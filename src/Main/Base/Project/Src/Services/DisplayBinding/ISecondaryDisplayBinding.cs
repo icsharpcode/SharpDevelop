@@ -1,7 +1,7 @@
 ﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
+//     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
 //     <version>$Revision$</version>
 // </file>
 
@@ -16,6 +16,9 @@ namespace ICSharpCode.SharpDevelop
 	/// </summary>
 	public interface ISecondaryDisplayBinding
 	{
+		/// <summary>
+		/// Gets if the display binding can attach to the specified view content.
+		/// </summary>
 		bool CanAttachTo(IViewContent content);
 		
 		/// <summary>
@@ -29,6 +32,6 @@ namespace ICSharpCode.SharpDevelop
 		/// If ReattachWhenParserServiceIsReady is used, the implementation is responsible
 		/// for checking that no duplicate secondary view contents are added.
 		/// </summary>
-		ISecondaryViewContent [] CreateSecondaryViewContent(IViewContent viewContent);
+		IViewContent[] CreateSecondaryViewContent(IViewContent viewContent);
 	}
 }

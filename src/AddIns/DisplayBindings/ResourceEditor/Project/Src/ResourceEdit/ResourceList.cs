@@ -69,7 +69,7 @@ namespace ResourceEditor
 		public PrintDocument PrintDocument
 		{
 			get {
-				return null; 
+				return null;
 			}
 		}
 		
@@ -82,7 +82,7 @@ namespace ResourceEditor
 		public ResourceList(ResourceEditorControl editor)
 		{
 			undoStack        = new UndoStack();
-						
+			
 			name.Text     = ResourceService.GetString("Global.Name");
 			name.Width    = 250;
 			
@@ -144,21 +144,21 @@ namespace ResourceEditor
 			}
 		}
 		
-		public void LoadFile(string filename)
+		public void LoadFile(string filename, Stream stream)
 		{
 			switch (Path.GetExtension(filename).ToLowerInvariant()) {
 				case ".resx":
-					ResXResourceReader rx = new ResXResourceReader(filename);
+					ResXResourceReader rx = new ResXResourceReader(stream);
 					rx.BasePath = Path.GetDirectoryName(filename);
 					IDictionaryEnumerator n = rx.GetEnumerator();
-					while (n.MoveNext()) 
+					while (n.MoveNext())
 						if (!resources.ContainsKey(n.Key.ToString()))
-							resources.Add(n.Key.ToString(), new ResourceItem(n.Key.ToString(), n.Value));
+						resources.Add(n.Key.ToString(), new ResourceItem(n.Key.ToString(), n.Value));
 					
 					n = rx.GetMetadataEnumerator();
-					while (n.MoveNext()) 
+					while (n.MoveNext())
 						if (!metadata.ContainsKey(n.Key.ToString()))
-							metadata.Add(n.Key.ToString(), new ResourceItem(n.Key.ToString(), n.Value));
+						metadata.Add(n.Key.ToString(), new ResourceItem(n.Key.ToString(), n.Value));
 					
 					rx.Close();
 					break;
@@ -166,7 +166,7 @@ namespace ResourceEditor
 					//// new file will fail here - so we have to ignore exception(s)
 					ResourceReader rr=null;
 					try {
-						rr = new ResourceReader(filename);
+						rr = new ResourceReader(stream);
 						foreach (DictionaryEntry entry in rr) {
 							if (!resources.ContainsKey(entry.Key.ToString()))
 								resources.Add(entry.Key.ToString(), new ResourceItem(entry.Key.ToString(), entry.Value));
@@ -183,14 +183,13 @@ namespace ResourceEditor
 			InitializeListView();
 		}
 		
-		public void SaveFile(string filename)
+		public void SaveFile(string filename, Stream stream)
 		{
-			Debug.Assert(!writeProtected, "ICSharpCode.SharpDevelop.Gui.Edit.Resource.ResourceEdit.SaveFile(string filename) : trying to save a write protected file");
 			switch (Path.GetExtension(filename).ToLowerInvariant()) {
-				
-				// write XML resource
+					
+					// write XML resource
 				case ".resx":
-					ResXResourceWriter rxw    = new ResXResourceWriter(filename);
+					ResXResourceWriter rxw = new ResXResourceWriter(stream);
 					foreach (KeyValuePair<string, ResourceItem> entry in resources) {
 						if (entry.Value != null) {
 							ResourceItem item = entry.Value;
@@ -205,18 +204,18 @@ namespace ResourceEditor
 					}
 					rxw.Generate();
 					rxw.Close();
-				break;
-				
-				// write default resource
+					break;
+					
+					// write default resource
 				default:
-					ResourceWriter rw = new ResourceWriter(filename);
+					ResourceWriter rw = new ResourceWriter(stream);
 					foreach (KeyValuePair<string, ResourceItem> entry in resources) {
 						ResourceItem item = (ResourceItem)entry.Value;
 						rw.AddResource(item.Name, item.ResourceValue);
 					}
 					rw.Generate();
 					rw.Close();
-				break;
+					break;
 			}
 		}
 

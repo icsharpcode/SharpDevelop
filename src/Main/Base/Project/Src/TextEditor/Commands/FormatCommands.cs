@@ -26,12 +26,12 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 		
 		public override void Run()
 		{
-			IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
+			IViewContent viewContent = WorkbenchSingleton.Workbench.ActiveViewContent;
 			
-			if (window == null || !(window.ViewContent is ITextEditorControlProvider)) {
+			if (viewContent == null || !(viewContent is ITextEditorControlProvider)) {
 				return;
 			}
-			TextEditorControl textEditor = ((ITextEditorControlProvider)window.ViewContent).TextEditorControl;
+			TextEditorControl textEditor = ((ITextEditorControlProvider)viewContent).TextEditorControl;
 			EditAction.Execute(textEditor.ActiveTextAreaControl.TextArea);
 		}
 	}
@@ -225,16 +225,16 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 		
 		public override void Run()
 		{
-			IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
+			IViewContent viewContent = WorkbenchSingleton.Workbench.ActiveViewContent;
 			
-			if (window == null || !(window.ViewContent is ITextEditorControlProvider)) {
+			if (viewContent == null || !(viewContent is ITextEditorControlProvider)) {
 				return;
 			}
 			
 			using (SortOptionsDialog sortOptionsDialog = new SortOptionsDialog()) {
 				sortOptionsDialog.Owner = (Form)WorkbenchSingleton.Workbench;
 				if (sortOptionsDialog.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) == DialogResult.OK) {
-					TextArea textarea = ((ITextEditorControlProvider)window.ViewContent).TextEditorControl.ActiveTextAreaControl.TextArea;
+					TextArea textarea = ((ITextEditorControlProvider)viewContent).TextEditorControl.ActiveTextAreaControl.TextArea;
 					textarea.BeginUpdate();
 					if (textarea.SelectionManager.HasSomethingSelected) {
 						foreach (ISelection selection in textarea.SelectionManager.SelectionCollection) {

@@ -23,6 +23,14 @@ namespace ICSharpCode.TextEditor.Util
 			return codepage == 65001 || codepage == 65000 || codepage == 1200 || codepage == 1201;
 		}
 		
+		public static string ReadFileContent(Stream fs, ref Encoding encoding, Encoding defaultEncoding)
+		{
+			using (StreamReader reader = OpenStream(fs, encoding, defaultEncoding)) {
+				encoding = reader.CurrentEncoding;
+				return reader.ReadToEnd();
+			}
+		}
+		
 		public static string ReadFileContent(string fileName, ref Encoding encoding, Encoding defaultEncoding)
 		{
 			using (FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read)) {
@@ -33,8 +41,11 @@ namespace ICSharpCode.TextEditor.Util
 			}
 		}
 		
-		public static StreamReader OpenStream(FileStream fs, Encoding suggestedEncoding, Encoding defaultEncoding)
+		public static StreamReader OpenStream(Stream fs, Encoding suggestedEncoding, Encoding defaultEncoding)
 		{
+			if (fs == null)
+				throw new ArgumentNullException("fs");
+			
 			if (fs.Length > 3) {
 				// the autodetection of StreamReader is not capable of detecting the difference
 				// between ISO-8859-1 and UTF-8 without BOM.
@@ -60,7 +71,7 @@ namespace ICSharpCode.TextEditor.Util
 			}
 		}
 		
-		static StreamReader AutoDetect(FileStream fs, byte firstByte, byte secondByte, Encoding defaultEncoding)
+		static StreamReader AutoDetect(Stream fs, byte firstByte, byte secondByte, Encoding defaultEncoding)
 		{
 			int max = (int)Math.Min(fs.Length, 500000); // look at max. 500 KB
 			const int ASCII = 0;

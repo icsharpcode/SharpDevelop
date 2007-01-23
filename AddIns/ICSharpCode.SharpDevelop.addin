@@ -52,9 +52,9 @@
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/DisplayBindings">
-		<DisplayBinding id               = "Browser"
-		                supportedformats = "Web Pages"
-		                class            = "ICSharpCode.SharpDevelop.BrowserDisplayBinding.BrowserDisplayBinding"/>
+		<DisplayBinding id    = "Browser"
+		                title = "Built-in Web Browser"
+		                class = "ICSharpCode.SharpDevelop.BrowserDisplayBinding.BrowserDisplayBinding"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/FileFilter">
@@ -183,7 +183,7 @@
 		<ToolbarItem id      = "OpenFile"
 		             icon    = "Icons.16x16.OpenFileIcon"
 		             tooltip = "${res:Gui.ProjectBrowser.Open}"
-		             class   = "ICSharpCode.SharpDevelop.Project.Commands.OpenFileEvent"/>
+		             class   = "ICSharpCode.SharpDevelop.Project.Commands.OpenFileFromProjectBrowser"/>
 	</Path>
 	
 	<Path path = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/SolutionNode">
@@ -247,7 +247,11 @@
 		<MenuItem id = "OpenFile"
 		          label = "${res:ProjectComponent.ContextMenu.Open}"
 		          icon  = "Icons.16x16.OpenFileIcon"
-		          class = "ICSharpCode.SharpDevelop.Project.Commands.OpenFileEvent"/>
+		          class = "ICSharpCode.SharpDevelop.Project.Commands.OpenFileFromProjectBrowser"/>
+		<MenuItem id      = "OpenFileWith"
+		          label = "${res:Gui.ProjectBrowser.OpenWith}"
+		          class   = "ICSharpCode.SharpDevelop.Project.Commands.OpenFileFromProjectBrowserWith"/>
+		
 		<MenuItem id = "OpenSeparator" type = "Separator" />
 		<Include id="CutCopyRemoveRename" path="/SharpDevelop/Pads/ProjectBrowser/ContextMenu/CutCopyRemoveRename"/>
 	</Path>
@@ -288,6 +292,11 @@
 		          label = "${res:ProjectComponent.ContextMenu.AddWebReference}"
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.AddWebReferenceToProject"/>
 		<MenuItem id = "AddSeparator" type = "Separator"/>
+		
+		<MenuItem id    = "OpenProjectWith"
+		          label = "${res:Gui.ProjectBrowser.OpenWith}"
+		          class = "ICSharpCode.SharpDevelop.Project.Commands.OpenFileFromProjectBrowserWith"/>
+		
 		<Include id = "ProjectActions" path="/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ProjectActions"/>
 		<MenuItem id = "Separator2" type = "Separator"/>
 		<Include id="inc" path="/SharpDevelop/Pads/ProjectBrowser/ContextMenu/CutPasteRemoveRename"/>
@@ -303,6 +312,11 @@
 	</Path>
 	
 	<Path name="/SharpDevelop/Pads/ProjectBrowser/ContextMenu/UnknownProjectNode">
+		<MenuItem id    = "OpenProjectWith"
+		          label = "${res:Gui.ProjectBrowser.OpenWith}"
+		          class = "ICSharpCode.SharpDevelop.Project.Commands.OpenFileFromProjectBrowserWith"/>
+		<MenuItem id = "OpenSeparator" type = "Separator" />
+		
 		<Include id="inc" path="/SharpDevelop/Pads/ProjectBrowser/ContextMenu/CutPasteRemoveRename"/>
 	</Path>
 	
@@ -343,7 +357,10 @@
 			<MenuItem id = "OpenFile"
 			          label = "${res:ProjectComponent.ContextMenu.Open}"
 			          icon  = "Icons.16x16.OpenFileIcon"
-			          class = "ICSharpCode.SharpDevelop.Project.Commands.OpenFileEvent"/>
+			          class = "ICSharpCode.SharpDevelop.Project.Commands.OpenFileFromProjectBrowser"/>
+			<MenuItem id      = "OpenFileWith"
+			          label = "${res:Gui.ProjectBrowser.OpenWith}"
+			          class   = "ICSharpCode.SharpDevelop.Project.Commands.OpenFileFromProjectBrowserWith"/>
 		</ComplexCondition>
 		<Condition name = "Ownerstate" ownerstate = "Missing">
 			<MenuItem id = "Remove"
@@ -609,7 +626,7 @@
 		<MenuItem id    = "OpenFile"
 		          label = "${res:ProjectComponent.ContextMenu.Open}"
 		          icon  = "Icons.16x16.OpenFileIcon"
-		          class = "ICSharpCode.SharpDevelop.Project.Commands.OpenFileEvent"/>
+		          class = "ICSharpCode.SharpDevelop.Project.Commands.OpenFileFromProjectBrowser"/>
 		
 		<MenuItem id   = "OpenSeparator"
 		          type = "Separator"  />
@@ -1639,7 +1656,7 @@
 	<Path name = "/SharpDevelop/Workbench/DisplayBindings">
 		<DisplayBinding id    = "Text"
 		                insertafter = "Browser"
-		                supportedformats = "Text Files,Source Files"
+		                title = "Text editor"
 		                class = "ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.TextEditorDisplayBinding" />
 	</Path>
 	

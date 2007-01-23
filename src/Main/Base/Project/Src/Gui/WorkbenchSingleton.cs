@@ -68,6 +68,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public static void InitializeWorkbench()
 		{
 			LayoutConfiguration.LoadLayoutConfiguration();
+			FileService.InitializeService();
 			StatusBarService.Initialize();
 			DomHostCallback.Register(); // must be called after StatusBarService.Initialize()
 			ParserService.InitializeParserService();
@@ -92,9 +93,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		#region Safe Thread Caller
 		/// <summary>
-		/// Description of STAThreadCaller.
+		/// Helper class for invoking methods on the main thread.
 		/// </summary>
-		private class STAThreadCaller
+		private sealed class STAThreadCaller
 		{
 			Control ctl;
 			
@@ -139,6 +140,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
+		readonly static object[] emptyObjectArray = new object[0];
+		
 		/// <summary>
 		/// Makes a call GUI threadsafe. WARNING: This method waits for the result of the
 		/// operation, which can result in a dead-lock when the main thread waits for a lock
@@ -146,7 +149,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		public static R SafeThreadFunction<R>(Func<R> method)
 		{
-			return (R)caller.Call(method, new object[0]);
+			return (R)caller.Call(method, emptyObjectArray);
 		}
 		
 		/// <summary>
@@ -166,7 +169,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		public static void SafeThreadCall(Action method)
 		{
-			caller.Call(method, new object[0]);
+			caller.Call(method, emptyObjectArray);
 		}
 		
 		/// <summary>

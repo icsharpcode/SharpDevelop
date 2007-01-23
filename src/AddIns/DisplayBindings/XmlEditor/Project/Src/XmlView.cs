@@ -25,6 +25,7 @@ using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Actions;
 using ICSharpCode.TextEditor.Document;
+using Bookmarks = ICSharpCode.SharpDevelop.Bookmarks;
 
 namespace ICSharpCode.XmlEditor
 {
@@ -54,20 +55,40 @@ namespace ICSharpCode.XmlEditor
 		static readonly string contextMenuPath = "/SharpDevelop/ViewContent/XmlEditor/ContextMenu";
 
 		XmlEditorControl xmlEditor;
-		TextEditorDisplayBindingWrapper.FileChangeWatcher watcher;
 		static MessageViewCategory category;
 		string stylesheetFileName;
 		XmlTreeView xmlTreeView;
-			
+		bool isInUnitTest;
+		
 		/// <summary>
-		/// Creates an XmlView that is used by SharpDevelop to provide an
-		/// XML editor.
+		/// Sets the primary file. Public because it is used by some unit tests.
 		/// </summary>
+		public void SetPrimaryFileUnitTestMode(OpenedFile file)
+		{
+			if (PrimaryFile != null)
+				throw new InvalidOperationException("primary file is already set");
+			
+			isInUnitTest = true;
+			
+			this.Files.Add(file);
+			OnFileNameChanged(file);
+			file.ForceInitializeView(this);
+		}
+		
+		public XmlView(OpenedFile file)
+			: this()
+		{
+			this.Files.Add(file);
+			OnFileNameChanged(file);
+			file.ForceInitializeView(this);
+			
+			xmlTreeView = new XmlTreeView(this);
+			SecondaryViewContents.Add(xmlTreeView);
+		}
+		
 		public XmlView()
 			: this(new SharpDevelopTextEditorProperties(), XmlSchemaManager.SchemaCompletionDataItems)
 		{
-			watcher = new TextEditorDisplayBindingWrapper.FileChangeWatcher(this);
-			
 			xmlEditor.AddEditActions(GetEditActions());
 			xmlEditor.TextAreaContextMenuStrip = MenuService.CreateContextMenu(xmlEditor, contextMenuPath);
 			
@@ -81,9 +102,6 @@ namespace ICSharpCode.XmlEditor
 			XmlEditorAddInOptions.PropertyChanged += PropertyChanged;
 			XmlSchemaManager.UserSchemaAdded += UserSchemaAdded;
 			XmlSchemaManager.UserSchemaRemoved += UserSchemaRemoved;
-
-			xmlTreeView = new XmlTreeView(this);
-			SecondaryViewContents.Add(xmlTreeView);
 		}
 		
 		/// <summary>
@@ -93,6 +111,8 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		public XmlView(ITextEditorProperties textEditorProperties, XmlSchemaCompletionDataCollection schemas)
 		{
+			this.TabPageText = "XML";
+			
 			xmlEditor = new XmlEditorControl();
 			xmlEditor.Dock = DockStyle.Fill;
 			
@@ -124,12 +144,6 @@ namespace ICSharpCode.XmlEditor
 		public static bool IsXmlViewActive {
 			get {
 				return ActiveXmlView != null;
-			}
-		}
-		
-		public override string TabPageText {
-			get {
-				return "XML";
 			}
 		}
 		
@@ -189,7 +203,7 @@ namespace ICSharpCode.XmlEditor
 		/// <summary>
 		/// Finds the xml nodes that match the specified xpath.
 		/// </summary>
-		/// <returns>An array of XPathNodeMatch items. These include line number 
+		/// <returns>An array of XPathNodeMatch items. These include line number
 		/// and line position information aswell as the node found.</returns>
 		public static XPathNodeMatch[] SelectNodes(string xml, string xpath, ReadOnlyCollection<XmlNamespace> namespaces)
 		{
@@ -203,21 +217,21 @@ namespace ICSharpCode.XmlEditor
 			foreach (XmlNamespace xmlNamespace in namespaces) {
 				namespaceManager.AddNamespace(xmlNamespace.Prefix, xmlNamespace.Uri);
 			}
-	
-			// Run the xpath query.                                                        
+			
+			// Run the xpath query.
 			XPathNodeIterator iterator = navigator.Select(xpath, namespaceManager);
 			
 			List<XPathNodeMatch> nodes = new List<XPathNodeMatch>();
 			while (iterator.MoveNext()) {
 				nodes.Add(new XPathNodeMatch(iterator.Current));
-			}			
+			}
 			return nodes.ToArray();
 		}
 		
 		/// <summary>
 		/// Finds the xml nodes that match the specified xpath.
 		/// </summary>
-		/// <returns>An array of XPathNodeMatch items. These include line number 
+		/// <returns>An array of XPathNodeMatch items. These include line number
 		/// and line position information aswell as the node found.</returns>
 		public static XPathNodeMatch[] SelectNodes(string xml, string xpath)
 		{
@@ -228,7 +242,7 @@ namespace ICSharpCode.XmlEditor
 		/// <summary>
 		/// Finds the xml nodes in the current document that match the specified xpath.
 		/// </summary>
-		/// <returns>An array of XPathNodeMatch items. These include line number 
+		/// <returns>An array of XPathNodeMatch items. These include line number
 		/// and line position information aswell as the node found.</returns>
 		public XPathNodeMatch[] SelectNodes(string xpath, ReadOnlyCollection<XmlNamespace> namespaces)
 		{
@@ -282,7 +296,7 @@ namespace ICSharpCode.XmlEditor
 					}
 					return schemaObject;
 				}
-			}	
+			}
 			return null;
 		}
 		
@@ -306,58 +320,44 @@ namespace ICSharpCode.XmlEditor
 					return;
 				}
 			}
-				
+			
 			OutputWindowWriteLine(String.Empty);
 			OutputWindowWriteLine(StringParser.Parse("${res:MainWindow.XmlValidationMessages.ValidationSuccess}"));
-		}
-		
-		/// <summary>
-		/// Gets the name of a new view.
-		/// </summary>
-		public override string UntitledName {
-			get {
-				return base.UntitledName;
-			}
-			set {
-				base.UntitledName = value;
-				xmlEditor.FileName = value;
-				SetDefaultSchema(Path.GetExtension(xmlEditor.FileName));
-			}
 		}
 		
 		public override void Dispose()
 		{
 			base.Dispose();
-			if (watcher != null) {
-				watcher.Dispose();
-				XmlEditorAddInOptions.PropertyChanged -= PropertyChanged;
-				XmlSchemaManager.UserSchemaAdded -= new EventHandler(UserSchemaAdded);
-				XmlSchemaManager.UserSchemaRemoved -= new EventHandler(UserSchemaRemoved);
-			}
+			XmlEditorAddInOptions.PropertyChanged -= PropertyChanged;
+			XmlSchemaManager.UserSchemaAdded -= UserSchemaAdded;
+			XmlSchemaManager.UserSchemaRemoved -= UserSchemaRemoved;
 			xmlEditor.Dispose();
 		}
 		
-		/// <summary>
-		/// Sets the filename associated with the view.
-		/// </summary>
-		public override string FileName {
-			set {
-				string extension = Path.GetExtension(value);
-				if (Path.GetExtension(FileName) != extension) {
-					if (xmlEditor.Document.HighlightingStrategy != null) {
-						if (XmlView.IsXmlFileExtension(extension)) {
-							xmlEditor.Document.HighlightingStrategy = HighlightingStrategyFactory.CreateHighlightingStrategy(XmlView.Language);
-						} else {
-							xmlEditor.Document.HighlightingStrategy = HighlightingStrategyFactory.CreateHighlightingStrategyForFile(value);
-						}
-						xmlEditor.Refresh();
+		
+		protected override void OnFileNameChanged(OpenedFile file)
+		{
+			base.OnFileNameChanged(file);
+			
+			string oldFileName = xmlEditor.FileName;
+			string newFileName = file.FileName;
+			
+			string extension = Path.GetExtension(newFileName);
+			if (Path.GetExtension(oldFileName) != extension) {
+				if (xmlEditor.Document.HighlightingStrategy != null) {
+					if (XmlView.IsXmlFileExtension(extension)) {
+						xmlEditor.Document.HighlightingStrategy = HighlightingStrategyFactory.CreateHighlightingStrategy(XmlView.Language);
+					} else {
+						xmlEditor.Document.HighlightingStrategy = HighlightingStrategyFactory.CreateHighlightingStrategyForFile(newFileName);
 					}
+					xmlEditor.Refresh();
 				}
-				base.FileName  = value;
-				base.TitleName = Path.GetFileName(value);
-				
-				SetDefaultSchema(extension);
 			}
+			SetDefaultSchema(extension);
+			
+			xmlEditor.FileName = newFileName;
+			ICSharpCode.SharpDevelop.Bookmarks.SDBookmarkFactory factory = (ICSharpCode.SharpDevelop.Bookmarks.SDBookmarkFactory)xmlEditor.Document.BookmarkManager.Factory;
+			factory.ChangeFilename(newFileName);
 		}
 		
 		/// <summary>
@@ -428,7 +428,7 @@ namespace ICSharpCode.XmlEditor
 				} catch (XmlSchemaInferenceException ex) {
 					AddTask(xmlEditor.FileName, ex.Message, ex.LinePosition, ex.LineNumber, TaskType.Error);
 				}
-			} 
+			}
 			ShowErrorList();
 			return null;
 		}
@@ -442,7 +442,7 @@ namespace ICSharpCode.XmlEditor
 		{
 			// Find schema object for selected xml element or attribute.
 			XmlCompletionDataProvider provider = new XmlCompletionDataProvider(xmlEditor.SchemaCompletionDataItems, xmlEditor.DefaultSchemaCompletionData, xmlEditor.DefaultNamespacePrefix);
-			XmlSchemaCompletionData currentSchemaCompletionData = provider.FindSchemaFromFileName(FileName);
+			XmlSchemaCompletionData currentSchemaCompletionData = provider.FindSchemaFromFileName(PrimaryFileName);
 			XmlSchemaObject schemaObject = GetSchemaObjectSelected(Text, xmlEditor.ActiveTextAreaControl.Caret.Offset, provider, currentSchemaCompletionData);
 			
 			// Open schema.
@@ -544,36 +544,23 @@ namespace ICSharpCode.XmlEditor
 			}
 		}
 		
-		public override void Load(string fileName)
+		public override void Load(OpenedFile file, Stream stream)
 		{
-			xmlEditor.IsReadOnly = IsFileReadOnly(fileName);
-			xmlEditor.LoadFile(fileName, false, true);
-			FileName  = fileName;
-			TitleName = Path.GetFileName(fileName);
-			IsDirty     = false;
-			
-			// Add bookmarks.
-			foreach (ICSharpCode.SharpDevelop.Bookmarks.SDBookmark bookmark in ICSharpCode.SharpDevelop.Bookmarks.BookmarkManager.GetBookmarks(fileName)) {
-				bookmark.Document = xmlEditor.Document;
-				xmlEditor.Document.BookmarkManager.Marks.Add(bookmark);
+			if (!file.IsUntitled) {
+				xmlEditor.IsReadOnly = IsFileReadOnly(file.FileName);
 			}
-
+			
+			xmlEditor.LoadFile(file.FileName, stream, false, true);
+			foreach (Bookmarks.SDBookmark mark in Bookmarks.BookmarkManager.GetBookmarks(file.FileName)) {
+				mark.Document = xmlEditor.Document;
+				xmlEditor.Document.BookmarkManager.Marks.Add(mark);
+			}
 			UpdateFolding();
-			watcher.SetWatcher(fileName);
 		}
 		
-		public override void Save(string fileName)
+		public override void Save(OpenedFile file, Stream stream)
 		{
-			OnSaving(EventArgs.Empty);
-			watcher.Disable();
-
-			xmlEditor.SaveFile(fileName);
-			FileName = fileName;
-			TitleName = Path.GetFileName(fileName);
-			IsDirty = false;
-			
-			watcher.SetWatcher(fileName);
-			OnSaved(new SaveEventArgs(true));
+			xmlEditor.SaveFile(stream);
 		}
 		
 		public override INavigationPoint BuildNavPoint()
@@ -581,7 +568,7 @@ namespace ICSharpCode.XmlEditor
 			int line = Line;
 			LineSegment lineSegment = xmlEditor.Document.GetLineSegment(line);
 			string text = xmlEditor.Document.GetText(lineSegment);
-			return new TextNavigationPoint(FileName, line, Column, text);
+			return new TextNavigationPoint(PrimaryFileName, line, Column, text);
 		}
 		
 		#endregion
@@ -666,7 +653,7 @@ namespace ICSharpCode.XmlEditor
 					xmlEditor.Document.HighlightingStrategy = highlightingStrategy;
 				}
 			}
-			xmlEditor.ActiveTextAreaControl.TextArea.TextView.FirstVisibleLine = properties.Get("VisibleLine", 0);		
+			xmlEditor.ActiveTextAreaControl.TextArea.TextView.FirstVisibleLine = properties.Get("VisibleLine", 0);
 			xmlEditor.Document.FoldingManager.DeserializeFromString(properties.Get("Foldings", String.Empty));
 		}
 		
@@ -725,14 +712,6 @@ namespace ICSharpCode.XmlEditor
 
 		#endregion
 
-		protected override void OnFileNameChanged(EventArgs e)
-		{
-			base.OnFileNameChanged(e);
-			xmlEditor.FileName = base.FileName;
-			ICSharpCode.SharpDevelop.Bookmarks.SDBookmarkFactory factory = (ICSharpCode.SharpDevelop.Bookmarks.SDBookmarkFactory)xmlEditor.Document.BookmarkManager.Factory;
-			factory.ChangeFilename(base.FileName);
-		}
-		
 		static bool IsFileReadOnly(string fileName)
 		{
 			return (File.GetAttributes(fileName) & FileAttributes.ReadOnly) == FileAttributes.ReadOnly;
@@ -766,6 +745,8 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		void RefreshMargin()
 		{
+			if (isInUnitTest) // SafeThreadAsyncCall doesn't work in unit testing
+				return;
 			WorkbenchSingleton.SafeThreadAsyncCall(xmlEditor.ActiveTextAreaControl.TextArea.Refresh,
 			                                       xmlEditor.ActiveTextAreaControl.TextArea.FoldMargin);
 		}
@@ -775,7 +756,7 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		void DocumentChanged(object sender, DocumentEventArgs e)
 		{
-			IsDirty = true;
+			this.PrimaryFile.MakeDirty();
 		}
 		
 		/// <summary>
@@ -1082,7 +1063,7 @@ namespace ICSharpCode.XmlEditor
 					ShowErrorList();
 					return false;
 				}
-			
+				
 				XmlReader reader = XmlReader.Create(xmlReader, settings);
 				
 				XmlDocument doc = new XmlDocument();
@@ -1101,7 +1082,7 @@ namespace ICSharpCode.XmlEditor
 		
 		/// <summary>
 		/// Assumes the content in the editor is a schema and validates it using
-		/// the XmlSchema class.  This is used instead of validating against the 
+		/// the XmlSchema class.  This is used instead of validating against the
 		/// XMLSchema.xsd file since it gives us better error information.
 		/// </summary>
 		bool ValidateSchema()
@@ -1189,7 +1170,7 @@ namespace ICSharpCode.XmlEditor
 				if (attributeValue.Length == 0) {
 					return attribute;
 				}
-		
+				
 				if (attribute.Name == "ref") {
 					schemaObject = FindSchemaObjectReference(attributeValue, provider, currentSchemaCompletionData, element.Name);
 				} else if (attribute.Name == "type") {
@@ -1258,7 +1239,7 @@ namespace ICSharpCode.XmlEditor
 		}
 		
 		/// <summary>
-		/// Converts a set of schemas to a string array, each array item 
+		/// Converts a set of schemas to a string array, each array item
 		/// contains the schema converted to a string.
 		/// </summary>
 		string[] GetSchemas(XmlSchemaSet schemaSet)

@@ -26,10 +26,7 @@ namespace SearchAndReplace
 				if (!SearchReplaceUtilities.IsTextAreaSelected) {
 					return null;
 				}
-				if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent.FileName == null) {
-					return WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent.UntitledName;
-				}
-				return WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent.FileName;
+				return WorkbenchSingleton.Workbench.ActiveViewContent.PrimaryFileName;
 			}
 		}
 		
@@ -38,7 +35,7 @@ namespace SearchAndReplace
 				if (!SearchReplaceUtilities.IsTextAreaSelected) {
 					return null;
 				}
-				TextEditorControl textEditor = (((ITextEditorControlProvider)WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent).TextEditorControl);
+				TextEditorControl textEditor = (((ITextEditorControlProvider)WorkbenchSingleton.Workbench.ActiveViewContent).TextEditorControl);
 				return new ProvidedDocumentInformation(textEditor.Document, CurrentFileName, textEditor.ActiveTextAreaControl);
 			}
 		}

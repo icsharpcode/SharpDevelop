@@ -8,6 +8,7 @@
 using System;
 using System.Drawing.Printing;
 using System.IO;
+using System.Diagnostics;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
@@ -53,24 +54,28 @@ namespace ICSharpCode.SharpDevelop.Commands
 	{
 		public override void Run()
 		{
-			IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
-			if (window != null) {
-				if (window.ViewContent.IsViewOnly) {
+			IViewContent content = WorkbenchSingleton.Workbench.ActiveViewContent;
+			if (content != null) {
+				if (content.IsViewOnly) {
 					return;
 				}
 				
-				if (window.ViewContent.FileName == null) {
-					SaveFileAs sfa = new SaveFileAs();
-					sfa.Run();
+				foreach (OpenedFile file in Linq.ToArray(content.Files)) {
+					Save(file);
+				}
+			}
+		}
+		
+		internal static void Save(OpenedFile file)
+		{
+			if (file.IsUntitled) {
+				SaveFileAs.Save(file);
+			} else {
+				FileAttributes attr = FileAttributes.ReadOnly | FileAttributes.Directory | FileAttributes.Offline | FileAttributes.System;
+				if (File.Exists(file.FileName) && (File.GetAttributes(file.FileName) & attr) != 0) {
+					SaveFileAs.Save(file);
 				} else {
-					FileAttributes attr = FileAttributes.ReadOnly | FileAttributes.Directory | FileAttributes.Offline | FileAttributes.System;
-					if (File.Exists(window.ViewContent.FileName) && (File.GetAttributes(window.ViewContent.FileName) & attr) != 0) {
-						SaveFileAs sfa = new SaveFileAs();
-						sfa.Run();
-					} else {
-						ProjectService.MarkFileDirty(window.ViewContent.FileName);
-						FileUtility.ObservedSave(new FileOperationDelegate(window.ViewContent.Save), window.ViewContent.FileName, FileErrorPolicy.ProvideAlternative);
-					}
+					FileUtility.ObservedSave(new NamedFileOperationDelegate(file.SaveToDisk), file.FileName, FileErrorPolicy.ProvideAlternative);
 				}
 			}
 		}
@@ -80,26 +85,23 @@ namespace ICSharpCode.SharpDevelop.Commands
 	{
 		public override void Run()
 		{
-			IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
-			if (window != null && window.ViewContent.FileName != null && !window.ViewContent.IsViewOnly) {
-				if (MessageService.AskQuestion("${res:ICSharpCode.SharpDevelop.Commands.ReloadFile.ReloadFileQuestion}")) {
-					Properties memento = null;
-					if (window.ViewContent is IMementoCapable) {
-						memento = ((IMementoCapable)window.ViewContent).CreateMemento();
-					}
-					try
-					{
-						window.ViewContent.Load(window.ViewContent.FileName);
-					}
-					catch(FileNotFoundException)
-					{
-						MessageService.ShowWarning("${res:ICSharpCode.SharpDevelop.Commands.ReloadFile.FileDeletedMessage}");
-						return;
-					}
-					
-					if (memento != null) {
-						((IMementoCapable)window.ViewContent).SetMemento(memento);
-					}
+			IViewContent content = WorkbenchSingleton.Workbench.ActiveViewContent;
+			if (content == null)
+				return;
+			OpenedFile file = content.PrimaryFile;
+			if (file == null || file.IsUntitled)
+				return;
+			if (file.IsDirty == false
+			    || MessageService.AskQuestion("${res:ICSharpCode.SharpDevelop.Commands.ReloadFile.ReloadFileQuestion}"))
+			{
+				try
+				{
+					file.ReloadFromDisk();
+				}
+				catch(FileNotFoundException)
+				{
+					MessageService.ShowWarning("${res:ICSharpCode.SharpDevelop.Commands.ReloadFile.FileDeletedMessage}");
+					return;
 				}
 			}
 		}
@@ -109,38 +111,45 @@ namespace ICSharpCode.SharpDevelop.Commands
 	{
 		public override void Run()
 		{
-			IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
-			if (window != null) {
-				if (window.ViewContent.IsViewOnly) {
-					return;
-				}
-				if (window.ViewContent is ICustomizedCommands) {
-					if (((ICustomizedCommands)window.ViewContent).SaveAsCommand()) {
+			// save the primary file only
+			IViewContent content = WorkbenchSingleton.Workbench.ActiveViewContent;
+			if (content != null && !content.IsViewOnly) {
+				if (content is ICustomizedCommands) {
+					if (((ICustomizedCommands)content).SaveAsCommand()) {
 						return;
 					}
 				}
-				using (SaveFileDialog fdiag = new SaveFileDialog()) {
-					fdiag.OverwritePrompt = true;
-					fdiag.AddExtension    = true;
-					
-					string[] fileFilters  = (string[])(AddInTree.GetTreeNode("/SharpDevelop/Workbench/FileFilter").BuildChildItems(this)).ToArray(typeof(string));
-					fdiag.Filter          = String.Join("|", fileFilters);
-					for (int i = 0; i < fileFilters.Length; ++i) {
-						if (fileFilters[i].IndexOf(Path.GetExtension(window.ViewContent.FileName == null ? window.ViewContent.UntitledName : window.ViewContent.FileName)) >= 0) {
-							fdiag.FilterIndex = i + 1;
-							break;
-						}
+				if (content.PrimaryFile != null) {
+					Save(content.PrimaryFile);
+				}
+			}
+		}
+		
+		internal static void Save(OpenedFile file)
+		{
+			Debug.Assert(file != null);
+			
+			using (SaveFileDialog fdiag = new SaveFileDialog()) {
+				fdiag.OverwritePrompt = true;
+				fdiag.AddExtension    = true;
+				
+				string[] fileFilters  = (string[])(AddInTree.GetTreeNode("/SharpDevelop/Workbench/FileFilter").BuildChildItems(null)).ToArray(typeof(string));
+				fdiag.Filter          = String.Join("|", fileFilters);
+				for (int i = 0; i < fileFilters.Length; ++i) {
+					if (fileFilters[i].IndexOf(Path.GetExtension(file.FileName)) >= 0) {
+						fdiag.FilterIndex = i + 1;
+						break;
 					}
-					
-					if (fdiag.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) == DialogResult.OK) {
-						string fileName = fdiag.FileName;
-						if (!FileService.CheckFileName(fileName)) {
-							return;
-						}
-						if (FileUtility.ObservedSave(new NamedFileOperationDelegate(window.ViewContent.Save), fileName) == FileOperationResult.OK) {
-							FileService.RecentOpen.AddLastFile(fileName);
-							MessageService.ShowMessage(fileName, "${res:ICSharpCode.SharpDevelop.Commands.SaveFile.FileSaved}");
-						}
+				}
+				
+				if (fdiag.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) == DialogResult.OK) {
+					string fileName = fdiag.FileName;
+					if (!FileService.CheckFileName(fileName)) {
+						return;
+					}
+					if (FileUtility.ObservedSave(new NamedFileOperationDelegate(file.SaveToDisk), fileName) == FileOperationResult.OK) {
+						FileService.RecentOpen.AddLastFile(fileName);
+						MessageService.ShowMessage(fileName, "${res:ICSharpCode.SharpDevelop.Commands.SaveFile.FileSaved}");
 					}
 				}
 			}
@@ -151,38 +160,9 @@ namespace ICSharpCode.SharpDevelop.Commands
 	{
 		public static void SaveAll()
 		{
-			foreach (IViewContent content in WorkbenchSingleton.Workbench.ViewContentCollection.ToArray()) {
-				if (content.IsViewOnly) {
-					continue;
-				}
-				
-				if (content.FileName == null) {
-					if (content is ICustomizedCommands) {
-						if (((ICustomizedCommands)content).SaveAsCommand()) {
-							continue;
-						}
-					} else {
-						using (SaveFileDialog fdiag = new SaveFileDialog()) {
-							fdiag.OverwritePrompt = true;
-							fdiag.AddExtension    = true;
-							fdiag.Filter          = String.Join("|", (string[])(AddInTree.GetTreeNode("/SharpDevelop/Workbench/FileFilter").BuildChildItems(null)).ToArray(typeof(string)));
-							
-							if (fdiag.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) == DialogResult.OK) {
-								string fileName = fdiag.FileName;
-								// currently useless, because the fdiag.FileName can't
-								// handle wildcard extensions :(
-								if (Path.GetExtension(fileName).StartsWith("?") || Path.GetExtension(fileName) == "*") {
-									fileName = Path.ChangeExtension(fileName, "");
-								}
-								if (FileUtility.ObservedSave(new NamedFileOperationDelegate(content.Save), fileName) == FileOperationResult.OK) {
-									
-									MessageService.ShowMessage(fileName, "${res:ICSharpCode.SharpDevelop.Commands.SaveFile.FileSaved}");
-								}
-							}
-						}
-					}
-				} else {
-					FileUtility.ObservedSave(new FileOperationDelegate(content.Save), content.FileName);
+			foreach (OpenedFile file in FileService.OpenedFiles) {
+				if (file.IsDirty) {
+					SaveFile.Save(file);
 				}
 			}
 		}
@@ -206,9 +186,9 @@ namespace ICSharpCode.SharpDevelop.Commands
 				
 				// search filter like in the current open file
 				if (!foundFilter) {
-					IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
-					if (window != null) {
-						string extension = Path.GetExtension(window.ViewContent.FileName == null ? window.ViewContent.UntitledName : window.ViewContent.FileName);
+					IViewContent content = WorkbenchSingleton.Workbench.ActiveViewContent;
+					if (content != null) {
+						string extension = Path.GetExtension(content.PrimaryFileName);
 						if (string.IsNullOrEmpty(extension) == false) {
 							for (int i = 0; i < fileFilters.Length; ++i) {
 								if (fileFilters[i].IndexOf(extension) >= 0) {
@@ -248,10 +228,9 @@ namespace ICSharpCode.SharpDevelop.Commands
 	{
 		public override void Run()
 		{
-			IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
-			if (window != null) {
-				if (window.ViewContent is IPrintable) {
-					PrintDocument pdoc = ((IPrintable)window.ViewContent).PrintDocument;
+			IPrintable printable = WorkbenchSingleton.Workbench.ActiveViewContent as IPrintable;
+			if (printable != null) {
+				using (PrintDocument pdoc = printable.PrintDocument) {
 					if (pdoc != null) {
 						using (PrintDialog ppd = new PrintDialog()) {
 							ppd.Document  = pdoc;
@@ -263,9 +242,9 @@ namespace ICSharpCode.SharpDevelop.Commands
 					} else {
 						MessageService.ShowError("${res:ICSharpCode.SharpDevelop.Commands.Print.CreatePrintDocumentError}");
 					}
-				} else {
-					MessageService.ShowError("${res:ICSharpCode.SharpDevelop.Commands.Print.CantPrintWindowContentError}");
 				}
+			} else {
+				MessageService.ShowError("${res:ICSharpCode.SharpDevelop.Commands.Print.CantPrintWindowContentError}");
 			}
 		}
 	}
@@ -275,26 +254,24 @@ namespace ICSharpCode.SharpDevelop.Commands
 		public override void Run()
 		{
 			try {
-				IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
-				if (window != null) {
-					if (window.ViewContent is IPrintable) {
-						using (PrintDocument pdoc = ((IPrintable)window.ViewContent).PrintDocument) {
-							if (pdoc != null) {
-								PrintPreviewDialog ppd = new PrintPreviewDialog();
-								ppd.Owner     = (Form)WorkbenchSingleton.Workbench;
-								ppd.TopMost   = true;
-								ppd.Document  = pdoc;
-								ppd.Show();
-							} else {
-								MessageService.ShowError("${res:ICSharpCode.SharpDevelop.Commands.Print.CreatePrintDocumentError}");
-							}
+				IPrintable printable = WorkbenchSingleton.Workbench.ActiveViewContent as IPrintable;
+				if (printable != null) {
+					using (PrintDocument pdoc = printable.PrintDocument) {
+						if (pdoc != null) {
+							PrintPreviewDialog ppd = new PrintPreviewDialog();
+							ppd.Owner     = (Form)WorkbenchSingleton.Workbench;
+							ppd.TopMost   = true;
+							ppd.Document  = pdoc;
+							ppd.Show();
+						} else {
+							MessageService.ShowError("${res:ICSharpCode.SharpDevelop.Commands.Print.CreatePrintDocumentError}");
 						}
 					}
 				}
 			} catch (InvalidPrinterException) {}
 		}
 	}
-	
+
 	public class ClearRecentFiles : AbstractMenuCommand
 	{
 		public override void Run()
@@ -304,7 +281,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 			} catch {}
 		}
 	}
-	
+
 	public class ClearRecentProjects : AbstractMenuCommand
 	{
 		public override void Run()

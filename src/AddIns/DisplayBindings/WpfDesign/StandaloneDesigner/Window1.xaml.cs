@@ -25,8 +25,6 @@ namespace StandaloneDesigner
 				MessageBox.Show(ex.ToString());
 				Close();
 			}
-			
-			propertyEditor.EditedObject = new StrangeDataSource();
 		}
 		
 		#if XAML_DEFINITIONS

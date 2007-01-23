@@ -77,7 +77,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 						Get<PictureBox>("applicationIcon").Image = Image.FromFile(applicationIcon);
 					} catch (OutOfMemoryException) {
 						Get<PictureBox>("applicationIcon").Image = null;
-						MessageService.ShowErrorFormatted("${res:Dialog.ProjectOptions.ApplicationSettings.InvalidIconFile}", Path.GetFullPath(applicationIcon));
+						MessageService.ShowErrorFormatted("${res:Dialog.ProjectOptions.ApplicationSettings.InvalidIconFile}", FileUtility.NormalizePath(applicationIcon));
 					}
 				} else {
 					Get<PictureBox>("applicationIcon").Image = null;

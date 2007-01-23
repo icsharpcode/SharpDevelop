@@ -239,7 +239,7 @@ namespace Plugins.RegExpTk {
 				return;
 			}
 			
-			string aboluteFileName = Path.GetFullPath(((TextBox)ControlDictionary["AssemblyFileCompileFileTextBox"]).Text);
+			string aboluteFileName = FileUtility.NormalizePath(((TextBox)ControlDictionary["AssemblyFileCompileFileTextBox"]).Text);
 			((StatusBar)ControlDictionary["StatusBar"]).Text = ResourceService.GetString("RegExpTk.Messages.FileCreated") + " " + aboluteFileName;
 		}
 		

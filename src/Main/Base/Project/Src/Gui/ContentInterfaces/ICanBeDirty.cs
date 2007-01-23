@@ -20,13 +20,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		bool IsDirty {
 			get;
-			set;
 		}
 		
 		/// <summary>
 		/// Is called when the content is changed after a save/load operation
 		/// and this signals that changes could be saved.
 		/// </summary>
-		event EventHandler DirtyChanged;
+		event EventHandler IsDirtyChanged;
 	}
 }

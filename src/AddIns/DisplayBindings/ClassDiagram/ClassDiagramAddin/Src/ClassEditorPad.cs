@@ -71,7 +71,7 @@ namespace ClassDiagramAddin
 			memberDom = CodeGenerator.ConvertMember(e.Member, new ClassFinder(e.Member.DeclaringType, cRegion.BeginLine + 1, 1));
 			
 			IProject proj = ProjectService.CurrentProject;
-			IViewContent vc = FileService.OpenFile(e.Member.DeclaringType.CompilationUnit.FileName).ViewContent;
+			IViewContent vc = FileService.OpenFile(e.Member.DeclaringType.CompilationUnit.FileName);
 			if (vc == null) return;
 			IDocument doc = GetDocument(vc);
 
@@ -181,13 +181,11 @@ namespace ClassDiagramAddin
 		
 		private static TextEditorControl GetTextEditorControl()
 		{
-			TextEditorControl tec = null;
-			IWorkbenchWindow window1 = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
-			if ((window1 != null) && (window1.ViewContent is ITextEditorControlProvider))
-			{
-				tec = ((ITextEditorControlProvider) window1.ViewContent).TextEditorControl;
-			}
-			return tec;
+			ITextEditorControlProvider provider = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorControlProvider;
+			if (provider != null)
+				return provider.TextEditorControl;
+			else
+				return null;
 		}
 	}
 }

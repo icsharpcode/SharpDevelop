@@ -31,20 +31,6 @@ namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 			}
 		}
 		
-		public override bool IsDirty {
-			get {
-				return false;
-			}
-			set {
-			}
-		}
-		
-		public override bool IsViewOnly {
-			get {
-				return true;
-			}
-		}
-		
 		protected BrowserPane(bool showNavigation)
 		{
 			htmlViewPane = new HtmlViewPane(showNavigation);
@@ -68,14 +54,9 @@ namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 			htmlViewPane.Dispose();
 		}
 		
-		public override void Load(string url)
+		public void Navigate(string url)
 		{
 			htmlViewPane.Navigate(url);
-		}
-		
-		public override void Save(string url)
-		{
-			Load(url);
 		}
 		
 		public Uri Url {
@@ -98,14 +79,6 @@ namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 				TitleName = ResourceService.GetString("ICSharpCode.SharpDevelop.BrowserDisplayBinding.Browser");
 			else
 				TitleName = title;
-		}
-		
-		// TODO: Navigation - implement browser navigation points?
-		public override INavigationPoint BuildNavPoint()
-		{
-			// returning null disables navigation for this IViewContent as
-			// requests to log null points are ignored.
-			return null;
 		}
 	}
 	

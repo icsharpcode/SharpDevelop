@@ -27,21 +27,9 @@ namespace ClassDiagramAddin
 			return true;
 		}
 		
-		public IViewContent CreateContentForFile(string fileName)
+		public IViewContent CreateContentForFile(OpenedFile file)
 		{
-			ClassDiagramViewContent vc = new ClassDiagramViewContent();
-			vc.Load(fileName);
-			return vc;
-		}
-		
-		public bool CanCreateContentForLanguage(string languageName)
-		{
-			return false;
-		}
-		
-		public IViewContent CreateContentForLanguage(string languageName, string content)
-		{
-			throw new NotImplementedException();
+			return new ClassDiagramViewContent(file);
 		}
 	}
 }

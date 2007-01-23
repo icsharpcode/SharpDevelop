@@ -25,6 +25,8 @@ namespace ICSharpCode.ComponentInspector.AddIn
 		{
 			instance = this;
 	
+			this.TitleName = StringParser.Parse("${res:ComponentInspector.ToolsMenu.ShowComponentInspectorMenuItem}");
+			
 			// HACK: Due to various static members in the ComponentInspector
 			// the ObjectBrowser does not like being re-used after being disposed. 
 			// Workaround this by keeping a reference to the ObjectBrowser.
@@ -53,8 +55,6 @@ namespace ICSharpCode.ComponentInspector.AddIn
 			get {
 				return false;
 			}
-			set {
-			}
 		}
 		
 		public override bool IsViewOnly {
@@ -72,14 +72,7 @@ namespace ICSharpCode.ComponentInspector.AddIn
 //				objectBrowser = null;
 			}
 			instance = null;
-		}
-		
-		public override string TitleName {
-			get {
-				return StringParser.Parse("${res:ComponentInspector.ToolsMenu.ShowComponentInspectorMenuItem}");
-			}
-			set {
-			}
+			base.Dispose();
 		}
 		
 		public void OpenFile(string fileName)

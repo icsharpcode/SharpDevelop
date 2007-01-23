@@ -24,7 +24,7 @@
 		                class = "ICSharpCode.AddInManager.AddInInstallBinding"
 		                insertbefore    = "Text"
 		                fileNamePattern = "\.sdaddin$"
-		                languagePattern = "^SDAddInPackageFiles$"/>
+		                title = "Install with AddIn manager"/>
 	</Path>
 	
 	<Path name = "/AddIns/AddInManager/ContextMenu">

@@ -33,8 +33,10 @@ namespace ClassDiagramAddin
 		private ClassCanvas canvas = new ClassCanvas();
 		private ToolStrip toolstrip;
 		
-		public ClassDiagramViewContent ()
+		public ClassDiagramViewContent (OpenedFile file) : base(file)
 		{
+			this.TabPageText = "Class Diagram";
+			
 			canvas.LayoutChanged += HandleLayoutChange;
 			ParserService.ParseInformationUpdated += OnParseInformationUpdated;
 			toolstrip = ToolbarService.CreateToolStrip(this, "/SharpDevelop/ViewContent/ClassDiagram/Toolbar");
@@ -50,38 +52,21 @@ namespace ClassDiagramAddin
 			get { return canvas; }
 		}
 
-		public override string TabPageText
+		public override void Load(OpenedFile file, Stream stream)
 		{
-			get { return "Class Diagram"; }
+			XmlDocument doc = new XmlDocument();
+			doc.Load(stream);
+			projectContent = ParserService.GetProjectContent(ProjectService.CurrentProject);
+			canvas.LoadFromXml(doc, projectContent);
 		}
 		
-		public override void Load(string fileName)
+		public override void Save(OpenedFile file, Stream stream)
 		{
-			FileName = fileName;
-			TitleName = Path.GetFileName(fileName);
-			IsDirty = false;
-
-			if (fileName.EndsWith(".cd"))
-			{
-				XmlDocument doc = new XmlDocument();
-				doc.Load(fileName);
-				projectContent = ParserService.GetProjectContent(ProjectService.CurrentProject);
-				canvas.LoadFromXml(doc, projectContent);
-			}
-		}
-		
-		public override void Save(string fileName)
-		{
-			if (!fileName.EndsWith(".cd")) return;
-			this.IsDirty = false;
-			this.FileName = fileName;
-			this.TitleName = Path.GetFileName(fileName);
-			
 			XmlWriterSettings settings = new XmlWriterSettings();
 			settings.Indent = true;
 			settings.Encoding = System.Text.Encoding.UTF8;
 			
-			XmlWriter xw = XmlWriter.Create(fileName, settings);
+			XmlWriter xw = XmlWriter.Create(stream, settings);
 			canvas.WriteToXml().WriteTo(xw);
 			xw.Close();
 		}
@@ -161,11 +146,12 @@ namespace ClassDiagramAddin
 		{
 			ParserService.ParseInformationUpdated -= OnParseInformationUpdated;
 			canvas.Dispose();
+			base.Dispose();
 		}
 		
 		protected void HandleLayoutChange (object sender, EventArgs args)
 		{
-			this.IsDirty = true;
+			this.PrimaryFile.MakeDirty();
 		}
 		
 		private void HandleItemSelected (object sender, CanvasItemEventArgs args)

@@ -21,21 +21,9 @@ namespace ICSharpCode.SettingsEditor
 			return true;
 		}
 		
-		public IViewContent CreateContentForFile(string fileName)
+		public IViewContent CreateContentForFile(OpenedFile file)
 		{
-			SettingsViewContent vc = new SettingsViewContent();
-			vc.Load(fileName);
-			return vc;
-		}
-		
-		public bool CanCreateContentForLanguage(string languageName)
-		{
-			return false;
-		}
-		
-		public IViewContent CreateContentForLanguage(string languageName, string content)
-		{
-			throw new NotImplementedException();
+			return new SettingsViewContent(file);
 		}
 	}
 }

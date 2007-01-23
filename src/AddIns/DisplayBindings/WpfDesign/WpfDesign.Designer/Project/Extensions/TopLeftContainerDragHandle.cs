@@ -16,6 +16,7 @@ using ICSharpCode.WpfDesign.Designer.Controls;
 
 namespace ICSharpCode.WpfDesign.Designer.Extensions
 {
+	/*
 	/// <summary>
 	/// The drag handle displayed for panels.
 	/// </summary>
@@ -39,4 +40,5 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			AddAdorner(p, AdornerOrder.Background, rect);
 		}
 	}
+	*/
 }

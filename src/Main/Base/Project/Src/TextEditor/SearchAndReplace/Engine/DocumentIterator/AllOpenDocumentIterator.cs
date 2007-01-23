@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.TextEditor;
@@ -28,10 +29,7 @@ namespace SearchAndReplace
 			get {
 				IViewContent viewContent = GetCurrentTextEditorViewContent();
 				if (viewContent != null) {
-					if (viewContent.FileName == null) {
-						return viewContent.UntitledName;
-					}
-					return viewContent.FileName;
+					return viewContent.PrimaryFileName;
 				}
 				return null;
 			}
@@ -41,7 +39,7 @@ namespace SearchAndReplace
 		{
 			GetCurIndex();
 			if (curIndex >= 0) {
-				IViewContent viewContent = WorkbenchSingleton.Workbench.ViewContentCollection[curIndex];
+				IViewContent viewContent = Linq.ToArray(WorkbenchSingleton.Workbench.ViewContentCollection)[curIndex];
 				if (viewContent is ITextEditorControlProvider) {
 					return viewContent;
 				}
@@ -65,10 +63,11 @@ namespace SearchAndReplace
 		
 		void GetCurIndex()
 		{
+			IViewContent[] viewContentCollection = Linq.ToArray(WorkbenchSingleton.Workbench.ViewContentCollection);
 			int viewCount = WorkbenchSingleton.Workbench.ViewContentCollection.Count;
 			if (curIndex == -1 || curIndex >= viewCount) {
 				for (int i = 0; i < viewCount; ++i) {
-					if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent == WorkbenchSingleton.Workbench.ViewContentCollection[i]) {
+					if (WorkbenchSingleton.Workbench.ActiveViewContent == viewContentCollection[i]) {
 						curIndex = i;
 						return;
 					}

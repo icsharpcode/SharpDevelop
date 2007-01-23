@@ -30,7 +30,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		}
 	}
 	
-	public class OpenFileEvent : AbstractMenuCommand
+	public class OpenFileFromProjectBrowser : AbstractMenuCommand
 	{
 		public override void Run()
 		{
@@ -40,6 +40,39 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			}
 			
 			node.ActivateItem();
+		}
+	}
+	
+	public class OpenFileFromProjectBrowserWith : AbstractMenuCommand
+	{
+		public override void Run()
+		{
+			SolutionItemNode solutionItemNode = ProjectBrowserPad.Instance.SelectedNode as SolutionItemNode;
+			if (solutionItemNode != null) {
+				OpenWith(solutionItemNode.FileName);
+			}
+			
+			FileNode fileNode = ProjectBrowserPad.Instance.SelectedNode as FileNode;
+			if (fileNode != null) {
+				OpenWith(fileNode.FileName);
+			}
+			
+			ProjectNode projectNode = ProjectBrowserPad.Instance.SelectedNode as ProjectNode;
+			if (projectNode != null) {
+				OpenWith(projectNode.Project.FileName);
+			}
+		}
+		
+		/// <summary>
+		/// Shows the OpenWith dialog for the specified file.
+		/// </summary>
+		public static void OpenWith(string fileName)
+		{
+			using (OpenWithDialog dlg = new OpenWithDialog(DisplayBindingService.GetCodonsPerFileName(fileName))) {
+				if (dlg.ShowDialog() == DialogResult.OK) {
+					FileUtility.ObservedLoad(new FileService.LoadFileWrapper(dlg.SelectedBinding.Binding).Invoke, fileName);
+				}
+			}
 		}
 	}
 	

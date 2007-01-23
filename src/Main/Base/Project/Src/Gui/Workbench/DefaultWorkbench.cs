@@ -22,15 +22,15 @@ using ICSharpCode.SharpDevelop.Project;
 namespace ICSharpCode.SharpDevelop.Gui
 {
 	/// <summary>
-	/// This is the a Workspace with a multiple document interface.
+	/// This is the Workspace with a multiple document interface.
 	/// </summary>
 	public class DefaultWorkbench : Form, IWorkbench
 	{
 		readonly static string mainMenuPath    = "/SharpDevelop/Workbench/MainMenu";
 		readonly static string viewContentPath = "/SharpDevelop/Workbench/Pads";
 		
-		List<PadDescriptor>  viewContentCollection    = new List<PadDescriptor>();
-		List<IViewContent> workbenchContentCollection = new List<IViewContent>();
+		List<PadDescriptor> padViewContentCollection = new List<PadDescriptor>();
+		List<IViewContent> viewContentCollection = new List<IViewContent>();
 		
 		bool isActiveWindow; // Gets whether SharpDevelop is the active application in Windows
 		
@@ -102,26 +102,55 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		public List<PadDescriptor> PadContentCollection {
+		public IList<PadDescriptor> PadContentCollection {
 			get {
-				System.Diagnostics.Debug.Assert(viewContentCollection != null);
-				return viewContentCollection;
+				Debug.Assert(padViewContentCollection != null);
+				return padViewContentCollection;
 			}
 		}
 		
-		public List<IViewContent> ViewContentCollection {
+		public IList<IWorkbenchWindow> WorkbenchWindowCollection {
 			get {
-				System.Diagnostics.Debug.Assert(workbenchContentCollection != null);
-				return workbenchContentCollection;
+				return Linq.ToArray(Linq.Distinct(
+					Linq.Select<IViewContent, IWorkbenchWindow>(
+						viewContentCollection,
+						delegate (IViewContent vc) { return vc.WorkbenchWindow; }
+					)
+				));
+			}
+		}
+		
+		public ICollection<IViewContent> ViewContentCollection {
+			get {
+//				return Linq.ToArray(Linq.Concat(Linq.Select<IWorkbenchWindow, IEnumerable<IViewContent>>(
+//					workbenchWindowCollection, delegate (IWorkbenchWindow w) { return w.ViewContents; }
+//				)));
+				return viewContentCollection.AsReadOnly();
 			}
 		}
 		
 		public IWorkbenchWindow ActiveWorkbenchWindow {
 			get {
+				#if DEBUG
+				WorkbenchSingleton.AssertMainThread();
+				#endif
 				if (layout == null) {
 					return null;
 				}
 				return layout.ActiveWorkbenchwindow;
+			}
+		}
+		
+		/// <summary>
+		/// The active view content inside the active workbench window.
+		/// </summary>
+		public IViewContent ActiveViewContent {
+			get{
+				IWorkbenchWindow window = this.ActiveWorkbenchWindow;
+				if (window != null)
+					return window.ActiveViewContent;
+				else
+					return null;
 			}
 		}
 		
@@ -268,11 +297,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public void CloseContent(IViewContent content)
 		{
-			if (PropertyService.Get("SharpDevelop.LoadDocumentProperties", true) && content is IMementoCapable) {
-				StoreMemento(content);
-			}
-			if (ViewContentCollection.Contains(content)) {
-				ViewContentCollection.Remove(content);
+//			if (PropertyService.Get("SharpDevelop.LoadDocumentProperties", true) && content is IMementoCapable) {
+//				StoreMemento(content);
+//			}
+			if (viewContentCollection.Contains(content)) {
+				viewContentCollection.Remove(content);
 			}
 			OnViewClosed(new ViewContentEventArgs(content));
 			content.Dispose();
@@ -283,9 +312,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			try {
 				closeAll = true;
-				List<IViewContent> fullList = new List<IViewContent>(workbenchContentCollection);
-				foreach (IViewContent content in fullList) {
-					IWorkbenchWindow window = content.WorkbenchWindow;
+				foreach (IWorkbenchWindow window in Linq.ToArray(this.WorkbenchWindowCollection)) {
 					window.CloseWindow(false);
 				}
 			} finally {
@@ -297,17 +324,17 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public virtual void ShowView(IViewContent content)
 		{
 			System.Diagnostics.Debug.Assert(layout != null);
-			ViewContentCollection.Add(content);
-			if (PropertyService.Get("SharpDevelop.LoadDocumentProperties", true) && content is IMementoCapable) {
-				try {
-					Properties memento = GetStoredMemento(content);
-					if (memento != null) {
-						((IMementoCapable)content).SetMemento(memento);
-					}
-				} catch (Exception e) {
-					MessageService.ShowError(e, "Can't get/set memento");
-				}
-			}
+			viewContentCollection.Add(content);
+//			if (PropertyService.Get("SharpDevelop.LoadDocumentProperties", true) && content is IMementoCapable) {
+//				try {
+//					Properties memento = GetStoredMemento(content);
+//					if (memento != null) {
+//						((IMementoCapable)content).SetMemento(memento);
+//					}
+//				} catch (Exception e) {
+//					MessageService.ShowError(e, "Can't get/set memento");
+//				}
+//			}
 			
 			layout.ShowView(content);
 			content.WorkbenchWindow.SelectWindow();
@@ -357,14 +384,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 					((IStatusUpdate)item).UpdateText();
 			}
 			
-			foreach (IViewContent content in workbenchContentCollection) {
+			foreach (IViewContent content in this.ViewContentCollection) {
 				content.RedrawContent();
-				if (content.WorkbenchWindow != null) {
-					content.WorkbenchWindow.RedrawContent();
-				}
+			}
+			foreach (IWorkbenchWindow window in this.WorkbenchWindowCollection) {
+				window.RedrawContent();
 			}
 			
-			foreach (PadDescriptor content in viewContentCollection) {
+			foreach (PadDescriptor content in padViewContentCollection) {
 				content.RedrawContent();
 			}
 			
@@ -383,38 +410,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			                    Path.GetFileName(contentName)
 			                    + "." + contentName.ToLowerInvariant().GetHashCode().ToString("x")
 			                    + ".xml");
-		}
-		
-		public Properties GetStoredMemento(IViewContent content)
-		{
-			if (content != null && content.FileName != null) {
-				string fullFileName = GetMementoFileName(content.FileName);
-				// check the file name length because it could be more than the maximum length of a file name
-				
-				if (FileUtility.IsValidFileName(fullFileName) && File.Exists(fullFileName)) {
-					return Properties.Load(fullFileName);
-				}
-			}
-			return null;
-		}
-		
-		public void StoreMemento(IViewContent content)
-		{
-			if (content.FileName == null) {
-				return;
-			}
-			
-			string directory = Path.Combine(PropertyService.ConfigDirectory, "temp");
-			if (!Directory.Exists(directory)) {
-				Directory.CreateDirectory(directory);
-			}
-			
-			Properties memento = ((IMementoCapable)content).CreateMemento();
-			string fullFileName = GetMementoFileName(content.FileName);
-			
-			if (FileUtility.IsValidFileName(fullFileName)) {
-				FileUtility.ObservedSave(new NamedFileOperationDelegate(memento.Save), fullFileName, FileErrorPolicy.Inform);
-			}
 		}
 		
 		// interface IMementoCapable
@@ -473,11 +468,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void CheckRemovedOrReplacedFile(object sender, FileEventArgs e)
 		{
-			for (int i = 0; i < ViewContentCollection.Count;) {
-				if (FileUtility.IsBaseDirectory(e.FileName, ViewContentCollection[i].FileName)) {
-					ViewContentCollection[i].WorkbenchWindow.CloseWindow(true);
-				} else {
-					++i;
+			foreach (OpenedFile file in Linq.ToArray(FileService.OpenedFiles)) {
+				if (FileUtility.IsBaseDirectory(e.FileName, file.FileName)) {
+					foreach (IViewContent content in Linq.ToArray(file.RegisteredViewContents)) {
+						content.WorkbenchWindow.CloseWindow(true);
+					}
 				}
 			}
 		}
@@ -485,17 +480,17 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void CheckRenamedFile(object sender, FileRenameEventArgs e)
 		{
 			if (e.IsDirectory) {
-				foreach (IViewContent content in ViewContentCollection) {
-					if (content.FileName != null && FileUtility.IsBaseDirectory(e.SourceFile, content.FileName)) {
-						content.FileName = FileUtility.RenameBaseDirectory(content.FileName, e.SourceFile, e.TargetFile);
+				foreach (OpenedFile file in FileService.OpenedFiles) {
+					if (file.FileName != null && FileUtility.IsBaseDirectory(e.SourceFile, file.FileName)) {
+						file.FileName = FileUtility.RenameBaseDirectory(file.FileName, e.SourceFile, e.TargetFile);
 					}
 				}
 			} else {
-				foreach (IViewContent content in ViewContentCollection) {
-					if (content.FileName != null &&
-					    FileUtility.IsEqualFileName(content.FileName, e.SourceFile)) {
-						content.FileName  = e.TargetFile;
-						content.TitleName = Path.GetFileName(e.TargetFile);
+				foreach (OpenedFile file in FileService.OpenedFiles) {
+					if (file.FileName != null &&
+					    FileUtility.IsEqualFileName(file.FileName, e.SourceFile))
+					{
+						file.FileName  = e.TargetFile;
 						return;
 					}
 				}
@@ -520,17 +515,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			ProjectService.SaveSolutionPreferences();
 			
-			while (WorkbenchSingleton.Workbench.ViewContentCollection.Count > 0) {
-				IViewContent content = WorkbenchSingleton.Workbench.ViewContentCollection[0];
-				if (content.WorkbenchWindow == null) {
-					LoggingService.Warn("Content with empty WorkbenchWindow found");
-					WorkbenchSingleton.Workbench.ViewContentCollection.RemoveAt(0);
-				} else {
-					content.WorkbenchWindow.CloseWindow(false);
-					if (WorkbenchSingleton.Workbench.ViewContentCollection.IndexOf(content) >= 0) {
-						e.Cancel = true;
-						return;
-					}
+			while (WorkbenchSingleton.Workbench.WorkbenchWindowCollection.Count > 0) {
+				IWorkbenchWindow window = WorkbenchSingleton.Workbench.WorkbenchWindowCollection[0];
+				if (!window.CloseWindow(false)) {
+					e.Cancel = true;
+					return;
 				}
 			}
 			

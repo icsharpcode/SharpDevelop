@@ -39,7 +39,7 @@ namespace SearchAndReplace
 		{
 			SetSearchOptions();
 			if (lastResult != null && WorkbenchSingleton.Workbench.ActiveWorkbenchWindow != null) {
-				ITextEditorControlProvider provider = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent as ITextEditorControlProvider;
+				ITextEditorControlProvider provider = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorControlProvider;
 				if (provider != null) {
 					TextEditorControl textarea = provider.TextEditorControl;
 					SelectionManager selectionManager = textarea.ActiveTextAreaControl.TextArea.SelectionManager;
@@ -73,7 +73,7 @@ namespace SearchAndReplace
 		public static bool ReplaceNextInSelection(IProgressMonitor monitor)
 		{
 			if (lastResult != null && WorkbenchSingleton.Workbench.ActiveWorkbenchWindow != null) {
-				ITextEditorControlProvider provider = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent as ITextEditorControlProvider;
+				ITextEditorControlProvider provider = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorControlProvider;
 				if (provider != null) {
 					TextEditorControl textarea = provider.TextEditorControl;
 					SelectionManager selectionManager = textarea.ActiveTextAreaControl.TextArea.SelectionManager;
@@ -374,9 +374,9 @@ namespace SearchAndReplace
 		{
 			ITextEditorControlProvider textEditorProvider = null;
 			if (fileName != null) {
-				textEditorProvider = FileService.OpenFile(fileName).ViewContent as ITextEditorControlProvider;
+				textEditorProvider = FileService.OpenFile(fileName) as ITextEditorControlProvider;
 			} else {
-				textEditorProvider = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent as ITextEditorControlProvider;
+				textEditorProvider = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorControlProvider;
 			}
 			
 			if (textEditorProvider != null) {
@@ -388,7 +388,7 @@ namespace SearchAndReplace
 		static void ClearSelection()
 		{
 			if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow != null) {
-				ITextEditorControlProvider provider = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent as ITextEditorControlProvider;
+				ITextEditorControlProvider provider = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorControlProvider;
 				if (provider != null) {
 					provider.TextEditorControl.ActiveTextAreaControl.TextArea.SelectionManager.ClearSelection();
 				}

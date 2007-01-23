@@ -86,7 +86,7 @@ namespace ICSharpCode.FormsDesigner
 			if (viewContent is ITextEditorControlProvider) {
 				ITextEditorControlProvider textAreaControlProvider = (ITextEditorControlProvider)viewContent;
 				string fileExtension = String.Empty;
-				string fileName      = viewContent.IsUntitled ? viewContent.UntitledName : viewContent.FileName;
+				string fileName      = viewContent.PrimaryFileName;
 				if (fileName == null)
 					return false;
 				
@@ -107,14 +107,17 @@ namespace ICSharpCode.FormsDesigner
 			return false;
 		}
 		
-		public ISecondaryViewContent[] CreateSecondaryViewContent(IViewContent viewContent)
+		public IViewContent[] CreateSecondaryViewContent(IViewContent viewContent)
 		{
-			if (viewContent.SecondaryViewContents.Exists(delegate(ISecondaryViewContent c) { return c.GetType() == typeof(FormsDesignerViewContent); })) {
-				return new ISecondaryViewContent[0];
+			if (Linq.Exists(viewContent.SecondaryViewContents,
+			                delegate(IViewContent c) { return c is FormsDesignerViewContent; })
+			   )
+			{
+				return new IViewContent[0];
 			}
 			
 			string fileExtension = String.Empty;
-			string fileName      = viewContent.IsUntitled ? viewContent.UntitledName : viewContent.FileName;
+			string fileName      = viewContent.PrimaryFileName;
 			
 			fileExtension = Path.GetExtension(fileName).ToLowerInvariant();
 			
@@ -137,7 +140,7 @@ namespace ICSharpCode.FormsDesigner
 				default:
 					throw new ApplicationException("Cannot create content for " + fileExtension);
 			}
-			return new ISecondaryViewContent[] { new FormsDesignerViewContent(viewContent, loader, generator) };
+			return new IViewContent[] { new FormsDesignerViewContent(viewContent, loader, generator) };
 		}
 	}
 }

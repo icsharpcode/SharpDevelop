@@ -1,11 +1,14 @@
 ﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
+//     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
 //     <version>$Revision$</version>
 // </file>
 
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
@@ -21,7 +24,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		#region IOwnerState
 		[Flags]
-		public enum OpenFileTabState {
+		public enum OpenFileTabStates {
 			Nothing             = 0,
 			FileDirty           = 1,
 			FileReadOnly        = 2,
@@ -30,19 +33,22 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public System.Enum InternalState {
 			get {
-				OpenFileTabState state = OpenFileTabState.Nothing;
+				IViewContent content = this.ActiveViewContent;
+				OpenFileTabStates state = OpenFileTabStates.Nothing;
 				if (content != null) {
-					if (content.IsDirty)    state |= OpenFileTabState.FileDirty;
-					if (content.IsReadOnly) state |= OpenFileTabState.FileReadOnly;
-					if (content.IsUntitled) state |= OpenFileTabState.FileUntitled;
+					if (content.IsDirty)
+						state |= OpenFileTabStates.FileDirty;
+					if (content.IsReadOnly)
+						state |= OpenFileTabStates.FileReadOnly;
+					if (content.PrimaryFile != null && content.PrimaryFile.IsUntitled)
+						state |= OpenFileTabStates.FileUntitled;
 				}
 				return state;
 			}
 		}
 		#endregion
-
-		TabControl   viewTabControl = null;
-		IViewContent content;
+		
+		TabControl viewTabControl;
 		
 		public string Title {
 			get {
@@ -56,29 +62,121 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		/// <summary>
 		/// The current view content which is shown inside this window.
-		/// This method is thread-safe.
 		/// </summary>
-		public IBaseViewContent ActiveViewContent {
+		public IViewContent ActiveViewContent {
 			get {
-				if (viewTabControl != null) {
-					int selectedIndex = 0;
-					if (WorkbenchSingleton.InvokeRequired) {
-						// the window might have been disposed just here, invoke on the
-						// Workbench instead
-						selectedIndex = WorkbenchSingleton.SafeThreadFunction<int>(GetSelectedIndex);
-					} else {
-						selectedIndex = GetSelectedIndex();
-					}
-					
-					return GetSubViewContent(selectedIndex);
+				Debug.Assert(WorkbenchSingleton.InvokeRequired == false);
+				if (viewTabControl != null && viewTabControl.SelectedIndex >= 0) {
+					return ViewContents[viewTabControl.SelectedIndex];
+				} else if (ViewContents.Count == 1) {
+					return ViewContents[0];
+				} else {
+					return null;
 				}
-				return content;
+			}
+			set {
+				int pos = ViewContents.IndexOf(value);
+				if (pos < 0)
+					throw new ArgumentException("");
+				SwitchView(pos);
 			}
 		}
 		
-		int GetSelectedIndex()
+		sealed class ViewContentCollection : Collection<IViewContent>
 		{
-			return viewTabControl.SelectedIndex;
+			readonly SdiWorkspaceWindow window;
+			
+			internal ViewContentCollection(SdiWorkspaceWindow window)
+			{
+				this.window = window;
+			}
+			
+			protected override void ClearItems()
+			{
+				foreach (IViewContent vc in this) {
+					window.UnregisterContent(vc);
+				}
+				
+				base.ClearItems();
+				window.ClearContent();
+			}
+			
+			protected override void InsertItem(int index, IViewContent item)
+			{
+				base.InsertItem(index, item);
+				
+				window.RegisterNewContent(item);
+				
+				item.Control.Dock = DockStyle.Fill;
+				if (Count == 1) {
+					window.Controls.Add(item.Control);
+				} else {
+					if (Count == 2) {
+						window.CreateViewTabControl();
+						IViewContent oldItem = this[0];
+						if (oldItem == item) oldItem = this[1];
+						
+						TabPage oldPage = new TabPage(StringParser.Parse(oldItem.TabPageText));
+						oldPage.Controls.Add(oldItem.Control);
+						window.viewTabControl.TabPages.Add(oldPage);
+					}
+					
+					TabPage newPage = new TabPage(StringParser.Parse(item.TabPageText));
+					newPage.Controls.Add(item.Control);
+					
+					// Work around bug in TabControl: TabPages.Insert has no effect if inserting at end
+					if (index == window.viewTabControl.TabPages.Count) {
+						window.viewTabControl.TabPages.Add(newPage);
+					} else {
+						window.viewTabControl.TabPages.Insert(index, newPage);
+					}
+				}
+				window.UpdateTitle();
+			}
+			
+			protected override void RemoveItem(int index)
+			{
+				window.UnregisterContent(this[index]);
+				
+				base.RemoveItem(index);
+				
+				if (Count < 2) {
+					window.ClearContent();
+					if (Count == 1) {
+						window.Controls.Add(this[0].Control);
+					}
+				} else {
+					window.viewTabControl.TabPages.RemoveAt(index);
+				}
+				window.UpdateTitle();
+			}
+			
+			protected override void SetItem(int index, IViewContent item)
+			{
+				window.UnregisterContent(this[index]);
+				
+				base.SetItem(index, item);
+				
+				window.RegisterNewContent(item);
+				
+				item.Control.Dock = DockStyle.Fill;
+				if (Count == 1) {
+					window.ClearContent();
+					window.Controls.Add(item.Control);
+				} else {
+					TabPage page = window.viewTabControl.TabPages[index];
+					page.Controls.Clear();
+					page.Controls.Add(item.Control);
+					page.Text = StringParser.Parse(item.TabPageText);
+				}
+				window.UpdateTitle();
+			}
+		}
+		
+		readonly ViewContentCollection viewContents;
+		
+		public IList<IViewContent> ViewContents {
+			get { return viewContents; }
 		}
 		
 		public void SwitchView(int viewNumber)
@@ -93,182 +191,123 @@ namespace ICSharpCode.SharpDevelop.Gui
 			Show();
 		}
 		
+		public SdiWorkspaceWindow()
+		{
+			viewContents = new ViewContentCollection(this);
+			
+			this.DockableAreas = WeifenLuo.WinFormsUI.DockAreas.Document;
+			this.DockPadding.All = 2;
+
+			OnTitleNameChanged(this, EventArgs.Empty);
+			this.TabPageContextMenuStrip = MenuService.CreateContextMenu(this, contextMenuPath);
+		}
+		
 		protected override void Dispose(bool disposing)
 		{
 			if (disposing) {
-				ParserService.LoadSolutionProjectsThreadEnded -= LoadSolutionProjectsThreadEndedEvent;
-				if (content != null)
-					DetachContent();
+				// DetachContent must be called before the controls are disposed
+				this.ViewContents.Clear();
 				if (this.TabPageContextMenu != null) {
 					this.TabPageContextMenu.Dispose();
 					this.TabPageContextMenu = null;
 				}
 			}
-			// DetachContent must be called before the controls are disposed
 			base.Dispose(disposing);
-		}
-		
-		public SdiWorkspaceWindow(IViewContent content)
-		{
-			this.content = content;
-			
-			content.WorkbenchWindow = this;
-			
-			content.TitleNameChanged += new EventHandler(SetTitleEvent);
-			content.DirtyChanged     += new EventHandler(SetTitleEvent);
-			
-			this.DockableAreas = WeifenLuo.WinFormsUI.DockAreas.Document;
-			this.DockPadding.All = 2;
-
-			SetTitleEvent(this, EventArgs.Empty);
-			this.TabPageContextMenuStrip = MenuService.CreateContextMenu(this, contextMenuPath);
-			InitControls();
-			
-			ParserService.LoadSolutionProjectsThreadEnded += LoadSolutionProjectsThreadEndedEvent;
 		}
 		
 		private void CreateViewTabControl()
 		{
-			viewTabControl = new TabControl();
-			viewTabControl.GotFocus += delegate {
-				TabPage page = viewTabControl.TabPages[viewTabControl.TabIndex];
-				if (page.Controls.Count == 1 && !page.ContainsFocus) page.Controls[0].Focus();
-			};
-			viewTabControl.Alignment = TabAlignment.Bottom;
-			viewTabControl.Dock = DockStyle.Fill;
-			viewTabControl.Selected += viewTabControlSelected;
-			viewTabControl.Deselecting += viewTabControlDeselecting;
-			viewTabControl.Deselected += viewTabControlDeselected;
+			if (viewTabControl == null) {
+				this.Controls.Clear();
+				
+				viewTabControl = new TabControl();
+				viewTabControl.GotFocus += delegate {
+					TabPage page = viewTabControl.TabPages[viewTabControl.TabIndex];
+					if (page.Controls.Count == 1 && !page.ContainsFocus) page.Controls[0].Focus();
+				};
+				viewTabControl.Alignment = TabAlignment.Bottom;
+				viewTabControl.Dock = DockStyle.Fill;
+				this.Controls.Add(viewTabControl);
+				
+				viewTabControl.SelectedIndexChanged += delegate {
+					this.ActiveViewContent.SwitchedTo();
+				};
+			}
 		}
 		
-		internal void InitControls()
+		void ClearContent()
 		{
-			if (content.SecondaryViewContents.Count > 0) {
-				CreateViewTabControl();
-				AttachSecondaryViewContent(content);
-				foreach (ISecondaryViewContent subContent in content.SecondaryViewContents) {
-					AttachSecondaryViewContent(subContent);
-				}
-				Controls.Add(viewTabControl);
-			} else {
-				content.Control.Dock = DockStyle.Fill;
-				Controls.Add(content.Control);
-			}
-		}
-		
-		private void AttachSecondaryViewContent(IBaseViewContent viewContent)
-		{
-			viewContent.WorkbenchWindow = this;
-			TabPage newPage = new TabPage(StringParser.Parse(viewContent.TabPageText));
-			newPage.Tag = viewContent;
-			viewContent.Control.Dock = DockStyle.Fill;
-			newPage.Controls.Add(viewContent.Control);
-			viewTabControl.TabPages.Add(newPage);
-		}
-		
-		/// <summary>
-		/// Ensures that all possible secondary view contents are attached.
-		/// This is primarily used to add the FormsDesigner view content for files
-		/// containing partial classes after the designer file has been parsed if
-		/// the view content has been created too early on startup.
-		/// </summary>
-		void RefreshSecondaryViewContents()
-		{
-			if (content == null) {
-				return;
-			}
-			int oldSvcCount = content.SecondaryViewContents.Count;
-			DisplayBindingService.AttachSubWindows(content, true);
-			if (content.SecondaryViewContents.Count > oldSvcCount) {
-				LoggingService.Debug("Attaching new secondary view contents to '"+this.Title+"'");
-				if (viewTabControl == null) {
-					// The tab control needs to be created first.
-					Controls.Remove(content.Control);
-					CreateViewTabControl();
-					AttachSecondaryViewContent(content);
-					Controls.Add(viewTabControl);
-				}
-				foreach (ISecondaryViewContent svc in content.SecondaryViewContents) {
-					if (svc.WorkbenchWindow == null) {
-						AttachSecondaryViewContent(svc);
-					}
-				}
-			}
-		}
-		
-		void LoadSolutionProjectsThreadEndedEvent(object sender, EventArgs e)
-		{
-			// do not invoke on this: it's possible that "this" is disposed while this method is executing
-			WorkbenchSingleton.SafeThreadAsyncCall(this.RefreshSecondaryViewContents);
-		}
-		
-		public IViewContent ViewContent {
-			get {
-				return content;
-			}
-		}
-		
-		void SetToolTipText()
-		{
-			if (content != null) {
-				try {
-					if (content.FileName != null && content.FileName.Length > 0) {
-						base.ToolTipText = Path.GetFullPath(content.FileName);
-					} else {
-						base.ToolTipText = null;
-					}
-				} catch (Exception) {
-					base.ToolTipText = content.FileName;
-				}
-			} else {
-				base.ToolTipText = null;
-			}
-		}
-		
-		public void SetTitleEvent(object sender, EventArgs e)
-		{
-			if (content == null) {
-				return;
-			}
-			SetToolTipText();
-			string newTitle = content.TitleName;
-			
-			if (content.IsDirty) {
-				newTitle += "*";
-			} else if (content.IsReadOnly) {
-				newTitle += "+";
-			}
-			
-			if (newTitle != Title) {
-				Title = newTitle;
-			}
-		}
-		
-		public void DetachContent()
-		{
-			content.TitleNameChanged -= new EventHandler(SetTitleEvent);
-			content.DirtyChanged     -= new EventHandler(SetTitleEvent);
-			content = null;
-			
+			this.Controls.Clear();
 			if (viewTabControl != null) {
 				foreach (TabPage page in viewTabControl.TabPages) {
-					if (viewTabControl.SelectedTab == page && page.Tag is IBaseViewContent) {
-						((IBaseViewContent)page.Tag).Deselecting();
-					}
 					page.Controls.Clear();
-					if (viewTabControl.SelectedTab == page && page.Tag is IBaseViewContent) {
-						((IBaseViewContent)page.Tag).Deselected();
-					}
 				}
 				viewTabControl.Dispose();
 				viewTabControl = null;
 			}
-			Controls.Clear();
+		}
+		
+		void OnTitleNameChanged(object sender, EventArgs e)
+		{
+			if (sender == ActiveViewContent) {
+				UpdateTitle();
+			}
+		}
+		
+		void OnIsDirtyChanged(object sender, EventArgs e)
+		{
+			if (sender == ActiveViewContent) {
+				UpdateTitle();
+			}
+		}
+		
+		void UpdateTitle()
+		{
+			IViewContent content = ActiveViewContent;
+			if (content != null) {
+				base.ToolTipText = content.PrimaryFileName;
+				
+				string newTitle = content.TitleName;
+				
+				if (content.IsDirty) {
+					newTitle += "*";
+				} else if (content.IsReadOnly) {
+					newTitle += "+";
+				}
+				
+				if (newTitle != Title) {
+					Title = newTitle;
+				}
+			}
+		}
+		
+		void RegisterNewContent(IViewContent content)
+		{
+			Debug.Assert(content.WorkbenchWindow == null);
+			content.WorkbenchWindow = this;
+			
+			content.TabPageTextChanged += OnTabPageTextChanged;
+			content.TitleNameChanged   += OnTitleNameChanged;
+			content.IsDirtyChanged     += OnIsDirtyChanged;
+		}
+		
+		void UnregisterContent(IViewContent content)
+		{
+			content.WorkbenchWindow = null;
+			
+			content.TabPageTextChanged -= OnTabPageTextChanged;
+			content.TitleNameChanged   -= OnTitleNameChanged;
+			content.IsDirtyChanged     -= OnIsDirtyChanged;
+		}
+		
+		void OnTabPageTextChanged(object sender, EventArgs e)
+		{
+			RefreshTabPageTexts();
 		}
 		
 		public bool CloseWindow(bool force)
 		{
-			if (!force && ViewContent != null && ViewContent.IsDirty) {
+			if (!force && ActiveViewContent != null && ActiveViewContent.IsDirty) {
 				DialogResult dr = MessageBox.Show(ResourceService.GetString("MainWindow.SaveChangesMessage"),
 				                                  ResourceService.GetString("MainWindow.SaveChangesMessageHeader") + " " + Title + " ?",
 				                                  MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question,
@@ -276,10 +315,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 				                                  RightToLeftConverter.IsRightToLeft ? MessageBoxOptions.RtlReading | MessageBoxOptions.RightAlign : 0);
 				switch (dr) {
 					case DialogResult.Yes:
-						if (content.FileName == null) {
+						if (ActiveViewContent.PrimaryFile != null) {
 							while (true) {
-								new ICSharpCode.SharpDevelop.Commands.SaveFileAs().Run();
-								if (ViewContent.IsDirty) {
+								Linq.Apply(ActiveViewContent.Files, ICSharpCode.SharpDevelop.Commands.SaveFile.Save);
+								if (ActiveViewContent.IsDirty) {
 									
 									if (MessageService.AskQuestion("${res:MainWindow.DiscardChangesMessage}")) {
 										break;
@@ -288,10 +327,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 									break;
 								}
 							}
-							
-						} else {
-							
-							FileUtility.ObservedSave(new FileOperationDelegate(ViewContent.Save), ViewContent.FileName , FileErrorPolicy.ProvideAlternative);
 						}
 						break;
 					case DialogResult.No:
@@ -306,53 +341,17 @@ namespace ICSharpCode.SharpDevelop.Gui
 			return true;
 		}
 		
-		IBaseViewContent GetSubViewContent(int index)
-		{
-			if (index == 0 || content == null)
-				return content;
-			else
-				return content.SecondaryViewContents[index - 1];
-		}
-		
-		void viewTabControlSelected(object sender, TabControlEventArgs e)
-		{
-			if (e.Action == TabControlAction.Selected && e.TabPageIndex >= 0) {
-				IBaseViewContent secondaryViewContent = GetSubViewContent(e.TabPageIndex);
-				if (secondaryViewContent != null) {
-					secondaryViewContent.SwitchedTo();
-					secondaryViewContent.Selected();
-				}
-			}
-			WorkbenchSingleton.Workbench.WorkbenchLayout.OnActiveWorkbenchWindowChanged(EventArgs.Empty);
-			ActiveViewContent.Control.Focus();
-		}
-		
-		void viewTabControlDeselecting(object sender, TabControlCancelEventArgs e)
-		{
-			if (e.Action == TabControlAction.Deselecting && e.TabPageIndex >= 0) {
-				IBaseViewContent secondaryViewContent = GetSubViewContent(e.TabPageIndex);
-				if (secondaryViewContent != null) {
-					secondaryViewContent.Deselecting();
-				}
-			}
-		}
-
-		void viewTabControlDeselected(object sender, TabControlEventArgs e)
-		{
-			if (e.Action == TabControlAction.Deselected && e.TabPageIndex >= 0) {
-				IBaseViewContent secondaryViewContent = GetSubViewContent(e.TabPageIndex);
-				if (secondaryViewContent != null) {
-					secondaryViewContent.Deselected();
-				}
-			}
-		}
-
 		public virtual void RedrawContent()
+		{
+			RefreshTabPageTexts();
+		}
+		
+		void RefreshTabPageTexts()
 		{
 			if (viewTabControl != null) {
 				for (int i = 0; i < viewTabControl.TabPages.Count; ++i) {
 					TabPage tabPage = viewTabControl.TabPages[i];
-					tabPage.Text = StringParser.Parse(GetSubViewContent(i).TabPageText);
+					tabPage.Text = StringParser.Parse(ViewContents[i].TabPageText);
 				}
 			}
 		}

@@ -19,8 +19,7 @@ namespace ResourceEditor
 	{
 		public override void Run()
 		{
-			IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
-			ResourceEditorControl editor = (ResourceEditorControl)window.ViewContent.Control;
+			ResourceEditorControl editor = (ResourceEditorControl)WorkbenchSingleton.Workbench.ActiveViewContent.Control;
 			ResourceList list = editor.ResourceList;
 			
 			if(list.SelectedItems.Count != 1) {

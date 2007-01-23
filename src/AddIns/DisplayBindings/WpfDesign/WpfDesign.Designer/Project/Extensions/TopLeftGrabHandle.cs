@@ -20,15 +20,80 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 	/// The resize thumb at the top left edge of a component.
 	/// </summary>
 	[ExtensionFor(typeof(FrameworkElement))]
-	public class TopLeftResizeThumb : PrimarySelectionAdornerProvider
+	public sealed class TopLeftResizeThumb : PrimarySelectionAdornerProvider
 	{
+		AdornerPanel adornerPanel;
+		
 		/// <summary></summary>
 		public TopLeftResizeThumb()
 		{
-			ResizeThumb resizeThumb = new ResizeThumb();
+			adornerPanel = new AdornerPanel();
+			adornerPanel.Order = AdornerOrder.Foreground;
 			
-			RelativePlacement p = new RelativePlacement(HorizontalAlignment.Left, VerticalAlignment.Top);
-			AddAdorner(p, AdornerOrder.Foreground, resizeThumb);
+			ResizeThumb resizeThumb;
+			
+			resizeThumb = new ResizeThumb();
+			AdornerPanel.SetPlacement(resizeThumb, new RelativePlacement(HorizontalAlignment.Left, VerticalAlignment.Top));
+			adornerPanel.Children.Add(resizeThumb);
+			
+			resizeThumb = new ResizeThumb();
+			AdornerPanel.SetPlacement(resizeThumb, new RelativePlacement(HorizontalAlignment.Right, VerticalAlignment.Top));
+			adornerPanel.Children.Add(resizeThumb);
+			
+			resizeThumb = new ResizeThumb();
+			AdornerPanel.SetPlacement(resizeThumb, new RelativePlacement(HorizontalAlignment.Left, VerticalAlignment.Bottom));
+			adornerPanel.Children.Add(resizeThumb);
+			
+			resizeThumb = new ResizeThumb();
+			AdornerPanel.SetPlacement(resizeThumb, new RelativePlacement(HorizontalAlignment.Right, VerticalAlignment.Bottom));
+			adornerPanel.Children.Add(resizeThumb);
+		}
+		
+		/// <summary/>
+		protected override void OnInitialized()
+		{
+			base.OnInitialized();
+			this.ExtendedItem.PropertyChanged += OnPropertyChanged;
+			this.Services.Selection.PrimarySelectionChanged += OnPrimarySelectionChanged;
+			UpdateAdornerVisibility();
+			OnPrimarySelectionChanged(null, null);
+		}
+		
+		/// <summary/>
+		protected override void OnRemove()
+		{
+			this.ExtendedItem.PropertyChanged -= OnPropertyChanged;
+			this.Services.Selection.PrimarySelectionChanged -= OnPrimarySelectionChanged;
+			base.OnRemove();
+		}
+		
+		void OnPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+		{
+			if (e.PropertyName == "Width" || e.PropertyName == "Height") {
+				UpdateAdornerVisibility();
+			}
+		}
+		
+		void OnPrimarySelectionChanged(object sender, EventArgs e)
+		{
+			bool isPrimarySelection = this.Services.Selection.PrimarySelection == this.ExtendedItem;
+			foreach (ResizeThumb g in adornerPanel.Children) {
+				g.IsPrimarySelection = isPrimarySelection;
+			}
+		}
+		
+		void UpdateAdornerVisibility()
+		{
+			FrameworkElement element = (FrameworkElement)this.ExtendedItem.Component;
+			if (double.IsNaN(element.Width) && double.IsNaN(element.Height)) {
+				if (this.Adorners.Count == 1) {
+					this.Adorners.Clear();
+				}
+			} else {
+				if (this.Adorners.Count == 0) {
+					this.Adorners.Add(adornerPanel);
+				}
+			}
 		}
 	}
 }

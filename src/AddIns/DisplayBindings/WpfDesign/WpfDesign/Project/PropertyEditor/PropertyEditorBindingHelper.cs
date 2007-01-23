@@ -5,7 +5,11 @@
 //     <version>$Revision$</version>
 // </file>
 
+// Enable additional Debug.WriteLines for Loading/Unloading event handlers
+//#define PropertyEditorBindingHelperDebugging
+
 using System;
+using System.Diagnostics;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
@@ -32,13 +36,22 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 			if (handler == null)
 				throw new ArgumentNullException("handler");
 			
+			bool isAttached = false;
+			
 			editor.Loaded += delegate {
-				dataProperty.ValueChanged += handler;
+				if (!isAttached) {
+					isAttached = true;
+					dataProperty.ValueChanged += handler;
+				}
 			};
 			editor.Unloaded += delegate {
-				dataProperty.ValueChanged -= handler;
+				if (isAttached) {
+					isAttached = false;
+					dataProperty.ValueChanged -= handler;
+				}
 			};
 			if (editor.IsLoaded) {
+				isAttached = true;
 				dataProperty.ValueChanged += handler;
 			}
 		}
@@ -52,6 +65,10 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 				throw new ArgumentNullException("editor");
 			if (dataProperty == null)
 				throw new ArgumentNullException("dataProperty");
+			
+			#if PropertyEditorBindingHelperDebugging
+			Debug.WriteLine("Create CustomBinding");
+			#endif
 			
 			CustomBinding customBinding = new CustomBinding(dataProperty);
 			editor.Loaded += customBinding.OnLoaded;
@@ -69,6 +86,7 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 		sealed class CustomBinding : INotifyPropertyChanged
 		{
 			readonly IPropertyEditorDataProperty dataProperty;
+			bool isLoaded;
 			
 			public CustomBinding(IPropertyEditorDataProperty dataProperty)
 			{
@@ -77,12 +95,26 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 			
 			internal void OnLoaded(object sender, RoutedEventArgs e)
 			{
-				dataProperty.ValueChanged += OnValueChanged;
+				#if PropertyEditorBindingHelperDebugging
+				Debug.WriteLine("CustomBinding.OnLoaded (isLoaded=" + isLoaded + ")");
+				#endif
+				
+				if (!isLoaded) {
+					isLoaded = true;
+					dataProperty.ValueChanged += OnValueChanged;
+				}
 			}
 			
 			internal void OnUnloaded(object sender, RoutedEventArgs e)
 			{
-				dataProperty.ValueChanged -= OnValueChanged;
+				#if PropertyEditorBindingHelperDebugging
+				Debug.WriteLine("CustomBinding.OnUnloaded (isLoaded=" + isLoaded + ")");
+				#endif
+				
+				if (isLoaded) {
+					isLoaded = false;
+					dataProperty.ValueChanged -= OnValueChanged;
+				}
 			}
 			
 			public object BoundValue {

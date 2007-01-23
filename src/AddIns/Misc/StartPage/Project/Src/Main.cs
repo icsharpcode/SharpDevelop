@@ -8,6 +8,7 @@
 // project created on 16.07.2002 at 18:07
 using System;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.BrowserDisplayBinding;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
@@ -24,7 +25,7 @@ namespace ICSharpCode.StartPage
 				isFirstStartPage = false;
 				ProjectService.SolutionLoaded += delegate {
 					// close all start pages when loading a solution
-					foreach (IViewContent v in WorkbenchSingleton.Workbench.ViewContentCollection.ToArray()) {
+					foreach (IViewContent v in Linq.ToArray(WorkbenchSingleton.Workbench.ViewContentCollection)) {
 						BrowserPane b = v as BrowserPane;
 						if (b != null) {
 							if (b.Url.Scheme == "startpage") {

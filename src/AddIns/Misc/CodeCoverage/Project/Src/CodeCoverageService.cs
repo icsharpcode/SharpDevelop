@@ -124,8 +124,8 @@ namespace ICSharpCode.CodeCoverage
 			foreach (IViewContent view in WorkbenchSingleton.Workbench.ViewContentCollection) {
 				TextEditorDisplayBindingWrapper textEditor = view as TextEditorDisplayBindingWrapper;
 				if (textEditor != null) {
-					codeCoverageHighlighter.RemoveMarkers(textEditor.textAreaControl.Document.MarkerStrategy);
-					textEditor.textAreaControl.Refresh();
+					codeCoverageHighlighter.RemoveMarkers(textEditor.TextEditorControl.Document.MarkerStrategy);
+					textEditor.TextEditorControl.Refresh();
 				}
 			}
 		}
@@ -140,8 +140,8 @@ namespace ICSharpCode.CodeCoverage
 		static void ShowCodeCoverage(IViewContent view)
 		{
 			TextEditorDisplayBindingWrapper displayBindingWrapper = view as TextEditorDisplayBindingWrapper;
-			if (displayBindingWrapper != null && displayBindingWrapper.TextEditorControl != null && view.FileName != null) {
-				ShowCodeCoverage(displayBindingWrapper.TextEditorControl, view.FileName);
+			if (displayBindingWrapper != null && displayBindingWrapper.TextEditorControl != null && view.PrimaryFileName != null) {
+				ShowCodeCoverage(displayBindingWrapper.TextEditorControl, view.PrimaryFileName);
 			}
 		}
 		

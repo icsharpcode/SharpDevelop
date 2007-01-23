@@ -56,7 +56,7 @@ namespace HtmlHelp2
 
 			if (help2Browser != null)
 			{
-				help2Browser.Load(topicLink);
+				help2Browser.Navigate(topicLink);
 				help2Browser.WorkbenchWindow.SelectWindow();
 			}
 		}

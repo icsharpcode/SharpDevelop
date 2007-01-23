@@ -136,7 +136,7 @@
 		                class = "ClassDiagramAddin.ClassDiagramDisplayBinding"
 		                insertbefore    = "Text"
 		                fileNamePattern = "\.(cd)$"
-		                languagePattern = "^ClassDiagramFiles$"/>
+		                title = "Class Diagram"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/Pads">

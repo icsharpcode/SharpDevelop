@@ -18,7 +18,7 @@
 	<Path name = "/SharpDevelop/Workbench/DisplayBindings">
 		<DisplayBinding id = "XmlEditor"
 		                insertbefore = "Text"
-		                supportedformats = "Text Files,Source Files"
+		                title = "XML editor"
 		                class = "ICSharpCode.XmlEditor.XmlDisplayBinding"/>
 	</Path>
 	

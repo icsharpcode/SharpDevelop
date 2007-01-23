@@ -122,7 +122,7 @@ namespace ICSharpCode.Svn
 			
 			fromRevision = leftListView.SelectedItems[0].Tag as Revision;
 			toRevision   = rightListView.SelectedItems[0].Tag as Revision;
-			fileName     = Path.GetFullPath(viewContent.FileName);
+			fileName     = Path.GetFullPath(viewContent.PrimaryFileName);
 			
 			if (fromRevision.ToString() == toRevision.ToString()) {
 				output = "";

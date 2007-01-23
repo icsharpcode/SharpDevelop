@@ -16,8 +16,7 @@ namespace ResourceEditor
 	{
 		public override void Run()
 		{
-			IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
-			ResourceEditWrapper editor = (ResourceEditWrapper)window.ViewContent;
+			ResourceEditWrapper editor = (ResourceEditWrapper)WorkbenchSingleton.Workbench.ActiveViewContent;
 			
 			editor.SelectAll();
 		}

@@ -18,7 +18,7 @@ namespace ICSharpCode.XmlEditor
 	{
 		public XslOutputView()
 		{
-			UntitledName = TitleName;
+			this.TitleName = StringParser.Parse("${res:ICSharpCode.XmlEditor.XslOutputView.Title}");
 		}
 		
 		public static XslOutputView Instance {
@@ -31,22 +31,6 @@ namespace ICSharpCode.XmlEditor
 					}
 				}
 				return null;
-			}
-		}
-		
-		public override bool IsDirty {
-			get {
-				return false;
-			}
-			set {
-			}
-		}
-		
-		public override string TitleName {
-			get {
-				return StringParser.Parse("${res:ICSharpCode.XmlEditor.XslOutputView.Title}");
-			}
-			set {
 			}
 		}
 	}

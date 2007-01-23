@@ -174,20 +174,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		static void ActiveWindowChanged(object sender, EventArgs e)
 		{
-			object activeContent = WorkbenchSingleton.Workbench.ActiveContent;
-			IViewContent viewContent = activeContent as IViewContent;
-			if (viewContent == null && activeContent is ISecondaryViewContent) {
-				// required if one creates a new winforms app and then immediately switches to design mode
-				// without focussing the text editor
-				IWorkbenchWindow window = ((ISecondaryViewContent)activeContent).WorkbenchWindow;
-				if (window == null) // workbench window is being disposed
-					return;
-				viewContent = window.ViewContent;
-			}
+			IViewContent viewContent = WorkbenchSingleton.Workbench.ActiveViewContent;
 			if (OpenSolution == null || viewContent == null) {
 				return;
 			}
-			string fileName = viewContent.FileName;
+			string fileName = viewContent.PrimaryFileName;
 			if (fileName == null) {
 				return;
 			}
@@ -470,22 +461,6 @@ namespace ICSharpCode.SharpDevelop.Project
 				
 				OnSolutionClosed(EventArgs.Empty);
 			}
-		}
-		
-		public static void MarkFileDirty(string fileName)
-		{
-			if (OpenSolution != null) {
-				foreach (IProject project in OpenSolution.Projects) {
-					if (project.IsFileInProject(fileName)) {
-						MarkProjectDirty(project);
-					}
-				}
-			}
-		}
-		
-		public static void MarkProjectDirty(IProject project)
-		{
-			project.IsDirty = true;
 		}
 		
 		static void OnCurrentProjectChanged(ProjectEventArgs e)

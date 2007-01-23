@@ -100,10 +100,10 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels
 			((Properties)CustomizationObject).Set("Encoding",             CharacterEncodings.GetCodePageByIndex(((ComboBox)ControlDictionary["textEncodingComboBox"]).SelectedIndex));
 			((Properties)CustomizationObject).Set("ShowQuickClassBrowserPanel", ((CheckBox)ControlDictionary["showQuickClassBrowserCheckBox"]).Checked);
 			
-			IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
+			IViewContent activeViewContent = WorkbenchSingleton.Workbench.ActiveViewContent;
 			
-			if (window != null && (window.ViewContent is ITextEditorControlProvider)) {
-				TextEditorControl textarea = ((ITextEditorControlProvider)window.ViewContent).TextEditorControl;
+			if (activeViewContent is ITextEditorControlProvider) {
+				TextEditorControl textarea = ((ITextEditorControlProvider)activeViewContent).TextEditorControl;
 				textarea.OptionsChanged();
 			}
 			return true;

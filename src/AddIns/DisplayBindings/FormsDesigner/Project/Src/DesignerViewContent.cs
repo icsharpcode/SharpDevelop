@@ -51,12 +51,6 @@ namespace ICSharpCode.FormsDesigner
 			}
 		}
 		
-		public override string TabPageText {
-			get {
-				return "${res:FormsDesigner.DesignTabPages.DesignTabPage}";
-			}
-		}
-		
 		public DesignSurface DesignSurface {
 			get {
 				return designSurface;
@@ -82,7 +76,10 @@ namespace ICSharpCode.FormsDesigner
 			}
 		}
 		public FormsDesignerViewContent(IViewContent viewContent, IDesignerLoaderProvider loaderProvider, IDesignerGenerator generator)
+			: base(viewContent)
 		{
+			this.TabPageText = "${res:FormsDesigner.DesignTabPages.DesignTabPage}";
+			
 			if (!FormKeyHandler.inserted) {
 				FormKeyHandler.Insert();
 			}
@@ -99,12 +96,12 @@ namespace ICSharpCode.FormsDesigner
 			this.textAreaControlProvider = viewContent as ITextEditorControlProvider;
 		}
 		
-		public override void SwitchedTo()
+		/*public override void SwitchedTo()
 		{
 			if (IsFormsDesignerVisible) {
 				AddSideBars();
 			}
-		}
+		}*/
 		
 		void LoadDesigner()
 		{
@@ -123,12 +120,12 @@ namespace ICSharpCode.FormsDesigner
 			// may not have been written to disk yet if the user switched
 			// between source and design view without saving.
 			if (designerResourceService == null) {
-				designerResourceService = new DesignerResourceService(viewContent.FileName);
+				designerResourceService = new DesignerResourceService(viewContent.PrimaryFileName);
 			}
 			serviceContainer.AddService(typeof(System.ComponentModel.Design.IResourceService), designerResourceService);
 			AmbientProperties ambientProperties = new AmbientProperties();
 			serviceContainer.AddService(typeof(AmbientProperties), ambientProperties);
-			serviceContainer.AddService(typeof(ITypeResolutionService), new TypeResolutionService(viewContent.FileName));
+			serviceContainer.AddService(typeof(ITypeResolutionService), new TypeResolutionService(viewContent.PrimaryFileName));
 			serviceContainer.AddService(typeof(System.ComponentModel.Design.IDesignerEventService), new DesignerEventService());
 			serviceContainer.AddService(typeof(DesignerOptionService), new SharpDevelopDesignerOptionService());
 			serviceContainer.AddService(typeof(ITypeDiscoveryService), new TypeDiscoveryService());
@@ -150,7 +147,7 @@ namespace ICSharpCode.FormsDesigner
 			undoEngine = new FormsDesignerUndoEngine(Host);
 			
 			IComponentChangeService componentChangeService = (IComponentChangeService)designSurface.GetService(typeof(IComponentChangeService));
-			componentChangeService.ComponentChanged += delegate { viewContent.IsDirty = true; };
+			componentChangeService.ComponentChanged += delegate { this.PrimaryFile.MakeDirty(); };
 			componentChangeService.ComponentAdded   += ComponentListChanged;
 			componentChangeService.ComponentRemoved += ComponentListChanged;
 			componentChangeService.ComponentRename  += ComponentListChanged;
@@ -187,9 +184,10 @@ namespace ICSharpCode.FormsDesigner
 		void UnloadDesigner()
 		{
 			generator.Detach();
-			bool savedIsDirty = viewContent.IsDirty;
+			bool savedIsDirty = this.PrimaryFile.IsDirty;
 			p.Controls.Clear();
-			viewContent.IsDirty = savedIsDirty;
+			this.PrimaryFile.IsDirty = savedIsDirty;
+			
 			// We cannot dispose the design surface now because of SD2-451:
 			// When the switch to the source view was triggered by a double-click on an event
 			// in the PropertyPad, "InvalidOperationException: The container cannot be disposed
@@ -228,13 +226,13 @@ namespace ICSharpCode.FormsDesigner
 				failedDesignerInitialize = false;
 				LoadDesigner();
 				
-				bool savedIsDirty = viewContent.IsDirty;
+				bool savedIsDirty = this.PrimaryFile.IsDirty;
 				if (designSurface != null && p.Controls.Count == 0) {
 					Control designer = designSurface.View as Control;
 					designer.Dock = DockStyle.Fill;
 					p.Controls.Add(designer);
 				}
-				viewContent.IsDirty = savedIsDirty;
+				this.PrimaryFile.IsDirty = savedIsDirty;
 			} catch (Exception e) {
 				failedDesignerInitialize = true;
 				TextBox errorText = new TextBox();
@@ -267,16 +265,16 @@ namespace ICSharpCode.FormsDesigner
 			if (this.failedDesignerInitialize) {
 				return;
 			}
-			bool isDirty = viewContent.IsDirty;
+			bool isDirty = this.PrimaryFile.IsDirty;
 			LoggingService.Info("Merging form changes...");
 			designSurface.Flush();
 			LoggingService.Info("Finished merging form changes");
-			viewContent.IsDirty = isDirty;
+			this.PrimaryFile.IsDirty = isDirty;
 		}
 		
 		public void ShowSourceCode()
 		{
-			WorkbenchWindow.SwitchView(0);
+			this.WorkbenchWindow.ActiveViewContent = this.PrimaryViewContent;
 		}
 		
 		public void ShowSourceCode(int lineNumber)
@@ -309,7 +307,8 @@ namespace ICSharpCode.FormsDesigner
 			return generator.GetCompatibleMethods(edesc);
 		}
 		
-		public override void Selected()
+		#warning Code temporarily disabled after IViewContent changes
+		/*public override void Selected()
 		{
 			PropertyPad.PropertyValueChanged += PropertyValueChanged;
 			Reload();
@@ -317,18 +316,25 @@ namespace ICSharpCode.FormsDesigner
 			AddSideBars();
 			SetActiveSideTab();
 			UpdatePropertyPad();
-		}
+		}*/
 		
 		public override void Dispose()
 		{
 			disposing = true;
-			if (IsFormsDesignerVisible) {
-				Deselecting();
-			}
 			base.Dispose();
 		}
 		
-		public override void Deselecting()
+		protected override void LoadFromPrimary()
+		{
+			Reload();
+		}
+		
+		protected override void SaveToPrimary()
+		{
+			MergeFormChanges();
+		}
+		
+		/*public override void Deselecting()
 		{
 			// can happen if form designer is disposed and then deselected
 			if (!IsFormsDesignerVisible)
@@ -354,32 +360,7 @@ namespace ICSharpCode.FormsDesigner
 			}
 			UnloadDesigner();
 			LoggingService.Info("Unloading form designer finished");
-		}
-		
-		public override void NotifyBeforeSave()
-		{
-			base.NotifyBeforeSave();
-			if (IsFormsDesignerVisible)
-				MergeFormChanges();
-		}
-		
-		public override void NotifyAfterSave(bool successful)
-		{
-			base.NotifyAfterSave(successful);
-			if (successful) {
-				if (designerResourceService != null) {
-					designerResourceService.Save(viewContent.FileName);
-				}
-			}
-		}
-		
-		public override void NotifyFileNameChanged()
-		{
-			base.NotifyFileNameChanged();
-			if (designerResourceService != null) {
-				designerResourceService.FormFileName = viewContent.FileName;
-			}
-		}
+		}*/
 		
 		void SelectionChangedHandler(object sender, EventArgs args)
 		{

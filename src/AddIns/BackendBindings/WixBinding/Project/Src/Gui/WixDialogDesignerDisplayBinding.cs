@@ -43,17 +43,14 @@ namespace ICSharpCode.WixBinding
 			return WixDocument.IsWixFileName(fileName);
 		}
 		
-		public ISecondaryViewContent[] CreateSecondaryViewContent(IViewContent viewContent)
+		public IViewContent[] CreateSecondaryViewContent(IViewContent viewContent)
 		{
-			return new ISecondaryViewContent[] {new WixDialogDesigner(viewContent)};
+			return new IViewContent[] {new WixDialogDesigner(viewContent)};
 		}
 		
 		static string GetViewContentFileName(IViewContent viewContent)
 		{
-			if (viewContent.IsUntitled) {
-				return viewContent.UntitledName;
-			} 
-			return viewContent.FileName;
+			return viewContent.PrimaryFileName;
 		}
 	}
 }

@@ -45,9 +45,9 @@ namespace ICSharpCode.PInvokeAddIn
 		public InsertPInvokeSignaturesForm()
 		{
 			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("PInvokeAddIn.Resources.InsertPInvokeSignaturesForm.xfrm"));
-		
+			
 			signatureRichTextBox = ((RichTextBox)ControlDictionary["SignatureRichTextBox"]);
-						
+			
 			// Hook up events.
 			closeButton = ((Button)ControlDictionary["CloseButton"]);
 			closeButton.Click += new EventHandler(CloseButtonClick);
@@ -59,7 +59,7 @@ namespace ICSharpCode.PInvokeAddIn
 			findButton = ((Button)ControlDictionary["FindButton"]);
 			findButton.Click += new EventHandler(FindButtonClick);
 			
-			functionNameComboBox = ((ComboBox)ControlDictionary["FunctionNameComboBox"]);	
+			functionNameComboBox = ((ComboBox)ControlDictionary["FunctionNameComboBox"]);
 			functionNameComboBox.AutoCompleteMode = AutoCompleteMode.Suggest;
 			functionNameComboBox.AutoCompleteSource = AutoCompleteSource.ListItems;
 
@@ -72,7 +72,7 @@ namespace ICSharpCode.PInvokeAddIn
 
 			languageComboBox = ((ComboBox)ControlDictionary["LanguageComboBox"]);
 			languageComboBox.SelectedIndexChanged += new EventHandler(LanguageComboBoxSelectedIndexChanged);
-		
+			
 			SetupLanguages();
 			SetupFunctionNames();
 			SetupModuleNames();
@@ -106,19 +106,19 @@ namespace ICSharpCode.PInvokeAddIn
 		void SetupFunctionNames()
 		{
 			string[] names = PInvokeRepository.Instance.GetFunctionNames();
-						
+			
 			foreach (string name in names) {
 				functionNameComboBox.Items.Add(name);
 			}
-		}		
-	
+		}
+		
 		/// <summary>
 		/// Populates the module name combo box.
 		/// </summary>
 		void SetupModuleNames()
 		{
 			string[] names = PInvokeRepository.Instance.GetModuleNames();
-						
+			
 			foreach (string name in names) {
 				moduleNameComboBox.Items.Add(name);
 			}
@@ -131,17 +131,17 @@ namespace ICSharpCode.PInvokeAddIn
 		
 		/// <summary>
 		/// Insert PInvoke signature into code.
-		/// </summary>		
+		/// </summary>
 		void InsertButtonClick(object sender, EventArgs e)
 		{
 			Close();
 			PInvokeCodeGenerator generator = new PInvokeCodeGenerator();
-		
+			
 			string language = languageComboBox.Text;
 			if (language == allLanguages) {
 				language = GetSourceFileLanguage();
 			}
-				
+			
 			string signature = GetSelectedPInvokeSignature(language);
 			
 			if (signature.Length > 0) {
@@ -214,7 +214,7 @@ namespace ICSharpCode.PInvokeAddIn
 				bool languageWanted = false;
 				if ((language == allLanguages) || (language.Equals(info.Language, StringComparison.OrdinalIgnoreCase))) {
 					languageWanted = true;
-				} 
+				}
 				
 				if (languageWanted) {
 					++signaturesAdded;
@@ -223,9 +223,9 @@ namespace ICSharpCode.PInvokeAddIn
 					if (signatureText.EndsWith("\r\n")) {
 						signatureRichTextBox.Text += String.Concat(signatureText, "\r\n\r\n");
 					} else {
-						signatureRichTextBox.Text += String.Concat(signatureText, "\r\n\r\n");	
+						signatureRichTextBox.Text += String.Concat(signatureText, "\r\n\r\n");
 					}
-				}					              
+				}
 			}
 			
 			if (signaturesAdded == 0) {
@@ -243,7 +243,7 @@ namespace ICSharpCode.PInvokeAddIn
 		string GetSignature(SignatureInfo info)
 		{
 			return info.Signature.Replace("|", "\r\n");
-		}	
+		}
 
 		string GetSourceFileLanguage()
 		{
@@ -284,15 +284,11 @@ namespace ICSharpCode.PInvokeAddIn
 		
 		static TextEditorControl GetTextEditorControl()
 		{
-			TextEditorControl textEditorControl = null;
-			
-			IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
-			
-			if ((window != null) && (window.ViewContent is ITextEditorControlProvider)) {
-				textEditorControl = ((ITextEditorControlProvider)window.ViewContent).TextEditorControl;
-			}
-
-			return textEditorControl;
+			ITextEditorControlProvider provider = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorControlProvider;
+			if (provider != null)
+				return provider.TextEditorControl;
+			else
+				return null;
 		}
 	}
 }

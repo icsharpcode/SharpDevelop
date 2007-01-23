@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 
@@ -15,21 +16,18 @@ namespace ICSharpCode.SharpDevelop
 	/// This class handles the installed display bindings
 	/// and provides a simple access point to these bindings.
 	/// </summary>
-	public static class DisplayBindingService
+	internal static class DisplayBindingService
 	{
 		readonly static string displayBindingPath = "/SharpDevelop/Workbench/DisplayBindings";
 		
 		static DisplayBindingDescriptor[] bindings = null;
 		
+		/// <summary>
+		/// Gets the primary display binding for the specified file name.
+		/// </summary>
 		public static IDisplayBinding GetBindingPerFileName(string filename)
 		{
 			DisplayBindingDescriptor codon = GetCodonPerFileName(filename);
-			return codon == null ? null : codon.Binding;
-		}
-		
-		public static IDisplayBinding GetBindingPerLanguageName(string languagename)
-		{
-			DisplayBindingDescriptor codon = GetCodonPerLanguageName(languagename);
 			return codon == null ? null : codon.Binding;
 		}
 		
@@ -45,30 +43,39 @@ namespace ICSharpCode.SharpDevelop
 			return null;
 		}
 		
-		static DisplayBindingDescriptor GetCodonPerLanguageName(string languagename)
+		/// <summary>
+		/// Gets list of possible primary display bindings for the specified file name.
+		/// </summary>
+		public static IList<DisplayBindingDescriptor> GetCodonsPerFileName(string filename)
 		{
+			List<DisplayBindingDescriptor> list = new List<DisplayBindingDescriptor>();
 			foreach (DisplayBindingDescriptor binding in bindings) {
-				if (!binding.IsSecondary && binding.CanAttachToLanguage(languagename)) {
-					if (binding.Binding != null && binding.Binding.CanCreateContentForLanguage(languagename)) {
-						return binding;
+				if (!binding.IsSecondary && binding.CanAttachToFile(filename)) {
+					if (binding.Binding != null && binding.Binding.CanCreateContentForFile(filename)) {
+						list.Add(binding);
 					}
 				}
 			}
-			return null;
+			return list;
 		}
 		
+		/// <summary>
+		/// Attach secondary view contents to the view content.
+		/// </summary>
+		/// <param name="viewContent">The view content to attach to</param>
+		/// <param name="isReattaching">This is a reattaching pass</param>
 		public static void AttachSubWindows(IViewContent viewContent, bool isReattaching)
 		{
 			foreach (DisplayBindingDescriptor binding in bindings) {
-				if (binding.IsSecondary && binding.CanAttachToFile(viewContent.FileName ?? viewContent.UntitledName)) {
+				if (binding.IsSecondary && binding.CanAttachToFile(viewContent.PrimaryFileName)) {
 					ISecondaryDisplayBinding displayBinding = binding.SecondaryBinding;
 					if (displayBinding != null
 					    && (!isReattaching || displayBinding.ReattachWhenParserServiceIsReady)
 					    && displayBinding.CanAttachTo(viewContent))
 					{
-						ISecondaryViewContent[] subViewContents = binding.SecondaryBinding.CreateSecondaryViewContent(viewContent);
+						IViewContent[] subViewContents = binding.SecondaryBinding.CreateSecondaryViewContent(viewContent);
 						if (subViewContents != null) {
-							viewContent.SecondaryViewContents.AddRange(subViewContents);
+							Array.ForEach(subViewContents, viewContent.SecondaryViewContents.Add);
 						} else {
 							MessageService.ShowError("Can't attach secondary view content. " + binding.SecondaryBinding + " returned null for " + viewContent + ".\n(should never happen)");
 						}

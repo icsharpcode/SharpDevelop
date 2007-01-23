@@ -10,6 +10,7 @@ using System.IO;
 using System.Windows.Forms;
 
 using IconEditor;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.IconEditorAddIn
@@ -24,16 +25,17 @@ namespace ICSharpCode.IconEditorAddIn
 			}
 		}
 		
-		public IconViewContent()
-		{
-			this.IsViewOnly = true;
+		public override bool IsViewOnly {
+			get { return true; }
 		}
 		
-		public override void Load(string fileName)
+		public IconViewContent(OpenedFile file) : base(file)
 		{
-			this.FileName = fileName;
-			this.TitleName = Path.GetFileName(fileName);
-			editor.ShowFile(new IconFile(fileName));
+		}
+		
+		public override void Load(OpenedFile file, Stream stream)
+		{
+			editor.ShowFile(new IconFile(stream));
 		}
 	}
 }

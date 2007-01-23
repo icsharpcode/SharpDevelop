@@ -168,10 +168,10 @@ namespace ICSharpCode.WixBinding
 		static void OpenDialog(string fileName, string dialogId)
 		{
 			// Open the Wix file.
-			IWorkbenchWindow window = FileService.OpenFile(fileName);
+			IViewContent viewContent = FileService.OpenFile(fileName);
 			
 			// Show the designer.
-			WixDialogDesigner designer = WixDialogDesigner.GetDesigner(window.ViewContent);
+			WixDialogDesigner designer = WixDialogDesigner.GetDesigner(viewContent);
 			if (designer != null) {
 				designer.OpenDialog(dialogId);
 			} else {

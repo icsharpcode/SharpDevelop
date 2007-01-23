@@ -12,7 +12,7 @@
 				<ControlTemplate TargetType="{x:Type src:ResizeThumb}">
 					<Rectangle Name="thumbRectangle"
 					           Width="7" Height="7" SnapsToDevicePixels="True"
-					           Stroke="Black" Fill="White" RadiusX="1.4142" RadiusY="1.4142"/>
+					           Stroke="Black" Fill="White" RadiusX="1.414" RadiusY="1.414"/>
 					<ControlTemplate.Triggers>
 						<Trigger Property="IsPrimarySelection" Value="False">
 							<Setter TargetName="thumbRectangle" Property="Stroke" Value="White"/>
@@ -20,9 +20,6 @@
 						</Trigger>
 						<Trigger Property="IsEnabled" Value="False">
 							<Setter TargetName="thumbRectangle" Property="Fill" Value="Gray"/>
-						</Trigger>
-						<Trigger Property="IsMouseOver" Value="True">
-							<Setter TargetName="thumbRectangle" Property="Fill" Value="White"/>
 						</Trigger>
 					</ControlTemplate.Triggers>
 				</ControlTemplate>

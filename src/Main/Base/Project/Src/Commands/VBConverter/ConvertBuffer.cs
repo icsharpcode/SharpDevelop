@@ -22,11 +22,11 @@ namespace ICSharpCode.SharpDevelop.Commands
 	{
 		public override void Run()
 		{
-			IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
+			IViewContent content = WorkbenchSingleton.Workbench.ActiveViewContent;
 			
-			if (window != null && window.ViewContent is IEditable) {
+			if (content != null && content.PrimaryFileName != null && content is IEditable) {
 				
-				IParser p = ParserFactory.CreateParser(SupportedLanguage.CSharp, new StringReader(((IEditable)window.ViewContent).Text));
+				IParser p = ParserFactory.CreateParser(SupportedLanguage.CSharp, new StringReader(((IEditable)content).Text));
 				p.Parse();
 				if (p.Errors.Count > 0) {
 					MessageService.ShowError("${res:ICSharpCode.SharpDevelop.Commands.Convert.CorrectSourceCodeErrors}\n" + p.Errors.ErrorOutput);
@@ -38,13 +38,13 @@ namespace ICSharpCode.SharpDevelop.Commands
 				List<ISpecial> specials = p.Lexer.SpecialTracker.CurrentSpecials;
 				PreprocessingDirective.CSharpToVB(specials);
 				IAstVisitor v = new CSharpToVBNetConvertVisitor(ParserService.CurrentProjectContent,
-				                                                window.ViewContent.FileName);
+				                                                content.PrimaryFileName);
 				v.VisitCompilationUnit(p.CompilationUnit, null);
 				using (SpecialNodesInserter.Install(specials, vbv)) {
 					vbv.VisitCompilationUnit(p.CompilationUnit, null);
 				}
 				
-				FileService.NewFile("Generated.vb", "VBNET", vbv.Text);
+				FileService.NewFile("Generated.vb", vbv.Text);
 			}
 		}
 	}

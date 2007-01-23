@@ -25,8 +25,9 @@ namespace SharpDbTools.Forms
 		public TableDescribeViewContent(DataTable tableInfo, 
 		                                string tableName,
 		                                string[] fieldsToDisplay,
-		                                string[] columnHeaderNames) : base("table: " + tableName)
+		                                string[] columnHeaderNames)
 		{		
+			this.TitleName = "table: " + tableName;
 			this.tableInfo = tableInfo;
 			this.tableInfoDataGridView = new DataGridView();
 			DataGridView v = this.tableInfoDataGridView;

@@ -187,6 +187,25 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
+		/// <summary>
+		/// Unloads the specified project content, causing it to be reloaded when
+		/// GetProjectContentForReference is called the next time.
+		/// </summary>
+		public void UnloadProjectContent(IProjectContent pc)
+		{
+			if (pc == null)
+				throw new ArgumentNullException("pc");
+			lock (contents) {
+				// find all keys used for the project content - might be the short name/full name/file name
+				List<string> keys = new List<string>();
+				foreach (KeyValuePair<string, IProjectContent> pair in contents) {
+					if (pair.Value == pc) keys.Add(pair.Key);
+				}
+				foreach (string key in keys) contents.Remove(key); // remove the entries using the keys
+			}
+			pc.Dispose();
+		}
+		
 		public IProjectContent GetExistingProjectContent(AssemblyName assembly)
 		{
 			return GetExistingProjectContent(assembly.FullName, assembly.FullName);

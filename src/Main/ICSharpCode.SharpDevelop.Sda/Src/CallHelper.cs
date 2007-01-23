@@ -168,7 +168,7 @@ namespace ICSharpCode.SharpDevelop.Sda
 		void GetOpenDocuments(List<Document> l)
 		{
 			foreach (IViewContent vc in WorkbenchSingleton.Workbench.ViewContentCollection) {
-				Document d = Document.FromWindow(vc.WorkbenchWindow);
+				Document d = Document.FromWindow(vc);
 				if (d != null) {
 					l.Add(d);
 				}
@@ -220,7 +220,7 @@ namespace ICSharpCode.SharpDevelop.Sda
 		bool CloseWorkbenchInternal(bool force)
 		{
 			if (force) {
-				foreach (IViewContent vc in WorkbenchSingleton.Workbench.ViewContentCollection.ToArray()) {
+				foreach (IViewContent vc in Linq.ToArray(WorkbenchSingleton.Workbench.ViewContentCollection)) {
 					vc.WorkbenchWindow.CloseWindow(true);
 				}
 			}

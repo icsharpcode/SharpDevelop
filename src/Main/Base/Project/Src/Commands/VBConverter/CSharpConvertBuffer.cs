@@ -22,10 +22,11 @@ namespace ICSharpCode.SharpDevelop.Commands
 	{
 		public override void Run()
 		{
-			IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
+			IViewContent content = WorkbenchSingleton.Workbench.ActiveViewContent;
 			
-			if (window != null && window.ViewContent is IEditable) {
-				IParser p = ParserFactory.CreateParser(SupportedLanguage.VBNet, new StringReader(((IEditable)window.ViewContent).Text));
+			if (content != null && content.PrimaryFileName != null && content is IEditable) {
+				
+				IParser p = ParserFactory.CreateParser(SupportedLanguage.VBNet, new StringReader(((IEditable)content).Text));
 				p.Parse();
 
 				if (p.Errors.Count > 0) {
@@ -36,13 +37,13 @@ namespace ICSharpCode.SharpDevelop.Commands
 				List<ISpecial> specials = p.Lexer.SpecialTracker.CurrentSpecials;
 				PreprocessingDirective.VBToCSharp(specials);
 				IAstVisitor v = new VBNetToCSharpConvertVisitor(ParserService.CurrentProjectContent,
-				                                                window.ViewContent.FileName);
+				                                                content.PrimaryFileName);
 				v.VisitCompilationUnit(p.CompilationUnit, null);
 				using (SpecialNodesInserter.Install(specials, output)) {
 					output.VisitCompilationUnit(p.CompilationUnit, null);
 				}
 				
-				FileService.NewFile("Generated.cs", "C#", output.Text);
+				FileService.NewFile("Generated.cs", output.Text);
 			}
 		}
 	}

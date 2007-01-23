@@ -33,7 +33,7 @@ namespace Grunwald.BooBinding.Designer
 			if (viewContent is ITextEditorControlProvider) {
 				ITextEditorControlProvider textAreaControlProvider = (ITextEditorControlProvider)viewContent;
 				string fileExtension = String.Empty;
-				string fileName      = viewContent.IsUntitled ? viewContent.UntitledName : viewContent.FileName;
+				string fileName      = viewContent.PrimaryFileName;
 				if (fileName == null)
 					return false;
 				if (Path.GetExtension(fileName).Equals(".boo", StringComparison.InvariantCultureIgnoreCase)) {
@@ -45,15 +45,16 @@ namespace Grunwald.BooBinding.Designer
 			return false;
 		}
 		
-		public ISecondaryViewContent[] CreateSecondaryViewContent(IViewContent viewContent)
+		public IViewContent[] CreateSecondaryViewContent(IViewContent viewContent)
 		{
-			if (viewContent.SecondaryViewContents.Exists(delegate(ISecondaryViewContent c) { return c.GetType() == typeof(FormsDesignerViewContent); })) {
-				return new ISecondaryViewContent[0];
+			if (Linq.Exists(viewContent.SecondaryViewContents, delegate(IViewContent c) { return c is FormsDesignerViewContent; }))
+			{
+				return new IViewContent[0];
 			}
 			
 			IDesignerLoaderProvider loader = new BooDesignerLoaderProvider(((ITextEditorControlProvider)viewContent).TextEditorControl);
 			IDesignerGenerator generator = new BooDesignerGenerator();
-			return new ISecondaryViewContent[] { new FormsDesignerViewContent(viewContent, loader, generator) };
+			return new IViewContent[] { new FormsDesignerViewContent(viewContent, loader, generator) };
 		}
 	}
 	

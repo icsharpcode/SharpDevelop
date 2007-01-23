@@ -30,6 +30,16 @@ namespace ICSharpCode.SharpDevelop
 		}
 		
 		/// <summary>
+		/// Applies an action to all elements in the input.
+		/// </summary>
+		public static void Apply<T>(IEnumerable<T> input, Action<T> action)
+		{
+			foreach (T element in input) {
+				action(element);
+			}
+		}
+		
+		/// <summary>
 		/// Returns only the elements in input for which filter is true.
 		/// </summary>
 		public static IEnumerable<T> Where<T>(IEnumerable<T> input, Predicate<T> filter)
@@ -73,6 +83,18 @@ namespace ICSharpCode.SharpDevelop
 					return element;
 			}
 			return default(T);
+		}
+		
+		/// <summary>
+		/// Returns if an element that matches the filter exists.
+		/// </summary>
+		public static bool Exists<T>(IEnumerable<T> input, Predicate<T> filter)
+		{
+			foreach (T element in input) {
+				if (filter(element))
+					return true;
+			}
+			return false;
 		}
 		
 		public static List<T> ToList<T>(IEnumerable<T> input)

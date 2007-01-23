@@ -75,12 +75,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			Properties properties = new Properties();
 			properties.Set("bookmarks", ICSharpCode.SharpDevelop.Bookmarks.BookmarkManager.GetProjectBookmarks(this).ToArray());
 			List<string> files = new List<string>();
-			foreach (ICSharpCode.SharpDevelop.Gui.IViewContent vc
-			         in ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.Workbench.ViewContentCollection)
-			{
-				string fileName = vc.FileName;
-				if (fileName != null && IsFileInProject(fileName)) {
-					files.Add(fileName);
+			foreach (OpenedFile file in FileService.OpenedFiles) {
+				if (file.FileName != null && IsFileInProject(file.FileName)) {
+					files.Add(file.FileName);
 				}
 			}
 			properties.Set("files", files.ToArray());
@@ -388,9 +385,7 @@ namespace ICSharpCode.SharpDevelop.Project
 						}
 					}
 				}
-				try {
-					fileName = Path.GetFullPath(fileName);
-				} catch {}
+				fileName = FileUtility.NormalizePath(fileName);
 				FileProjectItem outputItem;
 				findFileCache.TryGetValue(fileName, out outputItem);
 				return outputItem;

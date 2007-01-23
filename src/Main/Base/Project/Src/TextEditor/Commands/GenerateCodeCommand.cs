@@ -21,16 +21,16 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 	{
 		public override void Run()
 		{
-			IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
+			IViewContent viewContent = WorkbenchSingleton.Workbench.ActiveViewContent;
 			
-			if (window == null || !(window.ViewContent is ITextEditorControlProvider)) {
+			if (viewContent == null || !(viewContent is ITextEditorControlProvider)) {
 				return;
 			}
-			TextEditorControl textEditorControl = ((ITextEditorControlProvider)window.ViewContent).TextEditorControl;
+			TextEditorControl textEditorControl = ((ITextEditorControlProvider)viewContent).TextEditorControl;
 			
 			ParseInformation parseInformation;
 			
-			if (window.ViewContent.IsUntitled) {
+			if (viewContent.PrimaryFile.IsUntitled) {
 				parseInformation = ParserService.ParseFile(textEditorControl.FileName, textEditorControl.Document.TextContent);
 			} else {
 				parseInformation = ParserService.GetParseInformation(textEditorControl.FileName);
@@ -78,16 +78,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 				}
 			}
 			return null;
-		}
-	}
-	
-	public class SurroundCodeAction : AbstractEditAction
-	{
-		
-		public override void Execute(TextArea editActionHandler)
-		{
-//			SelectionWindow selectionWindow = new SelectionWindow("Surround");
-//			selectionWindow.Show();
 		}
 	}
 }

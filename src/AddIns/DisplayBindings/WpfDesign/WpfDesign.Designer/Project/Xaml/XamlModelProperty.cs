@@ -6,7 +6,7 @@
 // </file>
 
 // Turn this on to ensure event handlers on model properties are removed correctly:
-#define EventHandlerDebugging
+//#define EventHandlerDebugging
 
 using System;
 using System.Diagnostics;
@@ -88,25 +88,42 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			}
 		}
 		
+		#if EventHandlerDebugging
+		private event EventHandler _ValueChanged;
+		
 		public override event EventHandler ValueChanged {
 			add {
-				#if EventHandlerDebugging
 				if (ValueChangedEventHandlers == 0) {
 					Debug.WriteLine("ValueChangedEventHandlers is now > 0");
 				}
 				ValueChangedEventHandlers++;
-				#endif
-				_property.ValueChanged += value;
+				_ValueChanged += value;
 			}
 			remove {
-				#if EventHandlerDebugging
 				ValueChangedEventHandlers--;
 				if (ValueChangedEventHandlers == 0) {
 					Debug.WriteLine("ValueChangedEventHandlers reached 0");
 				}
-				#endif
-				_property.ValueChanged -= value;
+				_ValueChanged -= value;
 			}
+		}
+		#else
+		public override event EventHandler ValueChanged;
+		#endif
+		
+		void OnValueChanged(EventArgs e)
+		{
+			#if EventHandlerDebugging
+			if (_ValueChanged != null) {
+				_ValueChanged(this, EventArgs.Empty);
+			}
+			#else
+			if (ValueChanged != null) {
+				ValueChanged(this, EventArgs.Empty);
+			}
+			#endif
+			
+			_designItem.NotifyPropertyChanged(this.Name);
 		}
 		
 		public override object ValueOnInstance {
@@ -147,23 +164,32 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 		{
 			_property.ValueOnInstance = value;
 			
-			XamlComponentService componentService = _designItem.ComponentService;
-			
-			XamlDesignItem designItem = (XamlDesignItem)componentService.GetDesignItem(value);
-			if (designItem != null) {
-				if (designItem.Parent != null)
-					throw new DesignerException("Cannot set value to design item that already has a parent");
-				_property.PropertyValue = designItem.XamlObject;
+			if (value == null) {
+				_property.PropertyValue = _property.ParentObject.OwnerDocument.CreateNullValue();
 			} else {
-				XamlPropertyValue val = _property.ParentObject.OwnerDocument.CreatePropertyValue(value, _property);
-				designItem = componentService.RegisterXamlComponentRecursive(val as XamlObject);
-				_property.PropertyValue = val;
+				XamlComponentService componentService = _designItem.ComponentService;
+				
+				XamlDesignItem designItem = (XamlDesignItem)componentService.GetDesignItem(value);
+				if (designItem != null) {
+					if (designItem.Parent != null)
+						throw new DesignerException("Cannot set value to design item that already has a parent");
+					_property.PropertyValue = designItem.XamlObject;
+				} else {
+					XamlPropertyValue val = _property.ParentObject.OwnerDocument.CreatePropertyValue(value, _property);
+					designItem = componentService.RegisterXamlComponentRecursive(val as XamlObject);
+					_property.PropertyValue = val;
+				}
 			}
+			
+			OnValueChanged(EventArgs.Empty);
 		}
 		
 		public override void Reset()
 		{
-			_property.Reset();
+			if (_property.IsSet) {
+				_property.Reset();
+				OnValueChanged(EventArgs.Empty);
+			}
 		}
 	}
 }

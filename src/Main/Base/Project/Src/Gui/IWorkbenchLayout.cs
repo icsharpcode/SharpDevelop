@@ -17,9 +17,17 @@ namespace ICSharpCode.SharpDevelop.Gui
 	/// </summary>
 	public interface IWorkbenchLayout
 	{
+		/// <summary>
+		/// The active workbench window.
+		/// </summary>
 		IWorkbenchWindow ActiveWorkbenchwindow {
 			get;
 		}
+		
+		/// <summary>
+		/// The active content. This can be either a IViewContent or a IPadContent, depending on
+		/// where the focus currently is.
+		/// </summary>
 		object ActiveContent {
 			get;
 		}

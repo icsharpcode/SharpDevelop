@@ -138,9 +138,9 @@ namespace ICSharpCode.SharpDevelop.Project
 					string hintPath = HintPath;
 					try {
 						if (hintPath != null && hintPath.Length > 0) {
-							return Path.GetFullPath(Path.Combine(projectDir, hintPath));
+							return FileUtility.NormalizePath(Path.Combine(projectDir, hintPath));
 						}
-						string name = Path.GetFullPath(Path.Combine(projectDir, Include));
+						string name = FileUtility.NormalizePath(Path.Combine(projectDir, Include));
 						if (File.Exists(name)) {
 							return name;
 						}

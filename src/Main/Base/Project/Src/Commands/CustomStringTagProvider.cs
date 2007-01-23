@@ -37,10 +37,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 		
 		string GetCurrentItemPath()
 		{
-			if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow != null && !WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent.IsViewOnly && !WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent.IsUntitled) {
-				return WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent.FileName;
-			}
-			return String.Empty;
+			return WorkbenchSingleton.Workbench.ActiveViewContent.PrimaryFileName;
 		}
 		
 		string GetCurrentTargetPath()

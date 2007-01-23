@@ -68,10 +68,10 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels
 			((Properties)CustomizationObject).Set("LineViewerStyle", (LineViewerStyle)((ComboBox)ControlDictionary["lineMarkerStyleComboBox"]).SelectedIndex);
 			((Properties)CustomizationObject).Set("BracketMatchingStyle", (BracketMatchingStyle)((ComboBox)ControlDictionary["bracketMatchingStyleComboBox"]).SelectedIndex);
 			
-			IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
+			IViewContent activeViewContent = WorkbenchSingleton.Workbench.ActiveViewContent;
 			
-			if (window != null && (window.ViewContent is ITextEditorControlProvider)) {
-				TextEditorControl textarea = ((ITextEditorControlProvider)window.ViewContent).TextEditorControl;
+			if (activeViewContent is ITextEditorControlProvider) {
+				TextEditorControl textarea = ((ITextEditorControlProvider)activeViewContent).TextEditorControl;
 				textarea.OptionsChanged();
 			}
 			

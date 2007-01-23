@@ -19,7 +19,7 @@ namespace ICSharpCode.XmlEditor
 	public class RunXslTransformCommand : AbstractCommand
 	{
 		/// <summary>
-		/// Runs the transform on the xml file using the assigned stylesheet. 
+		/// Runs the transform on the xml file using the assigned stylesheet.
 		/// If no stylesheet is assigned the user is prompted to choose one.
 		/// If the view represents a stylesheet that is currently assigned to an
 		/// opened document then run the transform on that document.
@@ -34,8 +34,8 @@ namespace ICSharpCode.XmlEditor
 				}
 				
 				// Check to see if this view is actually a referenced stylesheet.
-				if (xmlView.FileName != null && xmlView.FileName.Length > 0) {
-					XmlView associatedXmlView = GetAssociatedXmlView(xmlView.FileName);
+				if (!string.IsNullOrEmpty(xmlView.PrimaryFileName)) {
+					XmlView associatedXmlView = GetAssociatedXmlView(xmlView.PrimaryFileName);
 					if (associatedXmlView != null) {
 						LoggingService.Debug("Using associated xml view.");
 						xmlView = associatedXmlView;
@@ -58,7 +58,7 @@ namespace ICSharpCode.XmlEditor
 		}
 		
 		/// <summary>
-		/// Gets the xml view that is currently referencing the 
+		/// Gets the xml view that is currently referencing the
 		/// specified stylesheet view.
 		/// </summary>
 		XmlView GetAssociatedXmlView(string stylesheetFileName)
@@ -77,14 +77,9 @@ namespace ICSharpCode.XmlEditor
 		string GetStylesheetContent(string fileName)
 		{
 			// File already open?
-			IWorkbenchWindow window = FileService.GetOpenFile(fileName);
-			if (window != null) {
-				XmlView view = window.ActiveViewContent as XmlView;
-				if (view != null) {
-					return view.Text;
-				} else {
-					LoggingService.Warn("Stylesheet file not opened in xml editor.");
-				}
+			XmlView view = FileService.GetOpenFile(fileName) as XmlView;
+			if (view != null) {
+				return view.Text;
 			}
 			
 			// Read in file contents.

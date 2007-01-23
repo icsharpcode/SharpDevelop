@@ -137,7 +137,7 @@ namespace ICSharpCode.Svn
 		{
 			try {
 				LogMessage logMessage = (LogMessage)loadChangedPathsItem.Tag;
-				string fileName = System.IO.Path.GetFullPath(viewContent.FileName);
+				string fileName = System.IO.Path.GetFullPath(viewContent.PrimaryFileName);
 				Client client = SvnClient.Instance.Client;
 				try {
 					client.Log(new string[] { fileName },

@@ -48,7 +48,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		{
 			ProjectService.SaveSolutionPreferences();
 			WorkbenchSingleton.Workbench.CloseAllViews();
-			if (WorkbenchSingleton.Workbench.ViewContentCollection.Count == 0) {
+			if (WorkbenchSingleton.Workbench.WorkbenchWindowCollection.Count == 0) {
 				ProjectService.CloseSolution();
 			}
 		}

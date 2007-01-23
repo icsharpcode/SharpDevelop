@@ -139,20 +139,14 @@ namespace ICSharpCode.SharpDevelop.Project
 			return GetParseableFileContent(item.Project, fileName);
 		}
 		
-		IViewContent[] viewContentCollection;
-		
-		IViewContent[] GetViewContentCollection()
-		{
-			return WorkbenchSingleton.Workbench.ViewContentCollection.ToArray();
-		}
+		IList<string> viewContentFileNamesCollection;
 		
 		bool IsFileOpen(string fileName)
 		{
-			if (viewContentCollection == null) {
-				viewContentCollection = WorkbenchSingleton.SafeThreadFunction<IViewContent[]>(GetViewContentCollection);
+			if (viewContentFileNamesCollection == null) {
+				viewContentFileNamesCollection = WorkbenchSingleton.SafeThreadFunction<IList<string>>(FileService.GetOpenFiles);
 			}
-			foreach (IViewContent content in viewContentCollection) {
-				string contentName = content.IsUntitled ? content.UntitledName : content.FileName;
+			foreach (string contentName in viewContentFileNamesCollection) {
 				if (contentName != null) {
 					if (FileUtility.IsEqualFileName(fileName, contentName))
 						return true;
@@ -163,13 +157,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		string GetFileContentFromOpenFile(string fileName)
 		{
-			IWorkbenchWindow window = FileService.GetOpenFile(fileName);
-			if (window != null) {
-				IViewContent viewContent = window.ViewContent;
-				IEditable editable = viewContent as IEditable;
-				if (editable != null) {
-					return editable.Text;
-				}
+			IViewContent viewContent = FileService.GetOpenFile(fileName);
+			IEditable editable = viewContent as IEditable;
+			if (editable != null) {
+				return editable.Text;
 			}
 			return null;
 		}

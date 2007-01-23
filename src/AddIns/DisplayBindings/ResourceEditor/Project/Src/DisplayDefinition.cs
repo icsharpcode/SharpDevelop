@@ -25,21 +25,9 @@ namespace ResourceEditor
 				Path.GetExtension(fileName).Equals(".RESX", StringComparison.OrdinalIgnoreCase);
 		}
 		
-		public bool CanCreateContentForLanguage(string language)
+		public IViewContent CreateContentForFile(OpenedFile file)
 		{
-			return language == "ResourceFiles";
-		}
-		
-		public IViewContent CreateContentForFile(string fileName)
-		{
-			ResourceEditWrapper di2 = new ResourceEditWrapper();
-			di2.Load(fileName);
-			return di2;
-		}
-		
-		public IViewContent CreateContentForLanguage(string language, string content)
-		{
-			return new ResourceEditWrapper();
+			return new ResourceEditWrapper(file);
 		}
 	}
 	
@@ -64,12 +52,13 @@ namespace ResourceEditor
 
 		void SetDirty(object sender, EventArgs e)
 		{
-			IsDirty = true;
+			this.PrimaryFile.MakeDirty();
 		}
 		
-		public ResourceEditWrapper()
+		public ResourceEditWrapper(OpenedFile file)
 		{
 			resourceEditor.ResourceList.Changed += new EventHandler(SetDirty);
+			this.Files.Add(file);
 		}
 		
 		public override void RedrawContent()
@@ -82,22 +71,14 @@ namespace ResourceEditor
 			resourceEditor.Dispose();
 		}
 		
-		public override void Load(string filename)
+		public override void Load(OpenedFile file, Stream stream)
 		{
-			resourceEditor.ResourceList.LoadFile(filename);
-			TitleName = Path.GetFileName(filename);
-			FileName = filename;
-			IsDirty = false;
+			resourceEditor.ResourceList.LoadFile(file.FileName, stream);
 		}
 		
-		public override void Save(string filename)
+		public override void Save(OpenedFile file, Stream stream)
 		{
-			OnSaving(EventArgs.Empty);
-			resourceEditor.ResourceList.SaveFile(filename);
-			TitleName = Path.GetFileName(filename);
-			FileName = filename;
-			IsDirty = false;
-			OnSaved(new SaveEventArgs(true));
+			resourceEditor.ResourceList.SaveFile(file.FileName, stream);
 		}
 		
 		

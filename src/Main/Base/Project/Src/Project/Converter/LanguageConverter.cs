@@ -44,7 +44,7 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			if (descriptor == null || descriptor.Binding == null)
 				throw new InvalidOperationException("Cannot get Language Binding for " + TargetLanguageName);
 			
-			info.OutputProjectFileName = Path.GetFullPath(Path.Combine(targetProjectDirectory, info.ProjectName + descriptor.ProjectFileExtension));
+			info.OutputProjectFileName = FileUtility.NormalizePath(Path.Combine(targetProjectDirectory, info.ProjectName + descriptor.ProjectFileExtension));
 			
 			return descriptor.Binding.CreateProject(info);
 		}
@@ -198,10 +198,10 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 				}
 				node = node.Parent;
 			}
-			ICSharpCode.SharpDevelop.Gui.IWorkbenchWindow newFileWindow;
-			newFileWindow = FileService.NewFile(ResourceService.GetString("ICSharpCode.SharpDevelop.Commands.Convert.ConversionResults"), "Text", conversionLog.ToString());
+			IViewContent newFileWindow;
+			newFileWindow = FileService.NewFile(ResourceService.GetString("ICSharpCode.SharpDevelop.Commands.Convert.ConversionResults"), conversionLog.ToString());
 			if (newFileWindow != null) {
-				newFileWindow.ViewContent.IsDirty = false;
+				newFileWindow.PrimaryFile.IsDirty = false;
 			}
 		}
 	}

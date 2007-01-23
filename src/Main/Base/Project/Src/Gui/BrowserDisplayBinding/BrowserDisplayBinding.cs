@@ -17,28 +17,20 @@ namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 			return fileName.StartsWith("http:")
 				|| fileName.StartsWith("https:")
 				|| fileName.StartsWith("ftp:")
-				|| fileName.StartsWith("browser://");
+				|| fileName.StartsWith("browser:");
 		}
 		
-		public bool CanCreateContentForLanguage(string language)
+		public IViewContent CreateContentForFile(OpenedFile file)
 		{
-			return false;
-		}
-		
-		public IViewContent CreateContentForFile(string fileName)
-		{
+			string fileName = file.FileName;
+			
 			BrowserPane browserPane = new BrowserPane();
 			if (fileName.StartsWith("browser://")) {
-				browserPane.Load(fileName.Substring("browser://".Length));
+				browserPane.Navigate(fileName.Substring("browser://".Length));
 			} else {
-				browserPane.Load(fileName);
+				browserPane.Navigate(fileName);
 			}
 			return browserPane;
-		}
-		
-		public IViewContent CreateContentForLanguage(string language, string content)
-		{
-			return null;
 		}
 	}
 }

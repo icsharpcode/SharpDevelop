@@ -26,6 +26,13 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		}
 		
 		/// <summary>
+		/// Gets the service provider used for markup extensions in this document.
+		/// </summary>
+		public IServiceProvider ServiceProvider {
+			get { return null; }
+		}
+		
+		/// <summary>
 		/// Gets the root xaml object.
 		/// </summary>
 		public XamlObject RootElement {
@@ -72,6 +79,14 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		public XamlObject CreateObject(object instance)
 		{
 			return (XamlObject)CreatePropertyValue(instance, null);
+		}
+		
+		/// <summary>
+		/// Creates a value that represents {x:Null}
+		/// </summary>
+		public XamlPropertyValue CreateNullValue()
+		{
+			return new XamlMarkupValue(this, (XamlObject)CreatePropertyValue(new System.Windows.Markup.NullExtension(), null));
 		}
 		
 		/// <summary>

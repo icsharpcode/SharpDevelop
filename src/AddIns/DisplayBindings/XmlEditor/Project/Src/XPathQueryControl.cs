@@ -426,10 +426,7 @@ namespace ICSharpCode.XmlEditor
 			
 			try {
 				MarkerStrategy markerStrategy = view.TextEditorControl.Document.MarkerStrategy;
-				fileName = view.FileName;
-				if (fileName == null) {
-					fileName = view.UntitledName;
-				}
+				fileName = view.PrimaryFileName;
 			
 				// Clear previous XPath results.
 				ClearResults();
@@ -619,7 +616,7 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		bool IsFileNameMatch(XmlView view)
 		{
-			return FileUtility.IsEqualFileName(fileName, view.FileName) || FileUtility.IsEqualFileName(fileName, view.UntitledName);
+			return FileUtility.IsEqualFileName(fileName, view.PrimaryFileName);
 		}
 		
 		/// <summary>

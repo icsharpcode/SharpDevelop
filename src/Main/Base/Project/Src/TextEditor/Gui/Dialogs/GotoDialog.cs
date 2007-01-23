@@ -348,9 +348,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		TextEditorControl GetEditor()
 		{
-			IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
-			if (window != null && window.ViewContent is ITextEditorControlProvider) {
-				return ((ITextEditorControlProvider)window.ViewContent).TextEditorControl;
+			IViewContent viewContent = WorkbenchSingleton.Workbench.ActiveViewContent;
+			if (viewContent is ITextEditorControlProvider) {
+				return ((ITextEditorControlProvider)viewContent).TextEditorControl;
 			}
 			return null;
 		}

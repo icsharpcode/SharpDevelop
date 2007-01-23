@@ -35,10 +35,8 @@ namespace ICSharpCode.CodeAnalysis
 				FilePosition p = tag.ProjectContent.GetPosition(tag.MemberName);
 				if (p.CompilationUnit == null || p.FileName == null || p.Line <= 0)
 					continue;
-				IWorkbenchWindow window = FileService.OpenFile(p.FileName);
-				if (window == null)
-					continue;
-				ITextEditorControlProvider provider = window.ViewContent as ITextEditorControlProvider;
+				IViewContent viewContent = FileService.OpenFile(p.FileName);
+				ITextEditorControlProvider provider = viewContent as ITextEditorControlProvider;
 				if (provider == null)
 					continue;
 				IDocument document = new TextEditorDocument(provider.TextEditorControl.Document);
@@ -59,7 +57,7 @@ namespace ICSharpCode.CodeAnalysis
 				provider.TextEditorControl.ActiveTextAreaControl.Caret.Line = p.Line - 1;
 				provider.TextEditorControl.ActiveTextAreaControl.ScrollToCaret();
 				TaskService.Remove(t);
-				ParserService.ParseViewContent(window.ViewContent);
+				ParserService.ParseViewContent(viewContent);
 			}
 		}
 		

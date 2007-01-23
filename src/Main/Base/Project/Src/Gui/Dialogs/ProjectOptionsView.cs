@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using System.IO;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
@@ -17,7 +18,7 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 	/// <summary>
 	/// Description of ProjectOptionsControl.
 	/// </summary>
-	public class ProjectOptionsView : AbstractViewContent
+	public class ProjectOptionsView : AbstractViewContentWithoutFile
 	{
 		List<IDialogPanelDescriptor> descriptors = new List<IDialogPanelDescriptor>();
 		TabControl tabControl = new TabControl();
@@ -26,23 +27,6 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 		public IProject Project {
 			get {
 				return project;
-			}
-		}
-		
-		public override string TitleName {
-			get {
-				return project.Name;
-			}
-		}
-		
-		public override string FileName {
-			get {
-				return project.FileName;
-			}
-			set {
-				// possible when project is renamed by the user, project.FileName will be changed by the
-				// renaming code
-				OnTitleNameChanged(EventArgs.Empty);
 			}
 		}
 		
@@ -60,6 +44,9 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 			
 			tabControl.HandleCreated += TabControlHandleCreated;
 			AddOptionPanels(node.BuildChildItems<IDialogPanelDescriptor>(this));
+			
+			this.AutomaticallyRegisterViewOnFiles = false;
+			this.Files.Add(FileService.AttachToOpenedFile(project.FileName, this));
 		}
 		
 		void TabControlHandleCreated(object sender, EventArgs e)
@@ -93,7 +80,7 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 					descriptor.DialogPanel.ReceiveDialogMessage(DialogMessage.Activated);
 					ICanBeDirty dirtyable = descriptor.DialogPanel as ICanBeDirty;
 					if (dirtyable != null) {
-						dirtyable.DirtyChanged += PanelDirtyChanged;
+						dirtyable.IsDirtyChanged += PanelDirtyChanged;
 					}
 					
 					TabPage page = new TabPage(descriptor.Label);
@@ -121,15 +108,31 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 					}
 				}
 			}
-			this.IsDirty = dirty;
+			this.MyIsDirty = dirty;
 		}
 		
-		public override void Load(string fileName)
+		bool myIsDirty;
+		
+		bool MyIsDirty {
+			get { return myIsDirty; }
+			set {
+				if (myIsDirty != value) {
+					myIsDirty = value;
+					RaiseIsDirtyChanged();
+				}
+			}
+		}
+		
+		public override bool IsDirty {
+			get { return myIsDirty; }
+		}
+		
+		public override void Load()
 		{
 			// TODO: reload project file
 		}
 		
-		public override void Save(string fileName)
+		public override void Save()
 		{
 			try {
 				foreach (IDialogPanelDescriptor pane in descriptors) {

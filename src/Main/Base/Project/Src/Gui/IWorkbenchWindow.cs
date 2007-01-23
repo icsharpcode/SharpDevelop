@@ -1,11 +1,12 @@
 ﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
+//     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
 //     <version>$Revision$</version>
 // </file>
 
 using System;
+using System.Collections.Generic;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -20,7 +21,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		string Title {
 			get;
-			set;
 		}
 		
 		/// <summary>
@@ -31,23 +31,28 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		
 		/// <summary>
-		/// The primary view content in this window.
+		/// Gets/Sets current view content which is shown inside this window.
 		/// </summary>
-		IViewContent ViewContent {
+		IViewContent ActiveViewContent {
+			get;
+			set;
+		}
+		
+		/// <summary>
+		/// Gets the list of view contents displayed in this window
+		/// </summary>
+		IList<IViewContent> ViewContents {
 			get;
 		}
 		
 		/// <summary>
-		/// The current view content which is shown inside this window.
-		/// This method is thread-safe.
+		/// Activates the view with the specified index.
 		/// </summary>
-		IBaseViewContent ActiveViewContent {
-			get;
-		}
+		void SwitchView(int viewNumber);
 		
 		/// <summary>
 		/// Closes the window, if force == true it closes the window
-		/// without ask, even the content is dirty.
+		/// without asking, even the content is dirty.
 		/// </summary>
 		/// <returns>true, if window is closed</returns>
 		bool CloseWindow(bool force);
@@ -60,15 +65,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void RedrawContent();
 		
-		void SwitchView(int viewNumber);
-		
 		/// <summary>
 		/// Only for internal use.
 		/// </summary>
 		void OnWindowSelected(EventArgs e);
 		void OnWindowDeselected(EventArgs e);
-		
-		//void AttachSecondaryViewContent(ISecondaryViewContent secondaryViewContent);
 		
 		/// <summary>
 		/// Is called when the window is selected.

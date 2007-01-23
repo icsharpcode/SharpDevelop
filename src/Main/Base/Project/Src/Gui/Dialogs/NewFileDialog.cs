@@ -393,13 +393,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 					LoggingService.Warn("binary file was skipped");
 					return;
 				}
-				IWorkbenchWindow window = FileService.NewFile(Path.GetFileName(parsedFileName), StringParser.Parse(newfile.Language), parsedContent);
-				if (window == null) {
+				IViewContent viewContent = FileService.NewFile(Path.GetFileName(parsedFileName), parsedContent);
+				if (viewContent == null) {
 					return;
 				}
 				if (Path.IsPathRooted(parsedFileName)) {
 					Directory.CreateDirectory(Path.GetDirectoryName(parsedFileName));
-					window.ViewContent.Save(parsedFileName);
+					viewContent.PrimaryFile.SaveToDisk(parsedFileName);
 				}
 			}
 			createdFiles.Add(new KeyValuePair<string, FileDescriptionTemplate>(parsedFileName, newfile));
@@ -455,7 +455,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 						fileName += Path.GetExtension(item.Template.DefaultName);
 					}
 					fileName = Path.Combine(basePath, fileName);
-					fileName = Path.GetFullPath(fileName);
+					fileName = FileUtility.NormalizePath(fileName);
 					IProject project = ProjectService.CurrentProject;
 					if (project != null) {
 						StringParser.Properties["StandardNamespace"] = CustomToolsService.GetDefaultNamespace(project, fileName);

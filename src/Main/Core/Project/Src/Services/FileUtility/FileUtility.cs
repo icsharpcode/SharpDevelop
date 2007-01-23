@@ -36,9 +36,6 @@ namespace ICSharpCode.Core
 	/// </summary>
 	public static class FileUtility
 	{
-		// TODO: GetFullPath is a **very** expensive method (performance-wise)!
-		// Call it only when necessary. (see IsEqualFile)
-		
 		readonly static char[] separators = { Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar, Path.VolumeSeparatorChar };
 		static string applicationRootPath = AppDomain.CurrentDomain.BaseDirectory;
 		const string fileNameRegEx = @"^([a-zA-Z]:)?[^:]+$";
@@ -117,12 +114,9 @@ namespace ICSharpCode.Core
 			if (IsUrl(absPath) || IsUrl(baseDirectoryPath)){
 				return absPath;
 			}
-			try {
-				baseDirectoryPath = Path.GetFullPath(baseDirectoryPath.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
-				absPath           = Path.GetFullPath(absPath);
-			} catch (Exception ex) {
-				throw new ArgumentException("GetRelativePath error '" + baseDirectoryPath + "' -> '" + absPath + "'", ex);
-			}
+			
+			baseDirectoryPath = NormalizePath(baseDirectoryPath);
+			absPath           = NormalizePath(absPath);
 			
 			string[] bPath = baseDirectoryPath.Split(separators);
 			string[] aPath = absPath.Split(separators);
@@ -157,38 +151,101 @@ namespace ICSharpCode.Core
 		/// </summary>
 		public static string GetAbsolutePath(string baseDirectoryPath, string relPath)
 		{
-			return Path.GetFullPath(Path.Combine(baseDirectoryPath, relPath));
+			return NormalizePath(Path.Combine(baseDirectoryPath, relPath));
+		}
+		
+		/// <summary>
+		/// Gets the normalized version of fileName.
+		/// Slashes are replaced with backslashes, backreferences "." and ".." are 'evaluated'.
+		/// </summary>
+		public static string NormalizePath(string fileName)
+		{
+			if (string.IsNullOrEmpty(fileName)) return fileName;
+			
+			int i;
+			
+			bool isWeb = false;
+			for (i = 0; i < fileName.Length; i++) {
+				if (fileName[i] == '/' || fileName[i] == '\\')
+					break;
+				if (fileName[i] == ':') {
+					if (i > 1)
+						isWeb = true;
+					break;
+				}
+			}
+			
+			char outputSeparator = isWeb ? '/' : '\\';
+			
+			StringBuilder result = new StringBuilder();
+			if (isWeb == false && fileName.StartsWith(@"\\") || fileName.StartsWith("//")) {
+				i = 2;
+				result.Append(outputSeparator);
+			} else {
+				i = 0;
+			}
+			int segmentStartPos = i;
+			for (; i <= fileName.Length; i++) {
+				if (i == fileName.Length || fileName[i] == '/' || fileName[i] == '\\') {
+					int segmentLength = i - segmentStartPos;
+					switch (segmentLength) {
+						case 0:
+							// ignore empty segment (if not in web mode)
+							if (isWeb) {
+								result.Append(outputSeparator);
+							}
+							break;
+						case 1:
+							// ignore /./ segment, but append other one-letter segments
+							if (fileName[segmentStartPos] != '.') {
+								if (result.Length > 0) result.Append(outputSeparator);
+								result.Append(fileName[segmentStartPos]);
+							}
+							break;
+						case 2:
+							if (fileName[segmentStartPos] == '.' && fileName[segmentStartPos + 1] == '.') {
+								// remove previous segment
+								int j;
+								for (j = result.Length - 1; j >= 0 && result[j] != outputSeparator; j--);
+								if (j > 0) {
+									result.Length = j;
+								}
+								break;
+							} else {
+								// append normal segment
+								goto default;
+							}
+						default:
+							if (result.Length > 0) result.Append(outputSeparator);
+							result.Append(fileName, segmentStartPos, segmentLength);
+							break;
+					}
+					segmentStartPos = i + 1; // remember start position for next segment
+				}
+			}
+			if (isWeb == false) {
+				if (result.Length > 0 && result[result.Length - 1] == outputSeparator) {
+					result.Length -= 1;
+				}
+				if (result.Length == 2 && result[1] == ':') {
+					result.Append(outputSeparator);
+				}
+			}
+			return result.ToString();
 		}
 		
 		public static bool IsEqualFileName(string fileName1, string fileName2)
 		{
-			// Optimized for performance:
-			//return Path.GetFullPath(fileName1.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)).ToLower() == Path.GetFullPath(fileName2.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)).ToLower();
-			
-			if (string.IsNullOrEmpty(fileName1) || string.IsNullOrEmpty(fileName2)) return false;
-			
-			char lastChar;
-			lastChar = fileName1[fileName1.Length - 1];
-			if (lastChar == Path.DirectorySeparatorChar || lastChar == Path.AltDirectorySeparatorChar)
-				fileName1 = fileName1.Substring(0, fileName1.Length - 1);
-			lastChar = fileName2[fileName2.Length - 1];
-			if (lastChar == Path.DirectorySeparatorChar || lastChar == Path.AltDirectorySeparatorChar)
-				fileName2 = fileName2.Substring(0, fileName2.Length - 1);
-			
-			try {
-				if (fileName1.Length < 2 || fileName1[1] != ':' || fileName1.IndexOf("/.") >= 0 || fileName1.IndexOf("\\.") >= 0)
-					fileName1 = Path.GetFullPath(fileName1);
-				if (fileName2.Length < 2 || fileName2[1] != ':' || fileName2.IndexOf("/.") >= 0 || fileName2.IndexOf("\\.") >= 0)
-					fileName2 = Path.GetFullPath(fileName2);
-			} catch (Exception) { }
-			return string.Equals(fileName1, fileName2, StringComparison.OrdinalIgnoreCase);
+			return string.Equals(NormalizePath(fileName1),
+			                     NormalizePath(fileName2),
+			                     StringComparison.OrdinalIgnoreCase);
 		}
 		
 		public static bool IsBaseDirectory(string baseDirectory, string testDirectory)
 		{
 			try {
-				baseDirectory = Path.GetFullPath(baseDirectory).ToUpperInvariant();
-				testDirectory = Path.GetFullPath(testDirectory).ToUpperInvariant();
+				baseDirectory = NormalizePath(baseDirectory).ToUpperInvariant();
+				testDirectory = NormalizePath(testDirectory).ToUpperInvariant();
 				baseDirectory = baseDirectory.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
 				testDirectory = testDirectory.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
 				
@@ -205,9 +262,9 @@ namespace ICSharpCode.Core
 		
 		public static string RenameBaseDirectory(string fileName, string oldDirectory, string newDirectory)
 		{
-			fileName     = Path.GetFullPath(fileName);
-			oldDirectory = Path.GetFullPath(oldDirectory.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
-			newDirectory = Path.GetFullPath(newDirectory.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
+			fileName     = NormalizePath(fileName);
+			oldDirectory = NormalizePath(oldDirectory.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
+			newDirectory = NormalizePath(newDirectory.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
 			if (IsBaseDirectory(oldDirectory, fileName)) {
 				if (fileName.Length == oldDirectory.Length) {
 					return newDirectory;

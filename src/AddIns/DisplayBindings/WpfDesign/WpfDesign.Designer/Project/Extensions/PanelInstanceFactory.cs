@@ -16,6 +16,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 	/// <summary>
 	/// Instance factory used to create Panel instances.
 	/// Sets the panels Brush to a transparent brush, and modifies the panel's type descriptor so that
+	/// the property value is reported as null when the transparent brush is used, and
 	/// setting the Brush to null actually restores the transparent brush.
 	/// </summary>
 	[ExtensionFor(typeof(Panel))]

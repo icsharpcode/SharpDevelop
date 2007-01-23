@@ -86,13 +86,10 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			}
 			
 			FileService.OpenFile(nextStatement.SourceFullFilename);
-			IWorkbenchWindow window = FileService.GetOpenFile(nextStatement.SourceFullFilename);
-			if (window != null) {
-				IViewContent content = window.ViewContent;
-				
-				if (content is IPositionable) {
-					((IPositionable)content).JumpTo((int)nextStatement.StartLine - 1, (int)nextStatement.StartColumn - 1);
-				}
+			IViewContent content = FileService.GetOpenFile(nextStatement.SourceFullFilename);
+			
+			if (content is IPositionable) {
+				((IPositionable)content).JumpTo((int)nextStatement.StartLine - 1, (int)nextStatement.StartColumn - 1);
 			}
 		}
 		

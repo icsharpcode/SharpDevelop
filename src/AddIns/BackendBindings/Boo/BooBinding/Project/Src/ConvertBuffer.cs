@@ -32,14 +32,14 @@ namespace Grunwald.BooBinding
 		{
 			IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
 			
-			if (window != null && window.ViewContent is IEditable) {
+			if (window != null && window.ActiveViewContent is IEditable) {
 				CompilerErrorCollection errors = new CompilerErrorCollection();
 				CompilerWarningCollection warnings = new CompilerWarningCollection();
 				Module module;
 				IList<ICSharpCode.NRefactory.ISpecial> specials;
 				CompileUnit compileUnit = new CompileUnit();
-				using (StringReader r = new StringReader(((IEditable)window.ViewContent).Text)) {
-					string fileName = window.ViewContent.FileName ?? window.ViewContent.UntitledName;
+				using (StringReader r = new StringReader(((IEditable)window.ActiveViewContent).Text)) {
+					string fileName = window.ActiveViewContent.PrimaryFileName;
 					module = Parser.ParseModule(compileUnit, r, ApplySettings(fileName, errors, warnings), out specials);
 				}
 				if (module == null) {
@@ -54,7 +54,7 @@ namespace Grunwald.BooBinding
 					}
 					MessageService.ShowError(errorBuilder.ToString());
 				} else {
-					FileService.NewFile("Generated.boo", "Boo", CreateBooCode(errors, warnings, module, specials));
+					FileService.NewFile("Generated.boo", CreateBooCode(errors, warnings, module, specials));
 				}
 			}
 		}

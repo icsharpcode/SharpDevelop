@@ -61,6 +61,7 @@
     <Compile Include="XamlConstants.cs" />
     <Compile Include="XamlDocument.cs" />
     <Compile Include="XamlLoadException.cs" />
+    <Compile Include="XamlMarkupValue.cs" />
     <Compile Include="XamlObject.cs" />
     <Compile Include="XamlParser.cs" />
     <Compile Include="XamlParserSettings.cs" />

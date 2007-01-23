@@ -20,16 +20,15 @@ namespace ICSharpCode.SharpDevelop
 	/// <attribute name="class" use="required">
 	/// Name of the IDisplayBinding or ISecondaryDisplayBinding class.
 	/// </attribute>
+	/// <attribute name="title" use="required">
+	/// Title of the display binding to use in the "Open With" dialog.
+	/// </attribute>
 	/// <attribute name="type" use="optional" enum="Primary;Secondary">
 	/// Type of the display binding (either "Primary" or "Secondary"). Default: "Primary".
 	/// </attribute>
 	/// <attribute name="fileNamePattern" use="optional">
 	/// Regular expression that specifies the file names for which the display binding
 	/// will be used. Example: "\.res(x|ources)$"
-	/// </attribute>
-	/// <attribute name="languagePattern" use="optional">
-	/// Regular expression that specifies the language for which the display binding
-	/// will be used. Only used for primary display bindings. Example: "\Resource Files$"
 	/// </attribute>
 	/// <usage>Only in /SharpDevelop/Workbench/DisplayBindings</usage>
 	/// <returns>
@@ -39,15 +38,16 @@ namespace ICSharpCode.SharpDevelop
 	/// <example title="Primary display binding: Resource editor">
 	/// &lt;Path name = "/SharpDevelop/Workbench/DisplayBindings"&gt;
 	///   &lt;DisplayBinding id    = "ResourceEditor"
+	///                   title = "Resource editor"
 	///                   class = "ResourceEditor.ResourceEditorDisplayBinding"
 	///                   insertbefore    = "Text"
-	///                   fileNamePattern = "\.res(x|ources)$"
-	///                   languagePattern = "^ResourceFiles$"/&gt;
+	///                   fileNamePattern = "\.res(x|ources)$"/&gt;
 	/// &lt;/Path&gt;
 	/// </example>
 	/// <example title="Secondary display binding: Form designer">
 	/// &lt;Path name = "/SharpDevelop/Workbench/DisplayBindings"&gt;
 	///   &lt;DisplayBinding id  = "FormsDesigner"
+	///                   title = "Windows Forms Designer"
 	///                   type  = "Secondary"
 	///                   class = "ICSharpCode.FormsDesigner.FormsDesignerSecondaryDisplayBinding"
 	///                   fileNamePattern = "\.(cs|vb)$" /&gt;

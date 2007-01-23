@@ -279,6 +279,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
+		public LocalResolveResult(IMember callingMember, IParameter parameter)
+			: this(callingMember, new DefaultField.ParameterField(parameter.ReturnType, parameter.Name, parameter.Region, callingMember.DeclaringType))
+		{}
+		
 		/// <summary>
 		/// Gets the field representing the local variable.
 		/// </summary>

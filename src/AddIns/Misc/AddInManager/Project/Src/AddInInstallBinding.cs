@@ -18,21 +18,11 @@ namespace ICSharpCode.AddInManager
 			return true;
 		}
 		
-		public ICSharpCode.SharpDevelop.Gui.IViewContent CreateContentForFile(string fileName)
+		public ICSharpCode.SharpDevelop.Gui.IViewContent CreateContentForFile(OpenedFile file)
 		{
 			ManagerForm.ShowForm();
-			ManagerForm.Instance.ShowInstallableAddIns(new string[] { fileName });
+			ManagerForm.Instance.ShowInstallableAddIns(new string[] { file.FileName });
 			return null;
-		}
-		
-		public bool CanCreateContentForLanguage(string languageName)
-		{
-			return false;
-		}
-		
-		public ICSharpCode.SharpDevelop.Gui.IViewContent CreateContentForLanguage(string languageName, string content)
-		{
-			throw new NotImplementedException();
 		}
 	}
 	#endif

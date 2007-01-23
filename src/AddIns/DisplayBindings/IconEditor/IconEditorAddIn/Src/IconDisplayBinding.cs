@@ -18,21 +18,9 @@ namespace ICSharpCode.IconEditorAddIn
 			return true; // definition in .addin does extension-based filtering
 		}
 		
-		public IViewContent CreateContentForFile(string fileName)
+		public IViewContent CreateContentForFile(OpenedFile file)
 		{
-			IconViewContent vc = new IconViewContent();
-			vc.Load(fileName);
-			return vc;
-		}
-		
-		public bool CanCreateContentForLanguage(string languageName)
-		{
-			return false;
-		}
-		
-		public IViewContent CreateContentForLanguage(string languageName, string content)
-		{
-			throw new NotSupportedException();
+			return new IconViewContent(file);
 		}
 	}
 }

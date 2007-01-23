@@ -139,15 +139,15 @@ namespace ClassWizard
 			else
 			{
 				string filename = Path.Combine(proj.Directory, Get<ComboBox>("existingFiles").Text);
-				IWorkbenchWindow wbw = FileService.OpenFile(filename);
+				IViewContent viewContent = FileService.OpenFile(filename);
 				
-				proj.LanguageProperties.CodeGenerator.InsertCodeAtEnd(DomRegion.Empty, GetDocument(wbw), new AbstractNode[] { domNS });
+				proj.LanguageProperties.CodeGenerator.InsertCodeAtEnd(DomRegion.Empty, GetDocument(viewContent), new AbstractNode[] { domNS });
 			}
 		}
 		
-		private static IDocument GetDocument(IWorkbenchWindow workbenchWindow)
+		private static IDocument GetDocument(IViewContent viewContent)
 		{
-			ITextEditorControlProvider provider1 = workbenchWindow.ViewContent as ITextEditorControlProvider;
+			ITextEditorControlProvider provider1 = viewContent as ITextEditorControlProvider;
 			if (provider1 == null)
 			{
 				return null;

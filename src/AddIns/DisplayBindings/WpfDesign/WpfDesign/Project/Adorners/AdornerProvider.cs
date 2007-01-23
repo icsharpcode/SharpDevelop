@@ -17,6 +17,14 @@ namespace ICSharpCode.WpfDesign.Adorners
 	/// Base class for extensions that present adorners on the screen.
 	/// </summary>
 	/// <remarks>
+	/// Cider adorner introduction:
+	/// http://blogs.msdn.com/jnak/archive/2006/04/24/580393.aspx
+	/// <quote>
+	/// Adorners are WPF elements that float on top of the design surface and track the
+	/// size and location of the elements they are adorning. All of the UI the designer
+	/// presents to the user, including snap lines, grab handles and grid rulers,
+	/// is composed of these adorners.
+	/// </quote>
 	/// About design-time adorners and their placement:
 	/// read http://myfun.spaces.live.com/blog/cns!AC1291870308F748!240.entry
 	/// and http://myfun.spaces.live.com/blog/cns!AC1291870308F748!242.entry
@@ -69,7 +77,7 @@ namespace ICSharpCode.WpfDesign.Adorners
 		}
 		#endregion
 		
-		AdornerPanelCollection _adorners;
+		readonly AdornerPanelCollection _adorners;
 		bool isVisible;
 		
 		/// <summary>
@@ -142,7 +150,7 @@ namespace ICSharpCode.WpfDesign.Adorners
 		{
 			if (!isVisible) return;
 			
-			item.SetAdornedElement(this.ExtendedItem.View, this.ExtendedItem);;
+			item.SetAdornedElement(this.ExtendedItem.View, this.ExtendedItem);
 			
 			IDesignPanel avs = Services.GetService<IDesignPanel>();
 			avs.Adorners.Add(item);

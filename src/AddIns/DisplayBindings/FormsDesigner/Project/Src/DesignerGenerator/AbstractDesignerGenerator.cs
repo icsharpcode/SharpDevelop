@@ -317,14 +317,14 @@ namespace ICSharpCode.FormsDesigner
 							designerContent = content;
 							document = viewContent.Document;
 						} else {
-							IWorkbenchWindow window = FileService.GetOpenFile(designerFile);
-							if (window == null) {
+							IViewContent designerFileViewContent = FileService.GetOpenFile(designerFile);
+							if (designerFileViewContent == null) {
 								document = new DocumentFactory().CreateDocument();
 								designerContent = ParserService.GetParseableFileContent(designerFile);
 								document.TextContent = designerContent;
 								saveDocumentToFile = designerFile;
 							} else {
-								ITextEditorControlProvider tecp = window.ViewContent as ITextEditorControlProvider;
+								ITextEditorControlProvider tecp = designerFileViewContent as ITextEditorControlProvider;
 								if (tecp == null)
 									throw new ApplicationException("designer file viewcontent must implement ITextEditorControlProvider");
 								document = tecp.TextEditorControl.Document;

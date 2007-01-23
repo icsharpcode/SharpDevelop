@@ -148,7 +148,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		{
 			foreach (IViewContent content in WorkbenchSingleton.Workbench.ViewContentCollection) {
 				if (content is ITextEditorControlProvider &&
-				    FileUtility.IsEqualFileName(content.IsUntitled ? content.UntitledName : content.FileName, fileName))
+				    FileUtility.IsEqualFileName(content.PrimaryFileName, fileName))
 				{
 					return new ProvidedDocumentInformation(((ITextEditorControlProvider)content).TextEditorControl.Document, fileName, 0);
 				}
@@ -270,7 +270,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			List<IViewContent> modifiedContents = new List<IViewContent>();
 			List<Modification> modifications = new List<Modification>();
 			foreach (Reference r in list) {
-				IViewContent viewContent = FileService.OpenFile(r.FileName).ViewContent;
+				IViewContent viewContent = FileService.OpenFile(r.FileName);
 				if (!modifiedContents.Contains(viewContent)) {
 					modifiedContents.Add(viewContent);
 				}

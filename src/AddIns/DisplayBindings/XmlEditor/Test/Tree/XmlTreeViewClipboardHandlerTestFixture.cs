@@ -37,14 +37,14 @@ namespace XmlEditor.Tests.Tree
 		{
 			XmlSchemaCompletionDataCollection schemas = new XmlSchemaCompletionDataCollection();
 			xmlView = new XmlView(new DefaultTextEditorProperties(), schemas);
+			xmlView.SetPrimaryFileUnitTestMode(OpenedFile.CreateDummyOpenedFile("test.xml", true));
 			view = new XmlTreeView(xmlView, null, null);
 			treeViewContainer = (XmlTreeViewContainerControl)view.Control;
 			treeView = treeViewContainer.TreeView;
 			clipboardHandler = view as IClipboardHandler;
 			
 			xmlView.XmlEditor.Text = "<html><body><p></p></body></html>";
-			xmlView.IsDirty = false;
-			view.Selected();
+			view.SwitchedTo();
 			
 			htmlTreeNode = treeView.Nodes[0] as XmlElementTreeNode;
 			htmlTreeNode.PerformInitialization();

@@ -412,22 +412,6 @@ namespace ICSharpCode.TextEditor
 		/// </value>
 		[Category("Behavior")]
 		[DefaultValue(false)]
-		[Description("Creates a backup copy for overwritten files")]
-		public bool CreateBackupCopy {
-			get {
-				return document.TextEditorProperties.CreateBackupCopy;
-			}
-			set {
-				document.TextEditorProperties.CreateBackupCopy = value;
-				OptionsChanged();
-			}
-		}
-		
-		/// <value>
-		/// if true spaces are converted to tabs
-		/// </value>
-		[Category("Behavior")]
-		[DefaultValue(false)]
 		[Description("Hide the mouse cursor while typing")]
 		public bool HideMouseCursor {
 			get {
@@ -615,6 +599,24 @@ namespace ICSharpCode.TextEditor
 		/// <param name="autodetectEncoding">Automatically detect file encoding and set Encoding property to the detected encoding.</param>
 		public void LoadFile(string fileName, bool autoLoadHighlighting, bool autodetectEncoding)
 		{
+			using (FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read)) {
+				LoadFile(fileName, fs, autoLoadHighlighting, autodetectEncoding);
+			}
+		}
+		
+		/// <remarks>
+		/// Loads a file from the specified stream.
+		/// </remarks>
+		/// <param name="fileName">The name of the file to open. Used to find the correct highlighting strategy
+		/// if autoLoadHighlighting is active, and sets the filename property to this value.</param>
+		/// <param name="stream">The stream to actually load the file content from.</param>
+		/// <param name="autoLoadHighlighting">Automatically load the highlighting for the file</param>
+		/// <param name="autodetectEncoding">Automatically detect file encoding and set Encoding property to the detected encoding.</param>
+		public void LoadFile(string fileName, Stream stream, bool autoLoadHighlighting, bool autodetectEncoding)
+		{
+			if (stream == null)
+				throw new ArgumentNullException("stream");
+			
 			BeginUpdate();
 			document.TextContent = String.Empty;
 			document.UndoStack.ClearAll();
@@ -625,7 +627,7 @@ namespace ICSharpCode.TextEditor
 			
 			if (autodetectEncoding) {
 				Encoding encoding = this.Encoding;
-				Document.TextContent = Util.FileReader.ReadFileContent(fileName, ref encoding, this.TextEditorProperties.Encoding);
+				Document.TextContent = Util.FileReader.ReadFileContent(stream, ref encoding, this.TextEditorProperties.Encoding);
 				this.Encoding = encoding;
 			} else {
 				using (StreamReader reader = new StreamReader(fileName, this.Encoding)) {
@@ -654,43 +656,29 @@ namespace ICSharpCode.TextEditor
 		}
 		
 		/// <remarks>
-		/// Saves a file given by fileName
+		/// Saves the text editor content into the file.
 		/// </remarks>
 		public void SaveFile(string fileName)
 		{
-			if (document.TextEditorProperties.CreateBackupCopy) {
-				MakeBackupCopy(fileName);
+			using (FileStream fs = new FileStream(fileName, FileMode.Create, FileAccess.Write)) {
+				SaveFile(fs);
 			}
-			
-			StreamWriter stream;
-			Encoding encoding = this.Encoding;
-			if (encoding == null) { // use UTF8 with BOM by default
-				stream = new StreamWriter(fileName, false, Encoding.UTF8);
-			} else {
-				stream = new StreamWriter(fileName, false, encoding);
-			}
-			
-			foreach (LineSegment line in Document.LineSegmentCollection) {
-				stream.Write(Document.GetText(line.Offset, line.Length));
-				stream.Write(document.TextEditorProperties.LineTerminator);
-			}
-			
-			stream.Close();
-			
 			this.FileName = fileName;
 		}
 		
-		void MakeBackupCopy(string fileName)
+		/// <remarks>
+		/// Saves the text editor content into the specified stream.
+		/// Does not close the stream.
+		/// </remarks>
+		public void SaveFile(Stream stream)
 		{
-			try {
-				if (File.Exists(fileName)) {
-					string backupName = fileName + ".bak";
-					File.Copy(fileName, backupName, true);
-				}
-			} catch (Exception) {
-//
-//				MessageService.ShowError(e, "Can not create backup copy of " + fileName);
+			StreamWriter streamWriter = new StreamWriter(stream, this.Encoding ?? Encoding.UTF8);
+			
+			foreach (LineSegment line in Document.LineSegmentCollection) {
+				streamWriter.Write(Document.GetText(line.Offset, line.Length));
+				streamWriter.Write(document.TextEditorProperties.LineTerminator);
 			}
+			streamWriter.Flush();
 		}
 		
 		public abstract void OptionsChanged();

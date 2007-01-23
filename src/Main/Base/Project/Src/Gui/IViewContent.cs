@@ -1,12 +1,14 @@
 ﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
+//     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
 //     <version>$Revision$</version>
 // </file>
 
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Windows.Forms;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -32,96 +34,147 @@ namespace ICSharpCode.SharpDevelop.Gui
 	/// IViewContent is the base interface for all editable data
 	/// inside SharpDevelop.
 	/// </summary>
-	public interface IViewContent : IBaseViewContent, ICanBeDirty
+	public interface IViewContent : IDisposable, ICanBeDirty
 	{
 		/// <summary>
-		/// A generic name for the file, when it does have no file name
-		/// (e.g. newly created files)
+		/// This is the Windows.Forms control for the view.
 		/// </summary>
-		string UntitledName {
+		Control Control {
+			get;
+		}
+		
+		/// <summary>
+		/// The workbench window in which this view is displayed.
+		/// </summary>
+		IWorkbenchWindow  WorkbenchWindow {
 			get;
 			set;
 		}
 		
 		/// <summary>
-		/// This is the whole name of the content, e.g. the file name or
-		/// the url depending on the type of the content.
+		/// Is raised when the value of the TabPageText property changes.
 		/// </summary>
-		/// <returns>
-		/// Title Name, if not set it returns UntitledName
-		/// </returns>
+		event EventHandler TabPageTextChanged;
+		
+		/// <summary>
+		/// The text on the tab page when more than one view content
+		/// is attached to a single window.
+		/// </summary>
+		string TabPageText {
+			get;
+		}
+		
+		/// <summary>
+		/// Is called when the window is switched to.
+		/// -> Inside the tab (on SelectedIndexChanged of the tab control)
+		/// -> Inside the workbench (focus change in the docking library).
+		/// </summary>
+		void SwitchedTo();
+		
+		/// <summary>
+		/// Reinitializes the content. (Re-initializes all add-in tree stuff)
+		/// and redraws the content.
+		/// Called on certain actions like changing the UI language.
+		/// </summary>
+		void RedrawContent();
+		
+		/// <summary>
+		/// The title of the view content. This normally is the title of the primary file being edited.
+		/// </summary>
 		string TitleName {
 			get;
-			set;
 		}
-		
-		/// <summary>
-		/// Returns the file name (if any) assigned to this view.
-		/// </summary>
-		string FileName {
-			get;
-			set;
-		}
-		
-		/// <summary>
-		/// If this property returns true the view is untitled.
-		/// </summary>
-		/// <returns>
-		/// True, if TitleName not set.
-		/// </returns>
-		bool IsUntitled {
-			get;
-		}
-		
-		/// <summary>
-		/// If this property returns true the content could not be altered.
-		/// </summary>
-		bool IsReadOnly {
-			get;
-		}
-		
-		/// <summary>
-		/// If this property returns true the content can't be written.
-		/// </summary>
-		bool IsViewOnly {
-			get;
-		}
-		
-		/// <summary>
-		/// Gets the list of secondary view contents attached to this view content.
-		/// </summary>
-		List<ISecondaryViewContent> SecondaryViewContents {
-			get;
-		}
-		
-		/// <summary>
-		/// Saves this content to the last load/save location.
-		/// </summary>
-		void Save();
-		
-		/// <summary>
-		/// Saves the content to the location <code>fileName</code>
-		/// </summary>
-		void Save(string fileName);
-		
-		/// <summary>
-		/// Loads the content from the location <code>fileName</code>
-		/// </summary>
-		void Load(string fileName);
-		
-		/// <summary>
-		/// Builds an <see cref="INavigationPoint"/> for the current position.
-		/// </summary>
-		INavigationPoint BuildNavPoint();
 		
 		/// <summary>
 		/// Is called each time the name for the content has changed.
 		/// </summary>
 		event EventHandler TitleNameChanged;
 		
-		event EventHandler FileNameChanged;
+		/// <summary>
+		/// Saves the content to the location <code>fileName</code>
+		/// </summary>
+		/// <remarks>
+		/// When the user switches between multiple views editing the same file, a view
+		/// change will trigger one view content to save that file into a memory stream
+		/// and the other view content will load the file from that memory stream.
+		/// </remarks>
+		void Save(OpenedFile file, Stream stream);
 		
-		event EventHandler     Saving;
-		event SaveEventHandler Saved;
+		/// <summary>
+		/// Load or reload the content of the specified file from the stream.
+		/// </summary>
+		/// <remarks>
+		/// When the user switches between multiple views editing the same file, a view
+		/// change will trigger one view content to save that file into a memory stream
+		/// and the other view content will load the file from that memory stream.
+		/// </remarks>
+		void Load(OpenedFile file, Stream stream);
+		
+		/// <summary>
+		/// Gets the list of files that are being edited using this view content.
+		/// The returned collection normally is readonly.
+		/// </summary>
+		IList<OpenedFile> Files { get; }
+		
+		/// <summary>
+		/// Gets the primary file being edited. Might return null if no file is edited.
+		/// </summary>
+		OpenedFile PrimaryFile { get; }
+		
+		/// <summary>
+		/// Gets the name of the primary file being edited. Might return null if no file is edited.
+		/// </summary>
+		string PrimaryFileName { get; }
+		
+		/// <summary>
+		/// Builds an <see cref="INavigationPoint"/> for the current position.
+		/// </summary>
+		INavigationPoint BuildNavPoint();
+		
+		event EventHandler ViewActivated;
+		
+		bool IsDisposed { get; }
+		
+		event EventHandler Disposed;
+		
+		/// <summary>
+		/// Gets if the view content is read-only (can be saved only when choosing another file name).
+		/// </summary>
+		bool IsReadOnly { get; }
+		
+		/// <summary>
+		/// Gets if the view content is view-only (cannot be saved at all).
+		/// </summary>
+		bool IsViewOnly { get; }
+		
+		#region Secondary view content support
+		/// <summary>
+		/// Gets the collection that stores the secondary view contents.
+		/// </summary>
+		ICollection<IViewContent> SecondaryViewContents { get; }
+		
+		
+		/// <summary>
+		/// Gets switching without a Save/Load cycle for <paramref name="file"/> is supported
+		/// when switching from this view content to <paramref name="newView"/>.
+		/// </summary>
+		bool SupportsSwitchFromThisWithoutSaveLoad(OpenedFile file, IViewContent newView);
+		
+		/// <summary>
+		/// Gets switching without a Save/Load cycle for <paramref name="file"/> is supported
+		/// when switching from <paramref name="oldView"/> to this view content.
+		/// </summary>
+		bool SupportsSwitchToThisWithoutSaveLoad(OpenedFile file, IViewContent oldView);
+		
+		/// <summary>
+		/// Executes an action before switching from this view content to the new view content.
+		/// </summary>
+		void SwitchFromThisWithoutSaveLoad(OpenedFile file, IViewContent newView);
+		
+		/// <summary>
+		/// Executes an action before switching from the old view content to this view content.
+		/// </summary>
+		void SwitchToThisWithoutSaveLoad(OpenedFile file, IViewContent oldView);
+		#endregion
 	}
 }

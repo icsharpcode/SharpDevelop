@@ -16,6 +16,7 @@ using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 using ICSharpCode.SharpDevelop.Project;
 
+
 namespace ICSharpCode.SharpDevelop.Gui
 {
 	/// <summary>
@@ -362,7 +363,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				FileLineReference lineReference = OutputTextLineParser.GetFileLineReference(textLine);
 				if (lineReference != null) {
 					// Open matching file.
-					FileService.JumpToFilePosition(Path.GetFullPath(lineReference.FileName), lineReference.Line, lineReference.Column);
+					FileService.JumpToFilePosition(lineReference.FileName, lineReference.Line, lineReference.Column);
 				}
 			}
 		}

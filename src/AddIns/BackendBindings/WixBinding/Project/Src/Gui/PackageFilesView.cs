@@ -24,7 +24,7 @@ namespace ICSharpCode.WixBinding
 	/// <summary>
 	/// Displays the setup package files.
 	/// </summary>
-	public class PackageFilesView : AbstractViewContent, ITextFileReader, IWixDocumentWriter
+	public class PackageFilesView : AbstractViewContentWithoutFile, ITextFileReader, IWixDocumentWriter
 	{
 		WixPackageFilesControl packageFilesControl;
 		WorkbenchTextFileReader textFileReader = new WorkbenchTextFileReader();
@@ -40,10 +40,9 @@ namespace ICSharpCode.WixBinding
 		PackageFilesView(WixProject project)
 		{
 			packageFilesControl = new WixPackageFilesControl();
-			packageFilesControl.DirtyChanged += PackageFilesControlDirtyChanged;
+			packageFilesControl.DirtyChanged += delegate { base.RaiseIsDirtyChanged(); };
 			TitleName = StringParser.Parse("${res:ICSharpCode.WixBinding.PackageFilesView.Title}");
 			this.project = project;
-			FileName = "Dummy.filename";
 			
 			WorkbenchSingleton.Workbench.ActiveWorkbenchWindowChanged += ActiveWorkbenchWindowChanged;
 		}
@@ -66,6 +65,10 @@ namespace ICSharpCode.WixBinding
 			}
 		}
 		
+		public override void Load()
+		{
+		}
+		
 		public override void Save()
 		{
 			packageFilesControl.Save();
@@ -74,9 +77,6 @@ namespace ICSharpCode.WixBinding
 		public override bool IsDirty {
 			get {
 				return packageFilesControl.IsDirty;
-			}
-			set {
-				packageFilesControl.IsDirty = value;
 			}
 		}
 		
@@ -102,6 +102,7 @@ namespace ICSharpCode.WixBinding
 				packageFilesControl.Dispose();
 				packageFilesControl = null;
 			}
+			base.Dispose();
 		}
 		
 		public TextReader Create(string fileName)
@@ -115,7 +116,7 @@ namespace ICSharpCode.WixBinding
 				ITextEditorProperties properties = new SharpDevelopTextEditorProperties();
 				document.Save(properties.LineTerminator, properties.ConvertTabsToSpaces, properties.TabIndent);
 			}
-			IsDirty = false;
+			packageFilesControl.IsDirty = false;
 		}
 		
 		/// <summary>
@@ -141,7 +142,7 @@ namespace ICSharpCode.WixBinding
 		{
 			packageFilesControl.AddFiles();
 		}
-	
+		
 		public void ShowFiles()
 		{
 			packageFilesControl.ShowFiles(project, this, this);
@@ -181,19 +182,11 @@ namespace ICSharpCode.WixBinding
 			return null;
 		}
 		
-		void PackageFilesControlDirtyChanged(object source, EventArgs e)
-		{
-			base.IsDirty = packageFilesControl.IsDirty;
-		}
-		
 		TextAreaControl GetTextAreaControl(string fileName)
 		{
-			IWorkbenchWindow openWindow = FileService.GetOpenFile(fileName);
-			if (openWindow != null) {
-				ITextEditorControlProvider textEditorControlProvider = openWindow.ViewContent as ITextEditorControlProvider;
-				if (textEditorControlProvider != null) {
-					return textEditorControlProvider.TextEditorControl.ActiveTextAreaControl;
-				}
+			ITextEditorControlProvider textEditorControlProvider = FileService.GetOpenFile(fileName) as ITextEditorControlProvider;
+			if (textEditorControlProvider != null) {
+				return textEditorControlProvider.TextEditorControl.ActiveTextAreaControl;
 			}
 			return null;
 		}
@@ -218,7 +211,7 @@ namespace ICSharpCode.WixBinding
 		
 		/// <summary>
 		/// When the user switches away from the package files view to the corresponding
-		/// Wix document then we update the document's contents. When the user switches 
+		/// Wix document then we update the document's contents. When the user switches
 		/// back we reload the view if the corresponding Wix document is open.
 		/// </summary>
 		void ActiveWorkbenchWindowChanged(object source, EventArgs e)
@@ -226,9 +219,9 @@ namespace ICSharpCode.WixBinding
 			if (IsWixDocumentWindowActive) {
 				if (IsDirty) {
 					// Set IsDirty to false first since we get another workbench window
-					// changed event whilst updating the open file. The 
+					// changed event whilst updating the open file. The
 					// DefaultDocument.Replace method triggers this.
-					IsDirty = false;
+					packageFilesControl.IsDirty= false;
 					UpdateOpenFile(packageFilesControl.Document);
 				}
 				reload = true;
@@ -247,13 +240,13 @@ namespace ICSharpCode.WixBinding
 				if (document != null) {
 					IViewContent view = WorkbenchSingleton.Workbench.ActiveContent as IViewContent;
 					if (view != null) {
-						return FileUtility.IsEqualFileName(view.FileName, document.FileName);
+						return FileUtility.IsEqualFileName(view.PrimaryFileName, document.FileName);
 					}
 				}
 				return false;
 			}
 		}
-			
+		
 		/// <summary>
 		/// Checks whether the active window is this window.
 		/// </summary>
@@ -261,7 +254,7 @@ namespace ICSharpCode.WixBinding
 			get {
 				return Object.ReferenceEquals(WorkbenchSingleton.Workbench.ActiveContent, this);
 			}
-		}	
+		}
 		
 		bool UpdateOpenFileWithRootDirectoryChanges(WixDocument wixDocument, TextAreaControl textAreaControl)
 		{
@@ -303,7 +296,7 @@ namespace ICSharpCode.WixBinding
 		/// </summary>
 		string GetWixXml(XmlElement element)
 		{
-			ITextEditorProperties properties = new SharpDevelopTextEditorProperties();				
+			ITextEditorProperties properties = new SharpDevelopTextEditorProperties();
 			return WixDocument.GetXml(element, properties.LineTerminator, properties.ConvertTabsToSpaces, properties.TabIndent);
 		}
 		
@@ -323,7 +316,7 @@ namespace ICSharpCode.WixBinding
 			if (!region.IsEmpty) {
 				documentEditor.Replace(region, xml);
 				return true;
-			} 
+			}
 			return false;
 		}
 	}

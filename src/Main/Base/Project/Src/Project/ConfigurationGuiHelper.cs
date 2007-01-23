@@ -149,14 +149,14 @@ namespace ICSharpCode.SharpDevelop.Project
 			set {
 				if (dirty != value) {
 					dirty = value;
-					if (DirtyChanged != null) {
-						DirtyChanged(this, EventArgs.Empty);
+					if (IsDirtyChanged != null) {
+						IsDirtyChanged(this, EventArgs.Empty);
 					}
 				}
 			}
 		}
 		
-		public event EventHandler DirtyChanged;
+		public event EventHandler IsDirtyChanged;
 		
 		string configuration;
 		

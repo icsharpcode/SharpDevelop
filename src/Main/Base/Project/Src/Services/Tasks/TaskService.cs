@@ -109,7 +109,7 @@ namespace ICSharpCode.SharpDevelop
 				Task curTask = tasks[i];
 				if (FileUtility.IsEqualFileName(curTask.FileName, e.SourceFile)) {
 					Remove(curTask);
-					curTask.FileName = Path.GetFullPath(e.TargetFile);
+					curTask.FileName = FileUtility.NormalizePath(e.TargetFile);
 					Add(curTask);
 					--i;
 				}

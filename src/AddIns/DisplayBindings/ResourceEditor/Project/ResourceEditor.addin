@@ -23,7 +23,7 @@
 		                class = "ResourceEditor.ResourceEditorDisplayBinding"
 		                insertbefore    = "Text"
 		                fileNamePattern = "\.res(x|ources)$"
-		                languagePattern = "^ResourceFiles$"/>
+		                title = "Resource editor"/>
 	</Path>
 	
 	<Path name="/SharpDevelop/ResourceEditor/ResourceList/ContextMenu">

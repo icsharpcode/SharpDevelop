@@ -22,7 +22,7 @@ namespace ICSharpCode.SharpDevelop.Project
 	/// When you implement IProject, you should also implement IProjectItemListProvider and IProjectAllowChangeConfigurations
 	/// </summary>
 	public interface IProject
-		: ISolutionFolder, IDisposable, IMementoCapable, ICanBeDirty
+		: ISolutionFolder, IDisposable, IMementoCapable
 	{
 		/// <summary>
 		/// Gets the list of items in the project. This member is thread-safe.

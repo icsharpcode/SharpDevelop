@@ -47,8 +47,8 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 		}
 		
 		public override string Name {
-			get { return null; }
-			set { throw new NotImplementedException(); }
+			get { return (string)this.Properties["Name"].ValueOnInstance; }
+			set { this.Properties["Name"].SetValue(value); }
 		}
 		
 		#if EventHandlerDebugging
@@ -63,11 +63,13 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 				#if EventHandlerDebugging
 				Debug.WriteLine("Add event handler to " + this.Component.GetType().Name + " (handler count=" + (++totalEventHandlerCount) + ")");
 				#endif
+				this.Properties["Name"].ValueChanged += value;
 			}
 			remove {
 				#if EventHandlerDebugging
 				Debug.WriteLine("Remove event handler from " + this.Component.GetType().Name + " (handler count=" + (--totalEventHandlerCount) + ")");
 				#endif
+				this.Properties["Name"].ValueChanged -= value;
 			}
 		}
 		
@@ -110,6 +112,11 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 		
 		public override DesignItemPropertyCollection Properties {
 			get { return _properties; }
+		}
+		
+		internal void NotifyPropertyChanged(string propertyName)
+		{
+			OnPropertyChanged(new System.ComponentModel.PropertyChangedEventArgs(propertyName));
 		}
 	}
 }

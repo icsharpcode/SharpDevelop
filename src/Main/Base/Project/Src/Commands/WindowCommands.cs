@@ -18,8 +18,8 @@ namespace ICSharpCode.SharpDevelop.Commands
 			if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow == null) {
 				return;
 			}
-			int index = WorkbenchSingleton.Workbench.ViewContentCollection.IndexOf(WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent);
-			WorkbenchSingleton.Workbench.ViewContentCollection[(index + 1) % WorkbenchSingleton.Workbench.ViewContentCollection.Count].WorkbenchWindow.SelectWindow();
+			int index = WorkbenchSingleton.Workbench.WorkbenchWindowCollection.IndexOf(WorkbenchSingleton.Workbench.ActiveWorkbenchWindow);
+			WorkbenchSingleton.Workbench.WorkbenchWindowCollection[(index + 1) % WorkbenchSingleton.Workbench.WorkbenchWindowCollection.Count].SelectWindow();
 		}
 	}
 	
@@ -30,8 +30,8 @@ namespace ICSharpCode.SharpDevelop.Commands
 			if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow == null) {
 				return;
 			}
-			int index = WorkbenchSingleton.Workbench.ViewContentCollection.IndexOf(WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent);
-			WorkbenchSingleton.Workbench.ViewContentCollection[(index + WorkbenchSingleton.Workbench.ViewContentCollection.Count - 1) % WorkbenchSingleton.Workbench.ViewContentCollection.Count].WorkbenchWindow.SelectWindow();
+			int index = WorkbenchSingleton.Workbench.WorkbenchWindowCollection.IndexOf(WorkbenchSingleton.Workbench.ActiveWorkbenchWindow);
+			WorkbenchSingleton.Workbench.WorkbenchWindowCollection[(index + WorkbenchSingleton.Workbench.WorkbenchWindowCollection.Count - 1) % WorkbenchSingleton.Workbench.WorkbenchWindowCollection.Count].SelectWindow();
 		}
 	}
 	

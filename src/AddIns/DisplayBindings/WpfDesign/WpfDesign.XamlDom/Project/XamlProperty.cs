@@ -100,8 +100,9 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		public XamlPropertyValue PropertyValue {
 			get { return propertyValue; }
 			set {
-				if (IsCollection)
-					throw new InvalidOperationException();
+				if (IsCollection) {
+					throw new InvalidOperationException("Cannot set the value of collection properties.");
+				}
 				
 				bool wasSet = this.IsSet;
 				

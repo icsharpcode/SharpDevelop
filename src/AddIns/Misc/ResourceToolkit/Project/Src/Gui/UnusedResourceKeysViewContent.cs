@@ -56,9 +56,10 @@ namespace Hornung.ResourceToolkit.Gui
 		/// </summary>
 		/// <param name="unusedKeys">A collection of <see cref="ResourceItem"/> classes that represent the unused resource keys to display.</param>
 		public UnusedResourceKeysViewContent(ICollection<ResourceItem> unusedKeys)
-			: base(StringParser.Parse("${res:Hornung.ResourceToolkit.UnusedResourceKeys.Title}"))
 		{
 			LoggingService.Debug("ResourceToolkit: Creating new UnusedResourceKeysViewContent");
+			
+			this.TitleName = StringParser.Parse("${res:Hornung.ResourceToolkit.UnusedResourceKeys.Title}");
 			
 			if (unusedKeys == null) {
 				throw new ArgumentNullException("unusedKeys");

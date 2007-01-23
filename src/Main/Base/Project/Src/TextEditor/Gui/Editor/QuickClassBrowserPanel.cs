@@ -268,7 +268,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		{
 			// Still needed ?
 			if (currentCompilationUnit == null) {
-				currentCompilationUnit = (ICompilationUnit)ParserService.GetParseInformation(Path.GetFullPath(textAreaControl.FileName)).MostRecentCompilationUnit;
+				currentCompilationUnit = (ICompilationUnit)ParserService.GetParseInformation(FileUtility.NormalizePath(textAreaControl.FileName)).MostRecentCompilationUnit;
 			}
 			
 			autoselect = false;

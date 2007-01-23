@@ -70,7 +70,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		
 		void FindKeys(string directory)
 		{
-			directory = Path.GetFullPath(directory);
+			directory = FileUtility.NormalizePath(directory);
 			while (true) {
 				try {
 					foreach (string fileName in Directory.GetFiles(directory, "*.snk")) {

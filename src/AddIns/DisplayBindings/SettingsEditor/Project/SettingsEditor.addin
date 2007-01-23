@@ -12,7 +12,7 @@
 		                insertbefore = "Text"
 		                class = "ICSharpCode.SettingsEditor.SettingsDisplayBinding"
 		                fileNamePattern = "\.settings$"
-		                languagePattern = "^SettingsFiles$"/>
+		                title = "Settings editor"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/CustomTools">

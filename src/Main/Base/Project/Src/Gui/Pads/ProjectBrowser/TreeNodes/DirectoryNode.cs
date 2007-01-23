@@ -614,11 +614,11 @@ namespace ICSharpCode.SharpDevelop.Project
 				return;
 			AddExistingItemsToProject.CopyDirectory(directoryName, this, true);
 			if (performMove) {
-				foreach (IViewContent content in WorkbenchSingleton.Workbench.ViewContentCollection) {
-					if (content.FileName != null &&
-					    FileUtility.IsBaseDirectory(directoryName, content.FileName))
+				foreach (OpenedFile file in FileService.OpenedFiles) {
+					if (file.FileName != null &&
+					    FileUtility.IsBaseDirectory(directoryName, file.FileName))
 					{
-						content.FileName = FileUtility.RenameBaseDirectory(content.FileName, directoryName, Path.Combine(this.directory, Path.GetFileName(directoryName)));
+						file.FileName = FileUtility.RenameBaseDirectory(file.FileName, directoryName, Path.Combine(this.directory, Path.GetFileName(directoryName)));
 					}
 				}
 				FileService.RemoveFile(directoryName, true);
@@ -673,12 +673,11 @@ namespace ICSharpCode.SharpDevelop.Project
 					RecreateSubNodes();
 			}
 			if (performMove) {
-				foreach (IViewContent content in WorkbenchSingleton.Workbench.ViewContentCollection) {
-					if (content.FileName != null &&
-					    FileUtility.IsEqualFileName(content.FileName, fileName))
+				foreach (OpenedFile file in FileService.OpenedFiles) {
+					if (file.FileName != null &&
+					    FileUtility.IsEqualFileName(file.FileName, fileName))
 					{
-						content.FileName  = copiedFileName;
-						content.TitleName = shortFileName;
+						file.FileName  = copiedFileName;
 					}
 				}
 				FileService.RemoveFile(fileName, false);

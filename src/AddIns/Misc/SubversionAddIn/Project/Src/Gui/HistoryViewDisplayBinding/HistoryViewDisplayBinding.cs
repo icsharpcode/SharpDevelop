@@ -25,9 +25,9 @@ namespace ICSharpCode.Svn
 			}
 		}
 		
-		public ICSharpCode.SharpDevelop.Gui.ISecondaryViewContent[] CreateSecondaryViewContent(ICSharpCode.SharpDevelop.Gui.IViewContent viewContent)
+		public ICSharpCode.SharpDevelop.Gui.IViewContent[] CreateSecondaryViewContent(ICSharpCode.SharpDevelop.Gui.IViewContent viewContent)
 		{
-			return new ICSharpCode.SharpDevelop.Gui.ISecondaryViewContent[] { new HistoryView(viewContent) };
+			return new ICSharpCode.SharpDevelop.Gui.IViewContent[] { new HistoryView(viewContent) };
 		}
 		
 		private static class SvnHelper {
@@ -65,11 +65,12 @@ namespace ICSharpCode.Svn
 			if (!AddInOptions.UseHistoryDisplayBinding) {
 				return false;
 			}
-			if (content.IsUntitled || content.FileName == null || !File.Exists(content.FileName)) {
+			OpenedFile file = content.PrimaryFile;
+			if (file == null || file.IsUntitled || !File.Exists(file.FileName)) {
 				return false;
 			}
-			if (Commands.RegisterEventsCommand.CanBeVersionControlledFile(content.FileName)) {
-				return SvnHelper.IsVersionControlled(content.FileName);
+			if (Commands.RegisterEventsCommand.CanBeVersionControlledFile(file.FileName)) {
+				return SvnHelper.IsVersionControlled(file.FileName);
 			} else {
 				return false;
 			}

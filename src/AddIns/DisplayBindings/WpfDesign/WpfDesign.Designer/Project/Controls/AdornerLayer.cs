@@ -5,6 +5,8 @@
 //     <version>$Revision$</version>
 // </file>
 
+//#define DEBUG_ADORNERLAYER
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -107,8 +109,10 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 		void OnLayoutUpdated(object sender, EventArgs e)
 		{
 			UpdateAllAdorners(false);
-//			Debug.WriteLine("Adorner LayoutUpdated. AdornedElements=" + _dict.Count +
-//			                ", visible adorners=" + VisualChildrenCount + ", total adorners=" + (_totalAdornerCount));
+			#if DEBUG_ADORNERLAYER
+			Debug.WriteLine("Adorner LayoutUpdated. AdornedElements=" + _dict.Count +
+			                ", visible adorners=" + VisualChildrenCount + ", total adorners=" + (_totalAdornerCount));
+			#endif
 		}
 		
 		protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo)
@@ -127,6 +131,7 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 		{
 			internal readonly List<AdornerPanel> adorners = new List<AdornerPanel>();
 			internal bool isVisible;
+			internal Rect position;
 		}
 		
 		// adorned element => AdornerInfo
@@ -251,6 +256,12 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 			}
 		}
 		
+		Rect GetPositionCache(UIElement element)
+		{
+			Transform t = (Transform)element.TransformToAncestor(_designPanel);
+			return new Rect(new Point(t.Value.OffsetX, t.Value.OffsetY), element.RenderSize);
+		}
+		
 		void UpdateAdornersForElement(UIElement element, AdornerInfo info, bool forceInvalidate)
 		{
 			if (element.IsDescendantOf(_designPanel)) {
@@ -259,10 +270,13 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 					// make adorners visible:
 					info.adorners.ForEach(AddAdornerToChildren);
 				}
-				if (forceInvalidate) {
+				Rect c = GetPositionCache(element);
+				if (forceInvalidate || !info.position.Equals(c)) {
+					info.position = c;
 					foreach (AdornerPanel p in info.adorners) {
 						p.InvalidateMeasure();
 					}
+					this.InvalidateArrange();
 				}
 			} else {
 				if (info.isVisible) {

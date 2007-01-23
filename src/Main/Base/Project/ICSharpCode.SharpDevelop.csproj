@@ -54,6 +54,13 @@
     <Reference Include="Microsoft.Build.Engine" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Src\Gui\AbstractSecondaryViewContent.cs" />
+    <Compile Include="Src\Gui\AbstractViewContentWithoutFile.cs" />
+    <Compile Include="Src\Gui\BrowserDisplayBinding\BrowserDisplayBinding.cs" />
+    <Compile Include="Src\Gui\Dialogs\OpenWithDialog.cs" />
+    <Compile Include="Src\Gui\Dialogs\OpenWithDialog.Designer.cs">
+      <DependentUpon>OpenWithDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="Src\Gui\Dialogs\SolutionConfiguration\AddNewConfigurationDialog.cs" />
     <Compile Include="Src\Gui\Dialogs\SolutionConfiguration\AddNewConfigurationDialog.Designer.cs">
       <DependentUpon>AddNewConfigurationDialog.cs</DependentUpon>
@@ -72,6 +79,8 @@
     <Compile Include="Src\Project\ProjectPropertyChangedEventArgs.cs" />
     <Compile Include="Src\Services\Debugger\BreakpointBookmark.cs" />
     <Compile Include="Src\Services\Debugger\BreakpointBookmarkEventArgs.cs" />
+    <Compile Include="Src\Services\DisplayBinding\ISecondaryDisplayBinding.cs" />
+    <Compile Include="Src\Services\File\OpenedFile.cs" />
     <Compile Include="Src\Services\File\RecentOpen.cs" />
     <Compile Include="Src\Services\Language\LanguageService.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\WindowActiveEvaluator.cs" />
@@ -130,7 +139,6 @@
     <Compile Include="Src\Gui\Pads\ProjectBrowser\Commands\FolderNodeCommands.cs" />
     <Compile Include="Src\Gui\Pads\ProjectBrowser\Commands\ProjectNodeCommands.cs" />
     <Compile Include="Src\Gui\Pads\ProjectBrowser\Commands\ReferenceFolderNodeCommands.cs" />
-    <Compile Include="Src\Gui\BrowserDisplayBinding\BrowserDisplayBinding.cs" />
     <Compile Include="Src\Gui\BrowserDisplayBinding\HtmlViewPane.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -233,17 +241,11 @@
     <Compile Include="Src\Services\ClassBrowserIcons\ClassBrowserIconService.cs" />
     <Compile Include="Src\Services\StatusBar\StatusBarService.cs" />
     <Compile Include="Src\Gui\Pads\PropertyPad\PropertyPadCommands.cs" />
-    <Compile Include="Src\Gui\ContentInterfaces\IParsableContent.cs" />
     <Compile Include="Src\Gui\ContentInterfaces\ICustomizedCommands.cs" />
     <Compile Include="Src\Commands\VBConverter\ConvertBuffer.cs" />
     <Compile Include="Src\Gui\Components\LocalizedPropertyGrid\LocalizedObject.cs" />
     <Compile Include="Src\Gui\Components\LocalizedPropertyGrid\LocalizedPropertyDescriptor.cs" />
     <Compile Include="Src\Gui\Components\LocalizedPropertyGrid\LocalizedPropertyAttribute.cs" />
-    <Compile Include="Src\Gui\IBaseViewContent.cs" />
-    <Compile Include="Src\Services\DisplayBinding\ISubDisplayBinding.cs" />
-    <Compile Include="Src\Gui\ISecondaryViewContent.cs" />
-    <Compile Include="Src\Gui\AbstractSecondaryViewContent.cs" />
-    <Compile Include="Src\Gui\AbstractBaseViewContent.cs" />
     <Compile Include="Src\Gui\XmlForms\BaseSharpDevelopUserControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -277,8 +279,6 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Src\Internal\ConditionEvaluators\ActiveContentExtensionEvaluator.cs" />
-    <Compile Include="Src\Gui\ContentInterfaces\IViewContentMemento.cs" />
-    <Compile Include="Src\Commands\ChooseConfigurationCommand.cs" />
     <Compile Include="Src\Gui\Workbench\ViewContentEventHandler.cs" />
     <Compile Include="Src\Services\Debugger\IDebugger.cs" />
     <Compile Include="Src\Services\Debugger\DefaultDebugger.cs" />
@@ -688,6 +688,9 @@
     <Compile Include="Src\TextEditor\Gui\Editor\IncrementalSearch.cs" />
     <EmbeddedResource Include="Resources\IncrementalSearchCursor.cur" />
     <EmbeddedResource Include="Resources\ReverseIncrementalSearchCursor.cur" />
+    <EmbeddedResource Include="Src\Gui\Dialogs\OpenWithDialog.resx">
+      <DependentUpon>OpenWithDialog.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Src\TextEditor\SearchAndReplace\Gui\AsynchronousWaitDialog.resx">
       <DependentUpon>AsynchronousWaitDialog.cs</DependentUpon>
     </EmbeddedResource>

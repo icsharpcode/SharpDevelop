@@ -15,6 +15,7 @@ using System.Xml;
 using System.Text;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SettingsEditor
@@ -25,13 +26,13 @@ namespace ICSharpCode.SettingsEditor
 		PropertyContainer propertyContainer = new PropertyContainer();
 		SettingsDocument setDoc = new SettingsDocument();
 		
-		public SettingsViewContent()
+		public SettingsViewContent(OpenedFile file) : base(file)
 		{
 			view.SelectionChanged += delegate {
 				propertyContainer.SelectedObjects = view.GetSelectedEntriesForPropertyGrid().ToArray();
 			};
 			view.SettingsChanged += delegate {
-				IsDirty = true;
+				this.PrimaryFile.MakeDirty();
 			};
 		}
 		
@@ -41,21 +42,19 @@ namespace ICSharpCode.SettingsEditor
 			}
 		}
 		
-		public override void Load(string filename)
+		public override void Load(OpenedFile file, Stream stream)
 		{
-			TitleName = Path.GetFileName(filename);
-			FileName = filename;
-			
-			try {
-				XmlDocument doc = new XmlDocument();
-				doc.Load(filename);
-				
-				setDoc = new SettingsDocument(doc.DocumentElement, view);
-				view.ShowEntries(setDoc.Entries);
-			} catch (XmlException ex) {
-				ShowLoadError(ex.Message);
+			if (file == PrimaryFile) {
+				try {
+					XmlDocument doc = new XmlDocument();
+					doc.Load(stream);
+					
+					setDoc = new SettingsDocument(doc.DocumentElement, view);
+					view.ShowEntries(setDoc.Entries);
+				} catch (XmlException ex) {
+					ShowLoadError(ex.Message);
+				}
 			}
-			IsDirty = false;
 		}
 		
 		void ShowLoadError(string message)
@@ -66,21 +65,21 @@ namespace ICSharpCode.SettingsEditor
 			}
 		}
 		
-		
-		public override void Save(string fileName)
+		public override void Save(OpenedFile file, Stream stream)
 		{
-			using (XmlTextWriter writer = new XmlTextWriter(fileName, Encoding.UTF8)) {
-				writer.Formatting = Formatting.Indented;
-				writer.WriteStartDocument();
-				
-				setDoc.Entries.Clear();
-				setDoc.Entries.AddRange(view.GetAllEntries());
-				
-				setDoc.Save(writer);
-				
-				writer.WriteEndDocument();
+			if (file == PrimaryFile) {
+				using (XmlTextWriter writer = new XmlTextWriter(stream, Encoding.UTF8)) {
+					writer.Formatting = Formatting.Indented;
+					writer.WriteStartDocument();
+					
+					setDoc.Entries.Clear();
+					setDoc.Entries.AddRange(view.GetAllEntries());
+					
+					setDoc.Save(writer);
+					
+					writer.WriteEndDocument();
+				}
 			}
-			IsDirty = false;
 		}
 		
 		public PropertyContainer PropertyContainer {

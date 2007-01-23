@@ -25,12 +25,12 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 	{
 		public override void Run()
 		{
-			IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
+			IViewContent viewContent = WorkbenchSingleton.Workbench.ActiveViewContent;
 			
-			if (window == null || !(window.ViewContent is ITextEditorControlProvider)) {
+			if (viewContent == null || !(viewContent is ITextEditorControlProvider)) {
 				return;
 			}
-			TextEditorControl textarea = ((ITextEditorControlProvider)window.ViewContent).TextEditorControl;
+			TextEditorControl textarea = ((ITextEditorControlProvider)viewContent).TextEditorControl;
 			
 			using (SharpDevelopColorDialog cd = new SharpDevelopColorDialog()) {
 				if (cd.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) == DialogResult.OK) {
@@ -68,12 +68,12 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 	{
 		public override void Run()
 		{
-			IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
+			IViewContent viewContent = WorkbenchSingleton.Workbench.ActiveViewContent;
 
-			if (window == null || !(window.ViewContent is ITextEditorControlProvider)) {
+			if (viewContent == null || !(viewContent is ITextEditorControlProvider)) {
 				return;
 			}
-			TextEditorControl textAreaControl = ((ITextEditorControlProvider)window.ViewContent).TextEditorControl;
+			TextEditorControl textAreaControl = ((ITextEditorControlProvider)viewContent).TextEditorControl;
 
 			int startLine = textAreaControl.Document.GetLineNumberForOffset(textAreaControl.ActiveTextAreaControl.Caret.Offset);
 			int endLine   = startLine;
@@ -195,12 +195,12 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 	{
 		public override void Run()
 		{
-			IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
+			IViewContent viewContent = WorkbenchSingleton.Workbench.ActiveViewContent;
 			
-			if (window == null || !(window.ViewContent is ITextEditorControlProvider)) {
+			if (viewContent == null || !(viewContent is ITextEditorControlProvider)) {
 				return;
 			}
-			TextEditorControl textEditorControl = ((ITextEditorControlProvider)window.ViewContent).TextEditorControl;
+			TextEditorControl textEditorControl = ((ITextEditorControlProvider)viewContent).TextEditorControl;
 			if (textEditorControl != null) {
 				textEditorControl.Split();
 			}
@@ -211,12 +211,12 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 	{
 		public override void Run()
 		{
-			IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
-			if (window == null || !(window.ViewContent is ITextEditorControlProvider)) {
+			IViewContent viewContent = WorkbenchSingleton.Workbench.ActiveViewContent;
+			if (viewContent == null || !(viewContent is ITextEditorControlProvider)) {
 				return;
 			}
 			
-			TextEditorControl textEditor = ((ITextEditorControlProvider)window.ViewContent).TextEditorControl;
+			TextEditorControl textEditor = ((ITextEditorControlProvider)viewContent).TextEditorControl;
 			if (textEditor == null) {
 				return;
 			}

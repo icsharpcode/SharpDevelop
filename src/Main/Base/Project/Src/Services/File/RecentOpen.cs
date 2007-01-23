@@ -153,7 +153,7 @@ namespace ICSharpCode.SharpDevelop
 			return p;
 		}
 		
-		public void FileRemoved(object sender, FileEventArgs e)
+		internal void FileRemoved(object sender, FileEventArgs e)
 		{
 			for (int i = 0; i < lastfile.Count; ++i) {
 				string file = lastfile[i].ToString();
@@ -165,7 +165,7 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
-		public void FileRenamed(object sender, FileRenameEventArgs e)
+		internal void FileRenamed(object sender, FileRenameEventArgs e)
 		{
 			for (int i = 0; i < lastfile.Count; ++i) {
 				string file = lastfile[i].ToString();

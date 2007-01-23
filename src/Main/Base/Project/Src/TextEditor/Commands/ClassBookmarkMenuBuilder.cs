@@ -123,8 +123,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			string newCode = ExtractCode(c, fullRegion, c.BodyRegion.BeginLine);
 			
 			newCode = language.RefactoringProvider.CreateNewFileLikeExisting(existingCode, newCode);
-			IWorkbenchWindow window = FileService.NewFile(newFileName, "Text", newCode);
-			window.ViewContent.Save(newFileName);
+			IViewContent viewContent = FileService.NewFile(newFileName, newCode);
+			viewContent.PrimaryFile.SaveToDisk(newFileName);
 			
 			IProject project = (IProject)c.ProjectContent.Project;
 			if (project != null) {
@@ -226,9 +226,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 		
 		static ICSharpCode.TextEditor.Document.IDocument GetDocument(IClass c)
 		{
-			IWorkbenchWindow win = FileService.OpenFile(c.CompilationUnit.FileName);
-			if (win == null) return null;
-			ITextEditorControlProvider tecp = win.ViewContent as ITextEditorControlProvider;
+			ITextEditorControlProvider tecp = FileService.OpenFile(c.CompilationUnit.FileName) as ITextEditorControlProvider;
 			if (tecp == null) return null;
 			return tecp.TextEditorControl.Document;
 		}

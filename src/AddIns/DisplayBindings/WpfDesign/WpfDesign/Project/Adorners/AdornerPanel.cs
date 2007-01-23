@@ -79,6 +79,11 @@ namespace ICSharpCode.WpfDesign.Adorners
 		{
 			if (adornedElement == null)
 				throw new ArgumentNullException("adornedElement");
+			
+			if (_adornedElement == adornedElement && _adornedDesignItem == adornedDesignItem) {
+				return; // ignore calls when nothing was changed
+			}
+			
 			if (_adornedElement != null)
 				throw new InvalidOperationException("AdornedElement is already set.");
 			

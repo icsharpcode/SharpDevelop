@@ -31,9 +31,9 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			set { helper.IsDirty = value; }
 		}
 		
-		public event EventHandler DirtyChanged {
-			add    { helper.DirtyChanged += value; }
-			remove { helper.DirtyChanged -= value; }
+		public event EventHandler IsDirtyChanged {
+			add    { helper.IsDirtyChanged += value; }
+			remove { helper.IsDirtyChanged -= value; }
 		}
 		
 		public override bool StorePanelContents()

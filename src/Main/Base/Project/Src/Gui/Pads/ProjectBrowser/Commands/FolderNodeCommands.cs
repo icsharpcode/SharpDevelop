@@ -64,7 +64,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		
 		public static void CopyDirectory(string directoryName, DirectoryNode node, bool includeInProject)
 		{
-			directoryName = Path.GetFullPath(directoryName);
+			directoryName = FileUtility.NormalizePath(directoryName);
 			string copiedFileName = Path.Combine(node.Directory, Path.GetFileName(directoryName));
 			LoggingService.Debug("Copy " + directoryName + " to " + copiedFileName);
 			if (!FileUtility.IsEqualFileName(directoryName, copiedFileName)) {

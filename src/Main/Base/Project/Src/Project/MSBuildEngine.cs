@@ -498,7 +498,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					
 					// create projectToBuild entry and add it to list and dictionary
 					string projectFileName = Path.Combine(this.solution.Directory, bestTask.GetParameterValue("Projects"));
-					ProjectToBuild projectToBuild = new ProjectToBuild(Path.GetFullPath(projectFileName),
+					ProjectToBuild projectToBuild = new ProjectToBuild(FileUtility.NormalizePath(projectFileName),
 					                                                   bestTask.GetParameterValue("Targets"));
 					
 					// get project configuration and platform from properties section

@@ -8,7 +8,7 @@
 using System;
 using System.Windows.Forms;
 using ICSharpCode.Core;
-using FileChangeWatcher = ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.TextEditorDisplayBindingWrapper.FileChangeWatcher;
+using FileChangeWatcher = ICSharpCode.SharpDevelop.OpenedFile.FileChangeWatcher;
 
 namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 {

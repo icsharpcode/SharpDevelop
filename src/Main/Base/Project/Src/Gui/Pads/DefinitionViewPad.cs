@@ -108,14 +108,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			// Get currently open text editor that matches the filename.
 			TextEditorControl openTextEditor = null;
-			IWorkbenchWindow window = FileService.GetOpenFile(fileName);
-			if (window != null) {
-				ITextEditorControlProvider provider = window.ActiveViewContent as ITextEditorControlProvider;
-				if (provider != null) {
-					openTextEditor = provider.TextEditorControl;
-				}
+			ITextEditorControlProvider provider = FileService.GetOpenFile(fileName) as ITextEditorControlProvider;
+			if (provider != null) {
+				openTextEditor = provider.TextEditorControl;
 			}
-		
+			
 			// Load the text into the definition view's text editor.
 			if (openTextEditor != null) {
 				ctl.Document.HighlightingStrategy = HighlightingStrategyFactory.CreateHighlightingStrategyForFile(fileName);

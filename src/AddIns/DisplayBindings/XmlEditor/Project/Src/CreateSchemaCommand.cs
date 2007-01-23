@@ -43,7 +43,7 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		void OpenNewXmlFile(string fileName, string xml)
 		{
-			FileService.NewFile(fileName, XmlView.Language, xml);
+			FileService.NewFile(fileName, xml);
 		}
 		
 		/// <summary>

@@ -15,7 +15,7 @@ using ICSharpCode.SharpDevelop.Gui;
 namespace ICSharpCode.XmlEditor
 {
 	/// <summary>
-	/// The secondary view content that displays the XML document as a tree view. 
+	/// The secondary view content that displays the XML document as a tree view.
 	/// </summary>
 	public class XmlTreeView : AbstractSecondaryViewContent, IClipboardHandler
 	{
@@ -35,7 +35,10 @@ namespace ICSharpCode.XmlEditor
 		/// This constructor is only used to test the XmlTreeView class.
 		/// </summary>
 		public XmlTreeView(XmlView xmlView, ContextMenuStrip attributesGridContextMenuStrip, ContextMenuStrip treeViewContextMenuStrip)
+			: base(xmlView)
 		{
+			this.TabPageText = "${res:ICSharpCode.XmlEditor.XmlTreeView.Title}";
+			
 			this.xmlView = xmlView;
 			treeViewContainer.DirtyChanged += TreeViewContainerDirtyChanged;
 			treeViewContainer.AttributesGrid.ContextMenuStrip = attributesGridContextMenuStrip;
@@ -48,51 +51,36 @@ namespace ICSharpCode.XmlEditor
 			}
 		}
 		
-		public override string TabPageText {
-			get {
-				return StringParser.Parse("${res:ICSharpCode.XmlEditor.XmlTreeView.Title}");
-			}
-		}
-		
-		public override void NotifyBeforeSave()
-		{
-			Deselecting();
-		}
-		
-		public override void NotifyAfterSave(bool successful)
-		{
-			if (!successful) {
-				ignoreDirtyChange = true;
-				treeViewContainer.IsDirty = xmlView.IsDirty;
-				ignoreDirtyChange = false;
-			}
-		}
-		
 		public override void Dispose()
 		{
+			LoggingService.Debug("XmlTreeView.Dispose");
+			
 			if (!disposed) {
 				disposed = true;
 				treeViewContainer.Dispose();
 			}
+			base.Dispose();
 		}
 		
-		public override void Selected()
+		protected override void LoadFromPrimary()
 		{
+			LoggingService.Debug("XmlTreeView.LoadFromPrimary");
+			
 			XmlEditorControl xmlEditor = xmlView.XmlEditor;
 			XmlCompletionDataProvider completionDataProvider = new XmlCompletionDataProvider(xmlEditor.SchemaCompletionDataItems, xmlEditor.DefaultSchemaCompletionData, xmlEditor.DefaultNamespacePrefix);
 			treeViewContainer.LoadXml(xmlView.Text, completionDataProvider);
 			xmlView.CheckIsWellFormed();
 		}
 		
-		public override void Deselecting()
+		protected override void SaveToPrimary()
 		{
-			if (!disposed) {
-				if (treeViewContainer.IsDirty) {
-					xmlView.ReplaceAll(treeViewContainer.Document.OuterXml);
-					ignoreDirtyChange = true;
-					treeViewContainer.IsDirty = false;
-					ignoreDirtyChange = false;
-				}
+			LoggingService.Debug("XmlTreeView.SaveToPrimary");
+			
+			if (treeViewContainer.IsDirty) {
+				xmlView.ReplaceAll(treeViewContainer.Document.OuterXml);
+				ignoreDirtyChange = true;
+				treeViewContainer.IsDirty = false;
+				ignoreDirtyChange = false;
 			}
 		}
 		
@@ -187,7 +175,7 @@ namespace ICSharpCode.XmlEditor
 		void TreeViewContainerDirtyChanged(object source, EventArgs e)
 		{
 			if (!ignoreDirtyChange) {
-				xmlView.IsDirty = treeViewContainer.IsDirty;
+				this.PrimaryFile.IsDirty = treeViewContainer.IsDirty;
 			}
 		}
 	}

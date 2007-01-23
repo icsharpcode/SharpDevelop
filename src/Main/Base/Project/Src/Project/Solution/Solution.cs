@@ -194,18 +194,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		[Browsable(false)]
-		public bool IsDirty {
-			get {
-				foreach (IProject project in Projects) {
-					if (project.IsDirty) {
-						return true;
-					}
-				}
-				return false;
-			}
-		}
-		
 		SolutionPreferences preferences;
 		
 		[Browsable(false)]
@@ -477,7 +465,7 @@ namespace ICSharpCode.SharpDevelop.Project
 						string guid         = match.Result("${Guid}");
 						
 						if (!FileUtility.IsUrl(location)) {
-							location = Path.GetFullPath(Path.Combine(solutionDirectory, location));
+							location = FileUtility.NormalizePath(Path.Combine(solutionDirectory, location));
 						}
 						
 						if (projectGuid == FolderGuid) {

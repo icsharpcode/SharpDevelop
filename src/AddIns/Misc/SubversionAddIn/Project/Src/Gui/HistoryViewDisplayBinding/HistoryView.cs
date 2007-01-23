@@ -15,23 +15,23 @@ namespace ICSharpCode.Svn
 	{
 		HistoryViewPanel historyViewPanel;
 		
-		#region ICSharpCode.SharpDevelop.Gui.AbstractSecondaryViewContent abstract class implementation
 		public override Control Control {
 			get {
 				return historyViewPanel;
 			}
 		}
 		
-		public override string TabPageText {
-			get {
-				return "History"; // TODO: Translate
-			}
-		}
-		#endregion
-		
-		public HistoryView(IViewContent viewContent)
+		public HistoryView(IViewContent viewContent) : base(viewContent)
 		{
+			this.TabPageText = "${res:AddIns.Subversion.History}";
 			this.historyViewPanel = new HistoryViewPanel(viewContent);
+		}
+		
+		protected override void LoadFromPrimary()
+		{
+		}
+		protected override void SaveToPrimary()
+		{
 		}
 	}
 }

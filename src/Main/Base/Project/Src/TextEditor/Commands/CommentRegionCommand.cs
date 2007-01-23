@@ -17,13 +17,13 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 	{ 
 		public override void Run()
 		{
-			IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
+			IViewContent viewContent = WorkbenchSingleton.Workbench.ActiveViewContent;
 			
-			if (window == null || !(window.ViewContent is ITextEditorControlProvider)) {
+			if (viewContent == null || !(viewContent is ITextEditorControlProvider)) {
 				return;
 			}
 			
-			TextEditorControl textarea = ((ITextEditorControlProvider)window.ViewContent).TextEditorControl;
+			TextEditorControl textarea = ((ITextEditorControlProvider)viewContent).TextEditorControl;
 			new ICSharpCode.TextEditor.Actions.ToggleComment().Execute(textarea.ActiveTextAreaControl.TextArea);
 		}
 	}

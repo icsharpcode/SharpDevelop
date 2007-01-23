@@ -34,15 +34,13 @@ namespace AddInScout
 			control.Dispose();
 		}
 		
-		public override void Load(string filename)
-		{
-		}
-		
 		AddInDetailsPanel addInDetailsPanel = new AddInDetailsPanel();
 		CodonListPanel    codonListPanel    = new CodonListPanel();
 		
-		public AddInScoutViewContent() : base("AddIn Scout")
+		public AddInScoutViewContent() : base()
 		{
+			this.TitleName = "AddIn Scout";
+			
 			Panel p = new Panel();
 			p.Dock = DockStyle.Fill;
 			p.BorderStyle = BorderStyle.FixedSingle;

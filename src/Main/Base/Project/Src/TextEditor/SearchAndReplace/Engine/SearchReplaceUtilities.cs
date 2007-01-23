@@ -21,16 +21,16 @@ namespace SearchAndReplace
 	{
 		public static bool IsTextAreaSelected {
 			get {
-				return WorkbenchSingleton.Workbench.ActiveWorkbenchWindow != null &&
-					WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent is ITextEditorControlProvider;
+				return WorkbenchSingleton.Workbench.ActiveViewContent != null &&
+					WorkbenchSingleton.Workbench.ActiveViewContent is ITextEditorControlProvider;
 			}
 		}
 		
 		public static TextEditorControl GetActiveTextEditor()
 		{
-			IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
-			if (window != null && (window.ViewContent is ITextEditorControlProvider)) {
-				return ((ITextEditorControlProvider)window.ViewContent).TextEditorControl;
+			IViewContent content = WorkbenchSingleton.Workbench.ActiveViewContent;
+			if (content is ITextEditorControlProvider) {
+				return ((ITextEditorControlProvider)content).TextEditorControl;
 			}
 			return null;
 		}
@@ -64,7 +64,7 @@ namespace SearchAndReplace
 				case DocumentIteratorType.Directory:
 					try {
 						if (!Directory.Exists(SearchOptions.LookIn)) {
-							MessageService.ShowMessageFormatted("${res:Dialog.NewProject.SearchReplace.SearchStringNotFound.Title}", "${res:Dialog.NewProject.SearchReplace.LookIn.DirectoryNotFound}", Path.GetFullPath(SearchOptions.LookIn));
+							MessageService.ShowMessageFormatted("${res:Dialog.NewProject.SearchReplace.SearchStringNotFound.Title}", "${res:Dialog.NewProject.SearchReplace.LookIn.DirectoryNotFound}", FileUtility.NormalizePath(SearchOptions.LookIn));
 							return new DummyDocumentIterator();
 						}
 					} catch (Exception ex) {

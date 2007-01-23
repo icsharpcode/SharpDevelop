@@ -15,21 +15,22 @@ namespace ICSharpCode.SharpDevelop.Sda
 	/// </summary>
 	public sealed class Document : MarshalByRefObject
 	{
-		internal static Document FromWindow(IWorkbenchWindow window)
+		internal static Document FromWindow(IViewContent viewContent)
 		{
-			if (window != null && window.ViewContent is IEditable) {
-				return new Document(window, ((IEditable)window.ViewContent));
+			IEditable editable = viewContent as IEditable;
+			if (editable != null) {
+				return new Document(viewContent, editable);
 			} else {
 				return null;
 			}
 		}
 		
-		IWorkbenchWindow window;
+		IViewContent viewContent;
 		IEditable editable;
 		
-		private Document(IWorkbenchWindow window, IEditable editable)
+		private Document(IViewContent viewContent, IEditable editable)
 		{
-			this.window = window;
+			this.viewContent = viewContent;
 			this.editable = editable;
 		}
 		
@@ -38,7 +39,7 @@ namespace ICSharpCode.SharpDevelop.Sda
 		/// </summary>
 		public string FileName {
 			get {
-				return window.ViewContent.FileName;
+				return viewContent.PrimaryFileName;
 			}
 		}
 		
@@ -60,7 +61,7 @@ namespace ICSharpCode.SharpDevelop.Sda
 		/// </summary>
 		public bool IsDisposed {
 			get {
-				return window.IsDisposed;
+				return viewContent.IsDisposed;
 			}
 		}
 		
@@ -72,7 +73,7 @@ namespace ICSharpCode.SharpDevelop.Sda
 		/// <returns>true, if the window has been closed</returns>
 		public bool Close(bool force)
 		{
-			return window.CloseWindow(force);
+			return viewContent.WorkbenchWindow.CloseWindow(force);
 		}
 	}
 }

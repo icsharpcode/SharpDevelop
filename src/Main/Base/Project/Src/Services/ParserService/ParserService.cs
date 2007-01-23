@@ -387,15 +387,9 @@ namespace ICSharpCode.SharpDevelop
 			LoggingService.Info("ParserUpdateThread stopped");
 		}
 		
-		static object[] GetWorkbench()
+		static IViewContent GetActiveViewContent()
 		{
-			IWorkbenchWindow activeWorkbenchWindow = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
-			if (activeWorkbenchWindow == null)
-				return null;
-			IBaseViewContent activeViewContent = activeWorkbenchWindow.ActiveViewContent;
-			if (activeViewContent == null)
-				return null;
-			return new object[] { activeViewContent, activeWorkbenchWindow.ViewContent };
+			return WorkbenchSingleton.Workbench.ActiveViewContent;
 		}
 		
 		public static void ParseCurrentViewContent()
@@ -405,53 +399,40 @@ namespace ICSharpCode.SharpDevelop
 		
 		static void ParserUpdateStep()
 		{
-			object[] workbench;
+			IViewContent activeViewContent;
 			try {
-				workbench = WorkbenchSingleton.SafeThreadFunction<object[]>(GetWorkbench);
+				activeViewContent = WorkbenchSingleton.SafeThreadFunction<IViewContent>(GetActiveViewContent);
 			} catch (InvalidOperationException) { // includes ObjectDisposedException
 				// maybe workbench has been disposed while waiting for the SafeThreadCall
 				// can occur after workbench unload or after aborting SharpDevelop with
 				// Application.Exit()
-				LoggingService.Warn("InvalidOperationException while trying to invoke GetWorkbench()");
+				LoggingService.Warn("InvalidOperationException while trying to invoke GetActiveViewContent()");
 				return; // abort this thread
 			}
-			if (workbench != null) {
-				IEditable editable = workbench[0] as IEditable;
-				if (editable != null) {
-					string fileName = null;
-					
-					IViewContent viewContent = (IViewContent)workbench[1];
-					IParseableContent parseableContent = workbench[0] as IParseableContent;
-					
-					//ivoko: Pls, do not throw text = parseableContent.ParseableText away. I NEED it.
-					string text = null;
-					if (parseableContent != null) {
-						fileName = parseableContent.ParseableContentName;
-						text = parseableContent.ParseableText;
-					} else {
-						fileName = viewContent.IsUntitled ? viewContent.UntitledName : viewContent.FileName;
+			IEditable editable = activeViewContent as IEditable;
+			if (editable != null) {
+				string fileName = activeViewContent.PrimaryFileName;
+				string text = null;
+				
+				if (!(fileName == null || fileName.Length == 0)) {
+					ParseInformation parseInformation = null;
+					bool updated = false;
+					if (text == null) {
+						text = editable.Text;
+						if (text == null) return;
 					}
-					
-					if (!(fileName == null || fileName.Length == 0)) {
-						ParseInformation parseInformation = null;
-						bool updated = false;
-						if (text == null) {
-							text = editable.Text;
-							if (text == null) return;
-						}
-						int hash = text.GetHashCode();
-						if (!lastUpdateHash.ContainsKey(fileName) || lastUpdateHash[fileName] != hash) {
-							parseInformation = ParseFile(fileName, text, !viewContent.IsUntitled);
-							lastUpdateHash[fileName] = hash;
-							updated = true;
-						}
-						if (updated) {
-							if (parseInformation != null && editable is IParseInformationListener) {
-								((IParseInformationListener)editable).ParseInformationUpdated(parseInformation);
-							}
-						}
-						OnParserUpdateStepFinished(new ParserUpdateStepEventArgs(fileName, text, updated, parseInformation));
+					int hash = text.GetHashCode();
+					if (!lastUpdateHash.ContainsKey(fileName) || lastUpdateHash[fileName] != hash) {
+						parseInformation = ParseFile(fileName, text, !activeViewContent.PrimaryFile.IsUntitled);
+						lastUpdateHash[fileName] = hash;
+						updated = true;
 					}
+					if (updated) {
+						if (parseInformation != null && editable is IParseInformationListener) {
+							((IParseInformationListener)editable).ParseInformationUpdated(parseInformation);
+						}
+					}
+					OnParserUpdateStepFinished(new ParserUpdateStepEventArgs(fileName, text, updated, parseInformation));
 				}
 			}
 		}
@@ -459,8 +440,8 @@ namespace ICSharpCode.SharpDevelop
 		public static void ParseViewContent(IViewContent viewContent)
 		{
 			string text = ((IEditable)viewContent).Text;
-			ParseInformation parseInformation = ParseFile(viewContent.IsUntitled ? viewContent.UntitledName : viewContent.FileName,
-			                                              text, !viewContent.IsUntitled);
+			ParseInformation parseInformation = ParseFile(viewContent.PrimaryFileName,
+			                                              text, !viewContent.PrimaryFile.IsUntitled);
 			if (parseInformation != null && viewContent is IParseInformationListener) {
 				((IParseInformationListener)viewContent).ParseInformationUpdated(parseInformation);
 			}
@@ -541,8 +522,7 @@ namespace ICSharpCode.SharpDevelop
 			if (WorkbenchSingleton.Workbench != null) {
 				WorkbenchSingleton.Workbench.ActiveWorkbenchWindowChanged += delegate {
 					if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow != null) {
-						string file = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent.FileName
-							?? WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent.UntitledName;
+						string file = WorkbenchSingleton.Workbench.ActiveViewContent.PrimaryFileName;
 						if (file != null) {
 							IParser parser = GetParser(file);
 							if (parser != null && parser.Language != null) {
@@ -631,13 +611,10 @@ namespace ICSharpCode.SharpDevelop
 		
 		public static string GetParseableFileContent(string fileName)
 		{
-			IWorkbenchWindow window = FileService.GetOpenFile(fileName);
-			if (window != null) {
-				IViewContent viewContent = window.ViewContent;
-				IEditable editable = viewContent as IEditable;
-				if (editable != null) {
-					return editable.Text;
-				}
+			IViewContent viewContent = FileService.GetOpenFile(fileName);
+			IEditable editable = viewContent as IEditable;
+			if (editable != null) {
+				return editable.Text;
 			}
 			//string res = project.GetParseableFileContent(fileName);
 			//if (res != null)

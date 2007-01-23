@@ -253,7 +253,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (dockPanel != null) {
 				LockWindowUpdate(wbForm.Handle);
 				try {
-					IViewContent activeView = GetActiveView();
+					IWorkbenchWindow activeWindow = this.ActiveWorkbenchwindow;
 					dockPanel.ActiveDocumentChanged -= new EventHandler(ActiveMdiChanged);
 					
 					DetachPadContents(false);
@@ -263,8 +263,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 					LoadLayoutConfiguration();
 					ShowPads();
 					ShowViewContents();
-					if (activeView != null && activeView.WorkbenchWindow != null) {
-						activeView.WorkbenchWindow.SelectWindow();
+					if (activeWindow != null) {
+						activeWindow.SelectWindow();
 					}
 				} finally {
 					LockWindowUpdate(IntPtr.Zero);
@@ -312,14 +312,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void DetachViewContents(bool dispose)
 		{
-			foreach (IViewContent viewContent in WorkbenchSingleton.Workbench.ViewContentCollection) {
+			foreach (SdiWorkspaceWindow f in WorkbenchSingleton.Workbench.WorkbenchWindowCollection) {
 				try {
-					SdiWorkspaceWindow f = (SdiWorkspaceWindow)viewContent.WorkbenchWindow;
 					f.DockPanel = null;
 					if (dispose) {
-						viewContent.WorkbenchWindow = null;
-						f.CloseEvent -= new EventHandler(CloseWindowEvent);
-						f.DetachContent();
+						f.CloseEvent -= CloseWindowEvent;
 						f.Dispose();
 					}
 				} catch (Exception e) { MessageService.ShowError(e); }
@@ -562,17 +559,17 @@ namespace ICSharpCode.SharpDevelop.Gui
 			statusStripContainer.Visible = statusBarVisible;
 		}
 		
-		public void CloseWindowEvent(object sender, EventArgs e)
+		void CloseWindowEvent(object sender, EventArgs e)
 		{
 			SdiWorkspaceWindow f = (SdiWorkspaceWindow)sender;
 			f.CloseEvent -= CloseWindowEvent;
-			if (f.ViewContent != null) {
-				((IWorkbench)wbForm).CloseContent(f.ViewContent);
-				if (f == oldSelectedWindow) {
-					oldSelectedWindow = null;
-				}
-				ActiveMdiChanged(this, null);
+			foreach (IViewContent vc in f.ViewContents) {
+				((IWorkbench)wbForm).CloseContent(vc);
 			}
+			if (f == oldSelectedWindow) {
+				oldSelectedWindow = null;
+			}
+			ActiveMdiChanged(this, null);
 		}
 		
 		public IWorkbenchWindow ShowView(IViewContent content)
@@ -584,12 +581,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 					return oldSdiWindow;
 				}
 			}
-			if (!content.Control.Visible) {
-				content.Control.Visible = true;
-			}
 			content.Control.Dock = DockStyle.Fill;
-			SdiWorkspaceWindow sdiWorkspaceWindow = new SdiWorkspaceWindow(content);
-			sdiWorkspaceWindow.CloseEvent        += new EventHandler(CloseWindowEvent);
+			SdiWorkspaceWindow sdiWorkspaceWindow = new SdiWorkspaceWindow();
+			sdiWorkspaceWindow.ViewContents.Add(content);
+			Linq.Apply(content.SecondaryViewContents, sdiWorkspaceWindow.ViewContents.Add);
+			sdiWorkspaceWindow.CloseEvent += new EventHandler(CloseWindowEvent);
 			if (dockPanel != null) {
 				sdiWorkspaceWindow.Show(dockPanel);
 			}
@@ -607,20 +603,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 			OnActiveWorkbenchWindowChanged(e);
 		}
 		
-		static IViewContent GetActiveView()
-		{
-			IWorkbenchWindow activeWindow = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
-			if (activeWindow != null) {
-				return activeWindow.ViewContent;
-			}
-			return null;
-		}
-		
 		IWorkbenchWindow oldSelectedWindow = null;
 		public virtual void OnActiveWorkbenchWindowChanged(EventArgs e)
 		{
 			IWorkbenchWindow newWindow = this.ActiveWorkbenchwindow;
-			if (newWindow == null || newWindow.ViewContent != null) {
+			if (newWindow == null || newWindow.ActiveViewContent != null) {
 				if (ActiveWorkbenchWindowChanged != null) {
 					ActiveWorkbenchWindowChanged(this, e);
 				}

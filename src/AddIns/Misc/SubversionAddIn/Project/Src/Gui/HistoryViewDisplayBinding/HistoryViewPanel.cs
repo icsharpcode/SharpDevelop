@@ -78,7 +78,7 @@ namespace ICSharpCode.Svn
 		void GetLogMessages()
 		{
 			try {
-				string fileName = Path.GetFullPath(viewContent.FileName);
+				string fileName = Path.GetFullPath(viewContent.PrimaryFileName);
 				LoggingService.Info("SVN: Get log of " + fileName);
 				if (File.Exists(fileName)) {
 					Client client = SvnClient.Instance.Client;

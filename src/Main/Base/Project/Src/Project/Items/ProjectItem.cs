@@ -378,12 +378,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				string fileName = this.fileNameCache;
 				if (fileName == null) {
 					lock (SyncRoot) {
-						fileName = Path.Combine(project.Directory, this.Include);
-						try {
-							if (Path.IsPathRooted(fileName)) {
-								fileName = Path.GetFullPath(fileName);
-							}
-						} catch {}
+						fileName = FileUtility.NormalizePath(Path.Combine(project.Directory, this.Include));
 						fileNameCache = fileName;
 					}
 				}

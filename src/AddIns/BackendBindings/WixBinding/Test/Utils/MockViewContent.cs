@@ -18,76 +18,85 @@ namespace WixBinding.Tests.Utils
 	/// Mock IViewContent class.
 	/// </summary>
 	public class MockViewContent : IViewContent
-	{		
-		string fileName = String.Empty;
-		string untitledFileName = String.Empty;
-		bool untitled = false;
-		List<ISecondaryViewContent> secondaryViews = new List<ISecondaryViewContent>();
+	{
+		OpenedFile primaryFile;
+		List<IViewContent> secondaryViews = new List<IViewContent>();
 		
 		public MockViewContent()
 		{
+			SetName("dummy.name");
 		}
 		
-		#region IViewContent
-
+		public void SetName(string fileName)
+		{
+			primaryFile = OpenedFile.CreateDummyOpenedFile(fileName, false);
+		}
+		
+		public void SetUntitledName(string fileName)
+		{
+			primaryFile = OpenedFile.CreateDummyOpenedFile(fileName, true);
+		}
+		
+		#pragma warning disable 67
+		public event EventHandler TabPageTextChanged;
+		public event EventHandler ViewActivated;
+		public event EventHandler Disposed;
+		public event EventHandler IsDirtyChanged;
 		public event EventHandler TitleNameChanged;
-		public event EventHandler Saving;
-		public event SaveEventHandler Saved;
-		public event EventHandler DirtyChanged;
-		public event EventHandler FileNameChanged;
+		#pragma warning restore 67
 		
-		public string UntitledName {
+		public IList<OpenedFile> Files {
 			get {
-				return untitledFileName;
-			}
-			set {
-				untitledFileName = value;
+				return new OpenedFile[] { primaryFile };
 			}
 		}
 		
-		public string TitleName {
-			get {
-				throw new NotImplementedException();
-			}
-			set {
-				throw new NotImplementedException();
-			}
+		public OpenedFile PrimaryFile {
+			get { return primaryFile; }
 		}
 		
-		public string FileName {
-			get {
-				return fileName;
-			}
-			set {
-				fileName = value;
-			}
+		public string PrimaryFileName {
+			get { return primaryFile.FileName; }
 		}
 		
-		public bool IsUntitled {
-			get {
-				return untitled;
-			}
-			set {
-				untitled = value;
-			}
+		public bool IsDisposed {
+			get { return false; }
 		}
 		
-		public bool IsReadOnly {
-			get {
-				throw new NotImplementedException();
-			}
-		}
-		
-		public bool IsViewOnly {
-			get {
-				throw new NotImplementedException();
-			}
-		}
-		
-		public List<ISecondaryViewContent> SecondaryViewContents {
+		public ICollection<IViewContent> SecondaryViewContents {
 			get {
 				return secondaryViews;
 			}
+		}
+		
+		public void Save(OpenedFile file, System.IO.Stream stream)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public void Load(OpenedFile file, System.IO.Stream stream)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public bool SupportsSwitchFromThisWithoutSaveLoad(OpenedFile file, IViewContent newView)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public bool SupportsSwitchToThisWithoutSaveLoad(OpenedFile file, IViewContent oldView)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public void SwitchFromThisWithoutSaveLoad(OpenedFile file, IViewContent newView)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public void SwitchToThisWithoutSaveLoad(OpenedFile file, IViewContent oldView)
+		{
+			throw new NotImplementedException();
 		}
 		
 		public Control Control {
@@ -111,51 +120,31 @@ namespace WixBinding.Tests.Utils
 			}
 		}
 		
+		public string TitleName {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public bool IsReadOnly {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public bool IsViewOnly {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
 		public bool IsDirty {
 			get {
 				throw new NotImplementedException();
 			}
-			set {
-				throw new NotImplementedException();
-			}
-		}
-		
-		public void Save()
-		{
-			throw new NotImplementedException();
-		}
-		
-		public void Save(string fileName)
-		{
-			throw new NotImplementedException();
-		}
-		
-		public void Load(string fileName)
-		{
-			throw new NotImplementedException();
-		}
-		
-		public INavigationPoint BuildNavPoint()
-		{
-			throw new NotImplementedException();
 		}
 		
 		public void SwitchedTo()
-		{
-			throw new NotImplementedException();
-		}
-		
-		public void Selected()
-		{
-			throw new NotImplementedException();
-		}
-		
-		public void Deselecting()
-		{
-			throw new NotImplementedException();
-		}
-		
-		public void Deselected()
 		{
 			throw new NotImplementedException();
 		}
@@ -165,45 +154,14 @@ namespace WixBinding.Tests.Utils
 			throw new NotImplementedException();
 		}
 		
+		public INavigationPoint BuildNavPoint()
+		{
+			throw new NotImplementedException();
+		}
+		
 		public void Dispose()
 		{
+			throw new NotImplementedException();
 		}
-		
-		protected virtual void OnTitleNameChanged(EventArgs e)
-		{
-			if (TitleNameChanged != null) {
-				TitleNameChanged(this, e);
-			}
-		}
-		
-		protected virtual void OnSaving(EventArgs e)
-		{
-			if (Saving != null) {
-				Saving(this, e);
-			}
-		}
-		
-		protected virtual void OnSaved(SaveEventArgs e)
-		{
-			if (Saved != null) {
-				Saved(this, e);
-			}
-		}
-		
-		protected virtual void OnDirtyChanged(EventArgs e)
-		{
-			if (DirtyChanged != null) {
-				DirtyChanged(this, e);
-			}
-		}
-		
-		protected virtual void OnFileNameChanged(EventArgs e)
-		{
-			if (FileNameChanged != null) {
-				FileNameChanged(this, e);
-			}
-		}
-		
-		#endregion
 	}
 }

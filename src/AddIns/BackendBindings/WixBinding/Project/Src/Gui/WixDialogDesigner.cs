@@ -52,7 +52,7 @@ namespace ICSharpCode.WixBinding
 		/// has no such designer attached.</returns>
 		public static WixDialogDesigner GetDesigner(IViewContent view)
 		{
-			foreach (ISecondaryViewContent secondaryView in view.SecondaryViewContents) {
+			foreach (IViewContent secondaryView in view.SecondaryViewContents) {
 				WixDialogDesigner designer = secondaryView as WixDialogDesigner;
 				if (designer != null) {
 					return designer;
@@ -71,9 +71,10 @@ namespace ICSharpCode.WixBinding
 			JumpToDialogElement(id);
 			if (base.IsFormsDesignerVisible) {
 				// Reload so the correct dialog is displayed.
-				base.Deselecting();
+				#warning Code temporarily disabled after IViewContent changes
+				//base.Deselecting();
 				DialogId = id;
-				base.Selected();
+				//base.Selected();
 			} else {
 				// Need to open the designer.
 				DialogId = id;
@@ -81,6 +82,7 @@ namespace ICSharpCode.WixBinding
 			}
 		}
 
+		/* //DG:
 		/// <summary>
 		/// Set dialog id to null after calling base.Deselecting since base.Deselecting 
 		/// calls MergeFormChanges which will reference this dialog id.
@@ -126,13 +128,14 @@ namespace ICSharpCode.WixBinding
 			base.SwitchedTo();
 			RemoveFormsDesignerToolboxSideTabs();
 		}
+		*/
 		
 		/// <summary>
 		/// Gets the Wix document filename.
 		/// </summary>
 		public string DocumentFileName {
 			get {
-				return base.viewContent.FileName;
+				return base.viewContent.PrimaryFileName;
 			}
 		}
 		
@@ -171,30 +174,14 @@ namespace ICSharpCode.WixBinding
 		/// </summary>
 		void OpenDesigner()
 		{
-			int viewNumber = GetViewNumber(base.viewContent.SecondaryViewContents);
 			try {
 				ignoreDialogIdSelectedInTextEditor = true;
-				WorkbenchWindow.SwitchView(viewNumber);
+				WorkbenchWindow.ActiveViewContent = this;
 			} finally {
 				ignoreDialogIdSelectedInTextEditor = false;
 			}
 		}
 		
-		/// <summary>
-		/// Gets the view number for the WixDialogDesigner.
-		/// </summary>
-		static int GetViewNumber(List<ISecondaryViewContent> secondaryViews)
-		{
-			int viewIndex = 0;
-			foreach (ISecondaryViewContent view in secondaryViews) {
-				++viewIndex;
-				if (view is WixDialogDesigner) {
-					break;
-				}
-			}
-			return viewIndex;
-		}
-				
 		/// <summary>
 		/// From the current cursor position in the text editor determine the
 		/// selected dialog id.
@@ -252,7 +239,7 @@ namespace ICSharpCode.WixBinding
 		void AddToErrorList(XmlException ex)
 		{
 			TaskService.ClearExceptCommentTasks();
-			TaskService.Add(new Task(base.viewContent.FileName, ex.Message, ex.LinePosition - 1, ex.LineNumber - 1, TaskType.Error));
+			TaskService.Add(new Task(base.viewContent.PrimaryFileName, ex.Message, ex.LinePosition - 1, ex.LineNumber - 1, TaskType.Error));
 			WorkbenchSingleton.Workbench.GetPad(typeof(ErrorListPad)).BringPadToFront();
 		}
 		
@@ -265,7 +252,7 @@ namespace ICSharpCode.WixBinding
 			Solution openSolution = ProjectService.OpenSolution;
 			if (openSolution != null) {
 				foreach (IProject project in openSolution.Projects) {
-					if (project.IsFileInProject(base.viewContent.FileName)) {
+					if (project.IsFileInProject(base.viewContent.PrimaryFileName)) {
 						return project as WixProject;
 					}
 				}

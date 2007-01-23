@@ -20,7 +20,7 @@ namespace ICSharpCode.TextEditor.Document
 		Font regularfont, boldfont, italicfont, bolditalicfont;
 		
 		/// <value>
-		/// The scaled, bold version of the base font
+		/// The scaled, regular version of the base font
 		/// </value>
 		public Font RegularFont {
 			get {

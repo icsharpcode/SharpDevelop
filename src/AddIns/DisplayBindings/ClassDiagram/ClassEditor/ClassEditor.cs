@@ -492,13 +492,11 @@ namespace ClassDiagram
 		
 		private static TextEditorControl GetTextEditorControl()
 		{
-			TextEditorControl control1 = null;
-			IWorkbenchWindow window1 = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
-			if ((window1 != null) && (window1.ViewContent is ITextEditorControlProvider))
-			{
-				control1 = ((ITextEditorControlProvider) window1.ViewContent).TextEditorControl;
-			}
-			return control1;
+			ITextEditorControlProvider textEditorProvider = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorControlProvider;
+			if (textEditorProvider != null)
+				return textEditorProvider.TextEditorControl;
+			else
+				return null;
 		}
 	}
 

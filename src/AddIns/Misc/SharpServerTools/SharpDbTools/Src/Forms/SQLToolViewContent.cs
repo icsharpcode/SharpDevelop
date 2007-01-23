@@ -21,9 +21,9 @@ namespace SharpDbTools.Forms
 		string logicalConnectionName;
 		SQLTool sqlTool;
 		
-		public SQLToolViewContent(string logicalConnectionName): 
-			base("SQL Tool: " + logicalConnectionName)
+		public SQLToolViewContent(string logicalConnectionName)
 		{
+			this.TitleName = "SQL Tool: " + logicalConnectionName;
 			this.logicalConnectionName = logicalConnectionName;
 			sqlTool = new SQLTool(this.logicalConnectionName);
 		}

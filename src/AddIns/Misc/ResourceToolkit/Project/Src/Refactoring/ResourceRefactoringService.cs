@@ -325,7 +325,7 @@ namespace Hornung.ResourceToolkit.Refactoring
 			if (ProjectService.OpenSolution == null) {
 				
 				foreach (IViewContent vc in WorkbenchSingleton.Workbench.ViewContentCollection) {
-					string name = vc.FileName ?? vc.UntitledName;
+					string name = vc.PrimaryFileName;
 					if (IsPossibleFile(name)) {
 						files.Add(name);
 					}

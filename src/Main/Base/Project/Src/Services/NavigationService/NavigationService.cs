@@ -97,8 +97,7 @@ namespace ICSharpCode.SharpDevelop
 		static void Log(IWorkbenchWindow window)
 		{
 			if (window==null) return;
-			// TODO: Navigation - enable logging of subpanes via window.ActiveViewContent
-			Log(window.ViewContent);
+			Log(window.ActiveViewContent);
 		}
 		
 		static void Log(IViewContent vc)

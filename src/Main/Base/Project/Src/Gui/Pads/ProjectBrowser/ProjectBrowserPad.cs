@@ -117,11 +117,10 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (WorkbenchSingleton.Workbench.ActiveContent == this) {
 				projectBrowserPanel.ProjectBrowserControl.PadActivated();
 			} else {
-				IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
-				if (window == null) {
+				IViewContent content = WorkbenchSingleton.Workbench.ActiveViewContent;
+				if (content == null)
 					return;
-				}
-				string fileName = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent.FileName;
+				string fileName = content.PrimaryFileName;
 				if (fileName == null || lastFileName == fileName) {
 					return;
 				}

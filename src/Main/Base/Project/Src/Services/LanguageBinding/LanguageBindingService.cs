@@ -111,9 +111,7 @@ namespace ICSharpCode.SharpDevelop
 			} else {
 				ILanguageBinding binding = LanguageBindingService.GetBindingPerProjectFile(location);
 				if (binding != null) {
-					try {
-						location = Path.GetFullPath(location);
-					} catch (Exception) {}
+					location = FileUtility.NormalizePath(location);
 					try {
 						newProject = binding.LoadProject(provider, location, title);
 					} catch (XmlException ex) {

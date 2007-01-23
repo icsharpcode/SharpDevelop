@@ -89,28 +89,41 @@ namespace ICSharpCode.WpfDesign.Designer
 			
 		}
 		
+		bool useCategories = false;
+		
 		void ShowProperties(IPropertyEditorDataSource dataSource)
 		{
 			contentStackPanel.Children.Clear();
 			if (dataSource == null)
 				return;
 			
-			List<PropertyEditorCategoryView> categories = new List<PropertyEditorCategoryView>();
-			foreach (IPropertyEditorDataProperty p in Linq.Sort(dataSource.Properties, ComparePropertyNames)) {
-				if (p.Name == "Name") {
-					continue;
+			if (useCategories) {
+				List<PropertyEditorCategoryView> categories = new List<PropertyEditorCategoryView>();
+				foreach (IPropertyEditorDataProperty p in Linq.Sort(dataSource.Properties, ComparePropertyNames)) {
+					if (p.Name == "Name") {
+						continue;
+					}
+					PropertyEditorCategoryView cv = GetOrCreateCategory(categories, p.Category);
+					PropertyGridView grid = (PropertyGridView)cv.Content;
+					grid.AddProperty(p);
 				}
-				PropertyEditorCategoryView cv = GetOrCreateCategory(categories, p.Category);
-				PropertyGridView grid = (PropertyGridView)cv.Content;
-				grid.AddProperty(p);
-			}
-			// Sort category titles alphabetically
-			categories.Sort(delegate (PropertyEditorCategoryView c1, PropertyEditorCategoryView c2) {
-			                	return c1.Header.ToString().CompareTo(c2.Header.ToString());
-			                });
-			// Add categories to contentStackPanel
-			foreach (PropertyEditorCategoryView c in categories) {
-				contentStackPanel.Children.Add(c);
+				// Sort category titles alphabetically
+				categories.Sort(delegate (PropertyEditorCategoryView c1, PropertyEditorCategoryView c2) {
+				                	return c1.Header.ToString().CompareTo(c2.Header.ToString());
+				                });
+				// Add categories to contentStackPanel
+				foreach (PropertyEditorCategoryView c in categories) {
+					contentStackPanel.Children.Add(c);
+				}
+			} else {
+				PropertyGridView grid = new PropertyGridView();
+				foreach (IPropertyEditorDataProperty p in Linq.Sort(dataSource.Properties, ComparePropertyNames)) {
+					if (p.Name == "Name") {
+						continue;
+					}
+					grid.AddProperty(p);
+				}
+				contentStackPanel.Children.Add(grid);
 			}
 		}
 		

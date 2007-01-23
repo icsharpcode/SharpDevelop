@@ -95,13 +95,14 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void Run()
 		{
-			IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
+			ITextEditorControlProvider provider = WorkbenchSingleton.Workbench.ActiveContent as ITextEditorControlProvider;
 			
-			if (window == null || !(window.ViewContent is ITextEditorControlProvider)) {
-				return;
+			if (provider != null) {
+				TextEditorControl textEditor = provider.TextEditorControl;
+				if (!string.IsNullOrEmpty(textEditor.FileName)) {
+					DebuggerService.ToggleBreakpointAt(textEditor.Document, textEditor.FileName, textEditor.ActiveTextAreaControl.Caret.Line);
+				}
 			}
-			TextEditorControl textEditor = ((ITextEditorControlProvider)window.ViewContent).TextEditorControl;
-			DebuggerService.ToggleBreakpointAt(textEditor.Document, textEditor.FileName, textEditor.ActiveTextAreaControl.Caret.Line);
 		}
 	}
 }

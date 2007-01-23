@@ -25,16 +25,23 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		
 		/// <summary>
-		/// A collection in which all active workspace windows are saved.
+		/// A collection in which all opened view contents are saved.
 		/// </summary>
-		List<IViewContent> ViewContentCollection {
+		ICollection<IViewContent> ViewContentCollection {
 			get;
 		}
 		
 		/// <summary>
 		/// A collection in which all active workspace windows are saved.
 		/// </summary>
-		List<PadDescriptor> PadContentCollection {
+		IList<IWorkbenchWindow> WorkbenchWindowCollection {
+			get;
+		}
+		
+		/// <summary>
+		/// A collection in which all active workspace windows are saved.
+		/// </summary>
+		IList<PadDescriptor> PadContentCollection {
 			get;
 		}
 		
@@ -45,6 +52,17 @@ namespace ICSharpCode.SharpDevelop.Gui
 			get;
 		}
 		
+		/// <summary>
+		/// The active view content inside the active workbench window.
+		/// </summary>
+		IViewContent ActiveViewContent {
+			get;
+		}
+		
+		/// <summary>
+		/// The active content. This can be either a IViewContent or a IPadContent, depending on
+		/// where the focus currently is.
+		/// </summary>
 		object ActiveContent {
 			get;
 		}

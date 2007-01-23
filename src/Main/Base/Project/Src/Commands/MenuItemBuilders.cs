@@ -84,7 +84,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 					containerItem.DropDownItems.Add(cmd);
 				}
 				
-				// if there's only one nested item, add it 
+				// if there's only one nested item, add it
 				// to the result directly, ignoring the bucket
 //				if (containerItem.DropDownItems.Count==1) {
 //					items[i] = containerItem.DropDownItems[0];
@@ -94,8 +94,8 @@ namespace ICSharpCode.SharpDevelop.Commands
 //					// add the bucket to the result
 //					items[i++] = containerItem;
 //				}
-					// add the bucket to the result
-					items[i++] = containerItem;
+				// add the bucket to the result
+				items[i++] = containerItem;
 			}
 			
 			return items;
@@ -234,8 +234,8 @@ namespace ICSharpCode.SharpDevelop.Commands
 			for (int i = 0; i < ToolLoader.Tool.Count; ++i) {
 				if (item.Text == ToolLoader.Tool[i].ToString()) {
 					ExternalTool tool = (ExternalTool)ToolLoader.Tool[i];
-					IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
-					string fileName = window == null ? null : window.ViewContent.FileName;
+					
+					string fileName = WorkbenchSingleton.Workbench.ActiveViewContent.PrimaryFileName;
 					StringParser.Properties["ItemPath"]        = fileName == null ? String.Empty : fileName;
 					StringParser.Properties["ItemDir"]         = fileName == null ? String.Empty : Path.GetDirectoryName(fileName);
 					StringParser.Properties["ItemFileName"]    = fileName == null ? String.Empty : Path.GetFileName(fileName);
@@ -309,37 +309,35 @@ namespace ICSharpCode.SharpDevelop.Commands
 		
 		class MyMenuItem : MenuCheckBox
 		{
-			IViewContent content;
-			public MyMenuItem(IViewContent content) : base(StringParser.Parse(content.TitleName))
+			IWorkbenchWindow window;
+			
+			public MyMenuItem(IWorkbenchWindow window) : base(StringParser.Parse(window.Title))
 			{
-				this.content = content;
+				this.window = window;
 			}
 			
 			protected override void OnClick(EventArgs e)
 			{
 				base.OnClick(e);
 				Checked = true;
-				content.WorkbenchWindow.SelectWindow();
+				window.SelectWindow();
 			}
 		}
 
 		public ToolStripItem[] BuildSubmenu(Codon codon, object owner)
 		{
-			int contentCount = WorkbenchSingleton.Workbench.ViewContentCollection.Count;
-			if (contentCount == 0) {
+			int windowCount = WorkbenchSingleton.Workbench.WorkbenchWindowCollection.Count;
+			if (windowCount == 0) {
 				return new ToolStripItem[] {};
 			}
-			ToolStripItem[] items = new ToolStripItem[contentCount + 1];
+			ToolStripItem[] items = new ToolStripItem[windowCount + 1];
 			items[0] = new MenuSeparator(null, null);
-			for (int i = 0; i < contentCount; ++i) {
-				IViewContent content = (IViewContent)WorkbenchSingleton.Workbench.ViewContentCollection[i];
-				if (content.WorkbenchWindow == null) {
-					continue;
-				}
-				MenuCheckBox item = new MyMenuItem(content);
-				item.Tag = content.WorkbenchWindow;
-				item.Checked = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow == content.WorkbenchWindow;
-				item.Description = "Activate this window ";
+			for (int i = 0; i < windowCount; ++i) {
+				IWorkbenchWindow window = WorkbenchSingleton.Workbench.WorkbenchWindowCollection[i];
+				MenuCheckBox item = new MyMenuItem(window);
+				item.Tag = window;
+				item.Checked = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow == window;
+				item.Description = "Activate this window";
 				items[i + 1] = item;
 			}
 			return items;

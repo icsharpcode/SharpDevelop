@@ -57,9 +57,16 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			if (!File.Exists(filename)) return null;
 			
-			using (StreamReader sr = new StreamReader(filename)) {
-				return GetReport(filename, sr);
-			}
+			return GetReport(filename, new StringReader(ParserService.GetParseableFileContent(filename)));
+		}
+		
+		Report GetReport(IViewContent content, TextReader reader)
+		{
+			OpenedFile file = content.PrimaryFile;
+			if (file != null && file.IsUntitled == false)
+				return GetReport(file.FileName, reader);
+			else
+				return GetReport(content.TitleName, reader);
 		}
 		
 		Report GetReport(string filename, TextReader reader)
@@ -88,14 +95,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			switch (((ComboBox)ControlDictionary["locationComboBox"]).SelectedIndex) {
 					case 0: {// current file
-						IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
-						if (window != null) {
-							IEditable editable = window.ViewContent as IEditable;
+						IViewContent viewContent = WorkbenchSingleton.Workbench.ActiveViewContent;
+						if (viewContent != null) {
+							IEditable editable = viewContent as IEditable;
 							if (editable == null) {
 								MessageService.ShowWarning("${res:Dialog.WordCountDialog.IsNotTextFile}");
 							} else {
-								Report r = GetReport(window.ViewContent.IsUntitled ? window.ViewContent.UntitledName : window.ViewContent.FileName,
-								                     new StringReader(editable.Text));
+								Report r = GetReport(viewContent, new StringReader(editable.Text));
 								if (r != null) items.Add(r);
 							}
 						}
@@ -107,8 +113,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 							foreach (IViewContent content in WorkbenchSingleton.Workbench.ViewContentCollection) {
 								IEditable editable = content as IEditable;
 								if (editable != null) {
-									Report r = GetReport(content.IsUntitled ? content.UntitledName : content.FileName,
-									                     new StringReader(editable.Text));
+									Report r = GetReport(content, new StringReader(editable.Text));
 									if (r != null) {
 										total += r;
 										items.Add(r);

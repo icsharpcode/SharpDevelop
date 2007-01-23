@@ -63,11 +63,6 @@ namespace ICSharpCode.TextEditor.Document
 			set;
 		}
 		
-		bool CreateBackupCopy { // is wrapped in text editor control
-			get;
-			set;
-		}
-		
 		LineViewerStyle LineViewerStyle { // is wrapped in text editor control
 			get;
 			set;
