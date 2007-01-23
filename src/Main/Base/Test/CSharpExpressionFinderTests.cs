@@ -139,7 +139,7 @@ class Main {
 		[Test]
 		public void NewException()
 		{
-			FindFull(program2, "otFoundException", "NotFoundException()", ExpressionContext.TypeDerivingFrom(ParserService.DefaultProjectContentRegistry.Mscorlib.GetClass("System.Exception"), true));
+			FindFull(program2, "otFoundException", "NotFoundException()", ExpressionContext.TypeDerivingFrom(ParserService.DefaultProjectContentRegistry.Mscorlib.GetClass("System.Exception", 0), true));
 		}
 	}
 }

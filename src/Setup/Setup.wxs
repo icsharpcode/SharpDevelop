@@ -316,6 +316,7 @@
 				<ComponentRef Id="PInvokeAddInFiles"/>
 				<ComponentRef Id="RegExToolkitFiles"/>
 				<ComponentRef Id="ResourceToolkitFiles"/>
+				<!--
 				<ComponentRef Id="SharpQueryDll"/>
 				<ComponentRef Id="SharpQueryInteropMSDASCDll"/>
 				<ComponentRef Id="SharpReportCoreDll"/>
@@ -324,6 +325,7 @@
 				<ComponentRef Id="PdfSharpDll"/>
 				<ComponentRef Id="PdfSharpDeResources"/>
 				<ComponentRef Id="SharpReportAddInDll"/>
+				-->
 				<ComponentRef Id="OracleDbToolsProviderDll"/>
 				<ComponentRef Id="ServerBrowserToolDll"/>
 				<ComponentRef Id="SharpDbToolsDll"/>
