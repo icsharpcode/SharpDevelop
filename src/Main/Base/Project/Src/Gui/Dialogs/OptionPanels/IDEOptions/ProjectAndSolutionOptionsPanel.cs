@@ -51,9 +51,11 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		
 		void SelectProjectLocationButtonClicked(object sender, EventArgs e)
 		{
-			FolderDialog fdiag = new  FolderDialog();
-			if (fdiag.DisplayDialog(StringParser.Parse("${res:Dialog.Options.IDEOptions.ProjectAndSolutionOptions.SelectDefaultProjectLocationDialog.Title}")) == DialogResult.OK) {
-				ControlDictionary["projectLocationTextBox"].Text = fdiag.Path;
+			TextBox projectLocationTextBox = (TextBox)ControlDictionary["projectLocationTextBox"];
+			using (FolderBrowserDialog fdiag = FileService.CreateFolderBrowserDialog("${res:Dialog.Options.IDEOptions.ProjectAndSolutionOptions.SelectDefaultProjectLocationDialog.Title}", projectLocationTextBox.Text)) {
+				if (fdiag.ShowDialog() == DialogResult.OK) {
+					projectLocationTextBox.Text = fdiag.SelectedPath;
+				}
 			}
 		}
 	}

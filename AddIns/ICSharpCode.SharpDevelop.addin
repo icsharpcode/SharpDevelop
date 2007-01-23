@@ -623,14 +623,6 @@
 	</Path>
 	
 	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ReferenceNode">
-		<MenuItem id    = "OpenFile"
-		          label = "${res:ProjectComponent.ContextMenu.Open}"
-		          icon  = "Icons.16x16.OpenFileIcon"
-		          class = "ICSharpCode.SharpDevelop.Project.Commands.OpenFileFromProjectBrowser"/>
-		
-		<MenuItem id   = "OpenSeparator"
-		          type = "Separator"  />
-		
 		<MenuItem id    = "Remove"
 		          label = "${res:Global.RemoveButtonText}"
 		          icon  = "Icons.16x16.DeleteIcon"

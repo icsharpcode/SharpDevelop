@@ -73,7 +73,7 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 			// append characters after expression
 			for (int i = offset + 1; i < inText.Length; ++i) {
 				char c = inText[i];
-				if (Char.IsLetterOrDigit(c)) {
+				if (Char.IsLetterOrDigit(c) || c == '_') {
 					if (Char.IsWhiteSpace(inText, i - 1))
 						break;
 					b.Append(c);
@@ -88,6 +88,10 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 				} else {
 					break;
 				}
+			}
+			// remove space from end:
+			if (b.Length > 0 && b[b.Length - 1] == ' ') {
+				b.Length -= 1;
 			}
 			return CreateResult(b.ToString());
 		}

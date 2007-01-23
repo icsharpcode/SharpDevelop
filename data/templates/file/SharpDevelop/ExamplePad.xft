@@ -70,6 +70,7 @@ namespace ${ProjectName}
 		public override void Dispose()
 		{
 			ctl.Dispose();
+			base.Dispose();
 		}
 	}
 }

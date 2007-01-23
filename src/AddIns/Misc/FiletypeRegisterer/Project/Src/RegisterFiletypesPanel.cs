@@ -38,7 +38,7 @@ namespace ICSharpCode.FiletypeRegisterer
 			
 			// Set previous values
 			SelectFiletypes(PropertyService.Get(RegisterFiletypesCommand.uiFiletypesProperty, RegisterFiletypesCommand.GetDefaultExtensions(allTypes)));
-			regChk.Checked = PropertyService.Get(RegisterFiletypesCommand.uiRegisterStartupProperty, true);
+			regChk.Checked = PropertyService.Get(RegisterFiletypesCommand.uiRegisterStartupProperty, false);
 		}
 		
 		public override bool ReceiveDialogMessage(DialogMessage message)

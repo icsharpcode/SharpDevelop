@@ -180,7 +180,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		string activePlatform = "AnyCPU";
 		
 		[ReadOnly(true)]
-		[LocalizedProperty("${res:Dialog.ProjectOptions.Configuration}")]
+		[LocalizedProperty("${res:Dialog.Options.CombineOptions.Configurations.ConfigurationColumnHeader}")]
 		public string ActiveConfiguration {
 			get { return activeConfiguration; }
 			set {

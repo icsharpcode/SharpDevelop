@@ -68,7 +68,11 @@ namespace ICSharpCode.FormsDesigner.Gui
 		{
 			if (componentListView.Items.Count == 0) {
 				if (componentListView.Controls.Count == 0) {
-					ClearComponentsList(StringParser.Parse("${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.NoComponentsFound}", new string[,] {{"Name", lastAssembly.FullName}}));
+					string name = String.Empty;
+					if (lastAssembly != null) {
+						name = lastAssembly.FullName;
+					}
+					ClearComponentsList(StringParser.Parse("${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.NoComponentsFound}", new string[,] {{"Name", name}}));
 				}
 			}
 			componentListView.EndUpdate();

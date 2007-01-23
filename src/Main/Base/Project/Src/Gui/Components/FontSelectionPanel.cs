@@ -199,9 +199,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			if (!fontListComboBox.Enabled)
 				return null;
-			int fontSize = 10;
+			float fontSize = 10f;
 			try {
-				fontSize = Math.Max(6, Int32.Parse(fontSizeComboBox.Text));
+				fontSize = Math.Max(6, Single.Parse(fontSizeComboBox.Text));
 			} catch (Exception) {}
 			
 			FontDescriptor fontDescriptor = (FontDescriptor)fontListComboBox.Items[fontListComboBox.SelectedIndex];

@@ -37,7 +37,7 @@
 			<OutputType>WinExe</OutputType>
 		</PropertyGroup>
 
-		<Imports>
+		<Imports failureMessage="Please ensure the .NET Framework 3.0 is installed on your machine!">
 			<Import Project="$(MSBuildBinPath)\Microsoft.WinFX.targets" />
 		</Imports>
 		

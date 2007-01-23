@@ -22,6 +22,7 @@ namespace ICSharpCode.WixBinding
 		public SemicolonSeparatedNameValueListBinding(NameValueListEditor editor)
 		{
 			this.editor = editor;
+			TreatPropertyValueAsLiteral = false;
 		}
 		
 		public override void Load()

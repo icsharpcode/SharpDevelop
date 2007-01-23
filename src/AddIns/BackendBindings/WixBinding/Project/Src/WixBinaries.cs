@@ -82,9 +82,11 @@ namespace ICSharpCode.WixBinding
 		List<string> GetWixFileNamesInProject(WixDocument document)
 		{
 			List<string> fileNames = new List<string>();
-			foreach (FileProjectItem fileProjectItem in project.WixFiles) {
-				if (!FileUtility.IsEqualFileName(fileProjectItem.FileName, document.FileName)) {
-					fileNames.Add(fileProjectItem.FileName);
+			if (project != null) {
+				foreach (FileProjectItem fileProjectItem in project.WixFiles) {
+					if (!FileUtility.IsEqualFileName(fileProjectItem.FileName, document.FileName)) {
+						fileNames.Add(fileProjectItem.FileName);
+					}
 				}
 			}
 			return fileNames;

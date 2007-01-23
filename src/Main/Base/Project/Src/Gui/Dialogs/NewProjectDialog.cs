@@ -320,11 +320,12 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 		
 		void BrowseDirectories(object sender, EventArgs e)
 		{
-			FolderDialog fd = new FolderDialog();
-			if (fd.DisplayDialog("${res:Dialog.NewProject.SelectDirectoryForProject}") == DialogResult.OK) {
-				((TextBox)ControlDictionary["locationTextBox"]).Text = fd.Path;
+			TextBox locationTextBox = ((TextBox)ControlDictionary["locationTextBox"]);
+			using (FolderBrowserDialog fd = FileService.CreateFolderBrowserDialog("${res:Dialog.NewProject.SelectDirectoryForProject}", locationTextBox.Text)) {
+				if (fd.ShowDialog() == DialogResult.OK) {
+					locationTextBox.Text = fd.SelectedPath;
+				}
 			}
-			// End
 		}
 		
 		// list view event handlers

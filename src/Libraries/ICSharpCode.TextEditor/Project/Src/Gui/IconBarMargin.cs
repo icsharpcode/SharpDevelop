@@ -78,10 +78,16 @@ namespace ICSharpCode.TextEditor
 			}
 			
 			List<Bookmark> marks = textArea.Document.BookmarkManager.Marks;
+			List<Bookmark> marksInLine = new List<Bookmark>();
 			int oldCount = marks.Count;
 			foreach (Bookmark mark in marks) {
 				if (mark.LineNumber == lineNumber) {
-					mark.Click(textArea, new MouseEventArgs(mouseButtons, 1, mousePos.X, mousePos.Y, 0));
+					marksInLine.Add(mark);
+				}
+			}
+			for (int i = marksInLine.Count - 1; i >= 0; i--) {
+				Bookmark mark = marksInLine[i];
+				if (mark.Click(textArea, new MouseEventArgs(mouseButtons, 1, mousePos.X, mousePos.Y, 0))) {
 					if (oldCount != marks.Count) {
 						textArea.UpdateLine(lineNumber);
 					}

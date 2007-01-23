@@ -223,6 +223,7 @@ namespace ICSharpCode.TextEditor.Document
 				OnDocumentAboutToBeChanged(new DocumentEventArgs(this, 0, 0, value));
 				textBufferStrategy.SetContent(value);
 				lineTrackingStrategy.SetContent(value);
+				undoStack.ClearAll();
 				
 				OnDocumentChanged(new DocumentEventArgs(this, 0, 0, value));
 				OnTextContentChanged(EventArgs.Empty);

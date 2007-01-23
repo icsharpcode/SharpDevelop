@@ -442,5 +442,13 @@ namespace ICSharpCode.TextEditor
 			}
 			base.WndProc(ref m);
 		}
+		
+		protected override void OnEnter(EventArgs e)
+		{
+			// SD2-1072 - Make sure the caret line is valid if anyone
+			// has handlers for the Enter event.
+			Caret.ValidateCaretPos();
+			base.OnEnter(e);
+		}
 	}
 }

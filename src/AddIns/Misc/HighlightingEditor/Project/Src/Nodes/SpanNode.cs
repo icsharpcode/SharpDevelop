@@ -20,11 +20,13 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 		EditorHighlightColor color;
 		EditorHighlightColor beginColor = null;
 		EditorHighlightColor endColor = null;
-		string      begin = "";
-		string      end   = "";
-		string      name  = "";
-		string      rule  = "";
+		string      begin = String.Empty;
+		string      end   = String.Empty;
+		string      name  = String.Empty;
+		string      rule  = String.Empty;
 		char        escapeCharacter;
+		bool        isBeginSingleWord;
+		bool        isEndSingleWord;
 		
 		public SpanNode(XmlElement el)
 		{
@@ -50,12 +52,20 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 			} else {
 				stopEOL = true;
 			}
-			begin   = el["Begin"].InnerText;
-			beginColor = new EditorHighlightColor(el["Begin"]);
+			XmlElement beginElement = el["Begin"];
+			begin = beginElement.InnerText;
+			beginColor = new EditorHighlightColor(beginElement);
+			if (beginElement.HasAttribute("singleword")) {
+				isBeginSingleWord = Boolean.Parse(beginElement.GetAttribute("singleword"));
+			}
 			
-			if (el["End"] != null) {
-				end  = el["End"].InnerText;
-				endColor = new EditorHighlightColor(el["End"]);
+			XmlElement endElement = el["End"];
+			if (endElement != null) {
+				end  = endElement.InnerText;
+				endColor = new EditorHighlightColor(endElement);
+				if (endElement.HasAttribute("singleword")) {
+					isEndSingleWord = Boolean.Parse(endElement.GetAttribute("singleword"));
+				}
 			}
 			
 			UpdateNodeText();
@@ -74,13 +84,17 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 			color.WriteXmlAttributes(writer);
 			
 			writer.WriteStartElement("Begin");
+			if (isBeginSingleWord) 
+				writer.WriteAttributeString("singleword", isBeginSingleWord.ToString().ToLowerInvariant());
 			if (beginColor != null && !beginColor.NoColor)
 				beginColor.WriteXmlAttributes(writer);
 			writer.WriteString(begin);
 			writer.WriteEndElement();
 			
-			if (end != "") {
+			if (end != String.Empty) {
 				writer.WriteStartElement("End");
+				if (isEndSingleWord) 
+					writer.WriteAttributeString("singleword", isEndSingleWord.ToString().ToLowerInvariant());
 				if (endColor != null && !endColor.NoColor)
 					endColor.WriteXmlAttributes(writer);
 				writer.WriteString(end);
@@ -102,9 +116,9 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 		
 		public override void UpdateNodeText()
 		{
-			if (name != "") { Text = name; return; }
+			if (name != String.Empty) { Text = name; return; }
 			
-			if (end == "" && stopEOL) {
+			if (end == String.Empty && stopEOL) {
 				Text = begin + " to EOL";
 			} else {
 				Text = begin + " to " + end;
@@ -156,12 +170,30 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 			}
 		}
 		
+		public bool IsBeginSingleWord {
+			get {
+				return isBeginSingleWord;
+			}
+			set {
+				isBeginSingleWord = value;
+			}
+		}
+		
 		public string End {
 			get {
 				return end;
 			}
 			set {
 				end = value;
+			}
+		}
+		
+		public bool IsEndSingleWord {
+			get {
+				return isEndSingleWord;
+			}
+			set {
+				isEndSingleWord = value;
 			}
 		}
 		
@@ -205,13 +237,17 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 		private System.Windows.Forms.Label samCont;
 		private System.Windows.Forms.TextBox escCharTextBox;
 		private System.Windows.Forms.CheckBox stopEolBox;
+		private System.Windows.Forms.CheckBox beginSingleWordCheckBox;
+		private System.Windows.Forms.CheckBox endSingleWordCheckBox;		
 		
 		public SpanOptionPanel(SpanNode parent) : base(parent)
 		{
 			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("Resources.Span.xfrm"));
 			nameBox  = (TextBox)ControlDictionary["nameBox"];
 			beginBox = (TextBox)ControlDictionary["beginBox"];
+			beginBox.TextChanged += BeginTextChanged;
 			endBox   = (TextBox)ControlDictionary["endBox"];
+			endBox.TextChanged += EndTextChanged;
 			ruleBox  = (ComboBox)ControlDictionary["ruleBox"];
 
 			useBegin = (CheckBox)ControlDictionary["useBegin"];
@@ -226,6 +262,8 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 			samCont  = (Label)ControlDictionary["samCont"];
 
 			stopEolBox = (CheckBox)ControlDictionary["stopEolBox"];
+			beginSingleWordCheckBox = (CheckBox)ControlDictionary["beginSingleWordCheckBox"];
+			endSingleWordCheckBox = (CheckBox)ControlDictionary["endSingleWordCheckBox"];
 			escCharTextBox   = (TextBox)ControlDictionary["escCharTextBox"];
 
 			this.chgBegin.Click += new EventHandler(chgBeginClick);
@@ -248,6 +286,8 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 			node.Begin = beginBox.Text;
 			node.End = endBox.Text;
 			node.StopEOL = stopEolBox.Checked;
+			node.IsBeginSingleWord = beginSingleWordCheckBox.Checked;
+			node.IsEndSingleWord = endSingleWordCheckBox.Checked;
 			node.EscapeCharacter = escCharTextBox.TextLength > 0 ? escCharTextBox.Text[0] : '\0';
 			node.Rule = ruleBox.Text;
 			
@@ -286,6 +326,8 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 			beginBox.Text = node.Begin;
 			endBox.Text = node.End;
 			stopEolBox.Checked = node.StopEOL;
+			beginSingleWordCheckBox.Checked = node.IsBeginSingleWord;
+			endSingleWordCheckBox.Checked = node.IsEndSingleWord;			
 			escCharTextBox.Text = (node.EscapeCharacter == '\0') ? "" : node.EscapeCharacter.ToString();
 			
 			color = node.Color;
@@ -303,15 +345,17 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 			PreviewUpdate(samEnd, endColor);
 			PreviewUpdate(samCont, color);
 			CheckedChanged(null, null);
+			BeginTextChanged(null, null);
+			EndTextChanged(null, null);
 		}
 		
 		public override bool ValidateSettings()
 		{
-			if (nameBox.Text == "") {
+			if (nameBox.Text == String.Empty) {
 				ValidationMessage(ResourceService.GetString("Dialog.HighlightingEditor.Span.NameEmpty"));
 				return false;
 			}
-			if (beginBox.Text == "") {
+			if (beginBox.Text == String.Empty) {
 				ValidationMessage(ResourceService.GetString("Dialog.HighlightingEditor.Span.BeginEmpty"));
 				return false;
 			}
@@ -353,6 +397,16 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 		{
 			chgEnd.Enabled = useEnd.Checked;
 			chgBegin.Enabled = useBegin.Checked;
+		}
+		
+		void BeginTextChanged(object sender, EventArgs e)
+		{
+			beginSingleWordCheckBox.Enabled = beginBox.Text.Length > 0; 
+		}
+		
+		void EndTextChanged(object sender, EventArgs e)
+		{
+			endSingleWordCheckBox.Enabled = endBox.Text.Length > 0; 
 		}
 	}
 }

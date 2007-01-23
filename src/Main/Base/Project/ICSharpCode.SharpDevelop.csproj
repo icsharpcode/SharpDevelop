@@ -157,7 +157,6 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\DirtyFilesDialog.cs" />
-    <Compile Include="Src\Gui\Dialogs\FolderDialog.cs" />
     <Compile Include="Src\Gui\Dialogs\NewFileDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -641,6 +640,7 @@
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\AsyncDiscoveryState.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\DiscoveryNetworkCredential.cs" />
     <Compile Include="Src\Services\ProjectService\ProjectLoader.cs" />
+    <Compile Include="Src\Util\HashSet.cs" />
     <Compile Include="Src\Util\ProcessRunnerException.cs" />
     <Compile Include="Src\Util\LineReceivedEventArgs.cs" />
     <Compile Include="Src\Util\OutputReader.cs" />

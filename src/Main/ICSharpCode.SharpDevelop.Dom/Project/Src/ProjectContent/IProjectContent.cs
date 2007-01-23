@@ -17,6 +17,15 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get;
 		}
 		
+		/// <summary>
+		/// Gets if the project content is representing the current version of the assembly.
+		/// This property always returns true for ParseProjectContents but might return false
+		/// for ReflectionProjectContent/CecilProjectContent if the file was changed.
+		/// </summary>
+		bool IsUpToDate {
+			get;
+		}
+		
 		ICollection<IClass> Classes {
 			get;
 		}

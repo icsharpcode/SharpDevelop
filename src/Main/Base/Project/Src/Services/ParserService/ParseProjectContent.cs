@@ -123,18 +123,22 @@ namespace ICSharpCode.SharpDevelop
 						// Compile project to ensure interop library is generated
 						project.Save(); // project is not yet saved when ItemAdded fires, so save it here
 						TaskService.BuildMessageViewCategory.AppendText("\n${res:MainWindow.CompilerMessages.CreatingCOMInteropAssembly}\n");
-						BuildCallback callback = delegate {
+						BuildCallback afterBuildCallback = delegate {
 							System.Threading.ThreadPool.QueueUserWorkItem(AddReference, reference);
 							lock (callAfterAddComReference) {
 								if (callAfterAddComReference.Count > 0) {
+									// run next enqueued action
 									callAfterAddComReference.Dequeue()();
 								} else {
 									buildingComReference = false;
 								}
 							}
 						};
-						project.StartBuild(new BuildOptions(BuildTarget.ResolveComReferences, callback));
+						project.StartBuild(new BuildOptions(BuildTarget.ResolveComReferences, afterBuildCallback));
 					};
+					
+					// enqueue actions when adding multiple COM references so that multiple builds of the same project
+					// are not started parallely
 					lock (callAfterAddComReference) {
 						if (buildingComReference) {
 							callAfterAddComReference.Enqueue(action);
@@ -144,6 +148,9 @@ namespace ICSharpCode.SharpDevelop
 						}
 					}
 				} else {
+					// refresh the reference if required
+					ParserService.RefreshProjectContentForReference(reference);
+					
 					System.Threading.ThreadPool.QueueUserWorkItem(AddReference, reference);
 				}
 			}

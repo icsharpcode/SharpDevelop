@@ -52,6 +52,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		
 		bool clearExistingImports;
 		List<Import> projectImports = new List<Import>();
+		string importsFailureMessage;
 		
 		List<FileDescriptionTemplate> files = new List<FileDescriptionTemplate>();
 		List<ProjectItem> projectItems = new List<ProjectItem>();
@@ -188,6 +189,9 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			if (string.Equals(importsElement.GetAttribute("clear"), "true", StringComparison.OrdinalIgnoreCase)) {
 				clearExistingImports = true;
 			}
+			if (importsElement.HasAttribute("failureMessage")) {
+				importsFailureMessage = importsElement.GetAttribute("failureMessage");
+			}
 			foreach (XmlElement importElement in ChildElements(importsElement)) {
 				TemplateLoadException.AssertAttributeExists(importElement, "Project");
 				projectImports.Add(new Import(
@@ -292,10 +296,19 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 					if (clearExistingImports) {
 						MSBuildInternals.ClearImports(((MSBuildBasedProject)project).MSBuildProject);
 					}
-					foreach (Import projectImport in projectImports) {
-						((MSBuildBasedProject)project).MSBuildProject.AddNewImport(projectImport.Key, projectImport.Value);
+					try {
+						foreach (Import projectImport in projectImports) {
+							((MSBuildBasedProject)project).MSBuildProject.AddNewImport(projectImport.Key, projectImport.Value);
+						}
+						((MSBuildBasedProject)project).CreateItemsListFromMSBuild();
+					} catch (MSBuild.InvalidProjectFileException ex) {
+						if (string.IsNullOrEmpty(importsFailureMessage)) {
+							MessageService.ShowError("Error creating project:\n" + ex.Message);
+						} else {
+							MessageService.ShowError(importsFailureMessage + "\n\n" + ex.Message);
+						}
+						return null;
 					}
-					((MSBuildBasedProject)project).CreateItemsListFromMSBuild();
 				}
 				
 				if (projectProperties.Count > 0) {

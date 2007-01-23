@@ -79,6 +79,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public virtual void AddFolder(ISolutionFolder folder)
 		{
+			if (string.IsNullOrEmpty(folder.IdGuid)) {
+				folder.IdGuid = Guid.NewGuid().ToString().ToUpperInvariant();
+			}
+			
 			if (folder.Parent != null) {
 				folder.Parent.RemoveFolder(folder);
 			}

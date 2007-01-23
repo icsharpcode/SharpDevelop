@@ -22,7 +22,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 	public class ProjectContentRegistry : IDisposable
 	{
 		internal DomPersistence persistence;
-		internal Dictionary<string, IProjectContent> contents = new Dictionary<string, IProjectContent>(StringComparer.InvariantCultureIgnoreCase);
+		Dictionary<string, IProjectContent> contents = new Dictionary<string, IProjectContent>(StringComparer.InvariantCultureIgnoreCase);
 		
 		/// <summary>
 		/// Redirects short names to long names. Used to redirect .NET libraries to the chosen .NET version
@@ -68,7 +68,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// and loads the assembly <paramref name="filename"/>.
 		/// If the file does not exist, <paramref name="include"/> is loaded from GAC.
 		/// </summary>
-		public ReflectionProjectContent ReflectionLoadProjectContent(string filename, string include)
+		protected ReflectionProjectContent ReflectionLoadProjectContent(string filename, string include)
 		{
 			DomPersistence persistence;
 			bool tempPersistence;
@@ -129,6 +129,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		ReflectionProjectContent mscorlibContent;
 		
+		/// <summary>
+		/// Runs the method inside the lock of the registry.
+		/// Use this method if you want to call multiple methods on the ProjectContentRegistry and ensure
+		/// that no other thread accesses the registry while your method runs.
+		/// </summary>
 		public void RunLocked(ThreadStart method)
 		{
 			lock (contents) {
@@ -190,18 +195,23 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// <summary>
 		/// Unloads the specified project content, causing it to be reloaded when
 		/// GetProjectContentForReference is called the next time.
+		/// Warning: do not unload project contents that are still in use! Doing so will result
+		/// in an ObjectDisposedException when the unloaded project content is used the next time!
 		/// </summary>
 		public void UnloadProjectContent(IProjectContent pc)
 		{
 			if (pc == null)
 				throw new ArgumentNullException("pc");
+			LoggingService.Debug("ProjectContentRegistry.UnloadProjectContent: " + pc);
 			lock (contents) {
 				// find all keys used for the project content - might be the short name/full name/file name
 				List<string> keys = new List<string>();
 				foreach (KeyValuePair<string, IProjectContent> pair in contents) {
 					if (pair.Value == pc) keys.Add(pair.Key);
 				}
-				foreach (string key in keys) contents.Remove(key); // remove the entries using the keys
+				foreach (string key in keys) {
+					contents.Remove(key);
+				}
 			}
 			pc.Dispose();
 		}

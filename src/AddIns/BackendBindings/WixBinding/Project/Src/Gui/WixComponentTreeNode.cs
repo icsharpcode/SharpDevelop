@@ -14,7 +14,7 @@ namespace ICSharpCode.WixBinding
 	{		
 		public WixComponentTreeNode(WixComponentElement element) : base(element)
 		{
-			SetIcon("Icons.16x16.SolutionIcon");
+			SetIcon("Setup.Icons.16x16.Component");
 			ContextmenuAddinTreePath = "/AddIns/WixBinding/PackageFilesView/ContextMenu/ComponentTreeNode";
 			Refresh();
 		}

@@ -74,7 +74,7 @@
 	</Path>
 	
 	<Path name = "/Workspace/Autostart">
-		<Condition name = "Compare" string = "${property:SharpDevelop.FiletypesRegisterStartup??True}" equals = "True">
+		<Condition name = "Compare" string = "${property:SharpDevelop.FiletypesRegisterStartup??False}" equals = "True">
 			<Class id    = "RegisterFiletypes"
 			       class = "ICSharpCode.FiletypeRegisterer.RegisterFiletypesCommand"/>
 		</Condition>

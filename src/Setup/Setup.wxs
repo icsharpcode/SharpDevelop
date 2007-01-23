@@ -1,8 +1,8 @@
-﻿<!-- 
+﻿<!--
 	Installer for SharpDevelop.
 -->
 <Wix xmlns="http://schemas.microsoft.com/wix/2003/01/wi">
-	<!-- 
+	<!--
 		Windows Installer only recognises 3 digits for the product version (Major.Minor.Build) 
 		so the third digit must be the Subversion revision. 
 	-->
@@ -34,7 +34,7 @@
 				IncludeMinimum="no"/>
 		</Upgrade>
 		
-		<!-- 
+		<!--
 			Conditions to be satisfied before the installer begins.
 			Note that we are using "Installed OR" in the conditions so
 			so they never block the user from repairing, patching, or 
@@ -44,7 +44,7 @@
  			and then run the msi to uninstall SharpDevelop. Without the 
 			"Installed OR" this would not be allowed.
 		-->
-		<!-- 
+		<!--
 			Check for .NET 2.0 
 			http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/msinetassemblysupport.asp
 		-->
@@ -52,7 +52,7 @@
 			Installed OR MsiNetAssemblySupport &gt;= "2.0.50727"
 		</Condition>
 		
-		<!-- 
+		<!--
 			Check for the operating system is at least Windows 2000 (VersionNT = 500). 
 			http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/operating_system_property_values.asp		
 		-->
@@ -60,7 +60,7 @@
 			Installed OR VersionNT &gt;= 500
 		</Condition>
 		
-		<!-- 
+		<!--
 			Check the user has elevated permissions. We need admin rights to NGen 
 			SharpDevelop.exe, to install NUnit into the GAC and to register the Help 
 			collection. 
@@ -84,7 +84,7 @@
 			Privileged
 		</Condition> -->
 		
-		<!-- 
+		<!--
 			Install for all users.
 
 			Using ALLUSERS=2 means SharpDevelop can be installed by a non-admin. 
@@ -97,8 +97,8 @@
 			http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/allusers.asp
 		-->
 		<Property Id="ALLUSERS">2</Property>
-
-		<!-- 
+		
+		<!--
 			Support entries shown when clicking "Click here for support information"
 			in Control Panel's Add/Remove Programs
 
@@ -110,36 +110,56 @@
 		<Property Id="ARPURLUPDATEINFO">http://icsharpcode.net/OpenSource/SD/Download/</Property>
 		
 		<!-- Suppress the Modify button in the Control Panel's Add/Remove Programs -->
-		<!-- 
+		<!--
 			Temporarily disabled whilst using the WixUI library 
 			<Property Id="ARPNOMODIFY">1</Property> 
 		-->
-
+		
 		<!-- Puts SharpDevelop icon in Control Panel's Add/Remove Programs -->
 		<Property Id="ARPPRODUCTICON">SharpDevelopIcon.exe</Property>
 		<Icon Id="SharpDevelopIcon.exe" SourceFile="..\Main\StartUp\Project\Resources\SharpDevelop.ico"/>
 		
-		<!-- 
+		<!--
 			Source media for the installation. 
  			Specifies a single cab file to be embedded in the installer's .msi. 
 		-->
 		<Media Id="1" Cabinet="contents.cab" EmbedCab="yes" CompressionLevel="high"/>
-	
+		
 		<!-- Installation directory and files are defined in Files.wxs -->
 		<Directory Id="TARGETDIR" Name="SourceDir"/>
 		
-		<!-- 
+		<!--
 			Currently just one core feature to install everything. 
 			Source code will become a separate feature. Perhaps all the add-ins too could
 			each be a feature if the user wants to heavily customise the installation.
 		-->
-		<Feature Id="Complete" Level="1">
-			<!-- 
+		<Feature Id="Complete"
+		         Title="SharpDevelop 2.1"
+		         Description="Installs SharpDevelop and registers file associations"
+		         Level="1"
+		         ConfigurableDirectory="INSTALLDIR"
+		         Absent="disallow"
+		         AllowAdvertise="no"
+		         InstallDefault="local"
+		         Display="expand">
+				<!-- 
+					We put a reference to a dummy component which contains no files
+					so we can get rid of the Network install options from the drop
+					down menu for this feature. Seems to be a bug in Windows Installer.
+				-->
+				<ComponentRef Id="DummyCompleteFeatureComponent"/>
+			<!--
 				The SharpDevelop application. This may at some point in the distant
 				future be further subdivided into addin features, but doing this
 				will mean a new ProductCode will need to be generated.
 			-->
-			<Feature Id="SharpDevelop" Level="1">
+			<Feature Id="SharpDevelop"
+			         Title="SharpDevelop"
+			         Description="Installs SharpDevelop"
+			         Level="1"
+			         InstallDefault="local"
+			         AllowAdvertise="no"
+			         Absent="disallow">
 				<ComponentRef Id="SharpDevelopExe"/>
 				<ComponentRef Id="SharpDevelopExeFiles"/>
 				<ComponentRef Id="SharpDevelopDocFiles"/>
@@ -206,10 +226,12 @@
 				<ComponentRef Id="WixCaDll"/>
 				<ComponentRef Id="WixCaWixLib"/>
 				<ComponentRef Id="WixCopExe"/>
+				<ComponentRef Id="WixMMCExtensionDll"/>
 				<ComponentRef Id="WixNetFxExtensionDll"/>
 				<ComponentRef Id="WixTasksDll"/>
 				<ComponentRef Id="WixUiWixLib"/>
 				<ComponentRef Id="WixLocalisationFiles"/>
+				<ComponentRef Id="WixUIhuhuWxl"/>
 				<ComponentRef Id="NUnitCoreExtensionsDll"/>
 				<ComponentRef Id="NUnitUiKitDll"/>
 				<ComponentRef Id="NUnitUtilDll"/>
@@ -322,13 +344,138 @@
 				<ComponentRef Id="SharpDevelopWebsiteShortcut"/>
 				<ComponentRef Id="SharpDevelopAppPathRegistrySetting"/>
 			</Feature>
+			<Feature Id="SharpDevelopFileAssociations"
+			         Level="1"
+			         AllowAdvertise="no"
+				     InstallDefault="local"
+			         Title="File Associations"
+			         Description="Registers file associations with SharpDevelop.">
+				<!-- 
+					We put a reference to a dummy component which contains no files
+					so we can get rid of the Network install options from the drop
+					down menu for this feature. Seems to be a bug in Windows Installer.
+				-->
+				<ComponentRef Id="DummyFileAssocationFeatureComponent"/>
+				<Feature Id="BooProjectFileAssociation"
+				         Level="1"
+				         AllowAdvertise="no"
+				         InstallDefault="local"
+				         Title="Boo Projects (.booproj)"
+				         Description="Associates Boo projects (.booproj) with SharpDevelop">
+					<ComponentRef Id="BooProjectFileAssociation"/>
+				</Feature>
+				<Feature Id="CombineFileAssociation"
+				         Level="1"
+				         AllowAdvertise="no"
+				         InstallDefault="local"
+				         Title="SharpDevelop 1.x Combines (.cmbx)"
+				         Description="Associates SharpDevelop 1.x Combines (.cmbx) with SharpDevelop">
+					<ComponentRef Id="SharpDevelopCombineFileAssociation"/>
+				</Feature>
+				<Feature Id="CSharpFileAssociation"
+				         Level="1"
+				         AllowAdvertise="no"
+				         InstallDefault="local"
+				         Title="C# Files (.cs)"
+				         Description="Associates C# Files (.cs) with SharpDevelop">
+					<ComponentRef Id="CSharpFileAssociation"/>
+				</Feature>
+				<Feature Id="CSharpProjectFileAssociation"
+				         Level="1"
+				         AllowAdvertise="no"
+				         InstallDefault="local"
+				         Title="C# Projects (.csproj)"
+				         Description="Associates C# Projects (.csproj) with SharpDevelop">
+					<ComponentRef Id="SharpDevelopCSharpProjectFileAssociation"/>
+				</Feature>
+				<Feature Id="SD11ProjectFileAssociation"
+				         Level="1"
+				         AllowAdvertise="no"
+				         InstallDefault="local"
+				         Title="SharpDevelop 1.x Projects (.prjx)"
+				         Description="Associates SharpDevelop 1.x Projects (.prjx) with SharpDevelop">
+					<ComponentRef Id="SharpDevelop11ProjectFileAssociation"/>
+				</Feature>
+				<Feature Id="ResxFileAssociation"
+				         Level="1"
+				         AllowAdvertise="no"
+				         InstallDefault="local"
+				         Title="Resource Files (.resx)"
+				         Description="Associates Resource Files (.resx) with SharpDevelop">
+					<ComponentRef Id="ResxFileAssociation"/>
+				</Feature>
+				<Feature Id="ResourcesFileAssociation"
+				         Level="1"
+				         AllowAdvertise="no"
+				         InstallDefault="local"
+				         Title="Binary Resource Files (.resources)"
+				         Description="Associates Binary Resources files (.resources) with SharpDevelop">
+					<ComponentRef Id="ResourcesFileAssociation"/>
+				</Feature>
+				<Feature Id="AddInFileAssociation"
+				         Level="1"
+				         AllowAdvertise="no"
+				         InstallDefault="local"
+				         Title="SharpDevelop AddIn Installation Packages (.sdaddin)"
+				         Description="Associates SharpDevelop AddIn Installation packages (.sdaddin) with SharpDevelop">
+					<ComponentRef Id="SharpDevelopAddInFileAssociation"/>
+				</Feature>
+				<Feature Id="SolutionFileAssociation"
+				         Level="1"
+				         AllowAdvertise="no"
+				         InstallDefault="local"
+				         Title="SharpDevelop Solutions (.sln)"
+				         Description="Associates SharpDevelop Solutions (.sln) with SharpDevelop">
+					<ComponentRef Id="SharpDevelopSolutionFileAssociation"/>
+				</Feature>
+				<Feature Id="VBFileAssociation"
+				         Level="1"
+				         AllowAdvertise="no"
+				         InstallDefault="local"
+				         Title="VB.NET Files (.vb)"
+				         Description="Associates VB.NET Files (.vb) with SharpDevelop">
+					<ComponentRef Id="VBFileAssociation"/>
+				</Feature>
+				<Feature Id="VBProjectFileAssociation"
+				         Level="1"
+				         AllowAdvertise="no"
+				         InstallDefault="local"
+				         Title="VB.NET Projects (.vbproj)"
+				         Description="Associates VB.NET Projects (.vbproj) with SharpDevelop">
+					<ComponentRef Id="SharpDevelopVBProjectFileAssociation"/>
+				</Feature>
+				<Feature Id="WixProjectFileAssociation"
+				         Level="1"
+				         AllowAdvertise="no"
+				         InstallDefault="local"
+				         Title="SharpDevelop WiX Projects (.wixproj)"
+				         Description="Associates SharpDevelop WiX Projects (.wixproj) with SharpDevelop">
+					<ComponentRef Id="SharpDevelopWixProjectFileAssociation"/>
+				</Feature>
+				<Feature Id="XmlFormFileAssociation"
+				         Level="1"
+				         AllowAdvertise="no"
+				         InstallDefault="local"
+				         Title="SharpDevelop XML Forms (.xfrm)"
+				         Description="Associates SharpDevelop XML Forms (.xfrm) with SharpDevelop">
+					<ComponentRef Id="SharpDevelopXmlFormFileAssociation"/>
+				</Feature>
+				<Feature Id="XmlFileAssociation"
+				         Level="1"
+				         AllowAdvertise="no"
+				         InstallDefault="local"
+				         Title="XML Files (.xml)"
+				         Description="Associates XML Files (.xml) with SharpDevelop">
+					<ComponentRef Id="XmlFileAssociation"/>
+				</Feature>
+			</Feature>
 		</Feature>
-			
+		
 		<!-- Using WixUI temporarily -->
 		<Property Id="WIXUI_INSTALLDIR">INSTALLDIR</Property>
-		<UIRef Id="WixUI_InstallDir"/>
-	
-		<!-- 
+		<UIRef Id="WixUI_FeatureTree"/>
+		
+		<!--
 			If a newer version of SharpDevelop 2.1 is installed show an
 			error message.
 	
@@ -337,10 +484,10 @@
 			configured everything.
 		-->
 		<CustomAction Id="NoDowngrade" Error="A later version of [ProductName] is already installed." />
-
+		
 		<!-- Add RemoveExistingProducts action to install sequence so upgrades can work -->
 		<InstallExecuteSequence>
-			<!-- 
+			<!--
 				Display an error message if a newer version found.
 				
 				Since the installer completely removes the existing SharpDevelop 2.1
@@ -348,7 +495,7 @@
 				inform the user that a newer version already exists.
  			-->
 			<Custom Action="NoDowngrade" After="FindRelatedProducts">NEWERVERSIONFOUND</Custom>
-			<!-- 
+			<!--
 				Removes the older version of SharpDevelop 2.1, if we are upgrading,
 				before installing the new version.
 

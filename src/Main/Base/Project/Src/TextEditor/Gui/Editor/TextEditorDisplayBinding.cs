@@ -85,7 +85,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		
 		void SetText(string value)
 		{
-			textEditorControl.Document.TextContent = value;
+			textEditorControl.Document.Replace(0, textEditorControl.Document.TextLength, value);
 		}
 		
 		public string Text {

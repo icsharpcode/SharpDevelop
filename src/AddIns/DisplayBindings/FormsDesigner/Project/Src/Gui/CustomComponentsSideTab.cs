@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Drawing.Design;
@@ -21,16 +22,29 @@ using ICSharpCode.SharpDevelop.Widgets.SideBar;
 
 namespace ICSharpCode.FormsDesigner.Gui
 {
-	public class CustomComponentsSideTab : SideTabDesigner
+	public class CustomComponentsSideTab : SideTabDesigner, IDisposable
 	{
+		bool disposed;
+		
 		///<summary>Load an assembly's controls</summary>
 		public CustomComponentsSideTab(SideBarControl sideTab, string name, IToolboxService toolboxService)
 			: base(sideTab, name, toolboxService)
 		{
 			this.DisplayName = StringParser.Parse(this.Name);
 			ScanProjectAssemblies();
-			ProjectService.EndBuild       += RescanProjectAssemblies;
-			ProjectService.SolutionLoaded += RescanProjectAssemblies;
+			ProjectService.EndBuild         += RescanProjectAssemblies;
+			ProjectService.SolutionLoaded   += RescanProjectAssemblies;
+			ProjectService.ProjectItemAdded += ProjectItemAdded;
+		}
+		
+		public void Dispose()
+		{
+			if (!disposed) {
+				disposed = true;
+				ProjectService.EndBuild         -= RescanProjectAssemblies;
+				ProjectService.SolutionLoaded   -= RescanProjectAssemblies;
+				ProjectService.ProjectItemAdded -= ProjectItemAdded;
+			}
 		}
 		
 		void RescanProjectAssemblies(object sender, EventArgs e)
@@ -41,11 +55,27 @@ namespace ICSharpCode.FormsDesigner.Gui
 			SharpDevelopSideBar.SideBar.Refresh();
 		}
 		
+		void ProjectItemAdded(object sender, ProjectItemEventArgs e)
+		{
+			if (e.ProjectItem is ReferenceProjectItem) {
+				RescanProjectAssemblies(sender, e);
+			}
+		}
+		
+		/// <summary>
+		/// Gets the list of project contents of all open projects plus the referenced project contents.
+		/// </summary>
+		static IEnumerable<IProjectContent> AllProjectContentsWithReferences {
+			get {
+				return Linq.Distinct(Linq.Concat(ParserService.AllProjectContents, ParserService.DefaultProjectContentRegistry.GetLoadedProjectContents()));
+			}
+		}
+		
 		void ScanProjectAssemblies()
 		{
 			// custom user controls don't need custom images
 			loadImages = false;
-			foreach (IProjectContent pc in ParserService.AllProjectContentsWithReferences) {
+			foreach (IProjectContent pc in AllProjectContentsWithReferences) {
 				if (pc.Project == null) {
 					ReflectionProjectContent rpc = pc as ReflectionProjectContent;
 					if (rpc == null)

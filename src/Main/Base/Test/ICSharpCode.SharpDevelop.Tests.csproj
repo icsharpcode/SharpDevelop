@@ -50,6 +50,7 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="CodeConverterTests.cs" />
+    <Compile Include="CSharpExpressionFinderTests.cs" />
     <Compile Include="NRefactoryResolverTests.cs" />
     <Compile Include="ReflectionLayerTests.cs" />
     <Compile Include="GenericResolverTests.cs" />
@@ -59,6 +60,7 @@
     <Compile Include="OverloadFinding.cs" />
     <Compile Include="SearchGenericClassTests.cs" />
     <Compile Include="MemberLookupHelperTests.cs" />
+    <Compile Include="VBExpressionFinderTests.cs" />
     <Compile Include="WebReferences\WebReferenceProjectItemsTest.cs" />
     <Compile Include="WebReferences\ProjectHasExistingWebRefFolderTest.cs" />
     <Compile Include="WebReferences\VBNetWebReferenceTest.cs" />

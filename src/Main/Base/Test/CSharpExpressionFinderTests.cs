@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
@@ -9,15 +9,14 @@ using System;
 using System.Reflection;
 using System.Collections.Generic;
 using NUnit.Framework;
-using CSharpBinding.Parser;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.CSharp;
 
-namespace CSharpBinding.Tests
+namespace ICSharpCode.SharpDevelop.Tests
 {
 	[TestFixture]
-	public class ExpressionFinderTests
+	public class CSharpExpressionFinderTests
 	{
 		const string document = @"using System;
 class Main<T> : BaseType
@@ -140,7 +139,7 @@ class Main {
 		[Test]
 		public void NewException()
 		{
-			FindFull(program2, "otFoundException", "NotFoundException()", ExpressionContext.TypeDerivingFrom(ParserService.DefaultProjectContentRegistry.Mscorlib.GetClass("System.Exception", 0), true));
+			FindFull(program2, "otFoundException", "NotFoundException()", ExpressionContext.TypeDerivingFrom(ParserService.DefaultProjectContentRegistry.Mscorlib.GetClass("System.Exception"), true));
 		}
 	}
 }

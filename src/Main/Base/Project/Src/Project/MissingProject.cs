@@ -15,7 +15,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			Name     = title;
 			FileName = fileName;
-			IdGuid = "{" + Guid.NewGuid().ToString() + "}";
 			TypeGuid = "{00000000-0000-0000-0000-000000000000}";
 		}
 	}

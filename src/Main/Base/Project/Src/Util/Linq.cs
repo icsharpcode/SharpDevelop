@@ -86,7 +86,7 @@ namespace ICSharpCode.SharpDevelop
 		}
 		
 		/// <summary>
-		/// Returns if an element that matches the filter exists.
+		/// Gets if any element in the input matches the filter.
 		/// </summary>
 		public static bool Exists<T>(IEnumerable<T> input, Predicate<T> filter)
 		{
@@ -130,9 +130,14 @@ namespace ICSharpCode.SharpDevelop
 		/// <summary>
 		/// Concatenates the specified enumerables.
 		/// </summary>
-		public static IEnumerable<T> Concat<T>(params IEnumerable<T>[] inputs)
+		public static IEnumerable<T> Concat<T>(IEnumerable<T> input1, IEnumerable<T> input2)
 		{
-			return Concat(inputs as IEnumerable<IEnumerable<T>>);
+			foreach (T element in input1) {
+				yield return element;
+			}
+			foreach (T element in input2) {
+				yield return element;
+			}
 		}
 		
 		/// <summary>

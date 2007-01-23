@@ -51,7 +51,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		[Browsable(false)]
-		public string IdGuid {
+		public virtual string IdGuid {
 			get {
 				return idGuid;
 			}

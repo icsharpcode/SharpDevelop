@@ -526,7 +526,10 @@ namespace ICSharpCode.SharpDevelop.Project
 				if (sec.Name == "SolutionConfiguration") {
 					this.Sections.Remove(sec);
 					foreach (SolutionItem item in sec.Items) {
-						newSec.Items.Add(new SolutionItem(item.Name + "|Any CPU", item.Location + "|Any CPU"));
+						// item.Name = item.Location
+						// might be  ConfigName.0 = Debug   (VS.NET)
+						// or        Debug = Debug          (VS.NET 03)
+						newSec.Items.Add(new SolutionItem(item.Location + "|Any CPU", item.Location + "|Any CPU"));
 					}
 					break;
 				}
