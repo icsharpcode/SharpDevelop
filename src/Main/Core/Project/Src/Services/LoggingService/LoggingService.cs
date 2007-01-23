@@ -12,6 +12,9 @@ using log4net.Config;
 
 namespace ICSharpCode.Core
 {
+	/// <summary>
+	/// Class for easy logging. Uses log4net as backend.
+	/// </summary>
 	public static class LoggingService
 	{
 		static ILog log = LogManager.GetLogger(typeof(LoggingService));

@@ -12,7 +12,7 @@ using System.Windows.Forms;
 namespace ICSharpCode.Core
 {
 	/// <summary>
-	/// Description of InputBox.
+	/// Class used to display an input box.
 	/// </summary>
 	internal class InputBox : System.Windows.Forms.Form
 	{

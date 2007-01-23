@@ -12,29 +12,32 @@ using System.Collections.Generic;
 namespace ICSharpCode.Core
 {
 	/// <summary>
-	/// Description of AddInTreeNode.
+	/// Represents an extension path in the <see cref="AddInTree"/>.
 	/// </summary>
-	public class AddInTreeNode
+	public sealed class AddInTreeNode
 	{
 		Dictionary<string, AddInTreeNode> childNodes = new Dictionary<string, AddInTreeNode>();
 		List<Codon> codons = new List<Codon>();
 		bool isSorted = false;
 		
+		/// <summary>
+		/// A dictionary containing the child paths.
+		/// </summary>
 		public Dictionary<string, AddInTreeNode> ChildNodes {
 			get {
 				return childNodes;
 			}
 		}
 		
+		/// <summary>
+		/// A list of child <see cref="Codon"/>s.
+		/// </summary>
 		public List<Codon> Codons {
 			get {
 				return codons;
 			}
 		}
 		
-		public AddInTreeNode()
-		{
-		}
 //
 //		public void BinarySerialize(BinaryWriter writer)
 //		{
@@ -54,7 +57,10 @@ namespace ICSharpCode.Core
 //			}
 //		}
 		
-		public class TopologicalSort
+		/// <summary>
+		/// Supports sorting codons using InsertBefore/InsertAfter
+		/// </summary>
+		sealed class TopologicalSort
 		{
 			List<Codon> codons;
 			bool[] visited;
@@ -126,6 +132,10 @@ namespace ICSharpCode.Core
 			}
 		}
 		
+		/// <summary>
+		/// Builds the child items in this path. Ensures that all items have the type T.
+		/// </summary>
+		/// <param name="caller">The owner used to create the objects.</param>
 		public List<T> BuildChildItems<T>(object caller)
 		{
 			List<T> items = new List<T>(codons.Count);
@@ -155,12 +165,20 @@ namespace ICSharpCode.Core
 			return items;
 		}
 		
-		// Workaround for Boo compiler (it cannot distinguish between the generic and non-generic method)
+		/// <summary>
+		/// Same as <see cref="BuildChildItems"/> (no type arguments).
+		/// Workaround for Boo compiler (it cannot distinguish between the generic and non-generic method).
+		/// </summary>
+		/// <param name="caller">The owner used to create the objects.</param>
 		public ArrayList BuildChildItemsArrayList(object caller)
 		{
 			return BuildChildItems(caller);
 		}
 		
+		/// <summary>
+		/// Builds the child items in this path.
+		/// </summary>
+		/// <param name="caller">The owner used to create the objects.</param>
 		public ArrayList BuildChildItems(object caller)
 		{
 			ArrayList items = new ArrayList(codons.Count);
@@ -186,6 +204,17 @@ namespace ICSharpCode.Core
 			return items;
 		}
 		
+		/// <summary>
+		/// Builds a specific child items in this path.
+		/// </summary>
+		/// <param name="childItemID">
+		/// The ID of the child item to build.
+		/// </param>
+		/// <param name="caller">The owner used to create the objects.</param>
+		/// <param name="subItems">The subitems to pass to the doozer</param>
+		/// <exception cref="TreePathNotFoundException">
+		/// Occurs when <paramref name="childItemID"/> does not exist in this path.
+		/// </exception>
 		public object BuildChildItem(string childItemID, object caller, ArrayList subItems)
 		{
 			foreach (Codon codon in codons) {

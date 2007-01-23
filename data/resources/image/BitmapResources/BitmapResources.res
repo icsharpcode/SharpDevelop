@@ -498,3 +498,4 @@ Icons.16x16.NavigateForward              = NavigationIcons\Icons.16x16.NavigateF
 
 #Setup icons (Wix)
 Setup.Icons.16x16.SetupDialogsPad = SetupIcons\Setup.Icons.16x16.SetupDialogsPad.png
+Setup.Icons.16x16.Component = SetupIcons\Setup.Icons.16x16.Component.png

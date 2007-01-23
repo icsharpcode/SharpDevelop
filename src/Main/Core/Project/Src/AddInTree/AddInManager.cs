@@ -13,24 +13,70 @@ using System.Xml;
 
 namespace ICSharpCode.Core
 {
+	/// <summary>
+	///   Specifies the action to be taken for a specific <see cref="AddIn"/>.
+	/// </summary>
 	public enum AddInAction
 	{
+		/// <summary>
+		///   Enable the <see cref="AddIn"/>.
+		/// </summary>
 		Enable,
+		/// <summary>
+		///     Disable the <see cref="AddIn"/>.
+		/// </summary>
 		Disable,
+		/// <summary>
+		///     Install the <see cref="AddIn"/>.
+		/// </summary>
 		Install,
+		/// <summary>
+		///     Uninstall the <see cref="AddIn"/>.
+		/// </summary>
 		Uninstall,
+		/// <summary>
+		///     Update the <see cref="AddIn"/>.
+		/// </summary>
 		Update,
+		/// <summary>
+		/// The <see cref="AddIn"/> is disabled because it has been installed
+		/// twice (duplicate identity).
+		/// </summary>
 		InstalledTwice,
+		/// <summary>
+		///     Tells that the <see cref="AddIn"/> cannot be loaded because not all dependencies are satisfied.
+		/// </summary>
 		DependencyError,
+		/// <summary>
+		/// A custom error has occurred (e.g. the AddIn disabled itself using a condition).
+		/// </summary>
 		CustomError
 	}
 	
+	/// <summary>
+	/// Manages all actions performed on <see cref="AddIn"/>s.
+	/// An AddInManager GUI can use the methods here to install/update/uninstall
+	/// <see cref="AddIn"/>s.
+	/// 
+	/// There are three types of AddIns:
+	/// - Preinstalled AddIns (added by host application) -> can only be disabled
+	/// - External AddIns -> can be added, disabled and removed
+	/// 	Removing external AddIns only removes the reference to the .addin file
+	///     but does not delete the AddIn.
+	/// - User AddIns -> are installed to UserAddInPath, can be installed, disabled
+	///     and uninstalled
+	/// </summary>
 	public static class AddInManager
 	{
 		static string configurationFileName;
 		static string addInInstallTemp;
 		static string userAddInPath;
 		
+		/// <summary>
+		/// Gets or sets the user addin path.
+		/// This is the path where user AddIns are installed to.
+		/// This property is normally initialized by <see cref="CoreStartup.ConfigureUserAddIns"/>.
+		/// </summary>
 		public static string UserAddInPath {
 			get {
 				return userAddInPath;
@@ -40,6 +86,12 @@ namespace ICSharpCode.Core
 			}
 		}
 		
+		/// <summary>
+		/// Gets or sets the addin install temporary directory.
+		/// This is a directory used to store AddIns that should be installed on
+		/// the next start of the application.
+		/// This property is normally initialized by <see cref="CoreStartup.ConfigureUserAddIns"/>.
+		/// </summary>
 		public static string AddInInstallTemp {
 			get {
 				return addInInstallTemp;
@@ -49,6 +101,12 @@ namespace ICSharpCode.Core
 			}
 		}
 		
+		/// <summary>
+		/// Gets or sets the full name of the configuration file.
+		/// In this file, the AddInManager stores the list of disabled AddIns
+		/// and the list of installed external AddIns.
+		/// This property is normally initialized by <see cref="CoreStartup.ConfigureExternalAddIns"/>.
+		/// </summary>
 		public static string ConfigurationFileName {
 			get {
 				return configurationFileName;
@@ -62,6 +120,7 @@ namespace ICSharpCode.Core
 		/// Installs the AddIns from AddInInstallTemp to the UserAddInPath.
 		/// In case of installation errors, a error message is displayed to the user
 		/// and the affected AddIn is added to the disabled list.
+		/// This method is normally called by <see cref="CoreStartup.ConfigureUserAddIns"/>
 		/// </summary>
 		public static void InstallAddIns(List<string> disabled)
 		{
@@ -139,6 +198,13 @@ namespace ICSharpCode.Core
 			return true;
 		}
 		
+		/// <summary>
+		/// Uninstalls the user addin on next start.
+		/// <see cref="RemoveUserAddInOnNextStart"/> schedules the AddIn for
+		/// deinstallation, you can unschedule it using
+		/// <see cref="AbortRemoveUserAddInOnNextStart"/>
+		/// </summary>
+		/// <param name="identity">The identity of the addin to remove.</param>
 		public static void RemoveUserAddInOnNextStart(string identity)
 		{
 			List<string> removeEntries = new List<string>();
@@ -163,6 +229,13 @@ namespace ICSharpCode.Core
 			}
 		}
 		
+		/// <summary>
+		/// Prevents a user AddIn from being uninstalled.
+		/// <see cref="RemoveUserAddInOnNextStart"/> schedules the AddIn for
+		/// deinstallation, you can unschedule it using
+		/// <see cref="AbortRemoveUserAddInOnNextStart"/>
+		/// </summary>
+		/// <param name="identity">The identity of which to abort the removal.</param>
 		public static void AbortRemoveUserAddInOnNextStart(string identity)
 		{
 			string removeFile = Path.Combine(addInInstallTemp, "remove.txt");
@@ -185,6 +258,14 @@ namespace ICSharpCode.Core
 			}
 		}
 		
+		/// <summary>
+		/// Adds the specified external AddIns to the list of registered external
+		/// AddIns.
+		/// </summary>
+		/// <param name="addIns">
+		/// The list of AddIns to add. (use <see cref="AddIn"/> instances
+		/// created by <see cref="AddIn.Load(TextReader)"/>).
+		/// </param>
 		public static void AddExternalAddIns(IList<AddIn> addIns)
 		{
 			List<string> addInFiles = new List<string>();
@@ -202,6 +283,12 @@ namespace ICSharpCode.Core
 			SaveAddInConfiguration(addInFiles, disabled);
 		}
 		
+		/// <summary>
+		/// Removes the specified external AddIns from the list of registered external
+		/// AddIns.
+		/// </summary>
+		/// The list of AddIns to remove.
+		/// (use external AddIns from the <see cref="AddInTree.AddIns"/> collection).
 		public static void RemoveExternalAddIns(IList<AddIn> addIns)
 		{
 			List<string> addInFiles = new List<string>();
@@ -222,6 +309,10 @@ namespace ICSharpCode.Core
 			SaveAddInConfiguration(addInFiles, disabled);
 		}
 		
+		/// <summary>
+		/// Marks the specified AddIns as enabled (will take effect after
+		/// next application restart).
+		/// </summary>
 		public static void Enable(IList<AddIn> addIns)
 		{
 			List<string> addInFiles = new List<string>();
@@ -248,6 +339,10 @@ namespace ICSharpCode.Core
 			SaveAddInConfiguration(addInFiles, disabled);
 		}
 		
+		/// <summary>
+		/// Marks the specified AddIns as disabled (will take effect after
+		/// next application restart).
+		/// </summary>
 		public static void Disable(IList<AddIn> addIns)
 		{
 			List<string> addInFiles = new List<string>();
@@ -274,6 +369,8 @@ namespace ICSharpCode.Core
 		/// "&lt;Disable addin='addin identity'&gt;" will be added to <paramref name="disabledAddIns"/>,
 		/// all other XML elements are ignored.
 		/// </summary>
+		/// <param name="addInFiles">File names of external AddIns are added to this collection.</param>
+		/// <param name="disabledAddIns">Identities of disabled addins are added to this collection.</param>
 		public static void LoadAddInConfiguration(List<string> addInFiles, List<string> disabledAddIns)
 		{
 			if (!File.Exists(configurationFileName))
@@ -297,6 +394,12 @@ namespace ICSharpCode.Core
 			}
 		}
 		
+		/// <summary>
+		/// Saves the AddIn configuration in the format expected by
+		/// <see cref="LoadAddInConfiguration"/>.
+		/// </summary>
+		/// <param name="addInFiles">List of file names of external AddIns.</param>
+		/// <param name="disabledAddIns">List of Identities of disabled addins.</param>
 		public static void SaveAddInConfiguration(List<string> addInFiles, List<string> disabledAddIns)
 		{
 			using (XmlTextWriter writer = new XmlTextWriter(configurationFileName, Encoding.UTF8)) {
