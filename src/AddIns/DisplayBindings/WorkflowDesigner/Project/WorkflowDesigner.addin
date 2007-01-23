@@ -1,0 +1,46 @@
+<AddIn name        = "Workflow Foundation Designer"
+       author      = "Russell Wilkins"
+       url         = ""
+       description = "Windows Workflow Foundation Designer">
+	
+	<Runtime>
+		<Import assembly = "WorkflowDesigner.dll"/>
+	</Runtime>
+	
+	<Manifest>
+		<Identity name="WorkflowDesigner" version="@WorkflowDesigner.dll"/>
+		<Dependency addin="SharpDevelop" version="3.0"/>
+	</Manifest>
+
+	
+	<!--Primary View -->
+	<Path name="/SharpDevelop/Workbench/FileFilter">
+		<FileFilter id   = "WorkflowFileFilter"
+		            name = "Workflow (*.xoml)"
+		            extensions   = "*.xoml"
+		            insertbefore = "Boo"/>
+	</Path>	
+	
+	<Path name = "/SharpDevelop/Workbench/DisplayBindings">
+		<DisplayBinding id    = "WorkflowDisplayBinding"
+		                class = "WorkflowDesigner.WorkflowPrimaryDisplayBinding"
+		                insertbefore    = "Text"
+		                fileNamePattern = "\.(xoml)$"
+		                languagePattern = "^Xoml$"
+		/>
+	</Path>
+
+	<!--Secondary View -->
+	<Path name = "/SharpDevelop/Workbench/DisplayBindings">
+		<DisplayBinding id  = "WorkflowDesignerSecondary"
+		                type  = "Secondary"
+		                class = "WorkflowDesigner.WorkflowDesignerSecondaryDisplayBinding"
+		                fileNamePattern = "\.cs?$" />
+	</Path>
+	
+	<!--Template path -->
+	<Path name = "/SharpDevelop/BackendBindings/Templates">
+		<Directory id = "WorkflowDesigner" path = "./Templates" />
+	</Path>
+
+</AddIn>

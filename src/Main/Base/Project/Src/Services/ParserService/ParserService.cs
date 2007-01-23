@@ -602,6 +602,10 @@ namespace ICSharpCode.SharpDevelop
 			return parseInformation;
 		}
 		
+		/// <summary>
+		/// Gets the content of the file using encoding auto-detection (or DefaultFileEncoding, if that fails).
+		/// If the file is already open, gets the text in the opened view content.
+		/// </summary>
 		public static string GetParseableFileContent(string fileName)
 		{
 			IViewContent viewContent = FileService.GetOpenFile(fileName);
