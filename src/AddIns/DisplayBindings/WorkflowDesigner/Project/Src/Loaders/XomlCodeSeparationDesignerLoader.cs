@@ -16,9 +16,6 @@ using System.Workflow.ComponentModel.Compiler;
 using System.CodeDom;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.NRefactory.Visitors;
-using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 #endregion
 
@@ -48,48 +45,15 @@ namespace WorkflowDesigner
 		
 		protected override void Load()
 		{
-			UpdateCCU();
+			IWorkflowDesignerGeneratorService srv = LoaderHost.GetService(typeof(IWorkflowDesignerGeneratorService)) as IWorkflowDesignerGeneratorService;
+			srv.UpdateCCU();
 			
 			LoadFromXoml();
 			
 			LoaderHost.Activate();
 		}
       
-        CodeCompileUnit ccu;
-		public void UpdateCCU()
-		{
-			LoggingService.Debug("UpdateCCU");
 
-			TypeProvider typeProvider = (TypeProvider)this.GetService(typeof(ITypeProvider));
-
-			if (ccu != null) 
-				typeProvider.RemoveCodeCompileUnit(ccu);
-			
-			ccu = Parse();
-			
-			if (ccu != null) 
-				typeProvider.AddCodeCompileUnit(ccu);
-			
-		}
-		
-		CodeCompileUnit Parse()
-		{
-			LoggingService.Debug("NRefactoryDesignerLoader.Parse()");
-			
-			string fileContent = ParserService.GetParseableFileContent(codeFileName);
-			
-			ICSharpCode.NRefactory.IParser  parser = ICSharpCode.NRefactory.ParserFactory.CreateParser(SupportedLanguage.CSharp, new StringReader(fileContent));
-			parser.Parse();
-			if (parser.Errors.Count > 0) {
-				throw new Exception("Syntax errors in " + codeFileName + ":\r\n" + parser.Errors.ErrorOutput);
-			}
-			
-			CodeDomVisitor visitor = new CodeDomVisitor();
-			visitor.VisitCompilationUnit(parser.CompilationUnit, null);
-			
-			LoggingService.Debug("NRefactoryDesignerLoader.Parse() finished");
-			return visitor.codeCompileUnit;
-		}
 		
 	}
 }

@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+#region Using
 using System;
 using System.ComponentModel.Design;
 using System.ComponentModel;
@@ -12,6 +13,9 @@ using System.Collections;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
+using System.Workflow.ComponentModel.Serialization;
+using System.Workflow.ComponentModel;
+#endregion
 
 namespace WorkflowDesigner
 {
@@ -77,7 +81,7 @@ namespace WorkflowDesigner
 		
 		public PropertyDescriptor GetEventProperty(EventDescriptor e)
 		{
-			return new EventPropertyDescriptor(e);
+			return new EventPropertyDescriptor(this,e);
 		}
 
 		public bool ShowCode()
@@ -101,10 +105,9 @@ namespace WorkflowDesigner
 		
 		public bool ShowCode(IComponent component, EventDescriptor e)
 		{
-			
 			IWorkflowDesignerGeneratorService generatorService = GeneratorService;
 			if (generatorService != null)
-				return GeneratorService.ShowCode();
+				return GeneratorService.ShowCode(component, e);
 			
 			return false;
 		}
@@ -132,10 +135,12 @@ namespace WorkflowDesigner
 	public class EventPropertyDescriptor : PropertyDescriptor
 	{
 		internal EventDescriptor eventDescriptor;
+		private IServiceProvider provider;
 		
-		public EventPropertyDescriptor(EventDescriptor eventDescriptor) : base(eventDescriptor)
+		public EventPropertyDescriptor(IServiceProvider provider,  EventDescriptor eventDescriptor) : base(eventDescriptor)
 		{
 			this.eventDescriptor = eventDescriptor;
+			this.provider = provider;
 		}
 		
 		public override Type ComponentType {
@@ -163,19 +168,60 @@ namespace WorkflowDesigner
 		
 		public override object GetValue(object component)
 		{
-			//TODO: Implement this
-			return null;
+			Activity activity = component as Activity;
+			if (component == null)
+				throw new ArgumentException("component must be derived from Activity");
+			
+			string value = string.Empty;
+			
+			// Find method name associated with the EventDescriptor.
+			Hashtable events = activity.GetValue(WorkflowMarkupSerializer.EventsProperty) as Hashtable;
+			
+			if (events != null) {
+				if (events.ContainsKey(this.eventDescriptor.Name))
+					value = events[this.eventDescriptor.Name] as string;
+			}
+			
+			return value;
 		}
 		
 		public override void ResetValue(object component)
 		{
-			
+			SetValue(component, null);
 		}
 		
 		public override void SetValue(object component, object value)
 		{
-			//TODO: Implement this
+			// Validate the parameters.
+			Activity activity = component as Activity;
+			if (component == null)
+				throw new ArgumentException("component must be derived from Activity");
+			
+			// Get the event list form the dependency object.
+			Hashtable events = activity.GetValue(WorkflowMarkupSerializer.EventsProperty) as Hashtable;
+
+			if (events == null) {
+				events = new Hashtable();
+				activity.SetValue(WorkflowMarkupSerializer.EventsProperty, events);
+			}
+
+			string oldValue = events[this.eventDescriptor.Name] as string;
+			
+			// Value not changed need go no further.
+			if (oldValue != null) {
+				if (oldValue.CompareTo(value) == 0)
+					return;				
+			}
+			
+			IComponentChangeService componentChangedService = provider.GetService(typeof(IComponentChangeService)) as  IComponentChangeService;
+			componentChangedService.OnComponentChanging(component, this.eventDescriptor);
+
+			// Update to new value.
+			events[this.eventDescriptor.Name] = value;
+			
+			componentChangedService.OnComponentChanged(component, this.eventDescriptor, oldValue, value);
 		}
+
 		
 		public override bool ShouldSerializeValue(object component)
 		{

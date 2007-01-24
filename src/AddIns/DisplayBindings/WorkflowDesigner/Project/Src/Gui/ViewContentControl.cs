@@ -207,10 +207,10 @@ namespace WorkflowDesigner
 			designSurface.BeginLoad(loader);
 
 			// Monitor for updates and make the view dirty.
-			//IComponentChangeService componentChangeService = (IComponentChangeService)designSurface.GetService(typeof(IComponentChangeService));
+			IComponentChangeService componentChangeService = (IComponentChangeService)designSurface.GetService(typeof(IComponentChangeService));
 			//componentChangeService.ComponentAdding += new ComponentEventHandler(ComponentAddingHandler);
-			//componentChangeService.ComponentAdded += new ComponentEventHandler(ComponentAddedHandler);
-			//componentChangeService.ComponentChanged += new ComponentChangedEventHandler(ComponentChangedHandler);
+			componentChangeService.ComponentAdded += new ComponentEventHandler(ComponentAddedHandler);
+			componentChangeService.ComponentChanged += new ComponentChangedEventHandler(ComponentChangedHandler);
 
 			// Attach the selection service to capture objects selection changes to update property pad.
 			ISelectionService selectionService = (ISelectionService)designSurface.GetService(typeof(ISelectionService));
@@ -218,9 +218,15 @@ namespace WorkflowDesigner
 			
 		}
 		
+		void UpdateCCU()
+		{
+			IWorkflowDesignerGeneratorService srv = this.DesignerHost.GetService(typeof(IWorkflowDesignerGeneratorService)) as IWorkflowDesignerGeneratorService;
+			srv.UpdateCCU();
+		}
+		
 		void ComponentAddedHandler(object sender, ComponentEventArgs args)
 		{
-			((XomlCodeSeparationDesignerLoader)loader).UpdateCCU();
+			UpdateCCU();
 			LoggingService.Debug("ComponentAddedHandler");
 		}
 		
@@ -231,8 +237,10 @@ namespace WorkflowDesigner
 
 		void ComponentChangedHandler(object sender, ComponentChangedEventArgs args)
 		{
-			((XomlCodeSeparationDesignerLoader)loader).UpdateCCU();
+			UpdateCCU();
 			viewContent.PrimaryFile.MakeDirty();
+			ISelectionService selectionService = (ISelectionService)designSurface.GetService(typeof(ISelectionService));
+			UpdatePropertyPadSelection(selectionService);
 		}
 
 		void SelectionChangedHandler(object sender, EventArgs args)
@@ -246,11 +254,9 @@ namespace WorkflowDesigner
 			object[] selArray = new object[selection.Count];
 			selection.CopyTo(selArray, 0);
 			propertyContainer.SelectableObjects = DesignerHost.Container.Components;
-			//propertyContainer.Host = DesignerHost.RootComponent.Site;
+			propertyContainer.Host = DesignerHost;
 			propertyContainer.SelectedObjects = selArray;
 			PropertyPad.Grid.CommandsVisibleIfAvailable = false;
-			PropertyPad.Grid.Site = DesignerHost.RootComponent.Site;
-			
 		}
 		
 		internal void Selected()

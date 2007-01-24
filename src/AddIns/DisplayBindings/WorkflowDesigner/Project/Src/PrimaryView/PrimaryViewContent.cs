@@ -84,10 +84,7 @@ namespace WorkflowDesigner
 			xomlDesignerLoader.Xoml = content;
 			control.LoadWorkflow(xomlDesignerLoader);
 		}
-		
-		// control.Selected();
-		// control.Deselected();
-		
+	
 		#region IHasPropertyContainer
 		public PropertyContainer PropertyContainer {
 			get {

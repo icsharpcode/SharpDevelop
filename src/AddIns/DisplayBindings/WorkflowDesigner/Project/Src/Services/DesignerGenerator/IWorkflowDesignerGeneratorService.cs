@@ -16,11 +16,13 @@ namespace WorkflowDesigner
 	/// </summary>
 	public interface IWorkflowDesignerGeneratorService
 	{
-		string CodeSeparationFileName {	get;}
+		string CodeFileName {	get;}
 		ICollection GetCompatibleMethods(EventDescriptor edesc);
 		bool ShowCode();
 		bool ShowCode(int lineNumber);
-		bool ShowCode(System.ComponentModel.IComponent component, System.ComponentModel.EventDescriptor e, string methodName);
-		void UseMethod(System.ComponentModel.IComponent component, System.ComponentModel.EventDescriptor e, string methodName);
+		bool ShowCode(IComponent component, EventDescriptor e);
+		bool ShowCode(IComponent component, EventDescriptor e, string methodName);
+		bool UseMethod(IComponent component, EventDescriptor e, string methodName);
+		void UpdateCCU();
 	}
 }

@@ -7,11 +7,17 @@
 
 #region Using
 using System;
+using System.Text;
+using System.IO;
 using System.Collections;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Workflow.ComponentModel.Design;
 using System.Reflection;
+using System.Workflow.ComponentModel;
+using System.Workflow.ComponentModel.Serialization;
+using System.Workflow.ComponentModel.Compiler;
+using System.CodeDom;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
@@ -20,6 +26,9 @@ using ICSharpCode.SharpDevelop.Dom.ReflectionLayer;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.TextEditor.Document;
+using ICSharpCode.NRefactory.Visitors;
+using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.Ast;
 
 #endregion
 
@@ -31,12 +40,52 @@ namespace WorkflowDesigner
 	public abstract class WorkflowDesignerGeneratorService : IWorkflowDesignerGeneratorService, IServiceProvider
 	{
 		IServiceProvider provider;
-		string codeSeparationFileName;
+		string codeFileName;
+        CodeCompileUnit ccu;
+
+        public void UpdateCCU()
+		{
+			LoggingService.Debug("UpdateCCU");
+
+			TypeProvider typeProvider = (TypeProvider)this.GetService(typeof(ITypeProvider));
+
+			if (ccu != null) 
+				typeProvider.RemoveCodeCompileUnit(ccu);
+			
+			ccu = Parse();
+			
+			if (ccu != null) 
+				typeProvider.AddCodeCompileUnit(ccu);
+
+			
+			
+		}
 		
+		private void RefreshCCU(object sender, EventArgs e)
+		{
+		}
+		
+		CodeCompileUnit Parse()
+		{
+			
+			string fileContent = ParserService.GetParseableFileContent(codeFileName);
+			
+			ICSharpCode.NRefactory.IParser  parser = ICSharpCode.NRefactory.ParserFactory.CreateParser(SupportedLanguage.CSharp, new StringReader(fileContent));
+			parser.Parse();
+			if (parser.Errors.Count > 0) {
+				throw new Exception("Syntax errors in " + codeFileName + ":\r\n" + parser.Errors.ErrorOutput);
+			}
+			
+			CodeDomVisitor visitor = new CodeDomVisitor();
+			visitor.VisitCompilationUnit(parser.CompilationUnit, null);
+			
+			return visitor.codeCompileUnit;
+		}
+
 		public WorkflowDesignerGeneratorService(IServiceProvider provider, string codeSeparationFileName)
 		{
 			this.provider = provider;
-			this.codeSeparationFileName = codeSeparationFileName;
+			this.codeFileName = codeSeparationFileName;
 		}
 
 		public object GetService(Type serviceType)
@@ -44,9 +93,9 @@ namespace WorkflowDesigner
 			return provider.GetService(serviceType);
 		}
 		
-		public string CodeSeparationFileName {
+		public string CodeFileName {
 			get {
-				return codeSeparationFileName;
+				return codeFileName;
 			}
 		}
 
@@ -62,7 +111,7 @@ namespace WorkflowDesigner
 				
 				LoggingService.DebugFormatted("DesignerHost.RootComponent={0}", rootDesigner.Component.Site.Name);
 				
-				ParseInformation info = ParserService.ParseFile(this.codeSeparationFileName);
+				ParseInformation info = ParserService.ParseFile(this.codeFileName);
 				ICompilationUnit cu = (ICompilationUnit)info.BestCompilationUnit;
 				MethodInfo methodInfo = edesc.EventType.GetMethod("Invoke");
 				
@@ -107,17 +156,38 @@ namespace WorkflowDesigner
 		
 		public bool ShowCode()
 		{
-			FileService.OpenFile(codeSeparationFileName);
+			FileService.OpenFile(codeFileName);
 			
 			return true;
 		}
 		
 		public bool ShowCode(int lineNumber)
 		{
-			ITextEditorControlProvider t = FileService.OpenFile(codeSeparationFileName) as ITextEditorControlProvider;
+			ITextEditorControlProvider t = FileService.OpenFile(codeFileName) as ITextEditorControlProvider;
 			t.TextEditorControl.ActiveTextAreaControl.JumpTo(lineNumber);
 			
 			return true;
+		}
+
+		public bool ShowCode(IComponent component, EventDescriptor e)
+		{
+			
+			Activity activity = component as Activity;
+			if (component == null)
+				throw new ArgumentException("component must be derived from Activity");
+			
+			string methodName = string.Empty;
+			
+			// Find method name associated with the EventDescriptor.
+			Hashtable events = activity.GetValue(WorkflowMarkupSerializer.EventsProperty) as Hashtable;
+			
+			if (events != null) {
+				if (events.ContainsKey(e.Name))
+					methodName = events[e.Name] as string;
+			}
+			
+			return UseMethod(component, e, methodName);
+			
 		}
 
 		public bool ShowCode(IComponent component, EventDescriptor e, string methodName)
@@ -127,10 +197,10 @@ namespace WorkflowDesigner
 			IDesignerHost designerHost = (IDesignerHost)this.GetService(typeof(IDesignerHost));
 			IRootDesigner rootDesigner = designerHost.GetDesigner(designerHost.RootComponent) as IRootDesigner;
 
-			ParseInformation info = ParserService.ParseFile(this.codeSeparationFileName);
+			ParseInformation info = ParserService.ParseFile(this.codeFileName);
 			ICompilationUnit cu = (ICompilationUnit)info.BestCompilationUnit;
 			
-			ITextEditorControlProvider t = FileService.OpenFile(codeSeparationFileName) as ITextEditorControlProvider;
+			ITextEditorControlProvider t = FileService.OpenFile(codeFileName) as ITextEditorControlProvider;
 			
 			IClass  completeClass;
 			foreach (IClass c in cu.Classes) {
@@ -183,20 +253,20 @@ namespace WorkflowDesigner
 			return c.Region.EndLine;
 		}
 
-		public void UseMethod(IComponent component, EventDescriptor edesc, string methodName)
+		public bool UseMethod(IComponent component, EventDescriptor edesc, string methodName)
 		{
 			LoggingService.DebugFormatted("UseMethod {0}", methodName);
 			IClass  completeClass;
 
 			IDesignerHost designerHost = (IDesignerHost)this.GetService(typeof(IDesignerHost));
-			if (designerHost != null && designerHost.RootComponent != null)
-			{
+			if (designerHost != null && designerHost.RootComponent != null)	{
+				
 				IRootDesigner rootDesigner = designerHost.GetDesigner(designerHost.RootComponent) as IRootDesigner;
-				ITextEditorControlProvider t = FileService.OpenFile(codeSeparationFileName) as ITextEditorControlProvider;
+				ITextEditorControlProvider t = FileService.OpenFile(codeFileName) as ITextEditorControlProvider;
 				
 				LoggingService.DebugFormatted("DesignerHost.RootComponent={0}", rootDesigner.Component.Site.Name);
 				
-				ParseInformation info = ParserService.ParseFile(this.codeSeparationFileName);
+				ParseInformation info = ParserService.ParseFile(this.codeFileName);
 				ICompilationUnit cu = (ICompilationUnit)info.BestCompilationUnit;
 				MethodInfo methodInfo = edesc.EventType.GetMethod("Invoke");
 				
@@ -225,7 +295,7 @@ namespace WorkflowDesigner
 									LoggingService.DebugFormatted("Found matching method {0}", method.Name);
 									int position = GetCursorLine(t.TextEditorControl.Document, method);
 									t.TextEditorControl.ActiveTextAreaControl.JumpTo(position-1);
-									return;
+									return true;
 								}
 							}
 
@@ -235,10 +305,13 @@ namespace WorkflowDesigner
 						int line = GetEventHandlerInsertionLine(c);
 						int offset = t.TextEditorControl.Document.GetLineSegment(line - 1).Offset;
 						t.TextEditorControl.Document.Insert(offset, CreateEventHandler(completeClass, edesc, methodName, "", "\t\t"));
-						
+						UpdateCCU();
+						return ShowCode(component, edesc, methodName);
 					}
 				}
 			}
+			
+			return false;
 		}
 		
 	}

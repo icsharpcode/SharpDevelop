@@ -63,7 +63,16 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Templates\Files\CSharp\Activity.xft">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\Files\CSharp\CodeSeparationSequentialWorkflow.xft">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Templates\Files\CSharp\CodeSequentialWorkflow.xft">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\Projects\CSharp\ConsoleProject.xpt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Templates\Projects\CSharp\EmptyProject.xpt">

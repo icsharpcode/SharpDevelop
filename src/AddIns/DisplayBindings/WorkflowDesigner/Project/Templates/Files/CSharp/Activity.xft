@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<Template author="Russell Wilkins" version="1.0">
+	
+	<Config
+		  name        = "Activity"
+		  icon        = "Icons.32x32.XMLFileIcon"
+		  category    = "Workflow"
+		  subcategory = "C#"
+		  defaultname = "Activity${Number}.xoml"
+		  language    = "C#"/>
+	 
+	<Description>Custom Activity</Description>
+
+
+	<Files>
+<File name="${Path}/${FileNameWithoutExtension}.xoml.cs" DependentUpon="${FileName}" language="C#"><![CDATA[${StandardHeader.C#}
+
+using System;
+using System.Workflow.Activities;
+
+namespace ${StandardNamespace}
+{
+	partial class ${ClassName} : SequenceActivity
+	{
+		
+	}
+}]]></File>
+
+<File name="${FullName}" language="Xoml"><![CDATA[<SequenceActivity 
+	x:Class="${StandardNamespace}.${ClassName}" 
+	x:Name="${ClassName}" 
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/workflow" />
+]]></File>
+	</Files>
+	
+	<AdditionalOptions/>
+</Template>
