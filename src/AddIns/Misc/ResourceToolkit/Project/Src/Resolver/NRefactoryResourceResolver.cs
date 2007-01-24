@@ -180,46 +180,10 @@ namespace Hornung.ResourceToolkit.Resolver
 			
 			if (p != null) {
 				
-				string fileName = null;
+				string fileName;
 				
-				if (resourceName.StartsWith(p.RootNamespace, StringComparison.InvariantCultureIgnoreCase)) {
-					
-					if (p.Language == "VBNet") {
-						
-						// SD2-1239
-						// The VB MSBuild tasks do not use the folder names 
-						// in the manifest resource names.
-						// We have to look in all folders of the project
-						// for a file with the specified resource name.
-						
-						// Need to add a dummy extension so that FindResourceFileName
-						// does not remove parts of the actual file name when it
-						// contains a dot.
-						string fileNameWithDummyExtension = String.Concat(resourceName.Substring(p.RootNamespace.Length+1), ".x");
-						
-						// Search in the project root folder
-						// (this folder is not specified explicitly in
-						// the MSBuild project)
-						if ((fileName = FindResourceFileName(Path.Combine(p.Directory, fileNameWithDummyExtension))) != null) {
-							return new ResourceSetReference(resourceName, fileName);
-						}
-						
-						// Search in all project folders
-						foreach (ProjectItem folder in p.GetItemsOfType(ItemType.Folder)) {
-							if ((fileName = FindResourceFileName(Path.Combine(folder.FileName, fileNameWithDummyExtension))) != null) {
-								return new ResourceSetReference(resourceName, fileName);
-							}
-						}
-						
-					} else {
-						
-						// Look for a resource file in the project with the exact name.
-						if ((fileName = FindResourceFileName(Path.Combine(p.Directory, resourceName.Substring(p.RootNamespace.Length+1).Replace('.', Path.DirectorySeparatorChar)))) != null) {
-							return new ResourceSetReference(resourceName, fileName);
-						}
-						
-					}
-					
+				if ((fileName = TryGetResourceFileNameFromProjectDirect(resourceName, p)) != null) {
+					return new ResourceSetReference(resourceName, fileName);
 				}
 				
 				// SharpDevelop silently strips the (hard-coded) folder names
@@ -346,6 +310,93 @@ namespace Hornung.ResourceToolkit.Resolver
 			#endif
 			
 			return new ResourceSetReference(resourceName, null);
+		}
+		
+		/// <summary>
+		/// Tries to find a resource file name for the manifest resources specified by
+		/// <paramref name="resourceName"/> according to the default MSBuild rules
+		/// for embedding resources.
+		/// The reference to these resources occurs within the project <paramref name="p"/>.
+		/// </summary>
+		/// <param name="resourceName">The name of the manifest resources to find the resource file for.</param>
+		/// <param name="p">The project where the reference to these resources occurs.</param>
+		/// <returns>The full path and name of the resource file that contains the specified resources, or <c>null</c> if no suitable resource file is found.</returns>
+		static string TryGetResourceFileNameFromProjectDirect(string resourceName, IProject p)
+		{
+			if (!resourceName.StartsWith(p.RootNamespace + ".", StringComparison.InvariantCultureIgnoreCase)) {
+				return null;
+			}
+			
+			// Strip root namespace + "." from resourceName
+			resourceName = resourceName.Substring(p.RootNamespace.Length+1);
+			
+			switch(p.Language) {
+				
+				case "VBNet":
+					
+					// SD2-1239
+					// The VB MSBuild tasks do not use the folder names
+					// in the manifest resource names.
+					// We have to look in all folders of the project
+					// for a file with the specified resource name.
+					
+					foreach (ProjectItem item in p.Items) {
+						
+						FileProjectItem fpi = item as FileProjectItem;
+						if (fpi == null) continue;
+						
+						string virtualName = fpi.VirtualName;
+						if (String.IsNullOrEmpty(virtualName)) continue;
+						
+						if (Path.GetFileNameWithoutExtension(virtualName).Equals(resourceName, StringComparison.OrdinalIgnoreCase) &&
+						    File.Exists(fpi.FileName) &&
+						    ResourceFileContentRegistry.GetResourceFileContentFactory(fpi.FileName) != null) {
+							
+							return fpi.FileName;
+							
+						}
+						
+					}
+					
+					break;
+					
+					
+				case "C#":
+				default:
+					
+					// The C# MSBuild tasks use the folder names in the
+					// manifest resource names.
+					// For example:
+					// RootNamespace.Resources.SomeResources
+					// is normally found in
+					// <ProjectRootDir>\Resources\SomeResources.{resx|resources}
+					
+					foreach (ProjectItem item in p.Items) {
+						
+						FileProjectItem fpi = item as FileProjectItem;
+						if (fpi == null) continue;
+						
+						string virtualName = FileUtility.NormalizePath(fpi.VirtualName);
+						if (String.IsNullOrEmpty(virtualName)) continue;
+						
+						int lastDotIndex = virtualName.LastIndexOf('.');
+						if (lastDotIndex == -1) continue;
+						
+						if (virtualName.Substring(0, lastDotIndex).Replace('\\', '.').Equals(resourceName, StringComparison.OrdinalIgnoreCase) &&
+						    File.Exists(fpi.FileName) &&
+						    ResourceFileContentRegistry.GetResourceFileContentFactory(fpi.FileName) != null) {
+							
+							return fpi.FileName;
+							
+						}
+						
+					}
+					
+					break;
+					
+			}
+			
+			return null;
 		}
 		
 		// ********************************************************************************************************************************

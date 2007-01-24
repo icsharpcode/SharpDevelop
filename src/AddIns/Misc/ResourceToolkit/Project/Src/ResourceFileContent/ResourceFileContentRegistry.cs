@@ -64,9 +64,25 @@ namespace Hornung.ResourceToolkit.ResourceFileContent
 		/// <returns>The resource content for the specified file, or <c>null</c>, if the resource file format cannot be handled.</returns>
 		static IResourceFileContent CreateResourceFileContent(string fileName)
 		{
+			IResourceFileContentFactory factory = GetResourceFileContentFactory(fileName);
+			if (factory == null) {
+				return null;
+			} else {
+				return factory.CreateContentForFile(fileName);
+			}
+		}
+		
+		/// <summary>
+		/// Gets a <see cref="IResourceFileContentFactory"/> that can create the resource file content
+		/// for the specified resource file.
+		/// </summary>
+		/// <param name="fileName">The resource file to get a <see cref="IResourceFileContentFactory"/> for.</param>
+		/// <returns>A <see cref="IResourceFileContentFactory"/> that can create the resource file content for the specified file, or <c>null</c> if the specified file is not supported by any registered resource file content factory.</returns>
+		public static IResourceFileContentFactory GetResourceFileContentFactory(string fileName)
+		{
 			foreach (IResourceFileContentFactory factory in Factories) {
 				if (factory.CanCreateContentForFile(fileName)) {
-					return factory.CreateContentForFile(fileName);
+					return factory;
 				}
 			}
 			return null;
