@@ -106,6 +106,7 @@ Icons.16x16.FormsDesigner.LockControls            = BitmapResources-data\Icons.1
 Icons.16x16.FormsDesigner.DecreaseVerticalSpace   = BitmapResources-data\Icons.16x16.FormsDesigner.DecreaseVerticalSpace.png
 Icons.16x16.NewFolderIcon                         = BitmapResources-data\Icons.16x16.NewFolderIcon.png
 Icons.16x16.UnderlineText                         = BitmapResources-data\Icons.16x16.UnderlineText.png
+Icons.16x16.RunAllIcon                            = BitmapResources-data\Icons.16x16.RunAllIcon.png
 Icons.16x16.RunProgramIcon                        = BitmapResources-data\Icons.16x16.RunProgramIcon.png
 Icons.16x16.HtmlElements.TableElement             = BitmapResources-data\Icons.16x16.HtmlElements.TableElement.png
 Icons.16x16.ResourceEditor.obj                    = BitmapResources-data\Icons.16x16.ResourceEditor.obj.ico

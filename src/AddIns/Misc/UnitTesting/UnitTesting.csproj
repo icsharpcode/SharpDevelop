@@ -57,6 +57,7 @@
     <None Include="UnitTesting.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Compile Include="Src\AllTestsTreeNode.cs" />
     <Compile Include="Src\UnitTestCommands.cs" />
     <Compile Include="Src\TestableCondition.cs" />
     <Compile Include="Src\RunningTestsCondition.cs" />

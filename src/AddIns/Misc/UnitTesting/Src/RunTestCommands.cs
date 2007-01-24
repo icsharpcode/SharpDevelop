@@ -493,4 +493,14 @@ namespace ICSharpCode.UnitTesting
 			WorkbenchSingleton.SafeThreadAsyncCall(TestsFinished);
 		}
 	}
+	
+	public class RunAllTestsInPadCommand : RunTestInPadCommand
+	{
+		public override void Run()
+		{
+			// To make sure all tests are run we set the Owner to null.
+			Owner = null;
+			base.Run();
+		}
+	}
 }
