@@ -548,9 +548,37 @@ namespace ClassDiagram
 			XmlDeclaration decl = doc.CreateXmlDeclaration("1.0", "utf-8", "yes");
 			doc.InsertBefore(decl, doc.FirstChild);
 			
-			XmlAttribute zoom = doc.CreateAttribute("Zoom");
+			XmlAttribute zoom = doc.CreateAttribute("Zoom"); // Non-Standard attribute
 			zoom.Value = Zoom.ToString(System.Globalization.CultureInfo.InvariantCulture);
 			doc.DocumentElement.Attributes.Append(zoom);
+			
+			#region unsupported attributes - added for compatability
+			// FIXME - Attribute not yet supported
+			XmlAttribute majorVersion = doc.CreateAttribute("MajorVersion");
+			majorVersion.Value = "1";
+			doc.DocumentElement.Attributes.Append(majorVersion);
+			
+			// FIXME - Attribute not yet supported
+			XmlAttribute minorVersion = doc.CreateAttribute("MinorVersion");
+			minorVersion.Value = "1";
+			doc.DocumentElement.Attributes.Append(minorVersion);
+
+			// FIXME - Attribute not yet supported
+			XmlAttribute membersFormat = doc.CreateAttribute("MembersFormat");
+			membersFormat.Value = "FullSignature";
+			doc.DocumentElement.Attributes.Append(membersFormat);
+			
+			// FIXME - Element not yet supported
+			XmlAttribute fontName = doc.CreateAttribute("Name");
+			fontName.Value = "Tahoma";
+
+			XmlAttribute fontSize = doc.CreateAttribute("Size");
+			fontSize.Value = "8.25";
+			
+			XmlElement fontElement = doc.CreateElement("Font");
+			fontElement.Attributes.Append(fontName);
+			fontElement.Attributes.Append(fontSize);
+			#endregion
 			
 			foreach (CanvasItemData item in itemsList)
 			{
@@ -576,7 +604,7 @@ namespace ClassDiagram
 					AddCanvasItem(canvasitem);
 				}
 			}
-			ni = nav.Select(@"/ClassDiagram/Note");
+			ni = nav.Select(@"/ClassDiagram/Comment");
 			while (ni.MoveNext())
 			{
 				NoteCanvasItem note = new NoteCanvasItem();

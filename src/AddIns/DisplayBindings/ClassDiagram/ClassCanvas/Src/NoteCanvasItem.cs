@@ -92,22 +92,33 @@ namespace ClassDiagram
 		#region Storage
 		protected override XmlElement CreateXmlElement(XmlDocument doc)
 		{
-			return doc.CreateElement("Note");
+			return doc.CreateElement("Comment");
 		}
 		
 		protected override void FillXmlElement(XmlElement element, XmlDocument document)
 		{
 			base.FillXmlElement(element, document);
-			element.SetAttribute("Height", Height.ToString(CultureInfo.InvariantCulture));
-			element.SetAttribute("Note", Note);
+			element.SetAttribute("CommentText", Note);
+		}
+		
+		protected override void FillXmlPositionElement(XmlElement position, XmlDocument document)
+		{
+			base.FillXmlPositionElement(position, document);
+			position.SetAttribute("Height", Height.ToString(CultureInfo.InvariantCulture));
 		}
 		
 		public override void LoadFromXml (XPathNavigator navigator)
 		{
 			base.LoadFromXml(navigator);
-			Height = float.Parse(navigator.GetAttribute("Height", ""), CultureInfo.InvariantCulture);
-			Note = navigator.GetAttribute("Note", "");
+			Note = navigator.GetAttribute("CommentText", "");
 		}
+		
+		protected override void ReadXmlPositionElement(XPathNavigator navigator)
+		{
+			base.ReadXmlPositionElement(navigator);
+			Height = float.Parse(navigator.GetAttribute("Height", ""), CultureInfo.InvariantCulture);
+		}
+		
 		#endregion
 		
 		#region Geometry

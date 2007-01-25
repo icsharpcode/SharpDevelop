@@ -13,7 +13,9 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 
-//using System.Reflection;
+using System.Xml;
+using System.Xml.XPath;
+
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -34,6 +36,11 @@ namespace ClassDiagram
 		protected override Brush InnerTitlesBackground
 		{
 			get { return innerTitlesBG; }
+		}
+				
+		protected override XmlElement CreateXmlElement(XmlDocument doc)
+		{
+			return doc.CreateElement("Interface");
 		}
 	}
 

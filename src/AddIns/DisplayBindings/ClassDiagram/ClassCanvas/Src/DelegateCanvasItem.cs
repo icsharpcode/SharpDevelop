@@ -60,6 +60,11 @@ namespace ClassDiagram
 				parameters.Add(ts);
 			}
 		}
+		
+		protected override XmlElement CreateXmlElement(XmlDocument doc)
+		{
+			return doc.CreateElement("Delegate");
+		}
 	}
 	
 	public delegate TestEnum TestDelegate (int num, string str);

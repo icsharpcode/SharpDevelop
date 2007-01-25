@@ -13,6 +13,9 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 
+using System.Xml;
+using System.Xml.XPath;
+
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -49,6 +52,11 @@ namespace ClassDiagram
 		{
 			fields.Clear();
 			PrepareMembersContent <IField> (RepresentedClassType.Fields, fields);
+		}
+		
+		protected override XmlElement CreateXmlElement(XmlDocument doc)
+		{
+			return doc.CreateElement("Enum");
 		}
 	}
 }

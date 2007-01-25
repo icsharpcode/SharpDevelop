@@ -58,7 +58,8 @@ namespace ClassDiagram
 		
 		DrawableItemsStack<InteractiveHeaderedItem> groups = new DrawableItemsStack<InteractiveHeaderedItem>();
 		Dictionary<InteractiveHeaderedItem, string> groupNames = new Dictionary<InteractiveHeaderedItem, string>(); // TODO - this is really an ugly patch
-
+		Dictionary<string, InteractiveHeaderedItem> groupsByName = new Dictionary<string, InteractiveHeaderedItem>(); // TODO - this is really an ugly patch
+		
 		DrawableItemsStack<TextSegment> interfaces = new DrawableItemsStack<TextSegment>();
 		
 		DrawableRectangle titlesBackgroundCollapsed;
@@ -418,6 +419,7 @@ namespace ClassDiagram
 			{
 				InteractiveHeaderedItem tg = PrepareGroup (title, groupContent);
 				groupNames.Add(tg, title);
+				groupsByName.Add(title, tg);
 				groups.Add(tg);
 			}
 		}
@@ -547,21 +549,25 @@ namespace ClassDiagram
 		
 		protected override XmlElement CreateXmlElement(XmlDocument doc)
 		{
-			return doc.CreateElement("ClassItem");
+			return doc.CreateElement("Class");
 		}
 		
 		protected override void FillXmlElement(XmlElement element, XmlDocument document)
 		{
 			base.FillXmlElement(element, document);
-			element.SetAttribute("Type", RepresentedClassType.FullyQualifiedName);
+			element.SetAttribute("Name", RepresentedClassType.FullyQualifiedName);
 			element.SetAttribute("Collapsed", Collapsed.ToString());
 			
+			//<Compartments>
+			XmlElement compartments = document.CreateElement("Compartments");
 			foreach (InteractiveHeaderedItem tg in groups)
 			{
-				XmlElement grp = document.CreateElement(groupNames[tg]);
+				XmlElement grp = document.CreateElement("Compartment");
+				grp.SetAttribute("Name", groupNames[tg]);
 				grp.SetAttribute("Collapsed", tg.Collapsed.ToString());
-				element.AppendChild(grp);
+				compartments.AppendChild(grp);
 			}
+			element.AppendChild(compartments);
 			
 		}
 		
@@ -571,11 +577,15 @@ namespace ClassDiagram
 			
 			Collapsed = bool.Parse(navigator.GetAttribute("Collapsed", ""));
 			
-			foreach (InteractiveHeaderedItem tg in groups)
+			XPathNodeIterator compNI = navigator.Select("Compartments/Compartment");
+			while (compNI.MoveNext())
 			{
-				XPathNodeIterator ni = navigator.SelectChildren(groupNames[tg], "");
-				ni.MoveNext();
-				tg.Collapsed = bool.Parse(ni.Current.GetAttribute("Collapsed", ""));
+				XPathNavigator compNav = compNI.Current;
+				InteractiveHeaderedItem grp;
+				if (groupsByName.TryGetValue(compNav.GetAttribute("Name", ""), out grp))
+				{
+					grp.Collapsed = bool.Parse(compNav.GetAttribute("Collapsed", ""));
+				}
 			}
 		}
 		

@@ -468,9 +468,16 @@ namespace ClassDiagram
 		
 		protected virtual void FillXmlElement (XmlElement element, XmlDocument document)
 		{
-			element.SetAttribute("X", X.ToString(CultureInfo.InvariantCulture));
-			element.SetAttribute("Y", Y.ToString(CultureInfo.InvariantCulture));
-			element.SetAttribute("Width", Width.ToString(CultureInfo.InvariantCulture));
+			XmlElement position = document.CreateElement("Position");
+			FillXmlPositionElement(position, document);
+			element.AppendChild(position);
+		}
+		
+		protected virtual void FillXmlPositionElement (XmlElement position, XmlDocument document)
+		{
+			position.SetAttribute("X", X.ToString(CultureInfo.InvariantCulture));
+			position.SetAttribute("Y", Y.ToString(CultureInfo.InvariantCulture));
+			position.SetAttribute("Width", Width.ToString(CultureInfo.InvariantCulture));
 		}
 		
 		public virtual void WriteToXml(XmlDocument document)
@@ -481,6 +488,12 @@ namespace ClassDiagram
 		}
 		
 		public virtual void LoadFromXml (XPathNavigator navigator)
+		{
+			XPathNodeIterator ni = navigator.SelectChildren("Position", "");
+			ReadXmlPositionElement(ni.Current);
+		}
+		
+		protected virtual void ReadXmlPositionElement (XPathNavigator navigator)
 		{
 			X = float.Parse(navigator.GetAttribute("X", ""), CultureInfo.InvariantCulture);
 			Y = float.Parse(navigator.GetAttribute("Y", ""), CultureInfo.InvariantCulture);
