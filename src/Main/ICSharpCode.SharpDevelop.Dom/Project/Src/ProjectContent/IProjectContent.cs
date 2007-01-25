@@ -91,6 +91,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 		string SearchNamespace(string name, IClass curType, ICompilationUnit unit, int caretLine, int caretColumn);
 		SearchTypeResult SearchType(SearchTypeRequest request);
 		
+		/// <summary>
+		/// Gets the definition position of the class/member.
+		/// </summary>
+		/// <param name="fullMemberName">The full member name in Reflection syntax (always case sensitive, ` for generics)</param>
 		FilePosition GetPosition(string fullMemberName);
 	}
 	
