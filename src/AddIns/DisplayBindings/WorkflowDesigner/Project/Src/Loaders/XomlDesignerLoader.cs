@@ -21,6 +21,7 @@ using System.Drawing.Design;
 using System.IO;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Project;
 #endregion
 
 namespace WorkflowDesigner
@@ -31,7 +32,9 @@ namespace WorkflowDesigner
 	public class XomlDesignerLoader : WorkflowDesignerLoader
 	{
 		private string xoml = string.Empty;
+		private StringBuilder rules;
 		private string fileName = string.Empty;
+		private string rulesFileName = string.Empty;
 		private IViewContent viewContent;
 		
 		public XomlDesignerLoader(IViewContent viewContent)
@@ -42,6 +45,7 @@ namespace WorkflowDesigner
 		public XomlDesignerLoader(IViewContent viewContent, string fileName, Stream stream) : this(viewContent)
 		{
 			this.fileName = fileName;
+			rulesFileName = Path.Combine(Path.GetDirectoryName(fileName), Path.GetFileNameWithoutExtension(fileName) + ".rules");
 			Encoding encoding = ICSharpCode.SharpDevelop.ParserService.DefaultFileEncoding;
 			xoml = ICSharpCode.TextEditor.Util.FileReader.ReadFileContent(stream, ref encoding, encoding);
 		}
@@ -59,21 +63,39 @@ namespace WorkflowDesigner
 		
 		public override TextReader GetFileReader(string filePath)
 		{
-			// TODO: Is this correct?
-			return null;
+			return new StringReader(rules.ToString());
 		}
 		
 		public override TextWriter GetFileWriter(string filePath)
 		{
-			// TODO: Is this correct?
-			return null;
+			if (rules == null) {
+				rules = new StringBuilder();
+				CreateRulesProjectItem();
+			}
+			
+			return new StringWriter(rules);
+		}
+		
+		private void CreateRulesProjectItem()
+		{
+			IProject project = ProjectService.CurrentProject;
+			if (project != null){
+				if (!project.IsFileInProject(rulesFileName)) {
+					FileProjectItem fpi = project.FindFile(fileName);
+					FileProjectItem rfpi = new FileProjectItem(project,ItemType.EmbeddedResource);
+					rfpi.FileName = Path.Combine(Path.GetDirectoryName(fileName), Path.GetFileName(rulesFileName));
+					rfpi.DependentUpon = Path.GetFileName(fileName);
+					ProjectService.AddProjectItem(project,  rfpi);
+					ProjectBrowserPad.Instance.ProjectBrowserControl.RefreshView();
+					project.Save();
+				}
+			}
 		}
 		
 		protected override void PerformFlush(System.ComponentModel.Design.Serialization.IDesignerSerializationManager serializationManager)
 		{
 			Activity rootActivity = LoaderHost.RootComponent as Activity;
-			if (rootActivity != null)
-			{
+			if (rootActivity != null) {
 				StringBuilder sb = new StringBuilder();
 				XmlTextWriter xmlWriter = new XmlTextWriter(new StringWriter(sb));
 				try
@@ -87,6 +109,11 @@ namespace WorkflowDesigner
 					xmlWriter.Close();
 				}
 			}
+			
+			// Update the rules if any exist.
+			if (rules.Length > 0)
+				File.WriteAllText(rulesFileName, rules.ToString());
+			
 		}
 		
 		
@@ -143,6 +170,13 @@ namespace WorkflowDesigner
 				AddChildren(rootActivity as CompositeActivity);
 			
 			SetBaseComponentClassName(rootActivity.GetType().FullName);
+			
+			// Load the rules
+			if (File.Exists(rulesFileName)) {
+				rules = new StringBuilder(File.ReadAllText(rulesFileName));
+				CreateRulesProjectItem();
+			}
+			
 		}
 		
 		protected void AddChildren(CompositeActivity compositeActivity)
