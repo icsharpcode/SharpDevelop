@@ -11,17 +11,17 @@
 	<Runtime>
 		<!-- need to load from correct directory SharpQuery first -->
 		<Import assembly = "$ICSharpCode.SharpQuery/SharpQuery.dll" />
-		<Import assembly = "SharpReportAddin.dll"/>
+		<Import assembly = "ICSharpCode.Reports.Addin.dll"/>
 	</Runtime>
 	
 	<!-- DisplayBinding -->
-	
+		
 	<Path name ="/SharpDevelop/Workbench/DisplayBindings">
 		<DisplayBinding id="SharpReportBinding"
 		                insertbefore="Text"
 		                fileNamePattern="\.srd$"
 		                languagePattern="^SharpReport$"
-		                class="SharpReportAddin.SharpReportDisplayBinding"/>
+		                class="ICSharpCode.Reports.Addin.SharpReportDisplayBinding"/>
 	</Path>
 	
 	<!-- File Filter -->
@@ -40,44 +40,33 @@
 			     icon="Icons.16x16.SharpQuery.Refresh"
 			     title = "ReportExplorer"
 			     shortcut = "Control|Alt|F"
-			     class="SharpReportAddin.ReportExplorer"/>
+			     class="ICSharpCode.Reports.Addin.ReportExplorer"/>
 	</Path>
 	
 	<!-- DesignerContectMenu Section -->
 	<Path name ="/SharpReport/ContextMenu/Section">
-		<MenuItem id="settings" label="${res:SharpReport.ContextMenu.Settings}" class="SharpReportAddin.Commands.ShowSettings"/>
-		<MenuItem id="preview" label="${res:SharpReport.ContextMenu.Preview}" class="SharpReportAddin.Commands.RunPreview"/>
-<!--
-		<MenuItem id="sep1" label="-"/>
-		<MenuItem id="visible" label="${res:SharpReport.ContextMenu.SectionVisible}" class="SharpReportAddin.Commands.SectionVisible"/>
-		<MenuItem id="function" label="${res:SharpReport.ContextMenu.Functions}" class="SharpReportAddin.Commands.InsertFunction"/>
-		
-   	<MenuItem id="fieldslist" label="${res:SharpReport.ContextMenu.FieldsList}" class="SharpReportAddin.Commands.ShowFieldsList"/>
- 		-->
+		<MenuItem id="settings" label="${res:SharpReport.ContextMenu.Settings}" class="ICSharpCode.Reports.Addin.Commands.ShowSettings"/>
 	</Path>
 
 	 <!-- DesignerContextMenu Items -->
    <Path name ="/SharpReport/ContextMenu/Items">
-      <MenuItem id="cut" label="${res:SharpReport.ContextMenu.Cut}" class="SharpReportAddin.Commands.CutReportItem"/>
-     <!--
-   	  <MenuItem id="paste" label="${res:SharpReport.ContextMenu.Paste}" class="SharpReportAddin.Commands.PasteReportItem"/>
-   		-->
+      <MenuItem id="cut" label="${res:SharpReport.ContextMenu.Cut}" class="ICSharpCode.Reports.Addin.Commands.CutReportItem"/>
    </Path>
 
    <!-- ReportExplorer ContextMenu's -->
 	<Path name ="/SharpReport/ContextMenu/ContextMenu/FieldsExplorer/SectionTreeNode">
 		<MenuItem id="removenodes"
 		          label="${res:SharpReport.FieldsExplorer.ContextMenu.Section.Clear}"
-		          class="SharpReportAddin.Commands.ClearNodes"/>
+		          class="ICSharpCode.Reports.Addin.Commands.ClearNodes"/>
 	</Path>
 	
 	<Path name = "/SharpReport/ContextMenu/ContextMenu/FieldsExplorer/ColumnTreeNode">
 		<MenuItem id="removenode"
 		          label="${res:SharpReport.FieldsExplorer.ContextMenu.Columns.Remove}"
-		          class="SharpReportAddin.Commands.RemoveNode"/>
+		          class="ICSharpCode.Reports.Addin.Commands.RemoveNode"/>
 		<MenuItem id="toggle"
 		          label="${res:SharpReport.FieldsExplorer.ContextMenu.Columns.ToggleSort}"
-		          class="SharpReportAddin.Commands.ToogleOrder"/>
+		          class="ICSharpCode.Reports.Addin.Commands.ToogleOrder"/>
 	</Path>
 	
 	<!-- Start SharpReport from MainMenu -->
@@ -87,8 +76,23 @@
 		          label = "${res:SharpReport.ReportGenerator}"
 		          
 		          shortcut = "Control|Alt|T"
-		          class    = "SharpReportAddin.Commands.RunSharpReport"/>
+		          class    = "ICSharpCode.Reports.Addin.Commands.RunSharpReport"/>
 	</Path>
 
+	<!-- Report wizard -->
+
+	<Path  name = "/ReportGenerator/ReportGeneratorWizard">
+		<DialogPanel id="Base" label = "${res:SharpReport.Wizard.BaseSettings}" class="ICSharpCode.Reports.Addin.ReportWizard.BaseSettingsPanel"/>
+		<DialogPanel id="PushModel" label="${res:SharpReport.Wizard.PushModel}" class="ICSharpCode.Reports.Addin.ReportWizard.PushModelPanel"/>
+		<DialogPanel id="PullModel" label="${res:SharpReport.Wizard.PullModel}" class="ICSharpCode.Reports.Addin.ReportWizard.PullModelPanel"/>
+		<DialogPanel id="QueryResult" label="${res:SharpReport.Wizard.ShowQueryResult}" class ="ICSharpCode.Reports.Addin.ReportWizard.ResultPanel"/>
+	</Path>
+	
+	<!-- ContextMenu Sections -->
+	<!-- Save Data from Resultpanel as *xsd File -->
+	<Path name ="/ReportGenerator/ResultPanel/ContextMenu">
+		<MenuItem id="xsdcomplete" label="${res:SharpReport.Wizard.ResultPanel.SaveXsdComplete}" class="ICSharpCode.Reports.Addin.ReportWizard.WriteXsdComplete"/>
+		<MenuItem id="xsdschema" label="${res:SharpReport.Wizard.ResultPanel.SaveXsdSchemaOnly}" class="ICSharpCode.Reports.Addin.ReportWizard.WriteXsdSchema"/>
+	</Path>
 	
 </AddIn>

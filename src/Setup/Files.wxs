@@ -1084,27 +1084,20 @@
 											<File Source="..\..\AddIns\AddIns\Misc\SharpQuery\Interop.MSDASC.dll" Name="INTERO_1.DLL" Id="Interop.MSDASC.dll" LongName="Interop.MSDASC.dll" Assembly=".net" AssemblyApplication="Interop.MSDASC.dll" AssemblyManifest="Interop.MSDASC.dll" KeyPath="yes" />
 										</Component>
 									</Directory>
-									<Directory Id="SharpReportFolder" LongName="SharpReport" Name="Report">
-										<Component Guid="FCC330AE-1BA6-49AB-8D75-6B056EEBD00D" Id="SharpReportCoreDll" DiskId="1">
-											<File Source="..\..\AddIns\SharpReport\SharpReportCore.dll" Name="SHARPR_1.DLL" Id="SharpReportCore.dll" LongName="SharpReportCore.dll" Assembly=".net" AssemblyApplication="SharpReportCore.dll" AssemblyManifest="SharpReportCore.dll" KeyPath="yes" />
+									<Directory Id="SharpDevelopReportsFolder" LongName="SharpDevelopReports" Name="Report">
+										<Component Guid="FCC330AE-1BA6-49AB-8D75-6B056EEBD00D" Id="SharpDevelopReportsCoreDll" DiskId="1">
+											<File Source="..\..\AddIns\SharpDevelopReports\ICSharpCode.Reports.Core.dll" Name="SHARPR_1.DLL" Id="ICSharpCode.Reports.Core.dll" LongName="ICSharpCode.Reports.Core.dll" Assembly=".net" AssemblyApplication="ICSharpCode.Reports.Core.dll" AssemblyManifest="ICSharpCode.Reports.Core.dll" KeyPath="yes" />
 										</Component>
-										<Component Id="ReportGeneratorDll" Guid="4A37F852-2BBC-40C5-AF32-6DAB8DB5075A" DiskId="1">
-											<File Source="..\..\AddIns\SharpReport\ReportGenerator.dll" Name="REPORT_1.DLL" Id="ReportGenerator.dll" LongName="ReportGenerator.dll" Assembly=".net" AssemblyApplication="ReportGenerator.dll" AssemblyManifest="ReportGenerator.dll" KeyPath="yes" />
-											<File Source="..\..\AddIns\SharpReport\ReportGenerator.addin" Name="REPORT_1.ADD" Id="ReportGenerator.addin" LongName="ReportGenerator.addin" />
-										</Component>
-										<Component Id="SharpReportDll" Guid="00331644-0A6F-4469-AEE5-2FCEED4F1651" DiskId="1">
-											<File Source="..\..\AddIns\SharpReport\SharpReport.dll" Name="SHARPR_2.DLL" Id="SharpReport.dll" LongName="SharpReport.dll" Assembly=".net" AssemblyApplication="SharpReport.dll" AssemblyManifest="SharpReport.dll" KeyPath="yes" />
-										</Component>
-										<Component Id="SharpReportAddInDll" Guid="9EC747D8-EA22-4C6B-8694-D7FA8029AE46" DiskId="1">
-											<File Source="..\..\AddIns\SharpReport\SharpReportAddin.addin" Name="SHARPR_1.ADD" Id="SharpReportAddin.addin" LongName="SharpReportAddin.addin" />
-											<File Source="..\..\AddIns\SharpReport\SharpReportAddin.dll" Name="SHARPR_3.DLL" Id="SharpReportAddin.dll" LongName="SharpReportAddin.dll" Assembly=".net" AssemblyApplication="SharpReportAddin.dll" AssemblyManifest="SharpReportAddin.dll" KeyPath="yes" />
+										<Component Id="SharpDevelopReportsAddInDll" Guid="4A37F852-2BBC-40C5-AF32-6DAB8DB5075A" DiskId="1">
+											<File Source="..\..\AddIns\SharpDevelopReports\ICSharpCode.Reports.Addin.dll" Name="REPORT_1.DLL" Id="ICSharpCode.Reports.Addin.dll" LongName="ICSharpCode.Reports.Addin.dll" Assembly=".net" AssemblyApplication="ICSharpCode.Reports.Addin.dll" AssemblyManifest="ICSharpCode.Reports.Addin.dll" KeyPath="yes" />
+											<File Source="..\..\AddIns\SharpDevelopReports\ICSharpCode.ReportDesigner.addin" Name="REPORT_1.ADD" Id="ICSharpCode.ReportDesigner.addin" LongName="ICSharpCode.ReportDesigner.addin" />
 										</Component>
 										<Component Guid="2ADD2FE1-C2FA-428E-896A-E1F119408A3D" Id="PdfSharpDll" DiskId="1">
-											<File Source="..\..\AddIns\SharpReport\PdfSharp.dll" Name="PdfSharp.dll" Id="PdfSharp.dll" Assembly=".net" AssemblyApplication="PdfSharp.dll" AssemblyManifest="PdfSharp.dll" KeyPath="yes" LongName="PdfSharp.dll" />
+											<File Source="..\..\AddIns\SharpDevelopReports\PdfSharp.dll" Name="PdfSharp.dll" Id="PdfSharp.dll" Assembly=".net" AssemblyApplication="PdfSharp.dll" AssemblyManifest="PdfSharp.dll" KeyPath="yes" LongName="PdfSharp.dll" />
 										</Component>
 										<Directory Id="PdfSharpResources" Name="de">
 											<Component Guid="DA561136-80BF-464C-8C30-CCFFEFF926B5" Id="PdfSharpDeResources" DiskId="1">
-												<File Source="..\..\AddIns\SharpReport\de\PdfSharp.resources.dll" Name="PDFSHA_1.DLL" Id="PdfSharp.resources.dll" LongName="PdfSharp.resources.dll" AssemblyApplication="PdfSharp.resources.dll" AssemblyManifest="PdfSharp.resources.dll" Assembly=".net" KeyPath="yes" />
+												<File Source="..\..\AddIns\SharpDevelopReports\de\PdfSharp.resources.dll" Name="PDFSHA_1.DLL" Id="PdfSharp.resources.dll" LongName="PdfSharp.resources.dll" AssemblyApplication="PdfSharp.resources.dll" AssemblyManifest="PdfSharp.resources.dll" Assembly=".net" KeyPath="yes" />
 											</Component>
 										</Directory>
 									</Directory>
