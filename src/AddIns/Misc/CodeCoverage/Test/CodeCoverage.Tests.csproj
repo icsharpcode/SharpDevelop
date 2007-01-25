@@ -52,6 +52,7 @@
     <Compile Include="CodeCoverageResultsTestFixture.cs" />
     <Compile Include="CodeCoverageTreeViewTestFixture.cs" />
     <Compile Include="DerivedCodeCoverageTreeView.cs" />
+    <Compile Include="ListViewSortingTestFixture.cs" />
     <Compile Include="ModuleVisitedSequencePointsTestFixture.cs" />
     <Compile Include="AddCodeCoverageMarkersTestFixture.cs" />
     <Compile Include="MockDocument.cs" />

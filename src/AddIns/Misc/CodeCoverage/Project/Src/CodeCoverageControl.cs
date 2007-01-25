@@ -31,6 +31,7 @@ namespace ICSharpCode.CodeCoverage
 		ToolStrip toolStrip;
 		bool showSourceCodePanel;
 		bool showVisitCountPanel = true;
+		SequencePointListViewSorter sequencePointListViewSorter;
 		
 		public CodeCoverageControl()
 		{
@@ -338,7 +339,7 @@ namespace ICSharpCode.CodeCoverage
 			listView.FullRowSelect = true;
 			listView.HideSelection = false;
 			listView.ItemActivate += ListViewItemActivate;
-			
+						
 			visitCountColumnHeader = new ColumnHeader();
 			visitCountColumnHeader.Text = StringParser.Parse("${res:ICSharpCode.CodeCoverage.VisitCount}");
 			visitCountColumnHeader.Width = 80;
@@ -364,6 +365,9 @@ namespace ICSharpCode.CodeCoverage
 			                          startColumnColumnHeader,
 			                          endLineColumnHeader,
 			                          endColumnColumnHeader});
+			
+			// Create custom list view sorter.
+			sequencePointListViewSorter = new SequencePointListViewSorter(listView);
 		}
 						
 		void DisposeListView()
@@ -383,6 +387,8 @@ namespace ICSharpCode.CodeCoverage
 			listView.ItemActivate -= ListViewItemActivate;
 			listView.Dispose();
 			listView = null;
+			
+			sequencePointListViewSorter.Dispose();
 		}
 		
 		void CreateVerticalSplitContainer()
