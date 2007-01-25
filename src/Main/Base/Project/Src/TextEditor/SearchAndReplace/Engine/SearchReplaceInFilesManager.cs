@@ -37,12 +37,12 @@ namespace SearchAndReplace
 			find.DocumentIterator = SearchReplaceUtilities.CreateDocumentIterator(SearchOptions.DocumentIteratorType);
 		}
 		
-		static bool InitializeSearchInFiles()
+		static bool InitializeSearchInFiles(IProgressMonitor monitor)
 		{
 			SetSearchOptions();
 			
 			find.Reset();
-			if (!find.SearchStrategy.CompilePattern())
+			if (!find.SearchStrategy.CompilePattern(monitor))
 				return false;
 			
 			currentFileName = String.Empty;
@@ -71,7 +71,7 @@ namespace SearchAndReplace
 		
 		public static void FindAll(IProgressMonitor monitor)
 		{
-			if (!InitializeSearchInFiles()) {
+			if (!InitializeSearchInFiles(monitor)) {
 				return;
 			}
 			
@@ -88,7 +88,7 @@ namespace SearchAndReplace
 		
 		public static void FindAll(int offset, int length, IProgressMonitor monitor)
 		{
-			if (!InitializeSearchInFiles()) {
+			if (!InitializeSearchInFiles(monitor)) {
 				return;
 			}
 			
