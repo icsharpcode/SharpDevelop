@@ -131,10 +131,6 @@
 					<Condition name="RunningTests"/>
 				</Not>
 			</And>
-			<MenuItem id    = "RunAll"
-			          icon  = "Icons.16x16.RunAllIcon"
-			          label = "${res:NUnitPad.NUnitPadContent.RunAllTests}"
-			          class = "ICSharpCode.UnitTesting.RunAllTestsInPadCommand"/>
 			<MenuItem id    = "Run"
 			          icon  = "Icons.16x16.RunProgramIcon"
 			          label = "${res:NUnitPad.NUnitPadContent.RunTestsContextMenuLabel}"

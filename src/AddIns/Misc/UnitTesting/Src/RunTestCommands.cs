@@ -117,6 +117,14 @@ namespace ICSharpCode.UnitTesting
 		protected virtual void OnBeforeRunTests()
 		{
 		}
+		
+		/// <summary>
+		/// Called after all tests have been run even if there have
+		/// been errors. If multiple projects are to be tested this is called only once.
+		/// </summary>
+		protected virtual void OnAfterRunTests()
+		{
+		}
 
 		protected abstract void RunTests(UnitTestApplicationStartHelper helper);
 		
@@ -141,6 +149,7 @@ namespace ICSharpCode.UnitTesting
 				if (TaskService.SomethingWentWrong && ErrorListPad.ShowAfterBuild) {
 					ShowErrorList();
 				}
+				OnAfterRunTests();
 			}
 		}
 		
@@ -160,6 +169,16 @@ namespace ICSharpCode.UnitTesting
 		/// </summary>
 		protected virtual void OnStop()
 		{
+		}
+		
+		/// <summary>
+		/// Brings the specified pad to the front.
+		/// </summary>
+		protected void ShowPad(PadDescriptor padDescriptor)
+		{
+			if (padDescriptor != null) {
+				WorkbenchSingleton.SafeThreadAsyncCall(padDescriptor.BringPadToFront);
+			}
 		}
 		
 		/// <summary>
@@ -267,13 +286,6 @@ namespace ICSharpCode.UnitTesting
 				}
 			}
 			return null;
-		}
-		
-		void ShowPad(PadDescriptor padDescriptor)
-		{
-			if (padDescriptor != null) {
-				WorkbenchSingleton.SafeThreadAsyncCall(padDescriptor.BringPadToFront);
-			}
 		}
 		
 		void ShowErrorList()
