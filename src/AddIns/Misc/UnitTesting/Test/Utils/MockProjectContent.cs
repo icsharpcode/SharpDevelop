@@ -148,6 +148,11 @@ namespace UnitTesting.Tests.Utils
 			throw new NotImplementedException();
 		}
 		
+		public IDecoration GetElement(string fullMemberName)
+		{
+			throw new NotImplementedException();
+		}
+		
 		public void Dispose()
 		{
 			throw new NotImplementedException();
