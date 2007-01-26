@@ -553,6 +553,32 @@ static int static_Test2_j = 0;");
 		}
 		
 		[Test]
+		public void NestedWithStatements()
+		{
+			TestStatement(
+				"With tb1\n" +
+				"  With .Font\n" +
+				"    .Italic = True\n" +
+				"  End With\n" +
+				"End With",
+				
+				"{\n\t{\n\t\ttb1.Font.Italic = true;\n\t}\n}");
+		}
+		
+		[Test]
+		public void NestedWithStatements2()
+		{
+			TestStatement(
+				"With tb1\n" +
+				"  With .Something.Font\n" +
+				"    .Italic = True\n" +
+				"  End With\n" +
+				"End With",
+				
+				"{\n\t{\n\t\ttb1.Something.Font.Italic = true;\n\t}\n}");
+		}
+		
+		[Test]
 		public void StructureWithImplicitPublicField()
 		{
 			TestMember("Public Structure Example \n Dim x As Object \n End Structure",

@@ -38,10 +38,20 @@ namespace ICSharpCode.FiletypeRegisterer {
 			return openCommand.StartsWith(mainExe) || openCommand.StartsWith('"' + mainExe);
 		}
 		
+		const string explorerFileExts = @"Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts";
+		
 		public static bool IsRegisteredFileType(string extension)
 		{
 			try {
 				using (RegistryKey key = Registry.ClassesRoot.OpenSubKey("." + extension)) {
+					if (key != null)
+						return true;
+				}
+			} catch (System.Security.SecurityException) {
+				// registry access might be denied
+			}
+			try {
+				using (RegistryKey key = Registry.CurrentUser.OpenSubKey(explorerFileExts + "\\." + extension)) {
 					if (key != null)
 						return true;
 				}
@@ -54,12 +64,18 @@ namespace ICSharpCode.FiletypeRegisterer {
 		static string GetOpenCommand(string extension)
 		{
 			try {
-				string clsKeyName;
-				using (RegistryKey extKey = Registry.ClassesRoot.OpenSubKey("." + extension)) {
+				string clsKeyName = null;
+				using (RegistryKey extKey = Registry.CurrentUser.OpenSubKey(explorerFileExts + "\\." + extension)) {
 					if (extKey != null)
-						clsKeyName = (string)extKey.GetValue("", "");
-					else
-						return null;
+						clsKeyName = (string)extKey.GetValue("Progid", "");
+				}
+				if (clsKeyName == null) {
+					using (RegistryKey extKey = Registry.ClassesRoot.OpenSubKey("." + extension)) {
+						if (extKey != null)
+							clsKeyName = (string)extKey.GetValue("", "");
+						else
+							return null;
+					}
 				}
 				using (RegistryKey cmdKey = Registry.ClassesRoot.OpenSubKey(clsKeyName + "\\shell\\open\\command")) {
 					if (cmdKey != null)
@@ -96,6 +112,14 @@ namespace ICSharpCode.FiletypeRegisterer {
 			}
 			extKey.SetValue("", "SD." + extension + "file");
 			extKey.Close();
+			
+			try {
+				extKey = Registry.CurrentUser.OpenSubKey(explorerFileExts + "\\." + extension, true);
+				if (extKey != null) {
+					extKey.DeleteValue("Progid");
+					extKey.Close();
+				}
+			} catch {}
 			
 			clsKey = rootKey.CreateSubKey("SD." + extension + "file");
 			

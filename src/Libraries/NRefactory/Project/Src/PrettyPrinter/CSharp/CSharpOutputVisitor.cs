@@ -24,7 +24,6 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		CSharpOutputFormatter outputFormatter;
 		PrettyPrintOptions    prettyPrintOptions = new PrettyPrintOptions();
 		NodeTracker           nodeTracker;
-		Stack<WithStatement> withExpressionStack = new Stack<WithStatement>();
 		bool printFullSystemType;
 		
 		public string Text {
@@ -876,7 +875,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.BeginBrace(braceStyle);
 				foreach (Statement stmt in blockStatement.Children) {
 					outputFormatter.Indent();
-					nodeTracker.TrackedVisit(stmt, null);
+					if (stmt is BlockStatement) {
+						nodeTracker.TrackedVisit(stmt, BraceStyle.EndOfLine);
+					} else {
+						nodeTracker.TrackedVisit(stmt, null);
+					}
 					if (!outputFormatter.LastCharacterIsNewLine)
 						outputFormatter.NewLine();
 				}
@@ -1462,9 +1465,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public object VisitWithStatement(WithStatement withStatement, object data)
 		{
-			withExpressionStack.Push(withStatement);
-			nodeTracker.TrackedVisit(withStatement.Body, BraceStyle.EndOfLine);
-			withExpressionStack.Pop();
+			NotSupported(withStatement);
 			return null;
 		}
 		
@@ -2321,9 +2322,6 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		public object VisitFieldReferenceExpression(FieldReferenceExpression fieldReferenceExpression, object data)
 		{
 			Expression target = fieldReferenceExpression.TargetObject;
-			if (target.IsNull && withExpressionStack.Count > 0) {
-				target = ((WithStatement)withExpressionStack.Peek()).Expression;
-			}
 			
 			if (target is BinaryOperatorExpression || target is CastExpression) {
 				outputFormatter.PrintToken(Tokens.OpenParenthesis);
