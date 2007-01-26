@@ -28,6 +28,7 @@ namespace ICSharpCode.WixBinding
 			
 			ConnectBrowseButton("localizedStringFileBrowseButton", "localizedStringFileTextBox", "${res:ICSharpCode.WixBinding.WixLocalizationFileFilterName} (*.wxl)|*.wxl|${res:SharpDevelop.FileFilter.AllFiles}|*.*");
 			b = helper.BindString("localizedStringFileTextBox", "LocalizedStringFile");
+			b.TreatPropertyValueAsLiteral = false;
 			b.CreateLocationButton("localizedStringFileTextBox");
 			
 			b = helper.BindEnum<WixOutputType>("outputTypeComboBox", "OutputType");
