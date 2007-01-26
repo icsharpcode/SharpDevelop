@@ -73,12 +73,14 @@
 			text = "SharpDevelop 1.x ${res:ICSharpCode.FiletypeRegisterer.Project}"/>
 	</Path>
 	
+	<!--
 	<Path name = "/Workspace/Autostart">
 		<Condition name = "Compare" string = "${property:SharpDevelop.FiletypesRegisterStartup??False}" equals = "True">
 			<Class id    = "RegisterFiletypes"
 			       class = "ICSharpCode.FiletypeRegisterer.RegisterFiletypesCommand"/>
 		</Condition>
 	</Path>
+	-->
 	
 	<Path name = "/SharpDevelop/Dialogs/OptionsDialog/UIOptions">
 		<DialogPanel id          = "RegisterFiletypes"

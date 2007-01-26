@@ -16,66 +16,26 @@ using Microsoft.Win32;
 
 namespace ICSharpCode.FiletypeRegisterer {
 	
-	public class RegisterFiletypesCommand : AbstractCommand
+	public static class RegisterFiletypesCommand
 	{
-		readonly public static string uiFiletypesProperty       = "SharpDevelop.Filetypes";
-		
-		// used in .addin file
-		readonly public static string uiRegisterStartupProperty = "SharpDevelop.FiletypesRegisterStartup";
-		
-		const int SHCNE_ASSOCCHANGED = 0x08000000;
-		const int SHCNF_IDLIST		 = 0x0;
-		
-		public static string GetDefaultExtensions(List<FiletypeAssociation> list)
+		public static void RegisterToSharpDevelop(FiletypeAssociation type)
 		{
-			StringBuilder b = new StringBuilder();
-			foreach (FiletypeAssociation a in list) {
-				if (a.IsDefault) {
-					if (b.Length > 0)
-						b.Append('|');
-					b.Append(a.Extension);
-				}
-			}
-			return b.ToString();
+			string mainExe = Assembly.GetEntryAssembly().Location;
+			RegisterFiletype(type.Extension,
+			                 type.Text,
+			                 '"' + Path.GetFullPath(mainExe) + '"' + " \"%1\"",
+			                 Path.GetFullPath(type.Icon));
 		}
 		
-		public override void Run()
+		public static bool IsRegisteredToSharpDevelop(string extension)
 		{
-			List<FiletypeAssociation> list = FiletypeAssociationDoozer.GetList();
+			string openCommand = GetOpenCommand(extension);
 			
-			// register Combine and Project by default
-			RegisterFiletypes(list, PropertyService.Get(uiFiletypesProperty, GetDefaultExtensions(list)));
+			if (string.IsNullOrEmpty(openCommand))
+				return false;
 			
-			RegisterUnknownFiletypes(list);
-		}
-		
-		public static void RegisterFiletypes(List<FiletypeAssociation> allTypes, string types)
-		{
-			string[] singleTypes = types.Split('|');
-			string mainExe  = Assembly.GetEntryAssembly().Location;
-			
-			foreach (FiletypeAssociation type in allTypes) {
-				if (Array.IndexOf(singleTypes, type.Extension) >= 0) {
-					RegisterFiletype(type.Extension,
-					                 type.Text,
-					                 '"' + Path.GetFullPath(mainExe) + '"' + " \"%1\"",
-					                 Path.GetFullPath(type.Icon));
-				}
-			}
-		}
-		
-		public static void RegisterUnknownFiletypes(List<FiletypeAssociation> allTypes)
-		{
-			string mainExe  = Assembly.GetEntryAssembly().Location;
-			string resPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "filetypes") + Path.DirectorySeparatorChar;
-			foreach (FiletypeAssociation type in allTypes) {
-				if (!IsRegisteredFileType(type.Extension)) {
-					RegisterFiletype(type.Extension,
-					                 type.Text,
-					                 '"' + Path.GetFullPath(mainExe) + '"' + " \"%1\"",
-					                 Path.GetFullPath(type.Icon));
-				}
-			}
+			string mainExe = Assembly.GetEntryAssembly().Location;
+			return openCommand.StartsWith(mainExe) || openCommand.StartsWith('"' + mainExe);
 		}
 		
 		public static bool IsRegisteredFileType(string extension)
@@ -88,12 +48,28 @@ namespace ICSharpCode.FiletypeRegisterer {
 			} catch (System.Security.SecurityException) {
 				// registry access might be denied
 			}
+			return false;
+		}
+		
+		static string GetOpenCommand(string extension)
+		{
 			try {
-				using (RegistryKey key = Registry.CurrentUser.OpenSubKey("Software\\Classes\\." + extension)) {
-					return key != null;
+				string clsKeyName;
+				using (RegistryKey extKey = Registry.ClassesRoot.OpenSubKey("." + extension)) {
+					if (extKey != null)
+						clsKeyName = (string)extKey.GetValue("", "");
+					else
+						return null;
+				}
+				using (RegistryKey cmdKey = Registry.ClassesRoot.OpenSubKey(clsKeyName + "\\shell\\open\\command")) {
+					if (cmdKey != null)
+						return (string)cmdKey.GetValue("", "");
+					else
+						return null;
 				}
 			} catch (System.Security.SecurityException) {
-				return false;
+				// registry access might be denied
+				return null;
 			}
 		}
 		
@@ -106,9 +82,7 @@ namespace ICSharpCode.FiletypeRegisterer {
 					RegisterFiletype(Registry.CurrentUser.CreateSubKey("Software\\Classes"), extension, description, command, icon);
 				} catch {}
 			}
-			try {
-				SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, IntPtr.Zero, IntPtr.Zero);
-			} catch {}
+			NotifyShellAfterChanges();
 		}
 		
 		static void RegisterFiletype(RegistryKey rootKey, string extension, string description, string command, string icon)
@@ -140,9 +114,7 @@ namespace ICSharpCode.FiletypeRegisterer {
 			try {
 				UnRegisterFiletype(extension, Registry.CurrentUser.CreateSubKey("Software\\Classes"));
 			} catch {} // catch CreateSubKey(Software\Classes)-exceptions
-			try {
-				SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, IntPtr.Zero, IntPtr.Zero);
-			} catch {}
+			NotifyShellAfterChanges();
 		}
 		
 		static void UnRegisterFiletype(string extension, RegistryKey root)
@@ -173,5 +145,16 @@ namespace ICSharpCode.FiletypeRegisterer {
 		
 		[System.Runtime.InteropServices.DllImport("shell32.dll")]
 		static extern void SHChangeNotify(int wEventId, int uFlags, IntPtr dwItem1, IntPtr dwItem2);
+		
+		/// <summary>
+		/// Notify Windows explorer that shortcut icons have changed.
+		/// </summary>
+		static void NotifyShellAfterChanges()
+		{
+			const int SHCNE_ASSOCCHANGED = 0x08000000;
+			const int SHCNF_IDLIST       = 0x0;
+			
+			SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, IntPtr.Zero, IntPtr.Zero);
+		}
 	}
 }
