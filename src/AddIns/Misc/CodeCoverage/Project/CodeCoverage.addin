@@ -71,6 +71,23 @@
 		</ComplexCondition>
 	</Path>
 	
+	<Path name = "/SharpDevelop/Pads/UnitTestsPad/Toolbar">
+		<ComplexCondition action="Disable">
+			<And>
+				<Condition name="SolutionOpen"/>
+				<Not>
+					<Condition name="RunningTests"/>
+				</Not>
+			</And>
+			<ToolbarItem id        = "RunWithCodeCoverage"
+			         insertbefore  = "Stop"
+			         insertafter   = "Run"
+		             icon          = "CodeCoverage.Icons.16x16.Run"
+		             tooltip       = "${res:ICSharpCode.UnitTesting.RunWithCoverage}"
+		             class         = "ICSharpCode.CodeCoverage.RunTestWithCodeCoverageCommand"/>
+		</ComplexCondition>
+	</Path>
+	
 	<Path path = "/SharpDevelop/BackendBindings/ProjectOptions/AllManaged">
 		<DialogPanel id          = "CodeCoverage"
 		             label       = "${res:ICSharpCode.UnitTesting.CodeCoverage}"

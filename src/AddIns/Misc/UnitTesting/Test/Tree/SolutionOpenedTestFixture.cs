@@ -81,6 +81,10 @@ namespace UnitTesting.Tests.Tree
 			Assert.AreEqual(0, pad.TestTreeView.Nodes.Count);
 		}
 		
+		/// <summary>
+		/// Add a new project and check that we also add an All Tests
+		/// root node and a new project node.
+		/// </summary>
 		[Test]
 		public void ProjectAdded()
 		{
@@ -92,7 +96,10 @@ namespace UnitTesting.Tests.Tree
 			
 			pad.CallProjectAdded(project);
 			
-			Assert.AreEqual(2, pad.TestTreeView.Nodes.Count);
+			Assert.AreEqual(2, pad.TestTreeView.GetProjects().Length);
+			Assert.AreEqual(1, pad.TestTreeView.Nodes.Count);
+			Assert.IsInstanceOfType(typeof(AllTestsTreeNode), pad.TestTreeView.Nodes[0]);
+			Assert.AreEqual(2, pad.TestTreeView.Nodes[0].Nodes.Count);
 		}
 		
 		[Test]
@@ -125,7 +132,10 @@ namespace UnitTesting.Tests.Tree
 			
 			// Project should be added since it has a reference to
 			// NUnit.
-			Assert.AreEqual(2, pad.TestTreeView.Nodes.Count);
+			Assert.AreEqual(2, pad.TestTreeView.GetProjects().Length);
+			Assert.AreEqual(1, pad.TestTreeView.Nodes.Count);
+			Assert.IsInstanceOfType(typeof(AllTestsTreeNode), pad.TestTreeView.Nodes[0]);
+			Assert.AreEqual(2, pad.TestTreeView.Nodes[0].Nodes.Count);
 		}
 		
 		[Test]
@@ -146,7 +156,10 @@ namespace UnitTesting.Tests.Tree
 			
 			pad.CallProjectItemAdded(refProjectItem);
 
-			Assert.AreEqual(2, pad.TestTreeView.Nodes.Count);
+			Assert.AreEqual(2, pad.TestTreeView.GetProjects().Length);
+			Assert.AreEqual(1, pad.TestTreeView.Nodes.Count);
+			Assert.IsInstanceOfType(typeof(AllTestsTreeNode), pad.TestTreeView.Nodes[0]);
+			Assert.AreEqual(2, pad.TestTreeView.Nodes[0].Nodes.Count);
 		}
 		
 		[Test]

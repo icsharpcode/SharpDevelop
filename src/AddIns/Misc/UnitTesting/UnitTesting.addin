@@ -94,7 +94,12 @@
 					<Condition name="RunningTests"/>
 				</Not>
 			</And>
+			<ToolbarItem id      = "RunAll"
+			             icon    = "Icons.16x16.RunAllIcon"
+			             tooltip = "${res:NUnitPad.NUnitPadContent.RunAllTests}"
+			             class   = "ICSharpCode.UnitTesting.RunAllTestsInPadCommand"/>
 			<ToolbarItem id      = "Run"
+			             insertafter="RunAll"
 			             icon    = "Icons.16x16.RunProgramIcon"
 			             tooltip = "${res:NUnitPad.NUnitPadContent.RunItem}"
 			             class   = "ICSharpCode.UnitTesting.RunTestInPadCommand"/>

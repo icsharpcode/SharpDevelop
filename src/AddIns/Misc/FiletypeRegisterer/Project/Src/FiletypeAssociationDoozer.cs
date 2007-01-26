@@ -18,14 +18,12 @@ namespace ICSharpCode.FiletypeRegisterer
 		string id;
 		string icon;
 		string text;
-		bool isDefault;
 		
-		public FiletypeAssociation(string id, string icon, string text, bool isDefault)
+		public FiletypeAssociation(string id, string icon, string text)
 		{
 			this.id = id;
 			this.icon = icon;
 			this.text = text;
-			this.isDefault = isDefault;
 		}
 		
 		public string Extension {
@@ -45,12 +43,6 @@ namespace ICSharpCode.FiletypeRegisterer
 				return text;
 			}
 		}
-		
-		public bool IsDefault {
-			get {
-				return isDefault;
-			}
-		}
 	}
 	
 	/// <summary>
@@ -64,10 +56,6 @@ namespace ICSharpCode.FiletypeRegisterer
 	/// </attribute>
 	/// <attribute name="text" use="required">
 	/// The description text.
-	/// </attribute>
-	/// <attribute name="autoRegister" use="optional">
-	/// Boolean value that specifies if the file type is registered on every startup, even if another
-	/// application has already registered it. Default=false
 	/// </attribute>
 	/// <returns>
 	/// A FiletypeAssociation describing the specified values.
@@ -101,8 +89,7 @@ namespace ICSharpCode.FiletypeRegisterer
 		{
 			return new FiletypeAssociation(codon.Id,
 			                               StringParser.Parse(codon.Properties["icon"]),
-			                               StringParser.Parse(codon.Properties["text"]),
-			                               bool.TrueString.Equals(codon.Properties["autoRegister"], StringComparison.OrdinalIgnoreCase));
+			                               StringParser.Parse(codon.Properties["text"]));
 		}
 	}
 }

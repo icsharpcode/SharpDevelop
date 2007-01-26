@@ -24,16 +24,14 @@ namespace ICSharpCode.CodeCoverage
 	public class RunTestWithCodeCoverageCommand : AbstractRunTestCommand
 	{
 		static MessageViewCategory category;
-		static NCoverRunner runner;
+		NCoverRunner runner;
 		string ncoverFileName;
 		
 		public RunTestWithCodeCoverageCommand()
 		{
-			if (runner == null) {
-				runner = NCoverRunnerSingleton.Runner;
-				runner.NCoverExited += new NCoverExitEventHandler(NCoverExited);
-				runner.OutputLineReceived += new LineReceivedEventHandler(OutputLineReceived);
-			}
+			runner = new NCoverRunner();
+			runner.NCoverExited += new NCoverExitEventHandler(NCoverExited);
+			runner.OutputLineReceived += new LineReceivedEventHandler(OutputLineReceived);
 		}
 		
 		protected override void RunTests(UnitTestApplicationStartHelper helper)
@@ -62,6 +60,17 @@ namespace ICSharpCode.CodeCoverage
 					form.ShowDialog();
 				}
 				Stop();
+			}
+		}
+		
+		/// <summary>
+		/// Shows the code coverage results window only if there were no
+		/// test failures.
+		/// </summary>
+		protected override void OnAfterRunTests()
+		{
+			if (!TaskService.HasCriticalErrors(false)) {
+				ShowPad(WorkbenchSingleton.Workbench.GetPad(typeof(CodeCoveragePad)));
 			}
 		}
 		
@@ -126,8 +135,8 @@ namespace ICSharpCode.CodeCoverage
 		{
 			System.Diagnostics.Debug.Assert(e.Error.Length == 0);
 			
-			WorkbenchSingleton.SafeThreadAsyncCall(TestsFinished);
 			DisplayCoverageResults(runner.CoverageResultsFileName);
+			WorkbenchSingleton.SafeThreadAsyncCall(TestsFinished);
 		}
 		
 		void OutputLineReceived(object sender, LineReceivedEventArgs e)

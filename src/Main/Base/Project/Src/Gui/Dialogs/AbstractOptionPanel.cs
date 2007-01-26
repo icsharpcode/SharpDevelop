@@ -13,7 +13,7 @@ using ICSharpCode.SharpDevelop.Gui.XmlForms;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
-	public abstract class AbstractOptionPanel : BaseSharpDevelopUserControl, IDialogPanel
+	public class AbstractOptionPanel : BaseSharpDevelopUserControl, IDialogPanel
 	{
 		bool   wasActivated = false;
 		bool   isFinished   = true;

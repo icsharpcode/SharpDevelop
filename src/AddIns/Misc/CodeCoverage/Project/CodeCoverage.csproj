@@ -52,6 +52,7 @@
     <Compile Include="Src\CodeCoverageMethodTreeNode.cs" />
     <Compile Include="Src\CodeCoverageClassTreeNode.cs" />
     <Compile Include="Src\CodeCoverageNamespaceTreeNode.cs" />
+    <Compile Include="Src\SequencePointListViewSorter.cs" />
     <Compile Include="Src\ToggleCodeCoverageCommand.cs" />
     <Compile Include="Src\CodeCoverageHighlighter.cs" />
     <Compile Include="Src\CodeCoverageTextMarker.cs" />
@@ -61,7 +62,6 @@
     <Compile Include="Src\CodeCoverageDisplayItem.cs" />
     <Compile Include="Src\ColorPickerComboBox.cs" />
     <Compile Include="Src\NCoverRunner.cs" />
-    <Compile Include="Src\NCoverRunnerSingleton.cs" />
     <Compile Include="Src\NCoverExitEventArgs.cs" />
     <Compile Include="Src\CodeCoverageProjectOptionsPanel.cs" />
     <EmbeddedResource Include="Resources\CodeCoverageProjectOptionsPanel.xfrm" />

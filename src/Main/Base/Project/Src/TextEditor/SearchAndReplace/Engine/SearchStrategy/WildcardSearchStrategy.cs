@@ -164,7 +164,7 @@ namespace SearchAndReplace
 			return -1;
 		}
 		
-		public bool CompilePattern()
+		public bool CompilePattern(ICSharpCode.SharpDevelop.Gui.IProgressMonitor monitor)
 		{
 			CompilePattern(SearchOptions.FindPattern, !SearchOptions.MatchCase);
 			return true;

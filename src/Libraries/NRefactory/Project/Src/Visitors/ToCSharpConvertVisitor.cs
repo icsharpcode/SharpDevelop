@@ -67,6 +67,40 @@ namespace ICSharpCode.NRefactory.Visitors
 			return null;
 		}
 		
+		public override object VisitWithStatement(WithStatement withStatement, object data)
+		{
+			withStatement.Body.AcceptVisitor(new ReplaceWithAccessTransformer(withStatement.Expression), data);
+			base.VisitWithStatement(withStatement, data);
+			ReplaceCurrentNode(withStatement.Body);
+			return null;
+		}
+		
+		sealed class ReplaceWithAccessTransformer : AbstractAstTransformer
+		{
+			readonly Expression replaceWith;
+			
+			public ReplaceWithAccessTransformer(Expression replaceWith)
+			{
+				this.replaceWith = replaceWith;
+			}
+			
+			public override object VisitFieldReferenceExpression(FieldReferenceExpression fieldReferenceExpression, object data)
+			{
+				if (fieldReferenceExpression.TargetObject.IsNull) {
+					fieldReferenceExpression.TargetObject = replaceWith;
+					return null;
+				} else {
+					return base.VisitFieldReferenceExpression(fieldReferenceExpression, data);
+				}
+			}
+			
+			public override object VisitWithStatement(WithStatement withStatement, object data)
+			{
+				// do not visit the body of the WithStatement
+				return withStatement.Expression.AcceptVisitor(this, data);
+			}
+		}
+		
 		static bool IsTypeLevel(INode node)
 		{
 			return node is MethodDeclaration || node is PropertyDeclaration || node is EventDeclaration

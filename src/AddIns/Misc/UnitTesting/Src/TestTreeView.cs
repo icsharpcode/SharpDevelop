@@ -31,9 +31,17 @@ namespace ICSharpCode.UnitTesting
 			SourceCodeItemSelected  = 1
 		}
 		
+		/// <summary>
+		/// The All Tests tree root node that is added if multiple 
+		/// test projects exist in the solution. If the solution contains
+		/// only one test project then no such node will be added.
+		/// </summary>
+		AllTestsTreeNode allTestsNode;
+		
 		public TestTreeView()
 		{
 			ImageList = TestTreeViewImageList.ImageList;
+			CanClearSelection = false;
 		}
 		
 		/// <summary>
@@ -77,7 +85,8 @@ namespace ICSharpCode.UnitTesting
 		/// </summary>
 		/// <remarks>
 		/// If the project is already in the tree then it will 
-		/// not be added again.
+		/// not be added again. If a project is already in the tree then
+		/// an All Tests root node will be added.
 		/// </remarks>
 		public void AddProject(IProject project)
 		{
@@ -88,7 +97,13 @@ namespace ICSharpCode.UnitTesting
 					if (projectContent != null) {
 						TestProject testProject = new TestProject(project, projectContent);
 						TestProjectTreeNode node = new TestProjectTreeNode(testProject);
-						node.AddTo(this);
+						
+						if (Nodes.Count == 0) {
+							node.AddTo(this);
+						} else {
+							AllTestsTreeNode allTestsNode = GetAllTestsNode();
+							allTestsNode.AddProjectNode(node);
+						}
 						
 						// Sort the nodes.
 						SortNodes(Nodes, true);
@@ -102,7 +117,14 @@ namespace ICSharpCode.UnitTesting
 		/// </summary>
 		public void RemoveProject(IProject project)
 		{
-			RemoveProjectNode(GetProjectTreeNode(project));
+			TestProjectTreeNode projectNode = GetProjectTreeNode(project);
+			RemoveProjectNode(projectNode);
+			
+			// Remove the All Tests node if it exists and there
+			// is only one project tree node left.
+			if (allTestsNode != null && GetProjectNodes().Count == 1) {
+				RemoveAllTestsNode();
+			}
 		}
 		
 		/// <summary>
@@ -111,7 +133,9 @@ namespace ICSharpCode.UnitTesting
 		public IProject[] GetProjects()
 		{
 			List<IProject> projects = new List<IProject>();
-			foreach (TestProjectTreeNode projectNode in Nodes) {
+			
+			// Get the project information.
+			foreach (TestProjectTreeNode projectNode in GetProjectNodes()) {
 				projects.Add(projectNode.Project);
 			}
 			return projects.ToArray();
@@ -211,7 +235,7 @@ namespace ICSharpCode.UnitTesting
 		/// </summary>
 		public void UpdateParseInfo(ICompilationUnit oldUnit, ICompilationUnit newUnit)
 		{
-			foreach (TestProjectTreeNode projectNode in Nodes) {
+			foreach (TestProjectTreeNode projectNode in GetProjectNodes()) {
 				TestProject testProject = projectNode.TestProject;
 				testProject.UpdateParseInfo(oldUnit, newUnit);
 			}
@@ -223,7 +247,7 @@ namespace ICSharpCode.UnitTesting
 		/// </summary>
 		public void ResetTestResults()
 		{
-			foreach (TestProjectTreeNode projectNode in Nodes) {
+			foreach (TestProjectTreeNode projectNode in GetProjectNodes()) {
 				TestProject testProject = projectNode.TestProject;
 				testProject.ResetTestResults();
 			}
@@ -277,7 +301,7 @@ namespace ICSharpCode.UnitTesting
 		/// </summary>
 		TestProjectTreeNode GetProjectTreeNode(IProject project)
 		{
-			foreach (TestProjectTreeNode projectNode in Nodes) {
+			foreach (TestProjectTreeNode projectNode in GetProjectNodes()) {
 				if (Object.ReferenceEquals(projectNode.Project, project)) {
 					return projectNode;
 				}
@@ -285,11 +309,93 @@ namespace ICSharpCode.UnitTesting
 			return null;
 		}
 		
+		/// <summary>
+		/// Returns the test project tree nodes taking into account 
+		/// if the All Tests root node exists.
+		/// </summary>
+		TreeNodeCollection GetProjectNodes()
+		{
+			if (allTestsNode != null) {
+				return allTestsNode.Nodes;
+			} 
+			return Nodes;
+		}
+		
+		/// <summary>
+		/// Removes the project node from the tree.
+		/// </summary>
 		void RemoveProjectNode(TestProjectTreeNode projectNode)
 		{
 			if (projectNode != null) {
-				projectNode.Remove();
+				if (allTestsNode != null) {
+					allTestsNode.RemoveProjectNode(projectNode);
+				} else {
+					projectNode.Remove();
+				}
 			}
+		}
+		
+		/// <summary>
+		/// Gets the All Tests root node which is added if the tree is 
+		/// showing multiple test projects. The All Tests root node will
+		/// be added if it does not exist. 
+		/// </summary>
+		AllTestsTreeNode GetAllTestsNode()
+		{
+			if (allTestsNode == null) {
+				AddAllTestsNode();
+			}
+			return allTestsNode;
+		}
+		
+		/// <summary>
+		/// Adds a new All Tests root node.
+		/// </summary>
+		void AddAllTestsNode()
+		{
+			// Save existing nodes (should only be one) before 
+			// clearing so we can add these to the new All Tests node.
+			TreeNode[] projectNodes = new TreeNode[Nodes.Count];
+			Nodes.CopyTo(projectNodes, 0);
+			Nodes.Clear();
+			
+			allTestsNode = new AllTestsTreeNode();
+			allTestsNode.Disposed += AllTestsNodeDisposed;
+			Nodes.Add(allTestsNode);
+			
+			// Add the original project nodes to the new
+			// All Tests node.
+			foreach (TestProjectTreeNode node in projectNodes) {
+				allTestsNode.AddProjectNode(node);
+			}
+		}
+		
+		/// <summary>
+		/// Removes the all tests node.
+		/// </summary>
+		void RemoveAllTestsNode()
+		{
+			// Remove the all tests node.
+			allTestsNode.Remove();
+			
+			// Copy project nodes to the root.
+			foreach (TestTreeNode node in allTestsNode.Nodes) {
+				Nodes.Add(node);
+			}
+			
+			// Dispose the all tests node.
+			AllTestsNodeDisposed(null, null);
+		}
+		
+		/// <summary>
+		/// Ensures that if the TreeView's Clear method is called
+		/// directly the test tree does not think there is still 
+		/// an All Tests node.
+		/// </summary>
+		void AllTestsNodeDisposed(object source, EventArgs e)
+		{
+			allTestsNode.Disposed -= AllTestsNodeDisposed;
+			allTestsNode = null;
 		}
 	}
 }
