@@ -71,6 +71,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			base.Create(information);
 			
+			this.MSBuildProject.DefaultTargets = "Build";
+			
 			this.OutputType = OutputType.Exe;
 			this.RootNamespace = information.RootNamespace;
 			this.AssemblyName = information.ProjectName;
