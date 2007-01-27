@@ -31,7 +31,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			IReturnType rt = o as IReturnType;
 			if (rt == null) return false;
-			return rt.IsDefaultReturnType && this.FullyQualifiedName == rt.FullyQualifiedName && this.TypeParameterCount == rt.TypeParameterCount;
+			return rt.IsDefaultReturnType && DefaultReturnType.Equals(this, rt);
 		}
 		
 		public override int GetHashCode()
