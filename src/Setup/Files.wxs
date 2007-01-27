@@ -73,7 +73,7 @@
 									<Registry Id="SD.booprojfile.command" Type="string" Key="shell\open\command" Value="&quot;[#SharpDevelop.exe]&quot; &quot;%1&quot;" />
 									<Registry Id="SD.booprojfile.icon" Type="string" Key="DefaultIcon" Value="&quot;[#prjx.ico]&quot;" />
 								</Registry>
-								<Registry Id="SD.booprojfile.association" Root="HKCR" Type="string" Key=".booproj" Value="SD.booproj" />
+								<Registry Id="SD.booprojfile.association" Root="HKCR" Type="string" Key=".booproj" Value="SD.booprojfile" />
 							</Component>
 							<Component Id="SharpDevelopCombineFileAssociation" Guid="9D7E0D45-CD48-4A52-8875-939A78B8F710" DiskId="1">
 								<Registry Id="SD.cmbxfile" Root="HKCR" Type="string" Key="SD.cmbxfile" Value="SharpDevelop 1.x Combine" KeyPath="yes">
@@ -94,7 +94,7 @@
 									<Registry Id="SD.csproj.command" Type="string" Key="shell\open\command" Value="&quot;[#SharpDevelop.exe]&quot; &quot;%1&quot;" />
 									<Registry Id="SD.csproj.icon" Type="string" Key="DefaultIcon" Value="&quot;[#prjx.ico]&quot;" />
 								</Registry>
-								<Registry Id="SD.csproj.association" Root="HKCR" Type="string" Key=".csproj" Value="SD.csproj" />
+								<Registry Id="SD.csproj.association" Root="HKCR" Type="string" Key=".csproj" Value="SD.csprojfile" />
 							</Component>
 							<Component Id="SharpDevelop11ProjectFileAssociation" Guid="DD3AAFF7-A307-4918-A33E-35620A2118F6" DiskId="1">
 								<Registry Id="SD.prjxfile" Root="HKCR" Type="string" Key="SD.prjxfile" Value="SharpDevelop 1.x Project" KeyPath="yes">
