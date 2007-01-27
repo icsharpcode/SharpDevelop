@@ -35,6 +35,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			Expression expr;
 			
 			foreach (IField field in currentClass.Fields) {
+				if (field.IsStatic) continue;
+				
 				expr = new AssignmentExpression(new IdentifierExpression(var.Name),
 				                                AssignmentOperatorType.ExclusiveOr,
 				                                new InvocationExpression(new FieldReferenceExpression(new IdentifierExpression(field.Name), "GetHashCode")));
@@ -75,13 +77,19 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			                              currentType);
 			method.Body.AddChild(new LocalVariableDeclaration(var));
 			
-			expr = TestEquality(var.Name, currentClass.Fields[0]);
-			for (int i = 1; i < currentClass.Fields.Count; i++) {
-				expr = new BinaryOperatorExpression(expr, BinaryOperatorType.LogicalAnd,
-				                                    TestEquality(var.Name, currentClass.Fields[i]));
+			expr = null;
+			foreach (IField field in currentClass.Fields) {
+				if (field.IsStatic) continue;
+				
+				if (expr == null) {
+					expr = TestEquality(var.Name, field);
+				} else {
+					expr = new BinaryOperatorExpression(expr, BinaryOperatorType.LogicalAnd,
+					                                    TestEquality(var.Name, field));
+				}
 			}
 			
-			method.Body.AddChild(new ReturnStatement(expr));
+			method.Body.AddChild(new ReturnStatement(expr ?? new PrimitiveExpression(true, "true")));
 			
 			nodes.Add(method);
 		}
