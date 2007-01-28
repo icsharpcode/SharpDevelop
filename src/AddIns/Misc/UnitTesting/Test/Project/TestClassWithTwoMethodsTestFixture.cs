@@ -22,6 +22,7 @@ namespace UnitTesting.Tests.Project
 		TestClass testClass;
 		TestMethod testMethod1;
 		TestMethod testMethod2;
+		MockClass mockClass;
 		
 		[SetUp]
 		public void Init()
@@ -35,7 +36,7 @@ namespace UnitTesting.Tests.Project
 			MockProjectContent projectContent = new MockProjectContent();
 			projectContent.Language = LanguageProperties.None;
 			
-			MockClass mockClass = new MockClass("RootNamespace.Tests.MyTestFixture");
+			mockClass = new MockClass("RootNamespace.Tests.MyTestFixture");
 			mockClass.Namespace = "RootNamespace.Tests";
 			mockClass.ProjectContent = projectContent;
 			mockClass.Attributes.Add(new MockAttribute("TestFixture"));
@@ -182,6 +183,32 @@ namespace UnitTesting.Tests.Project
 		public void FindTestMethodFromInvalidTestMethodName()
 		{
 			Assert.IsNull(testProject.TestClasses.GetTestMethod(String.Empty));
+		}
+		
+		/// <summary>
+		/// SD2-1278. Tests that the method is updated in the TestClass. 
+		/// This ensures that the method's location is up to date.
+		/// </summary>
+		[Test]
+		public void TestMethodShouldBeUpdatedInClass()
+		{
+			MockMethod mockMethod = new MockMethod("TestMethod1");
+			mockMethod.DeclaringType = mockClass;
+			mockMethod.Attributes.Add(new MockAttribute("Test"));
+			mockClass.SetCompoundClass(mockClass);
+			
+			// Remove the existing TestMethod1 in the class.
+			mockClass.Methods.RemoveAt(0);
+
+			// Add our newly created test method object.
+			mockClass.Methods.Insert(0, mockMethod);
+			
+			TestClass testClass = testProject.TestClasses["RootNamespace.Tests.MyTestFixture"];
+			testClass.UpdateClass(mockClass);
+			
+			// Ensure that the TestClass now uses the new method object.
+			TestMethod method = testClass.GetTestMethod("TestMethod1");
+			Assert.AreSame(mockMethod, method.Method);
 		}
 	}
 }
