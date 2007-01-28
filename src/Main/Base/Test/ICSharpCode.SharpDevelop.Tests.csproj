@@ -48,9 +48,14 @@
     <Reference Include="Microsoft.Build.Engine" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AbstractDecorationIsOverridableTestFixture.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="CSharpExpressionFinderTests.cs" />
+    <Compile Include="ExceptionClassOverridesTestFixture.cs" />
     <Compile Include="NRefactoryResolverTests.cs" />
+    <Compile Include="CollectionClassOverridesTestFixture.cs" />
+    <Compile Include="OverridableMethodsTestFixture.cs" />
+    <Compile Include="OverridablePropertiesTestFixture.cs" />
     <Compile Include="ReflectionLayerTests.cs" />
     <Compile Include="GenericResolverTests.cs" />
     <Compile Include="InnerClassesResolverTests.cs" />
@@ -59,6 +64,13 @@
     <Compile Include="OverloadFinding.cs" />
     <Compile Include="SearchGenericClassTests.cs" />
     <Compile Include="MemberLookupHelperTests.cs" />
+    <Compile Include="Utils\MockAmbience.cs" />
+    <Compile Include="Utils\MockClass.cs" />
+    <Compile Include="Utils\MockDecoration.cs" />
+    <Compile Include="Utils\MockDefaultReturnType.cs" />
+    <Compile Include="Utils\MockMethod.cs" />
+    <Compile Include="Utils\MockProject.cs" />
+    <Compile Include="Utils\MockProperty.cs" />
     <Compile Include="VBExpressionFinderTests.cs" />
     <Compile Include="WebReferences\WebReferenceProjectItemsTest.cs" />
     <Compile Include="WebReferences\ProjectHasExistingWebRefFolderTest.cs" />
@@ -93,6 +105,10 @@
     <Compile Include="SharpDevelopColorDialogTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj">
+      <Project>{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D}</Project>
+      <Name>ICSharpCode.TextEditor</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Project\ICSharpCode.SharpDevelop.csproj">
       <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
       <Name>ICSharpCode.SharpDevelop</Name>
@@ -125,6 +141,7 @@
       <Link>ICSharpCode.TextEditor.dll</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Folder Include="Utils" />
     <Folder Include="WebReferences" />
     <Folder Include="Templates" />
     <Folder Include="Services_Navigation" />

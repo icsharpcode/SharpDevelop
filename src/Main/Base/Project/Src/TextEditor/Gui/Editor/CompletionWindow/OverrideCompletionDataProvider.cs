@@ -17,6 +17,48 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 {
 	public class OverrideCompletionDataProvider : AbstractCompletionDataProvider
 	{
+		/// <summary>
+		/// Gets a list of overridable methods from the specified class.
+		/// A better location for this method is in the DefaultClass
+		/// class and the IClass interface.
+		/// </summary>
+		public static IMethod[] GetOverridableMethods(IClass c)
+		{
+			if (c == null) {
+				throw new ArgumentException("c");
+			}
+			
+			List<IMethod> methods = new List<IMethod>();
+			foreach (IMethod m in c.DefaultReturnType.GetMethods()) {
+				if (m.IsOverridable && !m.IsConst && !m.IsPrivate) {
+					if (m.DeclaringType.FullyQualifiedName != c.FullyQualifiedName) {
+						methods.Add(m);
+					}
+				}
+			}
+			return methods.ToArray();
+		}
+		
+		/// <summary>
+		/// Gets a list of overridable properties from the specified class.
+		/// </summary>
+		public static IProperty[] GetOverridableProperties(IClass c)
+		{
+			if (c == null) {
+				throw new ArgumentException("c");
+			}
+			
+			List<IProperty> properties = new List<IProperty>();
+			foreach (IProperty p in c.DefaultReturnType.GetProperties()) {
+				if (p.IsOverridable && !p.IsConst && !p.IsPrivate) {
+					if (p.DeclaringType.FullyQualifiedName != c.FullyQualifiedName) {
+						properties.Add(p);
+					}
+				}
+			}
+			return properties.ToArray();
+		}
+		
 		public override ICompletionData[] GenerateCompletionData(string fileName, TextArea textArea, char charTyped)
 		{
 			ParseInformation parseInfo = ParserService.GetParseInformation(fileName);
@@ -24,27 +66,11 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			IClass c = parseInfo.MostRecentCompilationUnit.GetInnermostClass(textArea.Caret.Line, textArea.Caret.Column);
 			if (c == null) return null;
 			List<ICompletionData> result = new List<ICompletionData>();
-			foreach (IMethod m in c.DefaultReturnType.GetMethods()) {
-				if (m.IsPublic || m.IsProtected) {
-					if (m.IsAbstract || m.IsVirtual || m.IsOverride) {
-						if (!m.IsSealed && !m.IsConst) {
-							if (m.DeclaringType.FullyQualifiedName != c.FullyQualifiedName) {
-								result.Add(new OverrideCompletionData(m));
-							}
-						}
-					}
-				}
+			foreach (IMethod m in GetOverridableMethods(c)) {
+				result.Add(new OverrideCompletionData(m));
 			}
-			foreach (IProperty m in c.DefaultReturnType.GetProperties()) {
-				if (m.IsPublic || m.IsProtected) {
-					if (m.IsAbstract || m.IsVirtual || m.IsOverride) {
-						if (!m.IsSealed && !m.IsConst) {
-							if (m.DeclaringType.FullyQualifiedName != c.FullyQualifiedName) {
-								result.Add(new OverrideCompletionData(m));
-							}
-						}
-					}
-				}
+			foreach (IProperty p in GetOverridableProperties(c)) {
+				result.Add(new OverrideCompletionData(p));
 			}
 			return result.ToArray();
 		}
