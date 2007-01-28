@@ -206,14 +206,16 @@ namespace ClassDiagram
 		
 		#region Graphics related members
 		
+		static Color titlesBG = Color.FromArgb(255,217, 225, 241);
 		protected virtual Color TitleBackground
 		{
-			get { return Color.LightSteelBlue;}
+			get { return titlesBG;}
 		}
 
+		static Brush innerTitlesBG = new SolidBrush(Color.FromArgb(255, 240, 242, 249));
 		protected virtual Brush InnerTitlesBackground
 		{
-			get { return Brushes.AliceBlue;}
+			get { return innerTitlesBG;}
 		}
 
 		protected virtual bool RoundedCorners
@@ -353,10 +355,14 @@ namespace ClassDiagram
 			#region Create Header
 			TextSegment titleSegment = new TextSegment(Graphics, title, GroupTitleFont, true);
 			
-			headerPlus.Add(new PlusShape());
+			PlusShape plus = new PlusShape();
+			plus.Border = 3;
+			headerPlus.Add(plus);
 			headerPlus.Add(titleSegment);
 			
-			headerMinus.Add(new MinusShape());
+			MinusShape minus = new MinusShape();
+			minus.Border = 3;
+			headerMinus.Add(minus);
 			headerMinus.Add(titleSegment);
 			
 			DrawableItemsStack headerCollapsed = new DrawableItemsStack();
@@ -387,6 +393,20 @@ namespace ClassDiagram
 			content.OrientationAxis = Axis.Y;
 			PrepareMembersContent <MT> (members, content);
 			return content;
+		}
+		
+		private DrawableItemsStack PerpareNestedTypesContent()
+		{
+			DrawableItemsStack innerItems = new DrawableItemsStack();
+			innerItems.OrientationAxis = Axis.Y;
+			innerItems.Spacing = 10;
+			innerItems.Border = 10;
+			foreach (IClass ct in classtype.InnerClasses)
+			{
+				ClassCanvasItem innerItem = ClassCanvas.CreateItemFromType(ct);
+				innerItems.Add(innerItem);
+			}
+			return innerItems;
 		}
 		
 		protected virtual void PrepareMembersContent <MT> (ICollection<MT> members, DrawableItemsStack content) where MT : IMember
@@ -423,7 +443,7 @@ namespace ClassDiagram
 				groups.Add(tg);
 			}
 		}
-			
+		
 		protected virtual void PrepareMembersContent ()
 		{
 			if (classtype == null) return;
@@ -439,6 +459,12 @@ namespace ClassDiagram
 			AddGroupToContent("Methods", methodsContent);
 			AddGroupToContent("Fields", fieldsContent);
 			AddGroupToContent("Events", eventsContent);
+			
+			if (classtype.InnerClasses.Count > 0)
+			{
+				DrawableItemsStack nestedTypesContent = PerpareNestedTypesContent();
+				AddGroupToContent("Nested Types", nestedTypesContent);
+			}
 		}
 		
 		protected virtual void PrepareFrame ()
@@ -472,11 +498,11 @@ namespace ClassDiagram
 		public override void DrawToGraphics (Graphics graphics)
 		{
 			grad.ResetTransform();
-			grad.TranslateTransform(X, Y);
+			grad.TranslateTransform(AbsoluteX, AbsoluteY);
 			grad.ScaleTransform(ActualWidth, 1);
 			
 			GraphicsState state = graphics.Save();
-			graphics.TranslateTransform (X, Y);
+			graphics.TranslateTransform (AbsoluteX, AbsoluteY);
 			
 			//Draw Shadow
 			graphics.FillPath(CanvasItem.ShadowBrush, shadowpath);
@@ -492,12 +518,12 @@ namespace ClassDiagram
 			//TODO - should be converted to an headered item.
 			if (interfaces.Count > 0)
 			{
-				interfaces.X = X + 15;
-				interfaces.Y = Y - interfaces.ActualHeight - 1;
+				interfaces.X = AbsoluteX + 15;
+				interfaces.Y = AbsoluteY - interfaces.ActualHeight - 1;
 				interfaces.DrawToGraphics(graphics);
 				
-				graphics.DrawEllipse(Pens.Black, X + 9, Y - interfaces.ActualHeight - 11, 10, 10);
-				graphics.DrawLine(Pens.Black, X + 14, Y - interfaces.ActualHeight - 1, X + 14, Y);
+				graphics.DrawEllipse(Pens.Black, AbsoluteX + 9, AbsoluteY - interfaces.ActualHeight - 11, 10, 10);
+				graphics.DrawLine(Pens.Black, AbsoluteX + 14, AbsoluteY - interfaces.ActualHeight - 1, AbsoluteX + 14, AbsoluteY);
 			}
 			
 			base.DrawToGraphics(graphics);

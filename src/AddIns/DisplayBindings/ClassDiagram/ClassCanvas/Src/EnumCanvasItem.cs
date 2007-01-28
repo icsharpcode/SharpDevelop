@@ -24,16 +24,16 @@ using Tools.Diagrams.Drawables;
 
 namespace ClassDiagram
 {
-	//TODO - an enum looks differently.
 	public class EnumCanvasItem : ClassCanvasItem
 	{
 		public EnumCanvasItem (IClass ct) : base (ct) {}
 	
 		private DrawableItemsStack fields = new DrawableItemsStack();
 		
+		static Color titlesBG = Color.FromArgb(255, 221, 214, 239);
 		protected override Color TitleBackground
 		{
-			get { return Color.Plum; }
+			get { return titlesBG; }
 		}
 		
 		protected override bool RoundedCorners

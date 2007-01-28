@@ -592,10 +592,10 @@ namespace ClassDiagram
 			if (pc == null) return;
 			if (doc == null) return;
 			XPathNavigator nav = doc.CreateNavigator();
-			XPathNodeIterator ni = nav.Select(@"/ClassDiagram/ClassItem");
+			XPathNodeIterator ni = nav.Select(@"/ClassDiagram/Class | /ClassDiagram/Struct | /ClassDiagram/Enum | /ClassDiagram/Interface | /ClassDiagram/Delegate");
 			while (ni.MoveNext())
 			{
-				string typeName = ni.Current.GetAttribute("Type", "");
+				string typeName = ni.Current.GetAttribute("Name", "");
 				IClass ct = pc.GetClass(typeName, 0);
 				ClassCanvasItem canvasitem = ClassCanvas.CreateItemFromType(ct);
 				if (canvasitem != null)

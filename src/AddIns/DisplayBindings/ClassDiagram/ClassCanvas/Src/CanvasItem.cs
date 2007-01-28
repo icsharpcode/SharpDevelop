@@ -23,6 +23,7 @@ using ICSharpCode.SharpDevelop.Project;
 using System.Globalization;
 
 using Tools.Diagrams;
+using Tools.Diagrams.Drawables;
 
 namespace ClassDiagram
 {
@@ -65,7 +66,7 @@ namespace ClassDiagram
 		}
 	}
 	
-	public abstract class CanvasItem : IInteractiveDrawable, IRectangle
+	public abstract class CanvasItem : BaseRectangle, IInteractiveDrawable, IDrawableRectangle
 	{
 		#region Constructors
 		
@@ -76,16 +77,6 @@ namespace ClassDiagram
 		}
 		
 		#endregion
-		
-		public virtual bool IsHResizable
-		{
-			get { return true; }
-		}
-		
-		public virtual bool IsVResizable
-		{
-			get { return true; }
-		}
 		
 		#region Layout Events
 		
@@ -126,7 +117,7 @@ namespace ClassDiagram
 		
 		#region Geometry
 		
-		private float x, y, w, h;
+		//private float x, y, w, h;
 		
 		#region Geometry related events
 		
@@ -148,16 +139,16 @@ namespace ClassDiagram
 			if (e.Cancel) return;
 
 			if (AllowXModifications())
-				this.x = e.Value.X;
+				base.X = e.Value.X;
 			else
-				this.x = x;
+				base.X = x;
 			
 			if (AllowYModifications())
-				this.y = e.Value.Y;
+				base.Y = e.Value.Y;
 			else
-				this.y = y;
+				base.Y = y;
 
-			PositionChanged (this, new ValueChangedEventArgs<PointF> (new PointF(this.x, this.y)));
+			PositionChanged (this, new ValueChangedEventArgs<PointF> (new PointF(base.X, base.Y)));
 			EmitLayoutUpdate();
 		}
 		
@@ -168,16 +159,16 @@ namespace ClassDiagram
 			if (e.Cancel) return;
 
 			if (AllowWidthModifications())
-				this.w = e.Value.Width;
+				base.Width = e.Value.Width;
 			else
-				this.w = width;
+				base.Width = width;
 			
 			if (AllowHeightModifications())
-				this.h = e.Value.Height;
+				base.Height = e.Value.Height;
 			else
-				this.h = height;
+				base.Height = height;
 			
-			SizeChanged (this, new ValueChangedEventArgs<SizeF> (new SizeF(this.w, this.h)));
+			SizeChanged (this, new ValueChangedEventArgs<SizeF> (new SizeF(base.Width, base.Height)));
 			EmitLayoutUpdate();
 		}
 		
@@ -187,71 +178,43 @@ namespace ClassDiagram
 		
 		#region IRectangle implementation
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "X")]
-		public virtual float X
+		public override float X
 		{
-			get { return x; }
-			set { Move(value, y); }
+			get { return base.X; }
+			set { Move(value, base.Y); }
 		}
 		
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Y")]
-		public virtual float Y
+		public override float Y
 		{
-			get { return y; }
-			set { Move(x, value); }
+			get { return base.Y; }
+			set { Move(base.X, value); }
 		}
 		
-		public virtual float AbsoluteX
+		public override float Width
 		{
-			get { return x; }
+			get { return base.Width; }
+			set { Resize (value, base.Height); OnWidthChanged(); }
 		}
 		
-		public virtual float AbsoluteY
+		public override float Height
 		{
-			get { return y; }
+			get { return base.Height; }
+			set { Resize (base.Width, value); OnHeightChanged(); }
 		}
 		
-		public virtual float Width
-		{
-			get { return w; }
-			set { Resize (value, h); WidthChanged(this, EventArgs.Empty); }
-		}
-		
-		public virtual float Height
-		{
-			get { return h; }
-			set { Resize (w, value); HeightChanged(this, EventArgs.Empty); }
-		}
-		
-		public virtual float ActualWidth
+		public override float ActualWidth
 		{
 			get { return Width; }
-			set { Width = value; ActualWidthChanged(this, EventArgs.Empty); }
+			set { Width = value; OnActualWidthChanged(); }
 		}
 		
-		public virtual float ActualHeight
+		public override float ActualHeight
 		{
 			get { return Height; }
-			set { Height = value; ActualHeightChanged(this, EventArgs.Empty); }
+			set { Height = value; OnActualHeightChanged(); }
 		}
 		
-		public virtual float Border
-		{
-			get { return 0; }
-			set { }
-		}
-		
-		public virtual float Padding
-		{
-			get { return 0; }
-			set { }
-		}
-		
-		public virtual IRectangle Container
-		{
-			get { return null; }
-			set {}
-		}
-
 		#endregion
 
 		#region Geometry Controllers
@@ -449,16 +412,6 @@ namespace ClassDiagram
 		
 		#endregion
 		
-		public virtual float GetAbsoluteContentWidth()
-		{
-			throw new NotImplementedException();
-		}
-		
-		public virtual float GetAbsoluteContentHeight()
-		{
-			throw new NotImplementedException();
-		}
-		
 		#region Storage
 		
 		protected virtual XmlElement CreateXmlElement(XmlDocument doc)
@@ -490,7 +443,8 @@ namespace ClassDiagram
 		public virtual void LoadFromXml (XPathNavigator navigator)
 		{
 			XPathNodeIterator ni = navigator.SelectChildren("Position", "");
-			ReadXmlPositionElement(ni.Current);
+			if (ni.MoveNext())
+				ReadXmlPositionElement(ni.Current);
 		}
 		
 		protected virtual void ReadXmlPositionElement (XPathNavigator navigator)
@@ -501,16 +455,5 @@ namespace ClassDiagram
 		}
 
 		#endregion
-		
-		public bool KeepAspectRatio
-		{
-			get { return false; }
-			set {}
-		}
-		
-		public event EventHandler WidthChanged = delegate {};
-		public event EventHandler HeightChanged = delegate {};
-		public event EventHandler ActualWidthChanged = delegate {};
-		public event EventHandler ActualHeightChanged = delegate {};
 	}
 }

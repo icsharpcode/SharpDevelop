@@ -72,7 +72,7 @@ namespace Tools.Diagrams.Drawables
 				path.AddLine(AbsoluteX + ActualWidth, AbsoluteY, AbsoluteX + ActualWidth, AbsoluteY);
 			
 			if (brRad > 0)
-				path.AddArc(AbsoluteX + ActualWidth-brRad, AbsoluteY + ActualHeight - brRad, brRad, brRad, 0, 90);
+				path.AddArc(AbsoluteX + ActualWidth - brRad, AbsoluteY + ActualHeight - brRad, brRad, brRad, 0, 90);
 			else
 				path.AddLine(AbsoluteX + ActualWidth, AbsoluteY + ActualHeight, AbsoluteX + ActualWidth, AbsoluteY + ActualHeight);
 			

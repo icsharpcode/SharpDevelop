@@ -37,9 +37,10 @@ namespace ClassDiagram
 		
 		private DrawableItemsStack parameters = new DrawableItemsStack();
 		
+		static Color titlesBG = Color.FromArgb(255, 237, 219, 221);
 		protected override Color TitleBackground
 		{
-			get { return Color.LightPink;}
+			get { return titlesBG; }
 		}
 		
 		protected override IDrawableRectangle InitContent()
@@ -59,6 +60,12 @@ namespace ClassDiagram
 				TextSegment ts = new TextSegment(Graphics, par.Name  + " : " + ambience.Convert(par.ReturnType), MemberFont, true);
 				parameters.Add(ts);
 			}
+		}
+		
+		// TODO - remove - for debug only.
+		public override void DrawToGraphics(Graphics graphics)
+		{
+			base.DrawToGraphics(graphics);
 		}
 		
 		protected override XmlElement CreateXmlElement(XmlDocument doc)

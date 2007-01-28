@@ -17,7 +17,7 @@ namespace Tools.Diagrams
 		private float w = float.NaN, h = float.NaN;
 		private float b, p;
 		private float aw = float.NaN, ah = float.NaN;
-		private bool ar = false;
+		private bool keepAspectRatio = false;
 		
 		private IRectangle container;
 		
@@ -69,7 +69,7 @@ namespace Tools.Diagrams
 			set
 			{
 				aw = value;
-				if (ar)
+				if (keepAspectRatio)
 					ah = aw * (GetAbsoluteContentHeight() / GetAbsoluteContentWidth());
 				OnActualSizeChanged();
 				OnActualWidthChanged();
@@ -82,7 +82,7 @@ namespace Tools.Diagrams
 			set
 			{
 				ah = value;
-				if (ar)
+				if (keepAspectRatio)
 					aw = ah * (GetAbsoluteContentWidth() / GetAbsoluteContentHeight());
 				OnActualSizeChanged();
 				OnActualHeightChanged();
@@ -95,6 +95,10 @@ namespace Tools.Diagrams
 			set
 			{
 				w = value;
+				if (float.IsNaN(w))
+				{
+					
+				}
 				OnSizeChanged();
 				OnWidthChanged();
 			}
@@ -141,8 +145,8 @@ namespace Tools.Diagrams
 		
 		public bool KeepAspectRatio
 		{
-			get { return ar; }
-			set { ar = value; }
+			get { return keepAspectRatio; }
+			set { keepAspectRatio = value; }
 		}
 		
 		protected virtual void OnSizeChanged() {}
