@@ -56,6 +56,8 @@ namespace ICSharpCode.NAntAddIn.Gui
 			ProjectService.SolutionClosed += SolutionClosed;
 			ProjectService.ProjectItemRemoved += ProjectItemRemoved;
 			ProjectService.ProjectItemAdded += ProjectItemAdded;
+			WorkbenchSingleton.Workbench.ViewOpened += WorkbenchViewOpened;
+			WorkbenchSingleton.Workbench.ViewClosed += WorkbenchViewClosed;
 			FileService.FileRenamed += FileRenamed;
 			FileService.FileRemoved += FileRemoved;
 			FileUtility.FileSaved += FileSaved;
@@ -66,8 +68,7 @@ namespace ICSharpCode.NAntAddIn.Gui
 			
 			// Due to lazy loading we have missed the solution loaded event
 			// so add it now.
-			
-			AddSolutionToPad(ProjectService.OpenSolution);
+			Refresh();
 		}
 		
 		/// <summary>
@@ -96,6 +97,11 @@ namespace ICSharpCode.NAntAddIn.Gui
 			Solution solution = ProjectService.OpenSolution;
 			if (solution != null) {
 				treeView.AddSolution(solution);
+			}
+			foreach (IViewContent view in WorkbenchSingleton.Workbench.ViewContentCollection) {
+				if (IsStandaloneNAntBuildFile(view.FileName)) {
+					treeView.AddBuildFile(String.Empty, view.FileName);
+				}
 			}
 		}
 		
@@ -152,6 +158,8 @@ namespace ICSharpCode.NAntAddIn.Gui
 				ProjectService.SolutionClosed -= SolutionClosed;
 				ProjectService.ProjectItemRemoved -= ProjectItemRemoved;
 				ProjectService.ProjectItemAdded -= ProjectItemAdded;
+				WorkbenchSingleton.Workbench.ViewOpened -= WorkbenchViewOpened;
+				WorkbenchSingleton.Workbench.ViewClosed -= WorkbenchViewClosed;
 				FileService.FileRenamed -= FileRenamed;
 				FileService.FileRemoved -= FileRemoved;
 				FileUtility.FileSaved -= FileSaved;
@@ -170,7 +178,6 @@ namespace ICSharpCode.NAntAddIn.Gui
 		{
 			LoggingService.Debug("SolutionClosed.");
 			treeView.Clear();
-			UpdateToolbar();
 		}
 		
 		void SolutionLoaded(object sender, SolutionEventArgs e)
@@ -183,7 +190,6 @@ namespace ICSharpCode.NAntAddIn.Gui
 		{
 			if (solution != null) {
 				treeView.AddSolution(solution);
-				UpdateToolbar();
 			}
 		}
 		
@@ -234,6 +240,41 @@ namespace ICSharpCode.NAntAddIn.Gui
 					treeView.RemoveBuildFile(e.ProjectItem.FileName);
 				}
 			}
+		}
+		
+		void WorkbenchViewOpened(object sender, ViewContentEventArgs e)
+		{
+			if (IsStandaloneNAntBuildFile(e.Content.FileName)) {
+				treeView.UpdateBuildFile(e.Content.FileName);
+			}
+		}
+		
+		void WorkbenchViewClosed(object sender, ViewContentEventArgs e)
+		{
+			if (IsStandaloneNAntBuildFile(e.Content.FileName)) {
+				treeView.RemoveBuildFile(e.Content.FileName);
+			}
+		}
+		
+		bool IsStandaloneNAntBuildFile(string fileName)
+		{
+			if (fileName != null) {
+				return NAntBuildFile.IsBuildFile(fileName) && !IsInProject(fileName);
+			}
+			return false;
+		}
+		
+		bool IsInProject(string fileName)
+		{
+			Solution solution = ProjectService.OpenSolution;
+			if (solution != null) {
+				foreach (IProject project in solution.Projects) {
+					if (project.IsFileInProject(fileName)) {
+						return true;
+					}
+				}
+			}
+			return false;
 		}
 		
 		void FileSaved(object sender, FileNameEventArgs e)

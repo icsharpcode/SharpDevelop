@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Src\AddInOptions.cs" />
+    <Compile Include="Src\Commands\RunSelectedNAntCleanTargetCommand.cs" />
     <Compile Include="Src\Gui\NAntAddInOptionPanel.cs" />
     <Compile Include="Src\Commands\RunNAntCommand.cs" />
     <Compile Include="Src\NAntAddInException.cs" />

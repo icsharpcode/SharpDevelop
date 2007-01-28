@@ -71,8 +71,10 @@ namespace ICSharpCode.NAntAddIn.Gui
 		{
 			StringBuilder nodeText = new StringBuilder();
 			
-			nodeText.Append(projectName);
-			nodeText.Append(Path.DirectorySeparatorChar);
+			if (projectName.Length > 0) {
+				nodeText.Append(projectName);
+				nodeText.Append(Path.DirectorySeparatorChar);
+			}
 			nodeText.Append(buildFile.FileName);
 			
 			if (buildFile.DefaultTarget != null) {

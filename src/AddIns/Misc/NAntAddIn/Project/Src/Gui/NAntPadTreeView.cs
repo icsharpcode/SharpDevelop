@@ -153,6 +153,8 @@ namespace ICSharpCode.NAntAddIn.Gui
 			if (node != null) {
 				NAntBuildFile buildFile = new NAntBuildFile(fileName);
 				node.BuildFile = buildFile;
+			} else {
+				AddBuildFile(String.Empty, fileName);
 			}
 		}		
 		

@@ -29,7 +29,6 @@
 		          type="Menu">
 			<ComplexCondition action="Disable">
 				<And>
-					<Condition name="SolutionOpen"/>
 					<Not>
 						<Condition name="IsNAntRunning"/>
 					</Not>
@@ -50,7 +49,6 @@
 			</ComplexCondition>
 			<ComplexCondition action="Disable">
 				<And>
-					<Condition name="SolutionOpen"/>
 					<Condition name="IsNAntRunning"/>
 				</And>
 				<MenuItem id = "StopNAnt"
@@ -94,7 +92,6 @@
 	<Path name = "/SharpDevelop/Pads/NAntPad/Toolbar">
 		<ComplexCondition action="Disable">
 			<And>
-				<Condition name="SolutionOpen"/>
 				<Not>
 					<Condition name="IsNAntRunning"/>
 				</Not>
@@ -104,15 +101,12 @@
 			             tooltip = "${res:ICSharpCode.NAntAddIn.NAntPadContent.RunCommandBarButtonText}"
 			             class   = "ICSharpCode.NAntAddIn.Commands.RunSelectedNAntTargetCommand"/>
 		</ComplexCondition>
-		<Condition name = "SolutionOpen" action="Disable">
-			<ToolbarItem id      = "Refresh"
-			             icon    = "Icons.16x16.BrowserRefresh"
-			             tooltip = "${res:ICSharpCode.NAntAddIn.NAntPadContent.RefreshCommandBarButtonText}"
-			             class   = "ICSharpCode.NAntAddIn.Commands.RefreshNAntPadCommand"/>
-		</Condition>
+		<ToolbarItem id      = "Refresh"
+		             icon    = "Icons.16x16.BrowserRefresh"
+		             tooltip = "${res:ICSharpCode.NAntAddIn.NAntPadContent.RefreshCommandBarButtonText}"
+		             class   = "ICSharpCode.NAntAddIn.Commands.RefreshNAntPadCommand"/>
 		<ComplexCondition action="Disable">
 			<And>
-				<Condition name="SolutionOpen"/>
 				<Condition name="IsNAntRunning"/>
 			</And>
 			<ToolbarItem id      = "Stop"
@@ -133,7 +127,7 @@
 			    icon         = "NAntAddIn.Icons.16x16.RunNAntClean"
 			    label        = "${res:ICSharpCode.NAntAddIn.RunCleanTargetMenuLabel}" 
 			    description  = "Runs the clean target on the build file." 
-			    class        = "ICSharpCode.NAntAddIn.Commands.RunNAntCleanTargetCommand"/>
+			    class        = "ICSharpCode.NAntAddIn.Commands.RunSelectedNAntCleanTargetCommand"/>
 		</Condition>
 		<Condition name="Ownerstate" ownerstate="BuildFileSelected">
 			<MenuItem id = "StopNAnt"
