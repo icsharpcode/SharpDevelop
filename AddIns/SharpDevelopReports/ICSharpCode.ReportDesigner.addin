@@ -1,10 +1,10 @@
-﻿<AddIn name        = "SharpReport"
+﻿<AddIn name        = "SharpDevelopReports"
        author      = "Forstmeier Peter"
-       url         = ""
-       description = "Reporting tool for SharpDevelop">
+       url         = "http://www.sharpdevelopreports.net/"
+       description = "Reporting Tool For SharpDevelop">
 	
 	<Manifest>
-		<Identity name="ICSharpCode.SharpReport"/>
+		<Identity name="ICSharpCode.Reports.Addin"/>
 		<Dependency addin="ICSharpCode.SharpQuery"/>
 	</Manifest>
 	
@@ -17,18 +17,18 @@
 	<!-- DisplayBinding -->
 		
 	<Path name ="/SharpDevelop/Workbench/DisplayBindings">
-		<DisplayBinding id="SharpReportBinding"
+		<DisplayBinding id="SharpDevelopReportsBinding"
 		                insertbefore="Text"
 		                fileNamePattern="\.srd$"
-		                languagePattern="^SharpReport$"
-		                class="ICSharpCode.Reports.Addin.SharpReportDisplayBinding"/>
+		                languagePattern="^SharpDevelopReports$"
+		                class="ICSharpCode.Reports.Addin.ReportDisplayBinding"/>
 	</Path>
 	
 	<!-- File Filter -->
 	<Path name ="/SharpDevelop/Workbench/FileFilter">
-		<FileFilter id="SharpReport"
+		<FileFilter id="SharpDevelopReports"
 		            insertbefore="AllFiles"
-		            name="SharpReport (*.srd)"
+		            name="SharpDevelop Reports (*.srd)"
 		            extensions="*.srd"/>
 	</Path>
 	
@@ -44,23 +44,23 @@
 	</Path>
 	
 	<!-- DesignerContectMenu Section -->
-	<Path name ="/SharpReport/ContextMenu/Section">
+	<Path name ="/SharpDevelopReports/ContextMenu/Section">
 		<MenuItem id="settings" label="${res:SharpReport.ContextMenu.Settings}" class="ICSharpCode.Reports.Addin.Commands.ShowSettings"/>
 	</Path>
 
 	 <!-- DesignerContextMenu Items -->
-   <Path name ="/SharpReport/ContextMenu/Items">
+   <Path name ="/SharpDevelopReports/ContextMenu/Items">
       <MenuItem id="cut" label="${res:SharpReport.ContextMenu.Cut}" class="ICSharpCode.Reports.Addin.Commands.CutReportItem"/>
    </Path>
 
    <!-- ReportExplorer ContextMenu's -->
-	<Path name ="/SharpReport/ContextMenu/ContextMenu/FieldsExplorer/SectionTreeNode">
+	<Path name ="/SharpDevelopReports/ContextMenu/ContextMenu/FieldsExplorer/SectionTreeNode">
 		<MenuItem id="removenodes"
 		          label="${res:SharpReport.FieldsExplorer.ContextMenu.Section.Clear}"
 		          class="ICSharpCode.Reports.Addin.Commands.ClearNodes"/>
 	</Path>
 	
-	<Path name = "/SharpReport/ContextMenu/ContextMenu/FieldsExplorer/ColumnTreeNode">
+	<Path name = "/SharpDevelopReports/ContextMenu/ContextMenu/FieldsExplorer/ColumnTreeNode">
 		<MenuItem id="removenode"
 		          label="${res:SharpReport.FieldsExplorer.ContextMenu.Columns.Remove}"
 		          class="ICSharpCode.Reports.Addin.Commands.RemoveNode"/>
@@ -69,14 +69,14 @@
 		          class="ICSharpCode.Reports.Addin.Commands.ToogleOrder"/>
 	</Path>
 	
-	<!-- Start SharpReport from MainMenu -->
+	<!-- Start SharpDevelop Reports from MainMenu -->
 	
 	<Path name = "/Workspace/Tools">
 		<MenuItem id       = "ReportGeneratorPad"
 		          label = "${res:SharpReport.ReportGenerator}"
 		          
 		          shortcut = "Control|Alt|T"
-		          class    = "ICSharpCode.Reports.Addin.Commands.RunSharpReport"/>
+		          class    = "ICSharpCode.Reports.Addin.Commands.StartReportView"/>
 	</Path>
 
 	<!-- Report wizard -->
