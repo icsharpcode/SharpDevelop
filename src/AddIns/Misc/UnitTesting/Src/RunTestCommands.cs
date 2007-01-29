@@ -79,6 +79,7 @@ namespace ICSharpCode.UnitTesting
 					}
 				} catch {
 					runningTestCommand = null;
+					ProjectService.RaiseEventEndBuild();
 					throw;
 				}
 			}
@@ -150,6 +151,7 @@ namespace ICSharpCode.UnitTesting
 					ShowErrorList();
 				}
 				OnAfterRunTests();
+				ProjectService.RaiseEventEndBuild();
 			}
 		}
 		
@@ -225,6 +227,7 @@ namespace ICSharpCode.UnitTesting
 			ResetAllTestResults();
 			
 			OnBeforeRunTests();
+			ProjectService.RaiseEventEndBuild();
 		}
 				
 		/// <summary>

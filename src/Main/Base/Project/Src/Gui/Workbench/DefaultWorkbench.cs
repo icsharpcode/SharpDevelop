@@ -518,6 +518,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			base.OnClosing(e);
 			
+			if (ProjectService.IsBuilding) {
+				MessageService.ShowMessage(StringParser.Parse("${res:MainWindow.CannotCloseWithBuildInProgressMessage}"));
+				e.Cancel = true;
+				return;
+			}
+			
 			ProjectService.SaveSolutionPreferences();
 			
 			while (WorkbenchSingleton.Workbench.ViewContentCollection.Count > 0) {
