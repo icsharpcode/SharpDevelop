@@ -29,6 +29,8 @@ namespace WorkflowDesigner
 			control = new ViewContentControl(this);
 			
 			primaryFile.ForceInitializeView(this); // call Load()
+			
+			WorkflowSideTabService.AddViewContent(this);
 		}
 		
 		public override System.Windows.Forms.Control Control {

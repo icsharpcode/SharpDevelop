@@ -86,6 +86,7 @@ namespace WorkflowDesigner
 					Control designer = designSurface.View as Control;
 					designer.Dock = DockStyle.Fill;
 					Controls.Add(designer);
+					DesignerHost.Activate();
 					Selected(); // HACK: Selected event not working so calling directly at present
 				}
 			} catch (Exception e) {
@@ -150,7 +151,6 @@ namespace WorkflowDesigner
 			// Attach the selection service to capture objects selection changes to update property pad.
 			ISelectionService selectionService = (ISelectionService)designSurface.GetService(typeof(ISelectionService));
 			selectionService.SelectionChanged += new EventHandler(SelectionChangedHandler);
-			
 		}
 		
 		void UpdateCCU()
@@ -196,8 +196,6 @@ namespace WorkflowDesigner
 		
 		internal void Selected()
 		{
-			WorkflowToolboxService srv = this.DesignerHost.GetService(typeof(IToolboxService)) as WorkflowToolboxService;
-			srv.ShowSideTabs();
 		}
 		
 		internal void Deselected()

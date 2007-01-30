@@ -103,6 +103,7 @@
     <Compile Include="Src\Services\EventBindingService\WorkflowDesignerEventBindingService.cs" />
     <Compile Include="Src\Services\IdentifierCreationService.cs" />
     <Compile Include="Src\Services\MemberCreationService.cs" />
+    <Compile Include="Src\Services\WorkflowSideTabService.cs" />
     <Compile Include="Src\Services\WorkflowMenuCommandService.cs" />
     <Compile Include="Src\Services\WorkflowToolboxService.cs" />
     <None Include="Templates\Files\NoCodeSequentialWorkflow.xft">
