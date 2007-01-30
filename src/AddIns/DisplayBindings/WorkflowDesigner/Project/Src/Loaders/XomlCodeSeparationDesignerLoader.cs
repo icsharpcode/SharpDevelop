@@ -39,13 +39,12 @@ namespace WorkflowDesigner
 			
 			// TODO: Install the Add the additional services into the designer here.
 			LoaderHost.AddService(typeof(IMemberCreationService), new MemberCreationService());
-			LoaderHost.AddService(typeof(IEventBindingService), new EventBindingService(LoaderHost));
-			LoaderHost.AddService(typeof(IWorkflowDesignerGeneratorService), new CSharpWorkflowDesignerGeneratorService(LoaderHost,codeFileName));
+			LoaderHost.AddService(typeof(IEventBindingService), new CSharpWorkflowDesignerEventBindingService(LoaderHost,codeFileName));
 		}
 		
 		protected override void Load()
 		{
-			IWorkflowDesignerGeneratorService srv = LoaderHost.GetService(typeof(IWorkflowDesignerGeneratorService)) as IWorkflowDesignerGeneratorService;
+			IWorkflowDesignerEventBindingService srv = LoaderHost.GetService(typeof(IEventBindingService)) as IWorkflowDesignerEventBindingService;
 			srv.UpdateCCU();
 			
 			LoadFromXoml();

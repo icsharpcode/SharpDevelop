@@ -5,24 +5,21 @@
 //     <version>$Revision$</version>
 // </file>
 
+#region Using
 using System;
 using System.ComponentModel;
 using System.Collections;
+using System.ComponentModel.Design;
+#endregion
 
 namespace WorkflowDesigner
 {
 	/// <summary>
 	/// Description of IWorkflowDesignerGenerator.
 	/// </summary>
-	public interface IWorkflowDesignerGeneratorService
+	public interface IWorkflowDesignerEventBindingService : IEventBindingService
 	{
 		string CodeFileName {	get;}
-		ICollection GetCompatibleMethods(EventDescriptor edesc);
-		bool ShowCode();
-		bool ShowCode(int lineNumber);
-		bool ShowCode(IComponent component, EventDescriptor e);
-		bool ShowCode(IComponent component, EventDescriptor e, string methodName);
-		bool UseMethod(IComponent component, EventDescriptor e, string methodName);
 		void UpdateCCU();
 	}
 }

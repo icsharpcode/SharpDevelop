@@ -94,7 +94,7 @@ namespace WorkflowDesigner
 			host.AddService(typeof(ITypeResolutionService), new ICSharpCode.FormsDesigner.Services.TypeResolutionService(viewContent.PrimaryFileName));
 			host.AddService(typeof(IIdentifierCreationService), new IdentifierCreationService());
 			host.AddService(typeof(IMemberCreationService), new MemberCreationService());
-			host.AddService(typeof(IEventBindingService), new EventBindingService(host));
+			//host.AddService(typeof(IEventBindingService), new EventBindingService(host));
 			host.AddService(typeof(IToolboxService), new WorkflowToolboxService());
 			host.AddService(typeof(MemberRelationshipService), new DefaultMemberRelationshipService());
 			host.AddService(typeof(IMenuCommandService), new WorkflowMenuCommandService(host));

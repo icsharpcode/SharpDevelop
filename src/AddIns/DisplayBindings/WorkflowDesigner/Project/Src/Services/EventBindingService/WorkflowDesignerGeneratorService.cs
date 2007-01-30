@@ -37,13 +37,21 @@ namespace WorkflowDesigner
 	/// <summary>
 	/// Description of WorkflowDesignerGenerator.
 	/// </summary>
-	public abstract class WorkflowDesignerGeneratorService : IWorkflowDesignerGeneratorService, IServiceProvider
+	public abstract class WorkflowDesignerEventBindingService : IWorkflowDesignerEventBindingService, IServiceProvider
 	{
 		IServiceProvider provider;
 		string codeFileName;
         CodeCompileUnit ccu;
 
-        public void UpdateCCU()
+		public WorkflowDesignerEventBindingService(IServiceProvider provider, string codeSeparationFileName)
+		{
+			this.provider = provider;
+			this.codeFileName = codeSeparationFileName;
+		}
+
+
+		
+		public void UpdateCCU()
 		{
 			LoggingService.Debug("UpdateCCU");
 
@@ -82,12 +90,6 @@ namespace WorkflowDesigner
 			return visitor.codeCompileUnit;
 		}
 
-		public WorkflowDesignerGeneratorService(IServiceProvider provider, string codeSeparationFileName)
-		{
-			this.provider = provider;
-			this.codeFileName = codeSeparationFileName;
-		}
-
 		public object GetService(Type serviceType)
 		{
 			return provider.GetService(serviceType);
@@ -99,6 +101,37 @@ namespace WorkflowDesigner
 			}
 		}
 
+		public string CreateUniqueMethodName(IComponent component, EventDescriptor e)
+		{
+			LoggingService.Debug("CreateUniqueMethodName(" + component + ", " + e + ")");
+			return String.Format("{0}{1}", Char.ToUpper(component.Site.Name[0]) + component.Site.Name.Substring(1), e.DisplayName);
+		}
+		
+		public EventDescriptor GetEvent(PropertyDescriptor property)
+		{
+			EventPropertyDescriptor epd = property as EventPropertyDescriptor;
+			if (epd == null)
+				return null;
+			
+			return epd.eventDescriptor;
+		}
+		
+		public PropertyDescriptorCollection GetEventProperties(EventDescriptorCollection events)
+		{
+			ArrayList props = new ArrayList ();
+			
+			foreach (EventDescriptor e in events)
+				props.Add (GetEventProperty (e));
+			
+			return new PropertyDescriptorCollection ((PropertyDescriptor[]) props.ToArray (typeof (PropertyDescriptor)));
+		}
+		
+		public PropertyDescriptor GetEventProperty(EventDescriptor e)
+		{
+			return new EventPropertyDescriptor(this,e);
+		}
+		
+		
 		public virtual ICollection GetCompatibleMethods(EventDescriptor edesc)
 		{
 			ArrayList compatibleMethods = new ArrayList();

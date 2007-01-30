@@ -11,6 +11,7 @@ using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Drawing;
 using System.Collections;
+using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Workflow.ComponentModel.Design;
 using System.Workflow.Activities;
@@ -23,7 +24,6 @@ using ICSharpCode.SharpDevelop;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Widgets.SideBar;
-using ICSharpCode.FormsDesigner;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
 using ICSharpCode.SharpDevelop.Project;
@@ -42,7 +42,6 @@ namespace WorkflowDesigner
 		private DesignSurface designSurface;
 		private	BasicDesignerLoader loader;
 		private IViewContent viewContent;
-		private string codeSeparationFileName ;
 
 		// HACK: Temporary sidebar creation.
 		static SideTab	sideTab;
@@ -82,12 +81,6 @@ namespace WorkflowDesigner
 			
 		}
 		
-		public string CodeSeparationFileName {
-			get { return codeSeparationFileName; }
-			set { codeSeparationFileName = value; }
-		}
-		
-
 		public ViewContentControl(IViewContent viewContent)
 		{
 			//
@@ -96,21 +89,13 @@ namespace WorkflowDesigner
 			InitializeComponent();
 			
 			this.viewContent = viewContent;
-
+			
 			// Make sure the standard workflow sidebar is on screen.
 			if (!SharpDevelopSideBar.SideBar.Tabs.Contains(sideTab)) {
 				SharpDevelopSideBar.SideBar.Tabs.Add(sideTab);
 				SharpDevelopSideBar.SideBar.Refresh();
 			}
-			
 		}
-		
-		protected override void OnVisibleChanged(EventArgs e)
-		{
-			if (!Visible) this.Deselected();
-			base.OnVisibleChanged(e);
-		}
-		
 		
 		public IDesignerHost DesignerHost {
 			get {
@@ -142,7 +127,6 @@ namespace WorkflowDesigner
 		internal void LoadWorkflow(BasicDesignerLoader loader)
 		{
 			
-			
 			this.loader = loader;
 
 			try {
@@ -153,6 +137,7 @@ namespace WorkflowDesigner
 					Control designer = designSurface.View as Control;
 					designer.Dock = DockStyle.Fill;
 					Controls.Add(designer);
+					Selected(); // HACK: Selected event not working so calling directly at present
 				}
 			} catch (Exception e) {
 				TextBox errorText = new TextBox();
@@ -169,6 +154,7 @@ namespace WorkflowDesigner
 				
 				errorText.Dock = DockStyle.Fill;
 				Controls.Add(errorText);
+				errorText.BringToFront();
 				Control title = new Label();
 				title.Text = "Failed to load designer. Check the source code for syntax errors and check if all references are available.";
 				title.Dock = DockStyle.Top;
@@ -220,7 +206,7 @@ namespace WorkflowDesigner
 		
 		void UpdateCCU()
 		{
-			IWorkflowDesignerGeneratorService srv = this.DesignerHost.GetService(typeof(IWorkflowDesignerGeneratorService)) as IWorkflowDesignerGeneratorService;
+			IWorkflowDesignerEventBindingService srv = this.DesignerHost.GetService(typeof(IEventBindingService)) as IWorkflowDesignerEventBindingService;
 			srv.UpdateCCU();
 		}
 		
@@ -261,7 +247,8 @@ namespace WorkflowDesigner
 		
 		internal void Selected()
 		{
-			SharpDevelopSideBar.SideBar.ActiveTab = sideTab;
+			WorkflowToolboxService srv = this.DesignerHost.GetService(typeof(IToolboxService)) as WorkflowToolboxService;
+			//srv.ShowSideTabs();
 		}
 		
 		internal void Deselected()

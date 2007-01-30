@@ -19,9 +19,9 @@ namespace WorkflowDesigner
 	/// <summary>
 	/// Description of CSharpWorkflowDesignerGenerator.
 	/// </summary>
-	public class CSharpWorkflowDesignerGeneratorService : WorkflowDesignerGeneratorService
+	public class CSharpWorkflowDesignerEventBindingService : WorkflowDesignerEventBindingService
 	{
-		public CSharpWorkflowDesignerGeneratorService(IServiceProvider provider, string codeSeparationFileName) : base(provider, codeSeparationFileName)
+		public CSharpWorkflowDesignerEventBindingService(IServiceProvider provider, string codeSeparationFileName) : base(provider, codeSeparationFileName)
 		{
 		}
 

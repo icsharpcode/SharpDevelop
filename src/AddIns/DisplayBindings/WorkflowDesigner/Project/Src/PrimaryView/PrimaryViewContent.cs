@@ -13,7 +13,6 @@ using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
-using ICSharpCode.FormsDesigner;
 
 namespace WorkflowDesigner
 {
@@ -59,9 +58,9 @@ namespace WorkflowDesigner
 				found = true;
 			}
 			if (found) {
-				control.CodeSeparationFileName =  sb.ToString();
-				LoggingService.DebugFormatted("Found code file {0}", control.CodeSeparationFileName);
-				loader = new XomlCodeSeparationDesignerLoader(this, file.FileName, stream, control.CodeSeparationFileName);
+				string codeFileName =  sb.ToString();
+				LoggingService.DebugFormatted("Found code file {0}", codeFileName);
+				loader = new XomlCodeSeparationDesignerLoader(this, file.FileName, stream, codeFileName);
 			}
 			
 			// No separation file so the nocode loader will be used.
