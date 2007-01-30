@@ -7,32 +7,24 @@
 
 #region Using
 using System;
-using System.ComponentModel;
 using System.ComponentModel.Design;
-using System.Drawing;
 using System.Collections;
-using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Workflow.ComponentModel.Design;
 using System.Workflow.Activities;
 using System.ComponentModel.Design.Serialization;
 using System.IO;
 using System.Drawing.Design;
-using System.Reflection;
 
-using ICSharpCode.SharpDevelop;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Widgets.SideBar;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
-using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 #endregion
 
 namespace WorkflowDesigner
 {
-	
 
 	/// <summary>
 	/// Description of ViewContentControl.
@@ -43,44 +35,6 @@ namespace WorkflowDesigner
 		private	BasicDesignerLoader loader;
 		private IViewContent viewContent;
 
-		// HACK: Temporary sidebar creation.
-		static SideTab	sideTab;
-		
-		static ViewContentControl()
-		{
-			sideTab = new SideTab("Workflow");
-			
-			// Make sure the side bar has actually bee created!
-			if (SharpDevelopSideBar.SideBar == null)
-				WorkbenchSingleton.Workbench.GetPad(typeof(SideBarView)).CreatePad();
-			
-			sideTab.CanSaved = false;
-			
-			// Add the standard pointer.
-			SharpDevelopSideTabItem sti = new SharpDevelopSideTabItem("Pointer");
-			sti.CanBeRenamed = false;
-			sti.CanBeDeleted = false;
-			Bitmap pointerBitmap = new Bitmap(IconService.GetBitmap("Icons.16x16.FormsDesigner.PointerIcon"), 16, 16);
-			sti.Icon = pointerBitmap;
-			sti.Tag = null;
-			sideTab.Items.Add(sti);
-
-
-			// Load activities from the standard assembly.
-			Assembly assembly = AppDomain.CurrentDomain.Load("System.Workflow.Activities, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35");
-			ICollection toolboxItems = System.Drawing.Design.ToolboxService.GetToolboxItems(assembly.GetName());
-			foreach (ToolboxItem tbi in toolboxItems)
-			{
-				sti = new SharpDevelopSideTabItem(tbi.DisplayName);
-				sti.CanBeDeleted = false;
-				sti.CanBeRenamed = false;
-				sti.Tag = tbi;
-				sti.Icon = tbi.Bitmap;
-				sideTab.Items.Add(sti);
-			}
-			
-		}
-		
 		public ViewContentControl(IViewContent viewContent)
 		{
 			//
@@ -90,11 +44,6 @@ namespace WorkflowDesigner
 			
 			this.viewContent = viewContent;
 			
-			// Make sure the standard workflow sidebar is on screen.
-			if (!SharpDevelopSideBar.SideBar.Tabs.Contains(sideTab)) {
-				SharpDevelopSideBar.SideBar.Tabs.Add(sideTab);
-				SharpDevelopSideBar.SideBar.Refresh();
-			}
 		}
 		
 		public IDesignerHost DesignerHost {
@@ -248,7 +197,7 @@ namespace WorkflowDesigner
 		internal void Selected()
 		{
 			WorkflowToolboxService srv = this.DesignerHost.GetService(typeof(IToolboxService)) as WorkflowToolboxService;
-			//srv.ShowSideTabs();
+			srv.ShowSideTabs();
 		}
 		
 		internal void Deselected()

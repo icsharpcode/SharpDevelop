@@ -39,7 +39,6 @@ namespace WorkflowDesigner
 	/// </summary>
 	public abstract class WorkflowDesignerEventBindingService : IWorkflowDesignerEventBindingService, IServiceProvider
 	{
-		IServiceProvider provider;
 		string codeFileName;
         CodeCompileUnit ccu;
 
@@ -50,7 +49,7 @@ namespace WorkflowDesigner
 		}
 
 
-		
+		#region IWorkflowDesignerEventBinginService implementation
 		public void UpdateCCU()
 		{
 			LoggingService.Debug("UpdateCCU");
@@ -68,10 +67,17 @@ namespace WorkflowDesigner
 			
 			
 		}
+
+		public string CodeFileName {
+			get {
+				return codeFileName;
+			}
+		}
 		
 		private void RefreshCCU(object sender, EventArgs e)
 		{
 		}
+		#endregion
 		
 		CodeCompileUnit Parse()
 		{
@@ -90,17 +96,16 @@ namespace WorkflowDesigner
 			return visitor.codeCompileUnit;
 		}
 
+		#region IServiceProvider implementation
+		IServiceProvider provider;
 		public object GetService(Type serviceType)
 		{
 			return provider.GetService(serviceType);
 		}
+		#endregion
 		
-		public string CodeFileName {
-			get {
-				return codeFileName;
-			}
-		}
 
+		#region IEventBindingService implemention
 		public string CreateUniqueMethodName(IComponent component, EventDescriptor e)
 		{
 			LoggingService.Debug("CreateUniqueMethodName(" + component + ", " + e + ")");
@@ -179,14 +184,6 @@ namespace WorkflowDesigner
 			return compatibleMethods;
 		}
 		
-		protected virtual int GetCursorLine(IDocument document, IMethod method)
-		{
-			return method.BodyRegion.BeginLine + 1;
-		}
-		
-		protected abstract string CreateEventHandler(IClass completeClass, EventDescriptor edesc, string eventMethodName, string body, string indentation);
-		
-		
 		public bool ShowCode()
 		{
 			FileService.OpenFile(codeFileName);
@@ -223,6 +220,16 @@ namespace WorkflowDesigner
 			
 		}
 
+		#endregion
+		
+		protected virtual int GetCursorLine(IDocument document, IMethod method)
+		{
+			return method.BodyRegion.BeginLine + 1;
+		}
+		
+		protected abstract string CreateEventHandler(IClass completeClass, EventDescriptor edesc, string eventMethodName, string body, string indentation);
+		
+		
 		public bool ShowCode(IComponent component, EventDescriptor e, string methodName)
 		{
 			LoggingService.DebugFormatted("ShowCode {0}", methodName);

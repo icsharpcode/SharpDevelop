@@ -121,7 +121,7 @@ namespace WorkflowDesigner
 		{
 			base.Initialize();
 
-			LoaderHost.AddService(typeof(IToolboxService), new WorkflowToolboxService());
+			LoaderHost.AddService(typeof(IToolboxService), new WorkflowToolboxService(LoaderHost));
 			
 			// HACK: Use default type provider and load all assemblies in #D,
 			//       should really only use the references for the current project!
