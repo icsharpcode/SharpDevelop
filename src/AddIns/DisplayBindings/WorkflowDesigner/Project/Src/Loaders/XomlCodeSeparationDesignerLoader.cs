@@ -12,6 +12,7 @@ using System.IO;
 using ICSharpCode.SharpDevelop.Gui;
 using System.ComponentModel.Design;
 using System.Workflow.ComponentModel.Design;
+using System.ComponentModel.Design.Serialization;
 using System.Workflow.ComponentModel.Compiler;
 using System.CodeDom;
 using ICSharpCode.Core;
@@ -42,12 +43,12 @@ namespace WorkflowDesigner
 			LoaderHost.AddService(typeof(IEventBindingService), new CSharpWorkflowDesignerEventBindingService(LoaderHost,codeFileName));
 		}
 		
-		protected override void Load()
+		protected override void Load(IDesignerSerializationManager serializationManager)
 		{
 			IWorkflowDesignerEventBindingService srv = LoaderHost.GetService(typeof(IEventBindingService)) as IWorkflowDesignerEventBindingService;
 			srv.UpdateCCU();
 			
-			LoadFromXoml();
+			LoadFromXoml(serializationManager);
 			
 			LoaderHost.Activate();
 		}

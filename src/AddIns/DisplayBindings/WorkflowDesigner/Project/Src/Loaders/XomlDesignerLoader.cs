@@ -19,9 +19,12 @@ using System.Xml;
 using System.Reflection;
 using System.Drawing.Design;
 using System.IO;
+using System.Collections;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Dom;
 #endregion
 
 namespace WorkflowDesigner
@@ -92,7 +95,7 @@ namespace WorkflowDesigner
 			}
 		}
 		
-		protected override void PerformFlush(System.ComponentModel.Design.Serialization.IDesignerSerializationManager serializationManager)
+		protected override void PerformFlush(IDesignerSerializationManager serializationManager)
 		{
 			Activity rootActivity = LoaderHost.RootComponent as Activity;
 			if (rootActivity != null) {
@@ -101,7 +104,7 @@ namespace WorkflowDesigner
 				try
 				{
 					WorkflowMarkupSerializer xomlSerializer = new WorkflowMarkupSerializer();
-					xomlSerializer.Serialize(xmlWriter, rootActivity);
+					xomlSerializer.Serialize(serializationManager, xmlWriter, rootActivity);
 					xoml = sb.ToString();
 				}
 				finally
@@ -111,7 +114,7 @@ namespace WorkflowDesigner
 			}
 			
 			// Update the rules if any exist.
-			if (rules.Length > 0)
+			if ((rules != null) && (rules.Length > 0))
 				File.WriteAllText(rulesFileName, rules.ToString());
 			
 		}
@@ -122,34 +125,25 @@ namespace WorkflowDesigner
 			base.Initialize();
 
 			LoaderHost.AddService(typeof(IToolboxService), new WorkflowToolboxService(LoaderHost));
-			
-			// HACK: Use default type provider and load all assemblies in #D,
-			//       should really only use the references for the current project!
-			TypeProvider typeProvider = new TypeProvider(LoaderHost);
-			foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
-			{
-				typeProvider.AddAssembly(assembly);
-			}
-			LoaderHost.AddService(typeof(ITypeProvider), typeProvider);
+			LoaderHost.AddService(typeof(ITypeProvider), TypeProviderService.GetTypeProvider(ProjectService.CurrentProject));
 			LoaderHost.AddService(typeof(IMenuCommandService), new WorkflowMenuCommandService(LoaderHost));
 
 		}
 
-		protected override void PerformLoad(System.ComponentModel.Design.Serialization.IDesignerSerializationManager serializationManager)
+		protected override void PerformLoad(IDesignerSerializationManager serializationManager)
 		{
 			base.PerformLoad(serializationManager);
-
-			Load();
+			Load(serializationManager);
 		}
 
 		
-		protected virtual void Load()
+		protected virtual void Load(IDesignerSerializationManager serializationManager)
 		{
-			LoadFromXoml();
+			LoadFromXoml(serializationManager);
 			LoaderHost.Activate();
 		}
 		
-		protected void LoadFromXoml()
+		protected void LoadFromXoml(IDesignerSerializationManager serializationManager)
 		{
 			// get the root activity from the xml.
 			XmlReader  reader = new XmlTextReader(new StringReader(xoml));
@@ -157,8 +151,7 @@ namespace WorkflowDesigner
 			try
 			{
 				WorkflowMarkupSerializer xomlSerializer = new WorkflowMarkupSerializer();
-				rootActivity = xomlSerializer.Deserialize(reader) as Activity;
-
+				rootActivity = xomlSerializer.Deserialize(serializationManager, reader) as Activity;
 			}
 			finally
 			{
@@ -200,6 +193,7 @@ namespace WorkflowDesigner
 				LoaderHost.RemoveService(typeof(IMemberCreationService));
 				LoaderHost.RemoveService(typeof(IMenuCommandService));
 			}
+
 			
 			base.Dispose();
 		}

@@ -38,6 +38,8 @@ namespace WorkflowDesigner
 		private static Dictionary<IProject, Dictionary<ReferenceProjectItem, SideTab>> projects;
 		private static bool initialised;
 		
+		
+		#region Properties
 		private static IProject ActiveProject {
 			get { return activeProject; }
 			set {
@@ -83,7 +85,7 @@ namespace WorkflowDesigner
 				}
 			}
 		}
-		
+		#endregion
 		
 		private static void Initialise()
 		{
@@ -106,6 +108,8 @@ namespace WorkflowDesigner
 			if (standardSideTab == null) {
 				Assembly assembly = AppDomain.CurrentDomain.Load("System.Workflow.Activities, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35");
 				standardSideTab = CreateSideTabFromAssembly("Workflow", assembly);
+				assembly = AppDomain.CurrentDomain.Load("System.Workflow.ComponentModel, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35");
+				LoadSideTabItemsFromAssembly(assembly, standardSideTab);
 			}
 
 			// Attach the handlers.
@@ -255,6 +259,7 @@ namespace WorkflowDesigner
 			sideTab.CanSaved = false;
 			AddPointerToSideTab(sideTab);
 			LoadSideTabItemsFromAssembly(assembly, sideTab);
+			SortSideTabItems(sideTab);
 			return sideTab;
 		}
 		
@@ -275,6 +280,8 @@ namespace WorkflowDesigner
 			ICollection toolboxItems = System.Drawing.Design.ToolboxService.GetToolboxItems(assembly.GetName());
 			foreach (ToolboxItem tbi in toolboxItems)
 			{
+				//TODO: Add further checking to see if this component can actually be put on the sidetab.
+				
 				SharpDevelopSideTabItem sti = new SharpDevelopSideTabItem(tbi.DisplayName);
 				sti.CanBeDeleted = false;
 				sti.CanBeRenamed = false;
@@ -282,6 +289,18 @@ namespace WorkflowDesigner
 				sti.Icon = tbi.Bitmap;
 				sideTab.Items.Add(sti);
 			}
+		}
+		
+		private static void SortSideTabItems(SideTab sideTab)
+		{
+			SortedDictionary<string, SideTabItem> list = new SortedDictionary<string, SideTabItem>();
+			foreach (SideTabItem item in sideTab.Items)
+				list.Add(item.Name, item);
+			
+			sideTab.Items.Clear();
+			foreach (SideTabItem item in list.Values)
+				sideTab.Items.Add(item);
+			
 		}
 	}
 }
