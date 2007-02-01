@@ -18,6 +18,7 @@ using ICSharpCode.TextEditor;
 using ICSharpCode.Core;
 
 using SharpDbTools.Data;
+using SharpDbTools.Forms.TextEditor;
 
 namespace SharpDbTools.Forms
 {
@@ -28,7 +29,7 @@ namespace SharpDbTools.Forms
 	public partial class SQLTool
 	{
 		private string logicalConnectionName = null;
-		private TextEditorControl sqlEditorControl = null;
+		private SQLTextEditorControl sqlEditorControl = null;
 		private BackgroundWorker backgroundWorker;
 		private string lastSQL;
 		
@@ -43,7 +44,7 @@ namespace SharpDbTools.Forms
 			
 			// add sqlEditor to the editor panel
 			
-			sqlEditorControl = new TextEditorControl();
+			sqlEditorControl = new SQLTextEditorControl();
 			sqlEditorControl.Dock = DockStyle.Fill;
 
 			// set up the highlighting manager for generic SQL
