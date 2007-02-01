@@ -40,7 +40,7 @@
 		     category = "Debugger"
 		     title    = "${res:MainWindow.Windows.Debug.Breakpoints}"
 		     icon     = "PadIcons.BreakPoints"
-		     shortcut = "Control|Alt|B"
+		     shortcut = "Control|Alt|P"
 		     class = "ICSharpCode.SharpDevelop.Gui.Pads.BreakPointsPad"/>
 		
 		<Pad id    = "CallStackPad" 
