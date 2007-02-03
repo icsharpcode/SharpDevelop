@@ -49,12 +49,31 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			TaskService.Added   += new TaskEventHandler(OnAdded);
 			TaskService.Removed += new TaskEventHandler(OnRemoved);
 			TaskService.Cleared += new EventHandler(OnCleared);
+			TaskService.InUpdateChanged += OnInUpdateChanged;
 			textEditor.FileNameChanged += new EventHandler(SetErrors);
 			DebuggerService.DebugStarted += OnDebugStarted;
 			DebuggerService.DebugStopped += OnDebugStopped;
 		}
 		
 		bool isDisposed;
+		bool requireTextEditorRefresh;
+		
+		void RefreshTextEditor()
+		{
+			if (TaskService.InUpdate) {
+				requireTextEditorRefresh = true;
+			} else {
+				textEditor.Refresh();
+			}
+		}
+		
+		void OnInUpdateChanged(object sender, EventArgs e)
+		{
+			if (requireTextEditorRefresh) {
+				requireTextEditorRefresh = false;
+				textEditor.Refresh();
+			}
+		}
 		
 		/// <summary>
 		/// Deregisters the event handlers so the error drawer (and associated TextEditorControl)
@@ -68,6 +87,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			TaskService.Added   -= new TaskEventHandler(OnAdded);
 			TaskService.Removed -= new TaskEventHandler(OnRemoved);
 			TaskService.Cleared -= new EventHandler(OnCleared);
+			TaskService.InUpdateChanged -= OnInUpdateChanged;
 			textEditor.FileNameChanged -= new EventHandler(SetErrors);
 			DebuggerService.DebugStarted -= OnDebugStarted;
 			DebuggerService.DebugStopped -= OnDebugStopped;
@@ -99,7 +119,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				VisualError ve = marker as VisualError;
 				if (ve != null && ve.Task == t) {
 					textEditor.Document.MarkerStrategy.RemoveMarker(marker);
-					textEditor.Refresh();
+					RefreshTextEditor();
 					break;
 				}
 			}
@@ -108,7 +128,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		void OnCleared(object sender, EventArgs e)
 		{
 			if (ClearErrors()) {
-				textEditor.Refresh();
+				RefreshTextEditor();
 			}
 		}
 		
@@ -158,9 +178,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 					length = 2; // use minimum length
 				}
 				textEditor.Document.MarkerStrategy.AddMarker(new VisualError(offset, length, task));
-				if (refresh) {
-					textEditor.Refresh();
-				}
+				if (refresh) RefreshTextEditor();
 			}
 		}
 		

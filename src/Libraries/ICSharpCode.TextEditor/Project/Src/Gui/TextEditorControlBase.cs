@@ -707,7 +707,7 @@ namespace ICSharpCode.TextEditor
 		}
 		
 		/// <remarks>
-		/// Overwritten refresh method that locks if the control is in
+		/// Overwritten refresh method that does nothing if the control is in
 		/// an update cycle.
 		/// </remarks>
 		public override void Refresh()
