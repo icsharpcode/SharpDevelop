@@ -43,19 +43,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public override bool Equals(IReturnType o)
 		{
-			SearchClassReturnType rt = o as SearchClassReturnType;
-			if (rt != null) {
-				if (name != rt.name)
-					return false;
-				if (declaringClass.FullyQualifiedName == rt.declaringClass.FullyQualifiedName
-				    && typeParameterCount == rt.typeParameterCount
-				    && caretLine == rt.caretLine
-				    && caretColumn == rt.caretColumn)
-				{
-					return true;
-				}
-			}
-			return base.Equals(o);
+			IReturnType rt2 = o as IReturnType;
+			if (rt2 != null && rt2.IsDefaultReturnType)
+				return DefaultReturnType.Equals(this, rt2);
+			else
+				return false;
 		}
 		
 		public override int GetHashCode()

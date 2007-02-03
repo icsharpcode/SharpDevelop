@@ -17,6 +17,24 @@ namespace ICSharpCode.SharpDevelop.Dom
 	/// </summary>
 	public class DefaultReturnType : AbstractReturnType
 	{
+		public static bool Equals(IReturnType rt1, IReturnType rt2)
+		{
+			if (rt1 == rt2) return true;
+			if (rt1 == null || rt2 == null) return false;
+			IClass c1 = rt1.GetUnderlyingClass();
+			IClass c2 = rt2.GetUnderlyingClass();
+			if (c1 == null && c2 == null) {
+				// guess if the classes are equal
+				return rt1.FullyQualifiedName == rt2.FullyQualifiedName && rt1.TypeParameterCount == rt2.TypeParameterCount;
+			} else {
+				if (c1 == c2)
+					return true;
+				if (c1 == null || c2 == null)
+					return false;
+				return c1.FullyQualifiedName == c2.FullyQualifiedName && c1.TypeParameters.Count == c2.TypeParameters.Count;
+			}
+		}
+		
 		IClass c;
 		
 		public DefaultReturnType(IClass c)

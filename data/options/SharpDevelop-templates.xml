@@ -114,7 +114,4 @@ End While</CodeTemplate>
     <CodeTemplate template="italicb" description="italic block">&lt;i&gt;|${Selection}&lt;/i&gt;</CodeTemplate>
     <CodeTemplate template="parab" description="paragraph block">&lt;p&gt;|${Selection}&lt;/p&gt;</CodeTemplate>
   </CodeTemplateGroup>
-  <CodeTemplateGroup extensions=".xml;.xfrm;.addin;.xft;.xpt">
-    <CodeTemplate template="commentb" description="comment block">&lt;!--|${Selection}--&gt;</CodeTemplate>
-  </CodeTemplateGroup>
 </CodeTemplates>

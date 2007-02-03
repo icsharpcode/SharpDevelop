@@ -26,14 +26,32 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 		{
 			TypeReference intReference = new TypeReference("System.Int32");
 			MethodDeclaration method = new MethodDeclaration("GetHashCode", Modifiers.Public | Modifiers.Override, intReference, null, null);
-			Expression expr = CallGetHashCode(new IdentifierExpression(currentClass.Fields[0].Name));
-			for (int i = 1; i < currentClass.Fields.Count; i++) {
-				IdentifierExpression identifier = new IdentifierExpression(currentClass.Fields[i].Name);
-				expr = new BinaryOperatorExpression(expr, BinaryOperatorType.ExclusiveOr,
-				                                    CallGetHashCode(identifier));
-			}
 			method.Body = new BlockStatement();
-			method.Body.AddChild(new ReturnStatement(expr));
+			
+			VariableDeclaration var;
+			var = new VariableDeclaration("hashCode", new PrimitiveExpression(0, "0"), intReference);
+			method.Body.AddChild(new LocalVariableDeclaration(var));
+			
+			Expression expr;
+			
+			foreach (IField field in currentClass.Fields) {
+				if (field.IsStatic) continue;
+				
+				expr = new AssignmentExpression(new IdentifierExpression(var.Name),
+				                                AssignmentOperatorType.ExclusiveOr,
+				                                new InvocationExpression(new FieldReferenceExpression(new IdentifierExpression(field.Name), "GetHashCode")));
+				if (IsValueType(field.ReturnType)) {
+					method.Body.AddChild(new ExpressionStatement(expr));
+				} else {
+					method.Body.AddChild(new IfElseStatement(
+						new BinaryOperatorExpression(new IdentifierExpression(field.Name),
+						                             BinaryOperatorType.ReferenceInequality,
+						                             new PrimitiveExpression(null, "null")),
+						new ExpressionStatement(expr)
+					));
+				}
+			}
+			method.Body.AddChild(new ReturnStatement(new IdentifierExpression(var.Name)));
 			nodes.Add(method);
 			
 			TypeReference boolReference = new TypeReference("System.Boolean");
@@ -49,37 +67,66 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			expr = new UnaryOperatorExpression(expr, UnaryOperatorType.Not);
 			method.Body.AddChild(new IfElseStatement(expr, new ReturnStatement(new PrimitiveExpression(false, "false"))));
 			
-			expr = new BinaryOperatorExpression(new ThisReferenceExpression(),
-			                                    BinaryOperatorType.Equality,
-			                                    new IdentifierExpression("obj"));
-			method.Body.AddChild(new IfElseStatement(expr, new ReturnStatement(new PrimitiveExpression(true, "true"))));
+//			expr = new BinaryOperatorExpression(new ThisReferenceExpression(),
+//			                                    BinaryOperatorType.ReferenceEquality,
+//			                                    new IdentifierExpression("obj"));
+//			method.Body.AddChild(new IfElseStatement(expr, new ReturnStatement(new PrimitiveExpression(true, "true"))));
 			
-			VariableDeclaration var = new VariableDeclaration("my" + currentClass.Name,
-			                                                  new CastExpression(currentType, new IdentifierExpression("obj"), CastType.Cast),
-			                                                  currentType);
+			var = new VariableDeclaration("my" + currentClass.Name,
+			                              new CastExpression(currentType, new IdentifierExpression("obj"), CastType.Cast),
+			                              currentType);
 			method.Body.AddChild(new LocalVariableDeclaration(var));
 			
-			expr = TestEquality(var.Name, currentClass.Fields[0]);
-			for (int i = 1; i < currentClass.Fields.Count; i++) {
-				expr = new BinaryOperatorExpression(expr, BinaryOperatorType.LogicalAnd,
-				                                    TestEquality(var.Name, currentClass.Fields[i]));
+			expr = null;
+			foreach (IField field in currentClass.Fields) {
+				if (field.IsStatic) continue;
+				
+				if (expr == null) {
+					expr = TestEquality(var.Name, field);
+				} else {
+					expr = new BinaryOperatorExpression(expr, BinaryOperatorType.LogicalAnd,
+					                                    TestEquality(var.Name, field));
+				}
 			}
 			
-			method.Body.AddChild(new ReturnStatement(expr));
+			method.Body.AddChild(new ReturnStatement(expr ?? new PrimitiveExpression(true, "true")));
 			
 			nodes.Add(method);
 		}
 		
-		static InvocationExpression CallGetHashCode(Expression expr)
+		static bool IsValueType(IReturnType type)
 		{
-			return new InvocationExpression(new FieldReferenceExpression(expr, "GetHashCode"));
+			IClass c = type.GetUnderlyingClass();
+			return c != null && (c.ClassType == Dom.ClassType.Struct || c.ClassType == Dom.ClassType.Enum);
+		}
+		
+		static bool CanCompareEqualityWithOperator(IReturnType type)
+		{
+			// return true for value types except float and double
+			// return false for reference types except string.
+			IClass c = type.GetUnderlyingClass();
+			return c != null
+				&& c.FullyQualifiedName != "System.Single"
+				&& c.FullyQualifiedName != "System.Double"
+				&& (c.ClassType == Dom.ClassType.Struct
+				    || c.ClassType == Dom.ClassType.Enum
+				    || c.FullyQualifiedName == "System.String");
 		}
 		
 		static Expression TestEquality(string other, IField field)
 		{
-			return new BinaryOperatorExpression(new FieldReferenceExpression(new ThisReferenceExpression(), field.Name),
-			                                    BinaryOperatorType.Equality,
-			                                    new FieldReferenceExpression(new IdentifierExpression(other), field.Name));
+			if (CanCompareEqualityWithOperator(field.ReturnType)) {
+				return new BinaryOperatorExpression(new FieldReferenceExpression(new ThisReferenceExpression(), field.Name),
+				                                    BinaryOperatorType.Equality,
+				                                    new FieldReferenceExpression(new IdentifierExpression(other), field.Name));
+			} else {
+				InvocationExpression ie = new InvocationExpression(
+					new FieldReferenceExpression(new TypeReferenceExpression("System.Object"), "Equals")
+				);
+				ie.Arguments.Add(new FieldReferenceExpression(new ThisReferenceExpression(), field.Name));
+				ie.Arguments.Add(new FieldReferenceExpression(new IdentifierExpression(other), field.Name));
+				return ie;
+			}
 		}
 		
 		public override bool IsActive {

@@ -9,6 +9,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
+using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.NRefactory.Ast;
 
@@ -36,23 +37,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 		
 		protected override void InitContent()
 		{
-			foreach (IClass c in currentClass.ClassInheritanceTree) {
-				if (c.FullyQualifiedName != currentClass.FullyQualifiedName) {
-					foreach (IProperty property in c.Properties) {
-						if (!property.IsPrivate && (property.IsAbstract || property.IsVirtual || property.IsOverride)) {
-							bool alreadyAdded = false;
-							foreach (PropertyWrapper w in Content) {
-								if (w.Property.Name == property.Name) {
-									alreadyAdded = true;
-									break;
-								}
-							}
-							if (!alreadyAdded) {
-								Content.Add(new PropertyWrapper(property));
-							}
-						}
-					}
-				}
+			foreach (IProperty p in OverrideCompletionDataProvider.GetOverridableProperties(currentClass)) {
+				Content.Add(new PropertyWrapper(p));
 			}
 			Content.Sort();
 		}

@@ -62,6 +62,15 @@ namespace ICSharpCode.UnitTesting
 		}
 		
 		/// <summary>
+		/// Updates the test method based on new information 
+		/// in the specified IMethod.
+		/// </summary>
+		public void Update(IMethod method)
+		{
+			this.method = method;
+		}
+		
+		/// <summary>
 		/// Gets the test result for this method.
 		/// </summary>
 		public TestResultType Result {

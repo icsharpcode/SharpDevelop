@@ -31,7 +31,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			if (other == null)
 				return false;
-			return other.IsDefaultReturnType && this.FullyQualifiedName == other.FullyQualifiedName && this.TypeParameterCount == other.TypeParameterCount;
+			return other.IsDefaultReturnType && DefaultReturnType.Equals(this, other);
 		}
 		
 		public sealed override bool Equals(object o)

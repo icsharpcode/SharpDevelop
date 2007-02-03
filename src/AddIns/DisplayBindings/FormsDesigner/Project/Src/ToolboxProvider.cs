@@ -37,13 +37,18 @@ namespace ICSharpCode.FormsDesigner
 		}
 		public static ICSharpCode.FormsDesigner.Services.ToolboxService ToolboxService {
 			get {
-				if (toolboxService == null) {
-					toolboxService = new ICSharpCode.FormsDesigner.Services.ToolboxService();
-					ReloadSideTabs(false);
-					toolboxService.SelectedItemUsed += new EventHandler(SelectedToolUsedHandler);
-					SharpDevelopSideBar.SideBar.SideTabDeleted += SideTabDeleted;
-				}
+				CreateToolboxService();
 				return toolboxService;
+			}
+		}
+		
+		static void CreateToolboxService()
+		{
+			if (toolboxService == null) {
+				toolboxService = new ICSharpCode.FormsDesigner.Services.ToolboxService();
+				ReloadSideTabs(false);
+				toolboxService.SelectedItemUsed += new EventHandler(SelectedToolUsedHandler);
+				SharpDevelopSideBar.SideBar.SideTabDeleted += SideTabDeleted;
 			}
 		}
 		
@@ -86,6 +91,7 @@ namespace ICSharpCode.FormsDesigner
 		
 		public static void ReloadSideTabs(bool doInsert)
 		{
+			CreateToolboxService();
 			bool reInsertTabs = false;
 			foreach(SideTab tab in SideTabs) {
 				tab.ItemRemoved -= SideTabItemRemoved;

@@ -22,7 +22,7 @@ namespace ICSharpCode.NRefactory.Visitors
 			// value is null if there are multiple casings for the variable -> the variable is conflicting
 			Dictionary<string, string> caseInsensitive = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
 			
-			LookupTableVisitor ltv = new LookupTableVisitor(StringComparer.InvariantCulture);
+			LookupTableVisitor ltv = new LookupTableVisitor(SupportedLanguage.CSharp);
 			method.AcceptVisitor(ltv, null);
 			
 			// add method parameters to caseInsensitive

@@ -273,7 +273,9 @@ namespace ICSharpCode.UnitTesting
 			TestMethodCollection existingTestMethods = TestMethods;
 			for (int i = existingTestMethods.Count - 1; i >= 0; --i) {
 				TestMethod method = existingTestMethods[i];
-				if (!newTestMethods.Contains(method.Name)) {
+				if (newTestMethods.Contains(method.Name)) {
+					method.Update(newTestMethods[method.Name].Method);
+				} else {
 					existingTestMethods.RemoveAt(i);
 				}
 			}

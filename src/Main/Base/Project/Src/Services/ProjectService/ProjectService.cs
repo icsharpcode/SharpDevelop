@@ -520,8 +520,17 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		static bool building;
+		
+		public static bool IsBuilding {
+			get {
+				return building;
+			}
+		}
+		
 		public static void RaiseEventStartBuild()
 		{
+			building = true;
 			if (StartBuild != null) {
 				StartBuild(null, EventArgs.Empty);
 			}
@@ -529,6 +538,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public static void RaiseEventEndBuild()
 		{
+			building = false;
 			if (EndBuild != null) {
 				EndBuild(null, EventArgs.Empty);
 			}

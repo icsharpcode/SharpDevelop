@@ -37,6 +37,7 @@ namespace ICSharpCode.NRefactory.Visitors
 	public sealed class LookupTableVisitor : AbstractAstVisitor
 	{
 		Dictionary<string, List<LocalLookupVariable>> variables;
+		SupportedLanguage language;
 		
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
 		public Dictionary<string, List<LocalLookupVariable>> Variables {
@@ -53,9 +54,14 @@ namespace ICSharpCode.NRefactory.Visitors
 			}
 		}
 		
-		public LookupTableVisitor(StringComparer nameComparer)
+		public LookupTableVisitor(SupportedLanguage language)
 		{
-			variables = new Dictionary<string, List<LocalLookupVariable>>(nameComparer);
+			this.language = language;
+			if (language == SupportedLanguage.VBNet) {
+				variables = new Dictionary<string, List<LocalLookupVariable>>(StringComparer.InvariantCultureIgnoreCase);
+			} else {
+				variables = new Dictionary<string, List<LocalLookupVariable>>(StringComparer.InvariantCulture);
+			}
 		}
 		
 		public void AddVariable(TypeReference typeRef, string name,
@@ -182,6 +188,15 @@ namespace ICSharpCode.NRefactory.Visitors
 				base.VisitUsingStatement(usingStatement, data);
 				endLocationStack.Pop();
 				return null;
+			}
+		}
+		
+		public override object VisitSwitchSection(SwitchSection switchSection, object data)
+		{
+			if (language == SupportedLanguage.VBNet) {
+				return VisitBlockStatement(switchSection, data);
+			} else {
+				return base.VisitSwitchSection(switchSection, data);
 			}
 		}
 		

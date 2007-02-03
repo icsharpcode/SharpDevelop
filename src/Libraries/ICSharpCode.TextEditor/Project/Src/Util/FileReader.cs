@@ -33,7 +33,7 @@ namespace ICSharpCode.TextEditor.Util
 		
 		public static string ReadFileContent(string fileName, ref Encoding encoding, Encoding defaultEncoding)
 		{
-			using (FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read)) {
+			using (FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)) {
 				using (StreamReader reader = OpenStream(fs, encoding, defaultEncoding)) {
 					encoding = reader.CurrentEncoding;
 					return reader.ReadToEnd();

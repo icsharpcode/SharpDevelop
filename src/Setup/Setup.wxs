@@ -265,6 +265,7 @@
 				<ComponentRef Id="VBNetFileTemplates"/>
 				<ComponentRef Id="MiscFileTemplates"/>
 				<ComponentRef Id="SharpDevelopFileTemplates"/>
+				<ComponentRef Id="SharpDevelopReportTemplate"/>
 				<ComponentRef Id="CSharpProjectTemplates"/>
 				<ComponentRef Id="CSharpWebServiceProjectTemplate"/>
 				<ComponentRef Id="CSharpNotifyIconProjectTemplate"/>

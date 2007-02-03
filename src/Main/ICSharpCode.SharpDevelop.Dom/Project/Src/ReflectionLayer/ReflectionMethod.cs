@@ -65,6 +65,9 @@ namespace ICSharpCode.SharpDevelop.Dom.ReflectionLayer
 			if (methodBase.IsAbstract) {
 				modifiers |= ModifierEnum.Abstract;
 			}
+			if (methodBase.IsFinal) {
+				modifiers |= ModifierEnum.Sealed;
+			}
 			this.Modifiers = modifiers;
 		}
 	}

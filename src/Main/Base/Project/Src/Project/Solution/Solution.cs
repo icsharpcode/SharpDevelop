@@ -499,8 +499,12 @@ namespace ICSharpCode.SharpDevelop.Project
 				foreach (SolutionItem item in nestedProjectsSection.Items) {
 					string from = item.Name;
 					string to   = item.Location;
-					ISolutionFolderContainer folder = newSolution.guidDictionary[to] as ISolutionFolderContainer;
-					folder.AddFolder(newSolution.guidDictionary[from]);
+					if (newSolution.guidDictionary.ContainsKey(to) && newSolution.guidDictionary.ContainsKey(from)) {
+						// ignore invalid entries
+						
+						ISolutionFolderContainer folder = newSolution.guidDictionary[to] as ISolutionFolderContainer;
+						folder.AddFolder(newSolution.guidDictionary[from]);
+					}
 				}
 			}
 			

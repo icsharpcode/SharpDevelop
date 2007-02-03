@@ -2483,14 +2483,16 @@ EmbeddedStatement<out Statement statement>
 		Statement block = null;
 	.)
 	{
-		(.List<CaseLabel> caseClauses = null; .)
+		(.List<CaseLabel> caseClauses = null; Location caseLocation = la.Location; .)
 		"Case" CaseClauses<out caseClauses> [ IF(IsNotStatementSeparator()) ":" ] EndOfStmt
 		(.
 			SwitchSection selectSection = new SwitchSection(caseClauses);
+			selectSection.StartLocation = caseLocation;
 		.)
 		Block<out block>
 		(.
 			selectSection.Children = block.Children;
+			selectSection.EndLocation = t.EndLocation;
 			selectSections.Add(selectSection);
 		.)
 	}

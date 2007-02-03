@@ -41,11 +41,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public override bool Equals(IReturnType o)
 		{
-			GetClassReturnType rt = o as GetClassReturnType;
-			if (rt != null) {
-				return fullName == rt.fullName && typeParameterCount == rt.typeParameterCount && content == rt.content;
-			}
-			return base.Equals(o);
+			IReturnType rt = o as IReturnType;
+			if (rt != null && rt.IsDefaultReturnType)
+				return DefaultReturnType.Equals(this, rt);
+			else
+				return false;
 		}
 		
 		public override int GetHashCode()
