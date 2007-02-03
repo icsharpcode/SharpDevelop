@@ -55,12 +55,9 @@ namespace ICSharpCode.SharpDevelop.Commands
 				editingLayout = true;
 				ShowLayoutEditor();
 				OnOwnerChanged(EventArgs.Empty);
-				comboBox.SelectedIndex = oldItem;
 				editingLayout = false;
 			} else if (comboBox.SelectedIndex == resetIndex) {
 				ResetToDefaults();
-				
-				comboBox.SelectedIndex = oldItem;
 			} else {
 				LayoutConfiguration config = (LayoutConfiguration)LayoutConfiguration.Layouts[comboBox.SelectedIndex];
 				LayoutConfiguration.CurrentLayoutName = config.Name;
@@ -89,7 +86,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 				ed.ManualOrder = false;
 				ed.BrowseForDirectory = false;
 				ed.TitleText = StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.ChooseLayoutCommand.EditLayouts.Label}");
-				                                  ed.AddButtonText = StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.ChooseLayoutCommand.EditLayouts.AddLayout}");
+				ed.AddButtonText = StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.ChooseLayoutCommand.EditLayouts.AddLayout}");
 				
 				ed.LoadList(CustomLayoutNames);
 				FlowLayoutPanel p = new FlowLayoutPanel();
@@ -151,6 +148,8 @@ namespace ICSharpCode.SharpDevelop.Commands
 					}
 				}
 				WorkbenchSingleton.Workbench.WorkbenchLayout.LoadConfiguration();
+				
+				LayoutChanged(null, null);
 			}
 		}
 		

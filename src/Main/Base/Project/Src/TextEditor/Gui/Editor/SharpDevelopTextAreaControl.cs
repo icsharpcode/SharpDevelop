@@ -243,14 +243,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			ActivateQuickClassBrowserOnDemand();
 		}
 		
-		//// Alex: routine for pulsing parser thread
-//		protected void PulseParser() {
-//			lock(DefaultParserService.ParserPulse) {
-//				Monitor.Pulse(DefaultParserService.ParserPulse);
-//			}
-//		}
-		//// ALex: end of mod
-		
 		static ICodeCompletionBinding[] codeCompletionBindings;
 		
 		public static ICodeCompletionBinding[] CodeCompletionBindings {

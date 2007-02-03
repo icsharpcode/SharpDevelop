@@ -64,6 +64,18 @@
 	  							<xsl:when test="$orig_author = 'dickonfield'">
 									<xsl:text>Dickon Field</xsl:text>
 	  							</xsl:when>
+	  							<xsl:when test="$orig_author = 'itaibarhaim'">
+									<xsl:text>Itai Bar-Haim</xsl:text>
+	  							</xsl:when>
+	  							<xsl:when test="$orig_author = 'christianhornung'">
+									<xsl:text>Christian Hornung</xsl:text>
+	  							</xsl:when>
+	  							<xsl:when test="$orig_author = 'justindearing'">
+									<xsl:text>Justin Dearing</xsl:text>
+	  							</xsl:when>
+	  							<xsl:when test="$orig_author = 'russellwilkins'">
+									<xsl:text>Russell Wilkins</xsl:text>
+	  							</xsl:when>
 	  							<xsl:otherwise>
 	  								<xsl:value-of select="./author" />
 	  							</xsl:otherwise>

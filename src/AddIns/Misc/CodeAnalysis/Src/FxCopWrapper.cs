@@ -86,17 +86,20 @@ namespace ICSharpCode.CodeAnalysis
 		public static string FindFxCopPath()
 		{
 			string fxCopPath = AnalysisIdeOptionsPanel.FxCopPath;
-			if (IsFxCopPath(fxCopPath)) {
-				return fxCopPath;
-			}
-			// Code duplication: FxCop.cs in ICSharpCode.Build.Tasks
-			fxCopPath = FromRegistry(Registry.CurrentUser.OpenSubKey(@"Software\Classes\FxCopProject\Shell\Open\Command"));
-			if (IsFxCopPath(fxCopPath)) {
-				return fxCopPath;
-			}
-			fxCopPath = FromRegistry(Registry.ClassesRoot.OpenSubKey(@"FxCopProject\Shell\Open\Command"));
-			if (IsFxCopPath(fxCopPath)) {
-				return fxCopPath;
+			if (string.IsNullOrEmpty(fxCopPath)) {
+				// Code duplication: FxCop.cs in ICSharpCode.Build.Tasks
+				fxCopPath = FromRegistry(Registry.CurrentUser.OpenSubKey(@"Software\Classes\FxCopProject\Shell\Open\Command"));
+				if (IsFxCopPath(fxCopPath)) {
+					return fxCopPath;
+				}
+				fxCopPath = FromRegistry(Registry.ClassesRoot.OpenSubKey(@"FxCopProject\Shell\Open\Command"));
+				if (IsFxCopPath(fxCopPath)) {
+					return fxCopPath;
+				}
+			} else {
+				if (IsFxCopPath(fxCopPath)) {
+					return fxCopPath;
+				}
 			}
 			return null;
 		}
