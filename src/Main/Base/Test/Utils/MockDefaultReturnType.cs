@@ -29,7 +29,7 @@ namespace ICSharpCode.SharpDevelop.Tests.Utils
 				return methods;
 			}
 		}
-				
+		
 		/// <summary>
 		/// Gets the property list directly. Only available in the
 		/// mock default return type class.
@@ -38,6 +38,11 @@ namespace ICSharpCode.SharpDevelop.Tests.Utils
 			get {
 				return properties;
 			}
+		}
+		
+		public bool Equals(IReturnType other)
+		{
+			throw new NotImplementedException();
 		}
 		
 		public string FullyQualifiedName {
@@ -71,24 +76,6 @@ namespace ICSharpCode.SharpDevelop.Tests.Utils
 		}
 		
 		public bool IsDefaultReturnType {
-			get {
-				throw new NotImplementedException();
-			}
-		}
-		
-		public bool IsArrayReturnType {
-			get {
-				throw new NotImplementedException();
-			}
-		}
-		
-		public bool IsGenericReturnType {
-			get {
-				throw new NotImplementedException();
-			}
-		}
-		
-		public bool IsConstructedReturnType {
 			get {
 				throw new NotImplementedException();
 			}
@@ -130,6 +117,34 @@ namespace ICSharpCode.SharpDevelop.Tests.Utils
 		}
 		
 		public ConstructedReturnType CastToConstructedReturnType()
+		{
+			throw new NotImplementedException();
+		}
+		
+		public bool IsArrayReturnType {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public bool IsGenericReturnType {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public bool IsConstructedReturnType {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public bool IsDecoratingReturnType<T>() where T : DecoratingReturnType
+		{
+			throw new NotImplementedException();
+		}
+		
+		public T CastToDecoratingReturnType<T>() where T : DecoratingReturnType
 		{
 			throw new NotImplementedException();
 		}

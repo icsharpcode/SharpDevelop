@@ -80,7 +80,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 		{
 			ProjectContentRegistry registry = new ProjectContentRegistry();
 			IProjectContent mscorlibProjectContent = registry.Mscorlib;
-			IClass c = mscorlibProjectContent.GetClass("System.Collections.ObjectModel.Collection");
+			IClass c = mscorlibProjectContent.GetClass("System.Collections.ObjectModel.Collection", 1);
 			
 			List<string> methodNames = new List<string>();
 			foreach (IMethod m in c.Methods) {
@@ -107,7 +107,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 		{
 			ProjectContentRegistry registry = new ProjectContentRegistry();
 			IProjectContent mscorlibProjectContent = registry.Mscorlib;
-			IClass collectionClass = mscorlibProjectContent.GetClass("System.Collections.ObjectModel.Collection");
+			IClass collectionClass = mscorlibProjectContent.GetClass("System.Collections.ObjectModel.Collection", 1);
 			
 			DefaultProjectContent projectContent = new DefaultProjectContent();
 			DefaultCompilationUnit unit = new DefaultCompilationUnit(projectContent);
