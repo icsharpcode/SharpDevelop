@@ -143,15 +143,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public virtual int CompareTo(IParameter value)
 		{
 			if (value == null) return -1;
-			int cmp;
 			
-			if(0 != (cmp = ((int)Modifiers - (int)value.Modifiers)))
-				return cmp;
-			
+			// two parameters are equal if they have the same return type
+			// (they may have different names)
 			if (object.Equals(ReturnType, value.ReturnType))
 				return 0;
 			else
-				return -1;
+				return string.Compare(this.Name, value.Name);
+			// if the parameters are not equal, use the parameter name to provide the ordering
 		}
 		
 		int IComparable.CompareTo(object value)
