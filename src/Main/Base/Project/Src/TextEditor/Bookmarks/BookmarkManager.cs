@@ -51,13 +51,26 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			OnRemoved(new BookmarkEventArgs(bookmark));
 		}
 		
+		public static void Clear()
+		{
+			while (bookmarks.Count > 0) {
+				SDBookmark b = bookmarks[bookmarks.Count - 1];
+				bookmarks.RemoveAt(bookmarks.Count - 1);
+				OnRemoved(new BookmarkEventArgs(b));
+			}
+		}
+		
+		internal static void Initialize()
+		{
+			Project.ProjectService.SolutionClosing += delegate { Clear(); };
+		}
+		
 		static void OnRemoved(BookmarkEventArgs e) 
 		{
 			if (Removed != null) {
 				Removed(null, e);
 			}
 		}
-		
 		
 		static void OnAdded(BookmarkEventArgs e) 
 		{
