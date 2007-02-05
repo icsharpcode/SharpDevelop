@@ -130,9 +130,17 @@ namespace WorkflowDesigner
 			if (item == null) return;
 			
 			Dictionary<ReferenceProjectItem, SideTab> references = Projects[e.Project];
-
-			if (!item.Include.StartsWith("System")){
-				references.Add(item, CreateSideTabForProjectItemReference(item as ReferenceProjectItem));
+			if (item is ProjectReferenceProjectItem) {
+				references.Add(item, CreateSideTabForProjectItem(item));
+				return;
+			} else if (item is ReferenceProjectItem) {
+				
+				if (!e.ProjectItem.Include.StartsWith("System")){
+					references.Add(item, CreateSideTabForProjectItem(item));
+				}
+					
+			} else {
+				return;
 			}
 			
 			if (ActiveProject == e.Project)
@@ -141,7 +149,6 @@ namespace WorkflowDesigner
 					SharpDevelopSideBar.SideBar.Tabs.Add(references[item]);
 				}
 			}
-			
 		}
 
 		private static void ProjectItemRemovedEventHandler(object sender, ProjectItemEventArgs e)
@@ -232,19 +239,34 @@ namespace WorkflowDesigner
 		private static void LoadProjectReferenceSideTabs(IProject project, Dictionary<ReferenceProjectItem, SideTab> tabs)
 		{
 			foreach (ProjectItem item in project.Items) {
-				if (item is ReferenceProjectItem) {
+				if (item is ProjectReferenceProjectItem) {
+					tabs.Add(item as ReferenceProjectItem, CreateSideTabForProjectItem(item));
+					
+				} else 	if (item is ReferenceProjectItem) {
 					if (!item.Include.StartsWith("System")){
-						tabs.Add(item as ReferenceProjectItem, CreateSideTabForProjectItemReference(item as ReferenceProjectItem));
+						tabs.Add(item as ReferenceProjectItem, CreateSideTabForProjectItem(item));
 					}
 				}
 			}
 		}
 		
-		private static SideTab CreateSideTabForProjectItemReference(ReferenceProjectItem item)
+		private static SideTab CreateSideTabForProjectItem(ProjectItem item)
 		{
-			AssemblyName name = new AssemblyName();
-			name.CodeBase = item.FileName;
-			Assembly assembly = AppDomain.CurrentDomain.Load(name);
+			Assembly assembly = null;
+			
+			if (item is ProjectReferenceProjectItem) {
+				ProjectReferenceProjectItem pitem = item as ProjectReferenceProjectItem;
+				AssemblyName name = new AssemblyName();
+				
+				name.CodeBase = pitem.ReferencedProject.OutputAssemblyFullPath;
+				assembly = AppDomain.CurrentDomain.Load(name);
+				
+			} else if (item is ReferenceProjectItem) {
+				AssemblyName name = new AssemblyName();
+				name.CodeBase = item.FileName;
+				assembly = AppDomain.CurrentDomain.Load(name);
+			}
+			
 			return CreateSideTabFromAssembly(assembly);
 		}
 		
@@ -294,10 +316,15 @@ namespace WorkflowDesigner
 		private static void SortSideTabItems(SideTab sideTab)
 		{
 			SortedDictionary<string, SideTabItem> list = new SortedDictionary<string, SideTabItem>();
+			
+			SideTabItem pointer = sideTab.Items[0];
+			
+			sideTab.Items.RemoveAt(0);
 			foreach (SideTabItem item in sideTab.Items)
 				list.Add(item.Name, item);
 			
 			sideTab.Items.Clear();
+			sideTab.Items.Add(pointer);
 			foreach (SideTabItem item in list.Values)
 				sideTab.Items.Add(item);
 			

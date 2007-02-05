@@ -72,6 +72,9 @@
     <None Include="Templates\Files\CSharp\CodeSequentialWorkflow.xft">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="Templates\Projects\CSharp\ActivityLibrary.xpt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Templates\Projects\CSharp\ConsoleProject.xpt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -104,6 +107,7 @@
     <Compile Include="Src\Services\IdentifierCreationService.cs" />
     <Compile Include="Src\Services\MemberCreationService.cs" />
     <Compile Include="Src\Services\TypeProviderService.cs" />
+    <Compile Include="Src\Services\TypeResolutionService.cs" />
     <Compile Include="Src\Services\WorkflowSideTabService.cs" />
     <Compile Include="Src\Services\WorkflowMenuCommandService.cs" />
     <Compile Include="Src\Services\WorkflowToolboxService.cs" />

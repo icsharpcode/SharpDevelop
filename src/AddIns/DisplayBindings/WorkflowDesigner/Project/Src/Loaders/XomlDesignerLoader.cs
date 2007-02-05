@@ -127,7 +127,9 @@ namespace WorkflowDesigner
 			LoaderHost.AddService(typeof(IToolboxService), new WorkflowToolboxService(LoaderHost));
 			LoaderHost.AddService(typeof(ITypeProvider), TypeProviderService.GetTypeProvider(ProjectService.CurrentProject));
 			LoaderHost.AddService(typeof(IMenuCommandService), new WorkflowMenuCommandService(LoaderHost));
+			LoaderHost.AddService(typeof(ITypeResolutionService), new TypeResolutionService(LoaderHost));
 
+			
 		}
 
 		protected override void PerformLoad(IDesignerSerializationManager serializationManager)

@@ -14,21 +14,22 @@ using System.Reflection;
 
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop;
 #endregion
 
 namespace WorkflowDesigner
 {
+	
 	/// <summary>
 	/// This service maintains a single TypeProvider for each workflow project. All designers in
 	/// the project will use the same typeprovider. The providers are kept up to date with the
-	/// project references so the designers do no need magane it themselves.
+	/// project references so the designers do no need manage it themselves.
 	/// </summary>
 	public class TypeProviderService
 	{
 		private static Dictionary<IProject, TypeProvider> providers;
-		private static bool initialised;
 
-		#region Property Accessor
+		#region Property Accessorors
 		private static Dictionary<IProject, TypeProvider> Providers {
 			get {
 				if (providers == null)
@@ -40,13 +41,11 @@ namespace WorkflowDesigner
 		#endregion
 		
 		
-		private static void Initialise()
+		static TypeProviderService()
 		{
 			ProjectService.ProjectItemRemoved += ProjectItemRemovedEventHandler;
 			ProjectService.ProjectItemAdded += ProjectItemAddedEventHandler;
 			ProjectService.SolutionClosing += SolutionClosingEventHandler;
-			
-			initialised = true;
 		}
 		
 		
@@ -58,7 +57,6 @@ namespace WorkflowDesigner
 		/// no project passed.</returns>
 		public static ITypeProvider GetTypeProvider(IProject project)
 		{
-			if (!initialised) Initialise();
 
 			if ((project != null) && (Providers.ContainsKey(project)))
 				return Providers[project];
@@ -72,45 +70,41 @@ namespace WorkflowDesigner
 			if (project == null)
 				return typeProvider;
 			
-			// Load the references for the project.
-			foreach (ProjectItem item in project.Items) {
-				if (item is ReferenceProjectItem) {
-					
-					Assembly assembly = ReflectionLoader.ReflectionLoadGacAssembly(item.Include, false);
-					
-					if (assembly == null) {
-						AssemblyName name = new AssemblyName();
-						name.CodeBase = item.FileName;
-						assembly = AppDomain.CurrentDomain.Load(name);
-					}
-					
-					typeProvider.AddAssembly(assembly);
-				}
-			}
+			LoadProjectReferences(project, typeProvider);
 			
 			Providers.Add(project, typeProvider);
+
+			MSBuildBasedProject p = project as MSBuildBasedProject;
+			p.ActiveConfigurationChanged += ActiveConfigurationChangedEventHandler;
 			
 			return typeProvider;
+		}
+		
+		private static void LoadProjectReferences(IProject project, TypeProvider typeProvider)
+		{
+			
+			foreach (ProjectItem item in project.Items) {
+				
+				Assembly assembly = LoadAssembly(item, AppDomain.CurrentDomain);
+				
+				if (assembly != null)
+					typeProvider.AddAssembly(assembly);
+			}
+			
 		}
 		
 		private static void ProjectItemAddedEventHandler(object sender, ProjectItemEventArgs e)
 		{
 			if (e.Project == null) return;
 			if (!Providers.ContainsKey(e.Project)) return;
-			
+
 			ReferenceProjectItem item = e.ProjectItem as ReferenceProjectItem;
 			if (item == null) return;
+
+			Assembly assembly = LoadAssembly(item);
 			
-			Assembly assembly = ReflectionLoader.ReflectionLoadGacAssembly(item.Include, false);
-			
-			if (assembly == null) {
-				AssemblyName name = new AssemblyName();
-				name.CodeBase = item.FileName;
-				assembly = AppDomain.CurrentDomain.Load(name);
-			}
-			
-			Providers[e.Project].AddAssembly(assembly);
-			
+			if (assembly != null)
+				Providers[e.Project].AddAssembly(assembly);
 		}
 
 		private static void ProjectItemRemovedEventHandler(object sender, ProjectItemEventArgs e)
@@ -120,17 +114,47 @@ namespace WorkflowDesigner
 			
 			ReferenceProjectItem item = e.ProjectItem as ReferenceProjectItem;
 			if (item == null) return;
+
+			Assembly assembly = LoadAssembly(item);
 			
-			Assembly assembly = ReflectionLoader.ReflectionLoadGacAssembly(item.Include, false);
+			if (assembly != null)
+				Providers[e.Project].RemoveAssembly(assembly);
 			
-			if (assembly == null) {
-				AssemblyName name = new AssemblyName();
-				name.CodeBase = item.FileName;
-				assembly = AppDomain.CurrentDomain.Load(name);
-			}
 			
-			Providers[e.Project].RemoveAssembly(assembly);
+		}
+		
+		private static Assembly LoadAssembly(ProjectItem item)
+		{
+			return LoadAssembly(item, AppDomain.CurrentDomain);
+		}
+		
+		private static Assembly LoadAssembly(ProjectItem item, AppDomain appDomain)
+		{
 			
+			Assembly assembly = null;
+			
+			if (item is ProjectReferenceProjectItem) {
+				throw new NotImplementedException("ProjectReferenceProjectItem references not implemented yet!");
+
+				
+				//ProjectReferenceProjectItem pitem = item as ProjectReferenceProjectItem;
+				
+				//AssemblyName name = new AssemblyName();
+				//name.CodeBase = pitem.ReferencedProject.OutputAssemblyFullPath;
+				//assembly = appDomain.Load(name);
+
+			} else if (item is ReferenceProjectItem) {
+				assembly = ReflectionLoader.ReflectionLoadGacAssembly(item.Include, false);
+				
+				if (assembly == null) {
+					AssemblyName name = new AssemblyName();
+					name.CodeBase = item.FileName;
+					assembly = appDomain.Load(name);
+				}
+				
+			} 
+			
+			return assembly;
 		}
 		
 		private static void SolutionClosingEventHandler(object sender, SolutionEventArgs e)
@@ -145,5 +169,23 @@ namespace WorkflowDesigner
 				}
 			}
 		}
+
+		private static void ActiveConfigurationChangedEventHandler(object sender, EventArgs e)
+		{
+			IProject project = sender as IProject;
+
+			if (!Providers.ContainsKey(project))
+				return;
+			
+			// Reload the typeprovider.
+			ICSharpCode.Core.LoggingService.DebugFormatted("Reloading TypeProvider assemblies for project {0}", project.Name);
+			TypeProvider typeProvider = Providers[project];
+			foreach (Assembly asm in typeProvider.ReferencedAssemblies)
+				typeProvider.RemoveAssembly(asm);
+			
+			LoadProjectReferences(project, typeProvider);
+			
+		}
+		
 	}
 }
