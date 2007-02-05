@@ -39,7 +39,7 @@ namespace WixBinding.Tests.Utils
 		
 		#pragma warning disable 67
 		public event EventHandler TabPageTextChanged;
-		public event EventHandler ViewActivated;
+		public event EventHandler SwitchedTo;
 		public event EventHandler Disposed;
 		public event EventHandler IsDirtyChanged;
 		public event EventHandler TitleNameChanged;
@@ -144,7 +144,7 @@ namespace WixBinding.Tests.Utils
 			}
 		}
 		
-		public void SwitchedTo()
+		public void OnSwitchedTo()
 		{
 			throw new NotImplementedException();
 		}

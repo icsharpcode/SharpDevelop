@@ -44,7 +44,7 @@ namespace XmlEditor.Tests.Tree
 			clipboardHandler = view as IClipboardHandler;
 			
 			xmlView.XmlEditor.Text = "<html><body><p></p></body></html>";
-			view.SwitchedTo();
+			((IViewContent)view).OnSwitchedTo();
 			
 			htmlTreeNode = treeView.Nodes[0] as XmlElementTreeNode;
 			htmlTreeNode.PerformInitialization();
