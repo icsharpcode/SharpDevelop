@@ -35,7 +35,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 	{
 		public override void Run()
 		{
-			BookmarkNode node = BookmarkPad.Instance.CurrentNode;
+			BookmarkNode node = ((BookmarkPadBase)Owner).CurrentNode;
 			if (node != null) {
 				if (node.Bookmark.Document != null) {
 					node.Bookmark.Document.BookmarkManager.RemoveMark(node.Bookmark);
@@ -51,8 +51,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 	{
 		public override void Run()
 		{
-			BookmarkPad.Instance.EnableDisableAll();
+			((BookmarkPadBase)Owner).EnableDisableAll();
 		}
 	}
-	
 }

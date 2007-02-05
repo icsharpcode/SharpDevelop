@@ -36,21 +36,21 @@
 	</Path>-->
 	
 	<Path name = "/SharpDevelop/Workbench/Pads">
-		<Pad id    = "BreakPointsPad" 
+		<Pad id    = "BreakPointsPad"
 		     category = "Debugger"
 		     title    = "${res:MainWindow.Windows.Debug.Breakpoints}"
 		     icon     = "PadIcons.BreakPoints"
 		     shortcut = "Control|Alt|P"
 		     class = "ICSharpCode.SharpDevelop.Gui.Pads.BreakPointsPad"/>
 		
-		<Pad id    = "CallStackPad" 
+		<Pad id    = "CallStackPad"
 		     category = "Debugger"
 		     title    = "${res:MainWindow.Windows.Debug.CallStack}"
 		     icon     = "PadIcons.CallStack"
 		     shortcut = "Control|Alt|C"
 		     class = "ICSharpCode.SharpDevelop.Gui.Pads.CallStackPad"/>
 		
-		<Pad id    = "LoadedModulesPad" 
+		<Pad id    = "LoadedModulesPad"
 		     category = "Debugger"
 		     title    = "${res:MainWindow.Windows.Debug.Modules}"
 		     icon     = "PadIcons.LoadedModules"
@@ -64,14 +64,14 @@
 		     shortcut = "Control|Alt|H"
 		     class = "ICSharpCode.SharpDevelop.Gui.Pads.RunningThreadsPad"/>
 		
-		<Pad id    = "LocalVarPad" 
+		<Pad id    = "LocalVarPad"
 		     category = "Debugger"
 		     title    = "${res:MainWindow.Windows.Debug.LocalVariables}"
 		     icon     = "PadIcons.LocalVariables"
 		     shortcut = "Control|Alt|V"
 		     class = "ICSharpCode.SharpDevelop.Gui.Pads.LocalVarPad"/>
 		
-		<!--<Pad id    = "ExceptionHistoryPad" 
+		<!--<Pad id    = "ExceptionHistoryPad"
 		     category = "Debugger"
 		     title    = "${res:MainWindow.Windows.Debug.ExceptionHistory}"
 		     icon     = "PadIcons.Exceptions"
