@@ -50,7 +50,7 @@ namespace WorkflowDesigner
 
 
 		#region IWorkflowDesignerEventBinginService implementation
-		public void UpdateCCU()
+		public void UpdateCodeCompileUnit()
 		{
 			LoggingService.Debug("UpdateCCU");
 
@@ -108,6 +108,12 @@ namespace WorkflowDesigner
 		#region IEventBindingService implemention
 		public string CreateUniqueMethodName(IComponent component, EventDescriptor e)
 		{
+			if (component == null)
+				throw new ArgumentNullException("component");
+			
+			if (e == null)
+				throw new ArgumentNullException("eventDescriptor");
+
 			LoggingService.Debug("CreateUniqueMethodName(" + component + ", " + e + ")");
 			return String.Format("{0}{1}", Char.ToUpper(component.Site.Name[0]) + component.Site.Name.Substring(1), e.DisplayName);
 		}
@@ -123,7 +129,10 @@ namespace WorkflowDesigner
 		
 		public PropertyDescriptorCollection GetEventProperties(EventDescriptorCollection events)
 		{
-			ArrayList props = new ArrayList ();
+			if (events == null)
+				throw new ArgumentNullException("events");
+			
+			ArrayList props = new ArrayList();
 			
 			foreach (EventDescriptor e in events)
 				props.Add (GetEventProperty (e));
@@ -201,7 +210,12 @@ namespace WorkflowDesigner
 
 		public bool ShowCode(IComponent component, EventDescriptor e)
 		{
+			if (component == null)
+				throw new ArgumentNullException("component");
 			
+			if (e == null)
+				throw new ArgumentNullException("eventDescriptor");
+
 			Activity activity = component as Activity;
 			if (component == null)
 				throw new ArgumentException("component must be derived from Activity");
@@ -227,7 +241,7 @@ namespace WorkflowDesigner
 			return method.BodyRegion.BeginLine + 1;
 		}
 		
-		protected abstract string CreateEventHandler(IClass completeClass, EventDescriptor edesc, string eventMethodName, string body, string indentation);
+		protected abstract string CreateEventHandler(IClass completeClass, EventDescriptor eventDescriptor, string eventMethodName, string body, string indentation);
 		
 		
 		public bool ShowCode(IComponent component, EventDescriptor e, string methodName)
@@ -280,10 +294,10 @@ namespace WorkflowDesigner
 		/// Gets a method implementing the signature specified by the event descriptor
 		/// </summary>
 		protected static ICSharpCode.NRefactory.Ast.MethodDeclaration
-			ConvertDescriptorToNRefactory(IClass completeClass, EventDescriptor edesc, string methodName)
+			ConvertDescriptorToNRefactory(IClass completeClass, EventDescriptor eventDescriptor, string methodName)
 		{
 			return ICSharpCode.SharpDevelop.Dom.Refactoring.CodeGenerator.ConvertMember(
-				ConvertDescriptorToDom(completeClass, edesc, methodName),
+				ConvertDescriptorToDom(completeClass, eventDescriptor, methodName),
 				new ClassFinder(completeClass, completeClass.BodyRegion.BeginLine + 1, 1)
 			) as ICSharpCode.NRefactory.Ast.MethodDeclaration;
 		}
@@ -293,7 +307,7 @@ namespace WorkflowDesigner
 			return c.Region.EndLine;
 		}
 
-		public bool UseMethod(IComponent component, EventDescriptor edesc, string methodName)
+		public bool UseMethod(IComponent component, EventDescriptor eventDescriptor, string methodName)
 		{
 			LoggingService.DebugFormatted("UseMethod {0}", methodName);
 			IClass  completeClass;
@@ -308,7 +322,7 @@ namespace WorkflowDesigner
 				
 				ParseInformation info = ParserService.ParseFile(this.codeFileName);
 				ICompilationUnit cu = (ICompilationUnit)info.BestCompilationUnit;
-				MethodInfo methodInfo = edesc.EventType.GetMethod("Invoke");
+				MethodInfo methodInfo = eventDescriptor.EventType.GetMethod("Invoke");
 				
 				foreach (IClass c in cu.Classes) {
 					if (c.Name == rootDesigner.Component.Site.Name){
@@ -344,9 +358,9 @@ namespace WorkflowDesigner
 						LoggingService.DebugFormatted("Creating new method...");
 						int line = GetEventHandlerInsertionLine(c);
 						int offset = t.TextEditorControl.Document.GetLineSegment(line - 1).Offset;
-						t.TextEditorControl.Document.Insert(offset, CreateEventHandler(completeClass, edesc, methodName, "", "\t\t"));
-						UpdateCCU();
-						return ShowCode(component, edesc, methodName);
+						t.TextEditorControl.Document.Insert(offset, CreateEventHandler(completeClass, eventDescriptor, methodName, "", "\t\t"));
+						UpdateCodeCompileUnit();
+						return ShowCode(component, eventDescriptor, methodName);
 					}
 				}
 			}

@@ -161,8 +161,9 @@ namespace WorkflowDesigner
 			}
 
 			LoaderHost.Container.Add(rootActivity, rootActivity.QualifiedName);
-			if (rootActivity is CompositeActivity)
-				AddChildren(rootActivity as CompositeActivity);
+			CompositeActivity compositeActivity = rootActivity as CompositeActivity;
+			if (compositeActivity != null)
+				AddChildren(compositeActivity);
 			
 			SetBaseComponentClassName(rootActivity.GetType().FullName);
 			
@@ -179,25 +180,31 @@ namespace WorkflowDesigner
 			foreach (Activity activity in compositeActivity.Activities)
 			{
 				LoaderHost.Container.Add(activity, activity.QualifiedName);
-				if (activity is CompositeActivity)
-					AddChildren(activity as CompositeActivity);
+
+				CompositeActivity compositeActivity2 = activity as CompositeActivity;
+				if (compositeActivity2 != null)
+					AddChildren(compositeActivity2);
 			}
 		}
 		
 		public override void Dispose()
 		{
-			// Remove all the services from the from the host designer.
-			if (LoaderHost != null)
-			{
-				LoaderHost.RemoveService(typeof(IToolboxService));
-				LoaderHost.RemoveService(typeof(ITypeProvider));
-				LoaderHost.RemoveService(typeof(IEventBindingService));
-				LoaderHost.RemoveService(typeof(IMemberCreationService));
-				LoaderHost.RemoveService(typeof(IMenuCommandService));
+			try {
+				// Remove all the services from the from the host designer.
+				if (LoaderHost != null)
+				{
+					LoaderHost.RemoveService(typeof(IToolboxService));
+					LoaderHost.RemoveService(typeof(ITypeProvider));
+					LoaderHost.RemoveService(typeof(IEventBindingService));
+					LoaderHost.RemoveService(typeof(IMemberCreationService));
+					LoaderHost.RemoveService(typeof(IMenuCommandService));
+				}
+				
+			} finally {
+				base.Dispose();
+				
 			}
-
 			
-			base.Dispose();
 		}
 		
 		

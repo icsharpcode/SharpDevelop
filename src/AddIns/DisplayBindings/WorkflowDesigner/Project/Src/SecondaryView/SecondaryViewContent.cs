@@ -56,7 +56,6 @@ namespace WorkflowDesigner
 		protected override void LoadFromPrimary()
 		{
 			control.LoadWorkflow(new NRefactoryDesignerLoader(((ITextEditorControlProvider)viewContent).TextEditorControl, viewContent));
-			control.Selected();
 		}
 		
 		protected override void SaveToPrimary()

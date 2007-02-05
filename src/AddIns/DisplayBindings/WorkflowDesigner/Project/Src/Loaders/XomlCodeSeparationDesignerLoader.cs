@@ -46,7 +46,7 @@ namespace WorkflowDesigner
 		protected override void Load(IDesignerSerializationManager serializationManager)
 		{
 			IWorkflowDesignerEventBindingService srv = LoaderHost.GetService(typeof(IEventBindingService)) as IWorkflowDesignerEventBindingService;
-			srv.UpdateCCU();
+			srv.UpdateCodeCompileUnit();
 			
 			LoadFromXoml(serializationManager);
 			

@@ -87,7 +87,6 @@ namespace WorkflowDesigner
 					designer.Dock = DockStyle.Fill;
 					Controls.Add(designer);
 					DesignerHost.Activate();
-					Selected(); // HACK: Selected event not working so calling directly at present
 				}
 			} catch (Exception e) {
 				TextBox errorText = new TextBox();
@@ -144,7 +143,7 @@ namespace WorkflowDesigner
 
 			// Monitor for updates and make the view dirty.
 			IComponentChangeService componentChangeService = (IComponentChangeService)designSurface.GetService(typeof(IComponentChangeService));
-			//componentChangeService.ComponentAdding += new ComponentEventHandler(ComponentAddingHandler);
+			componentChangeService.ComponentAdding += new ComponentEventHandler(ComponentAddingHandler);
 			componentChangeService.ComponentAdded += new ComponentEventHandler(ComponentAddedHandler);
 			componentChangeService.ComponentChanged += new ComponentChangedEventHandler(ComponentChangedHandler);
 
@@ -153,15 +152,15 @@ namespace WorkflowDesigner
 			selectionService.SelectionChanged += new EventHandler(SelectionChangedHandler);
 		}
 		
-		void UpdateCCU()
+		void UpdateCodeCompileUniteCompileUnit()
 		{
 			IWorkflowDesignerEventBindingService srv = this.DesignerHost.GetService(typeof(IEventBindingService)) as IWorkflowDesignerEventBindingService;
-			srv.UpdateCCU();
+			srv.UpdateCodeCompileUnit();
 		}
 		
 		void ComponentAddedHandler(object sender, ComponentEventArgs args)
 		{
-			UpdateCCU();
+			UpdateCodeCompileUniteCompileUnit();
 			LoggingService.Debug("ComponentAddedHandler");
 		}
 		
@@ -172,7 +171,7 @@ namespace WorkflowDesigner
 
 		void ComponentChangedHandler(object sender, ComponentChangedEventArgs args)
 		{
-			UpdateCCU();
+			UpdateCodeCompileUniteCompileUnit();
 			viewContent.PrimaryFile.MakeDirty();
 			ISelectionService selectionService = (ISelectionService)designSurface.GetService(typeof(ISelectionService));
 			UpdatePropertyPadSelection(selectionService);
@@ -192,10 +191,6 @@ namespace WorkflowDesigner
 			propertyContainer.Host = DesignerHost;
 			propertyContainer.SelectedObjects = selArray;
 			PropertyPad.Grid.CommandsVisibleIfAvailable = false;
-		}
-		
-		internal void Selected()
-		{
 		}
 		
 		internal void Deselected()

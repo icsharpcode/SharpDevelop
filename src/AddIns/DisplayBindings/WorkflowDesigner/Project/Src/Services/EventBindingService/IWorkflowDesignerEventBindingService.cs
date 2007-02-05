@@ -20,6 +20,6 @@ namespace WorkflowDesigner
 	public interface IWorkflowDesignerEventBindingService : IEventBindingService
 	{
 		string CodeFileName {	get;}
-		void UpdateCCU();
+		void UpdateCodeCompileUnit();
 	}
 }

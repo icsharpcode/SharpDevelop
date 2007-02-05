@@ -101,6 +101,9 @@ namespace WorkflowDesigner
 		
 		public static void AddViewContent(IViewContent viewContent)
 		{
+			if (viewContent == null)
+				throw new ArgumentNullException("viewContent");
+			
 			if (!initialised)
 				Initialise();
 			

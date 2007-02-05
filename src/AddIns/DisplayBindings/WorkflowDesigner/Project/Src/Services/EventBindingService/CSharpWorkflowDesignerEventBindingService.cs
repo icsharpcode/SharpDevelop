@@ -35,7 +35,6 @@ namespace WorkflowDesigner
 		{
 			DomRegion r = method.BodyRegion;
 			int offset = document.PositionToOffset(new Point(r.BeginColumn - 1, r.BeginLine - 1));
-			string tmp = document.GetText(offset, 10);
 			while (offset < document.TextLength) {
 				char c = document.GetCharAt(offset++);
 				if (c == '{') {
@@ -50,7 +49,7 @@ namespace WorkflowDesigner
 	
 		protected override string CreateEventHandler(IClass completeClass, EventDescriptor edesc, string eventMethodName, string body, string indentation)
 		{
-			string param = GenerateParams(completeClass, edesc, true);
+			string param = GenerateParameters(completeClass, edesc, true);
 			
 			StringBuilder b = new StringBuilder();
 			b.AppendLine(indentation);
@@ -66,10 +65,10 @@ namespace WorkflowDesigner
 			return b.ToString();
 		}
 		
-		protected string GenerateParams(IClass completeClass, EventDescriptor edesc, bool paramNames)
+		protected string GenerateParameters(IClass completeClass, EventDescriptor eventDescriptor, bool paramNames)
 		{
 			CSharpOutputVisitor v = new CSharpOutputVisitor();
-			MethodDeclaration md = ConvertDescriptorToNRefactory(completeClass, edesc, "name");
+			MethodDeclaration md = ConvertDescriptorToNRefactory(completeClass, eventDescriptor, "name");
 			if (md != null) {
 				v.AppendCommaSeparatedList(md.Parameters);
 			}
