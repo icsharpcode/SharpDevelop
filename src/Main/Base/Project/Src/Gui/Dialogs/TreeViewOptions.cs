@@ -225,7 +225,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		protected void InitializeComponent()
 		{
-			Owner = (Form)WorkbenchSingleton.Workbench;
+			Owner = WorkbenchSingleton.MainForm;
 
 			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("Resources.TreeViewOptionsDialog.xfrm"));
 			

@@ -12,14 +12,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 	/// <summary>
 	/// Base class for view contents that are not based on a file.
 	/// </summary>
-	public abstract class AbstractViewContentWithoutFile : AbstractViewContent
+	public abstract class AbstractViewContentWithoutFile : AbstractViewContent, ICustomizedCommands
 	{
 		public override bool IsViewOnly {
 			get { return false; }
 		}
 		
 		[Obsolete("AbstractViewContentWithoutFile.PrimaryFile is always null")]
-		public override OpenedFile PrimaryFile { get { return null; } }
+		public sealed override OpenedFile PrimaryFile { get { return null; } }
 		
 		[Obsolete("This method is not supported on an AbstractViewContentWithoutFile")]
 		public sealed override void Load(OpenedFile file, System.IO.Stream stream)
@@ -42,5 +42,17 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// Save the view content.
 		/// </summary>
 		public abstract void Save();
+		
+		bool ICustomizedCommands.SaveCommand()
+		{
+			Save();
+			return true;
+		}
+		
+		bool ICustomizedCommands.SaveAsCommand()
+		{
+			Save();
+			return true;
+		}
 	}
 }

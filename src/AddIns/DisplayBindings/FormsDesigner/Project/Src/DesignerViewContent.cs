@@ -96,13 +96,6 @@ namespace ICSharpCode.FormsDesigner
 			this.textAreaControlProvider = viewContent as ITextEditorControlProvider;
 		}
 		
-		/*public override void SwitchedTo()
-		{
-			if (IsFormsDesignerVisible) {
-				AddSideBars();
-			}
-		}*/
-		
 		void LoadDesigner()
 		{
 			LoggingService.Info("Form Designer: BEGIN INITIALIZE");
@@ -307,35 +300,27 @@ namespace ICSharpCode.FormsDesigner
 			return generator.GetCompatibleMethods(edesc);
 		}
 		
-		#warning Code temporarily disabled after IViewContent changes
-		/*public override void Selected()
+		/*
+		protected override void OnViewActivated(EventArgs e)
 		{
-			PropertyPad.PropertyValueChanged += PropertyValueChanged;
-			Reload();
+			LoggingService.Info("Designer.OnViewActived 1");
+			base.OnViewActivated(e); // calls Load() if required
+			LoggingService.Info("Designer.OnViewActived 2");
+			
 			IsFormsDesignerVisible = true;
 			AddSideBars();
+			PropertyPad.PropertyValueChanged += PropertyValueChanged;
 			SetActiveSideTab();
 			UpdatePropertyPad();
-		}*/
-		
-		public override void Dispose()
-		{
-			disposing = true;
-			base.Dispose();
+			LoggingService.Info("Designer.OnViewActived 3");
 		}
+		*/
 		
-		protected override void LoadFromPrimary()
+		/*
+		protected override void OnViewDeactivated(EventArgs e)
 		{
-			Reload();
-		}
-		
-		protected override void SaveToPrimary()
-		{
-			MergeFormChanges();
-		}
-		
-		/*public override void Deselecting()
-		{
+			LoggingService.Info("Designer.OnViewDeactivated");
+			
 			// can happen if form designer is disposed and then deselected
 			if (!IsFormsDesignerVisible)
 				return;
@@ -360,7 +345,24 @@ namespace ICSharpCode.FormsDesigner
 			}
 			UnloadDesigner();
 			LoggingService.Info("Unloading form designer finished");
-		}*/
+		}
+		*/
+		
+		public override void Dispose()
+		{
+			disposing = true;
+			base.Dispose();
+		}
+		
+		protected override void LoadFromPrimary()
+		{
+			Reload();
+		}
+		
+		protected override void SaveToPrimary()
+		{
+			MergeFormChanges();
+		}
 		
 		void SelectionChangedHandler(object sender, EventArgs args)
 		{

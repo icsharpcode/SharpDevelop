@@ -231,7 +231,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			((ListView)ControlDictionary["resultListView"]).ColumnClick += new ColumnClickEventHandler(SortEvt);
 			
 			Icon  = IconService.GetIcon("Icons.16x16.FindIcon");
-			Owner = (Form)WorkbenchSingleton.Workbench;
+			Owner = WorkbenchSingleton.MainForm;
 			
 			((ComboBox)ControlDictionary["locationComboBox"]).Items.Add(StringParser.Parse("${res:Global.Location.currentfile}"));
 			((ComboBox)ControlDictionary["locationComboBox"]).Items.Add(StringParser.Parse("${res:Global.Location.allopenfiles}"));

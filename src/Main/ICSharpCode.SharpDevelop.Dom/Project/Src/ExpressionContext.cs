@@ -93,16 +93,16 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// object creation.</remarks>
 		public static ExpressionContext GetAttribute(IProjectContent projectContent)
 		{
-			return new TypeExpressionContext(projectContent.GetClass("System.Attribute", 0), false, true);
+			return new TypeExpressionContext(projectContent.SystemTypes.Attribute, false, true);
 		}
 		
 		/// <summary>Context expects a type name which has special base type</summary>
 		/// <param name="baseClass">The class the expression must derive from.</param>
 		/// <param name="isObjectCreation">Specifies whether classes must be constructable.</param>
 		/// <example>catch(*expr* ...), using(*expr* ...), throw new ***</example>
-		public static ExpressionContext TypeDerivingFrom(IClass baseClass, bool isObjectCreation)
+		public static ExpressionContext TypeDerivingFrom(IReturnType baseType, bool isObjectCreation)
 		{
-			return new TypeExpressionContext(baseClass, isObjectCreation, false);
+			return new TypeExpressionContext(baseType, isObjectCreation, false);
 		}
 		
 		/// <summary>Context expects an interface</summary>
@@ -163,9 +163,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 			IClass baseClass;
 			bool isObjectCreation;
 			
-			public TypeExpressionContext(IClass baseClass, bool isObjectCreation, bool readOnly)
+			public TypeExpressionContext(IReturnType baseType, bool isObjectCreation, bool readOnly)
 			{
-				this.baseClass = baseClass;
+				if (baseType != null)
+					baseClass = baseType.GetUnderlyingClass();
 				this.isObjectCreation = isObjectCreation;
 				this.readOnly = readOnly;
 			}

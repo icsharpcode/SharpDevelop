@@ -77,8 +77,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 		
 		public void Run(IList<string> fileList)
 		{
-			Form f = (Form)WorkbenchSingleton.Workbench;
-			f.Show();
+			//WorkbenchSingleton.MainForm.Show();
 			
 			bool didLoadCombineOrFile = false;
 			
@@ -110,13 +109,13 @@ namespace ICSharpCode.SharpDevelop.Commands
 				}
 			}
 			
-			f.Focus(); // windows.forms focus workaround
+			//WorkbenchSingleton.MainForm.Focus(); // windows.forms focus workaround
 			
 			ParserService.StartParserThread();
 			
 			// finally run the workbench window ...
 			Application.AddMessageFilter(new FormKeyHandler());
-			Application.Run(f);
+			Application.Run(WorkbenchSingleton.MainForm);
 			
 			// save the workbench memento in the ide properties
 			try {

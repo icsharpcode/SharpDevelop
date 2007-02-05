@@ -6,7 +6,7 @@
 // </file>
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
 
@@ -14,9 +14,9 @@ namespace ICSharpCode.SharpDevelop
 {
 	public class HelpProvider
 	{
-		public static ArrayList GetProviders()
+		public static List<HelpProvider> GetProviders()
 		{
-			return AddInTree.BuildItems("/SharpDevelop/Services/HelpProvider", null, false);
+			return AddInTree.BuildItems<HelpProvider>("/SharpDevelop/Services/HelpProvider", null, false);
 		}
 		
 		public static void ShowHelp(IClass c)

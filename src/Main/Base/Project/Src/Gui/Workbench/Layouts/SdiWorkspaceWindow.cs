@@ -18,7 +18,7 @@ using WeifenLuo.WinFormsUI;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
-	public class SdiWorkspaceWindow : DockContent, IWorkbenchWindow, IOwnerState
+	internal sealed class SdiWorkspaceWindow : DockContent, IWorkbenchWindow, IOwnerState
 	{
 		readonly static string contextMenuPath = "/SharpDevelop/Workbench/OpenFileTab/ContextMenu";
 		
@@ -82,6 +82,20 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
+		public event EventHandler ActiveViewContentChanged;
+		
+		IViewContent oldActiveViewContent;
+		
+		void UpdateActiveViewContent()
+		{
+			UpdateTitle();
+			IViewContent newActiveViewContent = this.ActiveViewContent;
+			if (oldActiveViewContent != newActiveViewContent && ActiveViewContentChanged != null) {
+				ActiveViewContentChanged(this, EventArgs.Empty);
+			}
+			oldActiveViewContent = newActiveViewContent;
+		}
+		
 		sealed class ViewContentCollection : Collection<IViewContent>
 		{
 			readonly SdiWorkspaceWindow window;
@@ -99,6 +113,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				
 				base.ClearItems();
 				window.ClearContent();
+				window.UpdateActiveViewContent();
 			}
 			
 			protected override void InsertItem(int index, IViewContent item)
@@ -131,7 +146,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 						window.viewTabControl.TabPages.Insert(index, newPage);
 					}
 				}
-				window.UpdateTitle();
+				window.UpdateActiveViewContent();
 			}
 			
 			protected override void RemoveItem(int index)
@@ -148,7 +163,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				} else {
 					window.viewTabControl.TabPages.RemoveAt(index);
 				}
-				window.UpdateTitle();
+				window.UpdateActiveViewContent();
 			}
 			
 			protected override void SetItem(int index, IViewContent item)
@@ -169,7 +184,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					page.Controls.Add(item.Control);
 					page.Text = StringParser.Parse(item.TabPageText);
 				}
-				window.UpdateTitle();
+				window.UpdateActiveViewContent();
 			}
 		}
 		
@@ -230,7 +245,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 				this.Controls.Add(viewTabControl);
 				
 				viewTabControl.SelectedIndexChanged += delegate {
-					this.ActiveViewContent.SwitchedTo();
+					this.ActiveViewContent.OnSwitchedTo();
+					UpdateActiveViewContent();
 				};
 			}
 		}
@@ -341,7 +357,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			return true;
 		}
 		
-		public virtual void RedrawContent()
+		public void RedrawContent()
 		{
 			RefreshTabPageTexts();
 		}
@@ -356,12 +372,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		protected virtual void OnTitleChanged(EventArgs e)
+		void OnTitleChanged(EventArgs e)
 		{
 			if (TitleChanged != null) {
 				TitleChanged(this, e);
 			}
-			WorkbenchSingleton.Workbench.WorkbenchLayout.OnActiveWorkbenchWindowChanged(EventArgs.Empty);
 		}
 		
 		protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
@@ -369,7 +384,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			e.Cancel = !CloseWindow(false);
 		}
 		
-		protected virtual void OnCloseEvent(EventArgs e)
+		void OnCloseEvent(EventArgs e)
 		{
 			OnWindowDeselected(e);
 			if (CloseEvent != null) {
@@ -377,13 +392,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		public virtual void OnWindowSelected(EventArgs e)
+		public void OnWindowSelected(EventArgs e)
 		{
 			if (WindowSelected != null) {
 				WindowSelected(this, e);
 			}
 		}
-		public virtual void OnWindowDeselected(EventArgs e)
+		
+		public void OnWindowDeselected(EventArgs e)
 		{
 			if (WindowDeselected != null) {
 				WindowDeselected(this, e);

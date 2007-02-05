@@ -18,7 +18,7 @@ namespace ICSharpCode.SharpDevelop
 	/// it checks, if the files exists at every creation, and if not it doesn't list them in the 
 	/// recent files, and they'll not be saved during the next option save.
 	/// </summary>
-	public class RecentOpen
+	public sealed class RecentOpen
 	{
 		/// <summary>
 		/// This variable is the maximal length of lastfile/lastopen entries

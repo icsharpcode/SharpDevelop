@@ -45,6 +45,7 @@ namespace ICSharpCode.SharpDevelop
 				PropertyService.Set("RecentOpen", recentOpen.ToProperties());
 			}
 			ProjectService.SolutionLoaded -= ProjectServiceSolutionLoaded;
+			ParserService.LoadSolutionProjectsThreadEnded -= ParserServiceLoadSolutionProjectsThreadEnded;
 			serviceInitialized = false;
 		}
 		
@@ -52,6 +53,7 @@ namespace ICSharpCode.SharpDevelop
 		{
 			if (!serviceInitialized) {
 				ProjectService.SolutionLoaded += ProjectServiceSolutionLoaded;
+				ParserService.LoadSolutionProjectsThreadEnded += ParserServiceLoadSolutionProjectsThreadEnded;
 				serviceInitialized = true;
 			}
 		}
@@ -180,6 +182,16 @@ namespace ICSharpCode.SharpDevelop
 				}
 				file.CloseIfAllViewsClosed();
 			}
+		}
+		
+		static void ParserServiceLoadSolutionProjectsThreadEnded(object sender, EventArgs e)
+		{
+			WorkbenchSingleton.SafeThreadAsyncCall(
+				delegate {
+					foreach (IViewContent content in Linq.ToArray(WorkbenchSingleton.Workbench.ViewContentCollection)) {
+						DisplayBindingService.AttachSubWindows(content, true);
+					}
+				});
 		}
 		
 		public static bool IsOpen(string fileName)
@@ -372,7 +384,7 @@ namespace ICSharpCode.SharpDevelop
 		}
 		
 		/// <summary>
-		/// Creates a FolderBrowserDialog that will initially select the 
+		/// Creates a FolderBrowserDialog that will initially select the
 		/// specified folder. If the folder does not exist then the default
 		/// behaviour of the FolderBrowserDialog is used where it selects the
 		/// desktop folder.
@@ -389,7 +401,7 @@ namespace ICSharpCode.SharpDevelop
 		}
 		
 		/// <summary>
-		/// Creates a FolderBrowserDialog that will initially select the 
+		/// Creates a FolderBrowserDialog that will initially select the
 		/// desktop folder.
 		/// </summary>
 		public static FolderBrowserDialog CreateFolderBrowserDialog(string description)

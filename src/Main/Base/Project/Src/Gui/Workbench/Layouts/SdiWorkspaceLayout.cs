@@ -20,7 +20,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 	/// <summary>
 	/// This is the a Workspace with a single document interface.
 	/// </summary>
-	public class SdiWorkbenchLayout : IWorkbenchLayout
+	internal sealed class SdiWorkbenchLayout : IWorkbenchLayout
 	{
 		DefaultWorkbench wbForm;
 		
@@ -604,7 +604,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		
 		IWorkbenchWindow oldSelectedWindow = null;
-		public virtual void OnActiveWorkbenchWindowChanged(EventArgs e)
+		
+		internal void OnActiveWorkbenchWindowChanged(EventArgs e)
 		{
 			IWorkbenchWindow newWindow = this.ActiveWorkbenchwindow;
 			if (newWindow == null || newWindow.ActiveViewContent != null) {
@@ -618,13 +619,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 			} else {
 				//LoggingService.Debug("ignore window change to disposed window");
 			}
-			if (oldSelectedWindow != null) {
+			if (oldSelectedWindow != null && oldSelectedWindow.ActiveViewContent != null) {
 				oldSelectedWindow.OnWindowDeselected(EventArgs.Empty);
 			}
 			oldSelectedWindow = newWindow;
-			if (oldSelectedWindow != null && oldSelectedWindow.ActiveViewContent != null && oldSelectedWindow.ActiveViewContent.Control != null) {
-				oldSelectedWindow.OnWindowSelected(EventArgs.Empty);
-				oldSelectedWindow.ActiveViewContent.SwitchedTo();
+			if (newWindow != null && newWindow.ActiveViewContent != null) {
+				newWindow.ActiveViewContent.OnSwitchedTo();
+				newWindow.OnWindowSelected(EventArgs.Empty);
 			}
 		}
 		

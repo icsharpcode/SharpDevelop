@@ -398,7 +398,7 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 			tooltip.SetToolTip(ControlDictionary["largeIconsRadioButton"], StringParser.Parse("${res:Global.LargeIconToolTip}"));
 			tooltip.SetToolTip(ControlDictionary["smallIconsRadioButton"], StringParser.Parse("${res:Global.SmallIconToolTip}"));
 			tooltip.Active = true;
-			Owner         = (Form)WorkbenchSingleton.Workbench;
+			Owner         = WorkbenchSingleton.MainForm;
 			StartPosition = FormStartPosition.CenterParent;
 			Icon          = null;
 			

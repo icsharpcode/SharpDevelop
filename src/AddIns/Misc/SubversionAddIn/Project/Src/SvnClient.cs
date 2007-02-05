@@ -190,7 +190,7 @@ namespace ICSharpCode.Svn
 			thread.Name = "SvnOperation";
 			thread.IsBackground = true;
 			inOperationForm = new InOperationDialog(operationName, thread);
-			inOperationForm.Owner = (Form)WorkbenchSingleton.Workbench;
+			inOperationForm.Owner = WorkbenchSingleton.MainForm;
 			inOperationForm.Show();
 			thread.Start();
 		}

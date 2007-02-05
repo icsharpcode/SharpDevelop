@@ -191,7 +191,7 @@ namespace ICSharpCode.SharpDevelop
 			
 			registeredViews.Add(view);
 			
-			view.ViewActivated += SwitchedToView;
+			view.SwitchedTo += SwitchedToView;
 			#if DEBUG
 			view.Disposed += ViewDisposed;
 			#endif
@@ -203,7 +203,7 @@ namespace ICSharpCode.SharpDevelop
 				throw new ArgumentNullException("view");
 			Debug.Assert(registeredViews.Contains(view));
 			
-			view.ViewActivated -= SwitchedToView;
+			view.SwitchedTo -= SwitchedToView;
 			#if DEBUG
 			view.Disposed -= ViewDisposed;
 			#endif

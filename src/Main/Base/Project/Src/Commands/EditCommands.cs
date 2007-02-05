@@ -214,7 +214,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 		public override void Run()
 		{
 			using (WordCountDialog wcd = new WordCountDialog()) {
-				wcd.Owner = (Form)WorkbenchSingleton.Workbench;
+				wcd.Owner = WorkbenchSingleton.MainForm;
 				wcd.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm);
 			}
 		}

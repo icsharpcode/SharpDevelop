@@ -64,7 +64,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.Text       = dialogName;
 			ControlDictionary["okButton"].Click += new EventHandler(AcceptEvent);
 			Icon = null;
-			Owner = (Form)WorkbenchSingleton.Workbench;
+			Owner = WorkbenchSingleton.MainForm;
 			
 			AddOptionPanels(node.BuildChildItems<IDialogPanelDescriptor>(this));
 		}

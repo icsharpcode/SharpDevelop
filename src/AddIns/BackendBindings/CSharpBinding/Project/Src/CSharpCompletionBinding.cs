@@ -43,10 +43,10 @@ namespace CSharpBinding
 							context = ExpressionContext.Default;
 							break;
 						case "using":
-							context = ExpressionContext.TypeDerivingFrom(ParserService.CurrentProjectContent.GetClass("System.IDisposable", 0), false);
+							context = ExpressionContext.TypeDerivingFrom(ParserService.CurrentProjectContent.SystemTypes.IDisposable, false);
 							break;
 						case "catch":
-							context = ExpressionContext.TypeDerivingFrom(ParserService.CurrentProjectContent.GetClass("System.Exception", 0), false);
+							context = ExpressionContext.TypeDerivingFrom(ParserService.CurrentProjectContent.SystemTypes.Exception, false);
 							break;
 						case "foreach":
 						case "typeof":

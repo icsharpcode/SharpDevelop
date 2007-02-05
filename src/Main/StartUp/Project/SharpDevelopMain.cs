@@ -155,7 +155,7 @@ namespace ICSharpCode.SharpDevelop
 						return false;
 					}
 				}
-				return DefaultWorkbench.SingleInstanceHelper.OpenFilesInPreviousInstance(fileList);
+				return SingleInstanceHelper.OpenFilesInPreviousInstance(fileList);
 			} catch (Exception ex) {
 				LoggingService.Error(ex);
 				return false;

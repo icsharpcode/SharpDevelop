@@ -32,8 +32,8 @@ namespace ICSharpCode.SharpDevelop.Commands
 			                                                           AddInTree.GetTreeNode("/SharpDevelop/Dialogs/OptionsDialog"))) {
 				optionsDialog.FormBorderStyle = FormBorderStyle.FixedDialog;
 				
-				optionsDialog.Owner = (Form)WorkbenchSingleton.Workbench;
-				optionsDialog.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm);
+				optionsDialog.Owner = WorkbenchSingleton.MainForm;
+				optionsDialog.ShowDialog(WorkbenchSingleton.MainForm);
 			}
 		}
 	}

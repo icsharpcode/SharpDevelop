@@ -46,12 +46,7 @@ namespace ICSharpCode.SharpDevelop.Commands.TabStrip
 		{
 			IWorkbenchWindow window = Owner as IWorkbenchWindow;
 			if (window != null) {
-				if (window.ActiveViewContent.IsViewOnly) {
-					return;
-				}
-				foreach (OpenedFile file in window.ActiveViewContent.Files) {
-					SaveFile.Save(file);
-				}
+				SaveFile.Save(window.ActiveViewContent);
 			}
 		}
 	}
@@ -63,12 +58,7 @@ namespace ICSharpCode.SharpDevelop.Commands.TabStrip
 			IWorkbenchWindow window = Owner as IWorkbenchWindow;
 			
 			if (window != null) {
-				if (window.ActiveViewContent.IsViewOnly) {
-					return;
-				}
-				foreach (OpenedFile file in window.ActiveViewContent.Files) {
-					SaveFileAs.Save(file);
-				}
+				SaveFileAs.Save(window.ActiveViewContent);
 			}
 		}
 	}

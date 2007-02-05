@@ -362,7 +362,7 @@ namespace SearchAndReplace
 		static void ShowNotFoundMessage(IProgressMonitor monitor)
 		{
 			if (monitor != null) monitor.ShowingDialog = true;
-			MessageBox.Show((Form)WorkbenchSingleton.Workbench,
+			MessageBox.Show(WorkbenchSingleton.MainForm,
 			                ResourceService.GetString("Dialog.NewProject.SearchReplace.SearchStringNotFound"),
 			                ResourceService.GetString("Dialog.NewProject.SearchReplace.SearchStringNotFound.Title"),
 			                MessageBoxButtons.OK,

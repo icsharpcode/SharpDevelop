@@ -20,7 +20,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			
 			
 			using (NewProjectDialog npdlg = new NewProjectDialog(true)) {
-				npdlg.Owner = (Form)WorkbenchSingleton.Workbench;
+				npdlg.Owner = WorkbenchSingleton.MainForm;
 				npdlg.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm);
 			}
 		}

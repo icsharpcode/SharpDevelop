@@ -34,7 +34,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 				}
 			}
 			using (NewFileDialog nfd = new NewFileDialog(null)) {
-				nfd.Owner = (Form)WorkbenchSingleton.Workbench;
+				nfd.Owner = WorkbenchSingleton.MainForm;
 				nfd.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm);
 			}
 		}
@@ -54,8 +54,17 @@ namespace ICSharpCode.SharpDevelop.Commands
 	{
 		public override void Run()
 		{
-			IViewContent content = WorkbenchSingleton.Workbench.ActiveViewContent;
+			Save(WorkbenchSingleton.Workbench.ActiveViewContent);
+		}
+		
+		internal static void Save(IViewContent content)
+		{
 			if (content != null) {
+				if (content is ICustomizedCommands) {
+					if (((ICustomizedCommands)content).SaveCommand()) {
+						return;
+					}
+				}
 				if (content.IsViewOnly) {
 					return;
 				}
@@ -111,14 +120,18 @@ namespace ICSharpCode.SharpDevelop.Commands
 	{
 		public override void Run()
 		{
-			// save the primary file only
-			IViewContent content = WorkbenchSingleton.Workbench.ActiveViewContent;
+			Save(WorkbenchSingleton.Workbench.ActiveViewContent);
+		}
+		
+		internal static void Save(IViewContent content)
+		{
 			if (content != null && !content.IsViewOnly) {
 				if (content is ICustomizedCommands) {
 					if (((ICustomizedCommands)content).SaveAsCommand()) {
 						return;
 					}
 				}
+				// save the primary file only
 				if (content.PrimaryFile != null) {
 					Save(content.PrimaryFile);
 				}
@@ -160,6 +173,11 @@ namespace ICSharpCode.SharpDevelop.Commands
 	{
 		public static void SaveAll()
 		{
+			foreach (IViewContent content in WorkbenchSingleton.Workbench.ViewContentCollection) {
+				if (content is ICustomizedCommands && content.IsDirty) {
+					((ICustomizedCommands)content).SaveCommand();
+				}
+			}
 			foreach (OpenedFile file in FileService.OpenedFiles) {
 				if (file.IsDirty) {
 					SaveFile.Save(file);
@@ -220,7 +238,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 	{
 		public override void Run()
 		{
-			((Form)WorkbenchSingleton.Workbench).Close();
+			WorkbenchSingleton.MainForm.Close();
 		}
 	}
 	
@@ -259,7 +277,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 					using (PrintDocument pdoc = printable.PrintDocument) {
 						if (pdoc != null) {
 							PrintPreviewDialog ppd = new PrintPreviewDialog();
-							ppd.Owner     = (Form)WorkbenchSingleton.Workbench;
+							ppd.Owner     = WorkbenchSingleton.MainForm;
 							ppd.TopMost   = true;
 							ppd.Document  = pdoc;
 							ppd.Show();

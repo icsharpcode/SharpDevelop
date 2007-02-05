@@ -13,7 +13,7 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop
 {
-	public class ParseProjectContent : DefaultProjectContent
+	public sealed class ParseProjectContent : DefaultProjectContent
 	{
 		internal static ParseProjectContent CreateUninitalized(IProject project)
 		{

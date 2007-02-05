@@ -38,15 +38,13 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 		
 		public ProjectOptionsView(AddInTreeNode node, IProject project)
 		{
-			this.project    = project;
+			this.project = project;
+			this.TitleName = project.Name;
 			
 //			tabControl.Alignment = TabAlignment.Left;
 			
 			tabControl.HandleCreated += TabControlHandleCreated;
 			AddOptionPanels(node.BuildChildItems<IDialogPanelDescriptor>(this));
-			
-			this.AutomaticallyRegisterViewOnFiles = false;
-			this.Files.Add(FileService.AttachToOpenedFile(project.FileName, this));
 		}
 		
 		void TabControlHandleCreated(object sender, EventArgs e)

@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Diagnostics;
 using System.Windows.Forms;
 using ICSharpCode.Core;
 
@@ -128,6 +129,16 @@ namespace ICSharpCode.SharpDevelop.Gui
 				else
 					return ((Form)workbench).InvokeRequired;
 			}
+		}
+		
+		/// <summary>
+		/// Throws an exception if the current thread is not the main thread.
+		/// For performance reasons, the thread check is only done in debug builds.
+		/// </summary>
+		[Conditional("DEBUG")]
+		internal static void DebugAssertMainThread()
+		{
+			AssertMainThread();
 		}
 		
 		/// <summary>

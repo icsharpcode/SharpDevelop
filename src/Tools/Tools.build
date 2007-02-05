@@ -13,17 +13,17 @@
 	</ItemGroup>
 	
 	<Target Name="Build">
-		<Copy SourceFiles="@(NDocFiles)" DestinationFolder="..\..\bin\Tools\NDoc"/>
-		<Copy SourceFiles="@(WixFiles)" DestinationFolder="..\..\bin\Tools\Wix"/>
-		<Copy SourceFiles="@(WixDocFiles)" DestinationFolder="..\..\bin\Tools\Wix\doc"/>
-		<Copy SourceFiles="@(WixBitmapFiles)" DestinationFolder="..\..\bin\Tools\Wix\Bitmaps"/>
-		<Copy SourceFiles="@(WixIncFiles)" DestinationFolder="..\..\bin\Tools\Wix\inc"/>
-		<Copy SourceFiles="@(WixLibFiles)" DestinationFolder="..\..\bin\Tools\Wix\lib"/>
-		<Copy SourceFiles="@(NUnitFiles)" DestinationFolder="..\..\bin\Tools\NUnit"/>
-		<Copy SourceFiles="@(NUnitFiles)" DestinationFolder="..\..\bin\Tools\NUnit\Net-1.1"/>
-		<Copy SourceFiles="@(NUnitConfigFileNetv11)" DestinationFiles="@(NUnitConfigFileNetv11->'..\..\bin\Tools\NUnit\Net-1.1\nunit-console.exe.config')"/>
-		<Copy SourceFiles="@(NUnitConfigFile)" DestinationFolder="..\..\bin\Tools\NUnit"/>
-		<Copy SourceFiles="@(ToolFiles)" DestinationFolder="..\..\bin\Tools"/>
+		<Copy SourceFiles="@(NDocFiles)" DestinationFolder="..\..\bin\Tools\NDoc" SkipUnchangedFiles="true"/>
+		<Copy SourceFiles="@(WixFiles)" DestinationFolder="..\..\bin\Tools\Wix" SkipUnchangedFiles="true"/>
+		<Copy SourceFiles="@(WixDocFiles)" DestinationFolder="..\..\bin\Tools\Wix\doc" SkipUnchangedFiles="true"/>
+		<Copy SourceFiles="@(WixBitmapFiles)" DestinationFolder="..\..\bin\Tools\Wix\Bitmaps" SkipUnchangedFiles="true"/>
+		<Copy SourceFiles="@(WixIncFiles)" DestinationFolder="..\..\bin\Tools\Wix\inc" SkipUnchangedFiles="true"/>
+		<Copy SourceFiles="@(WixLibFiles)" DestinationFolder="..\..\bin\Tools\Wix\lib" SkipUnchangedFiles="true"/>
+		<Copy SourceFiles="@(NUnitFiles)" DestinationFolder="..\..\bin\Tools\NUnit" SkipUnchangedFiles="true"/>
+		<Copy SourceFiles="@(NUnitFiles)" DestinationFolder="..\..\bin\Tools\NUnit\Net-1.1" SkipUnchangedFiles="true"/>
+		<Copy SourceFiles="@(NUnitConfigFileNetv11)" DestinationFiles="@(NUnitConfigFileNetv11->'..\..\bin\Tools\NUnit\Net-1.1\nunit-console.exe.config')" SkipUnchangedFiles="true"/>
+		<Copy SourceFiles="@(NUnitConfigFile)" DestinationFolder="..\..\bin\Tools\NUnit" SkipUnchangedFiles="true"/>
+		<Copy SourceFiles="@(ToolFiles)" DestinationFolder="..\..\bin\Tools" SkipUnchangedFiles="true"/>
 		
 		<!--
 		<MSBuild Projects="@(ToolProject)" Targets="Build">

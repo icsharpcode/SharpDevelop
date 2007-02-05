@@ -53,11 +53,22 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		
 		/// <summary>
+		/// Is called, when the workbench window which the user has into
+		/// the foreground (e.g. editable) changed to a new one.
+		/// </summary>
+		event EventHandler ActiveWorkbenchWindowChanged;
+		
+		/// <summary>
 		/// The active view content inside the active workbench window.
 		/// </summary>
 		IViewContent ActiveViewContent {
 			get;
 		}
+		
+		/// <summary>
+		/// Is called, when the active view content has changed.
+		/// </summary>
+		event EventHandler ActiveViewContentChanged;
 		
 		/// <summary>
 		/// The active content. This can be either a IViewContent or a IPadContent, depending on
@@ -130,11 +141,5 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// Is called, when a workbench view was closed
 		/// </summary>
 		event ViewContentEventHandler ViewClosed;
-		
-		/// <summary>
-		/// Is called, when the workbench window which the user has into
-		/// the foreground (e.g. editable) changed to a new one.
-		/// </summary>
-		event EventHandler ActiveWorkbenchWindowChanged;
 	}
 }

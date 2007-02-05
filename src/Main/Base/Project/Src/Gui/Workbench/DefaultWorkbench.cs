@@ -24,7 +24,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 	/// <summary>
 	/// This is the Workspace with a multiple document interface.
 	/// </summary>
-	public class DefaultWorkbench : Form, IWorkbench
+	sealed class DefaultWorkbench : Form, IWorkbench
 	{
 		readonly static string mainMenuPath    = "/SharpDevelop/Workbench/MainMenu";
 		readonly static string viewContentPath = "/SharpDevelop/Workbench/Pads";
@@ -99,6 +99,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				value.Attach(this);
 				layout = value;
 				layout.ActiveWorkbenchWindowChanged += OnActiveWindowChanged;
+				OnActiveWindowChanged(null, null);
 			}
 		}
 		
@@ -129,30 +130,77 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		public IWorkbenchWindow ActiveWorkbenchWindow {
-			get {
-				#if DEBUG
-				WorkbenchSingleton.AssertMainThread();
-				#endif
-				if (layout == null) {
-					return null;
-				}
-				return layout.ActiveWorkbenchwindow;
+		void OnActiveWindowChanged(object sender, EventArgs e)
+		{
+			if (closeAll) return;
+			
+			if (layout == null) {
+				this.ActiveWorkbenchWindow = null;
+			} else {
+				this.ActiveWorkbenchWindow = layout.ActiveWorkbenchwindow;
 			}
 		}
+		
+		IWorkbenchWindow activeWorkbenchWindow;
+		
+		public IWorkbenchWindow ActiveWorkbenchWindow {
+			get {
+				WorkbenchSingleton.DebugAssertMainThread();
+				return activeWorkbenchWindow;
+			}
+			private set {
+				if (activeWorkbenchWindow != value) {
+					if (activeWorkbenchWindow != null) {
+						activeWorkbenchWindow.ActiveViewContentChanged -= OnWorkbenchActiveViewContentChanged;
+					}
+					activeWorkbenchWindow = value;
+					if (activeWorkbenchWindow != null) {
+						activeWorkbenchWindow.ActiveViewContentChanged += OnWorkbenchActiveViewContentChanged;
+					}
+					OnWorkbenchActiveViewContentChanged(null, null);
+					if (ActiveWorkbenchWindowChanged != null) {
+						ActiveWorkbenchWindowChanged(this, EventArgs.Empty);
+					}
+				}
+			}
+		}
+		
+		void OnWorkbenchActiveViewContentChanged(object sender, EventArgs e)
+		{
+			// update ActiveViewContent
+			IWorkbenchWindow window = this.ActiveWorkbenchWindow;
+			if (window != null)
+				this.ActiveViewContent = window.ActiveViewContent;
+			else
+				this.ActiveViewContent = null;
+		}
+		
+		public event EventHandler ActiveWorkbenchWindowChanged;
+		
+		IViewContent activeViewContent;
 		
 		/// <summary>
 		/// The active view content inside the active workbench window.
 		/// </summary>
 		public IViewContent ActiveViewContent {
-			get{
-				IWorkbenchWindow window = this.ActiveWorkbenchWindow;
-				if (window != null)
-					return window.ActiveViewContent;
-				else
-					return null;
+			get {
+				WorkbenchSingleton.DebugAssertMainThread();
+				return activeViewContent;
+			}
+			private set {
+				if (activeViewContent != value) {
+					activeViewContent = value;
+					if (ActiveViewContentChanged != null) {
+						ActiveViewContentChanged(this, EventArgs.Empty);
+					}
+				}
 			}
 		}
+		
+		/// <summary>
+		/// Is called, when the active view content has changed.
+		/// </summary>
+		public event EventHandler ActiveViewContentChanged;
 		
 		public object ActiveContent {
 			get {
@@ -173,87 +221,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 			AllowDrop     = true;
 		}
 		
-		#region Single instance code
 		protected override void WndProc(ref Message m)
 		{
 			if (!SingleInstanceHelper.PreFilterMessage(ref m)) {
 				base.WndProc(ref m);
 			}
 		}
-		
-		public static class SingleInstanceHelper
-		{
-			const int WM_USER = 0x400;
-			const int CUSTOM_MESSAGE = WM_USER + 2;
-			const int RESULT_FILES_HANDLED = 2;
-			const int RESULT_PROJECT_IS_OPEN = 3;
-			
-			[System.Runtime.InteropServices.DllImport("user32.dll")]
-			static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);
-			
-			[System.Runtime.InteropServices.DllImport("user32.dll")]
-			static extern IntPtr SetForegroundWindow(IntPtr hWnd);
-			
-			public static bool OpenFilesInPreviousInstance(string[] fileList)
-			{
-				LoggingService.Info("Trying to pass arguments to previous instance...");
-				int currentProcessId = Process.GetCurrentProcess().Id;
-				string currentFile = Assembly.GetEntryAssembly().Location;
-				int number = new Random().Next();
-				string fileName = Path.Combine(Path.GetTempPath(), "sd" + number + ".tmp");
-				try {
-					File.WriteAllLines(fileName, fileList);
-					List<IntPtr> alternatives = new List<IntPtr>();
-					foreach (Process p in Process.GetProcessesByName("SharpDevelop")) {
-						if (p.Id == currentProcessId) continue;
-						
-						if (FileUtility.IsEqualFileName(currentFile, p.MainModule.FileName)) {
-							IntPtr hWnd = p.MainWindowHandle;
-							if (hWnd != IntPtr.Zero) {
-								long result = SendMessage(hWnd, CUSTOM_MESSAGE, new IntPtr(number), IntPtr.Zero).ToInt64();
-								if (result == RESULT_FILES_HANDLED) {
-									return true;
-								} else if (result == RESULT_PROJECT_IS_OPEN) {
-									alternatives.Add(hWnd);
-								}
-							}
-						}
-					}
-					foreach (IntPtr hWnd in alternatives) {
-						if (SendMessage(hWnd, CUSTOM_MESSAGE, new IntPtr(number), new IntPtr(1)).ToInt64()== RESULT_FILES_HANDLED) {
-							return true;
-						}
-					}
-					return false;
-				} finally {
-					File.Delete(fileName);
-				}
-			}
-			
-			internal static bool PreFilterMessage(ref Message m)
-			{
-				if (m.Msg != CUSTOM_MESSAGE)
-					return false;
-				long fileNumber = m.WParam.ToInt64();
-				long openEvenIfProjectIsOpened = m.LParam.ToInt64();
-				LoggingService.Info("Receiving custom message...");
-				if (openEvenIfProjectIsOpened == 0 && ProjectService.OpenSolution != null) {
-					m.Result = new IntPtr(RESULT_PROJECT_IS_OPEN);
-				} else {
-					m.Result = new IntPtr(RESULT_FILES_HANDLED);
-					try {
-						WorkbenchSingleton.SafeThreadAsyncCall(delegate { SetForegroundWindow(WorkbenchSingleton.MainForm.Handle) ; });
-						foreach (string file in File.ReadAllLines(Path.Combine(Path.GetTempPath(), "sd" + fileNumber + ".tmp"))) {
-							WorkbenchSingleton.SafeThreadAsyncCall(delegate(string openFileName) { FileService.OpenFile(openFileName); }, file);
-						}
-					} catch (Exception ex) {
-						LoggingService.Warn(ex);
-					}
-				}
-				return true;
-			}
-		}
-		#endregion
 		
 		System.Windows.Forms.Timer toolbarUpdateTimer;
 
@@ -321,7 +294,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		public virtual void ShowView(IViewContent content)
+		public void ShowView(IViewContent content)
 		{
 			System.Diagnostics.Debug.Assert(layout != null);
 			viewContentCollection.Add(content);
@@ -341,7 +314,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			OnViewOpened(new ViewContentEventArgs(content));
 		}
 		
-		public virtual void ShowPad(PadDescriptor content)
+		public void ShowPad(PadDescriptor content)
 		{
 			PadContentCollection.Add(content);
 			
@@ -560,12 +533,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			StatusBarService.SetMessage("${res:MainWindow.StatusBar.ReadyMessage}");
 		}
 		
-		void OnActiveWindowChanged(object sender, EventArgs e)
-		{
-			if (!closeAll && ActiveWorkbenchWindowChanged != null) {
-				ActiveWorkbenchWindowChanged(this, e);
-			}
-		}
 //		public ToolStripManager ToolStripManager = new ToolStripManager();
 		public MenuStrip   TopMenu  = null;
 		public ToolStrip[] ToolBars = null;
@@ -675,14 +642,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		protected virtual void OnViewOpened(ViewContentEventArgs e)
+		void OnViewOpened(ViewContentEventArgs e)
 		{
 			if (ViewOpened != null) {
 				ViewOpened(this, e);
 			}
 		}
 		
-		protected virtual void OnViewClosed(ViewContentEventArgs e)
+		void OnViewClosed(ViewContentEventArgs e)
 		{
 			if (ViewClosed != null) {
 				ViewClosed(this, e);
@@ -691,7 +658,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public event ViewContentEventHandler ViewOpened;
 		public event ViewContentEventHandler ViewClosed;
-		public event EventHandler ActiveWorkbenchWindowChanged;
 		
 		protected override void OnActivated(EventArgs e)
 		{

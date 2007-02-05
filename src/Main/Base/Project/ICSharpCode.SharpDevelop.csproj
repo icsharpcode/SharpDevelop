@@ -65,6 +65,7 @@
     <Compile Include="Src\Gui\Dialogs\SolutionConfiguration\AddNewConfigurationDialog.Designer.cs">
       <DependentUpon>AddNewConfigurationDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="Src\Gui\Workbench\SingleInstanceHelper.cs" />
     <Compile Include="Src\Internal\ExternalTool\ExternalTool.cs" />
     <Compile Include="Src\Internal\Templates\CodeTemplate.cs" />
     <Compile Include="Src\Internal\Templates\Project\ProjectTemplate.cs" />

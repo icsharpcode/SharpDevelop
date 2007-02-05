@@ -65,11 +65,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		
 		/// <summary>
+		/// Used internally.
 		/// Is called when the window is switched to.
 		/// -> Inside the tab (on SelectedIndexChanged of the tab control)
 		/// -> Inside the workbench (focus change in the docking library).
 		/// </summary>
-		void SwitchedTo();
+		void OnSwitchedTo();
+		
+		event EventHandler SwitchedTo;
 		
 		/// <summary>
 		/// Reinitializes the content. (Re-initializes all add-in tree stuff)
@@ -130,8 +133,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// Builds an <see cref="INavigationPoint"/> for the current position.
 		/// </summary>
 		INavigationPoint BuildNavPoint();
-		
-		event EventHandler ViewActivated;
 		
 		bool IsDisposed { get; }
 		

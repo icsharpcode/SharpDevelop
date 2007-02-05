@@ -61,7 +61,7 @@ namespace SharpDbTools.Forms.TextEditor
 				if (next == '.') {
 					ICompletionDataProvider completionDataProvider = new TestCodeCompletionProvider(); // TODO: create a simple provider that just returns a couple of strings
 					codeCompletionWindow = 
-						CodeCompletionWindow.ShowCompletionWindow((Form)WorkbenchSingleton.Workbench, 
+						CodeCompletionWindow.ShowCompletionWindow(WorkbenchSingleton.MainForm, 
 						                                          this, this.FileName, completionDataProvider, next);
 					if (codeCompletionWindow != null) {
 						codeCompletionWindow.Closed += new EventHandler(CloseCodeCompletionWindow);

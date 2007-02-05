@@ -18,7 +18,7 @@ using System.Windows.Forms;
 
 using ICSharpCode.Core;
 
-namespace ICSharpCode.SharpDevelop
+namespace ICSharpCode.SharpDevelop.Gui
 {
 	public enum TaskViewCols : int {
 		Icon = 0,

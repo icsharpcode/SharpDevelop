@@ -26,8 +26,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public readonly IReturnType Attribute;
 		public readonly IReturnType Type;
 		
+		public readonly IReturnType Exception;
 		public readonly IReturnType AsyncCallback;
 		public readonly IReturnType IAsyncResult;
+		public readonly IReturnType IDisposable;
 		
 		IProjectContent pc;
 		
@@ -47,8 +49,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 			Attribute = CreateFromName("System.Attribute");
 			Type      = CreateFromName("System.Type");
 			
+			Exception     = CreateFromName("System.Exception");
 			AsyncCallback = CreateFromName("System.AsyncCallback");
 			IAsyncResult  = CreateFromName("System.IAsyncResult");
+			IAsyncResult  = CreateFromName("System.IDisposable");
 		}
 		
 		IReturnType CreateFromName(string name)

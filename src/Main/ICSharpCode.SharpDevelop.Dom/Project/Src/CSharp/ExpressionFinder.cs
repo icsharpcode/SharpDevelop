@@ -76,7 +76,7 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 						IReturnType t = finder.SearchType(nonGenericClassName, typeParameterCount);
 						IClass c = (t != null) ? t.GetUnderlyingClass() : null;
 						if (c != null) {
-							ExpressionContext context = ExpressionContext.TypeDerivingFrom(c, true);
+							ExpressionContext context = ExpressionContext.TypeDerivingFrom(t, true);
 							if (context.ShowEntry(c)) {
 								if (genericPart != null) {
 									DefaultClass genericClass = new DefaultClass(c.CompilationUnit, c.ClassType, c.Modifiers, c.Region, c.DeclaringType);
@@ -94,7 +94,7 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 			} else {
 				UnGet();
 				if (ReadIdentifier(GetNextNonWhiteSpace()) == "throw") {
-					return ExpressionContext.TypeDerivingFrom(HostCallback.GetCurrentProjectContent().GetClass("System.Exception", 0), true);
+					return ExpressionContext.TypeDerivingFrom(HostCallback.GetCurrentProjectContent().SystemTypes.Exception, true);
 				}
 			}
 			return ExpressionContext.ObjectCreation;
@@ -201,7 +201,7 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 		
 		/// <summary>
 		/// Gets the position in the source string (after filtering out comments)
-		/// where the beginning of last expression was found. 
+		/// where the beginning of last expression was found.
 		/// </summary>
 		public int LastExpressionStartPosition {
 			get {

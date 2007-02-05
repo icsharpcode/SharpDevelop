@@ -39,6 +39,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		
 		/// <summary>
+		/// Is raised when the ActiveViewContent property has changed.
+		/// </summary>
+		event EventHandler ActiveViewContentChanged;
+		
+		/// <summary>
 		/// Gets the list of view contents displayed in this window
 		/// </summary>
 		IList<IViewContent> ViewContents {
@@ -66,9 +71,15 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void RedrawContent();
 		
 		/// <summary>
-		/// Only for internal use.
+		/// Used internally:
+		/// This method is called by the workbench to notify the window that is was selected.
 		/// </summary>
 		void OnWindowSelected(EventArgs e);
+		
+		/// <summary>
+		/// Used internally:
+		/// This method is called by the workbench to notify the window that is was deselected.
+		/// </summary>
 		void OnWindowDeselected(EventArgs e);
 		
 		/// <summary>

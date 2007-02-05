@@ -316,7 +316,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		public void ShowInsightWindow(IInsightDataProvider insightDataProvider)
 		{
 			if (insightWindow == null || insightWindow.IsDisposed) {
-				insightWindow = new InsightWindow(((Form)WorkbenchSingleton.Workbench), this);
+				insightWindow = new InsightWindow(WorkbenchSingleton.MainForm, this);
 				insightWindow.Closed += new EventHandler(CloseInsightWindow);
 			}
 			insightWindow.AddInsightDataProvider(insightDataProvider, this.FileName);
@@ -331,7 +331,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		
 		public void ShowCompletionWindow(ICompletionDataProvider completionDataProvider, char ch)
 		{
-			codeCompletionWindow = CodeCompletionWindow.ShowCompletionWindow((Form)WorkbenchSingleton.Workbench, this, this.FileName, completionDataProvider, ch);
+			codeCompletionWindow = CodeCompletionWindow.ShowCompletionWindow(WorkbenchSingleton.MainForm, this, this.FileName, completionDataProvider, ch);
 			if (codeCompletionWindow != null) {
 				codeCompletionWindow.Closed += new EventHandler(CloseCodeCompletionWindow);
 			}
