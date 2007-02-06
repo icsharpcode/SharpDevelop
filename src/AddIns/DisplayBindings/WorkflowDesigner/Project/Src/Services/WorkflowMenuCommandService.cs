@@ -34,33 +34,61 @@ namespace WorkflowDesigner
 			
 			LoggingService.Debug("ShowContextMenu");
 			
+			ContextMenuStrip contextMenu = null;
+
 			if (menuID == WorkflowMenuCommands.DesignerActionsMenu) {
-				ContextMenuStrip contextMenu = new ContextMenuStrip();
+				contextMenu = new ContextMenuStrip();
 				
 				Guid DesignerActionGuid = new Guid("3bd4a275-fccd-49f0-b617-765ce63b4340");
 				
 				ICollection collection = this.GetCommandList(menuID.Guid);
 				foreach (System.ComponentModel.Design.MenuCommand menuCommand in collection) {
+
 					// Only interested in the errors.
 					if (menuCommand.CommandID.ID == 8342) {
-						foreach (object o in menuCommand.Properties.Keys)
-							LoggingService.DebugFormatted("{0} {1}", o.GetType(), o.ToString());
-						foreach (object o in menuCommand.Properties.Values)
-							LoggingService.DebugFormatted("{0} {1}", o.GetType(), o.ToString());
 						ToolStripMenuItem menuItem = new ToolStripMenuItem(menuCommand.Properties["Text"].ToString());
-						menuItem.Click += new EventHandler(ClickHandler);
+						menuItem.Click += new EventHandler(DesignerActionsMenuClickHandler);
 						menuItem.Tag = menuCommand.Properties[DesignerActionGuid];
 						contextMenu.Items.Add(menuItem);
 					}
 				}
 
+
+			} else if (menuID == WorkflowMenuCommands.SelectionMenu) {
+				contextMenu = new ContextMenuStrip();
+
+				foreach (DesignerVerb verb in Verbs) {
+					if (verb.Visible) {
+						ToolStripMenuItem menuItem = new ToolStripMenuItem(verb.Text);
+						menuItem.Click += new EventHandler(SelectionMenuClickHandler);
+						menuItem.Enabled = verb.Enabled;
+						menuItem.Checked = verb.Checked;
+						menuItem.Tag = verb;
+						contextMenu.Items.Add(menuItem);
+					}
+				}
+			}
+			
+			if (contextMenu != null) {
 				WorkflowView workflowView = GetService(typeof(WorkflowView)) as WorkflowView;
 				contextMenu.Show(workflowView , workflowView.PointToClient(new Point(x, y)));
-
 			}
+			
+			
 		}
 		
-		void ClickHandler(object sender, EventArgs e)
+		private void SelectionMenuClickHandler(object sender, EventArgs e)
+		{
+			ToolStripMenuItem menuItem = sender as ToolStripMenuItem;
+			if (menuItem != null){
+				System.ComponentModel.Design.MenuCommand command = menuItem.Tag as System.ComponentModel.Design.MenuCommand;
+				if (command != null)
+					command.Invoke();
+				
+			}
+		}
+
+		void DesignerActionsMenuClickHandler(object sender, EventArgs e)
 		{
 			DesignerAction designerAction = ((ToolStripMenuItem)sender).Tag as DesignerAction;
 			if (designerAction == null)
@@ -70,7 +98,7 @@ namespace WorkflowDesigner
 			
 			if (!string.IsNullOrEmpty( designerAction.PropertyName))
 			{
-				// No easy way to search for a grid item so
+				// No easy way I can find to search for a specific griditem so
 				// find the root item in the grid, and search for items for the property.
 				GridItem item = PropertyPad.Grid.SelectedGridItem;
 				while (item.Parent != null) {
