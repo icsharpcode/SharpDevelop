@@ -25,8 +25,9 @@ namespace WorkflowDesigner
 	{
 		internal EventDescriptor eventDescriptor;
 		private IServiceProvider provider;
+		private TypeConverter converter;
 		
-		public EventPropertyDescriptor(IServiceProvider provider,  EventDescriptor eventDescriptor) : base(eventDescriptor)
+		public EventPropertyDescriptor(IServiceProvider provider,  EventDescriptor eventDescriptor) : base(eventDescriptor, null)
 		{
 			this.eventDescriptor = eventDescriptor;
 			this.provider = provider;
@@ -43,6 +44,17 @@ namespace WorkflowDesigner
 				return false;
 			}
 		}
+		
+		public override TypeConverter Converter {
+			get {
+				
+				if (converter == null)
+					converter = new EventPropertyTypeConverter(this);
+				
+				return converter;
+			}
+		}
+		
 		
 		public override Type PropertyType {
 			get {
@@ -61,7 +73,7 @@ namespace WorkflowDesigner
 			if (component == null)
 				throw new ArgumentException("component must be derived from Activity");
 			
-			string value = string.Empty;
+			string value = null;
 			
 			// Find method name associated with the EventDescriptor.
 			Hashtable events = activity.GetValue(WorkflowMarkupSerializer.EventsProperty) as Hashtable;
@@ -99,7 +111,7 @@ namespace WorkflowDesigner
 			// Value not changed need go no further.
 			if (oldValue != null) {
 				if (oldValue.CompareTo(value) == 0)
-					return;				
+					return;
 			}
 			
 			IComponentChangeService componentChangedService = provider.GetService(typeof(IComponentChangeService)) as  IComponentChangeService;
@@ -117,6 +129,79 @@ namespace WorkflowDesigner
 			if (GetValue (component) == null) return false;
 			return true;
 		}
+
+		/// <summary>
+		/// To allow the designer to convert the descriptor to/from string.
+		/// </summary>
+		class EventPropertyTypeConverter : TypeConverter
+		{
+			private EventPropertyDescriptor eventPropertyDescriptor;
+			
+			internal EventPropertyTypeConverter(EventPropertyDescriptor eventPropertyDescriptor)
+			{
+				this.eventPropertyDescriptor = eventPropertyDescriptor;
+			}
+			
+			public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
+			{
+				if (sourceType == typeof(string))
+					return true;
+				
+				return base.CanConvertFrom(context, sourceType);
+			}
+			
+			public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
+			{
+				if (destinationType == typeof(string))
+					return true;
+				
+				return base.CanConvertTo(context, destinationType);
+			}
+
+			public override object ConvertFrom(ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value)
+			{
+				if (value is string)
+					return value;
+				
+				return base.ConvertFrom(context, culture, value);
+			}
+			
+			public override object ConvertTo(ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value, Type destinationType)
+			{
+				if (destinationType == typeof(string))
+					return value;
+
+				return base.ConvertTo(context, culture, value, destinationType);
+			}
+			
+			public override bool GetStandardValuesSupported(ITypeDescriptorContext context)
+			{
+				return true;
+			}
+
+			public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
+			{
+				string[] methodNames = null;
+				
+				if (context != null) {
+					IEventBindingService eventBindingService = context.GetService(typeof(IEventBindingService)) as IEventBindingService;
+
+					ICollection compatibleMethods = eventBindingService.GetCompatibleMethods(eventPropertyDescriptor.eventDescriptor);
+					methodNames = new string[compatibleMethods.Count];
+					int i =0;
+					foreach (string methodName in compatibleMethods) {
+						methodNames[i++] = methodName;
+					}
+					
+				}
+				
+				return new StandardValuesCollection(methodNames);
+			}
+			
+			
+		}
+		
 	}
 
+	
 }
