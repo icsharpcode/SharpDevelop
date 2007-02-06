@@ -181,21 +181,15 @@ namespace WorkflowDesigner
 
 			public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
 			{
-				string[] methodNames = null;
+				ICollection compatibleMethods = null;;
 				
 				if (context != null) {
 					IEventBindingService eventBindingService = context.GetService(typeof(IEventBindingService)) as IEventBindingService;
-
-					ICollection compatibleMethods = eventBindingService.GetCompatibleMethods(eventPropertyDescriptor.eventDescriptor);
-					methodNames = new string[compatibleMethods.Count];
-					int i =0;
-					foreach (string methodName in compatibleMethods) {
-						methodNames[i++] = methodName;
-					}
-					
+					if (eventBindingService != null)
+						compatibleMethods = eventBindingService.GetCompatibleMethods(eventPropertyDescriptor.eventDescriptor);
 				}
 				
-				return new StandardValuesCollection(methodNames);
+				return new StandardValuesCollection(compatibleMethods);
 			}
 			
 			
