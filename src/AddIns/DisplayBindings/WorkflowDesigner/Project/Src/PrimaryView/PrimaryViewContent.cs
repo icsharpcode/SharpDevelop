@@ -30,7 +30,6 @@ namespace WorkflowDesigner
 			
 			primaryFile.ForceInitializeView(this); // call Load()
 			
-			WorkflowSideTabService.AddViewContent(this);
 		}
 		
 		public override System.Windows.Forms.Control Control {
@@ -46,23 +45,14 @@ namespace WorkflowDesigner
 			XomlDesignerLoader loader = null;
 			
 			// First look for a code separation file.
-			// FIXME:	The loader does nont know the project this belongs
-			//		 	to as ProjectService.CurrentProject is not set at this point
-			//			so look for all possible language files.
-			LoggingService.DebugFormatted("Looking for code separation file");
-			StringBuilder sb = new StringBuilder(file.FileName);
-			bool found = false;
-			if (File.Exists(file.FileName + ".cs")) {
-				sb.Append(".cs");
-				found = true;
-			} else if (File.Exists(file.FileName + ".vb")) {
-				sb.Append(".vb");
-				found = true;
-			}
-			if (found) {
-				string codeFileName =  sb.ToString();
-				LoggingService.DebugFormatted("Found code file {0}", codeFileName);
-				loader = new XomlCodeSeparationDesignerLoader(this, file.FileName, stream, codeFileName);
+			IProject project = ProjectService.OpenSolution.FindProjectContainingFile(file.FileName);
+			if (project != null) {
+				FileProjectItem fpi = project.FindFile(file.FileName);
+				string codeFileName = file.FileName + "." + project.LanguageProperties.CodeDomProvider.FileExtension;
+				FileProjectItem dfpi = project.FindFile(codeFileName);
+				if (dfpi.DependentUpon == Path.GetFileName(fpi.VirtualName))	{
+					loader = new XomlCodeSeparationDesignerLoader(this, file.FileName, stream, dfpi.FileName);
+				}
 			}
 			
 			// No separation file so the nocode loader will be used.
@@ -85,7 +75,7 @@ namespace WorkflowDesigner
 			xomlDesignerLoader.Xoml = content;
 			control.LoadWorkflow(xomlDesignerLoader);
 		}
-	
+		
 		#region IHasPropertyContainer
 		public PropertyContainer PropertyContainer {
 			get {

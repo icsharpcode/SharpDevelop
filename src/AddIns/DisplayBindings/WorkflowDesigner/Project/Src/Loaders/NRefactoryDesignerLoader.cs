@@ -13,8 +13,8 @@ using ICSharpCode.NRefactory.Visitors;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.TextEditor;
-using ICSharpCode.FormsDesigner;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Project;
 
 using System;
 using System.CodeDom;
@@ -52,7 +52,7 @@ namespace WorkflowDesigner
 	{
 		TextEditorControl textEditorControl;
 		ITypeResolutionService typeResolutionService;
-		IDesignerGenerator    generator = new CSharpDesignerGenerator();
+		//IDesignerGenerator    generator = new CSharpDesignerGenerator();
 		IViewContent viewContent;
 		
 		#region Constructors
@@ -63,15 +63,16 @@ namespace WorkflowDesigner
 		}
 		#endregion
 		
+		CodeDomProvider codeDomProvider = Microsoft.CSharp.CSharpCodeProvider.CreateProvider("CSharp");
 		protected override CodeDomProvider CodeDomProvider {
 			get {
-				return generator.CodeDomProvider;
+				return codeDomProvider;
 			}
 		}
 		
 		protected override ITypeResolutionService TypeResolutionService {
 			get {
-				return this.typeResolutionService;
+				return typeResolutionService;
 			}
 		}
 		
@@ -82,35 +83,22 @@ namespace WorkflowDesigner
 			throw new NotImplementedException();
 		}
 		
-		
-		
-		public override void BeginLoad(IDesignerLoaderHost host)
+		protected override void Initialize()
 		{
-			if (host == null)
-				throw new ArgumentNullException("host");
-			
-			LoggingService.Debug("NRefactoryDesignerLoader.BeginLoad()");
 
-			host.AddService(typeof(ITypeResolutionService), new ICSharpCode.FormsDesigner.Services.TypeResolutionService(viewContent.PrimaryFileName));
-			host.AddService(typeof(IIdentifierCreationService), new IdentifierCreationService());
-			host.AddService(typeof(IMemberCreationService), new MemberCreationService());
-			//host.AddService(typeof(IEventBindingService), new EventBindingService(host));
-			host.AddService(typeof(IToolboxService), new WorkflowToolboxService(host));
-			host.AddService(typeof(MemberRelationshipService), new DefaultMemberRelationshipService());
-			host.AddService(typeof(IMenuCommandService), new WorkflowMenuCommandService(host));
-			TypeProvider tp = new TypeProvider(host);
-			host.AddService(typeof(ITypeProvider), tp);
+			LoaderHost.AddService(typeof(IIdentifierCreationService), new IdentifierCreationService());
+			LoaderHost.AddService(typeof(IMemberCreationService), new MemberCreationService());
+			LoaderHost.AddService(typeof(IEventBindingService), new CSharpWorkflowDesignerEventBindingService(LoaderHost, viewContent.PrimaryFileName));
+			LoaderHost.AddService(typeof(IToolboxService), new WorkflowToolboxService(LoaderHost));
+			LoaderHost.AddService(typeof(MemberRelationshipService), new DefaultMemberRelationshipService());
+			LoaderHost.AddService(typeof(IMenuCommandService), new WorkflowMenuCommandService(LoaderHost));
+			LoaderHost.AddService(typeof(ITypeProvider), TypeProviderService.GetTypeProvider(ProjectService.CurrentProject));
+			typeResolutionService = new TypeResolutionService(LoaderHost);
+			LoaderHost.AddService(typeof(ITypeResolutionService), typeResolutionService);
 			
-			// HACK: Load all assemblies in the #D - should only be references for the current project!
-			foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
-			{
-				tp.AddAssembly(assembly);
-			}
-			
-			typeResolutionService = (ITypeResolutionService)host.GetService(typeof(ITypeResolutionService));
-			base.BeginLoad(host);
-			
+			base.Initialize();
 		}
+		
 		
 		
 		#region Taken from FormDesigner.NRefactoryDesignerLoad to get a CodeCompileUnit for the activity.
@@ -254,7 +242,7 @@ namespace WorkflowDesigner
 		/// <summary>
 		/// Fix type names and remove unused methods.
 		/// </summary>
-		void FixTypeNames(object o, ICSharpCode.SharpDevelop.Dom.ICompilationUnit domCu, ref bool foundInitMethod)
+		public static void FixTypeNames(object o, ICSharpCode.SharpDevelop.Dom.ICompilationUnit domCu, ref bool foundInitMethod)
 		{
 			if (domCu == null)
 				return;
@@ -312,7 +300,7 @@ namespace WorkflowDesigner
 			}
 		}
 		
-		void FixTypeReference(TypeReference type, Location location, ICSharpCode.SharpDevelop.Dom.ICompilationUnit domCu)
+		public static void FixTypeReference(TypeReference type, Location location, ICSharpCode.SharpDevelop.Dom.ICompilationUnit domCu)
 		{
 			if (type == null)
 				return;

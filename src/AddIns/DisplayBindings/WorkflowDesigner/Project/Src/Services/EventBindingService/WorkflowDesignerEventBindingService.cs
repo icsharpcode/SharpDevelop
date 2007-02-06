@@ -9,6 +9,7 @@
 using System;
 using System.Text;
 using System.IO;
+using System.Collections.Generic;
 using System.Collections;
 using System.ComponentModel;
 using System.ComponentModel.Design;
@@ -40,7 +41,7 @@ namespace WorkflowDesigner
 	public abstract class WorkflowDesignerEventBindingService : IWorkflowDesignerEventBindingService, IServiceProvider
 	{
 		string codeFileName;
-        CodeCompileUnit ccu;
+		CodeCompileUnit ccu;
 
 		public WorkflowDesignerEventBindingService(IServiceProvider provider, string codeSeparationFileName)
 		{
@@ -56,16 +57,13 @@ namespace WorkflowDesigner
 
 			TypeProvider typeProvider = (TypeProvider)this.GetService(typeof(ITypeProvider));
 
-			if (ccu != null) 
+			if (ccu != null)
 				typeProvider.RemoveCodeCompileUnit(ccu);
 			
 			ccu = Parse();
 			
-			if (ccu != null) 
+			if (ccu != null)
 				typeProvider.AddCodeCompileUnit(ccu);
-
-			
-			
 		}
 
 		public string CodeFileName {
@@ -81,21 +79,84 @@ namespace WorkflowDesigner
 		
 		CodeCompileUnit Parse()
 		{
-			
-			string fileContent = ParserService.GetParseableFileContent(codeFileName);
-			
-			ICSharpCode.NRefactory.IParser  parser = ICSharpCode.NRefactory.ParserFactory.CreateParser(SupportedLanguage.CSharp, new StringReader(fileContent));
-			parser.Parse();
-			if (parser.Errors.Count > 0) {
-				throw new Exception("Syntax errors in " + codeFileName + ":\r\n" + parser.Errors.ErrorOutput);
+			ParseInformation parseInfo = ParserService.GetParseInformation(codeFileName);
+			IClass formClass = null;
+			bool isFirstClassInFile;
+			IList<IClass> parts = FindFormClassParts(parseInfo, out formClass, out isFirstClassInFile);
+
+			// Get all the related compilation units.
+			List<KeyValuePair<string, CompilationUnit>> compilationUnits = new List<KeyValuePair<string, CompilationUnit>>();
+			foreach (IClass part in parts) {
+				string fileName = part.CompilationUnit.FileName;
+				if (fileName == null) continue;
+				bool found = false;
+				foreach (KeyValuePair<string, CompilationUnit> entry in compilationUnits) {
+					if (FileUtility.IsEqualFileName(fileName, entry.Key)) {
+						found = true;
+						break;
+					}
+				}
+				if (found) continue;
+				
+				string fileContent = ParserService.GetParseableFileContent(fileName);
+				
+				ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser(SupportedLanguage.CSharp, new StringReader(fileContent));
+				parser.Parse();
+				if (parser.Errors.Count > 0) {
+					throw new WorkflowDesignerLoadException("Syntax errors in " + fileName + ":\r\n" + parser.Errors.ErrorOutput);
+				}
+				
+				compilationUnits.Add(new KeyValuePair<string, CompilationUnit>(fileName, parser.CompilationUnit));
 			}
 			
-			CodeDomVisitor visitor = new CodeDomVisitor();
-			visitor.VisitCompilationUnit(parser.CompilationUnit, null);
+			if (compilationUnits.Count == 1)
+			{
+				CodeDomVisitor visitor1 = new CodeDomVisitor();
+				visitor1.VisitCompilationUnit(compilationUnits[0].Value, null);
+				return visitor1.codeCompileUnit;
+			}
+
+			return null;
+			//string fileContent = ParserService.GetParseableFileContent(codeFileName);
 			
-			return visitor.codeCompileUnit;
+//			ICSharpCode.NRefactory.IParser  parser = ICSharpCode.NRefactory.ParserFactory.CreateParser(SupportedLanguage.CSharp, new StringReader(fileContent));
+//			parser.Parse();
+//			if (parser.Errors.Count > 0) {
+//				throw new Exception("Syntax errors in " + codeFileName + ":\r\n" + parser.Errors.ErrorOutput);
+//			}
+//
+//			CodeDomVisitor visitor = new CodeDomVisitor();
+//			visitor.VisitCompilationUnit(parser.CompilationUnit, null);
+			
+//			return visitor.codeCompileUnit;
+		}
+		
+		public static IList<IClass> FindFormClassParts(ParseInformation parseInfo, out IClass formClass, out bool isFirstClassInFile)
+		{
+			
+			formClass = null;
+			isFirstClassInFile = true;
+			foreach (IClass c in parseInfo.BestCompilationUnit.Classes) {
+				if (WorkflowDesignerSecondaryDisplayBinding.BaseClassIsWorkflow(c)) {
+					formClass = c;
+					break;
+				}
+				isFirstClassInFile = false;
+			}
+			if (formClass == null)
+				throw new WorkflowDesignerLoadException("No class derived from Form or UserControl was found.");
+			
+			// Initialize designer for formClass
+			formClass = formClass.GetCompoundClass();
+			if (formClass is CompoundClass) {
+				return (formClass as CompoundClass).GetParts();
+			} else {
+				return new IClass[] { formClass };
+			}
 		}
 
+		
+		
 		#region IServiceProvider implementation
 		IServiceProvider provider;
 		public object GetService(Type serviceType)
@@ -104,7 +165,6 @@ namespace WorkflowDesigner
 		}
 		#endregion
 		
-
 		#region IEventBindingService implemention
 		public string CreateUniqueMethodName(IComponent component, EventDescriptor e)
 		{

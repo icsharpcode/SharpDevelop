@@ -31,9 +31,6 @@ namespace WorkflowDesigner
 			this.viewContent = primaryViewContent;
 			control = new ViewContentControl(primaryViewContent);
 			
-			// HACK to ensure SideBarPad exists! - Normally handled by FormsDesigner
-			//PadDescriptor pad = WorkbenchSingleton.Workbench.GetPad(typeof(SideBarView));
-			//.pad.CreatePad();
 			
 		}
 		#endregion

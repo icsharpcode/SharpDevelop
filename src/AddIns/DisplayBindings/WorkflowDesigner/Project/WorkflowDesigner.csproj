@@ -146,11 +146,6 @@
       <Name>ICSharpCode.SharpDevelop.Widgets</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\FormsDesigner\Project\FormsDesigner.csproj">
-      <Project>{7D7E92DF-ACEB-4B69-92C8-8AC7A703CD57}</Project>
-      <Name>FormsDesigner</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <Folder Include="Src\Gui" />
     <Folder Include="Src\Loaders" />
     <Folder Include="Src\Commands" />

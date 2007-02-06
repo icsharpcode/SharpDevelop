@@ -64,6 +64,12 @@ namespace WorkflowDesigner
 			}
 		}
 		
+		public IProject Project {
+			get {
+				return ProjectService.OpenSolution.FindProjectContainingFile(fileName);
+			}
+		}
+		
 		public override TextReader GetFileReader(string filePath)
 		{
 			return new StringReader(rules.ToString());
@@ -81,7 +87,7 @@ namespace WorkflowDesigner
 		
 		private void CreateRulesProjectItem()
 		{
-			IProject project = ProjectService.CurrentProject;
+			IProject project = ProjectService.OpenSolution.FindProjectContainingFile(this.fileName);
 			if (project != null){
 				if (!project.IsFileInProject(rulesFileName)) {
 					FileProjectItem fpi = project.FindFile(fileName);
@@ -125,7 +131,7 @@ namespace WorkflowDesigner
 			base.Initialize();
 
 			LoaderHost.AddService(typeof(IToolboxService), new WorkflowToolboxService(LoaderHost));
-			LoaderHost.AddService(typeof(ITypeProvider), TypeProviderService.GetTypeProvider(ProjectService.CurrentProject));
+			LoaderHost.AddService(typeof(ITypeProvider), TypeProviderService.GetTypeProvider(Project));
 			LoaderHost.AddService(typeof(IMenuCommandService), new WorkflowMenuCommandService(LoaderHost));
 			LoaderHost.AddService(typeof(ITypeResolutionService), new TypeResolutionService(LoaderHost));
 

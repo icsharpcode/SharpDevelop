@@ -43,6 +43,8 @@ namespace WorkflowDesigner
 			InitializeComponent();
 			
 			this.viewContent = viewContent;
+
+			WorkflowSideTabService.AddViewContent(this.viewContent);
 			
 		}
 		
