@@ -685,6 +685,7 @@
 									<File Source="..\..\data\resources\StringResources.ro.resources" Name="STRIN_14.RES" Id="StringResources.ro.resources" LongName="StringResources.ro.resources" />
 									<File Source="..\..\data\resources\StringResources.se.resources" Name="STRIN_15.RES" Id="StringResources.se.resources" LongName="StringResources.se.resources" />
 									<File Source="..\..\data\resources\StringResources.pt.resources" Name="STRIN_16.RES" Id="StringResources.pt.resources" LongName="StringResources.pt.resources" />
+									<File Source="..\..\data\resources\StringResources.cn-gb.resources" Name="CB-GB.RES" Id="StringResources.cn_gb.resources" LongName="StringResources.cn-gb.resources" />
 								</Component>
 							</Directory>
 							<Directory Id="SchemasFolder" Name="schemas">
