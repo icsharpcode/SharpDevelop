@@ -39,7 +39,7 @@
 			     category = "Tools"
 			     icon="Icons.16x16.SharpQuery.Refresh"
 			     title = "ReportExplorer"
-			     shortcut = "Control|Alt|F"
+			     shortcut = "Control|Alt|Q"
 			     class="ICSharpCode.Reports.Addin.ReportExplorer"/>
 	</Path>
 	
@@ -75,7 +75,7 @@
 		<MenuItem id       = "ReportGeneratorPad"
 		          label = "${res:SharpReport.ReportGenerator}"
 		          
-		          shortcut = "Control|Alt|T"
+		          shortcut = "Control|Alt|R"
 		          class    = "ICSharpCode.Reports.Addin.Commands.StartReportView"/>
 	</Path>
 
