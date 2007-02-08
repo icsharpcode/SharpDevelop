@@ -65,8 +65,6 @@ namespace ClassDiagram
 		DrawableRectangle titlesBackgroundCollapsed;
 		DrawableRectangle titlesBackgroundExpanded;
 		
-		const int radius = 20;
-		
 		protected override bool AllowHeightModifications()
 		{
 			return false;
@@ -101,26 +99,30 @@ namespace ClassDiagram
 		public ClassCanvasItem (IClass ct)
 		{
 			classtype = ct;
-			
+	
+			grad = new LinearGradientBrush(
+				new PointF(0, 0), new PointF(1, 0),
+				TitleBackground, Color.White);
+					
 			classItemHeaderedContent = new InteractiveHeaderedItem(titlesCollapsed, titlesExpanded, InitContentContainer(InitContent()));
 
 			classItemContainer.Container = this;
 			classItemContainer.Add(classItemHeaderedContent);
 			Pen outlinePen = GetClassOutlinePen();
 			if (RoundedCorners)
+			{
+				int radius = CornerRadius;
 				containingShape = new DrawableRectangle(null, outlinePen, radius, radius, radius, radius);
+			}
 			else
 				containingShape = new DrawableRectangle(null, outlinePen, 0, 0, 0, 0);
 			
 			classItemContainer.Add(containingShape);
 			classItemContainer.OrientationAxis = Axis.Z;
 			
-			grad = new LinearGradientBrush(
-				new PointF(0, 0), new PointF(1, 0),
-				TitleBackground, Color.White);
-			
 			if (RoundedCorners)
 			{
+				int radius = CornerRadius;
 				titlesBackgroundCollapsed = new DrawableRectangle(grad, null, radius, radius, radius, radius);
 				titlesBackgroundExpanded = new DrawableRectangle(grad, null, radius, radius, 0, 0);
 			}
@@ -177,11 +179,24 @@ namespace ClassDiagram
 			get { return false; }
 		}
 
+		protected virtual DrawableRectangle InitContentBackground()
+		{
+			if (RoundedCorners)
+			{
+				int radius = CornerRadius;
+				return new DrawableRectangle(ContentBG, null, 0, 0, radius, radius);
+			}
+			else
+				return new DrawableRectangle(ContentBG, null, 0, 0, 0, 0);
+		}
+		
 		protected virtual DrawableItemsStack InitContentContainer(params IDrawableRectangle[] items)
 		{
 			DrawableItemsStack content = new DrawableItemsStack();
 			content.OrientationAxis = Axis.Z;
-			content.Add(new DrawableRectangle(Brushes.White, null, 1, 1, radius, radius));
+			
+			content.Add(InitContentBackground());
+			
 			foreach (IDrawableRectangle item in items)
 				content.Add(item);
 			
@@ -209,18 +224,34 @@ namespace ClassDiagram
 		static Color titlesBG = Color.FromArgb(255,217, 225, 241);
 		protected virtual Color TitleBackground
 		{
-			get { return titlesBG;}
+			get { return titlesBG; }
 		}
 
+		protected virtual LinearGradientBrush TitleBG
+		{
+			get { return grad; }
+		}
+		
 		static Brush innerTitlesBG = new SolidBrush(Color.FromArgb(255, 240, 242, 249));
 		protected virtual Brush InnerTitlesBackground
 		{
-			get { return innerTitlesBG;}
+			get { return innerTitlesBG; }
 		}
 
+		static Brush contentBG = new SolidBrush(Color.FromArgb(255, 255, 255, 255));
+		protected virtual Brush ContentBG
+		{
+			get { return contentBG; }
+		}
+		
 		protected virtual bool RoundedCorners
 		{
 			get { return true; }
+		}
+		
+		protected virtual int CornerRadius
+		{
+			get { return 15; }
 		}
 		#endregion
 		
@@ -380,27 +411,30 @@ namespace ClassDiagram
 			
 			InteractiveHeaderedItem tg = new InteractiveHeaderedItem(headerCollapsed, headerExpanded, content);
 			tg.HeaderClicked += delegate { tg.Collapsed = !tg.Collapsed; };
+			IMouseInteractable interactive = content as IMouseInteractable;
+			if (interactive != null)
+				tg.ContentClicked += delegate (object sender, PointF pos) { interactive.HandleMouseClick(pos); };
 			tg.RedrawNeeded += HandleRedraw;
 			
 			return tg;
 		}
 		
-		protected virtual DrawableItemsStack PrepareMembersContent <MT> (ICollection<MT> members) where MT : IMember
+		protected virtual InteractiveItemsStack PrepareMembersContent <MT> (ICollection<MT> members) where MT : IMember
 		{
 			if (members == null) return null;
 			if (members.Count == 0) return null;
-			DrawableItemsStack content = new DrawableItemsStack();
+			InteractiveItemsStack content = new InteractiveItemsStack();
 			content.OrientationAxis = Axis.Y;
 			PrepareMembersContent <MT> (members, content);
 			return content;
 		}
 		
-		private DrawableItemsStack PerpareNestedTypesContent()
+		private InteractiveItemsStack PerpareNestedTypesContent()
 		{
-			DrawableItemsStack innerItems = new DrawableItemsStack();
+			InteractiveItemsStack innerItems = new InteractiveItemsStack();
 			innerItems.OrientationAxis = Axis.Y;
 			innerItems.Spacing = 10;
-			innerItems.Border = 10;
+			innerItems.Padding = 10;
 			foreach (IClass ct in classtype.InnerClasses)
 			{
 				ClassCanvasItem innerItem = ClassCanvas.CreateItemFromType(ct);
@@ -409,7 +443,7 @@ namespace ClassDiagram
 			return innerItems;
 		}
 		
-		protected virtual void PrepareMembersContent <MT> (ICollection<MT> members, DrawableItemsStack content) where MT : IMember
+		protected virtual void PrepareMembersContent <MT> (ICollection<MT> members, InteractiveItemsStack content) where MT : IMember
 		{
 			if (members == null) return;
 			if (members.Count == 0) return;
@@ -433,7 +467,7 @@ namespace ClassDiagram
 			#endregion
 		}
 		
-		private void AddGroupToContent(string title, DrawableItemsStack groupContent)
+		private void AddGroupToContent(string title, InteractiveItemsStack groupContent)
 		{
 			if (groupContent != null)
 			{
@@ -450,10 +484,10 @@ namespace ClassDiagram
 			
 			groups.Clear();
 			
-			DrawableItemsStack propertiesContent = PrepareMembersContent <IProperty> (classtype.Properties);
-			DrawableItemsStack methodsContent = PrepareMembersContent <IMethod> (classtype.Methods);
-			DrawableItemsStack fieldsContent = PrepareMembersContent <IField> (classtype.Fields);
-			DrawableItemsStack eventsContent = PrepareMembersContent <IEvent> (classtype.Events);
+			InteractiveItemsStack propertiesContent = PrepareMembersContent <IProperty> (classtype.Properties);
+			InteractiveItemsStack methodsContent = PrepareMembersContent <IMethod> (classtype.Methods);
+			InteractiveItemsStack fieldsContent = PrepareMembersContent <IField> (classtype.Fields);
+			InteractiveItemsStack eventsContent = PrepareMembersContent <IEvent> (classtype.Events);
 			
 			AddGroupToContent("Properties", propertiesContent);
 			AddGroupToContent("Methods", methodsContent);
@@ -462,7 +496,7 @@ namespace ClassDiagram
 			
 			if (classtype.InnerClasses.Count > 0)
 			{
-				DrawableItemsStack nestedTypesContent = PerpareNestedTypesContent();
+				InteractiveItemsStack nestedTypesContent = PerpareNestedTypesContent();
 				AddGroupToContent("Nested Types", nestedTypesContent);
 			}
 		}
@@ -470,14 +504,17 @@ namespace ClassDiagram
 		protected virtual void PrepareFrame ()
 		{
 			ActualHeight = classItemContainer.GetAbsoluteContentHeight();
-
+			
+			if (Container != null) return;
+			
 			shadowpath = new GraphicsPath();
 			if (RoundedCorners)
 			{
+				int radius = CornerRadius;
 				shadowpath.AddArc(ActualWidth-radius + 4, 3, radius, radius, 300, 60);
-				shadowpath.AddArc(ActualWidth-radius + 4, ActualHeight-radius + 3, radius, radius, 0, 90);
+				shadowpath.AddArc(ActualWidth-radius + 4, ActualHeight - radius + 3, radius, radius, 0, 90);
 				shadowpath.AddArc(4, ActualHeight-radius + 3, radius, radius, 90, 45);
-				shadowpath.AddArc(ActualWidth-radius, ActualHeight-radius, radius, radius, 90, -90);
+				shadowpath.AddArc(ActualWidth-radius, ActualHeight - radius, radius, radius, 90, -90);
 			}
 			else
 			{
@@ -504,14 +541,16 @@ namespace ClassDiagram
 			GraphicsState state = graphics.Save();
 			graphics.TranslateTransform (AbsoluteX, AbsoluteY);
 			
-			//Draw Shadow
-			graphics.FillPath(CanvasItem.ShadowBrush, shadowpath);
-					
+			if (Container == null)
+			{
+				//Draw Shadow
+				graphics.FillPath(CanvasItem.ShadowBrush, shadowpath);
+			}
+			
 			classItemContainer.Width = Width;
 			classItemContainer.Height = Height;
-			
+				
 			graphics.Restore(state);
-			
 			classItemContainer.DrawToGraphics(graphics);
 			
 			//Draw interfaces lollipops
@@ -620,7 +659,8 @@ namespace ClassDiagram
 		public void Dispose()
 		{
 			grad.Dispose();
-			shadowpath.Dispose();
+			if (shadowpath != null)
+				shadowpath.Dispose();
 		}
 		
 		public override string ToString()
@@ -628,39 +668,4 @@ namespace ClassDiagram
 			return "ClasCanvasItem: " + classtype.Name;
 		}
 	}
-	
-	/// <summary>
-	/// Test interface
-	/// </summary>
-	public interface TestInterface
-	{
-		
-	}
-	
-	/// <summary>
-	/// Test class.
-	/// </summary>
-	public class TestClass_Long_Title : TestInterface
-	{
-		/// <summary>
-		/// A method with a common test name and one parameter.
-		/// </summary>
-		public void foo(string str) {}
-		
-		/// <summary>
-		/// Some test field.
-		/// </summary>
-		public int bar;
-		
-		/// <summary>
-		/// The getter for the 'bar' field.
-		/// </summary>
-		public int Bar { get { return bar; } }
-		
-		/// <summary>
-		/// A simple test event.
-		/// </summary>
-		public event EventHandler stupid = delegate {};
-	}
-
 }

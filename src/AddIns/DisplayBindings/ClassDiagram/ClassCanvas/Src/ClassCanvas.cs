@@ -170,7 +170,7 @@ namespace ClassDiagram
 				w = Math.Max(w, item.Item.X + item.Item.ActualWidth + item.Item.Border);
 				h = Math.Max(h, item.Item.Y + item.Item.ActualHeight + item.Item.Border);
 			}
-			return new SizeF(w + 40, h + 40);
+			return new SizeF(w + 50, h + 50);
 		}
 		
 		public Size GetDiagramPixelSize ()
@@ -183,7 +183,8 @@ namespace ClassDiagram
 		public void SetRecommendedGraphicsAttributes (Graphics graphics)
 		{
 			graphics.CompositingQuality = CompositingQuality.HighSpeed;
-			graphics.SmoothingMode = SmoothingMode.AntiAlias;
+			//graphics.SmoothingMode = SmoothingMode.AntiAlias;
+			graphics.SmoothingMode = SmoothingMode.HighQuality;
 			graphics.PageUnit = GraphicsUnit.Pixel;
 			graphics.PixelOffsetMode = PixelOffsetMode.Half;
 			graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit;
@@ -395,8 +396,8 @@ namespace ClassDiagram
 		{
 			PointF pos = new PointF(args.Value.X, args.Value.Y);
 			
-			pos.X = Math.Max ((float) Math.Round(pos.X / 10.0f) * 10.0f, 40.0f);
-			pos.Y = Math.Max ((float) Math.Round(pos.Y / 10.0f) * 10.0f, 40.0f);
+			pos.X = Math.Max ((float) Math.Round(pos.X / 10.0f) * 10.0f, 50.0f);
+			pos.Y = Math.Max ((float) Math.Round(pos.Y / 10.0f) * 10.0f, 50.0f);
 			
 			args.Cancel = (pos.X == args.Value.X) && (pos.Y == args.Value.Y);
 			args.Value = pos;

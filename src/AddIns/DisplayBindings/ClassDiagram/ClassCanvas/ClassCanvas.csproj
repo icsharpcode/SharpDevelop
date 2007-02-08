@@ -46,6 +46,7 @@
     <Compile Include="Interactivity\IInteractiveDrawable.cs" />
     <Compile Include="Interactivity\IMouseInteractable.cs" />
     <Compile Include="Interactivity\InteractiveHeaderedItem.cs" />
+    <Compile Include="Interactivity\InteractiveItemsStack.cs" />
     <Compile Include="Src\CanvasItem.cs" />
     <Compile Include="Src\ClassCanvas.cs" />
     <Compile Include="Src\ClassCanvas.Designer.cs">

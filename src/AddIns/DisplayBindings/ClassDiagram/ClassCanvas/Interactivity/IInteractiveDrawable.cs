@@ -18,4 +18,7 @@ namespace ClassDiagram
 	{
 	}
 
+	public interface IInteractiveRectangle : IDrawableRectangle, IHitTestable, IMouseInteractable
+	{
+	}
 }

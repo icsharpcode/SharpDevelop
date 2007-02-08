@@ -24,11 +24,11 @@ using Tools.Diagrams.Drawables;
 
 namespace ClassDiagram
 {
-	public class EnumCanvasItem : ClassCanvasItem
+	public class EnumCanvasItem : EnumDelegateCanvasItem
 	{
 		public EnumCanvasItem (IClass ct) : base (ct) {}
 	
-		private DrawableItemsStack fields = new DrawableItemsStack();
+		private InteractiveItemsStack fields = new InteractiveItemsStack();
 		
 		static Color titlesBG = Color.FromArgb(255, 221, 214, 239);
 		protected override Color TitleBackground
@@ -41,17 +41,10 @@ namespace ClassDiagram
 			get { return false; }
 		}
 		
-		protected override IDrawableRectangle InitContent()
-		{
-			fields.Border = 5;
-			fields.OrientationAxis = Axis.Y;
-			return fields;
-		}
-		
 		protected override void PrepareMembersContent ()
 		{
-			fields.Clear();
-			PrepareMembersContent <IField> (RepresentedClassType.Fields, fields);
+			Items.Clear();
+			PrepareMembersContent <IField> (RepresentedClassType.Fields, Items);
 		}
 		
 		protected override XmlElement CreateXmlElement(XmlDocument doc)

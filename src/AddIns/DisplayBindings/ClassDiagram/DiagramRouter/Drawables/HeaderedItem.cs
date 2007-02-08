@@ -47,17 +47,17 @@ namespace Tools.Diagrams.Drawables
 			headerExpanded.HeightChanged += delegate { content.Y = headerExpanded.GetAbsoluteContentHeight(); };
 		}
 
-		protected IDrawableRectangle HeaderCollapsed
+		public IDrawableRectangle HeaderCollapsed
 		{
 			get { return headerCollapsed; }
 		}
 		
-		protected IDrawableRectangle HeaderExpanded
+		public IDrawableRectangle HeaderExpanded
 		{
 			get { return headerExpanded; }
 		}
 		
-		protected IDrawableRectangle Content
+		public IDrawableRectangle Content
 		{
 			get { return content; }
 		}
@@ -141,7 +141,7 @@ namespace Tools.Diagrams.Drawables
 			if (!collapsed)
 			{
 				width = Math.Max(width, headerExpanded.GetAbsoluteContentWidth());
-				width = Math.Max(width, content.GetAbsoluteContentWidth());
+				width = Math.Max(width, content.GetAbsoluteContentWidth() + content.Padding * 2);
 			}
 			else
 				width = headerCollapsed.GetAbsoluteContentWidth();
@@ -156,6 +156,7 @@ namespace Tools.Diagrams.Drawables
 			{
 				height = headerExpanded.GetAbsoluteContentHeight();
 				height += content.GetAbsoluteContentHeight();
+				height += content.Padding * 2;
 			}
 			else
 			{

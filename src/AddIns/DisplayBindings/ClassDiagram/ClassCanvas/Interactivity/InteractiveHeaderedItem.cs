@@ -25,16 +25,16 @@ namespace ClassDiagram
 		                                IDrawableRectangle content)
 			: base (headerCollapsed, headerExpanded, content) {}
 		
-		public event EventHandler HeaderClicked = delegate {};
-		public event EventHandler ContentClicked = delegate {};
-		public event EventHandler HeaderMouseDown = delegate {};
-		public event EventHandler ContentMouseDown = delegate {};		
-		public event EventHandler HeaderMouseMove = delegate {};
-		public event EventHandler ContentMouseMove = delegate {};		
-		public event EventHandler HeaderMouseUp = delegate {};
-		public event EventHandler ContentMouseUp = delegate {};		
+		public event PositionDelegate HeaderClicked = delegate {};
+		public event PositionDelegate ContentClicked = delegate {};
+		public event PositionDelegate HeaderMouseDown = delegate {};
+		public event PositionDelegate ContentMouseDown = delegate {};		
+		public event PositionDelegate HeaderMouseMove = delegate {};
+		public event PositionDelegate ContentMouseMove = delegate {};		
+		public event PositionDelegate HeaderMouseUp = delegate {};
+		public event PositionDelegate ContentMouseUp = delegate {};		
 		
-		private void HandleMouseEvent(PointF pos, EventHandler headerEvent, EventHandler contentEvent)
+		private void HandleMouseEvent(PointF pos, PositionDelegate headerEvent, PositionDelegate contentEvent)
 		{
 			if (Collapsed)
 			{
@@ -43,7 +43,7 @@ namespace ClassDiagram
 					pos.Y >= HeaderCollapsed.AbsoluteY &&
 					pos.Y <= HeaderCollapsed.AbsoluteY + HeaderCollapsed.ActualHeight)
 				{
-					headerEvent(this, EventArgs.Empty);
+					headerEvent(this, pos);
 				}
 			}
 			else
@@ -53,14 +53,14 @@ namespace ClassDiagram
 					pos.Y >= HeaderExpanded.AbsoluteY &&
 					pos.Y <= HeaderExpanded.AbsoluteY + HeaderExpanded.ActualHeight)
 				{
-					headerEvent(this, EventArgs.Empty);
+					headerEvent(this, pos);
 				}
 				else if (pos.X >= Content.AbsoluteX &&
 						pos.X <= Content.AbsoluteX + Content.ActualWidth &&
 						pos.Y >= Content.AbsoluteY &&
 						pos.Y <= Content.AbsoluteY + Content.ActualHeight)
 				{
-					contentEvent(this, EventArgs.Empty);
+					contentEvent(this, pos);
 				}
 			}
 		}

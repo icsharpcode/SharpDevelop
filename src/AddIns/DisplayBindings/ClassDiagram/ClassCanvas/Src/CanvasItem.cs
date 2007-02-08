@@ -66,7 +66,7 @@ namespace ClassDiagram
 		}
 	}
 	
-	public abstract class CanvasItem : BaseRectangle, IInteractiveDrawable, IDrawableRectangle
+	public abstract class CanvasItem : BaseRectangle, IInteractiveDrawable, IDrawableRectangle, IInteractiveRectangle
 	{
 		#region Constructors
 		
@@ -428,15 +428,15 @@ namespace ClassDiagram
 		
 		protected virtual void FillXmlPositionElement (XmlElement position, XmlDocument document)
 		{
-			position.SetAttribute("X", X.ToString(CultureInfo.InvariantCulture));
-			position.SetAttribute("Y", Y.ToString(CultureInfo.InvariantCulture));
-			position.SetAttribute("Width", Width.ToString(CultureInfo.InvariantCulture));
+			position.SetAttribute("X", (X/100).ToString(CultureInfo.InvariantCulture));
+			position.SetAttribute("Y", (Y/100).ToString(CultureInfo.InvariantCulture));
+			position.SetAttribute("Width", (Width/100).ToString(CultureInfo.InvariantCulture));
 		}
 		
 		public virtual void WriteToXml(XmlDocument document)
 		{
 			XmlElement elem = CreateXmlElement(document);
-			FillXmlElement (elem, document);
+			FillXmlElement(elem, document);
 			document.DocumentElement.AppendChild(elem);
 		}
 		
@@ -449,9 +449,9 @@ namespace ClassDiagram
 		
 		protected virtual void ReadXmlPositionElement (XPathNavigator navigator)
 		{
-			X = float.Parse(navigator.GetAttribute("X", ""), CultureInfo.InvariantCulture);
-			Y = float.Parse(navigator.GetAttribute("Y", ""), CultureInfo.InvariantCulture);
-			Width = float.Parse(navigator.GetAttribute("Width", ""), CultureInfo.InvariantCulture);
+			X = 100 * float.Parse(navigator.GetAttribute("X", ""), CultureInfo.InvariantCulture);
+			Y = 100 * float.Parse(navigator.GetAttribute("Y", ""), CultureInfo.InvariantCulture);
+			Width = 100 * float.Parse(navigator.GetAttribute("Width", ""), CultureInfo.InvariantCulture);
 		}
 
 		#endregion

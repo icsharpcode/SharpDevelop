@@ -27,15 +27,61 @@ using Tools.Diagrams.Drawables;
 
 namespace ClassDiagram
 {
-	// TODO - should look at the Invoke method and extract the parameters and return type.
-	//        this is the only information that need to be shown. The parameters should
-	//        be listed in the form of paramName : paramType, as for the return type, still
-	//        need to figure that out ;)
-	public class DelegateCanvasItem : ClassCanvasItem
+	// TODO - perhaps abandon this base class and implement styles mechanism instead?
+	public class EnumDelegateCanvasItem : ClassCanvasItem
+	{
+		public EnumDelegateCanvasItem (IClass ct) : base (ct) {}
+
+		private InteractiveItemsStack items = new InteractiveItemsStack();
+		
+		public InteractiveItemsStack Items {
+			get { return items; }
+		}
+
+		protected override DrawableRectangle InitContentBackground()
+		{
+			if (RoundedCorners)
+			{
+				int radius = CornerRadius;
+				return new DrawableRectangle(ContentBG, null, 0, 0, radius, 0);
+			}
+			else
+				return new DrawableRectangle(ContentBG, null, 0, 0, 0, 0);
+		}
+		
+		protected override DrawableItemsStack InitContentContainer(params IDrawableRectangle[] items)
+		{
+			DrawableItemsStack decorator = new DrawableItemsStack();
+			decorator.OrientationAxis = Axis.X;
+			DrawableRectangle rect;
+			if (RoundedCorners)
+			{
+				int radius = CornerRadius;
+				rect = new DrawableRectangle(TitleBG, null, 0, 0, 0, radius);
+			}
+			else
+			{
+				rect = new DrawableRectangle(TitleBG, null, 0, 0, 0, 0);
+			}
+			
+			rect.Width = 20;
+			
+			decorator.Add(rect);
+			decorator.Add(base.InitContentContainer(items));
+			return decorator;
+		}
+		
+		protected override IDrawableRectangle InitContent()
+		{
+			items.Border = 5;
+			items.OrientationAxis = Axis.Y;
+			return items;
+		}
+	}
+	
+	public class DelegateCanvasItem : EnumDelegateCanvasItem
 	{
 		public DelegateCanvasItem (IClass ct) : base (ct) {}
-		
-		private DrawableItemsStack parameters = new DrawableItemsStack();
 		
 		static Color titlesBG = Color.FromArgb(255, 237, 219, 221);
 		protected override Color TitleBackground
@@ -43,22 +89,21 @@ namespace ClassDiagram
 			get { return titlesBG; }
 		}
 		
-		protected override IDrawableRectangle InitContent()
+		static Brush contentBG = new SolidBrush(Color.FromArgb(255, 247, 240, 240));
+		protected override Brush ContentBG
 		{
-			parameters.Border = 5;
-			parameters.OrientationAxis = Axis.Y;
-			return parameters;
+			get { return contentBG; }
 		}
-				
+
 		protected override void PrepareMembersContent()
 		{
-			parameters.Clear();
+			Items.Clear();
 			IMethod invokeMethod = RepresentedClassType.SearchMember("Invoke", RepresentedClassType.ProjectContent.Language) as IMethod;
 			IAmbience ambience = GetAmbience();
 			foreach (IParameter par in invokeMethod.Parameters)
 			{
 				TextSegment ts = new TextSegment(Graphics, par.Name  + " : " + ambience.Convert(par.ReturnType), MemberFont, true);
-				parameters.Add(ts);
+				Items.Add(ts);
 			}
 		}
 		

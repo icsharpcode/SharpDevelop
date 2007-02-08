@@ -80,4 +80,6 @@ namespace ClassDiagram
 		/// </summary>
 		void HandleMouseLeave ();
 	}
+	
+	public delegate void PositionDelegate (object sender, PointF pos);
 }

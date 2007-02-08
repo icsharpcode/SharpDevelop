@@ -104,7 +104,7 @@ namespace ClassDiagram
 		protected override void FillXmlPositionElement(XmlElement position, XmlDocument document)
 		{
 			base.FillXmlPositionElement(position, document);
-			position.SetAttribute("Height", Height.ToString(CultureInfo.InvariantCulture));
+			position.SetAttribute("Height", (Height/100).ToString(CultureInfo.InvariantCulture));
 		}
 		
 		public override void LoadFromXml (XPathNavigator navigator)
@@ -116,7 +116,7 @@ namespace ClassDiagram
 		protected override void ReadXmlPositionElement(XPathNavigator navigator)
 		{
 			base.ReadXmlPositionElement(navigator);
-			Height = float.Parse(navigator.GetAttribute("Height", ""), CultureInfo.InvariantCulture);
+			Height = 100 * float.Parse(navigator.GetAttribute("Height", ""), CultureInfo.InvariantCulture);
 		}
 		
 		#endregion

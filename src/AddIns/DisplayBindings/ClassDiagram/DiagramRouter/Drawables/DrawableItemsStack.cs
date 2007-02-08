@@ -24,7 +24,7 @@ namespace Tools.Diagrams.Drawables
 	
 	public class DrawableItemsStack<T>
 		: ItemsStack<T>, IDrawableRectangle
-		where T : IDrawableRectangle
+		where T : IDrawable, IRectangle
 	{
 		public void DrawToGraphics(Graphics graphics)
 		{

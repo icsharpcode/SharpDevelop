@@ -138,6 +138,8 @@ namespace Tools.Diagrams
 				
 				if (!IsItemWidthValid(r))
 					r.ActualWidth = Math.Max(spacePerUndefined - r.Border * 2, 0);
+				else if (float.IsNaN(r.ActualWidth) || r.ActualWidth < 0)
+					r.ActualWidth = r.Width;
 				
 				w += r.ActualWidth + spacing + r.Border * 2;
 				x = w;
@@ -225,7 +227,9 @@ namespace Tools.Diagrams
 				
 				if (!IsItemHeightValid(r))
 					r.ActualHeight = Math.Max (spacePerUndefined - r.Border * 2, 0);
-
+				else if (float.IsNaN(r.ActualHeight) || r.ActualHeight < 0)
+					r.ActualHeight = r.Height;
+					
 				h += r.ActualHeight + spacing + r.Border * 2;
 				y = h;
 			}
@@ -245,10 +249,11 @@ namespace Tools.Diagrams
 			
 			foreach (IRectangle r in items)
 			{
-				r.X = r.Border + Padding;
-				r.Y = r.Border + Padding;
-				r.ActualWidth = w - (r.Border + Padding) * 2;
-				r.ActualHeight = h - (r.Border + Padding) * 2;
+				float bp = r.Border + Padding;
+				r.X = bp;
+				r.Y = bp;
+				r.ActualWidth = w - bp * 2;
+				r.ActualHeight = h - bp * 2;
 			}
 			
 			dontHandleResize = true;

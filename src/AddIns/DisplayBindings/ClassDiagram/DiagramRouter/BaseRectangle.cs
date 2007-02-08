@@ -21,6 +21,8 @@ namespace Tools.Diagrams
 		
 		private IRectangle container;
 		
+		public string Name;
+		
 		public IRectangle Container 
 		{
 			get { return container; }
@@ -95,10 +97,6 @@ namespace Tools.Diagrams
 			set
 			{
 				w = value;
-				if (float.IsNaN(w))
-				{
-					
-				}
 				OnSizeChanged();
 				OnWidthChanged();
 			}
@@ -186,5 +184,11 @@ namespace Tools.Diagrams
 		public event EventHandler HeightChanged = delegate {};
 		public event EventHandler ActualWidthChanged = delegate {};
 		public event EventHandler ActualHeightChanged = delegate {};
+		
+		public override string ToString()
+		{
+			return Name + " (" + this.GetType().ToString() + ")";
+		}
+		
 	}
 }
