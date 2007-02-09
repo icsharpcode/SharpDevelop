@@ -35,6 +35,7 @@ namespace WorkflowDesigner
 {
 	public class DefaultMemberRelationshipService : MemberRelationshipService
 	{
+
 		public override bool SupportsRelationship(MemberRelationship source, MemberRelationship relationship)
 		{
 			return true;
@@ -51,7 +52,6 @@ namespace WorkflowDesigner
 	public class NRefactoryDesignerLoader : CodeDomDesignerLoader
 	{
 		TextEditorControl textEditorControl;
-		ITypeResolutionService typeResolutionService;
 		//IDesignerGenerator    generator = new CSharpDesignerGenerator();
 		IViewContent viewContent;
 		
@@ -72,7 +72,7 @@ namespace WorkflowDesigner
 		
 		protected override ITypeResolutionService TypeResolutionService {
 			get {
-				return typeResolutionService;
+				return GetService(typeof(ITypeResolutionService)) as ITypeResolutionService;
 			}
 		}
 		
@@ -85,20 +85,26 @@ namespace WorkflowDesigner
 		
 		protected override void Initialize()
 		{
+			ITypeProvider typeProvider = TypeProviderService.GetTypeProvider(ProjectService.OpenSolution.FindProjectContainingFile(viewContent.PrimaryFileName));
+			try {
+				typeProvider.GetType("System.ComponentModel.Design.Serialization.CodeDomSerializer", true);			
+			} catch (Exception ex) {
+				MessageService.ShowErrorFormatted("Unable to find class CodeDomSerializer, make sure the project has a reference to assembly System.Design");
+				throw ex;
+			}
 
+			LoaderHost.AddService(typeof(ITypeProvider), typeProvider);
 			LoaderHost.AddService(typeof(IIdentifierCreationService), new IdentifierCreationService());
-			LoaderHost.AddService(typeof(IMemberCreationService), new MemberCreationService());
+			LoaderHost.AddService(typeof(IMemberCreationService), new MemberCreationService(LoaderHost));
 			LoaderHost.AddService(typeof(IEventBindingService), new CSharpWorkflowDesignerEventBindingService(LoaderHost, viewContent.PrimaryFileName));
 			LoaderHost.AddService(typeof(IToolboxService), new WorkflowToolboxService(LoaderHost));
 			LoaderHost.AddService(typeof(MemberRelationshipService), new DefaultMemberRelationshipService());
 			LoaderHost.AddService(typeof(IMenuCommandService), new WorkflowMenuCommandService(LoaderHost));
-			LoaderHost.AddService(typeof(ITypeProvider), TypeProviderService.GetTypeProvider(ProjectService.CurrentProject));
-			typeResolutionService = new TypeResolutionService(LoaderHost);
-			LoaderHost.AddService(typeof(ITypeResolutionService), typeResolutionService);
+			LoaderHost.AddService(typeof(ITypeResolutionService), new TypeResolutionService(LoaderHost));
+			LoaderHost.AddService(typeof(IPropertyValueUIService), new PropertyValueUIService());
 			
 			base.Initialize();
 		}
-		
 		
 		
 		#region Taken from FormDesigner.NRefactoryDesignerLoad to get a CodeCompileUnit for the activity.
@@ -123,12 +129,6 @@ namespace WorkflowDesigner
 						missingReferenceMessage, new string[,] {{ "Name" , "System.Workflow.Activities"}}
 					));
 			}
-			/*if (formClass.ProjectContent.GetClass("System.Windows.Forms.Form", 0) == null) {
-				throw new WorkflowDesignerLoadException(
-					StringParser.Parse(
-						missingReferenceMessage, new string[,] {{ "Name" , "System.Windows.Forms"}}
-					));
-			}*/
 			
 			List<KeyValuePair<string, CompilationUnit>> compilationUnits = new List<KeyValuePair<string, CompilationUnit>>();
 			bool foundInitMethod = false;

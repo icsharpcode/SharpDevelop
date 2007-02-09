@@ -34,6 +34,9 @@ namespace WorkflowDesigner
 		
 		public bool CanAttachTo(IViewContent content)
 		{
+			if (content == null)
+				throw new ArgumentNullException("content");
+
 			if (content is ITextEditorControlProvider) {
 				ITextEditorControlProvider textAreaControlProvider = (ITextEditorControlProvider)content;
 				string fileExtension = String.Empty;

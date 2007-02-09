@@ -145,7 +145,7 @@ namespace WorkflowDesigner
 
 			// Monitor for updates and make the view dirty.
 			IComponentChangeService componentChangeService = (IComponentChangeService)designSurface.GetService(typeof(IComponentChangeService));
-			componentChangeService.ComponentAdding += new ComponentEventHandler(ComponentAddingHandler);
+			//componentChangeService.ComponentAdding += new ComponentEventHandler(ComponentAddingHandler);
 			componentChangeService.ComponentAdded += new ComponentEventHandler(ComponentAddedHandler);
 			componentChangeService.ComponentChanged += new ComponentChangedEventHandler(ComponentChangedHandler);
 
@@ -192,7 +192,6 @@ namespace WorkflowDesigner
 			propertyContainer.SelectableObjects = DesignerHost.Container.Components;
 			propertyContainer.Host = DesignerHost;
 			propertyContainer.SelectedObjects = selArray;
-			PropertyPad.Grid.CommandsVisibleIfAvailable = false;
 		}
 		
 		internal void Deselected()

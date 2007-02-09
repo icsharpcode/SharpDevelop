@@ -43,7 +43,7 @@ namespace WorkflowDesigner
 		string codeFileName;
 		CodeCompileUnit ccu;
 
-		public WorkflowDesignerEventBindingService(IServiceProvider provider, string codeSeparationFileName)
+		protected WorkflowDesignerEventBindingService(IServiceProvider provider, string codeSeparationFileName)
 		{
 			this.provider = provider;
 			this.codeFileName = codeSeparationFileName;
@@ -274,7 +274,7 @@ namespace WorkflowDesigner
 				throw new ArgumentNullException("component");
 			
 			if (e == null)
-				throw new ArgumentNullException("eventDescriptor");
+				throw new ArgumentNullException("e");
 
 			Activity activity = component as Activity;
 			if (component == null)

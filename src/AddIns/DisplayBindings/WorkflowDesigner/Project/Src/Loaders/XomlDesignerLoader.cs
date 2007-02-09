@@ -7,6 +7,7 @@
 
 #region Using
 using System;
+using System.Globalization;
 using System.Text;
 using System.Workflow.ComponentModel;
 using System.Workflow.ComponentModel.Serialization;
@@ -82,7 +83,7 @@ namespace WorkflowDesigner
 				CreateRulesProjectItem();
 			}
 			
-			return new StringWriter(rules);
+			return new StringWriter(rules, CultureInfo.CurrentCulture);
 		}
 		
 		private void CreateRulesProjectItem()
@@ -106,15 +107,12 @@ namespace WorkflowDesigner
 			Activity rootActivity = LoaderHost.RootComponent as Activity;
 			if (rootActivity != null) {
 				StringBuilder sb = new StringBuilder();
-				XmlTextWriter xmlWriter = new XmlTextWriter(new StringWriter(sb));
-				try
-				{
+				XmlTextWriter xmlWriter = new XmlTextWriter(new StringWriter(sb, CultureInfo.CurrentCulture));
+				try {
 					WorkflowMarkupSerializer xomlSerializer = new WorkflowMarkupSerializer();
 					xomlSerializer.Serialize(serializationManager, xmlWriter, rootActivity);
 					xoml = sb.ToString();
-				}
-				finally
-				{
+				} finally {
 					xmlWriter.Close();
 				}
 			}
@@ -128,13 +126,14 @@ namespace WorkflowDesigner
 		
 		protected override void Initialize()
 		{
-			base.Initialize();
 
 			LoaderHost.AddService(typeof(IToolboxService), new WorkflowToolboxService(LoaderHost));
 			LoaderHost.AddService(typeof(ITypeProvider), TypeProviderService.GetTypeProvider(Project));
 			LoaderHost.AddService(typeof(IMenuCommandService), new WorkflowMenuCommandService(LoaderHost));
 			LoaderHost.AddService(typeof(ITypeResolutionService), new TypeResolutionService(LoaderHost));
+			LoaderHost.AddService(typeof(IPropertyValueUIService), new PropertyValueUIService());
 
+			base.Initialize();
 			
 		}
 
@@ -156,13 +155,10 @@ namespace WorkflowDesigner
 			// get the root activity from the xml.
 			XmlReader  reader = new XmlTextReader(new StringReader(xoml));
 			Activity rootActivity = null;
-			try
-			{
+			try	{
 				WorkflowMarkupSerializer xomlSerializer = new WorkflowMarkupSerializer();
 				rootActivity = xomlSerializer.Deserialize(serializationManager, reader) as Activity;
-			}
-			finally
-			{
+			} finally {
 				reader.Close();
 			}
 
@@ -183,8 +179,7 @@ namespace WorkflowDesigner
 		
 		protected void AddChildren(CompositeActivity compositeActivity)
 		{
-			foreach (Activity activity in compositeActivity.Activities)
-			{
+			foreach (Activity activity in compositeActivity.Activities)	{
 				LoaderHost.Container.Add(activity, activity.QualifiedName);
 
 				CompositeActivity compositeActivity2 = activity as CompositeActivity;
@@ -197,22 +192,18 @@ namespace WorkflowDesigner
 		{
 			try {
 				// Remove all the services from the from the host designer.
-				if (LoaderHost != null)
-				{
+				if (LoaderHost != null)	{
 					LoaderHost.RemoveService(typeof(IToolboxService));
 					LoaderHost.RemoveService(typeof(ITypeProvider));
 					LoaderHost.RemoveService(typeof(IEventBindingService));
 					LoaderHost.RemoveService(typeof(IMemberCreationService));
 					LoaderHost.RemoveService(typeof(IMenuCommandService));
+					LoaderHost.RemoveService(typeof(IPropertyValueUIService));
+					LoaderHost.RemoveService(typeof(ITypeResolutionService));
 				}
-				
 			} finally {
 				base.Dispose();
-				
 			}
-			
 		}
-		
-		
 	}
 }

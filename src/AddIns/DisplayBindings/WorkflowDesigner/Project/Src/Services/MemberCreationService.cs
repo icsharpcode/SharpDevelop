@@ -5,32 +5,46 @@
 //     <version>$Revision$</version>
 // </file>
 
+#region Using
 using System;
+using System.CodeDom;
 using System.Workflow.ComponentModel.Design;
+using System.Workflow.ComponentModel;
+using System.Workflow.ComponentModel.Compiler;
 using ICSharpCode.Core;
+#endregion
 
 namespace WorkflowDesigner
 {
 	/// <summary>
 	/// Description of MemberCreationService.
 	/// </summary>
-	public class MemberCreationService : IMemberCreationService
+	public class MemberCreationService : IMemberCreationService, IServiceProvider
 	{
-		public MemberCreationService()
+		#region IServiceProvider implementation
+		IServiceProvider provider;
+		public object GetService(Type serviceType)
 		{
+			return provider.GetService(serviceType);
+		}
+		#endregion
+		
+		public MemberCreationService(IServiceProvider provider)
+		{
+			this.provider = provider;
 		}
 		
-		public void CreateField(string className, string fieldName, Type fieldType, Type[] genericParameterTypes, System.CodeDom.MemberAttributes attributes, System.CodeDom.CodeSnippetExpression initializationExpression, bool overwriteExisting)
+		public void CreateField(string className, string fieldName, Type fieldType, Type[] genericParameterTypes, MemberAttributes attributes, System.CodeDom.CodeSnippetExpression initializationExpression, bool overwriteExisting)
 		{
 			throw new NotImplementedException();
 		}
 		
-		public void CreateProperty(string className, string propertyName, Type propertyType, System.Workflow.ComponentModel.Compiler.AttributeInfo[] attributes, bool emitDependencyProperty, bool isMetaProperty, bool isAttached, Type ownerType, bool isReadOnly)
+		public void CreateProperty(string className, string propertyName, Type propertyType, AttributeInfo[] attributes, bool emitDependencyProperty, bool isMetaProperty, bool isAttached, Type ownerType, bool isReadOnly)
 		{
 			throw new NotImplementedException();
 		}
 		
-		public void CreateEvent(string className, string eventName, Type eventType, System.Workflow.ComponentModel.Compiler.AttributeInfo[] attributes, bool emitDependencyProperty)
+		public void CreateEvent(string className, string eventName, Type eventType, AttributeInfo[] attributes, bool emitDependencyProperty)
 		{
 			throw new NotImplementedException();
 		}
@@ -38,7 +52,7 @@ namespace WorkflowDesigner
 		public void UpdateTypeName(string oldClassName, string newClassName)
 		{
 			LoggingService.DebugFormatted("UpdateTypeName(oldClassName={0}, newClassName={1})", oldClassName, newClassName);
-			//throw new NotImplementedException();
+			throw new NotImplementedException();
 		}
 		
 		public void UpdateBaseType(string className, Type baseType)
@@ -66,7 +80,7 @@ namespace WorkflowDesigner
 			throw new NotImplementedException();
 		}
 		
-		public void ShowCode(System.Workflow.ComponentModel.Activity activity, string methodName, Type delegateType)
+		public void ShowCode(Activity activity, string methodName, Type delegateType)
 		{
 			throw new NotImplementedException();
 		}

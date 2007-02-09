@@ -39,7 +39,7 @@ namespace WorkflowDesigner
 			base.Initialize();
 			
 			// TODO: Install the Add the additional services into the designer here.
-			LoaderHost.AddService(typeof(IMemberCreationService), new MemberCreationService());
+			LoaderHost.AddService(typeof(IMemberCreationService), new MemberCreationService(LoaderHost));
 			LoaderHost.AddService(typeof(IEventBindingService), new CSharpWorkflowDesignerEventBindingService(LoaderHost,codeFileName));
 		}
 		

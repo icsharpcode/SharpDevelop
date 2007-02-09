@@ -106,6 +106,7 @@
     <Compile Include="Src\Services\EventBindingService\WorkflowDesignerEventBindingService.cs" />
     <Compile Include="Src\Services\IdentifierCreationService.cs" />
     <Compile Include="Src\Services\MemberCreationService.cs" />
+    <Compile Include="Src\Services\PropertyValueUIService.cs" />
     <Compile Include="Src\Services\TypeProviderService.cs" />
     <Compile Include="Src\Services\TypeResolutionService.cs" />
     <Compile Include="Src\Services\WorkflowSideTabService.cs" />

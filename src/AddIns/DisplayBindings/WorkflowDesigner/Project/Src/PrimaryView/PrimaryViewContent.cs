@@ -25,6 +25,9 @@ namespace WorkflowDesigner
 
 		public WorkflowPrimaryViewContent(OpenedFile primaryFile) : base(primaryFile)
 		{
+			if (primaryFile == null)
+				throw new ArgumentNullException("primaryFile");
+			
 			this.TabPageText = "Workflow";
 			control = new ViewContentControl(this);
 			
@@ -71,6 +74,9 @@ namespace WorkflowDesigner
 		
 		public void LoadContent(string content)
 		{
+			if (content == null)
+				throw new ArgumentNullException("content");
+			
 			XomlDesignerLoader xomlDesignerLoader = new XomlDesignerLoader(this);
 			xomlDesignerLoader.Xoml = content;
 			control.LoadWorkflow(xomlDesignerLoader);
