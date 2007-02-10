@@ -30,7 +30,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		const string CompileTaskNamesPath = "/SharpDevelop/MSBuildEngine/CompileTaskNames";
 		const string AdditionalTargetFilesPath = "/SharpDevelop/MSBuildEngine/AdditionalTargetFiles";
 		const string AdditionalLoggersPath = "/SharpDevelop/MSBuildEngine/AdditionalLoggers";
-		const string AdditionalPropertiesPath = "/SharpDevelop/MSBuildEngine/AdditionalProperties";
+		internal const string AdditionalPropertiesPath = "/SharpDevelop/MSBuildEngine/AdditionalProperties";
 		
 		/// <summary>
 		/// Gets a list of the task names that cause a "Compiling ..." log message.
@@ -69,6 +69,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			MSBuildProperties = new SortedList<string, string>();
 			MSBuildProperties.Add("SharpDevelopBinPath", Path.GetDirectoryName(typeof(MSBuildEngine).Assembly.Location));
+			MSBuildProperties.Add("BuildingInsideVisualStudio", "true");
 		}
 		
 		#region Properties
@@ -373,21 +374,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			internal Engine CreateEngine()
 			{
 				Engine engine = MSBuildInternals.CreateEngine();
-				foreach (KeyValuePair<string, string> entry in MSBuildProperties) {
-					engine.GlobalProperties.SetProperty(entry.Key, entry.Value);
-				}
-				// re-load these properties from AddInTree every time because "text" might contain
-				// SharpDevelop properties resolved by the StringParser (e.g. ${property:FxCopPath})
-				AddInTreeNode node = AddInTree.GetTreeNode(AdditionalPropertiesPath, false);
-				if (node != null) {
-					foreach (Codon codon in node.Codons) {
-						object item = codon.BuildItem(null, new System.Collections.ArrayList());
-						if (item != null) {
-							bool escapeValue = !codon.Properties.Get("text", "").Contains("$(");
-							engine.GlobalProperties.SetProperty(codon.Id, item.ToString(), escapeValue);
-						}
-					}
-				}
+				
+				MSBuildBasedProject.InitializeMSBuildProjectProperties(engine.GlobalProperties);
+				
 				if (options.AdditionalProperties != null) {
 					foreach (KeyValuePair<string, string> entry in options.AdditionalProperties) {
 						engine.GlobalProperties.SetProperty(entry.Key, entry.Value);
@@ -397,8 +386,6 @@ namespace ICSharpCode.SharpDevelop.Project
 				engine.GlobalProperties.SetProperty("SolutionExt", ".sln");
 				engine.GlobalProperties.SetProperty("SolutionFileName", Path.GetFileName(solution.FileName));
 				engine.GlobalProperties.SetProperty("SolutionPath", solution.FileName);
-				
-				engine.GlobalProperties.SetProperty("BuildingInsideVisualStudio", "true");
 				
 				return engine;
 			}

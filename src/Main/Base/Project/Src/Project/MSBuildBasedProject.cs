@@ -820,9 +820,28 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		internal static void InitializeMSBuildProject(MSBuild.Project project)
 		{
-			project.GlobalProperties.SetProperty("BuildingInsideVisualStudio", "true");
-			foreach (KeyValuePair<string, string> pair in MSBuildEngine.MSBuildProperties) {
-				project.GlobalProperties.SetProperty(pair.Key, pair.Value, true);
+			InitializeMSBuildProjectProperties(project.GlobalProperties);
+		}
+		
+		/// <summary>
+		/// Set compilation properties (MSBuildProperties and AddInTree/AdditionalPropertiesPath).
+		/// </summary>
+		internal static void InitializeMSBuildProjectProperties(MSBuild.BuildPropertyGroup propertyGroup)
+		{
+			foreach (KeyValuePair<string, string> entry in MSBuildEngine.MSBuildProperties) {
+				propertyGroup.SetProperty(entry.Key, entry.Value);
+			}
+			// re-load these properties from AddInTree every time because "text" might contain
+			// SharpDevelop properties resolved by the StringParser (e.g. ${property:FxCopPath})
+			AddInTreeNode node = AddInTree.GetTreeNode(MSBuildEngine.AdditionalPropertiesPath, false);
+			if (node != null) {
+				foreach (Codon codon in node.Codons) {
+					object item = codon.BuildItem(null, new System.Collections.ArrayList());
+					if (item != null) {
+						bool escapeValue = !codon.Properties.Get("text", "").Contains("$(");
+						propertyGroup.SetProperty(codon.Id, item.ToString(), escapeValue);
+					}
+				}
 			}
 		}
 		

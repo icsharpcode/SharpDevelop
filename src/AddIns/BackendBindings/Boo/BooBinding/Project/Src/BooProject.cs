@@ -18,17 +18,11 @@ namespace Grunwald.BooBinding
 {
 	public class BooProject : CompilableProject
 	{
-		static bool initialized = false;
 		public static readonly string BooBinPath = Path.GetDirectoryName(typeof(BooProject).Assembly.Location);
 		
 		void Init()
 		{
 			reparseCodeSensitiveProperties.Add("Ducky");
-			
-			if (!initialized) {
-				initialized = true;
-				MSBuildEngine.MSBuildProperties.Add("BooBinPath", BooBinPath);
-			}
 		}
 		
 		public override string Language {

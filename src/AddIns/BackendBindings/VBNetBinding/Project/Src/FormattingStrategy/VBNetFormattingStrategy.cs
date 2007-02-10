@@ -351,7 +351,7 @@ namespace VBNetBinding.FormattingStrategy
 							if (Regex.IsMatch(texttoreplace.Trim(), statement.StartRegex, RegexOptions.IgnoreCase)) {
 								string indentation = GetIndentation(textArea, lineNr - 1);
 								if (isEndStatementNeeded(textArea, ref statement, lineNr)) {
-									textArea.Document.Insert(textArea.Caret.Offset, terminator + indentation + statement.EndStatement);
+									textArea.Document.Replace(curLine.Offset, curLine.Length, terminator + indentation + statement.EndStatement);
 									++undoCount;
 								}
 								for (int i = 0; i < statement.IndentPlus; i++) {
