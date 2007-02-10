@@ -324,6 +324,7 @@ namespace ICSharpCode.UnitTesting
 				if (TaskService.SomethingWentWrong && ErrorListPad.ShowAfterBuild) {
 					ShowErrorList();
 				}
+				ProjectService.RaiseEventEndBuild();
 			}
 		}
 		

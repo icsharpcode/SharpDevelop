@@ -53,6 +53,8 @@
     <Compile Include="CodeConverterTests.cs" />
     <Compile Include="CSharpExpressionFinderTests.cs" />
     <Compile Include="ExceptionClassOverridesTestFixture.cs" />
+    <Compile Include="FindNextWithCursorAtEndTestFixture.cs" />
+    <Compile Include="ForwardTextIteratorPositionIsEndOffsetTestFixture.cs" />
     <Compile Include="NRefactoryResolverTests.cs" />
     <Compile Include="CollectionClassOverridesTestFixture.cs" />
     <Compile Include="OverridableMethodsTestFixture.cs" />
@@ -67,8 +69,10 @@
     <Compile Include="MemberLookupHelperTests.cs" />
     <Compile Include="Utils\MockAmbience.cs" />
     <Compile Include="Utils\MockClass.cs" />
+    <Compile Include="Utils\MockCurrentDocumentIterator.cs" />
     <Compile Include="Utils\MockDecoration.cs" />
     <Compile Include="Utils\MockDefaultReturnType.cs" />
+    <Compile Include="Utils\MockDocument.cs" />
     <Compile Include="Utils\MockMethod.cs" />
     <Compile Include="Utils\MockProject.cs" />
     <Compile Include="Utils\MockProperty.cs" />

@@ -221,7 +221,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return IsAccessible(callingClass, isClassInInheritanceTree);
 		}
 		
-		
 		public virtual int CompareTo(IDecoration value)
 		{
 			return this.Modifiers - value.Modifiers;

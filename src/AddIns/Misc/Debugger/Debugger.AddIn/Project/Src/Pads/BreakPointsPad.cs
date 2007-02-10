@@ -10,10 +10,12 @@ using Debugger;
 using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Services;
 using ICSharpCode.SharpDevelop.Debugging;
+using System.Windows.Forms;
+using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
-	public class BreakPointsPad : BookmarkPad
+	public class BreakPointsPad : BookmarkPadBase
 	{
 		WindowsDebugger debugger;
 		NDebugger debuggerCore;
@@ -39,6 +41,11 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		public void InitializeDebugger()
 		{
 			debuggerCore = debugger.DebuggerCore;
+		}
+		
+		protected override bool ShowBookmarkInThisPad(SDBookmark mark)
+		{
+			return mark.IsVisibleInBookmarkPad && mark is Debugging.BreakpointBookmark;
 		}
 	}
 }

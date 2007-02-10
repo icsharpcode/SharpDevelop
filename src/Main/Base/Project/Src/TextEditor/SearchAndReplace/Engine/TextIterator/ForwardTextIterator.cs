@@ -91,8 +91,26 @@ namespace SearchAndReplace
 				case TextIteratorState.Done:
 					return false;
 				case TextIteratorState.Iterating:
+					if (oldOffset == -1 && textBuffer.Length == endOffset) {
+						// HACK: Take off one if the iterator start
+						// position is at the end of the text.
+						Position--;
+					}
+					
+					if (oldOffset != -1 && Position == endOffset - 1 && textBuffer.Length == endOffset) {
+						state = TextIteratorState.Done;
+						return false;
+					}
+					
 					Position = (Position + numChars) % textBuffer.Length;
 					bool finish = oldOffset != -1 && (oldOffset > Position || oldOffset < endOffset) && Position >= endOffset;
+					
+					// HACK: Iterating is complete if Position == endOffset - 1 
+					// when the iterator start position was initially at the
+					// end of the text.
+					if (oldOffset != -1 && oldOffset == endOffset - 1 && textBuffer.Length == endOffset) {
+						finish = true;
+					}
 					
 					oldOffset = Position;
 					if (finish) {

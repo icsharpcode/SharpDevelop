@@ -14,7 +14,7 @@ using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.Bookmarks
 {
-	public class BookmarkPad : AbstractPadContent
+	public sealed class BookmarkPad : BookmarkPadBase
 	{
 		static BookmarkPad instance;
 		
@@ -27,11 +27,19 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			}
 		}
 		
+		public BookmarkPad()
+		{
+			instance = this;
+		}
+	}
+	
+	public abstract class BookmarkPadBase : AbstractPadContent
+	{
 		Panel       myPanel          = new Panel();
 		ExtTreeView bookmarkTreeView = new ExtTreeView();
 		
 		Dictionary<string, BookmarkFolderNode> fileNodes = new Dictionary<string, BookmarkFolderNode>();
-			
+		
 		public override Control Control {
 			get {
 				return myPanel;
@@ -44,21 +52,23 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			}
 		}
 		
-		public BookmarkPad()
+		protected virtual ToolStrip CreateToolStrip()
 		{
-			instance = this;
-			
+			ToolStrip toolStrip = ToolbarService.CreateToolStrip(this, "/SharpDevelop/Pads/BookmarkPad/Toolbar");
+			toolStrip.Stretch   = true;
+			toolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+			return toolStrip;
+		}
+		
+		protected BookmarkPadBase()
+		{
 			bookmarkTreeView.Dock = DockStyle.Fill;
 			bookmarkTreeView.CheckBoxes = true;
 			bookmarkTreeView.HideSelection = false;
 			bookmarkTreeView.Font = ExtTreeNode.RegularBigFont;
 			bookmarkTreeView.IsSorted = false;
 			
-			ToolStrip toolStrip = ToolbarService.CreateToolStrip(this, "/SharpDevelop/Pads/BookmarkPad/Toolbar");
-			toolStrip.Stretch   = true;
-			toolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
-			
-			myPanel.Controls.AddRange(new Control[] { bookmarkTreeView, toolStrip} );
+			myPanel.Controls.AddRange(new Control[] { bookmarkTreeView, CreateToolStrip()} );
 			BookmarkManager.Added   += new BookmarkEventHandler(BookmarkManagerAdded);
 			BookmarkManager.Removed += new BookmarkEventHandler(BookmarkManagerRemoved);
 			
@@ -67,11 +77,10 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			}
 		}
 		
-		public class BookmarkNodeEnumerator {
-			public IEnumerator<TreeNode> GetEnumerator()
-			{
+		public IEnumerable<TreeNode> AllNodes {
+			get {
 				Stack<TreeNode> treeNodes = new Stack<TreeNode>();
-				foreach (TreeNode node in Instance.bookmarkTreeView.Nodes) {
+				foreach (TreeNode node in bookmarkTreeView.Nodes) {
 					treeNodes.Push(node);
 				}
 				
@@ -82,13 +91,6 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 					}
 					yield return node;
 				}
-			}
-		}
-		BookmarkNodeEnumerator bookmarkNodeEnumerator = new BookmarkNodeEnumerator();
-		
-		public BookmarkNodeEnumerator AllNodes {
-			get {
-				return bookmarkNodeEnumerator;
 			}
 		}
 		
@@ -112,7 +114,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		
 		void AddMark(SDBookmark mark)
 		{
-			if (!mark.IsVisibleInBookmarkPad)
+			if (!ShowBookmarkInThisPad(mark))
 				return;
 			if (!fileNodes.ContainsKey(mark.FileName)) {
 				BookmarkFolderNode folderNode = new BookmarkFolderNode(mark.FileName);
@@ -123,7 +125,12 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			fileNodes[mark.FileName].Expand();
 		}
 		
-		void BookmarkManagerAdded(object sender, BookmarkEventArgs e) 
+		protected virtual bool ShowBookmarkInThisPad(SDBookmark mark)
+		{
+			return mark.IsVisibleInBookmarkPad && !(mark is Debugging.BreakpointBookmark);
+		}
+		
+		void BookmarkManagerAdded(object sender, BookmarkEventArgs e)
 		{
 			AddMark((SDBookmark)e.Bookmark);
 		}

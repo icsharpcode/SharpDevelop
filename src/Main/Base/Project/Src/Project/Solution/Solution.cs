@@ -38,6 +38,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			preferences = new SolutionPreferences(this);
 		}
 		
+		[Browsable(false)]
 		public MSBuild.Engine BuildEngine {
 			get { return buildEngine; }
 		}

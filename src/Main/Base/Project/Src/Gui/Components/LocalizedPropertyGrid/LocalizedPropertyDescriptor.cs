@@ -17,7 +17,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 	/// </summary>
 	public class LocalizedPropertyDescriptor : PropertyDescriptor
 	{
-		PropertyDescriptor basePropertyDescriptor; 
+		PropertyDescriptor basePropertyDescriptor;
 		
 		string localizedName        = String.Empty;
 		string localizedDescription = String.Empty;
@@ -118,6 +118,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public override void ResetValue(object component)
 		{
 			this.basePropertyDescriptor.ResetValue(component);
+			if (component is LocalizedObject) {
+				((LocalizedObject)component).InformSetValue(this, component, null);
+			}
 		}
 
 		public override bool ShouldSerializeValue(object component)
@@ -128,7 +131,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public override void SetValue(object component, object value)
 		{
 			if (this.customTypeConverter != null && value.GetType() != PropertyType) {
-				this.basePropertyDescriptor.SetValue(component, this.customTypeConverter.ConvertFrom(value));	
+				this.basePropertyDescriptor.SetValue(component, this.customTypeConverter.ConvertFrom(value));
 			} else {
 				this.basePropertyDescriptor.SetValue(component, value);
 			}

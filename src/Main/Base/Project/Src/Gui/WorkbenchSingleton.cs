@@ -73,6 +73,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			StatusBarService.Initialize();
 			DomHostCallback.Register(); // must be called after StatusBarService.Initialize()
 			ParserService.InitializeParserService();
+			Bookmarks.BookmarkManager.Initialize();
 			Project.CustomToolsService.Initialize();
 			
 			workbench = new DefaultWorkbench();
