@@ -7,6 +7,7 @@
 
 #region Using
 using System;
+using System.IO;
 using System.Drawing;
 using System.Reflection;
 using System.Collections;
@@ -50,7 +51,7 @@ namespace WorkflowDesigner
 					RemoveAllSideTabs();
 				else {
 					if (activeProject != null)
-						RemoveSideTabsForProject(activeProject);
+						RemoveProjectSideTabs(activeProject);
 					ShowSideTabsForProject(value);
 				}
 				
@@ -95,6 +96,7 @@ namespace WorkflowDesigner
 
 			ProjectService.ProjectItemRemoved += ProjectItemRemovedEventHandler;
 			ProjectService.ProjectItemAdded += ProjectItemAddedEventHandler;
+			ProjectService.SolutionClosing += SolutionClosingEventHandler;
 			
 			initialised = true;
 		}
@@ -109,10 +111,8 @@ namespace WorkflowDesigner
 			
 			// Make sure the standard workflow sidebar exists
 			if (standardSideTab == null) {
-				Assembly assembly = AppDomain.CurrentDomain.Load("System.Workflow.Activities, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35");
-				standardSideTab = CreateSideTabFromAssembly("Workflow", assembly);
-				assembly = AppDomain.CurrentDomain.Load("System.Workflow.ComponentModel, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35");
-				LoadSideTabItemsFromAssembly(assembly, standardSideTab);
+				standardSideTab = CreateSideTabFromAssembly("Workflow", new AssemblyName("System.Workflow.Activities, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35"));
+				LoadSideTabItemsFromAssembly(new AssemblyName("System.Workflow.ComponentModel, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35"), standardSideTab);
 			}
 
 			// Attach the handlers.
@@ -123,7 +123,7 @@ namespace WorkflowDesigner
 		}
 		
 		
-		#region ProjectService ProjectItems added/removed handlers
+		#region ProjectService event handlers
 		private static void ProjectItemAddedEventHandler(object sender, ProjectItemEventArgs e)
 		{
 			if (e.Project == null) return;
@@ -141,7 +141,7 @@ namespace WorkflowDesigner
 				if (!e.ProjectItem.Include.StartsWith("System")){
 					references.Add(item, CreateSideTabForProjectItem(item));
 				}
-					
+				
 			} else {
 				return;
 			}
@@ -171,6 +171,18 @@ namespace WorkflowDesigner
 				references.Remove(item);
 			}
 		}
+		
+		private static void SolutionClosingEventHandler(object sender, SolutionEventArgs e)
+		{
+			foreach (IProject project in e.Solution.Projects) {
+				if (Projects.ContainsKey(project)) {
+					RemoveProjectSideTabs(project);
+					Projects.Remove(project);
+				}
+			}
+		}
+		
+		
 		#endregion
 		
 		#region IViewContent event handlers
@@ -194,10 +206,10 @@ namespace WorkflowDesigner
 				SharpDevelopSideBar.SideBar.Tabs.Add(standardSideTab);
 			}
 
-			ActiveProject = ProjectService.CurrentProject;
 			
 			LoggingService.DebugFormatted("ViewActivated {0}", sender);
 			activeViewContent = sender as IViewContent;
+			ActiveProject = ProjectService.OpenSolution.FindProjectContainingFile(activeViewContent.PrimaryFileName);
 			
 			SharpDevelopSideBar.SideBar.Refresh();
 		}
@@ -207,26 +219,47 @@ namespace WorkflowDesigner
 		{
 			if (!Projects.ContainsKey(project)){
 				Dictionary<ReferenceProjectItem, SideTab> tabs = new Dictionary<ReferenceProjectItem, SideTab>();
+				tabs.Add(new ReferenceProjectItem(project), CreateCustomComponentsSideTab(project));
 				LoadProjectReferenceSideTabs(project, tabs);
 				Projects.Add(project, tabs);
 			}
 			
 			Dictionary<ReferenceProjectItem, SideTab> references = Projects[project];
 			foreach (SideTab sideTab in references.Values) {
-				if (!SharpDevelopSideBar.SideBar.Tabs.Contains(sideTab)) {
-					SharpDevelopSideBar.SideBar.Tabs.Add(sideTab);
+				if (sideTab.Items.Count > 1) {
+					if (!SharpDevelopSideBar.SideBar.Tabs.Contains(sideTab)) {
+						SharpDevelopSideBar.SideBar.Tabs.Add(sideTab);
+					}
 				}
 			}
+		}
+		
+		private static SideTab CreateCustomComponentsSideTab(IProject project)
+		{
+			AssemblyName assemblyName = new AssemblyName();
+			assemblyName.CodeBase = project.OutputAssemblyFullPath;
+			
+			SideTab sideTab = new SideTab("Project components");
+			sideTab.CanSaved = false;
+			AddPointerToSideTab(sideTab);
+
+			// TODO: Need to load the sidetab with activities from the current project.
+			//       Cannot use LoadSideTabFromAssembly as it will only
+			//		 load public components from the assembly.
+			
+			
+			SortSideTabItems(sideTab);
+			return sideTab;
 		}
 		
 		private static void RemoveAllSideTabs()
 		{
 			foreach (IProject project in Projects.Keys) {
-				RemoveSideTabsForProject(project);
+				RemoveProjectSideTabs(project);
 			}
 		}
 		
-		private static void RemoveSideTabsForProject(IProject project)
+		private static void RemoveProjectSideTabs(IProject project)
 		{
 			if (!Projects.ContainsKey(project))
 				return;
@@ -255,35 +288,35 @@ namespace WorkflowDesigner
 		
 		private static SideTab CreateSideTabForProjectItem(ProjectItem item)
 		{
-			Assembly assembly = null;
+			AssemblyName assemblyName = null;
 			
 			if (item is ProjectReferenceProjectItem) {
 				ProjectReferenceProjectItem pitem = item as ProjectReferenceProjectItem;
-				AssemblyName name = new AssemblyName();
+				assemblyName = new AssemblyName();
 				
-				name.CodeBase = pitem.ReferencedProject.OutputAssemblyFullPath;
-				assembly = AppDomain.CurrentDomain.Load(name);
+				assemblyName.CodeBase = pitem.ReferencedProject.OutputAssemblyFullPath;
+				return CreateSideTabFromAssembly(pitem.ReferencedProject.Name, assemblyName);
 				
 			} else if (item is ReferenceProjectItem) {
-				AssemblyName name = new AssemblyName();
-				name.CodeBase = item.FileName;
-				assembly = AppDomain.CurrentDomain.Load(name);
+				assemblyName = new AssemblyName();
+				assemblyName.CodeBase = item.FileName;
+				return CreateSideTabFromAssembly(Path.GetFileNameWithoutExtension(item.FileName) + " components",assemblyName);
 			}
 			
-			return CreateSideTabFromAssembly(assembly);
+			return null;
 		}
 		
-		private static SideTab CreateSideTabFromAssembly(Assembly assembly)
+		private static SideTab CreateSideTabFromAssembly(AssemblyName assemblyName)
 		{
-			return CreateSideTabFromAssembly(assembly.GetName().Name + " components", assembly);
+			return CreateSideTabFromAssembly(assemblyName.FullName + " components", assemblyName);
 		}
 
-		private static SideTab CreateSideTabFromAssembly(string name, Assembly assembly)
+		private static SideTab CreateSideTabFromAssembly(string name, AssemblyName assemblyName)
 		{
 			SideTab sideTab = new SideTab(name);
 			sideTab.CanSaved = false;
 			AddPointerToSideTab(sideTab);
-			LoadSideTabItemsFromAssembly(assembly, sideTab);
+			LoadSideTabItemsFromAssembly(assemblyName, sideTab);
 			SortSideTabItems(sideTab);
 			return sideTab;
 		}
@@ -300,9 +333,10 @@ namespace WorkflowDesigner
 			sideTab.Items.Add(sti);
 		}
 		
-		private static void LoadSideTabItemsFromAssembly(Assembly assembly, SideTab sideTab)
+		private static void LoadSideTabItemsFromAssembly(AssemblyName assemblyName, SideTab sideTab)
 		{
-			ICollection toolboxItems = System.Drawing.Design.ToolboxService.GetToolboxItems(assembly.GetName());
+			ICollection toolboxItems = System.Drawing.Design.ToolboxService.GetToolboxItems(assemblyName);
+			
 			foreach (ToolboxItem tbi in toolboxItems)
 			{
 				//TODO: Add further checking to see if this component can actually be put on the sidetab.
@@ -314,6 +348,8 @@ namespace WorkflowDesigner
 				sti.Icon = tbi.Bitmap;
 				sideTab.Items.Add(sti);
 			}
+			
+			System.Drawing.Design.ToolboxService.UnloadToolboxItems();
 		}
 		
 		private static void SortSideTabItems(SideTab sideTab)

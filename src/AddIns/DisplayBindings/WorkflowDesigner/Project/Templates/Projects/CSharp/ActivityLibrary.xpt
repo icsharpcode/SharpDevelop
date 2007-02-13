@@ -30,6 +30,10 @@
 			<OutputType>Library</OutputType>
 		</PropertyGroup>
 		
+		<PropertyGroup escapeValue="false">
+		    <ProjectTypeGuids>{14822709-B5A1-4724-98CA-57A101D1B079};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+		</PropertyGroup>
+
 		<Files>
 		
 			<!-- Assembly -->
@@ -70,7 +74,7 @@ using System.Runtime.InteropServices;
 			</File>
 			
 			<!-- Workflow Code -->
-			<File name="Activities\Activity1.xoml.cs" DependentUpon="Activity1.xoml" language="C#">
+			<File name="Activity1.xoml.cs" DependentUpon="Activity1.xoml" language="C#">
 				<![CDATA[${StandardHeader.C#}
 
 using System;
@@ -85,7 +89,7 @@ namespace ${StandardNamespace}
 			</File>
 			
 			<!-- Workflow -->
-			<File name="Activities\Activity1.xoml" language="Xoml" buildAction="Content" SubType="Component">
+			<File name="Activity1.xoml" language="Xoml" buildAction="Content" SubType="Component">
 				<![CDATA[<SequenceActivity
 	x:Class="${StandardNamespace}.Activity1" 
 	x:Name="Activity1" 

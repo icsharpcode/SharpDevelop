@@ -7,6 +7,7 @@
 
 #region Using
 using System;
+using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using System.Workflow.ComponentModel.Compiler;
@@ -134,14 +135,13 @@ namespace WorkflowDesigner
 			Assembly assembly = null;
 			
 			if (item is ProjectReferenceProjectItem) {
-				throw new NotImplementedException("ProjectReferenceProjectItem references not implemented yet!");
-
+				ProjectReferenceProjectItem pitem = item as ProjectReferenceProjectItem;
+				AssemblyName name = new AssemblyName();
+				name.CodeBase = pitem.ReferencedProject.OutputAssemblyFullPath;
 				
-				//ProjectReferenceProjectItem pitem = item as ProjectReferenceProjectItem;
-				
-				//AssemblyName name = new AssemblyName();
-				//name.CodeBase = pitem.ReferencedProject.OutputAssemblyFullPath;
-				//assembly = appDomain.Load(name);
+				// TODO: This is only a temporary solution so the assembly is not locked.
+				// Need to look at this in terms of using a separate domain.
+				assembly = appDomain.Load(File.ReadAllBytes(pitem.ReferencedProject.OutputAssemblyFullPath));
 
 			} else if (item is ReferenceProjectItem) {
 				assembly = ReflectionLoader.ReflectionLoadGacAssembly(item.Include, false);
@@ -152,7 +152,7 @@ namespace WorkflowDesigner
 					assembly = appDomain.Load(name);
 				}
 				
-			} 
+			}
 			
 			return assembly;
 		}

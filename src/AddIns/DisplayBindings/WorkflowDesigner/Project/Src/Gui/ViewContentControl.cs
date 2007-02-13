@@ -163,6 +163,7 @@ namespace WorkflowDesigner
 		void ComponentAddedHandler(object sender, ComponentEventArgs args)
 		{
 			UpdateCodeCompileUniteCompileUnit();
+			viewContent.PrimaryFile.MakeDirty();
 			LoggingService.Debug("ComponentAddedHandler");
 		}
 		

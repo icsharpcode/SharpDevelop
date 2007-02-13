@@ -22,11 +22,15 @@
 			<Reference Include="System.Workflow.ComponentModel" />
 			<Reference Include="System.Workflow.Runtime" />
 		</ProjectItems>
-	
-	<Files>
-		<!-- Assembly -->
-		<File name="Configuration\AssemblyInfo.cs">
-			<![CDATA[using System.Reflection;
+		
+		<PropertyGroup escapeValue="false">
+			<ProjectTypeGuids>{14822709-B5A1-4724-98CA-57A101D1B079};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+		</PropertyGroup>
+		
+		<Files>
+			<!-- Assembly -->
+			<File name="Configuration\AssemblyInfo.cs">
+				<![CDATA[using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -59,7 +63,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyVersion("1.0.0.0")]
 
 ]]>
-		</File>
-	</Files>
+			</File>
+		</Files>
 	</Project>
 </Template>

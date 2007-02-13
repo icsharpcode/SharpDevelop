@@ -11,7 +11,7 @@
 	</TemplateConfiguration>
 	
 	<Actions>
-		<Open filename="Main.cs" />
+		<Open filename="Workflow1.xoml" />
 	</Actions>
 	
 	<Project language="C#">
@@ -25,6 +25,10 @@
 			<Reference Include="System.Workflow.ComponentModel" />
 			<Reference Include="System.Workflow.Runtime" />
 		</ProjectItems>
+		
+		<PropertyGroup escapeValue="false">
+			<ProjectTypeGuids>{14822709-B5A1-4724-98CA-57A101D1B079};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+		</PropertyGroup>
 		
 		
 		<Files>
@@ -103,7 +107,7 @@ using System.Runtime.InteropServices;
 			</File>
 			
 			<!-- Workflow Code -->
-			<File name="Workflows\Workflow1.xoml.cs" DependentUpon="Workflow1.xoml" language="C#">
+			<File name="Workflow1.xoml.cs" DependentUpon="Workflow1.xoml" language="C#">
 				<![CDATA[${StandardHeader.C#}
 
 using System;
@@ -111,14 +115,14 @@ using System.Workflow.Activities;
 
 namespace ${StandardNamespace}
 {
-	partial class Workflow1 : SequentialWorkflowActivity
+	public partial class Workflow1 : SequentialWorkflowActivity
 	{
 	}
 }]]>
 			</File>
 			
 			<!-- Workflow -->
-			<File name="Workflows\Workflow1.xoml" language="Xoml" buildAction="Content" SubType="Component">
+			<File name="Workflow1.xoml" language="Xoml" buildAction="Content" SubType="Component">
 				<![CDATA[<SequentialWorkflowActivity
 	x:Class="${StandardNamespace}.Workflow1" 
 	x:Name="Workflow1" 

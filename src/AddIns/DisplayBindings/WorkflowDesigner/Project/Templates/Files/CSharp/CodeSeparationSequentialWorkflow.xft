@@ -20,7 +20,7 @@ using System.Workflow.Activities;
 
 namespace ${StandardNamespace}
 {
-	partial class ${ClassName} : SequentialWorkflowActivity
+	public partial class ${ClassName} : SequentialWorkflowActivity
 	{
 		
 	}
