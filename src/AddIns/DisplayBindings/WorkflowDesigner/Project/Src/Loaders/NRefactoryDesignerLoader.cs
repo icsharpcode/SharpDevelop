@@ -100,7 +100,7 @@ namespace WorkflowDesigner
 			LoaderHost.AddService(typeof(IToolboxService), new WorkflowToolboxService(LoaderHost));
 			LoaderHost.AddService(typeof(MemberRelationshipService), new DefaultMemberRelationshipService());
 			LoaderHost.AddService(typeof(IMenuCommandService), new WorkflowMenuCommandService(LoaderHost));
-			LoaderHost.AddService(typeof(ITypeResolutionService), new TypeResolutionService(LoaderHost));
+			LoaderHost.AddService(typeof(ITypeResolutionService), new TypeResolutionService(ProjectService.OpenSolution.FindProjectContainingFile(this.textEditorControl.FileName),LoaderHost));
 			LoaderHost.AddService(typeof(IPropertyValueUIService), new PropertyValueUIService());
 			
 			base.Initialize();

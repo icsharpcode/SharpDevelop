@@ -24,10 +24,13 @@ namespace WorkflowDesigner
 	/// </summary>
 	public class TypeResolutionService : ITypeResolutionService, IServiceProvider
 	{
+		IProject project;
+		
 		
 		#region Constructors
-		public TypeResolutionService(IServiceProvider provider)
+		public TypeResolutionService(IProject project, IServiceProvider provider)
 		{
+			this.project = project;
 			this.provider = provider;
 		}
 		#endregion
@@ -68,29 +71,32 @@ namespace WorkflowDesigner
 
 			// Ignoring versions numbers on types.
 			string[] splitName = name.Split(',');
-			string typeName     = splitName[0];
+			string typeName     = splitName[0].Replace('+','.');
 			
 			// Check for the type ourselves in the projects referenced assemblies
 			// as the System.Workflow.ComponentModel.Compiler.TypeProvider does
 			// not seem find private types in referenced assemblies!
 			TypeProvider typeProvider = provider.GetService(typeof(ITypeProvider)) as TypeProvider;
-			if (typeProvider != null)
-			{
-				
+			if (typeProvider != null) {
 				foreach (Assembly asm in typeProvider.ReferencedAssemblies){
-					type = asm.GetType(typeName, throwOnError, ignoreCase);
-					if (type != null)
-						return type;
+					foreach (Module module in asm.GetModules()){
+						type = module.GetType(typeName, throwOnError, ignoreCase);
+						if (type != null) 
+							return type;
+					}
 				}
 			}
-
+			
 			if (type == null)
-			{
+				type = typeProvider.GetType(typeName, throwOnError);
+			
+			// TODO: Need to check current project see if we can find it!
+
+			if (type == null) {
 				LoggingService.WarnFormatted("TypeResolutionService failed to find type {0}", typeName);
 				if (throwOnError)
 					throw new TypeLoadException(name + " not found by TypeResolutionService");
 			}
-
 			return type;
 			
 		}
@@ -106,6 +112,8 @@ namespace WorkflowDesigner
 				if (asm.FullName == name.FullName)
 					return;
 			}
+			
+			LoggingService.DebugFormatted("TypeResolutionService.ReferenceAssembly {0}", name);
 			
 			// TODO: Not in project so add the reference.
 //			IProject project = ProjectService.CurrentProject;

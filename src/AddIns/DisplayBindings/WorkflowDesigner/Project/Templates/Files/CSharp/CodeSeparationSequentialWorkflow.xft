@@ -26,7 +26,7 @@ namespace ${StandardNamespace}
 	}
 }]]></File>
 
-<File name="${FullName}" language="Xoml"><![CDATA[<SequentialWorkflowActivity 
+<File name="${FullName}"  language="Xoml" buildAction="Content" SubType="Component"><![CDATA[<SequentialWorkflowActivity 
 	x:Class="${StandardNamespace}.${ClassName}" 
 	x:Name="${ClassName}" 
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 

@@ -7,15 +7,22 @@
 
 #region Using
 using System;
+using System.Collections.Specialized;
 using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using System.Workflow.ComponentModel.Compiler;
 using System.Reflection;
+using System.CodeDom;
+using System.CodeDom.Compiler;
 
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.Core;
+using ICSharpCode.NRefactory.Visitors;
+using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.NRefactory;
 #endregion
 
 namespace WorkflowDesigner
@@ -29,8 +36,9 @@ namespace WorkflowDesigner
 	public class TypeProviderService
 	{
 		private static Dictionary<IProject, TypeProvider> providers = null;
+		private static Dictionary<FileProjectItem, CodeCompileUnit> codeCompileUnits = null;
 
-		#region Property Accessorors
+		#region Property Accessors
 		private static Dictionary<IProject, TypeProvider> Providers {
 			get {
 				if (providers == null)
@@ -39,6 +47,15 @@ namespace WorkflowDesigner
 				return providers;
 			}
 		}
+		private static Dictionary<FileProjectItem, CodeCompileUnit> CodeCompileUnits {
+			get {
+				if (codeCompileUnits == null)
+					codeCompileUnits = new Dictionary<FileProjectItem, CodeCompileUnit>();
+
+				return codeCompileUnits;
+			}
+		}
+		
 		#endregion
 		
 		
@@ -64,14 +81,19 @@ namespace WorkflowDesigner
 			
 			TypeProvider typeProvider = new TypeProvider(null);
 			
-			// Always need the core runtime!
-			Assembly assembly2 = AppDomain.CurrentDomain.Load("mscorlib");
-			typeProvider.AddAssembly(assembly2);
+			// Add the essential designer assemblies.
+			typeProvider.AddAssembly(typeof(System.Object).Assembly);
+			typeProvider.AddAssembly(typeof(System.ComponentModel.Design.Serialization.CodeDomSerializer).Assembly);
+			typeProvider.AddAssembly(typeof(System.Workflow.ComponentModel.DependencyObject).Assembly);
+			typeProvider.AddAssembly(typeof(System.Workflow.Activities.CodeActivity).Assembly);
+			typeProvider.AddAssembly(typeof(System.Workflow.Runtime.WorkflowRuntime).Assembly);
 
+			// Just return the basic provider if not related to a project.
 			if (project == null)
 				return typeProvider;
 			
 			LoadProjectReferences(project, typeProvider);
+			RefreshCodeCompileUnits(project, typeProvider);
 			
 			Providers.Add(project, typeProvider);
 
@@ -88,8 +110,10 @@ namespace WorkflowDesigner
 				
 				Assembly assembly = LoadAssembly(item, AppDomain.CurrentDomain);
 				
-				if (assembly != null)
-					typeProvider.AddAssembly(assembly);
+				if (assembly != null) {
+					if (!typeProvider.ReferencedAssemblies.Contains(assembly))
+						typeProvider.AddAssembly(assembly);
+				}
 			}
 			
 		}
@@ -185,6 +209,134 @@ namespace WorkflowDesigner
 			
 			LoadProjectReferences(project, typeProvider);
 			
+		}
+		
+		private static void RefreshCodeCompileUnits(IProject project, TypeProvider typeProvider)
+		{
+			ICSharpCode.Core.LoggingService.Debug("RefreshCodeCompileUnits");
+			
+			// First use the workflow compiler to create one ccu for all the workflows
+			StringCollection files = new StringCollection();
+			foreach (ProjectItem item in project.GetItemsOfType(ItemType.Content)){
+				files.AddRange(GetRelatedFiles(project, item.FileName));
+			}
+
+			string[] s = new string[files.Count];
+			for (int i = 0; i < files.Count; i++)
+				s[i] = files[i];
+
+			CodeCompileUnit ccu = ParseXoml(project, s);
+			if (ccu != null) {
+				typeProvider.AddCodeCompileUnit(ccu);
+				cp.UserCodeCompileUnits.Add(ccu);
+			}
+
+			// Now create one ccu for each source file.
+			foreach (ProjectItem item in project.GetItemsOfType(ItemType.Compile)){
+				ICSharpCode.Core.LoggingService.Debug(item.FileName);
+				if (item is FileProjectItem) {
+					ccu = Parse(item.FileName);
+					if (ccu != null) {
+						typeProvider.AddCodeCompileUnit(ccu);
+						cp.UserCodeCompileUnits.Add(ccu);
+						CodeCompileUnits.Add(item as FileProjectItem, ccu);
+					}
+				}
+			}
+		}
+
+		public static void UpdateCodeCompileUnit(FileProjectItem item)
+		{
+			TypeProvider typeProvider = Providers[item.Project];
+			if (typeProvider == null)
+				return;
+			
+			// Remove the old ccu
+			if (CodeCompileUnits.ContainsKey(item))
+				typeProvider.RemoveCodeCompileUnit(CodeCompileUnits[item]);
+			
+			// Build the new unit.
+			CodeCompileUnit codeCompileUnit = Parse(item.FileName);
+
+			// Now add the new unit.
+			if ( codeCompileUnit != null) {
+				typeProvider.AddCodeCompileUnit(codeCompileUnit);
+				if (CodeCompileUnits.ContainsKey(item))
+					CodeCompileUnits[item] = codeCompileUnit;
+				else
+					CodeCompileUnits.Add(item, codeCompileUnit);
+			}
+			
+		}
+		
+		static WorkflowCompilerParameters cp = new WorkflowCompilerParameters();
+		
+		private static string[] GetRelatedFiles(IProject project, string fileName)
+		{
+			StringCollection files = new StringCollection();
+			files.Add(fileName);
+			
+			foreach (ProjectItem item in project.Items){
+				if (item is FileProjectItem) {
+					FileProjectItem fItem = item as FileProjectItem;
+					if ((item.ItemType == ItemType.Compile) || (item.ItemType == ItemType.Content)) {
+						if (fItem.DependentUpon == Path.GetFileName(fileName)){
+							files.Add(item.FileName);
+						}
+					}
+				}
+			}
+			
+			
+			string[] s = new string[files.Count];
+			for (int i = 0; i < files.Count; i++)
+				s[i] = files[i];
+			
+			return s;
+		}
+		
+		private static CodeCompileUnit ParseXoml(IProject project, string[] fileNames)
+		{
+			ICSharpCode.Core.LoggingService.DebugFormatted("ParseXoml {0}", fileNames);
+
+			cp.GenerateCodeCompileUnitOnly = true;
+			cp.LanguageToUse = "CSharp";
+			
+			WorkflowCompiler compiler = new WorkflowCompiler();
+			WorkflowCompilerResults results = compiler.Compile(cp, fileNames);
+			
+			if (results.Errors.Count > 0) {
+				foreach (CompilerError e in results.Errors) {
+					ICSharpCode.Core.LoggingService.ErrorFormatted("{0}: {1}: {2}", e.Line, e.ErrorNumber, e.ErrorText);
+				}
+				return null;
+			}
+			
+			return results.CompiledUnit;
+			
+		}
+
+		private static CodeCompileUnit Parse(string fileName)
+		{
+			ICSharpCode.Core.LoggingService.DebugFormatted("Parse {0}", fileName);
+			
+			string fileContent = ParserService.GetParseableFileContent(fileName);
+
+			ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser(SupportedLanguage.CSharp, new StringReader(fileContent));
+			parser.Parse();
+			if (parser.Errors.Count > 0) {
+				return null;
+			}
+
+			
+			CodeDomVisitor visitor = new CodeDomVisitor();
+			try {
+				visitor.VisitCompilationUnit(parser.CompilationUnit, null);
+				return visitor.codeCompileUnit;
+			} catch (Exception e) {
+				ICSharpCode.Core.LoggingService.Error("Parse", e);
+				return null;
+			}
 		}
 		
 	}

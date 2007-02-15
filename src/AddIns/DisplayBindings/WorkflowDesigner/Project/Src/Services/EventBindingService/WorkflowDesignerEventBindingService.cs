@@ -30,6 +30,7 @@ using ICSharpCode.TextEditor.Document;
 using ICSharpCode.NRefactory.Visitors;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.SharpDevelop.Project;
 
 #endregion
 
@@ -41,7 +42,6 @@ namespace WorkflowDesigner
 	public abstract class WorkflowDesignerEventBindingService : IWorkflowDesignerEventBindingService, IServiceProvider
 	{
 		string codeFileName;
-		CodeCompileUnit ccu;
 
 		protected WorkflowDesignerEventBindingService(IServiceProvider provider, string codeSeparationFileName)
 		{
@@ -55,15 +55,11 @@ namespace WorkflowDesigner
 		{
 			LoggingService.Debug("UpdateCCU");
 
-			TypeProvider typeProvider = (TypeProvider)this.GetService(typeof(ITypeProvider));
+			IProject project = ProjectService.OpenSolution.FindProjectContainingFile(codeFileName);
+			FileProjectItem fpi = project.FindFile(codeFileName);
+			
+			TypeProviderService.UpdateCodeCompileUnit(fpi);
 
-			if (ccu != null)
-				typeProvider.RemoveCodeCompileUnit(ccu);
-			
-			ccu = Parse();
-			
-			if (ccu != null)
-				typeProvider.AddCodeCompileUnit(ccu);
 		}
 
 		public string CodeFileName {

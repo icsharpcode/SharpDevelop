@@ -19,6 +19,7 @@ using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Widgets.SideBar;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Dom;
 #endregion
 
 namespace WorkflowDesigner
@@ -247,6 +248,10 @@ namespace WorkflowDesigner
 			//       Cannot use LoadSideTabFromAssembly as it will only
 			//		 load public components from the assembly.
 			
+			IProjectContent projectContent = ParserService.GetProjectContent(project);
+			foreach (IProjectContent pc in  projectContent.ReferencedContents){
+				//LoggingService.DebugFormatted(pc.ToString());
+			}
 			
 			SortSideTabItems(sideTab);
 			return sideTab;

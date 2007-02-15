@@ -17,6 +17,7 @@ using System.IO;
 using System.Drawing.Design;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
@@ -154,15 +155,8 @@ namespace WorkflowDesigner
 			selectionService.SelectionChanged += new EventHandler(SelectionChangedHandler);
 		}
 		
-		void UpdateCodeCompileUniteCompileUnit()
-		{
-			IWorkflowDesignerEventBindingService srv = this.DesignerHost.GetService(typeof(IEventBindingService)) as IWorkflowDesignerEventBindingService;
-			srv.UpdateCodeCompileUnit();
-		}
-		
 		void ComponentAddedHandler(object sender, ComponentEventArgs args)
 		{
-			UpdateCodeCompileUniteCompileUnit();
 			viewContent.PrimaryFile.MakeDirty();
 			LoggingService.Debug("ComponentAddedHandler");
 		}
@@ -174,7 +168,6 @@ namespace WorkflowDesigner
 
 		void ComponentChangedHandler(object sender, ComponentChangedEventArgs args)
 		{
-			UpdateCodeCompileUniteCompileUnit();
 			viewContent.PrimaryFile.MakeDirty();
 			ISelectionService selectionService = (ISelectionService)designSurface.GetService(typeof(ISelectionService));
 			UpdatePropertyPadSelection(selectionService);

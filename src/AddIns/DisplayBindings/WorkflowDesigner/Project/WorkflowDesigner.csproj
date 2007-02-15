@@ -58,6 +58,7 @@
     <Reference Include="System.Workflow.ComponentModel">
       <Private>False</Private>
     </Reference>
+    <Reference Include="System.Workflow.Runtime" />
     <Reference Include="System.Xml">
       <Private>False</Private>
     </Reference>

@@ -130,7 +130,7 @@ namespace WorkflowDesigner
 			LoaderHost.AddService(typeof(IToolboxService), new WorkflowToolboxService(LoaderHost));
 			LoaderHost.AddService(typeof(ITypeProvider), TypeProviderService.GetTypeProvider(Project));
 			LoaderHost.AddService(typeof(IMenuCommandService), new WorkflowMenuCommandService(LoaderHost));
-			LoaderHost.AddService(typeof(ITypeResolutionService), new TypeResolutionService(LoaderHost));
+			LoaderHost.AddService(typeof(ITypeResolutionService), new TypeResolutionService(ProjectService.OpenSolution.FindProjectContainingFile(this.FileName),LoaderHost));
 			LoaderHost.AddService(typeof(IPropertyValueUIService), new PropertyValueUIService());
 
 			base.Initialize();
@@ -167,7 +167,7 @@ namespace WorkflowDesigner
 			if (compositeActivity != null)
 				AddChildren(compositeActivity);
 			
-			SetBaseComponentClassName(rootActivity.GetType().FullName);
+			SetBaseComponentClassName(rootActivity.GetValue(WorkflowMarkupSerializer.XClassProperty) as string);
 			
 			// Load the rules
 			if (File.Exists(rulesFileName)) {
