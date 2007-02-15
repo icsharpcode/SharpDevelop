@@ -28,8 +28,9 @@
 		<PlatformTarget/>
 	</PropertyGroup>
 	
-	<PropertyGroup Condition=" '$(TargetFrameworkVersion)' == 'v2.0' ">
-		<SharpDevelopUseMicrosoftFramework>true</SharpDevelopUseMicrosoftFramework>		
+	<PropertyGroup Condition=" ('$(TargetFrameworkVersion)' == 'v2.0') or ('$(TargetFrameworkVersion)' == '') ">
+		<TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+		<SharpDevelopUseMicrosoftFramework>true</SharpDevelopUseMicrosoftFramework>
 	</PropertyGroup>
 	
 	<PropertyGroup Condition=" '$(TargetFrameworkVersion)' == 'CF 1.0' ">
@@ -157,11 +158,20 @@
 	<Import Condition=" '$(TargetFrameworkVersion)' == 'Mono v1.1' " Project="$(SharpDevelopBinPath)\SharpDevelop.Build.Mono.Mbas.targets"/>
 	<Import Condition=" '$(TargetFrameworkVersion)' == 'Mono v2.0' " Project="$(SharpDevelopBinPath)\SharpDevelop.Build.Mono.Mbas.targets"/>
 	
-	<!-- Compact framework default platform values -->
-	<PropertyGroup Condition=" '$(SharpDevelopUseCompactFramework)' == 'true' ">
+	<!-- Compact framework property adjustments: -->
+	<!-- When StdLib is not set, set it to true and add reference to mscorlib -->
+	<!-- Set PlatformFamilyName and PlatformID if required -->
+	<PropertyGroup Condition=" '$(SharpDevelopTargetFrameworkClass)' == 'CF' ">
 		<PlatformFamilyName Condition=" '$(PlatformFamilyName)' == '' ">PocketPC</PlatformFamilyName>
-    	<PlatformID Condition=" '$(PlatformID)' == '' ">WinCE</PlatformID>
+		<PlatformID Condition=" '$(PlatformID)' == '' ">WinCE</PlatformID>
+		
+		<SharpDevelopAddReferenceToCompactMscorlib Condition="'$(NoStdLib)' == ''">true</SharpDevelopAddReferenceToCompactMscorlib>
+		<NoStdLib Condition="'$(NoStdLib)' == ''">true</NoStdLib>
 	</PropertyGroup>
+	
+	<ItemGroup Condition=" '$(SharpDevelopAddReferenceToCompactMscorlib)' == 'true' ">
+		<Reference Include="mscorlib"/>
+	</ItemGroup>
 	
 	<!-- Compact framework imports -->
 	<Import Condition=" ('$(TargetFrameworkVersion)' == 'v1.0') And ('$(SharpDevelopUseCompactFramework)' == 'true') "

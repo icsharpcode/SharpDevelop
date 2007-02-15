@@ -32,7 +32,7 @@
 				<End>&lt;/script&gt;</End>
 			</Span>
 			<Span name="UnknownScriptTag" bold="false" italic="false" color="SpringGreen" stopateol="false">
-				<Begin>&lt;script</Begin>
+				<Begin>&lt;script@C</Begin>
 				<End>&lt;/script&gt;</End>
 			</Span>
 			<Span name="HtmlTag" rule="HtmlTagSet" bold="false" italic="false" color="DarkMagenta" stopateol="false">

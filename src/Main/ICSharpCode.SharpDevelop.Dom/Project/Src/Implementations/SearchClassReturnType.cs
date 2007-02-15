@@ -114,14 +114,16 @@ namespace ICSharpCode.SharpDevelop.Dom
 				lock (cache) {
 					if (cache.TryGetValue(this, out type))
 						return type;
-					try {
-						isSearching = true;
-						type = pc.SearchType(new SearchTypeRequest(name, typeParameterCount, declaringClass, caretLine, caretColumn)).Result;
+				}
+				try {
+					isSearching = true;
+					type = pc.SearchType(new SearchTypeRequest(name, typeParameterCount, declaringClass, caretLine, caretColumn)).Result;
+					lock (cache) {
 						cache[this] = type;
-						return type;
-					} finally {
-						isSearching = false;
 					}
+					return type;
+				} finally {
+					isSearching = false;
 				}
 			}
 		}
