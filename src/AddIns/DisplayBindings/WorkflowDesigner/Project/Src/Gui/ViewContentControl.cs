@@ -22,6 +22,8 @@ using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
+
+using WorkflowDesigner.Loaders;
 #endregion
 
 namespace WorkflowDesigner

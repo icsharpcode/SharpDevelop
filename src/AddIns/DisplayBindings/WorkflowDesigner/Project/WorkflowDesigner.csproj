@@ -93,7 +93,8 @@
     <Compile Include="Src\Gui\ViewContentControl.Designer.cs">
       <DependentUpon>ViewContentControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="Src\Loaders\NRefactoryDesignerLoader.cs" />
+    <Compile Include="Src\Loaders\BasicWorkflowDesignerLoader.cs" />
+    <Compile Include="Src\Loaders\CodeDesignerLoader.cs" />
     <Compile Include="Src\Loaders\WorkflowDesignerLoadException.cs" />
     <Compile Include="Src\Loaders\XomlCodeSeparationDesignerLoader.cs" />
     <Compile Include="Src\Loaders\XomlDesignerLoader.cs" />
@@ -105,7 +106,6 @@
     <Compile Include="Src\Services\EventBindingService\EventPropertyDescriptor.cs" />
     <Compile Include="Src\Services\EventBindingService\IWorkflowDesignerEventBindingService.cs" />
     <Compile Include="Src\Services\EventBindingService\WorkflowDesignerEventBindingService.cs" />
-    <Compile Include="Src\Services\IdentifierCreationService.cs" />
     <Compile Include="Src\Services\MemberCreationService.cs" />
     <Compile Include="Src\Services\PropertyValueUIService.cs" />
     <Compile Include="Src\Services\TypeProviderService.cs" />

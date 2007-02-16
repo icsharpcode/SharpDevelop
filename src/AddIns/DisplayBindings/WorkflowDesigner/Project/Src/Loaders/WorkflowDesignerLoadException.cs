@@ -8,7 +8,7 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace WorkflowDesigner
+namespace WorkflowDesigner.Loaders
 {
 	/// <summary>
 	/// Description of WorkflowDesignerLoaderException.

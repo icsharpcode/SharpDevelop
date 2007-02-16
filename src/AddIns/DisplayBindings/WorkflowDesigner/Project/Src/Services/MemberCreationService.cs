@@ -21,6 +21,8 @@ namespace WorkflowDesigner
 	/// </summary>
 	public class MemberCreationService : IMemberCreationService, IServiceProvider
 	{
+		private string typeName = string.Empty;
+		
 		#region IServiceProvider implementation
 		IServiceProvider provider;
 		public object GetService(Type serviceType)
@@ -52,7 +54,7 @@ namespace WorkflowDesigner
 		public void UpdateTypeName(string oldClassName, string newClassName)
 		{
 			LoggingService.DebugFormatted("UpdateTypeName(oldClassName={0}, newClassName={1})", oldClassName, newClassName);
-			throw new NotImplementedException();
+			typeName = newClassName;
 		}
 		
 		public void UpdateBaseType(string className, Type baseType)

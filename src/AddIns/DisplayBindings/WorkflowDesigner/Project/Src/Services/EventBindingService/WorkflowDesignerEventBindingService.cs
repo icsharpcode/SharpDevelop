@@ -32,6 +32,8 @@ using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.SharpDevelop.Project;
 
+using WorkflowDesigner.Loaders;
+
 #endregion
 
 namespace WorkflowDesigner

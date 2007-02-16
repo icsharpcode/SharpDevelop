@@ -6,116 +6,81 @@
 // </file>
 
 #region Using
-using ICSharpCode.Core;
-using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.Ast;
-using ICSharpCode.NRefactory.Visitors;
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.TextEditor;
-using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Project;
-
 using System;
 using System.CodeDom;
-using System.CodeDom.Compiler;
-using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.ComponentModel.Design.Serialization;
-using System.Drawing.Design;
 using System.IO;
-using System.Reflection;
-using System.Workflow.ComponentModel.Compiler;
+using System.Workflow.ComponentModel;
 using System.Workflow.ComponentModel.Design;
-using System.Windows.Forms;
-#endregion
 
-namespace WorkflowDesigner
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.NRefactory.Visitors;
+#endregion 
+
+namespace WorkflowDesigner.Loaders
 {
-	public class DefaultMemberRelationshipService : MemberRelationshipService
-	{
-
-		public override bool SupportsRelationship(MemberRelationship source, MemberRelationship relationship)
-		{
-			return true;
-		}
-		protected override MemberRelationship GetRelationship(MemberRelationship source)
-		{
-			return base.GetRelationship(source);
-		}
-	}
-	
 	/// <summary>
-	/// Description of CodeDomLoader.
+	/// Description of CodeDesignerLoader.
 	/// </summary>
-	public class NRefactoryDesignerLoader : CodeDomDesignerLoader
+	public class CodeDesignerLoader : BasicWorkflowDesignerLoader
 	{
-		TextEditorControl textEditorControl;
-		//IDesignerGenerator    generator = new CSharpDesignerGenerator();
-		IViewContent viewContent;
-		
-		#region Constructors
-		public NRefactoryDesignerLoader(TextEditorControl textEditorControl, IViewContent viewContent) : base()
+		public CodeDesignerLoader(IViewContent viewContent) : base(viewContent)
 		{
-			this.textEditorControl = textEditorControl;
-			this.viewContent = viewContent;
 		}
-		#endregion
-		
-		CodeDomProvider codeDomProvider = Microsoft.CSharp.CSharpCodeProvider.CreateProvider("CSharp");
-		protected override CodeDomProvider CodeDomProvider {
-			get {
-				return codeDomProvider;
-			}
-		}
-		
-		protected override ITypeResolutionService TypeResolutionService {
-			get {
-				return GetService(typeof(ITypeResolutionService)) as ITypeResolutionService;
-			}
-		}
-		
-		
-		protected override void Write(CodeCompileUnit unit)
-		{
-			LoggingService.Debug("NRefactoryDesignerLoader.Write()");
-			throw new NotImplementedException();
-		}
-		
+	
 		protected override void Initialize()
 		{
-			ITypeProvider typeProvider = TypeProviderService.GetTypeProvider(ProjectService.OpenSolution.FindProjectContainingFile(viewContent.PrimaryFileName));
-			try {
-				typeProvider.GetType("System.ComponentModel.Design.Serialization.CodeDomSerializer", true);			
-			} catch (Exception ex) {
-				MessageService.ShowErrorFormatted("Unable to find class CodeDomSerializer, make sure the project has a reference to assembly System.Design");
-				throw ex;
-			}
-
-			LoaderHost.AddService(typeof(ITypeProvider), typeProvider);
-			LoaderHost.AddService(typeof(IIdentifierCreationService), new IdentifierCreationService());
-			LoaderHost.AddService(typeof(IMemberCreationService), new MemberCreationService(LoaderHost));
-			LoaderHost.AddService(typeof(IEventBindingService), new CSharpWorkflowDesignerEventBindingService(LoaderHost, viewContent.PrimaryFileName));
-			LoaderHost.AddService(typeof(IToolboxService), new WorkflowToolboxService(LoaderHost));
-			LoaderHost.AddService(typeof(MemberRelationshipService), new DefaultMemberRelationshipService());
-			LoaderHost.AddService(typeof(IMenuCommandService), new WorkflowMenuCommandService(LoaderHost));
-			LoaderHost.AddService(typeof(ITypeResolutionService), new TypeResolutionService(ProjectService.OpenSolution.FindProjectContainingFile(this.textEditorControl.FileName),LoaderHost));
-			LoaderHost.AddService(typeof(IPropertyValueUIService), new PropertyValueUIService());
-			
 			base.Initialize();
+
+			LoaderHost.AddService(typeof(IMemberCreationService), new MemberCreationService(LoaderHost));
+			LoaderHost.AddService(typeof(IEventBindingService), new CSharpWorkflowDesignerEventBindingService(LoaderHost, ViewContent.PrimaryFileName));
+		}
+
+		protected override void DoPerformLoad(IDesignerSerializationManager serializationManager)
+		{
+
+			// Step 1, Get the CodeDom
+			CodeCompileUnit ccu = Parse();
+			
+			// Step 2, Find the first class
+			CodeTypeDeclaration cdt = ccu.Namespaces[0].Types[0];
+			
+			TypeResolutionService srv = GetService(typeof(ITypeResolutionService)) as TypeResolutionService;
+			Type t = srv.GetType(cdt.BaseTypes[0].BaseType);
+			if (t == null)
+				throw new WorkflowDesignerLoadException("Unable to resolve type " + cdt.BaseTypes[0].BaseType);
+				
+			// Step 3, Deserialize it!
+			TypeCodeDomSerializer cds = serializationManager.GetSerializer(t, typeof(TypeCodeDomSerializer)) as TypeCodeDomSerializer;
+
+			// Step 4, load up the designer.
+			Activity rootActivity = null;
+			rootActivity = cds.Deserialize(serializationManager, cdt) as Activity;
+			rootActivity.Name = cdt.Name;
+
+			LoaderHost.Container.Add(rootActivity, rootActivity.QualifiedName);
+			
+			SetBaseComponentClassName(ccu.Namespaces[0].Name + "." + cdt.Name);
+			
+		}
+
+		protected override void DoPerformFlush(IDesignerSerializationManager serializationManager)
+		{
+			
 		}
 		
 		
-		#region Taken from FormDesigner.NRefactoryDesignerLoad to get a CodeCompileUnit for the activity.
-		string lastTextContent;
-		protected override CodeCompileUnit Parse()
+		#region Taken from FormDesigner.NRefactoryDesignerLoad to get a single CodeCompileUnit for the activity.
+		protected CodeCompileUnit Parse()
 		{
-			LoggingService.Debug("NRefactoryDesignerLoader.Parse()");
-			
-			lastTextContent = textEditorControl.Document.TextContent;
-			
-			ParseInformation parseInfo = ParserService.GetParseInformation(textEditorControl.FileName);
+			ParseInformation parseInfo = ParserService.GetParseInformation(FileName);
 			
 			IClass formClass;
 			bool isFirstClassInFile;
@@ -191,17 +156,6 @@ namespace WorkflowDesigner
 			visitor.EnvironmentInformationProvider = new ICSharpCode.SharpDevelop.Dom.NRefactoryResolver.NRefactoryInformationProvider(formClass.ProjectContent);
 			visitor.VisitCompilationUnit(combinedCu, null);
 			
-			// output generated CodeDOM to the console :
-			#if DEBUG
-//			if ((Control.ModifierKeys & Keys.Control) == Keys.Control) {
-//				CodeDomVerboseOutputGenerator outputGenerator = new CodeDomVerboseOutputGenerator();
-//				outputGenerator.GenerateCodeFromMember(visitor.codeCompileUnit.Namespaces[0].Types[0], Console.Out, null);
-//				this.CodeDomProvider.GenerateCodeFromCompileUnit(visitor.codeCompileUnit, Console.Out, null);
-//			}
-			#endif
-			
-			LoggingService.Debug("NRefactoryDesignerLoader.Parse() finished");
-			
 			if (!isFirstClassInFile) {
 				MessageService.ShowWarning("The form must be the first class in the file in order for form resources be compiled correctly.\n" +
 				                           "Please move other classes below the form class definition or move them to other files.");
@@ -212,11 +166,6 @@ namespace WorkflowDesigner
 		
 		public static IList<IClass> FindFormClassParts(ParseInformation parseInfo, out IClass formClass, out bool isFirstClassInFile)
 		{
-			#if DEBUG
-			if ((Control.ModifierKeys & (Keys.Alt | Keys.Control)) == (Keys.Alt | Keys.Control)) {
-				System.Diagnostics.Debugger.Break();
-			}
-			#endif
 			
 			formClass = null;
 			isFirstClassInFile = true;
@@ -317,5 +266,6 @@ namespace WorkflowDesigner
 		}
 		
 		#endregion
+		
 	}
 }

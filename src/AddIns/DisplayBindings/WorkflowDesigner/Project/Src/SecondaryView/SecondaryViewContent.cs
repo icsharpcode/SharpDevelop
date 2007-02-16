@@ -12,6 +12,8 @@ using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Widgets.SideBar;
+
+using WorkflowDesigner.Loaders;
 #endregion
 
 namespace WorkflowDesigner
@@ -21,17 +23,13 @@ namespace WorkflowDesigner
 	/// </summary>
 	public class WorkflowDesignerSecondaryViewContent : AbstractSecondaryViewContent, IHasPropertyContainer
 	{
-		IViewContent viewContent;
 		ViewContentControl control;
 
 		#region Constructors
 		public WorkflowDesignerSecondaryViewContent(IViewContent primaryViewContent) : base(primaryViewContent)
 		{
 			this.TabPageText = "Workflow";
-			this.viewContent = primaryViewContent;
 			control = new ViewContentControl(primaryViewContent);
-			
-			
 		}
 		#endregion
 		
@@ -52,7 +50,7 @@ namespace WorkflowDesigner
 
 		protected override void LoadFromPrimary()
 		{
-			control.LoadWorkflow(new NRefactoryDesignerLoader(((ITextEditorControlProvider)viewContent).TextEditorControl, viewContent));
+			control.LoadWorkflow(new CodeDesignerLoader(this.PrimaryViewContent));
 		}
 		
 		protected override void SaveToPrimary()

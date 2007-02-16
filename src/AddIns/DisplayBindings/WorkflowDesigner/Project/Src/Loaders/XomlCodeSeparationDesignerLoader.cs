@@ -20,7 +20,7 @@ using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 #endregion
 
-namespace WorkflowDesigner
+namespace WorkflowDesigner.Loaders
 {
 	/// <summary>
 	/// Description of XomlCodeSeparationDesignerLoader.
@@ -29,7 +29,7 @@ namespace WorkflowDesigner
 	{
 		private string codeFileName;
 		
-		public XomlCodeSeparationDesignerLoader(IViewContent viewContent, string fileName, Stream stream, string codeFileName) : base(viewContent, fileName, stream)
+		public XomlCodeSeparationDesignerLoader(IViewContent viewContent, Stream stream, string codeFileName) : base(viewContent, stream)
 		{
 			this.codeFileName = codeFileName;
 		}
@@ -43,14 +43,12 @@ namespace WorkflowDesigner
 			LoaderHost.AddService(typeof(IEventBindingService), new CSharpWorkflowDesignerEventBindingService(LoaderHost,codeFileName));
 		}
 		
-		protected override void Load(IDesignerSerializationManager serializationManager)
+		protected override void DoPerformLoad(IDesignerSerializationManager serializationManager)
 		{
 			IWorkflowDesignerEventBindingService srv = LoaderHost.GetService(typeof(IEventBindingService)) as IWorkflowDesignerEventBindingService;
 			srv.UpdateCodeCompileUnit();
 			
-			LoadFromXoml(serializationManager);
-			
-			LoaderHost.Activate();
+			LoadXoml(serializationManager);
 		}
       
 

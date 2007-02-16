@@ -85,7 +85,7 @@ namespace WorkflowDesigner
 			typeProvider.AddAssembly(typeof(System.Object).Assembly);
 			typeProvider.AddAssembly(typeof(System.ComponentModel.Design.Serialization.CodeDomSerializer).Assembly);
 			typeProvider.AddAssembly(typeof(System.Workflow.ComponentModel.DependencyObject).Assembly);
-			typeProvider.AddAssembly(typeof(System.Workflow.Activities.CodeActivity).Assembly);
+			typeProvider.AddAssembly(typeof(System.Workflow.Activities.SequentialWorkflowActivity).Assembly);
 			typeProvider.AddAssembly(typeof(System.Workflow.Runtime.WorkflowRuntime).Assembly);
 
 			// Just return the basic provider if not related to a project.
@@ -221,14 +221,18 @@ namespace WorkflowDesigner
 				files.AddRange(GetRelatedFiles(project, item.FileName));
 			}
 
-			string[] s = new string[files.Count];
-			for (int i = 0; i < files.Count; i++)
-				s[i] = files[i];
-
-			CodeCompileUnit ccu = ParseXoml(project, s);
-			if (ccu != null) {
-				typeProvider.AddCodeCompileUnit(ccu);
-				cp.UserCodeCompileUnits.Add(ccu);
+			CodeCompileUnit ccu;
+	
+			if (files.Count > 0) {
+				string[] s = new string[files.Count];
+				for (int i = 0; i < files.Count; i++)
+					s[i] = files[i];
+				
+				ccu = ParseXoml(project, s);
+				if (ccu != null) {
+					typeProvider.AddCodeCompileUnit(ccu);
+					cp.UserCodeCompileUnits.Add(ccu);
+				}
 			}
 
 			// Now create one ccu for each source file.

@@ -28,28 +28,21 @@ using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 #endregion
 
-namespace WorkflowDesigner
+namespace WorkflowDesigner.Loaders
 {
 	/// <summary>
 	/// Description of XomlDesignerLoader.
 	/// </summary>
-	public class XomlDesignerLoader : WorkflowDesignerLoader
+	public class XomlDesignerLoader : BasicWorkflowDesignerLoader
 	{
 		private string xoml = string.Empty;
-		private StringBuilder rules;
-		private string fileName = string.Empty;
-		private string rulesFileName = string.Empty;
-		private IViewContent viewContent;
 		
-		public XomlDesignerLoader(IViewContent viewContent)
+		public XomlDesignerLoader(IViewContent viewContent) : base(viewContent)
 		{
-			this.viewContent = viewContent;
 		}
-		
-		public XomlDesignerLoader(IViewContent viewContent, string fileName, Stream stream) : this(viewContent)
+
+		public XomlDesignerLoader(IViewContent viewContent, Stream stream) : this(viewContent)
 		{
-			this.fileName = fileName;
-			rulesFileName = Path.Combine(Path.GetDirectoryName(fileName), Path.GetFileNameWithoutExtension(fileName) + ".rules");
 			Encoding encoding = ICSharpCode.SharpDevelop.ParserService.DefaultFileEncoding;
 			xoml = ICSharpCode.TextEditor.Util.FileReader.ReadFileContent(stream, ref encoding, encoding);
 		}
@@ -59,50 +52,8 @@ namespace WorkflowDesigner
 			set { xoml = value; }
 		}
 		
-		public override string FileName {
-			get {
-				return fileName;
-			}
-		}
 		
-		public IProject Project {
-			get {
-				return ProjectService.OpenSolution.FindProjectContainingFile(fileName);
-			}
-		}
-		
-		public override TextReader GetFileReader(string filePath)
-		{
-			return new StringReader(rules.ToString());
-		}
-		
-		public override TextWriter GetFileWriter(string filePath)
-		{
-			if (rules == null) {
-				rules = new StringBuilder();
-				CreateRulesProjectItem();
-			}
-			
-			return new StringWriter(rules, CultureInfo.CurrentCulture);
-		}
-		
-		private void CreateRulesProjectItem()
-		{
-			IProject project = ProjectService.OpenSolution.FindProjectContainingFile(this.fileName);
-			if (project != null){
-				if (!project.IsFileInProject(rulesFileName)) {
-					FileProjectItem fpi = project.FindFile(fileName);
-					FileProjectItem rfpi = new FileProjectItem(project,ItemType.EmbeddedResource);
-					rfpi.FileName = Path.Combine(Path.GetDirectoryName(fileName), Path.GetFileName(rulesFileName));
-					rfpi.DependentUpon = Path.GetFileName(fileName);
-					ProjectService.AddProjectItem(project,  rfpi);
-					ProjectBrowserPad.Instance.ProjectBrowserControl.RefreshView();
-					project.Save();
-				}
-			}
-		}
-		
-		protected override void PerformFlush(IDesignerSerializationManager serializationManager)
+		protected override void DoPerformFlush(IDesignerSerializationManager serializationManager)
 		{
 			Activity rootActivity = LoaderHost.RootComponent as Activity;
 			if (rootActivity != null) {
@@ -116,41 +67,14 @@ namespace WorkflowDesigner
 					xmlWriter.Close();
 				}
 			}
-			
-			// Update the rules if any exist.
-			if ((rules != null) && (rules.Length > 0))
-				File.WriteAllText(rulesFileName, rules.ToString());
-			
 		}
 		
-		
-		protected override void Initialize()
+		protected override void DoPerformLoad(IDesignerSerializationManager serializationManager)
 		{
-
-			LoaderHost.AddService(typeof(IToolboxService), new WorkflowToolboxService(LoaderHost));
-			LoaderHost.AddService(typeof(ITypeProvider), TypeProviderService.GetTypeProvider(Project));
-			LoaderHost.AddService(typeof(IMenuCommandService), new WorkflowMenuCommandService(LoaderHost));
-			LoaderHost.AddService(typeof(ITypeResolutionService), new TypeResolutionService(ProjectService.OpenSolution.FindProjectContainingFile(this.FileName),LoaderHost));
-			LoaderHost.AddService(typeof(IPropertyValueUIService), new PropertyValueUIService());
-
-			base.Initialize();
-			
-		}
-
-		protected override void PerformLoad(IDesignerSerializationManager serializationManager)
-		{
-			base.PerformLoad(serializationManager);
-			Load(serializationManager);
-		}
-
-		
-		protected virtual void Load(IDesignerSerializationManager serializationManager)
-		{
-			LoadFromXoml(serializationManager);
-			LoaderHost.Activate();
+			LoadXoml(serializationManager);
 		}
 		
-		protected void LoadFromXoml(IDesignerSerializationManager serializationManager)
+		protected void LoadXoml(IDesignerSerializationManager serializationManager)
 		{
 			// get the root activity from the xml.
 			XmlReader  reader = new XmlTextReader(new StringReader(xoml));
@@ -169,12 +93,6 @@ namespace WorkflowDesigner
 			
 			SetBaseComponentClassName(rootActivity.GetValue(WorkflowMarkupSerializer.XClassProperty) as string);
 			
-			// Load the rules
-			if (File.Exists(rulesFileName)) {
-				rules = new StringBuilder(File.ReadAllText(rulesFileName));
-				CreateRulesProjectItem();
-			}
-			
 		}
 		
 		protected void AddChildren(CompositeActivity compositeActivity)
@@ -188,22 +106,5 @@ namespace WorkflowDesigner
 			}
 		}
 		
-		public override void Dispose()
-		{
-			try {
-				// Remove all the services from the from the host designer.
-				if (LoaderHost != null)	{
-					LoaderHost.RemoveService(typeof(IToolboxService));
-					LoaderHost.RemoveService(typeof(ITypeProvider));
-					LoaderHost.RemoveService(typeof(IEventBindingService));
-					LoaderHost.RemoveService(typeof(IMemberCreationService));
-					LoaderHost.RemoveService(typeof(IMenuCommandService));
-					LoaderHost.RemoveService(typeof(IPropertyValueUIService));
-					LoaderHost.RemoveService(typeof(ITypeResolutionService));
-				}
-			} finally {
-				base.Dispose();
-			}
-		}
 	}
 }

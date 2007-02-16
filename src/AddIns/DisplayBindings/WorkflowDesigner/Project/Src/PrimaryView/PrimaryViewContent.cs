@@ -14,6 +14,8 @@ using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 
+using WorkflowDesigner.Loaders;
+
 namespace WorkflowDesigner
 {
 	/// <summary>
@@ -54,13 +56,13 @@ namespace WorkflowDesigner
 				string codeFileName = file.FileName + "." + project.LanguageProperties.CodeDomProvider.FileExtension;
 				FileProjectItem dfpi = project.FindFile(codeFileName);
 				if (dfpi.DependentUpon == Path.GetFileName(fpi.VirtualName))	{
-					loader = new XomlCodeSeparationDesignerLoader(this, file.FileName, stream, dfpi.FileName);
+					loader = new XomlCodeSeparationDesignerLoader(this, stream, dfpi.FileName);
 				}
 			}
 			
 			// No separation file so the nocode loader will be used.
 			if (loader == null)
-				loader = new XomlDesignerLoader(this, file.FileName, stream);
+				loader = new XomlDesignerLoader(this, stream);
 
 			control.LoadWorkflow(loader);
 		}
