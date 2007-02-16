@@ -44,7 +44,7 @@
       </System.Windows.Forms.ComboBox>
       <System.Windows.Forms.Label>
         <Name value="label5" />
-        <Location value="12, 14" />
+        <Location value="8, 14" />
         <Text value="Namespace:" />
         <Size value="67, 13" />
         <AutoSize value="True" />
@@ -181,7 +181,7 @@
       </System.Windows.Forms.Button>
       <System.Windows.Forms.Label>
         <Name value="label3" />
-        <Location value="12, 90" />
+        <Location value="8, 90" />
         <Text value="Implements:" />
         <Size value="63, 13" />
         <AutoSize value="True" />
@@ -189,7 +189,7 @@
       </System.Windows.Forms.Label>
       <System.Windows.Forms.Label>
         <Name value="label2" />
-        <Location value="12, 67" />
+        <Location value="8, 67" />
         <Text value="Inherit from:" />
         <Size value="62, 13" />
         <AutoSize value="True" />
@@ -197,7 +197,7 @@
       </System.Windows.Forms.Label>
       <System.Windows.Forms.Label>
         <Name value="label1" />
-        <Location value="12, 41" />
+        <Location value="8, 41" />
         <Text value="Class Name:" />
         <Size value="66, 13" />
         <AutoSize value="True" />
