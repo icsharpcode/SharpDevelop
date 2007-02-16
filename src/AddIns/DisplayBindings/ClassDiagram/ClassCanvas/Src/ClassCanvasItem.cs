@@ -429,7 +429,7 @@ namespace ClassDiagram
 			return content;
 		}
 		
-		private InteractiveItemsStack PerpareNestedTypesContent()
+		private InteractiveItemsStack PrepareNestedTypesContent()
 		{
 			InteractiveItemsStack innerItems = new InteractiveItemsStack();
 			innerItems.OrientationAxis = Axis.Y;
@@ -439,6 +439,7 @@ namespace ClassDiagram
 			{
 				ClassCanvasItem innerItem = ClassCanvas.CreateItemFromType(ct);
 				innerItems.Add(innerItem);
+				innerItem.LayoutChanged += HandleRedraw;
 			}
 			return innerItems;
 		}
@@ -496,7 +497,7 @@ namespace ClassDiagram
 			
 			if (classtype.InnerClasses.Count > 0)
 			{
-				InteractiveItemsStack nestedTypesContent = PerpareNestedTypesContent();
+				InteractiveItemsStack nestedTypesContent = PrepareNestedTypesContent();
 				AddGroupToContent("Nested Types", nestedTypesContent);
 			}
 		}
