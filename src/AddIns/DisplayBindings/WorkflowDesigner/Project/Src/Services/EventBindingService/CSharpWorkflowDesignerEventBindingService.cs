@@ -60,7 +60,7 @@ namespace WorkflowDesigner
 			return b.ToString();
 		}
 		
-		protected string GenerateParameters(IClass completeClass, EventDescriptor eventDescriptor, bool paramNames)
+		protected static string GenerateParameters(IClass completeClass, EventDescriptor eventDescriptor, bool paramNames)
 		{
 			CSharpOutputVisitor v = new CSharpOutputVisitor();
 			MethodDeclaration md = ConvertDescriptorToNRefactory(completeClass, eventDescriptor, "name");

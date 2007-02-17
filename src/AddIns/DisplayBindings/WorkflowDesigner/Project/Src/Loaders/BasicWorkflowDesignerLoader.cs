@@ -27,10 +27,10 @@ namespace WorkflowDesigner.Loaders
 	public abstract class BasicWorkflowDesignerLoader : WorkflowDesignerLoader
 	{
 		private IViewContent viewContent;
-		private string ruleFileName = string.Empty;
+		private string ruleFileName;
 		private StringBuilder rules;
 
-		public BasicWorkflowDesignerLoader(IViewContent viewContent)
+		protected BasicWorkflowDesignerLoader(IViewContent viewContent)
 		{
 			this.viewContent = viewContent;
 			ruleFileName = Path.Combine(Path.GetDirectoryName(FileName),
@@ -90,7 +90,6 @@ namespace WorkflowDesigner.Loaders
 		{
 			if (Project != null){
 				if (!Project.IsFileInProject(ruleFileName)) {
-					FileProjectItem fpi = Project.FindFile(FileName);
 					FileProjectItem rfpi = new FileProjectItem(Project,ItemType.EmbeddedResource);
 					rfpi.FileName = Path.Combine(Path.GetDirectoryName(FileName), Path.GetFileName(ruleFileName));
 					rfpi.DependentUpon = Path.GetFileName(FileName);

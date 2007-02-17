@@ -26,6 +26,21 @@ using ICSharpCode.NRefactory.Visitors;
 
 namespace WorkflowDesigner.Loaders
 {
+	public class IdentifierCreationService : IIdentifierCreationService
+	{
+		public void EnsureUniqueIdentifiers(CompositeActivity parentActivity, System.Collections.ICollection childActivities)
+		{
+		//	throw new NotImplementedException();
+		}
+		
+		public void ValidateIdentifier(Activity activity, string identifier)
+		{
+		//	throw new NotImplementedException();
+		}
+		
+	}
+	
+	
 	/// <summary>
 	/// Description of CodeDesignerLoader.
 	/// </summary>
@@ -40,7 +55,9 @@ namespace WorkflowDesigner.Loaders
 			base.Initialize();
 
 			LoaderHost.AddService(typeof(IMemberCreationService), new MemberCreationService(LoaderHost));
-			LoaderHost.AddService(typeof(IEventBindingService), new CSharpWorkflowDesignerEventBindingService(LoaderHost, ViewContent.PrimaryFileName));
+			//LoaderHost.AddService(typeof(IEventBindingService), new CSharpWorkflowDesignerEventBindingService(LoaderHost, ViewContent.PrimaryFileName));
+			//LoaderHost.RemoveService(typeof(IIdentifierCreationService));
+			//LoaderHost.AddService(typeof(IIdentifierCreationService), new IdentifierCreationService());
 		}
 
 		protected override void DoPerformLoad(IDesignerSerializationManager serializationManager)
@@ -73,7 +90,7 @@ namespace WorkflowDesigner.Loaders
 
 		protected override void DoPerformFlush(IDesignerSerializationManager serializationManager)
 		{
-			
+			// TODO: Update the InitializeComponent() method here.
 		}
 		
 		

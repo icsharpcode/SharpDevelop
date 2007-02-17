@@ -39,7 +39,6 @@ namespace WorkflowDesigner
 
 			if (content is ITextEditorControlProvider) {
 				ITextEditorControlProvider textAreaControlProvider = (ITextEditorControlProvider)content;
-				string fileExtension = String.Empty;
 				string fileName      = content.PrimaryFileName;
 				if (fileName == null)
 					return false;

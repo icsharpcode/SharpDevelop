@@ -170,7 +170,7 @@ namespace WorkflowDesigner
 				throw new ArgumentNullException("component");
 			
 			if (e == null)
-				throw new ArgumentNullException("eventDescriptor");
+				throw new ArgumentNullException("e");
 
 			LoggingService.Debug("CreateUniqueMethodName(" + component + ", " + e + ")");
 			return String.Format("{0}{1}", Char.ToUpper(component.Site.Name[0]) + component.Site.Name.Substring(1), e.DisplayName);

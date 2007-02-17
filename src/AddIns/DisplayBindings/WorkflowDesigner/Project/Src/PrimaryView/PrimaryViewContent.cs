@@ -46,25 +46,8 @@ namespace WorkflowDesigner
 		public override void Load(OpenedFile file, Stream stream)
 		{
 			Debug.Assert(file == this.PrimaryFile);
-			
-			XomlDesignerLoader loader = null;
-			
-			// First look for a code separation file.
-			IProject project = ProjectService.OpenSolution.FindProjectContainingFile(file.FileName);
-			if (project != null) {
-				FileProjectItem fpi = project.FindFile(file.FileName);
-				string codeFileName = file.FileName + "." + project.LanguageProperties.CodeDomProvider.FileExtension;
-				FileProjectItem dfpi = project.FindFile(codeFileName);
-				if (dfpi.DependentUpon == Path.GetFileName(fpi.VirtualName))	{
-					loader = new XomlCodeSeparationDesignerLoader(this, stream, dfpi.FileName);
-				}
-			}
-			
-			// No separation file so the nocode loader will be used.
-			if (loader == null)
-				loader = new XomlDesignerLoader(this, stream);
 
-			control.LoadWorkflow(loader);
+			control.LoadWorkflow(new XomlDesignerLoader(this, stream));
 		}
 		
 		public override void Save(OpenedFile file, Stream stream)

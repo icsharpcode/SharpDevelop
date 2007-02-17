@@ -30,15 +30,32 @@ using ICSharpCode.SharpDevelop.Dom;
 
 namespace WorkflowDesigner.Loaders
 {
+	enum AuthoringMode {
+		NoCode,
+		CodeSeparation
+	}
+	
 	/// <summary>
 	/// Description of XomlDesignerLoader.
 	/// </summary>
 	public class XomlDesignerLoader : BasicWorkflowDesignerLoader
 	{
-		private string xoml = string.Empty;
+		private AuthoringMode authoringMode = AuthoringMode.NoCode;
+		private string xoml;
+		private string codeBesideFileName;
 		
 		public XomlDesignerLoader(IViewContent viewContent) : base(viewContent)
 		{
+			// Loock for a code beside file for CodeSeparation mode.
+			if (Project != null) {
+				FileProjectItem fpi = Project.FindFile(FileName);
+				string codeFileName = FileName + "." + Project.LanguageProperties.CodeDomProvider.FileExtension;
+				FileProjectItem dfpi = Project.FindFile(codeFileName);
+				if (dfpi.DependentUpon == Path.GetFileName(fpi.VirtualName))	{
+					authoringMode = AuthoringMode.CodeSeparation;
+					codeBesideFileName = codeFileName;
+				}
+			}
 		}
 
 		public XomlDesignerLoader(IViewContent viewContent, Stream stream) : this(viewContent)
@@ -46,12 +63,22 @@ namespace WorkflowDesigner.Loaders
 			Encoding encoding = ICSharpCode.SharpDevelop.ParserService.DefaultFileEncoding;
 			xoml = ICSharpCode.TextEditor.Util.FileReader.ReadFileContent(stream, ref encoding, encoding);
 		}
-		
+
 		public string Xoml {
 			get { return xoml; }
 			set { xoml = value; }
 		}
 		
+		protected override void Initialize()
+		{
+			base.Initialize();
+			
+			// Install the additional services into the designer.
+			if (authoringMode == AuthoringMode.CodeSeparation) {
+				LoaderHost.AddService(typeof(IMemberCreationService), new MemberCreationService(LoaderHost));
+				LoaderHost.AddService(typeof(IEventBindingService), new CSharpWorkflowDesignerEventBindingService(LoaderHost,codeBesideFileName));	
+			}
+		}
 		
 		protected override void DoPerformFlush(IDesignerSerializationManager serializationManager)
 		{

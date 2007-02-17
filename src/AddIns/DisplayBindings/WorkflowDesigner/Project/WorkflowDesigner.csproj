@@ -96,7 +96,6 @@
     <Compile Include="Src\Loaders\BasicWorkflowDesignerLoader.cs" />
     <Compile Include="Src\Loaders\CodeDesignerLoader.cs" />
     <Compile Include="Src\Loaders\WorkflowDesignerLoadException.cs" />
-    <Compile Include="Src\Loaders\XomlCodeSeparationDesignerLoader.cs" />
     <Compile Include="Src\Loaders\XomlDesignerLoader.cs" />
     <Compile Include="Src\PrimaryView\PrimaryDisplayBinding.cs" />
     <Compile Include="Src\PrimaryView\PrimaryViewContent.cs" />

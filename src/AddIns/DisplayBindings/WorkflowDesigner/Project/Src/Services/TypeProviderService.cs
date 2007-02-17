@@ -35,8 +35,8 @@ namespace WorkflowDesigner
 	/// </summary>
 	public class TypeProviderService
 	{
-		private static Dictionary<IProject, TypeProvider> providers = null;
-		private static Dictionary<FileProjectItem, CodeCompileUnit> codeCompileUnits = null;
+		private static Dictionary<IProject, TypeProvider> providers;
+		private static Dictionary<FileProjectItem, CodeCompileUnit> codeCompileUnits;
 
 		#region Property Accessors
 		private static Dictionary<IProject, TypeProvider> Providers {
