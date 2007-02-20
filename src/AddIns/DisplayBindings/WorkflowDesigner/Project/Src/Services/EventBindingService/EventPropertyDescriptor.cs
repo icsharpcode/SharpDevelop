@@ -94,16 +94,16 @@ namespace WorkflowDesigner
 		public override void SetValue(object component, object value)
 		{
 			// Validate the parameters.
-			Activity activity = component as Activity;
-			if (component == null)
-				throw new ArgumentException("component must be derived from Activity");
+			DependencyObject dependencyObject = component as DependencyObject;
+			if (dependencyObject == null)
+				throw new ArgumentException(component.ToString() + " must be derived from DependencyObject", "component");
 			
 			// Get the event list form the dependency object.
-			Hashtable events = activity.GetValue(WorkflowMarkupSerializer.EventsProperty) as Hashtable;
+			Hashtable events = dependencyObject.GetValue(WorkflowMarkupSerializer.EventsProperty) as Hashtable;
 
 			if (events == null) {
 				events = new Hashtable();
-				activity.SetValue(WorkflowMarkupSerializer.EventsProperty, events);
+				dependencyObject.SetValue(WorkflowMarkupSerializer.EventsProperty, events);
 			}
 
 			string oldValue = events[this.eventDescriptor.Name] as string;

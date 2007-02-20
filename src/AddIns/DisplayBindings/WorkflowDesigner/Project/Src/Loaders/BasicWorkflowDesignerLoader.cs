@@ -135,10 +135,8 @@ namespace WorkflowDesigner.Loaders
 
 		protected override void PerformLoad(IDesignerSerializationManager serializationManager)
 		{
-			base.PerformLoad(serializationManager);
 			DoPerformLoad(serializationManager);
 			LoadRules();
-			LoaderHost.Activate();
 		}
 
 		protected abstract void DoPerformLoad(IDesignerSerializationManager serializationManager);

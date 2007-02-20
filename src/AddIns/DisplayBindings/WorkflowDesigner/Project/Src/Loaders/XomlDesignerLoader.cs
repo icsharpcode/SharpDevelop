@@ -46,7 +46,7 @@ namespace WorkflowDesigner.Loaders
 		
 		public XomlDesignerLoader(IViewContent viewContent) : base(viewContent)
 		{
-			// Loock for a code beside file for CodeSeparation mode.
+			// Look for a code beside file for CodeSeparation mode.
 			if (Project != null) {
 				FileProjectItem fpi = Project.FindFile(FileName);
 				string codeFileName = FileName + "." + Project.LanguageProperties.CodeDomProvider.FileExtension;

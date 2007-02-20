@@ -8,7 +8,9 @@
 #region Using
 using System;
 using System.CodeDom;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.ComponentModel.Design.Serialization;
 using System.IO;
@@ -22,24 +24,10 @@ using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.Visitors;
-#endregion 
+#endregion
 
 namespace WorkflowDesigner.Loaders
 {
-	public class IdentifierCreationService : IIdentifierCreationService
-	{
-		public void EnsureUniqueIdentifiers(CompositeActivity parentActivity, System.Collections.ICollection childActivities)
-		{
-		//	throw new NotImplementedException();
-		}
-		
-		public void ValidateIdentifier(Activity activity, string identifier)
-		{
-		//	throw new NotImplementedException();
-		}
-		
-	}
-	
 	
 	/// <summary>
 	/// Description of CodeDesignerLoader.
@@ -49,15 +37,14 @@ namespace WorkflowDesigner.Loaders
 		public CodeDesignerLoader(IViewContent viewContent) : base(viewContent)
 		{
 		}
-	
+		
 		protected override void Initialize()
 		{
 			base.Initialize();
 
 			LoaderHost.AddService(typeof(IMemberCreationService), new MemberCreationService(LoaderHost));
-			//LoaderHost.AddService(typeof(IEventBindingService), new CSharpWorkflowDesignerEventBindingService(LoaderHost, ViewContent.PrimaryFileName));
-			//LoaderHost.RemoveService(typeof(IIdentifierCreationService));
-			//LoaderHost.AddService(typeof(IIdentifierCreationService), new IdentifierCreationService());
+			LoaderHost.AddService(typeof(CodeDomProvider), Project.LanguageProperties.CodeDomProvider);
+			LoaderHost.AddService(typeof(IEventBindingService), new CSharpWorkflowDesignerEventBindingService(LoaderHost, ViewContent.PrimaryFileName));
 		}
 
 		protected override void DoPerformLoad(IDesignerSerializationManager serializationManager)
@@ -67,25 +54,40 @@ namespace WorkflowDesigner.Loaders
 			CodeCompileUnit ccu = Parse();
 			
 			// Step 2, Find the first class
-			CodeTypeDeclaration cdt = ccu.Namespaces[0].Types[0];
+			CodeTypeDeclaration codeTypeDeclaration = ccu.Namespaces[0].Types[0];
 			
-			TypeResolutionService srv = GetService(typeof(ITypeResolutionService)) as TypeResolutionService;
-			Type t = srv.GetType(cdt.BaseTypes[0].BaseType);
-			if (t == null)
-				throw new WorkflowDesignerLoadException("Unable to resolve type " + cdt.BaseTypes[0].BaseType);
-				
+			TypeResolutionService typeResolutionService = GetService(typeof(ITypeResolutionService)) as TypeResolutionService;
+			Type baseType = typeResolutionService.GetType(codeTypeDeclaration.BaseTypes[0].BaseType);
+			if (baseType == null)
+				throw new WorkflowDesignerLoadException("Unable to resolve type " + codeTypeDeclaration.BaseTypes[0].BaseType);
+			
 			// Step 3, Deserialize it!
-			TypeCodeDomSerializer cds = serializationManager.GetSerializer(t, typeof(TypeCodeDomSerializer)) as TypeCodeDomSerializer;
+			TypeCodeDomSerializer serializer = serializationManager.GetSerializer(baseType, typeof(TypeCodeDomSerializer)) as TypeCodeDomSerializer;
+
+			#if DEBUG
+			Project.LanguageProperties.CodeDomProvider.GenerateCodeFromType(codeTypeDeclaration, Console.Out, null);
+			#endif
+
 
 			// Step 4, load up the designer.
-			Activity rootActivity = null;
-			rootActivity = cds.Deserialize(serializationManager, cdt) as Activity;
-			rootActivity.Name = cdt.Name;
-
-			LoaderHost.Container.Add(rootActivity, rootActivity.QualifiedName);
+			Activity rootActivity = serializer.Deserialize(serializationManager, codeTypeDeclaration) as Activity;
 			
-			SetBaseComponentClassName(ccu.Namespaces[0].Name + "." + cdt.Name);
+			// FIXME: This is a workaraound as the deserializer does not appear to add the 
+			// components to the container with the activity.name so
+			// the designer complains the name is already used when the 
+			// name of an activity is the same as a field name in the workflow!
+			// When I work out how the IMemberCreationService fits into
+			// the scheme of things this will probably go away!
+			// (Worth noting CodeDomDesignerLoader has the same problem!)
+			//int i = 0;
+			foreach(IComponent c in LoaderHost.Container.Components) {
+				if (c is Activity) {
+					LoaderHost.Container.Remove(c);
+					LoaderHost.Container.Add(c, ((Activity)c).Name);
+				}
+			}
 			
+			SetBaseComponentClassName(ccu.Namespaces[0].Name + "." + codeTypeDeclaration.Name);
 		}
 
 		protected override void DoPerformFlush(IDesignerSerializationManager serializationManager)
