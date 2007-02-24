@@ -973,13 +973,13 @@
 												<File Source="..\..\AddIns\AddIns\DisplayBindings\ClassDiagram\Resources\Bitmaps.resources" Name="BITMAPS.RES" Id="Bitmaps.resources" LongName="Bitmaps.resources" />
 											</Component>
 										</Directory>
-										<Component Guid="3939D17D-14A9-46F3-B568-05682BA10FB4" Id="ClassDiagramFiles" DiskId="1">
+										<Component Guid="EC3D2661-177C-4059-90BF-1BB838F0A335" Id="ClassDiagramFiles" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\DisplayBindings\ClassDiagram\Aga.Controls.dll" Name="Aga.dll" Id="ClassDiagram.Aga.Controls.dll" LongName="Aga.Controls.dll" />
 											<File Source="..\..\AddIns\AddIns\DisplayBindings\ClassDiagram\ClassCanvas.dll" Name="CLASSC_1.DLL" Id="ClassCanvas.dll" LongName="ClassCanvas.dll" />
 											<File Source="..\..\AddIns\AddIns\DisplayBindings\ClassDiagram\ClassDiagramAddin.addin" Name="CLASSD_1.ADD" Id="ClassDiagramAddin.addin" LongName="ClassDiagramAddin.addin" />
 											<File Source="..\..\AddIns\AddIns\DisplayBindings\ClassDiagram\ClassDiagramAddin.dll" Name="CLASSD_1.DLL" Id="ClassDiagramAddin.dll" LongName="ClassDiagramAddin.dll" />
 											<File Source="..\..\AddIns\AddIns\DisplayBindings\ClassDiagram\ClassEditor.dll" Name="CLASSE_1.DLL" Id="ClassEditor.dll" LongName="ClassEditor.dll" />
 											<File Source="..\..\AddIns\AddIns\DisplayBindings\ClassDiagram\Diagrams.dll" Name="Diagrams.dll" Id="Diagrams.dll" />
-											<File Source="..\..\AddIns\AddIns\DisplayBindings\ClassDiagram\TreeListView.dll" Name="TREELI_1.DLL" Id="ClassDiagram.TreeListView.dll" LongName="TreeListView.dll" />
 										</Component>
 									</Directory>
 								</Directory>
