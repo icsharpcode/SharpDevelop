@@ -182,30 +182,22 @@ namespace ClassDiagram
 				this.parameter = parameter;
 				this.editor = editor;
 				this.method = method;
-				
-				UpdateMethod();
 			}
 
-			
 			IAmbience ambience;
 			IParameter parameter;
 			IMethod method;
 			ClassEditor editor;
-			
-			private void UpdateMethod()
-			{
-				MemberNode member = this.Parent as MemberNode;
-				if (member != null)
-					method = member.Member as IMethod;
-			}
+			Image icon;
 			
 			public IParameter Parameter {
 				get { return parameter; }
-				set
-				{
-					parameter = value;
-					UpdateMethod();
-				}
+				set { parameter = value; }
+			}
+			
+			public IMethod Method {
+				get { return method; }
+				set { method = value; }
 			}
 			
 			public string MemberName
@@ -218,7 +210,6 @@ namespace ClassDiagram
 				}
 			}
 			
-			protected Image icon;
 			public Image MemberIcon
 			{
 				get { return icon; }
@@ -265,7 +256,7 @@ namespace ClassDiagram
 			}
 			
 			Image icon;
-			public Image Icon {
+			public Image MemberIcon {
 				get { return icon; }
 			}
 			
@@ -478,10 +469,10 @@ namespace ClassDiagram
 		
 		private void FillParams(MemberNode item, IMethod method)
 		{
-			Image comma = (Image)resources.GetObject("Comma");
-			Image openBrace = (Image)resources.GetObject("OpenBrace");
-			Image closeBrace = (Image)resources.GetObject("CloseBrace");
-			Image emptyBraces = (Image)resources.GetObject("EmptyBraces");
+			Image comma = (Image)resources.GetObject("ClassEditor.Comma");
+			Image openBrace = (Image)resources.GetObject("ClassEditor.OpenBrace");
+			Image closeBrace = (Image)resources.GetObject("ClassEditor.CloseBrace");
+			Image emptyBraces = (Image)resources.GetObject("ClassEditor.EmptyBraces");
 			Image currentImage = openBrace;
 			foreach (IParameter param in method.Parameters)
 			{
@@ -554,10 +545,13 @@ namespace ClassDiagram
 		
 		void MembersListNodeMouseDoubleClick(object sender, TreeNodeAdvMouseEventArgs e)
 		{
-			MemberNode memberItem = e.Node.Tag as MemberNode;
-			if (memberItem == null) return;
+			Node item = e.Node.Tag as Node;
 			
-			if (addMemberItems.ContainsValue(memberItem))
+			if (item == null) return;
+			
+			MemberNode memberItem = item as MemberNode;
+			
+			if (memberItem != null && addMemberItems.ContainsValue(memberItem))
 			{
 				/*				IAmbience ambience = GetAmbience();
 				item.SubItems.Add(ambience.Convert(VoidReturnType.Instance));
@@ -566,27 +560,17 @@ namespace ClassDiagram
 				item.Text = "[method name]";
 				item.BeginEdit(0);*/
 			}
-			else if (addParameterItems.ContainsValue(memberItem))
+			else if (addParameterItems.ContainsValue(item))
 			{
 				
 			}
 			else
 			{
-				IParameter itemParameter = memberItem.Member as IParameter;
-				if (itemParameter != null)
-				{
-					MemberNode methodNode = memberItem.Parent as MemberNode;
-					if (methodNode != null)
-					{
-						IMethod method = methodNode.Member as IMethod;
-						if (method != null)
-							ParameterActivated(this, new IParameterEventArgs(method, itemParameter));
-					}
-				}
+				ParameterNode paramItem = item as ParameterNode;
+				if (paramItem != null && paramItem.Parameter != null && paramItem.Method != null)
+					ParameterActivated(this, new IParameterEventArgs(paramItem.Method, paramItem.Parameter));
 				else
-				{
 					MemberActivated(this, new IMemberEventArgs(memberItem.Member));
-				}
 			}
 		}
 		
