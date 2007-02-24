@@ -306,10 +306,9 @@ namespace ClassDiagram
 		{
 			ParameterModified(this, e);
 		}
-
+/*
 		private void AfterEdit (object sender, TreeListViewLabelEditEventArgs e)
 		{
-			/*
 			IProjectContent pc = ProjectService.CurrentProject.CreateProjectContent();
 			IMember member = null;
 			
@@ -349,9 +348,9 @@ namespace ClassDiagram
 				ClassMemberAdded(this, memberargs);
 				return;
 			}
-			*/
+			
 		}
-		
+		*/
 		private void SetClassGroups (IClass classType)
 		{
 			AddGroup<IMethod>("Methods", classType.Methods);
