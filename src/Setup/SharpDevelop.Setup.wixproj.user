@@ -1,8 +1,8 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <SetupProductBuildVersion>1</SetupProductBuildVersion>
-    <SetupProductCodeGuid>A0AB2551-A579-42D3-9A90-D6424B3AC2CD</SetupProductCodeGuid>
-    <SetupPackageCodeGuid>DFC87BE9-A5A6-434D-97BA-F34BB1C1C1A7</SetupPackageCodeGuid>
+    <SetupProductCodeGuid>B6389F87-D46B-40AB-AD76-CFF21B0A97BD</SetupProductCodeGuid>
+    <SetupPackageCodeGuid>F6FC71BB-8BCB-4C61-8562-E0813199DECD</SetupPackageCodeGuid>
    <DefineConstants>PACKAGECODEGUID=$(SetupPackageCodeGuid);PRODUCTCODEGUID=$(SetupProductCodeGuid);PRODUCTBUILDVERSION=$(SetupProductBuildVersion)</DefineConstants>
   </PropertyGroup>
 </Project>
