@@ -489,6 +489,16 @@ namespace ClassDiagram
 			LayoutChanged(this, EventArgs.Empty);
 		}
 		
+		public void ClearCanvas()
+		{
+			itemsList.Clear();
+			classesToData.Clear();
+			itemsList.Clear();
+			dragItemNode = null;
+			hoverItemNode = null;
+			diagramRouter.Clear();
+		}
+		
 		/// <summary>
 		/// Retruns a copy of the the canvas items list as an array.
 		/// </summary>
@@ -592,6 +602,8 @@ namespace ClassDiagram
 		{
 			if (pc == null) return;
 			if (doc == null) return;
+			ClearCanvas();
+			
 			XPathNavigator nav = doc.CreateNavigator();
 			XPathNodeIterator ni = nav.Select(@"/ClassDiagram/Class | /ClassDiagram/Struct | /ClassDiagram/Enum | /ClassDiagram/Interface | /ClassDiagram/Delegate");
 			while (ni.MoveNext())

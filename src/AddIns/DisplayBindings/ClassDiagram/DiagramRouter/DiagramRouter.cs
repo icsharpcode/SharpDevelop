@@ -117,6 +117,17 @@ namespace Tools.Diagrams
 			routes.Remove(route);
 		}
 		
+		public void Clear()
+		{
+			routes.Clear();
+			rects.Clear();
+		}
+		
+		public void ClearRoutes()
+		{
+			routes.Clear();
+		}
+		
 		private DependencyTree<IRectangleSizeDecorator> BuildDependenciesTree ()
 		{
 			DependencyTree<IRectangleSizeDecorator> deps = new DependencyTree<IRectangleSizeDecorator>();
