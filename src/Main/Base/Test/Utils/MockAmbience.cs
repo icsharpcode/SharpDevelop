@@ -19,11 +19,6 @@ namespace ICSharpCode.SharpDevelop.Tests.Utils
 		{
 		}
 		
-		public override string Convert(ModifierEnum modifier)
-		{
-			return String.Empty;
-		}
-		
 		public override string Convert(IClass c)
 		{
 			return String.Empty;
