@@ -51,7 +51,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		{
 			IMember method = methods[number];
 			IAmbience conv = AmbienceService.CurrentAmbience;
-			conv.ConversionFlags = ConversionFlags.StandardConversionFlags;
+			conv.ConversionFlags = ConversionFlags.StandardConversionFlags| ConversionFlags.UseFullyQualifiedMemberNames;
 			string documentation = method.Documentation;
 			string text;
 			if (method is IMethod) {

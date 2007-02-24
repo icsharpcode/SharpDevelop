@@ -403,14 +403,13 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			if (result is MixedResolveResult)
 				return GetText(((MixedResolveResult)result).PrimaryResult, expression, out debuggerCanShowValue);
 			IAmbience ambience = AmbienceService.CurrentAmbience;
-			ambience.ConversionFlags = ConversionFlags.StandardConversionFlags | ConversionFlags.ShowAccessibility;
+			ambience.ConversionFlags = ConversionFlags.StandardConversionFlags | ConversionFlags.UseFullyQualifiedMemberNames;
 			if (result is MemberResolveResult) {
 				return GetMemberText(ambience, ((MemberResolveResult)result).ResolvedMember, expression, out debuggerCanShowValue);
 			} else if (result is LocalResolveResult) {
 				LocalResolveResult rr = (LocalResolveResult)result;
-				ambience.ConversionFlags = ConversionFlags.UseFullyQualifiedNames
-					| ConversionFlags.ShowReturnType
-					| ConversionFlags.QualifiedNamesOnlyForReturnTypes;
+				ambience.ConversionFlags = ConversionFlags.UseFullyQualifiedTypeNames
+					| ConversionFlags.ShowReturnType | ConversionFlags.ShowDefinitionKeyWord;
 				StringBuilder b = new StringBuilder();
 				if (rr.IsParameter)
 					b.Append("parameter ");

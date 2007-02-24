@@ -130,7 +130,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			imageIndex = ClassBrowserIconService.GetIcon(c);
 			ambience.ConversionFlags = ConversionFlags.None;
 			text = ambience.Convert(c);
-			ambience.ConversionFlags = ConversionFlags.UseFullyQualifiedNames | ConversionFlags.ShowReturnType | ConversionFlags.ShowModifiers;
+			ambience.ConversionFlags = ConversionFlags.StandardConversionFlags | ConversionFlags.UseFullyQualifiedMemberNames;
 			description = ambience.Convert(c);
 			documentation = c.Documentation;
 			GetPriority(c.DotNetName);
@@ -140,7 +140,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		{
 			member = method;
 			ambience = AmbienceService.CurrentAmbience;
-			ambience.ConversionFlags = ConversionFlags.ShowReturnType | ConversionFlags.ShowParameterNames | ConversionFlags.ShowModifiers;
+			ambience.ConversionFlags = ConversionFlags.StandardConversionFlags;
 			imageIndex  = ClassBrowserIconService.GetIcon(method);
 			text        = method.Name;
 			description = ambience.Convert(method);
@@ -152,7 +152,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		{
 			member = field;
 			ambience = AmbienceService.CurrentAmbience;
-			ambience.ConversionFlags = ConversionFlags.ShowReturnType | ConversionFlags.ShowParameterNames | ConversionFlags.ShowModifiers;
+			ambience.ConversionFlags = ConversionFlags.StandardConversionFlags;
 			imageIndex  = ClassBrowserIconService.GetIcon(field);
 			text        = field.Name;
 			description = ambience.Convert(field);
@@ -164,7 +164,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		{
 			member = property;
 			ambience = AmbienceService.CurrentAmbience;
-			ambience.ConversionFlags = ConversionFlags.ShowReturnType | ConversionFlags.ShowParameterNames | ConversionFlags.ShowModifiers;
+			ambience.ConversionFlags = ConversionFlags.StandardConversionFlags;
 			imageIndex  = ClassBrowserIconService.GetIcon(property);
 			text        = property.Name;
 			description = ambience.Convert(property);
@@ -176,7 +176,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		{
 			member = e;
 			ambience = AmbienceService.CurrentAmbience;
-			ambience.ConversionFlags = ConversionFlags.ShowReturnType | ConversionFlags.ShowParameterNames | ConversionFlags.ShowModifiers;
+			ambience.ConversionFlags = ConversionFlags.StandardConversionFlags;
 			imageIndex  = ClassBrowserIconService.GetIcon(e);
 			text        = e.Name;
 			description = ambience.Convert(e);

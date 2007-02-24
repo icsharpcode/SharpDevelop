@@ -136,7 +136,7 @@ namespace CSharpBinding
 							if (CodeGenerator.CanUseShortTypeName(rr.ResolvedType, context))
 								CSharpAmbience.Instance.ConversionFlags = ConversionFlags.None;
 							else
-								CSharpAmbience.Instance.ConversionFlags = ConversionFlags.UseFullyQualifiedNames;
+								CSharpAmbience.Instance.ConversionFlags = ConversionFlags.UseFullyQualifiedTypeNames;
 							string typeName = CSharpAmbience.Instance.Convert(rr.ResolvedType);
 							editor.Document.Replace(curLine.Offset + typeToken.col - 1, 1, typeName);
 							editor.ActiveTextAreaControl.Caret.Column += typeName.Length - 1;

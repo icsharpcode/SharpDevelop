@@ -26,11 +26,6 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
-		public string Convert(ModifierEnum modifier)
-		{
-			return conv.Convert(modifier);
-		}
-		
 		public string Convert(IClass c)
 		{
 			return conv.Convert(c);

@@ -98,7 +98,7 @@ namespace Grunwald.BooBinding
 			return (modifier & query) == query;
 		}
 		
-		public override string Convert(ModifierEnum modifier)
+		string ConvertAccessibility(ModifierEnum modifier)
 		{
 			if (ShowAccessibility) {
 				if (ModifierIsSet(modifier, ModifierEnum.Public)) {
@@ -143,7 +143,7 @@ namespace Grunwald.BooBinding
 		{
 			StringBuilder builder = new StringBuilder();
 			
-			builder.Append(Convert(c.Modifiers));
+			builder.Append(ConvertAccessibility(c.Modifiers));
 			
 			if (IncludeHTMLMarkup) {
 				builder.Append("<i>");
@@ -170,7 +170,7 @@ namespace Grunwald.BooBinding
 				builder.Append("</i>");
 			}
 			
-			if (ShowModifiers) {
+			if (ShowDefinitionKeyWord) {
 				switch (c.ClassType) {
 					case ClassType.Delegate:
 						builder.Append("callable");
@@ -205,7 +205,7 @@ namespace Grunwald.BooBinding
 			if (IncludeHTMLMarkup) {
 				builder.Append("</b>");
 			}
-			if (c.TypeParameters.Count > 0) {
+			if (ShowTypeParameterList && c.TypeParameters.Count > 0) {
 				builder.Append("[of ");
 				for (int i = 0; i < c.TypeParameters.Count; ++i) {
 					if (i > 0) builder.Append(", ");
@@ -214,7 +214,7 @@ namespace Grunwald.BooBinding
 				builder.Append(']');
 			}
 			
-			if (ShowReturnType && c.ClassType == ClassType.Delegate) {
+			if (ShowParameterList && c.ClassType == ClassType.Delegate) {
 				builder.Append(" (");
 				if (IncludeHTMLMarkup) builder.Append("<br>");
 				
@@ -231,7 +231,8 @@ namespace Grunwald.BooBinding
 					}
 				}
 				builder.Append(')');
-				
+			}
+			if (ShowReturnType && c.ClassType == ClassType.Delegate) {
 				foreach(IMethod m in c.Methods) {
 					if (m.Name != "Invoke") continue;
 					
@@ -239,7 +240,7 @@ namespace Grunwald.BooBinding
 					builder.Append(Convert(m.ReturnType));
 				}
 				
-			} else if (ShowInheritanceList) {
+			} else if (ShowInheritanceList && c.ClassType != ClassType.Delegate) {
 				if (c.BaseTypes.Count > 0) {
 					builder.Append("(");
 					for (int i = 0; i < c.BaseTypes.Count; ++i) {
@@ -252,7 +253,7 @@ namespace Grunwald.BooBinding
 				}
 			}
 			
-			if (IncludeBodies) {
+			if (IncludeBody) {
 				builder.Append(":\n");
 			}
 			
@@ -268,7 +269,7 @@ namespace Grunwald.BooBinding
 		{
 			StringBuilder builder = new StringBuilder();
 			
-			builder.Append(Convert(field.Modifiers));
+			builder.Append(ConvertAccessibility(field.Modifiers));
 			
 			if (IncludeHTMLMarkup) {
 				builder.Append("<i>");
@@ -316,7 +317,7 @@ namespace Grunwald.BooBinding
 		{
 			StringBuilder builder = new StringBuilder();
 			
-			builder.Append(Convert(property.Modifiers));
+			builder.Append(ConvertAccessibility(property.Modifiers));
 			
 			if (ShowModifiers) {
 				builder.Append(GetModifier(property));
@@ -346,7 +347,7 @@ namespace Grunwald.BooBinding
 				}
 			}
 			
-			if (property.Parameters.Count > 0) {
+			if (ShowParameterList && property.Parameters.Count > 0) {
 				builder.Append('[');
 				if (IncludeHTMLMarkup) builder.Append("<br>");
 				
@@ -367,7 +368,7 @@ namespace Grunwald.BooBinding
 				builder.Append(Convert(property.ReturnType));
 			}
 			
-			if (IncludeBodies) {
+			if (IncludeBody) {
 				builder.Append(":");
 				
 				if (property.CanGet) {
@@ -385,13 +386,15 @@ namespace Grunwald.BooBinding
 		{
 			StringBuilder builder = new StringBuilder();
 			
-			builder.Append(Convert(e.Modifiers));
+			builder.Append(ConvertAccessibility(e.Modifiers));
 			
 			if (ShowModifiers) {
 				builder.Append(GetModifier(e));
 			}
 			
-			builder.Append("event ");
+			if (ShowDefinitionKeyWord) {
+				builder.Append("event ");
+			}
 			
 			if (IncludeHTMLMarkup) {
 				builder.Append("<b>");
@@ -422,13 +425,15 @@ namespace Grunwald.BooBinding
 				builder.Append("[Extension] ");
 			}
 			
-			builder.Append(Convert(m.Modifiers));
+			builder.Append(ConvertAccessibility(m.Modifiers));
 			
 			if (ShowModifiers) {
 				builder.Append(GetModifier(m));
 			}
 			
-			builder.Append("def ");
+			if (ShowDefinitionKeyWord) {
+				builder.Append("def ");
+			}
 			
 			if (IncludeHTMLMarkup) {
 				builder.Append("<b>");
@@ -448,7 +453,7 @@ namespace Grunwald.BooBinding
 				builder.Append("</b>");
 			}
 			
-			if (m.TypeParameters.Count > 0) {
+			if (ShowTypeParameterList && m.TypeParameters.Count > 0) {
 				builder.Append("[of ");
 				for (int i = 0; i < m.TypeParameters.Count; ++i) {
 					if (i > 0) builder.Append(", ");
@@ -457,19 +462,21 @@ namespace Grunwald.BooBinding
 				builder.Append(']');
 			}
 			
-			builder.Append("(");
-			if (IncludeHTMLMarkup) builder.Append("<br>");
-			
-			for (int i = 0; i < m.Parameters.Count; ++i) {
-				if (IncludeHTMLMarkup) builder.Append("&nbsp;&nbsp;&nbsp;");
-				builder.Append(Convert(m.Parameters[i]));
-				if (i + 1 < m.Parameters.Count) {
-					builder.Append(", ");
-				}
+			if (ShowParameterList) {
+				builder.Append("(");
 				if (IncludeHTMLMarkup) builder.Append("<br>");
+				
+				for (int i = 0; i < m.Parameters.Count; ++i) {
+					if (IncludeHTMLMarkup) builder.Append("&nbsp;&nbsp;&nbsp;");
+					builder.Append(Convert(m.Parameters[i]));
+					if (i + 1 < m.Parameters.Count) {
+						builder.Append(", ");
+					}
+					if (IncludeHTMLMarkup) builder.Append("<br>");
+				}
+				
+				builder.Append(')');
 			}
-			
-			builder.Append(')');
 			
 			if (m.ReturnType != null && ShowReturnType) {
 				builder.Append(" as ");
@@ -519,7 +526,7 @@ namespace Grunwald.BooBinding
 				if (fullName != null && typeConversionTable.ContainsKey(fullName)) {
 					builder.Append(typeConversionTable[fullName].ToString());
 				} else {
-					if (UseFullyQualifiedNames) {
+					if (UseFullyQualifiedTypeNames) {
 						builder.Append(fullName);
 					} else {
 						builder.Append(returnType.Name);

@@ -14,16 +14,11 @@ namespace ICSharpCode.SharpDevelop
 {
 	public class NetAmbience :  AbstractAmbience
 	{
-		public override string Convert(ModifierEnum modifier)
-		{
-			return "";
-		}
-		
 		public override string Convert(IClass c)
 		{
 			StringBuilder builder = new StringBuilder();
 			
-			if (ShowModifiers) {
+			if (ShowDefinitionKeyWord) {
 				switch (c.ClassType) {
 					case ClassType.Delegate:
 						builder.Append("Delegate");
@@ -47,12 +42,12 @@ namespace ICSharpCode.SharpDevelop
 				builder.Append(' ');
 			}
 			
-			if (UseFullyQualifiedNames) {
+			if (UseFullyQualifiedMemberNames) {
 				builder.Append(c.FullyQualifiedName);
 			} else {
 				builder.Append(c.Name);
 			}
-			if (c.TypeParameters.Count > 0) {
+			if (ShowTypeParameterList && c.TypeParameters.Count > 0) {
 				builder.Append('<');
 				for (int i = 0; i < c.TypeParameters.Count; ++i) {
 					if (i > 0) builder.Append(", ");
@@ -61,7 +56,7 @@ namespace ICSharpCode.SharpDevelop
 				builder.Append('>');
 			}
 			
-			if (c.ClassType == ClassType.Delegate) {
+			if (ShowParameterList && c.ClassType == ClassType.Delegate) {
 				builder.Append('(');
 				
 				foreach (IMethod m in c.Methods) {
@@ -92,7 +87,7 @@ namespace ICSharpCode.SharpDevelop
 				}
 			}
 			
-			if (IncludeBodies) {
+			if (IncludeBody) {
 				builder.Append("\n{");
 			}
 			
@@ -107,12 +102,12 @@ namespace ICSharpCode.SharpDevelop
 		public override string Convert(IField field)
 		{
 			StringBuilder builder = new StringBuilder();
-			if (ShowModifiers) {
+			if (ShowDefinitionKeyWord) {
 				builder.Append("Field");
 				builder.Append(' ');
 			}
 			
-			if (UseFullyQualifiedNames) {
+			if (UseFullyQualifiedMemberNames) {
 				builder.Append(field.FullyQualifiedName);
 			} else {
 				builder.Append(field.Name);
@@ -129,30 +124,31 @@ namespace ICSharpCode.SharpDevelop
 		public override string Convert(IProperty property)
 		{
 			StringBuilder builder = new StringBuilder();
-			if (ShowModifiers) {
+			if (ShowDefinitionKeyWord) {
 				if (property.IsIndexer)
 					builder.Append("Indexer ");
 				else
 					builder.Append("Property ");
 			}
 			
-			if (UseFullyQualifiedNames) {
+			if (UseFullyQualifiedMemberNames) {
 				builder.Append(property.FullyQualifiedName);
 			} else {
 				builder.Append(property.Name);
 			}
 
-			if (property.Parameters.Count > 0) builder.Append('(');
-			
-			for (int i = 0; i < property.Parameters.Count; ++i) {
-				builder.Append(Convert(property.Parameters[i]));
-				if (i + 1 < property.Parameters.Count) {
-					builder.Append(", ");
+			if (ShowParameterList) {
+				if (property.Parameters.Count > 0) builder.Append('(');
+				
+				for (int i = 0; i < property.Parameters.Count; ++i) {
+					builder.Append(Convert(property.Parameters[i]));
+					if (i + 1 < property.Parameters.Count) {
+						builder.Append(", ");
+					}
 				}
+				
+				if (property.Parameters.Count > 0) builder.Append(')');
 			}
-			
-			if (property.Parameters.Count > 0) builder.Append(')');
-			
 			
 			if (property.ReturnType != null  && ShowReturnType) {
 				builder.Append(" : ");
@@ -164,11 +160,11 @@ namespace ICSharpCode.SharpDevelop
 		public override string Convert(IEvent e)
 		{
 			StringBuilder builder = new StringBuilder();
-			if (ShowModifiers) {
+			if (ShowDefinitionKeyWord) {
 				builder.Append("Event ");
 			}
 			
-			if (UseFullyQualifiedNames) {
+			if (UseFullyQualifiedMemberNames) {
 				builder.Append(e.FullyQualifiedName);
 			} else {
 				builder.Append(e.Name);
@@ -183,19 +179,19 @@ namespace ICSharpCode.SharpDevelop
 		public override string Convert(IMethod m)
 		{
 			StringBuilder builder = new StringBuilder();
-			if (ShowModifiers) {
-				if (m.IsExtensionMethod) {
+			if (ShowDefinitionKeyWord) {
+				if (ShowModifiers && m.IsExtensionMethod) {
 					builder.Append("[Extension] ");
 				}
 				builder.Append("Method ");
 			}
 			
-			if (UseFullyQualifiedNames) {
+			if (UseFullyQualifiedMemberNames) {
 				builder.Append(m.FullyQualifiedName);
 			} else {
 				builder.Append(m.Name);
 			}
-			if (m.TypeParameters.Count > 0) {
+			if (ShowTypeParameterList && m.TypeParameters.Count > 0) {
 				builder.Append('<');
 				for (int i = 0; i < m.TypeParameters.Count; ++i) {
 					if (i > 0) builder.Append(", ");
@@ -203,21 +199,23 @@ namespace ICSharpCode.SharpDevelop
 				}
 				builder.Append('>');
 			}
-			builder.Append('(');
-			for (int i = 0; i < m.Parameters.Count; ++i) {
-				builder.Append(Convert(m.Parameters[i]));
-				if (i + 1 < m.Parameters.Count) {
-					builder.Append(", ");
+			if (ShowParameterList) {
+				builder.Append('(');
+				for (int i = 0; i < m.Parameters.Count; ++i) {
+					builder.Append(Convert(m.Parameters[i]));
+					if (i + 1 < m.Parameters.Count) {
+						builder.Append(", ");
+					}
 				}
+				builder.Append(")");
 			}
 			
-			builder.Append(")");
 			if (m.ReturnType != null && ShowReturnType) {
 				builder.Append(" : ");
 				builder.Append(Convert(m.ReturnType));
 			}
 			
-			if (IncludeBodies) {
+			if (IncludeBody) {
 				builder.Append(" {");
 			}
 			
@@ -237,7 +235,7 @@ namespace ICSharpCode.SharpDevelop
 			StringBuilder builder = new StringBuilder();
 			
 			string name = returnType.DotNetName;
-			if (UseFullyQualifiedNames) {
+			if (UseFullyQualifiedTypeNames) {
 				builder.Append(name);
 			} else {
 				int pos = returnType.Namespace.Length;

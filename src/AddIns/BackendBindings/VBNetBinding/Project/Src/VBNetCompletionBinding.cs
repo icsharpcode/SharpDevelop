@@ -133,7 +133,7 @@ namespace VBNetBinding
 				if (CodeGenerator.CanUseShortTypeName(rr.ResolvedType, context))
 					VBNetAmbience.Instance.ConversionFlags = ConversionFlags.None;
 				else
-					VBNetAmbience.Instance.ConversionFlags = ConversionFlags.UseFullyQualifiedNames;
+					VBNetAmbience.Instance.ConversionFlags = ConversionFlags.UseFullyQualifiedTypeNames;
 				string typeName = VBNetAmbience.Instance.Convert(rr.ResolvedType);
 				editor.Document.Replace(curLine.Offset + t1.col - 1, 1, typeName);
 				editor.ActiveTextAreaControl.Caret.Column += typeName.Length - 1;
