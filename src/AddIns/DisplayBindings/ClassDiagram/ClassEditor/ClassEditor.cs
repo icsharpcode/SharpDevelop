@@ -50,15 +50,7 @@ namespace ClassDiagram
 		public event EventHandler<IMemberEventArgs> ClassMemberAdded = delegate {};
 		
 		TreeModel model = new TreeModel();
-		
-		//TreeListViewItem editedItem = null;
-		/*
-		TreeColumn nameCol = new TreeColumn("Name", 100);
-		TreeColumn typeCol = new TreeColumn("Type", 100);
-		TreeColumn modifierCol = new TreeColumn("Modifier", 100);
-		TreeColumn summaryCol = new TreeColumn("Summary", 100);
-		 */
-		
+			
 		private class GroupNode : Node
 		{
 			public GroupNode(Type groupType, string title)
@@ -183,16 +175,18 @@ namespace ClassDiagram
 		
 		private class ParameterNode : Node
 		{
-			public ParameterNode(IParameter parameter, IAmbience ambience, Image icon, ClassEditor editor)
+			public ParameterNode(IMethod method, IParameter parameter, IAmbience ambience, Image icon, ClassEditor editor)
 			{
 				this.ambience = ambience;
 				this.icon = icon;
 				this.parameter = parameter;
 				this.editor = editor;
+				this.method = method;
 				
 				UpdateMethod();
 			}
 
+			
 			IAmbience ambience;
 			IParameter parameter;
 			IMethod method;
@@ -254,7 +248,7 @@ namespace ClassDiagram
 			
 			public string MemberSummary
 			{
-				get { return ClassEditor.GetSummary(parameter); }
+				get { return ClassEditor.GetParameterSummary(method, parameter.Name); }
 				set
 				{
 					IParameterModificationEventArgs pmea = new IParameterModificationEventArgs(method, parameter, Modification.Summary, value);
@@ -275,8 +269,7 @@ namespace ClassDiagram
 				get { return icon; }
 			}
 			
-			public string MemberName
-			{
+			public string MemberName {
 				get { return base.Text; }
 			}
 		}
@@ -290,34 +283,22 @@ namespace ClassDiagram
 			
 			membersList.Model = model;
 			
-//			try
-//			{
-//				membersList.SmallImageList = ClassBrowserIconService.ImageList;
-//			}
-//			catch
-//			{
-//				membersList.SmallImageList = new ImageList();
-//			}
-			
-			//TODO - check with the #D documentation how to add new icons correctly.
-			//membersList.SmallImageList.Images.Add("OpenBrace", (Bitmap)resources.GetObject("openbrace"));
-			//membersList.SmallImageList.Images.Add("Comma", (Bitmap)resources.GetObject("comma"));
-			//membersList.SmallImageList.Images.Add("CloseBrace", (Bitmap)resources.GetObject("closebrace"));
-			//membersList.SmallImageList.Images.Add("EmptyBraces", (Bitmap)resources.GetObject("emptybraces"));
-			
-//			membersList.DoubleClick += HandleDoubleClick;
-//			membersList.BeforeLabelEdit += BeforeEdit;
-//			membersList.AfterLabelEdit += AfterEdit;
-			
-			Controls.Add(membersList);
-			membersList.Dock = DockStyle.Fill;
-			
 			classTypeGroupCreators.Add(ClassType.Class, SetClassGroups);
 			classTypeGroupCreators.Add(ClassType.Interface, SetClassGroups);
 			classTypeGroupCreators.Add(ClassType.Struct, SetClassGroups);
 			classTypeGroupCreators.Add(ClassType.Enum, SetEnumGroups);
 			classTypeGroupCreators.Add(ClassType.Delegate, SetDelegateGroups);
 			//classTypeGroupCreators[ClassType.Module] = SetClassGroups; //???
+		}
+		
+		private void InitTypeList()
+		{
+			_type.DropDownItems.Clear();
+			
+			IProjectContent pc = ProjectService.CurrentProject.CreateProjectContent();
+			foreach (IClass c in pc.Classes)
+				_type.DropDownItems.Add(c.Name);
+			_type.DropDownItems.Sort();
 		}
 		
 		private void HandleDoubleClick (object sender, EventArgs e)
@@ -334,87 +315,9 @@ namespace ClassDiagram
 		{
 			ParameterModified(this, e);
 		}
-		/*
-		private void BeforeEdit(object sender, TreeListViewBeforeLabelEditEventArgs e)
-		{
-			editedItem = model.Nodes[membersList.SelectedNodes[0].Index];
 
-			IMember itemMember = editedItem.Tag as IMember;
-			IParameter itemParameter = editedItem.Tag as IParameter;
-			if (itemMember != null)
-			{
-				if (e.ColumnIndex == nameCol.Index)
-				{
-				}
-				else if (e.ColumnIndex == typeCol.Index)
-				{
-				}
-				else if (e.ColumnIndex == modifierCol.Index)
-				{
-					e.Editor = visibilityModifierEditor;
-				}
-				else if (e.ColumnIndex == summaryCol.Index)
-				{
-				}
-				else
-				{
-					e.Cancel = true;
-				}
-			}
-			else if (itemParameter != null)
-			{
-				if (e.ColumnIndex == nameCol.Index)
-				{
-				}
-				else if (e.ColumnIndex == typeCol.Index)
-				{
-				}
-				else if (e.ColumnIndex == modifierCol.Index)
-				{
-					e.Editor = parameterModifierEditor;
-				}
-				else if (e.ColumnIndex == summaryCol.Index)
-				{
-				}
-				else
-				{
-					e.Cancel = true;
-				}
-			}
-
-			if (addParameterItems.ContainsValue(editedItem))
-			{
-				e.Cancel = true;
-			}
-		}
-		 */
 		private void AfterEdit (object sender, TreeListViewLabelEditEventArgs e)
 		{
-			/*
-			Modification modification = Modification.None;
-			if (e.ColumnIndex == nameCol.Index)
-			{
-				modification = Modification.Name;
-			}
-			else if (e.ColumnIndex == typeCol.Index)
-			{
-				modification = Modification.Type;
-			}
-			else if (e.ColumnIndex == modifierCol.Index)
-			{
-				modification = Modification.Modifier;
-			}
-			else if (e.ColumnIndex == summaryCol.Index)
-			{
-				modification = Modification.Summary;
-			}
-			else
-			{
-				e.Cancel = true;
-			}
-			
-			if (e.Cancel) return;
-			*/
 			/*
 			IProjectContent pc = ProjectService.CurrentProject.CreateProjectContent();
 			IMember member = null;
@@ -454,34 +357,6 @@ namespace ClassDiagram
 				IMemberEventArgs memberargs = new IMemberEventArgs(member);
 				ClassMemberAdded(this, memberargs);
 				return;
-			}
-			*/
-			/*
-			member = editedItem.Tag as IMember;
-			IParameter parameter = editedItem.Tag as IParameter;
-			if (member != null)
-			{
-				IMemberModificationEventArgs mmea = new IMemberModificationEventArgs(member, modification, e.Label);
-				MemberModified(this, mmea);
-				e.Cancel = mmea.Cancel;
-			}
-			else if (parameter != null)
-			{
-				IMethod method = editedItem.Parent.Tag as IMethod;
-				if (method == null)
-				{
-					e.Cancel = true;
-				}
-				else
-				{
-					IParameterModificationEventArgs pmea = new IParameterModificationEventArgs(method, parameter, modification, e.Label);
-					ParameterModified(this, pmea);
-					e.Cancel = pmea.Cancel;
-				}
-			}
-			else
-			{
-				e.Cancel = true;
 			}
 			*/
 		}
@@ -578,12 +453,14 @@ namespace ClassDiagram
 		
 		private static string GetSummary (IDecoration decoration)
 		{
+			if (decoration == null) return String.Empty;
 			return GetSummary(decoration.Documentation, @"/docroot/summary");
 		}
 
-		private static string GetSummary (IParameter parameter)
+		private static string GetParameterSummary (IDecoration decoration, string parameterName)
 		{
-			return GetSummary(parameter.Documentation, @"/docroot/param[@name='"+parameter.Name+"']");
+			if (decoration == null) return String.Empty;
+			return GetSummary(decoration.Documentation, @"/docroot/param[@name='"+parameterName+"']");
 		}
 		
 		private static string GetSummary (string documentation, string xpath)
@@ -608,7 +485,7 @@ namespace ClassDiagram
 			Image currentImage = openBrace;
 			foreach (IParameter param in method.Parameters)
 			{
-				ParameterNode parameter = new ParameterNode(param, GetAmbience(), currentImage, this);
+				ParameterNode parameter = new ParameterNode(method, param, GetAmbience(), currentImage, this);
 				currentImage = comma;
 				item.Nodes.Add(parameter);
 			}
@@ -618,7 +495,6 @@ namespace ClassDiagram
 				currentImage = closeBrace;
 			
 			AddParameterNode addParam = new AddParameterNode(currentImage);
-			//	addParam.ForeColor = Color.Gray;
 			item.Nodes.Add(addParam);
 			addParameterItems[method] = addParam;
 		}
@@ -658,6 +534,7 @@ namespace ClassDiagram
 			if (memberItem != null)
 			{
 				_modifiers.DropDownItems.Clear();
+				
 				_modifiers.DropDownItems.Add(ICSharpCode.NRefactory.Ast.Modifiers.Public);
 				_modifiers.DropDownItems.Add(ICSharpCode.NRefactory.Ast.Modifiers.Private);
 				_modifiers.DropDownItems.Add(ICSharpCode.NRefactory.Ast.Modifiers.Protected);
@@ -711,6 +588,12 @@ namespace ClassDiagram
 					MemberActivated(this, new IMemberEventArgs(memberItem.Member));
 				}
 			}
+		}
+		
+		void _nameDrawText(object sender, DrawEventArgs e)
+		{
+			if ((e.Node.Tag is GroupNode || e.Node.Tag is AddParameterNode) && e.Node.IsSelected == false)
+				e.TextBrush = Brushes.Gray;
 		}
 	}
 

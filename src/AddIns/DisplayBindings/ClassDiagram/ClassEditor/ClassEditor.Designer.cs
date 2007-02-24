@@ -115,18 +115,22 @@ namespace ClassDiagram
 			this._name.DataPropertyName = "MemberName";
 			this._name.EditEnabled = true;
 			this._name.ParentColumn = this.nameCol;
+			this._name.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
+			this._name.DrawText += new System.EventHandler<Aga.Controls.Tree.NodeControls.DrawEventArgs>(this._nameDrawText);
 			// 
 			// _type
 			// 
 			this._type.DataPropertyName = "MemberType";
 			this._type.EditEnabled = true;
 			this._type.ParentColumn = this.typeCol;
+			this._type.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
 			// 
 			// _modifiers
 			// 
 			this._modifiers.DataPropertyName = "MemberModifier";
 			this._modifiers.EditEnabled = true;
 			this._modifiers.ParentColumn = this.modifierCol;
+			this._modifiers.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
 			this._modifiers.EditorShowing += new System.ComponentModel.CancelEventHandler(this._modifiersEditorShowing);
 			// 
 			// _summary
