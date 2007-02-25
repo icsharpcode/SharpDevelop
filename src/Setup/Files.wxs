@@ -494,6 +494,9 @@
 									</Directory>
 								</Directory>
 							</Directory>
+							<Component Guid="3730EF42-5257-4EB2-9DA1-57151E5EB5A3" Id="AgaControlsDll" DiskId="1">
+								<File Source="..\..\bin\Aga.Controls.dll" Name="AGACON.DLL" Id="Aga.Controls.dll" LongName="Aga.Controls.dll" Assembly=".net" AssemblyApplication="Aga.Controls.dll" AssemblyManifest="Aga.Controls.dll" KeyPath="yes" />
+							</Component>
 						</Directory>
 						<Directory Id="DocFolder" Name="doc">
 							<Component Guid="370DE542-C4A9-48DA-ACF8-09949CDCD808" Id="SharpDevelopDocFiles" DiskId="1">
@@ -973,13 +976,18 @@
 												<File Source="..\..\AddIns\AddIns\DisplayBindings\ClassDiagram\Resources\Bitmaps.resources" Name="BITMAPS.RES" Id="Bitmaps.resources" LongName="Bitmaps.resources" />
 											</Component>
 										</Directory>
-										<Component Guid="EC3D2661-177C-4059-90BF-1BB838F0A335" Id="ClassDiagramFiles" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\DisplayBindings\ClassDiagram\Aga.Controls.dll" Name="Aga.dll" Id="ClassDiagram.Aga.Controls.dll" LongName="Aga.Controls.dll" />
-											<File Source="..\..\AddIns\AddIns\DisplayBindings\ClassDiagram\ClassCanvas.dll" Name="CLASSC_1.DLL" Id="ClassCanvas.dll" LongName="ClassCanvas.dll" />
-											<File Source="..\..\AddIns\AddIns\DisplayBindings\ClassDiagram\ClassDiagramAddin.addin" Name="CLASSD_1.ADD" Id="ClassDiagramAddin.addin" LongName="ClassDiagramAddin.addin" />
-											<File Source="..\..\AddIns\AddIns\DisplayBindings\ClassDiagram\ClassDiagramAddin.dll" Name="CLASSD_1.DLL" Id="ClassDiagramAddin.dll" LongName="ClassDiagramAddin.dll" />
-											<File Source="..\..\AddIns\AddIns\DisplayBindings\ClassDiagram\ClassEditor.dll" Name="CLASSE_1.DLL" Id="ClassEditor.dll" LongName="ClassEditor.dll" />
-											<File Source="..\..\AddIns\AddIns\DisplayBindings\ClassDiagram\Diagrams.dll" Name="Diagrams.dll" Id="Diagrams.dll" />
+										<Component Guid="A8619065-03F6-4AF0-A1F2-81D5C810D8A3" Id="ClassDiagramAddInFiles" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\DisplayBindings\ClassDiagram\ClassDiagramAddin.addin" Name="CLASSD.ADD" Id="ClassDiagram.ClassDiagramAddin.addin" LongName="ClassDiagramAddin.addin" />
+											<File Source="..\..\AddIns\AddIns\DisplayBindings\ClassDiagram\ClassDiagramAddin.dll" Name="CLSADDIN.DLL" Id="ClassDiagram.ClassDiagramAddin.dll" LongName="ClassDiagramAddin.dll" Assembly=".net" AssemblyApplication="ClassDiagram.ClassDiagramAddin.dll" AssemblyManifest="ClassDiagram.ClassDiagramAddin.dll" KeyPath="yes" />
+										</Component>
+										<Component Guid="5F09F966-5605-4381-B346-8231DA0B1C6B" Id="ClassCanvasDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\DisplayBindings\ClassDiagram\ClassCanvas.dll" Name="CLSCANV.DLL" Id="ClassDiagram.ClassCanvas.dll" LongName="ClassCanvas.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="ClassDiagram.ClassCanvas.dll" AssemblyManifest="ClassDiagram.ClassCanvas.dll" />
+										</Component>
+										<Component Guid="C315C474-B72D-4B12-8BB9-545E3A34DA59" Id="ClassEditorDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\DisplayBindings\ClassDiagram\ClassEditor.dll" Name="CLSEDIT..DLL" Id="ClassDiagram.ClassEditor.dll" LongName="ClassEditor.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="ClassDiagram.ClassEditor.dll" AssemblyManifest="ClassDiagram.ClassEditor.dll" />
+										</Component>
+										<Component Guid="EF2B150B-B0C4-4884-800C-BE904E520CF4" Id="DiagramsDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\DisplayBindings\ClassDiagram\Diagrams.dll" Name="Diagrams.dll" Id="ClassDiagram.Diagrams.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="ClassDiagram.Diagrams.dll" AssemblyManifest="ClassDiagram.Diagrams.dll" />
 										</Component>
 									</Directory>
 								</Directory>

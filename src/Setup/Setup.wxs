@@ -178,6 +178,7 @@
 				<ComponentRef Id="ICSharpCodeSharpDevelopWidgets"/>
 				<ComponentRef Id="ICSharpCodeSharpDevelopSdaFiles"/>
 				<ComponentRef Id="ICSharpCodeTextEditorDll"/>
+				<ComponentRef Id="AgaControlsDll"/>
 				<ComponentRef Id="log4netDll"/>
 				<ComponentRef Id="MonoCecilDll"/>
 				<ComponentRef Id="WeifenLuoWinFormsUIDockingDll"/>
@@ -305,7 +306,10 @@
 				<ComponentRef Id="ResourceEditorFiles"/>
 				<ComponentRef Id="SettingsEditorFiles"/>
 				<ComponentRef Id="ClassDiagramResources"/>
-				<ComponentRef Id="ClassDiagramFiles"/>
+				<ComponentRef Id="ClassDiagramAddInFiles"/>
+				<ComponentRef Id="ClassCanvasDll"/>
+				<ComponentRef Id="ClassEditorDll"/>
+				<ComponentRef Id="DiagramsDll"/>
 				<ComponentRef Id="XmlEditorFiles"/>
 				<ComponentRef Id="AddInManagerFiles"/>
 				<ComponentRef Id="AddInManagerSharpZipLibDll"/>
