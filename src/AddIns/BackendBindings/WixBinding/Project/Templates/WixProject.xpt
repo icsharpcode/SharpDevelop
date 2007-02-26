@@ -24,6 +24,7 @@
 		Name="Your Application"
 		Language="1033"
 		Version="1.0.0.0"
+		UpgradeCode="${GUID}"
 		Manufacturer="Your Company">
 		<Package Id="${GUID}"
 			Description="#Description"
