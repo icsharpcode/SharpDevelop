@@ -118,6 +118,7 @@ internal class GlobalsCompletionDataProvider(ICSharpCode.SharpDevelop.DefaultEdi
 		
 	override def GenerateCompletionData(fileName as string, textArea as TextArea, charTyped as System.Char) as (ICompletionData):
 		globals = _interpreter.GetGlobals()
+		return array(ICompletionData, 0) if globals is null
 		data = array(ICompletionData, len(globals))
 		for index, key in enumerate(globals):
 			value = null #_interpreter.GetValue(key) TODO

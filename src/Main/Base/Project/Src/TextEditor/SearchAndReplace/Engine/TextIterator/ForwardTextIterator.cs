@@ -85,6 +85,10 @@ namespace SearchAndReplace
 			
 			switch (state) {
 				case TextIteratorState.Resetted:
+					if (textBuffer.Length == 0) {
+						state = TextIteratorState.Done;
+						return false;
+					}
 					Position = endOffset;
 					state = TextIteratorState.Iterating;
 					return true;

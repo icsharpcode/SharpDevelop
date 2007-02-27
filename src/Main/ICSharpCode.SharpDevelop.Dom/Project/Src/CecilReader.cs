@@ -256,6 +256,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 						DefaultField f = new DefaultField(this, field.Name);
 						f.Modifiers = TranslateModifiers(field);
 						f.ReturnType = CreateType(this.ProjectContent, this, field.FieldType);
+						AddAttributes(CompilationUnit.ProjectContent, f.Attributes, field.CustomAttributes);
 						Fields.Add(f);
 					}
 				}
@@ -277,6 +278,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 							p.IsIndexer = true;
 						}
 						AddParameters(p, property.Parameters);
+						AddAttributes(CompilationUnit.ProjectContent, p.Attributes, property.CustomAttributes);
 						Properties.Add(p);
 					}
 				}
@@ -290,6 +292,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 							e.Modifiers = TranslateModifiers(eventDef);
 						}
 						e.ReturnType = CreateType(this.ProjectContent, this, eventDef.EventType);
+						AddAttributes(CompilationUnit.ProjectContent, e.Attributes, eventDef.CustomAttributes);
 						Events.Add(e);
 					}
 				}
@@ -320,6 +323,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 					}
 					
 					m.ReturnType = CreateType(this.ProjectContent, m, method.ReturnType.ReturnType);
+					AddAttributes(CompilationUnit.ProjectContent, m.Attributes, method.CustomAttributes);
 					if (this.ClassType == ClassType.Interface) {
 						m.Modifiers = ModifierEnum.Public | ModifierEnum.Abstract;
 					} else {

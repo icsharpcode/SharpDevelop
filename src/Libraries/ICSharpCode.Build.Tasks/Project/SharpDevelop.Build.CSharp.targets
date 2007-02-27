@@ -7,46 +7,50 @@
 			to work around a problem in Microsoft's C# targets
  		-->
 		<SharpDevelopTargetFrameworkVersion>$(TargetFrameworkVersion)</SharpDevelopTargetFrameworkVersion>
+		<SharpDevelopTargetFrameworkClass>unknown</SharpDevelopTargetFrameworkClass>
 	</PropertyGroup>
 	
-	<PropertyGroup Condition=" '$(TargetFrameworkVersion)' == 'v1.0' ">
-		<CscToolPath>$(SystemRoot)\Microsoft.NET\Framework\v1.0.3705</CscToolPath>
-		<SharpDevelopUse1xCompiler>true</SharpDevelopUse1xCompiler>
-		<SharpDevelopUseMicrosoftFramework>true</SharpDevelopUseMicrosoftFramework>
-	</PropertyGroup>
-	<PropertyGroup Condition=" '$(TargetFrameworkVersion)' == 'v1.1' ">
-		<CscToolPath>$(SystemRoot)\Microsoft.NET\Framework\v1.1.4322</CscToolPath>
-		<SharpDevelopUse1xCompiler>true</SharpDevelopUse1xCompiler>
-		<SharpDevelopUseMicrosoftFramework>true</SharpDevelopUseMicrosoftFramework>
-	
-		<!-- Work around MsBuild problem: Microsoft.CSharp.targets adds NoWarn entries that -->
-		<!-- don't exist in v1.1 when version is set to anything else than v1.0 -->
+	<PropertyGroup Condition=" ('$(SharpDevelopTargetFrameworkVersion)' == 'v1.0') or ($(SharpDevelopTargetFrameworkVersion) == 'v1.1') ">
 		<TargetFrameworkVersion>v1.0</TargetFrameworkVersion>
-	</PropertyGroup>
-	<PropertyGroup Condition=" '$(SharpDevelopUse1xCompiler)' == 'true' ">
+		<!-- TargetFrameworkVersion must be v1.0 both for .NET 1.0 and .NET 1.1 - otherwise Microsoft.CSharp.targets adds invalid NoWarn entries -->
+		
+		<CscToolPath Condition="'$(SharpDevelopTargetFrameworkVersion)' == 'v1.0'">$(SystemRoot)\Microsoft.NET\Framework\v1.0.3705</CscToolPath>
+		<CscToolPath Condition="'$(SharpDevelopTargetFrameworkVersion)' == 'v1.1'">$(SystemRoot)\Microsoft.NET\Framework\v1.1.4322</CscToolPath>
 		<UseHostCompilerIfAvailable>false</UseHostCompilerIfAvailable>
 		<ErrorReport/>
 		<PlatformTarget/>
+		<SharpDevelopTargetFrameworkClass>v1</SharpDevelopTargetFrameworkClass>
 	</PropertyGroup>
 	
-	<PropertyGroup Condition=" '$(TargetFrameworkVersion)' == 'v2.0' ">
-		<SharpDevelopUseMicrosoftFramework>true</SharpDevelopUseMicrosoftFramework>		
+	<PropertyGroup Condition=" ('$(SharpDevelopTargetFrameworkVersion)' == 'v2.0' or '$(SharpDevelopTargetFrameworkVersion)' == '') ">
+		<TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+		<SharpDevelopTargetFrameworkClass>v2</SharpDevelopTargetFrameworkClass>
 	</PropertyGroup>
 	
-	<PropertyGroup Condition=" '$(TargetFrameworkVersion)' == 'CF 1.0' ">
+	<PropertyGroup Condition=" '$(SharpDevelopTargetFrameworkVersion)' == 'CF 1.0' ">
 		<TargetFrameworkVersion>v1.0</TargetFrameworkVersion>
 		<SharpDevelopUseCompactFramework>true</SharpDevelopUseCompactFramework>
+		<SharpDevelopTargetFrameworkClass>CF</SharpDevelopTargetFrameworkClass>
 	</PropertyGroup>
-	<PropertyGroup Condition=" '$(TargetFrameworkVersion)' == 'CF 2.0' ">
+	<PropertyGroup Condition=" '$(SharpDevelopTargetFrameworkVersion)' == 'CF 2.0' ">
 		<TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
 		<SharpDevelopUseCompactFramework>true</SharpDevelopUseCompactFramework>
+		<SharpDevelopTargetFrameworkClass>CF</SharpDevelopTargetFrameworkClass>
+	</PropertyGroup>
+	<PropertyGroup Condition=" ('$(SharpDevelopTargetFrameworkVersion)' == 'Mono v1.1') or ('$(SharpDevelopTargetFrameworkVersion)' == 'Mono v2.0') ">
+		<SharpDevelopTargetFrameworkClass>Mono</SharpDevelopTargetFrameworkClass>
 	</PropertyGroup>
 	
+	<Target Name="Build" Condition="'$(SharpDevelopTargetFrameworkClass)' == 'unknown'">
+		<Error Text="Unknown target framework version '$(SharpDevelopTargetFrameworkVersion)'."/>
+	</Target>
+	
 	<!-- Use Microsoft's C# standard targets -->
-	<Import Condition=" '$(SharpDevelopUseMicrosoftFramework)' == 'true' " Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+	<Import Condition=" ('$(SharpDevelopTargetFrameworkClass)' == 'v1') or ('$(SharpDevelopTargetFrameworkClass)' == 'v2') "
+	        Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 	
 	<!-- Override properties created by Microsoft.CSharp.targets -->
-	<PropertyGroup Condition=" '$(SharpDevelopUse1xCompiler)' == 'true' ">
+	<PropertyGroup Condition=" '$(SharpDevelopTargetFrameworkClass)' == 'v1' ">
 		<AssemblySearchPaths>
 		{CandidateAssemblyFiles};
 		$(ReferencePath);
@@ -60,7 +64,7 @@
 		<TargetFrameworkDirectory>$(CscToolPath)</TargetFrameworkDirectory>
 	</PropertyGroup>
 	
-	<ItemGroup Condition=" '$(SharpDevelopUse1xCompiler)' == 'true' ">
+	<ItemGroup Condition=" '$(SharpDevelopTargetFrameworkClass)' == 'v1' ">
 		<TargetFrameworkDirectoryItem Include="$(CscToolPath)">
 			<InProject>false</InProject>
 		</TargetFrameworkDirectoryItem>
@@ -68,16 +72,16 @@
 	
 	<!-- GetFrameworkPaths overwrites TargetFrameworkDirectory, so modify it -->
 	<!-- to be inactive if SharpDevelopUse1xCompiler is set. -->
-	<Target Name="GetFrameworkPaths" DependsOnTargets="$(GetFrameworkPathsDependsOn)" Condition=" '$(SharpDevelopUseMicrosoftFramework)' == 'true' ">
-		<Error Condition=" ('$(SharpDevelopUse1xCompiler)' == 'true') And !Exists('$(CscToolPath)\Csc.exe') "
+	<Target Name="GetFrameworkPaths" DependsOnTargets="$(GetFrameworkPathsDependsOn)" Condition=" ('$(SharpDevelopTargetFrameworkClass)' == 'v1') or ('$(SharpDevelopTargetFrameworkClass)' == 'v2') ">
+		<Error Condition=" ('$(SharpDevelopTargetFrameworkClass)' == 'v1') And !Exists('$(CscToolPath)\Csc.exe') "
 		       Text="Could not find the C# compiler in $(CscToolPath)."/>
 		
-		<GetFrameworkPath Condition=" '$(SharpDevelopUse1xCompiler)' != 'true' ">
+		<GetFrameworkPath Condition=" '$(SharpDevelopTargetFrameworkClass)' != 'v1' ">
 			<Output TaskParameter="Path" PropertyName="TargetFrameworkDirectory"/>
 			<Output TaskParameter="Path" ItemName="TargetFrameworkDirectoryItem"/>
 		</GetFrameworkPath>
 		
-		<GetFrameworkSDKPath Condition=" '$(SharpDevelopUse1xCompiler)' != 'true' ">
+		<GetFrameworkSDKPath Condition=" '$(SharpDevelopTargetFrameworkClass)' != 'v1' ">
 			<Output TaskParameter="Path" PropertyName="TargetFrameworkSDKDirectory"/>
 			<Output TaskParameter="Path" ItemName="TargetFrameworkSDKDirectoryItem"/>
 		</GetFrameworkSDKPath>
@@ -87,15 +91,24 @@
 	<Import Condition=" '$(TargetFrameworkVersion)' == 'Mono v1.1' " Project="$(SharpDevelopBinPath)\SharpDevelop.Build.Mono.Mcs.targets"/>
 	<Import Condition=" '$(TargetFrameworkVersion)' == 'Mono v2.0' " Project="$(SharpDevelopBinPath)\SharpDevelop.Build.Mono.Gmcs.targets"/>
 	
-	<!-- Compact framework default platform values -->
-	<PropertyGroup Condition=" '$(SharpDevelopUseCompactFramework)' == 'true' ">
+	<!-- Compact framework property adjustments: -->
+	<!-- When StdLib is not set, set it to true and add reference to mscorlib -->
+	<!-- Set PlatformFamilyName and PlatformID if required -->
+	<PropertyGroup Condition=" '$(SharpDevelopTargetFrameworkClass)' == 'CF' ">
 		<PlatformFamilyName Condition=" '$(PlatformFamilyName)' == '' ">PocketPC</PlatformFamilyName>
-    	<PlatformID Condition=" '$(PlatformID)' == '' ">WinCE</PlatformID>
+		<PlatformID Condition=" '$(PlatformID)' == '' ">WinCE</PlatformID>
+		
+		<SharpDevelopAddReferenceToCompactMscorlib Condition="'$(NoStdLib)' == ''">true</SharpDevelopAddReferenceToCompactMscorlib>
+		<NoStdLib Condition="'$(NoStdLib)' == ''">true</NoStdLib>
 	</PropertyGroup>
 	
+	<ItemGroup Condition=" '$(SharpDevelopAddReferenceToCompactMscorlib)' == 'true' ">
+		<Reference Include="mscorlib"/>
+	</ItemGroup>
+	
 	<!-- Compact framework imports -->
-	<Import Condition=" ('$(TargetFrameworkVersion)' == 'v1.0') And ('$(SharpDevelopUseCompactFramework)' == 'true') "
+	<Import Condition=" '$(SharpDevelopTargetFrameworkVersion)' == 'CF 1.0' "
 	        Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.v1.targets"/>
-	<Import Condition=" ('$(TargetFrameworkVersion)' == 'v2.0') And ('$(SharpDevelopUseCompactFramework)' == 'true') "
+	<Import Condition=" '$(SharpDevelopTargetFrameworkVersion)' == 'CF 2.0' "
 	        Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets"/>
 </Project>

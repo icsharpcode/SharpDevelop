@@ -15,6 +15,7 @@
 		<Import assembly = ":ICSharpCode.SharpDevelop"/>
 	</Runtime>
 	
+	<!-- Add the "Boo" entry to the Open Project Dialog -->
 	<Path name = "/SharpDevelop/Workbench/Combine/FileFilter">
 		<FileFilter id         = "BooProject"
 		            insertbefore="AllFiles"
@@ -22,7 +23,8 @@
 		            class      = "ICSharpCode.SharpDevelop.Project.LoadProject"
 		            extensions = "*.booproj"/>
 	</Path>
-
+	
+	<!-- Add the "Boo" entry to the Open File Dialog -->
 	<Path name = "/SharpDevelop/Workbench/FileFilter">
 		<FileFilter id = "Boo"
 		            insertbefore="AllFiles"
@@ -30,9 +32,15 @@
 		            extensions = "*.boo"/>
 	</Path>
 	
+	<!-- Makes SharpDevelop show the text 'Compiling ProjectName...' whenever an MSBuild task named 'booc' is started -->
 	<Path name = "/SharpDevelop/MSBuildEngine/CompileTaskNames">
-		<!-- Makes SharpDevelop show the text 'Compiling ProjectName...' when the task is started -->
 		<String id="booc" text = "booc"/>
+	</Path>
+	
+	<!-- Register path to Boo.Microsoft.Build.targets for MSBuild engine. -->
+	<!-- Boo.Microsoft.Build.targets are in the AddIn directory -->
+	<Path name = "/SharpDevelop/MSBuildEngine/AdditionalProperties">
+		<String id="BooBinPath" text = "${AddInPath:ICSharpCode.BooBinding}"/>
 	</Path>
 	
 	<Path name = "/AddIns/FileTypeRegisterer/FileTypes">
@@ -136,7 +144,7 @@
 		                 projectfileextension = ".booproj"
 		                 class                = "Grunwald.BooBinding.BooLanguageBinding" />
 	</Path>
-
+	
 	<Path name = "/SharpDevelop/Workbench/MainMenu/Tools/ConvertCode">
 		<ComplexCondition action = "Disable">
 			<Or>

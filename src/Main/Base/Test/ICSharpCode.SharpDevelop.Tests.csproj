@@ -54,6 +54,7 @@
     <Compile Include="CSharpExpressionFinderTests.cs" />
     <Compile Include="ExceptionClassOverridesTestFixture.cs" />
     <Compile Include="FindNextWithCursorAtEndTestFixture.cs" />
+    <Compile Include="ForwardIteratorWithEmptyTextBufferTestFixture.cs" />
     <Compile Include="ForwardTextIteratorPositionIsEndOffsetTestFixture.cs" />
     <Compile Include="NRefactoryResolverTests.cs" />
     <Compile Include="CollectionClassOverridesTestFixture.cs" />
