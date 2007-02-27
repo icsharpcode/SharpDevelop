@@ -4,6 +4,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
+using System.Windows.Input;
 using System.Windows.Markup;
 using System.Xml;
 using ICSharpCode.WpfDesign;
@@ -21,6 +22,11 @@ namespace StandaloneDesigner
 		{
 			try {
 				InitializeComponent();
+				foreach (object o in toolBar.Items) {
+					if (o is Button) {
+						(o as Button).CommandTarget = designSurface;
+					}
+				}
 			} catch (Exception ex) {
 				MessageBox.Show(ex.ToString());
 				Close();
@@ -32,6 +38,7 @@ namespace StandaloneDesigner
 		TextBox CodeTextBox;
 		DesignSurface designSurface;
 		PropertyEditor propertyEditor;
+		ToolBar toolBar;
 		#endif
 		
 		void tabControlSelectionChanged(object sender, RoutedEventArgs e)

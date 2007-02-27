@@ -35,7 +35,9 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 		{
 			this.property = property;
 			UpdateFromSource();
-			PropertyEditorBindingHelper.AddValueChangedEventHandler(this, property, delegate { UpdateFromSource(); });
+			PropertyEditorBindingHelper.AddValueChangedEventHandler(
+				this, property, delegate { UpdateFromSource(); }
+			);
 		}
 		
 		void UpdateFromSource()

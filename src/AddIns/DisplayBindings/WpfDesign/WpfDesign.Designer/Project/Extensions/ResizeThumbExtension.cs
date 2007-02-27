@@ -85,10 +85,13 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				adornerPanel.ClearValue(AdornerPanel.CursorProperty);
 				
 				if (resizeBehavior != null) {
-					resizeBehavior.Resize(this.ExtendedItem,
-					                      FixChange(e.HorizontalChange, horizontalAlignment),
-					                      FixChange(e.VerticalChange, verticalAlignment),
-					                      horizontalAlignment, verticalAlignment);
+					using (ChangeGroup group = this.ExtendedItem.OpenGroup("Resize")) {
+						resizeBehavior.Resize(this.ExtendedItem,
+						                      FixChange(e.HorizontalChange, horizontalAlignment),
+						                      FixChange(e.VerticalChange, verticalAlignment),
+						                      horizontalAlignment, verticalAlignment);
+						group.Commit();
+					}
 				}
 			};
 		}

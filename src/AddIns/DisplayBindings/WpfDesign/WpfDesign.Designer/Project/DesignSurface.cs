@@ -6,11 +6,14 @@
 // </file>
 
 using System;
+using System.Diagnostics;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Controls;
 using System.Xml;
 
 using ICSharpCode.WpfDesign.Designer.Controls;
+using ICSharpCode.WpfDesign.Designer.Services;
 
 namespace ICSharpCode.WpfDesign.Designer
 {
@@ -34,7 +37,53 @@ namespace ICSharpCode.WpfDesign.Designer
 			_scrollViewer.VerticalScrollBarVisibility = ScrollBarVisibility.Visible;
 			_scrollViewer.HorizontalScrollBarVisibility = ScrollBarVisibility.Visible;
 			this.VisualChild = _scrollViewer;
+			
+			this.CommandBindings.Add(new CommandBinding(ApplicationCommands.Undo, OnUndoExecuted, OnUndoCanExecute));
+			this.CommandBindings.Add(new CommandBinding(ApplicationCommands.Redo, OnRedoExecuted, OnRedoCanExecute));
 		}
+		
+		#region Undo/Redo
+		UndoService _undoService;
+		
+		private UndoService UndoService {
+			get { return _undoService; }
+			set {
+				if (_undoService != null) {
+					_undoService.UndoStackChanged -= OnUndoStackChanged;
+				}
+				_undoService = value;
+				if (_undoService != null) {
+					_undoService.UndoStackChanged += OnUndoStackChanged;
+				}
+				CommandManager.InvalidateRequerySuggested();
+			}
+		}
+		
+		void OnUndoExecuted(object sender, ExecutedRoutedEventArgs e)
+		{
+			_undoService.Undo();
+		}
+		
+		void OnUndoCanExecute(object sender, CanExecuteRoutedEventArgs e)
+		{
+			e.CanExecute = _undoService != null && _undoService.CanUndo;
+		}
+		
+		void OnRedoExecuted(object sender, ExecutedRoutedEventArgs e)
+		{
+			_undoService.Redo();
+		}
+		
+		void OnRedoCanExecute(object sender, CanExecuteRoutedEventArgs e)
+		{
+			e.CanExecute = _undoService != null && _undoService.CanRedo;
+		}
+		
+		void OnUndoStackChanged(object sender, EventArgs e)
+		{
+			CommandManager.InvalidateRequerySuggested();
+		}
+		#endregion
 		
 		/// <summary>
 		/// Gets the active design context.
@@ -70,6 +119,7 @@ namespace ICSharpCode.WpfDesign.Designer
 			designPanelBorder.Padding = new Thickness(10);
 			_designPanel.Child = designPanelBorder;
 			designPanelBorder.Child = context.RootItem.View;
+			UndoService = context.Services.GetService<UndoService>();
 		}
 		
 		/// <summary>
@@ -82,6 +132,7 @@ namespace ICSharpCode.WpfDesign.Designer
 			_designPanel.Child = null;
 			_designPanel.Adorners.Clear();
 			_designPanel.MarkerCanvas.Children.Clear();
+			UndoService = null;
 		}
 	}
 }

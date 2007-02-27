@@ -66,10 +66,10 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		public void Resize(DesignItem childItem, double horizontalChange, double verticalChange, HorizontalAlignment horizontal, VerticalAlignment vertical)
 		{
 			RelativePlacement p = (RelativePlacement)GetPlacement(childItem, horizontalChange, verticalChange, horizontal, vertical);
-			Resize(childItem, p, horizontalChange, verticalChange, horizontal, vertical);
+			Resize(childItem, p, horizontal, vertical);
 		}
 		
-		static void Resize(DesignItem childItem, RelativePlacement p, double horizontalChange, double verticalChange, HorizontalAlignment horizontal, VerticalAlignment vertical)
+		static void Resize(DesignItem childItem, RelativePlacement p, HorizontalAlignment horizontal, VerticalAlignment vertical)
 		{
 			DesignItemProperty margin = childItem.Properties[FrameworkElement.MarginProperty];
 			if (margin.IsSet) {
@@ -80,6 +80,9 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				t.Bottom -= p.YOffset + p.HeightOffset;
 				margin.SetValue(t);
 			}
+			
+			double horizontalChange = p.WidthOffset;
+			double verticalChange = p.HeightOffset;
 			
 			FrameworkElement child = (FrameworkElement)childItem.Component;
 			double width = child.Width;
@@ -130,8 +133,8 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				rp.XOffset -= horizontalChange;
 				rp.WidthOffset += horizontalChange;
 			} else {
-				rp.XOffset -= horizontalChange / 2;
-				rp.WidthOffset += horizontalChange;
+				rp.XOffset -= horizontalChange;
+				rp.WidthOffset += horizontalChange * 2;
 			}
 			
 			if (vertical == VerticalAlignment.Bottom) {
@@ -140,8 +143,8 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				rp.YOffset -= verticalChange;
 				rp.HeightOffset += verticalChange;
 			} else {
-				rp.YOffset -= verticalChange / 2;
-				rp.HeightOffset += verticalChange;
+				rp.YOffset -= verticalChange;
+				rp.HeightOffset += verticalChange * 2;
 			}
 			
 			return rp;

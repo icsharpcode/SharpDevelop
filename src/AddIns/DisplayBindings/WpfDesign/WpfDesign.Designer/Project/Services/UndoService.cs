@@ -17,7 +17,7 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 		void Do();
 		void Undo();
 		
-		string Title { get; set; }
+		string Title { get; }
 	}
 	#endregion
 	
@@ -100,9 +100,10 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 		{
 			AssertState(TransactionState.Undone);
 			try {
-				for (int i = 0; i < items.Count; i--) {
+				for (int i = 0; i < items.Count; i++) {
 					items[i].Do();
 				}
+				_state = TransactionState.Completed;
 			} catch {
 				_state = TransactionState.Failed;
 				try {
@@ -144,18 +145,10 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 		Stack<ITransactionItem> _undoStack = new Stack<ITransactionItem>();
 		Stack<ITransactionItem> _redoStack = new Stack<ITransactionItem>();
 		
-		UndoTransaction CurrentTransaction {
-			get {
-				if (_transactionStack.Count == 0)
-					return null;
-				else
-					return _transactionStack.Peek();
-			}
-		}
-		
 		internal UndoTransaction StartTransaction()
 		{
 			UndoTransaction t = new UndoTransaction();
+			_transactionStack.Push(t);
 			t.Committed += TransactionFinished;
 			t.RolledBack += TransactionFinished;
 			t.Committed += delegate(object sender, EventArgs e) {
@@ -177,6 +170,7 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 				item.Do();
 				_undoStack.Push(item);
 				_redoStack.Clear();
+				OnUndoStackChanged(EventArgs.Empty);
 			} else {
 				_transactionStack.Peek().Execute(item);
 			}
@@ -187,6 +181,18 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 		/// </summary>
 		public bool CanUndo {
 			get { return _undoStack.Count > 0; }
+		}
+		
+		/// <summary>
+		/// Is raised when the undo stack has changed.
+		/// </summary>
+		public event EventHandler UndoStackChanged;
+		
+		void OnUndoStackChanged(EventArgs e)
+		{
+			if (UndoStackChanged != null) {
+				UndoStackChanged(this, e);
+			}
 		}
 		
 		/// <summary>
@@ -202,10 +208,33 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 			try {
 				item.Undo();
 				_redoStack.Push(item);
+				OnUndoStackChanged(EventArgs.Empty);
 			} catch {
 				// state might be invalid now, clear stacks to prevent getting more inconsistencies
 				Clear();
 				throw;
+			}
+		}
+		
+		/// <summary>
+		/// Gets the list of names of the available actions on the undo stack.
+		/// </summary>
+		public IEnumerable<string> UndoActions {
+			get {
+				foreach (ITransactionItem item in _undoStack) {
+					yield return item.Title;
+				}
+			}
+		}
+		
+		/// <summary>
+		/// Gets the list of names of the available actions on the undo stack.
+		/// </summary>
+		public IEnumerable<string> RedoActions {
+			get {
+				foreach (ITransactionItem item in _redoStack) {
+					yield return item.Title;
+				}
 			}
 		}
 		
@@ -227,6 +256,7 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 			try {
 				item.Do();
 				_undoStack.Push(item);
+				OnUndoStackChanged(EventArgs.Empty);
 			} catch {
 				// state might be invalid now, clear stacks to prevent getting more inconsistencies
 				Clear();
@@ -241,6 +271,7 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 		{
 			_undoStack.Clear();
 			_redoStack.Clear();
+			OnUndoStackChanged(EventArgs.Empty);
 		}
 	}
 	#endregion

@@ -11,6 +11,7 @@
 using System;
 using System.Diagnostics;
 using ICSharpCode.WpfDesign.XamlDom;
+using ICSharpCode.WpfDesign.Designer.Services;
 
 namespace ICSharpCode.WpfDesign.Designer.Xaml
 {
@@ -88,42 +89,28 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			}
 		}
 		
-		#if EventHandlerDebugging
-		private event EventHandler _ValueChanged;
-		
+		// There may be multipley XamlModelProperty instances for the same property,
+		// so this class may not have any mutable fields / events - instead,
+		// we forward all event handlers to the XamlProperty.
 		public override event EventHandler ValueChanged {
 			add {
+				#if EventHandlerDebugging
 				if (ValueChangedEventHandlers == 0) {
 					Debug.WriteLine("ValueChangedEventHandlers is now > 0");
 				}
 				ValueChangedEventHandlers++;
-				_ValueChanged += value;
+				#endif
+				_property.ValueChanged += value;
 			}
 			remove {
+				#if EventHandlerDebugging
 				ValueChangedEventHandlers--;
 				if (ValueChangedEventHandlers == 0) {
 					Debug.WriteLine("ValueChangedEventHandlers reached 0");
 				}
-				_ValueChanged -= value;
+				#endif
+				_property.ValueChanged -= value;
 			}
-		}
-		#else
-		public override event EventHandler ValueChanged;
-		#endif
-		
-		void OnValueChanged(EventArgs e)
-		{
-			#if EventHandlerDebugging
-			if (_ValueChanged != null) {
-				_ValueChanged(this, EventArgs.Empty);
-			}
-			#else
-			if (ValueChanged != null) {
-				ValueChanged(this, EventArgs.Empty);
-			}
-			#endif
-			
-			_designItem.NotifyPropertyChanged(this.Name);
 		}
 		
 		public override object ValueOnInstance {
@@ -162,10 +149,9 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 		
 		public override void SetValue(object value)
 		{
-			_property.ValueOnInstance = value;
-			
+			XamlPropertyValue newValue;
 			if (value == null) {
-				_property.PropertyValue = _property.ParentObject.OwnerDocument.CreateNullValue();
+				newValue = _property.ParentObject.OwnerDocument.CreateNullValue();
 			} else {
 				XamlComponentService componentService = _designItem.ComponentService;
 				
@@ -173,22 +159,94 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 				if (designItem != null) {
 					if (designItem.Parent != null)
 						throw new DesignerException("Cannot set value to design item that already has a parent");
-					_property.PropertyValue = designItem.XamlObject;
+					newValue = designItem.XamlObject;
 				} else {
 					XamlPropertyValue val = _property.ParentObject.OwnerDocument.CreatePropertyValue(value, _property);
 					designItem = componentService.RegisterXamlComponentRecursive(val as XamlObject);
-					_property.PropertyValue = val;
+					newValue = val;
 				}
 			}
 			
-			OnValueChanged(EventArgs.Empty);
+			UndoService undoService = _designItem.Services.GetService<UndoService>();
+			if (undoService != null)
+				undoService.Execute(new PropertyChangeAction(this, true, newValue, value));
+			else
+				SetValueInternal(value, newValue);
+		}
+		
+		void SetValueInternal(object value, XamlPropertyValue newValue)
+		{
+			_property.ValueOnInstance = value;
+			_property.PropertyValue = newValue;
+			
+			_designItem.NotifyPropertyChanged(this.Name);
 		}
 		
 		public override void Reset()
 		{
+			UndoService undoService = _designItem.Services.GetService<UndoService>();
+			if (undoService != null)
+				undoService.Execute(new PropertyChangeAction(this, false, null, null));
+			else
+				ResetInternal();
+		}
+		
+		void ResetInternal()
+		{
 			if (_property.IsSet) {
 				_property.Reset();
-				OnValueChanged(EventArgs.Empty);
+				_designItem.NotifyPropertyChanged(this.Name);
+			}
+		}
+		
+		sealed class PropertyChangeAction : ITransactionItem
+		{
+			XamlModelProperty property;
+			
+			bool newIsSet;
+			XamlPropertyValue newValue;
+			object newObject;
+			
+			XamlPropertyValue oldValue;
+			object oldObject;
+			bool oldIsSet;
+			
+			public PropertyChangeAction(XamlModelProperty property, bool newIsSet, XamlPropertyValue newValue, object newObject)
+			{
+				this.property = property;
+				
+				this.newIsSet = newIsSet;
+				this.newValue = newValue;
+				this.newObject = newObject;
+				
+				oldIsSet = property._property.IsSet;
+				oldValue = property._property.PropertyValue;
+				oldObject = property._property.ValueOnInstance;
+			}
+			
+			public string Title {
+				get {
+					if (newIsSet)
+						return "Set " + property.Name;
+					else
+						return "Reset " + property.Name;
+				}
+			}
+			
+			public void Do()
+			{
+				if (newIsSet)
+					property.SetValueInternal(newObject, newValue);
+				else
+					property.ResetInternal();
+			}
+			
+			public void Undo()
+			{
+				if (oldIsSet)
+					property.SetValueInternal(oldObject, oldValue);
+				else
+					property.ResetInternal();
 			}
 		}
 	}

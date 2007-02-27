@@ -61,5 +61,8 @@
       <Project>{66A378A1-E9F4-4AD5-8946-D0EC06C2902F}</Project>
       <Name>WpfDesign</Name>
     </ProjectReference>
+    <Folder Include="Images" />
+    <Resource Include="Images\Redo.png" />
+    <Resource Include="Images\Undo.png" />
   </ItemGroup>
 </Project>
