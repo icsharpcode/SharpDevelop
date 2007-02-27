@@ -139,6 +139,12 @@ namespace ICSharpCode.XmlEditor
 			}
 		}
 		
+		public override bool IsReadOnly {
+			get { 
+				return xmlEditor.IsReadOnly;
+			}
+		}
+		
 		/// <summary>
 		/// Loads the string content into the view.
 		/// </summary>
