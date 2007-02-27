@@ -23,6 +23,9 @@ namespace ICSharpCode.Svn.Commands
 	/// </summary>
 	public sealed class RegisterEventsCommand : AbstractCommand
 	{
+		const int CannotDeleteFileWithLocalModifications = 195006;
+		const int CannotDeleteFileNotUnderVersionControl = 200005;
+		
 		public override void Run()
 		{
 			FileService.FileRemoving += FileRemoving;
@@ -65,12 +68,12 @@ namespace ICSharpCode.Svn.Commands
 		
 		void FileCreated(object sender, FileEventArgs e)
 		{
+			if (e.IsDirectory) return;
 			if (!AddInOptions.AutomaticallyAddFiles) return;
 			if (!Path.IsPathRooted(e.FileName)) return;
 			
 			string fullName = Path.GetFullPath(e.FileName);
 			if (!CanBeVersionControlledFile(fullName)) return;
-			if (e.IsDirectory) return;
 			try {
 				Status status = SvnClient.Instance.Client.SingleStatus(fullName);
 				switch (status.TextStatus) {
@@ -91,7 +94,9 @@ namespace ICSharpCode.Svn.Commands
 			if (e.Cancel) return;
 			string fullName = Path.GetFullPath(e.FileName);
 			if (!CanBeVersionControlledFile(fullName)) return;
+			
 			if (e.IsDirectory) {
+				
 				// show "cannot delete directories" message even if
 				// AutomaticallyDeleteFiles (see below) is off!
 				Status status = SvnClient.Instance.Client.SingleStatus(fullName);
@@ -100,12 +105,45 @@ namespace ICSharpCode.Svn.Commands
 					case StatusKind.Unversioned:
 						break;
 					default:
-						MessageService.ShowMessage("SubversionAddIn cannot delete directories, the directory is only removed from the project.");
+						// must be done using the subversion client, even if
+						// AutomaticallyDeleteFiles is off, because we don't want to corrupt the
+						// working copy
 						e.OperationAlreadyDone = true;
+						try {
+							SvnClient.Instance.Client.Delete(new string[] { fullName }, false);
+						} catch (SvnClientException ex) {
+							LoggingService.Warn("SVN Error code " + ex.ErrorCode);
+							LoggingService.Warn(ex);
+							
+							if (ex.ErrorCode == CannotDeleteFileWithLocalModifications
+							    || ex.ErrorCode == CannotDeleteFileNotUnderVersionControl)
+							{
+								if (MessageService.ShowCustomDialog("Delete directory",
+								                                    "Error deleting " + fullName + ":\n" +
+								                                    ex.Message, 0, 1,
+								                                    "Force delete", "${res:Global.CancelButtonText}")
+								    == 0)
+								{
+									try {
+										SvnClient.Instance.Client.Delete(new string[] { fullName }, true);
+									} catch (SvnClientException ex2) {
+										e.Cancel = true;
+										MessageService.ShowError(ex2.Message);
+									}
+								} else {
+									e.Cancel = true;
+								}
+							} else {
+								e.Cancel = true;
+								MessageService.ShowError(ex.Message);
+							}
+						}
 						break;
 				}
 				return;
 			}
+			// not a directory, but a file:
+			
 			if (!AddInOptions.AutomaticallyDeleteFiles) return;
 			try {
 				Status status = SvnClient.Instance.Client.SingleStatus(fullName);
