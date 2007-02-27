@@ -192,7 +192,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
+		[Obsolete("Use DomAssemblyName instead of AssemblyName")]
 		public IProjectContent GetExistingProjectContent(AssemblyName assembly)
+		{
+			return GetExistingProjectContent(assembly.FullName, assembly.FullName);
+		}
+		
+		public IProjectContent GetExistingProjectContent(DomAssemblyName assembly)
 		{
 			return GetExistingProjectContent(assembly.FullName, assembly.FullName);
 		}

@@ -88,6 +88,7 @@
     <Compile Include="Src\NRefactoryResolver\NRefactoryInformationProvider.cs" />
     <Compile Include="Src\NRefactoryResolver\NRefactoryResolver.cs" />
     <Compile Include="Src\NRefactoryResolver\TypeVisitor.cs" />
+    <Compile Include="Src\ProjectContent\DomAssemblyName.cs" />
     <Compile Include="Src\Refactoring\CodeGeneratorOptions.cs" />
     <Compile Include="Src\ReflectionLayer\DomPersistence.cs" />
     <Compile Include="Src\ReflectionLayer\ReflectionClass.cs" />

@@ -24,9 +24,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 				throw new ArgumentNullException("registry");
 			LoggingService.Info("Cecil: Load from " + fileName);
 			AssemblyDefinition asm = AssemblyFactory.GetAssembly(fileName);
-			List<AssemblyName> referencedAssemblies = new List<AssemblyName>();
+			List<DomAssemblyName> referencedAssemblies = new List<DomAssemblyName>();
 			foreach (AssemblyNameReference anr in asm.MainModule.AssemblyReferences) {
-				referencedAssemblies.Add(new AssemblyName(anr.FullName));
+				referencedAssemblies.Add(new DomAssemblyName(anr.FullName));
 			}
 			return new CecilProjectContent(asm.Name.FullName, fileName, referencedAssemblies.ToArray(), asm.MainModule.Types, registry);
 		}
@@ -121,7 +121,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		private sealed class CecilProjectContent : ReflectionProjectContent
 		{
-			public CecilProjectContent(string fullName, string fileName, AssemblyName[] referencedAssemblies,
+			public CecilProjectContent(string fullName, string fileName, DomAssemblyName[] referencedAssemblies,
 			                           TypeDefinitionCollection types, ProjectContentRegistry registry)
 				: base(fullName, fileName, referencedAssemblies, registry)
 			{
