@@ -27,6 +27,16 @@
 		</Setter>
 	</Style>
 	
+	<Style TargetType="{x:Type src:DragFrame}">
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="{x:Type src:DragFrame}">
+					<Rectangle Fill="#519ABFE5" Stroke="#FF7A8787" StrokeThickness="1"/>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+	
 	<Style TargetType="{x:Type src:ContainerDragHandle}">
 		<Setter Property="Template">
 			<Setter.Value>

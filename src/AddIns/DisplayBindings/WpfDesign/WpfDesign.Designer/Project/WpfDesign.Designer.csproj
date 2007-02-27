@@ -58,6 +58,7 @@
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Controls\AdornerLayer.cs" />
     <Compile Include="Controls\ContainerDragHandle.cs" />
+    <Compile Include="Controls\DragFrame.cs" />
     <Compile Include="Controls\ErrorBalloon.cs" />
     <Compile Include="Controls\PropertyEditor\DependencyPropertyDotButton.cs" />
     <Compile Include="Controls\PropertyEditor\PropertyEditor.cs" />
@@ -69,11 +70,12 @@
     <Compile Include="Controls\TypeEditors\BrushEditor.cs" />
     <Compile Include="Controls\WindowClone.cs" />
     <Compile Include="DesignPanel.cs" />
+    <Compile Include="Extensions\DefaultChildResizeSupport.cs" />
     <Compile Include="Extensions\PanelInstanceFactory.cs" />
     <Compile Include="Extensions\SelectedElementRectangleExtension.cs" />
     <Compile Include="Extensions\TabItemClickableExtension.cs" />
     <Compile Include="Extensions\TopLeftContainerDragHandle.cs" />
-    <Compile Include="Extensions\TopLeftGrabHandle.cs" />
+    <Compile Include="Extensions\ResizeThumbExtension.cs" />
     <Compile Include="Linq.cs" />
     <Compile Include="ServiceRequiredException.cs" />
     <Compile Include="Services\ErrorService.cs" />

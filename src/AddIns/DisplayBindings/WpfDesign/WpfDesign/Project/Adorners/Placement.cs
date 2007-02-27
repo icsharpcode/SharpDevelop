@@ -152,12 +152,12 @@ namespace ICSharpCode.WpfDesign.Adorners
 		
 		Size CalculateSize(UIElement adorner, Size adornedElementSize)
 		{
-			return new Size(widthOffset
-			                + widthRelativeToDesiredWidth * adorner.DesiredSize.Width
-			                + widthRelativeToContentWidth * adornedElementSize.Width,
-			                heightOffset
-			                + heightRelativeToDesiredHeight * adorner.DesiredSize.Height
-			                + heightRelativeToContentHeight * adornedElementSize.Height);
+			return new Size(Math.Max(widthOffset
+			                         + widthRelativeToDesiredWidth * adorner.DesiredSize.Width
+			                         + widthRelativeToContentWidth * adornedElementSize.Width, 0),
+			                Math.Max(heightOffset
+			                         + heightRelativeToDesiredHeight * adorner.DesiredSize.Height
+			                         + heightRelativeToContentHeight * adornedElementSize.Height, 0));
 		}
 		
 		double xOffset, yOffset;

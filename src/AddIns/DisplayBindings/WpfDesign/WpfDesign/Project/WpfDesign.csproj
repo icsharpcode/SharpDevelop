@@ -61,6 +61,7 @@
     <Compile Include="Adorners\AdornerProvider.cs" />
     <Compile Include="Adorners\AdornerProviderClasses.cs" />
     <Compile Include="Adorners\Placement.cs" />
+    <Compile Include="Behavior.cs" />
     <Compile Include="ChangeGroup.cs" />
     <Compile Include="DesignContext.cs" />
     <Compile Include="DesignItemProperty.cs" />
