@@ -1003,8 +1003,6 @@
 										<Component Guid="3A14B928-3319-429B-8F39-8870431C49CB" Id="DebuggerAddInFiles" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\Misc\Debugger\Debugger.AddIn.addin" Name="DEBUGG_1.ADD" Id="Debugger.AddIn.addin" LongName="Debugger.AddIn.addin" />
 											<File Source="..\..\AddIns\AddIns\Misc\Debugger\Debugger.AddIn.dll" Name="DEBUGG_1.DLL" Id="Debugger.AddIn.dll" LongName="Debugger.AddIn.dll" />
-											<File Source="..\..\AddIns\AddIns\Misc\Debugger\Debugger.BooInterpreter.addin" Name="DEBUGG_2.ADD" Id="Debugger.BooInterpreter.addin" LongName="Debugger.BooInterpreter.addin" />
-											<File Source="..\..\AddIns\AddIns\Misc\Debugger\Debugger.BooInterpreter.dll" Name="DEBUGG_2.DLL" Id="Debugger.BooInterpreter.dll" LongName="Debugger.BooInterpreter.dll" />
 											<File Source="..\..\AddIns\AddIns\Misc\Debugger\Debugger.Core.dll" Name="DEBUGG_3.DLL" Id="Debugger.Core.dll" LongName="Debugger.Core.dll" />
 											<File Source="..\..\AddIns\AddIns\Misc\Debugger\TreeListView.dll" Name="TREELI_1.DLL" Id="TreeListView.dll" LongName="TreeListView.dll" />
 											<File Source="..\..\AddIns\AddIns\Misc\Debugger\Boo.Lang.Compiler.dll" Name="BOOLA_2.DLL" Id="Debugger.Boo.Lang.Compiler.dll" LongName="Boo.Lang.Compiler.dll" />
