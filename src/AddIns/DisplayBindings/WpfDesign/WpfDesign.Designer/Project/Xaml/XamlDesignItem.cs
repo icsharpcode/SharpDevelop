@@ -96,7 +96,7 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			UndoService undoService = this.Services.GetService<UndoService>();
 			if (undoService == null)
 				throw new ServiceRequiredException(typeof(UndoService));
-			UndoTransaction g = undoService.StartTransaction();
+			UndoTransaction g = undoService.StartTransaction(new DesignItem[] { this });
 			g.Title = changeGroupTitle;
 			return g;
 		}

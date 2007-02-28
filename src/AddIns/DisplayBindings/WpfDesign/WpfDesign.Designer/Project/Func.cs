@@ -12,7 +12,7 @@ using System.Collections.Generic;
 namespace ICSharpCode.WpfDesign.Designer
 {
 	// Static helpers that should become extension methods in the future
-	static class Linq
+	static class Func
 	{
 		public static T[] ToArray<T>(ICollection<T> collection)
 		{
@@ -36,6 +36,19 @@ namespace ICSharpCode.WpfDesign.Designer
 			T[] arr = ToArray(collection);
 			Array.Sort(arr, comparison);
 			return arr;
+		}
+		
+		/// <summary>
+		/// Returns the first element from <paramref name="input"/>.
+		/// </summary>
+		public static T First<T>(IEnumerable<T> input)
+		{
+			if (input == null)
+				throw new ArgumentNullException("input");
+			foreach (T item in input) {
+				return item;
+			}
+			throw new ArgumentException("input must not be an empty collection", "input");
 		}
 	}
 }

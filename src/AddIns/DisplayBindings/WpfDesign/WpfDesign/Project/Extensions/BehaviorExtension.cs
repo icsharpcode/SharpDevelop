@@ -14,7 +14,7 @@ namespace ICSharpCode.WpfDesign.Extensions
 	/// These extensions are always loaded. They must have an parameter-less constructor.
 	/// </summary>
 	[ExtensionServer(typeof(DefaultExtensionServer.Permanent))]
-	public abstract class BehaviorExtension : DefaultExtension
+	public class BehaviorExtension : DefaultExtension
 	{
 		
 	}

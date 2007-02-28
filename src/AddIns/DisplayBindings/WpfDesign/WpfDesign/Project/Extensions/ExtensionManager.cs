@@ -123,7 +123,7 @@ namespace ICSharpCode.WpfDesign.Extensions
 			foreach (ExtensionEntry entry in GetExtensionEntries(item)) {
 				servers.Add(entry.Server);
 			}
-			return Linq.ToArray(servers);
+			return Func.ToArray(servers);
 		}
 		
 		internal IEnumerable<Extension> CreateExtensions(ExtensionServer server, DesignItem item)

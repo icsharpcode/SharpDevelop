@@ -180,5 +180,18 @@ namespace ICSharpCode.WpfDesign.XamlDom.Tests
 </ExampleClassContainer>
 			");
 		}
+		
+		[Test]
+		public void ExampleServiceTest()
+		{
+			TestLoading(@"
+<t:ExampleDependencyObject
+  xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+  xmlns:t=""clr-namespace:ICSharpCode.WpfDesign.XamlDom.Tests;assembly=ICSharpCode.WpfDesign.XamlDom.Tests""
+  xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+  t:ExampleService.Example=""attached value"">
+</t:ExampleDependencyObject>
+			");
+		}
 	}
 }

@@ -99,7 +99,7 @@ namespace ICSharpCode.WpfDesign.Designer
 			
 			if (useCategories) {
 				List<PropertyEditorCategoryView> categories = new List<PropertyEditorCategoryView>();
-				foreach (IPropertyEditorDataProperty p in Linq.Sort(dataSource.Properties, ComparePropertyNames)) {
+				foreach (IPropertyEditorDataProperty p in Func.Sort(dataSource.Properties, ComparePropertyNames)) {
 					if (p.Name == "Name") {
 						continue;
 					}
@@ -117,7 +117,7 @@ namespace ICSharpCode.WpfDesign.Designer
 				}
 			} else {
 				PropertyGridView grid = new PropertyGridView();
-				foreach (IPropertyEditorDataProperty p in Linq.Sort(dataSource.Properties, ComparePropertyNames)) {
+				foreach (IPropertyEditorDataProperty p in Func.Sort(dataSource.Properties, ComparePropertyNames)) {
 					if (p.Name == "Name") {
 						continue;
 					}

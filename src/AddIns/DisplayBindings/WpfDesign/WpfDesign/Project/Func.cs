@@ -11,7 +11,7 @@ using System.Collections.Generic;
 namespace ICSharpCode.WpfDesign
 {
 	// Static helpers that should become extension methods in the future
-	static class Linq
+	static class Func
 	{
 		public static T[] ToArray<T>(ICollection<T> collection) where T : class
 		{

@@ -103,14 +103,49 @@ namespace ICSharpCode.WpfDesign
 	public abstract class DesignItemPropertyCollection : IEnumerable<DesignItemProperty>
 	{
 		/// <summary>
-		/// Gets the design item property representing the specified dependency property.
+		/// Gets the property with the specified name.
 		/// </summary>
-		public abstract DesignItemProperty this[DependencyProperty dependencyProperty] { get; }
+		public DesignItemProperty this[string name] {
+			get { return GetProperty(name); }
+		}
 		
 		/// <summary>
 		/// Gets the property with the specified name.
 		/// </summary>
-		public abstract DesignItemProperty this[string name] { get; }
+		public DesignItemProperty this[DependencyProperty dependencyProperty] {
+			get { return GetProperty(dependencyProperty); }
+		}
+		
+		/// <summary>
+		/// Gets the design item property with the specified name.
+		/// </summary>
+		public abstract DesignItemProperty GetProperty(string name);
+		
+		/// <summary>
+		/// Gets the attached property on the specified owner with the specified name.
+		/// </summary>
+		public abstract DesignItemProperty GetAttachedProperty(Type ownerType, string name);
+		
+		/// <summary>
+		/// Gets the design item property representing the specified dependency property.
+		/// The property must not be an attached property.
+		/// </summary>
+		public DesignItemProperty GetProperty(DependencyProperty dependencyProperty)
+		{
+			if (dependencyProperty == null)
+				throw new ArgumentNullException("dependencyProperty");
+			return GetProperty(dependencyProperty.Name);
+		}
+		
+		/// <summary>
+		/// Gets the design item property representing the specified attached dependency property.
+		/// </summary>
+		public DesignItemProperty GetAttachedProperty(DependencyProperty dependencyProperty)
+		{
+			if (dependencyProperty == null)
+				throw new ArgumentNullException("dependencyProperty");
+			return GetAttachedProperty(dependencyProperty.OwnerType, dependencyProperty.Name);
+		}
 		
 		/// <summary>
 		/// Gets an enumerator to enumerate the properties that have a non-default value.

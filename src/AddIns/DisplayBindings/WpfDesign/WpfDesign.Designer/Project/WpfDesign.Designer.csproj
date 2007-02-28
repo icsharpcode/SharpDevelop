@@ -70,13 +70,14 @@
     <Compile Include="Controls\TypeEditors\BrushEditor.cs" />
     <Compile Include="Controls\WindowClone.cs" />
     <Compile Include="DesignPanel.cs" />
+    <Compile Include="Extensions\CanvasChildResizeSupport.cs" />
     <Compile Include="Extensions\DefaultChildResizeSupport.cs" />
     <Compile Include="Extensions\PanelInstanceFactory.cs" />
     <Compile Include="Extensions\SelectedElementRectangleExtension.cs" />
     <Compile Include="Extensions\TabItemClickableExtension.cs" />
     <Compile Include="Extensions\TopLeftContainerDragHandle.cs" />
     <Compile Include="Extensions\ResizeThumbExtension.cs" />
-    <Compile Include="Linq.cs" />
+    <Compile Include="Func.cs" />
     <Compile Include="ServiceRequiredException.cs" />
     <Compile Include="Services\ErrorService.cs" />
     <Compile Include="Services\SelectionService.cs" />

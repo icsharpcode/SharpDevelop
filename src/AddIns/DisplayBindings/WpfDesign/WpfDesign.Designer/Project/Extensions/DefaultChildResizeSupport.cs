@@ -66,10 +66,10 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		public void Resize(DesignItem childItem, double horizontalChange, double verticalChange, HorizontalAlignment horizontal, VerticalAlignment vertical)
 		{
 			RelativePlacement p = (RelativePlacement)GetPlacement(childItem, horizontalChange, verticalChange, horizontal, vertical);
-			Resize(childItem, p, horizontal, vertical);
+			Resize(childItem, p);
 		}
 		
-		static void Resize(DesignItem childItem, RelativePlacement p, HorizontalAlignment horizontal, VerticalAlignment vertical)
+		internal static void Resize(DesignItem childItem, RelativePlacement p)
 		{
 			DesignItemProperty margin = childItem.Properties[FrameworkElement.MarginProperty];
 			if (margin.IsSet) {

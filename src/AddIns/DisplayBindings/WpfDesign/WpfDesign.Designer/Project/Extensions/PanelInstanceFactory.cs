@@ -20,7 +20,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 	/// setting the Brush to null actually restores the transparent brush.
 	/// </summary>
 	[ExtensionFor(typeof(Panel))]
-	public class PanelInstanceFactory : CustomInstanceFactory
+	public sealed class PanelInstanceFactory : CustomInstanceFactory
 	{
 		Brush _transparentBrush = new SolidColorBrush(Colors.Transparent);
 		
@@ -92,7 +92,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				PropertyDescriptor property = properties[_parent._propertyName];
 				if (property != null) {
 					if ((properties as System.Collections.IDictionary).IsReadOnly) {
-						properties = new PropertyDescriptorCollection(Linq.ToArray(properties));
+						properties = new PropertyDescriptorCollection(Func.ToArray(properties));
 					}
 					properties.Remove(property);
 					properties.Add(new ShadowPropertyDescriptor(_parent, property));

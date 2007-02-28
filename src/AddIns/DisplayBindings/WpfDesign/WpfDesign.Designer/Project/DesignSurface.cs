@@ -61,7 +61,10 @@ namespace ICSharpCode.WpfDesign.Designer
 		
 		void OnUndoExecuted(object sender, ExecutedRoutedEventArgs e)
 		{
+			IUndoAction action = Func.First(_undoService.UndoActions);
+			Debug.WriteLine("Undo " + action.Title);
 			_undoService.Undo();
+			_designContext.Services.Selection.SetSelectedComponents(action.AffectedElements);
 		}
 		
 		void OnUndoCanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -71,7 +74,10 @@ namespace ICSharpCode.WpfDesign.Designer
 		
 		void OnRedoExecuted(object sender, ExecutedRoutedEventArgs e)
 		{
+			IUndoAction action = Func.First(_undoService.RedoActions);
+			Debug.WriteLine("Redo " + action.Title);
 			_undoService.Redo();
+			_designContext.Services.Selection.SetSelectedComponents(action.AffectedElements);
 		}
 		
 		void OnRedoCanExecute(object sender, CanExecuteRoutedEventArgs e)

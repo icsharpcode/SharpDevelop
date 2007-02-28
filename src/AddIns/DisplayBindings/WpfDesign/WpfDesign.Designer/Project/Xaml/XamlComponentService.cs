@@ -108,7 +108,7 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 		/// </summary>
 		internal void UnregisterAllComponents()
 		{
-			Array.ForEach(Linq.ToArray(_sites.Values), UnregisterComponentFromDesigner);
+			Array.ForEach(Func.ToArray(_sites.Values), UnregisterComponentFromDesigner);
 			_sites.Clear();
 		}
 	}

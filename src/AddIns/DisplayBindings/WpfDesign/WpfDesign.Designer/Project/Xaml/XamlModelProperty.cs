@@ -248,6 +248,12 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 				else
 					property.ResetInternal();
 			}
+			
+			public System.Collections.Generic.ICollection<DesignItem> AffectedElements {
+				get {
+					return new DesignItem[] { property._designItem };
+				}
+			}
 		}
 	}
 }

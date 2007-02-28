@@ -13,7 +13,7 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 	/// <summary>
 	/// Implements IPropertyEditorDataSource by combining the information from multiple data sources.
 	/// </summary>
-	public class MultiSelectionDataSource : IPropertyEditorDataSource
+	public sealed class MultiSelectionDataSource : IPropertyEditorDataSource
 	{
 		/// <summary>
 		/// Creates a data source for a collection of data sources.
@@ -52,7 +52,7 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 			this.services = services;
 			if (sources == null)
 				throw new ArgumentNullException("sources");
-			data = Linq.ToArray(sources);
+			data = Func.ToArray(sources);
 			if (data.Length < 2)
 				throw new ArgumentException("The collection must have at least 2 items!");
 			

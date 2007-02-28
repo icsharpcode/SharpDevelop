@@ -117,6 +117,8 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 				}
 			}
 			
+			// Used by the Binding using Reflection.
+			[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
 			public object BoundValue {
 				get { return dataProperty.Value; }
 				set { dataProperty.Value = value; }

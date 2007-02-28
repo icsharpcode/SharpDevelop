@@ -24,7 +24,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		XamlPropertyValue propertyValue;
 		
 		List<XamlPropertyValue> collectionElements;
-		bool _isCollection;
+		bool isCollection;
 		
 		static readonly IList<XamlPropertyValue> emptyCollectionElementsArray = new XamlPropertyValue[0];
 		
@@ -39,7 +39,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				propertyValue.ParentProperty = this;
 			} else {
 				if (propertyInfo.IsCollection) {
-					_isCollection = true;
+					isCollection = true;
 					collectionElements = new List<XamlPropertyValue>();
 				}
 			}
@@ -49,7 +49,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		{
 			this.parentObject = parentObject;
 			this.propertyInfo = propertyInfo;
-			_isCollection = propertyInfo.IsCollection;
+			isCollection = propertyInfo.IsCollection;
 		}
 		
 		/// <summary>
@@ -71,6 +71,13 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		/// </summary>
 		public Type PropertyTargetType {
 			get { return propertyInfo.TargetType; }
+		}
+		
+		/// <summary>
+		/// Gets if this property is an attached property.
+		/// </summary>
+		public bool IsAttached {
+			get { return propertyInfo.IsAttached; }
 		}
 		
 		/// <summary>
@@ -145,7 +152,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		/// Gets if the property is a collection property.
 		/// </summary>
 		public bool IsCollection {
-			get { return _isCollection; }
+			get { return isCollection; }
 		}
 		
 		/// <summary>
@@ -370,8 +377,19 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			if (attribute != null) {
 				property.ParentObject.XmlElement.Attributes.Append(attribute);
 			} else if (textValue != null) {
-				property.ParentObject.XmlElement.SetAttribute(property.PropertyName, textValue);
-				attribute = property.ParentObject.XmlElement.GetAttributeNode(property.PropertyName);
+				string ns = property.ParentObject.OwnerDocument.GetNamespaceFor(property.PropertyTargetType);
+				string name;
+				if (property.IsAttached)
+					name = property.PropertyTargetType.Name + "." + property.PropertyName;
+				else
+					name = property.PropertyName;
+				if (property.ParentObject.XmlElement.GetPrefixOfNamespace(ns) == "") {
+					property.ParentObject.XmlElement.SetAttribute(name, textValue);
+					attribute = property.ParentObject.XmlElement.GetAttributeNode(name);
+				} else {
+					property.ParentObject.XmlElement.SetAttribute(name, ns, textValue);
+					attribute = property.ParentObject.XmlElement.GetAttributeNode(name, ns);
+				}
 				textValue = null;
 			} else {
 				property.AddChildNodeToProperty(textNode);

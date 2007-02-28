@@ -20,17 +20,15 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			this._item = item;
 		}
 		
-		public override DesignItemProperty this[DependencyProperty dependencyProperty] {
-			get {
-				//return new XamlModelProperty(_item, dependencyProperty);
-				return this[dependencyProperty.Name];
-			}
+		
+		public override DesignItemProperty GetProperty(string name)
+		{
+			return new XamlModelProperty(_item, _item.XamlObject.FindOrCreateProperty(name));
 		}
 		
-		public override DesignItemProperty this[string name] {
-			get {
-				return new XamlModelProperty(_item, _item.XamlObject.FindOrCreateProperty(name));
-			}
+		public override DesignItemProperty GetAttachedProperty(Type ownerType, string name)
+		{
+			return new XamlModelProperty(_item, _item.XamlObject.FindOrCreateAttachedProperty(ownerType, name));
 		}
 		
 		public override System.Collections.Generic.IEnumerator<DesignItemProperty> GetEnumerator()

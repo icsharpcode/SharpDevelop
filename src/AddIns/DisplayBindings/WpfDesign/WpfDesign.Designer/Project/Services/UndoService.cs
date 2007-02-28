@@ -12,11 +12,27 @@ using System.Diagnostics;
 namespace ICSharpCode.WpfDesign.Designer.Services
 {
 	#region ITransactionItem
-	interface ITransactionItem
+	interface ITransactionItem : IUndoAction
 	{
 		void Do();
 		void Undo();
+	}
+	#endregion
+	
+	#region IUndoAction
+	/// <summary>
+	/// Describes an action available on the undo or redo stack.
+	/// </summary>
+	public interface IUndoAction
+	{
+		/// <summary>
+		/// The list of elements affected by the action.
+		/// </summary>
+		ICollection<DesignItem> AffectedElements { get; }
 		
+		/// <summary>
+		/// The title of the action.
+		/// </summary>
 		string Title { get; }
 	}
 	#endregion
@@ -27,6 +43,17 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 	/// </summary>
 	sealed class UndoTransaction : ChangeGroup, ITransactionItem
 	{
+		readonly ICollection<DesignItem> affectedElements;
+		
+		internal UndoTransaction(ICollection<DesignItem> affectedElements)
+		{
+			this.affectedElements = affectedElements;
+		}
+		
+		public ICollection<DesignItem> AffectedElements {
+			get { return affectedElements; }
+		}
+		
 		public enum TransactionState
 		{
 			Open,
@@ -145,9 +172,9 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 		Stack<ITransactionItem> _undoStack = new Stack<ITransactionItem>();
 		Stack<ITransactionItem> _redoStack = new Stack<ITransactionItem>();
 		
-		internal UndoTransaction StartTransaction()
+		internal UndoTransaction StartTransaction(ICollection<DesignItem> affectedItems)
 		{
-			UndoTransaction t = new UndoTransaction();
+			UndoTransaction t = new UndoTransaction(affectedItems);
 			_transactionStack.Push(t);
 			t.Committed += TransactionFinished;
 			t.RolledBack += TransactionFinished;
@@ -219,23 +246,25 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 		/// <summary>
 		/// Gets the list of names of the available actions on the undo stack.
 		/// </summary>
-		public IEnumerable<string> UndoActions {
+		public IEnumerable<IUndoAction> UndoActions {
 			get {
-				foreach (ITransactionItem item in _undoStack) {
-					yield return item.Title;
-				}
+				return GetActions(_undoStack);
 			}
 		}
 		
 		/// <summary>
 		/// Gets the list of names of the available actions on the undo stack.
 		/// </summary>
-		public IEnumerable<string> RedoActions {
+		public IEnumerable<IUndoAction> RedoActions {
 			get {
-				foreach (ITransactionItem item in _redoStack) {
-					yield return item.Title;
-				}
+				return GetActions(_redoStack);
 			}
+		}
+		
+		static IEnumerable<IUndoAction> GetActions(Stack<ITransactionItem> stack)
+		{
+			foreach (ITransactionItem item in stack)
+				yield return item;
 		}
 		
 		/// <summary>

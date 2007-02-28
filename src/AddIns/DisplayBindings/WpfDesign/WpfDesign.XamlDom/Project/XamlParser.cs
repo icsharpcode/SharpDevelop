@@ -281,7 +281,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			return new XamlNormalPropertyInfo(propertyInfo);
 		}
 		
-		static XamlPropertyInfo TryFindAttachedProperty(Type elementType, string propertyName)
+		internal static XamlPropertyInfo TryFindAttachedProperty(Type elementType, string propertyName)
 		{
 			MethodInfo getMethod = elementType.GetMethod("Get" + propertyName, BindingFlags.Public | BindingFlags.Static);
 			MethodInfo setMethod = elementType.GetMethod("Set" + propertyName, BindingFlags.Public | BindingFlags.Static);

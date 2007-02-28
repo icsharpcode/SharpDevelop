@@ -58,6 +58,7 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="ExampleClass.cs" />
     <Compile Include="ExampleClassContainer.cs" />
+    <Compile Include="ExampleService.cs" />
     <Compile Include="SamplesTests.cs" />
     <Compile Include="SimpleLoadTests.cs" />
     <Compile Include="SystemTypesLoadTest.cs" />

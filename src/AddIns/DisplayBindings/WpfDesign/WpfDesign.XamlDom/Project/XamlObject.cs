@@ -99,7 +99,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				throw new ArgumentNullException("propertyName");
 			
 			foreach (XamlProperty p in properties) {
-				if (p.PropertyName == propertyName)
+				if (!p.IsAttached && p.PropertyName == propertyName)
 					return p;
 			}
 			PropertyDescriptorCollection propertyDescriptors = TypeDescriptor.GetProperties(instance);
@@ -108,6 +108,29 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				throw new ArgumentException("The property '" + propertyName + "' doesn't exist on " + elementType.FullName, "propertyName");
 			}
 			XamlProperty newProperty = new XamlProperty(this, new XamlNormalPropertyInfo(propertyInfo));
+			properties.Add(newProperty);
+			return newProperty;
+		}
+		
+		/// <summary>
+		/// Finds the specified property, or creates it if it doesn't exist.
+		/// </summary>
+		public XamlProperty FindOrCreateAttachedProperty(Type ownerType, string propertyName)
+		{
+			if (ownerType == null)
+				throw new ArgumentNullException("ownerType");
+			if (propertyName == null)
+				throw new ArgumentNullException("propertyName");
+			
+			foreach (XamlProperty p in properties) {
+				if (p.IsAttached && p.PropertyTargetType == ownerType && p.PropertyName == propertyName)
+					return p;
+			}
+			XamlPropertyInfo info = XamlParser.TryFindAttachedProperty(ownerType, propertyName);
+			if (info == null) {
+				throw new ArgumentException("The attached property '" + propertyName + "' doesn't exist on " + ownerType.FullName, "propertyName");
+			}
+			XamlProperty newProperty = new XamlProperty(this, info);
 			properties.Add(newProperty);
 			return newProperty;
 		}

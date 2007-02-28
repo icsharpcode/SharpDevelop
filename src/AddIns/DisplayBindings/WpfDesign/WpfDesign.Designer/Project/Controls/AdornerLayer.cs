@@ -64,7 +64,7 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 			
 			public void CopyTo(AdornerPanel[] array, int arrayIndex)
 			{
-				Linq.ToArray(this).CopyTo(array, arrayIndex);
+				Func.ToArray(this).CopyTo(array, arrayIndex);
 			}
 			
 			public bool Remove(AdornerPanel item)

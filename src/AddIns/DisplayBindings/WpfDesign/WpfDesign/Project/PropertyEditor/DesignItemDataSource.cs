@@ -39,7 +39,7 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 			}
 			designItemProperties.AddRange(item.Properties);
 			
-			foreach (DesignItemProperty p in Linq.Distinct(designItemProperties)) {
+			foreach (DesignItemProperty p in Func.Distinct(designItemProperties)) {
 				properties.Add(new DesignItemDataProperty(this, p));
 			}
 		}
