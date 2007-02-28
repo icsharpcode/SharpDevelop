@@ -783,23 +783,24 @@ namespace ICSharpCode.SharpDevelop.Dom
 			SearchTypeResult fallbackResult = SearchTypeResult.Empty;
 			if (request.CurrentType != null) {
 				// Try parent namespaces of the current class
-				string fullname = request.CurrentType.FullyQualifiedName;
-				string[] namespaces = fullname.Split('.');
-				StringBuilder curnamespace = new StringBuilder();
-				for (int i = 0; i < namespaces.Length; ++i) {
-					curnamespace.Append(namespaces[i]);
-					curnamespace.Append('.');
+				string fullname = request.CurrentType.Namespace;
+				while (fullname != null && fullname.Length > 0) {
+					string nameSpace = fullname + '.' + name;
 					
-					curnamespace.Append(name);
-					c = GetClass(curnamespace.ToString(), request.TypeParameterCount);
+					c = GetClass(nameSpace, request.TypeParameterCount);
 					if (c != null) {
 						if (c.TypeParameters.Count == request.TypeParameterCount)
 							return new SearchTypeResult(c.DefaultReturnType);
 						else
 							fallbackResult = new SearchTypeResult(c.DefaultReturnType);
 					}
-					// remove class name again to try next namespace
-					curnamespace.Length -= name.Length;
+					
+					int pos = fullname.LastIndexOf('.');
+					if (pos < 0) {
+						fullname = null;
+					} else {
+						fullname = fullname.Substring(0, pos);
+					}
 				}
 				
 				if (name.IndexOf('.') < 0) {

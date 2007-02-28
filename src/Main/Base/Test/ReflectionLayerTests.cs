@@ -122,7 +122,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 		[Test]
 		public void ReflectionParserTest()
 		{
-			ICompilationUnit cu = new ReflectionProjectContent("TestName", "testlocation", new AssemblyName[0], ParserService.DefaultProjectContentRegistry).AssemblyCompilationUnit;
+			ICompilationUnit cu = new ReflectionProjectContent("TestName", "testlocation", new DomAssemblyName[0], ParserService.DefaultProjectContentRegistry).AssemblyCompilationUnit;
 			IClass c = new ReflectionClass(cu, typeof(TestClass<,>), typeof(TestClass<,>).FullName, null);
 			cu.ProjectContent.AddClassToNamespaceList(c);
 			

@@ -793,6 +793,24 @@ namespace A.B {
 			TypeResolveResult trr = Resolve<TypeResolveResult>(program, "C.D", 7);
 			Assert.AreEqual("A.B.C.D", trr.ResolvedClass.FullyQualifiedName, "trr.ResolvedClass.FullyQualifiedName");
 		}
+		
+		[Test]
+		public void ResolveTypeSD2_863()
+		{
+			string program = @"using System;
+namespace A { class C {} }
+namespace A.B {
+	class C {}
+	class TestClass {
+		void Test() {
+			
+		}
+	}
+}
+";
+			TypeResolveResult trr = Resolve<TypeResolveResult>(program, "C", 7);
+			Assert.AreEqual("A.B.C", trr.ResolvedClass.FullyQualifiedName, "trr.ResolvedClass.FullyQualifiedName");
+		}
 		#endregion
 		
 		#region Import class tests
