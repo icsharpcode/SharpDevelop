@@ -60,6 +60,7 @@
     <Compile Include="Controls\ContainerDragHandle.cs" />
     <Compile Include="Controls\DragFrame.cs" />
     <Compile Include="Controls\ErrorBalloon.cs" />
+    <Compile Include="Controls\GrayOutDesignerExceptActiveArea.cs" />
     <Compile Include="Controls\PropertyEditor\DependencyPropertyDotButton.cs" />
     <Compile Include="Controls\PropertyEditor\PropertyEditor.cs" />
     <Compile Include="Controls\PropertyEditor\PropertyEditorCategoryView.cs" />
@@ -73,6 +74,7 @@
     <Compile Include="Extensions\CanvasChildResizeSupport.cs" />
     <Compile Include="Extensions\DefaultChildResizeSupport.cs" />
     <Compile Include="Extensions\PanelInstanceFactory.cs" />
+    <Compile Include="Extensions\PanelSelectionHandler.cs" />
     <Compile Include="Extensions\SelectedElementRectangleExtension.cs" />
     <Compile Include="Extensions\TabItemClickableExtension.cs" />
     <Compile Include="Extensions\TopLeftContainerDragHandle.cs" />

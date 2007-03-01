@@ -6,17 +6,18 @@
 // </file>
 
 using System;
-using ICSharpCode.WpfDesign.Extensions;
 using System.Windows;
 using System.Windows.Controls;
+
 using ICSharpCode.WpfDesign.Adorners;
+using ICSharpCode.WpfDesign.Extensions;
 
 namespace ICSharpCode.WpfDesign.Designer.Extensions
 {
 	/// <summary>
 	/// Provides <see cref="IChildResizeSupport"/> behavior for <see cref="Canvas"/>.
 	/// </summary>
-	[ExtensionFor(typeof(Canvas))]
+	[ExtensionFor(typeof(Canvas), OverrideExtension = typeof(DefaultChildResizeSupport))]
 	public sealed class CanvasChildResizeSupport : BehaviorExtension, IChildResizeSupport
 	{
 		/// <inherits/>

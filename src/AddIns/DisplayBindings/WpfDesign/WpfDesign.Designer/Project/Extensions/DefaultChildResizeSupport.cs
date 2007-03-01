@@ -6,9 +6,9 @@
 // </file>
 
 using System;
-using ICSharpCode.WpfDesign.Extensions;
-using ICSharpCode.WpfDesign.Adorners;
 using System.Windows;
+using ICSharpCode.WpfDesign.Adorners;
+using ICSharpCode.WpfDesign.Extensions;
 
 namespace ICSharpCode.WpfDesign.Designer.Extensions
 {
@@ -16,21 +16,17 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 	/// Implements IChildResizeSupport supporting size changes using the
 	/// Width, Height, Margin properties.
 	/// </summary>
-	//[ExtensionFor(typeof(FrameworkElement))]
-	sealed class DefaultChildResizeSupport : IChildResizeSupport
+	[ExtensionFor(typeof(FrameworkElement))]
+	public sealed class DefaultChildResizeSupport : BehaviorExtension, IChildResizeSupport
 	{
-		// the default behavior is not an extension because it does not depend
-		// on a parent container instance
-		public static readonly DefaultChildResizeSupport Instance = new DefaultChildResizeSupport();
+		internal static readonly DefaultChildResizeSupport Instance = new DefaultChildResizeSupport();
 		
-		/*
 		/// <inherits/>
 		protected override void OnInitialized()
 		{
 			base.OnInitialized();
 			this.ExtendedItem.AddBehavior(typeof(IChildResizeSupport), this);
 		}
-		 */
 		
 		/// <inherits/>
 		public bool CanResizeChild(DesignItem childItem)

@@ -64,11 +64,23 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 		{
 			if (e.ChangedButton == MouseButton.Left && MouseGestureBase.IsOnlyButtonPressed(e, MouseButton.Left)) {
 				e.Handled = true;
-				new SelectionGesture().Start((IDesignPanel)sender, e);
+				IDesignPanel designPanel = (IDesignPanel)sender;
+				DesignPanelHitTestResult result = designPanel.HitTest(e, false, true);
+				if (result.ModelHit != null) {
+					IHandlePointerToolMouseDown b = result.ModelHit.GetBehavior<IHandlePointerToolMouseDown>();
+					if (b != null) {
+						b.HandleSelectionMouseDown(designPanel, e, result);
+					} else {
+						designPanel.Context.Services.Selection.SetSelectedComponents(new DesignItem[] { result.ModelHit }, SelectionTypes.Auto);
+					}
+				}
 			}
 		}
 	}
 	
+	/// <summary>
+	/// Base class for classes handling mouse gestures on the design surface.
+	/// </summary>
 	abstract class MouseGestureBase
 	{
 		/// <summary>
@@ -89,12 +101,19 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 		
 		public void Start(IDesignPanel designPanel, MouseButtonEventArgs e)
 		{
+			if (designPanel == null)
+				throw new ArgumentNullException("designPanel");
+			if (e == null)
+				throw new ArgumentNullException("e");
+			if (isStarted)
+				throw new InvalidOperationException("Gesture already was started");
+			
+			isStarted = true;
 			this.designPanel = designPanel;
 			this.services = designPanel.Context.Services;
-			isStarted = true;
 			designPanel.IsAdornerLayerHitTestVisible = false;
-			RegisterEvents();
 			if (designPanel.CaptureMouse()) {
+				RegisterEvents();
 				OnStarted(e);
 			} else {
 				Stop();
@@ -147,23 +166,5 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 		
 		protected virtual void OnStarted(MouseButtonEventArgs e) {}
 		protected virtual void OnStopped() {}
-	}
-	
-	sealed class SelectionGesture : MouseGestureBase
-	{
-		protected override void OnStarted(MouseButtonEventArgs e)
-		{
-			base.OnStarted(e);
-			DesignPanelHitTestResult result = designPanel.HitTest(e, false, true);
-			if (result.ModelHit != null) {
-				services.Selection.SetSelectedComponents(new DesignItem[] { result.ModelHit }, SelectionTypes.Auto);
-			}
-		}
-		
-		protected override void OnStopped()
-		{
-			//designPanel.cur
-			base.OnStopped();
-		}
 	}
 }

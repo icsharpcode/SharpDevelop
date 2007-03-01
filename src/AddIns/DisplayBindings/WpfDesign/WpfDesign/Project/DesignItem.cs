@@ -152,7 +152,7 @@ namespace ICSharpCode.WpfDesign
 		#endregion
 		
 		#region Manage behavior
-		Dictionary<Type, object> _behaviorObjects = new Dictionary<Type, object>();
+		readonly Dictionary<Type, object> _behaviorObjects = new Dictionary<Type, object>();
 		
 		/// <summary>
 		/// Adds a bevahior extension object to this design item.
@@ -163,6 +163,8 @@ namespace ICSharpCode.WpfDesign
 				throw new ArgumentNullException("bevahiorInterface");
 			if (behaviorImplementation == null)
 				throw new ArgumentNullException("behaviorImplementation");
+			if (!bevahiorInterface.IsInstanceOfType(behaviorImplementation))
+				throw new ArgumentException("behaviorImplementation must implement bevahiorInterface", "behaviorImplementation");
 			
 			_behaviorObjects.Add(bevahiorInterface, behaviorImplementation);
 		}

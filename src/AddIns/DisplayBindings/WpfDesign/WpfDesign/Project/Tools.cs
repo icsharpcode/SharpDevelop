@@ -9,7 +9,6 @@ using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 using System.Windows.Input;
 
 using ICSharpCode.WpfDesign.Adorners;
@@ -83,7 +82,8 @@ namespace ICSharpCode.WpfDesign
 		
 		/// <summary>
 		/// A canvas that is on top of the design surface and all adorners.
-		/// Used for temporary drawings that are not attached to any element, e.g. the selection frame.
+		/// Used for temporary drawings that are not attached to any element, e.g. graying out everything
+		/// except the target container in drag'n'drop operations.
 		/// </summary>
 		Canvas MarkerCanvas { get; }
 		

@@ -9,6 +9,7 @@ using System;
 using System.Xml;
 using ICSharpCode.WpfDesign.XamlDom;
 using ICSharpCode.WpfDesign.Designer.Services;
+using ICSharpCode.WpfDesign.Designer.Extensions;
 using ICSharpCode.WpfDesign.Extensions;
 using ICSharpCode.WpfDesign.PropertyEditor;
 

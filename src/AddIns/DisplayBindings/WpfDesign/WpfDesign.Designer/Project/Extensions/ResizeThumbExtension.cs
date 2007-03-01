@@ -6,14 +6,13 @@
 // </file>
 
 using System;
-using System.Collections.Generic;
 using System.Windows;
-using System.Windows.Input;
-using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Input;
+
 using ICSharpCode.WpfDesign.Adorners;
-using ICSharpCode.WpfDesign.Extensions;
 using ICSharpCode.WpfDesign.Designer.Controls;
+using ICSharpCode.WpfDesign.Extensions;
 
 namespace ICSharpCode.WpfDesign.Designer.Extensions
 {
@@ -25,6 +24,8 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 	{
 		AdornerPanel adornerPanel;
 		DragFrame dragFrame;
+		IChildResizeSupport resizeBehavior;
+		GrayOutDesignerExceptActiveArea grayOut;
 		
 		/// <summary></summary>
 		public ResizeThumbExtension()
@@ -49,12 +50,14 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			resizeThumb.DragCompleted += OnDragCompleted(horizontalAlignment, verticalAlignment);
 		}
 		
-		IChildResizeSupport resizeBehavior;
-		
 		void OnDragStarted(object sender, DragStartedEventArgs e)
 		{
 			if (dragFrame == null)
 				dragFrame = new DragFrame();
+			
+			if (this.ExtendedItem.Parent != null) {
+				GrayOutDesignerExceptActiveArea.Start(ref grayOut, this.Services.GetService<IDesignPanel>(), this.ExtendedItem.Parent.View);
+			}
 			
 			AdornerPanel.SetPlacement(dragFrame, Placement.FillContent);
 			adornerPanel.Children.Add(dragFrame);
@@ -83,8 +86,9 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			return delegate (object sender, DragCompletedEventArgs e) {
 				adornerPanel.Children.Remove(dragFrame);
 				adornerPanel.ClearValue(AdornerPanel.CursorProperty);
+				GrayOutDesignerExceptActiveArea.Stop(ref grayOut, this.Services.GetService<IDesignPanel>());
 				
-				if (resizeBehavior != null) {
+				if (e.Canceled == false && resizeBehavior != null) {
 					using (ChangeGroup group = this.ExtendedItem.OpenGroup("Resize")) {
 						resizeBehavior.Resize(this.ExtendedItem,
 						                      FixChange(e.HorizontalChange, horizontalAlignment),
@@ -127,7 +131,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			if (parentItem == null) // resizing the root element
 				resizeBehavior = RootElementResizeSupport.Instance;
 			else
-				resizeBehavior = parentItem.GetBehavior<IChildResizeSupport>() ?? DefaultChildResizeSupport.Instance;
+				resizeBehavior = parentItem.GetBehavior<IChildResizeSupport>();
 			
 			UpdateAdornerVisibility();
 			OnPrimarySelectionChanged(null, null);
