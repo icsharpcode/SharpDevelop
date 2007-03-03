@@ -25,10 +25,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 			LoggingService.Info("Cecil: Load from " + fileName);
 			AssemblyDefinition asm = AssemblyFactory.GetAssembly(fileName);
 			List<DomAssemblyName> referencedAssemblies = new List<DomAssemblyName>();
-			foreach (AssemblyNameReference anr in asm.MainModule.AssemblyReferences) {
-				referencedAssemblies.Add(new DomAssemblyName(anr.FullName));
+			foreach (ModuleDefinition module in asm.Modules) {
+				foreach (AssemblyNameReference anr in module.AssemblyReferences) {
+					referencedAssemblies.Add(new DomAssemblyName(anr.FullName));
+				}
 			}
-			return new CecilProjectContent(asm.Name.FullName, fileName, referencedAssemblies.ToArray(), asm.MainModule.Types, registry);
+			return new CecilProjectContent(asm.Name.FullName, fileName, referencedAssemblies.ToArray(), asm, registry);
 		}
 		
 		static void AddAttributes(IProjectContent pc, IList<IAttribute> list, CustomAttributeCollection attributes)
@@ -122,8 +124,16 @@ namespace ICSharpCode.SharpDevelop.Dom
 		private sealed class CecilProjectContent : ReflectionProjectContent
 		{
 			public CecilProjectContent(string fullName, string fileName, DomAssemblyName[] referencedAssemblies,
-			                           TypeDefinitionCollection types, ProjectContentRegistry registry)
+			                           AssemblyDefinition assembly, ProjectContentRegistry registry)
 				: base(fullName, fileName, referencedAssemblies, registry)
+			{
+				foreach (ModuleDefinition module in assembly.Modules) {
+					AddTypes(module.Types);
+				}
+				InitializeSpecialClasses();
+			}
+			
+			void AddTypes(TypeDefinitionCollection types)
 			{
 				foreach (TypeDefinition td in types) {
 					if ((td.Attributes & TypeAttributes.Public) == TypeAttributes.Public) {
@@ -141,7 +151,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 						AddClassToNamespaceListInternal(new CecilClass(this.AssemblyCompilationUnit, null, td, name));
 					}
 				}
-				InitializeSpecialClasses();
 			}
 		}
 		
