@@ -31,6 +31,15 @@ namespace ICSharpCode.WpfDesign.Designer.Tests
 		}
 		
 		[Test]
+		public void SetButtonWidthElementSyntax()
+		{
+			DesignItem button = CreateCanvasContext("<Button><Button.Width>50</Button.Width></Button>");
+			button.Properties["Width"].SetValue(100.0);
+			AssertCanvasDesignerOutput("<Button Width=\"100\">\n</Button>", button.Context);
+			AssertLog("");
+		}
+		
+		[Test]
 		public void UndoRedoTest()
 		{
 			DesignItem button = CreateCanvasContext("<Button/>");
@@ -80,13 +89,43 @@ namespace ICSharpCode.WpfDesign.Designer.Tests
 		
 		
 		[Test]
-		public void AddTextBoxToStackPanel()
+		public void AddTextBoxToCanvas()
 		{
 			DesignItem button = CreateCanvasContext("<Button/>");
 			DesignItem canvas = button.Parent;
 			DesignItem textBox = canvas.Services.Component.RegisterComponentForDesigner(new TextBox());
 			canvas.Properties["Children"].CollectionElements.Add(textBox);
 			AssertCanvasDesignerOutput("<Button />\n<TextBox />", button.Context);
+			AssertLog("");
+		}
+		
+		[Test]
+		public void AddTextBoxToCanvasExplicitChildrenCollection()
+		{
+			DesignItem button = CreateCanvasContext("<Canvas.Children><Button/></Canvas.Children>");
+			DesignItem canvas = button.Parent;
+			DesignItem textBox = canvas.Services.Component.RegisterComponentForDesigner(new TextBox());
+			canvas.Properties["Children"].CollectionElements.Add(textBox);
+			AssertCanvasDesignerOutput("<Canvas.Children>\n  <Button />\n  <TextBox />\n</Canvas.Children>", button.Context);
+			AssertLog("");
+		}
+		
+		[Test]
+		public void InsertTextBoxInCanvas()
+		{
+			DesignItem button = CreateCanvasContext("<Canvas.Width>50</Canvas.Width><Button/><Canvas.Height>60</Canvas.Height>");
+			DesignItem canvas = button.Parent;
+			DesignItem textBox = canvas.Services.Component.RegisterComponentForDesigner(new TextBox());
+			canvas.Properties["Children"].CollectionElements.Add(textBox);
+			
+			DesignItem checkBox = canvas.Services.Component.RegisterComponentForDesigner(new CheckBox());
+			canvas.Properties["Children"].CollectionElements.Insert(0, checkBox);
+			
+			AssertCanvasDesignerOutput("<Canvas.Width>50</Canvas.Width>\n" +
+			                           "<CheckBox />\n" +
+			                           "<Button />\n" +
+			                           "<TextBox />\n" +
+			                           "<Canvas.Height>60</Canvas.Height>", button.Context);
 			AssertLog("");
 		}
 	}

@@ -68,6 +68,8 @@
     <Compile Include="XamlParserSettings.cs" />
     <Compile Include="XamlProperty.cs" />
     <Compile Include="XamlPropertyInfo.cs" />
+    <Compile Include="XamlPropertyValue.cs" />
+    <Compile Include="XamlTextValue.cs" />
     <Compile Include="XamlTypeFinder.cs" />
   </ItemGroup>
 </Project>

@@ -208,7 +208,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				if (childValue != null) {
 					if (defaultProperty != null && defaultProperty.IsCollection) {
 						defaultProperty.AddValue(defaultPropertyValue, childValue);
-						defaultCollectionProperty.ParserAddCollectionElement(childValue);
+						defaultCollectionProperty.ParserAddCollectionElement(null, childValue);
 					} else {
 						if (setDefaultValueTo != null)
 							throw new XamlLoadException("default property may have only one value assigned");
@@ -360,10 +360,18 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			if (propertyInfo.IsCollection) {
 				if (defaultProperty.FullyQualifiedName == propertyInfo.FullyQualifiedName) {
 					collectionInstance = defaultPropertyValue;
+					foreach (XamlProperty existing in obj.Properties) {
+						if (existing.propertyInfo == defaultProperty) {
+							collectionProperty = existing;
+							break;
+						}
+					}
 				} else {
 					collectionInstance = propertyInfo.GetValue(obj.Instance);
 				}
-				obj.AddProperty(collectionProperty = new XamlProperty(obj, propertyInfo, null));
+				if (collectionProperty == null) {
+					obj.AddProperty(collectionProperty = new XamlProperty(obj, propertyInfo, null));
+				}
 			}
 			
 			XmlSpace oldXmlSpace = currentXmlSpace;
@@ -376,13 +384,15 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				if (childValue != null) {
 					if (propertyInfo.IsCollection) {
 						propertyInfo.AddValue(collectionInstance, childValue);
-						collectionProperty.ParserAddCollectionElement(childValue);
+						collectionProperty.ParserAddCollectionElement(element, childValue);
 					} else {
 						if (valueWasSet)
 							throw new XamlLoadException("non-collection property may have only one child element");
 						valueWasSet = true;
 						propertyInfo.SetValue(obj.Instance, childValue.GetValueFor(propertyInfo));
-						obj.AddProperty(new XamlProperty(obj, propertyInfo, childValue));
+						XamlProperty xp = new XamlProperty(obj, propertyInfo, childValue);
+						xp.ParserSetPropertyElement(element);
+						obj.AddProperty(xp);
 					}
 				}
 			}

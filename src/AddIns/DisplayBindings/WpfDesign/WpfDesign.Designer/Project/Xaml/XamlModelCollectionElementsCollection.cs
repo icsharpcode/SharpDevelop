@@ -13,29 +13,92 @@ using ICSharpCode.WpfDesign.XamlDom;
 
 namespace ICSharpCode.WpfDesign.Designer.Xaml
 {
-	sealed class XamlModelCollectionElementsCollection : Collection<DesignItem>
+	sealed class XamlModelCollectionElementsCollection : IList<DesignItem>
 	{
 		readonly XamlModelProperty modelProperty;
 		readonly XamlProperty property;
+		readonly XamlDesignContext context;
 		
 		public XamlModelCollectionElementsCollection(XamlModelProperty modelProperty, XamlProperty property)
 		{
 			this.modelProperty = modelProperty;
 			this.property = property;
-			
-			XamlDesignContext context = (XamlDesignContext)modelProperty.DesignItem.Context;
-			foreach (XamlPropertyValue val in property.CollectionElements) {
-				//context._componentService.GetDesignItem(val);
-				if (val is XamlObject) {
-					base.InsertItem(this.Count, context._componentService.GetDesignItem( ((XamlObject)val).Instance ));
-				}
+			this.context = (XamlDesignContext)modelProperty.DesignItem.Context;
+		}
+		
+		public int Count {
+			get {
+				return property.CollectionElements.Count;
 			}
 		}
 		
-		protected override void ClearItems()
+		public bool IsReadOnly {
+			get {
+				return false;
+			}
+		}
+		
+		public void Add(DesignItem item)
 		{
-			base.ClearItems();
+			property.CollectionElements.Add(CheckItem(item).XamlObject);
+		}
+		
+		public void Clear()
+		{
 			property.CollectionElements.Clear();
+		}
+		
+		public bool Contains(DesignItem item)
+		{
+			XamlDesignItem xitem = CheckItemNoException(item);
+			if (xitem != null)
+				return property.CollectionElements.Contains(xitem.XamlObject);
+			else
+				return false;
+		}
+		
+		public int IndexOf(DesignItem item)
+		{
+			XamlDesignItem xitem = CheckItemNoException(item);
+			if (xitem != null)
+				return property.CollectionElements.IndexOf(xitem.XamlObject);
+			else
+				return -1;
+		}
+		
+		public void CopyTo(DesignItem[] array, int arrayIndex)
+		{
+			Func.ToArray(this).CopyTo(array, arrayIndex);
+		}
+		
+		public bool Remove(DesignItem item)
+		{
+			XamlDesignItem xitem = CheckItemNoException(item);
+			if (xitem != null)
+				return property.CollectionElements.Remove(xitem.XamlObject);
+			else
+				return false;
+		}
+		
+		public IEnumerator<DesignItem> GetEnumerator()
+		{
+			foreach (XamlPropertyValue val in property.CollectionElements) {
+				yield return GetItem(val);
+			}
+		}
+		
+		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+		{
+			return this.GetEnumerator();
+		}
+		
+		DesignItem GetItem(XamlPropertyValue val)
+		{
+			if (val is XamlObject) {
+				return context._componentService.GetDesignItem( ((XamlObject)val).Instance );
+			} else {
+				throw new NotImplementedException();
+			}
 		}
 		
 		XamlDesignItem CheckItem(DesignItem item)
@@ -49,29 +112,28 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			return xitem;
 		}
 		
-		protected override void InsertItem(int index, DesignItem item)
+		XamlDesignItem CheckItemNoException(DesignItem item)
 		{
-			XamlDesignItem xitem = CheckItem(item);
-			property.CollectionElements.Insert(index, xitem.XamlObject);
-			
-			base.InsertItem(index, item);
+			return item as XamlDesignItem;
 		}
 		
-		protected override void RemoveItem(int index)
+		public DesignItem this[int index] {
+			get {
+				return GetItem(property.CollectionElements[index]);
+			}
+			set {
+				property.CollectionElements[index] = CheckItem(value).XamlObject;
+			}
+		}
+		
+		public void Insert(int index, DesignItem item)
 		{
-			XamlDesignItem item = (XamlDesignItem)this[index];
-			
+			property.CollectionElements.Insert(index, CheckItem(item).XamlObject);
+		}
+		
+		public void RemoveAt(int index)
+		{
 			property.CollectionElements.RemoveAt(index);
-			base.RemoveItem(index);
-		}
-		
-		protected override void SetItem(int index, DesignItem item)
-		{
-			XamlDesignItem xitem = CheckItem(item);
-			property.CollectionElements[index] = xitem.XamlObject;
-			
-			
-			base.SetItem(index, item);
 		}
 	}
 }

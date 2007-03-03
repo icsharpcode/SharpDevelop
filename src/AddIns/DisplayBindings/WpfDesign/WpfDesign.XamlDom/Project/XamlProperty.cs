@@ -17,10 +17,10 @@ namespace ICSharpCode.WpfDesign.XamlDom
 	/// <summary>
 	/// Describes a property on a <see cref="XamlObject"/>.
 	/// </summary>
-	public sealed partial class XamlProperty
+	public sealed class XamlProperty
 	{
 		XamlObject parentObject;
-		XamlPropertyInfo propertyInfo;
+		internal readonly XamlPropertyInfo propertyInfo;
 		XamlPropertyValue propertyValue;
 		
 		CollectionElementsCollection collectionElements;
@@ -133,11 +133,28 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		
 		internal void ParserSetPropertyElement(XmlElement propertyElement)
 		{
+			XmlElement oldPropertyElement = _propertyElement;
+			if (oldPropertyElement == propertyElement) return;
+			
 			_propertyElement = propertyElement;
+			
+			if (oldPropertyElement != null && IsCollection) {
+				Debug.WriteLine("Property element for " + this.PropertyName + " already exists, merging..");
+				foreach (XamlPropertyValue val in this.collectionElements) {
+					val.RemoveNodeFromParent();
+					val.AddNodeTo(this);
+				}
+				oldPropertyElement.ParentNode.RemoveChild(oldPropertyElement);
+			}
 		}
 		
 		internal void AddChildNodeToProperty(XmlNode newChildNode)
 		{
+			if (this.IsCollection) {
+				// this is the default collection
+				InsertNodeInCollection(newChildNode, collectionElements.Count);
+				return;
+			}
 			if (_propertyElement == null) {
 				_propertyElement = parentObject.OwnerDocument.XmlDocument.CreateElement(
 					this.PropertyTargetType.Name + "." + this.PropertyName,
@@ -146,6 +163,36 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				parentObject.XmlElement.InsertBefore(_propertyElement, parentObject.XmlElement.FirstChild);
 			}
 			_propertyElement.AppendChild(newChildNode);
+		}
+		
+		internal void InsertNodeInCollection(XmlNode newChildNode, int index)
+		{
+			Debug.Assert(index >= 0 && index <= collectionElements.Count);
+			XmlElement collection = _propertyElement;
+			if (collection == null) {
+				if (collectionElements.Count == 0) {
+					// we have to create the collection element
+					_propertyElement = parentObject.OwnerDocument.XmlDocument.CreateElement(
+						this.PropertyTargetType.Name + "." + this.PropertyName,
+						parentObject.OwnerDocument.GetNamespaceFor(this.PropertyTargetType)
+					);
+					parentObject.XmlElement.AppendChild(_propertyElement);
+					collection = _propertyElement;
+				} else {
+					// this is the default collection
+					collection = parentObject.XmlElement;
+				}
+			}
+			if (collectionElements.Count == 0) {
+				// collection is empty -> we may insert anywhere
+				collection.AppendChild(newChildNode);
+			} else if (index == collectionElements.Count) {
+				// insert after last element in collection
+				collection.InsertAfter(newChildNode, collectionElements[collectionElements.Count - 1].GetNodeForCollection());
+			} else {
+				// insert before specified index
+				collection.InsertBefore(newChildNode, collectionElements[index].GetNodeForCollection());
+			}
 		}
 		
 		/// <summary>
@@ -215,10 +262,17 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		/// used internally by the XamlParser.
 		/// Add a collection element that already is part of the XML DOM.
 		/// </summary>
-		internal void ParserAddCollectionElement(XamlPropertyValue val)
+		internal void ParserAddCollectionElement(XmlElement collectionPropertyElement, XamlPropertyValue val)
 		{
-			collectionElements.AddByParser(val);
+			if (collectionPropertyElement != null && _propertyElement == null) {
+				ParserSetPropertyElement(collectionPropertyElement);
+			}
+			collectionElements.AddInternal(val);
 			val.ParentProperty = this;
+			if (collectionPropertyElement != _propertyElement) {
+				val.RemoveNodeFromParent();
+				val.AddNodeTo(this);
+			}
 		}
 		
 		/// <summary>
@@ -250,157 +304,5 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				return attribute == null && element == null;
 			}
 		}*/
-	}
-	
-	/// <summary>
-	/// Used for the value of a <see cref="XamlProperty"/>.
-	/// Can be a <see cref="XamlTextValue"/> or a <see cref="XamlObject"/>.
-	/// </summary>
-	public abstract class XamlPropertyValue
-	{
-		/// <summary>
-		/// used internally by the XamlParser.
-		/// </summary>
-		internal abstract object GetValueFor(XamlPropertyInfo targetProperty);
-		
-		XamlProperty _parentProperty;
-		
-		/// <summary>
-		/// Gets the parent property that this value is assigned to.
-		/// </summary>
-		public XamlProperty ParentProperty {
-			get { return _parentProperty; }
-			internal set { 
-				_parentProperty = value;
-				OnParentPropertyChanged();
-			}
-		}
-		
-		internal virtual void OnParentPropertyChanged()
-		{
-		}
-		
-		internal abstract void RemoveNodeFromParent();
-		
-		internal abstract void AddNodeTo(XamlProperty property);
-	}
-	
-	/// <summary>
-	/// A textual value in a .xaml file.
-	/// </summary>
-	public sealed class XamlTextValue : XamlPropertyValue
-	{
-		XmlAttribute attribute;
-		XmlText textNode;
-		XmlSpace xmlSpace;
-		string textValue;
-		
-		internal XamlTextValue(XmlAttribute attribute)
-		{
-			this.attribute = attribute;
-		}
-		
-		internal XamlTextValue(string textValue)
-		{
-			this.textValue = textValue;
-		}
-		
-		internal XamlTextValue(XmlText textNode, XmlSpace xmlSpace)
-		{
-			this.xmlSpace = xmlSpace;
-			this.textNode = textNode;
-		}
-		
-		/// <summary>
-		/// The text represented by the value.
-		/// </summary>
-		public string Text {
-			get {
-				if (attribute != null)
-					return attribute.Value;
-				else if (textValue != null)
-					return textValue;
-				else
-					return NormalizeWhitespace(textNode.Value);
-			}
-			set {
-				if (value == null)
-					throw new ArgumentNullException("value");
-				
-				if (attribute != null)
-					attribute.Value = value;
-				else if (textValue != null)
-					textValue = value;
-				else
-					textNode.Value = value;
-			}
-		}
-		
-		string NormalizeWhitespace(string text)
-		{
-			if (xmlSpace == XmlSpace.Preserve) {
-				return text.Replace("\r", "");
-			}
-			StringBuilder b = new StringBuilder();
-			bool wasWhitespace = true;
-			foreach (char c in text) {
-				if (char.IsWhiteSpace(c)) {
-					if (!wasWhitespace) {
-						b.Append(' ');
-					}
-					wasWhitespace = true;
-				} else {
-					wasWhitespace = false;
-					b.Append(c);
-				}
-			}
-			if (b.Length > 0 && wasWhitespace)
-				b.Length -= 1;
-			return b.ToString();
-		}
-		
-		internal override object GetValueFor(XamlPropertyInfo targetProperty)
-		{
-			if (targetProperty == null)
-				return this.Text;
-			TypeConverter converter = targetProperty.TypeConverter;
-			if (converter != null) {
-				return converter.ConvertFromInvariantString(this.Text);
-			} else {
-				return this.Text;
-			}
-		}
-		
-		internal override void RemoveNodeFromParent()
-		{
-			if (attribute != null)
-				attribute.OwnerElement.RemoveAttribute(attribute.Name);
-			else if (textNode != null)
-				textNode.ParentNode.RemoveChild(textNode);
-		}
-		
-		internal override void AddNodeTo(XamlProperty property)
-		{
-			if (attribute != null) {
-				property.ParentObject.XmlElement.Attributes.Append(attribute);
-			} else if (textValue != null) {
-				string ns = property.ParentObject.OwnerDocument.GetNamespaceFor(property.PropertyTargetType);
-				string name;
-				if (property.IsAttached)
-					name = property.PropertyTargetType.Name + "." + property.PropertyName;
-				else
-					name = property.PropertyName;
-				if (property.ParentObject.XmlElement.GetPrefixOfNamespace(ns) == "") {
-					property.ParentObject.XmlElement.SetAttribute(name, textValue);
-					attribute = property.ParentObject.XmlElement.GetAttributeNode(name);
-				} else {
-					property.ParentObject.XmlElement.SetAttribute(name, ns, textValue);
-					attribute = property.ParentObject.XmlElement.GetAttributeNode(name, ns);
-				}
-				textValue = null;
-			} else {
-				property.AddChildNodeToProperty(textNode);
-			}
-		}
 	}
 }

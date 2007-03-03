@@ -44,5 +44,10 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		{
 			markupObject.AddNodeTo(property);
 		}
+		
+		internal override System.Xml.XmlNode GetNodeForCollection()
+		{
+			return markupObject.GetNodeForCollection();
+		}
 	}
 }

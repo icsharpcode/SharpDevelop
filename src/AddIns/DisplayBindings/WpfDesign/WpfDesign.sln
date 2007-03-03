@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
-# SharpDevelop 2.1.0.2192
+# SharpDevelop 2.1.0.2382
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfDesign.XamlDom", "WpfDesign.XamlDom\Project\WpfDesign.XamlDom.csproj", "{88DA149F-21B2-48AB-82C4-28FB6BDFD783}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfDesign.XamlDom.Tests", "WpfDesign.XamlDom\Tests\WpfDesign.XamlDom.Tests.csproj", "{BD62F5BC-115F-4339-8B5B-96C7A21DC67E}"

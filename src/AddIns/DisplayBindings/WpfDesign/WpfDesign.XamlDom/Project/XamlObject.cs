@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Xml;
 
 namespace ICSharpCode.WpfDesign.XamlDom
@@ -35,6 +36,14 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		/// <summary>For use by XamlParser only.</summary>
 		internal void AddProperty(XamlProperty property)
 		{
+			#if DEBUG
+			if (property.IsAttached == false) {
+				foreach (XamlProperty p in properties) {
+					if (p.IsAttached == false && p.PropertyName == property.PropertyName)
+						Debug.Fail("duplicate property");
+				}
+			}
+			#endif
 			properties.Add(property);
 		}
 		
@@ -42,6 +51,11 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		internal override object GetValueFor(XamlPropertyInfo targetProperty)
 		{
 			return instance;
+		}
+		
+		internal override XmlNode GetNodeForCollection()
+		{
+			return element;
 		}
 		#endregion
 		
