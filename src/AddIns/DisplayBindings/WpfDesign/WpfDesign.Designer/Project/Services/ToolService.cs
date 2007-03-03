@@ -71,7 +71,11 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 					if (b != null) {
 						b.HandleSelectionMouseDown(designPanel, e, result);
 					} else {
-						designPanel.Context.Services.Selection.SetSelectedComponents(new DesignItem[] { result.ModelHit }, SelectionTypes.Auto);
+						ISelectionService selectionService = designPanel.Context.Services.Selection;
+						selectionService.SetSelectedComponents(new DesignItem[] { result.ModelHit }, SelectionTypes.Auto);
+						if (selectionService.IsComponentSelected(result.ModelHit)) {
+							new DragMoveMouseGesture(result.ModelHit).Start(designPanel, e);
+						}
 					}
 				}
 			}
@@ -97,6 +101,7 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 		
 		protected IDesignPanel designPanel;
 		protected ServiceContainer services;
+		protected bool canAbortWithEscape = true;
 		bool isStarted;
 		
 		public void Start(IDesignPanel designPanel, MouseButtonEventArgs e)
@@ -126,6 +131,7 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 			designPanel.MouseDown += OnMouseDown;
 			designPanel.MouseMove += OnMouseMove;
 			designPanel.MouseUp += OnMouseUp;
+			designPanel.KeyDown += OnKeyDown;
 		}
 		
 		void UnRegisterEvents()
@@ -134,9 +140,18 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 			designPanel.MouseDown -= OnMouseDown;
 			designPanel.MouseMove -= OnMouseMove;
 			designPanel.MouseUp -= OnMouseUp;
+			designPanel.KeyDown -= OnKeyDown;
 		}
 		
-		protected virtual void OnLostMouseCapture(object sender, MouseEventArgs e)
+		void OnKeyDown(object sender, KeyEventArgs e)
+		{
+			if (canAbortWithEscape && e.Key == Key.Escape) {
+				e.Handled = true;
+				Stop();
+			}
+		}
+		
+		void OnLostMouseCapture(object sender, MouseEventArgs e)
 		{
 			Stop();
 		}

@@ -23,26 +23,26 @@ namespace ICSharpCode.WpfDesign.Adorners
 		/// The dependency property used to store the placement of adorner visuals.
 		/// </summary>
 		public static readonly DependencyProperty PlacementProperty = DependencyProperty.RegisterAttached(
-			"Placement", typeof(Placement), typeof(AdornerPanel),
-			new FrameworkPropertyMetadata(Placement.FillContent, FrameworkPropertyMetadataOptions.AffectsParentMeasure)
+			"Placement", typeof(AdornerPlacement), typeof(AdornerPanel),
+			new FrameworkPropertyMetadata(AdornerPlacement.FillContent, FrameworkPropertyMetadataOptions.AffectsParentMeasure)
 		);
 		
 		/// <summary>
 		/// Gets the placement of the specified adorner.
 		/// </summary>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters")]
-		public static Placement GetPlacement(UIElement adorner)
+		public static AdornerPlacement GetPlacement(UIElement adorner)
 		{
 			if (adorner == null)
 				throw new ArgumentNullException("adorner");
-			return (Placement)adorner.GetValue(PlacementProperty);
+			return (AdornerPlacement)adorner.GetValue(PlacementProperty);
 		}
 		
 		/// <summary>
 		/// Sets the placement of the specified adorner.
 		/// </summary>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters")]
-		public static void SetPlacement(UIElement adorner, Placement placement)
+		public static void SetPlacement(UIElement adorner, AdornerPlacement placement)
 		{
 			if (adorner == null)
 				throw new ArgumentNullException("adorner");
@@ -151,6 +151,12 @@ namespace ICSharpCode.WpfDesign.Adorners
 		/// The adorner is in the content layer.
 		/// </summary>
 		public static readonly AdornerOrder Content = new AdornerOrder(200);
+		
+		/// <summary>
+		/// The adorner is in the layer behind the foreground but above the content. This layer
+		/// is used for the gray-out effect.
+		/// </summary>
+		public static readonly AdornerOrder BehindForeground = new AdornerOrder(280);
 		
 		/// <summary>
 		/// The adorner is in the foreground layer.

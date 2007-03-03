@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
@@ -17,107 +18,105 @@ using ICSharpCode.WpfDesign.Extensions;
 namespace ICSharpCode.WpfDesign.Designer.Extensions
 {
 	/// <summary>
-	/// The resize thumb at the top left edge of a component.
+	/// The resize thumb around a component.
 	/// </summary>
 	[ExtensionFor(typeof(FrameworkElement))]
 	public sealed class ResizeThumbExtension : PrimarySelectionAdornerProvider
 	{
-		AdornerPanel adornerPanel;
-		DragFrame dragFrame;
-		IChildResizeSupport resizeBehavior;
-		GrayOutDesignerExceptActiveArea grayOut;
+		readonly AdornerPanel adornerPanel;
+		readonly ResizeThumb[] resizeThumbs;
+		IPlacementBehavior resizeBehavior;
+		PlacementOperation operation;
+		ResizeThumb activeResizeThumb;
 		
 		/// <summary></summary>
 		public ResizeThumbExtension()
 		{
 			adornerPanel = new AdornerPanel();
 			adornerPanel.Order = AdornerOrder.Foreground;
+			this.Adorners.Add(adornerPanel);
 			
-			CreateThumb(HorizontalAlignment.Left, VerticalAlignment.Top);
-			CreateThumb(HorizontalAlignment.Right, VerticalAlignment.Top);
-			CreateThumb(HorizontalAlignment.Left, VerticalAlignment.Bottom);
-			CreateThumb(HorizontalAlignment.Right, VerticalAlignment.Bottom);
+			resizeThumbs = new ResizeThumb[] {
+				CreateThumb(PlacementAlignments.TopLeft, Cursors.SizeNWSE),
+				CreateThumb(PlacementAlignments.Top, Cursors.SizeNS),
+				CreateThumb(PlacementAlignments.TopRight, Cursors.SizeNESW),
+				CreateThumb(PlacementAlignments.Left, Cursors.SizeWE),
+				CreateThumb(PlacementAlignments.Right, Cursors.SizeWE),
+				CreateThumb(PlacementAlignments.BottomLeft, Cursors.SizeNESW),
+				CreateThumb(PlacementAlignments.Bottom, Cursors.SizeNS),
+				CreateThumb(PlacementAlignments.BottomRight, Cursors.SizeNWSE)
+			};
 		}
 		
-		void CreateThumb(HorizontalAlignment horizontalAlignment, VerticalAlignment verticalAlignment)
+		ResizeThumb CreateThumb(PlacementAlignment alignment, Cursor cursor)
 		{
-			ResizeThumb resizeThumb = new ResizeThumb();
-			AdornerPanel.SetPlacement(resizeThumb, new RelativePlacement(horizontalAlignment, verticalAlignment));
+			ResizeThumb resizeThumb = new ResizeThumbImpl( cursor == Cursors.SizeNS, cursor == Cursors.SizeWE );
+			resizeThumb.Cursor = cursor;
+			resizeThumb.Alignment = alignment;
+			AdornerPanel.SetPlacement(resizeThumb, new RelativePlacement(alignment.Horizontal, alignment.Vertical));
 			adornerPanel.Children.Add(resizeThumb);
 			
 			resizeThumb.DragStarted   += OnDragStarted;
-			resizeThumb.DragDelta     += OnDragDelta(horizontalAlignment, verticalAlignment);
-			resizeThumb.DragCompleted += OnDragCompleted(horizontalAlignment, verticalAlignment);
+			resizeThumb.DragDelta     += OnDragDelta(alignment);
+			resizeThumb.DragCompleted += OnDragCompleted;
+			return resizeThumb;
 		}
 		
 		void OnDragStarted(object sender, DragStartedEventArgs e)
 		{
-			if (dragFrame == null)
-				dragFrame = new DragFrame();
-			
-			if (this.ExtendedItem.Parent != null) {
-				GrayOutDesignerExceptActiveArea.Start(ref grayOut, this.Services.GetService<IDesignPanel>(), this.ExtendedItem.Parent.View);
-			}
-			
-			AdornerPanel.SetPlacement(dragFrame, Placement.FillContent);
-			adornerPanel.Children.Add(dragFrame);
-			adornerPanel.Cursor = Cursors.SizeNWSE;
-//			newSize.Width = double.IsNaN(component.Width) ? component.ActualWidth : component.Width;
-//			newSize.Height = double.IsNaN(component.Height) ? component.ActualHeight : component.Height;
+			activeResizeThumb = (ResizeThumb)sender;
+			operation = PlacementOperation.Start(this.ExtendedItem, PlacementType.Resize);
+			this.ExtendedItem.Services.GetService<IDesignPanel>().KeyDown += OnDesignPanelKeyDown;
 		}
 		
-		DragDeltaEventHandler OnDragDelta(HorizontalAlignment horizontalAlignment, VerticalAlignment verticalAlignment)
+		DragDeltaEventHandler OnDragDelta(PlacementAlignment alignment)
 		{
 			return delegate(object sender, DragDeltaEventArgs e) {
-				if (resizeBehavior != null) {
-					Placement p = resizeBehavior.GetPlacement(this.ExtendedItem,
-					                                          FixChange(e.HorizontalChange, horizontalAlignment),
-					                                          FixChange(e.VerticalChange, verticalAlignment),
-					                                          horizontalAlignment, verticalAlignment);
-					if (p != null) {
-						AdornerPanel.SetPlacement(dragFrame, p);
-					}
+				switch (alignment.Horizontal) {
+					case HorizontalAlignment.Left:
+						operation.Left += e.HorizontalChange;
+						if (operation.Left > operation.Right)
+							operation.Left = operation.Right;
+						break;
+					case HorizontalAlignment.Right:
+						operation.Right += e.HorizontalChange;
+						if (operation.Right < operation.Left)
+							operation.Right = operation.Left;
+						break;
 				}
+				switch (alignment.Vertical) {
+					case VerticalAlignment.Top:
+						operation.Top += e.VerticalChange;
+						if (operation.Top > operation.Bottom)
+							operation.Top = operation.Bottom;
+						break;
+					case VerticalAlignment.Bottom:
+						operation.Bottom += e.VerticalChange;
+						if (operation.Bottom < operation.Top)
+							operation.Bottom = operation.Top;
+						break;
+				}
+				operation.UpdatePlacement();
 			};
 		}
 		
-		DragCompletedEventHandler OnDragCompleted(HorizontalAlignment horizontalAlignment, VerticalAlignment verticalAlignment)
+		void OnDragCompleted(object sender, DragCompletedEventArgs e)
 		{
-			return delegate (object sender, DragCompletedEventArgs e) {
-				adornerPanel.Children.Remove(dragFrame);
-				adornerPanel.ClearValue(AdornerPanel.CursorProperty);
-				GrayOutDesignerExceptActiveArea.Stop(ref grayOut, this.Services.GetService<IDesignPanel>());
-				
-				if (e.Canceled == false && resizeBehavior != null) {
-					using (ChangeGroup group = this.ExtendedItem.OpenGroup("Resize")) {
-						resizeBehavior.Resize(this.ExtendedItem,
-						                      FixChange(e.HorizontalChange, horizontalAlignment),
-						                      FixChange(e.VerticalChange, verticalAlignment),
-						                      horizontalAlignment, verticalAlignment);
-						group.Commit();
-					}
-				}
-			};
+			if (operation != null) {
+				this.ExtendedItem.Services.GetService<IDesignPanel>().KeyDown -= OnDesignPanelKeyDown;
+				if (e.Canceled)
+					operation.Abort();
+				else
+					operation.Commit();
+				operation = null;
+			}
 		}
 		
-		double FixChange(double val, VerticalAlignment va)
+		void OnDesignPanelKeyDown(object sender, KeyEventArgs e)
 		{
-			if (va == VerticalAlignment.Bottom)
-				return val;
-			else if (va == VerticalAlignment.Top)
-				return -val;
-			else
-				return 0;
-		}
-		
-		double FixChange(double val, HorizontalAlignment ha)
-		{
-			if (ha == HorizontalAlignment.Right)
-				return val;
-			else if (ha == HorizontalAlignment.Left)
-				return -val;
-			else
-				return 0;
+			if (e.Key == Key.Escape) {
+				activeResizeThumb.CancelDrag();
+			}
 		}
 		
 		/// <summary/>
@@ -127,11 +126,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			this.ExtendedItem.PropertyChanged += OnPropertyChanged;
 			this.Services.Selection.PrimarySelectionChanged += OnPrimarySelectionChanged;
 			
-			DesignItem parentItem = this.ExtendedItem.Parent;
-			if (parentItem == null) // resizing the root element
-				resizeBehavior = RootElementResizeSupport.Instance;
-			else
-				resizeBehavior = parentItem.GetBehavior<IChildResizeSupport>();
+			resizeBehavior = PlacementOperation.GetPlacementBehavior(this.ExtendedItem);
 			
 			UpdateAdornerVisibility();
 			OnPrimarySelectionChanged(null, null);
@@ -160,14 +155,10 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		
 		void UpdateAdornerVisibility()
 		{
-			if (resizeBehavior == null || !resizeBehavior.CanResizeChild(this.ExtendedItem)) {
-				if (this.Adorners.Count == 1) {
-					this.Adorners.Clear();
-				}
-			} else {
-				if (this.Adorners.Count == 0) {
-					this.Adorners.Add(adornerPanel);
-				}
+			FrameworkElement fe = this.ExtendedItem.View as FrameworkElement;
+			foreach (ResizeThumb r in resizeThumbs) {
+				bool isVisible = resizeBehavior != null && resizeBehavior.CanPlace(this.ExtendedItem, PlacementType.Resize, r.Alignment);
+				r.Visibility = isVisible ? Visibility.Visible : Visibility.Hidden;
 			}
 		}
 	}

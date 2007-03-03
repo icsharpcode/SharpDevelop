@@ -6,8 +6,12 @@
 // </file>
 
 using System;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Media;
+using System.Windows.Threading;
+using System.Windows.Media.Animation;
+using ICSharpCode.WpfDesign.Adorners;
 
 namespace ICSharpCode.WpfDesign.Designer.Controls
 {
@@ -17,19 +21,18 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 	sealed class GrayOutDesignerExceptActiveArea : FrameworkElement
 	{
 		//Geometry infiniteRectangle = new RectangleGeometry(new Rect(0, 0, double.PositiveInfinity, double.PositiveInfinity));
-		Geometry infiniteRectangle = new RectangleGeometry(new Rect(0, 0, 10000, 10000));
+		Geometry infiniteRectangle = new RectangleGeometry(new Rect(-100, -100, 10000, 10000));
 		Geometry activeAreaGeometry;
 		Geometry combinedGeometry;
 		Brush grayOutBrush;
+		AdornerPanel adornerPanel;
+		IDesignPanel designPanel;
+		const double MaxOpacity = 0.3;
 		
 		public GrayOutDesignerExceptActiveArea()
 		{
-			Color c = SystemColors.GrayTextColor;
-			c.R = (byte)Math.Max(0, c.R - 20);
-			c.G = (byte)Math.Max(0, c.G - 20);
-			c.B = (byte)Math.Max(0, c.B - 20);
-			c.A = 30;
-			this.GrayOutBrush = new SolidColorBrush(c);
+			this.GrayOutBrush = new SolidColorBrush(SystemColors.GrayTextColor);
+			this.GrayOutBrush.Opacity = MaxOpacity;
 		}
 		
 		public Brush GrayOutBrush {
@@ -45,11 +48,6 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 			}
 		}
 		
-		public void SetActiveArea(UIElement activeContainer)
-		{
-			this.ActiveAreaGeometry = new RectangleGeometry(new Rect(activeContainer.RenderSize), 0, 0, (Transform)activeContainer.TransformToVisual(this));
-		}
-		
 		protected override void OnRender(DrawingContext drawingContext)
 		{
 			drawingContext.DrawGeometry(grayOutBrush, null, combinedGeometry);
@@ -57,17 +55,40 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 		
 		internal static void Start(ref GrayOutDesignerExceptActiveArea grayOut, IDesignPanel designPanel, UIElement activeContainer)
 		{
-			if (designPanel != null) {
+			Debug.Assert(activeContainer != null);
+			if (designPanel != null && grayOut == null) {
 				grayOut = new GrayOutDesignerExceptActiveArea();
-				designPanel.MarkerCanvas.Children.Add(grayOut);
-				grayOut.SetActiveArea(activeContainer);
+				grayOut.designPanel = designPanel;
+				grayOut.adornerPanel = new AdornerPanel();
+				grayOut.adornerPanel.Order = AdornerOrder.BehindForeground;
+				grayOut.adornerPanel.SetAdornedElement(designPanel.Context.RootItem.View, null);
+				grayOut.adornerPanel.Children.Add(grayOut);
+				grayOut.ActiveAreaGeometry = new RectangleGeometry(new Rect(activeContainer.RenderSize), 0, 0, (Transform)activeContainer.TransformToVisual(grayOut.adornerPanel.AdornedElement));
+				Animate(grayOut.GrayOutBrush, Brush.OpacityProperty, 0, MaxOpacity);
+				designPanel.Adorners.Add(grayOut.adornerPanel);
 			}
 		}
 		
-		internal static void Stop(ref GrayOutDesignerExceptActiveArea grayOut, IDesignPanel designPanel)
+		static readonly TimeSpan animationTime = new TimeSpan(2000000);
+		
+		static void Animate(Animatable element, DependencyProperty property, double from, double to)
+		{
+			element.BeginAnimation(property, new DoubleAnimation(from, to, new Duration(animationTime), FillBehavior.Stop));
+		}
+		
+		internal static void Stop(ref GrayOutDesignerExceptActiveArea grayOut)
 		{
 			if (grayOut != null) {
-				designPanel.MarkerCanvas.Children.Remove(grayOut);
+				Animate(grayOut.GrayOutBrush, Brush.OpacityProperty, MaxOpacity, 0);
+				IDesignPanel designPanel = grayOut.designPanel;
+				AdornerPanel adornerPanelToRemove = grayOut.adornerPanel;
+				DispatcherTimer timer = new DispatcherTimer();
+				timer.Interval = animationTime;
+				timer.Tick += delegate {
+					timer.Stop();
+					designPanel.Adorners.Remove(adornerPanelToRemove);
+				};
+				timer.Start();
 				grayOut = null;
 			}
 		}

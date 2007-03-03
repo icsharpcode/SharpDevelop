@@ -18,15 +18,15 @@ using ICSharpCode.WpfDesign.Extensions;
 namespace ICSharpCode.WpfDesign.Designer.Controls
 {
 	/// <summary>
-	/// The rectangle shown during a drag'n'drop operation.
+	/// The rectangle shown during a rubber-band selecting operation.
 	/// </summary>
-	public class DragFrame : Control
+	public class SelectionFrame : Control
 	{
-		static DragFrame()
+		static SelectionFrame()
 		{
 			//This OverrideMetadata call tells the system that this element wants to provide a style that is different than its base class.
 			//This style is defined in themes\generic.xaml
-			DefaultStyleKeyProperty.OverrideMetadata(typeof(DragFrame), new FrameworkPropertyMetadata(typeof(DragFrame)));
+			DefaultStyleKeyProperty.OverrideMetadata(typeof(SelectionFrame), new FrameworkPropertyMetadata(typeof(SelectionFrame)));
 		}
 	}
 }

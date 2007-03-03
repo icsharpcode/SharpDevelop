@@ -65,7 +65,7 @@ namespace StandaloneDesigner
 		
 		void OnSelectionChanged(object sender, DesignItemCollectionEventArgs e)
 		{
-			propertyEditor.EditedObject = DesignItemDataSource.GetDataSourceForDesignItems(designSurface.DesignContext.Services.Selection.SelectedItems);
+			//propertyEditor.EditedObject = DesignItemDataSource.GetDataSourceForDesignItems(designSurface.DesignContext.Services.Selection.SelectedItems);
 		}
 	}
 }

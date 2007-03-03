@@ -26,7 +26,7 @@
         BorderThickness="10" Width="400" Height="300">
 	<StackPanel>
 		<Canvas Height="50">
-			<Button Width="60" Height="25.96">CB</Button>
+			<Button>CB</Button>
 		</Canvas>
 		<Button>Button 1</Button>
 		<Button>Button 2</Button>

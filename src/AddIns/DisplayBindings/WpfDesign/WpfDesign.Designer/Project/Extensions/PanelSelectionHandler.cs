@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -39,28 +40,26 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		}
 	}
 	
-	sealed class RangeSelectionGesture : MouseGestureBase
+	sealed class RangeSelectionGesture : ClickOrDragMouseGesture
 	{
 		DesignItem container;
 		AdornerPanel adornerPanel;
-		DragFrame selectionFrame;
-		Point startPoint;
+		SelectionFrame selectionFrame;
+		
 		GrayOutDesignerExceptActiveArea grayOut;
 		
 		public RangeSelectionGesture(DesignItem container)
 		{
 			this.container = container;
+			this.positionRelativeTo = container.View;
 		}
 		
-		protected override void OnStarted(MouseButtonEventArgs e)
+		protected override void OnDragStarted()
 		{
-			startPoint = e.GetPosition(container.View);
-			
 			adornerPanel = new AdornerPanel();
 			adornerPanel.SetAdornedElement(container.View, container);
 			
-			selectionFrame = new DragFrame();
-			SetPlacement(e.GetPosition(container.View));
+			selectionFrame = new SelectionFrame();
 			adornerPanel.Children.Add(selectionFrame);
 			
 			designPanel.Adorners.Add(adornerPanel);
@@ -70,24 +69,31 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		
 		protected override void OnMouseMove(object sender, MouseEventArgs e)
 		{
-			SetPlacement(e.GetPosition(container.View));
+			base.OnMouseMove(sender, e);
+			if (hasDragStarted) {
+				SetPlacement(e.GetPosition(positionRelativeTo));
+			}
 		}
 		
 		protected override void OnMouseUp(object sender, MouseButtonEventArgs e)
 		{
-			Point endPoint = e.GetPosition(container.View);
-			Rect frameRect = new Rect(
-				Math.Min(startPoint.X, endPoint.X),
-				Math.Min(startPoint.Y, endPoint.Y),
-				Math.Abs(startPoint.X - endPoint.X),
-				Math.Abs(startPoint.Y - endPoint.Y)
-			);
-			
-			ICollection<DesignItem> items = GetChildDesignItemsInContainer(container, new RectangleGeometry(frameRect));
-			if (items.Count == 0) {
-				items.Add(container);
+			if (hasDragStarted == false) {
+				services.Selection.SetSelectedComponents(new DesignItem [] { container }, SelectionTypes.Auto);
+			} else {
+				Point endPoint = e.GetPosition(positionRelativeTo);
+				Rect frameRect = new Rect(
+					Math.Min(startPoint.X, endPoint.X),
+					Math.Min(startPoint.Y, endPoint.Y),
+					Math.Abs(startPoint.X - endPoint.X),
+					Math.Abs(startPoint.Y - endPoint.Y)
+				);
+				
+				ICollection<DesignItem> items = GetChildDesignItemsInContainer(container, new RectangleGeometry(frameRect));
+				if (items.Count == 0) {
+					items.Add(container);
+				}
+				services.Selection.SetSelectedComponents(items, SelectionTypes.Auto);
 			}
-			services.Selection.SetSelectedComponents(items, SelectionTypes.Auto);
 			Stop();
 		}
 		
@@ -155,8 +161,9 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				designPanel.Adorners.Remove(adornerPanel);
 				adornerPanel = null;
 			}
-			GrayOutDesignerExceptActiveArea.Stop(ref grayOut, designPanel);
+			GrayOutDesignerExceptActiveArea.Stop(ref grayOut);
 			selectionFrame = null;
+			base.OnStopped();
 		}
 	}
 }

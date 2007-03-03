@@ -124,7 +124,7 @@ namespace ICSharpCode.WpfDesign.Adorners
 		/// <summary>
 		/// Adds an UIElement as adorner with the specified placement.
 		/// </summary>
-		protected void AddAdorner(Placement placement, AdornerOrder order, UIElement adorner)
+		protected void AddAdorner(AdornerPlacement placement, AdornerOrder order, UIElement adorner)
 		{
 			AdornerPanel p = new AdornerPanel();
 			p.Order = order;
@@ -136,7 +136,7 @@ namespace ICSharpCode.WpfDesign.Adorners
 		/// <summary>
 		/// Adds several UIElements as adorners with the specified placement.
 		/// </summary>
-		protected void AddAdorners(Placement placement, params UIElement[] adorners)
+		protected void AddAdorners(AdornerPlacement placement, params UIElement[] adorners)
 		{
 			AdornerPanel p = new AdornerPanel();
 			foreach (UIElement adorner in adorners) {

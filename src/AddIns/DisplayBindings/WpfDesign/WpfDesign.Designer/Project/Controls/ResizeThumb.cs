@@ -7,7 +7,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using ICSharpCode.WpfDesign.Adorners;
@@ -17,7 +19,6 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 {
 	/// <summary>
 	/// A thumb where the look can depend on the IsPrimarySelection property.
-	/// Used by UIElementSelectionRectangle.
 	/// </summary>
 	public class ResizeThumb : Thumb
 	{
@@ -26,6 +27,14 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 		/// </summary>
 		public static readonly DependencyProperty IsPrimarySelectionProperty
 			= DependencyProperty.Register("IsPrimarySelection", typeof(bool), typeof(ResizeThumb));
+		
+		/// <summary>
+		/// Dependency property for <see cref="IsPrimarySelection"/>.
+		/// </summary>
+		public static readonly DependencyProperty ResizeThumbVisibleProperty
+			= DependencyProperty.Register("ResizeThumbVisible", typeof(bool), typeof(ResizeThumb), new FrameworkPropertyMetadata(true));
+		
+		internal PlacementAlignment Alignment;
 		
 		static ResizeThumb()
 		{
@@ -40,6 +49,41 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 		public bool IsPrimarySelection {
 			get { return (bool)GetValue(IsPrimarySelectionProperty); }
 			set { SetValue(IsPrimarySelectionProperty, value); }
+		}
+		
+		/// <summary>
+		/// Gets/Sets if the resize thumb is visible.
+		/// </summary>
+		public bool ResizeThumbVisible {
+			get { return (bool)GetValue(ResizeThumbVisibleProperty); }
+			set { SetValue(ResizeThumbVisibleProperty, value); }
+		}
+	}
+	
+	/// <summary>
+	/// Resize thumb that automatically disappears if the adornered element is too small.
+	/// </summary>
+	sealed class ResizeThumbImpl : ResizeThumb
+	{
+		bool checkWidth, checkHeight;
+		
+		internal ResizeThumbImpl(bool checkWidth, bool checkHeight)
+		{
+			Debug.Assert((checkWidth && checkHeight) == false);
+			this.checkWidth = checkWidth;
+			this.checkHeight = checkHeight;
+		}
+		
+		protected override Size ArrangeOverride(Size arrangeBounds)
+		{
+			AdornerPanel parent = this.Parent as AdornerPanel;
+			if (parent != null && parent.AdornedElement != null) {
+				if (checkWidth)
+					this.ResizeThumbVisible = parent.AdornedElement.RenderSize.Width > 14;
+				else if (checkHeight)
+					this.ResizeThumbVisible = parent.AdornedElement.RenderSize.Height > 14;
+			}
+			return base.ArrangeOverride(arrangeBounds);
 		}
 	}
 }

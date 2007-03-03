@@ -81,13 +81,6 @@ namespace ICSharpCode.WpfDesign
 		ICollection<AdornerPanel> Adorners { get; }
 		
 		/// <summary>
-		/// A canvas that is on top of the design surface and all adorners.
-		/// Used for temporary drawings that are not attached to any element, e.g. graying out everything
-		/// except the target container in drag'n'drop operations.
-		/// </summary>
-		Canvas MarkerCanvas { get; }
-		
-		/// <summary>
 		/// Performs a hit test on the design surface.
 		/// </summary>
 		DesignPanelHitTestResult HitTest(MouseEventArgs e, bool testAdorners, bool testDesignSurface);

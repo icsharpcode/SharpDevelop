@@ -14,36 +14,11 @@ namespace ICSharpCode.WpfDesign.Adorners
 {
 	// We have to support the different coordinate spaces as explained in
 	// http://myfun.spaces.live.com/blog/cns!AC1291870308F748!242.entry
-	
-	/// <summary>
-	/// Defines how a design-time adorner is placed.
-	/// </summary>
-	public abstract class Placement
-	{
-		/// <summary>
-		/// A placement instance that places the adorner above the content, using the same bounds as the content.
-		/// </summary>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
-		public static readonly Placement FillContent = new FillContentPlacement();
-		
-		/// <summary>
-		/// Arranges the adorner element on the specified adorner panel.
-		/// </summary>
-		public abstract void Arrange(AdornerPanel panel, UIElement adorner, Size adornedElementSize);
-		
-		sealed class FillContentPlacement : Placement
-		{
-			public override void Arrange(AdornerPanel panel, UIElement adorner, Size adornedElementSize)
-			{
-				adorner.Arrange(new Rect(adornedElementSize));
-			}
-		}
-	}
-	
+
 	/// <summary>
 	/// Placement class providing properties for different kinds of relative placements.
 	/// </summary>
-	public sealed class RelativePlacement : Placement
+	public sealed class RelativePlacement : AdornerPlacement
 	{
 		/// <summary>
 		/// Creates a new RelativePlacement instance. The default instance is a adorner with zero size, you
@@ -232,24 +207,5 @@ namespace ICSharpCode.WpfDesign.Adorners
 			Size adornerSize = CalculateSize(adorner, adornedElementSize);
 			adorner.Arrange(new Rect(CalculatePosition(adornedElementSize, adornerSize), adornerSize));
 		}
-	}
-	
-	/// <summary>
-	/// Describes the space in which an adorner is placed.
-	/// </summary>
-	public enum PlacementSpace
-	{
-		/// <summary>
-		/// The adorner is affected by the render transform of the adorned element.
-		/// </summary>
-		Render,
-		/// <summary>
-		/// The adorner is affected by the layout transform of the adorned element.
-		/// </summary>
-		Layout,
-		/// <summary>
-		/// The adorner is not affected by transforms of designed controls.
-		/// </summary>
-		Designer
 	}
 }

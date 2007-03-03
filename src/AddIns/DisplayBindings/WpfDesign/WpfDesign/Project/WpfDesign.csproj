@@ -58,9 +58,12 @@
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Adorners\AdornerPanel.cs" />
+    <Compile Include="Adorners\AdornerPlacement.cs" />
+    <Compile Include="Adorners\AdornerPlacementSpace.cs" />
     <Compile Include="Adorners\AdornerProvider.cs" />
     <Compile Include="Adorners\AdornerProviderClasses.cs" />
-    <Compile Include="Adorners\Placement.cs" />
+    <Compile Include="Adorners\RelativePlacement.cs" />
+    <Compile Include="PlacementBehavior.cs" />
     <Compile Include="MouseInteraction.cs" />
     <Compile Include="ChangeGroup.cs" />
     <Compile Include="DesignContext.cs" />
@@ -82,6 +85,8 @@
     <Compile Include="Extensions\SelectionExtensionServer.cs" />
     <Compile Include="HashSet.cs" />
     <Compile Include="Func.cs" />
+    <Compile Include="PlacementOperation.cs" />
+    <Compile Include="PlacementType.cs" />
     <Compile Include="PropertyEditor\BooleanEditor.cs" />
     <Compile Include="PropertyEditor\MultiSelectionDataProperty.cs" />
     <Compile Include="PropertyEditor\StandardValuesComboBoxEditor.cs" />
@@ -95,6 +100,7 @@
     <Compile Include="PropertyEditor\PropertyEditorAttribute.cs" />
     <Compile Include="PropertyEditor\PropertyEditorBindingHelper.cs" />
     <Compile Include="PropertyEditor\TypeEditorAttribute.cs" />
+    <Compile Include="PlacementAlignment.cs" />
     <Compile Include="ServiceContainer.cs" />
     <Compile Include="DesignItem.cs" />
     <Compile Include="Services.cs" />
