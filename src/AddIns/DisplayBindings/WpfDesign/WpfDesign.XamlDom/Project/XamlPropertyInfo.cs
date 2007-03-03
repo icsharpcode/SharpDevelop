@@ -203,5 +203,27 @@ namespace ICSharpCode.WpfDesign.XamlDom
 					CultureInfo.InvariantCulture);
 			}
 		}
+		
+		static readonly Type[] RemoveAtParameters = { typeof(int) };
+		
+		public static bool RemoveItemAt(Type collectionType, object collectionInstance, int index)
+		{
+			MethodInfo m = collectionType.GetMethod("RemoveAt", RemoveAtParameters);
+			if (m != null) {
+				m.Invoke(collectionInstance, new object[] { index });
+				return true;
+			} else {
+				return false;
+			}
+		}
+		
+		public static void RemoveItem(Type collectionType, object collectionInstance, object item)
+		{
+			collectionType.InvokeMember(
+				"Remove", BindingFlags.Public | BindingFlags.InvokeMethod | BindingFlags.Instance,
+				null, collectionInstance,
+				new object[] { item },
+				CultureInfo.InvariantCulture);
+		}
 	}
 }

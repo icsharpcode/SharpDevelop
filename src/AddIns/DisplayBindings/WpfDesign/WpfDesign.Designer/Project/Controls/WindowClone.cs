@@ -44,6 +44,17 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 		}
 		
 		/// <summary>
+		/// This property has no effect. (for compatibility with <see cref="Window"/> only).
+		/// </summary>
+		[Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden), TypeConverter(typeof(DialogResultConverter))]
+		public bool? DialogResult {
+			get {
+				return null;
+			}
+			set { }
+		}
+		
+		/// <summary>
 		/// Specifies the icon to use.
 		/// </summary>
 		public ImageSource Icon {
@@ -58,6 +69,16 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 		public double Left {
 			get { return (double)GetValue(Window.LeftProperty); }
 			set { SetValue(Window.LeftProperty, value); }
+		}
+		
+		Window owner;
+		
+		/// <summary>
+		/// This property has no effect. (for compatibility with <see cref="Window"/> only).
+		/// </summary>
+		public Window Owner {
+			get { return owner; }
+			set { owner = value; }
 		}
 		
 		/// <summary>
@@ -107,6 +128,24 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 		public bool Topmost {
 			get { return (bool)GetValue(Window.TopmostProperty); }
 			set { SetValue(Window.TopmostProperty, value); }
+		}
+		
+		WindowStartupLocation windowStartupLocation;
+		
+		/// <summary>
+		/// This property has no effect. (for compatibility with <see cref="Window"/> only).
+		/// </summary>
+		public WindowStartupLocation WindowStartupLocation {
+			get { return windowStartupLocation; }
+			set { windowStartupLocation = value; }
+		}
+		
+		/// <summary>
+		/// This property has no effect. (for compatibility with <see cref="Window"/> only).
+		/// </summary>
+		public WindowState WindowState {
+			get { return (WindowState) GetValue(Window.WindowStateProperty); }
+			set { SetValue(Window.WindowStateProperty, value); }
 		}
 		
 		/// <summary>

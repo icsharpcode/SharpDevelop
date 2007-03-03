@@ -29,7 +29,9 @@
 			<Button>CB</Button>
 		</Canvas>
 		<Button>Button 1</Button>
-		<Button>Button 2</Button>
+		<Canvas Height="50">
+			<Button>Button 2</Button>
+		</Canvas>
 		<TabControl Width="300" MinHeight="100">
 			<TabItem Header="Page 1"><StackPanel><Button>a</Button></StackPanel> </TabItem>
 			<TabItem Header="Page 2"><Button>button on page 2</Button></TabItem>

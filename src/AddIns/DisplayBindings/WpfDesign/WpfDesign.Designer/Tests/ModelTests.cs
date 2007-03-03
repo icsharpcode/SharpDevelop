@@ -10,6 +10,8 @@ using System.Text;
 using System.IO;
 using System.Xml;
 using System.Diagnostics;
+using System.Windows;
+using System.Windows.Controls;
 using NUnit.Framework;
 using ICSharpCode.WpfDesign.Designer.Xaml;
 using ICSharpCode.WpfDesign.Designer.Services;
@@ -73,6 +75,18 @@ namespace ICSharpCode.WpfDesign.Designer.Tests
 			Assert.IsTrue(s.CanUndo);
 			Assert.IsFalse(s.CanRedo);
 			AssertCanvasDesignerOutput(@"<Button Width=""100"" Height=""200"" />", button.Context);
+			AssertLog("");
+		}
+		
+		
+		[Test]
+		public void AddTextBoxToStackPanel()
+		{
+			DesignItem button = CreateCanvasContext("<Button/>");
+			DesignItem canvas = button.Parent;
+			DesignItem textBox = canvas.Services.Component.RegisterComponentForDesigner(new TextBox());
+			canvas.Properties["Children"].CollectionElements.Add(textBox);
+			AssertCanvasDesignerOutput("<Button />\n<TextBox />", button.Context);
 			AssertLog("");
 		}
 	}

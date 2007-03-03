@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Diagnostics;
+using System.Collections.Generic;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Markup;
 using System.Xml;
+
 using ICSharpCode.WpfDesign;
 using ICSharpCode.WpfDesign.Designer;
 using ICSharpCode.WpfDesign.PropertyEditor;
@@ -63,9 +61,30 @@ namespace StandaloneDesigner
 			}
 		}
 		
+		ICollection<DesignItem> oldItems = new DesignItem[0];
+		
 		void OnSelectionChanged(object sender, DesignItemCollectionEventArgs e)
 		{
-			//propertyEditor.EditedObject = DesignItemDataSource.GetDataSourceForDesignItems(designSurface.DesignContext.Services.Selection.SelectedItems);
+			ISelectionService selectionService = designSurface.DesignContext.Services.Selection;
+			ICollection<DesignItem> items = selectionService.SelectedItems;
+			if (!IsCollectionWithSameElements(items, oldItems)) {
+				propertyEditor.EditedObject = DesignItemDataSource.GetDataSourceForDesignItems(items);
+				oldItems = items;
+			}
+		}
+		
+		static bool IsCollectionWithSameElements(ICollection<DesignItem> a, ICollection<DesignItem> b)
+		{
+			return ContainsAll(a, b) && ContainsAll(b, a);
+		}
+		
+		static bool ContainsAll(ICollection<DesignItem> a, ICollection<DesignItem> b)
+		{
+			foreach (DesignItem item in a) {
+				if (!b.Contains(item))
+					return false;
+			}
+			return true;
 		}
 	}
 }

@@ -64,7 +64,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			
 			designPanel.Adorners.Add(adornerPanel);
 			
-			GrayOutDesignerExceptActiveArea.Start(ref grayOut, designPanel, container.View);
+			GrayOutDesignerExceptActiveArea.Start(ref grayOut, services, container.View);
 		}
 		
 		protected override void OnMouseMove(object sender, MouseEventArgs e)

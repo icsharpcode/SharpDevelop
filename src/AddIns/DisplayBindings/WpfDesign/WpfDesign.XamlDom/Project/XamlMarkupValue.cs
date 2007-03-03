@@ -29,6 +29,12 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			return ((MarkupExtension)markupObject.Instance).ProvideValue(doc.ServiceProvider);
 		}
 		
+		internal override void OnParentPropertyChanged()
+		{
+			base.OnParentPropertyChanged();
+			markupObject.ParentProperty = this.ParentProperty;
+		}
+		
 		internal override void RemoveNodeFromParent()
 		{
 			markupObject.RemoveNodeFromParent();

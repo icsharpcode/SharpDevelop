@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using System.Windows.Media.Animation;
 using ICSharpCode.WpfDesign.Adorners;
+using ICSharpCode.WpfDesign.Designer.Services;
 
 namespace ICSharpCode.WpfDesign.Designer.Controls
 {
@@ -33,6 +34,7 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 		{
 			this.GrayOutBrush = new SolidColorBrush(SystemColors.GrayTextColor);
 			this.GrayOutBrush.Opacity = MaxOpacity;
+			this.IsHitTestVisible = false;
 		}
 		
 		public Brush GrayOutBrush {
@@ -53,10 +55,13 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 			drawingContext.DrawGeometry(grayOutBrush, null, combinedGeometry);
 		}
 		
-		internal static void Start(ref GrayOutDesignerExceptActiveArea grayOut, IDesignPanel designPanel, UIElement activeContainer)
+		internal static void Start(ref GrayOutDesignerExceptActiveArea grayOut, ServiceContainer services, UIElement activeContainer)
 		{
+			Debug.Assert(services != null);
 			Debug.Assert(activeContainer != null);
-			if (designPanel != null && grayOut == null) {
+			IDesignPanel designPanel = services.GetService<IDesignPanel>();
+			OptionService optionService = services.GetService<OptionService>();
+			if (designPanel != null && grayOut == null && optionService != null && optionService.GrayOutDesignSurfaceExceptParentContainerWhenDragging) {
 				grayOut = new GrayOutDesignerExceptActiveArea();
 				grayOut.designPanel = designPanel;
 				grayOut.adornerPanel = new AdornerPanel();

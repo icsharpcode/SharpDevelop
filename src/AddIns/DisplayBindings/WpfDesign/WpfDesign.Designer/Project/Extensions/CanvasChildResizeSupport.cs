@@ -37,18 +37,15 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		}
 		
 		/// <inherits/>
-		public void StartPlacement(PlacementOperation operation, out bool supportsRemoveFromContainer)
+		public void StartPlacement(PlacementOperation operation)
 		{
-			supportsRemoveFromContainer = false;
-			
-			//DesignItemProperty margin = operation.PlacedItem.Properties[FrameworkElement.MarginProperty];
 			UIElement child = (UIElement)operation.PlacedItem.Component;
 			operation.Left = GetLeft(child);
 			operation.Top = GetTop(child);
 			operation.Right = operation.Left + GetWidth(child);
 			operation.Bottom = operation.Top + GetHeight(child);
 			
-			GrayOutDesignerExceptActiveArea.Start(ref grayOut, this.Services.GetService<IDesignPanel>(), this.ExtendedItem.View);
+			BeginPlacement();
 		}
 		
 		static double GetLeft(UIElement element)
@@ -109,7 +106,48 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		/// <inherits/>
 		public void FinishPlacement(PlacementOperation operation)
 		{
+			EndPlacement();
+		}
+		
+		void BeginPlacement()
+		{
+			GrayOutDesignerExceptActiveArea.Start(ref grayOut, this.Services, this.ExtendedItem.View);
+		}
+		
+		void EndPlacement()
+		{
 			GrayOutDesignerExceptActiveArea.Stop(ref grayOut);
+		}
+		
+		/// <inherits/>
+		public bool CanLeaveContainer(PlacementOperation operation)
+		{
+			return true;
+		}
+		
+		/// <inherits/>
+		public void LeaveContainer(PlacementOperation operation)
+		{
+			EndPlacement();
+			
+			this.ExtendedItem.Properties["Children"].CollectionElements.Remove(operation.PlacedItem);
+			operation.PlacedItem.Properties.GetAttachedProperty(Canvas.LeftProperty).Reset();
+			operation.PlacedItem.Properties.GetAttachedProperty(Canvas.TopProperty).Reset();
+		}
+		
+		/// <inherits/>
+		public bool CanEnterContainer(PlacementOperation operation)
+		{
+			return true;
+		}
+		
+		/// <inherits/>
+		public void EnterContainer(PlacementOperation operation)
+		{
+			this.ExtendedItem.Properties["Children"].CollectionElements.Add(operation.PlacedItem);
+			UpdatePlacement(operation);
+			
+			BeginPlacement();
 		}
 	}
 }

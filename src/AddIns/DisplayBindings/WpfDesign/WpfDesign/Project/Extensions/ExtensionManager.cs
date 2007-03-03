@@ -112,7 +112,7 @@ namespace ICSharpCode.WpfDesign.Extensions
 			if (extendedItem.Component == null)
 				return emptyExtensionEntryArray;
 			else
-				return GetExtensionEntries(extendedItem.Component.GetType());
+				return GetExtensionEntries(extendedItem.ComponentType);
 		}
 		
 		ExtensionServer[] GetExtensionServersForItem(DesignItem item)

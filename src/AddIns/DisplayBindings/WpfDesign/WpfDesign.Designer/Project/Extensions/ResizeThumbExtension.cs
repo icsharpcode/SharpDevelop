@@ -96,7 +96,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 							operation.Bottom = operation.Top;
 						break;
 				}
-				operation.UpdatePlacement();
+				operation.CurrentContainerBehavior.UpdatePlacement(operation);
 			};
 		}
 		

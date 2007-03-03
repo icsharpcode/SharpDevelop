@@ -38,17 +38,10 @@ namespace ICSharpCode.WpfDesign.Designer
 			}
 		}
 		
-		// Like VisualTreeHelper.HitTest(Visual,Point); but allows using a filter callback.
-		static PointHitTestResult RunHitTest(Visual reference, Point point, HitTestFilterCallback filterCallback)
+		static void RunHitTest(Visual reference, Point point, HitTestFilterCallback filterCallback, HitTestResultCallback resultCallback)
 		{
-			HitTestResult result = null;
-			VisualTreeHelper.HitTest(reference, filterCallback,
-			                         delegate (HitTestResult resultParameter) {
-			                         	result = resultParameter;
-			                         	return HitTestResultBehavior.Stop;
-			                         },
+			VisualTreeHelper.HitTest(reference, filterCallback, resultCallback,
 			                         new PointHitTestParameters(point));
-			return result as PointHitTestResult;
 		}
 		
 		static HitTestFilterBehavior FilterHitTestInvisibleElements(DependencyObject potentialHitTestTarget)
@@ -62,65 +55,81 @@ namespace ICSharpCode.WpfDesign.Designer
 			return HitTestFilterBehavior.Continue;
 		}
 		
-		DesignPanelHitTestResult _lastHitTestResult;
-		
 		/// <summary>
 		/// Performs a custom hit testing lookup for the specified mouse event args.
 		/// </summary>
 		public DesignPanelHitTestResult HitTest(MouseEventArgs e, bool testAdorners, bool testDesignSurface)
 		{
-			_lastHitTestResult = CustomHitTestInternal(e.GetPosition(this), testAdorners, testDesignSurface);
-			return _lastHitTestResult;
+			DesignPanelHitTestResult result = DesignPanelHitTestResult.NoHit;
+			HitTest(e, testAdorners, testDesignSurface,
+			        delegate(DesignPanelHitTestResult r) {
+			        	result = r;
+			        	return false;
+			        });
+			return result;
 		}
 		
-		DesignPanelHitTestResult CustomHitTestInternal(Point mousePosition, bool testAdorners, bool testDesignSurface)
+		/// <summary>
+		/// Performs a hit test on the design surface, raising <paramref name="callback"/> for each match.
+		/// Hit testing continues while the callback returns true.
+		/// </summary>
+		public void HitTest(MouseEventArgs e, bool testAdorners, bool testDesignSurface, Predicate<DesignPanelHitTestResult> callback)
 		{
+			Point mousePosition = e.GetPosition(this);
 			if (mousePosition.X < 0 || mousePosition.Y < 0 || mousePosition.X > this.RenderSize.Width || mousePosition.Y > this.RenderSize.Height) {
-				return DesignPanelHitTestResult.NoHit;
+				return;
 			}
 			// First try hit-testing on the adorner layer.
 			
-			PointHitTestResult result;
-			DesignPanelHitTestResult customResult;
+			bool continueHitTest = true;
 			
 			if (testAdorners) {
-				result = RunHitTest(_adornerLayer, mousePosition, FilterHitTestInvisibleElements);
-				if (result != null && result.VisualHit != null) {
-					if (result.VisualHit == _lastHitTestResult.VisualHit)
-						return _lastHitTestResult;
-					customResult = new DesignPanelHitTestResult(result.VisualHit);
-					DependencyObject obj = result.VisualHit;
-					while (obj != null && obj != _adornerLayer) {
-						AdornerPanel adorner = obj as AdornerPanel;
-						if (adorner != null) {
-							customResult.AdornerHit = adorner;
+				RunHitTest(
+					_adornerLayer, mousePosition, FilterHitTestInvisibleElements,
+					delegate(HitTestResult result) {
+						if (result != null && result.VisualHit != null && result.VisualHit is Visual) {
+							DesignPanelHitTestResult customResult = new DesignPanelHitTestResult((Visual)result.VisualHit);
+							DependencyObject obj = result.VisualHit;
+							while (obj != null && obj != _adornerLayer) {
+								AdornerPanel adorner = obj as AdornerPanel;
+								if (adorner != null) {
+									customResult.AdornerHit = adorner;
+								}
+								obj = VisualTreeHelper.GetParent(obj);
+							}
+							continueHitTest = callback(customResult);
+							return continueHitTest ? HitTestResultBehavior.Continue : HitTestResultBehavior.Stop;
+						} else {
+							return HitTestResultBehavior.Continue;
 						}
-						obj = VisualTreeHelper.GetParent(obj);
-					}
-					return customResult;
-				}
+					});
 			}
 			
-			if (testDesignSurface) {
-				result = RunHitTest(this.Child, mousePosition, delegate { return HitTestFilterBehavior.Continue; });
-				if (result != null && result.VisualHit != null) {
-					customResult = new DesignPanelHitTestResult(result.VisualHit);
-					
-					ViewService viewService = _context.Services.View;
-					DependencyObject obj = result.VisualHit;
-					while (obj != null) {
-						if ((customResult.ModelHit = viewService.GetModel(obj)) != null)
-							break;
-						obj = VisualTreeHelper.GetParent(obj);
+			if (continueHitTest && testDesignSurface) {
+				RunHitTest(
+					this.Child, mousePosition, delegate { return HitTestFilterBehavior.Continue; },
+					delegate(HitTestResult result) {
+						if (result != null && result.VisualHit != null && result.VisualHit is Visual) {
+							DesignPanelHitTestResult customResult = new DesignPanelHitTestResult((Visual)result.VisualHit);
+							
+							ViewService viewService = _context.Services.View;
+							DependencyObject obj = result.VisualHit;
+							while (obj != null) {
+								if ((customResult.ModelHit = viewService.GetModel(obj)) != null)
+									break;
+								obj = VisualTreeHelper.GetParent(obj);
+							}
+							if (customResult.ModelHit == null) {
+								customResult.ModelHit = _context.RootItem;
+							}
+							continueHitTest = callback(customResult);
+							return continueHitTest ? HitTestResultBehavior.Continue : HitTestResultBehavior.Stop;
+						} else {
+							return HitTestResultBehavior.Continue;
+						}
 					}
-					if (customResult.ModelHit == null)
-					{
-						customResult.ModelHit = _context.RootItem;
-					}
-					return customResult;
-				}
+				);
 			}
-			return DesignPanelHitTestResult.NoHit;
 		}
 		#endregion
 		

@@ -17,13 +17,13 @@ namespace ICSharpCode.WpfDesign.XamlDom
 	/// <summary>
 	/// Describes a property on a <see cref="XamlObject"/>.
 	/// </summary>
-	public sealed class XamlProperty
+	public sealed partial class XamlProperty
 	{
 		XamlObject parentObject;
 		XamlPropertyInfo propertyInfo;
 		XamlPropertyValue propertyValue;
 		
-		List<XamlPropertyValue> collectionElements;
+		CollectionElementsCollection collectionElements;
 		bool isCollection;
 		
 		static readonly IList<XamlPropertyValue> emptyCollectionElementsArray = new XamlPropertyValue[0];
@@ -40,7 +40,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			} else {
 				if (propertyInfo.IsCollection) {
 					isCollection = true;
-					collectionElements = new List<XamlPropertyValue>();
+					collectionElements = new CollectionElementsCollection(this);
 				}
 			}
 		}
@@ -159,7 +159,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		/// Gets the collection elements of the property. Is empty if the property is not a collection.
 		/// </summary>
 		public IList<XamlPropertyValue> CollectionElements {
-			get { return collectionElements != null ? collectionElements.AsReadOnly() : emptyCollectionElementsArray; }
+			get { return collectionElements ?? emptyCollectionElementsArray; }
 		}
 		
 		/// <summary>
@@ -217,7 +217,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		/// </summary>
 		internal void ParserAddCollectionElement(XamlPropertyValue val)
 		{
-			collectionElements.Add(val);
+			collectionElements.AddByParser(val);
 			val.ParentProperty = this;
 		}
 		
@@ -270,7 +270,14 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		/// </summary>
 		public XamlProperty ParentProperty {
 			get { return _parentProperty; }
-			internal set { _parentProperty = value; }
+			internal set { 
+				_parentProperty = value;
+				OnParentPropertyChanged();
+			}
+		}
+		
+		internal virtual void OnParentPropertyChanged()
+		{
 		}
 		
 		internal abstract void RemoveNodeFromParent();

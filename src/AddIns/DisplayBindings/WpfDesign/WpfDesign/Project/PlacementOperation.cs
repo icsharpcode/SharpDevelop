@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
 
@@ -25,10 +26,7 @@ namespace ICSharpCode.WpfDesign
 		readonly IPlacementBehavior oldContainerBehavior;
 		DesignItem currentContainer;
 		IPlacementBehavior currentContainerBehavior;
-		bool supportsRemoveFromContainer;
 		bool isAborted, isCommitted;
-		
-		//DesignItem newContainer;
 		
 		#region Properties
 		/// <summary>
@@ -43,13 +41,6 @@ namespace ICSharpCode.WpfDesign
 		/// </summary>
 		public PlacementType Type {
 			get { return type; }
-		}
-		
-		/// <summary>
-		/// Gets if removing the placed item from the container is supported.
-		/// </summary>
-		public bool SupportsRemoveFromContainer {
-			get { return supportsRemoveFromContainer; }
 		}
 		
 		/// <summary>
@@ -72,11 +63,46 @@ namespace ICSharpCode.WpfDesign
 		/// </summary>
 		public double Left, Right, Top, Bottom;
 		
+		/// <summary>
+		/// Gets the current container for the placement operation.
+		/// </summary>
+		public DesignItem CurrentContainer {
+			get { return currentContainer; }
+		}
+		
+		/// <summary>
+		/// Gets the placement behavior for the current container.
+		/// </summary>
+		public IPlacementBehavior CurrentContainerBehavior {
+			get { return currentContainerBehavior; }
+		}
+		
 		#endregion
 		
-		public void UpdatePlacement()
+		/// <summary>
+		/// Make the placed item switch the container.
+		/// This method assumes that you already have checked if changing the container is possible.
+		/// </summary>
+		public void ChangeContainer(DesignItem newContainer)
 		{
-			currentContainerBehavior.UpdatePlacement(this);
+			if (newContainer == null)
+				throw new ArgumentNullException("newContainer");
+			if (currentContainer == newContainer)
+				return;
+			
+			try {
+				currentContainerBehavior.LeaveContainer(this);
+				
+				currentContainer = newContainer;
+				currentContainerBehavior = newContainer.GetBehavior<IPlacementBehavior>();
+				
+				Debug.Assert(currentContainerBehavior != null);
+				currentContainerBehavior.EnterContainer(this);
+			} catch (Exception ex) {
+				Debug.WriteLine(ex.ToString());
+				Abort();
+				throw;
+			}
 		}
 		
 		#region Start
@@ -101,7 +127,7 @@ namespace ICSharpCode.WpfDesign
 				if (op.currentContainerBehavior == null)
 					throw new InvalidOperationException("Starting the operation is not supported");
 				op.Left = op.Top = op.Bottom = op.Right = double.NaN;
-				op.currentContainerBehavior.StartPlacement(op, out op.supportsRemoveFromContainer);
+				op.currentContainerBehavior.StartPlacement(op);
 				if (double.IsNaN(op.Left) || double.IsNaN(op.Top) || double.IsNaN(op.Bottom) || double.IsNaN(op.Right))
 					throw new InvalidOperationException("IPlacementBehavior.StartPlacement must set Left,Top,Right+Bottom to non-NAN values");
 			} catch {

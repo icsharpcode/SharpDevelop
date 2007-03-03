@@ -7,6 +7,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Media;
 using System.Collections.Generic;
@@ -21,6 +22,34 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 		readonly DesignItem item;
 		readonly List<IPropertyEditorDataProperty> properties = new List<IPropertyEditorDataProperty>();
 		
+		#region Available properties
+		// cache properties available for a type - retrieving this list takes ~100ms on my machine, so
+		// we cannot do this for every selected component, but must reuse the list
+		static readonly Dictionary<Type, string[]> availableProperties = new Dictionary<Type, string[]>();
+		
+		static string[] GetAvailableProperties(Type forType)
+		{
+			Debug.Assert(forType != null);
+			string[] result;
+			lock (availableProperties) {
+				if (availableProperties.TryGetValue(forType, out result))
+					return result;
+			}
+			List<string> names = new List<string>();
+			foreach (PropertyDescriptor p in TypeDescriptor.GetProperties(forType)) {
+				if (!p.IsBrowsable) continue;
+				if (p.IsReadOnly) continue;
+				if (p.Name.Contains(".")) continue;
+				names.Add(p.Name);
+			}
+			result = names.ToArray();
+			lock (availableProperties) {
+				availableProperties[forType] = result;
+			}
+			return result;
+		}
+		#endregion
+		
 		/// <summary>
 		/// Constructs a new DesignItemDataSource for the specified design item.
 		/// </summary>
@@ -31,11 +60,8 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 			this.item = item;
 			
 			List<DesignItemProperty> designItemProperties = new List<DesignItemProperty>();
-			foreach (PropertyDescriptor p in TypeDescriptor.GetProperties(item.Component)) {
-				if (!p.IsBrowsable) continue;
-				if (p.IsReadOnly) continue;
-				if (p.Name.Contains(".")) continue;
-				designItemProperties.Add(item.Properties[p.Name]);
+			foreach (string name in GetAvailableProperties(item.ComponentType)) {
+				designItemProperties.Add(item.Properties[name]);
 			}
 			designItemProperties.AddRange(item.Properties);
 			
@@ -99,7 +125,7 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 		/// <summary>See <see cref="IPropertyEditorDataSource"/></summary>
 		public string Type {
 			get {
-				return item.Component.GetType().Name;
+				return item.ComponentType.Name;
 			}
 		}
 		

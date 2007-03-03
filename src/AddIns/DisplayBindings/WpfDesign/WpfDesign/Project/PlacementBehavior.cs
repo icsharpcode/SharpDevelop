@@ -27,12 +27,32 @@ namespace ICSharpCode.WpfDesign
 		/// <summary>
 		/// Starts placement mode of the child element specified in the placement operation.
 		/// </summary>
-		void StartPlacement(PlacementOperation operation, out bool supportsRemoveFromContainer);
+		void StartPlacement(PlacementOperation operation);
 		
 		/// <summary>
 		/// Updates the placement of the element specified in the placement operation.
 		/// </summary>
 		void UpdatePlacement(PlacementOperation operation);
+		
+		/// <summary>
+		/// Gets if leaving this container is allowed for the specified operation.
+		/// </summary>
+		bool CanLeaveContainer(PlacementOperation operation);
+		
+		/// <summary>
+		/// Remove the placed child from this container.
+		/// </summary>
+		void LeaveContainer(PlacementOperation operation);
+		
+		/// <summary>
+		/// Gets if entering this container is allowed for the specified operation.
+		/// </summary>
+		bool CanEnterContainer(PlacementOperation operation);
+		
+		/// <summary>
+		/// Let the placed child enter this container.
+		/// </summary>
+		void EnterContainer(PlacementOperation operation);
 		
 		/// <summary>
 		/// Finishes placement of a child element. This method is called both for aborted

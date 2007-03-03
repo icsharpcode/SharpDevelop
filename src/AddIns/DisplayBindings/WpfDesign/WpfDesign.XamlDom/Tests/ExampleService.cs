@@ -34,6 +34,11 @@ namespace ICSharpCode.WpfDesign.XamlDom.Tests
 	
 	public class ExampleDependencyObject : DependencyObject
 	{
-		
+		protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
+		{
+			base.OnPropertyChanged(e);
+			// TODO: add this test, check for correct setting of NameScope
+			//TestHelperLog.Log("ExampleDependencyObject.OnPropertyChanged " + e.Property.Name);
+		}
 	}
 }

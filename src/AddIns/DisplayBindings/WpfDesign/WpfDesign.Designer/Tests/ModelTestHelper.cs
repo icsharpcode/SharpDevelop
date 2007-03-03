@@ -78,7 +78,7 @@ namespace ICSharpCode.WpfDesign.Designer.Tests
 		
 		static string ItemIdentity(DesignItem item)
 		{
-			return item.Component.GetType().Name + " (" + item.GetHashCode() + ")";
+			return item.ComponentType.Name + " (" + item.GetHashCode() + ")";
 		}
 		
 		protected void AssertLog(string expectedLog)

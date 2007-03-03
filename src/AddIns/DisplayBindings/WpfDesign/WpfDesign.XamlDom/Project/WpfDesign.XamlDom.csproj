@@ -58,6 +58,7 @@
       <Link>GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="CollectionElementsCollection.cs" />
     <Compile Include="XamlConstants.cs" />
     <Compile Include="XamlDocument.cs" />
     <Compile Include="XamlLoadException.cs" />

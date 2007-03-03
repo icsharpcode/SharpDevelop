@@ -27,6 +27,13 @@ namespace ICSharpCode.WpfDesign
 		public abstract object Component { get; }
 		
 		/// <summary>
+		/// Gets the component type of this design site.
+		/// This value may be different from Component.GetType() if a CustomInstanceFactory created
+		/// an object using a different type.
+		/// </summary>
+		public abstract Type ComponentType { get; }
+		
+		/// <summary>
 		/// Gets the view used for the component.
 		/// </summary>
 		public abstract UIElement View { get; }

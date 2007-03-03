@@ -19,6 +19,11 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 	{
 		readonly XamlDesignItem _designItem;
 		readonly XamlProperty _property;
+		readonly XamlModelCollectionElementsCollection _collectionElements;
+		
+		internal XamlDesignItem DesignItem {
+			get { return _designItem; }
+		}
 		
 		public XamlModelProperty(XamlDesignItem designItem, XamlProperty property)
 		{
@@ -27,6 +32,9 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			
 			this._designItem = designItem;
 			this._property = property;
+			if (property.IsCollection) {
+				_collectionElements = new XamlModelCollectionElementsCollection(this, property);
+			}
 		}
 		
 		public override bool Equals(object obj)
@@ -70,7 +78,10 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 		
 		public override System.Collections.Generic.IList<DesignItem> CollectionElements {
 			get {
-				throw new NotImplementedException();
+				if (!IsCollection)
+					throw new DesignerException("Cannot access CollectionElements for non-collection properties.");
+				else
+					return _collectionElements;
 			}
 		}
 		
