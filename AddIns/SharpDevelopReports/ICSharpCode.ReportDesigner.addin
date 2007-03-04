@@ -45,28 +45,28 @@
 	
 	<!-- DesignerContectMenu Section -->
 	<Path name ="/SharpDevelopReports/ContextMenu/Section">
-		<MenuItem id="settings" label="${res:SharpReport.ContextMenu.Settings}" class="ICSharpCode.Reports.Addin.Commands.ShowSettings"/>
+		<MenuItem id="settings" label="${res:SharpReport.ContextMenu.Settings}" class="ICSharpCode.Reports.Addin.Commands.ShowSettingsCommand"/>
 	</Path>
 
 	 <!-- DesignerContextMenu Items -->
    <Path name ="/SharpDevelopReports/ContextMenu/Items">
-      <MenuItem id="cut" label="${res:SharpReport.ContextMenu.Cut}" class="ICSharpCode.Reports.Addin.Commands.CutReportItem"/>
+      <MenuItem id="cut" label="${res:SharpReport.ContextMenu.Cut}" class="ICSharpCode.Reports.Addin.Commands.CutReportItemCommand"/>
    </Path>
 
    <!-- ReportExplorer ContextMenu's -->
 	<Path name ="/SharpDevelopReports/ContextMenu/ContextMenu/FieldsExplorer/SectionTreeNode">
 		<MenuItem id="removenodes"
 		          label="${res:SharpReport.FieldsExplorer.ContextMenu.Section.Clear}"
-		          class="ICSharpCode.Reports.Addin.Commands.ClearNodes"/>
+		          class="ICSharpCode.Reports.Addin.Commands.ClearNodesCommand"/>
 	</Path>
 	
 	<Path name = "/SharpDevelopReports/ContextMenu/ContextMenu/FieldsExplorer/ColumnTreeNode">
 		<MenuItem id="removenode"
 		          label="${res:SharpReport.FieldsExplorer.ContextMenu.Columns.Remove}"
-		          class="ICSharpCode.Reports.Addin.Commands.RemoveNode"/>
+		          class="ICSharpCode.Reports.Addin.Commands.RemoveNodeCommand"/>
 		<MenuItem id="toggle"
 		          label="${res:SharpReport.FieldsExplorer.ContextMenu.Columns.ToggleSort}"
-		          class="ICSharpCode.Reports.Addin.Commands.ToogleOrder"/>
+		          class="ICSharpCode.Reports.Addin.Commands.ToogleOrderCommand"/>
 	</Path>
 	
 	<!-- Start SharpDevelop Reports from MainMenu -->
@@ -76,7 +76,7 @@
 		          label = "${res:SharpReport.ReportGenerator}"
 		          
 		          shortcut = "Control|Alt|R"
-		          class    = "ICSharpCode.Reports.Addin.Commands.StartReportView"/>
+		          class    = "ICSharpCode.Reports.Addin.Commands.StartViewCommand"/>
 	</Path>
 
 	<!-- Report wizard -->
@@ -91,8 +91,8 @@
 	<!-- ContextMenu Sections -->
 	<!-- Save Data from Resultpanel as *xsd File -->
 	<Path name ="/ReportGenerator/ResultPanel/ContextMenu">
-		<MenuItem id="xsdcomplete" label="${res:SharpReport.Wizard.ResultPanel.SaveXsdComplete}" class="ICSharpCode.Reports.Addin.ReportWizard.WriteXsdComplete"/>
-		<MenuItem id="xsdschema" label="${res:SharpReport.Wizard.ResultPanel.SaveXsdSchemaOnly}" class="ICSharpCode.Reports.Addin.ReportWizard.WriteXsdSchema"/>
+		<MenuItem id="xsdcomplete" label="${res:SharpReport.Wizard.ResultPanel.SaveXsdComplete}" class="ICSharpCode.Reports.Addin.ReportWizard.WriteXsdCompleteCommand"/>
+		<MenuItem id="xsdschema" label="${res:SharpReport.Wizard.ResultPanel.SaveXsdSchemaOnly}" class="ICSharpCode.Reports.Addin.ReportWizard.WriteXsdSchemaCommand"/>
 	</Path>
 	
 </AddIn>
