@@ -22,7 +22,7 @@ namespace SharpDbTools.Forms
 	/// Description of DatabaseExplorerNode.
 	/// Hold minimal state - access state through the DbModelInfoService
 	/// </summary>
-	public class DatabaseExplorerTreeNode: TreeNode, IRebuildable, IRequiresRebuildSource
+	public class DatabaseExplorerTreeNode: TreeNode, IRebuildable, IRequiresRebuildSource, ISupportsDragDrop
 	{	
 		public DatabaseExplorerTreeNode(): base("Database Explorer")
 		{
@@ -140,6 +140,32 @@ namespace SharpDbTools.Forms
 					if (result.Equals(DialogResult.Yes)) {
 						DbModelInfoService.SaveToFile(name, true);
 					}
+				}
+			}
+		}
+		
+		/// <summary>
+		/// If a DbModelInfoTreeNode is selected then the desired drag and drop behaviour
+		/// is to pass the ConnectionString to drop target.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		public void HandleMouseDownEvent(object sender, MouseEventArgs e)
+		{
+			LoggingService.Debug(this.GetType().Name + " handling MouseDownEvent");
+			TreeView parent = this.TreeView;
+			TreeNode currentlySelected = parent.SelectedNode;
+			
+			// If the user has selected a TreeNode for a specific connection, and has the right
+			// mouse button down, then initiate a drag drop operation
+			DbModelInfoTreeNode infoNode = currentlySelected as DbModelInfoTreeNode;
+			if (infoNode != null) {
+				string logicalConnectionName = infoNode.LogicalConnectionName;
+				DbModelInfo info = DbModelInfoService.GetDbModelInfo(logicalConnectionName);
+				string connectionString = info.ConnectionString;
+				LoggingService.Debug("drag drop operation initiated for ConnectionString: " + connectionString);
+				if (connectionString != null) {
+					parent.DoDragDrop(connectionString, DragDropEffects.Copy);	
 				}
 			}
 		}

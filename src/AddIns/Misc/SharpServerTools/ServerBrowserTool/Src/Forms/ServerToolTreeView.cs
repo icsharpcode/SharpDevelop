@@ -34,14 +34,25 @@ namespace SharpServerTools.Forms
 				// create an instance of the relevant ServerTool TreeNode
 				string id = codon.Id;
 				TreeNode treeNode = (TreeNode)node.BuildChildItem(id, null, null);
-				IRequiresRebuildSource s = treeNode as IRequiresRebuildSource;
-				
+
 				// a ServerTool plugin can register to be refreshed by the ServerToolTreeView
 				// control by implementing the IRequiresRebuildSource interface
+				
+				IRequiresRebuildSource s = treeNode as IRequiresRebuildSource;
 				
 				if (s != null) {
 					s.RebuildRequiredEvent += new RebuildRequiredEventHandler(RebuildRequiredNotify);
 				}
+				
+				// a ServerTool plugin can also register to handle drag-n-drop if it implements
+				// the required interface
+				
+				ISupportsDragDrop d = treeNode as ISupportsDragDrop;
+				
+				if (d != null) {
+					this.MouseDown += new MouseEventHandler(d.HandleMouseDownEvent);
+				}
+				
 				this.Nodes.Add(treeNode);
 			}
 			
@@ -91,7 +102,7 @@ namespace SharpServerTools.Forms
 			}
 		}
 		
-		
 	}
 	public delegate void RebuildChildrenDelegate(IEnumerable children);
+	
 }

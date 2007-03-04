@@ -40,6 +40,7 @@
     <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Src\Forms\ISupportsDragDrop.cs" />
     <Compile Include="Src\Forms\ServerToolTreeView.cs" />
     <Compile Include="Src\Forms\IInitializable.cs" />
     <Compile Include="Src\Forms\NodeAwareContextMenuStrip.cs" />
