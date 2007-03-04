@@ -79,7 +79,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 							ch = (char)next;
 							if (ch == '"') {
 								token = ReadVerbatimString();
-							} else if (Char.IsLetterOrDigit(ch)) {
+							} else if (Char.IsLetterOrDigit(ch) || ch == '_') {
 								token = new Token(Tokens.Identifier, x - 1, y, ReadIdent(ch));
 							} else {
 								errors.Error(y, x, String.Format("Unexpected char in Lexer.Next() : {0}", ch));

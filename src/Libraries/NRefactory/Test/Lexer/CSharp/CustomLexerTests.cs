@@ -42,6 +42,34 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 		}
 		
 		[Test]
+		public void TestIdentifierStartingWithUnderscore()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("_Bc05"));
+			Token t = lexer.NextToken();
+			Assert.AreEqual(Tokens.Identifier, t.kind);
+			Assert.AreEqual("_Bc05", t.val);
+		}
+		
+		[Test]
+		public void TestKeyWordAsIdentifier()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("@int"));
+			Token t = lexer.NextToken();
+			Assert.AreEqual(Tokens.Identifier, t.kind);
+			Assert.AreEqual("int", t.val);
+		}
+		
+		
+		[Test]
+		public void TestKeyWordAsIdentifierStartingWithUnderscore()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("@_int"));
+			Token t = lexer.NextToken();
+			Assert.AreEqual(Tokens.Identifier, t.kind);
+			Assert.AreEqual("_int", t.val);
+		}
+		
+		[Test]
 		public void TestSkippedEmptyBlock()
 		{
 			ILexer lexer = GenerateLexer(new StringReader("{}+"));
