@@ -25,6 +25,8 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 	{
 		readonly AdornerPanel adornerPanel;
 		readonly ResizeThumb[] resizeThumbs;
+		/// <summary>An array containing this.ExtendedItem as only element</summary>
+		readonly DesignItem[] extendedItemArray = new DesignItem[1];
 		IPlacementBehavior resizeBehavior;
 		PlacementOperation operation;
 		ResizeThumb activeResizeThumb;
@@ -65,38 +67,45 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		void OnDragStarted(object sender, DragStartedEventArgs e)
 		{
 			activeResizeThumb = (ResizeThumb)sender;
-			operation = PlacementOperation.Start(this.ExtendedItem, PlacementType.Resize);
+			operation = PlacementOperation.Start(extendedItemArray, PlacementType.Resize);
 			this.ExtendedItem.Services.GetService<IDesignPanel>().KeyDown += OnDesignPanelKeyDown;
 		}
 		
 		DragDeltaEventHandler OnDragDelta(PlacementAlignment alignment)
 		{
 			return delegate(object sender, DragDeltaEventArgs e) {
-				switch (alignment.Horizontal) {
-					case HorizontalAlignment.Left:
-						operation.Left += e.HorizontalChange;
-						if (operation.Left > operation.Right)
-							operation.Left = operation.Right;
-						break;
-					case HorizontalAlignment.Right:
-						operation.Right += e.HorizontalChange;
-						if (operation.Right < operation.Left)
-							operation.Right = operation.Left;
-						break;
+				foreach (PlacementInformation info in operation.PlacedItems) {
+					double left = info.Bounds.Left;
+					double right = info.Bounds.Right;
+					double bottom = info.Bounds.Bottom;
+					double top = info.Bounds.Top;
+					switch (alignment.Horizontal) {
+						case HorizontalAlignment.Left:
+							left += e.HorizontalChange;
+							if (left > right)
+								left = right;
+							break;
+						case HorizontalAlignment.Right:
+							right += e.HorizontalChange;
+							if (right < left)
+								right = left;
+							break;
+					}
+					switch (alignment.Vertical) {
+						case VerticalAlignment.Top:
+							top += e.VerticalChange;
+							if (top > bottom)
+								top = bottom;
+							break;
+						case VerticalAlignment.Bottom:
+							bottom += e.VerticalChange;
+							if (bottom < top)
+								bottom = top;
+							break;
+					}
+					info.Bounds = new Rect(left, top, right - left, bottom - top);
+					operation.CurrentContainerBehavior.SetPosition(info);
 				}
-				switch (alignment.Vertical) {
-					case VerticalAlignment.Top:
-						operation.Top += e.VerticalChange;
-						if (operation.Top > operation.Bottom)
-							operation.Top = operation.Bottom;
-						break;
-					case VerticalAlignment.Bottom:
-						operation.Bottom += e.VerticalChange;
-						if (operation.Bottom < operation.Top)
-							operation.Bottom = operation.Top;
-						break;
-				}
-				operation.CurrentContainerBehavior.UpdatePlacement(operation);
 			};
 		}
 		
@@ -123,10 +132,11 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		protected override void OnInitialized()
 		{
 			base.OnInitialized();
+			extendedItemArray[0] = this.ExtendedItem;
 			this.ExtendedItem.PropertyChanged += OnPropertyChanged;
 			this.Services.Selection.PrimarySelectionChanged += OnPrimarySelectionChanged;
 			
-			resizeBehavior = PlacementOperation.GetPlacementBehavior(this.ExtendedItem);
+			resizeBehavior = PlacementOperation.GetPlacementBehavior(extendedItemArray);
 			
 			UpdateAdornerVisibility();
 			OnPrimarySelectionChanged(null, null);
@@ -157,7 +167,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		{
 			FrameworkElement fe = this.ExtendedItem.View as FrameworkElement;
 			foreach (ResizeThumb r in resizeThumbs) {
-				bool isVisible = resizeBehavior != null && resizeBehavior.CanPlace(this.ExtendedItem, PlacementType.Resize, r.Alignment);
+				bool isVisible = resizeBehavior != null && resizeBehavior.CanPlace(extendedItemArray, PlacementType.Resize, r.Alignment);
 				r.Visibility = isVisible ? Visibility.Visible : Visibility.Hidden;
 			}
 		}

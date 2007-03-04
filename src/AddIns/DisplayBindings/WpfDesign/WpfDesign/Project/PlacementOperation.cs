@@ -6,6 +6,8 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
@@ -20,7 +22,7 @@ namespace ICSharpCode.WpfDesign
 	public sealed class PlacementOperation
 	{
 		readonly ChangeGroup changeGroup;
-		readonly DesignItem placedItem;
+		readonly ReadOnlyCollection<PlacementInformation> placedItems;
 		readonly PlacementType type;
 		readonly DesignItem oldContainer;
 		readonly IPlacementBehavior oldContainerBehavior;
@@ -30,10 +32,10 @@ namespace ICSharpCode.WpfDesign
 		
 		#region Properties
 		/// <summary>
-		/// The item being placed.
+		/// The items being placed.
 		/// </summary>
-		public DesignItem PlacedItem {
-			get { return placedItem; }
+		public ReadOnlyCollection<PlacementInformation> PlacedItems {
+			get { return placedItems; }
 		}
 		
 		/// <summary>
@@ -58,12 +60,6 @@ namespace ICSharpCode.WpfDesign
 		}
 		
 		/// <summary>
-		/// The position of the left/right/top/bottom side in the coordinate system of the parent container.
-		/// These values must be set by IPlacementBehavior.StartPlacement and are updated by the drag operation.
-		/// </summary>
-		public double Left, Right, Top, Bottom;
-		
-		/// <summary>
 		/// Gets the current container for the placement operation.
 		/// </summary>
 		public DesignItem CurrentContainer {
@@ -79,6 +75,7 @@ namespace ICSharpCode.WpfDesign
 		
 		#endregion
 		
+		#region Container changing
 		/// <summary>
 		/// Make the placed item switch the container.
 		/// This method assumes that you already have checked if changing the container is possible.
@@ -93,6 +90,12 @@ namespace ICSharpCode.WpfDesign
 			try {
 				currentContainerBehavior.LeaveContainer(this);
 				
+				System.Windows.Media.GeneralTransform transform = currentContainer.View.TransformToVisual(newContainer.View);
+				foreach (PlacementInformation info in placedItems) {
+					info.OriginalBounds = transform.TransformBounds(info.OriginalBounds);
+					info.Bounds = transform.TransformBounds(info.Bounds);
+				}
+				
 				currentContainer = newContainer;
 				currentContainerBehavior = newContainer.GetBehavior<IPlacementBehavior>();
 				
@@ -104,63 +107,82 @@ namespace ICSharpCode.WpfDesign
 				throw;
 			}
 		}
+		#endregion
 		
 		#region Start
 		/// <summary>
 		/// Starts a new placement operation that changes the placement of <paramref name="placedItem"/>.
 		/// </summary>
-		/// <param name="placedItem">The item to be placed.</param>
+		/// <param name="placedItems">The items to be placed.</param>
 		/// <param name="type">The type of the placement.</param>
 		/// <returns>A PlacementOperation object.</returns>
 		/// <remarks>
 		/// You MUST call either <see cref="Abort"/> or <see cref="Commit"/> on the returned PlacementOperation
 		/// once you are done with it, otherwise a ChangeGroup will be left open and Undo/Redo will fail to work!
 		/// </remarks>
-		public static PlacementOperation Start(DesignItem placedItem, PlacementType type)
+		public static PlacementOperation Start(ICollection<DesignItem> placedItems, PlacementType type)
 		{
-			if (placedItem == null)
-				throw new ArgumentNullException("placedItem");
+			if (placedItems == null)
+				throw new ArgumentNullException("placedItems");
 			if (type == null)
 				throw new ArgumentNullException("type");
-			PlacementOperation op = new PlacementOperation(placedItem, type);
+			DesignItem[] items = Func.ToArray(placedItems);
+			if (items.Length == 0)
+				throw new ArgumentException("placedItems.Length must be > 0");
+			
+			PlacementOperation op = new PlacementOperation(items, type);
 			try {
 				if (op.currentContainerBehavior == null)
 					throw new InvalidOperationException("Starting the operation is not supported");
-				op.Left = op.Top = op.Bottom = op.Right = double.NaN;
-				op.currentContainerBehavior.StartPlacement(op);
-				if (double.IsNaN(op.Left) || double.IsNaN(op.Top) || double.IsNaN(op.Bottom) || double.IsNaN(op.Right))
-					throw new InvalidOperationException("IPlacementBehavior.StartPlacement must set Left,Top,Right+Bottom to non-NAN values");
+				
+				op.currentContainerBehavior.BeginPlacement(op);
+				foreach (PlacementInformation info in op.placedItems) {
+					info.OriginalBounds = op.currentContainerBehavior.GetPosition(op, info.Item);
+					info.Bounds = info.OriginalBounds;
+				}
 			} catch {
 				op.changeGroup.Abort();
 				throw;
 			}
 			return op;
 		}
-		private PlacementOperation(DesignItem placedItem, PlacementType type)
+		private PlacementOperation(DesignItem[] items, PlacementType type)
 		{
-			this.placedItem = placedItem;
+			PlacementInformation[] information = new PlacementInformation[items.Length];
+			for (int i = 0; i < information.Length; i++) {
+				information[i] = new PlacementInformation(items[i], this);
+			}
+			this.placedItems = new ReadOnlyCollection<PlacementInformation>(information);
 			this.type = type;
 			
-			this.oldContainer = placedItem.Parent;
-			this.oldContainerBehavior = GetPlacementBehavior(placedItem);
+			this.oldContainer = items[0].Parent;
+			this.oldContainerBehavior = GetPlacementBehavior(items);
 			
 			this.currentContainer = oldContainer;
 			this.currentContainerBehavior = oldContainerBehavior;
-			this.changeGroup = placedItem.OpenGroup(type.ToString());
+			this.changeGroup = items[0].Context.OpenGroup(type.ToString(), items);
 		}
 		
 		/// <summary>
-		/// Gets the placement behavior associated with the specified item.
+		/// Gets the placement behavior associated with the specified items.
 		/// </summary>
-		public static IPlacementBehavior GetPlacementBehavior(DesignItem item)
+		public static IPlacementBehavior GetPlacementBehavior(ICollection<DesignItem> items)
 		{
-			if (item == null)
-				throw new ArgumentNullException("item");
-			if (item.Parent != null) {
-				return item.Parent.GetBehavior<IPlacementBehavior>();
-			} else {
-				return item.GetBehavior<IRootPlacementBehavior>();
+			if (items == null)
+				throw new ArgumentNullException("items");
+			if (items.Count == 0)
+				return null;
+			DesignItem parent = Func.First(items).Parent;
+			foreach (DesignItem item in Func.Skip(items, 1)) {
+				if (item.Parent != parent)
+					return null;
 			}
+			if (parent != null)
+				return parent.GetBehavior<IPlacementBehavior>();
+			else if (items.Count == 1)
+				return Func.First(items).GetBehavior<IRootPlacementBehavior>();
+			else
+				return null;
 		}
 		#endregion
 		
@@ -183,7 +205,7 @@ namespace ICSharpCode.WpfDesign
 				if (isCommitted)
 					throw new InvalidOperationException("PlacementOperation is committed.");
 				isAborted = true;
-				currentContainerBehavior.FinishPlacement(this);
+				currentContainerBehavior.EndPlacement(this);
 				changeGroup.Abort();
 			}
 		}
@@ -197,7 +219,7 @@ namespace ICSharpCode.WpfDesign
 			if (isAborted || isCommitted)
 				throw new InvalidOperationException("PlacementOperation is already aborted/committed.");
 			isCommitted = true;
-			currentContainerBehavior.FinishPlacement(this);
+			currentContainerBehavior.EndPlacement(this);
 			changeGroup.Commit();
 		}
 		#endregion

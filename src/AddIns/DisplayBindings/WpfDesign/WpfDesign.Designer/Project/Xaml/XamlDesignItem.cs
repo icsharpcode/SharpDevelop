@@ -95,16 +95,6 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			}
 		}
 		
-		public override ChangeGroup OpenGroup(string changeGroupTitle)
-		{
-			UndoService undoService = this.Services.GetService<UndoService>();
-			if (undoService == null)
-				throw new ServiceRequiredException(typeof(UndoService));
-			UndoTransaction g = undoService.StartTransaction(new DesignItem[] { this });
-			g.Title = changeGroupTitle;
-			return g;
-		}
-		
 		internal void SetView(UIElement newView)
 		{
 			_view = newView;

@@ -63,6 +63,7 @@
     <Compile Include="Adorners\AdornerProvider.cs" />
     <Compile Include="Adorners\AdornerProviderClasses.cs" />
     <Compile Include="Adorners\RelativePlacement.cs" />
+    <Compile Include="PlacementInformation.cs" />
     <Compile Include="PlacementBehavior.cs" />
     <Compile Include="MouseInteraction.cs" />
     <Compile Include="ChangeGroup.cs" />

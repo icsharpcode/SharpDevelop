@@ -72,10 +72,15 @@ namespace ICSharpCode.WpfDesign
 		}
 		
 		/// <summary>
-		/// Opens a new change group used to batch several changes. ChangeGroups work as transactions and
-		/// are used to support the Undo/Redo system.
+		/// Opens a new change group used to batch several changes.
+		/// ChangeGroups work as transactions and are used to support the Undo/Redo system.
+		/// Note: the ChangeGroup applies to the whole <see cref="DesignContext"/>, not just to
+		/// this item!
 		/// </summary>
-		public abstract ChangeGroup OpenGroup(string changeGroupTitle);
+		public ChangeGroup OpenGroup(string changeGroupTitle)
+		{
+			return this.Context.OpenGroup(changeGroupTitle, new DesignItem[] { this });
+		}
 		
 		#region Extensions support
 		private struct ExtensionEntry

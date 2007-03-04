@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.Windows;
 using ICSharpCode.WpfDesign.Extensions;
 
@@ -25,7 +26,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		}
 		
 		/// <inherits/>
-		public bool CanPlace(DesignItem child, PlacementType type, PlacementAlignment position)
+		public bool CanPlace(ICollection<DesignItem> children, PlacementType type, PlacementAlignment position)
 		{
 			return type == PlacementType.Resize &&
 				(position == PlacementAlignments.Right
@@ -33,14 +34,22 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				 || position == PlacementAlignments.Bottom);
 		}
 		
+		
 		/// <inherits/>
-		public void StartPlacement(PlacementOperation operation)
+		public void BeginPlacement(PlacementOperation operation)
 		{
-			UIElement element = (UIElement)operation.PlacedItem.Component;
-			operation.Left = 0;
-			operation.Top = 0;
-			operation.Right = GetWidth(element);
-			operation.Bottom = GetHeight(element);
+		}
+		
+		/// <inherits/>
+		public void EndPlacement(PlacementOperation operation)
+		{
+		}
+		
+		/// <inherits/>
+		public Rect GetPosition(PlacementOperation operation, DesignItem childItem)
+		{
+			UIElement child = childItem.View;
+			return new Rect(0, 0, GetWidth(child), GetHeight(child));
 		}
 		
 		static double GetWidth(UIElement element)
@@ -62,20 +71,16 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		}
 		
 		/// <inherits/>
-		public void UpdatePlacement(PlacementOperation operation)
+		public void SetPosition(PlacementInformation info)
 		{
-			UIElement element = (UIElement)operation.PlacedItem.Component;
-			if (operation.Right != GetWidth(element)) {
-				operation.PlacedItem.Properties[FrameworkElement.WidthProperty].SetValue(operation.Right);
+			UIElement element = info.Item.View;
+			Rect newPosition = info.Bounds;
+			if (newPosition.Right != GetWidth(element)) {
+				info.Item.Properties[FrameworkElement.WidthProperty].SetValue(newPosition.Right);
 			}
-			if (operation.Bottom != GetHeight(element)) {
-				operation.PlacedItem.Properties[FrameworkElement.HeightProperty].SetValue(operation.Bottom);
+			if (newPosition.Bottom != GetHeight(element)) {
+				info.Item.Properties[FrameworkElement.HeightProperty].SetValue(newPosition.Bottom);
 			}
-		}
-		
-		/// <inherits/>
-		public void FinishPlacement(PlacementOperation operation)
-		{
 		}
 		
 		/// <inherits/>

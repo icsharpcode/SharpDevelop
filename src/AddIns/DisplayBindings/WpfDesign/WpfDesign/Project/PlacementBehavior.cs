@@ -6,10 +6,8 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.Windows;
-using System.Windows.Input;
-
-using ICSharpCode.WpfDesign.Adorners;
 
 namespace ICSharpCode.WpfDesign
 {
@@ -22,17 +20,27 @@ namespace ICSharpCode.WpfDesign
 		/// <summary>
 		/// Gets if the child element can be resized.
 		/// </summary>
-		bool CanPlace(DesignItem child, PlacementType type, PlacementAlignment position);
+		bool CanPlace(ICollection<DesignItem> childItems, PlacementType type, PlacementAlignment position);
 		
 		/// <summary>
-		/// Starts placement mode of the child element specified in the placement operation.
+		/// Starts placement mode for this container.
 		/// </summary>
-		void StartPlacement(PlacementOperation operation);
+		void BeginPlacement(PlacementOperation operation);
+		
+		/// <summary>
+		/// Ends placement mode for this container.
+		/// </summary>
+		void EndPlacement(PlacementOperation operation);
+		
+		/// <summary>
+		/// Gets the original position of the child item.
+		/// </summary>
+		Rect GetPosition(PlacementOperation operation, DesignItem child);
 		
 		/// <summary>
 		/// Updates the placement of the element specified in the placement operation.
 		/// </summary>
-		void UpdatePlacement(PlacementOperation operation);
+		void SetPosition(PlacementInformation info);
 		
 		/// <summary>
 		/// Gets if leaving this container is allowed for the specified operation.
@@ -40,7 +48,7 @@ namespace ICSharpCode.WpfDesign
 		bool CanLeaveContainer(PlacementOperation operation);
 		
 		/// <summary>
-		/// Remove the placed child from this container.
+		/// Remove the placed children from this container.
 		/// </summary>
 		void LeaveContainer(PlacementOperation operation);
 		
@@ -50,15 +58,9 @@ namespace ICSharpCode.WpfDesign
 		bool CanEnterContainer(PlacementOperation operation);
 		
 		/// <summary>
-		/// Let the placed child enter this container.
+		/// Let the placed children enter this container.
 		/// </summary>
 		void EnterContainer(PlacementOperation operation);
-		
-		/// <summary>
-		/// Finishes placement of a child element. This method is called both for aborted
-		/// and committed placement operations.
-		/// </summary>
-		void FinishPlacement(PlacementOperation operation);
 	}
 	
 	/// <summary>

@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -31,21 +32,16 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		GrayOutDesignerExceptActiveArea grayOut;
 		
 		/// <inherits/>
-		public bool CanPlace(DesignItem child, PlacementType type, PlacementAlignment position)
+		public bool CanPlace(ICollection<DesignItem> child, PlacementType type, PlacementAlignment position)
 		{
 			return type == PlacementType.Resize || type == PlacementType.Move;
 		}
 		
 		/// <inherits/>
-		public void StartPlacement(PlacementOperation operation)
+		public Rect GetPosition(PlacementOperation operation, DesignItem childItem)
 		{
-			UIElement child = (UIElement)operation.PlacedItem.Component;
-			operation.Left = GetLeft(child);
-			operation.Top = GetTop(child);
-			operation.Right = operation.Left + GetWidth(child);
-			operation.Bottom = operation.Top + GetHeight(child);
-			
-			BeginPlacement();
+			UIElement child = childItem.View;
+			return new Rect(GetLeft(child), GetTop(child), GetWidth(child), GetHeight(child));
 		}
 		
 		static double GetLeft(UIElement element)
@@ -85,36 +81,32 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		}
 		
 		/// <inherits/>
-		public void UpdatePlacement(PlacementOperation operation)
+		public void SetPosition(PlacementInformation info)
 		{
-			DesignItem item = operation.PlacedItem;
-			UIElement child = (UIElement)item.Component;
-			if (operation.Left != GetLeft(child)) {
-				item.Properties.GetAttachedProperty(Canvas.LeftProperty).SetValue(operation.Left);
+			UIElement child = info.Item.View;
+			Rect newPosition = info.Bounds;
+			if (newPosition.Left != GetLeft(child)) {
+				info.Item.Properties.GetAttachedProperty(Canvas.LeftProperty).SetValue(newPosition.Left);
 			}
-			if (operation.Top != GetTop(child)) {
-				item.Properties.GetAttachedProperty(Canvas.TopProperty).SetValue(operation.Top);
+			if (newPosition.Top != GetTop(child)) {
+				info.Item.Properties.GetAttachedProperty(Canvas.TopProperty).SetValue(newPosition.Top);
 			}
-			if (operation.Right - operation.Left != GetWidth(child)) {
-				item.Properties.GetProperty(FrameworkElement.WidthProperty).SetValue(operation.Right - operation.Left);
+			if (newPosition.Width != GetWidth(child)) {
+				info.Item.Properties.GetProperty(FrameworkElement.WidthProperty).SetValue(newPosition.Right - newPosition.Left);
 			}
-			if (operation.Bottom - operation.Top != GetHeight(child)) {
-				item.Properties.GetProperty(FrameworkElement.HeightProperty).SetValue(operation.Bottom - operation.Top);
+			if (newPosition.Height != GetHeight(child)) {
+				info.Item.Properties.GetProperty(FrameworkElement.HeightProperty).SetValue(newPosition.Bottom - newPosition.Top);
 			}
 		}
 		
 		/// <inherits/>
-		public void FinishPlacement(PlacementOperation operation)
-		{
-			EndPlacement();
-		}
-		
-		void BeginPlacement()
+		public void BeginPlacement(PlacementOperation op)
 		{
 			GrayOutDesignerExceptActiveArea.Start(ref grayOut, this.Services, this.ExtendedItem.View);
 		}
 		
-		void EndPlacement()
+		/// <inherits/>
+		public void EndPlacement(PlacementOperation op)
 		{
 			GrayOutDesignerExceptActiveArea.Stop(ref grayOut);
 		}
@@ -128,11 +120,12 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		/// <inherits/>
 		public void LeaveContainer(PlacementOperation operation)
 		{
-			EndPlacement();
-			
-			this.ExtendedItem.Properties["Children"].CollectionElements.Remove(operation.PlacedItem);
-			operation.PlacedItem.Properties.GetAttachedProperty(Canvas.LeftProperty).Reset();
-			operation.PlacedItem.Properties.GetAttachedProperty(Canvas.TopProperty).Reset();
+			EndPlacement(operation);
+			foreach (PlacementInformation info in operation.PlacedItems) {
+				this.ExtendedItem.Properties["Children"].CollectionElements.Remove(info.Item);
+				info.Item.Properties.GetAttachedProperty(Canvas.LeftProperty).Reset();
+				info.Item.Properties.GetAttachedProperty(Canvas.TopProperty).Reset();
+			}
 		}
 		
 		/// <inherits/>
@@ -144,10 +137,11 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		/// <inherits/>
 		public void EnterContainer(PlacementOperation operation)
 		{
-			this.ExtendedItem.Properties["Children"].CollectionElements.Add(operation.PlacedItem);
-			UpdatePlacement(operation);
-			
-			BeginPlacement();
+			foreach (PlacementInformation info in operation.PlacedItems) {
+				this.ExtendedItem.Properties["Children"].CollectionElements.Add(info.Item);
+				SetPosition(info);
+			}
+			BeginPlacement(operation);
 		}
 	}
 }

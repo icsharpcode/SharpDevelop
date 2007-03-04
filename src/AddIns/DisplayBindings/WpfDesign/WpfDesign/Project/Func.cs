@@ -34,5 +34,43 @@ namespace ICSharpCode.WpfDesign
 				}
 			}
 		}
+		
+		/// <summary>
+		/// Returns the first element from <paramref name="input"/>.
+		/// </summary>
+		public static T First<T>(IEnumerable<T> input)
+		{
+			if (input == null)
+				throw new ArgumentNullException("input");
+			foreach (T item in input) {
+				return item;
+			}
+			throw new ArgumentException("input must not be an empty collection", "input");
+		}
+		
+		/// <summary>
+		/// Skips the first <paramref name="skipCount"/> items in input and returns the rest.
+		/// </summary>
+		public static IEnumerable<T> Skip<T>(IEnumerable<T> input, long skipCount)
+		{
+			if (input == null)
+				throw new ArgumentNullException("input");
+			if (skipCount < 0)
+				throw new ArgumentOutOfRangeException("skipCount", skipCount, "skipCount must be non-negative.");
+			using (IEnumerator<T> enumerator = input.GetEnumerator()) {
+				if (skipCount != 0) {
+					long i = 0;
+					while (enumerator.MoveNext()) {
+						// skip item
+						if (++i == skipCount)
+							break;
+					}
+					if (i != skipCount) yield break; // MoveNext returned false, don't call it again
+				}
+				while (enumerator.MoveNext()) {
+					yield return enumerator.Current;
+				}
+			}
+		}
 	}
 }

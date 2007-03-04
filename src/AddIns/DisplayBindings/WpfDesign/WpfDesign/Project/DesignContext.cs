@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Xml;
 
@@ -45,5 +46,11 @@ namespace ICSharpCode.WpfDesign
 		/// Save the designed elements as XML.
 		/// </summary>
 		public abstract void Save(XmlWriter writer);
+		
+		/// <summary>
+		/// Opens a new change group used to batch several changes.
+		/// ChangeGroups work as transactions and are used to support the Undo/Redo system.
+		/// </summary>
+		public abstract ChangeGroup OpenGroup(string changeGroupTitle, ICollection<DesignItem> affectedItems);
 	}
 }

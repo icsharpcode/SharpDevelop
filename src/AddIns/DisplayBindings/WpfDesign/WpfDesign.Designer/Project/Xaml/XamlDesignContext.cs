@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.Xml;
 using ICSharpCode.WpfDesign.XamlDom;
 using ICSharpCode.WpfDesign.Designer.Services;
@@ -83,6 +84,23 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 		/// </summary>
 		public override DesignItem RootItem {
 			get { return _rootItem; }
+		}
+		
+		/// <summary>
+		/// Opens a new change group used to batch several changes.
+		/// ChangeGroups work as transactions and are used to support the Undo/Redo system.
+		/// </summary>
+		public override ChangeGroup OpenGroup(string changeGroupTitle, ICollection<DesignItem> affectedItems)
+		{
+			if (affectedItems == null)
+				throw new ArgumentNullException("affectedItems");
+			
+			UndoService undoService = this.Services.GetService<UndoService>();
+			if (undoService == null)
+				throw new ServiceRequiredException(typeof(UndoService));
+			UndoTransaction g = undoService.StartTransaction(affectedItems);
+			g.Title = changeGroupTitle;
+			return g;
 		}
 	}
 }

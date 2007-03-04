@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
@@ -20,6 +21,7 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 	{
 		DesignItem clickedOn;
 		PlacementOperation operation;
+		ICollection<DesignItem> selectedItems;
 		
 		internal DragMoveMouseGesture(DesignItem clickedOn)
 		{
@@ -31,19 +33,17 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 				this.positionRelativeTo = clickedOn.Parent.View;
 			else
 				this.positionRelativeTo = clickedOn.View;
+			
+			selectedItems = clickedOn.Services.Selection.SelectedItems;
+			if (!selectedItems.Contains(clickedOn))
+				selectedItems = new DesignItem[0];
 		}
-		
-		double startLeft, startRight, startTop, startBottom;
 		
 		protected override void OnDragStarted()
 		{
-			IPlacementBehavior b = PlacementOperation.GetPlacementBehavior(clickedOn);
-			if (b != null && b.CanPlace(clickedOn, PlacementType.Move, PlacementAlignments.TopLeft)) {
-				operation = PlacementOperation.Start(clickedOn, PlacementType.Move);
-				startLeft = operation.Left;
-				startRight = operation.Right;
-				startTop = operation.Top;
-				startBottom = operation.Bottom;
+			IPlacementBehavior b = PlacementOperation.GetPlacementBehavior(selectedItems);
+			if (b != null && b.CanPlace(selectedItems, PlacementType.Move, PlacementAlignments.TopLeft)) {
+				operation = PlacementOperation.Start(selectedItems, PlacementType.Move);
 			}
 		}
 		
@@ -63,11 +63,13 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 				}
 				
 				Vector v = e.GetPosition(positionRelativeTo) - startPoint;
-				operation.Left = startLeft + v.X;
-				operation.Right = startRight + v.X;
-				operation.Top = startTop + v.Y;
-				operation.Bottom = startBottom + v.Y;
-				operation.CurrentContainerBehavior.UpdatePlacement(operation);
+				foreach (PlacementInformation info in operation.PlacedItems) {
+					info.Bounds = new Rect(info.OriginalBounds.Left + v.X,
+					                       info.OriginalBounds.Top + v.Y,
+					                       info.OriginalBounds.Width,
+					                       info.OriginalBounds.Height);
+					operation.CurrentContainerBehavior.SetPosition(info);
+				}
 			}
 		}
 		
