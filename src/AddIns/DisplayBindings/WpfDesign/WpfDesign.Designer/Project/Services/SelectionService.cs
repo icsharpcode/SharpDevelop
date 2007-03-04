@@ -77,10 +77,16 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 				}
 				
 				selectionType &= ~SelectionTypes.Primary;
-				// if selectionType was only Primary, keep current selection; but if new primary selection
-				// is not yet selected, replace existing selection with new
-				if (selectionType == 0 && IsComponentSelected(newPrimarySelection) == false) {
-					selectionType = SelectionTypes.Replace;
+				if (selectionType == 0) {
+					// if selectionType was only Primary, and components has only one item that
+					// changes the primary selection was changed to an already-selected item,
+					// then we keep the current selection.
+					// otherwise, we replace it
+					if (components.Count == 1 && IsComponentSelected(newPrimarySelection)) {
+						// keep selectionType = 0 -> don't change the selection
+					} else {
+						selectionType = SelectionTypes.Replace;
+					}
 				}
 			}
 			

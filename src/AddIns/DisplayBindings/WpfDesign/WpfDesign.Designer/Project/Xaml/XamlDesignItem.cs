@@ -86,6 +86,20 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			}
 		}
 		
+		public override DesignItemProperty ParentProperty {
+			get {
+				DesignItem parent = this.Parent;
+				if (parent == null)
+					return null;
+				XamlProperty prop = _xamlObject.ParentProperty;
+				if (prop.IsAttached) {
+					return parent.Properties.GetAttachedProperty(prop.PropertyTargetType, prop.PropertyName);
+				} else {
+					return parent.Properties.GetProperty(prop.PropertyName);
+				}
+			}
+		}
+		
 		public override UIElement View {
 			get {
 				if (_view != null)

@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Windows;
 
 namespace ICSharpCode.WpfDesign
@@ -15,8 +16,9 @@ namespace ICSharpCode.WpfDesign
 	/// <summary>
 	/// Represents a property of a DesignItem.
 	/// All changes done via the DesignItemProperty class are represented in the underlying model (e.g. XAML).
-	/// This also ensures that
-	/// Changes directly done to control instances might not be reflected in the model.
+	/// All such changes are recorded in the currently running designer transaction (<see cref="ChangeGroup"/>),
+	/// enabling Undo/Redo support.
+	/// Warning: Changes directly done to control instances might not be reflected in the model.
 	/// </summary>
 	public abstract class DesignItemProperty
 	{
@@ -109,10 +111,14 @@ namespace ICSharpCode.WpfDesign
 		}
 		
 		/// <summary>
-		/// Gets the property with the specified name.
+		/// Gets the design item property representing the specified dependency property.
+		/// The property must not be an attached property.
 		/// </summary>
 		public DesignItemProperty this[DependencyProperty dependencyProperty] {
-			get { return GetProperty(dependencyProperty); }
+			get {
+				Debug.Assert(DependencyPropertyDescriptor.FromProperty(dependencyProperty, dependencyProperty.OwnerType).IsAttached == false);
+				return GetProperty(dependencyProperty);
+			}
 		}
 		
 		/// <summary>

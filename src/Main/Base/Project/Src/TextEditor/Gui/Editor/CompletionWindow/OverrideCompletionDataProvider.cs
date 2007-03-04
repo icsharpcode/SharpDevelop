@@ -59,6 +59,14 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			return properties.ToArray();
 		}
 		
+		public override CompletionDataProviderKeyResult ProcessKey(char key)
+		{
+			if (key == '(')
+				return CompletionDataProviderKeyResult.NormalKey;
+			else
+				return base.ProcessKey(key);
+		}
+		
 		public override ICompletionData[] GenerateCompletionData(string fileName, TextArea textArea, char charTyped)
 		{
 			ParseInformation parseInfo = ParserService.GetParseInformation(fileName);
@@ -87,8 +95,9 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		}
 		
 		public OverrideCompletionData(IMethod method)
-			: base(GetName(method, ConversionFlags.None),
+			: base(GetName(method, ConversionFlags.ShowParameterList),
 			       "override " + GetName(method, ConversionFlags.ShowReturnType
+			                             | ConversionFlags.ShowParameterList
 			                             | ConversionFlags.ShowAccessibility)
 			       + "\n\n" + method.Documentation,
 			       ClassBrowserIconService.GetIcon(method))

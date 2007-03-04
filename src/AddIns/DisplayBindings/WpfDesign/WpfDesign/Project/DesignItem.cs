@@ -29,7 +29,7 @@ namespace ICSharpCode.WpfDesign
 		/// <summary>
 		/// Gets the component type of this design site.
 		/// This value may be different from Component.GetType() if a CustomInstanceFactory created
-		/// an object using a different type.
+		/// an object using a different type (e.g. ComponentType=Window but Component.GetType()=WindowClone).
 		/// </summary>
 		public abstract Type ComponentType { get; }
 		
@@ -47,6 +47,11 @@ namespace ICSharpCode.WpfDesign
 		/// Gets the parent design item.
 		/// </summary>
 		public abstract DesignItem Parent { get; }
+		
+		/// <summary>
+		/// Gets the property where this DesignItem is used as a value.
+		/// </summary>
+		public abstract DesignItemProperty ParentProperty { get; }
 		
 		/// <summary>
 		/// Gets properties set on the design item.

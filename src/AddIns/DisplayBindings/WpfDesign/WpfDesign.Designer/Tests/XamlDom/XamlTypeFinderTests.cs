@@ -5,14 +5,15 @@
 //     <version>$Revision$</version>
 // </file>
 
-using NUnit.Framework;
 using System;
-using System.Collections.Generic;
-using System.Windows.Markup;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Markup;
 
-namespace ICSharpCode.WpfDesign.XamlDom.Tests
+using ICSharpCode.WpfDesign.XamlDom;
+using NUnit.Framework;
+
+namespace ICSharpCode.WpfDesign.Tests.XamlDom
 {
 	[TestFixture]
 	public class XamlTypeFinderTests : TestHelper
@@ -53,11 +54,13 @@ namespace ICSharpCode.WpfDesign.XamlDom.Tests
 			                typeFinder.GetType(XamlConstants.XamlNamespace, "NullExtension"));
 		}
 		
+		public const string XamlDomTestsNamespace = "clr-namespace:ICSharpCode.WpfDesign.Tests.XamlDom;assembly=ICSharpCode.WpfDesign.Tests";
+		
 		[Test]
 		public void FindExampleClass()
 		{
 			Assert.AreEqual(typeof(ExampleClass),
-			                typeFinder.GetType("clr-namespace:ICSharpCode.WpfDesign.XamlDom.Tests;assembly=ICSharpCode.WpfDesign.XamlDom.Tests",
+			                typeFinder.GetType(XamlDomTestsNamespace,
 			                                   "ExampleClass"));
 		}
 	}

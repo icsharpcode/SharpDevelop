@@ -79,12 +79,6 @@ namespace ICSharpCode.TextEditor.Undo
 			undostack.Push(new UndoQueue(undostack, actionCount));
 		}
 		
-		[Obsolete("Use CombineLast(int x) instead!")]
-		public void UndoLast(int x)
-		{
-			CombineLast(x);
-		}
-		
 		/// <summary>
 		/// Call this method to undo the last operation on the stack
 		/// </summary>

@@ -5,10 +5,10 @@
 //     <version>$Revision$</version>
 // </file>
 
-using NUnit.Framework;
 using System;
+using NUnit.Framework;
 
-namespace ICSharpCode.WpfDesign.XamlDom.Tests
+namespace ICSharpCode.WpfDesign.Tests.XamlDom
 {
 	[TestFixture]
 	public class WhitespaceTests : TestHelper
@@ -19,7 +19,7 @@ namespace ICSharpCode.WpfDesign.XamlDom.Tests
 			TestLoading(@"
 <t:ExampleClass
   xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
-  xmlns:t=""clr-namespace:ICSharpCode.WpfDesign.XamlDom.Tests;assembly=ICSharpCode.WpfDesign.XamlDom.Tests""
+  xmlns:t=""" + XamlTypeFinderTests.XamlDomTestsNamespace + @"""
   xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
       
    a test string
@@ -34,7 +34,7 @@ namespace ICSharpCode.WpfDesign.XamlDom.Tests
 			TestLoading(@"
 <t:ExampleClass
   xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
-  xmlns:t=""clr-namespace:ICSharpCode.WpfDesign.XamlDom.Tests;assembly=ICSharpCode.WpfDesign.XamlDom.Tests""
+  xmlns:t=""" + XamlTypeFinderTests.XamlDomTestsNamespace + @"""
   xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
    a test               string
 </t:ExampleClass>
@@ -47,7 +47,7 @@ namespace ICSharpCode.WpfDesign.XamlDom.Tests
 			TestLoading(@"
 <t:ExampleClass
   xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
-  xmlns:t=""clr-namespace:ICSharpCode.WpfDesign.XamlDom.Tests;assembly=ICSharpCode.WpfDesign.XamlDom.Tests""
+  xmlns:t=""" + XamlTypeFinderTests.XamlDomTestsNamespace + @"""
   xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
    a test
    string
@@ -61,7 +61,7 @@ namespace ICSharpCode.WpfDesign.XamlDom.Tests
 			TestLoading(@"
 <t:ExampleClass
   xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
-  xmlns:t=""clr-namespace:ICSharpCode.WpfDesign.XamlDom.Tests;assembly=ICSharpCode.WpfDesign.XamlDom.Tests""
+  xmlns:t=""" + XamlTypeFinderTests.XamlDomTestsNamespace + @"""
   xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" xml:space=""preserve"">
       
    a test string
@@ -76,7 +76,7 @@ namespace ICSharpCode.WpfDesign.XamlDom.Tests
 			TestLoading(@"
 <t:ExampleClass
   xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
-  xmlns:t=""clr-namespace:ICSharpCode.WpfDesign.XamlDom.Tests;assembly=ICSharpCode.WpfDesign.XamlDom.Tests""
+  xmlns:t=""" + XamlTypeFinderTests.XamlDomTestsNamespace + @"""
   xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" xml:space=""preserve"">
    a test               string
 </t:ExampleClass>
@@ -89,7 +89,7 @@ namespace ICSharpCode.WpfDesign.XamlDom.Tests
 			TestLoading(@"
 <t:ExampleClass
   xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
-  xmlns:t=""clr-namespace:ICSharpCode.WpfDesign.XamlDom.Tests;assembly=ICSharpCode.WpfDesign.XamlDom.Tests""
+  xmlns:t=""" + XamlTypeFinderTests.XamlDomTestsNamespace + @"""
   xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" xml:space=""preserve"">
    a test
    string

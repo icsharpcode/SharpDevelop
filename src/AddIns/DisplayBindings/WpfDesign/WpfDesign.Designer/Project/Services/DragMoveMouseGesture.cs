@@ -43,6 +43,9 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 		{
 			IPlacementBehavior b = PlacementOperation.GetPlacementBehavior(selectedItems);
 			if (b != null && b.CanPlace(selectedItems, PlacementType.Move, PlacementAlignments.TopLeft)) {
+				List<DesignItem> sortedSelectedItems = new List<DesignItem>(selectedItems);
+				sortedSelectedItems.Sort(ModelTools.ComparePositionInModelFile);
+				selectedItems = sortedSelectedItems;
 				operation = PlacementOperation.Start(selectedItems, PlacementType.Move);
 			}
 		}

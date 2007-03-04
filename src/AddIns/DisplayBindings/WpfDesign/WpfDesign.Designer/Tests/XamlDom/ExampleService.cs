@@ -8,7 +8,7 @@
 using System;
 using System.Windows;
 
-namespace ICSharpCode.WpfDesign.XamlDom.Tests
+namespace ICSharpCode.WpfDesign.Tests.XamlDom
 {
 	/// <summary>
 	/// Provides an example attached property.

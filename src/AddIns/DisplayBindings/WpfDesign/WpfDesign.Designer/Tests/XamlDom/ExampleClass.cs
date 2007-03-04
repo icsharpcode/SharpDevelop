@@ -9,7 +9,7 @@ using System;
 using System.ComponentModel;
 using System.Windows.Markup;
 
-namespace ICSharpCode.WpfDesign.XamlDom.Tests
+namespace ICSharpCode.WpfDesign.Tests.XamlDom
 {
 	[ContentProperty("StringProp")]
 	public class ExampleClass : ISupportInitialize

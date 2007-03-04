@@ -4,8 +4,8 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <OutputType>Library</OutputType>
-    <RootNamespace>ICSharpCode.WpfDesign.Designer.Tests</RootNamespace>
-    <AssemblyName>ICSharpCode.WpfDesign.Designer.Tests</AssemblyName>
+    <RootNamespace>ICSharpCode.WpfDesign.Tests</RootNamespace>
+    <AssemblyName>ICSharpCode.WpfDesign.Tests</AssemblyName>
     <OutputPath>..\..\..\..\..\..\bin\UnitTests\</OutputPath>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
@@ -49,11 +49,24 @@
       <Link>GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="ModelTestHelper.cs" />
-    <Compile Include="ModelTests.cs" />
+    <Compile Include="Designer\ModelTestHelper.cs" />
+    <Compile Include="Designer\ModelTests.cs" />
+    <Compile Include="XamlDom\ExampleClass.cs" />
+    <Compile Include="XamlDom\ExampleClassContainer.cs" />
+    <Compile Include="XamlDom\ExampleService.cs" />
+    <Compile Include="XamlDom\SamplesTests.cs" />
+    <Compile Include="XamlDom\SimpleLoadTests.cs" />
+    <Compile Include="XamlDom\SystemTypesLoadTest.cs" />
+    <Compile Include="XamlDom\TestHelper.cs" />
+    <Compile Include="XamlDom\WhitespaceTests.cs" />
+    <Compile Include="XamlDom\XamlTypeFinderTests.cs" />
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\WpfDesign.XamlDom\Project\WpfDesign.XamlDom.csproj">
+      <Project>{88DA149F-21B2-48AB-82C4-28FB6BDFD783}</Project>
+      <Name>WpfDesign.XamlDom</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\WpfDesign\Project\WpfDesign.csproj">
       <Project>{66A378A1-E9F4-4AD5-8946-D0EC06C2902F}</Project>
       <Name>WpfDesign</Name>
@@ -62,5 +75,7 @@
       <Project>{78CC29AC-CC79-4355-B1F2-97936DF198AC}</Project>
       <Name>WpfDesign.Designer</Name>
     </ProjectReference>
+    <Folder Include="Designer" />
+    <Folder Include="XamlDom" />
   </ItemGroup>
 </Project>

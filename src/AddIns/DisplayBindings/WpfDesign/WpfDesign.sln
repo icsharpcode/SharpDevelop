@@ -4,15 +4,13 @@ Microsoft Visual Studio Solution File, Format Version 9.00
 # SharpDevelop 2.1.0.2382
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfDesign.XamlDom", "WpfDesign.XamlDom\Project\WpfDesign.XamlDom.csproj", "{88DA149F-21B2-48AB-82C4-28FB6BDFD783}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfDesign.XamlDom.Tests", "WpfDesign.XamlDom\Tests\WpfDesign.XamlDom.Tests.csproj", "{BD62F5BC-115F-4339-8B5B-96C7A21DC67E}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfDesign.Designer", "WpfDesign.Designer\Project\WpfDesign.Designer.csproj", "{78CC29AC-CC79-4355-B1F2-97936DF198AC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StandaloneDesigner", "StandaloneDesigner\StandaloneDesigner.csproj", "{84D65E9C-B66C-44C3-95FD-445EFE3ED322}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfDesign", "WpfDesign\Project\WpfDesign.csproj", "{66A378A1-E9F4-4AD5-8946-D0EC06C2902F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfDesign.Designer.Tests", "WpfDesign.Designer\Tests\WpfDesign.Designer.Tests.csproj", "{943DBBB3-E84E-4CF4-917C-C05AFA8743C1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfDesign.Tests", "WpfDesign.Designer\Tests\WpfDesign.Tests.csproj", "{943DBBB3-E84E-4CF4-917C-C05AFA8743C1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -13,10 +13,11 @@ using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using NUnit.Framework;
+using ICSharpCode.WpfDesign.Designer;
 using ICSharpCode.WpfDesign.Designer.Xaml;
 using ICSharpCode.WpfDesign.Designer.Services;
 
-namespace ICSharpCode.WpfDesign.Designer.Tests
+namespace ICSharpCode.WpfDesign.Tests.Designer
 {
 	[TestFixture]
 	public class ModelTests : ModelTestHelper

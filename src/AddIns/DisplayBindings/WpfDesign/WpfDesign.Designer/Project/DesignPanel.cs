@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
@@ -144,6 +145,7 @@ namespace ICSharpCode.WpfDesign.Designer
 			this.Focusable = true;
 			this.VerticalAlignment = VerticalAlignment.Top;
 			this.HorizontalAlignment = HorizontalAlignment.Left;
+			DesignerProperties.SetIsInDesignMode(this, true);
 			
 			_eatAllHitTestRequests = new EatAllHitTestRequests();
 			_adornerLayer = new AdornerLayer(this);

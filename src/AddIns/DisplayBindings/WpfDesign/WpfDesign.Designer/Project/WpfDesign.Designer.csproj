@@ -71,6 +71,7 @@
     <Compile Include="Controls\TypeEditors\BrushEditor.cs" />
     <Compile Include="Controls\WindowClone.cs" />
     <Compile Include="DesignPanel.cs" />
+    <Compile Include="ModelTools.cs" />
     <Compile Include="Extensions\CanvasChildResizeSupport.cs" />
     <Compile Include="Extensions\PanelInstanceFactory.cs" />
     <Compile Include="Extensions\PanelSelectionHandler.cs" />

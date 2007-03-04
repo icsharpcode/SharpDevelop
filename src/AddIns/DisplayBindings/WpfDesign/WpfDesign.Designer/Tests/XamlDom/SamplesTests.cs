@@ -8,7 +8,7 @@
 using System;
 using NUnit.Framework;
 
-namespace ICSharpCode.WpfDesign.XamlDom.Tests
+namespace ICSharpCode.WpfDesign.Tests.XamlDom
 {
 	[TestFixture]
 	public class SamplesTests : TestHelper

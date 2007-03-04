@@ -15,9 +15,10 @@ using System.Windows.Media;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using NUnit.Framework;
+using ICSharpCode.WpfDesign.Designer;
 using ICSharpCode.WpfDesign.Designer.Xaml;
 
-namespace ICSharpCode.WpfDesign.Designer.Tests
+namespace ICSharpCode.WpfDesign.Tests.Designer
 {
 	/// <summary>
 	/// Base class for model tests.

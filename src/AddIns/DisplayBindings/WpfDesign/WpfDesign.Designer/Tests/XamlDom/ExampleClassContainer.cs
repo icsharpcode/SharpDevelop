@@ -7,10 +7,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Windows.Markup;
 
-namespace ICSharpCode.WpfDesign.XamlDom.Tests
+namespace ICSharpCode.WpfDesign.Tests.XamlDom
 {
 	[ContentProperty("List")]
 	public class ExampleClassContainer : ExampleClass

@@ -6,15 +6,17 @@
 // </file>
 
 using System;
-using System.Diagnostics;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Text;
 using System.Windows.Markup;
 using System.Xml;
-using System.IO;
+
+using ICSharpCode.WpfDesign.XamlDom;
 using NUnit.Framework;
 
-namespace ICSharpCode.WpfDesign.XamlDom.Tests
+namespace ICSharpCode.WpfDesign.Tests.XamlDom
 {
 	public class TestHelper
 	{

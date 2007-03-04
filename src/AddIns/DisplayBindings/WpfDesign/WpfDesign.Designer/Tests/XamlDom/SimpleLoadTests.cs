@@ -5,10 +5,10 @@
 //     <version>$Revision$</version>
 // </file>
 
-using NUnit.Framework;
 using System;
+using NUnit.Framework;
 
-namespace ICSharpCode.WpfDesign.XamlDom.Tests
+namespace ICSharpCode.WpfDesign.Tests.XamlDom
 {
 	[TestFixture]
 	public class SimpleLoadTests : TestHelper
@@ -54,7 +54,7 @@ namespace ICSharpCode.WpfDesign.XamlDom.Tests
 			TestLoading(@"
 <t:ExampleClass
   xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
-  xmlns:t=""clr-namespace:ICSharpCode.WpfDesign.XamlDom.Tests;assembly=ICSharpCode.WpfDesign.XamlDom.Tests""
+  xmlns:t=""" + XamlTypeFinderTests.XamlDomTestsNamespace + @"""
   xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
 </t:ExampleClass>
 			");
@@ -66,7 +66,7 @@ namespace ICSharpCode.WpfDesign.XamlDom.Tests
 			TestLoading(@"
 <t:ExampleClass
   xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
-  xmlns:t=""clr-namespace:ICSharpCode.WpfDesign.XamlDom.Tests;assembly=ICSharpCode.WpfDesign.XamlDom.Tests""
+  xmlns:t=""" + XamlTypeFinderTests.XamlDomTestsNamespace + @"""
   xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
   StringProp=""a test string"">
 </t:ExampleClass>
@@ -79,7 +79,7 @@ namespace ICSharpCode.WpfDesign.XamlDom.Tests
 			TestLoading(@"
 <t:ExampleClass
   xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
-  xmlns:t=""clr-namespace:ICSharpCode.WpfDesign.XamlDom.Tests;assembly=ICSharpCode.WpfDesign.XamlDom.Tests""
+  xmlns:t=""" + XamlTypeFinderTests.XamlDomTestsNamespace + @"""
   xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
    a test string
 </t:ExampleClass>
@@ -92,7 +92,7 @@ namespace ICSharpCode.WpfDesign.XamlDom.Tests
 			TestLoading(@"
 <t:ExampleClass
   xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
-  xmlns:t=""clr-namespace:ICSharpCode.WpfDesign.XamlDom.Tests;assembly=ICSharpCode.WpfDesign.XamlDom.Tests""
+  xmlns:t=""" + XamlTypeFinderTests.XamlDomTestsNamespace + @"""
   xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
    <t:ExampleClass.StringProp>
       a test string
@@ -107,7 +107,7 @@ namespace ICSharpCode.WpfDesign.XamlDom.Tests
 			TestLoading(@"
 <t:ExampleClass
   xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
-  xmlns:t=""clr-namespace:ICSharpCode.WpfDesign.XamlDom.Tests;assembly=ICSharpCode.WpfDesign.XamlDom.Tests""
+  xmlns:t=""" + XamlTypeFinderTests.XamlDomTestsNamespace + @"""
   xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
    a test string
    <t:ExampleClass.OtherProp>
@@ -123,7 +123,7 @@ namespace ICSharpCode.WpfDesign.XamlDom.Tests
 			TestLoading(@"
 <t:ExampleClass
   xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
-  xmlns:t=""clr-namespace:ICSharpCode.WpfDesign.XamlDom.Tests;assembly=ICSharpCode.WpfDesign.XamlDom.Tests""
+  xmlns:t=""" + XamlTypeFinderTests.XamlDomTestsNamespace + @"""
   xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
    <t:ExampleClass.OtherProp>
       otherValue
@@ -139,7 +139,7 @@ namespace ICSharpCode.WpfDesign.XamlDom.Tests
 			TestLoading(@"
 <t:ExampleClass
   xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
-  xmlns:t=""clr-namespace:ICSharpCode.WpfDesign.XamlDom.Tests;assembly=ICSharpCode.WpfDesign.XamlDom.Tests""
+  xmlns:t=""" + XamlTypeFinderTests.XamlDomTestsNamespace + @"""
   xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
    <t:ExampleClass.OtherProp>
       otherValue
@@ -157,7 +157,7 @@ namespace ICSharpCode.WpfDesign.XamlDom.Tests
 		{
 			TestLoading(@"
 <ExampleClassContainer
-  xmlns=""clr-namespace:ICSharpCode.WpfDesign.XamlDom.Tests;assembly=ICSharpCode.WpfDesign.XamlDom.Tests""
+  xmlns=""" + XamlTypeFinderTests.XamlDomTestsNamespace + @"""
   xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
    <ExampleClassContainer.List>
       <ExampleClass OtherProp=""a""> </ExampleClass>
@@ -173,7 +173,7 @@ namespace ICSharpCode.WpfDesign.XamlDom.Tests
 		{
 			TestLoading(@"
 <ExampleClassContainer
-  xmlns=""clr-namespace:ICSharpCode.WpfDesign.XamlDom.Tests;assembly=ICSharpCode.WpfDesign.XamlDom.Tests""
+  xmlns=""" + XamlTypeFinderTests.XamlDomTestsNamespace + @"""
   xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
       <ExampleClass OtherProp=""a"" />
       <ExampleClass OtherProp=""b"" />
@@ -187,7 +187,7 @@ namespace ICSharpCode.WpfDesign.XamlDom.Tests
 			TestLoading(@"
 <t:ExampleDependencyObject
   xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
-  xmlns:t=""clr-namespace:ICSharpCode.WpfDesign.XamlDom.Tests;assembly=ICSharpCode.WpfDesign.XamlDom.Tests""
+  xmlns:t=""" + XamlTypeFinderTests.XamlDomTestsNamespace + @"""
   xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
   t:ExampleService.Example=""attached value"">
 </t:ExampleDependencyObject>
