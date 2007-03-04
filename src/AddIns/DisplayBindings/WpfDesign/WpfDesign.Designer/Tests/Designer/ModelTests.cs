@@ -112,6 +112,34 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 		}
 		
 		[Test]
+		public void AddTextBoxToCanvasEmptyExplicitPanelChildrenCollection()
+		{
+			DesignItem canvas = CreateCanvasContext("<Canvas><Panel.Children></Panel.Children></Canvas>");
+			DesignItem textBox = canvas.Services.Component.RegisterComponentForDesigner(new TextBox());
+			canvas.Properties["Children"].CollectionElements.Add(textBox);
+			AssertCanvasDesignerOutput("<Canvas>\n" +
+			                           "  <Panel.Children>\n" +
+			                           "    <TextBox />\n" +
+			                           "  </Panel.Children>\n" +
+			                           "</Canvas>", canvas.Context);
+			AssertLog("");
+		}
+		
+		[Test]
+		public void AddTextBoxToCanvasEmptyExplicitCanvasChildrenCollection()
+		{
+			DesignItem canvas = CreateCanvasContext("<Canvas><Canvas.Children></Canvas.Children></Canvas>");
+			DesignItem textBox = canvas.Services.Component.RegisterComponentForDesigner(new TextBox());
+			canvas.Properties["Children"].CollectionElements.Add(textBox);
+			AssertCanvasDesignerOutput("<Canvas>\n" +
+			                           "  <Canvas.Children>\n" +
+			                           "    <TextBox />\n" +
+			                           "  </Canvas.Children>\n" +
+			                           "</Canvas>", canvas.Context);
+			AssertLog("");
+		}
+		
+		[Test]
 		public void InsertTextBoxInCanvas()
 		{
 			DesignItem button = CreateCanvasContext("<Canvas.Width>50</Canvas.Width><Button/><Canvas.Height>60</Canvas.Height>");
@@ -127,6 +155,17 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 			                           "<Button />\n" +
 			                           "<TextBox />\n" +
 			                           "<Canvas.Height>60</Canvas.Height>", button.Context);
+			AssertLog("");
+		}
+		
+		[Test]
+		public void ClearImplicitChildCollection()
+		{
+			DesignItem canvas = CreateCanvasContext("<Canvas><Button/><TextBox/></Canvas>");
+			DesignItem textBox = canvas.Services.Component.RegisterComponentForDesigner(new TextBox());
+			canvas.Properties["Children"].CollectionElements.Clear();
+			AssertCanvasDesignerOutput("<Canvas>\n" +
+			                           "</Canvas>", canvas.Context);
 			AssertLog("");
 		}
 	}

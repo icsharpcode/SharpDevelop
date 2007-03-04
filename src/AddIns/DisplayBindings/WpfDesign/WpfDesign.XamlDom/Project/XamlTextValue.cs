@@ -23,6 +23,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		XmlText textNode;
 		XmlSpace xmlSpace;
 		string textValue;
+		XmlCDataSection cDataSection;
 		
 		internal XamlTextValue(XmlAttribute attribute)
 		{
@@ -40,6 +41,12 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			this.textNode = textNode;
 		}
 		
+		internal XamlTextValue(XmlCDataSection cDataSection, XmlSpace xmlSpace)
+		{
+			this.xmlSpace = xmlSpace;
+			this.cDataSection = cDataSection;
+		}
+		
 		/// <summary>
 		/// The text represented by the value.
 		/// </summary>
@@ -49,6 +56,8 @@ namespace ICSharpCode.WpfDesign.XamlDom
 					return attribute.Value;
 				else if (textValue != null)
 					return textValue;
+				else if (cDataSection != null)
+					return cDataSection.Value;
 				else
 					return NormalizeWhitespace(textNode.Value);
 			}
@@ -60,6 +69,8 @@ namespace ICSharpCode.WpfDesign.XamlDom
 					attribute.Value = value;
 				else if (textValue != null)
 					textValue = value;
+				else if (cDataSection != null)
+					cDataSection.Value = value;
 				else
 					textNode.Value = value;
 			}
@@ -106,6 +117,8 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				attribute.OwnerElement.RemoveAttribute(attribute.Name);
 			else if (textNode != null)
 				textNode.ParentNode.RemoveChild(textNode);
+			else if (cDataSection != null)
+				cDataSection.ParentNode.RemoveChild(cDataSection);
 		}
 		
 		internal override void AddNodeTo(XamlProperty property)
@@ -127,6 +140,8 @@ namespace ICSharpCode.WpfDesign.XamlDom
 					attribute = property.ParentObject.XmlElement.GetAttributeNode(name, ns);
 				}
 				textValue = null;
+			} else if (cDataSection != null) {
+				property.AddChildNodeToProperty(cDataSection);
 			} else {
 				property.AddChildNodeToProperty(textNode);
 			}
@@ -136,6 +151,8 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		{
 			if (textNode != null)
 				return textNode;
+			else if (cDataSection != null)
+				return cDataSection;
 			else
 				throw new NotImplementedException();
 		}

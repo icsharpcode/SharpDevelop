@@ -48,7 +48,17 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
 			string officialSaved = XamlWriter.Save(officialResult);
 			string ownSaved = XamlWriter.Save(ownResult);
 			
+			Debug.WriteLine("Official saved:");
+			Debug.WriteLine(officialSaved);
+			Debug.WriteLine("Own saved:");
+			Debug.WriteLine(ownSaved);
+			
 			Assert.AreEqual(officialSaved, ownSaved);
+			
+			Debug.WriteLine("Official log:");
+			Debug.WriteLine(officialLog);
+			Debug.WriteLine("Own log:");
+			Debug.WriteLine(ownLog);
 			
 			// compare logs:
 			Assert.AreEqual(officialLog, ownLog);

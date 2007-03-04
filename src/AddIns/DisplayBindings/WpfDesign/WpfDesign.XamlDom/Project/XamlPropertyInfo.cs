@@ -32,10 +32,12 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		public abstract string FullyQualifiedName { get; }
 		public abstract bool IsAttached { get; }
 		public abstract bool IsCollection { get; }
+		public virtual bool IsEvent { get { return false; } }
 		public abstract string Category { get; }
 		internal abstract void AddValue(object collectionInstance, XamlPropertyValue newElement);
 	}
 	
+	#region XamlDependencyPropertyInfo
 	internal class XamlDependencyPropertyInfo : XamlPropertyInfo
 	{
 		readonly DependencyProperty property;
@@ -104,7 +106,9 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			throw new NotSupportedException();
 		}
 	}
-	
+	#endregion
+
+	#region XamlNormalPropertyInfo
 	internal sealed class XamlNormalPropertyInfo : XamlPropertyInfo
 	{
 		PropertyDescriptor _propertyDescriptor;
@@ -175,55 +179,75 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			CollectionSupport.AddToCollection(_propertyDescriptor.PropertyType, collectionInstance, newElement);
 		}
 	}
+	#endregion
 	
-	static class CollectionSupport
+	#region XamlEventPropertyInfo
+	sealed class XamlEventPropertyInfo : XamlPropertyInfo
 	{
-		public static bool IsCollectionType(Type type)
+		readonly EventDescriptor _eventDescriptor;
+		
+		public XamlEventPropertyInfo(EventDescriptor eventDescriptor)
 		{
-			return typeof(IList).IsAssignableFrom(type)
-				|| typeof(IDictionary).IsAssignableFrom(type)
-				|| type.IsArray
-				|| typeof(IAddChild).IsAssignableFrom(type);
+			this._eventDescriptor = eventDescriptor;
 		}
 		
-		public static void AddToCollection(Type collectionType, object collectionInstance, XamlPropertyValue newElement)
+		public override object GetValue(object instance)
 		{
-			IAddChild addChild = collectionInstance as IAddChild;
-			if (addChild != null) {
-				if (newElement is XamlTextValue) {
-					addChild.AddText((string)newElement.GetValueFor(null));
-				} else {
-					addChild.AddChild(newElement.GetValueFor(null));
-				}
-			} else {
-				collectionType.InvokeMember(
-					"Add", BindingFlags.Public | BindingFlags.InvokeMethod | BindingFlags.Instance,
-					null, collectionInstance,
-					new object[] { newElement.GetValueFor(null) },
-					CultureInfo.InvariantCulture);
+			return null;
+		}
+		
+		public override void SetValue(object instance, object value)
+		{
+			
+		}
+		
+		public override void ResetValue(object instance)
+		{
+			
+		}
+		
+		public override Type ReturnType {
+			get { return _eventDescriptor.EventType; }
+		}
+		
+		public override Type TargetType {
+			get { return _eventDescriptor.ComponentType; }
+		}
+		
+		public override string Category {
+			get { return _eventDescriptor.Category; }
+		}
+		
+		public override TypeConverter TypeConverter {
+			get { return null; }
+		}
+		
+		public override string FullyQualifiedName {
+			get {
+				return _eventDescriptor.ComponentType.FullName + "." + _eventDescriptor.Name;
 			}
 		}
 		
-		static readonly Type[] RemoveAtParameters = { typeof(int) };
-		
-		public static bool RemoveItemAt(Type collectionType, object collectionInstance, int index)
-		{
-			MethodInfo m = collectionType.GetMethod("RemoveAt", RemoveAtParameters);
-			if (m != null) {
-				m.Invoke(collectionInstance, new object[] { index });
-				return true;
-			} else {
-				return false;
-			}
+		public override string Name {
+			get { return _eventDescriptor.Name; }
 		}
 		
-		public static void RemoveItem(Type collectionType, object collectionInstance, object item)
+		public override bool IsEvent {
+			get { return true; }
+		}
+		
+		public override bool IsAttached {
+			get { return false; }
+		}
+		
+		public override bool IsCollection {
+			get { return false; }
+		}
+		
+		internal override void AddValue(object collectionInstance, XamlPropertyValue newElement)
 		{
-			collectionType.InvokeMember(
-				"Remove", BindingFlags.Public | BindingFlags.InvokeMethod | BindingFlags.Instance,
-				null, collectionInstance,
-				new object[] { item },
-				CultureInfo.InvariantCulture);
+			throw new NotSupportedException();
 		}
 	}
+	#endregion
 }

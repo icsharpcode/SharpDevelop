@@ -96,5 +96,36 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
 </t:ExampleClass>
 			");
 		}
+		
+		[Test]
+		public void CDataTest()
+		{
+			TestLoading(@"
+		          <t:ExampleClass
+  xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+  xmlns:t=""" + XamlTypeFinderTests.XamlDomTestsNamespace + @"""
+  xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" xml:space=""preserve""> <![CDATA[
+	This is text inside the CData section.
+This is another line of text.
+	This one is indented again.
+
+And that was an empty line.
+		]]>
+ </t:ExampleClass>");
+		}
+		
+		[Test]
+		public void CDataAndContentMixTest()
+		{
+			TestLoading(@"
+		          <t:ExampleClass
+  xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+  xmlns:t=""" + XamlTypeFinderTests.XamlDomTestsNamespace + @"""
+  xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+	some text
+	<![CDATA[ text in <CDATA> ]]>
+	more text
+ </t:ExampleClass>");
+		}
 	}
 }

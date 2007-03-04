@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
@@ -189,7 +190,16 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				obj.AddProperty(defaultCollectionProperty = new XamlProperty(obj, defaultProperty, null));
 			}
 			
-			foreach (XmlNode childNode in element.ChildNodes) {
+			foreach (XmlNode childNode in GetNormalizedChildNodes(element)) {
+				
+				// I don't know why the official XamlReader runs the property getter
+				// here, but let's try to imitate it as good as possible
+				if (defaultProperty != null && !defaultProperty.IsCollection) {
+					for (; combinedNormalizedChildNodes > 0; combinedNormalizedChildNodes--) {
+						defaultProperty.GetValue(instance);
+					}
+				}
+				
 				XmlElement childElement = childNode as XmlElement;
 				if (childElement != null) {
 					if (ObjectChildElementIsPropertyElement(childElement)) {
@@ -240,11 +250,52 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			return obj;
 		}
 		
+		int combinedNormalizedChildNodes;
+		
+		IEnumerable<XmlNode> GetNormalizedChildNodes(XmlElement element)
+		{
+			XmlNode node = element.FirstChild;
+			while (node != null) {
+				XmlText text = node as XmlText;
+				XmlCDataSection cData = node as XmlCDataSection;
+				if (node.NodeType == XmlNodeType.SignificantWhitespace) {
+					text = element.OwnerDocument.CreateTextNode(node.Value);
+					element.ReplaceChild(text, node);
+					node = text;
+				}
+				if (text != null || cData != null) {
+					node = node.NextSibling;
+					while (node != null
+					       && (node.NodeType == XmlNodeType.Text
+					           || node.NodeType == XmlNodeType.CDATA
+					           || node.NodeType == XmlNodeType.SignificantWhitespace))
+					{
+						combinedNormalizedChildNodes++;
+						
+						if (text != null) text.Value += node.Value;
+						else cData.Value += node.Value;
+						XmlNode nodeToDelete = node;
+						node = node.NextSibling;
+						element.RemoveChild(nodeToDelete);
+					}
+					if (text != null) yield return text;
+					else yield return cData;
+				} else {
+					yield return node;
+					node = node.NextSibling;
+				}
+			}
+		}
+		
 		XamlPropertyValue ParseValue(XmlNode childNode)
 		{
 			XmlText childText = childNode as XmlText;
 			if (childText != null) {
 				return new XamlTextValue(childText, currentXmlSpace);
+			}
+			XmlCDataSection cData = childNode as XmlCDataSection;
+			if (cData != null) {
+				return new XamlTextValue(cData, currentXmlSpace);
 			}
 			XmlElement element = childNode as XmlElement;
 			if (element != null) {
@@ -270,15 +321,25 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				properties = TypeDescriptor.GetProperties(propertyType);
 			}
 			PropertyDescriptor propertyInfo = properties[propertyName];
-			if (propertyInfo == null) {
+			if (propertyInfo != null) {
+				return new XamlNormalPropertyInfo(propertyInfo);
+			} else {
 				XamlPropertyInfo pi = TryFindAttachedProperty(propertyType, propertyName);
 				if (pi != null) {
 					return pi;
-				} else {
-					throw new XamlLoadException("property " + propertyName + " not found");
 				}
 			}
-			return new XamlNormalPropertyInfo(propertyInfo);
+			EventDescriptorCollection events;
+			if (elementInstance != null) {
+				events = TypeDescriptor.GetEvents(elementInstance);
+			} else {
+				events = TypeDescriptor.GetEvents(propertyType);
+			}
+			EventDescriptor eventInfo = events[propertyName];
+			if (eventInfo != null) {
+				return new XamlEventPropertyInfo(eventInfo);
+			}
+			throw new XamlLoadException("property " + propertyName + " not found");
 		}
 		
 		internal static XamlPropertyInfo TryFindAttachedProperty(Type elementType, string propertyName)
@@ -372,6 +433,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				if (collectionProperty == null) {
 					obj.AddProperty(collectionProperty = new XamlProperty(obj, propertyInfo, null));
 				}
+				collectionProperty.ParserSetPropertyElement(element);
 			}
 			
 			XmlSpace oldXmlSpace = currentXmlSpace;
