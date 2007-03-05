@@ -19,7 +19,7 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 	/// </summary>
 	sealed class DragMoveMouseGesture : ClickOrDragMouseGesture
 	{
-		DesignItem clickedOn;
+		readonly DesignItem clickedOn;
 		PlacementOperation operation;
 		ICollection<DesignItem> selectedItems;
 		
@@ -39,7 +39,7 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 				selectedItems = new DesignItem[0];
 		}
 		
-		protected override void OnDragStarted()
+		protected override void OnDragStarted(MouseEventArgs e)
 		{
 			IPlacementBehavior b = PlacementOperation.GetPlacementBehavior(selectedItems);
 			if (b != null && b.CanPlace(selectedItems, PlacementType.Move, PlacementAlignments.TopLeft)) {

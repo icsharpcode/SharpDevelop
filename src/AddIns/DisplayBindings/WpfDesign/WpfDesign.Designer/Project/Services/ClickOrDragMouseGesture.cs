@@ -34,9 +34,11 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 		{
 			if (!hasDragStarted) {
 				Vector v = e.GetPosition(positionRelativeTo) - startPoint;
-				if (v.LengthSquared >= MinimumDragDistance * MinimumDragDistance) {
+				if (Math.Abs(v.X) >= SystemParameters.MinimumHorizontalDragDistance
+				    || Math.Abs(v.Y) >= SystemParameters.MinimumVerticalDragDistance)
+				{
 					hasDragStarted = true;
-					OnDragStarted();
+					OnDragStarted(e);
 				}
 			}
 		}
@@ -46,6 +48,6 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 			hasDragStarted = false;
 		}
 		
-		protected virtual void OnDragStarted() {}
+		protected virtual void OnDragStarted(MouseEventArgs e) {}
 	}
 }

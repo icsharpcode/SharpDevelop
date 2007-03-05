@@ -52,6 +52,11 @@ namespace ICSharpCode.WpfDesign
 		/// Gets/Sets the currently selected tool.
 		/// </summary>
 		ITool CurrentTool { get; set; }
+		
+		/// <summary>
+		/// Is raised when the current tool changes.
+		/// </summary>
+		event EventHandler CurrentToolChanged;
 	}
 	
 	/// <summary>
@@ -103,5 +108,25 @@ namespace ICSharpCode.WpfDesign
 		/// Occurs when a mouse button is released.
 		/// </summary>
 		event MouseButtonEventHandler MouseUp;
+		
+		/// <summary>
+		/// Occurs when a drag operation enters the design panel.
+		/// </summary>
+		event DragEventHandler DragEnter;
+		
+		/// <summary>
+		/// Occurs when a drag operation is over the design panel.
+		/// </summary>
+		event DragEventHandler DragOver;
+		
+		/// <summary>
+		/// Occurs when a drag operation leaves the design panel.
+		/// </summary>
+		event DragEventHandler DragLeave;
+		
+		/// <summary>
+		/// Occurs when an element is dropped on the design panel.
+		/// </summary>
+		event DragEventHandler Drop;
 	}
 }

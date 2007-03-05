@@ -117,13 +117,13 @@ namespace ICSharpCode.WpfDesign.Designer
 				}
 			} else {
 				PropertyGridView grid = new PropertyGridView();
+				contentStackPanel.Children.Add(grid);
 				foreach (IPropertyEditorDataProperty p in Func.Sort(dataSource.Properties, ComparePropertyNames)) {
 					if (p.Name == "Name") {
 						continue;
 					}
 					grid.AddProperty(p);
 				}
-				contentStackPanel.Children.Add(grid);
 			}
 		}
 		

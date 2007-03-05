@@ -34,7 +34,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		/// <inherits/>
 		public bool CanPlace(ICollection<DesignItem> child, PlacementType type, PlacementAlignment position)
 		{
-			return type == PlacementType.Resize || type == PlacementType.Move;
+			return type == PlacementType.Resize || type == PlacementType.Move || type == PlacementType.Delete;
 		}
 		
 		/// <inherits/>

@@ -31,12 +31,12 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 		{
 			log = new StringBuilder();
 			XamlDesignContext context = new XamlDesignContext(new XmlTextReader(new StringReader(xaml)));
-			context.Services.Component.ComponentRegistered += delegate(object sender, DesignItemEventArgs e) {
+			/*context.Services.Component.ComponentRegistered += delegate(object sender, DesignItemEventArgs e) {
 				log.AppendLine("Register " + ItemIdentity(e.Item));
 			};
 			context.Services.Component.ComponentUnregistered += delegate(object sender, DesignItemEventArgs e) {
 				log.AppendLine("Unregister " + ItemIdentity(e.Item));
-			};
+			};*/
 			return context;
 		}
 		

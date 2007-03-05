@@ -39,8 +39,10 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 		}
 		
 		public event EventHandler<DesignItemEventArgs> ComponentRegistered;
-		public event EventHandler<DesignItemEventArgs> ComponentUnregistered;
 		
+		// TODO: this must not be a dictionary because there's no way to unregister components
+		// however, this isn't critical because our design items will stay alive for the lifetime of the
+		// designer anyway if we don't limit the Undo stack.
 		Dictionary<object, XamlDesignItem> _sites = new Dictionary<object, XamlDesignItem>(IdentityEqualityComparer.Instance);
 		
 		public DesignItem GetDesignItem(object component)
@@ -62,23 +64,10 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			
 			XamlDesignItem item = new XamlDesignItem(_context.Document.CreateObject(component), _context);
 			_sites.Add(component, item);
-			return item;
-		}
-		
-		/// <summary>
-		/// currently for use by UnregisterAllComponents only because it doesn't update the XAML
-		/// </summary>
-		void UnregisterComponentFromDesigner(DesignItem site)
-		{
-			if (site == null)
-				throw new ArgumentNullException("site");
-			
-			if (!_sites.Remove(site.Component))
-				throw new ArgumentException("The site was not registered here!");
-			
-			if (ComponentUnregistered != null) {
-				ComponentUnregistered(this, new DesignItemEventArgs(site));
+			if (ComponentRegistered != null) {
+				ComponentRegistered(this, new DesignItemEventArgs(item));
 			}
+			return item;
 		}
 		
 		/// <summary>
@@ -101,15 +90,6 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 				ComponentRegistered(this, new DesignItemEventArgs(site));
 			}
 			return site;
-		}
-		
-		/// <summary>
-		/// unregisters all components
-		/// </summary>
-		internal void UnregisterAllComponents()
-		{
-			Array.ForEach(Func.ToArray(_sites.Values), UnregisterComponentFromDesigner);
-			_sites.Clear();
 		}
 	}
 }

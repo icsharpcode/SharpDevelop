@@ -42,11 +42,11 @@ namespace ICSharpCode.WpfDesign
 		/// <summary>
 		/// Remove from the selection.
 		/// </summary>
-		Remove = 0x1,
+		Remove = 0x10,
 		/// <summary>
 		/// Replace the selection.
 		/// </summary>
-		Replace = 0x2
+		Replace = 0x20
 	}
 	
 	/// <summary>
@@ -112,13 +112,8 @@ namespace ICSharpCode.WpfDesign
 		/// <summary>Registers a component for usage in the designer.</summary>
 		DesignItem RegisterComponentForDesigner(object component);
 		
-		// /// <summary>Unregisters a component from usage in the designer.</summary>
-		// void UnregisterComponentFromDesigner(DesignSite site);
-		
 		/// <summary>Event raised whenever a component is registered</summary>
 		event EventHandler<DesignItemEventArgs> ComponentRegistered;
-		/// <summary>Event raised whenever a component is unregistered</summary>
-		event EventHandler<DesignItemEventArgs> ComponentUnregistered;
 	}
 	#endregion
 	
@@ -147,6 +142,19 @@ namespace ICSharpCode.WpfDesign
 	}
 	#endregion
 
+	#region IPropertyDescriptionService
+	/// <summary>
+	/// Used to get a description for properties.
+	/// </summary>
+	public interface IPropertyDescriptionService
+	{
+		/// <summary>
+		/// Gets a WPF object representing a graphical description of the property.
+		/// </summary>
+		object GetDescription(DesignItemProperty property);
+	}
+	#endregion
+	
 	#region IErrorService
 	/// <summary>
 	/// Service for showing error UI.

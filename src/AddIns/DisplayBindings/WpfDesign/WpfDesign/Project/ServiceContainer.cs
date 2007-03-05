@@ -21,6 +21,15 @@ namespace ICSharpCode.WpfDesign
 		readonly Dictionary<Type, Delegate> _waitingSubscribers = new Dictionary<Type, Delegate>();
 		
 		/// <summary>
+		/// Gets a collection of all registered services.
+		/// </summary>
+		public IEnumerable<object> AllServices {
+			get {
+				return _services.Values;
+			}
+		}
+		
+		/// <summary>
 		/// Adds a new service to the container.
 		/// </summary>
 		/// <param name="serviceInterface">

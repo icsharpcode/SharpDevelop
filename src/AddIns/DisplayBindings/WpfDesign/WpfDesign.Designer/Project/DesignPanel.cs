@@ -145,9 +145,11 @@ namespace ICSharpCode.WpfDesign.Designer
 			this.Focusable = true;
 			this.VerticalAlignment = VerticalAlignment.Top;
 			this.HorizontalAlignment = HorizontalAlignment.Left;
+			this.AllowDrop = true;
 			DesignerProperties.SetIsInDesignMode(this, true);
 			
 			_eatAllHitTestRequests = new EatAllHitTestRequests();
+			_eatAllHitTestRequests.AllowDrop = true;
 			_adornerLayer = new AdornerLayer(this);
 			_markerCanvas = new Canvas();
 			_markerCanvas.IsHitTestVisible = false;
@@ -168,10 +170,6 @@ namespace ICSharpCode.WpfDesign.Designer
 			get {
 				return _adornerLayer.Adorners;
 			}
-		}
-		
-		public Canvas MarkerCanvas {
-			get { return _markerCanvas; }
 		}
 		
 		/// <summary>

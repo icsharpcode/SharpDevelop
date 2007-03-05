@@ -30,18 +30,11 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		
 		// for use by parser only
 		internal XamlProperty(XamlObject parentObject, XamlPropertyInfo propertyInfo, XamlPropertyValue propertyValue)
+			: this(parentObject, propertyInfo)
 		{
-			this.parentObject = parentObject;
-			this.propertyInfo = propertyInfo;
-			
 			this.propertyValue = propertyValue;
 			if (propertyValue != null) {
 				propertyValue.ParentProperty = this;
-			} else {
-				if (propertyInfo.IsCollection) {
-					isCollection = true;
-					collectionElements = new CollectionElementsCollection(this);
-				}
 			}
 		}
 		
@@ -49,7 +42,11 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		{
 			this.parentObject = parentObject;
 			this.propertyInfo = propertyInfo;
-			isCollection = propertyInfo.IsCollection;
+			
+			if (propertyInfo.IsCollection) {
+				isCollection = true;
+				collectionElements = new CollectionElementsCollection(this);
+			}
 		}
 		
 		/// <summary>

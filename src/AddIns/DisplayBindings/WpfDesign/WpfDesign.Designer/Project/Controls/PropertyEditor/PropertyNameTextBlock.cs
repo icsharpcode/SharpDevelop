@@ -18,8 +18,8 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 	sealed class PropertyNameTextBlock : TextBlock
 	{
 		readonly IPropertyEditorDataProperty property;
-		readonly TextBlock toolTipTextBlock;
-		bool toolTipTextBlockInitialized;
+		readonly DockPanel toolTipDockPanel;
+		bool toolTipInitialized;
 		internal DependencyPropertyDotButton ContextMenuProvider;
 		
 		public PropertyNameTextBlock(IPropertyEditorDataProperty property)
@@ -29,7 +29,7 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 			this.TextAlignment = TextAlignment.Right;
 			this.TextTrimming = TextTrimming.CharacterEllipsis;
 			
-			this.ToolTip = toolTipTextBlock = new TextBlock();
+			this.ToolTip = toolTipDockPanel = new DockPanel();
 		}
 		
 		protected override void OnToolTipOpening(ToolTipEventArgs e)
@@ -48,17 +48,22 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 		
 		void CreateToolTip()
 		{
-			if (toolTipTextBlockInitialized)
+			if (toolTipInitialized)
 				return;
-			toolTipTextBlockInitialized = true;
-			toolTipTextBlock.TextAlignment = TextAlignment.Left;
-			toolTipTextBlock.Inlines.Add(new Bold(new Run(property.Name)));
+			toolTipInitialized = true;
+			TextBlock textBlock = new TextBlock();
+			textBlock.TextAlignment = TextAlignment.Left;
+			textBlock.Inlines.Add(new Bold(new Run(property.Name)));
 			if (property.ReturnType != null) {
-				toolTipTextBlock.Inlines.Add(" (" + property.ReturnType.Name + ")");
+				textBlock.Inlines.Add(" (" + property.ReturnType.Name + ")");
 			}
-			if (!string.IsNullOrEmpty(property.Description)) {
-				toolTipTextBlock.Inlines.Add(new LineBreak());
-				toolTipTextBlock.Inlines.Add(property.Description);
+			DockPanel.SetDock(textBlock, Dock.Top);
+			toolTipDockPanel.Children.Add(textBlock);
+			object description = property.GetDescription();
+			if (description != null) {
+				ContentControl cc = new ContentControl();
+				cc.Content = description;
+				toolTipDockPanel.Children.Add(cc);
 			}
 		}
 	}

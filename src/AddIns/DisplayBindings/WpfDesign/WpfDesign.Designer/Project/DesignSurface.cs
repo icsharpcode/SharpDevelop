@@ -40,54 +40,58 @@ namespace ICSharpCode.WpfDesign.Designer
 			
 			this.CommandBindings.Add(new CommandBinding(ApplicationCommands.Undo, OnUndoExecuted, OnUndoCanExecute));
 			this.CommandBindings.Add(new CommandBinding(ApplicationCommands.Redo, OnRedoExecuted, OnRedoCanExecute));
+			this.CommandBindings.Add(new CommandBinding(ApplicationCommands.Delete, OnDeleteExecuted, OnDeleteCanExecute));
 		}
 		
-		#region Undo/Redo
-		UndoService _undoService;
-		
-		private UndoService UndoService {
-			get { return _undoService; }
-			set {
-				if (_undoService != null) {
-					_undoService.UndoStackChanged -= OnUndoStackChanged;
-				}
-				_undoService = value;
-				if (_undoService != null) {
-					_undoService.UndoStackChanged += OnUndoStackChanged;
-				}
-				CommandManager.InvalidateRequerySuggested();
-			}
+		T GetService<T>() where T : class
+		{
+			if (_designContext != null)
+				return _designContext.Services.GetService<T>();
+			else
+				return null;
 		}
 		
+		#region Command: Undo/Redo
 		void OnUndoExecuted(object sender, ExecutedRoutedEventArgs e)
 		{
-			IUndoAction action = Func.First(_undoService.UndoActions);
+			UndoService undoService = GetService<UndoService>();
+			IUndoAction action = Func.First(undoService.UndoActions);
 			Debug.WriteLine("Undo " + action.Title);
-			_undoService.Undo();
+			undoService.Undo();
 			_designContext.Services.Selection.SetSelectedComponents(action.AffectedElements);
 		}
 		
 		void OnUndoCanExecute(object sender, CanExecuteRoutedEventArgs e)
 		{
-			e.CanExecute = _undoService != null && _undoService.CanUndo;
+			UndoService undoService = GetService<UndoService>();
+			e.CanExecute = undoService != null && undoService.CanUndo;
 		}
 		
 		void OnRedoExecuted(object sender, ExecutedRoutedEventArgs e)
 		{
-			IUndoAction action = Func.First(_undoService.RedoActions);
+			UndoService undoService = GetService<UndoService>();
+			IUndoAction action = Func.First(undoService.RedoActions);
 			Debug.WriteLine("Redo " + action.Title);
-			_undoService.Redo();
+			undoService.Redo();
 			_designContext.Services.Selection.SetSelectedComponents(action.AffectedElements);
 		}
 		
 		void OnRedoCanExecute(object sender, CanExecuteRoutedEventArgs e)
 		{
-			e.CanExecute = _undoService != null && _undoService.CanRedo;
+			UndoService undoService = GetService<UndoService>();
+			e.CanExecute = undoService != null && undoService.CanRedo;
+		}
+		#endregion
+		
+		#region Command: Delete
+		void OnDeleteExecuted(object sender, ExecutedRoutedEventArgs e)
+		{
+			
 		}
 		
-		void OnUndoStackChanged(object sender, EventArgs e)
+		void OnDeleteCanExecute(object sender, CanExecuteRoutedEventArgs e)
 		{
-			CommandManager.InvalidateRequerySuggested();
+			
 		}
 		#endregion
 		
@@ -125,7 +129,13 @@ namespace ICSharpCode.WpfDesign.Designer
 			designPanelBorder.Padding = new Thickness(10);
 			_designPanel.Child = designPanelBorder;
 			designPanelBorder.Child = context.RootItem.View;
-			UndoService = context.Services.GetService<UndoService>();
+			context.Services.RunWhenAvailable<UndoService>(
+				delegate (UndoService undoService) {
+					CommandManager.InvalidateRequerySuggested();
+				});
+			context.Services.Selection.SelectionChanged += delegate {
+				CommandManager.InvalidateRequerySuggested();
+			};
 		}
 		
 		/// <summary>
@@ -133,12 +143,16 @@ namespace ICSharpCode.WpfDesign.Designer
 		/// </summary>
 		public void UnloadDesigner()
 		{
+			if (_designContext != null) {
+				foreach (object o in _designContext.Services.AllServices) {
+					IDisposable d = o as IDisposable;
+					if (d != null) d.Dispose();
+				}
+			}
 			_designContext = null;
 			_designPanel.Context = null;
 			_designPanel.Child = null;
 			_designPanel.Adorners.Clear();
-			_designPanel.MarkerCanvas.Children.Clear();
-			UndoService = null;
 		}
 	}
 }

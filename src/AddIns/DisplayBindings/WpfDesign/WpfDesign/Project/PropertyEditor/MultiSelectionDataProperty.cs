@@ -195,8 +195,9 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 			get { return data[0].TypeConverter; }
 		}
 		
-		public string Description {
-			get { return data[0].Description; }
+		public object GetDescription()
+		{
+			return data[0].GetDescription();
 		}
 		
 		public bool CanUseCustomExpression {

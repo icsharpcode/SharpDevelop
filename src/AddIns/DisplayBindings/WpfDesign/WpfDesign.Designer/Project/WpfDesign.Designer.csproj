@@ -83,9 +83,12 @@
     <Compile Include="Func.cs" />
     <Compile Include="ServiceRequiredException.cs" />
     <Compile Include="Services\ClickOrDragMouseGesture.cs" />
+    <Compile Include="Services\CreateComponentTool.cs" />
     <Compile Include="Services\DragMoveMouseGesture.cs" />
     <Compile Include="Services\ErrorService.cs" />
+    <Compile Include="Services\MouseGestureBase.cs" />
     <Compile Include="Services\OptionService.cs" />
+    <Compile Include="Services\PointerTool.cs" />
     <Compile Include="Services\SelectionService.cs" />
     <Compile Include="Services\ToolService.cs" />
     <Compile Include="Services\UndoService.cs" />

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows;
@@ -8,6 +9,8 @@ using System.Xml;
 using ICSharpCode.WpfDesign;
 using ICSharpCode.WpfDesign.Designer;
 using ICSharpCode.WpfDesign.PropertyEditor;
+using System.Threading;
+using System.Windows.Threading;
 
 namespace StandaloneDesigner
 {
@@ -37,6 +40,7 @@ namespace StandaloneDesigner
 		DesignSurface designSurface;
 		PropertyEditor propertyEditor;
 		ToolBar toolBar;
+		Toolbox toolbox;
 		#endif
 		
 		void tabControlSelectionChanged(object sender, RoutedEventArgs e)
@@ -45,6 +49,7 @@ namespace StandaloneDesigner
 			if (tabControl.SelectedItem == designTab) {
 				designSurface.LoadDesigner(new XmlTextReader(new StringReader(CodeTextBox.Text)));
 				designSurface.DesignContext.Services.Selection.SelectionChanged += OnSelectionChanged;
+				toolbox.ToolService = designSurface.DesignContext.Services.Tool;
 			} else {
 				if (designSurface.DesignContext != null) {
 					propertyEditor.EditedObject = null;
@@ -58,6 +63,7 @@ namespace StandaloneDesigner
 					}
 				}
 				designSurface.UnloadDesigner();
+				toolbox.ToolService = null;
 			}
 		}
 		
@@ -68,7 +74,8 @@ namespace StandaloneDesigner
 			ISelectionService selectionService = designSurface.DesignContext.Services.Selection;
 			ICollection<DesignItem> items = selectionService.SelectedItems;
 			if (!IsCollectionWithSameElements(items, oldItems)) {
-				propertyEditor.EditedObject = DesignItemDataSource.GetDataSourceForDesignItems(items);
+				IPropertyEditorDataSource dataSource = DesignItemDataSource.GetDataSourceForDesignItems(items);
+				propertyEditor.EditedObject = dataSource;
 				oldItems = items;
 			}
 		}
@@ -85,6 +92,20 @@ namespace StandaloneDesigner
 					return false;
 			}
 			return true;
+		}
+
+		void TestButtonClick(object sender, EventArgs e)
+		{
+			DesignItem[] c = new List<DesignItem>(designSurface.DesignContext.Services.Selection.SelectedItems).ToArray();
+			if (c.Length < 2) return;
+			int index = 0;
+			DispatcherTimer timer = new DispatcherTimer();
+			timer.Interval = new TimeSpan(0, 0, 0, 0, 100);
+			timer.Tick += delegate {
+				index++;
+				designSurface.DesignContext.Services.Selection.SetSelectedComponents(new DesignItem[] { c[index % c.Length] });
+			};
+			timer.Start();
 		}
 	}
 }

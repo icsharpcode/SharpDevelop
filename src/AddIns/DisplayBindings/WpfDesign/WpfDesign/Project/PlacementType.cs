@@ -26,6 +26,12 @@ namespace ICSharpCode.WpfDesign
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
 		public static readonly PlacementType Move = Register("Move");
 		
+		/// <summary>
+		/// Not a "real" placement, but deleting the element.
+		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
+		public static readonly PlacementType Delete = Register("Delete");
+		
 		readonly string name;
 		
 		private PlacementType(string name)
@@ -36,6 +42,8 @@ namespace ICSharpCode.WpfDesign
 		/// <summary>
 		/// Creates a new unique PlacementKind.
 		/// </summary>
+		/// <param name="name">The name to return from a ToString() call.
+		/// Note that two PlacementTypes with the same name are NOT equal!</param>
 		public static PlacementType Register(string name)
 		{
 			return new PlacementType(name);

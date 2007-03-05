@@ -54,7 +54,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			this.positionRelativeTo = container.View;
 		}
 		
-		protected override void OnDragStarted()
+		protected override void OnDragStarted(MouseEventArgs e)
 		{
 			adornerPanel = new AdornerPanel();
 			adornerPanel.SetAdornedElement(container.View, container);

@@ -1,0 +1,182 @@
+﻿// <file>
+//     <copyright see="prj:///doc/copyright.txt"/>
+//     <license see="prj:///doc/license.txt"/>
+//     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
+//     <version>$Revision$</version>
+// </file>
+
+using System.Windows;
+using System;
+using System.Diagnostics;
+using System.Windows.Input;
+using ICSharpCode.WpfDesign.Adorners;
+using ICSharpCode.WpfDesign.Designer.Controls;
+
+namespace ICSharpCode.WpfDesign.Designer.Services
+{
+	/// <summary>
+	/// A tool that creates a component when used.
+	/// </summary>
+	public class CreateComponentTool : ITool
+	{
+		readonly Type componentType;
+		
+		/// <summary>
+		/// Creates a new CreateComponentTool instance.
+		/// </summary>
+		public CreateComponentTool(Type componentType)
+		{
+			if (componentType == null)
+				throw new ArgumentNullException("componentType");
+			this.componentType = componentType;
+		}
+		
+		/// <summary>
+		/// Gets the type of the component to be created.
+		/// </summary>
+		public Type ComponentType {
+			get { return componentType; }
+		}
+		
+		/// <inherits/>
+		public Cursor Cursor {
+			get { return null; }
+		}
+		
+		/// <inherits/>
+		public void Activate(IDesignPanel designPanel)
+		{
+			designPanel.MouseDown += OnMouseDown;
+			designPanel.DragOver += OnDragOver;
+			designPanel.Drop += OnDrop;
+		}
+		
+		/// <inherits/>
+		public void Deactivate(IDesignPanel designPanel)
+		{
+			designPanel.MouseDown -= OnMouseDown;
+			designPanel.DragOver -= OnDragOver;
+			designPanel.Drop -= OnDrop;
+		}
+		
+		/// <summary>
+		/// Is called to create the item used by the CreateComponentTool.
+		/// </summary>
+		protected virtual DesignItem CreateItem(DesignContext context)
+		{
+			object newInstance = Activator.CreateInstance(componentType);
+			return context.Services.Component.RegisterComponentForDesigner(newInstance);
+		}
+		
+		void OnDragOver(object sender, DragEventArgs e)
+		{
+			if (e.Data.GetData(typeof(CreateComponentTool)) == this) {
+				e.Effects = DragDropEffects.Copy;
+				e.Handled = true;
+			} else {
+				e.Effects = DragDropEffects.None;
+			}
+		}
+		
+		void OnDrop(object sender, DragEventArgs e)
+		{
+			if (e.Data.GetData(typeof(CreateComponentTool)) != this)
+				return;
+			e.Handled = true;
+			MessageBox.Show("Not implemented");
+		}
+		
+		void OnMouseDown(object sender, MouseButtonEventArgs e)
+		{
+			if (e.ChangedButton == MouseButton.Left && MouseGestureBase.IsOnlyButtonPressed(e, MouseButton.Left)) {
+				e.Handled = true;
+				IDesignPanel designPanel = (IDesignPanel)sender;
+				DesignPanelHitTestResult result = designPanel.HitTest(e, false, true);
+				if (result.ModelHit != null) {
+					IPlacementBehavior behavior = result.ModelHit.GetBehavior<IPlacementBehavior>();
+					if (behavior != null) {
+						// ensure the design panel has the focus - otherwise pressing Escape to abort creating doesn't work
+						designPanel.Focus();
+						
+						DesignItem createdItem = CreateItem(designPanel.Context);
+						
+						new CreateComponentMouseGesture(result.ModelHit, createdItem).Start(designPanel, e);
+					}
+				}
+			}
+		}
+	}
+	
+	sealed class CreateComponentMouseGesture : ClickOrDragMouseGesture
+	{
+		DesignItem createdItem;
+		PlacementOperation operation;
+		DesignItem container;
+		
+		public CreateComponentMouseGesture(DesignItem clickedOn, DesignItem createdItem)
+		{
+			this.container = clickedOn;
+			this.createdItem = createdItem;
+			this.positionRelativeTo = clickedOn.View;
+		}
+		
+//		GrayOutDesignerExceptActiveArea grayOut;
+//		SelectionFrame frame;
+//		AdornerPanel adornerPanel;
+		
+		Rect GetStartToEndRect(MouseEventArgs e)
+		{
+			Point endPoint = e.GetPosition(positionRelativeTo);
+			return new Rect(
+				Math.Min(startPoint.X, endPoint.X),
+				Math.Min(startPoint.Y, endPoint.Y),
+				Math.Abs(startPoint.X - endPoint.X),
+				Math.Abs(startPoint.Y - endPoint.Y)
+			);
+		}
+		
+		protected override void OnDragStarted(MouseEventArgs e)
+		{
+			operation = PlacementOperation.TryStartInsertNewComponents(container,
+			                                                           new DesignItem[] { createdItem },
+			                                                           new Rect[] { GetStartToEndRect(e) },
+			                                                           PlacementType.Resize);
+			if (operation != null) {
+				services.Selection.SetSelectedComponents(new DesignItem[] { createdItem });
+			}
+		}
+		
+		protected override void OnMouseMove(object sender, MouseEventArgs e)
+		{
+			base.OnMouseMove(sender, e);
+			if (operation != null) {
+				foreach (PlacementInformation info in operation.PlacedItems) {
+					info.Bounds = GetStartToEndRect(e);
+					operation.CurrentContainerBehavior.SetPosition(info);
+				}
+			}
+		}
+		
+		protected override void OnMouseUp(object sender, MouseButtonEventArgs e)
+		{
+			if (hasDragStarted) {
+				if (operation != null) {
+					operation.Commit();
+					operation = null;
+				}
+			} else {
+				
+			}
+			base.OnMouseUp(sender, e);
+		}
+		
+		protected override void OnStopped()
+		{
+			if (operation != null) {
+				operation.Abort();
+				operation = null;
+			}
+			base.OnStopped();
+		}
+	}
+}

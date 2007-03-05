@@ -48,6 +48,7 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Toolbox.cs" />
     <Compile Include="Window1.xaml.cs">
       <SubType>Code</SubType>
       <DependentUpon>Window1.xaml</DependentUpon>
@@ -64,5 +65,6 @@
     <Folder Include="Images" />
     <Resource Include="Images\Redo.png" />
     <Resource Include="Images\Undo.png" />
+    <Resource Include="Images\Delete.png" />
   </ItemGroup>
 </Project>

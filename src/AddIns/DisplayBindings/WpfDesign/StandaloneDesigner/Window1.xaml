@@ -2,12 +2,14 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:designer="clr-namespace:ICSharpCode.WpfDesign.Designer;assembly=ICSharpCode.WpfDesign.Designer"
+        xmlns:my="clr-namespace:StandaloneDesigner"
         Title="StandaloneDesigner" Height="500" Width="700"
 >
 	<DockPanel>
 		<ToolBar DockPanel.Dock="Top" Name="toolBar">
 			<Button Command="Undo"><Image Source="Images/Undo.png" Stretch="None"/></Button>
 			<Button Command="Redo"><Image Source="Images/Redo.png" Stretch="None"/></Button>
+			<Button Command="Delete"><Image Source="Images/Delete.png" Stretch="None"/></Button>
 		</ToolBar>
 		<Grid>
 			<Grid.ColumnDefinitions>
@@ -47,7 +49,16 @@
 				</TabItem>
 			</TabControl>
 			<GridSplitter HorizontalAlignment="Left" Width="4" VerticalAlignment="Stretch" Grid.Column="1"/>
-			<designer:PropertyEditor Name="propertyEditor" Grid.Column="1" Margin="4 0 0 0" FontSize="8.25pt"/>
+			<Grid Grid.Column="1" Margin="4 0 0 0">
+				<Grid.RowDefinitions>
+					<RowDefinition Height="100"/>
+					<RowDefinition Height="*"/>
+				</Grid.RowDefinitions>
+				<my:Toolbox x:Name="toolbox"/>
+				<!--<Button Click="TestButtonClick">TestButton</Button>-->
+				<GridSplitter HorizontalAlignment="Stretch" Height="4" VerticalAlignment="Top" Grid.Row="1"/>
+				<designer:PropertyEditor Name="propertyEditor" Grid.Row="1"  Margin="0 4 0 0" FontSize="8.25pt"/>
+			</Grid>
 		</Grid>
 	</DockPanel>
 </Window>

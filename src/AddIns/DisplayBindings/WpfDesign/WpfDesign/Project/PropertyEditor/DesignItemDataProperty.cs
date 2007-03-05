@@ -40,8 +40,13 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 			get { return property.Name; }
 		}
 		
-		public string Description {
-			get { return "Description for " + property.Name; }
+		public object GetDescription()
+		{
+			IPropertyDescriptionService p = ownerDataSource.DesignItem.Services.GetService<IPropertyDescriptionService>();
+			if (p != null)
+				return p.GetDescription(property);
+			else
+				return null;
 		}
 		
 		public System.ComponentModel.TypeConverter TypeConverter {

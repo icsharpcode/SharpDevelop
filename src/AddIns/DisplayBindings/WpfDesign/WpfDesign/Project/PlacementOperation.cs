@@ -24,8 +24,6 @@ namespace ICSharpCode.WpfDesign
 		readonly ChangeGroup changeGroup;
 		readonly ReadOnlyCollection<PlacementInformation> placedItems;
 		readonly PlacementType type;
-		readonly DesignItem oldContainer;
-		readonly IPlacementBehavior oldContainerBehavior;
 		DesignItem currentContainer;
 		IPlacementBehavior currentContainerBehavior;
 		bool isAborted, isCommitted;
@@ -155,11 +153,9 @@ namespace ICSharpCode.WpfDesign
 			this.placedItems = new ReadOnlyCollection<PlacementInformation>(information);
 			this.type = type;
 			
-			this.oldContainer = items[0].Parent;
-			this.oldContainerBehavior = GetPlacementBehavior(items);
+			this.currentContainer = items[0].Parent;
+			this.currentContainerBehavior = GetPlacementBehavior(items);
 			
-			this.currentContainer = oldContainer;
-			this.currentContainerBehavior = oldContainerBehavior;
 			this.changeGroup = items[0].Context.OpenGroup(type.ToString(), items);
 		}
 		
@@ -183,6 +179,53 @@ namespace ICSharpCode.WpfDesign
 				return Func.First(items).GetBehavior<IRootPlacementBehavior>();
 			else
 				return null;
+		}
+		#endregion
+		
+		#region StartInsertNewComponents
+		/// <summary>
+		/// Try to insert new components into the container.
+		/// </summary>
+		/// <param name="container">The container that should become the parent of the components.</param>
+		/// <param name="placedItems">The components to add to the container.</param>
+		/// <param name="positions">The rectangle specifying the position the element should get.</param>
+		/// <param name="type">The type </param>
+		/// <returns>The operation that inserts the new components, or null if inserting is not possible.</returns>
+		public static PlacementOperation TryStartInsertNewComponents(DesignItem container, IList<DesignItem> placedItems, IList<Rect> positions, PlacementType type)
+		{
+			if (container == null)
+				throw new ArgumentNullException("container");
+			if (placedItems == null)
+				throw new ArgumentNullException("placedItems");
+			if (positions == null)
+				throw new ArgumentNullException("positions");
+			if (type == null)
+				throw new ArgumentNullException("type");
+			if (placedItems.Count == 0)
+				throw new ArgumentException("placedItems.Count must be > 0");
+			if (placedItems.Count != positions.Count)
+				throw new ArgumentException("positions.Count must be = placedItems.Count");
+			
+			DesignItem[] items = Func.ToArray(placedItems);
+			
+			PlacementOperation op = new PlacementOperation(items, type);
+			try {
+				for (int i = 0; i < items.Length; i++) {
+					op.placedItems[i].OriginalBounds = op.placedItems[i].Bounds = positions[i];
+				}
+				op.currentContainer = container;
+				op.currentContainerBehavior = container.GetBehavior<IPlacementBehavior>();
+				if (op.currentContainerBehavior == null || !op.currentContainerBehavior.CanEnterContainer(op)) {
+					op.changeGroup.Abort();
+					return null;
+				}
+				op.currentContainerBehavior.EnterContainer(op);
+			} catch (Exception ex) {
+				Debug.WriteLine(ex.ToString());
+				op.changeGroup.Abort();
+				throw;
+			}
+			return op;
 		}
 		#endregion
 		

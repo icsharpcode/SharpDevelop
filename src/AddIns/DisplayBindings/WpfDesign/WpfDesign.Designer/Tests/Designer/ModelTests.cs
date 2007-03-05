@@ -112,6 +112,34 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 		}
 		
 		[Test]
+		public void AddTextBoxToCanvasEmptyImplicitPanelChildrenCollection()
+		{
+			DesignItem canvas = CreateCanvasContext("<Canvas></Canvas>");
+			DesignItem textBox = canvas.Services.Component.RegisterComponentForDesigner(new TextBox());
+			canvas.Properties["Children"].CollectionElements.Add(textBox);
+			AssertCanvasDesignerOutput("<Canvas>\n" +
+			                           "  <Panel.Children>\n" +
+			                           "    <TextBox />\n" +
+			                           "  </Panel.Children>\n" +
+			                           "</Canvas>", canvas.Context);
+			AssertLog("");
+		}
+		
+		[Test]
+		public void AddTextBoxToCanvasEmptyImplicitPanelChildrenCollectionEmptyTag()
+		{
+			DesignItem canvas = CreateCanvasContext("<Canvas/>");
+			DesignItem textBox = canvas.Services.Component.RegisterComponentForDesigner(new TextBox());
+			canvas.Properties["Children"].CollectionElements.Add(textBox);
+			AssertCanvasDesignerOutput("<Canvas>\n" +
+			                           "  <Panel.Children>\n" +
+			                           "    <TextBox />\n" +
+			                           "  </Panel.Children>\n" +
+			                           "</Canvas>", canvas.Context);
+			AssertLog("");
+		}
+		
+		[Test]
 		public void AddTextBoxToCanvasEmptyExplicitPanelChildrenCollection()
 		{
 			DesignItem canvas = CreateCanvasContext("<Canvas><Panel.Children></Panel.Children></Canvas>");

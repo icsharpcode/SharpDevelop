@@ -90,9 +90,10 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 		TypeConverter TypeConverter { get; }
 		
 		/// <summary>
-		/// Gets the description of the property.
+		/// Gets the description of the property. The returned object should be something that
+		/// can be used as Content for a WPF tooltip.
 		/// </summary>
-		string Description { get; }
+		object GetDescription();
 		
 		/// <summary>
 		/// Gets/Sets if the property has been assigned a local value.

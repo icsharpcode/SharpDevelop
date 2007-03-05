@@ -187,7 +187,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			
 			if (defaultProperty != null && defaultProperty.IsCollection && !element.IsEmpty) {
 				defaultPropertyValue = defaultProperty.GetValue(instance);
-				obj.AddProperty(defaultCollectionProperty = new XamlProperty(obj, defaultProperty, null));
+				obj.AddProperty(defaultCollectionProperty = new XamlProperty(obj, defaultProperty));
 			}
 			
 			foreach (XmlNode childNode in GetNormalizedChildNodes(element)) {
@@ -202,6 +202,9 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				
 				XmlElement childElement = childNode as XmlElement;
 				if (childElement != null) {
+					if (childElement.NamespaceURI == XamlConstants.XamlNamespace)
+						continue;
+					
 					if (ObjectChildElementIsPropertyElement(childElement)) {
 						// I don't know why the official XamlReader runs the property getter
 						// here, but let's try to imitate it as good as possible
@@ -431,7 +434,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 					collectionInstance = propertyInfo.GetValue(obj.Instance);
 				}
 				if (collectionProperty == null) {
-					obj.AddProperty(collectionProperty = new XamlProperty(obj, propertyInfo, null));
+					obj.AddProperty(collectionProperty = new XamlProperty(obj, propertyInfo));
 				}
 				collectionProperty.ParserSetPropertyElement(element);
 			}

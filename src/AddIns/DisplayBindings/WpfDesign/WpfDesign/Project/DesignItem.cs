@@ -135,6 +135,8 @@ namespace ICSharpCode.WpfDesign
 		
 		internal void ReapplyExtensionServer(ExtensionManager extensionManager, ExtensionServer server)
 		{
+			Debug.Assert(_extensionServers != null);
+			
 			for (int i = 0; i < _extensionServers.Length; i++) {
 				if (_extensionServers[i] == server) {
 					bool shouldApply = server.ShouldApplyExtensions(this);
