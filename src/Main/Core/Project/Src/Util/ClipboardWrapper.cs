@@ -60,13 +60,32 @@ namespace ICSharpCode.Core
 		
 		public static void SetDataObject(object data)
 		{
+			SafeSetClipboard(data);
+		}
+		
+		// Code duplication: TextAreaClipboardHandler.cs also has SafeSetClipboard
+		[ThreadStatic] static int SafeSetClipboardDataVersion;
+		
+		static void SafeSetClipboard(object dataObject)
+		{
+			// Work around ExternalException bug. (SD2-426)
+			// Best reproducable inside Virtual PC.
+			int version = unchecked(++SafeSetClipboardDataVersion);
 			try {
-				Clipboard.SetDataObject(data, true, 10, 50);
+				Clipboard.SetDataObject(dataObject, true);
 			} catch (ExternalException) {
-				Application.DoEvents();
-				try {
-					Clipboard.SetDataObject(data, true, 10, 50);
-				} catch (ExternalException) { }
+				Timer timer = new Timer();
+				timer.Interval = 100;
+				timer.Tick += delegate {
+					timer.Stop();
+					timer.Dispose();
+					if (SafeSetClipboardDataVersion == version) {
+						try {
+							Clipboard.SetDataObject(dataObject, true, 10, 50);
+						} catch (ExternalException) { }
+					}
+				};
+				timer.Start();
 			}
 		}
 	}
