@@ -24,11 +24,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 				throw new ArgumentNullException("registry");
 			LoggingService.Info("Cecil: Load from " + fileName);
 			AssemblyDefinition asm = AssemblyFactory.GetAssembly(fileName);
-			List<AssemblyName> referencedAssemblies = new List<AssemblyName>();
-			foreach (AssemblyNameReference anr in asm.MainModule.AssemblyReferences) {
-				referencedAssemblies.Add(new AssemblyName(anr.FullName));
+			List<DomAssemblyName> referencedAssemblies = new List<DomAssemblyName>();
+			foreach (ModuleDefinition module in asm.Modules) {
+				foreach (AssemblyNameReference anr in module.AssemblyReferences) {
+					referencedAssemblies.Add(new DomAssemblyName(anr.FullName));
+				}
 			}
-			return new CecilProjectContent(asm.Name.FullName, fileName, referencedAssemblies.ToArray(), asm.MainModule.Types, registry);
+			return new CecilProjectContent(asm.Name.FullName, fileName, referencedAssemblies.ToArray(), asm, registry);
 		}
 		
 		static void AddAttributes(IProjectContent pc, IList<IAttribute> list, CustomAttributeCollection attributes)
@@ -121,9 +123,17 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		private sealed class CecilProjectContent : ReflectionProjectContent
 		{
-			public CecilProjectContent(string fullName, string fileName, AssemblyName[] referencedAssemblies,
-			                           TypeDefinitionCollection types, ProjectContentRegistry registry)
+			public CecilProjectContent(string fullName, string fileName, DomAssemblyName[] referencedAssemblies,
+			                           AssemblyDefinition assembly, ProjectContentRegistry registry)
 				: base(fullName, fileName, referencedAssemblies, registry)
+			{
+				foreach (ModuleDefinition module in assembly.Modules) {
+					AddTypes(module.Types);
+				}
+				InitializeSpecialClasses();
+			}
+			
+			void AddTypes(TypeDefinitionCollection types)
 			{
 				foreach (TypeDefinition td in types) {
 					if ((td.Attributes & TypeAttributes.Public) == TypeAttributes.Public) {
@@ -141,7 +151,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 						AddClassToNamespaceListInternal(new CecilClass(this.AssemblyCompilationUnit, null, td, name));
 					}
 				}
-				InitializeSpecialClasses();
 			}
 		}
 		
