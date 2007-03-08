@@ -21,6 +21,7 @@ namespace SharpDbTools.Data
 	/// - opening (essentially refreshing) from a database connection
 	/// - adding for new connection data (name, invariant name, connection string)
 	/// - saving to files
+	/// Note: it is not threadsafe
 	/// </summary>
 	public static class DbModelInfoService
 	{

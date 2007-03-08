@@ -159,15 +159,16 @@ namespace SharpDbTools.Forms
 			// If the user has selected a TreeNode for a specific connection, and has the right
 			// mouse button down, then initiate a drag drop operation
 			DbModelInfoTreeNode infoNode = currentlySelected as DbModelInfoTreeNode;
-			if (infoNode != null) {
-				string logicalConnectionName = infoNode.LogicalConnectionName;
-				DbModelInfo info = DbModelInfoService.GetDbModelInfo(logicalConnectionName);
-				string connectionString = info.ConnectionString;
-				LoggingService.Debug("drag drop operation initiated for ConnectionString: " + connectionString);
-				if (connectionString != null) {
-					parent.DoDragDrop(connectionString, DragDropEffects.Copy);	
-				}
+			if (infoNode == null) return;
+			string logicalConnectionName = infoNode.LogicalConnectionName;
+			DbModelInfo info = DbModelInfoService.GetDbModelInfo(logicalConnectionName);
+			if (info == null) return;
+			string connectionString = info.ConnectionString;
+			LoggingService.Debug("drag drop operation initiated for ConnectionString: " + connectionString);
+			if (connectionString != null) {
+				parent.DoDragDrop(connectionString, DragDropEffects.Copy);	
 			}
+			
 		}
 	}
 }

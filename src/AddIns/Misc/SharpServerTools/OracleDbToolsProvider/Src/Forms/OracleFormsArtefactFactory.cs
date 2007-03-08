@@ -59,15 +59,15 @@ namespace SharpDbTools.Oracle.Forms
 						TreeNode objectNode = null;
 						switch(metadataCollectionName) {
 						       case "Tables":
-								LoggingService.Debug("found table row");
+								//LoggingService.Debug("found table row");
 						       	objectNode = new TableTreeNode((string)dbObjectRow[1], logicalConnectionName);
 						       	break;
 						       case "Users":
-						       	LoggingService.Debug("found users row");
+						       	//LoggingService.Debug("found users row");
 						       	objectNode = new TreeNode((string)dbObjectRow[0]);
 						       	break;
 						       default:
-						       	LoggingService.Debug("found " + metadataCollectionName + " row");
+						       	//LoggingService.Debug("found " + metadataCollectionName + " row");
 						       	if (dbObjectRow.ItemArray.Length > 1) {
 						       		objectNode = new TreeNode((string)dbObjectRow[1]);
 						       	} else {
