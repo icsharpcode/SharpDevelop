@@ -57,23 +57,23 @@ namespace SharpDbTools.Oracle.Forms
 					metaNode.Nodes.Add(collectionNode);
 					foreach (DataRow dbObjectRow in metaCollectionTable.Rows) {
 						TreeNode objectNode = null;
-						if (dbObjectRow.ItemArray.Length > 1) {
-							
-							// if it is a table metadata collection then create a node
-							// with the option to invoke the DescribeTableViewContent
-							
-							if (metadataCollectionName.Equals("Tables")) {
-								objectNode = new TableTreeNode((string)dbObjectRow[1], logicalConnectionName);
-							} else {
-								
-								// TODO: describe other metadata collections
-								
-								objectNode = new TreeNode((string)dbObjectRow[1]);	
-							}
-							objectNode.Name = logicalConnectionName + ":Object:" + (string)dbObjectRow[1];
-						} else {
-							objectNode = new TreeNode((string)dbObjectRow[0]);
-							objectNode.Name = logicalConnectionName + ":Object:" + (string)dbObjectRow[0];
+						switch(metadataCollectionName) {
+						       case "Tables":
+								LoggingService.Debug("found table row");
+						       	objectNode = new TableTreeNode((string)dbObjectRow[1], logicalConnectionName);
+						       	break;
+						       case "Users":
+						       	LoggingService.Debug("found users row");
+						       	objectNode = new TreeNode((string)dbObjectRow[0]);
+						       	break;
+						       default:
+						       	LoggingService.Debug("found " + metadataCollectionName + " row");
+						       	if (dbObjectRow.ItemArray.Length > 1) {
+						       		objectNode = new TreeNode((string)dbObjectRow[1]);
+						       	} else {
+						       		objectNode = new TreeNode((string)dbObjectRow[0]);
+						       	}
+						       	break;
 						}
 						collectionNode.Nodes.Add(objectNode);
 					}

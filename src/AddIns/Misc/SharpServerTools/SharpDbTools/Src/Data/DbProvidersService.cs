@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Windows.Forms;
 
 using ICSharpCode.Core;
 
@@ -47,11 +48,20 @@ namespace SharpDbTools.Data
 				LoggingService.Debug("adding lookup for: " + name + " to: + " + invariantName);
 				invariantByNameLookup.Add(name, invariantName);
 				//factoryData.Add(name, row);
-				LoggingService.Debug("retrieving DbProviderFactory for Name: " + name + " InvariantName: " + invariantName);
-				DbProviderFactory factory = DbProviderFactories.GetFactory(row);
-				names.Add(name);
-				factories.Add(name, factory);
-				factoriesByInvariantName.Add(invariantName, factory);
+				try {
+					LoggingService.Debug("retrieving DbProviderFactory for Name: " 
+					                     + name + " InvariantName: " + invariantName);
+					DbProviderFactory factory = DbProviderFactories.GetFactory(row);
+					names.Add(name);
+					factories.Add(name, factory);
+					factoriesByInvariantName.Add(invariantName, factory);
+				} catch (Exception) {
+					MessageBox.Show("Unable to load DbProviderFactory for: " + name + ", this will be unavailable." +
+					                "\nCheck *.config files for invalid ado.net config elements, or config" +
+					                "for assemblies that are not available.",
+					                "Exception loading DbProviderFactory", MessageBoxButtons.OK, 
+					                MessageBoxIcon.Error);
+				}
 			}
 
 			initialized = true;
