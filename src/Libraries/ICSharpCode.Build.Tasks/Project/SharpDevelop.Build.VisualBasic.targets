@@ -161,7 +161,7 @@
 	<!-- Compact framework property adjustments: -->
 	<!-- When StdLib is not set, set it to true and add reference to mscorlib -->
 	<!-- Set PlatformFamilyName and PlatformID if required -->
-	<PropertyGroup Condition=" '$(SharpDevelopTargetFrameworkClass)' == 'CF' ">
+	<PropertyGroup Condition=" '$(SharpDevelopUseCompactFramework)' == 'true' ">
 		<PlatformFamilyName Condition=" '$(PlatformFamilyName)' == '' ">PocketPC</PlatformFamilyName>
 		<PlatformID Condition=" '$(PlatformID)' == '' ">WinCE</PlatformID>
 		
