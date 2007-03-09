@@ -42,7 +42,7 @@ namespace ICSharpCode.TextEditor.Document
 			}
 		}
 		
-		public void SetContent(string text) 
+		public void SetContent(string text)
 		{
 			if (text == null) {
 				text = String.Empty;
@@ -51,15 +51,27 @@ namespace ICSharpCode.TextEditor.Document
 			gapBeginOffset = gapEndOffset = 0;
 		}
 		
-		public char GetCharAt(int offset) 
-		{
-			return offset < gapBeginOffset ? buffer[offset] : buffer[offset + GapLength];
-		}
-		
-		public string GetText(int offset, int length) 
+		public char GetCharAt(int offset)
 		{
 			#if DEBUG
 			CheckThread();
+			if (offset < 0 || offset >= Length) {
+				throw new ArgumentOutOfRangeException("offset", offset, "0 <= offset < " + Length.ToString());
+			}
+			#endif
+			return offset < gapBeginOffset ? buffer[offset] : buffer[offset + GapLength];
+		}
+		
+		public string GetText(int offset, int length)
+		{
+			#if DEBUG
+			CheckThread();
+			if (offset < 0 || offset > Length) {
+				throw new ArgumentOutOfRangeException("offset", offset, "0 <= offset <= " + Length.ToString());
+			}
+			if (length < 0 || offset + length > Length) {
+				throw new ArgumentOutOfRangeException("length", length, "0 <= length, offset+length <= " + Length.ToString());
+			}
 			#endif
 			int end = offset + length;
 			
@@ -90,11 +102,21 @@ namespace ICSharpCode.TextEditor.Document
 			Replace(offset, length, String.Empty);
 		}
 		
-		public void Replace(int offset, int length, string text) 
+		public void Replace(int offset, int length, string text)
 		{
 			if (text == null) {
 				text = String.Empty;
 			}
+			
+			#if DEBUG
+			CheckThread();
+			if (offset < 0 || offset > Length) {
+				throw new ArgumentOutOfRangeException("offset", offset, "0 <= offset <= " + Length.ToString());
+			}
+			if (length < 0 || offset + length > Length) {
+				throw new ArgumentOutOfRangeException("length", length, "0 <= length, offset+length <= " + Length.ToString());
+			}
+			#endif
 			
 			// Math.Max is used so that if we need to resize the array
 			// the new array has enough space for all old chars
@@ -103,7 +125,7 @@ namespace ICSharpCode.TextEditor.Document
 			gapBeginOffset += text.Length - length;
 		}
 		
-		void PlaceGap(int offset, int length) 
+		void PlaceGap(int offset, int length)
 		{
 			int deltaLength = GapLength - length;
 			// if the gap has the right length, move the chars between offset and gap

@@ -35,8 +35,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// <summary>
 		/// Creates a new CompoundClass with the specified class as first part.
 		/// </summary>
-		public CompoundClass(IClass firstPart) : base(firstPart.CompilationUnit, firstPart.FullyQualifiedName)
+		public CompoundClass(IClass firstPart) : base(new DefaultCompilationUnit(firstPart.ProjectContent), firstPart.FullyQualifiedName)
 		{
+			this.CompilationUnit.Classes.Add(this);
+			
 			parts.Add(firstPart);
 			UpdateInformationFromParts();
 		}
@@ -48,15 +50,23 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			// Common for all parts:
 			this.ClassType = parts[0].ClassType;
-			this.CompilationUnit.FileName = parts[0].CompilationUnit.FileName;
-			this.Region = parts[0].Region;
 			
 			ModifierEnum modifier = ModifierEnum.None;
 			const ModifierEnum defaultClassVisibility = ModifierEnum.Internal;
 			
 			this.BaseTypes.Clear();
 			this.Attributes.Clear();
+			
+			string shortestFileName = null;
+			
 			foreach (IClass part in parts) {
+				if (!string.IsNullOrEmpty(part.CompilationUnit.FileName)) {
+					if (shortestFileName == null || part.CompilationUnit.FileName.Length < shortestFileName.Length) {
+						shortestFileName = part.CompilationUnit.FileName;
+						this.Region = part.Region;
+					}
+				}
+				
 				if ((part.Modifiers & ModifierEnum.VisibilityMask) != defaultClassVisibility) {
 					modifier |= part.Modifiers;
 				} else {
@@ -71,6 +81,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 					this.Attributes.Add(attribute);
 				}
 			}
+			this.CompilationUnit.FileName = shortestFileName;
 			if ((modifier & ModifierEnum.VisibilityMask) == ModifierEnum.None) {
 				modifier |= defaultClassVisibility;
 			}
