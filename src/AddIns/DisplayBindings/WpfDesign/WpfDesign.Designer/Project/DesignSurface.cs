@@ -86,12 +86,18 @@ namespace ICSharpCode.WpfDesign.Designer
 		#region Command: Delete
 		void OnDeleteExecuted(object sender, ExecutedRoutedEventArgs e)
 		{
-			
+			if (_designContext != null) {
+				ModelTools.DeleteComponents(_designContext.Services.Selection.SelectedItems);
+			}
 		}
 		
 		void OnDeleteCanExecute(object sender, CanExecuteRoutedEventArgs e)
 		{
-			
+			if (_designContext != null) {
+				e.CanExecute = ModelTools.CanDeleteComponents(_designContext.Services.Selection.SelectedItems);
+			} else {
+				e.CanExecute = false;
+			}
 		}
 		#endregion
 		

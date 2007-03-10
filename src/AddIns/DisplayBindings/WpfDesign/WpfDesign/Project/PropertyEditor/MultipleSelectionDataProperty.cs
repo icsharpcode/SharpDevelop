@@ -10,12 +10,12 @@ using System.Diagnostics;
 
 namespace ICSharpCode.WpfDesign.PropertyEditor
 {
-	sealed class MultiSelectionDataProperty : IPropertyEditorDataProperty
+	sealed class MultipleSelectionDataProperty : IPropertyEditorDataProperty
 	{
-		readonly MultiSelectionDataSource ownerDataSource;
+		readonly MultipleSelectionDataSource ownerDataSource;
 		readonly IPropertyEditorDataProperty[] data;
 		
-		public MultiSelectionDataProperty(MultiSelectionDataSource ownerDataSource, IPropertyEditorDataProperty[] data)
+		public MultipleSelectionDataProperty(MultipleSelectionDataSource ownerDataSource, IPropertyEditorDataProperty[] data)
 		{
 			Debug.Assert(ownerDataSource != null);
 			Debug.Assert(data != null);

@@ -137,7 +137,6 @@ namespace ICSharpCode.WpfDesign.Designer
 		DesignContext _context;
 		readonly EatAllHitTestRequests _eatAllHitTestRequests;
 		readonly AdornerLayer _adornerLayer;
-		readonly Canvas _markerCanvas;
 		
 		public DesignPanel()
 		{
@@ -148,10 +147,12 @@ namespace ICSharpCode.WpfDesign.Designer
 			DesignerProperties.SetIsInDesignMode(this, true);
 			
 			_eatAllHitTestRequests = new EatAllHitTestRequests();
+			_eatAllHitTestRequests.MouseDown += delegate {
+				// ensure the design panel has focus while the user is interacting with it
+				this.Focus();
+			};
 			_eatAllHitTestRequests.AllowDrop = true;
 			_adornerLayer = new AdornerLayer(this);
-			_markerCanvas = new Canvas();
-			_markerCanvas.IsHitTestVisible = false;
 		}
 		#endregion
 		
@@ -201,12 +202,10 @@ namespace ICSharpCode.WpfDesign.Designer
 					// remove _adornerLayer and _eatAllHitTestRequests
 					RemoveVisualChild(_adornerLayer);
 					RemoveVisualChild(_eatAllHitTestRequests);
-					RemoveVisualChild(_markerCanvas);
 				} else if (base.Child == null) {
 					// Child is being set from null to some value
 					AddVisualChild(_adornerLayer);
 					AddVisualChild(_eatAllHitTestRequests);
-					AddVisualChild(_markerCanvas);
 				}
 				base.Child = value;
 			}
@@ -221,8 +220,6 @@ namespace ICSharpCode.WpfDesign.Designer
 					return _eatAllHitTestRequests;
 				else if (index == 2)
 					return _adornerLayer;
-				else if (index == 3)
-					return _markerCanvas;
 			}
 			return base.GetVisualChild(index);
 		}
@@ -230,7 +227,7 @@ namespace ICSharpCode.WpfDesign.Designer
 		protected override int VisualChildrenCount {
 			get {
 				if (base.Child != null)
-					return 4;
+					return 3;
 				else
 					return base.VisualChildrenCount;
 			}
@@ -242,7 +239,6 @@ namespace ICSharpCode.WpfDesign.Designer
 			if (this.Child != null) {
 				_adornerLayer.Measure(constraint);
 				_eatAllHitTestRequests.Measure(constraint);
-				_markerCanvas.Measure(constraint);
 			}
 			return result;
 		}
@@ -254,7 +250,6 @@ namespace ICSharpCode.WpfDesign.Designer
 				Rect r = new Rect(new Point(0, 0), arrangeSize);
 				_adornerLayer.Arrange(r);
 				_eatAllHitTestRequests.Arrange(r);
-				_markerCanvas.Arrange(r);
 			}
 			return result;
 		}

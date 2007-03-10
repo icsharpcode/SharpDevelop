@@ -98,7 +98,7 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 				
 				sources[i++] = GetDataSourceForDesignItem(item);
 			}
-			return MultiSelectionDataSource.CreateDataSource(context != null ? context.Services : null, sources);
+			return MultipleSelectionDataSource.CreateDataSource(context != null ? context.Services : null, sources);
 		}
 		
 		/// <summary>

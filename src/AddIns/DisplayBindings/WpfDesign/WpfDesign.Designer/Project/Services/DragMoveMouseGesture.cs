@@ -42,7 +42,7 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 		protected override void OnDragStarted(MouseEventArgs e)
 		{
 			IPlacementBehavior b = PlacementOperation.GetPlacementBehavior(selectedItems);
-			if (b != null && b.CanPlace(selectedItems, PlacementType.Move, PlacementAlignments.TopLeft)) {
+			if (b != null && b.CanPlace(selectedItems, PlacementType.Move, PlacementAlignment.TopLeft)) {
 				List<DesignItem> sortedSelectedItems = new List<DesignItem>(selectedItems);
 				sortedSelectedItems.Sort(ModelTools.ComparePositionInModelFile);
 				selectedItems = sortedSelectedItems;

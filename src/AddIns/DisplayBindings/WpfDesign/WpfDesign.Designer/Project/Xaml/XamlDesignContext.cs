@@ -55,20 +55,9 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			propertyGridEditorManager.RegisterAssembly(typeof(XamlDesignContext).Assembly);
 			
 			XamlParserSettings xamlParseSettings = new XamlParserSettings();
-			xamlParseSettings.CreateInstanceCallback = OnXamlParserCreateInstance;
+			xamlParseSettings.CreateInstanceCallback = this.Services.ExtensionManager.CreateInstanceWithCustomInstanceFactory;
 			_doc = XamlParser.Parse(xamlReader, xamlParseSettings);
 			_rootItem = _componentService.RegisterXamlComponentRecursive(_doc.RootElement);
-		}
-		
-		object OnXamlParserCreateInstance(Type instanceType, object[] arguments)
-		{
-			foreach (Type extensionType in this.Services.ExtensionManager.GetExtensionTypes(instanceType)) {
-				if (typeof(CustomInstanceFactory).IsAssignableFrom(extensionType)) {
-					CustomInstanceFactory factory = (CustomInstanceFactory)Activator.CreateInstance(extensionType);
-					return factory.CreateInstance(instanceType, arguments);
-				}
-			}
-			return CustomInstanceFactory.DefaultInstanceFactory.CreateInstance(instanceType, arguments);
 		}
 		
 		/// <summary>

@@ -93,6 +93,7 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 			base.OnTextChanged(e);
 		}
 		
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		protected override void OnLostFocus(RoutedEventArgs e)
 		{
 			if (isDirty) {
@@ -113,6 +114,7 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 			base.OnLostFocus(e);
 		}
 		
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		protected override void OnKeyDown(KeyEventArgs e)
 		{
 			base.OnKeyDown(e);

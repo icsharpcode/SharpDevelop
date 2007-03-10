@@ -13,7 +13,7 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 	/// <summary>
 	/// Implements IPropertyEditorDataSource by combining the information from multiple data sources.
 	/// </summary>
-	public sealed class MultiSelectionDataSource : IPropertyEditorDataSource
+	public sealed class MultipleSelectionDataSource : IPropertyEditorDataSource
 	{
 		/// <summary>
 		/// Creates a data source for a collection of data sources.
@@ -35,7 +35,7 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 				}
 				throw new InvalidOperationException();
 			} else {
-				return new MultiSelectionDataSource(services, sources);
+				return new MultipleSelectionDataSource(services, sources);
 			}
 		}
 		
@@ -47,7 +47,7 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 		/// <summary>
 		/// Creates a new MultiSelectionDataSource instance.
 		/// </summary>
-		public MultiSelectionDataSource(ServiceContainer services, ICollection<IPropertyEditorDataSource> sources)
+		public MultipleSelectionDataSource(ServiceContainer services, ICollection<IPropertyEditorDataSource> sources)
 		{
 			this.services = services;
 			if (sources == null)
@@ -73,7 +73,7 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 				}
 				
 				if (properties != null) {
-					this.properties.Add(new MultiSelectionDataProperty(this, properties));
+					this.properties.Add(new MultipleSelectionDataProperty(this, properties));
 				}
 			}
 		}

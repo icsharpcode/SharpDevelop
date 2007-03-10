@@ -93,7 +93,8 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 		/// Gets the description of the property. The returned object should be something that
 		/// can be used as Content for a WPF tooltip.
 		/// </summary>
-		object GetDescription();
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
+		object GetDescription(); // is not a property because it can create a new instance on every call
 		
 		/// <summary>
 		/// Gets/Sets if the property has been assigned a local value.

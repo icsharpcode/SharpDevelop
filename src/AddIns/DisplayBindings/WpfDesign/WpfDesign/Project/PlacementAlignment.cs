@@ -81,13 +81,8 @@ namespace ICSharpCode.WpfDesign
 			return !(lhs.Equals(rhs));
 		}
 		#endregion
-	}
-	
-	/// <summary>
-	/// Contains known PlacementAlignment values like an enumeration.
-	/// </summary>
-	public static class PlacementAlignments
-	{
+		
+		
 		/// <summary>Top left</summary>
 		public static readonly PlacementAlignment TopLeft = new PlacementAlignment(HorizontalAlignment.Left, VerticalAlignment.Top);
 		/// <summary>Top center</summary>

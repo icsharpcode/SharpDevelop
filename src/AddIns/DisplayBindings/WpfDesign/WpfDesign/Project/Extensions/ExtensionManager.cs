@@ -98,6 +98,8 @@ namespace ICSharpCode.WpfDesign.Extensions
 		/// </summary>
 		public IEnumerable<Type> GetExtensionTypes(Type extendedItemType)
 		{
+			if (extendedItemType == null)
+				throw new ArgumentNullException("extendedItemType");
 			foreach (ExtensionEntry entry in GetExtensionEntries(extendedItemType)) {
 				yield return entry.ExtensionType;
 			}
@@ -194,6 +196,9 @@ namespace ICSharpCode.WpfDesign.Extensions
 		/// </summary>
 		public ExtensionServer GetExtensionServer(ExtensionServerAttribute attribute)
 		{
+			if (attribute == null)
+				throw new ArgumentNullException("attribute");
+			
 			Type extensionServerType = attribute.ExtensionServerType;
 			
 			ExtensionServer server;
@@ -207,6 +212,28 @@ namespace ICSharpCode.WpfDesign.Extensions
 				ReapplyExtensions(e.Items, (ExtensionServer)sender);
 			};
 			return server;
+		}
+		#endregion
+		
+		#region Special extensions (Instance Factory)
+		/// <summary>
+		/// Create an instance of the specified type using the specified arguments.
+		/// The instance is created using a CustomInstanceFactory registered for the type,
+		/// or using reflection if no instance factory is found.
+		/// </summary>
+		public object CreateInstanceWithCustomInstanceFactory(Type instanceType, object[] arguments)
+		{
+			if (instanceType == null)
+				throw new ArgumentNullException("instanceType");
+			if (arguments == null)
+				arguments = new object[0];
+			foreach (Type extensionType in GetExtensionTypes(instanceType)) {
+				if (typeof(CustomInstanceFactory).IsAssignableFrom(extensionType)) {
+					CustomInstanceFactory factory = (CustomInstanceFactory)Activator.CreateInstance(extensionType);
+					return factory.CreateInstance(instanceType, arguments);
+				}
+			}
+			return CustomInstanceFactory.DefaultInstanceFactory.CreateInstance(instanceType, arguments);
 		}
 		#endregion
 	}

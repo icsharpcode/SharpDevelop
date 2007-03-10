@@ -36,6 +36,7 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 			OnValueChanged(null, null);
 		}
 		
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		void OnValueChanged(object sender, EventArgs e)
 		{
 			if (property.IsSet) {

@@ -34,7 +34,9 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		/// <inherits/>
 		public bool CanPlace(ICollection<DesignItem> child, PlacementType type, PlacementAlignment position)
 		{
-			return type == PlacementType.Resize || type == PlacementType.Move || type == PlacementType.Delete;
+			return type == PlacementType.Resize || type == PlacementType.Move
+				|| type == PlacementType.Delete
+				|| type == PlacementType.AddItem;
 		}
 		
 		/// <inherits/>
@@ -84,7 +86,9 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		/// <inherits/>
 		public void BeginPlacement(PlacementOperation op)
 		{
-			GrayOutDesignerExceptActiveArea.Start(ref grayOut, this.Services, this.ExtendedItem.View);
+			if (op.Type == PlacementType.Move || op.Type == PlacementType.Resize) {
+				GrayOutDesignerExceptActiveArea.Start(ref grayOut, this.Services, this.ExtendedItem.View);
+			}
 		}
 		
 		/// <inherits/>

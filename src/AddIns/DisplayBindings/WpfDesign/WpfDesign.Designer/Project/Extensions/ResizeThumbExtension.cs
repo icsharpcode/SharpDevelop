@@ -39,14 +39,14 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			this.Adorners.Add(adornerPanel);
 			
 			resizeThumbs = new ResizeThumb[] {
-				CreateThumb(PlacementAlignments.TopLeft, Cursors.SizeNWSE),
-				CreateThumb(PlacementAlignments.Top, Cursors.SizeNS),
-				CreateThumb(PlacementAlignments.TopRight, Cursors.SizeNESW),
-				CreateThumb(PlacementAlignments.Left, Cursors.SizeWE),
-				CreateThumb(PlacementAlignments.Right, Cursors.SizeWE),
-				CreateThumb(PlacementAlignments.BottomLeft, Cursors.SizeNESW),
-				CreateThumb(PlacementAlignments.Bottom, Cursors.SizeNS),
-				CreateThumb(PlacementAlignments.BottomRight, Cursors.SizeNWSE)
+				CreateThumb(PlacementAlignment.TopLeft, Cursors.SizeNWSE),
+				CreateThumb(PlacementAlignment.Top, Cursors.SizeNS),
+				CreateThumb(PlacementAlignment.TopRight, Cursors.SizeNESW),
+				CreateThumb(PlacementAlignment.Left, Cursors.SizeWE),
+				CreateThumb(PlacementAlignment.Right, Cursors.SizeWE),
+				CreateThumb(PlacementAlignment.BottomLeft, Cursors.SizeNESW),
+				CreateThumb(PlacementAlignment.Bottom, Cursors.SizeNS),
+				CreateThumb(PlacementAlignment.BottomRight, Cursors.SizeNWSE)
 			};
 		}
 		

@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.Windows;
 
 namespace ICSharpCode.WpfDesign.Designer
@@ -41,6 +42,32 @@ namespace ICSharpCode.WpfDesign.Designer
 				}
 			}
 			return 0;
+		}
+		
+		/// <summary>
+		/// Gets if the specified components can be deleted.
+		/// </summary>
+		public static bool CanDeleteComponents(ICollection<DesignItem> items)
+		{
+			IPlacementBehavior b = PlacementOperation.GetPlacementBehavior(items);
+			return b != null
+				&& b.CanPlace(items, PlacementType.Delete, PlacementAlignment.Center);
+		}
+		
+		/// <summary>
+		/// Deletes the specified components from their parent containers.
+		/// If the deleted components are currently selected, they are deselected before they are deleted.
+		/// </summary>
+		public static void DeleteComponents(ICollection<DesignItem> items)
+		{
+			PlacementOperation operation = PlacementOperation.Start(items, PlacementType.Delete);
+			try {
+				Func.First(items).Services.Selection.SetSelectedComponents(items, SelectionTypes.Remove);
+				operation.DeleteItemsAndCommit();
+			} catch {
+				operation.Abort();
+				throw;
+			}
 		}
 		
 		internal static Size GetDefaultSize(DesignItem createdItem)

@@ -64,7 +64,7 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 		/// </summary>
 		protected virtual DesignItem CreateItem(DesignContext context)
 		{
-			object newInstance = Activator.CreateInstance(componentType);
+			object newInstance = context.Services.ExtensionManager.CreateInstanceWithCustomInstanceFactory(componentType, null);
 			return context.Services.Component.RegisterComponentForDesigner(newInstance);
 		}
 		
@@ -104,7 +104,7 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 				container,
 				new DesignItem[] { createdItem },
 				new Rect[] { new Rect(position, ModelTools.GetDefaultSize(createdItem)) },
-				PlacementType.Move
+				PlacementType.AddItem
 			);
 			if (operation != null) {
 				container.Services.Selection.SetSelectedComponents(new DesignItem[] { createdItem });
@@ -124,9 +124,6 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 				if (result.ModelHit != null) {
 					IPlacementBehavior behavior = result.ModelHit.GetBehavior<IPlacementBehavior>();
 					if (behavior != null) {
-						// ensure the design panel has the focus - otherwise pressing Escape to abort creating doesn't work
-						designPanel.Focus();
-						
 						DesignItem createdItem = CreateItem(designPanel.Context);
 						
 						new CreateComponentMouseGesture(result.ModelHit, createdItem).Start(designPanel, e);

@@ -45,7 +45,6 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 			isStarted = true;
 			this.designPanel = designPanel;
 			this.services = designPanel.Context.Services;
-			designPanel.IsAdornerLayerHitTestVisible = false;
 			if (designPanel.CaptureMouse()) {
 				RegisterEvents();
 				OnStarted(e);
@@ -104,7 +103,6 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 			isStarted = false;
 			designPanel.ReleaseMouseCapture();
 			UnRegisterEvents();
-			designPanel.IsAdornerLayerHitTestVisible = true;
 			OnStopped();
 		}
 		

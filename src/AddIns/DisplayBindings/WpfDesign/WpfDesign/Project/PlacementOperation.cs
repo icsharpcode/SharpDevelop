@@ -82,8 +82,13 @@ namespace ICSharpCode.WpfDesign
 		{
 			if (newContainer == null)
 				throw new ArgumentNullException("newContainer");
+			if (isAborted || isCommitted)
+				throw new InvalidOperationException("The operation is not running anymore.");
 			if (currentContainer == newContainer)
 				return;
+			
+			if (!currentContainerBehavior.CanLeaveContainer(this))
+				throw new NotSupportedException("The items cannot be removed from their parent container.");
 			
 			try {
 				currentContainerBehavior.LeaveContainer(this);
@@ -104,6 +109,22 @@ namespace ICSharpCode.WpfDesign
 				Abort();
 				throw;
 			}
+		}
+		#endregion
+		
+		#region Delete Items
+		/// <summary>
+		/// Deletes the items being placed, and commits the placement operation.
+		/// </summary>
+		public void DeleteItemsAndCommit()
+		{
+			if (isAborted || isCommitted)
+				throw new InvalidOperationException("The operation is not running anymore.");
+			if (!currentContainerBehavior.CanLeaveContainer(this))
+				throw new NotSupportedException("The items cannot be removed from their parent container.");
+			
+			currentContainerBehavior.LeaveContainer(this);
+			Commit();
 		}
 		#endregion
 		

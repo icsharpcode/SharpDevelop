@@ -15,16 +15,23 @@ namespace ICSharpCode.WpfDesign
 	public sealed class PlacementType
 	{
 		/// <summary>
-		/// Placement is done by resizing an element.
+		/// Placement is done by resizing an element in a drag'n'drop operation.
 		/// </summary>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
 		public static readonly PlacementType Resize = Register("Resize");
 		
 		/// <summary>
-		/// Placement is done by moving an element.
+		/// Placement is done by moving an element in a drag'n'drop operation.
 		/// </summary>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
 		public static readonly PlacementType Move = Register("Move");
+		
+		/// <summary>
+		/// Adding an element to a specified position in the container.
+		/// T
+		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
+		public static readonly PlacementType AddItem = Register("AddItem");
 		
 		/// <summary>
 		/// Not a "real" placement, but deleting the element.
