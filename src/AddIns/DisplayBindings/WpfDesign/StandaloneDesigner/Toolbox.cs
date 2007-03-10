@@ -38,7 +38,9 @@ namespace StandaloneDesigner
 					AddTool(typeof(Button));
 					AddTool(typeof(TextBox));
 					AddTool(typeof(CheckBox));
-					
+					AddTool(typeof(Label));
+					AddTool(typeof(Canvas));
+					AddTool(typeof(Grid));
 					toolService.CurrentToolChanged += OnCurrentToolChanged;
 					OnCurrentToolChanged(null, null);
 				}

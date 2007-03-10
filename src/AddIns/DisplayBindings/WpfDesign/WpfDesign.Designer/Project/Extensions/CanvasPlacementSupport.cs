@@ -41,7 +41,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		public Rect GetPosition(PlacementOperation operation, DesignItem childItem)
 		{
 			UIElement child = childItem.View;
-			return new Rect(GetLeft(child), GetTop(child), GetWidth(child), GetHeight(child));
+			return new Rect(GetLeft(child), GetTop(child), ModelTools.GetWidth(child), ModelTools.GetHeight(child));
 		}
 		
 		static double GetLeft(UIElement element)
@@ -62,24 +62,6 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				return v;
 		}
 		
-		static double GetWidth(UIElement element)
-		{
-			double v = (double)element.GetValue(FrameworkElement.WidthProperty);
-			if (double.IsNaN(v))
-				return element.RenderSize.Width;
-			else
-				return v;
-		}
-		
-		static double GetHeight(UIElement element)
-		{
-			double v = (double)element.GetValue(FrameworkElement.HeightProperty);
-			if (double.IsNaN(v))
-				return element.RenderSize.Height;
-			else
-				return v;
-		}
-		
 		/// <inherits/>
 		public void SetPosition(PlacementInformation info)
 		{
@@ -91,10 +73,10 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			if (newPosition.Top != GetTop(child)) {
 				info.Item.Properties.GetAttachedProperty(Canvas.TopProperty).SetValue(newPosition.Top);
 			}
-			if (newPosition.Width != GetWidth(child)) {
+			if (newPosition.Width != ModelTools.GetWidth(child)) {
 				info.Item.Properties.GetProperty(FrameworkElement.WidthProperty).SetValue(newPosition.Right - newPosition.Left);
 			}
-			if (newPosition.Height != GetHeight(child)) {
+			if (newPosition.Height != ModelTools.GetHeight(child)) {
 				info.Item.Properties.GetProperty(FrameworkElement.HeightProperty).SetValue(newPosition.Bottom - newPosition.Top);
 			}
 		}

@@ -15,7 +15,7 @@ using ICSharpCode.WpfDesign.Designer.Controls;
 namespace ICSharpCode.WpfDesign.Designer.Services
 {
 	/// <summary>
-	/// A tool that creates a component when used.
+	/// A tool that creates a component.
 	/// </summary>
 	public class CreateComponentTool : ITool
 	{
@@ -83,7 +83,36 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 			if (e.Data.GetData(typeof(CreateComponentTool)) != this)
 				return;
 			e.Handled = true;
-			MessageBox.Show("Not implemented");
+			
+			IDesignPanel designPanel = (IDesignPanel)sender;
+			DesignPanelHitTestResult result = designPanel.HitTest(e.GetPosition(designPanel), false, true);
+			if (result.ModelHit != null) {
+				designPanel.Focus();
+				
+				DesignItem createdItem = CreateItem(designPanel.Context);
+				AddItemWithDefaultSize(result.ModelHit, createdItem, e.GetPosition(result.ModelHit.View));
+			}
+			
+			if (designPanel.Context.Services.Tool.CurrentTool is CreateComponentTool) {
+				designPanel.Context.Services.Tool.CurrentTool = designPanel.Context.Services.Tool.PointerTool;
+			}
+		}
+		
+		internal static bool AddItemWithDefaultSize(DesignItem container, DesignItem createdItem, Point position)
+		{
+			PlacementOperation operation = PlacementOperation.TryStartInsertNewComponents(
+				container,
+				new DesignItem[] { createdItem },
+				new Rect[] { new Rect(position, ModelTools.GetDefaultSize(createdItem)) },
+				PlacementType.Move
+			);
+			if (operation != null) {
+				container.Services.Selection.SetSelectedComponents(new DesignItem[] { createdItem });
+				operation.Commit();
+				return true;
+			} else {
+				return false;
+			}
 		}
 		
 		void OnMouseDown(object sender, MouseButtonEventArgs e)
@@ -91,7 +120,7 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 			if (e.ChangedButton == MouseButton.Left && MouseGestureBase.IsOnlyButtonPressed(e, MouseButton.Left)) {
 				e.Handled = true;
 				IDesignPanel designPanel = (IDesignPanel)sender;
-				DesignPanelHitTestResult result = designPanel.HitTest(e, false, true);
+				DesignPanelHitTestResult result = designPanel.HitTest(e.GetPosition(designPanel), false, true);
 				if (result.ModelHit != null) {
 					IPlacementBehavior behavior = result.ModelHit.GetBehavior<IPlacementBehavior>();
 					if (behavior != null) {
@@ -165,7 +194,7 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 					operation = null;
 				}
 			} else {
-				
+				CreateComponentTool.AddItemWithDefaultSize(container, createdItem, e.GetPosition(positionRelativeTo));
 			}
 			base.OnMouseUp(sender, e);
 		}
@@ -175,6 +204,9 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 			if (operation != null) {
 				operation.Abort();
 				operation = null;
+			}
+			if (services.Tool.CurrentTool is CreateComponentTool) {
+				services.Tool.CurrentTool = services.Tool.PointerTool;
 			}
 			base.OnStopped();
 		}

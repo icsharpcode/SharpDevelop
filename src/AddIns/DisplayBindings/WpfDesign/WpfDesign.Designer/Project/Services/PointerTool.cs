@@ -33,7 +33,7 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 			if (e.ChangedButton == MouseButton.Left && MouseGestureBase.IsOnlyButtonPressed(e, MouseButton.Left)) {
 				e.Handled = true;
 				IDesignPanel designPanel = (IDesignPanel)sender;
-				DesignPanelHitTestResult result = designPanel.HitTest(e, false, true);
+				DesignPanelHitTestResult result = designPanel.HitTest(e.GetPosition(designPanel), false, true);
 				if (result.ModelHit != null) {
 					IHandlePointerToolMouseDown b = result.ModelHit.GetBehavior<IHandlePointerToolMouseDown>();
 					if (b != null) {

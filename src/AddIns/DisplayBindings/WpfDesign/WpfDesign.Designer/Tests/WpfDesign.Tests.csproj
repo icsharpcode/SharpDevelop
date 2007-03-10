@@ -51,6 +51,7 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Designer\ModelTestHelper.cs" />
     <Compile Include="Designer\ModelTests.cs" />
+    <Compile Include="Designer\PlacementTests.cs" />
     <Compile Include="XamlDom\ExampleClass.cs" />
     <Compile Include="XamlDom\ExampleClassContainer.cs" />
     <Compile Include="XamlDom\ExampleService.cs" />

@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Windows;
 
 namespace ICSharpCode.WpfDesign.Designer
 {
@@ -40,6 +41,29 @@ namespace ICSharpCode.WpfDesign.Designer
 				}
 			}
 			return 0;
+		}
+		
+		internal static Size GetDefaultSize(DesignItem createdItem)
+		{
+			return new Size(GetWidth(createdItem.View), GetHeight(createdItem.View));
+		}
+		
+		internal static double GetWidth(UIElement element)
+		{
+			double v = (double)element.GetValue(FrameworkElement.WidthProperty);
+			if (double.IsNaN(v))
+				return element.RenderSize.Width;
+			else
+				return v;
+		}
+		
+		internal static double GetHeight(UIElement element)
+		{
+			double v = (double)element.GetValue(FrameworkElement.HeightProperty);
+			if (double.IsNaN(v))
+				return element.RenderSize.Height;
+			else
+				return v;
 		}
 	}
 }

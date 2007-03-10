@@ -6,14 +6,14 @@
 // </file>
 
 using System;
-using System.Windows.Input;
+using System.Windows;
 using System.Windows.Media;
 using ICSharpCode.WpfDesign.Adorners;
 
 namespace ICSharpCode.WpfDesign
 {
 	/// <summary>
-	/// Describes the result of a <see cref="IDesignPanel.HitTest(MouseEventArgs, bool, bool)"/> call.
+	/// Describes the result of a <see cref="IDesignPanel.HitTest(Point, bool, bool)"/> call.
 	/// </summary>
 	public struct DesignPanelHitTestResult : IEquatable<DesignPanelHitTestResult>
 	{

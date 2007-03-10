@@ -59,10 +59,10 @@ namespace ICSharpCode.WpfDesign.Designer
 		/// <summary>
 		/// Performs a custom hit testing lookup for the specified mouse event args.
 		/// </summary>
-		public DesignPanelHitTestResult HitTest(MouseEventArgs e, bool testAdorners, bool testDesignSurface)
+		public DesignPanelHitTestResult HitTest(Point mousePosition, bool testAdorners, bool testDesignSurface)
 		{
 			DesignPanelHitTestResult result = DesignPanelHitTestResult.NoHit;
-			HitTest(e, testAdorners, testDesignSurface,
+			HitTest(mousePosition, testAdorners, testDesignSurface,
 			        delegate(DesignPanelHitTestResult r) {
 			        	result = r;
 			        	return false;
@@ -74,9 +74,8 @@ namespace ICSharpCode.WpfDesign.Designer
 		/// Performs a hit test on the design surface, raising <paramref name="callback"/> for each match.
 		/// Hit testing continues while the callback returns true.
 		/// </summary>
-		public void HitTest(MouseEventArgs e, bool testAdorners, bool testDesignSurface, Predicate<DesignPanelHitTestResult> callback)
+		public void HitTest(Point mousePosition, bool testAdorners, bool testDesignSurface, Predicate<DesignPanelHitTestResult> callback)
 		{
-			Point mousePosition = e.GetPosition(this);
 			if (mousePosition.X < 0 || mousePosition.Y < 0 || mousePosition.X > this.RenderSize.Width || mousePosition.Y > this.RenderSize.Height) {
 				return;
 			}

@@ -72,7 +72,7 @@
     <Compile Include="Controls\WindowClone.cs" />
     <Compile Include="DesignPanel.cs" />
     <Compile Include="ModelTools.cs" />
-    <Compile Include="Extensions\CanvasChildResizeSupport.cs" />
+    <Compile Include="Extensions\CanvasPlacementSupport.cs" />
     <Compile Include="Extensions\PanelInstanceFactory.cs" />
     <Compile Include="Extensions\PanelSelectionHandler.cs" />
     <Compile Include="Extensions\SelectedElementRectangleExtension.cs" />

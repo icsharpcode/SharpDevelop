@@ -56,12 +56,11 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 			if (operation != null) {
 				UIElement currentContainer = operation.CurrentContainer.View;
 				Point p = e.GetPosition(currentContainer);
-				if (p.X < 0 || p.Y < 0 || p.X > currentContainer.RenderSize.Width || p.Y > currentContainer.RenderSize.Height) {
-					// outside the bounds of the current container
-					if (operation.CurrentContainerBehavior.CanLeaveContainer(operation)) {
-						if (ChangeContainerIfPossible(e)) {
-							return;
-						}
+				
+				// try to switch the container
+				if (operation.CurrentContainerBehavior.CanLeaveContainer(operation)) {
+					if (ChangeContainerIfPossible(e)) {
+						return;
 					}
 				}
 				
@@ -82,7 +81,7 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 			DesignPanelHitTestResult result = DesignPanelHitTestResult.NoHit;
 			ISelectionService selection = services.Selection;
 			designPanel.HitTest(
-				e, false, true,
+				e.GetPosition(designPanel), false, true,
 				delegate(DesignPanelHitTestResult r) {
 					if (r.ModelHit == null)
 						return true; // continue hit testing
@@ -98,6 +97,7 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 		{
 			DesignPanelHitTestResult result = HitTestUnselectedModel(e);
 			if (result.ModelHit == null) return false;
+			if (result.ModelHit == operation.CurrentContainer) return false;
 			
 			// check that we don't move an item into itself:
 			DesignItem tmp = result.ModelHit;
