@@ -45,6 +45,20 @@ namespace ICSharpCode.WpfDesign.Designer
 		}
 		
 		/// <summary>
+		/// Gets if the specified design item is in the document it belongs to.
+		/// </summary>
+		/// <returns>True for live objects, false for deleted objects.</returns>
+		public static bool IsInDocument(DesignItem item)
+		{
+			DesignItem rootItem = item.Context.RootItem;
+			while (item != null) {
+				if (item == rootItem) return true;
+				item = item.Parent;
+			}
+			return false;
+		}
+		
+		/// <summary>
 		/// Gets if the specified components can be deleted.
 		/// </summary>
 		public static bool CanDeleteComponents(ICollection<DesignItem> items)
@@ -60,9 +74,15 @@ namespace ICSharpCode.WpfDesign.Designer
 		/// </summary>
 		public static void DeleteComponents(ICollection<DesignItem> items)
 		{
+			DesignItem parent = Func.First(items).Parent;
 			PlacementOperation operation = PlacementOperation.Start(items, PlacementType.Delete);
 			try {
-				Func.First(items).Services.Selection.SetSelectedComponents(items, SelectionTypes.Remove);
+				ISelectionService selectionService = Func.First(items).Services.Selection;
+				selectionService.SetSelectedComponents(items, SelectionTypes.Remove);
+				// if the selection is empty after deleting some components, select the parent of the deleted component
+				if (selectionService.SelectionCount == 0 && !items.Contains(parent)) {
+					selectionService.SetSelectedComponents(new DesignItem[] { parent });
+				}
 				operation.DeleteItemsAndCommit();
 			} catch {
 				operation.Abort();

@@ -6,10 +6,11 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows;
-using System.Windows.Input;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Xml;
 
 using ICSharpCode.WpfDesign.Designer.Controls;
@@ -58,7 +59,7 @@ namespace ICSharpCode.WpfDesign.Designer
 			IUndoAction action = Func.First(undoService.UndoActions);
 			Debug.WriteLine("Undo " + action.Title);
 			undoService.Undo();
-			_designContext.Services.Selection.SetSelectedComponents(action.AffectedElements);
+			_designContext.Services.Selection.SetSelectedComponents(GetLiveElements(action.AffectedElements));
 		}
 		
 		void OnUndoCanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -73,13 +74,26 @@ namespace ICSharpCode.WpfDesign.Designer
 			IUndoAction action = Func.First(undoService.RedoActions);
 			Debug.WriteLine("Redo " + action.Title);
 			undoService.Redo();
-			_designContext.Services.Selection.SetSelectedComponents(action.AffectedElements);
+			_designContext.Services.Selection.SetSelectedComponents(GetLiveElements(action.AffectedElements));
 		}
 		
 		void OnRedoCanExecute(object sender, CanExecuteRoutedEventArgs e)
 		{
 			UndoService undoService = GetService<UndoService>();
 			e.CanExecute = undoService != null && undoService.CanRedo;
+		}
+		
+		// Filters an element list, dropping all elements that are not part of the xaml document
+		// (e.g. because they were deleted).
+		static List<DesignItem> GetLiveElements(ICollection<DesignItem> items)
+		{
+			List<DesignItem> result = new List<DesignItem>(items.Count);
+			foreach (DesignItem item in items) {
+				if (ModelTools.IsInDocument(item)) {
+					result.Add(item);
+				}
+			}
+			return result;
 		}
 		#endregion
 		

@@ -7,14 +7,13 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.WpfDesign.Adorners;
-using ICSharpCode.WpfDesign.Extensions;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Shapes;
-using System.Windows.Media;
 using System.Windows.Threading;
+
+using ICSharpCode.WpfDesign.Adorners;
 using ICSharpCode.WpfDesign.Designer.Controls;
+using ICSharpCode.WpfDesign.Extensions;
 
 namespace ICSharpCode.WpfDesign.Designer.Extensions
 {
@@ -22,7 +21,8 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 	/// Allows arranging the rows/column on a grid.
 	/// </summary>
 	[ExtensionFor(typeof(Grid))]
-	public class GridAdornerProvider : PrimarySelectionAdornerProvider
+	[ExtensionServer(typeof(LogicalOrExtensionServer<PrimarySelectionExtensionServer, PrimarySelectionParentExtensionServer>))]
+	public class GridAdornerProvider : AdornerProvider
 	{
 		sealed class RowSplitterPlacement : AdornerPlacement
 		{
@@ -31,9 +31,9 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			
 			public override void Arrange(AdornerPanel panel, UIElement adorner, Size adornedElementSize)
 			{
-				adorner.Arrange(new Rect(-GridRailAdorner.RailSize,
+				adorner.Arrange(new Rect(-(GridRailAdorner.RailSize + GridRailAdorner.RailDistance),
 				                         row.Offset - GridRailAdorner.SplitterWidth / 2,
-				                         GridRailAdorner.RailSize + adornedElementSize.Width,
+				                         GridRailAdorner.RailSize + GridRailAdorner.RailDistance + adornedElementSize.Width,
 				                         GridRailAdorner.SplitterWidth));
 			}
 		}
@@ -46,9 +46,9 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			public override void Arrange(AdornerPanel panel, UIElement adorner, Size adornedElementSize)
 			{
 				adorner.Arrange(new Rect(column.Offset - GridRailAdorner.SplitterWidth / 2,
-				                         -GridRailAdorner.RailSize,
+				                         -(GridRailAdorner.RailSize + GridRailAdorner.RailDistance),
 				                         GridRailAdorner.SplitterWidth,
-				                         GridRailAdorner.RailSize + adornedElementSize.Height));
+				                         GridRailAdorner.RailSize + GridRailAdorner.RailDistance + adornedElementSize.Height));
 			}
 		}
 		
@@ -60,8 +60,12 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			leftBar = new GridRailAdorner(this.ExtendedItem, adornerPanel, Orientation.Vertical);
 			topBar = new GridRailAdorner(this.ExtendedItem, adornerPanel, Orientation.Horizontal);
 			
-			AdornerPanel.SetPlacement(leftBar, new RelativePlacement(HorizontalAlignment.Left, VerticalAlignment.Stretch));
-			AdornerPanel.SetPlacement(topBar, new RelativePlacement(HorizontalAlignment.Stretch, VerticalAlignment.Top));
+			RelativePlacement rp = new RelativePlacement(HorizontalAlignment.Left, VerticalAlignment.Stretch);
+			rp.XOffset -= GridRailAdorner.RailDistance;
+			AdornerPanel.SetPlacement(leftBar, rp);
+			rp = new RelativePlacement(HorizontalAlignment.Stretch, VerticalAlignment.Top);
+			rp.YOffset -= GridRailAdorner.RailDistance;
+			AdornerPanel.SetPlacement(topBar, rp);
 			
 			adornerPanel.Children.Add(leftBar);
 			adornerPanel.Children.Add(topBar);
@@ -110,16 +114,18 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 					}
 					splitterList.Clear();
 					Grid grid = (Grid)this.ExtendedItem.Component;
+					IList<DesignItem> col = this.ExtendedItem.Properties["RowDefinitions"].CollectionElements;
 					for (int i = 1; i < grid.RowDefinitions.Count; i++) {
 						RowDefinition row = grid.RowDefinitions[i];
-						GridRowSplitterAdorner splitter = new GridRowSplitterAdorner();
+						GridRowSplitterAdorner splitter = new GridRowSplitterAdorner(this.ExtendedItem, col[i-1], col[i]);
 						AdornerPanel.SetPlacement(splitter, new RowSplitterPlacement(row));
 						adornerPanel.Children.Add(splitter);
 						splitterList.Add(splitter);
 					}
+					col = this.ExtendedItem.Properties["ColumnDefinitions"].CollectionElements;
 					for (int i = 1; i < grid.ColumnDefinitions.Count; i++) {
 						ColumnDefinition column = grid.ColumnDefinitions[i];
-						GridColumnSplitterAdorner splitter = new GridColumnSplitterAdorner();
+						GridColumnSplitterAdorner splitter = new GridColumnSplitterAdorner(this.ExtendedItem, col[i-1], col[i]);
 						AdornerPanel.SetPlacement(splitter, new ColumnSplitterPlacement(column));
 						adornerPanel.Children.Add(splitter);
 						splitterList.Add(splitter);

@@ -161,6 +161,8 @@
 							<ColumnDefinition Width="10"/> <!-- 10=RailSize -->
 							<ColumnDefinition Width="*"/>
 						</Grid.ColumnDefinitions>
+						<!-- put a transparent rectangle in the rail so the user does not have to hit the small railHandle -->
+						<Rectangle Fill="Transparent"/>
 						<Path Name="railHandle" Fill="#FFE6E6FF" Stretch="Fill" Stroke="#FF584FFF" Data="M0,0 L0,1 1,0.5 z"/>
 						<Path Name="line" Stretch="Fill" Stroke="#FF584FFF" Grid.Column="2" Margin="-1 0 0 0" Data="M0,0.5 L1,0.5"/>
 					</Grid>
@@ -187,6 +189,8 @@
 							<RowDefinition Height="10"/> <!-- 10=RailSize -->
 							<RowDefinition Height="*"/>
 						</Grid.RowDefinitions>
+						<!-- put a transparent rectangle in the rail so the user does not have to hit the small railHandle -->
+						<Rectangle Fill="Transparent"/>
 						<Path Name="railHandle" Fill="#FFE6E6FF" Stretch="Fill" Stroke="#FF584FFF" Data="M0,0 L1,0 0.5,1 z"/>
 						<Path Name="line" Stretch="Fill" Stroke="#FF584FFF" Grid.Row="2" Margin="0 -1 0 0" Data="M0.5,0 L0.5,1"/>
 					</Grid>
