@@ -56,7 +56,9 @@ namespace ICSharpCode.WpfDesign
 			return new PlacementType(name);
 		}
 		
-		/// <inherit/>
+		/// <summary>
+		/// Gets the name used to register this PlacementType.
+		/// </summary>
 		public override string ToString()
 		{
 			return name;

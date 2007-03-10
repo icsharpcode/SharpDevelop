@@ -38,12 +38,10 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 			get { return componentType; }
 		}
 		
-		/// <inherits/>
 		public Cursor Cursor {
 			get { return null; }
 		}
 		
-		/// <inherits/>
 		public void Activate(IDesignPanel designPanel)
 		{
 			designPanel.MouseDown += OnMouseDown;
@@ -51,7 +49,6 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 			designPanel.Drop += OnDrop;
 		}
 		
-		/// <inherits/>
 		public void Deactivate(IDesignPanel designPanel)
 		{
 			designPanel.MouseDown -= OnMouseDown;

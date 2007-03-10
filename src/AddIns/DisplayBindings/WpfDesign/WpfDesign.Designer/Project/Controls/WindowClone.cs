@@ -28,11 +28,11 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 			//This style is defined in themes\generic.xaml
 			DefaultStyleKeyProperty.OverrideMetadata(typeof(WindowClone), new FrameworkPropertyMetadata(typeof(WindowClone)));
 			
-			Control.IsTabStopProperty.OverrideMetadata(typeof(WindowClone), new FrameworkPropertyMetadata(false));
+			Control.IsTabStopProperty.OverrideMetadata(typeof(WindowClone), new FrameworkPropertyMetadata(SharedInstances.BoxedFalse));
 			KeyboardNavigation.DirectionalNavigationProperty.OverrideMetadata(typeof(WindowClone), new FrameworkPropertyMetadata(KeyboardNavigationMode.Cycle));
 			KeyboardNavigation.TabNavigationProperty.OverrideMetadata(typeof(WindowClone), new FrameworkPropertyMetadata(KeyboardNavigationMode.Cycle));
 			KeyboardNavigation.ControlTabNavigationProperty.OverrideMetadata(typeof(WindowClone), new FrameworkPropertyMetadata(KeyboardNavigationMode.Cycle));
-			FocusManager.IsFocusScopeProperty.OverrideMetadata(typeof(WindowClone), new FrameworkPropertyMetadata(true));
+			FocusManager.IsFocusScopeProperty.OverrideMetadata(typeof(WindowClone), new FrameworkPropertyMetadata(SharedInstances.BoxedTrue));
 		}
 		
 		/// <summary>
@@ -40,7 +40,7 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 		/// </summary>
 		public bool AllowsTransparency {
 			get { return (bool)GetValue(Window.AllowsTransparencyProperty); }
-			set { SetValue(Window.AllowsTransparencyProperty, value); }
+			set { SetValue(Window.AllowsTransparencyProperty, SharedInstances.Box(value)); }
 		}
 		
 		/// <summary>
@@ -94,7 +94,7 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 		/// </summary>
 		public bool ShowInTaskbar {
 			get { return (bool)GetValue(Window.ShowInTaskbarProperty); }
-			set { SetValue(Window.ShowInTaskbarProperty, value); }
+			set { SetValue(Window.ShowInTaskbarProperty, SharedInstances.Box(value)); }
 		}
 		
 		/// <summary>
@@ -127,7 +127,7 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 		/// </summary>
 		public bool Topmost {
 			get { return (bool)GetValue(Window.TopmostProperty); }
-			set { SetValue(Window.TopmostProperty, value); }
+			set { SetValue(Window.TopmostProperty, SharedInstances.Box(value)); }
 		}
 		
 		WindowStartupLocation windowStartupLocation;

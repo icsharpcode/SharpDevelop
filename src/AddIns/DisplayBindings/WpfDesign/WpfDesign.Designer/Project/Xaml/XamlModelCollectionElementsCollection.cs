@@ -190,11 +190,13 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			public void Do()
 			{
 				collection.InsertInternal(index, item);
+				collection.modelProperty.DesignItem.NotifyPropertyChanged(collection.modelProperty);
 			}
 			
 			public void Undo()
 			{
 				collection.RemoveInternal(index, item);
+				collection.modelProperty.DesignItem.NotifyPropertyChanged(collection.modelProperty);
 			}
 		}
 		
@@ -226,11 +228,13 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			public void Do()
 			{
 				collection.RemoveInternal(index, item);
+				collection.modelProperty.DesignItem.NotifyPropertyChanged(collection.modelProperty);
 			}
 			
 			public void Undo()
 			{
 				collection.InsertInternal(index, item);
+				collection.modelProperty.DesignItem.NotifyPropertyChanged(collection.modelProperty);
 			}
 		}
 	}

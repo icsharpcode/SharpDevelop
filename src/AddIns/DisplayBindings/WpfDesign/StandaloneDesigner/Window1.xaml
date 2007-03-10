@@ -30,13 +30,12 @@
 		<Canvas Height="50">
 			<Button>CB</Button>
 		</Canvas>
-		<Button>Button 1</Button>
-		<Canvas Height="50">
-			<Button>Button 2</Button>
-		</Canvas>
-		<TabControl Width="300" MinHeight="100">
-			<TabItem Header="Page 1"><StackPanel><Button>a</Button></StackPanel> </TabItem>
-			<TabItem Header="Page 2"><Button>button on page 2</Button></TabItem>
+		<TabControl MinHeight="150">
+			<TabItem Header="StackPanel"><StackPanel><Button>a</Button></StackPanel> </TabItem>
+			<TabItem Header="Button"><Button>button on page 2</Button></TabItem>
+			<TabItem Header="Canvas"><Canvas/></TabItem>
+			<TabItem Header="Grid"><Grid/></TabItem>
+			<TabItem Header="DockPanel"><DockPanel/></TabItem>
 		</TabControl>
 	</StackPanel>
 </Window>

@@ -122,9 +122,10 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			get { return _properties; }
 		}
 		
-		internal void NotifyPropertyChanged(string propertyName)
+		internal void NotifyPropertyChanged(XamlModelProperty property)
 		{
-			OnPropertyChanged(new System.ComponentModel.PropertyChangedEventArgs(propertyName));
+			Debug.Assert(property != null);
+			OnPropertyChanged(new System.ComponentModel.PropertyChangedEventArgs(property.Name));
 		}
 	}
 }

@@ -36,7 +36,7 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 			
 			selectedItems = clickedOn.Services.Selection.SelectedItems;
 			if (!selectedItems.Contains(clickedOn))
-				selectedItems = new DesignItem[0];
+				selectedItems = SharedInstances.EmptyDesignItemArray;
 		}
 		
 		protected override void OnDragStarted(MouseEventArgs e)

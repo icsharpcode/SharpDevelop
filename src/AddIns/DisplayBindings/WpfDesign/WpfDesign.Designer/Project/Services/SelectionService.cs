@@ -52,7 +52,7 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 		public void SetSelectedComponents(ICollection<DesignItem> components, SelectionTypes selectionType)
 		{
 			if (components == null)
-				components = new DesignItem[0];
+				components = SharedInstances.EmptyDesignItemArray;
 			
 			if (SelectionChanging != null)
 				SelectionChanging(this, EventArgs.Empty);

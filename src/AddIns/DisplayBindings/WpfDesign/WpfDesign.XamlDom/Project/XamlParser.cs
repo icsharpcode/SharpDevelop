@@ -220,7 +220,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				XamlPropertyValue childValue = ParseValue(childNode);
 				if (childValue != null) {
 					if (defaultProperty != null && defaultProperty.IsCollection) {
-						defaultProperty.AddValue(defaultPropertyValue, childValue);
+						CollectionSupport.AddToCollection(defaultProperty.ReturnType, defaultPropertyValue, childValue);
 						defaultCollectionProperty.ParserAddCollectionElement(null, childValue);
 					} else {
 						if (setDefaultValueTo != null)
@@ -448,7 +448,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				XamlPropertyValue childValue = ParseValue(childNode);
 				if (childValue != null) {
 					if (propertyInfo.IsCollection) {
-						propertyInfo.AddValue(collectionInstance, childValue);
+						CollectionSupport.AddToCollection(propertyInfo.ReturnType, collectionInstance, childValue);
 						collectionProperty.ParserAddCollectionElement(element, childValue);
 					} else {
 						if (valueWasSet)

@@ -66,7 +66,7 @@
 	<Style TargetType="{x:Type src:WindowClone}">
 		<Setter Property="Template">
 			<Setter.Value>
-				<ControlTemplate TargetType="src:WindowClone">
+				<ControlTemplate TargetType="{x:Type src:WindowClone}">
 					<Border Background="{DynamicResource {x:Static SystemColors.GradientActiveCaptionBrushKey}}" BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}" BorderThickness="1,1,1,1" CornerRadius="5,5,5,5">
 						<DockPanel Margin="4,0,4,4">
 							<DockPanel Height="26" DockPanel.Dock="Top">
@@ -106,7 +106,7 @@
 		<Setter Property="ShowInTaskbar" Value="False"/>
 		<Setter Property="Template">
 			<Setter.Value>
-				<ControlTemplate TargetType="src:ErrorBalloon">
+				<ControlTemplate TargetType="{x:Type src:ErrorBalloon}">
 					<Grid x:Name="LayoutRoot">
 						<Grid.ColumnDefinitions>
 							<ColumnDefinition Width="*"/>
@@ -141,5 +141,66 @@
 			</Setter.Value>
 		</Setter>
 	</Style>
-
+	
+	<Style TargetType="{x:Type src:GridRailAdorner}">
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="{x:Type src:GridRailAdorner}">
+					<Rectangle Fill="#302020ff"/>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+	
+	<Style TargetType="{x:Type src:GridRowSplitterAdorner}">
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="{x:Type src:GridRowSplitterAdorner}">
+					<Grid Height="{x:Static src:GridRailAdorner.SplitterWidth}">
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="10"/> <!-- 10=RailSize -->
+							<ColumnDefinition Width="*"/>
+						</Grid.ColumnDefinitions>
+						<Path Name="railHandle" Fill="#FFE6E6FF" Stretch="Fill" Stroke="#FF584FFF" Data="M0,0 L0,1 1,0.5 z"/>
+						<Path Name="line" Stretch="Fill" Stroke="#FF584FFF" Grid.Column="2" Margin="-1 0 0 0" Data="M0,0.5 L1,0.5"/>
+					</Grid>
+					<ControlTemplate.Triggers>
+						<Trigger Property="IsMouseOver" Value="True">
+							<Setter TargetName="railHandle" Property="Fill" Value="#FFFFB74F"/>
+						</Trigger>
+						<Trigger Property="IsPreview" Value="True">
+							<Setter TargetName="railHandle" Property="Stroke" Value="#D0FFB74F"/>
+							<Setter TargetName="line" Property="Stroke" Value="#D0FFB74F"/>
+						</Trigger>
+					</ControlTemplate.Triggers>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+	
+	<Style TargetType="{x:Type src:GridColumnSplitterAdorner}">
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="{x:Type src:GridColumnSplitterAdorner}">
+					<Grid Width="{x:Static src:GridRailAdorner.SplitterWidth}">
+						<Grid.RowDefinitions>
+							<RowDefinition Height="10"/> <!-- 10=RailSize -->
+							<RowDefinition Height="*"/>
+						</Grid.RowDefinitions>
+						<Path Name="railHandle" Fill="#FFE6E6FF" Stretch="Fill" Stroke="#FF584FFF" Data="M0,0 L1,0 0.5,1 z"/>
+						<Path Name="line" Stretch="Fill" Stroke="#FF584FFF" Grid.Row="2" Margin="0 -1 0 0" Data="M0.5,0 L0.5,1"/>
+					</Grid>
+					<ControlTemplate.Triggers>
+						<Trigger Property="IsMouseOver" Value="True">
+							<Setter TargetName="railHandle" Property="Fill" Value="#FFFFB74F"/>
+						</Trigger>
+						<Trigger Property="IsPreview" Value="True">
+							<Setter TargetName="railHandle" Property="Stroke" Value="#D0FFB74F"/>
+							<Setter TargetName="line" Property="Stroke" Value="#D0FFB74F"/>
+						</Trigger>
+					</ControlTemplate.Triggers>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
 </ResourceDictionary>

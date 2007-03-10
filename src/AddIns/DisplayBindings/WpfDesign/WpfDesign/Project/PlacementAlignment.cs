@@ -61,7 +61,9 @@ namespace ICSharpCode.WpfDesign
 			return this.horizontal == other.horizontal && this.vertical == other.vertical;
 		}
 		
-		/// <inherit/>
+		/// <summary>
+		/// Gets the hash code.
+		/// </summary>
 		public override int GetHashCode()
 		{
 			unchecked {

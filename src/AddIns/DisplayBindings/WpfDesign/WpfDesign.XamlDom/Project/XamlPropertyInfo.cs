@@ -34,7 +34,6 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		public abstract bool IsCollection { get; }
 		public virtual bool IsEvent { get { return false; } }
 		public abstract string Category { get; }
-		internal abstract void AddValue(object collectionInstance, XamlPropertyValue newElement);
 	}
 	
 	#region XamlDependencyPropertyInfo
@@ -99,11 +98,6 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		public override void ResetValue(object instance)
 		{
 			((DependencyObject)instance).ClearValue(property);
-		}
-		
-		internal override void AddValue(object collectionInstance, XamlPropertyValue newElement)
-		{
-			throw new NotSupportedException();
 		}
 	}
 	#endregion
@@ -173,11 +167,6 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				return CollectionSupport.IsCollectionType(_propertyDescriptor.PropertyType);
 			}
 		}
-		
-		internal override void AddValue(object collectionInstance, XamlPropertyValue newElement)
-		{
-			CollectionSupport.AddToCollection(_propertyDescriptor.PropertyType, collectionInstance, newElement);
-		}
 	}
 	#endregion
 	
@@ -242,11 +231,6 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		
 		public override bool IsCollection {
 			get { return false; }
-		}
-		
-		internal override void AddValue(object collectionInstance, XamlPropertyValue newElement)
-		{
-			throw new NotSupportedException();
 		}
 	}
 	#endregion

@@ -22,7 +22,6 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 	[ExtensionFor(typeof(Canvas))]
 	public sealed class CanvasPlacementSupport : BehaviorExtension, IPlacementBehavior
 	{
-		/// <inherits/>
 		protected override void OnInitialized()
 		{
 			base.OnInitialized();
@@ -31,7 +30,6 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		
 		GrayOutDesignerExceptActiveArea grayOut;
 		
-		/// <inherits/>
 		public bool CanPlace(ICollection<DesignItem> child, PlacementType type, PlacementAlignment position)
 		{
 			return type == PlacementType.Resize || type == PlacementType.Move
@@ -39,7 +37,6 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				|| type == PlacementType.AddItem;
 		}
 		
-		/// <inherits/>
 		public Rect GetPosition(PlacementOperation operation, DesignItem childItem)
 		{
 			UIElement child = childItem.View;
@@ -64,7 +61,6 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				return v;
 		}
 		
-		/// <inherits/>
 		public void SetPosition(PlacementInformation info)
 		{
 			UIElement child = info.Item.View;
@@ -83,7 +79,6 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			}
 		}
 		
-		/// <inherits/>
 		public void BeginPlacement(PlacementOperation op)
 		{
 			if (op.Type == PlacementType.Move || op.Type == PlacementType.Resize) {
@@ -91,19 +86,16 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			}
 		}
 		
-		/// <inherits/>
 		public void EndPlacement(PlacementOperation op)
 		{
 			GrayOutDesignerExceptActiveArea.Stop(ref grayOut);
 		}
 		
-		/// <inherits/>
 		public bool CanLeaveContainer(PlacementOperation operation)
 		{
 			return true;
 		}
 		
-		/// <inherits/>
 		public void LeaveContainer(PlacementOperation operation)
 		{
 			EndPlacement(operation);
@@ -114,13 +106,11 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			}
 		}
 		
-		/// <inherits/>
 		public bool CanEnterContainer(PlacementOperation operation)
 		{
 			return true;
 		}
 		
-		/// <inherits/>
 		public void EnterContainer(PlacementOperation operation)
 		{
 			foreach (PlacementInformation info in operation.PlacedItems) {

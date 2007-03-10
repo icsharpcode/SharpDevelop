@@ -11,6 +11,8 @@ using System.Collections.Generic;
 
 namespace ICSharpCode.WpfDesign.Designer
 {
+	delegate void Action();
+	
 	// Static helpers that should become extension methods in the future
 	static class Func
 	{

@@ -44,6 +44,15 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			}
 		}
 		
+		public static void Insert(Type collectionType, object collectionInstance, XamlPropertyValue newElement, int index)
+		{
+			collectionType.InvokeMember(
+				"Insert", BindingFlags.Public | BindingFlags.InvokeMethod | BindingFlags.Instance,
+				null, collectionInstance,
+				new object[] { index, newElement.GetValueFor(null) },
+				CultureInfo.InvariantCulture);
+		}
+		
 		static readonly Type[] RemoveAtParameters = { typeof(int) };
 		
 		public static bool RemoveItemAt(Type collectionType, object collectionInstance, int index)

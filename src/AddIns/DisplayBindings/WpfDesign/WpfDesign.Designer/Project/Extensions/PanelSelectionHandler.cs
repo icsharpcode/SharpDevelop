@@ -26,14 +26,12 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 	[ExtensionFor(typeof(Panel))]
 	public class PanelSelectionHandler : BehaviorExtension, IHandlePointerToolMouseDown
 	{
-		/// <inherit/>
 		protected override void OnInitialized()
 		{
 			base.OnInitialized();
 			this.ExtendedItem.AddBehavior(typeof(IHandlePointerToolMouseDown), this);
 		}
 		
-		/// <inherit/>
 		public void HandleSelectionMouseDown(IDesignPanel designPanel, MouseButtonEventArgs e, DesignPanelHitTestResult result)
 		{
 			new RangeSelectionGesture(result.ModelHit).Start(designPanel, e);

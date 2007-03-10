@@ -190,7 +190,7 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			_property.ValueOnInstance = value;
 			_property.PropertyValue = newValue;
 			
-			_designItem.NotifyPropertyChanged(this.Name);
+			_designItem.NotifyPropertyChanged(this);
 		}
 		
 		public override void Reset()
@@ -206,7 +206,7 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 		{
 			if (_property.IsSet) {
 				_property.Reset();
-				_designItem.NotifyPropertyChanged(this.Name);
+				_designItem.NotifyPropertyChanged(this);
 			}
 		}
 		

@@ -12,6 +12,7 @@
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <OutputPath>..\..\..\..\..\..\AddIns\AddIns\DisplayBindings\WpfDesign\</OutputPath>
     <DocumentationFile>..\..\..\..\..\..\AddIns\AddIns\DisplayBindings\WpfDesign\ICSharpCode.WpfDesign.Designer.xml</DocumentationFile>
+    <NoWarn>1591</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -58,6 +59,7 @@
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Controls\AdornerLayer.cs" />
     <Compile Include="Controls\ContainerDragHandle.cs" />
+    <Compile Include="Controls\GridAdorner.cs" />
     <Compile Include="Controls\SelectionFrame.cs" />
     <Compile Include="Controls\ErrorBalloon.cs" />
     <Compile Include="Controls\GrayOutDesignerExceptActiveArea.cs" />
@@ -71,6 +73,7 @@
     <Compile Include="Controls\TypeEditors\BrushEditor.cs" />
     <Compile Include="Controls\WindowClone.cs" />
     <Compile Include="DesignPanel.cs" />
+    <Compile Include="Extensions\GridAdornerProvider.cs" />
     <Compile Include="ModelTools.cs" />
     <Compile Include="Extensions\CanvasPlacementSupport.cs" />
     <Compile Include="Extensions\PanelInstanceFactory.cs" />
@@ -94,6 +97,7 @@
     <Compile Include="Services\UndoService.cs" />
     <Compile Include="Services\ViewService.cs" />
     <Compile Include="DesignSurface.cs" />
+    <Compile Include="SharedInstances.cs" />
     <Compile Include="Xaml\XamlModelCollectionElementsCollection.cs" />
     <Compile Include="Xaml\XamlComponentService.cs" />
     <Compile Include="Xaml\XamlDesignContext.cs" />

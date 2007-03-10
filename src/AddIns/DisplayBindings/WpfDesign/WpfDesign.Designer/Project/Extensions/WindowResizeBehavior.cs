@@ -18,14 +18,12 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 	[ExtensionFor(typeof(Window))]
 	public class WindowResizeBehavior : BehaviorExtension, IRootPlacementBehavior
 	{
-		/// <inherits/>
 		protected override void OnInitialized()
 		{
 			base.OnInitialized();
 			this.ExtendedItem.AddBehavior(typeof(IRootPlacementBehavior), this);
 		}
 		
-		/// <inherits/>
 		public bool CanPlace(ICollection<DesignItem> children, PlacementType type, PlacementAlignment position)
 		{
 			return type == PlacementType.Resize &&
@@ -35,24 +33,20 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		}
 		
 		
-		/// <inherits/>
 		public void BeginPlacement(PlacementOperation operation)
 		{
 		}
 		
-		/// <inherits/>
 		public void EndPlacement(PlacementOperation operation)
 		{
 		}
 		
-		/// <inherits/>
 		public Rect GetPosition(PlacementOperation operation, DesignItem childItem)
 		{
 			UIElement child = childItem.View;
 			return new Rect(0, 0, ModelTools.GetWidth(child), ModelTools.GetHeight(child));
 		}
 		
-		/// <inherits/>
 		public void SetPosition(PlacementInformation info)
 		{
 			UIElement element = info.Item.View;
@@ -65,25 +59,21 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			}
 		}
 		
-		/// <inherits/>
 		public bool CanLeaveContainer(PlacementOperation operation)
 		{
 			return false;
 		}
 		
-		/// <inherits/>
 		public void LeaveContainer(PlacementOperation operation)
 		{
 			throw new NotSupportedException();
 		}
 		
-		/// <inherits/>
 		public bool CanEnterContainer(PlacementOperation operation)
 		{
 			return false;
 		}
 		
-		/// <inherits/>
 		public void EnterContainer(PlacementOperation operation)
 		{
 			throw new NotSupportedException();

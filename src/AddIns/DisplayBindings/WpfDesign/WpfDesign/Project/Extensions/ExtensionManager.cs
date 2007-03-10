@@ -216,6 +216,8 @@ namespace ICSharpCode.WpfDesign.Extensions
 		#endregion
 		
 		#region Special extensions (Instance Factory)
+		static readonly object[] emptyObjectArray = new object[0];
+		
 		/// <summary>
 		/// Create an instance of the specified type using the specified arguments.
 		/// The instance is created using a CustomInstanceFactory registered for the type,
@@ -226,7 +228,7 @@ namespace ICSharpCode.WpfDesign.Extensions
 			if (instanceType == null)
 				throw new ArgumentNullException("instanceType");
 			if (arguments == null)
-				arguments = new object[0];
+				arguments = emptyObjectArray;
 			foreach (Type extensionType in GetExtensionTypes(instanceType)) {
 				if (typeof(CustomInstanceFactory).IsAssignableFrom(extensionType)) {
 					CustomInstanceFactory factory = (CustomInstanceFactory)Activator.CreateInstance(extensionType);
