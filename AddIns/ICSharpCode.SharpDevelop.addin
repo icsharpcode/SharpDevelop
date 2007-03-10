@@ -606,6 +606,10 @@
 	</Path>
 	
 	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ReferenceNode">
+		<MenuItem id    = "RefreshReference"
+		          icon  = "Icons.16x16.BrowserRefresh"
+		          label = "${res:AddIns.HtmlHelp2.Refresh}"
+		          class = "ICSharpCode.SharpDevelop.Project.Commands.RefreshReference"/>
 		<MenuItem id    = "Remove"
 		          label = "${res:Global.RemoveButtonText}"
 		          icon  = "Icons.16x16.DeleteIcon"
