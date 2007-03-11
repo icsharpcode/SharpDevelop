@@ -55,7 +55,26 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 			drawingContext.DrawGeometry(grayOutBrush, null, combinedGeometry);
 		}
 		
+		Rect currentAnimateActiveAreaRectToTarget;
+		
+		internal void AnimateActiveAreaRectTo(Rect newRect)
+		{
+			if (newRect.Equals(currentAnimateActiveAreaRectToTarget))
+				return;
+			activeAreaGeometry.BeginAnimation(
+				RectangleGeometry.RectProperty,
+				new RectAnimation(newRect, new Duration(new TimeSpan(0,0,0,0,100))),
+				HandoffBehavior.SnapshotAndReplace);
+			currentAnimateActiveAreaRectToTarget = newRect;
+		}
+		
 		internal static void Start(ref GrayOutDesignerExceptActiveArea grayOut, ServiceContainer services, UIElement activeContainer)
+		{
+			Debug.Assert(activeContainer != null);
+			Start(ref grayOut, services, activeContainer, new Rect(activeContainer.RenderSize));
+		}
+		
+		internal static void Start(ref GrayOutDesignerExceptActiveArea grayOut, ServiceContainer services, UIElement activeContainer, Rect activeRectInActiveContainer)
 		{
 			Debug.Assert(services != null);
 			Debug.Assert(activeContainer != null);
@@ -68,7 +87,7 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 				grayOut.adornerPanel.Order = AdornerOrder.BehindForeground;
 				grayOut.adornerPanel.SetAdornedElement(designPanel.Context.RootItem.View, null);
 				grayOut.adornerPanel.Children.Add(grayOut);
-				grayOut.ActiveAreaGeometry = new RectangleGeometry(new Rect(activeContainer.RenderSize), 0, 0, (Transform)activeContainer.TransformToVisual(grayOut.adornerPanel.AdornedElement));
+				grayOut.ActiveAreaGeometry = new RectangleGeometry(activeRectInActiveContainer, 0, 0, (Transform)activeContainer.TransformToVisual(grayOut.adornerPanel.AdornedElement));
 				Animate(grayOut.GrayOutBrush, Brush.OpacityProperty, 0, MaxOpacity);
 				designPanel.Adorners.Add(grayOut.adornerPanel);
 			}

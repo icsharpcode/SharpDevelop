@@ -115,6 +115,9 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			foreach (PlacementInformation info in operation.PlacedItems) {
 				this.ExtendedItem.Properties["Children"].CollectionElements.Add(info.Item);
 				SetPosition(info);
+				info.Item.Properties[FrameworkElement.HorizontalAlignmentProperty].Reset();
+				info.Item.Properties[FrameworkElement.VerticalAlignmentProperty].Reset();
+				info.Item.Properties[FrameworkElement.MarginProperty].Reset();
 			}
 			BeginPlacement(operation);
 		}

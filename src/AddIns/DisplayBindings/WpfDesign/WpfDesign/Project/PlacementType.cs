@@ -28,7 +28,7 @@ namespace ICSharpCode.WpfDesign
 		
 		/// <summary>
 		/// Adding an element to a specified position in the container.
-		/// T
+		/// AddItem is used when dragging a toolbox item to the design surface.
 		/// </summary>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
 		public static readonly PlacementType AddItem = Register("AddItem");

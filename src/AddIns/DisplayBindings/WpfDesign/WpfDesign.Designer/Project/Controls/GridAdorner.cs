@@ -244,12 +244,12 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 			if (original1.IsStar && originalPixelSize1 > 0)
 				new1 = new GridLength(original1.Value * (originalPixelSize1 + delta) / originalPixelSize1, GridUnitType.Star);
 			else
-				new1 = new GridLength(original1.Value + delta);
+				new1 = new GridLength(originalPixelSize1 + delta);
 			GridLength new2;
 			if (original2.IsStar && originalPixelSize2 > 0)
 				new2 = new GridLength(original2.Value * (originalPixelSize2 - delta) / originalPixelSize2, GridUnitType.Star);
 			else
-				new2 = new GridLength(original2.Value - delta);
+				new2 = new GridLength(originalPixelSize2 - delta);
 			firstRow.Properties[RowColumnSizeProperty].SetValue(new1);
 			secondRow.Properties[RowColumnSizeProperty].SetValue(new2);
 			((UIElement)VisualTreeHelper.GetParent(this)).InvalidateArrange();
