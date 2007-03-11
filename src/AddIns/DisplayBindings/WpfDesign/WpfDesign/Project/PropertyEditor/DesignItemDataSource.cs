@@ -150,5 +150,17 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 		public ServiceContainer Services {
 			get { return item.Services; }
 		}
+		
+		/// <summary>See <see cref="IPropertyEditorDataSource"/></summary>
+		public Brush CreateThumbnailBrush()
+		{
+			if (item.View != null) {
+				VisualBrush b = new VisualBrush(item.View);
+				b.AutoLayoutContent = false;
+				return b;
+			} else {
+				return null;
+			}
+		}
 	}
 }

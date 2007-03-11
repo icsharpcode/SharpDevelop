@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Windows.Media;
 
 namespace ICSharpCode.WpfDesign.PropertyEditor
 {
@@ -126,6 +127,12 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 		/// </summary>
 		public ServiceContainer Services {
 			get { return services; }
+		}
+		
+		/// <summary>See <see cref="IPropertyEditorDataSource"/></summary>
+		public Brush CreateThumbnailBrush()
+		{
+			return null;
 		}
 	}
 }

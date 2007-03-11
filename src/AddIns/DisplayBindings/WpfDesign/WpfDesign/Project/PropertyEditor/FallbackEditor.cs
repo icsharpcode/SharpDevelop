@@ -44,20 +44,24 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 			} else {
 				this.FontWeight = FontWeights.Regular;
 			}
-			object val = property.Value;
-			if (val == null) {
-				this.Text = "null";
-				this.FontStyle = FontStyles.Italic;
+			if (property.IsAmbiguous) {
+				this.Text = "";
 			} else {
-				this.FontStyle = FontStyles.Normal;
-				try {
-					this.Text = val.ToString();
-				} catch (Exception ex) {
-					this.FontWeight = FontWeights.Regular;
-					Inlines.Clear();
-					Inlines.Add(new Italic(new Run(ex.GetType().Name)));
-					Inlines.Add(" ");
-					Inlines.Add(ex.Message);
+				object val = property.Value;
+				if (val == null) {
+					this.Text = "null";
+					this.FontStyle = FontStyles.Italic;
+				} else {
+					this.FontStyle = FontStyles.Normal;
+					try {
+						this.Text = val.ToString();
+					} catch (Exception ex) {
+						this.FontWeight = FontWeights.Regular;
+						Inlines.Clear();
+						Inlines.Add(new Italic(new Run(ex.GetType().Name)));
+						Inlines.Add(" ");
+						Inlines.Add(ex.Message);
+					}
 				}
 			}
 		}

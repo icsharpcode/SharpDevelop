@@ -52,6 +52,11 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 		/// Gets the service container attached to this data source.
 		/// </summary>
 		ServiceContainer Services { get; }
+		
+		/// <summary>
+		/// Gets a brush used as a preview for the data source.
+		/// </summary>
+		Brush CreateThumbnailBrush();
 	}
 	
 	/// <summary>

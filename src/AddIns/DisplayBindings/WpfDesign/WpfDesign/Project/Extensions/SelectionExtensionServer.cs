@@ -96,8 +96,6 @@ namespace ICSharpCode.WpfDesign.Extensions
 	/// </summary>
 	public class PrimarySelectionParentExtensionServer : DefaultExtensionServer
 	{
-		DesignItem oldPrimarySelectionParent;
-		
 		/// <summary>
 		/// Is called after the extension server is initialized and the Context property has been set.
 		/// </summary>
@@ -107,30 +105,32 @@ namespace ICSharpCode.WpfDesign.Extensions
 			this.Services.Selection.PrimarySelectionChanged += OnPrimarySelectionChanged;
 		}
 		
-		DesignItem PrimarySelectionParent {
-			get {
-				DesignItem newPrimarySelection = this.Services.Selection.PrimarySelection;
-				if (newPrimarySelection != null) {
-					return newPrimarySelection.Parent;
-				} else {
-					return null;
-				}
-			}
-		}
+		DesignItem primarySelection;
+		DesignItem primarySelectionParent;
 		
 		void OnPrimarySelectionChanged(object sender, EventArgs e)
 		{
-			DesignItem newPrimarySelectionParent = PrimarySelectionParent;
-			
-			if (oldPrimarySelectionParent != newPrimarySelectionParent) {
-				if (oldPrimarySelectionParent == null) {
-					ReapplyExtensions(new DesignItem[] { newPrimarySelectionParent });
-				} else if (newPrimarySelectionParent == null) {
-					ReapplyExtensions(new DesignItem[] { oldPrimarySelectionParent });
-				} else {
-					ReapplyExtensions(new DesignItem[] { oldPrimarySelectionParent, newPrimarySelectionParent });
+			DesignItem newPrimarySelection = this.Services.Selection.PrimarySelection;
+			if (primarySelection != newPrimarySelection) {
+				if (primarySelection != null) {
+					primarySelection.ParentChanged -= OnParentChanged;
 				}
-				oldPrimarySelectionParent = newPrimarySelectionParent;
+				if (newPrimarySelection != null) {
+					newPrimarySelection.ParentChanged += OnParentChanged;
+				}
+				primarySelection = newPrimarySelection;
+				OnParentChanged(sender, e);
+			}
+		}
+		
+		void OnParentChanged(object sender, EventArgs e)
+		{
+			DesignItem newPrimarySelectionParent = primarySelection != null ? primarySelection.Parent : null;
+			
+			if (primarySelectionParent != newPrimarySelectionParent) {
+				DesignItem oldPrimarySelectionParent = primarySelectionParent;
+				primarySelectionParent = newPrimarySelectionParent;
+				ReapplyExtensions(new DesignItem[] { oldPrimarySelectionParent, newPrimarySelectionParent });
 			}
 		}
 		
@@ -139,7 +139,7 @@ namespace ICSharpCode.WpfDesign.Extensions
 		/// </summary>
 		public override bool ShouldApplyExtensions(DesignItem extendedItem)
 		{
-			return PrimarySelectionParent == extendedItem;
+			return primarySelectionParent == extendedItem;
 		}
 	}
 }

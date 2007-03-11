@@ -103,12 +103,15 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				default:
 					throw new NotSupportedException();
 			}
-			return new Rect(left, top, width, height);
+			return new Rect(left, top, Math.Max(0, width), Math.Max(0, height));
 		}
 		
 		double GetColumnOffset(int index)
 		{
-			if (index < grid.ColumnDefinitions.Count)
+			// when the grid has no columns, we still need to return 0 for index=0 and grid.Width for index=1
+			if (index == 0)
+				return 0;
+			else if (index < grid.ColumnDefinitions.Count)
 				return grid.ColumnDefinitions[index].Offset;
 			else
 				return grid.ActualWidth;
@@ -116,7 +119,9 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		
 		double GetRowOffset(int index)
 		{
-			if (index < grid.RowDefinitions.Count)
+			if (index == 0)
+				return 0;
+			else if (index < grid.RowDefinitions.Count)
 				return grid.RowDefinitions[index].Offset;
 			else
 				return grid.ActualHeight;

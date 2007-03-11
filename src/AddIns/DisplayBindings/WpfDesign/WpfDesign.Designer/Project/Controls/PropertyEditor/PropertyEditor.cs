@@ -35,7 +35,7 @@ namespace ICSharpCode.WpfDesign.Designer
 		// this is not compiled, but gives us code-completion inside SharpDevelop
 		TextBox nameTextBox;
 		Label typeLabel;
-		Image componentImage;
+		Rectangle componentImage;
 		TextBox searchTextBox;
 		StackPanel contentStackPanel;
 		#endif
@@ -73,7 +73,9 @@ namespace ICSharpCode.WpfDesign.Designer
 		
 		void OnEditedObjectPropertyChanged(DependencyPropertyChangedEventArgs e)
 		{
-			ShowProperties(e.NewValue as IPropertyEditorDataSource);
+			IPropertyEditorDataSource dataSource = e.NewValue as IPropertyEditorDataSource;
+			componentImage.Fill = dataSource != null ? dataSource.CreateThumbnailBrush() : null;
+			ShowProperties(dataSource);
 			if (EditedObjectChanged != null) {
 				EditedObjectChanged(this, EventArgs.Empty);
 			}

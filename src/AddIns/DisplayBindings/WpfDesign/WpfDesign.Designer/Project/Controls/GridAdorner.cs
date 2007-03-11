@@ -118,6 +118,8 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 						rowCollection.CollectionElements.Insert(i + 1, newRowDefinition);
 						rowCollection.CollectionElements[i].Properties[RowDefinition.HeightProperty].SetValue(newLength1);
 						newRowDefinition.Properties[RowDefinition.HeightProperty].SetValue(newLength2);
+						
+						FixIndicesAfterSplit(i, Grid.RowProperty, Grid.RowSpanProperty);
 						changeGroup.Commit();
 						gridItem.Services.Selection.SetSelectedComponents(new DesignItem[] { newRowDefinition }, SelectionTypes.Auto);
 						break;
@@ -141,14 +143,29 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 						GridLength oldLength = (GridLength)column.GetValue(ColumnDefinition.WidthProperty);
 						GridLength newLength1, newLength2;
 						SplitLength(oldLength, insertionPosition - column.Offset, column.ActualWidth, out newLength1, out newLength2);
-						columnCollection.CollectionElements[i].Properties[ColumnDefinition.WidthProperty].SetValue(newLength1);
 						DesignItem newColumnDefinition = gridItem.Services.Component.RegisterComponentForDesigner(new ColumnDefinition());
-						newColumnDefinition.Properties[ColumnDefinition.WidthProperty].SetValue(newLength2);
 						columnCollection.CollectionElements.Insert(i + 1, newColumnDefinition);
+						columnCollection.CollectionElements[i].Properties[ColumnDefinition.WidthProperty].SetValue(newLength1);
+						newColumnDefinition.Properties[ColumnDefinition.WidthProperty].SetValue(newLength2);
+						FixIndicesAfterSplit(i, Grid.ColumnProperty, Grid.ColumnSpanProperty);
 						changeGroup.Commit();
 						gridItem.Services.Selection.SetSelectedComponents(new DesignItem[] { newColumnDefinition }, SelectionTypes.Auto);
 						break;
 					}
+				}
+			}
+		}
+		
+		void FixIndicesAfterSplit(int splitIndex, DependencyProperty idxProperty, DependencyProperty spanProperty)
+		{
+			// increment ColSpan of all controls in the split column, increment Column of all controls in later columns:
+			foreach (DesignItem child in gridItem.Properties["Children"].CollectionElements) {
+				int start = (int)child.Properties.GetAttachedProperty(idxProperty).ValueOnInstance;
+				int span = (int)child.Properties.GetAttachedProperty(spanProperty).ValueOnInstance;
+				if (start <= splitIndex && splitIndex < start + span) {
+					child.Properties.GetAttachedProperty(spanProperty).SetValue(span + 1);
+				} else if (start > splitIndex) {
+					child.Properties.GetAttachedProperty(idxProperty).SetValue(start + 1);
 				}
 			}
 		}

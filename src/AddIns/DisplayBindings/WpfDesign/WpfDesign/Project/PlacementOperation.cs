@@ -159,7 +159,8 @@ namespace ICSharpCode.WpfDesign
 					info.OriginalBounds = op.currentContainerBehavior.GetPosition(op, info.Item);
 					info.Bounds = info.OriginalBounds;
 				}
-			} catch {
+			} catch (Exception ex) {
+				Debug.WriteLine(ex.ToString());
 				op.changeGroup.Abort();
 				throw;
 			}

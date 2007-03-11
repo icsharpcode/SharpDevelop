@@ -33,13 +33,23 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		public XamlProperty ParentProperty {
 			get { return _parentProperty; }
 			internal set {
-				_parentProperty = value;
-				OnParentPropertyChanged();
+				if (_parentProperty != value) {
+					_parentProperty = value;
+					OnParentPropertyChanged();
+				}
 			}
 		}
 		
+		/// <summary>
+		/// Occurs when the value of the ParentProperty property changes.
+		/// </summary>
+		public event EventHandler ParentPropertyChanged;
+		
 		internal virtual void OnParentPropertyChanged()
 		{
+			if (ParentPropertyChanged != null) {
+				ParentPropertyChanged(this, EventArgs.Empty);
+			}
 		}
 		
 		internal abstract void RemoveNodeFromParent();

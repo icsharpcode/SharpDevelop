@@ -49,6 +49,11 @@ namespace ICSharpCode.WpfDesign
 		public abstract DesignItem Parent { get; }
 		
 		/// <summary>
+		/// Occurs when the parent of this design item changes.
+		/// </summary>
+		public abstract event EventHandler ParentChanged;
+		
+		/// <summary>
 		/// Gets the property where this DesignItem is used as a value.
 		/// </summary>
 		public abstract DesignItemProperty ParentProperty { get; }

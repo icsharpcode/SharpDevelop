@@ -41,7 +41,9 @@ namespace ICSharpCode.WpfDesign.Extensions
 		void ReapplyExtensions(IEnumerable<DesignItem> items, ExtensionServer server)
 		{
 			foreach (DesignItem item in items) {
-				item.ReapplyExtensionServer(this, server);
+				if (item != null) {
+					item.ReapplyExtensionServer(this, server);
+				}
 			}
 		}
 		

@@ -13,7 +13,7 @@
 						<ColumnDefinition Width="*" />
 						<ColumnDefinition Width="Auto" />
 					</Grid.ColumnDefinitions>
-					<Image Grid.Column="0" Width="32" Height="32" Name="componentImage" />
+					<Rectangle Grid.Column="0" Width="32" Height="32" Name="componentImage"/>
 					<Grid Grid.Column="1" Margin="0 0 2 0">
 						<Grid.ColumnDefinitions>
 							<ColumnDefinition Width="Auto" />

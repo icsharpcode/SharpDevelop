@@ -100,6 +100,14 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			}
 		}
 		
+		/// <summary>
+		/// Occurs when the parent of this design item changes.
+		/// </summary>
+		public override event EventHandler ParentChanged {
+			add    { _xamlObject.ParentPropertyChanged += value; }
+			remove { _xamlObject.ParentPropertyChanged += value; }
+		}
+		
 		public override UIElement View {
 			get {
 				if (_view != null)

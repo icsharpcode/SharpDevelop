@@ -71,6 +71,7 @@
     <Compile Include="Controls\ResizeThumb.cs" />
     <Compile Include="Controls\SingleVisualChildElement.cs" />
     <Compile Include="Controls\TypeEditors\BrushEditor.cs" />
+    <Compile Include="Controls\TypeEditors\ContentEditor.cs" />
     <Compile Include="Controls\WindowClone.cs" />
     <Compile Include="DesignPanel.cs" />
     <Compile Include="Extensions\GridAdornerProvider.cs" />

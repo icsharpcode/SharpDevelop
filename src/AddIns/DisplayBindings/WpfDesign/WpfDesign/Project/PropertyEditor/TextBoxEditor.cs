@@ -22,7 +22,7 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 	/// <summary>
 	/// Type editor used to edit properties using a text box and the type's default type converter.
 	/// </summary>
-	sealed class TextBoxEditor : TextBox
+	public sealed class TextBoxEditor : TextBox
 	{
 		readonly IPropertyEditorDataProperty property;
 		bool isDirty;
@@ -33,6 +33,9 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 		/// </summary>
 		public TextBoxEditor(IPropertyEditorDataProperty property)
 		{
+			if (property == null)
+				throw new ArgumentNullException("property");
+			
 			this.property = property;
 			UpdateFromSource();
 			PropertyEditorBindingHelper.AddValueChangedEventHandler(

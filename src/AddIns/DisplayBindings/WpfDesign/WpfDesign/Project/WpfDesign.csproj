@@ -90,6 +90,7 @@
     <Compile Include="PlacementType.cs" />
     <Compile Include="PropertyEditor\BooleanEditor.cs" />
     <Compile Include="PropertyEditor\MultipleSelectionDataProperty.cs" />
+    <Compile Include="PropertyEditor\ProxyPropertyEditorDataProperty.cs" />
     <Compile Include="PropertyEditor\StandardValuesComboBoxEditor.cs" />
     <Compile Include="PropertyEditor\DesignItemDataProperty.cs" />
     <Compile Include="PropertyEditor\DesignItemDataSource.cs" />
