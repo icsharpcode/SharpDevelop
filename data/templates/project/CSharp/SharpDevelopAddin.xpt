@@ -15,6 +15,7 @@
 	<!-- Actions -->
 	<Actions>
 		<Open filename = "${ProjectName}.addin"/>
+		<Open filename = "AddInWritingHelp.txt"/>
 	</Actions>
 	
 	<Project language = "C#">
@@ -155,6 +156,7 @@ public class TestPad : AbstractPadContent
 }
 ]]></File>
 			<File name="Configuration/AssemblyInfo.cs" src="DefaultAssemblyInfo.cs"/>
+			<File name="AddInWritingHelp.txt" src="..\AddInWritingHelp.txt"/>
 		</Files>
 	</Project>
 </Template>
