@@ -32,7 +32,8 @@ namespace SharpDbTools.Oracle.Forms
 			                     + ": creating MetaDataNode for: " + logicalConnectionName);
 			// create root node of the metadata collections tree
 			
-			TreeNode metaNode = new TreeNode("Db Objects");
+			string nodeName = ResourceService.GetString("SharpDbTools.Data.DbObjectNodeName");
+			TreeNode metaNode = new TreeNode(nodeName);
 			
 			// retrieve the metadata for this logical connection name
 			
@@ -52,7 +53,9 @@ namespace SharpDbTools.Oracle.Forms
 					LoggingService.Debug("looking for metadata: " + metadataCollectionName);
 					DataTable metaCollectionTable = info.Tables[metadataCollectionName];
 					LoggingService.Debug("found metadata collection: " + metadataCollectionName);
-					TreeNode collectionNode = new TreeNode(metadataCollectionName);
+					string nodeDisplayNameKey = "SharpDbTools.Data.PrimaryObjects." + metadataCollectionName;
+					string nodeDisplayName = ResourceService.GetString(nodeDisplayNameKey);
+					TreeNode collectionNode = new TreeNode(nodeDisplayName);
 					collectionNode.Name = logicalConnectionName + ":Collection:" + metadataCollectionName;
 					metaNode.Nodes.Add(collectionNode);
 					foreach (DataRow dbObjectRow in metaCollectionTable.Rows) {

@@ -47,6 +47,7 @@
     <Compile Include="Src\Forms\DbModelInfoTreeNode.cs" />
     <Compile Include="Src\Forms\FormsArtefactFactories.cs" />
     <Compile Include="Src\Forms\FormsArtefactFactory.cs" />
+    <EmbeddedResource Include="Resources\Strings.resx" />
     <EmbeddedResource Include="Src\Forms\ConnectionStringDefinitionDialog.resx">
       <DependentUpon>ConnectionStringDefinitionDialog.cs</DependentUpon>
     </EmbeddedResource>

@@ -48,8 +48,10 @@
     <Compile Include="Src\Forms\ServerBrowserTool.cs" />
     <Compile Include="Src\Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\Forms\ProgressEllipsis.cs" />
+    <EmbeddedResource Include="Resources\Strings.resx" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Resources" />
     <Folder Include="Src" />
     <Folder Include="Src\Configuration" />
     <Folder Include="Src\Forms" />

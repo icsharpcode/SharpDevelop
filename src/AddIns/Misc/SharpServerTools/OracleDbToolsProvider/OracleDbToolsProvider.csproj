@@ -44,6 +44,7 @@
     <Compile Include="Src\Forms\OracleFormsArtefactFactory.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Resources" />
     <Folder Include="Src" />
     <Folder Include="Src\Forms" />
     <ProjectReference Include="..\..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
