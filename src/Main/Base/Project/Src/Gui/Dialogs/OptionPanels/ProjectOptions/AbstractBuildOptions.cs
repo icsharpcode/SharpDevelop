@@ -22,9 +22,12 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		{
 			helper.BindString(Get<TextBox>("baseIntermediateOutputPath"),
 			                  "BaseIntermediateOutputPath",
+			                  TextBoxEditMode.EditRawProperty,
 			                  delegate { return @"obj\"; }
 			                 ).CreateLocationButton("baseIntermediateOutputPathTextBox");
-			ConnectBrowseFolder("baseIntermediateOutputPathBrowseButton", "baseIntermediateOutputPathTextBox", "${res:Dialog.Options.PrjOptions.Configuration.FolderBrowserDescription}");
+			ConnectBrowseFolder("baseIntermediateOutputPathBrowseButton", "baseIntermediateOutputPathTextBox", 
+			                    "${res:Dialog.Options.PrjOptions.Configuration.FolderBrowserDescription}",
+			                    TextBoxEditMode.EditRawProperty);
 		}
 		
 		protected void InitIntermediateOutputPath()
@@ -32,6 +35,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			ConfigurationGuiBinding binding = helper.BindString(
 				Get<TextBox>("intermediateOutputPath"),
 				"IntermediateOutputPath",
+				TextBoxEditMode.EditRawProperty,
 				delegate {
 					return Path.Combine(helper.GetProperty("BaseIntermediateOutputPath", @"obj\", true),
 					                    helper.Configuration);
@@ -39,19 +43,23 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			);
 			binding.DefaultLocation = PropertyStorageLocations.ConfigurationSpecific;
 			binding.CreateLocationButton("intermediateOutputPathTextBox");
-			ConnectBrowseFolder("intermediateOutputPathBrowseButton", "intermediateOutputPathTextBox", "${res:Dialog.Options.PrjOptions.Configuration.FolderBrowserDescription}");
+			ConnectBrowseFolder("intermediateOutputPathBrowseButton",
+			                    "intermediateOutputPathTextBox",
+			                    "${res:Dialog.Options.PrjOptions.Configuration.FolderBrowserDescription}",
+			                    TextBoxEditMode.EditRawProperty);
 		}
 		
 		protected void InitOutputPath()
 		{
-			helper.BindString("outputPathTextBox", "OutputPath").CreateLocationButton("outputPathTextBox");
-			ConnectBrowseFolder("outputPathBrowseButton", "outputPathTextBox", "${res:Dialog.Options.PrjOptions.Configuration.FolderBrowserDescription}");
+			helper.BindString("outputPathTextBox", "OutputPath", TextBoxEditMode.EditRawProperty)
+				.CreateLocationButton("outputPathTextBox");
+			ConnectBrowseFolder("outputPathBrowseButton", "outputPathTextBox", "${res:Dialog.Options.PrjOptions.Configuration.FolderBrowserDescription}", TextBoxEditMode.EditRawProperty);
 		}
 		
 		protected void InitXmlDoc()
 		{
 			ConfigurationGuiBinding b;
-			b = helper.BindString("xmlDocumentationTextBox", "DocumentationFile");
+			b = helper.BindString("xmlDocumentationTextBox", "DocumentationFile", TextBoxEditMode.EditRawProperty);
 			b.CreateLocationButton("xmlDocumentationCheckBox");
 			helper.Loaded += XmlDocHelperLoaded;
 			XmlDocHelperLoaded(null, null);
@@ -88,13 +96,13 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			                          new StringPair("3", "3"),
 			                          new StringPair("4", "4"));
 			ChooseStorageLocationButton locationButton = b.CreateLocationButtonInPanel("warningsGroupBox");
-			b = helper.BindString("suppressWarningsTextBox", "NoWarn");
+			b = helper.BindString("suppressWarningsTextBox", "NoWarn", TextBoxEditMode.EditEvaluatedProperty);
 			b.RegisterLocationButton(locationButton);
 			
 			b = new WarningsAsErrorsBinding(this);
 			helper.AddBinding("TreatWarningsAsErrors", b);
 			locationButton = b.CreateLocationButtonInPanel("treatWarningsAsErrorsGroupBox");
-			b = helper.BindString("specificWarningsTextBox", "WarningsAsErrors"); // must be saved AFTER TreatWarningsAsErrors
+			b = helper.BindString("specificWarningsTextBox", "WarningsAsErrors", TextBoxEditMode.EditEvaluatedProperty); // must be saved AFTER TreatWarningsAsErrors
 			b.RegisterLocationButton(locationButton);
 			
 			EventHandler setDirty = delegate {

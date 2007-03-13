@@ -20,15 +20,14 @@ namespace ICSharpCode.WixBinding
 		{
 			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("ICSharpCode.WixBinding.Resources.ApplicationSettingsPanel.xfrm"));
 			InitializeHelper();
-						
+			
 			ConfigurationGuiBinding b;
-			b = helper.BindString("outputNameTextBox", "OutputName");
+			b = helper.BindString("outputNameTextBox", "OutputName", TextBoxEditMode.EditEvaluatedProperty);
 			b.CreateLocationButton("outputNameTextBox");
 			Get<TextBox>("outputName").TextChanged += RefreshOutputFileNameTextBox;
 			
-			ConnectBrowseButton("localizedStringFileBrowseButton", "localizedStringFileTextBox", "${res:ICSharpCode.WixBinding.WixLocalizationFileFilterName} (*.wxl)|*.wxl|${res:SharpDevelop.FileFilter.AllFiles}|*.*");
-			b = helper.BindString("localizedStringFileTextBox", "LocalizedStringFile");
-			b.TreatPropertyValueAsLiteral = false;
+			ConnectBrowseButton("localizedStringFileBrowseButton", "localizedStringFileTextBox", "${res:ICSharpCode.WixBinding.WixLocalizationFileFilterName} (*.wxl)|*.wxl|${res:SharpDevelop.FileFilter.AllFiles}|*.*", TextBoxEditMode.EditEvaluatedProperty);
+			b = helper.BindString("localizedStringFileTextBox", "LocalizedStringFile", TextBoxEditMode.EditRawProperty);
 			b.CreateLocationButton("localizedStringFileTextBox");
 			
 			b = helper.BindEnum<WixOutputType>("outputTypeComboBox", "OutputType");

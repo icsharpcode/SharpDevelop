@@ -21,25 +21,23 @@ namespace ICSharpCode.WixBinding
 			InitializeHelper();
 			
 			ConfigurationGuiBinding b;
-			b = helper.BindString("outputPathTextBox", "OutputPath");
+			b = helper.BindString("outputPathTextBox", "OutputPath", TextBoxEditMode.EditRawProperty);
 			b.CreateLocationButton("outputPathTextBox");
-			ConnectBrowseFolder("outputPathBrowseButton", "outputPathTextBox", "${res:Dialog.Options.PrjOptions.Configuration.FolderBrowserDescription}");
+			ConnectBrowseFolder("outputPathBrowseButton", "outputPathTextBox", "${res:Dialog.Options.PrjOptions.Configuration.FolderBrowserDescription}", TextBoxEditMode.EditRawProperty);
 
-			b = helper.BindString("baseOutputPathTextBox", "BaseOutputPath");
+			b = helper.BindString("baseOutputPathTextBox", "BaseOutputPath", TextBoxEditMode.EditRawProperty);
 			b.CreateLocationButton("baseOutputPathTextBox");
-			ConnectBrowseFolder("baseOutputPathBrowseButton", "baseOutputPathTextBox", "${res:Dialog.Options.PrjOptions.Configuration.FolderBrowserDescription}");
+			ConnectBrowseFolder("baseOutputPathBrowseButton", "baseOutputPathTextBox", "${res:Dialog.Options.PrjOptions.Configuration.FolderBrowserDescription}", TextBoxEditMode.EditRawProperty);
 			
-			b = helper.BindString("intermediateOutputPathTextBox", "IntermediateOutputPath");
+			b = helper.BindString("intermediateOutputPathTextBox", "IntermediateOutputPath", TextBoxEditMode.EditRawProperty);
 			b.CreateLocationButton("intermediateOutputPathTextBox");
-			ConnectBrowseFolder("intermediateOutputPathBrowseButton", "intermediateOutputPathTextBox", "${res:Dialog.Options.PrjOptions.Configuration.FolderBrowserDescription}");
+			ConnectBrowseFolder("intermediateOutputPathBrowseButton", "intermediateOutputPathTextBox", "${res:Dialog.Options.PrjOptions.Configuration.FolderBrowserDescription}", TextBoxEditMode.EditRawProperty);
 			
-			b = helper.BindString("wixToolPathTextBox", "WixToolPath");
-			b.TreatPropertyValueAsLiteral = false;
-			ConnectBrowseFolder("wixToolPathBrowseButton", "wixToolPathTextBox", String.Empty);
+			b = helper.BindString("wixToolPathTextBox", "WixToolPath", TextBoxEditMode.EditRawProperty);
+			ConnectBrowseFolder("wixToolPathBrowseButton", "wixToolPathTextBox", String.Empty, TextBoxEditMode.EditRawProperty);
 			
-			b = helper.BindString("wixMSBuildExtensionsPathTextBox", "WixMSBuildExtensionsPath");
-			b.TreatPropertyValueAsLiteral = false;
-			ConnectBrowseFolder("wixMSBuildExtensionsPathBrowseButton", "wixMSBuildExtensionsPathTextBox", String.Empty);
+			b = helper.BindString("wixMSBuildExtensionsPathTextBox", "WixMSBuildExtensionsPath", TextBoxEditMode.EditRawProperty);
+			ConnectBrowseFolder("wixMSBuildExtensionsPathBrowseButton", "wixMSBuildExtensionsPathTextBox", String.Empty, TextBoxEditMode.EditRawProperty);
 
 			// Add the extension picker in manually since the anchoring does not
 			// work if we add the picker into the XML of the CompilerParametersPanel.xfrm file.
@@ -66,7 +64,7 @@ namespace ICSharpCode.WixBinding
 			                          new StringPair("2", "2"),
 			                          new StringPair("3", "3"));
 			ChooseStorageLocationButton locationButton = b.CreateLocationButtonInPanel("errorsAndWarningsGroupBox");
-			b = helper.BindString("suppressWarningsTextBox", "NoWarn");
+			b = helper.BindString("suppressWarningsTextBox", "NoWarn", TextBoxEditMode.EditEvaluatedProperty);
 			b.RegisterLocationButton(locationButton);
 			
 			b = helper.BindBoolean("treatWarningsAsErrorsCheckBox", "TreatWarningsAsErrors", false);

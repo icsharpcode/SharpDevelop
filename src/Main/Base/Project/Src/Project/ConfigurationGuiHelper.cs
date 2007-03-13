@@ -18,6 +18,26 @@ using ICSharpCode.SharpDevelop.Gui;
 namespace ICSharpCode.SharpDevelop.Project
 {
 	/// <summary>
+	/// Specifies whether the user enters the property value or the MSBuild code for
+	/// the property value.
+	/// </summary>
+	public enum TextBoxEditMode
+	{
+		/// <summary>
+		/// The user edits the MSBuild property value. It is not evaluated on loading,
+		/// and not escaped when saving.
+		/// The user can use MSBuild properties with $() in the text box.
+		/// </summary>
+		EditRawProperty,
+		/// <summary>
+		/// The user edits the property. When loading the value, it is evaluated;
+		/// when saving the value, it is escaped.
+		/// The user cannot use MSBuild properties with $() because the $ will be escaped.
+		/// </summary>
+		EditEvaluatedProperty
+	}
+	
+	/// <summary>
 	/// Class that helps connecting configuration GUI controls to MsBuild properties.
 	/// </summary>
 	public class ConfigurationGuiHelper : ICanBeDirty
@@ -232,20 +252,37 @@ namespace ICSharpCode.SharpDevelop.Project
 		#region Bind string to TextBox or ComboBox
 		static Func<string> GetEmptyString = delegate { return ""; };
 		
+		[Obsolete("Please explicitly specify textBoxEditMode")]
 		public ConfigurationGuiBinding BindString(string control, string property)
 		{
-			return BindString(controlDictionary[control], property, GetEmptyString);
+			return BindString(controlDictionary[control], property, TextBoxEditMode.EditEvaluatedProperty, GetEmptyString);
 		}
 		
+		[Obsolete("Please explicitly specify textBoxEditMode")]
 		public ConfigurationGuiBinding BindString(Control control, string property)
 		{
-			return BindString(control, property, GetEmptyString);
+			return BindString(control, property, TextBoxEditMode.EditEvaluatedProperty, GetEmptyString);
 		}
 		
-		public ConfigurationGuiBinding BindString(Control control, string property, Func<string> defaultValueProvider)
+		public ConfigurationGuiBinding BindString(string control, string property, TextBoxEditMode textBoxEditMode)
+		{
+			return BindString(controlDictionary[control], property, textBoxEditMode, GetEmptyString);
+		}
+		
+		public ConfigurationGuiBinding BindString(Control control, string property, TextBoxEditMode textBoxEditMode)
+		{
+			return BindString(control, property, textBoxEditMode, GetEmptyString);
+		}
+		
+		public ConfigurationGuiBinding BindString(Control control, string property, TextBoxEditMode textBoxEditMode, Func<string> defaultValueProvider)
 		{
 			if (control is TextBoxBase || control is ComboBox) {
 				SimpleTextBinding binding = new SimpleTextBinding(control, defaultValueProvider);
+				if (textBoxEditMode == TextBoxEditMode.EditEvaluatedProperty) {
+					binding.TreatPropertyValueAsLiteral = true;
+				} else {
+					binding.TreatPropertyValueAsLiteral = false;
+				}
 				AddBinding(property, binding);
 				control.TextChanged += ControlValueChanged;
 				if (control is ComboBox) {

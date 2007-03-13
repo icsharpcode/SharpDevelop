@@ -7,6 +7,7 @@
 
 using System;
 using ICSharpCode.SharpDevelop.Gui.OptionPanels;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace Grunwald.BooBinding
 {
@@ -31,15 +32,13 @@ namespace Grunwald.BooBinding
 			helper.BindBoolean("noCorlibCheckBox", "NoStdLib", false).CreateLocationButton("noCorlibCheckBox");
 			helper.BindBoolean("duckyCheckBox", "Ducky", false).CreateLocationButton("duckyCheckBox");
 			
-			helper.BindString("pipelineTextBox", "Pipeline").CreateLocationButton("pipelineLabel");
+			helper.BindString("pipelineTextBox", "Pipeline", TextBoxEditMode.EditEvaluatedProperty).CreateLocationButton("pipelineLabel");
 			
 			//InitWarnings();
 			
 			//
-			helper.BindString("baseIntermediateOutputPathTextBox", "BaseIntermediateOutputPath").CreateLocationButton("baseIntermediateOutputPathTextBox");
-			ConnectBrowseFolder("baseIntermediateOutputPathBrowseButton", "baseIntermediateOutputPathTextBox", "${res:Dialog.Options.PrjOptions.Configuration.FolderBrowserDescription}");
-			helper.BindString("intermediateOutputPathTextBox", "IntermediateOutputPath").CreateLocationButton("intermediateOutputPathTextBox");
-			ConnectBrowseFolder("intermediateOutputPathBrowseButton", "intermediateOutputPathTextBox", "${res:Dialog.Options.PrjOptions.Configuration.FolderBrowserDescription}");
+			InitBaseIntermediateOutputPath();
+			InitIntermediateOutputPath();
 			//
 			
 			helper.AddConfigurationSelector(this);
