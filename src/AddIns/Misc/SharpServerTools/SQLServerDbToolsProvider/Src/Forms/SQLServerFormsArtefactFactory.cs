@@ -16,9 +16,13 @@ using SharpDbTools.Forms;
 namespace SharpDbTools.SQLServer.Forms
 {
 	/// <summary>
-	/// Description of MetaDataNodeBuilder.
-	/// TODO: currently this is just a flat list - need to reflect ownership
-	/// relationships such as schema etc
+	/// Creates a TreeNode that displays the metadata for a SQLServer database
+	/// Uses:
+	/// <item>DbModelInfo and DbModelInfoService: to access the metadata</item>
+	/// <item>TableTreeNode: to display Table metadata - this has 'Describe' 
+	/// behaviour associated with it, accessed via a right mouse menu</item>
+	/// Going forward this should reflect the structure and relationship
+	/// of SQLServer objects - for now it is generic
 	/// </summary>
 	public class SQLServerFormsArtefactFactory : FormsArtefactFactory
 	{
@@ -32,7 +36,8 @@ namespace SharpDbTools.SQLServer.Forms
 			                     + ": creating MetaDataNode for: " + logicalConnectionName);
 			// create root node of the metadata collections tree
 			
-			TreeNode metaNode = new TreeNode("Db Objects");
+			string nodeName = ResourceService.GetString("SharpDbTools.Forms.DbObjectNodeName");
+			TreeNode metaNode = new TreeNode(nodeName);
 			
 			// retrieve the metadata for this logical connection name
 			
@@ -52,7 +57,9 @@ namespace SharpDbTools.SQLServer.Forms
 					LoggingService.Debug("looking for metadata: " + metadataCollectionName);
 					DataTable metaCollectionTable = info.Tables[metadataCollectionName];
 					LoggingService.Debug("found metadata collection: " + metadataCollectionName);
-					TreeNode collectionNode = new TreeNode(metadataCollectionName);
+					string nodeDisplayNameKey = "SharpDbTools.Data.PrimaryObjects." + metadataCollectionName;
+					string nodeDisplayName = ResourceService.GetString(nodeDisplayNameKey);
+					TreeNode collectionNode = new TreeNode(nodeDisplayName);
 					metaNode.Nodes.Add(collectionNode);
 					
 					if (metaCollectionTable != null) {

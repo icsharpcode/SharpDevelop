@@ -25,11 +25,6 @@ namespace SharpDbTools.Forms
 		{
 		}
 		
-		static FormsArtefactFactory()
-		{
-			ResourceService.RegisterStrings("SharpDbTools.Resources.Strings", typeof(FormsArtefactFactory).Assembly);
-		}
-		
 		public abstract TreeNode CreateMetaDataNode(string name);
 		public abstract string[] GetDescribeTableFieldNames();
 		public abstract string[] GetDescribeTableColumnHeaderNames();

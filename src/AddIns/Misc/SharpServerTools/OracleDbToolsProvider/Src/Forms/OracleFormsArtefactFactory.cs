@@ -32,7 +32,7 @@ namespace SharpDbTools.Oracle.Forms
 			                     + ": creating MetaDataNode for: " + logicalConnectionName);
 			// create root node of the metadata collections tree
 			
-			string nodeName = ResourceService.GetString("SharpDbTools.Data.DbObjectNodeName");
+			string nodeName = ResourceService.GetString("SharpDbTools.Forms.DbObjectNodeName");
 			TreeNode metaNode = new TreeNode(nodeName);
 			
 			// retrieve the metadata for this logical connection name

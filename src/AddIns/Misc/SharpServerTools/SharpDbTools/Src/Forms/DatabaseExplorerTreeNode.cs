@@ -23,20 +23,32 @@ namespace SharpDbTools.Forms
 	/// Hold minimal state - access state through the DbModelInfoService
 	/// </summary>
 	public class DatabaseExplorerTreeNode: TreeNode, IRebuildable, IRequiresRebuildSource, ISupportsDragDrop
-	{	
-		public DatabaseExplorerTreeNode(): base("Database Explorer")
+	{
+		static DatabaseExplorerTreeNode()
 		{
+			ResourceService.RegisterStrings("SharpDbTools.Resources.Strings", typeof(DatabaseExplorerTreeNode).Assembly);
+		}
+		
+		public DatabaseExplorerTreeNode(): base()
+		{
+			this.Text = ResourceService.GetString("SharpDbTools.Forms.DbExplorerNodeName");
 			ContextMenuStrip cMenu = new ContextMenuStrip();
 			ToolStripMenuItem addConnectionMenuItem = 
-				new ToolStripMenuItem("Add Connection");
+				new ToolStripMenuItem();
+			addConnectionMenuItem.Text = 
+				ResourceService.GetString("SharpDbTools.Forms.AddConnectionMenu");
 			addConnectionMenuItem.Click += new EventHandler(AddDbConnectionClickHandler);
 			
 			ToolStripMenuItem deleteConnectionMenuItem = 
-				new ToolStripMenuItem("Delete Connection");
+				new ToolStripMenuItem();
+			deleteConnectionMenuItem.Text = 
+				ResourceService.GetString("SharpDbTools.Forms.DeleteConnectionMenu");
 			deleteConnectionMenuItem.Click += new EventHandler(DeleteDbConnectionClickHandler);
 			
 			ToolStripMenuItem saveMetadataMenuItem =
-				new ToolStripMenuItem("Save All");
+				new ToolStripMenuItem();
+			saveMetadataMenuItem.Text = 
+				ResourceService.GetString("SharpDbTools.Forms.SaveAllMenu");
 			saveMetadataMenuItem.Click += new EventHandler(SaveDbModelInfoClickHandler);
 			
 

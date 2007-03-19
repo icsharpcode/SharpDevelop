@@ -47,18 +47,22 @@ namespace SharpDbTools.Forms
 			// create menu items
 			
 			ToolStripMenuItem setConnectionStringMenuItem = 
-				new ToolStripMenuItem("Set Connection String");
+				new ToolStripMenuItem();
+			setConnectionStringMenuItem.Text = ResourceService.GetString("SharpDbTools.Forms.SetConnectionStringMenu");
 			setConnectionStringMenuItem.Click += new EventHandler(SetConnectionStringOnDbModelInfoClickHandler);
 			
 			ToolStripMenuItem loadMetadataFromConnectionMenuItem =
-				new ToolStripMenuItem("Load Metadata from Connection");
+				new ToolStripMenuItem();
+			loadMetadataFromConnectionMenuItem.Text = ResourceService.GetString("SharpDbTools.Forms.LoadMetadataFromConnectionMenu");
 			loadMetadataFromConnectionMenuItem.Click += new EventHandler(LoadMetadataFromConnectionClickHandler);
 			
 			ToolStripMenuItem loadMetadataFromFileMenuItem =
-				new ToolStripMenuItem("Load Metadata from File");
+				new ToolStripMenuItem();
+			loadMetadataFromFileMenuItem.Text = ResourceService.GetString("SharpDbTools.Forms.LoadMetadataFromFileMenu");
 			loadMetadataFromFileMenuItem.Click += new EventHandler(LoadMetadataFromFileClickHandler);
 			
-			ToolStripMenuItem openSQLToolMenuItem = new ToolStripMenuItem("Open SQL Tool");	
+			ToolStripMenuItem openSQLToolMenuItem = new ToolStripMenuItem();	
+			openSQLToolMenuItem.Text = ResourceService.GetString("SharpDbTools.Forms.OpenSQLToolMenu");
 			openSQLToolMenuItem.Click += new EventHandler(OpenSQLToolClickHandler);
 			
 			cMenu.Items.AddRange(new ToolStripMenuItem[] 
@@ -116,14 +120,17 @@ namespace SharpDbTools.Forms
 			string invariantName = modelInfo.InvariantName;
 			
 			TreeNode attributesNode = new TreeNode("Connection Properties");
+			attributesNode.Text = ResourceService.GetString("SharpDbTools.Forms.ConnectionPropertiesNodeName");
 				
 			if (connectionString != null) {
-				TreeNode cstringNode = new TreeNode("Connection String: " + connectionString);
+				TreeNode cstringNode = new TreeNode();
+				cstringNode.Text = ResourceService.GetString("SharpDbTools.Forms.ConnectionStringNodeName") + connectionString;
 				attributesNode.Nodes.Add(cstringNode);
 			}
 			
 			if (invariantName != null) {
-				TreeNode invNameNode = new TreeNode("Invariant Name: " + invariantName);
+				TreeNode invNameNode = new TreeNode();
+				invNameNode.Text = ResourceService.GetString("SharpDbTools.Forms.InvariantNameNodeName") + invariantName;
 				attributesNode.Nodes.Add(invNameNode);
 			}
 			

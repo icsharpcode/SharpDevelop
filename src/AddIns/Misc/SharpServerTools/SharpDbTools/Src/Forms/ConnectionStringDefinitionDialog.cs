@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data.Common;
 using System.Windows.Forms;
+using ICSharpCode.Core;
 
 using SharpDbTools.Data;
 
@@ -40,6 +41,19 @@ namespace SharpDbTools.Forms
 			// The InitializeComponent() call is required for Windows Forms designer support.
 			//
 			InitializeComponent();
+			
+			// overwrite Text properties using ResourceService
+			
+			this.testButton.Text = ResourceService.GetString("SharpDbTools.Forms.TestButton");
+			this.submitButton.Text = ResourceService.GetString("SharpDbTools.Forms.SubmitButton");
+			this.cancelButton.Text = ResourceService.GetString("SharpDbTools.Forms.CancelButton");
+			this.dataSourceTypeLabel.Text = ResourceService.GetString("SharpDbTools.Forms.DataSourceTypeLabel");
+			this.connectionStringLabel.Text = ResourceService.GetString("SharpDbTools.Forms.ConnectionStringLabel");
+			this.connectionStringTab.Text = ResourceService.GetString("SharpDbTools.Forms.ConnectionStringTab");
+			this.testResultTab.Text = ResourceService.GetString("SharpDbTools.Forms.TestResultTab");
+			this.Text = ResourceService.GetString("SharpDbTools.Forms.ConnectionStringDefinitionDialog");
+			
+			
 			this.connStringPropertyGrid.PropertyValueChanged += 
 				new PropertyValueChangedEventHandler(this.ConnStringAttributesViewPropertyValueChanged);
 			// add a ProgressBar to the statusString
@@ -187,12 +201,13 @@ namespace SharpDbTools.Forms
 				connection.ConnectionString = this.ConnectionString;
 
 				connection.Open();				
-				e.Result = "Connection Succeeded";
+				e.Result = ResourceService.GetString("SharpDbTools.Forms.ConnectionSucceededMsg"); //"Connection Succeeded";
 				connectionTestState = ConnectionTestState.TestSucceeded;
 			}
 			catch(Exception ex)
 			{
-				e.Result = "Connection Failed: " + ex.Message;
+				e.Result =  
+					ResourceService.GetString("SharpDbTools.Forms.ConnectionFailedMsg") + ex.Message; /*"Connection Failed: "*/
 				connectionTestState = ConnectionTestState.TestFailed;
 			}
 			finally

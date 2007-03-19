@@ -133,7 +133,73 @@
   <data name="SharpDbTools.Data.PrimaryObjects.Users" xml:space="preserve">
     <value>Users</value>
   </data>
-  <data name="SharpDbTools.Data.DbObjectNodeName" xml:space="preserve">
+  <data name="SharpDbTools.Forms.DbObjectNodeName" xml:space="preserve">
     <value>Db Objects</value>
+  </data>
+  <data name="SharpDbTools.Forms.DbExplorerNodeName" xml:space="preserve">
+    <value>Database Explorer</value>
+  </data>
+  <data name="SharpDbTools.Forms.AddConnectionMenu" xml:space="preserve">
+    <value>Add Connection</value>
+  </data>
+  <data name="SharpDbTools.Forms.DeleteConnectionMenu" xml:space="preserve">
+    <value>Delete Connection</value>
+  </data>
+  <data name="SharpDbTools.Forms.SaveAllMenu" xml:space="preserve">
+    <value>Save All</value>
+  </data>
+  <data name="SharpDbTools.Forms.ConnectionPropertiesNodeName" xml:space="preserve">
+    <value>Connection Properties</value>
+  </data>
+  <data name="SharpDbTools.Forms.NoMetadataNodeName" xml:space="preserve">
+    <value>No Metadata</value>
+  </data>
+  <data name="SharpDbTools.Forms.SetConnectionStringMenu" xml:space="preserve">
+    <value>Set Connection String</value>
+  </data>
+  <data name="SharpDbTools.Forms.LoadMetadataFromConnectionMenu" xml:space="preserve">
+    <value>Load Metadata From Connection</value>
+  </data>
+  <data name="SharpDbTools.Forms.LoadMetadataFromFileMenu" xml:space="preserve">
+    <value>Load Metadata From File</value>
+  </data>
+  <data name="SharpDbTools.Forms.OpenSQLToolMenu" xml:space="preserve">
+    <value>Open SQL Tool</value>
+  </data>
+  <data name="SharpDbTools.Forms.ConnectionStringNodeName" xml:space="preserve">
+    <value>Connection String:</value>
+  </data>
+  <data name="SharpDbTools.Forms.InvariantNameNodeName" xml:space="preserve">
+    <value>Invariant Name:</value>
+  </data>
+  <data name="SharpDbTools.Forms.ConnectionSucceededMsg" xml:space="preserve">
+    <value>Connection Succeeded</value>
+  </data>
+  <data name="SharpDbTools.Forms.ConnectionFailedMsg" xml:space="preserve">
+    <value>Connection Failed</value>
+  </data>
+  <data name="SharpDbTools.Forms.TestButton" xml:space="preserve">
+    <value>Test</value>
+  </data>
+  <data name="SharpDbTools.Forms.SubmitButton" xml:space="preserve">
+    <value>Submit</value>
+  </data>
+  <data name="SharpDbTools.Forms.CancelButton" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="SharpDbTools.Forms.DataSourceTypeLabel" xml:space="preserve">
+    <value>Data Source Type:</value>
+  </data>
+  <data name="SharpDbTools.Forms.ConnectionStringLabel" xml:space="preserve">
+    <value>Connection String:</value>
+  </data>
+  <data name="SharpDbTools.Forms.ConnectionStringTab" xml:space="preserve">
+    <value>Connection String</value>
+  </data>
+  <data name="SharpDbTools.Forms.TestResultTab" xml:space="preserve">
+    <value>Test Result Message</value>
+  </data>
+  <data name="SharpDbTools.Forms.ConnectionStringDefinitionDialog" xml:space="preserve">
+    <value>Set Up Connection String</value>
   </data>
 </root>
