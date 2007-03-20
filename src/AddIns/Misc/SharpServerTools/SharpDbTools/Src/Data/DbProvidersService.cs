@@ -45,16 +45,22 @@ namespace SharpDbTools.Data
 				// TODO: factor out string literals for column names
 				string name = (string)row["Name"];
 				string invariantName = (string)row["InvariantName"];
-				LoggingService.Debug("adding lookup for: " + name + " to: + " + invariantName);
-				invariantByNameLookup.Add(name, invariantName);
-				//factoryData.Add(name, row);
 				try {
+					LoggingService.Debug("adding lookup for: " + name + " to: + " + invariantName);
+					invariantByNameLookup.Add(name, invariantName);
+					//factoryData.Add(name, row);
+
 					LoggingService.Debug("retrieving DbProviderFactory for Name: " 
 					                     + name + " InvariantName: " + invariantName);
 					DbProviderFactory factory = DbProviderFactories.GetFactory(row);
 					names.Add(name);
 					factories.Add(name, factory);
 					factoriesByInvariantName.Add(invariantName, factory);
+				} catch (ArgumentException) {
+					MessageBox.Show("Found duplicate config for data provider: " + name + ", invariant name: " +
+					                invariantName + ", will use config found first", "Exception loading DbProviderFactory", 
+					                MessageBoxButtons.OK,
+					                MessageBoxIcon.Error);
 				} catch (Exception) {
 					MessageBox.Show("Unable to load DbProviderFactory for: " + name + ", this will be unavailable." +
 					                "\nCheck *.config files for invalid ado.net config elements, or config" +
