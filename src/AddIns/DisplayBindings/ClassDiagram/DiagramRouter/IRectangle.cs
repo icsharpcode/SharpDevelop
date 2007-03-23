@@ -111,6 +111,7 @@ namespace Tools.Diagrams
 		bool IsHResizable { get; }
 		bool IsVResizable { get; }
 		
+		event EventHandler AbsolutePositionChanged;
 		event EventHandler WidthChanged;
 		event EventHandler HeightChanged;
 		event EventHandler ActualWidthChanged;

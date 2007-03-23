@@ -98,19 +98,8 @@ namespace ClassDiagram
 				if (iconIndex > -1)
 					icon = ClassBrowserIconService.ImageList.Images[iconIndex];
 				
-				if (methodMember != null)
-				{
-					if (methodMember.IsConstructor)
-					{
-						if (methodMember.DeclaringType != null)
-							memberName = methodMember.DeclaringType.Name;
-						else
-							memberName = methodMember.Name;
-					}
-					else
-						memberName = methodMember.Name;
-				}
-				if (eventMember != null) memberName = eventMember.Name;
+				if (methodMember != null) memberName = ambience.Convert(methodMember);
+				if (eventMember != null) memberName = ambience.Convert(eventMember);
 				if (propertyMember != null) memberName = ambience.Convert(propertyMember);
 				if (fieldMember != null) memberName = ambience.Convert(fieldMember);
 			}
@@ -532,6 +521,8 @@ namespace ClassDiagram
 			}
 			else if (parameterItem != null)
 			{
+				_modifiers.DropDownItems.Clear();
+
 				_modifiers.DropDownItems.Add(ParameterModifiers.In);
 				_modifiers.DropDownItems.Add(ParameterModifiers.Out);
 				_modifiers.DropDownItems.Add(ParameterModifiers.Ref);

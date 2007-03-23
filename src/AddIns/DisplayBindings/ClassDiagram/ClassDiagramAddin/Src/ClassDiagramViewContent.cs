@@ -73,12 +73,17 @@ namespace ClassDiagramAddin
 
 		void OnParseInformationUpdated(object sender, ParseInformationEventArgs e)
 		{
+			System.Diagnostics.Debug.WriteLine("ClassDiagramViewContent.OnParseInformationUpdated");
+
 			if (e == null) return;
 			if (e.CompilationUnit == null) return;
 			if (e.CompilationUnit.ProjectContent == null) return;
 			if (e.CompilationUnit.ProjectContent.Classes == null) return;
 			if (e.CompilationUnit.ProjectContent != projectContent) return;
-
+			//TODO - this is a wrong way to handle changed parse informtation.
+			//       the correct way is to mark removed classes as missing, and to
+			//       update changed classes that exist in the diagram.
+			/*
 			List<CanvasItem> addedItems = new List<CanvasItem>();
 			foreach (IClass ct in e.CompilationUnit.ProjectContent.Classes)
 			{
@@ -101,6 +106,7 @@ namespace ClassDiagramAddin
 						canvas.RemoveCanvasItem(cci);
 				}
 			}
+			*/
 		}
 
 		private void PlaceNewItems (ICollection<CanvasItem> items)

@@ -46,6 +46,7 @@ namespace ClassDiagram
 			this._type = new Aga.Controls.Tree.NodeControls.NodeComboBox();
 			this._modifiers = new Aga.Controls.Tree.NodeControls.NodeComboBox();
 			this._summary = new Aga.Controls.Tree.NodeControls.NodeTextBox();
+			this._paramModifiers = new Aga.Controls.Tree.NodeControls.NodeComboBox();
 			this.SuspendLayout();
 			// 
 			// membersList
@@ -70,6 +71,7 @@ namespace ClassDiagram
 			this.membersList.NodeControls.Add(this._type);
 			this.membersList.NodeControls.Add(this._modifiers);
 			this.membersList.NodeControls.Add(this._summary);
+			this.membersList.NodeControls.Add(this._paramModifiers);
 			this.membersList.Search.BackColor = System.Drawing.Color.Pink;
 			this.membersList.Search.FontColor = System.Drawing.Color.Black;
 			this.membersList.SelectedNode = null;
@@ -128,10 +130,13 @@ namespace ClassDiagram
 			// _modifiers
 			// 
 			this._modifiers.DataPropertyName = "MemberModifier";
+			this._modifiers.DropDownItems.Add("Public");
+			this._modifiers.DropDownItems.Add("Private");
+			this._modifiers.DropDownItems.Add("Protected");
+			this._modifiers.DropDownItems.Add("Internal");
 			this._modifiers.EditEnabled = true;
 			this._modifiers.ParentColumn = this.modifierCol;
 			this._modifiers.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
-			this._modifiers.EditorShowing += new System.ComponentModel.CancelEventHandler(this._modifiersEditorShowing);
 			// 
 			// _summary
 			// 
@@ -139,6 +144,16 @@ namespace ClassDiagram
 			this._summary.EditEnabled = true;
 			this._summary.ParentColumn = this.summaryCol;
 			this._summary.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
+			// 
+			// _paramModifiers
+			// 
+			this._paramModifiers.DataPropertyName = "MemberModifier";
+			this._paramModifiers.DropDownItems.Add("In");
+			this._paramModifiers.DropDownItems.Add("Out");
+			this._paramModifiers.DropDownItems.Add("Ref");
+			this._paramModifiers.DropDownItems.Add("Params");
+			this._paramModifiers.DropDownItems.Add("Optional");
+			this._paramModifiers.ParentColumn = this.modifierCol;
 			// 
 			// ClassEditor
 			// 
@@ -149,6 +164,7 @@ namespace ClassDiagram
 			this.Size = new System.Drawing.Size(603, 299);
 			this.ResumeLayout(false);
 		}
+		private Aga.Controls.Tree.NodeControls.NodeComboBox _paramModifiers;
 		private Aga.Controls.Tree.NodeControls.NodeIcon _icon;
 		private Aga.Controls.Tree.NodeControls.NodeComboBox _modifiers;
 		private Aga.Controls.Tree.NodeControls.NodeComboBox _type;

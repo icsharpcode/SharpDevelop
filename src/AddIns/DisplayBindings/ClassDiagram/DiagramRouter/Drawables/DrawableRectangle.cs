@@ -48,6 +48,12 @@ namespace Tools.Diagrams.Drawables
 			set { strokePen = value; }
 		}
 		
+		protected override void OnAbsolutePositionChanged()
+		{
+			base.OnAbsolutePositionChanged();
+			path = null;
+		}
+		
 		protected override void OnActualSizeChanged()
 		{
 			path = null;

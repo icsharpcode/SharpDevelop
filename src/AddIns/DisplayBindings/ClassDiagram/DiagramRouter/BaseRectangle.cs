@@ -26,7 +26,14 @@ namespace Tools.Diagrams
 		public IRectangle Container 
 		{
 			get { return container; }
-			set { container = value; }
+			set
+			{
+				if (container != null)
+					container.AbsolutePositionChanged -= HandleAbsolutePositionChanged;
+				container = value;
+				if (container != null)
+					container.AbsolutePositionChanged += HandleAbsolutePositionChanged;
+			}
 		}
 			
 		#region Geometry
@@ -34,13 +41,24 @@ namespace Tools.Diagrams
 		public virtual float X
 		{
 			get { return x; }
-			set { x = value; }
+			
+			set
+			{
+				if (x == value) return;
+				x = value;
+				OnAbsolutePositionChanged();
+			}
 		}
 	
 		public virtual float Y
 		{
 			get { return y; }
-			set { y = value; }
+			set
+			{
+				if (y == value) return;
+				y = value;
+				OnAbsolutePositionChanged();
+			}
 		}
 		
 		public virtual float AbsoluteX
@@ -65,11 +83,19 @@ namespace Tools.Diagrams
 			}
 		}
 		
+		public void ResetActualSize()
+		{
+			aw = float.NaN;
+			ah = float.NaN;
+			OnActualSizeChanged();
+		}
+		
 		public virtual float ActualWidth
 		{
 			get { return aw; }
 			set
 			{
+				if (aw == value) return;
 				aw = value;
 				if (keepAspectRatio)
 					ah = aw * (GetAbsoluteContentHeight() / GetAbsoluteContentWidth());
@@ -83,6 +109,7 @@ namespace Tools.Diagrams
 			get { return ah; }
 			set
 			{
+				if (ah == value) return;
 				ah = value;
 				if (keepAspectRatio)
 					aw = ah * (GetAbsoluteContentWidth() / GetAbsoluteContentHeight());
@@ -96,6 +123,7 @@ namespace Tools.Diagrams
 			get { return w; }
 			set
 			{
+				if (w == value) return;
 				w = value;
 				OnSizeChanged();
 				OnWidthChanged();
@@ -107,6 +135,7 @@ namespace Tools.Diagrams
 			get { return h; }
 			set
 			{
+				if (h == value) return;
 				h = value;
 				OnSizeChanged();
 				OnHeightChanged();
@@ -147,6 +176,16 @@ namespace Tools.Diagrams
 			set { keepAspectRatio = value; }
 		}
 		
+		protected virtual void HandleAbsolutePositionChanged(object sender, EventArgs e)
+		{
+			OnAbsolutePositionChanged();
+		}
+		
+		protected virtual void OnAbsolutePositionChanged()
+		{
+			AbsolutePositionChanged(this, EventArgs.Empty);
+		}
+		
 		protected virtual void OnSizeChanged() {}
 		protected virtual void OnWidthChanged()
 		{
@@ -180,6 +219,7 @@ namespace Tools.Diagrams
 			get { return true; }
 		}
 		
+		public event EventHandler AbsolutePositionChanged = delegate {};
 		public event EventHandler WidthChanged = delegate {};
 		public event EventHandler HeightChanged = delegate {};
 		public event EventHandler ActualWidthChanged = delegate {};

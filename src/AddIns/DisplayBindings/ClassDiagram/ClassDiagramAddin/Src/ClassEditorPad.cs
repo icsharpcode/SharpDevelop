@@ -58,7 +58,7 @@ namespace ClassDiagramAddin
 			ICompilationUnit compUnit = e.Method.DeclaringType.CompilationUnit;
 			FileService.JumpToFilePosition(compUnit.FileName,
 			                               e.Parameter.Region.BeginLine - 1,
-			                               e.Parameter.Region.BeginColumn - 1);
+			                               e.Parameter.Region.BeginColumn);
 		}
 		
 		private void EditorClassMemberAdded (object sender, IMemberEventArgs e)

@@ -36,6 +36,7 @@ namespace Tools.Diagrams
 		
 		public void Add (T item)
 		{
+//			System.Diagnostics.Debug.WriteLine("ItemStack.Add");
 			items.Add(item);
 			item.Container = this;
 			modified = true;
@@ -43,6 +44,7 @@ namespace Tools.Diagrams
 
 		public void Remove (T item)
 		{
+//			System.Diagnostics.Debug.WriteLine("ItemStack.Remove");
 			items.Remove(item);
 			item.Container = null;
 			modified = true;
@@ -50,6 +52,7 @@ namespace Tools.Diagrams
 		
 		public void Clear()
 		{
+//			System.Diagnostics.Debug.WriteLine("ItemStack.Clear");
 			items.Clear();
 			modified = true;
 		}
@@ -59,6 +62,7 @@ namespace Tools.Diagrams
 			get { return axis; }
 			set
 			{
+//				System.Diagnostics.Debug.WriteLine("ItemStack.set_OrientationAxis curr: " + axis + "; new: " + value);
 				axis = value;
 				modified = true;
 			}
@@ -279,14 +283,13 @@ namespace Tools.Diagrams
 		
 		protected override void OnActualSizeChanged()
 		{
+//			System.Diagnostics.Debug.WriteLine("ItemStack.OnActualSizeChanged");
 			modified = true;
 		}
 		
 		protected override void OnSizeChanged()
 		{
-			modified = true;
-			base.ActualWidth = float.NaN;
-			base.ActualHeight = float.NaN;
+			ResetActualSize();
 		}
 		
 		#region Geometry
@@ -296,6 +299,7 @@ namespace Tools.Diagrams
 			get { return minHeight; }
 			set
 			{
+//				System.Diagnostics.Debug.WriteLine("ItemStack.set_MinHeight curr: " + minHeight + "; new: " + value);
 				minHeight = value;
 				modified = true;
 			}
@@ -306,6 +310,7 @@ namespace Tools.Diagrams
 			get { return minWidth; }
 			set
 			{
+//				System.Diagnostics.Debug.WriteLine("ItemStack.set_MinWidth curr: " + minWidth + "; new: " + value);
 				minWidth = value;
 				modified = true;
 			}
@@ -357,6 +362,7 @@ namespace Tools.Diagrams
 			get { return spacing; }
 			set
 			{
+//				System.Diagnostics.Debug.WriteLine("ItemStack.set_Spacing curr: " + spacing + "; new: " + value);
 				spacing = value;
 				modified = true;
 			}

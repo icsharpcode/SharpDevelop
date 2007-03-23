@@ -17,7 +17,7 @@ namespace ClassDiagram
 {
 	public abstract class VectorShape : BaseRectangle, IDrawableRectangle
 	{
-		public VectorShape ()
+		protected VectorShape ()
 		{
 			KeepAspectRatio = true;
 		}

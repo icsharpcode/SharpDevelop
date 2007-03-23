@@ -333,7 +333,7 @@ namespace ClassDiagram
 					decorator.HandleMouseDown(pos);
 			}
 			
-			bool hit = HitTest(pos);
+			//bool hit = HitTest(pos);
 			
 			if (DragAreaHitTest(pos))
 			{

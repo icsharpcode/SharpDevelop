@@ -182,6 +182,7 @@ namespace ClassDiagram
 		
 		public void SetRecommendedGraphicsAttributes (Graphics graphics)
 		{
+			if (graphics == null) return;
 			graphics.CompositingQuality = CompositingQuality.HighSpeed;
 			//graphics.SmoothingMode = SmoothingMode.AntiAlias;
 			graphics.SmoothingMode = SmoothingMode.HighQuality;
@@ -200,6 +201,7 @@ namespace ClassDiagram
 		
 		private void PictureBox1Paint (object sender, PaintEventArgs e)
 		{
+//			System.Diagnostics.Debug.WriteLine("ClassCanvas.PictureBox1Paint");
 			Size bbox = GetDiagramPixelSize();
 			
 			pictureBox1.Width = bbox.Width + 100;
@@ -367,7 +369,6 @@ namespace ClassDiagram
 				if (!value && redrawNeeded)
 				{
 					redrawNeeded = false;
-					this.Invalidate(true);
 					HandleRedraw (this, EventArgs.Empty);
 				}
 			}
@@ -389,6 +390,8 @@ namespace ClassDiagram
 				redrawNeeded = true;
 				return;
 			}
+//			System.Diagnostics.StackTrace st = new System.Diagnostics.StackTrace();
+//			System.Diagnostics.Debug.WriteLine(st.ToString());
 			this.Invalidate(true);
 		}
 		
