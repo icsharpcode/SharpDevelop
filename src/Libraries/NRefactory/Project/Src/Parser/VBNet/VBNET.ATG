@@ -2777,6 +2777,8 @@ Identifier	=
 	| "Preserve"
 	| "Unicode"
 	| "Until"
+	| "Off"
+	| "Explicit"
 .
 
 IdentifierForFieldDeclaration =
@@ -2791,6 +2793,8 @@ IdentifierForFieldDeclaration =
 	| "Preserve"
 	| "Unicode"
 	| "Until"
+	| "Off"
+	| "Explicit"
 .
 
 /* 2.2 */

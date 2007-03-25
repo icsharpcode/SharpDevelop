@@ -48,10 +48,12 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		}
 		
 		[Test]
-		public void VBNetAssemblyIdentifierExpressionTest()
+		public void VBNetContextKeywordsTest()
 		{
 			Assert.AreEqual("Assembly", ParseUtilVBNet.ParseExpression<IdentifierExpression>("Assembly").Identifier);
 			Assert.AreEqual("Custom", ParseUtilVBNet.ParseExpression<IdentifierExpression>("Custom").Identifier);
+			Assert.AreEqual("Off", ParseUtilVBNet.ParseExpression<IdentifierExpression>("Off").Identifier);
+			Assert.AreEqual("Explicit", ParseUtilVBNet.ParseExpression<IdentifierExpression>("Explicit").Identifier);
 		}
 		#endregion
 	}
