@@ -115,6 +115,7 @@ internal class GlobalsCompletionDataProvider(ICSharpCode.SharpDevelop.DefaultEdi
 	
 	def constructor(interpreter as InterpreterContext):
 		_interpreter = interpreter
+		super.preSelection = ""
 		
 	override def GenerateCompletionData(fileName as string, textArea as TextArea, charTyped as System.Char) as (ICompletionData):
 		globals = _interpreter.GetGlobals()
