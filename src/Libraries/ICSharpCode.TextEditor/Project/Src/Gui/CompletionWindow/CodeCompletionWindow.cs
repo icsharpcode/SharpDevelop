@@ -7,6 +7,7 @@
 
 using System;
 using System.Drawing;
+using System.Diagnostics;
 using System.Windows.Forms;
 using ICSharpCode.TextEditor.Document;
 
@@ -280,6 +281,7 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 					if (endOffset - startOffset > 0) {
 						control.Document.Remove(startOffset, endOffset - startOffset);
 					}
+					Debug.Assert(startOffset <= document.TextLength);
 					result = dataProvider.InsertAction(data, control.ActiveTextAreaControl.TextArea, startOffset, ch);
 				} finally {
 					control.EndUpdate();

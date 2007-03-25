@@ -422,7 +422,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			object collectionInstance = null;
 			XamlProperty collectionProperty = null;
 			if (propertyInfo.IsCollection) {
-				if (defaultProperty.FullyQualifiedName == propertyInfo.FullyQualifiedName) {
+				if (defaultProperty != null && defaultProperty.FullyQualifiedName == propertyInfo.FullyQualifiedName) {
 					collectionInstance = defaultPropertyValue;
 					foreach (XamlProperty existing in obj.Properties) {
 						if (existing.propertyInfo == defaultProperty) {

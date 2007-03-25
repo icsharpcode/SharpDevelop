@@ -226,32 +226,6 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		#region VB.NET
 		
 		[Test]
-		public void VBNetSimpleMethodDeclarationTest()
-		{
-			MethodDeclaration md = ParseUtilCSharp.ParseTypeMember<MethodDeclaration>("void MyMethod() {} ");
-			Assert.AreEqual("void", md.TypeReference.Type);
-			Assert.AreEqual(0, md.Parameters.Count);
-		}
-		
-		[Test]
-		public void VBNetSimpleMethodRegionTest()
-		{
-			const string program = @"
-		void MyMethod()
-		{
-			OtherMethod();
-		}
-";
-			MethodDeclaration md = ParseUtilCSharp.ParseTypeMember<MethodDeclaration>(program);
-			Assert.AreEqual(2, md.StartLocation.Y, "StartLocation.Y");
-			Assert.AreEqual(2, md.EndLocation.Y, "EndLocation.Y");
-			Assert.AreEqual(3, md.StartLocation.X, "StartLocation.X");
-			
-			// endLocation.X is currently 20. It should be 18, but that error is not critical
-			//Assert.AreEqual(18, md.EndLocation.X, "EndLocation.X");
-		}
-		
-		[Test]
 		public void VBNetMethodWithModifiersRegionTest()
 		{
 			const string program = @"public shared sub MyMethod()
@@ -344,6 +318,25 @@ End Interface
 			Assert.AreEqual("T", md.Templates[0].Name);
 			Assert.AreEqual(1, md.Templates[0].Bases.Count);
 			Assert.AreEqual("ISomeInterface", md.Templates[0].Bases[0].Type);
+		}
+		
+		[Test]
+		public void VBNetMethodWithHandlesClause()
+		{
+			MethodDeclaration md = ParseUtilVBNet.ParseTypeMember<MethodDeclaration>(
+				@"Public Sub MyMethod(sender As Object, e As EventArgs) Handles x.y
+			End Sub");
+			Assert.AreEqual(new string[] { "x.y" }, md.HandlesClause.ToArray());
+			
+			md = ParseUtilVBNet.ParseTypeMember<MethodDeclaration>(
+				@"Public Sub MyMethod() Handles Me.FormClosing
+			End Sub");
+			Assert.AreEqual(new string[] { "Me.FormClosing" }, md.HandlesClause.ToArray());
+			
+			md = ParseUtilVBNet.ParseTypeMember<MethodDeclaration>(
+				@"Public Sub MyMethod() Handles MyBase.Event, Button1.Click
+			End Sub");
+			Assert.AreEqual(new string[] { "MyBase.Event", "Button1.Click" }, md.HandlesClause.ToArray());
 		}
 		
 		#endregion

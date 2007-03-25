@@ -41,6 +41,10 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		/// <summary>
+		/// Gets if the value should be evaluated when loading the property and escaped
+		/// when saving. The default value is true.
+		/// </summary>
 		public bool TreatPropertyValueAsLiteral {
 			get { return treatPropertyValueAsLiteral; }
 			set { treatPropertyValueAsLiteral = value; }

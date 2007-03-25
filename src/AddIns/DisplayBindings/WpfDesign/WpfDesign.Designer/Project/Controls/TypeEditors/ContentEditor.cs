@@ -61,6 +61,8 @@ namespace ICSharpCode.WpfDesign.Designer.Controls.TypeEditors
 			ContextMenu contextMenu = new ContextMenu();
 			contextMenu.Items.Add(CreateMenuItem("Set to _null", delegate { property.Value = null; }));
 			contextMenu.Items.Add(CreateMenuItem("Create _string", delegate { property.Value = ""; }));
+			contextMenu.Items.Add(CreateMenuItem("Create _Canvas", delegate { property.Value = new Canvas(); }));
+			contextMenu.Items.Add(CreateMenuItem("Create _Grid", delegate { property.Value = new Grid(); }));
 			return contextMenu;
 		}
 		

@@ -22,17 +22,19 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			
 			ConnectBrowseButton("preBuildEventBrowseButton",
 			                    "preBuildEventTextBox",
-			                    "${res:SharpDevelop.FileFilter.AllFiles}|*.*");
+			                    "${res:SharpDevelop.FileFilter.AllFiles}|*.*",
+			                    TextBoxEditMode.EditRawProperty);
 			ConnectBrowseButton("postBuildEventBrowseButton",
 			                    "postBuildEventTextBox",
-			                    "${res:SharpDevelop.FileFilter.AllFiles}|*.*");
+			                    "${res:SharpDevelop.FileFilter.AllFiles}|*.*",
+			                    TextBoxEditMode.EditRawProperty);
 			
 			ConfigurationGuiBinding b;
 			
-			b = helper.BindString("preBuildEventTextBox", "PreBuildEvent");
+			b = helper.BindString("preBuildEventTextBox", "PreBuildEvent", TextBoxEditMode.EditRawProperty);
 			b.CreateLocationButton("preBuildEventTextBox");
 			
-			b = helper.BindString("postBuildEventTextBox", "PostBuildEvent");
+			b = helper.BindString("postBuildEventTextBox", "PostBuildEvent", TextBoxEditMode.EditRawProperty);
 			b.CreateLocationButton("postBuildEventTextBox");
 			
 			b = helper.BindEnum<RunPostBuildEvent>("runPostBuildEventComboBox", "RunPostBuildEvent");

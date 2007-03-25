@@ -17,7 +17,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public ReferenceProjectItem ReferenceProjectItem {
 			get {
-				return ReferenceProjectItem;
+				return referenceProjectItem;
 			}
 		}
 		

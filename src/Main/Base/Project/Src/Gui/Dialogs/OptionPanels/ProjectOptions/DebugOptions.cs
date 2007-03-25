@@ -17,8 +17,11 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		public override void LoadPanelContents()
 		{
 			SetupFromXmlResource("ProjectOptions.DebugOptions.xfrm");
-			ConnectBrowseButton("startExternalProgramBrowseButton", "startExternalProgramTextBox", "${res:SharpDevelop.FileFilter.ExecutableFiles}|*.exe;*.com;*.pif;*.bat;*.cmd");
-			ConnectBrowseFolder("workingDirectoryBrowseButton", "workingDirectoryTextBox");
+			ConnectBrowseButton("startExternalProgramBrowseButton", "startExternalProgramTextBox",
+			                    "${res:SharpDevelop.FileFilter.ExecutableFiles}|*.exe;*.com;*.pif;*.bat;*.cmd",
+			                    TextBoxEditMode.EditEvaluatedProperty);
+			ConnectBrowseFolder("workingDirectoryBrowseButton", "workingDirectoryTextBox",
+			                    TextBoxEditMode.EditEvaluatedProperty);
 			
 			InitializeHelper();
 			
@@ -32,20 +35,20 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			b.DefaultLocation = PropertyStorageLocations.ConfigurationSpecific;
 			locationButton = b.CreateLocationButtonInPanel("startActionGroupBox");
 			
-			b = helper.BindString("startExternalProgramTextBox", "StartProgram");
+			b = helper.BindString("startExternalProgramTextBox", "StartProgram", TextBoxEditMode.EditEvaluatedProperty);
 			b.DefaultLocation = PropertyStorageLocations.ConfigurationSpecific;
 			b.RegisterLocationButton(locationButton);
 			
-			b = helper.BindString("startBrowserInURLTextBox", "StartURL");
+			b = helper.BindString("startBrowserInURLTextBox", "StartURL", TextBoxEditMode.EditEvaluatedProperty);
 			b.DefaultLocation = PropertyStorageLocations.ConfigurationSpecific;
 			b.RegisterLocationButton(locationButton);
 			
 			Get<RadioButton>("startExternalProgram").CheckedChanged += UpdateEnabledStates;
 			Get<RadioButton>("startBrowserInURL").CheckedChanged += UpdateEnabledStates;
 			
-			b = helper.BindString("commandLineArgumentsTextBox", "StartArguments");
+			b = helper.BindString("commandLineArgumentsTextBox", "StartArguments", TextBoxEditMode.EditEvaluatedProperty);
 			locationButton = b.CreateLocationButtonInPanel("startOptionsGroupBox");
-			b = helper.BindString("workingDirectoryTextBox", "StartWorkingDirectory");
+			b = helper.BindString("workingDirectoryTextBox", "StartWorkingDirectory", TextBoxEditMode.EditEvaluatedProperty);
 			b.RegisterLocationButton(locationButton);
 			
 			UpdateEnabledStates(this, EventArgs.Empty);

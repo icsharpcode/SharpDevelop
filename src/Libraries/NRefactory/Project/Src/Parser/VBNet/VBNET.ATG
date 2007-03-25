@@ -1532,16 +1532,14 @@ ImplementsClause<out List<InterfaceImplementation> baseInterfaces>
 .
 
 EventMemberSpecifier<out string name>
-	(. string type; name = String.Empty; .) =
-	Identifier (. type = t.val; .)
+(. string eventName; .)
+=
+	( Identifier | "MyBase" | "Me" )
+	(. name = t.val; .)
 	"."
-	Identifier (. name = type + "." + t.val; .)
-	| "MyBase" "."
-	(
-		Identifier (. name = "MyBase." + t.val; .)
-		| "Error"  (. name = "MyBase.Error"; .)
-	)
-	.
+	IdentifierOrKeyword<out eventName>
+	(. name = name + "." + eventName; .)
+.
 
 Expr<out Expression expr>
 =
@@ -2787,6 +2785,8 @@ Identifier	=
 	| "Preserve"
 	| "Unicode"
 	| "Until"
+	| "Off"
+	| "Explicit"
 .
 
 IdentifierForFieldDeclaration =
@@ -2801,6 +2801,8 @@ IdentifierForFieldDeclaration =
 	| "Preserve"
 	| "Unicode"
 	| "Until"
+	| "Off"
+	| "Explicit"
 .
 
 /* 2.2 */

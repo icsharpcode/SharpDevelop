@@ -13,6 +13,7 @@
 	<!-- Actions -->
 	<Actions>
 		<Open filename = "${ProjectName}.addin"/>
+		<Open filename = "AddInWritingHelp.txt"/>
 	</Actions>
 	
 	<Project language="C#">
@@ -185,6 +186,7 @@ namespace ${StandardNamespace}
 ]]></File>
 			<File name="FileTemplate.xft" src="SharpDevelopCustomToolTemplate.xft.xml" binary="true" CopyToOutputDirectory="Always"/>
 			<File name="AssemblyInfo.cs" src="DefaultAssemblyInfo.cs"/>
+			<File name="AddInWritingHelp.txt" src="..\AddInWritingHelp.txt"/>
 		</Files>
 	</Project>
 </Template>

@@ -15,6 +15,7 @@
 	<!-- Actions -->
 	<Actions>
 		<Open filename = "${ProjectName}.addin"/>
+		<Open filename = "AddInWritingHelp.txt"/>
 	</Actions>
 	
 	<Project language="VBNet">
@@ -96,6 +97,7 @@ Inherits AbstractMenuCommand
 End Class
 ]]></File>
 		<File name="Configuration/AssemblyInfo.vb" src="DefaultAssemblyInfo.vb"/>
+        <File name="AddInWritingHelp.txt" src="..\AddInWritingHelp.txt"/>
 		</Files>
 	</Project>
 </Template>

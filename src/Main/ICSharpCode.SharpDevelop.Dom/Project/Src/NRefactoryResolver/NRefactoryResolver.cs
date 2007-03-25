@@ -23,7 +23,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		IClass callingClass;
 		IMember callingMember;
 		ICSharpCode.NRefactory.Visitors.LookupTableVisitor lookupTableVisitor;
-		IProjectContent projectContent = null;
+		IProjectContent projectContent;
 		
 		NR.SupportedLanguage language;
 		
@@ -41,6 +41,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				return projectContent;
 			}
 			set {
+				if (value == null)
+					throw new ArgumentNullException("value");
 				projectContent = value;
 			}
 		}
@@ -1012,6 +1014,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		IClass GetPrimitiveClass(string systemType, string newName)
 		{
 			IClass c = projectContent.GetClass(systemType, 0);
+			if (c == null)
+				return null;
 			DefaultClass c2 = new DefaultClass(c.CompilationUnit, newName);
 			c2.ClassType = c.ClassType;
 			c2.Modifiers = c.Modifiers;
@@ -1030,14 +1034,16 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (language == NR.SupportedLanguage.VBNet) {
 				foreach (KeyValuePair<string, string> pair in TypeReference.PrimitiveTypesVB) {
 					if ("System." + pair.Key != pair.Value) {
-						result.Add(GetPrimitiveClass(pair.Value, pair.Key));
+						IClass c = GetPrimitiveClass(pair.Value, pair.Key);
+						if (c != null) result.Add(c);
 					}
 				}
 				result.Add("Global");
 				result.Add("New");
 			} else {
 				foreach (KeyValuePair<string, string> pair in TypeReference.PrimitiveTypesCSharp) {
-					result.Add(GetPrimitiveClass(pair.Value, pair.Key));
+					IClass c = GetPrimitiveClass(pair.Value, pair.Key);
+					if (c != null) result.Add(c);
 				}
 			}
 			ParseInformation parseInfo = HostCallback.GetParseInformation(fileName);
