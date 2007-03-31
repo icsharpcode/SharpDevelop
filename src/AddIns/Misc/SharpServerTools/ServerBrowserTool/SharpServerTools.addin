@@ -12,6 +12,7 @@
 		<Import assembly = "ServerBrowserTool.dll"/>
 		<Import assembly="OracleDbToolsProvider.dll"/>
 		<Import assembly="SqlServerDbToolsProvider.dll"/>
+		<Import assembly="SQLiteDbToolsProvider.dll"/>
 	</Runtime>
 	
 	<Path name = "/SharpDevelop/Workbench/Pads">
@@ -23,6 +24,12 @@
 		     class    = "SharpServerTools.Forms.ServerBrowserTool"/>
 	</Path>
 
+	<Path name = "/SharpServerTools/SharpDbTools/FormsArtefactFactory">
+		<Class id       = "System.Data.SQLite"
+		     class    = "SharpDbTools.SQLite.Forms.SQLiteFormsArtefactFactory"/>
+	</Path>
+	
+	
 	<Path name = "/SharpServerTools/SharpDbTools/FormsArtefactFactory">
 		<Class id       = "System.Data.OracleClient"
 		     class    = "SharpDbTools.Oracle.Forms.OracleFormsArtefactFactory"/>

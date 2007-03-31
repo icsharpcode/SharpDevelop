@@ -56,6 +56,7 @@ namespace SharpDbTools.SQLServer.Forms
 					string metadataCollectionName = TableNames.PrimaryObjects[i];
 					LoggingService.Debug("looking for metadata: " + metadataCollectionName);
 					DataTable metaCollectionTable = info.Tables[metadataCollectionName];
+					if (metaCollectionTable == null) continue;
 					LoggingService.Debug("found metadata collection: " + metadataCollectionName);
 					string nodeDisplayNameKey = "SharpDbTools.Data.PrimaryObjects." + metadataCollectionName;
 					string nodeDisplayName = ResourceService.GetString(nodeDisplayNameKey);

@@ -13,16 +13,16 @@ using ICSharpCode.Core;
 using SharpDbTools.Data;
 using SharpDbTools.Forms;
 
-namespace SharpDbTools.Oracle.Forms
+namespace SharpDbTools.SQLite.Forms
 {
 	/// <summary>
 	/// Description of MetaDataNodeBuilder.
 	/// TODO: currently this is just a flat list - need to reflect ownership
 	/// relationships such as schema etc
 	/// </summary>
-	public class OracleFormsArtefactFactory : FormsArtefactFactory
+	public class SQLiteFormsArtefactFactory : FormsArtefactFactory
 	{
-		public OracleFormsArtefactFactory()
+		public SQLiteFormsArtefactFactory()
 		{
 		}
 		
@@ -64,19 +64,10 @@ namespace SharpDbTools.Oracle.Forms
 						switch(metadataCollectionName) {
 						       case "Tables":
 								//LoggingService.Debug("found table row");
-						       	objectNode = new TableTreeNode((string)dbObjectRow[1], logicalConnectionName);
-						       	break;
-						       case "Users":
-						       	//LoggingService.Debug("found users row");
-						       	objectNode = new TreeNode((string)dbObjectRow[0]);
+						       	objectNode = new TableTreeNode((string)dbObjectRow[2], logicalConnectionName);
 						       	break;
 						       default:
-						       	//LoggingService.Debug("found " + metadataCollectionName + " row");
-						       	if (dbObjectRow.ItemArray.Length > 1) {
-						       		objectNode = new TreeNode((string)dbObjectRow[1]);
-						       	} else {
-						       		objectNode = new TreeNode((string)dbObjectRow[0]);
-						       	}
+						       	objectNode = new TreeNode((string)dbObjectRow[2]);
 						       	break;
 						}
 						collectionNode.Nodes.Add(objectNode);
