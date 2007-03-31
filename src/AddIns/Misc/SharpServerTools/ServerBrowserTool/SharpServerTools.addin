@@ -19,7 +19,7 @@
 		<Pad id       = "SharpServerToolsPad"
 		     category = "Main"
 		     title    = "Server Explorer"
-		     icon     = "PadIcons.Output"
+		     icon     = "ServerTool.Server"
 		     shortcut = "Control|Alt|D"
 		     class    = "SharpServerTools.Forms.ServerBrowserTool"/>
 	</Path>
