@@ -103,7 +103,12 @@ namespace ICSharpCode.SharpDevelop.Project
 			get {
 				RegistryKey typeLibsKey = Registry.ClassesRoot.OpenSubKey("TypeLib");
 				foreach (string typeLibKeyName in typeLibsKey.GetSubKeyNames()) {
-					RegistryKey typeLibKey = typeLibsKey.OpenSubKey(typeLibKeyName);
+					RegistryKey typeLibKey = null;
+					try {
+						typeLibKey = typeLibsKey.OpenSubKey(typeLibKeyName);
+					} catch (System.Security.SecurityException) {
+						// ignore type libraries that cannot be read from the registry
+					}
 					if (typeLibKey == null) {
 						continue;
 					}
@@ -151,7 +156,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					RegistryKey win32Key = NullKey.OpenSubKey("win32");
 					
 					return win32Key == null || win32Key.GetValue(null) == null ? null : GetTypeLibPath(win32Key.GetValue(null).ToString());
-				} 
+				}
 			}
 			return null;
 		}
@@ -168,7 +173,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		string GetTypeLibName()
 		{
 			string name = null;
-		
+			
 			int typeLibLcid;
 			if (guid != null && lcid != null && Int32.TryParse(lcid, out typeLibLcid)) {
 				Guid typeLibGuid = new Guid(this.guid);
@@ -226,7 +231,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				} finally {
 					Marshal.ReleaseComObject(typeLib);
 				}
-			} 
+			}
 			return null;
 		}
 		
@@ -238,15 +243,15 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		[DllImport("oleaut32.dll")]
 		static extern int LoadTypeLibEx([MarshalAs(UnmanagedType.BStr)] string szFile,
-			RegKind regkind,
-			out ITypeLib pptlib);
+		                                RegKind regkind,
+		                                out ITypeLib pptlib);
 		
 		[DllImport("oleaut32.dll")]
-		static extern int LoadRegTypeLib( 
-			ref Guid rguid,             
-  			short wVerMajor,  
-  			short wVerMinor,  
-  			int lcid,                 
-  			out ITypeLib pptlib);
+		static extern int LoadRegTypeLib(
+			ref Guid rguid,
+			short wVerMajor,
+			short wVerMinor,
+			int lcid,
+			out ITypeLib pptlib);
 	}
 }

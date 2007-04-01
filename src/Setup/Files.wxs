@@ -1153,21 +1153,6 @@
 											<File Source="..\..\AddIns\AddIns\Misc\CodeCoverage\CodeCoverage.addin" Name="ccover.add" Id="CodeCoverage.addin" LongName="CodeCoverage.addin" />
 										</Component>
 									</Directory>
-									<Directory Id="SharpServerTools" Name="SvrTool" LongName="SharpServerTools">
-										<Component Guid="222C0F80-D2BC-4C35-B829-64E33CED573D" Id="OracleDbToolsProviderDll" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\Misc\SharpServerTools\OracleDbToolsProvider.dll" Name="ORACLEDB.DLL" Id="OracleDbToolsProvider.dll" LongName="OracleDbToolsProvider.dll" Assembly=".net" AssemblyApplication="OracleDbToolsProvider.dll" AssemblyManifest="OracleDbToolsProvider.dll" KeyPath="yes" />
-										</Component>
-										<Component Guid="C4CE7F6D-0ABF-418B-B5BF-486FB6FEBABC" Id="ServerBrowserToolDll" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\Misc\SharpServerTools\ServerBrowserTool.dll" Name="SVRBROWS.DLL" Id="ServerBrowserTool.dll" LongName="ServerBrowserTool.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="ServerBrowserTool.dll" AssemblyManifest="ServerBrowserTool.dll" />
-										</Component>
-										<Component Guid="DE8B6825-3F51-4E8D-80CA-459E3BE6A9B9" Id="SharpDbToolsDll" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\Misc\SharpServerTools\SharpDbTools.dll" Name="DBTOOLS.DLL" Id="SharpDbTools.dll" LongName="SharpDbTools.dll" Assembly=".net" AssemblyApplication="SharpDbTools.dll" AssemblyManifest="SharpDbTools.dll" KeyPath="yes" />
-											<File Source="..\..\AddIns\AddIns\Misc\SharpServerTools\SharpServerTools.addin" Name="SVRTOOLS.ADD" Id="SharpServerTools.addin" LongName="SharpServerTools.addin" />
-										</Component>
-										<Component Guid="770BE2AE-2B65-4EEF-A36B-316D8A4BD47E" Id="SQLServerDbToolsProviderDll" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\Misc\SharpServerTools\SQLServerDbToolsProvider.dll" Name="SQLDB.DLL" Id="SQLServerDbToolsProvider.dll" LongName="SQLServerDbToolsProvider.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="SQLServerDbToolsProvider.dll" AssemblyManifest="SQLServerDbToolsProvider.dll" />
-										</Component>
-									</Directory>
 								</Directory>
 							</Directory>
 						</Directory>
