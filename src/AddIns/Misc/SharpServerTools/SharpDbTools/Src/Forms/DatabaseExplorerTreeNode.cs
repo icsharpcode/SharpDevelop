@@ -26,7 +26,7 @@ namespace SharpDbTools.Forms
 	{
 		static DatabaseExplorerTreeNode()
 		{
-			ResourceService.RegisterStrings("SharpDbTools.Resources.Strings", typeof(DatabaseExplorerTreeNode).Assembly);
+			ResourceService.RegisterStrings("ICSharpCode.DataTools.AddIn.Resources.Strings", typeof(DatabaseExplorerTreeNode).Assembly);
 		}
 		
 		public DatabaseExplorerTreeNode(): base()

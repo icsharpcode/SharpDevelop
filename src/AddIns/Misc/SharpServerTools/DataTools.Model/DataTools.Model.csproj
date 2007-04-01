@@ -1,11 +1,11 @@
 ﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <OutputType>Library</OutputType>
-    <RootNamespace>SQLServerDbToolsProvider</RootNamespace>
-    <AssemblyName>SQLServerDbToolsProvider</AssemblyName>
+    <ProjectGuid>{51783FC4-D8D2-4BFB-A1F1-AC8857CF3ED0}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{8C692BAF-108E-4346-B41E-6EE7D20E2E9D}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>ICSharpCode.DataTools.Model</RootNamespace>
+    <AssemblyName>ICSharpCode.DataTools.Model</AssemblyName>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
     <WarningLevel>4</WarningLevel>
@@ -13,19 +13,18 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <OutputPath>..\..\..\..\..\AddIns\AddIns\Misc\SharpServerTools\</OutputPath>
-    <Optimize>False</Optimize>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>Full</DebugType>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <Optimize>False</Optimize>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <OutputPath>..\..\..\..\..\AddIns\AddIns\Misc\SharpServerTools\</OutputPath>
-    <Optimize>True</Optimize>
-    <DefineConstants>TRACE</DefineConstants>
+    <OutputPath>bin\Release\</OutputPath>
     <DebugSymbols>False</DebugSymbols>
     <DebugType>None</DebugType>
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
     <RegisterForComInterop>False</RegisterForComInterop>
@@ -34,28 +33,28 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <FileAlignment>4096</FileAlignment>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Windows.Forms" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Config\AssemblyInfo.cs" />
-    <Compile Include="Src\Forms\SQLServerFormsArtefactFactory.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Src" />
-    <Folder Include="Config" />
-    <Folder Include="Src\Forms" />
-    <ProjectReference Include="..\..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
-      <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
-      <Name>ICSharpCode.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SharpDbTools\SharpDbTools.csproj">
-      <Project>{93B2D6DF-7588-40C0-8A35-CA0DD7328FC3}</Project>
-      <Name>SharpDbTools</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+  <ItemGroup>
+    <Reference Include="log4net">
+      <HintPath>..\..\..\..\Libraries\log4net\bin\net\2.0\release\log4net.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="Src\ColumnNames.cs" />
+    <Compile Include="Src\DbModelInfo.cs" />
+    <Compile Include="Src\DbModelInfoService.cs" />
+    <Compile Include="Src\DbProvidersException.cs" />
+    <Compile Include="Src\DbProvidersService.cs" />
+    <Compile Include="Src\MetadataNames.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Configuration" />
+    <Folder Include="Resources" />
+    <Folder Include="Src" />
+  </ItemGroup>
 </Project>

@@ -1,7 +1,0 @@
-﻿
-Microsoft Visual Studio Solution File, Format Version 9.00
-# SharpDevelop 2.1.0.2001
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SQLServerDbToolsProvider", "SQLServerDbToolsProvider.csproj", "{8C692BAF-108E-4346-B41E-6EE7D20E2E9D}"
-EndProject
-Global
-EndGlobal

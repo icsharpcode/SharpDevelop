@@ -1,11 +1,11 @@
 ﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <ProjectGuid>{5C1F6FB6-AB08-430D-8956-E2BE137470CD}</ProjectGuid>
+    <ProjectGuid>{87C0E3D9-0DFD-4F6D-8E38-408AAF73F4EE}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <OutputType>Library</OutputType>
-    <RootNamespace>SQLiteDbToolsProvider</RootNamespace>
-    <AssemblyName>SQLiteDbToolsProvider</AssemblyName>
+    <RootNamespace>ICSharpCode.DataTools.UI</RootNamespace>
+    <AssemblyName>ICSharpCode.DataTools.UI</AssemblyName>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
     <WarningLevel>4</WarningLevel>
@@ -43,24 +43,20 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration\AssemblyInfo.cs" />
-    <Compile Include="Src\Forms\SQLiteArtefactFactory.cs" />
+    <Compile Include="Src\ConnectionStringDefinitionDialog.cs" />
+    <Compile Include="Src\ConnectionStringDefinitionDialog.Designer.cs" />
+    <EmbeddedResource Include="Resources\Strings.resx" />
+    <EmbeddedResource Include="Src\ConnectionStringDefinitionDialog.resx">
+      <DependentUpon>ConnectionStringDefinitionDialog.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Configuration" />
-    <Folder Include="Src" />
     <Folder Include="Resources" />
-    <Folder Include="Src\Forms" />
-    <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
-      <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
-      <Name>ICSharpCode.SharpDevelop</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
-      <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
-      <Name>ICSharpCode.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SharpDbTools\SharpDbTools.csproj">
-      <Project>{93B2D6DF-7588-40C0-8A35-CA0DD7328FC3}</Project>
-      <Name>SharpDbTools</Name>
+    <Folder Include="Src" />
+    <ProjectReference Include="..\DataTools.Model\DataTools.Model.csproj">
+      <Project>{51783FC4-D8D2-4BFB-A1F1-AC8857CF3ED0}</Project>
+      <Name>DataTools.Model</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

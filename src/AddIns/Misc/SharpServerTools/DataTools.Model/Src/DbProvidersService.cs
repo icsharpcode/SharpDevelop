@@ -9,9 +9,8 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-using System.Windows.Forms;
 
-using ICSharpCode.Core;
+using log4net;
 
 namespace SharpDbTools.Data
 {
@@ -29,6 +28,8 @@ namespace SharpDbTools.Data
 		// This is only valid witin one session - do not persist
 		private Dictionary<string, string> invariantByNameLookup = new Dictionary<string, string>();
 		private List<string> names = new List<string>();
+		static ILog log = LogManager.GetLogger(typeof(DbProvidersService));
+		List<string> errMsgs = new List<string>();
 		
 		private DbProvidersService()
 		{
@@ -40,41 +41,43 @@ namespace SharpDbTools.Data
 			DataTable providerFactoriesTable = DbProviderFactories.GetFactoryClasses();
 			DataRow[] rows = providerFactoriesTable.Select();
 			
+			List<string> errorMsgs = new List<string>();
+			
 			foreach(DataRow row in rows)
 			{
 				// TODO: factor out string literals for column names
 				string name = (string)row["Name"];
 				string invariantName = (string)row["InvariantName"];
 				try {
-					LoggingService.Debug("adding lookup for: " + name + " to: + " + invariantName);
+					log.Debug("adding lookup for: " + name + " to: + " + invariantName);
 					invariantByNameLookup.Add(name, invariantName);
 					//factoryData.Add(name, row);
 
-					LoggingService.Debug("retrieving DbProviderFactory for Name: " 
+					log.Debug("retrieving DbProviderFactory for Name: " 
 					                     + name + " InvariantName: " + invariantName);
 					DbProviderFactory factory = DbProviderFactories.GetFactory(row);
 					names.Add(name);
 					factories.Add(name, factory);
 					factoriesByInvariantName.Add(invariantName, factory);
 				} catch (ArgumentException) {
-					MessageBox.Show("Found duplicate config for data provider: " + name + ", invariant name: " +
-					                invariantName + ", will use config found first", "Exception loading DbProviderFactory", 
-					                MessageBoxButtons.OK,
-					                MessageBoxIcon.Error);
+					errorMsgs.Add("Found duplicate config for data provider: " + name + ", invariant name: " +
+					              invariantName + ", will use config found first");
+
 				} catch (Exception) {
-					MessageBox.Show("Unable to load DbProviderFactory for: " + name + ", this will be unavailable." +
-					                "\nCheck *.config files for invalid ado.net config elements, or config" +
-					                "for assemblies that are not available.",
-					                "Exception loading DbProviderFactory", MessageBoxButtons.OK, 
-					                MessageBoxIcon.Error);
+					errorMsgs.Add("Unable to load DbProviderFactory for: " + name + ", this will be unavailable." +
+					              " Check *.config files for invalid ado.net config elements, or config");				                
 				}
 			}
-
 			initialized = true;
 		}
 		
-		public List<string> Names
-		{
+		public List<string> ErrorMessages {
+			get {
+				return this.errMsgs;
+			}
+		}
+		
+		public List<string> Names {
 			get
 			{
 				return names;

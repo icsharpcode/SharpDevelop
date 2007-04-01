@@ -41,15 +41,15 @@ namespace SharpDbTools.SQLite.Forms
 			
 			// retrieve the table listing the metadata collections
 			
-			DataTable metadataCollectionsTable = info.Tables[TableNames.MetaDataCollections];
+			DataTable metadataCollectionsTable = info.Tables[MetadataNames.MetaDataCollections];
 			
 			// if it exists then populate the tree
 			
 			if (metadataCollectionsTable != null) {
 				LoggingService.Debug(this.GetType().ToString() + ": found metadata collections table, " +
 				                     " building node...");
-				for (int i = 0; i < TableNames.PrimaryObjects.Length; i++) {
-					string metadataCollectionName = TableNames.PrimaryObjects[i];
+				for (int i = 0; i < MetadataNames.PrimaryObjects.Length; i++) {
+					string metadataCollectionName = MetadataNames.PrimaryObjects[i];
 					LoggingService.Debug("looking for metadata: " + metadataCollectionName);
 					DataTable metaCollectionTable = info.Tables[metadataCollectionName];
 					if (metaCollectionTable == null) continue;

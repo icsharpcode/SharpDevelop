@@ -8,11 +8,10 @@
 	</Manifest>
 	
 	<Runtime>
-		<Import assembly = "SharpDbTools.dll"/>
-		<Import assembly = "ServerBrowserTool.dll"/>
-		<Import assembly="OracleDbToolsProvider.dll"/>
-		<Import assembly="SqlServerDbToolsProvider.dll"/>
-		<Import assembly="SQLiteDbToolsProvider.dll"/>
+		<Import assembly = "ICSharpCode.ServerBrowserTool.dll"/>
+		<Import assembly="ICSharpCode.DataTools.AddIn.dll"/>
+		<Import assembly="ICSharpCode.DataTools.UI.dll"/>
+		<Import assembly="ICSharpCode.DataTools.Model.dll"/>
 	</Runtime>
 	
 	<Path name = "/SharpDevelop/Workbench/Pads">

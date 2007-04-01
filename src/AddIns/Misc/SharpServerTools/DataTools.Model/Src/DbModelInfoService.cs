@@ -11,7 +11,7 @@ using System.Data;
 using System.Data.Common;
 using System.IO;
 
-using ICSharpCode.Core;
+using log4net;
 
 namespace SharpDbTools.Data
 {
@@ -25,18 +25,25 @@ namespace SharpDbTools.Data
 	/// </summary>
 	public static class DbModelInfoService
 	{
-		static string saveLocation = null;
-		static object lockObject = new Object();
 		const string dbFilesDir = "DbTools";	
 		static SortedList<string, DbModelInfo> cache = null;
+		static ILog log = LogManager.GetLogger(typeof(DbModelInfoService));
+		static string savePath;
 		
+		
+		public static string SavePath {
+			set {
+				savePath = value;
+			}
+			get {
+				return savePath;
+			}
+		}
 		public static IList<string> Names {
 			get {
-				lock(lockObject) {
-					if (cache == null) {
-						cache = new SortedList<string, DbModelInfo>();
-						LoadNamesFromFiles();
-					}
+				if (cache == null) {
+					cache = new SortedList<string, DbModelInfo>();
+					LoadNamesFromFiles();
 				}
 				return cache.Keys;
 			}
@@ -74,11 +81,11 @@ namespace SharpDbTools.Data
 		
 		public static DataTable GetTableInfo(string modelName, string tableName)
 		{
-			LoggingService.Debug("-->GetTableInfo");
+			log.Debug("-->GetTableInfo");
 			DbModelInfo modelInfo = GetDbModelInfo(modelName);
-			DataTable columnTable = modelInfo.Tables[TableNames.Columns];
+			DataTable columnTable = modelInfo.Tables[MetadataNames.Columns];
 			DataRow[] columnsMetadata = columnTable.Select(ColumnNames.TableName + "='" + tableName + "'");
-			LoggingService.Debug("found: " + columnsMetadata.Length + " columns belonging to table: " + tableName);
+			log.Debug("found: " + columnsMetadata.Length + " columns belonging to table: " + tableName);
 			DataTable tableInfo = new DataTable();
 			DataColumnCollection cols = columnTable.Columns;
 			foreach (DataColumn c in cols) {
@@ -132,7 +139,7 @@ namespace SharpDbTools.Data
 				connection.Open();
 				DataTable schemaInfo = connection.GetSchema();
 				if (schemaInfo != null) {
-					LoggingService.Debug("retrieved schema info with " + schemaInfo.Rows.Count + " rows");
+					log.Debug("retrieved schema info with " + schemaInfo.Rows.Count + " rows");
 				}
 				
 				// clear the DbModelInfo prior to refreshing from the connection
@@ -144,16 +151,16 @@ namespace SharpDbTools.Data
 				
 				foreach (DataRow collectionRow in schemaInfo.Rows) {
 					String collectionName = (string)collectionRow[0];
-					LoggingService.Debug("loading metadata for collection: " + collectionName);
+					log.Debug("loading metadata for collection: " + collectionName);
 					DataTable nextMetaData = connection.GetSchema(collectionName);
 					modelInfo.Merge(nextMetaData);
 				}
-				LoggingService.Debug("completed load of metadata, committing changes");
+				log.Debug("completed load of metadata, committing changes");
 				modelInfo.AcceptChanges();
 				return modelInfo;
 			}
 			catch(Exception e) {
-				LoggingService.Fatal("Exception caught while trying to retrieve database metadata: " + e);
+				log.Fatal("Exception caught while trying to retrieve database metadata: " + e);
 				throw e;
 			}
 			finally {
@@ -184,7 +191,7 @@ namespace SharpDbTools.Data
 				
 				
 				string filePath = path + @"\" + name + ".metadata";
-				LoggingService.Debug("writing metadata to: " + filePath);
+				log.Debug("writing metadata to: " + filePath);
 				if (File.Exists(filePath)) {
 				    	if (overwriteExistingFile) {
 				    		File.Delete(filePath);	
@@ -215,12 +222,12 @@ namespace SharpDbTools.Data
 		{
 			// load DbModelInfo's from file system
 			string saveLocation = GetSaveLocation();
-			LoggingService.Debug("looking for metadata files at: " + saveLocation);
+			log.Debug("looking for metadata files at: " + saveLocation);
 			string[] files = Directory.GetFileSystemEntries(saveLocation);
 
 			cache.Clear();
 			for (int i = 0; i < files.Length; i++) {
-				LoggingService.Debug("found to load metadata from: " + files[i]);
+				log.Debug("found to load metadata from: " + files[i]);
 				int start = files[i].LastIndexOf('\\');
 				int end = files[i].LastIndexOf('.');
 				start++;
@@ -244,7 +251,7 @@ namespace SharpDbTools.Data
 		
 		private static DbModelInfo LoadFromFileAtPath(string filePath)
 		{
-			LoggingService.Debug("loading DbModelInfo from filePath: " + filePath);
+			log.Debug("loading DbModelInfo from filePath: " + filePath);
 			DbModelInfo nextModel = new DbModelInfo();
 			nextModel.ReadXml(filePath);
 			return nextModel;
@@ -252,7 +259,7 @@ namespace SharpDbTools.Data
 		
 		public static void LoadFromFile(string logicalConnectionName)
 		{
-			LoggingService.Debug("loading DbModelInfo for name: " + logicalConnectionName);
+			log.Debug("loading DbModelInfo for name: " + logicalConnectionName);
 			string saveLocation = GetSaveLocation();
 			string path = saveLocation + "\\" + logicalConnectionName + ".metadata";
 			DbModelInfo info = LoadFromFileAtPath(path);
@@ -264,17 +271,15 @@ namespace SharpDbTools.Data
 		{
 			// append the path of the directory for saving Db files
 			
-			if (saveLocation == null) {
-				lock(lockObject) {
-					string configDir = PropertyService.ConfigDirectory;
-					saveLocation = configDir + @"\" + dbFilesDir;
-					saveLocation = saveLocation.Replace("/", @"\");
-				}
+			if (SavePath == null) {
+				string configDir = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+				SavePath = configDir + @"\" + dbFilesDir;
+				SavePath = SavePath.Replace("/", @"\");	
 			}
-			if (!Directory.Exists(saveLocation)) {
-				Directory.CreateDirectory(@saveLocation);
+			if (!Directory.Exists(SavePath)) {
+				Directory.CreateDirectory(@SavePath);
 			}
-			return saveLocation;			
+			return SavePath;			
 		}
 	}
 	

@@ -8,11 +8,11 @@ using System.Runtime.InteropServices;
 // change them to the information which is associated with the assembly
 // you compile.
 
-[assembly: AssemblyTitle("SQLServerDbToolsProvider")]
+[assembly: AssemblyTitle("DataTools.UI")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("SQLServerDbToolsProvider")]
+[assembly: AssemblyProduct("DataTools.UI")]
 [assembly: AssemblyCopyright("")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

@@ -12,7 +12,7 @@ namespace SharpDbTools.Data
 	/// <summary>
 	/// Description of Tables.
 	/// </summary>
-	public sealed class TableNames
+	public sealed class MetadataNames
 	{
 		public const string MetaDataCollections = "MetaDataCollections";
 		public const string ConnectionInfo = "ConnectionInfo";

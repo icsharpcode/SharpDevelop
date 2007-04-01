@@ -45,7 +45,7 @@ namespace SharpDbTools.Data
 		
 		public string Name {
 			get {
-				DataTable table = this.Tables[TableNames.ConnectionInfo];
+				DataTable table = this.Tables[MetadataNames.ConnectionInfo];
 				string name = table.Rows[0][ColumnNames.Name] as string;
 				return name;
 			}
@@ -53,7 +53,7 @@ namespace SharpDbTools.Data
 		
 		public string InvariantName {
 			get {
-				DataTable table = this.Tables[TableNames.ConnectionInfo];
+				DataTable table = this.Tables[MetadataNames.ConnectionInfo];
 				string invariantName = null;
 				try {
 					invariantName = table.Rows[0][ColumnNames.InvariantName] as string;	
@@ -65,7 +65,7 @@ namespace SharpDbTools.Data
 				return invariantName;
 			}
 			set {
-				DataTable table = this.Tables[TableNames.ConnectionInfo];
+				DataTable table = this.Tables[MetadataNames.ConnectionInfo];
 				string invariantName = table.Rows[0][ColumnNames.InvariantName] as string;
 				string name = this.Name;
 				string connectionString = this.ConnectionString;
@@ -87,7 +87,7 @@ namespace SharpDbTools.Data
 		
 		public string ConnectionString {
 			get {
-				DataTable table = this.Tables[TableNames.ConnectionInfo];
+				DataTable table = this.Tables[MetadataNames.ConnectionInfo];
 				string connectionString = null;
 				try {
 					connectionString = table.Rows[0][ColumnNames.ConnectionString] as string;	
@@ -101,7 +101,7 @@ namespace SharpDbTools.Data
 				return connectionString;
 			}
 			set {
-				DataTable table = this.Tables[TableNames.ConnectionInfo];
+				DataTable table = this.Tables[MetadataNames.ConnectionInfo];
 				string connectionString = this.ConnectionString;
 				if (connectionString == null) {
 					table.Rows[0][ColumnNames.ConnectionString] = value;	
@@ -137,7 +137,7 @@ namespace SharpDbTools.Data
 			// create a table in the DbModelInfo to hold this initial info.
 			// this creates a consistent representation of the data and makes
 			// it easier to serialise it
-			DataTable table = this.Tables.Add(TableNames.ConnectionInfo);
+			DataTable table = this.Tables.Add(MetadataNames.ConnectionInfo);
 			table.Columns.Add(ColumnNames.Name, typeof(string));
 			table.Columns.Add(ColumnNames.InvariantName, typeof(string));
 			table.Columns.Add(ColumnNames.ConnectionString, typeof(string));
