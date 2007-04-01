@@ -20,7 +20,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// <summary>
 		/// The active workbench window.
 		/// </summary>
-		IWorkbenchWindow ActiveWorkbenchwindow {
+		IWorkbenchWindow ActiveWorkbenchWindow {
 			get;
 		}
 		

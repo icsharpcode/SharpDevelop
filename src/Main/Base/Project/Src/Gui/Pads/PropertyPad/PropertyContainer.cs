@@ -11,6 +11,12 @@ using System.ComponentModel.Design;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
+	/// <summary>
+	/// A IViewContent or IPadContent can implement this interface to display a set of properties in
+	/// the property grid when it has focus.
+	/// One view/pad content instance has to always return the same property container instance
+	/// and has to change only the properties on that PropertyContainer.
+	/// </summary>
 	public interface IHasPropertyContainer
 	{
 		PropertyContainer PropertyContainer { get; }
@@ -28,6 +34,16 @@ namespace ICSharpCode.SharpDevelop.Gui
 	/// </summary>
 	public sealed class PropertyContainer
 	{
+		/// <summary>
+		/// Creates a new PropertyContainer instance.
+		/// This has the side effect of constructing the PropertyPad if necessary.
+		/// </summary>
+		public PropertyContainer()
+		{
+			PadDescriptor desc = WorkbenchSingleton.Workbench.GetPad(typeof(PropertyPad));
+			if (desc != null) desc.CreatePad();
+		}
+		
 		object selectedObject;
 		object[] selectedObjects;
 		

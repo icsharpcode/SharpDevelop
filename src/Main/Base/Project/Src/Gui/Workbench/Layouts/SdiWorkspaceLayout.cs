@@ -33,7 +33,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		static bool firstTimeError = true; // TODO: Debug statement only, remove me
 		#endif
 		
-		public IWorkbenchWindow ActiveWorkbenchwindow {
+		public IWorkbenchWindow ActiveWorkbenchWindow {
 			get {
 				if (dockPanel == null)  {
 					return null;
@@ -253,7 +253,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (dockPanel != null) {
 				LockWindowUpdate(wbForm.Handle);
 				try {
-					IWorkbenchWindow activeWindow = this.ActiveWorkbenchwindow;
+					IWorkbenchWindow activeWindow = this.ActiveWorkbenchWindow;
 					dockPanel.ActiveDocumentChanged -= new EventHandler(ActiveMdiChanged);
 					
 					DetachPadContents(false);
@@ -607,7 +607,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		internal void OnActiveWorkbenchWindowChanged(EventArgs e)
 		{
-			IWorkbenchWindow newWindow = this.ActiveWorkbenchwindow;
+			IWorkbenchWindow newWindow = this.ActiveWorkbenchWindow;
 			if (newWindow == null || newWindow.ActiveViewContent != null) {
 				if (ActiveWorkbenchWindowChanged != null) {
 					ActiveWorkbenchWindowChanged(this, e);

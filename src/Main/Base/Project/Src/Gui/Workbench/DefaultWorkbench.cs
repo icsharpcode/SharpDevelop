@@ -137,7 +137,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (layout == null) {
 				this.ActiveWorkbenchWindow = null;
 			} else {
-				this.ActiveWorkbenchWindow = layout.ActiveWorkbenchwindow;
+				this.ActiveWorkbenchWindow = layout.ActiveWorkbenchWindow;
 			}
 		}
 		
@@ -158,9 +158,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 						activeWorkbenchWindow.ActiveViewContentChanged += OnWorkbenchActiveViewContentChanged;
 					}
 					OnWorkbenchActiveViewContentChanged(null, null);
-					if (ActiveWorkbenchWindowChanged != null) {
-						ActiveWorkbenchWindowChanged(this, EventArgs.Empty);
-					}
+				}
+				// raise even when activeWorkbenchWindow didn't change because we also use
+				// ActiveWorkbenchWindowChanged to signal changes in ActiveContent (when switching between pads)
+				if (ActiveWorkbenchWindowChanged != null) {
+					ActiveWorkbenchWindowChanged(this, EventArgs.Empty);
 				}
 			}
 		}

@@ -21,12 +21,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 	{
 		static PropertyPad instance;
 		
-		public static PropertyPad Instance {
-			get {
-				return instance;
-			}
-		}
-		
 		PropertyContainer activeContainer;
 		
 		void SetActiveContainer(PropertyContainer pc)
@@ -81,6 +75,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		PropertyGrid  grid;
 		IDesignerHost host;
 		
+		/// <summary>
+		/// Gets the underlying property grid. Returns null if the property pad has not yet been created.
+		/// </summary>
 		public static PropertyGrid Grid {
 			get {
 				if (instance == null)
