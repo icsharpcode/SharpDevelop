@@ -335,10 +335,11 @@
 				<ComponentRef Id="PdfSharpDll"/>
 				<ComponentRef Id="PdfSharpDeResources"/>
 				-->
-				<ComponentRef Id="OracleDbToolsProviderDll"/>
+				<ComponentRef Id="DataToolsModelDll"/>
 				<ComponentRef Id="ServerBrowserToolDll"/>
-				<ComponentRef Id="SharpDbToolsDll"/>
-				<ComponentRef Id="SQLServerDbToolsProviderDll"/>
+				<ComponentRef Id="DataToolsAddinDll"/>
+				<ComponentRef Id="DataToolsUIDll"/>
+
 				<ComponentRef Id="StartPageAddInFiles"/>
 				<ComponentRef Id="SubversionAddInDll"/>
 				<ComponentRef Id="SubversionUtilsDll"/>

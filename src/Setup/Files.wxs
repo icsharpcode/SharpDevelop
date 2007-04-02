@@ -1147,18 +1147,18 @@
 										</Component>
 									</Directory>
 									<Directory Id="SharpServerTools" Name="SvrTool" LongName="SharpServerTools">
-										<Component Guid="222C0F80-D2BC-4C35-B829-64E33CED573D" Id="OracleDbToolsProviderDll" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\Misc\SharpServerTools\OracleDbToolsProvider.dll" Name="ORACLEDB.DLL" Id="OracleDbToolsProvider.dll" LongName="OracleDbToolsProvider.dll" Assembly=".net" AssemblyApplication="OracleDbToolsProvider.dll" AssemblyManifest="OracleDbToolsProvider.dll" KeyPath="yes" />
+										<Component Guid="222C0F80-D2BC-4C35-B829-64E33CED573D" Id="DataToolsModelDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\Misc\SharpServerTools\ICSharpCode.DataTools.Model.dll" Name="DBMODEL.DLL" Id="ICSharpCode.DataTools.Model.dll" LongName="ICSharpCode.DataTools.Model.dll" Assembly=".net" AssemblyApplication="ICSharpCode.DataTools.Model.dll" AssemblyManifest="ICSharpCode.DataTools.Model.dll" KeyPath="yes" />
 										</Component>
 										<Component Guid="C4CE7F6D-0ABF-418B-B5BF-486FB6FEBABC" Id="ServerBrowserToolDll" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\Misc\SharpServerTools\ServerBrowserTool.dll" Name="SVRBROWS.DLL" Id="ServerBrowserTool.dll" LongName="ServerBrowserTool.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="ServerBrowserTool.dll" AssemblyManifest="ServerBrowserTool.dll" />
+											<File Source="..\..\AddIns\AddIns\Misc\SharpServerTools\ICSharpCode.ServerBrowserTool.dll" Name="SVRBROWS.DLL" Id="ICSharpCode.ServerBrowserTool.dll" LongName="ICSharpCode.ServerBrowserTool.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="ICSharpCode.ServerBrowserTool.dll" AssemblyManifest="ICSharpCode.ServerBrowserTool.dll" />
 										</Component>
-										<Component Guid="DE8B6825-3F51-4E8D-80CA-459E3BE6A9B9" Id="SharpDbToolsDll" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\Misc\SharpServerTools\SharpDbTools.dll" Name="DBTOOLS.DLL" Id="SharpDbTools.dll" LongName="SharpDbTools.dll" Assembly=".net" AssemblyApplication="SharpDbTools.dll" AssemblyManifest="SharpDbTools.dll" KeyPath="yes" />
+										<Component Guid="DE8B6825-3F51-4E8D-80CA-459E3BE6A9B9" Id="DataToolsAddinDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\Misc\SharpServerTools\ICSharpCode.DataTools.AddIn.dll" Name="DBTOOLS.DLL" Id="ICSharpCode.DataTools.AddIn.dll" LongName="ICSharpCode.DataTools.AddIn.dll" Assembly=".net" AssemblyApplication="ICSharpCode.DataTools.AddIn.dll" AssemblyManifest="ICSharpCode.DataTools.AddIn.dll" KeyPath="yes" />
 											<File Source="..\..\AddIns\AddIns\Misc\SharpServerTools\SharpServerTools.addin" Name="SVRTOOLS.ADD" Id="SharpServerTools.addin" LongName="SharpServerTools.addin" />
 										</Component>
-										<Component Guid="770BE2AE-2B65-4EEF-A36B-316D8A4BD47E" Id="SQLServerDbToolsProviderDll" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\Misc\SharpServerTools\SQLServerDbToolsProvider.dll" Name="SQLDB.DLL" Id="SQLServerDbToolsProvider.dll" LongName="SQLServerDbToolsProvider.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="SQLServerDbToolsProvider.dll" AssemblyManifest="SQLServerDbToolsProvider.dll" />
+										<Component Guid="770BE2AE-2B65-4EEF-A36B-316D8A4BD47E" Id="DataToolsUIDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\Misc\SharpServerTools\ICSharpCode.DataTools.UI.dll" Name="DBUI.DLL" Id="ICSharpCode.DataTools.UI.dll" LongName="ICSharpCode.DataTools.UI.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="ICSharpCode.DataTools.UI.dll" AssemblyManifest="ICSharpCode.DataTools.UI.dll" />
 										</Component>
 									</Directory>
 								</Directory>
