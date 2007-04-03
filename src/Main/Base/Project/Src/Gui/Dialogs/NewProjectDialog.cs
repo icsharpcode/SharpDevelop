@@ -263,13 +263,13 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 			string solution = ((TextBox)ControlDictionary["solutionNameTextBox"]).Text.Trim();
 			string name     = ((TextBox)ControlDictionary["nameTextBox"]).Text.Trim();
 			string location = ((TextBox)ControlDictionary["locationTextBox"]).Text.Trim();
-			if (!FileUtility.IsValidFileName(solution)
+			if (!FileUtility.IsValidPath(solution)
 			    || solution.IndexOf(Path.DirectorySeparatorChar) >= 0
 			    || solution.IndexOf(Path.AltDirectorySeparatorChar) >= 0
-			    || !FileUtility.IsValidFileName(name)
+			    || !FileUtility.IsValidPath(name)
 			    || name.IndexOf(Path.AltDirectorySeparatorChar) >= 0
 			    || name.IndexOf(Path.DirectorySeparatorChar) >= 0
-			    || !FileUtility.IsValidFileName(location))
+			    || !FileUtility.IsValidPath(location))
 			{
 				MessageService.ShowError("${res:ICSharpCode.SharpDevelop.Gui.Dialogs.NewProjectDialog.IllegalProjectNameError}");
 				return;

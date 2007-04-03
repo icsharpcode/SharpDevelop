@@ -147,11 +147,11 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		{
 			List<ExternalTool> newlist = new List<ExternalTool>();
 			foreach (ExternalTool tool in ((ListBox)ControlDictionary["toolListBox"]).Items) {
-				if (!FileUtility.IsValidFileName(tool.Command)) {
+				if (!FileUtility.IsValidPath(tool.Command)) {
 					MessageService.ShowError(String.Format("The command of tool \"{0}\" is invalid.", tool.MenuCommand));
 					return false;
 				}
-				if ((tool.InitialDirectory != "") && (!FileUtility.IsValidFileName(tool.InitialDirectory))) {
+				if ((tool.InitialDirectory != "") && (!FileUtility.IsValidPath(tool.InitialDirectory))) {
 					MessageService.ShowError(String.Format("The working directory of tool \"{0}\" is invalid.", tool.MenuCommand));
 					return false;
 				}

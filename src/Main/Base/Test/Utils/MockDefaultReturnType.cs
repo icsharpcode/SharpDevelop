@@ -69,7 +69,7 @@ namespace ICSharpCode.SharpDevelop.Tests.Utils
 			}
 		}
 		
-		public int TypeParameterCount {
+		public int TypeArgumentCount {
 			get {
 				throw new NotImplementedException();
 			}

@@ -86,7 +86,7 @@ namespace ICSharpCode.CodeAnalysis
 			{
 				string[] moreData = (subcategory ?? "").Split('|');
 				BuildError err = engineWorker.CurrentErrorOrWarning;
-				if (FileUtility.IsValidFileName(file) &&
+				if (FileUtility.IsValidPath(file) &&
 				    Path.GetFileName(file) == "SharpDevelop.CodeAnalysis.targets") {
 					err.FileName = null;
 				}

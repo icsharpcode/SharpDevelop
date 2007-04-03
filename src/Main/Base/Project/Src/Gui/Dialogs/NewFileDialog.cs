@@ -444,7 +444,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					fileName = GenerateCurrentFileName();
 				} else {
 					fileName = ControlDictionary["fileNameTextBox"].Text.Trim();
-					if (!FileUtility.IsValidFileName(fileName)
+					if (!FileUtility.IsValidPath(fileName)
 					    || fileName.IndexOf(Path.AltDirectorySeparatorChar) >= 0
 					    || fileName.IndexOf(Path.DirectorySeparatorChar) >= 0)
 					{

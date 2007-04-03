@@ -688,11 +688,12 @@ namespace ICSharpCode.SharpDevelop
 		
 		////////////////////////////////////
 		
-		public static ArrayList CtrlSpace(int caretLine, int caretColumn, string fileName, string fileContent, ExpressionContext context)
+		public static ArrayList CtrlSpace(int caretLine, int caretColumn,
+		                                  string fileName, string fileContent, ExpressionContext context)
 		{
 			IResolver resolver = CreateResolver(fileName);
 			if (resolver != null) {
-				return resolver.CtrlSpace(caretLine, caretColumn, fileName, fileContent, context);
+				return resolver.CtrlSpace(caretLine, caretColumn, GetParseInformation(fileName), fileContent, context);
 			}
 			return null;
 		}
@@ -707,14 +708,12 @@ namespace ICSharpCode.SharpDevelop
 		}
 		
 		public static ResolveResult Resolve(ExpressionResult expressionResult,
-		                                    int caretLineNumber,
-		                                    int caretColumn,
-		                                    string fileName,
-		                                    string fileContent)
+		                                    int caretLineNumber, int caretColumn,
+		                                    string fileName, string fileContent)
 		{
 			IResolver resolver = CreateResolver(fileName);
 			if (resolver != null) {
-				return resolver.Resolve(expressionResult, caretLineNumber, caretColumn, fileName, fileContent);
+				return resolver.Resolve(expressionResult, caretLineNumber, caretColumn, GetParseInformation(fileName), fileContent);
 			}
 			return null;
 		}

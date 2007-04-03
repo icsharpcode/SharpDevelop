@@ -15,11 +15,11 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 	/// </summary>
 	public class CSharpExpressionFinder : IExpressionFinder
 	{
-		string fileName;
+		Func<ParseInformation> parseInformationSource;
 		
-		public CSharpExpressionFinder(string fileName)
+		public CSharpExpressionFinder(Func<ParseInformation> parseInformationSource)
 		{
-			this.fileName = fileName;
+			this.parseInformationSource = parseInformationSource ?? delegate { return null; };
 		}
 		
 		#region Capture Context
@@ -72,7 +72,7 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 							nonGenericClassName = className;
 							genericPart = null;
 						}
-						ClassFinder finder = new ClassFinder(fileName, text, typeStart);
+						ClassFinder finder = new ClassFinder(parseInformationSource(), text, typeStart);
 						IReturnType t = finder.SearchType(nonGenericClassName, typeParameterCount);
 						IClass c = (t != null) ? t.GetUnderlyingClass() : null;
 						if (c != null) {

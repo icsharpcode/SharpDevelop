@@ -49,7 +49,8 @@ namespace CSharpEditor
 		
 		internal Dom.ProjectContentRegistry pcRegistry;
 		internal Dom.DefaultProjectContent myProjectContent;
-		internal Dom.ICompilationUnit lastCompilationUnit;
+		internal Dom.ParseInformation parseInformation = new Dom.ParseInformation();
+		Dom.ICompilationUnit lastCompilationUnit;
 		Thread parserThread;
 		
 		public static bool IsVisualBasic = false;
@@ -175,6 +176,7 @@ class A
 			// Remove information from lastCompilationUnit and add information from newCompilationUnit.
 			myProjectContent.UpdateCompilationUnit(lastCompilationUnit, newCompilationUnit, DummyFileName);
 			lastCompilationUnit = newCompilationUnit;
+			parseInformation.ValidCompilationUnit = newCompilationUnit;
 		}
 		
 		Dom.ICompilationUnit ConvertCompilationUnit(NRefactory.Ast.CompilationUnit cu)

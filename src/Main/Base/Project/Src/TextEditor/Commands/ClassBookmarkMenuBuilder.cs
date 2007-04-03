@@ -102,7 +102,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 					// File name does not match class name
 					string correctFileName = Path.Combine(Path.GetDirectoryName(c.CompilationUnit.FileName),
 					                                      c.Name + Path.GetExtension(c.CompilationUnit.FileName));
-					if (FileUtility.IsValidFileName(correctFileName)
+					if (FileUtility.IsValidPath(correctFileName)
 					    && Path.IsPathRooted(correctFileName)
 					    && !File.Exists(correctFileName))
 					{

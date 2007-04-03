@@ -30,9 +30,14 @@ namespace CSharpBinding
 		{
 		}
 		
+		static CSharpExpressionFinder CreateExpressionFinder(string fileName)
+		{
+			return new CSharpExpressionFinder(delegate { return ParserService.GetParseInformation(fileName); });
+		}
+		
 		public override bool HandleKeyPress(SharpDevelopTextAreaControl editor, char ch)
 		{
-			CSharpExpressionFinder ef = new CSharpExpressionFinder(editor.FileName);
+			CSharpExpressionFinder ef = CreateExpressionFinder(editor.FileName);
 			int cursor = editor.ActiveTextAreaControl.Caret.Offset;
 			ExpressionContext context = null;
 			if (ch == '(') {
@@ -132,7 +137,8 @@ namespace CSharpBinding
 						                                         t.col, editor.FileName,
 						                                         editor.Document.TextContent);
 						if (rr != null && rr.ResolvedType != null) {
-							ClassFinder context = new ClassFinder(editor.FileName, editor.ActiveTextAreaControl.Caret.Line, t.col);
+							ClassFinder context = new ClassFinder(ParserService.GetParseInformation(editor.FileName),
+							                                      editor.ActiveTextAreaControl.Caret.Line, t.col);
 							if (CodeGenerator.CanUseShortTypeName(rr.ResolvedType, context))
 								CSharpAmbience.Instance.ConversionFlags = ConversionFlags.None;
 							else
@@ -150,7 +156,7 @@ namespace CSharpBinding
 		
 		bool IsInComment(SharpDevelopTextAreaControl editor)
 		{
-			CSharpExpressionFinder ef = new CSharpExpressionFinder(editor.FileName);
+			CSharpExpressionFinder ef = CreateExpressionFinder(editor.FileName);
 			int cursor = editor.ActiveTextAreaControl.Caret.Offset - 1;
 			return ef.FilterComments(editor.Document.GetText(0, cursor + 1), ref cursor) == null;
 		}
@@ -196,7 +202,7 @@ namespace CSharpBinding
 		
 		bool ShowNewCompletion(SharpDevelopTextAreaControl editor)
 		{
-			CSharpExpressionFinder ef = new CSharpExpressionFinder(editor.FileName);
+			CSharpExpressionFinder ef = CreateExpressionFinder(editor.FileName);
 			int cursor = editor.ActiveTextAreaControl.Caret.Offset;
 			ExpressionContext context = ef.FindExpression(editor.Document.GetText(0, cursor) + " T.", cursor + 2).Context;
 			if (context.IsObjectCreation) {
@@ -210,8 +216,8 @@ namespace CSharpBinding
 		bool DoCaseCompletion(SharpDevelopTextAreaControl editor)
 		{
 			ICSharpCode.TextEditor.Caret caret = editor.ActiveTextAreaControl.Caret;
-			NRefactoryResolver r = new NRefactoryResolver(ParserService.CurrentProjectContent, LanguageProperties.CSharp);
-			if (r.Initialize(editor.FileName, caret.Line + 1, caret.Column + 1)) {
+			NRefactoryResolver r = new NRefactoryResolver(LanguageProperties.CSharp);
+			if (r.Initialize(ParserService.GetParseInformation(editor.FileName), caret.Line + 1, caret.Column + 1)) {
 				AST.INode currentMember = r.ParseCurrentMember(editor.Text);
 				if (currentMember != null) {
 					CaseCompletionSwitchFinder ccsf = new CaseCompletionSwitchFinder(caret.Line + 1, caret.Column + 1);

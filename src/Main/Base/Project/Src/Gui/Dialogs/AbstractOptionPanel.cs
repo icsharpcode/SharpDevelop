@@ -95,16 +95,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		protected string baseDirectory;
 		
-		[Obsolete("Please specify fileFilter and targetNeedsMSBuildEncoding")]
-		protected void ConnectBrowseButton(string browseButton, string target)
-		{
-			ConnectBrowseButton(browseButton, target, "${res:SharpDevelop.FileFilter.AllFiles}|*.*");
-		}
-		[Obsolete("Please specify targetNeedsMSBuildEncoding")]
-		protected void ConnectBrowseButton(string browseButton, string target, string fileFilter)
-		{
-			ConnectBrowseButton(browseButton, target, fileFilter, TextBoxEditMode.EditEvaluatedProperty);
-		}
 		protected void ConnectBrowseButton(string browseButton, string target, string fileFilter, TextBoxEditMode textBoxEditMode)
 		{
 			if (ControlDictionary[browseButton] == null) {
@@ -113,23 +103,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 				return;
 			}
 			if (ControlDictionary[target] == null) {
-				
 				MessageService.ShowError(target + " not found!");
 				return;
 			}
-			ControlDictionary[browseButton].Click += new EventHandler(new BrowseButtonEvent(this, target, fileFilter, textBoxEditMode).Event);
+			ControlDictionary[browseButton].Click += new EventHandler(new BrowseButtonEvent(this, ControlDictionary[target], fileFilter, textBoxEditMode).Event);
 		}
 		
-		[Obsolete("Please specify textBoxEditMode")]
-		protected void ConnectBrowseFolder(string browseButton, string target)
-		{
-			ConnectBrowseFolder(browseButton, target, TextBoxEditMode.EditEvaluatedProperty);
-		}
-		[Obsolete("Please specify textBoxEditMode")]
-		protected void ConnectBrowseFolder(string browseButton, string target, string description)
-		{
-			ConnectBrowseFolder(browseButton, target, description, TextBoxEditMode.EditEvaluatedProperty);
-		}
 		protected void ConnectBrowseFolder(string browseButton, string target, TextBoxEditMode textBoxEditMode)
 		{
 			ConnectBrowseFolder(browseButton, target, "${res:Dialog.ProjectOptions.SelectFolderTitle}", textBoxEditMode);
@@ -147,21 +126,22 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			ControlDictionary[browseButton].Click += new EventHandler(new BrowseFolderEvent(this, target, description, textBoxEditMode).Event);
 		}
+		protected void BrowseForFile(Control target, string filter, TextBoxEditMode textBoxEditMode)
+		{
+			if (target == null) {
+				throw new ArgumentNullException("target");
+			}
+			new BrowseButtonEvent(this, target, filter, textBoxEditMode).Event(null, null);
+		}
 		
-		protected class BrowseButtonEvent
+		sealed class BrowseButtonEvent
 		{
 			AbstractOptionPanel panel;
-			string target;
+			Control target;
 			string filter;
 			TextBoxEditMode textBoxEditMode;
 			
-			[Obsolete("specify textBoxEditMode")]
-			public BrowseButtonEvent(AbstractOptionPanel panel, string target, string filter)
-				: this(panel, target, filter, TextBoxEditMode.EditEvaluatedProperty)
-			{
-			}
-			
-			public BrowseButtonEvent(AbstractOptionPanel panel, string target, string filter, TextBoxEditMode textBoxEditMode)
+			public BrowseButtonEvent(AbstractOptionPanel panel, Control target, string filter, TextBoxEditMode textBoxEditMode)
 			{
 				this.panel  = panel;
 				this.filter = filter;
@@ -174,34 +154,33 @@ namespace ICSharpCode.SharpDevelop.Gui
 				using (OpenFileDialog fdiag = new OpenFileDialog()) {
 					fdiag.Filter      = StringParser.Parse(filter);
 					fdiag.Multiselect = false;
-					
+					try {
+						string initialDir = System.IO.Path.GetDirectoryName(System.IO.Path.Combine(panel.baseDirectory, target.Text));
+						if (FileUtility.IsValidPath(initialDir) && System.IO.Directory.Exists(initialDir)) {
+							fdiag.InitialDirectory = initialDir;
+						}
+					} catch {}
 					if(fdiag.ShowDialog() == DialogResult.OK) {
 						string file = fdiag.FileName;
 						if (panel.baseDirectory != null) {
 							file = FileUtility.GetRelativePath(panel.baseDirectory, file);
 						}
 						if (textBoxEditMode == TextBoxEditMode.EditEvaluatedProperty) {
-							panel.ControlDictionary[target].Text = file;
+							target.Text = file;
 						} else {
-							panel.ControlDictionary[target].Text = MSBuildInternals.Escape(file);
+							target.Text = MSBuildInternals.Escape(file);
 						}
 					}
 				}
 			}
 		}
 		
-		class BrowseFolderEvent
+		sealed class BrowseFolderEvent
 		{
 			AbstractOptionPanel panel;
 			string target;
 			string description;
 			TextBoxEditMode textBoxEditMode;
-			
-			[Obsolete("Do not use BrowseFolderEvent directly")]
-			public BrowseFolderEvent(AbstractOptionPanel panel, string target, string description)
-				: this(panel, target, description, TextBoxEditMode.EditEvaluatedProperty)
-			{
-			}
 			
 			internal BrowseFolderEvent(AbstractOptionPanel panel, string target, string description, TextBoxEditMode textBoxEditMode)
 			{

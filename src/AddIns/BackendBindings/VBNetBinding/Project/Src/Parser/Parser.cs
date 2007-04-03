@@ -134,7 +134,7 @@ namespace VBNetBinding.Parser
 		
 		public IResolver CreateResolver()
 		{
-			return new NRefactoryResolver(ParserService.CurrentProjectContent, LanguageProperties.VBNet);
+			return new NRefactoryResolver(LanguageProperties.VBNet);
 		}
 		///////// IParser Interface END
 	}

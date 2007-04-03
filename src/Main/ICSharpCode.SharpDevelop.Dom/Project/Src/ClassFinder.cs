@@ -38,7 +38,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public ClassFinder(string fileName, string fileContent, int offset)
+		public ClassFinder(ParseInformation parseInfo, string fileContent, int offset)
 		{
 			caretLine = 0;
 			caretColumn = 0;
@@ -50,15 +50,15 @@ namespace ICSharpCode.SharpDevelop.Dom
 					caretColumn++;
 				}
 			}
-			Init(fileName);
+			Init(parseInfo);
 		}
 		
-		public ClassFinder(string fileName, int caretLineNumber, int caretColumn)
+		public ClassFinder(ParseInformation parseInfo, int caretLineNumber, int caretColumn)
 		{
 			this.caretLine   = caretLineNumber;
 			this.caretColumn = caretColumn;
 			
-			Init(fileName);
+			Init(parseInfo);
 		}
 		
 		public ClassFinder(IMember classMember)
@@ -83,9 +83,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 		}
 		
-		void Init(string fileName)
+		void Init(ParseInformation parseInfo)
 		{
-			ParseInformation parseInfo = HostCallback.GetParseInformation(fileName);
 			if (parseInfo != null) {
 				cu = parseInfo.MostRecentCompilationUnit;
 			}

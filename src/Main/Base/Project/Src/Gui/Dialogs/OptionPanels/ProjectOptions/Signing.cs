@@ -96,7 +96,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		void BrowseKeyFile()
 		{
 			keyFile.SelectedIndex = -1;
-			new BrowseButtonEvent(this, "keyFileComboBox", "${res:SharpDevelop.FileFilter.KeyFiles} (" + KeyFileExtensions + ")|" + KeyFileExtensions + "|${res:SharpDevelop.FileFilter.AllFiles}|*.*", TextBoxEditMode.EditEvaluatedProperty).Event(this, EventArgs.Empty);
+			BrowseForFile(ControlDictionary["keyFileComboBox"], "${res:SharpDevelop.FileFilter.KeyFiles} (" + KeyFileExtensions + ")|" + KeyFileExtensions + "|${res:SharpDevelop.FileFilter.AllFiles}|*.*", TextBoxEditMode.EditEvaluatedProperty);
 		}
 		
 		void CreateKeyFile()

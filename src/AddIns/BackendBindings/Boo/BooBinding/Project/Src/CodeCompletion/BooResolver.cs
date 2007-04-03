@@ -77,9 +77,8 @@ namespace Grunwald.BooBinding.CodeCompletion
 		#endregion
 		
 		#region Initialization
-		bool Initialize(string fileName, int caretLine, int caretColumn)
+		bool Initialize(ParseInformation parseInfo, int caretLine, int caretColumn)
 		{
-			ParseInformation parseInfo = ParserService.GetParseInformation(fileName);
 			if (parseInfo == null) {
 				return false;
 			}
@@ -168,7 +167,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 				lexInfo = node.LexicalInfo;
 				node = node.ParentNode;
 			} while (lexInfo == null || lexInfo.FileName == null);
-			if (!Initialize(lexInfo.FileName, lexInfo.Line, lexInfo.Column))
+			if (!Initialize(ParserService.GetParseInformation(lexInfo.FileName), lexInfo.Line, lexInfo.Column))
 				return null;
 			if (callingClass != null)
 				this.callingClass = callingClass;
@@ -194,9 +193,9 @@ namespace Grunwald.BooBinding.CodeCompletion
 		#region Resolve
 		public ResolveResult Resolve(ExpressionResult expressionResult,
 		                             int caretLineNumber, int caretColumn,
-		                             string fileName, string fileContent)
+		                             ParseInformation parseInfo, string fileContent)
 		{
-			if (!Initialize(fileName, caretLineNumber, caretColumn))
+			if (!Initialize(parseInfo, caretLineNumber, caretColumn))
 				return null;
 			LoggingService.Debug("Resolve " + expressionResult.ToString());
 			if (expressionResult.Expression == "__GlobalNamespace") { // used for "import" completion
@@ -293,11 +292,11 @@ namespace Grunwald.BooBinding.CodeCompletion
 			return c2;
 		}
 		
-		public ArrayList CtrlSpace(int caretLine, int caretColumn, string fileName, string fileContent, ExpressionContext context)
+		public ArrayList CtrlSpace(int caretLine, int caretColumn, ParseInformation parseInfo, string fileContent, ExpressionContext context)
 		{
 			ArrayList result = new ArrayList();
 			
-			if (!Initialize(fileName, caretLine, caretColumn))
+			if (!Initialize(parseInfo, caretLine, caretColumn))
 				return null;
 			if (context == ExpressionContext.Importable) {
 				pc.AddNamespaceContents(result, "", pc.Language, true);

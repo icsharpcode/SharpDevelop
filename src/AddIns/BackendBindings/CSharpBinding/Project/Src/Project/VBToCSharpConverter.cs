@@ -42,7 +42,7 @@ namespace CSharpBinding
 		{
 			PreprocessingDirective.VBToCSharp(specials);
 			IProjectContent pc = ParserService.GetProjectContent(sourceItem.Project) ?? ParserService.CurrentProjectContent;
-			compilationUnit.AcceptVisitor(new VBNetToCSharpConvertVisitor(pc, sourceItem.FileName), null);
+			compilationUnit.AcceptVisitor(new VBNetToCSharpConvertVisitor(pc, ParserService.GetParseInformation(sourceItem.FileName)), null);
 		}
 	}
 }

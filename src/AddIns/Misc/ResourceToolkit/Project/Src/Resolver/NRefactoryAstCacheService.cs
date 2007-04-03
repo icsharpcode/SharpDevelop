@@ -215,18 +215,9 @@ namespace Hornung.ResourceToolkit.Resolver
 				return null;
 			}
 			
-			// HACK: initialize resolver with correct language properties
-			// when file language != project language
-			// see http://community.sharpdevelop.net/forums/thread/12453.aspx
-			
-			// Ideally ParserService should provide a GetResolver overload taking file name and project content
-			// instead of always using the current project content
-			NRefactoryResolver fileResolverWrongProject = ParserService.CreateResolver(fileName) as NRefactoryResolver;
-			NRefactoryResolver resolver;
-			if (fileResolverWrongProject != null) {
-				resolver = new NRefactoryResolver(pc, fileResolverWrongProject.LanguageProperties);
-			} else {
-				resolver = new NRefactoryResolver(pc, LanguageProperties.CSharp);
+			NRefactoryResolver resolver = ParserService.CreateResolver(fileName) as NRefactoryResolver;
+			if (resolver == null) {
+				resolver = new NRefactoryResolver(LanguageProperties.CSharp);
 			}
 			
 			if (compilationUnit == null) {
@@ -237,7 +228,7 @@ namespace Hornung.ResourceToolkit.Resolver
 				return null;
 			}
 			
-			if (!resolver.Initialize(fileName, caretLine, caretColumn)) {
+			if (!resolver.Initialize(ParserService.GetParseInformation(fileName), caretLine, caretColumn)) {
 				LoggingService.Info("ResourceToolkit: NRefactoryAstCacheService: ResolveLowLevel failed. NRefactoryResolver.Initialize returned false.");
 				return null;
 			}

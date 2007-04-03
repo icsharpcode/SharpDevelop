@@ -256,7 +256,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			AbstractProject.filesToOpenAfterSolutionLoad.Clear();
 			try {
 				string file = GetPreferenceFileName(openSolution.FileName);
-				if (FileUtility.IsValidFileName(file) && File.Exists(file)) {
+				if (FileUtility.IsValidPath(file) && File.Exists(file)) {
 					(openSolution.Preferences as IMementoCapable).SetMemento(Properties.Load(file));
 				} else {
 					(openSolution.Preferences as IMementoCapable).SetMemento(new Properties());
@@ -292,7 +292,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			openSolution.ApplySolutionConfigurationAndPlatformToProjects();
 			foreach (IProject project in openSolution.Projects) {
 				string file = GetPreferenceFileName(project.FileName);
-				if (FileUtility.IsValidFileName(file) && File.Exists(file)) {
+				if (FileUtility.IsValidPath(file) && File.Exists(file)) {
 					project.SetMemento(Properties.Load(file));
 				}
 			}
@@ -443,7 +443,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			Properties memento = (openSolution.Preferences as IMementoCapable).CreateMemento();
 			
 			string fullFileName = GetPreferenceFileName(openSolution.FileName);
-			if (FileUtility.IsValidFileName(fullFileName)) {
+			if (FileUtility.IsValidPath(fullFileName)) {
 				FileUtility.ObservedSave(new NamedFileOperationDelegate(memento.Save), fullFileName, FileErrorPolicy.Inform);
 			}
 			
@@ -452,7 +452,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				if (memento == null) continue;
 				
 				fullFileName = GetPreferenceFileName(project.FileName);
-				if (FileUtility.IsValidFileName(fullFileName)) {
+				if (FileUtility.IsValidPath(fullFileName)) {
 					FileUtility.ObservedSave(new NamedFileOperationDelegate(memento.Save), fullFileName, FileErrorPolicy.Inform);
 				}
 			}

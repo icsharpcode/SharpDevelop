@@ -83,7 +83,7 @@ namespace Grunwald.BooBinding.Tests
 			GetPos(prog, marker, out line, out column);
 			
 			BooResolver r = new BooResolver();
-			return r.Resolve(er, line, column, fileName, prog);
+			return r.Resolve(er, line, column, ParserService.GetParseInformation(fileName), prog);
 		}
 		#endregion
 		
@@ -379,7 +379,7 @@ namespace Grunwald.BooBinding.Tests
 			GetPos(prog, "/*mark*/", out line, out column);
 			BooResolver r = new BooResolver();
 			System.Collections.ArrayList ar;
-			ar = r.CtrlSpace(line, column, fileName, prog, ExpressionContext.Default);
+			ar = r.CtrlSpace(line, column, ParserService.GetParseInformation(fileName), prog, ExpressionContext.Default);
 			foreach (string e in unExpected) {
 				foreach (object o in ar) {
 					if (e.Equals(o))

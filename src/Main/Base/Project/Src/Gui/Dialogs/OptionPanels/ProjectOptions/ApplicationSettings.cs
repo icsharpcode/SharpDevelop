@@ -73,7 +73,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		
 		void ApplicationIconComboBoxTextChanged(object sender, EventArgs e)
 		{
-			if(FileUtility.IsValidFileName(Get<ComboBox>("applicationIcon").Text))
+			if(FileUtility.IsValidPath(Get<ComboBox>("applicationIcon").Text))
 			{
 				string applicationIcon = Path.Combine(baseDirectory, Get<ComboBox>("applicationIcon").Text);
 				if (File.Exists(applicationIcon)) {

@@ -338,9 +338,9 @@ namespace ICSharpCode.Core
 		public static int MaxPathLength = 260;
 		
 		/// <summary>
-		/// This method checks the file fileName if it is valid.
+		/// This method checks if a path (full or relative) is valid.
 		/// </summary>
-		public static bool IsValidFileName(string fileName)
+		public static bool IsValidPath(string fileName)
 		{
 			// Fixme: 260 is the hardcoded maximal length for a path on my Windows XP system
 			//        I can't find a .NET property or method for determining this variable.
@@ -390,7 +390,7 @@ namespace ICSharpCode.Core
 		/// </summary>
 		public static bool IsValidDirectoryName(string name)
 		{
-			if (!IsValidFileName(name)) {
+			if (!IsValidPath(name)) {
 				return false;
 			}
 			if (name.IndexOfAny(new char[]{Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar}) >= 0) {
@@ -489,7 +489,7 @@ namespace ICSharpCode.Core
 		// Observe SAVE functions
 		public static FileOperationResult ObservedSave(FileOperationDelegate saveFile, string fileName, string message, FileErrorPolicy policy)
 		{
-			System.Diagnostics.Debug.Assert(IsValidFileName(fileName));
+			System.Diagnostics.Debug.Assert(IsValidPath(fileName));
 			try {
 				saveFile();
 				OnFileSaved(new FileNameEventArgs(fileName));
@@ -534,7 +534,7 @@ namespace ICSharpCode.Core
 		
 		public static FileOperationResult ObservedSave(NamedFileOperationDelegate saveFileAs, string fileName, string message, FileErrorPolicy policy)
 		{
-			System.Diagnostics.Debug.Assert(IsValidFileName(fileName));
+			System.Diagnostics.Debug.Assert(IsValidPath(fileName));
 			try {
 				string directory = Path.GetDirectoryName(fileName);
 				if (!Directory.Exists(directory)) {

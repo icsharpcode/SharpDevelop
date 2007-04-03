@@ -185,7 +185,7 @@ namespace Plugins.RegExpTk {
 			
 			string file_ = ((TextBox)ControlDictionary["AssemblyFileCompileFileTextBox"]).Text;
 			
-			if(! FileUtility.IsValidFileName(((TextBox)ControlDictionary["AssemblyFileCompileFileTextBox"]).Text)) {
+			if(! FileUtility.IsValidPath(((TextBox)ControlDictionary["AssemblyFileCompileFileTextBox"]).Text)) {
 				compileErrorProvider.SetError((TextBox)ControlDictionary["AssemblyFileCompileFileTextBox"], ResourceService.GetString("RegExpTk.Messages.FilenameInvalid"));
 				error = true;
 			}

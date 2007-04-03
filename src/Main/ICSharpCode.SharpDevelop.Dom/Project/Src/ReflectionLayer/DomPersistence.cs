@@ -201,7 +201,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			
 			public ClassNameTypeCountPair(IReturnType rt) {
 				this.ClassName = rt.FullyQualifiedName;
-				this.TypeParameterCount = (byte)rt.TypeParameterCount;
+				this.TypeParameterCount = (byte)rt.TypeArgumentCount;
 			}
 			
 			public override bool Equals(object obj) {

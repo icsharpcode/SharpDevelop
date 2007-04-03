@@ -35,7 +35,7 @@ namespace VBNetBinding
 		{
 			PreprocessingDirective.CSharpToVB(specials);
 			IProjectContent pc = ParserService.GetProjectContent(sourceItem.Project) ?? ParserService.CurrentProjectContent;
-			compilationUnit.AcceptVisitor(new CSharpToVBNetConvertVisitor(pc, sourceItem.FileName), null);
+			compilationUnit.AcceptVisitor(new CSharpToVBNetConvertVisitor(pc, ParserService.GetParseInformation(sourceItem.FileName)), null);
 		}
 		
 		protected override void CopyProperties(IProject sourceProject, IProject targetProject)

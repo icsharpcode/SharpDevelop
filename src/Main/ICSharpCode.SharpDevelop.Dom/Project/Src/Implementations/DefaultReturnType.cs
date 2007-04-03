@@ -25,7 +25,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			IClass c2 = rt2.GetUnderlyingClass();
 			if (c1 == null && c2 == null) {
 				// guess if the classes are equal
-				return rt1.FullyQualifiedName == rt2.FullyQualifiedName && rt1.TypeParameterCount == rt2.TypeParameterCount;
+				return rt1.FullyQualifiedName == rt2.FullyQualifiedName && rt1.TypeArgumentCount == rt2.TypeArgumentCount;
 			} else {
 				if (c1 == c2)
 					return true;
@@ -49,7 +49,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return c.FullyQualifiedName;
 		}
 		
-		public override int TypeParameterCount {
+		public override int TypeArgumentCount {
 			get {
 				return c.TypeParameters.Count;
 			}

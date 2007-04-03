@@ -129,7 +129,7 @@ namespace VBNetBinding
 			                                         t2.col, editor.FileName,
 			                                         editor.Document.TextContent);
 			if (rr != null && rr.ResolvedType != null) {
-				ClassFinder context = new ClassFinder(editor.FileName, editor.ActiveTextAreaControl.Caret.Line, t1.col);
+				ClassFinder context = new ClassFinder(ParserService.GetParseInformation(editor.FileName), editor.ActiveTextAreaControl.Caret.Line, t1.col);
 				if (CodeGenerator.CanUseShortTypeName(rr.ResolvedType, context))
 					VBNetAmbience.Instance.ConversionFlags = ConversionFlags.None;
 				else

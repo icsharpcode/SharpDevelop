@@ -19,7 +19,6 @@ namespace ICSharpCode.SharpDevelop
 	{
 		internal static void Register()
 		{
-			HostCallback.GetParseInformation = ParserService.GetParseInformation;
 			HostCallback.RenameMember = Refactoring.FindReferencesAndRenameHelper.RenameMember;
 			HostCallback.ShowMessage = MessageService.ShowMessage;
 			

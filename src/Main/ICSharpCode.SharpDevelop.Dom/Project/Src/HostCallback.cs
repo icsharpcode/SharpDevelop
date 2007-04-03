@@ -27,13 +27,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 		};
 		
 		/// <summary>
-		/// Get parse information by file name.
-		/// </summary>
-		public static Func<string, ParseInformation> GetParseInformation = delegate {
-			throw new NotImplementedException("GetParseInformation was not implemented by the host.");
-		};
-		
-		/// <summary>
 		/// Get the current project content.
 		/// </summary>
 		public static Func<IProjectContent> GetCurrentProjectContent = delegate {

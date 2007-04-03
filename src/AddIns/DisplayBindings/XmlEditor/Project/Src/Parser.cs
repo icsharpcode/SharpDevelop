@@ -46,11 +46,6 @@ namespace ICSharpCode.XmlEditor
 			return null;
 		}
 		
-		public ICompilationUnit Parse(IProjectContent projectContent, string fileName)
-		{
-			return Parse(projectContent, fileName, null);
-		}
-		
 		public ICompilationUnit Parse(IProjectContent projectContent, string fileName, string fileContent)
 		{
 			DefaultCompilationUnit compilationUnit = new DefaultCompilationUnit(projectContent);

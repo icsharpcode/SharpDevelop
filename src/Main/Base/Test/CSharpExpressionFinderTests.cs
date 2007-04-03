@@ -48,12 +48,11 @@ class Main {
 		[SetUp]
 		public void Init()
 		{
-			HostCallback.GetParseInformation = ParserService.GetParseInformation;
 			HostCallback.GetCurrentProjectContent = delegate {
 				return ParserService.CurrentProjectContent;
 			};
 			
-			ef = new CSharpExpressionFinder("test.cs");
+			ef = new CSharpExpressionFinder(delegate { return null; });
 		}
 		
 		void FindFull(string location, string expectedExpression, ExpressionContext expectedContext)

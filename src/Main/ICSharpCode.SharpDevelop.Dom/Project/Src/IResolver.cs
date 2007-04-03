@@ -22,9 +22,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 		ResolveResult Resolve(ExpressionResult expressionResult,
 		                      int caretLineNumber,
 		                      int caretColumn,
-		                      string fileName,
+		                      ParseInformation parseInfo,
 		                      string fileContent);
 		
-		ArrayList CtrlSpace(int caretLine, int caretColumn, string fileName, string fileContent, ExpressionContext context);
+		ArrayList CtrlSpace(int caretLine, int caretColumn, ParseInformation parseInfo, string fileContent, ExpressionContext context);
 	}
 }

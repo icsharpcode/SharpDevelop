@@ -21,7 +21,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public abstract List<IField>    GetFields();
 		public abstract List<IEvent>    GetEvents();
 		
-		public virtual int TypeParameterCount {
+		public virtual int TypeArgumentCount {
 			get {
 				return 0;
 			}

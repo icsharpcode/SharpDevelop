@@ -92,11 +92,11 @@ namespace CSharpEditor
 			//	new DefaultCompletionData("Text", "Description", 1)
 			//};
 			
-			NRefactoryResolver resolver = new NRefactoryResolver(mainForm.myProjectContent, mainForm.myProjectContent.Language);
+			NRefactoryResolver resolver = new NRefactoryResolver(mainForm.myProjectContent.Language);
 			Dom.ResolveResult rr = resolver.Resolve(FindExpression(textArea),
 			                                        textArea.Caret.Line,
 			                                        textArea.Caret.Column,
-			                                        fileName,
+			                                        mainForm.parseInformation,
 			                                        textArea.MotherTextEditorControl.Text);
 			List<ICompletionData> resultList = new List<ICompletionData>();
 			if (rr != null) {
@@ -119,7 +119,7 @@ namespace CSharpEditor
 			if (MainForm.IsVisualBasic) {
 				finder = new Dom.VBNet.VBExpressionFinder();
 			} else {
-				finder = new Dom.CSharp.CSharpExpressionFinder(MainForm.DummyFileName);
+				finder = new Dom.CSharp.CSharpExpressionFinder(delegate { return mainForm.parseInformation; });
 			}
 			return finder.FindExpression(textArea.Document.TextContent, textArea.Caret.Offset - 1);
 		}

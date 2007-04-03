@@ -42,17 +42,6 @@ namespace CSharpEditor
 	{
 		public static void Register(MainForm mainForm)
 		{
-			// Must be implemented. Gets the parse information for the specified file.
-			HostCallback.GetParseInformation = delegate(string fileName) {
-				if (fileName != MainForm.DummyFileName)
-					throw new Exception("Unknown file");
-				if (mainForm.lastCompilationUnit == null)
-					return null;
-				ParseInformation pi = new ParseInformation();
-				pi.ValidCompilationUnit = mainForm.lastCompilationUnit;
-				return pi;
-			};
-			
 			// Must be implemented. Gets the project content of the active project.
 			HostCallback.GetCurrentProjectContent = delegate {
 				return mainForm.myProjectContent;

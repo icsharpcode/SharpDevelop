@@ -111,9 +111,9 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		protected bool InsightRefreshOnComma(SharpDevelopTextAreaControl editor, char ch)
 		{
 			// Show MethodInsightWindow or IndexerInsightWindow
-			NRefactoryResolver r = new NRefactoryResolver(ParserService.CurrentProjectContent, languageProperties);
+			NRefactoryResolver r = new NRefactoryResolver(languageProperties);
 			Location cursorLocation = new Location(editor.ActiveTextAreaControl.Caret.Column + 1, editor.ActiveTextAreaControl.Caret.Line + 1);
-			if (r.Initialize(editor.FileName, cursorLocation.Y, cursorLocation.X)) {
+			if (r.Initialize(ParserService.GetParseInformation(editor.FileName), cursorLocation.Y, cursorLocation.X)) {
 				TextReader currentMethod = r.ExtractCurrentMethod(editor.Text);
 				if (currentMethod != null) {
 					ILexer lexer = ParserFactory.CreateLexer(language, currentMethod);
@@ -262,8 +262,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		protected IMember GetCurrentMember(SharpDevelopTextAreaControl editor)
 		{
 			ICSharpCode.TextEditor.Caret caret = editor.ActiveTextAreaControl.Caret;
-			NRefactoryResolver r = new NRefactoryResolver(ParserService.CurrentProjectContent, languageProperties);
-			if (r.Initialize(editor.FileName, caret.Line + 1, caret.Column + 1)) {
+			NRefactoryResolver r = new NRefactoryResolver(languageProperties);
+			if (r.Initialize(ParserService.GetParseInformation(editor.FileName), caret.Line + 1, caret.Column + 1)) {
 				return r.CallingMember;
 			} else {
 				return null;

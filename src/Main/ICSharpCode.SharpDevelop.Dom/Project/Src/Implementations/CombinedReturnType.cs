@@ -142,7 +142,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public override int TypeParameterCount {
+		public override int TypeArgumentCount {
 			get {
 				return 0;
 			}

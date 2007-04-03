@@ -25,7 +25,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		ICSharpCode.NRefactory.Visitors.LookupTableVisitor lookupTableVisitor;
 		IProjectContent projectContent;
 		
-		NR.SupportedLanguage language;
+		readonly NR.SupportedLanguage language;
 		
 		int caretLine;
 		int caretColumn;
@@ -77,7 +77,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 		}
 		
-		LanguageProperties languageProperties;
+		readonly LanguageProperties languageProperties;
 		
 		public LanguageProperties LanguageProperties {
 			get {
@@ -85,14 +85,11 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 		}
 		
-		public NRefactoryResolver(IProjectContent projectContent, LanguageProperties languageProperties)
+		public NRefactoryResolver(LanguageProperties languageProperties)
 		{
-			if (projectContent == null)
-				throw new ArgumentNullException("projectContent");
 			if (languageProperties == null)
 				throw new ArgumentNullException("languageProperties");
 			this.languageProperties = languageProperties;
-			this.projectContent = projectContent;
 			if (languageProperties is LanguageProperties.CSharpProperties) {
 				language = NR.SupportedLanguage.CSharp;
 			} else if (languageProperties is LanguageProperties.VBNetProperties) {
@@ -145,24 +142,22 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return expression;
 		}
 		
-		public bool Initialize(string fileName, int caretLineNumber, int caretColumn)
+		public bool Initialize(ParseInformation parseInfo, int caretLineNumber, int caretColumn)
 		{
 			this.caretLine   = caretLineNumber;
 			this.caretColumn = caretColumn;
 			
-			ParseInformation parseInfo = HostCallback.GetParseInformation(fileName);
 			if (parseInfo == null) {
 				return false;
 			}
 			
 			cu = parseInfo.MostRecentCompilationUnit;
-			
-			if (cu != null) {
-				callingClass = cu.GetInnermostClass(caretLine, caretColumn);
-				if (cu.ProjectContent != null) {
-					this.ProjectContent = cu.ProjectContent;
-				}
+			if (cu == null || cu.ProjectContent == null) {
+				return false;
 			}
+			this.ProjectContent = cu.ProjectContent;
+			
+			callingClass = cu.GetInnermostClass(caretLine, caretColumn);
 			callingMember = GetCurrentMember();
 			return true;
 		}
@@ -170,12 +165,12 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		public ResolveResult Resolve(ExpressionResult expressionResult,
 		                             int caretLineNumber,
 		                             int caretColumn,
-		                             string fileName,
+		                             ParseInformation parseInfo,
 		                             string fileContent)
 		{
 			string expression = GetFixedExpression(expressionResult);
 			
-			if (!Initialize(fileName, caretLineNumber, caretColumn))
+			if (!Initialize(parseInfo, caretLineNumber, caretColumn))
 				return null;
 			
 			Expression expr = null;
@@ -1028,8 +1023,10 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return c2;
 		}
 		
-		public ArrayList CtrlSpace(int caretLine, int caretColumn, string fileName, string fileContent, ExpressionContext context)
+		public ArrayList CtrlSpace(int caretLine, int caretColumn, ParseInformation parseInfo, string fileContent, ExpressionContext context)
 		{
+			if (!Initialize(parseInfo, caretLine, caretColumn))
+				return null;
 			ArrayList result = new ArrayList();
 			if (language == NR.SupportedLanguage.VBNet) {
 				foreach (KeyValuePair<string, string> pair in TypeReference.PrimitiveTypesVB) {
@@ -1046,23 +1043,9 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					if (c != null) result.Add(c);
 				}
 			}
-			ParseInformation parseInfo = HostCallback.GetParseInformation(fileName);
-			if (parseInfo == null) {
-				return null;
-			}
-			
-			this.caretLine   = caretLine;
-			this.caretColumn = caretColumn;
 			
 			lookupTableVisitor = new LookupTableVisitor(language);
 			
-			cu = parseInfo.MostRecentCompilationUnit;
-			
-			if (cu != null) {
-				callingClass = cu.GetInnermostClass(caretLine, caretColumn);
-			}
-			
-			callingMember = GetCurrentMember();
 			if (callingMember != null) {
 				CompilationUnit parsedCu = ParseCurrentMemberAsCompilationUnit(fileContent);
 				if (parsedCu != null) {

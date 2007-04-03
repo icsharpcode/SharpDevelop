@@ -252,18 +252,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		#region Bind string to TextBox or ComboBox
 		static Func<string> GetEmptyString = delegate { return ""; };
 		
-		[Obsolete("Please explicitly specify textBoxEditMode")]
-		public ConfigurationGuiBinding BindString(string control, string property)
-		{
-			return BindString(controlDictionary[control], property, TextBoxEditMode.EditEvaluatedProperty, GetEmptyString);
-		}
-		
-		[Obsolete("Please explicitly specify textBoxEditMode")]
-		public ConfigurationGuiBinding BindString(Control control, string property)
-		{
-			return BindString(control, property, TextBoxEditMode.EditEvaluatedProperty, GetEmptyString);
-		}
-		
 		public ConfigurationGuiBinding BindString(string control, string property, TextBoxEditMode textBoxEditMode)
 		{
 			return BindString(controlDictionary[control], property, textBoxEditMode, GetEmptyString);

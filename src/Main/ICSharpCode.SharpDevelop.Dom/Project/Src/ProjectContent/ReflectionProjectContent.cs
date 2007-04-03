@@ -35,11 +35,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		[Obsolete("This property always returns an empty array! Use ReferencedAssemblyNames instead!")]
-		public AssemblyName[] ReferencedAssemblies {
-			get { return new AssemblyName[0]; }
-		}
-		
 		/// <summary>
 		/// Gets the list of assembly names referenced by this project content.
 		/// </summary>
@@ -86,12 +81,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 				}
 			}
 			InitializeSpecialClasses();
-		}
-		
-		[Obsolete("Use DomAssemblyName instead of AssemblyName!")]
-		public ReflectionProjectContent(string assemblyFullName, string assemblyLocation, AssemblyName[] referencedAssemblies, ProjectContentRegistry registry)
-			: this(assemblyFullName, assemblyLocation, DomAssemblyName.Convert(referencedAssemblies), registry)
-		{
 		}
 		
 		public ReflectionProjectContent(string assemblyFullName, string assemblyLocation, DomAssemblyName[] referencedAssemblies, ProjectContentRegistry registry)

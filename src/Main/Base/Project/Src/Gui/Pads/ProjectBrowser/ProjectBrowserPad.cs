@@ -125,7 +125,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					return;
 				}
 				
-				if (!FileUtility.IsValidFileName(fileName)) {
+				if (!FileUtility.IsValidPath(fileName)) {
 					return;
 				}
 				lastFileName = fileName;

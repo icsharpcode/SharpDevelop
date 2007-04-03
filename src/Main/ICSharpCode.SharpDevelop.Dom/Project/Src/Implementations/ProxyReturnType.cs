@@ -99,10 +99,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public virtual int TypeParameterCount {
+		public virtual int TypeArgumentCount {
 			get {
 				IReturnType baseType = BaseType;
-				int tmp = (baseType != null && TryEnter()) ? baseType.TypeParameterCount : 0;
+				int tmp = (baseType != null && TryEnter()) ? baseType.TypeArgumentCount : 0;
 				busy = false;
 				return tmp;
 			}

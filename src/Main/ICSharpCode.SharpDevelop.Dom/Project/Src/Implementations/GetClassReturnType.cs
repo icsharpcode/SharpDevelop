@@ -18,12 +18,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 		IProjectContent content;
 		string fullName;
 		string shortName;
-		int typeParameterCount;
+		int typeArgumentCount;
 		
 		public GetClassReturnType(IProjectContent content, string fullName, int typeParameterCount)
 		{
 			this.content = content;
-			this.typeParameterCount = typeParameterCount;
+			this.typeArgumentCount = typeParameterCount;
 			SetFullyQualifiedName(fullName);
 		}
 		
@@ -33,9 +33,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public override int TypeParameterCount {
+		public override int TypeArgumentCount {
 			get {
-				return typeParameterCount;
+				return typeArgumentCount;
 			}
 		}
 		
@@ -50,12 +50,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public override int GetHashCode()
 		{
-			return content.GetHashCode() ^ fullName.GetHashCode() ^ (typeParameterCount * 5);
+			return content.GetHashCode() ^ fullName.GetHashCode() ^ (typeArgumentCount * 5);
 		}
 		
 		public override IReturnType BaseType {
 			get {
-				IClass c = content.GetClass(fullName, typeParameterCount);
+				IClass c = content.GetClass(fullName, typeArgumentCount);
 				return (c != null) ? c.DefaultReturnType : null;
 			}
 		}

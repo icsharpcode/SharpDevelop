@@ -35,7 +35,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			// check for correct settings
 			string projectPath = ControlDictionary["projectLocationTextBox"].Text;
 			if (projectPath.Length > 0) {
-				if (!FileUtility.IsValidFileName(projectPath)) {
+				if (!FileUtility.IsValidPath(projectPath)) {
 					MessageService.ShowError(StringParser.Parse("${res:Dialog.Options.IDEOptions.ProjectAndSolutionOptions.InvalidProjectPathSpecified}"));
 					return false;
 				}

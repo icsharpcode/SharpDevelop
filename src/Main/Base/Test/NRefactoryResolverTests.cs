@@ -74,31 +74,30 @@ namespace ICSharpCode.SharpDevelop.Tests
 			return visitor.Cu;
 		}
 		
-		void AddCompilationUnit(ICompilationUnit parserOutput, string fileName)
+		ParseInformation AddCompilationUnit(ICompilationUnit parserOutput, string fileName)
 		{
-			HostCallback.GetParseInformation = ParserService.GetParseInformation;
-			ParserService.UpdateParseInformation(parserOutput, fileName, false);
+			return ParserService.UpdateParseInformation(parserOutput, fileName, false);
 		}
 		
 		public ResolveResult Resolve(string program, string expression, int line)
 		{
-			AddCompilationUnit(Parse("a.cs", program), "a.cs");
+			ParseInformation parseInfo = AddCompilationUnit(Parse("a.cs", program), "a.cs");
 			
-			NRefactoryResolver resolver = new NRefactoryResolver(lastPC, LanguageProperties.CSharp);
+			NRefactoryResolver resolver = new NRefactoryResolver(LanguageProperties.CSharp);
 			return resolver.Resolve(new ExpressionResult(expression),
 			                        line, 0,
-			                        "a.cs",
+			                        parseInfo,
 			                        program);
 		}
 		
 		public ResolveResult ResolveVB(string program, string expression, int line)
 		{
-			AddCompilationUnit(ParseVB("a.vb", program), "a.vb");
+			ParseInformation parseInfo = AddCompilationUnit(ParseVB("a.vb", program), "a.vb");
 			
-			NRefactoryResolver resolver = new NRefactoryResolver(lastPC, LanguageProperties.VBNet);
+			NRefactoryResolver resolver = new NRefactoryResolver(LanguageProperties.VBNet);
 			return resolver.Resolve(new ExpressionResult(expression),
 			                        line, 0,
-			                        "a.vb",
+			                        parseInfo,
 			                        program);
 		}
 		
@@ -681,10 +680,10 @@ namespace Root.Child {
   }
 }
 ";
-			AddCompilationUnit(Parse("a.cs", program), "a.cs");
+			ParseInformation parseInfo = AddCompilationUnit(Parse("a.cs", program), "a.cs");
 			
-			NRefactoryResolver resolver = new NRefactoryResolver(lastPC, LanguageProperties.CSharp);
-			ArrayList m = resolver.CtrlSpace(7, 0, "a.cs", program, ExpressionContext.Default);
+			NRefactoryResolver resolver = new NRefactoryResolver(LanguageProperties.CSharp);
+			ArrayList m = resolver.CtrlSpace(7, 0, parseInfo, program, ExpressionContext.Default);
 			Assert.IsTrue(TypeExists(m, "Beta"), "Meta must exist");
 			Assert.IsTrue(TypeExists(m, "Alpha"), "Alpha must exist");
 		}
@@ -1057,6 +1056,31 @@ namespace OtherName { class Bla { } }
 			ResolveResult result = Resolve(mixedTypeTestProgram, "OtherName.Instance", 4);
 			Assert.IsInstanceOfType(typeof(MemberResolveResult), result);
 			Assert.AreEqual("Instance", (result as MemberResolveResult).ResolvedMember.Name);
+		}
+		#endregion
+		
+		#region C# 3.0 tests
+		[Test]
+		public void SimpleLinqTest()
+		{
+			string program = @"using System;
+class TestClass {
+	void Test(string[] input) {
+		var r = from e in input
+			where e.StartsWith(""/"")
+			select e.Trim();
+		
+	}
+}
+";
+			LocalResolveResult lrr = Resolve<LocalResolveResult>(program, "e", 5);
+			Assert.AreEqual("System.String", lrr.ResolvedType.FullyQualifiedName);
+			lrr = Resolve<LocalResolveResult>(program, "e", 6);
+			Assert.AreEqual("System.String", lrr.ResolvedType.FullyQualifiedName);
+			
+			lrr = Resolve<LocalResolveResult>(program, "r", 7);
+			Assert.AreEqual("System.Collections.Generic.IEnumerable", lrr.ResolvedType.FullyQualifiedName);
+			Assert.AreEqual("System.String", lrr.ResolvedType.CastToConstructedReturnType().TypeArguments[0].FullyQualifiedName);
 		}
 		#endregion
 	}

@@ -63,9 +63,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 		
 		/// <summary>
-		/// Gets the count of type parameters the target class should have.
+		/// Gets the number of type parameters the target class should have
+		/// / the number of type arguments specified by this type reference.
 		/// </summary>
-		int TypeParameterCount {
+		int TypeArgumentCount {
 			get;
 		}
 		
@@ -78,7 +79,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// <summary>
 		/// Gets all methods that can be called on this return type.
 		/// </summary>
-		List<IMethod>   GetMethods();
+		List<IMethod> GetMethods();
 		
 		/// <summary>
 		/// Gets all properties that can be called on this return type.
@@ -88,12 +89,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// <summary>
 		/// Gets all fields that can be called on this return type.
 		/// </summary>
-		List<IField>    GetFields();
+		List<IField> GetFields();
 		
 		/// <summary>
 		/// Gets all events that can be called on this return type.
 		/// </summary>
-		List<IEvent>    GetEvents();
+		List<IEvent> GetEvents();
 		
 		
 		/// <summary>

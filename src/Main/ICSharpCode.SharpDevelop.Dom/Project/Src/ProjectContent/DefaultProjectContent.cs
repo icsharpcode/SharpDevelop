@@ -821,7 +821,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				foreach (IUsing u in request.CurrentCompilationUnit.Usings) {
 					if (u != null) {
 						foreach (IReturnType r in u.SearchType(name, request.TypeParameterCount)) {
-							if (r.TypeParameterCount == request.TypeParameterCount) {
+							if (r.TypeArgumentCount == request.TypeParameterCount) {
 								return new SearchTypeResult(r, u);
 							} else {
 								fallbackResult = new SearchTypeResult(r, u);
@@ -832,7 +832,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 			if (defaultImports != null) {
 				foreach (IReturnType r in defaultImports.SearchType(name, request.TypeParameterCount)) {
-					if (r.TypeParameterCount == request.TypeParameterCount) {
+					if (r.TypeArgumentCount == request.TypeParameterCount) {
 						return new SearchTypeResult(r, defaultImports);
 					} else {
 						fallbackResult = new SearchTypeResult(r, defaultImports);

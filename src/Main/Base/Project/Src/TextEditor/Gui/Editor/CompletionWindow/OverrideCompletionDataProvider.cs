@@ -114,7 +114,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		
 		public override bool InsertAction(TextArea textArea, char ch)
 		{
-			ClassFinder context = new ClassFinder(textArea.MotherTextEditorControl.FileName,
+			ClassFinder context = new ClassFinder(ParserService.GetParseInformation(textArea.MotherTextEditorControl.FileName),
 			                                      textArea.Caret.Line + 1, textArea.Caret.Column + 1);
 			int caretPosition = textArea.Caret.Offset;
 			LineSegment line = textArea.Document.GetLineSegment(textArea.Caret.Line);

@@ -34,7 +34,6 @@ End Class
 		[SetUp]
 		public void Init()
 		{
-			HostCallback.GetParseInformation = ParserService.GetParseInformation;
 			HostCallback.GetCurrentProjectContent = delegate {
 				return ParserService.CurrentProjectContent;
 			};

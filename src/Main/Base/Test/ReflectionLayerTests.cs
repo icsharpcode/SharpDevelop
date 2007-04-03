@@ -159,7 +159,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 			Assert.AreSame(m, m.TypeParameters[0].Method);
 			
 			Assert.AreEqual("IEquatable", m.TypeParameters[0].Constraints[0].Name);
-			Assert.AreEqual(1, m.TypeParameters[0].Constraints[0].TypeParameterCount);
+			Assert.AreEqual(1, m.TypeParameters[0].Constraints[0].TypeArgumentCount);
 			Assert.AreEqual(1, m.TypeParameters[0].Constraints[0].CastToConstructedReturnType().TypeArguments.Count);
 			GenericReturnType grt = (GenericReturnType)m.TypeParameters[0].Constraints[0].CastToConstructedReturnType().TypeArguments[0];
 			Assert.AreSame(m.TypeParameters[0], grt.TypeParameter);

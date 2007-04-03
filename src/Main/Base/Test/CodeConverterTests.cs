@@ -62,17 +62,14 @@ namespace ICSharpCode.SharpDevelop.Tests
 				pc.AddClassToNamespaceList(c);
 			}
 			
-			HostCallback.GetParseInformation = delegate(string fileName) {
-				ParseInformation pi = new ParseInformation();
-				pi.ValidCompilationUnit = visitor.Cu;
-				return pi;
-			};
+			ParseInformation parseInfo = new ParseInformation();
+			parseInfo.ValidCompilationUnit = visitor.Cu;
 			
 			if (sourceLanguage == SupportedLanguage.CSharp) {
-				CSharpToVBNetConvertVisitor convertVisitor = new CSharpToVBNetConvertVisitor(pc, visitor.Cu.FileName);
+				CSharpToVBNetConvertVisitor convertVisitor = new CSharpToVBNetConvertVisitor(pc, parseInfo);
 				parser.CompilationUnit.AcceptVisitor(convertVisitor, null);
 			} else {
-				VBNetToCSharpConvertVisitor convertVisitor = new VBNetToCSharpConvertVisitor(pc, visitor.Cu.FileName);
+				VBNetToCSharpConvertVisitor convertVisitor = new VBNetToCSharpConvertVisitor(pc, parseInfo);
 				parser.CompilationUnit.AcceptVisitor(convertVisitor, null);
 			}
 			

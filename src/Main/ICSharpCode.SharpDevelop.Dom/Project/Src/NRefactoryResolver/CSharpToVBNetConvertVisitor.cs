@@ -18,12 +18,12 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 	public class CSharpToVBNetConvertVisitor : CSharpConstructsVisitor
 	{
 		NRefactoryResolver _resolver;
-		string _fileName;
+		ParseInformation _parseInfo;
 		
-		public CSharpToVBNetConvertVisitor(IProjectContent pc, string fileName)
+		public CSharpToVBNetConvertVisitor(IProjectContent pc, ParseInformation parseInfo)
 		{
-			_resolver = new NRefactoryResolver(pc, LanguageProperties.CSharp);
-			_fileName = fileName;
+			_resolver = new NRefactoryResolver(LanguageProperties.CSharp);
+			_parseInfo = parseInfo;
 		}
 		
 		public override object VisitCompilationUnit(CompilationUnit compilationUnit, object data)
@@ -38,16 +38,26 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		{
 			// Initialize resolver for method:
 			if (!methodDeclaration.Body.IsNull) {
-				if (_resolver.Initialize(_fileName, methodDeclaration.Body.StartLocation.Y, methodDeclaration.Body.StartLocation.X)) {
+				if (_resolver.Initialize(_parseInfo, methodDeclaration.Body.StartLocation.Y, methodDeclaration.Body.StartLocation.X)) {
 					_resolver.RunLookupTableVisitor(methodDeclaration);
 				}
 			}
 			return base.VisitMethodDeclaration(methodDeclaration, data);
 		}
 		
+		public override object VisitConstructorDeclaration(ConstructorDeclaration constructorDeclaration, object data)
+		{
+			if (!constructorDeclaration.Body.IsNull) {
+				if (_resolver.Initialize(_parseInfo, constructorDeclaration.Body.StartLocation.Y, constructorDeclaration.Body.StartLocation.X)) {
+					_resolver.RunLookupTableVisitor(constructorDeclaration);
+				}
+			}
+			return base.VisitConstructorDeclaration(constructorDeclaration, data);
+		}
+		
 		public override object VisitPropertyDeclaration(PropertyDeclaration propertyDeclaration, object data)
 		{
-			if (_resolver.Initialize(_fileName, propertyDeclaration.BodyStart.Y, propertyDeclaration.BodyStart.X)) {
+			if (_resolver.Initialize(_parseInfo, propertyDeclaration.BodyStart.Y, propertyDeclaration.BodyStart.X)) {
 				_resolver.RunLookupTableVisitor(propertyDeclaration);
 			}
 			return base.VisitPropertyDeclaration(propertyDeclaration, data);
