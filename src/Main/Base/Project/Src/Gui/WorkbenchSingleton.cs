@@ -19,7 +19,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		const string workbenchMemento        = "WorkbenchMemento";
 		
 		static STAThreadCaller caller;
-		static DefaultWorkbench workbench    = null;
+		static DefaultWorkbench workbench;
 		
 		public static Form MainForm {
 			get {
@@ -27,6 +27,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
+		/// <summary>
+		/// Gets the workbench. Returns null in unit-testing mode.
+		/// </summary>
 		public static IWorkbench Workbench {
 			get {
 				return workbench;

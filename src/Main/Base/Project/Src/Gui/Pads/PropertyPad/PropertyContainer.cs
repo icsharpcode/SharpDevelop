@@ -40,8 +40,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		public PropertyContainer()
 		{
-			PadDescriptor desc = WorkbenchSingleton.Workbench.GetPad(typeof(PropertyPad));
-			if (desc != null) desc.CreatePad();
+			if (WorkbenchSingleton.Workbench != null) {
+				PadDescriptor desc = WorkbenchSingleton.Workbench.GetPad(typeof(PropertyPad));
+				if (desc != null) desc.CreatePad();
+			}
 		}
 		
 		object selectedObject;
