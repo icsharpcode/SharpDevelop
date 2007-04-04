@@ -237,6 +237,15 @@ namespace ClassDiagram
 			}
 		}
 		
+		private class AddMemberNode : Node
+		{
+			public AddMemberNode (string str) : base (str) {}
+			
+			public string MemberName {
+				get { return base.Text; }
+			}
+		}
+		
 		private class AddParameterNode : Node
 		{
 			public AddParameterNode (Image icon) : base ("<Add Parameter>")
@@ -410,12 +419,12 @@ namespace ClassDiagram
 		{
 			string str = "";
 			
-			if (memberType == typeof(IMethod)) str = "<add method>";
-			else if (memberType == typeof(IEvent)) str = "<add event>";
-			else if (memberType == typeof(IProperty)) str = "<add property>";
-			else if (memberType == typeof(IField)) str = "<add field>";
+			if (memberType == typeof(IMethod)) str = "<Add Method>";
+			else if (memberType == typeof(IEvent)) str = "<Add Event>";
+			else if (memberType == typeof(IProperty)) str = "<Add Property>";
+			else if (memberType == typeof(IField)) str = "<Add Field>";
 			
-			Node addNewMember = new Node(str); // TODO set color
+			AddMemberNode addNewMember = new AddMemberNode(str); // TODO set color
 			//addNewMember.ForeColor = SystemColors.GrayText;
 			group.Nodes.Add(addNewMember);
 			addMemberItems[memberType] = addNewMember;
@@ -540,8 +549,11 @@ namespace ClassDiagram
 			if (item == null) return;
 			
 			MemberNode memberItem = item as MemberNode;
+			ParameterNode paramItem = item as ParameterNode;
+			AddMemberNode addMemberItem = item as AddMemberNode;
+			AddParameterNode addParamItem = item as AddParameterNode;
 			
-			if (memberItem != null && addMemberItems.ContainsValue(memberItem))
+			if (addMemberItem != null)// && addMemberItems.ContainsValue(memberItem))
 			{
 				/*				IAmbience ambience = GetAmbience();
 				item.SubItems.Add(ambience.Convert(VoidReturnType.Instance));
@@ -550,23 +562,24 @@ namespace ClassDiagram
 				item.Text = "[method name]";
 				item.BeginEdit(0);*/
 			}
-			else if (addParameterItems.ContainsValue(item))
+			else if (addParamItem != null) //addParameterItems.ContainsValue(item))
 			{
 				
 			}
-			else
+			else if (memberItem != null)
 			{
-				ParameterNode paramItem = item as ParameterNode;
-				if (paramItem != null && paramItem.Parameter != null && paramItem.Method != null)
-					ParameterActivated(this, new IParameterEventArgs(paramItem.Method, paramItem.Parameter));
-				else
 					MemberActivated(this, new IMemberEventArgs(memberItem.Member));
+			}
+			else if (paramItem != null)
+			{
+				if (paramItem.Parameter != null && paramItem.Method != null)
+					ParameterActivated(this, new IParameterEventArgs(paramItem.Method, paramItem.Parameter));
 			}
 		}
 		
 		void _nameDrawText(object sender, DrawEventArgs e)
 		{
-			if ((e.Node.Tag is GroupNode || e.Node.Tag is AddParameterNode) && e.Node.IsSelected == false)
+			if ((e.Node.Tag is GroupNode || e.Node.Tag is AddParameterNode || e.Node.Tag is AddMemberNode) && e.Node.IsSelected == false)
 				e.TextBrush = Brushes.Gray;
 		}
 	}
