@@ -353,7 +353,7 @@ namespace ClassDiagram
 				image.Border = 1;
 			}
 			
-			DrawableItemsStack memberItem = new DrawableItemsStack();
+			InteractiveItemsStack memberItem = new InteractiveItemsStack(false);
 			
 			string memberString;
 			
@@ -367,7 +367,7 @@ namespace ClassDiagram
 				return memberString.CompareTo(other.MemberString);
 			}
 			
-			public DrawableItemsStack<IDrawableRectangle> Item
+			public InteractiveItemsStack Item
 			{
 				get { return memberItem; }
 			}
