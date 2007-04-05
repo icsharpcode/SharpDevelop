@@ -438,7 +438,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				if (subdir.Equals("source", StringComparison.OrdinalIgnoreCase))
 					continue;
 				standardNameSpace.Append('.');
-				standardNameSpace.Append(NewFileDialog.GenerateValidClassName(subdir));
+				standardNameSpace.Append(NewFileDialog.GenerateValidClassOrNamespaceName(subdir, true));
 			}
 			return standardNameSpace.ToString();
 		}

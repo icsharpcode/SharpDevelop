@@ -405,22 +405,25 @@ namespace ICSharpCode.SharpDevelop.Gui
 			createdFiles.Add(new KeyValuePair<string, FileDescriptionTemplate>(parsedFileName, newfile));
 		}
 		
-		internal static string GenerateValidClassName(string className)
+		internal static string GenerateValidClassOrNamespaceName(string className, bool allowDot)
 		{
-			int idx = 0;
-			while (idx < className.Length && className[idx] != '_' && !Char.IsLetter(className[idx])) {
-				++idx;
-			}
+			if (className == null)
+				throw new ArgumentNullException("className");
+			className = className.Trim();
+			if (className.Length == 0)
+				return string.Empty;
 			StringBuilder nameBuilder = new StringBuilder();
-			for (; idx < className.Length; ++idx) {
+			if (className[0] != '_' && !char.IsLetter(className, 0))
+				nameBuilder.Append('_');
+			for (int idx = 0; idx < className.Length; ++idx) {
 				if (Char.IsLetterOrDigit(className[idx]) || className[idx] == '_') {
 					nameBuilder.Append(className[idx]);
-				}
-				if (className[idx] == ' ' || className[idx] == '-' ) {
+				} else if (className[idx] == '.' && allowDot) {
+					nameBuilder.Append('.');
+				} else {
 					nameBuilder.Append('_');
 				}
 			}
-			
 			return nameBuilder.ToString();
 		}
 		
@@ -467,7 +470,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				StringParser.Properties["Extension"]                = Path.GetExtension(fileName);
 				StringParser.Properties["Path"]                     = Path.GetDirectoryName(fileName);
 				
-				StringParser.Properties["ClassName"] = GenerateValidClassName(Path.GetFileNameWithoutExtension(fileName));
+				StringParser.Properties["ClassName"] = GenerateValidClassOrNamespaceName(Path.GetFileNameWithoutExtension(fileName), false);
 				
 				
 				if (item.Template.WizardPath != null) {

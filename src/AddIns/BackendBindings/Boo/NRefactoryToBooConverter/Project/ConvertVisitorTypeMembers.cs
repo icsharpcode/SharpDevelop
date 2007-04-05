@@ -195,7 +195,7 @@ namespace NRefactoryToBooConverter
 				m.Getter = new B.Method(GetLexicalInfo(propertyDeclaration.GetRegion));
 				if (propertyDeclaration.GetRegion != null) {
 					ConvertAttributes(propertyDeclaration.GetRegion.Attributes, m.Getter.Attributes);
-					m.Modifiers = ConvertModifier(propertyDeclaration.GetRegion, m.Visibility);
+					m.Getter.Modifiers = ConvertModifier(propertyDeclaration.GetRegion, m.Visibility);
 					m.Getter.Body = ConvertMethodBlock(propertyDeclaration.GetRegion.Block);
 					m.Getter.ReturnType = m.Type;
 				}
@@ -204,7 +204,7 @@ namespace NRefactoryToBooConverter
 				m.Setter = new B.Method(GetLexicalInfo(propertyDeclaration.SetRegion));
 				if (propertyDeclaration.SetRegion != null) {
 					ConvertAttributes(propertyDeclaration.SetRegion.Attributes, m.Setter.Attributes);
-					m.Modifiers = ConvertModifier(propertyDeclaration.SetRegion, m.Visibility);
+					m.Setter.Modifiers = ConvertModifier(propertyDeclaration.SetRegion, m.Visibility);
 					m.Setter.Body = ConvertMethodBlock(propertyDeclaration.SetRegion.Block);
 				}
 			}

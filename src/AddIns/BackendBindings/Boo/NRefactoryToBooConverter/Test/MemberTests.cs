@@ -228,7 +228,6 @@ namespace NRefactoryToBooConverter.Tests
 		}
 		
 		[Test]
-		[Ignore("Fix requires change to Boo.Lang.Compiler.dll")]
 		public void AbstractProperty()
 		{
 			TestInClass("public abstract string Prop { get; }", "public abstract Prop as System.String:\n\tget:\n\t\tpass");
