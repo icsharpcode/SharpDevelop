@@ -20,23 +20,12 @@ namespace WeifenLuo.WinFormsUI.Docking
                 m_content = content;
             }
 
-            ~Tab()
-            {
-                Dispose(false);
-            }
-
             public IDockContent Content
             {
                 get { return m_content; }
             }
-
-            public void Dispose()
-            {
-                Dispose(true);
-                GC.SuppressFinalize(this);
-            }
-
-            protected virtual void Dispose(bool disposing)
+            
+            public virtual void Dispose()
             {
             }
         }
@@ -126,11 +115,6 @@ namespace WeifenLuo.WinFormsUI.Docking
                 m_dockPane = dockPane;
             }
 
-            ~Pane()
-            {
-                Dispose(false);
-            }
-
             public DockPane DockPane
             {
                 get { return m_dockPane; }
@@ -145,14 +129,8 @@ namespace WeifenLuo.WinFormsUI.Docking
                     return DockPane.AutoHideTabs as TabCollection;
                 }
             }
-
-            public void Dispose()
-            {
-                Dispose(true);
-                GC.SuppressFinalize(this);
-            }
-
-            protected virtual void Dispose(bool disposing)
+            
+            public virtual void Dispose()
             {
             }
         }

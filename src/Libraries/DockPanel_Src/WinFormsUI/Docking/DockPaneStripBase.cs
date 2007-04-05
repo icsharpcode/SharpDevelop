@@ -21,11 +21,6 @@ namespace WeifenLuo.WinFormsUI.Docking
                 m_content = content;
             }
 
-            ~Tab()
-            {
-                Dispose(false);
-            }
-
             public IDockContent Content
             {
                 get { return m_content; }
@@ -36,13 +31,7 @@ namespace WeifenLuo.WinFormsUI.Docking
                 get { return m_content as Form; }
             }
 
-            public void Dispose()
-            {
-                Dispose(true);
-                GC.SuppressFinalize(this);
-            }
-
-            protected virtual void Dispose(bool disposing)
+            public virtual void Dispose()
             {
             }
         }
@@ -226,6 +215,13 @@ namespace WeifenLuo.WinFormsUI.Docking
 					    content.DockHandler.IsFloat = !content.DockHandler.IsFloat;	
 				}
 
+				return;
+			} else if (m.Msg == (int)Win32.Msgs.WM_MBUTTONUP) {
+				base.WndProc(ref m);
+				int index = HitTest();
+				if (index != -1) {
+					DockPane.CloseContent(Tabs[index].Content);
+				}
 				return;
 			}
 

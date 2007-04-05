@@ -4,14 +4,6 @@ Patch #0:
        Add bool IsDisposed { get; } to IDockContent interface.
 
 Patch #1:
-	Close documents with middle click     - in DockPaneTabStripBase.cs
-	Remove redundant finalizers           - in AutoHidePane.cs and AutoHideTab.cs
-	Remove redundant P/Invoke call        - in AutoHideStripBase.cs
-	Fix compilation warning               - in InertButton.cs
- Committed in revision 1147.
-
-Patch #2:
-	Activate the autohide pad explicitly  - in DockContentHandler.cs
-	(DockContentHandler.Activate())  
- Committed in revision 1840.
-
+	Close documents with middle click     - in DockPaneStripBase.cs
+	Remove redundant finalizers           - in AutoHideStripBase.cs, DockPaneStripBase.cs
+ Committed in revision 2473.
