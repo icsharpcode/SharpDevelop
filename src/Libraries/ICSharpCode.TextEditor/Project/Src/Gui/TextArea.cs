@@ -442,7 +442,14 @@ namespace ICSharpCode.TextEditor
 				lastMouseInMargin = null;
 			}
 			if (textView.DrawingPosition.Contains(e.X, e.Y)) {
-				this.Cursor = textView.Cursor;
+				Point realmousepos = TextView.GetLogicalPosition(e.X - TextView.DrawingPosition.X, e.Y - TextView.DrawingPosition.Y);
+				if(SelectionManager.IsSelected(Document.PositionToOffset(realmousepos)) && MouseButtons == MouseButtons.None) {
+					// mouse is hovering over a selection, so show default mouse
+					this.Cursor = Cursors.Default;
+				} else {
+					// mouse is hovering over text area, not a selection, so show the textView cursor
+					this.Cursor = textView.Cursor;
+				}
 				return;
 			}
 			this.Cursor = Cursors.Default;
