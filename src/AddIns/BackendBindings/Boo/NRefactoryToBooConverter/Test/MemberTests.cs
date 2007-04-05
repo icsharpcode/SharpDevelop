@@ -228,6 +228,13 @@ namespace NRefactoryToBooConverter.Tests
 		}
 		
 		[Test]
+		public void PropertyWithProtectedSetter()
+		{
+			TestInClass("public string Text { get {} protected set { } }",
+			            "public Text as System.String:\n\tget:\n\t\tpass\n\tprotected set:\n\t\tpass");
+		}
+		
+		[Test]
 		public void AbstractProperty()
 		{
 			TestInClass("public abstract string Prop { get; }", "public abstract Prop as System.String:\n\tget:\n\t\tpass");
