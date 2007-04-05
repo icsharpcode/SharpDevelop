@@ -1,43 +1,25 @@
-// *****************************************************************************
-// 
-//  Copyright 2004, Weifen Luo
-//  All rights reserved. The software and associated documentation 
-//  supplied hereunder are the proprietary information of Weifen Luo
-//  and are supplied subject to licence terms.
-// 
-//  WinFormsUI Library Version 1.0
-// *****************************************************************************
-
 using System;
-using System.Collections;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Drawing;
+using System.Windows.Forms;
 
-namespace WeifenLuo.WinFormsUI
+namespace WeifenLuo.WinFormsUI.Docking
 {
-	/// <include file='CodeDoc\FloatWindowCollection.xml' path='//CodeDoc/Class[@name="FloatWindowCollection"]/ClassDef/*'/>>
-	public class FloatWindowCollection : ReadOnlyCollectionBase
+	public class FloatWindowCollection : ReadOnlyCollection<FloatWindow>
 	{
 		internal FloatWindowCollection()
+            : base(new List<FloatWindow>())
 		{
-		}
-
-		/// <include file='CodeDoc\FloatWindowCollection.xml' path='//CodeDoc/Class[@name="FloatWindowCollection"]/Property[@name="Item"]/*'/>>
-		public FloatWindow this[int index]
-		{
-			get {  return InnerList[index] as FloatWindow;  }
 		}
 
 		internal int Add(FloatWindow fw)
 		{
-			if (InnerList.Contains(fw))
-				return InnerList.IndexOf(fw);
+			if (Items.Contains(fw))
+				return Items.IndexOf(fw);
 
-			return InnerList.Add(fw);
-		}
-
-		/// <include file='CodeDoc\FloatWindowCollection.xml' path='//CodeDoc/Class[@name="FloatWindowCollection"]/Method[@name="Contains(FloatWindow)"]/*'/>>
-		public bool Contains(FloatWindow fw)
-		{
-			return InnerList.Contains(fw);
+			Items.Add(fw);
+            return Count - 1;
 		}
 
 		internal void Dispose()
@@ -46,21 +28,15 @@ namespace WeifenLuo.WinFormsUI
 				this[i].Close();
 		}
 
-		/// <include file='CodeDoc\FloatWindowCollection.xml' path='//CodeDoc/Class[@name="FloatWindowCollection"]/Method[@name="IndexOf(FloatWindow)"]/*'/>>
-		public int IndexOf(FloatWindow fw)
-		{
-			return InnerList.IndexOf(fw);
-		}
-
 		internal void Remove(FloatWindow fw)
 		{
-			InnerList.Remove(fw);
+			Items.Remove(fw);
 		}
 
 		internal void BringWindowToFront(FloatWindow fw)
 		{
-			InnerList.Remove(fw);
-			InnerList.Add(fw);
+			Items.Remove(fw);
+			Items.Add(fw);
 		}
 	}
 }

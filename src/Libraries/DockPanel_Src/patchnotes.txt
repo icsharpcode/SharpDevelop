@@ -1,5 +1,8 @@
 List of our custom patches to apply to the DockPanel Suite:
 
+Patch #0:
+       Add bool IsDisposed { get; } to IDockContent interface.
+
 Patch #1:
 	Close documents with middle click     - in DockPaneTabStripBase.cs
 	Remove redundant finalizers           - in AutoHidePane.cs and AutoHideTab.cs
@@ -8,13 +11,7 @@ Patch #1:
  Committed in revision 1147.
 
 Patch #2:
-	Fixed CREATESTRUCT, MDICREATESTRUCT and WINDOWPOS P/Invoke structure declarations:
-           use IntPtr instead of int - we have to use a pointer-size integers here for 64-bit systems
- Committed in revision 1335.
- Reported to SF: http://sourceforge.net/tracker/index.php?func=detail&aid=1438642&group_id=110642&atid=659401
- The fix was accepted and will be in the next release of the library.
-
-Patch #3:
 	Activate the autohide pad explicitly  - in DockContentHandler.cs
 	(DockContentHandler.Activate())  
  Committed in revision 1840.
+

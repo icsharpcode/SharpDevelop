@@ -13,7 +13,7 @@ using System.Windows.Forms;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Widgets.AutoHide;
-using WeifenLuo.WinFormsUI;
+using WeifenLuo.WinFormsUI.Docking;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -98,8 +98,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			statusStripContainer = new AutoHideStatusStripContainer((StatusStrip)StatusBarService.Control);
 			statusStripContainer.Dock = DockStyle.Bottom;
 			
-			dockPanel = new WeifenLuo.WinFormsUI.DockPanel();
-			dockPanel.DocumentStyle = DocumentStyles.DockingWindow;
+			dockPanel = new WeifenLuo.WinFormsUI.Docking.DockPanel();
+			dockPanel.DocumentStyle = DocumentStyle.DockingWindow;
 			this.dockPanel.Dock = System.Windows.Forms.DockStyle.Fill;
 			
 			Panel helperPanel = new Panel();
@@ -363,10 +363,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				if (padDescriptor == null)
 					throw new ArgumentNullException("padDescriptor");
 				this.padDescriptor = padDescriptor;
-				this.DockableAreas = ((((WeifenLuo.WinFormsUI.DockAreas.Float | WeifenLuo.WinFormsUI.DockAreas.DockLeft) |
-				                        WeifenLuo.WinFormsUI.DockAreas.DockRight) |
-				                       WeifenLuo.WinFormsUI.DockAreas.DockTop) |
-				                      WeifenLuo.WinFormsUI.DockAreas.DockBottom);
+				this.DockAreas = DockAreas.Float | DockAreas.DockLeft | DockAreas.DockRight | DockAreas.DockTop | DockAreas.DockBottom;
 				HideOnClose = true;
 			}
 			

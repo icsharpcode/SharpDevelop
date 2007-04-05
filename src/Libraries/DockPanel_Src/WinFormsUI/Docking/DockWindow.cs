@@ -1,33 +1,22 @@
-// *****************************************************************************
-// 
-//  Copyright 2004, Weifen Luo
-//  All rights reserved. The software and associated documentation 
-//  supplied hereunder are the proprietary information of Weifen Luo
-//  and are supplied subject to licence terms.
-// 
-//  WinFormsUI Library Version 1.0
-// *****************************************************************************
-
 using System;
-using System.ComponentModel;
+using System.Windows.Forms;
 using System.Drawing;
 using System.Runtime.InteropServices;
-using System.Windows.Forms;
+using System.ComponentModel;
 
-namespace WeifenLuo.WinFormsUI
+namespace WeifenLuo.WinFormsUI.Docking
 {
-	/// <include file='CodeDoc\DockWindow.xml' path='//CodeDoc/Class[@name="DockWindow"]/ClassDef/*'/>
 	[ToolboxItem(false)]
-	public class DockWindow : Panel, IDockListContainer
+	public partial class DockWindow : Panel, INestedPanesContainer, ISplitterDragSource
 	{
 		private DockPanel m_dockPanel;
 		private DockState m_dockState;
-		private DockWindowSplitter m_splitter;
-		private DockList m_dockList;
+		private SplitterControl m_splitter;
+		private NestedPaneCollection m_nestedPanes;
 
 		internal DockWindow(DockPanel dockPanel, DockState dockState)
 		{
-			m_dockList = new DockList(this);
+			m_nestedPanes = new NestedPaneCollection(this);
 			m_dockPanel = dockPanel;
 			m_dockState = dockState;
 			Visible = false;
@@ -37,7 +26,7 @@ namespace WeifenLuo.WinFormsUI
 			if (DockState == DockState.DockLeft || DockState == DockState.DockRight ||
 				DockState == DockState.DockTop || DockState == DockState.DockBottom)
 			{
-				m_splitter = new DockWindowSplitter();
+				m_splitter = new SplitterControl();
 				Controls.Add(m_splitter);
 			}
 
@@ -69,38 +58,26 @@ namespace WeifenLuo.WinFormsUI
 			ResumeLayout();
 		}
 
-		/// <exclude/>
-		protected override Size DefaultSize
+		public VisibleNestedPaneCollection VisibleNestedPanes
 		{
-			// Set the default size to empty to reduce the screen flicker
-			get	{	return Size.Empty;	}
+			get	{	return NestedPanes.VisibleNestedPanes;	}
 		}
 
-		/// <include file='CodeDoc\DockWindow.xml' path='//CodeDoc/Class[@name="DockWindow"]/Property[@name="DisplayingList"]/*'/>
-		public DisplayingDockList DisplayingList
+		public NestedPaneCollection NestedPanes
 		{
-			get	{	return DockList.DisplayingList;	}
+			get	{	return m_nestedPanes;	}
 		}
 
-		/// <include file='CodeDoc\DockWindow.xml' path='//CodeDoc/Class[@name="DockWindow"]/Property[@name="DockList"]/*'/>
-		public DockList DockList
-		{
-			get	{	return m_dockList;	}
-		}
-
-		/// <include file='CodeDoc\DockWindow.xml' path='//CodeDoc/Class[@name="DockWindow"]/Property[@name="DockPanel"]/*'/>
 		public DockPanel DockPanel
 		{
 			get	{	return m_dockPanel;	}
 		}
 
-		/// <include file='CodeDoc\DockWindow.xml' path='//CodeDoc/Class[@name="DockWindow"]/Property[@name="DockState"]/*'/>
 		public DockState DockState
 		{
 			get	{	return m_dockState;	}
 		}
 
-		/// <include file='CodeDoc\DockWindow.xml' path='//CodeDoc/Class[@name="DockWindow"]/Property[@name="IsFloat"]/*'/>
 		public bool IsFloat
 		{
 			get	{	return DockState == DockState.Float;	}
@@ -108,10 +85,9 @@ namespace WeifenLuo.WinFormsUI
 
 		internal DockPane DefaultPane
 		{
-			get	{	return DisplayingList.Count == 0 ? null : DisplayingList[0];	}
+			get	{	return VisibleNestedPanes.Count == 0 ? null : VisibleNestedPanes[0];	}
 		}
 
-		/// <include file='CodeDoc\DockWindow.xml' path='//CodeDoc/Class[@name="DockWindow"]/Property[@name="DisplayingRectangle"]/*'/>
 		public virtual Rectangle DisplayingRectangle
 		{
 			get
@@ -145,46 +121,123 @@ namespace WeifenLuo.WinFormsUI
 			}
 		}
 
-		/// <exclude/>
 		protected override void OnPaint(PaintEventArgs e)
 		{
 			// if DockWindow is document, draw the border
-			if (DockState == DockState.Document)
-				e.Graphics.DrawRectangle(SystemPens.ControlDark, ClientRectangle.X, ClientRectangle.Y, ClientRectangle.Width - 1, ClientRectangle.Height - 1);
+            if (DockState == DockState.Document)
+                e.Graphics.DrawRectangle(SystemPens.ControlDark, ClientRectangle.X, ClientRectangle.Y, ClientRectangle.Width - 1, ClientRectangle.Height - 1);
 
 			base.OnPaint(e);
 		}
 
-		/// <exclude/>
 		protected override void OnLayout(LayoutEventArgs levent)
 		{
-			DisplayingList.Refresh();
-			if (DisplayingList.Count == 0)
+			VisibleNestedPanes.Refresh();
+			if (VisibleNestedPanes.Count == 0)
 			{
-				if (Visible)
-					Visible = false;
+                if (Visible)
+                    Visible = false;
 			}
 			else if (!Visible)
 			{
 				Visible = true;
-				DisplayingList.Refresh();
+				VisibleNestedPanes.Refresh();
 			}
 
 			base.OnLayout (levent);
 		}
 
-		/// <exclude/>
-		protected override void WndProc(ref Message m)
-		{
-			if (m.Msg == (int)Win32.Msgs.WM_WINDOWPOSCHANGING)
-			{
-				int offset = (int)Marshal.OffsetOf(typeof(Win32.WINDOWPOS), "flags");
-				int flags = Marshal.ReadInt32(m.LParam, offset);
-				Marshal.WriteInt32(m.LParam, offset, flags | (int)Win32.FlagsSetWindowPos.SWP_NOCOPYBITS);
-			}
+        #region ISplitterDragSource Members
 
-			base.WndProc (ref m);
-		}
+        void ISplitterDragSource.BeginDrag(Rectangle rectSplitter)
+        {
+        }
 
-	}
+        void ISplitterDragSource.EndDrag()
+        {
+        }
+
+        bool ISplitterDragSource.IsVertical
+        {
+            get { return (DockState == DockState.DockLeft || DockState == DockState.DockRight); }
+        }
+
+        Rectangle ISplitterDragSource.DragLimitBounds
+        {
+            get
+            {
+                Rectangle rectLimit = DockPanel.DockArea;
+                Point location;
+                if ((Control.ModifierKeys & Keys.Shift) == 0)
+                    location = Location;
+                else
+                    location = DockPanel.DockArea.Location;
+
+                if (((ISplitterDragSource)this).IsVertical)
+                {
+                    rectLimit.X += MeasurePane.MinSize;
+                    rectLimit.Width -= 2 * MeasurePane.MinSize;
+                    rectLimit.Y = location.Y;
+                    if ((Control.ModifierKeys & Keys.Shift) == 0)
+                        rectLimit.Height = Height;
+                }
+                else
+                {
+                    rectLimit.Y += MeasurePane.MinSize;
+                    rectLimit.Height -= 2 * MeasurePane.MinSize;
+                    rectLimit.X = location.X;
+                    if ((Control.ModifierKeys & Keys.Shift) == 0)
+                        rectLimit.Width = Width;
+                }
+
+                return DockPanel.RectangleToScreen(rectLimit);
+            }
+        }
+
+        void ISplitterDragSource.MoveSplitter(int offset)
+        {
+            if ((Control.ModifierKeys & Keys.Shift) != 0)
+                SendToBack();
+
+            Rectangle rectDockArea = DockPanel.DockArea;
+            if (DockState == DockState.DockLeft && rectDockArea.Width > 0)
+            {
+                if (DockPanel.DockLeftPortion > 1)
+                    DockPanel.DockLeftPortion = Width + offset;
+                else
+                    DockPanel.DockLeftPortion += ((double)offset) / (double)rectDockArea.Width;
+            }
+            else if (DockState == DockState.DockRight && rectDockArea.Width > 0)
+            {
+                if (DockPanel.DockRightPortion > 1)
+                    DockPanel.DockRightPortion = Width - offset;
+                else
+                    DockPanel.DockRightPortion -= ((double)offset) / (double)rectDockArea.Width;
+            }
+            else if (DockState == DockState.DockBottom && rectDockArea.Height > 0)
+            {
+                if (DockPanel.DockBottomPortion > 1)
+                    DockPanel.DockBottomPortion = Height - offset;
+                else
+                    DockPanel.DockBottomPortion -= ((double)offset) / (double)rectDockArea.Height;
+            }
+            else if (DockState == DockState.DockTop && rectDockArea.Height > 0)
+            {
+                if (DockPanel.DockTopPortion > 1)
+                    DockPanel.DockTopPortion = Height + offset;
+                else
+                    DockPanel.DockTopPortion += ((double)offset) / (double)rectDockArea.Height;
+            }
+        }
+
+        #region IDragSource Members
+
+        Control IDragSource.DragControl
+        {
+            get { return this; }
+        }
+
+        #endregion
+        #endregion
+    }
 }
