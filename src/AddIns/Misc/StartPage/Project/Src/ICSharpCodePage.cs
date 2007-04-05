@@ -185,7 +185,7 @@ namespace ICSharpCode.StartPage
 
 		public ICSharpCodePage()
 		{
-			ColorScheme = ICSharpCode.StartPage.ColorScheme.green;
+			ColorScheme = ICSharpCode.StartPage.ColorScheme.blue;
 			
 			TopMenu = new List<MenuItem>();
 			PopulateTopMenu();

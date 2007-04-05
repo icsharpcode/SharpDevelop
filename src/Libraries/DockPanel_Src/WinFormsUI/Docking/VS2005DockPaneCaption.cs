@@ -295,12 +295,7 @@ namespace WeifenLuo.WinFormsUI.Docking
 		{
             get
             {
-                string colorScheme = VisualStyleInformation.ColorScheme;
-
-                if (colorScheme == "HomeStead" || colorScheme == "Metallic")
-                    return SystemColors.GradientInactiveCaption;
-                else
-                    return SystemColors.GrayText;
+                return SystemColors.Control;
             }
 		}
 

@@ -7,3 +7,7 @@ Patch #1:
 	Close documents with middle click     - in DockPaneStripBase.cs
 	Remove redundant finalizers           - in AutoHideStripBase.cs, DockPaneStripBase.cs
  Committed in revision 2473.
+
+Patch #2:
+	Changed background color of inactive pads.
+ Committed in revision 2474.
