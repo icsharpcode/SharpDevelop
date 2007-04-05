@@ -1,31 +1,34 @@
-﻿<AddIn name="ComponentInspectorAddIn" 
-       author="Matt Ward" 
+﻿<AddIn name="ComponentInspectorAddIn"
+       author="Matt Ward"
        url="http://oaklandsoftware.com/"
        copyright="prj:///doc/copyright.txt"
        description="Component Inspector AddIn for SharpDevelop">
-
+	
 	<Manifest>
 		<Identity name="ICSharpCode.ComponentInspector"/>
 	</Manifest>
-
+	
 	<Runtime>
+		<Condition name = "Compare" string = "${Platform}" equals = "Win64">
+			<DisableAddIn message = "This AddIn does not work when SharpDevelop runs as 64-bit process."/>
+		</Condition>
 		<Import assembly="ComponentInspector.AddIn.dll"/>
 	</Runtime>
-
+	
 	<Path name="/Workspace/Tools">
 		<MenuItem id="ShowComponentInspector"
 		          insertafter="ShowAddInScout"
-		          label="${res:ComponentInspector.ToolsMenu.ShowComponentInspectorMenuItem}" 
+		          label="${res:ComponentInspector.ToolsMenu.ShowComponentInspectorMenuItem}"
 		          class="ICSharpCode.ComponentInspector.AddIn.ShowComponentInspectorCommand"/>
 	</Path>
-
+	
 	<Path name="/SharpDevelop/Workbench/MainMenu">
 		<Condition name="WindowActive" activewindow="ICSharpCode.ComponentInspector.AddIn.ComponentInspectorView">
-				<MenuItem id="ComponentInspector"
-				          insertafter="Tools"
-				          insertbefore="Window"
-				          label="${res:ComponentInspector.MainMenu.InspectorMenu}"
-				          type="Menu">
+			<MenuItem id="ComponentInspector"
+			          insertafter="Tools"
+			          insertbefore="Window"
+			          label="${res:ComponentInspector.MainMenu.InspectorMenu}"
+			          type="Menu">
 				<MenuItem id="OpenAssembly"
 				          label="${res:ComponentInspector.InspectorMenu.OpenAssembly}"
 				          class="ICSharpCode.ComponentInspector.AddIn.OpenAssemblyCommand"/>
@@ -39,7 +42,7 @@
 			</MenuItem>
 		</Condition>
 	</Path>
-
+	
 	<Path name = "/SharpDevelop/Dialogs/OptionsDialog">
 		<DialogPanel id="ComponentInspectorOptions"
 		             label="${res:ComponentInspector.ToolsMenu.ShowComponentInspectorMenuItem}"

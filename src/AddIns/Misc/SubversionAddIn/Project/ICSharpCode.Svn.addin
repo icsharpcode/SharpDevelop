@@ -9,7 +9,7 @@
 	
 	<Runtime>
 		<Condition name = "Compare" string = "${Platform}" equals = "Win64">
-			<DisableAddIn message = "This AddIn does not work in the x64 Edition of Windows."/>
+			<DisableAddIn message = "This AddIn does not work when SharpDevelop runs as 64-bit process."/>
 		</Condition>
 		<Import assembly = "SubversionAddIn.dll">
 			<ConditionEvaluator name="SubversionState" class="ICSharpCode.Svn.SubversionStateCondition"/>
