@@ -14,12 +14,12 @@
 		<Import assembly=":ICSharpCode.SharpDevelop">
 			<!-- SharpDevelop defines more conditions and doozers, we just -->
 			<!-- import those we need here. -->
-			<ConditionEvaluator name="WindowActive" class="ICSharpCode.Core.WindowActiveConditionEvaluator"/>
-			<ConditionEvaluator name="ActiveWindowState" class="ICSharpCode.Core.ActiveWindowStateConditionEvaluator"/>
-			<ConditionEvaluator name="OpenWindowState" class="ICSharpCode.Core.OpenWindowStateConditionEvaluator"/>
+			<ConditionEvaluator name="WindowActive" class="ICSharpCode.SharpDevelop.WindowActiveConditionEvaluator"/>
+			<ConditionEvaluator name="ActiveWindowState" class="ICSharpCode.SharpDevelop.ActiveWindowStateConditionEvaluator"/>
+			<ConditionEvaluator name="OpenWindowState" class="ICSharpCode.SharpDevelop.OpenWindowStateConditionEvaluator"/>
 			
-			<Doozer name="DialogPanel" class="ICSharpCode.Core.DialogPanelDoozer"/>
-			<Doozer name="DisplayBinding" class="ICSharpCode.Core.DisplayBindingDoozer"/>
+			<Doozer name="DialogPanel" class="ICSharpCode.SharpDevelop.DialogPanelDoozer"/>
+			<Doozer name="DisplayBinding" class="ICSharpCode.SharpDevelop.DisplayBindingDoozer"/>
 		</Import>
 	</Runtime>
 	
