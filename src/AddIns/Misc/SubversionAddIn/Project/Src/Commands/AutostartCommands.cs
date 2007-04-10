@@ -7,6 +7,7 @@
 
 using System;
 using System.IO;
+using System.Text;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
@@ -32,6 +33,8 @@ namespace ICSharpCode.Svn.Commands
 			FileService.FileRenaming += FileRenaming;
 			FileService.FileCreated += FileCreated;
 			
+			ProjectService.ProjectAdded += ProjectAdded;
+			
 			FileUtility.FileSaved += new FileNameEventHandler(FileSaved);
 			AbstractProjectBrowserTreeNode.AfterNodeInitialize += TreeNodeInitialized;
 		}
@@ -42,6 +45,71 @@ namespace ICSharpCode.Svn.Commands
 		{
 			AbstractProjectBrowserTreeNode node = e.Node as AbstractProjectBrowserTreeNode;
 			node.AcceptVisitor(visitor, null);
+		}
+		
+		void ProjectAdded(object sender, ProjectEventArgs e)
+		{
+			if (!AddInOptions.AutomaticallyAddFiles) return;
+			if (!CanBeVersionControlledFile(e.Project.Directory)) return;
+			
+			string projectDir = Path.GetFullPath(e.Project.Directory);
+			try {
+				Status status = SvnClient.Instance.Client.SingleStatus(projectDir);
+				if (status.TextStatus != StatusKind.Unversioned)
+					return;
+				SvnClient.Instance.Client.Add(projectDir, Recurse.None);
+				if (FileUtility.IsBaseDirectory(Path.Combine(projectDir, "bin"), e.Project.OutputAssemblyFullPath)) {
+					AddToIgnoreList(projectDir, "bin");
+				}
+				CompilableProject compilableProject = e.Project as CompilableProject;
+				if (compilableProject != null) {
+					if (FileUtility.IsBaseDirectory(Path.Combine(projectDir, "obj"), compilableProject.IntermediateOutputFullPath)) {
+						AddToIgnoreList(projectDir, "obj");
+					}
+				}
+				foreach (ProjectItem item in e.Project.Items) {
+					FileProjectItem fileItem = item as FileProjectItem;
+					if (fileItem != null) {
+						if (FileUtility.IsBaseDirectory(projectDir, fileItem.FileName)) {
+							AddFileWithParentDirectoriesToSvn(fileItem.FileName);
+						}
+					}
+				}
+				AddFileWithParentDirectoriesToSvn(e.Project.FileName);
+			} catch (Exception ex) {
+				MessageService.ShowError("Project add exception: " + ex);
+			}
+		}
+		
+		void AddFileWithParentDirectoriesToSvn(string fileName)
+		{
+			if (!CanBeVersionControlledFile(fileName)) {
+				AddFileWithParentDirectoriesToSvn(FileUtility.GetAbsolutePath(fileName, ".."));
+			}
+			Status status = SvnClient.Instance.Client.SingleStatus(fileName);
+			if (status.TextStatus != StatusKind.Unversioned)
+				return;
+			SvnClient.Instance.Client.Add(fileName, Recurse.None);
+		}
+		
+		void AddToIgnoreList(string directory, string file)
+		{
+			PropertyDictionary pd = SvnClient.Instance.Client.PropGet("svn:ignore", directory, Revision.Working, Recurse.None);
+			StringBuilder b = new StringBuilder();
+			foreach (Property p in pd.Values) {
+				using (StreamReader r = new StreamReader(new MemoryStream(p.Data))) {
+					string line;
+					while ((line = r.ReadLine()) != null) {
+						if (line.Length > 0) {
+							b.AppendLine(line);
+						}
+					}
+				}
+				break;
+			}
+			b.AppendLine(file);
+			SvnClient.Instance.Client.PropSet(new Property("svn:ignore", b.ToString()),
+			                                  directory, Recurse.None);
 		}
 		
 		internal static bool CanBeVersionControlledFile(string fileName)
