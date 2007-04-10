@@ -108,6 +108,32 @@ namespace ICSharpCode.Core
 			return path.IndexOf(':') >= 2;
 		}
 		
+		public static string GetCommonBaseDirectory(string dir1, string dir2)
+		{
+			if (dir1 == null || dir2 == null) return null;
+			if (IsUrl(dir1) || IsUrl(dir2)) return null;
+			
+			dir1 = Path.GetFullPath(dir1);
+			dir2 = Path.GetFullPath(dir2);
+			
+			string[] aPath = dir1.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+			string[] bPath = dir2.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+			StringBuilder result = new StringBuilder();
+			int indx = 0;
+			for(; indx < Math.Min(bPath.Length, aPath.Length); ++indx) {
+				if (bPath[indx].Equals(aPath[indx], StringComparison.OrdinalIgnoreCase)) {
+					if (result.Length > 0) result.Append(Path.DirectorySeparatorChar);
+					result.Append(aPath[indx]);
+				} else {
+					break;
+				}
+			}
+			if (indx == 0)
+				return null;
+			else
+				return result.ToString();
+		}
+		
 		/// <summary>
 		/// Converts a given absolute path and a given base path to a path that leads
 		/// from the base path to the absoulte path. (as a relative path)

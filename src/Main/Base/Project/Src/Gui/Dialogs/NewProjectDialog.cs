@@ -34,6 +34,15 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 		
 		protected bool createNewSolution;
 		
+		public string InitialProjectLocationDirectory {
+			get {
+				return ((TextBox)ControlDictionary["locationTextBox"]).Text;
+			}
+			set {
+				((TextBox)ControlDictionary["locationTextBox"]).Text = value;
+			}
+		}
+		
 		public NewProjectDialog(bool createNewSolution)
 		{
 			StandardHeader.SetHeaders();

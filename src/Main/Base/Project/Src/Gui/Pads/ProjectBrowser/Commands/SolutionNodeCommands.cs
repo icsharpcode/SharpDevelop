@@ -22,6 +22,9 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			ISolutionFolderNode solutionFolderNode = node as ISolutionFolderNode;
 			if (node != null) {
 				using (NewProjectDialog npdlg = new NewProjectDialog(false)) {
+					npdlg.InitialProjectLocationDirectory = GetInitialDirectorySuggestion(solutionFolderNode);
+					
+					// show the dialog to request project type and name
 					if (npdlg.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) == DialogResult.OK) {
 						if (npdlg.NewProjectLocation.Length == 0) {
 							MessageService.ShowError("No project has been created, there is nothing to add.");
@@ -31,6 +34,32 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 						ProjectService.SaveSolution();
 					}
 				}
+			}
+		}
+		
+		internal static string GetInitialDirectorySuggestion(ISolutionFolderNode solutionFolderNode)
+		{
+			// Detect the correct folder to place the new project in:
+			int projectCount = 0;
+			string initialDirectory = null;
+			foreach (ISolutionFolder folderEntry in solutionFolderNode.Container.Folders) {
+				IProject project = folderEntry as IProject;
+				if (project != null) {
+					if (projectCount == 0)
+						initialDirectory = project.Directory;
+					else
+						initialDirectory = FileUtility.GetCommonBaseDirectory(initialDirectory, project.Directory);
+					projectCount++;
+				}
+			}
+			if (initialDirectory != null) {
+				if (projectCount == 1) {
+					return FileUtility.GetAbsolutePath(initialDirectory, "..");
+				} else {
+					return initialDirectory;
+				}
+			} else {
+				return solutionFolderNode.Solution.Directory;
 			}
 		}
 	}
@@ -62,6 +91,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 					fdiag.Filter = ProjectService.GetAllProjectsFilter(this);
 					fdiag.Multiselect     = true;
 					fdiag.CheckFileExists = true;
+					fdiag.InitialDirectory = AddNewProjectToSolution.GetInitialDirectorySuggestion(solutionFolderNode);
 					if (fdiag.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) == DialogResult.OK) {
 						foreach (string fileName in fdiag.FileNames) {
 							AddProject(solutionFolderNode, fileName);
