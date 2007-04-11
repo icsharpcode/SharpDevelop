@@ -990,6 +990,37 @@
 											<File Source="..\..\AddIns\AddIns\DisplayBindings\ClassDiagram\Diagrams.dll" Name="Diagrams.dll" Id="ClassDiagram.Diagrams.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="ClassDiagram.Diagrams.dll" AssemblyManifest="ClassDiagram.Diagrams.dll" />
 										</Component>
 									</Directory>
+									<Directory Id="WorkflowDesignerFolder" Name="Workflow" LongName="WorkflowDesigner">
+										<Component Guid="0A5A0835-4280-4E64-9BBE-A87E7BCF640B" Id="WorkflowDesignerAddin" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\DisplayBindings\WorkflowDesigner\WorkflowDesigner.addin" Name="WORKFL_1.ADD" Id="WorkflowDesigner.addin" LongName="WorkflowDesigner.addin" />
+										</Component>
+										<Component Guid="69BD4F05-0ADD-48C9-AD46-72D9B0C4A569" Id="WorkflowDesignerDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\DisplayBindings\WorkflowDesigner\WorkflowDesigner.dll" Name="WORKFL_1.DLL" Id="WorkflowDesigner.dll" LongName="WorkflowDesigner.dll" />
+										</Component>
+										<Directory Id="WorkflowDesignerTemplatesFolder" Name="Template" LongName="Templates">
+											<Directory Id="WorkflowDesignerFilesFolder" Name="Files">
+												<Component Guid="DA3146B7-E769-4240-9C6E-74956A395782" Id="NoCodeSequentialWorkflowXft" DiskId="1">
+													<File Source="..\..\AddIns\AddIns\DisplayBindings\WorkflowDesigner\Templates\Files\NoCodeSequentialWorkflow.xft" Name="NOCODE_1.XFT" Id="NoCodeSequentialWorkflow.xft" LongName="NoCodeSequentialWorkflow.xft" />
+												</Component>
+												<Directory Id="WorkflowDesignerCSharpFilesFolder" Name="CSharp">
+													<Component Guid="D1C07A4B-45D7-440D-A0AC-AD1ED73CDD6F" Id="WorkflowDesignerCSharpFilesTemplates" DiskId="1">
+														<File Source="..\..\AddIns\AddIns\DisplayBindings\WorkflowDesigner\Templates\Files\CSharp\Activity.xft" Name="Activity.xft" Id="Activity.xft" />
+														<File Source="..\..\AddIns\AddIns\DisplayBindings\WorkflowDesigner\Templates\Files\CSharp\CodeSeparationSequentialWorkflow.xft" Name="CODESE_1.XFT" Id="CodeSeparationSequentialWorkflow.xft" LongName="CodeSeparationSequentialWorkflow.xft" />
+														<File Source="..\..\AddIns\AddIns\DisplayBindings\WorkflowDesigner\Templates\Files\CSharp\CodeSequentialWorkflow.xft" Name="CODESE_2.XFT" Id="CodeSequentialWorkflow.xft" LongName="CodeSequentialWorkflow.xft" />
+													</Component>
+												</Directory>
+											</Directory>
+											<Directory Id="WorkflowDesignerProjectsFolder" Name="Projects">
+												<Directory Id="WorkflowDesignerCSharpProjectsFolder" Name="CSharp">
+													<Component Guid="1114229A-8154-4A4B-A347-AA226D56C8F5" Id="WorkflowDesignerCSharpProjectTemplates" DiskId="1">
+														<File Source="..\..\AddIns\AddIns\DisplayBindings\WorkflowDesigner\Templates\Projects\CSharp\ActivityLibrary.xpt" Name="ACTIVI_1.XPT" Id="ActivityLibrary.xpt" LongName="ActivityLibrary.xpt" />
+														<File Source="..\..\AddIns\AddIns\DisplayBindings\WorkflowDesigner\Templates\Projects\CSharp\ConsoleProject.xpt" Name="CONSOL_1.XPT" Id="ConsoleProject.xpt" LongName="ConsoleProject.xpt" />
+														<File Source="..\..\AddIns\AddIns\DisplayBindings\WorkflowDesigner\Templates\Projects\CSharp\EmptyProject.xpt" Name="EMPTYP_1.XPT" Id="EmptyProject.xpt" LongName="EmptyProject.xpt" />
+													</Component>
+												</Directory>
+											</Directory>
+										</Directory>
+									</Directory>
 								</Directory>
 								<Directory Id="MiscAddInsFolder" Name="Misc">
 									<Directory Id="AddInManagerFolder" LongName="AddInManager" Name="AddMan">
@@ -1030,8 +1061,6 @@
 											<File Source="..\..\AddIns\AddIns\Misc\Debugger\Debugger.BooInterpreter.dll" Name="DEBUGG_2.DLL" Id="Debugger.BooInterpreter.dll" LongName="Debugger.BooInterpreter.dll" />
 											<File Source="..\..\AddIns\AddIns\Misc\Debugger\Debugger.Core.dll" Name="DEBUGG_3.DLL" Id="Debugger.Core.dll" LongName="Debugger.Core.dll" />
 											<File Source="..\..\AddIns\AddIns\Misc\Debugger\TreeListView.dll" Name="TREELI_1.DLL" Id="TreeListView.dll" LongName="TreeListView.dll" />
-											<File Source="..\..\AddIns\AddIns\Misc\Debugger\Boo.Lang.Compiler.dll" Name="BOOLA_2.DLL" Id="Debugger.Boo.Lang.Compiler.dll" LongName="Boo.Lang.Compiler.dll" />
-											<File Source="..\..\AddIns\AddIns\Misc\Debugger\Boo.Lang.Interpreter.dll" Name="BOOLA_3.DLL" Id="Debugger.Boo.Lang.Interpreter.dll" LongName="Boo.Lang.Interpreter.dll" />
 										</Component>
 									</Directory>
 									<Directory Id="FiletypeRegistererFolder" LongName="FiletypeRegisterer" Name="Filetype">

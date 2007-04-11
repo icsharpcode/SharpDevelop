@@ -310,6 +310,13 @@
 				<ComponentRef Id="ClassCanvasDll"/>
 				<ComponentRef Id="ClassEditorDll"/>
 				<ComponentRef Id="DiagramsDll"/>
+				
+				<ComponentRef Id="WorkflowDesignerAddin"/>
+				<ComponentRef Id="WorkflowDesignerDll"/>
+				<ComponentRef Id="WorkflowDesignerCSharpFilesTemplates"/>
+				<ComponentRef Id="WorkflowDesignerCSharpProjectTemplates"/>
+				<ComponentRef Id="NoCodeSequentialWorkflowXft"/>
+				
 				<ComponentRef Id="XmlEditorFiles"/>
 				<ComponentRef Id="AddInManagerFiles"/>
 				<ComponentRef Id="AddInManagerSharpZipLibDll"/>
