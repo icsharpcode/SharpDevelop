@@ -158,7 +158,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		public static BitArray TypeKW = NewSet(Char, Bool, Object, String, Sbyte, Byte, Short, Ushort, Int, Uint, Long, Ulong, Float, Double, Decimal);
 		public static BitArray UnaryHead = NewSet(Plus, Minus, Not, BitwiseComplement, Times, Increment, Decrement, BitwiseAnd);
 		public static BitArray AssnStartOp = NewSet(Plus, Minus, Not, BitwiseComplement, Times);
-		public static BitArray CastFollower = NewSet(Identifier, Literal, OpenParenthesis, New, This, Base, Null, Checked, Unchecked, Typeof, Sizeof, Delegate, Minus, Not, BitwiseComplement, Increment, Decrement, True, False);
+		public static BitArray CastFollower = NewSet(Identifier, Literal, OpenParenthesis, New, This, Base, Null, Checked, Unchecked, Typeof, Sizeof, Delegate, Minus, Not, BitwiseComplement, Increment, Decrement, True, False, Plus, Minus, Not, BitwiseComplement, Times, Increment, Decrement, BitwiseAnd);
 		public static BitArray AssgnOps = NewSet(Assign, PlusAssign, MinusAssign, TimesAssign, DivAssign, ModAssign, BitwiseAndAssign, BitwiseOrAssign, ShiftLeftAssign);
 		public static BitArray UnaryOp = NewSet(Plus, Minus, Not, BitwiseComplement, Times, Increment, Decrement, BitwiseAnd);
 		public static BitArray TypeDeclarationKW = NewSet(Class, Interface, Struct, Enum, Delegate);
