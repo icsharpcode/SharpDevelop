@@ -155,7 +155,7 @@ Pointer = "->"
 
 #Sets
 
-OverloadableUnaryOp("+", "!", "~", "++", "--", "true", "false")
+OverloadableUnaryOp("-", "!", "~", "++", "--", "true", "false")
 OverloadableBinaryOp("+", "-", "*", "/", "%", "&", "|", "^", "<<", "==", "!=", ">", "<", ">=", "<=")
 
 TypeKW("char", "bool", "object", "string", "sbyte", "byte", "short", "ushort", "int", "uint", "long", "ulong", "float", "double", "decimal")

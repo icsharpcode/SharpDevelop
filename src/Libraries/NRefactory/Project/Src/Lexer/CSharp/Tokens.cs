@@ -153,12 +153,12 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			}
 			return bitArray;
 		}
-		public static BitArray OverloadableUnaryOp = NewSet(Plus, Not, BitwiseComplement, Increment, Decrement, True, False);
+		public static BitArray OverloadableUnaryOp = NewSet(Minus, Not, BitwiseComplement, Increment, Decrement, True, False);
 		public static BitArray OverloadableBinaryOp = NewSet(Plus, Minus, Times, Div, Mod, BitwiseAnd, BitwiseOr, Xor, ShiftLeft, Equal, NotEqual, GreaterThan, LessThan, GreaterEqual, LessEqual);
 		public static BitArray TypeKW = NewSet(Char, Bool, Object, String, Sbyte, Byte, Short, Ushort, Int, Uint, Long, Ulong, Float, Double, Decimal);
 		public static BitArray UnaryHead = NewSet(Plus, Minus, Not, BitwiseComplement, Times, Increment, Decrement, BitwiseAnd);
 		public static BitArray AssnStartOp = NewSet(Plus, Minus, Not, BitwiseComplement, Times);
-		public static BitArray CastFollower = NewSet(Identifier, Literal, OpenParenthesis, New, This, Base, Null, Checked, Unchecked, Typeof, Sizeof, Delegate, Plus, Not, BitwiseComplement, Increment, Decrement, True, False);
+		public static BitArray CastFollower = NewSet(Identifier, Literal, OpenParenthesis, New, This, Base, Null, Checked, Unchecked, Typeof, Sizeof, Delegate, Minus, Not, BitwiseComplement, Increment, Decrement, True, False);
 		public static BitArray AssgnOps = NewSet(Assign, PlusAssign, MinusAssign, TimesAssign, DivAssign, ModAssign, BitwiseAndAssign, BitwiseOrAssign, ShiftLeftAssign);
 		public static BitArray UnaryOp = NewSet(Plus, Minus, Not, BitwiseComplement, Times, Increment, Decrement, BitwiseAnd);
 		public static BitArray TypeDeclarationKW = NewSet(Class, Interface, Struct, Enum, Delegate);
