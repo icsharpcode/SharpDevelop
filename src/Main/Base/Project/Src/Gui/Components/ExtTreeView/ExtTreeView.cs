@@ -374,19 +374,24 @@ namespace ICSharpCode.SharpDevelop.Gui
 			ExtTreeNode node             = GetNodeAt(clientcoordinate) as ExtTreeNode;
 			
 			if (node != null) {
-				DragDropEffects effect = DragDropEffects.None;
-				
-				if ((e.KeyState & 8) > 0) { // CTRL key pressed.
-					effect = DragDropEffects.Copy;
-				} else {
-					effect = DragDropEffects.Move;
-				}
-				e.Effect = node.GetDragDropEffect(e.Data, effect);
+				HandleDragOver(e, node);
 				
 				if (e.Effect != DragDropEffects.None) {
 					SelectedNode = node;
 				}
 			}
+		}
+		
+		void HandleDragOver(DragEventArgs e, ExtTreeNode node)
+		{
+			DragDropEffects effect = DragDropEffects.None;
+			
+			if ((e.KeyState & 8) > 0) { // CTRL key pressed.
+				effect = DragDropEffects.Copy;
+			} else {
+				effect = DragDropEffects.Move;
+			}
+			e.Effect = node.GetDragDropEffect(e.Data, effect);
 		}
 		
 		protected override void OnDragDrop(DragEventArgs e)
@@ -396,8 +401,15 @@ namespace ICSharpCode.SharpDevelop.Gui
 			ExtTreeNode node             = GetNodeAt(clientcoordinate) as ExtTreeNode;
 			
 			if (node != null) {
-				node.DoDragDrop(e.Data, e.Effect);
-				SortParentNodes(node);
+				// when dragging very fast from one node to another, it's possible that
+				// OnDragDrop raises without OnDragOver for the node.
+				// So we have to call HandleDragOver to ensure that we don't call DoDragDrop for
+				// invalid operations.
+				HandleDragOver(e, node);
+				if (e.Effect != DragDropEffects.None) {
+					node.DoDragDrop(e.Data, e.Effect);
+					SortParentNodes(node);
+				}
 			}
 		}
 		

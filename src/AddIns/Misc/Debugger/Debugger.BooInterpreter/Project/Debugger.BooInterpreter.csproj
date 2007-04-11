@@ -38,7 +38,7 @@
     <Reference Include="Boo.Lang.Interpreter">
       <HintPath>..\..\..\..\BackendBindings\Boo\RequiredLibraries\Boo.Lang.Interpreter.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
-      <Private>True</Private>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Boo.Lang">
       <HintPath>..\..\..\..\BackendBindings\Boo\RequiredLibraries\Boo.Lang.dll</HintPath>
@@ -80,10 +80,12 @@
     <ProjectReference Include="..\..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
       <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
       <Name>ICSharpCode.SharpDevelop</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
       <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
       <Name>ICSharpCode.Core</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />

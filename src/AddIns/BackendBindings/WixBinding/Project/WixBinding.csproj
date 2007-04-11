@@ -194,7 +194,7 @@
     <ProjectReference Include="..\..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
       <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
       <Name>NRefactory</Name>
-      <Private>True</Private>
+      <Private>False</Private>
     </ProjectReference>
     <Content Include="Templates\EmptyWixProject.xpt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

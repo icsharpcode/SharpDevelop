@@ -45,14 +45,16 @@ namespace ICSharpCode.SharpDevelop.Project
 			projectBrowserControl.Dock = DockStyle.Fill;
 			Controls.Add(projectBrowserControl);
 			
-			toolStrip = ToolbarService.CreateToolStrip(this, "/SharpDevelop/Pads/ProjectBrowser/ToolBar/Standard");
-			toolStrip.ShowItemToolTips  = true;
-			toolStrip.Dock = DockStyle.Top;
-			toolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
-			toolStrip.Stretch   = true;
-			standardItems = new ToolStripItem[toolStrip.Items.Count];
-			toolStrip.Items.CopyTo(standardItems, 0);
-			Controls.Add(toolStrip);
+			if (AddInTree.ExistsTreeNode("/SharpDevelop/Pads/ProjectBrowser/ToolBar/Standard")) {
+				toolStrip = ToolbarService.CreateToolStrip(this, "/SharpDevelop/Pads/ProjectBrowser/ToolBar/Standard");
+				toolStrip.ShowItemToolTips  = true;
+				toolStrip.Dock = DockStyle.Top;
+				toolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+				toolStrip.Stretch   = true;
+				standardItems = new ToolStripItem[toolStrip.Items.Count];
+				toolStrip.Items.CopyTo(standardItems, 0);
+				Controls.Add(toolStrip);
+			}
 			projectBrowserControl.TreeView.BeforeSelect += TreeViewBeforeSelect;
 		}
 		
@@ -63,6 +65,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		void UpdateToolStrip(AbstractProjectBrowserTreeNode node)
 		{
+			if (toolStrip == null) return;
 			toolStrip.Items.Clear();
 			toolStrip.Items.AddRange(standardItems);
 			ToolbarService.UpdateToolbar(toolStrip);

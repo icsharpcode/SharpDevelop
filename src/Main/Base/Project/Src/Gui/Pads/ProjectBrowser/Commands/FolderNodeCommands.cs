@@ -177,6 +177,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 				fdiag.AddExtension    = true;
 				string[] fileFilters  = (string[])(AddInTree.GetTreeNode("/SharpDevelop/Workbench/FileFilter").BuildChildItems(this)).ToArray(typeof(string));
 				
+				fdiag.InitialDirectory = node.Directory;
 				fdiag.FilterIndex     = GetFileFilterIndex(node.Project, fileFilters);
 				fdiag.Filter          = String.Join("|", fileFilters);
 				fdiag.Multiselect     = true;
@@ -230,6 +231,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 						if (res == 2) {
 							return;
 						}
+						// only continue for res==0 (Copy)
 					}
 					bool replaceAll = false;
 					foreach (KeyValuePair<string, string> pair in fileNames) {
