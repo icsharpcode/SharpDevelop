@@ -154,17 +154,17 @@ namespace ICSharpCode.TextEditor.Document
 		
 		public void ExtendSelection(Point oldPosition, Point newPosition)
 		{
-			// where oldposition is where the cursor was,
-			// and newposition is where it has ended up from a click (both zero based)
+            // where oldposition is where the cursor was,
+            // and newposition is where it has ended up from a click (both zero based)
 
-			if (oldPosition == newPosition)
-			{
+			if (oldPosition == newPosition) 
+            {
 				return;
 			}
 
 			Point min;
 			Point max;
-			int oldnewX = newPosition.X;
+            int oldnewX = newPosition.X;
 			bool  oldIsGreater = GreaterEqPos(oldPosition, newPosition);
 			if (oldIsGreater) {
 				min = newPosition;
@@ -174,59 +174,57 @@ namespace ICSharpCode.TextEditor.Document
 				max = newPosition;
 			}
 
-			if (min == max) {
-				return;
-			}
+            if (min == max) {
+                return;
+            }
 
-			if (!HasSomethingSelected) {
+            if (!HasSomethingSelected) 
+            {
 				SetSelection(new DefaultSelection(document, min, max));
+                // initialise selectFrom for a cursor selection
+                if (selectFrom.where == WhereFrom.None)
+                    selectionStart = oldPosition; //textArea.Caret.Position;
 				return;
 			}
 
 			ISelection selection = this.selectionCollection[0];
 
-			if (min == max) {
+            if (min == max) {
 				//selection.StartPosition = newPosition;
-				return;
-			} else {
-				// changed selection via gutter
-				if (selectFrom.where == WhereFrom.Gutter) {
-					// selection new position is always at the left edge for gutter selections
-					newPosition.X = 0;
-				}
+                return;
+            } else {
+                // changed selection via gutter
+			    if (selectFrom.where == WhereFrom.Gutter) 
+                {
+                    // selection new position is always at the left edge for gutter selections
+                    newPosition.X = 0;
+                }
 
-				if (newPosition.Y >= selectionStart.Y) {
-					// selecting down
-					if(GreaterEqPos(newPosition, selectionStart)) {
-						selection.StartPosition = selectionStart;
-						// this handles last line selection
-						//if( textArea.Document.TotalNumberOfLines - 1 == newPosition.Y)
-						if (selectFrom.where == WhereFrom.Gutter ) //&& newPosition.Y != oldPosition.Y)
-							//selection.EndPosition = NextValidPosition(newPosition.Y - 1);
-							selection.EndPosition = new Point(textArea.Caret.Column, textArea.Caret.Line);
-						else {
-							newPosition.X = oldnewX;
-							selection.EndPosition = newPosition;
-						}
-					} else { // generally this occurs if the selection is on the same line, at a point less than the start position
-						selection.StartPosition = newPosition;
-						selection.EndPosition = selectionStart;
-					}
-				} else { // selecting up
-					if (selectFrom.where == WhereFrom.Gutter && selectFrom.first == WhereFrom.Gutter) {
-						// gutter selection
-						selection.EndPosition = NextValidPosition(selectionStart.Y);
-					} else { // internal text selection
-						selection.EndPosition = selectionStart; //selection.StartPosition;
-					}
-					selection.StartPosition = newPosition;
-				}
-			}
+			    if (GreaterEqPos(newPosition, selectionStart)) // selecting forward
+			    {
+			        selection.StartPosition = selectionStart;
+                    // this handles last line selection
+                    if (selectFrom.where == WhereFrom.Gutter ) //&& newPosition.Y != oldPosition.Y)
+                        selection.EndPosition = new Point(textArea.Caret.Column, textArea.Caret.Line);
+                    else {
+                        newPosition.X = oldnewX;
+			            selection.EndPosition = newPosition;
+                    }
+			    } else { // selecting back
+	                if (selectFrom.where == WhereFrom.Gutter && selectFrom.first == WhereFrom.Gutter) 
+                    { // gutter selection
+					    selection.EndPosition = NextValidPosition(selectionStart.Y);
+                    } else { // internal text selection
+					    selection.EndPosition = selectionStart; //selection.StartPosition;
+                    }
+				    selection.StartPosition = newPosition;
+			    }
+            }
 
 			document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.LinesBetween, min.Y, max.Y));
 			document.CommitUpdate();
 			OnSelectionChanged(EventArgs.Empty);
-		}
+        }
 
 		// retrieve the next available line
 		// - checks that there are more lines available after the current one
@@ -259,10 +257,11 @@ namespace ICSharpCode.TextEditor.Document
 			// this is the most logical place to reset selection starting
 			// positions because it is always called before a new selection
 			selectFrom.first = selectFrom.where;
-			selectionStart = textArea.TextView.GetLogicalPosition(mousepos.X - textArea.TextView.DrawingPosition.X, mousepos.Y - textArea.TextView.DrawingPosition.Y);
+            selectionStart = textArea.TextView.GetLogicalPosition(mousepos.X - textArea.TextView.DrawingPosition.X, mousepos.Y - textArea.TextView.DrawingPosition.Y);
 			if(selectFrom.where == WhereFrom.Gutter) {
 				selectionStart.X = 0;
-			}
+//				selectionStart.Y = -1;
+            }
 
 			ClearWithoutUpdate();
 			document.CommitUpdate();
