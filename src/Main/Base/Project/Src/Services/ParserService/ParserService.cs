@@ -624,8 +624,7 @@ namespace ICSharpCode.SharpDevelop
 		
 		public static Encoding DefaultFileEncoding {
 			get {
-				Properties textEditorProperties = PropertyService.Get("ICSharpCode.TextEditor.Document.Document.DefaultDocumentAggregatorProperties", new Properties());
-				return Encoding.GetEncoding(textEditorProperties.Get("Encoding", 1252));
+				return DefaultEditor.Gui.Editor.SharpDevelopTextEditorProperties.Instance.Encoding;
 			}
 		}
 		

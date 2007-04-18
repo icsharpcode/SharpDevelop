@@ -38,10 +38,20 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			ctl = new TextEditorControl();
 			ctl.Document.ReadOnly = true;
-			ctl.TextEditorProperties = new SharpDevelopTextEditorProperties();
+			ctl.TextEditorProperties = SharpDevelopTextEditorProperties.Instance;
 			ctl.ActiveTextAreaControl.TextArea.DoubleClick += OnDoubleClick;
-			ParserService.ParserUpdateStepFinished += UpdateTick;
-			ctl.VisibleChanged += delegate { UpdateTick(null, null); };
+			ParserService.ParserUpdateStepFinished += OnParserUpdateStep;
+			ctl.VisibleChanged += delegate { UpdateTick(null); };
+		}
+		
+		/// <summary>
+		/// Cleans up all used resources
+		/// </summary>
+		public override void Dispose()
+		{
+			ParserService.ParserUpdateStepFinished -= OnParserUpdateStep;
+			ctl.Dispose();
+			base.Dispose();
 		}
 		
 		void OnDoubleClick(object sender, EventArgs e)
@@ -52,19 +62,25 @@ namespace ICSharpCode.SharpDevelop.Gui
 				FileService.JumpToFilePosition(fileName, caret.Line, caret.Column);
 				
 				// refresh DefinitionView to show the definition of the expression that was double-clicked
-				UpdateTick(null, null);
+				UpdateTick(null);
 			}
 		}
 		
-		void UpdateTick(object sender, ParserUpdateStepEventArgs e)
+		void OnParserUpdateStep(object sender, ParserUpdateStepEventArgs e)
+		{
+			WorkbenchSingleton.SafeThreadAsyncCall(UpdateTick, e);
+		}
+		
+		void UpdateTick(ParserUpdateStepEventArgs e)
 		{
 			if (!this.IsVisible) return;
 			LoggingService.Debug("DefinitionViewPad.Update");
+			
 			ResolveResult res = ResolveAtCaret(e);
 			if (res == null) return;
 			FilePosition pos = res.GetDefinitionPosition();
 			if (pos.IsEmpty) return;
-			WorkbenchSingleton.SafeThreadAsyncCall(OpenFile, pos);
+			OpenFile(pos);
 		}
 		
 		ResolveResult ResolveAtCaret(ParserUpdateStepEventArgs e)
@@ -129,16 +145,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public override void RedrawContent()
 		{
 			// Refresh the whole pad control here, renew all resource strings whatever.
-		}
-		
-		/// <summary>
-		/// Cleans up all used resources
-		/// </summary>
-		public override void Dispose()
-		{
-			ParserService.ParserUpdateStepFinished -= UpdateTick;
-			ctl.Dispose();
-			base.Dispose();
 		}
 	}
 }

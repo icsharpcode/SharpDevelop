@@ -7,6 +7,7 @@
 
 using System;
 using System.Drawing;
+using System.Drawing.Text;
 using System.Text;
 using System.Windows.Forms;
 
@@ -22,8 +23,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels
 	/// </summary>
 	public class GeneralTextEditorPanel : AbstractOptionPanel
 	{
-		int encoding = Encoding.UTF8.CodePage;
-		
 		ComboBox fontListComboBox, fontSizeComboBox;
 		FontSelectionPanelHelper helper;
 		
@@ -34,25 +33,24 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels
 			fontListComboBox = ((ComboBox)ControlDictionary["fontListComboBox"]);
 			fontSizeComboBox = ((ComboBox)ControlDictionary["fontSizeComboBox"]);
 			
-			((CheckBox)ControlDictionary["enableDoublebufferingCheckBox"]).Checked = ((Properties)CustomizationObject).Get("DoubleBuffer", true);
-			//((CheckBox)ControlDictionary["enableCodeCompletionCheckBox"]).Checked  = ((Properties)CustomizationObject).Get("EnableCodeCompletion", true);
-			((CheckBox)ControlDictionary["enableFoldingCheckBox"]).Checked         = ((Properties)CustomizationObject).Get("EnableFolding", true);
-			((CheckBox)ControlDictionary["showQuickClassBrowserCheckBox"]).Checked = ((Properties)CustomizationObject).Get("ShowQuickClassBrowserPanel", true);
+			SharpDevelopTextEditorProperties properties = SharpDevelopTextEditorProperties.Instance;
 			
-			((CheckBox)ControlDictionary["enableAAFontRenderingCheckBox"]).Checked = ((Properties)CustomizationObject).Get("UseAntiAliasFont", false);
-			((CheckBox)ControlDictionary["mouseWheelZoomCheckBox"]).Checked = ((Properties)CustomizationObject).Get("MouseWheelTextZoom", true);
+			((CheckBox)ControlDictionary["enableFoldingCheckBox"]).Checked = properties.EnableFolding;
+			((CheckBox)ControlDictionary["showQuickClassBrowserCheckBox"]).Checked = properties.ShowQuickClassBrowserPanel;
+			
+			((CheckBox)ControlDictionary["enableAAFontRenderingCheckBox"]).Checked = UseAntialiasing;
+			((CheckBox)ControlDictionary["mouseWheelZoomCheckBox"]).Checked = properties.MouseWheelTextZoom;
 			
 			foreach (String name in CharacterEncodings.Names) {
 				((ComboBox)ControlDictionary["textEncodingComboBox"]).Items.Add(name);
 			}
 			int encodingIndex = 0;
 			try {
-				encodingIndex = CharacterEncodings.GetEncodingIndex((Int32)((Properties)CustomizationObject).Get("Encoding", encoding));
+				encodingIndex = CharacterEncodings.GetEncodingIndex(properties.EncodingCodePage);
 			} catch {
-				encodingIndex = CharacterEncodings.GetEncodingIndex(encoding);
+				encodingIndex = CharacterEncodings.GetEncodingIndex(Encoding.UTF8.CodePage);
 			}
 			((ComboBox)ControlDictionary["textEncodingComboBox"]).SelectedIndex = encodingIndex;
-			encoding = CharacterEncodings.GetEncodingByIndex(encodingIndex).CodePage;
 			
 			for (int i = 6; i <= 24; ++i) {
 				fontSizeComboBox.Items.Add(i);
@@ -65,7 +63,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels
 			fontListComboBox.TextChanged += new EventHandler(UpdateFontPreviewLabel);
 			fontListComboBox.SelectedIndexChanged += new EventHandler(UpdateFontPreviewLabel);
 			
-			Font currentFont = FontSelectionPanel.ParseFont(((Properties)CustomizationObject).Get("DefaultFont", ResourceService.DefaultMonospacedFont.ToString()).ToString());
+			Font currentFont = FontSelectionPanel.ParseFont(properties.FontContainer.DefaultFont.ToString());
 			helper = new FontSelectionPanelHelper(fontSizeComboBox, fontListComboBox, currentFont);
 			
 			fontListComboBox.MeasureItem += new System.Windows.Forms.MeasureItemEventHandler(helper.MeasureComboBoxItem);
@@ -73,6 +71,33 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels
 			
 			UpdateFontPreviewLabel(null, null);
 			helper.StartThread();
+		}
+		
+		bool UseAntialiasing {
+			get {
+				switch (SharpDevelopTextEditorProperties.Instance.TextRenderingHint) {
+					case TextRenderingHint.SystemDefault:
+						return SystemInformation.IsFontSmoothingEnabled;
+					case TextRenderingHint.SingleBitPerPixel:
+					case TextRenderingHint.SingleBitPerPixelGridFit:
+						return false;
+					default:
+						return true;
+				}
+			}
+			set {
+				if (value == true) {
+					if (SystemInformation.IsFontSmoothingEnabled)
+						SharpDevelopTextEditorProperties.Instance.TextRenderingHint = TextRenderingHint.SystemDefault;
+					else
+						SharpDevelopTextEditorProperties.Instance.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
+				} else {
+					if (SystemInformation.IsFontSmoothingEnabled)
+						SharpDevelopTextEditorProperties.Instance.TextRenderingHint = TextRenderingHint.SingleBitPerPixelGridFit;
+					else
+						SharpDevelopTextEditorProperties.Instance.TextRenderingHint = TextRenderingHint.SystemDefault;
+				}
+			}
 		}
 		
 		Font CurrentFont {
@@ -88,17 +113,19 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels
 		
 		public override bool StorePanelContents()
 		{
-			((Properties)CustomizationObject).Set("DoubleBuffer",         ((CheckBox)ControlDictionary["enableDoublebufferingCheckBox"]).Checked);
-			((Properties)CustomizationObject).Set("UseAntiAliasFont",     ((CheckBox)ControlDictionary["enableAAFontRenderingCheckBox"]).Checked);
-			((Properties)CustomizationObject).Set("MouseWheelTextZoom",   ((CheckBox)ControlDictionary["mouseWheelZoomCheckBox"]).Checked);
+			SharpDevelopTextEditorProperties properties = SharpDevelopTextEditorProperties.Instance;
+			
+			
+			UseAntialiasing = ((CheckBox)ControlDictionary["enableAAFontRenderingCheckBox"]).Checked;
+			properties.MouseWheelTextZoom = ((CheckBox)ControlDictionary["mouseWheelZoomCheckBox"]).Checked;
 			//((Properties)CustomizationObject).Set("EnableCodeCompletion", ((CheckBox)ControlDictionary["enableCodeCompletionCheckBox"]).Checked);
-			((Properties)CustomizationObject).Set("EnableFolding",        ((CheckBox)ControlDictionary["enableFoldingCheckBox"]).Checked);
+			properties.EnableFolding = ((CheckBox)ControlDictionary["enableFoldingCheckBox"]).Checked;
 			Font currentFont = CurrentFont;
 			if (currentFont != null) {
-				((Properties)CustomizationObject).Set("DefaultFont", currentFont.ToString());
+				properties.Font = currentFont;
 			}
-			((Properties)CustomizationObject).Set("Encoding",             CharacterEncodings.GetCodePageByIndex(((ComboBox)ControlDictionary["textEncodingComboBox"]).SelectedIndex));
-			((Properties)CustomizationObject).Set("ShowQuickClassBrowserPanel", ((CheckBox)ControlDictionary["showQuickClassBrowserCheckBox"]).Checked);
+			properties.EncodingCodePage = CharacterEncodings.GetCodePageByIndex(((ComboBox)ControlDictionary["textEncodingComboBox"]).SelectedIndex);
+			properties.ShowQuickClassBrowserPanel = ((CheckBox)ControlDictionary["showQuickClassBrowserCheckBox"]).Checked;
 			
 			IViewContent activeViewContent = WorkbenchSingleton.Workbench.ActiveViewContent;
 			
@@ -107,17 +134,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels
 				textarea.OptionsChanged();
 			}
 			return true;
-		}
-		
-		static Font ParseFont(string font)
-		{
-			try {
-				string[] descr = font.Split(new char[]{',', '='});
-				return new Font(descr[1], Single.Parse(descr[3]));
-			} catch (Exception ex) {
-				LoggingService.Warn(ex);
-				return ResourceService.DefaultMonospacedFont;
-			}
 		}
 	}
 }

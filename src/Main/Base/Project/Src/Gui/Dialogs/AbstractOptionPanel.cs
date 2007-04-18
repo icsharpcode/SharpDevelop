@@ -18,7 +18,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 	{
 		bool   wasActivated = false;
 		bool   isFinished   = true;
-		object customizationObject = null;
+		object customizationObject;
 		
 		public Control Control {
 			get {
@@ -32,7 +32,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		public virtual object CustomizationObject {
+		public object CustomizationObject {
 			get {
 				return customizationObject;
 			}

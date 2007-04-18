@@ -16,9 +16,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 	{
 		public static void ShowTabbedOptions(string dialogTitle, AddInTreeNode node)
 		{
-			TabbedOptions o = new TabbedOptions(dialogTitle,
-			                                    ((Properties)PropertyService.Get("ICSharpCode.TextEditor.Document.Document.DefaultDocumentAggregatorProperties", new Properties())),
-			                                    node);
+			TabbedOptions o = new TabbedOptions(dialogTitle, node);
 			o.Width  = 450;
 			o.Height = 425;
 			o.FormBorderStyle = FormBorderStyle.FixedDialog;
@@ -28,8 +26,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 		
 		public override void Run()
 		{
-			using (TreeViewOptions optionsDialog = new TreeViewOptions((Properties)PropertyService.Get("ICSharpCode.TextEditor.Document.Document.DefaultDocumentAggregatorProperties", new Properties()),
-			                                                           AddInTree.GetTreeNode("/SharpDevelop/Dialogs/OptionsDialog"))) {
+			using (TreeViewOptions optionsDialog = new TreeViewOptions(AddInTree.GetTreeNode("/SharpDevelop/Dialogs/OptionsDialog"))) {
 				optionsDialog.FormBorderStyle = FormBorderStyle.FixedDialog;
 				
 				optionsDialog.Owner = WorkbenchSingleton.MainForm;

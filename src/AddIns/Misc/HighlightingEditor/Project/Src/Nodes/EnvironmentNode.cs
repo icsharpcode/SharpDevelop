@@ -13,6 +13,7 @@ using System.Xml;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.TextEditor.Document;
 
 namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
@@ -142,12 +143,6 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 			Font basefont;
 			Font listfont;
 			
-			static Font ParseFont(string font)
-			{
-				string[] descr = font.Split(new char[]{',', '='});
-				return new Font(descr[1], Single.Parse(descr[3]));
-			}
-			
 			public EnvironmentItem(int index, string name, EditorHighlightColor color, Font listFont) : base(new string[] {name, "Sample"})
 			{
 				Name = name;
@@ -156,8 +151,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 				
 				this.UseItemStyleForSubItems = false;
 				
-				Properties properties = ((Properties)PropertyService.Get("ICSharpCode.TextEditor.Document.Document.DefaultDocumentAggregatorProperties", new Properties()));
-				basefont = ParseFont(properties.Get("DefaultFont", ResourceService.DefaultMonospacedFont.ToString()));
+				basefont = SharpDevelopTextEditorProperties.Instance.FontContainer.DefaultFont;
 				listfont = listFont;
 				
 				ColorUpdate();

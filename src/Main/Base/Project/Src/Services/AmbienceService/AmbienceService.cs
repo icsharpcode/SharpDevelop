@@ -17,7 +17,6 @@ namespace ICSharpCode.SharpDevelop
 	{
 		const string ambienceProperty       = "SharpDevelop.UI.CurrentAmbience";
 		const string codeGenerationProperty = "SharpDevelop.UI.CodeGenerationOptions";
-		const string textEditorProperty     = "ICSharpCode.TextEditor.Document.Document.DefaultDocumentAggregatorProperties";
 		
 		static AmbienceService()
 		{
@@ -116,7 +115,7 @@ namespace ICSharpCode.SharpDevelop
 				defaultAmbience = null;
 				OnAmbienceChanged(EventArgs.Empty);
 			}
-			if (e.Key == codeGenerationProperty || e.Key == textEditorProperty) {
+			if (e.Key == codeGenerationProperty) {
 				ApplyCodeGenerationPropertiesToNRefactory();
 			}
 		}

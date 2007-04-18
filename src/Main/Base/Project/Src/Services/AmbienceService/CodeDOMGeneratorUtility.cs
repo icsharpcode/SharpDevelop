@@ -12,6 +12,7 @@ using System.Collections;
 using System.Text;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 
 namespace ICSharpCode.SharpDevelop
 {
@@ -25,11 +26,11 @@ namespace ICSharpCode.SharpDevelop
 				options.ElseOnClosing            = AmbienceService.CodeGenerationProperties.Get("ElseOnClosing", true);
 				
 				
-				Properties docProperties = ((Properties)PropertyService.Get("ICSharpCode.TextEditor.Document.Document.DefaultDocumentAggregatorProperties", new Properties()));
+				SharpDevelopTextEditorProperties docProperties = SharpDevelopTextEditorProperties.Instance;
 				
-				if ((bool)docProperties.Get("TabsToSpaces", false)) {
+				if (docProperties.ConvertTabsToSpaces) {
 					StringBuilder indentationString = new StringBuilder();
-					for (int i = 0; i < (int)docProperties.Get("IndentationSize", 4); ++i) {
+					for (int i = 0; i < docProperties.IndentationSize; ++i) {
 						indentationString.Append(' ');
 					}
 					options.IndentString = indentationString.ToString();

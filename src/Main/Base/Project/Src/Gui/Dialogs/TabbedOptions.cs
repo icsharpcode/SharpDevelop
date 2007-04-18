@@ -22,7 +22,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 	public class TabbedOptions : BaseSharpDevelopForm
 	{
 		ArrayList OptionPanels = new ArrayList();
-		Properties properties = null;
 		
 		void AcceptEvent(object sender, EventArgs e)
 		{
@@ -38,7 +37,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			foreach (IDialogPanelDescriptor descriptor in dialogPanelDescriptors) {
 				if (descriptor != null && descriptor.DialogPanel != null && descriptor.DialogPanel.Control != null) { // may be null, if it is only a "path"
-					descriptor.DialogPanel.CustomizationObject = properties;
 					descriptor.DialogPanel.Control.Dock = DockStyle.Fill;
 					descriptor.DialogPanel.ReceiveDialogMessage(DialogMessage.Activated);
 					OptionPanels.Add(descriptor.DialogPanel);
@@ -55,10 +53,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		public TabbedOptions(string dialogName, Properties properties, AddInTreeNode node)
+		public TabbedOptions(string dialogName, AddInTreeNode node)
 		{
-			this.properties = properties;
-
 			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("Resources.TabbedOptionsDialog.xfrm"));
 			
 			this.Text       = dialogName;

@@ -54,14 +54,13 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		
 		public SharpDevelopTextAreaControl()
 		{
-			errorDrawer = new ErrorDrawer(this);
 			Document.FoldingManager.FoldingStrategy = new ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ParserFoldingStrategy();
 			Document.BookmarkManager.Factory = new Bookmarks.SDBookmarkFactory(Document.BookmarkManager);
 			Document.BookmarkManager.Added   += new BookmarkEventHandler(BookmarkAdded);
 			Document.BookmarkManager.Removed += new BookmarkEventHandler(BookmarkRemoved);
 			GenerateEditActions();
 			
-			TextEditorProperties = new SharpDevelopTextEditorProperties();
+			TextEditorProperties = SharpDevelopTextEditorProperties.Instance;
 		}
 		
 		void BookmarkAdded(object sender, BookmarkEventArgs e)
@@ -166,6 +165,16 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 					RemoveQuickClassBrowserPanel();
 				} else {
 					ActivateQuickClassBrowserOnDemand();
+				}
+				if (sdtep.UnderlineErrors) {
+					if (errorDrawer == null) {
+						errorDrawer = new ErrorDrawer(this);
+					}
+				} else {
+					if (errorDrawer != null) {
+						errorDrawer.Dispose();
+						errorDrawer = null;
+					}
 				}
 			}
 		}
@@ -285,7 +294,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 							return false;
 					}
 				}
-				if (ch == ' ') {
+				if (ch == ' ' && SharpDevelopTextEditorProperties.Instance.AutoInsertTemplates) {
 					string word = GetWordBeforeCaret();
 					if (word != null) {
 						CodeTemplateGroup templateGroup = CodeTemplateLoader.GetTemplateGroupPerFilename(FileName);

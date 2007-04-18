@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Text;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
@@ -174,17 +175,17 @@ namespace ICSharpCode.TextEditor
 		}
 		
 		/// <value>
-		/// If true antialiased fonts are used inside the textarea
+		/// Specifies the quality of text rendering (whether to use hinting and/or anti-aliasing).
 		/// </value>
 		[Category("Appearance")]
-		[DefaultValue(false)]
-		[Description("If true antialiased fonts are used inside the textarea")]
-		public bool UseAntiAliasFont {
+		[DefaultValue(TextRenderingHint.SystemDefault)]
+		[Description("Specifies the quality of text rendering (whether to use hinting and/or anti-aliasing).")]
+		public TextRenderingHint TextRenderingHint {
 			get {
-				return document.TextEditorProperties.UseAntiAliasedFont;
+				return document.TextEditorProperties.TextRenderingHint;
 			}
 			set {
-				document.TextEditorProperties.UseAntiAliasedFont = value;
+				document.TextEditorProperties.TextRenderingHint = value;
 				OptionsChanged();
 			}
 		}

@@ -50,7 +50,7 @@ namespace ICSharpCode.TextEditor.Document
 		bool        showHorizontalRuler = false;
 		bool        showVerticalRuler   = true;
 		bool        convertTabsToSpaces = false;
-		bool        useAntiAliasedFont  = false;
+		System.Drawing.Text.TextRenderingHint textRenderingHint = System.Drawing.Text.TextRenderingHint.SystemDefault;
 		bool        createBackupCopy    = false;
 		bool        mouseWheelScrollDown = true;
 		bool        mouseWheelTextZoom   = true;
@@ -186,14 +186,11 @@ namespace ICSharpCode.TextEditor.Document
 				convertTabsToSpaces = value;
 			}
 		}
-		public bool UseAntiAliasedFont {
-			get {
-				return useAntiAliasedFont;
-			}
-			set {
-				useAntiAliasedFont = value;
-			}
+		public System.Drawing.Text.TextRenderingHint TextRenderingHint {
+			get { return textRenderingHint; }
+			set { textRenderingHint = value; }
 		}
+		
 		public bool CreateBackupCopy {
 			get {
 				return createBackupCopy;

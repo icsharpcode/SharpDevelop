@@ -53,16 +53,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		protected List<IDialogPanel> OptionPanels = new List<IDialogPanel>();
 		
-		protected Properties properties = null;
-		
 		protected Font plainFont = null;
 		protected Font boldFont  = null;
-		
-		public Properties Properties {
-			get {
-				return properties;
-			}
-		}
 		
 		protected void AcceptEvent(object sender, EventArgs e)
 		{
@@ -139,7 +131,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			IDialogPanelDescriptor descriptor = node.Tag as IDialogPanelDescriptor;
 			if (descriptor != null && descriptor.DialogPanel != null && descriptor.DialogPanel.Control != null) {
 				if (!OptionPanels.Contains(descriptor.DialogPanel)) {
-					descriptor.DialogPanel.CustomizationObject = this.properties;
 					descriptor.DialogPanel.Control.Dock = DockStyle.Fill;
 					OptionPanels.Add(descriptor.DialogPanel);
 				}
@@ -205,10 +196,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		public TreeViewOptions(Properties properties, AddInTreeNode node)
+		public TreeViewOptions(AddInTreeNode node)
 		{
-			this.properties = properties;
-			
 			this.Text = StringParser.Parse("${res:Dialog.Options.TreeViewOptions.DialogName}");
 
 			this.InitializeComponent();

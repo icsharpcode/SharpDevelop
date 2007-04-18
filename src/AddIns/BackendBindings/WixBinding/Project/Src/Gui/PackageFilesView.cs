@@ -113,7 +113,7 @@ namespace ICSharpCode.WixBinding
 		public void Write(WixDocument document)
 		{
 			if (!UpdateOpenFile(document)) {
-				ITextEditorProperties properties = new SharpDevelopTextEditorProperties();
+				ITextEditorProperties properties = SharpDevelopTextEditorProperties.Instance;
 				document.Save(properties.LineTerminator, properties.ConvertTabsToSpaces, properties.TabIndent);
 			}
 			packageFilesControl.IsDirty = false;
@@ -273,7 +273,7 @@ namespace ICSharpCode.WixBinding
 			Location location = WixDocument.GetEndElementLocation(new StringReader(document.TextContent), "Product", wixDocument.Product.GetAttribute("Id"));
 			if (!location.IsEmpty) {
 				// Insert the xml with an extra new line at the end.
-				ITextEditorProperties properties = new SharpDevelopTextEditorProperties();
+				ITextEditorProperties properties = SharpDevelopTextEditorProperties.Instance;
 				WixDocumentEditor documentEditor = new WixDocumentEditor(textAreaControl);
 				documentEditor.Insert(location.Y, location.X, String.Concat(xml, properties.LineTerminator));
 				return true;
@@ -296,7 +296,7 @@ namespace ICSharpCode.WixBinding
 		/// </summary>
 		string GetWixXml(XmlElement element)
 		{
-			ITextEditorProperties properties = new SharpDevelopTextEditorProperties();
+			ITextEditorProperties properties = SharpDevelopTextEditorProperties.Instance;
 			return WixDocument.GetXml(element, properties.LineTerminator, properties.ConvertTabsToSpaces, properties.TabIndent);
 		}
 		

@@ -39,7 +39,7 @@ namespace ICSharpCode.Svn
 			textEditor.Dock = DockStyle.Fill;
 			diffViewPanel.Controls.Add(textEditor);
 			
-			textEditor.TextEditorProperties = new SharpDevelopTextEditorProperties();
+			textEditor.TextEditorProperties = SharpDevelopTextEditorProperties.Instance;
 			textEditor.Document.ReadOnly = true;
 			textEditor.Enabled = false;
 			

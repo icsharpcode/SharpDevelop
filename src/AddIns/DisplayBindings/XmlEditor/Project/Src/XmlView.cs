@@ -87,7 +87,7 @@ namespace ICSharpCode.XmlEditor
 		}
 		
 		public XmlView()
-			: this(new SharpDevelopTextEditorProperties(), XmlSchemaManager.SchemaCompletionDataItems)
+			: this(SharpDevelopTextEditorProperties.Instance, XmlSchemaManager.SchemaCompletionDataItems)
 		{
 			xmlEditor.AddEditActions(GetEditActions());
 			xmlEditor.TextAreaContextMenuStrip = MenuService.CreateContextMenu(xmlEditor, contextMenuPath);

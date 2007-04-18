@@ -317,9 +317,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 				}
 			} catch {}
 			
-			Properties properties = ((Properties)PropertyService.Get("ICSharpCode.TextEditor.Document.Document.DefaultDocumentAggregatorProperties", new Properties()));
-			////samBegin.Font = samEnd.Font = samCont.Font = ParseFont(properties.Get("DefaultFont", new Font("Courier New", 10).ToString()));
-			samBegin.Font = samEnd.Font = samCont.Font = ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.SharpDevelopTextEditorProperties.FontContainer.DefaultFont;
+			samBegin.Font = samEnd.Font = samCont.Font = ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.SharpDevelopTextEditorProperties.Instance.FontContainer.DefaultFont;
 
 			nameBox.Text = node.Name;
 			ruleBox.Text = node.Rule;

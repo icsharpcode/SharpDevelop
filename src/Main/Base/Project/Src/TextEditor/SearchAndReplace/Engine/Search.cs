@@ -7,6 +7,7 @@
 
 using System;
 using System.Diagnostics;
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace SearchAndReplace
 {
@@ -80,7 +81,7 @@ namespace SearchAndReplace
 			}
 		}
 		
-		public SearchResult FindNext() 
+		public SearchResult FindNext()
 		{
 			// insanity check
 			Debug.Assert(searchStrategy      != null);

@@ -8,44 +8,56 @@
 using System;
 using System.Drawing;
 using System.Text;
-
+using System.Drawing.Text;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 using ICSharpCode.TextEditor.Document;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 {
-	public class SharpDevelopTextEditorProperties : ITextEditorProperties
+	public sealed class SharpDevelopTextEditorProperties : ITextEditorProperties
 	{
-		static Properties properties;
-		static FontContainer fontContainer;
+		static SharpDevelopTextEditorProperties textEditorProperties;
+		Properties properties;
+		FontContainer fontContainer;
 		
-		static SharpDevelopTextEditorProperties()
-		{
-			Properties properties2 = ((Properties)PropertyService.Get("ICSharpCode.TextEditor.Document.Document.DefaultDocumentAggregatorProperties", new Properties()));
-			fontContainer = new FontContainer(FontContainer.ParseFont(properties2.Get("DefaultFont", ResourceService.DefaultMonospacedFont.ToString())));
-			properties2.PropertyChanged += new PropertyChangedEventHandler(CheckFontChange);
+		public static SharpDevelopTextEditorProperties Instance {
+			get {
+				if (textEditorProperties == null) {
+					textEditorProperties = new SharpDevelopTextEditorProperties();
+				}
+				return textEditorProperties;
+			}
 		}
 		
-		static void CheckFontChange(object sender, PropertyChangedEventArgs e)
+		private SharpDevelopTextEditorProperties()
+		{
+			properties = PropertyService.Get("ICSharpCode.TextEditor.Document.Document.DefaultDocumentAggregatorProperties", new Properties());
+			fontContainer = new FontContainer(FontContainer.ParseFont(properties.Get("DefaultFont", ResourceService.DefaultMonospacedFont.ToString())));
+			properties.PropertyChanged += new PropertyChangedEventHandler(CheckFontChange);
+		}
+		
+		void CheckFontChange(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.Key == "DefaultFont") {
 				fontContainer.DefaultFont = FontContainer.ParseFont(e.NewValue.ToString());
 			}
 		}
 		
-		public SharpDevelopTextEditorProperties()
-		{
-			properties = ((Properties)PropertyService.Get("ICSharpCode.TextEditor.Document.Document.DefaultDocumentAggregatorProperties", new Properties()));
-		}
-		
 		public int TabIndent {
 			get {
 				return properties.Get("TabIndent", 4);
-
 			}
 			set {
 				properties.Set("TabIndent", value);
+			}
+		}
+		public int IndentationSize {
+			get {
+				return properties.Get("IndentationSize", 4);
+			}
+			set {
+				properties.Set("IndentationSize", value);
 			}
 		}
 		public IndentStyle IndentStyle {
@@ -81,6 +93,14 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			}
 			set {
 				properties.Set("CursorBehindEOL", value);
+			}
+		}
+		public bool UnderlineErrors {
+			get {
+				return properties.Get("ShowErrors", true);
+			}
+			set {
+				properties.Set("ShowErrors", value);
 			}
 		}
 		public bool ShowMatchingBracket {
@@ -171,22 +191,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				properties.Set("TabsToSpaces", value);
 			}
 		}
-		public bool UseAntiAliasedFont {
-			get {
-				return properties.Get("UseAntiAliasFont", false);
-			}
-			set {
-				properties.Set("UseAntiAliasFont", value);
-			}
-		}
-		public bool CreateBackupCopy {
-			get {
-				return properties.Get("CreateBackupCopy", false);
-			}
-			set {
-				properties.Set("CreateBackupCopy", value);
-			}
-		}
 		public bool MouseWheelScrollDown {
 			get {
 				return properties.Get("MouseWheelScrollDown", true);
@@ -225,11 +229,15 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 
 		public Encoding Encoding {
 			get {
-				return Encoding.GetEncoding(properties.Get("Encoding", 65001));
+				return Encoding.GetEncoding(this.EncodingCodePage);
 			}
 			set {
-				properties.Set("Encoding", value.CodePage);
+				this.EncodingCodePage = value.CodePage;
 			}
+		}
+		public int EncodingCodePage {
+			get { return properties.Get("Encoding", 65001); }
+			set { properties.Set("Encoding", value); }
 		}
 		
 		public int VerticalRulerRow {
@@ -271,6 +279,14 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				properties.Set("AutoInsertCurlyBracket", value);
 			}
 		}
+		public bool AutoInsertTemplates {
+			get {
+				return properties.Get("AutoInsertTemplates", true);
+			}
+			set {
+				properties.Set("AutoInsertTemplates", value);
+			}
+		}
 		
 		public Font Font {
 			get {
@@ -281,20 +297,14 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				fontContainer.DefaultFont = value;
 			}
 		}
-		FontContainer ITextEditorProperties.FontContainer {
+		public FontContainer FontContainer {
 			get {
 				return fontContainer;
 			}
 		}
-		public static FontContainer FontContainer {
-			get {
-				return fontContainer;
-			}
-		}
-		
 		public BracketMatchingStyle  BracketMatchingStyle {
 			get {
-				return (BracketMatchingStyle)properties.Get("BracketMatchingStyle", BracketMatchingStyle.After);
+				return properties.Get("BracketMatchingStyle", BracketMatchingStyle.After);
 			}
 			set {
 				properties.Set("BracketMatchingStyle", value);
@@ -308,6 +318,16 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			}
 			set {
 				useCustomLine = value;
+			}
+		}
+		
+		public TextRenderingHint TextRenderingHint {
+			get {
+				return properties.Get("TextRenderingHint", TextRenderingHint.SystemDefault);
+			}
+			set {
+				LoggingService.Debug("Setting TextRenderingHint to " + value);
+				properties.Set("TextRenderingHint", value);
 			}
 		}
 	}

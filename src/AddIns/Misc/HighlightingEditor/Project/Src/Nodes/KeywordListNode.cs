@@ -12,6 +12,7 @@ using System.Xml;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 
 namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 {
@@ -149,8 +150,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 				listBox.Items.Add(word);
 			}
 			
-			Properties properties = ((Properties)PropertyService.Get("ICSharpCode.TextEditor.Document.Document.DefaultDocumentAggregatorProperties", new Properties()));
-			sampleLabel.Font = ParseFont(properties.Get("DefaultFont", ResourceService.DefaultMonospacedFont.ToString()));
+			sampleLabel.Font = SharpDevelopTextEditorProperties.Instance.FontContainer.DefaultFont;
 
 			color = node.Color;
 			nameBox.Text = node.Name;

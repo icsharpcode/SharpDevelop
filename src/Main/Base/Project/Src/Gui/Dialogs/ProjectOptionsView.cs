@@ -68,13 +68,10 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 		
 		void AddOptionPanels(IEnumerable<IDialogPanelDescriptor> dialogPanelDescriptors)
 		{
-			Properties newProperties = new Properties();
-			newProperties.Set("Project", project);
-			
 			foreach (IDialogPanelDescriptor descriptor in dialogPanelDescriptors) {
 				descriptors.Add(descriptor);
 				if (descriptor != null && descriptor.DialogPanel != null && descriptor.DialogPanel.Control != null) { // may be null, if it is only a "path"
-					descriptor.DialogPanel.CustomizationObject = newProperties;
+					descriptor.DialogPanel.CustomizationObject = project;
 					descriptor.DialogPanel.ReceiveDialogMessage(DialogMessage.Activated);
 					ICanBeDirty dirtyable = descriptor.DialogPanel as ICanBeDirty;
 					if (dirtyable != null) {

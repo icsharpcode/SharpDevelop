@@ -467,7 +467,7 @@ namespace ICSharpCode.CodeCoverage
 			textEditorControl = new TextEditorControl();
 			textEditorControl.Dock = DockStyle.Fill;
 			textEditorControl.Document.ReadOnly = true;
-			textEditorControl.TextEditorProperties = new SharpDevelopTextEditorProperties();
+			textEditorControl.TextEditorProperties = SharpDevelopTextEditorProperties.Instance;
 			textEditorControl.ActiveTextAreaControl.TextArea.DoubleClick += TextEditorControlDoubleClick;
 		}
 		

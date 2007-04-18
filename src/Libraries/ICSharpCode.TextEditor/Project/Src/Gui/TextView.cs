@@ -90,12 +90,6 @@ namespace ICSharpCode.TextEditor
 		
 		public TextView(TextArea textArea) : base(textArea)
 		{
-			/*measureStringFormat.LineAlignment = StringAlignment.Near;
-			measureStringFormat.FormatFlags   = StringFormatFlags.MeasureTrailingSpaces |
-				StringFormatFlags.FitBlackBox |
-				StringFormatFlags.NoWrap |
-				StringFormatFlags.NoClip;*/
-			
 			base.Cursor = Cursors.IBeam;
 			OptionsChanged();
 		}

@@ -476,6 +476,7 @@ namespace ICSharpCode.TextEditor
 			Graphics  g             = e.Graphics;
 			Rectangle clipRectangle = e.ClipRectangle;
 			
+			g.TextRenderingHint = this.TextEditorProperties.TextRenderingHint;
 			
 			if (updateMargin != null) {
 				updateMargin.Paint(g, updateMargin.DrawingPosition);
@@ -484,12 +485,6 @@ namespace ICSharpCode.TextEditor
 			
 			if (clipRectangle.Width <= 0 || clipRectangle.Height <= 0) {
 				return;
-			}
-			
-			if (this.TextEditorProperties.UseAntiAliasedFont) {
-				g.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
-			} else {
-				g.TextRenderingHint = TextRenderingHint.SystemDefault;
 			}
 			
 			foreach (AbstractMargin margin in leftMargins) {

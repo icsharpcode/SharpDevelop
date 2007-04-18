@@ -24,40 +24,44 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels
 		{
 			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("Resources.BehaviorTextEditorPanel.xfrm"));
 			
-			((CheckBox)ControlDictionary["autoinsertCurlyBraceCheckBox"]).Checked = ((Properties)CustomizationObject).Get("AutoInsertCurlyBracket", true);
-			((CheckBox)ControlDictionary["hideMouseCursorCheckBox"]).Checked      = ((Properties)CustomizationObject).Get("HideMouseCursor", true);
-			((CheckBox)ControlDictionary["caretBehindEOLCheckBox"]).Checked       = ((Properties)CustomizationObject).Get("CursorBehindEOL", false);
-			((CheckBox)ControlDictionary["auotInsertTemplatesCheckBox"]).Checked  = ((Properties)CustomizationObject).Get("AutoInsertTemplates", true);
-			((CheckBox)ControlDictionary["cutCopyWholeLine"]).Checked             = ((Properties)CustomizationObject).Get("CutCopyWholeLine", true);
+			SharpDevelopTextEditorProperties properties = SharpDevelopTextEditorProperties.Instance;
 			
-			((CheckBox)ControlDictionary["convertTabsToSpacesCheckBox"]).Checked  = ((Properties)CustomizationObject).Get("TabsToSpaces", false);
+			((CheckBox)ControlDictionary["autoinsertCurlyBraceCheckBox"]).Checked = properties.AutoInsertCurlyBracket;
+			((CheckBox)ControlDictionary["hideMouseCursorCheckBox"]).Checked      = properties.HideMouseCursor;
+			((CheckBox)ControlDictionary["caretBehindEOLCheckBox"]).Checked       = properties.AllowCaretBeyondEOL;
+			((CheckBox)ControlDictionary["auotInsertTemplatesCheckBox"]).Checked  = properties.AutoInsertTemplates;
+			((CheckBox)ControlDictionary["cutCopyWholeLine"]).Checked             = properties.CutCopyWholeLine;
 			
-			ControlDictionary["tabSizeTextBox"].Text    = ((Properties)CustomizationObject).Get("TabIndent", 4).ToString();
-			ControlDictionary["indentSizeTextBox"].Text = ((Properties)CustomizationObject).Get("IndentationSize", 4).ToString();
+			((CheckBox)ControlDictionary["convertTabsToSpacesCheckBox"]).Checked  = properties.ConvertTabsToSpaces;
+			
+			ControlDictionary["tabSizeTextBox"].Text    = properties.TabIndent.ToString();
+			ControlDictionary["indentSizeTextBox"].Text = properties.IndentationSize.ToString();
 			
 			((ComboBox)ControlDictionary["indentStyleComboBox"]).Items.Add(StringParser.Parse("${res:Dialog.Options.IDEOptions.TextEditor.Behaviour.IndentStyle.None}"));
 			((ComboBox)ControlDictionary["indentStyleComboBox"]).Items.Add(StringParser.Parse("${res:Dialog.Options.IDEOptions.TextEditor.Behaviour.IndentStyle.Automatic}"));
 			((ComboBox)ControlDictionary["indentStyleComboBox"]).Items.Add(StringParser.Parse("${res:Dialog.Options.IDEOptions.TextEditor.Behaviour.IndentStyle.Smart}"));
 			
-			((ComboBox)ControlDictionary["indentStyleComboBox"]).SelectedIndex = (int)(IndentStyle)((Properties)CustomizationObject).Get("IndentStyle", IndentStyle.Smart);
-		
+			((ComboBox)ControlDictionary["indentStyleComboBox"]).SelectedIndex = (int)properties.IndentStyle;
+			
 			((ComboBox)ControlDictionary["mouseWhellDirectionComboBox"]).Items.Add(StringParser.Parse("${res:Dialog.Options.IDEOptions.TextEditor.Behaviour.NormalMouseDirectionRadioButton}"));
 			((ComboBox)ControlDictionary["mouseWhellDirectionComboBox"]).Items.Add(StringParser.Parse("${res:Dialog.Options.IDEOptions.TextEditor.Behaviour.ReverseMouseDirectionRadioButton}"));
-			((ComboBox)ControlDictionary["mouseWhellDirectionComboBox"]).SelectedIndex = ((Properties)CustomizationObject).Get("MouseWheelScrollDown", true) ? 0 : 1;
+			((ComboBox)ControlDictionary["mouseWhellDirectionComboBox"]).SelectedIndex = properties.MouseWheelScrollDown ? 0 : 1;
 		}
 		
 		public override bool StorePanelContents()
 		{
-			((Properties)CustomizationObject).Set("TabsToSpaces",         ((CheckBox)ControlDictionary["convertTabsToSpacesCheckBox"]).Checked);
-			((Properties)CustomizationObject).Set("MouseWheelScrollDown", ((ComboBox)ControlDictionary["mouseWhellDirectionComboBox"]).SelectedIndex == 0);
+			SharpDevelopTextEditorProperties properties = SharpDevelopTextEditorProperties.Instance;
 			
-			((Properties)CustomizationObject).Set("AutoInsertCurlyBracket", ((CheckBox)ControlDictionary["autoinsertCurlyBraceCheckBox"]).Checked);
-			((Properties)CustomizationObject).Set("HideMouseCursor",        ((CheckBox)ControlDictionary["hideMouseCursorCheckBox"]).Checked);
-			((Properties)CustomizationObject).Set("CursorBehindEOL",        ((CheckBox)ControlDictionary["caretBehindEOLCheckBox"]).Checked);
-			((Properties)CustomizationObject).Set("AutoInsertTemplates",    ((CheckBox)ControlDictionary["auotInsertTemplatesCheckBox"]).Checked);
-			((Properties)CustomizationObject).Set("CutCopyWholeLine",       ((CheckBox)ControlDictionary["cutCopyWholeLine"]).Checked);
+			properties.ConvertTabsToSpaces = ((CheckBox)ControlDictionary["convertTabsToSpacesCheckBox"]).Checked;
+			properties.MouseWheelScrollDown = ((ComboBox)ControlDictionary["mouseWhellDirectionComboBox"]).SelectedIndex == 0;
 			
-			((Properties)CustomizationObject).Set("IndentStyle", (IndentStyle)((ComboBox)ControlDictionary["indentStyleComboBox"]).SelectedIndex);
+			properties.AutoInsertCurlyBracket = ((CheckBox)ControlDictionary["autoinsertCurlyBraceCheckBox"]).Checked;
+			properties.HideMouseCursor = ((CheckBox)ControlDictionary["hideMouseCursorCheckBox"]).Checked;
+			properties.AllowCaretBeyondEOL = ((CheckBox)ControlDictionary["caretBehindEOLCheckBox"]).Checked;
+			properties.AutoInsertTemplates = ((CheckBox)ControlDictionary["auotInsertTemplatesCheckBox"]).Checked;
+			properties.CutCopyWholeLine = ((CheckBox)ControlDictionary["cutCopyWholeLine"]).Checked;
+			
+			properties.IndentStyle = (IndentStyle)((ComboBox)ControlDictionary["indentStyleComboBox"]).SelectedIndex;
 			
 			try {
 				int tabSize = Int32.Parse(ControlDictionary["tabSizeTextBox"].Text);
@@ -65,13 +69,13 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels
 				// FIX: don't allow to set tab size to zero as this will cause divide by zero exceptions in the text control.
 				// Zero isn't a setting that makes sense, anyway.
 				if (tabSize > 0) {
-					((Properties)CustomizationObject).Set("TabIndent", tabSize);
+					properties.TabIndent = tabSize;
 				}
 			} catch (Exception) {
 			}
 			
 			try {
-				((Properties)CustomizationObject).Set("IndentationSize", Int32.Parse(ControlDictionary["indentSizeTextBox"].Text));
+				properties.IndentationSize = Int32.Parse(ControlDictionary["indentSizeTextBox"].Text);
 			} catch (Exception) {
 			}
 			

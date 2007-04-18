@@ -21,7 +21,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		
 		protected void InitializeHelper()
 		{
-			project = (MSBuildBasedProject)((Properties)CustomizationObject).Get("Project");
+			project = (MSBuildBasedProject)CustomizationObject;
 			baseDirectory = project.Directory;
 			helper = new ConfigurationGuiHelper(project, this.ControlDictionary);
 		}

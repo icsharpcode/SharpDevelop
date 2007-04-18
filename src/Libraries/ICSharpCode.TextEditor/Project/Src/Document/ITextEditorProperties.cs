@@ -43,7 +43,7 @@ namespace ICSharpCode.TextEditor.Document
 			set;
 		}
 
-		bool UseAntiAliasedFont { // is wrapped in text editor control
+		System.Drawing.Text.TextRenderingHint TextRenderingHint { // is wrapped in text editor control
 			get;
 			set;
 		}
