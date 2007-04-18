@@ -39,8 +39,8 @@ namespace SearchAndReplace
 			
 			while (textIterator.MoveAhead(1)) {
 				Match m = regex.Match(document, textIterator.Position);
-				if (m == null || m.Index <= 0 || m.Length <= 0) {
-					
+				if (m == null || !m.Success) {
+					break;
 				} else {
 					int delta = m.Index - textIterator.Position;
 					if (delta <= 0 || textIterator.MoveAhead(delta)) {
@@ -60,8 +60,8 @@ namespace SearchAndReplace
 			
 			while (textIterator.MoveAhead(1) && TextSelection.IsInsideRange(textIterator.Position, offset, length)) {
 				Match m = regex.Match(document, textIterator.Position);
-				if (m == null || m.Index <= 0 || m.Length <= 0) {
-					
+				if (m == null || !m.Success) {
+					break;
 				} else {
 					int delta = m.Index - textIterator.Position;
 					if (delta <= 0 || textIterator.MoveAhead(delta)) {
@@ -79,7 +79,7 @@ namespace SearchAndReplace
 			return null;
 		}
 		
-		private class RegexSearchResult : SearchResult
+		private sealed class RegexSearchResult : SearchResult
 		{
 			Match m;
 			
