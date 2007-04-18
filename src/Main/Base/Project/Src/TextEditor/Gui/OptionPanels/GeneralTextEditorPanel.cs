@@ -38,7 +38,17 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels
 			((CheckBox)ControlDictionary["enableFoldingCheckBox"]).Checked = properties.EnableFolding;
 			((CheckBox)ControlDictionary["showQuickClassBrowserCheckBox"]).Checked = properties.ShowQuickClassBrowserPanel;
 			
-			((CheckBox)ControlDictionary["enableAAFontRenderingCheckBox"]).Checked = UseAntialiasing;
+			if (IsClearTypeEnabled) {
+				// Somehow, SingleBitPerPixelGridFit still renders as Cleartype if cleartype is enabled
+				// and we're using the TextRenderer for rendering.
+				// So we cannot support not using antialiasing if system-wide font smoothening is enabled.
+				((CheckBox)ControlDictionary["enableAAFontRenderingCheckBox"]).Checked = true;
+				((CheckBox)ControlDictionary["enableAAFontRenderingCheckBox"]).Enabled = false;
+			} else {
+				((CheckBox)ControlDictionary["enableAAFontRenderingCheckBox"]).Checked =
+					(properties.TextRenderingHint == TextRenderingHint.AntiAliasGridFit || properties.TextRenderingHint == TextRenderingHint.ClearTypeGridFit);
+			}
+			
 			((CheckBox)ControlDictionary["mouseWheelZoomCheckBox"]).Checked = properties.MouseWheelTextZoom;
 			
 			foreach (String name in CharacterEncodings.Names) {
@@ -73,36 +83,15 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels
 			helper.StartThread();
 		}
 		
-		bool UseAntialiasing {
-			get {
-				switch (SharpDevelopTextEditorProperties.Instance.TextRenderingHint) {
-					case TextRenderingHint.SystemDefault:
-						return SystemInformation.IsFontSmoothingEnabled;
-					case TextRenderingHint.SingleBitPerPixel:
-					case TextRenderingHint.SingleBitPerPixelGridFit:
-						return false;
-					default:
-						return true;
-				}
-			}
-			set {
-				if (value == true) {
-					if (SystemInformation.IsFontSmoothingEnabled)
-						SharpDevelopTextEditorProperties.Instance.TextRenderingHint = TextRenderingHint.SystemDefault;
-					else
-						SharpDevelopTextEditorProperties.Instance.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
-				} else {
-					if (SystemInformation.IsFontSmoothingEnabled)
-						SharpDevelopTextEditorProperties.Instance.TextRenderingHint = TextRenderingHint.SingleBitPerPixelGridFit;
-					else
-						SharpDevelopTextEditorProperties.Instance.TextRenderingHint = TextRenderingHint.SystemDefault;
-				}
-			}
-		}
-		
 		Font CurrentFont {
 			get {
 				return helper.GetSelectedFont();
+			}
+		}
+		
+		bool IsClearTypeEnabled {
+			get {
+				return SystemInformation.IsFontSmoothingEnabled && SystemInformation.FontSmoothingType >= 2;
 			}
 		}
 		
@@ -115,8 +104,12 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels
 		{
 			SharpDevelopTextEditorProperties properties = SharpDevelopTextEditorProperties.Instance;
 			
-			
-			UseAntialiasing = ((CheckBox)ControlDictionary["enableAAFontRenderingCheckBox"]).Checked;
+			if (((CheckBox)ControlDictionary["enableAAFontRenderingCheckBox"]).Enabled) {
+				properties.TextRenderingHint = ((CheckBox)ControlDictionary["enableAAFontRenderingCheckBox"]).Checked
+					? TextRenderingHint.ClearTypeGridFit : TextRenderingHint.SystemDefault;
+			} else {
+				properties.TextRenderingHint = TextRenderingHint.SystemDefault;
+			}
 			properties.MouseWheelTextZoom = ((CheckBox)ControlDictionary["mouseWheelZoomCheckBox"]).Checked;
 			//((Properties)CustomizationObject).Set("EnableCodeCompletion", ((CheckBox)ControlDictionary["enableCodeCompletionCheckBox"]).Checked);
 			properties.EnableFolding = ((CheckBox)ControlDictionary["enableFoldingCheckBox"]).Checked;
