@@ -146,11 +146,16 @@ namespace ICSharpCode.SharpDevelop.Dom
 			
 			// two parameters are equal if they have the same return type
 			// (they may have different names)
-			if (object.Equals(ReturnType, value.ReturnType))
+			if (object.Equals(ReturnType, value.ReturnType)) {
 				return 0;
-			else
-				return string.Compare(this.Name, value.Name);
-			// if the parameters are not equal, use the parameter name to provide the ordering
+			} else {
+				// if the parameters are not equal, use the parameter name to provide the ordering
+				int r = string.Compare(this.Name, value.Name);
+				if (r != 0)
+					return r;
+				else
+					return -1; // but equal names don't make parameters of different return types equal
+			}
 		}
 		
 		int IComparable.CompareTo(object value)
