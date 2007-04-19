@@ -152,8 +152,15 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
+		[Obsolete()]
 		public static ResolveResult GetResultFromDeclarationLine(IClass callingClass, IMethodOrProperty callingMember, int caretLine, int caretColumn, string expression)
 		{
+			return GetResultFromDeclarationLine(callingClass, callingMember, caretLine, caretColumn, new ExpressionResult(expression));
+		}
+		
+		public static ResolveResult GetResultFromDeclarationLine(IClass callingClass, IMethodOrProperty callingMember, int caretLine, int caretColumn, ExpressionResult expressionResult)
+		{
+			string expression = expressionResult.Expression;
 			if (callingClass == null) return null;
 			int pos = expression.IndexOf('(');
 			if (pos >= 0) {
@@ -165,11 +172,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 			{
 				return new TypeResolveResult(callingClass, callingMember, callingClass);
 			}
-			if (callingMember != null
-			    && !callingMember.BodyRegion.IsInside(caretLine, caretColumn)
-			    && callingClass.ProjectContent.Language.NameComparer.Equals(expression, callingMember.Name))
-			{
-				return new MemberResolveResult(callingClass, callingMember, callingMember);
+			if (expressionResult.Context != ExpressionContext.Type) {
+				if (callingMember != null
+				    && !callingMember.BodyRegion.IsInside(caretLine, caretColumn)
+				    && callingClass.ProjectContent.Language.NameComparer.Equals(expression, callingMember.Name))
+				{
+					return new MemberResolveResult(callingClass, callingMember, callingMember);
+				}
 			}
 			return null;
 		}

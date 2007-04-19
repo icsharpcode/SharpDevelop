@@ -82,11 +82,16 @@ namespace ICSharpCode.SharpDevelop.Tests
 		
 		public ResolveResult Resolve(string program, string expression, int line)
 		{
+			return Resolve(program, expression, line, 0, ExpressionContext.Default);
+		}
+		
+		public ResolveResult Resolve(string program, string expression, int line, int column, ExpressionContext context)
+		{
 			AddCompilationUnit(Parse("a.cs", program), "a.cs");
 			
 			NRefactoryResolver resolver = new NRefactoryResolver(lastPC, LanguageProperties.CSharp);
-			return resolver.Resolve(new ExpressionResult(expression),
-			                        line, 0,
+			return resolver.Resolve(new ExpressionResult(expression, context),
+			                        line, column,
 			                        "a.cs",
 			                        program);
 		}
@@ -227,9 +232,20 @@ class A {
 		}
 		
 		[Test]
+		public void PropertyTypeConflictTestResolveInTypeContext()
+		{
+			TypeResolveResult result = (TypeResolveResult)Resolve(arrayListConflictProgram, "ArrayList", 4, 0, ExpressionContext.Type);
+			Assert.AreEqual("System.Collections.ArrayList", result.ResolvedClass.FullyQualifiedName);
+			
+			result = (TypeResolveResult)Resolve(arrayListConflictProgram, "ArrayList", 8, 10, ExpressionContext.Type);
+			Assert.AreEqual("System.Collections.ArrayList", result.ResolvedClass.FullyQualifiedName);
+		}
+		
+		[Test]
 		public void PropertyTypeConflictCompletionResultTest()
 		{
 			ResolveResult result = Resolve(arrayListConflictProgram, "ArrayList", 4);
+			Assert.IsTrue(result is MixedResolveResult);
 			// CC should offer both static and non-static results
 			ArrayList list = result.GetCompletionData(lastPC);
 			bool ok = false;
@@ -491,6 +507,17 @@ class A {
 			Assert.AreEqual("System.String", result.ResolvedType.FullyQualifiedName);
 			MemberResolveResult mrr = Resolve<MemberResolveResult>(program, "value.ToString()", 4);
 			Assert.AreEqual("System.String.ToString", mrr.ResolvedMember.FullyQualifiedName);
+			
+			int valueParameterCount = 0;
+			foreach (object o in CtrlSpaceResolveCSharp(program, 4)) {
+				IField f = o as IField;
+				if (f != null && f.Name == "value") {
+					valueParameterCount++;
+					Assert.IsTrue(f.IsParameter);
+					Assert.AreEqual("System.String", f.ReturnType.FullyQualifiedName);
+				}
+			}
+			Assert.IsTrue(valueParameterCount == 1);
 		}
 		
 		[Test]
@@ -657,6 +684,14 @@ namespace Root.Child {
 			Assert.AreEqual("Root.Alpha", result.ResolvedType.FullyQualifiedName);
 		}
 		
+		ArrayList CtrlSpaceResolveCSharp(string program, int line)
+		{
+			AddCompilationUnit(Parse("a.cs", program), "a.cs");
+			
+			NRefactoryResolver resolver = new NRefactoryResolver(lastPC, LanguageProperties.CSharp);
+			return resolver.CtrlSpace(line, 0, "a.cs", program, ExpressionContext.Default);
+		}
+		
 		[Test]
 		public void ParentNamespaceCtrlSpace()
 		{
@@ -672,10 +707,7 @@ namespace Root.Child {
   }
 }
 ";
-			AddCompilationUnit(Parse("a.cs", program), "a.cs");
-			
-			NRefactoryResolver resolver = new NRefactoryResolver(lastPC, LanguageProperties.CSharp);
-			ArrayList m = resolver.CtrlSpace(7, 0, "a.cs", program, ExpressionContext.Default);
+			ArrayList m = CtrlSpaceResolveCSharp(program, 7);
 			Assert.IsTrue(TypeExists(m, "Beta"), "Meta must exist");
 			Assert.IsTrue(TypeExists(m, "Alpha"), "Alpha must exist");
 		}

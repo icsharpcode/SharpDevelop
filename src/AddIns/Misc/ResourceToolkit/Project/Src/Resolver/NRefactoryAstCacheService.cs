@@ -223,7 +223,7 @@ namespace Hornung.ResourceToolkit.Resolver
 					// code belonging to this expression is unavailable.
 					expressionString = resolver.LanguageProperties.CodeGenerator.GenerateCode(expression, String.Empty);
 				}
-				if ((rr = CtrlSpaceResolveHelper.GetResultFromDeclarationLine(resolver.CallingClass, resolver.CallingMember as IMethodOrProperty, caretLine, caretColumn, expressionString)) != null) {
+				if ((rr = CtrlSpaceResolveHelper.GetResultFromDeclarationLine(resolver.CallingClass, resolver.CallingMember as IMethodOrProperty, caretLine, caretColumn, new ExpressionResult(expressionString))) != null) {
 					return rr;
 				}
 			}

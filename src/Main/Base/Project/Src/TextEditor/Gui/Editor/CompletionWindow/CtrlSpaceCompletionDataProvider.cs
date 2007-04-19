@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.TextEditor;
 
@@ -76,7 +77,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				if (charTyped != '\0') {
 					preSelection = null;
 				}
-				AddResolveResults(ParserService.CtrlSpace(caretLineNumber, caretColumn, fileName, textArea.Document.TextContent, expressionResult.Context), expressionResult.Context);
+				ArrayList results = ParserService.CtrlSpace(caretLineNumber, caretColumn, fileName, textArea.Document.TextContent, expressionResult.Context);
+				AddResolveResults(results, expressionResult.Context);
 			}
 		}
 	}

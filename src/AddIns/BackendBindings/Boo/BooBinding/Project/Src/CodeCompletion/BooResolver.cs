@@ -203,7 +203,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 				return new NamespaceResolveResult(callingClass, callingMember, "");
 			}
 			
-			ResolveResult rr = CtrlSpaceResolveHelper.GetResultFromDeclarationLine(callingClass, callingMember as IMethodOrProperty, this.caretLine, this.caretColumn, expressionResult.Expression);
+			ResolveResult rr = CtrlSpaceResolveHelper.GetResultFromDeclarationLine(callingClass, callingMember as IMethodOrProperty, this.caretLine, this.caretColumn, expressionResult);
 			if (rr != null) return rr;
 			
 			AST.Expression expr;
