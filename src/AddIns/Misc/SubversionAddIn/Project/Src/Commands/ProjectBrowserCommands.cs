@@ -11,6 +11,7 @@ using System.IO;
 using System.Text;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using NSvn.Common;
@@ -33,16 +34,17 @@ namespace ICSharpCode.Svn.Commands
 					nodeFileName = ((SolutionNode)node).Solution.Directory;
 				}
 				if (nodeFileName != null) {
-					List<IViewContent> unsavedViewContents = new List<IViewContent>();
-					foreach (IViewContent vc in WorkbenchSingleton.Workbench.ViewContentCollection) {
-						if (string.IsNullOrEmpty(vc.FileName)) continue;
-						if (FileUtility.IsUrl(vc.FileName)) continue;
-						if (vc.IsDirty == false) continue;
-						if (FileUtility.IsBaseDirectory(nodeFileName, vc.FileName)) {
-							unsavedViewContents.Add(vc);
+					List<OpenedFile> unsavedFiles = new List<OpenedFile>();
+					foreach (OpenedFile file in FileService.OpenedFiles) {
+						if (file.IsDirty && !file.IsUntitled) {
+							if (string.IsNullOrEmpty(file.FileName)) continue;
+							if (FileUtility.IsUrl(file.FileName)) continue;
+							if (FileUtility.IsBaseDirectory(nodeFileName, file.FileName)) {
+								unsavedFiles.Add(file);
+							}
 						}
 					}
-					if (unsavedViewContents.Count > 0) {
+					if (unsavedFiles.Count > 0) {
 						if (MessageService.ShowCustomDialog(
 							MessageService.DefaultMessageBoxTitle,
 							"The version control operation would affect files with unsaved modifications.\n" +
@@ -52,9 +54,8 @@ namespace ICSharpCode.Svn.Commands
 						    == 0)
 						{
 							// Save
-							foreach (IViewContent vc in unsavedViewContents) {
-								ProjectService.MarkFileDirty(vc.FileName);
-								FileUtility.ObservedSave(new FileOperationDelegate(vc.Save), vc.FileName, FileErrorPolicy.ProvideAlternative);
+							foreach (OpenedFile file in unsavedFiles) {
+								SharpDevelop.Commands.SaveFile.Save(file);
 							}
 						} else {
 							// Cancel

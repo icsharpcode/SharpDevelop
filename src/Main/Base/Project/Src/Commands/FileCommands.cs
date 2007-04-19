@@ -75,7 +75,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 			}
 		}
 		
-		internal static void Save(OpenedFile file)
+		public static void Save(OpenedFile file)
 		{
 			if (file.IsUntitled) {
 				SaveFileAs.Save(file);
