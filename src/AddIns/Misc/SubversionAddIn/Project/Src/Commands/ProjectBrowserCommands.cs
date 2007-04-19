@@ -24,12 +24,45 @@ namespace ICSharpCode.Svn.Commands
 		{
 			AbstractProjectBrowserTreeNode node = ProjectBrowserPad.Instance.SelectedNode;
 			if (node != null) {
+				string nodeFileName = null;
 				if (node is DirectoryNode) {
-					Run(((DirectoryNode)node).Directory);
+					nodeFileName = ((DirectoryNode)node).Directory;
 				} else if (node is FileNode) {
-					Run(((FileNode)node).FileName);
+					nodeFileName =  ((FileNode)node).FileName;
 				} else if (node is SolutionNode) {
-					Run(((SolutionNode)node).Solution.Directory);
+					nodeFileName = ((SolutionNode)node).Solution.Directory;
+				}
+				if (nodeFileName != null) {
+					List<IViewContent> unsavedViewContents = new List<IViewContent>();
+					foreach (IViewContent vc in WorkbenchSingleton.Workbench.ViewContentCollection) {
+						if (string.IsNullOrEmpty(vc.FileName)) continue;
+						if (FileUtility.IsUrl(vc.FileName)) continue;
+						if (vc.IsDirty == false) continue;
+						if (FileUtility.IsBaseDirectory(nodeFileName, vc.FileName)) {
+							unsavedViewContents.Add(vc);
+						}
+					}
+					if (unsavedViewContents.Count > 0) {
+						if (MessageService.ShowCustomDialog(
+							MessageService.DefaultMessageBoxTitle,
+							"The version control operation would affect files with unsaved modifications.\n" +
+							"You have to save those files before running the operation.",
+							0, 1,
+							"Save files", "Cancel")
+						    == 0)
+						{
+							// Save
+							foreach (IViewContent vc in unsavedViewContents) {
+								ProjectService.MarkFileDirty(vc.FileName);
+								FileUtility.ObservedSave(new FileOperationDelegate(vc.Save), vc.FileName, FileErrorPolicy.ProvideAlternative);
+							}
+						} else {
+							// Cancel
+							return;
+						}
+					}
+					// now run the actual operation:
+					Run(nodeFileName);
 				}
 			}
 		}
