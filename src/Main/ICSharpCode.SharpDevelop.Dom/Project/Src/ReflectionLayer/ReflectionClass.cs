@@ -28,7 +28,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ReflectionLayer
 			}
 			
 			foreach (FieldInfo field in type.GetFields(flags)) {
-				if (!field.IsPublic && !field.IsFamily) continue;
+				if (!field.IsPublic && !field.IsFamily && !field.IsFamilyOrAssembly) continue;
 				if (!field.IsSpecialName) {
 					Fields.Add(new ReflectionField(field, this));
 				}
@@ -41,12 +41,12 @@ namespace ICSharpCode.SharpDevelop.Dom.ReflectionLayer
 			}
 			
 			foreach (ConstructorInfo constructorInfo in type.GetConstructors(flags)) {
-				if (!constructorInfo.IsPublic && !constructorInfo.IsFamily) continue;
+				if (!constructorInfo.IsPublic && !constructorInfo.IsFamily && !constructorInfo.IsFamilyOrAssembly) continue;
 				Methods.Add(new ReflectionMethod(constructorInfo, this));
 			}
 			
 			foreach (MethodInfo methodInfo in type.GetMethods(flags)) {
-				if (!methodInfo.IsPublic && !methodInfo.IsFamily) continue;
+				if (!methodInfo.IsPublic && !methodInfo.IsFamily && !methodInfo.IsFamilyOrAssembly) continue;
 				if (!methodInfo.IsSpecialName) {
 					Methods.Add(new ReflectionMethod(methodInfo, this));
 				}
@@ -62,7 +62,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ReflectionLayer
 			return type.IsSubclassOf(typeof(Delegate)) && type != typeof(MulticastDelegate);
 		}
 		
-		static void AddAttributes(IProjectContent pc, IList<IAttribute> list, IList<CustomAttributeData> attributes)
+		internal static void AddAttributes(IProjectContent pc, IList<IAttribute> list, IList<CustomAttributeData> attributes)
 		{
 			foreach (CustomAttributeData att in attributes) {
 				DefaultAttribute a = new DefaultAttribute(att.Constructor.DeclaringType.FullName);
@@ -82,7 +82,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ReflectionLayer
 		{
 			foreach (IAttribute att in c.Attributes) {
 				if (att.Name == "Microsoft.VisualBasic.CompilerServices.StandardModuleAttribute"
-				    || att.Name == "Boo.Lang.ModuleAttribute")
+				    || att.Name == "System.Runtime.CompilerServices.CompilerGlobalScopeAttribute")
 				{
 					c.ClassType = ClassType.Module;
 					break;
