@@ -12,6 +12,20 @@ namespace ICSharpCode.SharpDevelop.Dom.ReflectionLayer
 {
 	internal class ReflectionMethod : DefaultMethod
 	{
+		internal static void ApplySpecialsFromAttributes(DefaultMethod m)
+		{
+			if (m.IsStatic) {
+				foreach (IAttribute a in m.Attributes) {
+					string attributeName = a.Name;
+					if (attributeName == "System.Runtime.CompilerServices.ExtensionAttribute"
+					    || attributeName == "Boo.Lang.ExtensionAttribute")
+					{
+						m.IsExtensionMethod = true;
+					}
+				}
+			}
+		}
+		
 		public ReflectionMethod(MethodBase methodBase, ReflectionClass declaringType)
 			: base(declaringType, methodBase is ConstructorInfo ? "#ctor" : methodBase.Name)
 		{
@@ -35,16 +49,6 @@ namespace ICSharpCode.SharpDevelop.Dom.ReflectionLayer
 				}
 			}
 			
-			if (methodBase.IsStatic) {
-				foreach (CustomAttributeData data in CustomAttributeData.GetCustomAttributes(methodBase)) {
-					string attributeName = data.Constructor.DeclaringType.FullName;
-					if (attributeName == "System.Runtime.CompilerServices.ExtensionAttribute"
-					    || attributeName == "Boo.Lang.ExtensionAttribute")
-					{
-						this.IsExtensionMethod = true;
-					}
-				}
-			}
 			ModifierEnum modifiers  = ModifierEnum.None;
 			if (methodBase.IsStatic) {
 				modifiers |= ModifierEnum.Static;
@@ -69,6 +73,9 @@ namespace ICSharpCode.SharpDevelop.Dom.ReflectionLayer
 				modifiers |= ModifierEnum.Sealed;
 			}
 			this.Modifiers = modifiers;
+			
+			ReflectionClass.AddAttributes(declaringType.ProjectContent, this.Attributes, CustomAttributeData.GetCustomAttributes(methodBase));
+			ApplySpecialsFromAttributes(this);
 		}
 	}
 }

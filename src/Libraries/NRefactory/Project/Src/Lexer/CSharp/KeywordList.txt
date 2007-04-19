@@ -176,13 +176,13 @@ LambdaArrow = "=>"
 # When changing IdentifierTokens, ensure you also change the "Identifier" production in cs.ATG
 IdentifierTokens(Identifier, "partial", "where", "get", "set", "add", "remove", "yield", "select", "group", "by", "into", "from", "ascending", "descending", "orderby")
 
-OverloadableUnaryOp("+", "!", "~", "++", "--", "true", "false")
+OverloadableUnaryOp("-", "!", "~", "++", "--", "true", "false")
 OverloadableBinaryOp("+", "-", "*", "/", "%", "&", "|", "^", "<<", "==", "!=", ">", "<", ">=", "<=")
 
 TypeKW("char", "bool", "object", "string", "sbyte", "byte", "short", "ushort", "int", "uint", "long", "ulong", "float", "double", "decimal")
 UnaryHead("+", "-", "!", "~", "*", "++", "--", "&")
 AssnStartOp("+", "-", "!", "~", "*")
-CastFollower(IdentifierTokens, Literal, "(", "new", "this", "base", "null", "checked", "unchecked", "typeof", "sizeof", "delegate", @OverloadableUnaryOp)
+CastFollower(@IdentifierTokens, Literal, "(", "new", "this", "base", "null", "checked", "unchecked", "typeof", "sizeof", "delegate", @OverloadableUnaryOp, @UnaryOp)
 AssgnOps("=", "+=", "-=", "*=", "/=", "%=", "&=", "|=", "<<=")
 UnaryOp("+", "-", "!", "~", "*", "++", "--", "&")
 TypeDeclarationKW("class", "interface", "struct", "enum", "delegate")

@@ -209,14 +209,6 @@ sub write_tokensfile {
 		print DAT "\t\t\t}\n";
 		print DAT "\t\t\treturn bitArray;\n";
 		print DAT "\t\t}\n";
-		print DAT "\t\tstatic BitArray NewSet(BitArray existing, params int[] values)\n";
-		print DAT "\t\t{\n";
-		print DAT "\t\t\tBitArray bitArray = new BitArray(existing);\n";
-		print DAT "\t\t\tforeach (int val in values) {\n";
-		print DAT "\t\t\tbitArray[val] = true;\n";
-		print DAT "\t\t\t}\n";
-		print DAT "\t\t\treturn bitArray;\n";
-		print DAT "\t\t}\n";
 		for ($i=0; $i <= $#sets; $i++) {
 			print DAT "\t\tpublic static BitArray ". $sets[$i] . " = NewSet(";
 			print_list($i);

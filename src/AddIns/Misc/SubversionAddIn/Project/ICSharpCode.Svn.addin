@@ -172,7 +172,7 @@
 		<Include id = "SubversionInclude" path = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/SubversionItem"/>
 	</Path>
 	
-	<Path name = "/SharpDevelop/Dialogs/OptionsDialog/Tools">
+	<Path name = "/SharpDevelop/Dialogs/OptionsDialog/ToolsOptions">
 		<DialogPanel id = "SubversionOptionsPanel"
 		             label = "${res:AddIns.Subversion.Options.Title}"
 		             class = "ICSharpCode.Svn.Gui.SubversionOptionsPanel"/>

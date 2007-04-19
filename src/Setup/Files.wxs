@@ -836,6 +836,7 @@
 									</Directory>
 									<Component Guid="73EAC135-57B6-46C0-9F24-70A347B9AAC8" Id="ExampleProjectTemplate" DiskId="1">
 										<File Source="..\..\data\templates\project\ComplexExample.xpt.test" Name="COMPLE_1.TES" Id="ComplexExample.xpt.test" LongName="ComplexExample.xpt.test" />
+										<File Source="..\..\data\templates\project\AddInWritingHelp.txt" Name="ADDINW_1.TXT" Id="AddInWritingHelp.txt" LongName="AddInWritingHelp.txt" />
 									</Component>
 								</Directory>
 							</Directory>

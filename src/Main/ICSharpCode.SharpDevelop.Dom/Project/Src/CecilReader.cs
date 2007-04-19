@@ -340,6 +340,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 					}
 					AddParameters(m, method.Parameters);
 					AddExplicitInterfaceImplementations(method.Overrides, m);
+					ReflectionLayer.ReflectionMethod.ApplySpecialsFromAttributes(m);
 					Methods.Add(m);
 				}
 			}
