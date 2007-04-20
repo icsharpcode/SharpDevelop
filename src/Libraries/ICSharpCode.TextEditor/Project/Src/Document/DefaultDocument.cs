@@ -128,7 +128,7 @@ namespace ICSharpCode.TextEditor.Document
 			}
 		}
 		
-		public List<LineSegment> LineSegmentCollection {
+		public IList<LineSegment> LineSegmentCollection {
 			get {
 				return lineTrackingStrategy.LineSegmentCollection;
 			}

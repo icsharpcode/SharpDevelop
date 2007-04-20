@@ -56,50 +56,31 @@ namespace ICSharpCode.TextEditor.Document
 	public class LineLengthEventArgs : EventArgs
 	{
 		IDocument document;
-		int       lineNumber;
-		int       lineOffset;
-		int       moved;
+		LineSegment lineSegment;
+		int lengthDelta;
 		
 		public IDocument Document {
-			get {
-				return document;
-			}
+			get { return document; }
 		}
 		
-		public int LineNumber {
-			get {
-				return lineNumber;
-			}
+		public LineSegment LineSegment {
+			get { return lineSegment; }
 		}
 		
-		public int LineOffset {
-			get {
-				return lineOffset;
-			}
+		public int LengthDelta {
+			get { return lengthDelta; }
 		}
 		
-		public int Moved {
-			get {
-				return moved;
-			}
-		}
-		
-		public LineLengthEventArgs(IDocument document, int lineNumber, int lineOffset, int moved)
+		public LineLengthEventArgs(IDocument document, LineSegment lineSegment, int moved)
 		{
 			this.document = document;
-			this.lineNumber = lineNumber;
-			this.lineOffset = lineOffset;
-			this.moved = moved;
+			this.lineSegment = lineSegment;
+			this.lengthDelta = moved;
 		}
 		
 		public override string ToString()
 		{
-			return String.Format("[LineLengthEventArgs: Document = {0}, LineNumber = {1}, LineOffset = {2}, Moved = {3}]",
-			                     Document,
-			                     LineNumber,
-			                     LineOffset,
-			                     Moved);
+			return string.Format("[LineLengthEventArgs Document={0} LineSegment={1} LengthDelta={2}]", this.document, this.lineSegment, this.lengthDelta);
 		}
-		
 	}
 }

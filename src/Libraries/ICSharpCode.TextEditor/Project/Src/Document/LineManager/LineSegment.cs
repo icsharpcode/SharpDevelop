@@ -12,12 +12,13 @@ using System.Text;
 
 namespace ICSharpCode.TextEditor.Document
 {
-	public sealed class LineSegment : AbstractSegment
+	public sealed class LineSegment : ISegment
 	{
-		int delimiterLength;
+		internal LineSegmentTree.Enumerator treeEntry;
+		int totalLength, delimiterLength;
 		
-		List<TextWord> words              = null;
-		SpanStack highlightSpanStack = null;
+		List<TextWord> words;
+		SpanStack highlightSpanStack;
 		
 		public TextWord GetWord(int column)
 		{
@@ -31,32 +32,35 @@ namespace ICSharpCode.TextEditor.Document
 			return null;
 		}
 		
-		public override int Length {
-			get	{
-				return length - delimiterLength;
-			}
-			set {
-				throw new System.NotSupportedException();
-			}
+		public int LineNumber {
+			get { return treeEntry.CurrentIndex; }
+		}
+		
+		public int Offset {
+			get { return treeEntry.CurrentOffset; }
+		}
+		
+		public int Length {
+			get	{ return totalLength - delimiterLength; }
+		}
+		
+		int ISegment.Offset {
+			get { return this.Offset; }
+			set { throw new NotSupportedException(); }
+		}
+		int ISegment.Length {
+			get { return this.Length; }
+			set { throw new NotSupportedException(); }
 		}
 		
 		public int TotalLength {
-			get {
-				return length;
-			}
-			
-			set {
-				length = value;
-			}
+			get { return totalLength; }
+			internal set { totalLength = value; }
 		}
 		
 		public int DelimiterLength {
-			get {
-				return delimiterLength;
-			}
-			set {
-				delimiterLength = value;
-			}
+			get { return delimiterLength; }
+			set { delimiterLength = value; }
 		}
 		
 		// highlighting information
@@ -92,27 +96,12 @@ namespace ICSharpCode.TextEditor.Document
 			}
 		}
 		
-		public LineSegment(int offset, int end, int delimiterLength)
-		{
-			this.offset          = offset;
-			this.delimiterLength = delimiterLength;
-		
-			this.TotalLength     = end - offset + 1;
-		}
-		
-		public LineSegment(int offset, int length)
-		{
-			this.offset          = offset;
-			this.length          = length;
-			this.delimiterLength = 0;
-		}
-		
 		/// <summary>
 		/// Converts a <see cref="LineSegment"/> instance to string (for debug purposes)
 		/// </summary>
 		public override string ToString()
 		{
-			return "[LineSegment: Offset = "+ offset +", Length = " + Length + ", TotalLength = " + TotalLength + ", DelimiterLength = " + delimiterLength + "]";
+			return "[LineSegment: Offset = "+ Offset +", Length = " + Length + ", TotalLength = " + TotalLength + ", DelimiterLength = " + delimiterLength + "]";
 		}
 		
 		// Svante Lidman: reconsider whether it was the right descision to move these methids here.
@@ -127,7 +116,7 @@ namespace ICSharpCode.TextEditor.Document
 			StringBuilder regexpr = new StringBuilder();;
 			
 			for (int i = 0; i < expr.Length; ++i, ++j) {
-				if (index + j >= this.Length) 
+				if (index + j >= this.Length)
 					break;
 				
 				switch (expr[i]) {
@@ -150,8 +139,8 @@ namespace ICSharpCode.TextEditor.Document
 						if (expr[i] != document.GetCharAt(this.Offset + index + j)) {
 							return regexpr.ToString();
 						}
-					regexpr.Append(document.GetCharAt(this.Offset + index + j));
-					break;
+						regexpr.Append(document.GetCharAt(this.Offset + index + j));
+						break;
 				}
 			}
 			return regexpr.ToString();
@@ -175,54 +164,54 @@ namespace ICSharpCode.TextEditor.Document
 										char ch = document.GetCharAt(this.Offset + index + j);
 										if (!Char.IsWhiteSpace(ch) && !Char.IsPunctuation(ch)) {
 											return false;
-										} 
+										}
 									}
 									break;
 								case '!': // don't match the following expression
-								{
-									StringBuilder whatmatch = new StringBuilder();
-									++i;
-									while (i < expr.Length && expr[i] != '@') {
-										whatmatch.Append(expr[i++]);
-									}
-									if (this.Offset + index + j + whatmatch.Length < document.TextLength) {
-										int k = 0;
-										for (; k < whatmatch.Length; ++k) {
-											char docChar = ignoreCase ? Char.ToUpperInvariant(document.GetCharAt(this.Offset + index + j + k)) : document.GetCharAt(this.Offset + index + j + k);
-											char spanChar = ignoreCase ? Char.ToUpperInvariant(whatmatch[k]) : whatmatch[k];
-											if (docChar != spanChar) {
-												break;
+									{
+										StringBuilder whatmatch = new StringBuilder();
+										++i;
+										while (i < expr.Length && expr[i] != '@') {
+											whatmatch.Append(expr[i++]);
+										}
+										if (this.Offset + index + j + whatmatch.Length < document.TextLength) {
+											int k = 0;
+											for (; k < whatmatch.Length; ++k) {
+												char docChar = ignoreCase ? Char.ToUpperInvariant(document.GetCharAt(this.Offset + index + j + k)) : document.GetCharAt(this.Offset + index + j + k);
+												char spanChar = ignoreCase ? Char.ToUpperInvariant(whatmatch[k]) : whatmatch[k];
+												if (docChar != spanChar) {
+													break;
+												}
+											}
+											if (k >= whatmatch.Length) {
+												return false;
 											}
 										}
-										if (k >= whatmatch.Length) {
-											return false;
-										}
-									}
 //									--j;
-									break;
-								}
-								case '-': // don't match the  expression before 
-								{
-									StringBuilder whatmatch = new StringBuilder();
-									++i;
-									while (i < expr.Length && expr[i] != '@') {
-										whatmatch.Append(expr[i++]);
+										break;
 									}
-									if (index - whatmatch.Length >= 0) {
-										int k = 0;
-										for (; k < whatmatch.Length; ++k) {
-											char docChar = ignoreCase ? Char.ToUpperInvariant(document.GetCharAt(this.Offset + index - whatmatch.Length + k)) : document.GetCharAt(this.Offset + index - whatmatch.Length + k);
-											char spanChar = ignoreCase ? Char.ToUpperInvariant(whatmatch[k]) : whatmatch[k];
-											if (docChar != spanChar)
-												break;
+								case '-': // don't match the  expression before
+									{
+										StringBuilder whatmatch = new StringBuilder();
+										++i;
+										while (i < expr.Length && expr[i] != '@') {
+											whatmatch.Append(expr[i++]);
 										}
-										if (k >= whatmatch.Length) {
-											return false;
+										if (index - whatmatch.Length >= 0) {
+											int k = 0;
+											for (; k < whatmatch.Length; ++k) {
+												char docChar = ignoreCase ? Char.ToUpperInvariant(document.GetCharAt(this.Offset + index - whatmatch.Length + k)) : document.GetCharAt(this.Offset + index - whatmatch.Length + k);
+												char spanChar = ignoreCase ? Char.ToUpperInvariant(whatmatch[k]) : whatmatch[k];
+												if (docChar != spanChar)
+													break;
+											}
+											if (k >= whatmatch.Length) {
+												return false;
+											}
 										}
-									}
 //									--j;
-									break;
-								}
+										break;
+									}
 								case '@': // matches @
 									if (index + j >= this.Length || '@' != document.GetCharAt(this.Offset + index + j)) {
 										return false;
@@ -232,17 +221,17 @@ namespace ICSharpCode.TextEditor.Document
 						}
 						break;
 					default:
-					{
-						if (index + j >= this.Length) {
-							return false;
+						{
+							if (index + j >= this.Length) {
+								return false;
+							}
+							char docChar = ignoreCase ? Char.ToUpperInvariant(document.GetCharAt(this.Offset + index + j)) : document.GetCharAt(this.Offset + index + j);
+							char spanChar = ignoreCase ? Char.ToUpperInvariant(expr[i]) : expr[i];
+							if (docChar != spanChar) {
+								return false;
+							}
+							break;
 						}
-						char docChar = ignoreCase ? Char.ToUpperInvariant(document.GetCharAt(this.Offset + index + j)) : document.GetCharAt(this.Offset + index + j);
-						char spanChar = ignoreCase ? Char.ToUpperInvariant(expr[i]) : expr[i];
-						if (docChar != spanChar) {
-							return false;
-						}
-						break;
-					}
 				}
 			}
 			return true;

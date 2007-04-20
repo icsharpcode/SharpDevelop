@@ -7,20 +7,18 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace ICSharpCode.TextEditor.Document
 {
 	internal class DefaultLineManager : ILineManager
 	{
-		List<LineSegment> lineCollection = new List<LineSegment>();
+		LineSegmentTree lineCollection = new LineSegmentTree();
 		
 		IDocument document;
 		IHighlightingStrategy highlightingStrategy;
 		
-		// keep track of the textlength ourselves
-		int textLength;
-		
-		public List<LineSegment> LineSegmentCollection {
+		public IList<LineSegment> LineSegmentCollection {
 			get {
 				return lineCollection;
 			}
@@ -28,11 +26,7 @@ namespace ICSharpCode.TextEditor.Document
 		
 		public int TotalNumberOfLines {
 			get {
-				if (lineCollection.Count == 0) {
-					return 1;
-				}
-			
-				return ((LineSegment)lineCollection[lineCollection.Count - 1]).DelimiterLength > 0 ? lineCollection.Count + 1 : lineCollection.Count;
+				return lineCollection.Count;
 			}
 		}
 		
@@ -43,168 +37,33 @@ namespace ICSharpCode.TextEditor.Document
 			set {
 				if (highlightingStrategy != value) {
 					highlightingStrategy = value;
-					if (highlightingStrategy != null) {							
-						highlightingStrategy.MarkTokens(document);		
+					if (highlightingStrategy != null) {
+						highlightingStrategy.MarkTokens(document);
 					}
 				}
 			}
 		}
 		
-		public DefaultLineManager(IDocument document, IHighlightingStrategy highlightingStrategy) 
+		public DefaultLineManager(IDocument document, IHighlightingStrategy highlightingStrategy)
 		{
 			this.document = document;
-			this.highlightingStrategy  = highlightingStrategy;
+			this.highlightingStrategy = highlightingStrategy;
 		}
 		
-		public int GetLineNumberForOffset(int offset) 
+		public int GetLineNumberForOffset(int offset)
 		{
-			if (offset < 0 || offset > textLength) {
-				throw new ArgumentOutOfRangeException("offset", offset, "should be between 0 and " + textLength);
-			}
-			
-			if (offset == textLength) {
-				if (lineCollection.Count == 0) {
-					return 0;
-				}
-				
-				LineSegment lastLine = (LineSegment)lineCollection[lineCollection.Count - 1];
-				return lastLine.DelimiterLength > 0 ? lineCollection.Count : lineCollection.Count - 1;
-			}
-			
-			return FindLineNumber(offset);
+			return GetLineSegmentForOffset(offset).LineNumber;
 		}
 		
-		public LineSegment GetLineSegmentForOffset(int offset) 
+		public LineSegment GetLineSegmentForOffset(int offset)
 		{
-			if (offset < 0 || offset > textLength) {
-				throw new ArgumentOutOfRangeException("offset", offset, "should be between 0 and " + textLength);
-			}
-			
-			if (offset == textLength) {
-				if (lineCollection.Count == 0) {
-					return new LineSegment(0, 0);
-				}
-				LineSegment lastLine = (LineSegment)lineCollection[lineCollection.Count - 1];
-				return lastLine.DelimiterLength > 0 ? new LineSegment(textLength, 0) : lastLine;
-			}
-			
-			return GetLineSegment(FindLineNumber(offset));
+			return lineCollection.GetByOffset(offset);
 		}
 		
-		public LineSegment GetLineSegment(int lineNr) 
+		public LineSegment GetLineSegment(int lineNr)
 		{
-			if (lineNr < 0 || lineNr > lineCollection.Count) {
-				throw new ArgumentOutOfRangeException("lineNr", lineNr, "should be between 0 and " + lineCollection.Count);
-			}
-			
-			if (lineNr == lineCollection.Count) {
-				if (lineCollection.Count == 0) {
-					return new LineSegment(0, 0);
-				}
-				LineSegment lastLine = (LineSegment)lineCollection[lineCollection.Count - 1];
-				return lastLine.DelimiterLength > 0 ? new LineSegment(lastLine.Offset + lastLine.TotalLength, 0) : lastLine;
-			}
-			
-			return (LineSegment)lineCollection[lineNr];
+			return lineCollection[lineNr];
 		}
-		
-		int Insert(int lineNumber, int offset, string text) 
-		{
-			if (text == null || text.Length == 0) {
-				return 0;
-			}
-			
-			textLength += text.Length;
-			
-			if (lineCollection.Count == 0 || lineNumber >= lineCollection.Count) {
-				return CreateLines(text, lineCollection.Count, offset);
-			}
-			
-			LineSegment line = (LineSegment)lineCollection[lineNumber];
-			
-			ISegment nextDelimiter = NextDelimiter(text, 0);
-			if (nextDelimiter == null || nextDelimiter.Offset < 0) {
-				line.TotalLength += text.Length;
-				markLines.Add(line);
-				OnLineLengthChanged(new LineLengthEventArgs(document, lineNumber, offset -line.Offset, text.Length));
-				return 0;
-			}
-			
-			int restLength = line.Offset + line.TotalLength - offset;
-			
-			if (restLength > 0) {
-				LineSegment lineRest = new LineSegment(offset, restLength);
-				lineRest.DelimiterLength = line.DelimiterLength;
-				
-				lineRest.Offset += text.Length;
-				markLines.Add(lineRest);
-				
-				if (restLength - line.DelimiterLength < 0) {
-					throw new ApplicationException("tried to insert inside delimiter string " + lineRest.ToString() + "!!!");
-				}
-				
-				lineCollection.Insert(lineNumber + 1, lineRest);
-				OnLineCountChanged(new LineManagerEventArgs(document, lineNumber - 1, 1));
-			}
-			
-			line.DelimiterLength = nextDelimiter.Length;
-			int nextStart = offset + nextDelimiter.Offset + nextDelimiter.Length;
-			line.TotalLength = nextStart - line.Offset;
-			
-			markLines.Add(line);
-			text = text.Substring(nextDelimiter.Offset + nextDelimiter.Length);
-			
-			return CreateLines(text, lineNumber + 1, nextStart) + 1;
-		}
-		
-		bool Remove(int lineNumber, int offset, int length)
-		{
-			if (length == 0) {
-				return false;
-			}
-			
-			int removedLineEnds = GetNumberOfLines(lineNumber, offset, length) - 1;
-			
-			LineSegment line = (LineSegment)lineCollection[lineNumber];
-			if ((lineNumber == lineCollection.Count - 1) && removedLineEnds > 0) {
-				line.TotalLength -= length;
-				line.DelimiterLength = 0;
-			} else {
-				++lineNumber;
-				for (int i = 1; i <= removedLineEnds; ++i) {
-					
-					if (lineNumber == lineCollection.Count) {
-						line.DelimiterLength = 0;
-						break;
-					}
-					
-					LineSegment line2 = (LineSegment)lineCollection[lineNumber];
-					
-					line.TotalLength += line2.TotalLength;
-					line.DelimiterLength = line2.DelimiterLength;
-					lineCollection.RemoveAt(lineNumber);
-				}
-				line.TotalLength -= length;
-				
-				if (lineNumber < lineCollection.Count && removedLineEnds > 0) {
-					markLines.Add(lineCollection[lineNumber]);
-				}
-			}
-			
-			textLength -= length;
-			
-			if (line.TotalLength == 0) {
-				lineCollection.Remove(line);
-				OnLineCountChanged(new LineManagerEventArgs(document, lineNumber, -removedLineEnds));
-				return true;
-			}
-			
-			markLines.Add(line);
-			OnLineCountChanged(new LineManagerEventArgs(document, lineNumber, -removedLineEnds));
-			return false;
-		}
-		
-		List<LineSegment> markLines = new List<LineSegment>();
 		
 		public void Insert(int offset, string text)
 		{
@@ -216,152 +75,118 @@ namespace ICSharpCode.TextEditor.Document
 			Replace(offset, length, String.Empty);
 		}
 		
-		public void Replace(int offset, int length, string text) 
+		public void Replace(int offset, int length, string text)
 		{
-			int lineNumber = GetLineNumberForOffset(offset);			
-			int insertLineNumber = lineNumber;
-			if (Remove(lineNumber, offset, length)) {
-				--lineNumber;
+//			Console.WriteLine("Replace offset="+offset+" length="+length+" text.Length="+text.Length);
+			int lineStart = GetLineNumberForOffset(offset);
+			int oldNumberOfLines = this.TotalNumberOfLines;
+			RemoveInternal(offset, length);
+			int numberOfLinesAfterRemoving = this.TotalNumberOfLines;
+			if (!string.IsNullOrEmpty(text)) {
+				InsertInternal(offset, text);
 			}
-			
-			lineNumber += Insert(insertLineNumber, offset, text);
-			
-			int delta = -length;
-			if (text != null) {
-				delta = text.Length + delta;
+//			#if DEBUG
+//			Console.WriteLine("New line collection:");
+//			Console.WriteLine(lineCollection.GetTreeAsString());
+//			Console.WriteLine("New text:");
+//			Console.WriteLine("'" + document.TextContent + "'");
+//			#endif
+			RunHighlighter(lineStart, 1 + Math.Max(0, this.TotalNumberOfLines - numberOfLinesAfterRemoving));
+			if (this.TotalNumberOfLines != oldNumberOfLines) {
+				OnLineCountChanged(new LineManagerEventArgs(document, lineStart, this.TotalNumberOfLines - oldNumberOfLines));
 			}
-			
-			if (delta != 0) {
-				AdaptLineOffsets(lineNumber, delta);		
-			}
-			
-			RunHighlighter();
 		}
 		
-		void RunHighlighter()
+		void RemoveInternal(int offset, int length)
 		{
-			DateTime time = DateTime.Now;
+			Debug.Assert(length >= 0);
+			if (length == 0) return;
+			LineSegmentTree.Enumerator it = lineCollection.GetEnumeratorForOffset(offset);
+			LineSegment startSegment = it.Current;
+			int startSegmentOffset = startSegment.Offset;
+			if (offset + length < startSegmentOffset + startSegment.TotalLength) {
+				// just removing a part of this line segment
+				SetSegmentLength(startSegment, startSegment.TotalLength - length);
+				return;
+			}
+			// merge startSegment with another line segment because startSegment's delimiter was deleted
+			// possibly remove lines in between if multiple delimiters were deleted
+			int charactersRemovedInStartLine = startSegmentOffset + startSegment.TotalLength - offset;
+			Debug.Assert(charactersRemovedInStartLine > 0);
+			
+			
+			LineSegment endSegment = lineCollection.GetByOffset(offset + length);
+			if (endSegment == startSegment) {
+				// special case: we are removing a part of the last line up to the
+				// end of the document
+				SetSegmentLength(startSegment, startSegment.TotalLength - length);
+				return;
+			}
+			int endSegmentOffset = endSegment.Offset;
+			int charactersLeftInEndLine = endSegmentOffset + endSegment.TotalLength - (offset + length);
+			SetSegmentLength(startSegment, startSegment.TotalLength - charactersRemovedInStartLine + charactersLeftInEndLine);
+			startSegment.DelimiterLength = endSegment.DelimiterLength;
+			// remove all segments between startSegment (excl.) and endSegment (incl.)
+			it.MoveNext();
+			LineSegment segmentToRemove;
+			do {
+				segmentToRemove = it.Current;
+				it.MoveNext();
+				lineCollection.RemoveSegment(segmentToRemove);
+			} while (segmentToRemove != endSegment);
+		}
+		
+		void InsertInternal(int offset, string text)
+		{
+			LineSegment segment = lineCollection.GetByOffset(offset);
+			int lastDelimiterEnd = 0;
+			DelimiterSegment ds;
+			while ((ds = NextDelimiter(text, lastDelimiterEnd)) != null) {
+				// split line segment at line delimiter
+				int lineBreakOffset = offset + ds.Offset + ds.Length;
+				int lengthAfterInsertionPos = segment.Offset + segment.TotalLength - (offset + lastDelimiterEnd);
+				lineCollection.SetSegmentLength(segment, lineBreakOffset - segment.Offset);
+				LineSegment newSegment = lineCollection.InsertSegmentAfter(segment, lengthAfterInsertionPos);
+				segment.DelimiterLength = ds.Length;
+				
+				segment = newSegment;
+				lastDelimiterEnd = ds.Offset + ds.Length;
+			}
+			// insert rest after last delimiter
+			if (lastDelimiterEnd != text.Length) {
+				SetSegmentLength(segment, segment.TotalLength + text.Length - lastDelimiterEnd);
+			}
+		}
+		
+		void SetSegmentLength(LineSegment segment, int newTotalLength)
+		{
+			int delta = newTotalLength - segment.TotalLength;
+			lineCollection.SetSegmentLength(segment, newTotalLength);
+			OnLineLengthChanged(new LineLengthEventArgs(document, segment, delta));
+		}
+		
+		void RunHighlighter(int firstLine, int lineCount)
+		{
 			if (highlightingStrategy != null) {
+				List<LineSegment> markLines = new List<LineSegment>();
+				LineSegmentTree.Enumerator it = lineCollection.GetEnumeratorForIndex(firstLine);
+				for (int i = 0; i < lineCount && it.IsValid; i++) {
+					markLines.Add(it.Current);
+					it.MoveNext();
+				}
 				highlightingStrategy.MarkTokens(document, markLines);
 			}
-			markLines.Clear();
 		}
 		
 		public void SetContent(string text)
 		{
 			lineCollection.Clear();
 			if (text != null) {
-				textLength = text.Length;
-				CreateLines(text, 0, 0);
-				RunHighlighter();
+				Replace(0, 0, text);
 			}
 		}
 		
-		void AdaptLineOffsets(int lineNumber, int delta) 
-		{
-			for (int i = lineNumber + 1; i < lineCollection.Count; ++i) {
-				((LineSegment)lineCollection[i]).Offset += delta;
-			}
-		}
 		
-		int GetNumberOfLines(int startLine, int offset, int length) 
-		{
-			if (length == 0) {
-				return 1;
-			}
-			
-			int target = offset + length;
-			
-			LineSegment l = (LineSegment)lineCollection[startLine];
-			
-			if (l.DelimiterLength == 0) {
-				return 1;
-			}
-			
-			if (l.Offset + l.TotalLength > target) {
-				return 1;
-			}
-			
-			if (l.Offset + l.TotalLength == target) {
-				return 2;
-			}
-			
-			return GetLineNumberForOffset(target) - startLine + 1;
-		}
-		
-		int FindLineNumber(int offset) 
-		{
-			if (lineCollection.Count == 0) {
-				return - 1;
-			}
-			
-			int leftIndex  = 0;
-			int rightIndex = lineCollection.Count - 1;
-			
-			LineSegment curLine = null;
-			
-			while (leftIndex < rightIndex) {
-				int pivotIndex = (leftIndex + rightIndex) / 2;
-				
-				curLine = (LineSegment)lineCollection[pivotIndex];
-				
-				if (offset < curLine.Offset) {
-					rightIndex = pivotIndex - 1;
-				} else if (offset > curLine.Offset) {
-					leftIndex = pivotIndex + 1;
-				} else {
-					leftIndex = pivotIndex;
-					break;
-				}
-			}
-			
-			return ((LineSegment)lineCollection[leftIndex]).Offset > offset ? leftIndex - 1 : leftIndex;
-		}
-		
-		
-// OLD 'SAFE & TESTED' CreateLines
-		int CreateLines(string text, int insertPosition, int offset) 
-		{
-			int count = 0;
-			int start = 0;
-			ISegment nextDelimiter = NextDelimiter(text, 0);
-			while (nextDelimiter != null && nextDelimiter.Offset >= 0) {
-				int index = nextDelimiter.Offset + (nextDelimiter.Length - 1);
-				
-				LineSegment newLine = new LineSegment(offset + start, offset + index, nextDelimiter.Length);
-				
-				markLines.Add(newLine);
-				
-				if (insertPosition + count >= lineCollection.Count) {
-					lineCollection.Add(newLine);
-				} else {
-					lineCollection.Insert(insertPosition + count, newLine);
-				}
-				
-				++count;
-				start = index + 1;
-				nextDelimiter = NextDelimiter(text, start);
-			}
-			
-			if (start < text.Length) {
-				if (insertPosition + count < lineCollection.Count) {
-					LineSegment l = (LineSegment)lineCollection[insertPosition + count];
-					
-					int delta = text.Length - start;
-					
-					l.Offset -= delta;
-					l.TotalLength += delta;
-				} else {
-					LineSegment newLine = new LineSegment(offset + start, text.Length - start);
-					
-					markLines.Add(newLine);
-					lineCollection.Add(newLine);
-					++count;
-				}
-			}
-			OnLineCountChanged(new LineManagerEventArgs(document, insertPosition, count));
-			return count;
-		}
 		
 		public int GetVisibleLine(int logicalLineNumber)
 		{
@@ -421,7 +246,7 @@ namespace ICSharpCode.TextEditor.Document
 		}
 		
 		// TODO : speedup the next/prev visible line search
-		// HOW? : save the foldings in a sorted list and lookup the 
+		// HOW? : save the foldings in a sorted list and lookup the
 		//        line numbers in this list
 		public int GetNextVisibleLineAbove(int lineNumber, int lineCount)
 		{
@@ -461,10 +286,10 @@ namespace ICSharpCode.TextEditor.Document
 				LineCountChanged(this, e);
 			}
 		}
-				
+		
 		// use always the same ISegment object for the DelimiterInfo
-		DelimiterSegment delimiterSegment = new DelimiterSegment(); 
-		ISegment NextDelimiter(string text, int offset) 
+		DelimiterSegment delimiterSegment = new DelimiterSegment();
+		DelimiterSegment NextDelimiter(string text, int offset)
 		{
 			for (int i = offset; i < text.Length; i++) {
 				switch (text[i]) {
@@ -496,7 +321,7 @@ namespace ICSharpCode.TextEditor.Document
 		public event LineLengthEventHandler LineLengthChanged;
 		public event LineManagerEventHandler LineCountChanged;
 		
-		public class DelimiterSegment : ISegment
+		sealed class DelimiterSegment : ISegment
 		{
 			int offset;
 			int length;

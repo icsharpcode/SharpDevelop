@@ -57,6 +57,7 @@
     <Compile Include="Src\Document\DocumentFactory.cs" />
     <Compile Include="Src\Document\IDocument.cs" />
     <Compile Include="Src\Document\ISegment.cs" />
+    <Compile Include="Src\Document\LineManager\LineSegmentTree.cs" />
     <Compile Include="Src\Document\TextUtilities.cs" />
     <Compile Include="Src\Document\BookmarkManager\BookmarkManager.cs" />
     <Compile Include="Src\Document\CustomLineManager\CustomLineManager.cs" />
@@ -86,7 +87,9 @@
     <Compile Include="Src\Document\TextBufferStrategy\GapTextBufferStrategy.cs" />
     <Compile Include="Src\Document\TextBufferStrategy\ITextBufferStrategy.cs" />
     <Compile Include="Src\Document\TextBufferStrategy\StringTextBufferStrategy.cs" />
+    <Compile Include="Src\Util\AugmentableRedBlackTree.cs" />
     <Compile Include="Src\Util\LookupTable.cs" />
+    <Compile Include="Src\Util\RedBlackTreeIterator.cs" />
     <Compile Include="Src\Util\TextUtility.cs" />
     <Compile Include="Src\Undo\UndoableDelete.cs" />
     <Compile Include="Src\Undo\UndoableInsert.cs" />

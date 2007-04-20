@@ -99,7 +99,7 @@ namespace ICSharpCode.TextEditor.Document
 		/// of the 'last line ends with a delimiter problem'. Otherwise
 		/// the <see cref="GetLineSegment"/> method should be used.
 		/// </remarks>
-		List<LineSegment> LineSegmentCollection {
+		IList<LineSegment> LineSegmentCollection {
 			get;
 		}
 		

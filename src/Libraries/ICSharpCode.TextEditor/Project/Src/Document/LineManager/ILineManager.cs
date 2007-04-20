@@ -17,7 +17,7 @@ namespace ICSharpCode.TextEditor.Document
 		/// <value>
 		/// A collection of all line segments
 		/// </value>
-		List<LineSegment> LineSegmentCollection {
+		IList<LineSegment> LineSegmentCollection {
 			get;
 		}
 		
