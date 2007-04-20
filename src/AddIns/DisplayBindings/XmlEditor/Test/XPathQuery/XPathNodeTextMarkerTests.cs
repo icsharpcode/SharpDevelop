@@ -26,8 +26,8 @@ namespace XmlEditor.Tests.XPathQuery
 			string xml = "<root><foo/></root>";
 			XPathNodeMatch[] nodes = XmlView.SelectNodes(xml, "//root");
 			
-			MockDocument doc = new MockDocument();
-			doc.AddLines(xml);
+			IDocument doc = MockDocument.Create();
+			doc.TextContent = xml;
 			MarkerStrategy markerStrategy = new MarkerStrategy(doc);
 			XPathNodeTextMarker.AddMarkers(markerStrategy, nodes);
 			
@@ -62,8 +62,8 @@ namespace XmlEditor.Tests.XPathQuery
 			string xml = "<!----><root/>";
 			XPathNodeMatch[] nodes = XmlView.SelectNodes(xml, "//comment()");
 			
-			MockDocument doc = new MockDocument();
-			doc.AddLines(xml);
+			IDocument doc = MockDocument.Create();
+			doc.TextContent = xml;
 			MarkerStrategy markerStrategy = new MarkerStrategy(doc);
 			XPathNodeTextMarker.AddMarkers(markerStrategy, nodes);
 			
@@ -89,8 +89,8 @@ namespace XmlEditor.Tests.XPathQuery
 				"<Xml1></Xml1>";
 			XPathNodeMatch[] nodes = XmlView.SelectNodes(xml, "//namespace::*");
 			
-			MockDocument doc = new MockDocument();
-			doc.AddLines(xml);
+			IDocument doc = MockDocument.Create();
+			doc.TextContent = xml;
 			MarkerStrategy markerStrategy = new MarkerStrategy(doc);
 			XPathNodeTextMarker.AddMarkers(markerStrategy, nodes);
 			

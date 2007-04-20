@@ -99,7 +99,7 @@ namespace ICSharpCode.SharpDevelop.Tests.Utils
 			}
 		}
 		
-		public System.Collections.Generic.List<LineSegment> LineSegmentCollection {
+		public System.Collections.Generic.IList<LineSegment> LineSegmentCollection {
 			get {
 				throw new NotImplementedException();
 			}

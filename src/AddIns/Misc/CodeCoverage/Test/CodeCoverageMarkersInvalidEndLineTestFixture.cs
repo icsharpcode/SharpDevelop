@@ -28,9 +28,9 @@ namespace ICSharpCode.CodeCoverage.Tests
 				PropertyService.InitializeService(configFolder, Path.Combine(configFolder, "data"), "NCoverAddIn.Tests");
 			} catch (Exception) {}
 			
-			MockDocument document = new MockDocument();
+			IDocument document = MockDocument.Create();
 			// Give doc 3 lines (end line seems to be counted as an extra line).
-			document.AddLines("abc\r\ndef"); 
+			document.TextContent = "abc\r\ndef";
 			MarkerStrategy markerStrategy = new MarkerStrategy(document);
 			
 			string xml = "<coverage>\r\n" +

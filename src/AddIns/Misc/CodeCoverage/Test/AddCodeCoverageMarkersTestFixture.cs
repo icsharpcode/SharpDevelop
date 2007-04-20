@@ -22,7 +22,7 @@ namespace ICSharpCode.CodeCoverage.Tests
 		CodeCoverageTextMarker markerOne;
 		CodeCoverageTextMarker markerTwo;
 		CodeCoverageTextMarker markerThree;
-		MockDocument document;
+		IDocument document;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
@@ -32,11 +32,11 @@ namespace ICSharpCode.CodeCoverage.Tests
 				PropertyService.InitializeService(configFolder, Path.Combine(configFolder, "data"), "NCoverAddIn.Tests");
 			} catch (Exception) {}
 			
-			document = new MockDocument();
+			document = MockDocument.Create();
 			string code = "\t\t{\r\n" +
 				"\t\t\tint count = 0;\r\n" +
 				"\t\t}\r\n";
-			document.AddLines(code);
+			document.TextContent = code;
 			markerStrategy = new MarkerStrategy(document);
 			
 			string xml = "<coverage>\r\n" +

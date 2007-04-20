@@ -28,7 +28,7 @@ namespace ICSharpCode.CodeCoverage.Tests
 				PropertyService.InitializeService(configFolder, Path.Combine(configFolder, "data"), "NCoverAddIn.Tests");
 			} catch (Exception) {}
 			
-			MockDocument document = new MockDocument();
+			IDocument document = MockDocument.Create();
 			MarkerStrategy markerStrategy = new MarkerStrategy(document);
 			
 			string xml = "<coverage>\r\n" +

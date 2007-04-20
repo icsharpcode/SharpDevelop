@@ -27,7 +27,7 @@ namespace ICSharpCode.CodeCoverage.Tests
 				PropertyService.InitializeService(configFolder, Path.Combine(configFolder, "data"), "NCoverAddIn.Tests");
 			} catch (Exception) {}
 			
-			MockDocument document = new MockDocument();
+			IDocument document = MockDocument.Create();
 			string code = "\t\t{\r\n" +
 				"\t\t\treturn \"<?xml version=\\\"1.0\\\"?>\\r\\n\" +\r\n" +
 				"\t\t\t\t\"<xs:schema xmlns:xs=\\\"http://www.w3.org/2001/XMLSchema\\\"\\r\\n\" +\r\n" +
@@ -38,7 +38,7 @@ namespace ICSharpCode.CodeCoverage.Tests
 				"\t\t\t\t\"</xs:element>\\r\\n\" +\r\n" +
 				"\t\t\t\t\"</xs:schema>\";\r\n" +
 				"\t\t}\r\n";
-			document.AddLines(code);
+			document.TextContent = code;
 			MarkerStrategy markerStrategy = new MarkerStrategy(document);
 			
 			string xml = "<coverage>\r\n" +
