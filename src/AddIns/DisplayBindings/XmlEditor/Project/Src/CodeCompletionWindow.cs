@@ -79,6 +79,7 @@ namespace ICSharpCode.XmlEditor
 			
 			declarationViewWindow = new DeclarationViewWindow(parentForm);
 			SetDeclarationViewLocation();
+			declarationViewWindow.MouseMove += ControlMouseMove;
 			declarationViewWindow.ShowDeclarationViewWindow();
 			control.Focus();
 			CodeCompletionListViewSelectedItemChanged(this, EventArgs.Empty);
