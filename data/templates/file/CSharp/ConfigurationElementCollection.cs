@@ -9,7 +9,7 @@ namespace ${StandardNamespace}
 	/// <summary>
 	/// A collection of ${ClassName}Element(s).
 	/// </summary>
-	public class ${ClassName}Collection : ConfigurationElementCollection
+	public sealed class ${ClassName}Collection : ConfigurationElementCollection
 	{
 		#region Properties
 
