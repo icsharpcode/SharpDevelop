@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<Template originator = "Mathias Simmack" created = "01/06/06" lastModified = "09/06/06">
+<Template originator = "Mathias Simmack" created = "01/06/06" lastModified = "04/29/07">
 
 	<!-- Template Header -->
 	<TemplateConfiguration>
@@ -82,7 +82,7 @@ namespace ${StandardNamespace}
 	#endregion
 
 
-	[GuidAttribute("PLACE-A-VALID-GUID-HERE"), ProgId("${StandardNamespace}.Connect")]
+	[GuidAttribute("${GUID}"), ProgId("${StandardNamespace}.Connect")]
 	[ComVisible(true)]
 	public class Connect : Object, Extensibility.IDTExtensibility2
 	{

@@ -27,7 +27,7 @@
 			type          = "System.Boolean"
 			defaultValue  = "False"
 			category      = "${res:Templates.File.Properties.ContextCategory}"
-			description   = "${res:Templates.File.Properties.AddIFDEFTest.Description}"
+			description   = "${res:Templates.File.Properties.IsSealed.Description}"
 		/>
 	</Properties>
 
