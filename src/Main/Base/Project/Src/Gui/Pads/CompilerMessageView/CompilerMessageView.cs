@@ -16,6 +16,7 @@ using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 using ICSharpCode.SharpDevelop.Project;
 
+
 namespace ICSharpCode.SharpDevelop.Gui
 {
 	/// <summary>
@@ -223,26 +224,15 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		const int WM_SETREDRAW = 0x00B;
-		
-		[System.Security.SuppressUnmanagedCodeSecurityAttribute]
-		[System.Runtime.InteropServices.DllImport("user32.dll")]
-		static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);
-		
-		void SetUpdate(bool update)
-		{
-			SendMessage(textEditorControl.Handle, WM_SETREDRAW, update ? new IntPtr(1) : IntPtr.Zero, IntPtr.Zero);
-		}
-		
 		void AppendTextCombined(MessageViewCategory category)
 		{
 			Application.DoEvents();
 			Thread.Sleep(50);
 			Application.DoEvents();
 			lock (appendCallLock) {
-				SetUpdate(false);
+				NativeMethods.SetWindowRedraw(textEditorControl.Handle, false);
 				SetText(category, category.Text);
-				SetUpdate(true);
+				NativeMethods.SetWindowRedraw(textEditorControl.Handle, true);
 				textEditorControl.SelectionStart = textEditorControl.TextLength;
 				if (LoggingService.IsDebugEnabled) {
 					LoggingService.Debug("Replaced " + pendingAppendCalls + " appends with one set call");

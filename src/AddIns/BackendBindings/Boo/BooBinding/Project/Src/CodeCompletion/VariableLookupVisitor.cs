@@ -108,8 +108,10 @@ namespace Grunwald.BooBinding.CodeCompletion
 		
 		public override void OnExceptionHandler(ExceptionHandler node)
 		{
-			if (node.LexicalInfo.Line <= resolver.CaretLine && GetEndSourceLocation(node).Line >= resolver.CaretLine) {
-				DeclarationFound(node.Declaration.Name, node.Declaration.Type ?? new SimpleTypeReference("System.Exception"), null, node.Declaration.LexicalInfo);
+			if (node.Declaration != null) {
+				if (node.LexicalInfo.Line <= resolver.CaretLine && GetEndSourceLocation(node).Line >= resolver.CaretLine) {
+					DeclarationFound(node.Declaration.Name, node.Declaration.Type ?? new SimpleTypeReference("System.Exception"), null, node.Declaration.LexicalInfo);
+				}
 			}
 			base.OnExceptionHandler(node);
 		}

@@ -245,13 +245,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 			return null;
 		}
 		
-		[System.Runtime.InteropServices.DllImport("user32.dll")]
-		public static extern bool LockWindowUpdate(IntPtr hWnd);
-		
 		public void LoadConfiguration()
 		{
 			if (dockPanel != null) {
-				LockWindowUpdate(wbForm.Handle);
+				NativeMethods.SetWindowRedraw(wbForm.Handle, false);
 				try {
 					IViewContent activeView = GetActiveView();
 					dockPanel.ActiveDocumentChanged -= new EventHandler(ActiveMdiChanged);
@@ -267,7 +264,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 						activeView.WorkbenchWindow.SelectWindow();
 					}
 				} finally {
-					LockWindowUpdate(IntPtr.Zero);
+					NativeMethods.SetWindowRedraw(wbForm.Handle, true);
 				}
 			}
 		}

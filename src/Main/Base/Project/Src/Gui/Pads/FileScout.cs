@@ -19,63 +19,15 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
-	public enum DriveType {
-		Unknown     = 0,
-		NoRoot      = 1,
-		Removeable  = 2,
-		Fixed       = 3,
-		Remote      = 4,
-		Cdrom       = 5,
-		Ramdisk     = 6
-	}
-	
 	public class DriveObject
 	{
+		DriveInfo driveInfo;
 		string text  = null;
-		string drive = null;
 		
 		public string Drive {
 			get {
-				return drive;
+				return driveInfo.Name;
 			}
-		}
-		class NativeMethods {
-			[DllImport("kernel32.dll", SetLastError=true)]
-			public static extern int GetVolumeInformation(string volumePath,
-			                                              StringBuilder volumeNameBuffer,
-			                                              int volNameBuffSize,
-			                                              ref int volumeSerNr,
-			                                              ref int maxComponentLength,
-			                                              ref int fileSystemFlags,
-			                                              StringBuilder fileSystemNameBuffer,
-			                                              int fileSysBuffSize);
-			
-			[DllImport("kernel32.dll")]
-			public static extern DriveType GetDriveType(string driveName);
-		}
-		
-		public static string VolumeLabel(string volumePath)
-		{
-			try {
-				StringBuilder volumeName  = new StringBuilder(128);
-				int dummyInt = 0;
-				NativeMethods.GetVolumeInformation(volumePath,
-				                                   volumeName,
-				                                   128,
-				                                   ref dummyInt,
-				                                   ref dummyInt,
-				                                   ref dummyInt,
-				                                   null,
-				                                   0);
-				return volumeName.ToString();
-			} catch (Exception) {
-				return String.Empty;
-			}
-		}
-		
-		public static DriveType GetDriveType(string driveName)
-		{
-			return NativeMethods.GetDriveType(driveName);
 		}
 		
 		public static Image GetImageForFile(string fileName)
@@ -83,23 +35,23 @@ namespace ICSharpCode.SharpDevelop.Gui
 			return IconService.GetBitmap(IconService.GetImageForFile(fileName));
 		}
 		
-		public DriveObject(string drive)
+		public DriveObject(DriveInfo driveInfo)
 		{
-			this.drive = drive;
+			this.driveInfo = driveInfo;
 			
-			text = drive.Substring(0, 2);
+			text = this.Drive.Substring(0, 2);
 			
-			switch(GetDriveType(drive)) {
-				case DriveType.Removeable:
+			switch (driveInfo.DriveType) {
+				case DriveType.Removable:
 					text += " (${res:MainWindow.Windows.FileScout.DriveType.Removeable})";
 					break;
 				case DriveType.Fixed:
 					text += " (${res:MainWindow.Windows.FileScout.DriveType.Fixed})";
 					break;
-				case DriveType.Cdrom:
+				case DriveType.CDRom:
 					text += " (${res:MainWindow.Windows.FileScout.DriveType.CD})";
 					break;
-				case DriveType.Remote:
+				case DriveType.Network:
 					text += " (${res:MainWindow.Windows.FileScout.DriveType.Remote})";
 					break;
 			}
@@ -490,27 +442,25 @@ namespace ICSharpCode.SharpDevelop.Gui
 				computerNode.Tag = "C:\\";
 			}
 			
-			foreach (string driveName in Environment.GetLogicalDrives()) {
-				DriveObject drive = new DriveObject(driveName);
+			foreach (DriveInfo info in DriveInfo.GetDrives()) {
+				DriveObject drive = new DriveObject(info);
 				
 				TreeNode node = new TreeNode(drive.ToString());
 				node.Nodes.Add(new TreeNode(""));
-				node.Tag = driveName.Substring(0, driveName.Length - 1);
+				node.Tag = drive.Drive.Substring(0, 2);
 				computerNode.Nodes.Add(node);
 				
-				
-				
-				switch(DriveObject.GetDriveType(driveName)) {
-					case DriveType.Removeable:
+				switch (info.DriveType) {
+					case DriveType.Removable:
 						node.ImageIndex = node.SelectedImageIndex = 2;
 						break;
 					case DriveType.Fixed:
 						node.ImageIndex = node.SelectedImageIndex = 3;
 						break;
-					case DriveType.Cdrom:
+					case DriveType.CDRom:
 						node.ImageIndex = node.SelectedImageIndex = 4;
 						break;
-					case DriveType.Remote:
+					case DriveType.Network:
 						node.ImageIndex = node.SelectedImageIndex = 5;
 						break;
 					default:
