@@ -199,7 +199,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (ProjectService.OpenSolution != null) {
 				foreach (IProject project in ProjectService.OpenSolution.Projects) {
 					foreach (ProjectItem item in project.Items) {
-						if (item is FileProjectItem) {
+						if (item is FileProjectItem && item.ItemType != ItemType.Folder) {
 							AddSourceFile(text, lineNumber, item);
 						}
 					}

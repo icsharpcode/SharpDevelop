@@ -28,12 +28,6 @@ namespace NRefactoryToBooConverter
 			return null;
 		}
 		
-		public object VisitQueryExpressionFromGenerator(QueryExpressionFromGenerator queryExpressionFromGenerator, object data)
-		{
-			AddError(queryExpressionFromGenerator, "QueryExpressionFromGenerator is not supported.");
-			return null;
-		}
-		
 		public object VisitQueryExpressionGroupClause(QueryExpressionGroupClause queryExpressionGroupClause, object data)
 		{
 			AddError(queryExpressionGroupClause, "QueryExpressionGroupClause is not supported.");
@@ -61,6 +55,18 @@ namespace NRefactoryToBooConverter
 		public object VisitQueryExpressionWhereClause(QueryExpressionWhereClause queryExpressionWhereClause, object data)
 		{
 			AddError(queryExpressionWhereClause, "QueryExpressionWhereClause is not supported.");
+			return null;
+		}
+		
+		public object VisitQueryExpressionJoinClause(QueryExpressionJoinClause queryExpressionJoinClause, object data)
+		{
+			AddError(queryExpressionJoinClause, "QueryExpressionJoinClause is not supported.");
+			return null;
+		}
+		
+		public object VisitQueryExpressionLetClause(QueryExpressionLetClause queryExpressionLetClause, object data)
+		{
+			AddError(queryExpressionLetClause, "QueryExpressionLetClause is not supported.");
 			return null;
 		}
 	}

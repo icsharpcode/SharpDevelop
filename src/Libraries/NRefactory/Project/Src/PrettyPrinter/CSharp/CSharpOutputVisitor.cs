@@ -2566,7 +2566,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		{
 			outputFormatter.IndentationLevel++;
 			queryExpression.FromClause.AcceptVisitor(this, data);
-			queryExpression.FromOrWhereClauses.ForEach(PrintClause);
+			queryExpression.FromLetWhereClauses.ForEach(PrintClause);
 			if (queryExpression.Orderings.Count > 0) {
 				outputFormatter.NewLine();
 				outputFormatter.Indent();
@@ -2593,17 +2593,50 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		{
 			outputFormatter.PrintToken(Tokens.From);
 			outputFormatter.Space();
-			AppendCommaSeparatedList(fromClause.Generators);
+			VisitQueryExpressionFromOrJoinClause(fromClause, data);
 			return null;
 		}
 		
-		public override object TrackedVisitQueryExpressionFromGenerator(QueryExpressionFromGenerator fromGenerator, object data)
+		public override object TrackedVisitQueryExpressionJoinClause(QueryExpressionJoinClause joinClause, object data)
 		{
-			outputFormatter.PrintIdentifier(fromGenerator.Identifier);
+			outputFormatter.PrintToken(Tokens.From);
+			outputFormatter.Space();
+			VisitQueryExpressionFromOrJoinClause(joinClause, data);
+			outputFormatter.Space();
+			outputFormatter.PrintToken(Tokens.On);
+			outputFormatter.Space();
+			joinClause.OnExpression.AcceptVisitor(this, data);
+			outputFormatter.Space();
+			outputFormatter.PrintToken(Tokens.Equals);
+			outputFormatter.Space();
+			joinClause.EqualsExpression.AcceptVisitor(this, data);
+			if (!string.IsNullOrEmpty(joinClause.IntoIdentifier)) {
+				outputFormatter.Space();
+				outputFormatter.PrintToken(Tokens.Into);
+				outputFormatter.Space();
+				outputFormatter.PrintIdentifier(joinClause.IntoIdentifier);
+			}
+			return null;
+		}
+		
+		void VisitQueryExpressionFromOrJoinClause(QueryExpressionFromOrJoinClause clause, object data)
+		{
+			outputFormatter.PrintIdentifier(clause.Identifier);
 			outputFormatter.Space();
 			outputFormatter.PrintToken(Tokens.In);
 			outputFormatter.Space();
-			return fromGenerator.InExpression.AcceptVisitor(this, data);
+			clause.InExpression.AcceptVisitor(this, data);
+		}
+		
+		public override object TrackedVisitQueryExpressionLetClause(QueryExpressionLetClause letClause, object data)
+		{
+			outputFormatter.PrintToken(Tokens.Let);
+			outputFormatter.Space();
+			outputFormatter.PrintIdentifier(letClause.Identifier);
+			outputFormatter.Space();
+			outputFormatter.PrintToken(Tokens.Assign);
+			outputFormatter.Space();
+			return letClause.Expression.AcceptVisitor(this, data);
 		}
 		
 		public override object TrackedVisitQueryExpressionGroupClause(QueryExpressionGroupClause groupClause, object data)

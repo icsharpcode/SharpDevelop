@@ -137,19 +137,50 @@ namespace ICSharpCode.NRefactory.Visitors
 			return base.VisitLambdaExpression(lambdaExpression, data);
 		}
 		
-		public override object VisitQueryExpressionFromGenerator(QueryExpressionFromGenerator queryExpressionFromGenerator, object data)
+		public override object VisitQueryExpressionFromClause(QueryExpressionFromClause fromClause, object data)
 		{
-			if (queryExpressionFromGenerator.Parent != null) {
-				// find parent QueryExpression
-				QueryExpression parentExpression = queryExpressionFromGenerator.Parent.Parent as QueryExpression;
-				
+			QueryExpression parentExpression = fromClause.Parent as QueryExpression;
+			if (parentExpression != null) {
+				AddVariable(fromClause.Type, fromClause.Identifier,
+				            parentExpression.StartLocation, parentExpression.EndLocation,
+				            false, true, fromClause.InExpression);
+			}
+			return base.VisitQueryExpressionFromClause(fromClause, data);
+		}
+		
+		public override object VisitQueryExpressionJoinClause(QueryExpressionJoinClause joinClause, object data)
+		{
+			if (string.IsNullOrEmpty(joinClause.IntoIdentifier)) {
+				QueryExpression parentExpression = joinClause.Parent as QueryExpression;
 				if (parentExpression != null) {
-					AddVariable(null, queryExpressionFromGenerator.Identifier,
+					AddVariable(joinClause.Type, joinClause.Identifier,
 					            parentExpression.StartLocation, parentExpression.EndLocation,
-					            false, true, queryExpressionFromGenerator.InExpression);
+					            false, true, joinClause.InExpression);
+				}
+			} else {
+				AddVariable(joinClause.Type, joinClause.Identifier,
+				            joinClause.StartLocation, joinClause.EndLocation,
+				            false, true, joinClause.InExpression);
+				
+				QueryExpression parentExpression = joinClause.Parent as QueryExpression;
+				if (parentExpression != null) {
+					AddVariable(joinClause.Type, joinClause.IntoIdentifier,
+					            parentExpression.StartLocation, parentExpression.EndLocation,
+					            false, false, joinClause.InExpression);
 				}
 			}
-			return base.VisitQueryExpressionFromGenerator(queryExpressionFromGenerator, data);
+			return base.VisitQueryExpressionJoinClause(joinClause, data);
+		}
+		
+		public override object VisitQueryExpressionLetClause(QueryExpressionLetClause letClause, object data)
+		{
+			QueryExpression parentExpression = letClause.Parent as QueryExpression;
+			if (parentExpression != null) {
+				AddVariable(null, letClause.Identifier,
+				            parentExpression.StartLocation, parentExpression.EndLocation,
+				            false, false, letClause.Expression);
+			}
+			return base.VisitQueryExpressionLetClause(letClause, data);
 		}
 		
 		public override object VisitForNextStatement(ForNextStatement forNextStatement, object data)

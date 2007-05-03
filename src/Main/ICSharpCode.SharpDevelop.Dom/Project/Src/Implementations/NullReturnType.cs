@@ -13,6 +13,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 	/// <summary>The type of the 'null'/'nothing' literal.</summary>
 	public sealed class NullReturnType : AbstractReturnType
 	{
+		private NullReturnType() {}
+		
 		public static readonly NullReturnType Instance = new NullReturnType();
 		
 		public override bool Equals(IReturnType o)

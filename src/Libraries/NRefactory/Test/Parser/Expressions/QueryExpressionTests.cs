@@ -22,12 +22,11 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			QueryExpression qe = ParseUtilCSharp.ParseExpression<QueryExpression>(
 				"from c in customers where c.City == \"London\" select c"
 			);
-			Assert.AreEqual(1, qe.FromClause.Generators.Count);
-			Assert.AreEqual("c", qe.FromClause.Generators[0].Identifier);
-			Assert.AreEqual("customers", ((IdentifierExpression)qe.FromClause.Generators[0].InExpression).Identifier);
-			Assert.AreEqual(1, qe.FromOrWhereClauses.Count);
-			Assert.IsInstanceOfType(typeof(QueryExpressionWhereClause), qe.FromOrWhereClauses[0]);
-			QueryExpressionWhereClause wc = (QueryExpressionWhereClause)qe.FromOrWhereClauses[0];
+			Assert.AreEqual("c", qe.FromClause.Identifier);
+			Assert.AreEqual("customers", ((IdentifierExpression)qe.FromClause.InExpression).Identifier);
+			Assert.AreEqual(1, qe.FromLetWhereClauses.Count);
+			Assert.IsInstanceOfType(typeof(QueryExpressionWhereClause), qe.FromLetWhereClauses[0]);
+			QueryExpressionWhereClause wc = (QueryExpressionWhereClause)qe.FromLetWhereClauses[0];
 			Assert.IsInstanceOfType(typeof(BinaryOperatorExpression), wc.Condition);
 			Assert.IsInstanceOfType(typeof(QueryExpressionSelectClause), qe.SelectOrGroupClause);
 		}
@@ -41,11 +40,10 @@ where c.City == ""London""
 from o in c.Orders
 where o.OrderDate.Year == 2005
 select new { c.Name, o.OrderID, o.Total }");
-			Assert.AreEqual(1, qe.FromClause.Generators.Count);
-			Assert.AreEqual(3, qe.FromOrWhereClauses.Count);
-			Assert.IsInstanceOfType(typeof(QueryExpressionWhereClause), qe.FromOrWhereClauses[0]);
-			Assert.IsInstanceOfType(typeof(QueryExpressionFromClause), qe.FromOrWhereClauses[1]);
-			Assert.IsInstanceOfType(typeof(QueryExpressionWhereClause), qe.FromOrWhereClauses[2]);
+			Assert.AreEqual(3, qe.FromLetWhereClauses.Count);
+			Assert.IsInstanceOfType(typeof(QueryExpressionWhereClause), qe.FromLetWhereClauses[0]);
+			Assert.IsInstanceOfType(typeof(QueryExpressionFromClause), qe.FromLetWhereClauses[1]);
+			Assert.IsInstanceOfType(typeof(QueryExpressionWhereClause), qe.FromLetWhereClauses[2]);
 			
 			Assert.IsInstanceOfType(typeof(QueryExpressionSelectClause), qe.SelectOrGroupClause);
 		}

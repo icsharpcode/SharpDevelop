@@ -152,8 +152,12 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		public const int Ascending            = 138;
 		public const int Descending           = 139;
 		public const int Orderby              = 140;
+		public const int Let                  = 141;
+		public const int Join                 = 142;
+		public const int On                   = 143;
+		new public const int Equals               = 144;
 
-		public const int MaxToken = 141;
+		public const int MaxToken = 145;
 		static BitArray NewSet(params int[] values)
 		{
 			BitArray bitArray = new BitArray(MaxToken);
@@ -162,13 +166,13 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			}
 			return bitArray;
 		}
-		public static BitArray IdentifierTokens = NewSet(Identifier, Partial, Where, Get, Set, Add, Remove, Yield, Select, Group, By, Into, From, Ascending, Descending, Orderby);
+		public static BitArray IdentifierTokens = NewSet(Identifier, Partial, Where, Get, Set, Add, Remove, Yield, Select, Group, By, Into, From, Ascending, Descending, Orderby, Let, Join, On, Equals);
 		public static BitArray OverloadableUnaryOp = NewSet(Minus, Not, BitwiseComplement, Increment, Decrement, True, False);
 		public static BitArray OverloadableBinaryOp = NewSet(Plus, Minus, Times, Div, Mod, BitwiseAnd, BitwiseOr, Xor, ShiftLeft, Equal, NotEqual, GreaterThan, LessThan, GreaterEqual, LessEqual);
 		public static BitArray TypeKW = NewSet(Char, Bool, Object, String, Sbyte, Byte, Short, Ushort, Int, Uint, Long, Ulong, Float, Double, Decimal);
 		public static BitArray UnaryHead = NewSet(Plus, Minus, Not, BitwiseComplement, Times, Increment, Decrement, BitwiseAnd);
 		public static BitArray AssnStartOp = NewSet(Plus, Minus, Not, BitwiseComplement, Times);
-		public static BitArray CastFollower = NewSet(Identifier, Partial, Where, Get, Set, Add, Remove, Yield, Select, Group, By, Into, From, Ascending, Descending, Orderby, Literal, OpenParenthesis, New, This, Base, Null, Checked, Unchecked, Typeof, Sizeof, Delegate, Minus, Not, BitwiseComplement, Increment, Decrement, True, False, Plus, Minus, Not, BitwiseComplement, Times, Increment, Decrement, BitwiseAnd);
+		public static BitArray CastFollower = NewSet(Identifier, Partial, Where, Get, Set, Add, Remove, Yield, Select, Group, By, Into, From, Ascending, Descending, Orderby, Let, Join, On, Equals, Literal, OpenParenthesis, New, This, Base, Null, Checked, Unchecked, Typeof, Sizeof, Delegate, Minus, Not, BitwiseComplement, Increment, Decrement, True, False, Plus, Minus, Not, BitwiseComplement, Times, Increment, Decrement, BitwiseAnd);
 		public static BitArray AssgnOps = NewSet(Assign, PlusAssign, MinusAssign, TimesAssign, DivAssign, ModAssign, BitwiseAndAssign, BitwiseOrAssign, ShiftLeftAssign);
 		public static BitArray UnaryOp = NewSet(Plus, Minus, Not, BitwiseComplement, Times, Increment, Decrement, BitwiseAnd);
 		public static BitArray TypeDeclarationKW = NewSet(Class, Interface, Struct, Enum, Delegate);
@@ -318,6 +322,10 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			"ascending",
 			"descending",
 			"orderby",
+			"let",
+			"join",
+			"on",
+			"equals",
 		};
 		public static string GetTokenString(int token)
 		{

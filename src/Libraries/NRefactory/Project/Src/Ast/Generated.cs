@@ -1586,15 +1586,15 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 		}
 		
-		public bool HasRemoveRegion {
-			get {
-				return !removeRegion.IsNull;
-			}
-		}
-		
 		public bool HasAddRegion {
 			get {
 				return !addRegion.IsNull;
+			}
+		}
+		
+		public bool HasRemoveRegion {
+			get {
+				return !removeRegion.IsNull;
 			}
 		}
 		
@@ -2250,17 +2250,17 @@ namespace ICSharpCode.NRefactory.Ast {
 			elseIfSections = new List<ElseIfSection>();
 		}
 		
-		public bool HasElseIfSections {
-			get {
-				return elseIfSections.Count > 0;
-			}
-		}
-		
 
 			public IfElseStatement(Expression condition, Statement trueStatement)
 				: this(condition) {
 				this.trueStatement.Add(Statement.CheckNull(trueStatement));
 			}
+		
+		public bool HasElseIfSections {
+			get {
+				return elseIfSections.Count > 0;
+			}
+		}
 		
 
 			public IfElseStatement(Expression condition, Statement trueStatement, Statement falseStatement)
@@ -2388,12 +2388,6 @@ namespace ICSharpCode.NRefactory.Ast {
 			setRegion = PropertySetRegion.Null;
 		}
 		
-		public bool IsWriteOnly {
-			get {
-				return !HasGetRegion && HasSetRegion;
-			}
-		}
-		
 		public bool IsReadOnly {
 			get {
 				return HasGetRegion && !HasSetRegion;
@@ -2403,6 +2397,12 @@ namespace ICSharpCode.NRefactory.Ast {
 		public bool HasGetRegion {
 			get {
 				return !getRegion.IsNull;
+			}
+		}
+		
+		public bool IsWriteOnly {
+			get {
+				return !HasGetRegion && HasSetRegion;
 			}
 		}
 		
@@ -3272,24 +3272,6 @@ namespace ICSharpCode.NRefactory.Ast {
 			setRegion = PropertySetRegion.Null;
 		}
 		
-		public bool HasGetRegion {
-			get {
-				return !getRegion.IsNull;
-			}
-		}
-		
-		public bool HasSetRegion {
-			get {
-				return !setRegion.IsNull;
-			}
-		}
-		
-		public bool IsReadOnly {
-			get {
-				return HasGetRegion && !HasSetRegion;
-			}
-		}
-		
 		public bool IsWriteOnly {
 			get {
 				return !HasGetRegion && HasSetRegion;
@@ -3305,6 +3287,24 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 			if ((modifier & Modifiers.WriteOnly) != Modifiers.WriteOnly) {
 				this.GetRegion = new PropertyGetRegion(null, null);
+			}
+		}
+		
+		public bool IsReadOnly {
+			get {
+				return HasGetRegion && !HasSetRegion;
+			}
+		}
+		
+		public bool HasGetRegion {
+			get {
+				return !getRegion.IsNull;
+			}
+		}
+		
+		public bool HasSetRegion {
+			get {
+				return !setRegion.IsNull;
 			}
 		}
 		
@@ -3449,7 +3449,7 @@ namespace ICSharpCode.NRefactory.Ast {
 		
 		QueryExpressionFromClause fromClause;
 		
-		List<QueryExpressionClause> fromOrWhereClauses;
+		List<QueryExpressionClause> fromLetWhereClauses;
 		
 		List<QueryExpressionOrdering> orderings;
 		
@@ -3467,12 +3467,12 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 		}
 		
-		public List<QueryExpressionClause> FromOrWhereClauses {
+		public List<QueryExpressionClause> FromLetWhereClauses {
 			get {
-				return fromOrWhereClauses;
+				return fromLetWhereClauses;
 			}
 			set {
-				fromOrWhereClauses = value ?? new List<QueryExpressionClause>();
+				fromLetWhereClauses = value ?? new List<QueryExpressionClause>();
 			}
 		}
 		
@@ -3507,7 +3507,7 @@ namespace ICSharpCode.NRefactory.Ast {
 		
 		public QueryExpression() {
 			fromClause = QueryExpressionFromClause.Null;
-			fromOrWhereClauses = new List<QueryExpressionClause>();
+			fromLetWhereClauses = new List<QueryExpressionClause>();
 			orderings = new List<QueryExpressionOrdering>();
 			selectOrGroupClause = QueryExpressionClause.Null;
 			intoClause = QueryExpressionIntoClause.Null;
@@ -3524,8 +3524,8 @@ namespace ICSharpCode.NRefactory.Ast {
 		}
 		
 		public override string ToString() {
-			return string.Format("[QueryExpression FromClause={0} FromOrWhereClauses={1} Orderings={2} SelectOrGrou" +
-					"pClause={3} IntoClause={4}]", FromClause, GetCollectionString(FromOrWhereClauses), GetCollectionString(Orderings), SelectOrGroupClause, IntoClause);
+			return string.Format("[QueryExpression FromClause={0} FromLetWhereClauses={1} Orderings={2} SelectOrGro" +
+					"upClause={3} IntoClause={4}]", FromClause, GetCollectionString(FromLetWhereClauses), GetCollectionString(Orderings), SelectOrGroupClause, IntoClause);
 		}
 	}
 	
@@ -3582,21 +3582,9 @@ namespace ICSharpCode.NRefactory.Ast {
 		}
 	}
 	
-	public class QueryExpressionFromClause : QueryExpressionClause {
-		
-		List<QueryExpressionFromGenerator> generators;
-		
-		public List<QueryExpressionFromGenerator> Generators {
-			get {
-				return generators;
-			}
-			set {
-				generators = value ?? new List<QueryExpressionFromGenerator>();
-			}
-		}
+	public class QueryExpressionFromClause : QueryExpressionFromOrJoinClause {
 		
 		public QueryExpressionFromClause() {
-			generators = new List<QueryExpressionFromGenerator>();
 		}
 		
 		public new static QueryExpressionFromClause Null {
@@ -3610,7 +3598,7 @@ namespace ICSharpCode.NRefactory.Ast {
 		}
 		
 		public override string ToString() {
-			return string.Format("[QueryExpressionFromClause Generators={0}]", GetCollectionString(Generators));
+			return string.Format("[QueryExpressionFromClause Type={0} Identifier={1} InExpression={2}]", Type, Identifier, InExpression);
 		}
 	}
 	
@@ -3633,11 +3621,22 @@ namespace ICSharpCode.NRefactory.Ast {
 		}
 	}
 	
-	public class QueryExpressionFromGenerator : AbstractNode {
+	public abstract class QueryExpressionFromOrJoinClause : QueryExpressionClause {
+		
+		TypeReference type;
 		
 		string identifier;
 		
 		Expression inExpression;
+		
+		public TypeReference Type {
+			get {
+				return type;
+			}
+			set {
+				type = value ?? TypeReference.Null;
+			}
+		}
 		
 		public string Identifier {
 			get {
@@ -3656,19 +3655,6 @@ namespace ICSharpCode.NRefactory.Ast {
 				inExpression = value ?? Expression.Null;
 				if (!inExpression.IsNull) inExpression.Parent = this;
 			}
-		}
-		
-		public QueryExpressionFromGenerator() {
-			identifier = "?";
-			inExpression = Expression.Null;
-		}
-		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.VisitQueryExpressionFromGenerator(this, data);
-		}
-		
-		public override string ToString() {
-			return string.Format("[QueryExpressionFromGenerator Identifier={0} InExpression={1}]", Identifier, InExpression);
 		}
 	}
 	
@@ -3773,6 +3759,98 @@ namespace ICSharpCode.NRefactory.Ast {
 		
 		public override string ToString() {
 			return "[NullQueryExpressionIntoClause]";
+		}
+	}
+	
+	public class QueryExpressionJoinClause : QueryExpressionFromOrJoinClause {
+		
+		Expression onExpression;
+		
+		Expression equalsExpression;
+		
+		string intoIdentifier;
+		
+		public Expression OnExpression {
+			get {
+				return onExpression;
+			}
+			set {
+				onExpression = value ?? Expression.Null;
+				if (!onExpression.IsNull) onExpression.Parent = this;
+			}
+		}
+		
+		public Expression EqualsExpression {
+			get {
+				return equalsExpression;
+			}
+			set {
+				equalsExpression = value ?? Expression.Null;
+				if (!equalsExpression.IsNull) equalsExpression.Parent = this;
+			}
+		}
+		
+		public string IntoIdentifier {
+			get {
+				return intoIdentifier;
+			}
+			set {
+				intoIdentifier = value ?? "";
+			}
+		}
+		
+		public QueryExpressionJoinClause() {
+			onExpression = Expression.Null;
+			equalsExpression = Expression.Null;
+			intoIdentifier = "";
+		}
+		
+		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+			return visitor.VisitQueryExpressionJoinClause(this, data);
+		}
+		
+		public override string ToString() {
+			return string.Format("[QueryExpressionJoinClause OnExpression={0} EqualsExpression={1} IntoIdentifier={" +
+					"2} Type={3} Identifier={4} InExpression={5}]", OnExpression, EqualsExpression, IntoIdentifier, Type, Identifier, InExpression);
+		}
+	}
+	
+	public class QueryExpressionLetClause : QueryExpressionClause {
+		
+		string identifier;
+		
+		Expression expression;
+		
+		public string Identifier {
+			get {
+				return identifier;
+			}
+			set {
+				identifier = string.IsNullOrEmpty(value) ? "?" : value;
+			}
+		}
+		
+		public Expression Expression {
+			get {
+				return expression;
+			}
+			set {
+				expression = value ?? Expression.Null;
+				if (!expression.IsNull) expression.Parent = this;
+			}
+		}
+		
+		public QueryExpressionLetClause() {
+			identifier = "?";
+			expression = Expression.Null;
+		}
+		
+		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+			return visitor.VisitQueryExpressionLetClause(this, data);
+		}
+		
+		public override string ToString() {
+			return string.Format("[QueryExpressionLetClause Identifier={0} Expression={1}]", Identifier, Expression);
 		}
 	}
 	
@@ -4693,9 +4771,9 @@ public TypeReferenceExpression(string typeName) : this(new TypeReference(typeNam
 			Usings = usings;
 		}
 		
-public UsingDeclaration(string @namespace, TypeReference alias) { usings = new List<Using>(1); usings.Add(new Using(@namespace, alias)); }
-		
 public UsingDeclaration(string @namespace) : this(@namespace, null) {}
+		
+public UsingDeclaration(string @namespace, TypeReference alias) { usings = new List<Using>(1); usings.Add(new Using(@namespace, alias)); }
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
 			return visitor.VisitUsingDeclaration(this, data);
@@ -4871,15 +4949,15 @@ public UsingDeclaration(string @namespace) : this(@namespace, null) {}
 			Statement = statement;
 		}
 		
-		public bool IsYieldBreak {
-			get {
-				return statement is BreakStatement;
-			}
-		}
-		
 		public bool IsYieldReturn {
 			get {
 				return statement is ReturnStatement;
+			}
+		}
+		
+		public bool IsYieldBreak {
+			get {
+				return statement is BreakStatement;
 			}
 		}
 		

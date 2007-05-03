@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.IO;
 using System.Diagnostics;
@@ -17,6 +18,17 @@ using NR = ICSharpCode.NRefactory;
 
 namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 {
+	/// <summary>
+	/// NRefactoryResolver implements the IResolver interface for the NRefactory languages (C# and VB).
+	/// </summary>
+	/// <remarks>
+	/// About implementing code-completion for other languages:
+	/// 
+	/// It possible to convert from your AST to NRefactory (to C# or VB) (or even let your parser create
+	/// NRefactory AST objects directly), but then code-completion might be incorrect when the rules of your language
+	/// differ from the C#/VB language rules.
+	/// If you want to correctly implement code-completion for your own language, you should implement your own resolver.
+	/// </remarks>
 	public class NRefactoryResolver : IResolver
 	{
 		ICompilationUnit cu;
@@ -341,7 +353,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 							ctors.Add(m);
 					}
 					TypeVisitor typeVisitor = new TypeVisitor(this);
-					return CreateMemberResolveResult(typeVisitor.FindOverload(ctors, null, ie.Arguments, null));
+					return CreateMemberResolveResult(typeVisitor.FindOverload(ctors, null, ie.Arguments));
 				}
 			}
 			return null;
@@ -440,7 +452,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					typeParameters = new IReturnType[type.CastToConstructedReturnType().TypeArguments.Count];
 					type.CastToConstructedReturnType().TypeArguments.CopyTo(typeParameters, 0);
 				}
-				ResolveResult rr = CreateMemberResolveResult(typeVisitor.FindOverload(constructors, typeParameters, ((ObjectCreateExpression)expr).Parameters, null));
+				ResolveResult rr = CreateMemberResolveResult(typeVisitor.FindOverload(constructors, typeParameters, ((ObjectCreateExpression)expr).Parameters));
 				if (rr != null) {
 					rr.ResolvedType = type;
 				}
@@ -887,19 +899,35 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					methods.Add(m);
 				}
 			}
-			if (methods.Count == 0) {
-				if (languageProperties.SupportsExtensionMethods && callingClass != null) {
-					ArrayList list = new ArrayList();
-					ResolveResult.AddExtensions(languageProperties, list, callingClass, type);
-					foreach (IMethodOrProperty mp in list) {
-						if (mp is IMethod && IsSameName(mp.Name, memberName)) {
-							methods.Add((IMethod)mp);
-						}
-					}
-				}
-			}
 			
 			return methods;
+		}
+		
+		public IList<IMethod> SearchExtensionMethods(string name)
+		{
+			List<IMethod> results = new List<IMethod>();
+			foreach (IMethodOrProperty m in SearchAllExtensionMethods()) {
+				if (IsSameName(name, m.Name)) {
+					results.Add((IMethod)m);
+				}
+			}
+			return results;
+		}
+		
+		ReadOnlyCollection<IMethodOrProperty> cachedExtensionMethods;
+		IClass cachedExtensionMethods_LastClass; // invalidate cache when callingClass != LastClass
+		
+		static readonly ReadOnlyCollection<IMethodOrProperty> emptyMethodOrPropertyList = new ReadOnlyCollection<IMethodOrProperty>(new IMethodOrProperty[0]);
+		
+		public ReadOnlyCollection<IMethodOrProperty> SearchAllExtensionMethods()
+		{
+			if (callingClass == null)
+				return emptyMethodOrPropertyList;
+			if (callingClass != cachedExtensionMethods_LastClass) {
+				cachedExtensionMethods_LastClass = callingClass;
+				cachedExtensionMethods = new ReadOnlyCollection<IMethodOrProperty>(CtrlSpaceResolveHelper.FindAllExtensions(languageProperties, callingClass));
+			}
+			return cachedExtensionMethods;
 		}
 		#endregion
 		
@@ -975,7 +1003,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				return null;
 			}
 			
-			if (v.TypeRef == null || v.TypeRef.Type == "var") {
+			if (v.TypeRef == null || v.TypeRef.IsNull || v.TypeRef.Type == "var") {
 				if (v.IsLoopVariable) {
 					return new ElementReturnType(this.projectContent,
 					                             new InferredReturnType(v.Initializer, this));

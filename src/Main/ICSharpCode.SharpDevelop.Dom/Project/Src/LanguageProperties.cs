@@ -101,7 +101,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// <summary>
 		/// Gets if extension methods/properties are searched in imported classes (returns true) or if
 		/// only the extensions from the current class, imported classes and imported modules are used
-		/// (returns false). This property has no effect if the language doesn't support
+		/// (returns false). This property has no effect if the language doesn't support extension methods or properties.
 		/// </summary>
 		public virtual bool SearchExtensionsInClasses {
 			get { return false; }

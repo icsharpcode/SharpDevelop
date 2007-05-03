@@ -14,18 +14,30 @@ namespace ICSharpCode.SharpDevelop.Dom
 	/// Class with methods to help finding the correct overload for a member.
 	/// </summary>
 	/// <remarks>
-	/// This class tries to do member lookup as close to the C# spec (ECMA-334, § 14.3) as possible.
+	/// This class does member lookup like specified by the C# spec (ECMA-334, § 14.3).
 	/// Other languages might need custom lookup methods.
 	/// </remarks>
 	public static class MemberLookupHelper
 	{
 		#region FindOverload
-		public static IMethod FindOverload(IList<IMethod> methods, IReturnType[] typeParameters, IReturnType[] arguments)
+		/// <summary>
+		/// Finds the correct overload according to the C# specification.
+		/// </summary>
+		/// <param name="methods">List with the methods to check.<br/>
+		/// <b>Generic methods in the input type are replaced by methods with have the types substituted!</b>
+		/// </param>
+		/// <param name="typeParameters">The type parameters passed to the method.</param>
+		/// <param name="arguments">The types of the arguments passed to the method.</param>
+		/// <param name="resultIsAcceptable">Out parameter. Will be true if the resulting method
+		/// is an acceptable match, false if the resulting method is just a guess and will lead
+		/// to a compile error.</param>
+		/// <returns>The method that will be called.</returns>
+		public static IMethod FindOverload(IList<IMethod> methods, IReturnType[] typeParameters, IReturnType[] arguments, out bool resultIsAcceptable)
 		{
+			resultIsAcceptable = false;
 			if (methods.Count == 0)
 				return null;
-			bool tmp;
-			int[] ranking = RankOverloads(methods, typeParameters, arguments, false, out tmp);
+			int[] ranking = RankOverloads(methods, typeParameters, arguments, false, out resultIsAcceptable);
 			int bestRanking = -1;
 			int best = 0;
 			for (int i = 0; i < ranking.Length; i++) {
@@ -61,7 +73,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// <summary>
 		/// Assigns a ranking score to each method in the <paramref name="list"/>.
 		/// </summary>
-		/// <param name="list">Link with the methods to check.<br/>
+		/// <param name="list">List with the methods to check.<br/>
 		/// <b>Generic methods in the input type are replaced by methods with have the types substituted!</b>
 		/// </param>
 		/// <param name="typeParameters">List with the type parameters passed to the method.
@@ -212,7 +224,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 								// the old member is better
 								ranking[i] = score - 1;
 								// this is not really correct, we would need to compare the member with other members
-								// but this works as we're mostly interested in the best overload only
+								// but this works as we're interested in the best overload only
 								break;
 						}
 					}
@@ -397,20 +409,25 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// Returns false when expectedArgument and passedArgument are incompatible, otherwise true
 		/// is returned (true is used both for successful inferring and other kind of errors).
 		/// </summary>
+		/// <remarks>
+		/// The C# spec (§ 25.6.4) has a bug: it says that type inference works if the passedArgument is IEnumerable{T}
+		/// and the expectedArgument is an array; passedArgument and expectedArgument must be swapped here.
+		/// </remarks>
 		public static bool InferTypeArgument(IReturnType expectedArgument, IReturnType passedArgument, IReturnType[] outputArray)
 		{
 			if (expectedArgument == null) return true;
-			if (passedArgument == null) return true; // TODO: NullTypeReference
-			if (expectedArgument.IsArrayReturnType) {
-				IReturnType expectedArrayElementType = expectedArgument.CastToArrayReturnType().ArrayElementType;
-				if (passedArgument.IsArrayReturnType && expectedArgument.CastToArrayReturnType().ArrayDimensions == passedArgument.CastToArrayReturnType().ArrayDimensions) {
-					return InferTypeArgument(expectedArrayElementType, passedArgument.CastToArrayReturnType().ArrayElementType, outputArray);
-				} else if (passedArgument.IsConstructedReturnType) {
-					switch (passedArgument.FullyQualifiedName) {
+			if (passedArgument == null || passedArgument == NullReturnType.Instance) return true;
+			
+			if (passedArgument.IsArrayReturnType) {
+				IReturnType passedArrayElementType = passedArgument.CastToArrayReturnType().ArrayElementType;
+				if (expectedArgument.IsArrayReturnType && expectedArgument.CastToArrayReturnType().ArrayDimensions == passedArgument.CastToArrayReturnType().ArrayDimensions) {
+					return InferTypeArgument(expectedArgument.CastToArrayReturnType().ArrayElementType, passedArrayElementType, outputArray);
+				} else if (expectedArgument.IsConstructedReturnType) {
+					switch (expectedArgument.FullyQualifiedName) {
 						case "System.Collections.Generic.IList":
 						case "System.Collections.Generic.ICollection":
 						case "System.Collections.Generic.IEnumerable":
-							return InferTypeArgument(expectedArrayElementType, passedArgument.CastToConstructedReturnType().TypeArguments[0], outputArray);
+							return InferTypeArgument(expectedArgument.CastToConstructedReturnType().TypeArguments[0], passedArrayElementType, outputArray);
 					}
 				}
 				// If P is an array type, and A is not an array type of the same rank,
@@ -505,7 +522,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public static bool IsApplicable(IReturnType argument, IReturnType expected)
 		{
-			if (argument == null) // TODO: Use NullReturnType instead of no return type
+			if (argument == null || argument == NullReturnType.Instance)
 				return true; // "null" can be passed for any argument
 			if (expected.IsGenericReturnType) {
 				foreach (IReturnType constraint in expected.CastToGenericReturnType().TypeParameter.Constraints) {
@@ -582,6 +599,23 @@ namespace ICSharpCode.SharpDevelop.Dom
 				// from array to other array type
 				if (fromArt.ArrayDimensions == toArt.ArrayDimensions) {
 					return ConversionExists(fromArt.ArrayElementType, toArt.ArrayElementType);
+				}
+			}
+			
+			if (from.IsDecoratingReturnType<AnonymousMethodReturnType>() && (toIsDefault || to.IsConstructedReturnType)) {
+				IList<IParameter> methodParameters = from.CastToDecoratingReturnType<AnonymousMethodReturnType>().MethodParameters;
+				IClass toClass = to.GetUnderlyingClass();
+				if (toClass != null && toClass.ClassType == ClassType.Delegate) {
+					if (methodParameters == null) {
+						return true;
+					} else {
+						foreach (IMethod m in toClass.Methods) {
+							if (m.Name == "Invoke") {
+								return m.Parameters.Count == methodParameters.Count;
+							}
+						}
+						return true;
+					}
 				}
 			}
 			

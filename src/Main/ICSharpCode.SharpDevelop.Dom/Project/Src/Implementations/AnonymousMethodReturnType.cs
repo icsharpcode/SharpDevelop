@@ -17,7 +17,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 	public sealed class AnonymousMethodReturnType : DecoratingReturnType
 	{
 		IReturnType returnType;
-		IList<IParameter> parameters = new List<IParameter>();
+		IList<IParameter> parameters;
 		ICompilationUnit cu;
 		
 		public AnonymousMethodReturnType(ICompilationUnit cu)
@@ -60,26 +60,25 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 		
 		/// <summary>
-		/// Gets the list of method parameters.
+		/// Gets the list of method parameters. Can be null if the anonymous method has no parameter list.
 		/// </summary>
 		public IList<IParameter> MethodParameters {
-			get {
-				return parameters;
-			}
-			set {
-				if (value == null) throw new ArgumentNullException("value");
-				parameters = value;
-			}
+			get { return parameters; }
+			set { parameters = value; }
 		}
 		
-		volatile DefaultClass cachedClass;
+		public bool HasParameterList {
+			get { return parameters != null; }
+		}
+		
+		DefaultClass cachedClass;
 		
 		public override IClass GetUnderlyingClass()
 		{
 			if (cachedClass != null) return cachedClass;
 			DefaultClass c = new DefaultClass(cu, ClassType.Delegate, ModifierEnum.None, DomRegion.Empty, null);
 			c.BaseTypes.Add(cu.ProjectContent.SystemTypes.Delegate);
-			AddDefaultDelegateMethod(c, returnType ?? cu.ProjectContent.SystemTypes.Object, parameters);
+			AddDefaultDelegateMethod(c, returnType ?? cu.ProjectContent.SystemTypes.Object, parameters ?? new IParameter[0]);
 			cachedClass = c;
 			return c;
 		}
@@ -118,17 +117,20 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public override string FullyQualifiedName {
 			get {
-				StringBuilder b = new StringBuilder("delegate(");
-				bool first = true;
-				foreach (IParameter p in parameters) {
-					if (first) first = false; else b.Append(", ");
-					b.Append(p.Name);
-					if (p.ReturnType != null) {
-						b.Append(":");
-						b.Append(p.ReturnType.Name);
+				StringBuilder b = new StringBuilder("delegate");
+				if (HasParameterList) {
+					bool first = true;
+					b.Append("(");
+					foreach (IParameter p in parameters) {
+						if (first) first = false; else b.Append(", ");
+						b.Append(p.Name);
+						if (p.ReturnType != null) {
+							b.Append(":");
+							b.Append(p.ReturnType.Name);
+						}
 					}
+					b.Append(")");
 				}
-				b.Append(")");
 				if (returnType != null) {
 					b.Append(":");
 					b.Append(returnType.Name);

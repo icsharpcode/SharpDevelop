@@ -2731,11 +2731,6 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			throw new NotImplementedException();
 		}
 		
-		public override object TrackedVisitQueryExpressionFromGenerator(QueryExpressionFromGenerator queryExpressionFromGenerator, object data)
-		{
-			throw new NotImplementedException();
-		}
-		
 		public override object TrackedVisitQueryExpressionGroupClause(QueryExpressionGroupClause queryExpressionGroupClause, object data)
 		{
 			throw new NotImplementedException();
@@ -2757,6 +2752,16 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		}
 		
 		public override object TrackedVisitQueryExpressionWhereClause(QueryExpressionWhereClause queryExpressionWhereClause, object data)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public override object TrackedVisitQueryExpressionJoinClause(QueryExpressionJoinClause queryExpressionJoinClause, object data)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public override object TrackedVisitQueryExpressionLetClause(QueryExpressionLetClause queryExpressionLetClause, object data)
 		{
 			throw new NotImplementedException();
 		}

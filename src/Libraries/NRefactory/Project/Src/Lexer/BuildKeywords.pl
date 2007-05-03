@@ -127,7 +127,7 @@ sub write_keywordfile
 
 sub write_token {
 	$formattedString = sprintf("%-20s", ucfirst $tokenName);
-	if ($tokenName eq "GetType") {
+	if (($tokenName eq "GetType") or ($tokenName eq "equals")) {
 		print DAT "\t\tnew public const int $formattedString = $tokenValue;\n";
 	} else {
 		print DAT "\t\tpublic const int $formattedString = $tokenValue;\n";

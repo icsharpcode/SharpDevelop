@@ -29,6 +29,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		// contains <guid>, (IProject/ISolutionFolder) pairs.
 		Dictionary<string, ISolutionFolder> guidDictionary = new Dictionary<string, ISolutionFolder>();
 		
+		/// <summary>
+		/// The version number of the solution (9 = Whidbey, 10 = Orcas)
+		/// </summary>
+		int versionNumber = 9;
+		
 		string fileName = String.Empty;
 		
 		MSBuild.Engine buildEngine = MSBuildInternals.CreateEngine();
@@ -333,8 +338,10 @@ namespace ICSharpCode.SharpDevelop.Project
 			// we need to specify UTF8 because MSBuild needs the BOM
 			using (StreamWriter sw = new StreamWriter(fileName, false, Encoding.UTF8)) {
 				sw.WriteLine();
-				sw.WriteLine("Microsoft Visual Studio Solution File, Format Version 9.00");
-				sw.WriteLine("# Visual Studio 2005");
+				sw.WriteLine("Microsoft Visual Studio Solution File, Format Version " + versionNumber + ".00");
+				if (versionNumber == 9) {
+					sw.WriteLine("# Visual Studio 2005");
+				}
 				sw.WriteLine("# SharpDevelop " + RevisionClass.FullVersion);
 				sw.Write(projectSection.ToString());
 				
@@ -446,6 +453,10 @@ namespace ICSharpCode.SharpDevelop.Project
 						}
 						break;
 					case "9.00":
+						newSolution.versionNumber = 9;
+						break;
+					case "10.00":
+						newSolution.versionNumber = 10;
 						break;
 					default:
 						MessageService.ShowErrorFormatted("${res:SharpDevelop.Solution.UnknownSolutionVersion}", match.Result("${Version}"));

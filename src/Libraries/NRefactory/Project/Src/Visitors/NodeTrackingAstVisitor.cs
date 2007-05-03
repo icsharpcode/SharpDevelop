@@ -556,13 +556,6 @@ namespace ICSharpCode.NRefactory.Visitors {
 			return result;
 		}
 		
-		public sealed override object VisitQueryExpressionFromGenerator(QueryExpressionFromGenerator queryExpressionFromGenerator, object data) {
-			this.BeginVisit(queryExpressionFromGenerator);
-			object result = this.TrackedVisitQueryExpressionFromGenerator(queryExpressionFromGenerator, data);
-			this.EndVisit(queryExpressionFromGenerator);
-			return result;
-		}
-		
 		public sealed override object VisitQueryExpressionGroupClause(QueryExpressionGroupClause queryExpressionGroupClause, object data) {
 			this.BeginVisit(queryExpressionGroupClause);
 			object result = this.TrackedVisitQueryExpressionGroupClause(queryExpressionGroupClause, data);
@@ -574,6 +567,20 @@ namespace ICSharpCode.NRefactory.Visitors {
 			this.BeginVisit(queryExpressionIntoClause);
 			object result = this.TrackedVisitQueryExpressionIntoClause(queryExpressionIntoClause, data);
 			this.EndVisit(queryExpressionIntoClause);
+			return result;
+		}
+		
+		public sealed override object VisitQueryExpressionJoinClause(QueryExpressionJoinClause queryExpressionJoinClause, object data) {
+			this.BeginVisit(queryExpressionJoinClause);
+			object result = this.TrackedVisitQueryExpressionJoinClause(queryExpressionJoinClause, data);
+			this.EndVisit(queryExpressionJoinClause);
+			return result;
+		}
+		
+		public sealed override object VisitQueryExpressionLetClause(QueryExpressionLetClause queryExpressionLetClause, object data) {
+			this.BeginVisit(queryExpressionLetClause);
+			object result = this.TrackedVisitQueryExpressionLetClause(queryExpressionLetClause, data);
+			this.EndVisit(queryExpressionLetClause);
 			return result;
 		}
 		
@@ -1101,16 +1108,20 @@ namespace ICSharpCode.NRefactory.Visitors {
 			return base.VisitQueryExpressionFromClause(queryExpressionFromClause, data);
 		}
 		
-		public virtual object TrackedVisitQueryExpressionFromGenerator(QueryExpressionFromGenerator queryExpressionFromGenerator, object data) {
-			return base.VisitQueryExpressionFromGenerator(queryExpressionFromGenerator, data);
-		}
-		
 		public virtual object TrackedVisitQueryExpressionGroupClause(QueryExpressionGroupClause queryExpressionGroupClause, object data) {
 			return base.VisitQueryExpressionGroupClause(queryExpressionGroupClause, data);
 		}
 		
 		public virtual object TrackedVisitQueryExpressionIntoClause(QueryExpressionIntoClause queryExpressionIntoClause, object data) {
 			return base.VisitQueryExpressionIntoClause(queryExpressionIntoClause, data);
+		}
+		
+		public virtual object TrackedVisitQueryExpressionJoinClause(QueryExpressionJoinClause queryExpressionJoinClause, object data) {
+			return base.VisitQueryExpressionJoinClause(queryExpressionJoinClause, data);
+		}
+		
+		public virtual object TrackedVisitQueryExpressionLetClause(QueryExpressionLetClause queryExpressionLetClause, object data) {
+			return base.VisitQueryExpressionLetClause(queryExpressionLetClause, data);
 		}
 		
 		public virtual object TrackedVisitQueryExpressionOrdering(QueryExpressionOrdering queryExpressionOrdering, object data) {

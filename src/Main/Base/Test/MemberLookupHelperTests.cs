@@ -329,5 +329,37 @@ namespace ICSharpCode.SharpDevelop.Tests
 			Assert.IsTrue(MemberLookupHelper.ConversionExists(new ArrayReturnType(msc, msc.SystemTypes.String, 1),
 			                                                  IListOf(CreateT())));
 		}
+		
+		[Test]
+		public void ConversionExistsFromAnonymousDelegateToSystemPredicate()
+		{
+			Assert.IsTrue(MemberLookupHelper.ConversionExists(
+				new AnonymousMethodReturnType(new DefaultCompilationUnit(msc)),
+				new GetClassReturnType(msc, "System.Predicate", 1)
+			));
+		}
+		
+		[Test]
+		public void NoConversionExistsFromParameterlessAnonymousDelegateToSystemPredicate()
+		{
+			AnonymousMethodReturnType amrt = new AnonymousMethodReturnType(new DefaultCompilationUnit(msc));
+			amrt.MethodParameters = new List<IParameter>();
+			Assert.IsFalse(MemberLookupHelper.ConversionExists(
+				amrt,
+				new GetClassReturnType(msc, "System.Predicate", 1)
+			));
+		}
+		
+		[Test]
+		public void ConversionExistsFromAnonymousDelegateWithParameterToSystemPredicate()
+		{
+			AnonymousMethodReturnType amrt = new AnonymousMethodReturnType(new DefaultCompilationUnit(msc));
+			amrt.MethodParameters = new List<IParameter>();
+			amrt.MethodParameters.Add(new DefaultParameter("test", msc.SystemTypes.Object, DomRegion.Empty));
+			Assert.IsTrue(MemberLookupHelper.ConversionExists(
+				amrt,
+				new GetClassReturnType(msc, "System.Predicate", 1)
+			));
+		}
 	}
 }

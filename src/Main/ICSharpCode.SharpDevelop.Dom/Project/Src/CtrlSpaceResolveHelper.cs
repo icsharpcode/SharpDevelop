@@ -173,5 +173,51 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 			return null;
 		}
+		
+		public static IList<IMethodOrProperty> FindAllExtensions(LanguageProperties language, IClass callingClass)
+		{
+			if (language == null)
+				throw new ArgumentNullException("language");
+			if (callingClass == null)
+				throw new ArgumentNullException("callingClass");
+			
+			List<IMethodOrProperty> res = new List<IMethodOrProperty>();
+			
+			bool supportsExtensionMethods = language.SupportsExtensionMethods;
+			bool supportsExtensionProperties = language.SupportsExtensionProperties;
+			if (supportsExtensionMethods || supportsExtensionProperties) {
+				ArrayList list = new ArrayList();
+				IMethod dummyMethod = new DefaultMethod("dummy", VoidReturnType.Instance, ModifierEnum.Static, DomRegion.Empty, DomRegion.Empty, callingClass);
+				CtrlSpaceResolveHelper.AddContentsFromCalling(list, callingClass, dummyMethod);
+				CtrlSpaceResolveHelper.AddImportedNamespaceContents(list, callingClass.CompilationUnit, callingClass);
+				
+				bool searchExtensionsInClasses = language.SearchExtensionsInClasses;
+				foreach (object o in list) {
+					IMethodOrProperty mp = o as IMethodOrProperty;
+					if (mp != null && mp.IsExtensionMethod &&
+					    (supportsExtensionMethods && o is IMethod || supportsExtensionProperties && o is IProperty))
+					{
+						res.Add(mp);
+					} else if (searchExtensionsInClasses && o is IClass) {
+						IClass c = o as IClass;
+						if (c.HasExtensionMethods) {
+							if (supportsExtensionProperties) {
+								foreach (IProperty p in c.Properties) {
+									if (p.IsExtensionMethod)
+										res.Add(p);
+								}
+							}
+							if (supportsExtensionMethods) {
+								foreach (IMethod m in c.Methods) {
+									if (m.IsExtensionMethod)
+										res.Add(m);
+								}
+							}
+						}
+					}
+				}
+			}
+			return res;
+		}
 	}
 }

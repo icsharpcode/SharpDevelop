@@ -97,7 +97,11 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			"from",
 			"ascending",
 			"descending",
-			"orderby"
+			"orderby",
+			"let",
+			"join",
+			"on",
+			"equals"
 		};
 		
 		static LookupTable keywords = new LookupTable(true);

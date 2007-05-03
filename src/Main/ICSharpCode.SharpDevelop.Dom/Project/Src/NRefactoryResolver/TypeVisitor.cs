@@ -110,21 +110,64 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				return null;
 		}
 		
-		public IMethod FindOverload(List<IMethod> methods, IReturnType[] typeParameters, IList<Expression> arguments, object data)
+		static readonly IMethod[] emptyMethodsArray = new IMethod[0];
+		
+		/// <summary>
+		/// Find the correct overload from a list of overloads.
+		/// </summary>
+		/// <param name="methods">The list of available methods to call.</param>
+		/// <param name="typeParameters">The type parameters used for the method call.</param>
+		/// <param name="arguments">The arguments passed to the method.</param>
+		/// <returns>The chosen overload.</returns>
+		public IMethod FindOverload(IList<IMethod> methods, IReturnType[] typeParameters, IList<Expression> arguments)
 		{
-			if (methods.Count <= 0) {
+			return FindOverload(methods, null, null, typeParameters, arguments);
+		}
+		
+		/// <summary>
+		/// Find the correct overload from a list of overloads.
+		/// </summary>
+		/// <param name="methods">The list of available methods to call.</param>
+		/// <param name="extensionMethods">The list of available extension methods to call.</param>
+		/// <param name="targetType">The type of the expression on which the method is called. Used as first argument to the extension methods.</param>
+		/// <param name="typeParameters">The type parameters used for the method call.</param>
+		/// <param name="arguments">The arguments passed to the method.</param>
+		/// <returns>The chosen overload.</returns>
+		public IMethod FindOverload(IList<IMethod> methods, IList<IMethod> extensionMethods, IReturnType targetType, IReturnType[] typeParameters, IList<Expression> arguments)
+		{
+			if (extensionMethods == null) extensionMethods = emptyMethodsArray;
+			
+			if (methods.Count == 0 && extensionMethods.Count == 0) {
 				return null;
 			}
-			// We can't use this shortcut because MemberLookupHelper does type inference and
-			// type substitution for us
-			//if (methods.Count == 1)
-			//	return methods[0];
+			
+			// We must call FindOverload even if there is only one possible match
+			// because MemberLookupHelper does type inference and type substitution for us
+			
+			
 			
 			IReturnType[] types = new IReturnType[arguments.Count];
 			for (int i = 0; i < types.Length; ++i) {
-				types[i] = arguments[i].AcceptVisitor(this, data) as IReturnType;
+				types[i] = arguments[i].AcceptVisitor(this, null) as IReturnType;
 			}
-			return MemberLookupHelper.FindOverload(methods, typeParameters, types);
+			
+			bool matchIsAcceptable;
+			IMethod result = MemberLookupHelper.FindOverload(methods, typeParameters, types, out matchIsAcceptable);
+			if (matchIsAcceptable) return result;
+			
+			if (extensionMethods.Count > 0) {
+				IReturnType[] extendedTypes = new IReturnType[types.Length + 1];
+				extendedTypes[0] = targetType;
+				types.CopyTo(extendedTypes, 1);
+				
+				IMethod extensionResult = MemberLookupHelper.FindOverload(extensionMethods, typeParameters, extendedTypes, out matchIsAcceptable);
+				if (matchIsAcceptable)
+					return extensionResult;
+				else
+					return result ?? extensionResult;
+			} else {
+				return result;
+			}
 		}
 		
 		/// <summary>
@@ -136,11 +179,19 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			IReturnType[] typeParameters = CreateReturnTypes(invocationExpression.TypeArguments);
 			if (invocationExpression.TargetObject is FieldReferenceExpression) {
 				FieldReferenceExpression field = (FieldReferenceExpression)invocationExpression.TargetObject;
-				IReturnType type = field.TargetObject.AcceptVisitor(this, null) as IReturnType;
-				List<IMethod> methods = resolver.SearchMethod(type, field.FieldName);
-				if (methods.Count == 0 && resolver.Language == SupportedLanguage.VBNet)
+				IReturnType targetType = field.TargetObject.AcceptVisitor(this, null) as IReturnType;
+				
+				List<IMethod> methods = resolver.SearchMethod(targetType, field.FieldName);
+				
+				// FindOverload does not need the extensionMethods if a normal method is applicable,
+				// so we use a LazyList because SearchExtensionMethods is expensive and we don't want to call it
+				// if it is not required.
+				IList<IMethod> extensionMethods = new LazyList<IMethod>(
+					delegate { return resolver.SearchExtensionMethods(field.FieldName); });
+				
+				if (methods.Count == 0 && extensionMethods.Count == 0 && resolver.Language == SupportedLanguage.VBNet)
 					return GetVisualBasicIndexer(invocationExpression);
-				return FindOverload(methods, typeParameters, invocationExpression.Arguments, null);
+				return FindOverload(methods, extensionMethods, targetType, typeParameters, invocationExpression.Arguments);
 			} else if (invocationExpression.TargetObject is IdentifierExpression) {
 				string id = ((IdentifierExpression)invocationExpression.TargetObject).Identifier;
 				if (resolver.CallingClass == null) {
@@ -149,7 +200,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				List<IMethod> methods = resolver.SearchMethod(id);
 				if (methods.Count == 0 && resolver.Language == SupportedLanguage.VBNet)
 					return GetVisualBasicIndexer(invocationExpression);
-				return FindOverload(methods, typeParameters, invocationExpression.Arguments, null);
+				return FindOverload(methods, typeParameters, invocationExpression.Arguments);
 			} else {
 				// this could be a nested indexer access
 				if (resolver.Language == SupportedLanguage.VBNet)
@@ -423,8 +474,11 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		public override object VisitAnonymousMethodExpression(AnonymousMethodExpression anonymousMethodExpression, object data)
 		{
 			AnonymousMethodReturnType amrt = new AnonymousMethodReturnType(resolver.CompilationUnit);
-			foreach (ParameterDeclarationExpression param in anonymousMethodExpression.Parameters) {
-				amrt.MethodParameters.Add(NRefactoryASTConvertVisitor.CreateParameter(param, resolver.CallingMember as IMethod, resolver.CallingClass, resolver.CompilationUnit));
+			if (anonymousMethodExpression.HasParameterList) {
+				amrt.MethodParameters = new List<IParameter>();
+				foreach (ParameterDeclarationExpression param in anonymousMethodExpression.Parameters) {
+					amrt.MethodParameters.Add(NRefactoryASTConvertVisitor.CreateParameter(param, resolver.CallingMember as IMethod, resolver.CallingClass, resolver.CompilationUnit));
+				}
 			}
 			return amrt;
 		}

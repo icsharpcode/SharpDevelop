@@ -112,39 +112,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 				throw new ArgumentNullException("language");
 			if (res == null)
 				throw new ArgumentNullException("res");
-			if (callingClass == null)
-				throw new ArgumentNullException("callingClass");
 			if (resolvedType == null)
 				throw new ArgumentNullException("resolvedType");
+			if (callingClass == null)
+				throw new ArgumentNullException("callingClass");
 			
-			bool supportsExtensionMethods = language.SupportsExtensionMethods;
-			bool supportsExtensionProperties = language.SupportsExtensionProperties;
-			if (supportsExtensionMethods || supportsExtensionProperties) {
-				ArrayList list = new ArrayList();
-				IMethod dummyMethod = new DefaultMethod("dummy", VoidReturnType.Instance, ModifierEnum.Static, DomRegion.Empty, DomRegion.Empty, callingClass);
-				CtrlSpaceResolveHelper.AddContentsFromCalling(list, callingClass, dummyMethod);
-				CtrlSpaceResolveHelper.AddImportedNamespaceContents(list, callingClass.CompilationUnit, callingClass);
-				
-				bool searchExtensionsInClasses = language.SearchExtensionsInClasses;
-				foreach (object o in list) {
-					if (supportsExtensionMethods && o is IMethod || supportsExtensionProperties && o is IProperty) {
-						TryAddExtension(language, res, o as IMethodOrProperty, resolvedType);
-					} else if (searchExtensionsInClasses && o is IClass) {
-						IClass c = o as IClass;
-						if (c.HasExtensionMethods) {
-							if (supportsExtensionProperties) {
-								foreach (IProperty p in c.Properties) {
-									TryAddExtension(language, res, p, resolvedType);
-								}
-							}
-							if (supportsExtensionMethods) {
-								foreach (IMethod m in c.Methods) {
-									TryAddExtension(language, res, m, resolvedType);
-								}
-							}
-						}
-					}
-				}
+			foreach (IMethodOrProperty mp in CtrlSpaceResolveHelper.FindAllExtensions(language, callingClass)) {
+				TryAddExtension(language, res, mp, resolvedType);
 			}
 		}
 		

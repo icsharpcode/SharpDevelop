@@ -1061,6 +1061,82 @@ namespace OtherName { class Bla { } }
 		
 		#region C# 3.0 tests
 		[Test]
+		public void ExtensionMethodsTest()
+		{
+			string program = @"using XN;
+class TestClass {
+	static void Test(A a, B b, C c) {
+		
+	}
+}
+class A { }
+class B {
+	public void F(int i) { }
+}
+class C {
+	public void F(object obj) { }
+}
+namespace XN {
+	public static class XC {
+		public static void F(this object obj, int i) { }
+		public static void F(this object obj, string s) { }
+	}
+}
+";
+			MemberResolveResult mrr;
+			
+			mrr = Resolve<MemberResolveResult>(program, "a.F(1)", 4);
+			Assert.AreEqual("XN.XC.F", mrr.ResolvedMember.FullyQualifiedName);
+			Assert.AreEqual("System.Int32", ((IMethod)mrr.ResolvedMember).Parameters[1].ReturnType.FullyQualifiedName);
+			
+			mrr = Resolve<MemberResolveResult>(program, "a.F(\"text\")", 4);
+			Assert.AreEqual("XN.XC.F", mrr.ResolvedMember.FullyQualifiedName);
+			Assert.AreEqual("System.String", ((IMethod)mrr.ResolvedMember).Parameters[1].ReturnType.FullyQualifiedName);
+			
+			mrr = Resolve<MemberResolveResult>(program, "b.F(1)", 4);
+			Assert.AreEqual("B.F", mrr.ResolvedMember.FullyQualifiedName);
+			
+			mrr = Resolve<MemberResolveResult>(program, "b.F(\"text\")", 4);
+			Assert.AreEqual("XN.XC.F", mrr.ResolvedMember.FullyQualifiedName);
+			Assert.AreEqual("System.String", ((IMethod)mrr.ResolvedMember).Parameters[1].ReturnType.FullyQualifiedName);
+			
+			mrr = Resolve<MemberResolveResult>(program, "c.F(1)", 4);
+			Assert.AreEqual("C.F", mrr.ResolvedMember.FullyQualifiedName);
+			
+			mrr = Resolve<MemberResolveResult>(program, "c.F(\"text\")", 4);
+			Assert.AreEqual("C.F", mrr.ResolvedMember.FullyQualifiedName);
+		}
+		
+		[Test]
+		public void ExtensionMethodsTest2()
+		{
+			string program = @"using System; using System.Collections.Generic;
+class TestClass {
+	static void Test(string[] args) {
+		
+	}
+}
+public static class XC {
+	public static int ToInt32(this string s) { return int.Parse(s); }
+	public static T[] Slice<T>(this T[] source, int index, int count) { throw new NotImplementedException(); }
+	public static IEnumerable<T> Filter<T>(this IEnumerable<T> source, Predicate<T> predicate) { throw new NotImplementedException(); }
+}
+";
+			MemberResolveResult mrr;
+			
+			mrr = Resolve<MemberResolveResult>(program, "\"text\".ToInt32()", 4);
+			Assert.AreEqual("XC.ToInt32", mrr.ResolvedMember.FullyQualifiedName);
+			
+			mrr = Resolve<MemberResolveResult>(program, "args.Slice(1, 2)", 4);
+			Assert.AreEqual("XC.Slice", mrr.ResolvedMember.FullyQualifiedName);
+			Assert.AreEqual("System.String[]", mrr.ResolvedType.DotNetName);
+			
+			mrr = Resolve<MemberResolveResult>(program, "args.Filter(delegate { return true; })", 4);
+			Assert.AreEqual("XC.Filter", mrr.ResolvedMember.FullyQualifiedName);
+			Assert.AreEqual("System.Collections.Generic.IEnumerable{System.String}", mrr.ResolvedType.DotNetName);
+		}
+		
+		[Test]
 		public void SimpleLinqTest()
 		{
 			string program = @"using System;

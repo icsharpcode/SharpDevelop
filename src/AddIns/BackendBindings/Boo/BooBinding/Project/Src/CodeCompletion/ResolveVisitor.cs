@@ -512,7 +512,8 @@ namespace Grunwald.BooBinding.CodeCompletion
 				types[i] = (resolveResult != null) ? resolveResult.ResolvedType : null;
 				ClearResult();
 			}
-			MakeResult(MemberLookupHelper.FindOverload(methods, new IReturnType[0], types));
+			bool resultIsAcceptable;
+			MakeResult(MemberLookupHelper.FindOverload(methods, new IReturnType[0], types, out resultIsAcceptable));
 		}
 		#endregion
 		
@@ -618,6 +619,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 				amrt.MethodReturnType = new BooInferredReturnType(node.Body, resolver.CallingClass,
 				                                               node.ContainsAnnotation("inline"));
 			}
+			amrt.MethodParameters = new List<IParameter>();
 			ConvertVisitor.AddParameters(node.Parameters, amrt.MethodParameters, resolver.CallingMember, resolver.CallingClass ?? new DefaultClass(resolver.CompilationUnit, "__Dummy"));
 			MakeResult(amrt);
 		}

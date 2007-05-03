@@ -266,6 +266,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 				if (ctr.ReturnType != null) {
 					amrt.MethodReturnType = CreateReturnType(ctr.ReturnType, callingClass, callingMember, caretLine, caretColumn, projectContent);
 				}
+				amrt.MethodParameters = new List<IParameter>();
 				AddParameters(ctr.Parameters, amrt.MethodParameters, callingMember, callingClass ?? new DefaultClass(new DefaultCompilationUnit(projectContent), "__Dummy"));
 				return amrt;
 			} else {

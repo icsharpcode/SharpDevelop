@@ -165,11 +165,13 @@ namespace ICSharpCode.NRefactory {
 		
 		object VisitQueryExpressionFromClause(QueryExpressionFromClause queryExpressionFromClause, object data);
 		
-		object VisitQueryExpressionFromGenerator(QueryExpressionFromGenerator queryExpressionFromGenerator, object data);
-		
 		object VisitQueryExpressionGroupClause(QueryExpressionGroupClause queryExpressionGroupClause, object data);
 		
 		object VisitQueryExpressionIntoClause(QueryExpressionIntoClause queryExpressionIntoClause, object data);
+		
+		object VisitQueryExpressionJoinClause(QueryExpressionJoinClause queryExpressionJoinClause, object data);
+		
+		object VisitQueryExpressionLetClause(QueryExpressionLetClause queryExpressionLetClause, object data);
 		
 		object VisitQueryExpressionOrdering(QueryExpressionOrdering queryExpressionOrdering, object data);
 		

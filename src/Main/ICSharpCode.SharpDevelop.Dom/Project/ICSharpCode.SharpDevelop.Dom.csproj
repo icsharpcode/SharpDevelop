@@ -86,6 +86,7 @@
     <Compile Include="Src\Implementations\SearchClassReturnType.cs" />
     <Compile Include="Src\Implementations\SystemTypes.cs" />
     <Compile Include="Src\Interfaces\ExplicitInterfaceImplementation.cs" />
+    <Compile Include="Src\LazyList.cs" />
     <Compile Include="Src\NRefactoryResolver\CSharpToVBNetConvertVisitor.cs" />
     <Compile Include="Src\NRefactoryResolver\InferredReturnType.cs" />
     <Compile Include="Src\NRefactoryResolver\NRefactoryASTConvertVisitor.cs" />

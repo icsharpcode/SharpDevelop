@@ -248,7 +248,7 @@ namespace NRefactoryASTGenerator.Ast
 	[ImplementNullable(NullableImplementation.Shadow)]
 	class QueryExpression : Expression {
 		QueryExpressionFromClause fromClause;
-		List<QueryExpressionClause> fromOrWhereClauses;
+		List<QueryExpressionClause> fromLetWhereClauses;
 		List<QueryExpressionOrdering> orderings;
 		QueryExpressionClause selectOrGroupClause;
 		QueryExpressionIntoClause intoClause;
@@ -261,15 +261,27 @@ namespace NRefactoryASTGenerator.Ast
 		Expression condition;
 	}
 	
-	[ImplementNullable(NullableImplementation.Shadow)]
-	class QueryExpressionFromClause : QueryExpressionClause {
-		List<QueryExpressionFromGenerator> generators;
+	class QueryExpressionLetClause : QueryExpressionClause {
+		[QuestionMarkDefault]
+		string identifier;
+		Expression expression;
 	}
 	
-	class QueryExpressionFromGenerator : AbstractNode {
+	abstract class QueryExpressionFromOrJoinClause : QueryExpressionClause {
+		TypeReference type;
 		[QuestionMarkDefault]
 		string identifier;
 		Expression inExpression;
+	}
+	
+	[ImplementNullable(NullableImplementation.Shadow)]
+	class QueryExpressionFromClause : QueryExpressionFromOrJoinClause { }
+	
+	class QueryExpressionJoinClause : QueryExpressionFromOrJoinClause {
+		Expression onExpression;
+		Expression equalsExpression;
+		
+		string intoIdentifier;
 	}
 	
 	class QueryExpressionOrdering : AbstractNode {
@@ -294,6 +306,7 @@ namespace NRefactoryASTGenerator.Ast
 	class QueryExpressionIntoClause : QueryExpressionClause {
 		[QuestionMarkDefault]
 		string intoIdentifier;
+		
 		QueryExpression continuedQuery;
 	}
 }
