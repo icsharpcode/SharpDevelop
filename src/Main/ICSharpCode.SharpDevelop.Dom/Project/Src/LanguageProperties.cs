@@ -6,6 +6,8 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using ICSharpCode.SharpDevelop.Dom.Refactoring;
 
 namespace ICSharpCode.SharpDevelop.Dom
@@ -169,10 +171,25 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 		
 		/// <summary>
-		/// Gets the token that denotes a possible beginning of an indexer expression.
+		/// Gets the start token of an indexer expression in the language. Usually '[' or '('.
 		/// </summary>
 		public virtual string IndexerExpressionStartToken {
 			get { return "["; }
+		}
+		
+		public virtual TextFinder GetFindClassReferencesTextFinder(IClass c)
+		{
+			return new WholeWordTextFinder(c.Name, nameComparer);
+		}
+		
+		public virtual TextFinder GetFindMemberReferencesTextFinder(IMember member)
+		{
+			IProperty property = member as IProperty;
+			if (property != null && property.IsIndexer) {
+				return new IndexBeforeTextFinder(IndexerExpressionStartToken);
+			} else {
+				return new WholeWordTextFinder(member.Name, nameComparer);
+			}
 		}
 		
 		public virtual bool IsClassWithImplicitlyStaticMembers(IClass c)
@@ -259,6 +276,20 @@ namespace ICSharpCode.SharpDevelop.Dom
 			{
 				return "[LanguageProperties: C#]";
 			}
+			
+			public override TextFinder GetFindMemberReferencesTextFinder(IMember member)
+			{
+				IMethod method = member as IMethod;
+				if (method != null && method.IsConstructor) {
+					return new CombinedTextFinder(
+						new WholeWordTextFinder(member.DeclaringType.Name, this.NameComparer),
+						new WholeWordTextFinder("this", this.NameComparer),
+						new WholeWordTextFinder("base", this.NameComparer)
+					);
+				} else {
+					return base.GetFindMemberReferencesTextFinder(member);
+				}
+			}
 		}
 		#endregion
 		
@@ -290,12 +321,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 			public override bool CanImportClasses {
 				get {
 					return true;
-				}
-			}
-			
-			public override string IndexerExpressionStartToken {
-				get {
-					return "(";
 				}
 			}
 			
@@ -350,9 +375,110 @@ namespace ICSharpCode.SharpDevelop.Dom
 				}
 			}
 			
+			public override string IndexerExpressionStartToken {
+				get { return "("; }
+			}
+			
 			public override string ToString()
 			{
 				return "[LanguageProperties: VB.NET]";
+			}
+		}
+		#endregion
+		
+		#region Text Finder
+		protected sealed class WholeWordTextFinder : TextFinder
+		{
+			readonly string searchedText;
+			readonly bool caseInsensitive;
+			
+			public WholeWordTextFinder(string word, StringComparer nameComparer)
+			{
+				if (word == null) word = string.Empty;
+				
+				caseInsensitive = nameComparer.Equals("a", "A");
+				if (caseInsensitive)
+					this.searchedText = word.ToLowerInvariant();
+				else
+					this.searchedText = word;
+			}
+			
+			public override string PrepareInputText(string inputText)
+			{
+				if (caseInsensitive)
+					return inputText.ToLowerInvariant();
+				else
+					return inputText;
+			}
+			
+			public override TextFinderMatch Find(string inputText, int startPosition)
+			{
+				if (searchedText.Length == 0)
+					return TextFinderMatch.Empty;
+				int pos = startPosition - 1;
+				while ((pos = inputText.IndexOf(searchedText, pos + 1)) >= 0) {
+					if (pos > 0 && char.IsLetterOrDigit(inputText, pos - 1)) {
+						continue; // memberName is not a whole word (a.SomeName cannot reference Name)
+					}
+					if (pos < inputText.Length - searchedText.Length - 1
+					    && char.IsLetterOrDigit(inputText, pos + searchedText.Length))
+					{
+						continue; // memberName is not a whole word (a.Name2 cannot reference Name)
+					}
+					return new TextFinderMatch(pos, searchedText.Length);
+				}
+				return TextFinderMatch.Empty;
+			}
+		}
+		
+		protected sealed class CombinedTextFinder : TextFinder
+		{
+			readonly TextFinder[] finders;
+			
+			public CombinedTextFinder(params TextFinder[] finders)
+			{
+				if (finders == null)
+					throw new ArgumentNullException("finders");
+				if (finders.Length == 0)
+					throw new ArgumentException("finders.Length must be > 0");
+				this.finders = finders;
+			}
+			
+			public override string PrepareInputText(string inputText)
+			{
+				return finders[0].PrepareInputText(inputText);
+			}
+			
+			public override TextFinderMatch Find(string inputText, int startPosition)
+			{
+				TextFinderMatch best = TextFinderMatch.Empty;
+				foreach (TextFinder f in finders) {
+					TextFinderMatch r = f.Find(inputText, startPosition);
+					if (r.Position >= 0 && (best.Position < 0 || r.Position < best.Position)) {
+						best = r;
+					}
+				}
+				return best;
+			}
+		}
+		
+		protected sealed class IndexBeforeTextFinder : TextFinder
+		{
+			readonly string searchText;
+			
+			public IndexBeforeTextFinder(string searchText)
+			{
+				this.searchText = searchText;
+			}
+			
+			public override TextFinderMatch Find(string inputText, int startPosition)
+			{
+				int pos = inputText.IndexOf(searchText, startPosition);
+				if (pos >= 0) {
+					return new TextFinderMatch(pos, searchText.Length, pos - 1);
+				} else {
+					return TextFinderMatch.Empty;
+				}
 			}
 		}
 		#endregion

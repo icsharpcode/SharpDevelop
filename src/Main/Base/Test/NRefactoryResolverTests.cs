@@ -143,6 +143,44 @@ class TestClass {
 			// to the generic method.
 			Assert.IsTrue(Refactoring.RefactoringService.IsReferenceToMember(genericMethod, mrr));
 		}
+		
+		[Test]
+		public void ConstructorBaseCall()
+		{
+			string program = @"using System;
+class A {
+	public A(int a) {}
+}
+class B : A {
+	public B(int a)
+		: base(a)  /*7*/
+ 	{}
+}
+class C : B {
+	public C(int a)
+		: base(a)  /*12*/
+ 	{}
+}
+";
+			MemberResolveResult mrr = Resolve<MemberResolveResult>(program, "new A(2)", 3);
+			IMember aCtor = mrr.ResolvedMember;
+			Assert.AreEqual("A.#ctor", mrr.ResolvedMember.FullyQualifiedName);
+			
+			mrr = Resolve<MemberResolveResult>(program, "new B(2)", 3);
+			IMember bCtor = mrr.ResolvedMember;
+			Assert.AreEqual("B.#ctor", mrr.ResolvedMember.FullyQualifiedName);
+			
+			mrr = Resolve<MemberResolveResult>(program, "base(a)", 7);
+			Assert.AreEqual("A.#ctor", mrr.ResolvedMember.FullyQualifiedName);
+			
+			mrr = Resolve<MemberResolveResult>(program, "base(a)", 12);
+			Assert.AreEqual("B.#ctor", mrr.ResolvedMember.FullyQualifiedName);
+			
+			// ensure that the reference pointing to the B ctor is not seen as a reference
+			// to the A ctor.
+			Assert.IsTrue(Refactoring.RefactoringService.IsReferenceToMember(bCtor, mrr));
+			Assert.IsFalse(Refactoring.RefactoringService.IsReferenceToMember(aCtor, mrr));
+		}
 		#endregion
 		
 		#region Test for old issues (Fidalgo)

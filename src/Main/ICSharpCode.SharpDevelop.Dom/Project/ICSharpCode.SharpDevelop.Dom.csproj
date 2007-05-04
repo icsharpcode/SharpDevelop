@@ -96,6 +96,7 @@
     <Compile Include="Src\NRefactoryResolver\VBNetToCSharpConvertVisitor.cs" />
     <Compile Include="Src\ProjectContent\DomAssemblyName.cs" />
     <Compile Include="Src\Refactoring\CodeGeneratorOptions.cs" />
+    <Compile Include="Src\Refactoring\TextFinder.cs" />
     <Compile Include="Src\ReflectionLayer\DomPersistence.cs" />
     <Compile Include="Src\ReflectionLayer\ReflectionClass.cs" />
     <Compile Include="Src\ReflectionLayer\ReflectionEvent.cs" />

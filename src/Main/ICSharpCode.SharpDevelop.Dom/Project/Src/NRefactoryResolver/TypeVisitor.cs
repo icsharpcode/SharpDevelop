@@ -202,11 +202,27 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					return GetVisualBasicIndexer(invocationExpression);
 				return FindOverload(methods, typeParameters, invocationExpression.Arguments);
 			} else {
+				if (resolver.Language == SupportedLanguage.CSharp && resolver.CallingClass != null) {
+					if (invocationExpression.TargetObject is ThisReferenceExpression) {
+						// call to constructor
+						return FindOverload(GetConstructors(resolver.CallingClass), typeParameters, invocationExpression.Arguments);
+					} else if (invocationExpression.TargetObject is BaseReferenceExpression) {
+						return FindOverload(GetConstructors(resolver.CallingClass.BaseClass), typeParameters, invocationExpression.Arguments);
+					}
+				}
+				
 				// this could be a nested indexer access
 				if (resolver.Language == SupportedLanguage.VBNet)
 					return GetVisualBasicIndexer(invocationExpression);
 			}
 			return null;
+		}
+		
+		IList<IMethod> GetConstructors(IClass c)
+		{
+			if (c == null)
+				return emptyMethodsArray;
+			return c.Methods.FindAll(delegate(IMethod m) { return m.IsConstructor; });
 		}
 		
 		IProperty GetVisualBasicIndexer(InvocationExpression invocationExpression)

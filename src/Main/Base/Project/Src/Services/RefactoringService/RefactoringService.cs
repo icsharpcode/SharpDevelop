@@ -6,11 +6,13 @@
 // </file>
 
 using System;
+using System.Diagnostics;
 using System.Collections.Generic;
 using System.Drawing;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -177,58 +179,36 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		                          bool isLocal,
 		                          string fileName, string fileContent)
 		{
-			string lowerFileContent = fileContent.ToLowerInvariant();
-			string searchedText; // the text that is searched for
-			bool searchingIndexer = false;
-			
+			TextFinder textFinder; // the class used to find the position to resolve
 			if (member == null) {
-				searchedText = parentClass.Name.ToLowerInvariant();
+				textFinder = parentClass.ProjectContent.Language.GetFindClassReferencesTextFinder(parentClass);
 			} else {
-				// When looking for a member, the name of the parent class does not always exist
-				// in the file where the member is accessed.
-				// (examples: derived classes, partial classes)
-				if (member is IMethod && ((IMethod)member).IsConstructor)
-					searchedText = parentClass.Name.ToLowerInvariant();
-				else {
-					if (member is IProperty && ((IProperty)member).IsIndexer) {
-						searchingIndexer = true;
-						searchedText = GetIndexerExpressionStartToken(fileName);
-					} else {
-						searchedText = member.Name.ToLowerInvariant();
-					}
-				}
+				Debug.Assert(member.DeclaringType == parentClass);
+				textFinder = parentClass.ProjectContent.Language.GetFindMemberReferencesTextFinder(member);
 			}
 			
 			// It is possible that a class or member does not have a name (when parsing incomplete class definitions)
 			// - in that case, we cannot find references.
-			if (searchedText.Length == 0) {
+			if (textFinder == null) {
 				return;
 			}
 			
-			int pos = -1;
-			int exprPos;
+			string fileContentForFinder = textFinder.PrepareInputText(fileContent);
+			
 			IExpressionFinder expressionFinder = null;
-			while ((pos = lowerFileContent.IndexOf(searchedText, pos + 1)) >= 0) {
-				if (!searchingIndexer) {
-					if (pos > 0 && char.IsLetterOrDigit(fileContent, pos - 1)) {
-						continue; // memberName is not a whole word (a.SomeName cannot reference Name)
-					}
-					if (pos < fileContent.Length - searchedText.Length - 1
-					    && char.IsLetterOrDigit(fileContent, pos + searchedText.Length))
-					{
-						continue; // memberName is not a whole word (a.Name2 cannot reference Name)
-					}
-					exprPos = pos;
-				} else {
-					exprPos = pos-1;	// indexer expressions are found by resolving the part before the indexer
-				}
+			TextFinderMatch match = new TextFinderMatch(-1, 0);
+			
+			while (true) {
+				match = textFinder.Find(fileContentForFinder, match.Position + 1);
+				if (match.Position < 0)
+					break;
 				
 				if (expressionFinder == null) {
 					expressionFinder = ParserService.GetExpressionFinder(fileName);
 				}
-				ExpressionResult expr = expressionFinder.FindFullExpression(fileContent, exprPos);
+				ExpressionResult expr = expressionFinder.FindFullExpression(fileContent, match.ResolvePosition);
 				if (expr.Expression != null) {
-					Point position = GetPosition(fileContent, exprPos);
+					Point position = GetPosition(fileContent, match.ResolvePosition);
 				repeatResolve:
 					// TODO: Optimize by re-using the same resolver if multiple expressions were
 					// found in this file (the resolver should parse all methods at once)
@@ -237,14 +217,14 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 					if (isLocal) {
 						// find reference to local variable
 						if (IsReferenceToLocalVariable(rr, member)) {
-							list.Add(new Reference(fileName, pos, searchedText.Length, expr.Expression, rr));
+							list.Add(new Reference(fileName, match.Position, match.Length, expr.Expression, rr));
 						} else if (FixIndexerExpression(expressionFinder, ref expr, mrr)) {
 							goto repeatResolve;
 						}
 					} else if (member != null) {
 						// find reference to member
 						if (IsReferenceToMember(member, rr)) {
-							list.Add(new Reference(fileName, pos, searchedText.Length, expr.Expression, rr));
+							list.Add(new Reference(fileName, match.Position, match.Length, expr.Expression, rr));
 						} else if (FixIndexerExpression(expressionFinder, ref expr, mrr)) {
 							goto repeatResolve;
 						}
@@ -253,12 +233,12 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 						if (mrr != null) {
 							if (mrr.ResolvedMember is IMethod && ((IMethod)mrr.ResolvedMember).IsConstructor) {
 								if (mrr.ResolvedMember.DeclaringType.FullyQualifiedName == parentClass.FullyQualifiedName) {
-									list.Add(new Reference(fileName, pos, searchedText.Length, expr.Expression, rr));
+									list.Add(new Reference(fileName, match.Position, match.Length, expr.Expression, rr));
 								}
 							}
 						} else {
 							if (rr is TypeResolveResult && rr.ResolvedType.FullyQualifiedName == parentClass.FullyQualifiedName) {
-								list.Add(new Reference(fileName, pos, searchedText.Length, expr.Expression, rr));
+								list.Add(new Reference(fileName, match.Position, match.Length, expr.Expression, rr));
 							}
 						}
 					}
@@ -284,25 +264,6 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				return true;
 			}
 			return false;
-		}
-		
-		/// <summary>
-		/// Determines the token that denotes a possible beginning of an indexer
-		/// expression in the specified file.
-		/// </summary>
-		static string GetIndexerExpressionStartToken(string fileName)
-		{
-			if (fileName != null) {
-				ParseInformation pi = ParserService.GetParseInformation(fileName);
-				if (pi != null &&
-				    pi.MostRecentCompilationUnit != null &&
-				    pi.MostRecentCompilationUnit.ProjectContent != null &&
-				    pi.MostRecentCompilationUnit.ProjectContent.Language != null) {
-					return pi.MostRecentCompilationUnit.ProjectContent.Language.IndexerExpressionStartToken;
-				}
-			}
-			LoggingService.Warn("RefactoringService: unable to determine the correct indexer expression start token for file '"+fileName+"'");
-			return LanguageProperties.CSharp.IndexerExpressionStartToken;
 		}
 		
 		static Point GetPosition(string fileContent, int pos)
@@ -547,6 +508,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		public static IMember FindBaseMember(IMember member)
 		{
 			if (member == null) return null;
+			if (member is IMethod && (member as IMethod).IsConstructor) return null;
 			IClass parentClass = member.DeclaringType;
 			IClass baseClass = parentClass.BaseClass;
 			if (baseClass == null) return null;
