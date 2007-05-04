@@ -124,19 +124,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		static void TryAddExtension(LanguageProperties language, ArrayList res, IMethodOrProperty ext, IReturnType resolvedType)
 		{
-			// accept only extension methods
-			if (!ext.IsExtensionMethod)
-				return;
-			// don't add extension if method with that name already exists
-			// but allow overloading extension methods
-			foreach (IMember member in res) {
-				IMethodOrProperty p = member as IMethodOrProperty;
-				if (p != null && p.IsExtensionMethod)
-					continue;
-				if (language.NameComparer.Equals(member.Name, ext.Name)) {
-					return;
-				}
-			}
 			// now add the extension method if it fits the type
 			if (MemberLookupHelper.IsApplicable(resolvedType, ext.Parameters[0].ReturnType)) {
 				IMethod method = ext as IMethod;
@@ -145,7 +132,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 					MemberLookupHelper.InferTypeArgument(method.Parameters[0].ReturnType, resolvedType, typeArguments);
 					for (int i = 0; i < typeArguments.Length; i++) {
 						if (typeArguments[i] != null) {
-							ext = (IMethod)ext.Clone();
+							ext = (IMethod)ext.CreateSpecializedMember();
 							ext.ReturnType = ConstructedReturnType.TranslateType(ext.ReturnType, typeArguments, true);
 							for (int j = 0; j < ext.Parameters.Count; ++j) {
 								ext.Parameters[j].ReturnType = ConstructedReturnType.TranslateType(ext.Parameters[j].ReturnType, typeArguments, true);

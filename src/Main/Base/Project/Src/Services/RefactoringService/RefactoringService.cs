@@ -463,11 +463,28 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		/// </summary>
 		public static bool IsSimilarMember(IMember member1, IMember member2)
 		{
+			member1 = GetGenericMember(member1);
+			member2 = GetGenericMember(member2);
 			do {
 				if (IsSimilarMemberInternal(member1, member2))
 					return true;
 			} while ((member1 = FindBaseMember(member1)) != null);
 			return false;
+		}
+		
+		/// <summary>
+		/// Gets the generic member from a specialized member.
+		/// Specialized members are the result of overload resolution with type substitution.
+		/// </summary>
+		static IMember GetGenericMember(IMember member)
+		{
+			// e.g. member = string[] ToArray<string>(IEnumerable<string> input)
+			// result = T[] ToArray<T>(IEnumerable<T> input)
+			if (member != null) {
+				while (member.GenericMember != null)
+					member = member.GenericMember;
+			}
+			return member;
 		}
 		
 		static bool IsSimilarMemberInternal(IMember member1, IMember member2)

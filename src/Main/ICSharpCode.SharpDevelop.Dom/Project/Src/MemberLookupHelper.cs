@@ -104,7 +104,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				for (int i = 0; i < list.Count; i++) {
 					IMethod m = list[i];
 					if (m.TypeParameters.Count == typeParameters.Length) {
-						m = (IMethod)m.Clone();
+						m = (IMethod)m.CreateSpecializedMember();
 						m.ReturnType = ConstructedReturnType.TranslateType(m.ReturnType, typeParameters, true);
 						for (int j = 0; j < m.Parameters.Count; ++j) {
 							m.Parameters[j].ReturnType = ConstructedReturnType.TranslateType(m.Parameters[j].ReturnType, typeParameters, true);
@@ -144,7 +144,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			for (int i = 0; i < list.Count; i++) {
 				IReturnType[] inferred = inferredTypeParameters[i];
 				if (inferred != null && inferred.Length > 0) {
-					IMethod m = (IMethod)list[i].Clone();
+					IMethod m = (IMethod)list[i].CreateSpecializedMember();
 					m.ReturnType = ConstructedReturnType.TranslateType(m.ReturnType, inferred, true);
 					for (int j = 0; j < m.Parameters.Count; ++j) {
 						m.Parameters[j].ReturnType = ConstructedReturnType.TranslateType(m.Parameters[j].ReturnType, inferred, true);
@@ -524,16 +524,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			if (argument == null || argument == NullReturnType.Instance)
 				return true; // "null" can be passed for any argument
-			if (expected.IsGenericReturnType) {
-				foreach (IReturnType constraint in expected.CastToGenericReturnType().TypeParameter.Constraints) {
-					if (!ConversionExists(argument, constraint)) {
-						return false;
-					}
-				}
-				return true;
-			} else {
-				return ConversionExists(argument, expected);
-			}
+			return ConversionExistsInternal(argument, expected, true);
 		}
 		#endregion
 		
@@ -542,6 +533,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// Checks if an implicit conversion exists from <paramref name="from"/> to <paramref name="to"/>.
 		/// </summary>
 		public static bool ConversionExists(IReturnType from, IReturnType to)
+		{
+			return ConversionExistsInternal(from, to, false);
+		}
+		
+		static bool ConversionExistsInternal(IReturnType from, IReturnType to, bool allowGenericTarget)
 		{
 			// ECMA-334, § 13.1 Implicit conversions
 			
@@ -584,11 +580,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return true; // from any type to object
 			}
 			
-			if ((toIsDefault || to.IsConstructedReturnType)
+			if ((toIsDefault || to.IsConstructedReturnType || to.IsGenericReturnType)
 			    && (fromIsDefault || from.IsArrayReturnType || from.IsConstructedReturnType))
 			{
 				foreach (IReturnType baseTypeOfFrom in GetTypeInheritanceTree(from)) {
-					if (IsConstructedConversionToGenericReturnType(baseTypeOfFrom, to))
+					if (IsConstructedConversionToGenericReturnType(baseTypeOfFrom, to, allowGenericTarget))
 						return true;
 				}
 			}
@@ -598,7 +594,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				ArrayReturnType toArt   = to.CastToArrayReturnType();
 				// from array to other array type
 				if (fromArt.ArrayDimensions == toArt.ArrayDimensions) {
-					return ConversionExists(fromArt.ArrayElementType, toArt.ArrayElementType);
+					return ConversionExistsInternal(fromArt.ArrayElementType, toArt.ArrayElementType, allowGenericTarget);
 				}
 			}
 			
@@ -622,14 +618,17 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return false;
 		}
 		
-		static bool IsConstructedConversionToGenericReturnType(IReturnType from, IReturnType to)
+		static bool IsConstructedConversionToGenericReturnType(IReturnType from, IReturnType to, bool allowGenericTarget)
 		{
 			if (from.Equals(to))
 				return true;
 			
+			if (!allowGenericTarget)
+				return false;
+			
 			if (to.IsGenericReturnType) {
 				foreach (IReturnType constraintType in to.CastToGenericReturnType().TypeParameter.Constraints) {
-					if (!ConversionExists(from, constraintType)) {
+					if (!ConversionExistsInternal(from, constraintType, allowGenericTarget)) {
 						return false;
 					}
 				}
@@ -642,7 +641,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			if (cFrom != null && cTo != null) {
 				if (cFrom.FullyQualifiedName == cTo.FullyQualifiedName && cFrom.TypeArguments.Count == cTo.TypeArguments.Count) {
 					for (int i = 0; i < cFrom.TypeArguments.Count; i++) {
-						if (!IsConstructedConversionToGenericReturnType(cFrom.TypeArguments[i], cTo.TypeArguments[i]))
+						if (!IsConstructedConversionToGenericReturnType(cFrom.TypeArguments[i], cTo.TypeArguments[i], allowGenericTarget))
 							return false;
 					}
 					return true;

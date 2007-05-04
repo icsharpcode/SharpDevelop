@@ -490,7 +490,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 				ResolveResult.AddExtensions(callingClass.ProjectContent.Language, list, callingClass, containingType);
 				foreach (IMethodOrProperty mp in list) {
 					if (IsSameName(mp.Name, methodName) && mp is IMethod) {
-						IMethod m = (IMethod)mp.Clone();
+						IMethod m = (IMethod)mp.CreateSpecializedMember();
 						m.Parameters.RemoveAt(0);
 						methods.Add(m);
 					}

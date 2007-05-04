@@ -73,5 +73,20 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			return this.Clone();
 		}
+		
+		IMember genericMember;
+		
+		public virtual IMember GenericMember {
+			get { return genericMember; }
+		}
+		
+		public virtual IMember CreateSpecializedMember()
+		{
+			AbstractMember copy = Clone() as AbstractMember;
+			if (copy == null)
+				throw new Exception("Clone() must return an AbstractMember instance, or CreateSpecializedMember must also be overridden.");
+			copy.genericMember = this;
+			return copy;
+		}
 	}
 }

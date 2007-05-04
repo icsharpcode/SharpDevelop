@@ -116,6 +116,33 @@ namespace ICSharpCode.SharpDevelop.Tests
 			Assert.AreEqual(typeof(T), rr.GetType());
 			return (T)rr;
 		}
+		
+		[Test]
+		public void GenericMethodInstanciation()
+		{
+			string program = @"using System;
+using System.Collections.Generic;
+class TestClass {
+	void Main() {
+		
+	}
+	static T First<T>(IEnumerable<T> input) {
+		foreach (T e in input) return e;
+		throw new EmptyCollectionException();
+	}
+}
+";
+			MemberResolveResult mrr = Resolve<MemberResolveResult>(program, "First(new string[0])", 5);
+			Assert.AreEqual("System.String", mrr.ResolvedType.FullyQualifiedName);
+			Assert.AreEqual("System.String", mrr.ResolvedMember.ReturnType.FullyQualifiedName);
+			
+			IMethod genericMethod = mrr.ResolvedMember.DeclaringType.Methods[1];
+			Assert.AreEqual("T", genericMethod.ReturnType.FullyQualifiedName);
+			
+			// ensure that the reference pointing to the specialized method is seen as a reference
+			// to the generic method.
+			Assert.IsTrue(Refactoring.RefactoringService.IsReferenceToMember(genericMethod, mrr));
+		}
 		#endregion
 		
 		#region Test for old issues (Fidalgo)

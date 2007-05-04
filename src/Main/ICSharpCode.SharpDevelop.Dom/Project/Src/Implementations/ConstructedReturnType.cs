@@ -174,7 +174,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			List<IMethod> l = baseType.GetMethods();
 			for (int i = 0; i < l.Count; ++i) {
 				if (CheckReturnType(l[i].ReturnType) || CheckParameters(l[i].Parameters)) {
-					l[i] = (IMethod)l[i].Clone();
+					l[i] = (IMethod)l[i].CreateSpecializedMember();
 					if (l[i].DeclaringType == baseType.GetUnderlyingClass()) {
 						l[i].DeclaringTypeReference = this;
 					}
@@ -192,7 +192,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			List<IProperty> l = baseType.GetProperties();
 			for (int i = 0; i < l.Count; ++i) {
 				if (CheckReturnType(l[i].ReturnType) || CheckParameters(l[i].Parameters)) {
-					l[i] = (IProperty)l[i].Clone();
+					l[i] = (IProperty)l[i].CreateSpecializedMember();
 					if (l[i].DeclaringType == baseType.GetUnderlyingClass()) {
 						l[i].DeclaringTypeReference = this;
 					}
@@ -210,7 +210,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			List<IField> l = baseType.GetFields();
 			for (int i = 0; i < l.Count; ++i) {
 				if (CheckReturnType(l[i].ReturnType)) {
-					l[i] = (IField)l[i].Clone();
+					l[i] = (IField)l[i].CreateSpecializedMember();
 					if (l[i].DeclaringType == baseType.GetUnderlyingClass()) {
 						l[i].DeclaringTypeReference = this;
 					}
@@ -225,7 +225,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			List<IEvent> l = baseType.GetEvents();
 			for (int i = 0; i < l.Count; ++i) {
 				if (CheckReturnType(l[i].ReturnType)) {
-					l[i] = (IEvent)l[i].Clone();
+					l[i] = (IEvent)l[i].CreateSpecializedMember();
 					if (l[i].DeclaringType == baseType.GetUnderlyingClass()) {
 						l[i].DeclaringTypeReference = this;
 					}

@@ -18,12 +18,29 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		/// <summary>
 		/// Gets/Sets the declaring type reference (declaring type incl. type arguments).
-		/// If set to null, the getter returns the default type reference to the <see cref="DeclaringType"/>.
+		/// Never returns null, if the property is set to null (e.g. when this is not a specialized member),
+		/// it should return the default type reference to the <see cref="DeclaringType"/>.
 		/// </summary>
 		IReturnType DeclaringTypeReference {
 			get;
 			set;
 		}
+		
+		/// <summary>
+		/// Gets the generic member this member is based on.
+		/// Returns null if this is not a specialized member.
+		/// Specialized members are the result of overload resolution with type substitution.
+		/// </summary>
+		IMember GenericMember {
+			get;
+		}
+		
+		/// <summary>
+		/// Creates a copy of this member with its GenericMember property set to this member.
+		/// Use this method to create copies of a member that should be regarded as the "same member"
+		/// for refactoring purposes.
+		/// </summary>
+		IMember CreateSpecializedMember();
 		
 		/// <summary>
 		/// Declaration region of the member (without body!)

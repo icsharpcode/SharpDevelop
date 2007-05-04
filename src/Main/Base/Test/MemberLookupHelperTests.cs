@@ -310,30 +310,43 @@ namespace ICSharpCode.SharpDevelop.Tests
 		}
 		
 		[Test]
-		public void ConversionExistsFromListOfStringToListOfT()
+		public void ListOfStringIsApplicableOnListOfT()
 		{
-			Assert.IsTrue(MemberLookupHelper.ConversionExists(ListOf(msc.SystemTypes.String),
-			                                                  ListOf(CreateT())));
+			Assert.IsTrue(MemberLookupHelper.IsApplicable(ListOf(msc.SystemTypes.String),
+			                                              ListOf(CreateT())));
 		}
 		
 		[Test]
-		public void ConversionExistsFromListOfStringToIEnumerableOfT()
+		public void ListOfStringIsApplicableOnIEnumerableOfT()
 		{
-			Assert.IsTrue(MemberLookupHelper.ConversionExists(ListOf(msc.SystemTypes.String),
-			                                                  EnumerableOf(CreateT())));
+			Assert.IsTrue(MemberLookupHelper.IsApplicable(ListOf(msc.SystemTypes.String),
+			                                              EnumerableOf(CreateT())));
 		}
 		
 		[Test]
-		public void ConversionExistsFromArrayOfStringToIListOfT()
+		public void ArrayOfStringIsApplicableOnIListOfT()
 		{
-			Assert.IsTrue(MemberLookupHelper.ConversionExists(new ArrayReturnType(msc, msc.SystemTypes.String, 1),
-			                                                  IListOf(CreateT())));
+			Assert.IsTrue(MemberLookupHelper.IsApplicable(new ArrayReturnType(msc, msc.SystemTypes.String, 1),
+			                                              IListOf(CreateT())));
+			
+			Assert.IsFalse(MemberLookupHelper.ConversionExists(new ArrayReturnType(msc, msc.SystemTypes.String, 1),
+			                                                   IListOf(CreateT())));
+		}
+		
+		[Test]
+		public void ArrayOfStringIsApplicableOnArrayOfT()
+		{
+			Assert.IsTrue(MemberLookupHelper.IsApplicable(new ArrayReturnType(msc, msc.SystemTypes.String, 1),
+			                                              new ArrayReturnType(msc, CreateT(), 1)));
+			
+			Assert.IsFalse(MemberLookupHelper.ConversionExists(new ArrayReturnType(msc, msc.SystemTypes.String, 1),
+			                                                   new ArrayReturnType(msc, CreateT(), 1)));
 		}
 		
 		[Test]
 		public void ConversionExistsFromAnonymousDelegateToSystemPredicate()
 		{
-			Assert.IsTrue(MemberLookupHelper.ConversionExists(
+			Assert.IsTrue(MemberLookupHelper.IsApplicable(
 				new AnonymousMethodReturnType(new DefaultCompilationUnit(msc)),
 				new GetClassReturnType(msc, "System.Predicate", 1)
 			));

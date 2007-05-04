@@ -290,5 +290,15 @@ namespace ICSharpCode.SharpDevelop.Tests.Utils
 			throw new NotImplementedException();
 		}
 		
+		public IMember GenericMember {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public IMember CreateSpecializedMember()
+		{
+			throw new NotImplementedException();
+		}
 	}
 }
