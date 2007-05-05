@@ -397,20 +397,25 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// Returns false when expectedArgument and passedArgument are incompatible, otherwise true
 		/// is returned (true is used both for successful inferring and other kind of errors).
 		/// </summary>
+		/// <remarks>
+		/// The C# spec (§ 25.6.4) has a bug: it says that type inference works if the passedArgument is IEnumerable{T}
+		/// and the expectedArgument is an array; passedArgument and expectedArgument must be swapped here.
+		/// </remarks>
 		public static bool InferTypeArgument(IReturnType expectedArgument, IReturnType passedArgument, IReturnType[] outputArray)
 		{
 			if (expectedArgument == null) return true;
-			if (passedArgument == null) return true; // TODO: NullTypeReference
-			if (expectedArgument.IsArrayReturnType) {
-				IReturnType expectedArrayElementType = expectedArgument.CastToArrayReturnType().ArrayElementType;
-				if (passedArgument.IsArrayReturnType && expectedArgument.CastToArrayReturnType().ArrayDimensions == passedArgument.CastToArrayReturnType().ArrayDimensions) {
-					return InferTypeArgument(expectedArrayElementType, passedArgument.CastToArrayReturnType().ArrayElementType, outputArray);
-				} else if (passedArgument.IsConstructedReturnType) {
-					switch (passedArgument.FullyQualifiedName) {
+			if (passedArgument == null || passedArgument == NullReturnType.Instance) return true;
+			
+			if (passedArgument.IsArrayReturnType) {
+				IReturnType passedArrayElementType = passedArgument.CastToArrayReturnType().ArrayElementType;
+				if (expectedArgument.IsArrayReturnType && expectedArgument.CastToArrayReturnType().ArrayDimensions == passedArgument.CastToArrayReturnType().ArrayDimensions) {
+					return InferTypeArgument(expectedArgument.CastToArrayReturnType().ArrayElementType, passedArrayElementType, outputArray);
+				} else if (expectedArgument.IsConstructedReturnType) {
+					switch (expectedArgument.FullyQualifiedName) {
 						case "System.Collections.Generic.IList":
 						case "System.Collections.Generic.ICollection":
 						case "System.Collections.Generic.IEnumerable":
-							return InferTypeArgument(expectedArrayElementType, passedArgument.CastToConstructedReturnType().TypeArguments[0], outputArray);
+							return InferTypeArgument(expectedArgument.CastToConstructedReturnType().TypeArguments[0], passedArrayElementType, outputArray);
 					}
 				}
 				// If P is an array type, and A is not an array type of the same rank,

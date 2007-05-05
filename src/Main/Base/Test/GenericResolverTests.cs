@@ -22,6 +22,11 @@ namespace ICSharpCode.SharpDevelop.Tests
 			return nrrt.Resolve(program, expression, line);
 		}
 		
+		RR Resolve<RR>(string program, string expression, int line) where RR : ResolveResult
+		{
+			return nrrt.Resolve<RR>(program, expression, line);
+		}
+		
 		ResolveResult ResolveVB(string program, string expression, int line)
 		{
 			return nrrt.ResolveVB(program, expression, line);
@@ -167,7 +172,7 @@ class DerivedClass : BaseClass<string> {
 			Assert.AreEqual("System.String", rr.ResolvedType.FullyQualifiedName);
 		}
 		
-				[Test]
+		[Test]
 		public void CrossTypeParametersInheritance()
 		{
 			string program = @"using System;
@@ -249,6 +254,36 @@ public class GenericClass<T> where T : IDisposable {
 			Assert.IsNotNull(rr);
 			Assert.IsTrue(rr is LocalResolveResult);
 			Assert.IsTrue(rr.ResolvedType is GenericReturnType);
+		}
+		#endregion
+		
+		#region Generic methods
+		[Test]
+		public void GenericMethodInstanciation()
+		{
+			string program = @"using System;
+using System.Collections.Generic;
+class TestClass {
+	void Main() {
+		
+	}
+	static T First<T>(IEnumerable<T> input) {
+		foreach (T e in input) return e;
+		throw new EmptyCollectionException();
+	}
+}
+";
+			MemberResolveResult mrr = Resolve<MemberResolveResult>(program, "First(new string[0])", 5);
+			Assert.AreEqual("System.String", mrr.ResolvedType.FullyQualifiedName);
+			Assert.AreEqual("System.String", mrr.ResolvedMember.ReturnType.FullyQualifiedName);
+			
+			IMethod genericMethod = mrr.ResolvedMember.DeclaringType.Methods[1];
+			Assert.AreEqual("T", genericMethod.ReturnType.FullyQualifiedName);
+			
+			// ensure that the reference pointing to the specialized method is seen as a reference
+			// to the generic method.
+			// Fixing this requires changing the IMember interface: won't fix for 2.x
+			//Assert.IsTrue(Refactoring.RefactoringService.IsReferenceToMember(genericMethod, mrr));
 		}
 		#endregion
 	}
