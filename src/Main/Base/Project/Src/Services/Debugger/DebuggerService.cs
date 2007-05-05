@@ -381,14 +381,22 @@ namespace ICSharpCode.SharpDevelop.Debugging
 				ResolveResult result = ParserService.Resolve(expressionResult, logicPos.Y + 1, logicPos.X + 1, textArea.MotherTextEditorControl.FileName, textContent);
 				bool debuggerCanShowValue;
 				string toolTipText = GetText(result, expression, out debuggerCanShowValue);
+				if (Control.ModifierKeys == Keys.Control) {
+					toolTipText = "expr: " + expressionResult.ToString() + "\n" + toolTipText;
+					debuggerCanShowValue = false;
+				}
 				if (toolTipText != null) {
-					if (Control.ModifierKeys == Keys.Control) {
-						toolTipText = "expr: " + expressionResult.ToString() + "\n" + toolTipText;
-					} else if (debuggerCanShowValue && currentDebugger != null) {
+					if (debuggerCanShowValue && currentDebugger != null) {
 						return new ToolTipInfo(currentDebugger.GetTooltipControl(expressionResult.Expression));
 					}
 					return new ToolTipInfo(toolTipText);
 				}
+			} else {
+				#if DEBUG
+				if (Control.ModifierKeys == Keys.Control) {
+					return new ToolTipInfo("no expr: " + expressionResult.ToString());
+				}
+				#endif
 			}
 			return null;
 		}

@@ -37,7 +37,7 @@ namespace CSharpBinding.Parser
 		
 		public IExpressionFinder CreateExpressionFinder(string fileName)
 		{
-			return new CSharpExpressionFinder(delegate { return ParserService.GetParseInformation(fileName); });
+			return new CSharpExpressionFinder(ParserService.GetParseInformation(fileName));
 		}
 		
 		public bool CanParse(string fileName)

@@ -596,7 +596,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		[System.Runtime.InteropServices.DllImport("user32.dll", ExactSpelling=true)]
 		static extern short GetAsyncKeyState(int vKey);
 		
-		public bool IsAltGRPressed {
+		internal static bool IsAltGRPressed {
 			get {
 				return GetAsyncKeyState(VK_RMENU) < 0 && (Control.ModifierKeys & Keys.Control) == Keys.Control;
 			}

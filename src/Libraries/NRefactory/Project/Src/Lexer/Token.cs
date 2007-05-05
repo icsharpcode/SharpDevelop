@@ -51,5 +51,14 @@ namespace ICSharpCode.NRefactory.Parser
 			this.val          = val;
 			this.literalValue = literalValue;
 		}
+		
+		public override string ToString()
+		{
+			return string.Format("[C# {0}/VB {1} line={2} col={3} val={4}]",
+			                     CSharp.Tokens.GetTokenString(kind),
+			                     VB.Tokens.GetTokenString(kind),
+			                     line, col, val);
+			
+		}
 	}
 }

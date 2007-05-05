@@ -182,7 +182,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		void GenerateEditActions()
 		{
 			#if DEBUG
-			editactions[Keys.Control | Keys.OemPeriod] = new DebugCodeCompletionAction();
+			editactions[Keys.Control | Keys.OemPeriod] = new DebugDotCompletionAction();
+			editactions[Keys.Control | Keys.Shift | Keys.Space] = new DebugCtrlSpaceCodeCompletionAction();
 			#endif
 			try {
 				IEditAction[] actions = (IEditAction[])(AddInTree.GetTreeNode(editActionsPath).BuildChildItems(this)).ToArray(typeof(IEditAction));

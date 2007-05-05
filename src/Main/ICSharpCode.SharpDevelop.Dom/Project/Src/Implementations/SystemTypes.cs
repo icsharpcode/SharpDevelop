@@ -86,6 +86,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		private VoidClass()
 			: base(DefaultCompilationUnit.DummyCompilationUnit, VoidName)
 		{
+			this.Modifiers = ModifierEnum.Public | ModifierEnum.Sealed;
 		}
 		
 		protected override IReturnType CreateDefaultReturnType()

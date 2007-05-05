@@ -32,7 +32,7 @@ namespace CSharpBinding
 		
 		static CSharpExpressionFinder CreateExpressionFinder(string fileName)
 		{
-			return new CSharpExpressionFinder(delegate { return ParserService.GetParseInformation(fileName); });
+			return new CSharpExpressionFinder(ParserService.GetParseInformation(fileName));
 		}
 		
 		public override bool HandleKeyPress(SharpDevelopTextAreaControl editor, char ch)
@@ -41,26 +41,6 @@ namespace CSharpBinding
 			int cursor = editor.ActiveTextAreaControl.Caret.Offset;
 			ExpressionContext context = null;
 			if (ch == '(') {
-				if (CodeCompletionOptions.KeywordCompletionEnabled) {
-					switch (editor.GetWordBeforeCaret().Trim()) {
-						case "for":
-						case "lock":
-							context = ExpressionContext.Default;
-							break;
-						case "using":
-							context = ExpressionContext.TypeDerivingFrom(ParserService.CurrentProjectContent.SystemTypes.IDisposable, false);
-							break;
-						case "catch":
-							context = ExpressionContext.TypeDerivingFrom(ParserService.CurrentProjectContent.SystemTypes.Exception, false);
-							break;
-						case "foreach":
-						case "typeof":
-						case "sizeof":
-						case "default":
-							context = ExpressionContext.Type;
-							break;
-					}
-				}
 				if (context != null) {
 					if (IsInComment(editor)) return false;
 					editor.ShowCompletionWindow(new CtrlSpaceCompletionDataProvider(context), ch);
@@ -118,6 +98,16 @@ namespace CSharpBinding
 				TryDeclarationTypeInference(editor, curLine);
 			}
 			
+			if (char.IsLetter(ch) || ch == '_') {
+				if (cursor > 1 && !char.IsLetterOrDigit(editor.Document.GetCharAt(cursor - 1))) {
+					ExpressionResult result = ef.FindExpression(editor.Text, cursor - 1);
+					LoggingService.Debug("CC: Beginning to type a word, result=" + result);
+					if (result.Context != ExpressionContext.IdentifierExpected) {
+						editor.ShowCompletionWindow(new CtrlSpaceCompletionDataProvider(result.Context), '\0');
+					}
+				}
+			}
+			
 			return base.HandleKeyPress(editor, ch);
 		}
 		
@@ -163,9 +153,6 @@ namespace CSharpBinding
 		
 		public override bool HandleKeyword(SharpDevelopTextAreaControl editor, string word)
 		{
-			// TODO: Assistance writing Methods/Fields/Properties/Events:
-			// use public/static/etc. as keywords to display a list with other modifiers
-			// and possible return types.
 			switch (word) {
 				case "using":
 					if (IsInComment(editor)) return false;

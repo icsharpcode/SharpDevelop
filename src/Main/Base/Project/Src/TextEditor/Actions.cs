@@ -30,13 +30,26 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Actions
 		public override void Execute(TextArea services)
 		{
 			SharpDevelopTextAreaControl sdtac = (SharpDevelopTextAreaControl)services.MotherTextEditorControl;
-			
-			sdtac.ShowCompletionWindow(new CtrlSpaceCompletionDataProvider(), '\0');
+			CtrlSpaceCompletionDataProvider provider = new CtrlSpaceCompletionDataProvider();
+			provider.AllowCompleteExistingExpression = true;
+			sdtac.ShowCompletionWindow(provider, '\0');
 		}
 	}
 	
 	#if DEBUG
-	public class DebugCodeCompletionAction : AbstractEditAction
+	internal class DebugCtrlSpaceCodeCompletionAction : AbstractEditAction
+	{
+		public override void Execute(TextArea services)
+		{
+			SharpDevelopTextAreaControl sdtac = (SharpDevelopTextAreaControl)services.MotherTextEditorControl;
+			CtrlSpaceCompletionDataProvider provider = new CtrlSpaceCompletionDataProvider();
+			provider.AllowCompleteExistingExpression = true;
+			provider.DebugMode = true;
+			sdtac.ShowCompletionWindow(provider, '\0');
+		}
+	}
+	
+	internal class DebugDotCompletionAction : AbstractEditAction
 	{
 		public override void Execute(TextArea services)
 		{

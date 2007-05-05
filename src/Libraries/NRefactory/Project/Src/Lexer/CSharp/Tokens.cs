@@ -176,6 +176,19 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		public static BitArray AssgnOps = NewSet(Assign, PlusAssign, MinusAssign, TimesAssign, DivAssign, ModAssign, BitwiseAndAssign, BitwiseOrAssign, ShiftLeftAssign);
 		public static BitArray UnaryOp = NewSet(Plus, Minus, Not, BitwiseComplement, Times, Increment, Decrement, BitwiseAnd);
 		public static BitArray TypeDeclarationKW = NewSet(Class, Interface, Struct, Enum, Delegate);
+		public static BitArray ValidInsideTypeName = NewSet(Identifier, Partial, Where, Get, Set, Add, Remove, Yield, Select, Group, By, Into, From, Ascending, Descending, Orderby, Let, Join, On, Equals, Char, Bool, Object, String, Sbyte, Byte, Short, Ushort, Int, Uint, Long, Ulong, Float, Double, Decimal, LessThan, GreaterThan, Dot, Question, OpenSquareBracket, Comma, CloseSquareBracket, Times, DoubleColon);
+		public static BitArray KCCClassModifiers = NewSet(Abstract, Sealed, Static, Unsafe, Partial);
+		public static BitArray KCCTypeDeclarationStart = NewSet(Public, Internal, Class, Interface, Struct, Enum, Delegate, Abstract, Sealed, Static, Unsafe, Partial);
+		public static BitArray KCCMemberVisibilityModifiers = NewSet(Protected, Private, Public, Internal);
+		public static BitArray SimpleTypeName = NewSet(Char, Bool, Object, String, Sbyte, Byte, Short, Ushort, Int, Uint, Long, Ulong, Float, Double, Decimal, Identifier, Partial, Where, Get, Set, Add, Remove, Yield, Select, Group, By, Into, From, Ascending, Descending, Orderby, Let, Join, On, Equals, Void);
+		public static BitArray GlobalLevel = NewSet(Namespace, Using, Public, Internal, Class, Interface, Struct, Enum, Delegate, Abstract, Sealed, Static, Unsafe, Partial);
+		public static BitArray ExpressionStart = NewSet(Base, Delegate, False, New, Null, Sizeof, This, True, Typeof, Checked, Unchecked, From);
+		public static BitArray InterfaceLevel = NewSet(Event);
+		public static BitArray TypeLevel = NewSet(Public, Internal, Class, Interface, Struct, Enum, Delegate, Abstract, Sealed, Static, Unsafe, Partial, Protected, Private, Public, Internal, Const, Event, Explicit, Extern, Fixed, Implicit, Operator, Override, Readonly, Virtual, Volatile);
+		public static BitArray StatementStart = NewSet(Base, Delegate, False, New, Null, Sizeof, This, True, Typeof, Checked, Unchecked, From, Break, Case, Catch, Checked, Unchecked, Const, Continue, Default, Do, Else, Finally, Fixed, For, Foreach, Goto, If, Lock, Return, Stackalloc, Switch, Throw, Try, Unsafe, Using, While, Yield);
+		public static BitArray QueryExpressionClauseStart = NewSet(From, Let, Where, Join, Orderby, Group, Select);
+		public static BitArray InPropertyDeclaration = NewSet(Protected, Private, Public, Internal, Get, Set);
+		public static BitArray InEventDeclaration = NewSet(Add, Remove);
 
 		static string[] tokenList = new string[] {
 			// ----- terminal classes -----

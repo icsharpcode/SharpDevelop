@@ -225,7 +225,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 		{
 			CodeGenerator codeGen = c.ProjectContent.Language.CodeGenerator;
 			IAmbience ambience = AmbienceService.CurrentAmbience;
-			ambience.ConversionFlags = ConversionFlags.None;
+			ambience.ConversionFlags = ConversionFlags.ShowTypeParameterList;
 			foreach (IReturnType rt in c.BaseTypes) {
 				IClass interf = rt.GetUnderlyingClass();
 				if (interf != null && interf.ClassType == ClassType.Interface) {

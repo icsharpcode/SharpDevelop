@@ -115,7 +115,7 @@ namespace ICSharpCode.SharpDevelop.Gui.ClassBrowser
 		protected virtual IAmbience GetAmbience()
 		{
 			IAmbience ambience = AmbienceService.CurrentAmbience;
-			ambience.ConversionFlags = ConversionFlags.None;
+			ambience.ConversionFlags = ConversionFlags.ShowTypeParameterList;
 			return ambience;
 		}
 		

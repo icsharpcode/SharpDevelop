@@ -190,3 +190,23 @@ CastFollower(@IdentifierTokens, Literal, "(", "new", "this", "base", "null", "ch
 AssgnOps("=", "+=", "-=", "*=", "/=", "%=", "&=", "|=", "<<=")
 UnaryOp("+", "-", "!", "~", "*", "++", "--", "&")
 TypeDeclarationKW("class", "interface", "struct", "enum", "delegate")
+
+ValidInsideTypeName(@IdentifierTokens, @TypeKW, "<", ">", ".", "?", "[", Comma, "]", "*", "::")
+
+# Keywords for keyword-code-completion
+KCCClassModifiers("abstract", "sealed", "static", "unsafe", "partial")
+KCCTypeDeclarationStart("public", "internal", @TypeDeclarationKW, @KCCClassModifiers)
+KCCMemberVisibilityModifiers("protected", "private", "public", "internal")
+SimpleTypeName(@TypeKW, @IdentifierTokens, "void")
+GlobalLevel("namespace", "using", @KCCTypeDeclarationStart)
+ExpressionStart("base", "delegate", "false", "new", "null", "sizeof", "this", "true", "typeof", "checked", "unchecked", "from")
+# interfaces cannot have inner classes etc., the only keyword (expect for type names) that may appear in them is "event"
+InterfaceLevel("event")
+TypeLevel(@KCCTypeDeclarationStart, @KCCMemberVisibilityModifiers, "const", "event", "explicit", "extern", "fixed", "implicit", "operator", "override", "readonly", "virtual", "volatile")
+StatementStart(@ExpressionStart, "break", "case", "catch", "checked", "unchecked", "const", "continue", "default", "do", "else", "finally", "fixed", "for", "foreach", "goto", "if", "lock", "return", "stackalloc", "switch", "throw", "try", "unsafe", "using", "while", "yield")
+QueryExpressionClauseStart("from", "let", "where", "join", "orderby", "group", "select")
+InPropertyDeclaration(@KCCMemberVisibilityModifiers, "get", "set")
+InEventDeclaration("add", "remove")
+
+# unused: as, is, out, params, ref, where, in
+# "by", "into", "ascending", "descending", "on", "equals"

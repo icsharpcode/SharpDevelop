@@ -93,7 +93,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				callingClass = cu.GetInnermostClass(caretLine, caretColumn);
 				projectContent = cu.ProjectContent;
 			} else {
-				projectContent = HostCallback.GetCurrentProjectContent();
+				projectContent = DefaultProjectContent.DummyProjectContent;
 			}
 			if (projectContent == null)
 				throw new ArgumentException("projectContent not found!");

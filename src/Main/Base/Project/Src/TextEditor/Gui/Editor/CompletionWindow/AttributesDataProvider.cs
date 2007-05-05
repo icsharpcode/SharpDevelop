@@ -24,7 +24,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		
 		public AttributesDataProvider(ExpressionContext context) : base(context)
 		{
-			this.ForceNewExpression = true;
 		}
 		
 		bool removeAttributeSuffix = true;

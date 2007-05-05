@@ -1051,10 +1051,20 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return c2;
 		}
 		
+		static void AddCSharpKeywords(ArrayList ar, BitArray keywords)
+		{
+			for (int i = 0; i < keywords.Length; i++) {
+				if (keywords[i]) {
+					ar.Add(NR.Parser.CSharp.Tokens.GetTokenString(i));
+				}
+			}
+		}
+		
 		public ArrayList CtrlSpace(int caretLine, int caretColumn, ParseInformation parseInfo, string fileContent, ExpressionContext context)
 		{
 			if (!Initialize(parseInfo, caretLine, caretColumn))
 				return null;
+			
 			ArrayList result = new ArrayList();
 			if (language == NR.SupportedLanguage.VBNet) {
 				foreach (KeyValuePair<string, string> pair in TypeReference.PrimitiveTypesVB) {
@@ -1065,13 +1075,69 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				}
 				result.Add("Global");
 				result.Add("New");
+				CtrlSpaceInternal(result, fileContent);
 			} else {
-				foreach (KeyValuePair<string, string> pair in TypeReference.PrimitiveTypesCSharp) {
-					IClass c = GetPrimitiveClass(pair.Value, pair.Key);
-					if (c != null) result.Add(c);
+				if (context == ExpressionContext.TypeDeclaration) {
+					AddCSharpKeywords(result, NR.Parser.CSharp.Tokens.TypeLevel);
+					AddCSharpPrimitiveTypes(result);
+					CtrlSpaceInternal(result, fileContent);
+				} else if (context == ExpressionContext.InterfaceDeclaration) {
+					AddCSharpKeywords(result, NR.Parser.CSharp.Tokens.InterfaceLevel);
+					AddCSharpPrimitiveTypes(result);
+					CtrlSpaceInternal(result, fileContent);
+				} else if (context == ExpressionContext.StatementStart) {
+					result.Add("var");
+					AddCSharpKeywords(result, NR.Parser.CSharp.Tokens.StatementStart);
+					AddCSharpPrimitiveTypes(result);
+					CtrlSpaceInternal(result, fileContent);
+				} else if (context == ExpressionContext.Global) {
+					AddCSharpKeywords(result, NR.Parser.CSharp.Tokens.GlobalLevel);
+				} else if (context == ExpressionContext.InterfacePropertyDeclaration) {
+					result.Add("get");
+					result.Add("set");
+				} else if (context == ExpressionContext.BaseConstructorCall) {
+					result.Add("this");
+					result.Add("base");
+				} else if (context == ExpressionContext.PropertyDeclaration) {
+					AddCSharpKeywords(result, NR.Parser.CSharp.Tokens.InPropertyDeclaration);
+				} else if (context == ExpressionContext.EventDeclaration) {
+					AddCSharpKeywords(result, NR.Parser.CSharp.Tokens.InEventDeclaration);
+				} else if (context == ExpressionContext.FullyQualifiedType) {
+					cu.ProjectContent.AddNamespaceContents(result, "", languageProperties, true);
+				} else if (context == ExpressionContext.ParameterType || context == ExpressionContext.FirstParameterType) {
+					result.Add("ref");
+					result.Add("out");
+					result.Add("params");
+					if (context == ExpressionContext.FirstParameterType && languageProperties.SupportsExtensionMethods) {
+						if (callingMember != null && callingMember.IsStatic) {
+							result.Add("this");
+						}
+					}
+					AddCSharpPrimitiveTypes(result);
+					CtrlSpaceInternal(result, fileContent);
+				} else if (context == ExpressionContext.Default) {
+					AddCSharpKeywords(result, NR.Parser.CSharp.Tokens.ExpressionStart);
+					AddCSharpPrimitiveTypes(result);
+					CtrlSpaceInternal(result, fileContent);
+				} else {
+					// e.g. some ExpressionContext.TypeDerivingFrom()
+					AddCSharpPrimitiveTypes(result);
+					CtrlSpaceInternal(result, fileContent);
 				}
 			}
-			
+			return result;
+		}
+		
+		void AddCSharpPrimitiveTypes(ArrayList result)
+		{
+			foreach (KeyValuePair<string, string> pair in TypeReference.PrimitiveTypesCSharp) {
+				IClass c = GetPrimitiveClass(pair.Value, pair.Key);
+				if (c != null) result.Add(c);
+			}
+		}
+		
+		void CtrlSpaceInternal(ArrayList result, string fileContent)
+		{
 			lookupTableVisitor = new LookupTableVisitor(language);
 			
 			if (callingMember != null) {
@@ -1095,7 +1161,6 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				}
 			}
 			CtrlSpaceResolveHelper.AddImportedNamespaceContents(result, cu, callingClass);
-			return result;
 		}
 	}
 }

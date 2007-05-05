@@ -164,7 +164,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			if (c == null) return false;
 			if (c.ClassType == ClassType.Enum) {
 				CtrlSpaceCompletionDataProvider cdp = new CtrlSpaceCompletionDataProvider();
-				cdp.ForceNewExpression = true;
 				ContextCompletionDataProvider cache = new ContextCompletionDataProvider(cdp);
 				cache.activationKey = charTyped;
 				cache.GenerateCompletionData(editor.FileName, editor.ActiveTextAreaControl.TextArea, charTyped);
