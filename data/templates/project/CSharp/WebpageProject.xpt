@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0"?>
 <Template originator   = "Tom Schroeter"
           created      = "24/03/2006"
-          lastModified = "24/03/2006">
+	  lastModified = "06/05/2006">
 
 	<!-- Template Header -->
 	<TemplateConfiguration>
@@ -132,35 +132,7 @@ namespace ${StandardNamespace}
 	}
 }]]></File>
 <!--*************************************************************************-->
-		<File name=".\AssemblyInfo.cs">
-			<![CDATA[using System.Reflection;
-using System.Runtime.CompilerServices;
-
-// Information about this assembly is defined by the following
-// attributes.
-//
-// change them to the information which is associated with the assembly
-// you compile.
-
-[assembly: AssemblyTitle("")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("")]
-[assembly: AssemblyCopyright("")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-
-// The assembly version has following format :
-//
-// Major.Minor.Build.Revision
-//
-// You can specify all values by your own or you can build default build and revision
-// numbers with the '*' character (the default):
-
-[assembly: AssemblyVersion("1.0.0.0")]
-
-]]></File>
+<File name=".\AssemblyInfo.cs" src="DefaultAssemblyInfo.cs" />
 <!--*************************************************************************-->
 		<File name="Global.asax" language="HTML">
 			<![CDATA[<%@ Application Codebehind="Global.cs"
@@ -262,17 +234,15 @@ namespace ${StandardNamespace}
 
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmls="http://www.w3.org/1999/xhtml">
-
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
 		<title>${ProjectName}</title>
 
-		<meta http-equiv="content-type" content="text/html; charset=utf-8">
-		<meta HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
-		<meta HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<meta http-equiv="CACHE-CONTROL" content="NO-CACHE" />
+		<meta http-equiv="PRAGMA" content="NO-CACHE" />
 
-		<link href="${StandardNamespace}.css" type="text/css" rel="stylesheet">
+		<link href="${StandardNamespace}.css" type="text/css" rel="stylesheet" />
 		
 	</head>
 	<body>
@@ -291,14 +261,14 @@ namespace ${StandardNamespace}
 						Name:
 					</td>
 					<td>
-						<input id="_Input_Name" runat="server">
+						<input id="_Input_Name" runat="server" />
 					</td>
 				</tr>
 
 				<tr>
 					<td colspan="2">
-						<input id="_Button_No" type="submit" value="Oh No!" runat="server">
-						<input id="_Button_Ok" type="submit" value="Ok" runat="server">
+						<input id="_Button_No" type="submit" value="Oh No!" runat="server" />
+						<input id="_Button_Ok" type="submit" value="Ok" runat="server" />
 					</td>
 				</tr>
 
@@ -311,8 +281,8 @@ namespace ${StandardNamespace}
 			</table>
 
 		</form>
-	</Body>
-</Html>
+	</body>
+</html>
 ]]></File>
 <!--*************************************************************************-->
 		<File name="${StandardNamespace}.css" language="HTML">
