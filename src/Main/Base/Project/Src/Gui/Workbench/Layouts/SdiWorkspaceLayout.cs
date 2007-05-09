@@ -265,6 +265,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					}
 				} finally {
 					NativeMethods.SetWindowRedraw(wbForm.Handle, true);
+					wbForm.Refresh();
 				}
 			}
 		}
