@@ -83,9 +83,11 @@ namespace ICSharpCode.XmlEditor
 			declarationViewWindow.ShowDeclarationViewWindow();
 			control.Focus();
 			CodeCompletionListViewSelectedItemChanged(this, EventArgs.Empty);
-						
-			if (completionDataProvider.DefaultIndex >= 0) {
-				codeCompletionListView.SelectIndex(completionDataProvider.DefaultIndex);
+			
+			int defaultIndex = completionDataProvider.DefaultIndex;
+			if (defaultIndex >= 0) {
+				codeCompletionListView.SelectIndex(defaultIndex);
+				codeCompletionListView.CenterViewOn(defaultIndex);
 			}
 			
 			if (completionDataProvider.PreSelection != null) {

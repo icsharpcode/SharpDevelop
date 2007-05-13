@@ -103,8 +103,22 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 					int max = Math.Max(selectedItem, oldSelectedItem) - firstItem;
 					Invalidate(new Rectangle(0, 1 + min * ItemHeight, Width, (max - min + 1) * ItemHeight));
 				}
-				Update();
 				OnSelectedItemChanged(EventArgs.Empty);
+			}
+		}
+		
+		public void CenterViewOn(int index)
+		{
+			int oldFirstItem = this.FirstItem;
+			int firstItem = index - MaxVisibleItem / 2;
+			if (firstItem < 0)
+				this.FirstItem = 0;
+			else if (firstItem >= completionData.Length - MaxVisibleItem)
+				this.FirstItem = completionData.Length - MaxVisibleItem;
+			else
+				this.FirstItem = firstItem;
+			if (this.FirstItem != oldFirstItem) {
+				Invalidate();
 			}
 		}
 		
@@ -186,10 +200,16 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 					}
 				}
 			}
-			if (bestIndex < 0)
+			if (bestIndex < 0) {
 				ClearSelection();
-			else
-				SelectIndex(bestIndex);
+			} else {
+				if (bestIndex < firstItem || firstItem + MaxVisibleItem <= bestIndex) {
+					SelectIndex(bestIndex);
+					CenterViewOn(bestIndex);
+				} else {
+					SelectIndex(bestIndex);
+				}
+			}
 		}
 		
 		protected override void OnPaint(PaintEventArgs pe)
