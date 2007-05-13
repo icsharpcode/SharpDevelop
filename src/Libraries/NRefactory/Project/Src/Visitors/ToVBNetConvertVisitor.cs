@@ -109,11 +109,13 @@ namespace ICSharpCode.NRefactory.Visitors
 			for (int i = 1;; i++) {
 				string name = "ConvertedAnonymousMethod" + i;
 				bool ok = true;
-				foreach (object c in currentType.Children) {
-					MethodDeclaration method = c as MethodDeclaration;
-					if (method != null && method.Name == name) {
-						ok = false;
-						break;
+				if (currentType != null) {
+					foreach (object c in currentType.Children) {
+						MethodDeclaration method = c as MethodDeclaration;
+						if (method != null && method.Name == name) {
+							ok = false;
+							break;
+						}
 					}
 				}
 				if (ok)
@@ -162,7 +164,9 @@ namespace ICSharpCode.NRefactory.Visitors
 		{
 			MethodDeclaration method = new MethodDeclaration(GetAnonymousMethodName(), Modifiers.Private, new TypeReference("System.Void"), anonymousMethodExpression.Parameters, null);
 			method.Body = anonymousMethodExpression.Body;
-			currentType.Children.Add(method);
+			if (currentType != null) {
+				currentType.Children.Add(method);
+			}
 			ReplaceCurrentNode(new AddressOfExpression(new IdentifierExpression(method.Name)));
 			return null;
 		}
@@ -173,7 +177,7 @@ namespace ICSharpCode.NRefactory.Visitors
 			    || assignmentExpression.Op == AssignmentOperatorType.Subtract)
 			{
 				string methodName = GetMethodNameOfDelegateCreation(assignmentExpression.Right);
-				if (methodName != null) {
+				if (methodName != null && currentType != null) {
 					foreach (object c in currentType.Children) {
 						MethodDeclaration method = c as MethodDeclaration;
 						if (method != null && method.Name == methodName) {
