@@ -423,6 +423,8 @@ NonModuleDeclaration<ModifierList m, List<AttributeSection> attributes>
 	[ ClassBaseType<out typeRef> (. newType.BaseTypes.Add(typeRef); .) ]
 	{ TypeImplementsClause<out baseInterfaces> (. newType.BaseTypes.AddRange(baseInterfaces); .) }
 	ClassBody<newType>
+	"End" "Class" (. newType.EndLocation = t.EndLocation; .)
+	EOL
 	(.
 		compilationUnit.BlockEnd();
 	.)
@@ -540,8 +542,6 @@ ClassBody<TypeDeclaration newType>
 		{ MemberModifier<m> }
 		ClassMemberDecl<m, attributes>
 	}
-	"End" "Class" (. newType.EndLocation = t.EndLocation; .)
-	EOL
 	.
 
 StructureBody<TypeDeclaration newType>

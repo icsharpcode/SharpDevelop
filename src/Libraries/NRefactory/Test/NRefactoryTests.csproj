@@ -46,6 +46,7 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Lexer\CSharp\LexerTests.cs" />
     <Compile Include="General\UnitTest.cs" />
+    <Compile Include="Output\SnippetConversion.cs" />
     <Compile Include="Parser\GlobalScope\AttributeSectionTests.cs" />
     <Compile Include="Output\CSharp\CSharpOutputTest.cs" />
     <Compile Include="Parser\Expressions\PrimitiveExpressionTests.cs" />

@@ -13,6 +13,7 @@ namespace ICSharpCode.NRefactory.Visitors
 	/// <summary>
 	/// This class converts C# constructs to their VB.NET equivalents.
 	/// </summary>
+	[Obsolete("Use CSharpConstructsVisitor + ToVBNetConvertVisitor instead")]
 	public class CSharpToVBNetConvertVisitor : CSharpConstructsVisitor
 	{
 		public override object VisitCompilationUnit(CompilationUnit compilationUnit, object data)

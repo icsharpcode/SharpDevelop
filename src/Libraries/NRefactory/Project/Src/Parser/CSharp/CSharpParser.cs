@@ -53,6 +53,41 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			Expr(out expr);
 			return expr;
 		}
+		
+		public override BlockStatement ParseBlock()
+		{
+			lexer.NextToken();
+			compilationUnit = new CompilationUnit();
+			
+			BlockStatement blockStmt = new BlockStatement();
+			blockStmt.StartLocation = la.Location;
+			compilationUnit.BlockStart(blockStmt);
+			
+			while (la.kind != Tokens.EOF) {
+				Token oldLa = la;
+				Statement();
+				if (la == oldLa) {
+					// did not advance lexer position, we cannot parse this as a statement block
+					return null;
+				}
+			}
+			
+			compilationUnit.BlockEnd();
+			return blockStmt;
+		}
+		
+		public override List<INode> ParseTypeMembers()
+		{
+			lexer.NextToken();
+			compilationUnit = new CompilationUnit();
+			
+			TypeDeclaration newType = new TypeDeclaration(Modifiers.None, null);
+			compilationUnit.BlockStart(newType);
+			ClassBody();
+			compilationUnit.BlockEnd();
+			return newType.Children;
+		}
+		
 		// Begin ISTypeCast
 		bool IsTypeCast()
 		{

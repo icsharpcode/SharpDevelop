@@ -562,8 +562,14 @@ out baseInterfaces);
 			ClassBody(
 #line  425 "VBNET.ATG" 
 newType);
+			Expect(88);
+			Expect(67);
 
-#line  427 "VBNET.ATG" 
+#line  426 "VBNET.ATG" 
+			newType.EndLocation = t.EndLocation; 
+			Expect(1);
+
+#line  429 "VBNET.ATG" 
 			compilationUnit.BlockEnd();
 			
 			break;
@@ -571,7 +577,7 @@ newType);
 		case 121: {
 			lexer.NextToken();
 
-#line  431 "VBNET.ATG" 
+#line  433 "VBNET.ATG" 
 			m.Check(Modifiers.VBModules);
 			TypeDeclaration newType = new TypeDeclaration(m.Modifier, attributes);
 			compilationUnit.AddChild(newType);
@@ -581,17 +587,17 @@ newType);
 			
 			Identifier();
 
-#line  438 "VBNET.ATG" 
+#line  440 "VBNET.ATG" 
 			newType.Name = t.val; 
 			Expect(1);
 
-#line  440 "VBNET.ATG" 
+#line  442 "VBNET.ATG" 
 			newType.BodyStartLocation = t.Location; 
 			ModuleBody(
-#line  441 "VBNET.ATG" 
+#line  443 "VBNET.ATG" 
 newType);
 
-#line  443 "VBNET.ATG" 
+#line  445 "VBNET.ATG" 
 			compilationUnit.BlockEnd();
 			
 			break;
@@ -599,7 +605,7 @@ newType);
 		case 166: {
 			lexer.NextToken();
 
-#line  447 "VBNET.ATG" 
+#line  449 "VBNET.ATG" 
 			m.Check(Modifiers.VBStructures);
 			TypeDeclaration newType = new TypeDeclaration(m.Modifier, attributes);
 			compilationUnit.AddChild(newType);
@@ -609,28 +615,28 @@ newType);
 			
 			Identifier();
 
-#line  454 "VBNET.ATG" 
+#line  456 "VBNET.ATG" 
 			newType.Name = t.val; 
 			TypeParameterList(
-#line  455 "VBNET.ATG" 
+#line  457 "VBNET.ATG" 
 newType.Templates);
 			Expect(1);
 
-#line  457 "VBNET.ATG" 
+#line  459 "VBNET.ATG" 
 			newType.BodyStartLocation = t.Location; 
 			while (la.kind == 107) {
 				TypeImplementsClause(
-#line  458 "VBNET.ATG" 
+#line  460 "VBNET.ATG" 
 out baseInterfaces);
 
-#line  458 "VBNET.ATG" 
+#line  460 "VBNET.ATG" 
 				newType.BaseTypes.AddRange(baseInterfaces);
 			}
 			StructureBody(
-#line  459 "VBNET.ATG" 
+#line  461 "VBNET.ATG" 
 newType);
 
-#line  461 "VBNET.ATG" 
+#line  463 "VBNET.ATG" 
 			compilationUnit.BlockEnd();
 			
 			break;
@@ -638,7 +644,7 @@ newType);
 		case 90: {
 			lexer.NextToken();
 
-#line  466 "VBNET.ATG" 
+#line  468 "VBNET.ATG" 
 			m.Check(Modifiers.VBEnums);
 			TypeDeclaration newType = new TypeDeclaration(m.Modifier, attributes);
 			newType.StartLocation = m.GetDeclarationLocation(t.Location);
@@ -649,26 +655,26 @@ newType);
 			
 			Identifier();
 
-#line  474 "VBNET.ATG" 
+#line  476 "VBNET.ATG" 
 			newType.Name = t.val; 
 			if (la.kind == 48) {
 				lexer.NextToken();
 				NonArrayTypeName(
-#line  475 "VBNET.ATG" 
+#line  477 "VBNET.ATG" 
 out typeRef, false);
 
-#line  475 "VBNET.ATG" 
+#line  477 "VBNET.ATG" 
 				newType.BaseTypes.Add(typeRef); 
 			}
 			Expect(1);
 
-#line  477 "VBNET.ATG" 
+#line  479 "VBNET.ATG" 
 			newType.BodyStartLocation = t.Location; 
 			EnumBody(
-#line  478 "VBNET.ATG" 
+#line  480 "VBNET.ATG" 
 newType);
 
-#line  480 "VBNET.ATG" 
+#line  482 "VBNET.ATG" 
 			compilationUnit.BlockEnd();
 			
 			break;
@@ -676,7 +682,7 @@ newType);
 		case 112: {
 			lexer.NextToken();
 
-#line  485 "VBNET.ATG" 
+#line  487 "VBNET.ATG" 
 			m.Check(Modifiers.VBInterfacs);
 			TypeDeclaration newType = new TypeDeclaration(m.Modifier, attributes);
 			newType.StartLocation = m.GetDeclarationLocation(t.Location);
@@ -686,28 +692,28 @@ newType);
 			
 			Identifier();
 
-#line  492 "VBNET.ATG" 
+#line  494 "VBNET.ATG" 
 			newType.Name = t.val; 
 			TypeParameterList(
-#line  493 "VBNET.ATG" 
+#line  495 "VBNET.ATG" 
 newType.Templates);
 			EndOfStmt();
 
-#line  495 "VBNET.ATG" 
+#line  497 "VBNET.ATG" 
 			newType.BodyStartLocation = t.Location; 
 			while (la.kind == 110) {
 				InterfaceBase(
-#line  496 "VBNET.ATG" 
+#line  498 "VBNET.ATG" 
 out baseInterfaces);
 
-#line  496 "VBNET.ATG" 
+#line  498 "VBNET.ATG" 
 				newType.BaseTypes.AddRange(baseInterfaces); 
 			}
 			InterfaceBody(
-#line  497 "VBNET.ATG" 
+#line  499 "VBNET.ATG" 
 newType);
 
-#line  499 "VBNET.ATG" 
+#line  501 "VBNET.ATG" 
 			compilationUnit.BlockEnd();
 			
 			break;
@@ -715,7 +721,7 @@ newType);
 		case 80: {
 			lexer.NextToken();
 
-#line  504 "VBNET.ATG" 
+#line  506 "VBNET.ATG" 
 			m.Check(Modifiers.VBDelegates);
 			DelegateDeclaration delegateDeclr = new DelegateDeclaration(m.Modifier, attributes);
 			delegateDeclr.ReturnType = new TypeReference("", "System.Void");
@@ -726,63 +732,63 @@ newType);
 				lexer.NextToken();
 				Identifier();
 
-#line  511 "VBNET.ATG" 
+#line  513 "VBNET.ATG" 
 				delegateDeclr.Name = t.val; 
 				TypeParameterList(
-#line  512 "VBNET.ATG" 
+#line  514 "VBNET.ATG" 
 delegateDeclr.Templates);
 				if (la.kind == 24) {
 					lexer.NextToken();
 					if (StartOf(4)) {
 						FormalParameterList(
-#line  513 "VBNET.ATG" 
+#line  515 "VBNET.ATG" 
 p);
 					}
 					Expect(25);
 
-#line  513 "VBNET.ATG" 
+#line  515 "VBNET.ATG" 
 					delegateDeclr.Parameters = p; 
 				}
 			} else if (la.kind == 100) {
 				lexer.NextToken();
 				Identifier();
 
-#line  515 "VBNET.ATG" 
+#line  517 "VBNET.ATG" 
 				delegateDeclr.Name = t.val; 
 				TypeParameterList(
-#line  516 "VBNET.ATG" 
+#line  518 "VBNET.ATG" 
 delegateDeclr.Templates);
 				if (la.kind == 24) {
 					lexer.NextToken();
 					if (StartOf(4)) {
 						FormalParameterList(
-#line  517 "VBNET.ATG" 
+#line  519 "VBNET.ATG" 
 p);
 					}
 					Expect(25);
 
-#line  517 "VBNET.ATG" 
+#line  519 "VBNET.ATG" 
 					delegateDeclr.Parameters = p; 
 				}
 				if (la.kind == 48) {
 					lexer.NextToken();
 
-#line  518 "VBNET.ATG" 
+#line  520 "VBNET.ATG" 
 					TypeReference type; 
 					TypeName(
-#line  518 "VBNET.ATG" 
+#line  520 "VBNET.ATG" 
 out type);
 
-#line  518 "VBNET.ATG" 
+#line  520 "VBNET.ATG" 
 					delegateDeclr.ReturnType = type; 
 				}
 			} else SynErr(214);
 
-#line  520 "VBNET.ATG" 
+#line  522 "VBNET.ATG" 
 			delegateDeclr.EndLocation = t.EndLocation; 
 			Expect(1);
 
-#line  523 "VBNET.ATG" 
+#line  525 "VBNET.ATG" 
 			compilationUnit.AddChild(delegateDeclr);
 			
 			break;
@@ -1003,40 +1009,34 @@ out type);
 	}
 
 	void ClassBody(
-#line  533 "VBNET.ATG" 
+#line  535 "VBNET.ATG" 
 TypeDeclaration newType) {
 
-#line  534 "VBNET.ATG" 
+#line  536 "VBNET.ATG" 
 		AttributeSection section; 
 		while (StartOf(7)) {
 
-#line  536 "VBNET.ATG" 
+#line  538 "VBNET.ATG" 
 			List<AttributeSection> attributes = new List<AttributeSection>();
 			ModifierList m = new ModifierList();
 			
 			while (la.kind == 27) {
 				AttributeSection(
-#line  539 "VBNET.ATG" 
+#line  541 "VBNET.ATG" 
 out section);
 
-#line  539 "VBNET.ATG" 
+#line  541 "VBNET.ATG" 
 				attributes.Add(section); 
 			}
 			while (StartOf(8)) {
 				MemberModifier(
-#line  540 "VBNET.ATG" 
+#line  542 "VBNET.ATG" 
 m);
 			}
 			ClassMemberDecl(
-#line  541 "VBNET.ATG" 
+#line  543 "VBNET.ATG" 
 m, attributes);
 		}
-		Expect(88);
-		Expect(67);
-
-#line  543 "VBNET.ATG" 
-		newType.EndLocation = t.EndLocation; 
-		Expect(1);
 	}
 
 	void ModuleBody(

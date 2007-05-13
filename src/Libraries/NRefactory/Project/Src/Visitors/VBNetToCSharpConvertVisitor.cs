@@ -15,6 +15,7 @@ namespace ICSharpCode.NRefactory.Visitors
 	/// Applying the VBNetToCSharpConvertVisitor on a CompilationUnit has the same effect
 	/// as applying the VBNetConstructsConvertVisitor and ToCSharpConvertVisitor.
 	/// </summary>
+	[Obsolete("Use VBNetConstructsConvertVisitor + ToCSharpConvertVisitor instead")]
 	public class VBNetToCSharpConvertVisitor : VBNetConstructsConvertVisitor
 	{
 		public override object VisitCompilationUnit(CompilationUnit compilationUnit, object data)

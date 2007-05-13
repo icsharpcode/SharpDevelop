@@ -23,7 +23,7 @@ namespace ICSharpCode.NRefactory.Tests
 			Type[] allTypes = typeof(INode).Assembly.GetTypes();
 			
 			foreach (Type type in allTypes) {
-				if (type.IsClass && !type.IsAbstract && type.GetInterface(typeof(INode).FullName) != null) {
+				if (type.IsClass && !type.IsAbstract && !type.IsNested && type.GetInterface(typeof(INode).FullName) != null) {
 					MethodInfo methodInfo = type.GetMethod("ToString", BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public);
 					Assert.IsNotNull(methodInfo, "ToString() not found in " + type.FullName);
 				}
@@ -68,7 +68,7 @@ namespace ICSharpCode.NRefactory.Tests
 			Type visitor = typeof(IAstVisitor);
 			
 			foreach (Type type in allTypes) {
-				if (type.IsClass && !type.IsAbstract && type.GetInterface(typeof(INode).FullName) != null && !type.Name.StartsWith("Null")) {
+				if (type.IsClass && !type.IsAbstract && !type.IsNested && type.GetInterface(typeof(INode).FullName) != null && !type.Name.StartsWith("Null")) {
 					MethodInfo methodInfo = visitor.GetMethod("Visit" + type.Name, BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.ExactBinding, null, new Type[] {type, typeof(object)}, null);
 					Assert.IsNotNull(methodInfo, "Visit with parameter " + type.FullName + " not found");
 					Assert.AreEqual(2, methodInfo.GetParameters().Length);
@@ -89,7 +89,7 @@ namespace ICSharpCode.NRefactory.Tests
 			Type visitor = typeof(AbstractAstVisitor);
 			
 			foreach (Type type in allTypes) {
-				if (type.IsClass && !type.IsAbstract && type.GetInterface(typeof(INode).FullName) != null && !type.Name.StartsWith("Null")) {
+				if (type.IsClass && !type.IsAbstract && !type.IsNested && type.GetInterface(typeof(INode).FullName) != null && !type.Name.StartsWith("Null")) {
 					MethodInfo methodInfo = visitor.GetMethod("Visit" + type.Name, BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.ExactBinding, null, new Type[] {type, typeof(object)}, null);
 					Assert.IsNotNull(methodInfo, "Visit with parameter " + type.FullName + " not found");
 					

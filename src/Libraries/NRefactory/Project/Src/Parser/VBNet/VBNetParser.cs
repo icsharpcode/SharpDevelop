@@ -65,6 +65,28 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			Expr(out expr);
 			return expr;
 		}
+		
+		public override BlockStatement ParseBlock()
+		{
+			lexer.NextToken();
+			compilationUnit = new CompilationUnit();
+			
+			Statement st;
+			Block(out st);
+			return st as BlockStatement;
+		}
+		
+		public override List<INode> ParseTypeMembers()
+		{
+			lexer.NextToken();
+			compilationUnit = new CompilationUnit();
+			
+			TypeDeclaration newType = new TypeDeclaration(Modifiers.None, null);
+			compilationUnit.BlockStart(newType);
+			ClassBody(newType);
+			compilationUnit.BlockEnd();
+			return newType.Children;
+		}
 
 		bool LeaveBlock()
 		{

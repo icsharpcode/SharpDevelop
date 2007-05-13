@@ -343,7 +343,7 @@ TypeDecl<ModifierList m, List<AttributeSection> attributes>
 	{ IF (IdentIsWhere()) TypeParameterConstraintsClause<templates> }
 	
 	(. newType.BodyStartLocation = t.EndLocation; .)
-	ClassBody
+	"{" ClassBody "}"
 	[ ";" ]                         (. newType.EndLocation = t.Location; 
 	                                   compilationUnit.BlockEnd();
 	                                .)
@@ -456,7 +456,6 @@ ClassBase<out List<TypeReference> names>
 ClassBody
 (. AttributeSection section; .)
 =
-	"{"
 	{                                  (.List<AttributeSection> attributes = new List<AttributeSection>();
 		                                 ModifierList m = new ModifierList();
 		                               .)
@@ -464,7 +463,6 @@ ClassBody
 		MemberModifiers<m>
 		ClassMemberDecl<m, attributes> 
 	}
-	"}"
 .
 
 StructInterfaces<out List<TypeReference> names>
