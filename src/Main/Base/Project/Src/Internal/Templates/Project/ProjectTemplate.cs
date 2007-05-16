@@ -50,9 +50,15 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		/// </summary>
 		public static ReadOnlyCollection<ProjectTemplate> ProjectTemplates {
 			get {
+				#if DEBUG
+				// Always reload project templates if debugging.
+				// TODO: Make this a configurable option.
+				LoadProjectTemplates();
+				#else
 				if (projectTemplates == null) {
 					LoadProjectTemplates();
 				}
+				#endif
 				return projectTemplates.AsReadOnly();
 			}
 		}
