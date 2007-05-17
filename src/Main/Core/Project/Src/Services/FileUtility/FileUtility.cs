@@ -265,12 +265,12 @@ namespace ICSharpCode.Core
 		
 		public static List<string> SearchDirectory(string directory, string filemask, bool searchSubdirectories)
 		{
-			return SearchDirectory(directory, filemask, searchSubdirectories, false);
+			return SearchDirectory(directory, filemask, searchSubdirectories, true);
 		}
 		
 		public static List<string> SearchDirectory(string directory, string filemask)
 		{
-			return SearchDirectory(directory, filemask, true, false);
+			return SearchDirectory(directory, filemask, true, true);
 		}
 		
 		/// <summary>
@@ -283,11 +283,19 @@ namespace ICSharpCode.Core
 		/// </summary>
 		static void SearchDirectory(string directory, string filemask, List<string> collection, bool searchSubdirectories, bool ignoreHidden)
 		{
+			// If Directory.GetFiles() searches the 8.3 name as well as the full name so if the filemask is 
+			// "*.xpt" it will return "Template.xpt~"
+			bool isExtMatch = Regex.IsMatch(filemask, @"^\*\..{3}$");
+			string ext = null; 
 			string[] file = Directory.GetFiles(directory, filemask);
+			if (isExtMatch) ext = filemask.Remove(0,1);
+			
 			foreach (string f in file) {
 				if (ignoreHidden && (File.GetAttributes(f) & FileAttributes.Hidden) == FileAttributes.Hidden) {
 					continue;
 				}
+				if (isExtMatch && Path.GetExtension(f) != ext) continue;
+				
 				collection.Add(f);
 			}
 			
