@@ -20,16 +20,21 @@ namespace ICSharpCode.NRefactory.Tests.Output
 		{
 			SnippetParser parser = new SnippetParser(SupportedLanguage.CSharp);
 			INode node = parser.Parse(input);
+			// parser.Errors.ErrorOutput contains syntax errors, if any
 			Assert.IsNotNull(node);
 			Assert.AreEqual("", parser.Errors.ErrorOutput);
+			// parser.Specials is the list of comments, preprocessor directives etc.
 			PreprocessingDirective.CSharpToVB(parser.Specials);
+			// Convert C# constructs to VB.NET:
 			node.AcceptVisitor(new CSharpConstructsVisitor(), null);
 			node.AcceptVisitor(new ToVBNetConvertVisitor(), null);
-			
+
 			VBNetOutputVisitor output = new VBNetOutputVisitor();
 			using (SpecialNodesInserter.Install(parser.Specials, output)) {
 				node.AcceptVisitor(output, null);
 			}
+			// output.Errors.ErrorOutput contains conversion errors/warnings, if any
+			// output.Text contains the converted code
 			Assert.AreEqual("", output.Errors.ErrorOutput);
 			Assert.AreEqual(expectedOutput, output.Text);
 		}

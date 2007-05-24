@@ -36,7 +36,9 @@ namespace ICSharpCode.SharpDevelop.Commands
 				
 				List<ISpecial> specials = p.Lexer.SpecialTracker.CurrentSpecials;
 				PreprocessingDirective.CSharpToVB(specials);
-				new CSharpToVBNetConvertVisitor().VisitCompilationUnit(p.CompilationUnit, null);
+				p.CompilationUnit.AcceptVisitor(new CSharpConstructsVisitor(), null);
+				p.CompilationUnit.AcceptVisitor(new ToVBNetConvertVisitor(), null);
+				
 				using (SpecialNodesInserter.Install(specials, vbv)) {
 					vbv.VisitCompilationUnit(p.CompilationUnit, null);
 				}
