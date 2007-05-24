@@ -82,15 +82,15 @@ namespace ICSharpCode.HtmlSyntaxColorizer
 			string myMainStyle = MainStyle;
 			currentDefaultTextColor = document.HighlightingStrategy.GetColorFor("Default");
 			myMainStyle += " color: " + ColorToString(currentDefaultTextColor.Color) + ";"
-				+ " background-color: " + ColorToString(currentDefaultTextColor.BackgroundColor);
+				+ " background-color: " + ColorToString(currentDefaultTextColor.BackgroundColor) + ";";
 			
 			string LineNumberStyle;
 			HighlightColor lineNumbersColor = document.HighlightingStrategy.GetColorFor("LineNumbers");
 			if (lineNumbersColor != null) {
-				LineNumberStyle = " color: " + ColorToString(lineNumbersColor.Color) + ";"
-					+ " background-color: " + ColorToString(lineNumbersColor.BackgroundColor);
+				LineNumberStyle = "color: " + ColorToString(lineNumbersColor.Color) + ";"
+					+ " background-color: " + ColorToString(lineNumbersColor.BackgroundColor) + ";";
 			} else {
-				LineNumberStyle = " color: #606060";
+				LineNumberStyle = "color: #606060;";
 			}
 			
 			StringBuilder b = new StringBuilder();
@@ -222,7 +222,7 @@ namespace ICSharpCode.HtmlSyntaxColorizer
 			return style;
 		}
 		
-		string ColorToString(System.Drawing.Color color)
+		static string ColorToString(System.Drawing.Color color)
 		{
 			return "#" + color.R.ToString("x2") + color.G.ToString("x2") + color.B.ToString("x2");
 		}

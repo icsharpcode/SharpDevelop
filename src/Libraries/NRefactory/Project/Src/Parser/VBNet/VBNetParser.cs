@@ -63,6 +63,8 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			lexer.NextToken();
 			Expression expr;
 			Expr(out expr);
+			while (la.kind == Tokens.EOL) lexer.NextToken();
+			Expect(Tokens.EOF);
 			return expr;
 		}
 		
@@ -73,6 +75,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			
 			Statement st;
 			Block(out st);
+			Expect(Tokens.EOF);
 			return st as BlockStatement;
 		}
 		
@@ -85,6 +88,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			compilationUnit.BlockStart(newType);
 			ClassBody(newType);
 			compilationUnit.BlockEnd();
+			Expect(Tokens.EOF);
 			return newType.Children;
 		}
 

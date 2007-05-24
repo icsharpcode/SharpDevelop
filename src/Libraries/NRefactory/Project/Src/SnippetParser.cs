@@ -43,7 +43,7 @@ namespace ICSharpCode.NRefactory
 		}
 		
 		/// <summary>
-		/// Parse the code. The result may be a CompilationUnit, an Expression, a BlockStatement or a list of class
+		/// Parse the code. The result may be a CompilationUnit, an Expression, a list of statements or a list of class
 		/// members.
 		/// </summary>
 		public INode Parse(string code)
@@ -55,7 +55,12 @@ namespace ICSharpCode.NRefactory
 			INode result = parser.CompilationUnit;
 			
 			if (errors.Count > 0) {
-				parser = ParserFactory.CreateParser(language, new StringReader(code));
+				if (language == SupportedLanguage.CSharp) {
+					// SEMICOLON HACK : without a trailing semicolon, parsing expressions does not work correctly
+					parser = ParserFactory.CreateParser(language, new StringReader(code + ";"));
+				} else {
+					parser = ParserFactory.CreateParser(language, new StringReader(code));
+				}
 				Expression expression = parser.ParseExpression();
 				if (expression != null && parser.Errors.Count < errors.Count) {
 					errors = parser.Errors;
@@ -78,19 +83,19 @@ namespace ICSharpCode.NRefactory
 				if (members != null && members.Count > 0 && parser.Errors.Count < errors.Count) {
 					errors = parser.Errors;
 					specials = parser.Lexer.SpecialTracker.RetrieveSpecials();
-					result = new MemberListNode(members);
+					result = new NodeListNode(members);
 				}
 			}
 			return result;
 		}
 		
-		sealed class MemberListNode : INode
+		sealed class NodeListNode : INode
 		{
-			List<INode> members;
+			List<INode> nodes;
 			
-			public MemberListNode(List<INode> members)
+			public NodeListNode(List<INode> nodes)
 			{
-				this.members = members;
+				this.nodes = nodes;
 			}
 			
 			public INode Parent {
@@ -99,7 +104,7 @@ namespace ICSharpCode.NRefactory
 			}
 			
 			public List<INode> Children {
-				get { return members; }
+				get { return nodes; }
 			}
 			
 			public Location StartLocation {
@@ -114,7 +119,7 @@ namespace ICSharpCode.NRefactory
 			
 			public object AcceptChildren(IAstVisitor visitor, object data)
 			{
-				foreach (INode n in members) {
+				foreach (INode n in nodes) {
 					n.AcceptVisitor(visitor, data);
 				}
 				return null;

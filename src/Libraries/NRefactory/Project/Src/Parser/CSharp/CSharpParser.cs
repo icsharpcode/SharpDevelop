@@ -51,6 +51,9 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			lexer.NextToken();
 			Expression expr;
 			Expr(out expr);
+			// SEMICOLON HACK : without a trailing semicolon, parsing expressions does not work correctly
+			if (la.kind == Tokens.Semicolon) lexer.NextToken();
+			Expect(Tokens.EOF);
 			return expr;
 		}
 		
@@ -73,6 +76,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			}
 			
 			compilationUnit.BlockEnd();
+			Expect(Tokens.EOF);
 			return blockStmt;
 		}
 		
@@ -85,6 +89,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			compilationUnit.BlockStart(newType);
 			ClassBody();
 			compilationUnit.BlockEnd();
+			Expect(Tokens.EOF);
 			return newType.Children;
 		}
 		

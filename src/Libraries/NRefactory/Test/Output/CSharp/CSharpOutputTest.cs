@@ -45,6 +45,7 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		
 		void TestExpression(string expression)
 		{
+			// SEMICOLON HACK : without a trailing semicolon, parsing expressions does not work correctly
 			IParser parser = ParserFactory.CreateParser(SupportedLanguage.CSharp, new StringReader(expression + ";"));
 			Expression e = parser.ParseExpression();
 			Assert.AreEqual("", parser.Errors.ErrorOutput);

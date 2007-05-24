@@ -930,6 +930,18 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public object VisitBlockStatement(BlockStatement blockStatement, object data)
 		{
+			if (outputFormatter.TextLength == 0) {
+				// we are outputting only a code block:
+				// do not output braces, just the block's contents
+				foreach (Statement stmt in blockStatement.Children) {
+					outputFormatter.Indent();
+					nodeTracker.TrackedVisit(stmt, null);
+					if (!outputFormatter.LastCharacterIsNewLine)
+						outputFormatter.NewLine();
+				}
+				return null;
+			}
+			
 			if (data is BraceStyle)
 				OutputBlock(blockStatement, (BraceStyle)data);
 			else
