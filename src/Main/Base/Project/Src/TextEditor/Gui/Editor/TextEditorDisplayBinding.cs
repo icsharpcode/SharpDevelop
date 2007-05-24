@@ -51,8 +51,13 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			
 			b2.textAreaControl.Dock = DockStyle.Fill;
 			b2.Load(fileName);
-			b2.textAreaControl.Document.HighlightingStrategy = HighlightingStrategyFactory.CreateHighlightingStrategyForFile(fileName);
-			b2.textAreaControl.InitializeAdvancedHighlighter();
+			try {
+				b2.textAreaControl.Document.HighlightingStrategy = HighlightingStrategyFactory.CreateHighlightingStrategyForFile(fileName);
+				b2.textAreaControl.InitializeAdvancedHighlighter();
+			} catch (HighlightingDefinitionInvalidException ex) {
+				b2.textAreaControl.Document.HighlightingStrategy = HighlightingStrategyFactory.CreateHighlightingStrategy();
+				MessageBox.Show(ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
 			b2.textAreaControl.InitializeFormatter();
 			b2.textAreaControl.ActivateQuickClassBrowserOnDemand();
 			
@@ -64,8 +69,13 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			TextEditorDisplayBindingWrapper b2 = new TextEditorDisplayBindingWrapper();
 			
 			b2.textAreaControl.Document.TextContent = content;
-			b2.textAreaControl.Document.HighlightingStrategy = HighlightingStrategyFactory.CreateHighlightingStrategy(language);
-			b2.textAreaControl.InitializeAdvancedHighlighter();
+			try {
+				b2.textAreaControl.Document.HighlightingStrategy = HighlightingStrategyFactory.CreateHighlightingStrategy(language);
+				b2.textAreaControl.InitializeAdvancedHighlighter();
+			} catch (HighlightingDefinitionInvalidException ex) {
+				b2.textAreaControl.Document.HighlightingStrategy = HighlightingStrategyFactory.CreateHighlightingStrategy();
+				MessageBox.Show(ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
 			b2.textAreaControl.InitializeFormatter();
 			b2.textAreaControl.ActivateQuickClassBrowserOnDemand();
 			return b2;

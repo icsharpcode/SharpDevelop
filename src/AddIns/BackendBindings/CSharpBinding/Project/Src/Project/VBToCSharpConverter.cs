@@ -42,7 +42,8 @@ namespace CSharpBinding
 		protected override void ConvertAst(CompilationUnit compilationUnit, List<ISpecial> specials)
 		{
 			PreprocessingDirective.VBToCSharp(specials);
-			compilationUnit.AcceptVisitor(new VBNetToCSharpConvertVisitor(), null);
+			compilationUnit.AcceptVisitor(new VBNetConstructsConvertVisitor(), null);
+			compilationUnit.AcceptVisitor(new ToCSharpConvertVisitor(), null);
 		}
 	}
 }

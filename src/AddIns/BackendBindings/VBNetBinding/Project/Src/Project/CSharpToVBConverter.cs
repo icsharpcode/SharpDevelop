@@ -35,7 +35,8 @@ namespace VBNetBinding
 		protected override void ConvertAst(CompilationUnit compilationUnit, List<ISpecial> specials)
 		{
 			PreprocessingDirective.CSharpToVB(specials);
-			compilationUnit.AcceptVisitor(new CSharpToVBNetConvertVisitor(), null);
+			compilationUnit.AcceptVisitor(new CSharpConstructsVisitor(), null);
+			compilationUnit.AcceptVisitor(new ToVBNetConvertVisitor(), null);
 		}
 		
 		protected override void CopyProperties(IProject sourceProject, IProject targetProject)

@@ -1,7 +1,6 @@
 ﻿<?xml version="1.0"?>
-<!-- syntaxdefinition for C/C++ 2001 by Andrea Paatz and Mike Krueger -->
 
-<SyntaxDefinition name = "Patch files" extensions = ".patch;.diff">
+<SyntaxDefinition name = "Patch" extensions = ".patch;.diff">
 	<!--<Digits name = "Digits" bold = "false" italic = "false" color = "DarkBlue"/>-->
 	
 	<RuleSets>

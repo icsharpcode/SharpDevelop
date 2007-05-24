@@ -71,8 +71,7 @@ namespace ICSharpCode.TextEditor.Document
 							case "SyntaxModes":
 								string version = reader.GetAttribute("version");
 								if (version != "1.0") {
-									MessageBox.Show("Unknown syntax mode file defininition with version " + version , "Error", MessageBoxButtons.OK, MessageBoxIcon.Hand, MessageBoxDefaultButton.Button1);
-									return syntaxModes;
+									throw new HighlightingDefinitionInvalidException("Unknown syntax mode file defininition with version " + version);
 								}
 								break;
 							case "Mode":
@@ -81,8 +80,7 @@ namespace ICSharpCode.TextEditor.Document
 								                               reader.GetAttribute("extensions")));
 								break;
 							default:
-								MessageBox.Show("Unknown node in syntax mode file :" + reader.Name, "Error", MessageBoxButtons.OK, MessageBoxIcon.Hand, MessageBoxDefaultButton.Button1);
-								return syntaxModes;
+								throw new HighlightingDefinitionInvalidException("Unknown node in syntax mode file :" + reader.Name);
 						}
 						break;
 				}
