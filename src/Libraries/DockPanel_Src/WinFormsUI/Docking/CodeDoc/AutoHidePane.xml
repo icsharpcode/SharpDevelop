@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<CodeDoc>
+	<Class name="AutoHidePane">
+		<ClassDef>
+			<summary>Represent a <see cref="DockPane"/> displayed in the auto-hide tab strip area of <see cref="DockPanel"/>.</summary>
+			<remarks>When customizing the auto-hide tab strip area of the <see cref="DockPanel"/>, you can derive a class from <see cref="AutoHideStripBase"/>
+			class, and then plug it into the <see cref="DockPanel"/> through the <see cref="DockPanelExtender.AutoHideStripFactory"/> property of <see cref="DockPanel.Extender"/>. If you want to
+			associate data with auto-hide <see cref="DockPane"/>, you can derived a class from <see cref="AutoHidePane"/> class,
+			then plug it into the <see cref="DockPanel"/> through <see cref="DockPanelExtender.AutoHidePaneFactory"/> property of <see cref="DockPanel.Extender"/>. The docking framework
+			will create the class instances and you can reference them through 
+			<see cref="AutoHideStripBase.PanesTop"/>, <see cref="AutoHideStripBase.PanesBottom"/>,
+			<see cref="AutoHideStripBase.PanesLeft"/>, <see cref="AutoHideStripBase.PanesRight"/> properties
+			of class <see cref="AutoHideStripBase"/>.</remarks>
+		</ClassDef>
+		<Construct name="(DockPane)">
+			<summary>Creates a instance of <see cref="AutoHidePane"/> class.</summary>
+			<param name="pane">The <see cref="DockPane"/> object to associate with.</param>
+			<remarks>Instance of <see cref="AutoHidePane"/> or derived class should only be created by the docking framework.
+			The constructor should only be called within the implementation of <see cref="DockPanelExtender.IAutoHidePaneFactory"/> interface or derived class's constructor.</remarks>
+		</Construct>
+		<Property name="DockPane">
+			<summary>Gets the associated <see cref="DockPane"/> object.</summary>
+			<value>A <see cref="DockPane" /> object which associates with this <see cref="AutoHidePane"/> object.</value>
+		</Property>
+		<Property name="Tabs">
+			<summary>Gets the collection of tabs contained within the auto-hide pane.</summary>
+			<value>A <see cref="AutoHideTabCollection" /> representing the collection of tabs contained within the auto-hide pane.</value>
+		</Property>
+		<Method name="Dispose">
+			<overloads>
+				<summary>Releases the resources used by the <see cref="AutoHidePane"/> object.</summary>
+			</overloads>
+		</Method>
+		<Method name="Dispose()">
+			<summary>
+				Releases all the resources used by the <see cref="AutoHidePane"/> object.
+			</summary>
+		</Method>
+		<Method name="Dispose(bool)">
+			<summary>
+				Releases the unmanaged resources used by the <see cref="AutoHidePane"/> object and optionally releases the managed resources.
+			</summary>
+			<param name='disposing'>
+				<B>true</B> to release both managed and unmanaged resources;
+				<B>false</B> to release only unmanaged resources.
+			</param>
+		</Method>
+	</Class>
+</CodeDoc>

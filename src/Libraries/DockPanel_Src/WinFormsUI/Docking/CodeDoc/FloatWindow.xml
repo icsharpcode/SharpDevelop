@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CodeDoc>
+	<Class name="FloatWindow">
+		<ClassDef>
+			<summary>Represents the floating window to contain the nested docking DockPane.</summary>
+			<remarks>
+				The <see cref="WeifenLuo.WinFormsUI.FloatWindow" /> implements <see cref="WeifenLuo.WinFormsUI.IDockListContainer" />,
+				it can contain a list of nested <see cref="WeifenLuo.WinFormsUI.DockPane" /> objects.
+			</remarks>
+		</ClassDef>
+		<Constructor name="Overloads">
+			<overloads>
+				<summary>Initializes a new instance of <see cref="WeifenLuo.WinFormsUI.FloatWindow" />.</summary>
+			</overloads>
+		</Constructor>
+		<Constructor name="(DockPanel, DockPane)">
+			<summary>Initializes a new instance of <see cref="WeifenLuo.WinFormsUI.FloatWindow" />,
+			with default size and location.</summary>
+			<param name="dockPanel">The <see cref="WeifenLuo.WinFormsUI.DockPanel" /> which owns this
+			<see cref="WeifenLuo.WinFormsUI.FloatWindow" />.</param>
+			<param name="pane">The first <see cref="WeifenLuo.WinFormsUI.DockPane" /> in this
+			<see cref="WeifenLuo.WinFormsUI.FloatWindow" />.</param>
+		</Constructor>
+		<Constructor name="(DockPanel, DockPane, Rectangle)">
+			<summary>Initializes a new instance of <see cref="WeifenLuo.WinFormsUI.FloatWindow" />,
+			with specified size and location.</summary>
+			<include file='FloatWindow.xml' path='//CodeDoc/Class[@name="FloatWindow"]/Constructor[@name="(DockPanel, DockPane)"]/param[@name="dockPanel"]' />
+			<include file='FloatWindow.xml' path='//CodeDoc/Class[@name="FloatWindow"]/Constructor[@name="(DockPanel, DockPane)"]/param[@name="pane"]' />
+			<param name="bounds">A <see cref="System.Drawing.Rectangle" /> for the location and size of the window.</param>
+		</Constructor>
+		<Property name="AllowRedocking">
+			<summary>Gets or sets if the drag and drop re-docking is allowed.</summary>
+			<value><b>True</b> if drag and drop re-docking is allowed; otherwise, <b>false</b>.</value>
+		</Property>
+		<Property name="DisplayingList">
+			<summary>Gets the <see cref="WeifenLuo.WinFormsUI.DisplayingDockList" /> which contains
+			a list of visible nested docking <see cref="WeifenLuo.WinFormsUI.DockPane" /> objects.</summary>
+			<value>The <see cref="WeifenLuo.WinFormsUI.DisplayingDockList" /> which contains
+			a list of visible nested docking <see cref="WeifenLuo.WinFormsUI.DockPane" /> objects.</value>
+		</Property>
+		<Property name="DisplayingRectangle">
+			<summary>Gets the rectangle represents the displaying area for nested docking DockPane objects.</summary>
+			<value>A <see cref="System.Drawing.Rectangle" /> represents the displaying area for nested docking DockPane objects.</value>
+		</Property>
+		<Property name="DockList">
+			<summary>Gets the <see cref="WeifenLuo.WinFormsUI.DockList" /> which contains
+			a list of nested docking <see cref="WeifenLuo.WinFormsUI.DockPane" /> objects.</summary>
+			<value>The <see cref="WeifenLuo.WinFormsUI.DockList" /> which contains
+			a list of nested docking <see cref="WeifenLuo.WinFormsUI.DockPane" /> objects.</value>
+		</Property>
+		<Property name="DockPanel">
+			<summary>Gets the <see cref="WeifenLuo.WinFormsUI.DockPanel" /> which contains this
+			<see cref="WeifenLuo.WinFormsUI.FloatWindow" />.</summary>
+			<value>The <see cref="WeifenLuo.WinFormsUI.DockPanel" /> which contains this
+			<see cref="WeifenLuo.WinFormsUI.FloatWindow" />.</value>
+		</Property>
+		<Property name="DockState">
+			<summary>Gets the docking state of this <see cref="WeifenLuo.WinFormsUI.FloatWindow" />.</summary>
+			<value>The value of this property is always <see cref="WeifenLuo.WinFormsUI.DockState.Float" />.</value>
+		</Property>
+		<Property name="IsFloat">
+			<summary>Gets to determine if this <see cref="WeifenLuo.WinFormsUI.FloatWindow" /> is floating.</summary>
+			<value>The value of this property is always <b>true</b>.</value>
+		</Property>
+	</Class>
+</CodeDoc>

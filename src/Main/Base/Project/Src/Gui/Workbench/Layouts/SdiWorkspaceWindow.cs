@@ -14,7 +14,7 @@ using System.IO;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
-using WeifenLuo.WinFormsUI.Docking;
+using WeifenLuo.WinFormsUI;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -210,7 +210,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			viewContents = new ViewContentCollection(this);
 			
-			this.DockAreas = DockAreas.Document;
+			this.DockableAreas = DockAreas.Document;
 			this.DockPadding.All = 2;
 
 			OnTitleNameChanged(this, EventArgs.Empty);

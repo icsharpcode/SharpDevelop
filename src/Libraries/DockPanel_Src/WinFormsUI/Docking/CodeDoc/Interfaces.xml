@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CodeDoc>
+	<Interface name="IDockContent">
+		<InterfaceDef>
+			<summary>Represents dockable form.</summary>
+			<remarks>Form implements this interface to be dockable. Docking is handled by DockPanel library
+			through its <see cref="WeifenLuo.WinFormsUI.IDockContent.DockHandler" /> object.</remarks>
+		</InterfaceDef>
+		<Property name="DockHandler">
+			<summary>Gets the <see cref="WeifenLuo.WinFormsUI.DockHandler"/> object to handle the docking behaviors.</summary>
+			<value>The <see cref="WeifenLuo.WinFormsUI.DockHandler"/> object to handle the docking behaviors.</value>
+		</Property>
+	</Interface>
+	<Interface name="IDockListContainer">
+		<InterfaceDef>
+			<summary>Container for nested docking <see cref='WeifenLuo.WinFormsUI.DockPane' /> objects.</summary>
+			<remarks>
+				<para>
+				<b>IDockListContainer</b> contains a list of <b>DockPane</b> objects
+				for nested docking. It maintans two lists: <see cref='WeifenLuo.WinFormsUI.DockList' />
+				and <see cref='WeifenLuo.WinFormsUI.DisplayingDockList' />. <b>DockList</b>
+				contains all <b>DockPane</b> objects, no matter it's visible or not; <b>DisplayingDockList</b> contains only
+				visible <b>DockPane</b> objects for this container.
+			</para>
+				<para>
+				Internally, <b>IDockListContainer</b> creates <b>DockList</b>, this <b>DockList</b> then creates <b>DisplayingDockList</b>,
+				and these two lists are always synchronized.
+			</para>
+			</remarks>
+		</InterfaceDef>
+		<Property name="DisplayingList">
+			<summary>Gets the <see cref="WeifenLuo.WinFormsUI.DisplayingDockList" /> which contains
+			a list of visible nested docking <see cref="WeifenLuo.WinFormsUI.DockPane" /> objects.</summary>
+			<value>The <see cref="WeifenLuo.WinFormsUI.DisplayingDockList" /> which contains
+			a list of visible nested docking <see cref="WeifenLuo.WinFormsUI.DockPane" /> objects.</value>
+		</Property>
+		<Property name="DisplayingRectangle">
+			<summary>Gets the rectangle represents the displaying area for nested docking DockPane objects.</summary>
+			<value>A <see cref="System.Drawing.Rectangle" /> represents the displaying area for nested docking DockPane objects.</value>
+		</Property>
+		<Property name="DockList">
+			<summary>Gets the <see cref="WeifenLuo.WinFormsUI.DockList" /> which contains
+			a list of nested docking <see cref="WeifenLuo.WinFormsUI.DockPane" /> objects.</summary>
+			<value>The <see cref="WeifenLuo.WinFormsUI.DockList" /> which contains
+			a list of nested docking <see cref="WeifenLuo.WinFormsUI.DockPane" /> objects.</value>
+		</Property>
+		<Property name="DockState">
+			<summary>Gets the docking state of this container.</summary>
+			<value>One of the <see cref='WeifenLuo.WinFormsUI.DockState' /> values.</value>
+		</Property>
+		<Property name="IsDisposed">
+			<summary>Gets a value indicates the control has been disposed of.</summary>
+			<value><b>True</b> if the control has been disposed of, otherwise, <b>false</b>.</value>
+		</Property>
+		<Property name="IsFloat">
+			<summary>Determines if this container window is floating.</summary>
+			<value><b>True</b> if is floating; otherwise, <b>false</b>.</value>
+		</Property>
+	</Interface>
+</CodeDoc>

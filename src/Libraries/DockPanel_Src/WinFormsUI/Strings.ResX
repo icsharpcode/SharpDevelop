@@ -1,0 +1,369 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<root>
+	<!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:element name="root" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="metadata">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" />
+							</xsd:sequence>
+							<xsd:attribute name="name" use="required" type="xsd:string" />
+							<xsd:attribute name="type" type="xsd:string" />
+							<xsd:attribute name="mimetype" type="xsd:string" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="assembly">
+						<xsd:complexType>
+							<xsd:attribute name="alias" type="xsd:string" />
+							<xsd:attribute name="name" type="xsd:string" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="data">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="resheader">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required" />
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<data name="DockContent.Show.InvalidDockState">
+		<value xml:space="preserve">Invalid DockState: Content can not be showed as "Unknown" or "Hidden".</value>
+	</data>
+	<data name="DockPanel.LoadFromXml.InvalidFormatVersion">
+		<value xml:space="preserve">The configuration file's version is invalid.</value>
+	</data>
+	<data name="Category.DockingNotification">
+		<value xml:space="preserve">Docking Notification</value>
+	</data>
+	<data name="InertButton.Monochrom.Description">
+		<value xml:space="preserve">Determines fore/back colors are used to display black/white image.</value>
+	</data>
+	<data name="DockPanel.LoadFromXml.InvalidXmlFormat">
+		<value xml:space="preserve">The XML file format is invalid.</value>
+	</data>
+	<data name="InertButton.ToolTipText.Description">
+		<value xml:space="preserve">The tool tip text to display.</value>
+	</data>
+	<data name="InertButton.BorderWidth.Description">
+		<value xml:space="preserve">The border width of the control.</value>
+	</data>
+	<data name="FloatWindow.SetPaneIndex.InvalidPane">
+		<value xml:space="preserve">Invalid Pane: DockPane not within the collection.</value>
+	</data>
+	<data name="InertButton.ImageIndexDisabled.Description">
+		<value xml:space="preserve">The index of the image in the ImageList to display when the control is disabled.</value>
+	</data>
+	<data name="DockPanel.SetPaneIndex.InvalidPane">
+		<value xml:space="preserve">Invalid Pane: DockPane not within the collection.</value>
+	</data>
+	<data name="DockContent.ToolTipText.Description">
+		<value xml:space="preserve">The text displayed when mouse hovers over the tab.</value>
+	</data>
+	<data name="DockPane.Constructor.NullDockPanel">
+		<value xml:space="preserve">Invalid argument: The content's DockPanel can not be "null".</value>
+	</data>
+	<data name="InertButton.IsPopup.Description">
+		<value xml:space="preserve">Determines whether the control should be displayed in popup style.</value>
+	</data>
+	<data name="DockPanel.DockLeftPortion.Description">
+		<value xml:space="preserve">Portion of the left docking window.</value>
+	</data>
+	<data name="DockPaneCaption.ToolTipAutoHide">
+		<value xml:space="preserve">Auto Hide</value>
+	</data>
+	<data name="DockPane.ActiveContent.InvalidValue">
+		<value xml:space="preserve">Invalid Content: ActiveContent must be one of the visible contents, or null if there is no visible content.</value>
+	</data>
+	<data name="DockPaneStrip.ToolTipScrollLeft">
+		<value xml:space="preserve">Scroll Left</value>
+	</data>
+	<data name="DockContent.Show.NullDockPanel">
+		<value xml:space="preserve">DockPanel can not be null.</value>
+	</data>
+	<data name="DockContent.HideOnClose.Description">
+		<value xml:space="preserve">Indicates the content will be hidden instead of being closed.</value>
+	</data>
+	<data name="DockPanel.ActiveAutoHideContent.InvalidValue">
+		<value xml:space="preserve">Invalid Content: The content must be auto-hide state and assiociates with this DockPanel.</value>
+	</data>
+	<data name="Category.Docking">
+		<value xml:space="preserve">Docking</value>
+	</data>
+	<data name="InertButton.ImageDisabled.Description">
+		<value xml:space="preserve">The image will be displayed when the control is disabled.</value>
+	</data>
+	<data name="DockPanel.DockRightPortion.Description">
+		<value xml:space="preserve">Portion of the right docking window.</value>
+	</data>
+	<data name="FloatWindow.SetPaneIndex.InvalidIndex">
+		<value xml:space="preserve">Invalid Index: The index is out of range.</value>
+	</data>
+	<data name="DockPanel.DockBottomPortion.Description">
+		<value xml:space="preserve">Portion of the bottom docking window.</value>
+	</data>
+	<data name="DockPaneStrip.ToolTipClose">
+		<value xml:space="preserve">Close</value>
+	</data>
+	<data name="DockContent.DockableAreas.Description">
+		<value xml:space="preserve">Gets or sets a value indicating in which area of the DockPanel the content allowed to show.</value>
+	</data>
+	<data name="DockPane.Constructor.NullContent">
+		<value xml:space="preserve">Invalid argument: Content can not be "null".</value>
+	</data>
+	<data name="DockContent.AutoHidePortion.Description">
+		<value xml:space="preserve">The portion when the content displayed in auto hide mode.</value>
+	</data>
+	<data name="DockContent.ShowHint.Description">
+		<value xml:space="preserve">The desired docking state when first showing.</value>
+	</data>
+	<data name="DockPanel.ContentRemoved.Description">
+		<value xml:space="preserve">Occurs when a content removed from the DockPanel.</value>
+	</data>
+	<data name="DockPanel.SetPaneIndex.InvalidIndex">
+		<value xml:space="preserve">Invalid Index: The index is out of range.</value>
+	</data>
+	<data name="InertButton.TextAlign.Description">
+		<value xml:space="preserve">The alignment of the text that will be displayed in the face of the control.</value>
+	</data>
+	<data name="DockContent.AllowRedocking.Description">
+		<value xml:space="preserve">Determines if drag-and-drop re-docking is allowed.</value>
+	</data>
+	<data name="FloatWindow.Constructor.NullDockPanel">
+		<value xml:space="preserve">Invalid argument: DockPanel can not be "null".</value>
+	</data>
+	<data name="DockPane.SetContentIndex.InvalidContent">
+		<value xml:space="preserve">Invalid Content: Content not within the collection.</value>
+	</data>
+	<data name="InertButton.ImageEnabled.Description">
+		<value xml:space="preserve">The image will be displayed when the control is enabled.</value>
+	</data>
+	<data name="DockPane.SetContentIndex.InvalidIndex">
+		<value xml:space="preserve">Invalid Index: The index is out of range.</value>
+	</data>
+	<data name="DockPanel.ContentAdded.Description">
+		<value xml:space="preserve">Occurs when a content added to the DockPanel.</value>
+	</data>
+	<data name="DockPanel.DockTopPortion.Description">
+		<value xml:space="preserve">Portion of the top docking window.</value>
+	</data>
+	<data name="DockPanel.LoadFromXml.AlreadyInitialized">
+		<value xml:space="preserve">The DockPanel has already been initialized.</value>
+	</data>
+	<data name="DockContent.DockableAreas.InvalidValue">
+		<value xml:space="preserve">Invalid Value: The value of DockableAreas conflicts with current DockState.</value>
+	</data>
+	<data name="DockContent.CloseButton.Description">
+		<value xml:space="preserve">Enable/Disable the close button of the content.</value>
+	</data>
+	<data name="DockPaneStrip.ToolTipScrollRight">
+		<value xml:space="preserve">Scroll Right</value>
+	</data>
+	<data name="DockContent.DockStateChanged.Description">
+		<value xml:space="preserve">Occurs when the value of DockState property changed.</value>
+	</data>
+	<data name="Category.PropertyChanged">
+		<value xml:space="preserve">Property Changed</value>
+	</data>
+	<data name="DockPaneCaption.ToolTipClose">
+		<value xml:space="preserve">Close</value>
+	</data>
+	<data name="DockPanel.ActiveDocumentChanged.Description">
+		<value xml:space="preserve">Occurs when the value of ActiveDocument property changed.</value>
+	</data>
+	<data name="InertButton.ImageIndexEnabled.Description">
+		<value xml:space="preserve">The index of the image in the image list to display when the control is enabled.</value>
+	</data>
+	<data name="InertButton.BorderColor.Description">
+		<value xml:space="preserve">The color of the left top border.</value>
+	</data>
+	<data name="DockContent.AutoHidePortion.OutOfRange">
+		<value xml:space="preserve">The provided value is out of range.</value>
+	</data>
+	<data name="InertButton.ImageList.Description">
+		<value xml:space="preserve">The image list to get the image(s) to display in the face of the control.</value>
+	</data>
+	<data name="DockContent.ShowHint.InvalidValue">
+		<value xml:space="preserve">Invalid value, check DockableAreas property.</value>
+	</data>
+	<data name="DockPane.FloatWindow.InvalidValue">
+		<value xml:space="preserve">FloatWindow property can not be set to "null" when DockState is DockState.Float.</value>
+	</data>
+	<data name="DockPanel.ActiveContentChanged.Description">
+		<value xml:space="preserve">Occurs when the value of ActiveContentProperty changed.</value>
+	</data>
+	<data name="DockContent.TabText.Description">
+		<value xml:space="preserve">The tab text displayed in the dock pane. If not set, the Text property will be used.</value>
+	</data>
+	<data name="DockPanel.ActivePaneChanged.Description">
+		<value xml:space="preserve">Occurs when the value of ActivePane property changed.</value>
+	</data>
+	<data name="DockPane.AddToDockList.NullContainer">
+		<value xml:space="preserve">The container can not be null.</value>
+	</data>
+	<data name="DockPane.AddToDockList.NullPrevPane">
+		<value xml:space="preserve">The PrevPane can not be null when the dock list is not empty.</value>
+	</data>
+	<data name="DockPane.AddToDockList.NoPrevPane">
+		<value xml:space="preserve">The PrevPane does not exist in the dock list.</value>
+	</data>
+	<data name="DockPane.AddToDockList.SelfPrevPane">
+		<value xml:space="preserve">The PrevPane can not be itself.</value>
+	</data>
+	<data name="DockContent.TabPageContextMenu.Description">
+		<value xml:space="preserve">Context menu displayed for the dock pane tab strip.</value>
+	</data>
+	<data name="DockPane.SetDockState.InvalidState">
+		<value xml:space="preserve">The state for the dock pane is invalid.</value>
+	</data>
+	<data name="DockContent.SetDockState.NullPanel">
+		<value xml:space="preserve">The dock panel is null.</value>
+	</data>
+	<data name="DockPane.AddToDockList.InvalidContainer">
+		<value xml:space="preserve">The specified container conflicts with the IsFloat property.</value>
+	</data>
+	<data name="DockContent.IsFloat.InvalidValue">
+		<value xml:space="preserve">Invalid value, conflicts with DockableAreas  property.</value>
+	</data>
+	<data name="DockContent.SetDockState.InvalidState">
+		<value xml:space="preserve">The dock state is invalid.</value>
+	</data>
+	<data name="DockContent.DockPane.InvalidValue">
+		<value xml:space="preserve">The pane is invalid. Check the IsFloat and DockPanel properties of this dock pane.</value>
+	</data>
+	<data name="DockContent.FloatPane.InvalidValue">
+		<value xml:space="preserve">The pane is invalid. Check the IsFloat and DockPanel properties of this dock pane.</value>
+	</data>
+	<data name="DockPanel.AllowRedocking.Description">
+		<value xml:space="preserve">Determines if the drag and drop redocking is allowed.</value>
+	</data>
+	<data name="DockContent.Show.NullPane">
+		<value xml:space="preserve">The Pane can not be null.</value>
+	</data>
+	<data name="DockContent.Show.InvalidBeforeContent">
+		<value xml:space="preserve">Invalid beforeContent, it must be contained by the pane.</value>
+	</data>
+	<data name="DockContent.Show.InvalidPrevPane">
+		<value xml:space="preserve">The prevPane is invalid. It can not be null, and its docking state must not be auto-hide.</value>
+	</data>
+	<data name="MdiClientController.AutoScroll.Description">
+		<value xml:space="preserve">Determines whether scrollbars will automatically appear if controls are placed outside the MDI client area.</value>
+	</data>
+	<data name="MdiClientController.BackColor.Description">
+		<value xml:space="preserve">The backcolor used to display text and graphics in the control.</value>
+	</data>
+	<data name="MdiClientController.BorderStyle.Description">
+		<value xml:space="preserve">Indicates the border style of the MDI area.</value>
+	</data>
+	<data name="MdiClientController.Image.Description">
+		<value xml:space="preserve">The image displayed in the MDI client area.</value>
+	</data>
+	<data name="MdiClientController.ImageAlign.Description">
+		<value xml:space="preserve">Determines the position of the image within the MDI client area.</value>
+	</data>
+	<data name="MdiClientController.StretchImage.Description">
+		<value xml:space="preserve">Determines whether the image should be scaled to fill the entire client area.</value>
+	</data>
+	<data name="MdiClientController.Paint.Description">
+		<value xml:space="preserve">Occurs when a control needs repainting.</value>
+	</data>
+	<data name="DockPanel.DocumentStyle.Description">
+		<value xml:space="preserve">The style of the document window.</value>
+	</data>
+	<data name="DockPanel.ShowDocumentIcon.Description">
+		<value xml:space="preserve">Determines if the document icon will be displayed in the tab strip.</value>
+	</data>
+	<data name="DockHandler.TabPageContextMenuStrip.Description">
+		<value xml:space="preserve">Context menu displayed for the dock pane tab strip.</value>
+	</data>
+	<data name="DockIndicator.ToolTipText">
+		<value>Press SHIFT for docking to full side.</value>
+	</data>
+</root>

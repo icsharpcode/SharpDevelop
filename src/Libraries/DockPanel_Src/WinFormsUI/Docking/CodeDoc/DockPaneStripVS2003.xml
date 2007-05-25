@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<CodeDoc>
+	<Class name="DockPaneStripVS2003">
+		<ClassDef>
+			<summary>Visual Studio 2003 style tab strip of <see cref="DockPane"/>.</summary>
+		</ClassDef>
+		<Construct name="(DockPane)">
+			<summary>Initializes a instance of <see cref="DockPaneStripVS2003"/> class.</summary>
+			<param name="pane">The associated <see cref="DockPane"/>.</param>
+		</Construct>
+		<Property name="ToolWindowStripGapLeft">
+			<summary>Gets the left space of the tool window style tab strip.</summary>
+			<value>The left space, in pixel, of the tool window style tab strip.</value>
+			<remarks>Derived class can override this property to provide its own value.</remarks>
+		</Property>
+		<Property name="ToolWindowStripGapRight">
+			<summary>Gets the right space of the tool window style tab strip.</summary>
+			<value>The right space, in pixel, of the tool window style tab strip.</value>
+			<remarks>Derived class can override this property to provide its own value.</remarks>
+		</Property>
+		<Property name="ToolWindowImageHeight">
+			<summary>Gets the image height of the tool window style tab strip.</summary>
+			<value>The image height, in pixel, of the tool window style tab strip.</value>
+			<remarks>Derived class can override this property to provide its own value.</remarks>
+		</Property>
+		<Property name="ToolWindowImageWidth">
+			<summary>Gets the image width of the tool window style tab strip.</summary>
+			<value>The image width, in pixel, of the tool window style tab strip.</value>
+			<remarks>Derived class can override this property to provide its own value.</remarks>
+		</Property>
+		<Property name="ToolWindowImageGapTop">
+			<summary>Gets the top side extra space of the image for the tool window style tab strip.</summary>
+			<value>The top side extra space of the image, in pixel, for the tool window style tab strip.</value>
+			<remarks>Derived class can override this property to provide its own value.</remarks>
+		</Property>
+		<Property name="ToolWindowImageGapBottom">
+			<summary>Gets the bottom side extra space of the image for the tool window style tab strip.</summary>
+			<value>The bottom side extra space of the image, in pixel, for the tool window style tab strip.</value>
+			<remarks>Derived class can override this property to provide its own value.</remarks>
+		</Property>
+		<Property name="ToolWindowImageGapLeft">
+			<summary>Gets the left side extra space of the image for the tool window style tab strip.</summary>
+			<value>The left side extra space of the image, in pixel, for the tool window style tab strip.</value>
+			<remarks>Derived class can override this property to provide its own value.</remarks>
+		</Property>
+		<Property name="ToolWindowImageGapRight">
+			<summary>Gets the right side extra space of the image for the tool window style tab strip.</summary>
+			<value>The right side extra space of the image, in pixel, for the tool window style tab strip.</value>
+			<remarks>Derived class can override this property to provide its own value.</remarks>
+		</Property>
+		<Property name="ToolWindowTextGapRight">
+			<summary>Gets the right side extra space of the text for the tool window style tab.</summary>
+			<value>The right side extra space of the text, in pixel, for the tool window style tab.</value>
+			<remarks>Derived class can override this property to provide its own value.</remarks>
+		</Property>
+		<Property name="ToolWindowSeperatorGapTop">
+			<summary>Gets the space between the tab seperator and the top of the tool window style tab strip.</summary>
+			<value>The space, in pixel, between the tab seperator and the top of the tool window style tab strip.</value>
+			<remarks>Derived class can override this property to provide its own value.</remarks>
+		</Property>
+		<Property name="ToolWindowSeperatorGapBottom">
+			<summary>Gets the space between the tab seperator and the bottom of the tool window style tab strip.</summary>
+			<value>The space, in pixel, between the tab seperator and the bottom of the tool window style tab strip.</value>
+			<remarks>Derived class can override this property to provide its own value.</remarks>
+		</Property>
+		<Property name="ImageCloseEnabled">
+			<summary>Gets the <see cref="Image"/> of the enabled "close" inert button for document style tab strip.</summary>
+			<value>The <see cref="Image"/> of the enabled "close" inert button for document style tab strip.</value>
+			<remarks>Derived class can override this property to provide its own value.</remarks>
+		</Property>
+		<Property name="ImageCloseDisabled">
+			<summary>Gets the <see cref="Image"/> of the disabled "close" inert button for document style tab strip.</summary>
+			<value>The <see cref="Image"/> of the disabled "close" inert button for document style tab strip.</value>
+			<remarks>Derived class can override this property to provide its own value.</remarks>
+		</Property>
+		<Property name="ImageScrollLeftEnabled">
+			<summary>Gets the <see cref="Image"/> of the enabled "scroll left" inert button for document style tab strip.</summary>
+			<value>The <see cref="Image"/> of the enabled "scroll left" inert button for document style tab strip.</value>
+			<remarks>Derived class can override this property to provide its own value.</remarks>
+		</Property>
+		<Property name="ImageScrollLeftDisabled">
+			<summary>Gets the <see cref="Image"/> of the disabled "scroll left" inert button for document style tab strip.</summary>
+			<value>The <see cref="Image"/> of the disabled "scroll left" inert button for document style tab strip.</value>
+			<remarks>Derived class can override this property to provide its own value.</remarks>
+		</Property>
+		<Property name="ImageScrollRightEnabled">
+			<summary>Gets the <see cref="Image"/> of the enabled "scroll right" inert button for document style tab strip.</summary>
+			<value>The <see cref="Image"/> of the enabled "scroll right" inert button for document style tab strip.</value>
+			<remarks>Derived class can override this property to provide its own value.</remarks>
+		</Property>
+		<Property name="ImageScrollRightDisabled">
+			<summary>Gets the <see cref="Image"/> of the disabled "scroll right" inert button for document style tab strip.</summary>
+			<value>The <see cref="Image"/> of the disabled "scroll right" inert button for document style tab strip.</value>
+			<remarks>Derived class can override this property to provide its own value.</remarks>
+		</Property>
+		<Property name="ToolTipClose">
+			<summary>Gets the tool tip text of the "close" inert button for document style tab strip.</summary>
+			<value>The tool tip text of the "close" inert button for document style tab strip.</value>
+			<remarks>Derived class can override this property to provide its own value.</remarks>
+		</Property>
+		<Property name="ToolTipScrollLeft">
+			<summary>Gets the tool tip text of the "scroll left" inert button for document style tab strip.</summary>
+			<value>The tool tip text of the "scroll left" inert button for document style tab strip.</value>
+			<remarks>Derived class can override this property to provide its own value.</remarks>
+		</Property>
+		<Property name="ToolTipScrollRight">
+			<summary>Gets the tool tip text of the "scroll right" inert button for document style tab strip.</summary>
+			<value>The tool tip text of the "scroll right" inert button for document style tab strip.</value>
+			<remarks>Derived class can override this property to provide its own value.</remarks>
+		</Property>
+		<Property name="ToolWindowTextStringFormat">
+			<summary>Gets the <see cref="StringFormat"/> for drawing the text of the tool window style tab strip.</summary>
+			<value>The <see cref="StringFormat"/> for drawing the text of the tool window style tab strip.</value>
+			<remarks>Derived class can override this property to provide its own value.</remarks>
+		</Property>
+		<Property name="DocumentTextStringFormat">
+			<summary>Gets the <see cref="StringFormat"/> for drawing the text of the document style tab strip.</summary>
+			<value>The <see cref="StringFormat"/> for drawing the text of the document style tab strip.</value>
+			<remarks>Derived class can override this property to provide its own value.</remarks>
+		</Property>
+		<Property name="DocumentTabMaxWidth">
+			<summary>Gets the maximum width of the document style tab.</summary>
+			<value>The maximum width, in pixel, of the document style tab.</value>
+			<remarks>Derived class can override this property to provide its own value.</remarks>
+		</Property>
+		<Property name="DocumentButtonGapTop">
+			<summary>Gets the top side extra space of the inert buttons for the document style tab strip.</summary>
+			<value>The top side extra space, in pixel, of the inert buttons for the document style tab strip.</value>
+			<remarks>Derived class can override this property to provide its own value.</remarks>
+		</Property>
+		<Property name="DocumentButtonGapBottom">
+			<summary>Gets the bottom side extra space of the inert buttons for the document style tab strip.</summary>
+			<value>The bottom side extra space, in pixel, of the inert buttons for the document style tab strip.</value>
+			<remarks>Derived class can override this property to provide its own value.</remarks>
+		</Property>
+		<Property name="DocumentButtonGapRight">
+			<summary>Gets the right side extra space of the inert buttons for the document style tab strip.</summary>
+			<value>The right side extra space, in pixel, of the inert buttons for the document style tab strip.</value>
+			<remarks>Derived class can override this property to provide its own value.</remarks>
+		</Property>
+		<Property name="DocumentButtonGapBetween">
+			<summary>Gets the horizontal space between two inert buttons for the document style tab strip.</summary>
+			<value>The horizontal space, in pixel, between two inert buttons for the document style tab strip.</value>
+			<remarks>Derived class can override this property to provide its own value.</remarks>
+		</Property>
+		<Property name="DocumentTabGapTop">
+			<summary>Gets the top side extra space of the tab for the document style tab strip.</summary>
+			<value>The top side extra space, in pixel, of the tab for the document style tab strip.</value>
+			<remarks>Derived class can override this property to provide its own value.</remarks>
+		</Property>
+		<Property name="DocumentTabGapLeft">
+			<summary>Gets the left side extra space of the tab for the document style tab strip.</summary>
+			<value>The left side extra space, in pixel, of the tab for the document style tab strip.</value>
+			<remarks>Derived class can override this property to provide its own value.</remarks>
+		</Property>
+		<Property name="DocumentTabGapRight">
+			<summary>Gets the right side extra space of the tab for the document style tab strip.</summary>
+			<value>The right side extra space, in pixel, of the tab for the document style tab strip.</value>
+			<remarks>Derived class can override this property to provide its own value.</remarks>
+		</Property>
+		<Property name="DocumentTextExtraHeight">
+			<summary>Gets the extra height for drawing text of document style tab.</summary>
+			<value>The extra height, in pixel, for drawing text of document style tab.</value>
+			<remarks>Derived class can override this property to provide its own value.</remarks>
+		</Property>
+		<Property name="DocumentTextExtraWidth">
+			<summary>Gets the extra width for drawing text of document style tab.</summary>
+			<value>The extra width, in pixel, for drawing text of document style tab.</value>
+			<remarks>Derived class can override this property to provide its own value.</remarks>
+		</Property>
+		<Property name="DocumentIconGapLeft">
+			<summary>Gets the left side extra space of the document icon.</summary>
+			<value>The left side extra width, in pixel, of the document icon.</value>
+			<remarks>Derived class can override this property to provide its own value.</remarks>
+		</Property>
+		<Property name="DocumentIconGapWidth">
+			<summary>Gets the width of the document icon.</summary>
+			<value>The width, in pixel, of the document icon.</value>
+			<remarks>Derived class can override this property to provide its own value.</remarks>
+		</Property>
+		<Property name="DocumentIconGapHeight">
+			<summary>Gets the height of the document icon.</summary>
+			<value>The height, in pixel, of the document icon.</value>
+			<remarks>Derived class can override this property to provide its own value.</remarks>
+		</Property>
+		<Property name="OutlineInnerPen">
+			<summary>Gets the <see cref="Pen"/> for drawing the inner outline.</summary>
+			<value>The <see cref="Pen"/> for drawing the inner outline.</value>
+			<remarks>Derived class can override this property to provide its own value.</remarks>
+		</Property>
+		<Property name="OutlineOuterPen">
+			<summary>Gets the <see cref="Pen"/> for drawing the outer outline.</summary>
+			<value>The <see cref="Pen"/> for drawing the outer outline.</value>
+			<remarks>Derived class can override this property to provide its own value.</remarks>
+		</Property>
+		<Property name="ActiveBackBrush">
+			<summary>Gets the <see cref="Brush"/> for drawing the background of active tab.</summary>
+			<value>The <see cref="Brush"/> for drawing the background of active tab.</value>
+			<remarks>Derived class can override this property to provide its own value.</remarks>
+		</Property>
+		<Property name="ActiveTextBrush">
+			<summary>Gets the <see cref="Brush"/> for drawing the text of active tab.</summary>
+			<value>The <see cref="Brush"/> for drawing the text of active tab.</value>
+			<remarks>Derived class can override this property to provide its own value.</remarks>
+		</Property>
+		<Property name="InactiveTextBrush">
+			<summary>Gets the <see cref="Brush"/> for drawing the text of inactive tab.</summary>
+			<value>The <see cref="Brush"/> for drawing the text of inactive tab.</value>
+			<remarks>Derived class can override this property to provide its own value.</remarks>
+		</Property>
+		<Property name="TabSeperatorPen">
+			<summary>Gets the <see cref="Pen"/> for drawing the seperator of tabs.</summary>
+			<value>The <see cref="Pen"/> for drawing the seperator of tabs.</value>
+			<remarks>Derived class can override this property to provide its own value.</remarks>
+		</Property>
+		<Method name="OnBeginDrawTab(DockPaneTab)">
+			<summary>Invoked when begin to draw the tab.</summary>
+			<param name="tab">The tab begin to draw.</param>
+		</Method>
+		<Method name="OnEndDrawTab(DockPaneTab)">
+			<summary>Invoked when end to draw the tab.</summary>
+			<param name="tab">The tab end to draw.</param>
+		</Method>
+		<Method name="OnBeginDrawTabStrip()">
+			<summary>Invoked when begin to draw the tab strip.</summary>
+		</Method>
+		<Method name="OnEndDrawTabStrip()">
+			<summary>Invoked when end to draw the tab strip.</summary>
+		</Method>
+	</Class>
+</CodeDoc>

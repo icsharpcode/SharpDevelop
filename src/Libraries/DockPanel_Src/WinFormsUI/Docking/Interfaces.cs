@@ -1,45 +1,41 @@
+// *****************************************************************************
+// 
+//  Copyright 2004, Weifen Luo
+//  All rights reserved. The software and associated documentation 
+//  supplied hereunder are the proprietary information of Weifen Luo
+//  and are supplied subject to licence terms.
+// 
+//  WinFormsUI Library Version 1.0
+// *****************************************************************************
+
 using System;
 using System.Drawing;
-using System.Windows.Forms;
 
-namespace WeifenLuo.WinFormsUI.Docking
+namespace WeifenLuo.WinFormsUI
 {
-	public interface IDockContent
+	/// <include file='CodeDoc\Interfaces.xml' path='//CodeDoc/Interface[@name="IDockContent"]/InterfaceDef/*'/>
+	public interface IDockContent : IDisposable
 	{
+		/// <include file='CodeDoc\Interfaces.xml' path='//CodeDoc/Interface[@name="IDockListContainer"]/Property[@name="DockHandler"]/*'/>
 		DockContentHandler DockHandler	{	get;	}
+		
 		bool IsDisposed { get; }
 	}
 
-	public interface INestedPanesContainer
+	/// <include file='CodeDoc\Interfaces.xml' path='//CodeDoc/Interface[@name="IDockListContainer"]/InterfaceDef/*'/>
+	public interface IDockListContainer
 	{
+		/// <include file='CodeDoc\Interfaces.xml' path='//CodeDoc/Interface[@name="IDockListContainer"]/Property[@name="DockState"]/*'/>
 		DockState DockState	{	get;	}
+		/// <include file='CodeDoc\Interfaces.xml' path='//CodeDoc/Interface[@name="IDockListContainer"]/Property[@name="DisplayingRectangle"]/*'/>
 		Rectangle DisplayingRectangle	{	get;	}
-		NestedPaneCollection NestedPanes	{	get;	}
-		VisibleNestedPaneCollection VisibleNestedPanes	{	get;	}
+		/// <include file='CodeDoc\Interfaces.xml' path='//CodeDoc/Interface[@name="IDockListContainer"]/Property[@name="DockList"]/*'/>
+		DockList DockList	{	get;	}
+		/// <include file='CodeDoc\Interfaces.xml' path='//CodeDoc/Interface[@name="IDockListContainer"]/Property[@name="DisplayingList"]/*'/>
+		DisplayingDockList DisplayingList	{	get;	}
+		/// <include file='CodeDoc\Interfaces.xml' path='//CodeDoc/Interface[@name="IDockListContainer"]/Property[@name="IsDisposed"]/*'/>
+		bool IsDisposed	{	get;	}
+		/// <include file='CodeDoc\Interfaces.xml' path='//CodeDoc/Interface[@name="IDockListContainer"]/Property[@name="IsFloat"]/*'/>
 		bool IsFloat	{	get;	}
 	}
-
-    internal interface IDragSource
-    {
-        Control DragControl { get; }
-    }
-
-    internal interface IDockDragSource : IDragSource
-    {
-        Rectangle BeginDrag(Point ptMouse);
-        bool IsDockStateValid(DockState dockState);
-        bool CanDockTo(DockPane pane);
-        void FloatAt(Rectangle floatWindowBounds);
-        void DockTo(DockPane pane, DockStyle dockStyle, int contentIndex);
-        void DockTo(DockPanel panel, DockStyle dockStyle);
-    }
-
-    internal interface ISplitterDragSource : IDragSource
-    {
-        void BeginDrag(Rectangle rectSplitter);
-        void EndDrag();
-        bool IsVertical { get; }
-        Rectangle DragLimitBounds { get; }
-        void MoveSplitter(int offset);
-    }
 }

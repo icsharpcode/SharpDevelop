@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8" ?> 
+
+<CodeDoc>
+	<Class name="NestedDockingStatus">
+		<ClassDef>
+			<summary>Provides nested docking information for a <see cref="WeifenLuo.WinFormsUI.DockPane"/>.</summary>
+		</ClassDef>
+		<Property name="Alignment">
+			<summary>Gets the edge of the target <see cref="WeifenLuo.WinFormsUI.DockPane"/> to dock.</summary>
+			<value>One of the <see cref="WeifenLuo.WinFormsUI.DockAlignment"/> values.</value>
+		</Property>
+		<Property name="DisplayingAlignment">
+			<summary>Gets the edge of the target <see cref="WeifenLuo.WinFormsUI.DockPane"/> to dock, when displaying.</summary>
+			<value>One of the <see cref="WeifenLuo.WinFormsUI.DockAlignment"/> values.</value>
+		</Property>
+		<Property name="DisplayingPrevPane">
+			<summary>Gets the target <see cref="WeifenLuo.WinFormsUI.DockPane"/> to dock, when displaying.</summary>
+			<value>A <see cref="WeifenLuo.WinFormsUI.DockPane"/> object that represents the target <see cref="WeifenLuo.WinFormsUI.DockPane"/> to dock, when displaying.</value>
+		</Property>
+		<Property name="DisplayingProportion">
+			<summary>Gets the size for the nested docking, when displaying.</summary>
+			<value>A value between 0 and 1 to indicate the size for the nested docking.</value>
+		</Property>
+		<Property name="DockList">
+			<summary>Gets the containing <see cref="WeifenLuo.WinFormsUI.DockList"/>.</summary>
+			<value>The containing <see cref="WeifenLuo.WinFormsUI.DockList"/>.</value>
+		</Property>
+		<Property name="DockPane">
+			<summary>Gets the containing <see cref="WeifenLuo.WinFormsUI.DockPane" />.</summary>
+			<value>The containing <see cref="WeifenLuo.WinFormsUI.DockPane" />.</value>
+		</Property>
+		<Property name="IsDisplaying">
+			<summary>Gets the value to indicate if current <see cref="WeifenLuo.WinFormsUI.DockPane"/> is being displayed.</summary>
+			<value><b>true</b> if current <see cref="WeifenLuo.WinFormsUI.DockPane"/> is being displayed, otherwise, <b>false</b>.</value>
+		</Property>
+		<Property name="LogicalBounds">
+			<summary>Gets the logical location and size of the <see cref="WeifenLuo.WinFormsUI.DockPane"/>.</summary>
+			<value>The <see cref="System.Drawing.Rectangle"/> to represent the logical location and size of the
+			<see cref="WeifenLuo.WinFormsUI.DockPane"/>.</value>
+		</Property>
+		<Property name="PaneBounds">
+			<summary>Gets the actual location and size of the <see cref="WeifenLuo.WinFormsUI.DockPane"/>.</summary>
+			<value>The <see cref="System.Drawing.Rectangle"/> to represent the actual location and size of the
+			<see cref="WeifenLuo.WinFormsUI.DockPane"/>.</value>
+		</Property>
+		<Property name="PrevPane">
+			<summary>Gets the target Gets the target <see cref="WeifenLuo.WinFormsUI.DockPane"/> to dock.</summary>
+			<value>A <see cref="WeifenLuo.WinFormsUI.DockPane"/> object that represents the target <see cref="WeifenLuo.WinFormsUI.DockPane"/> to dock.</value>
+		</Property>
+		<Property name="Proportion">
+			<summary>Gets the size for the nested docking.</summary>
+			<value>A value between 0 and 1 to indicate the size for the nested docking.</value>
+		</Property>
+		<Property name="SplitterBounds">
+			<summary>Gets the location and size of the <see cref="WeifenLuo.WinFormsUI.DockPane"/> splitter.</summary>
+			<value>The <see cref="System.Drawing.Rectangle"/> to represent the location and size of the
+			<see cref="WeifenLuo.WinFormsUI.DockPane"/> splitter.</value>
+		</Property>
+	</Class>
+</CodeDoc>

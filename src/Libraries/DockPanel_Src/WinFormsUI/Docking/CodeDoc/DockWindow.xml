@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CodeDoc>
+	<Class name="DockWindow">
+		<ClassDef>
+			<summary>Represents the docking zone of the <see cref="WeifenLuo.WinFormsUI.DockPanel" />.</summary>
+			<remarks>
+				<para>The <see cref="WeifenLuo.WinFormsUI.DockPanel" /> is divided into 5
+				<see cref="WeifenLuo.WinFormsUI.DockWindow" />s: Top, Bottom, Left, Right and Document.
+				The document <see cref="WeifenLuo.WinFormsUI.DockWindow" /> is always positioned in the central of the 
+				<see cref="WeifenLuo.WinFormsUI.DockPanel" />. Other 4 <see cref="WeifenLuo.WinFormsUI.DockWindow" />s’ positions
+				are determined by the Z-order. The last displayed <see cref="WeifenLuo.WinFormsUI.DockWindow" /> will be sent to the back of the
+				Z-order.</para>
+				<para>The <see cref="WeifenLuo.WinFormsUI.DockWindow" /> implements <see cref="WeifenLuo.WinFormsUI.IDockListContainer" />,
+				it can contain a list of nested <see cref="WeifenLuo.WinFormsUI.DockPane" /> objects.</para>
+			</remarks>
+		</ClassDef>
+		<Property name="DisplayingList">
+			<summary>Gets the <see cref="WeifenLuo.WinFormsUI.DisplayingDockList" /> which contains
+			a list of visible nested docking <see cref="WeifenLuo.WinFormsUI.DockPane" /> objects.</summary>
+			<value>The <see cref="WeifenLuo.WinFormsUI.DisplayingDockList" /> which contains
+			a list of visible nested docking <see cref="WeifenLuo.WinFormsUI.DockPane" /> objects.</value>
+		</Property>
+		<Property name="DisplayingRectangle">
+			<summary>Gets the rectangle represents the displaying area for nested docking DockPane objects.</summary>
+			<value>A <see cref="System.Drawing.Rectangle" /> represents the displaying area for nested docking DockPane objects.</value>
+		</Property>
+		<Property name="DockList">
+			<summary>Gets the <see cref="WeifenLuo.WinFormsUI.DockList" /> which contains
+			a list of nested docking <see cref="WeifenLuo.WinFormsUI.DockPane" /> objects.</summary>
+			<value>The <see cref="WeifenLuo.WinFormsUI.DockList" /> which contains
+			a list of nested docking <see cref="WeifenLuo.WinFormsUI.DockPane" /> objects.</value>
+		</Property>
+		<Property name="DockPanel">
+			<summary>Gets the <see cref="WeifenLuo.WinFormsUI.DockPanel"/> which contains this
+			<see cref="WeifenLuo.WinFormsUI.DockWindow"/>.</summary>
+			<value>The <see cref="WeifenLuo.WinFormsUI.DockPanel"/> which contains this
+			<see cref="WeifenLuo.WinFormsUI.DockWindow"/>.</value>
+		</Property>
+		<Property name="DockState">
+			<summary>Gets the docking state of this <see cref="WeifenLuo.WinFormsUI.DockWindow"/>.</summary>
+			<value>The docking state of this <see cref="WeifenLuo.WinFormsUI.DockWindow"/>.</value>
+		</Property>
+		<Property name="IsFloat">
+			<summary>Gets to determine if this <see cref="WeifenLuo.WinFormsUI.DockWindow"/> is floating.</summary>
+			<value>The value of this property is always <b>false</b>.</value>
+		</Property>
+	</Class>
+</CodeDoc>

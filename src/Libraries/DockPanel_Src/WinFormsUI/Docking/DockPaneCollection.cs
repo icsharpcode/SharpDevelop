@@ -1,36 +1,67 @@
-using System;
-using System.Collections.ObjectModel;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Windows.Forms;
+// *****************************************************************************
+// 
+//  Copyright 2004, Weifen Luo
+//  All rights reserved. The software and associated documentation 
+//  supplied hereunder are the proprietary information of Weifen Luo
+//  and are supplied subject to licence terms.
+// 
+//  WinFormsUI Library Version 1.0
+// *****************************************************************************
 
-namespace WeifenLuo.WinFormsUI.Docking
+using System;
+using System.Collections;
+
+namespace WeifenLuo.WinFormsUI
 {
-	public class DockPaneCollection : ReadOnlyCollection<DockPane>
+	/// <include file='CodeDoc\DockPaneCollection.xml' path='//CodeDoc/Class[@name="DockPaneCollection"]/ClassDef/*'/>>
+	public class DockPaneCollection : ReadOnlyCollectionBase
 	{
-        internal DockPaneCollection()
-            : base(new List<DockPane>())
-        {
-        }
+		internal DockPaneCollection()
+		{
+		}
+
+		/// <include file='CodeDoc\DockPaneCollection.xml' path='//CodeDoc/Class[@name="DockPaneCollection"]/Property[@name="Item"]/*'/>>
+		public DockPane this[int index]
+		{
+			get {  return InnerList[index] as DockPane;  }
+		}
 
 		internal int Add(DockPane pane)
 		{
-			if (Items.Contains(pane))
-				return Items.IndexOf(pane);
+			if (InnerList.Contains(pane))
+				return InnerList.IndexOf(pane);
 
-			Items.Add(pane);
-            return Count - 1;
+			return InnerList.Add(pane);
 		}
 
 		internal void AddAt(DockPane pane, int index)
 		{
-			if (index < 0 || index > Items.Count - 1)
+			if (index < 0 || index > InnerList.Count - 1)
 				return;
 			
 			if (Contains(pane))
 				return;
 
-			Items.Insert(index, pane);
+			InnerList.Insert(index, pane);
+		}
+
+		internal void AddAt(DockPane pane, DockPane paneBefore)
+		{
+			AddAt(pane, IndexOf(paneBefore));
+		}
+
+		internal void Add(DockPane pane, DockPane paneBefore)
+		{
+			if (paneBefore == null)
+				Add(pane);
+			else
+				InnerList.Insert(IndexOf(paneBefore), pane);
+		}
+
+		/// <include file='CodeDoc\DockPaneCollection.xml' path='//CodeDoc/Class[@name="DockPaneCollection"]/Method[@name="Contains(DockPane)"]/*'/>>
+		public bool Contains(DockPane pane)
+		{
+			return InnerList.Contains(pane);
 		}
 
 		internal void Dispose()
@@ -39,9 +70,20 @@ namespace WeifenLuo.WinFormsUI.Docking
 				this[i].Close();
 		}
 
+		/// <include file='CodeDoc\DockPaneCollection.xml' path='//CodeDoc/Class[@name="DockPaneCollection"]/Method[@name="IndexOf(DockPane)"]/*'/>>
+		public int IndexOf(DockPane pane)
+		{
+			return InnerList.IndexOf(pane);
+		}
+
 		internal void Remove(DockPane pane)
 		{
-			Items.Remove(pane);
+			InnerList.Remove(pane);
+		}
+
+		internal void Clear()
+		{
+			InnerList.Clear();
 		}
 	}
 }

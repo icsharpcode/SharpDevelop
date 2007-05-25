@@ -1,0 +1,42 @@
+<project SchemaVersion="1.3">
+    <assemblies>
+        <assembly location=".\WinFormsUI\bin\NDoc\WeifenLuo.WinFormsUI.Docking.dll" documentation=".\WinFormsUI\bin\NDoc\CodeDoc.xml" />
+    </assemblies>
+    <documenters>
+        <documenter name="JavaDoc">
+            <property name="OutputDirectory" value=".\doc\" />
+        </documenter>
+        <documenter name="LaTeX">
+            <property name="OutputDirectory" value=".\doc\" />
+            <property name="TextFileFullName" value="Documentation.tex" />
+            <property name="TexFileBaseName" value="Documentation" />
+            <property name="LatexCompiler" value="latex" />
+            <property name="TexFileFullPath" value=".\doc\Documentation.tex" />
+        </documenter>
+        <documenter name="LinearHtml">
+            <property name="OutputDirectory" value=".\doc\" />
+            <property name="Title" value="An NDoc Documented Class Library" />
+        </documenter>
+        <documenter name="MSDN">
+            <property name="OutputDirectory" value="..\doc\" />
+            <property name="HtmlHelpName" value="DockPanel" />
+            <property name="Title" value="DockPanel Class Library (Ver 1.0)" />
+            <property name="OutputTarget" value="HtmlHelp" />
+            <property name="CopyrightText" value="Copyright Weifen Luo, All Rights Reserved." />
+            <property name="FeedbackEmailAddress" value="weifenluo@yahoo.com" />
+            <property name="CleanIntermediates" value="True" />
+        </documenter>
+        <documenter name="MSDN 2003">
+            <property name="OutputDirectory" value=".\doc\" />
+            <property name="Title" value="An NDoc Documented Class Library" />
+        </documenter>
+        <documenter name="VS.NET 2003">
+            <property name="OutputDirectory" value=".\doc\" />
+            <property name="HtmlHelpName" value="Documentation" />
+            <property name="Title" value="An NDoc documented library" />
+        </documenter>
+        <documenter name="XML">
+            <property name="OutputFile" value=".\doc\doc.xml" />
+        </documenter>
+    </documenters>
+</project>

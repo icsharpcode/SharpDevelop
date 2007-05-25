@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<CodeDoc>
+	<Class name="AutoHideStripBase">
+		<ClassDef>
+			<summary>Implements the basic functionality common to auto-hide tab strip of <see cref="DockPanel"/>.</summary>
+		</ClassDef>
+		<Construct name="(DockPanel)">
+			<summary>Creates a instance of <see cref="AutoHideStripBase"/>.</summary>
+			<param name="panel">The <see cref="DockPanel"/> to associate with.</param>
+		</Construct>
+		<Property name="DockPanel">
+			<summary>Gets the associated <see cref="DockPanel"/>.</summary>
+			<value>The associated <see cref="DockPanel"/>.</value>
+		</Property>
+		<Property name="PanesTop">
+			<summary>Gets a collection of <see cref="AutoHidePane"/> objects on the top side.</summary>
+			<value>A <see cref="AutoHidePaneCollection"/> contains a collection of <see cref="AutoHidePane"/> objects on the top side.</value>
+		</Property>
+		<Property name="PanesBottom">
+			<summary>Gets a collection of <see cref="AutoHidePane"/> objects on the bottom side.</summary>
+			<value>A <see cref="AutoHidePaneCollection"/> contains a collection of <see cref="AutoHidePane"/> objects on the bottom side.</value>
+		</Property>
+		<Property name="PanesLeft">
+			<summary>Gets a collection of <see cref="AutoHidePane"/> objects on the left side.</summary>
+			<value>A <see cref="AutoHidePaneCollection"/> contains a collection of <see cref="AutoHidePane"/> objects on the left side.</value>
+		</Property>
+		<Property name="PanesRight">
+			<summary>Gets a collection of <see cref="AutoHidePane"/> objects on the right side.</summary>
+			<value>A <see cref="AutoHidePaneCollection"/> contains a collection of <see cref="AutoHidePane"/> objects on the right side.</value>
+		</Property>
+		<Method name="GetPanes(DockState)">
+			<summary>Gets a collection of <see cref="AutoHidePane"/> objects for the specified docking state.</summary>
+			<param name="dockState">Specifies the docking state.</param>
+			<return>A <see cref="AutoHidePaneCollection"/> contains a collection of <see cref="AutoHidePane"/> ojbects based on the specified docking state.</return>
+		</Method>
+		<Property name="RectangleTopLeft">
+			<summary>Gets the rectangle that represents the top left blank area.</summary>
+			<value>A <see cref="Rectangle"/> that represents the top left blank area.</value>
+		</Property>
+		<Property name="RectangleTopRight">
+			<summary>Gets the rectangle that represents the top right blank area.</summary>
+			<value>A <see cref="Rectangle"/> that represents the top right blank area.</value>
+		</Property>
+		<Property name="RectangleBottomLeft">
+			<summary>Gets the rectangle that represents the bottom left blank area.</summary>
+			<value>A <see cref="Rectangle"/> that represents the bottom left blank area.</value>
+		</Property>
+		<Property name="RectangleBottomRight">
+			<summary>Gets the rectangle that represents the bottom right blank area.</summary>
+			<value>A <see cref="Rectangle"/> that represents the bottom right blank area.</value>
+		</Property>
+		<Method name="GetTabStripRectangle(DockState)">
+			<summary>Gets the rectangle that represents the tab strip drawing area for the specified docking state.</summary>
+			<param name="dockState">Specifies the docking state of the tab strip.</param>
+			<returns>A <see cref="Rectangle"/> that represents the tab strip drawing area for the specified docking state.</returns>
+		</Method>
+		<Method name="OnRefreshChanges()">
+			<summary>Invoked when the underlying data has been changed and needs update of the control.</summary>
+			<remarks>Derived class should override to update the changes.</remarks>
+		</Method>
+		<Method name="MeasureHeight()">
+			<summary>Measures the height of the tab strip.</summary>
+		</Method>
+	</Class>
+</CodeDoc>

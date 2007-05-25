@@ -1,47 +1,61 @@
+// *****************************************************************************
+// 
+//  Copyright 2004, Weifen Luo
+//  All rights reserved. The software and associated documentation 
+//  supplied hereunder are the proprietary information of Weifen Luo
+//  and are supplied subject to licence terms.
+// 
+//  WinFormsUI Library Version 1.0
+// *****************************************************************************
+
 using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
-using System.Runtime.InteropServices;
-using System.Diagnostics.CodeAnalysis;
 
-namespace WeifenLuo.WinFormsUI.Docking
+namespace WeifenLuo.WinFormsUI
 {
+	/// <include file='CodeDoc\DockContent.xml' path='//CodeDoc/Class[@name="DockContent"]/ClassDef/*'/>
 	public class DockContent : Form, IDockContent
 	{
+		/// <include file='CodeDoc\DockContent.xml' path='//CodeDoc/Class[@name="DockHContent"]/Constructor[@name="()"]/*'/>
 		public DockContent()
 		{
-			m_dockHandler = new DockContentHandler(this, new GetPersistStringCallback(GetPersistString));
+			m_dockHandler = new DockContentHandler(this, new GetPersistStringDelegate(GetPersistString));
 			m_dockHandler.DockStateChanged += new EventHandler(DockHandler_DockStateChanged);
 		}
 
 		private DockContentHandler m_dockHandler = null;
+		/// <include file='CodeDoc\DockContent.xml' path='//CodeDoc/Class[@name="DockContent"]/Property[@name="DockHandler"]/*'/>
 		[Browsable(false)]
 		public DockContentHandler DockHandler
 		{
 			get	{	return m_dockHandler;	}
 		}
 
-		[LocalizedCategory("Category_Docking")]
-		[LocalizedDescription("DockContent_AllowEndUserDocking_Description")]
+		/// <include file='CodeDoc\DockContent.xml' path='//CodeDoc/Class[@name="DockContent"]/Property[@name="AllowRedocking"]/*'/>
+		[LocalizedCategory("Category.Docking")]
+		[LocalizedDescription("DockHandler.AllowRedocking.Description")]
 		[DefaultValue(true)]
-		public bool AllowEndUserDocking
+		public bool AllowRedocking
 		{
-			get	{	return DockHandler.AllowEndUserDocking;	}
-			set	{	DockHandler.AllowEndUserDocking = value;	}
+			get	{	return DockHandler.AllowRedocking;	}
+			set	{	DockHandler.AllowRedocking = value;	}
 		}
 
-		[LocalizedCategory("Category_Docking")]
-		[LocalizedDescription("DockContent_DockAreas_Description")]
+		/// <include file='CodeDoc\DockContent.xml' path='//CodeDoc/Class[@name="DockContent"]/Property[@name="DockableAreas"]/*'/>
+		[LocalizedCategory("Category.Docking")]
+		[LocalizedDescription("DockHandler.DockableAreas.Description")]
 		[DefaultValue(DockAreas.DockLeft|DockAreas.DockRight|DockAreas.DockTop|DockAreas.DockBottom|DockAreas.Document|DockAreas.Float)]
-		public DockAreas DockAreas
+		public DockAreas DockableAreas
 		{
-			get	{	return DockHandler.DockAreas;	}
-			set	{	DockHandler.DockAreas = value;	}
+			get	{	return DockHandler.DockableAreas;	}
+			set	{	DockHandler.DockableAreas = value;	}
 		}
 
-		[LocalizedCategory("Category_Docking")]
-		[LocalizedDescription("DockContent_AutoHidePortion_Description")]
+		/// <include file='CodeDoc\DockContent.xml' path='//CodeDoc/Class[@name="DockContent"]/Property[@name="AutoHidePortion"]/*'/>
+		[LocalizedCategory("Category.Docking")]
+		[LocalizedDescription("DockHandler.AutoHidePortion.Description")]
 		[DefaultValue(0.25)]
 		public double AutoHidePortion
 		{
@@ -49,9 +63,10 @@ namespace WeifenLuo.WinFormsUI.Docking
 			set	{	DockHandler.AutoHidePortion = value;	}
 		}
 
+		/// <include file='CodeDoc\DockContent.xml' path='//CodeDoc/Class[@name="DockContent"]/Property[@name="TabText"]/*'/>
 		[Localizable(true)]
-		[LocalizedCategory("Category_Docking")]
-		[LocalizedDescription("DockContent_TabText_Description")]
+		[LocalizedCategory("Category.Docking")]
+		[LocalizedDescription("DockHandler.TabText.Description")]
 		[DefaultValue(null)]
 		public string TabText
 		{
@@ -63,8 +78,9 @@ namespace WeifenLuo.WinFormsUI.Docking
 			return (DockHandler.TabText != null);
 		}
 
-		[LocalizedCategory("Category_Docking")]
-		[LocalizedDescription("DockContent_CloseButton_Description")]
+		/// <include file='CodeDoc\DockContent.xml' path='//CodeDoc/Class[@name="DockContent"]/Property[@name="CloseButton"]/*'/>
+		[LocalizedCategory("Category.Docking")]
+		[LocalizedDescription("DockHandler.CloseButton.Description")]
 		[DefaultValue(true)]
 		public bool CloseButton
 		{
@@ -72,6 +88,7 @@ namespace WeifenLuo.WinFormsUI.Docking
 			set	{	DockHandler.CloseButton = value;	}
 		}
 		
+		/// <include file='CodeDoc\DockContent.xml' path='//CodeDoc/Class[@name="DockContent"]/Property[@name="DockPanel"]/*'/>
 		[Browsable(false)]
 		public DockPanel DockPanel
 		{
@@ -79,6 +96,7 @@ namespace WeifenLuo.WinFormsUI.Docking
 			set	{	DockHandler.DockPanel = value;	}
 		}
 
+		/// <include file='CodeDoc\DockContent.xml' path='//CodeDoc/Class[@name="DockContent"]/Property[@name="DockState"]/*'/>
 		[Browsable(false)]
 		public DockState DockState
 		{
@@ -86,6 +104,7 @@ namespace WeifenLuo.WinFormsUI.Docking
 			set	{	DockHandler.DockState = value;	}
 		}
 
+		/// <include file='CodeDoc\DockContent.xml' path='//CodeDoc/Class[@name="DockContent"]/Property[@name="Pane"]/*'/>
 		[Browsable(false)]
 		public DockPane Pane
 		{
@@ -93,6 +112,7 @@ namespace WeifenLuo.WinFormsUI.Docking
 			set	{	DockHandler.Pane = value;		}
 		}
 
+		/// <include file='CodeDoc\DockContent.xml' path='//CodeDoc/Class[@name="DockContent"]/Property[@name="IsHidden"]/*'/>
 		[Browsable(false)]
 		public bool IsHidden
 		{
@@ -100,6 +120,7 @@ namespace WeifenLuo.WinFormsUI.Docking
 			set	{	DockHandler.IsHidden = value;	}
 		}
 
+		/// <include file='CodeDoc\DockContent.xml' path='//CodeDoc/Class[@name="DockContent"]/Property[@name="VisibleState"]/*'/>
 		[Browsable(false)]
 		public DockState VisibleState
 		{
@@ -107,6 +128,7 @@ namespace WeifenLuo.WinFormsUI.Docking
 			set	{	DockHandler.VisibleState = value;	}
 		}
 
+		/// <include file='CodeDoc\DockContent.xml' path='//CodeDoc/Class[@name="DockContent"]/Property[@name="IsFloat"]/*'/>
 		[Browsable(false)]
 		public bool IsFloat
 		{
@@ -114,6 +136,7 @@ namespace WeifenLuo.WinFormsUI.Docking
 			set	{	DockHandler.IsFloat = value;	}
 		}
 
+		/// <include file='CodeDoc\DockContent.xml' path='//CodeDoc/Class[@name="DockContent"]/Property[@name="PanelPane"]/*'/>
 		[Browsable(false)]
 		public DockPane PanelPane
 		{
@@ -121,6 +144,7 @@ namespace WeifenLuo.WinFormsUI.Docking
 			set	{	DockHandler.PanelPane = value;	}
 		}
 
+		/// <include file='CodeDoc\DockContent.xml' path='//CodeDoc/Class[@name="DockContent"]/Property[@name="FloatPane"]/*'/>
 		[Browsable(false)]
 		public DockPane FloatPane
 		{
@@ -128,14 +152,15 @@ namespace WeifenLuo.WinFormsUI.Docking
 			set	{	DockHandler.FloatPane = value;	}
 		}
 
-        [SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
-        protected virtual string GetPersistString()
+		/// <include file='CodeDoc\DockContent.xml' path='//CodeDoc/Class[@name="DockContent"]/Method[@name="GetPersistString()"]/*'/>
+		protected virtual string GetPersistString()
 		{
-            return GetType().ToString();
+			return GetType().ToString();
 		}
 
-		[LocalizedCategory("Category_Docking")]
-		[LocalizedDescription("DockContent_HideOnClose_Description")]
+		/// <include file='CodeDoc\DockContent.xml' path='//CodeDoc/Class[@name="DockContent"]/Property[@name="HideOnClose"]/*'/>
+		[LocalizedCategory("Category.Docking")]
+		[LocalizedDescription("DockHandler.HideOnClose.Description")]
 		[DefaultValue(false)]
 		public bool HideOnClose
 		{
@@ -143,8 +168,9 @@ namespace WeifenLuo.WinFormsUI.Docking
 			set	{	DockHandler.HideOnClose = value;	}
 		}
 
-		[LocalizedCategory("Category_Docking")]
-		[LocalizedDescription("DockContent_ShowHint_Description")]
+		/// <include file='CodeDoc\DockContent.xml' path='//CodeDoc/Class[@name="DockContent"]/Property[@name="ShowHint"]/*'/>
+		[LocalizedCategory("Category.Docking")]
+		[LocalizedDescription("DockHandler.ShowHint.Description")]
 		[DefaultValue(DockState.Unknown)]
 		public DockState ShowHint
 		{
@@ -152,19 +178,22 @@ namespace WeifenLuo.WinFormsUI.Docking
 			set	{	DockHandler.ShowHint = value;	}
 		}
 
+		/// <include file='CodeDoc\DockContent.xml' path='//CodeDoc/Class[@name="DockContent"]/Property[@name="IsActivated"]/*'/>
 		[Browsable(false)]
 		public bool IsActivated
 		{
 			get	{	return DockHandler.IsActivated;	}
 		}
 
+		/// <include file='CodeDoc\DockContent.xml' path='//CodeDoc/Class[@name="DockContent"]/Method[@name="IsDockStateValid(DockState)"]/*'/>
 		public bool IsDockStateValid(DockState dockState)
 		{
 			return DockHandler.IsDockStateValid(dockState);
 		}
 
-		[LocalizedCategory("Category_Docking")]
-		[LocalizedDescription("DockContent_TabPageContextMenu_Description")]
+		/// <include file='CodeDoc\DockContent.xml' path='//CodeDoc/Class[@name="DockContent"]/Property[@name="TabPageContextMenu"]/*'/>
+		[LocalizedCategory("Category.Docking")]
+		[LocalizedDescription("DockHandler.TabPageContextMenu.Description")]
 		[DefaultValue(null)]
 		public ContextMenu TabPageContextMenu
 		{
@@ -172,18 +201,22 @@ namespace WeifenLuo.WinFormsUI.Docking
 			set	{	DockHandler.TabPageContextMenu = value;	}
 		}
 
-        [LocalizedCategory("Category_Docking")]
-        [LocalizedDescription("DockContent_TabPageContextMenuStrip_Description")]
+        #if FRAMEWORK_VER_2x
+        /// <include file='CodeDoc\DockContent.xml' path='//CodeDoc/Class[@name="DockContent"]/Property[@name="TabPageContextMenuStrip"]/*'/>
+        [LocalizedCategory("Category.Docking")]
+        [LocalizedDescription("DockHandler.TabPageContextMenuStrip.Description")]
         [DefaultValue(null)]
         public ContextMenuStrip TabPageContextMenuStrip
         {
             get { return DockHandler.TabPageContextMenuStrip; }
             set { DockHandler.TabPageContextMenuStrip = value; }
         }
+        #endif
 
+        /// <include file='CodeDoc\DockContent.xml' path='//CodeDoc/Class[@name="DockContent"]/Property[@name="ToolTipText"]/*'/>
 		[Localizable(true)]
 		[Category("Appearance")]
-		[LocalizedDescription("DockContent_ToolTipText_Description")]
+		[LocalizedDescription("DockHandler.ToolTipText.Description")]
 		[DefaultValue(null)]
 		public string ToolTipText
 		{
@@ -191,62 +224,53 @@ namespace WeifenLuo.WinFormsUI.Docking
 			set {	DockHandler.ToolTipText = value;	}
 		}
 
+		/// <include file='CodeDoc\DockContent.xml' path='//CodeDoc/Class[@name="DockContent"]/Method[@name="Activate()"]/*'/>
 		public new void Activate()
 		{
 			DockHandler.Activate();
 		}
 
+		/// <exclude/>
 		public new void Hide()
 		{
 			DockHandler.Hide();
 		}
 
+		/// <include file='CodeDoc\DockContent.xml' path='//CodeDoc/Class[@name="DockContent"]/Method[@name="Show()"]/*'/>
 		public new void Show()
 		{
 			DockHandler.Show();
 		}
 
+		/// <include file='CodeDoc\DockContent.xml' path='//CodeDoc/Class[@name="DockContent"]/Method[@name="Show(DockPanel)"]/*'/>
 		public void Show(DockPanel dockPanel)
 		{
 			DockHandler.Show(dockPanel);
 		}
 
+		/// <include file='CodeDoc\DockContent.xml' path='//CodeDoc/Class[@name="DockContent"]/Method[@name="Show(DockPanel, DockState)"]/*'/>
 		public void Show(DockPanel dockPanel, DockState dockState)
 		{
 			DockHandler.Show(dockPanel, dockState);
 		}
 
-        [SuppressMessage("Microsoft.Naming", "CA1720:AvoidTypeNamesInParameters")]
+		/// <include file='CodeDoc\DockContent.xml' path='//CodeDoc/Class[@name="DockContent"]/Method[@name="Show(DockPanel, Rectangle)"]/*'/>
 		public void Show(DockPanel dockPanel, Rectangle floatWindowBounds)
 		{
 			DockHandler.Show(dockPanel, floatWindowBounds);
 		}
 
+		/// <include file='CodeDoc\DockContent.xml' path='//CodeDoc/Class[@name="DockContent"]/Method[@name="Show(DockPane, DockHandler)"]/*'/>
 		public void Show(DockPane pane, IDockContent beforeContent)
 		{
 			DockHandler.Show(pane, beforeContent);
 		}
 
-		public void Show(DockPane previousPane, DockAlignment alignment, double proportion)
+		/// <include file='CodeDoc\DockContent.xml' path='//CodeDoc/Class[@name="DockContent"]/Method[@name="Show(DockPane, DockAlignment, double)"]/*'/>
+		public void Show(DockPane prevPane, DockAlignment alignment, double proportion)
 		{
-			DockHandler.Show(previousPane, alignment, proportion);
+			DockHandler.Show(prevPane, alignment, proportion);
 		}
-
-        [SuppressMessage("Microsoft.Naming", "CA1720:AvoidTypeNamesInParameters")]
-        public void FloatAt(Rectangle floatWindowBounds)
-        {
-            DockHandler.FloatAt(floatWindowBounds);
-        }
-
-        public void DockTo(DockPane paneTo, DockStyle dockStyle, int contentIndex)
-        {
-            DockHandler.DockTo(paneTo, dockStyle, contentIndex);
-        }
-
-        public void DockTo(DockPanel panel, DockStyle dockStyle)
-        {
-            DockHandler.DockTo(panel, dockStyle);
-        }
 
 		#region Events
 		private void DockHandler_DockStateChanged(object sender, EventArgs e)
@@ -255,13 +279,15 @@ namespace WeifenLuo.WinFormsUI.Docking
 		}
 
 		private static readonly object DockStateChangedEvent = new object();
-		[LocalizedCategory("Category_PropertyChanged")]
-		[LocalizedDescription("Pane_DockStateChanged_Description")]
+		/// <include file='CodeDoc\DockContent.xml' path='//CodeDoc/Class[@name="IDockContent"]/Event[@name="DockStateChanged"]/*'/>
+		[LocalizedCategory("Category.PropertyChanged")]
+		[LocalizedDescription("Pane.DockStateChanged.Description")]
 		public event EventHandler DockStateChanged
 		{
 			add	{	Events.AddHandler(DockStateChangedEvent, value);	}
 			remove	{	Events.RemoveHandler(DockStateChangedEvent, value);	}
 		}
+		/// <include file='CodeDoc\DockContent.xml' path='//CodeDoc/Class[@name="IDockContent"]/Method[@name="OnDockStateChanged(EventArgs)"]/*'/>
 		protected virtual void OnDockStateChanged(EventArgs e)
 		{
 			EventHandler handler = (EventHandler)Events[DockStateChangedEvent];

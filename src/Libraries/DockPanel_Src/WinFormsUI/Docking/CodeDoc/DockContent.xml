@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<CodeDoc>
+	<Class name="DockContent">
+		<ClassDef>
+			<summary>The <see cref="System.Windows.Forms.Form" /> derived class that implements 
+			<see cref="WeifenLuo.WinFormsUI.IDockContent" /> interface.</summary>
+			<remarks>
+				<para>
+					<see cref="WeifenLuo.WinFormsUI.DockContent" /> derives from <see cref="Form" /> class.
+					To use the DockPanel library, you can derive your form from <see cref="DockContent" /> class,
+					and implement your user interface in this class. <see cref="WeifenLuo.WinFormsUI.DockContent" />
+					wraps all the properties, methods and events of <see cref="WeifenLuo.WinFormsUI.DockContentHandler" /> objects.
+				</para>
+			</remarks>
+		</ClassDef>
+		<Constructor name="()">
+			<summary>Initialize a new <see cref="WeifenLuo.WinFormsUI.Content" /> instance.</summary>
+		</Constructor>
+		<Property name="DockHandler">
+			<summary>Implementation of <see cref="WeifenLuo.WinFormsUI.IDockContent.DockHandler" />.</summary>
+		</Property>
+		<Property name="AllowRedocking">
+			<summary>Wrapper of <see cref="WeifenLuo.WinFormsUI.DockContentHandler.AllowRedocking"/>.</summary>
+		</Property>
+		<Property name="AutoHidePortion">
+			<summary>Wrapper of <see cref="WeifenLuo.WinFormsUI.DockContentHandler.AutoHidePortion"/>.</summary>
+		</Property>
+		<Property name="CloseButton">
+			<summary>Wrapper of <see cref="WeifenLuo.WinFormsUI.DockContentHandler.CloseButton"/>.</summary>
+		</Property>
+		<Property name="DockableAreas">
+			<summary>Wrapper of <see cref="WeifenLuo.WinFormsUI.DockContentHandler.DockableAreas"/>.</summary>
+		</Property>
+		<Property name="DockPanel">
+			<summary>Wrapper of <see cref="WeifenLuo.WinFormsUI.DockContentHandler.DockPanel"/>.</summary>
+		</Property>
+		<Property name="DockState">
+			<summary>Wrapper of <see cref="WeifenLuo.WinFormsUI.DockContentHandler.DockState"/>.</summary>
+		</Property>
+		<Property name="FloatPane">
+			<summary>Wrapper of <see cref="WeifenLuo.WinFormsUI.DockContentHandler.FloatPane"/>.</summary>
+		</Property>
+		<Property name="HideOnClose">
+			<summary>Wrapper of <see cref="WeifenLuo.WinFormsUI.DockContentHandler.HideOnClose"/>.</summary>
+		</Property>
+		<Property name="IsActivated">
+			<summary>Wrapper of <see cref="WeifenLuo.WinFormsUI.DockContentHandler.IsActivated"/>.</summary>
+		</Property>
+		<Property name="IsFloat">
+			<summary>Wrapper of <see cref="WeifenLuo.WinFormsUI.DockContentHandler.IsFloat"/>.</summary>
+		</Property>
+		<Property name="IsHidden">
+			<summary>Wrapper of <see cref="WeifenLuo.WinFormsUI.DockContentHandler.IsHidden"/>.</summary>
+		</Property>
+		<Property name="Pane">
+			<summary>Wrapper of <see cref="WeifenLuo.WinFormsUI.DockContentHandler.Pane"/>.</summary>
+		</Property>
+		<Property name="PanelPane">
+			<summary>Wrapper of <see cref="WeifenLuo.WinFormsUI.DockContentHandler.PanelPane"/>.</summary>
+		</Property>
+		<Property name="ShowHint">
+			<summary>Wrapper of <see cref="WeifenLuo.WinFormsUI.DockContentHandler.ShowHint"/>.</summary>
+		</Property>
+		<Property name="TabPageContextMenu">
+			<summary>Wrapper of <see cref="WeifenLuo.WinFormsUI.DockContentHandler.TabPageContextMenu"/>.</summary>
+		</Property>
+		<Property name="TabText">
+			<summary>Wrapper of <see cref="WeifenLuo.WinFormsUI.DockContentHandler.TabText"/>.</summary>
+		</Property>
+		<Property name="ToolTipText">
+			<summary>Wrapper of <see cref="WeifenLuo.WinFormsUI.DockContentHandler.ToolTipText"/>.</summary>
+		</Property>
+		<Property name="VisibleState">
+			<summary>Wrapper of <see cref="WeifenLuo.WinFormsUI.DockContentHandler.VisibleState"/>.</summary>
+		</Property>
+		<Method name="Activate()">
+			<summary>Wrapper of <see cref="WeifenLuo.WinFormsUI.DockContentHandler.Activate"/>.</summary>
+		</Method>
+		<Method name="GetPersistString()">
+			<summary>Gets the string to persist this DockContent object.</summary>
+			<returns>The string to persist this DockContent object.</returns>
+			<include file='DockPanel.xml' path='//CodeDoc/Delegate[@name="DeserializeDockContent"]/remarks' />
+		</Method>
+		<Method name="IsDockStateValid(DockState)">
+			<summary>Wrapper of <see cref="WeifenLuo.WinFormsUI.DockContentHandler.IsDockStateValid"/>.</summary>
+		</Method>
+		<Method name="OnDockStateChanged(EventArgs)">
+			<summary>Raises the <see cref="WeifenLuo.WinFormsUI.DockContent.DockStateChanged" /> event.</summary>
+			<param name="e">An <see cref="System.EventArgs" /> that contains the event data.</param>
+		</Method>
+		<Method name="Show()">
+			<summary>Wrapper of <see cref="WeifenLuo.WinFormsUI.DockContentHandler.Show"/>.</summary>
+		</Method>
+		<Method name="Show(DockPane, DockAlignment, double)">
+			<summary>Wrapper of <see cref="WeifenLuo.WinFormsUI.DockContentHandler.Show"/>.</summary>
+		</Method>
+		<Method name="Show(DockPane, IDockContent)">
+			<summary>Wrapper of <see cref="WeifenLuo.WinFormsUI.DockContentHandler.Show"/>.</summary>
+		</Method>
+		<Method name="Show(DockPanel)">
+			<summary>Wrapper of <see cref="WeifenLuo.WinFormsUI.DockContentHandler.Show"/>.</summary>
+		</Method>
+		<Method name="Show(DockPanel, Rectangle)">
+			<summary>Wrapper of <see cref="WeifenLuo.WinFormsUI.DockContentHandler.Show"/>.</summary>
+		</Method>
+		<Method name="Show(DockPanel, DockState)">
+			<summary>Wrapper of <see cref="WeifenLuo.WinFormsUI.DockContentHandler.Show"/>.</summary>
+		</Method>
+		<Event name="DockStateChanged">
+			<summary>Occurs when the <see cref="WeifenLuo.WinFormsUI.DockContent.DockState"/> property changed.</summary>
+		</Event>
+	</Class>
+</CodeDoc>
