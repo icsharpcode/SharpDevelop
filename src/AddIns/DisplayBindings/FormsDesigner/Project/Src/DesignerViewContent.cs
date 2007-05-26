@@ -195,12 +195,14 @@ namespace ICSharpCode.FormsDesigner
 			// in the PropertyPad, "InvalidOperationException: The container cannot be disposed
 			// at design time" is thrown.
 			// This is solved by calling dispose after the double-click event has been processed.
-			if (disposing) {
-				designSurface.Dispose();
-			} else {
-				p.BeginInvoke(new MethodInvoker(designSurface.Dispose));
+			if (designSurface != null) {
+				if (disposing) {
+					designSurface.Dispose();
+				} else {
+					p.BeginInvoke(new MethodInvoker(designSurface.Dispose));
+				}
+				designSurface = null;
 			}
-			designSurface = null;
 		}
 		
 		PropertyContainer propertyContainer = new PropertyContainer();
@@ -213,6 +215,10 @@ namespace ICSharpCode.FormsDesigner
 		
 		public void ShowHelp()
 		{
+			if (Host == null) {
+				return;
+			}
+			
 			ISelectionService selectionService = (ISelectionService)Host.GetService(typeof(ISelectionService));
 			if (selectionService != null) {
 				Control ctl = selectionService.PrimarySelection as Control;
@@ -396,7 +402,7 @@ namespace ICSharpCode.FormsDesigner
 		
 		protected void UpdatePropertyPad()
 		{
-			if (IsFormsDesignerVisible) {
+			if (IsFormsDesignerVisible && Host != null) {
 				propertyContainer.Host = Host;
 				propertyContainer.SelectableObjects = Host.Container.Components;
 				ISelectionService selectionService = (ISelectionService)Host.GetService(typeof(ISelectionService));
@@ -441,62 +447,54 @@ namespace ICSharpCode.FormsDesigner
 		#endregion
 		
 		#region IClipboardHandler implementation
+		bool IsMenuCommandEnabled(CommandID commandID)
+		{
+			if (designSurface == null) {
+				return false;
+			}
+			
+			IMenuCommandService menuCommandService = (IMenuCommandService)designSurface.GetService(typeof(IMenuCommandService));
+			if (menuCommandService == null) {
+				return false;
+			}
+			
+			System.ComponentModel.Design.MenuCommand menuCommand = menuCommandService.FindCommand(commandID);
+			if (menuCommand == null) {
+				return false;
+			}
+			
+			//int status = menuCommand.OleStatus;
+			return menuCommand.Enabled;
+		}
+		
 		public bool EnableCut {
 			get {
-				//ISelectionService selectionService = (ISelectionService)designSurface.GetService(typeof(ISelectionService));
-				//return selectionService.SelectionCount >= 0 && selectionService.PrimarySelection != host.RootComponent;
-				IMenuCommandService menuCommandService = (IMenuCommandService)designSurface.GetService(typeof(IMenuCommandService));
-				System.ComponentModel.Design.MenuCommand menuCommand = menuCommandService.FindCommand(StandardCommands.Cut);
-				if (menuCommand == null) {
-					return false;
-				}
-				int status = menuCommand.OleStatus;
-				return menuCommand.Enabled;
+				return IsMenuCommandEnabled(StandardCommands.Cut);
 			}
 		}
 		
 		public bool EnableCopy {
 			get {
-				//ISelectionService selectionService = (ISelectionService)designSurface.GetService(typeof(ISelectionService));
-				//return selectionService.SelectionCount >= 0 && selectionService.PrimarySelection != host.RootComponent;
-				IMenuCommandService menuCommandService = (IMenuCommandService)designSurface.GetService(typeof(IMenuCommandService));
-				System.ComponentModel.Design.MenuCommand menuCommand = menuCommandService.FindCommand(StandardCommands.Copy);
-				if (menuCommand == null) {
-					return false;
-				}
-				int status = menuCommand.OleStatus;
-				return menuCommand.Enabled;
+				return IsMenuCommandEnabled(StandardCommands.Copy);
 			}
 		}
 		
 		const string ComponentClipboardFormat = "CF_DESIGNERCOMPONENTS";
 		public bool EnablePaste {
 			get {
-				IMenuCommandService menuCommandService = (IMenuCommandService)designSurface.GetService(typeof(IMenuCommandService));
-				System.ComponentModel.Design.MenuCommand menuCommand = menuCommandService.FindCommand(StandardCommands.Paste);
-				if (menuCommand == null) {
-					return false;
-				}
-				int status = menuCommand.OleStatus;
-				return menuCommand.Enabled;
+				return IsMenuCommandEnabled(StandardCommands.Paste);
 			}
 		}
 		
 		public bool EnableDelete {
 			get {
-				IMenuCommandService menuCommandService = (IMenuCommandService)designSurface.GetService(typeof(IMenuCommandService));
-				System.ComponentModel.Design.MenuCommand menuCommand = menuCommandService.FindCommand(StandardCommands.Delete);
-				if (menuCommand == null) {
-					return false;
-				}
-				int status = menuCommand.OleStatus;
-				return menuCommand.Enabled;
+				return IsMenuCommandEnabled(StandardCommands.Delete);
 			}
 		}
 		
 		public bool EnableSelectAll {
 			get {
-				return true;
+				return designSurface != null;
 			}
 		}
 		
