@@ -243,7 +243,7 @@ namespace ICSharpCode.FormsDesigner
 					errorText.Text = e.InnerException.Message;
 				} else if (e is FormsDesignerLoadException) {
 					errorText.Text = e.Message;
-				} else if (!designSurface.IsLoaded && designSurface.LoadErrors != null) {
+				} else if (designSurface != null && !designSurface.IsLoaded && designSurface.LoadErrors != null) {
 					errorText.Text = StringParser.Parse("${res:ICSharpCode.SharpDevelop.FormDesigner.ErrorLoadingDesigner}\r\n\r\n");
 					foreach(Exception le in designSurface.LoadErrors) {
 						errorText.Text += le.ToString();
