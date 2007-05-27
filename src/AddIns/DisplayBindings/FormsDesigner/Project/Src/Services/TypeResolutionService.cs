@@ -419,24 +419,29 @@ namespace ICSharpCode.FormsDesigner.Services
 		{
 			if (vsDesignerIdeDir == null) {
 				vsDesignerIdeDir = "";
-				RegistryKey key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\VisualStudio\8.0\Setup\VS");
-				if (key != null) {
-					vsDesignerIdeDir = key.GetValue("VS7CommonDir") as string ?? "";
-					if (vsDesignerIdeDir.Length > 0) {
-						vsDesignerIdeDir = Path.Combine(vsDesignerIdeDir, "IDE");
-						AppDomain.CurrentDomain.AssemblyResolve += delegate(object sender, ResolveEventArgs args) {
-							string shortName = args.Name;
-							if (shortName.IndexOf(',') >= 0) {
-								shortName = shortName.Substring(0, shortName.IndexOf(','));
-							}
-							if (shortName.StartsWith("Microsoft.")
-							    && File.Exists(Path.Combine(vsDesignerIdeDir, shortName + ".dll")))
-							{
-								return Assembly.LoadFrom(Path.Combine(vsDesignerIdeDir, shortName + ".dll"));
-							}
-							return null;
-						};
+				try {
+					using(RegistryKey key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\VisualStudio\8.0\Setup\VS")) {
+						if (key != null) {
+							vsDesignerIdeDir = key.GetValue("VS7CommonDir") as string ?? "";
+						}
 					}
+				} catch (System.Security.SecurityException) {
+					// registry access might be denied
+				}
+				if (vsDesignerIdeDir.Length > 0) {
+					vsDesignerIdeDir = Path.Combine(vsDesignerIdeDir, "IDE");
+					AppDomain.CurrentDomain.AssemblyResolve += delegate(object sender, ResolveEventArgs args) {
+						string shortName = args.Name;
+						if (shortName.IndexOf(',') >= 0) {
+							shortName = shortName.Substring(0, shortName.IndexOf(','));
+						}
+						if (shortName.StartsWith("Microsoft.")
+						    && File.Exists(Path.Combine(vsDesignerIdeDir, shortName + ".dll")))
+						{
+							return Assembly.LoadFrom(Path.Combine(vsDesignerIdeDir, shortName + ".dll"));
+						}
+						return null;
+					};
 				}
 			}
 		}
