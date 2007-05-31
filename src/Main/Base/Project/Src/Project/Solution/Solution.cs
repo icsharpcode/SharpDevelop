@@ -26,7 +26,7 @@ namespace ICSharpCode.SharpDevelop.Project
 	
 	public class Solution : SolutionFolder, IDisposable, IMSBuildEngineProvider
 	{
-		// contains <guid>, (IProject/ISolutionFolder) pairs.
+		/// <summary>contains <guid>, (IProject/ISolutionFolder) pairs.</summary>
 		Dictionary<string, ISolutionFolder> guidDictionary = new Dictionary<string, ISolutionFolder>();
 		
 		/// <summary>
@@ -35,6 +35,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		int versionNumber = 9;
 		
 		string fileName = String.Empty;
+		
+		bool readOnly = false;
 		
 		MSBuild.Engine buildEngine = MSBuildInternals.CreateEngine();
 		
@@ -208,6 +210,12 @@ namespace ICSharpCode.SharpDevelop.Project
 				return preferences;
 			}
 		}
+		
+		/// <summary>Property to determine if the solution is readonly.</summary>
+		[Browsable(false)]
+		public bool ReadOnly {
+			get { return readOnly; }
+		}
 		#endregion
 		
 		#region ISolutionFolderContainer implementations
@@ -242,9 +250,25 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			try {
 				Save(fileName);
+				return;
 			} catch (IOException ex) {
 				MessageService.ShowError("Could not save " + fileName + ":\n" + ex.Message);
 			} catch (UnauthorizedAccessException ex) {
+				FileAttributes attributes = File.GetAttributes(fileName);
+				if ((FileAttributes.ReadOnly & attributes) == FileAttributes.ReadOnly) {
+					bool attemptOverwrite = MessageService.AskQuestionFormatted(
+						"Solution file {0} is marked readonly. Attempt to save anyway?",
+						new string [] {fileName});
+					if (attemptOverwrite) {
+						try {
+							attributes = (int) attributes - FileAttributes.ReadOnly;
+							File.SetAttributes(fileName, attributes);
+							Save(fileName);
+							return;
+						} catch { /* If something screws up shows the error */ }
+					}
+				}
+				this.readOnly = true;
 				MessageService.ShowError("Could not save " + fileName + ":\n" + ex.Message + "\n\nEnsure the file is writable.");
 			}
 		}
@@ -260,24 +284,17 @@ namespace ICSharpCode.SharpDevelop.Project
 			StringBuilder projectSection        = new StringBuilder();
 			StringBuilder nestedProjectsSection = new StringBuilder();
 			
-			List<ISolutionFolder> folderList = Folders;
-			Stack<ISolutionFolder> stack = new Stack<ISolutionFolder>(folderList.Count);
+			Stack<ISolutionFolder> stack = new Stack<ISolutionFolder>(Folders.Count);
 			// push folders in reverse order because it's a stack
-			for (int i = folderList.Count - 1; i >= 0; i--) {
-				stack.Push(folderList[i]);
+			for (int i = Folders.Count - 1; i >= 0; i--) {
+				stack.Push(Folders[i]);
 			}
 			
 			while (stack.Count > 0) {
 				ISolutionFolder currentFolder = stack.Pop();
-				
-				projectSection.Append("Project(\"");
-				projectSection.Append(currentFolder.TypeGuid);
-				projectSection.Append("\")");
-				projectSection.Append(" = ");
-				projectSection.Append('"');
-				projectSection.Append(currentFolder.Name);
-				projectSection.Append("\", ");
 				string relativeLocation;
+				
+				// The project file relative to the solution file.
 				if (currentFolder is IProject) {
 					currentFolder.Location = ((IProject)currentFolder).FileName;
 				}
@@ -286,12 +303,10 @@ namespace ICSharpCode.SharpDevelop.Project
 				} else {
 					relativeLocation = currentFolder.Location;
 				}
-				projectSection.Append('"');
-				projectSection.Append(relativeLocation);
-				projectSection.Append("\", ");
-				projectSection.Append('"');
-				projectSection.Append(currentFolder.IdGuid);
-				projectSection.Append("\"");
+				
+				projectSection.AppendFormat 
+					("Project(\"{0}\") = \"{1}\", \"{2}\", \"{3}\"",
+					 new object [] {currentFolder.TypeGuid, currentFolder.Name, relativeLocation, currentFolder.IdGuid});
 				projectSection.AppendLine();
 				
 				if (currentFolder is IProject) {
@@ -304,7 +319,10 @@ namespace ICSharpCode.SharpDevelop.Project
 					
 					SaveProjectSections(folder.Sections, projectSection);
 					
-					foreach (ISolutionFolder subFolder in folder.Folders) {
+					ISolutionFolder subFolder;
+					for (int i = folder.Folders.Count - 1; i >= 0; i--) {
+					//foreach (ISolutionFolder subFolder in folder.Folders) {
+						subFolder = folder.Folders[i];
 						stack.Push(subFolder);
 						nestedProjectsSection.Append("\t\t");
 						nestedProjectsSection.Append(subFolder.IdGuid);
