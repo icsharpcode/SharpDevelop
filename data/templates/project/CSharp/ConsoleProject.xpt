@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <Template originator   = "Mike Krueger"
           created      = "06/10/2001"
-          lastModified = "14/01/2006">
+	  lastModified = "30/05/2007">
 	
 	<!-- Template Header -->
 	<TemplateConfiguration>
@@ -14,28 +14,32 @@
 	
 	<!-- Actions -->
 	<Actions>
-		<Open filename = "Main.cs"/>
+		<Open filename = "Program.cs"/>
 	</Actions>
 	
 	<!-- Template Content -->
 	<Project language = "C#">
 		<ProjectItems>
 			<Reference Include="System" />
-			<Reference Include="System.Data" />
-			<Reference Include="System.Xml" />
 		</ProjectItems>
 		<Files>
-			<File name="Main.cs"><![CDATA[${StandardHeader.C#}
+			<File name="Program.cs"><![CDATA[${StandardHeader.C#}
 using System;
-using System.Collections.Generic;
+using System.IO;
 
 namespace ${StandardNamespace}
 {
-	class MainClass
+	class Program
 	{
 		public static void Main(string[] args)
 		{
-			Console.WriteLine("Hello World!");
+			Console.WriteLine(Path.GetFileName(typeof(Program).Assembly.Location));
+			Console.WriteLine();
+			
+			// TODO: Implement Functionality Here
+			
+			Console.Write("Press any key to continue . . . ");
+			Console.ReadKey(false);
 		}
 	}
 }]]></File>
