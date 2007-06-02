@@ -22,10 +22,15 @@
 	<Project language = "VBNet">
 		<ProjectItems>
 			<Reference Include="System" />
+			<Reference Include="System.Data" />
+			<Reference Include="System.Xml" />
 			
 			<Import Include="Microsoft.VisualBasic" />
 			<Import Include="System" />
-			<Import Include="System.IO" />
+			<Import Include="System.Collections" />
+			<Import Include="System.Collections.Generic" />
+			<Import Include="System.Data" />
+			<Import Include="System.Diagnostics" />
 		</ProjectItems>
 		
 		<PropertyGroup>
@@ -35,18 +40,14 @@
 		<Files>
 	<File name="Program.vb">
 			<![CDATA[${StandardHeader.VBNET}
-Option Strict On
-Option Explicit On
-			
 Module Program
 	Sub Main()
-		Console.WriteLine(Path.GetFileName(GetType(Program).Assembly.Location))
-		Console.WriteLine()
-			
+		Console.WriteLine("Hello World!")
+		
 		' TODO: Implement Functionality Here
-			
+		
 		Console.Write("Press any key to continue . . . ")
-            	Console.ReadKey(false)
+		Console.ReadKey()
 	End Sub
 End Module
 ]]></File>

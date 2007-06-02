@@ -1,7 +1,5 @@
 <?xml version="1.0"?>
-<Template originator   = "Mike Krueger"
-          created      = "06/10/2001"
-	  lastModified = "30/05/2007">
+<Template originator = "Mike Krueger">
 	
 	<!-- Template Header -->
 	<TemplateConfiguration>
@@ -21,11 +19,12 @@
 	<Project language = "C#">
 		<ProjectItems>
 			<Reference Include="System" />
+			<Reference Include="System.Data" />
+			<Reference Include="System.Xml" />
 		</ProjectItems>
 		<Files>
 			<File name="Program.cs"><![CDATA[${StandardHeader.C#}
 using System;
-using System.IO;
 
 namespace ${StandardNamespace}
 {
@@ -33,13 +32,12 @@ namespace ${StandardNamespace}
 	{
 		public static void Main(string[] args)
 		{
-			Console.WriteLine(Path.GetFileName(typeof(Program).Assembly.Location));
-			Console.WriteLine();
+			Console.WriteLine("Hello World!");
 			
 			// TODO: Implement Functionality Here
 			
 			Console.Write("Press any key to continue . . . ");
-			Console.ReadKey(false);
+			Console.ReadKey();
 		}
 	}
 }]]></File>
