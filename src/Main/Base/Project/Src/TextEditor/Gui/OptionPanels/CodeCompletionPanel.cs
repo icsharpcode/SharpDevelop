@@ -43,6 +43,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels
 			
 			Get<CheckBox>("useDebugTooltipsOnly").Checked = CodeCompletionOptions.TooltipsOnlyWhenDebugging;
 			
+			Get<CheckBox>("completeWhenTyping").Checked = CodeCompletionOptions.CompleteWhenTyping;
 			Get<CheckBox>("useKeywordCompletion").Checked = CodeCompletionOptions.KeywordCompletionEnabled;
 			
 			Get<CheckBox>("useInsight").CheckedChanged += delegate(object sender, EventArgs e) {
@@ -60,6 +61,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels
 			CodeCompletionOptions.DataUsageCacheItemCount = (int)Get<NumericUpDown>("dataUsageCacheItemCount").Value;
 			CodeCompletionOptions.TooltipsEnabled = Get<CheckBox>("useTooltips").Checked;
 			CodeCompletionOptions.TooltipsOnlyWhenDebugging = Get<CheckBox>("useDebugTooltipsOnly").Checked;
+			CodeCompletionOptions.CompleteWhenTyping = Get<CheckBox>("completeWhenTyping").Checked;
 			CodeCompletionOptions.KeywordCompletionEnabled = Get<CheckBox>("useKeywordCompletion").Checked;
 			CodeCompletionOptions.InsightEnabled = Get<CheckBox>("useInsight").Checked;
 			CodeCompletionOptions.InsightRefreshOnComma = Get<CheckBox>("refreshInsightOnComma").Checked;

@@ -98,8 +98,10 @@ namespace CSharpBinding
 				TryDeclarationTypeInference(editor, curLine);
 			}
 			
-			if (char.IsLetter(ch) || ch == '_') {
-				if (cursor > 1 && !char.IsLetterOrDigit(editor.Document.GetCharAt(cursor - 1))) {
+			if ((char.IsLetter(ch) || ch == '_') && CodeCompletionOptions.CompleteWhenTyping) {
+				if (cursor > 1 && !char.IsLetterOrDigit(editor.Document.GetCharAt(cursor - 1))
+				    && !IsInComment(editor))
+				{
 					ExpressionResult result = ef.FindExpression(editor.Text, cursor - 1);
 					LoggingService.Debug("CC: Beginning to type a word, result=" + result);
 					if (result.Context != ExpressionContext.IdentifierExpected) {

@@ -51,48 +51,33 @@ namespace ICSharpCode.SharpDevelop
 		}
 		
 		public static bool TooltipsEnabled {
-			get {
-				return properties.Get("TooltipsEnabled", true);
-			}
-			set {
-				properties.Set("TooltipsEnabled", value);
-			}
+			get { return properties.Get("TooltipsEnabled", true); }
+			set { properties.Set("TooltipsEnabled", value); }
 		}
 		
 		public static bool TooltipsOnlyWhenDebugging {
-			get {
-				return properties.Get("TooltipsOnlyWhenDebugging", false);
-			}
-			set {
-				properties.Set("TooltipsOnlyWhenDebugging", value);
-			}
+			get { return properties.Get("TooltipsOnlyWhenDebugging", false); }
+			set { properties.Set("TooltipsOnlyWhenDebugging", value); }
 		}
 		
 		public static bool KeywordCompletionEnabled {
-			get {
-				return properties.Get("KeywordCompletionEnabled", true);
-			}
-			set {
-				properties.Set("KeywordCompletionEnabled", value);
-			}
+			get { return properties.Get("KeywordCompletionEnabled", true); }
+			set { properties.Set("KeywordCompletionEnabled", value); }
+		}
+		
+		public static bool CompleteWhenTyping {
+			get { return properties.Get("CompleteWhenTyping", true); }
+			set { properties.Set("CompleteWhenTyping", value); }
 		}
 		
 		public static bool InsightEnabled {
-			get {
-				return properties.Get("InsightEnabled", true);
-			}
-			set {
-				properties.Set("InsightEnabled", value);
-			}
+			get { return properties.Get("InsightEnabled", true); }
+			set { properties.Set("InsightEnabled", value); }
 		}
 		
 		public static bool InsightRefreshOnComma {
-			get {
-				return properties.Get("InsightRefreshOnComma", true);
-			}
-			set {
-				properties.Set("InsightRefreshOnComma", value);
-			}
+			get { return properties.Get("InsightRefreshOnComma", true); }
+			set { properties.Set("InsightRefreshOnComma", value); }
 		}
 	}
 }

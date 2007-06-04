@@ -137,7 +137,6 @@ class Main {
 		}
 		
 		[Test]
-		[Ignore("Context inside methods not yet implemented")]
 		public void IdentifierBeforeKeyword()
 		{
 			FindFull(program2, "arName", "varName", ExpressionContext.IdentifierExpected);

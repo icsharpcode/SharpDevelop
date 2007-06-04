@@ -419,7 +419,9 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 								frame.childType = FrameType.Property;
 							}
 							frame.SetContext(ExpressionContext.IdentifierExpected);
-						} else if (frame.type == FrameType.ParameterList) {
+						} else if (frame.type == FrameType.ParameterList
+						           || frame.type == FrameType.Statements)
+						{
 							frame.SetContext(ExpressionContext.IdentifierExpected);
 						}
 					}

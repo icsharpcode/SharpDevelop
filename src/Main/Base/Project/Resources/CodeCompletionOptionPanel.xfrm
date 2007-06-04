@@ -5,125 +5,133 @@
     <Controls>
       <System.Windows.Forms.GroupBox>
         <Name value="groupBox" />
-        <Location value="{X=4,Y=55}" />
+        <Location value="4, 55" />
         <Text value="${res:Dialog.Options.IDEOptions.CodeCompletion.DetailSettings}" />
-        <Size value="{Width=369, Height=286}" />
-        <TabIndex value="2" />
         <Anchor value="Top, Bottom, Left, Right" />
+        <Size value="369, 286" />
+        <TabIndex value="2" />
         <Controls>
           <System.Windows.Forms.CheckBox>
             <Name value="refreshInsightOnCommaCheckBox" />
-            <Location value="{X=31,Y=186}" />
+            <Location value="31, 216" />
             <Text value="${res:Dialog.Options.IDEOptions.CodeCompletion.RefreshInsightOnComma}" />
-            <TabIndex value="10" />
-            <Size value="{Width=332, Height=24}" />
+            <TabIndex value="11" />
+            <Size value="332, 32" />
             <Anchor value="Top, Left, Right" />
           </System.Windows.Forms.CheckBox>
           <System.Windows.Forms.CheckBox>
             <Name value="useDebugTooltipsOnlyCheckBox" />
-            <Location value="{X=31,Y=85}" />
+            <Location value="31, 85" />
             <Text value="${res:Dialog.Options.IDEOptions.CodeCompletion.UseDebugTooltipsOnly}" />
             <TabIndex value="6" />
-            <Size value="{Width=332, Height=24}" />
+            <Size value="332, 24" />
             <Anchor value="Top, Left, Right" />
           </System.Windows.Forms.CheckBox>
           <System.Windows.Forms.Button>
             <Name value="clearDataUseCacheButton" />
-            <Location value="{X=225,Y=40}" />
+            <Location value="225, 40" />
             <Text value="${res:Dialog.Options.IDEOptions.CodeCompletion.ClearCache}" />
-            <Size value="{Width=101, Height=23}" />
+            <Size value="101, 23" />
             <TabIndex value="4" />
           </System.Windows.Forms.Button>
           <System.Windows.Forms.CheckBox>
             <Name value="useTooltipsCheckBox" />
-            <Location value="{X=12,Y=66}" />
+            <Location value="12, 66" />
             <Checked value="True" />
             <CheckState value="Checked" />
             <Text value="${res:Dialog.Options.IDEOptions.CodeCompletion.UseTooltips}" />
             <TabIndex value="5" />
-            <Size value="{Width=351, Height=24}" />
+            <Size value="351, 24" />
             <Anchor value="Top, Left, Right" />
           </System.Windows.Forms.CheckBox>
           <System.Windows.Forms.CheckBox>
             <Name value="useInsightCheckBox" />
-            <Location value="{X=12,Y=167}" />
+            <Location value="12, 197" />
             <Checked value="True" />
             <CheckState value="Checked" />
             <Text value="${res:Dialog.Options.IDEOptions.CodeCompletion.UseInsight}" />
-            <TabIndex value="9" />
-            <Size value="{Width=351, Height=24}" />
+            <TabIndex value="10" />
+            <Size value="351, 24" />
             <Anchor value="Top, Left, Right" />
           </System.Windows.Forms.CheckBox>
           <System.Windows.Forms.Label>
             <Name value="label4" />
-            <Location value="{X=6,Y=112}" />
+            <Location value="6, 112" />
             <Text value="${res:Dialog.Options.IDEOptions.CodeCompletion.LanguageDependend}" />
-            <Size value="{Width=357, Height=31}" />
-            <TabIndex value="7" />
             <Anchor value="Top, Left, Right" />
+            <Size value="357, 31" />
+            <TabIndex value="7" />
           </System.Windows.Forms.Label>
           <System.Windows.Forms.CheckBox>
-            <Name value="useKeywordCompletionCheckBox" />
-            <Location value="{X=12,Y=146}" />
-            <Text value="${res:Dialog.Options.IDEOptions.CodeCompletion.UseKeywordCompletion}" />
+            <Name value="completeWhenTypingCheckBox" />
+            <Location value="12, 155" />
+            <Text value="${res:Dialog.Options.IDEOptions.CodeCompletion.CompleteWhenTyping}" />
             <TabIndex value="8" />
-            <Size value="{Width=351, Height=24}" />
+            <Size value="351, 24" />
+            <Anchor value="Top, Left, Right" />
+          </System.Windows.Forms.CheckBox>
+          <System.Windows.Forms.CheckBox>
+            <Name value="useKeywordCompletionCheckBox" />
+            <Location value="12, 176" />
+            <Text value="${res:Dialog.Options.IDEOptions.CodeCompletion.UseKeywordCompletion}" />
+            <TabIndex value="9" />
+            <Size value="351, 24" />
             <Anchor value="Top, Left, Right" />
           </System.Windows.Forms.CheckBox>
           <System.Windows.Forms.Label>
             <Name value="dataUsageCacheLabel2" />
-            <Location value="{X=154,Y=42}" />
+            <Location value="154, 42" />
             <Text value="${res:Dialog.Options.IDEOptions.CodeCompletion.SaveItemCountAfterNumber}" />
             <TextAlign value="MiddleLeft" />
-            <Size value="{Width=65, Height=23}" />
+            <Size value="65, 23" />
             <TabIndex value="3" />
           </System.Windows.Forms.Label>
           <System.Windows.Forms.NumericUpDown>
             <Name value="dataUsageCacheItemCountNumericUpDown" />
             <Value value="50" />
             <TabIndex value="2" />
-            <Maximum value="10000" />
             <Minimum value="50" />
             <Increment value="50" />
             <TextAlign value="Right" />
-            <Size value="{Width=68, Height=21}" />
-            <Location value="{X=80,Y=42}" />
+            <Maximum value="10000" />
+            <Size value="68, 20" />
+            <Location value="80, 42" />
           </System.Windows.Forms.NumericUpDown>
           <System.Windows.Forms.Label>
             <Name value="dataUsageCacheLabel1" />
-            <Location value="{X=18,Y=42}" />
+            <Location value="18, 42" />
             <Text value="${res:Dialog.Options.IDEOptions.CodeCompletion.SaveItemCountBeforeNumber}" />
             <TextAlign value="MiddleRight" />
-            <Size value="{Width=56, Height=21}" />
+            <Size value="56, 21" />
             <TabIndex value="1" />
           </System.Windows.Forms.Label>
           <System.Windows.Forms.CheckBox>
             <Name value="useDataUsageCacheCheckBox" />
-            <Location value="{X=12,Y=20}" />
+            <Location value="12, 20" />
             <Checked value="True" />
             <CheckState value="Checked" />
             <Text value="${res:Dialog.Options.IDEOptions.CodeCompletion.UseDataUsageCache}" />
             <TabIndex value="0" />
-            <Size value="{Width=351, Height=24}" />
+            <Size value="351, 24" />
             <Anchor value="Top, Left, Right" />
           </System.Windows.Forms.CheckBox>
         </Controls>
       </System.Windows.Forms.GroupBox>
       <System.Windows.Forms.Label>
         <Name value="label1" />
-        <Location value="{X=8,Y=8}" />
+        <Location value="8, 8" />
         <Text value="${res:Dialog.Options.IDEOptions.CodeCompletion.MainOption}" />
-        <TextAlign value="MiddleLeft" />
-        <Size value="{Width=365, Height=22}" />
-        <TabIndex value="0" />
         <Anchor value="Top, Left, Right" />
+        <TextAlign value="MiddleLeft" />
+        <Size value="365, 22" />
+        <TabIndex value="0" />
       </System.Windows.Forms.Label>
       <System.Windows.Forms.CheckBox>
         <Name value="codeCompletionEnabledCheckBox" />
-        <Location value="{X=16,Y=25}" />
+        <Location value="16, 25" />
         <Text value="${res:Dialog.Options.IDEOptions.TextEditor.General.CodeCompletionCheckBox}" />
         <TabIndex value="1" />
-        <Size value="{Width=357, Height=24}" />
+        <Size value="357, 24" />
         <Anchor value="Top, Left, Right" />
       </System.Windows.Forms.CheckBox>
     </Controls>
