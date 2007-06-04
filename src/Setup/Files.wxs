@@ -810,6 +810,9 @@
 										<Component Guid="7D1DCA03-CB13-4516-B232-028F53B096BF" Id="CSharpWebServiceProjectTemplate" DiskId="1">
 											<File Source="..\..\data\templates\project\CSharp\WebService.xpt" Name="WEBSRVC.XPT" Id="WebService.xpt" LongName="WebService.xpt" />
 										</Component>
+										<Component Guid="084FDE9A-C356-4D88-8718-00D53478225A" Id="WPFAssemblyInfoTemplate" DiskId="1">
+											<File Source="..\..\data\templates\project\CSharp\WPFAssemblyInfo.cs" Name="WPFAsem.cs" Id="WPFAssemblyInfoTemplate" LongName="WPFAssemblyInfo.cs" />
+										</Component>
 									</Directory>
 									<Directory Id="MiscProjectTemplatesFolder" Name="Misc">
 										<Component Guid="F9A7F832-6EC8-4B15-A037-146BD028C9D5" Id="MiscProjectTemplates" DiskId="1">

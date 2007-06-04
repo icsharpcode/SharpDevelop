@@ -205,12 +205,16 @@ namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 		
 		public void Navigate(string url)
 		{
-			webBrowser.Navigate(new Uri(url));
+			Navigate(new Uri(url));
 		}
 		
 		public void Navigate(Uri url)
 		{
-			webBrowser.Navigate(url);
+			try {
+				webBrowser.Navigate(url);
+			} catch (Exception ex) {
+				LoggingService.Warn("Error navigating to " + url.ToString(), ex);
+			}
 		}
 		
 		public const string DefaultHomepage = "http://www.icsharpcode.net/";

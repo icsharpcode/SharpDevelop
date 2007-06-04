@@ -13,7 +13,7 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 	{
 		public bool BracesOnSameLine = true;
 		public bool EmptyLinesBetweenMembers = true;
-		string indentString;
+		string indentString = "\t";
 		
 		public string IndentString {
 			get { return indentString; }

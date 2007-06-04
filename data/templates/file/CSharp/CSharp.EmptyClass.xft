@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<Template author="Mike Krueger" version="1.0">
+<Template author="Mike Krueger" version="1.1">
 	
 	<Config
 		  name        = "${res:Templates.File.EmptyClass.Name}"
@@ -19,7 +19,18 @@
 		${Extension}                -> Extension in the form ".cs"
 		${Path}                     -> Full path of the file
 		${ClassName}                -> Class name (generally FileNameWithoutExtension w/o 'bad' characters)
-	 -->
+	-->
+	<Properties>
+		<Property
+			name          = "IsSealed"
+			localizedName = "${res:Templates.File.Properties.IsSealed}"
+			type          = "System.Boolean"
+			defaultValue  = "False"
+			category      = "${res:Templates.File.Properties.ContextCategory}"
+			description   = "${res:Templates.File.Properties.IsSealed.Description}"
+		/>
+	</Properties>
+
 	<Files>
 		<File name="${FullName}" language="C#"><![CDATA[${StandardHeader.C#}
 
@@ -30,7 +41,7 @@ namespace ${StandardNamespace}
 	/// <summary>
 	/// Description of ${ClassName}.
 	/// </summary>
-	public class ${ClassName}
+	public <% if (IsSealed) { %>sealed <% } %>class ${ClassName}
 	{
 		public ${ClassName}()
 		{

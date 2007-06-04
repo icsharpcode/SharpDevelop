@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using ICSharpCode.SharpDevelop.Dom.Refactoring;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {
@@ -58,5 +59,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 			                    + ":\r\n" + message + "\r\n");
 			ShowAssemblyLoadError(fileName, include, message);
 		}
+		
+		/// <summary>
+		/// Initialize the code generator options of the passed CodeGenerator.
+		/// Invoked exactly once for each created instance of a class derived from CodeGenerator.
+		/// </summary>
+		public static Action<CodeGenerator> InitializeCodeGeneratorOptions = delegate {};
 	}
 }

@@ -638,9 +638,14 @@ namespace Hornung.ResourceToolkit.Resolver
 		/// </summary>
 		public static bool IsTypeRelationshipPossible(IMember member1, IMember member2)
 		{
+			if (member1.ReturnType == null || member2.ReturnType == null) {
+				return false;
+			}
+			
 			if (member1.ReturnType.Equals(member2.ReturnType)) {
 				return true;
 			}
+			
 			IClass class1;
 			IClass class2;
 			if ((class1 = member1.ReturnType.GetUnderlyingClass()) == null) {

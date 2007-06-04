@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.Refactoring;
@@ -21,7 +22,6 @@ namespace ICSharpCode.SharpDevelop
 		static AmbienceService()
 		{
 			PropertyService.PropertyChanged += new PropertyChangedEventHandler(PropertyChanged);
-			ApplyCodeGenerationPropertiesToNRefactory();
 		}
 		
 		public static Properties CodeGenerationProperties {
@@ -30,21 +30,22 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
-		static void ApplyCodeGenerationPropertiesToNRefactory()
+		static List<CodeGenerator> codeGenerators = new List<CodeGenerator>();
+		
+		static void ApplyCodeGenerationProperties(CodeGenerator generator)
 		{			
-			CodeGeneratorOptions csharpOptions = LanguageProperties.CSharp.CodeGenerator.Options;
-			CodeGeneratorOptions vbOptions = LanguageProperties.VBNet.CodeGenerator.Options;
+			CodeGeneratorOptions options = generator.Options;
 			System.CodeDom.Compiler.CodeGeneratorOptions cdo = new CodeDOMGeneratorUtility().CreateCodeGeneratorOptions;
 			
-			csharpOptions.EmptyLinesBetweenMembers = cdo.BlankLinesBetweenMembers;
-			vbOptions.EmptyLinesBetweenMembers = cdo.BlankLinesBetweenMembers;
-			
-			bool startBlockOnSameLine = CodeGenerationProperties.Get("StartBlockOnSameLine", true);
-			csharpOptions.BracesOnSameLine = startBlockOnSameLine;
-			vbOptions.BracesOnSameLine = startBlockOnSameLine;
-			
-			csharpOptions.IndentString = cdo.IndentString;
-			vbOptions.IndentString = cdo.IndentString;
+			options.EmptyLinesBetweenMembers = cdo.BlankLinesBetweenMembers;
+			options.BracesOnSameLine = CodeGenerationProperties.Get("StartBlockOnSameLine", true);;
+			options.IndentString = cdo.IndentString;
+		}
+		
+		internal static void InitializeCodeGeneratorOptions(CodeGenerator generator)
+		{
+			codeGenerators.Add(generator);
+			ApplyCodeGenerationProperties(generator);
 		}
 		
 		public static bool GenerateDocumentComments {
@@ -116,7 +117,7 @@ namespace ICSharpCode.SharpDevelop
 				OnAmbienceChanged(EventArgs.Empty);
 			}
 			if (e.Key == codeGenerationProperty) {
-				ApplyCodeGenerationPropertiesToNRefactory();
+				codeGenerators.ForEach(ApplyCodeGenerationProperties);
 			}
 		}
 		

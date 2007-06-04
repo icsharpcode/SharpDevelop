@@ -1,9 +1,10 @@
 <?xml version="1.0"?>
-<Template author="Justin Dearing" version="1.1">
+<Template author="Justin Dearing" version="1.2">
 	<Config
 		name		= "${res:Templates.File.ConfigurationElementCollection.Name}"
 		icon		= "C#.File.NewClass"
 		category	= "C#"
+		subcategory	= "Configuration Classes"
 		defaultname	= "Class${Number}.cs"
 		language	= "C#"/>
 	<Description>${res:Templates.File.ConfigurationElementCollection.Description}</Description>  
@@ -19,7 +20,7 @@
 	-->
 	<Files>
 		<File name="${Path}/${FileNameWithoutExtension}Element.cs" language="C#" src="ConfigurationElement.cs" />
-		<File name="${Path}/${FileNameWithoutExtension}ElementCollection.cs" language="C#" src="ConfigurationElementCollection.cs" />
+		<File name="${Path}/${FileNameWithoutExtension}Collection.cs" language="C#" src="ConfigurationElementCollection.cs" />
 	</Files>
 	<AdditionalOptions/>
 </Template>

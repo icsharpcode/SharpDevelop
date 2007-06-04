@@ -535,6 +535,7 @@ namespace NavigationServiceTests
 			Assert.AreEqual(r, NavigationService.CurrentPosition);
 		}
 		
+		/*
 		[Test]
 		[Ignore] // this test disabled on purpose - DA
 		/// <summary>
@@ -571,6 +572,7 @@ namespace NavigationServiceTests
 			Assert.IsTrue(NavigationService.CanNavigateBack);
 			Assert.IsTrue(NavigationService.CanNavigateForwards);
 		}
+		*/
 		
 		[Test]
 		/// <summary>

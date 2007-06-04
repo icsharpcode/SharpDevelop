@@ -146,6 +146,9 @@ namespace ICSharpCode.TextEditor.Document
 			//// id. is typed on next line after comment one
 			//// Would be better if lexer would parse properly such expressions. However this will cause
 			//// modifications in this area too - to get full comment line and remove it afterwards
+			if (offset < 0)
+				return string.Empty;
+			
 			string resText=document.GetText(offset, textArea.Caret.Offset - offset ).Trim();
 			int pos=resText.LastIndexOf('\n');
 			if (pos>=0) {

@@ -91,23 +91,26 @@ namespace ICSharpCode.TextEditor
 			}
 		}
 		
-		void ShowHiddenCursor(bool forceShow)
+		void ShowHiddenCursorIfMovedOrLeft()
 		{
-			if (textArea.HiddenMouseCursor) {
-				if (textArea.MouseCursorHidePosition != Cursor.Position) {
-					Cursor.Show();
-					textArea.HiddenMouseCursor = false;
-				}
-			}
+			textArea.ShowHiddenCursor(!textArea.Focused ||
+			                          !textArea.ClientRectangle.Contains(textArea.PointToClient(Cursor.Position)));
 		}
 		
 		void TextAreaLostFocus(object sender, EventArgs e)
 		{
-			ShowHiddenCursor(true);
+			// The call to ShowHiddenCursorIfMovedOrLeft is delayed
+			// until pending messages have been processed
+			// so that it can properly detect whether the TextArea
+			// has really lost focus.
+			// For example, the CodeCompletionWindow gets focus when it is shown,
+			// but immediately gives back focus to the TextArea.
+			textArea.BeginInvoke(new MethodInvoker(ShowHiddenCursorIfMovedOrLeft));
 		}
+		
 		void OnMouseLeave(object sender, EventArgs e)
 		{
-			ShowHiddenCursor(true);
+			ShowHiddenCursorIfMovedOrLeft();
 			gotmousedown = false;
 			mousedownpos = nilPoint;
 		}
@@ -156,7 +159,7 @@ namespace ICSharpCode.TextEditor
 					break;
 
 			}
-			ShowHiddenCursor(false);
+			textArea.ShowHiddenCursor(false);
 			if (dodragdrop) {
 				dodragdrop = false;
 				return;

@@ -76,6 +76,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		
 		public static T ParseExpression<T>(string expr, bool expectErrors) where T : INode
 		{
+			// SEMICOLON HACK : without a trailing semicolon, parsing expressions does not work correctly
 			IParser parser = ParserFactory.CreateParser(SupportedLanguage.CSharp, new StringReader(expr + ";"));
 			object parsedExpression = parser.ParseExpression();
 			if (expectErrors)

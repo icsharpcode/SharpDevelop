@@ -19,6 +19,11 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 	/// </summary>
 	public abstract class CodeGenerator
 	{
+		protected CodeGenerator()
+		{
+			HostCallback.InitializeCodeGeneratorOptions(this);
+		}
+		
 		#region Dummy Code Generator
 		public static readonly CodeGenerator DummyCodeGenerator = new DummyCodeGeneratorClass();
 		

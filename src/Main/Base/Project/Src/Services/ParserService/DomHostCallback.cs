@@ -42,6 +42,8 @@ namespace ICSharpCode.SharpDevelop
 				WorkbenchSingleton.SafeThreadAsyncCall(ShowAssemblyLoadError,
 				                                       fileName, include, message);
 			};
+			
+			HostCallback.InitializeCodeGeneratorOptions = AmbienceService.InitializeCodeGeneratorOptions;
 		}
 		
 		static void ShowAssemblyLoadError(string fileName, string include, string message)

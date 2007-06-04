@@ -37,7 +37,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		[Test]
 		public void CSharpDoubleTest1()
 		{
-			PrimitiveExpression pe = ParseUtilCSharp.ParseExpression<PrimitiveExpression>(".5e-06;");
+			PrimitiveExpression pe = ParseUtilCSharp.ParseExpression<PrimitiveExpression>(".5e-06");
 			Assert.AreEqual(".5e-06", pe.StringValue);
 			Assert.AreEqual(.5e-06, (double)pe.Value);
 		}
@@ -45,7 +45,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		[Test]
 		public void CSharpCharTest1()
 		{
-			PrimitiveExpression pe = ParseUtilCSharp.ParseExpression<PrimitiveExpression>("'\\u0356';");
+			PrimitiveExpression pe = ParseUtilCSharp.ParseExpression<PrimitiveExpression>("'\\u0356'");
 			Assert.AreEqual("'\\u0356'", pe.StringValue);
 			Assert.AreEqual('\u0356', (char)pe.Value);
 		}
@@ -53,7 +53,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		[Test]
 		public void CSharpStringTest1()
 		{
-			PrimitiveExpression pe = ParseUtilCSharp.ParseExpression<PrimitiveExpression>("\"\\n\\t\\u0005 Hello World !!!\";");
+			PrimitiveExpression pe = ParseUtilCSharp.ParseExpression<PrimitiveExpression>("\"\\n\\t\\u0005 Hello World !!!\"");
 			Assert.AreEqual("\"\\n\\t\\u0005 Hello World !!!\"", pe.StringValue);
 			Assert.AreEqual("\n\t\u0005 Hello World !!!", (string)pe.Value);
 		}

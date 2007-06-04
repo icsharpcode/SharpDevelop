@@ -46,8 +46,7 @@ namespace ICSharpCode.TextEditor.Document
 		{
 			string syntaxModeFile = Path.Combine(directory, syntaxMode.FileName);
 			if (!File.Exists(syntaxModeFile)) {
-				MessageBox.Show("Can't load highlighting definition " + syntaxModeFile + " (file not found)!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Hand, MessageBoxDefaultButton.Button1);
-				return null;
+				throw new HighlightingDefinitionInvalidException("Can't load highlighting definition " + syntaxModeFile + " (file not found)!");
 			}
 			return new XmlTextReader(File.OpenRead(syntaxModeFile));
 		}
@@ -70,8 +69,7 @@ namespace ICSharpCode.TextEditor.Document
 									                         extensions));
 									goto bailout;
 								default:
-									MessageBox.Show("Unknown root node in syntax highlighting file :" + reader.Name, "Error", MessageBoxButtons.OK, MessageBoxIcon.Hand, MessageBoxDefaultButton.Button1);
-									goto bailout;
+									throw new HighlightingDefinitionInvalidException("Unknown root node in syntax highlighting file :" + reader.Name);
 							}
 						}
 					}

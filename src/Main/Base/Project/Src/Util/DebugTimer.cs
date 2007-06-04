@@ -36,6 +36,7 @@ namespace ICSharpCode.SharpDevelop
 		{
 			stopWatch.Stop();
 			LoggingService.Debug("\"" + desc + "\" took " + (stopWatch.ElapsedMilliseconds) + " ms");
+			stopWatch.Reset();
 		}
 	}
 }

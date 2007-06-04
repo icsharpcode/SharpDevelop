@@ -19,16 +19,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 {
 	public static class SingleInstanceHelper
 	{
-		const int WM_USER = 0x400;
-		const int CUSTOM_MESSAGE = WM_USER + 2;
+		const int CUSTOM_MESSAGE = NativeMethods.WM_USER + 2;
 		const int RESULT_FILES_HANDLED = 2;
 		const int RESULT_PROJECT_IS_OPEN = 3;
-		
-		[System.Runtime.InteropServices.DllImport("user32.dll")]
-		static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);
-		
-		[System.Runtime.InteropServices.DllImport("user32.dll")]
-		static extern IntPtr SetForegroundWindow(IntPtr hWnd);
 		
 		public static bool OpenFilesInPreviousInstance(string[] fileList)
 		{
@@ -46,7 +39,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					if (FileUtility.IsEqualFileName(currentFile, p.MainModule.FileName)) {
 						IntPtr hWnd = p.MainWindowHandle;
 						if (hWnd != IntPtr.Zero) {
-							long result = SendMessage(hWnd, CUSTOM_MESSAGE, new IntPtr(number), IntPtr.Zero).ToInt64();
+							long result = NativeMethods.SendMessage(hWnd, CUSTOM_MESSAGE, new IntPtr(number), IntPtr.Zero).ToInt64();
 							if (result == RESULT_FILES_HANDLED) {
 								return true;
 							} else if (result == RESULT_PROJECT_IS_OPEN) {
@@ -56,7 +49,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					}
 				}
 				foreach (IntPtr hWnd in alternatives) {
-					if (SendMessage(hWnd, CUSTOM_MESSAGE, new IntPtr(number), new IntPtr(1)).ToInt64() == RESULT_FILES_HANDLED) {
+					if (NativeMethods.SendMessage(hWnd, CUSTOM_MESSAGE, new IntPtr(number), new IntPtr(1)).ToInt64()== RESULT_FILES_HANDLED) {
 						return true;
 					}
 				}
@@ -78,9 +71,15 @@ namespace ICSharpCode.SharpDevelop.Gui
 			} else {
 				m.Result = new IntPtr(RESULT_FILES_HANDLED);
 				try {
-					WorkbenchSingleton.SafeThreadAsyncCall(delegate { SetForegroundWindow(WorkbenchSingleton.MainForm.Handle) ; });
-					foreach (string file in File.ReadAllLines(Path.Combine(Path.GetTempPath(), "sd" + fileNumber + ".tmp"))) {
-						WorkbenchSingleton.SafeThreadAsyncCall(delegate(string openFileName) { FileService.OpenFile(openFileName); }, file);
+					WorkbenchSingleton.SafeThreadAsyncCall(
+						delegate { NativeMethods.SetForegroundWindow(WorkbenchSingleton.MainForm.Handle) ; }
+					);
+					string tempFileName = Path.Combine(Path.GetTempPath(), "sd" + fileNumber + ".tmp");
+					foreach (string file in File.ReadAllLines(tempFileName)) {
+						WorkbenchSingleton.SafeThreadAsyncCall(
+							delegate(string openFileName) { FileService.OpenFile(openFileName); }
+							, file
+						);
 					}
 				} catch (Exception ex) {
 					LoggingService.Warn(ex);

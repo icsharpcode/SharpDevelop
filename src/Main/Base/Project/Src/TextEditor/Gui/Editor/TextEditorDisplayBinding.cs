@@ -45,8 +45,13 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			file.ForceInitializeView(b2); // load file to initialize folding etc.
 			
 			b2.textEditorControl.Dock = DockStyle.Fill;
-			b2.textEditorControl.Document.HighlightingStrategy = HighlightingStrategyFactory.CreateHighlightingStrategyForFile(file.FileName);
-			b2.textEditorControl.InitializeAdvancedHighlighter();
+			try {
+				b2.textEditorControl.Document.HighlightingStrategy = HighlightingStrategyFactory.CreateHighlightingStrategyForFile(file.FileName);
+				b2.textEditorControl.InitializeAdvancedHighlighter();
+			} catch (HighlightingDefinitionInvalidException ex) {
+				b2.textEditorControl.Document.HighlightingStrategy = HighlightingStrategyFactory.CreateHighlightingStrategy();
+				MessageBox.Show(ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
 			b2.textEditorControl.InitializeFormatter();
 			b2.textEditorControl.ActivateQuickClassBrowserOnDemand();
 			

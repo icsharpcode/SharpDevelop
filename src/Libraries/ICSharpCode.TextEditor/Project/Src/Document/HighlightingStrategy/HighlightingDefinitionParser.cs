@@ -17,8 +17,6 @@ namespace ICSharpCode.TextEditor.Document
 {
 	public static class HighlightingDefinitionParser
 	{
-		static List<ValidationEventArgs> errors = null;
-
 		public static DefaultHighlightingStrategy Parse(SyntaxMode syntaxMode, XmlReader xmlReader)
 		{
 			return Parse(null, syntaxMode, xmlReader);
@@ -31,10 +29,16 @@ namespace ICSharpCode.TextEditor.Document
 			if (xmlReader == null)
 				throw new ArgumentNullException("xmlTextReader");
 			try {
+				List<ValidationEventArgs> errors = null;
 				XmlReaderSettings settings = new XmlReaderSettings();
 				Stream shemaStream = typeof(HighlightingDefinitionParser).Assembly.GetManifestResourceStream("ICSharpCode.TextEditor.Resources.Mode.xsd");
 				settings.Schemas.Add("", new XmlTextReader(shemaStream));
-				settings.Schemas.ValidationEventHandler += new ValidationEventHandler(ValidationHandler);
+				settings.Schemas.ValidationEventHandler += delegate(object sender, ValidationEventArgs args) {
+					if (errors == null) {
+						errors = new List<ValidationEventArgs>();
+					}
+					errors.Add(args);
+				};
 				settings.ValidationType = ValidationType.Schema;
 				XmlReader validatingReader = XmlReader.Create(xmlReader, settings);
 
@@ -47,7 +51,7 @@ namespace ICSharpCode.TextEditor.Document
 				if (doc.DocumentElement.HasAttribute("extends")) {
 					KeyValuePair<SyntaxMode, ISyntaxModeFileProvider> entry = HighlightingManager.Manager.FindHighlighterEntry(doc.DocumentElement.GetAttribute("extends"));
 					if (entry.Key == null) {
-						MessageBox.Show("Cannot find referenced highlighting source " + doc.DocumentElement.GetAttribute("extends"));
+						throw new HighlightingDefinitionInvalidException("Cannot find referenced highlighting source " + doc.DocumentElement.GetAttribute("extends"));
 					} else {
 						highlighter = Parse(highlighter, entry.Key, entry.Value.GetSyntaxModeFile(entry.Key));
 						if (highlighter == null) return null;
@@ -89,36 +93,18 @@ namespace ICSharpCode.TextEditor.Document
 				
 				xmlReader.Close();
 				
-				if(errors!=null) {
-					ReportErrors(syntaxMode.FileName);
-					errors = null;
-					return null;
+				if (errors != null) {
+					StringBuilder msg = new StringBuilder();
+					foreach (ValidationEventArgs args in errors) {
+						msg.AppendLine(args.Message);
+					}
+					throw new HighlightingDefinitionInvalidException(msg.ToString());
 				} else {
 					return highlighter;
 				}
 			} catch (Exception e) {
-				MessageBox.Show("Could not load mode definition file '" + syntaxMode.FileName + "'.\n" + e.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
-				return null;
+				throw new HighlightingDefinitionInvalidException("Could not load mode definition file '" + syntaxMode.FileName + "'.\n", e);
 			}
-		}
-		
-		private static void ValidationHandler(object sender, ValidationEventArgs args)
-		{
-			if (errors == null) {
-				errors=new List<ValidationEventArgs>();
-			}
-			errors.Add(args);
-		}
-
-		private static void ReportErrors(string fileName)
-		{
-			StringBuilder msg = new StringBuilder();
-			msg.Append("Could not load mode definition file. Reason:\n\n");
-			foreach(ValidationEventArgs args in errors) {
-				msg.Append(args.Message);
-				msg.Append(Console.Out.NewLine);
-			}
-			MessageBox.Show(msg.ToString(), "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1);
 		}
 	}
 }

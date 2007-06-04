@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using ICSharpCode.NRefactory.Ast;
 
 namespace ICSharpCode.NRefactory.Parser
@@ -53,7 +54,7 @@ namespace ICSharpCode.NRefactory.Parser
 			}
 		}
 		
-		protected AbstractParser(ILexer lexer)
+		internal AbstractParser(ILexer lexer)
 		{
 			this.errors = lexer.Errors;
 			this.lexer  = lexer;
@@ -63,9 +64,11 @@ namespace ICSharpCode.NRefactory.Parser
 		public abstract void Parse();
 		
 		public abstract Expression ParseExpression();
+		public abstract BlockStatement ParseBlock();
+		public abstract List<INode> ParseTypeMembers();
 		
 		protected abstract void SynErr(int line, int col, int errorNumber);
-			
+		
 		protected void SynErr(int n)
 		{
 			if (errDist >= MinErrDist) {
@@ -96,7 +99,9 @@ namespace ICSharpCode.NRefactory.Parser
 		public void Dispose()
 		{
 			errors = null;
-			lexer.Dispose();
+			if (lexer != null) {
+				lexer.Dispose();
+			}
 			lexer = null;
 		}
 		#endregion

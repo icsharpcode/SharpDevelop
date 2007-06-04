@@ -486,7 +486,11 @@ namespace ICSharpCode.TextEditor
 		protected virtual void OnReloadHighlighting(object sender, EventArgs e)
 		{
 			if (Document.HighlightingStrategy != null) {
-				Document.HighlightingStrategy = HighlightingStrategyFactory.CreateHighlightingStrategy(Document.HighlightingStrategy.Name);
+				try {
+					Document.HighlightingStrategy = HighlightingStrategyFactory.CreateHighlightingStrategy(Document.HighlightingStrategy.Name);
+				} catch (HighlightingDefinitionInvalidException ex) {
+					MessageBox.Show(ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				}
 				OptionsChanged();
 			}
 		}

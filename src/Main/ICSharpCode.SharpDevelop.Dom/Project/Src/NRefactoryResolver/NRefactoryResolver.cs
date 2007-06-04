@@ -221,7 +221,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			
 			RunLookupTableVisitor(fileContent);
 			
-			ResolveResult rr = CtrlSpaceResolveHelper.GetResultFromDeclarationLine(callingClass, callingMember as IMethodOrProperty, caretLine, caretColumn, expression);
+			ResolveResult rr = CtrlSpaceResolveHelper.GetResultFromDeclarationLine(callingClass, callingMember as IMethodOrProperty, caretLine, caretColumn, expressionResult);
 			if (rr != null) return rr;
 			
 			return ResolveInternal(expr, expressionResult.Context);
@@ -1160,6 +1160,13 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					}
 				}
 			}
+			if (callingMember is IProperty) {
+				IProperty property = (IProperty)callingMember;
+				if (property.SetterRegion.IsInside(caretLine, caretColumn)) {
+					result.Add(new DefaultField.ParameterField(property.ReturnType, "value", property.Region, callingClass));
+				}
+			}
+			
 			CtrlSpaceResolveHelper.AddImportedNamespaceContents(result, cu, callingClass);
 		}
 	}

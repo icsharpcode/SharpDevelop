@@ -29,12 +29,12 @@ namespace ICSharpCode.TextEditor
 	[ToolboxItem(false)]
 	public class TextArea : Control
 	{
-		internal bool HiddenMouseCursor = false;
+		bool hiddenMouseCursor = false;
 		/// <summary>
 		/// The position where the mouse cursor was when it was hidden. Sometimes the text editor gets MouseMove
 		/// events when typing text even if the mouse is not moved.
 		/// </summary>
-		internal Point MouseCursorHidePosition;
+		Point mouseCursorHidePosition;
 		
 		Point virtualTop        = new Point(0, 0);
 		TextAreaControl         motherTextAreaControl;
@@ -315,6 +315,20 @@ namespace ICSharpCode.TextEditor
 			}
 		}
 		
+		/// <summary>
+		/// Shows the mouse cursor if it has been hidden.
+		/// </summary>
+		/// <param name="forceShow"><c>true</c> to always show the cursor or <c>false</c> to show it only if it has been moved since it was hidden.</param>
+		internal void ShowHiddenCursor(bool forceShow)
+		{
+			if (hiddenMouseCursor) {
+				if (mouseCursorHidePosition != Cursor.Position || forceShow) {
+					Cursor.Show();
+					hiddenMouseCursor = false;
+				}
+			}
+		}
+		
 		
 		// static because the mouse can only be in one text area and we don't want to have
 		// tooltips of text areas from inactive tabs floating around.
@@ -571,10 +585,10 @@ namespace ICSharpCode.TextEditor
 				return;
 			}
 			
-			if (!HiddenMouseCursor && TextEditorProperties.HideMouseCursor) {
+			if (!hiddenMouseCursor && TextEditorProperties.HideMouseCursor) {
 				if (this.ClientRectangle.Contains(PointToClient(Cursor.Position))) {
-					MouseCursorHidePosition = Cursor.Position;
-					HiddenMouseCursor = true;
+					mouseCursorHidePosition = Cursor.Position;
+					hiddenMouseCursor = true;
 					Cursor.Hide();
 				}
 			}

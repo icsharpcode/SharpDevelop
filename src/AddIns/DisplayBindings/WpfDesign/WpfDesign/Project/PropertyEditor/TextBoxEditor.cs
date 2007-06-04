@@ -88,6 +88,7 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 			}
 		}
 		
+		/// <summary/>
 		protected override void OnTextChanged(TextChangedEventArgs e)
 		{
 			isDirty = true;
@@ -96,6 +97,7 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 			base.OnTextChanged(e);
 		}
 		
+		/// <summary/>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		protected override void OnLostFocus(RoutedEventArgs e)
 		{
@@ -117,6 +119,7 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 			base.OnLostFocus(e);
 		}
 		
+		/// <summary/>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		protected override void OnKeyDown(KeyEventArgs e)
 		{

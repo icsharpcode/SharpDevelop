@@ -91,6 +91,7 @@
     <Compile Include="Src\PrettyPrinter\AbstractPrettyPrintOptions.cs" />
     <Compile Include="Src\PrettyPrinter\IOutputAstVisitor.cs" />
     <Compile Include="Src\PrettyPrinter\SpecialNodesInserter.cs" />
+    <Compile Include="Src\SnippetParser.cs" />
     <Compile Include="Src\Visitors\AbstractAstTransformer.cs" />
     <Compile Include="Src\Visitors\AbstractASTVisitor.cs" />
     <Compile Include="Src\Visitors\CodeDOMOutputVisitor.cs" />

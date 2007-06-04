@@ -156,8 +156,8 @@ namespace ICSharpCode.TextEditor.Document
 							}
 						}
 						if (!found) {
-							MessageBox.Show("The RuleSet " + aSpan.Rule + " could not be found in mode definition " + this.Name, "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1);
 							aSpan.RuleSet = null;
+							throw new HighlightingDefinitionInvalidException("The RuleSet " + aSpan.Rule + " could not be found in mode definition " + this.Name);
 						}
 					} else {
 						aSpan.RuleSet = null;
@@ -166,7 +166,7 @@ namespace ICSharpCode.TextEditor.Document
 			}
 			
 			if (defaultRuleSet == null) {
-				MessageBox.Show("No default RuleSet is defined for mode definition " + this.Name, "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1);
+				throw new HighlightingDefinitionInvalidException("No default RuleSet is defined for mode definition " + this.Name);
 			}
 		}
 		
@@ -179,8 +179,8 @@ namespace ICSharpCode.TextEditor.Document
 					if (highlighter != null) {
 						ruleSet.Highlighter = highlighter;
 					} else {
-						MessageBox.Show("The mode defintion " + ruleSet.Reference + " which is refered from the " + this.Name + " mode definition could not be found", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1);
 						ruleSet.Highlighter = this;
+						throw new HighlightingDefinitionInvalidException("The mode defintion " + ruleSet.Reference + " which is refered from the " + this.Name + " mode definition could not be found");
 					}
 				} else {
 					ruleSet.Highlighter = this;

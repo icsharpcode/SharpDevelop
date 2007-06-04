@@ -41,7 +41,7 @@ Imports System
 Imports System.Runtime.InteropServices
 Imports Extensibility
 
-<GuidAttribute("PLACE-A-VALID-GUID-HERE"), ProgId("${ProjectName}.Connect")> _
+<GuidAttribute("${GUID}"), ProgId("${ProjectName}.Connect")> _
 Public Class Connect
 	Implements Extensibility.IDTExtensibility2
 

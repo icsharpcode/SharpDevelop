@@ -14,7 +14,7 @@
 	
 	<!-- Actions -->
 	<Actions>
-		<Open filename = "Main.vb"/>
+		<Open filename = "Program.vb"/>
 	</Actions>
 	
 
@@ -23,7 +23,6 @@
 		<ProjectItems>
 			<Reference Include="System" />
 			<Reference Include="System.Data" />
-			<Reference Include="System.Deployment" />
 			<Reference Include="System.Xml" />
 			
 			<Import Include="Microsoft.VisualBasic" />
@@ -39,11 +38,16 @@
 		</PropertyGroup>
 		
 		<Files>
-	<File name="Main.vb">
+	<File name="Program.vb">
 			<![CDATA[${StandardHeader.VBNET}
-Module Main
+Module Program
 	Sub Main()
 		Console.WriteLine("Hello World!")
+		
+		' TODO: Implement Functionality Here
+		
+		Console.Write("Press any key to continue . . . ")
+		Console.ReadKey()
 	End Sub
 End Module
 ]]></File>

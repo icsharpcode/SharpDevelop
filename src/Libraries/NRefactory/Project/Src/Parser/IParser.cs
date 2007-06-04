@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using ICSharpCode.NRefactory.Ast;
 
 namespace ICSharpCode.NRefactory
@@ -34,5 +35,7 @@ namespace ICSharpCode.NRefactory
 		void Parse();
 		
 		Expression ParseExpression();
+		BlockStatement ParseBlock();
+		List<INode> ParseTypeMembers();
 	}
 }

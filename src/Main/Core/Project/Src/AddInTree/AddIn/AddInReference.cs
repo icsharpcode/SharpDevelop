@@ -92,6 +92,15 @@ namespace ICSharpCode.Core
 				} else {
 					reference.maximumVersion = reference.minimumVersion = ParseVersion(version, hintPath);
 				}
+				
+				if (reference.Name == "SharpDevelop") {
+					// HACK: SD 2.1 AddIns work with SharpDevelop 2.2
+					// Because some 2.1 AddIns restrict themselves to SD 2.1, we extend the
+					// supported SD range.
+					if (reference.maximumVersion == new Version("2.1")) {
+						reference.maximumVersion = new Version("2.2");
+					}
+				}
 			}
 			return reference;
 		}

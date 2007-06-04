@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<Template author="Justin Dearing" version="1.0">
+	<Config
+		  name		= "${res:Templates.File.Xml.AppConfig.Name}"
+		  icon		= "Icons.32x32.XMLFileIcon"
+		  category	= "${res:Templates.File.Categories.Misc}"
+		  defaultname	= "app.config"
+		  language	= "XML"/>
+	 
+	<Description>${res:Templates.File.Xml.AppConfigFile.Description}</Description>
+
+	<Files>
+		<File name="${FullName}" language="XML"><![CDATA[<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+	<connectionStrings>
+		<!-- Example connection to a SQL Server Database on localhost. -->
+		<!-- <add name="ExampleConnectionString"
+			connectionString="Data Source=.;Initial Catalog=DBName;Integrated Security=True"
+			providerName="System.Data.SqlClient" /> -->
+	</connectionStrings>
+	<appSettings>
+		<!-- access these values via the property:
+			System.Configuration.ConfigurationManager.AppSettings[key]
+		-->
+		<add key="Setting1" value="Very" />
+		<add key="Setting2" value="Easy" />
+ 	</appSettings>
+</configuration>
+]]>
+		</File>
+	</Files>
+	
+	<AdditionalOptions/>
+</Template>

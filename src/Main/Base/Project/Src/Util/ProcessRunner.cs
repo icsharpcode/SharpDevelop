@@ -222,9 +222,7 @@ namespace ICSharpCode.SharpDevelop.Util
 					process = null;
 				}
 			}
-			// Control-C does not seem to work.
-			//GenerateConsoleCtrlEvent((int)ConsoleEvent.ControlC, 0);
-		}		
+		}
 		
 		/// <summary>
 		/// Raises the <see cref="ProcessExited"/> event.
@@ -262,15 +260,6 @@ namespace ICSharpCode.SharpDevelop.Util
 			if (ErrorLineReceived != null) {
 				ErrorLineReceived(this, e);
 			}
-		}		
-
-		enum ConsoleEvent
-		{
-			ControlC = 0,
-			ControlBreak = 1
-		};
-		
-		[DllImport("kernel32.dll", SetLastError=true)] 
-		static extern int GenerateConsoleCtrlEvent(int dwCtrlEvent, int dwProcessGroupId);
+		}
 	}
 }

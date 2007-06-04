@@ -125,6 +125,10 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			control.ActiveTextAreaControl.Caret.PositionChanged       += new EventHandler(CaretOffsetChanged);
 			control.ActiveTextAreaControl.TextArea.LostFocus          += new EventHandler(this.TextEditorLostFocus);
 			control.Resize += new EventHandler(ParentFormLocationChanged);
+			
+			foreach (Control c in Controls) {
+				c.MouseMove += ControlMouseMove;
+			}
 		}
 		
 		void ParentFormLocationChanged(object sender, EventArgs e)
@@ -168,6 +172,10 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			// take out the inserted methods
 			parentForm.LocationChanged -= new EventHandler(ParentFormLocationChanged);
 			
+			foreach (Control c in Controls) {
+				c.MouseMove -= ControlMouseMove;
+			}
+			
 			if (control.ActiveTextAreaControl.VScrollBar != null) {
 				control.ActiveTextAreaControl.VScrollBar.ValueChanged -= new EventHandler(ParentFormLocationChanged);
 			}
@@ -180,6 +188,26 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			control.ActiveTextAreaControl.TextArea.DoProcessDialogKey -= new DialogKeyProcessor(ProcessTextAreaKey);
 			control.Resize -= new EventHandler(ParentFormLocationChanged);
 			Dispose();
+		}
+		
+		protected override void OnMouseMove(MouseEventArgs e)
+		{
+			base.OnMouseMove(e);
+			ControlMouseMove(this, e);
+		}
+		
+		/// <summary>
+		/// Invoked when the mouse moves over this form or any child control.
+		/// Shows the mouse cursor on the text area if it has been hidden.
+		/// </summary>
+		/// <remarks>
+		/// Derived classes should attach this handler to the MouseMove event
+		/// of all created controls which are not added to the Controls
+		/// collection.
+		/// </remarks>
+		protected void ControlMouseMove(object sender, MouseEventArgs e)
+		{
+			control.ActiveTextAreaControl.TextArea.ShowHiddenCursor(false);
 		}
 	}
 }

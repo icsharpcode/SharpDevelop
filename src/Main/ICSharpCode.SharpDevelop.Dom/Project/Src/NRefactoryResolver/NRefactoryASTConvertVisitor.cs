@@ -128,7 +128,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					else
 						break;
 				} else {
-					m = left + (line - leftLine) * (right - left) / (rightLine - leftLine);
+					m = (int)(left + Math.BigMul((line - leftLine), (right - left)) / (rightLine - leftLine));
 				}
 				
 				int mLine = specials[m].StartPosition.Y;

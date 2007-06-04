@@ -9,6 +9,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Diagnostics;
 
 namespace ICSharpCode.TextEditor.Document
 {
@@ -17,7 +18,10 @@ namespace ICSharpCode.TextEditor.Document
 		ArrayList syntaxModeFileProviders = new ArrayList();
 		static HighlightingManager highlightingManager;
 		
+		// hash table from extension name to highlighting definition,
+		// OR from extension name to Pair SyntaxMode,ISyntaxModeFileProvider
 		Hashtable highlightingDefs = new Hashtable();
+		
 		Hashtable extensionsToName = new Hashtable();
 		
 		public Hashtable HighlightingDefinitions {
@@ -28,7 +32,7 @@ namespace ICSharpCode.TextEditor.Document
 		
 		public static HighlightingManager Manager {
 			get {
-				return highlightingManager;		
+				return highlightingManager;
 			}
 		}
 		
@@ -89,14 +93,20 @@ namespace ICSharpCode.TextEditor.Document
 		{
 			SyntaxMode              syntaxMode             = (SyntaxMode)entry.Key;
 			ISyntaxModeFileProvider syntaxModeFileProvider = (ISyntaxModeFileProvider)entry.Value;
-			
-			DefaultHighlightingStrategy highlightingStrategy = HighlightingDefinitionParser.Parse(syntaxMode, syntaxModeFileProvider.GetSyntaxModeFile(syntaxMode));
-			if (highlightingStrategy == null) {
-				highlightingStrategy = DefaultHighlighting;
+
+			DefaultHighlightingStrategy highlightingStrategy = null;
+			try {
+				highlightingStrategy = HighlightingDefinitionParser.Parse(syntaxMode, syntaxModeFileProvider.GetSyntaxModeFile(syntaxMode));
+				if (highlightingStrategy.Name != syntaxMode.Name) {
+					throw new HighlightingDefinitionInvalidException("The name specified in the .xshd '" + highlightingStrategy.Name + "' must be equal the syntax mode name '" + syntaxMode.Name + "'");
+				}
+			} finally {
+				if (highlightingStrategy == null) {
+					highlightingStrategy = DefaultHighlighting;
+				}
+				highlightingDefs[syntaxMode.Name] = highlightingStrategy;
+				highlightingStrategy.ResolveReferences();
 			}
-			highlightingDefs[syntaxMode.Name] = highlightingStrategy;
-			highlightingStrategy.ResolveReferences();
-			
 			return highlightingStrategy;
 		}
 		
