@@ -186,7 +186,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				}
 			} else if (o is IMethod) {
 				IMethod method = (IMethod)o;
-				if (method.Name != null &&!method.IsConstructor) {
+				if (method.Name != null) {
 					CodeCompletionData ccd = new CodeCompletionData(method);
 					if (insertedElements[method.Name] == null) {
 						insertedElements[method.Name] = ccd;

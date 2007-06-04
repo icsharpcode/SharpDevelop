@@ -878,6 +878,43 @@ namespace A.B {
 			TypeResolveResult trr = Resolve<TypeResolveResult>(program, "C", 7);
 			Assert.AreEqual("A.B.C", trr.ResolvedClass.FullyQualifiedName, "trr.ResolvedClass.FullyQualifiedName");
 		}
+		
+		[Test]
+		public void VBBaseConstructorCall()
+		{
+			string program = @"Class A
+Inherits B
+	Sub New()
+		
+	End Sub
+	Sub Test()
+	
+	End Sub
+End Class
+Class B
+	Sub New(a As String)
+	End Sub
+End Class
+";
+			MemberResolveResult mrr = ResolveVB<MemberResolveResult>(program, "mybase.new(\"bb\")", 4);
+			Assert.AreEqual("B", mrr.ResolvedMember.DeclaringType.FullyQualifiedName);
+			Assert.IsTrue(((IMethod)mrr.ResolvedMember).IsConstructor);
+			
+			ResolveResult result = ResolveVB<VBBaseOrThisReferenceInConstructorResolveResult>(program, "mybase", 4);
+			Assert.AreEqual("B", result.ResolvedType.FullyQualifiedName);
+			Assert.IsTrue(ContainsMember(result.GetCompletionData(result.CallingClass.ProjectContent), mrr.ResolvedMember.FullyQualifiedName));
+			
+			result = ResolveVB<ResolveResult>(program, "mybase", 7);
+			Assert.AreEqual("B", result.ResolvedType.FullyQualifiedName);
+			Assert.IsFalse(ContainsMember(result.GetCompletionData(result.CallingClass.ProjectContent), mrr.ResolvedMember.FullyQualifiedName));
+		}
+		
+		bool ContainsMember(IEnumerable input, string fullMemberName)
+		{
+			return Linq.Exists(Linq.OfType<IMember>(input), delegate(IMember m) {
+			                   	return m.FullyQualifiedName == fullMemberName;
+			                   });
+		}
 		#endregion
 		
 		#region Import class tests

@@ -433,6 +433,12 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (type == null || type.FullyQualifiedName == "") {
 				return null;
 			}
+			if (language == NR.SupportedLanguage.VBNet
+			    && callingMember is IMethod && (callingMember as IMethod).IsConstructor
+			    && (expr is BaseReferenceExpression || expr is ThisReferenceExpression))
+			{
+				return new VBBaseOrThisReferenceInConstructorResolveResult(callingClass, callingMember, type);
+			}
 			if (expr is ObjectCreateExpression) {
 				List<IMethod> constructors = new List<IMethod>();
 				foreach (IMethod m in type.GetMethods()) {
@@ -891,6 +897,14 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			bool isClassInInheritanceTree = false;
 			if (callingClass != null)
 				isClassInInheritanceTree = callingClass.IsTypeInInheritanceTree(type.GetUnderlyingClass());
+			
+			if (language == NR.SupportedLanguage.VBNet && IsSameName(memberName, "New")) {
+				foreach (IMethod m in type.GetMethods()) {
+					if (m.IsConstructor && m.IsAccessible(callingClass, isClassInInheritanceTree)) {
+						methods.Add(m);
+					}
+				}
+			}
 			
 			foreach (IMethod m in type.GetMethods()) {
 				if (IsSameName(m.Name, memberName)

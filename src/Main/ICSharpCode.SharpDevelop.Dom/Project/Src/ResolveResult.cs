@@ -80,7 +80,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			if (callingClass != null)
 				isClassInInheritanceTree = callingClass.IsTypeInInheritanceTree(resolvedType.GetUnderlyingClass());
 			foreach (IMethod m in resolvedType.GetMethods()) {
-				if (language.ShowMember(m, showStatic) && m.IsAccessible(callingClass, isClassInInheritanceTree))
+				if (language.ShowMember(m, showStatic) && m.IsAccessible(callingClass, isClassInInheritanceTree) && !m.IsConstructor)
 					res.Add(m);
 			}
 			foreach (IEvent e in resolvedType.GetEvents()) {
@@ -541,6 +541,29 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return MemberResolveResult.GetDefinitionPosition(m);
 			else
 				return base.GetDefinitionPosition();
+		}
+	}
+	#endregion
+	
+	#region VBBaseOrThisReferenceInConstructorResolveResult
+	/// <summary>
+	/// Is used for "MyBase" or "Me" in VB constructors to show "New" in the completion list.
+	/// </summary>
+	public sealed class VBBaseOrThisReferenceInConstructorResolveResult : ResolveResult
+	{
+		public VBBaseOrThisReferenceInConstructorResolveResult(IClass callingClass, IMember callingMember, IReturnType referencedType)
+			: base(callingClass, callingMember, referencedType)
+		{
+		}
+		
+		public override ArrayList GetCompletionData(IProjectContent projectContent)
+		{
+			ArrayList res = base.GetCompletionData(projectContent);
+			foreach (IMethod m in this.ResolvedType.GetMethods()) {
+				if (m.IsConstructor && !m.IsStatic && m.IsAccessible(this.CallingClass, true))
+					res.Add(m);
+			}
+			return res;
 		}
 	}
 	#endregion

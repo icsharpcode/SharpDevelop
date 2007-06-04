@@ -139,10 +139,11 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		public CodeCompletionData(IMethod method)
 		{
 			member = method;
-			ambience = AmbienceService.CurrentAmbience;
-			ambience.ConversionFlags = ConversionFlags.StandardConversionFlags;
 			imageIndex  = ClassBrowserIconService.GetIcon(method);
-			text        = method.Name;
+			ambience = AmbienceService.CurrentAmbience;
+			ambience.ConversionFlags = ConversionFlags.ShowTypeParameterList;
+			text = ambience.Convert(method);
+			ambience.ConversionFlags = ConversionFlags.StandardConversionFlags;
 			description = ambience.Convert(method);
 			documentation = method.Documentation;
 			GetPriority(method.DotNetName);
@@ -152,9 +153,10 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		{
 			member = field;
 			ambience = AmbienceService.CurrentAmbience;
-			ambience.ConversionFlags = ConversionFlags.StandardConversionFlags;
 			imageIndex  = ClassBrowserIconService.GetIcon(field);
-			text        = field.Name;
+			ambience.ConversionFlags = ConversionFlags.None;
+			text = ambience.Convert(field);
+			ambience.ConversionFlags = ConversionFlags.StandardConversionFlags;
 			description = ambience.Convert(field);
 			documentation = field.Documentation;
 			GetPriority(field.DotNetName);
@@ -164,9 +166,10 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		{
 			member = property;
 			ambience = AmbienceService.CurrentAmbience;
-			ambience.ConversionFlags = ConversionFlags.StandardConversionFlags;
 			imageIndex  = ClassBrowserIconService.GetIcon(property);
-			text        = property.Name;
+			ambience.ConversionFlags = ConversionFlags.None;
+			text = ambience.Convert(property);
+			ambience.ConversionFlags = ConversionFlags.StandardConversionFlags;
 			description = ambience.Convert(property);
 			documentation = property.Documentation;
 			GetPriority(property.DotNetName);
@@ -176,9 +179,10 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		{
 			member = e;
 			ambience = AmbienceService.CurrentAmbience;
-			ambience.ConversionFlags = ConversionFlags.StandardConversionFlags;
 			imageIndex  = ClassBrowserIconService.GetIcon(e);
-			text        = e.Name;
+			ambience.ConversionFlags = ConversionFlags.None;
+			text = ambience.Convert(e);
+			ambience.ConversionFlags = ConversionFlags.StandardConversionFlags;
 			description = ambience.Convert(e);
 			documentation = e.Documentation;
 			GetPriority(e.DotNetName);
