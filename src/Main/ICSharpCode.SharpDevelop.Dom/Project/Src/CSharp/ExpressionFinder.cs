@@ -291,7 +291,11 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 					if (Tokens.ValidInsideTypeName[lastToken]) {
 						frame = new Frame(frame);
 						frame.bracketType = '<';
-						frame.SetContext(ExpressionContext.Type);
+						if (frame.parent.type == FrameType.Statements) {
+							frame.SetContext(ExpressionContext.Default);
+						} else {
+							frame.SetContext(ExpressionContext.Type);
+						}
 					}
 					break;
 				case Tokens.GreaterThan:
@@ -439,7 +443,8 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 			Frame resultFrame = frame;
 			int resultStartOffset = -1;
 			int resultEndOffset = -1;
-			ExpressionContext context = ExpressionContext.Default;
+			ExpressionContext prevContext = ExpressionContext.Default;
+			ExpressionContext resultContext = ExpressionContext.Default;
 			
 			Token token;
 			while ((token = lexer.NextToken()) != null) {
@@ -448,7 +453,7 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 				if (state == SEARCHING_OFFSET) {
 					if (targetPosition < token.Location) {
 						resultFrame = frame;
-						context = frame.context;
+						resultContext = frame.context;
 						resultStartOffset = LocationToOffset(frame.lastExpressionStart);
 						if (resultStartOffset < 0)
 							break;
@@ -456,11 +461,12 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 						state = SEARCHING_END;
 					}
 				}
+				prevContext = frame.context;
 				ApplyToken(token);
 				if (state == SEARCHING_OFFSET) {
 					if (targetPosition < token.EndLocation) {
 						resultFrame = frame;
-						context = frame.context;
+						resultContext = prevContext;
 						resultStartOffset = LocationToOffset(frame.lastExpressionStart);
 						resultEndOffset = LocationToOffset(token.EndLocation);
 						if (resultStartOffset < 0)
@@ -472,13 +478,17 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 					    resultStartOffset != LocationToOffset(resultFrame.lastExpressionStart) ||
 					    token.kind == Tokens.Dot || token.kind == Tokens.DoubleColon)
 					{
+						// now we can change the context based on the next token
 						if (frame == resultFrame && Tokens.IdentifierTokens[token.kind]) {
 							// the expression got aborted because of an identifier. This means the
 							// expression was a type reference
-							context = ExpressionContext.Type;
+							resultContext = ExpressionContext.Type;
+						} else if (resultFrame.bracketType == '<' && token.kind == Tokens.GreaterThan) {
+							// expression was a type argument
+							resultContext = ExpressionContext.Type;
 						}
 						
-						return new ExpressionResult(text.Substring(resultStartOffset, resultEndOffset - resultStartOffset), context);
+						return new ExpressionResult(text.Substring(resultStartOffset, resultEndOffset - resultStartOffset), resultContext);
 					} else {
 						resultEndOffset = LocationToOffset(token.EndLocation);
 					}

@@ -172,7 +172,7 @@ class Main {
 		public void GlobalNamespace()
 		{
 			// context = context after the found word
-			FindFull(program3, "global", "global", ExpressionContext.IdentifierExpected);
+			FindFull(program3, "global", "global", ExpressionContext.FirstParameterType);
 			FindFull(program3, "System.Ex", "global::System", ExpressionContext.IdentifierExpected);
 			FindFull(program3, "Excep", "global::System.Exception", ExpressionContext.Type);
 		}
