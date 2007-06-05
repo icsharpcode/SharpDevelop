@@ -188,8 +188,9 @@
 	<!-- A grouping of keywords that sholuld be colored the same way -->
 	<xsd:complexType name="KeyWords">
 		<xsd:sequence>
+			<!-- allow groups with 0 keywords: this simplifies the syntax highlighting editor -->
 			<!-- A KeyWord -->
-			<xsd:element name="Key" type="Key" minOccurs="1" maxOccurs="unbounded">
+			<xsd:element name="Key" type="Key" minOccurs="0" maxOccurs="unbounded">
 			</xsd:element>
 		</xsd:sequence>
 		<!-- The name of the KeyWord group -->

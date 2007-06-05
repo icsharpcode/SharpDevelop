@@ -624,7 +624,11 @@ namespace ICSharpCode.TextEditor
 			document.UndoStack.ClearAll();
 			document.BookmarkManager.Clear();
 			if (autoLoadHighlighting) {
-				document.HighlightingStrategy = HighlightingStrategyFactory.CreateHighlightingStrategyForFile(fileName);
+				try {
+					document.HighlightingStrategy = HighlightingStrategyFactory.CreateHighlightingStrategyForFile(fileName);
+				} catch (HighlightingDefinitionInvalidException ex) {
+					MessageBox.Show(ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				}
 			}
 			
 			if (autodetectEncoding) {
