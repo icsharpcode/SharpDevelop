@@ -231,9 +231,11 @@ namespace ICSharpCode.FormsDesigner
 		bool FieldChanged(IField oldField, CodeMemberField newField)
 		{
 			// compare types
-			if (oldField.ReturnType.FullyQualifiedName != newField.Type.BaseType) {
-				LoggingService.Debug("FieldChanged: "+oldField.Name+", "+oldField.ReturnType.FullyQualifiedName+" -> "+newField.Type.BaseType);
-				return true;
+			if (oldField.ReturnType != null) { // ignore type changes to untyped VB fields
+				if (oldField.ReturnType.FullyQualifiedName != newField.Type.BaseType) {
+					LoggingService.Debug("FieldChanged: "+oldField.Name+", "+oldField.ReturnType.FullyQualifiedName+" -> "+newField.Type.BaseType);
+					return true;
+				}
 			}
 			
 			// compare modifiers
