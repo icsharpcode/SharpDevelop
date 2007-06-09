@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using System;
 using System.Drawing;
 
 namespace ICSharpCode.TextEditor.Util
@@ -13,7 +14,7 @@ namespace ICSharpCode.TextEditor.Util
 	{
 		float triHeight = 10;
 		float triWidth  = 10;
-			
+		
 		public CountTipText(Graphics graphics, Font font, string text) : base(graphics, font, text)
 		{
 		}
@@ -27,20 +28,20 @@ namespace ICSharpCode.TextEditor.Util
 			brush = Brushes.Black;
 			if (flipped) {
 				base.Graphics.FillPolygon(brush, new PointF[] {
-					new PointF(x,                y + triHeight2 - triHeight4),
-					new PointF(x + triWidth / 2, y + triHeight2 + triHeight4),
-					new PointF(x + triWidth,     y + triHeight2 - triHeight4),
-				});
+				                          	new PointF(x,                y + triHeight2 - triHeight4),
+				                          	new PointF(x + triWidth / 2, y + triHeight2 + triHeight4),
+				                          	new PointF(x + triWidth,     y + triHeight2 - triHeight4),
+				                          });
 				
 			} else {
 				base.Graphics.FillPolygon(brush, new PointF[] {
-					new PointF(x,                y +  triHeight2 + triHeight4),
-					new PointF(x + triWidth / 2, y +  triHeight2 - triHeight4),
-					new PointF(x + triWidth,     y +  triHeight2 + triHeight4),
-				});
+				                          	new PointF(x,                y +  triHeight2 + triHeight4),
+				                          	new PointF(x + triWidth / 2, y +  triHeight2 - triHeight4),
+				                          	new PointF(x + triWidth,     y +  triHeight2 + triHeight4),
+				                          });
 			}
 		}
-	
+		
 		public Rectangle DrawingRectangle1;
 		public Rectangle DrawingRectangle2;
 		
@@ -48,14 +49,14 @@ namespace ICSharpCode.TextEditor.Util
 		{
 			if (tipText != null && tipText.Length > 0) {
 				base.Draw(new PointF(location.X + triWidth + 4, location.Y));
-				DrawingRectangle1 = new Rectangle((int)location.X + 2, 
-				                                 (int)location.Y + 2, 
-				                                 (int)(triWidth), 
-				                                 (int)(triHeight));
+				DrawingRectangle1 = new Rectangle((int)location.X + 2,
+				                                  (int)location.Y + 2,
+				                                  (int)(triWidth),
+				                                  (int)(triHeight));
 				DrawingRectangle2 = new Rectangle((int)(location.X + base.AllocatedSize.Width - triWidth  - 2),
-				                                 (int)location.Y + 2, 
-				                                 (int)(triWidth), 
-				                                 (int)(triHeight));
+				                                  (int)location.Y + 2,
+				                                  (int)(triWidth),
+				                                  (int)(triHeight));
 				DrawTriangle(location.X + 2, location.Y + 2, false);
 				DrawTriangle(location.X + base.AllocatedSize.Width - triWidth  - 2, location.Y + 2, true);
 			}
@@ -79,16 +80,18 @@ namespace ICSharpCode.TextEditor.Util
 	class TipText: TipSection
 	{
 		protected StringAlignment horzAlign;
-		protected StringAlignment vertAlign;	
+		protected StringAlignment vertAlign;
 		protected Color           tipColor;
 		protected Font            tipFont;
 		protected StringFormat    tipFormat;
 		protected string          tipText;
-        
+		
 		public TipText(Graphics graphics, Font font, string text):
 			base(graphics)
 		{
 			tipFont = font; tipText = text;
+			if (text != null && text.Length > short.MaxValue)
+				throw new ArgumentException("TipText: text too long (max. is " + short.MaxValue + " characters)", "text");
 			
 			Color               = SystemColors.InfoText;
 			HorizontalAlignment = StringAlignment.Near;
@@ -103,7 +106,7 @@ namespace ICSharpCode.TextEditor.Util
 				Graphics.DrawString(tipText, tipFont,
 				                    BrushRegistry.GetBrush(Color),
 				                    drawRectangle,
-				                    GetInternalStringFormat());   
+				                    GetInternalStringFormat());
 			}
 		}
 		

@@ -86,7 +86,7 @@ namespace ICSharpCode.TextEditor.Actions
 				Point pos = new Point(xpos,
 				                      textArea.TextView.DrawingPosition.Y + (visualLine - 1) * textArea.TextView.FontHeight - textArea.TextView.TextArea.VirtualTop.Y);
 				textArea.Caret.Position = textArea.TextView.GetLogicalPosition(pos.X, pos.Y);
-				textArea.SetCaretToDesiredColumn(textArea.Caret.Position.Y);
+				textArea.SetCaretToDesiredColumn();
 			}
 //			if (textArea.Caret.Line  > 0) {
 //				textArea.SetCaretToDesiredColumn(textArea.Caret.Line - 1);
@@ -106,7 +106,7 @@ namespace ICSharpCode.TextEditor.Actions
 				Point pos = new Point(xpos,
 				                      textArea.TextView.DrawingPosition.Y + (visualLine + 1) * textArea.TextView.FontHeight - textArea.TextView.TextArea.VirtualTop.Y);
 				textArea.Caret.Position = textArea.TextView.GetLogicalPosition(pos.X, pos.Y);
-				textArea.SetCaretToDesiredColumn(textArea.Caret.Position.Y);
+				textArea.SetCaretToDesiredColumn();
 			}
 //			if (textArea.Caret.Line + 1 < textArea.Document.TotalNumberOfLines) {
 //				textArea.SetCaretToDesiredColumn(textArea.Caret.Line + 1);
