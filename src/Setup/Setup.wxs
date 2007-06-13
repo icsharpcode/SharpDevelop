@@ -30,7 +30,7 @@
 			<!-- Checks for newer versions -->
 			<UpgradeVersion OnlyDetect="yes"
 			                Property="NEWERVERSIONFOUND"
-			                Minimum="2.1.$(var.PRODUCTBUILDVERSION)"
+			                Minimum="2.2.$(var.PRODUCTBUILDVERSION)"
 			                IncludeMinimum="no"/>
 		</Upgrade>
 		
@@ -134,7 +134,7 @@
 			each be a feature if the user wants to heavily customise the installation.
 		-->
 		<Feature Id="Complete"
-		         Title="SharpDevelop 2.1"
+		         Title="SharpDevelop"
 		         Description="Installs SharpDevelop and registers file associations"
 		         Level="1"
 		         ConfigurableDirectory="INSTALLDIR"
