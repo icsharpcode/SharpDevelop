@@ -1207,7 +1207,7 @@
 			</Directory>
 			<!-- SharpDevelop Start menu folder -->
 			<Directory Id="ProgramMenuFolder" Name="PMenu" LongName="Programs">
-				<Directory Id="SharpDevelopProgramMenuFolder" Name="SharpDev" LongName="SharpDevelop 2.1">
+				<Directory Id="SharpDevelopProgramMenuFolder" Name="SharpDev" LongName="SharpDevelop 2.2">
 					<Component Id="SharpDevelopProgramMenuItems" Guid="AB3D8418-BD70-4EB8-8659-8ED3CEC83FEC">
 						<!-- 
 							Fix ICE 38 by adding a dummy registry key that is the key for this shortcut.
@@ -1232,7 +1232,7 @@
 						http://msdn.microsoft.com/library/en-us/msi/setup/ice38.asp
 					-->
 					<Registry Id="SharpDevelopExeDesktopShortcutRegistryKey" Root="HKCU" KeyPath="yes" Key="Software\SharpDevelop2" />
-					<Shortcut Id="SharpDevelopExeDesktopShortcut" Directory="DesktopFolder" Target="[!SharpDevelop.exe]" Name="SharpDev" LongName="SharpDevelop 2.1" Icon="SharpDevelopIcon.exe" WorkingDirectory="BinFolder" />
+					<Shortcut Id="SharpDevelopExeDesktopShortcut" Directory="DesktopFolder" Target="[!SharpDevelop.exe]" Name="SharpDev" LongName="SharpDevelop 2.2" Icon="SharpDevelopIcon.exe" WorkingDirectory="BinFolder" />
 				</Component>
 			</Directory>
 		</DirectoryRef>
