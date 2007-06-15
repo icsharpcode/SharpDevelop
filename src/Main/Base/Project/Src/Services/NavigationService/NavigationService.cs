@@ -217,23 +217,20 @@ namespace ICSharpCode.SharpDevelop
 			OnHistoryChanged();
 		}
 		
-/*		// untested
+		// Unit test covered but the test does not yet verify the results.
 		public static INavigationPoint Log()
 		{
-//			IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
-//			if (window == null) {
-//				return null;
-//			}
-//
-//			IViewContent view = window.ViewContent;
-//			if (view == null) {
-//				return null;
-//			}
-//
-//			return view.BuildNavPoint();
-			return null;
+			if (WorkbenchSingleton.Workbench == null) {
+				return null;
+			}
+			IViewContent view = WorkbenchSingleton.Workbench.ActiveViewContent;
+			if (view == null) {
+				return null;
+			}
+
+			return view.BuildNavPoint();
 		}
-*/		
+
 		/// <summary>
 		/// Gets a <see cref="List<T>"/> of the <see cref="INavigationPoints"/> that 
 		/// are currently in the collection.
@@ -448,6 +445,7 @@ namespace ICSharpCode.SharpDevelop
 		#endregion
 	}
 }
+
 
 
 
