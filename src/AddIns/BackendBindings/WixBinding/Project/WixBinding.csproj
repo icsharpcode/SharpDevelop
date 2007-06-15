@@ -150,6 +150,48 @@
     <Compile Include="Src\Gui\WixPackageFilesDiffControl.cs" />
     <Compile Include="Src\Commands\HideDiffCommand.cs" />
     <Compile Include="Src\ExcludedNames.cs" />
+    <Content Include="Templates\DefaultBrowseDialog.wxs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\DefaultCancelDialog.wxs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\DefaultExitDialog.wxs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\DefaultFatalErrorDialog.wxs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\DefaultOutOfDiskSpaceDialog.wxs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\DefaultOutOfRollbackDiskSpaceDialog.wxs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\DefaultProgressDialog.wxs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\DefaultSelectFolderDialog.wxs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\DefaultUserExitDialog.wxs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\DefaultUserInterface.wxs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\DefaultVerifyReadyDialog.wxs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\DefaultViewLicenseAgreementDIalog.wxs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\DefaultWelcomeDialog.wxs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\DefaultLicense.rtf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Content Include="WixBinding.addin">

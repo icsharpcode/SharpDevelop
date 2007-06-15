@@ -336,6 +336,7 @@
 				<ComponentRef Id="SyntaxModesFiles"/>
 				<ComponentRef Id="SharpDevelopWebsiteShortcut"/>
 				<ComponentRef Id="SharpDevelopAppPathRegistrySetting"/>
+				<ComponentRef Id="WixProjectIncludes"/>
 				<ComponentRef Id="WPFAssemblyInfoTemplate"/>
 			</Feature>
 			<Feature Id="SharpDevelopFileAssociations"

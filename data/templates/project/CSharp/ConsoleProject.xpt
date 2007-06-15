@@ -37,7 +37,7 @@ namespace ${StandardNamespace}
 			// TODO: Implement Functionality Here
 			
 			Console.Write("Press any key to continue . . . ");
-			Console.ReadKey();
+			Console.ReadKey(true);
 		}
 	}
 }]]></File>

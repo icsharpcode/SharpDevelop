@@ -47,7 +47,7 @@ Module Program
 		' TODO: Implement Functionality Here
 		
 		Console.Write("Press any key to continue . . . ")
-		Console.ReadKey()
+		Console.ReadKey(True)
 	End Sub
 End Module
 ]]></File>

@@ -934,6 +934,22 @@
 												<File Source="..\..\AddIns\AddIns\BackendBindings\WixBinding\Templates\EmptyWixProject.xpt" Name="EMPTYW_1.XPT" Id="EmptyWixProject.xpt" LongName="EmptyWixProject.xpt" />
 												<File Source="..\..\AddIns\AddIns\BackendBindings\WixBinding\Templates\WixDialog.xft" Name="WIXDIA_1.XFT" Id="WixDialog.xft" LongName="WixDialog.xft" />
 											</Component>
+											<Component Guid="2A63D916-4372-48F7-B486-45A4B35F96CA" Id="WixProjectIncludes" DiskId="1">
+												<File Source="..\..\AddIns\AddIns\BackendBindings\WixBinding\Templates\DefaultBrowseDialog.wxs" Name="BrwseDlg.wxs" Id="DefaultBrowseDialog.wxs" LongName="DefaultBrowseDialog.wxs" />
+												<File Source="..\..\AddIns\AddIns\BackendBindings\WixBinding\Templates\DefaultCancelDialog.wxs" Name="CanclDlg.wxs" Id="DefaultCancelDialog.wxs" LongName="DefaultCancelDialog.wxs" />
+												<File Source="..\..\AddIns\AddIns\BackendBindings\WixBinding\Templates\DefaultExitDialog.wxs" Name="ExitDlg.wxs" Id="DefaultExitDialog.wxs" LongName="DefaultExitDialog.wxs" />
+												<File Source="..\..\AddIns\AddIns\BackendBindings\WixBinding\Templates\DefaultFatalErrorDialog.wxs" Name="FatalDlg.wxs" Id="DefaultFatalErrorDialog.wxs" LongName="DefaultFatalErrorDialog.wxs" />
+												<File Source="..\..\AddIns\AddIns\BackendBindings\WixBinding\Templates\DefaultLicense.rtf" Name="License.rtf" Id="DefaultLicense.rtf" LongName="DefaultLicense.rtf" />
+												<File Source="..\..\AddIns\AddIns\BackendBindings\WixBinding\Templates\DefaultOutOfDiskSpaceDialog.wxs" Name="NoDskDlg.wxs" Id="DefaultOutOfDiskSpaceDialog.wxs" LongName="DefaultOutOfDiskSpaceDialog.wxs" />
+												<File Source="..\..\AddIns\AddIns\BackendBindings\WixBinding\Templates\DefaultOutOfRollbackDiskSpaceDialog.wxs" Name="RllbkDlg.wxs" Id="DefaultOutOfRollbackDiskSpaceDialog.wxs" LongName="DefaultOutOfRollbackDiskSpaceDialog.wxs" />
+												<File Source="..\..\AddIns\AddIns\BackendBindings\WixBinding\Templates\DefaultProgressDialog.wxs" Name="PrgsDlg.wxs" Id="DefaultProgressDialog.wxs" LongName="DefaultProgressDialog.wxs" />
+												<File Source="..\..\AddIns\AddIns\BackendBindings\WixBinding\Templates\DefaultSelectFolderDialog.wxs" Name="FldrDlg.wxs" Id="DefaultSelectFolderDialog.wxs" LongName="DefaultSelectFolderDialog.wxs" />
+												<File Source="..\..\AddIns\AddIns\BackendBindings\WixBinding\Templates\DefaultUserExitDialog.wxs" Name="ExitDlg.wxs" Id="DefaultUserExitDialog.wxs" LongName="DefaultUserExitDialog.wxs" />
+												<File Source="..\..\AddIns\AddIns\BackendBindings\WixBinding\Templates\DefaultUserInterface.wxs" Name="Intrface.wxs" Id="DefaultUserInterface.wxs" LongName="DefaultUserInterface.wxs" />
+												<File Source="..\..\AddIns\AddIns\BackendBindings\WixBinding\Templates\DefaultVerifyReadyDialog.wxs" Name="ReadyDlg.wxs" Id="DefaultVerifyReadyDialog.wxs" LongName="DefaultVerifyReadyDialog.wxs" />
+												<File Source="..\..\AddIns\AddIns\BackendBindings\WixBinding\Templates\DefaultViewLicenseAgreementDialog.wxs" Name="LicDlg.wxs" Id="DefaultViewLicenseAgreementDialog.wxs" LongName="DefaultViewLicenseAgreementDialog.wxs" />
+												<File Source="..\..\AddIns\AddIns\BackendBindings\WixBinding\Templates\DefaultWelcomeDialog.wxs" Name="WelcmDlg.wxs" Id="DefaultWelcomeDialog.wxs" LongName="DefaultWelcomeDialog.wxs" />
+											</Component>
 										</Directory>
 									</Directory>
 								</Directory>
@@ -1156,7 +1172,7 @@
 						</Directory>
 						<Component Guid="5212F79E-568F-426D-AFD2-FC93914D5CE9" Id="SharpDevelopWebsiteShortcut" DiskId="1">
 							<!--
-								The choice here is to either use the IniFile element to
+								The choice here is to either useW the IniFile element to
  								generate the two website shortcuts or create a 
 								SharpDevelop.url file on disk and use a File element and
 								link to the file instead. We will use a file otherwise an
