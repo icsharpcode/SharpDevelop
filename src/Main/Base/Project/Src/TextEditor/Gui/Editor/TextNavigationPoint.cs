@@ -24,6 +24,10 @@ namespace ICSharpCode.SharpDevelop
 		public TextNavigationPoint(string fileName, int lineNumber, int column) : this(fileName, lineNumber, column, String.Empty) {}
 		public TextNavigationPoint(string fileName, int lineNumber, int column, string content) : base(fileName, new Point(column, lineNumber))
 		{
+			if (String.IsNullOrEmpty(content)) {
+				this.content = String.Empty;
+				return;
+			}
 			this.content = content.Trim();
 		}
 		#endregion
@@ -95,7 +99,8 @@ namespace ICSharpCode.SharpDevelop
 		
 		public override string Description {
 			get {
-				return String.Format("{0}: {1}",
+				return String.Format(System.Globalization.CultureInfo.CurrentCulture,
+				                     "{0}: {1}",
 				                     this.LineNumber,
 				                     this.content);
 			}
@@ -103,10 +108,12 @@ namespace ICSharpCode.SharpDevelop
 		
 		public override string FullDescription {
 			get {
-				return String.Format("{0} - {1}",
+				return String.Format(System.Globalization.CultureInfo.CurrentCulture,
+				                     "{0} - {1}",
 				                     Path.GetFileName(this.FileName),
 				                     this.Description);
 			}
 		}
 	}
 }
+

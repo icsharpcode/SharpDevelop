@@ -40,34 +40,86 @@ namespace ICSharpCode.SharpDevelop
 	/// Navigational history (go back/forward) for WinForms controls</see></i>
 	/// </para>
 	/// </remarks>
-	public class NavigationService
+	public sealed class NavigationService
 	{
 		#region Private members
 		static LinkedList<INavigationPoint> history = new LinkedList<INavigationPoint>();
-		static LinkedListNode<INavigationPoint> currentNode; // autoinitialized to null (FxCop)
-		static bool loggingSuspended; // autoinitialized to false (FxCop)
+		static LinkedListNode<INavigationPoint> currentNode;
+		static bool loggingSuspended;
+		static bool serviceInitialized;
 		#endregion
 		
-		// TODO: FxCop says "find another way to do this" (ReviewVisibleEventHandlers)
-		static NavigationService()
-		{			
-			WorkbenchSingleton.WorkbenchCreated += WorkbenchCreatedHandler;
-			FileService.FileRenamed += FileService_FileRenamed;
-			ProjectService.SolutionClosed += ProjectService_SolutionClosed;
+		/// <summary>
+		/// Keeps .NET compiler from autogenerating a public constructor that breaks an FxCop rule #CA1053
+		/// </summary>
+		private NavigationService()
+		{
+		}
+		
+		/// <summary>
+		/// Initializes the NavigationService.
+		/// </summary>
+		/// <remarks>Must be called after the Workbench has been initialized.</remarks>
+		/// <exception cref="InvalidOperationException">The <see cref="WorkbenchSingleton"/> has not yet been initialized and <see cref="WorkbenchSingleton.Workbench">Workbench</see> is <value>null</value></exception>
+		public static void InitializeService()
+		{
+			if (!serviceInitialized) {
+				if (WorkbenchSingleton.Workbench == null) {
+					throw new InvalidOperationException("Initializing the NavigationService requires that the WorkbenchSingleton has already created a Workbench.");
+				}
+				// trap changes in the secondary tab via the workbench's ActiveViewContentChanged event
+				WorkbenchSingleton.Workbench.ActiveViewContentChanged += ActiveViewContentChanged;
+				
+				FileService.FileRenamed += FileService_FileRenamed;
+				ProjectService.SolutionClosed += ProjectService_SolutionClosed;
+				serviceInitialized = true;
+			}
+		}
+		
+		/// <summary>
+		/// Unloads the <see cref="NavigationService"/>
+		/// </summary>
+		public static void Unload()
+		{
+			// perform any necessary cleanup
+			HistoryChanged = null;
+			ClearHistory(true);
+			serviceInitialized = false;
 		}
 		
 		#region Public Properties
 		
+		/// <summary>
+		/// <b>true</b> if we can navigate back to a previous point; <b>false</b> 
+		/// if there are no points in the history.
+		/// </summary>
 		public static bool CanNavigateBack {
 			get { return currentNode != history.First && currentNode != null;}
 		}
+		
+		/// <summary>
+		/// <b>true</b> if we can navigate forwards to a point prevously left
+		/// via navigating backwards; <b>false</b> if all the points in the 
+		/// history are in the "past".
+		/// </summary>
 		public static bool CanNavigateForwards {
 			get {return currentNode != history.Last && currentNode != null;}
 		}
+		
+		/// <summary>
+		/// Gets the number of points in the navigation history.
+		/// </summary>
+		/// <remarks>
+		/// <b>Note:</b> jumping forwards or backwards requires at least 
+		/// two points in the history; otherwise navigating has no meaning.
+		/// </remarks>
 		public static int Count {
 			get { return history.Count; }
 		}
 		
+		/// <summary>
+		/// Gets or sets the "current" position as tracked by the service.
+		/// </summary>
 		public static INavigationPoint CurrentPosition {
 			get {
 				return currentNode==null ? (INavigationPoint)null : currentNode.Value;
@@ -77,6 +129,10 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
+		/// <summary>
+		/// <b>true</b> when the service is logging points; <b>false</b> when
+		/// logging is suspended.
+		/// </summary>
 		public static bool IsLogging {
 			get { return !loggingSuspended;}
 		}
@@ -85,6 +141,8 @@ namespace ICSharpCode.SharpDevelop
 		#region Public Methods
 		
 		// TODO: FxCop says "find another way to do this" (ReviewVisibleEventHandlers)
+		// we'd have to ask each point that cares to subscribe to the appropriate event
+		// listeners in their respective IViewContent implementation's underlying models.
 		public static void ContentChanging(object sender, EventArgs e)
 		{
 			foreach (INavigationPoint p in history)
@@ -93,20 +151,29 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
-		#region private helpers
-		static void Log(IWorkbenchWindow window)
+/*		static void Log(IWorkbenchWindow window)
 		{
 			if (window==null) return;
 			Log(window.ActiveViewContent);
 		}
+*/		
+
 		
-		static void Log(IViewContent vc)
+		/// <summary>
+		/// Asks an <see cref="IViewContent"/> implementation to build an
+		/// <see cref="INavigationPoint"/> and then logs it.
+		/// </summary>
+		/// <param name="vc"></param>
+		public static void Log(IViewContent vc)
 		{
 			if (vc==null) return;
 			Log(vc.BuildNavPoint());
 		}
-		#endregion
 		
+		/// <summary>
+		/// Adds an <see cref="INavigationPoint"/> to the history.
+		/// </summary>
+		/// <param name="pointToLog">The point to store.</param>
 		public static void Log(INavigationPoint pointToLog)
 		{
 			if (loggingSuspended) {
@@ -115,14 +182,24 @@ namespace ICSharpCode.SharpDevelop
 			LogInternal(pointToLog);
 		}
 
-		// refactoring this out of Log() allows the NavigationService
-		// to call this and ensure it will work regardless of the
-		// requested state of loggingSuspended
+		/// <summary>
+		/// Adds an <see cref="INavigationPoint"/> to the history.
+		/// </summary>
+		/// <param name="p">The <see cref="INavigationPoint"/> to add.</param>
+		/// <remarks>
+		/// Refactoring this out of Log() allows the NavigationService
+		/// to call this and ensure it will work regardless of the
+		/// requested state of loggingSuspended, as in 
+		/// <see cref="ClearHistory"/> where we want to log
+		/// the current position after clearing the
+		/// history.
+		/// </remarks>
 		private static void LogInternal(INavigationPoint p)
 		{
 			if (p == null
-			    || p.FileName==null			   // HACK: why/how do we get here?
-			    || p.FileName==String.Empty) { // HACK: why/how do we get here?
+			    || String.IsNullOrEmpty(p.FileName)
+			   )
+			    { 
 				return;
 			}
 			if (currentNode==null) {
@@ -136,7 +213,7 @@ namespace ICSharpCode.SharpDevelop
 			OnHistoryChanged();
 		}
 		
-		// untested
+/*		// untested
 		public static INavigationPoint Log()
 		{
 //			IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
@@ -152,7 +229,11 @@ namespace ICSharpCode.SharpDevelop
 //			return view.BuildNavPoint();
 			return null;
 		}
-		
+*/		
+		/// <summary>
+		/// Gets a <see cref="List<T>"/> of the <see cref="INavigationPoints"/> that 
+		/// are currently in the collection.
+		/// </summary>
 		public static ICollection<INavigationPoint> Points
 		{
 			get {
@@ -160,11 +241,26 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
+		/// <summary>
+		/// Clears the navigation history (except for the current position).
+		/// </summary>
 		public static void ClearHistory()
 		{
 			ClearHistory(false);
 		}
 		
+		/// <summary>
+		/// Clears the navigation history and optionally clears the current position.
+		/// </summary>
+		/// <param name="clearCurrentPosition">Do we clear the current position as well as the rest of the history?</param>
+		/// <remarks>
+		/// <para>The current position is often used to "seed" the next history to ensure 
+		/// that the first significant movement after clearing the history allows
+		/// us to jump "back" immediately.</para>
+		/// <para>Remembering the current position across requests to clear the history
+		/// does not always make sense, however, such as when a solution is closing, 
+		/// hence the ability to explicitly control it's retention.</para>
+		/// </remarks>
 		public static void ClearHistory(bool clearCurrentPosition)
 		{
 			INavigationPoint currentPosition = CurrentPosition;
@@ -176,9 +272,16 @@ namespace ICSharpCode.SharpDevelop
 			OnHistoryChanged();
 		}
 		
+		/// <summary>
+		/// Navigates to an <see cref="INavigationPoint"/> that is an arbitrary 
+		/// number of points away from the <see cref="CurrentPosition"/>.
+		/// </summary>
+		/// <param name="delta">Number of points to move; negative deltas move 
+		/// backwards while positive deltas move forwards through the history.</param>
 		public static void Go(int delta)
 		{
 			if (0 == delta) {
+				// no movement required
 				return;
 			} else if (0>delta) {
 				// move backwards
@@ -197,6 +300,12 @@ namespace ICSharpCode.SharpDevelop
 			SyncViewWithModel();
 		}
 		
+		/// <summary>
+		/// Jump to a specific <see cref="INavigationPoint"/> in the history;
+		/// if the point is not in the history, we log it internally, regardless
+		/// of whether logging is currently suspended or not.
+		/// </summary>
+		/// <param name="target">The <see cref="INavigationPoint"/> to jump</param>
 		public static void Go(INavigationPoint target)
 		{
 			if (target==null) {
@@ -210,33 +319,47 @@ namespace ICSharpCode.SharpDevelop
 			} else {
 				LoggingService.ErrorFormatted("Logging additional point: {0}", target);
 				LogInternal(target);
-				//currentNode = history.AddAfter(currentNode, target);
 			}
 			
 			SyncViewWithModel();
 		}
 		
+		/// <summary>
+		/// Navigates the view (i.e. the workbench) to whatever
+		/// <see cref="INavigationPosition"/> is the current 
+		/// position in the internal model.
+		/// </summary>
+		/// <remarks>Factoring this out of code that manipulates
+		/// the history allows to make multiple changes to the
+		/// history while only updating the view once we are
+		/// finished.</remarks>
 		private static void SyncViewWithModel()
 		{
-			//LoggingService.Info("suspend logging");
 			SuspendLogging();
 			if (CurrentPosition!=null) {
 				CurrentPosition.JumpTo();
 			}
-			//LoggingService.Info("resume logging");
 			ResumeLogging();
 		}
 		
-
-		
+		/// <summary>
+		/// Suspends logging of navigation so that we don't log intermediate points
+		/// while opening a file, for example.
+		/// </summary>
 		public static void SuspendLogging()
 		{
+			LoggingService.Info("NavigationSercice -- suspend logging");
 			loggingSuspended = true;
 		}
+		
+		/// <summary>
+		/// Resumes logging after suspending it via <see cref="SuspendLogging"/>.
+		/// </summary>
 		public static void ResumeLogging()
 		{
-			// ENH: possible enhancement: use int instead of bool so resume statements are incremental rather than definitive.
+			LoggingService.Debug("NavigationService -- resume logging");
 			loggingSuspended = false;
+			// ENH: possible enhancement: use int instead of bool so resume statements are incremental rather than definitive.
 		}
 		
 		#endregion
@@ -245,51 +368,26 @@ namespace ICSharpCode.SharpDevelop
 		// how to test code triggered by the user interacting with the workbench
 		#region event trapping
 
-		#region ViewContent events
-		static void WorkbenchCreatedHandler(object sender, EventArgs e)
+		/// <summary>
+		/// Respond to changes in the <see cref="IWorkbench.ActiveViewContent">
+		/// ActiveViewContent</see> by logging the new <see cref="IViewContent"/>.
+		/// </summary>
+		static void ActiveViewContentChanged(object sender, EventArgs e)
 		{
-			WorkbenchSingleton.Workbench.ViewOpened +=
-				new ViewContentEventHandler(ViewContentOpened);
-			WorkbenchSingleton.Workbench.ViewClosed +=
-				new ViewContentEventHandler(ViewContentClosed);
-		}
-
-		static void ViewContentOpened(object sender, ViewContentEventArgs e)
-		{
-			//Log(e.Content);
-			e.Content.WorkbenchWindow.WindowSelected += WorkBenchWindowSelected;
-		}
-		
-		static void ViewContentClosed(object sender, ViewContentEventArgs e)
-		{
-			e.Content.WorkbenchWindow.WindowSelected -= WorkBenchWindowSelected;
+			IViewContent vc = WorkbenchSingleton.Workbench.ActiveViewContent;
+			if (vc == null) return;
+			LoggingService.DebugFormatted("NavigationService\n\tActiveViewContent: {0}\n\t          Subview: {1}", 
+			                              vc.TitleName, 
+			                              vc.TabPageText);
+			Log(vc);
 		}
 		
-		static IWorkbenchWindow lastSelectedWindow; // = null; (FXCop)
-		static void WorkBenchWindowSelected(object sender, EventArgs e)
-		{
-			try {
-				IWorkbenchWindow window = sender as IWorkbenchWindow;
-				if (window == lastSelectedWindow) {
-					return;
-				}
-				//int n = NavigationService.Count;
-				Log(window);
-				//LoggingService.DebugFormatted("WorkbenchSelected: logging {0}", window.Title);
-
-				// HACK: Navigation - for some reason, JumpToFilePosition returns _before_ this
-				//       gets fired, (not the behaviour i expected) so we need to remember the
-				//       previous selected window to ensure that we only log once per visit to
-				//       a given window.
-				lastSelectedWindow = window;
-
-			} catch (Exception ex) {
-				LoggingService.ErrorFormatted("{0}:\n{1}",ex.Message, ex.StackTrace);
-				throw;
-			}
-		}
-		#endregion
-		
+		/// <summary>
+		/// Respond to changes in filenames by updating points in the history
+		/// to reflect the change.
+		/// </summary>
+		/// <param name="e"><see cref="FileRenameEventArgs"/> describing 
+		/// the file rename.</param>
 		static void FileService_FileRenamed(object sender, FileRenameEventArgs e)
 		{
 			foreach (INavigationPoint p in history) {
@@ -298,18 +396,27 @@ namespace ICSharpCode.SharpDevelop
 				}
 			}
 		}
-		
+
+		/// <summary>
+		/// Responds to the <see cref="ProjectService"/>.<see cref="SolutionClosed"/> event.
+		/// </summary>
 		static void ProjectService_SolutionClosed(object sender, EventArgs e)
 		{
 			NavigationService.ClearHistory(true);
 		}
 		
 		#endregion
-		
-		
+			
 		#region Public Events
+
+		/// <summary>
+		/// Fires whenever the navigation history has changed.
+		/// </summary>
 		public static event System.EventHandler HistoryChanged;
 		
+		/// <summary>
+		/// Used internally to call the <see cref="HistoryChanged"/> event delegates.
+		/// </summary>
 		static void OnHistoryChanged()
 		{
 			if (HistoryChanged!=null) {
@@ -319,3 +426,6 @@ namespace ICSharpCode.SharpDevelop
 		#endregion
 	}
 }
+
+
+

@@ -371,6 +371,9 @@ namespace ICSharpCode.SharpDevelop
 		/// </summary>
 		public static IViewContent JumpToFilePosition(string fileName, int line, int column)
 		{
+			LoggingService.InfoFormatted("FileService\n\tJumping to File Position:  [{0} : {1}x{2}]", fileName, line, column);
+			NavigationService.SuspendLogging();
+			
 			if (fileName == null || fileName.Length == 0) {
 				return null;
 			}
@@ -379,7 +382,10 @@ namespace ICSharpCode.SharpDevelop
 				// TODO: enable jumping to a particular view
 				((IPositionable)content).JumpTo(Math.Max(0, line), Math.Max(0, column));
 			}
-			NavigationService.Log(content.BuildNavPoint());
+			
+			LoggingService.InfoFormatted("FileService\n\tJumped to File Position:  [{0} : {1}x{2}]", fileName, line, column);
+			NavigationService.ResumeLogging();
+
 			return content;
 		}
 		
@@ -471,3 +477,5 @@ namespace ICSharpCode.SharpDevelop
 		public static event EventHandler<FileEventArgs> FileReplaced;
 	}
 }
+
+

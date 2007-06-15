@@ -111,6 +111,7 @@ namespace ICSharpCode.SharpDevelop.Sda
 			
 			// initialize workbench-dependent services:
 			Project.ProjectService.InitializeService();
+			NavigationService.InitializeService();
 			
 			LoggingService.Info("Starting workbench...");
 			Exception exception = null;
@@ -131,6 +132,7 @@ namespace ICSharpCode.SharpDevelop.Sda
 				LoggingService.Info("Unloading services...");
 				try {
 					Project.ProjectService.CloseSolution();
+					NavigationService.Unload();
 					FileService.Unload();
 					PropertyService.Save();
 				} catch (Exception ex) {
@@ -259,3 +261,4 @@ namespace ICSharpCode.SharpDevelop.Sda
 		}
 	}
 }
+
