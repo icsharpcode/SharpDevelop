@@ -245,6 +245,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public static void LoadSolution(string fileName)
 		{
 			BeforeLoadSolution();
+			OnSolutionLoading(fileName);
 			try {
 				openSolution = Solution.Load(fileName);
 				if (openSolution == null)
@@ -492,6 +493,13 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		static void OnSolutionLoading(string fileName)
+		{
+			if (SolutionLoading != null) {
+				SolutionLoading(fileName, EventArgs.Empty);
+			}
+		}
+		
 		static void OnSolutionLoaded(SolutionEventArgs e)
 		{
 			if (SolutionLoaded != null) {
@@ -593,6 +601,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public static event ProjectConfigurationEventHandler ProjectConfigurationChanged;
 		public static event SolutionConfigurationEventHandler SolutionConfigurationChanged;
 		
+		public static event EventHandler                    SolutionLoading;
 		public static event EventHandler<SolutionEventArgs> SolutionLoaded;
 		public static event EventHandler<SolutionEventArgs> SolutionSaved;
 		
@@ -611,3 +620,4 @@ namespace ICSharpCode.SharpDevelop.Project
 		public static event EventHandler<ProjectItemEventArgs> ProjectItemRemoved;
 	}
 }
+

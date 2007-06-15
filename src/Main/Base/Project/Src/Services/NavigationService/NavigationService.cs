@@ -59,7 +59,7 @@ namespace ICSharpCode.SharpDevelop
 		/// <summary>
 		/// Initializes the NavigationService.
 		/// </summary>
-		/// <remarks>Must be called after the Workbench has been initialized.</remarks>
+		/// <remarks>Must be called after the Workbench has been initialized and after the ProjectService has been initialized.</remarks>
 		/// <exception cref="InvalidOperationException">The <see cref="WorkbenchSingleton"/> has not yet been initialized and <see cref="WorkbenchSingleton.Workbench">Workbench</see> is <value>null</value></exception>
 		public static void InitializeService()
 		{
@@ -69,6 +69,10 @@ namespace ICSharpCode.SharpDevelop
 				}
 				// trap changes in the secondary tab via the workbench's ActiveViewContentChanged event
 				WorkbenchSingleton.Workbench.ActiveViewContentChanged += ActiveViewContentChanged;
+				
+				// ignore files opened as part of loading a solution.
+				ProjectService.SolutionLoading += ProjectService_SolutionLoading;
+				ParserService.LoadSolutionProjectsThreadEnded += LoadSolutionProjectsThreadEnded;
 				
 				FileService.FileRenamed += FileService_FileRenamed;
 				ProjectService.SolutionClosed += ProjectService_SolutionClosed;
@@ -348,7 +352,7 @@ namespace ICSharpCode.SharpDevelop
 		/// </summary>
 		public static void SuspendLogging()
 		{
-			LoggingService.Info("NavigationSercice -- suspend logging");
+			LoggingService.Debug("NavigationService -- suspend logging");
 			loggingSuspended = true;
 		}
 		
@@ -368,6 +372,24 @@ namespace ICSharpCode.SharpDevelop
 		// how to test code triggered by the user interacting with the workbench
 		#region event trapping
 
+		/// <summary>
+		/// Prepares the NavigationService to load a new solution.
+		/// </summary>
+		/// <param name="sender">The fileName of the solution as a <see cref="String"/>.</param>
+		static void ProjectService_SolutionLoading(object sender, EventArgs e)
+		{
+			SuspendLogging();
+		}
+
+		/// <summary>
+		/// Prepares the NavigationService for working with a newly loaded solution
+		/// </summary>
+		/// <param name="sender"></param>
+		static void LoadSolutionProjectsThreadEnded(object sender, EventArgs e)
+		{
+			ResumeLogging();
+		}
+		
 		/// <summary>
 		/// Respond to changes in the <see cref="IWorkbench.ActiveViewContent">
 		/// ActiveViewContent</see> by logging the new <see cref="IViewContent"/>.
@@ -426,6 +448,7 @@ namespace ICSharpCode.SharpDevelop
 		#endregion
 	}
 }
+
 
 
 

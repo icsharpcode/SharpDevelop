@@ -80,6 +80,8 @@ namespace ICSharpCode.SharpDevelop.Commands
 			//WorkbenchSingleton.MainForm.Show();
 			
 			bool didLoadCombineOrFile = false;
+		
+			NavigationService.SuspendLogging();
 			
 			foreach (string file in fileList) {
 				didLoadCombineOrFile = true;
@@ -109,6 +111,8 @@ namespace ICSharpCode.SharpDevelop.Commands
 				}
 			}
 			
+			NavigationService.ResumeLogging();
+			
 			//WorkbenchSingleton.MainForm.Focus(); // windows.forms focus workaround
 			
 			ParserService.StartParserThread();
@@ -126,3 +130,4 @@ namespace ICSharpCode.SharpDevelop.Commands
 		}
 	}
 }
+
