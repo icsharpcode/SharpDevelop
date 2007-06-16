@@ -17,14 +17,22 @@ namespace UnitTesting.Tests.Project
 	/// <summary>
 	/// If a test fixture's base class has test attributes then
 	/// NUnit includes the base class test methods by prefixing
-	/// the base class name to them.
+	/// the base class name to them. In NUnit 2.2 this was true for
+	/// both the GUI and the test result information. In 
+	/// NUnit 2.4 the GUI prefixes the base class to the method
+	/// name but the test result does not prefix the base class
+	/// to the name of the method.
 	/// 
 	/// [TestFixture]
 	/// public DerivedClass : BaseClass
 	/// 
-	/// Fully qualified test method is named:
+	/// Test method is shown in UI as:
 	/// 
-	/// RootNamespace.DerivedClass.BaseClass.BaseClassMethod.
+	/// BaseClass.BaseClassMethod
+	/// 
+	/// Test method name returned by NUnit-Console:
+	/// 
+	/// RootNamespace.DerivedClass.BaseClassMethod
 	/// </summary>
 	[TestFixture]
 	public class TestMethodsInBaseClassTestFixture
@@ -34,7 +42,6 @@ namespace UnitTesting.Tests.Project
 		[SetUp]
 		public void SetUp()
 		{			
-			
 			MockProjectContent projectContent = new MockProjectContent();
 			projectContent.Language = LanguageProperties.None;
 			
@@ -83,12 +90,25 @@ namespace UnitTesting.Tests.Project
 		}
 		
 		[Test]
-		public void GetTestClass()
+		public void UpdateTestResultUsingPrefixBaseClassName()
 		{
 			TestClassCollection testClasses = new TestClassCollection();
 			testClasses.Add(testClass);
 
 			TestResult testResult = new TestResult("RootNamespace.MyTestFixture.TestFixtureBase.BaseMethod");
+			testResult.IsFailure = true;
+			testClasses.UpdateTestResult(testResult);
+			
+			Assert.AreEqual(TestResultType.Failure, testClass.Result);
+		}
+		
+		[Test]
+		public void UpdateTestResult()
+		{
+			TestClassCollection testClasses = new TestClassCollection();
+			testClasses.Add(testClass);
+
+			TestResult testResult = new TestResult("RootNamespace.MyTestFixture.BaseMethod");
 			testResult.IsFailure = true;
 			testClasses.UpdateTestResult(testResult);
 			

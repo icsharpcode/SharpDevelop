@@ -446,6 +446,9 @@
 									<Component Guid="AB89A052-2D0A-426E-B755-6FA1A9C1C64F" Id="NUnitFrameworkDll" DiskId="1">
 										<File Source="..\..\bin\Tools\NUnit\nunit.framework.dll" Name="nuframe.dll" Id="nunit.framework.dll" LongName="nunit.framework.dll" />
 									</Component>
+									<Component Guid="D67E8EC9-2D98-4889-856F-78FD2BE35947" Id="NUnitCoreInterfacesDll" DiskId="1">
+										<File Id="nunit.core.interfaces.dll" KeyPath="yes" LongName="nunit.core.interfaces.dll" Name="nucorif.dll" Assembly=".net" AssemblyApplication="nunit.core.interfaces.dll" AssemblyManifest="nunit.core.interfaces.dll" Source="..\..\bin\Tools\NUnit\nunit.core.interfaces.dll" />
+									</Component>
 									<Directory Id="NUnitGacFolder" Name="GAC">
 										<!-- 
 											This is a dummy folder since if we just add the 
@@ -488,8 +491,20 @@
 										<Component Guid="1615EFF3-D86A-4F7E-A1C7-4417EB420002" Id="NUnitCoreDllNetv11" DiskId="1">
 											<File Source="..\..\bin\Tools\NUnit\Net-1.1\nunit.core.dll" Name="nucore2.dll" Id="Net_1.1.nunit.core.dll" LongName="nunit.core.dll" Assembly=".net" AssemblyApplication="Net_1.1.nunit.core.dll" AssemblyManifest="Net_1.1.nunit.core.dll" KeyPath="yes" />
 										</Component>
+										<Component Guid="EA6D0786-6103-42DE-8E49-A65FC622D181" Id="NUnitUiKitDllNetv11" DiskId="1">
+											<File Source="..\..\bin\Tools\NUnit\Net-1.1\nunit.uikit.dll" Name="nuuikit.dll" Id="Net_1.1.nunit.uikit.dll" LongName="nunit.uikit.dll" Assembly=".net" AssemblyApplication="Net_1.1.nunit.uikit.dll" AssemblyManifest="Net_1.1.nunit.uikit.dll" KeyPath="yes" />
+										</Component>
 										<Component Guid="3D66D8B1-5C03-404B-882B-105715A598CD" Id="NUnitUtilDllNetv11" DiskId="1">
 											<File Source="..\..\bin\Tools\NUnit\Net-1.1\nunit.util.dll" Name="nuutil2.dll" Id="Net_1.1.nunit.util.dll" LongName="nunit.util.dll" Assembly=".net" AssemblyApplication="Net_1.1.nunit.util.dll" AssemblyManifest="Net_1.1.nunit.util.dll" KeyPath="yes" />
+										</Component>
+										<Component Guid="6B1EB863-88A1-4B3F-95C5-FCAC7C525998" Id="NUnitCoreInterfacesDllNetv11" DiskId="1">
+											<File Source="..\..\bin\Tools\NUnit\Net-1.1\nunit.core.interfaces.dll" Name="nucori2.dll" Id="Net_1.1.nunit.core.interfaces.dll" LongName="nunit.core.interfaces.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Net_1.1.nunit.core.interfaces.dll" AssemblyManifest="Net_1.1.nunit.core.interfaces.dll" />
+										</Component>
+										<Component Guid="F81843D5-CECB-431C-A940-33E8CC478D01" Id="NUnitCoreExtensionsDllNetv11" DiskId="1">
+											<File Source="..\..\bin\Tools\NUnit\Net-1.1\nunit.core.extensions.dll" Name="NCOREX1.DLL" Id="Net_1.1.nunit.core.extensions.dll" LongName="nunit.core.extensions.dll" Assembly=".net" KeyPath="yes" AssemblyApplication="Net_1.1.nunit.core.extensions.dll" AssemblyManifest="Net_1.1.nunit.core.extensions.dll" />
+										</Component>
+										<Component Guid="A1F0ABAB-3E44-4BD3-B2E1-13B9E4F28DA5" Id="NUnitFrameworkDllNetv11" DiskId="1">
+											<File Source="..\..\bin\Tools\NUnit\Net-1.1\nunit.framework.dll" Name="nuframe.dll" Id="Net_1.1.nunit.framework.dll" LongName="nunit.framework.dll" />
 										</Component>
 									</Directory>
 								</Directory>

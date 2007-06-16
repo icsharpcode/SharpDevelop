@@ -45,6 +45,10 @@
       <HintPath>..\..\..\..\Tools\NUnit\nunit.core.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="nunit.core.interfaces">
+      <HintPath>..\..\..\..\Tools\NUnit\nunit.core.interfaces.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\..\..\..\Tools\NUnit\nunit.framework.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
@@ -65,6 +69,7 @@
     <Compile Include="Utils\DerivedTestTreeView.cs" />
     <Compile Include="Utils\DerivedUnitTestsPad.cs" />
     <Compile Include="Utils\MockTestCase.cs" />
+    <Compile Include="Utils\MockTestFixture.cs" />
     <Compile Include="Utils\MockTestTreeView.cs" />
     <Compile Include="Utils\MockMember.cs" />
     <Compile Include="Utils\MockClass.cs" />

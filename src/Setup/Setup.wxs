@@ -241,10 +241,15 @@
 				<ComponentRef Id="NUnitCoreGacDll"/>
 				<ComponentRef Id="NUnitFrameworkGacDll"/>
 				<ComponentRef Id="NunitConsoleRunnerDll"/>
+				<ComponentRef Id="NUnitCoreInterfacesDll"/>
+				<ComponentRef Id="NUnitUiKitDllNetv11"/>
 				<ComponentRef Id="NUnitUtilDllNetv11"/>
 				<ComponentRef Id="NUnitConsoleNetv11Files"/>
 				<ComponentRef Id="NUnitCoreDllNetv11"/>
+				<ComponentRef Id="NUnitCoreExtensionsDllNetv11"/>
 				<ComponentRef Id="NUnitConsoleRunnerDllNetv11"/>
+				<ComponentRef Id="NUnitCoreInterfacesDllNetv11"/>
+				<ComponentRef Id="NUnitFrameworkDllNetv11"/>
 				<ComponentRef Id="ConversionStyleSheetFiles"/>
 				<ComponentRef Id="TextLibOptionsFiles"/>
 				<ComponentRef Id="OptionsFiles"/>

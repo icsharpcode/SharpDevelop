@@ -10,21 +10,11 @@ using NUnit.Core;
 
 namespace UnitTesting.Tests.Utils
 {
-	public class MockTestCase : TestCase
+	public class MockTestFixture : TestFixture
 	{
-		public MockTestCase(string name) : base(CreateTestName(name))
+		public MockTestFixture(string fullName) : base(typeof(MockTestFixture))
 		{
-		}
-		
-		public override void Run(TestCaseResult result)
-		{
-		}
-		
-		static TestName CreateTestName(string name)
-		{
-			TestName testName = new TestName();
-			testName.FullName = name;
-			return testName;
+			base.TestName.FullName = fullName;
 		}
 	}
 }
