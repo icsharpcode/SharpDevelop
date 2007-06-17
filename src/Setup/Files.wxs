@@ -5,7 +5,7 @@
 			<!-- SharpDevelop installation directory and files -->
 			<Directory Id="ProgramFilesFolder" Name="PFiles">
 				<Directory Id="SharpDevelopFolder" Name="SDevelop" LongName="SharpDevelop">
-					<Directory Id="INSTALLDIR" Name="2.1">
+					<Directory Id="INSTALLDIR" Name="2.2">
 						<Directory Id="BinFolder" Name="bin">
 							<Component Id="SharpDevelopExe" Guid="F632C62C-A4DD-4507-9678-C7DCFF4DBC8C" DiskId="1">
 								<File Id="SharpDevelop.exe" Name="SharpDev.exe" LongName="SharpDevelop.exe" Source="..\..\bin\SharpDevelop.exe" Assembly=".net" AssemblyApplication="SharpDevelop.exe" AssemblyManifest="SharpDevelop.exe" KeyPath="yes">
@@ -533,6 +533,9 @@
 									<File Source="..\..\doc\technotes\TechicalWritingMadeEasier.rtf" Name="techwrit.rtf" Id="TechicalWritingMadeEasier.rtf" LongName="TechicalWritingMadeEasier.rtf" />
 									<File Source="..\..\doc\technotes\TheFineArtOfCommenting.rtf" Name="comment.rtf" Id="TheFineArtOfCommenting.rtf" LongName="TheFineArtOfCommenting.rtf" />
 								</Component>
+								<Component Guid="B5E6404F-E602-42AA-9C3A-996425AC3B40" Id="AddInWritingHelpWebsiteShortcut" DiskId="1">
+									<File Name="ADDINWH.URL" Id="AddInWritingHelp.url" LongName="Addin Writing Help.url" Source="..\..\doc\technotes\AddIn Writing Help.url" KeyPath="yes" />
+								</Component>
 							</Directory>
 						</Directory>
 						<Directory Id="DataFolder" Name="data">
@@ -699,7 +702,11 @@
 									<File Source="..\..\data\resources\StringResources.pt-br.resources" Name="STRIN_13.RES" Id="StringResources.pt_br.resources" LongName="StringResources.pt-br.resources" />
 									<File Source="..\..\data\resources\StringResources.ro.resources" Name="STRIN_14.RES" Id="StringResources.ro.resources" LongName="StringResources.ro.resources" />
 									<File Source="..\..\data\resources\StringResources.se.resources" Name="STRIN_15.RES" Id="StringResources.se.resources" LongName="StringResources.se.resources" />
+								</Component>
+								<Component Guid="720DC3DF-9547-4069-9C36-873F41579791" Id="StringResources.pt.resources" DiskId="1">
 									<File Source="..\..\data\resources\StringResources.pt.resources" Name="STRIN_16.RES" Id="StringResources.pt.resources" LongName="StringResources.pt.resources" />
+								</Component>
+								<Component Guid="78CE4E0B-296B-4479-8978-8D389BF01885" Id="StringResources.cngb.resources" DiskId="1">
 									<File Source="..\..\data\resources\StringResources.cn-gb.resources" Name="CB-GB.RES" Id="StringResources.cn_gb.resources" LongName="StringResources.cn-gb.resources" />
 								</Component>
 							</Directory>
@@ -764,6 +771,9 @@
 										<Component Guid="4431463D-4FA8-48A5-9D92-D1FDA818B324" Id="SharpDevelopReportTemplate" DiskId="1">
 											<File Source="..\..\data\templates\file\Misc\EmptyReport.xft" Name="SDR.XFT" Id="EmptyReport.xft" LongName="EmptyReport.xft" />
 										</Component>
+										<Component Guid="DC3D0C22-B117-4FD8-AFF9-77B0CB36ECD1" Id="AppConfigFileTemplate" DiskId="1">
+											<File Source="..\..\data\templates\file\Misc\AppConfigFile.xft" Name="APPCONF.XFT" Id="AppConfigFile.xft" LongName="AppConfigFile.xft" />
+										</Component>
 									</Directory>
 									<Directory Id="SharpDevelopFileTemplatesFolder" LongName="SharpDevelop" Name="SharpDev">
 										<Component Guid="5CD9262F-7A3B-4F28-94FD-43693E669E2B" Id="SharpDevelopFileTemplates" DiskId="1">
@@ -812,6 +822,8 @@
 											<File Source="..\..\data\templates\project\CSharp\SharpDevelopMacro.xpt" Name="SHARPD_2.XPT" Id="CSharpSharpDevelopMacro.xpt" LongName="SharpDevelopMacro.xpt" />
 											<File Source="..\..\data\templates\project\CSharp\WebpageProject.xpt" Name="WEBPAG_1.XPT" Id="CSharpWebpageProject.xpt" LongName="WebpageProject.xpt" />
 											<File Source="..\..\data\templates\project\CSharp\WPFApplication.xpt" Name="WPFAPP_1.XPT" Id="CSharpWPFApplication.xpt" LongName="WPFApplication.xpt" />
+										</Component>
+										<Component Guid="9D156515-C54F-4DAB-AD66-40E44C28E56C" Id="CSharpProjectSharpDevelopCustomToolTemplates" DiskId="1">
 											<File Source="..\..\data\templates\project\CSharp\SharpDevelopCustomTool.xpt" Name="SHARPD_3.XPT" Id="SharpDevelopCustomTool.xpt" LongName="SharpDevelopCustomTool.xpt" />
 											<File Source="..\..\data\templates\project\CSharp\SharpDevelopCustomToolTemplate.xft.xml" Name="SHARPD_1.XML" Id="SharpDevelopCustomToolTemplate.xft.xml" LongName="SharpDevelopCustomToolTemplate.xft.xml" />
 										</Component>
@@ -846,11 +858,15 @@
 											<File Source="..\..\data\templates\project\VBNet\Service.xpt" Name="Service.xpt" Id="VBNetService.xpt" />
 											<File Source="..\..\data\templates\project\VBNet\SharedAddin.xpt" Name="SHARED_1.XPT" Id="VBNetSharedAddin.xpt" LongName="SharedAddin.xpt" />
 											<File Source="..\..\data\templates\project\VBNet\SharpDevelopAddin.xpt" Name="SHARPD_4.XPT" Id="VBNetSharpDevelopAddin.xpt" LongName="SharpDevelopAddin.xpt" />
+										</Component>
+										<Component Guid="5B2ED689-37E3-4C9C-A21B-A5315943792E" Id="VBNetProjectCompactFormsProjectTemplate" DiskId="1">
 											<File Source="..\..\data\templates\project\VBNet\CompactFormsProject.xpt" Name="COMPAC_1.XPT" Id="CompactFormsProject.xpt" LongName="CompactFormsProject.xpt" />
 										</Component>
 									</Directory>
 									<Component Guid="73EAC135-57B6-46C0-9F24-70A347B9AAC8" Id="ExampleProjectTemplate" DiskId="1">
 										<File Source="..\..\data\templates\project\ComplexExample.xpt.test" Name="COMPLE_1.TES" Id="ComplexExample.xpt.test" LongName="ComplexExample.xpt.test" />
+									</Component>
+									<Component Guid="56D8230D-F249-4BC8-A2A3-0BC800F29253" Id="AddInWritingHelp" DiskId="1">
 										<File Source="..\..\data\templates\project\AddInWritingHelp.txt" Name="ADDINW_1.TXT" Id="AddInWritingHelp.txt" LongName="AddInWritingHelp.txt" />
 									</Component>
 								</Directory>
