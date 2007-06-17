@@ -201,8 +201,6 @@
 				<ComponentRef Id="WixDocFiles"/>
 				<ComponentRef Id="NetFxSchema"/>
 				<ComponentRef Id="VSExtensionSchema"/>
-				<ComponentRef Id="WixIncFiles"/>
-				<ComponentRef Id="WixLibFiles"/>
 				<ComponentRef Id="WixVSExtension"/>
 				<ComponentRef Id="CandleExe"/>
 				<ComponentRef Id="DarkExe"/>
@@ -212,10 +210,6 @@
 				<ComponentRef Id="MicrosoftToolsWindowsInstallerXmlNAntTasksDll"/>
 				<ComponentRef Id="NetFxWixLib"/>
 				<ComponentRef Id="NetFxCaDll"/>
-				<ComponentRef Id="PcaExecDll"/>
-				<ComponentRef Id="PcaExtDll"/>
-				<ComponentRef Id="PcaSchedDll"/>
-				<ComponentRef Id="PubCaWixLib"/>
 				<ComponentRef Id="ScaWixLib"/>
 				<ComponentRef Id="ScaExecDll"/>
 				<ComponentRef Id="ScashedDll"/>
@@ -230,8 +224,7 @@
 				<ComponentRef Id="WixNetFxExtensionDll"/>
 				<ComponentRef Id="WixTasksDll"/>
 				<ComponentRef Id="WixUiWixLib"/>
-				<ComponentRef Id="WixLocalisationFiles"/>
-				<ComponentRef Id="WixUIhuhuWxl"/>
+				<ComponentRef Id="WixUiEnUsWxl"/>
 				<ComponentRef Id="NUnitCoreExtensionsDll"/>
 				<ComponentRef Id="NUnitUiKitDll"/>
 				<ComponentRef Id="NUnitUtilDll"/>

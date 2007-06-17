@@ -283,8 +283,7 @@
 										<File Source="..\..\bin\Tools\Wix\candle.exe" Name="candle.exe" Id="candle.exe" Assembly=".net" AssemblyApplication="candle.exe" AssemblyManifest="candle.exe" KeyPath="yes" />
 										<File Source="..\..\bin\Tools\Wix\candle.exe.config" Name="CANDLE_1.CON" Id="candle.exe.config" LongName="candle.exe.config" />
 									</Component>
-									<Component Id="WixLicenseFiles" Guid="35784338-0E6A-4046-A82F-79BCE7549F08" DiskId="1">
-										<File Source="..\..\bin\Tools\Wix\CPL.TXT" Name="CPL.TXT" Id="CPL.TXT" />
+									<Component Id="WixLicenseFiles" Guid="3EA29F1C-0855-4521-BEFE-7C6D5C4A5D30" DiskId="1">
 										<File Source="..\..\bin\Tools\Wix\License.rtf" Name="License.rtf" Id="License.rtf" />
 									</Component>
 									<Component Id="DarkExe" Guid="45BAAB13-6E19-42DA-80BE-8C44EAD8A24E" DiskId="1">
@@ -310,18 +309,6 @@
 									</Component>
 									<Component Id="NetFxCaDll" Guid="F5970A44-7122-4660-ABCD-821360690CCC" DiskId="1">
 										<File Source="..\..\bin\Tools\Wix\netfxca.dll" Name="netfxca.dll" Id="netfxca.dll" />
-									</Component>
-									<Component Id="PcaExecDll" Guid="978F8CBF-CB97-492F-B787-C4C9049AAFCD" DiskId="1">
-										<File Source="..\..\bin\Tools\Wix\pcaexec.dll" Name="pcaexec.dll" Id="pcaexec.dll" />
-									</Component>
-									<Component Id="PcaExtDll" Guid="993733F6-DE48-4723-B1BF-6BC9BD395AEF" DiskId="1">
-										<File Source="..\..\bin\Tools\Wix\pcaext.dll" Name="pcaext.dll" Id="pcaext.dll" Assembly=".net" AssemblyApplication="pcaext.dll" AssemblyManifest="pcaext.dll" KeyPath="yes" />
-									</Component>
-									<Component Id="PcaSchedDll" Guid="4296DDD0-93F0-4341-AAAC-9D64B7974EE7" DiskId="1">
-										<File Source="..\..\bin\Tools\Wix\pcasched.dll" Name="pcasched.dll" Id="pcasched.dll" />
-									</Component>
-									<Component Id="PubCaWixLib" Guid="FA9D7586-CE64-45EF-B8F4-8104B53BA7D2" DiskId="1">
-										<File Source="..\..\bin\Tools\Wix\pubca.wixlib" Name="pubca.lib" LongName="pubca.wixlib" Id="pubca.wixlib" />
 									</Component>
 									<Component Id="ScaWixLib" Guid="97C97B61-27B2-4520-8406-AFD3C0627081" DiskId="1">
 										<File Source="..\..\bin\Tools\Wix\sca.wixlib" Name="sca.lib" Id="sca.wixlib" LongName="sca.wixlib" />
@@ -364,11 +351,8 @@
 									<Component Id="WixUiWixLib" Guid="EC84F252-770A-457F-8701-99C93684D6B6" DiskId="1">
 										<File Source="..\..\bin\Tools\Wix\wixui.wixlib" Name="wixui.lib" LongName="wixui.wixlib" Id="wixui.wixlib" />
 									</Component>
-									<Component Id="WixLocalisationFiles" Guid="5BBC8B25-5495-4AFA-B4C3-1A2ABD907314" DiskId="1">
-										<File Source="..\..\bin\Tools\Wix\WixUI_de-de.wxl" Name="wixuide.wxl" Id="WixUI_de_de.wxl" LongName="WixUI_de-de.wxl" />
+									<Component Id="WixUiEnUsWxl" Guid="20AAD10C-F5C9-46E8-A515-B516C494235B" DiskId="1">
 										<File Source="..\..\bin\Tools\Wix\WixUI_en-us.wxl" Name="wixuien.wxs" Id="WixUI_en_us.wxl" LongName="WixUI_en-us.wxl" />
-										<File Source="..\..\bin\Tools\Wix\WixUI_es-es.wxl" Name="wixuies.wxl" Id="WixUI_es_es.wxl" LongName="WixUI_es-es.wxl" />
-										<File Source="..\..\bin\Tools\Wix\WixUI_nl-nl.wxl" Name="wixuinl.wxl" Id="WixUI_nl_nl.wxl" LongName="WixUI_nl-nl.wxl" />
 									</Component>
 									<Directory Id="WixBitmapsFolder" Name="Bitmaps">
 										<Component Guid="363E0512-B16C-43ED-A1BE-CE91DBD2463E" Id="WixBitmapFiles" DiskId="1">
@@ -393,34 +377,8 @@
 											<File Source="..\..\bin\Tools\Wix\doc\vs.xsd" Name="vs.xsd" Id="vs.xsd" />
 										</Component>
 									</Directory>
-									<Directory Id="WixIncFolder" Name="inc">
-										<Component Guid="07E93366-FFBD-4C7A-AF4B-F557EC5B42DD" Id="WixIncFiles" DiskId="1">
-											<File Source="..\..\bin\Tools\Wix\inc\aclutil.h" Name="aclutil.h" Id="aclutil.h" />
-											<File Source="..\..\bin\Tools\Wix\inc\cabcutil.h" Name="cabcutil.h" Id="cabcutil.h" />
-											<File Source="..\..\bin\Tools\Wix\inc\cabutil.h" Name="cabutil.h" Id="cabutil.h" />
-											<File Source="..\..\bin\Tools\Wix\inc\dirutil.h" Name="dirutil.h" Id="dirutil.h" />
-											<File Source="..\..\bin\Tools\Wix\inc\dutil.h" Name="dutil.h" Id="dutil.h" />
-											<File Source="..\..\bin\Tools\Wix\inc\fileutil.h" Name="fileutil.h" Id="fileutil.h" />
-											<File Source="..\..\bin\Tools\Wix\inc\memutil.h" Name="memutil.h" Id="memutil.h" />
-											<File Source="..\..\bin\Tools\Wix\inc\metautil.h" Name="metautil.h" Id="metautil.h" />
-											<File Source="..\..\bin\Tools\Wix\inc\perfutil.h" Name="perfutil.h" Id="perfutil.h" />
-											<File Source="..\..\bin\Tools\Wix\inc\sqlutil.h" Name="sqlutil.h" Id="sqlutil.h" />
-											<File Source="..\..\bin\Tools\Wix\inc\strutil.h" Name="strutil.h" Id="strutil.h" />
-											<File Source="..\..\bin\Tools\Wix\inc\wcautil.h" Name="wcautil.h" Id="wcautil.h" />
-											<File Source="..\..\bin\Tools\Wix\inc\xmlutil.h" Name="xmlutil.h" Id="xmlutil.h" />
-										</Component>
-									</Directory>
-									<Directory Id="WixLibFolder" Name="lib">
-										<Component Guid="B2006977-986A-40C2-8C36-C349AC90DF5E" Id="WixLibFiles" DiskId="1">
-											<File Source="..\..\bin\Tools\Wix\lib\dutil.lib" Name="dutil.lib" Id="dutil.lib" />
-											<File Source="..\..\bin\Tools\Wix\lib\wcautil.lib" Name="wcautil.lib" Id="wcautil.lib" />
-										</Component>
-									</Directory>
 									<Component Guid="6B84E84F-C796-4104-981C-07C16CAAB0F8" Id="WixMMCExtensionDll" DiskId="1">
 										<File Source="..\..\bin\Tools\Wix\WixMMCExtension.dll" Name="WIXMMC.DLL" Id="WixMMCExtension.dll" LongName="WixMMCExtension.dll" Assembly=".net" AssemblyApplication="WixMMCExtension.dll" AssemblyManifest="WixMMCExtension.dll" KeyPath="yes" />
-									</Component>
-									<Component Guid="CB3536B4-5A4E-4578-9FDE-808367353C51" Id="WixUIhuhuWxl" DiskId="1">
-										<File Source="..\..\bin\Tools\Wix\WixUI_hu-hu.wxl" Name="WIXUI.WXL" Id="WixUI_hu_hu.wxl" LongName="WixUI_hu-hu.wxl" KeyPath="yes" />
 									</Component>
 								</Directory>
 								<Directory Id="NUnitFolder" Name="NUnit">

@@ -7,14 +7,6 @@
     <xs:annotation>
         <xs:documentation>
             Copyright (c) Microsoft Corporation.  All rights reserved.
-            
-            The use and distribution terms for this software are covered by the
-            Common Public License 1.0 (http://opensource.org/licenses/cpl.php)
-            which can be found in the file CPL.TXT at the root of this distribution.
-            By using this software in any fashion, you are agreeing to be bound by
-            the terms of this license.
-            
-            You must not remove this notice, or any other, from this software.
 
             Schema for describing Windows Installer database files (.msi/.msm/.pcp).
         </xs:documentation>
@@ -24,7 +16,7 @@
 
     <xs:element name="Wix">
         <xs:annotation><xs:documentation>
-            This is the top-level container element for every wxs file.  Amongst the possible children,
+            This is the top-level container element for every wxs file.  Among the possible children,
             the Product, Module, and PatchCreation elements are analogous to the main function in a C program.
             There can only be one of these present when linking occurs.  Product compiles into an msi file,
             Module compiles into an msm file, PatchCreation compiles into a pcp file.  The Fragment element
@@ -501,13 +493,13 @@
     <xs:element name="PatchCreation">
         <xs:annotation><xs:documentation>
             The PatchCreation element is analogous to the main function in a C program.  When linking, only one PatchCreation section
-            can be given to the linker to produce a successful result.  Using this element creates a pcp file.
+            can be given to the linker to produce a successful result.  Using this element creates a pcp file. 
         </xs:documentation></xs:annotation>
         <xs:complexType>
             <xs:sequence>
-                <xs:element ref="PatchInformation" minOccurs="1" maxOccurs="1"/>
-                <xs:element ref="PatchMetadata" minOccurs="0" maxOccurs="1"/>
-                <xs:element ref="Family" minOccurs="1" maxOccurs="unbounded"/>
+                <xs:element ref="PatchInformation" minOccurs="1" maxOccurs="1" />
+                <xs:element ref="PatchMetadata" minOccurs="0" maxOccurs="1" />
+                <xs:element ref="Family" minOccurs="1" maxOccurs="unbounded" />
                 <xs:choice minOccurs="0" maxOccurs="unbounded">
                     <xs:element ref="PatchProperty"/>
                     <xs:element ref="PatchSequence"/>
@@ -517,33 +509,31 @@
             </xs:sequence>
         
             <xs:attribute name="Id" type="uuid" use="required">
-                <xs:annotation><xs:documentation>Guid for this patch.</xs:documentation></xs:annotation>
-            </xs:attribute>
-            <xs:attribute name="Codepage" type="xs:integer">
-                <xs:annotation>
-                    <xs:documentation>The codepage for the resulting PCP.</xs:documentation>
-                </xs:annotation>
-            </xs:attribute>
-            <xs:attribute name="OutputPath" type="xs:string">
-                <xs:annotation><xs:documentation>Output patch for patchwiz.</xs:documentation></xs:annotation>
-            </xs:attribute>
-            <xs:attribute name="WholeFilesOnly" type="YesNoType">
-                <xs:annotation><xs:documentation>Changing files should be included in their entirety.</xs:documentation></xs:annotation>
-            </xs:attribute>
-            <xs:attribute name="SourceList" type="xs:string">
-                <xs:annotation><xs:documentation>Used to locate the .msp file for the patch if the cached copy is unavailable.</xs:documentation></xs:annotation>
-            </xs:attribute>
-            <xs:attribute name="AllowProductCodeMismatches" type="YesNoType">
-                <xs:annotation><xs:documentation>ProductCode property may differ between UpgradedImages table and TargetImages table.</xs:documentation></xs:annotation>
+                <xs:annotation><xs:documentation>PatchCreation identifier; this is the primary key for identifying patches.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="AllowMajorVersionMismatches" type="YesNoType">
-                <xs:annotation><xs:documentation>True if ProductVersion property may differ by a major version.</xs:documentation></xs:annotation>
+                <xs:annotation><xs:documentation>Use this to set whether the major versions between the upgrade and target images match. See <a href="http://msdn2.microsoft.com/en-us/library/aa370890.aspx">AllowProductVersionMajorMismatches</a> for more information.</xs:documentation></xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="AllowProductCodeMismatches" type="YesNoType">
+                <xs:annotation><xs:documentation>Use this to set whether the product code between the upgrade and target images match. See <a href="http://msdn2.microsoft.com/en-us/library/aa370890.aspx">AllowProductCodeMismatches</a> for more information.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="CleanWorkingFolder" type="YesNoType">
-                <xs:annotation><xs:documentation>Whether patchwiz should clean the temp folder when finished.</xs:documentation></xs:annotation>
+                <xs:annotation><xs:documentation>Use this to set whether Patchwiz should clean the temp folder when finished. See <a href="http://msdn2.microsoft.com/en-us/library/aa370890.aspx">DontRemoveTempFolderWhenFinished</a> for more information.	</xs:documentation></xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="Codepage" type="xs:integer">
+                <xs:annotation><xs:documentation>The codepage for the resulting PCP.</xs:documentation></xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="OutputPath" type="xs:string">
+                <xs:annotation><xs:documentation>The full path, including file name, of the patch package file that is to be generated. See <a href="http://msdn2.microsoft.com/en-us/library/aa370890.aspx">PatchOutputPath</a> for more information.</xs:documentation></xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="SourceList" type="xs:string">
+                <xs:annotation><xs:documentation>Used to locate the .msp file for the patch if the cached copy is unavailable. See <a href="http://msdn2.microsoft.com/en-us/library/aa370890.aspx">PatchSourceList</a> for more information.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="SymbolFlags" type="xs:int">
-                <xs:annotation><xs:documentation>Symbol flags.</xs:documentation></xs:annotation>
+                <xs:annotation><xs:documentation>An 8-digit hex integer representing the combination of patch symbol usage flags to use when creating a binary file patch. See <a href="http://msdn2.microsoft.com/en-us/library/aa370890.aspxhttp://msdn2.microsoft.com/en-us/library/aa370890.aspx">ApiPatchingSymbolFlags</a> for more information.</xs:documentation></xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="WholeFilesOnly" type="YesNoType">
+                <xs:annotation><xs:documentation>Use this to set whether changing files should be included in their entirety. See <a href="http://msdn2.microsoft.com/en-us/library/aa370890.aspx">IncludeWholeFilesOnly</a> for more information.</xs:documentation></xs:annotation>
             </xs:attribute>
         </xs:complexType>
     </xs:element>
@@ -618,6 +608,9 @@
     <xs:element name="PatchMetadata">
         <xs:annotation>
             <xs:documentation>Properties about the patch to be placed in the PatchMetadata table.</xs:documentation>
+            <xs:appinfo>
+                <xse:msiRef table="MsiPatchMetadata" />
+            </xs:appinfo>
         </xs:annotation>
         <xs:complexType>
             <xs:choice>
@@ -760,7 +753,12 @@
     </xs:element>
     
     <xs:element name="PatchSequence">
-        <xs:annotation><xs:documentation>Sequence information for this patch database. Sequence information is generated automatically in most cases, and rarely needs to be set explicitly.</xs:documentation></xs:annotation>
+        <xs:annotation>
+            <xs:documentation>Sequence information for this patch database. Sequence information is generated automatically in most cases, and rarely needs to be set explicitly.</xs:documentation>
+            <xs:appinfo>
+                <xse:msiRef table="MsiPatchSequence" />
+            </xs:appinfo>
+        </xs:annotation>
         <xs:complexType>
             <xs:attribute name="PatchFamily" type="xs:string" use="required">
                 <xs:annotation>
@@ -951,7 +949,7 @@
                     <xs:element ref="IgnoreRange"/>
                 </xs:choice>
             </xs:sequence>
-            
+
             <xs:attribute name="File" type="xs:string" use="required">
                 <xs:annotation><xs:documentation>Foreign key into the File table.</xs:documentation></xs:annotation>
             </xs:attribute>
@@ -1153,6 +1151,7 @@
         <xs:complexType>
             <xs:choice maxOccurs="unbounded">
                 <xs:element ref="DigitalCertificate" />
+                <xs:element ref="DigitalCertificateRef" />
             </xs:choice>
         </xs:complexType>
     </xs:element>
@@ -1162,6 +1161,9 @@
             <xs:documentation>
                 Adds a digital certificate.
             </xs:documentation>
+            <xs:appinfo>
+                <xse:msiRef table="MsiDigitalSignature" />
+            </xs:appinfo>
             <xs:appinfo>
                 <xse:msiRef table="MsiDigitalCertificate" />
             </xs:appinfo>
@@ -1176,23 +1178,20 @@
         </xs:complexType>
     </xs:element>
 
-    <xs:element name="DigitalSignature">
+    <xs:element name="DigitalCertificateRef">
         <xs:annotation>
             <xs:documentation>
-                Adds a digital signature
+                Adds a reference to digital certificate.
             </xs:documentation>
             <xs:appinfo>
-                <xse:msiRef table="MsiDigitalSignature" />
+                <xse:seeAlso ref="DigitalCertificate"/>
             </xs:appinfo>
         </xs:annotation>
-        <xs:complexType mixed="true">
-            <xs:annotation><xs:documentation>Element value can be hex-encoded hash value</xs:documentation></xs:annotation>
-            <xs:choice minOccurs="0" maxOccurs="unbounded">
-                <xs:element ref="DigitalCertificate"/>
-            </xs:choice>
-
-            <xs:attribute name="SourceFile" type="xs:string">
-                <xs:annotation><xs:documentation>The path to signature's optional hash file.</xs:documentation></xs:annotation>
+        <xs:complexType>
+            <xs:attribute name="Id" type="xs:string" use="required">
+                <xs:annotation>
+                    <xs:documentation>Identifier of DigitalCertificate to reference.</xs:documentation>
+                </xs:annotation>
             </xs:attribute>
         </xs:complexType>
     </xs:element>
@@ -1327,9 +1326,6 @@
             <xs:attribute name="Value" type="xs:string">
                 <xs:annotation><xs:documentation>The value to be written.</xs:documentation></xs:annotation>
             </xs:attribute>
-            <xs:attribute name="CreateElement" use="optional" type="YesNoType">
-                <xs:annotation><xs:documentation>Specifies whether or not to create an Element with the name specified in the Name attribute.</xs:documentation></xs:annotation>
-            </xs:attribute>
             <xs:attribute name="Action" use="required">
                 <xs:annotation><xs:documentation>The type of modification to be made to the XML file when the component is installed.</xs:documentation></xs:annotation>
                 <xs:simpleType>
@@ -1351,6 +1347,81 @@
             </xs:attribute>
             <xs:attribute name="Sequence" use="optional" type="xs:integer">
                 <xs:annotation><xs:documentation>Specifies the order in which the modification is to be attempted on the XML file.  It is important to ensure that new elements are created before you attempt to add an attribute to them.</xs:documentation></xs:annotation>
+            </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="XmlConfig">
+        <xs:annotation>
+            <xs:documentation>
+                Adds or removes .xml file entries.  If you use the XmlConfig element you must link with wixca.wixlib because it requires the XmlConfig custom actions.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexType mixed="true">
+            <xs:sequence>
+                <xs:element ref="XmlConfig" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+            <xs:attribute name="Id" use="required" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>Identifier for xml file modification.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="Action">
+                <xs:simpleType>
+                    <xs:restriction base="xs:NMTOKEN">
+                        <xs:enumeration value="create" />
+                        <xs:enumeration value="delete" />
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:attribute>
+            <xs:attribute name="ElementPath" use="required" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>The XPath of the parent element being modified.  Note that this is a formatted field and therefore, square brackets in the XPath must be escaped.  ElementPath can also be set to the Id of another XmlConfig.  In this case, the 'Action' 'Node' and 'On' attributes must be left unspecified.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="File" use="required" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>Path of the .xml file to configure.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="Name" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>Name of XML node to set/add to the specified element.  Not setting this attribute causes the element's text value to be set.  Otherwise this specified the attribute name that is set.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="Node">
+                <xs:simpleType>
+                    <xs:restriction base="xs:NMTOKEN">
+                        <xs:enumeration value="element" />
+                        <xs:enumeration value="value" />
+                        <xs:enumeration value="document" />
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:attribute>
+            <xs:attribute name="On">
+                <xs:simpleType>
+                    <xs:restriction base="xs:NMTOKEN">
+                        <xs:enumeration value="install" />
+                        <xs:enumeration value="uninstall" />
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:attribute>
+            <xs:attribute name="Sequence" use="optional" type="xs:integer">
+                <xs:annotation>
+                    <xs:documentation>Specifies the order in which the modification is to be attempted on the XML file.  It is important to ensure that new elements are created before you attempt to add an attribute to them.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="Value" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>
+                        The value to be written.  See the <html:a href="http://msdn2.microsoft.com/en-us/library/Aa368609">Formatted topic</html:a> for information about how to escape square brackets in the value.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="VerifyPath" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>The XPath to the element being modified.  This is required for 'delete' actions.  For 'create' actions, VerifyPath is used to decide if the element already exists.</xs:documentation>
+                </xs:annotation>
             </xs:attribute>
         </xs:complexType>
     </xs:element>
@@ -1601,7 +1672,9 @@
                 <xs:element ref="FileSearchRef"/>
             </xs:choice>
 
-            <xs:attribute name="Id" use="required" type="xs:string"/>
+            <xs:attribute name="Id" use="required" type="xs:string">
+              <xs:annotation><xs:documentation>Id of the search being referred to.</xs:documentation></xs:annotation>
+            </xs:attribute>
             <xs:attribute name="Guid" type="uuid">
                 <xs:annotation><xs:documentation>The component ID of the component whose key path is to be used for the search.</xs:documentation></xs:annotation>
             </xs:attribute>
@@ -1999,6 +2072,7 @@
         </xs:annotation>
         <xs:complexType>
             <xs:attribute name="Domain" type="xs:string">
+                <xs:annotation><xs:documentation>The domain of the user getting the specified permissions.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="Extended" use="optional" type="YesNoType">
                 <xs:annotation><xs:documentation>Specifies whether or not to use the LockPermissions table when the Permission element 
@@ -2008,28 +2082,39 @@
                 permissions for many more well known user SIDs as well as for user accounts that are created as part of the install.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="User" use="required" type="xs:string">
+                <xs:annotation><xs:documentation>The user getting the specified permissions.</xs:documentation></xs:annotation>
             </xs:attribute>
             <!-- Common ACLs -->
             <xs:attribute name="Read" type="YesNoType">
+                <xs:annotation><xs:documentation>The standard access right to read the object.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="Delete" type="YesNoType">
+                <xs:annotation><xs:documentation>The standard access right to delete the object.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="ReadPermission" type="YesNoType">
+                <xs:annotation><xs:documentation>The standard access right to read permissions in the object's security descriptor.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="ChangePermission" type="YesNoType">
+                <xs:annotation><xs:documentation>The standard access right to modify permissions in the object's security descriptor.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="TakeOwnership" type="YesNoType">
+                <xs:annotation><xs:documentation>The standard access right to change the owner in the object's security descriptor.</xs:documentation></xs:annotation>
             </xs:attribute>
             <!-- Folder and File ACLs -->
             <xs:attribute name="ReadAttributes" type="YesNoType">
+                <xs:annotation><xs:documentation>The right to open and copy file system attributes from a folder or file.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="WriteAttributes" type="YesNoType">
+                <xs:annotation><xs:documentation>The right to open and write file system attributes to a folder or file.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="ReadExtendedAttributes" type="YesNoType">
+                <xs:annotation><xs:documentation>The right to open and copy extended file system attributes from a folder or file.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="WriteExtendedAttributes" type="YesNoType">
+                <xs:annotation><xs:documentation>The right to open and write extended file system attributes to a folder or file.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="Synchronize" type="YesNoType">
+                <xs:annotation><xs:documentation>The standard access right to use the object for thread synchronization.</xs:documentation></xs:annotation>
             </xs:attribute>
             <!-- Folder only ACLs -->
             <xs:attribute name="CreateFile" type="YesNoType">
@@ -2046,30 +2131,40 @@
             </xs:attribute>
             <!-- File only ACLs -->
             <xs:attribute name="Append" type="YesNoType">
+                <xs:annotation><xs:documentation>The right to append data to the end of a file.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="Execute" type="YesNoType">
+                <xs:annotation><xs:documentation>The right to execute a file.</xs:documentation></xs:annotation>
             </xs:attribute>
             <!-- File and Registry ACLs -->
             <xs:attribute name="Write" type="YesNoType">
+                <xs:annotation><xs:documentation>The right to open and write to a file, folder, and registry key.</xs:documentation></xs:annotation>
             </xs:attribute>
             <!-- Registry only ACLs -->
             <xs:attribute name="CreateSubkeys" type="YesNoType">
+                <xs:annotation><xs:documentation>The right to create subkeys of a registry key.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="EnumerateSubkeys" type="YesNoType">
+                <xs:annotation><xs:documentation>The right to get a list of a registry key's subkeys.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="Notify" type="YesNoType">
+                <xs:annotation><xs:documentation>The right to request notification of changes to a registry key.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="CreateLink" type="YesNoType">
+                <xs:annotation><xs:documentation>Reserved for system use.</xs:documentation></xs:annotation>
             </xs:attribute>
             <!-- Generic ACLs, mapped by system to appropriate permissions -->
             <xs:attribute name="GenericAll" type="YesNoType">
+                <xs:annotation><xs:documentation>General read, write, and execute access, mapped by Windows to a set of standard and object-specific access rights.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="GenericExecute" type="YesNoType">
+                <xs:annotation><xs:documentation>General execute access, mapped by Windows to a set of standard and object-specific access rights.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="GenericWrite" type="YesNoType">
+                <xs:annotation><xs:documentation>General write access, mapped by Windows to a set of standard and object-specific access rights.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="GenericRead" type="YesNoType">
-                <xs:annotation><xs:documentation>specifying this will fail to grant read access</xs:documentation></xs:annotation>
+                <xs:annotation><xs:documentation>General read access, mapped by Windows to a set of standard and object-specific access rights. Specifying only GenericRead is not allowed; you must combine it with some additional attribute.</xs:documentation></xs:annotation>
             </xs:attribute>
             <!-- Service only ACLs -->
             <xs:attribute name="ServiceQueryConfig" type="YesNoType">
@@ -2196,35 +2291,10 @@
         </xs:complexType>
     </xs:element>
 
-    <xs:element name="Patch">
-        <xs:annotation>
-            <xs:documentation>
-                Patch information for parent File element
-            </xs:documentation>
-            <xs:appinfo>
-                <xse:msiRef table="Patch" />
-            </xs:appinfo>
-        </xs:annotation>
-        <xs:complexType>
-            <xs:attribute name="Sequence" type="xs:integer">
-                <xs:annotation><xs:documentation>may be defaulted if not in cabinet if build tools supply sequence</xs:documentation></xs:annotation>
-            </xs:attribute>
-            <xs:attribute name="PatchSize" type="xs:integer">
-                <xs:annotation><xs:documentation>may be defaulted if build tools supply actual size</xs:documentation></xs:annotation>
-            </xs:attribute>
-            <xs:attribute name="Header" use="required" type="xs:string">
-                <xs:annotation><xs:documentation>stream in Binary table</xs:documentation></xs:annotation>
-            </xs:attribute>
-            <!-- 'Attributes' column integer value generated from XML attributes below -->
-            <xs:attribute name="Vital" type="YesNoType">
-            </xs:attribute>
-        </xs:complexType>
-    </xs:element>
-
     <xs:element name="File">
         <xs:annotation>
             <xs:documentation>
-                File specification for File table, must be child node of Component
+                File specification for File table, must be child node of Component.
             </xs:documentation>
             <xs:appinfo>
                 <xse:msiRef table="File" />
@@ -2233,21 +2303,20 @@
         <xs:complexType>
             <xs:choice minOccurs="0" maxOccurs="unbounded">
                 <xs:element ref="AssemblyName"/>
-                <xs:element ref="Permission"/>
+                <xs:element ref="Permission">
+                    <xs:annotation><xs:documentation>Used to configure the ACLs for this file.</xs:documentation></xs:annotation>
+                </xs:element>
                 <xs:element ref="CopyFile">
-                    <xs:annotation><xs:documentation>to DuplicateFile table</xs:documentation></xs:annotation>
+                    <xs:annotation><xs:documentation>Used to create a duplicate of this file elsewhere.</xs:documentation></xs:annotation>
                 </xs:element>
                 <xs:element ref="Shortcut">
-                    <xs:annotation><xs:documentation>Target is preset to this file</xs:documentation></xs:annotation>
+                    <xs:annotation><xs:documentation>Target of the shortcut will be set to this file.</xs:documentation></xs:annotation>
                 </xs:element>
                 <xs:element ref="ODBCDriver"/>
                 <xs:element ref="ODBCTranslator"/>
                 <xs:element ref="Class"/>
                 <xs:element ref="AppId"/>
                 <xs:element ref="TypeLib"/>
-                <xs:element ref="Patch">
-                    <xs:annotation><xs:documentation>to Patch table</xs:documentation></xs:annotation>
-                </xs:element>
                 <xs:element ref="PerfCounter"/>
                 <xs:any namespace="##other" processContents="lax">
                     <xs:annotation>
@@ -2259,10 +2328,16 @@
                 </xs:any>
             </xs:choice>
 
-            <xs:attribute name="Id" type="xs:string" use="required"/>
+            <xs:attribute name="Id" type="xs:string" use="required">
+                <xs:annotation><xs:documentation>The unique identifier for this File element.  May be referenced as a Property by specifying [#value].</xs:documentation></xs:annotation>
+            </xs:attribute>
             <xs:attribute name="CompanionFile" type="xs:string">
                 <xs:annotation>
-                    <xs:documentation>Set this attribute to make this file a companion child of another file.  The installation state of a companion file depends not on its own file versioning information, but on the versioning of its companion parent.  A file that is the key path for its component can not be a companion file (that means this attribute cannot be set if KeyPath="yes" for this file).  The Version attribute cannot be set along with this attribute since companion files are not installed based on their own version.</xs:documentation>
+                    <xs:documentation>Set this attribute to make this file a companion child of another file.  The installation 
+                    state of a companion file depends not on its own file versioning information, but on the versioning of its 
+                    companion parent.  A file that is the key path for its component can not be a companion file (that means 
+                    this attribute cannot be set if KeyPath="yes" for this file).  The Version attribute cannot be set along 
+                    with this attribute since companion files are not installed based on their own version.</xs:documentation>
                 </xs:annotation>
             </xs:attribute>
             <xs:attribute name="Name" type="ShortFileNameType" use="required">
@@ -2331,9 +2406,8 @@
             <!-- assembly information -->
             <xs:attribute name="Assembly">
                 <xs:annotation>
-                    <xs:documentation>
-                        Specifies if this File is a Win32 Assembly or .NET Assembly; the default is neither.
-                        If the value is '.net' or 'win32', this file must also be the key path of the Component.
+                    <xs:documentation>Specifies if this File is a Win32 Assembly or .NET Assembly that needs to be installed into the 
+                    Global Assembly Cache.  If the value is '.net' or 'win32', this file must also be the key path of the Component.
                     </xs:documentation>
                 </xs:annotation>
                 <xs:simpleType>
@@ -2410,11 +2484,11 @@
         <xs:complexType>
             <xs:sequence>
                 <xs:element ref="Permission" minOccurs="1" maxOccurs="unbounded">
-                    <xs:annotation><xs:documentation>ACL permission</xs:documentation></xs:annotation>
+                    <xs:annotation><xs:documentation>Used to set the ACLs on this share.</xs:documentation></xs:annotation>
                 </xs:element>
             </xs:sequence>
             <xs:attribute name="Id" type="xs:string" use="required">
-                <xs:annotation><xs:documentation>Identifier for the file share (primary key).</xs:documentation></xs:annotation>
+                <xs:annotation><xs:documentation>Identifier for the file share (File/@Id).</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="Name" type="xs:string" use="required">
                 <xs:annotation><xs:documentation>Name of the file share.</xs:documentation></xs:annotation>
@@ -3049,13 +3123,21 @@
                 </xs:element>
             </xs:sequence>
 
-            <xs:attribute name="Id" type="xs:string" use="required"/>
-            <xs:attribute name="Description" type="xs:string"/>
-            <xs:attribute name="Icon" type="xs:string">
-                <xs:annotation><xs:documentation>reference to Icon element</xs:documentation></xs:annotation>
+            <xs:attribute name="Id" type="xs:string" use="required">
+                <xs:annotation><xs:documentation>ProgId or version-independent ProgId.</xs:documentation></xs:annotation>
             </xs:attribute>
-            <xs:attribute name="IconIndex" type="xs:integer"/>
-            <xs:attribute name="Advertise" type="YesNoType"/>
+            <xs:attribute name="Description" type="xs:string">
+                <xs:annotation><xs:documentation>Optional localizable description of the ProgId.</xs:documentation></xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="Icon" type="xs:string">
+                <xs:annotation><xs:documentation>Reference to Icon element</xs:documentation></xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="IconIndex" type="xs:integer">
+                <xs:annotation><xs:documentation>The zero-based index of the icon associated with this ProgId. Do not specify this attribute for a version-independent ProgId.</xs:documentation></xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="Advertise" type="YesNoType">
+                <xs:annotation><xs:documentation>If yes, the ProgId is set using the ProgId table; if no, the ProgId is set using the Registry table. If the ProgId is a child of a Class element, the ProgId's Advertise attribute value must match the Class Advertise value.</xs:documentation></xs:annotation>
+            </xs:attribute>
             <xs:attribute name="NoOpen" type="xs:string">
                 <xs:annotation><xs:documentation>Specifies that the associated ProgId should not be opened by users. The value is presented as a warning to users. An empty string is also valid for this attribute. See <html:a href='http://msdn.microsoft.com/library/en-us/dnwue/html/ch11c.asp'>the MSDN documentation</html:a> for more information.</xs:documentation></xs:annotation>
             </xs:attribute>
@@ -3893,7 +3975,8 @@
     <xs:element name="ServiceArgument" type="xs:string">
         <xs:annotation>
             <xs:documentation>
-                Argument used in ServiceControl parent
+                The inner text of this element is added as the argument used for the parent ServiceControl. 
+                Multiple ServiceArgument elements are allowed.
             </xs:documentation>
             <xs:appinfo>
                 <xse:msiRef table="ServiceControl" />
@@ -3920,7 +4003,9 @@
                 </xs:element>
             </xs:sequence>
 
-            <xs:attribute name="Id" type="xs:string" use="required"/>
+            <xs:attribute name="Id" type="xs:string" use="required">
+                <xs:annotation><xs:documentation>Unique identifier of this ServiceControl.</xs:documentation></xs:annotation>
+            </xs:attribute>
             <xs:attribute name="Name" type="xs:string" use="required">
                 <xs:annotation><xs:documentation>Name of the service.</xs:documentation></xs:annotation>
             </xs:attribute>
@@ -4181,6 +4266,7 @@
                 <xs:element ref="WebSite"/>
                 <xs:element ref="WebVirtualDir"/>
                 <xs:element ref="XmlFile"/>
+                <xs:element ref="XmlConfig"/>
                 <xs:any namespace="##other" processContents="lax">
                     <xs:annotation><xs:documentation>
                         Extensibility point in the WiX XML Schema.  Schema extensions can register additional
@@ -4486,7 +4572,7 @@
             <xs:appinfo>
                 <xse:seeAlso ref="MergeRef"/>
             </xs:appinfo>
-            <xs:documentation>Merge directive to bring in a Merge Module to be redirected to parent Directory</xs:documentation>
+            <xs:documentation>Merge directive to bring in a merge module that will be redirected to the parent directory.</xs:documentation>
         </xs:annotation>
         <xs:complexType>
             <xs:choice minOccurs="0" maxOccurs="unbounded">
@@ -4495,7 +4581,7 @@
                 </xs:element>
             </xs:choice>
             <xs:attribute name="Id" type="xs:string" use="required">
-                <xs:annotation><xs:documentation>The unique identifier for the Merge element in the source code.  Referenced by the MergeRef/@Id.</xs:documentation></xs:annotation>
+                <xs:annotation><xs:documentation>The unique identifier used by MergeRef to associate the merge module with a feature.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="DiskId" type="xs:string" use="required">
                 <xs:annotation><xs:documentation>The value of this attribute should correspond to the Id attribute of a
@@ -4503,11 +4589,15 @@
                     element, you set the packaging options to the values specified in the Media
                     element (values such as compression level, cab embedding, etc...).</xs:documentation></xs:annotation>
             </xs:attribute>
-            <xs:attribute name="FileCompression" type="YesNoType"/>
+            <xs:attribute name="FileCompression" type="YesNoType">
+                <xs:annotation><xs:documentation>Specifies if the files in the merge module should be compressed.</xs:documentation></xs:annotation>
+            </xs:attribute>
             <xs:attribute name="Language" type="xs:integer" use="required">
                 <xs:annotation><xs:documentation>Specifies the decimal LCID for the language to merge the Module in as.</xs:documentation></xs:annotation>
             </xs:attribute>
-            <xs:attribute name="SourceFile" type="xs:string"/>
+            <xs:attribute name="SourceFile" type="xs:string">
+                <xs:annotation><xs:documentation>Path to the source location of the merge module.</xs:documentation></xs:annotation>
+            </xs:attribute>
             <xs:attribute name="src" type="xs:string">
                 <xs:annotation>
                     <xs:appinfo>
@@ -4642,7 +4732,7 @@
                         <xs:annotation><xs:documentation>The installer sets the REMOVE property to features specified in this column.  The features to be removed can be determined at run time.  The Formatted string entered in this field must evaluate to a comma-delimited list of feature names.  For example: [Feature1],[Feature2],[Feature3].  No features are removed if the field contains formatted text that evaluates to an empty string.  The installer sets REMOVE=ALL only if the Remove field is empty.</xs:documentation></xs:annotation>
                     </xs:attribute>
                     <xs:attribute name="Property" type="xs:string">
-                        <xs:annotation><xs:documentation>When the FindRelatedProducts action detects a related product installed on the system, it appends the product code to the property specified in this field.  The property specified in this field must be a public property and the package author must add the property to the SecureCustomProperties Property.  Each UpgradeVersion must have a unique Property value.  After FindRelatedProducts the value of this property is a list product codes, separated by semicolons (;), detected on the system.</xs:documentation></xs:annotation>
+                        <xs:annotation><xs:documentation>When the FindRelatedProducts action detects a related product installed on the system, it appends the product code to the property specified in this field.  Windows Installer documentation for the <a href="http://msdn2.microsoft.com/en-us/library/aa372379.aspx">Upgrade table</a> states that the property specified in this field must be a public property and must be added to the <a href="http://msdn2.microsoft.com/en-us/library/aa371571.aspx">SecureCustomProperties</a> property.  WiX automatically appends the property specified in this field to the SecureCustomProperties property when creating an MSI.  Each UpgradeVersion must have a unique Property value.  After the FindRelatedProducts action is run, the value of this property is a list product codes, separated by semicolons (;), detected on the system.</xs:documentation></xs:annotation>
                     </xs:attribute>
                     <xs:attribute name="MigrateFeatures" type="YesNoType">
                         <xs:annotation><xs:documentation>Set to "yes" to migrate feature states from upgraded products by enabling the logic in the MigrateFeatureStates action.</xs:documentation></xs:annotation>
@@ -4957,7 +5047,10 @@
         </xs:annotation>
         <xs:complexType>
             <xs:sequence>
-                <xs:element ref="DigitalSignature" minOccurs="0"/>
+                <xs:choice minOccurs="0">
+                    <xs:element ref="DigitalCertificate"/>
+                    <xs:element ref="DigitalCertificateRef"/>
+                </xs:choice>
                 <xs:element ref="PatchPackage" minOccurs="0" maxOccurs="unbounded"/>
             </xs:sequence>
             <xs:attribute name="Id" type="xs:integer" use="required">
@@ -5027,14 +5120,27 @@
     <xs:element name="IgnoreModularization">
         <xs:annotation>
             <xs:documentation>
-                Use this to Ignore Modularization of particular values.  This feature
-                is intended to be used in very rare situations.  Before using this
-                feature, contact your support alias to verify your use is supported.
+                Use this to ignore modularization of particular values.  When creating a merge
+                module, ignoring modularization will prevent a GUID from being appended to the
+                item with the specified name and type.  This feature is intended to be used in
+                very rare situations because GUIDs are appended in order to guarantee uniqueness
+                for items when merge modules are merged into an MSI.
             </xs:documentation>
         </xs:annotation>
         <xs:complexType>
-            <xs:attribute name="Name" use="required" type="xs:string" />
+            <xs:attribute name="Name" use="required" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>
+                        The name of the item to ignore modularization for.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
             <xs:attribute name="Type">
+                <xs:annotation>
+                    <xs:documentation>
+                        The type of the item to ignore modularization for.
+                    </xs:documentation>
+                </xs:annotation>
                 <xs:simpleType>
                     <xs:restriction base="xs:NMTOKEN">
                         <xs:enumeration value="Action" />
@@ -5355,12 +5461,16 @@
         <xs:annotation>
             <xs:appinfo>
                 <xse:seeAlso ref="Upgrade"/>
+                <xse:msiRef action="FindRelatedProducts"/>
             </xs:appinfo>
             <xs:documentation>Runs through each record of the Upgrade table in sequence and compares the upgrade code, product version, and language in each row to products installed on the system.  When FindRelatedProducts detects a correspondence between the upgrade information and an installed product, it appends the product code to the property specified in the ActionProperty column of the UpgradeTable.  The FindRelatedProducts action only runs the first time the product is installed.  The FindRelatedProducts action does not run during maintenance mode or uninstallation.  FindRelatedProducts should be authored into the InstallUISequence table and InstallExecuteSequence tables.  The installer prevents FindRelated Products from running in InstallExecuteSequence if the action has already run in InstallUISequence.  The FindRelatedProducts action must come before the MigrateFeatureStates action and the RemoveExistingProducts action.  The condition for this action may be specified in the element's inner text.</xs:documentation>
         </xs:annotation>
     </xs:element>
     <xs:element name="ValidateProductID" type="ActionSequenceType">
         <xs:annotation>
+            <xs:appinfo>
+                <xse:msiRef action="ValidateProductID"/>
+            </xs:appinfo>
             <xs:documentation>Sets the ProductID property to the full product identifier.  This action must be sequenced before the user interface wizard in the InstallUISequence table and before the RegisterUser action in the InstallExecuteSequence table.  If the product identifier has already been validated successfully, the ValidateProductID action does nothing.  The ValidateProductID action always returns a success, whether or not the product identifier is valid, so that the product identifier can be entered on the command line the first time the product is run.  The product identifier can be validated without having the user reenter this information by setting the PIDKEY property on the command line or by using a transform.  The display of the dialog box requesting the user to enter the product identifier can then be made conditional upon the presence of the ProductID property, which is set when the PIDKEY property is validated.  The condition for this action may be specified in the element's inner text.</xs:documentation>
         </xs:annotation>
     </xs:element>
@@ -5369,6 +5479,7 @@
             <xs:appinfo>
                 <xse:seeAlso ref="FileCost"/>
                 <xse:seeAlso ref="CostFinalize"/>
+                <xse:msiRef action="CostInitialize"/>
             </xs:appinfo>
             <xs:documentation>Initiates the internal installation costing process.  Any standard or custom actions that affect costing should be sequenced before the CostInitialize action.  Call the FileCost action immediately following the CostInitialize action.  Then call the CostFinalize action following the CostInitialize action to make all final cost calculations available to the installer through the Component table.  The condition for this action may be specified in the element's inner text.</xs:documentation>
         </xs:annotation>
@@ -5378,6 +5489,7 @@
             <xs:appinfo>
                 <xse:seeAlso ref="CostInitialize"/>
                 <xse:seeAlso ref="CostFinalize"/>
+                <xse:msiRef action="FileCost"/>
             </xs:appinfo>
             <xs:documentation>Initiates dynamic costing of standard installation actions.  Any standard or custom actions that affect costing should sequenced before the CostInitialize action.  Call the FileCost action immediately following the CostInitialize action.  Then call the CostFinalize action following the FileCost action to make all final cost calculations available to the installer through the Component table.  The CostInitialize action must be executed before the FileCost action.  The installer then determines the disk-space cost of every file in the File table, on a per-component basis, taking both volume clustering and the presence of existing files that may need to be overwritten into account.  All actions that consume or release disk space are also considered.  If an existing file is found, a file version check is performed to determine whether the new file actually needs to be installed or not.  If the existing file is of an equal or greater version number, the existing file is not overwritten and no disk-space cost is incurred.  In all cases, the installer uses the results of version number checking to set the installation state of each file.  The FileCost action initializes cost calculation with the installer.  Actual dynamic costing does not occur until the CostFinalize action is executed.  The condition for this action may be specified in the element's inner text.</xs:documentation>
         </xs:annotation>
@@ -5386,6 +5498,7 @@
         <xs:annotation>
             <xs:appinfo>
                 <xse:seeAlso ref="IsolateComponent"/>
+                <xse:msiRef action="IsolateComponents"/>
             </xs:appinfo>
             <xs:documentation>Installs a copy of a component (commonly a shared DLL) into a private location for use by a specific application (typically an .exe).  This isolates the application from other copies of the component that may be installed to a shared location on the computer.  The action refers to each record of the IsolatedComponent table and associates the files of the component listed in the Component_Shared field with the component listed in the Component_Application field.  The installer installs the files of Component_Shared into the same directory as Component_Application.  The installer generates a file in this directory, zero bytes in length, having the short filename name of the key file for Component_Application (typically this is the same file name as the .exe) appended with .local.  The IsolatedComponent action does not affect the installation of Component_Application.  Uninstalling Component_Application also removes the Component_Shared files and the .local file from the directory.  The IsolateComponents action can be used only in the InstallUISequence table and the InstallExecuteSequence table.  This action must come after the CostInitialize action and before the CostFinalize action.  The condition for this action may be specified in the element's inner text.</xs:documentation>
         </xs:annotation>
@@ -5395,187 +5508,466 @@
             <xs:appinfo>
                 <xse:seeAlso ref="CostInitialize"/>
                 <xse:seeAlso ref="FileCost"/>
+                <xse:msiRef action="CostFinalize"/>
             </xs:appinfo>
             <xs:documentation>Ends the internal installation costing process begun by the CostInitialize action.  Any standard or custom actions that affect costing should be sequenced before the CostInitialize action.  Call the FileCost action immediately following the CostInitialize action and then call the CostFinalize action to make all final cost calculations available to the installer through the Component table.  The CostFinalize action must be executed before starting any user interface sequence which allows the user to view or modify Feature table selections or directories.  The CostFinalize action queries the Condition table to determine which features are scheduled to be installed.  Costing is done for each component in the Component table.  The CostFinalize action also verifies that all the target directories are writable before allowing the installation to continue.  The condition for this action may be specified in the element's inner text.</xs:documentation>
         </xs:annotation>
     </xs:element>
     <xs:element name="SetODBCFolders" type="ActionSequenceType">
-        <xs:annotation><xs:documentation>Checks for existing ODBC drivers and sets the target directory for each new driver to the location of an existing driver.  The condition for this action may be specified in the element's inner text.</xs:documentation></xs:annotation>
+        <xs:annotation>
+            <xs:appinfo>
+                <xse:msiRef action="SetODBCFolders"/>
+            </xs:appinfo>
+            <xs:documentation>Checks for existing ODBC drivers and sets the target directory for each new driver to the location of an existing driver.  The condition for this action may be specified in the element's inner text.</xs:documentation>
+        </xs:annotation>
     </xs:element>
     <xs:element name="MigrateFeatureStates" type="ActionSequenceType">
-        <xs:annotation><xs:documentation>Used for upgrading or installing over an existing application.  Reads feature states from existing application and sets these feature states for the pending installation.  The condition for this action may be specified in the element's inner text.</xs:documentation></xs:annotation>
+        <xs:annotation>
+            <xs:appinfo>
+                <xse:msiRef action="MigrateFeatureStates"/>
+            </xs:appinfo>
+            <xs:documentation>Used for upgrading or installing over an existing application.  Reads feature states from existing application and sets these feature states for the pending installation.  The condition for this action may be specified in the element's inner text.</xs:documentation>
+        </xs:annotation>
     </xs:element>
     <xs:element name="ExecuteAction" type="ActionSequenceType">
-        <xs:annotation><xs:documentation>Initiates the execution sequence.  The condition for this action may be specified in the element's inner text.</xs:documentation></xs:annotation>
+        <xs:annotation>
+            <xs:appinfo>
+                <xse:msiRef action="ExecuteAction"/>
+            </xs:appinfo>
+            <xs:documentation>Initiates the execution sequence.  The condition for this action may be specified in the element's inner text.</xs:documentation>
+        </xs:annotation>
     </xs:element>
     <xs:element name="InstallValidate" type="ActionSequenceType">
-        <xs:annotation><xs:documentation>Verifies that all costed volumes have enough space for the installation.  The condition for this action may be specified in the element's inner text.</xs:documentation></xs:annotation>
+        <xs:annotation>
+            <xs:appinfo>
+                <xse:msiRef action="InstallValidate"/>
+            </xs:appinfo>
+            <xs:documentation>Verifies that all costed volumes have enough space for the installation.  The condition for this action may be specified in the element's inner text.</xs:documentation>
+        </xs:annotation>
     </xs:element>
     <xs:element name="InstallInitialize" type="ActionSequenceType">
         <xs:annotation>
             <xs:appinfo>
                 <xse:seeAlso ref="InstallFinalize"/>
+                <xse:msiRef action="InstallInitialize"/>
             </xs:appinfo>
             <xs:documentation>Marks the beginning of a sequence of actions that change the system.  The condition for this action may be specified in the element's inner text.</xs:documentation>
         </xs:annotation>
     </xs:element>
     <xs:element name="AllocateRegistrySpace" type="ActionSequenceType">
-        <xs:annotation><xs:documentation>Ensures the needed amount of space exists in the registry.  The condition for this action may be specified in the element's inner text.</xs:documentation></xs:annotation>
+        <xs:annotation>
+            <xs:appinfo>
+                <xse:msiRef action="AllocateRegistrySpace"/>
+            </xs:appinfo>
+            <xs:documentation>Ensures the needed amount of space exists in the registry.  The condition for this action may be specified in the element's inner text.</xs:documentation>
+        </xs:annotation>
     </xs:element>
     <xs:element name="ProcessComponents" type="ActionSequenceType">
-        <xs:annotation><xs:documentation>Registers and unregisters components, their key paths, and the component clients.  The condition for this action may be specified in the element's inner text.</xs:documentation></xs:annotation>
+        <xs:annotation>
+            <xs:appinfo>
+                <xse:msiRef action="ProcessComponents"/>
+            </xs:appinfo>
+            <xs:documentation>Registers and unregisters components, their key paths, and the component clients.  The condition for this action may be specified in the element's inner text.</xs:documentation>
+        </xs:annotation>
     </xs:element>
     <xs:element name="UnpublishComponents" type="ActionSequenceType">
-        <xs:annotation><xs:documentation>Manages the unadvertisement of components listed in the PublishComponent table.  The condition for this action may be specified in the element's inner text.</xs:documentation></xs:annotation>
+        <xs:annotation>
+            <xs:appinfo>
+                <xse:msiRef action="UnpublishComponents"/>
+            </xs:appinfo>
+            <xs:documentation>Manages the unadvertisement of components listed in the PublishComponent table.  The condition for this action may be specified in the element's inner text.</xs:documentation>
+        </xs:annotation>
     </xs:element>
     <xs:element name="MsiUnpublishAssemblies" type="ActionSequenceType">
-        <xs:annotation><xs:documentation>Manages the unadvertisement of CLR and Win32 assemblies that are being removed.  The condition for this action may be specified in the element's inner text.</xs:documentation></xs:annotation>
+        <xs:annotation>
+            <xs:appinfo>
+                <xse:msiRef action="MsiUnpublishAssemblies"/>
+            </xs:appinfo>
+            <xs:documentation>Manages the unadvertisement of CLR and Win32 assemblies that are being removed.  The condition for this action may be specified in the element's inner text.</xs:documentation>
+        </xs:annotation>
     </xs:element>
     <xs:element name="UnpublishFeatures" type="ActionSequenceType">
-        <xs:annotation><xs:documentation>Removes selection-state and feature-component mapping information from the registry.  The condition for this action may be specified in the element's inner text.</xs:documentation></xs:annotation>
+        <xs:annotation>
+            <xs:appinfo>
+                <xse:msiRef action="UnpublishFeatures"/>
+            </xs:appinfo>
+            <xs:documentation>Removes selection-state and feature-component mapping information from the registry.  The condition for this action may be specified in the element's inner text.</xs:documentation>
+        </xs:annotation>
     </xs:element>
     <xs:element name="StopServices" type="ActionSequenceType">
-        <xs:annotation><xs:documentation>Stops system services.  The condition for this action may be specified in the element's inner text.</xs:documentation></xs:annotation>
+        <xs:annotation>
+            <xs:appinfo>
+                <xse:msiRef action="StopServices"/>
+            </xs:appinfo>
+            <xs:documentation>Stops system services.  The condition for this action may be specified in the element's inner text.</xs:documentation>
+        </xs:annotation>
     </xs:element>
     <xs:element name="DeleteServices" type="ActionSequenceType">
-        <xs:annotation><xs:documentation>Stops a service and removes its registration from the system.  The condition for this action may be specified in the element's inner text.</xs:documentation></xs:annotation>
+        <xs:annotation>
+            <xs:appinfo>
+                <xse:msiRef action="DeleteServices"/>
+            </xs:appinfo>
+            <xs:documentation>Stops a service and removes its registration from the system.  The condition for this action may be specified in the element's inner text.</xs:documentation>
+        </xs:annotation>
     </xs:element>
     <xs:element name="UnregisterComPlus" type="ActionSequenceType">
-        <xs:annotation><xs:documentation>Removes COM+ applications from the registry.  The condition for this action may be specified in the element's inner text.</xs:documentation></xs:annotation>
+        <xs:annotation>
+            <xs:appinfo>
+                <xse:msiRef action="UnregisterComPlus"/>
+            </xs:appinfo>
+            <xs:documentation>Removes COM+ applications from the registry.  The condition for this action may be specified in the element's inner text.</xs:documentation>
+        </xs:annotation>
     </xs:element>
     <xs:element name="SelfUnregModules" type="ActionSequenceType">
-        <xs:annotation><xs:documentation>Unregisters all modules listed in the SelfReg table that are scheduled to be uninstalled.  The condition for this action may be specified in the element's inner text.</xs:documentation></xs:annotation>
+        <xs:annotation>
+            <xs:appinfo>
+                <xse:msiRef action="SelfUnregModules"/>
+            </xs:appinfo>
+            <xs:documentation>Unregisters all modules listed in the SelfReg table that are scheduled to be uninstalled.  The condition for this action may be specified in the element's inner text.</xs:documentation>
+        </xs:annotation>
     </xs:element>
     <xs:element name="UnregisterTypeLibraries" type="ActionSequenceType">
-        <xs:annotation><xs:documentation>Unregisters type libraries from the system.  The condition for this action may be specified in the element's inner text.</xs:documentation></xs:annotation>
+        <xs:annotation>
+            <xs:appinfo>
+                <xse:msiRef action="UnregisterTypeLibraries"/>
+            </xs:appinfo>
+            <xs:documentation>Unregisters type libraries from the system.  The condition for this action may be specified in the element's inner text.</xs:documentation>
+        </xs:annotation>
     </xs:element>
     <xs:element name="RemoveODBC" type="ActionSequenceType">
-        <xs:annotation><xs:documentation>Removes the data sources, translators, and drivers listed for removal during the installation.  The condition for this action may be specified in the element's inner text.</xs:documentation></xs:annotation>
+        <xs:annotation>
+            <xs:appinfo>
+                <xse:msiRef action="RemoveODBC"/>
+            </xs:appinfo>
+            <xs:documentation>Removes the data sources, translators, and drivers listed for removal during the installation.  The condition for this action may be specified in the element's inner text.</xs:documentation>
+        </xs:annotation>
     </xs:element>
     <xs:element name="UnregisterFonts" type="ActionSequenceType">
-        <xs:annotation><xs:documentation>Removes registration information about installed fonts from the system.  The condition for this action may be specified in the element's inner text.</xs:documentation></xs:annotation>
+        <xs:annotation>
+            <xs:appinfo>
+                <xse:msiRef action="UnregisterFonts"/>
+            </xs:appinfo>
+            <xs:documentation>Removes registration information about installed fonts from the system.  The condition for this action may be specified in the element's inner text.</xs:documentation>
+        </xs:annotation>
     </xs:element>
     <xs:element name="RemoveRegistryValues" type="ActionSequenceType">
-        <xs:annotation><xs:documentation>Removes a registry value that has been authored into the registry table if the associated component was installed locally or as run from source, and is now set to be uninstalled.  The condition for this action may be specified in the element's inner text.</xs:documentation></xs:annotation>
+        <xs:annotation>
+            <xs:appinfo>
+                <xse:msiRef action="RemoveRegistryValues"/>
+            </xs:appinfo>
+            <xs:documentation>Removes a registry value that has been authored into the registry table if the associated component was installed locally or as run from source, and is now set to be uninstalled.  The condition for this action may be specified in the element's inner text.</xs:documentation>
+        </xs:annotation>
     </xs:element>
     <xs:element name="UnregisterClassInfo" type="ActionSequenceType">
-        <xs:annotation><xs:documentation>Manages the removal of COM class information from the system registry.  The condition for this action may be specified in the element's inner text.</xs:documentation></xs:annotation>
+        <xs:annotation>
+            <xs:appinfo>
+                <xse:msiRef action="UnregisterClassInfo"/>
+            </xs:appinfo>
+            <xs:documentation>Manages the removal of COM class information from the system registry.  The condition for this action may be specified in the element's inner text.</xs:documentation>
+        </xs:annotation>
     </xs:element>
     <xs:element name="UnregisterExtensionInfo" type="ActionSequenceType">
-        <xs:annotation><xs:documentation>Manages the removal of extension-related information from the system registry.  The condition for this action may be specified in the element's inner text.</xs:documentation></xs:annotation>
+        <xs:annotation>
+            <xs:appinfo>
+                <xse:msiRef action="UnregisterExtensionInfo"/>
+            </xs:appinfo>
+            <xs:documentation>Manages the removal of extension-related information from the system registry.  The condition for this action may be specified in the element's inner text.</xs:documentation>
+        </xs:annotation>
     </xs:element>
     <xs:element name="UnregisterProgIdInfo" type="ActionSequenceType">
-        <xs:annotation><xs:documentation>Manages the unregistration of OLE ProgId information with the system.  The condition for this action may be specified in the element's inner text.</xs:documentation></xs:annotation>
+        <xs:annotation>
+            <xs:appinfo>
+                <xse:msiRef action="UnregisterProgIdInfo"/>
+            </xs:appinfo>
+            <xs:documentation>Manages the unregistration of OLE ProgId information with the system.  The condition for this action may be specified in the element's inner text.</xs:documentation>
+        </xs:annotation>
     </xs:element>
     <xs:element name="UnregisterMIMEInfo" type="ActionSequenceType">
-        <xs:annotation><xs:documentation>Unregisters MIME-related registry information from the system.  The condition for this action may be specified in the element's inner text.</xs:documentation></xs:annotation>
+        <xs:annotation>
+            <xs:appinfo>
+                <xse:msiRef action="UnregisterMIMEInfo"/>
+            </xs:appinfo>
+            <xs:documentation>Unregisters MIME-related registry information from the system.  The condition for this action may be specified in the element's inner text.</xs:documentation>
+        </xs:annotation>
     </xs:element>
     <xs:element name="RemoveIniValues" type="ActionSequenceType">
-        <xs:annotation><xs:documentation>Removes .ini file information specified for removal in the RemoveIniFile table if the component is set to be installed locally or run from source.  The condition for this action may be specified in the element's inner text.</xs:documentation></xs:annotation>
+        <xs:annotation>
+            <xs:appinfo>
+                <xse:msiRef action="RemoveIniValues"/>
+            </xs:appinfo>
+            <xs:documentation>Removes .ini file information specified for removal in the RemoveIniFile table if the component is set to be installed locally or run from source.  The condition for this action may be specified in the element's inner text.</xs:documentation>
+        </xs:annotation>
     </xs:element>
     <xs:element name="RemoveShortcuts" type="ActionSequenceType">
-        <xs:annotation><xs:documentation>Manages the removal of an advertised shortcut whose feature is selected for uninstallation or a nonadvertised shortcut whose component is selected for uninstallation.  The condition for this action may be specified in the element's inner text.</xs:documentation></xs:annotation>
+        <xs:annotation>
+            <xs:appinfo>
+                <xse:msiRef action="RemoveShortcuts"/>
+            </xs:appinfo>
+            <xs:documentation>Manages the removal of an advertised shortcut whose feature is selected for uninstallation or a nonadvertised shortcut whose component is selected for uninstallation.  The condition for this action may be specified in the element's inner text.</xs:documentation>
+        </xs:annotation>
     </xs:element>
     <xs:element name="RemoveEnvironmentStrings" type="ActionSequenceType">
-        <xs:annotation><xs:documentation>Modifies the values of environment variables.  The condition for this action may be specified in the element's inner text.</xs:documentation></xs:annotation>
+        <xs:annotation>
+            <xs:appinfo>
+                <xse:msiRef action="RemoveEnvironmentStrings"/>
+            </xs:appinfo>
+            <xs:documentation>Modifies the values of environment variables.  The condition for this action may be specified in the element's inner text.</xs:documentation>
+        </xs:annotation>
     </xs:element>
     <xs:element name="RemoveDuplicateFiles" type="ActionSequenceType">
-        <xs:annotation><xs:documentation>Deletes files installed by the DuplicateFiles action.  The condition for this action may be specified in the element's inner text.</xs:documentation></xs:annotation>
+        <xs:annotation>
+            <xs:appinfo>
+                <xse:msiRef action="RemoveDuplicateFiles"/>
+            </xs:appinfo>
+            <xs:documentation>Deletes files installed by the DuplicateFiles action.  The condition for this action may be specified in the element's inner text.</xs:documentation>
+        </xs:annotation>
     </xs:element>
     <xs:element name="RemoveFiles" type="ActionSequenceType">
-        <xs:annotation><xs:documentation>Removes files previously installed by the InstallFiles action.  The condition for this action may be specified in the element's inner text.</xs:documentation></xs:annotation>
+        <xs:annotation>
+            <xs:appinfo>
+                <xse:msiRef action="RemoveFiles"/>
+            </xs:appinfo>
+            <xs:documentation>Removes files previously installed by the InstallFiles action.  The condition for this action may be specified in the element's inner text.</xs:documentation>
+        </xs:annotation>
     </xs:element>
     <xs:element name="RemoveFolders" type="ActionSequenceType">
-        <xs:annotation><xs:documentation>Removes any folders linked to components set to be removed or run from source.  The condition for this action may be specified in the element's inner text.</xs:documentation></xs:annotation>
+        <xs:annotation>
+            <xs:appinfo>
+                <xse:msiRef action="RemoveFolders"/>
+            </xs:appinfo>
+            <xs:documentation>Removes any folders linked to components set to be removed or run from source.  The condition for this action may be specified in the element's inner text.</xs:documentation>
+        </xs:annotation>
     </xs:element>
     <xs:element name="CreateFolders" type="ActionSequenceType">
-        <xs:annotation><xs:documentation>Creates empty folders for components that are set to be installed.  The condition for this action may be specified in the element's inner text.</xs:documentation></xs:annotation>
+        <xs:annotation>
+            <xs:appinfo>
+                <xse:msiRef action="CreateFolders"/>
+            </xs:appinfo>
+            <xs:documentation>Creates empty folders for components that are set to be installed.  The condition for this action may be specified in the element's inner text.</xs:documentation>
+        </xs:annotation>
     </xs:element>
     <xs:element name="MoveFiles" type="ActionSequenceType">
-        <xs:annotation><xs:documentation>Locates existing files on the system and moves or copies those files to a new location.  The condition for this action may be specified in the element's inner text.</xs:documentation></xs:annotation>
+        <xs:annotation>
+            <xs:appinfo>
+                <xse:msiRef action="MoveFiles"/>
+            </xs:appinfo>
+            <xs:documentation>Locates existing files on the system and moves or copies those files to a new location.  The condition for this action may be specified in the element's inner text.</xs:documentation>
+        </xs:annotation>
     </xs:element>
     <xs:element name="InstallAdminPackage" type="ActionSequenceType">
-        <xs:annotation><xs:documentation>Copies the product database to the administrative installation point.  The condition for this action may be specified in the element's inner text.</xs:documentation></xs:annotation>
+        <xs:annotation>
+            <xs:appinfo>
+                <xse:msiRef action="InstallAdminPackage"/>
+            </xs:appinfo>
+            <xs:documentation>Copies the product database to the administrative installation point.  The condition for this action may be specified in the element's inner text.</xs:documentation>
+        </xs:annotation>
     </xs:element>
     <xs:element name="InstallFiles" type="ActionSequenceType">
-        <xs:annotation><xs:documentation>Copies files specified in the File table from the source directory to the destination directory.  The condition for this action may be specified in the element's inner text.</xs:documentation></xs:annotation>
+        <xs:annotation>
+            <xs:appinfo>
+                <xse:msiRef action="InstallFiles"/>
+            </xs:appinfo>
+            <xs:documentation>Copies files specified in the File table from the source directory to the destination directory.  The condition for this action may be specified in the element's inner text.</xs:documentation>
+        </xs:annotation>
     </xs:element>
     <xs:element name="DuplicateFiles" type="ActionSequenceType">
-        <xs:annotation><xs:documentation>Duplicates files installed by the InstallFiles action.  The condition for this action may be specified in the element's inner text.</xs:documentation></xs:annotation>
+        <xs:annotation>
+            <xs:appinfo>
+                <xse:msiRef action="DuplicateFiles"/>
+            </xs:appinfo>
+            <xs:documentation>Duplicates files installed by the InstallFiles action.  The condition for this action may be specified in the element's inner text.</xs:documentation>
+        </xs:annotation>
     </xs:element>
     <xs:element name="PatchFiles" type="ActionSequenceType">
-        <xs:annotation><xs:documentation>Queries the Patch table to determine which patches are to be applied.  The condition for this action may be specified in the element's inner text.</xs:documentation></xs:annotation>
+        <xs:annotation>
+            <xs:appinfo>
+                <xse:msiRef action="PatchFiles"/>
+            </xs:appinfo>
+            <xs:documentation>Queries the Patch table to determine which patches are to be applied.  The condition for this action may be specified in the element's inner text.</xs:documentation>
+        </xs:annotation>
     </xs:element>
     <xs:element name="BindImage" type="ActionSequenceType">
-        <xs:annotation><xs:documentation>Binds each executable or DLL that must be bound to the DLLs imported by it.  The condition for this action may be specified in the element's inner text.</xs:documentation></xs:annotation>
+        <xs:annotation>
+            <xs:appinfo>
+                <xse:msiRef table="BindImage"/>
+                <xse:msiRef action="BindImage"/>
+            </xs:appinfo>
+            <xs:documentation>Binds each executable or DLL that must be bound to the DLLs imported by it.  The condition for this action may be specified in the element's inner text.</xs:documentation>
+        </xs:annotation>
     </xs:element>
     <xs:element name="CreateShortcuts" type="ActionSequenceType">
-        <xs:annotation><xs:documentation>Manages the creation of shortcuts.  The condition for this action may be specified in the element's inner text.</xs:documentation></xs:annotation>
+        <xs:annotation>
+            <xs:appinfo>
+                <xse:msiRef action="CreateShortcuts"/>
+            </xs:appinfo>
+            <xs:documentation>Manages the creation of shortcuts.  The condition for this action may be specified in the element's inner text.</xs:documentation>
+        </xs:annotation>
     </xs:element>
     <xs:element name="RegisterClassInfo" type="ActionSequenceType">
-        <xs:annotation><xs:documentation>Manages the registration of COM class information with the system.  The condition for this action may be specified in the element's inner text.</xs:documentation></xs:annotation>
+        <xs:annotation>
+            <xs:appinfo>
+                <xse:msiRef action="RegisterClassInfo"/>
+            </xs:appinfo>
+            <xs:documentation>Manages the registration of COM class information with the system.  The condition for this action may be specified in the element's inner text.</xs:documentation>
+        </xs:annotation>
     </xs:element>
     <xs:element name="RegisterExtensionInfo" type="ActionSequenceType">
-        <xs:annotation><xs:documentation>Manages the registration of extension related information with the system.  The condition for this action may be specified in the element's inner text.</xs:documentation></xs:annotation>
+        <xs:annotation>
+            <xs:appinfo>
+                <xse:msiRef action="RegisterExtensionInfo"/>
+            </xs:appinfo>
+            <xs:documentation>Manages the registration of extension related information with the system.  The condition for this action may be specified in the element's inner text.</xs:documentation>
+        </xs:annotation>
     </xs:element>
     <xs:element name="RegisterProgIdInfo" type="ActionSequenceType">
-        <xs:annotation><xs:documentation>Manages the registration of OLE ProgId information with the system.  The condition for this action may be specified in the element's inner text.</xs:documentation></xs:annotation>
+        <xs:annotation>
+            <xs:appinfo>
+                <xse:msiRef action="RegisterProgIdInfo"/>
+            </xs:appinfo>
+            <xs:documentation>Manages the registration of OLE ProgId information with the system.  The condition for this action may be specified in the element's inner text.</xs:documentation>
+        </xs:annotation>
     </xs:element>
     <xs:element name="RegisterMIMEInfo" type="ActionSequenceType">
-        <xs:annotation><xs:documentation>Registers MIME-related registry information with the system.  The condition for this action may be specified in the element's inner text.</xs:documentation></xs:annotation>
+        <xs:annotation>
+            <xs:appinfo>
+                <xse:msiRef action="RegisterMIMEInfo"/>
+            </xs:appinfo>
+            <xs:documentation>Registers MIME-related registry information with the system.  The condition for this action may be specified in the element's inner text.</xs:documentation>
+        </xs:annotation>
     </xs:element>
     <xs:element name="WriteRegistryValues" type="ActionSequenceType">
-        <xs:annotation><xs:documentation>Sets up an application's registry information.  The condition for this action may be specified in the element's inner text.</xs:documentation></xs:annotation>
+        <xs:annotation>
+            <xs:appinfo>
+                <xse:msiRef action="WriteRegistryValues"/>
+            </xs:appinfo>
+            <xs:documentation>Sets up an application's registry information.  The condition for this action may be specified in the element's inner text.</xs:documentation>
+        </xs:annotation>
     </xs:element>
     <xs:element name="WriteIniValues" type="ActionSequenceType">
-        <xs:annotation><xs:documentation>Writes the .ini file information that the application needs written to its .ini files.  The condition for this action may be specified in the element's inner text.</xs:documentation></xs:annotation>
+        <xs:annotation>
+            <xs:appinfo>
+                <xse:msiRef action="WriteIniValues"/>
+            </xs:appinfo>
+            <xs:documentation>Writes the .ini file information that the application needs written to its .ini files.  The condition for this action may be specified in the element's inner text.</xs:documentation>
+        </xs:annotation>
     </xs:element>
     <xs:element name="WriteEnvironmentStrings" type="ActionSequenceType">
-        <xs:annotation><xs:documentation>Modifies the values of environment variables.  The condition for this action may be specified in the element's inner text.</xs:documentation></xs:annotation>
+        <xs:annotation>
+            <xs:appinfo>
+                <xse:msiRef action="WriteEnvironmentStrings"/>
+            </xs:appinfo>
+            <xs:documentation>Modifies the values of environment variables.  The condition for this action may be specified in the element's inner text.</xs:documentation>
+        </xs:annotation>
     </xs:element>
     <xs:element name="RegisterFonts" type="ActionSequenceType">
-        <xs:annotation><xs:documentation>Registers installed fonts with the system.  The condition for this action may be specified in the element's inner text.</xs:documentation></xs:annotation>
+        <xs:annotation>
+            <xs:appinfo>
+                <xse:msiRef action="RegisterFonts"/>
+            </xs:appinfo>
+            <xs:documentation>Registers installed fonts with the system.  The condition for this action may be specified in the element's inner text.</xs:documentation>
+        </xs:annotation>
     </xs:element>
     <xs:element name="InstallODBC" type="ActionSequenceType">
-        <xs:annotation><xs:documentation>Installs the drivers, translators, and data sources in the ODBCDriver table, ODBCTranslator table, and ODBCDataSource table.  The condition for this action may be specified in the element's inner text.</xs:documentation></xs:annotation>
+        <xs:annotation>
+            <xs:appinfo>
+                <xse:msiRef action="InstallODBC"/>
+            </xs:appinfo>
+            <xs:documentation>Installs the drivers, translators, and data sources in the ODBCDriver table, ODBCTranslator table, and ODBCDataSource table.  The condition for this action may be specified in the element's inner text.</xs:documentation>
+        </xs:annotation>
     </xs:element>
     <xs:element name="RegisterTypeLibraries" type="ActionSequenceType">
-        <xs:annotation><xs:documentation>Registers type libraries with the system.  The condition for this action may be specified in the element's inner text.</xs:documentation></xs:annotation>
+        <xs:annotation>
+            <xs:appinfo>
+                <xse:msiRef action="RegisterTypeLibraries"/>
+            </xs:appinfo>
+            <xs:documentation>Registers type libraries with the system.  The condition for this action may be specified in the element's inner text.</xs:documentation>
+        </xs:annotation>
     </xs:element>
     <xs:element name="SelfRegModules" type="ActionSequenceType">
-        <xs:annotation><xs:documentation>Processes all modules listed in the SelfReg table and registers all installed modules with the system.  The condition for this action may be specified in the element's inner text.</xs:documentation></xs:annotation>
+        <xs:annotation>
+            <xs:appinfo>
+                <xse:msiRef action="SelfRegModules"/>
+            </xs:appinfo>
+            <xs:documentation>Processes all modules listed in the SelfReg table and registers all installed modules with the system.  The condition for this action may be specified in the element's inner text.</xs:documentation>
+        </xs:annotation>
     </xs:element>
     <xs:element name="RegisterComPlus" type="ActionSequenceType">
-        <xs:annotation><xs:documentation>Registers COM+ applications.  The condition for this action may be specified in the element's inner text.</xs:documentation></xs:annotation>
+        <xs:annotation>
+            <xs:appinfo>
+                <xse:msiRef action="RegisterComPlus"/>
+            </xs:appinfo>
+            <xs:documentation>Registers COM+ applications.  The condition for this action may be specified in the element's inner text.</xs:documentation>
+        </xs:annotation>
     </xs:element>
     <xs:element name="InstallServices" type="ActionSequenceType">
-        <xs:annotation><xs:documentation>Registers a service for the system.  The condition for this action may be specified in the element's inner text.</xs:documentation></xs:annotation>
+        <xs:annotation>
+            <xs:appinfo>
+                <xse:msiRef action="InstallServices"/>
+            </xs:appinfo>
+            <xs:documentation>Registers a service for the system.  The condition for this action may be specified in the element's inner text.</xs:documentation>
+        </xs:annotation>
     </xs:element>
     <xs:element name="StartServices" type="ActionSequenceType">
-        <xs:annotation><xs:documentation>Starts system services.  The condition for this action may be specified in the element's inner text.</xs:documentation></xs:annotation>
+        <xs:annotation>
+            <xs:appinfo>
+                <xse:msiRef action="StartServices"/>
+            </xs:appinfo>
+            <xs:documentation>Starts system services.  The condition for this action may be specified in the element's inner text.</xs:documentation>
+        </xs:annotation>
     </xs:element>
     <xs:element name="RegisterUser" type="ActionSequenceType">
-        <xs:annotation><xs:documentation>Registers the user information with the installer to identify the user of a product.  The condition for this action may be specified in the element's inner text.</xs:documentation></xs:annotation>
+        <xs:annotation>
+            <xs:appinfo>
+                <xse:msiRef action="RegisterUser"/>
+            </xs:appinfo>
+            <xs:documentation>Registers the user information with the installer to identify the user of a product.  The condition for this action may be specified in the element's inner text.</xs:documentation>
+        </xs:annotation>
     </xs:element>
     <xs:element name="RegisterProduct" type="ActionSequenceType">
-        <xs:annotation><xs:documentation>Registers the product information with the installer.  The condition for this action may be specified in the element's inner text.</xs:documentation></xs:annotation>
+        <xs:annotation>
+            <xs:appinfo>
+                <xse:msiRef action="RegisterProduct"/>
+            </xs:appinfo>
+            <xs:documentation>Registers the product information with the installer.  The condition for this action may be specified in the element's inner text.</xs:documentation>
+        </xs:annotation>
     </xs:element>
     <xs:element name="PublishComponents" type="ActionSequenceType">
-        <xs:annotation><xs:documentation>Manages the advertisement of the components from the PublishComponent table.  The condition for this action may be specified in the element's inner text.</xs:documentation></xs:annotation>
+        <xs:annotation>
+            <xs:appinfo>
+                <xse:msiRef action="PublishComponents"/>
+            </xs:appinfo>
+            <xs:documentation>Manages the advertisement of the components from the PublishComponent table.  The condition for this action may be specified in the element's inner text.</xs:documentation>
+        </xs:annotation>
     </xs:element>
     <xs:element name="MsiPublishAssemblies" type="ActionSequenceType">
-        <xs:annotation><xs:documentation>Manages the advertisement of CLR and Win32 assemblies.  The condition for this action may be specified in the element's inner text.</xs:documentation></xs:annotation>
+        <xs:annotation>
+            <xs:appinfo>
+                <xse:msiRef action="MsiPublishAssemblies"/>
+            </xs:appinfo>
+            <xs:documentation>Manages the advertisement of CLR and Win32 assemblies.  The condition for this action may be specified in the element's inner text.</xs:documentation>
+        </xs:annotation>
     </xs:element>
     <xs:element name="PublishFeatures" type="ActionSequenceType">
-        <xs:annotation><xs:documentation>Writes each feature's state into the system registry.  The condition for this action may be specified in the element's inner text.</xs:documentation></xs:annotation>
+        <xs:annotation>
+            <xs:appinfo>
+                <xse:msiRef action="PublishFeatures"/>
+            </xs:appinfo>
+            <xs:documentation>Writes each feature's state into the system registry.  The condition for this action may be specified in the element's inner text.</xs:documentation>
+        </xs:annotation>
     </xs:element>
     <xs:element name="PublishProduct" type="ActionSequenceType">
-        <xs:annotation><xs:documentation>Manages the advertisement of the product information with the system.  The condition for this action may be specified in the element's inner text.</xs:documentation></xs:annotation>
+        <xs:annotation>
+            <xs:appinfo>
+                <xse:msiRef action="PublishProduct"/>
+            </xs:appinfo>
+            <xs:documentation>Manages the advertisement of the product information with the system.  The condition for this action may be specified in the element's inner text.</xs:documentation>
+        </xs:annotation>
     </xs:element>
     <xs:element name="InstallFinalize" type="ActionSequenceType">
         <xs:annotation>
             <xs:appinfo>
                 <xse:seeAlso ref="InstallInitialize"/>
+                <xse:msiRef action="InstallFinalize"/>
             </xs:appinfo>
             <xs:documentation>Marks the end of a sequence of actions that change the system.  The condition for this action may be specified in the element's inner text.</xs:documentation>
         </xs:annotation>
@@ -5588,6 +5980,8 @@
                 <xse:seeAlso ref="FileSearch"/>
                 <xse:seeAlso ref="IniFileSearch"/>
                 <xse:seeAlso ref="RegistrySearch"/>
+                <xse:msiRef table="AppSearch"/>
+                <xse:msiRef action="AppSearch"/>
             </xs:appinfo>
             <xs:documentation>Uses file signatures to search for existing versions of products.  The AppSearch action may use this information to determine where upgrades are to be installed.  The AppSearch action can also be used to set a property to the existing value of an registry or .ini file entry.  AppSearch should be authored into the InstallUISequence table and InstallExecuteSequence table.  The installer prevents The AppSearch action from running in the InstallExecuteSequence sequence if the action has already run in InstallUISequence sequence.  The AppSearch action searches for file signatures using the CompLocator table first, the RegLocator table next, then the IniLocator table, and finally the DrLocator table.  The condition for this action may be specified in the element's inner text.</xs:documentation>
         </xs:annotation>
@@ -5597,6 +5991,7 @@
             <xs:appinfo>
                 <xse:seeAlso ref="RMCCPSearch"/>
                 <xse:seeAlso ref="ComplianceCheck"/>
+                <xse:msiRef action="CCPSearch"/>
             </xs:appinfo>
             <xs:documentation>Uses file signatures to validate that qualifying products are installed on a system before an upgrade installation is performed.  The CCPSearch action should be authored into the InstallUISequence table and InstallExecuteSequence table.  The installer prevents the CCPSearch action from running in the InstallExecuteSequence sequence if the action has already run in InstallUISequence sequence.  The CCPSearch action must come before the RMCCPSearch action.  The condition for this action may be specified in the element's inner text.</xs:documentation>
         </xs:annotation>
@@ -5606,6 +6001,7 @@
             <xs:appinfo>
                 <xse:seeAlso ref="CCPSearch"/>
                 <xse:seeAlso ref="ComplianceCheck"/>
+                <xse:msiRef action="RMCCPSearch"/>
             </xs:appinfo>
             <xs:documentation>Uses file signatures to validate that qualifying products are installed on a system before an upgrade installation is performed.  The RMCCPSearch action should be authored into the InstallUISequence table and InstallExecuteSequence table.  The installer prevents RMCCPSearch from running in the InstallExecuteSequence sequence if the action has already run in InstallUISequence sequence.  The RMCCPSearch action requires the CCP_DRIVE property to be set to the root path on the removable volume that has the installation for any of the qualifying products.  The condition for this action may be specified in the element's inner text.</xs:documentation>
         </xs:annotation>
@@ -5614,42 +6010,64 @@
         <xs:annotation>
             <xs:appinfo>
                 <xse:seeAlso ref="Condition"/>
+                <xse:msiRef action="LaunchConditions"/>
             </xs:appinfo>
             <xs:documentation>Queries the LaunchCondition table and evaluates each conditional statement recorded there.  If any of these conditional statements fail, an error message is displayed to the user and the installation is terminated.  The LaunchConditions action is optional.  This action is normally the first in the sequence, but the AppSearch Action may be sequenced before the LaunchConditions action.  If there are launch conditions that do not apply to all installation modes, the appropriate installation mode property should be used in a conditional expression in the appropriate sequence table.  The condition for this action may be specified in the element's inner text.</xs:documentation>
         </xs:annotation>
     </xs:element>
     <xs:element name="InstallExecute" type="ActionModuleSequenceType">
         <xs:annotation>
+            <xs:appinfo>
+                <xse:msiRef action="InstallExecute"/>
+            </xs:appinfo>
             <xs:documentation>Runs a script containing all operations spooled since either the start of the installation or the last InstallExecute action, or InstallExecuteAgain action.  Special actions don't have a built-in sequence number and thus must appear relative to another action.  The suggested way to do this is by using the Before or After attribute.  InstallExecute and InstallExecuteAgain can optionally appear anywhere between InstallInitialize and InstallFinalize.</xs:documentation>
         </xs:annotation>
     </xs:element>
     <xs:element name="InstallExecuteAgain" type="ActionModuleSequenceType">
         <xs:annotation>
+            <xs:appinfo>
+                <xse:msiRef action="InstallExecuteAgain"/>
+            </xs:appinfo>
             <xs:documentation>Runs a script containing all operations spooled since either the start of the installation or the last InstallExecute action, or InstallExecuteAgain action.  Should only be used after InstallExecute.  Special actions don't have a built-in sequence number and thus must appear relative to another action.  The suggested way to do this is by using the Before or After attribute.  InstallExecute and InstallExecuteAgain can optionally appear anywhere between InstallInitialize and InstallFinalize.</xs:documentation>
         </xs:annotation>
     </xs:element>
     <xs:element name="DisableRollback" type="ActionModuleSequenceType">
         <xs:annotation>
+            <xs:appinfo>
+                <xse:msiRef action="DisableRollback"/>
+            </xs:appinfo>
             <xs:documentation>Disables rollback for the remainder of the installation.  Special actions don't have a built-in sequence number and thus must appear relative to another action.  The suggested way to do this is by using the Before or After attribute.  InstallExecute and InstallExecuteAgain can optionally appear anywhere between InstallInitialize and InstallFinalize.</xs:documentation>
         </xs:annotation>
     </xs:element>
     <xs:element name="RemoveExistingProducts" type="ActionModuleSequenceType">
         <xs:annotation>
+            <xs:appinfo>
+                <xse:msiRef action="RemoveExistingProducts"/>
+            </xs:appinfo>
             <xs:documentation>Goes through the product codes listed in the ActionProperty column of the Upgrade table and removes the products in sequence.  Special actions don't have a built-in sequence number and thus must appear relative to another action.  The suggested way to do this is by using the Before or After attribute.  InstallExecute and InstallExecuteAgain can optionally appear anywhere between InstallInitialize and InstallFinalize.</xs:documentation>
         </xs:annotation>
     </xs:element>
     <xs:element name="ScheduleReboot" type="ActionModuleSequenceType">
         <xs:annotation>
+            <xs:appinfo>
+                <xse:msiRef action="ScheduleReboot"/>
+            </xs:appinfo>
             <xs:documentation>Prompts the user to restart the system at the end of installation.  Special actions don't have a built-in sequence number and thus must appear relative to another action.  The suggested way to do this is by using the Before or After attribute.  InstallExecute and InstallExecuteAgain can optionally appear anywhere between InstallInitialize and InstallFinalize.</xs:documentation>
         </xs:annotation>
     </xs:element>
     <xs:element name="ForceReboot" type="ActionModuleSequenceType">
         <xs:annotation>
+            <xs:appinfo>
+                <xse:msiRef action="ForceReboot"/>
+            </xs:appinfo>
             <xs:documentation>Prompts the user for a restart of the system during the installation.  Special actions don't have a built-in sequence number and thus must appear relative to another action.  The suggested way to do this is by using the Before or After attribute.  InstallExecute and InstallExecuteAgain can optionally appear anywhere between InstallInitialize and InstallFinalize.</xs:documentation>
         </xs:annotation>
     </xs:element>
     <xs:element name="ResolveSource" type="ActionModuleSequenceType">
         <xs:annotation>
+            <xs:appinfo>
+                <xse:msiRef action="ResolveSource"/>
+            </xs:appinfo>
             <xs:documentation>Determines the location of the source and sets the SourceDir property if the source has not been resolved yet.  Special actions don't have a built-in sequence number and thus must appear relative to another action.  The suggested way to do this is by using the Before or After attribute.  InstallExecute and InstallExecuteAgain can optionally appear anywhere between InstallInitialize and InstallFinalize.</xs:documentation>
         </xs:annotation>
     </xs:element>
@@ -5665,9 +6083,11 @@
             <xs:simpleContent>
                 <xs:extension base="xs:string">
                     <xs:annotation><xs:documentation>Text node specifies the condition of the action.</xs:documentation></xs:annotation>
-                    <xs:attribute name="Action" type="xs:string" use="required"/>
+                    <xs:attribute name="Action" type="xs:string" use="required">
+                        <xs:annotation><xs:documentation>The action to which the Custom element applies.</xs:documentation></xs:annotation>
+                    </xs:attribute>
                     <xs:attribute name="OnExit">
-                        <xs:annotation><xs:documentation>mutually exclusive with Before, After, and Sequence attributes</xs:documentation></xs:annotation>
+                        <xs:annotation><xs:documentation>Mutually exclusive with Before, After, and Sequence attributes</xs:documentation></xs:annotation>
                         <xs:simpleType>
                             <xs:restriction base="xs:NMTOKEN">
                                 <xs:enumeration value="success"/>
@@ -5677,20 +6097,34 @@
                             </xs:restriction>
                         </xs:simpleType>
                     </xs:attribute>
-                    <xs:attribute name="Before" type="xs:string"/>
-                    <xs:attribute name="After" type="xs:string"/>
-                    <xs:attribute name="Sequence" type="xs:integer"/>
+                    <xs:attribute name="Before" type="xs:string">
+                        <xs:annotation><xs:documentation>The name of the standard or custom action before which this action should be performed. Mutually exclusive with OnExit, After, and Sequence attributes</xs:documentation></xs:annotation>
+                    </xs:attribute>
+                    <xs:attribute name="After" type="xs:string">
+                        <xs:annotation><xs:documentation>The name of the standard or custom action after which this action should be performed. Mutually exclusive with Before, OnExit, and Sequence attributes</xs:documentation></xs:annotation>
+                    </xs:attribute>
+                    <xs:attribute name="Sequence" type="xs:integer">
+                        <xs:annotation><xs:documentation>The sequence number for this action. Mutually exclusive with Before, After, and OnExit attributes</xs:documentation></xs:annotation>
+                    </xs:attribute>
                 </xs:extension>
             </xs:simpleContent>
         </xs:complexType>
     </xs:element>
+
     <xs:element name="Show">
+        <xs:annotation>
+            <xs:documentation>
+                Schedules a dialog in a UI sequence.
+            </xs:documentation>
+        </xs:annotation>
         <xs:complexType>
             <xs:simpleContent>
                 <xs:extension base="xs:string">
-                    <xs:attribute name="Dialog" type="xs:string" use="required"/>
+                    <xs:attribute name="Dialog" type="xs:string" use="required">
+                        <xs:annotation><xs:documentation>The dialog to be scheduled.</xs:documentation></xs:annotation>
+                    </xs:attribute>
                     <xs:attribute name="OnExit">
-                        <xs:annotation><xs:documentation>mutually exclusive with Before, After, and Sequence attributes</xs:documentation></xs:annotation>
+                        <xs:annotation><xs:documentation>Specifies the dialog is one of the required exit dialogs. Mutually exclusive with Before, After, and Sequence attributes.</xs:documentation></xs:annotation>
                         <xs:simpleType>
                             <xs:restriction base="xs:NMTOKEN">
                                 <xs:enumeration value="success"/>
@@ -5700,9 +6134,15 @@
                             </xs:restriction>
                         </xs:simpleType>
                     </xs:attribute>
-                    <xs:attribute name="Before" type="xs:string"/>
-                    <xs:attribute name="After" type="xs:string"/>
-                    <xs:attribute name="Sequence" type="xs:integer"/>
+                    <xs:attribute name="Before" type="xs:string">
+                        <xs:annotation><xs:documentation>Schedules the dialog before the specified action or dialog.</xs:documentation></xs:annotation>
+                    </xs:attribute>
+                    <xs:attribute name="After" type="xs:string">
+                        <xs:annotation><xs:documentation>Schedules the dialog after the specified action or dialog.</xs:documentation></xs:annotation>
+                    </xs:attribute>
+                    <xs:attribute name="Sequence" type="xs:integer">
+                        <xs:annotation><xs:documentation>Schedules the dialog at a particular sequence number.</xs:documentation></xs:annotation>
+                    </xs:attribute>
                 </xs:extension>
             </xs:simpleContent>
         </xs:complexType>
@@ -5711,6 +6151,11 @@
     <!-- standard sequence table compositions -->
 
     <xs:element name="InstallUISequence">
+        <xs:annotation>
+            <xs:appinfo>
+                <xse:msiRef table="InstallUISequence" />
+            </xs:appinfo>
+        </xs:annotation>
         <xs:complexType mixed="true">
             <xs:choice minOccurs="0" maxOccurs="unbounded">
                 <xs:element ref="Custom" minOccurs="0" maxOccurs="unbounded">
@@ -6157,7 +6602,7 @@
         </xs:annotation>
         <xs:complexType>
             <xs:attribute name="Id" type="xs:string" use="required">
-                <xs:annotation><xs:documentation>The Id cannot by longer than 55 characters.  In order to prevent errors in cases where the Id is modularized, it should not be longer than 18 characters.</xs:documentation></xs:annotation>
+                <xs:annotation><xs:documentation>The Id cannot be longer than 55 characters, so to prevent errors in cases where the Id is modularized, it should not be longer than 18 characters.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="SourceFile" type="xs:string">
                 <xs:annotation><xs:documentation>Path to the binary file.</xs:documentation></xs:annotation>
@@ -6183,7 +6628,7 @@
         </xs:annotation>
         <xs:complexType>
             <xs:attribute name="Id" type="xs:string" use="required">
-                <xs:annotation><xs:documentation>The Id cannot by longer than 55 characters.  In order to prevent errors in cases where the Id is modularized, it should not be longer than 18 characters.</xs:documentation></xs:annotation>
+                <xs:annotation><xs:documentation>The Id cannot be longer than 55 characters, so to prevent errors in cases where the Id is modularized, it should not be longer than 18 characters.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="SourceFile" type="xs:string">
                 <xs:annotation><xs:documentation>Path to the icon file.</xs:documentation></xs:annotation>
@@ -6300,6 +6745,7 @@
 
     <xs:element name="Control">
         <xs:annotation>
+            <xs:documentation>Contains the controls that appear on each dialog.</xs:documentation>
             <xs:appinfo>
                 <xse:msiRef table="Control" />
                 <xse:msiRef table="ComboBox" />
@@ -6341,100 +6787,119 @@
                     <xs:element ref="Subscribe"/>
                 </xs:choice>
             </xs:sequence>
-            <xs:attribute name="Id" use="required" type="xs:string"/>
+            <xs:attribute name="Id" use="required" type="xs:string">
+                <xs:annotation><xs:documentation>Combined with the Dialog Id to make up the primary key of the Control table.</xs:documentation></xs:annotation>
+            </xs:attribute>
             <xs:attribute name="Type" use="required" type="xs:string">
+                <xs:annotation><xs:documentation>The type of the control. Could be one of the following: Billboard, Bitmap, CheckBox, ComboBox, DirectoryCombo, DirectoryList, Edit, GroupBox, Icon, Line, ListBox, ListView, MaskedEdit, PathEdit, ProgressBar, PushButton, RadioButtonGroup, ScrollableText, SelectionTree, Text, VolumeCostList, VolumeSelectCombo</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="X" use="required" type="LocalizableInteger">
+                <xs:annotation><xs:documentation>Horizontal coordinate of the upper-left corner of the rectangular boundary of the control. This must be a non-negative number.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="Y" use="required" type="LocalizableInteger">
+                <xs:annotation><xs:documentation>Vertical coordinate of the upper-left corner of the rectangular boundary of the control. This must be a non-negative number.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="Width" use="required" type="LocalizableInteger">
+                <xs:annotation><xs:documentation>Width of the rectangular boundary of the control. This must be a non-negative number.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="Height" use="required" type="LocalizableInteger">
+                <xs:annotation><xs:documentation>Height of the rectangular boundary of the control. This must be a non-negative number.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="Property" type="xs:string">
+                <xs:annotation><xs:documentation>The name of a defined property to be linked to this control. This column is required for active controls.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="Text" type="xs:string">
+                <xs:annotation><xs:documentation>A localizable string used to set the initial text contained in a control. This attribute can contain a formatted string that is processed at install time to insert the values of properties using [PropertyName] syntax. Also supported are environment variables, file installation paths, and component installation directories; see <a href="http://msdn2.microsoft.com/en-us/library/aa368609.aspx">Formatted</a> for details.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="Help" type="xs:string">
+                <xs:annotation><xs:documentation>This part is reserved for future use. No need to use this until Windows Installer uses it for something.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="ToolTip" type="xs:string">
+                <xs:annotation><xs:documentation>The string used for the Tooltip.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="CheckBoxValue" type="xs:string">
                 <xs:annotation><xs:documentation>Only for CheckBox control to set Property to a value on check</xs:documentation></xs:annotation>
             </xs:attribute>
             <!-- Control ordering - order of declaration in Dialog determines tab ordering -->
             <xs:attribute name="TabSkip" type="YesNoType">
-                <xs:annotation><xs:documentation>yes if this control is skipped in the tab sequence</xs:documentation></xs:annotation>
+                <xs:annotation><xs:documentation>Yes if this control is skipped in the tab sequence</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="Default" type="YesNoType">
-                <xs:annotation><xs:documentation>yes if this control invoked by the return key</xs:documentation></xs:annotation>
+                <xs:annotation><xs:documentation>Yes if this control invoked by the return key</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="Cancel" type="YesNoType">
-                <xs:annotation><xs:documentation>yes if this is the control invoked on cancel of dialog</xs:documentation></xs:annotation>
+                <xs:annotation><xs:documentation>Yes if this is the control invoked on cancel of dialog.</xs:documentation></xs:annotation>
             </xs:attribute>
             <!-- common Control attributes -->
             <xs:attribute name="Hidden" type="YesNoType">
+                <xs:annotation><xs:documentation>Sets whether the control is hidden.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="Disabled" type="YesNoType">
+                <xs:annotation><xs:documentation>Sets whether the control is disabled.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="Sunken" type="YesNoType">
+                <xs:annotation><xs:documentation>Sets whether the control is sunken.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="Indirect" type="YesNoType">
+                <xs:annotation><xs:documentation>Specifies whether the value displayed or changed by this control is referenced indirectly. If this bit is set, the control displays or changes the value of the property that has the identifier listed in the Property column of the Control table.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="Integer" type="YesNoType">
+                <xs:annotation><xs:documentation>Specifies if the property of the control is an integer. Otherwise it is tread as a string</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="RightToLeft" type="YesNoType">
+                <xs:annotation><xs:documentation>Sets whether the control is read right to left.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="RightAligned" type="YesNoType">
+                <xs:annotation><xs:documentation>Sets whether the control is right aligned.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="LeftScroll" type="YesNoType">
+                <xs:annotation><xs:documentation>Sets whether the controls scroll bar is on the left</xs:documentation></xs:annotation>
             </xs:attribute>
             <!-- attributes applied to specific Controls -->
             <xs:attribute name="Transparent" type="YesNoType">
-                <xs:annotation><xs:documentation>only valid for Text Controls</xs:documentation></xs:annotation>
+                <xs:annotation><xs:documentation>Only valid for Text Controls</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="NoPrefix" type="YesNoType">
-                <xs:annotation><xs:documentation>only valid for Text Controls</xs:documentation></xs:annotation>
+                <xs:annotation><xs:documentation>Only valid for Text Controls</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="NoWrap" type="YesNoType">
-                <xs:annotation><xs:documentation>only valid for Text Controls</xs:documentation></xs:annotation>
+                <xs:annotation><xs:documentation>Only valid for Text Controls</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="FormatSize" type="YesNoType">
-                <xs:annotation><xs:documentation>only valid for Text Controls</xs:documentation></xs:annotation>
+                <xs:annotation><xs:documentation>Only valid for Text Controls</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="UserLanguage" type="YesNoType">
-                <xs:annotation><xs:documentation>only valid for Text Controls</xs:documentation></xs:annotation>
+                <xs:annotation><xs:documentation>Only valid for Text Controls</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="Multiline" type="YesNoType">
-                <xs:annotation><xs:documentation>only valid for Edit Controls</xs:documentation></xs:annotation>
+                <xs:annotation><xs:documentation>Only valid for Edit Controls</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="Password" type="YesNoType">
-                <xs:annotation><xs:documentation>only valid for Edit Controls</xs:documentation></xs:annotation>
+                <xs:annotation><xs:documentation>Only valid for Edit Controls</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="ProgressBlocks" type="YesNoType">
-                <xs:annotation><xs:documentation>only valid for ProgressBar Controls</xs:documentation></xs:annotation>
+                <xs:annotation><xs:documentation>Only valid for ProgressBar Controls</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="Removable" type="YesNoType">
-                <xs:annotation><xs:documentation>only valid for Volume and Directory Controls</xs:documentation></xs:annotation>
+                <xs:annotation><xs:documentation>Only valid for Volume and Directory Controls</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="Fixed" type="YesNoType">
-                <xs:annotation><xs:documentation>only valid for Volume and Directory Controls</xs:documentation></xs:annotation>
+                <xs:annotation><xs:documentation>Only valid for Volume and Directory Controls</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="Remote" type="YesNoType">
-                <xs:annotation><xs:documentation>only valid for Volume and Directory Controls</xs:documentation></xs:annotation>
+                <xs:annotation><xs:documentation>Only valid for Volume and Directory Controls</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="CDROM" type="YesNoType">
-                <xs:annotation><xs:documentation>only valid for Volume and Directory Controls</xs:documentation></xs:annotation>
+                <xs:annotation><xs:documentation>Only valid for Volume and Directory Controls</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="RAMDisk" type="YesNoType">
-                <xs:annotation><xs:documentation>only valid for Volume and Directory Controls</xs:documentation></xs:annotation>
+                <xs:annotation><xs:documentation>Only valid for Volume and Directory Controls</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="Floppy" type="YesNoType">
-                <xs:annotation><xs:documentation>only valid for Volume and Directory Controls</xs:documentation></xs:annotation>
+                <xs:annotation><xs:documentation>Only valid for Volume and Directory Controls</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="ShowRollbackCost" type="YesNoType">
-                <xs:annotation><xs:documentation>only valid for VolumeCostList Controls</xs:documentation></xs:annotation>
+                <xs:annotation><xs:documentation>Only valid for VolumeCostList Controls</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="Sorted" type="YesNoType">
                 <xs:annotation><xs:documentation>This attribute is only valid for Listbox, ListView, and ComboBox Controls. Set 
@@ -6443,10 +6908,10 @@
                 </xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="ComboList" type="YesNoType">
-                <xs:annotation><xs:documentation>only valid for ComboBox Controls</xs:documentation></xs:annotation>
+                <xs:annotation><xs:documentation>Only valid for ComboBox Controls</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="Image" type="YesNoType">
-                <xs:annotation><xs:documentation>only valid for RadioButton, PushButton, and Icon Controls</xs:documentation></xs:annotation>
+                <xs:annotation><xs:documentation>Only valid for RadioButton, PushButton, and Icon Controls</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="IconSize">
                 <xs:annotation><xs:documentation>only valid for RadioButton, PushButton, and Icon Controls</xs:documentation></xs:annotation>
@@ -6538,6 +7003,9 @@
 
     <xs:element name="Dialog">
         <xs:annotation>
+            <xs:documentation>
+                Defines a dialog box in the Dialog Table.
+            </xs:documentation>
             <xs:appinfo>
                 <xse:msiRef table="Control" />
                 <xse:msiRef table="ComboBox" />
@@ -6550,46 +7018,60 @@
         <xs:complexType>
             <xs:sequence>
                 <xs:element ref="Control" minOccurs="0" maxOccurs="unbounded">
-                    <xs:annotation><xs:documentation>Control elements belonging to this dialog</xs:documentation></xs:annotation>
+                    <xs:annotation><xs:documentation>Control elements belonging to this dialog.</xs:documentation></xs:annotation>
                 </xs:element>
             </xs:sequence>
-            <xs:attribute name="Id" type="xs:string" use="required"/>
+            <xs:attribute name="Id" type="xs:string" use="required">
+                <xs:annotation><xs:documentation>Unique identifier for the dialog.</xs:documentation></xs:annotation>
+            </xs:attribute>
             <xs:attribute name="X" type="xs:integer">
-                <xs:annotation><xs:documentation>in %, defaults to centered on screen (50)</xs:documentation></xs:annotation>
+                <xs:annotation><xs:documentation>Horizontal placement of the dialog box as a percentage of screen width. The default value is 50.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="Y" type="xs:integer">
-                <xs:annotation><xs:documentation>in %, defaults to centered on screen (50)</xs:documentation></xs:annotation>
+                <xs:annotation><xs:documentation>Vertical placement of the dialog box as a percentage of screen height. The default value is 50.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="Width" use="required" type="xs:integer">
-                <xs:annotation><xs:documentation>in dialog units</xs:documentation></xs:annotation>
+                <xs:annotation><xs:documentation>The width of the dialog box in dialog units.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="Height" use="required" type="xs:integer">
-                <xs:annotation><xs:documentation>in dialog units</xs:documentation></xs:annotation>
+                <xs:annotation><xs:documentation>The height of the dialog box in dialog units.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="Title" type="xs:string">
+                <xs:annotation><xs:documentation>The title of the dialog box.</xs:documentation></xs:annotation>
             </xs:attribute>
             <!-- 'Attributes' column integer value generated from XML attributes below -->
             <xs:attribute name="Hidden" type="YesNoType">
+              <xs:annotation><xs:documentation>Used to hide the dialog.</xs:documentation></xs:annotation>
             </xs:attribute>
-            <xs:attribute name="Modeless" type="YesNoType">
+            <xs:attribute name="Modeless" type="YesNoType"> 
+              <xs:annotation><xs:documentation>Used to set the dialog as modeless.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="NoMinimize" type="YesNoType">
+              <xs:annotation><xs:documentation>Used to specify if the dialog can be minimized.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="SystemModal" type="YesNoType">
+              <xs:annotation><xs:documentation>Used to set the dialog as system modal.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="KeepModeless" type="YesNoType">
+              <xs:annotation><xs:documentation>Keep modeless dialogs alive when this dialog is created through DoAction.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="TrackDiskSpace" type="YesNoType">
+              <xs:annotation><xs:documentation>Have the dialog periodically call the installer to check if available disk space has changed.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="CustomPalette" type="YesNoType">
+              <xs:annotation><xs:documentation>Used to specify if pictures in the dialog box are rendered with a custom palette.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="RightToLeft" type="YesNoType">
+              <xs:annotation><xs:documentation>Used to specify if the text in the dialog should be displayed in left to right reading order.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="RightAligned" type="YesNoType">
+              <xs:annotation><xs:documentation>Align text on the right.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="LeftScroll" type="YesNoType">
+              <xs:annotation><xs:documentation>Used to align the scroll bar on the left.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="ErrorDialog" type="YesNoType">
+              <xs:annotation><xs:documentation>Specifies this dialog as an error dialog.</xs:documentation></xs:annotation>
             </xs:attribute>
         </xs:complexType>
     </xs:element>
@@ -6620,10 +7102,12 @@
         <xs:complexType>
             <xs:simpleContent>
                 <xs:extension base="xs:string">
-                    <xs:annotation><xs:documentation>Element value is progress message text for action</xs:documentation></xs:annotation>
-                    <xs:attribute name="Action" type="xs:string" use="required"/>
+                    <xs:annotation><xs:documentation>Element value is progress message text for action.</xs:documentation></xs:annotation>
+                    <xs:attribute name="Action" type="xs:string" use="required">
+                        <xs:annotation><xs:documentation>The standard or custom action associated with this progress message.</xs:documentation></xs:annotation>
+                    </xs:attribute>
                     <xs:attribute name="Template" type="xs:string">
-                        <xs:annotation><xs:documentation>used to format ActionData messages from action processing</xs:documentation></xs:annotation>
+                        <xs:annotation><xs:documentation>Template used to format ActionData messages.</xs:documentation></xs:annotation>
                     </xs:attribute>
                 </xs:extension>
             </xs:simpleContent>
@@ -6776,7 +7260,9 @@
                 </xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="Height" use="required" type="LocalizableInteger"/>
-            <xs:attribute name="Help" type="xs:string"/>
+            <xs:attribute name="Help" type="xs:string">
+                <xs:annotation><xs:documentation>Reserved for future use.</xs:documentation></xs:annotation>
+            </xs:attribute>
             <xs:attribute name="Icon" type="xs:string">
                 <xs:annotation><xs:documentation>
                     This attribute defines the icon displayed with the radio button.  The value of the attribute creates a reference
@@ -6787,7 +7273,9 @@
             <xs:attribute name="Text" type="xs:string">
                 <xs:annotation><xs:documentation>Text displayed with the radio button.  This attribute is mutually exclusive with the Bitmap and Icon attributes.</xs:documentation></xs:annotation>
             </xs:attribute>
-            <xs:attribute name="ToolTip" type="xs:string"/>
+            <xs:attribute name="ToolTip" type="xs:string">
+                <xs:annotation><xs:documentation>Tooltip text displayed when the cursor hovers over the control.</xs:documentation></xs:annotation>
+            </xs:attribute>
             <xs:attribute name="Value" type="xs:string" use="required">
                 <xs:annotation><xs:documentation>Value assigned to the associated control Property when this radio button is selected.</xs:documentation></xs:annotation>
             </xs:attribute>
@@ -6821,7 +7309,7 @@
     <xs:element name="UIText">
         <xs:annotation>
             <xs:documentation>
-                Text associated with certain controls
+                Text associated with certain UI controls.
             </xs:documentation>
             <xs:appinfo>
                 <xse:msiRef table="UIText" />
@@ -6830,8 +7318,10 @@
         <xs:complexType>
             <xs:simpleContent>
                 <xs:extension base="xs:string">
-                    <xs:annotation><xs:documentation>Element value is text, may use CDATA if needed to escape XML delimiters</xs:documentation></xs:annotation>
-                    <xs:attribute name="Id" use="required" type="xs:string"/>
+                    <xs:annotation><xs:documentation>Element value is the text of the string. You can use CDATA if needed to escape XML.</xs:documentation></xs:annotation>
+                    <xs:attribute name="Id" use="required" type="xs:string">
+                      <xs:annotation><xs:documentation>Unique identifier for the string.</xs:documentation></xs:annotation>
+                    </xs:attribute>
                 </xs:extension>
             </xs:simpleContent>
         </xs:complexType>
@@ -6840,7 +7330,7 @@
     <xs:element name="UIRef">
         <xs:annotation>
             <xs:documentation>
-                Reference to a UI element.  This will force the entire referenced Fragment's contents
+                Reference to a UI element. Forces the entire Fragment that contains the referenced UI element
                 to be included in the installer database.
             </xs:documentation>
             <xs:appinfo>
@@ -6848,7 +7338,9 @@
             </xs:appinfo>
         </xs:annotation>
         <xs:complexType>
-            <xs:attribute name="Id" type="xs:string" use="required" />
+            <xs:attribute name="Id" type="xs:string" use="required">
+              <xs:annotation><xs:documentation>UI element to reference.</xs:documentation></xs:annotation>
+            </xs:attribute>
         </xs:complexType>
     </xs:element>
 
@@ -7021,12 +7513,14 @@
     </xs:element>
 
     <xs:element name="Data">
-        <xs:annotation><xs:documentation>Data item for a row of a Custom Table</xs:documentation></xs:annotation>
+        <xs:annotation><xs:documentation>Used for a Custom Table. Specifies the data for the parent Row and specified Column.</xs:documentation></xs:annotation>
         <xs:complexType>
             <xs:simpleContent>
                 <xs:extension base="xs:string">
-                    <xs:annotation><xs:documentation>Element value is data the data value</xs:documentation></xs:annotation>
-                    <xs:attribute name="Column" use="required" type="xs:string"/>
+                    <xs:annotation><xs:documentation>A data value</xs:documentation></xs:annotation>
+                    <xs:attribute name="Column" use="required" type="xs:string">
+                      <xs:annotation><xs:documentation>Specifies in which column to insert this data.</xs:documentation></xs:annotation>
+                    </xs:attribute>
                 </xs:extension>
             </xs:simpleContent>
         </xs:complexType>
@@ -7105,39 +7599,64 @@
             <xs:attribute name="CreateUser" type="YesNoType">
                 <xs:annotation><xs:documentation>Indicates whether or not to create the user.  User creation can be skipped if all that is desired is to join a user to groups.</xs:documentation></xs:annotation>
             </xs:attribute>
+            <xs:attribute name="LogonAsService" type="YesNoType">
+                <xs:annotation><xs:documentation>Indicates whether or not the user can logon as a serivce.  User creation can be skipped if all that is desired is to set this access right on the user.</xs:documentation></xs:annotation>
+            </xs:attribute>
         </xs:complexType>
     </xs:element>
     
     <xs:element name="GroupRef">
         <xs:annotation>
-            <xs:documentation>Used to join a user to a group</xs:documentation>
+            <xs:documentation>Used to join the user specified by the parent User element to the referenced Group.</xs:documentation>
+            <xs:appinfo>
+                <xse:seeAlso ref="Group"/>
+                <xse:seeAlso ref="User"/>
+            </xs:appinfo>
         </xs:annotation>
         <xs:complexType>
-            <xs:attribute name="Id" type="xs:string" use="required"/>
+            <xs:attribute name="Id" type="xs:string" use="required">
+                <xs:annotation><xs:documentation>References the Group the User will be added to.</xs:documentation></xs:annotation>
+            </xs:attribute>
         </xs:complexType>
     </xs:element>
 
     <xs:element name="Group">
         <xs:annotation>
-            <xs:documentation>Group for all kinds of things</xs:documentation>
+            <xs:documentation>Searches for an existing group in the specified domain.  Groups cannot be created by this element.</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-            <xs:attribute name="Id" type="xs:string" use="required"/>
-            <xs:attribute name="Name" type="xs:string" use="required"/>
-            <xs:attribute name="Domain" type="xs:string"/>
+            <xs:attribute name="Id" type="xs:string" use="required">
+                <xs:annotation><xs:documentation>The unique identifier for this Group element.</xs:documentation></xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="Name" type="xs:string" use="required">
+                <xs:annotation><xs:documentation>Name of the Group.  This attribute can contain a formatted string that is processed at install time to insert the values of properties using [PropertyName] syntax. Also supported are environment variables, file installation paths, and component installation directories; see <a href="http://msdn2.microsoft.com/en-us/library/aa368609.aspx">Formatted</a> for details.</xs:documentation></xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="Domain" type="xs:string">
+                <xs:annotation><xs:documentation>Domain of the Group.  This attribute can contain a formatted string that is processed at install time to insert the values of properties using [PropertyName] syntax. Also supported are environment variables, file installation paths, and component installation directories; see <a href="http://msdn2.microsoft.com/en-us/library/aa368609.aspx">Formatted</a> for details.</xs:documentation></xs:annotation>
+            </xs:attribute>
         </xs:complexType>
     </xs:element>
 
     <xs:element name="WebDirProperties">
         <xs:annotation>
-            <xs:documentation>WebDirProperites used by one or more WebSites. Lists properties common to IIS web sites and vroots. Corresponding properties can be viewed through the IIS Manager snap-in. One property entry can be reused by multiple sites or vroots using the Id field as a reference, using WebVirtualDir.DirProperties, WebSite.DirProperties, or WebDir.DirProperties.
+            <xs:documentation>WebDirProperites used by one or more WebSites. Lists properties common to IIS web sites and virtual roots. Corresponding properties can be viewed through the IIS Manager snap-in. One property entry can be reused by multiple sites or virtual roots using the Id field as a reference, using WebVirtualDir.DirProperties, WebSite.DirProperties, or WebDir.DirProperties.
         </xs:documentation></xs:annotation>
         <xs:complexType>
-                <xs:attribute name="Id" type="xs:string" use="required"/>
-                <xs:attribute name="Read" type="YesNoType"/>
-                <xs:attribute name="Write" type="YesNoType"/>
-                <xs:attribute name="Script" type="YesNoType"/>
-                <xs:attribute name="Execute" type="YesNoType"/>
+                <xs:attribute name="Id" type="xs:string" use="required">
+                    <xs:annotation><xs:documentation>Identifier for this WebDirProperties element.</xs:documentation></xs:annotation>
+                </xs:attribute>
+                <xs:attribute name="Read" type="YesNoType">
+                    <xs:annotation><xs:documentation>Specifies whether to allow read permissions. Defaults to 'no.'</xs:documentation></xs:annotation>
+                </xs:attribute>
+                <xs:attribute name="Write" type="YesNoType">
+                    <xs:annotation><xs:documentation>Specifies whether to allow write permissions. Defaults to 'no.'</xs:documentation></xs:annotation>
+                </xs:attribute>
+                <xs:attribute name="Script" type="YesNoType">
+                    <xs:annotation><xs:documentation>Specifies whether to allow script execution permissions. Defaults to 'no.'</xs:documentation></xs:annotation>
+                </xs:attribute>
+                <xs:attribute name="Execute" type="YesNoType">
+                    <xs:annotation><xs:documentation>Specifies whether to allow execute permissions. Defaults to 'no.'</xs:documentation></xs:annotation>
+                </xs:attribute>
                 <xs:attribute name="AnonymousAccess" type="YesNoType">
                     <xs:annotation><xs:documentation>Sets the Enable Anonymous Access checkbox, which maps anonymous users to a Windows user account. When setting this to 'yes' you should also provide the user account using the AnonymousUser attribute, and determine what setting to use for the IIsControlledPassword attribute. Defaults to 'no.'</xs:documentation></xs:annotation>
                 </xs:attribute>
@@ -7169,7 +7688,7 @@
                     <xs:annotation><xs:documentation>The list of default documents to set for this web directory, in comma-delimited format.</xs:documentation></xs:annotation>
                 </xs:attribute>
                 <xs:attribute name="AspDetailedError" type="YesNoType">
-                    <xs:annotation><xs:documentation>Sets the option for whether to send detailed ASP errors back to the client on script error. Default is 'no.'</xs:documentation></xs:annotation>
+                    <xs:annotation><xs:documentation>Sets the option for whether to send detailed ASP errors back to the client on script error. Defaults to 'no.'</xs:documentation></xs:annotation>
                 </xs:attribute>
                 <xs:attribute name="HttpExpires" type="xs:string">
                     <xs:annotation><xs:documentation>Value to set the HttpExpires attribute to for a Web Dir in the metabase.</xs:documentation></xs:annotation>
@@ -7243,7 +7762,7 @@
             </xs:attribute>
             <xs:attribute name="Value" type="xs:string">
                 <xs:annotation>
-                    <xs:documentation>Value for the custom HTTP Header.  This attribute may be set via a formatted Property (e.g. [MyProperty]).</xs:documentation>
+                    <xs:documentation>Value for the custom HTTP Header. This attribute can contain a formatted string that is processed at install time to insert the values of properties using [PropertyName] syntax. Also supported are environment variables, file installation paths, and component installation directories; see <a href="http://msdn2.microsoft.com/en-us/library/aa368609.aspx">Formatted</a> for details.</xs:documentation>
                 </xs:annotation>
             </xs:attribute>
         </xs:complexType>
@@ -7283,7 +7802,7 @@
                 <xs:annotation><xs:documentation>Description of the filter.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="Flags" type="xs:integer">
-                <xs:annotation><xs:documentation>Sets the MD_FILTER_FLAGS metabase key for the filter. This must be an integer. See MSDN 'FilterFlags' documentation for more details.</xs:documentation></xs:annotation>
+                <xs:annotation><xs:documentation>Sets the MD_FILTER_FLAGS metabase key for the filter. This must be an integer. See the <html:a href="http://msdn2.microsoft.com/en-gb/library/ms525825.aspx">FilterFlags topic</html:a> for more details.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="LoadOrder" type="xs:string">
                 <xs:annotation><xs:documentation>Allowed values: "first", "last", number</xs:documentation></xs:annotation>
@@ -7390,7 +7909,9 @@
     <xs:element name="PerfCounter">
         <xs:annotation><xs:documentation>Used to install Perfmon counters.</xs:documentation></xs:annotation>
         <xs:complexType>
-            <xs:attribute name="Name" type="xs:string"/>
+            <xs:attribute name="Name" type="xs:string">
+                <xs:annotation><xs:documentation>The name of the driver or service the Perfmon counter is for. Used to remove the Perfmon counter during uninstallation and rollback.</xs:documentation></xs:annotation>
+            </xs:attribute>
         </xs:complexType>
     </xs:element>
 
@@ -7658,11 +8179,15 @@
     </xs:element>
 
     <xs:element name="WebAddress">
-        <xs:annotation><xs:documentation>WebAddress for WebSite</xs:documentation></xs:annotation>
+        <xs:annotation><xs:documentation>WebAddress for WebSite. Also used to locate an existing WebSite.</xs:documentation></xs:annotation>
         <xs:complexType>
             <xs:attribute name="Id" use="required" type="xs:string"/>
             <xs:attribute name="IP" type="xs:string">
-                <xs:annotation><xs:documentation>For IP address "All Unassigned", do not specify this attribute or specify its value as "*".</xs:documentation></xs:annotation>
+                <xs:annotation><xs:documentation>
+                    The IP address for the web address.  To specify the "All Unassigned" IP address, do not specify this attribute or specify its 
+                    value as "*".  The IP address is also used to determine if the WebSite is already installed. The IP address must match exactly
+                    (empty value matches "All Unassigned") unless "*" is used which will match any existing IP (including "All Unassigned").
+                </xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="Port" use="required" type="xs:string"/>
             <xs:attribute name="Header" type="xs:string"/>
@@ -7681,7 +8206,9 @@
                 <xs:element ref="HttpHeader" minOccurs="0" maxOccurs="unbounded"/>
                 <xs:element ref="MimeMap" minOccurs="0" maxOccurs="unbounded"/>
             </xs:sequence>
-            <xs:attribute name="Id" use="required" type="xs:string"/>
+            <xs:attribute name="Id" use="required" type="xs:string">
+                <xs:annotation><xs:documentation>Identifier for this virtual directory.</xs:documentation></xs:annotation>
+            </xs:attribute>
             <xs:attribute name="WebSite" type="xs:string">
                 <xs:annotation><xs:documentation>References the Id attribute for a WebSite in which this virtual directory belongs. Required when this element is not a child of WebSite element.</xs:documentation></xs:annotation>
             </xs:attribute>
@@ -7703,7 +8230,9 @@
     <xs:element name="WebDir">
         <xs:annotation><xs:documentation>Defines a subdirectory within an IIS web site. When this element is a child of WebSite, the web directory is defined within that web site. Otherwise the web directory must reference a WebSite element via the WebSite attribute.</xs:documentation></xs:annotation>
         <xs:complexType>
-            <xs:attribute name="Id" use="required" type="xs:string"/>
+            <xs:attribute name="Id" use="required" type="xs:string">
+                <xs:annotation><xs:documentation>Identifier for this web directory.</xs:documentation></xs:annotation>
+            </xs:attribute>
             <xs:attribute name="WebSite" type="xs:string">
                 <xs:annotation><xs:documentation>References the Id attribute for a WebSite element in which this directory belongs. Required when this element is not a child of a WebSite element.</xs:documentation></xs:annotation>
             </xs:attribute>
@@ -7838,7 +8367,9 @@
     <xs:element name="WebServiceExtension">
         <xs:annotation><xs:documentation>The WebServiceExtension property is used by the Web server to determine whether a Web service extension is permitted to run.</xs:documentation></xs:annotation>
         <xs:complexType>
-            <xs:attribute name="Id" use="required" type="xs:string"/>
+            <xs:attribute name="Id" use="required" type="xs:string">
+                <xs:annotation><xs:documentation>Identifier for this Web service extension.</xs:documentation></xs:annotation>
+            </xs:attribute>
             <xs:attribute name="File" use="required" type="xs:string">
                 <xs:annotation><xs:documentation>Usually a Property that resolves to short file name path</xs:documentation></xs:annotation>
             </xs:attribute>
@@ -8057,7 +8588,7 @@
             <xs:attribute name="Id" use="required" type="xs:string">
                 <xs:annotation><xs:documentation>ID of the file specification.</xs:documentation></xs:annotation>
             </xs:attribute>
-            <xs:attribute name="Name" type="xs:string">
+            <xs:attribute name="Name" use="required" type="xs:string">
                 <xs:annotation><xs:documentation>Specifies the logical name for the database file.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="Filename" use="required" type="xs:string">
