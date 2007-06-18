@@ -25,8 +25,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 	{
 		WebServiceDiscoveryClientProtocol discoveryClientProtocol;
 		CredentialCache credentialCache = new CredentialCache();
-		int initialFormWidth;
-		int initialUrlComboBoxWidth;
 		string namespacePrefix = String.Empty;
 		Uri discoveryUri;
 		IProject project;
@@ -42,13 +40,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 			AddMruList();
 			AddImages();
 			AddStringResources();
-			initialFormWidth = Width;
-			initialUrlComboBoxWidth = urlComboBox.Width;
+			// fixes forum-16247: Add Web Reference dialog missing URL on 120 DPI
+			AddWebReferenceDialogResize(null, null);
 			this.project = project;
 		}
 		
 		/// <summary>
-		/// The prefix that will be added to the web service's namespace 
+		/// The prefix that will be added to the web service's namespace
 		/// (typically the project's namespace).
 		/// </summary>
 		public string NamespacePrefix {
@@ -348,7 +346,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		private System.Windows.Forms.ToolStripButton backButton;
 		private ICSharpCode.SharpDevelop.Gui.WebServicesView webServicesView;
 		#endregion
-	
+		
 		void AddMruList()
 		{
 			try {
@@ -374,7 +372,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				} else if (backButton.Selected && e.Modifiers == Keys.Shift) {
 					toolStrip.TabStop = true;
 				}
-			} 
+			}
 		}
 		
 		void ToolStripEnter(object sender, EventArgs e)
@@ -391,7 +389,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			try {
 				webBrowser.GoBack();
-			} catch (Exception) { }			
+			} catch (Exception) { }
 		}
 		
 		void ForwardButtonClick(object sender, System.EventArgs e)
@@ -405,7 +403,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			webBrowser.Stop();
 			StopDiscovery();
-			addButton.Enabled = false;		
+			addButton.Enabled = false;
 		}
 		
 		void RefreshButtonClick(object sender, System.EventArgs e)
@@ -438,7 +436,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void WebBrowserNavigated(object sender, WebBrowserNavigatedEventArgs e)
 		{
-			Cursor = Cursors.Default;	
+			Cursor = Cursors.Default;
 			stopButton.Enabled = false;
 			urlComboBox.Text = webBrowser.Url.ToString();
 			StartDiscovery(e.Url);
@@ -471,7 +469,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			if (discoveryUri != null) {
 				return discoveryUri.Host;
-			} 
+			}
 			return String.Empty;
 		}
 
@@ -493,7 +491,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 								break;
 							}
 						}
-					}					
+					}
 				}
 				
 				return valid;
@@ -505,7 +503,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				if (referenceNameTextBox.Text.Length > 0) {
 					if (referenceNameTextBox.Text.IndexOf('\\') == -1) {
 						if (!ContainsInvalidDirectoryChar(referenceNameTextBox.Text)) {
-						    	return true;
+							return true;
 						}
 					}
 				}
@@ -552,7 +550,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			AsyncDiscoveryState state = (AsyncDiscoveryState)result.AsyncState;
 			WebServiceDiscoveryClientProtocol protocol = state.Protocol;
-					
+			
 			// Check that we are still waiting for this particular callback.
 			bool wanted = false;
 			lock (this) {
@@ -578,7 +576,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 						Invoke(handler, new object[] {null});
 					}
 				}
-			} 
+			}
 		}
 		
 		/// <summary>
@@ -593,7 +591,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					} catch (NotImplementedException) {
 					} catch (ObjectDisposedException) {
 						// Receive this error if the url pointed to a file.
-						// The discovery client will already have closed the file 
+						// The discovery client will already have closed the file
 						// so the abort fails.
 					}
 					discoveryClientProtocol.Dispose();
@@ -619,7 +617,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			protocol.ResolveOneLevel();
 			
 			foreach (DictionaryEntry entry in protocol.References) {
-				ContractReference contractRef = entry.Value as ContractReference;				
+				ContractReference contractRef = entry.Value as ContractReference;
 				if (contractRef != null) {
 					services.Add(contractRef.Contract);
 				}
@@ -628,7 +626,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		
 		void DiscoveredWebServices(DiscoveryClientProtocol protocol)
-		{			
+		{
 			if (protocol != null) {
 				addButton.Enabled = true;
 				namespaceTextBox.Text = GetDefaultNamespace();
@@ -656,8 +654,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void AddWebReferenceDialogResize(object sender, EventArgs e)
 		{
-			int widthChange = Width - initialFormWidth;
-			urlComboBox.Width = initialUrlComboBoxWidth + widthChange;	
+			int width = toolStrip.ClientSize.Width;
+			foreach (ToolStripItem item in toolStrip.Items) {
+				if (item != urlComboBox)
+					width -= item.Width + 8;
+			}
+			urlComboBox.Width = width;
 		}
 		
 		void AddButtonClick(object sender,EventArgs e)
@@ -665,14 +667,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 			try {
 				if (!IsValidReferenceName) {
 					MessageService.ShowError(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Gui.Dialogs.AddWebReferenceDialog.InvalidReferenceNameError}"));
-					return;					
+					return;
 				}
 				
 				if (!IsValidNamespace) {
 					MessageService.ShowError(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Gui.Dialogs.AddWebReferenceDialog.InvalidNamespaceError}"));
-					return;										
+					return;
 				}
-											
+				
 				webReference.Name = referenceNameTextBox.Text;
 				webReference.ProxyNamespace = namespaceTextBox.Text;
 				
@@ -717,7 +719,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			stopButton.Text = StringParser.Parse("${res:ICSharpCode.SharpDevelop.Gui.Dialogs.AddWebReferenceDialog.StopButtonTooltip}");
 			stopButton.ToolTipText = stopButton.Text;
-				
+			
 			webServicesTabPage.Text = StringParser.Parse("${res:ICSharpCode.SharpDevelop.Gui.Dialogs.AddWebReferenceDialog.WebServicesTabPageTitle}");
 			webServicesTabPage.ToolTipText = webServicesTabPage.Text;
 		}
