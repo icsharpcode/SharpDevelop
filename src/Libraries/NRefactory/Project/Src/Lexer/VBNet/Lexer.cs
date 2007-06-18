@@ -12,7 +12,7 @@ using System.Text;
 
 namespace ICSharpCode.NRefactory.Parser.VB
 {
-	internal class Lexer : AbstractLexer
+	internal sealed class Lexer : AbstractLexer
 	{
 		bool lineEnd = true;
 		
@@ -318,6 +318,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 				ch = Char.ToUpper(ch, CultureInfo.InvariantCulture);
 				bool unsigned = ch == 'U';
 				if (unsigned) {
+					ReaderRead(); // read the U
 					ch = (char)ReaderPeek();
 					sb.Append(ch);
 					ch = Char.ToUpper(ch, CultureInfo.InvariantCulture);
@@ -325,60 +326,65 @@ namespace ICSharpCode.NRefactory.Parser.VB
 						errors.Error(Line, Col, "Invalid type character: U" + ch);
 					}
 				}
-				if (isokt) {
-					ReaderRead();
-					ulong number = 0L;
-					for (int i = 0; i < digit.Length; ++i) {
-						number = number * 8 + digit[i] - '0';
+				try {
+					if (isokt) {
+						ReaderRead();
+						ulong number = 0L;
+						for (int i = 0; i < digit.Length; ++i) {
+							number = number * 8 + digit[i] - '0';
+						}
+						if (ch == 'S') {
+							if (unsigned)
+								return new Token(Tokens.LiteralInteger, x, y, sb.ToString(), (ushort)number);
+							else
+								return new Token(Tokens.LiteralInteger, x, y, sb.ToString(), (short)number);
+						} else if (ch == '%' || ch == 'I') {
+							if (unsigned)
+								return new Token(Tokens.LiteralInteger, x, y, sb.ToString(), (uint)number);
+							else
+								return new Token(Tokens.LiteralInteger, x, y, sb.ToString(), (int)number);
+						} else if (ch == '&' || ch == 'L') {
+							if (unsigned)
+								return new Token(Tokens.LiteralInteger, x, y, sb.ToString(), (ulong)number);
+							else
+								return new Token(Tokens.LiteralInteger, x, y, sb.ToString(), (long)number);
+						} else {
+							if (number > uint.MaxValue) {
+								return new Token(Tokens.LiteralInteger, x, y, sb.ToString(), unchecked((long)number));
+							} else {
+								return new Token(Tokens.LiteralInteger, x, y, sb.ToString(), unchecked((int)number));
+							}
+						}
 					}
 					if (ch == 'S') {
+						ReaderRead();
 						if (unsigned)
-							return new Token(Tokens.LiteralInteger, x, y, sb.ToString(), (ushort)number);
+							return new Token(Tokens.LiteralInteger, x, y, sb.ToString(), UInt16.Parse(digit, ishex ? NumberStyles.HexNumber : NumberStyles.Number));
 						else
-							return new Token(Tokens.LiteralInteger, x, y, sb.ToString(), (short)number);
+							return new Token(Tokens.LiteralInteger, x, y, sb.ToString(), Int16.Parse(digit, ishex ? NumberStyles.HexNumber : NumberStyles.Number));
 					} else if (ch == '%' || ch == 'I') {
+						ReaderRead();
 						if (unsigned)
-							return new Token(Tokens.LiteralInteger, x, y, sb.ToString(), (uint)number);
+							return new Token(Tokens.LiteralInteger, x, y, sb.ToString(), UInt32.Parse(digit, ishex ? NumberStyles.HexNumber : NumberStyles.Number));
 						else
-							return new Token(Tokens.LiteralInteger, x, y, sb.ToString(), (int)number);
+							return new Token(Tokens.LiteralInteger, x, y, sb.ToString(), Int32.Parse(digit, ishex ? NumberStyles.HexNumber : NumberStyles.Number));
 					} else if (ch == '&' || ch == 'L') {
+						ReaderRead();
 						if (unsigned)
-							return new Token(Tokens.LiteralInteger, x, y, sb.ToString(), (ulong)number);
+							return new Token(Tokens.LiteralInteger, x, y, sb.ToString(), UInt64.Parse(digit, ishex ? NumberStyles.HexNumber : NumberStyles.Number));
 						else
-							return new Token(Tokens.LiteralInteger, x, y, sb.ToString(), (long)number);
-					} else {
+							return new Token(Tokens.LiteralInteger, x, y, sb.ToString(), Int64.Parse(digit, ishex ? NumberStyles.HexNumber : NumberStyles.Number));
+					} else if (ishex) {
+						ulong number = UInt64.Parse(digit, NumberStyles.HexNumber);
 						if (number > uint.MaxValue) {
 							return new Token(Tokens.LiteralInteger, x, y, sb.ToString(), unchecked((long)number));
 						} else {
 							return new Token(Tokens.LiteralInteger, x, y, sb.ToString(), unchecked((int)number));
 						}
 					}
-				}
-				if (ch == 'S') {
-					ReaderRead();
-					if (unsigned)
-						return new Token(Tokens.LiteralInteger, x, y, sb.ToString(), UInt16.Parse(digit, ishex ? NumberStyles.HexNumber : NumberStyles.Number));
-					else
-						return new Token(Tokens.LiteralInteger, x, y, sb.ToString(), Int16.Parse(digit, ishex ? NumberStyles.HexNumber : NumberStyles.Number));
-				} else if (ch == '%' || ch == 'I') {
-					ReaderRead();
-					if (unsigned)
-						return new Token(Tokens.LiteralInteger, x, y, sb.ToString(), UInt32.Parse(digit, ishex ? NumberStyles.HexNumber : NumberStyles.Number));
-					else
-						return new Token(Tokens.LiteralInteger, x, y, sb.ToString(), Int32.Parse(digit, ishex ? NumberStyles.HexNumber : NumberStyles.Number));
-				} else if (ch == '&' || ch == 'L') {
-					ReaderRead();
-					if (unsigned)
-						return new Token(Tokens.LiteralInteger, x, y, sb.ToString(), UInt64.Parse(digit, ishex ? NumberStyles.HexNumber : NumberStyles.Number));
-					else
-						return new Token(Tokens.LiteralInteger, x, y, sb.ToString(), Int64.Parse(digit, ishex ? NumberStyles.HexNumber : NumberStyles.Number));
-				} else if (ishex) {
-					ulong number = UInt64.Parse(digit, NumberStyles.HexNumber);
-					if (number > uint.MaxValue) {
-						return new Token(Tokens.LiteralInteger, x, y, sb.ToString(), unchecked((long)number));
-					} else {
-						return new Token(Tokens.LiteralInteger, x, y, sb.ToString(), unchecked((int)number));
-					}
+				} catch (OverflowException ex) {
+					errors.Error(Line, Col, ex.Message);
+					return new Token(Tokens.LiteralInteger, x, y, sb.ToString(), 0);
 				}
 			}
 			Token nextToken = null; // if we accedently read a 'dot'
