@@ -25,6 +25,12 @@ namespace ICSharpCode.SharpDevelop.Sda
 		SharpDevelopHost.CallbackHelper callback;
 		bool useSharpDevelopErrorHandler;
 		
+		
+		public override object InitializeLifetimeService()
+		{
+			return null;
+		}
+		
 		#region Initialize Core
 		public void InitSharpDevelopCore(SharpDevelopHost.CallbackHelper callback, StartupSettings properties)
 		{

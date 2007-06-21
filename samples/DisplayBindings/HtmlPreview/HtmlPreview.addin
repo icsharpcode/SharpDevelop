@@ -1,6 +1,5 @@
 ﻿<AddIn name        = "HtmlPreview"
-       author      = "Daniel Grunwald"
-       copyright   = "GNU Lesser General Public License">
+       author      = "Daniel Grunwald">
 	
 	<Runtime>
 		<Import assembly = "HtmlPreview.dll"/>

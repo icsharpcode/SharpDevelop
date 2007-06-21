@@ -12,7 +12,7 @@
 //   of conditions and the following disclaimer in the documentation and/or other materials
 //   provided with the distribution.
 // 
-// - Neither the name of the ICSharpCode nor the names of its contributors may be used to
+// - Neither the name of the ICSharpCode team nor the names of its contributors may be used to
 //   endorse or promote products derived from this software without specific prior written
 //   permission.
 // 
@@ -92,7 +92,7 @@ namespace CSharpEditor
 			//	new DefaultCompletionData("Text", "Description", 1)
 			//};
 			
-			NRefactoryResolver resolver = new NRefactoryResolver(mainForm.myProjectContent);
+			NRefactoryResolver resolver = new NRefactoryResolver(mainForm.myProjectContent, mainForm.myProjectContent.Language);
 			Dom.ResolveResult rr = resolver.Resolve(FindExpression(textArea),
 			                                        textArea.Caret.Line,
 			                                        textArea.Caret.Column,

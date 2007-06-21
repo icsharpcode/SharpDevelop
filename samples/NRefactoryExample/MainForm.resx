@@ -119,8 +119,8 @@
   </resheader>
   <data name="inputTextBox.Text" xml:space="preserve">
     <value>// &lt;file&gt;
-//     &lt;copyright see="prj:///doc/copyright.txt"&gt;2002-2005 AlphaSierraPapa&lt;/copyright&gt;
-//     &lt;license see="prj:///doc/license.txt"&gt;GNU General Public License&lt;/license&gt;
+//     &lt;copyright see="prj:///doc/copyright.txt"/&gt;
+//     &lt;license see="prj:///doc/license.txt"/&gt;
 //     &lt;owner name="David Srbecký" email="dsrbecky@gmail.com"/&gt;
 //     &lt;version&gt;$Revision: 698 $&lt;/version&gt;
 // &lt;/file&gt;

@@ -1,6 +1,5 @@
 ﻿<AddIn name        = "ImageViewer"
-       author      = "Daniel Grunwald"
-       copyright   = "GNU Lesser General Public License">
+       author      = "Daniel Grunwald">
 	
 	<Runtime>
 		<Import assembly = "ImageViewer.dll"/>
