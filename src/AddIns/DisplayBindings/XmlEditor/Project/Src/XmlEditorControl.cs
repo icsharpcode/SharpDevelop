@@ -239,7 +239,7 @@ namespace ICSharpCode.XmlEditor
 		
 		void ClipboardHandlerCopyText(object sender, CopyTextEventArgs e)
 		{
-			SideBarView.PutInClipboardRing(e.Text);
+//			TextEditorSideBar.PutInClipboardRing(e.Text);
 		}
 	
 		void TextAreaMouseWheel(object sender, MouseEventArgs e)

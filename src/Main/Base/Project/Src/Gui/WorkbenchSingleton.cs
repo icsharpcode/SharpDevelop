@@ -69,6 +69,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
+		/// <summary>
+		/// Runs workbench initialization.
+		/// Is called by ICSharpCode.SharpDevelop.Sda and should not be called manually!
+		/// </summary>
 		public static void InitializeWorkbench()
 		{
 			LayoutConfiguration.LoadLayoutConfiguration();
@@ -94,6 +98,26 @@ namespace ICSharpCode.SharpDevelop.Gui
 			workbench.WorkbenchLayout = new SdiWorkbenchLayout();
 			
 			OnWorkbenchCreated();
+			
+			// initialize workbench-dependent services:
+			Project.ProjectService.InitializeService();
+			NavigationService.InitializeService();
+		}
+		
+		/// <summary>
+		/// Runs workbench cleanup.
+		/// Is called by ICSharpCode.SharpDevelop.Sda and should not be called manually!
+		/// </summary>
+		public static void OnWorkbenchUnloaded()
+		{
+			Project.ProjectService.CloseSolution();
+			NavigationService.Unload();
+			
+			if (WorkbenchUnloaded != null) {
+				WorkbenchUnloaded(null, EventArgs.Empty);
+			}
+			
+			FileService.Unload();
 		}
 		
 		#region Safe Thread Caller
@@ -261,5 +285,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// Is called, when the workbench is created
 		/// </summary>
 		public static event EventHandler WorkbenchCreated;
+		
+		/// <summary>
+		/// Is called, when the workbench is unloaded
+		/// </summary>
+		public static event EventHandler WorkbenchUnloaded;
 	}
 }

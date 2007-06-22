@@ -21,7 +21,7 @@ namespace WorkflowDesigner
 	/// <summary>
 	/// Description of SecondaryViewContent.
 	/// </summary>
-	public class WorkflowDesignerSecondaryViewContent : AbstractSecondaryViewContent, IHasPropertyContainer
+	public class WorkflowDesignerSecondaryViewContent : AbstractSecondaryViewContent, IHasPropertyContainer, IToolsHost
 	{
 		ViewContentControl control;
 
@@ -56,6 +56,12 @@ namespace WorkflowDesigner
 		protected override void SaveToPrimary()
 		{
 			control.UnloadWorkflow();
+		}
+		
+		System.Windows.Forms.Control IToolsHost.ToolsControl {
+			get {
+				return WorkflowSideTabService.WorkflowSideBar;
+			}
 		}
 	}
 }

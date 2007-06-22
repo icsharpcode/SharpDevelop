@@ -59,7 +59,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		}
 	}
 	
-	public class TextEditorDisplayBindingWrapper : AbstractViewContent, IMementoCapable, IPrintable, IEditable, IUndoHandler, IPositionable, ITextEditorControlProvider, IParseInformationListener, IClipboardHandler, IContextHelpProvider
+	public class TextEditorDisplayBindingWrapper : AbstractViewContent, IMementoCapable, IPrintable, IEditable, IUndoHandler, IPositionable, ITextEditorControlProvider, IParseInformationListener, IClipboardHandler, IContextHelpProvider, IToolsHost
 	{
 		internal readonly SharpDevelopTextAreaControl textEditorControl;
 		
@@ -470,5 +470,9 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			textEditorControl.ActiveTextAreaControl.TextArea.ClipboardHandler.Cut(null, null);
 		}
 		#endregion
+		
+		Control IToolsHost.ToolsControl {
+			get { return TextEditorSideBar.Instance; }
+		}
 	}
 }

@@ -26,7 +26,7 @@ using ICSharpCode.SharpDevelop.Widgets.SideBar;
 
 namespace ICSharpCode.FormsDesigner
 {
-	public class FormsDesignerViewContent : AbstractSecondaryViewContent, IClipboardHandler, IUndoHandler, IHasPropertyContainer, IContextHelpProvider
+	public class FormsDesignerViewContent : AbstractSecondaryViewContent, IClipboardHandler, IUndoHandler, IHasPropertyContainer, IContextHelpProvider, IToolsHost
 	{
 		protected bool failedDesignerInitialize;
 		
@@ -36,9 +36,6 @@ namespace ICSharpCode.FormsDesigner
 		Panel p = new Panel();
 		DesignSurface designSurface;
 		bool disposing;
-		
-		// Switch to the Windows Forms tab by default.
-		string activeTabName = "Windows Forms";
 		
 		IDesignerLoaderProvider loaderProvider;
 		IDesignerGenerator generator;
@@ -562,28 +559,8 @@ namespace ICSharpCode.FormsDesigner
 			}
 		}
 		
-		void AddSideBars()
-		{
-			foreach(SideTab tab in ToolboxProvider.SideTabs) {
-				if (!SharpDevelopSideBar.SideBar.Tabs.Contains(tab)) {
-					SharpDevelopSideBar.SideBar.Tabs.Add(tab);
-				}
-			}
-			SharpDevelopSideBar.SideBar.Refresh();
-		}
-		
-		void SetActiveSideTab()
-		{
-			if (activeTabName.Length == 0) {
-				return;
-			}
-			
-			foreach(SideTab tab in ToolboxProvider.SideTabs) {
-				if (activeTabName == tab.Name) {
-					SharpDevelopSideBar.SideBar.ActiveTab = tab;
-					return;
-				}
-			}
+		public virtual Control ToolsControl {
+			get { return ToolboxProvider.FormsDesignerSideBar; }
 		}
 	}
 }

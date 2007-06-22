@@ -12,6 +12,7 @@ using System.Drawing;
 using System.Reflection;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing.Design;
 using System.ComponentModel.Design;
 using ICSharpCode.Core;
@@ -75,26 +76,30 @@ namespace WorkflowDesigner
 				viewCount = value;
 				
 				if (viewCount == 0)	{
-					if (SharpDevelopSideBar.SideBar.Tabs.Contains(standardSideTab)) {
-						SharpDevelopSideBar.SideBar.Tabs.Remove(standardSideTab);
-						standardSideTab = null;
-					}
-
+					standardSideTab = null;
 					ActiveProject = null;
-					
-					SharpDevelopSideBar.SideBar.Refresh();
-					
 				}
 			}
 		}
+		
+		static SharpDevelopSideBar workflowSideBar;
+		
+		public static SharpDevelopSideBar WorkflowSideBar {
+			get {
+				Debug.Assert(WorkbenchSingleton.InvokeRequired == false);
+				if (workflowSideBar == null) {
+					workflowSideBar = new SharpDevelopSideBar();
+					
+				}
+				return workflowSideBar;
+			}
+		}
+		
 		#endregion
 		
 		private static void Initialise()
 		{
 			// Make sure the side bar has actually been created!
-			if (SharpDevelopSideBar.SideBar == null)
-				WorkbenchSingleton.Workbench.GetPad(typeof(SideBarView)).CreatePad();
-
 			ProjectService.ProjectItemRemoved += ProjectItemRemovedEventHandler;
 			ProjectService.ProjectItemAdded += ProjectItemAddedEventHandler;
 			ProjectService.SolutionClosing += SolutionClosingEventHandler;
@@ -149,8 +154,8 @@ namespace WorkflowDesigner
 			
 			if (ActiveProject == e.Project)
 			{
-				if (!SharpDevelopSideBar.SideBar.Tabs.Contains(references[item])) {
-					SharpDevelopSideBar.SideBar.Tabs.Add(references[item]);
+				if (!WorkflowSideBar.Tabs.Contains(references[item])) {
+					WorkflowSideBar.Tabs.Add(references[item]);
 				}
 			}
 		}
@@ -166,8 +171,8 @@ namespace WorkflowDesigner
 			Dictionary<ReferenceProjectItem, SideTab> references = Projects[e.Project];
 			
 			if (references.ContainsKey(item)){
-				if (SharpDevelopSideBar.SideBar.Tabs.Contains(references[item])) {
-					SharpDevelopSideBar.SideBar.Tabs.Remove(references[item]);
+				if (WorkflowSideBar.Tabs.Contains(references[item])) {
+					WorkflowSideBar.Tabs.Remove(references[item]);
 				}
 				references.Remove(item);
 			}
@@ -203,8 +208,11 @@ namespace WorkflowDesigner
 				return;
 
 			// Make sure the standard workflow sidebar is on screen.
-			if (!SharpDevelopSideBar.SideBar.Tabs.Contains(standardSideTab)) {
-				SharpDevelopSideBar.SideBar.Tabs.Add(standardSideTab);
+			if (!WorkflowSideBar.Tabs.Contains(standardSideTab)) {
+				WorkflowSideBar.Tabs.Add(standardSideTab);
+				if (WorkflowSideBar.Tabs.Count == 1) {
+					WorkflowSideBar.ActiveTab = WorkflowSideBar.Tabs[0];
+				}
 			}
 
 			
@@ -212,7 +220,7 @@ namespace WorkflowDesigner
 			activeViewContent = sender as IViewContent;
 			ActiveProject = ProjectService.OpenSolution.FindProjectContainingFile(activeViewContent.PrimaryFileName);
 			
-			SharpDevelopSideBar.SideBar.Refresh();
+			WorkflowSideBar.Refresh();
 		}
 		#endregion;
 		
@@ -228,8 +236,8 @@ namespace WorkflowDesigner
 			Dictionary<ReferenceProjectItem, SideTab> references = Projects[project];
 			foreach (SideTab sideTab in references.Values) {
 				if (sideTab.Items.Count > 1) {
-					if (!SharpDevelopSideBar.SideBar.Tabs.Contains(sideTab)) {
-						SharpDevelopSideBar.SideBar.Tabs.Add(sideTab);
+					if (!WorkflowSideBar.Tabs.Contains(sideTab)) {
+						WorkflowSideBar.Tabs.Add(sideTab);
 					}
 				}
 			}
@@ -271,8 +279,8 @@ namespace WorkflowDesigner
 			
 			Dictionary<ReferenceProjectItem, SideTab> references = Projects[project];
 			foreach (SideTab sideTab in references.Values) {
-				if (SharpDevelopSideBar.SideBar.Tabs.Contains(sideTab)) {
-					SharpDevelopSideBar.SideBar.Tabs.Remove(sideTab);
+				if (WorkflowSideBar.Tabs.Contains(sideTab)) {
+					WorkflowSideBar.Tabs.Remove(sideTab);
 				}
 			}
 		}

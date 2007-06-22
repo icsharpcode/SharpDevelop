@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Xml;
 
@@ -25,7 +26,6 @@ namespace ICSharpCode.WixBinding
 	{
 		string dialogId = String.Empty;
 		WixProject wixProject;
-		SetupDialogControlsSideTab setupDialogControlsSideTab;
 		
 		/// <summary>
 		/// Ignore the dialog id in the text editor if the OpenDialog method is called
@@ -33,7 +33,7 @@ namespace ICSharpCode.WixBinding
 		/// </summary>
 		bool ignoreDialogIdSelectedInTextEditor;
 		
-		public WixDialogDesigner(IViewContent view) 
+		public WixDialogDesigner(IViewContent view)
 			: this(view, new WixDialogDesignerLoaderProvider(), new WixDialogDesignerGenerator())
 		{
 		}
@@ -47,7 +47,7 @@ namespace ICSharpCode.WixBinding
 		/// <summary>
 		/// Gets the WixDialogDesigner from the primary view.
 		/// </summary>
-		/// <returns>The wix dialog designer view that is attached as a 
+		/// <returns>The wix dialog designer view that is attached as a
 		/// secondary view; <see langword="null"/> if the primary view
 		/// has no such designer attached.</returns>
 		public static WixDialogDesigner GetDesigner(IViewContent view)
@@ -62,19 +62,18 @@ namespace ICSharpCode.WixBinding
 		}
 		
 		/// <summary>
-		/// Attempts to open the Wix dialog from the document currently 
+		/// Attempts to open the Wix dialog from the document currently
 		/// associated with this designer.
 		/// </summary>
 		/// <param name="id">The id of the dialog that will be opened.</param>
 		public void OpenDialog(string id)
-		{			
+		{
 			JumpToDialogElement(id);
 			if (base.IsFormsDesignerVisible) {
 				// Reload so the correct dialog is displayed.
-				#warning Code temporarily disabled after IViewContent changes
-				//base.Deselecting();
+				SaveToPrimary();
 				DialogId = id;
-				//base.Selected();
+				LoadFromPrimary();
 			} else {
 				// Need to open the designer.
 				DialogId = id;
@@ -84,7 +83,7 @@ namespace ICSharpCode.WixBinding
 
 		/* //DG:
 		/// <summary>
-		/// Set dialog id to null after calling base.Deselecting since base.Deselecting 
+		/// Set dialog id to null after calling base.Deselecting since base.Deselecting
 		/// calls MergeFormChanges which will reference this dialog id.
 		/// </summary>
 		public override void Deselecting()
@@ -98,7 +97,7 @@ namespace ICSharpCode.WixBinding
 		/// Designer has been selected.
 		/// </summary>
 		public override void Selected()
-		{			
+		{
 			try {
 				if (!ignoreDialogIdSelectedInTextEditor) {
 					string dialogId = GetDialogIdSelectedInTextEditor();
@@ -109,8 +108,8 @@ namespace ICSharpCode.WixBinding
 					DialogId = dialogId;
 				}
 				wixProject = GetProject();
-			} catch (XmlException ex) {	
-				// Let the Wix designer loader try to load the XML and generate 
+			} catch (XmlException ex) {
+				// Let the Wix designer loader try to load the XML and generate
 				// an error message.
 				DialogId = "InvalidXML";
 				AddToErrorList(ex);
@@ -128,7 +127,7 @@ namespace ICSharpCode.WixBinding
 			base.SwitchedTo();
 			RemoveFormsDesignerToolboxSideTabs();
 		}
-		*/
+		 */
 		
 		/// <summary>
 		/// Gets the Wix document filename.
@@ -167,7 +166,7 @@ namespace ICSharpCode.WixBinding
 				dialogId = value;
 			}
 		}
-			
+		
 		/// <summary>
 		/// Finds the WixDialogDesigner in the current window's secondary views
 		/// and switches to it.
@@ -244,7 +243,7 @@ namespace ICSharpCode.WixBinding
 		}
 		
 		/// <summary>
-		/// Cannot use ProjectService.CurrentProject since it is possible to switch 
+		/// Cannot use ProjectService.CurrentProject since it is possible to switch
 		/// to the designer without selecting the project.
 		/// </summary>
 		WixProject GetProject()
@@ -277,63 +276,29 @@ namespace ICSharpCode.WixBinding
 						textArea.JumpTo(location.Y);
 					}
 				}
-			} catch (XmlException) { 
+			} catch (XmlException) {
 				// Ignore
 			}
 		}
 		
-		/// <summary>
-		/// Removes forms designer toolbox side bars.
-		/// </summary>
-		/// <remarks>
-		/// Cannot remove forms designer toolbox side tabs otherwise
-		/// the designer will not unload when you call base.Deselected.
-		/// Not sure why the existence of the side tab stops the unload. 
-		/// This has been the case since SharpDevelop 1.1.
-		/// </remarks>
-		void RemoveFormsDesignerToolboxSideTabs()
-		{
-//			foreach(AxSideTab tab in ToolboxProvider.SideTabs) {
-//				if (!SharpDevelopSideBar.SideBar.Tabs.Contains(tab)) {
-//					return;
-//				}
-//				SharpDevelopSideBar.SideBar.Tabs.Remove(tab);
-//			}
-//			SharpDevelopSideBar.SideBar.Refresh();
-		}
+		static SharpDevelopSideBar setupDialogControlsToolBox;
 		
-		/// <summary>
-		/// Gets the setup controls side tab.
-		/// </summary>
-		SetupDialogControlsSideTab SetupDialogControlsSideTab {
+		public static SharpDevelopSideBar SetupDialogControlsToolBox {
 			get {
-				if (setupDialogControlsSideTab == null) {
-					setupDialogControlsSideTab = SetupDialogControlsSideTab.CreateSideTab();
+				Debug.Assert(WorkbenchSingleton.InvokeRequired == false);
+				if (setupDialogControlsToolBox == null) {
+					setupDialogControlsToolBox = new SharpDevelopSideBar();
+					setupDialogControlsToolBox.Tabs.Add(SetupDialogControlsSideTab.CreateSideTab());
+					setupDialogControlsToolBox.ActiveTab = setupDialogControlsToolBox.Tabs[0];
 				}
-				return setupDialogControlsSideTab;
+				return setupDialogControlsToolBox;
 			}
 		}
 		
-		/// <summary>
-		/// Adds the Wix toolbox side tab
-		/// </summary>
-		void AddWixToolboxSideTab()
-		{
-			if (!SharpDevelopSideBar.SideBar.Tabs.Contains(SetupDialogControlsSideTab)) {
-				SharpDevelopSideBar.SideBar.Tabs.Add(SetupDialogControlsSideTab);
-				SharpDevelopSideBar.SideBar.ActiveTab = SetupDialogControlsSideTab;
-				SharpDevelopSideBar.SideBar.Refresh();
-			}
-		}
 		
-		/// <summary>
-		/// Removes the Wix toolbox side tab
-		/// </summary>
-		void RemoveWixToolboxSideTab()
-		{
-			if (SharpDevelopSideBar.SideBar.Tabs.Contains(SetupDialogControlsSideTab)) {
-				SharpDevelopSideBar.SideBar.Tabs.Remove(SetupDialogControlsSideTab);
-				SharpDevelopSideBar.SideBar.Refresh();
+		public override System.Windows.Forms.Control ToolsControl {
+			get {
+				return SetupDialogControlsToolBox;
 			}
 		}
 	}

@@ -31,7 +31,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 			
 			this.Owner = owner;
 			
-				
+			
 			if (categoryName == null) {
 				ControlDictionary["categoryNameTextBox"].Text = "New Category";
 				Text = StringParser.Parse("${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.RenameCategoryDialog.NewCategoryDialogName}");
@@ -49,8 +49,6 @@ namespace ICSharpCode.FormsDesigner.Gui
 			MessageService.ShowError("${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.RenameCategoryDialog.DuplicateNameError}");
 		}
 		
-		// THIS METHOD IS MAINTAINED BY THE FORM DESIGNER
-		// DO NOT EDIT IT MANUALLY! YOUR CHANGES ARE LIKELY TO BE LOST
 		void okButtonClick(object sender, System.EventArgs e)
 		{
 			if (categoryName != ControlDictionary["categoryNameTextBox"].Text) {
@@ -60,8 +58,8 @@ namespace ICSharpCode.FormsDesigner.Gui
 						return;
 					}
 				}
-					
-				foreach (SideTab tab in SharpDevelopSideBar.SideBar.Tabs) {
+				
+				foreach (SideTab tab in ToolboxProvider.FormsDesignerSideBar.Tabs) {
 					if (!(tab is SideTabDesigner) && !(tab is CustomComponentsSideTab)) {
 						if (tab.Name == ControlDictionary["categoryNameTextBox"].Text) {
 							ShowDuplicateErrorMessage();

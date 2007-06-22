@@ -153,8 +153,9 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		
 		void ClipboardHandlerCopyText(object sender, CopyTextEventArgs e)
 		{
-			ICSharpCode.SharpDevelop.Gui.SideBarView.PutInClipboardRing(e.Text);
+			TextEditorSideBar.Instance.PutInClipboardRing(e.Text);
 		}
+		
 		public override void OptionsChanged()
 		{
 			base.OptionsChanged();

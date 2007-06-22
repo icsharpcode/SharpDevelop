@@ -127,7 +127,9 @@ namespace ICSharpCode.SharpDevelop.Widgets.SideBar
 		protected override void OnResize(System.EventArgs e)
 		{
 			base.OnResize(e);
-			scrollBar.LargeChange = sideTabContent.Height / activeTab.ItemHeight;
+			if (activeTab != null) {
+				scrollBar.LargeChange = sideTabContent.Height / activeTab.ItemHeight;
+			}
 		}
 		
 		public SideBarControl()
@@ -735,7 +737,7 @@ namespace ICSharpCode.SharpDevelop.Widgets.SideBar
 			
 			protected override void OnPaint(PaintEventArgs e)
 			{
-				if (sideBar != null) {
+				if (sideBar != null && sideBar.activeTab != null) {
 					sideBar.activeTab.DrawTabContent(e.Graphics, Font, new Rectangle(0, 0, Width, Height));
 				}
 			}
@@ -746,7 +748,7 @@ namespace ICSharpCode.SharpDevelop.Widgets.SideBar
 			{
 				base.OnDragEnter(e);
 				sideBar.ExitRenameMode();
-				if (sideBar.activeTab.CanDragDrop) {
+				if (sideBar.activeTab != null && sideBar.activeTab.CanDragDrop) {
 					if (e.Data.GetDataPresent(typeof(string)) || e.Data.GetDataPresent(typeof(SideTabItem))) {
 						e.Effect = GetDragDropEffect(e);
 					} else {
@@ -760,9 +762,11 @@ namespace ICSharpCode.SharpDevelop.Widgets.SideBar
 			protected override void OnDragLeave(EventArgs e)
 			{
 				base.OnDragLeave(e);
-				sideBar.Tabs.DragOverTab = null;
-				sideBar.ClearDraggings(sideBar.activeTab);
-				Refresh();
+				if (sideBar.activeTab != null) {
+					sideBar.Tabs.DragOverTab = null;
+					sideBar.ClearDraggings(sideBar.activeTab);
+					Refresh();
+				}
 			}
 			
 			protected override void OnDragDrop(DragEventArgs e)
@@ -871,7 +875,9 @@ namespace ICSharpCode.SharpDevelop.Widgets.SideBar
 			protected override void OnMouseLeave(EventArgs e)
 			{
 				base.OnMouseLeave(e);
-				sideBar.activeTab.SelectedItem = null;
+				if (sideBar.activeTab != null) {
+					sideBar.activeTab.SelectedItem = null;
+				}
 				Refresh();
 			}
 			
@@ -880,6 +886,7 @@ namespace ICSharpCode.SharpDevelop.Widgets.SideBar
 			protected override void OnMouseMove(MouseEventArgs e)
 			{
 				base.OnMouseMove(e);
+				if (sideBar.activeTab == null) return;
 				if (e.Button == MouseButtons.Left) {
 					SideTabItem item = sideBar.activeTab.GetItemAt(e.X, e.Y);
 					
@@ -913,7 +920,7 @@ namespace ICSharpCode.SharpDevelop.Widgets.SideBar
 			protected override void OnMouseDown(MouseEventArgs e)
 			{
 				base.OnMouseDown(e);
-				if (e.Button == MouseButtons.Left) {
+				if (e.Button == MouseButtons.Left && sideBar.activeTab != null) {
 					mouseDownPos = e.Location;
 					sideBar.activeTab.ChoosedItem = sideBar.activeTab.SelectedItem;
 				}

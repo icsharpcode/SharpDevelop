@@ -13,6 +13,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 {
 	/// <summary>
 	/// A view content that is based on another (primary) view content.
+	/// Loading works by getting the content from the primary view content,
+	/// saving by merging it back to the primary view content and then saving the
+	/// primary view content.
+	/// AbstractSecondaryViewContent implements the [Support]Switch* methods to make switching
+	/// between the primary view content and the secondary possible without having to save/load the
+	/// primary view content.
 	/// </summary>
 	public abstract class AbstractSecondaryViewContent : AbstractViewContent
 	{

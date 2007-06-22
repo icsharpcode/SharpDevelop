@@ -34,26 +34,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 			return new SharpDevelopSideTabItem(name, tag, bitmap);
 		}
 	}
-		
+	
 	public class SharpDevelopSideBar : SideBarControl, IOwnerState
 	{
-		readonly static string contextMenuPath        = "/SharpDevelop/Workbench/SharpDevelopSideBar/ContextMenu";
-		readonly static string sideTabContextMenuPath = "/SharpDevelop/Workbench/SharpDevelopSideBar/SideTab/ContextMenu";
-		
-		Point mousePosition;
-		Point itemMousePosition;
-		public SideTab ClipboardRing = null;
-		
-		public Point ItemMousePosition {
-			get {
-				return itemMousePosition;
-			}
-		}
-		public Point SideBarMousePosition {
-			get {
-				return mousePosition;
-			}
-		}
+		protected string contextMenuPath        = "/SharpDevelop/Workbench/SharpDevelopSideBar/ContextMenu";
+		protected string sideTabContextMenuPath = "/SharpDevelop/Workbench/SharpDevelopSideBar/SideTab/ContextMenu";
 		
 		[Flags]
 		public enum SidebarState {
@@ -74,73 +59,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		Hashtable   standardTabs = new Hashtable();
-		
-		public static SharpDevelopSideBar SideBar;
-		
-		public SharpDevelopSideBar(XmlElement el) : this()
-		{
-			SetOptions(el);
-		}
-		
 		public SharpDevelopSideBar()
 		{
-			SideBar = this;
-			
 			SideTabItemFactory = new SharpDevelopSideTabItemFactory();
 			
 			MouseUp                     += new MouseEventHandler(SetContextMenu);
 			sideTabContent.MouseUp += new MouseEventHandler(SetItemContextMenu);
-			
-			foreach (TextTemplate template in TextTemplate.TextTemplates) {
-				SideTab tab = new SideTab(this, template.Name);
-				tab.DisplayName = StringParser.Parse(tab.Name);
-				tab.CanSaved  = false;
-				foreach (TextTemplate.Entry entry in template.Entries)  {
-					tab.Items.Add(SideTabItemFactory.CreateSideTabItem(entry.Display, entry.Value));
-				}
-				tab.CanBeDeleted = tab.CanDragDrop = false;
-				standardTabs[tab] = true;
-				Tabs.Add(tab);
-			}
-			sideTabContent.DoubleClick += new EventHandler(MyDoubleClick);
-		}
-		
-		public void MyDoubleClick(object sender, EventArgs e)
-		{
-//			if (mainWindow.ActiveContentWindow == null) {
-//				return;
-//			}
-//			string text = ActiveTab.SelectedItem.Tag.ToString();
-//			
-//			mainWindow.ActiveContentWindow.IEditable.ClipboardHandler.Delete(this, null);
-//			
-//			TextAreaControl sharptextarea = (TextAreaControl)mainWindow.ActiveContentWindow.ISdEditable;
-//			
-//			int curLineNr     = sharptextarea.Document.GetLineNumberForOffset(sharptextarea.Document.Caret.Offset);
-//			sharptextarea.Document.Insert(sharptextarea.Document.Caret.Offset, text);
-//			
-//			sharptextarea.Document.Caret.Offset += text.Length;
-//			
-//			if (curLineNr != sharptextarea.Document.GetLineNumberForOffset(sharptextarea.Document.Caret.Offset)) {
-//				sharptextarea.UpdateToEnd(curLineNr);
-//			} else {
-//				sharptextarea.UpdateLines(curLineNr, curLineNr);
-//			}
-		}
-		
-		public void PutInClipboardRing(string text)
-		{
-			foreach (SideTab tab in Tabs) {
-				if (tab.IsClipboardRing) {
-					tab.Items.Add("Text:" + text.Trim(), text);
-					if (tab.Items.Count > 20) {
-						tab.Items.RemoveAt(0);
-					}
-					return;
-				}
-			}
-			System.Diagnostics.Debug.Assert(false, "Can't find clipboard ring side tab category");
 		}
 		
 		public void DeleteSideTab(SideTab tab)
@@ -215,7 +139,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				} else {
 					internalState = internalState & ~(SidebarState.CanMoveDown);
 				}
-				Tabs.DragOverTab = tab;				
+				Tabs.DragOverTab = tab;
 				Refresh();
 				Tabs.DragOverTab = null;
 			}
@@ -268,78 +192,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 				
 				MenuService.ShowContextMenu(this, sideTabContextMenuPath, sideTabContent, e.X, e.Y);
 			}
-		}
-		
-		void MoveItem(object sender, MouseEventArgs e)
-		{
-			itemMousePosition = new Point(e.X, e.Y);
-		}
-		
-		protected override void OnMouseMove(MouseEventArgs e)
-		{
-			base.OnMouseMove(e);
-			mousePosition = new Point(e.X, e.Y);
-		}
-		
-		void SetOptions(XmlElement el)
-		{
-			foreach (XmlElement sideTabEl in el.ChildNodes) {
-				SideTab tab = new SideTab(this, sideTabEl.GetAttribute("text"));
-				tab.DisplayName = StringParser.Parse(tab.Name);
-				if (tab.Name == el.GetAttribute("activetab")) {
-					ActiveTab = tab;
-				} else {
-					if (ActiveTab == null) {
-						ActiveTab = tab;
-					}
-				}
-				
-				foreach (XmlElement sideTabItemEl in sideTabEl.ChildNodes) {
-					tab.Items.Add(SideTabItemFactory.CreateSideTabItem(sideTabItemEl.GetAttribute("text"), 
-					                                                   sideTabItemEl.GetAttribute("value")));
-				}
-				
-				if (sideTabEl.GetAttribute("clipboardring") == "true") {
-					tab.CanBeDeleted = false;
-					tab.CanDragDrop  = false;
-					tab.Name         = "${res:SharpDevelop.SideBar.ClipboardRing}";
-					tab.DisplayName  = StringParser.Parse(tab.Name);
-					tab.IsClipboardRing = true;
-				}
-				Tabs.Add(tab);
-			}
-		}
-		public XmlElement ToXmlElement(XmlDocument doc)
-		{
-			if (doc == null) {
-				throw new ArgumentNullException("doc");
-			}
-			XmlElement el = doc.CreateElement("SideBar");
-			el.SetAttribute("activetab", ActiveTab.Name);
-			
-			foreach (SideTab tab in Tabs) {
-				if (tab.CanSaved && standardTabs[tab] == null) {
-					XmlElement child = doc.CreateElement("SideTab");
-					
-					if (tab.IsClipboardRing) {
-						child.SetAttribute("clipboardring", "true");
-					}
-					
-					child.SetAttribute("text", tab.Name);
-					
-					foreach (SideTabItem item in tab.Items) {
-						XmlElement itemChild = doc.CreateElement("SideTabItem");
-						
-						itemChild.SetAttribute("text",  item.Name);
-						itemChild.SetAttribute("value", item.Tag.ToString());
-						
-						child.AppendChild(itemChild);
-					}
-					el.AppendChild(child);
-				}
-			}
-			
-			return el;
 		}
 		
 		void OnSideTabDeleted(SideTab tab)

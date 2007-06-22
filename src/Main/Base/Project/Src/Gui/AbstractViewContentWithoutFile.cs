@@ -10,7 +10,13 @@ using System;
 namespace ICSharpCode.SharpDevelop.Gui
 {
 	/// <summary>
-	/// Base class for view contents that are not based on a file.
+	/// Base class for view contents that are not based on a file, but can be loaded/saved.
+	/// If you need a view content that cannot save (IsViewOnly==true), you should instead derive
+	/// directly from AbstractViewContent and leave the Files collection empty.
+	/// 
+	/// AbstractViewContentWithoutFile implements ICustomizedCommands to make "File > Save" work
+	/// without requiring an OpenedFile. "File > Save as" will also cause Save() to be called, without
+	/// showing a "Save as" dialog.
 	/// </summary>
 	public abstract class AbstractViewContentWithoutFile : AbstractViewContent, ICustomizedCommands
 	{

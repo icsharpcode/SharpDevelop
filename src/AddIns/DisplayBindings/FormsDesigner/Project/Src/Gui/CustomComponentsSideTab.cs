@@ -52,7 +52,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 			Items.Clear();
 			AddDefaultItem();
 			ScanProjectAssemblies();
-			SharpDevelopSideBar.SideBar.Refresh();
+			ToolboxProvider.FormsDesignerSideBar.Refresh();
 		}
 		
 		void ProjectItemAdded(object sender, ProjectItemEventArgs e)

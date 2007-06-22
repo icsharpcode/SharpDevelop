@@ -21,7 +21,7 @@ namespace WorkflowDesigner
 	/// <summary>
 	/// Description of PrimaryViewContent.
 	/// </summary>
-	public class WorkflowPrimaryViewContent : AbstractViewContent, IHasPropertyContainer
+	public class WorkflowPrimaryViewContent : AbstractViewContent, IHasPropertyContainer, IToolsHost
 	{
 		ViewContentControl control;
 
@@ -74,5 +74,11 @@ namespace WorkflowDesigner
 			}
 		}
 		#endregion
+		
+		System.Windows.Forms.Control IToolsHost.ToolsControl {
+			get {
+				return WorkflowSideTabService.WorkflowSideBar;
+			}
+		}
 	}
 }

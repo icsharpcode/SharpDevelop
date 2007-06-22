@@ -115,10 +115,6 @@ namespace ICSharpCode.SharpDevelop.Sda
 			LoggingService.Info("Initializing workbench...");
 			WorkbenchSingleton.InitializeWorkbench();
 			
-			// initialize workbench-dependent services:
-			Project.ProjectService.InitializeService();
-			NavigationService.InitializeService();
-			
 			LoggingService.Info("Starting workbench...");
 			Exception exception = null;
 			// finally start the workbench.
@@ -137,9 +133,7 @@ namespace ICSharpCode.SharpDevelop.Sda
 			} finally {
 				LoggingService.Info("Unloading services...");
 				try {
-					Project.ProjectService.CloseSolution();
-					NavigationService.Unload();
-					FileService.Unload();
+					WorkbenchSingleton.OnWorkbenchUnloaded();
 					PropertyService.Save();
 				} catch (Exception ex) {
 					LoggingService.Warn("Exception during unloading", ex);

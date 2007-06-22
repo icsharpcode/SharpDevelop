@@ -13,6 +13,17 @@ using System.Windows.Forms;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
+	/// <summary>
+	/// Provides a default implementation for the IViewContent interface.
+	/// It provides a files collection that, by default, automatically registers the view with the
+	/// files added to it.
+	/// Several properties have default implementation that depend on the contents of the files collection,
+	/// e.g. IsDirty is true when at least one of the files in the collection is dirty.
+	/// To support the changed event, this class registers event handlers with the members of the files collection.
+	/// 
+	/// When used with an empty Files collection, IsViewOnly will return true and this class can be used as a base class
+	/// for view contents not using files.
+	/// </summary>
 	public abstract class AbstractViewContent : IViewContent
 	{
 		/// <summary>

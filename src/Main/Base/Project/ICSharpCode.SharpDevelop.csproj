@@ -57,6 +57,7 @@
     <Compile Include="Src\Gui\AbstractSecondaryViewContent.cs" />
     <Compile Include="Src\Gui\AbstractViewContentWithoutFile.cs" />
     <Compile Include="Src\Gui\BrowserDisplayBinding\BrowserDisplayBinding.cs" />
+    <Compile Include="Src\Gui\Components\SideBar\TextEditorSideBar.cs" />
     <Compile Include="Src\Gui\Dialogs\OpenWithDialog.cs" />
     <Compile Include="Src\Gui\Dialogs\OpenWithDialog.Designer.cs">
       <DependentUpon>OpenWithDialog.cs</DependentUpon>
@@ -65,6 +66,7 @@
     <Compile Include="Src\Gui\Dialogs\SolutionConfiguration\AddNewConfigurationDialog.Designer.cs">
       <DependentUpon>AddNewConfigurationDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="Src\Gui\Pads\ToolsPad.cs" />
     <Compile Include="Src\Gui\Workbench\SingleInstanceHelper.cs" />
     <Compile Include="Src\Internal\ExternalTool\ExternalTool.cs" />
     <Compile Include="Src\Internal\Templates\CodeTemplate.cs" />
@@ -227,7 +229,6 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Src\Gui\Pads\PropertyPad\PropertyPad.cs" />
-    <Compile Include="Src\Gui\Pads\SideBarView.cs" />
     <Compile Include="Src\Gui\Workbench\DefaultWorkbench.cs">
       <SubType>Form</SubType>
     </Compile>

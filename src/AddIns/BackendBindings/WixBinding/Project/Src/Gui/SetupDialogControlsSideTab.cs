@@ -38,7 +38,7 @@ namespace ICSharpCode.WixBinding
 			foreach (ToolComponent toolComponent in category.ToolComponents) {
 				toolComponent.HintPath = StringParser.Parse(toolComponent.HintPath);
 			}
-			return new SetupDialogControlsSideTab(SharpDevelopSideBar.SideBar, category, ToolboxProvider.ToolboxService);
+			return new SetupDialogControlsSideTab(WixDialogDesigner.SetupDialogControlsToolBox, category, ToolboxProvider.ToolboxService);
 		}
 		
 		/// <summary>

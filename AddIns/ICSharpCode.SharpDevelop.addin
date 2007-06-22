@@ -83,7 +83,7 @@
 		     title    = "${res:MainWindow.Windows.ToolbarLabel}"
 		     icon     = "PadIcons.Toolbar"
 		     shortcut = "Control|Alt|X"
-		     class    = "ICSharpCode.SharpDevelop.Gui.SideBarView"/>
+		     class    = "ICSharpCode.SharpDevelop.Gui.ToolsPad"/>
 		
 		<Pad id       = "ErrorList"
 		     category = "Main"

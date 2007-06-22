@@ -31,8 +31,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 	}
 	
 	/// <summary>
-	/// IViewContent is the base interface for all editable data
-	/// inside SharpDevelop.
+	/// IViewContent is the base interface for "windows" in the document area of SharpDevelop.
+	/// A view content is a view onto multiple files, or other content that opens like a document
+	/// (e.g. the start page).
 	/// </summary>
 	public interface IViewContent : IDisposable, ICanBeDirty
 	{
