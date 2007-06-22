@@ -283,8 +283,7 @@
 										<File Source="..\..\bin\Tools\Wix\candle.exe" Name="candle.exe" Id="candle.exe" Assembly=".net" AssemblyApplication="candle.exe" AssemblyManifest="candle.exe" KeyPath="yes" />
 										<File Source="..\..\bin\Tools\Wix\candle.exe.config" Name="CANDLE_1.CON" Id="candle.exe.config" LongName="candle.exe.config" />
 									</Component>
-									<Component Id="WixLicenseFiles" Guid="35784338-0E6A-4046-A82F-79BCE7549F08" DiskId="1">
-										<File Source="..\..\bin\Tools\Wix\CPL.TXT" Name="CPL.TXT" Id="CPL.TXT" />
+									<Component Id="WixLicenseFiles" Guid="3EA29F1C-0855-4521-BEFE-7C6D5C4A5D30" DiskId="1">
 										<File Source="..\..\bin\Tools\Wix\License.rtf" Name="License.rtf" Id="License.rtf" />
 									</Component>
 									<Component Id="DarkExe" Guid="45BAAB13-6E19-42DA-80BE-8C44EAD8A24E" DiskId="1">
@@ -310,18 +309,6 @@
 									</Component>
 									<Component Id="NetFxCaDll" Guid="F5970A44-7122-4660-ABCD-821360690CCC" DiskId="1">
 										<File Source="..\..\bin\Tools\Wix\netfxca.dll" Name="netfxca.dll" Id="netfxca.dll" />
-									</Component>
-									<Component Id="PcaExecDll" Guid="978F8CBF-CB97-492F-B787-C4C9049AAFCD" DiskId="1">
-										<File Source="..\..\bin\Tools\Wix\pcaexec.dll" Name="pcaexec.dll" Id="pcaexec.dll" />
-									</Component>
-									<Component Id="PcaExtDll" Guid="993733F6-DE48-4723-B1BF-6BC9BD395AEF" DiskId="1">
-										<File Source="..\..\bin\Tools\Wix\pcaext.dll" Name="pcaext.dll" Id="pcaext.dll" Assembly=".net" AssemblyApplication="pcaext.dll" AssemblyManifest="pcaext.dll" KeyPath="yes" />
-									</Component>
-									<Component Id="PcaSchedDll" Guid="4296DDD0-93F0-4341-AAAC-9D64B7974EE7" DiskId="1">
-										<File Source="..\..\bin\Tools\Wix\pcasched.dll" Name="pcasched.dll" Id="pcasched.dll" />
-									</Component>
-									<Component Id="PubCaWixLib" Guid="FA9D7586-CE64-45EF-B8F4-8104B53BA7D2" DiskId="1">
-										<File Source="..\..\bin\Tools\Wix\pubca.wixlib" Name="pubca.lib" LongName="pubca.wixlib" Id="pubca.wixlib" />
 									</Component>
 									<Component Id="ScaWixLib" Guid="97C97B61-27B2-4520-8406-AFD3C0627081" DiskId="1">
 										<File Source="..\..\bin\Tools\Wix\sca.wixlib" Name="sca.lib" Id="sca.wixlib" LongName="sca.wixlib" />
@@ -364,11 +351,8 @@
 									<Component Id="WixUiWixLib" Guid="EC84F252-770A-457F-8701-99C93684D6B6" DiskId="1">
 										<File Source="..\..\bin\Tools\Wix\wixui.wixlib" Name="wixui.lib" LongName="wixui.wixlib" Id="wixui.wixlib" />
 									</Component>
-									<Component Id="WixLocalisationFiles" Guid="5BBC8B25-5495-4AFA-B4C3-1A2ABD907314" DiskId="1">
-										<File Source="..\..\bin\Tools\Wix\WixUI_de-de.wxl" Name="wixuide.wxl" Id="WixUI_de_de.wxl" LongName="WixUI_de-de.wxl" />
+									<Component Id="WixUiEnUsWxl" Guid="20AAD10C-F5C9-46E8-A515-B516C494235B" DiskId="1">
 										<File Source="..\..\bin\Tools\Wix\WixUI_en-us.wxl" Name="wixuien.wxs" Id="WixUI_en_us.wxl" LongName="WixUI_en-us.wxl" />
-										<File Source="..\..\bin\Tools\Wix\WixUI_es-es.wxl" Name="wixuies.wxl" Id="WixUI_es_es.wxl" LongName="WixUI_es-es.wxl" />
-										<File Source="..\..\bin\Tools\Wix\WixUI_nl-nl.wxl" Name="wixuinl.wxl" Id="WixUI_nl_nl.wxl" LongName="WixUI_nl-nl.wxl" />
 									</Component>
 									<Directory Id="WixBitmapsFolder" Name="Bitmaps">
 										<Component Guid="363E0512-B16C-43ED-A1BE-CE91DBD2463E" Id="WixBitmapFiles" DiskId="1">
@@ -393,34 +377,8 @@
 											<File Source="..\..\bin\Tools\Wix\doc\vs.xsd" Name="vs.xsd" Id="vs.xsd" />
 										</Component>
 									</Directory>
-									<Directory Id="WixIncFolder" Name="inc">
-										<Component Guid="07E93366-FFBD-4C7A-AF4B-F557EC5B42DD" Id="WixIncFiles" DiskId="1">
-											<File Source="..\..\bin\Tools\Wix\inc\aclutil.h" Name="aclutil.h" Id="aclutil.h" />
-											<File Source="..\..\bin\Tools\Wix\inc\cabcutil.h" Name="cabcutil.h" Id="cabcutil.h" />
-											<File Source="..\..\bin\Tools\Wix\inc\cabutil.h" Name="cabutil.h" Id="cabutil.h" />
-											<File Source="..\..\bin\Tools\Wix\inc\dirutil.h" Name="dirutil.h" Id="dirutil.h" />
-											<File Source="..\..\bin\Tools\Wix\inc\dutil.h" Name="dutil.h" Id="dutil.h" />
-											<File Source="..\..\bin\Tools\Wix\inc\fileutil.h" Name="fileutil.h" Id="fileutil.h" />
-											<File Source="..\..\bin\Tools\Wix\inc\memutil.h" Name="memutil.h" Id="memutil.h" />
-											<File Source="..\..\bin\Tools\Wix\inc\metautil.h" Name="metautil.h" Id="metautil.h" />
-											<File Source="..\..\bin\Tools\Wix\inc\perfutil.h" Name="perfutil.h" Id="perfutil.h" />
-											<File Source="..\..\bin\Tools\Wix\inc\sqlutil.h" Name="sqlutil.h" Id="sqlutil.h" />
-											<File Source="..\..\bin\Tools\Wix\inc\strutil.h" Name="strutil.h" Id="strutil.h" />
-											<File Source="..\..\bin\Tools\Wix\inc\wcautil.h" Name="wcautil.h" Id="wcautil.h" />
-											<File Source="..\..\bin\Tools\Wix\inc\xmlutil.h" Name="xmlutil.h" Id="xmlutil.h" />
-										</Component>
-									</Directory>
-									<Directory Id="WixLibFolder" Name="lib">
-										<Component Guid="B2006977-986A-40C2-8C36-C349AC90DF5E" Id="WixLibFiles" DiskId="1">
-											<File Source="..\..\bin\Tools\Wix\lib\dutil.lib" Name="dutil.lib" Id="dutil.lib" />
-											<File Source="..\..\bin\Tools\Wix\lib\wcautil.lib" Name="wcautil.lib" Id="wcautil.lib" />
-										</Component>
-									</Directory>
 									<Component Guid="6B84E84F-C796-4104-981C-07C16CAAB0F8" Id="WixMMCExtensionDll" DiskId="1">
 										<File Source="..\..\bin\Tools\Wix\WixMMCExtension.dll" Name="WIXMMC.DLL" Id="WixMMCExtension.dll" LongName="WixMMCExtension.dll" Assembly=".net" AssemblyApplication="WixMMCExtension.dll" AssemblyManifest="WixMMCExtension.dll" KeyPath="yes" />
-									</Component>
-									<Component Guid="CB3536B4-5A4E-4578-9FDE-808367353C51" Id="WixUIhuhuWxl" DiskId="1">
-										<File Source="..\..\bin\Tools\Wix\WixUI_hu-hu.wxl" Name="WIXUI.WXL" Id="WixUI_hu_hu.wxl" LongName="WixUI_hu-hu.wxl" KeyPath="yes" />
 									</Component>
 								</Directory>
 								<Directory Id="NUnitFolder" Name="NUnit">
@@ -445,6 +403,9 @@
 									</Component>
 									<Component Guid="AB89A052-2D0A-426E-B755-6FA1A9C1C64F" Id="NUnitFrameworkDll" DiskId="1">
 										<File Source="..\..\bin\Tools\NUnit\nunit.framework.dll" Name="nuframe.dll" Id="nunit.framework.dll" LongName="nunit.framework.dll" />
+									</Component>
+									<Component Guid="D67E8EC9-2D98-4889-856F-78FD2BE35947" Id="NUnitCoreInterfacesDll" DiskId="1">
+										<File Id="nunit.core.interfaces.dll" KeyPath="yes" LongName="nunit.core.interfaces.dll" Name="nucorif.dll" Assembly=".net" AssemblyApplication="nunit.core.interfaces.dll" AssemblyManifest="nunit.core.interfaces.dll" Source="..\..\bin\Tools\NUnit\nunit.core.interfaces.dll" />
 									</Component>
 									<Directory Id="NUnitGacFolder" Name="GAC">
 										<!-- 
@@ -488,8 +449,20 @@
 										<Component Guid="1615EFF3-D86A-4F7E-A1C7-4417EB420002" Id="NUnitCoreDllNetv11" DiskId="1">
 											<File Source="..\..\bin\Tools\NUnit\Net-1.1\nunit.core.dll" Name="nucore2.dll" Id="Net_1.1.nunit.core.dll" LongName="nunit.core.dll" Assembly=".net" AssemblyApplication="Net_1.1.nunit.core.dll" AssemblyManifest="Net_1.1.nunit.core.dll" KeyPath="yes" />
 										</Component>
+										<Component Guid="EA6D0786-6103-42DE-8E49-A65FC622D181" Id="NUnitUiKitDllNetv11" DiskId="1">
+											<File Source="..\..\bin\Tools\NUnit\Net-1.1\nunit.uikit.dll" Name="nuuikit.dll" Id="Net_1.1.nunit.uikit.dll" LongName="nunit.uikit.dll" Assembly=".net" AssemblyApplication="Net_1.1.nunit.uikit.dll" AssemblyManifest="Net_1.1.nunit.uikit.dll" KeyPath="yes" />
+										</Component>
 										<Component Guid="3D66D8B1-5C03-404B-882B-105715A598CD" Id="NUnitUtilDllNetv11" DiskId="1">
 											<File Source="..\..\bin\Tools\NUnit\Net-1.1\nunit.util.dll" Name="nuutil2.dll" Id="Net_1.1.nunit.util.dll" LongName="nunit.util.dll" Assembly=".net" AssemblyApplication="Net_1.1.nunit.util.dll" AssemblyManifest="Net_1.1.nunit.util.dll" KeyPath="yes" />
+										</Component>
+										<Component Guid="6B1EB863-88A1-4B3F-95C5-FCAC7C525998" Id="NUnitCoreInterfacesDllNetv11" DiskId="1">
+											<File Source="..\..\bin\Tools\NUnit\Net-1.1\nunit.core.interfaces.dll" Name="nucori2.dll" Id="Net_1.1.nunit.core.interfaces.dll" LongName="nunit.core.interfaces.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Net_1.1.nunit.core.interfaces.dll" AssemblyManifest="Net_1.1.nunit.core.interfaces.dll" />
+										</Component>
+										<Component Guid="F81843D5-CECB-431C-A940-33E8CC478D01" Id="NUnitCoreExtensionsDllNetv11" DiskId="1">
+											<File Source="..\..\bin\Tools\NUnit\Net-1.1\nunit.core.extensions.dll" Name="NCOREX1.DLL" Id="Net_1.1.nunit.core.extensions.dll" LongName="nunit.core.extensions.dll" Assembly=".net" KeyPath="yes" AssemblyApplication="Net_1.1.nunit.core.extensions.dll" AssemblyManifest="Net_1.1.nunit.core.extensions.dll" />
+										</Component>
+										<Component Guid="A1F0ABAB-3E44-4BD3-B2E1-13B9E4F28DA5" Id="NUnitFrameworkDllNetv11" DiskId="1">
+											<File Source="..\..\bin\Tools\NUnit\Net-1.1\nunit.framework.dll" Name="nuframe.dll" Id="Net_1.1.nunit.framework.dll" LongName="nunit.framework.dll" />
 										</Component>
 									</Directory>
 								</Directory>
@@ -520,6 +493,9 @@
 									<File Source="..\..\doc\technotes\listing.css" Name="listing.css" Id="listing.css" />
 									<File Source="..\..\doc\technotes\TechicalWritingMadeEasier.rtf" Name="techwrit.rtf" Id="TechicalWritingMadeEasier.rtf" LongName="TechicalWritingMadeEasier.rtf" />
 									<File Source="..\..\doc\technotes\TheFineArtOfCommenting.rtf" Name="comment.rtf" Id="TheFineArtOfCommenting.rtf" LongName="TheFineArtOfCommenting.rtf" />
+								</Component>
+								<Component Guid="B5E6404F-E602-42AA-9C3A-996425AC3B40" Id="AddInWritingHelpWebsiteShortcut" DiskId="1">
+									<File Name="ADDINWH.URL" Id="AddInWritingHelp.url" LongName="Addin Writing Help.url" Source="..\..\doc\technotes\AddIn Writing Help.url" KeyPath="yes" />
 								</Component>
 							</Directory>
 						</Directory>
@@ -687,7 +663,11 @@
 									<File Source="..\..\data\resources\StringResources.pt-br.resources" Name="STRIN_13.RES" Id="StringResources.pt_br.resources" LongName="StringResources.pt-br.resources" />
 									<File Source="..\..\data\resources\StringResources.ro.resources" Name="STRIN_14.RES" Id="StringResources.ro.resources" LongName="StringResources.ro.resources" />
 									<File Source="..\..\data\resources\StringResources.se.resources" Name="STRIN_15.RES" Id="StringResources.se.resources" LongName="StringResources.se.resources" />
+								</Component>
+								<Component Guid="720DC3DF-9547-4069-9C36-873F41579791" Id="StringResources.pt.resources" DiskId="1">
 									<File Source="..\..\data\resources\StringResources.pt.resources" Name="STRIN_16.RES" Id="StringResources.pt.resources" LongName="StringResources.pt.resources" />
+								</Component>
+								<Component Guid="78CE4E0B-296B-4479-8978-8D389BF01885" Id="StringResources.cngb.resources" DiskId="1">
 									<File Source="..\..\data\resources\StringResources.cn-gb.resources" Name="CB-GB.RES" Id="StringResources.cn_gb.resources" LongName="StringResources.cn-gb.resources" />
 								</Component>
 							</Directory>
@@ -752,6 +732,9 @@
 										<Component Guid="4431463D-4FA8-48A5-9D92-D1FDA818B324" Id="SharpDevelopReportTemplate" DiskId="1">
 											<File Source="..\..\data\templates\file\Misc\EmptyReport.xft" Name="SDR.XFT" Id="EmptyReport.xft" LongName="EmptyReport.xft" />
 										</Component>
+										<Component Guid="DC3D0C22-B117-4FD8-AFF9-77B0CB36ECD1" Id="AppConfigFileTemplate" DiskId="1">
+											<File Source="..\..\data\templates\file\Misc\AppConfigFile.xft" Name="APPCONF.XFT" Id="AppConfigFile.xft" LongName="AppConfigFile.xft" />
+										</Component>
 									</Directory>
 									<Directory Id="SharpDevelopFileTemplatesFolder" LongName="SharpDevelop" Name="SharpDev">
 										<Component Guid="5CD9262F-7A3B-4F28-94FD-43693E669E2B" Id="SharpDevelopFileTemplates" DiskId="1">
@@ -800,6 +783,8 @@
 											<File Source="..\..\data\templates\project\CSharp\SharpDevelopMacro.xpt" Name="SHARPD_2.XPT" Id="CSharpSharpDevelopMacro.xpt" LongName="SharpDevelopMacro.xpt" />
 											<File Source="..\..\data\templates\project\CSharp\WebpageProject.xpt" Name="WEBPAG_1.XPT" Id="CSharpWebpageProject.xpt" LongName="WebpageProject.xpt" />
 											<File Source="..\..\data\templates\project\CSharp\WPFApplication.xpt" Name="WPFAPP_1.XPT" Id="CSharpWPFApplication.xpt" LongName="WPFApplication.xpt" />
+										</Component>
+										<Component Guid="9D156515-C54F-4DAB-AD66-40E44C28E56C" Id="CSharpProjectSharpDevelopCustomToolTemplates" DiskId="1">
 											<File Source="..\..\data\templates\project\CSharp\SharpDevelopCustomTool.xpt" Name="SHARPD_3.XPT" Id="SharpDevelopCustomTool.xpt" LongName="SharpDevelopCustomTool.xpt" />
 											<File Source="..\..\data\templates\project\CSharp\SharpDevelopCustomToolTemplate.xft.xml" Name="SHARPD_1.XML" Id="SharpDevelopCustomToolTemplate.xft.xml" LongName="SharpDevelopCustomToolTemplate.xft.xml" />
 										</Component>
@@ -834,11 +819,15 @@
 											<File Source="..\..\data\templates\project\VBNet\Service.xpt" Name="Service.xpt" Id="VBNetService.xpt" />
 											<File Source="..\..\data\templates\project\VBNet\SharedAddin.xpt" Name="SHARED_1.XPT" Id="VBNetSharedAddin.xpt" LongName="SharedAddin.xpt" />
 											<File Source="..\..\data\templates\project\VBNet\SharpDevelopAddin.xpt" Name="SHARPD_4.XPT" Id="VBNetSharpDevelopAddin.xpt" LongName="SharpDevelopAddin.xpt" />
+										</Component>
+										<Component Guid="5B2ED689-37E3-4C9C-A21B-A5315943792E" Id="VBNetProjectCompactFormsProjectTemplate" DiskId="1">
 											<File Source="..\..\data\templates\project\VBNet\CompactFormsProject.xpt" Name="COMPAC_1.XPT" Id="CompactFormsProject.xpt" LongName="CompactFormsProject.xpt" />
 										</Component>
 									</Directory>
 									<Component Guid="73EAC135-57B6-46C0-9F24-70A347B9AAC8" Id="ExampleProjectTemplate" DiskId="1">
 										<File Source="..\..\data\templates\project\ComplexExample.xpt.test" Name="COMPLE_1.TES" Id="ComplexExample.xpt.test" LongName="ComplexExample.xpt.test" />
+									</Component>
+									<Component Guid="56D8230D-F249-4BC8-A2A3-0BC800F29253" Id="AddInWritingHelp" DiskId="1">
 										<File Source="..\..\data\templates\project\AddInWritingHelp.txt" Name="ADDINW_1.TXT" Id="AddInWritingHelp.txt" LongName="AddInWritingHelp.txt" />
 									</Component>
 								</Directory>
@@ -936,6 +925,22 @@
 												<File Source="..\..\AddIns\AddIns\BackendBindings\WixBinding\Templates\EmptyWixFile.xft" Name="EMPTYW_1.XFT" Id="EmptyWixFile.xft" LongName="EmptyWixFile.xft" />
 												<File Source="..\..\AddIns\AddIns\BackendBindings\WixBinding\Templates\EmptyWixProject.xpt" Name="EMPTYW_1.XPT" Id="EmptyWixProject.xpt" LongName="EmptyWixProject.xpt" />
 												<File Source="..\..\AddIns\AddIns\BackendBindings\WixBinding\Templates\WixDialog.xft" Name="WIXDIA_1.XFT" Id="WixDialog.xft" LongName="WixDialog.xft" />
+											</Component>
+											<Component Guid="2A63D916-4372-48F7-B486-45A4B35F96CA" Id="WixProjectIncludes" DiskId="1">
+												<File Source="..\..\AddIns\AddIns\BackendBindings\WixBinding\Templates\DefaultBrowseDialog.wxs" Name="BrwseDlg.wxs" Id="DefaultBrowseDialog.wxs" LongName="DefaultBrowseDialog.wxs" />
+												<File Source="..\..\AddIns\AddIns\BackendBindings\WixBinding\Templates\DefaultCancelDialog.wxs" Name="CanclDlg.wxs" Id="DefaultCancelDialog.wxs" LongName="DefaultCancelDialog.wxs" />
+												<File Source="..\..\AddIns\AddIns\BackendBindings\WixBinding\Templates\DefaultExitDialog.wxs" Name="ExitDlg.wxs" Id="DefaultExitDialog.wxs" LongName="DefaultExitDialog.wxs" />
+												<File Source="..\..\AddIns\AddIns\BackendBindings\WixBinding\Templates\DefaultFatalErrorDialog.wxs" Name="FatalDlg.wxs" Id="DefaultFatalErrorDialog.wxs" LongName="DefaultFatalErrorDialog.wxs" />
+												<File Source="..\..\AddIns\AddIns\BackendBindings\WixBinding\Templates\DefaultLicense.rtf" Name="License.rtf" Id="DefaultLicense.rtf" LongName="DefaultLicense.rtf" />
+												<File Source="..\..\AddIns\AddIns\BackendBindings\WixBinding\Templates\DefaultOutOfDiskSpaceDialog.wxs" Name="NoDskDlg.wxs" Id="DefaultOutOfDiskSpaceDialog.wxs" LongName="DefaultOutOfDiskSpaceDialog.wxs" />
+												<File Source="..\..\AddIns\AddIns\BackendBindings\WixBinding\Templates\DefaultOutOfRollbackDiskSpaceDialog.wxs" Name="RllbkDlg.wxs" Id="DefaultOutOfRollbackDiskSpaceDialog.wxs" LongName="DefaultOutOfRollbackDiskSpaceDialog.wxs" />
+												<File Source="..\..\AddIns\AddIns\BackendBindings\WixBinding\Templates\DefaultProgressDialog.wxs" Name="PrgsDlg.wxs" Id="DefaultProgressDialog.wxs" LongName="DefaultProgressDialog.wxs" />
+												<File Source="..\..\AddIns\AddIns\BackendBindings\WixBinding\Templates\DefaultSelectFolderDialog.wxs" Name="FldrDlg.wxs" Id="DefaultSelectFolderDialog.wxs" LongName="DefaultSelectFolderDialog.wxs" />
+												<File Source="..\..\AddIns\AddIns\BackendBindings\WixBinding\Templates\DefaultUserExitDialog.wxs" Name="ExitDlg.wxs" Id="DefaultUserExitDialog.wxs" LongName="DefaultUserExitDialog.wxs" />
+												<File Source="..\..\AddIns\AddIns\BackendBindings\WixBinding\Templates\DefaultUserInterface.wxs" Name="Intrface.wxs" Id="DefaultUserInterface.wxs" LongName="DefaultUserInterface.wxs" />
+												<File Source="..\..\AddIns\AddIns\BackendBindings\WixBinding\Templates\DefaultVerifyReadyDialog.wxs" Name="ReadyDlg.wxs" Id="DefaultVerifyReadyDialog.wxs" LongName="DefaultVerifyReadyDialog.wxs" />
+												<File Source="..\..\AddIns\AddIns\BackendBindings\WixBinding\Templates\DefaultViewLicenseAgreementDialog.wxs" Name="LicDlg.wxs" Id="DefaultViewLicenseAgreementDialog.wxs" LongName="DefaultViewLicenseAgreementDialog.wxs" />
+												<File Source="..\..\AddIns\AddIns\BackendBindings\WixBinding\Templates\DefaultWelcomeDialog.wxs" Name="WelcmDlg.wxs" Id="DefaultWelcomeDialog.wxs" LongName="DefaultWelcomeDialog.wxs" />
 											</Component>
 										</Directory>
 									</Directory>
@@ -1199,7 +1204,7 @@
 						</Directory>
 						<Component Guid="5212F79E-568F-426D-AFD2-FC93914D5CE9" Id="SharpDevelopWebsiteShortcut" DiskId="1">
 							<!--
-								The choice here is to either use the IniFile element to
+								The choice here is to either useW the IniFile element to
  								generate the two website shortcuts or create a 
 								SharpDevelop.url file on disk and use a File element and
 								link to the file instead. We will use a file otherwise an

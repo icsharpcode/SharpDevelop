@@ -265,12 +265,6 @@ namespace ICSharpCode.TextEditor
 					textArea.SelectionManager.ExtendSelection(minSelection, maxSelection);
 					
 				}
-				// after a double-click selection, the caret is placed correctly,
-				// but it is not positioned internally.  The effect is when the cursor
-				// is moved up or down a line, the caret will take on the column first
-				// clicked on for the double-click
-				textArea.SetDesiredColumn();
-
 				// HACK WARNING !!!
 				// must refresh here, because when a error tooltip is showed and the underlined
 				// code is double clicked the textArea don't update corrctly, updateline doesn't

@@ -29,7 +29,11 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 	{
 		public override void Run()
 		{
-			LocalResolveResult local = (LocalResolveResult)Owner;
+			Run((LocalResolveResult)Owner);
+		}
+		
+		public static void Run(LocalResolveResult local)
+		{
 			string newName = MessageService.ShowInputBox("${res:SharpDevelop.Refactoring.Rename}", "${res:SharpDevelop.Refactoring.RenameMemberText}", local.Field.Name);
 			if (!FindReferencesAndRenameHelper.CheckName(newName, local.Field.Name)) return;
 			

@@ -208,8 +208,6 @@
 				<ComponentRef Id="WixDocFiles"/>
 				<ComponentRef Id="NetFxSchema"/>
 				<ComponentRef Id="VSExtensionSchema"/>
-				<ComponentRef Id="WixIncFiles"/>
-				<ComponentRef Id="WixLibFiles"/>
 				<ComponentRef Id="WixVSExtension"/>
 				<ComponentRef Id="CandleExe"/>
 				<ComponentRef Id="DarkExe"/>
@@ -219,10 +217,6 @@
 				<ComponentRef Id="MicrosoftToolsWindowsInstallerXmlNAntTasksDll"/>
 				<ComponentRef Id="NetFxWixLib"/>
 				<ComponentRef Id="NetFxCaDll"/>
-				<ComponentRef Id="PcaExecDll"/>
-				<ComponentRef Id="PcaExtDll"/>
-				<ComponentRef Id="PcaSchedDll"/>
-				<ComponentRef Id="PubCaWixLib"/>
 				<ComponentRef Id="ScaWixLib"/>
 				<ComponentRef Id="ScaExecDll"/>
 				<ComponentRef Id="ScashedDll"/>
@@ -237,8 +231,7 @@
 				<ComponentRef Id="WixNetFxExtensionDll"/>
 				<ComponentRef Id="WixTasksDll"/>
 				<ComponentRef Id="WixUiWixLib"/>
-				<ComponentRef Id="WixLocalisationFiles"/>
-				<ComponentRef Id="WixUIhuhuWxl"/>
+				<ComponentRef Id="WixUiEnUsWxl"/>
 				<ComponentRef Id="NUnitCoreExtensionsDll"/>
 				<ComponentRef Id="NUnitUiKitDll"/>
 				<ComponentRef Id="NUnitUtilDll"/>
@@ -248,10 +241,15 @@
 				<ComponentRef Id="NUnitCoreGacDll"/>
 				<ComponentRef Id="NUnitFrameworkGacDll"/>
 				<ComponentRef Id="NunitConsoleRunnerDll"/>
+				<ComponentRef Id="NUnitCoreInterfacesDll"/>
+				<ComponentRef Id="NUnitUiKitDllNetv11"/>
 				<ComponentRef Id="NUnitUtilDllNetv11"/>
 				<ComponentRef Id="NUnitConsoleNetv11Files"/>
 				<ComponentRef Id="NUnitCoreDllNetv11"/>
+				<ComponentRef Id="NUnitCoreExtensionsDllNetv11"/>
 				<ComponentRef Id="NUnitConsoleRunnerDllNetv11"/>
+				<ComponentRef Id="NUnitCoreInterfacesDllNetv11"/>
+				<ComponentRef Id="NUnitFrameworkDllNetv11"/>
 				<ComponentRef Id="ConversionStyleSheetFiles"/>
 				<ComponentRef Id="TextLibOptionsFiles"/>
 				<ComponentRef Id="OptionsFiles"/>
@@ -362,7 +360,15 @@
 				<ComponentRef Id="SyntaxModesFiles"/>
 				<ComponentRef Id="SharpDevelopWebsiteShortcut"/>
 				<ComponentRef Id="SharpDevelopAppPathRegistrySetting"/>
+				<ComponentRef Id="WixProjectIncludes"/>
 				<ComponentRef Id="WPFAssemblyInfoTemplate"/>
+				<ComponentRef Id="AddInWritingHelp"/>
+				<ComponentRef Id="CSharpProjectSharpDevelopCustomToolTemplates"/>
+				<ComponentRef Id="StringResources.pt.resources"/>
+				<ComponentRef Id="VBNetProjectCompactFormsProjectTemplate"/>
+				<ComponentRef Id="StringResources.cngb.resources"/>
+				<ComponentRef Id="AddInWritingHelpWebsiteShortcut"/>
+				<ComponentRef Id="AppConfigFileTemplate"/>
 			</Feature>
 			<Feature Id="SharpDevelopFileAssociations"
 			         Level="1"

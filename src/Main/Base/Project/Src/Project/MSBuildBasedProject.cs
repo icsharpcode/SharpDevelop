@@ -857,7 +857,20 @@ namespace ICSharpCode.SharpDevelop.Project
 					project.Load(fileName);
 				} catch (MSBuild.InvalidProjectFileException ex) {
 					LoggingService.Warn(ex);
-					if (ex.ErrorCode == "MSB4075") {
+					LoggingService.Warn("ErrorCode = " + ex.ErrorCode);
+					bool isVS2003ProjectWithInvalidEncoding = false;
+					if (ex.ErrorCode == "MSB4025") {
+						// Invalid XML.
+						// This MIGHT be a VS2003 project in default encoding, so we have to use this
+						// ugly trick to detect old-style projects
+						using (StreamReader r = File.OpenText(fileName)) {
+							if (r.ReadLine() == "<VisualStudioProject>") {
+								isVS2003ProjectWithInvalidEncoding = true;
+							}
+						}
+					}
+					if (ex.ErrorCode == "MSB4075" || isVS2003ProjectWithInvalidEncoding) {
+						// MSB4075 is:
 						// "The project file must be opened in VS IDE and converted to latest version
 						// before it can be build by MSBuild."
 						Converter.PrjxToSolutionProject.ConvertVSNetProject(fileName);

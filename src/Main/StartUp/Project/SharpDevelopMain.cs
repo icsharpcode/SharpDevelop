@@ -72,7 +72,7 @@ namespace ICSharpCode.SharpDevelop
 			// LoggingService requires ICSharpCode.Core.dll and log4net.dll
 			// When a method containing a call to LoggingService is JITted, the
 			// libraries are loaded.
-			// We want to show the SplashScreen while those libraries are loaded, so
+			// We want to show the SplashScreen while those libraries are loading, so
 			// don't call LoggingService.
 			
 			#if DEBUG

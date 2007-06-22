@@ -37,6 +37,7 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 			Assert.AreEqual(Tokens.Literal, t.kind, "Tokens.Literal");
 			Assert.AreEqual(text, t.val, "value");
 			Assert.IsNotNull(t.literalValue, "literalValue is null");
+			Assert.AreEqual(val.GetType(), t.literalValue.GetType(), "literalValue.GetType()");
 			Assert.AreEqual(val, t.literalValue, "literalValue");
 		}
 		
@@ -80,12 +81,15 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 			GenerateLexer(new StringReader("0xG2F")).NextToken();
 			// SD2-457
 			GenerateLexer(new StringReader("0x")).NextToken();
+			// hexadecimal integer >ulong.MaxValue
+			GenerateLexer(new StringReader("0xfedcba98765432100")).NextToken();
 		}
 		
 		[Test]
 		public void TestLongHexadecimalInteger()
 		{
 			CheckToken("0x4244636f446c6d58", 0x4244636f446c6d58);
+			CheckToken("0xf244636f446c6d58", 0xf244636f446c6d58);
 		}
 		
 		[Test]

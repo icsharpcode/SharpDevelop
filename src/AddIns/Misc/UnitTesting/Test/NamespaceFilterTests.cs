@@ -45,6 +45,15 @@ namespace UnitTesting.Tests
 		}
 		
 		[Test]
+		public void NullTestCaseFullName()
+		{
+			NamespaceFilter filter = new NamespaceFilter("Project.Tests");
+			MockTestCase testCase = new MockTestCase("Project.Tests.MyTest");
+			testCase.TestName.FullName = null;
+			Assert.IsFalse(filter.Pass(testCase));
+		}		
+		
+		[Test]
 		public void TestCaseNameMatchesNamespace()
 		{
 			NamespaceFilter filter = new NamespaceFilter("Project.Test");
@@ -53,53 +62,41 @@ namespace UnitTesting.Tests
 		}
 
 		[Test]
-		public void NullTestSuite()
+		public void NullTestFixture()
 		{
-			NamespaceSuite testSuite = null;
+			TestFixture testFixture = null;
 			NamespaceFilter filter = new NamespaceFilter("Project.Tests");
-			Assert.IsFalse(filter.Pass(testSuite));
+			Assert.IsFalse(filter.Pass(testFixture));
 		}
 		
 		[Test]
-		public void NamespaceTestSuiteIncluded()
+		public void TestFixtureIncluded()
 		{
-			NamespaceSuite testSuite = new NamespaceSuite("Project", "Tests", 0);
+			MockTestFixture testFixture = new MockTestFixture("Project.Tests.MyTestFixture");
 			NamespaceFilter filter = new NamespaceFilter("Project.Tests");
-			Assert.IsTrue(filter.Pass(testSuite));
+			Assert.IsTrue(filter.Pass(testFixture));
 		}
 		
 		[Test]
-		public void RootNamespaceTestSuiteIncluded()
+		public void TestFixtureExcluded()
 		{
-			NamespaceSuite testSuite = new NamespaceSuite("Project", 0);
+			MockTestFixture testFixture = new MockTestFixture("Project.Different");
 			NamespaceFilter filter = new NamespaceFilter("Project.Tests");
-			Assert.IsTrue(filter.Pass(testSuite));
-		}
-		
-		[Test]
-		public void ChildNamespaceTestSuiteIncluded()
-		{
-			NamespaceSuite testSuite = new NamespaceSuite("Project", "Tests", 0);
-			NamespaceFilter filter = new NamespaceFilter("Project");
-			Assert.IsTrue(filter.Pass(testSuite));
-		}
-		
-		[Test]
-		public void NamespaceTestSuiteExcluded()
-		{
-			NamespaceSuite testSuite = new NamespaceSuite("Project", "Different", 0);
-			NamespaceFilter filter = new NamespaceFilter("Project.Tests");
-			Assert.IsFalse(filter.Pass(testSuite));
+			Assert.IsFalse(filter.Pass(testFixture));
 		}
 		
 		[Test]
 		public void RootNamespaceTestSuiteExcluded()
 		{
-			NamespaceSuite testSuite = new NamespaceSuite("Root", 0);
+			MockTestFixture testSuite = new MockTestFixture("Root");
 			NamespaceFilter filter = new NamespaceFilter("Project.Tests");
 			Assert.IsFalse(filter.Pass(testSuite));
 		}
 		
+		/// <summary>
+		/// All test suite classes should pass. NUnit passes namespaces and
+		/// the assembly itself to the filter as a TestSuite object.
+		/// </summary>		
 		[Test]
 		public void TestSuitePasses()
 		{

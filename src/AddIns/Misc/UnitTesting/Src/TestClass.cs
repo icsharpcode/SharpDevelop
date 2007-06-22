@@ -356,39 +356,37 @@ namespace ICSharpCode.UnitTesting
 				ResultChanged(this, new EventArgs());
 			}
 		}
-		
+				
 		/// <summary>
-		/// First tries the last dotted part of the test result name as the
-		/// method name. If there is no matching method the preceding dotted
-		/// part is prefixed to the method name until a match is found. 
+		/// This function adds the base class as a prefix and tries to find
+		/// the corresponding test method.
 		/// 
-		/// Given a test result of:
+		/// Actual method name:
 		/// 
-		/// RootNamespace.ClassName.BaseClass1.BaseClass2.TestMethod
-		/// 
-		/// The method names tried are:
-		/// 
-		/// TestMethod
-		/// BaseClass2.TestMethod
-		/// BaseClass2.BaseClass1.TestMethod
-		/// etc.
+		/// RootNamespace.TestFixture.TestFixtureBaseClass.TestMethod
 		/// </summary>
+		/// <remarks>
+		/// NUnit 2.4 uses the correct test method name when a test 
+		/// class uses a base class with test methods. It does 
+		/// not prefix the test method name with the base class name 
+		/// in the test results returned from nunit-console. It still
+		/// displays the name in the NUnit GUI with the base class
+		/// name prefixed. Older versions of NUnit-console (2.2.9) returned
+		/// the test result with the test method name as follows:
+		/// 
+		/// RootNamespace.TestFixture.BaseTestFixture.TestMethod
+		/// 
+		/// The test method name would have the base class name prefixed 
+		/// to it.
+		/// </remarks>
 		TestMethod GetPrefixedTestMethod(string testResultName)
 		{
-			int index = 0;
-			string methodName = TestMethod.GetMethodName(testResultName);
-			string className = TestMethod.GetQualifiedClassName(testResultName);
-			do {
-				index = className.LastIndexOf('.');
-				if (index > 0) {
-					methodName = String.Concat(className.Substring(index + 1), ".", methodName);
-					TestMethod method = GetTestMethod(methodName);
-					if (method != null) {
-						return method;
-					}
-					className = className.Substring(0, index);
-				}
-			} while (index > 0);
+			IClass baseClass = c.BaseClass;
+			if (baseClass != null && TestClass.IsTestClass(baseClass)) {
+				string methodName = TestMethod.GetMethodName(testResultName);
+				string actualMethodName = String.Concat(baseClass.Name, ".", methodName);
+				return GetTestMethod(actualMethodName);
+			}
 			return null;
 		}
 	}

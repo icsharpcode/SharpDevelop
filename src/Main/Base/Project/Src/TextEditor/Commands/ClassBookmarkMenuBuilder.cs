@@ -53,10 +53,20 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			// This should prefer non-designer files over designer files.
 			IClass preferredClass = parts[0];
 			for (int i = 1; i < parts.Count; i++) {
-				if (parts[i].CompilationUnit.FileName.Length < preferredClass.CompilationUnit.FileName.Length)
+				if (IsShorterFileName(parts[i].CompilationUnit.FileName, preferredClass.CompilationUnit.FileName))
 					preferredClass = parts[i];
 			}
 			return preferredClass;
+		}
+		
+		static bool IsShorterFileName(string a, string b)
+		{
+			// Fix forum-17295: compilation unit's file name might be null: prefer the non-null file
+			if (a == null)
+				return false;
+			if (b == null)
+				return true;
+			return a.Length < b.Length;
 		}
 		
 		static IClass GetCurrentPart(IClass possibleCompound)

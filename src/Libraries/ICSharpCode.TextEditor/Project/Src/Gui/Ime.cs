@@ -19,6 +19,10 @@ namespace ICSharpCode.TextEditor
 	{
 		public Ime(IntPtr hWnd, Font font)
 		{
+			string PROCESSOR_ARCHITEW6432 = Environment.GetEnvironmentVariable("PROCESSOR_ARCHITEW6432");
+			if (PROCESSOR_ARCHITEW6432 == "IA64" || PROCESSOR_ARCHITEW6432 == "AMD64") {
+				disableIME = true;
+			}
 			this.hWnd = hWnd;
 			this.hIMEWnd = ImmGetDefaultIMEWnd(hWnd);
 			this.font = font;
@@ -124,11 +128,11 @@ namespace ICSharpCode.TextEditor
 
 			try {
 				SendMessage(
-				            hIMEWnd,
-				            WM_IME_CONTROL,
-				            new IntPtr(IMC_SETCOMPOSITIONFONT),
-				            lf
-				           );
+					hIMEWnd,
+					WM_IME_CONTROL,
+					new IntPtr(IMC_SETCOMPOSITIONFONT),
+					lf
+				);
 			} catch (AccessViolationException ex) {
 				Handle(ex);
 			}
@@ -149,11 +153,11 @@ namespace ICSharpCode.TextEditor
 
 			try {
 				SendMessage(
-				            hIMEWnd,
-				            WM_IME_CONTROL,
-				            new IntPtr(IMC_SETCOMPOSITIONWINDOW),
-				            lParam
-				           );
+					hIMEWnd,
+					WM_IME_CONTROL,
+					new IntPtr(IMC_SETCOMPOSITIONWINDOW),
+					lParam
+				);
 			} catch (AccessViolationException ex) {
 				Handle(ex);
 			}

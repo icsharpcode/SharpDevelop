@@ -156,13 +156,7 @@ namespace ICSharpCode.TextEditor.Actions
 					return;
 				}
 			}
-            textArea.Caret.Position = textArea.SelectionManager.NextValidPosition(endPoint.Y);
-            textArea.SelectionManager.ExtendSelection(startPoint, endPoint);
-            // after a SelectWholeDocument selection, the caret is placed correctly,
-            // but it is not positioned internally.  The effect is when the cursor
-            // is moved up or down a line, the caret will take on the column that
-            // it was in before the SelectWholeDocument
-			textArea.SetDesiredColumn();
+			textArea.SelectionManager.SetSelection(new DefaultSelection(textArea.Document, startPoint, endPoint));
 		}
 	}
 	

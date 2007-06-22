@@ -212,7 +212,7 @@ namespace ICSharpCode.TextEditor.Actions
 				} else {
 					textArea.Caret.DesiredColumn = Math.Max(0, currentColumn - remainder);
 				}
-				textArea.SetCaretToDesiredColumn(textArea.Caret.Line);
+				textArea.SetCaretToDesiredColumn();
 			}
 		}
 	}

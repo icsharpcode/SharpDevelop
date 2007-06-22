@@ -5,7 +5,6 @@
 		<WixBitmapFiles Include="wix\Bitmaps\*"/>
 		<WixDocFiles Include="wix\doc\*"/>
 		<WixLibFiles Include="wix\lib\*"/>
-		<WixIncFiles Include="wix\inc\*"/>
 		<NUnitFiles Include="NUnit\*.dll;NUnit\*.exe"/>
 		<NUnitConfigFileNetv11 Include="NUnit\nunit-console-netv11.exe.config"/>
 		<NUnitConfigFile Include="NUnit\nunit-console.exe.config"/>
@@ -17,7 +16,6 @@
 		<Copy SourceFiles="@(WixFiles)" DestinationFolder="..\..\bin\Tools\Wix" SkipUnchangedFiles="true"/>
 		<Copy SourceFiles="@(WixDocFiles)" DestinationFolder="..\..\bin\Tools\Wix\doc" SkipUnchangedFiles="true"/>
 		<Copy SourceFiles="@(WixBitmapFiles)" DestinationFolder="..\..\bin\Tools\Wix\Bitmaps" SkipUnchangedFiles="true"/>
-		<Copy SourceFiles="@(WixIncFiles)" DestinationFolder="..\..\bin\Tools\Wix\inc" SkipUnchangedFiles="true"/>
 		<Copy SourceFiles="@(WixLibFiles)" DestinationFolder="..\..\bin\Tools\Wix\lib" SkipUnchangedFiles="true"/>
 		<Copy SourceFiles="@(NUnitFiles)" DestinationFolder="..\..\bin\Tools\NUnit" SkipUnchangedFiles="true"/>
 		<Copy SourceFiles="@(NUnitFiles)" DestinationFolder="..\..\bin\Tools\NUnit\Net-1.1" SkipUnchangedFiles="true"/>

@@ -340,6 +340,11 @@ namespace ICSharpCode.SharpDevelop.Sda
 				this.host = host;
 			}
 			
+			public override object InitializeLifetimeService()
+			{
+				return null;
+			}
+			
 			private bool InvokeRequired {
 				get {
 					return host.invokeTarget != null && host.invokeTarget.InvokeRequired;

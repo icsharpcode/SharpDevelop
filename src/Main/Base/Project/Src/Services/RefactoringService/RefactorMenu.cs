@@ -114,18 +114,13 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			ResolveResult rr = ResolveAtCaret(textEditor);
 			if (rr is MixedResolveResult) rr = (rr as MixedResolveResult).PrimaryResult;
 			if (rr is TypeResolveResult) {
-				IClass c = (rr as TypeResolveResult).ResolvedClass;
-				if (c == null) {
-					ShowUnknownSymbolError();
-				} else if (c.CompilationUnit.FileName == null) {
-					ShowNoUserCodeError();
-				} else {
-					FindReferencesAndRenameHelper.RenameClass(c);
-				}
+				Rename((rr as TypeResolveResult).ResolvedClass);
 			} else if (rr is MemberResolveResult) {
 				Rename((rr as MemberResolveResult).ResolvedMember);
 			} else if (rr is MethodResolveResult) {
 				Rename((rr as MethodResolveResult).GetMethodIfSingleOverload());
+			} else if (rr is LocalResolveResult) {
+				RenameLocalVariableCommand.Run(rr as LocalResolveResult);
 			} else {
 				ShowUnknownSymbolError();
 			}
@@ -147,7 +142,23 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			} else if (member.DeclaringType.CompilationUnit.FileName == null) {
 				ShowNoUserCodeError();
 			} else {
-				FindReferencesAndRenameHelper.RenameMember(member);
+				IMethod method = member as IMethod;
+				if (method != null && method.IsConstructor) {
+					Rename(method.DeclaringType);
+				} else {
+					FindReferencesAndRenameHelper.RenameMember(member);
+				}
+			}
+		}
+		
+		static void Rename(IClass c)
+		{
+			if (c == null) {
+				ShowUnknownSymbolError();
+			} else if (c.CompilationUnit.FileName == null) {
+				ShowNoUserCodeError();
+			} else {
+				FindReferencesAndRenameHelper.RenameClass(c);
 			}
 		}
 	}

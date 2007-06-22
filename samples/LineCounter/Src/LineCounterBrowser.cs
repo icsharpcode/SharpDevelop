@@ -823,7 +823,7 @@ namespace LineCounterAddin
 		/// <param name="projectItems">The ProjectItems collection to scan.</param>
 		/// <param name="summary">The root summary data object that these
 		/// files belong to.</param>
-		private void ScanProjectItems(List<ProjectItem> projectItems, LineCountSummary summary)
+		private void ScanProjectItems(IList<ProjectItem> projectItems, LineCountSummary summary)
 		{
 			tsprgTask.Maximum += projectItems.Count;
 			foreach (ProjectItem projectItem in projectItems)
