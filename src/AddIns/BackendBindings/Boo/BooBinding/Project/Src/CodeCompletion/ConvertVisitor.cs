@@ -165,7 +165,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 				c.Attributes = DefaultAttribute.EmptyAttributeList;
 			} else {
 				foreach (AST.Attribute a in node.Attributes) {
-					c.Attributes.Add(new DefaultAttribute(a.Name));
+					c.Attributes.Add(new DefaultAttribute(new AttributeReturnType(a.Name)));
 				}
 			}
 			c.Documentation = node.Documentation;

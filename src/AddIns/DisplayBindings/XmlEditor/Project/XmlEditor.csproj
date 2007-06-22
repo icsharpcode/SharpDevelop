@@ -106,8 +106,9 @@
     <EmbeddedResource Include="Resources\SelectXmlSchema.xfrm" />
     <EmbeddedResource Include="Resources\XmlEditorOptionsPanel.xfrm" />
     <EmbeddedResource Include="Resources\XmlCommentTreeNodeIcon.png" />
+    <None Include="PostBuildEvent.proj" />
     <None Include="XmlEditor.addin">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
     <Compile Include="Src\RunXslTransformCommand.cs" />
     <Compile Include="Src\XslOutputView.cs" />
@@ -167,4 +168,5 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+  <Import Project="PostBuildEvent.proj" />
 </Project>

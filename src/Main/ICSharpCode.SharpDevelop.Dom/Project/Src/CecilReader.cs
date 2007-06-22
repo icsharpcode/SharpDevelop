@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 
@@ -36,8 +37,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 		static void AddAttributes(IProjectContent pc, IList<IAttribute> list, CustomAttributeCollection attributes)
 		{
 			foreach (CustomAttribute att in attributes) {
-				DefaultAttribute a = new DefaultAttribute(att.Constructor.DeclaringType.FullName);
-				// TODO: add only attributes marked "important", and include attribute arguments
+				DefaultAttribute a = new DefaultAttribute(CreateType(pc, null, att.Constructor.DeclaringType));
+				foreach (object o in att.ConstructorParameters) {
+					a.PositionalArguments.Add(o);
+				}
+				foreach (DictionaryEntry entry in att.Properties) {
+					a.NamedArguments.Add(entry.Key.ToString(), entry.Value);
+				}
 				list.Add(a);
 			}
 		}
@@ -127,6 +133,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			                           AssemblyDefinition assembly, ProjectContentRegistry registry)
 				: base(fullName, fileName, referencedAssemblies, registry)
 			{
+				AddAttributes(this, this.AssemblyCompilationUnit.Attributes, assembly.CustomAttributes);
 				foreach (ModuleDefinition module in assembly.Modules) {
 					AddTypes(module.Types);
 				}

@@ -46,6 +46,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get { return assemblyCompilationUnit; }
 		}
 		
+		public override IList<IAttribute> GetAssemblyAttributes()
+		{
+			return assemblyCompilationUnit.Attributes;
+		}
+		
 		DateTime assemblyFileLastWriteTime;
 		
 		/// <summary>
@@ -80,6 +85,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 					AddClassToNamespaceListInternal(new ReflectionClass(assemblyCompilationUnit, type, name, null));
 				}
 			}
+			ReflectionClass.AddAttributes(this, assemblyCompilationUnit.Attributes, CustomAttributeData.GetCustomAttributes(assembly));
 			InitializeSpecialClasses();
 		}
 		

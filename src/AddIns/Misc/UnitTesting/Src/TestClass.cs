@@ -53,7 +53,7 @@ namespace ICSharpCode.UnitTesting
 			if (nameComparer != null) {
 				TestAttributeName testAttributeName = new TestAttributeName("TestFixture", nameComparer);
 				foreach (IAttribute attribute in c.Attributes) {
-					if (testAttributeName.IsEqual(attribute.Name)) {
+					if (testAttributeName.IsEqual(attribute.AttributeType.FullyQualifiedName)) {
 						return true;
 					}
 				}

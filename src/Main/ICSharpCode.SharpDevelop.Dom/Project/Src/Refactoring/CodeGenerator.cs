@@ -140,7 +140,7 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 		{
 			AttributeSection sec = new AttributeSection(null, null);
 			foreach (IAttribute att in attributes) {
-				sec.Attributes.Add(new ICSharpCode.NRefactory.Ast.Attribute(att.Name, null, null));
+				sec.Attributes.Add(new ICSharpCode.NRefactory.Ast.Attribute(ConvertType(att.AttributeType, targetContext).Type, null, null));
 			}
 			List<AttributeSection> resultList = new List<AttributeSection>(1);
 			if (sec.Attributes.Count > 0)

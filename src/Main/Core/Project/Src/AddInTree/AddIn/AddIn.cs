@@ -29,6 +29,7 @@ namespace ICSharpCode.Core
 
 		public object CreateObject(string className)
 		{
+			LoadDependencies();
 			foreach (Runtime runtime in runtimes) {
 				object o = runtime.CreateInstance(className);
 				if (o != null) {
@@ -42,6 +43,37 @@ namespace ICSharpCode.Core
 				MessageService.ShowError("Cannot create object: " + className + "\nFuture missing objects will not cause an error message.");
 			}
 			return null;
+		}
+		
+		public void LoadRuntimeAssemblies()
+		{
+			LoadDependencies();
+			foreach (Runtime runtime in runtimes) {
+				runtime.Load();
+			}
+		}
+		
+		bool dependenciesLoaded;
+		
+		void LoadDependencies()
+		{
+			if (!dependenciesLoaded) {
+				dependenciesLoaded = true;
+				foreach (AddInReference r in manifest.Dependencies) {
+					if (r.RequirePreload) {
+						bool found = false;
+						foreach (AddIn addIn in AddInTree.AddIns) {
+							if (addIn.Manifest.Identities.ContainsKey(r.Name)) {
+								found = true;
+								addIn.LoadRuntimeAssemblies();
+							}
+						}
+						if (!found) {
+							throw new AddInLoadException("Cannot load run-time dependency for " + r.ToString());
+						}
+					}
+				}
+			}
 		}
 		
 		public override string ToString()

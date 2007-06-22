@@ -6,16 +6,25 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {
-	public interface IAttribute : IComparable
+	public interface IAttribute
 	{
 		AttributeTarget AttributeTarget {
 			get;
 		}
 		
-		string Name {
+		IReturnType AttributeType {
+			get;
+		}
+		
+		IList<object> PositionalArguments {
+			get;
+		}
+		
+		IDictionary<string, object> NamedArguments {
 			get;
 		}
 	}
@@ -32,17 +41,5 @@ namespace ICSharpCode.SharpDevelop.Dom
 		Property,
 		Return,
 		Type
-	}
-	
-	public struct AttributeArgument
-	{
-		public readonly IReturnType Type;
-		public readonly object Value;
-		
-		public AttributeArgument(IReturnType type, object value)
-		{
-			this.Type = type;
-			this.Value = value;
-		}
 	}
 }

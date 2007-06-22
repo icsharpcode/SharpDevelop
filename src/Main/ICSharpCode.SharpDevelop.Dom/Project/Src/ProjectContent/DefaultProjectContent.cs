@@ -448,6 +448,15 @@ namespace ICSharpCode.SharpDevelop.Dom
 			RemoveEmptyNamespace(parent); // remove parent if also empty
 		}
 		
+		List<IAttribute> assemblyAttributes = new List<IAttribute>();
+		
+		public virtual IList<IAttribute> GetAssemblyAttributes()
+		{
+			lock (namespaces) {
+				return assemblyAttributes.ToArray();
+			}
+		}
+		
 		public void RemoveCompilationUnit(ICompilationUnit unit)
 		{
 			lock (namespaces) {

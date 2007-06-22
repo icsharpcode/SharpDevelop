@@ -240,7 +240,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				}
 				
 				foreach (AST.Attribute attribute in section.Attributes) {
-					result.Add(new DefaultAttribute(attribute.Name, target));
+					result.Add(new DefaultAttribute(new AttributeReturnType(attribute.Name), target));
 				}
 			}
 			return result;

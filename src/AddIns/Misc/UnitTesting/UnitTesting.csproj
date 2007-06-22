@@ -54,8 +54,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="PostBuildEvent.proj" />
     <None Include="UnitTesting.addin">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
     <Compile Include="Src\AllTestsTreeNode.cs" />
     <Compile Include="Src\UnitTestCommands.cs" />
@@ -123,4 +124,5 @@
     <Folder Include="Resources" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+  <Import Project="PostBuildEvent.proj" />
 </Project>

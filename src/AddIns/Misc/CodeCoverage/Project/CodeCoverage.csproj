@@ -99,7 +99,6 @@
       <Name>ICSharpCode.TextEditor</Name>
       <Private>False</Private>
     </ProjectReference>
-    <Content Include="PostBuildEvent.proj" />
     <ProjectReference Include="..\..\UnitTesting\UnitTesting.csproj">
       <Project>{1F261725-6318-4434-A1B1-6C70CE4CD324}</Project>
       <Name>UnitTesting</Name>
@@ -112,5 +111,4 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
-  <Import Project="PostBuildEvent.proj" />
 </Project>

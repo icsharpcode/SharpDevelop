@@ -70,6 +70,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get;
 		}
 		
+		IList<IAttribute> GetAssemblyAttributes();
+		
 		string GetXmlDocumentation(string memberTag);
 		
 		void AddClassToNamespaceList(IClass addClass);

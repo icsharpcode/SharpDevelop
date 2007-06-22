@@ -14,65 +14,45 @@ namespace ICSharpCode.SharpDevelop.Dom
 	{
 		public static readonly IList<IAttribute> EmptyAttributeList = new List<IAttribute>().AsReadOnly();
 		
-		string name;
-		List<AttributeArgument> positionalArguments;
-		SortedList<string, AttributeArgument> namedArguments;
+		IReturnType attributeType;
+		IList<object> positionalArguments;
+		IDictionary<string, object> namedArguments;
 		AttributeTarget attributeTarget;
 		
-		public DefaultAttribute(string name) : this(name, AttributeTarget.None) {}
+		public DefaultAttribute(IReturnType attributeType) : this(attributeType, AttributeTarget.None) {}
 		
-		public DefaultAttribute(string name, AttributeTarget attributeTarget)
+		public DefaultAttribute(IReturnType attributeType, AttributeTarget attributeTarget)
+			: this(attributeType, attributeTarget, null, null)
 		{
-			this.name = name;
-			this.attributeTarget = attributeTarget;
-			this.positionalArguments = new List<AttributeArgument>();
-			this.namedArguments = new SortedList<string, AttributeArgument>();
 		}
 		
-		public DefaultAttribute(string name, AttributeTarget attributeTarget, List<AttributeArgument> positionalArguments, SortedList<string, AttributeArgument> namedArguments)
+		public DefaultAttribute(IReturnType attributeType, AttributeTarget attributeTarget, IList<object> positionalArguments, IDictionary<string, object> namedArguments)
 		{
-			this.name = name;
+			if (attributeType == null)
+				throw new ArgumentNullException("attributeType");
+			this.attributeType = attributeType;
 			this.attributeTarget = attributeTarget;
-			this.positionalArguments = positionalArguments;
-			this.namedArguments = namedArguments;
+			this.positionalArguments = positionalArguments ?? new List<object>();
+			this.namedArguments = namedArguments ?? new SortedList<string, object>();
 		}
 		
-		public string Name {
-			get {
-				return name;
-			}
-			set {
-				name = value;
-			}
+		
+		public IReturnType AttributeType {
+			get { return attributeType; }
+			set { attributeType = value; }
 		}
 		
 		public AttributeTarget AttributeTarget {
-			get {
-				return attributeTarget;
-			}
-			set {
-				attributeTarget = value;
-			}
+			get { return attributeTarget; }
+			set { attributeTarget = value; }
 		}
 		
-		public List<AttributeArgument> PositionalArguments {
-			get {
-				return positionalArguments;
-			}
+		public IList<object> PositionalArguments {
+			get { return positionalArguments; }
 		}
 		
-		public SortedList<string, AttributeArgument> NamedArguments {
-			get {
-				return namedArguments;
-			}
-		}
-		
-		public virtual int CompareTo(IAttribute value) {
-			return Name.CompareTo(value.Name);
-		}
-		
-		int IComparable.CompareTo(object value) {
-			return CompareTo((IAttribute)value);
+		public IDictionary<string, object> NamedArguments {
+			get { return namedArguments; }
 		}
 	}
 }

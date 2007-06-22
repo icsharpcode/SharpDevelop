@@ -40,7 +40,7 @@ namespace VBNetBinding
 			DefaultClass c = new DefaultClass(cu, ns + ".MyProject");
 			c.ClassType = ClassType.Module;
 			c.Modifiers = ModifierEnum.Internal | ModifierEnum.Partial | ModifierEnum.Sealed | ModifierEnum.Synthetic;
-			c.Attributes.Add(new DefaultAttribute("Microsoft.VisualBasic.HideModuleNameAttribute"));
+			c.Attributes.Add(new DefaultAttribute(CreateTypeRef(cu, "Microsoft.VisualBasic.HideModuleNameAttribute")));
 			
 			// we need to use GetClassReturnType instead of DefaultReturnType because we need
 			// a reference to the compound class.
@@ -71,22 +71,22 @@ namespace VBNetBinding
 			DefaultClass c = new DefaultClass(cu, ns + ".MyApplication");
 			c.ClassType = ClassType.Class;
 			c.Modifiers = ModifierEnum.Internal | ModifierEnum.Sealed | ModifierEnum.Partial | ModifierEnum.Synthetic;
-			c.Attributes.Add(new DefaultAttribute("Microsoft.VisualBasic.HideModuleNameAttribute"));
+			c.Attributes.Add(new DefaultAttribute(CreateTypeRef(cu, "Microsoft.VisualBasic.HideModuleNameAttribute")));
 			switch (project.OutputType) {
 				case OutputType.WinExe:
-					c.BaseTypes.Add(CreateBaseType(cu, "Microsoft.VisualBasic.ApplicationServices.WindowsFormsApplicationBase"));
+					c.BaseTypes.Add(CreateTypeRef(cu, "Microsoft.VisualBasic.ApplicationServices.WindowsFormsApplicationBase"));
 					break;
 				case OutputType.Exe:
-					c.BaseTypes.Add(CreateBaseType(cu, "Microsoft.VisualBasic.ApplicationServices.ConsoleApplicationBase"));
+					c.BaseTypes.Add(CreateTypeRef(cu, "Microsoft.VisualBasic.ApplicationServices.ConsoleApplicationBase"));
 					break;
 				default:
-					c.BaseTypes.Add(CreateBaseType(cu, "Microsoft.VisualBasic.ApplicationServices.ApplicationBase"));
+					c.BaseTypes.Add(CreateTypeRef(cu, "Microsoft.VisualBasic.ApplicationServices.ApplicationBase"));
 					break;
 			}
 			return c;
 		}
 		
-		static IReturnType CreateBaseType(ICompilationUnit cu, string fullName)
+		static IReturnType CreateTypeRef(ICompilationUnit cu, string fullName)
 		{
 			return new GetClassReturnType(cu.ProjectContent, fullName, 0);
 		}
@@ -96,8 +96,8 @@ namespace VBNetBinding
 			DefaultClass c = new DefaultClass(cu, ns + ".MyComputer");
 			c.ClassType = ClassType.Class;
 			c.Modifiers = ModifierEnum.Internal | ModifierEnum.Sealed | ModifierEnum.Partial | ModifierEnum.Synthetic;
-			c.Attributes.Add(new DefaultAttribute("Microsoft.VisualBasic.HideModuleNameAttribute"));
-			c.BaseTypes.Add(CreateBaseType(cu, "Microsoft.VisualBasic.Devices.Computer"));
+			c.Attributes.Add(new DefaultAttribute(CreateTypeRef(cu, "Microsoft.VisualBasic.HideModuleNameAttribute")));
+			c.BaseTypes.Add(CreateTypeRef(cu, "Microsoft.VisualBasic.Devices.Computer"));
 			return c;
 		}
 		
@@ -106,7 +106,7 @@ namespace VBNetBinding
 			DefaultClass c = new MyFormsClass(cu, ns + ".MyForms");
 			c.ClassType = ClassType.Class;
 			c.Modifiers = ModifierEnum.Internal | ModifierEnum.Sealed | ModifierEnum.Synthetic;
-			c.Attributes.Add(new DefaultAttribute("Microsoft.VisualBasic.HideModuleNameAttribute"));
+			c.Attributes.Add(new DefaultAttribute(CreateTypeRef(cu, "Microsoft.VisualBasic.HideModuleNameAttribute")));
 			return c;
 		}
 		

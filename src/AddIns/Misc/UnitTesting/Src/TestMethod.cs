@@ -114,7 +114,7 @@ namespace ICSharpCode.UnitTesting
 			if (nameComparer != null) {
 				TestAttributeName testAttribute = new TestAttributeName("Test", nameComparer);
 				foreach (IAttribute attribute in member.Attributes) {
-					if (testAttribute.IsEqual(attribute.Name)) {
+					if (testAttribute.IsEqual(attribute.AttributeType.FullyQualifiedName)) {
 						IMethod method = (IMethod)member;
 						if (method.Parameters.Count == 0) {
 							return true;

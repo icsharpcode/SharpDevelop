@@ -5,12 +5,10 @@
 	
 	<Manifest>
 		<Identity   name  = "ICSharpCode.CodeCoverage"/>
-		<Dependency addin = "ICSharpCode.UnitTesting"/>
+		<Dependency addin = "ICSharpCode.UnitTesting" requirePreload = "true"/>
 	</Manifest>
 	
 	<Runtime>
-		<!-- NUnit is not in the path, so we need to load it manually -->
-		<Import assembly = "$ICSharpCode.UnitTesting/UnitTesting.dll"/>
 		<Import assembly = "CodeCoverage.dll"/>
 	</Runtime>
 	

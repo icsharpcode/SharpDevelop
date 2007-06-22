@@ -6,13 +6,12 @@
 	
 	<Manifest>
 		<Identity name = "ICSharpCode.WixBinding"/>
-		<Dependency addin = "ICSharpCode.FormsDesigner"/>
+		<Dependency addin = "ICSharpCode.FormsDesigner" requirePreload = "true"/>
+		<Dependency addin = "ICSharpCode.XmlEditor" requirePreload = "true"/>
 	</Manifest>
 	
 	<Runtime>
 		<Import assembly = ":ICSharpCode.SharpDevelop"/>
-		<Import assembly = "$ICSharpCode.FormsDesigner/FormsDesigner.dll"/>
-		<Import assembly = "$ICSharpCode.XmlEditor/XmlEditor.dll"/>
 		<Import assembly = "WixBinding.dll"/>
 	</Runtime>
 	

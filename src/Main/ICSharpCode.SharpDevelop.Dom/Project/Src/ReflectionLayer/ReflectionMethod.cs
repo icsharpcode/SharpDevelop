@@ -16,7 +16,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ReflectionLayer
 		{
 			if (m.IsStatic) {
 				foreach (IAttribute a in m.Attributes) {
-					string attributeName = a.Name;
+					string attributeName = a.AttributeType.FullyQualifiedName;
 					if (attributeName == "System.Runtime.CompilerServices.ExtensionAttribute"
 					    || attributeName == "Boo.Lang.ExtensionAttribute")
 					{

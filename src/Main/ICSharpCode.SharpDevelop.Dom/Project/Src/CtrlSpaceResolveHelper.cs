@@ -152,12 +152,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		[Obsolete()]
-		public static ResolveResult GetResultFromDeclarationLine(IClass callingClass, IMethodOrProperty callingMember, int caretLine, int caretColumn, string expression)
-		{
-			return GetResultFromDeclarationLine(callingClass, callingMember, caretLine, caretColumn, new ExpressionResult(expression));
-		}
-		
 		public static ResolveResult GetResultFromDeclarationLine(IClass callingClass, IMethodOrProperty callingMember, int caretLine, int caretColumn, ExpressionResult expressionResult)
 		{
 			string expression = expressionResult.Expression;

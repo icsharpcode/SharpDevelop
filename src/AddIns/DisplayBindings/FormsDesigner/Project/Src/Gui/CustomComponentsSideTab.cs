@@ -101,11 +101,15 @@ namespace ICSharpCode.FormsDesigner.Gui
 							goto isDesignComponent;
 						}
 						foreach (IAttribute attr in subClass.Attributes) {
-							if (attr.Name == "DesignTimeVisibleAttribute"
-							    || attr.Name == "System.ComponentModel.DesignTimeVisibleAttribute")
+							if (attr.AttributeType.FullyQualifiedName == "System.ComponentModel.DesignTimeVisibleAttribute")
 							{
-								// TODO: Check value of attribute (make IAttribute store at least simple values like bool's and typeof's)
-								goto isDesignComponent;
+								if (attr.PositionalArguments.Count == 1 && attr.PositionalArguments[0] is bool) {
+									if ((bool)attr.PositionalArguments[0]) {
+										goto isDesignComponent;
+									}
+								} else {
+									goto isDesignComponent;
+								}
 							}
 						}
 					}

@@ -47,46 +47,54 @@ namespace ICSharpCode.Core
 			}
 		}
 
+		/// <summary>
+		/// Force loading the runtime assembly now.
+		/// </summary>
+		public void Load()
+		{
+			if (!isAssemblyLoaded) {
+				LoggingService.Info("Loading addin " + assembly);
+
+				isAssemblyLoaded = true;
+
+				try {
+					if (assembly[0] == ':') {
+						loadedAssembly = System.Reflection.Assembly.Load(assembly.Substring(1));
+					} else if (assembly[0] == '$') {
+						int pos = assembly.IndexOf('/');
+						if (pos < 0)
+							throw new ApplicationException("Expected '/' in path beginning with '$'!");
+						string referencedAddIn = assembly.Substring(1, pos - 1);
+						foreach (AddIn addIn in AddInTree.AddIns) {
+							if (addIn.Enabled && addIn.Manifest.Identities.ContainsKey(referencedAddIn)) {
+								string assemblyFile = Path.Combine(Path.GetDirectoryName(addIn.FileName),
+								                                   assembly.Substring(pos + 1));
+								loadedAssembly = System.Reflection.Assembly.LoadFrom(assemblyFile);
+								break;
+							}
+						}
+						if (loadedAssembly == null) {
+							throw new FileNotFoundException("Could not find referenced AddIn " + referencedAddIn);
+						}
+					} else {
+						loadedAssembly = System.Reflection.Assembly.LoadFrom(Path.Combine(hintPath, assembly));
+					}
+
+					#if DEBUG
+					// preload assembly to provoke FileLoadException if dependencies are missing
+					loadedAssembly.GetExportedTypes();
+					#endif
+				} catch (FileNotFoundException ex) {
+					MessageService.ShowError("The addin '" + assembly + "' could not be loaded:\n" + ex.ToString());
+				} catch (FileLoadException ex) {
+					MessageService.ShowError("The addin '" + assembly + "' could not be loaded:\n" + ex.ToString());
+				}
+			}
+		}
+		
 		public Assembly LoadedAssembly {
 			get {
-				if (!isAssemblyLoaded) {
-					LoggingService.Info("Loading addin " + assembly);
-
-					isAssemblyLoaded = true;
-
-					try {
-						if (assembly[0] == ':') {
-							loadedAssembly = System.Reflection.Assembly.Load(assembly.Substring(1));
-						} else if (assembly[0] == '$') {
-							int pos = assembly.IndexOf('/');
-							if (pos < 0)
-								throw new ApplicationException("Expected '/' in path beginning with '$'!");
-							string referencedAddIn = assembly.Substring(1, pos - 1);
-							foreach (AddIn addIn in AddInTree.AddIns) {
-								if (addIn.Enabled && addIn.Manifest.Identities.ContainsKey(referencedAddIn)) {
-									string assemblyFile = Path.Combine(Path.GetDirectoryName(addIn.FileName),
-									                                   assembly.Substring(pos + 1));
-									loadedAssembly = System.Reflection.Assembly.LoadFrom(assemblyFile);
-									break;
-								}
-							}
-							if (loadedAssembly == null) {
-								throw new FileNotFoundException("Could not find referenced AddIn " + referencedAddIn);
-							}
-						} else {
-							loadedAssembly = System.Reflection.Assembly.LoadFrom(Path.Combine(hintPath, assembly));
-						}
-
-						#if DEBUG
-						// preload assembly to provoke FileLoadException if dependencies are missing
-						loadedAssembly.GetExportedTypes();
-						#endif
-					} catch (FileNotFoundException ex) {
-						MessageService.ShowError("The addin '" + assembly + "' could not be loaded:\n" + ex.ToString());
-					} catch (FileLoadException ex) {
-						MessageService.ShowError("The addin '" + assembly + "' could not be loaded:\n" + ex.ToString());
-					}
-				}
+				Load(); // load the assembly, if not already done
 				return loadedAssembly;
 			}
 		}

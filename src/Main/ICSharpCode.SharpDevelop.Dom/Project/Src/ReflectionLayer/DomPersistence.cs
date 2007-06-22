@@ -20,7 +20,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 	{
 		public const long FileMagic = 0x11635233ED2F428C;
 		public const long IndexFileMagic = 0x11635233ED2F427D;
-		public const short FileVersion = 11;
+		public const short FileVersion = 12;
 		
 		ProjectContentRegistry registry;
 		string cacheDirectory;
@@ -297,6 +297,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			void WriteClasses()
 			{
 				ICollection<IClass> classes = pc.Classes;
+				IList<IAttribute> assemblyAttributes = pc.GetAssemblyAttributes();
 				
 				classIndices.Clear();
 				stringDict.Clear();
@@ -309,6 +310,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				List<ClassNameTypeCountPair> externalTypes = new List<ClassNameTypeCountPair>();
 				List<string> stringList = new List<string>();
 				CreateExternalTypeList(externalTypes, stringList, classes.Count, classes);
+				AddStringsAndExternalTypesFromAttributes(stringList, externalTypes, classes.Count, assemblyAttributes);
 				
 				writer.Write(classes.Count);
 				writer.Write(externalTypes.Count);
@@ -323,6 +325,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				foreach (string text in stringList) {
 					writer.Write(text);
 				}
+				WriteAttributes(assemblyAttributes);
 				foreach (IClass c in classes) {
 					WriteClass(c);
 					// BinaryReader easily reads junk data when the file does not have the
@@ -350,6 +353,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				for (int i = 0; i < stringArray.Length; i++) {
 					stringArray[i] = reader.ReadString();
 				}
+				ReadAttributes(pc.AssemblyCompilationUnit);
 				for (int i = 0; i < classes.Length; i++) {
 					ReadClass(classes[i]);
 					pc.AddClassToNamespaceList(classes[i]);
@@ -485,7 +489,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			{
 				foreach (IClass c in classes) {
 					CreateExternalTypeList(externalTypes, stringList, classCount, c.InnerClasses);
-					AddStrings(stringList, c.Attributes);
+					AddStringsAndExternalTypesFromAttributes(stringList, externalTypes, classCount, c.Attributes);
 					foreach (IReturnType returnType in c.BaseTypes) {
 						AddExternalType(returnType, externalTypes, classCount);
 					}
@@ -505,7 +509,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 						CreateExternalTypeListMember(externalTypes, stringList, classCount, p);
 						foreach (IParameter parameter in p.Parameters) {
 							AddString(stringList, parameter.Name);
-							AddStrings(stringList, parameter.Attributes);
+							AddStringsAndExternalTypesFromAttributes(stringList, externalTypes, classCount, parameter.Attributes);
 							AddExternalType(parameter.ReturnType, externalTypes, classCount);
 						}
 					}
@@ -513,7 +517,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 						CreateExternalTypeListMember(externalTypes, stringList, classCount, m);
 						foreach (IParameter parameter in m.Parameters) {
 							AddString(stringList, parameter.Name);
-							AddStrings(stringList, parameter.Attributes);
+							AddStringsAndExternalTypesFromAttributes(stringList, externalTypes, classCount, parameter.Attributes);
 							AddExternalType(parameter.ReturnType, externalTypes, classCount);
 						}
 						foreach (ITypeParameter tp in m.TypeParameters) {
@@ -531,7 +535,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			                                  IMember member)
 			{
 				AddString(stringList, member.Name);
-				AddStrings(stringList, member.Attributes);
+				AddStringsAndExternalTypesFromAttributes(stringList, externalTypes, classCount, member.Attributes);
 				foreach (ExplicitInterfaceImplementation eii in member.InterfaceImplementations) {
 					AddString(stringList, eii.MemberName);
 					AddExternalType(eii.InterfaceReference, externalTypes, classCount);
@@ -689,20 +693,44 @@ namespace ICSharpCode.SharpDevelop.Dom
 			#endregion
 			
 			#region Write/Read attributes
+			void AddStringsAndExternalTypesFromAttributes(List<string> stringList,
+			                                              List<ClassNameTypeCountPair> externalTypes, int classCount,
+			                                              IList<IAttribute> attributes)
+			{
+				foreach (IAttribute a in attributes) {
+					AddExternalType(a.AttributeType, externalTypes, classCount);
+					foreach (object o in a.PositionalArguments) {
+						AddStringsAndExternalTypesFromAttributeArgument(stringList, attributes, externalTypes, classCount, o);
+					}
+					foreach (KeyValuePair<string, object> pair in a.NamedArguments) {
+						AddString(stringList, pair.Key);
+						AddStringsAndExternalTypesFromAttributeArgument(stringList, attributes, externalTypes, classCount, pair.Value);
+					}
+				}
+			}
+			
 			void WriteAttributes(IList<IAttribute> attributes)
 			{
 				writer.Write((ushort)attributes.Count);
 				foreach (IAttribute a in attributes) {
-					WriteString(a.Name);
+					WriteType(a.AttributeType);
 					writer.Write((byte)a.AttributeTarget);
+					writer.Write((byte)a.PositionalArguments.Count);
+					foreach (object o in a.PositionalArguments) {
+						WriteAttributeArgument(o);
+					}
+					writer.Write((byte)a.NamedArguments.Count);
+					foreach (KeyValuePair<string, object> pair in a.NamedArguments) {
+						WriteString(pair.Key);
+						WriteAttributeArgument(pair.Value);
+					}
 				}
 			}
 			
-			void AddStrings(List<string> stringList, IList<IAttribute> attributes)
+			void ReadAttributes(ICompilationUnit cu)
 			{
-				foreach (IAttribute a in attributes) {
-					AddString(stringList, a.Name);
-				}
+				int count = reader.ReadUInt16();
+				ReadAttributes(cu.Attributes, count);
 			}
 			
 			void ReadAttributes(DefaultParameter parameter)
@@ -728,8 +756,80 @@ namespace ICSharpCode.SharpDevelop.Dom
 			void ReadAttributes(IList<IAttribute> attributes, int count)
 			{
 				for (int i = 0; i < count; i++) {
-					string name = ReadString();
-					attributes.Add(new DefaultAttribute(name, (AttributeTarget)reader.ReadByte()));
+					IReturnType type = ReadType();
+					DefaultAttribute attr = new DefaultAttribute(type, (AttributeTarget)reader.ReadByte());
+					int posArgCount = reader.ReadByte();
+					for (int j = 0; j < posArgCount; j++) {
+						attr.PositionalArguments.Add(ReadAttributeArgument());
+					}
+					int namedArgCount = reader.ReadByte();
+					for (int j = 0; j < namedArgCount; j++) {
+						attr.NamedArguments.Add(ReadString(), ReadAttributeArgument());
+					}
+					attributes.Add(attr);
+				}
+			}
+			#endregion
+			
+			#region Write/Read attribute arguments
+			void AddStringsAndExternalTypesFromAttributeArgument(List<string> stringList, IList<IAttribute> attributes,
+			                                                     List<ClassNameTypeCountPair> externalTypes, int classCount,
+			                                                     object value)
+			{
+				if (value is string) {
+					AddString(stringList, (string)value);
+				} else if (value is IReturnType) {
+					AddExternalType((IReturnType)value, externalTypes, classCount);
+				}
+			}
+			
+			enum AttributeType : byte
+			{
+				Null,
+				String,
+				Type,
+				Int32,
+				Bool
+			}
+			
+			void WriteAttributeArgument(object o)
+			{
+				if (o == null) {
+					writer.Write((byte)AttributeType.Null);
+				} else if (o is string) {
+					writer.Write((byte)AttributeType.String);
+					WriteString((string)o);
+				} else if (o is IReturnType) {
+					writer.Write((byte)AttributeType.Type);
+					WriteType((IReturnType)o);
+				} else if (o is int) {
+					writer.Write((byte)AttributeType.Int32);
+					writer.Write((int)o);
+				} else if (o is bool) {
+					writer.Write((byte)AttributeType.Bool);
+					writer.Write((bool)o);
+				} else {
+					writer.Write((byte)AttributeType.Null);
+					LoggingService.Warn("Cannot write attribute arguments of type " + o.GetType());
+				}
+			}
+			
+			object ReadAttributeArgument()
+			{
+				byte type = reader.ReadByte();
+				switch ((AttributeType)type) {
+					case AttributeType.Null:
+						return null;
+					case AttributeType.String:
+						return ReadString();
+					case AttributeType.Type:
+						return ReadType();
+					case AttributeType.Int32:
+						return reader.ReadInt32();
+					case AttributeType.Bool:
+						return reader.ReadBoolean();
+					default:
+						throw new NotSupportedException("Invalid attribute argument type code " + type);
 				}
 			}
 			#endregion

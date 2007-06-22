@@ -275,12 +275,6 @@ namespace ICSharpCode.TextEditor
 			Caret.Position = textView.GetLogicalColumn(Caret.Line, Caret.DesiredColumn + (int)(VirtualTop.X * textView.WideSpaceWidth));
 		}
 		
-		[Obsolete("Use the parameterless version")]
-		public void SetCaretToDesiredColumn(int caretLine)
-		{
-			Caret.Position = textView.GetLogicalColumn(Caret.Line, Caret.DesiredColumn + (int)(VirtualTop.X * textView.WideSpaceWidth));
-		}
-		
 		public void OptionsChanged()
 		{
 			UpdateMatchingBracket();

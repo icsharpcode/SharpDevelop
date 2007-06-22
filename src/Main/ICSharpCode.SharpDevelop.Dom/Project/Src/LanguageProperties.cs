@@ -332,13 +332,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			public override bool ShowInNamespaceCompletion(IClass c)
 			{
 				foreach (IAttribute attr in c.Attributes) {
-					if (NameComparer.Equals(attr.Name, "Microsoft.VisualBasic.HideModuleNameAttribute"))
-						return false;
-					if (NameComparer.Equals(attr.Name, "HideModuleNameAttribute"))
-						return false;
-					if (NameComparer.Equals(attr.Name, "Microsoft.VisualBasic.HideModuleName"))
-						return false;
-					if (NameComparer.Equals(attr.Name, "HideModuleName"))
+					if (attr.AttributeType.FullyQualifiedName == "Microsoft.VisualBasic.HideModuleNameAttribute")
 						return false;
 				}
 				return base.ShowInNamespaceCompletion(c);
