@@ -82,11 +82,11 @@ namespace ICSharpCode.SharpDevelop.Project
 			ProjectService.SolutionClosed += ProjectServiceSolutionClosed;
 			ProjectService.SolutionPreferencesSaving += ProjectServiceSolutionPreferencesSaving;
 			
-			WorkbenchSingleton.Workbench.ActiveWorkbenchWindowChanged += ActiveWindowChanged;
+			WorkbenchSingleton.Workbench.ActiveContentChanged += ActiveContentChanged;
 			if (ProjectService.OpenSolution != null) {
 				ProjectServiceSolutionLoaded(null, new SolutionEventArgs(ProjectService.OpenSolution));
 			}
-			ActiveWindowChanged(null, null);
+			ActiveContentChanged(null, null);
 		}
 		
 		public void StartLabelEdit(ExtTreeNode node)
@@ -112,7 +112,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		string lastFileName;
 		
-		void ActiveWindowChanged(object sender, EventArgs e)
+		void ActiveContentChanged(object sender, EventArgs e)
 		{
 			if (WorkbenchSingleton.Workbench.ActiveContent == this) {
 				projectBrowserPanel.ProjectBrowserControl.PadActivated();

@@ -44,7 +44,7 @@ namespace ICSharpCode.WixBinding
 			TitleName = StringParser.Parse("${res:ICSharpCode.WixBinding.PackageFilesView.Title}");
 			this.project = project;
 			
-			WorkbenchSingleton.Workbench.ActiveWorkbenchWindowChanged += ActiveWorkbenchWindowChanged;
+			WorkbenchSingleton.Workbench.ActiveViewContentChanged += ActiveViewContentChanged;
 		}
 		
 		public static PackageFilesView ActiveView {
@@ -98,7 +98,7 @@ namespace ICSharpCode.WixBinding
 		public override void Dispose()
 		{
 			if (packageFilesControl != null) {
-				WorkbenchSingleton.Workbench.ActiveWorkbenchWindowChanged -= ActiveWorkbenchWindowChanged;
+				WorkbenchSingleton.Workbench.ActiveViewContentChanged -= ActiveViewContentChanged;
 				packageFilesControl.Dispose();
 				packageFilesControl = null;
 			}
@@ -214,7 +214,7 @@ namespace ICSharpCode.WixBinding
 		/// Wix document then we update the document's contents. When the user switches
 		/// back we reload the view if the corresponding Wix document is open.
 		/// </summary>
-		void ActiveWorkbenchWindowChanged(object source, EventArgs e)
+		void ActiveViewContentChanged(object source, EventArgs e)
 		{
 			if (IsWixDocumentWindowActive) {
 				if (IsDirty) {
@@ -238,7 +238,7 @@ namespace ICSharpCode.WixBinding
 			get {
 				WixDocument document = packageFilesControl.Document;
 				if (document != null) {
-					IViewContent view = WorkbenchSingleton.Workbench.ActiveContent as IViewContent;
+					IViewContent view = WorkbenchSingleton.Workbench.ActiveViewContent;
 					if (view != null) {
 						return FileUtility.IsEqualFileName(view.PrimaryFileName, document.FileName);
 					}
@@ -252,7 +252,7 @@ namespace ICSharpCode.WixBinding
 		/// </summary>
 		bool IsActiveWindow {
 			get {
-				return Object.ReferenceEquals(WorkbenchSingleton.Workbench.ActiveContent, this);
+				return Object.ReferenceEquals(WorkbenchSingleton.Workbench.ActiveViewContent, this);
 			}
 		}
 		

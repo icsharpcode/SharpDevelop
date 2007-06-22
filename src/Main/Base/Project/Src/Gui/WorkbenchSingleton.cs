@@ -102,6 +102,16 @@ namespace ICSharpCode.SharpDevelop.Gui
 			// initialize workbench-dependent services:
 			Project.ProjectService.InitializeService();
 			NavigationService.InitializeService();
+			
+			workbench.ActiveContentChanged += delegate {
+				Console.WriteLine("ActiveContentChanged to " + workbench.ActiveContent);
+			};
+			workbench.ActiveViewContentChanged += delegate {
+				Console.WriteLine("ActiveViewContentChanged to " + workbench.ActiveViewContent);
+			};
+			workbench.ActiveWorkbenchWindowChanged += delegate {
+				Console.WriteLine("ActiveWorkbenchWindowChanged to " + workbench.ActiveWorkbenchWindow);
+			};
 		}
 		
 		/// <summary>

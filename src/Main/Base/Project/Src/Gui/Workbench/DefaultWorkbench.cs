@@ -136,8 +136,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			if (layout == null) {
 				this.ActiveWorkbenchWindow = null;
+				this.ActiveContent = null;
 			} else {
 				this.ActiveWorkbenchWindow = layout.ActiveWorkbenchWindow;
+				this.ActiveContent = layout.ActiveContent;
 			}
 		}
 		
@@ -157,12 +159,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 					if (activeWorkbenchWindow != null) {
 						activeWorkbenchWindow.ActiveViewContentChanged += OnWorkbenchActiveViewContentChanged;
 					}
+					
+					if (ActiveWorkbenchWindowChanged != null) {
+						ActiveWorkbenchWindowChanged(this, EventArgs.Empty);
+					}
+					
 					OnWorkbenchActiveViewContentChanged(null, null);
-				}
-				// raise even when activeWorkbenchWindow didn't change because we also use
-				// ActiveWorkbenchWindowChanged to signal changes in ActiveContent (when switching between pads)
-				if (ActiveWorkbenchWindowChanged != null) {
-					ActiveWorkbenchWindowChanged(this, EventArgs.Empty);
 				}
 			}
 		}
@@ -175,6 +177,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 				this.ActiveViewContent = window.ActiveViewContent;
 			else
 				this.ActiveViewContent = null;
+			
+			this.ActiveContent = layout.ActiveContent;
 		}
 		
 		public event EventHandler ActiveWorkbenchWindowChanged;
@@ -204,14 +208,26 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		public event EventHandler ActiveViewContentChanged;
 		
+		object activeContent;
+		
 		public object ActiveContent {
 			get {
-				if (layout == null) {
-					return null;
+				return activeContent;
+			}
+			private set {
+				if (activeContent != value) {
+					activeContent = value;
+					if (ActiveContentChanged != null) {
+						ActiveContentChanged(this, EventArgs.Empty);
+					}
 				}
-				return layout.ActiveContent;
 			}
 		}
+		
+		/// <summary>
+		/// Is called, when the active content has changed.
+		/// </summary>
+		public event EventHandler ActiveContentChanged;
 		#endregion
 		
 		public DefaultWorkbench()

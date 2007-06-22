@@ -44,8 +44,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			panel.Controls.Add(noToolsAvailable);
 			child = noToolsAvailable;
 			
-			WorkbenchSingleton.Workbench.ActiveWorkbenchWindowChanged += WorkbenchWindowChanged;
-			WorkbenchWindowChanged(null, null);
+			WorkbenchSingleton.Workbench.ActiveContentChanged += WorkbenchActiveContentChanged;
+			WorkbenchActiveContentChanged(null, null);
 		}
 		
 		void SetChild(Control newChild)
@@ -58,7 +58,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		void WorkbenchWindowChanged(object sender, EventArgs e)
+		void WorkbenchActiveContentChanged(object sender, EventArgs e)
 		{
 			IToolsHost th = WorkbenchSingleton.Workbench.ActiveContent as IToolsHost;
 			if (th == null) {

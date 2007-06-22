@@ -23,7 +23,7 @@ namespace ICSharpCode.XmlEditor
 		public XPathQueryPad()
 		{
 			xPathQueryControl = new XPathQueryControl();
-			WorkbenchSingleton.Workbench.ActiveWorkbenchWindowChanged += ActiveWorkbenchWindowChanged;
+			WorkbenchSingleton.Workbench.ActiveViewContentChanged += ActiveViewContentChanged;
 			Properties properties = PropertyService.Get(XPathQueryControlProperties, new Properties());
 			xPathQueryControl.SetMemento(properties);
 			instance = this;
@@ -48,7 +48,7 @@ namespace ICSharpCode.XmlEditor
 		{
 			if (!disposed) {
 				disposed = true;
-				WorkbenchSingleton.Workbench.ActiveWorkbenchWindowChanged -= ActiveWorkbenchWindowChanged;
+				WorkbenchSingleton.Workbench.ActiveViewContentChanged -= ActiveViewContentChanged;
 				Properties properties = xPathQueryControl.CreateMemento();
 				PropertyService.Set(XPathQueryControlProperties, properties);
 				xPathQueryControl.Dispose();
@@ -60,7 +60,7 @@ namespace ICSharpCode.XmlEditor
 			xPathQueryControl.RemoveXPathNodeTextMarkers();
 		}
 		
-		void ActiveWorkbenchWindowChanged(object source, EventArgs e)
+		void ActiveViewContentChanged(object source, EventArgs e)
 		{
 			xPathQueryControl.ActiveWindowChanged();
 		}

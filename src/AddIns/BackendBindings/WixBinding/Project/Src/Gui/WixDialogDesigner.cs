@@ -71,9 +71,9 @@ namespace ICSharpCode.WixBinding
 			JumpToDialogElement(id);
 			if (base.IsFormsDesignerVisible) {
 				// Reload so the correct dialog is displayed.
-				SaveToPrimary();
+				base.SaveToPrimary();
 				DialogId = id;
-				LoadFromPrimary();
+				base.LoadFromPrimary();
 			} else {
 				// Need to open the designer.
 				DialogId = id;
@@ -81,22 +81,7 @@ namespace ICSharpCode.WixBinding
 			}
 		}
 
-		/* //DG:
-		/// <summary>
-		/// Set dialog id to null after calling base.Deselecting since base.Deselecting
-		/// calls MergeFormChanges which will reference this dialog id.
-		/// </summary>
-		public override void Deselecting()
-		{
-			base.Deselecting();
-			DialogId = null;
-			RemoveWixToolboxSideTab();
-		}
-		
-		/// <summary>
-		/// Designer has been selected.
-		/// </summary>
-		public override void Selected()
+		protected override void LoadFromPrimary()
 		{
 			try {
 				if (!ignoreDialogIdSelectedInTextEditor) {
@@ -114,20 +99,8 @@ namespace ICSharpCode.WixBinding
 				DialogId = "InvalidXML";
 				AddToErrorList(ex);
 			}
-			base.Selected();
-			RemoveFormsDesignerToolboxSideTabs();
-			AddWixToolboxSideTab();
+			base.LoadFromPrimary();
 		}
-		
-		/// <summary>
-		/// Removes the WinForms toolbox side tabs.
-		/// </summary>
-		public override void SwitchedTo()
-		{
-			base.SwitchedTo();
-			RemoveFormsDesignerToolboxSideTabs();
-		}
-		 */
 		
 		/// <summary>
 		/// Gets the Wix document filename.

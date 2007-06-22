@@ -359,6 +359,7 @@ namespace ICSharpCode.FormsDesigner
 		
 		protected override void LoadFromPrimary()
 		{
+			UnloadDesigner();
 			Reload();
 		}
 		

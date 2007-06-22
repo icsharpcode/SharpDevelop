@@ -60,7 +60,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			if (!initialized) {
 				initialized = true;
-				WorkbenchSingleton.Workbench.ActiveWorkbenchWindowChanged += ActiveWindowChanged;
+				WorkbenchSingleton.Workbench.ActiveViewContentChanged += ActiveViewContentChanged;
 				FileService.FileRenamed += FileServiceFileRenamed;
 				FileService.FileRemoved += FileServiceFileRemoved;
 			}
@@ -172,7 +172,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		static void ActiveWindowChanged(object sender, EventArgs e)
+		static void ActiveViewContentChanged(object sender, EventArgs e)
 		{
 			IViewContent viewContent = WorkbenchSingleton.Workbench.ActiveViewContent;
 			if (OpenSolution == null || viewContent == null) {

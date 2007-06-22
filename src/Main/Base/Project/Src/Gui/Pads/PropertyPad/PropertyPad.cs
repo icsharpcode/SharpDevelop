@@ -97,7 +97,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		void WorkbenchWindowChanged(object sender, EventArgs e)
+		void WorkbenchActiveContentChanged(object sender, EventArgs e)
 		{
 			IHasPropertyContainer c = WorkbenchSingleton.Workbench.ActiveContent as IHasPropertyContainer;
 			if (c == null) {
@@ -148,8 +148,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			grid.ContextMenuStrip = MenuService.CreateContextMenu(this, "/SharpDevelop/Views/PropertyPad/ContextMenu");
 			
 			LoggingService.Debug("PropertyPad created");
-			WorkbenchSingleton.Workbench.ActiveWorkbenchWindowChanged += WorkbenchWindowChanged;
-			WorkbenchWindowChanged(null, null);
+			WorkbenchSingleton.Workbench.ActiveContentChanged += WorkbenchActiveContentChanged;
+			WorkbenchActiveContentChanged(null, null);
 		}
 		
 		void CombineClosedEvent(object sender, EventArgs e)

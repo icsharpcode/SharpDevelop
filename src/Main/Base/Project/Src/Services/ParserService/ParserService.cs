@@ -513,8 +513,8 @@ namespace ICSharpCode.SharpDevelop
 				defaultProjectContent.AddReferencedContent(ParserService.GetProjectContentForReference(item));
 			}
 			if (WorkbenchSingleton.Workbench != null) {
-				WorkbenchSingleton.Workbench.ActiveWorkbenchWindowChanged += delegate {
-					if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow != null) {
+				WorkbenchSingleton.Workbench.ActiveViewContentChanged += delegate {
+					if (WorkbenchSingleton.Workbench.ActiveViewContent != null) {
 						string file = WorkbenchSingleton.Workbench.ActiveViewContent.PrimaryFileName;
 						if (file != null) {
 							IParser parser = GetParser(file);

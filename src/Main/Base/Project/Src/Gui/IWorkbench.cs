@@ -47,14 +47,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		/// <summary>
 		/// The active workbench window.
+		/// This is the window containing the active view content.
 		/// </summary>
 		IWorkbenchWindow ActiveWorkbenchWindow {
 			get;
 		}
 		
 		/// <summary>
-		/// Is called, when the workbench window which the user has into
-		/// the foreground (e.g. editable) changed to a new one.
+		/// Is called, when the ActiveWorkbenchWindow property changes.
 		/// </summary>
 		event EventHandler ActiveWorkbenchWindowChanged;
 		
@@ -71,12 +71,18 @@ namespace ICSharpCode.SharpDevelop.Gui
 		event EventHandler ActiveViewContentChanged;
 		
 		/// <summary>
-		/// The active content. This can be either a IViewContent or a IPadContent, depending on
-		/// where the focus currently is.
+		/// The active content, depending on where the focus currently is.
+		/// If a document is currently active, this will be equal to ActiveViewContent,
+		/// if a pad has the focus, this property will return the IPadContent instance.
 		/// </summary>
 		object ActiveContent {
 			get;
 		}
+		
+		/// <summary>
+		/// Is called, when the active content has changed.
+		/// </summary>
+		event EventHandler ActiveContentChanged;
 		
 		IWorkbenchLayout WorkbenchLayout {
 			get;

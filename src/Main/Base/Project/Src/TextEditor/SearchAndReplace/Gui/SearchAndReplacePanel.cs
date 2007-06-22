@@ -341,7 +341,7 @@ namespace SearchAndReplace
 			return null;
 		}
 		
-		void WorkbenchWindowChanged(object source, EventArgs e)
+		void WorkbenchActiveViewContentChanged(object source, EventArgs e)
 		{
 			TextEditorControl activeTextEditorControl = SearchReplaceUtilities.GetActiveTextEditor();
 			if (activeTextEditorControl != this.textEditor) {
@@ -369,7 +369,7 @@ namespace SearchAndReplace
 		
 		void RemoveActiveWindowChangedHandler()
 		{
-			WorkbenchSingleton.Workbench.ActiveWorkbenchWindowChanged -= WorkbenchWindowChanged;
+			WorkbenchSingleton.Workbench.ActiveViewContentChanged -= WorkbenchActiveViewContentChanged;
 		}
 		
 		/// <summary>
@@ -398,7 +398,7 @@ namespace SearchAndReplace
 			findFirst = true;
 			selection = GetCurrentTextSelection();
 			AddSelectionChangedHandler(SearchReplaceUtilities.GetActiveTextEditor());
-			WorkbenchSingleton.Workbench.ActiveWorkbenchWindowChanged += WorkbenchWindowChanged;
+			WorkbenchSingleton.Workbench.ActiveViewContentChanged += WorkbenchActiveViewContentChanged;
 		}
 		
 		void RemoveSelectionSearchHandlers()
