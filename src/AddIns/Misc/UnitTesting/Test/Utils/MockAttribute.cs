@@ -12,15 +12,11 @@ namespace UnitTesting.Tests.Utils
 {
 	public class MockAttribute : IAttribute
 	{
-		string name = String.Empty;
-		
-		public MockAttribute()
-		{
-		}
+		IReturnType type;
 		
 		public MockAttribute(string name)
 		{
-			this.name = name;
+			type = new DefaultReturnType(new MockClass(name));
 		}
 		
 		public AttributeTarget AttributeTarget {
@@ -29,18 +25,22 @@ namespace UnitTesting.Tests.Utils
 			}
 		}
 		
-		public string Name {
+		public IReturnType AttributeType {
 			get {
-				return name;
-			}
-			set {
-				name = value;
+				return type;
 			}
 		}
 		
-		public int CompareTo(object obj)
-		{
-			throw new NotImplementedException();
+		public System.Collections.Generic.IList<object> PositionalArguments {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public System.Collections.Generic.IDictionary<string, object> NamedArguments {
+			get {
+				throw new NotImplementedException();
+			}
 		}
 	}
 }

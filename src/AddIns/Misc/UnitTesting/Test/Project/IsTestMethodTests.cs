@@ -56,15 +56,6 @@ namespace UnitTesting.Tests.Project
 		}
 		
 		[Test]
-		public void NullAttributeName()
-		{
-			List<MockAttribute> attributes = new List<MockAttribute>();
-			attributes.Add(new MockAttribute(null));
-			MockMethod mockMethod = CreateMockMethod(attributes);
-			Assert.IsFalse(TestMethod.IsTestMethod(mockMethod));
-		}
-		
-		[Test]
 		public void NullMethod()
 		{
 			Assert.IsFalse(TestMethod.IsTestMethod(null));

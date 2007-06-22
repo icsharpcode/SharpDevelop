@@ -170,5 +170,10 @@ namespace UnitTesting.Tests.Utils
 				throw new NotImplementedException();
 			}
 		}
+		
+		public IList<IAttribute> GetAssemblyAttributes()
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

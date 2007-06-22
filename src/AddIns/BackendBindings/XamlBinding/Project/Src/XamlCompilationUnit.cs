@@ -49,7 +49,7 @@ namespace XamlBinding
 				if (type != null)
 					return type;
 				foreach (IProjectContent p in this.ProjectContent.ReferencedContents) {
-					type = FindTypeInAssembly(this.ProjectContent, xmlNamespace, className);
+					type = FindTypeInAssembly(p, xmlNamespace, className);
 					if (type != null)
 						return type;
 				}
