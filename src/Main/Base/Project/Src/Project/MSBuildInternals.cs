@@ -75,7 +75,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				throw new ArgumentNullException("item");
 			if (item.IsAddedToProject)
 				throw new ArgumentException("item is already added to project", "item");
-			MSBuild.BuildItem newItem = group.AddNewItem(item.ItemType.ToString(), item.Include, true);
+			MSBuild.BuildItem newItem = group.AddNewItem(item.ItemType.ToString(), item.Include, item.TreatIncludeAsLiteral);
 			foreach (string name in item.MetadataNames) {
 				newItem.SetMetadata(name, item.GetMetadata(name));
 			}

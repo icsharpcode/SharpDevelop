@@ -31,6 +31,7 @@ namespace ICSharpCode.SharpDevelop.Project
 	{
 		IProject project;
 		volatile string fileNameCache;
+		bool treatIncludeAsLiteral;
 		
 		// either use: (bound mode)
 		BuildItem buildItem;
@@ -54,11 +55,17 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		protected ProjectItem(IProject project, ItemType itemType, string include)
+			: this(project, itemType, include, false)
+		{
+		}
+		
+		protected ProjectItem(IProject project, ItemType itemType, string include, bool treatIncludeAsLiteral)
 		{
 			this.project = project;
 			this.virtualItemType = itemType;
 			this.virtualInclude = include ?? "";
 			this.virtualMetadata = new Dictionary<string, string>();
+			this.treatIncludeAsLiteral = treatIncludeAsLiteral;
 		}
 		
 		[Browsable(false)]
@@ -66,6 +73,11 @@ namespace ICSharpCode.SharpDevelop.Project
 			get {
 				return project;
 			}
+		}
+		
+		public bool TreatIncludeAsLiteral {
+			get { return treatIncludeAsLiteral; }
+			set { treatIncludeAsLiteral = value; }
 		}
 		
 		/// <summary>
