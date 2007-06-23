@@ -86,14 +86,35 @@ namespace ICSharpCode.WpfDesign.AddIn
 		
 		void OnCurrentToolChanged(object sender, EventArgs e)
 		{
-			Debug.WriteLine("WpfToolbox.OnCurrentToolChanged");
-//			for (int i = 0; i < this.Items.Count; i++) {
-//				if (((ListBoxItem)this.Items[i]).Tag == toolService.CurrentTool) {
-//					this.SelectedIndex = i;
-//					return;
-//				}
-//			}
-//			this.SelectedIndex = -1;
+			object tagToFind;
+			if (toolService.CurrentTool == toolService.PointerTool) {
+				tagToFind = null;
+			} else {
+				tagToFind = toolService.CurrentTool;
+			}
+			if (sideBar.ActiveTab.ChoosedItem != null) {
+				if (sideBar.ActiveTab.ChoosedItem.Tag == tagToFind)
+					return;
+			}
+			foreach (SideTabItem item in sideBar.ActiveTab.Items) {
+				if (item.Tag == tagToFind) {
+					sideBar.ActiveTab.ChoosedItem = item;
+					sideBar.Refresh();
+					return;
+				}
+			}
+			foreach (SideTab tab in sideBar.Tabs) {
+				foreach (SideTabItem item in tab.Items) {
+					if (item.Tag == tagToFind) {
+						sideBar.ActiveTab = tab;
+						sideBar.ActiveTab.ChoosedItem = item;
+						sideBar.Refresh();
+						return;
+					}
+				}
+			}
+			sideBar.ActiveTab.ChoosedItem = null;
+			sideBar.Refresh();
 		}
 		
 		sealed class WpfSideBar : SharpDevelopSideBar

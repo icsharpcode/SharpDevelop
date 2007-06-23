@@ -52,12 +52,19 @@
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="Src\PropertyDescriptionService.cs" />
+    <Compile Include="Src\SharpDevelopElementHost.cs" />
     <Compile Include="Src\WpfDisplayBinding.cs" />
     <Compile Include="Src\WpfSideTabItem.cs" />
     <Compile Include="Src\WpfToolbox.cs" />
     <Compile Include="Src\WpfViewContent.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj">
+      <Project>{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D}</Project>
+      <Name>ICSharpCode.TextEditor</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
       <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
       <Name>ICSharpCode.SharpDevelop</Name>
@@ -66,6 +73,11 @@
     <ProjectReference Include="..\..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
       <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
       <Name>ICSharpCode.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
+      <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
+      <Name>ICSharpCode.SharpDevelop.Dom</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Widgets\Project\ICSharpCode.SharpDevelop.Widgets.csproj">

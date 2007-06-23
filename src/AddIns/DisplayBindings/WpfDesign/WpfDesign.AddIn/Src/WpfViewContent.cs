@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Diagnostics;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows.Forms;
@@ -15,6 +16,7 @@ using System.Xml;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.WpfDesign.Designer;
+using ICSharpCode.WpfDesign.Designer.Services;
 using ICSharpCode.WpfDesign.PropertyEditor;
 
 namespace ICSharpCode.WpfDesign.AddIn
@@ -34,10 +36,11 @@ namespace ICSharpCode.WpfDesign.AddIn
 		
 		protected override void LoadInternal(OpenedFile file, System.IO.Stream stream)
 		{
+			Debug.Assert(file == this.PrimaryFile);
 			if (designer == null) {
 				// initialize designer on first load
 				DragDropExceptionHandler.HandleException = ICSharpCode.Core.MessageService.ShowError;
-				wpfHost = new ElementHost();
+				wpfHost = new SharpDevelopElementHost();
 				designer = new DesignSurface();
 				wpfHost.Child = designer;
 				this.UserControl = wpfHost;
@@ -45,7 +48,9 @@ namespace ICSharpCode.WpfDesign.AddIn
 			}
 			using (XmlTextReader r = new XmlTextReader(stream)) {
 				designer.LoadDesigner(r);
+				designer.DesignContext.Services.AddService(typeof(IPropertyDescriptionService), new PropertyDescriptionService(this.PrimaryFile));
 				designer.DesignContext.Services.Selection.SelectionChanged += OnSelectionChanged;
+				designer.DesignContext.Services.GetService<UndoService>().UndoStackChanged += OnUndoStackChanged;
 			}
 		}
 		
@@ -57,13 +62,18 @@ namespace ICSharpCode.WpfDesign.AddIn
 			}
 		}
 		
+		void OnUndoStackChanged(object sender, EventArgs e)
+		{
+			this.PrimaryFile.MakeDirty();
+		}
+		
 		#region Property editor / SelectionChanged
 		Designer.PropertyEditor propertyEditor;
 		ElementHost propertyEditorHost;
 		
 		void InitPropertyEditor()
 		{
-			propertyEditorHost = new ElementHost();
+			propertyEditorHost = new SharpDevelopElementHost();
 			propertyEditor = new Designer.PropertyEditor();
 			propertyEditorHost.Child = propertyEditor;
 			propertyContainer.PropertyGridReplacementControl = propertyEditorHost;

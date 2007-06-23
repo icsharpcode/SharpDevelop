@@ -60,7 +60,12 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 			DockPanel.SetDock(textBlock, Dock.Top);
 			toolTipDockPanel.Children.Add(textBlock);
 			object description = property.GetDescription();
-			if (description != null) {
+			if (description is UIElement) {
+				toolTipDockPanel.Children.Add((UIElement)description);
+			} else if (description is string) {
+				textBlock.Inlines.Add(new LineBreak());
+				textBlock.Inlines.Add((string)description);
+			} else if (description != null) {
 				ContentControl cc = new ContentControl();
 				cc.Content = description;
 				toolTipDockPanel.Children.Add(cc);

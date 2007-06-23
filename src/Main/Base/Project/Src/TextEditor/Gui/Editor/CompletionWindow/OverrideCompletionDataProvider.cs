@@ -99,14 +99,14 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			       "override " + GetName(method, ConversionFlags.ShowReturnType
 			                             | ConversionFlags.ShowParameterList
 			                             | ConversionFlags.ShowAccessibility)
-			       + "\n\n" + method.Documentation,
+			       + "\n\n" + CodeCompletionData.GetDocumentation(method.Documentation),
 			       ClassBrowserIconService.GetIcon(method))
 		{
 			this.member = method;
 		}
 		
 		public OverrideCompletionData(IProperty property)
-			: base(property.Name, "override " + property.Name + "\n\n" + property.Documentation,
+			: base(property.Name, "override " + property.Name + "\n\n" + CodeCompletionData.GetDocumentation(property.Documentation),
 			       ClassBrowserIconService.GetIcon(property))
 		{
 			this.member = property;
