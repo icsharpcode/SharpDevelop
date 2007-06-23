@@ -30,7 +30,7 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 		protected XamlDesignContext CreateContext(string xaml)
 		{
 			log = new StringBuilder();
-			XamlDesignContext context = new XamlDesignContext(new XmlTextReader(new StringReader(xaml)), null);
+			XamlDesignContext context = new XamlDesignContext(new XmlTextReader(new StringReader(xaml)), new XamlLoadSettings());
 			/*context.Services.Component.ComponentRegistered += delegate(object sender, DesignItemEventArgs e) {
 				log.AppendLine("Register " + ItemIdentity(e.Item));
 			};

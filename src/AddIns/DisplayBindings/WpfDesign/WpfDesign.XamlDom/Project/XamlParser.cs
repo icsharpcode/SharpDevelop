@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
@@ -158,7 +159,10 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			
 			object instance;
 			if (initializeFromTextValueInsteadOfConstructor != null) {
-				instance = TypeDescriptor.GetConverter(elementType).ConvertFromString(initializeFromTextValueInsteadOfConstructor.Text);
+				instance = TypeDescriptor.GetConverter(elementType).ConvertFromString(
+					document.GetTypeDescriptorContext(),
+					CultureInfo.InvariantCulture,
+					initializeFromTextValueInsteadOfConstructor.Text);
 			} else {
 				instance = settings.CreateInstanceCallback(elementType, emptyObjectArray);
 			}
