@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Xml;
 using ICSharpCode.WpfDesign.XamlDom;
 using ICSharpCode.WpfDesign.Designer.Services;
@@ -32,10 +33,12 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 		/// <summary>
 		/// Creates a new XamlDesignContext instance.
 		/// </summary>
-		public XamlDesignContext(XmlReader xamlReader)
+		public XamlDesignContext(XmlReader xamlReader, XamlLoadSettings loadSettings)
 		{
 			if (xamlReader == null)
 				throw new ArgumentNullException("xamlReader");
+			if (loadSettings == null)
+				throw new ArgumentNullException("loadSettings");
 			
 			this.Services.AddService(typeof(ISelectionService), new DefaultSelectionService());
 			this.Services.AddService(typeof(IToolService), new DefaultToolService(this));
@@ -50,13 +53,21 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			EditorManager propertyGridEditorManager = new EditorManager();
 			this.Services.AddService(typeof(EditorManager), propertyGridEditorManager);
 			
-			// register extensions from this assembly:
-			this.Services.ExtensionManager.RegisterAssembly(typeof(XamlDesignContext).Assembly);
-			propertyGridEditorManager.RegisterAssembly(typeof(XamlDesignContext).Assembly);
+			foreach (Action<XamlDesignContext> action in loadSettings.CustomServiceRegisterFunctions) {
+				action(this);
+			}
 			
-			XamlParserSettings xamlParseSettings = new XamlParserSettings();
-			xamlParseSettings.CreateInstanceCallback = this.Services.ExtensionManager.CreateInstanceWithCustomInstanceFactory;
-			_doc = XamlParser.Parse(xamlReader, xamlParseSettings);
+			// register extensions from the designer assemblies:
+			foreach (Assembly designerAssembly in loadSettings.DesignerAssemblies) {
+				this.Services.ExtensionManager.RegisterAssembly(designerAssembly);
+				propertyGridEditorManager.RegisterAssembly(designerAssembly);
+			}
+			
+			XamlParserSettings parserSettings = new XamlParserSettings();
+			parserSettings.TypeFinder = loadSettings.TypeFinder;
+			parserSettings.CreateInstanceCallback = this.Services.ExtensionManager.CreateInstanceWithCustomInstanceFactory;
+			parserSettings.ServiceProvider = this.Services;
+			_doc = XamlParser.Parse(xamlReader, parserSettings);
 			_rootItem = _componentService.RegisterXamlComponentRecursive(_doc.RootElement);
 		}
 		

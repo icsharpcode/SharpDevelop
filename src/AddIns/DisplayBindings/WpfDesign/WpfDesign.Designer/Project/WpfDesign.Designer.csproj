@@ -101,6 +101,7 @@
     <Compile Include="Services\ViewService.cs" />
     <Compile Include="DesignSurface.cs" />
     <Compile Include="SharedInstances.cs" />
+    <Compile Include="Xaml\XamlLoadSettings.cs" />
     <Compile Include="Xaml\XamlModelCollectionElementsCollection.cs" />
     <Compile Include="Xaml\XamlComponentService.cs" />
     <Compile Include="Xaml\XamlDesignContext.cs" />

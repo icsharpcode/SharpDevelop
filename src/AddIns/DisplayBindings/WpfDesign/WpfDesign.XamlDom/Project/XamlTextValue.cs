@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.Text;
 using System.Xml;
 
@@ -19,30 +20,35 @@ namespace ICSharpCode.WpfDesign.XamlDom
 	/// </summary>
 	public sealed class XamlTextValue : XamlPropertyValue
 	{
+		XamlDocument document;
 		XmlAttribute attribute;
 		XmlText textNode;
 		XmlSpace xmlSpace;
 		string textValue;
 		XmlCDataSection cDataSection;
 		
-		internal XamlTextValue(XmlAttribute attribute)
+		internal XamlTextValue(XamlDocument document, XmlAttribute attribute)
 		{
+			this.document = document;
 			this.attribute = attribute;
 		}
 		
-		internal XamlTextValue(string textValue)
+		internal XamlTextValue(XamlDocument document, string textValue)
 		{
+			this.document = document;
 			this.textValue = textValue;
 		}
 		
-		internal XamlTextValue(XmlText textNode, XmlSpace xmlSpace)
+		internal XamlTextValue(XamlDocument document, XmlText textNode, XmlSpace xmlSpace)
 		{
+			this.document = document;
 			this.xmlSpace = xmlSpace;
 			this.textNode = textNode;
 		}
 		
-		internal XamlTextValue(XmlCDataSection cDataSection, XmlSpace xmlSpace)
+		internal XamlTextValue(XamlDocument document, XmlCDataSection cDataSection, XmlSpace xmlSpace)
 		{
+			this.document = document;
 			this.xmlSpace = xmlSpace;
 			this.cDataSection = cDataSection;
 		}
@@ -105,7 +111,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				return this.Text;
 			TypeConverter converter = targetProperty.TypeConverter;
 			if (converter != null) {
-				return converter.ConvertFromInvariantString(this.Text);
+				return converter.ConvertFromString(document.GetTypeDescriptorContext(), CultureInfo.InvariantCulture, this.Text);
 			} else {
 				return this.Text;
 			}

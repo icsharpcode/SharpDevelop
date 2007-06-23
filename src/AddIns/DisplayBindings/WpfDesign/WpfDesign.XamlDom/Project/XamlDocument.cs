@@ -18,6 +18,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 	{
 		XmlDocument _xmlDoc;
 		XamlObject _rootElement;
+		IServiceProvider _serviceProvider;
 		
 		XamlTypeFinder _typeFinder;
 		
@@ -29,7 +30,48 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		/// Gets the service provider used for markup extensions in this document.
 		/// </summary>
 		public IServiceProvider ServiceProvider {
-			get { return null; }
+			get { return _serviceProvider; }
+		}
+		
+		internal ITypeDescriptorContext GetTypeDescriptorContext()
+		{
+			return new DummyTypeDescriptorContext(this);
+		}
+		
+		sealed class DummyTypeDescriptorContext : ITypeDescriptorContext
+		{
+			XamlDocument document;
+			
+			public DummyTypeDescriptorContext(XamlDocument document)
+			{
+				this.document = document;
+			}
+			
+			public IContainer Container {
+				get { return null; }
+			}
+			
+			public object Instance {
+				get { return null; }
+			}
+			
+			public PropertyDescriptor PropertyDescriptor {
+				get { return null; }
+			}
+			
+			public bool OnComponentChanging()
+			{
+				return false;
+			}
+			
+			public void OnComponentChanged()
+			{
+			}
+			
+			public object GetService(Type serviceType)
+			{
+				return document.ServiceProvider.GetService(serviceType);
+			}
 		}
 		
 		/// <summary>
@@ -59,10 +101,11 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		/// <summary>
 		/// Internal constructor, used by XamlParser.
 		/// </summary>
-		internal XamlDocument(XmlDocument xmlDoc, XamlTypeFinder typeFinder)
+		internal XamlDocument(XmlDocument xmlDoc, XamlParserSettings settings)
 		{
 			this._xmlDoc = xmlDoc;
-			this._typeFinder = typeFinder;
+			this._typeFinder = settings.TypeFinder;
+			this._serviceProvider = settings.ServiceProvider;
 		}
 		
 		/// <summary>
@@ -86,7 +129,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		/// </summary>
 		public XamlPropertyValue CreateNullValue()
 		{
-			return new XamlMarkupValue(this, (XamlObject)CreatePropertyValue(new System.Windows.Markup.NullExtension(), null));
+			return new XamlMarkupValue((XamlObject)CreatePropertyValue(new System.Windows.Markup.NullExtension(), null));
 		}
 		
 		/// <summary>
@@ -102,7 +145,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			bool hasStringConverter = c.CanConvertTo(typeof(string)) && c.CanConvertFrom(typeof(string));
 			
 			if (forProperty != null && hasStringConverter) {
-				return new XamlTextValue(c.ConvertToInvariantString(instance));
+				return new XamlTextValue(this, c.ConvertToInvariantString(instance));
 			}
 			
 			

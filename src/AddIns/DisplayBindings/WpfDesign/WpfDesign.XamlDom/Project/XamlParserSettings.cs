@@ -21,6 +21,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 	{
 		CreateInstanceCallback _createInstanceCallback = Activator.CreateInstance;
 		XamlTypeFinder _typeFinder = XamlTypeFinder.CreateWpfTypeFinder();
+		IServiceProvider _serviceProvider = DummyServiceProvider.Instance;
 		
 		/// <summary>
 		/// Gets/Sets the method used to create object instances.
@@ -43,6 +44,28 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				if (value == null)
 					throw new ArgumentNullException("value");
 				_typeFinder = value;
+			}
+		}
+		
+		/// <summary>
+		/// Gets/Sets the service provider to use to initialize markup extensions.
+		/// </summary>
+		public IServiceProvider ServiceProvider {
+			get { return _serviceProvider; }
+			set {
+				if (value == null)
+					throw new ArgumentNullException("value");
+				_serviceProvider = value;
+			}
+		}
+		
+		sealed class DummyServiceProvider : IServiceProvider
+		{
+			public static readonly DummyServiceProvider Instance = new DummyServiceProvider();
+			
+			public object GetService(Type serviceType)
+			{
+				return null;
 			}
 		}
 	}

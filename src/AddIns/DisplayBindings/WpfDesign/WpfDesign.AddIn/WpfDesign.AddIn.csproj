@@ -52,6 +52,8 @@
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="Src\FileUriContext.cs" />
+    <Compile Include="Src\MyTypeFinder.cs" />
     <Compile Include="Src\PropertyDescriptionService.cs" />
     <Compile Include="Src\SharpDevelopElementHost.cs" />
     <Compile Include="Src\WpfDisplayBinding.cs" />
@@ -85,9 +87,18 @@
       <Name>ICSharpCode.SharpDevelop.Widgets</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\FormsDesigner\Project\FormsDesigner.csproj">
+      <Project>{7D7E92DF-ACEB-4B69-92C8-8AC7A703CD57}</Project>
+      <Name>FormsDesigner</Name>
+    </ProjectReference>
     <ProjectReference Include="..\WpfDesign.Designer\Project\WpfDesign.Designer.csproj">
       <Project>{78CC29AC-CC79-4355-B1F2-97936DF198AC}</Project>
       <Name>WpfDesign.Designer</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\WpfDesign.XamlDom\Project\WpfDesign.XamlDom.csproj">
+      <Project>{88DA149F-21B2-48AB-82C4-28FB6BDFD783}</Project>
+      <Name>WpfDesign.XamlDom</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\WpfDesign\Project\WpfDesign.csproj">

@@ -125,10 +125,10 @@ namespace ICSharpCode.WpfDesign.Designer
 		/// <summary>
 		/// Initializes the designer content from the specified XmlReader.
 		/// </summary>
-		public void LoadDesigner(XmlReader xamlReader)
+		public void LoadDesigner(XmlReader xamlReader, Xaml.XamlLoadSettings loadSettings)
 		{
 			UnloadDesigner();
-			InitializeDesigner(new Xaml.XamlDesignContext(xamlReader));
+			InitializeDesigner(new Xaml.XamlDesignContext(xamlReader, loadSettings ?? new Xaml.XamlLoadSettings()));
 		}
 		
 		/// <summary>

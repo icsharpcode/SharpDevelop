@@ -3,6 +3,11 @@
        copyright   = "prj:///doc/copyright.txt"
        description = "WPF Designer">
 	
+	<Manifest>
+		<Identity name="ICSharpCode.WpfDesigner"/>
+		<Dependency addin = "ICSharpCode.FormsDesigner" requirePreload = "true"/>
+	</Manifest>
+	
 	<Runtime>
 		<Import assembly = "ICSharpCode.WpfDesign.AddIn.dll"/>
 	</Runtime>

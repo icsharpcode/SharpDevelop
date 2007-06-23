@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.ComponentModel;
 using System.Windows.Markup;
 
 namespace ICSharpCode.WpfDesign.XamlDom
@@ -15,18 +16,16 @@ namespace ICSharpCode.WpfDesign.XamlDom
 	/// </summary>
 	public class XamlMarkupValue : XamlPropertyValue
 	{
-		readonly XamlDocument doc;
 		XamlObject markupObject;
 		
-		internal XamlMarkupValue(XamlDocument doc, XamlObject markupObject)
+		internal XamlMarkupValue(XamlObject markupObject)
 		{
-			this.doc = doc;
 			this.markupObject = markupObject;
 		}
 		
 		internal override object GetValueFor(XamlPropertyInfo targetProperty)
 		{
-			return ((MarkupExtension)markupObject.Instance).ProvideValue(doc.ServiceProvider);
+			return ((MarkupExtension)markupObject.Instance).ProvideValue(markupObject.OwnerDocument.ServiceProvider);
 		}
 		
 		internal override void OnParentPropertyChanged()

@@ -94,7 +94,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				throw new ArgumentNullException("document");
 			XamlParser p = new XamlParser();
 			p.settings = settings;
-			p.document = new XamlDocument(document, settings.TypeFinder);
+			p.document = new XamlDocument(document, settings);
 			p.document.ParseComplete(p.ParseObject(document.DocumentElement));
 			return p.document;
 		}
@@ -118,7 +118,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			if (attribute.NamespaceURI.Length > 0)
 				return attribute.NamespaceURI;
 			else
-				return attribute.OwnerElement.NamespaceURI;
+				return attribute.OwnerElement.GetNamespaceOfPrefix("");
 		}
 		
 		readonly static object[] emptyObjectArray = new object[0];
@@ -158,7 +158,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			
 			object instance;
 			if (initializeFromTextValueInsteadOfConstructor != null) {
-				instance = TypeDescriptor.GetConverter(elementType).ConvertFromInvariantString(initializeFromTextValueInsteadOfConstructor.Text);
+				instance = TypeDescriptor.GetConverter(elementType).ConvertFromString(initializeFromTextValueInsteadOfConstructor.Text);
 			} else {
 				instance = settings.CreateInstanceCallback(elementType, emptyObjectArray);
 			}
@@ -294,11 +294,11 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		{
 			XmlText childText = childNode as XmlText;
 			if (childText != null) {
-				return new XamlTextValue(childText, currentXmlSpace);
+				return new XamlTextValue(document, childText, currentXmlSpace);
 			}
 			XmlCDataSection cData = childNode as XmlCDataSection;
 			if (cData != null) {
-				return new XamlTextValue(cData, currentXmlSpace);
+				return new XamlTextValue(document, cData, currentXmlSpace);
 			}
 			XmlElement element = childNode as XmlElement;
 			if (element != null) {
@@ -401,7 +401,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		void ParseObjectAttribute(XamlObject obj, XmlAttribute attribute)
 		{
 			XamlPropertyInfo propertyInfo = GetPropertyInfo(obj.Instance, obj.ElementType, attribute);
-			XamlTextValue textValue = new XamlTextValue(attribute);
+			XamlTextValue textValue = new XamlTextValue(document, attribute);
 			propertyInfo.SetValue(obj.Instance, textValue.GetValueFor(propertyInfo));
 			obj.AddProperty(new XamlProperty(obj, propertyInfo, textValue));
 		}

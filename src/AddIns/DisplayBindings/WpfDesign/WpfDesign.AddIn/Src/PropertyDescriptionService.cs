@@ -26,7 +26,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 		
 		public object GetDescription(DesignItemProperty property)
 		{
-			IProjectContent pc = GetProjectContent();
+			IProjectContent pc = MyTypeFinder.GetProjectContent(file);
 			if (pc != null) {
 				string fullName = property.DeclaringType.FullName + "." + property.Name;
 				IDecoration dec = pc.GetElement(fullName);
@@ -39,17 +39,6 @@ namespace ICSharpCode.WpfDesign.AddIn
 				}
 			}
 			return null;
-		}
-		
-		IProjectContent GetProjectContent()
-		{
-			if (ProjectService.OpenSolution != null) {
-				IProject p = ProjectService.OpenSolution.FindProjectContainingFile(file.FileName);
-				if (p != null) {
-					return ParserService.GetProjectContent(p);
-				}
-			}
-			return ParserService.DefaultProjectContent;
 		}
 	}
 }

@@ -6,17 +6,19 @@
 // </file>
 
 using System;
-using System.Diagnostics;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using System.Windows.Forms;
 using System.Windows.Forms.Integration;
+using System.Windows.Markup;
 using System.Xml;
 
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.WpfDesign.Designer;
 using ICSharpCode.WpfDesign.Designer.Services;
+using ICSharpCode.WpfDesign.Designer.Xaml;
 using ICSharpCode.WpfDesign.PropertyEditor;
 
 namespace ICSharpCode.WpfDesign.AddIn
@@ -47,7 +49,15 @@ namespace ICSharpCode.WpfDesign.AddIn
 				InitPropertyEditor();
 			}
 			using (XmlTextReader r = new XmlTextReader(stream)) {
-				designer.LoadDesigner(r);
+				XamlLoadSettings settings = new XamlLoadSettings();
+				settings.CustomServiceRegisterFunctions.Add(
+					delegate(XamlDesignContext context) {
+						context.Services.AddService(typeof(IUriContext), new FileUriContext(this.PrimaryFile));
+					});
+				settings.TypeFinder = MyTypeFinder.Create(this.PrimaryFile);
+				
+				designer.LoadDesigner(r, settings);
+				
 				designer.DesignContext.Services.AddService(typeof(IPropertyDescriptionService), new PropertyDescriptionService(this.PrimaryFile));
 				designer.DesignContext.Services.Selection.SelectionChanged += OnSelectionChanged;
 				designer.DesignContext.Services.GetService<UndoService>().UndoStackChanged += OnUndoStackChanged;

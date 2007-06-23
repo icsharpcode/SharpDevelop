@@ -41,7 +41,7 @@ namespace StandaloneDesigner
 		{
 			if (e.Source != tabControl) return;
 			if (tabControl.SelectedItem == designTab) {
-				designSurface.LoadDesigner(new XmlTextReader(new StringReader(CodeTextBox.Text)));
+				designSurface.LoadDesigner(new XmlTextReader(new StringReader(CodeTextBox.Text)), null);
 				designSurface.DesignContext.Services.Selection.SelectionChanged += OnSelectionChanged;
 				toolbox.ToolService = designSurface.DesignContext.Services.Tool;
 			} else {
@@ -103,5 +103,6 @@ namespace StandaloneDesigner
 		}
 	}
 }
+
 
 
