@@ -20,7 +20,7 @@ namespace ResourceEditor
 	{
 		public override void Run()
 		{
-			ResourceEditorControl editor = (ResourceEditorControl)WorkbenchSingleton.Workbench.ActiveViewContent.Control;
+			ResourceEditorControl editor = ((ResourceEditWrapper)WorkbenchSingleton.Workbench.ActiveViewContent).ResourceEditor;
 			
 			if(editor.ResourceList.WriteProtected) {
 				return;
@@ -28,10 +28,10 @@ namespace ResourceEditor
 			
 			using (OpenFileDialog fdiag = new OpenFileDialog()) {
 				fdiag.AddExtension   = true;
-				fdiag.Filter         = "All files (*.*)|*.*";
+				fdiag.Filter         = StringParser.Parse("${res:SharpDevelop.FileFilter.AllFiles}|*.*");
 				fdiag.Multiselect    = true;
 				fdiag.CheckFileExists = true;
-								
+				
 				if (fdiag.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) == DialogResult.OK) {
 					foreach (string filename in fdiag.FileNames) {
 						string oresname = Path.ChangeExtension(Path.GetFileName(filename), null);
@@ -40,7 +40,7 @@ namespace ResourceEditor
 						string resname = oresname;
 						
 						int i = 0;
-						TestName:
+					TestName:
 						if (editor.ResourceList.Resources.ContainsKey(resname)) {
 							if (i == 10) {
 								continue;
@@ -80,8 +80,8 @@ namespace ResourceEditor
 					}
 				default:
 					// try to read a bitmap
-					try { 
-						return new Bitmap(name); 
+					try {
+						return new Bitmap(name);
 					} catch {}
 					
 					// try to read a serialized object
@@ -109,7 +109,7 @@ namespace ResourceEditor
 						string message = ResourceService.GetString("ResourceEditor.Messages.CantLoadResource");
 						MessageService.ShowWarning(message + " " + name + ".");
 					}
-				break;
+					break;
 			}
 			return null;
 		}

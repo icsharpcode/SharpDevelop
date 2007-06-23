@@ -1,0 +1,21 @@
+﻿<AddIn name        = "WPF Designer AddIn"
+       author      = "Daniel Grunwald"
+       copyright   = "prj:///doc/copyright.txt"
+       description = "WPF Designer">
+	
+	<Runtime>
+		<Import assembly = "ICSharpCode.WpfDesign.AddIn.dll"/>
+	</Runtime>
+	
+	<Path name = "/SharpDevelop/Workbench/DisplayBindings">
+		<!--<DisplayBinding id    = "WPFDesigner"
+		                class = "ICSharpCode.WpfDesign.AddIn.WpfPrimaryDisplayBinding"
+		                insertbefore    = "Text"
+		                fileNamePattern = "\.xaml$"
+		                title = "WPF designer"/>-->
+		<DisplayBinding id    = "WPFDesigner"
+		                type  = "Secondary"
+		                class = "ICSharpCode.WpfDesign.AddIn.WpfSecondaryDisplayBinding"
+		                fileNamePattern = "\.xaml$"/>
+	</Path>
+</AddIn>

@@ -218,6 +218,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				if (activeContent != value) {
 					activeContent = value;
 					if (ActiveContentChanged != null) {
+						Console.WriteLine(Environment.StackTrace);
 						ActiveContentChanged(this, EventArgs.Empty);
 					}
 				}

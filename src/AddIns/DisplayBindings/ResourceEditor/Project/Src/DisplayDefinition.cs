@@ -34,14 +34,12 @@ namespace ResourceEditor
 	/// <summary>
 	/// This class describes the main functionality of a language codon
 	/// </summary>
-	public class ResourceEditWrapper : AbstractViewContent, IClipboardHandler
+	public class ResourceEditWrapper : AbstractViewContentHandlingLoadErrors, IClipboardHandler
 	{
 		ResourceEditorControl resourceEditor = new ResourceEditorControl();
 		
-		public override Control Control {
-			get {
-				return resourceEditor;
-			}
+		public ResourceEditorControl ResourceEditor {
+			get { return resourceEditor; }
 		}
 		
 		public override bool IsReadOnly {
@@ -57,6 +55,7 @@ namespace ResourceEditor
 		
 		public ResourceEditWrapper(OpenedFile file)
 		{
+			base.UserControl = resourceEditor;
 			resourceEditor.ResourceList.Changed += new EventHandler(SetDirty);
 			this.Files.Add(file);
 		}
@@ -71,12 +70,12 @@ namespace ResourceEditor
 			resourceEditor.Dispose();
 		}
 		
-		public override void Load(OpenedFile file, Stream stream)
+		protected override void LoadInternal(OpenedFile file, Stream stream)
 		{
 			resourceEditor.ResourceList.LoadFile(file.FileName, stream);
 		}
 		
-		public override void Save(OpenedFile file, Stream stream)
+		protected override void SaveInternal(OpenedFile file, Stream stream)
 		{
 			resourceEditor.ResourceList.SaveFile(file.FileName, stream);
 		}

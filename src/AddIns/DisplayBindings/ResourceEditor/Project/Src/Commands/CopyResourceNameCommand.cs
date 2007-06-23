@@ -15,7 +15,7 @@ namespace ResourceEditor
 	{
 		public override void Run()
 		{
-			ResourceEditorControl editor = (ResourceEditorControl)WorkbenchSingleton.Workbench.ActiveViewContent.Control;
+			ResourceEditorControl editor = ((ResourceEditWrapper)WorkbenchSingleton.Workbench.ActiveViewContent).ResourceEditor;
 			
 			if(editor.ResourceList.SelectedItems.Count > 0) {
 				ClipboardWrapper.SetText(editor.ResourceList.SelectedItems[0].Text);

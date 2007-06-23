@@ -45,6 +45,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 			child = noToolsAvailable;
 			
 			WorkbenchSingleton.Workbench.ActiveContentChanged += WorkbenchActiveContentChanged;
+			// it is possible that ActiveContent changes fires before ActiveViewContent.
+			// if we listen the new content is not a IToolsHost and we listen only to ActiveContentChanged,
+			// we might display the ToolsControl of a no longer active view content
+			WorkbenchSingleton.Workbench.ActiveViewContentChanged += WorkbenchActiveContentChanged;
 			WorkbenchActiveContentChanged(null, null);
 		}
 		
@@ -62,10 +66,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			IToolsHost th = WorkbenchSingleton.Workbench.ActiveContent as IToolsHost;
 			if (th == null) {
-				IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
-				if (window != null) {
-					th = window.ActiveViewContent as IToolsHost;
-				}
+				th = WorkbenchSingleton.Workbench.ActiveViewContent as IToolsHost;
 			}
 			if (th != null) {
 				SetChild(th.ToolsControl ?? noToolsAvailable);

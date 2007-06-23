@@ -97,6 +97,19 @@ namespace ICSharpCode.SharpDevelop
 			return false;
 		}
 		
+		/// <summary>
+		/// Returns the first element from <paramref name="input"/>.
+		/// </summary>
+		public static T First<T>(IEnumerable<T> input)
+		{
+			if (input == null)
+				throw new ArgumentNullException("input");
+			foreach (T item in input) {
+				return item;
+			}
+			throw new ArgumentException("input must not be an empty collection", "input");
+		}
+		
 		public static List<T> ToList<T>(IEnumerable<T> input)
 		{
 			return new List<T>(input);

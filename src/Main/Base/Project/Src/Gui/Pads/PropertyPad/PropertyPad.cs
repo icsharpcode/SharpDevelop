@@ -101,10 +101,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			IHasPropertyContainer c = WorkbenchSingleton.Workbench.ActiveContent as IHasPropertyContainer;
 			if (c == null) {
-				IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
-				if (window != null) {
-					c = window.ActiveViewContent as IHasPropertyContainer;
-				}
+				c = WorkbenchSingleton.Workbench.ActiveViewContent as IHasPropertyContainer;
 			}
 			if (c != null) {
 				SetActiveContainer(c.PropertyContainer);
@@ -149,6 +146,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			LoggingService.Debug("PropertyPad created");
 			WorkbenchSingleton.Workbench.ActiveContentChanged += WorkbenchActiveContentChanged;
+			// it is possible that ActiveContent changes fires before ActiveViewContent.
+			// if we listen the new content is not a IHasPropertyContainer and we listen only to ActiveContentChanged,
+			// we might display the ToolsControl of a no longer active view content
+			WorkbenchSingleton.Workbench.ActiveViewContentChanged += WorkbenchActiveContentChanged;
 			WorkbenchActiveContentChanged(null, null);
 		}
 		
