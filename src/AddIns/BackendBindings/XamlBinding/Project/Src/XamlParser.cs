@@ -102,9 +102,11 @@ namespace XamlBinding
 			
 			if (!string.IsNullOrEmpty(name)) {
 				IReturnType type = TypeFromXmlNode(cu, r);
-				if (!r.MoveToAttribute("Name", XamlNamespace)) {
-					r.MoveToAttribute("Name");
-				}
+				
+				// Use position of Name attribute for field region
+				//if (!r.MoveToAttribute("Name", XamlNamespace)) {
+				//	r.MoveToAttribute("Name");
+				//}
 				DomRegion position = new DomRegion(r.LineNumber, r.LinePosition, r.LineNumber, r.LinePosition + name.Length);
 				c.Fields.Add(new DefaultField(type, name, ModifierEnum.Internal, position, c));
 			}

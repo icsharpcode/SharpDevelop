@@ -148,6 +148,14 @@ namespace XamlBinding
 			if (propertyOrEvent is IEvent) {
 				return new MethodResolveResult(callingClass, null, callingClass.DefaultReturnType, expression);
 			}
+			
+			if (propertyOrEvent.Name == "Name") {
+				foreach (IField f in callingClass.Fields) {
+					if (f.Name == expression)
+						return new MemberResolveResult(callingClass, null, f);
+				}
+			}
+			
 			IReturnType type = propertyOrEvent.ReturnType;
 			if (type == null) return null;
 			IClass c = type.GetUnderlyingClass();

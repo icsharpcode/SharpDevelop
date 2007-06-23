@@ -108,8 +108,10 @@ namespace ICSharpCode.SharpDevelop.Project
 			ProjectItem item = nextItem;
 			nextItem = (++index < projectItems.Count) ? projectItems[index] : null;
 			if (item == null) return false;
-			if (item.ItemType != ItemType.Compile)
+			
+			if (ParserService.GetParser(item.FileName) == null)
 				return MoveNext();
+			
 			string fileContent;
 			try {
 				fileContent = GetFileContent(item);

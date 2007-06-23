@@ -382,7 +382,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 					}
 				}
 				foreach (ProjectItem item in p.Items) {
-					if (item.ItemType == ItemType.Compile) {
+					if (item is FileProjectItem) {
 						resultList.Add(item);
 					}
 				}
