@@ -25,7 +25,7 @@ namespace XamlBinding
 				throw new ArgumentNullException("compilationUnit");
 			
 			this.compilationUnit = compilationUnit;
-			this.xmlNamespace = xmlNamespace ?? "";
+			this.xmlNamespace = xmlNamespace;
 			this.className = className ?? "";
 		}
 		

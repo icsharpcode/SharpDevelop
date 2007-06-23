@@ -31,15 +31,6 @@ namespace ICSharpCode.WpfDesign.Designer
 			= DependencyProperty.Register("EditedObject", typeof(IPropertyEditorDataSource), typeof(PropertyEditor),
 			                              new FrameworkPropertyMetadata(null, _OnEditedObjectPropertyChanged));
 		
-		#if XAML_DEFINITIONS
-		// this is not compiled, but gives us code-completion inside SharpDevelop
-		TextBox nameTextBox;
-		Label typeLabel;
-		Rectangle componentImage;
-		TextBox searchTextBox;
-		StackPanel contentStackPanel;
-		#endif
-		
 		/// <summary>
 		/// Creates a new PropertyGrid instance.
 		/// </summary>
@@ -180,3 +171,4 @@ namespace ICSharpCode.WpfDesign.Designer
 		}
 	}
 }
+

@@ -41,6 +41,10 @@ namespace XamlBinding
 			b.Append("[XamlExpressionContext ");
 			for (int i = 0; i < ElementPath.Elements.Count; i ++) {
 				if (i > 0) b.Append(">");
+				if (!string.IsNullOrEmpty(ElementPath.Elements[i].Prefix)) {
+					b.Append(ElementPath.Elements[i].Prefix);
+					b.Append(':');
+				}
 				b.Append(ElementPath.Elements[i].Name);
 			}
 			if (!string.IsNullOrEmpty(AttributeName)) {

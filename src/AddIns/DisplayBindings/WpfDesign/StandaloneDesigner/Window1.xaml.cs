@@ -34,15 +34,6 @@ namespace StandaloneDesigner
 			}
 		}
 		
-		#if XAML_DEFINITIONS
-		// this is not compiled, but gives us code-completion inside SharpDevelop
-		TextBox CodeTextBox;
-		DesignSurface designSurface;
-		PropertyEditor propertyEditor;
-		ToolBar toolBar;
-		Toolbox toolbox;
-		#endif
-		
 		void tabControlSelectionChanged(object sender, RoutedEventArgs e)
 		{
 			if (e.Source != tabControl) return;
@@ -109,3 +100,4 @@ namespace StandaloneDesigner
 		}
 	}
 }
+
