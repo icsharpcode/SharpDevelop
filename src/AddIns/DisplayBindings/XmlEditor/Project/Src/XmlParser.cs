@@ -220,6 +220,18 @@ namespace ICSharpCode.XmlEditor
 		}
 		
 		/// <summary>
+		/// Gets the attribute name and any prefix. The namespace
+		/// is not determined.
+		/// </summary>
+		/// <returns><see langword="null"/> if no attribute name can
+		/// be found.</returns>
+		public static QualifiedName GetQualifiedAttributeName(string xml, int index)
+		{
+			string name = GetAttributeName(xml, index);
+			return GetQualifiedName(name);
+		}
+		
+		/// <summary>
 		/// Gets the name of the attribute inside but before the specified 
 		/// index.
 		/// </summary>
@@ -230,8 +242,17 @@ namespace ICSharpCode.XmlEditor
 			}
 			
 			index = GetCorrectedIndex(xml.Length, index);
-			
 			return GetAttributeName(xml, index, true, true, true);
+		}
+		
+		/// <summary>
+		/// Gets the name of the attribute and its prefix at the specified index. The index
+		/// can be anywhere inside the attribute name or in the attribute value.
+		/// </summary>
+		public static QualifiedName GetQualifiedAttributeNameAtIndex(string xml, int index)
+		{
+			string name = GetAttributeNameAtIndex(xml, index);
+			return GetQualifiedName(name);
 		}
 		
 		/// <summary>
@@ -523,17 +544,7 @@ namespace ICSharpCode.XmlEditor
 				name = xml.Substring(1);
 			}
 			
-			QualifiedName qualifiedName = new QualifiedName();
-			
-			int prefixIndex = name.IndexOf(':');
-			if (prefixIndex > 0) {
-				qualifiedName.Prefix = name.Substring(0, prefixIndex);
-				qualifiedName.Name = name.Substring(prefixIndex + 1);
-			} else {
-				qualifiedName.Name = name;
-			}
-			
-			return qualifiedName;
+			return GetQualifiedName(name);
 		}		
 		
 		/// <summary>
@@ -658,7 +669,7 @@ namespace ICSharpCode.XmlEditor
 				
 				--currentIndex;
 			}
-
+			
 			if (!invalidString) {
 				name = ReverseString(reversedAttributeName.ToString());
 			}
@@ -683,5 +694,26 @@ namespace ICSharpCode.XmlEditor
 			}
 			return null;
 		}
+		
+		/// <summary>
+		/// Returns a name and its prefix.
+		/// </summary>
+		static QualifiedName GetQualifiedName(string name)
+		{
+			if (name.Length == 0) {
+				return null;
+			}
+			
+			QualifiedName qualifiedName = new QualifiedName();
+			int prefixIndex = name.IndexOf(':');
+			if (prefixIndex > 0) {
+				qualifiedName.Prefix = name.Substring(0, prefixIndex);
+				qualifiedName.Name = name.Substring(prefixIndex + 1);
+			} else {
+				qualifiedName.Name = name;
+			}
+			return qualifiedName;
+		}
 	}
 }
+

@@ -22,76 +22,98 @@ namespace XmlEditor.Tests.Parser
 		public void SuccessTest1()
 		{
 			string text = " foo='a";
-			Assert.AreEqual("foo", XmlParser.GetAttributeName(text, text.Length), "Should have retrieved the attribute name 'foo'");
+			QualifiedName expectedName = new QualifiedName("foo", String.Empty);
+			QualifiedName name = XmlParser.GetQualifiedAttributeName(text, text.Length);
+			Assert.AreEqual(expectedName, name, "Should have retrieved the attribute name 'foo'");
 		}
 
 		[Test]
 		public void SuccessTest2()
 		{
 			string text = " foo='";
-			Assert.AreEqual("foo", XmlParser.GetAttributeName(text, text.Length), "Should have retrieved the attribute name 'foo'");
+			QualifiedName expectedName = new QualifiedName("foo", String.Empty);
+			QualifiedName name = XmlParser.GetQualifiedAttributeName(text, text.Length);
+			Assert.AreEqual(expectedName, name, "Should have retrieved the attribute name 'foo'");
 		}		
 		
 		[Test]
 		public void SuccessTest3()
 		{
 			string text = " foo=";
-			Assert.AreEqual("foo", XmlParser.GetAttributeName(text, text.Length), "Should have retrieved the attribute name 'foo'");
+			QualifiedName expectedName = new QualifiedName("foo", String.Empty);
+			QualifiedName name = XmlParser.GetQualifiedAttributeName(text, text.Length);
+			Assert.AreEqual(expectedName, name, "Should have retrieved the attribute name 'foo'");
 		}			
 		
 		[Test]
 		public void SuccessTest4()
 		{
 			string text = " foo=\"";
-			Assert.AreEqual("foo", XmlParser.GetAttributeName(text, text.Length), "Should have retrieved the attribute name 'foo'");
+			QualifiedName expectedName = new QualifiedName("foo", String.Empty);
+			QualifiedName name = XmlParser.GetQualifiedAttributeName(text, text.Length);
+			Assert.AreEqual(expectedName, name, "Should have retrieved the attribute name 'foo'");
 		}	
 		
 		[Test]
 		public void SuccessTest5()
 		{
 			string text = " foo = \"";
-			Assert.AreEqual("foo", XmlParser.GetAttributeName(text, text.Length), "Should have retrieved the attribute name 'foo'");
+			QualifiedName expectedName = new QualifiedName("foo", String.Empty);
+			QualifiedName name = XmlParser.GetQualifiedAttributeName(text, text.Length);
+			Assert.AreEqual(expectedName, name, "Should have retrieved the attribute name 'foo'");
 		}			
 		
 		[Test]
 		public void SuccessTest6()
 		{
 			string text = " foo = '#";
-			Assert.AreEqual("foo", XmlParser.GetAttributeName(text, text.Length), "Should have retrieved the attribute name 'foo'");
+			QualifiedName expectedName = new QualifiedName("foo", String.Empty);
+			QualifiedName name = XmlParser.GetQualifiedAttributeName(text, text.Length);
+			Assert.AreEqual(expectedName, name, "Should have retrieved the attribute name 'foo'");
 		}	
 		
 		[Test]
 		public void FailureTest1()
 		{
 			string text = "foo=";
-			Assert.AreEqual(String.Empty, XmlParser.GetAttributeName(text, text.Length), "Should have retrieved the attribute name 'foo'");
+			Assert.IsNull(XmlParser.GetQualifiedAttributeName(text, text.Length));
 		}		
 		
 		[Test]
 		public void FailureTest2()
 		{
 			string text = "foo=<";
-			Assert.AreEqual(String.Empty, XmlParser.GetAttributeName(text, text.Length), "Should have retrieved the attribute name 'foo'");
+			Assert.IsNull(XmlParser.GetQualifiedAttributeName(text, text.Length));
 		}		
 		
 		[Test]
 		public void FailureTest3()
 		{
 			string text = "a";
-			Assert.AreEqual(String.Empty, XmlParser.GetAttributeName(text, text.Length));
+			Assert.IsNull(XmlParser.GetQualifiedAttributeName(text, text.Length));
 		}	
 		
 		[Test]
 		public void FailureTest4()
 		{
 			string text = " a";
-			Assert.AreEqual(String.Empty, XmlParser.GetAttributeName(text, text.Length));
+			Assert.IsNull(XmlParser.GetQualifiedAttributeName(text, text.Length));
 		}	
 		
 		[Test]
 		public void EmptyString()
 		{
-			Assert.AreEqual(String.Empty, XmlParser.GetAttributeName(String.Empty, 10));
+			Assert.IsNull(XmlParser.GetQualifiedAttributeName(String.Empty, 10));
+		}
+		
+		[Test]
+		public void AttributeWithPrefix()
+		{
+			string text = " a:test=";
+			QualifiedName expectedName = new QualifiedName("test", String.Empty, "a");
+			QualifiedName name = XmlParser.GetQualifiedAttributeName(text, text.Length);
+			Assert.AreEqual(expectedName, name);
 		}
 	}
 }
+
