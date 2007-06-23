@@ -266,7 +266,7 @@ namespace ICSharpCode.XmlEditor
 				// Find end of attribute name.
 				for (; index < xml.Length; ++index) {
 					char ch = xml[index];
-					if (!Char.IsLetterOrDigit(ch)) {
+					if (!IsXmlNameChar(ch)) {
 						if (ch == '\'' || ch == '\"') {
 							ignoreQuote = true;
 							ignoreEqualsSign = true;
@@ -625,7 +625,7 @@ namespace ICSharpCode.XmlEditor
 				
 				char currentChar = xml[currentIndex];
 				
-				if (Char.IsLetterOrDigit(currentChar)) {
+				if (IsXmlNameChar(currentChar)) {
 					if (!ignoreEqualsSign) {
 						ignoreWhitespace = false;
 						reversedAttributeName.Append(currentChar);

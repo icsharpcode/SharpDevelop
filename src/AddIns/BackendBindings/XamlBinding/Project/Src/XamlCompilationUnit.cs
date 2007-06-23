@@ -22,13 +22,13 @@ namespace XamlBinding
 		public IReturnType CreateType(string xmlNamespace, string className)
 		{
 			if (xmlNamespace.StartsWith("clr-namespace:")) {
-				return CreateClrNamespaceType(xmlNamespace, className);
+				return CreateClrNamespaceType(this.ProjectContent, xmlNamespace, className);
 			} else {
 				return new XamlClassReturnType(this, xmlNamespace, className);
 			}
 		}
 		
-		IReturnType CreateClrNamespaceType(string xmlNamespace, string className)
+		static IReturnType CreateClrNamespaceType(IProjectContent pc, string xmlNamespace, string className)
 		{
 			string namespaceName = xmlNamespace.Substring("clr-namespace:".Length);
 			int pos = namespaceName.IndexOf(';');
@@ -37,18 +37,27 @@ namespace XamlBinding
 				// can ignore the assembly part after the ;
 				namespaceName = namespaceName.Substring(0, pos);
 			}
-			return new GetClassReturnType(this.ProjectContent, namespaceName + "." + className, 0);
+			return new GetClassReturnType(pc, namespaceName + "." + className, 0);
 		}
 		
 		public IReturnType FindType(string xmlNamespace, string className)
 		{
+			return FindType(this.ProjectContent, xmlNamespace, className);
+		}
+		
+		public static IReturnType FindType(IProjectContent pc, string xmlNamespace, string className)
+		{
+			if (pc == null)
+				throw new ArgumentNullException("pc");
+			if (xmlNamespace == null || className == null)
+				return null;
 			if (xmlNamespace.StartsWith("clr-namespace:")) {
-				return CreateClrNamespaceType(xmlNamespace, className);
+				return CreateClrNamespaceType(pc, xmlNamespace, className);
 			} else {
-				IReturnType type = FindTypeInAssembly(this.ProjectContent, xmlNamespace, className);
+				IReturnType type = FindTypeInAssembly(pc, xmlNamespace, className);
 				if (type != null)
 					return type;
-				foreach (IProjectContent p in this.ProjectContent.ReferencedContents) {
+				foreach (IProjectContent p in pc.ReferencedContents) {
 					type = FindTypeInAssembly(p, xmlNamespace, className);
 					if (type != null)
 						return type;

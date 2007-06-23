@@ -183,7 +183,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			if (member == null) {
 				textFinder = parentClass.ProjectContent.Language.GetFindClassReferencesTextFinder(parentClass);
 			} else {
-				Debug.Assert(member.DeclaringType == parentClass);
+				Debug.Assert(member.DeclaringType.GetCompoundClass() == parentClass.GetCompoundClass());
 				textFinder = parentClass.ProjectContent.Language.GetFindMemberReferencesTextFinder(member);
 			}
 			

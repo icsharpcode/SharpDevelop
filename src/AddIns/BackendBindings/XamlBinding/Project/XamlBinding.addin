@@ -11,7 +11,7 @@
 	
 	<Manifest>
 		<Identity name = "ICSharpCode.XamlBinding"/>
-		<!--<Dependency addin = "ICSharpCode.XmlEditor" requirePreload = "true"/>-->
+		<Dependency addin = "ICSharpCode.XmlEditor" requirePreload = "true"/>
 	</Manifest>
 	
 	<Runtime>

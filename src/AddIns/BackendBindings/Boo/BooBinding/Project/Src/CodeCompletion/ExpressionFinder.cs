@@ -81,7 +81,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 		public ExpressionResult FindExpression(string inText, int offset)
 		{
 			if (inText == null || offset >= inText.Length)
-				return new ExpressionResult(null);
+				return ExpressionResult.Empty;
 			// OK, first try a kind of "quick find"
 			int i = offset + 1;
 			const string forbidden = "\"\'/#)]}";
@@ -110,7 +110,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 			
 			inText = SimplifyCode(inText, offset);
 			if (inText == null) {
-				return new ExpressionResult(null);
+				return ExpressionResult.Empty;
 			}
 			// inText now has no comments or string literals, but the same meaning in
 			// terms of the type system
@@ -133,7 +133,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 					while (bracketStack.Count > 0 && bracketStack.Pop() > bracket);
 				}
 			}
-			return new ExpressionResult(null);
+			return ExpressionResult.Empty;
 		}
 		
 		bool CheckString(string text, int offset, string forbidden, string finish)
@@ -150,7 +150,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 		
 		ExpressionResult GetExpression(string inText, int start, int end)
 		{
-			if (start == end) return new ExpressionResult(null);
+			if (start == end) return ExpressionResult.Empty;
 			StringBuilder b = new StringBuilder();
 			bool wasSpace = true;
 			int i = start;
@@ -273,7 +273,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 					while (bracketStack.Count > 0 && bracketStack.Pop() > bracket);
 				}
 			}
-			return new ExpressionResult(null);
+			return ExpressionResult.Empty;
 		}
 		#endregion
 		

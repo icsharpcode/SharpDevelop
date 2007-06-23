@@ -51,11 +51,13 @@ namespace XamlBinding
 		public ICompilationUnit Parse(IProjectContent projectContent, string fileName, string fileContent)
 		{
 			XamlCompilationUnit cu = new XamlCompilationUnit(projectContent);
+			cu.FileName = fileName;
 			try {
 				using (XmlTextReader r = new XmlTextReader(new StringReader(fileContent))) {
+					r.WhitespaceHandling = WhitespaceHandling.Significant;
 					r.Read();
 					r.MoveToContent();
-					DomRegion classStart = new DomRegion(r.LineNumber, r.LinePosition);
+					DomRegion classStart = new DomRegion(r.LineNumber, r.LinePosition - 1);
 					string className = r.GetAttribute("Class", XamlNamespace);
 					if (string.IsNullOrEmpty(className)) {
 						LoggingService.Debug("XamlParser: returning empty cu because root element has no Class attribute");
@@ -76,8 +78,7 @@ namespace XamlBinding
 						
 						ParseXamlElement(cu, c, r);
 						if (r.NodeType == XmlNodeType.EndElement) {
-							r.Read();
-							c.Region = new DomRegion(classStart.BeginLine, classStart.BeginColumn, r.LineNumber, r.LinePosition);
+							c.Region = new DomRegion(classStart.BeginLine, classStart.BeginColumn, r.LineNumber, r.LinePosition + r.Name.Length);
 						}
 					}
 				}
@@ -90,41 +91,50 @@ namespace XamlBinding
 		
 		IReturnType TypeFromXmlNode(XamlCompilationUnit cu, XmlReader r)
 		{
-			return cu.CreateType(r.NamespaceURI, r.Name);
+			return cu.CreateType(r.NamespaceURI, r.LocalName);
 		}
 		
 		void ParseXamlElement(XamlCompilationUnit cu, DefaultClass c, XmlTextReader r)
 		{
 			Debug.Assert(r.NodeType == XmlNodeType.Element);
 			string name = r.GetAttribute("Name", XamlNamespace) ?? r.GetAttribute("Name");
+			bool isEmptyElement = r.IsEmptyElement;
+			
 			if (!string.IsNullOrEmpty(name)) {
-				DefaultField field = new DefaultField(
-					TypeFromXmlNode(cu, r),
-					name,
-					ModifierEnum.Internal,
-					new DomRegion(r.LineNumber, r.LinePosition),
-					c);
-				c.Fields.Add(field);
+				IReturnType type = TypeFromXmlNode(cu, r);
+				if (!r.MoveToAttribute("Name", XamlNamespace)) {
+					r.MoveToAttribute("Name");
+				}
+				DomRegion position = new DomRegion(r.LineNumber, r.LinePosition, r.LineNumber, r.LinePosition + name.Length);
+				c.Fields.Add(new DefaultField(type, name, ModifierEnum.Internal, position, c));
 			}
 			
-			if (r.IsEmptyElement)
+			if (isEmptyElement)
 				return;
-			do {
-				r.Read();
+			while (r.Read()) {
 				if (r.NodeType == XmlNodeType.Element) {
 					ParseXamlElement(cu, c, r);
+				} else if (r.NodeType == XmlNodeType.Comment) {
+					foreach (string tag in lexerTags) {
+						if (r.Value.Contains(tag)) {
+							cu.TagComments.Add(new TagComment(r.Value, new DomRegion(r.LineNumber, r.LinePosition, r.LineNumber, r.LinePosition + r.Value.Length)));
+							break;
+						}
+					}
+				} else if (r.NodeType == XmlNodeType.EndElement) {
+					break;
 				}
-			} while (r.NodeType != XmlNodeType.EndElement);
+			}
 		}
 		
 		public IExpressionFinder CreateExpressionFinder(string fileName)
 		{
-			throw new NotImplementedException();
+			return XamlExpressionFinder.Instance;
 		}
 		
 		public IResolver CreateResolver()
 		{
-			throw new NotImplementedException();
+			return new XamlResolver();
 		}
 	}
 }

@@ -37,6 +37,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 	/// </summary>
 	public struct ExpressionResult
 	{
+		public static readonly ExpressionResult Empty = new ExpressionResult(null);
+		
 		/// <summary>The expression that has been found at the specified offset.</summary>
 		public string Expression;
 		/// <summary>Specifies the context in which the expression was found.</summary>
