@@ -205,7 +205,5 @@ namespace WorkflowDesigner
 			}
 		}
 		#endregion
-		
-		
 	}
 }

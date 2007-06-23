@@ -21,6 +21,9 @@ namespace StandaloneDesigner
 	{
 		public Window1()
 		{
+			DragDropExceptionHandler.HandleException = delegate (Exception ex) {
+				MessageBox.Show(ex.ToString());
+			};
 			try {
 				InitializeComponent();
 				foreach (object o in toolBar.Items) {
@@ -100,4 +103,5 @@ namespace StandaloneDesigner
 		}
 	}
 }
+
 

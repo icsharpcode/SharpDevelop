@@ -8,6 +8,7 @@
 using System;
 using System.Collections;
 using System.ComponentModel.Design;
+using System.Windows.Forms;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -95,6 +96,16 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
+		Control propertyGridReplacementControl;
+		
+		public Control PropertyGridReplacementControl {
+			get { return propertyGridReplacementControl; }
+			set {
+				propertyGridReplacementControl = value;
+				PropertyPad.UpdatePropertyGridReplacementControl(this);
+			}
+		}
+		
 		/// <summary>
 		/// Clears all properties on this container.
 		/// When a ViewContent is closed, it should call Clear on it's property container to
@@ -105,6 +116,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			Host = null;
 			SelectableObjects = null;
 			SelectedObject = null;
+			PropertyGridReplacementControl = null;
 		}
 	}
 }

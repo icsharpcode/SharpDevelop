@@ -67,31 +67,39 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 		
 		void OnDragOver(object sender, DragEventArgs e)
 		{
-			if (e.Data.GetData(typeof(CreateComponentTool)) == this) {
-				e.Effects = DragDropEffects.Copy;
-				e.Handled = true;
-			} else {
-				e.Effects = DragDropEffects.None;
+			try {
+				if (e.Data.GetData(typeof(CreateComponentTool)) == this) {
+					e.Effects = DragDropEffects.Copy;
+					e.Handled = true;
+				} else {
+					e.Effects = DragDropEffects.None;
+				}
+			} catch (Exception ex) {
+				DragDropExceptionHandler.HandleException(ex);
 			}
 		}
 		
 		void OnDrop(object sender, DragEventArgs e)
 		{
-			if (e.Data.GetData(typeof(CreateComponentTool)) != this)
-				return;
-			e.Handled = true;
-			
-			IDesignPanel designPanel = (IDesignPanel)sender;
-			DesignPanelHitTestResult result = designPanel.HitTest(e.GetPosition(designPanel), false, true);
-			if (result.ModelHit != null) {
-				designPanel.Focus();
+			try {
+				if (e.Data.GetData(typeof(CreateComponentTool)) != this)
+					return;
+				e.Handled = true;
 				
-				DesignItem createdItem = CreateItem(designPanel.Context);
-				AddItemWithDefaultSize(result.ModelHit, createdItem, e.GetPosition(result.ModelHit.View));
-			}
-			
-			if (designPanel.Context.Services.Tool.CurrentTool is CreateComponentTool) {
-				designPanel.Context.Services.Tool.CurrentTool = designPanel.Context.Services.Tool.PointerTool;
+				IDesignPanel designPanel = (IDesignPanel)sender;
+				DesignPanelHitTestResult result = designPanel.HitTest(e.GetPosition(designPanel), false, true);
+				if (result.ModelHit != null) {
+					designPanel.Focus();
+					
+					DesignItem createdItem = CreateItem(designPanel.Context);
+					AddItemWithDefaultSize(result.ModelHit, createdItem, e.GetPosition(result.ModelHit.View));
+				}
+				
+				if (designPanel.Context.Services.Tool.CurrentTool is CreateComponentTool) {
+					designPanel.Context.Services.Tool.CurrentTool = designPanel.Context.Services.Tool.PointerTool;
+				}
+			} catch (Exception ex) {
+				DragDropExceptionHandler.HandleException(ex);
 			}
 		}
 		

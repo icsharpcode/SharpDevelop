@@ -20,7 +20,7 @@ using ICSharpCode.WpfDesign.PropertyEditor;
 namespace ICSharpCode.WpfDesign.Designer
 {
 	/// <summary>
-	/// Description of PropertyGrid.
+	/// Shows a list of properties; supports data binding.
 	/// </summary>
 	public partial class PropertyEditor : UserControl
 	{
@@ -32,7 +32,7 @@ namespace ICSharpCode.WpfDesign.Designer
 			                              new FrameworkPropertyMetadata(null, _OnEditedObjectPropertyChanged));
 		
 		/// <summary>
-		/// Creates a new PropertyGrid instance.
+		/// Creates a new PropertyEditor instance.
 		/// </summary>
 		public PropertyEditor()
 		{

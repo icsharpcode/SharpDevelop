@@ -53,6 +53,8 @@
     </Compile>
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\WpfDisplayBinding.cs" />
+    <Compile Include="Src\WpfSideTabItem.cs" />
+    <Compile Include="Src\WpfToolbox.cs" />
     <Compile Include="Src\WpfViewContent.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -64,6 +66,11 @@
     <ProjectReference Include="..\..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
       <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
       <Name>ICSharpCode.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Widgets\Project\ICSharpCode.SharpDevelop.Widgets.csproj">
+      <Project>{8035765F-D51F-4A0C-A746-2FD100E19419}</Project>
+      <Name>ICSharpCode.SharpDevelop.Widgets</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\WpfDesign.Designer\Project\WpfDesign.Designer.csproj">

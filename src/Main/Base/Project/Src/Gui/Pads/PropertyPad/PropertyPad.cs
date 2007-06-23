@@ -30,9 +30,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (pc == null)
 				return;
 			activeContainer = pc;
+			
 			UpdateHostIfActive(pc);
 			UpdateSelectedObjectIfActive(pc);
 			UpdateSelectableIfActive(pc);
+			UpdatePropertyGridReplacementControl(pc);
 		}
 		
 		internal static void UpdateSelectedObjectIfActive(PropertyContainer container)
@@ -68,6 +70,27 @@ namespace ICSharpCode.SharpDevelop.Gui
 				return;
 			LoggingService.Debug("UpdateSelectableIfActive");
 			instance.SetSelectableObjects(container.SelectableObjects);
+		}
+		
+		internal static void UpdatePropertyGridReplacementControl(PropertyContainer container)
+		{
+			if (instance == null) return;
+			if (instance.activeContainer != container)
+				return;
+			LoggingService.Debug("UpdatePropertyGridReplacementControl");
+			if (container.PropertyGridReplacementControl != null) {
+				if (!instance.panel.Controls.Contains(container.PropertyGridReplacementControl)) {
+					instance.panel.Controls.Clear();
+					container.PropertyGridReplacementControl.Dock = DockStyle.Fill;
+					instance.panel.Controls.Add(container.PropertyGridReplacementControl);
+				}
+			} else {
+				if (!instance.panel.Controls.Contains(instance.grid)) {
+					instance.panel.Controls.Clear();
+					instance.panel.Controls.Add(instance.grid);
+					instance.panel.Controls.Add(instance.comboBox);
+				}
+			}
 		}
 		
 		Panel         panel;

@@ -87,5 +87,11 @@ namespace ICSharpCode.SettingsEditor
 				return propertyContainer;
 			}
 		}
+		
+		public override void Dispose()
+		{
+			propertyContainer.Clear();
+			base.Dispose();
+		}
 	}
 }

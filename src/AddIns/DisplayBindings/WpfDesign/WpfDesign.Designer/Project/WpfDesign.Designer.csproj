@@ -74,6 +74,7 @@
     <Compile Include="Controls\TypeEditors\ContentEditor.cs" />
     <Compile Include="Controls\WindowClone.cs" />
     <Compile Include="DesignPanel.cs" />
+    <Compile Include="DragDropExceptionHandler.cs" />
     <Compile Include="Extensions\GridAdornerProvider.cs" />
     <Compile Include="Extensions\GridPlacementSupport.cs" />
     <Compile Include="ModelTools.cs" />

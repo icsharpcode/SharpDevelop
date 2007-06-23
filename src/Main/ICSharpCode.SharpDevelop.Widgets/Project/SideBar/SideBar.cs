@@ -707,6 +707,14 @@ namespace ICSharpCode.SharpDevelop.Widgets.SideBar
 			sideTabContent.Refresh();
 		}
 		
+		protected virtual object StartItemDrag(SideTabItem draggedItem)
+		{
+			SpecialDataObject dataObject = new SpecialDataObject();
+			dataObject.SetData(draggedItem.Tag);
+			dataObject.SetData(draggedItem);
+			return dataObject;
+		}
+		
 		protected class SideTabContent : UserControl
 		{
 			SideBarControl sideBar = null;
@@ -893,11 +901,8 @@ namespace ICSharpCode.SharpDevelop.Widgets.SideBar
 					if (item != null) {
 						if (IsDragStarted(mouseDownPos, e.Location)) {
 							sideBar.Tabs.DragOverTab = sideBar.activeTab;
-							SpecialDataObject dataObject = new SpecialDataObject();
-							dataObject.SetData(item.Tag);
-							dataObject.SetData(item);
 							
-							DoDragDrop(dataObject, sideBar.activeTab.CanDragDrop ? DragDropEffects.All : (DragDropEffects.Copy | DragDropEffects.None));
+							DoDragDrop(sideBar.StartItemDrag(item), sideBar.activeTab.CanDragDrop ? DragDropEffects.All : (DragDropEffects.Copy | DragDropEffects.None));
 						}
 						Refresh();
 					}
