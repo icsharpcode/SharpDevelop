@@ -305,7 +305,7 @@
 										<File Source="..\..\bin\Tools\Wix\Microsoft.Tools.WindowsInstallerXml.NAntTasks.dll" Name="MICROS_1.DLL" Id="Microsoft.Tools.WindowsInstallerXml.NAntTasks.dll" LongName="Microsoft.Tools.WindowsInstallerXml.NAntTasks.dll" Assembly=".net" AssemblyApplication="Microsoft.Tools.WindowsInstallerXml.NAntTasks.dll" AssemblyManifest="Microsoft.Tools.WindowsInstallerXml.NAntTasks.dll" KeyPath="yes" />
 									</Component>
 									<Component Id="NetFxWixLib" Guid="CE847BC0-E9B2-41A1-A117-A9C0F22BD044" DiskId="1">
-										<File Source="..\..\bin\Tools\Wix\netfx.wixlib" Name="netfx.lib" LongName="netfix.wixlib" Id="netfx.wixlib" />
+										<File Source="..\..\bin\Tools\Wix\netfx.wixlib" Name="netfx.lib" Id="netfx.wixlib" />
 									</Component>
 									<Component Id="NetFxCaDll" Guid="F5970A44-7122-4660-ABCD-821360690CCC" DiskId="1">
 										<File Source="..\..\bin\Tools\Wix\netfxca.dll" Name="netfxca.dll" Id="netfxca.dll" />
