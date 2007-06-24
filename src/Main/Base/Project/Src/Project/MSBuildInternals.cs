@@ -122,6 +122,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			try {
 				MSBuild.Engine engine = CreateEngine();
 				tempProject = engine.CreateNewProject();
+				// tell MSBuild the path so that projects containing <Import Project="relativePath" />
+				// can be loaded
+				tempProject.FullFileName = baseProject.FullFileName;
 				MSBuildBasedProject.InitializeMSBuildProject(tempProject);
 				tempProject.LoadXml(baseProject.Xml);
 				tempProject.SetProperty("Configuration", configuration);

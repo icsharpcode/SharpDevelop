@@ -47,6 +47,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				throw new ArgumentNullException("project");
 			this.project = project;
 			this.buildItem = buildItem;
+			this.treatIncludeAsLiteral = true;
 		}
 		
 		protected ProjectItem(IProject project, ItemType itemType)
@@ -55,7 +56,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		protected ProjectItem(IProject project, ItemType itemType, string include)
-			: this(project, itemType, include, false)
+			: this(project, itemType, include, true)
 		{
 		}
 		
@@ -75,6 +76,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		[Browsable(false)]
 		public bool TreatIncludeAsLiteral {
 			get { return treatIncludeAsLiteral; }
 			set { treatIncludeAsLiteral = value; }
