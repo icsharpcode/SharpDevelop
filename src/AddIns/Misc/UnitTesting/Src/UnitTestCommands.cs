@@ -45,6 +45,10 @@ namespace ICSharpCode.UnitTesting
 				IMember member = treeView.SelectedMethod;
 				IClass c = treeView.SelectedClass;
 				if (member != null) {
+					BaseTestMethod baseTestMethod = member as BaseTestMethod;
+					if (baseTestMethod != null) {
+						member = baseTestMethod.Method;
+					}
 					GotoMember(member);
 				} else if (c != null) {
 					GotoClass(c);

@@ -14,10 +14,13 @@ namespace UnitTesting.Tests.Utils
 	public class MockMethod : IMethod
 	{
 		IClass declaringType;
+		ModifierEnum modifiers;
 		DomRegion region = DomRegion.Empty;
+		DomRegion bodyRegion = DomRegion.Empty;
 		IList<IAttribute> attributes = new List<IAttribute>();
 		string name = String.Empty;
 		IList<IParameter> parameters = new List<IParameter>();
+		IReturnType returnType;
 		
 		public MockMethod() : this(String.Empty)
 		{
@@ -42,7 +45,10 @@ namespace UnitTesting.Tests.Utils
 		
 		public DomRegion BodyRegion {
 			get {
-				throw new NotImplementedException();
+				return bodyRegion;
+			}
+			set {
+				bodyRegion = value;
 			}
 		}
 		
@@ -96,10 +102,10 @@ namespace UnitTesting.Tests.Utils
 		
 		public IReturnType ReturnType {
 			get {
-				return null;
+				return returnType;
 			}
 			set {
-				throw new NotImplementedException();
+				returnType = value;
 			}
 		}
 		
@@ -114,9 +120,10 @@ namespace UnitTesting.Tests.Utils
 		
 		public ModifierEnum Modifiers {
 			get {
-				return ModifierEnum.None;
+				return modifiers;
 			}
 			set {
+				modifiers = value;
 			}
 		}
 		
