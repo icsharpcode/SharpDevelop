@@ -44,10 +44,10 @@ namespace ICSharpCode.WixBinding
 			WixCompilerExtensionPicker extensionPicker = new WixCompilerExtensionPicker();
 			extensionPicker.Dock = DockStyle.Fill;
 			ControlDictionary["compilerExtensionsGroupBox"].Controls.Add(extensionPicker);
-			extensionPicker.ExtensionsChanged += CompilerExtensionsChanged;
 
 			b = new WixCompilerExtensionBinding(extensionPicker);
 			helper.AddBinding("CompileExtension", b);
+			extensionPicker.ExtensionsChanged += CompilerExtensionsChanged;
 
 			InitWarnings();
 

@@ -23,10 +23,10 @@ namespace ICSharpCode.WixBinding
 			WixCompilerExtensionPicker extensionPicker = new WixCompilerExtensionPicker();
 			extensionPicker.Dock = DockStyle.Fill;
 			ControlDictionary["compilerExtensionsGroupBox"].Controls.Add(extensionPicker);
-			extensionPicker.ExtensionsChanged += CompilerExtensionsChanged;
 			
 			WixCompilerExtensionBinding b = new WixCompilerExtensionBinding(extensionPicker);
 			helper.AddBinding("LinkExtension", b);
+			extensionPicker.ExtensionsChanged += CompilerExtensionsChanged;
 		
 			helper.AddConfigurationSelector(this);
 		}

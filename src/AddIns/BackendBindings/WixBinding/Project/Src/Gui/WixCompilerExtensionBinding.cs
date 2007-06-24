@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.ObjectModel;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.WixBinding
@@ -33,7 +34,12 @@ namespace ICSharpCode.WixBinding
 			IProject project = Project;
 			WixCompilerExtensionName[] extensions = extensionPicker.GetExtensions();
 			foreach (WixCompilerExtensionName extension in extensions) {
-				ProjectService.AddProjectItem(project, CreateProjectItem(extension));
+				if (extension.AssemblyName.Length > 0) {
+					ProjectService.AddProjectItem(project, CreateProjectItem(extension));
+				} else {
+					MessageService.ShowMessage(StringParser.Parse("${res:ICSharpCode.WixBinding.ExtensionBinding.InvalidExtension}"));
+					return false;
+				}
 			}
 			return true;
 		}
