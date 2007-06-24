@@ -201,6 +201,7 @@
 							<Component Id="ICSharpCodeSharpDevelopSdaFiles" Guid="12B16781-2FFE-4E80-A78E-73F1425991BF" DiskId="1">
 								<File Source="..\..\bin\ICSharpCode.SharpDevelop.Sda.dll" Name="ICsda.dll" Id="ICSharpCode.SharpDevelop.Sda.dll" LongName="ICSharpCode.SharpDevelop.Sda.dll" Assembly=".net" AssemblyApplication="ICSharpCode.SharpDevelop.Sda.dll" AssemblyManifest="ICSharpCode.SharpDevelop.Sda.dll" KeyPath="yes" />
 								<File Source="..\..\bin\ICSharpCode.SharpDevelop.Sda.dll.config" Name="ICSda.con" Id="ICSharpCode.SharpDevelop.Sda.dll.config" LongName="ICSharpCode.SharpDevelop.Sda.dll.config" />
+								<File Source="..\..\bin\ICSharpCode.SharpDevelop.Sda.xml" Name="ICSHAR_1.XML" Id="ICSharpCode.SharpDevelop.Sda.xml" LongName="ICSharpCode.SharpDevelop.Sda.xml" />
 							</Component>
 							<Component Id="ICSharpCodeTextEditorDll" Guid="E67D85A5-A891-4E61-9980-C1F1523C7972" DiskId="1">
 								<File Source="..\..\bin\ICSharpCode.TextEditor.dll" Name="ICText.DLL" Id="ICSharpCode.TextEditor.dll" LongName="ICSharpCode.TextEditor.dll" Assembly=".net" AssemblyApplication="ICSharpCode.SharpDevelop.Sda.dll" AssemblyManifest="ICSharpCode.SharpDevelop.Sda.dll" KeyPath="yes" />
@@ -944,6 +945,12 @@
 											</Component>
 										</Directory>
 									</Directory>
+									<Directory Id="XamlBinding" Name="XamlBind" LongName="XamlBinding">
+										<Component Guid="7A569E59-A93E-43A5-B154-ACEBC868C9F2" Id="XamlBindingFiles" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\BackendBindings\XamlBinding\XamlBinding.addin" Name="XAMLBI_1.ADD" Id="XamlBinding.addin" LongName="XamlBinding.addin" />
+											<File Source="..\..\AddIns\AddIns\BackendBindings\XamlBinding\XamlBinding.dll" Name="XAMLBI_1.DLL" Id="XamlBinding.dll" LongName="XamlBinding.dll" />
+										</Component>
+									</Directory>
 								</Directory>
 								<Directory Id="DisplayBindingsFolder" Name="display" LongName="DisplayBindings">
 									<Directory Id="FormsDesignerFolder" LongName="FormsDesigner" Name="Forms">
@@ -1029,6 +1036,18 @@
 												</Directory>
 											</Directory>
 										</Directory>
+									</Directory>
+									<Directory Id="WpfDesign" Name="WpfDesig" LongName="WpfDesign">
+										<Component Guid="334A5E49-DF28-4733-9AD8-8381974B099D" Id="WpfDesignFiles" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\DisplayBindings\WpfDesign\WpfDesign.addin" Name="WPFDES_1.ADD" Id="WpfDesign.addin" LongName="WpfDesign.addin" />
+											<File Source="..\..\AddIns\AddIns\DisplayBindings\WpfDesign\ICSharpCode.WpfDesign.AddIn.dll" Name="ICSHAR_1.DLL" Id="ICSharpCode.WpfDesign.AddIn.dll" LongName="ICSharpCode.WpfDesign.AddIn.dll" />
+											<File Source="..\..\AddIns\AddIns\DisplayBindings\WpfDesign\ICSharpCode.WpfDesign.Designer.dll" Name="ICSHAR_2.DLL" Id="ICSharpCode.WpfDesign.Designer.dll" LongName="ICSharpCode.WpfDesign.Designer.dll" />
+											<File Source="..\..\AddIns\AddIns\DisplayBindings\WpfDesign\ICSharpCode.WpfDesign.Designer.xml" Name="ICSHAR_1.XML" Id="ICSharpCode.WpfDesign.Designer.xml" LongName="ICSharpCode.WpfDesign.Designer.xml" />
+											<File Source="..\..\AddIns\AddIns\DisplayBindings\WpfDesign\ICSharpCode.WpfDesign.dll" Name="ICSHAR_3.DLL" Id="ICSharpCode.WpfDesign.dll" LongName="ICSharpCode.WpfDesign.dll" />
+											<File Source="..\..\AddIns\AddIns\DisplayBindings\WpfDesign\ICSharpCode.WpfDesign.XamlDom.dll" Name="ICSHAR_4.DLL" Id="ICSharpCode.WpfDesign.XamlDom.dll" LongName="ICSharpCode.WpfDesign.XamlDom.dll" />
+											<File Source="..\..\AddIns\AddIns\DisplayBindings\WpfDesign\ICSharpCode.WpfDesign.XamlDom.xml" Name="ICSHAR_2.XML" Id="ICSharpCode.WpfDesign.XamlDom.xml" LongName="ICSharpCode.WpfDesign.XamlDom.xml" />
+											<File Source="..\..\AddIns\AddIns\DisplayBindings\WpfDesign\ICSharpCode.WpfDesign.xml" Name="ICSHAR_3.XML" Id="ICSharpCode.WpfDesign.xml" LongName="ICSharpCode.WpfDesign.xml" />
+										</Component>
 									</Directory>
 								</Directory>
 								<Directory Id="MiscAddInsFolder" Name="Misc">

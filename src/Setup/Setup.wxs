@@ -308,6 +308,8 @@
 				<ComponentRef Id="ClassCanvasDll"/>
 				<ComponentRef Id="ClassEditorDll"/>
 				<ComponentRef Id="DiagramsDll"/>
+				<ComponentRef Id="XamlBindingFiles"/>
+				<ComponentRef Id="WpfDesignFiles"/>
 				
 				<ComponentRef Id="WorkflowDesignerAddin"/>
 				<ComponentRef Id="WorkflowDesignerDll"/>
