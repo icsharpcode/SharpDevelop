@@ -105,9 +105,8 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			// Include menu for current class and method
 			ICompilationUnit cu = null;
 			IMember callingMember = null;
-			if (rr != null) {
+			if (rr != null && rr.CallingMember != null) {
 				callingMember = rr.CallingMember;
-				cu = callingMember.DeclaringType.CompilationUnit;
 			} else {
 				ParseInformation parseInfo = ParserService.GetParseInformation(textEditorControl.FileName);
 				if (parseInfo != null) {
@@ -279,6 +278,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		}
 	}
 }
+
 
 
 

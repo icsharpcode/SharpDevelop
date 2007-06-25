@@ -38,6 +38,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
+		public int CaretLine {
+			get { return caretLine; }
+		}
+		
+		public int CaretColumn {
+			get { return caretColumn; }
+		}
+		
 		public ClassFinder(ParseInformation parseInfo, string fileContent, int offset)
 		{
 			caretLine = 0;
@@ -115,3 +123,4 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 	}
 }
+

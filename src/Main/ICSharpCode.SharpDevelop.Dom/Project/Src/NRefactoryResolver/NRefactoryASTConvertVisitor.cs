@@ -192,11 +192,18 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (from.Attributes.Count == 0) {
 				to.Attributes = DefaultAttribute.EmptyAttributeList;
 			} else {
-				to.Attributes = VisitAttributes(from.Attributes);
+				ICSharpCode.NRefactory.Location location = from.Attributes[0].StartLocation;
+				ClassFinder context;
+				if (to is IClass) {
+					context = new ClassFinder((IClass)to, location.Line, location.Column);
+				} else {
+					context = new ClassFinder(to.DeclaringType, location.Line, location.Column);
+				}
+				to.Attributes = VisitAttributes(from.Attributes, context);
 			}
 		}
 		
-		List<IAttribute> VisitAttributes(List<AST.AttributeSection> attributes)
+		List<IAttribute> VisitAttributes(List<AST.AttributeSection> attributes, ClassFinder context)
 		{
 			// TODO Expressions???
 			List<IAttribute> result = new List<IAttribute>();
@@ -240,7 +247,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				}
 				
 				foreach (AST.Attribute attribute in section.Attributes) {
-					result.Add(new DefaultAttribute(new AttributeReturnType(attribute.Name), target));
+					result.Add(new DefaultAttribute(new AttributeReturnType(context, attribute.Name), target));
 				}
 			}
 			return result;
@@ -642,3 +649,4 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		}
 	}
 }
+

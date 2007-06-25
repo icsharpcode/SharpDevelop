@@ -159,16 +159,22 @@ namespace Grunwald.BooBinding.CodeCompletion
 			m.TypeParameters = DefaultTypeParameter.EmptyTypeParameterList;
 		}
 		
-		void ConvertAttributes(AST.TypeMember node, AbstractDecoration c)
+		void ConvertAttributes(AST.TypeMember node, AbstractDecoration to)
 		{
 			if (node.Attributes.Count == 0) {
-				c.Attributes = DefaultAttribute.EmptyAttributeList;
+				to.Attributes = DefaultAttribute.EmptyAttributeList;
 			} else {
+				ClassFinder context;
+				if (to is IClass) {
+					context = new ClassFinder((IClass)to, node.LexicalInfo.Line, node.LexicalInfo.Column);
+				} else {
+					context = new ClassFinder(to.DeclaringType, node.LexicalInfo.Line, node.LexicalInfo.Column);
+				}
 				foreach (AST.Attribute a in node.Attributes) {
-					c.Attributes.Add(new DefaultAttribute(new AttributeReturnType(a.Name)));
+					to.Attributes.Add(new DefaultAttribute(new AttributeReturnType(context, a.Name)));
 				}
 			}
-			c.Documentation = node.Documentation;
+			to.Documentation = node.Documentation;
 		}
 		
 		void ConvertParameters(AST.ParameterDeclarationCollection parameters, DefaultMethod m)
@@ -497,3 +503,4 @@ namespace Grunwald.BooBinding.CodeCompletion
 		}
 	}
 }
+
