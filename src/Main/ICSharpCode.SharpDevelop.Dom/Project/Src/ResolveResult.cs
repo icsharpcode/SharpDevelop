@@ -32,6 +32,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 			this.resolvedType = resolvedType;
 		}
 		
+		public virtual bool IsValid {
+			get { return true; }
+		}
+		
 		/// <summary>
 		/// Gets the class that contained the expression used to get this ResolveResult.
 		/// Can be null when the class is unknown.
@@ -567,4 +571,26 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 	}
 	#endregion
+	
+	#region UnknownIdentifierResolveResult
+	public class UnknownIdentifierResolveResult : ResolveResult
+	{
+		string identifier;
+		
+		public UnknownIdentifierResolveResult(IClass callingClass, IMember callingMember, string identifier)
+			: base(callingClass, callingMember, null)
+		{
+			this.identifier = identifier;
+		}
+		
+		public string Identifier {
+			get { return identifier; }
+		}
+		
+		public override bool IsValid {
+			get { return false; }
+		}
+	}
+	#endregion
 }
+

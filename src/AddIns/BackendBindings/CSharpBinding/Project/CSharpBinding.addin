@@ -57,6 +57,12 @@
 		<CodeCompletionBinding id = "CSharp" extensions = ".cs" class = "CSharpBinding.CSharpCompletionBinding"/>
 	</Path>
 	
+	<!--
+	<Path name = "/AddIns/DefaultTextEditor/AdvancedHighlighter/C#">
+		<Class id = "CSharpHighlighter" class = "CSharpBinding.CSharpAdvancedHighlighter"/>
+	</Path>
+	-->
+	
 	<Path path = "/SharpDevelop/BackendBindings/ProjectOptions/C#">
 		<DialogPanel id    = "Application"
 		             label = "${res:Dialog.ProjectOptions.ApplicationSettings}"
@@ -105,3 +111,5 @@
 		                 class                = "CSharpBinding.CSharpLanguageBinding" />
 	</Path>
 </AddIn>
+
+

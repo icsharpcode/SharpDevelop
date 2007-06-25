@@ -3,12 +3,17 @@
 
 <SyntaxDefinition name = "C#" extensions = ".cs">
 	
+	<Environment>
+		<Custom name="TypeReference" bold="false" italic="false" color="#04ABAB" />
+		<Custom name="UnknownEntity" bold="false" italic="false" color="#AB0404" />
+	</Environment>
+	
 	<Properties>
 		<Property name="LineComment" value="//"/>
 	</Properties>
 	
 	<Digits name = "Digits" bold = "false" italic = "false" color = "DarkBlue"/>
-
+	
 	<RuleSets>
 		<RuleSet ignorecase="false">
 			<Delimiters>&amp;&lt;&gt;~!%^*()-+=|\#/{}[]:;"' ,	.?</Delimiters>
@@ -20,19 +25,19 @@
 			<Span name = "DocLineComment" rule = "DocCommentSet" bold = "false" italic = "false" color = "Green" stopateol = "true" noescapesequences="true">
 				<Begin bold = "false" italic = "false" color = "Gray">///@!/@</Begin>
 			</Span>
-		  
-		  	<Span name = "LineComment" rule = "CommentMarkerSet" bold = "false" italic = "false" color = "Green" stopateol = "true">
-			   	<Begin>//@!/@</Begin>
-		  	</Span>
-		  	<Span name = "LineComment2" rule = "CommentMarkerSet" bold = "false" italic = "false" color = "Green" stopateol = "true">
-			   	<Begin>////</Begin>
-		  	</Span>
-		  
+			
+			<Span name = "LineComment" rule = "CommentMarkerSet" bold = "false" italic = "false" color = "Green" stopateol = "true">
+				<Begin>//@!/@</Begin>
+			</Span>
+			<Span name = "LineComment2" rule = "CommentMarkerSet" bold = "false" italic = "false" color = "Green" stopateol = "true">
+				<Begin>////</Begin>
+			</Span>
+			
 			<Span name = "BlockComment" rule = "CommentMarkerSet" bold = "false" italic = "false" color = "Green" stopateol = "false">
 				<Begin>/*</Begin>
 				<End>*/</End>
 			</Span>
-		  	
+			
 			<Span name = "String" bold = "false" italic = "false" color = "Blue" stopateol = "true" escapecharacter="\">
 				<Begin>"</Begin>
 				<End>"</End>
@@ -73,9 +78,9 @@
 				<Key word = "~" />
 				<Key word = "!" />
 				<Key word = "|" />
-			    <Key word = "&amp;" />
-		  	</KeyWords>
-		  
+				<Key word = "&amp;" />
+			</KeyWords>
+			
 			<KeyWords name = "AccessKeywords" bold="true" italic="false" color="Black">
 				<Key word = "this" />
 				<Key word = "base" />
@@ -91,8 +96,8 @@
 				<Key word = "false" />
 				<Key word = "stackalloc" />
 			</KeyWords>
-		  
-		
+			
+			
 			<KeyWords name = "SelectionStatements" bold="true" italic="false" color="Blue">
 				<Key word = "else" />
 				<Key word = "if" />
@@ -100,7 +105,7 @@
 				<Key word = "case" />
 				<Key word = "default" />
 			</KeyWords>
-		
+			
 			<KeyWords name = "IterationStatements" bold="true" italic="false" color="Blue">
 				<Key word = "do" />
 				<Key word = "for" />
@@ -108,7 +113,7 @@
 				<Key word = "in" />
 				<Key word = "while" />
 			</KeyWords>
-		
+			
 			<KeyWords name = "JumpStatements" bold="false" italic="false" color="Navy">
 				<Key word = "break" />
 				<Key word = "continue" />
@@ -129,12 +134,12 @@
 				<Key word = "catch" />
 				<Key word = "finally" />
 			</KeyWords>
-		  
+			
 			<KeyWords name = "CheckedUncheckedStatements" bold="true" italic="false" color="DarkGray">
 				<Key word = "checked" />
 				<Key word = "unchecked" />
 			</KeyWords>
-		
+			
 			<KeyWords name = "UnsafeFixedStatements" bold="false" italic="false" color="Olive">
 				<Key word = "fixed" />
 				<Key word = "unsafe" />
@@ -156,88 +161,88 @@
 				<Key word = "uint" />
 				<Key word = "ushort" />
 				<Key word = "ulong" />
-		  	</KeyWords>
-		  
-		  	<KeyWords name = "ReferenceTypes" bold="false" italic="false" color="Red">
-			    <Key word = "class" />
-			    <Key word = "interface" />
-			    <Key word = "delegate" />
-			    <Key word = "object" />
-			    <Key word = "string" />
-		  	</KeyWords>
-		  
-		  	<KeyWords name = "Void" bold="false" italic="false" color="Red">
-			    <Key word = "void" />
-		  	</KeyWords>
-		  
-		  	<KeyWords name = "ConversionKeyWords" bold="true" italic="false" color="Pink">
-			    <Key word = "explicit" />
-			    <Key word = "implicit" />
-			    <Key word = "operator" />
-		  	</KeyWords>
-		  
+			</KeyWords>
+			
+			<KeyWords name = "ReferenceTypes" bold="false" italic="false" color="Red">
+				<Key word = "class" />
+				<Key word = "interface" />
+				<Key word = "delegate" />
+				<Key word = "object" />
+				<Key word = "string" />
+			</KeyWords>
+			
+			<KeyWords name = "Void" bold="false" italic="false" color="Red">
+				<Key word = "void" />
+			</KeyWords>
+			
+			<KeyWords name = "ConversionKeyWords" bold="true" italic="false" color="Pink">
+				<Key word = "explicit" />
+				<Key word = "implicit" />
+				<Key word = "operator" />
+			</KeyWords>
+			
 			<KeyWords name = "MethodParameters" bold="true" italic="false" color="DeepPink">
-			    <Key word = "params" />
-			    <Key word = "ref" />
-			    <Key word = "out" />
-		  	</KeyWords>
-		  
-		  	<KeyWords name = "Modifiers" bold="false" italic="false" color="Brown">
-			    <Key word = "abstract" />
-			    <Key word = "const" />
-			    <Key word = "event" />
-			    <Key word = "extern" />
-			    <Key word = "override" />
-			    <Key word = "readonly" />
-			    <Key word = "sealed" />
-			    <Key word = "static" />
-			    <Key word = "virtual" />
+				<Key word = "params" />
+				<Key word = "ref" />
+				<Key word = "out" />
+			</KeyWords>
+			
+			<KeyWords name = "Modifiers" bold="false" italic="false" color="Brown">
+				<Key word = "abstract" />
+				<Key word = "const" />
+				<Key word = "event" />
+				<Key word = "extern" />
+				<Key word = "override" />
+				<Key word = "readonly" />
+				<Key word = "sealed" />
+				<Key word = "static" />
+				<Key word = "virtual" />
 				<Key word = "volatile" />
-		  	</KeyWords>
-		  
-		  	<KeyWords name = "AccessModifiers" bold="true" italic="false" color="Blue">
+			</KeyWords>
+			
+			<KeyWords name = "AccessModifiers" bold="true" italic="false" color="Blue">
 				<Key word = "public" />
 				<Key word = "protected" />
 				<Key word = "private" />
 				<Key word = "internal" />
-		  	</KeyWords>
-		  
+			</KeyWords>
+			
 			<KeyWords name = "NameSpaces" bold="true" italic="false" color="Green">
-			    <Key word = "namespace" />
-			    <Key word = "using" />
+				<Key word = "namespace" />
+				<Key word = "using" />
 			</KeyWords>
-		  
+			
 			<KeyWords name = "LockKeyWord" bold="false" italic="false" color="DarkViolet">
-			    <Key word = "lock" />
-		  	</KeyWords>
-		  
-			<KeyWords name = "GetSet" bold="false" italic="false" color="SaddleBrown">
-			    <Key word = "get" />
-			    <Key word = "set" />
-			    <Key word = "add" />
-			    <Key word = "remove" />
+				<Key word = "lock" />
 			</KeyWords>
-		  
+			
+			<KeyWords name = "GetSet" bold="false" italic="false" color="SaddleBrown">
+				<Key word = "get" />
+				<Key word = "set" />
+				<Key word = "add" />
+				<Key word = "remove" />
+			</KeyWords>
+			
 			<KeyWords name = "Literals" bold="true" italic="false" color="Black">
-			    <Key word = "null" />
-			    <Key word = "value" />
+				<Key word = "null" />
+				<Key word = "value" />
 			</KeyWords>
 		</RuleSet>
 		
 		<RuleSet name = "CommentMarkerSet" ignorecase = "false">
-		  	<Delimiters>&lt;&gt;~!@%^*()-+=|\#/{}[]:;"' ,	.?</Delimiters>
+			<Delimiters>&lt;&gt;~!@%^*()-+=|\#/{}[]:;"' ,	.?</Delimiters>
 			<KeyWords name = "ErrorWords" bold="true" italic="false" color="Red">
 				<Key word = "TODO" />
 				<Key word = "FIXME" />
-	 	 	</KeyWords>
+			</KeyWords>
 			<KeyWords name = "WarningWords" bold="true" italic="false" color="#EEE0E000">
 				<Key word = "HACK" />
 				<Key word = "UNDONE" />
-	 	 	</KeyWords>
+			</KeyWords>
 		</RuleSet>
 		
 		<RuleSet name = "DocCommentSet" ignorecase = "false">
-		  	<Delimiters>&lt;&gt;~!@%^*()-+=|\#/{}[]:;"' ,	.?</Delimiters>
+			<Delimiters>&lt;&gt;~!@%^*()-+=|\#/{}[]:;"' ,	.?</Delimiters>
 			
 			<Span name = "XmlTag" rule = "XmlDocSet" bold = "false" italic = "false" color = "Gray" stopateol = "true">
 				<Begin>&lt;</Begin>
@@ -245,13 +250,13 @@
 			</Span>
 			
 			<KeyWords name = "ErrorWords" bold="true" italic="false" color="Red">
-				    <Key word = "TODO" />
-				    <Key word = "FIXME" />
+				<Key word = "TODO" />
+				<Key word = "FIXME" />
 			</KeyWords>
 			
 			<KeyWords name = "WarningWords" bold="true" italic="false" color="#EEE0E000">
-				    <Key word = "HACK" />
-				    <Key word = "UNDONE" />
+				<Key word = "HACK" />
+				<Key word = "UNDONE" />
 			</KeyWords>
 		</RuleSet>
 		
@@ -275,45 +280,46 @@
 		</RuleSet>
 		
 		<RuleSet name = "XmlDocSet" ignorecase = "false">
-		  	<Delimiters>&lt;&gt;~!@%^*()-+=|\#/{}[]:;"' ,	.?</Delimiters>
-	  	    
+			<Delimiters>&lt;&gt;~!@%^*()-+=|\#/{}[]:;"' ,	.?</Delimiters>
+			
 			<Span name = "String" bold = "true" italic = "false" color = "Silver" stopateol = "true">
 				<Begin>"</Begin>
 				<End>"</End>
 			</Span>
-	  	   
+			
 			
 			<KeyWords name = "Punctuation" bold = "true" italic = "false" color = "Gray">
 				<Key word = "/" />
 				<Key word = "|" />
 				<Key word = "=" />
-		  	</KeyWords>
-		  	
-		 	<KeyWords name = "SpecialComment" bold="true" italic="false" color="Gray">
-				    <Key word = "c" />
-				    <Key word = "code" />
-				    <Key word = "example" />
-				    <Key word = "exception" />
-				    <Key word = "list" />
-				    <Key word = "para" />
-				    <Key word = "param" />
-				    <Key word = "paramref" />
-				    <Key word = "permission" />
-				    <Key word = "remarks" />
-				    <Key word = "returns" />
-				    <Key word = "see" />
-				    <Key word = "seealso" />
-				    <Key word = "summary" />
-				    <Key word = "value" />
-				    
-				    <Key word = "type" />
-				    <Key word = "name" />
-				    <Key word = "cref" />
-				    <Key word = "item" />
-				    <Key word = "term" />
-				    <Key word = "description" />
-				    <Key word = "listheader" />
-	 	 	</KeyWords>
+			</KeyWords>
+			
+			<KeyWords name = "SpecialComment" bold="true" italic="false" color="Gray">
+				<Key word = "c" />
+				<Key word = "code" />
+				<Key word = "example" />
+				<Key word = "exception" />
+				<Key word = "list" />
+				<Key word = "para" />
+				<Key word = "param" />
+				<Key word = "paramref" />
+				<Key word = "permission" />
+				<Key word = "remarks" />
+				<Key word = "returns" />
+				<Key word = "see" />
+				<Key word = "seealso" />
+				<Key word = "summary" />
+				<Key word = "value" />
+				
+				<Key word = "type" />
+				<Key word = "name" />
+				<Key word = "cref" />
+				<Key word = "item" />
+				<Key word = "term" />
+				<Key word = "description" />
+				<Key word = "listheader" />
+			</KeyWords>
 		</RuleSet>
 	</RuleSets>
 </SyntaxDefinition>
+

@@ -417,6 +417,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				ResolveResult result = ResolveIdentifier(((IdentifierExpression)expr).Identifier, expr.StartLocation, context);
 				if (result != null)
 					return result;
+				else
+					return new UnknownIdentifierResolveResult(callingClass, callingMember, ((IdentifierExpression)expr).Identifier);
 			} else if (expr is TypeReferenceExpression) {
 				type = TypeVisitor.CreateReturnType(((TypeReferenceExpression)expr).TypeReference, this);
 				if (type != null) {
@@ -1185,3 +1187,4 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		}
 	}
 }
+

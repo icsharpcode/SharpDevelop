@@ -94,19 +94,24 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			} else if (rr is LocalResolveResult) {
 				item = MakeItem((LocalResolveResult)rr, caretLine + 1 == ((LocalResolveResult)rr).Field.Region.BeginLine);
 				insertIndex = 0;	// Insert local variable menu item at the topmost position.
+			} else if (rr is UnknownIdentifierResolveResult) {
+				item = MakeItemForResolveError((UnknownIdentifierResolveResult)rr, expressionResult.Context, textArea);
+				insertIndex = 0;	// Insert menu item at the topmost position.
 			}
 			if (item != null) {
 				resultItems.Insert(insertIndex, item);
 			}
 			
 			// Include menu for current class and method
+			ICompilationUnit cu = null;
 			IMember callingMember = null;
 			if (rr != null) {
 				callingMember = rr.CallingMember;
+				cu = callingMember.DeclaringType.CompilationUnit;
 			} else {
 				ParseInformation parseInfo = ParserService.GetParseInformation(textEditorControl.FileName);
 				if (parseInfo != null) {
-					ICompilationUnit cu = parseInfo.MostRecentCompilationUnit;
+					cu = parseInfo.MostRecentCompilationUnit;
 					if (cu != null) {
 						IClass callingClass = cu.GetInnermostClass(caretLine + 1, textArea.Caret.Column + 1);
 						callingMember = GetCallingMember(callingClass, caretLine + 1, textArea.Caret.Column + 1);
@@ -126,6 +131,48 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			} else {
 				resultItems.Add(new MenuSeparator());
 				return resultItems.ToArray();
+			}
+		}
+		
+		ToolStripMenuItem MakeItemForResolveError(UnknownIdentifierResolveResult rr, ExpressionContext context, TextArea textArea)
+		{
+			if (context != null && context.IsTypeContext) {
+				return MakeItemForUnknownClass(rr.CallingClass, rr.Identifier, textArea);
+			}
+			return null;
+		}
+		
+		ToolStripMenuItem MakeItemForUnknownClass(IClass callingClass, string unknownClassName, TextArea textArea)
+		{
+			if (callingClass == null)
+				return null;
+			IProjectContent pc = callingClass.ProjectContent;
+			if (!pc.Language.RefactoringProvider.IsEnabledForFile(callingClass.CompilationUnit.FileName))
+				return null;
+			ToolStripMenuItem item = MakeItemInternal(unknownClassName, ClassBrowserIconService.GotoArrowIndex, callingClass.CompilationUnit, DomRegion.Empty);
+			List<IClass> searchResults = new List<IClass>();
+			SearchAllClassesWithName(searchResults, pc, unknownClassName, pc.Language);
+			foreach (IProjectContent rpc in pc.ReferencedContents) {
+				SearchAllClassesWithName(searchResults, rpc, unknownClassName, pc.Language);
+			}
+			foreach (IClass c in searchResults) {
+				string newNamespace = c.Namespace;
+				ToolStripMenuItem subItem = new ToolStripMenuItem("using " + newNamespace, ClassBrowserIconService.ImageList.Images[ClassBrowserIconService.NamespaceIndex]);
+				item.DropDownItems.Add(subItem);
+				subItem.Click += delegate {
+					NamespaceRefactoringService.AddUsingDeclaration(callingClass.CompilationUnit, textArea.Document, newNamespace, true);
+					textArea.MotherTextEditorControl.Refresh();
+				};
+			}
+			return item;
+		}
+		
+		void SearchAllClassesWithName(List<IClass> searchResults, IProjectContent pc, string name, LanguageProperties language)
+		{
+			foreach (string ns in pc.NamespaceNames) {
+				IClass c = pc.GetClass(ns + "." + name, 0, language, false);
+				if (c != null)
+					searchResults.Add(c);
 			}
 		}
 		
@@ -194,7 +241,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			//item.DropDown.Items.Add(titleItem);
 			//item.DropDown.Items.Add(new ToolStripSeparator());
 			
-			if (cu.FileName != null && !region.IsEmpty) {
+			if (cu != null && cu.FileName != null && !region.IsEmpty) {
 				ToolStripMenuItem gotoDefinitionItem = new ToolStripMenuItem(StringParser.Parse("${res:ICSharpCode.NAntAddIn.GotoDefinitionMenuLabel}"),
 				                                                             ClassBrowserIconService.ImageList.Images[ClassBrowserIconService.GotoArrowIndex]);
 				gotoDefinitionItem.ShortcutKeys = Keys.Control | Keys.Enter;
@@ -232,3 +279,6 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		}
 	}
 }
+
+
+

@@ -26,7 +26,7 @@ class Main<T> : BaseType
 	void Method() {
 		simple += 1;
 		int a = 0;
-		((CastTo)castTarget).MethodOnCastExpression(parameter);
+		((CastTo)castTarget).MethodOnCastExpression(par.a, par.b);
 		int b = 0;
 		return ((CastTo)castTarget).PropertyOnCastExpression;
 	}
@@ -61,7 +61,9 @@ class Main {
 			if (pos < 0) Assert.Fail("location not found in program");
 			ExpressionResult er = ef.FindFullExpression(program, pos);
 			Assert.AreEqual(expectedExpression, er.Expression);
-			Assert.AreEqual(expectedContext.ToString(), er.Context.ToString());
+			if (expectedContext != null) {
+				Assert.AreEqual(expectedContext.ToString(), er.Context.ToString());
+			}
 		}
 		
 		void FindExpr(string program, string location, string expectedExpression, ExpressionContext expectedContext)
@@ -110,24 +112,21 @@ class Main {
 		}
 		
 		[Test]
-		[Ignore("Context inside methods not yet implemented")]
 		public void MethodOnCast()
 		{
-			FindFull(document, "thodOnCastExpression(para", "((CastTo)castTarget).MethodOnCastExpression(parameter)", ExpressionContext.Default);
+			FindFull(document, "thodOnCastExpression(pa", "((CastTo)castTarget).MethodOnCastExpression(par.a, par.b)", null);
 		}
 		
 		[Test]
-		[Ignore("Context inside methods not yet implemented")]
 		public void PropertyOnCast()
 		{
-			FindFull(document, "pertyOnCastExpression", "((CastTo)castTarget).PropertyOnCastExpression", ExpressionContext.Default);
+			FindFull(document, "pertyOnCastExpression", "((CastTo)castTarget).PropertyOnCastExpression", null);
 		}
 		
 		[Test]
-		[Ignore("Context inside methods not yet implemented")]
 		public void PropertyOnCastInForeachLoop()
 		{
-			FindFull(program2, "pertyOnCastExpression", "((CastTo)castTarget).PropertyOnCastExpression", ExpressionContext.Default);
+			FindFull(program2, "pertyOnCastExpression", "((CastTo)castTarget).PropertyOnCastExpression", null);
 		}
 		
 		[Test]
@@ -204,3 +203,4 @@ class Main {
 		}
 	}
 }
+

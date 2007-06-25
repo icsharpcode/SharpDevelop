@@ -62,6 +62,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return false;
 			}
 		}
+		
+		public virtual bool IsTypeContext {
+			get { return false; }
+		}
 		#endregion
 		
 		#region C# specific contexts (public static fields) * MOVE TO ANOTHER CLASS *
@@ -277,6 +281,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 				}
 			}
 			
+			public override bool IsTypeContext {
+				get { return true; }
+			}
+			
 			public override string ToString()
 			{
 				if (baseClass != null)
@@ -461,3 +469,4 @@ namespace ICSharpCode.SharpDevelop.Dom
 		#endregion
 	}
 }
+

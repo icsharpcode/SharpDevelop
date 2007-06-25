@@ -9,6 +9,7 @@ using System;
 using System.IO;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Dom.VBNet;
 using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -36,7 +37,7 @@ namespace VBNetBinding.Parser
 		
 		public IExpressionFinder CreateExpressionFinder(string fileName)
 		{
-			return new ExpressionFinder();
+			return new VBExpressionFinder();
 		}
 		
 		public bool CanParse(string fileName)
@@ -139,3 +140,4 @@ namespace VBNetBinding.Parser
 		///////// IParser Interface END
 	}
 }
+

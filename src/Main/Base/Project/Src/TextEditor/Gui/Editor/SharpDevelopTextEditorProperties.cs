@@ -62,7 +62,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		}
 		public IndentStyle IndentStyle {
 			get {
-				return (IndentStyle)properties.Get("IndentStyle", IndentStyle.Smart);
+				return properties.Get("IndentStyle", IndentStyle.Smart);
 			}
 			set {
 				properties.Set("IndentStyle", value);
@@ -71,7 +71,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		
 		public DocumentSelectionMode DocumentSelectionMode {
 			get {
-				return (DocumentSelectionMode)properties.Get("DocumentSelectionMode", DocumentSelectionMode.Normal);
+				return properties.Get("DocumentSelectionMode", DocumentSelectionMode.Normal);
 			}
 			set {
 				properties.Set("DocumentSelectionMode", value);
@@ -132,7 +132,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				return properties.Get("ShowTabs", false);
 			}
 			set {
-				properties.Get("ShowTabs", value);
+				properties.Set("ShowTabs", value);
 			}
 		}
 		public bool ShowEOLMarker {
@@ -250,7 +250,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		}
 		public LineViewerStyle LineViewerStyle {
 			get {
-				return (LineViewerStyle)properties.Get("LineViewerStyle", LineViewerStyle.None);
+				return properties.Get("LineViewerStyle", LineViewerStyle.None);
 			}
 			set {
 				properties.Set("LineViewerStyle", value);
@@ -258,7 +258,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		}
 		public string LineTerminator {
 			get {
-				LineTerminatorStyle lineTerminatorStyle = (LineTerminatorStyle)PropertyService.Get("SharpDevelop.LineTerminatorStyle", LineTerminatorStyle.Windows);
+				LineTerminatorStyle lineTerminatorStyle = PropertyService.Get("SharpDevelop.LineTerminatorStyle", LineTerminatorStyle.Windows);
 				switch (lineTerminatorStyle) {
 					case LineTerminatorStyle.Windows:
 						return "\r\n";
@@ -332,3 +332,4 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		}
 	}
 }
+

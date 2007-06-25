@@ -30,10 +30,17 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get;
 		}
 		
+		/// <summary>
+		/// Gets the list of namespaces defined in this project content. Does not include namespaces from
+		/// referenced project contents.
+		/// </summary>
 		ICollection<string> NamespaceNames {
 			get;
 		}
 		
+		/// <summary>
+		/// Gets the list of referenced project contents.
+		/// </summary>
 		ICollection<IProjectContent> ReferencedContents {
 			get;
 		}
@@ -167,3 +174,4 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 	}
 }
+

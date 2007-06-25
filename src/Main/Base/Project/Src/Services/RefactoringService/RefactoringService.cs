@@ -205,6 +205,10 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				
 				if (expressionFinder == null) {
 					expressionFinder = ParserService.GetExpressionFinder(fileName);
+					if (expressionFinder == null) {
+						// ignore file if we cannot get an expression finder
+						return;
+					}
 				}
 				ExpressionResult expr = expressionFinder.FindFullExpression(fileContent, match.ResolvePosition);
 				if (expr.Expression != null) {
@@ -523,3 +527,4 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		#endregion
 	}
 }
+

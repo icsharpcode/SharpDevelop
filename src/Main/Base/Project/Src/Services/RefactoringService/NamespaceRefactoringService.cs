@@ -67,7 +67,16 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			}
 			
 			// put empty line after last System namespace
-			if (sort && newUsings.Count > 1 && newUsings[0].Usings.Count > 0) {
+			if (sort) {
+				PutEmptyLineAfterLastSystemNamespace(newUsings);
+			}
+			
+			cu.ProjectContent.Language.CodeGenerator.ReplaceUsings(new TextEditorDocument(document), cu.Usings, newUsings);
+		}
+		
+		static void PutEmptyLineAfterLastSystemNamespace(List<IUsing> newUsings)
+		{
+			if (newUsings.Count > 1 && newUsings[0].Usings.Count > 0) {
 				bool inSystem = IsSystemNamespace(newUsings[0].Usings[0]);
 				int inSystemCount = 1;
 				for (int i = 1; inSystem && i < newUsings.Count; i++) {
@@ -81,8 +90,36 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 					}
 				}
 			}
+		}
+		
+		public static void AddUsingDeclaration(ICompilationUnit cu, IDocument document, string newNamespace, bool sortExistingUsings)
+		{
+			IUsing newUsingDecl = new DefaultUsing(cu.ProjectContent);
+			newUsingDecl.Usings.Add(newNamespace);
 			
+			List<IUsing> newUsings = new List<IUsing>(cu.Usings);
+			if (sortExistingUsings) {
+				newUsings.Sort(CompareUsings);
+			}
+			bool inserted = false;
+			for (int i = 0; i < newUsings.Count; i++) {
+				if (newUsings[i].Usings.Count >= 1
+				    && cu.ProjectContent.Language.NameComparer.Compare(newNamespace, newUsings[i].Usings[0]) <= 0)
+				{
+					newUsings.Insert(i, newUsingDecl);
+					inserted = true;
+					break;
+				}
+			}
+			if (!inserted) {
+				newUsings.Add(newUsingDecl);
+			}
+			if (sortExistingUsings) {
+				PutEmptyLineAfterLastSystemNamespace(newUsings);
+			}
 			cu.ProjectContent.Language.CodeGenerator.ReplaceUsings(new TextEditorDocument(document), cu.Usings, newUsings);
 		}
 	}
 }
+
+

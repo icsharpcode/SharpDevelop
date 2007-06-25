@@ -40,7 +40,6 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 			throw new NotSupportedException();
 		}
 		
-		
 		public virtual bool SupportsCreateNewFileLikeExisting {
 			get {
 				return false;
@@ -72,3 +71,5 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 		}
 	}
 }
+
+

@@ -435,7 +435,41 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 		
 		public ExpressionResult FindFullExpression(string text, int offset)
 		{
+			return FindFullExpression(text, offset, null);
+		}
+		
+		/// <summary>
+		/// Like FindFullExpression, but text is a code snippet inside a type declaration.
+		/// </summary>
+		public ExpressionResult FindFullExpressionInTypeDeclaration(string text, int offset)
+		{
+			Frame root = new Frame(null);
+			root.childType = FrameType.TypeDecl;
+			Frame typeDecl = new Frame(root);
+			return FindFullExpression(text, offset, typeDecl);
+		}
+		
+		
+		/// <summary>
+		/// Like FindFullExpression, but text is a code snippet inside a method body.
+		/// </summary>
+		public ExpressionResult FindFullExpressionInMethod(string text, int offset)
+		{
+			Frame root = new Frame(null);
+			root.childType = FrameType.TypeDecl;
+			Frame typeDecl = new Frame(root);
+			typeDecl.childType = FrameType.Statements;
+			Frame methodBody = new Frame(typeDecl);
+			return FindFullExpression(text, offset, methodBody);
+		}
+		
+		ExpressionResult FindFullExpression(string text, int offset, Frame initialFrame)
+		{
 			Init(text, offset);
+			
+			if (initialFrame != null) {
+				frame = initialFrame;
+			}
 			
 			const int SEARCHING_OFFSET = 0;
 			const int SEARCHING_END = 1;
@@ -486,9 +520,11 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 						} else if (resultFrame.bracketType == '<' && token.kind == Tokens.GreaterThan) {
 							// expression was a type argument
 							resultContext = ExpressionContext.Type;
+							return new ExpressionResult(text.Substring(resultStartOffset, resultEndOffset - resultStartOffset), resultContext);
 						}
-						
-						return new ExpressionResult(text.Substring(resultStartOffset, resultEndOffset - resultStartOffset), resultContext);
+						if (frame == resultFrame || resultFrame.type == FrameType.Popped) {
+							return new ExpressionResult(text.Substring(resultStartOffset, resultEndOffset - resultStartOffset), resultContext);
+						}
 					} else {
 						resultEndOffset = LocationToOffset(token.EndLocation);
 					}
@@ -689,3 +725,4 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 		#endregion
 	}
 }
+
