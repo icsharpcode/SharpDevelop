@@ -121,13 +121,13 @@
     <ProjectReference Include="..\..\WpfDesign.XamlDom\Project\WpfDesign.XamlDom.csproj">
       <Project>{88DA149F-21B2-48AB-82C4-28FB6BDFD783}</Project>
       <Name>WpfDesign.XamlDom</Name>
-      <Private>False</Private>
+      <Private>True</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\WpfDesign\Project\WpfDesign.csproj">
       <Project>{66A378A1-E9F4-4AD5-8946-D0EC06C2902F}</Project>
       <Name>WpfDesign</Name>
       <SpecificVersion>False</SpecificVersion>
-      <Private>False</Private>
+      <Private>True</Private>
     </ProjectReference>
     <Page Include="Controls\PropertyEditor\PropertyEditor.xaml">
       <DependentUpon>PropertyEditor.cs</DependentUpon>
