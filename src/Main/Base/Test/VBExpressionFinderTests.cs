@@ -73,5 +73,33 @@ End Class
 		{
 			FindFull(program1, "arName", "loopVarName", ExpressionContext.Default);
 		}
+		
+		#region Old Tests
+		void OldTest(string expr, int offset)
+		{
+			string fulltext = "Test\n " + expr + ".AnotherField \n TestEnde";
+			Assert.AreEqual(expr, ef.FindFullExpression(fulltext, 6 + offset).Expression);
+		}
+		
+		[Test]
+		public void FieldReference()
+		{
+			OldTest("abc", 1);
+			OldTest("abc.def", 6);
+		}
+		
+		[Test]
+		public void WithFieldReference()
+		{
+			OldTest(".abc", 2);
+			OldTest(".abc.def", 7);
+		}
+		
+		[Test]
+		public void MethodCall()
+		{
+			OldTest("abc.Method().Method()", 16);
+		}
+		#endregion
 	}
 }

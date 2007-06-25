@@ -21,12 +21,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 			this.name = name;
 		}
 		
-		public override string Name {
-			get { return name; }
-		}
-		
 		public override IReturnType BaseType {
-			get { return null; }
+			get {
+				
+				return null;
+			}
 		}
 	}
 }
+

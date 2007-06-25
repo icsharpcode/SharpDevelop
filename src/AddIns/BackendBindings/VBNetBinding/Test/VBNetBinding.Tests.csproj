@@ -41,9 +41,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ExpressionFinderTest.cs" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\Project\VBNetBinding.csproj">
       <Project>{BF38FB72-B380-4196-AF8C-95749D726C61}</Project>
       <Name>VBNetBinding</Name>
