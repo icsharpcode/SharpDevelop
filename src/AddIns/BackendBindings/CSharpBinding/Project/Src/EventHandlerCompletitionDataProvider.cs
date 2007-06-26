@@ -26,13 +26,15 @@ namespace CSharpBinding
 	{
 		string expression;
 		ResolveResult resolveResult;
+		IReturnType resolvedReturnType;
 		IClass resolvedClass;
 		
 		public EventHandlerCompletitionDataProvider(string expression, ResolveResult resolveResult)
 		{
 			this.expression = expression;
 			this.resolveResult = resolveResult;
-			this.resolvedClass = resolveResult.ResolvedType.GetUnderlyingClass();
+			this.resolvedReturnType = resolveResult.ResolvedType;
+			this.resolvedClass = resolvedReturnType.GetUnderlyingClass();
 		}
 		
 		/// <summary>
@@ -41,7 +43,7 @@ namespace CSharpBinding
 		public override ICompletionData[] GenerateCompletionData(string fileName, TextArea textArea, char charTyped)
 		{
 			List<ICompletionData> completionData = new List<ICompletionData>();
-						
+			
 			// delegate {  }
 			completionData.Add(new DelegateCompletionData("delegate {  };", 3,
 			                                              "${res:CSharpBinding.InsertAnonymousMethod}"));
@@ -52,12 +54,38 @@ namespace CSharpBinding
 			StringBuilder parameterString = new StringBuilder();
 			if (invoke != null) {
 				
+				IParameter parameter;
+				ConstructedReturnType constructedReturnType;
+				// HACK: store the EventHandler type name so that we can manipulate it in the event of a generic handler (ie. with TEventArgs)
+				string eventHandlerFullyQualifiedTypeName = resolvedClass.FullyQualifiedName;
+				string eventHandlerTypeName = resolvedReturnType.Name;
+				
 				// build the parameter string
 				for (int i = 0; i < invoke.Parameters.Count; ++i) {
 					if (i > 0) {
 						parameterString.Append(", ");
 					}
-					parameterString.Append(ambience.Convert(invoke.Parameters[i]));
+					
+					// HACK: attempt to resolve a generic type from TEventArgs into something more useful.
+					//  ?? : should this already be handled by NRefactoryResolver or the Parser?
+					parameter = invoke.Parameters[i];
+					if (parameter.ReturnType.GetType() == typeof(GenericReturnType)
+					    && resolvedReturnType.IsConstructedReturnType) {
+						
+						constructedReturnType = resolvedReturnType.CastToConstructedReturnType();
+						
+						if (constructedReturnType != null
+						    && constructedReturnType.TypeArgumentCount > 0) {
+							
+							parameter = new DefaultParameter(parameter.Name, constructedReturnType.TypeArguments[0], DomRegion.Empty);
+
+							// add more detail to the names.
+							eventHandlerFullyQualifiedTypeName = eventHandlerFullyQualifiedTypeName + "<" + parameter.ReturnType.FullyQualifiedName+">";
+							eventHandlerTypeName = eventHandlerTypeName + "<" + parameter.ReturnType.Name + ">";
+						}
+					}
+					parameterString.Append(ambience.Convert(parameter));
+					
 				}
 				
 				// delegate(object sender, EventArgs e) {  };
@@ -71,14 +99,14 @@ namespace CSharpBinding
 				MemberResolveResult mrr = resolveResult as MemberResolveResult;
 				DefaultEvent eventMember = (mrr != null ? mrr.ResolvedMember as DefaultEvent : null);
 				
-				// build the new handler name
+				// ...build the new handler name...
 				StringBuilder newHandlerNameBuilder = new StringBuilder(callingClass.Name).Append("_").Append(eventMember != null ? eventMember.Name : "eventName");
 
-				// build the completion text
-				StringBuilder newHandlerTextBuilder = new StringBuilder("new ").Append(resolveResult.ResolvedType.Name).Append("(");
+				// ...build the completion text...
+				StringBuilder newHandlerTextBuilder = new StringBuilder("new ").Append(eventHandlerTypeName).Append("(");
 				newHandlerTextBuilder.Append(newHandlerNameBuilder.ToString()).Append(");");
 
-				// build the optional new method text
+				// ...build the optional new method text...
 				StringBuilder newHandlerCodeBuilder = new StringBuilder();
 				newHandlerCodeBuilder.AppendLine().AppendLine();
 				newHandlerCodeBuilder.Append(ambience.Convert(invoke.ReturnType)).Append(" ").Append(newHandlerNameBuilder.ToString());
@@ -86,14 +114,16 @@ namespace CSharpBinding
 				newHandlerCodeBuilder.AppendLine("{");
 				newHandlerCodeBuilder.Append("throw new NotImplementedException(\"").Append(ResourceService.GetString("CSharpBinding.MethodIsNotImplemented")).AppendLine("\");");
 				newHandlerCodeBuilder.Append("}");
+
+				// ...and add it to the completionData.
 				completionData.Add(new NewEventHandlerCompletionData(
 					newHandlerTextBuilder.ToString(),
-				    2+newHandlerNameBuilder.Length,
-				    newHandlerNameBuilder.Length,
-				    "delegate " + resolvedClass.FullyQualifiedName + "(" + newHandlerNameBuilder.ToString() + ")" +"\n"+ResourceService.GetString("CSharpBinding.GenerateNewHandlerInstructions") + "\n" + CodeCompletionData.GetDocumentation(resolvedClass.Documentation),
-				    resolveResult,
-				    newHandlerCodeBuilder.ToString()
-				   ));
+					2+newHandlerNameBuilder.Length,
+					newHandlerNameBuilder.Length,
+					"delegate " + eventHandlerFullyQualifiedTypeName + "(" + newHandlerNameBuilder.ToString() + ")" +"\n"+ResourceService.GetString("CSharpBinding.GenerateNewHandlerInstructions") + "\n" + CodeCompletionData.GetDocumentation(resolvedClass.Documentation),
+					resolveResult,
+					newHandlerCodeBuilder.ToString()
+				));
 				
 				IClass eventReturnType = invoke.ReturnType.GetUnderlyingClass();
 				IClass[] eventParameters = new IClass[invoke.Parameters.Count];
@@ -181,16 +211,20 @@ namespace CSharpBinding
 				textArea.SelectionManager.SetSelection(
 					textArea.Document.OffsetToPosition(selectBegin),
 					textArea.Document.OffsetToPosition(selectBegin + this.selectionLength));
-				
-				// TODO: skip this step if the method already exists, or change behavior so that it moves the caret inside the existing method.
-				// attatch our keydown filter to catch the next character pressed
-				this.textArea = textArea;
+
 				// TODO: refactor ToolTip architecture to allow for showing a tooltip relative to the current caret position so that we can show our "press TAB to create this method" text as a text-based tooltip
+				
+				// TODO: skip the auto-insert step if the method already exists, or change behavior so that it moves the caret inside the existing method.
+
+				// attatch our keydown filter to catch the next character pressed
 				textArea.PreviewKeyDown += new PreviewKeyDownEventHandler(NewEventHandlerPreviewKeyDown);
+
+				// save a reference to the relevant textArea so that we can remove our keydown filter after the next keystroke
+				this.textArea = textArea;
 				
 				return r;
 			}
-						
+			
 			public void NewEventHandlerPreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
 			{
 				if (e.KeyCode == Keys.Tab
@@ -235,4 +269,8 @@ namespace CSharpBinding
 		}
 	}
 }
+
+
+
+
 
