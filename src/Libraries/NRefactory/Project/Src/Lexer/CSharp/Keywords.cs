@@ -117,5 +117,14 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		{
 			return keywords[keyword];
 		}
+		
+		public static bool IsNonIdentifierKeyword(string word)
+		{
+			int token = GetToken(word);
+			if (token < 0)
+				return false;
+			return !Tokens.IdentifierTokens[token];
+		}
 	}
 }
+

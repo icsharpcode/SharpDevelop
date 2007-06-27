@@ -87,7 +87,7 @@ namespace CSharpBinding
 					ExpressionResult result = findExpressionMethod(lineText, word.Offset);
 					if (result.Expression != null) {
 						// result.Expression
-						if (ICSharpCode.NRefactory.Parser.CSharp.Keywords.GetToken(result.Expression) >= 0)
+						if (ICSharpCode.NRefactory.Parser.CSharp.Keywords.IsNonIdentifierKeyword(result.Expression))
 							continue;
 						// convert text editor to DOM coordinates:
 						resolveCount++;
@@ -147,6 +147,7 @@ namespace CSharpBinding
 		}
 	}
 }
+
 
 
 

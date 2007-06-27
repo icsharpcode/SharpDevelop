@@ -49,16 +49,17 @@ namespace CSharpBinding
 			                                              "${res:CSharpBinding.InsertAnonymousMethod}"));
 
 			CSharpAmbience ambience = new CSharpAmbience();
-			ambience.ConversionFlags = ConversionFlags.ShowParameterNames;
-			IMethod invoke = resolvedClass.SearchMember("Invoke", LanguageProperties.CSharp) as IMethod;
+			// get eventHandler type name incl. type argument list
+			ambience.ConversionFlags = ConversionFlags.ShowParameterNames | ConversionFlags.ShowTypeParameterList | ConversionFlags.UseFullyQualifiedTypeNames;
+			string eventHandlerFullyQualifiedTypeName = ambience.Convert(resolvedReturnType);
+			ambience.ConversionFlags = ConversionFlags.ShowParameterNames | ConversionFlags.ShowTypeParameterList;
+			string eventHandlerTypeName = ambience.Convert(resolvedReturnType);
+			
+			// retrieve Invoke method from resolvedReturnType instead of resolvedClass to get a method where
+			// type arguments are substituted.
+			IMethod invoke = resolvedReturnType.GetMethods().Find(delegate(IMethod m) { return m.Name == "Invoke"; });
 			StringBuilder parameterString = new StringBuilder();
 			if (invoke != null) {
-				
-				IParameter parameter;
-				ConstructedReturnType constructedReturnType;
-				// HACK: store the EventHandler type name so that we can manipulate it in the event of a generic handler (ie. with TEventArgs)
-				string eventHandlerFullyQualifiedTypeName = resolvedClass.FullyQualifiedName;
-				string eventHandlerTypeName = resolvedReturnType.Name;
 				
 				// build the parameter string
 				for (int i = 0; i < invoke.Parameters.Count; ++i) {
@@ -66,26 +67,7 @@ namespace CSharpBinding
 						parameterString.Append(", ");
 					}
 					
-					// HACK: attempt to resolve a generic type from TEventArgs into something more useful.
-					//  ?? : should this already be handled by NRefactoryResolver or the Parser?
-					parameter = invoke.Parameters[i];
-					if (parameter.ReturnType.GetType() == typeof(GenericReturnType)
-					    && resolvedReturnType.IsConstructedReturnType) {
-						
-						constructedReturnType = resolvedReturnType.CastToConstructedReturnType();
-						
-						if (constructedReturnType != null
-						    && constructedReturnType.TypeArgumentCount > 0) {
-							
-							parameter = new DefaultParameter(parameter.Name, constructedReturnType.TypeArguments[0], DomRegion.Empty);
-
-							// add more detail to the names.
-							eventHandlerFullyQualifiedTypeName = eventHandlerFullyQualifiedTypeName + "<" + parameter.ReturnType.FullyQualifiedName+">";
-							eventHandlerTypeName = eventHandlerTypeName + "<" + parameter.ReturnType.Name + ">";
-						}
-					}
-					parameterString.Append(ambience.Convert(parameter));
-					
+					parameterString.Append(ambience.Convert(invoke.Parameters[i]));
 				}
 				
 				// delegate(object sender, EventArgs e) {  };
@@ -96,20 +78,23 @@ namespace CSharpBinding
 
 				// new EventHandler(ClassName_EventName);
 				IClass callingClass = resolveResult.CallingClass;
-				MemberResolveResult mrr = resolveResult as MemberResolveResult;
-				DefaultEvent eventMember = (mrr != null ? mrr.ResolvedMember as DefaultEvent : null);
 				
 				// ...build the new handler name...
-				StringBuilder newHandlerNameBuilder = new StringBuilder(callingClass.Name).Append("_").Append(eventMember != null ? eventMember.Name : "eventName");
+				string newHandlerName = BuildHandlerName();
+				if (newHandlerName == null) {
+					MemberResolveResult mrr = resolveResult as MemberResolveResult;
+					IEvent eventMember = (mrr != null ? mrr.ResolvedMember as IEvent : null);
+					newHandlerName = callingClass.Name + "_" + ((eventMember != null) ? eventMember.Name : "eventMember");
+				}
 
 				// ...build the completion text...
 				StringBuilder newHandlerTextBuilder = new StringBuilder("new ").Append(eventHandlerTypeName).Append("(");
-				newHandlerTextBuilder.Append(newHandlerNameBuilder.ToString()).Append(");");
+				newHandlerTextBuilder.Append(newHandlerName).Append(");");
 
 				// ...build the optional new method text...
 				StringBuilder newHandlerCodeBuilder = new StringBuilder();
 				newHandlerCodeBuilder.AppendLine().AppendLine();
-				newHandlerCodeBuilder.Append(ambience.Convert(invoke.ReturnType)).Append(" ").Append(newHandlerNameBuilder.ToString());
+				newHandlerCodeBuilder.Append(ambience.Convert(invoke.ReturnType)).Append(" ").Append(newHandlerName);
 				newHandlerCodeBuilder.Append("(").Append(parameterString.ToString()).AppendLine(")");
 				newHandlerCodeBuilder.AppendLine("{");
 				newHandlerCodeBuilder.Append("throw new NotImplementedException(\"").Append(ResourceService.GetString("CSharpBinding.MethodIsNotImplemented")).AppendLine("\");");
@@ -118,23 +103,14 @@ namespace CSharpBinding
 				// ...and add it to the completionData.
 				completionData.Add(new NewEventHandlerCompletionData(
 					newHandlerTextBuilder.ToString(),
-					2+newHandlerNameBuilder.Length,
-					newHandlerNameBuilder.Length,
-					"delegate " + eventHandlerFullyQualifiedTypeName + "(" + newHandlerNameBuilder.ToString() + ")" +"\n"+ResourceService.GetString("CSharpBinding.GenerateNewHandlerInstructions") + "\n" + CodeCompletionData.GetDocumentation(resolvedClass.Documentation),
+					2+newHandlerName.Length,
+					newHandlerName.Length,
+					"new " + eventHandlerFullyQualifiedTypeName + "(" + newHandlerName + ")" +"\n"+ResourceService.GetString("CSharpBinding.GenerateNewHandlerInstructions") + "\n" + CodeCompletionData.GetDocumentation(resolvedClass.Documentation),
 					resolveResult,
 					newHandlerCodeBuilder.ToString()
 				));
 				
-				IClass eventReturnType = invoke.ReturnType.GetUnderlyingClass();
-				IClass[] eventParameters = new IClass[invoke.Parameters.Count];
-				for (int i = 0; i < eventParameters.Length; i++) {
-					eventParameters[i] = invoke.Parameters[i].ReturnType.GetUnderlyingClass();
-					if (eventParameters[i] == null) {
-						eventReturnType = null;
-						break;
-					}
-				}
-				if (callingClass != null && eventReturnType != null) {
+				if (callingClass != null) {
 					bool inStatic = false;
 					if (resolveResult.CallingMember != null)
 						inStatic = resolveResult.CallingMember.IsStatic;
@@ -146,13 +122,11 @@ namespace CSharpBinding
 						if (method.Parameters.Count != invoke.Parameters.Count)
 							continue;
 						// check return type compatibility:
-						IClass c2 = method.ReturnType.GetUnderlyingClass();
-						if (c2 == null || !c2.IsTypeInInheritanceTree(eventReturnType))
+						if (!MemberLookupHelper.ConversionExists(method.ReturnType, invoke.ReturnType))
 							continue;
 						bool ok = true;
-						for (int i = 0; i < eventParameters.Length; i++) {
-							c2 = method.Parameters[i].ReturnType.GetUnderlyingClass();
-							if (c2 == null || !eventParameters[i].IsTypeInInheritanceTree(c2)) {
+						for (int i = 0; i < invoke.Parameters.Count; i++) {
+							if (!MemberLookupHelper.ConversionExists(invoke.Parameters[i].ReturnType, method.Parameters[i].ReturnType)) {
 								ok = false;
 								break;
 							}
@@ -164,6 +138,30 @@ namespace CSharpBinding
 				}
 			}
 			return completionData.ToArray();
+		}
+		
+		string BuildHandlerName()
+		{
+			if (expression != null)
+				expression = expression.Trim();
+			if (string.IsNullOrEmpty(expression))
+				return null;
+			if (!(char.IsLetter(expression[0]) || expression[0] == '_'))
+				return null;
+			StringBuilder handlerNameBuilder = new StringBuilder();
+			for (int i = 0; i < expression.Length; i++) {
+				if (char.IsLetterOrDigit(expression[i]) || expression[i] == '_') {
+					handlerNameBuilder.Append(expression[i]);
+				} else if (expression[i] == '.') {
+					if (ICSharpCode.NRefactory.Parser.CSharp.Keywords.IsNonIdentifierKeyword(handlerNameBuilder.ToString())) {
+						return null;
+					}
+					handlerNameBuilder.Append('_');
+				} else {
+					return null;
+				}
+			}
+			return handlerNameBuilder.ToString();
 		}
 		
 		private class DelegateCompletionData : DefaultCompletionData
@@ -269,6 +267,8 @@ namespace CSharpBinding
 		}
 	}
 }
+
+
 
 
 
