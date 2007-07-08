@@ -683,9 +683,14 @@ namespace ICSharpCode.TextEditor
 		{
 			StreamWriter streamWriter = new StreamWriter(stream, this.Encoding ?? Encoding.UTF8);
 			
+			// save line per line to apply the LineTerminator to all lines
+			// (otherwise we might save files with mixed-up line endings)
 			foreach (LineSegment line in Document.LineSegmentCollection) {
 				streamWriter.Write(Document.GetText(line.Offset, line.Length));
-				streamWriter.Write(document.TextEditorProperties.LineTerminator);
+				if (line.DelimiterLength > 0) {
+					// only save line terminator if the line has one
+					streamWriter.Write(document.TextEditorProperties.LineTerminator);
+				}
 			}
 			streamWriter.Flush();
 		}
