@@ -146,7 +146,8 @@ namespace ICSharpCode.TextEditor
 		
 		void TextAreaMouseMove(object sender, MouseEventArgs e)
 		{
-			Point mousepos = textArea.mousepos;
+			//Point mousepos = textArea.mousepos;
+			textArea.mousepos = e.Location;
 
 			// honour the starting selection strategy
 			switch (textArea.SelectionManager.selectFrom.where)
@@ -154,7 +155,7 @@ namespace ICSharpCode.TextEditor
 				case WhereFrom.Gutter:
 					//moveGutter(sender, e);
 					ExtendSelectionToMouse();
-					break;
+					return;
 
 				case WhereFrom.TArea:
 					break;
@@ -170,8 +171,8 @@ namespace ICSharpCode.TextEditor
 			textArea.mousepos = new Point(e.X, e.Y);
 			
 			if (clickedOnSelectedText) {
-				if (Math.Abs(mousedownpos.X - mousepos.X) >= SystemInformation.DragSize.Width / 2 ||
-				    Math.Abs(mousedownpos.Y - mousepos.Y) >= SystemInformation.DragSize.Height / 2)
+				if (Math.Abs(mousedownpos.X - e.X) >= SystemInformation.DragSize.Width / 2 ||
+				    Math.Abs(mousedownpos.Y - e.Y) >= SystemInformation.DragSize.Height / 2)
 				{
 					clickedOnSelectedText = false;
 					ISelection selection = textArea.SelectionManager.GetSelectionAt(textArea.Caret.Offset);
@@ -226,6 +227,7 @@ namespace ICSharpCode.TextEditor
 			else
 				textArea.Caret.Position = realmousepos;
 
+			// moves selection across whole words
 			if (minSelection != nilPoint && textArea.SelectionManager.SelectionCollection.Count > 0) {
 				// Extend selection when selection was started with double-click
 				ISelection selection = textArea.SelectionManager.SelectionCollection[0];
@@ -281,8 +283,24 @@ namespace ICSharpCode.TextEditor
 							break;
 							
 					}
+					textArea.Caret.Position = maxSelection;
 					textArea.SelectionManager.ExtendSelection(minSelection, maxSelection);
 				}
+
+				if (textArea.SelectionManager.selectionCollection.Count > 0) {
+					ISelection selection = textArea.SelectionManager.selectionCollection[0];
+					
+					selection.StartPosition = minSelection;
+					selection.EndPosition = maxSelection;
+					textArea.SelectionManager.selectionStart = minSelection;
+				}
+
+				// after a double-click selection, the caret is placed correctly,
+				// but it is not positioned internally.  The effect is when the cursor
+				// is moved up or down a line, the caret will take on the column first
+				// clicked on for the double-click
+				textArea.SetDesiredColumn();
+
 				// HACK WARNING !!!
 				// must refresh here, because when a error tooltip is showed and the underlined
 				// code is double clicked the textArea don't update corrctly, updateline doesn't
@@ -292,12 +310,12 @@ namespace ICSharpCode.TextEditor
 			}
 		}
 
-		
 		DateTime lastTime = DateTime.Now;
 		void OnMouseDown(object sender, MouseEventArgs e)
 		{
 			Point mousepos;
-			mousepos = textArea.mousepos;
+			textArea.mousepos = e.Location;
+			mousepos = e.Location;
 
 			if (dodragdrop)
 			{
@@ -314,6 +332,7 @@ namespace ICSharpCode.TextEditor
 				textArea.SelectionManager.selectFrom.where = WhereFrom.TArea;
 				button = e.Button;
 				
+				// double-click
 				if (button == MouseButtons.Left && (DateTime.Now - lastTime).Milliseconds < SystemInformation.DoubleClickTime) {
 					int deltaX   = Math.Abs(lastmousedownpos.X - e.X);
 					int deltaY   = Math.Abs(lastmousedownpos.Y - e.Y);
@@ -322,6 +341,17 @@ namespace ICSharpCode.TextEditor
 						DoubleClickSelectionExtend();
 						lastTime = DateTime.Now;
 						lastmousedownpos = new Point(e.X, e.Y);
+
+						if(textArea.SelectionManager.selectFrom.where == WhereFrom.Gutter) {
+							if(minSelection != nilPoint && maxSelection != nilPoint && textArea.SelectionManager.SelectionCollection.Count > 0) {
+								textArea.SelectionManager.SelectionCollection[0].StartPosition = minSelection;
+								textArea.SelectionManager.SelectionCollection[0].EndPosition = maxSelection;
+								textArea.SelectionManager.selectionStart = minSelection;
+
+								minSelection = nilPoint;
+								maxSelection = nilPoint;
+							}
+						}
 						return;
 					}
 				}
@@ -457,6 +487,7 @@ namespace ICSharpCode.TextEditor
 				return;
 			}
 			
+			textArea.SelectionManager.selectFrom.where = WhereFrom.TArea;
 			doubleclick = true;
 			
 		}
