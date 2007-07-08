@@ -240,20 +240,23 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public static XmlDoc Load(string fileName, string cachePath)
 		{
 			//LoggingService.Debug("Loading XmlDoc for " + fileName);
-			Directory.CreateDirectory(cachePath);
-			string cacheName = cachePath + "/" + Path.GetFileNameWithoutExtension(fileName)
-				+ "." + fileName.GetHashCode().ToString("x") + ".dat";
 			XmlDoc doc;
-			if (File.Exists(cacheName)) {
-				doc = new XmlDoc();
-				if (doc.LoadFromBinary(cacheName, File.GetLastWriteTimeUtc(fileName))) {
-					//LoggingService.Debug("XmlDoc: Load from cache successful");
-					return doc;
-				} else {
-					doc.Dispose();
-					try {
-						File.Delete(cacheName);
-					} catch {}
+			string cacheName = null;
+			if (cachePath != null) {
+				Directory.CreateDirectory(cachePath);
+				cacheName = cachePath + "/" + Path.GetFileNameWithoutExtension(fileName)
+					+ "." + fileName.GetHashCode().ToString("x") + ".dat";
+				if (File.Exists(cacheName)) {
+					doc = new XmlDoc();
+					if (doc.LoadFromBinary(cacheName, File.GetLastWriteTimeUtc(fileName))) {
+						//LoggingService.Debug("XmlDoc: Load from cache successful");
+						return doc;
+					} else {
+						doc.Dispose();
+						try {
+							File.Delete(cacheName);
+						} catch {}
+					}
 				}
 			}
 			
@@ -266,7 +269,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return new XmlDoc();
 			}
 			
-			if (doc.xmlDescription.Count > cacheLength * 2) {
+			if (cachePath != null && doc.xmlDescription.Count > cacheLength * 2) {
 				LoggingService.Debug("XmlDoc: Creating cache for " + fileName);
 				DateTime date = File.GetLastWriteTimeUtc(fileName);
 				try {

@@ -102,9 +102,10 @@ class A
 			
 			pcRegistry = new Dom.ProjectContentRegistry(); // Default .NET 2.0 registry
 			
-			// Persistence caches referenced project contents for faster loading.
-			// It also activates loading XML documentation files and caching them
-			// for faster loading and lower memory usage.
+			// Persistence lets SharpDevelop.Dom create a cache file on disk so that
+			// future starts are faster.
+			// It also caches XML documentation files in an on-disk hash table, thus
+			// reducing memory usage.
 			pcRegistry.ActivatePersistence(Path.Combine(Path.GetTempPath(),
 			                                            "CSharpCodeCompletion"));
 			

@@ -46,6 +46,7 @@ namespace ICSharpCode.SharpDevelop.Sda
 			if (properties.PropertiesName != null) {
 				startup.PropertiesName = properties.PropertiesName;
 			}
+			ParserService.DomPersistencePath = properties.DomPersistencePath;
 			
 			// disable RTL: translations for the RTL languages are inactive
 			RightToLeftConverter.RightToLeftLanguages = new string[0];
@@ -261,4 +262,5 @@ namespace ICSharpCode.SharpDevelop.Sda
 		}
 	}
 }
+
 

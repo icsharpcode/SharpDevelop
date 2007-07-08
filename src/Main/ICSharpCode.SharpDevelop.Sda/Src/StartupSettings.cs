@@ -24,6 +24,7 @@ namespace ICSharpCode.SharpDevelop.Sda
 		string propertiesName;
 		string configDirectory;
 		string dataDirectory;
+		string domPersistencePath;
 		string resourceAssemblyName = "SharpDevelop";
 		internal List<string> addInDirectories = new List<string>();
 		internal List<string> addInFiles = new List<string>();
@@ -118,6 +119,15 @@ namespace ICSharpCode.SharpDevelop.Sda
 		public string PropertiesName {
 			get { return propertiesName; }
 			set { propertiesName = value; }
+		}
+		
+		/// <summary>
+		/// Sets the directory used to store the code completion cache.
+		/// Use null (default) to disable the code completion cache.
+		/// </summary>
+		public string DomPersistencePath {
+			get { return domPersistencePath; }
+			set { domPersistencePath = value; }
 		}
 		
 		/// <summary>

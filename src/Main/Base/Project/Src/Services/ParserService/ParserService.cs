@@ -39,22 +39,25 @@ namespace ICSharpCode.SharpDevelop
 				parser = AddInTree.BuildItems<ParserDescriptor>("/Workspace/Parser", null, false);
 				registries = AddInTree.BuildItems<ProjectContentRegistryDescriptor>("/Workspace/ProjectContentRegistry", null, false);
 				
-				domPersistencePath = Path.Combine(Path.GetTempPath(), "SharpDevelop" + RevisionClass.MainVersion);
-				#if DEBUG
-				domPersistencePath = Path.Combine(domPersistencePath, "Debug");
-				#endif
-				Directory.CreateDirectory(domPersistencePath);
-				defaultProjectContentRegistry.ActivatePersistence(domPersistencePath);
+				if (!string.IsNullOrEmpty(domPersistencePath)) {
+					Directory.CreateDirectory(domPersistencePath);
+					defaultProjectContentRegistry.ActivatePersistence(domPersistencePath);
+				}
 				ProjectService.SolutionClosed += ProjectServiceSolutionClosed;
 			}
 		}
 		
 		/// <summary>
-		/// Gets the cache directory used for DOM persistence.
+		/// Gets/Sets the cache directory used for DOM persistence.
 		/// </summary>
 		public static string DomPersistencePath {
 			get {
 				return domPersistencePath;
+			}
+			set {
+				if (parser != null)
+					throw new InvalidOperationException("Cannot set DomPersistencePath after ParserService was initialized");
+				domPersistencePath = value;
 			}
 		}
 		

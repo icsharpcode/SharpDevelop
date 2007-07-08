@@ -124,8 +124,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 				}
 			}
 			
-			if (fileName != null && registry.persistence != null) {
-				this.XmlDoc = XmlDoc.Load(fileName, Path.Combine(registry.persistence.CacheDirectory, "XmlDoc"));
+			if (fileName != null) {
+				if (registry.persistence != null) {
+					this.XmlDoc = XmlDoc.Load(fileName, Path.Combine(registry.persistence.CacheDirectory, "XmlDoc"));
+				} else {
+					this.XmlDoc = XmlDoc.Load(fileName, null);
+				}
 			}
 		}
 		

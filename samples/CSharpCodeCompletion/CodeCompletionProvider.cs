@@ -119,7 +119,7 @@ namespace CSharpEditor
 			if (MainForm.IsVisualBasic) {
 				finder = new Dom.VBNet.VBExpressionFinder();
 			} else {
-				finder = new Dom.CSharp.CSharpExpressionFinder(delegate { return mainForm.parseInformation; });
+				finder = new Dom.CSharp.CSharpExpressionFinder(mainForm.parseInformation);
 			}
 			return finder.FindExpression(textArea.Document.TextContent, textArea.Caret.Offset - 1);
 		}

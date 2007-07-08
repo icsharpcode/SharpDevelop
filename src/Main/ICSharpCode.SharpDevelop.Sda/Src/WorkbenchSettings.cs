@@ -18,7 +18,6 @@ namespace ICSharpCode.SharpDevelop.Sda
 	public sealed class WorkbenchSettings
 	{
 		bool runOnNewThread = true;
-		bool useTipOfTheDay;
 		Collection<string> fileList = new Collection<string>();
 		
 		/// <summary>
@@ -31,19 +30,6 @@ namespace ICSharpCode.SharpDevelop.Sda
 			}
 			set {
 				runOnNewThread = value;
-			}
-		}
-		
-		/// <summary>
-		/// Gets/Sets whether the tip of the day is supported.
-		/// The default is false.
-		/// </summary>
-		public bool UseTipOfTheDay {
-			get {
-				return useTipOfTheDay;
-			}
-			set {
-				useTipOfTheDay = value;
 			}
 		}
 		

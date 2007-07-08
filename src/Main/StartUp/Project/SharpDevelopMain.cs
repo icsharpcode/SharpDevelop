@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
@@ -113,8 +114,24 @@ namespace ICSharpCode.SharpDevelop
 				Assembly exe = typeof(SharpDevelopMain).Assembly;
 				startup.ApplicationRootPath = Path.Combine(Path.GetDirectoryName(exe.Location), "..");
 				startup.AllowUserAddIns = true;
-				startup.ConfigDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-				                                       "ICSharpCode/SharpDevelop3.0");
+				
+				string configDirectory = ConfigurationManager.AppSettings["settingsPath"];
+				if (String.IsNullOrEmpty(configDirectory)) {
+					startup.ConfigDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+					                                       "ICSharpCode/SharpDevelop" + RevisionClass.MainVersion);
+				} else {
+					startup.ConfigDirectory = Path.Combine(Path.GetDirectoryName(exe.Location), configDirectory);
+				}
+				
+				startup.DomPersistencePath = ConfigurationManager.AppSettings["domPersistencePath"];
+				if (string.IsNullOrEmpty(startup.DomPersistencePath)) {
+					startup.DomPersistencePath = Path.Combine(Path.GetTempPath(), "SharpDevelop" + RevisionClass.MainVersion);
+					#if DEBUG
+					startup.DomPersistencePath = Path.Combine(startup.DomPersistencePath, "Debug");
+					#endif
+				} else if (startup.DomPersistencePath == "none") {
+					startup.DomPersistencePath = null;
+				}
 				
 				startup.AddAddInsFromDirectory(Path.Combine(startup.ApplicationRootPath, "AddIns"));
 				
@@ -137,7 +154,6 @@ namespace ICSharpCode.SharpDevelop
 				
 				WorkbenchSettings workbenchSettings = new WorkbenchSettings();
 				workbenchSettings.RunOnNewThread = false;
-				workbenchSettings.UseTipOfTheDay = true;
 				for (int i = 0; i < fileList.Length; i++) {
 					workbenchSettings.InitialFileList.Add(fileList[i]);
 				}
