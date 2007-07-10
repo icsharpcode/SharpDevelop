@@ -144,8 +144,9 @@ namespace ICSharpCode.TextEditor.Document
 			while ((ds = NextDelimiter(text, lastDelimiterEnd)) != null) {
 				// split line segment at line delimiter
 				int lineBreakOffset = offset + ds.Offset + ds.Length;
-				int lengthAfterInsertionPos = segment.Offset + segment.TotalLength - (offset + lastDelimiterEnd);
-				lineCollection.SetSegmentLength(segment, lineBreakOffset - segment.Offset);
+				int segmentOffset = segment.Offset;
+				int lengthAfterInsertionPos = segmentOffset + segment.TotalLength - (offset + lastDelimiterEnd);
+				lineCollection.SetSegmentLength(segment, lineBreakOffset - segmentOffset);
 				LineSegment newSegment = lineCollection.InsertSegmentAfter(segment, lengthAfterInsertionPos);
 				segment.DelimiterLength = ds.Length;
 				
@@ -161,8 +162,10 @@ namespace ICSharpCode.TextEditor.Document
 		void SetSegmentLength(LineSegment segment, int newTotalLength)
 		{
 			int delta = newTotalLength - segment.TotalLength;
-			lineCollection.SetSegmentLength(segment, newTotalLength);
-			OnLineLengthChanged(new LineLengthEventArgs(document, segment, delta));
+			if (delta != 0) {
+				lineCollection.SetSegmentLength(segment, newTotalLength);
+				OnLineLengthChanged(new LineLengthEventArgs(document, segment, delta));
+			}
 		}
 		
 		void RunHighlighter(int firstLine, int lineCount)
@@ -185,8 +188,6 @@ namespace ICSharpCode.TextEditor.Document
 				Replace(0, 0, text);
 			}
 		}
-		
-		
 		
 		public int GetVisibleLine(int logicalLineNumber)
 		{
@@ -287,8 +288,9 @@ namespace ICSharpCode.TextEditor.Document
 			}
 		}
 		
-		// use always the same ISegment object for the DelimiterInfo
+		// use always the same DelimiterSegment object for the NextDelimiter
 		DelimiterSegment delimiterSegment = new DelimiterSegment();
+		
 		DelimiterSegment NextDelimiter(string text, int offset)
 		{
 			for (int i = offset; i < text.Length; i++) {
@@ -321,28 +323,10 @@ namespace ICSharpCode.TextEditor.Document
 		public event LineLengthEventHandler LineLengthChanged;
 		public event LineManagerEventHandler LineCountChanged;
 		
-		sealed class DelimiterSegment : ISegment
+		sealed class DelimiterSegment
 		{
-			int offset;
-			int length;
-			
-			public int Offset {
-				get {
-					return offset;
-				}
-				set {
-					offset = value;
-				}
-			}
-			
-			public int Length {
-				get {
-					return length;
-				}
-				set {
-					length = value;
-				}
-			}
+			internal int Offset;
+			internal int Length;
 		}
 	}
 }

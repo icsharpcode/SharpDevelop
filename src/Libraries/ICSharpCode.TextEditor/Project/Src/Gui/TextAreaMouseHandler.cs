@@ -22,8 +22,6 @@ namespace ICSharpCode.TextEditor
 	{
 		TextArea  textArea;
 		bool      doubleclick = false;
-		int       selbegin;
-		int       selend;
 		bool      clickedOnSelectedText = false;
 		
 		MouseButtons button;
@@ -146,14 +144,12 @@ namespace ICSharpCode.TextEditor
 		
 		void TextAreaMouseMove(object sender, MouseEventArgs e)
 		{
-			//Point mousepos = textArea.mousepos;
 			textArea.mousepos = e.Location;
 
 			// honour the starting selection strategy
 			switch (textArea.SelectionManager.selectFrom.where)
 			{
 				case WhereFrom.Gutter:
-					//moveGutter(sender, e);
 					ExtendSelectionToMouse();
 					return;
 
@@ -213,22 +209,21 @@ namespace ICSharpCode.TextEditor
 				return;
 			}
 
-			if (textArea.SelectionManager.selectFrom.where == WhereFrom.Gutter)
+			// the selection is from the gutter
+			if (textArea.SelectionManager.selectFrom.where == WhereFrom.Gutter) {
 				if(realmousepos.Y < textArea.SelectionManager.selectionStart.Y) {
-				// the selection is from the gutter and it has moved above the startpoint
-				textArea.Caret.Position = new Point(0, realmousepos.Y);
-			} else {
-				if(realmousepos.Y == textArea.SelectionManager.selectionStart.Y) {
-					textArea.Caret.Position = textArea.SelectionManager.NextValidPosition(realmousepos.Y);
+					// the selection has moved above the startpoint
+					textArea.Caret.Position = new Point(0, realmousepos.Y);
 				} else {
+					// the selection has moved below the startpoint
 					textArea.Caret.Position = textArea.SelectionManager.NextValidPosition(realmousepos.Y);
 				}
-			}
-			else
+			} else {
 				textArea.Caret.Position = realmousepos;
+			}
 
-			// moves selection across whole words
-			if (minSelection != nilPoint && textArea.SelectionManager.SelectionCollection.Count > 0) {
+			// moves selection across whole words for double-click initiated selection
+			if (minSelection != nilPoint && textArea.SelectionManager.SelectionCollection.Count > 0 && textArea.SelectionManager.selectFrom.where == WhereFrom.TArea) {
 				// Extend selection when selection was started with double-click
 				ISelection selection = textArea.SelectionManager.SelectionCollection[0];
 				Point min = textArea.SelectionManager.GreaterEqPos(minSelection, maxSelection) ? maxSelection : minSelection;
@@ -236,12 +231,10 @@ namespace ICSharpCode.TextEditor
 				if (textArea.SelectionManager.GreaterEqPos(max, realmousepos) && textArea.SelectionManager.GreaterEqPos(realmousepos, min)) {
 					textArea.SelectionManager.SetSelection(min, max);
 				} else if (textArea.SelectionManager.GreaterEqPos(max, realmousepos)) {
-					//textArea.SelectionManager.SetSelection(realmousepos, max);
 					int moff = textArea.Document.PositionToOffset(realmousepos);
 					min = textArea.Document.OffsetToPosition(FindWordStart(textArea.Document, moff));
 					textArea.SelectionManager.SetSelection(min, max);
 				} else {
-					//textArea.SelectionManager.SetSelection(min, realmousepos);
 					int moff = textArea.Document.PositionToOffset(realmousepos);
 					max = textArea.Document.OffsetToPosition(FindWordEnd(textArea.Document, moff));
 					textArea.SelectionManager.SetSelection(min, max);
@@ -386,13 +379,12 @@ namespace ICSharpCode.TextEditor
 						    textArea.SelectionManager.IsSelected(offset)) {
 							clickedOnSelectedText = true;
 						} else {
-							selbegin = selend = offset;
 							textArea.SelectionManager.ClearSelection();
 							if (mousepos.Y > 0 && mousepos.Y < textArea.TextView.DrawingPosition.Height) {
 								Point pos = new Point();
 								pos.Y = Math.Min(textArea.Document.TotalNumberOfLines - 1,  realmousepos.Y);
 								pos.X = realmousepos.X;
-								textArea.Caret.Position = pos;//Math.Max(0, Math.Min(textArea.Document.TextLength, line.Offset + Math.Min(line.Length, pos.X)));
+								textArea.Caret.Position = pos;
 								textArea.SetDesiredColumn();
 							}
 						}
@@ -405,13 +397,12 @@ namespace ICSharpCode.TextEditor
 					if (!textArea.SelectionManager.HasSomethingSelected ||
 					    !textArea.SelectionManager.IsSelected(offset))
 					{
-						selbegin = selend = offset;
 						textArea.SelectionManager.ClearSelection();
 						if (mousepos.Y > 0 && mousepos.Y < textArea.TextView.DrawingPosition.Height) {
 							Point pos = new Point();
 							pos.Y = Math.Min(textArea.Document.TotalNumberOfLines - 1,  realmousepos.Y);
 							pos.X = realmousepos.X;
-							textArea.Caret.Position = pos;//Math.Max(0, Math.Min(textArea.Document.TextLength, line.Offset + Math.Min(line.Length, pos.X)));
+							textArea.Caret.Position = pos;
 							textArea.SetDesiredColumn();
 						}
 					}

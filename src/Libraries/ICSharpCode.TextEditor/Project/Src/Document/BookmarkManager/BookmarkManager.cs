@@ -24,7 +24,7 @@ namespace ICSharpCode.TextEditor.Document
 		List<Bookmark> bookmark = new List<Bookmark>();
 		
 		/// <value>
-		/// Contains all bookmarks as int values
+		/// Contains all bookmarks
 		/// </value>
 		public List<Bookmark> Marks {
 			get {

@@ -257,10 +257,10 @@ namespace ICSharpCode.TextEditor
 				}
 			}
 			Document.UpdateQueue.Clear();
-			this.primaryTextArea.TextArea.Update();
-			if (this.secondaryTextArea != null) {
-				this.secondaryTextArea.TextArea.Update();
-			}
+//			this.primaryTextArea.TextArea.Update();
+//			if (this.secondaryTextArea != null) {
+//				this.secondaryTextArea.TextArea.Update();
+//			}
 		}
 		#endregion
 		

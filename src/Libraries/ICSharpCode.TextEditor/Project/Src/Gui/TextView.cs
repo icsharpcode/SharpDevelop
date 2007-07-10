@@ -148,7 +148,7 @@ namespace ICSharpCode.TextEditor
 			// Just to ensure that fontHeight and char widths are always correct...
 			if (lastFont != TextEditorProperties.FontContainer.RegularFont) {
 				OptionsChanged();
-				base.TextArea.BeginInvoke(new MethodInvoker(base.TextArea.Refresh));
+				textArea.Invalidate();
 			}
 			
 			int horizontalDelta = (int)(textArea.VirtualTop.X * WideSpaceWidth);

@@ -490,6 +490,9 @@ namespace ICSharpCode.TextEditor
 			Graphics  g             = e.Graphics;
 			Rectangle clipRectangle = e.ClipRectangle;
 			
+			bool isFullRepaint = clipRectangle.X == 0 && clipRectangle.Y == 0
+				&& clipRectangle.Width == this.Width && clipRectangle.Height == this.Height;
+			
 			g.TextRenderingHint = this.TextEditorProperties.TextRenderingHint;
 			
 			if (updateMargin != null) {
@@ -505,6 +508,10 @@ namespace ICSharpCode.TextEditor
 				if (margin.IsVisible) {
 					Rectangle marginRectangle = new Rectangle(currentXPos , currentYPos, margin.Size.Width, Height - currentYPos);
 					if (marginRectangle != margin.DrawingPosition) {
+						// margin changed size
+						if (!isFullRepaint && !clipRectangle.Contains(marginRectangle)) {
+							Invalidate(); // do a full repaint
+						}
 						adjustScrollBars = true;
 						margin.DrawingPosition = marginRectangle;
 					}
@@ -891,7 +898,7 @@ namespace ICSharpCode.TextEditor
 //				return;
 //			}
 			
-			lineBegin     = Math.Min(lineBegin, FirstPhysicalLine);
+			//lineBegin     = Math.Min(lineBegin, FirstPhysicalLine);
 			int y         = Math.Max(    0, (int)(lineBegin * textView.FontHeight));
 			y = Math.Max(0, y - this.virtualTop.Y);
 			Rectangle r = new Rectangle(0,

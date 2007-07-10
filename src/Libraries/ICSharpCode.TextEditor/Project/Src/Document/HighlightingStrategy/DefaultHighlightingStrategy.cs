@@ -414,18 +414,15 @@ namespace ICSharpCode.TextEditor.Document
 			Dictionary<LineSegment, bool> processedLines = new Dictionary<LineSegment, bool>();
 			
 			bool spanChanged = false;
+			int documentLineSegmentCount = document.LineSegmentCollection.Count;
 			
 			foreach (LineSegment lineToProcess in inputLines) {
 				if (!processedLines.ContainsKey(lineToProcess)) {
-					int lineNumber = document.GetLineNumberForOffset(lineToProcess.Offset);
+					int lineNumber = lineToProcess.LineNumber;
 					bool processNextLine = true;
 					
 					if (lineNumber != -1) {
-						while (processNextLine && lineNumber < document.TotalNumberOfLines) {
-							if (lineNumber >= document.LineSegmentCollection.Count) { // may be, if the last line ends with a delimiter
-								break;                                                // then the last line is not in the collection :)
-							}
-							
+						while (processNextLine && lineNumber < documentLineSegmentCount) {
 							processNextLine = MarkTokensInLine(document, lineNumber, ref spanChanged);
 							processedLines[currentLine] = true;
 							++lineNumber;
@@ -434,14 +431,17 @@ namespace ICSharpCode.TextEditor.Document
 				}
 			}
 			
-			if (spanChanged) {
+			if (spanChanged || inputLines.Count > 20) {
+				// if the span was changed (more than inputLines lines had to be reevaluated)
+				// or if there are many lines in inputLines, it's faster to update the whole
+				// text area instead of many small segments
 				document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.WholeTextArea));
 			} else {
 //				document.Caret.ValidateCaretPos();
 //				document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.SingleLine, document.GetLineNumberForOffset(document.Caret.Offset)));
 //
 				foreach (LineSegment lineToProcess in inputLines) {
-					document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.SingleLine, document.GetLineNumberForOffset(lineToProcess.Offset)));
+					document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.SingleLine, lineToProcess.LineNumber));
 				}
 				
 			}
@@ -474,8 +474,11 @@ namespace ICSharpCode.TextEditor.Document
 			currentLength = 0;
 			UpdateSpanStateVariables();
 			
-			for (int i = 0; i < currentLine.Length; ++i) {
-				char ch = document.GetCharAt(currentLine.Offset + i);
+			int currentLineLength = currentLine.Length;
+			int currentLineOffset = currentLine.Offset;
+			
+			for (int i = 0; i < currentLineLength; ++i) {
+				char ch = document.GetCharAt(currentLineOffset + i);
 				switch (ch) {
 					case '\n':
 					case '\r':
@@ -516,8 +519,8 @@ namespace ICSharpCode.TextEditor.Document
 								{
 									// the escape character is a end-doubling escape character
 									// it may count as escape only when the next character is the escape, too
-									if (i + 1 < currentLine.Length) {
-										if (document.GetCharAt(currentLine.Offset + i + 1) == escapeCharacter) {
+									if (i + 1 < currentLineLength) {
+										if (document.GetCharAt(currentLineOffset + i + 1) == escapeCharacter) {
 											currentLength += 2;
 											PushCurWord(document, ref markNext, words);
 											++i;
@@ -527,7 +530,7 @@ namespace ICSharpCode.TextEditor.Document
 								} else {
 									// this is a normal \-style escape
 									++currentLength;
-									if (i + 1 < currentLine.Length) {
+									if (i + 1 < currentLineLength) {
 										++currentLength;
 									}
 									PushCurWord(document, ref markNext, words);
@@ -537,53 +540,53 @@ namespace ICSharpCode.TextEditor.Document
 							}
 							
 							// highlight digits
-							if (!inSpan && (Char.IsDigit(ch) || (ch == '.' && i + 1 < currentLine.Length && Char.IsDigit(document.GetCharAt(currentLine.Offset + i + 1)))) && currentLength == 0) {
+							if (!inSpan && (Char.IsDigit(ch) || (ch == '.' && i + 1 < currentLineLength && Char.IsDigit(document.GetCharAt(currentLineOffset + i + 1)))) && currentLength == 0) {
 								bool ishex = false;
 								bool isfloatingpoint = false;
 								
-								if (ch == '0' && i + 1 < currentLine.Length && Char.ToUpper(document.GetCharAt(currentLine.Offset + i + 1)) == 'X') { // hex digits
+								if (ch == '0' && i + 1 < currentLineLength && Char.ToUpper(document.GetCharAt(currentLineOffset + i + 1)) == 'X') { // hex digits
 									const string hex = "0123456789ABCDEF";
 									++currentLength;
 									++i; // skip 'x'
 									++currentLength;
 									ishex = true;
-									while (i + 1 < currentLine.Length && hex.IndexOf(Char.ToUpper(document.GetCharAt(currentLine.Offset + i + 1))) != -1) {
+									while (i + 1 < currentLineLength && hex.IndexOf(Char.ToUpper(document.GetCharAt(currentLineOffset + i + 1))) != -1) {
 										++i;
 										++currentLength;
 									}
 								} else {
 									++currentLength;
-									while (i + 1 < currentLine.Length && Char.IsDigit(document.GetCharAt(currentLine.Offset + i + 1))) {
+									while (i + 1 < currentLineLength && Char.IsDigit(document.GetCharAt(currentLineOffset + i + 1))) {
 										++i;
 										++currentLength;
 									}
 								}
-								if (!ishex && i + 1 < currentLine.Length && document.GetCharAt(currentLine.Offset + i + 1) == '.') {
+								if (!ishex && i + 1 < currentLineLength && document.GetCharAt(currentLineOffset + i + 1) == '.') {
 									isfloatingpoint = true;
 									++i;
 									++currentLength;
-									while (i + 1 < currentLine.Length && Char.IsDigit(document.GetCharAt(currentLine.Offset + i + 1))) {
+									while (i + 1 < currentLineLength && Char.IsDigit(document.GetCharAt(currentLineOffset + i + 1))) {
 										++i;
 										++currentLength;
 									}
 								}
 								
-								if (i + 1 < currentLine.Length && Char.ToUpper(document.GetCharAt(currentLine.Offset + i + 1)) == 'E') {
+								if (i + 1 < currentLineLength && Char.ToUpper(document.GetCharAt(currentLineOffset + i + 1)) == 'E') {
 									isfloatingpoint = true;
 									++i;
 									++currentLength;
-									if (i + 1 < currentLine.Length && (document.GetCharAt(currentLine.Offset + i + 1) == '+' || document.GetCharAt(currentLine.Offset + i + 1) == '-')) {
+									if (i + 1 < currentLineLength && (document.GetCharAt(currentLineOffset + i + 1) == '+' || document.GetCharAt(currentLine.Offset + i + 1) == '-')) {
 										++i;
 										++currentLength;
 									}
-									while (i + 1 < currentLine.Length && Char.IsDigit(document.GetCharAt(currentLine.Offset + i + 1))) {
+									while (i + 1 < currentLine.Length && Char.IsDigit(document.GetCharAt(currentLineOffset + i + 1))) {
 										++i;
 										++currentLength;
 									}
 								}
 								
 								if (i + 1 < currentLine.Length) {
-									char nextch = Char.ToUpper(document.GetCharAt(currentLine.Offset + i + 1));
+									char nextch = Char.ToUpper(document.GetCharAt(currentLineOffset + i + 1));
 									if (nextch == 'F' || nextch == 'M' || nextch == 'D') {
 										isfloatingpoint = true;
 										++i;
@@ -593,15 +596,15 @@ namespace ICSharpCode.TextEditor.Document
 								
 								if (!isfloatingpoint) {
 									bool isunsigned = false;
-									if (i + 1 < currentLine.Length && Char.ToUpper(document.GetCharAt(currentLine.Offset + i + 1)) == 'U') {
+									if (i + 1 < currentLineLength && Char.ToUpper(document.GetCharAt(currentLineOffset + i + 1)) == 'U') {
 										++i;
 										++currentLength;
 										isunsigned = true;
 									}
-									if (i + 1 < currentLine.Length && Char.ToUpper(document.GetCharAt(currentLine.Offset + i + 1)) == 'L') {
+									if (i + 1 < currentLineLength && Char.ToUpper(document.GetCharAt(currentLineOffset + i + 1)) == 'L') {
 										++i;
 										++currentLength;
-										if (!isunsigned && i + 1 < currentLine.Length && Char.ToUpper(document.GetCharAt(currentLine.Offset + i + 1)) == 'U') {
+										if (!isunsigned && i + 1 < currentLineLength && Char.ToUpper(document.GetCharAt(currentLineOffset + i + 1)) == 'U') {
 											++i;
 											++currentLength;
 										}
