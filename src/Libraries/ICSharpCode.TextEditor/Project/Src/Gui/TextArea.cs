@@ -898,7 +898,7 @@ namespace ICSharpCode.TextEditor
 //				return;
 //			}
 			
-			//lineBegin     = Math.Min(lineBegin, FirstPhysicalLine);
+			lineBegin = Document.GetVisibleLine(lineBegin);
 			int y         = Math.Max(    0, (int)(lineBegin * textView.FontHeight));
 			y = Math.Max(0, y - this.virtualTop.Y);
 			Rectangle r = new Rectangle(0,
