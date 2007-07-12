@@ -130,6 +130,47 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			Assert.IsTrue(ifElseStatement.TrueStatement[0] is BlockStatement, "Statement was: " + ifElseStatement.TrueStatement[0]);
 			Assert.IsTrue(ifElseStatement.ElseIfSections[0].EmbeddedStatement.Children[0] is StopStatement, "Statement was: " + ifElseStatement.ElseIfSections[0].EmbeddedStatement.Children[0]);
 		}
+		[Test]
+		public void VBNetMultiStatementIfStatementTest()
+		{
+			IfElseStatement ifElseStatement = ParseUtilVBNet.ParseStatement<IfElseStatement>("If True THEN Stop : b");
+			Assert.IsFalse(ifElseStatement.Condition.IsNull);
+			Assert.AreEqual(2, ifElseStatement.TrueStatement.Count, "true count");
+			Assert.AreEqual(0, ifElseStatement.FalseStatement.Count, "false count");
+			
+			Assert.IsTrue(ifElseStatement.TrueStatement[0] is StopStatement);
+			Assert.IsTrue(ifElseStatement.TrueStatement[1] is ExpressionStatement);
+		}
+		[Test]
+		public void VBNetMultiStatementIfStatementWithEndStatementTest()
+		{
+			IfElseStatement ifElseStatement = ParseUtilVBNet.ParseStatement<IfElseStatement>("If True THEN Stop : End : b");
+			Assert.IsFalse(ifElseStatement.Condition.IsNull);
+			Assert.AreEqual(3, ifElseStatement.TrueStatement.Count, "true count");
+			Assert.AreEqual(0, ifElseStatement.FalseStatement.Count, "false count");
+			
+			Assert.IsTrue(ifElseStatement.TrueStatement[0] is StopStatement);
+			Assert.IsTrue(ifElseStatement.TrueStatement[1] is EndStatement);
+			Assert.IsTrue(ifElseStatement.TrueStatement[2] is ExpressionStatement);
+		}
+		
+		[Test]
+		public void VBNetIfWithEmptyElseTest()
+		{
+			IfElseStatement ifElseStatement = ParseUtilVBNet.ParseStatement<IfElseStatement>("If True THEN a Else");
+			Assert.IsFalse(ifElseStatement.Condition.IsNull);
+			Assert.AreEqual(1, ifElseStatement.TrueStatement.Count, "true count");
+			Assert.AreEqual(0, ifElseStatement.FalseStatement.Count, "false count");
+		}
+		
+		[Test]
+		public void VBNetIfWithMultipleColons()
+		{
+			IfElseStatement ifElseStatement = ParseUtilVBNet.ParseStatement<IfElseStatement>("If True THEN a : : b");
+			Assert.IsFalse(ifElseStatement.Condition.IsNull);
+			Assert.AreEqual(2, ifElseStatement.TrueStatement.Count, "true count");
+			Assert.AreEqual(0, ifElseStatement.FalseStatement.Count, "false count");
+		}
 		#endregion
 	}
 }

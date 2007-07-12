@@ -2413,8 +2413,6 @@ EmbeddedStatement<out Statement statement>
 	| /* 10.8.1 */
 	"If" (. Location ifStartLocation = t.Location; .) Expr<out expr> [ "Then" ] 
 	(	
-		IF (IsEndStmtAhead()) "End" (. statement = new IfElseStatement(expr, new EndStatement()); statement.StartLocation = ifStartLocation; statement.EndLocation = t.Location; .) 
-		|
 		/* multiline if statement */
 		EndOfStmt Block<out embeddedStatement>
 		(.
@@ -2449,24 +2447,17 @@ EmbeddedStatement<out Statement statement>
 			ifStatement.EndLocation = t.Location;
 			statement = ifStatement;
 		.)
-		| /* singleline if statement */
-		EmbeddedStatement<out embeddedStatement>
+	|	/* singleline if statement */
 		(.
-			IfElseStatement ifStatement = new IfElseStatement(expr, embeddedStatement);
+			IfElseStatement ifStatement = new IfElseStatement(expr);
 			ifStatement.StartLocation = ifStartLocation;
 		.)
-		{ ":" EmbeddedStatement<out embeddedStatement> (. ifStatement.TrueStatement.Add(embeddedStatement); .) }
+		SingleLineStatementList<ifStatement.TrueStatement>
 		[
-			"Else" [ EmbeddedStatement<out embeddedStatement> ]
-			(.
-				ifStatement.FalseStatement.Add(embeddedStatement);
-			.)
-			{
-				":" EmbeddedStatement<out embeddedStatement>
-				(. ifStatement.FalseStatement.Add(embeddedStatement); .)
-			}
+			"Else"
+			[ SingleLineStatementList<ifStatement.FalseStatement> ]
 		]
-		(. ifStatement.EndLocation = ifStartLocation; statement = ifStatement; .)
+		(. ifStatement.EndLocation = t.Location; statement = ifStatement; .)
 	)
 	| /* 10.8.2 */
 	"Select" [ "Case" ] Expr<out expr> EndOfStmt
@@ -2532,6 +2523,19 @@ EmbeddedStatement<out Statement statement>
 			(. statement = new UsingStatement(new ExpressionStatement(expr), block); .)
 		)
 		"End" "Using"
+.
+
+SingleLineStatementList<List<Statement> list>
+(. Statement embeddedStatement = null; .)
+=
+	( "End" (. embeddedStatement = new EndStatement(); .)
+	| EmbeddedStatement<out embeddedStatement> )
+	(. if (embeddedStatement != null) list.Add(embeddedStatement); .)
+	{	":" { ":" }
+		( "End" (. embeddedStatement = new EndStatement(); .)
+		| EmbeddedStatement<out embeddedStatement> )
+		(. if (embeddedStatement != null) list.Add(embeddedStatement); .)
+	}
 .
 
 /* 10.9.2 */
