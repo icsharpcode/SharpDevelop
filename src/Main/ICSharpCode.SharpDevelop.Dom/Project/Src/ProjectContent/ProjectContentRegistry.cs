@@ -314,7 +314,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 					// add default .NET assemblies to redirected assemblies (both when loaded from persistence
 					// and when loaded using Reflection)
 					lock (redirectedAssemblyNames) {
-						redirectedAssemblyNames.Add(shortName, pc.AssemblyFullName);
+						redirectedAssemblyNames[shortName] = pc.AssemblyFullName;
 					}
 				}
 			} else {
@@ -404,3 +404,4 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 	}
 }
+

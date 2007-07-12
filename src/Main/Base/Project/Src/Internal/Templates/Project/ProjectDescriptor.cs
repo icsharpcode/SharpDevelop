@@ -142,10 +142,12 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		
 		void LoadProjectItems(XmlElement projectItemsElement)
 		{
+			bool escapeIncludeValue = String.Equals(projectItemsElement.GetAttribute("escapeValue"), "false", StringComparison.OrdinalIgnoreCase);
 			foreach (XmlElement projectItemElement in ChildElements(projectItemsElement)) {
 				ProjectItem item = new UnknownProjectItem(null,
 				                                          projectItemElement.Name,
-				                                          projectItemElement.GetAttribute("Include"));
+				                                          projectItemElement.GetAttribute("Include"),
+				                                          escapeIncludeValue);
 				foreach (XmlElement metadataElement in ChildElements(projectItemElement)) {
 					item.SetMetadata(metadataElement.Name, metadataElement.InnerText);
 				}

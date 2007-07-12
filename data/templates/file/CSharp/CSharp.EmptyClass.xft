@@ -20,7 +20,7 @@
 		${Path}                     -> Full path of the file
 		${ClassName}                -> Class name (generally FileNameWithoutExtension w/o 'bad' characters)
 	-->
-	<Properties>
+	<!--<Properties>
 		<Property
 			name          = "IsSealed"
 			localizedName = "${res:Templates.File.Properties.IsSealed}"
@@ -29,7 +29,7 @@
 			category      = "${res:Templates.File.Properties.ContextCategory}"
 			description   = "${res:Templates.File.Properties.IsSealed.Description}"
 		/>
-	</Properties>
+	</Properties>-->
 
 	<Files>
 		<File name="${FullName}" language="C#"><![CDATA[${StandardHeader.C#}
@@ -41,7 +41,7 @@ namespace ${StandardNamespace}
 	/// <summary>
 	/// Description of ${ClassName}.
 	/// </summary>
-	public <% if (IsSealed) { %>sealed <% } %>class ${ClassName}
+	public class ${ClassName}
 	{
 		public ${ClassName}()
 		{

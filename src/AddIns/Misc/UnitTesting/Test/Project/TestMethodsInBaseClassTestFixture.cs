@@ -38,6 +38,7 @@ namespace UnitTesting.Tests.Project
 	public class TestMethodsInBaseClassTestFixture
 	{
 		TestClass testClass;
+		MockClass c;
 		
 		[SetUp]
 		public void SetUp()
@@ -55,7 +56,7 @@ namespace UnitTesting.Tests.Project
 			baseClass.Methods.Add(baseMethod);
 			
 			// Create the derived test class.
-			MockClass c = new MockClass("RootNamespace.MyTestFixture");
+			c = new MockClass("RootNamespace.MyTestFixture");
 			c.Attributes.Add(new MockAttribute("TestFixture"));
 			c.ProjectContent = projectContent;
 			MockMethod method = new MockMethod("DerivedMethod");
@@ -87,6 +88,19 @@ namespace UnitTesting.Tests.Project
 		public void BaseMethod()
 		{
 			Assert.IsTrue(testClass.TestMethods.Contains("TestFixtureBase.BaseMethod"));
+		}
+		
+		/// <summary>
+		/// The TestMethod.Method property should return an IMethod 
+		/// that returns the derived class from the DeclaringType property
+		/// and not the base class. This ensures that the correct
+		/// test is run when selected in the unit test tree.
+		/// </summary>
+		[Test]
+		public void BaseMethodDeclaringTypeIsDerivedClass()
+		{
+			TestMethod method = testClass.TestMethods["TestFixtureBase.BaseMethod"];
+			Assert.AreEqual(c, method.Method.DeclaringType);
 		}
 		
 		[Test]

@@ -60,6 +60,7 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="NamespaceFilterTests.cs" />
+    <Compile Include="Project\BaseTestMethodTestFixture.cs" />
     <Compile Include="TestableConditionTests.cs" />
     <Compile Include="Tree\MultipleTestProjectsTestFixture.cs" />
     <Compile Include="Tree\TreeNodeContextMenuTestFixture.cs" />

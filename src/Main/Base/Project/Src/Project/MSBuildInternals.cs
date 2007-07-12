@@ -75,7 +75,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				throw new ArgumentNullException("item");
 			if (item.IsAddedToProject)
 				throw new ArgumentException("item is already added to project", "item");
-			MSBuild.BuildItem newItem = group.AddNewItem(item.ItemType.ToString(), item.Include, true);
+			MSBuild.BuildItem newItem = group.AddNewItem(item.ItemType.ToString(), item.Include, item.TreatIncludeAsLiteral);
 			foreach (string name in item.MetadataNames) {
 				newItem.SetMetadata(name, item.GetMetadata(name));
 			}
@@ -122,6 +122,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			try {
 				MSBuild.Engine engine = CreateEngine();
 				tempProject = engine.CreateNewProject();
+				// tell MSBuild the path so that projects containing <Import Project="relativePath" />
+				// can be loaded
+				tempProject.FullFileName = baseProject.FullFileName;
 				MSBuildBasedProject.InitializeMSBuildProject(tempProject);
 				tempProject.LoadXml(baseProject.Xml);
 				tempProject.SetProperty("Configuration", configuration);

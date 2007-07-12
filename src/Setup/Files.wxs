@@ -306,7 +306,7 @@
 										<File Source="..\..\bin\Tools\Wix\Microsoft.Tools.WindowsInstallerXml.NAntTasks.dll" Name="MICROS_1.DLL" Id="Microsoft.Tools.WindowsInstallerXml.NAntTasks.dll" LongName="Microsoft.Tools.WindowsInstallerXml.NAntTasks.dll" Assembly=".net" AssemblyApplication="Microsoft.Tools.WindowsInstallerXml.NAntTasks.dll" AssemblyManifest="Microsoft.Tools.WindowsInstallerXml.NAntTasks.dll" KeyPath="yes" />
 									</Component>
 									<Component Id="NetFxWixLib" Guid="CE847BC0-E9B2-41A1-A117-A9C0F22BD044" DiskId="1">
-										<File Source="..\..\bin\Tools\Wix\netfx.wixlib" Name="netfx.lib" LongName="netfix.wixlib" Id="netfx.wixlib" />
+										<File Source="..\..\bin\Tools\Wix\netfx.wixlib" Name="netfx.lib" Id="netfx.wixlib" />
 									</Component>
 									<Component Id="NetFxCaDll" Guid="F5970A44-7122-4660-ABCD-821360690CCC" DiskId="1">
 										<File Source="..\..\bin\Tools\Wix\netfxca.dll" Name="netfxca.dll" Id="netfxca.dll" />
@@ -942,6 +942,18 @@
 												<File Source="..\..\AddIns\AddIns\BackendBindings\WixBinding\Templates\DefaultVerifyReadyDialog.wxs" Name="ReadyDlg.wxs" Id="DefaultVerifyReadyDialog.wxs" LongName="DefaultVerifyReadyDialog.wxs" />
 												<File Source="..\..\AddIns\AddIns\BackendBindings\WixBinding\Templates\DefaultViewLicenseAgreementDialog.wxs" Name="LicDlg.wxs" Id="DefaultViewLicenseAgreementDialog.wxs" LongName="DefaultViewLicenseAgreementDialog.wxs" />
 												<File Source="..\..\AddIns\AddIns\BackendBindings\WixBinding\Templates\DefaultWelcomeDialog.wxs" Name="WelcmDlg.wxs" Id="DefaultWelcomeDialog.wxs" LongName="DefaultWelcomeDialog.wxs" />
+											</Component>
+											<Component Guid="C880DD6E-EFD9-436D-8CC3-B91A45BB53E1" DiskId="1" Id="WixUIFeatureTreeProjectTemplate">
+												<File Source="..\..\AddIns\AddIns\BackendBindings\WixBinding\Templates\WixUIFeatureTreeProject.xpt" Name="WUIFTREE.XPT" Id="WixUIFeatureTreeProject.xpt" LongName="WixUIFeatureTreeProject.xpt" KeyPath="yes" />
+											</Component>
+											<Component Guid="5F910AA8-EA41-46C7-9B8B-9DA6DAC835F0" Id="WixUIInstallDirProjectTemplate" DiskId="1">
+												<File Source="..\..\AddIns\AddIns\BackendBindings\WixBinding\Templates\WixUIInstallDirProject.xpt" Name="WUIDIR.XPT" Id="WixUIInstallDirProject.xpt" LongName="WixUIInstallDirProject.xpt" KeyPath="yes" />
+											</Component>
+											<Component Guid="36FF353F-2C22-42D1-9E2A-B2CE5FC2BA56" Id="WixUIMinimalProjectTemplate" DiskId="1">
+												<File Source="..\..\AddIns\AddIns\BackendBindings\WixBinding\Templates\WixUIMinimalProject.xpt" Name="WUIMIN.XPT" Id="WixUIMinimalProject.xpt" LongName="WixUIMinimalProject.xpt" KeyPath="yes" />
+											</Component>
+											<Component Guid="D930CB0E-1554-457C-A274-FF58D10D3659" Id="WixUIMondoProjectTemplate" DiskId="1">
+												<File Source="..\..\AddIns\AddIns\BackendBindings\WixBinding\Templates\WixUIMondoProject.xpt" Name="WUIMONDO.XPT" Id="WixUIMondoProject.xpt" LongName="WixUIMondoProject.xpt" KeyPath="yes" />
 											</Component>
 										</Directory>
 									</Directory>

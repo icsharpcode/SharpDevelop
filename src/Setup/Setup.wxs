@@ -300,6 +300,10 @@
 				<ComponentRef Id="VBNetBindingFiles"/>
 				<ComponentRef Id="WixBindingFiles"/>
 				<ComponentRef Id="WixBindingTemplates"/>
+				<ComponentRef Id="WixUIMondoProjectTemplate"/>
+				<ComponentRef Id="WixUIMinimalProjectTemplate"/>
+				<ComponentRef Id="WixUIInstallDirProjectTemplate"/>
+				<ComponentRef Id="WixUIFeatureTreeProjectTemplate"/>
 				<ComponentRef Id="FormsDesignerFiles"/>
 				<ComponentRef Id="IconEditorAddInFiles"/>
 				<ComponentRef Id="IconEditorExe"/>

@@ -328,7 +328,8 @@ namespace ICSharpCode.UnitTesting
 			if (c.BaseClass != null) {
 				foreach (IMethod method in c.BaseClass.Methods) {
 					if (TestMethod.IsTestMethod(method)) {
-						TestMethod testMethod = new TestMethod(c.BaseClass.Name, method);
+						BaseTestMethod baseTestMethod = new BaseTestMethod(c, method);
+						TestMethod testMethod = new TestMethod(c.BaseClass.Name, baseTestMethod);
 						if (!testMethods.Contains(testMethod.Name)) {
 							testMethods.Add(testMethod);
 						}

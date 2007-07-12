@@ -6,22 +6,23 @@ http://community.sharpdevelop.net/forums/
 ++ WIKI ++
 
 http://wiki.sharpdevelop.net/ (HOME)
-http://wiki.sharpdevelop.net/default.aspx/SharpDevelop.FeatureVideos
-http://wiki.sharpdevelop.net/default.aspx/SharpDevelop.HowToDoThings
+http://wiki.sharpdevelop.net/SharpDevelopSites.ashx (sites and servers)
+http://wiki.sharpdevelop.net/ScreenRecordingsForDevelopers.ashx
 
 
 ++ ROADMAPS ++
 
-http://wiki.sharpdevelop.net/default.aspx/SharpDevelop.SharpDevelop2xRoadmap
+http://wiki.sharpdevelop.net/RoadmapVersion2x.ashx
+http://wiki.sharpdevelop.net/RoadmapVersion3x.ashx
 
 
 ++ HELPING ++
 
-http://wiki.sharpdevelop.net/default.aspx/SharpDevelop.HowCanIHelp
-http://wiki.sharpdevelop.net/default.aspx/SharpDevelop.FeaturesYouCouldHelpUsWith
+http://wiki.sharpdevelop.net/JoiningTheTeam.ashx
+http://wiki.sharpdevelop.net/FeaturesWeSolicitHelpFor.ashx
 
 
 ++ WISH LIST ++
 
-http://wiki.sharpdevelop.net/default.aspx/SharpDevelop.SharpDevelopWishList
+http://wiki.sharpdevelop.net/Wishlist.ashx
 

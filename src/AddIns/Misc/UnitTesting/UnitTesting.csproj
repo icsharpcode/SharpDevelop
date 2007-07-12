@@ -59,6 +59,7 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
     <Compile Include="Src\AllTestsTreeNode.cs" />
+    <Compile Include="Src\BaseTestMethod.cs" />
     <Compile Include="Src\UnitTestCommands.cs" />
     <Compile Include="Src\TestableCondition.cs" />
     <Compile Include="Src\RunningTestsCondition.cs" />

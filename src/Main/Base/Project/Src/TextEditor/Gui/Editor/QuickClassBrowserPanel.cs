@@ -160,7 +160,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			string ToStringInternal()
 			{
 				IAmbience ambience = AmbienceService.CurrentAmbience;
-				ambience.ConversionFlags = ConversionFlags.ShowParameterNames;
+				ambience.ConversionFlags = ConversionFlags.ShowParameterList | ConversionFlags.ShowParameterNames;
 				if (item is IMethod) {
 					return ambience.Convert((IMethod)item);
 				}

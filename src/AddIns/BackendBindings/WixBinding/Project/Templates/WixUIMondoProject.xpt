@@ -1,0 +1,94 @@
+﻿<?xml version="1.0"?>
+<Template originators="Matt Ward">
+	<TemplateConfiguration>
+		<Name>${res:Templates.Project.SetupProject.Name} - WixUI Mondo</Name>
+		<Category>${res:Templates.File.Categories.Setup}</Category>
+		<Icon>Icons.32x32.EmptyProjectIcon</Icon>
+		<Description>${res:Templates.Project.SetupProject.Description}</Description>
+	</TemplateConfiguration>
+	
+	<!-- Actions -->
+	<Actions>
+		<Open filename="Setup.wxs"/>
+	</Actions>
+	
+	<!-- Template Content -->
+	<Project language="Wix">
+		<PropertyGroup escapeValue="false">
+			<LocalizedStringFile>$(WixToolPath)\WixUI_en-us.wxl</LocalizedStringFile>
+		</PropertyGroup>
+		<ProjectItems>
+			<WixLibrary Include="$(WixToolPath)\wixui.wixlib"/>
+		</ProjectItems>
+		<Files>
+			<File name="Setup.wxs"><![CDATA[<?xml version="1.0"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2003/01/wi">
+	<Product Id="${GUID}"
+		Name="Your Application"
+		Language="1033"
+		Version="1.0.0.0"
+		UpgradeCode="${GUID}"
+		Manufacturer="Your Company">
+		<Package Id="${GUID}"
+			Description="#Description"
+			Comments="Comments"
+			InstallerVersion="200"
+			Compressed="yes"/>
+		<!--
+			Source media for the installation. 
+ 			Specifies a single cab file to be embedded in the installer's .msi. 
+		-->
+		<Media Id="1" Cabinet="contents.cab" EmbedCab="yes" CompressionLevel="high"/>
+		
+		<!-- Installation directory and files are defined in Files.wxs -->
+		<Directory Id="TARGETDIR" Name="SourceDir"/>
+		
+		<Feature Id="Complete"
+		         Title="Your Application"
+		         Description="Your description"
+		         Level="1"
+		         ConfigurableDirectory="INSTALLDIR">
+		         <ComponentRef Id="MyComponent"/>
+		</Feature>
+		
+		<!-- 
+			Using the Wix UI library
+ 
+			WixUI_Mondo includes the full set of dialogs:
+ 			
+			welcome
+			license agreement
+			setup type (typical, custom, and complete)
+			feature customization
+			directory browse
+			disk cost. 
+
+			Maintenance-mode dialogs are also included. 
+
+			Use WixUI_Mondo when you have some of your product's features 
+			are not installed by default and there is a meaningful 
+			difference between typical and complete installs
+		-->
+		<UIRef Id="WixUI_Mondo"/>
+	</Product>
+</Wix>
+]]></File>
+			<File name="Files.wxs"><![CDATA[<?xml version="1.0"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2003/01/wi">
+	<Fragment>
+		<DirectoryRef Id="TARGETDIR">
+			<Directory Id="ProgramFilesFolder" Name="PFiles">
+				<Directory Id="INSTALLDIR" Name="YourApp" LongName="Your Application">
+					<Component Id="MyComponent" Guid="${GUID}" DiskId="1">
+						<File Id="LicenseFile" Name="license.rtf" Source="license.rtf"/>
+					</Component>
+				</Directory>
+			</Directory>
+		</DirectoryRef>
+	</Fragment>
+</Wix>
+]]></File>
+			<File name="license.rtf" src="DefaultLicense.rtf" buildAction="None" />		
+		</Files>
+	</Project>
+</Template>
