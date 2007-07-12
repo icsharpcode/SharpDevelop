@@ -91,6 +91,11 @@ namespace ICSharpCode.SharpDevelop.Project
 			            PropertyStorageLocations.ConfigurationSpecific, true);
 			SetProperty("Release", null, "DebugType", "None",
 			            PropertyStorageLocations.ConfigurationSpecific, true);
+			
+			SetProperty("Debug", null, "Optimize", "False",
+			            PropertyStorageLocations.ConfigurationSpecific, true);
+			SetProperty("Release", null, "Optimize", "True",
+			            PropertyStorageLocations.ConfigurationSpecific, true);
 		}
 		
 		/// <summary>
