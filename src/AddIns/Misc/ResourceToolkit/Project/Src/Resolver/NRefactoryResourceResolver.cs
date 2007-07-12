@@ -182,7 +182,7 @@ namespace Hornung.ResourceToolkit.Resolver
 				
 				string fileName = null;
 				
-				if (resourceName.StartsWith(p.RootNamespace, StringComparison.InvariantCultureIgnoreCase)) {
+				if (resourceName.StartsWith(p.RootNamespace, StringComparison.InvariantCultureIgnoreCase) && resourceName.Length > p.RootNamespace.Length) {
 					
 					if (p.Language == "VBNet") {
 						
