@@ -569,7 +569,7 @@ namespace ICSharpCode.StartPage
 		public void RenderSectionAuthorBody(StringBuilder builder)
 		{
 			try {
-				builder.Append("<iframe name=\"iframe\" src=\"http://wiki.sharpdevelop.net/default.aspx/SharpDevelop.Contributors\" width=\"100%\" height=\"1400\" />");
+				builder.Append("<iframe name=\"iframe\" src=\"http://wiki.sharpdevelop.net/Contributors.ashx\" width=\"100%\" height=\"1400\" />");
 //
 //
 //
@@ -610,7 +610,7 @@ namespace ICSharpCode.StartPage
 		public void RenderSectionHelpWantedBody(StringBuilder builder)
 		{
 			try {
-				builder.Append("<iframe name=\"iframe\" src=\"http://wiki.sharpdevelop.net/default.aspx/SharpDevelop.FeaturesYouCouldHelpUsWith\"  width=\"100%\" height=\"1000\" />");
+				builder.Append("<iframe name=\"iframe\" src=\"http://wiki.sharpdevelop.net/FeaturesWeSolicitHelpFor.ashx\"  width=\"100%\" height=\"1000\" />");
 //
 //				string html = ConvertXml.ConvertToString(Application.StartupPath +
 //				                   Path.DirectorySeparatorChar + ".." +
