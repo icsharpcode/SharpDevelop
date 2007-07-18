@@ -15,7 +15,7 @@
 	         Version="2.2.$(var.PRODUCTBUILDVERSION)">
 		
 		<Package Id="$(var.PACKAGECODEGUID)"
-		         Description="SharpDevelop 2.2.0.$(var.PRODUCTBUILDVERSION)"
+		         Description="SharpDevelop 2.2.1.$(var.PRODUCTBUILDVERSION)"
 		         InstallerVersion="300"
 		         Compressed="yes"/>
 		
