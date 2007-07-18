@@ -250,8 +250,12 @@ namespace ICSharpCode.Build.Tasks
 			}
 		}
 		
-		protected override string GenerateResponseFileCommands()
+		//protected override string GenerateResponseFileCommands()
+		protected override string GenerateCommandLineCommands()
 		{
+			// using a response file fails when the a path contains spaces, but using the command line
+			// works fine (FxCop bug?)
+			
 			StringBuilder b = new StringBuilder();
 			AppendSwitch(b, "o", realLogFile);
 			AppendSwitch(b, "f", inputAssembly);
@@ -274,6 +278,9 @@ namespace ICSharpCode.Build.Tasks
 					AppendSwitch(b, "ruleid", rule);
 				}
 			}
+			#if DEBUG
+			Console.WriteLine(b.ToString());
+			#endif
 			return b.ToString();
 		}
 	}
