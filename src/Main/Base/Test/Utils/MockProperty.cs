@@ -36,6 +36,18 @@ namespace ICSharpCode.SharpDevelop.Tests.Utils
 			}
 		}
 		
+		public ModifierEnum GetterModifiers {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public ModifierEnum SetterModifiers {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
 		public bool CanGet {
 			get {
 				throw new NotImplementedException();

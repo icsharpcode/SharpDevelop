@@ -20,7 +20,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 	{
 		public const long FileMagic = 0x11635233ED2F428C;
 		public const long IndexFileMagic = 0x11635233ED2F427D;
-		public const short FileVersion = 12;
+		public const short FileVersion = 13;
 		
 		ProjectContentRegistry registry;
 		string cacheDirectory;
@@ -929,6 +929,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 				} else {
 					writer.Write((byte)0);
 				}
+				writer.Write((byte)((p.GetterModifiers != ModifierEnum.None ? 1 : 0) + (p.SetterModifiers != ModifierEnum.None ? 2 : 0)));
+				if (p.GetterModifiers != ModifierEnum.None) {
+					writer.Write((int)p.GetterModifiers);
+				}
+				if (p.SetterModifiers != ModifierEnum.None) {
+					writer.Write((int)p.SetterModifiers);
+				}
 				WriteParameters(p.Parameters);
 			}
 			
@@ -937,6 +944,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 				DefaultProperty p = new DefaultProperty(currentClass, ReadString());
 				ReadMember(p);
 				p.accessFlags = reader.ReadByte();
+				byte b = reader.ReadByte();
+				if ((b & 1) == 1) {
+					p.GetterModifiers = (ModifierEnum)reader.ReadInt32();
+				}
+				if ((b & 2) == 2) {
+					p.SetterModifiers = (ModifierEnum)reader.ReadInt32();
+				}
 				ReadParameters(p);
 				return p;
 			}

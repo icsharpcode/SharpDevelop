@@ -21,6 +21,7 @@ namespace ICSharpCode.SharpDevelop.Dom {
 		const byte getterFlag    = 0x02;
 		const byte setterFlag    = 0x04;
 		const byte extensionFlag = 0x08;
+		ModifierEnum getterModifiers, setterModifiers;
 		
 		public bool IsIndexer {
 			get { return (accessFlags & indexerFlag) == indexerFlag; }
@@ -70,23 +71,25 @@ namespace ICSharpCode.SharpDevelop.Dom {
 				parameters = value;
 			}
 		}
-
+		
 		public DomRegion GetterRegion {
-			get {
-				return getterRegion;
-			}
-			set {
-				getterRegion = value;
-			}
+			get { return getterRegion; }
+			set { getterRegion = value; }
 		}
-
+		
 		public DomRegion SetterRegion {
-			get {
-				return setterRegion;
-			}
-			set {
-				setterRegion = value;
-			}
+			get { return setterRegion; }
+			set { setterRegion = value; }
+		}
+		
+		public ModifierEnum GetterModifiers {
+			get { return getterModifiers; }
+			set { getterModifiers = value; }
+		}
+		
+		public ModifierEnum SetterModifiers {
+			get { return setterModifiers; }
+			set { setterModifiers = value; }
 		}
 		
 		public DefaultProperty(IClass declaringType, string name) : base(declaringType, name)

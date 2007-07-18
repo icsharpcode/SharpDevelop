@@ -569,10 +569,12 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (propertyDeclaration.HasGetRegion) {
 				property.GetterRegion = GetRegion(propertyDeclaration.GetRegion.StartLocation, propertyDeclaration.GetRegion.EndLocation);
 				property.CanGet = true;
+				property.GetterModifiers = ConvertModifier(propertyDeclaration.GetRegion.Modifier, ModifierEnum.None);
 			}
 			if (propertyDeclaration.HasSetRegion) {
 				property.SetterRegion = GetRegion(propertyDeclaration.SetRegion.StartLocation, propertyDeclaration.SetRegion.EndLocation);
 				property.CanSet = true;
+				property.SetterModifiers = ConvertModifier(propertyDeclaration.SetRegion.Modifier, ModifierEnum.None);
 			}
 			property.Documentation = GetDocumentation(region.BeginLine, propertyDeclaration.Attributes);
 			ConvertAttributes(propertyDeclaration, property);

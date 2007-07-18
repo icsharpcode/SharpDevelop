@@ -223,8 +223,14 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 				                             p.Name,
 				                             ConvertParameters(p.Parameters, targetContext));
 				md.TypeReference = ConvertType(p.ReturnType, targetContext);
-				if (p.CanGet) md.GetRegion = new PropertyGetRegion(CreateNotImplementedBlock(), null);
-				if (p.CanSet) md.SetRegion = new PropertySetRegion(CreateNotImplementedBlock(), null);
+				if (p.CanGet) {
+					md.GetRegion = new PropertyGetRegion(CreateNotImplementedBlock(), null);
+					md.GetRegion.Modifier = ConvertModifier(p.GetterModifiers, null);
+				}
+				if (p.CanSet) {
+					md.SetRegion = new PropertySetRegion(CreateNotImplementedBlock(), null);
+					md.SetRegion.Modifier = ConvertModifier(p.SetterModifiers, null);
+				}
 				return md;
 			}
 		}
@@ -593,29 +599,32 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 			node.Modifier &= ~(Modifiers.Virtual | Modifiers.Abstract);
 			node.Modifier |= Modifiers.Override;
 			
-			MethodDeclaration method = node as MethodDeclaration;
-			if (method != null) {
-				method.Body.Children.Clear();
-				if (method.TypeReference.SystemType == "System.Void") {
-					method.Body.AddChild(new ExpressionStatement(CreateForwardingMethodCall(method)));
-				} else {
-					method.Body.AddChild(new ReturnStatement(CreateForwardingMethodCall(method)));
+			if (!baseMember.IsAbstract) {
+				// replace the method/property body with a call to the base method/property
+				MethodDeclaration method = node as MethodDeclaration;
+				if (method != null) {
+					method.Body.Children.Clear();
+					if (method.TypeReference.SystemType == "System.Void") {
+						method.Body.AddChild(new ExpressionStatement(CreateForwardingMethodCall(method)));
+					} else {
+						method.Body.AddChild(new ReturnStatement(CreateForwardingMethodCall(method)));
+					}
 				}
-			}
-			PropertyDeclaration property = node as PropertyDeclaration;
-			if (property != null) {
-				Expression field = new FieldReferenceExpression(new BaseReferenceExpression(),
-				                                                property.Name);
-				if (!property.GetRegion.Block.IsNull) {
-					property.GetRegion.Block.Children.Clear();
-					property.GetRegion.Block.AddChild(new ReturnStatement(field));
-				}
-				if (!property.SetRegion.Block.IsNull) {
-					property.SetRegion.Block.Children.Clear();
-					Expression expr = new AssignmentExpression(field,
-					                                           AssignmentOperatorType.Assign,
-					                                           new IdentifierExpression("value"));
-					property.SetRegion.Block.AddChild(new ExpressionStatement(expr));
+				PropertyDeclaration property = node as PropertyDeclaration;
+				if (property != null) {
+					Expression field = new FieldReferenceExpression(new BaseReferenceExpression(),
+					                                                property.Name);
+					if (!property.GetRegion.Block.IsNull) {
+						property.GetRegion.Block.Children.Clear();
+						property.GetRegion.Block.AddChild(new ReturnStatement(field));
+					}
+					if (!property.SetRegion.Block.IsNull) {
+						property.SetRegion.Block.Children.Clear();
+						Expression expr = new AssignmentExpression(field,
+						                                           AssignmentOperatorType.Assign,
+						                                           new IdentifierExpression("value"));
+						property.SetRegion.Block.AddChild(new ExpressionStatement(expr));
+					}
 				}
 			}
 			return node;

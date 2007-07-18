@@ -30,5 +30,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 		bool IsIndexer {
 			get;
 		}
+		
+		ModifierEnum GetterModifiers {
+			get;
+		}
+		
+		ModifierEnum SetterModifiers {
+			get;
+		}
 	}
 }

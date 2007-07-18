@@ -23,7 +23,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 		ProjectContentRegistry projectContentRegistry = ParserService.DefaultProjectContentRegistry;
 		
 		#region Test helper methods
-		ICompilationUnit Parse(string fileName, string fileContent)
+		public ICompilationUnit Parse(string fileName, string fileContent)
 		{
 			ICSharpCode.NRefactory.IParser p = ICSharpCode.NRefactory.ParserFactory.CreateParser(ICSharpCode.NRefactory.SupportedLanguage.CSharp, new StringReader(fileContent));
 			p.ParseMethodBodies = false;
