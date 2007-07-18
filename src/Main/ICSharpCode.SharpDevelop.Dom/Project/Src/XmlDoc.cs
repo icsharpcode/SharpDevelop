@@ -18,6 +18,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 	/// </summary>
 	public sealed class XmlDoc : IDisposable
 	{
+		static readonly List<string> xmlDocLookupDirectories = new List<string>(
+			new string[] { System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory() }
+		);
+		
+		public static IList<string> XmlDocLookupDirectories {
+			get { return xmlDocLookupDirectories; }
+		}
+		
 		struct IndexEntry : IComparable<IndexEntry>
 		{
 			public int HashCode;

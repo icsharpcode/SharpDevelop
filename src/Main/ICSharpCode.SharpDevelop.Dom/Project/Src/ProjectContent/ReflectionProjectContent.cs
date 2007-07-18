@@ -9,7 +9,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using Microsoft.Win32;
 
 using ICSharpCode.SharpDevelop.Dom.ReflectionLayer;
 
@@ -116,35 +115,17 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 			
 			string fileName = LookupLocalizedXmlDoc(assemblyLocation);
-			// Not found -> look in runtime directory.
 			if (fileName == null) {
-				string runtimeDirectory = System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory();
-				fileName = LookupLocalizedXmlDoc(Path.Combine(runtimeDirectory, Path.GetFileName(assemblyLocation)));
-			}
-			if (fileName == null) {
-				// still not found -> look in WinFX reference directory
-				string referenceDirectory = WinFXReferenceDirectory;
-				if (!string.IsNullOrEmpty(referenceDirectory)) {
-					fileName = LookupLocalizedXmlDoc(Path.Combine(referenceDirectory, Path.GetFileName(assemblyLocation)));
+				// Not found -> look in other directories:
+				foreach (string testDirectory in XmlDoc.XmlDocLookupDirectories) {
+					fileName = LookupLocalizedXmlDoc(Path.Combine(testDirectory, Path.GetFileName(assemblyLocation)));
+					if (fileName != null)
+						break;
 				}
 			}
 			
 			if (fileName != null && registry.persistence != null) {
 				this.XmlDoc = XmlDoc.Load(fileName, Path.Combine(registry.persistence.CacheDirectory, "XmlDoc"));
-			}
-		}
-		
-		static string WinFXReferenceDirectory {
-			get {
-				RegistryKey k = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\NET Framework Setup\NDP\v3.0\Setup\Windows Communication Foundation");
-				if (k == null)
-					return null;
-				object o = k.GetValue("ReferenceInstallPath");
-				k.Close();
-				if (o == null)
-					return null;
-				else
-					return o.ToString();
 			}
 		}
 		
