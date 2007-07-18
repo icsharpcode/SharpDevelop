@@ -16,8 +16,8 @@
             <Name value="bracketMatchingStyleComboBox" />
             <Anchor value="Bottom, Right" />
             <TabIndex value="9" />
-            <Location value="{X=216,Y=178}" />
-            <Size value="{Width=168, Height=21}" />
+            <Location value="{X=226,Y=178}" />
+            <Size value="{Width=158, Height=21}" />
             <DropDownStyle value="DropDownList" />
           </System.Windows.Forms.ComboBox>
           <System.Windows.Forms.ComboBox>
@@ -48,7 +48,7 @@
           <System.Windows.Forms.CheckBox>
             <Name value="showBracketHighlighterCheckBox" />
             <Location value="{X=8,Y=179}" />
-            <Size value="{Width=208, Height=24}" />
+            <Size value="{Width=228, Height=24}" />
             <Text value="${res:Dialog.Options.IDEOptions.TextEditor.Markers.HiglightBracketCheckBox}" />
             <Anchor value="Top, Left, Right" />
             <TabIndex value="8" />
