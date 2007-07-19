@@ -87,6 +87,10 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 			/// parsing a field initializer (TypeDecl)
 			/// </summary>
 			Initializer,
+			/// <summary>
+			/// Between class/struct/enum keyword and body of the type declaration
+			/// </summary>
+			TypeDecl
 		}
 		
 		/// <summary>
@@ -167,6 +171,14 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 				this.parent = parent;
 				if (parent != null) {
 					this.type = parent.childType;
+				}
+				ResetChildType();
+				SetDefaultContext();
+			}
+			
+			public void ResetChildType()
+			{
+				if (parent != null) {
 					switch (this.type) {
 						case FrameType.Property:
 						case FrameType.Event:
@@ -176,8 +188,9 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 							this.childType = this.type;
 							break;
 					}
+				} else {
+					this.childType = this.type;
 				}
-				SetDefaultContext();
 			}
 		}
 		
@@ -258,7 +271,7 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 				case Tokens.OpenCurlyBrace:
 					frame.lastExpressionStart = Location.Empty;
 					frame = new Frame(frame);
-					frame.parent.childType = frame.parent.type;
+					frame.parent.ResetChildType();
 					frame.bracketType = '{';
 					break;
 				case Tokens.CloseCurlyBrace:
@@ -375,18 +388,21 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 				case Tokens.Class:
 				case Tokens.Struct:
 					if (frame.type == FrameType.Global || frame.type == FrameType.TypeDecl) {
+						frame.state = FrameState.TypeDecl;
 						frame.childType = FrameType.TypeDecl;
 						frame.SetContext(ExpressionContext.IdentifierExpected);
 					}
 					break;
 				case Tokens.Interface:
 					if (frame.type == FrameType.Global || frame.type == FrameType.TypeDecl) {
+						frame.state = FrameState.TypeDecl;
 						frame.childType = FrameType.Interface;
 						frame.SetContext(ExpressionContext.IdentifierExpected);
 					}
 					break;
 				case Tokens.Enum:
 					if (frame.type == FrameType.Global || frame.type == FrameType.TypeDecl) {
+						frame.state = FrameState.TypeDecl;
 						frame.childType = FrameType.Enum;
 						frame.SetContext(ExpressionContext.IdentifierExpected);
 					}

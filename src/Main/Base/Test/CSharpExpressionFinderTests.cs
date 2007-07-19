@@ -240,6 +240,51 @@ class Main {
 		{
 			FindFull(program3, "oo2)", "foo2", ExpressionContext.Default);
 		}
+		
+		
+		[Test]
+		public void NestedClass()
+		{
+			const string nestedClassProgram = @"using System; using System.Collections.Generic;
+class Main {
+	/* in main */
+	class Nested {
+		/* in nested */
+	}
+	/* still in main */
+	enum NestedEnum {
+		/* in enum */
+	}
+}";
+			
+			FindExpr(nestedClassProgram, "\t/* in main", null, ExpressionContext.TypeDeclaration);
+			FindExpr(nestedClassProgram, "\t/* in nested ", null, ExpressionContext.TypeDeclaration);
+			FindExpr(nestedClassProgram, "\t/* still in main", null, ExpressionContext.TypeDeclaration);
+			FindExpr(nestedClassProgram, "\t/* in enum", null, ExpressionContext.IdentifierExpected);
+		}
+		
+		[Test]
+		public void PropertyClass()
+		{
+			const string propertyProgram = @"using System; using System.Collections.Generic;
+class Main {
+	public int Prop {
+		/* in prop */
+		get {
+			/* in getter */
+		}
+		set {
+			/* in setter */
+		}
+		/* still in prop */
+	}
+}";
+			
+			FindExpr(propertyProgram, "\t/* in prop", null, ExpressionContext.PropertyDeclaration);
+			FindExpr(propertyProgram, "\t/* in getter ", null, ExpressionContext.MethodBody);
+			FindExpr(propertyProgram, "\t/* in setter", null, ExpressionContext.MethodBody);
+			FindExpr(propertyProgram, "\t/* still in prop", null, ExpressionContext.PropertyDeclaration);
+		}
 	}
 }
 
