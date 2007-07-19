@@ -147,7 +147,7 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 							}
 							break;
 						case FrameType.Statements:
-							SetContext(ExpressionContext.StatementStart);
+							SetContext(ExpressionContext.MethodBody);
 							break;
 						case FrameType.ParameterList:
 							SetContext(ExpressionContext.ParameterType);
@@ -302,6 +302,9 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 					if (frame.parent != null && frame.bracketType == '<') {
 						frame.type = FrameType.Popped;
 						frame = frame.parent;
+					} else {
+						frame.lastExpressionStart = Location.Empty;
+						frame.SetDefaultContext();
 					}
 					break;
 				case Tokens.Dot:

@@ -78,13 +78,13 @@ class Main {
 		[Test]
 		public void Simple()
 		{
-			FindFull(document, "mple += 1", "simple", ExpressionContext.StatementStart);
+			FindFull(document, "mple += 1", "simple", ExpressionContext.MethodBody);
 		}
 		
 		[Test]
 		public void SimpleBeginningOfExpression()
 		{
-			FindFull(document, "simple += 1", "simple", ExpressionContext.StatementStart);
+			FindFull(document, "simple += 1", "simple", ExpressionContext.MethodBody);
 		}
 		
 		[Test]
@@ -165,6 +165,8 @@ class Main {
 			
 		} else if (boolVar) {
 			
+		} else if (arg > b) {
+			
 		}
 		List<string> a = new
 	}
@@ -212,13 +214,19 @@ class Main {
 		[Test]
 		public void ConditionInIfStatement()
 		{
-			FindFull(program3, "oolVar)", "boolVar", ExpressionContext.StatementStart);
+			FindFull(program3, "oolVar)", "boolVar", ExpressionContext.MethodBody);
 		}
 		
 		[Test]
 		public void IdentifierFollowedByLessThan()
 		{
-			FindFull(program3, "rg < b", "arg", ExpressionContext.StatementStart);
+			FindFull(program3, "rg < b", "arg", ExpressionContext.MethodBody);
+		}
+		
+		[Test]
+		public void IdentifierFollowedByGreaterThan()
+		{
+			FindFull(program3, "rg > b", "arg", ExpressionContext.MethodBody);
 		}
 	}
 }

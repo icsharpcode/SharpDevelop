@@ -88,9 +88,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// <example>event EventHandler NameChanged { *expr* }</example>
 		public static ExpressionContext EventDeclaration = new DefaultExpressionContext("EventDeclaration");
 		
-		/// <summary>The context is the start of a new statement.</summary>
+		/// <summary>The context is the body of a method.</summary>
 		/// <example>void Main () { *expr* }</example>
-		public static ExpressionContext StatementStart = new DefaultExpressionContext("StatementStart");
+		public static ExpressionContext MethodBody = new DefaultExpressionContext("MethodBody");
 		
 		
 		/// <summary>The context is the body of a type declaration.</summary>

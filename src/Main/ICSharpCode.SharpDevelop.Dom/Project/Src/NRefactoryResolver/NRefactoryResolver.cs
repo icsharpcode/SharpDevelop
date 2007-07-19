@@ -1101,7 +1101,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					AddCSharpKeywords(result, NR.Parser.CSharp.Tokens.InterfaceLevel);
 					AddCSharpPrimitiveTypes(result);
 					CtrlSpaceInternal(result, fileContent);
-				} else if (context == ExpressionContext.StatementStart) {
+				} else if (context == ExpressionContext.MethodBody) {
 					result.Add("var");
 					AddCSharpKeywords(result, NR.Parser.CSharp.Tokens.StatementStart);
 					AddCSharpPrimitiveTypes(result);
