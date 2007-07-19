@@ -53,6 +53,7 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 			Property,
 			Event,
 			Statements,
+			Expression,
 			Popped
 		}
 		
@@ -291,7 +292,7 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 					if (Tokens.ValidInsideTypeName[lastToken]) {
 						frame = new Frame(frame);
 						frame.bracketType = '<';
-						if (frame.parent.type == FrameType.Statements) {
+						if (frame.parent.type == FrameType.Statements || frame.parent.type == FrameType.Expression) {
 							frame.SetContext(ExpressionContext.Default);
 						} else {
 							frame.SetContext(ExpressionContext.Type);
@@ -416,6 +417,13 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 						frame.SetContext(ExpressionContext.FirstParameterType);
 						frame.parent.state = FrameState.MethodDecl;
 						frame.parent.childType = FrameType.Statements;
+					}
+					break;
+				case Tokens.If:
+				case Tokens.While:
+				case Tokens.Switch:
+					if (frame.type == FrameType.Statements) {
+						frame.childType = FrameType.Expression;
 					}
 					break;
 				default:

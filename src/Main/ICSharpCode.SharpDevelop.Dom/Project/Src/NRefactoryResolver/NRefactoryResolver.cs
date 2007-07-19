@@ -1133,6 +1133,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					CtrlSpaceInternal(result, fileContent);
 				} else if (context == ExpressionContext.Default) {
 					AddCSharpKeywords(result, NR.Parser.CSharp.Tokens.ExpressionStart);
+					AddCSharpKeywords(result, NR.Parser.CSharp.Tokens.ExpressionContent);
 					AddCSharpPrimitiveTypes(result);
 					CtrlSpaceInternal(result, fileContent);
 				} else {

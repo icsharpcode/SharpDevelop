@@ -127,4 +127,3 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		}
 	}
 }
-

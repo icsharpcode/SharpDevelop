@@ -161,11 +161,11 @@ class Main {
 		const string program3 = @"using System; using System.Collections.Generic;
 class Main {
 	void Method(global::System.Exception ex, int arg) {
-		if (arg < b) {
+		if (arg < foo1) {
 			
 		} else if (boolVar) {
 			
-		} else if (arg > b) {
+		} else if (arg > foo2) {
 			
 		}
 		List<string> a = new
@@ -214,19 +214,31 @@ class Main {
 		[Test]
 		public void ConditionInIfStatement()
 		{
-			FindFull(program3, "oolVar)", "boolVar", ExpressionContext.MethodBody);
+			FindFull(program3, "oolVar)", "boolVar", ExpressionContext.Default);
 		}
 		
 		[Test]
 		public void IdentifierFollowedByLessThan()
 		{
-			FindFull(program3, "rg < b", "arg", ExpressionContext.MethodBody);
+			FindFull(program3, "rg < foo", "arg", ExpressionContext.Default);
+		}
+		
+		[Test]
+		public void IdentifierAfterByLessThan()
+		{
+			FindFull(program3, "oo1)", "foo1", ExpressionContext.Default);
 		}
 		
 		[Test]
 		public void IdentifierFollowedByGreaterThan()
 		{
-			FindFull(program3, "rg > b", "arg", ExpressionContext.MethodBody);
+			FindFull(program3, "rg > foo", "arg", ExpressionContext.Default);
+		}
+		
+		[Test]
+		public void IdentifierAfterByGreaterThan()
+		{
+			FindFull(program3, "oo2)", "foo2", ExpressionContext.Default);
 		}
 	}
 }

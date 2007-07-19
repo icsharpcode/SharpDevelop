@@ -159,9 +159,15 @@ namespace CSharpBinding
 				case "using":
 					if (IsInComment(editor)) return false;
 					
-					// TODO: check if we are inside class/namespace
-					editor.ShowCompletionWindow(new CtrlSpaceCompletionDataProvider(ExpressionContext.Namespace), ' ');
-					return true;
+					ParseInformation parseInfo = ParserService.GetParseInformation(editor.FileName);
+					if (parseInfo != null) {
+						IClass innerMostClass = parseInfo.MostRecentCompilationUnit.GetInnermostClass(editor.ActiveTextAreaControl.Caret.Line + 1, editor.ActiveTextAreaControl.Caret.Column + 1);
+						if (innerMostClass == null) {
+							editor.ShowCompletionWindow(new CtrlSpaceCompletionDataProvider(ExpressionContext.Namespace), ' ');
+						}
+						return true;
+					}
+					return false;
 				case "as":
 				case "is":
 					if (IsInComment(editor)) return false;
