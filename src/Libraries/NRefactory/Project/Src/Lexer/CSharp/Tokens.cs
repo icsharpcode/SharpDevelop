@@ -185,7 +185,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		public static BitArray ExpressionStart = NewSet(Base, Delegate, False, New, Null, Sizeof, This, True, Typeof, Checked, Unchecked, From);
 		public static BitArray ExpressionContent = NewSet(As, Is, Out, Ref, In);
 		public static BitArray InterfaceLevel = NewSet(Event);
-		public static BitArray TypeLevel = NewSet(Public, Internal, Class, Interface, Struct, Enum, Delegate, Abstract, Sealed, Static, Unsafe, Partial, Protected, Private, Public, Internal, Const, Event, Explicit, Extern, Fixed, Implicit, Operator, Override, Readonly, Virtual, Volatile);
+		public static BitArray TypeLevel = NewSet(Public, Internal, Class, Interface, Struct, Enum, Delegate, Abstract, Sealed, Static, Unsafe, Partial, Protected, Private, Public, Internal, Const, Event, Explicit, Extern, Fixed, Implicit, New, Operator, Override, Readonly, Virtual, Volatile);
 		public static BitArray StatementStart = NewSet(Base, Delegate, False, New, Null, Sizeof, This, True, Typeof, Checked, Unchecked, From, As, Is, Out, Ref, In, Break, Case, Catch, Checked, Unchecked, Const, Continue, Default, Do, Else, Finally, Fixed, For, Foreach, Goto, If, Lock, Return, Stackalloc, Switch, Throw, Try, Unsafe, Using, While, Yield);
 		public static BitArray QueryExpressionClauseStart = NewSet(From, Let, Where, Join, Orderby, Group, Select);
 		public static BitArray InPropertyDeclaration = NewSet(Protected, Private, Public, Internal, Get, Set);

@@ -184,6 +184,13 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 						case FrameType.Event:
 							this.childType = FrameType.Statements;
 							break;
+						case FrameType.TypeDecl:
+							if (state == FrameState.Initializer) {
+								this.childType = FrameType.Expression;
+								break;
+							} else {
+								goto default;
+							}
 						default:
 							this.childType = this.type;
 							break;
@@ -291,7 +298,7 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 					if (frame.lastExpressionStart.IsEmpty && token.kind == Tokens.OpenParenthesis)
 						frame.lastExpressionStart = token.Location;
 					frame = new Frame(frame);
-					frame.parent.childType = frame.parent.type;
+					frame.parent.ResetChildType();
 					frame.bracketType = '(';
 					break;
 				case Tokens.CloseParenthesis:
@@ -355,7 +362,9 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 					frame.SetExpectedType(projectContent.SystemTypes.Exception);
 					break;
 				case Tokens.New:
-					frame.SetContext(ExpressionContext.TypeDerivingFrom(frame.expectedType, true));
+					if (frame.type == FrameType.Statements || frame.type == FrameType.Expression) {
+						frame.SetContext(ExpressionContext.TypeDerivingFrom(frame.expectedType, true));
+					}
 					break;
 				case Tokens.Namespace:
 					frame.SetContext(ExpressionContext.IdentifierExpected);
@@ -370,6 +379,7 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 					} else if (frame.type == FrameType.TypeDecl) {
 						frame.SetContext(ExpressionContext.Default);
 						frame.state = FrameState.Initializer;
+						frame.ResetChildType();
 						break;
 					} else {
 						goto default;

@@ -285,6 +285,33 @@ class Main {
 			FindExpr(propertyProgram, "\t/* in setter", null, ExpressionContext.MethodBody);
 			FindExpr(propertyProgram, "\t/* still in prop", null, ExpressionContext.PropertyDeclaration);
 		}
+		
+		[Test]
+		public void FindObjectCreationContextForNewKeywordCompletion()
+		{
+			const string program = @"using System; using System.Text;
+class Main {
+	void M() {
+		StringBuilder b = new";
+			
+			ExpressionResult result = ef.FindExpression(program, program.Length - 1);
+			Assert.AreEqual(ExpressionContext.ObjectCreation.ToString(), result.Context.ToString());
+		}
+		
+		[Test]
+		public void ExpressionContextInFieldInitializer()
+		{
+			const string program = @"using System; using System.Collections.Generic;
+class Main {
+	int field1 =  1;
+	int field2 =  StaticMethod(  2);
+	int field3 = MakeArray()[  3];
+}";
+			FindExpr(program, " 1", null, ExpressionContext.Default);
+			FindExpr(program, " 2", null, ExpressionContext.Default);
+			FindFull(program, "taticMethod", "StaticMethod(  2)", ExpressionContext.Default);
+			FindExpr(program, " 3", null, ExpressionContext.Default);
+		}
 	}
 }
 

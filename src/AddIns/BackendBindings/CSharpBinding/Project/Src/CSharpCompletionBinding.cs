@@ -162,9 +162,10 @@ namespace CSharpBinding
 		{
 			CSharpExpressionFinder ef = CreateExpressionFinder(editor.FileName);
 			int cursor = editor.ActiveTextAreaControl.Caret.Offset;
-			ExpressionContext context = ef.FindExpression(editor.Document.GetText(0, cursor) + " T.", cursor + 2).Context;
-			if (context.IsObjectCreation) {
-				editor.ShowCompletionWindow(new CtrlSpaceCompletionDataProvider(context), ' ');
+			ExpressionResult expressionResult = ef.FindExpression(editor.Document.GetText(0, cursor), cursor - 1);
+			LoggingService.Debug("ShowNewCompletion: expression is " + expressionResult);
+			if (expressionResult.Context.IsObjectCreation) {
+				editor.ShowCompletionWindow(new CtrlSpaceCompletionDataProvider(expressionResult.Context), ' ');
 				return true;
 			}
 			return false;
