@@ -92,10 +92,6 @@ namespace CSharpBinding
 						}
 					}
 				}
-			} else if (ch == ';') {
-				LineSegment curLine = editor.Document.GetLineSegmentForOffset(cursor);
-				// don't return true when inference succeeds, otherwise the ';' won't be added to the document.
-				TryDeclarationTypeInference(editor, curLine);
 			}
 			
 			if ((char.IsLetter(ch) || ch == '_') && CodeCompletionOptions.CompleteWhenTyping) {
@@ -111,39 +107,6 @@ namespace CSharpBinding
 			}
 			
 			return base.HandleKeyPress(editor, ch);
-		}
-		
-		bool TryDeclarationTypeInference(SharpDevelopTextAreaControl editor, LineSegment curLine)
-		{
-			string lineText = editor.Document.GetText(curLine.Offset, curLine.Length);
-			ILexer lexer = ParserFactory.CreateLexer(SupportedLanguage.CSharp, new System.IO.StringReader(lineText));
-			Token typeToken = lexer.NextToken();
-			if (typeToken.kind == CSTokens.Question) {
-				if (lexer.NextToken().kind == CSTokens.Identifier) {
-					Token t = lexer.NextToken();
-					if (t.kind == CSTokens.Assign) {
-						string expr = lineText.Substring(t.col);
-						LoggingService.Debug("DeclarationTypeInference: >" + expr + "<");
-						ResolveResult rr = ParserService.Resolve(new ExpressionResult(expr),
-						                                         editor.ActiveTextAreaControl.Caret.Line + 1,
-						                                         t.col, editor.FileName,
-						                                         editor.Document.TextContent);
-						if (rr != null && rr.ResolvedType != null) {
-							ClassFinder context = new ClassFinder(ParserService.GetParseInformation(editor.FileName),
-							                                      editor.ActiveTextAreaControl.Caret.Line, t.col);
-							if (CodeGenerator.CanUseShortTypeName(rr.ResolvedType, context))
-								CSharpAmbience.Instance.ConversionFlags = ConversionFlags.None;
-							else
-								CSharpAmbience.Instance.ConversionFlags = ConversionFlags.UseFullyQualifiedTypeNames;
-							string typeName = CSharpAmbience.Instance.Convert(rr.ResolvedType);
-							editor.Document.Replace(curLine.Offset + typeToken.col - 1, 1, typeName);
-							editor.ActiveTextAreaControl.Caret.Column += typeName.Length - 1;
-							return true;
-						}
-					}
-				}
-			}
-			return false;
 		}
 		
 		bool IsInComment(SharpDevelopTextAreaControl editor)

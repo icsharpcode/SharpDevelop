@@ -64,7 +64,5 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// if the carret is outside any class boundaries.
 		/// </summary>
 		IClass GetInnermostClass(int caretLine, int caretColumn);
-		
-		List<IClass> GetOuterClasses(int caretLine, int caretColumn);
 	}
 }

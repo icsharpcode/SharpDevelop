@@ -674,14 +674,15 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				ResolveResult result = ResolveMethod(callingClass.DefaultReturnType, identifier);
 				if (result != null)
 					return result;
-			}
-			
-			// try if there exists a static member in outer classes named typeName
-			List<IClass> classes = cu.GetOuterClasses(position.Line, position.Column);
-			foreach (IClass c in classes) {
-				IMember member = GetMember(c.DefaultReturnType, identifier);
-				if (member != null && member.IsStatic) {
-					return new MemberResolveResult(callingClass, callingMember, member);
+				
+				// try if there exists a static member in outer classes named typeName
+				IClass tmp = callingClass.DeclaringType;
+				while (tmp != null) {
+					member = GetMember(tmp.DefaultReturnType, identifier);
+					if (member != null && member.IsStatic) {
+						return new MemberResolveResult(callingClass, callingMember, member);
+					}
+					tmp = tmp.DeclaringType;
 				}
 			}
 			
@@ -857,9 +858,16 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		public List<IMethod> SearchMethod(string memberName)
 		{
-			List<IMethod> methods = SearchMethod(callingClass.DefaultReturnType, memberName);
-			if (methods.Count > 0)
-				return methods;
+			List<IMethod> methods = null;
+			
+			// Search for the method in the callingClass and outer classes
+			IClass tmp = callingClass;
+			while (tmp != null) {
+				methods = SearchMethod(tmp.DefaultReturnType, memberName);
+				if (methods.Count > 0)
+					return methods;
+				tmp = tmp.DeclaringType;
+			}
 			
 			if (languageProperties.CanImportClasses) {
 				foreach (IUsing @using in cu.Usings) {
@@ -873,6 +881,9 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					}
 				}
 			}
+			
+			if (methods == null)
+				methods = new List<IMethod>();
 			
 			if (languageProperties.ImportModules) {
 				ArrayList list = new ArrayList();

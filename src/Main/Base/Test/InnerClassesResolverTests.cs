@@ -23,6 +23,11 @@ namespace ICSharpCode.SharpDevelop.Tests
 			return nrrt.Resolve(program, expression, line);
 		}
 		
+		T Resolve<T>(string program, string expression, int line) where T : ResolveResult
+		{
+			return nrrt.Resolve<T>(program, expression, line);
+		}
+		
 		ResolveResult ResolveVB(string program, string expression, int line)
 		{
 			return nrrt.ResolveVB(program, expression, line);
@@ -60,7 +65,7 @@ class A {
 		}
 		
 		[Test]
-		public void OuterclassPrivateFieldResolveTest()
+		public void OuterclassPrivateFieldCtrlSpaceTest()
 		{
 			string program = @"class A
 {
@@ -86,6 +91,44 @@ class A {
 				}
 			}
 			Assert.Fail("private field not visible from inner class");
+		}
+		
+		[Test]
+		public void OuterclassStaticFieldResolveTest()
+		{
+			string program = @"class A
+{
+	static int myField;
+	class B
+	{
+		void MyMethod()
+		{
+		
+		}
+	}
+}
+";
+			MemberResolveResult result = Resolve<MemberResolveResult>(program, "myField", 8);
+			Assert.AreEqual("A.myField", result.ResolvedMember.FullyQualifiedName);
+		}
+		
+		[Test]
+		public void OuterclassStaticMethodCallResolveTest()
+		{
+			string program = @"class A
+{
+	static void Test(int arg);
+	class B
+	{
+		void MyMethod()
+		{
+		
+		}
+	}
+}
+";
+			MemberResolveResult result = Resolve<MemberResolveResult>(program, "Test(4)", 8);
+			Assert.AreEqual("A.Test", result.ResolvedMember.FullyQualifiedName);
 		}
 		
 		[Test]
