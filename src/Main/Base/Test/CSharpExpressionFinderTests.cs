@@ -160,11 +160,18 @@ class Main {
 		
 		const string program3 = @"using System; using System.Collections.Generic;
 class Main {
-	void Method(global::System.Exception ex) {
+	void Method(global::System.Exception ex, int arg) {
+		if (arg < b) {
+			
+		} else if (boolVar) {
+			
+		}
 		List<string> a = new
 	}
 	Main() : this() {}
-	Main(int a) : base(a + 3) {}
+	Main(int arg) : base(arg + 3) {
+		
+	}
 }";
 		
 		[Test]
@@ -193,13 +200,25 @@ class Main {
 		public void ConstructorCall()
 		{
 			FindFull(program3, "this(", "this()", ExpressionContext.BaseConstructorCall);
-			FindFull(program3, "base(", "base(a + 3)", ExpressionContext.BaseConstructorCall);
+			FindFull(program3, "base(", "base(arg + 3)", ExpressionContext.BaseConstructorCall);
 		}
 		
 		[Test]
 		public void UsingStatement()
 		{
 			FindExpr(program3, "using", null, ExpressionContext.Global);
+		}
+		
+		[Test]
+		public void ConditionInIfStatement()
+		{
+			FindFull(program3, "oolVar)", "boolVar", ExpressionContext.StatementStart);
+		}
+		
+		[Test]
+		public void IdentifierFollowedByLessThan()
+		{
+			FindFull(program3, "rg < b", "arg", ExpressionContext.StatementStart);
 		}
 	}
 }

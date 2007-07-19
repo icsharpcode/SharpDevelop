@@ -526,7 +526,9 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 							return new ExpressionResult(text.Substring(resultStartOffset, resultEndOffset - resultStartOffset), resultContext);
 						}
 					} else {
-						resultEndOffset = LocationToOffset(token.EndLocation);
+						if (frame.bracketType != '<') {
+							resultEndOffset = LocationToOffset(token.EndLocation);
+						}
 					}
 				}
 				lastToken = token.kind;
