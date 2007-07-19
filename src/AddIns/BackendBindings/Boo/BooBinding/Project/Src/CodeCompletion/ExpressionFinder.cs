@@ -80,6 +80,10 @@ namespace Grunwald.BooBinding.CodeCompletion
 		
 		public ExpressionResult FindExpression(string inText, int offset)
 		{
+			offset--; // earlier all ExpressionFinder calls had an inexplicable "cursor - 1".
+			// The IExpressionFinder API to use normal cursor offsets, so we need to adjust the offset
+			// because Boo ExpressionFinder still uses an implementation that expects old offsets
+			
 			if (inText == null || offset >= inText.Length)
 				return ExpressionResult.Empty;
 			// OK, first try a kind of "quick find"

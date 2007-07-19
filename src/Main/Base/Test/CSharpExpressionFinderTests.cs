@@ -294,7 +294,45 @@ class Main {
 	void M() {
 		StringBuilder b = new";
 			
-			ExpressionResult result = ef.FindExpression(program, program.Length - 1);
+			ExpressionResult result = ef.FindExpression(program, program.Length);
+			Assert.AreEqual(ExpressionContext.ObjectCreation.ToString(), result.Context.ToString());
+		}
+		
+		[Test]
+		public void FindObjectCreationContextForConstructorInsight()
+		{
+			const string program = @"using System; using System.Text;
+class Main {
+	void M() {
+		StringBuilder b = new StringBuilder";
+			
+			ExpressionResult result = ef.FindExpression(program, program.Length);
+			Assert.AreEqual("StringBuilder", result.Expression);
+			Assert.AreEqual(ExpressionContext.ObjectCreation.ToString(), result.Context.ToString());
+		}
+		
+		[Test]
+		public void FindObjectCreationContextForConstructorInsight2()
+		{
+			const string program = @"using System; using System.Text;
+class Main {
+	StringBuilder field = new StringBuilder";
+			
+			ExpressionResult result = ef.FindExpression(program, program.Length);
+			Assert.AreEqual("StringBuilder", result.Expression);
+			Assert.AreEqual(ExpressionContext.ObjectCreation.ToString(), result.Context.ToString());
+		}
+		
+		[Test]
+		public void FindObjectCreationContextForConstructorInsight3()
+		{
+			const string program = @"using System;
+class Main {
+	void M() {
+		System.Text.StringBuilder b = new System.Text.StringBuilder";
+			
+			ExpressionResult result = ef.FindExpression(program, program.Length);
+			Assert.AreEqual("System.Text.StringBuilder", result.Expression);
 			Assert.AreEqual(ExpressionContext.ObjectCreation.ToString(), result.Context.ToString());
 		}
 		

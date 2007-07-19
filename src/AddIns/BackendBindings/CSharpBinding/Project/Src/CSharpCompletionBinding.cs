@@ -98,7 +98,7 @@ namespace CSharpBinding
 				if (cursor > 1 && !char.IsLetterOrDigit(editor.Document.GetCharAt(cursor - 1))
 				    && !IsInComment(editor))
 				{
-					ExpressionResult result = ef.FindExpression(editor.Text, cursor - 1);
+					ExpressionResult result = ef.FindExpression(editor.Text, cursor);
 					LoggingService.Debug("CC: Beginning to type a word, result=" + result);
 					if (result.Context != ExpressionContext.IdentifierExpected) {
 						editor.ShowCompletionWindow(new CtrlSpaceCompletionDataProvider(result.Context), '\0');
@@ -162,7 +162,7 @@ namespace CSharpBinding
 		{
 			CSharpExpressionFinder ef = CreateExpressionFinder(editor.FileName);
 			int cursor = editor.ActiveTextAreaControl.Caret.Offset;
-			ExpressionResult expressionResult = ef.FindExpression(editor.Document.GetText(0, cursor), cursor - 1);
+			ExpressionResult expressionResult = ef.FindExpression(editor.Document.GetText(0, cursor), cursor);
 			LoggingService.Debug("ShowNewCompletion: expression is " + expressionResult);
 			if (expressionResult.Context.IsObjectCreation) {
 				editor.ShowCompletionWindow(new CtrlSpaceCompletionDataProvider(expressionResult.Context), ' ');

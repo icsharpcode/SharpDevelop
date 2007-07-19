@@ -102,7 +102,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			if (expressionFinder == null)
 				expressionResult = new ExpressionResult(TextUtilities.GetExpressionBeforeOffset(textArea, useOffset));
 			else
-				expressionResult = expressionFinder.FindExpression(textArea.Document.TextContent, useOffset - 1);
+				expressionResult = expressionFinder.FindExpression(textArea.Document.TextContent, useOffset);
+			
 			if (expressionResult.Expression == null) // expression is null when cursor is in string/comment
 				return;
 			expressionResult.Expression = expressionResult.Expression.Trim();

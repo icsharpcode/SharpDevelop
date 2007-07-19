@@ -133,7 +133,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			if (expressionFinder == null) {
 				return new ExpressionResult(TextUtilities.GetExpressionBeforeOffset(textArea, textArea.Caret.Offset));
 			} else {
-				ExpressionResult res = expressionFinder.FindExpression(document.GetText(0, textArea.Caret.Offset), textArea.Caret.Offset - 1);
+				ExpressionResult res = expressionFinder.FindExpression(document.GetText(0, textArea.Caret.Offset), textArea.Caret.Offset);
 				if (overrideContext != null)
 					res.Context = overrideContext;
 				return res;

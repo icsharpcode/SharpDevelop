@@ -107,6 +107,14 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 			internal ExpressionContext context;
 			internal IReturnType expectedType;
 			
+			internal bool InExpressionMode {
+				get {
+					return type == FrameType.Statements 
+						|| type == FrameType.Expression
+						|| state == FrameState.Initializer;
+				}
+			}
+			
 			internal void SetContext(ExpressionContext context)
 			{
 				this.context = context;
@@ -230,7 +238,6 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 		
 		public ExpressionResult FindExpression(string text, int offset)
 		{
-			offset++;
 			Init(text, offset);
 			Token token;
 			while ((token = lexer.NextToken()) != null) {
@@ -362,7 +369,7 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 					frame.SetExpectedType(projectContent.SystemTypes.Exception);
 					break;
 				case Tokens.New:
-					if (frame.type == FrameType.Statements || frame.type == FrameType.Expression) {
+					if (frame.InExpressionMode) {
 						frame.SetContext(ExpressionContext.TypeDerivingFrom(frame.expectedType, true));
 					}
 					break;
@@ -459,11 +466,15 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 								frame.state = FrameState.FieldDecl;
 								frame.childType = FrameType.Property;
 							}
-							frame.SetContext(ExpressionContext.IdentifierExpected);
+							if (!(frame.state == FrameState.Initializer && frame.context.IsObjectCreation)) {
+								frame.SetContext(ExpressionContext.IdentifierExpected);
+							}
 						} else if (frame.type == FrameType.ParameterList
 						           || frame.type == FrameType.Statements)
 						{
-							frame.SetContext(ExpressionContext.IdentifierExpected);
+							if (!frame.context.IsObjectCreation) {
+								frame.SetContext(ExpressionContext.IdentifierExpected);
+							}
 						}
 					}
 					break;
