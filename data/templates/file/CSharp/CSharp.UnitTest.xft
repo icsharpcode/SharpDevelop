@@ -51,6 +51,7 @@
 <% if (ConditionalClass) { %>#if TEST
 <% } %>
 using NUnit.Framework;
+using NUnit.Framework.SyntaxHelpers;
 using System;
 
 namespace ${StandardNamespace}
