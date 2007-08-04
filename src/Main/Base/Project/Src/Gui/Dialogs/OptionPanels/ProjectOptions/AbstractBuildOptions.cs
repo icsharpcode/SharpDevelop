@@ -25,7 +25,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			                  TextBoxEditMode.EditRawProperty,
 			                  delegate { return @"obj\"; }
 			                 ).CreateLocationButton("baseIntermediateOutputPathTextBox");
-			ConnectBrowseFolder("baseIntermediateOutputPathBrowseButton", "baseIntermediateOutputPathTextBox", 
+			ConnectBrowseFolder("baseIntermediateOutputPathBrowseButton", "baseIntermediateOutputPathTextBox",
 			                    "${res:Dialog.Options.PrjOptions.Configuration.FolderBrowserDescription}",
 			                    TextBoxEditMode.EditRawProperty);
 		}
@@ -232,27 +232,38 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			ConfigurationGuiBinding targetFrameworkBinding;
 			targetFrameworkBinding = helper.BindStringEnum("targetFrameworkComboBox", TargetFrameworkProperty,
 			                                               "",
-			                                               new StringPair("", "Default (.NET 2.0)"),
-			                                               // We do not support .NET 1.0 anymore - compiling would still work,
-			                                               // but debugging, unit testing etc. are not supported.
-			                                               //new StringPair("v1.0", ".NET Framework 1.0"),
-			                                               new StringPair("v1.1", ".NET Framework 1.1"),
-			                                               new StringPair("v2.0", ".NET Framework 2.0"),
+			                                               new StringPair("", "C# 2.0 / .NET 2.0"),
+			                                               new StringPair("v2.0", "C# 3.0 / .NET 2.0"),
+			                                               new StringPair("v3.0", "C# 3.0 / .NET 3.0"),
+			                                               new StringPair("v3.5", "C# 3.0 / .NET 3.5"),
 			                                               new StringPair("CF 1.0", "Compact Framework 1.0"),
 			                                               new StringPair("CF 2.0", "Compact Framework 2.0"),
 			                                               new StringPair("Mono v1.1", "Mono 1.1"),
 			                                               new StringPair("Mono v2.0", "Mono 2.0"));
 			targetFrameworkBinding.CreateLocationButton("targetFrameworkLabel");
 			helper.Saved += delegate {
-				// Test if SharpDevelop-Build extensions are needed
 				MSBuildBasedProject project = helper.Project;
+				// Test if SharpDevelop-Build extensions are needed
 				bool needExtensions = false;
+				// Test if MSBuild 3.5 is required
+				bool needMSBuild35 = false;
+				
 				foreach (MSBuild.BuildProperty p in project.GetAllProperties(TargetFrameworkProperty)) {
-					if (p.IsImported == false && p.Value.Length > 0) {
-						needExtensions = true;
-						break;
+					if (p.IsImported == false) {
+						if (p.Value.StartsWith("CF") || p.Value.StartsWith("Mono")) {
+							needExtensions = true;
+						} else if (p.Value.StartsWith("v")) {
+							needMSBuild35 = true;
+						}
 					}
 				}
+				
+				string newToolsVersion = needMSBuild35 ? "3.5" : "2.0";
+				if (project.MSBuildProject.DefaultToolsVersion != newToolsVersion) {
+					project.MSBuildProject.DefaultToolsVersion = newToolsVersion;
+					project.ParentSolution.Save();
+				}
+				
 				foreach (MSBuild.Import import in project.MSBuildProject.Imports) {
 					if (needExtensions) {
 						if (defaultTargets.Equals(import.ProjectPath, StringComparison.InvariantCultureIgnoreCase)) {

@@ -30,11 +30,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <summary>contains <guid>, (IProject/ISolutionFolder) pairs.</summary>
 		Dictionary<string, ISolutionFolder> guidDictionary = new Dictionary<string, ISolutionFolder>();
 		
-		/// <summary>
-		/// The version number of the solution (9 = Whidbey, 10 = Orcas)
-		/// </summary>
-		int versionNumber = 9;
-		
 		string fileName = String.Empty;
 		
 		bool readOnly = false;
@@ -305,7 +300,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					relativeLocation = currentFolder.Location;
 				}
 				
-				projectSection.AppendFormat 
+				projectSection.AppendFormat
 					("Project(\"{0}\") = \"{1}\", \"{2}\", \"{3}\"",
 					 new object [] {currentFolder.TypeGuid, currentFolder.Name, relativeLocation, currentFolder.IdGuid});
 				projectSection.AppendLine();
@@ -322,7 +317,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					
 					ISolutionFolder subFolder;
 					for (int i = folder.Folders.Count - 1; i >= 0; i--) {
-					//foreach (ISolutionFolder subFolder in folder.Folders) {
+						//foreach (ISolutionFolder subFolder in folder.Folders) {
 						subFolder = folder.Folders[i];
 						stack.Push(subFolder);
 						nestedProjectsSection.Append("\t\t");
@@ -357,9 +352,17 @@ namespace ICSharpCode.SharpDevelop.Project
 			// we need to specify UTF8 because MSBuild needs the BOM
 			using (StreamWriter sw = new StreamWriter(fileName, false, Encoding.UTF8)) {
 				sw.WriteLine();
+				int versionNumber = 9;
+				foreach (IProject p in this.Projects) {
+					if (p.MinimumSolutionVersion > versionNumber)
+						versionNumber = p.MinimumSolutionVersion;
+				}
+				
 				sw.WriteLine("Microsoft Visual Studio Solution File, Format Version " + versionNumber + ".00");
 				if (versionNumber == 9) {
 					sw.WriteLine("# Visual Studio 2005");
+				} else if (versionNumber == 10) {
+					sw.WriteLine("# Visual Studio 2008");
 				}
 				sw.WriteLine("# SharpDevelop " + RevisionClass.FullVersion);
 				sw.Write(projectSection.ToString());
@@ -472,10 +475,7 @@ namespace ICSharpCode.SharpDevelop.Project
 						}
 						break;
 					case "9.00":
-						newSolution.versionNumber = 9;
-						break;
 					case "10.00":
-						newSolution.versionNumber = 10;
 						break;
 					default:
 						MessageService.ShowErrorFormatted("${res:SharpDevelop.Solution.UnknownSolutionVersion}", match.Result("${Version}"));

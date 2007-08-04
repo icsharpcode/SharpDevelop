@@ -211,6 +211,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// Creates a new ProjectItem for the passed MSBuild item.
 		/// </summary>
 		ProjectItem CreateProjectItem(Microsoft.Build.BuildEngine.BuildItem item);
+		
+		/// <summary>
+		/// Gets the minimum version the solution must have to support this project type.
+		/// </summary>
+		int MinimumSolutionVersion { get; }
 	}
 	
 	/// <summary>

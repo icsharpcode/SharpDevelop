@@ -62,6 +62,18 @@ namespace ICSharpCode.SharpDevelop.Project
 			MSBuildInternals.EnsureCorrectTempProject(project, null, null, ref evaluatingTempProject);
 		}
 		
+		public override int MinimumSolutionVersion {
+			get {
+				if (string.IsNullOrEmpty(project.DefaultToolsVersion)
+				    || project.DefaultToolsVersion == "2.0")
+				{
+					return 9;
+				} else {
+					return 10;
+				}
+			}
+		}
+		
 		#region CreateProjectItem
 		/// <summary>
 		/// Creates a new projectItem for the passed itemType
