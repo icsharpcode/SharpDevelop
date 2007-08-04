@@ -53,11 +53,11 @@
 			Note that SharpDevelop 3.0 will eventually use WiX 3.0 where the
 			NETFRAMEWORK30 property is already defined.
 		-->
-		<Property Id="NETFRAMEWORK30">
-			<RegistrySearch Id="NetFramework30" Root="HKLM" Key="SOFTWARE\Microsoft\NET Framework Setup\NDP\v3.0\Setup" Name="InstallSuccess" Type="raw" />
+		<Property Id="NETFRAMEWORK35">
+			<RegistrySearch Id="NetFramework35" Root="HKLM" Key="SOFTWARE\Microsoft\NET Framework Setup\NDP\v3.5" Name="Install" Type="raw" />
 		</Property>
-		<Condition Message="This setup requires the .NET Framework 3.0 to be installed.">
-			Installed OR NETFRAMEWORK30
+		<Condition Message="This setup requires the .NET Framework 3.5 to be installed.">
+			Installed OR NETFRAMEWORK35
 		</Condition>
 		
 		<!--
@@ -283,17 +283,7 @@
 				<ComponentRef Id="ExampleProjectTemplate"/>
 				<ComponentRef Id="ICSharpCode.SharpDevelop.addin"/>
 				<ComponentRef Id="BooTemplateFiles"/>
-				<ComponentRef Id="BooBindingDll"/>
-				<ComponentRef Id="BoocExe"/>
-				<ComponentRef Id="NRefactoryToBooConverterDll"/>
-				<ComponentRef Id="BooBuildTasksDll"/>
-				<ComponentRef Id="BooLangUsefulDll"/>
-				<ComponentRef Id="BooLangParserDll"/>
-				<ComponentRef Id="BooLangInterpreterDll"/>
-				<ComponentRef Id="BooLangDll"/>
-				<ComponentRef Id="BooLangCompilerDll"/>
-				<ComponentRef Id="BooLangCodeDomDll"/>
-				<ComponentRef Id="BooBindingAddInDll"/>
+				<ComponentRef Id="BooBindingFiles"/>
 				<ComponentRef Id="CSharpBindingFiles"/>
 				<ComponentRef Id="ILAsmTemplates"/>
 				<ComponentRef Id="ILAsmBindingFiles"/>

@@ -1,6 +1,6 @@
 rem Prepares a release by updating the changelog
 pushd Tools
-%windir%\microsoft.net\framework\v2.0.50727\msbuild /t:PrepareRelease /property:Configuration=Release Tools.build
+%windir%\microsoft.net\framework\v3.5\msbuild /t:PrepareRelease /property:Configuration=Release Tools.build
 @popd
 @IF %ERRORLEVEL% NEQ 0 PAUSE & EXIT
 @echo.

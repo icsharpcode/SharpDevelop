@@ -19,7 +19,7 @@
 			properties available for the projects inside the solution 
 			(but this works using the command line) -->
 		<!-- B) The Wix task assembly is locked if we do not use a separate MSBuild process -->
-		<MSBuildExecutable>&quot;$(MSBuildBinPath)\msbuild.exe&quot;</MSBuildExecutable>
+		<MSBuildExecutable>&quot;$(MSBuildBinPath)\..\v3.5\msbuild.exe&quot;</MSBuildExecutable>
 		<BuildProperties>/p:Configuration=Release</BuildProperties>
 		<BuildProperties>$(BuildProperties) &quot;/p:SharpDevelopBinPath=$(SharpDevelopBin)&quot;</BuildProperties>
 		<BuildProperties>$(BuildProperties) &quot;/p:BooBinPath=$(SharpDevelopSrc)\AddIns\BackendBindings\Boo\RequiredLibraries&quot;</BuildProperties>

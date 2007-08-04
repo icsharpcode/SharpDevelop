@@ -30,7 +30,7 @@ namespace WixBinding.Tests.Gui
 		}
 		
 		[Test]
-		[ExpectedException(typeof(FormsDesignerLoadException), "No setup dialog selected in Wix document. Please move the cursor inside a dialog element or use the Setup Dialogs window to open a dialog.")]
+		[ExpectedException(typeof(FormsDesignerLoadException), ExpectedMessage = "No setup dialog selected in Wix document. Please move the cursor inside a dialog element or use the Setup Dialogs window to open a dialog.")]
 		public void NoDialogIdSpecified()
 		{
 			WixDialogDesignerLoader loader = new WixDialogDesignerLoader(this, new WixDialogDesignerGenerator());

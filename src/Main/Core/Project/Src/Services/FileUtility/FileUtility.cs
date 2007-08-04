@@ -172,8 +172,7 @@ namespace ICSharpCode.Core
 		}
 		
 		/// <summary>
-		/// Converts a given relative path and a given base path to a path that leads
-		/// to the relative path absoulte.
+		/// Combines baseDirectoryPath with relPath and normalizes the resulting path.
 		/// </summary>
 		public static string GetAbsolutePath(string baseDirectoryPath, string relPath)
 		{

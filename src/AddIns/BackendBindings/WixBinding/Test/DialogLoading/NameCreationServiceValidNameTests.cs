@@ -75,7 +75,7 @@ namespace WixBinding.Tests.DialogLoading
 		}
 		
 		[Test]
-		[ExpectedException(typeof(Exception), "Invalid name 9")]
+		[ExpectedException(typeof(Exception), ExpectedMessage = "Invalid name 9")]
 		public void ValidateNameThrowsExceptionWhenFirstCharIsDigit()
 		{
 			nameCreationService.ValidateName("9");

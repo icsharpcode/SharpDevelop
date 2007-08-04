@@ -164,7 +164,9 @@ namespace ICSharpCode.SharpDevelop.Project
 				} catch (Exception ex) {
 					MessageService.ShowError(ex);
 				}
-				StartWorkerBuild();
+				if (MSBuildEngine.isRunning) {
+					StartWorkerBuild();
+				}
 			}
 			
 			void Finish()
@@ -190,32 +192,81 @@ namespace ICSharpCode.SharpDevelop.Project
 			{
 				parentEngine.MessageView.AppendLine("${res:MainWindow.CompilerMessages.BuildStarted}");
 				
-				if (project == null) {
-					LoggingService.Debug("Parsing solution file " + solution.FileName);
-					
-					Engine engine = CreateEngine();
-					if (parentEngine.Configuration != null) {
-						engine.GlobalProperties.SetProperty("Configuration", parentEngine.Configuration);
-					}
-					if (parentEngine.Platform != null) {
-						engine.GlobalProperties.SetProperty("Platform", parentEngine.Platform);
-					}
-					Project solutionProject = LoadProject(engine, solution.FileName);
-					if (solutionProject == null) {
-						Finish();
-						return;
-					}
-					if (!ParseSolution(solutionProject)) {
-						Finish();
-						return;
-					}
-				} else {
-					if (ParseMSBuildProject(project) == null) {
-						Finish();
-						return;
+				// first parse the solution file into a MSBuild project
+				LoggingService.Debug("Parsing solution file " + solution.FileName);
+				
+				Engine engine = CreateEngine();
+				if (parentEngine.Configuration != null) {
+					engine.GlobalProperties.SetProperty("Configuration", parentEngine.Configuration);
+				}
+				if (parentEngine.Platform != null) {
+					engine.GlobalProperties.SetProperty("Platform", parentEngine.Platform);
+				}
+				Project solutionProject = LoadProject(engine, solution.FileName);
+				if (solutionProject == null) {
+					Finish();
+					return;
+				}
+				
+				// get the projects that should be built
+				IEnumerable<IProject> projectsToBuildWithoutDependencies;
+				if (project == null)
+					projectsToBuildWithoutDependencies = solution.Projects;
+				else
+					projectsToBuildWithoutDependencies = GetAllReferencedProjects(project);
+				
+				projectsToBuild = Linq.ToList(Linq.Select<IProject, ProjectToBuild>(
+					projectsToBuildWithoutDependencies,
+					p => new ProjectToBuild(p.FileName, options.Target.TargetName)
+				));
+				
+				Dictionary<string, ProjectToBuild> projectDict = new Dictionary<string, ProjectToBuild>(StringComparer.InvariantCultureIgnoreCase);
+				foreach (ProjectToBuild ptb in projectsToBuild) {
+					projectDict[ptb.file] = ptb;
+				}
+				
+				// use the information from the parsed solution file to determine build level, configuration and
+				// platform of the projects to build
+				
+				for (int level = 0;; level++) {
+					BuildItemGroup group = solutionProject.GetEvaluatedItemsByName("BuildLevel" + level);
+					if (group.Count == 0)
+						break;
+					foreach (BuildItem item in group) {
+						string path = FileUtility.GetAbsolutePath(solution.Directory, item.Include);
+						ProjectToBuild ptb;
+						if (projectDict.TryGetValue(path, out ptb)) {
+							ptb.level = level;
+							ptb.configuration = item.GetEvaluatedMetadata("Configuration");
+							ptb.platform = item.GetEvaluatedMetadata("Platform");
+						} else {
+							parentEngine.MessageView.AppendLine("Cannot build project file: " + path + " (project is not loaded by SharpDevelop)");
+						}
 					}
 				}
-				SortProjectsToBuild();
+				
+				projectsToBuild.Sort(
+					delegate(ProjectToBuild ptb1, ProjectToBuild ptb2) {
+						if (ptb1.level == ptb2.level) {
+							return Path.GetFileName(ptb1.file).CompareTo(Path.GetFileName(ptb2.file));
+						} else {
+							return ptb1.level.CompareTo(ptb2.level);
+						}
+					});
+				
+				bool noProjectsToBuild = true;
+				for (int i = 0; i < projectsToBuild.Count; i++) {
+					if (projectsToBuild[i].level < 0) {
+						parentEngine.MessageView.AppendLine("Skipping " + Path.GetFileName(projectsToBuild[i].file));
+					} else {
+						noProjectsToBuild = false;
+						break;
+					}
+				}
+				if (noProjectsToBuild) {
+					parentEngine.MessageView.AppendLine("There are no projects to build.");
+					Finish();
+				}
 			}
 			#endregion
 			
@@ -274,6 +325,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			
 			int lastUniqueWorkerID;
+			int currentBuildLevel;
 			
 			/// <summary>
 			/// Find available work and run it on the specified worker.
@@ -283,7 +335,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				ProjectToBuild nextFreeProject = null;
 				lock (projectsToBuild) {
 					foreach (ProjectToBuild ptb in projectsToBuild) {
-						if (ptb.buildStarted == false && ptb.DependenciesSatisfied()) {
+						if (ptb.buildStarted == false && ptb.level == currentBuildLevel) {
 							if (nextFreeProject == null) {
 								nextFreeProject = ptb;
 								
@@ -307,8 +359,26 @@ namespace ICSharpCode.SharpDevelop.Project
 						}
 					}
 					if (nextFreeProject == null) {
-						// nothing to do for this worker thread
-						return false;
+						// are all projects on the current level done?
+						bool allDone = true;
+						foreach (ProjectToBuild ptb in projectsToBuild) {
+							if (ptb.level == currentBuildLevel) {
+								if (!ptb.buildFinished) {
+									allDone = false;
+									break;
+								}
+							}
+						}
+						if (allDone) {
+							currentBuildLevel++;
+							if (currentBuildLevel > projectsToBuild[projectsToBuild.Count - 1].level) {
+								return false;
+							}
+							return true;
+						} else {
+							// nothing to do for this worker thread
+							return false;
+						}
 					}
 					// now build nextFreeProject
 					nextFreeProject.buildStarted = true;
@@ -423,226 +493,42 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			#endregion
 			
-			#region ParseSolution
-			bool ParseSolution(Project solution)
-			{
-				// get the build target to call
-				Target mainBuildTarget = solution.Targets[options.Target.TargetName];
-				if (mainBuildTarget == null) {
-					currentResults.Result = BuildResultCode.BuildFileError;
-					currentResults.Add(new BuildError(this.solution.FileName, "Target '" + options.Target + "' not supported by solution."));
-					return false;
-				}
-				// example of mainBuildTarget:
-				//  <Target Name="Build" Condition="'$(CurrentSolutionConfigurationContents)' != ''">
-				//    <CallTarget Targets="Main\ICSharpCode_SharpDevelop;Main\ICSharpCode_Core;Main\StartUp;Tools" RunEachTargetSeparately="true" />
-				//  </Target>
-				List<BuildTask> mainBuildTargetTasks = Linq.ToList(Linq.CastTo<BuildTask>(mainBuildTarget));
-				if (mainBuildTargetTasks.Count != 1
-				    || mainBuildTargetTasks[0].Name != "CallTarget")
-				{
-					return InvalidTarget(mainBuildTarget);
-				}
-				
-				List<Target> solutionTargets = new List<Target>();
-				foreach (string solutionTargetName in mainBuildTargetTasks[0].GetParameterValue("Targets").Split(';'))
-				{
-					Target target = solution.Targets[solutionTargetName];
-					if (target != null) {
-						solutionTargets.Add(target);
-					}
-				}
-				
-				// dictionary for fast lookup of ProjectToBuild elements
-				Dictionary<string, ProjectToBuild> projectsToBuildDict = new Dictionary<string, ProjectToBuild>();
-				
-				// now look through targets that took like this:
-				//  <Target Name="Main\ICSharpCode_Core" Condition="'$(CurrentSolutionConfigurationContents)' != ''">
-				//    <MSBuild Projects="Main\Core\Project\ICSharpCode.Core.csproj" Properties="Configuration=Debug; Platform=AnyCPU; BuildingSolutionFile=true; CurrentSolutionConfigurationContents=$(CurrentSolutionConfigurationContents); SolutionDir=$(SolutionDir); SolutionExt=$(SolutionExt); SolutionFileName=$(SolutionFileName); SolutionName=$(SolutionName); SolutionPath=$(SolutionPath)" Condition=" ('$(Configuration)' == 'Debug') and ('$(Platform)' == 'Any CPU') " />
-				//    <MSBuild Projects="Main\Core\Project\ICSharpCode.Core.csproj" Properties="Configuration=Release; Platform=AnyCPU; BuildingSolutionFile=true; CurrentSolutionConfigurationContents=$(CurrentSolutionConfigurationContents); SolutionDir=$(SolutionDir); SolutionExt=$(SolutionExt); SolutionFileName=$(SolutionFileName); SolutionName=$(SolutionName); SolutionPath=$(SolutionPath)" Condition=" ('$(Configuration)' == 'Release') and ('$(Platform)' == 'Any CPU') " />
-				//  </Target>
-				// and add those targets to the "projectsToBuild" list.
-				foreach (Target target in solutionTargets) {
-					List<BuildTask> tasks = Linq.ToList(Linq.CastTo<BuildTask>(target));
-					if (tasks.Count == 0) {
-						return InvalidTarget(target);
-					}
-					
-					// find task to run when this target is executed
-					BuildTask bestTask = null;
-					foreach (BuildTask task in tasks) {
-						if (task.Name != "MSBuild") {
-							return InvalidTarget(target);
-						}
-						if (MSBuildInternals.EvaluateCondition(solution, task.Condition)) {
-							bestTask = task;
-						}
-					}
-					if (bestTask == null) {
-						LoggingService.Warn("No matching condition for solution target " + target.Name);
-						bestTask = tasks[0];
-					}
-					
-					// create projectToBuild entry and add it to list and dictionary
-					string projectFileName = Path.Combine(this.solution.Directory, bestTask.GetParameterValue("Projects"));
-					ProjectToBuild projectToBuild = new ProjectToBuild(FileUtility.NormalizePath(projectFileName),
-					                                                   bestTask.GetParameterValue("Targets"));
-					
-					// get project configuration and platform from properties section
-					string propertiesString = bestTask.GetParameterValue("Properties");
-					Match match = Regex.Match(propertiesString, @"\bConfiguration=([^;]+);");
-					if (match.Success) {
-						projectToBuild.configuration = match.Groups[1].Value;
-					} else {
-						projectToBuild.configuration = parentEngine.Configuration;
-					}
-					match = Regex.Match(propertiesString, @"\bPlatform=([^;]+);");
-					if (match.Success) {
-						projectToBuild.platform = match.Groups[1].Value;
-					} else {
-						projectToBuild.platform = parentEngine.Platform;
-						if (projectToBuild.platform == "Any CPU") {
-							projectToBuild.platform = "AnyCPU";
-						}
-					}
-					
-					projectsToBuild.Add(projectToBuild);
-					projectsToBuildDict[target.Name] = projectToBuild;
-				}
-				
-				// now create dependencies between projectsToBuild
-				foreach (Target target in solutionTargets) {
-					ProjectToBuild p1;
-					if (!projectsToBuildDict.TryGetValue(target.Name, out p1))
-						continue;
-					foreach (string dependency in target.DependsOnTargets.Split(';')) {
-						ProjectToBuild p2;
-						if (!projectsToBuildDict.TryGetValue(dependency, out p2))
-							continue;
-						p1.dependencies.Add(p2);
-					}
-				}
-				return true;
-			}
-			
+			#region GetAllReferencedProjects
 			/// <summary>
-			/// Adds an error message that the specified target is invalid and returns false.
+			/// Gets all projects referenced by the project.
 			/// </summary>
-			bool InvalidTarget(Target target)
+			static ICollection<IProject> GetAllReferencedProjects(IProject project)
 			{
-				currentResults.Result = BuildResultCode.BuildFileError;
-				currentResults.Add(new BuildError(this.solution.FileName, "Solution target '" + target.Name + "' is invalid."));
-				return false;
+				HashSet<IProject> referencedProjects = new HashSet<IProject>();
+				Stack<IProject> stack = new Stack<IProject>();
+				referencedProjects.Add(project);
+				stack.Push(project);
+				
+				while (stack.Count != 0) {
+					project = stack.Pop();
+					foreach (ProjectItem item in project.GetItemsOfType(ItemType.ProjectReference)) {
+						ProjectReferenceProjectItem prpi = item as ProjectReferenceProjectItem;
+						if (prpi != null) {
+							if (referencedProjects.Add(prpi.ReferencedProject)) {
+								stack.Push(prpi.ReferencedProject);
+							}
+						}
+					}
+				}
+				
+				return referencedProjects;
 			}
 			#endregion
 			
-			#region ParseMSBuildProject
-			Dictionary<IProject, ProjectToBuild> parseMSBuildProjectProjectsToBuildDict = new Dictionary<IProject, ProjectToBuild>();
-			
-			/// <summary>
-			/// Adds a ProjectToBuild item for the project and it's project references.
-			/// Returns the added item, or null if an error occured.
-			/// </summary>
-			ProjectToBuild ParseMSBuildProject(IProject project)
-			{
-				ProjectToBuild ptb;
-				if (parseMSBuildProjectProjectsToBuildDict.TryGetValue(project, out ptb)) {
-					// only add each project once, reuse existing ProjectToBuild
-					return ptb;
-				}
-				ptb = new ProjectToBuild(project.FileName, options.Target.TargetName);
-				ptb.configuration = parentEngine.Configuration;
-				ptb.platform = parentEngine.Platform;
-				
-				projectsToBuild.Add(ptb);
-				parseMSBuildProjectProjectsToBuildDict[project] = ptb;
-				
-				foreach (ProjectItem item in project.GetItemsOfType(ItemType.ProjectReference)) {
-					ProjectReferenceProjectItem prpi = item as ProjectReferenceProjectItem;
-					if (prpi != null && prpi.ReferencedProject != null) {
-						ProjectToBuild referencedProject = ParseMSBuildProject(prpi.ReferencedProject);
-						if (referencedProject == null)
-							return null;
-						ptb.dependencies.Add(referencedProject);
-					}
-				}
-				
-				return ptb;
-			}
-			#endregion
-			
-			#region SortProjectsToBuild
-			/// <summary>
-			/// Recursively count dependencies and sort projects (most important first).
-			/// This decreases the number of waiting workers on multi-processor builds
-			/// </summary>
-			void SortProjectsToBuild()
-			{
-				// count:
-				try {
-					foreach (ProjectToBuild ptb in projectsToBuild) {
-						projectsToBuild.ForEach(delegate(ProjectToBuild p) { p.visitFlag = 0; });
-						ptb.dependencies.ForEach(IncrementRequiredByCount);
-					}
-				} catch (DependencyCycleException) {
-					currentResults.Add(new BuildError(null, "Dependency cycle detected, cannot build!"));
-					return;
-				}
-				// sort by requiredByCount, decreasing
-				projectsToBuild.Sort(delegate (ProjectToBuild a, ProjectToBuild b) {
-				                     	return -a.requiredByCount.CompareTo(b.requiredByCount);
-				                     });
-			}
-			
-			/// <summary>
-			/// Recursively increment requiredByCount on ptb and all its dependencies
-			/// </summary>
-			static void IncrementRequiredByCount(ProjectToBuild ptb)
-			{
-				if (ptb.visitFlag == 1) {
-					return;
-				}
-				if (ptb.visitFlag == -1) {
-					throw new DependencyCycleException();
-				}
-				ptb.visitFlag = -1;
-				ptb.requiredByCount++;
-				ptb.dependencies.ForEach(IncrementRequiredByCount);
-				ptb.visitFlag = 1;
-			}
-			
-			class DependencyCycleException : Exception {}
-			#endregion
 		}
 		
-		/// <summary>
-		/// node used for project dependency graph
-		/// </summary>
-		internal class ProjectToBuild
+		internal sealed class ProjectToBuild
 		{
-			// information required to build the project
 			internal string file;
+			internal int level = -1;
+			internal string configuration;
+			internal string platform;
 			internal string targets;
-			internal string configuration, platform;
-			
-			internal List<ProjectToBuild> dependencies = new List<ProjectToBuild>();
-			
-			internal bool DependenciesSatisfied()
-			{
-				return dependencies.TrueForAll(delegate(ProjectToBuild p) { return p.buildFinished; });
-			}
-			
-			/// <summary>
-			/// Number of projects that are directly or indirectly dependent on this project.
-			/// Used in SortProjectsToBuild step.
-			/// </summary>
-			internal int requiredByCount;
-			
-			/// <summary>
-			/// Mark already visited nodes. 0 = not visited, -1 = visiting, 1 = visited
-			/// Used in SortProjectsToBuild step.
-			/// </summary>
-			internal int visitFlag;
 			
 			// build status. Three possible values:
 			//   buildStarted=buildFinished=false       => build not yet started
@@ -651,7 +537,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			internal bool buildStarted;
 			internal bool buildFinished;
 			
-			public ProjectToBuild(string file, string targets)
+			internal ProjectToBuild(string file, string targets)
 			{
 				this.file = file;
 				this.targets = targets;

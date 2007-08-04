@@ -852,43 +852,20 @@
 												<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Templates\FormsProject.xpt" Name="FORMSP_1.XPT" Id="FormsProject.xpt" LongName="FormsProject.xpt" />
 											</Component>
 										</Directory>
-										<Component Guid="208A468E-646B-4A34-A066-97DA55008ED4" Id="BooBindingAddInDll" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Boo.Interpreter.addin" Name="BOOIN_1.ADD" Id="Boo.Interpreter.addin" LongName="Boo.Interpreter.addin" />
-											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Boo.InterpreterAddIn.dll" Name="BOOIN_1.DLL" Id="Boo.InterpreterAddIn.dll" LongName="Boo.InterpreterAddIn.dll" Assembly=".net" AssemblyApplication="Boo.InterpreterAddIn.dll" AssemblyManifest="Boo.InterpreterAddIn.dll" KeyPath="yes" />
-										</Component>
-										<Component Id="BooLangCodeDomDll" Guid="4AAA804F-6175-4C23-8A72-4B452EDD5CDF" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Boo.Lang.CodeDom.dll" Name="BOOLA_1.DLL" Id="Boo.Lang.CodeDom.dll" LongName="Boo.Lang.CodeDom.dll" Assembly=".net" AssemblyApplication="Boo.Lang.CodeDom.dll" AssemblyManifest="Boo.Lang.CodeDom.dll" KeyPath="yes" />
-										</Component>
-										<Component Id="BooLangCompilerDll" Guid="601BA36D-B290-41A9-91A9-B97646A132E9" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Boo.Lang.Compiler.dll" Name="BOOLA_2.DLL" Id="Boo.Lang.Compiler.dll" LongName="Boo.Lang.Compiler.dll" Assembly=".net" AssemblyApplication="Boo.Lang.Compiler.dll" AssemblyManifest="Boo.Lang.Compiler.dll" KeyPath="yes" />
-										</Component>
-										<Component Id="BooLangDll" Guid="80FA218A-9E89-4703-A5D2-705071A04096" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Boo.Lang.dll" Name="BooLang.dll" LongName="Boo.Lang.dll" Id="Boo.Lang.dll" Assembly=".net" AssemblyApplication="Boo.Lang.dll" AssemblyManifest="Boo.Lang.dll" KeyPath="yes" />
-										</Component>
-										<Component Id="BooLangInterpreterDll" Guid="BD78B601-D070-46EF-A07D-39945161F399" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Boo.Lang.Interpreter.dll" Name="BOOLA_3.DLL" Id="Boo.Lang.Interpreter.dll" LongName="Boo.Lang.Interpreter.dll" Assembly=".net" AssemblyApplication="Boo.Lang.Interpreter.dll" AssemblyManifest="Boo.Lang.Interpreter.dll" KeyPath="yes" />
-										</Component>
-										<Component Id="BooLangParserDll" Guid="A82A9C7A-7F1D-4AF1-BA30-0EFC3B87987D" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Boo.Lang.Parser.dll" Name="BOOLA_4.DLL" Id="Boo.Lang.Parser.dll" LongName="Boo.Lang.Parser.dll" Assembly=".net" AssemblyApplication="Boo.Lang.Parser.dll" AssemblyManifest="Boo.Lang.Parser.dll" KeyPath="yes" />
-										</Component>
-										<Component Id="BooLangUsefulDll" Guid="0CAA6615-B9EE-42EE-9B4B-ABB714B4A989" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Boo.Lang.Useful.dll" Name="BOOLA_5.DLL" Id="Boo.Lang.Useful.dll" LongName="Boo.Lang.Useful.dll" Assembly=".net" AssemblyApplication="Boo.Lang.Useful.dll" AssemblyManifest="Boo.Lang.Useful.dll" KeyPath="yes" />
-										</Component>
-										<Component Id="BooBuildTasksDll" Guid="4D7B1FD8-1835-425E-BAB9-C45CDD81D11A" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Boo.Microsoft.Build.targets" Name="BOOMI_1.TAR" Id="Boo.Microsoft.Build.targets" LongName="Boo.Microsoft.Build.targets" />
-											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Boo.Microsoft.Build.Tasks.dll" Name="BOOMI_1.DLL" Id="Boo.Microsoft.Build.Tasks.dll" LongName="Boo.Microsoft.Build.Tasks.dll" Assembly=".net" AssemblyApplication="Boo.Microsoft.Build.Tasks.dll" AssemblyManifest="Boo.Microsoft.Build.Tasks.dll" KeyPath="yes" />
-										</Component>
-										<Component Id="BooBindingDll" Guid="38DDCB00-D3F8-4658-B463-8DA6CB597B66" DiskId="1">
+										<Component Guid="2E711769-201C-4C5F-A97A-179C852B023F" Id="BooBindingFiles" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Boo.Lang.CodeDom.dll" Name="BOOLAN_1.DLL" Id="Boo.Lang.CodeDom.dll" LongName="Boo.Lang.CodeDom.dll" />
+											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Boo.Lang.Compiler.dll" Name="BOOLAN_2.DLL" Id="Boo.Lang.Compiler.dll" LongName="Boo.Lang.Compiler.dll" />
+											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Boo.Lang.dll" Name="Boo.Lang.dll" Id="Boo.Lang.dll" />
+											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Boo.Lang.Parser.dll" Name="BOOLAN_3.DLL" Id="Boo.Lang.Parser.dll" LongName="Boo.Lang.Parser.dll" />
+											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Boo.Lang.Useful.dll" Name="BOOLAN_4.DLL" Id="Boo.Lang.Useful.dll" LongName="Boo.Lang.Useful.dll" />
+											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Boo.Microsoft.Build.targets" Name="BOOMIC_1.TAR" Id="Boo.Microsoft.Build.targets" LongName="Boo.Microsoft.Build.targets" />
+											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Boo.Microsoft.Build.Tasks.dll" Name="BOOMIC_1.DLL" Id="Boo.Microsoft.Build.Tasks.dll" LongName="Boo.Microsoft.Build.Tasks.dll" />
 											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\BooBinding.addin" Name="BOOBIN_1.ADD" Id="BooBinding.addin" LongName="BooBinding.addin" />
-											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\BooBinding.dll" Name="BOOBIN_1.DLL" Id="BooBinding.dll" LongName="BooBinding.dll" Assembly=".net" AssemblyApplication="BooBinding.dll" AssemblyManifest="BooBinding.dll" KeyPath="yes" />
-										</Component>
-										<Component Id="BoocExe" Guid="41237AF5-CDDF-41E2-9DE4-0317D05CB840" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\booc.exe" Name="booc.exe" Id="booc.exe" Assembly=".net" AssemblyApplication="booc.exe" AssemblyManifest="booc.exe" KeyPath="yes" />
+											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\BooBinding.dll" Name="BOOBIN_1.DLL" Id="BooBinding.dll" LongName="BooBinding.dll" />
+											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\booc.exe" Name="booc.exe" Id="booc.exe" />
 											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\booc.exe.config" Name="BOOCEXE.CON" Id="booc.exe.config" LongName="booc.exe.config" />
 											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\booc.rsp" Name="booc.rsp" Id="booc.rsp" />
-										</Component>
-										<Component Id="NRefactoryToBooConverterDll" Guid="EC246CDF-A2C2-4BCF-81DB-CDDFFF42AA92" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\NRefactoryToBooConverter.dll" Name="NREFAC_1.DLL" Id="NRefactoryToBooConverter.dll" LongName="NRefactoryToBooConverter.dll" Assembly=".net" AssemblyApplication="NRefactoryToBooConverter.dll" AssemblyManifest="NRefactoryToBooConverter.dll" KeyPath="yes" />
+											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\NRefactoryToBooConverter.dll" Name="NREFAC_1.DLL" Id="NRefactoryToBooConverter.dll" LongName="NRefactoryToBooConverter.dll" />
 										</Component>
 									</Directory>
 									<Directory Id="CSharpBindingFolder" LongName="CSharpBinding" Name="CSharp">
@@ -1097,8 +1074,10 @@
 										<Component Guid="3A14B928-3319-429B-8F39-8870431C49CB" Id="DebuggerAddInFiles" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\Misc\Debugger\Debugger.AddIn.addin" Name="DEBUGG_1.ADD" Id="Debugger.AddIn.addin" LongName="Debugger.AddIn.addin" />
 											<File Source="..\..\AddIns\AddIns\Misc\Debugger\Debugger.AddIn.dll" Name="DEBUGG_1.DLL" Id="Debugger.AddIn.dll" LongName="Debugger.AddIn.dll" />
+											<!--
 											<File Source="..\..\AddIns\AddIns\Misc\Debugger\Debugger.BooInterpreter.addin" Name="DEBUGG_2.ADD" Id="Debugger.BooInterpreter.addin" LongName="Debugger.BooInterpreter.addin" />
 											<File Source="..\..\AddIns\AddIns\Misc\Debugger\Debugger.BooInterpreter.dll" Name="DEBUGG_2.DLL" Id="Debugger.BooInterpreter.dll" LongName="Debugger.BooInterpreter.dll" />
+											-->
 											<File Source="..\..\AddIns\AddIns\Misc\Debugger\Debugger.Core.dll" Name="DEBUGG_3.DLL" Id="Debugger.Core.dll" LongName="Debugger.Core.dll" />
 											<File Source="..\..\AddIns\AddIns\Misc\Debugger\TreeListView.dll" Name="TREELI_1.DLL" Id="TreeListView.dll" LongName="TreeListView.dll" />
 										</Component>

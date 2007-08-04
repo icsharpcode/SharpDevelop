@@ -220,7 +220,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public static MSBuild.Engine CreateEngine()
 		{
-			return new MSBuild.Engine(System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory());
+			return new MSBuild.Engine(MSBuild.ToolsetDefinitionLocations.Registry
+			                          | MSBuild.ToolsetDefinitionLocations.ConfigurationFile);
 		}
 		
 		/// <summary>
@@ -268,16 +269,16 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		/// <summary>
-		/// Gets an array containing all custom metadata names.
+		/// Gets all custom metadata names defined directly on the item, ignoring defaulted metadata entries.
 		/// </summary>
-		public static string[] GetCustomMetadataNames(MSBuild.BuildItem item)
+		public static IList<string> GetCustomMetadataNames(MSBuild.BuildItem item)
 		{
-			ArrayList a = (ArrayList)typeof(MSBuild.BuildItem).InvokeMember(
-				"GetAllCustomMetadataNames",
-				BindingFlags.InvokeMethod | BindingFlags.Instance | BindingFlags.NonPublic,
-				null, item, null
-			);
-			return (string[])a.ToArray(typeof(string));
+			PropertyInfo prop = typeof(MSBuild.BuildItem).GetProperty("ItemDefinitionLibrary", BindingFlags.Instance | BindingFlags.NonPublic);
+			object oldValue = prop.GetValue(item, null);
+			prop.SetValue(item, null, null);
+			IList<string> result = (IList<string>)item.CustomMetadataNames;
+			prop.SetValue(item, oldValue, null);
+			return result;
 		}
 		
 		static XmlElement CreateElement(XmlDocument document, string name)

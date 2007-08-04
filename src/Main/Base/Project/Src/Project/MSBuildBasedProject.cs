@@ -800,7 +800,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		public override void StartBuild(BuildOptions options)
 		{
 			RunMSBuild(this.ParentSolution, this,
-			           this.ActiveConfiguration, this.ActivePlatform, options);
+			           this.ParentSolution.Preferences.ActiveConfiguration,
+			           this.ParentSolution.Preferences.ActivePlatform,
+			           options);
 		}
 		
 		internal static void RunMSBuild(Solution solution, IProject project,

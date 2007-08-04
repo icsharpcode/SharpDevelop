@@ -32,7 +32,7 @@ namespace WixBinding.Tests.Gui
 			ResourceService.RegisterNeutralStrings(rm);
 		}
 		[Test]
-		[ExpectedException(typeof(FormsDesignerLoadException), "Unable to find dialog with an id of 'MissingDialog'.")]
+		[ExpectedException(typeof(FormsDesignerLoadException), ExpectedMessage = "Unable to find dialog with an id of 'MissingDialog'.")]
 		public void LoadMissingDialog()
 		{
 			WixDialogDesignerLoader loader = new WixDialogDesignerLoader(this, new WixDialogDesignerGenerator());
