@@ -21,11 +21,11 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
 		{
 			TestLoading(@"
 <Page
-    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+    xmlns=""http://schemas.microsoft.com/netfx/2007/xaml/presentation""
     xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
     >
   <StackPanel
-    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+    xmlns=""http://schemas.microsoft.com/netfx/2007/xaml/presentation""
     xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
     <TextBlock>
       Hello, World!
@@ -43,7 +43,7 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
 			TestLoading(@"
 <!--<SnippetSimpleLayout>-->
 <StackPanel
-  xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+  xmlns=""http://schemas.microsoft.com/netfx/2007/xaml/presentation""
   xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
   <Button HorizontalAlignment=""Left""
           Width=""100""
@@ -66,10 +66,10 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
 		{
 			TestLoading(@"
 <Page
-	xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+	xmlns=""http://schemas.microsoft.com/netfx/2007/xaml/presentation""
 	xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
 	<DockPanel
-		xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+		xmlns=""http://schemas.microsoft.com/netfx/2007/xaml/presentation""
 		xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
 		<TextBlock Background=""LightBlue""
 		           DockPanel.Dock=""Top"">Some Text</TextBlock>
@@ -103,7 +103,7 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
 		{
 			TestLoading(@"
 		<Page
-    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+    xmlns=""http://schemas.microsoft.com/netfx/2007/xaml/presentation""
     xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
   <StackPanel Background=""LightBlue"">
     <TextBlock Margin=""10,10,10,10"">Start Page</TextBlock>

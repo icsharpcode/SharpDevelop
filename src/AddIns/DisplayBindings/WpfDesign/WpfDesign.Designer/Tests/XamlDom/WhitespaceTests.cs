@@ -18,7 +18,7 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
 		{
 			TestLoading(@"
 <t:ExampleClass
-  xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+  xmlns=""http://schemas.microsoft.com/netfx/2007/xaml/presentation""
   xmlns:t=""" + XamlTypeFinderTests.XamlDomTestsNamespace + @"""
   xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
       
@@ -33,7 +33,7 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
 		{
 			TestLoading(@"
 <t:ExampleClass
-  xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+  xmlns=""http://schemas.microsoft.com/netfx/2007/xaml/presentation""
   xmlns:t=""" + XamlTypeFinderTests.XamlDomTestsNamespace + @"""
   xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
    a test               string
@@ -46,7 +46,7 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
 		{
 			TestLoading(@"
 <t:ExampleClass
-  xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+  xmlns=""http://schemas.microsoft.com/netfx/2007/xaml/presentation""
   xmlns:t=""" + XamlTypeFinderTests.XamlDomTestsNamespace + @"""
   xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
    a test
@@ -60,7 +60,7 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
 		{
 			TestLoading(@"
 <t:ExampleClass
-  xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+  xmlns=""http://schemas.microsoft.com/netfx/2007/xaml/presentation""
   xmlns:t=""" + XamlTypeFinderTests.XamlDomTestsNamespace + @"""
   xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" xml:space=""preserve"">
       
@@ -75,7 +75,7 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
 		{
 			TestLoading(@"
 <t:ExampleClass
-  xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+  xmlns=""http://schemas.microsoft.com/netfx/2007/xaml/presentation""
   xmlns:t=""" + XamlTypeFinderTests.XamlDomTestsNamespace + @"""
   xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" xml:space=""preserve"">
    a test               string
@@ -88,7 +88,7 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
 		{
 			TestLoading(@"
 <t:ExampleClass
-  xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+  xmlns=""http://schemas.microsoft.com/netfx/2007/xaml/presentation""
   xmlns:t=""" + XamlTypeFinderTests.XamlDomTestsNamespace + @"""
   xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" xml:space=""preserve"">
    a test
@@ -102,7 +102,7 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
 		{
 			TestLoading(@"
 		          <t:ExampleClass
-  xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+  xmlns=""http://schemas.microsoft.com/netfx/2007/xaml/presentation""
   xmlns:t=""" + XamlTypeFinderTests.XamlDomTestsNamespace + @"""
   xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" xml:space=""preserve""> <![CDATA[
 	This is text inside the CData section.
@@ -119,7 +119,7 @@ And that was an empty line.
 		{
 			TestLoading(@"
 		          <t:ExampleClass
-  xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+  xmlns=""http://schemas.microsoft.com/netfx/2007/xaml/presentation""
   xmlns:t=""" + XamlTypeFinderTests.XamlDomTestsNamespace + @"""
   xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
 	some text

@@ -18,7 +18,7 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
 		{
 			TestLoading(@"
 <Window
-  xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+  xmlns=""http://schemas.microsoft.com/netfx/2007/xaml/presentation""
   xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
 </Window>
 			");
@@ -29,7 +29,7 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
 		{
 			TestLoading(@"
 <Window
-  xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+  xmlns=""http://schemas.microsoft.com/netfx/2007/xaml/presentation""
   xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
   Width=""300"" Height=""400"">
 </Window>
@@ -41,7 +41,7 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
 		{
 			TestLoading(@"
 <Window
-  xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+  xmlns=""http://schemas.microsoft.com/netfx/2007/xaml/presentation""
   xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
   <Window.Height>100</Window.Height>
 </Window>
@@ -53,7 +53,7 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
 		{
 			TestLoading(@"
 <t:ExampleClass
-  xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+  xmlns=""http://schemas.microsoft.com/netfx/2007/xaml/presentation""
   xmlns:t=""" + XamlTypeFinderTests.XamlDomTestsNamespace + @"""
   xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
 </t:ExampleClass>
@@ -65,7 +65,7 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
 		{
 			TestLoading(@"
 <t:ExampleClass
-  xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+  xmlns=""http://schemas.microsoft.com/netfx/2007/xaml/presentation""
   xmlns:t=""" + XamlTypeFinderTests.XamlDomTestsNamespace + @"""
   xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
   StringProp=""a test string"">
@@ -78,7 +78,7 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
 		{
 			TestLoading(@"
 <t:ExampleClass
-  xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+  xmlns=""http://schemas.microsoft.com/netfx/2007/xaml/presentation""
   xmlns:t=""" + XamlTypeFinderTests.XamlDomTestsNamespace + @"""
   xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
    a test string
@@ -91,7 +91,7 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
 		{
 			TestLoading(@"
 <t:ExampleClass
-  xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+  xmlns=""http://schemas.microsoft.com/netfx/2007/xaml/presentation""
   xmlns:t=""" + XamlTypeFinderTests.XamlDomTestsNamespace + @"""
   xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
    <t:ExampleClass.StringProp>
@@ -106,7 +106,7 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
 		{
 			TestLoading(@"
 <t:ExampleClass
-  xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+  xmlns=""http://schemas.microsoft.com/netfx/2007/xaml/presentation""
   xmlns:t=""" + XamlTypeFinderTests.XamlDomTestsNamespace + @"""
   xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
    a test string
@@ -122,7 +122,7 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
 		{
 			TestLoading(@"
 <t:ExampleClass
-  xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+  xmlns=""http://schemas.microsoft.com/netfx/2007/xaml/presentation""
   xmlns:t=""" + XamlTypeFinderTests.XamlDomTestsNamespace + @"""
   xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
    <t:ExampleClass.OtherProp>
@@ -138,7 +138,7 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
 		{
 			TestLoading(@"
 <t:ExampleClass
-  xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+  xmlns=""http://schemas.microsoft.com/netfx/2007/xaml/presentation""
   xmlns:t=""" + XamlTypeFinderTests.XamlDomTestsNamespace + @"""
   xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
    <t:ExampleClass.OtherProp>
@@ -186,7 +186,7 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
 		{
 			TestLoading(@"
 <t:ExampleDependencyObject
-  xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+  xmlns=""http://schemas.microsoft.com/netfx/2007/xaml/presentation""
   xmlns:t=""" + XamlTypeFinderTests.XamlDomTestsNamespace + @"""
   xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
   t:ExampleService.Example=""attached value"">

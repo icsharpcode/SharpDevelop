@@ -43,7 +43,7 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 		protected DesignItem CreateCanvasContext(string xaml)
 		{
 			XamlDesignContext context = CreateContext(@"<Canvas
-  xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+  xmlns=""http://schemas.microsoft.com/netfx/2007/xaml/presentation""
   xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
   " + xaml + "</Canvas>");
 			Canvas canvas = (Canvas)context.RootItem.Component;
@@ -57,7 +57,7 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 		{
 			expectedXaml =
 				"<?xml version=\"1.0\" encoding=\"utf-16\"?>\n" +
-				("<Canvas xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\" " +
+				("<Canvas xmlns=\"http://schemas.microsoft.com/netfx/2007/xaml/presentation\" " +
 				 "xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\">\n" + expectedXaml.Trim())
 				.Replace("\r", "").Replace("\n", "\n  ")
 				+ "\n</Canvas>";
