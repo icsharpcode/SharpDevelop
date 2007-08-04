@@ -95,6 +95,9 @@ namespace ICSharpCode.SharpDevelop.Tests
 			expectedMethodNames.Add("RemoveItem");
 			expectedMethodNames.Add("SetItem");
 			
+			methodNames.Sort();
+			expectedMethodNames.Sort();
+			
 			Assert.AreEqual(expectedMethodNames.ToArray(), methodNames.ToArray());
 		}
 		

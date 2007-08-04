@@ -71,6 +71,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		}
 	}
 	
+	[Obsolete]
 	public class TemplateScript
 	{
 		string languageName;
@@ -150,7 +151,6 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		
 		List<FileDescriptionTemplate> files = new List<FileDescriptionTemplate>();
 		List<TemplateProperty> properties  = new List<TemplateProperty>();
-		List<TemplateScript> scripts = new List<TemplateScript>();
 		List<TemplateType> customTypes = new List<TemplateType>();
 		
 		XmlElement fileoptions = null;
@@ -244,15 +244,17 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			}
 		}
 		
+		[Obsolete]
 		public List<TemplateScript> Scripts {
 			get {
-				return scripts;
+				return new List<TemplateScript>();
 			}
 		}
 		
+		[Obsolete]
 		public bool HasScripts {
 			get {
-				return scripts != null && scripts.Count > 0;
+				return false;
 			}
 		}
 		
@@ -314,13 +316,6 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 					this.files.Add(new FileDescriptionTemplate((XmlElement)filenode, Path.GetDirectoryName(filename)));
 				}
 			}
-			
-			// load scripts (if any)
-			XmlNodeList scriptList = doc.DocumentElement.SelectNodes("Script");
-			foreach (XmlElement scriptElement in scriptList) {
-				this.scripts.Add(new TemplateScript(scriptElement));
-			}
-			
 		}
 		
 		static FileTemplate()
