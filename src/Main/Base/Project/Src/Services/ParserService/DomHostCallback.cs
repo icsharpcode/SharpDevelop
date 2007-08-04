@@ -6,6 +6,8 @@
 // </file>
 
 using System;
+using System.IO;
+using Microsoft.Win32;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
@@ -44,6 +46,13 @@ namespace ICSharpCode.SharpDevelop
 			};
 			
 			HostCallback.InitializeCodeGeneratorOptions = AmbienceService.InitializeCodeGeneratorOptions;
+			
+			string dir = WinFXReferenceDirectory;
+			if (!string.IsNullOrEmpty(dir))
+				XmlDoc.XmlDocLookupDirectories.Add(dir);
+			dir = XNAReferenceDirectory;
+			if (!string.IsNullOrEmpty(dir))
+				XmlDoc.XmlDocLookupDirectories.Add(dir);
 		}
 		
 		static void ShowAssemblyLoadError(string fileName, string include, string message)
@@ -55,6 +64,34 @@ namespace ICSharpCode.SharpDevelop
 					new string[,] { {"Assembly", include}, {"Filename", fileName}}
 				) + "\r\n" + message + "\r\n"
 			);
+		}
+		
+		static string WinFXReferenceDirectory {
+			get {
+				RegistryKey k = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\NET Framework Setup\NDP\v3.0\Setup\Windows Communication Foundation");
+				if (k == null)
+					return null;
+				object o = k.GetValue("ReferenceInstallPath");
+				k.Close();
+				if (o == null)
+					return null;
+				else
+					return o.ToString();
+			}
+		}
+		
+		static string XNAReferenceDirectory {
+			get {
+				RegistryKey k = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\XNA\Game Studio Express\v1.0");
+				if (k == null)
+					return null;
+				object o = k.GetValue("InstallPath");
+				k.Close();
+				if (o == null)
+					return null;
+				else
+					return Path.Combine(o.ToString(), @"References\Windows\x86");
+			}
 		}
 	}
 }

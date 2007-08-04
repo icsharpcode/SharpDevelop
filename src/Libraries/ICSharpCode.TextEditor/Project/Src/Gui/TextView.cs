@@ -220,6 +220,10 @@ namespace ICSharpCode.TextEditor
 					physicalXPos = PaintLinePart(g, lineNumber, column, firstFolding.StartColumn, lineRectangle, physicalXPos);
 					column     = firstFolding.EndColumn;
 					lineNumber = firstFolding.EndLine;
+					if (lineNumber >= textArea.Document.TotalNumberOfLines) {
+						Debug.Assert(false, "Folding ends after document end");
+						break;
+					}
 					
 					ColumnRange    selectionRange2 = textArea.SelectionManager.GetSelectionAtLine(lineNumber);
 					bool drawSelected = ColumnRange.WholeColumn.Equals(selectionRange2) || firstFolding.StartColumn >= selectionRange2.StartColumn && firstFolding.EndColumn <= selectionRange2.EndColumn;

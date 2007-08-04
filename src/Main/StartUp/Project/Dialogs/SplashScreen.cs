@@ -32,9 +32,6 @@ namespace ICSharpCode.SharpDevelop
 		
 		public SplashScreenForm()
 		{
-			#if !DEBUG
-			TopMost         = true;
-			#endif
 			FormBorderStyle = FormBorderStyle.None;
 			StartPosition   = FormStartPosition.CenterScreen;
 			ShowInTaskbar   = false;

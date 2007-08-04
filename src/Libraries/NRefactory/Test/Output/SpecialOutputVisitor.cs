@@ -205,5 +205,18 @@ End Class");
 			                 "\tEnd Sub\n" +
 			                 "End Class");
 		}
+		
+		[Test]
+		public void ConditionalAttribute()
+		{
+			TestProgram("class A\n" +
+			            "{\n" +
+			            "\t#if TEST\n" +
+			            "\t[MyAttribute()]\n" +
+			            "\t#endif\n" +
+			            "\tpublic int Field;\n" +
+			            "}\n" +
+			            "#end if");
+		}
 	}
 }

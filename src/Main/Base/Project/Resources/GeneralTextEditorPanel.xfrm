@@ -77,10 +77,10 @@
           </System.Windows.Forms.ComboBox>
           <System.Windows.Forms.CheckBox>
             <Name value="mouseWheelZoomCheckBox" />
-            <Location value="192, 109" />
+            <Location value="{X=182,Y=109}" />
             <Text value="${res:Dialog.Options.IDEOptions.TextEditor.General.MouseWheelZoomCheckBoxCheckBox}" />
             <TabIndex value="6" />
-            <Size value="160, 24" />
+            <Size value="{Width=170, Height=24}" />
             <Anchor value="Top, Left, Right" />
           </System.Windows.Forms.CheckBox>
           <System.Windows.Forms.Label>

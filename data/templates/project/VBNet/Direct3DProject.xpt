@@ -41,10 +41,13 @@
 		
 		<PropertyGroup>
 			<OutputType>WinExe</OutputType>
+			<StartupObject>${StandardNamespace}.MainClass</StartupObject>
 		</PropertyGroup>
 		
 		<Files>
 			<File name="MainClass.vb"><![CDATA[${StandardHeader.VBNET}
+
+Imports System.ComponentModel
 
 ' This is the main class of my Direct3D application
 Public Class MainClass
@@ -104,7 +107,7 @@ Public Class MainClass
 	
 	' This method renders the scene
 	Protected Overridable Sub Render()
-		If Not device Is Nothing
+		If Not device Is Nothing Then
 			device.Clear(ClearFlags.Target, Color.Blue, 1.0f, 0)
 			device.BeginScene()
 			
@@ -131,7 +134,7 @@ Public Class MainClass
 	
 	Protected Overrides Sub OnKeyPress(e As KeyPressEventArgs)
 		MyBase.OnKeyPress(e)
-		If AscW(e.KeyChar) = CInt(Keys.Escape)
+		If AscW(e.KeyChar) = CInt(Keys.Escape) Then
 			Close()
 		End If
 	End Sub
@@ -140,7 +143,7 @@ Public Class MainClass
 	Shared Sub Main()
 		Dim mainClass As New MainClass()
 		
-		If Not mainClass.InitializeGraphics()
+		If Not mainClass.InitializeGraphics() Then
 			MessageBox.Show("Error while initializing Direct3D")
 			Return
 		End If

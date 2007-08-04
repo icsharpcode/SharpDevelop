@@ -71,12 +71,22 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			available = enumerator.MoveNext();
 		}
 		
+		AttributedNode currentAttributedNode;
+		
 		/// <summary>
 		/// Writes all specials up to the start position of the node.
 		/// </summary>
 		public void AcceptNodeStart(INode node)
 		{
-			AcceptPoint(node.StartLocation);
+			if (node is AttributedNode) {
+				currentAttributedNode = node as AttributedNode;
+				if (currentAttributedNode.Attributes.Count == 0) {
+					AcceptPoint(node.StartLocation);
+					currentAttributedNode = null;
+				}
+			} else {
+				AcceptPoint(node.StartLocation);
+			}
 		}
 		
 		/// <summary>
@@ -87,6 +97,12 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			visitor.ForceWriteInPreviousLine = true;
 			AcceptPoint(node.EndLocation);
 			visitor.ForceWriteInPreviousLine = false;
+			if (currentAttributedNode != null) {
+				if (node == currentAttributedNode.Attributes[currentAttributedNode.Attributes.Count - 1]) {
+					AcceptPoint(currentAttributedNode.StartLocation);
+					currentAttributedNode = null;
+				}
+			}
 		}
 		
 		/// <summary>

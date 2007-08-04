@@ -245,7 +245,6 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			}
 		}
 		
-		[Conditional("DEBUG")]
 		internal static void WarnObsoleteNode(XmlElement element, string message)
 		{
 			MessageService.ShowWarning("Obsolete node <" + element.Name +
@@ -253,7 +252,6 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			                           "':\n" + message);
 		}
 		
-		[Conditional("DEBUG")]
 		internal static void WarnObsoleteAttribute(XmlElement element, string attribute, string message)
 		{
 			MessageService.ShowWarning("Obsolete attribute <" + element.Name +
@@ -262,7 +260,6 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			                           "':\n" + message);
 		}
 		
-		[Conditional("DEBUG")]
 		internal static void WarnAttributeMissing(XmlElement element, string attribute)
 		{
 			MessageService.ShowWarning("Missing attribute <" + element.Name +
