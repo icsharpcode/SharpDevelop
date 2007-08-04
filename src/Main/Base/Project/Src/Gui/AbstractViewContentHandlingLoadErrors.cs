@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.IO;
 using System.Windows.Forms;
 
@@ -113,7 +114,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 							panel.Controls.Add(userControl);
 						}
 					} else {
-						ShowError(Linq.First(errorList.Values).exception);
+						ShowError(errorList.Values.First().exception);
 					}
 				}
 			} catch (Exception ex) {

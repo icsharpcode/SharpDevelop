@@ -7,6 +7,7 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using ICSharpCode.FormsDesigner;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
@@ -47,8 +48,7 @@ namespace Grunwald.BooBinding.Designer
 		
 		public IViewContent[] CreateSecondaryViewContent(IViewContent viewContent)
 		{
-			if (Linq.Exists(viewContent.SecondaryViewContents, delegate(IViewContent c) { return c is FormsDesignerViewContent; }))
-			{
+			if (viewContent.SecondaryViewContents.Any(c => c is FormsDesignerViewContent)) {
 				return new IViewContent[0];
 			}
 			

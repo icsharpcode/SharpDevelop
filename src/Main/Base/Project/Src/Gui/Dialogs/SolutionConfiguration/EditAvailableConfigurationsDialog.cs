@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
@@ -79,7 +80,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void ShowEntries(IEnumerable<string> list, string activeItem)
 		{
-			string[] array = Linq.ToArray(list);
+			string[] array = list.ToArray();
 			listBox.Items.Clear();
 			listBox.Items.AddRange(array);
 			if (listBox.Items.Count == 0) {

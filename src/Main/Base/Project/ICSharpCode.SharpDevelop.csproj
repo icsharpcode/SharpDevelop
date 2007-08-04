@@ -41,6 +41,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Core" />
     <Reference Include="System.Data" />
     <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
@@ -696,7 +697,7 @@
       <DependentUpon>AsynchronousWaitDialog.cs</DependentUpon>
     </EmbeddedResource>
     <Compile Include="Src\Gui\Dialogs\SharpDevelopColorDialog.cs" />
-    <Compile Include="Src\Util\Linq.cs" />
+    <Compile Include="Src\Util\ExtensionMethods.cs" />
     <Compile Include="Src\Util\DebugTimer.cs" />
     <Compile Include="Src\Project\CustomTool.cs" />
     <Compile Include="Src\Gui\Dialogs\SolutionConfiguration\EditAvailableConfigurationsDialog.Designer.cs">

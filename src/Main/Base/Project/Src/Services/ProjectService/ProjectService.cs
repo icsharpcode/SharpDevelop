@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Linq;
 using System.IO;
 using System.Text;
 
@@ -161,7 +162,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				if (FileUtility.IsBaseDirectory(project.Directory, fileName)) {
 					IProjectItemListProvider provider = project as IProjectItemListProvider;
 					if (provider != null) {
-						foreach (ProjectItem item in Linq.ToArray(provider.Items)) {
+						foreach (ProjectItem item in provider.Items.ToArray()) {
 							if (FileUtility.IsBaseDirectory(fileName, item.FileName)) {
 								provider.RemoveProjectItem(item);
 								OnProjectItemRemoved(new ProjectItemEventArgs(project, item));
@@ -187,10 +188,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public static void AddProject(ISolutionFolderNode solutionFolderNode, IProject newProject)
 		{
-			if (Linq.Exists(solutionFolderNode.Solution.SolutionFolders,
-			                delegate (ISolutionFolder folder) {
-			                	return string.Equals(folder.IdGuid, newProject.IdGuid, StringComparison.OrdinalIgnoreCase);
-			                }))
+			if (solutionFolderNode.Solution.SolutionFolders.Any(
+				folder => string.Equals(folder.IdGuid, newProject.IdGuid, StringComparison.OrdinalIgnoreCase)))
 			{
 				LoggingService.Warn("ProjectService.AddProject: Duplicate IdGuid detected");
 				newProject.IdGuid = Guid.NewGuid().ToString().ToUpperInvariant();

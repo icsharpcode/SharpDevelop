@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Xml;
 
@@ -98,7 +99,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		
 		static IEnumerable<XmlElement> ChildElements(XmlElement parentElement)
 		{
-			return Linq.OfType<XmlElement>(parentElement.ChildNodes);
+			return parentElement.ChildNodes.OfType<XmlElement>();
 		}
 		
 		void LoadElement(XmlElement node, string hintPath)

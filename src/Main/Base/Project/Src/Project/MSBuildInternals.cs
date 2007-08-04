@@ -9,6 +9,7 @@ using System;
 using System.Diagnostics;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Xml;
 using System.Text;
 using System.Globalization;
@@ -214,8 +215,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public static MSBuild.BuildProperty GetProperty(MSBuild.BuildPropertyGroup pg, string name)
 		{
-			return Linq.Find(Linq.CastTo<MSBuild.BuildProperty>(pg),
-			                 delegate(MSBuild.BuildProperty p) { return p.Name == name; });
+			return pg.Cast<MSBuild.BuildProperty>().FirstOrDefault(p => p.Name == name);
 		}
 		
 		public static MSBuild.Engine CreateEngine()

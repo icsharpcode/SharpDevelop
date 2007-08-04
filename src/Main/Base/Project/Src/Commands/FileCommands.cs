@@ -8,6 +8,7 @@
 using System;
 using System.Drawing.Printing;
 using System.IO;
+using System.Linq;
 using System.Diagnostics;
 using System.Windows.Forms;
 
@@ -69,7 +70,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 					return;
 				}
 				
-				foreach (OpenedFile file in Linq.ToArray(content.Files)) {
+				foreach (OpenedFile file in content.Files.ToArray()) {
 					Save(file);
 				}
 			}

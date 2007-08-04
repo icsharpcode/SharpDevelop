@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -942,8 +943,8 @@ namespace ICSharpCode.SharpDevelop.Project
 					projectConfiguration = matching.Configuration;
 					projectPlatform = matching.Platform;
 				} else {
-					projectConfiguration = Linq.ToArray(project.ConfigurationNames)[0];
-					projectPlatform = FixPlatformNameForSolution(Linq.ToArray(project.PlatformNames)[0]);
+					projectConfiguration = project.ConfigurationNames.First();
+					projectPlatform = FixPlatformNameForSolution(project.PlatformNames.First());
 				}
 				if (createInProjects) {
 					ICollection<string> existingInProject = addPlatform ? project.PlatformNames : project.ConfigurationNames;

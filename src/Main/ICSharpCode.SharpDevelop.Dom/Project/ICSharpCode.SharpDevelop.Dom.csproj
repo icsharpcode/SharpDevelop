@@ -41,6 +41,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Core" />
     <Reference Include="System.Xml" />
     <Reference Include="Mono.Cecil">
       <HintPath>..\..\..\Libraries\Mono.Cecil\Mono.Cecil.dll</HintPath>
@@ -144,7 +145,6 @@
     <Compile Include="Src\FusionNative.cs" />
     <Compile Include="Src\DiffUtility.cs" />
     <Compile Include="Src\ProjectContent\ParseInformation.cs" />
-    <Compile Include="Src\Functional.cs" />
     <Compile Include="Src\HostCallback.cs" />
     <Compile Include="Src\Refactoring\CodeGenerator.cs" />
     <Compile Include="Src\Refactoring\IDocument.cs" />

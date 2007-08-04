@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing.Design;
+using System.Linq;
 using System.IO;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
@@ -74,9 +75,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			static IEnumerable<string> GetNames(IEnumerable<ItemType> itemTypes)
 			{
-				return Linq.Select<ItemType, string>(
-					itemTypes, delegate(ItemType it) { return it.ItemName; }
-				);
+				return itemTypes.Select(it => it.ItemName);
 			}
 		}
 		

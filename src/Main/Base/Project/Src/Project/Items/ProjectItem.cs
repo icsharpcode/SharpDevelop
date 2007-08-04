@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
+using System.Linq;
 using System.IO;
 using System.Text;
 using System.Xml;
@@ -301,7 +302,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					if (buildItem != null)
 						return MSBuildInternals.GetCustomMetadataNames(buildItem);
 					else
-						return Linq.ToArray(virtualMetadata.Keys);
+						return virtualMetadata.Keys.ToArray();
 				}
 			}
 		}

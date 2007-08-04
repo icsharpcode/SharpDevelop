@@ -9,6 +9,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
@@ -112,12 +113,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public IList<IWorkbenchWindow> WorkbenchWindowCollection {
 			get {
-				return Linq.ToArray(Linq.Distinct(
-					Linq.Select<IViewContent, IWorkbenchWindow>(
-						viewContentCollection,
-						delegate (IViewContent vc) { return vc.WorkbenchWindow; }
-					)
-				));
+				return viewContentCollection.Select(vc => vc.WorkbenchWindow)
+					.Distinct().ToArray().AsReadOnly();
 			}
 		}
 		
@@ -303,7 +300,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			try {
 				closeAll = true;
-				foreach (IWorkbenchWindow window in Linq.ToArray(this.WorkbenchWindowCollection)) {
+				foreach (IWorkbenchWindow window in this.WorkbenchWindowCollection.ToArray()) {
 					window.CloseWindow(false);
 				}
 			} finally {
@@ -459,9 +456,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void CheckRemovedOrReplacedFile(object sender, FileEventArgs e)
 		{
-			foreach (OpenedFile file in Linq.ToArray(FileService.OpenedFiles)) {
+			foreach (OpenedFile file in FileService.OpenedFiles.ToArray()) {
 				if (FileUtility.IsBaseDirectory(e.FileName, file.FileName)) {
-					foreach (IViewContent content in Linq.ToArray(file.RegisteredViewContents)) {
+					foreach (IViewContent content in file.RegisteredViewContents.ToArray()) {
 						content.WorkbenchWindow.CloseWindow(true);
 					}
 				}

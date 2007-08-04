@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.IO;
 using System.Windows.Forms;
 
@@ -188,7 +189,7 @@ namespace ICSharpCode.SharpDevelop
 		{
 			WorkbenchSingleton.SafeThreadAsyncCall(
 				delegate {
-					foreach (IViewContent content in Linq.ToArray(WorkbenchSingleton.Workbench.ViewContentCollection)) {
+					foreach (IViewContent content in WorkbenchSingleton.Workbench.ViewContentCollection.ToArray()) {
 						DisplayBindingService.AttachSubWindows(content, true);
 					}
 				});

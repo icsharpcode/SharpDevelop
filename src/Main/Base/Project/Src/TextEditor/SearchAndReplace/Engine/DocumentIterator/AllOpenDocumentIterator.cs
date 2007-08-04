@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Linq;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Gui;
@@ -39,7 +40,7 @@ namespace SearchAndReplace
 		{
 			GetCurIndex();
 			if (curIndex >= 0) {
-				IViewContent viewContent = Linq.ToArray(WorkbenchSingleton.Workbench.ViewContentCollection)[curIndex];
+				IViewContent viewContent = WorkbenchSingleton.Workbench.ViewContentCollection.ToList()[curIndex];
 				if (viewContent is ITextEditorControlProvider) {
 					return viewContent;
 				}
@@ -63,7 +64,7 @@ namespace SearchAndReplace
 		
 		void GetCurIndex()
 		{
-			IViewContent[] viewContentCollection = Linq.ToArray(WorkbenchSingleton.Workbench.ViewContentCollection);
+			IViewContent[] viewContentCollection = WorkbenchSingleton.Workbench.ViewContentCollection.ToArray();
 			int viewCount = WorkbenchSingleton.Workbench.ViewContentCollection.Count;
 			if (curIndex == -1 || curIndex >= viewCount) {
 				for (int i = 0; i < viewCount; ++i) {

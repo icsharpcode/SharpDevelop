@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 using ICSharpCode.Core;
 
@@ -40,7 +41,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				okButton.Enabled = nameTextBox.TextLength > 0;
 			};
 			copyFromComboBox.Items.Add("<Empty>");
-			copyFromComboBox.Items.AddRange(Linq.ToArray(availableSourceItems));
+			copyFromComboBox.Items.AddRange(availableSourceItems.ToArray());
 			copyFromComboBox.SelectedIndex = 0;
 			
 			if (solution) {

@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.IO;
 
 using ICSharpCode.Core;
@@ -309,10 +310,10 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (string.IsNullOrEmpty(configuration)) configuration = ActiveConfiguration;
 			if (string.IsNullOrEmpty(platform))      platform = ActivePlatform;
 			
-			// We need to use ToArray because EvaluateMSBuildCondition invalidates the list
+			// We need to use ToList because EvaluateMSBuildCondition invalidates the list
 			// of property groups.
 			foreach (MSBuild.BuildPropertyGroup g
-			         in Linq.ToList(Linq.CastTo<MSBuild.BuildPropertyGroup>(project.PropertyGroups)))
+			         in project.PropertyGroups.Cast<MSBuild.BuildPropertyGroup>().ToList())
 			{
 				if (g.IsImported) {
 					continue;
@@ -1073,7 +1074,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				bool copiedGroup = false;
 				if (copyFrom != null) {
 					foreach (MSBuild.BuildPropertyGroup g
-					         in Linq.ToList(Linq.CastTo<MSBuild.BuildPropertyGroup>(project.PropertyGroups)))
+					         in project.PropertyGroups.Cast<MSBuild.BuildPropertyGroup>().ToList())
 					{
 						if (g.IsImported) {
 							continue;
@@ -1103,7 +1104,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				bool copiedGroup = false;
 				if (copyFrom != null) {
 					foreach (MSBuild.BuildPropertyGroup g
-					         in Linq.ToList(Linq.CastTo<MSBuild.BuildPropertyGroup>(project.PropertyGroups)))
+					         in project.PropertyGroups.Cast<MSBuild.BuildPropertyGroup>().ToList())
 					{
 						if (g.IsImported) {
 							continue;
@@ -1153,7 +1154,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					throw new InvalidOperationException("cannot remove the last configuration");
 				}
 				foreach (MSBuild.BuildPropertyGroup g
-				         in Linq.ToList(Linq.CastTo<MSBuild.BuildPropertyGroup>(project.PropertyGroups)))
+				         in project.PropertyGroups.Cast<MSBuild.BuildPropertyGroup>().ToList())
 				{
 					if (g.IsImported) {
 						continue;
@@ -1191,7 +1192,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					throw new InvalidOperationException("cannot remove the last platform");
 				}
 				foreach (MSBuild.BuildPropertyGroup g
-				         in Linq.ToList(Linq.CastTo<MSBuild.BuildPropertyGroup>(project.PropertyGroups)))
+				         in project.PropertyGroups.Cast<MSBuild.BuildPropertyGroup>().ToList())
 				{
 					if (g.IsImported) {
 						continue;

@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Drawing.Design;
+using System.Linq;
 using System.Reflection;
 
 using ICSharpCode.Core;
@@ -67,7 +68,8 @@ namespace ICSharpCode.FormsDesigner.Gui
 		/// </summary>
 		static IEnumerable<IProjectContent> AllProjectContentsWithReferences {
 			get {
-				return Linq.Distinct(Linq.Concat(ParserService.AllProjectContents, ParserService.DefaultProjectContentRegistry.GetLoadedProjectContents()));
+				return Enumerable.Concat(ParserService.AllProjectContents, ParserService.DefaultProjectContentRegistry.GetLoadedProjectContents())
+					.Distinct();
 			}
 		}
 		

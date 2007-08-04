@@ -8,6 +8,7 @@
 using System;
 using System.Collections;
 using System.IO;
+using System.Linq;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
@@ -911,9 +912,7 @@ End Class
 		
 		bool ContainsMember(IEnumerable input, string fullMemberName)
 		{
-			return Linq.Exists(Linq.OfType<IMember>(input), delegate(IMember m) {
-			                   	return m.FullyQualifiedName == fullMemberName;
-			                   });
+			return input.OfType<IMember>().Any(m => m.FullyQualifiedName == fullMemberName);
 		}
 		#endregion
 		

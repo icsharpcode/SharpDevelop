@@ -13,6 +13,7 @@ using System.IO;
 using System.Reflection;
 using System.Resources;
 using System.Threading;
+using System.Linq;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Commands;
@@ -223,7 +224,7 @@ namespace ICSharpCode.SharpDevelop.Sda
 		bool CloseWorkbenchInternal(bool force)
 		{
 			if (force) {
-				foreach (IViewContent vc in Linq.ToArray(WorkbenchSingleton.Workbench.ViewContentCollection)) {
+				foreach (IViewContent vc in WorkbenchSingleton.Workbench.ViewContentCollection.ToArray()) {
 					vc.WorkbenchWindow.CloseWindow(true);
 				}
 			}

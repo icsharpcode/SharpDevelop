@@ -7,6 +7,7 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
@@ -31,7 +32,7 @@ namespace ICSharpCode.SharpDevelop.Commands.TabStrip
 		public override void Run()
 		{
 			IWorkbenchWindow thisWindow = Owner as IWorkbenchWindow;
-			foreach (IWorkbenchWindow window in Linq.ToArray(WorkbenchSingleton.Workbench.WorkbenchWindowCollection)) {
+			foreach (IWorkbenchWindow window in WorkbenchSingleton.Workbench.WorkbenchWindowCollection.ToArray()) {
 				if (window != thisWindow) {
 					if (!window.CloseWindow(false))
 						break;

@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Text.RegularExpressions;
+using System.Linq;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
@@ -215,10 +216,8 @@ namespace ICSharpCode.SharpDevelop.Project
 				else
 					projectsToBuildWithoutDependencies = GetAllReferencedProjects(project);
 				
-				projectsToBuild = Linq.ToList(Linq.Select<IProject, ProjectToBuild>(
-					projectsToBuildWithoutDependencies,
-					p => new ProjectToBuild(p.FileName, options.Target.TargetName)
-				));
+				projectsToBuild = (from p in projectsToBuildWithoutDependencies
+				                   select new ProjectToBuild(p.FileName, options.Target.TargetName)).ToList();
 				
 				Dictionary<string, ProjectToBuild> projectDict = new Dictionary<string, ProjectToBuild>(StringComparer.InvariantCultureIgnoreCase);
 				foreach (ProjectToBuild ptb in projectsToBuild) {
@@ -240,7 +239,11 @@ namespace ICSharpCode.SharpDevelop.Project
 							ptb.configuration = item.GetEvaluatedMetadata("Configuration");
 							ptb.platform = item.GetEvaluatedMetadata("Platform");
 						} else {
-							parentEngine.MessageView.AppendLine("Cannot build project file: " + path + " (project is not loaded by SharpDevelop)");
+							// don't warn when compiling a specific project, but simply ignore projects
+							// that are not required
+							if (project == null) {
+								parentEngine.MessageView.AppendLine("Cannot build project file: " + path + " (project is not loaded by SharpDevelop)");
+							}
 						}
 					}
 				}

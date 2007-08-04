@@ -141,7 +141,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			member = method;
 			imageIndex  = ClassBrowserIconService.GetIcon(method);
 			ambience = AmbienceService.CurrentAmbience;
-			ambience.ConversionFlags = ConversionFlags.ShowTypeParameterList;
+			ambience.ConversionFlags = ConversionFlags.None;
 			text = ambience.Convert(method);
 			ambience.ConversionFlags = ConversionFlags.StandardConversionFlags;
 			description = ambience.Convert(method);

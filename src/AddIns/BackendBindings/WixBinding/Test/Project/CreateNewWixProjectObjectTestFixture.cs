@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Linq;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Internal.Templates;
@@ -156,7 +157,7 @@ namespace WixBinding.Tests.Project
 		MSBuild.BuildProperty GetMSBuildProperty(string name)
 		{
 			MSBuild.Project msbuildProject = project.MSBuildProject;
-			foreach (MSBuild.BuildPropertyGroup g in Linq.ToList(Linq.CastTo<MSBuild.BuildPropertyGroup>(msbuildProject.PropertyGroups))) {
+			foreach (MSBuild.BuildPropertyGroup g in msbuildProject.PropertyGroups.Cast<MSBuild.BuildPropertyGroup>().ToList()) {
 				if (!g.IsImported) {
 					MSBuild.BuildProperty property = MSBuildInternals.GetProperty(g, name);
 					if (property != null) {

@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Drawing;
 using System.Globalization;
 using System.Windows.Forms;
@@ -638,11 +639,11 @@ namespace ICSharpCode.SharpDevelop.Project
 			{
 				List<string> items;
 				configurationComboBox.Items.Clear();
-				items = Linq.ToList(helper.Project.ConfigurationNames);
+				items = helper.Project.ConfigurationNames.ToList();
 				items.Sort();
 				configurationComboBox.Items.AddRange(items.ToArray());
 				platformComboBox.Items.Clear();
-				items = Linq.ToList(helper.Project.PlatformNames);
+				items = helper.Project.PlatformNames.ToList();
 				items.Sort();
 				platformComboBox.Items.AddRange(items.ToArray());
 				ResetIndex();
