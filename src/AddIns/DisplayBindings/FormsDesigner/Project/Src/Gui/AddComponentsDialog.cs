@@ -50,8 +50,8 @@ namespace ICSharpCode.FormsDesigner.Gui
 		
 		void PrintGACCache()
 		{
-			foreach (GacInterop.AssemblyListEntry asm in GacInterop.GetAssemblyList()) {
-				ListViewItem item = new ListViewItem(new string[] {asm.Name, asm.Version});
+			foreach (DomAssemblyName asm in GacInterop.GetAssemblyList()) {
+				ListViewItem item = new ListViewItem(new string[] {asm.ShortName, asm.Version});
 				item.Tag = asm.FullName;
 				((ListView)ControlDictionary["gacListView"]).Items.Add(item);
 			}

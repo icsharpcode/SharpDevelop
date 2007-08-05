@@ -26,7 +26,7 @@ namespace ICSharpCode.MonoAddIn
 			foreach (MonoAssemblyName assemblyName in MonoGlobalAssemblyCache.GetAssemblyNames()) {
 				list.Add(new DomAssemblyName(assemblyName.FullName));
 			}
-			return itemList;
+			return list;
 		}
 	}
 }
