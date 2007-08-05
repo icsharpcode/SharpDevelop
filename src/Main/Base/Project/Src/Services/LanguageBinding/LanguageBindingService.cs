@@ -5,11 +5,11 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Gui;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
-
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -90,10 +90,10 @@ namespace ICSharpCode.SharpDevelop
 		
 		public static IProject LoadProject(IMSBuildEngineProvider provider, string location, string title)
 		{
-			return LoadProject(provider, location, title, "{" + Guid.Empty.ToString() + "}");
+			return LoadProject(provider, location, title, "{" + Guid.Empty.ToString() + "}", null);
 		}
 		
-		public static IProject LoadProject(IMSBuildEngineProvider provider, string location, string title, string projectTypeGuid)
+		public static IProject LoadProject(IMSBuildEngineProvider provider, string location, string title, string projectTypeGuid, IProgressMonitor progressMonitor)
 		{
 			if (provider == null)
 				throw new ArgumentNullException("provider");
@@ -103,6 +103,10 @@ namespace ICSharpCode.SharpDevelop
 				throw new ArgumentNullException("title");
 			if (projectTypeGuid == null)
 				throw new ArgumentNullException("projectTypeGuid");
+			
+			if (progressMonitor != null) {
+				progressMonitor.BeginTask("Loading " + title, 0, false);
+			}
 			
 			IProject newProject;
 			if (!File.Exists(location)) {

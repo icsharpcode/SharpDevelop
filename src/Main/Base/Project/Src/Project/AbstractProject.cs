@@ -445,11 +445,12 @@ namespace ICSharpCode.SharpDevelop.Project
 			return ItemType.None;
 		}
 		
-		/// <summary>
-		/// Gets the minimum version the solution must have to support this project type.
-		/// </summary>
 		public virtual int MinimumSolutionVersion {
 			get { return 9; }
+		}
+		
+		public virtual void ResolveAssemblyReferences()
+		{
 		}
 	}
 }

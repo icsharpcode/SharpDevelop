@@ -20,6 +20,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		public readonly static BuildTarget Build = new BuildTarget("Build");
 		public readonly static BuildTarget Rebuild = new BuildTarget("Rebuild");
 		public readonly static BuildTarget Clean = new BuildTarget("Clean");
+		
+		public readonly static BuildTarget ResolveReferences = new BuildTarget("ResolveReferences");
 		public readonly static BuildTarget ResolveComReferences = new BuildTarget("ResolveComReferences");
 		
 		readonly string targetName;

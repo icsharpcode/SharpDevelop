@@ -69,21 +69,21 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// <summary>
 		/// Gets the full display name of the GAC assembly of the specified short name
 		/// </summary>
-		public static GacAssemblyName FindBestMatchingAssemblyName(string name)
+		public static DomAssemblyName FindBestMatchingAssemblyName(string name)
 		{
-			return FindBestMatchingAssemblyName(new GacAssemblyName(name));
+			return FindBestMatchingAssemblyName(new DomAssemblyName(name));
 		}
 		
-		public static GacAssemblyName FindBestMatchingAssemblyName(GacAssemblyName name)
+		public static DomAssemblyName FindBestMatchingAssemblyName(DomAssemblyName name)
 		{
 			string[] info;
 			string version = name.Version;
-			string publicKey = name.PublicKey;
+			string publicKey = name.PublicKeyToken;
 			
 			IApplicationContext applicationContext = null;
 			IAssemblyEnum assemblyEnum = null;
 			IAssemblyName assemblyName;
-			Fusion.CreateAssemblyNameObject(out assemblyName, name.Name, 0, 0);
+			Fusion.CreateAssemblyNameObject(out assemblyName, name.ShortName, 0, 0);
 			Fusion.CreateAssemblyEnum(out assemblyEnum, null, assemblyName, 2, 0);
 			List<string> names = new List<string>();
 			
@@ -123,7 +123,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 					}
 				}
 				if (best != null)
-					return new GacAssemblyName(best);
+					return new DomAssemblyName(best);
 			}
 			// use assembly with highest version
 			best = names[0];
@@ -137,68 +137,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 					best = names[i];
 				}
 			}
-			return new GacAssemblyName(best);
-		}
-	}
-	
-	public class GacAssemblyName : IEquatable<GacAssemblyName>
-	{
-		readonly string fullName;
-		readonly string[] info;
-		
-		public GacAssemblyName(string fullName)
-		{
-			if (fullName == null)
-				throw new ArgumentNullException("fullName");
-			this.fullName = fullName;
-			info = fullName.Split(',');
-		}
-		
-		public string Name {
-			get {
-				return info[0];
-			}
-		}
-		
-		public string Version {
-			get {
-				return (info.Length > 1) ? info[1].Substring(info[1].LastIndexOf('=') + 1) : null;
-			}
-		}
-		
-		public string PublicKey {
-			get {
-				return (info.Length > 3) ? info[3].Substring(info[3].LastIndexOf('=') + 1) : null;
-			}
-		}
-		
-		public string FullName {
-			get { return fullName; }
-		}
-		
-		
-		
-		public override string ToString()
-		{
-			return fullName;
-		}
-		
-		public bool Equals(GacAssemblyName other)
-		{
-			if (other == null)
-				return false;
-			else
-				return fullName == other.fullName;
-		}
-		
-		public override bool Equals(object obj)
-		{
-			return Equals(obj as GacAssemblyName);
-		}
-		
-		public override int GetHashCode()
-		{
-			return fullName.GetHashCode();
+			return new DomAssemblyName(best);
 		}
 	}
 }

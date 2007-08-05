@@ -47,6 +47,9 @@ namespace ICSharpCode.SharpDevelop
 			ProjectService.ProjectItemAdded   += OnProjectItemAdded;
 			ProjectService.ProjectItemRemoved += OnProjectItemRemoved;
 			UpdateDefaultImports(items);
+			StatusBarService.ProgressMonitor.BeginTask("Resolving references for " + project.Name, 0, false);
+			project.ResolveAssemblyReferences();
+			StatusBarService.ProgressMonitor.Done();
 			foreach (ProjectItem item in items) {
 				if (!initializing) return; // abort initialization
 				if (item.ItemType == ItemType.Reference

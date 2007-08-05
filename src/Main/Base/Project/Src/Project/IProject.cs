@@ -216,6 +216,12 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// Gets the minimum version the solution must have to support this project type.
 		/// </summary>
 		int MinimumSolutionVersion { get; }
+		
+		/// <summary>
+		/// Retrieve the fully qualified assembly names and file location of referenced assemblies.
+		/// This method is thread safe.
+		/// </summary>
+		void ResolveAssemblyReferences();
 	}
 	
 	/// <summary>

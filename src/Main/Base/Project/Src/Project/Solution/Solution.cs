@@ -12,8 +12,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-
+using SearchAndReplace;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Gui;
 using MSBuild = Microsoft.Build.BuildEngine;
 
 namespace ICSharpCode.SharpDevelop.Project
@@ -445,19 +446,18 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		static bool SetupSolution(Solution newSolution, string fileName)
+		static bool SetupSolution(Solution newSolution)
 		{
-			string         solutionDirectory     = Path.GetDirectoryName(fileName);
 			ProjectSection nestedProjectsSection = null;
 			
 			bool needsConversion = false;
 			
 			// read solution files using system encoding, but detect UTF8 if BOM is present
-			using (StreamReader sr = new StreamReader(fileName, Encoding.Default, true)) {
+			using (StreamReader sr = new StreamReader(newSolution.FileName, Encoding.Default, true)) {
 				string line = GetFirstNonCommentLine(sr);
 				Match match = versionPattern.Match(line);
 				if (!match.Success) {
-					MessageService.ShowErrorFormatted("${res:SharpDevelop.Solution.InvalidSolutionFile}", fileName);
+					MessageService.ShowErrorFormatted("${res:SharpDevelop.Solution.InvalidSolutionFile}", newSolution.FileName);
 					return false;
 				}
 				
@@ -482,47 +482,8 @@ namespace ICSharpCode.SharpDevelop.Project
 						return false;
 				}
 				
-				while (true) {
-					line = sr.ReadLine();
-					
-					if (line == null) {
-						break;
-					}
-					match = projectLinePattern.Match(line);
-					if (match.Success) {
-						string projectGuid  = match.Result("${ProjectGuid}");
-						string title        = match.Result("${Title}");
-						string location     = match.Result("${Location}");
-						string guid         = match.Result("${Guid}");
-						
-						if (!FileUtility.IsUrl(location)) {
-							location = FileUtility.NormalizePath(Path.Combine(solutionDirectory, location));
-						}
-						
-						if (projectGuid == FolderGuid) {
-							SolutionFolder newFolder = SolutionFolder.ReadFolder(sr, title, location, guid);
-							newSolution.AddFolder(newFolder);
-						} else {
-							IProject newProject = LanguageBindingService.LoadProject(newSolution, location, title, projectGuid);
-							ReadProjectSections(sr, newProject.ProjectSections);
-							newProject.IdGuid = guid;
-							newSolution.AddFolder(newProject);
-						}
-						match = match.NextMatch();
-					} else {
-						match = globalSectionPattern.Match(line);
-						if (match.Success) {
-							ProjectSection newSection = ProjectSection.ReadGlobalSection(sr, match.Result("${Name}"), match.Result("${Type}"));
-							// Don't put the NestedProjects section into the global sections list
-							// because it's transformed to a tree representation and the tree representation
-							// is transformed back to the NestedProjects section during save.
-							if (newSection.Name == "NestedProjects") {
-								nestedProjectsSection = newSection;
-							} else {
-								newSolution.Sections.Add(newSection);
-							}
-						}
-					}
+				using (AsynchronousWaitDialog waitDialog = AsynchronousWaitDialog.ShowWaitDialog("Loading solution")) {
+					nestedProjectsSection = SetupSolutionLoadSolutionProjects(newSolution, sr, waitDialog);
 				}
 			}
 			// Create solution folder 'tree'.
@@ -544,6 +505,56 @@ namespace ICSharpCode.SharpDevelop.Project
 				newSolution.Save();
 			}
 			return true;
+		}
+		
+		static ProjectSection SetupSolutionLoadSolutionProjects(Solution newSolution, StreamReader sr, IProgressMonitor progressMonitor)
+		{
+			string solutionDirectory = Path.GetDirectoryName(newSolution.FileName);
+			
+			ProjectSection nestedProjectsSection = null;
+			while (true) {
+				string line = sr.ReadLine();
+				
+				if (line == null) {
+					break;
+				}
+				Match match = projectLinePattern.Match(line);
+				if (match.Success) {
+					string projectGuid  = match.Result("${ProjectGuid}");
+					string title        = match.Result("${Title}");
+					string location     = match.Result("${Location}");
+					string guid         = match.Result("${Guid}");
+					
+					if (!FileUtility.IsUrl(location)) {
+						location = FileUtility.NormalizePath(Path.Combine(solutionDirectory, location));
+					}
+					
+					if (projectGuid == FolderGuid) {
+						SolutionFolder newFolder = SolutionFolder.ReadFolder(sr, title, location, guid);
+						newSolution.AddFolder(newFolder);
+					} else {
+						IProject newProject = LanguageBindingService.LoadProject(newSolution, location, title, projectGuid, progressMonitor);
+						ReadProjectSections(sr, newProject.ProjectSections);
+						newProject.IdGuid = guid;
+						newSolution.AddFolder(newProject);
+					}
+					match = match.NextMatch();
+				} else {
+					match = globalSectionPattern.Match(line);
+					if (match.Success) {
+						ProjectSection newSection = ProjectSection.ReadGlobalSection(sr, match.Result("${Name}"), match.Result("${Type}"));
+						// Don't put the NestedProjects section into the global sections list
+						// because it's transformed to a tree representation and the tree representation
+						// is transformed back to the NestedProjects section during save.
+						if (newSection.Name == "NestedProjects") {
+							nestedProjectsSection = newSection;
+						} else {
+							newSolution.Sections.Add(newSection);
+						}
+					}
+				}
+			}
+			return nestedProjectsSection;
 		}
 		#endregion
 		
@@ -1108,7 +1119,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 			} else {
 				newSolution.fileName = fileName;
-				if (!SetupSolution(newSolution, fileName)) {
+				if (!SetupSolution(newSolution)) {
 					return null;
 				}
 			}

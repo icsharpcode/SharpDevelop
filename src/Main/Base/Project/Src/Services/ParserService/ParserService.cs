@@ -126,6 +126,7 @@ namespace ICSharpCode.SharpDevelop
 				}
 			}
 			loadSolutionProjectsThread = new Thread(new ThreadStart(LoadSolutionProjects));
+			loadSolutionProjectsThread.SetApartmentState(ApartmentState.STA); // allow loadSolutionProjects thread access to MSBuild
 			loadSolutionProjectsThread.Name = "loadSolutionProjects";
 			loadSolutionProjectsThread.Priority = ThreadPriority.BelowNormal;
 			loadSolutionProjectsThread.IsBackground = true;
@@ -280,6 +281,7 @@ namespace ICSharpCode.SharpDevelop
 					if (reParseThread == null) {
 						LoggingService.Info("Starting reParse thread");
 						reParseThread = new Thread(new ThreadStart(ReparseProjects));
+						reParseThread.SetApartmentState(ApartmentState.STA); // allow reParseThread access to MSBuild
 						reParseThread.Name = "reParse";
 						reParseThread.Priority = ThreadPriority.BelowNormal;
 						reParseThread.IsBackground = true;
@@ -764,7 +766,7 @@ namespace ICSharpCode.SharpDevelop
 				}
 				return ParserService.GetProjectContent(((ProjectReferenceProjectItem)item).ReferencedProject);
 			}
-			return GetRegistryForReference(item).GetExistingProjectContent(item.Include, item.FileName);
+			return GetRegistryForReference(item).GetExistingProjectContent(item.FileName);
 		}
 		
 		public static IProjectContent GetProjectContentForReference(ReferenceProjectItem item)

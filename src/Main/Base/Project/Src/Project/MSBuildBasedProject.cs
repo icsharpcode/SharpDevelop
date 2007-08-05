@@ -74,6 +74,11 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		public override void ResolveAssemblyReferences()
+		{
+			MSBuildInternals.ResolveAssemblyReferences(this, null);
+		}
+		
 		#region CreateProjectItem
 		/// <summary>
 		/// Creates a new projectItem for the passed itemType

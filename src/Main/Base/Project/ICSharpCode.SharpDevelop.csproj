@@ -48,7 +48,9 @@
     <Reference Include="System.Web.Services" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.XML" />
-    <Reference Include="Microsoft.Build.Framework" />
+    <Reference Include="Microsoft.Build.Framework">
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.Build.Engine" />
   </ItemGroup>
   <ItemGroup>
@@ -681,7 +683,6 @@
     <Compile Include="Src\Services\ParserService\Doozer\ProjectContentRegistryDescriptor.cs" />
     <Compile Include="Src\Services\ParserService\Doozer\ProjectContentRegistryDoozer.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\CompareProjectPropertyConditionEvaluator.cs" />
-    <Compile Include="Src\Services\ParserService\Net1xProjectContentRegistry.cs" />
     <Compile Include="Src\Services\ParserService\NetCFProjectContentRegistry.cs" />
     <Compile Include="Src\Gui\Dialogs\SolutionConfiguration\SolutionConfigurationEditor.Designer.cs">
       <DependentUpon>SolutionConfigurationEditor.cs</DependentUpon>

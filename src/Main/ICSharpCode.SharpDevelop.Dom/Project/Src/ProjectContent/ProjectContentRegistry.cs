@@ -25,11 +25,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 		Dictionary<string, IProjectContent> contents = new Dictionary<string, IProjectContent>(StringComparer.InvariantCultureIgnoreCase);
 		
 		/// <summary>
-		/// Redirects short names to long names. Used to redirect .NET libraries to the chosen .NET version
-		/// </summary>
-		protected Dictionary<string, string> redirectedAssemblyNames = new Dictionary<string, string>();
-		
-		/// <summary>
 		/// Disposes all project contents stored in this registry.
 		/// </summary>
 		public virtual void Dispose()
@@ -177,9 +172,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 					contents["mscorlib"] = mscorlibContent;
 					contents[mscorlibContent.AssemblyFullName] = mscorlibContent;
 					contents[mscorlibContent.AssemblyLocation] = mscorlibContent;
-					lock (redirectedAssemblyNames) {
-						redirectedAssemblyNames.Add("mscorlib", mscorlibContent.AssemblyFullName);
-					}
 					return mscorlibContent;
 				}
 			}
@@ -218,31 +210,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public IProjectContent GetExistingProjectContent(DomAssemblyName assembly)
 		{
-			return GetExistingProjectContent(assembly.FullName, assembly.FullName);
+			return GetExistingProjectContent(assembly.FullName);
 		}
 		
-		public virtual IProjectContent GetExistingProjectContent(string itemInclude, string itemFileName)
+		public virtual IProjectContent GetExistingProjectContent(string fileNameOrAssemblyName)
 		{
-			if (itemFileName == itemInclude) {
-				string shortName = itemInclude;
-				int pos = shortName.IndexOf(',');
-				if (pos > 0)
-					shortName = shortName.Substring(0, pos);
-				
-				// redirect all references to .NET default assemblies to the .NET version this registry uses
-				lock (redirectedAssemblyNames) {
-					if (redirectedAssemblyNames.ContainsKey(shortName)) {
-						itemFileName = redirectedAssemblyNames[shortName];
-						itemInclude = shortName;
-					}
-				}
-			}
 			lock (contents) {
-				if (contents.ContainsKey(itemFileName)) {
-					return contents[itemFileName];
-				}
-				if (contents.ContainsKey(itemInclude)) {
-					return contents[itemInclude];
+				if (contents.ContainsKey(fileNameOrAssemblyName)) {
+					return contents[fileNameOrAssemblyName];
 				}
 			}
 			return null;
@@ -251,7 +226,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public virtual IProjectContent GetProjectContentForReference(string itemInclude, string itemFileName)
 		{
 			lock (contents) {
-				IProjectContent pc = GetExistingProjectContent(itemInclude, itemFileName);
+				IProjectContent pc = GetExistingProjectContent(itemFileName);
 				if (pc != null) {
 					return pc;
 				}
@@ -310,26 +285,19 @@ namespace ICSharpCode.SharpDevelop.Dom
 						persistence.SaveProjectContent(pc);
 					}
 				}
-				if (pc != null) {
-					// add default .NET assemblies to redirected assemblies (both when loaded from persistence
-					// and when loaded using Reflection)
-					lock (redirectedAssemblyNames) {
-						redirectedAssemblyNames[shortName] = pc.AssemblyFullName;
-					}
-				}
 			} else {
 				// find real file name for cecil:
 				if (File.Exists(itemFileName)) {
 					pc = CecilReader.LoadAssembly(itemFileName, this);
 				} else {
-					GacAssemblyName asmName = GacInterop.FindBestMatchingAssemblyName(itemInclude);
+					DomAssemblyName asmName = GacInterop.FindBestMatchingAssemblyName(itemInclude);
 					if (persistence != null && asmName != null) {
 						//LoggingService.Debug("Looking up in DOM cache: " + asmName.FullName);
 						pc = persistence.LoadProjectContentByAssemblyName(asmName.FullName);
 					}
 					if (pc == null && asmName != null) {
-						string subPath = Path.Combine(asmName.Name, GetVersion__Token(asmName));
-						subPath = Path.Combine(subPath, asmName.Name + ".dll");
+						string subPath = Path.Combine(asmName.ShortName, GetVersion__Token(asmName));
+						subPath = Path.Combine(subPath, asmName.ShortName + ".dll");
 						foreach (string dir in Directory.GetDirectories(GacInterop.GacRootPath, "GAC*")) {
 							itemFileName = Path.Combine(dir, subPath);
 							if (File.Exists(itemFileName)) {
@@ -342,18 +310,18 @@ namespace ICSharpCode.SharpDevelop.Dom
 						}
 					}
 					if (pc == null) {
-						HostCallback.ShowAssemblyLoadErrorInternal("?", itemInclude, "Could not find assembly file.");
+						HostCallback.ShowAssemblyLoadErrorInternal(itemFileName, itemInclude, "Could not find assembly file.");
 					}
 				}
 			}
 			return pc;
 		}
 		
-		static string GetVersion__Token(GacAssemblyName asmName)
+		static string GetVersion__Token(DomAssemblyName asmName)
 		{
 			StringBuilder b = new StringBuilder(asmName.Version.ToString());
 			b.Append("__");
-			b.Append(asmName.PublicKey);
+			b.Append(asmName.PublicKeyToken);
 			return b.ToString();
 		}
 		

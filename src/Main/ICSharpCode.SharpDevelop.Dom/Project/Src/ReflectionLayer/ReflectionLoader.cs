@@ -21,7 +21,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public static Assembly ReflectionLoadGacAssembly(string partialName, bool reflectionOnly)
 		{
 			if (reflectionOnly) {
-				GacAssemblyName name = GacInterop.FindBestMatchingAssemblyName(partialName);
+				DomAssemblyName name = GacInterop.FindBestMatchingAssemblyName(partialName);
 				if (name == null)
 					return null;
 				return Assembly.ReflectionOnlyLoad(name.FullName);
@@ -98,7 +98,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				LoggingService.Warn("AssemblyResolve: ReflectionOnlyLoad failed for " + e.Name);
 				// We can't get the assembly we want.
 				// But propably we can get a similar version of it.
-				GacAssemblyName fixedName = GacInterop.FindBestMatchingAssemblyName(e.Name);
+				DomAssemblyName fixedName = GacInterop.FindBestMatchingAssemblyName(e.Name);
 				LoggingService.Info("AssemblyResolve: FixedName: " + fixedName);
 				return Assembly.ReflectionOnlyLoad(fixedName.FullName);
 			}

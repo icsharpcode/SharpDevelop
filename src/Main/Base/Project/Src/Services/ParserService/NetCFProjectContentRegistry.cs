@@ -32,7 +32,8 @@ namespace ICSharpCode.SharpDevelop
 			return null;
 		}
 		
-		
+		/*
+		 Is this still required now that we use MSBuild to resolve assembly references?
 		protected override IProjectContent LoadProjectContent(string itemInclude, string itemFileName)
 		{
 			if (File.Exists(itemFileName)) {
@@ -70,5 +71,6 @@ namespace ICSharpCode.SharpDevelop
 			}
 			return base.LoadProjectContent(itemInclude, itemFileName);
 		}
+		*/
 	}
 }
