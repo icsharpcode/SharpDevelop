@@ -44,10 +44,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 				IProject project = (IProject)item.Tag;
 				ILanguageBinding binding = LanguageBindingService.GetBindingPerLanguageName(project.Language);
 				
-				selectDialog.AddReference(ReferenceType.Project,
-				                          project.Name,
-				                          project.OutputAssemblyFullPath,
-				                          project);
+				selectDialog.AddReference(
+					project.Name, "Project", project.OutputAssemblyFullPath,
+					new ProjectReferenceProjectItem(selectDialog.ConfigureProject, project)
+				);
 			}
 		}
 		

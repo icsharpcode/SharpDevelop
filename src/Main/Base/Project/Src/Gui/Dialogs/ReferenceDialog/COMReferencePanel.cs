@@ -44,10 +44,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			foreach (ListViewItem item in SelectedItems) {
 				TypeLibrary library = (TypeLibrary)item.Tag;
-				selectDialog.AddReference(ReferenceType.Typelib,
-				                          library.Name,
-				                          library.Path,
-				                          library);
+				selectDialog.AddReference(
+					library.Name, "Typelib", library.Path,
+					new ComReferenceProjectItem(selectDialog.ConfigureProject, library)
+				);
 			}
 		}
 		

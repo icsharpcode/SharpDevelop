@@ -22,7 +22,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 	
 	public interface ISelectReferenceDialog
 	{
-		void AddReference(ReferenceType referenceType, string referenceName, string referenceLocation, object tag);
+		/// <summary>
+		/// Project to create references for.
+		/// </summary>
+		IProject ConfigureProject { get; }
+		
+		void AddReference(string referenceName, string referenceType, string referenceLocation, ReferenceProjectItem projectItem);
 	}
 	
 	public enum ReferenceType {
@@ -60,6 +65,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		IProject configureProject;
 		
+		public IProject ConfigureProject {
+			get { return configureProject; }
+		}
+		
 		public ArrayList ReferenceInformations {
 			get {
 				ArrayList referenceInformations = new ArrayList();
@@ -84,36 +93,19 @@ namespace ICSharpCode.SharpDevelop.Gui
 			comTabPage.Controls.Add(new COMReferencePanel(this));
 		}
 		
-		public void AddReference(ReferenceType referenceType, string referenceName, string referenceLocation, object tag)
+		public void AddReference(string referenceName, string referenceType, string referenceLocation, ReferenceProjectItem projectItem)
 		{
+			if (projectItem == null)
+				throw new ArgumentNullException("projectItem");
+			
 			foreach (ListViewItem item in referencesListView.Items) {
 				if (referenceLocation == item.SubItems[2].Text && referenceName == item.Text ) {
 					return;
 				}
 			}
 			
-			ListViewItem newItem = new ListViewItem(new string[] {referenceName, referenceType.ToString(), referenceLocation});
-			switch (referenceType) {
-				case ReferenceType.Typelib:
-					newItem.Tag = new ComReferenceProjectItem(configureProject, (TypeLibrary)tag);
-					break;
-				case ReferenceType.Project:
-					newItem.Tag = new ProjectReferenceProjectItem(configureProject, (IProject)tag);
-					break;
-				case ReferenceType.Gac:
-					newItem.Tag = new ReferenceProjectItem(configureProject, referenceLocation);
-					break;
-				case ReferenceType.Assembly:
-					ReferenceProjectItem assemblyReference = new ReferenceProjectItem(configureProject);
-					assemblyReference.Include = Path.GetFileNameWithoutExtension(referenceLocation);
-					assemblyReference.HintPath = FileUtility.GetRelativePath(configureProject.Directory, referenceLocation);
-					assemblyReference.SpecificVersion = false;
-					newItem.Tag = assemblyReference;
-					break;
-				default:
-					throw new System.NotSupportedException("Unknown reference type:" + referenceType);
-			}
-			
+			ListViewItem newItem = new ListViewItem(new string[] {referenceName, referenceType, referenceLocation});
+			newItem.Tag = projectItem;
 			referencesListView.Items.Add(newItem);
 		}
 		

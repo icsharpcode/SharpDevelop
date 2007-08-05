@@ -5,10 +5,10 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Dom;
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-
 using ICSharpCode.Build.Tasks;
 using ICSharpCode.SharpDevelop.Gui;
 
@@ -20,13 +20,11 @@ namespace ICSharpCode.MonoAddIn
 		{
 		}
 		
-		protected override List<ListViewItem> GetCacheContent()
+		protected override IList<DomAssemblyName> GetCacheContent()
 		{
-			List<ListViewItem> itemList = new List<ListViewItem>();
+			List<DomAssemblyName> list = new List<DomAssemblyName>();
 			foreach (MonoAssemblyName assemblyName in MonoGlobalAssemblyCache.GetAssemblyNames()) {
-				ListViewItem item = new ListViewItem(new string[] {assemblyName.Name, assemblyName.Version.ToString(), assemblyName.Directory});
-				item.Tag = assemblyName.FullName;
-				itemList.Add(item);
+				list.Add(new DomAssemblyName(assemblyName.FullName));
 			}
 			return itemList;
 		}

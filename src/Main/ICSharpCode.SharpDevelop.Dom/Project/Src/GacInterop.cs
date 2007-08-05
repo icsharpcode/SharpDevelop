@@ -31,28 +31,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public sealed class AssemblyListEntry
-		{
-			public readonly string FullName;
-			public readonly string Name;
-			public readonly string Version;
-			
-			internal AssemblyListEntry(string fullName)
-			{
-				this.FullName = fullName;
-				string[] info = fullName.Split(',');
-				this.Name = info[0];
-				this.Version = info[1].Substring(info[1].LastIndexOf('=') + 1);
-			}
-		}
-		
-		public static List<AssemblyListEntry> GetAssemblyList()
+		public static List<DomAssemblyName> GetAssemblyList()
 		{
 			IApplicationContext applicationContext = null;
 			IAssemblyEnum assemblyEnum = null;
 			IAssemblyName assemblyName = null;
 			
-			List<AssemblyListEntry> l = new List<AssemblyListEntry>();
+			List<DomAssemblyName> l = new List<DomAssemblyName>();
 			Fusion.CreateAssemblyEnum(out assemblyEnum, null, null, 2, 0);
 			while (assemblyEnum.GetNextAssembly(out applicationContext, out assemblyName, 0) == 0) {
 				uint nChars = 0;
@@ -61,7 +46,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				StringBuilder sb = new StringBuilder((int)nChars);
 				assemblyName.GetDisplayName(sb, ref nChars, 0);
 				
-				l.Add(new AssemblyListEntry(sb.ToString()));
+				l.Add(new DomAssemblyName(sb.ToString()));
 			}
 			return l;
 		}
