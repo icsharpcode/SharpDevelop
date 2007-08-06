@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.TextEditor.Document;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -12,8 +13,8 @@ using System.Drawing;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
-
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Gui.XmlForms;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
@@ -371,6 +372,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 			string parsedFileName = StringParser.Parse(newfile.Name);
 			// Parse twice so that tags used in included standard header are parsed
 			string parsedContent = StringParser.Parse(StringParser.Parse(content));
+			
+			if (parsedContent != null) {
+				if (SharpDevelopTextEditorProperties.IndentationString != "\t") {
+					parsedContent = parsedContent.Replace("\t", SharpDevelopTextEditorProperties.IndentationString);
+				}
+			}
+			
 			
 			// when newFile.Name is "${Path}/${FileName}", there might be a useless '/' in front of the file name
 			// if the file is created when no project is opened. So we remove single '/' or '\', but not double

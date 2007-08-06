@@ -1001,7 +1001,7 @@ namespace ICSharpCode.XmlEditor
 		{
 			XmlTextWriter writer = new XmlTextWriter(textWriter);
 			if (xmlEditor.TextEditorProperties.ConvertTabsToSpaces) {
-				writer.Indentation = xmlEditor.TextEditorProperties.TabIndent;
+				writer.Indentation = xmlEditor.TextEditorProperties.IndentationSize;
 				writer.IndentChar = ' ';
 			} else {
 				writer.Indentation = 1;

@@ -128,7 +128,18 @@ namespace ICSharpCode.TextEditor.Document
 			set;
 		}
 		
+		/// <summary>
+		/// The width of a tab.
+		/// </summary>
 		int TabIndent { // is wrapped in text editor control
+			get;
+			set;
+		}
+		
+		/// <summary>
+		/// The amount of spaces a tab is converted to if ConvertTabsToSpaces is true.
+		/// </summary>
+		int IndentationSize {
 			get;
 			set;
 		}

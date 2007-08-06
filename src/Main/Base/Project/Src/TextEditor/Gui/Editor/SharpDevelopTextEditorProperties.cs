@@ -40,14 +40,39 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		}
 		
 		public int TabIndent {
-			get {
-				return properties.Get("TabIndent", 4);
-
-			}
+			get { return properties.Get("TabIndent", 4); }
 			set {
+				// FIX: don't allow to set tab size to zero as this will cause divide by zero exceptions in the text control.
+				// Zero isn't a setting that makes sense, anyway.
+				if (value < 1) value = 1;
 				properties.Set("TabIndent", value);
 			}
 		}
+		
+		public int IndentationSize {
+			get { return properties.Get("IndentationSize", 4); }
+			set {
+				if (value < 1) value = 1;
+				properties.Set("IndentationSize", value);
+				indentationString = null;
+			}
+		}
+		
+		static string indentationString;
+		
+		public static string IndentationString {
+			get {
+				if (indentationString == null) {
+					SharpDevelopTextEditorProperties p = new SharpDevelopTextEditorProperties();
+					if (p.ConvertTabsToSpaces)
+						return new string(' ', p.IndentationSize);
+					else
+						return "\t";
+				}
+				return indentationString;
+			}
+		}
+		
 		public IndentStyle IndentStyle {
 			get {
 				return (IndentStyle)properties.Get("IndentStyle", IndentStyle.Smart);
@@ -169,6 +194,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			}
 			set {
 				properties.Set("TabsToSpaces", value);
+				indentationString = null;
 			}
 		}
 		public bool UseAntiAliasedFont {

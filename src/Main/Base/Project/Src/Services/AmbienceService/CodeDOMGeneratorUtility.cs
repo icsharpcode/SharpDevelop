@@ -5,12 +5,12 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using System;
 using System.CodeDom;
 using System.CodeDom.Compiler;
 using System.Collections;
 using System.Text;
-
 using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop
@@ -24,18 +24,8 @@ namespace ICSharpCode.SharpDevelop
 				options.BracingStyle             = AmbienceService.CodeGenerationProperties.Get("StartBlockOnSameLine", true) ? "Block" : "C";
 				options.ElseOnClosing            = AmbienceService.CodeGenerationProperties.Get("ElseOnClosing", true);
 				
+				options.IndentString = SharpDevelopTextEditorProperties.IndentationString;
 				
-				Properties docProperties = ((Properties)PropertyService.Get("ICSharpCode.TextEditor.Document.Document.DefaultDocumentAggregatorProperties", new Properties()));
-				
-				if ((bool)docProperties.Get("TabsToSpaces", false)) {
-					StringBuilder indentationString = new StringBuilder();
-					for (int i = 0; i < (int)docProperties.Get("IndentationSize", 4); ++i) {
-						indentationString.Append(' ');
-					}
-					options.IndentString = indentationString.ToString();
-				} else {
-					options.IndentString = "\t";
-				}
 				return options;
 			}
 		}

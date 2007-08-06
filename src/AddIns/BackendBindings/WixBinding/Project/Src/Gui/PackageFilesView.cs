@@ -113,7 +113,7 @@ namespace ICSharpCode.WixBinding
 		{
 			if (!UpdateOpenFile(document)) {
 				ITextEditorProperties properties = new SharpDevelopTextEditorProperties();
-				document.Save(properties.LineTerminator, properties.ConvertTabsToSpaces, properties.TabIndent);
+				document.Save(properties.LineTerminator, properties.ConvertTabsToSpaces, properties.IndentationSize);
 			}
 			IsDirty = false;
 		}
@@ -304,7 +304,7 @@ namespace ICSharpCode.WixBinding
 		string GetWixXml(XmlElement element)
 		{
 			ITextEditorProperties properties = new SharpDevelopTextEditorProperties();				
-			return WixDocument.GetXml(element, properties.LineTerminator, properties.ConvertTabsToSpaces, properties.TabIndent);
+			return WixDocument.GetXml(element, properties.LineTerminator, properties.ConvertTabsToSpaces, properties.IndentationSize);
 		}
 		
 		/// <summary>

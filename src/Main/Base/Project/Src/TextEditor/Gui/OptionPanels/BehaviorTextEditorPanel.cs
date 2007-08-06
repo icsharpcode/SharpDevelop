@@ -48,7 +48,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels
 		
 		public override bool StorePanelContents()
 		{
-			((Properties)CustomizationObject).Set("TabsToSpaces",         ((CheckBox)ControlDictionary["convertTabsToSpacesCheckBox"]).Checked);
+			SharpDevelopTextEditorProperties prop = new SharpDevelopTextEditorProperties();
+			prop.ConvertTabsToSpaces = ((CheckBox)ControlDictionary["convertTabsToSpacesCheckBox"]).Checked;
 			((Properties)CustomizationObject).Set("MouseWheelScrollDown", ((ComboBox)ControlDictionary["mouseWhellDirectionComboBox"]).SelectedIndex == 0);
 			
 			((Properties)CustomizationObject).Set("AutoInsertCurlyBracket", ((CheckBox)ControlDictionary["autoinsertCurlyBraceCheckBox"]).Checked);
@@ -59,19 +60,14 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels
 			
 			((Properties)CustomizationObject).Set("IndentStyle", (IndentStyle)((ComboBox)ControlDictionary["indentStyleComboBox"]).SelectedIndex);
 			
+			
 			try {
-				int tabSize = Int32.Parse(ControlDictionary["tabSizeTextBox"].Text);
-				
-				// FIX: don't allow to set tab size to zero as this will cause divide by zero exceptions in the text control.
-				// Zero isn't a setting that makes sense, anyway.
-				if (tabSize > 0) {
-					((Properties)CustomizationObject).Set("TabIndent", tabSize);
-				}
+				prop.TabIndent = Int32.Parse(ControlDictionary["tabSizeTextBox"].Text);
 			} catch (Exception) {
 			}
 			
 			try {
-				((Properties)CustomizationObject).Set("IndentationSize", Int32.Parse(ControlDictionary["indentSizeTextBox"].Text));
+				prop.IndentationSize = Int32.Parse(ControlDictionary["indentSizeTextBox"].Text);
 			} catch (Exception) {
 			}
 			
