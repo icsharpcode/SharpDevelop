@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
@@ -107,9 +108,15 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public void AddReference()
 		{
 			foreach (ListViewItem item in listView.SelectedItems) {
+				string include = chooseSpecificVersionCheckBox.Checked ? item.Tag.ToString() : item.Text;
+				ReferenceProjectItem rpi = new ReferenceProjectItem(selectDialog.ConfigureProject, include);
+				string requiredFrameworkVersion;
+				if (fullAssemblyNameToRequiredFrameworkVersionDictionary.TryGetValue(item.Tag.ToString(), out requiredFrameworkVersion)) {
+					rpi.SetMetadata("RequiredTargetFramework", requiredFrameworkVersion);
+				}
 				selectDialog.AddReference(
-					item.Text, "Gac", item.Tag.ToString(),
-					new ReferenceProjectItem(selectDialog.ConfigureProject, item.Tag.ToString())
+					item.Text, "Gac", rpi.Include,
+					rpi
 				);
 			}
 		}
@@ -148,7 +155,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				}
 				if (!isDuplicate) {
 					ListViewItem item = new ListViewItem(new string[] {asm.ShortName, asm.Version});
-					item.Tag = asm.ShortName;
+					item.Tag = asm.FullName;
 					itemList.Add(item);
 				}
 			}
@@ -204,6 +211,88 @@ namespace ICSharpCode.SharpDevelop.Gui
 					}
 				});
 		}
+		
+		readonly static Dictionary<string, string> fullAssemblyNameToRequiredFrameworkVersionDictionary = new Dictionary<string, string> {
+			{ "PresentationCore, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35", "3.0" },
+			{ "System.Printing, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35", "3.0" },
+			{ "Microsoft.Build.Conversion.v3.5, Version=3.5.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a", "3.5" },
+			{ "Microsoft.Build.Engine, Version=3.5.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a", "3.5" },
+			{ "Microsoft.Build.Framework, Version=3.5.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a", "3.5" },
+			{ "Microsoft.Build.Tasks.v3.5, Version=3.5.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a", "3.5" },
+			{ "Microsoft.Build.Utilities.v3.5, Version=3.5.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a", "3.5" },
+			{ "Microsoft.VisualC.STLCLR, Version=1.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a", "3.5" },
+			{ "policy.1.0.System.Web.Extensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35", "3.5" },
+			{ "policy.1.0.System.Web.Extensions.Design, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35", "3.5" },
+			{ "PresentationFramework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35", "3.0" },
+			{ "PresentationFramework.Aero, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35", "3.0" },
+			{ "PresentationFramework.Classic, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35", "3.0" },
+			{ "PresentationFramework.Luna, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35", "3.0" },
+			{ "PresentationFramework.Royale, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35", "3.0" },
+			{ "PresentationUI, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35", "3.0" },
+			{ "ReachFramework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35", "3.0" },
+			{ "System.AddIn, Version=3.5.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089", "3.5" },
+			{ "System.AddIn.Contract, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a", "3.5" },
+			{ "System.Core, Version=3.5.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089", "3.5" },
+			{ "System.Data.DataSetExtensions, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089", "3.5" },
+			{ "System.Data.Linq, Version=3.5.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089", "3.5" },
+			{ "System.DirectoryServices.AccountManagement, Version=3.5.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089", "3.5" },
+			{ "System.Management.Instrumentation, Version=3.5.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089", "3.5" },
+			{ "System.Net, Version=3.5.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a", "3.5" },
+			{ "System.ServiceModel.Web, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35", "3.5" },
+			{ "System.Web.Extensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35", "3.5" },
+			{ "System.Web.Extensions.Design, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35", "3.5" },
+			{ "System.Windows.Presentation, Version=3.5.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089", "3.5" },
+			{ "System.WorkflowServices, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35", "3.5" },
+			{ "System.Xml.Linq, Version=3.5.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089", "3.5" },
+			{ "UIAutomationProvider, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35", "3.0" },
+			{ "UIAutomationTypes, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35", "3.0" },
+			{ "WindowsBase, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35", "3.0" }
+		};
+		
+		#if DEBUG
+		/// <summary>
+		/// run this method with a .net 3.5 project to generate the table above.
+		/// </summary>
+		void CreateReferenceToFrameworkTable()
+		{
+			MSBuildBasedProject project = selectDialog.ConfigureProject as MSBuildBasedProject;
+			if (project == null)
+				return;
+			
+			var redistNameToRequiredFramework = new Dictionary<string, string> {
+				{ "Framework", null },
+				{ "Microsoft-Windows-CLRCoreComp", null },
+				{ "Microsoft.VisualStudio.Primary.Interop.Assemblies.8.0", null },
+				{ "Microsoft-WinFX-Runtime", "3.0" },
+				{ "Microsoft-Windows-CLRCoreComp-v3.5", "3.5" }
+			};
+			
+			using (StreamWriter w = new StreamWriter("c:\\temp\\references.txt")) {
+				List<ReferenceProjectItem> referenceItems = new List<ReferenceProjectItem>();
+				WorkbenchSingleton.SafeThreadCall(
+					delegate {
+						foreach (ListViewItem item in fullItemList) {
+							referenceItems.Add(new ReferenceProjectItem(project, item.Tag.ToString()));
+						}
+					});
+				
+				MSBuildInternals.ResolveAssemblyReferences(project, referenceItems.ToArray());
+				foreach (ReferenceProjectItem rpi in referenceItems) {
+					if (string.IsNullOrEmpty(rpi.Redist)) continue;
+					if (!redistNameToRequiredFramework.ContainsKey(rpi.Redist)) {
+						throw new Exception("unknown redist: " + rpi.Redist);
+					}
+					if (redistNameToRequiredFramework[rpi.Redist] != null) {
+						w.Write("\t\t\t{ \"");
+						w.Write(rpi.Include);
+						w.Write("\", \"");
+						w.Write(redistNameToRequiredFramework[rpi.Redist]);
+						w.WriteLine("\" },");
+					}
+				}
+			}
+		}
+		#endif
 		
 		protected virtual IList<DomAssemblyName> GetCacheContent()
 		{

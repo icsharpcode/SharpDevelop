@@ -209,7 +209,6 @@ namespace ICSharpCode.FormsDesigner
 			} else {
 				reference.Include = referenceName.FullName;
 				reference.HintPath = FileUtility.GetRelativePath(project.Directory, toolComponent.FileName);
-				reference.SpecificVersion = false;
 				LoggingService.Debug("Added assembly reference to project: " + reference.Include);
 			}
 			ProjectService.AddProjectItem(project, reference);

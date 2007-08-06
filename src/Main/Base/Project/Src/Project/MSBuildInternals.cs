@@ -334,6 +334,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				} else {
 					references = referenceReplacements;
 					
+					// replace all references in the project with the referenceReplacements
 					foreach (MSBuild.BuildItemGroup itemGroup in tempProject.ItemGroups) {
 						foreach (MSBuild.BuildItem item in itemGroup.ToArray()) {
 							if (item.Name == ItemType.Reference.ItemName) {
@@ -348,7 +349,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			var referenceDict = references.ToDictionary(item => item.Include);
 			
-			engine.RegisterLogger(new MSBuild.ConsoleLogger(Microsoft.Build.Framework.LoggerVerbosity.Detailed));
+			#if DEBUG
+			//engine.RegisterLogger(new MSBuild.ConsoleLogger(Microsoft.Build.Framework.LoggerVerbosity.Detailed));
+			#endif
 			
 			//Environment.CurrentDirectory = Path.GetDirectoryName(tempProject.FullFileName);
 			if (!tempProject.Build("ResolveAssemblyReferences")) {

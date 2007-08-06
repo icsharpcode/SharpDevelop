@@ -45,7 +45,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 						ReferenceProjectItem assemblyReference = new ReferenceProjectItem(selectDialog.ConfigureProject);
 						assemblyReference.Include = Path.GetFileNameWithoutExtension(file);
 						assemblyReference.HintPath = FileUtility.GetRelativePath(selectDialog.ConfigureProject.Directory, file);
-						assemblyReference.SpecificVersion = false;
 						
 						selectDialog.AddReference(
 							Path.GetFileName(file), "Assembly", file,

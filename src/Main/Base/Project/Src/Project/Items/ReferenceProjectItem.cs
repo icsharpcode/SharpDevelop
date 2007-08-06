@@ -66,11 +66,18 @@ namespace ICSharpCode.SharpDevelop.Project
 		                   Description = "${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.SpecificVersion.Description}")]
 		public bool SpecificVersion {
 			get {
-				return GetEvaluatedMetadata("SpecificVersion", false);
+				return this.Include.Contains(",");
 			}
-			set {
-				SetEvaluatedMetadata("SpecificVersion", value);
-			}
+			/* set {
+				if (this.SpecificVersion == value)
+					return;
+				if (value) {
+					this.Include = this.AssemblyName.FullName;
+				} else {
+					this.Include = this.AssemblyName.ShortName;
+					Ensure that reference still resolves to the same assembly
+				}
+			} */
 		}
 		
 		internal const string CopyLocalMetadataName = "Private";
