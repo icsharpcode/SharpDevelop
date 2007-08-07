@@ -320,29 +320,26 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 					}
 				}
 				
-				// Try to determine a parsable value using ranges. (Quick hack!)
-				decimal d = 0;
+				// Try to determine a parsable value using ranges.
+				ulong result;
 				if (ishex) {
-					ulong result;
-					if (ulong.TryParse(digit, NumberStyles.HexNumber, null, out result)) {
-						d = result;
-					} else {
+					if (!ulong.TryParse(digit, NumberStyles.HexNumber, null, out result)) {
 						errors.Error(y, x, String.Format("Can't parse hexadecimal constant {0}", digit));
 						return new Token(Tokens.Literal, x, y, stringValue.ToString(), 0);
 					}
 				} else {
-					if (!decimal.TryParse(digit, NumberStyles.Integer, null, out d)) {
+					if (!ulong.TryParse(digit, NumberStyles.Integer, null, out result)) {
 						errors.Error(y, x, String.Format("Can't parse integral constant {0}", digit));
 						return new Token(Tokens.Literal, x, y, stringValue.ToString(), 0);
 					}
 				}
 				
-				if (d < long.MinValue || d > long.MaxValue) {
+				if (result > long.MaxValue) {
 					islong     = true;
 					isunsigned = true;
-				} else if (d < uint.MinValue || d > uint.MaxValue) {
+				} else if (result > uint.MaxValue) {
 					islong = true;
-				} else if (d < int.MinValue || d > int.MaxValue) {
+				} else if (result > int.MaxValue) {
 					isunsigned = true;
 				}
 				
