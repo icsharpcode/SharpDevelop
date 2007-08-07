@@ -377,8 +377,13 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 				
 				if (ch == '\\') {
 					originalValue.Append('\\');
-					originalValue.Append(ReadEscapeSequence(out ch));
-					sb.Append(ch);
+					string surrogatePair;
+					originalValue.Append(ReadEscapeSequence(out ch, out surrogatePair));
+					if (surrogatePair != null) {
+						sb.Append(surrogatePair);
+					} else {
+						sb.Append(ch);
+					}
 				} else if (ch == '\n') {
 					errors.Error(y, x, String.Format("No new line is allowed inside a string literal"));
 					break;
@@ -431,14 +436,28 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		}
 		
 		char[] escapeSequenceBuffer = new char[12];
-		string ReadEscapeSequence(out char ch)
+		
+		/// <summary>
+		/// reads an escape sequence
+		/// </summary>
+		/// <param name="ch">The character represented by the escape sequence,
+		/// or '\0' if there was an error or the escape sequence represents a character that
+		/// can be represented only be a suggorate pair</param>
+		/// <param name="surrogatePair">Null, except when the character represented
+		/// by the escape sequence can only be represented by a surrogate pair (then the string
+		/// contains the surrogate pair)</param>
+		/// <returns>The escape sequence</returns>
+		string ReadEscapeSequence(out char ch, out string surrogatePair)
 		{
+			surrogatePair = null;
+			
 			int nextChar = ReaderRead();
 			if (nextChar == -1) {
 				errors.Error(Line, Col, String.Format("End of file reached inside escape sequence"));
 				ch = '\0';
 				return String.Empty;
 			}
+			int number;
 			char c = (char)nextChar;
 			int curPos              = 1;
 			escapeSequenceBuffer[0] = c;
@@ -478,8 +497,9 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 					break;
 				case 'u':
 				case 'x':
+					// 16 bit unicode character
 					c = (char)ReaderRead();
-					int number = GetHexNumber(c);
+					number = GetHexNumber(c);
 					escapeSequenceBuffer[curPos++] = c;
 					
 					if (number < 0) {
@@ -496,6 +516,27 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 						}
 					}
 					ch = (char)number;
+					break;
+				case 'U':
+					// 32 bit unicode character
+					number = 0;
+					for (int i = 0; i < 8; ++i) {
+						if (IsHex((char)ReaderPeek())) {
+							c = (char)ReaderRead();
+							int idx = GetHexNumber(c);
+							escapeSequenceBuffer[curPos++] = c;
+							number = 16 * number + idx;
+						} else {
+							errors.Error(Line, Col - 1, String.Format("Invalid char in literal : {0}", (char)ReaderPeek()));
+							break;
+						}
+					}
+					if (number > 0xffff) {
+						ch = '\0';
+						surrogatePair = char.ConvertFromUtf32(number);
+					} else {
+						ch = (char)number;
+					}
 					break;
 				default:
 					errors.Error(Line, Col, String.Format("Unexpected escape sequence : {0}", c));
@@ -518,7 +559,11 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			char chValue = ch;
 			string escapeSequence = String.Empty;
 			if (ch == '\\') {
-				escapeSequence = ReadEscapeSequence(out chValue);
+				string surrogatePair;
+				escapeSequence = ReadEscapeSequence(out chValue, out surrogatePair);
+				if (surrogatePair != null) {
+					errors.Error(y, x, String.Format("The unicode character must be represented by a surrogate pair and does not fit into a System.Char"));
+				}
 			}
 			
 			unchecked {

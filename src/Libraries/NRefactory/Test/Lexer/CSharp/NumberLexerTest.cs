@@ -124,6 +124,20 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 		{
 			CheckToken(@"@""-->""""<--""", @"-->""<--");
 			CheckToken(@"""-->\""<--""", "-->\"<--");
+			
+			CheckToken(@"""\U00000041""", "\U00000041");
+			CheckToken(@"""\U00010041""", "\U00010041");
+		}
+		
+		[Test]
+		public void TestCharLiteral()
+		{
+			CheckToken(@"'a'", 'a');
+			CheckToken(@"'\u0041'", '\u0041');
+			CheckToken(@"'\x41'", '\x41');
+			CheckToken(@"'\x041'", '\x041');
+			CheckToken(@"'\x0041'", '\x0041');
+			CheckToken(@"'\U00000041'", '\U00000041');
 		}
 	}
 }
