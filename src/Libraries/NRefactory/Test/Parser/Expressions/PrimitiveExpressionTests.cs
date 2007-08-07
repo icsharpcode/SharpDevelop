@@ -51,6 +51,40 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		}
 		
 		[Test]
+		public void IntMinValueTest()
+		{
+			PrimitiveExpression pe = ParseUtilCSharp.ParseExpression<PrimitiveExpression>("-2147483648");
+			Assert.AreEqual(-2147483648, (int)pe.Value);
+		}
+		
+		[Test]
+		public void IntMaxValueTest()
+		{
+			PrimitiveExpression pe = ParseUtilCSharp.ParseExpression<PrimitiveExpression>("2147483647");
+			Assert.AreEqual(2147483647, (int)pe.Value);
+			
+			pe = ParseUtilCSharp.ParseExpression<PrimitiveExpression>("2147483648");
+			Assert.AreEqual(2147483648, (uint)pe.Value);
+		}
+		
+		[Test]
+		public void LongMinValueTest()
+		{
+			PrimitiveExpression pe = ParseUtilCSharp.ParseExpression<PrimitiveExpression>("-9223372036854775808");
+			Assert.AreEqual(-9223372036854775808, (long)pe.Value);
+		}
+		
+		[Test]
+		public void LongMaxValueTest()
+		{
+			PrimitiveExpression pe = ParseUtilCSharp.ParseExpression<PrimitiveExpression>("9223372036854775807");
+			Assert.AreEqual(9223372036854775807, (long)pe.Value);
+			
+			pe = ParseUtilCSharp.ParseExpression<PrimitiveExpression>("9223372036854775808");
+			Assert.AreEqual(9223372036854775808, (ulong)pe.Value);
+		}
+		
+		[Test]
 		public void CSharpStringTest1()
 		{
 			PrimitiveExpression pe = ParseUtilCSharp.ParseExpression<PrimitiveExpression>("\"\\n\\t\\u0005 Hello World !!!\"");

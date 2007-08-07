@@ -321,7 +321,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 				}
 				
 				// Try to determine a parsable value using ranges. (Quick hack!)
-				double d = 0;
+				decimal d = 0;
 				if (ishex) {
 					ulong result;
 					if (ulong.TryParse(digit, NumberStyles.HexNumber, null, out result)) {
@@ -331,7 +331,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 						return new Token(Tokens.Literal, x, y, stringValue.ToString(), 0);
 					}
 				} else {
-					if (!Double.TryParse(digit, NumberStyles.Integer, null, out d)) {
+					if (!decimal.TryParse(digit, NumberStyles.Integer, null, out d)) {
 						errors.Error(y, x, String.Format("Can't parse integral constant {0}", digit));
 						return new Token(Tokens.Literal, x, y, stringValue.ToString(), 0);
 					}
