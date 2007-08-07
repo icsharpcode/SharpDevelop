@@ -21,7 +21,8 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		void ReadPreProcessingDirective()
 		{
 			Location start = new Location(Col - 1, Line);
-			string directive = ReadIdent('#');
+			bool canBeKeyword;
+			string directive = ReadIdent('#', out canBeKeyword);
 			string argument  = ReadToEndOfLine();
 			this.specialTracker.AddPreprocessingDirective(directive, argument.Trim(), start, new Location(start.X + directive.Length + argument.Length, start.Y));
 		}
@@ -80,7 +81,8 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 							if (ch == '"') {
 								token = ReadVerbatimString();
 							} else if (Char.IsLetterOrDigit(ch) || ch == '_') {
-								token = new Token(Tokens.Identifier, x - 1, y, ReadIdent(ch));
+								bool canBeKeyword;
+								token = new Token(Tokens.Identifier, x - 1, y, ReadIdent(ch, out canBeKeyword));
 							} else {
 								errors.Error(y, x, String.Format("Unexpected char in Lexer.Next() : {0}", ch));
 								continue;
@@ -89,13 +91,16 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 						break;
 					default:
 						ch = (char)nextChar;
-						if (Char.IsLetter(ch) || ch == '_') {
+						if (Char.IsLetter(ch) || ch == '_' || ch == '\\') {
 							int x = Col - 1; // Col was incremented above, but we want the start of the identifier
 							int y = Line;
-							string s = ReadIdent(ch);
-							int keyWordToken = Keywords.GetToken(s);
-							if (keyWordToken >= 0) {
-								return new Token(keyWordToken, x, y);
+							bool canBeKeyword;
+							string s = ReadIdent(ch, out canBeKeyword);
+							if (canBeKeyword) {
+								int keyWordToken = Keywords.GetToken(s);
+								if (keyWordToken >= 0) {
+									return new Token(keyWordToken, x, y);
+								}
 							}
 							return new Token(Tokens.Identifier, x, y, s);
 						} else if (Char.IsDigit(ch)) {
@@ -120,21 +125,50 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		const int MAX_IDENTIFIER_LENGTH = 512;
 		char[] identBuffer = new char[MAX_IDENTIFIER_LENGTH];
 		
-		string ReadIdent(char ch)
+		string ReadIdent(char ch, out bool canBeKeyword)
 		{
 			int peek;
-			int curPos     = 1;
-			identBuffer[0] = ch;
-			while (IsIdentifierPart(peek = ReaderPeek())) {
-				ReaderRead();
+			int curPos     = 0;
+			canBeKeyword = true;
+			while (true) {
+				if (ch == '\\') {
+					peek = ReaderPeek();
+					if (peek != 'u' && peek != 'U') {
+						errors.Error(Line, Col, "Identifiers can only contain unicode escape sequences");
+					}
+					canBeKeyword = false;
+					string surrogatePair;
+					ReadEscapeSequence(out ch, out surrogatePair);
+					if (surrogatePair != null) {
+						if (!char.IsLetterOrDigit(surrogatePair, 0)) {
+							errors.Error(Line, Col, "Unicode escape sequences in identifiers cannot be used to represent characters that are invalid in identifiers");
+						}
+						for (int i = 0; i < surrogatePair.Length - 1; i++) {
+							if (curPos < MAX_IDENTIFIER_LENGTH) {
+								identBuffer[curPos++] = surrogatePair[i];
+							}
+						}
+						ch = surrogatePair[surrogatePair.Length - 1];
+					} else {
+						if (!IsIdentifierPart(ch)) {
+							errors.Error(Line, Col, "Unicode escape sequences in identifiers cannot be used to represent characters that are invalid in identifiers");
+						}
+					}
+				}
 				
 				if (curPos < MAX_IDENTIFIER_LENGTH) {
-					identBuffer[curPos++] = (char)peek;
+					identBuffer[curPos++] = ch;
 				} else {
 					errors.Error(Line, Col, String.Format("Identifier too long"));
 					while (IsIdentifierPart(ReaderPeek())) {
 						ReaderRead();
 					}
+					break;
+				}
+				peek = ReaderPeek();
+				if (IsIdentifierPart(peek) || peek == '\\') {
+					ch = (char)ReaderRead();
+				} else {
 					break;
 				}
 			}

@@ -32,41 +32,57 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 			Assert.AreEqual(Tokens.EOF, lexer.NextToken().kind);
 		}
 		
+		void CheckIdentifier(string text, string actualIdentifier)
+		{
+			ILexer lexer = GenerateLexer(new StringReader(text));
+			Token t = lexer.NextToken();
+			Assert.AreEqual(Tokens.Identifier, t.kind);
+			Assert.AreEqual(actualIdentifier, t.val);
+			t = lexer.NextToken();
+			Assert.AreEqual(Tokens.EOF, t.kind);
+			Assert.AreEqual("", lexer.Errors.ErrorOutput);
+		}
+		
 		[Test]
 		public void TestIdentifier()
 		{
-			ILexer lexer = GenerateLexer(new StringReader("a_Bc05"));
-			Token t = lexer.NextToken();
-			Assert.AreEqual(Tokens.Identifier, t.kind);
-			Assert.AreEqual("a_Bc05", t.val);
+			CheckIdentifier("a_Bc05", "a_Bc05");
 		}
 		
 		[Test]
 		public void TestIdentifierStartingWithUnderscore()
 		{
-			ILexer lexer = GenerateLexer(new StringReader("_Bc05"));
-			Token t = lexer.NextToken();
-			Assert.AreEqual(Tokens.Identifier, t.kind);
-			Assert.AreEqual("_Bc05", t.val);
+			CheckIdentifier("_Bc05", "_Bc05");
+		}
+		
+		[Test]
+		public void TestIdentifierStartingWithEscapeSequence()
+		{
+			CheckIdentifier(@"\u006cexer", "lexer");
+		}
+		
+		[Test]
+		public void TestIdentifierContainingEscapeSequence()
+		{
+			CheckIdentifier(@"l\U00000065xer", "lexer");
 		}
 		
 		[Test]
 		public void TestKeyWordAsIdentifier()
 		{
-			ILexer lexer = GenerateLexer(new StringReader("@int"));
-			Token t = lexer.NextToken();
-			Assert.AreEqual(Tokens.Identifier, t.kind);
-			Assert.AreEqual("int", t.val);
+			CheckIdentifier("@int", "int");
 		}
 		
+		[Test]
+		public void TestKeywordWithEscapeSequenceIsIdentifier()
+		{
+			CheckIdentifier(@"i\u006et", "int");
+		}
 		
 		[Test]
 		public void TestKeyWordAsIdentifierStartingWithUnderscore()
 		{
-			ILexer lexer = GenerateLexer(new StringReader("@_int"));
-			Token t = lexer.NextToken();
-			Assert.AreEqual(Tokens.Identifier, t.kind);
-			Assert.AreEqual("_int", t.val);
+			CheckIdentifier("@_int", "_int");
 		}
 		
 		[Test]
