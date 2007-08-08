@@ -546,6 +546,27 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			}
 		}
 		
+		bool IsMostNegativeIntegerWithoutTypeSuffix()
+		{
+			Token token = la;
+			if (token.kind == Tokens.Literal) {
+				return token.val == "2147483648" || token.val == "9223372036854775808";
+			} else {
+				return false;
+			}
+		}
+		
+		bool LastExpressionIsUnaryMinus(System.Collections.ArrayList expressions)
+		{
+			if (expressions.Count == 0) return false;
+			UnaryOperatorExpression uoe = expressions[expressions.Count - 1] as UnaryOperatorExpression;
+			if (uoe != null) {
+				return uoe.Op == UnaryOperatorType.Minus;
+			} else {
+				return false;
+			}
+		}
+		
 		bool StartOfQueryExpression()
 		{
 			return la.kind == Tokens.From && IsIdentifierToken(Peek(1));

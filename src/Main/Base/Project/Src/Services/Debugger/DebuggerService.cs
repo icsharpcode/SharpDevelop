@@ -102,13 +102,20 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		
 		static void OnDebugStarted(object sender, EventArgs e)
 		{
+			// OnDebugStarted runs on the main thread, but for some reason we
+			// have to delay the layout change a bit to work around SD2-1325
+			WorkbenchSingleton.SafeThreadAsyncCall(OnDebugStartedInvoked);
+			if (DebugStarted != null)
+				DebugStarted(null, EventArgs.Empty);
+		}
+		
+		static void OnDebugStartedInvoked()
+		{
 			WorkbenchSingleton.Workbench.WorkbenchLayout.StoreConfiguration();
 			oldLayoutConfiguration = LayoutConfiguration.CurrentLayoutName;
 			LayoutConfiguration.CurrentLayoutName = "Debug";
 
 			ClearDebugMessages();
-			if (DebugStarted != null)
-				DebugStarted(null, e);
 		}
 		
 		static void OnDebugStopped(object sender, EventArgs e)

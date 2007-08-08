@@ -35,6 +35,15 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		}
 		
 		[Test]
+		public void CSharpNullableObjectCreateExpressionTest()
+		{
+			ObjectCreateExpression oce = ParseUtilCSharp.ParseExpression<ObjectCreateExpression>("new IntPtr?(1)");
+			Assert.AreEqual("System.Nullable", oce.CreateType.SystemType);
+			Assert.AreEqual(1, oce.CreateType.GenericTypes.Count);
+			Assert.AreEqual("IntPtr", oce.CreateType.GenericTypes[0].Type);
+		}
+		
+		[Test]
 		public void CSharpInvalidNestedObjectCreateExpressionTest()
 		{
 			// this test was written because this bug caused the AbstractASTVisitor to crash

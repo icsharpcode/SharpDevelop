@@ -1669,8 +1669,8 @@ Expr<out Expression expr>
 UnaryExpr<out Expression uExpr>
 (.
 	TypeReference type = null;
-	Expression expr;
-	ArrayList  expressions = new ArrayList();
+	Expression expr = null;
+	ArrayList expressions = new ArrayList();
 	uExpr = null;
 .)
 =
@@ -1694,20 +1694,35 @@ UnaryExpr<out Expression uExpr>
 		)
 	}
 	
-	PrimaryExpr<out expr> (. for (int i = 0; i < expressions.Count; ++i) {
-	                         	Expression nextExpression = i + 1 < expressions.Count ? (Expression)expressions[i + 1] : expr;
-	                         	if (expressions[i] is CastExpression) {
-	                         		((CastExpression)expressions[i]).Expression = nextExpression;
-	                         	} else {
-	                         		((UnaryOperatorExpression)expressions[i]).Expression = nextExpression;
-	                         	}
-	                         }
-	                         if (expressions.Count > 0) {
-	                         	uExpr = (Expression)expressions[0];
-	                         } else {
-	                         	uExpr = expr;
-	                         }
-	                      .)
+	/* special rule (2.4.4.2) to allow writing int.MinValue and long.MinValue */
+	( IF (LastExpressionIsUnaryMinus(expressions) && IsMostNegativeIntegerWithoutTypeSuffix())
+		Literal
+		(.
+			expressions.RemoveAt(expressions.Count - 1);
+			if (t.literalValue is uint) {
+				expr = new PrimitiveExpression(int.MinValue, int.MinValue.ToString());
+			} else if (t.literalValue is ulong) {
+				expr = new PrimitiveExpression(long.MinValue, long.MinValue.ToString());
+			} else {
+				throw new Exception("t.literalValue must be uint or ulong");
+			}
+		.)
+	|	PrimaryExpr<out expr> 
+	)
+	(.	for (int i = 0; i < expressions.Count; ++i) {
+			Expression nextExpression = i + 1 < expressions.Count ? (Expression)expressions[i + 1] : expr;
+			if (expressions[i] is CastExpression) {
+				((CastExpression)expressions[i]).Expression = nextExpression;
+			} else {
+				((UnaryOperatorExpression)expressions[i]).Expression = nextExpression;
+			}
+		}
+		if (expressions.Count > 0) {
+			uExpr = (Expression)expressions[0];
+		} else {
+			uExpr = expr;
+		}
+	.)
 .
 
 

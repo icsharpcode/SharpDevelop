@@ -344,6 +344,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					return property;
 				}
 			}
+			
 			location = PropertyStorageLocations.Unknown;
 			group = null;
 			return null;

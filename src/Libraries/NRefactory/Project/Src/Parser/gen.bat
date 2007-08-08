@@ -22,6 +22,3 @@ del VBNET.ATG
 :exit
 pause
 cd ..
-rem pushd ..\..\..
-rem %windir%\microsoft.net\framework\v2.0.50727\msbuild
-rem popd

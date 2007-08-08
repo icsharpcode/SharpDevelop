@@ -74,7 +74,7 @@ namespace ICSharpCode.WixBinding
 			}
 			// Get the replacement dialog xml.
 			ITextEditorProperties properties = view.TextEditorControl.TextEditorProperties;
-			string replacementXml = WixDocument.GetXml(dialogElement, properties.LineTerminator, properties.ConvertTabsToSpaces, properties.TabIndent);
+			string replacementXml = WixDocument.GetXml(dialogElement, properties.LineTerminator, properties.ConvertTabsToSpaces, properties.IndentationSize);
 
 			// Replace the xml and select the inserted text.
 			WixDocumentEditor editor = new WixDocumentEditor(view.TextEditorControl.ActiveTextAreaControl);

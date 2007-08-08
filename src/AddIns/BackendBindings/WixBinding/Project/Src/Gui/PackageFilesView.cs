@@ -114,7 +114,7 @@ namespace ICSharpCode.WixBinding
 		{
 			if (!UpdateOpenFile(document)) {
 				ITextEditorProperties properties = SharpDevelopTextEditorProperties.Instance;
-				document.Save(properties.LineTerminator, properties.ConvertTabsToSpaces, properties.TabIndent);
+				document.Save(properties.LineTerminator, properties.ConvertTabsToSpaces, properties.IndentationSize);
 			}
 			packageFilesControl.IsDirty = false;
 		}
@@ -297,7 +297,7 @@ namespace ICSharpCode.WixBinding
 		string GetWixXml(XmlElement element)
 		{
 			ITextEditorProperties properties = SharpDevelopTextEditorProperties.Instance;
-			return WixDocument.GetXml(element, properties.LineTerminator, properties.ConvertTabsToSpaces, properties.TabIndent);
+			return WixDocument.GetXml(element, properties.LineTerminator, properties.ConvertTabsToSpaces, properties.IndentationSize);
 		}
 		
 		/// <summary>

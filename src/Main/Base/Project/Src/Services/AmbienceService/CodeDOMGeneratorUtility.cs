@@ -10,7 +10,6 @@ using System.CodeDom;
 using System.CodeDom.Compiler;
 using System.Collections;
 using System.Text;
-
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 
@@ -25,18 +24,8 @@ namespace ICSharpCode.SharpDevelop
 				options.BracingStyle             = AmbienceService.CodeGenerationProperties.Get("StartBlockOnSameLine", true) ? "Block" : "C";
 				options.ElseOnClosing            = AmbienceService.CodeGenerationProperties.Get("ElseOnClosing", true);
 				
+				options.IndentString = SharpDevelopTextEditorProperties.Instance.IndentationString;
 				
-				SharpDevelopTextEditorProperties docProperties = SharpDevelopTextEditorProperties.Instance;
-				
-				if (docProperties.ConvertTabsToSpaces) {
-					StringBuilder indentationString = new StringBuilder();
-					for (int i = 0; i < docProperties.IndentationSize; ++i) {
-						indentationString.Append(' ');
-					}
-					options.IndentString = indentationString.ToString();
-				} else {
-					options.IndentString = "\t";
-				}
 				return options;
 			}
 		}

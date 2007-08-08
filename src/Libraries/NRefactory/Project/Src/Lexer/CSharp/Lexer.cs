@@ -21,7 +21,8 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		void ReadPreProcessingDirective()
 		{
 			Location start = new Location(Col - 1, Line);
-			string directive = ReadIdent('#');
+			bool canBeKeyword;
+			string directive = ReadIdent('#', out canBeKeyword);
 			string argument  = ReadToEndOfLine();
 			this.specialTracker.AddPreprocessingDirective(directive, argument.Trim(), start, new Location(start.X + directive.Length + argument.Length, start.Y));
 		}
@@ -80,7 +81,8 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 							if (ch == '"') {
 								token = ReadVerbatimString();
 							} else if (Char.IsLetterOrDigit(ch) || ch == '_') {
-								token = new Token(Tokens.Identifier, x - 1, y, ReadIdent(ch));
+								bool canBeKeyword;
+								token = new Token(Tokens.Identifier, x - 1, y, ReadIdent(ch, out canBeKeyword));
 							} else {
 								errors.Error(y, x, String.Format("Unexpected char in Lexer.Next() : {0}", ch));
 								continue;
@@ -89,13 +91,16 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 						break;
 					default:
 						ch = (char)nextChar;
-						if (Char.IsLetter(ch) || ch == '_') {
+						if (Char.IsLetter(ch) || ch == '_' || ch == '\\') {
 							int x = Col - 1; // Col was incremented above, but we want the start of the identifier
 							int y = Line;
-							string s = ReadIdent(ch);
-							int keyWordToken = Keywords.GetToken(s);
-							if (keyWordToken >= 0) {
-								return new Token(keyWordToken, x, y, s);
+							bool canBeKeyword;
+							string s = ReadIdent(ch, out canBeKeyword);
+							if (canBeKeyword) {
+								int keyWordToken = Keywords.GetToken(s);
+								if (keyWordToken >= 0) {
+									return new Token(keyWordToken, x, y, s);
+								}
 							}
 							return new Token(Tokens.Identifier, x, y, s);
 						} else if (Char.IsDigit(ch)) {
@@ -120,21 +125,50 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		const int MAX_IDENTIFIER_LENGTH = 512;
 		char[] identBuffer = new char[MAX_IDENTIFIER_LENGTH];
 		
-		string ReadIdent(char ch)
+		string ReadIdent(char ch, out bool canBeKeyword)
 		{
 			int peek;
-			int curPos     = 1;
-			identBuffer[0] = ch;
-			while (IsIdentifierPart(peek = ReaderPeek())) {
-				ReaderRead();
+			int curPos     = 0;
+			canBeKeyword = true;
+			while (true) {
+				if (ch == '\\') {
+					peek = ReaderPeek();
+					if (peek != 'u' && peek != 'U') {
+						errors.Error(Line, Col, "Identifiers can only contain unicode escape sequences");
+					}
+					canBeKeyword = false;
+					string surrogatePair;
+					ReadEscapeSequence(out ch, out surrogatePair);
+					if (surrogatePair != null) {
+						if (!char.IsLetterOrDigit(surrogatePair, 0)) {
+							errors.Error(Line, Col, "Unicode escape sequences in identifiers cannot be used to represent characters that are invalid in identifiers");
+						}
+						for (int i = 0; i < surrogatePair.Length - 1; i++) {
+							if (curPos < MAX_IDENTIFIER_LENGTH) {
+								identBuffer[curPos++] = surrogatePair[i];
+							}
+						}
+						ch = surrogatePair[surrogatePair.Length - 1];
+					} else {
+						if (!IsIdentifierPart(ch)) {
+							errors.Error(Line, Col, "Unicode escape sequences in identifiers cannot be used to represent characters that are invalid in identifiers");
+						}
+					}
+				}
 				
 				if (curPos < MAX_IDENTIFIER_LENGTH) {
-					identBuffer[curPos++] = (char)peek;
+					identBuffer[curPos++] = ch;
 				} else {
 					errors.Error(Line, Col, String.Format("Identifier too long"));
 					while (IsIdentifierPart(ReaderPeek())) {
 						ReaderRead();
 					}
+					break;
+				}
+				peek = ReaderPeek();
+				if (IsIdentifierPart(peek) || peek == '\\') {
+					ch = (char)ReaderRead();
+				} else {
 					break;
 				}
 			}
@@ -286,29 +320,26 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 					}
 				}
 				
-				// Try to determine a parsable value using ranges. (Quick hack!)
-				double d = 0;
+				// Try to determine a parsable value using ranges.
+				ulong result;
 				if (ishex) {
-					ulong result;
-					if (ulong.TryParse(digit, NumberStyles.HexNumber, null, out result)) {
-						d = result;
-					} else {
+					if (!ulong.TryParse(digit, NumberStyles.HexNumber, null, out result)) {
 						errors.Error(y, x, String.Format("Can't parse hexadecimal constant {0}", digit));
 						return new Token(Tokens.Literal, x, y, stringValue.ToString(), 0);
 					}
 				} else {
-					if (!Double.TryParse(digit, NumberStyles.Integer, null, out d)) {
+					if (!ulong.TryParse(digit, NumberStyles.Integer, null, out result)) {
 						errors.Error(y, x, String.Format("Can't parse integral constant {0}", digit));
 						return new Token(Tokens.Literal, x, y, stringValue.ToString(), 0);
 					}
 				}
 				
-				if (d < long.MinValue || d > long.MaxValue) {
+				if (result > long.MaxValue) {
 					islong     = true;
 					isunsigned = true;
-				} else if (d < uint.MinValue || d > uint.MaxValue) {
+				} else if (result > uint.MaxValue) {
 					islong = true;
-				} else if (d < int.MinValue || d > int.MaxValue) {
+				} else if (result > int.MaxValue) {
 					isunsigned = true;
 				}
 				
@@ -377,8 +408,13 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 				
 				if (ch == '\\') {
 					originalValue.Append('\\');
-					originalValue.Append(ReadEscapeSequence(out ch));
-					sb.Append(ch);
+					string surrogatePair;
+					originalValue.Append(ReadEscapeSequence(out ch, out surrogatePair));
+					if (surrogatePair != null) {
+						sb.Append(surrogatePair);
+					} else {
+						sb.Append(ch);
+					}
 				} else if (ch == '\n') {
 					errors.Error(y, x, String.Format("No new line is allowed inside a string literal"));
 					break;
@@ -431,14 +467,28 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		}
 		
 		char[] escapeSequenceBuffer = new char[12];
-		string ReadEscapeSequence(out char ch)
+		
+		/// <summary>
+		/// reads an escape sequence
+		/// </summary>
+		/// <param name="ch">The character represented by the escape sequence,
+		/// or '\0' if there was an error or the escape sequence represents a character that
+		/// can be represented only be a suggorate pair</param>
+		/// <param name="surrogatePair">Null, except when the character represented
+		/// by the escape sequence can only be represented by a surrogate pair (then the string
+		/// contains the surrogate pair)</param>
+		/// <returns>The escape sequence</returns>
+		string ReadEscapeSequence(out char ch, out string surrogatePair)
 		{
+			surrogatePair = null;
+			
 			int nextChar = ReaderRead();
 			if (nextChar == -1) {
 				errors.Error(Line, Col, String.Format("End of file reached inside escape sequence"));
 				ch = '\0';
 				return String.Empty;
 			}
+			int number;
 			char c = (char)nextChar;
 			int curPos              = 1;
 			escapeSequenceBuffer[0] = c;
@@ -478,8 +528,9 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 					break;
 				case 'u':
 				case 'x':
+					// 16 bit unicode character
 					c = (char)ReaderRead();
-					int number = GetHexNumber(c);
+					number = GetHexNumber(c);
 					escapeSequenceBuffer[curPos++] = c;
 					
 					if (number < 0) {
@@ -496,6 +547,27 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 						}
 					}
 					ch = (char)number;
+					break;
+				case 'U':
+					// 32 bit unicode character
+					number = 0;
+					for (int i = 0; i < 8; ++i) {
+						if (IsHex((char)ReaderPeek())) {
+							c = (char)ReaderRead();
+							int idx = GetHexNumber(c);
+							escapeSequenceBuffer[curPos++] = c;
+							number = 16 * number + idx;
+						} else {
+							errors.Error(Line, Col - 1, String.Format("Invalid char in literal : {0}", (char)ReaderPeek()));
+							break;
+						}
+					}
+					if (number > 0xffff) {
+						ch = '\0';
+						surrogatePair = char.ConvertFromUtf32(number);
+					} else {
+						ch = (char)number;
+					}
 					break;
 				default:
 					errors.Error(Line, Col, String.Format("Unexpected escape sequence : {0}", c));
@@ -518,7 +590,11 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			char chValue = ch;
 			string escapeSequence = String.Empty;
 			if (ch == '\\') {
-				escapeSequence = ReadEscapeSequence(out chValue);
+				string surrogatePair;
+				escapeSequence = ReadEscapeSequence(out chValue, out surrogatePair);
+				if (surrogatePair != null) {
+					errors.Error(y, x, String.Format("The unicode character must be represented by a surrogate pair and does not fit into a System.Char"));
+				}
 			}
 			
 			unchecked {

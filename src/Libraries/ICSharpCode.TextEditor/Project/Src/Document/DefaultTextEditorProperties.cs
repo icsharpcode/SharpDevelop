@@ -19,6 +19,7 @@ namespace ICSharpCode.TextEditor.Document
 	public class DefaultTextEditorProperties : ITextEditorProperties
 	{
 		int                   tabIndent             = 4;
+		int                   indentationSize       = 4;
 		IndentStyle           indentStyle           = IndentStyle.Smart;
 		DocumentSelectionMode documentSelectionMode = DocumentSelectionMode.Normal;
 		Encoding              encoding              = System.Text.Encoding.UTF8;
@@ -73,6 +74,10 @@ namespace ICSharpCode.TextEditor.Document
 			}
 		}
 		
+		public int IndentationSize {
+			get { return indentationSize; }
+			set { indentationSize = value; }
+		}
 		
 		public IndentStyle IndentStyle {
 			get {

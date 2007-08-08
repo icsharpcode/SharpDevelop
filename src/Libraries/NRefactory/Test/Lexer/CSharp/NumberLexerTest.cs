@@ -60,8 +60,11 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 		}
 		
 		[Test]
-		public void TestOctalInteger()
+		public void TestNonOctalInteger()
 		{
+			// C# does not have octal integers, so 077 should parse to 77
+			Assert.IsTrue(077 == 77);
+			
 			CheckToken("077", 077);
 			CheckToken("056", 056);
 		}
@@ -90,6 +93,17 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 		{
 			CheckToken("0x4244636f446c6d58", 0x4244636f446c6d58);
 			CheckToken("0xf244636f446c6d58", 0xf244636f446c6d58);
+		}
+		
+		[Test]
+		public void TestLongInteger()
+		{
+			CheckToken("9223372036854775807", 9223372036854775807); // long.MaxValue
+			CheckToken("9223372036854775808", 9223372036854775808); // long.MaxValue+1
+			CheckToken("18446744073709551615", 18446744073709551615); // ulong.MaxValue
+			CheckToken("18446744073709551616f", 18446744073709551616f); // ulong.MaxValue+1 as float
+			CheckToken("18446744073709551616d", 18446744073709551616d); // ulong.MaxValue+1 as double
+			CheckToken("18446744073709551616m", 18446744073709551616m); // ulong.MaxValue+1 as decimal
 		}
 		
 		[Test]
@@ -124,6 +138,20 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 		{
 			CheckToken(@"@""-->""""<--""", @"-->""<--");
 			CheckToken(@"""-->\""<--""", "-->\"<--");
+			
+			CheckToken(@"""\U00000041""", "\U00000041");
+			CheckToken(@"""\U00010041""", "\U00010041");
+		}
+		
+		[Test]
+		public void TestCharLiteral()
+		{
+			CheckToken(@"'a'", 'a');
+			CheckToken(@"'\u0041'", '\u0041');
+			CheckToken(@"'\x41'", '\x41');
+			CheckToken(@"'\x041'", '\x041');
+			CheckToken(@"'\x0041'", '\x0041');
+			CheckToken(@"'\U00000041'", '\U00000041');
 		}
 	}
 }

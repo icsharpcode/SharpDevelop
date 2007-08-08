@@ -25,7 +25,7 @@ namespace ICSharpCode.TextEditor.Actions
 			StringBuilder indent = new StringBuilder();
 			
 			if (document.TextEditorProperties.ConvertTabsToSpaces) {
-				int tabIndent = document.TextEditorProperties.TabIndent;
+				int tabIndent = document.TextEditorProperties.IndentationSize;
 				if (textArea != null) {
 					int column = textArea.TextView.GetVisualColumn(textArea.Caret.Line, textArea.Caret.Column);
 					indent.Append(new String(' ', tabIndent - column % tabIndent));
@@ -144,7 +144,7 @@ namespace ICSharpCode.TextEditor.Actions
 							charactersToRemove = 1;
 						} else if(document.GetCharAt(line.Offset) == ' ') {
 							int leadingSpaces = 1;
-							int tabIndent = document.TextEditorProperties.TabIndent;
+							int tabIndent = document.TextEditorProperties.IndentationSize;
 							for (leadingSpaces = 1; leadingSpaces < line.Length && document.GetCharAt(line.Offset + leadingSpaces) == ' '; leadingSpaces++) {
 								// deliberately empty
 							}
@@ -195,7 +195,7 @@ namespace ICSharpCode.TextEditor.Actions
 				// column is updated to that column.
 				LineSegment line = textArea.Document.GetLineSegmentForOffset(textArea.Caret.Offset);
 				string startOfLine = textArea.Document.GetText(line.Offset,textArea.Caret.Offset - line.Offset);
-				int tabIndent = textArea.Document.TextEditorProperties.TabIndent;
+				int tabIndent = textArea.Document.TextEditorProperties.IndentationSize;
 				int currentColumn = textArea.Caret.Column;
 				int remainder = currentColumn % tabIndent;
 				if (remainder == 0) {

@@ -5,18 +5,17 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml;
-
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
-
+using Import = System.Collections.Generic.KeyValuePair<System.String, System.String>;
 using MSBuild = Microsoft.Build.BuildEngine;
-using Import = System.Collections.Generic.KeyValuePair<string, string>;
 
 namespace ICSharpCode.SharpDevelop.Internal.Templates
 {
@@ -358,7 +357,11 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 						} else {
 							// Textual content
 							StreamWriter sr = new StreamWriter(File.Create(fileName), ParserService.DefaultFileEncoding);
-							sr.Write(StringParser.Parse(StringParser.Parse(file.Content, new string[,] { {"ProjectName", projectCreateInformation.ProjectName}, {"FileName", fileName}})));
+							string fileContent = StringParser.Parse(file.Content, new string[,] { {"ProjectName", projectCreateInformation.ProjectName}, {"FileName", fileName}});
+							if (SharpDevelopTextEditorProperties.Instance.IndentationString != "\t") {
+								fileContent = fileContent.Replace("\t", SharpDevelopTextEditorProperties.Instance.IndentationString);
+							}
+							sr.Write(fileContent);
 							sr.Close();
 						}
 					} catch (Exception ex) {
