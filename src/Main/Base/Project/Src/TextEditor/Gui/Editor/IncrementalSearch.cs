@@ -41,9 +41,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		/// </summary>
 		class IncrementalSearchFormattingStrategy : DefaultFormattingStrategy
 		{
-			public override int FormatLine(TextArea textArea, int line, int cursorOffset, char ch)
+			public override void FormatLine(TextArea textArea, int line, int cursorOffset, char ch)
 			{
-				return 0;
 			}
 		}
 		

@@ -111,8 +111,23 @@ namespace ICSharpCode.SharpDevelop.Gui
 				string include = chooseSpecificVersionCheckBox.Checked ? item.Tag.ToString() : item.Text;
 				ReferenceProjectItem rpi = new ReferenceProjectItem(selectDialog.ConfigureProject, include);
 				string requiredFrameworkVersion;
-				if (fullAssemblyNameToRequiredFrameworkVersionDictionary.TryGetValue(item.Tag.ToString(), out requiredFrameworkVersion)) {
-					rpi.SetMetadata("RequiredTargetFramework", requiredFrameworkVersion);
+				if (chooseSpecificVersionCheckBox.Checked) {
+					if (fullAssemblyNameToRequiredFrameworkVersionDictionary.TryGetValue(item.Tag.ToString(), out requiredFrameworkVersion)) {
+						rpi.SetMetadata("RequiredTargetFramework", requiredFrameworkVersion);
+					}
+				} else {
+					// find the lowest version of the assembly and use its RequiredTargetFramework
+					ListViewItem lowestVersion = item;
+					foreach (ListViewItem item2 in fullItemList) {
+						if (item2.Text == item.Text) {
+							if (new Version(item2.SubItems[1].Text) < new Version(((DomAssemblyName)lowestVersion.Tag).Version)) {
+								lowestVersion = item2;
+							}
+						}
+					}
+					if (fullAssemblyNameToRequiredFrameworkVersionDictionary.TryGetValue(lowestVersion.Tag.ToString(), out requiredFrameworkVersion)) {
+						rpi.SetMetadata("RequiredTargetFramework", requiredFrameworkVersion);
+					}
 				}
 				selectDialog.AddReference(
 					item.Text, "Gac", rpi.Include,
@@ -136,7 +151,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			// Create full item list
 			foreach (DomAssemblyName asm in cacheContent) {
 				ListViewItem item = new ListViewItem(new string[] {asm.ShortName, asm.Version});
-				item.Tag = asm.FullName;
+				item.Tag = asm;
 				itemList.Add(item);
 			}
 			fullItemList = itemList.ToArray();
@@ -155,7 +170,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				}
 				if (!isDuplicate) {
 					ListViewItem item = new ListViewItem(new string[] {asm.ShortName, asm.Version});
-					item.Tag = asm.FullName;
+					item.Tag = asm;
 					itemList.Add(item);
 				}
 			}

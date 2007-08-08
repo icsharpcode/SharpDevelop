@@ -76,12 +76,11 @@ namespace ICSharpCode.TextEditor.Document
 		/// of bytes (e.g. the number of bytes inserted before the caret, or
 		/// removed, if this number is negative)
 		/// </returns>
-		public virtual int FormatLine(TextArea textArea, int line, int cursorOffset, char ch)
+		public virtual void FormatLine(TextArea textArea, int line, int cursorOffset, char ch)
 		{
 			if (ch == '\n') {
-				return IndentLine(textArea, line);
+				textArea.Caret.Column = IndentLine(textArea, line);
 			}
-			return 0;
 		}
 		
 		/// <summary>
@@ -92,14 +91,20 @@ namespace ICSharpCode.TextEditor.Document
 		/// </returns>
 		public int IndentLine(TextArea textArea, int line)
 		{
+			textArea.Document.UndoStack.StartUndoGroup();
+			int result;
 			switch (textArea.Document.TextEditorProperties.IndentStyle) {
 				case IndentStyle.None:
+					result = 0;
 					break;
 				case IndentStyle.Auto:
-					return AutoIndentLine(textArea, line);
+					result = AutoIndentLine(textArea, line);
+					break;
 				case IndentStyle.Smart:
-					return SmartIndentLine(textArea, line);
+					result = SmartIndentLine(textArea, line);
+					break;
 			}
+			textArea.Document.UndoStack.EndUndoGroup();
 			return 0;
 		}
 		
@@ -108,15 +113,11 @@ namespace ICSharpCode.TextEditor.Document
 		/// </summary>
 		public virtual void IndentLines(TextArea textArea, int begin, int end)
 		{
-			int redocounter = 0;
+			textArea.Document.UndoStack.StartUndoGroup();
 			for (int i = begin; i <= end; ++i) {
-				if (IndentLine(textArea, i) > 0) {
-					++redocounter;
-				}
+				IndentLine(textArea, i);
 			}
-			if (redocounter > 0) {
-				textArea.Document.UndoStack.CombineLast(redocounter);
-			}
+			textArea.Document.UndoStack.EndUndoGroup();
 		}
 		
 		public virtual int SearchBracketBackward(IDocument document, int offset, char openBracket, char closingBracket)

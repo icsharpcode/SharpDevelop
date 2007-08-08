@@ -25,8 +25,9 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor
 	/// </summary>
 	public class XmlFormattingStrategy : DefaultFormattingStrategy
 	{
-		public override int FormatLine(TextArea textArea, int lineNr, int caretOffset, char charTyped) // used for comment tag formater/inserter
+		public override void FormatLine(TextArea textArea, int lineNr, int caretOffset, char charTyped) // used for comment tag formater/inserter
 		{
+			textArea.Document.UndoStack.StartUndoGroup();
 			try {
 				if (charTyped == '>') {
 					StringBuilder stringBuilder = new StringBuilder();
@@ -67,7 +68,10 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor
 			} catch (Exception e) { // Insanity check
 				Debug.Assert(false, e.ToString());
 			}
-			return charTyped == '\n' ? IndentLine(textArea, lineNr) : 0;
+			if (charTyped == '\n') {
+				IndentLine(textArea, lineNr);
+			}
+			textArea.Document.UndoStack.EndUndoGroup();
 		}
 		
 		/// <summary>
@@ -89,10 +93,13 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor
 		/// </summary>
 		public override void IndentLines(TextArea textArea, int begin, int end)
 		{
+			textArea.Document.UndoStack.StartUndoGroup();
 			try {
 				TryIndent(textArea, begin, end);
 			} catch (XmlException ex) {
 				LoggingService.Debug(ex.ToString());
+			} finally {
+				textArea.Document.UndoStack.EndUndoGroup();
 			}
 		}
 		
@@ -104,7 +111,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor
 			IDocument document = textArea.Document;
 			string tab = Tab.GetIndentationString(document);
 			int nextLine = begin; // in #dev coordinates
-			int changedLines = 0;
 			bool wasEmptyElement = false;
 			XmlNodeType lastType = XmlNodeType.XmlDeclaration;
 			// TextReader line number begin with 1, #dev line numbers with 0
@@ -144,7 +150,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor
 						
 						if (newText != lineText) {
 							document.Replace(line.Offset, line.Length, newText);
-							changedLines += 1;
 						}
 						nextLine += 1;
 					}
@@ -177,7 +182,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor
 							string newText = attribIndent + lineText.Trim();
 							if (newText != lineText) {
 								document.Replace(line.Offset, line.Length, newText);
-								changedLines += 1;
 							}
 							nextLine += 1;
 						}
@@ -185,8 +189,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor
 				}
 				r.Close();
 			}
-			if (changedLines > 1)
-				document.UndoStack.CombineLast(changedLines);
 		}
 		#endregion
 	}

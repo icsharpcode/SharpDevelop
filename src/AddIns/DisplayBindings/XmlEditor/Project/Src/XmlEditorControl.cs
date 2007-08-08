@@ -332,7 +332,7 @@ namespace ICSharpCode.XmlEditor
 					break;
 			}
 			int currentLineNr = ActiveTextAreaControl.TextArea.Caret.Line;
-			int delta = Document.FormattingStrategy.FormatLine(ActiveTextAreaControl.TextArea, currentLineNr, Document.PositionToOffset(ActiveTextAreaControl.TextArea.Caret.Position), ch);
+			Document.FormattingStrategy.FormatLine(ActiveTextAreaControl.TextArea, currentLineNr, Document.PositionToOffset(ActiveTextAreaControl.TextArea.Caret.Position), ch);
 			
 			ActiveTextAreaControl.TextArea.MotherTextEditorControl.EndUpdate();
 		}

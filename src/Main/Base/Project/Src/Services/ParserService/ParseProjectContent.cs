@@ -105,12 +105,6 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
-		// waitcallback for AddReference
-		void AddReference(object state)
-		{
-			AddReference((ReferenceProjectItem)state, true);
-		}
-		
 		// ensure that com references are built serially because we cannot invoke multiple instances of MSBuild
 		static Queue<System.Windows.Forms.MethodInvoker> callAfterAddComReference = new Queue<System.Windows.Forms.MethodInvoker>();
 		static bool buildingComReference;
@@ -127,13 +121,13 @@ namespace ICSharpCode.SharpDevelop
 						project.Save(); // project is not yet saved when ItemAdded fires, so save it here
 						TaskService.BuildMessageViewCategory.AppendText("\n${res:MainWindow.CompilerMessages.CreatingCOMInteropAssembly}\n");
 						BuildCallback afterBuildCallback = delegate {
-							System.Threading.ThreadPool.QueueUserWorkItem(AddReference, reference);
 							lock (callAfterAddComReference) {
 								if (callAfterAddComReference.Count > 0) {
 									// run next enqueued action
 									callAfterAddComReference.Dequeue()();
 								} else {
 									buildingComReference = false;
+									ParserService.Reparse(project, true, false);
 								}
 							}
 						};
@@ -151,10 +145,7 @@ namespace ICSharpCode.SharpDevelop
 						}
 					}
 				} else {
-					// refresh the reference if required
-					ParserService.RefreshProjectContentForReference(reference);
-					
-					System.Threading.ThreadPool.QueueUserWorkItem(AddReference, reference);
+					ParserService.Reparse(project, true, false);
 				}
 			}
 			if (e.ProjectItem.ItemType == ItemType.Import) {

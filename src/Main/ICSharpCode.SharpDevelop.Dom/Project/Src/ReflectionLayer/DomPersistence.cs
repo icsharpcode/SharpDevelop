@@ -20,7 +20,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 	{
 		public const long FileMagic = 0x11635233ED2F428C;
 		public const long IndexFileMagic = 0x11635233ED2F427D;
-		public const short FileVersion = 13;
+		public const short FileVersion = 14;
 		
 		ProjectContentRegistry registry;
 		string cacheDirectory;
@@ -788,8 +788,17 @@ namespace ICSharpCode.SharpDevelop.Dom
 				Null,
 				String,
 				Type,
+				SByte,
+				Int16,
 				Int32,
-				Bool
+				Int64,
+				Byte,
+				UInt16,
+				UInt32,
+				UInt64,
+				Bool,
+				Single,
+				Double,
 			}
 			
 			void WriteAttributeArgument(object o)
@@ -802,12 +811,39 @@ namespace ICSharpCode.SharpDevelop.Dom
 				} else if (o is IReturnType) {
 					writer.Write((byte)AttributeType.Type);
 					WriteType((IReturnType)o);
-				} else if (o is int) {
+				} else if (o is Byte) {
+					writer.Write((byte)AttributeType.Byte);
+					writer.Write((Byte)o);
+				} else if (o is Int16) {
+					writer.Write((byte)AttributeType.Int16);
+					writer.Write((Int16)o);
+				} else if (o is Int32) {
 					writer.Write((byte)AttributeType.Int32);
-					writer.Write((int)o);
+					writer.Write((Int32)o);
+				} else if (o is Int64) {
+					writer.Write((byte)AttributeType.Int64);
+					writer.Write((Int64)o);
+				} else if (o is SByte) {
+					writer.Write((byte)AttributeType.SByte);
+					writer.Write((SByte)o);
+				} else if (o is UInt16) {
+					writer.Write((byte)AttributeType.UInt16);
+					writer.Write((UInt16)o);
+				} else if (o is UInt32) {
+					writer.Write((byte)AttributeType.UInt32);
+					writer.Write((UInt32)o);
+				} else if (o is UInt64) {
+					writer.Write((byte)AttributeType.UInt64);
+					writer.Write((UInt64)o);
 				} else if (o is bool) {
 					writer.Write((byte)AttributeType.Bool);
 					writer.Write((bool)o);
+				} else if (o is Single) {
+					writer.Write((byte)AttributeType.Single);
+					writer.Write((Single)o);
+				} else if (o is Double) {
+					writer.Write((byte)AttributeType.Double);
+					writer.Write((Double)o);
 				} else {
 					writer.Write((byte)AttributeType.Null);
 					LoggingService.Warn("Cannot write attribute arguments of type " + o.GetType());
@@ -824,10 +860,28 @@ namespace ICSharpCode.SharpDevelop.Dom
 						return ReadString();
 					case AttributeType.Type:
 						return ReadType();
+					case AttributeType.SByte:
+						return reader.ReadSByte();
+					case AttributeType.Int16:
+						return reader.ReadInt16();
 					case AttributeType.Int32:
 						return reader.ReadInt32();
+					case AttributeType.Int64:
+						return reader.ReadInt64();
+					case AttributeType.Byte:
+						return reader.ReadByte();
+					case AttributeType.UInt16:
+						return reader.ReadUInt16();
+					case AttributeType.UInt32:
+						return reader.ReadUInt32();
+					case AttributeType.UInt64:
+						return reader.ReadUInt64();
 					case AttributeType.Bool:
 						return reader.ReadBoolean();
+					case AttributeType.Single:
+						return reader.ReadSingle();
+					case AttributeType.Double:
+						return reader.ReadDouble();
 					default:
 						throw new NotSupportedException("Invalid attribute argument type code " + type);
 				}

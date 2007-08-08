@@ -40,7 +40,6 @@ namespace ICSharpCode.TextEditor.Actions
 		
 		void InsertTabs(IDocument document, ISelection selection, int y1, int y2)
 		{
-			int    redocounter = 0;
 			string indentationString = GetIndentationString(document);
 			for (int i = y2; i >= y1; --i) {
 				LineSegment line = document.GetLineSegment(i);
@@ -52,14 +51,8 @@ namespace ICSharpCode.TextEditor.Actions
 				// a source file with a mixture of tabs and spaces
 //				string newLine = document.GetText(line.Offset,line.Length);
 //				document.Replace(line.Offset,line.Length,newLine);
-//				++redocounter;
 				
 				document.Insert(line.Offset, indentationString);
-				++redocounter;
-			}
-			
-			if (redocounter > 0) {
-				document.UndoStack.CombineLast(redocounter); // redo the whole operation (not the single deletes)
 			}
 		}
 		
@@ -88,6 +81,7 @@ namespace ICSharpCode.TextEditor.Actions
 			if (textArea.Document.ReadOnly) {
 				return;
 			}
+			textArea.Document.UndoStack.StartUndoGroup();
 			if (textArea.SelectionManager.HasSomethingSelected) {
 				foreach (ISelection selection in textArea.SelectionManager.SelectionCollection) {
 					int startLine = selection.StartPosition.Y;
@@ -108,6 +102,7 @@ namespace ICSharpCode.TextEditor.Actions
 			} else {
 				InsertTabAtCaretPosition(textArea);
 			}
+			textArea.Document.UndoStack.EndUndoGroup();
 		}
 	}
 	
@@ -115,7 +110,7 @@ namespace ICSharpCode.TextEditor.Actions
 	{
 		void RemoveTabs(IDocument document, ISelection selection, int y1, int y2)
 		{
-			int  redocounter = 0;
+			document.UndoStack.StartUndoGroup();
 			for (int i = y2; i >= y1; --i) {
 				LineSegment line = document.GetLineSegment(i);
 				if (i == y2 && line.Offset == selection.EndOffset) {
@@ -169,15 +164,11 @@ namespace ICSharpCode.TextEditor.Actions
 						}
 						if (charactersToRemove > 0) {
 							document.Remove(line.Offset,charactersToRemove);
-							++redocounter;
 						}
 					}
 				}
 			}
-			
-			if (redocounter > 0) {
-				document.UndoStack.CombineLast(redocounter); // redo the whole operation (not the single deletes)
-			}
+			document.UndoStack.EndUndoGroup();
 		}
 		
 		/// <remarks>
@@ -245,7 +236,6 @@ namespace ICSharpCode.TextEditor.Actions
 		
 		void RemoveCommentAt(IDocument document, string comment, ISelection selection, int y1, int y2)
 		{
-			int  redocounter = 0;
 			firstLine = y1;
 			lastLine  = y2;
 			
@@ -259,18 +249,12 @@ namespace ICSharpCode.TextEditor.Actions
 				string lineText = document.GetText(line.Offset, line.Length);
 				if (lineText.Trim().StartsWith(comment)) {
 					document.Remove(line.Offset + lineText.IndexOf(comment), comment.Length);
-					++redocounter;
 				}
-			}
-			
-			if (redocounter > 0) {
-				document.UndoStack.CombineLast(redocounter); // redo the whole operation (not the single deletes)
 			}
 		}
 		
 		void SetCommentAt(IDocument document, string comment, ISelection selection, int y1, int y2)
 		{
-			int  redocounter = 0;
 			firstLine = y1;
 			lastLine  = y2;
 			
@@ -283,11 +267,6 @@ namespace ICSharpCode.TextEditor.Actions
 				
 				string lineText = document.GetText(line.Offset, line.Length);
 				document.Insert(line.Offset, comment);
-				++redocounter;
-			}
-			
-			if (redocounter > 0) {
-				document.UndoStack.CombineLast(redocounter); // redo the whole operation (not the single deletes)
 			}
 		}
 		
@@ -326,6 +305,7 @@ namespace ICSharpCode.TextEditor.Actions
 				return;
 			}
 			
+			textArea.Document.UndoStack.StartUndoGroup();
 			if (textArea.SelectionManager.HasSomethingSelected) {
 				bool shouldComment = true;
 				foreach (ISelection selection in textArea.SelectionManager.SelectionCollection) {
@@ -360,6 +340,7 @@ namespace ICSharpCode.TextEditor.Actions
 				textArea.Document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.SingleLine, caretLine));
 				textArea.EndUpdate();
 			}
+			textArea.Document.UndoStack.EndUndoGroup();
 		}
 	}
 	
@@ -402,11 +383,13 @@ namespace ICSharpCode.TextEditor.Actions
 			
 			BlockCommentRegion commentRegion = FindSelectedCommentRegion(textArea.Document, commentStart, commentEnd, selectionStartOffset, selectionEndOffset);
 			
+			textArea.Document.UndoStack.StartUndoGroup();
 			if (commentRegion != null) {
 				RemoveComment(textArea.Document, commentRegion);
 			} else if (textArea.SelectionManager.HasSomethingSelected) {
 				SetCommentAt(textArea.Document, selectionStartOffset, selectionEndOffset, commentStart, commentEnd);
 			}
+			textArea.Document.UndoStack.EndUndoGroup();
 			
 			textArea.Document.CommitUpdate();
 			textArea.AutoClearSelection = false;
@@ -487,14 +470,12 @@ namespace ICSharpCode.TextEditor.Actions
 		{
 			document.Insert(offsetEnd, commentEnd);
 			document.Insert(offsetStart, commentStart);
-			document.UndoStack.CombineLast(2);
 		}
 		
 		void RemoveComment(IDocument document, BlockCommentRegion commentRegion)
 		{
 			document.Remove(commentRegion.EndOffset, commentRegion.CommentEnd.Length);
 			document.Remove(commentRegion.StartOffset, commentRegion.CommentStart.Length);
-			document.UndoStack.CombineLast(2);
 		}
 	}
 	
@@ -723,7 +704,7 @@ namespace ICSharpCode.TextEditor.Actions
 				textArea.InsertString(Environment.NewLine);
 				
 				int curLineNr = textArea.Caret.Line;
-				textArea.Caret.Column = textArea.Document.FormattingStrategy.FormatLine(textArea, curLineNr, textArea.Caret.Offset, '\n');
+				textArea.Document.FormattingStrategy.FormatLine(textArea, curLineNr, textArea.Caret.Offset, '\n');
 				textArea.SetDesiredColumn();
 				
 				textArea.Document.UpdateQueue.Clear();

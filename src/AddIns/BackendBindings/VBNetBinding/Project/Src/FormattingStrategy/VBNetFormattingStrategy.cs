@@ -252,7 +252,14 @@ namespace VBNetBinding.FormattingStrategy
 			}
 		}
 		
-		public override int FormatLine(TextArea textArea, int lineNr, int cursorOffset, char ch)
+		public override void FormatLine(TextArea textArea, int lineNr, int cursorOffset, char ch) // used for comment tag formater/inserter
+		{
+			textArea.Document.UndoStack.StartUndoGroup();
+			FormatLineInternal(textArea, lineNr, cursorOffset, ch);
+			textArea.Document.UndoStack.EndUndoGroup();
+		}
+		
+		void FormatLineInternal(TextArea textArea, int lineNr, int cursorOffset, char ch)
 		{
 			string terminator = textArea.TextEditorProperties.LineTerminator;
 			doCasing = PropertyService.Get("VBBinding.TextEditor.EnableCasing", true);
@@ -303,16 +310,13 @@ namespace VBNetBinding.FormattingStrategy
 							
 							textArea.Refresh();
 							textArea.Caret.Position = textArea.Document.OffsetToPosition(cursorOffset + indentation.Length + "/// ".Length + " <summary>".Length + terminator.Length);
-							return 0;
 						}
 					}
-					return 0;
+					return;
 				}
 				
 				if (ch == '\n' && lineAboveText != null)
 				{
-					int undoCount = 1;
-					
 					// remove comments
 					string texttoreplace = Regex.Replace(lineAboveText, "'.*$", "", RegexOptions.Singleline);
 					// remove string content
@@ -332,7 +336,6 @@ namespace VBNetBinding.FormattingStrategy
 									textArea.Document.Replace(lineAbove.Offset + match.Index, match.Length, "End If");
 								else
 									textArea.Document.Replace(lineAbove.Offset + match.Index, match.Length, keyword);
-								++undoCount;
 							}
 						}
 					}
@@ -342,7 +345,6 @@ namespace VBNetBinding.FormattingStrategy
 						if (Regex.IsMatch(texttoreplace.Trim(), @"^If .*[^_]$", RegexOptions.IgnoreCase)) {
 							if (false == Regex.IsMatch(texttoreplace, @"\bthen\b", RegexOptions.IgnoreCase)) {
 								textArea.Document.Insert(lineAbove.Offset + lineAbove.Length, " Then");
-								++undoCount;
 								texttoreplace += " Then";
 							}
 						}
@@ -352,15 +354,14 @@ namespace VBNetBinding.FormattingStrategy
 								string indentation = GetIndentation(textArea, lineNr - 1);
 								if (isEndStatementNeeded(textArea, ref statement, lineNr)) {
 									textArea.Document.Replace(curLine.Offset, curLine.Length, terminator + indentation + statement.EndStatement);
-									++undoCount;
 								}
 								for (int i = 0; i < statement.IndentPlus; i++) {
 									indentation += Tab.GetIndentationString(textArea.Document);
 								}
 								
 								textArea.Document.Replace(curLine.Offset, curLine.Length, indentation + curLineText.Trim());
-								textArea.Document.UndoStack.CombineLast(undoCount + 1);
-								return indentation.Length;
+								//return indentation.Length;
+								return;
 							}
 						}
 					}
@@ -376,17 +377,14 @@ namespace VBNetBinding.FormattingStrategy
 							if (IsElseConstruct(lineAboveText))
 								SmartIndentLine(textArea, lineNr - 1);
 							int result = SmartIndentLine(textArea, lineNr) + 1;
-							textArea.Document.UndoStack.CombineLast(undoCount + 3);
-							return result;
 						} else {
 							textArea.Document.Insert(lineAbove.Offset + lineAbove.Length,
 							                         "\"");
 							if (IsElseConstruct(lineAboveText))
 								SmartIndentLine(textArea, lineNr - 1);
 							int result = SmartIndentLine(textArea, lineNr);
-							textArea.Document.UndoStack.CombineLast(undoCount + 2);
-							return result;
 						}
+						//return result;
 					}
 					else
 					{
@@ -395,12 +393,10 @@ namespace VBNetBinding.FormattingStrategy
 							string newLineText = indent + TextUtilities.GetLineAsString(textArea.Document, lineNr).Trim();
 							curLine = textArea.Document.GetLineSegment(lineNr);
 							textArea.Document.Replace(curLine.Offset, curLine.Length, newLineText);
-							++undoCount;
 						}
 						if (IsElseConstruct(lineAboveText))
 							SmartIndentLine(textArea, lineNr - 1);
-						textArea.Document.UndoStack.CombineLast(undoCount);
-						return indent.Length;
+						//return indent.Length;
 					}
 				}
 				else if(ch == '>')
@@ -414,7 +410,7 @@ namespace VBNetBinding.FormattingStrategy
 						while (index > 0 && curLineText[index] != '<') {
 							--index;
 							if(curLineText[index] == '/')
-								return 0; // the tag was an end tag or already
+								return; // the tag was an end tag or already
 						}
 						
 						if (index > 0) {
@@ -433,7 +429,6 @@ namespace VBNetBinding.FormattingStrategy
 					}
 				}
 			}
-			return 0;
 		}
 		
 		bool IsInsideDocumentationComment(TextArea textArea, LineSegment curLine, int cursorOffset)

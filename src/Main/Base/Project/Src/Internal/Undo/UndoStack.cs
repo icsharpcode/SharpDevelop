@@ -44,14 +44,14 @@ namespace ICSharpCode.SharpDevelop.Internal.Undo
 			}
 		}
 		
-		/// <summary>
-		/// You call this method to pool the last x operations from the undo stack
-		/// to make 1 operation from it.
-		/// </summary>
-		public void UndoLast(int x)
-		{
-			undostack.Push(new UndoQueue(this, x));
-		}
+//		/// <summary>
+//		/// You call this method to pool the last x operations from the undo stack
+//		/// to make 1 operation from it.
+//		/// </summary>
+//		public void UndoLast(int x)
+//		{
+//			undostack.Push(new UndoQueue(this, x));
+//		}
 		
 		/// <summary>
 		/// Call this method to undo the last operation on the stack

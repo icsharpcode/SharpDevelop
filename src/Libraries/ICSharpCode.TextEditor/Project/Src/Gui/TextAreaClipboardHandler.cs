@@ -186,10 +186,9 @@ namespace ICSharpCode.TextEditor
 					if (data.GetDataPresent(DataFormats.UnicodeText)) {
 						string text = (string)data.GetData(DataFormats.UnicodeText);
 						if (text.Length > 0) {
-							int redocounter = 0;
+							textArea.Document.UndoStack.StartUndoGroup();
 							if (textArea.SelectionManager.HasSomethingSelected) {
 								Delete(sender, e);
-								redocounter++;
 							}
 							if (fullLine) {
 								int col = textArea.Caret.Column;
@@ -200,9 +199,7 @@ namespace ICSharpCode.TextEditor
 							else {
 								textArea.InsertString(text);
 							}
-							if (redocounter > 0) {
-								textArea.Document.UndoStack.CombineLast(redocounter + 1); // redo the whole operation
-							}
+							textArea.Document.UndoStack.EndUndoGroup();
 						}
 					}
 					return;

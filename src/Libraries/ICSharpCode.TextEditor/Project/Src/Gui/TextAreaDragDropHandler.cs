@@ -64,7 +64,6 @@ namespace ICSharpCode.TextEditor
 			Point p = textArea.PointToClient(new Point(e.X, e.Y));
 			
 			if (e.Data.GetDataPresent(typeof(string))) {
-				bool two = false;
 				textArea.BeginUpdate();
 				try {
 					int offset = textArea.Caret.Offset;
@@ -74,6 +73,7 @@ namespace ICSharpCode.TextEditor
 						// prevent dragging text into readonly section
 						return;
 					}
+					textArea.Document.UndoStack.StartUndoGroup();
 					if (e.Data.GetDataPresent(typeof(DefaultSelection))) {
 						ISelection sel = (ISelection)e.Data.GetData(typeof(DefaultSelection));
 						if (sel.ContainsPosition(textArea.Caret.Position)) {
@@ -92,14 +92,10 @@ namespace ICSharpCode.TextEditor
 								offset -= len;
 							}
 						}
-						two = true;
 					}
 					textArea.SelectionManager.ClearSelection();
 					InsertString(offset, (string)e.Data.GetData(typeof(string)));
-					if (two) {
-						textArea.Document.UndoStack.CombineLast(2);
-					}
-					textArea.Document.UpdateQueue.Clear();
+					textArea.Document.UndoStack.EndUndoGroup();
 					textArea.Document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.WholeTextArea));
 				} finally {
 					textArea.EndUpdate();

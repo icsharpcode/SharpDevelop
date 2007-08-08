@@ -39,7 +39,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 		}
 		
-		[Browsable(false)]
+		[ReadOnly(true)]
 		public string HintPath {
 			get {
 				return GetEvaluatedMetadata("HintPath");
@@ -64,20 +64,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		[DefaultValue(false)]
 		[LocalizedProperty("${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.SpecificVersion}",
 		                   Description = "${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.SpecificVersion.Description}")]
-		public bool SpecificVersion {
+		public virtual bool SpecificVersion {
 			get {
 				return this.Include.Contains(",");
 			}
-			/* set {
-				if (this.SpecificVersion == value)
-					return;
-				if (value) {
-					this.Include = this.AssemblyName.FullName;
-				} else {
-					this.Include = this.AssemblyName.ShortName;
-					Ensure that reference still resolves to the same assembly
-				}
-			} */
 		}
 		
 		internal const string CopyLocalMetadataName = "Private";
@@ -109,6 +99,13 @@ namespace ICSharpCode.SharpDevelop.Project
 		                   Description="${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.Name.Description}")]
 		public string Name {
 			get {
+				return Include;
+			}
+		}
+		
+		[Browsable(false)]
+		public virtual string ShortName {
+			get {
 				return this.AssemblyName.ShortName;
 			}
 		}
@@ -116,7 +113,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		[ReadOnly(true)]
 		[LocalizedProperty("${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.Version}",
 		                   Description="${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.Version.Description}")]
-		public Version Version {
+		public virtual Version Version {
 			get {
 				if (this.AssemblyName.Version == null)
 					return null;
@@ -128,7 +125,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		[ReadOnly(true)]
 		[LocalizedProperty("${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.Culture}",
 		                   Description="${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.Culture.Description}")]
-		public string Culture {
+		public virtual string Culture {
 			get {
 				return this.AssemblyName.Culture;
 			}
@@ -137,7 +134,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		[ReadOnly(true)]
 		[LocalizedProperty("${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.PublicKeyToken}",
 		                   Description="${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.PublicKeyToken.Description}")]
-		public string PublicKeyToken {
+		public virtual string PublicKeyToken {
 			get {
 				return this.AssemblyName.PublicKeyToken;
 			}
@@ -159,6 +156,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		string fullPath;
 		
 		[ReadOnly(true)]
+		[Browsable(true)]
 		public override string FileName {
 			get {
 				if (fullPath != null) {
@@ -204,6 +202,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			PropertyDescriptor copyLocalPD = globalizedProps["CopyLocal"];
 			globalizedProps.Remove(copyLocalPD);
 			globalizedProps.Add(new ReplaceDefaultValueDescriptor(copyLocalPD, !IsGacReference));
+			
+			if (string.IsNullOrEmpty(HintPath))
+				globalizedProps.Remove(globalizedProps["HintPath"]);
 		}
 		
 		sealed class ReplaceDefaultValueDescriptor : PropertyDescriptor

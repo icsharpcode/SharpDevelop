@@ -618,12 +618,9 @@ namespace ICSharpCode.TextEditor
 			}
 			
 			int currentLineNr = Caret.Line;
-			int delta = Document.FormattingStrategy.FormatLine(this, currentLineNr, Document.PositionToOffset(Caret.Position), ch);
+			Document.FormattingStrategy.FormatLine(this, currentLineNr, Document.PositionToOffset(Caret.Position), ch);
 			
 			motherTextEditorControl.EndUpdate();
-			if (delta != 0) {
-//				this.motherTextEditorControl.UpdateLines(currentLineNr, currentLineNr);
-			}
 		}
 		
 		protected override void OnKeyPress(KeyPressEventArgs e)
@@ -750,12 +747,12 @@ namespace ICSharpCode.TextEditor
 			if (Char.IsWhiteSpace(ch) && ch != '\t' && ch != '\n') {
 				ch = ' ';
 			}
-			bool removedText = false;
+			
+			Document.UndoStack.StartUndoGroup();
 			if (Document.TextEditorProperties.DocumentSelectionMode == DocumentSelectionMode.Normal &&
 			    SelectionManager.SelectionCollection.Count > 0) {
 				Caret.Position = SelectionManager.SelectionCollection[0].StartPosition;
 				SelectionManager.RemoveSelectedText();
-				removedText = true;
 			}
 			LineSegment caretLine = Document.GetLineSegment(Caret.Line);
 			int offset = Caret.Offset;
@@ -766,11 +763,8 @@ namespace ICSharpCode.TextEditor
 			} else {
 				Document.Insert(offset, ch.ToString());
 			}
+			Document.UndoStack.EndUndoGroup();
 			++Caret.Column;
-			
-			if (removedText) {
-				Document.UndoStack.CombineLast(2);
-			}
 			
 			if (!updating) {
 				EndUpdate();
@@ -791,12 +785,11 @@ namespace ICSharpCode.TextEditor
 				BeginUpdate();
 			}
 			try {
-				bool removedText = false;
+				Document.UndoStack.StartUndoGroup();
 				if (Document.TextEditorProperties.DocumentSelectionMode == DocumentSelectionMode.Normal &&
 				    SelectionManager.SelectionCollection.Count > 0) {
 					Caret.Position = SelectionManager.SelectionCollection[0].StartPosition;
 					SelectionManager.RemoveSelectedText();
-					removedText = true;
 				}
 				
 				int oldOffset = Document.PositionToOffset(Caret.Position);
@@ -810,9 +803,7 @@ namespace ICSharpCode.TextEditor
 					Document.Insert(oldOffset, str);
 					Caret.Position = Document.OffsetToPosition(oldOffset + str.Length);
 				}
-				if (removedText) {
-					Document.UndoStack.CombineLast(2);
-				}
+				Document.UndoStack.EndUndoGroup();
 				if (oldLine != Caret.Line) {
 					UpdateToEnd(oldLine);
 				} else {

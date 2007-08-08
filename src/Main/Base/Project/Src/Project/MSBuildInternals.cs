@@ -368,7 +368,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					string fullPath = FileUtility.GetAbsolutePath(baseProject.Directory, item.GetEvaluatedMetadata("Identity"));
 					reference.FileName = fullPath;
 					reference.Redist = item.GetEvaluatedMetadata("Redist");
-					LoggingService.Debug("Got information about " + originalInclude + "; fullpath=" + fullPath);
+					//LoggingService.Debug("Got information about " + originalInclude + "; fullpath=" + fullPath);
 				} else {
 					LoggingService.Warn("Unknown item " + originalInclude);
 				}

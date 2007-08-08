@@ -148,7 +148,6 @@ namespace ICSharpCode.TextEditor
 				BeginUpdate();
 				Document.UndoStack.Undo();
 				
-				Document.UpdateQueue.Clear();
 				Document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.WholeTextArea));
 				this.primaryTextArea.TextArea.UpdateMatchingBracket();
 				if (secondaryTextArea != null) {
@@ -167,7 +166,6 @@ namespace ICSharpCode.TextEditor
 				BeginUpdate();
 				Document.UndoStack.Redo();
 				
-				Document.UpdateQueue.Clear();
 				Document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.WholeTextArea));
 				this.primaryTextArea.TextArea.UpdateMatchingBracket();
 				if (secondaryTextArea != null) {

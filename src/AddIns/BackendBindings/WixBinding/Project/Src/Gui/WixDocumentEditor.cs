@@ -92,18 +92,13 @@ namespace ICSharpCode.WixBinding
 		{
 			int totalInsertedCharacters = 0;
 			
-			int redoCount = 0;
+			textArea.Document.UndoStack.StartUndoGroup();
 			for (int i = begin; i <= end; ++i) {
 				int existingCharacterCount = GetIndent(textArea, i);
 				int insertedCharacterCount = formattingStrategy.IndentLine(textArea, i) - existingCharacterCount;
-				if (insertedCharacterCount > 0) {
-					++redoCount;
-				}
 				totalInsertedCharacters += insertedCharacterCount;
 			}
-			if (redoCount > 0) {
-				textArea.Document.UndoStack.CombineLast(redoCount);
-			}
+			textArea.Document.UndoStack.EndUndoGroup();
 			
 			return totalInsertedCharacters;
 		}

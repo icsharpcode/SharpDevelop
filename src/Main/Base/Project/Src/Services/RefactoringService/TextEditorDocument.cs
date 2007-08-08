@@ -77,13 +77,11 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		
 		public void Insert(int offset, string text)
 		{
-			actionCount += 1;
 			doc.Insert(offset, text);
 		}
 		
 		public void Remove(int offset, int length)
 		{
-			actionCount += 1;
 			doc.Remove(offset, length);
 		}
 		
@@ -92,20 +90,14 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			return doc.GetCharAt(offset);
 		}
 		
-		Stack<int> undoableActionCountStack = new Stack<int>();
-		int actionCount;
-		
 		public void StartUndoableAction()
 		{
-			undoableActionCountStack.Push(actionCount);
-			actionCount = 0;
+			doc.UndoStack.StartUndoGroup();
 		}
 		
 		public void EndUndoableAction()
 		{
-			int undoCount = actionCount;
-			actionCount = undoableActionCountStack.Pop();
-			doc.UndoStack.CombineLast(undoCount);
+			doc.UndoStack.EndUndoGroup();
 		}
 		
 		public void UpdateView()

@@ -70,13 +70,34 @@ namespace ICSharpCode.TextEditor.Undo
 			}
 		}
 		
-		/// <summary>
-		/// You call this method to pool the last x operations from the undo stack
-		/// to make 1 operation from it.
-		/// </summary>
-		public void CombineLast(int actionCount)
+//		/// <summary>
+//		/// You call this method to pool the last x operations from the undo stack
+//		/// to make 1 operation from it.
+//		/// </summary>
+//		public void CombineLast(int actionCount)
+//		{
+//			undostack.Push(new UndoQueue(undostack, actionCount));
+//		}
+		
+		int undoGroupDepth;
+		int actionCountInUndoGroup;
+		
+		public void StartUndoGroup()
 		{
-			undostack.Push(new UndoQueue(undostack, actionCount));
+			if (undoGroupDepth == 0) {
+				actionCountInUndoGroup = 0;
+			}
+			undoGroupDepth++;
+		}
+		
+		public void EndUndoGroup()
+		{
+			if (undoGroupDepth == 0)
+				throw new InvalidOperationException("There are no open undo groups");
+			undoGroupDepth--;
+			if (undoGroupDepth == 0 && actionCountInUndoGroup > 1) {
+				undostack.Push(new UndoQueue(undostack, actionCountInUndoGroup));
+			}
 		}
 		
 		/// <summary>
@@ -84,6 +105,9 @@ namespace ICSharpCode.TextEditor.Undo
 		/// </summary>
 		public void Undo()
 		{
+			if (undoGroupDepth != 0) {
+				throw new InvalidOperationException("cannot perform Undo/Redo while undo group is open");
+			}
 			if (undostack.Count > 0) {
 				IUndoableOperation uedit = (IUndoableOperation)undostack.Pop();
 				redostack.Push(uedit);
@@ -97,6 +121,9 @@ namespace ICSharpCode.TextEditor.Undo
 		/// </summary>
 		public void Redo()
 		{
+			if (undoGroupDepth != 0) {
+				throw new InvalidOperationException("cannot perform Undo/Redo while undo group is open");
+			}
 			if (redostack.Count > 0) {
 				IUndoableOperation uedit = (IUndoableOperation)redostack.Pop();
 				undostack.Push(uedit);
@@ -116,11 +143,14 @@ namespace ICSharpCode.TextEditor.Undo
 			}
 			
 			if (AcceptChanges) {
+				StartUndoGroup();
 				undostack.Push(operation);
+				actionCountInUndoGroup++;
 				if (TextEditorControl != null) {
 					undostack.Push(new UndoableSetCaretPosition(this, TextEditorControl.ActiveTextAreaControl.Caret.Position));
-					CombineLast(2);
+					actionCountInUndoGroup++;
 				}
+				EndUndoGroup();
 				ClearRedoStack();
 			}
 		}
@@ -140,6 +170,7 @@ namespace ICSharpCode.TextEditor.Undo
 		{
 			undostack.Clear();
 			redostack.Clear();
+			actionCountInUndoGroup = 0;
 		}
 		
 		/// <summary>

@@ -20,6 +20,7 @@ namespace ICSharpCode.TextEditor.Actions
 		{
 			this.textArea = textArea;
 			textArea.BeginUpdate();
+			textArea.Document.UndoStack.StartUndoGroup();
 			if (textArea.SelectionManager.HasSomethingSelected) {
 				foreach (ISelection selection in textArea.SelectionManager.SelectionCollection) {
 					Convert(textArea.Document, selection.StartPosition.Y, selection.EndPosition.Y);
@@ -27,6 +28,7 @@ namespace ICSharpCode.TextEditor.Actions
 			} else {
 				Convert(textArea.Document, 0, textArea.Document.TotalNumberOfLines - 1);
 			}
+			textArea.Document.UndoStack.EndUndoGroup();
 			textArea.Caret.ValidateCaretPos();
 			textArea.EndUpdate();
 			textArea.Refresh();
@@ -59,7 +61,6 @@ namespace ICSharpCode.TextEditor.Actions
 	{
 		protected override void Convert(IDocument document, int y1, int y2) 
 		{
-			int  redocounter = 0; // must count how many Delete operations occur
 			for (int i = y1; i < y2; ++i) {
 				LineSegment line = document.GetLineSegment(i);
 				int removeNumber = 0;
@@ -68,11 +69,7 @@ namespace ICSharpCode.TextEditor.Actions
 				}
 				if (removeNumber > 0) {
 					document.Remove(line.Offset, removeNumber);
-					++redocounter; // count deletes
 				}
-			}
-			if (redocounter > 0) {
-				document.UndoStack.CombineLast(redocounter); // redo the whole operation (not the single deletes)
 			}
 		}
 	}
@@ -81,7 +78,6 @@ namespace ICSharpCode.TextEditor.Actions
 	{
 		protected override void Convert(IDocument document, int y1, int y2) 
 		{
-			int  redocounter = 0; // must count how many Delete operations occur
 			for (int i = y2 - 1; i >= y1; --i) {
 				LineSegment line = document.GetLineSegment(i);
 				int removeNumber = 0;
@@ -90,11 +86,7 @@ namespace ICSharpCode.TextEditor.Actions
 				}
 				if (removeNumber > 0) {
 					document.Remove(line.Offset + line.Length - removeNumber, removeNumber);
-					++redocounter;         // count deletes
 				}
-			}
-			if (redocounter > 0) {
-				document.UndoStack.CombineLast(redocounter); // redo the whole operation (not the single deletes)
 			}
 		}
 	}
@@ -172,7 +164,6 @@ namespace ICSharpCode.TextEditor.Actions
 	{
 		protected override void Convert(IDocument document, int y1, int y2) 
 		{
-			int  redocounter = 0;
 			for (int i = y2; i >= y1; --i) {
 				LineSegment line = document.GetLineSegment(i);
 				
@@ -186,13 +177,8 @@ namespace ICSharpCode.TextEditor.Actions
 						string newLine = document.GetText(line.Offset,whiteSpace);
 						string newPrefix = newLine.Replace("\t",new string(' ', document.TextEditorProperties.TabIndent));
 						document.Replace(line.Offset,whiteSpace,newPrefix);
-						++redocounter;
 					}
 				}
-			}
-			
-			if (redocounter > 0) {
-				document.UndoStack.CombineLast(redocounter); // redo the whole operation (not the single deletes)
 			}
 		}
 	}
@@ -201,7 +187,6 @@ namespace ICSharpCode.TextEditor.Actions
 	{
 		protected override void Convert(IDocument document, int y1, int y2) 
 		{
-			int  redocounter = 0;
 			for (int i = y2; i >= y1; --i) {
 				LineSegment line = document.GetLineSegment(i);
 				if(line.Length > 0) {
@@ -210,12 +195,7 @@ namespace ICSharpCode.TextEditor.Actions
 					// didn't add up to a whole number of tabs
 					string newLine = TextUtilities.LeadingWhiteSpaceToTabs(document.GetText(line.Offset,line.Length), document.TextEditorProperties.TabIndent);
 					document.Replace(line.Offset,line.Length,newLine);
-					++redocounter;
 				}
-			}
-			
-			if (redocounter > 0) {
-				document.UndoStack.CombineLast(redocounter); // redo the whole operation (not the single deletes)
 			}
 		}
 	}

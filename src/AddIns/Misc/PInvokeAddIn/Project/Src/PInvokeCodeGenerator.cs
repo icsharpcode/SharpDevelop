@@ -18,8 +18,6 @@ namespace ICSharpCode.PInvokeAddIn
 	/// </summary>
 	public class PInvokeCodeGenerator
 	{
-		int numOperations;
-		
 		public PInvokeCodeGenerator()
 		{
 		}
@@ -31,13 +29,13 @@ namespace ICSharpCode.PInvokeAddIn
 		/// <param name="signature">A PInvoke signature string.</param>
 		public void Generate(TextArea textArea, string signature)
 		{
-			numOperations = 0;
 			IndentStyle oldIndentStyle = textArea.TextEditorProperties.IndentStyle;
 			bool oldEnableEndConstructs = PropertyService.Get("VBBinding.TextEditor.EnableEndConstructs", true);
 
 			try {
 
 				textArea.BeginUpdate();
+				textArea.Document.UndoStack.StartUndoGroup();
 				textArea.TextEditorProperties.IndentStyle = IndentStyle.Smart;
 				PropertyService.Set("VBBinding.TextEditor.EnableEndConstructs", false);
 
@@ -46,7 +44,6 @@ namespace ICSharpCode.PInvokeAddIn
 				for (int i = 0; i < lines.Length; ++i) {
 					
 					textArea.InsertString(lines[i]);
-					++numOperations;
 					
 					// Insert new line if not the last line.
 					if ( i < (lines.Length - 1))
@@ -55,11 +52,8 @@ namespace ICSharpCode.PInvokeAddIn
 					}
 				}
 				
-				if (numOperations > 0) {
-					textArea.Document.UndoStack.CombineLast(numOperations);
-				}
-				
 			} finally {
+				textArea.Document.UndoStack.EndUndoGroup();
 				textArea.TextEditorProperties.IndentStyle = oldIndentStyle;
 				PropertyService.Set("VBBinding.TextEditor.EnableEndConstructs", oldEnableEndConstructs);
 				textArea.EndUpdate();
@@ -72,14 +66,12 @@ namespace ICSharpCode.PInvokeAddIn
 		{
 			IndentLine(textArea);
 			new Return().Execute(textArea);
-			++numOperations;
 		}
 		
 		void IndentLine(TextArea textArea)
 		{
 			int delta = textArea.Document.FormattingStrategy.IndentLine(textArea, textArea.Document.GetLineNumberForOffset(textArea.Caret.Offset));
 			if (delta != 0) {
-				++numOperations;
 				LineSegment caretLine = textArea.Document.GetLineSegmentForOffset(textArea.Caret.Offset);
 				textArea.Caret.Position = textArea.Document.OffsetToPosition(Math.Min(textArea.Caret.Offset + delta, caretLine.Offset + caretLine.Length));
 			}

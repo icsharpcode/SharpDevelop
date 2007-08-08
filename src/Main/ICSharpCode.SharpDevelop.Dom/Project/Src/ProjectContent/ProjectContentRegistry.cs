@@ -288,7 +288,16 @@ namespace ICSharpCode.SharpDevelop.Dom
 			} else {
 				// find real file name for cecil:
 				if (File.Exists(itemFileName)) {
-					pc = CecilReader.LoadAssembly(itemFileName, this);
+					if (persistence != null) {
+						pc = persistence.LoadProjectContentByAssemblyName(itemFileName);
+					}
+					if (pc == null) {
+						pc = CecilReader.LoadAssembly(itemFileName, this);
+						
+						if (persistence != null) {
+							persistence.SaveProjectContent(pc);
+						}
+					}
 				} else {
 					DomAssemblyName asmName = GacInterop.FindBestMatchingAssemblyName(itemInclude);
 					if (persistence != null && asmName != null) {
