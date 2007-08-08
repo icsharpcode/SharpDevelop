@@ -1654,6 +1654,10 @@
 		                insertafter = "Browser"
 		                title = "Text editor"
 		                class = "ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.TextEditorDisplayBinding" />
+		<DisplayBinding id    = "ShellExecute"
+		                insertafter = "Text"
+		                title = "Use the default Windows application for this file"
+		                class = "ICSharpCode.SharpDevelop.ShellExecuteDisplayBinding" />
 	</Path>
 	
 	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/ClassMemberContextMenu">

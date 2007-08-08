@@ -180,16 +180,11 @@ namespace NRefactoryToBooConverter
 			return null;
 		}
 		
-		// Some classes are handled by their parent (NamedArgumentExpression by Attribute etc.)
+		// Some classes are handled by their parent (TemplateDefinition by TypeDeclaration/MethodDeclaration etc.)
 		// so we don't need to implement Visit for them.
 		public object VisitTemplateDefinition(TemplateDefinition templateDefinition, object data)
 		{
 			throw new ApplicationException("Visited TemplateDefinition.");
-		}
-		
-		public object VisitNamedArgumentExpression(NamedArgumentExpression namedArgumentExpression, object data)
-		{
-			throw new ApplicationException("Visited NamedArgumentExpression.");
 		}
 		
 		public object VisitInterfaceImplementation(InterfaceImplementation interfaceImplementation, object data)

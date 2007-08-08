@@ -122,6 +122,12 @@ namespace NRefactoryToBooConverter
 			return null;
 		}
 		
+		public object VisitNamedArgumentExpression(NamedArgumentExpression namedArgumentExpression, object data)
+		{
+			AddError(namedArgumentExpression, "Named arguments are not supported in boo. (argument name was " + namedArgumentExpression.Name + ")");
+			return namedArgumentExpression.Expression.AcceptVisitor(this, data);
+		}
+		
 		public object VisitIdentifierExpression(IdentifierExpression identifierExpression, object data)
 		{
 			return new B.ReferenceExpression(GetLexicalInfo(identifierExpression), identifierExpression.Identifier);
