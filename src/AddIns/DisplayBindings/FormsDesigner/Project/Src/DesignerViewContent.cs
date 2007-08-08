@@ -151,6 +151,8 @@ namespace ICSharpCode.FormsDesigner
 				ShowTabOrder();
 			}
 			
+			UpdatePropertyPad();
+			
 			LoggingService.Info("Form Designer: END INITIALIZE");
 		}
 		
@@ -383,7 +385,7 @@ namespace ICSharpCode.FormsDesigner
 		
 		protected void UpdatePropertyPad()
 		{
-			if (IsFormsDesignerVisible && Host != null) {
+			if (Host != null) {
 				propertyContainer.Host = Host;
 				propertyContainer.SelectableObjects = Host.Container.Components;
 				ISelectionService selectionService = (ISelectionService)Host.GetService(typeof(ISelectionService));
@@ -392,8 +394,6 @@ namespace ICSharpCode.FormsDesigner
 				}
 			}
 		}
-		
-		public bool IsFormsDesignerVisible = false;
 		
 		#region IUndoHandler implementation
 		public bool EnableUndo {

@@ -77,11 +77,7 @@ namespace ICSharpCode.FormsDesigner
 			
 			FormsDesignerViewContent formDesigner = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ActiveViewContent as FormsDesignerViewContent;
 			
-			if (formDesigner == null) {
-				return false;
-			}
-			
-			if (!formDesigner.IsFormsDesignerVisible) {
+			if (formDesigner == null || formDesigner.Host == null) {
 				return false;
 			}
 			

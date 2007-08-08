@@ -69,7 +69,7 @@ namespace ICSharpCode.WixBinding
 		public void OpenDialog(string id)
 		{
 			JumpToDialogElement(id);
-			if (base.IsFormsDesignerVisible) {
+			if (base.Host != null) {
 				// Reload so the correct dialog is displayed.
 				base.SaveToPrimary();
 				DialogId = id;

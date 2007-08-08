@@ -39,9 +39,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// Creates a new PropertyContainer instance.
 		/// This has the side effect of constructing the PropertyPad if necessary.
 		/// </summary>
-		public PropertyContainer()
+		public PropertyContainer() : this(true) { }
+		
+		internal PropertyContainer(bool createPadOnConstruction)
 		{
-			if (WorkbenchSingleton.Workbench != null) {
+			if (createPadOnConstruction && WorkbenchSingleton.Workbench != null) {
 				PadDescriptor desc = WorkbenchSingleton.Workbench.GetPad(typeof(PropertyPad));
 				if (desc != null) desc.CreatePad();
 			}

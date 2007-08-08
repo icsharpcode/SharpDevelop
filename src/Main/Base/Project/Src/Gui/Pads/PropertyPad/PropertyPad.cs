@@ -21,6 +21,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 	{
 		static PropertyPad instance;
 		
+		// an empty container used to reset the property grid
+		readonly PropertyContainer emptyContainer = new PropertyContainer(false);
+		
 		PropertyContainer activeContainer;
 		
 		void SetActiveContainer(PropertyContainer pc)
@@ -28,7 +31,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (activeContainer == pc)
 				return;
 			if (pc == null)
-				return;
+				pc = emptyContainer;
 			activeContainer = pc;
 			
 			UpdateHostIfActive(pc);
@@ -120,15 +123,29 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
+		IHasPropertyContainer previousContent;
+		
 		void WorkbenchActiveContentChanged(object sender, EventArgs e)
 		{
 			IHasPropertyContainer c = WorkbenchSingleton.Workbench.ActiveContent as IHasPropertyContainer;
 			if (c == null) {
-				c = WorkbenchSingleton.Workbench.ActiveViewContent as IHasPropertyContainer;
+				if (previousContent == null) {
+					c = WorkbenchSingleton.Workbench.ActiveViewContent as IHasPropertyContainer;
+				} else {
+					// if the previous content is no longer visible, we have to remove the active container
+					if (previousContent is IViewContent && previousContent != WorkbenchSingleton.Workbench.ActiveViewContent) {
+						c = null;
+					} else {
+						c = previousContent;
+					}
+				}
 			}
 			if (c != null) {
 				SetActiveContainer(c.PropertyContainer);
+			} else {
+				SetActiveContainer(null);
 			}
+			previousContent = c;
 		}
 		
 		public PropertyPad()
@@ -170,8 +187,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			LoggingService.Debug("PropertyPad created");
 			WorkbenchSingleton.Workbench.ActiveContentChanged += WorkbenchActiveContentChanged;
 			// it is possible that ActiveContent changes fires before ActiveViewContent.
-			// if we listen the new content is not a IHasPropertyContainer and we listen only to ActiveContentChanged,
-			// we might display the ToolsControl of a no longer active view content
+			// if the new content is not a IHasPropertyContainer and we listen only to ActiveContentChanged,
+			// we might display the PropertyPad of a no longer active view content
 			WorkbenchSingleton.Workbench.ActiveViewContentChanged += WorkbenchActiveContentChanged;
 			WorkbenchActiveContentChanged(null, null);
 		}
