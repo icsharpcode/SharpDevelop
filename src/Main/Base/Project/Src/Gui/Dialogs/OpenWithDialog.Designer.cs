@@ -99,6 +99,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.setAsDefaultButton.TabIndex = 4;
 			this.setAsDefaultButton.Text = "Set as Default";
 			this.setAsDefaultButton.UseVisualStyleBackColor = true;
+			this.setAsDefaultButton.Click += new System.EventHandler(this.SetAsDefaultButtonClick);
 			// 
 			// okButton
 			// 

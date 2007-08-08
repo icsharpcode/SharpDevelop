@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 
@@ -20,13 +21,16 @@ namespace ICSharpCode.SharpDevelop
 	{
 		const string displayBindingPath = "/SharpDevelop/Workbench/DisplayBindings";
 		
+		static Properties displayBindingServiceProperties;
+		
 		static List<DisplayBindingDescriptor> bindings;
 		static List<ExternalProcessDisplayBinding> externalProcessDisplayBindings = new List<ExternalProcessDisplayBinding>();
 		
 		internal static void InitializeService()
 		{
 			bindings = AddInTree.BuildItems<DisplayBindingDescriptor>("/SharpDevelop/Workbench/DisplayBindings", null, true);
-			foreach (ExternalProcessDisplayBinding binding in PropertyService.Get("OpenWithExternalProcesses", new ExternalProcessDisplayBinding[0])) {
+			displayBindingServiceProperties = PropertyService.Get("DisplayBindingService", new Properties());
+			foreach (ExternalProcessDisplayBinding binding in displayBindingServiceProperties.Get("ExternalProcesses", new ExternalProcessDisplayBinding[0])) {
 				if (binding != null) {
 					AddExternalProcessDisplayBindingInternal(binding);
 				}
@@ -44,7 +48,7 @@ namespace ICSharpCode.SharpDevelop
 		
 		static void SaveExternalProcessDisplayBindings()
 		{
-			PropertyService.Set("OpenWithExternalProcesses", externalProcessDisplayBindings.ToArray());
+			displayBindingServiceProperties.Set("ExternalProcesses", externalProcessDisplayBindings.ToArray());
 		}
 		
 		static DisplayBindingDescriptor AddExternalProcessDisplayBindingInternal(ExternalProcessDisplayBinding binding)
@@ -79,20 +83,44 @@ namespace ICSharpCode.SharpDevelop
 		/// </summary>
 		public static IDisplayBinding GetBindingPerFileName(string filename)
 		{
-			DisplayBindingDescriptor codon = GetCodonPerFileName(filename);
+			DisplayBindingDescriptor codon = GetDefaultCodonPerFileName(filename);
 			return codon == null ? null : codon.Binding;
 		}
 		
-		static DisplayBindingDescriptor GetCodonPerFileName(string filename)
+		/// <summary>
+		/// Gets the default primary display binding for the specified file name.
+		/// </summary>
+		public static DisplayBindingDescriptor GetDefaultCodonPerFileName(string filename)
 		{
-			foreach (DisplayBindingDescriptor binding in bindings) {
-				if (!binding.IsSecondary && binding.CanOpenFile(filename)) {
-					if (binding.Binding != null && binding.Binding.CanCreateContentForFile(filename)) {
-						return binding;
+			string defaultCommandID = displayBindingServiceProperties.Get("Default" + Path.GetExtension(filename).ToLowerInvariant()) as string;
+			if (!string.IsNullOrEmpty(defaultCommandID)) {
+				foreach (DisplayBindingDescriptor binding in bindings) {
+					if (binding.Id == defaultCommandID) {
+						if (IsPrimaryBindingValidForFileName(binding, filename)) {
+							return binding;
+						}
 					}
 				}
 			}
+			
+			foreach (DisplayBindingDescriptor binding in bindings) {
+				if (IsPrimaryBindingValidForFileName(binding, filename)) {
+					return binding;
+				}
+			}
 			return null;
+		}
+		
+		public static void SetDefaultCodon(string extension, DisplayBindingDescriptor bindingDescriptor)
+		{
+			if (bindingDescriptor == null)
+				throw new ArgumentNullException("bindingDescriptor");
+			if (extension == null)
+				throw new ArgumentNullException("extension");
+			if (!extension.StartsWith("."))
+				throw new ArgumentException("extension must start with '.'");
+			
+			displayBindingServiceProperties.Set("Default" + extension.ToLowerInvariant(), bindingDescriptor.Id);
 		}
 		
 		/// <summary>
@@ -102,13 +130,21 @@ namespace ICSharpCode.SharpDevelop
 		{
 			List<DisplayBindingDescriptor> list = new List<DisplayBindingDescriptor>();
 			foreach (DisplayBindingDescriptor binding in bindings) {
-				if (!binding.IsSecondary && binding.CanOpenFile(filename)) {
-					if (binding.Binding != null && binding.Binding.CanCreateContentForFile(filename)) {
-						list.Add(binding);
-					}
+				if (IsPrimaryBindingValidForFileName(binding, filename)) {
+					list.Add(binding);
 				}
 			}
 			return list;
+		}
+		
+		static bool IsPrimaryBindingValidForFileName(DisplayBindingDescriptor binding, string filename)
+		{
+			if (!binding.IsSecondary && binding.CanOpenFile(filename)) {
+				if (binding.Binding != null && binding.Binding.CanCreateContentForFile(filename)) {
+					return true;
+				}
+			}
+			return false;
 		}
 		
 		/// <summary>

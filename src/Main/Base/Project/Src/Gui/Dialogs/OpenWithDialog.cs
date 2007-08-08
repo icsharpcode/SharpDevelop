@@ -21,21 +21,27 @@ namespace ICSharpCode.SharpDevelop.Gui
 		sealed class ListEntry
 		{
 			internal readonly DisplayBindingDescriptor desc;
+			internal readonly bool IsDefault;
 			
-			public ListEntry(DisplayBindingDescriptor desc)
+			public ListEntry(DisplayBindingDescriptor desc, bool isDefault)
 			{
 				this.desc = desc;
+				this.IsDefault = isDefault;
 			}
 			
 			public override string ToString()
 			{
-				return StringParser.Parse(desc.Title);
+				if (IsDefault)
+					return StringParser.Parse(desc.Title) + " (Default)";
+				else
+					return StringParser.Parse(desc.Title);
 			}
 		}
 		
 		string fileExtension;
+		int defaultBindingIndex;
 		
-		public OpenWithDialog(ICollection<DisplayBindingDescriptor> displayBindings, string fileExtension)
+		public OpenWithDialog(IList<DisplayBindingDescriptor> displayBindings, int defaultBindingIndex, string fileExtension)
 		{
 			if (displayBindings == null)
 				throw new ArgumentNullException("list");
@@ -44,14 +50,15 @@ namespace ICSharpCode.SharpDevelop.Gui
 			InitializeComponent();
 			
 			this.fileExtension = fileExtension;
+			this.defaultBindingIndex = defaultBindingIndex;
 			if (string.IsNullOrEmpty(fileExtension))
 				addButton.Enabled = false;
 			
-			foreach (DisplayBindingDescriptor desc in displayBindings) {
-				programListBox.Items.Add(new ListEntry(desc));
+			for (int i = 0; i < displayBindings.Count; i++) {
+				programListBox.Items.Add(new ListEntry(displayBindings[i], i == defaultBindingIndex));
 			}
-			if (programListBox.Items.Count != 0) {
-				programListBox.SelectedIndex = 0;
+			if (defaultBindingIndex < programListBox.Items.Count) {
+				programListBox.SelectedIndex = defaultBindingIndex;
 			}
 		}
 		
@@ -78,7 +85,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 						Title = dlg.DisplayName,
 						Id = Guid.NewGuid().ToString()
 					};
-					programListBox.Items.Add(new ListEntry(DisplayBindingService.AddExternalProcessDisplayBinding(binding)));
+					programListBox.Items.Add(new ListEntry(DisplayBindingService.AddExternalProcessDisplayBinding(binding), false));
 				}
 			}
 		}
@@ -88,9 +95,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 			DisplayBindingDescriptor binding = SelectedBinding;
 			if (binding != null) {
 				okButton.Enabled = true;
+				setAsDefaultButton.Enabled = true;
 				removeButton.Enabled = binding.GetLoadedBinding() is ExternalProcessDisplayBinding;
 			} else {
 				okButton.Enabled = false;
+				setAsDefaultButton.Enabled = false;
 				removeButton.Enabled = false;
 			}
 		}
@@ -98,7 +107,23 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void RemoveButtonClick(object sender, EventArgs e)
 		{
 			DisplayBindingService.RemoveExternalProcessDisplayBinding((ExternalProcessDisplayBinding)SelectedBinding.GetLoadedBinding());
+			if (defaultBindingIndex == programListBox.SelectedIndex)
+				defaultBindingIndex = -1;
 			programListBox.Items.RemoveAt(programListBox.SelectedIndex);
+		}
+		
+		void SetAsDefaultButtonClick(object sender, EventArgs e)
+		{
+			if (defaultBindingIndex >= 0) {
+				programListBox.Items[defaultBindingIndex] = new ListEntry(
+					((ListEntry)programListBox.Items[defaultBindingIndex]).desc,
+					false);
+			}
+			defaultBindingIndex = programListBox.SelectedIndex;
+			programListBox.Items[defaultBindingIndex] = new ListEntry(
+				((ListEntry)programListBox.Items[defaultBindingIndex]).desc,
+				true);
+			DisplayBindingService.SetDefaultCodon(fileExtension, SelectedBinding);
 		}
 	}
 }
