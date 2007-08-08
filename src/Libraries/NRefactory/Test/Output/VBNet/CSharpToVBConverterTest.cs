@@ -479,5 +479,24 @@ End Class
 			TestStatement("string[,] i = new string[6, 6];",
 			              "Dim i As String(,) = New String(5, 5) {}");
 		}
+		
+		[Test]
+		public void InlineAssignment()
+		{
+			TestProgram(@"public class Convert { void Run(string s) { char c; if ((c = s[0]) == '\n') { c = ' '; } } }",
+			            @"Public Class Convert
+	Private Sub Run(ByVal s As String)
+		Dim c As Char
+		If (InlineAssignHelper(c, s(0))) = Chr(10) Then
+			c = "" ""C
+		End If
+	End Sub
+	Private Shared Function InlineAssignHelper(Of T)(ByRef target As T, ByVal value As T) As T
+		target = value
+		Return value
+	End Function
+End Class
+");
+		}
 	}
 }

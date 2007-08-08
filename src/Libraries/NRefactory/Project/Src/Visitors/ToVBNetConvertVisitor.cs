@@ -189,7 +189,44 @@ namespace ICSharpCode.NRefactory.Visitors
 					}
 				}
 			}
-			return base.VisitAssignmentExpression(assignmentExpression, data);
+			base.VisitAssignmentExpression(assignmentExpression, data);
+			if (assignmentExpression.Op == AssignmentOperatorType.Assign && !(assignmentExpression.Parent is ExpressionStatement)) {
+				AddInlineAssignHelper();
+				ReplaceCurrentNode(
+					new InvocationExpression(
+						new IdentifierExpression("InlineAssignHelper"),
+						new List<Expression> { assignmentExpression.Left, assignmentExpression.Right }
+					));
+			}
+			return null;
+		}
+		
+		void AddInlineAssignHelper()
+		{
+			MethodDeclaration method;
+			foreach (INode node in currentType.Children) {
+				method = node as MethodDeclaration;
+				if (method != null && method.Name == "InlineAssignHelper") {
+					// inline assign helper already exists
+					return;
+				}
+			}
+			
+			method = new MethodDeclaration(
+				"InlineAssignHelper", Modifiers.Private | Modifiers.Static,
+				new TypeReference("T"),
+				new List<ParameterDeclarationExpression> {
+					new ParameterDeclarationExpression(new TypeReference("T"), "target", ParameterModifiers.Ref),
+					new ParameterDeclarationExpression(new TypeReference("T"), "value")
+				}, null);
+			method.Templates.Add(new TemplateDefinition("T", null));
+			method.Body = new BlockStatement();
+			method.Body.AddChild(new ExpressionStatement(new AssignmentExpression(
+				new IdentifierExpression("target"), 
+				AssignmentOperatorType.Assign, 
+				new IdentifierExpression("value"))));
+			method.Body.AddChild(new ReturnStatement(new IdentifierExpression("value")));
+			currentType.AddChild(method);
 		}
 		
 		bool IsClassType(ClassType c)
