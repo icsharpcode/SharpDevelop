@@ -105,7 +105,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 				Dictionary<string, IClass> oldList = classLists[0];
 				d = new Dictionary<string, IClass>(oldList.Count, language.NameComparer);
 				foreach (KeyValuePair<string, IClass> pair in oldList) {
-					d.Add(pair.Key, pair.Value);
+					// don't use d.Add(), the new name language might treat two names as equal
+					// that were unequal in the old dictionary
+					d[pair.Key] = pair.Value;
 				}
 			} else {
 				d = new Dictionary<string, IClass>(language.NameComparer);

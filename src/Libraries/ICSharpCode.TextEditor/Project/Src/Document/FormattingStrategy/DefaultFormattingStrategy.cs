@@ -103,9 +103,11 @@ namespace ICSharpCode.TextEditor.Document
 				case IndentStyle.Smart:
 					result = SmartIndentLine(textArea, line);
 					break;
+				default:
+					throw new NotSupportedException("Unsupported value for IndentStyle: " + textArea.Document.TextEditorProperties.IndentStyle);
 			}
 			textArea.Document.UndoStack.EndUndoGroup();
-			return 0;
+			return result;
 		}
 		
 		/// <summary>

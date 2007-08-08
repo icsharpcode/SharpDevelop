@@ -360,7 +360,7 @@ namespace VBNetBinding.FormattingStrategy
 								}
 								
 								textArea.Document.Replace(curLine.Offset, curLine.Length, indentation + curLineText.Trim());
-								//return indentation.Length;
+								textArea.Caret.Column = indentation.Length;
 								return;
 							}
 						}
@@ -376,15 +376,14 @@ namespace VBNetBinding.FormattingStrategy
 							
 							if (IsElseConstruct(lineAboveText))
 								SmartIndentLine(textArea, lineNr - 1);
-							int result = SmartIndentLine(textArea, lineNr) + 1;
+							textArea.Caret.Column = SmartIndentLine(textArea, lineNr) + 1;
 						} else {
 							textArea.Document.Insert(lineAbove.Offset + lineAbove.Length,
 							                         "\"");
 							if (IsElseConstruct(lineAboveText))
 								SmartIndentLine(textArea, lineNr - 1);
-							int result = SmartIndentLine(textArea, lineNr);
+							textArea.Caret.Column = SmartIndentLine(textArea, lineNr);
 						}
-						//return result;
 					}
 					else
 					{
@@ -396,7 +395,7 @@ namespace VBNetBinding.FormattingStrategy
 						}
 						if (IsElseConstruct(lineAboveText))
 							SmartIndentLine(textArea, lineNr - 1);
-						//return indent.Length;
+						textArea.Caret.Column = indent.Length;
 					}
 				}
 				else if(ch == '>')

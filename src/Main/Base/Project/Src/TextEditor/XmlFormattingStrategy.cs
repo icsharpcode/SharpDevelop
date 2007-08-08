@@ -69,7 +69,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor
 				Debug.Assert(false, e.ToString());
 			}
 			if (charTyped == '\n') {
-				IndentLine(textArea, lineNr);
+				textArea.Caret.Column = IndentLine(textArea, lineNr);
 			}
 			textArea.Document.UndoStack.EndUndoGroup();
 		}
