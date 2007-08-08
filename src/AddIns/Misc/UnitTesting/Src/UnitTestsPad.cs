@@ -314,7 +314,7 @@ namespace ICSharpCode.UnitTesting
 		{
 			ReferenceProjectItem referenceProjectItem = projectItem as ReferenceProjectItem;
 			if (referenceProjectItem != null) {
-				return TestProject.IsTestFrameworkReference(referenceProjectItem.Include);
+				return TestProject.IsTestFrameworkReference(referenceProjectItem);
 			}
 			return false;
 		}

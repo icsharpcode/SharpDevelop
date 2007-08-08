@@ -50,7 +50,7 @@ namespace ICSharpCode.UnitTesting
 				foreach (ProjectItem projectItem in project.Items) {
 					ReferenceProjectItem referenceProjectItem = projectItem as ReferenceProjectItem;
 					if (referenceProjectItem != null) {
-						if (IsTestFrameworkReference(referenceProjectItem.Name)) {
+						if (IsTestFrameworkReference(referenceProjectItem)) {
 							return true;
 						}
 					}
@@ -61,13 +61,13 @@ namespace ICSharpCode.UnitTesting
 		
 		/// <summary>
 		/// Determines whether the specified reference is a reference to
-		/// a test framework. Currently only references to the 
+		/// a test framework. Currently only references to the
 		/// NUnit.Framework return true.
 		/// </summary>
-		public static bool IsTestFrameworkReference(string referenceName)
+		public static bool IsTestFrameworkReference(ReferenceProjectItem referenceProjectItem)
 		{
-			if (referenceName != null) {
-				return referenceName.Equals("NUnit.Framework", StringComparison.InvariantCultureIgnoreCase);
+			if (referenceProjectItem != null) {
+				return string.Equals(referenceProjectItem.ShortName, "NUnit.Framework", StringComparison.InvariantCultureIgnoreCase);
 			}
 			return false;
 		}
@@ -120,10 +120,10 @@ namespace ICSharpCode.UnitTesting
 		}
 		
 		/// <summary>
-		/// Gets the distinct root namespaces for all this project.  
+		/// Gets the distinct root namespaces for all this project.
 		/// </summary>
 		/// <remarks>
-		/// If one of the namespaces is 'ICSharpCode.XmlEditor' then this 
+		/// If one of the namespaces is 'ICSharpCode.XmlEditor' then this
 		/// method will return 'ICSharpCode' as one of the root namespaces.
 		/// </remarks>
 		public IList<string> RootNamespaces {
@@ -152,12 +152,12 @@ namespace ICSharpCode.UnitTesting
 		}
 		
 		/// <summary>
-		/// Updates the classes and methods based on the new parse 
+		/// Updates the classes and methods based on the new parse
 		/// information.
 		/// </summary>
-		/// <param name="oldUnit">The old compiliation unit 
+		/// <param name="oldUnit">The old compiliation unit
 		/// (ParseInformationEventArgs.ParseInformation.BestCompilationUnit as ICompilationUnit)</param>
-		/// <param name="newUnit">The new compilation unit 
+		/// <param name="newUnit">The new compilation unit
 		/// (ParseInformationEventArgs.CompilationUnit).</param>
 		public void UpdateParseInfo(ICompilationUnit oldUnit, ICompilationUnit newUnit)
 		{
@@ -234,8 +234,8 @@ namespace ICSharpCode.UnitTesting
 					TestClasses.Remove(c.FullyQualifiedName);
 				}
 			} else {
-				// TestFixture attribute may have been recently added to 
-				// this class so call AddNewTestClass. No need to 
+				// TestFixture attribute may have been recently added to
+				// this class so call AddNewTestClass. No need to
 				// check if the class is actually a test class since
 				// AddNewTestClass does this anyway.
 				AddNewTestClass(c);
@@ -253,10 +253,10 @@ namespace ICSharpCode.UnitTesting
 				}
 			}
 		}
-			
+		
 		void GetRootNamespaces()
 		{
-			rootNamespaces = new List<string>();		
+			rootNamespaces = new List<string>();
 			foreach (TestClass c in TestClasses) {
 				string rootNamespace = c.RootNamespace;
 				if (rootNamespace.Length > 0 && !rootNamespaces.Contains(rootNamespace)) {
