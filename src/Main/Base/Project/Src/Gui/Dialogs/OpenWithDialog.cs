@@ -33,13 +33,19 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		public OpenWithDialog(ICollection<DisplayBindingDescriptor> displayBindings)
+		string fileExtension;
+		
+		public OpenWithDialog(ICollection<DisplayBindingDescriptor> displayBindings, string fileExtension)
 		{
 			if (displayBindings == null)
 				throw new ArgumentNullException("list");
 			
 			// The InitializeComponent() call is required for Windows Forms designer support.
 			InitializeComponent();
+			
+			this.fileExtension = fileExtension;
+			if (string.IsNullOrEmpty(fileExtension))
+				addButton.Enabled = false;
 			
 			foreach (DisplayBindingDescriptor desc in displayBindings) {
 				programListBox.Items.Add(new ListEntry(desc));
@@ -60,6 +66,39 @@ namespace ICSharpCode.SharpDevelop.Gui
 				else
 					return null;
 			}
+		}
+		
+		void AddButtonClick(object sender, EventArgs e)
+		{
+			using (AddOpenWithEntryDialog dlg = new AddOpenWithEntryDialog()) {
+				if (dlg.ShowDialog(this) == DialogResult.OK) {
+					ExternalProcessDisplayBinding binding = new ExternalProcessDisplayBinding {
+						FileExtension = fileExtension,
+						CommandLine = dlg.ProgramName,
+						Title = dlg.DisplayName,
+						Id = Guid.NewGuid().ToString()
+					};
+					programListBox.Items.Add(new ListEntry(DisplayBindingService.AddExternalProcessDisplayBinding(binding)));
+				}
+			}
+		}
+		
+		void ProgramListBoxSelectedIndexChanged(object sender, EventArgs e)
+		{
+			DisplayBindingDescriptor binding = SelectedBinding;
+			if (binding != null) {
+				okButton.Enabled = true;
+				removeButton.Enabled = binding.GetLoadedBinding() is ExternalProcessDisplayBinding;
+			} else {
+				okButton.Enabled = false;
+				removeButton.Enabled = false;
+			}
+		}
+		
+		void RemoveButtonClick(object sender, EventArgs e)
+		{
+			DisplayBindingService.RemoveExternalProcessDisplayBinding((ExternalProcessDisplayBinding)SelectedBinding.GetLoadedBinding());
+			programListBox.Items.RemoveAt(programListBox.SelectedIndex);
 		}
 	}
 }

@@ -18,9 +18,61 @@ namespace ICSharpCode.SharpDevelop
 	/// </summary>
 	internal static class DisplayBindingService
 	{
-		readonly static string displayBindingPath = "/SharpDevelop/Workbench/DisplayBindings";
+		const string displayBindingPath = "/SharpDevelop/Workbench/DisplayBindings";
 		
-		static DisplayBindingDescriptor[] bindings = null;
+		static List<DisplayBindingDescriptor> bindings;
+		static List<ExternalProcessDisplayBinding> externalProcessDisplayBindings = new List<ExternalProcessDisplayBinding>();
+		
+		internal static void InitializeService()
+		{
+			bindings = AddInTree.BuildItems<DisplayBindingDescriptor>("/SharpDevelop/Workbench/DisplayBindings", null, true);
+			foreach (ExternalProcessDisplayBinding binding in PropertyService.Get("OpenWithExternalProcesses", new ExternalProcessDisplayBinding[0])) {
+				if (binding != null) {
+					AddExternalProcessDisplayBindingInternal(binding);
+				}
+			}
+		}
+		
+		public static DisplayBindingDescriptor AddExternalProcessDisplayBinding(ExternalProcessDisplayBinding binding)
+		{
+			if (binding == null)
+				throw new ArgumentNullException("binding");
+			DisplayBindingDescriptor descriptor = AddExternalProcessDisplayBindingInternal(binding);
+			SaveExternalProcessDisplayBindings();
+			return descriptor;
+		}
+		
+		static void SaveExternalProcessDisplayBindings()
+		{
+			PropertyService.Set("OpenWithExternalProcesses", externalProcessDisplayBindings.ToArray());
+		}
+		
+		static DisplayBindingDescriptor AddExternalProcessDisplayBindingInternal(ExternalProcessDisplayBinding binding)
+		{
+			externalProcessDisplayBindings.Add(binding);
+			DisplayBindingDescriptor descriptor = new DisplayBindingDescriptor(binding) {
+				Id = binding.Id,
+				Title = binding.Title
+			};
+			bindings.Add(descriptor);
+			return descriptor;
+		}
+		
+		public static void RemoveExternalProcessDisplayBinding(ExternalProcessDisplayBinding binding)
+		{
+			if (binding == null)
+				throw new ArgumentNullException("binding");
+			if (!externalProcessDisplayBindings.Remove(binding))
+				throw new ArgumentException("binding was not added");
+			SaveExternalProcessDisplayBindings();
+			for (int i = 0; i < bindings.Count; i++) {
+				if (bindings[i].GetLoadedBinding() == binding) {
+					bindings.RemoveAt(i);
+					return;
+				}
+			}
+			throw new InvalidOperationException("did not find binding descriptor even though binding was registered");
+		}
 		
 		/// <summary>
 		/// Gets the primary display binding for the specified file name.
@@ -34,7 +86,7 @@ namespace ICSharpCode.SharpDevelop
 		static DisplayBindingDescriptor GetCodonPerFileName(string filename)
 		{
 			foreach (DisplayBindingDescriptor binding in bindings) {
-				if (!binding.IsSecondary && binding.CanAttachToFile(filename)) {
+				if (!binding.IsSecondary && binding.CanOpenFile(filename)) {
 					if (binding.Binding != null && binding.Binding.CanCreateContentForFile(filename)) {
 						return binding;
 					}
@@ -50,7 +102,7 @@ namespace ICSharpCode.SharpDevelop
 		{
 			List<DisplayBindingDescriptor> list = new List<DisplayBindingDescriptor>();
 			foreach (DisplayBindingDescriptor binding in bindings) {
-				if (!binding.IsSecondary && binding.CanAttachToFile(filename)) {
+				if (!binding.IsSecondary && binding.CanOpenFile(filename)) {
 					if (binding.Binding != null && binding.Binding.CanCreateContentForFile(filename)) {
 						list.Add(binding);
 					}
@@ -67,7 +119,7 @@ namespace ICSharpCode.SharpDevelop
 		public static void AttachSubWindows(IViewContent viewContent, bool isReattaching)
 		{
 			foreach (DisplayBindingDescriptor binding in bindings) {
-				if (binding.IsSecondary && binding.CanAttachToFile(viewContent.PrimaryFileName)) {
+				if (binding.IsSecondary && binding.CanOpenFile(viewContent.PrimaryFileName)) {
 					ISecondaryDisplayBinding displayBinding = binding.SecondaryBinding;
 					if (displayBinding != null
 					    && (!isReattaching || displayBinding.ReattachWhenParserServiceIsReady)
@@ -82,11 +134,6 @@ namespace ICSharpCode.SharpDevelop
 					}
 				}
 			}
-		}
-		
-		static DisplayBindingService()
-		{
-			bindings = (DisplayBindingDescriptor[])(AddInTree.GetTreeNode(displayBindingPath).BuildChildItems(null)).ToArray(typeof(DisplayBindingDescriptor));
 		}
 	}
 }

@@ -23,7 +23,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 	
 	/// <summary>
 	/// A pad that shows a single child control determined by the document that currently has the focus.
-	/// 
 	/// </summary>
 	public class ToolsPad : AbstractPadContent
 	{
@@ -44,10 +43,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			panel.Controls.Add(noToolsAvailable);
 			child = noToolsAvailable;
 			
-			WorkbenchSingleton.Workbench.ActiveContentChanged += WorkbenchActiveContentChanged;
-			// it is possible that ActiveContent changes fires before ActiveViewContent.
-			// if we listen the new content is not a IToolsHost and we listen only to ActiveContentChanged,
-			// we might display the ToolsControl of a no longer active view content
 			WorkbenchSingleton.Workbench.ActiveViewContentChanged += WorkbenchActiveContentChanged;
 			WorkbenchActiveContentChanged(null, null);
 		}
@@ -64,10 +59,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void WorkbenchActiveContentChanged(object sender, EventArgs e)
 		{
-			IToolsHost th = WorkbenchSingleton.Workbench.ActiveContent as IToolsHost;
-			if (th == null) {
-				th = WorkbenchSingleton.Workbench.ActiveViewContent as IToolsHost;
-			}
+			IToolsHost th = WorkbenchSingleton.Workbench.ActiveViewContent as IToolsHost;
 			if (th != null) {
 				SetChild(th.ToolsControl ?? noToolsAvailable);
 			} else {

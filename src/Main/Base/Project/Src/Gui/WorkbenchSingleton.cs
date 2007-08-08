@@ -75,6 +75,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		public static void InitializeWorkbench()
 		{
+			DisplayBindingService.InitializeService();
 			LayoutConfiguration.LoadLayoutConfiguration();
 			FileService.InitializeService();
 			StatusBarService.Initialize();

@@ -96,11 +96,13 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			selectEvent(this, EventArgs.Empty);
 		}
 		
+		internal const string ExecutableFilesFilter = "${res:SharpDevelop.FileFilter.ExecutableFiles}|*.exe;*.com;*.pif;*.bat;*.cmd|${res:SharpDevelop.FileFilter.AllFiles}|*.*";
+		
 		void browseEvent(object sender, EventArgs e)
 		{
 			using (OpenFileDialog fdiag  = new OpenFileDialog()) {
 				fdiag.CheckFileExists = true;
-				fdiag.Filter = StringParser.Parse("${res:SharpDevelop.FileFilter.ExecutableFiles}|*.exe;*.com;*.pif;*.bat;*.cmd|${res:SharpDevelop.FileFilter.AllFiles}|*.*");
+				fdiag.Filter = StringParser.Parse(ExecutableFilesFilter);
 				
 				if (fdiag.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) == DialogResult.OK) {
 					ControlDictionary["commandTextBox"].Text = fdiag.FileName;

@@ -59,6 +59,10 @@
     <Compile Include="Src\Gui\AbstractViewContentWithoutFile.cs" />
     <Compile Include="Src\Gui\BrowserDisplayBinding\BrowserDisplayBinding.cs" />
     <Compile Include="Src\Gui\Components\SideBar\TextEditorSideBar.cs" />
+    <Compile Include="Src\Gui\Dialogs\AddOpenWithEntryDialog.cs" />
+    <Compile Include="Src\Gui\Dialogs\AddOpenWithEntryDialog.Designer.cs">
+      <DependentUpon>AddOpenWithEntryDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="Src\Gui\Dialogs\OpenWithDialog.cs" />
     <Compile Include="Src\Gui\Dialogs\OpenWithDialog.Designer.cs">
       <DependentUpon>OpenWithDialog.cs</DependentUpon>
@@ -83,6 +87,7 @@
     <Compile Include="Src\Project\ProjectPropertyChangedEventArgs.cs" />
     <Compile Include="Src\Services\Debugger\BreakpointBookmark.cs" />
     <Compile Include="Src\Services\Debugger\BreakpointBookmarkEventArgs.cs" />
+    <Compile Include="Src\Services\DisplayBinding\ExternalProcessDisplayBinding.cs" />
     <Compile Include="Src\Services\DisplayBinding\ISecondaryDisplayBinding.cs" />
     <Compile Include="Src\Services\File\OpenedFile.cs" />
     <Compile Include="Src\Services\File\RecentOpen.cs" />
@@ -691,9 +696,6 @@
     <Compile Include="Src\TextEditor\Gui\Editor\IncrementalSearch.cs" />
     <EmbeddedResource Include="Resources\IncrementalSearchCursor.cur" />
     <EmbeddedResource Include="Resources\ReverseIncrementalSearchCursor.cur" />
-    <EmbeddedResource Include="Src\Gui\Dialogs\OpenWithDialog.resx">
-      <DependentUpon>OpenWithDialog.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Src\TextEditor\SearchAndReplace\Gui\AsynchronousWaitDialog.resx">
       <DependentUpon>AsynchronousWaitDialog.cs</DependentUpon>
     </EmbeddedResource>

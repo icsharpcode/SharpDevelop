@@ -64,17 +64,18 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.programListBox.Name = "programListBox";
 			this.programListBox.Size = new System.Drawing.Size(268, 156);
 			this.programListBox.TabIndex = 1;
+			this.programListBox.SelectedIndexChanged += new System.EventHandler(this.ProgramListBoxSelectedIndexChanged);
 			// 
 			// addButton
 			// 
 			this.addButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.addButton.Enabled = false;
 			this.addButton.Location = new System.Drawing.Point(286, 35);
 			this.addButton.Name = "addButton";
 			this.addButton.Size = new System.Drawing.Size(98, 23);
 			this.addButton.TabIndex = 2;
 			this.addButton.Text = "Add...";
 			this.addButton.UseVisualStyleBackColor = true;
+			this.addButton.Click += new System.EventHandler(this.AddButtonClick);
 			// 
 			// removeButton
 			// 
@@ -86,6 +87,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.removeButton.TabIndex = 3;
 			this.removeButton.Text = "Remove";
 			this.removeButton.UseVisualStyleBackColor = true;
+			this.removeButton.Click += new System.EventHandler(this.RemoveButtonClick);
 			// 
 			// setAsDefaultButton
 			// 
@@ -102,6 +104,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			// 
 			this.okButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.okButton.DialogResult = System.Windows.Forms.DialogResult.OK;
+			this.okButton.Enabled = false;
 			this.okButton.Location = new System.Drawing.Point(228, 204);
 			this.okButton.Name = "okButton";
 			this.okButton.Size = new System.Drawing.Size(75, 23);

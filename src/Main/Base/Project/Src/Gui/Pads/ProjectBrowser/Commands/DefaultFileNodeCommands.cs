@@ -68,8 +68,8 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		/// </summary>
 		public static void OpenWith(string fileName)
 		{
-			using (OpenWithDialog dlg = new OpenWithDialog(DisplayBindingService.GetCodonsPerFileName(fileName))) {
-				if (dlg.ShowDialog() == DialogResult.OK) {
+			using (OpenWithDialog dlg = new OpenWithDialog(DisplayBindingService.GetCodonsPerFileName(fileName), Path.GetExtension(fileName))) {
+				if (dlg.ShowDialog(WorkbenchSingleton.MainForm) == DialogResult.OK) {
 					FileUtility.ObservedLoad(new FileService.LoadFileWrapper(dlg.SelectedBinding.Binding).Invoke, fileName);
 				}
 			}
