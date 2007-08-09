@@ -246,5 +246,23 @@ namespace ICSharpCode.SharpDevelop.Tests
 			                    "int[] i = new int[11];\n" +
 			                    "Array.Resize(ref i, 21);");
 		}
+		
+		[Test]
+		public void RedimMultidimensional()
+		{
+			TestStatementsVB2CS("Dim MyArray(,) as Integer\n" +
+			                    "ReDim MyArray(5, 5)",
+			                    "int[,] MyArray;\n" +
+			                    "MyArray = new int[6, 6];\n");
+		}
+		
+		[Test]
+		public void RedimMultidimensionalPreserve()
+		{
+			TestStatementsVB2CS("Dim MyArray(5, 5) as Integer\n" +
+			                    "ReDim Preserve MyArray(10, 10)",
+			                    "int[,] MyArray = new int[6, 6];\n" +
+			                    "MyArray = (int[,])Microsoft.VisualBasic.CompilerServices.Utils.CopyArray(MyArray, new int[11, 11]);");
+		}
 	}
 }

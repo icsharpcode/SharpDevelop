@@ -19,7 +19,6 @@ namespace ICSharpCode.Core
 		public static bool ContainsText {
 			get {
 				try {
-					LoggingService.Debug("ContainsText called");
 					return Clipboard.ContainsText();
 				} catch (ExternalException) {
 					return false;

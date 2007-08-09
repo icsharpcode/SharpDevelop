@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.Visitors;
@@ -19,6 +20,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 	{
 		// Fixes identifier casing
 		// Adds using statements for the default usings
+		// Convert "ReDim" statement
 		
 		NRefactoryResolver _resolver;
 		ParseInformation _parseInfo;
@@ -142,7 +144,43 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (_resolver.CompilationUnit == null)
 				return null;
 			
-			if (!reDimStatement.IsPreserve && reDimStatement.ReDimClauses.Count == 1) {
+			if (reDimStatement.ReDimClauses.Count != 1)
+				return null;
+			
+			if (reDimStatement.IsPreserve) {
+				if (reDimStatement.ReDimClauses[0].Arguments.Count > 1) {
+					// multidimensional Redim Preserve
+					// replace with:
+					// MyArray = (int[,])Microsoft.VisualBasic.CompilerServices.Utils.CopyArray(MyArray, new int[dim1+1, dim2+1]);
+					
+					ResolveResult rr = _resolver.ResolveInternal(reDimStatement.ReDimClauses[0].TargetObject, ExpressionContext.Default);
+					if (rr != null && rr.ResolvedType != null && rr.ResolvedType.IsArrayReturnType) {
+						ArrayCreateExpression ace = new ArrayCreateExpression(
+							Refactoring.CodeGenerator.ConvertType(rr.ResolvedType, CreateContext())
+						);
+						foreach (Expression arg in reDimStatement.ReDimClauses[0].Arguments) {
+							ace.Arguments.Add(Expression.AddInteger(arg, 1));
+						}
+						
+						ReplaceCurrentNode(new ExpressionStatement(
+							new AssignmentExpression(
+								reDimStatement.ReDimClauses[0].TargetObject, 
+								AssignmentOperatorType.Assign, 
+								new CastExpression(
+									ace.CreateType,
+									new InvocationExpression(
+										MakeFieldReferenceExpression("Microsoft.VisualBasic.CompilerServices.Utils.CopyArray"),
+										new List<Expression> {
+											reDimStatement.ReDimClauses[0].TargetObject,
+											ace
+										}
+									),
+									CastType.Cast
+								)
+							)));
+					}
+				}
+			} else {
 				// replace with array create expression
 				
 				ResolveResult rr = _resolver.ResolveInternal(reDimStatement.ReDimClauses[0].TargetObject, ExpressionContext.Default);
@@ -159,6 +197,18 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				}
 			}
 			return null;
+		}
+		
+		Expression MakeFieldReferenceExpression(string name)
+		{
+			Expression e = null;
+			foreach (string n in name.Split('.')) {
+				if (e == null)
+					e = new IdentifierExpression(n);
+				else
+					e = new FieldReferenceExpression(e, n);
+			}
+			return e;
 		}
 		
 		public override object VisitLocalVariableDeclaration(LocalVariableDeclaration localVariableDeclaration, object data)
