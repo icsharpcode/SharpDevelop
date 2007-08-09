@@ -256,13 +256,13 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		public static void ShowAsSearchResults(string pattern, List<Reference> list)
 		{
 			if (list == null) return;
-			List<SearchResult> results = new List<SearchResult>(list.Count);
+			List<SearchResultMatch> results = new List<SearchResultMatch>(list.Count);
 			foreach (Reference r in list) {
-				SearchResult res = new SearchResult(r.Offset, r.Length);
+				SearchResultMatch res = new SearchResultMatch(r.Offset, r.Length);
 				res.ProvidedDocumentInformation = GetDocumentInformation(r.FileName);
 				results.Add(res);
 			}
-			SearchInFilesManager.ShowSearchResults(pattern, results);
+			SearchResultPanel.Instance.ShowSearchResults(new SearchResult(pattern, results));
 		}
 		
 		public static void RenameReferences(List<Reference> list, string newName)

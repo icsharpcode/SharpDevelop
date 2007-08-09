@@ -28,11 +28,11 @@ namespace SearchAndReplace
 		/// The find next method should search the next occurrence of the
 		/// compiled pattern in the text using the textIterator and options.
 		/// </remarks>
-		SearchResult FindNext(ITextIterator textIterator);
+		SearchResultMatch FindNext(ITextIterator textIterator);
 		
 		/// <summary>
 		/// Find only in the specified range.
 		/// </summary>
-		SearchResult FindNext(ITextIterator textIterator, int offset, int length);
+		SearchResultMatch FindNext(ITextIterator textIterator, int offset, int length);
 	}
 }

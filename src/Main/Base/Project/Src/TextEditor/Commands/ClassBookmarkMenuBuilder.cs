@@ -306,17 +306,19 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			IClass c = (IClass)item.Tag;
 			List<IClass> derivedClasses = RefactoringService.FindDerivedClasses(c, ParserService.AllProjectContents, false);
 			
-			List<SearchResult> results = new List<SearchResult>();
+			List<SearchResultMatch> results = new List<SearchResultMatch>();
 			foreach (IClass derivedClass in derivedClasses) {
 				if (derivedClass.CompilationUnit == null) continue;
 				if (derivedClass.CompilationUnit.FileName == null) continue;
 				
-				SearchResult res = new SimpleSearchResult(derivedClass.FullyQualifiedName, new Point(derivedClass.Region.BeginColumn - 1, derivedClass.Region.BeginLine - 1));
+				SearchResultMatch res = new SimpleSearchResultMatch(derivedClass.FullyQualifiedName, new Point(derivedClass.Region.BeginColumn - 1, derivedClass.Region.BeginLine - 1));
 				res.ProvidedDocumentInformation = FindReferencesAndRenameHelper.GetDocumentInformation(derivedClass.CompilationUnit.FileName);
 				results.Add(res);
 			}
-			SearchInFilesManager.ShowSearchResults(StringParser.Parse("${res:SharpDevelop.Refactoring.ClassesDerivingFrom}", new string[,] {{ "Name", c.Name }}),
-			                                       results);
+			SearchResultPanel.Instance.ShowSearchResults(new SearchResult(
+				StringParser.Parse("${res:SharpDevelop.Refactoring.ClassesDerivingFrom}", new string[,] {{ "Name", c.Name }}),
+				results
+			));
 		}
 		
 		void FindReferences(object sender, EventArgs e)

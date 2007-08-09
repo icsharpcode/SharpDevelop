@@ -1779,25 +1779,6 @@
 	
 	<Path name = "/SharpDevelop/Workbench/MainMenu">
 		<MenuItem id = "Search" insertafter ="View" insertbefore ="Tools" label = "${res:XML.MainMenu.SearchMenu}" type="Menu">
-			<MenuItem id = "Find"
-			          label = "${res:XML.MainMenu.SearchMenu.Find}"
-			          icon = "Icons.16x16.FindIcon"
-			          shortcut = "Control|F"
-			          class = "SearchAndReplace.Find"/>
-			<MenuItem id = "FindNext"
-			          label = "${res:XML.MainMenu.SearchMenu.FindNext}"
-			          icon = "Icons.16x16.FindNextIcon"
-			          shortcut = "F3"
-			          class = "SearchAndReplace.FindNext"/>
-			<MenuItem id = "FindNextSelected"
-			          label = "${res:XML.MainMenu.SearchMenu.FindNextSelected}"
-			          shortcut = "Control|F3"
-			          class = "SearchAndReplace.FindNextSelected"/>
-			<MenuItem id = "Replace"
-			          label = "${res:XML.MainMenu.SearchMenu.Replace}"
-			          icon = "Icons.16x16.ReplaceIcon"
-			          shortcut = "Control|R"
-			          class = "SearchAndReplace.Replace"/>
 			<MenuItem id = "SearchIncremental"
 			          label = "${res:XML.MainMenu.SearchMenu.IncrementalSearch}"
 			          shortcut = "Control|E"
@@ -2004,19 +1985,6 @@
 		</DialogPanel>
 	</Path>
 	
-	<Path name = "/SharpDevelop/DefaultEditor/SearchAndReplace/WildcardHelpPath">
-		<MenuItem id    = "*Char"
-		          label = "* Zero or more of any character" />
-		<MenuItem id    = "?Char"
-		          label = "? Any single character" />
-		<MenuItem id    = "#Char"
-		          label = "# Any single digit" />
-		<MenuItem id    = "[]Char"
-		          label = "[] Any one character in the set" />
-		<MenuItem id    = "[!]Char"
-		          label = "[!] Any one character not in the set" />
-	</Path>
-	
 	<!-- Note : Most actions are put directly into the control, because
 	            they're used for the standalone version too, only put keys in the
 	            tree that are sharpdevelop specific, general keys put into TextAreaControl.GenerateDefaultActions --> 
@@ -2059,14 +2027,8 @@
 			             icon    = "Icons.16x16.Assembly"
 			             tooltip = "${res:MainWindow.Windows.SearchResultPanel.CollapseAll.ToolTip}"
 			             class   = "SearchAndReplace.CollapseAll"/>
+			<ToolbarItem id = "ExpandCollapseSeparator" type = "Separator" />
 		</Condition>
-		<Condition name = "Ownerstate" ownerstate = "SpecialPanelMode" action = "Exclude">
-			<ToolbarItem id      = "BackToNormalView"
-			             icon    = "Icons.16x16.Assembly"
-			             tooltip = "${res:MainWindow.Windows.SearchResultPanel.BackToNormalView.ToolTip}"
-			             class   = "SearchAndReplace.BackToNormalView"/>
-		</Condition>
-		<ToolbarItem id = "ExpandCollapseSeparator" type = "Separator" />
 		
 		<ToolbarItem id      = "ShowLast"
 		             type    = "DropDownButton"
@@ -2074,24 +2036,13 @@
 		             tooltip = "${res:MainWindow.Windows.SearchResultPanel.ShowLast.ToolTip}"
 		             class   = "SearchAndReplace.ShowLastSearchResults"/>
 		
-		<ToolbarItem id      = "SelectViewMode"
-		             type    = "DropDownButton"
-		             icon    = "Icons.16x16.FindIcon"
-		             tooltip = "${res:MainWindow.Windows.SearchResultPanel.SelectViewMode.ToolTip}"
-		             class   = "SearchAndReplace.SelectViewMode"/>
-	</Path>
-	
-	<Path name = "/SharpDevelop/Workbench/ToolBar/Standard">
-		<ToolbarItem id = "FindSeparator" type = "Separator" />
-		<ToolbarItem id      = "Find"
-		             icon    = "Icons.16x16.FindIcon"
-		             tooltip = "${res:MainWindow.Windows.ClassBrowser.CommitSearch.ToolTip}"
-		             class   = "SearchAndReplace.Find"/>
-		
-		<ToolbarItem id      = "FindComboBox"
-		             type    = "ComboBox"
-		             tooltip = "${res:MainWindow.Windows.ClassBrowser.CommitSearch.ToolTip}"
-		             class   = "SearchAndReplace.FindComboBox"/>
+		<Condition name = "Ownerstate" ownerstate = "DefaultMode" action = "Exclude">
+			<ToolbarItem id      = "SelectViewMode"
+			             type    = "DropDownButton"
+			             icon    = "Icons.16x16.FindIcon"
+			             tooltip = "${res:MainWindow.Windows.SearchResultPanel.SelectViewMode.ToolTip}"
+			             class   = "SearchAndReplace.SelectViewMode"/>
+		</Condition>
 	</Path>
 	
 	<Path name = "/Workspace/Icons">

@@ -58,7 +58,7 @@ namespace SearchAndReplace
 			}
 		}
 		
-		SearchResult CreateNamedSearchResult(SearchResult pos)
+		SearchResultMatch CreateNamedSearchResult(SearchResultMatch pos)
 		{
 			if (info == null || pos == null) {
 				return null;
@@ -81,7 +81,7 @@ namespace SearchAndReplace
 			}
 		}
 		
-		public SearchResult FindNext()
+		public SearchResultMatch FindNext()
 		{
 			// insanity check
 			Debug.Assert(searchStrategy      != null);
@@ -97,7 +97,7 @@ namespace SearchAndReplace
 					textIterator.Position = info.CurrentOffset;
 				}
 				
-				SearchResult result = CreateNamedSearchResult(searchStrategy.FindNext(textIterator));
+				SearchResultMatch result = CreateNamedSearchResult(searchStrategy.FindNext(textIterator));
 				if (result != null) {
 					info.CurrentOffset = textIterator.Position;
 					return result;
@@ -119,7 +119,7 @@ namespace SearchAndReplace
 			return null;
 		}
 		
-		public SearchResult FindNext(int offset, int length)
+		public SearchResultMatch FindNext(int offset, int length)
 		{
 			if (info != null && textIterator != null && documentIterator.CurrentFileName != null) {
 				ProvidedDocumentInformation currentInfo = documentIterator.Current;
@@ -130,7 +130,7 @@ namespace SearchAndReplace
 					textIterator.Position = info.CurrentOffset;
 				}
 				
-				SearchResult result = CreateNamedSearchResult(searchStrategy.FindNext(textIterator, offset, length));
+				SearchResultMatch result = CreateNamedSearchResult(searchStrategy.FindNext(textIterator, offset, length));
 				if (result != null) {
 					info.CurrentOffset = textIterator.Position;
 					return result;

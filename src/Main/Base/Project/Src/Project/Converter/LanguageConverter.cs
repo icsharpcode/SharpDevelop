@@ -19,7 +19,6 @@ using ICSharpCode.NRefactory.PrettyPrinter;
 using ICSharpCode.SharpDevelop.Project.Commands;
 using MSBuild = Microsoft.Build.BuildEngine;
 using ICSharpCode.SharpDevelop.Internal.Templates;
-using AsynchronousWaitDialog = SearchAndReplace.AsynchronousWaitDialog;
 
 namespace ICSharpCode.SharpDevelop.Project.Converter
 {

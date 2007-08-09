@@ -14,7 +14,7 @@ using System.Reflection;
 // you compile.
 
 [assembly: AssemblyTitle("UnitTesting")]
-[assembly: AssemblyDescription("AddIn for SharpDevelop 2.0")]
+[assembly: AssemblyDescription("AddIn for SharpDevelop")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

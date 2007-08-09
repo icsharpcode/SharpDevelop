@@ -330,6 +330,7 @@
 				<ComponentRef Id="PInvokeAddInFiles"/>
 				<ComponentRef Id="RegExToolkitFiles"/>
 				<ComponentRef Id="ResourceToolkitFiles"/>
+				<ComponentRef Id="SearchAndReplaceFiles"/>
 				<!--
 				<ComponentRef Id="SharpQueryDll"/>
 				<ComponentRef Id="SharpQueryInteropMSDASCDll"/>

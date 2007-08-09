@@ -1,0 +1,64 @@
+﻿<AddIn name        = "Search &amp; Replace"
+       description = "Implements the Search &amp; Replace feature for the text editor">
+	
+	<Manifest>
+		<Identity name="ICSharpCode.SearchAndReplace"/>
+		<Dependency addin="SharpDevelop"/>
+	</Manifest>
+	
+	<Runtime>
+		<Import assembly = "SearchAndReplace.dll"/>
+	</Runtime>
+	
+	<Path name = "/SharpDevelop/Workbench/MainMenu/Search">
+		<MenuItem id = "Find"
+		          label = "${res:XML.MainMenu.SearchMenu.Find}"
+		          icon = "Icons.16x16.FindIcon"
+		          shortcut = "Control|F"
+		          class = "SearchAndReplace.Find"/>
+		<MenuItem id = "FindNext"
+		          insertafter = "Find"
+		          label = "${res:XML.MainMenu.SearchMenu.FindNext}"
+		          icon = "Icons.16x16.FindNextIcon"
+		          shortcut = "F3"
+		          class = "SearchAndReplace.FindNext"/>
+		<MenuItem id = "FindNextSelected"
+		          insertafter = "FindNext"
+		          label = "${res:XML.MainMenu.SearchMenu.FindNextSelected}"
+		          shortcut = "Control|F3"
+		          class = "SearchAndReplace.FindNextSelected"/>
+		<MenuItem id = "Replace"
+		          insertbefore = "SearchIncremental"
+		          insertafter = "FindNextSelected"
+		          label = "${res:XML.MainMenu.SearchMenu.Replace}"
+		          icon = "Icons.16x16.ReplaceIcon"
+		          shortcut = "Control|R"
+		          class = "SearchAndReplace.Replace"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/DefaultEditor/SearchAndReplace/WildcardHelpPath">
+		<MenuItem id    = "*Char"
+		          label = "* Zero or more of any character" />
+		<MenuItem id    = "?Char"
+		          label = "? Any single character" />
+		<MenuItem id    = "#Char"
+		          label = "# Any single digit" />
+		<MenuItem id    = "[]Char"
+		          label = "[] Any one character in the set" />
+		<MenuItem id    = "[!]Char"
+		          label = "[!] Any one character not in the set" />
+	</Path>
+	
+	<Path name = "/SharpDevelop/Workbench/ToolBar/Standard">
+		<ToolbarItem id = "FindSeparator" type = "Separator" />
+		<ToolbarItem id      = "Find"
+		             icon    = "Icons.16x16.FindIcon"
+		             tooltip = "${res:MainWindow.Windows.ClassBrowser.CommitSearch.ToolTip}"
+		             class   = "SearchAndReplace.Find"/>
+		
+		<ToolbarItem id      = "FindComboBox"
+		             type    = "ComboBox"
+		             tooltip = "${res:MainWindow.Windows.ClassBrowser.CommitSearch.ToolTip}"
+		             class   = "SearchAndReplace.FindComboBox"/>
+	</Path>
+</AddIn>

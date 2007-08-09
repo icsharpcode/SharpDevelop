@@ -108,7 +108,7 @@ namespace SearchAndReplace
 			List<TextEditorControl> textAreas = new List<TextEditorControl>();
 			int count;
 			for (count = 0;; count++) {
-				SearchResult result = SearchReplaceManager.find.FindNext();
+				SearchResultMatch result = SearchReplaceManager.find.FindNext();
 				
 				if (result == null) {
 					break;
@@ -134,7 +134,7 @@ namespace SearchAndReplace
 			List<TextEditorControl> textAreas = new List<TextEditorControl>();
 			int count;
 			for (count = 0;; count++) {
-				SearchResult result = find.FindNext(offset, length);
+				SearchResultMatch result = find.FindNext(offset, length);
 				if (result == null) {
 					break;
 				} else {
@@ -148,7 +148,7 @@ namespace SearchAndReplace
 			ShowMarkDoneMessage(count, monitor);
 		}
 		
-		static void MarkResult(List<TextEditorControl> textAreas, SearchResult result)
+		static void MarkResult(List<TextEditorControl> textAreas, SearchResultMatch result)
 		{
 			TextEditorControl textArea = OpenTextArea(result.FileName);
 			if (textArea != null) {
@@ -197,7 +197,7 @@ namespace SearchAndReplace
 			List<TextEditorControl> textAreas = new List<TextEditorControl>();
 			TextEditorControl textArea = null;
 			for (int count = 0;; count++) {
-				SearchResult result = SearchReplaceManager.find.FindNext();
+				SearchResultMatch result = SearchReplaceManager.find.FindNext();
 				
 				if (result == null) {
 					if (count != 0) {
@@ -243,7 +243,7 @@ namespace SearchAndReplace
 				return;
 			
 			for (int count = 0;; count++) {
-				SearchResult result = find.FindNext(offset, length);
+				SearchResultMatch result = find.FindNext(offset, length);
 				if (result == null) {
 					ShowReplaceDoneMessage(count, monitor);
 					return;
@@ -263,7 +263,7 @@ namespace SearchAndReplace
 			}
 		}
 		
-		static SearchResult lastResult = null;
+		static SearchResultMatch lastResult = null;
 		
 		public static void FindNext(IProgressMonitor monitor)
 		{
@@ -282,7 +282,7 @@ namespace SearchAndReplace
 			
 			TextEditorControl textArea = null;
 			while (textArea == null) {
-				SearchResult result = find.FindNext();
+				SearchResultMatch result = find.FindNext();
 				if (result == null) {
 					ShowNotFoundMessage(monitor);
 					find.Reset();
@@ -333,7 +333,7 @@ namespace SearchAndReplace
 		{
 			TextEditorControl textArea = null;
 			while (textArea == null) {
-				SearchResult result = find.FindNext(textSelection.Offset, textSelection.Length);
+				SearchResultMatch result = find.FindNext(textSelection.Offset, textSelection.Length);
 				if (result == null) {
 					if (!foundAtLeastOneItem) {
 						ShowNotFoundMessage(monitor);

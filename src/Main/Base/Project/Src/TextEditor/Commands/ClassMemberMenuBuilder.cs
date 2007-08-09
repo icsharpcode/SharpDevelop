@@ -17,6 +17,7 @@ using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using ICSharpCode.SharpDevelop.Gui.ClassBrowser;
 using ICSharpCode.SharpDevelop.Refactoring;
 using ICSharpCode.TextEditor;
+using ICSharpCode.SharpDevelop.Gui;
 using SearchAndReplace;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
@@ -176,20 +177,21 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			MenuCommand item = (MenuCommand)sender;
 			IMember member = (IMember)item.Tag;
 			List<IClass> derivedClasses = RefactoringService.FindDerivedClasses(member.DeclaringType, ParserService.AllProjectContents, false);
-			List<SearchResult> results = new List<SearchResult>();
+			List<SearchResultMatch> results = new List<SearchResultMatch>();
 			foreach (IClass derivedClass in derivedClasses) {
 				if (derivedClass.CompilationUnit == null) continue;
 				if (derivedClass.CompilationUnit.FileName == null) continue;
 				IMember m = RefactoringService.FindSimilarMember(derivedClass, member);
 				if (m != null && !m.Region.IsEmpty) {
-					SearchResult res = new SimpleSearchResult(m.FullyQualifiedName, new Point(m.Region.BeginColumn - 1, m.Region.BeginLine - 1));
+					SearchResultMatch res = new SimpleSearchResultMatch(m.FullyQualifiedName, new Point(m.Region.BeginColumn - 1, m.Region.BeginLine - 1));
 					res.ProvidedDocumentInformation = FindReferencesAndRenameHelper.GetDocumentInformation(derivedClass.CompilationUnit.FileName);
 					results.Add(res);
 				}
 			}
-			SearchInFilesManager.ShowSearchResults(StringParser.Parse("${res:SharpDevelop.Refactoring.OverridesOf}",
-			                                                          new string[,] {{ "Name", member.Name }}),
-			                                       results);
+			SearchResultPanel.Instance.ShowSearchResults(new SearchResult(
+				StringParser.Parse("${res:SharpDevelop.Refactoring.OverridesOf}", new string[,] {{ "Name", member.Name }}),
+				results
+			));
 		}
 		
 		void FindReferences(object sender, EventArgs e)

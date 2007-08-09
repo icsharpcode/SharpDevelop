@@ -4,7 +4,7 @@
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
 //     <version>$Revision$</version>
 // </file>
-namespace SearchAndReplace
+namespace ICSharpCode.SharpDevelop.Gui
 {
 	partial class AsynchronousWaitDialogForm : System.Windows.Forms.Form
 	{

@@ -170,21 +170,21 @@ namespace SearchAndReplace
 			return true;
 		}
 		
-		public SearchResult FindNext(ITextIterator textIterator)
+		public SearchResultMatch FindNext(ITextIterator textIterator)
 		{
 			int offset = InternalFindNext(textIterator);
 			return GetSearchResult(offset);
 		}
 		
-		public SearchResult FindNext(ITextIterator textIterator, int offset, int length)
+		public SearchResultMatch FindNext(ITextIterator textIterator, int offset, int length)
 		{
 			int foundOffset = InternalFindNext(textIterator, offset, length);
 			return GetSearchResult(foundOffset);
 		}
 		
-		SearchResult GetSearchResult(int offset)
+		SearchResultMatch GetSearchResult(int offset)
 		{
-			return offset >= 0 ? new SearchResult(offset, curMatchEndOffset - offset) : null;
+			return offset >= 0 ? new SearchResultMatch(offset, curMatchEndOffset - offset) : null;
 		}
 	}
 }

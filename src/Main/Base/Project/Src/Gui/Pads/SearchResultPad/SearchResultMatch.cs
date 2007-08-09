@@ -1,7 +1,7 @@
-﻿// <file>
+// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
+//     <owner name="Mike Kr�ger" email="mike@icsharpcode.net"/>
 //     <version>$Revision$</version>
 // </file>
 
@@ -11,7 +11,7 @@ using ICSharpCode.TextEditor.Document;
 
 namespace SearchAndReplace
 {
-	public class SearchResult
+	public class SearchResultMatch
 	{
 		ProvidedDocumentInformation providedDocumentInformation;
 		int    offset;
@@ -51,7 +51,7 @@ namespace SearchAndReplace
 			return providedDocumentInformation.CreateDocument();
 		}
 		
-		public SearchResult(int offset, int length)
+		public SearchResultMatch(int offset, int length)
 		{
 			if (length < 0)
 				throw new ArgumentOutOfRangeException("length");
@@ -82,14 +82,13 @@ namespace SearchAndReplace
 		
 		public override string ToString()
 		{
-			return String.Format("[SearchResult: FileName={0}, Offset={1}, Length={2}]",
-			                     FileName,
-			                     Offset,
-			                     Length);
+			return String.Format("[{3}: FileName={0}, Offset={1}, Length={2}]",
+			                     FileName, Offset, Length,
+			                     GetType().Name);
 		}
 	}
 	
-	public class SimpleSearchResult : SearchResult
+	public class SimpleSearchResultMatch : SearchResultMatch
 	{
 		Point position;
 		
@@ -111,7 +110,7 @@ namespace SearchAndReplace
 			}
 		}
 		
-		public SimpleSearchResult(string displayText, Point position) : base(0, 0)
+		public SimpleSearchResultMatch(string displayText, Point position) : base(0, 0)
 		{
 			this.position = position;
 			this.displayText = displayText;

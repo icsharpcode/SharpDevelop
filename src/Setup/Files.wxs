@@ -1209,6 +1209,12 @@
 											<File Source="..\..\AddIns\AddIns\Misc\SharpServerTools\ICSharpCode.DataTools.UI.dll" Name="DBUI.DLL" Id="ICSharpCode.DataTools.UI.dll" LongName="ICSharpCode.DataTools.UI.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="ICSharpCode.DataTools.UI.dll" AssemblyManifest="ICSharpCode.DataTools.UI.dll" />
 										</Component>
 									</Directory>
+									<Directory Id="SearchAndReplace" Name="SearchAn" LongName="SearchAndReplace">
+										<Component Guid="A76D4EB6-0EBB-49D7-9528-2FA87C983703" Id="SearchAndReplaceFiles" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\Misc\SearchAndReplace\SearchAndReplace.addin" Name="SEARCH_1.ADD" Id="SearchAndReplace.addin" LongName="SearchAndReplace.addin" />
+											<File Source="..\..\AddIns\AddIns\Misc\SearchAndReplace\SearchAndReplace.dll" Name="SEARCH_1.DLL" Id="SearchAndReplace.dll" LongName="SearchAndReplace.dll" />
+										</Component>
+									</Directory>
 								</Directory>
 							</Directory>
 						</Directory>

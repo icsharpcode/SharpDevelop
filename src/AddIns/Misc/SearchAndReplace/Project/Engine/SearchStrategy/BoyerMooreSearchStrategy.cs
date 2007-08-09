@@ -122,10 +122,10 @@ namespace SearchAndReplace
 		/// The find next method should search the next occurrence of the 
 		/// compiled pattern in the text using the textIterator and options.
 		/// </remarks>
-		public SearchResult FindNext(ITextIterator textIterator)
+		public SearchResultMatch FindNext(ITextIterator textIterator)
 		{
 			int offset = InternalFindNext(textIterator);
-			return offset >= 0 ? new SearchResult(offset, searchPattern.Length) : null;
+			return offset >= 0 ? new SearchResultMatch(offset, searchPattern.Length) : null;
 		}
 	}
 }

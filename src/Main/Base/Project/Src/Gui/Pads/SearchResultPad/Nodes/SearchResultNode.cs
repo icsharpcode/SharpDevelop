@@ -23,7 +23,7 @@ namespace SearchAndReplace
 	/// </summary>
 	public class SearchResultNode : ExtTreeNode
 	{
-		SearchResult result;
+		SearchResultMatch result;
 		
 		Point startPosition;
 		string positionText;
@@ -53,7 +53,7 @@ namespace SearchAndReplace
 			}
 		}
 		
-		public SearchResultNode(IDocument document, SearchResult result)
+		public SearchResultNode(IDocument document, SearchResultMatch result)
 		{
 			drawDefault = false;
 			this.result = result;

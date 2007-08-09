@@ -21,12 +21,12 @@ namespace SearchAndReplace
 	/// </summary>
 	public class SearchFolderNode : ExtFolderNode
 	{
-		List<SearchResult> results = new List<SearchResult>();
+		List<SearchResultMatch> results = new List<SearchResultMatch>();
 		string fileName;
 		string occurences;
 		Image icon;
 		
-		public List<SearchResult> Results { 
+		public List<SearchResultMatch> Results { 
 			get {
 				return results;
 			}
@@ -79,7 +79,7 @@ namespace SearchAndReplace
 			if (document.HighlightingStrategy == null) {
 				document.HighlightingStrategy = HighlightingStrategyFactory.CreateHighlightingStrategyForFile(fileName);
 			}
-			foreach (SearchResult result in results) {
+			foreach (SearchResultMatch result in results) {
 				TreeNode newResult = new SearchResultNode(document, result);
 				Nodes.Add(newResult);
 			}

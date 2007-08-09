@@ -12,7 +12,7 @@ using System.Windows.Forms;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.Core;
 
-namespace SearchAndReplace
+namespace ICSharpCode.SharpDevelop.Gui
 {
 	internal sealed partial class AsynchronousWaitDialogForm
 	{

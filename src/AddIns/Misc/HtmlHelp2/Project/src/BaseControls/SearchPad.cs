@@ -331,7 +331,9 @@ namespace HtmlHelp2
 				{
 					searchResults.SearchResultsListView.EndUpdate();
 					searchResults.SetStatusMessage(searchTerm.Text);
-					searchResults.BringPadToFront();
+					SearchAndReplace.SearchResultPanel.Instance.ShowSearchResults(
+						new SearchAndReplace.SearchResult(searchTerm.Text, searchResults)
+					);
 					searchIsBusy = false;
 				}
 			}

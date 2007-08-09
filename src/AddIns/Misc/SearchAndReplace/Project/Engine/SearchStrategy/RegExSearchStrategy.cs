@@ -33,7 +33,7 @@ namespace SearchAndReplace
 			}
 		}
 		
-		public SearchResult FindNext(ITextIterator textIterator)
+		public SearchResultMatch FindNext(ITextIterator textIterator)
 		{
 			string document = textIterator.TextBuffer.GetText(0, textIterator.TextBuffer.Length);
 			
@@ -57,7 +57,7 @@ namespace SearchAndReplace
 			return null;
 		}
 		
-		public SearchResult FindNext(ITextIterator textIterator, int offset, int length)
+		public SearchResultMatch FindNext(ITextIterator textIterator, int offset, int length)
 		{
 			string document = textIterator.TextBuffer.GetText(0, textIterator.TextBuffer.Length);
 			
@@ -85,7 +85,7 @@ namespace SearchAndReplace
 			return null;
 		}
 		
-		private sealed class RegexSearchResult : SearchResult
+		private sealed class RegexSearchResult : SearchResultMatch
 		{
 			Match m;
 			

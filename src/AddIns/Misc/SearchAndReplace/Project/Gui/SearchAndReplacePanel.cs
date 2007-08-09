@@ -34,13 +34,13 @@ namespace SearchAndReplace
 				Controls.Clear();
 				switch (searchAndReplaceMode) {
 					case SearchAndReplaceMode.Search:
-						SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("Resources.FindPanel.xfrm"));
+						SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("SearchAndReplace.Resources.FindPanel.xfrm"));
 						Get<Button>("bookmarkAll").Click += BookmarkAllButtonClicked;
 						Get<Button>("findAll").Click += FindAllButtonClicked;
 						this.ParentForm.AcceptButton = Get<Button>("findNext");
 						break;
 					case SearchAndReplaceMode.Replace:
-						SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("Resources.ReplacePanel.xfrm"));
+						SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("SearchAndReplace.Resources.ReplacePanel.xfrm"));
 						Get<Button>("replace").Click += ReplaceButtonClicked;
 						Get<Button>("replaceAll").Click += ReplaceAllButtonClicked;
 						this.ParentForm.AcceptButton = Get<Button>("replace");

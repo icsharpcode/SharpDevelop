@@ -63,6 +63,10 @@
     <Compile Include="Src\Gui\Dialogs\AddOpenWithEntryDialog.Designer.cs">
       <DependentUpon>AddOpenWithEntryDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="Src\Gui\Dialogs\AsynchronousWaitDialog.cs" />
+    <Compile Include="Src\Gui\Dialogs\AsynchronousWaitDialog.Designer.cs">
+      <DependentUpon>AsynchronousWaitDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="Src\Gui\Dialogs\OpenWithDialog.cs" />
     <Compile Include="Src\Gui\Dialogs\OpenWithDialog.Designer.cs">
       <DependentUpon>OpenWithDialog.cs</DependentUpon>
@@ -71,6 +75,14 @@
     <Compile Include="Src\Gui\Dialogs\SolutionConfiguration\AddNewConfigurationDialog.Designer.cs">
       <DependentUpon>AddNewConfigurationDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="Src\Gui\Pads\SearchResultPad\Nodes\SearchFolderNode.cs" />
+    <Compile Include="Src\Gui\Pads\SearchResultPad\Nodes\SearchResultNode.cs" />
+    <Compile Include="Src\Gui\Pads\SearchResultPad\Nodes\SearchRootNode.cs" />
+    <Compile Include="Src\Gui\Pads\SearchResultPad\ProvidedDocumentInformation.cs" />
+    <Compile Include="Src\Gui\Pads\SearchResultPad\SearchResult.cs" />
+    <Compile Include="Src\Gui\Pads\SearchResultPad\SearchResultMatch.cs" />
+    <Compile Include="Src\Gui\Pads\SearchResultPad\SearchResultPanel.cs" />
+    <Compile Include="Src\Gui\Pads\SearchResultPad\SearchResultPanelToolbarCommands.cs" />
     <Compile Include="Src\Gui\Pads\ToolsPad.cs" />
     <Compile Include="Src\Gui\Workbench\SingleInstanceHelper.cs" />
     <Compile Include="Src\Internal\ExternalTool\ExternalTool.cs" />
@@ -422,9 +434,7 @@
     <EmbeddedResource Include="Resources\TreeViewOptionsDialog.xfrm" />
     <EmbeddedResource Include="Resources\WordCountDialog.xfrm" />
     <EmbeddedResource Include="Resources\BehaviorTextEditorPanel.xfrm" />
-    <EmbeddedResource Include="Resources\FindPanel.xfrm" />
     <EmbeddedResource Include="Resources\GotoDialog.xfrm" />
-    <EmbeddedResource Include="Resources\ReplacePanel.xfrm" />
     <EmbeddedResource Include="Resources\GeneralTextEditorPanel.xfrm" />
     <EmbeddedResource Include="Resources\CodeTemplatePanel.xfrm" />
     <EmbeddedResource Include="Resources\MarkersTextEditorPanel.xfrm" />
@@ -500,46 +510,6 @@
     <Compile Include="Src\TextEditor\Gui\OptionPanels\MarkersTextEditorPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Src\TextEditor\SearchAndReplace\Commands\SearchMainMenuCommands.cs" />
-    <Compile Include="Src\TextEditor\SearchAndReplace\Commands\SearchToolbarCommands.cs" />
-    <Compile Include="Src\TextEditor\SearchAndReplace\Engine\DocumentIterator\AllOpenDocumentIterator.cs" />
-    <Compile Include="Src\TextEditor\SearchAndReplace\Engine\DocumentIterator\CurrentDocumentIterator.cs" />
-    <Compile Include="Src\TextEditor\SearchAndReplace\Engine\DocumentIterator\DirectoryDocumentIterator.cs" />
-    <Compile Include="Src\TextEditor\SearchAndReplace\Engine\DocumentIterator\IDocumentIterator.cs" />
-    <Compile Include="Src\TextEditor\SearchAndReplace\Engine\DocumentIterator\ProvidedDocumentInformation.cs" />
-    <Compile Include="Src\TextEditor\SearchAndReplace\Engine\DocumentIterator\WholeProjectDocumentIterator.cs" />
-    <Compile Include="Src\TextEditor\SearchAndReplace\Engine\DocumentIterator\WholeSolutionDocumentIterator.cs" />
-    <Compile Include="Src\TextEditor\SearchAndReplace\Engine\SearchStrategy\BruteForceSearchStrategy.cs" />
-    <Compile Include="Src\TextEditor\SearchAndReplace\Engine\SearchStrategy\ISearchStrategy.cs" />
-    <Compile Include="Src\TextEditor\SearchAndReplace\Engine\SearchStrategy\KMPSearchStrategy.cs" />
-    <Compile Include="Src\TextEditor\SearchAndReplace\Engine\SearchStrategy\RegExSearchStrategy.cs" />
-    <Compile Include="Src\TextEditor\SearchAndReplace\Engine\SearchStrategy\SearchResult.cs" />
-    <Compile Include="Src\TextEditor\SearchAndReplace\Engine\SearchStrategy\WildcardSearchStrategy.cs" />
-    <Compile Include="Src\TextEditor\SearchAndReplace\Engine\TextIterator\ForwardTextIterator.cs" />
-    <Compile Include="Src\TextEditor\SearchAndReplace\Engine\TextIterator\ForwardTextIteratorBuilder.cs" />
-    <Compile Include="Src\TextEditor\SearchAndReplace\Engine\TextIterator\ITextIterator.cs" />
-    <Compile Include="Src\TextEditor\SearchAndReplace\Engine\ITextIteratorBuilder.cs" />
-    <Compile Include="Src\TextEditor\SearchAndReplace\Engine\Search.cs" />
-    <Compile Include="Src\TextEditor\SearchAndReplace\Engine\SearchAllFinishedEventHandler.cs" />
-    <Compile Include="Src\TextEditor\SearchAndReplace\Engine\SearchReplaceInFilesManager.cs" />
-    <Compile Include="Src\TextEditor\SearchAndReplace\Engine\SearchReplaceManager.cs" />
-    <Compile Include="Src\TextEditor\SearchAndReplace\Engine\SearchReplaceUtilities.cs" />
-    <Compile Include="Src\TextEditor\SearchAndReplace\Gui\AsynchronousWaitDialog.cs" />
-    <Compile Include="Src\TextEditor\SearchAndReplace\Gui\AsynchronousWaitDialog.Designer.cs">
-      <DependentUpon>AsynchronousWaitDialog.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Src\TextEditor\SearchAndReplace\Gui\SearchAndReplaceDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Src\TextEditor\SearchAndReplace\Gui\SearchAndReplacePanel.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Src\TextEditor\SearchAndReplace\Pad\Nodes\SearchFolderNode.cs" />
-    <Compile Include="Src\TextEditor\SearchAndReplace\Pad\Nodes\SearchResultNode.cs" />
-    <Compile Include="Src\TextEditor\SearchAndReplace\Pad\Nodes\SearchRootNode.cs" />
-    <Compile Include="Src\TextEditor\SearchAndReplace\Pad\SearchResultPanel.cs" />
-    <Compile Include="Src\TextEditor\SearchAndReplace\Pad\SearchResultPanelToolbarCommands.cs" />
-    <Compile Include="Src\TextEditor\SearchAndReplace\SearchOptions.cs" />
     <Compile Include="Src\TextEditor\Actions.cs" />
     <Compile Include="Src\TextEditor\CharacterEncodings.cs" />
     <Compile Include="Src\TextEditor\XmlFormattingStrategy.cs" />
@@ -597,7 +567,6 @@
     </Compile>
     <Compile Include="Src\Services\Debugger\CurrentLineBookmark.cs" />
     <Compile Include="Src\TextEditor\Commands\ClassBookmarkMenuBuilder.cs" />
-    <Compile Include="Src\TextEditor\SearchAndReplace\Engine\SearchStrategy\BoyerMooreSearchStrategy.cs" />
     <Compile Include="Src\Gui\BrowserDisplayBinding\BrowserCommands.cs" />
     <Compile Include="Src\Gui\BrowserDisplayBinding\BrowserLocationConditionEvaluator.cs" />
     <Compile Include="Src\Services\Debugger\DebuggerDoozer.cs" />
@@ -667,7 +636,6 @@
     <Compile Include="Src\Gui\Pads\ClassBrowser\NodeBuilder\ProjectNodeBuilders.cs" />
     <Compile Include="Src\Gui\Pads\ClassBrowser\NodeBuilder\IClassNodeBuilder.cs" />
     <Compile Include="Src\Gui\Pads\ClassBrowser\NodeBuilder\IProjectNodeBuilder.cs" />
-    <Compile Include="Src\TextEditor\SearchAndReplace\Engine\TextSelection.cs" />
     <Compile Include="Src\Services\RefactoringService\NamespaceRefactoringService.cs" />
     <Compile Include="Src\Services\RefactoringService\RefactorMenu.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\AdvancedHighlightingStrategy.cs" />
@@ -697,9 +665,6 @@
     <Compile Include="Src\TextEditor\Gui\Editor\IncrementalSearch.cs" />
     <EmbeddedResource Include="Resources\IncrementalSearchCursor.cur" />
     <EmbeddedResource Include="Resources\ReverseIncrementalSearchCursor.cur" />
-    <EmbeddedResource Include="Src\TextEditor\SearchAndReplace\Gui\AsynchronousWaitDialog.resx">
-      <DependentUpon>AsynchronousWaitDialog.cs</DependentUpon>
-    </EmbeddedResource>
     <Compile Include="Src\Gui\Dialogs\SharpDevelopColorDialog.cs" />
     <Compile Include="Src\Util\ExtensionMethods.cs" />
     <Compile Include="Src\Util\DebugTimer.cs" />
@@ -740,6 +705,8 @@
       <Project>{35cef10f-2d4c-45f2-9dd1-161e0fec583c}</Project>
       <Name>ICSharpCode.Core</Name>
     </ProjectReference>
+    <Folder Include="Src\Gui\Pads\SearchResultPad" />
+    <Folder Include="Src\Gui\Pads\SearchResultPad\Nodes" />
     <Folder Include="Src\Gui\Pads\TaskList" />
     <Content Include="..\..\..\..\AddIns\ICSharpCode.SharpDevelop.addin">
       <Link>ICSharpCode.SharpDevelop.addin</Link>

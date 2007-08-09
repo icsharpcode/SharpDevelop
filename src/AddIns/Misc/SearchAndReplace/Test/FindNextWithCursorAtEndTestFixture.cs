@@ -28,7 +28,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 	public class FindNextWithCursorAtEndTestFixture
 	{
 		Search search;
-		SearchResult result;
+		SearchResultMatch result;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()

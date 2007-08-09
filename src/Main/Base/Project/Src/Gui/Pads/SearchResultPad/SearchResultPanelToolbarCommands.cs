@@ -35,7 +35,7 @@ namespace SearchAndReplace
 		
 		public override bool IsEnabled {
 			get {
-				return SearchInFilesManager.LastSearches.Count > 0;
+				return SearchResultPanel.Instance.LastSearches.Count > 0;
 			}
 		}
 		
@@ -45,37 +45,32 @@ namespace SearchAndReplace
 		
 		void SwitchSearchResults(object sender, EventArgs e)
 		{
-			SearchAllFinishedEventArgs args = (SearchAllFinishedEventArgs)((ToolStripItem)sender).Tag;
+			SearchResult result = (SearchResult)((ToolStripItem)sender).Tag;
 
-			// "bubble" this saved search to the top of the list			
-			SearchInFilesManager.LastSearches.Remove(args);
-			SearchInFilesManager.LastSearches.Insert(0, args);
-			UpdateLastSearches(null, args);
+			// "bubble" this saved search to the top of the list
+			// remove search, ShowSearchResults will add it again
+			SearchResultPanel.Instance.LastSearches.Remove(result);
 			
-			PadDescriptor searchResultPanel = WorkbenchSingleton.Workbench.GetPad(typeof(SearchResultPanel));
-			if (searchResultPanel != null) {
-				searchResultPanel.BringPadToFront();
-				SearchResultPanel.Instance.ShowSearchResults(args.Pattern, args.Results);
-			} else {
-				MessageService.ShowError("SearchResultPanel can't be found.");
-			}
+			SearchResultPanel.Instance.ShowSearchResults(result);
 		}
 		
 		void ClearHistory(object sender, EventArgs e)
 		{
 			SearchResultPanel.Instance.Clear();
-			SearchInFilesManager.LastSearches.Clear();
+			SearchResultPanel.Instance.LastSearches.Clear();
 			UpdateLastSearches(null, null);
 		}
 		
-		void UpdateLastSearches(object sender, SearchAllFinishedEventArgs e)
+		void UpdateLastSearches(object sender, EventArgs e)
 		{
 			dropDownButton.DropDownItems.Clear();
-			foreach (SearchAllFinishedEventArgs args in SearchInFilesManager.LastSearches) {
+			foreach (SearchResult args in SearchResultPanel.Instance.LastSearches) {
 				ToolStripItem newItem = new ToolStripMenuItem();
 				newItem.Text = StringParser.Parse("${res:MainWindow.Windows.SearchResultPanel.OccurrencesOf}",
-				                                  new string[,] {{ "Pattern", args.Pattern }})
-					+ " (" + SearchRootNode.GetOccurencesString(args.Results.Count) + ")";
+				                                 new string[,] {{ "Pattern", args.Pattern }});
+				if (args.Results != null) {
+					newItem.Text += " (" + SearchRootNode.GetOccurencesString(args.Results.Count) + ")";
+				}
 				newItem.Tag  = args;
 				newItem.Click += new EventHandler(SwitchSearchResults);
 				dropDownButton.DropDownItems.Add(newItem);
@@ -93,7 +88,7 @@ namespace SearchAndReplace
 			base.OnOwnerChanged(e);
 			dropDownButton = (ToolBarDropDownButton)Owner;
 			
-			SearchInFilesManager.SearchAllFinished += new SearchAllFinishedEventHandler(UpdateLastSearches);
+			SearchResultPanel.Instance.SearchResultsShown += UpdateLastSearches;
 			UpdateLastSearches(null, null);
 		}
 	}
@@ -120,7 +115,7 @@ namespace SearchAndReplace
 
 		void UpdateDropDownItems()
 		{
-			// Synchronize the Checked state of the menu items with 
+			// Synchronize the Checked state of the menu items with
 			// the current ViewMode of the SearchResultPanel.
 			foreach(ToolStripItem item in dropDownButton.DropDownItems) {
 				((ToolStripMenuItem)item).Checked =
@@ -132,9 +127,9 @@ namespace SearchAndReplace
 		{
 			ToolStripMenuItem newItem = null;
 			string menuItemText = String.Empty;
-		
+			
 			// Use SearchResultPanelViewMode enum to generate the menu choices automatically.
-			foreach (SearchResultPanelViewMode viewMode in System.Enum.GetValues(typeof(SearchResultPanelViewMode))) {			
+			foreach (SearchResultPanelViewMode viewMode in System.Enum.GetValues(typeof(SearchResultPanelViewMode))) {
 				newItem = new ToolStripMenuItem();
 				newItem.Text = StringParser.Parse("${res:MainWindow.Windows.SearchResultPanel."+viewMode.ToString()+"}");
 				newItem.Tag = viewMode;

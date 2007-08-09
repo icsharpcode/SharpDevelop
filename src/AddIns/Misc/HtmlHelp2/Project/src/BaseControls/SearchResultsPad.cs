@@ -35,14 +35,6 @@ namespace HtmlHelp2
 			}
 		}
 		
-		public void BringPadToFront()
-		{
-			PadDescriptor descriptor = WorkbenchSingleton.Workbench.GetPad(typeof(SearchAndReplace.SearchResultPanel));
-			SearchAndReplace.SearchResultPanel srp = (SearchAndReplace.SearchResultPanel)descriptor.PadContent;
-			srp.ShowSpecialPanel(this);
-			descriptor.BringPadToFront();
-		}
-		
 		public override void Refresh()
 		{
 			this.SetListViewHeader();

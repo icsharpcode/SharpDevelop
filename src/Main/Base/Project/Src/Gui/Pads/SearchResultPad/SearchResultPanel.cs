@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace SearchAndReplace
@@ -18,7 +19,7 @@ namespace SearchAndReplace
 	/// Specifies the format for viewing search results in the <see cref="SearchResultPanel"/>.
 	/// </summary>
 	/// <remarks>
-	/// The members of this enumeration are used to auto-generate the 
+	/// The members of this enumeration are used to auto-generate the
 	/// 'Select Search Mode' drop-down menu in the <see cref="SearchResultPanel"/>.
 	/// </remarks>
 	public enum SearchResultPanelViewMode
@@ -34,6 +35,9 @@ namespace SearchAndReplace
 		
 		public static SearchResultPanel Instance {
 			get {
+				if (instance == null) {
+					WorkbenchSingleton.Workbench.GetPad(typeof(SearchResultPanel)).CreatePad();
+				}
 				return instance;
 			}
 		}
@@ -42,8 +46,8 @@ namespace SearchAndReplace
 		ExtTreeView resultTreeView = new ExtTreeView();
 		ToolStrip   toolStrip;
 		
-		string             curPattern = null;
-		List<SearchResult> curResults = null;
+		string curPattern = null;
+		IList<SearchResultMatch> curResults = null;
 		
 		public override Control Control {
 			get {
@@ -98,7 +102,7 @@ namespace SearchAndReplace
 		void ShowSearchResultsPerFile()
 		{
 			Dictionary<string, SearchFolderNode> folderNodes = new Dictionary<string, SearchFolderNode>();
-			foreach (SearchResult result in curResults) {
+			foreach (SearchResultMatch result in curResults) {
 				if (!folderNodes.ContainsKey(result.FileName)) {
 					folderNodes[result.FileName] = new SearchFolderNode(result.FileName);
 				}
@@ -118,7 +122,7 @@ namespace SearchAndReplace
 		void ShowSearchResultsFlat()
 		{
 			Dictionary<string, SearchFolderNode> folderNodes = new Dictionary<string, SearchFolderNode>();
-			foreach (SearchResult result in curResults) {
+			foreach (SearchResultMatch result in curResults) {
 				if (!folderNodes.ContainsKey(result.FileName)) {
 					folderNodes[result.FileName] = new SearchFolderNode(result.FileName);
 				}
@@ -138,7 +142,7 @@ namespace SearchAndReplace
 			searchRootNode.Expand();
 		}
 		
-		public void ShowSearchResults(string pattern, List<SearchResult> results)
+		void ShowSearchResults(string pattern, IList<SearchResultMatch> results)
 		{
 			RemoveSpecialPanel();
 			
@@ -163,6 +167,30 @@ namespace SearchAndReplace
 			resultTreeView.EndUpdate();
 		}
 		
+		public void ShowSearchResults(SearchResult result)
+		{
+			if (result == null)
+				throw new ArgumentNullException("result");
+			
+			PadDescriptor searchResultPanel = WorkbenchSingleton.Workbench.GetPad(typeof(SearchResultPanel));
+			if (searchResultPanel != null) {
+				searchResultPanel.BringPadToFront();
+			}
+			
+			lastSearches.Insert(0, result);
+			
+			if (result.SpecialPanel != null) {
+				ShowSpecialPanel(result.SpecialPanel);
+			} else if (result.Results != null) {
+				ShowSearchResults(result.Pattern, result.Results);
+			}
+			
+			if (SearchResultsShown != null)
+				SearchResultsShown(this, EventArgs.Empty);
+		}
+		
+		public event EventHandler SearchResultsShown;
+		
 		public SearchResultPanel()
 		{
 			instance = this;
@@ -178,6 +206,7 @@ namespace SearchAndReplace
 		}
 		
 		// Special panel mode:
+		[Flags]
 		enum SearchResultPanelOwnerState
 		{
 			DefaultMode = 1,
@@ -193,7 +222,7 @@ namespace SearchAndReplace
 			}
 		}
 		
-		public void ShowSpecialPanel(Control ctl)
+		void ShowSpecialPanel(Control ctl)
 		{
 			ctl.Dock = DockStyle.Fill;
 			if (specialPanel == ctl)
@@ -208,7 +237,7 @@ namespace SearchAndReplace
 			ToolbarService.UpdateToolbar(toolStrip);
 		}
 		
-		public void RemoveSpecialPanel()
+		void RemoveSpecialPanel()
 		{
 			if (specialPanel != null) {
 				specialPanel = null;
@@ -218,12 +247,13 @@ namespace SearchAndReplace
 				ToolbarService.UpdateToolbar(toolStrip);
 			}
 		}
-	}
-	public class BackToNormalView : AbstractMenuCommand
-	{
-		public override void Run()
-		{
-			SearchResultPanel.Instance.RemoveSpecialPanel();
+		
+		List<SearchResult> lastSearches = new List<SearchResult> ();
+		
+		public List<SearchResult> LastSearches {
+			get {
+				return lastSearches;
+			}
 		}
 	}
 }

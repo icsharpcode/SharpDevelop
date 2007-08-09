@@ -20,17 +20,17 @@ namespace SearchAndReplace
 	/// </summary>
 	public class SearchRootNode : ExtTreeNode
 	{
-		List<SearchResult> results;
-		string             pattern;
+		IList<SearchResultMatch> results;
+		string pattern;
 		int fileCount;
 		
-		public List<SearchResult> Results {
+		public IList<SearchResultMatch> Results {
 			get {
 				return results;
 			}
 		}
 		
-		public SearchRootNode(string pattern, List<SearchResult> results, int fileCount)
+		public SearchRootNode(string pattern, IList<SearchResultMatch> results, int fileCount)
 		{
 			drawDefault = false;
 			this.results = results;

@@ -18,13 +18,6 @@ namespace SearchAndReplace
 		static Search find               = new Search();
 		
 		static string    currentFileName = String.Empty;
-		static List<SearchAllFinishedEventArgs> lastSearches = new List<SearchAllFinishedEventArgs> ();
-		
-		public static List<SearchAllFinishedEventArgs> LastSearches {
-			get {
-				return lastSearches;
-			}
-		}
 		
 		static SearchInFilesManager()
 		{
@@ -49,24 +42,14 @@ namespace SearchAndReplace
 			return true;
 		}
 		
-		static void FinishSearchInFiles(List<SearchResult> results)
+		static void FinishSearchInFiles(List<SearchResultMatch> results)
 		{
 			ShowSearchResults(SearchOptions.FindPattern, results);
 		}
 		
-		public static void ShowSearchResults(string pattern, List<SearchResult> results)
+		public static void ShowSearchResults(string pattern, List<SearchResultMatch> results)
 		{
-			SearchAndReplace.SearchAllFinishedEventArgs e =
-				new SearchAllFinishedEventArgs(pattern, results);
-			OnSearchAllFinished(e);
-
-			PadDescriptor searchResultPanel = WorkbenchSingleton.Workbench.GetPad(typeof(SearchResultPanel));
-			if (searchResultPanel != null) {
-				searchResultPanel.BringPadToFront();
-				SearchResultPanel.Instance.ShowSearchResults(pattern, results);
-			} else {
-				MessageService.ShowError("SearchResultPanel can't be created.");
-			}
+			SearchResultPanel.Instance.ShowSearchResults(new SearchResult(pattern, results));
 		}
 		
 		public static void FindAll(IProgressMonitor monitor)
@@ -75,9 +58,9 @@ namespace SearchAndReplace
 				return;
 			}
 			
-			List<SearchResult> results = new List<SearchResult>();
+			List<SearchResultMatch> results = new List<SearchResultMatch>();
 			while (true) {
-				SearchResult result = find.FindNext();
+				SearchResultMatch result = find.FindNext();
 				if (result == null) {
 					break;
 				}
@@ -92,9 +75,9 @@ namespace SearchAndReplace
 				return;
 			}
 			
-			List<SearchResult> results = new List<SearchResult>();
+			List<SearchResultMatch> results = new List<SearchResultMatch>();
 			while (true) {
-				SearchResult result = find.FindNext(offset, length);
+				SearchResultMatch result = find.FindNext(offset, length);
 				if (result == null) {
 					break;
 				}
@@ -102,15 +85,5 @@ namespace SearchAndReplace
 			}
 			FinishSearchInFiles(results);
 		}
-		
-		static void OnSearchAllFinished(SearchAllFinishedEventArgs e)
-		{
-			lastSearches.Insert(0, e);
-			if (SearchAllFinished != null) {
-				SearchAllFinished(null, e);
-			}
-		}
-		
-		public static event SearchAllFinishedEventHandler SearchAllFinished;
 	}
 }
