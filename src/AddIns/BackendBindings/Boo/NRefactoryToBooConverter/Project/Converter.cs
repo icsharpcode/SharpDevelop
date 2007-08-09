@@ -24,7 +24,7 @@ namespace NRefactoryToBooConverter
 			if (settings == null)
 				throw new ArgumentNullException("settings");
 			if (settings.IsVisualBasic)
-				cu.AcceptVisitor(new VBNetConstructsConvertVisitor(), null);
+				cu.AcceptVisitor(new VBNetConstructsConvertVisitor { AddDefaultValueInitializerToLocalVariableDeclarations = false }, null);
 			else
 				cu.AcceptVisitor(new CSharpConstructsVisitor(), null);
 			return (Module)cu.AcceptVisitor(new ConvertVisitor(settings), null);

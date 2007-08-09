@@ -202,8 +202,8 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		public void MultipleVariables()
 		{
 			TestStatement("Dim example, test As Single",
-			              "float example;\n" +
-			              "float test;");
+			              "float example = 0;\n" +
+			              "float test = 0;");
 		}
 		
 		[Test]
@@ -629,7 +629,7 @@ static int static_Test2_j = 0;");
 		[Test]
 		public void GlobalTypeReference()
 		{
-			TestStatement("Dim a As Global.System.String", "global::System.String a;");
+			TestStatement("Dim a As Global.System.String", "global::System.String a = null;");
 		}
 		
 		[Test]
@@ -659,6 +659,17 @@ static int static_Test2_j = 0;");
 			              "string[] i = new string[2] { \"0\", \"1\" };");
 			TestStatement("Dim i As String(,) = New String(5, 5) {}",
 			              "string[,] i = new string[6, 6];");
+		}
+		
+		[Test]
+		public void InitializeLocalVariables()
+		{
+			TestStatement("Dim x As Integer", "int x = 0;");
+			TestStatement("Dim x As Object", "object x = null;");
+			TestStatement("Dim x As String", "string x = null;");
+			TestStatement("Dim x", "object x = null;");
+			TestStatement("Dim x As Char", "char x = '\\0';");
+			TestStatement("Dim x As System.DateTime", "System.DateTime x = default(System.DateTime);");
 		}
 	}
 }

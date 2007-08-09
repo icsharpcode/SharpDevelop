@@ -27,7 +27,14 @@ namespace ICSharpCode.NRefactory.Visitors
 		//   Built-in methods => Prefix with class name
 		//   Function A() \n A = SomeValue \n End Function -> convert to return statement
 		//   Array creation => add 1 to upper bound to get array length
-		//   Comparison with empty string literal ->
+		//   Comparison with empty string literal -> string.IsNullOrEmpty
+		//   Add default value to local variable declarations without initializer
+		
+		/// <summary>
+		/// Specifies whether the "Add default value to local variable declarations without initializer"
+		/// operation is executed by this convert visitor.
+		/// </summary>
+		public bool AddDefaultValueInitializerToLocalVariableDeclarations = true;
 		
 		Dictionary<string, string> usings;
 		List<UsingDeclaration> addedUsings;
@@ -494,6 +501,47 @@ namespace ICSharpCode.NRefactory.Visitors
 				}
 			}
 			return null;
+		}
+		
+		public override object VisitLocalVariableDeclaration(LocalVariableDeclaration localVariableDeclaration, object data)
+		{
+			if (AddDefaultValueInitializerToLocalVariableDeclarations) {
+				for (int i = 0; i < localVariableDeclaration.Variables.Count; i++) {
+					VariableDeclaration decl = localVariableDeclaration.Variables[i];
+					if (decl.FixedArrayInitialization.IsNull && decl.Initializer.IsNull) {
+						TypeReference type = localVariableDeclaration.GetTypeForVariable(i);
+						if (type != null && !type.IsArrayType) {
+							switch (type.SystemType) {
+								case "System.SByte":
+								case "System.Byte":
+								case "System.Int16":
+								case "System.UInt16":
+								case "System.Int32":
+								case "System.UInt32":
+								case "System.Int64":
+								case "System.UInt64":
+								case "System.Single":
+								case "System.Double":
+									decl.Initializer = new PrimitiveExpression(0, "0");
+									break;
+								case "System.Char":
+									decl.Initializer = new PrimitiveExpression('\0', "'\\0'");
+									break;
+								case "System.Object":
+								case "System.String":
+									decl.Initializer = new PrimitiveExpression(null, "null");
+									break;
+								default:
+									decl.Initializer = new DefaultValueExpression(type);
+									break;
+							}
+						} else {
+							decl.Initializer = new PrimitiveExpression(null, "null");
+						}
+					}
+				}
+			}
+			return base.VisitLocalVariableDeclaration(localVariableDeclaration, data);
 		}
 	}
 }

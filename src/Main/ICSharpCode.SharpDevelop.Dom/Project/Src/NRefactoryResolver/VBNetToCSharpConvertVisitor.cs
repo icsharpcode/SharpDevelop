@@ -164,8 +164,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 						
 						ReplaceCurrentNode(new ExpressionStatement(
 							new AssignmentExpression(
-								reDimStatement.ReDimClauses[0].TargetObject, 
-								AssignmentOperatorType.Assign, 
+								reDimStatement.ReDimClauses[0].TargetObject,
+								AssignmentOperatorType.Assign,
 								new CastExpression(
 									ace.CreateType,
 									new InvocationExpression(
@@ -211,10 +211,22 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return e;
 		}
 		
-		public override object VisitLocalVariableDeclaration(LocalVariableDeclaration localVariableDeclaration, object data)
+		public override object VisitDefaultValueExpression(DefaultValueExpression defaultValueExpression, object data)
 		{
-			FixTypeReferenceCasing(localVariableDeclaration.TypeReference, localVariableDeclaration.StartLocation);
-			return base.VisitLocalVariableDeclaration(localVariableDeclaration, data);
+			base.VisitDefaultValueExpression(defaultValueExpression, data);
+			
+			IReturnType type = FixTypeReferenceCasing(defaultValueExpression.TypeReference, defaultValueExpression.StartLocation);
+			// the VBNetConstructsConvertVisitor will initialize local variables to
+			// default(TypeReference).
+			// MyType m = null; looks nicer than MyType m = default(MyType))
+			// so we replace default(ReferenceType) with null
+			if (type != null && (type.IsDefaultReturnType || type.IsConstructedReturnType)) {
+				IClass c = type.GetUnderlyingClass();
+				if (c != null && (c.ClassType == ClassType.Class || c.ClassType == ClassType.Interface || c.ClassType == ClassType.Delegate)) {
+					ReplaceCurrentNode(new PrimitiveExpression(null, "null"));
+				}
+			}
+			return null;
 		}
 		
 		public override object VisitVariableDeclaration(VariableDeclaration variableDeclaration, object data)
@@ -223,10 +235,10 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return base.VisitVariableDeclaration(variableDeclaration, data);
 		}
 		
-		void FixTypeReferenceCasing(TypeReference tr, Location loc)
+		IReturnType FixTypeReferenceCasing(TypeReference tr, Location loc)
 		{
-			if (_resolver.CompilationUnit == null) return;
-			if (tr.IsNull) return;
+			if (_resolver.CompilationUnit == null) return null;
+			if (tr.IsNull) return null;
 			IReturnType rt = _resolver.SearchType(tr.SystemType, loc);
 			if (rt != null) {
 				IClass c = rt.GetUnderlyingClass();
@@ -236,6 +248,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					}
 				}
 			}
+			return rt;
 		}
 		
 		string GetIdentifierFromResult(ResolveResult rr)

@@ -207,7 +207,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 		{
 			TestStatementsVB2CS("Dim obj as iDisposable\n" +
 			                    "Obj.dispose()",
-			                    "IDisposable obj;\n" +
+			                    "IDisposable obj = null;\n" +
 			                    "obj.Dispose();");
 		}
 		
@@ -252,7 +252,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 		{
 			TestStatementsVB2CS("Dim MyArray(,) as Integer\n" +
 			                    "ReDim MyArray(5, 5)",
-			                    "int[,] MyArray;\n" +
+			                    "int[,] MyArray = null;\n" +
 			                    "MyArray = new int[6, 6];\n");
 		}
 		
