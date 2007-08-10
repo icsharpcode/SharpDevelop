@@ -22,8 +22,9 @@ namespace NRefactoryASTGenerator.Ast
 	abstract class AttributedNode : AbstractNode
 	{
 		List<AttributeSection> attributes;
-		Modifiers               modifier;
+		Modifiers modifier;
 		
+		public AttributedNode() {}
 		public AttributedNode(List<AttributeSection> attributes) {}
 		public AttributedNode(Modifiers modifier, List<AttributeSection> attributes) {}
 	}
@@ -33,12 +34,10 @@ namespace NRefactoryASTGenerator.Ast
 		string name;
 		List<ParameterDeclarationExpression> parameters;
 		
+		public ParametrizedNode() {}
+		
 		public ParametrizedNode(Modifiers modifier, List<AttributeSection> attributes,
 		                        string name, List<ParameterDeclarationExpression> parameters)
-			: base(modifier, attributes)
-		{}
-		
-		public ParametrizedNode(Modifiers modifier, List<AttributeSection> attributes)
 			: base(modifier, attributes)
 		{}
 	}
@@ -50,7 +49,7 @@ namespace NRefactoryASTGenerator.Ast
 	}
 	
 	[CustomImplementation]
-	class InnerClassTypeReference : TypeReference 
+	class InnerClassTypeReference : TypeReference
 	{
 		TypeReference baseType;
 	}

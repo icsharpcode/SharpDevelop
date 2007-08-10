@@ -25,8 +25,12 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 		public override void GenerateCode(List<AbstractNode> nodes, IList items)
 		{
 			TypeReference intReference = new TypeReference("System.Int32");
-			MethodDeclaration method = new MethodDeclaration("GetHashCode", Modifiers.Public | Modifiers.Override, intReference, null, null);
-			method.Body = new BlockStatement();
+			MethodDeclaration method = new MethodDeclaration {
+				Name = "GetHashCode",
+				Modifier = Modifiers.Public | Modifiers.Override,
+				TypeReference = intReference,
+				Body = new BlockStatement()
+			};
 			
 			VariableDeclaration var;
 			var = new VariableDeclaration("hashCode", new PrimitiveExpression(0, "0"), intReference);
@@ -57,7 +61,11 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			TypeReference boolReference = new TypeReference("System.Boolean");
 			TypeReference objectReference = new TypeReference("System.Object");
 			
-			method = new MethodDeclaration("Equals", Modifiers.Public | Modifiers.Override, boolReference, null, null);
+			method = new MethodDeclaration {
+				Name = "Equals",
+				Modifier = Modifiers.Public | Modifiers.Override,
+				TypeReference = boolReference
+			};
 			method.Parameters.Add(new ParameterDeclarationExpression(objectReference, "obj"));
 			method.Body = new BlockStatement();
 			

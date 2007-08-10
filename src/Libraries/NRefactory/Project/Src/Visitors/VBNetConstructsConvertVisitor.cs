@@ -135,9 +135,14 @@ namespace ICSharpCode.NRefactory.Visitors
 				base.VisitUsingDeclaration(@using, data);
 			}
 			
-			MethodDeclaration method = new MethodDeclaration(declareDeclaration.Name, declareDeclaration.Modifier,
-			                                                 declareDeclaration.TypeReference, declareDeclaration.Parameters,
-			                                                 declareDeclaration.Attributes);
+			MethodDeclaration method = new MethodDeclaration {
+				Name = declareDeclaration.Name,
+				Modifier = declareDeclaration.Modifier,
+				TypeReference = declareDeclaration.TypeReference,
+				Parameters = declareDeclaration.Parameters,
+				Attributes = declareDeclaration.Attributes
+			};
+			
 			if ((method.Modifier & Modifiers.Visibility) == 0)
 				method.Modifier |= Modifiers.Public;
 			method.Modifier |= Modifiers.Extern | Modifiers.Static;

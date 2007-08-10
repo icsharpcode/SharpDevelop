@@ -176,15 +176,15 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 				                                  ConvertParameters(m.Parameters, targetContext),
 				                                  ConvertAttributes(m.Attributes, targetContext));
 			} else {
-				MethodDeclaration md;
-				md = new MethodDeclaration(m.Name,
-				                           ConvertModifier(m.Modifiers, targetContext),
-				                           ConvertType(m.ReturnType, targetContext),
-				                           ConvertParameters(m.Parameters, targetContext),
-				                           ConvertAttributes(m.Attributes, targetContext));
-				md.Templates = ConvertTemplates(m.TypeParameters, targetContext);
-				md.Body = CreateNotImplementedBlock();
-				return md;
+				return new MethodDeclaration {
+					Name = m.Name,
+					Modifier = ConvertModifier(m.Modifiers, targetContext),
+					TypeReference = ConvertType(m.ReturnType, targetContext),
+					Parameters = ConvertParameters(m.Parameters, targetContext),
+					Attributes = ConvertAttributes(m.Attributes, targetContext),
+					Templates = ConvertTemplates(m.TypeParameters, targetContext),
+					Body = CreateNotImplementedBlock()
+				};
 			}
 		}
 		
@@ -246,11 +246,12 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 		
 		public static EventDeclaration ConvertMember(IEvent e, ClassFinder targetContext)
 		{
-			return new EventDeclaration(ConvertType(e.ReturnType, targetContext),
-			                            e.Name,
-			                            ConvertModifier(e.Modifiers, targetContext),
-			                            ConvertAttributes(e.Attributes, targetContext),
-			                            null);
+			return new EventDeclaration {
+				TypeReference = ConvertType(e.ReturnType, targetContext),
+				Name = e.Name,
+				Modifier = ConvertModifier(e.Modifiers, targetContext),
+				Attributes = ConvertAttributes(e.Attributes, targetContext),
+			};
 		}
 		#endregion
 		
@@ -378,9 +379,11 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 		{
 			ClassFinder targetContext = new ClassFinder(property);
 			string name = property.Name + "Changed";
-			EventDeclaration ed = new EventDeclaration(new TypeReference("EventHandler"), name,
-			                                           ConvertModifier(property.Modifiers & (ModifierEnum.VisibilityMask | ModifierEnum.Static), targetContext)
-			                                           , null, null);
+			EventDeclaration ed = new EventDeclaration {
+				TypeReference = new TypeReference("EventHandler"),
+				Name = name,
+				Modifier = ConvertModifier(property.Modifiers & (ModifierEnum.VisibilityMask | ModifierEnum.Static), targetContext),
+			};
 			InsertCodeAfter(property, document, ed);
 			
 			List<Expression> arguments = new List<Expression>(2);
@@ -420,10 +423,12 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 				modifier = ModifierEnum.Protected;
 			else
 				modifier = ModifierEnum.Protected | ModifierEnum.Virtual;
-			MethodDeclaration method = new MethodDeclaration("On" + e.Name,
-			                                                 ConvertModifier(modifier, context),
-			                                                 new TypeReference("System.Void"),
-			                                                 parameters, null);
+			MethodDeclaration method = new MethodDeclaration {
+				Name = "On" + e.Name,
+				Modifier = ConvertModifier(modifier, context),
+				TypeReference = new TypeReference("System.Void"),
+				Parameters = parameters
+			};
 			
 			List<Expression> arguments = new List<Expression>();
 			if (sender) {

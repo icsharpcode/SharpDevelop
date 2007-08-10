@@ -615,10 +615,12 @@ InterfaceMemberDecl
 		[ "As" TypeName<out type> ]
 		EOL
 		(.
-			EventDeclaration ed = new EventDeclaration(type, mod.Modifier, p, attributes, name, null);
+			EventDeclaration ed = new EventDeclaration {
+				Name = name, TypeReference = type, Modifier = mod.Modifier,
+				Parameters = p, Attributes = attributes,
+				StartLocation = startLocation, EndLocation = t.EndLocation
+			};
 			compilationUnit.AddChild(ed);
-			ed.StartLocation = startLocation;
-			ed.EndLocation = t.EndLocation;
 		.)
 		|
 		"Sub"
@@ -631,11 +633,16 @@ InterfaceMemberDecl
 		[ "(" [ FormalParameterList<p> ] ")" ]
 		EOL
 		(.
-			MethodDeclaration md = new MethodDeclaration(name, mod.Modifier, null, p, attributes);
-			md.TypeReference = new TypeReference("", "System.Void");
-			md.StartLocation = startLocation;
-			md.EndLocation = t.EndLocation;
-			md.Templates = templates;
+			MethodDeclaration md = new MethodDeclaration {
+				Name = name, 
+				Modifier = mod.Modifier, 
+				Parameters = p,
+				Attributes = attributes,
+				TypeReference = new TypeReference("", "System.Void"),
+				StartLocation = startLocation,
+				EndLocation = t.EndLocation,
+				Templates = templates
+			};
 			compilationUnit.AddChild(md);
 		.)
 		|
@@ -652,7 +659,10 @@ InterfaceMemberDecl
 			if(type == null) {
 				type = new TypeReference("System.Object");
 			}
-			MethodDeclaration md = new MethodDeclaration(name, mod.Modifier, type, p, attributes);
+			MethodDeclaration md = new MethodDeclaration {
+				Name = name, Modifier = mod.Modifier, 
+				TypeReference = type, Parameters = p, Attributes = attributes
+			};
 			if (returnTypeAttributeSection != null) {
 				returnTypeAttributeSection.AttributeTarget = "return";
 				md.Attributes.Add(returnTypeAttributeSection);
@@ -764,28 +774,26 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 			/* abstract methods without a body */
 			IF(IsMustOverride(m))
 			(.
-				methodDeclaration = new MethodDeclaration(name, m.Modifier,  null, p, attributes);
-				methodDeclaration.StartLocation = m.GetDeclarationLocation(startPos);
-				methodDeclaration.EndLocation   = endLocation;
-				methodDeclaration.TypeReference = new TypeReference("", "System.Void");
-				
-				methodDeclaration.Templates = templates;
-				methodDeclaration.HandlesClause = handlesClause;
-				methodDeclaration.InterfaceImplementations = implementsClause;
-				
+				methodDeclaration = new MethodDeclaration {
+					Name = name, Modifier = m.Modifier, Parameters = p, Attributes = attributes,
+					StartLocation = m.GetDeclarationLocation(startPos), EndLocation = endLocation,
+					TypeReference = new TypeReference("", "System.Void"),
+					Templates = templates,
+					HandlesClause = handlesClause,
+					InterfaceImplementations = implementsClause
+				};
 				compilationUnit.AddChild(methodDeclaration);
 			.)
 		|
 			(.
-				methodDeclaration = new MethodDeclaration(name, m.Modifier,  null, p, attributes);
-				methodDeclaration.StartLocation = m.GetDeclarationLocation(startPos);
-				methodDeclaration.EndLocation   = endLocation;
-				methodDeclaration.TypeReference = new TypeReference("", "System.Void");
-				
-				methodDeclaration.Templates = templates;
-				methodDeclaration.HandlesClause = handlesClause;
-				methodDeclaration.InterfaceImplementations = implementsClause;
-				
+				methodDeclaration = new MethodDeclaration {
+					Name = name, Modifier = m.Modifier, Parameters = p, Attributes = attributes,
+					StartLocation = m.GetDeclarationLocation(startPos), EndLocation = endLocation,
+					TypeReference = new TypeReference("", "System.Void"),
+					Templates = templates,
+					HandlesClause = handlesClause,
+					InterfaceImplementations = implementsClause
+				};
 				compilationUnit.AddChild(methodDeclaration);
 			.)
 			
@@ -858,13 +866,15 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 		/* abstract methods without a body */
 		IF(IsMustOverride(m))
 			(.
-				methodDeclaration = new MethodDeclaration(name, m.Modifier,  type, p, attributes);
-				methodDeclaration.StartLocation = m.GetDeclarationLocation(startPos);
-				methodDeclaration.EndLocation   = t.EndLocation;
-				
-				methodDeclaration.HandlesClause = handlesClause;
-				methodDeclaration.Templates     = templates;
-				methodDeclaration.InterfaceImplementations = implementsClause;
+				methodDeclaration = new MethodDeclaration {
+					Name = name, Modifier = m.Modifier, TypeReference = type,
+					Parameters = p, Attributes = attributes,
+					StartLocation = m.GetDeclarationLocation(startPos),
+					EndLocation   = t.EndLocation,
+					HandlesClause = handlesClause,
+					Templates     = templates,
+					InterfaceImplementations = implementsClause
+				};
 				if (returnTypeAttributeSection != null) {
 					returnTypeAttributeSection.AttributeTarget = "return";
 					methodDeclaration.Attributes.Add(returnTypeAttributeSection);
@@ -873,13 +883,15 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 			.)
 		|
 			(.
-				methodDeclaration = new MethodDeclaration(name, m.Modifier,  type, p, attributes);
-				methodDeclaration.StartLocation = m.GetDeclarationLocation(startPos);
-				methodDeclaration.EndLocation   = t.EndLocation;
-				
-				methodDeclaration.Templates     = templates;
-				methodDeclaration.HandlesClause = handlesClause;
-				methodDeclaration.InterfaceImplementations = implementsClause;
+				methodDeclaration = new MethodDeclaration {
+					Name = name, Modifier = m.Modifier, TypeReference = type,
+					Parameters = p, Attributes = attributes,
+					StartLocation = m.GetDeclarationLocation(startPos),
+					EndLocation   = t.EndLocation,
+					Templates     = templates,
+					HandlesClause = handlesClause,
+					InterfaceImplementations = implementsClause
+				};
 				if (returnTypeAttributeSection != null) {
 					returnTypeAttributeSection.AttributeTarget = "return";
 					methodDeclaration.Attributes.Add(returnTypeAttributeSection);
@@ -958,9 +970,12 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 	)
 	[ ImplementsClause<out implementsClause> ]
 	(.
-		eventDeclaration = new EventDeclaration(type, m.Modifier, p, attributes, name, implementsClause);
-		eventDeclaration.StartLocation = m.GetDeclarationLocation(startPos);
-		eventDeclaration.EndLocation = t.EndLocation;
+		eventDeclaration = new EventDeclaration {
+			Name = name, TypeReference = type, Modifier = m.Modifier, 
+			Parameters = p, Attributes = attributes, InterfaceImplementations = implementsClause,
+			StartLocation = m.GetDeclarationLocation(startPos),
+			EndLocation = t.EndLocation
+		};
 		compilationUnit.AddChild(eventDeclaration);
 	.)
 	EOL
@@ -1098,12 +1113,15 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 			Error("Need to provide RaiseEvent accessor.");
 		}
 	
-		EventDeclaration decl = new EventDeclaration(type, customEventName, m.Modifier, attributes, null);
-		decl.StartLocation = m.GetDeclarationLocation(startPos);
-		decl.EndLocation = t.EndLocation;
-		decl.AddRegion = addHandlerAccessorDeclaration;
-		decl.RemoveRegion = removeHandlerAccessorDeclaration;
-		decl.RaiseRegion = raiseEventAccessorDeclaration;
+		EventDeclaration decl = new EventDeclaration {
+			TypeReference = type, Name = customEventName, Modifier = m.Modifier,
+			Attributes = attributes,
+			StartLocation = m.GetDeclarationLocation(startPos),
+			EndLocation = t.EndLocation,
+			AddRegion = addHandlerAccessorDeclaration,
+			RemoveRegion = removeHandlerAccessorDeclaration,
+			RaiseRegion = raiseEventAccessorDeclaration
+		};
 		compilationUnit.AddChild(decl);
 	.)
 |   (. ConversionType opConversionType = ConversionType.None; .)
@@ -1137,17 +1155,18 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 	[ "As" { AttributeSection<out section> (. returnTypeAttributes.Add(section); .) } TypeName<out returnType> (. endPos = t.EndLocation; .) EOL ]
 	Block<out stmt> "End" "Operator" EOL
 	(.
-		OperatorDeclaration operatorDeclaration = new OperatorDeclaration(m.Modifier, 
-		                                                                  attributes, 
-		                                                                  parameters, 
-		                                                                  returnType,
-		                                                                  operatorType
-		                                                                  );
-		operatorDeclaration.ConversionType = opConversionType;
-		operatorDeclaration.ReturnTypeAttributes = returnTypeAttributes;
-		operatorDeclaration.Body = (BlockStatement)stmt;
-		operatorDeclaration.StartLocation = m.GetDeclarationLocation(startPos);
-		operatorDeclaration.EndLocation = endPos;
+		OperatorDeclaration operatorDeclaration = new OperatorDeclaration {
+			Modifier = m.Modifier,
+			Attributes = attributes,
+			Parameters = parameters,
+			TypeReference = returnType,
+			OverloadableOperator = operatorType,
+			ConversionType = opConversionType,
+			ReturnTypeAttributes = returnTypeAttributes,
+			Body = (BlockStatement)stmt,
+			StartLocation = m.GetDeclarationLocation(startPos),
+			EndLocation = endPos
+		};
 		operatorDeclaration.Body.StartLocation = startPos;
 		operatorDeclaration.Body.EndLocation = t.Location;
 		compilationUnit.AddChild(operatorDeclaration);

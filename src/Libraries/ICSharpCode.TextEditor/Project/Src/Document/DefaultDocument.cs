@@ -236,17 +236,12 @@ namespace ICSharpCode.TextEditor.Document
 				return;
 			}
 			OnDocumentAboutToBeChanged(new DocumentEventArgs(this, offset, -1, text));
-			DateTime time = DateTime.Now;
+			
 			textBufferStrategy.Insert(offset, text);
-			
-			time = DateTime.Now;
 			lineTrackingStrategy.Insert(offset, text);
-			
-			time = DateTime.Now;
 			
 			undoStack.Push(new UndoableInsert(this, offset, text));
 			
-			time = DateTime.Now;
 			OnDocumentChanged(new DocumentEventArgs(this, offset, -1, text));
 		}
 		

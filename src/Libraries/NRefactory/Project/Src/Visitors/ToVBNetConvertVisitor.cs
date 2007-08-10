@@ -163,8 +163,13 @@ namespace ICSharpCode.NRefactory.Visitors
 		
 		public override object VisitAnonymousMethodExpression(AnonymousMethodExpression anonymousMethodExpression, object data)
 		{
-			MethodDeclaration method = new MethodDeclaration(GetAnonymousMethodName(), Modifiers.Private, new TypeReference("System.Void"), anonymousMethodExpression.Parameters, null);
-			method.Body = anonymousMethodExpression.Body;
+			MethodDeclaration method = new MethodDeclaration {
+				Name = GetAnonymousMethodName(),
+				Modifier = Modifiers.Private,
+				TypeReference = new TypeReference("System.Void"),
+				Parameters = anonymousMethodExpression.Parameters,
+				Body = anonymousMethodExpression.Body
+			};
 			if (currentType != null) {
 				currentType.Children.Add(method);
 			}
@@ -212,18 +217,19 @@ namespace ICSharpCode.NRefactory.Visitors
 				}
 			}
 			
-			method = new MethodDeclaration(
-				"InlineAssignHelper", Modifiers.Private | Modifiers.Static,
-				new TypeReference("T"),
-				new List<ParameterDeclarationExpression> {
+			method = new MethodDeclaration {
+				Name = "InlineAssignHelper",
+				Modifier = Modifiers.Private | Modifiers.Static,
+				TypeReference = new TypeReference("T"),
+				Parameters = new List<ParameterDeclarationExpression> {
 					new ParameterDeclarationExpression(new TypeReference("T"), "target", ParameterModifiers.Ref),
 					new ParameterDeclarationExpression(new TypeReference("T"), "value")
-				}, null);
+				}};
 			method.Templates.Add(new TemplateDefinition("T", null));
 			method.Body = new BlockStatement();
 			method.Body.AddChild(new ExpressionStatement(new AssignmentExpression(
-				new IdentifierExpression("target"), 
-				AssignmentOperatorType.Assign, 
+				new IdentifierExpression("target"),
+				AssignmentOperatorType.Assign,
 				new IdentifierExpression("value"))));
 			method.Body.AddChild(new ReturnStatement(new IdentifierExpression("value")));
 			currentType.AddChild(method);

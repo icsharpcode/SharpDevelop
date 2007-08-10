@@ -89,25 +89,14 @@ namespace NRefactoryASTGenerator.Ast
 	[IncludeBoolProperty("HasAddRegion",    "return !addRegion.IsNull;")]
 	[IncludeBoolProperty("HasRemoveRegion", "return !removeRegion.IsNull;")]
 	[IncludeBoolProperty("HasRaiseRegion",  "return !raiseRegion.IsNull;")]
-	class EventDeclaration : ParametrizedNode
+	class EventDeclaration : MemberNode
 	{
-		TypeReference typeReference;
-		List<InterfaceImplementation> interfaceImplementations;
 		EventAddRegion addRegion;
 		EventRemoveRegion removeRegion;
 		EventRaiseRegion raiseRegion;
 		Location bodyStart;
 		Location bodyEnd;
 		Expression initializer;
-		
-		public EventDeclaration(TypeReference typeReference, string name, Modifiers modifier, List<AttributeSection> attributes, List<ParameterDeclarationExpression> parameters)
-			: base(modifier, attributes, name, parameters)
-		{ }
-		
-		// for VB:
-		public EventDeclaration(TypeReference typeReference, Modifiers modifier, List<ParameterDeclarationExpression> parameters, List<AttributeSection> attributes, string name, List<InterfaceImplementation> interfaceImplementations)
-			: base(modifier, attributes, name, parameters)
-		{ }
 	}
 	
 	[IncludeMember(@"
@@ -142,44 +131,36 @@ namespace NRefactoryASTGenerator.Ast
 		{}
 	}
 	
-	class MethodDeclaration : ParametrizedNode
+	abstract class MemberNode : ParametrizedNode
 	{
-		TypeReference    typeReference;
+		List<InterfaceImplementation> interfaceImplementations;
+		TypeReference typeReference;
+		
+		public MemberNode() {}
+		
+		public MemberNode(Modifiers modifier, List<AttributeSection> attributes,
+		                  string name, List<ParameterDeclarationExpression> parameters)
+			: base(modifier, attributes, name, parameters)
+		{}
+	}
+	
+	class MethodDeclaration : MemberNode
+	{
 		BlockStatement   body;
 		List<string>     handlesClause;
-		List<InterfaceImplementation> interfaceImplementations;
 		List<TemplateDefinition> templates;
 		bool isExtensionMethod;
-		
-		public MethodDeclaration(string name, Modifiers modifier, TypeReference typeReference, List<ParameterDeclarationExpression> parameters, List<AttributeSection> attributes) : base(modifier, attributes, name, parameters) {}
 	}
 	
 	enum ConversionType { None }
 	enum OverloadableOperatorType { None }
 	
 	[IncludeBoolProperty("IsConversionOperator", "return conversionType != ConversionType.None;")]
-	[FixOperatorDeclarationAttribute]
 	class OperatorDeclaration : MethodDeclaration
 	{
 		ConversionType conversionType;
 		List<AttributeSection> returnTypeAttributes;
 		OverloadableOperatorType overloadableOperator;
-		
-		public OperatorDeclaration(Modifiers modifier,
-		                           List<AttributeSection> attributes,
-		                           List<ParameterDeclarationExpression> parameters,
-		                           TypeReference typeReference,
-		                           ConversionType conversionType)
-			: base(null, modifier, typeReference, parameters, attributes)
-		{}
-		
-		public OperatorDeclaration(Modifiers modifier,
-		                           List<AttributeSection> attributes,
-		                           List<ParameterDeclarationExpression> parameters,
-		                           TypeReference typeReference,
-		                           OverloadableOperatorType overloadableOperator)
-			: base(null, modifier, typeReference, parameters, attributes)
-		{}
 	}
 	
 	[IncludeBoolProperty("HasGetRegion", "return !getRegion.IsNull;")]
@@ -197,10 +178,8 @@ namespace NRefactoryASTGenerator.Ast
 				this.GetRegion = new PropertyGetRegion(null, null);
 			}
 		}")]
-	class PropertyDeclaration : ParametrizedNode
+	class PropertyDeclaration : MemberNode
 	{
-		List<InterfaceImplementation> interfaceImplementations;
-		TypeReference     typeReference;
 		Location          bodyStart;
 		Location          bodyEnd;
 		PropertyGetRegion getRegion;

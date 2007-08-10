@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.Visitors;
@@ -19,11 +20,18 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 	{
 		NRefactoryResolver _resolver;
 		ParseInformation _parseInfo;
+		IProjectContent _pc;
 		
 		public CSharpToVBNetConvertVisitor(IProjectContent pc, ParseInformation parseInfo)
 		{
 			_resolver = new NRefactoryResolver(LanguageProperties.CSharp);
+			_pc = pc;
 			_parseInfo = parseInfo;
+		}
+		
+		IReturnType ResolveType(TypeReference typeRef)
+		{
+			return TypeVisitor.CreateReturnType(typeRef, _resolver);
 		}
 		
 		public override object VisitCompilationUnit(CompilationUnit compilationUnit, object data)
@@ -34,6 +42,20 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return null;
 		}
 		
+		struct BaseType
+		{
+			internal readonly TypeReference TypeReference;
+			internal readonly IReturnType ReturnType;
+			internal readonly IClass UnderlyingClass;
+			
+			public BaseType(TypeReference typeReference, IReturnType returnType)
+			{
+				this.TypeReference = typeReference;
+				this.ReturnType = returnType;
+				this.UnderlyingClass = returnType.GetUnderlyingClass();
+			}
+		}
+		
 		public override object VisitMethodDeclaration(MethodDeclaration methodDeclaration, object data)
 		{
 			// Initialize resolver for method:
@@ -42,7 +64,69 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					_resolver.RunLookupTableVisitor(methodDeclaration);
 				}
 			}
+			IMethod currentMethod = _resolver.CallingMember as IMethod;
+			CreateInterfaceImplementations(currentMethod, methodDeclaration, methodDeclaration.InterfaceImplementations);
 			return base.VisitMethodDeclaration(methodDeclaration, data);
+		}
+		
+		ClassFinder CreateContext()
+		{
+			return new ClassFinder(_resolver.CallingClass, _resolver.CallingMember, _resolver.CaretLine, _resolver.CaretColumn);
+		}
+		
+		void CreateInterfaceImplementations(IMember currentMember, ParametrizedNode memberDecl, List<InterfaceImplementation> interfaceImplementations)
+		{
+			if (currentMember != null && interfaceImplementations.Count == 1) {
+				// member is explicitly implementing an interface member
+				// to convert explicit interface implementations to VB, make the member private
+				// and ensure its name does not collide with another member
+				memberDecl.Modifier |= Modifiers.Private;
+				memberDecl.Name = interfaceImplementations[0].InterfaceType.Type.Replace('.', '_') + "_" + memberDecl.Name;
+			}
+			
+			if (currentMember != null && currentMember.IsPublic
+			    && currentMember.DeclaringType.ClassType != ClassType.Interface)
+			{
+				// member could be implicitly implementing an interface member,
+				// search for interfaces containing the member
+				foreach (IReturnType directBaseType in currentMember.DeclaringType.GetCompoundClass().BaseTypes) {
+					IClass directBaseClass = directBaseType.GetUnderlyingClass();
+					if (directBaseClass != null && directBaseClass.ClassType == ClassType.Interface) {
+						// include members inherited from other interfaces in the search:
+						foreach (IReturnType baseType in MemberLookupHelper.GetTypeInheritanceTree(directBaseType)) {
+							IClass baseClass = baseType.GetUnderlyingClass();
+							if (baseClass != null && baseClass.ClassType == ClassType.Interface) {
+								IMember similarMember = MemberLookupHelper.FindSimilarMember(baseClass, currentMember);
+								// add an interface implementation for similarMember
+								// only when similarMember is not explicitly implemented by another member in this class
+								if (similarMember != null && !HasExplicitImplementationFor(similarMember, baseType, memberDecl.Parent)) {
+									interfaceImplementations.Add(new InterfaceImplementation(
+										Refactoring.CodeGenerator.ConvertType(baseType, CreateContext()),
+										currentMember.Name));
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		bool HasExplicitImplementationFor(IMember interfaceMember, IReturnType interfaceReference, INode typeDecl)
+		{
+			if (typeDecl == null)
+				return false;
+			foreach (INode node in typeDecl.Children) {
+				MemberNode memberNode = node as MemberNode;
+				if (memberNode != null && memberNode.InterfaceImplementations.Count > 0) {
+					foreach (InterfaceImplementation impl in memberNode.InterfaceImplementations) {
+						if (impl.MemberName == interfaceMember.Name
+						    && object.Equals(ResolveType(impl.InterfaceType), interfaceReference)) {
+							return true;
+						}
+					}
+				}
+			}
+			return false;
 		}
 		
 		public override object VisitConstructorDeclaration(ConstructorDeclaration constructorDeclaration, object data)
@@ -60,6 +144,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (_resolver.Initialize(_parseInfo, propertyDeclaration.BodyStart.Y, propertyDeclaration.BodyStart.X)) {
 				_resolver.RunLookupTableVisitor(propertyDeclaration);
 			}
+			IProperty currentProperty = _resolver.CallingMember as IProperty;
+			CreateInterfaceImplementations(currentProperty, propertyDeclaration, propertyDeclaration.InterfaceImplementations);
 			return base.VisitPropertyDeclaration(propertyDeclaration, data);
 		}
 		

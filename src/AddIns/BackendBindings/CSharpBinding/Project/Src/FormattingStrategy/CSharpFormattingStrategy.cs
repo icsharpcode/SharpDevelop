@@ -428,7 +428,7 @@ namespace CSharpBinding.FormattingStrategy
 								}
 								//// adding curline text
 								textArea.Document.Replace(curLine.Offset, curLine.Length, indentation.ToString() + " * " + curLineText);
-								//return indentation.Length + 3 + curLineText.Length;
+								textArea.Caret.Column = indentation.Length + 3 + curLineText.Length;
 								return;
 							}
 							
@@ -440,7 +440,7 @@ namespace CSharpBinding.FormattingStrategy
 								}
 								//// adding curline if present
 								textArea.Document.Replace(curLine.Offset, curLine.Length, indentation.ToString() + "* " + curLineText);
-								//return indentation.Length + 2 + curLineText.Length;
+								textArea.Caret.Column = indentation.Length + 2 + curLineText.Length;
 								return;
 							}
 						} else { // don't handle // lines, because they're only one lined comments
@@ -453,7 +453,7 @@ namespace CSharpBinding.FormattingStrategy
 								}
 								//// adding curline text if present
 								textArea.Document.Replace(curLine.Offset, curLine.Length, indentation.ToString() + "/// " + curLineText);
-								//return indentation.Length + 4 /*+ curLineText.Length*/;
+								textArea.Caret.Column = indentation.Length + 4;
 								return;
 							}
 							
@@ -476,6 +476,7 @@ namespace CSharpBinding.FormattingStrategy
 							}
 						}
 					}
+					textArea.Caret.Column = result;
 					return;
 			}
 		}

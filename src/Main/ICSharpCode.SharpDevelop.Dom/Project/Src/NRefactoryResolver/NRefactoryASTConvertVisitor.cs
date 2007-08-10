@@ -450,9 +450,9 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		{
 			DomRegion region     = GetRegion(methodDeclaration.StartLocation, methodDeclaration.EndLocation);
 			DomRegion bodyRegion = GetRegion(methodDeclaration.EndLocation, methodDeclaration.Body != null ? methodDeclaration.Body.EndLocation : RefParser.Location.Empty);
-			DefaultClass c  = GetCurrentClass();
+			DefaultClass currentClass = GetCurrentClass();
 			
-			DefaultMethod method = new DefaultMethod(methodDeclaration.Name, null, ConvertModifier(methodDeclaration.Modifier), region, bodyRegion, GetCurrentClass());
+			DefaultMethod method = new DefaultMethod(methodDeclaration.Name, null, ConvertModifier(methodDeclaration.Modifier), region, bodyRegion, currentClass);
 			method.IsExtensionMethod = methodDeclaration.IsExtensionMethod;
 			method.Documentation = GetDocumentation(region.BeginLine, methodDeclaration.Attributes);
 			ConvertTemplates(methodDeclaration.Templates, method);
@@ -465,7 +465,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			} else {
 				method.Parameters = DefaultParameter.EmptyParameterList;
 			}
-			c.Methods.Add(method);
+			currentClass.Methods.Add(method);
 			return null;
 		}
 		

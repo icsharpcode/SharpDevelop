@@ -54,20 +54,6 @@ namespace NRefactoryASTGenerator
 	{
 	}
 	
-	[AttributeUsage(AttributeTargets.Class)]
-	public class FixOperatorDeclarationAttribute : TypeImplementationModifierAttribute
-	{
-		public override void ModifyImplementation(CodeNamespace cns, CodeTypeDeclaration ctd, Type type)
-		{
-			foreach (object o in ctd.Members) {
-				CodeConstructor cc = o as CodeConstructor;
-				if (cc != null) {
-					cc.BaseConstructorArgs[0] = new CodePrimitiveExpression(null);
-				}
-			}
-		}
-	}
-	
 	[AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
 	public class IncludeMemberAttribute : TypeImplementationModifierAttribute
 	{

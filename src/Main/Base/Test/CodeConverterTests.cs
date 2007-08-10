@@ -112,14 +112,15 @@ namespace ICSharpCode.SharpDevelop.Tests
 			                 "End Class");
 		}
 		
+		const string DefaultUsingsCSharp = "using System;\nusing Microsoft.VisualBasic;\n";
+		
 		void TestMemberVB2CS(string sourceCode, string expectedCode)
 		{
 			TestProgramVB2CS("Class MyClassName\n" +
 			                 IndentAllLines(sourceCode) +
 			                 "End Class",
 			                 
-			                 "using System;\n" +
-			                 "using Microsoft.VisualBasic;\n" +
+			                 DefaultUsingsCSharp +
 			                 "class MyClassName\n{\n" +
 			                 IndentAllLines(expectedCode) +
 			                 "}");
@@ -264,5 +265,105 @@ namespace ICSharpCode.SharpDevelop.Tests
 			                    "int[,] MyArray = new int[6, 6];\n" +
 			                    "MyArray = (int[,])Microsoft.VisualBasic.CompilerServices.Utils.CopyArray(MyArray, new int[11, 11]);");
 		}
+		
+		#region InterfaceImplementation
+		[Test]
+		public void InterfaceImplementation1()
+		{
+			TestProgramCS2VB("using System;\n" +
+			                 "class Test : IDisposable {\n" +
+			                 "  public void Dispose() { }" +
+			                 "}",
+			                 "Imports System\n" +
+			                 "Class Test\n" +
+			                 "  Implements IDisposable\n" +
+			                 "  Public Sub Dispose() Implements IDisposable.Dispose\n" +
+			                 "  End Sub\n" +
+			                 "End Class");
+		}
+		
+		[Test]
+		public void InterfaceImplementation2()
+		{
+			TestProgramCS2VB("using System;\n" +
+			                 "class Test : IServiceProvider {\n" +
+			                 "  public object GetService(IntPtr a) { }\n" +
+			                 "  public object GetService(Type a) { }\n" +
+			                 "}",
+			                 "Imports System\n" +
+			                 "Class Test\n" +
+			                 "  Implements IServiceProvider\n" +
+			                 "  Public Function GetService(ByVal a As IntPtr) As Object\n" +
+			                 "  End Function\n" +
+			                 "  Public Function GetService(ByVal a As Type) As Object Implements IServiceProvider.GetService\n" +
+			                 "  End Function\n" +
+			                 "End Class");
+		}
+		
+		const string VBIEnumeratorOfStringImplementation =
+			"Imports System\n" +
+			"Imports System.Collections.Generic\n" +
+			"Class Test\n" +
+			"  Implements IEnumerator(Of String)\n" +
+			"  Public ReadOnly Property Current() As String Implements IEnumerator(Of String).Current\n" +
+			"    Get\n" +
+			"    End Get\n" +
+			"  End Property\n" +
+			"  Private ReadOnly Property System_Collections_IEnumerator_Current() As Object Implements System.Collections.IEnumerator.Current\n" +
+			"    Get\n" +
+			"    End Get\n" +
+			"  End Property\n" +
+			"  Public Function MoveNext() As Boolean Implements System.Collections.IEnumerator.MoveNext\n" +
+			"  End Function\n" +
+			"  Public Sub Reset() Implements System.Collections.IEnumerator.Reset\n" +
+			"  End Sub\n" +
+			"  Public Sub Dispose() Implements IDisposable.Dispose\n" +
+			"  End Sub\n" +
+			"End Class";
+		
+		[Test]
+		public void InterfaceImplementation3()
+		{
+			TestProgramCS2VB("using System; using System.Collections.Generic;\n" +
+			                 "class Test : IEnumerator<string> {\n" +
+			                 "  public string Current { get { } }\n" +
+			                 "  object System.Collections.IEnumerator.Current { get { } }\n" +
+			                 "  public bool MoveNext() { }\n" +
+			                 "  public void Reset() { }\n" +
+			                 "  public void Dispose() { }\n" +
+			                 "}",
+			                 VBIEnumeratorOfStringImplementation);
+		}
+		
+		[Test]
+		public void InterfaceImplementation4()
+		{
+			TestProgramVB2CS(VBIEnumeratorOfStringImplementation,
+			                 DefaultUsingsCSharp +
+			                 "using System;\n" +
+			                 "using System.Collections.Generic;\n" +
+			                 "class Test : IEnumerator<string>\n" +
+			                 "{\n" +
+			                 "  public string Current {\n" +
+			                 "    get { }\n" +
+			                 "  }\n" +
+			                 "  private object System_Collections_IEnumerator_Current {\n" +
+			                 "    get { }\n" +
+			                 "  }\n" +
+			                 "  object System.Collections.IEnumerator.Current {\n" +
+			                 "    get { return System_Collections_IEnumerator_Current; }\n" +
+			                 "  }\n" +
+			                 "  public bool MoveNext()\n" +
+			                 "  {\n" +
+			                 "  }\n" +
+			                 "  public void Reset()\n" +
+			                 "  {\n" +
+			                 "  }\n" +
+			                 "  public void Dispose()\n" +
+			                 "  {\n" +
+			                 "  }\n" +
+			                 "}");
+		}
+		#endregion
 	}
 }

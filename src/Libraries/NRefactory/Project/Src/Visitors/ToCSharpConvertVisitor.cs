@@ -20,6 +20,9 @@ namespace ICSharpCode.NRefactory.Visitors
 		// The following conversions are implemented:
 		//   Public Event EventName(param As String) -> automatic delegate declaration
 		//   static variables inside methods become fields
+		//   Explicit interface implementation:
+		//      => create additional member for implementing the interface
+		//      or convert to implicit interface implementation
 		
 		public override object VisitEventDeclaration(EventDeclaration eventDeclaration, object data)
 		{
@@ -31,13 +34,94 @@ namespace ICSharpCode.NRefactory.Visitors
 					dd.ReturnType = new TypeReference("System.Void");
 					dd.Parent = eventDeclaration.Parent;
 					eventDeclaration.Parameters = null;
-					int index = eventDeclaration.Parent.Children.IndexOf(eventDeclaration);
-					// inserting before current position is not allowed in a Transformer
-					eventDeclaration.Parent.Children.Insert(index + 1, dd);
+					InsertAfterSibling(eventDeclaration, dd);
 					eventDeclaration.TypeReference = new TypeReference(dd.Name);
 				}
 			}
 			return base.VisitEventDeclaration(eventDeclaration, data);
+		}
+		
+		// inserting before current position is not allowed in a Transformer
+		// but inserting after it is possible
+		void InsertAfterSibling(INode sibling, INode newNode)
+		{
+			if (sibling == null || sibling.Parent == null) return;
+			int index = sibling.Parent.Children.IndexOf(sibling);
+			sibling.Parent.Children.Insert(index + 1, newNode);
+			newNode.Parent = sibling.Parent;
+		}
+		
+		public override object VisitMethodDeclaration(MethodDeclaration methodDeclaration, object data)
+		{
+			ConvertInterfaceImplementation(methodDeclaration);
+			return base.VisitMethodDeclaration(methodDeclaration, data);
+		}
+		
+		void ConvertInterfaceImplementation(MethodDeclaration member)
+		{
+			// members without modifiers are already C# explicit interface implementations, do not convert them
+			if (member.Modifier == Modifiers.None)
+				return;
+			while (member.InterfaceImplementations.Count > 0) {
+				InterfaceImplementation impl = member.InterfaceImplementations[0];
+				member.InterfaceImplementations.RemoveAt(0);
+				if (member.Name != impl.MemberName) {
+					MethodDeclaration newMember = new MethodDeclaration {
+						Name = impl.MemberName,
+						TypeReference = member.TypeReference,
+						Parameters = member.Parameters,
+						Body = new BlockStatement()
+					};
+					InvocationExpression callExpression = new InvocationExpression(new IdentifierExpression(member.Name));
+					foreach (ParameterDeclarationExpression decl in member.Parameters) {
+						callExpression.Arguments.Add(new IdentifierExpression(decl.ParameterName));
+					}
+					if (member.TypeReference.SystemType == "System.Void") {
+						newMember.Body.AddChild(new ExpressionStatement(callExpression));
+					} else {
+						newMember.Body.AddChild(new ReturnStatement(callExpression));
+					}
+					newMember.InterfaceImplementations.Add(impl);
+					InsertAfterSibling(member, newMember);
+				}
+			}
+		}
+		
+		public override object VisitPropertyDeclaration(PropertyDeclaration propertyDeclaration, object data)
+		{
+			ConvertInterfaceImplementation(propertyDeclaration);
+			return base.VisitPropertyDeclaration(propertyDeclaration, data);
+		}
+		
+		void ConvertInterfaceImplementation(PropertyDeclaration member)
+		{
+			// members without modifiers are already C# explicit interface implementations, do not convert them
+			if (member.Modifier == Modifiers.None)
+				return;
+			while (member.InterfaceImplementations.Count > 0) {
+				InterfaceImplementation impl = member.InterfaceImplementations[0];
+				member.InterfaceImplementations.RemoveAt(0);
+				if (member.Name != impl.MemberName) {
+					PropertyDeclaration newMember = new PropertyDeclaration(Modifiers.None, null, impl.MemberName, null);
+					newMember.TypeReference = member.TypeReference;
+					if (member.HasGetRegion) {
+						newMember.GetRegion = new PropertyGetRegion(new BlockStatement(), null);
+						newMember.GetRegion.Block.AddChild(new ReturnStatement(new IdentifierExpression(member.Name)));
+					}
+					if (member.HasSetRegion) {
+						newMember.SetRegion = new PropertySetRegion(new BlockStatement(), null);
+						newMember.SetRegion.Block.AddChild(new ExpressionStatement(
+							new AssignmentExpression(
+								new IdentifierExpression(member.Name),
+								AssignmentOperatorType.Assign,
+								new IdentifierExpression("value")
+							)));
+					}
+					newMember.Parameters = member.Parameters;
+					newMember.InterfaceImplementations.Add(impl);
+					InsertAfterSibling(member, newMember);
+				}
+			}
 		}
 		
 		public override object VisitLocalVariableDeclaration(LocalVariableDeclaration localVariableDeclaration, object data)

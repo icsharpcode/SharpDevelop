@@ -754,17 +754,19 @@ StructMemberDecl<ModifierList m, List<AttributeSection> attributes>
 	"("
 	[ "this" (. isExtensionMethod = true; /* C# 3.0 */ .) ]
 	[ FormalParameterList<p> ] ")"
-	(.	MethodDeclaration methodDeclaration = new MethodDeclaration(qualident,
-		                                                            m.Modifier,
-		                                                            new TypeReference("void"),
-		                                                            p,
-		                                                            attributes);
-		methodDeclaration.StartLocation = m.GetDeclarationLocation(startPos);
-		methodDeclaration.EndLocation   = t.EndLocation;
-		methodDeclaration.Templates = templates;
-		methodDeclaration.IsExtensionMethod = isExtensionMethod;
+	(.	MethodDeclaration methodDeclaration = new MethodDeclaration {
+			Name = qualident,
+			Modifier = m.Modifier,
+			TypeReference = new TypeReference("void"),
+			Parameters = p,
+			Attributes = attributes,
+			StartLocation = m.GetDeclarationLocation(startPos),
+			EndLocation = t.EndLocation,
+			Templates = templates,
+			IsExtensionMethod = isExtensionMethod
+		};
 		if (explicitInterface != null)
-		methodDeclaration.InterfaceImplementations.Add(new InterfaceImplementation(explicitInterface, qualident));
+			methodDeclaration.InterfaceImplementations.Add(new InterfaceImplementation(explicitInterface, qualident));
 		compilationUnit.AddChild(methodDeclaration);
 		compilationUnit.BlockStart(methodDeclaration);
 	.)
@@ -777,13 +779,17 @@ StructMemberDecl<ModifierList m, List<AttributeSection> attributes>
 	                                       .)
 	
 |	/*--- event declaration: */     (. m.Check(Modifiers.PropertysEventsMethods); .)
-		"event"                     (. EventDeclaration eventDecl = new EventDeclaration(null, null, m.Modifier, attributes, null);
-		                               eventDecl.StartLocation = t.Location;
-		                               compilationUnit.AddChild(eventDecl);
-		                               compilationUnit.BlockStart(eventDecl);
-		                               EventAddRegion addBlock = null;
-		                               EventRemoveRegion removeBlock = null;
-		                            .)
+		"event"                     
+		(.	EventDeclaration eventDecl = new EventDeclaration {
+				Modifier = m.Modifier, 
+				Attributes = attributes,
+				StartLocation = t.Location
+			};
+			compilationUnit.AddChild(eventDecl);
+			compilationUnit.BlockStart(eventDecl);
+			EventAddRegion addBlock = null;
+			EventRemoveRegion removeBlock = null;
+		.)
 		Type<out type>        (. eventDecl.TypeReference = type; .)
 		( IF (IsExplicitInterfaceImplementation())
 			TypeName<out explicitInterface, false>
@@ -835,15 +841,16 @@ StructMemberDecl<ModifierList m, List<AttributeSection> attributes>
 		
 		List<ParameterDeclarationExpression> parameters = new List<ParameterDeclarationExpression>();
 		parameters.Add(new ParameterDeclarationExpression(type, varName));
-		OperatorDeclaration operatorDeclaration = new OperatorDeclaration(m.Modifier, 
-		                                                                  attributes, 
-		                                                                  parameters, 
-		                                                                  operatorType,
-		                                                                  isImplicit ? ConversionType.Implicit : ConversionType.Explicit
-		                                                                  );
-		operatorDeclaration.Body = (BlockStatement)stmt;
-		operatorDeclaration.StartLocation = m.GetDeclarationLocation(startPos);
-		operatorDeclaration.EndLocation = endPos;
+		OperatorDeclaration operatorDeclaration = new OperatorDeclaration {
+			Modifier = m.Modifier,
+			Attributes = attributes, 
+			Parameters = parameters, 
+			TypeReference = operatorType,
+			ConversionType = isImplicit ? ConversionType.Implicit : ConversionType.Explicit,
+			Body = (BlockStatement)stmt,
+			StartLocation = m.GetDeclarationLocation(startPos),
+			EndLocation = endPos
+		};
 		compilationUnit.AddChild(operatorDeclaration);
 	.)
 	
@@ -875,14 +882,16 @@ StructMemberDecl<ModifierList m, List<AttributeSection> attributes>
 			if (secondType != null) {
 				parameters.Add(new ParameterDeclarationExpression(secondType, secondName));
 			}
-			OperatorDeclaration operatorDeclaration = new OperatorDeclaration(m.Modifier,
-			                                                                  attributes,
-			                                                                  parameters,
-			                                                                  type,
-			                                                                  op);
-			operatorDeclaration.Body = (BlockStatement)stmt;
-			operatorDeclaration.StartLocation = m.GetDeclarationLocation(startPos);
-			operatorDeclaration.EndLocation = endPos;
+			OperatorDeclaration operatorDeclaration = new OperatorDeclaration {
+				Modifier = m.Modifier,
+				Attributes = attributes,
+				Parameters = parameters,
+				TypeReference = type,
+				OverloadableOperator = op,
+				Body = (BlockStatement)stmt,
+				StartLocation = m.GetDeclarationLocation(startPos),
+				EndLocation = endPos
+			};
 			compilationUnit.AddChild(operatorDeclaration);
 		.)
 		
@@ -946,11 +955,13 @@ StructMemberDecl<ModifierList m, List<AttributeSection> attributes>
 				[ "this" (. isExtensionMethod = true; .) ]
 				[ FormalParameterList<p> ] ")"
 				(.
-					MethodDeclaration methodDeclaration = new MethodDeclaration(qualident,
-					                                                            m.Modifier, 
-					                                                            type, 
-					                                                            p, 
-					                                                            attributes);
+					MethodDeclaration methodDeclaration = new MethodDeclaration {
+						Name = qualident,
+						Modifier = m.Modifier,
+						TypeReference = type,
+						Parameters = p, 
+						Attributes = attributes
+					};
 					if (explicitInterface != null)
 						methodDeclaration.InterfaceImplementations.Add(new InterfaceImplementation(explicitInterface, qualident));
 					methodDeclaration.StartLocation = m.GetDeclarationLocation(startPos);
@@ -1044,10 +1055,11 @@ InterfaceMemberDecl
 		"(" [ FormalParameterList<parameters> ] ")"
 		{ TypeParameterConstraintsClause<templates> }
 		";"
-		(.  MethodDeclaration md = new MethodDeclaration(name, mod, new TypeReference("void"), parameters, attributes);
-			md.StartLocation = startLocation;
-			md.EndLocation = t.EndLocation;
-			md.Templates = templates;
+		(.  MethodDeclaration md = new MethodDeclaration {
+				Name = name, Modifier = mod, TypeReference = new TypeReference("void"), 
+				Parameters = parameters, Attributes = attributes, Templates = templates,
+				StartLocation = startLocation, EndLocation = t.EndLocation
+			};
 			compilationUnit.AddChild(md);
 		.)
 		| (
@@ -1061,10 +1073,11 @@ InterfaceMemberDecl
 					"(" [ FormalParameterList<parameters> ] ")" 
 					/* .NET 2.0 */
 					{ TypeParameterConstraintsClause<templates> }
-					";" (.  MethodDeclaration md = new MethodDeclaration(name, mod, type, parameters, attributes);
-							md.StartLocation = startLocation;
-							md.EndLocation = t.EndLocation;
-							md.Templates = templates;
+					";" (.  MethodDeclaration md = new MethodDeclaration {
+								Name = name, Modifier = mod, TypeReference = type,
+								Parameters = parameters, Attributes = attributes, Templates = templates,
+								StartLocation = startLocation, EndLocation = t.EndLocation
+							};
 							compilationUnit.AddChild(md);
 						.)
 					/*--- interface property declaration: */
@@ -1076,10 +1089,13 @@ InterfaceMemberDecl
 				"{" (. Location bodyStart = t.Location;.) InterfaceAccessors<out getBlock, out setBlock> "}" (. id.GetRegion = getBlock; id.SetRegion = setBlock; id.StartLocation = startLocation;  id.EndLocation = bracketEndLocation; id.BodyStart = bodyStart; id.BodyEnd = t.EndLocation;.)
 			)
 			/*--- interface event declaration: */
-			| "event" (. if (startLocation.X == -1) startLocation = t.Location; .)
-			  Type<out type> Identifier (. EventDeclaration ed = new EventDeclaration(type, t.val, mod, attributes, null);
-			                                compilationUnit.AddChild(ed);
-			                            .)
+			|	"event" (. if (startLocation.X == -1) startLocation = t.Location; .)
+				Type<out type> Identifier
+				(.	EventDeclaration ed = new EventDeclaration {
+						TypeReference = type, Name = t.val, Modifier = mod, Attributes = attributes
+					};
+					compilationUnit.AddChild(ed);
+				.)
 			";"                        (. ed.StartLocation = startLocation; ed.EndLocation = t.EndLocation; .)
 		)
 	)

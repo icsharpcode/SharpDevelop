@@ -19,10 +19,11 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 		public override void GenerateCode(List<AbstractNode> nodes, IList items)
 		{
 			TypeReference stringReference = new TypeReference("System.String");
-			MethodDeclaration method = new MethodDeclaration("ToString",
-			                                                 Modifiers.Public | Modifiers.Override,
-			                                                 stringReference,
-			                                                 null, null);
+			MethodDeclaration method = new MethodDeclaration {
+				Name = "ToString",
+				Modifier = Modifiers.Public | Modifiers.Override,
+				TypeReference = stringReference,
+			};
 			method.Body = new BlockStatement();
 			Expression target = new FieldReferenceExpression(new TypeReferenceExpression(stringReference),
 			                                                 "Format");

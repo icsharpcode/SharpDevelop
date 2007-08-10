@@ -413,116 +413,12 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		{
 			MemberResolveResult mrr = rr as MemberResolveResult;
 			if (mrr != null) {
-				return IsSimilarMember(mrr.ResolvedMember, member);
+				return MemberLookupHelper.IsSimilarMember(mrr.ResolvedMember, member);
 			} else if (rr is MethodResolveResult) {
-				return IsSimilarMember((rr as MethodResolveResult).GetMethodIfSingleOverload(), member);
+				return MemberLookupHelper.IsSimilarMember((rr as MethodResolveResult).GetMethodIfSingleOverload(), member);
 			} else {
 				return false;
 			}
-		}
-		#endregion
-		
-		#region IsSimilarMember / FindBaseMember
-		/// <summary>
-		/// Gets if member1 is the same as member2 or if member1 overrides member2.
-		/// </summary>
-		public static bool IsSimilarMember(IMember member1, IMember member2)
-		{
-			member1 = GetGenericMember(member1);
-			member2 = GetGenericMember(member2);
-			do {
-				if (IsSimilarMemberInternal(member1, member2))
-					return true;
-			} while ((member1 = FindBaseMember(member1)) != null);
-			return false;
-		}
-		
-		/// <summary>
-		/// Gets the generic member from a specialized member.
-		/// Specialized members are the result of overload resolution with type substitution.
-		/// </summary>
-		static IMember GetGenericMember(IMember member)
-		{
-			// e.g. member = string[] ToArray<string>(IEnumerable<string> input)
-			// result = T[] ToArray<T>(IEnumerable<T> input)
-			if (member != null) {
-				while (member.GenericMember != null)
-					member = member.GenericMember;
-			}
-			return member;
-		}
-		
-		static bool IsSimilarMemberInternal(IMember member1, IMember member2)
-		{
-			if (member1 == member2)
-				return true;
-			if (member1 == null || member2 == null)
-				return false;
-			if (member1.FullyQualifiedName != member2.FullyQualifiedName)
-				return false;
-			if (member1.IsStatic != member2.IsStatic)
-				return false;
-			if (member1 is IMethod) {
-				if (member2 is IMethod) {
-					if (DiffUtility.Compare(((IMethod)member1).Parameters, ((IMethod)member2).Parameters) != 0)
-						return false;
-				} else {
-					return false;
-				}
-			}
-			if (member1 is IProperty) {
-				if (member2 is IProperty) {
-					if (DiffUtility.Compare(((IProperty)member1).Parameters, ((IProperty)member2).Parameters) != 0)
-						return false;
-				} else {
-					return false;
-				}
-			}
-			return true;
-		}
-		
-		public static IMember FindSimilarMember(IClass type, IMember member)
-		{
-			if (member is IMethod) {
-				IMethod parentMethod = (IMethod)member;
-				foreach (IMethod m in type.Methods) {
-					if (string.Equals(parentMethod.Name, m.Name, StringComparison.InvariantCultureIgnoreCase)) {
-						if (m.IsStatic == parentMethod.IsStatic) {
-							if (DiffUtility.Compare(parentMethod.Parameters, m.Parameters) == 0) {
-								return m;
-							}
-						}
-					}
-				}
-			} else if (member is IProperty) {
-				IProperty parentMethod = (IProperty)member;
-				foreach (IProperty m in type.Properties) {
-					if (string.Equals(parentMethod.Name, m.Name, StringComparison.InvariantCultureIgnoreCase)) {
-						if (m.IsStatic == parentMethod.IsStatic) {
-							if (DiffUtility.Compare(parentMethod.Parameters, m.Parameters) == 0) {
-								return m;
-							}
-						}
-					}
-				}
-			}
-			return null;
-		}
-		
-		public static IMember FindBaseMember(IMember member)
-		{
-			if (member == null) return null;
-			if (member is IMethod && (member as IMethod).IsConstructor) return null;
-			IClass parentClass = member.DeclaringType;
-			IClass baseClass = parentClass.BaseClass;
-			if (baseClass == null) return null;
-			
-			foreach (IClass childClass in baseClass.ClassInheritanceTree) {
-				IMember m = FindSimilarMember(childClass, member);
-				if (m != null)
-					return m;
-			}
-			return null;
 		}
 		#endregion
 	}
