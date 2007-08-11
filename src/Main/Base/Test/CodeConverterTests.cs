@@ -166,6 +166,78 @@ namespace ICSharpCode.SharpDevelop.Tests
 			                "End Sub");
 		}
 		
+		
+		[Test]
+		public void EventHandlerTest()
+		{
+			TestMemberCS2VB("public event EventHandler Click;" +
+			                "void T() {" +
+			                "  Click += T;" +
+			                "  Click -= this.T;" +
+			                "  Click += new EventHandler(T);" +
+			                "  Click += new EventHandler(this.T);" +
+			                "  EventHandler eh = new EventHandler(T);" +
+			                "  eh = T;" +
+			                "  eh += eh;" +
+			                "  eh -= eh;" +
+			                "  this.Click += eh;" +
+			                "}",
+			                "Public Event Click As EventHandler\n" +
+			                "Private Sub T()\n" +
+			                "  AddHandler Click, AddressOf T\n" +
+			                "  RemoveHandler Click, AddressOf Me.T\n" +
+			                "  AddHandler Click, New EventHandler(AddressOf T)\n" +
+			                "  AddHandler Click, New EventHandler(AddressOf Me.T)\n" +
+			                "  Dim eh As New EventHandler(AddressOf T)\n" +
+			                "  eh = AddressOf T\n" +
+			                "  eh = DirectCast([Delegate].Combine(eh, eh), EventHandler)\n" +
+			                "  eh = DirectCast([Delegate].Remove(eh, eh), EventHandler)\n" +
+			                "  AddHandler Me.Click, eh\n" +
+			                "End Sub");
+		}
+		
+		[Test]
+		public void CreateDelegateCS2VB()
+		{
+			TestProgramCS2VB("using System; using System.Text.RegularExpressions;\n" +
+			                 "class Test {\n" +
+			                 "  object M() {\n" +
+			                 "    return new MatchEvaluator(X);\n" +
+			                 "  }\n" +
+			                 "  string X(Match match) {}" +
+			                 "}",
+			                 "Imports System\n" +
+			                 "Imports System.Text.RegularExpressions\n" +
+			                 "Class Test\n" +
+			                 "  Private Function M() As Object\n" +
+			                 "    Return New MatchEvaluator(AddressOf X)\n" +
+			                 "  End Function\n" +
+			                 "  Private Function X(ByVal match As Match) As String\n" +
+			                 "  End Function\n" +
+			                 "End Class");
+		}
+		
+		[Test]
+		public void ImplicitlyCreateDelegateCS2VB()
+		{
+			TestProgramCS2VB("using System; using System.Text.RegularExpressions;\n" +
+			                 "class Test {\n" +
+			                 "  void M(Regex regex, string text) {\n" +
+			                 "    regex.Replace(text, X);\n" +
+			                 "  }\n" +
+			                 "  string X(Match match) {}" +
+			                 "}",
+			                 "Imports System\n" +
+			                 "Imports System.Text.RegularExpressions\n" +
+			                 "Class Test\n" +
+			                 "  Private Sub M(ByVal regex As Regex, ByVal text As String)\n" +
+			                 "    regex.Replace(text, AddressOf X)\n" +
+			                 "  End Sub\n" +
+			                 "  Private Function X(ByVal match As Match) As String\n" +
+			                 "  End Function\n" +
+			                 "End Class");
+		}
+		
 		[Test]
 		public void ReferenceEqualityAndValueEquality()
 		{
@@ -264,6 +336,25 @@ namespace ICSharpCode.SharpDevelop.Tests
 			                    "ReDim Preserve MyArray(10, 10)",
 			                    "int[,] MyArray = new int[6, 6];\n" +
 			                    "MyArray = (int[,])Microsoft.VisualBasic.CompilerServices.Utils.CopyArray(MyArray, new int[11, 11]);");
+		}
+		
+		[Test]
+		public void StringConcatWithException()
+		{
+			TestStatementsCS2VB("Exception ex;\n" +
+			                    "string a = \"Error: \" + ex + \"!\";",
+			                    "Dim ex As Exception\n" +
+			                    "Dim a As String = \"Error: \" & Convert.ToString(ex) & \"!\"\n");
+		}
+		
+		[Test]
+		public void PerformIntegerDivision()
+		{
+			TestStatementsCS2VB("int a = 5; int b = 2;\n" +
+			                    "int c = a / b;",
+			                    "Dim a As Integer = 5\n" +
+			                    "Dim b As Integer = 2\n" +
+			                    "Dim c As Integer = a \\ b\n");
 		}
 		
 		#region InterfaceImplementation

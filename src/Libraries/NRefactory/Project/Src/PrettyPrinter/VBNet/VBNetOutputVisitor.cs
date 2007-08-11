@@ -574,12 +574,14 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.NewLine();
 			
 			if (!IsAbstract(propertyDeclaration)) {
+				outputFormatter.IsInMemberBody = true;
 				++outputFormatter.IndentationLevel;
 				exitTokenStack.Push(Tokens.Property);
 				TrackedVisit(propertyDeclaration.GetRegion, data);
 				TrackedVisit(propertyDeclaration.SetRegion, data);
 				exitTokenStack.Pop();
 				--outputFormatter.IndentationLevel;
+				outputFormatter.IsInMemberBody = false;
 				
 				outputFormatter.Indent();
 				outputFormatter.PrintToken(Tokens.End);
@@ -848,6 +850,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.NewLine();
 			
 			if (!IsAbstract(methodDeclaration)) {
+				outputFormatter.IsInMemberBody = true;
 				BeginVisit(methodDeclaration.Body);
 				++outputFormatter.IndentationLevel;
 				exitTokenStack.Push(isSub ? Tokens.Sub : Tokens.Function);
@@ -866,6 +869,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				}
 				outputFormatter.NewLine();
 				EndVisit(methodDeclaration.Body);
+				outputFormatter.IsInMemberBody = false;
 			}
 			return null;
 		}
@@ -895,6 +899,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
 			outputFormatter.NewLine();
 			
+			outputFormatter.IsInMemberBody = true;
 			++outputFormatter.IndentationLevel;
 			exitTokenStack.Push(Tokens.Sub);
 			
@@ -903,6 +908,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			TrackedVisit(constructorDeclaration.Body, data);
 			exitTokenStack.Pop();
 			--outputFormatter.IndentationLevel;
+			outputFormatter.IsInMemberBody = false;
 			
 			outputFormatter.Indent();
 			outputFormatter.PrintToken(Tokens.End);
@@ -2031,6 +2037,10 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		{
 			int  op = 0;
 			switch (binaryOperatorExpression.Op) {
+				case BinaryOperatorType.Concat:
+					op = Tokens.ConcatString;
+					break;
+					
 				case BinaryOperatorType.Add:
 					op = Tokens.Plus;
 					break;
@@ -2045,6 +2055,10 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					
 				case BinaryOperatorType.Divide:
 					op = Tokens.Div;
+					break;
+					
+				case BinaryOperatorType.DivideInteger:
+					op = Tokens.DivInteger;
 					break;
 					
 				case BinaryOperatorType.Modulus:
@@ -2100,13 +2114,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					TrackedVisit(binaryOperatorExpression.Right, data);
 					return null;
 				case BinaryOperatorType.NullCoalescing:
-					outputFormatter.PrintText("IIf(");
+					outputFormatter.PrintText("If(");
 					TrackedVisit(binaryOperatorExpression.Left, data);
-					outputFormatter.PrintText(" Is Nothing, ");
-					TrackedVisit(binaryOperatorExpression.Right, data);
 					outputFormatter.PrintToken(Tokens.Comma);
 					outputFormatter.Space();
-					TrackedVisit(binaryOperatorExpression.Left, data);
+					TrackedVisit(binaryOperatorExpression.Right, data);
 					outputFormatter.PrintToken(Tokens.CloseParenthesis);
 					return null;
 				case BinaryOperatorType.LessThan:
@@ -2232,31 +2244,9 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					break;
 				case AssignmentOperatorType.Add:
 					op = Tokens.PlusAssign;
-					if (IsEventHandlerCreation(assignmentExpression.Right)) {
-						outputFormatter.PrintToken(Tokens.AddHandler);
-						outputFormatter.Space();
-						TrackedVisit(assignmentExpression.Left, data);
-						outputFormatter.PrintToken(Tokens.Comma);
-						outputFormatter.Space();
-						outputFormatter.PrintToken(Tokens.AddressOf);
-						outputFormatter.Space();
-						TrackedVisit(GetEventHandlerMethod(assignmentExpression.Right), data);
-						return null;
-					}
 					break;
 				case AssignmentOperatorType.Subtract:
 					op = Tokens.MinusAssign;
-					if (IsEventHandlerCreation(assignmentExpression.Right)) {
-						outputFormatter.PrintToken(Tokens.RemoveHandler);
-						outputFormatter.Space();
-						TrackedVisit(assignmentExpression.Left, data);
-						outputFormatter.PrintToken(Tokens.Comma);
-						outputFormatter.Space();
-						outputFormatter.PrintToken(Tokens.AddressOf);
-						outputFormatter.Space();
-						TrackedVisit(GetEventHandlerMethod(assignmentExpression.Right), data);
-						return null;
-					}
 					break;
 				case AssignmentOperatorType.Multiply:
 					op = Tokens.TimesAssign;
@@ -2540,13 +2530,14 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public override object TrackedVisitConditionalExpression(ConditionalExpression conditionalExpression, object data)
 		{
-			// No representation in VB.NET, but VB conversion is possible.
-			outputFormatter.PrintText("IIf");
+			outputFormatter.PrintText("If");
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);
 			TrackedVisit(conditionalExpression.Condition, data);
 			outputFormatter.PrintToken(Tokens.Comma);
+			outputFormatter.Space();
 			TrackedVisit(conditionalExpression.TrueExpression, data);
 			outputFormatter.PrintToken(Tokens.Comma);
+			outputFormatter.Space();
 			TrackedVisit(conditionalExpression.FalseExpression, data);
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
 			return null;
@@ -2695,25 +2686,6 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			foreach (AttributeSection section in attributes) {
 				TrackedVisit(section, data);
 			}
-		}
-		
-		
-		static bool IsEventHandlerCreation(Expression expr)
-		{
-			if (expr is ObjectCreateExpression) {
-				ObjectCreateExpression oce = (ObjectCreateExpression) expr;
-				if (oce.Parameters.Count == 1) {
-					return oce.CreateType.SystemType.EndsWith("Handler");
-				}
-			}
-			return false;
-		}
-		
-		// can only get called if IsEventHandlerCreation returned true for the expression
-		static Expression GetEventHandlerMethod(Expression expr)
-		{
-			ObjectCreateExpression oce = (ObjectCreateExpression)expr;
-			return oce.Parameters[0];
 		}
 		
 		public override object TrackedVisitLambdaExpression(LambdaExpression lambdaExpression, object data)

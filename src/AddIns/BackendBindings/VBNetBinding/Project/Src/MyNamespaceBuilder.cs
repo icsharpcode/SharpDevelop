@@ -75,6 +75,20 @@ namespace VBNetBinding
 			switch (project.OutputType) {
 				case OutputType.WinExe:
 					c.BaseTypes.Add(CreateTypeRef(cu, "Microsoft.VisualBasic.ApplicationServices.WindowsFormsApplicationBase"));
+					if (project.GetEvaluatedProperty("MyType") == "WindowsForms") {
+						c.Methods.Add(
+							new DefaultMethod(c, "Main") {
+								Modifiers = ModifierEnum.Internal | ModifierEnum.Static,
+								ReturnType = c.ProjectContent.SystemTypes.Void,
+								Parameters = new[] {
+									new DefaultParameter(
+										"args",
+										new ArrayReturnType(c.ProjectContent, c.ProjectContent.SystemTypes.String, 1),
+										DomRegion.Empty
+									)
+								}
+							});
+					}
 					break;
 				case OutputType.Exe:
 					c.BaseTypes.Add(CreateTypeRef(cu, "Microsoft.VisualBasic.ApplicationServices.ConsoleApplicationBase"));

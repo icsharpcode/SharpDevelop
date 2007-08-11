@@ -86,7 +86,7 @@ namespace ICSharpCode.NRefactory
 				return cmd;
 			}
 			set {
-				cmd = value;
+				cmd = value ?? string.Empty;
 			}
 		}
 		
@@ -95,7 +95,7 @@ namespace ICSharpCode.NRefactory
 				return arg;
 			}
 			set {
-				arg = value;
+				arg = value ?? string.Empty;
 			}
 		}
 		
@@ -109,8 +109,8 @@ namespace ICSharpCode.NRefactory
 		public PreprocessingDirective(string cmd, string arg, Location start, Location end)
 			: base(start, end)
 		{
-			this.cmd = cmd;
-			this.arg = arg;
+			this.Cmd = cmd;
+			this.Arg = arg;
 		}
 		
 		public override object AcceptVisitor(ISpecialVisitor visitor, object data)

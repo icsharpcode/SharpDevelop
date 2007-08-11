@@ -149,18 +149,6 @@ namespace ICSharpCode.NRefactory.Visitors
 			return null;
 		}
 		
-		static string GetMethodNameOfDelegateCreation(Expression expr)
-		{
-			string name = GetMemberNameOnThisReference(expr);
-			if (name != null)
-				return name;
-			ObjectCreateExpression oce = expr as ObjectCreateExpression;
-			if (oce != null && oce.Parameters.Count == 1) {
-				return GetMemberNameOnThisReference(oce.Parameters[0]);
-			}
-			return null;
-		}
-		
 		public override object VisitAnonymousMethodExpression(AnonymousMethodExpression anonymousMethodExpression, object data)
 		{
 			MethodDeclaration method = new MethodDeclaration {
@@ -179,21 +167,6 @@ namespace ICSharpCode.NRefactory.Visitors
 		
 		public override object VisitAssignmentExpression(AssignmentExpression assignmentExpression, object data)
 		{
-			if (assignmentExpression.Op == AssignmentOperatorType.Add
-			    || assignmentExpression.Op == AssignmentOperatorType.Subtract)
-			{
-				string methodName = GetMethodNameOfDelegateCreation(assignmentExpression.Right);
-				if (methodName != null && currentType != null) {
-					foreach (object c in currentType.Children) {
-						MethodDeclaration method = c as MethodDeclaration;
-						if (method != null && method.Name == methodName) {
-							// this statement is registering an event
-							assignmentExpression.Right = new AddressOfExpression(new IdentifierExpression(methodName));
-							break;
-						}
-					}
-				}
-			}
 			base.VisitAssignmentExpression(assignmentExpression, data);
 			if (assignmentExpression.Op == AssignmentOperatorType.Assign && !(assignmentExpression.Parent is ExpressionStatement)) {
 				AddInlineAssignHelper();

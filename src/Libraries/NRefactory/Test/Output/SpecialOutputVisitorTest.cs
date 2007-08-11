@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using NUnit.Framework;
 using ICSharpCode.NRefactory.Parser;
@@ -23,6 +24,9 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			parser.Parse();
 			Assert.AreEqual("", parser.Errors.ErrorOutput);
 			CSharpOutputVisitor outputVisitor = new CSharpOutputVisitor();
+			outputVisitor.Options.IndentationChar = ' ';
+			outputVisitor.Options.TabSize = 2;
+			outputVisitor.Options.IndentSize = 2;
 			using (SpecialNodesInserter.Install(parser.Lexer.SpecialTracker.RetrieveSpecials(),
 			                                    outputVisitor)) {
 				outputVisitor.VisitCompilationUnit(parser.CompilationUnit, null);
@@ -38,6 +42,9 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			parser.Parse();
 			Assert.AreEqual("", parser.Errors.ErrorOutput);
 			VBNetOutputVisitor outputVisitor = new VBNetOutputVisitor();
+			outputVisitor.Options.IndentationChar = ' ';
+			outputVisitor.Options.TabSize = 2;
+			outputVisitor.Options.IndentSize = 2;
 			using (SpecialNodesInserter.Install(parser.Lexer.SpecialTracker.RetrieveSpecials(),
 			                                    outputVisitor)) {
 				outputVisitor.VisitCompilationUnit(parser.CompilationUnit, null);
@@ -53,8 +60,12 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			parser.Parse();
 			Assert.AreEqual("", parser.Errors.ErrorOutput);
 			VBNetOutputVisitor outputVisitor = new VBNetOutputVisitor();
-			using (SpecialNodesInserter.Install(parser.Lexer.SpecialTracker.RetrieveSpecials(),
-			                                    outputVisitor)) {
+			List<ISpecial> specials = parser.Lexer.SpecialTracker.RetrieveSpecials();
+			PreprocessingDirective.CSharpToVB(specials);
+			outputVisitor.Options.IndentationChar = ' ';
+			outputVisitor.Options.TabSize = 2;
+			outputVisitor.Options.IndentSize = 2;
+			using (SpecialNodesInserter.Install(specials, outputVisitor)) {
 				outputVisitor.VisitCompilationUnit(parser.CompilationUnit, null);
 			}
 			Assert.AreEqual("", outputVisitor.Errors.ErrorOutput);
@@ -80,7 +91,7 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			TestProgram("// before class\n" +
 			            "class A\n" +
 			            "{\n" +
-			            "\t// in class\n" +
+			            "  // in class\n" +
 			            "}\n" +
 			            "// after class");
 		}
@@ -91,7 +102,7 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			TestProgram("/* before class */\n" +
 			            "class A\n" +
 			            "{\n" +
-			            "\t/* in class */\n" +
+			            "  /* in class */\n" +
 			            "}\n" +
 			            "/* after class */");
 		}
@@ -104,9 +115,9 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			            "/* block comment before */\n" +
 			            "class A\n" +
 			            "{\n" +
-			            "\t/* in class */\n" +
-			            "\t// in class 2" +
-			            "\t/* in class 3 */\n" +
+			            "  /* in class */\n" +
+			            "  // in class 2" +
+			            "  /* in class 3 */\n" +
 			            "}\n" +
 			            "/* after class */\n" +
 			            "// after class 2\n" +
@@ -128,11 +139,11 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		{
 			TestProgram("enum Test\n" +
 			            "{\n" +
-			            "\t// a\n" +
-			            "\tm1,\n" +
-			            "\t// b\n" +
-			            "\tm2\n" +
-			            "\t// c\n" +
+			            "  // a\n" +
+			            "  m1,\n" +
+			            "  // b\n" +
+			            "  m2\n" +
+			            "  // c\n" +
 			            "}\n" +
 			            "// d");
 		}
@@ -141,11 +152,11 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		public void EnumVB()
 		{
 			TestProgramVB("Enum Test\n" +
-			              "\t' a\n" +
-			              "\tm1\n" +
-			              "\t' b\n" +
-			              "\tm2\n" +
-			              "\t' c\n" +
+			              "  ' a\n" +
+			              "  m1\n" +
+			              "  ' b\n" +
+			              "  m2\n" +
+			              "  ' c\n" +
 			              "End Enum\n" +
 			              "' d");
 		}
@@ -155,26 +166,26 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		{
 			TestProgram(@"public class Class1
 {
-	private bool test(int l, int lvw)
-	{
-		#region Metodos Auxiliares
-		int i = 1;
-		return false;
-		#endregion
-	}
+  private bool test(int l, int lvw)
+  {
+    #region Metodos Auxiliares
+    int i = 1;
+    return false;
+    #endregion
+  }
 }");
 		}
 		
 		[Test]
-		public void RegionInsideMethodVB()
+		public void CommentsInsideMethodVB()
 		{
 			TestProgramVB(@"Public Class Class1
-	Private Function test(ByVal l As Integer, ByVal lvw As Integer) As Boolean
-		' Begin
-		Dim i As Integer = 1
-		Return False
-		' End of method
-	End Function
+  Private Function test(ByVal l As Integer, ByVal lvw As Integer) As Boolean
+    ' Begin
+    Dim i As Integer = 1
+    Return False
+    ' End of method
+  End Function
 End Class");
 		}
 		
@@ -199,10 +210,10 @@ End Class");
 		{
 			TestProgramCS2VB("class A { [PreserveSig] public void B(// comment\nint c) {} }",
 			                 "Class A\n" +
-			                 "\t\t' comment\n" +
-			                 "\t<PreserveSig()> _\n" +
-			                 "\tPublic Sub B(ByVal c As Integer)\n" +
-			                 "\tEnd Sub\n" +
+			                 "    ' comment\n" +
+			                 "  <PreserveSig()> _\n" +
+			                 "  Public Sub B(ByVal c As Integer)\n" +
+			                 "  End Sub\n" +
 			                 "End Class");
 		}
 		
@@ -211,12 +222,29 @@ End Class");
 		{
 			TestProgram("class A\n" +
 			            "{\n" +
-			            "\t#if TEST\n" +
-			            "\t[MyAttribute()]\n" +
-			            "\t#endif\n" +
-			            "\tpublic int Field;\n" +
+			            "  #if TEST\n" +
+			            "  [MyAttribute()]\n" +
+			            "  #endif\n" +
+			            "  public int Field;\n" +
 			            "}\n" +
 			            "#end if");
+		}
+		
+		[Test]
+		public void RegionInsideMethodCS2VB()
+		{
+			TestProgramCS2VB("class A { void M() {\n" +
+			                 "  #region PP\n" +
+			                 "  return;" +
+			                 "  #endregion\n" +
+			                 "} }",
+			                 "Class A\n" +
+			                 "  Sub M()\n" +
+			                 "    '#Region \"PP\"\n" +
+			                 "    Return\n" +
+			                 "    '#End Region\n" +
+			                 "  End Sub\n" +
+			                 "End Class");
 		}
 	}
 }

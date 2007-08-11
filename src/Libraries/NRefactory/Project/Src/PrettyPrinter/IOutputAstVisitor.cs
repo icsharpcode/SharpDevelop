@@ -43,6 +43,10 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		string Text {
 			get;
 		}
+		bool IsInMemberBody {
+			get;
+			set;
+		}
 		void NewLine();
 		void Indent();
 		void PrintComment(Comment comment, bool forceWriteInPreviousBlock);

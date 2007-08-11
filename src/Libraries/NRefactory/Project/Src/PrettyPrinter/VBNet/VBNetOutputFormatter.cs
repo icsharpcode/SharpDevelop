@@ -51,6 +51,19 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 		}
 		
+		public override void PrintPreprocessingDirective(PreprocessingDirective directive, bool forceWriteInPreviousBlock)
+		{
+			if (IsInMemberBody
+			    && (string.Equals(directive.Cmd, "#Region", StringComparison.InvariantCultureIgnoreCase)
+			        || string.Equals(directive.Cmd, "#End", StringComparison.InvariantCultureIgnoreCase)
+			        && directive.Arg.ToLowerInvariant().StartsWith("region")))
+			{
+				WriteLineInPreviousLine("'" + directive.Cmd + " " + directive.Arg, forceWriteInPreviousBlock);
+			} else {
+				base.PrintPreprocessingDirective(directive, forceWriteInPreviousBlock);
+			}
+		}
+		
 		public void PrintLineContinuation()
 		{
 			if (!LastCharacterIsWhiteSpace)

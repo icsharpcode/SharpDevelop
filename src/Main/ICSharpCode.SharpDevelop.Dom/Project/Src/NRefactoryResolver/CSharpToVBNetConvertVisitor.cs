@@ -21,6 +21,9 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		NRefactoryResolver _resolver;
 		ParseInformation _parseInfo;
 		IProjectContent _pc;
+		public string RootNamespaceToStrip { get; set; }
+		public string StartupObjectToMakePublic { get; set; }
+		public IList<string> DefaultImportsToRemove { get; set; }
 		
 		public CSharpToVBNetConvertVisitor(IProjectContent pc, ParseInformation parseInfo)
 		{
@@ -29,16 +32,54 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			_parseInfo = parseInfo;
 		}
 		
-		IReturnType ResolveType(TypeReference typeRef)
-		{
-			return TypeVisitor.CreateReturnType(typeRef, _resolver);
-		}
-		
 		public override object VisitCompilationUnit(CompilationUnit compilationUnit, object data)
 		{
 			base.VisitCompilationUnit(compilationUnit, data);
 			ToVBNetConvertVisitor v = new ToVBNetConvertVisitor();
 			compilationUnit.AcceptVisitor(v, data);
+			return null;
+		}
+		
+		IReturnType ResolveType(TypeReference typeRef)
+		{
+			return TypeVisitor.CreateReturnType(typeRef, _resolver);
+		}
+		
+		public override object VisitNamespaceDeclaration(NamespaceDeclaration namespaceDeclaration, object data)
+		{
+			base.VisitNamespaceDeclaration(namespaceDeclaration, data);
+			if (RootNamespaceToStrip != null) {
+				if (namespaceDeclaration.Name == RootNamespaceToStrip) {
+					// remove namespace declaration
+					foreach (INode child in namespaceDeclaration.Children) {
+						child.Parent = namespaceDeclaration.Parent;
+						namespaceDeclaration.Parent.Children.Add(child);
+					}
+					RemoveCurrentNode();
+				} else if (namespaceDeclaration.Name.StartsWith(RootNamespaceToStrip + ".")) {
+					namespaceDeclaration.Name = namespaceDeclaration.Name.Substring(RootNamespaceToStrip.Length + 1);
+				}
+			}
+			return null;
+		}
+		
+		public override object VisitUsing(Using @using, object data)
+		{
+			base.VisitUsing(@using, data);
+			if (DefaultImportsToRemove != null && !@using.IsAlias) {
+				if (DefaultImportsToRemove.Contains(@using.Name)) {
+					RemoveCurrentNode();
+				}
+			}
+			return null;
+		}
+		
+		public override object VisitUsingDeclaration(UsingDeclaration usingDeclaration, object data)
+		{
+			base.VisitUsingDeclaration(usingDeclaration, data);
+			if (usingDeclaration.Usings.Count == 0) {
+				RemoveCurrentNode();
+			}
 			return null;
 		}
 		
@@ -66,6 +107,14 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 			IMethod currentMethod = _resolver.CallingMember as IMethod;
 			CreateInterfaceImplementations(currentMethod, methodDeclaration, methodDeclaration.InterfaceImplementations);
+			if (currentMethod != null && currentMethod.Name == "Main") {
+				if (currentMethod.DeclaringType.FullyQualifiedName == StartupObjectToMakePublic) {
+					if (currentMethod.IsStatic && currentMethod.IsPrivate) {
+						methodDeclaration.Modifier &= ~Modifiers.Private;
+						methodDeclaration.Modifier |= Modifiers.Internal;
+					}
+				}
+			}
 			return base.VisitMethodDeclaration(methodDeclaration, data);
 		}
 		
@@ -164,40 +213,211 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 						eventInvocation.Arguments));
 				}
 			}
-			return base.VisitExpressionStatement(expressionStatement, data);
+			base.VisitExpressionStatement(expressionStatement, data);
+			
+			HandleAssignmentStatement(expressionStatement.Expression as AssignmentExpression);
+			return null;
 		}
 		
 		public override object VisitBinaryOperatorExpression(BinaryOperatorExpression binaryOperatorExpression, object data)
 		{
-			if (_resolver.CompilationUnit == null)
-				return base.VisitBinaryOperatorExpression(binaryOperatorExpression, data);
-			
 			base.VisitBinaryOperatorExpression(binaryOperatorExpression, data);
-			if (binaryOperatorExpression.Op == BinaryOperatorType.Equality || binaryOperatorExpression.Op == BinaryOperatorType.InEquality) {
-				// maybe we have to convert Equality operator to ReferenceEquality
-				ResolveResult left = _resolver.ResolveInternal(binaryOperatorExpression.Left, ExpressionContext.Default);
-				ResolveResult right = _resolver.ResolveInternal(binaryOperatorExpression.Right, ExpressionContext.Default);
-				if (left != null && right != null && left.ResolvedType != null && right.ResolvedType != null) {
-					IClass cLeft = left.ResolvedType.GetUnderlyingClass();
-					IClass cRight = right.ResolvedType.GetUnderlyingClass();
-					if (cLeft != null && cRight != null) {
-						if ((cLeft.ClassType != ClassType.Struct && cLeft.ClassType != ClassType.Enum)
-						    || (cRight.ClassType != ClassType.Struct && cRight.ClassType != ClassType.Enum))
-						{
-							// this is a reference comparison
-							if (cLeft.FullyQualifiedName != "System.String") {
-								// and it's not a string comparison, so we'll use reference equality
-								if (binaryOperatorExpression.Op == BinaryOperatorType.Equality) {
-									binaryOperatorExpression.Op = BinaryOperatorType.ReferenceEquality;
-								} else {
-									binaryOperatorExpression.Op = BinaryOperatorType.ReferenceInequality;
-								}
+			
+			if (_resolver.CompilationUnit == null)
+				return null;
+			
+			switch (binaryOperatorExpression.Op) {
+				case BinaryOperatorType.Equality:
+				case BinaryOperatorType.InEquality:
+					ConvertEqualityToReferenceEqualityIfRequired(binaryOperatorExpression);
+					break;
+				case BinaryOperatorType.Add:
+					ConvertArgumentsForStringConcatenationIfRequired(binaryOperatorExpression);
+					break;
+				case BinaryOperatorType.Divide:
+					ConvertDivisionToIntegerDivisionIfRequired(binaryOperatorExpression);
+					break;
+			}
+			return null;
+		}
+		
+		void ConvertEqualityToReferenceEqualityIfRequired(BinaryOperatorExpression binaryOperatorExpression)
+		{
+			// maybe we have to convert Equality operator to ReferenceEquality
+			ResolveResult left = _resolver.ResolveInternal(binaryOperatorExpression.Left, ExpressionContext.Default);
+			ResolveResult right = _resolver.ResolveInternal(binaryOperatorExpression.Right, ExpressionContext.Default);
+			if (left != null && right != null && left.ResolvedType != null && right.ResolvedType != null) {
+				IClass cLeft = left.ResolvedType.GetUnderlyingClass();
+				IClass cRight = right.ResolvedType.GetUnderlyingClass();
+				if (cLeft != null && cRight != null) {
+					if ((cLeft.ClassType != ClassType.Struct && cLeft.ClassType != ClassType.Enum)
+					    || (cRight.ClassType != ClassType.Struct && cRight.ClassType != ClassType.Enum))
+					{
+						// this is a reference comparison
+						if (cLeft.FullyQualifiedName != "System.String") {
+							// and it's not a string comparison, so we'll use reference equality
+							if (binaryOperatorExpression.Op == BinaryOperatorType.Equality) {
+								binaryOperatorExpression.Op = BinaryOperatorType.ReferenceEquality;
+							} else {
+								binaryOperatorExpression.Op = BinaryOperatorType.ReferenceInequality;
 							}
 						}
 					}
 				}
 			}
+		}
+		
+		void ConvertArgumentsForStringConcatenationIfRequired(BinaryOperatorExpression binaryOperatorExpression)
+		{
+			ResolveResult left = _resolver.ResolveInternal(binaryOperatorExpression.Left, ExpressionContext.Default);
+			ResolveResult right = _resolver.ResolveInternal(binaryOperatorExpression.Right, ExpressionContext.Default);
+			
+			if (left != null && right != null) {
+				if (IsString(left.ResolvedType)) {
+					binaryOperatorExpression.Op = BinaryOperatorType.Concat;
+					if (NeedsExplicitConversionToString(right.ResolvedType)) {
+						binaryOperatorExpression.Right = CreateExplicitConversionToString(binaryOperatorExpression.Right);
+					}
+				} else if (IsString(right.ResolvedType)) {
+					binaryOperatorExpression.Op = BinaryOperatorType.Concat;
+					if (NeedsExplicitConversionToString(left.ResolvedType)) {
+						binaryOperatorExpression.Left = CreateExplicitConversionToString(binaryOperatorExpression.Left);
+					}
+				}
+			}
+		}
+		
+		void ConvertDivisionToIntegerDivisionIfRequired(BinaryOperatorExpression binaryOperatorExpression)
+		{
+			ResolveResult left = _resolver.ResolveInternal(binaryOperatorExpression.Left, ExpressionContext.Default);
+			ResolveResult right = _resolver.ResolveInternal(binaryOperatorExpression.Right, ExpressionContext.Default);
+			
+			if (left != null && right != null) {
+				if (IsInteger(left.ResolvedType) && IsInteger(right.ResolvedType)) {
+					binaryOperatorExpression.Op = BinaryOperatorType.DivideInteger;
+				}
+			}
+		}
+		
+		bool IsString(IReturnType rt)
+		{
+			return rt != null && rt.IsDefaultReturnType && rt.FullyQualifiedName == "System.String";
+		}
+		
+		bool IsInteger(IReturnType rt)
+		{
+			if (rt != null && rt.IsDefaultReturnType) {
+				switch (rt.FullyQualifiedName) {
+					case "System.Byte":
+					case "System.SByte":
+					case "System.Int16":
+					case "System.UInt16":
+					case "System.Int32":
+					case "System.UInt32":
+					case "System.Int64":
+					case "System.UInt64":
+						return true;
+				}
+			}
+			return false;
+		}
+		
+		bool NeedsExplicitConversionToString(IReturnType rt)
+		{
+			if (rt != null) {
+				if (rt.IsDefaultReturnType) {
+					if (rt.FullyQualifiedName == "System.Object"
+					    || !TypeReference.PrimitiveTypesVBReverse.ContainsKey(rt.FullyQualifiedName))
+					{
+						// object and non-primitive types need explicit conversion
+						return true;
+					} else {
+						// primitive types except object don't need explicit conversion
+						return false;
+					}
+				} else {
+					return true;
+				}
+			}
+			return false;
+		}
+		
+		Expression CreateExplicitConversionToString(Expression expr)
+		{
+			InvocationExpression ie = new InvocationExpression(
+				new FieldReferenceExpression(new IdentifierExpression("Convert"), "ToString"));
+			ie.Arguments.Add(expr);
+			return ie;
+		}
+		
+		public override object VisitIdentifierExpression(IdentifierExpression identifierExpression, object data)
+		{
+			base.VisitIdentifierExpression(identifierExpression, data);
+			if (_resolver.CompilationUnit == null)
+				return null;
+			
+			InvocationExpression parentIE = identifierExpression.Parent as InvocationExpression;
+			if (!(identifierExpression.Parent is AddressOfExpression)
+			    && (parentIE == null || parentIE.TargetObject != identifierExpression))
+			{
+				ResolveResult rr = _resolver.ResolveInternal(identifierExpression, ExpressionContext.Default);
+				if (rr is MethodResolveResult) {
+					ReplaceCurrentNode(new AddressOfExpression(identifierExpression));
+				}
+			}
 			return null;
+		}
+		
+		public override object VisitFieldReferenceExpression(FieldReferenceExpression fieldReferenceExpression, object data)
+		{
+			base.VisitFieldReferenceExpression(fieldReferenceExpression, data);
+			
+			if (_resolver.CompilationUnit == null)
+				return null;
+			
+			InvocationExpression parentIE = fieldReferenceExpression.Parent as InvocationExpression;
+			if (!(fieldReferenceExpression.Parent is AddressOfExpression)
+			    && (parentIE == null || parentIE.TargetObject != fieldReferenceExpression))
+			{
+				ResolveResult rr = _resolver.ResolveInternal(fieldReferenceExpression, ExpressionContext.Default);
+				if (rr is MethodResolveResult) {
+					ReplaceCurrentNode(new AddressOfExpression(fieldReferenceExpression));
+				}
+			}
+			
+			return null;
+		}
+		
+		void HandleAssignmentStatement(AssignmentExpression assignmentExpression)
+		{
+			if (_resolver.CompilationUnit == null || assignmentExpression == null)
+				return;
+			
+			if (assignmentExpression.Op == AssignmentOperatorType.Add || assignmentExpression.Op == AssignmentOperatorType.Subtract) {
+				ResolveResult rr = _resolver.ResolveInternal(assignmentExpression.Left, ExpressionContext.Default);
+				if (rr is MemberResolveResult && (rr as MemberResolveResult).ResolvedMember is IEvent) {
+					if (assignmentExpression.Op == AssignmentOperatorType.Add) {
+						ReplaceCurrentNode(new AddHandlerStatement(assignmentExpression.Left, assignmentExpression.Right));
+					} else {
+						ReplaceCurrentNode(new RemoveHandlerStatement(assignmentExpression.Left, assignmentExpression.Right));
+					}
+				} else if (rr.ResolvedType != null) {
+					IClass c = rr.ResolvedType.GetUnderlyingClass();
+					if (c.ClassType == ClassType.Delegate) {
+						InvocationExpression invocation = new InvocationExpression(
+							new FieldReferenceExpression(
+								new IdentifierExpression("Delegate"),
+								assignmentExpression.Op == AssignmentOperatorType.Add ? "Combine" : "Remove"));
+						invocation.Arguments.Add(assignmentExpression.Left);
+						invocation.Arguments.Add(assignmentExpression.Right);
+						
+						assignmentExpression.Op = AssignmentOperatorType.Assign;
+						assignmentExpression.Right = new CastExpression(
+							Refactoring.CodeGenerator.ConvertType(rr.ResolvedType, CreateContext()),
+							invocation, CastType.Cast);
+					}
+				}
+			}
 		}
 	}
 }

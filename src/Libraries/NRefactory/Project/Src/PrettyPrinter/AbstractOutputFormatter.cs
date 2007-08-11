@@ -23,6 +23,8 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		bool          doNewLine      = true;
 		AbstractPrettyPrintOptions prettyPrintOptions;
 		
+		public bool IsInMemberBody { get; set; }
+		
 		public int IndentationLevel {
 			get {
 				return indentationLevel;

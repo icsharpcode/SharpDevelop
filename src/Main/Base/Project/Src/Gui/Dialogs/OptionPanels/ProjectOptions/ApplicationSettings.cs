@@ -6,11 +6,13 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
@@ -47,6 +49,9 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			
 			b = helper.BindString("startupObjectComboBox", "StartupObject", TextBoxEditMode.EditEvaluatedProperty);
 			b.RegisterLocationButton(locationButton);
+			foreach (IClass c in GetPossibleStartupObjects(project)) {
+				Get<ComboBox>("startupObject").Items.Add(c.FullyQualifiedName);
+			}
 			
 			b = helper.BindString("applicationIconComboBox", "ApplicationIcon", TextBoxEditMode.EditEvaluatedProperty);
 			Get<ComboBox>("applicationIcon").TextChanged += new EventHandler(ApplicationIconComboBoxTextChanged);
@@ -64,6 +69,22 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			RefreshOutputNameTextBox(null, EventArgs.Empty);
 			
 			helper.AddConfigurationSelector(this);
+		}
+		
+		public static IList<IClass> GetPossibleStartupObjects(IProject project)
+		{
+			List<IClass> results = new List<IClass>();
+			IProjectContent pc = ParserService.GetProjectContent(project);
+			if (pc != null) {
+				foreach (IClass c in pc.Classes) {
+					foreach (IMethod m in c.Methods) {
+						if (m.IsStatic && m.Name == "Main") {
+							results.Add(c);
+						}
+					}
+				}
+			}
+			return results;
 		}
 		
 		void RefreshOutputNameTextBox(object sender, EventArgs e)

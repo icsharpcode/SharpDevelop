@@ -149,20 +149,6 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		}
 		
 		[Test]
-		public void AddEventHandler()
-		{
-			TestStatement("this.button1.Click += new System.EventHandler(this.OnButton1Click);",
-			              "AddHandler Me.button1.Click, AddressOf Me.OnButton1Click");
-		}
-		
-		[Test]
-		public void RemoveEventHandler()
-		{
-			TestStatement("this.button1.Click -= new System.EventHandler(this.OnButton1Click);",
-			              "RemoveHandler Me.button1.Click, AddressOf Me.OnButton1Click");
-		}
-		
-		[Test]
 		public void RaiseEvent()
 		{
 			TestStatement("if (MyEvent != null) MyEvent(this, EventArgs.Empty);",
@@ -201,6 +187,7 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			              "End If");
 		}
 		
+		/*
 		[Test]
 		public void AnonymousMethod()
 		{
@@ -213,7 +200,6 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			           "End Sub");
 		}
 		
-		/*
 		[Test, Ignore("NRefactory cannot guess the anonymous method's return type")]
 		public void AnonymousMethodInVarDeclaration()
 		{
@@ -226,19 +212,6 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			           "End Function");
 		}
 		 */
-		
-		[Test]
-		public void RegisterEvent()
-		{
-			TestStatement("someEvent += tmp2;",
-			              "AddHandler someEvent, AddressOf tmp2");
-			TestStatement("someEvent += this.tmp2;",
-			              "AddHandler someEvent, AddressOf tmp2");
-			TestStatement("someEvent += new SomeDelegate(tmp2);",
-			              "AddHandler someEvent, AddressOf tmp2");
-			TestStatement("someEvent += new SomeDelegate(this.tmp2);",
-			              "AddHandler someEvent, AddressOf tmp2");
-		}
 		
 		[Test]
 		public void StaticMethod()
@@ -346,7 +319,14 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		public void NullCoalescing()
 		{
 			TestStatement("c = a ?? b;",
-			              "c = IIf(a Is Nothing, b, a)");
+			              "c = If(a, b)");
+		}
+		
+		[Test]
+		public void Ternary()
+		{
+			TestStatement("d = a ? b : c;",
+			              "d = If(a, b, c)");
 		}
 		
 		[Test]

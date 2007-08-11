@@ -144,7 +144,7 @@
     <Compile Include="Output\VBNet\VBNetOutputTest.cs" />
     <Compile Include="Output\VBNet\CSharpToVBConverterTest.cs" />
     <Compile Include="Output\CSharp\VBToCSharpConverterTest.cs" />
-    <Compile Include="Output\SpecialOutputVisitor.cs" />
+    <Compile Include="Output\SpecialOutputVisitorTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Project\NRefactory.csproj">

@@ -21,6 +21,11 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		void ReadPreProcessingDirective()
 		{
 			Location start = new Location(Col - 1, Line);
+			
+			// skip spaces between # and the directive
+			while (ReaderPeek() == ' ')
+				ReaderRead();
+			
 			bool canBeKeyword;
 			string directive = ReadIdent('#', out canBeKeyword);
 			string argument  = ReadToEndOfLine();
