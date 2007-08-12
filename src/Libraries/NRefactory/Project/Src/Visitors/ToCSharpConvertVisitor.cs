@@ -23,6 +23,27 @@ namespace ICSharpCode.NRefactory.Visitors
 		//   Explicit interface implementation:
 		//      => create additional member for implementing the interface
 		//      or convert to implicit interface implementation
+		//   Modules: make all members static
+		
+		public override object VisitTypeDeclaration(TypeDeclaration typeDeclaration, object data)
+		{
+			if (typeDeclaration.Type == ClassType.Module) {
+				typeDeclaration.Type = ClassType.Class;
+				typeDeclaration.Modifier |= Modifiers.Static;
+				foreach (INode node in typeDeclaration.Children) {
+					MemberNode aNode = node as MemberNode;
+					if (aNode != null) {
+						aNode.Modifier |= Modifiers.Static;
+					}
+					FieldDeclaration fd = node as FieldDeclaration;
+					if (fd != null) {
+						fd.Modifier |= Modifiers.Static;
+					}
+				}
+			}
+			
+			return base.VisitTypeDeclaration(typeDeclaration, data);
+		}
 		
 		public override object VisitEventDeclaration(EventDeclaration eventDeclaration, object data)
 		{

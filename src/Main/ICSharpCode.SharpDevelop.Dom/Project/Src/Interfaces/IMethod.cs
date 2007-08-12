@@ -30,5 +30,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 		bool IsConstructor {
 			get;
 		}
+		
+		IList<string> HandlesClauses {
+			get;
+		}
 	}
 }

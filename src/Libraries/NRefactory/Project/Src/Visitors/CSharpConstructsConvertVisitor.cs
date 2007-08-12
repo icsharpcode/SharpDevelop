@@ -13,7 +13,7 @@ namespace ICSharpCode.NRefactory.Visitors
 	/// <summary>
 	/// Converts special C# constructs to use more general AST classes.
 	/// </summary>
-	public class CSharpConstructsVisitor : ConvertVisitorBase
+	public class CSharpConstructsConvertVisitor : ConvertVisitorBase
 	{
 		// The following conversions are implemented:
 		//   a == null -> a Is Nothing

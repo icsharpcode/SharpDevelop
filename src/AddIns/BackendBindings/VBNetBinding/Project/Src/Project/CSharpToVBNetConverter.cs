@@ -18,7 +18,7 @@ using ICSharpCode.SharpDevelop.Project.Converter;
 
 namespace VBNetBinding
 {
-	public class CSharpToVBConverter : NRefactoryLanguageConverter
+	public class CSharpToVBNetConverter : NRefactoryLanguageConverter
 	{
 		public override string TargetLanguageName {
 			get {
@@ -52,9 +52,7 @@ namespace VBNetBinding
 			CSharpToVBNetConvertVisitor visitor = new CSharpToVBNetConvertVisitor(pc, ParserService.GetParseInformation(sourceItem.FileName));
 			visitor.RootNamespaceToRemove = sourceItem.Project.RootNamespace;
 			visitor.DefaultImportsToRemove = defaultImports;
-			if (sourceItem.Project is MSBuildBasedProject) {
 				visitor.StartupObjectToMakePublic = startupObject;
-			}
 			compilationUnit.AcceptVisitor(visitor, null);
 		}
 		

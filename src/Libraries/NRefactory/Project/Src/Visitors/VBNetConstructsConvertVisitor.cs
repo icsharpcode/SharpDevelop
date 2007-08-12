@@ -246,23 +246,7 @@ namespace ICSharpCode.NRefactory.Visitors
 					methodDeclaration.Body.AcceptVisitor(visitor, null);
 					if (visitor.replacementCount > 0) {
 						Expression init;
-						switch (methodDeclaration.TypeReference.SystemType) {
-							case "System.Int16":
-							case "System.Int32":
-							case "System.Int64":
-							case "System.Byte":
-							case "System.UInt16":
-							case "System.UInt32":
-							case "System.UInt64":
-								init = new PrimitiveExpression(0, "0");
-								break;
-							case "System.Boolean":
-								init = new PrimitiveExpression(false, "false");
-								break;
-							default:
-								init = new PrimitiveExpression(null, "null");
-								break;
-						}
+						init = GetDefaultValueForType(methodDeclaration.TypeReference);
 						methodDeclaration.Body.Children.Insert(0, new LocalVariableDeclaration(new VariableDeclaration(FunctionReturnValueName, init, methodDeclaration.TypeReference)));
 						methodDeclaration.Body.Children[0].Parent = methodDeclaration.Body;
 						methodDeclaration.Body.AddChild(new ReturnStatement(new IdentifierExpression(FunctionReturnValueName)));
@@ -515,38 +499,41 @@ namespace ICSharpCode.NRefactory.Visitors
 					VariableDeclaration decl = localVariableDeclaration.Variables[i];
 					if (decl.FixedArrayInitialization.IsNull && decl.Initializer.IsNull) {
 						TypeReference type = localVariableDeclaration.GetTypeForVariable(i);
-						if (type != null && !type.IsArrayType) {
-							switch (type.SystemType) {
-								case "System.SByte":
-								case "System.Byte":
-								case "System.Int16":
-								case "System.UInt16":
-								case "System.Int32":
-								case "System.UInt32":
-								case "System.Int64":
-								case "System.UInt64":
-								case "System.Single":
-								case "System.Double":
-									decl.Initializer = new PrimitiveExpression(0, "0");
-									break;
-								case "System.Char":
-									decl.Initializer = new PrimitiveExpression('\0', "'\\0'");
-									break;
-								case "System.Object":
-								case "System.String":
-									decl.Initializer = new PrimitiveExpression(null, "null");
-									break;
-								default:
-									decl.Initializer = new DefaultValueExpression(type);
-									break;
-							}
-						} else {
-							decl.Initializer = new PrimitiveExpression(null, "null");
-						}
+						decl.Initializer = GetDefaultValueForType(type);
 					}
 				}
 			}
 			return base.VisitLocalVariableDeclaration(localVariableDeclaration, data);
+		}
+		
+		Expression GetDefaultValueForType(TypeReference type)
+		{
+			if (type != null && !type.IsArrayType) {
+				switch (type.SystemType) {
+					case "System.SByte":
+					case "System.Byte":
+					case "System.Int16":
+					case "System.UInt16":
+					case "System.Int32":
+					case "System.UInt32":
+					case "System.Int64":
+					case "System.UInt64":
+					case "System.Single":
+					case "System.Double":
+						return new PrimitiveExpression(0, "0");
+					case "System.Char":
+						return new PrimitiveExpression('\0', "'\\0'");
+					case "System.Object":
+					case "System.String":
+						return new PrimitiveExpression(null, "null");
+					case "System.Boolean":
+						return new PrimitiveExpression(false, "false");
+					default:
+						return new DefaultValueExpression(type);
+				}
+			} else {
+				return new PrimitiveExpression(null, "null");
+			}
 		}
 	}
 }

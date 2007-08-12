@@ -24,7 +24,7 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			IParser parser = ParserFactory.CreateParser(SupportedLanguage.CSharp, new StringReader(input));
 			parser.Parse();
 			Assert.AreEqual("", parser.Errors.ErrorOutput);
-			parser.CompilationUnit.AcceptVisitor(new CSharpConstructsVisitor(), null);
+			parser.CompilationUnit.AcceptVisitor(new CSharpConstructsConvertVisitor(), null);
 			parser.CompilationUnit.AcceptVisitor(new ToVBNetConvertVisitor(), null);
 			VBNetOutputVisitor outputVisitor = new VBNetOutputVisitor();
 			outputVisitor.VisitCompilationUnit(parser.CompilationUnit, null);

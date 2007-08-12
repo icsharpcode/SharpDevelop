@@ -475,7 +475,7 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			           "End Function",
 			           "public CustomType run(int i)\n" +
 			           "{\n" +
-			           "\tCustomType " + VBNetConstructsConvertVisitor.FunctionReturnValueName + " = null;\n" +
+			           "\tCustomType " + VBNetConstructsConvertVisitor.FunctionReturnValueName + " = default(CustomType);\n" +
 			           "\twhile (something) {\n" +
 			           "\t\t" + VBNetConstructsConvertVisitor.FunctionReturnValueName + " = new CustomType();\n" +
 			           "\t}\n" +

@@ -602,6 +602,7 @@ namespace ICSharpCode.TextEditor
 			CloseToolTip();
 			
 			motherTextEditorControl.BeginUpdate();
+			Document.UndoStack.StartUndoGroup();
 			// INSERT char
 			if (!HandleKeyPress(ch)) {
 				switch (Caret.CaretMode) {
@@ -621,6 +622,7 @@ namespace ICSharpCode.TextEditor
 			Document.FormattingStrategy.FormatLine(this, currentLineNr, Document.PositionToOffset(Caret.Position), ch);
 			
 			motherTextEditorControl.EndUpdate();
+			Document.UndoStack.EndUndoGroup();
 		}
 		
 		protected override void OnKeyPress(KeyPressEventArgs e)

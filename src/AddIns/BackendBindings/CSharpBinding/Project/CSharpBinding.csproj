@@ -47,6 +47,7 @@
   <ItemGroup>
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <EmbeddedResource Include="Resources\BuildOptions.xfrm" />
+    <EmbeddedResource Include="Resources\MyNamespaceSupportForCSharp.cs" />
     <Compile Include="Src\CSharpAdvancedHighlighter.cs" />
     <Compile Include="Src\CSharpLanguageBinding.cs" />
     <Compile Include="Src\FormattingStrategy\CSharpFormattingStrategy.cs" />
@@ -56,13 +57,16 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Src\Parser\Parser.cs" />
+    <Compile Include="Src\Project\RemoveMembersInRangeVisitor.cs" />
+    <Compile Include="Src\Project\VBNetToCSharpConvertVisitorWithMyFormsSupport.cs" />
+    <Compile Include="Src\Project\CSharpMyNamespaceBuilder.cs" />
     <Compile Include="Src\Project\CSharpProject.cs" />
     <None Include="CSharpBinding.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <Compile Include="Src\CSharpCompletionBinding.cs" />
     <Compile Include="Src\EventHandlerCompletitionDataProvider.cs" />
-    <Compile Include="Src\Project\VBToCSharpConverter.cs" />
+    <Compile Include="Src\Project\VBNetToCSharpConverter.cs" />
     <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>

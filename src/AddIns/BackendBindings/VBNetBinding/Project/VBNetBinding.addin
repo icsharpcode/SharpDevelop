@@ -56,7 +56,7 @@
 		<Condition name = "ProjectActive" activeproject="C#">
 			<MenuItem id = "CSharpToVBConverter"
 			          label = "${res:ICSharpCode.SharpDevelop.Commands.CharpConvertProjectToVB}"
-			          class = "VBNetBinding.CSharpToVBConverter"/>
+			          class = "VBNetBinding.CSharpToVBNetConverter"/>
 		</Condition>
 	</Path>
 	

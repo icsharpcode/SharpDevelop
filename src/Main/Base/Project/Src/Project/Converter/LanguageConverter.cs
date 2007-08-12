@@ -55,6 +55,17 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			}
 		}
 		
+		protected virtual int GetRequiredWork(ProjectItem item)
+		{
+			if (item.ItemType == ItemType.Compile) {
+				return 50;
+			} else if (ItemType.DefaultFileItems.Contains(item.ItemType)) {
+				return 10;
+			} else {
+				return 1;
+			}
+		}
+		
 		protected virtual void CopyProperties(IProject sourceProject, IProject targetProject)
 		{
 			MSBuildBasedProject sp = sourceProject as MSBuildBasedProject;
@@ -121,6 +132,11 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 				throw new ArgumentNullException("targetProjectItems");
 			
 			ICollection<ProjectItem> sourceItems = sourceProject.Items;
+			int totalWork = 0;
+			foreach (ProjectItem item in sourceItems) {
+				totalWork += GetRequiredWork(item);
+			}
+			
 			monitor.BeginTask("Converting", sourceItems.Count, true);
 			int workDone = 0;
 			foreach (ProjectItem item in sourceItems) {
@@ -142,7 +158,8 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 				if (monitor.IsCancelled) {
 					return;
 				}
-				monitor.WorkDone = ++workDone;
+				workDone += GetRequiredWork(item);
+				monitor.WorkDone = workDone;
 			}
 			monitor.Done();
 		}

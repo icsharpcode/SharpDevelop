@@ -463,7 +463,13 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public override object TrackedVisitOptionDeclaration(OptionDeclaration optionDeclaration, object data)
 		{
-			NotSupported(optionDeclaration);
+			if ((optionDeclaration.OptionType == OptionType.Explicit || optionDeclaration.OptionType == OptionType.Strict)
+			    && optionDeclaration.OptionValue == true)
+			{
+				// Explicit On/Strict On is what C# does, do not report an error
+			} else {
+				NotSupported(optionDeclaration);
+			}
 			return null;
 		}
 		#endregion
@@ -638,6 +644,9 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			if (methodDeclaration.InterfaceImplementations.Count > 0) {
 				TrackVisit(methodDeclaration.InterfaceImplementations[0].InterfaceType, data);
 				outputFormatter.PrintToken(Tokens.Dot);
+			}
+			if (methodDeclaration.HandlesClause.Count > 0) {
+				Error(methodDeclaration, "Handles clauses are not supported in C#");
 			}
 			outputFormatter.PrintIdentifier(methodDeclaration.Name);
 			
@@ -1603,11 +1612,12 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		{
 			if (exitStatement.ExitType == ExitType.Function || exitStatement.ExitType == ExitType.Sub || exitStatement.ExitType == ExitType.Property) {
 				outputFormatter.PrintToken(Tokens.Return);
+				outputFormatter.PrintToken(Tokens.Semicolon);
 			} else {
 				outputFormatter.PrintToken(Tokens.Break);
+				outputFormatter.PrintToken(Tokens.Semicolon);
+				outputFormatter.PrintText(" // TODO: might not be correct. Was : Exit " + exitStatement.ExitType);
 			}
-			outputFormatter.PrintToken(Tokens.Semicolon);
-			outputFormatter.PrintText(" // TODO: might not be correct. Was : Exit " + exitStatement.ExitType);
 			outputFormatter.NewLine();
 			return null;
 		}

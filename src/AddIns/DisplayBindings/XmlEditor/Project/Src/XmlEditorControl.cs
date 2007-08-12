@@ -321,6 +321,7 @@ namespace ICSharpCode.XmlEditor
 		void InsertCharacter(char ch)
 		{
 			ActiveTextAreaControl.TextArea.MotherTextEditorControl.BeginUpdate();
+			Document.UndoStack.StartUndoGroup();
 			
 			switch (ActiveTextAreaControl.TextArea.Caret.CaretMode)
 			{
@@ -335,6 +336,7 @@ namespace ICSharpCode.XmlEditor
 			Document.FormattingStrategy.FormatLine(ActiveTextAreaControl.TextArea, currentLineNr, Document.PositionToOffset(ActiveTextAreaControl.TextArea.Caret.Position), ch);
 			
 			ActiveTextAreaControl.TextArea.MotherTextEditorControl.EndUpdate();
+			Document.UndoStack.EndUndoGroup();
 		}
 		
 		/// <summary>

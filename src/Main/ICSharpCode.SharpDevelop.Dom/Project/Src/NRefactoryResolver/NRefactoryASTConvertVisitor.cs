@@ -446,6 +446,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return p;
 		}
 		
+		static readonly IList<string> EmptyStringList = new List<string>().AsReadOnly();
+		
 		public override object VisitMethodDeclaration(AST.MethodDeclaration methodDeclaration, object data)
 		{
 			DomRegion region     = GetRegion(methodDeclaration.StartLocation, methodDeclaration.EndLocation);
@@ -458,13 +460,26 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			ConvertTemplates(methodDeclaration.Templates, method);
 			method.ReturnType = CreateReturnType(methodDeclaration.TypeReference, method);
 			ConvertAttributes(methodDeclaration, method);
-			if (methodDeclaration.Parameters != null && methodDeclaration.Parameters.Count > 0) {
+			if (methodDeclaration.Parameters.Count > 0) {
 				foreach (AST.ParameterDeclarationExpression par in methodDeclaration.Parameters) {
 					method.Parameters.Add(CreateParameter(par, method));
 				}
 			} else {
 				method.Parameters = DefaultParameter.EmptyParameterList;
 			}
+			if (methodDeclaration.HandlesClause.Count > 0) {
+				foreach (string handlesClause in methodDeclaration.HandlesClause) {
+					if (handlesClause.ToLowerInvariant().StartsWith("me."))
+						method.HandlesClauses.Add(handlesClause.Substring(3));
+					else if (handlesClause.ToLowerInvariant().StartsWith("mybase."))
+						method.HandlesClauses.Add(handlesClause.Substring(7));
+					else
+						method.HandlesClauses.Add(handlesClause);
+				}
+			} else {
+				method.HandlesClauses = EmptyStringList;
+			}
+			
 			currentClass.Methods.Add(method);
 			return null;
 		}

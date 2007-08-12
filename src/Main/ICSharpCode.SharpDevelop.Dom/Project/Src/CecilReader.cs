@@ -370,10 +370,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 				foreach (ParameterDefinition par in plist) {
 					IReturnType pReturnType = CreateType(this.ProjectContent, target, par.ParameterType);
 					DefaultParameter p = new DefaultParameter(par.Name, pReturnType, DomRegion.Empty);
-					if ((par.Attributes & ParameterAttributes.Out) == ParameterAttributes.Out) {
-						p.Modifiers = ParameterModifiers.Out;
-					} else if (par.ParameterType is ReferenceType) {
-						p.Modifiers = ParameterModifiers.Ref;
+					if (par.ParameterType is ReferenceType) {
+						if ((par.Attributes & ParameterAttributes.Out) == ParameterAttributes.Out) {
+							p.Modifiers = ParameterModifiers.Out;
+						} else {
+							p.Modifiers = ParameterModifiers.Ref;
+						}
 					} else {
 						p.Modifiers = ParameterModifiers.In;
 					}

@@ -35,6 +35,7 @@ namespace ICSharpCode.NRefactory
 			} else if (cmd.Equals("#Region", StringComparison.InvariantCultureIgnoreCase)) {
 				cmd = "#region";
 			} else if (cmd.Equals("#If", StringComparison.InvariantCultureIgnoreCase)) {
+				cmd = "#if";
 				if (arg.ToLowerInvariant().EndsWith(" then"))
 					arg = arg.Substring(0, arg.Length - 5);
 			}

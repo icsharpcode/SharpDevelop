@@ -16,7 +16,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 	/// <summary>
 	/// This class converts C# constructs to their VB.NET equivalents.
 	/// </summary>
-	public class CSharpToVBNetConvertVisitor : CSharpConstructsVisitor
+	public class CSharpToVBNetConvertVisitor : CSharpConstructsConvertVisitor
 	{
 		NRefactoryResolver _resolver;
 		ParseInformation _parseInfo;
@@ -406,7 +406,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					} else {
 						ReplaceCurrentNode(new RemoveHandlerStatement(assignmentExpression.Left, assignmentExpression.Right));
 					}
-				} else if (rr.ResolvedType != null) {
+				} else if (rr != null && rr.ResolvedType != null) {
 					IClass c = rr.ResolvedType.GetUnderlyingClass();
 					if (c.ClassType == ClassType.Delegate) {
 						InvocationExpression invocation = new InvocationExpression(

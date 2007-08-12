@@ -423,7 +423,7 @@ namespace ICSharpCode.TextEditor.Actions
 				commentEndOffset += selectionStartOffset;
 			}
 			
-			// Find start of comment before or partially inside the 
+			// Find start of comment before or partially inside the
 			// selected text.
 			
 			int commentEndBeforeStartOffset = -1;
@@ -453,7 +453,7 @@ namespace ICSharpCode.TextEditor.Actions
 				}
 				string text = document.GetText(offset, document.TextLength - offset);
 				commentEndOffset = text.IndexOf(commentEnd);
-				if (commentEndOffset >= 0) {	
+				if (commentEndOffset >= 0) {
 					commentEndOffset += offset;
 				}
 			}
@@ -698,9 +698,11 @@ namespace ICSharpCode.TextEditor.Actions
 				return;
 			}
 			textArea.BeginUpdate();
+			textArea.Document.UndoStack.StartUndoGroup();
 			try {
 				if (textArea.HandleKeyPress('\n'))
 					return;
+				
 				textArea.InsertString(Environment.NewLine);
 				
 				int curLineNr = textArea.Caret.Line;
@@ -710,6 +712,7 @@ namespace ICSharpCode.TextEditor.Actions
 				textArea.Document.UpdateQueue.Clear();
 				textArea.Document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.PositionToEnd, new Point(0, curLineNr - 1)));
 			} finally {
+				textArea.Document.UndoStack.EndUndoGroup();
 				textArea.EndUpdate();
 			}
 		}

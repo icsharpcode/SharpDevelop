@@ -49,8 +49,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 	[Serializable]
 	public class DefaultMethod : AbstractMember, IMethod
 	{
-		IList<IParameter> parameters = null;
-		IList<ITypeParameter> typeParameters = null;
+		IList<IParameter> parameters;
+		IList<ITypeParameter> typeParameters;
+		IList<string> handlesClauses;
 		
 		bool isExtensionMethod;
 		
@@ -132,6 +133,18 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 			set {
 				parameters = value;
+			}
+		}
+		
+		public IList<string> HandlesClauses {
+			get {
+				if (handlesClauses == null) {
+					handlesClauses = new List<string>();
+				}
+				return handlesClauses;
+			}
+			set {
+				handlesClauses = value;
 			}
 		}
 		

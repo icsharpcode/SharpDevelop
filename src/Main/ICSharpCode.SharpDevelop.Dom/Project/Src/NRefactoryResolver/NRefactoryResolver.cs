@@ -158,6 +158,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		{
 			this.caretLine   = caretLineNumber;
 			this.caretColumn = caretColumn;
+			callingClass = null;
+			callingMember = null;
 			
 			if (parseInfo == null) {
 				return false;

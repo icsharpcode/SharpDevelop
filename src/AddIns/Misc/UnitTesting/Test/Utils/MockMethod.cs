@@ -37,6 +37,12 @@ namespace UnitTesting.Tests.Utils
 			}
 		}
 		
+		public IList<string> HandlesClauses {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
 		public bool IsConstructor {
 			get {
 				throw new NotImplementedException();

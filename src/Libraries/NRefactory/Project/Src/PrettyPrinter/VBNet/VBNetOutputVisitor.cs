@@ -847,6 +847,17 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			
 			PrintInterfaceImplementations(methodDeclaration.InterfaceImplementations);
 			
+			if (methodDeclaration.HandlesClause.Count > 0) {
+				outputFormatter.Space();
+				outputFormatter.PrintToken(Tokens.Handles);
+				for (int i = 0; i < methodDeclaration.HandlesClause.Count; i++) {
+					if (i > 0)
+						outputFormatter.PrintToken(Tokens.Comma);
+					outputFormatter.Space();
+					outputFormatter.PrintText(methodDeclaration.HandlesClause[i]);
+				}
+			}
+			
 			outputFormatter.NewLine();
 			
 			if (!IsAbstract(methodDeclaration)) {
