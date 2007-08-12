@@ -19,6 +19,7 @@ namespace ICSharpCode.SharpDevelop.Util
 	/// </summary>
 	public class ProcessRunner : IDisposable
 	{
+		readonly object lockObj = new object();
 		Process process;
 		string standardOutput = String.Empty;
 		string workingDirectory = String.Empty;
@@ -97,7 +98,7 @@ namespace ICSharpCode.SharpDevelop.Util
 		/// Gets the process exit code.
 		/// </summary>
 		public int ExitCode {
-			get {	
+			get {
 				int exitCode = 0;
 				if (process != null) {
 					exitCode = process.ExitCode;
@@ -118,7 +119,7 @@ namespace ICSharpCode.SharpDevelop.Util
 		/// Waits for the process to exit.
 		/// </summary>
 		/// <param name="timeout">A timeout in milliseconds.</param>
-		/// <returns><see langword="true"/> if the associated process has 
+		/// <returns><see langword="true"/> if the associated process has
 		/// exited; otherwise, <see langword="false"/></returns>
 		public bool WaitForExit(int timeout)
 		{
@@ -155,7 +156,7 @@ namespace ICSharpCode.SharpDevelop.Util
 		/// <param name="arguments">The command line arguments to
 		/// pass to the command.</param>
 		public void Start(string command, string arguments)
-		{	
+		{
 			process = new Process();
 			process.StartInfo.CreateNoWindow = true;
 			process.StartInfo.FileName = command;
@@ -170,30 +171,32 @@ namespace ICSharpCode.SharpDevelop.Util
 				process.Exited += OnProcessExited;
 			}
 
-			bool started = false;
-			try {
-				process.Start();
-				started = true;
-			} finally {
-				if (!started) {
-					process.Exited -= OnProcessExited;			
-					process = null;
+			lock (lockObj) {
+				bool started = false;
+				try {
+					process.Start();
+					started = true;
+				} finally {
+					if (!started) {
+						process.Exited -= OnProcessExited;
+						process = null;
+					}
 				}
-			}
 				
-			standardOutputReader = new OutputReader(process.StandardOutput);
-			if (OutputLineReceived != null) {
-				standardOutputReader.LineReceived += new LineReceivedEventHandler(OnOutputLineReceived);
+				standardOutputReader = new OutputReader(process.StandardOutput);
+				if (OutputLineReceived != null) {
+					standardOutputReader.LineReceived += new LineReceivedEventHandler(OnOutputLineReceived);
+				}
+				
+				standardOutputReader.Start();
+				
+				standardErrorReader = new OutputReader(process.StandardError);
+				if (ErrorLineReceived != null) {
+					standardErrorReader.LineReceived += new LineReceivedEventHandler(OnErrorLineReceived);
+				}
+				
+				standardErrorReader.Start();
 			}
-			
-			standardOutputReader.Start();
-			
-			standardErrorReader = new OutputReader(process.StandardError);
-			if (ErrorLineReceived != null) {
-				standardErrorReader.LineReceived += new LineReceivedEventHandler(OnErrorLineReceived);
-			}
-			
-			standardErrorReader.Start();
 		}
 		
 		/// <summary>
@@ -230,9 +233,10 @@ namespace ICSharpCode.SharpDevelop.Util
 		protected void OnProcessExited(object sender, EventArgs e)
 		{
 			if (ProcessExited != null) {
-				
-				standardOutputReader.WaitForFinish();
-				standardErrorReader.WaitForFinish();
+				lock (lockObj) {
+					standardOutputReader.WaitForFinish();
+					standardErrorReader.WaitForFinish();
+				}
 				
 				ProcessExited(this, e);
 			}

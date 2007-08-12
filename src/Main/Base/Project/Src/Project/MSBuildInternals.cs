@@ -26,6 +26,12 @@ namespace ICSharpCode.SharpDevelop.Project
 	/// </summary>
 	public static class MSBuildInternals
 	{
+		/// <summary>
+		/// MSBuild does not support multi-threading, so every invocation of MSBuild that
+		/// runs inside the SharpDevelop process must lock on this object to prevent conflicts.
+		/// </summary>
+		public readonly static object InProcessMSBuildLock = new object();
+		
 		const string MSBuildXmlNamespace = "http://schemas.microsoft.com/developer/msbuild/2003";
 		
 		#region Escaping
@@ -354,9 +360,11 @@ namespace ICSharpCode.SharpDevelop.Project
 			#endif
 			
 			//Environment.CurrentDirectory = Path.GetDirectoryName(tempProject.FullFileName);
-			if (!tempProject.Build("ResolveAssemblyReferences")) {
-				LoggingService.Warn("ResolveAssemblyReferences exited with error");
-				return;
+			lock (MSBuildInternals.InProcessMSBuildLock) {
+				if (!tempProject.Build("ResolveAssemblyReferences")) {
+					LoggingService.Warn("ResolveAssemblyReferences exited with error");
+					return;
+				}
 			}
 			
 			foreach (MSBuild.BuildItem item in tempProject.GetEvaluatedItemsByName("_ResolveAssemblyReferenceResolvedFiles")) {

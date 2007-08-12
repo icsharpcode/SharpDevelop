@@ -105,25 +105,6 @@ namespace ICSharpCode.NRefactory.Visitors
 			return base.VisitDelegateDeclaration(delegateDeclaration, data);
 		}
 		
-		string GetAnonymousMethodName()
-		{
-			for (int i = 1;; i++) {
-				string name = "ConvertedAnonymousMethod" + i;
-				bool ok = true;
-				if (currentType != null) {
-					foreach (object c in currentType.Children) {
-						MethodDeclaration method = c as MethodDeclaration;
-						if (method != null && method.Name == name) {
-							ok = false;
-							break;
-						}
-					}
-				}
-				if (ok)
-					return name;
-			}
-		}
-		
 		public override object VisitExpressionStatement(ExpressionStatement expressionStatement, object data)
 		{
 			base.VisitExpressionStatement(expressionStatement, data);
@@ -151,17 +132,16 @@ namespace ICSharpCode.NRefactory.Visitors
 		
 		public override object VisitAnonymousMethodExpression(AnonymousMethodExpression anonymousMethodExpression, object data)
 		{
-			MethodDeclaration method = new MethodDeclaration {
-				Name = GetAnonymousMethodName(),
-				Modifier = Modifiers.Private,
-				TypeReference = new TypeReference("System.Void"),
-				Parameters = anonymousMethodExpression.Parameters,
-				Body = anonymousMethodExpression.Body
-			};
-			if (currentType != null) {
-				currentType.Children.Add(method);
+			base.VisitAnonymousMethodExpression(anonymousMethodExpression, data);
+			if (anonymousMethodExpression.Body.Children.Count == 1) {
+				ReturnStatement rs = anonymousMethodExpression.Body.Children[0] as ReturnStatement;
+				if (rs != null) {
+					LambdaExpression lambda = new LambdaExpression();
+					lambda.ExpressionBody = rs.Expression;
+					lambda.Parameters = anonymousMethodExpression.Parameters;
+					ReplaceCurrentNode(lambda);
+				}
 			}
-			ReplaceCurrentNode(new AddressOfExpression(new IdentifierExpression(method.Name)));
 			return null;
 		}
 		

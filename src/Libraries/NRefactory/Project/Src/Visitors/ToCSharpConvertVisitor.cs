@@ -41,16 +41,6 @@ namespace ICSharpCode.NRefactory.Visitors
 			return base.VisitEventDeclaration(eventDeclaration, data);
 		}
 		
-		// inserting before current position is not allowed in a Transformer
-		// but inserting after it is possible
-		void InsertAfterSibling(INode sibling, INode newNode)
-		{
-			if (sibling == null || sibling.Parent == null) return;
-			int index = sibling.Parent.Children.IndexOf(sibling);
-			sibling.Parent.Children.Insert(index + 1, newNode);
-			newNode.Parent = sibling.Parent;
-		}
-		
 		public override object VisitMethodDeclaration(MethodDeclaration methodDeclaration, object data)
 		{
 			ConvertInterfaceImplementation(methodDeclaration);

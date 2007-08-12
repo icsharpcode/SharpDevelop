@@ -67,6 +67,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 			
 			if (sourceLanguage == SupportedLanguage.CSharp) {
 				CSharpToVBNetConvertVisitor convertVisitor = new CSharpToVBNetConvertVisitor(pc, parseInfo);
+				convertVisitor.RootNamespaceToRemove = "RootNamespace";
 				parser.CompilationUnit.AcceptVisitor(convertVisitor, null);
 			} else {
 				VBNetToCSharpConvertVisitor convertVisitor = new VBNetToCSharpConvertVisitor(pc, parseInfo);
@@ -148,6 +149,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 		}
 		#endregion
 		
+		#region Events and delegates
 		[Test]
 		public void RaiseEventCS2VB()
 		{
@@ -237,7 +239,9 @@ namespace ICSharpCode.SharpDevelop.Tests
 			                 "  End Function\n" +
 			                 "End Class");
 		}
+		#endregion
 		
+		#region ReferenceEqualityAndValueEquality
 		[Test]
 		public void ReferenceEqualityAndValueEquality()
 		{
@@ -274,7 +278,9 @@ namespace ICSharpCode.SharpDevelop.Tests
 			                    "If a = b Then\n" +
 			                    "End If");
 		}
+		#endregion
 		
+		#region FixVBCasing
 		[Test]
 		public void FixVBCasing()
 		{
@@ -290,18 +296,9 @@ namespace ICSharpCode.SharpDevelop.Tests
 			TestStatementsVB2CS("Dim i as Integer = appdomain.getcurrentthreadid",
 			                    "int i = AppDomain.GetCurrentThreadId();");
 		}
+		#endregion
 		
-		[Test]
-		public void IndexerExpression()
-		{
-			TestStatementsVB2CS("Dim i(10) as Integer\n" +
-			                    "Dim i2 As Integer = i(4)",
-			                    "int[] i = new int[11];\n" +
-			                    "int i2 = i[4];");
-			TestStatementsVB2CS("Dim s as string = appdomain.currentdomain.GetAssemblies()(1).location",
-			                    "string s = AppDomain.CurrentDomain.GetAssemblies()[1].Location;");
-		}
-		
+		#region Redim
 		[Test]
 		public void Redim()
 		{
@@ -337,6 +334,18 @@ namespace ICSharpCode.SharpDevelop.Tests
 			                    "int[,] MyArray = new int[6, 6];\n" +
 			                    "MyArray = (int[,])Microsoft.VisualBasic.CompilerServices.Utils.CopyArray(MyArray, new int[11, 11]);");
 		}
+		#endregion
+		
+		[Test]
+		public void IndexerExpression()
+		{
+			TestStatementsVB2CS("Dim i(10) as Integer\n" +
+			                    "Dim i2 As Integer = i(4)",
+			                    "int[] i = new int[11];\n" +
+			                    "int i2 = i[4];");
+			TestStatementsVB2CS("Dim s as string = appdomain.currentdomain.GetAssemblies()(1).location",
+			                    "string s = AppDomain.CurrentDomain.GetAssemblies()[1].Location;");
+		}
 		
 		[Test]
 		public void StringConcatWithException()
@@ -356,6 +365,104 @@ namespace ICSharpCode.SharpDevelop.Tests
 			                    "Dim b As Integer = 2\n" +
 			                    "Dim c As Integer = a \\ b\n");
 		}
+		
+		#region Casting
+		[Test]
+		public void CastToEnum()
+		{
+			TestStatementsCS2VB("DayOfWeek dow = (DayOfWeek)obj;\n",
+			                    "Dim dow As DayOfWeek = CType(obj, DayOfWeek)\n");
+		}
+		
+		[Test]
+		public void CastToValueType()
+		{
+			TestStatementsCS2VB("Guid g = (Guid)obj;\n",
+			                    "Dim g As Guid = CType(obj, Guid)\n");
+		}
+		
+		[Test]
+		public void CastToReferenceType()
+		{
+			TestStatementsCS2VB("Exception ex = (Exception)obj;\n",
+			                    "Dim ex As Exception = DirectCast(obj, Exception)\n");
+		}
+		
+		[Test]
+		public void CastToInterface()
+		{
+			TestStatementsCS2VB("IDisposable ex = (IDisposable)obj;\n",
+			                    "Dim ex As IDisposable = DirectCast(obj, IDisposable)\n");
+		}
+		#endregion
+		
+		#region MoveUsingOutOfNamespace
+		[Test]
+		public void MoveUsingOutOfNamespace()
+		{
+			TestProgramCS2VB("namespace Test\n" +
+			                 "{\n" +
+			                 "  using System;\n" +
+			                 "  class Test {}" +
+			                 "}\n",
+			                 "Imports System\n" +
+			                 "Namespace Test\n" +
+			                 "  Class Test\n" +
+			                 "  End Class\n" +
+			                 "End Namespace");
+		}
+		
+		[Test]
+		public void MoveUsingOutOfNamespaceWithComments()
+		{
+			TestProgramCS2VB("// comment 1\n" +
+			                 "namespace Test\n" +
+			                 "{\n" +
+			                 "  // comment 2\n" +
+			                 "  using System;\n" +
+			                 "  // comment 3\n" +
+			                 "  class Test {}" +
+			                 "}\n",
+			                 "' comment 1\n" +
+			                 "' comment 2\n" +
+			                 "Imports System\n" +
+			                 "Namespace Test\n" +
+			                 "  ' comment 3\n" +
+			                 "  Class Test\n" +
+			                 "  End Class\n" +
+			                 "End Namespace");
+		}
+		
+		[Test]
+		public void MoveUsingOutOfRootNamespace()
+		{
+			TestProgramCS2VB("namespace RootNamespace\n" +
+			                 "{\n" +
+			                 "  using System;\n" +
+			                 "  class Test {}" +
+			                 "}\n",
+			                 "Imports System\n" +
+			                 "Class Test\n" +
+			                 "End Class");
+		}
+		
+		[Test]
+		public void MultipleNamespaces()
+		{
+			TestProgramCS2VB("namespace RootNamespace {\n" +
+			                 "  class Test { }" +
+			                 "}\n" +
+			                 "namespace RootNamespace.SubNamespace {\n" +
+			                 "  class Test2 { }" +
+			                 "}",
+			                 "Class Test\n" +
+			                 "End Class\n" +
+			                 "Namespace SubNamespace\n" +
+			                 "  Class Test2\n" +
+			                 "  End Class\n" +
+			                 "End Namespace");
+		}
+		#endregion
 		
 		#region InterfaceImplementation
 		[Test]
@@ -454,6 +561,36 @@ namespace ICSharpCode.SharpDevelop.Tests
 			                 "  {\n" +
 			                 "  }\n" +
 			                 "}");
+		}
+		
+		[Test]
+		public void InterfaceImplementation5()
+		{
+			TestProgramCS2VB("using System;\n" +
+			                 "interface IObj { void T(object a); }\n" +
+			                 "interface IStr { void T(string a); }\n" +
+			                 "class Test : IObj, IStr {\n" +
+			                 "  public void T(string a) { }\n" +
+			                 "  public void T(int a) { }\n" +
+			                 "  public void T(object a) { }\n" +
+			                 "}",
+			                 "Imports System\n" +
+			                 "Interface IObj\n" +
+			                 "  Sub T(ByVal a As Object)\n" +
+			                 "End Interface\n" +
+			                 "Interface IStr\n" +
+			                 "  Sub T(ByVal a As String)\n" +
+			                 "End Interface\n" +
+			                 "Class Test\n" +
+			                 "  Implements IObj\n" +
+			                 "  Implements IStr\n" +
+			                 "  Public Sub T(ByVal a As String) Implements IStr.T\n" +
+			                 "  End Sub\n" +
+			                 "  Public Sub T(ByVal a As Integer)\n" +
+			                 "  End Sub\n" +
+			                 "  Public Sub T(ByVal a As Object) Implements IObj.T\n" +
+			                 "  End Sub\n" +
+			                 "End Class");
 		}
 		#endregion
 	}

@@ -50,7 +50,7 @@ namespace VBNetBinding
 			PreprocessingDirective.CSharpToVB(specials);
 			IProjectContent pc = ParserService.GetProjectContent(sourceItem.Project) ?? ParserService.CurrentProjectContent;
 			CSharpToVBNetConvertVisitor visitor = new CSharpToVBNetConvertVisitor(pc, ParserService.GetParseInformation(sourceItem.FileName));
-			visitor.RootNamespaceToStrip = sourceItem.Project.RootNamespace;
+			visitor.RootNamespaceToRemove = sourceItem.Project.RootNamespace;
 			visitor.DefaultImportsToRemove = defaultImports;
 			if (sourceItem.Project is MSBuildBasedProject) {
 				visitor.StartupObjectToMakePublic = startupObject;

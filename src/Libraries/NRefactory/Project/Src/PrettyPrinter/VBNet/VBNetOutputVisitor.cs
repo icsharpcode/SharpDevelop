@@ -2340,7 +2340,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public override object TrackedVisitAnonymousMethodExpression(AnonymousMethodExpression anonymousMethodExpression, object data)
 		{
-			UnsupportedNode(anonymousMethodExpression);
+			OutputAnonymousMethodWithStatementBody(anonymousMethodExpression.Parameters, anonymousMethodExpression.Body);
 			return null;
 		}
 		
@@ -2364,11 +2364,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public override object TrackedVisitCastExpression(CastExpression castExpression, object data)
 		{
-			if (castExpression.CastType == CastType.Cast) {
-				return PrintCast(Tokens.DirectCast, castExpression);
-			}
 			if (castExpression.CastType == CastType.TryCast) {
 				return PrintCast(Tokens.TryCast, castExpression);
+			}
+			if (castExpression.CastType == CastType.Cast || castExpression.CastTo.IsArrayType) {
+				return PrintCast(Tokens.DirectCast, castExpression);
 			}
 			switch (castExpression.CastTo.SystemType) {
 				case "System.Boolean":
@@ -2690,7 +2690,41 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public override object TrackedVisitLambdaExpression(LambdaExpression lambdaExpression, object data)
 		{
-			throw new NotImplementedException();
+			if (!lambdaExpression.ExpressionBody.IsNull) {
+				outputFormatter.PrintToken(Tokens.Function);
+				outputFormatter.PrintToken(Tokens.OpenParenthesis);
+				AppendCommaSeparatedList(lambdaExpression.Parameters);
+				outputFormatter.PrintToken(Tokens.CloseParenthesis);
+				outputFormatter.Space();
+				return lambdaExpression.ExpressionBody.AcceptVisitor(this, data);
+			} else {
+				OutputAnonymousMethodWithStatementBody(lambdaExpression.Parameters, lambdaExpression.StatementBody);
+				return null;
+			}
+		}
+		
+		void OutputAnonymousMethodWithStatementBody(List<ParameterDeclarationExpression> parameters, BlockStatement body)
+		{
+			Error("VB does not support anonymous methods/lambda expressions with a statement body", body.StartLocation);
+			
+			outputFormatter.PrintToken(Tokens.Function);
+			outputFormatter.PrintToken(Tokens.OpenParenthesis);
+			AppendCommaSeparatedList(parameters);
+			outputFormatter.PrintToken(Tokens.CloseParenthesis);
+			outputFormatter.Space();
+			outputFormatter.PrintToken(Tokens.Do);
+			outputFormatter.NewLine();
+			
+			++outputFormatter.IndentationLevel;
+			exitTokenStack.Push(Tokens.Function);
+			body.AcceptVisitor(this, null);
+			exitTokenStack.Pop();
+			--outputFormatter.IndentationLevel;
+			
+			outputFormatter.Indent();
+			outputFormatter.PrintToken(Tokens.End);
+			outputFormatter.Space();
+			outputFormatter.PrintToken(Tokens.Function);
 		}
 		
 		public override object TrackedVisitQueryExpression(QueryExpression queryExpression, object data)

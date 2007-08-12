@@ -72,6 +72,10 @@ namespace ICSharpCode.NRefactory.Visitors
 		public override object VisitIfElseStatement(IfElseStatement ifElseStatement, object data)
 		{
 			BinaryOperatorExpression boe = ifElseStatement.Condition as BinaryOperatorExpression;
+			// the BinaryOperatorExpression might be inside a ParenthesizedExpression
+			if (boe == null && ifElseStatement.Condition is ParenthesizedExpression) {
+				boe = (ifElseStatement.Condition as ParenthesizedExpression).Expression as BinaryOperatorExpression;
+			}
 			if (ifElseStatement.ElseIfSections.Count == 0
 			    && ifElseStatement.FalseStatement.Count == 0
 			    && ifElseStatement.TrueStatement.Count == 1
@@ -80,9 +84,7 @@ namespace ICSharpCode.NRefactory.Visitors
 			    && (IsNullLiteralExpression(boe.Left) || IsNullLiteralExpression(boe.Right))
 			   )
 			{
-				IdentifierExpression ident = boe.Left as IdentifierExpression;
-				if (ident == null)
-					ident = boe.Right as IdentifierExpression;
+				string ident = GetPossibleEventName(boe.Left) ?? GetPossibleEventName(boe.Right);
 				ExpressionStatement se = ifElseStatement.TrueStatement[0] as ExpressionStatement;
 				if (se == null) {
 					BlockStatement block = ifElseStatement.TrueStatement[0] as BlockStatement;
@@ -92,15 +94,23 @@ namespace ICSharpCode.NRefactory.Visitors
 				}
 				if (ident != null && se != null) {
 					InvocationExpression ie = se.Expression as InvocationExpression;
-					if (ie != null &&
-					    ie.TargetObject is IdentifierExpression &&
-					    (ie.TargetObject as IdentifierExpression).Identifier == ident.Identifier)
-					{
-						ReplaceCurrentNode(new RaiseEventStatement(ident.Identifier, ie.Arguments));
+					if (ie != null && GetPossibleEventName(ie.TargetObject) == ident) {
+						ReplaceCurrentNode(new RaiseEventStatement(ident, ie.Arguments));
 					}
 				}
 			}
 			return base.VisitIfElseStatement(ifElseStatement, data);
+		}
+		
+		string GetPossibleEventName(Expression expression)
+		{
+			IdentifierExpression ident = expression as IdentifierExpression;
+			if (ident != null)
+				return ident.Identifier;
+			FieldReferenceExpression fre = expression as FieldReferenceExpression;
+			if (fre != null && fre.TargetObject is ThisReferenceExpression)
+				return fre.FieldName;
+			return null;
 		}
 		
 		public override object VisitForStatement(ForStatement forStatement, object data)
@@ -202,8 +212,9 @@ namespace ICSharpCode.NRefactory.Visitors
 		public override object VisitCastExpression(CastExpression castExpression, object data)
 		{
 			if (castExpression.CastType == CastType.Cast) {
-				//   Casts to value types are marked as conversions
-				// currently only supporting primitive types...
+				// Casts to value types are marked as conversions
+				// this code only supports primitive types, user-defined value types are handled by
+				// the DOM-aware CSharpToVBNetConvertVisitor
 				string type;
 				if (TypeReference.PrimitiveTypesCSharpReverse.TryGetValue(castExpression.CastTo.SystemType, out type)) {
 					if (type != "object" && type != "string") {

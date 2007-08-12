@@ -153,7 +153,15 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		{
 			TestStatement("if (MyEvent != null) MyEvent(this, EventArgs.Empty);",
 			              "RaiseEvent MyEvent(Me, EventArgs.Empty)");
+			TestStatement("if ((MyEvent != null)) MyEvent(this, EventArgs.Empty);",
+			              "RaiseEvent MyEvent(Me, EventArgs.Empty)");
 			TestStatement("if (null != MyEvent) { MyEvent(this, EventArgs.Empty); }",
+			              "RaiseEvent MyEvent(Me, EventArgs.Empty)");
+			TestStatement("if (this.MyEvent != null) MyEvent(this, EventArgs.Empty);",
+			              "RaiseEvent MyEvent(Me, EventArgs.Empty)");
+			TestStatement("if (MyEvent != null) this.MyEvent(this, EventArgs.Empty);",
+			              "RaiseEvent MyEvent(Me, EventArgs.Empty)");
+			TestStatement("if ((this.MyEvent != null)) { this.MyEvent(this, EventArgs.Empty); }",
 			              "RaiseEvent MyEvent(Me, EventArgs.Empty)");
 		}
 		
@@ -187,31 +195,14 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			              "End If");
 		}
 		
-		/*
 		[Test]
 		public void AnonymousMethod()
 		{
-			TestMember("void A() { someEvent += delegate(int argument) { return argument * 2; }; }",
-			           "Private Sub A()\n" +
-			           "\tAddHandler someEvent, AddressOf ConvertedAnonymousMethod1\n" +
-			           "End Sub\n" +
-			           "Private Sub ConvertedAnonymousMethod1(ByVal argument As Integer)\n" +
-			           "\tReturn argument * 2\n" +
-			           "End Sub");
-		}
-		
-		[Test, Ignore("NRefactory cannot guess the anonymous method's return type")]
-		public void AnonymousMethodInVarDeclaration()
-		{
 			TestMember("void A() { Converter<int, int> i = delegate(int argument) { return argument * 2; }; }",
 			           "Private Sub A()\n" +
-			           "\tDim i As Converter(Of Integer, Integer) = AddressOf ConvertedAnonymousMethod1\n" +
-			           "End Sub\n" +
-			           "Private Function ConvertedAnonymousMethod1(ByVal argument As Integer) As Integer\n" +
-			           "\tReturn argument * 2\n" +
-			           "End Function");
+			           "\tDim i As Converter(Of Integer, Integer) = Function(ByVal argument As Integer) argument * 2\n" +
+			           "End Sub");
 		}
-		 */
 		
 		[Test]
 		public void StaticMethod()
@@ -458,6 +449,17 @@ End Class
 			              "Dim i As String() = New String(1) {\"0\", \"1\"}");
 			TestStatement("string[,] i = new string[6, 6];",
 			              "Dim i As String(,) = New String(5, 5) {}");
+		}
+		
+		[Test]
+		public void ArrayCast()
+		{
+			TestStatement("string[] i = (string[])obj;",
+			              "Dim i As String() = DirectCast(obj, String())");
+			
+			// ensure the converter does not use CInt:
+			TestStatement("int[] i = (int[])obj;",
+			              "Dim i As Integer() = DirectCast(obj, Integer())");
 		}
 		
 		[Test]

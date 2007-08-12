@@ -21,7 +21,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		NRefactoryResolver _resolver;
 		ParseInformation _parseInfo;
 		IProjectContent _pc;
-		public string RootNamespaceToStrip { get; set; }
+		public string RootNamespaceToRemove { get; set; }
 		public string StartupObjectToMakePublic { get; set; }
 		public IList<string> DefaultImportsToRemove { get; set; }
 		
@@ -47,19 +47,21 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		public override object VisitNamespaceDeclaration(NamespaceDeclaration namespaceDeclaration, object data)
 		{
-			base.VisitNamespaceDeclaration(namespaceDeclaration, data);
-			if (RootNamespaceToStrip != null) {
-				if (namespaceDeclaration.Name == RootNamespaceToStrip) {
+			if (RootNamespaceToRemove != null) {
+				if (namespaceDeclaration.Name == RootNamespaceToRemove) {
 					// remove namespace declaration
+					INode insertAfter = namespaceDeclaration;
 					foreach (INode child in namespaceDeclaration.Children) {
-						child.Parent = namespaceDeclaration.Parent;
-						namespaceDeclaration.Parent.Children.Add(child);
+						InsertAfterSibling(insertAfter, child);
+						insertAfter = child;
 					}
+					namespaceDeclaration.Children.Clear();
 					RemoveCurrentNode();
-				} else if (namespaceDeclaration.Name.StartsWith(RootNamespaceToStrip + ".")) {
-					namespaceDeclaration.Name = namespaceDeclaration.Name.Substring(RootNamespaceToStrip.Length + 1);
+				} else if (namespaceDeclaration.Name.StartsWith(RootNamespaceToRemove + ".")) {
+					namespaceDeclaration.Name = namespaceDeclaration.Name.Substring(RootNamespaceToRemove.Length + 1);
 				}
 			}
+			base.VisitNamespaceDeclaration(namespaceDeclaration, data);
 			return null;
 		}
 		
@@ -125,7 +127,10 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		void CreateInterfaceImplementations(IMember currentMember, ParametrizedNode memberDecl, List<InterfaceImplementation> interfaceImplementations)
 		{
-			if (currentMember != null && interfaceImplementations.Count == 1) {
+			if (currentMember != null
+			    && (memberDecl.Modifier & Modifiers.Visibility) == Modifiers.None
+			    && interfaceImplementations.Count == 1)
+			{
 				// member is explicitly implementing an interface member
 				// to convert explicit interface implementations to VB, make the member private
 				// and ensure its name does not collide with another member
@@ -418,6 +423,26 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					}
 				}
 			}
+		}
+		
+		public override object VisitCastExpression(CastExpression castExpression, object data)
+		{
+			base.VisitCastExpression(castExpression, data);
+			
+			if (_resolver.CompilationUnit == null)
+				return null;
+			
+			// cast to value type is a conversion
+			if (castExpression.CastType == CastType.Cast) {
+				IReturnType rt = ResolveType(castExpression.CastTo);
+				if (rt != null) {
+					IClass c = rt.GetUnderlyingClass();
+					if (c != null && (c.ClassType == ClassType.Struct || c.ClassType == ClassType.Enum)) {
+						castExpression.CastType = CastType.Conversion;
+					}
+				}
+			}
+			return null;
 		}
 	}
 }

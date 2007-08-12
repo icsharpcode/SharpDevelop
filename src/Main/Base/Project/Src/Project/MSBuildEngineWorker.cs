@@ -47,20 +47,22 @@ namespace ICSharpCode.SharpDevelop.Project
 				engine.GlobalProperties.SetProperty("Platform", ptb.platform);
 			}
 			
-			Microsoft.Build.BuildEngine.Project project = buildRun.LoadProject(engine, ptb.file);
-			if (project == null) {
-				LoggingService.Debug("Error loading " + ptb.file);
-				return false;
-			}
-			foreach (string additionalTargetFile in MSBuildEngine.AdditionalTargetFiles) {
-				project.AddNewImport(additionalTargetFile, null);
-			}
-			
 			bool success;
-			if (string.IsNullOrEmpty(ptb.targets)) {
-				success = engine.BuildProject(project);
-			} else {
-				success = engine.BuildProject(project, ptb.targets.Split(';'));
+			lock (MSBuildInternals.InProcessMSBuildLock) {
+				Microsoft.Build.BuildEngine.Project project = buildRun.LoadProject(engine, ptb.file);
+				if (project == null) {
+					LoggingService.Debug("Error loading " + ptb.file);
+					return false;
+				}
+				foreach (string additionalTargetFile in MSBuildEngine.AdditionalTargetFiles) {
+					project.AddNewImport(additionalTargetFile, null);
+				}
+				
+				if (string.IsNullOrEmpty(ptb.targets)) {
+					success = engine.BuildProject(project);
+				} else {
+					success = engine.BuildProject(project, ptb.targets.Split(';'));
+				}
 			}
 			
 			logger.FlushCurrentError();
