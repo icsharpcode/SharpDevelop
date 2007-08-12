@@ -26,13 +26,12 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public override void PrintIdentifier(string identifier)
 		{
-			int token = Keywords.GetToken(identifier);
-			if (token < 0 || Tokens.Unreserved[token]) {
-				PrintText(identifier);
-			} else {
+			if (Keywords.IsNonIdentifierKeyword(identifier)) {
 				PrintText("[");
 				PrintText(identifier);
 				PrintText("]");
+			} else {
+				PrintText(identifier);
 			}
 		}
 		

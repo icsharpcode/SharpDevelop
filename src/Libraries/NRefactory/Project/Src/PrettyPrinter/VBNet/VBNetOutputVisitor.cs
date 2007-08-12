@@ -1231,7 +1231,19 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		#region Statements
 		public override object TrackedVisitBlockStatement(BlockStatement blockStatement, object data)
 		{
+			if (blockStatement.Parent is BlockStatement) {
+				outputFormatter.Indent();
+				outputFormatter.PrintText("If True Then");
+				outputFormatter.NewLine();
+				outputFormatter.IndentationLevel += 1;
+			}
 			VisitStatementList(blockStatement.Children);
+			if (blockStatement.Parent is BlockStatement) {
+				outputFormatter.IndentationLevel -= 1;
+				outputFormatter.Indent();
+				outputFormatter.PrintText("End If");
+				outputFormatter.NewLine();
+			}
 			return null;
 		}
 		
@@ -2106,13 +2118,8 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					op = Tokens.GreaterEqual;
 					break;
 				case BinaryOperatorType.InEquality:
-					TrackedVisit(binaryOperatorExpression.Left, data);
-					outputFormatter.Space();
-					outputFormatter.PrintToken(Tokens.LessThan);
-					outputFormatter.PrintToken(Tokens.GreaterThan);
-					outputFormatter.Space();
-					TrackedVisit(binaryOperatorExpression.Right, data);
-					return null;
+					op = Tokens.NotEqual;
+					break;
 				case BinaryOperatorType.NullCoalescing:
 					outputFormatter.PrintText("If(");
 					TrackedVisit(binaryOperatorExpression.Left, data);
@@ -2129,11 +2136,26 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					break;
 			}
 			
+			
+			BinaryOperatorExpression childBoe = binaryOperatorExpression.Left as BinaryOperatorExpression;
+			bool requireParenthesis = childBoe != null && OperatorPrecedence.ComparePrecedenceVB(binaryOperatorExpression.Op, childBoe.Op) > 0;
+			if (requireParenthesis)
+				outputFormatter.PrintToken(Tokens.OpenParenthesis);
 			TrackedVisit(binaryOperatorExpression.Left, data);
+			if (requireParenthesis)
+				outputFormatter.PrintToken(Tokens.CloseParenthesis);
+			
 			outputFormatter.Space();
 			outputFormatter.PrintToken(op);
 			outputFormatter.Space();
+			
+			childBoe = binaryOperatorExpression.Right as BinaryOperatorExpression;
+			requireParenthesis = childBoe != null && OperatorPrecedence.ComparePrecedenceVB(binaryOperatorExpression.Op, childBoe.Op) >= 0;
+			if (requireParenthesis)
+				outputFormatter.PrintToken(Tokens.OpenParenthesis);
 			TrackedVisit(binaryOperatorExpression.Right, data);
+			if (requireParenthesis)
+				outputFormatter.PrintToken(Tokens.CloseParenthesis);
 			
 			return null;
 		}
@@ -2405,10 +2427,10 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					outputFormatter.PrintToken(Tokens.CUShort);
 					break;
 				case "System.UInt32":
-					outputFormatter.PrintToken(Tokens.CInt);
+					outputFormatter.PrintToken(Tokens.CUInt);
 					break;
 				case "System.UInt64":
-					outputFormatter.PrintToken(Tokens.CLng);
+					outputFormatter.PrintToken(Tokens.CULng);
 					break;
 				case "System.Object":
 					outputFormatter.PrintToken(Tokens.CObj);

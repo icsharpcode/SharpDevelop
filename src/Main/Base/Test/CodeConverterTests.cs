@@ -366,6 +366,15 @@ namespace ICSharpCode.SharpDevelop.Tests
 			                    "Dim c As Integer = a \\ b\n");
 		}
 		
+		[Test]
+		public void OperatorPrecedenceChange()
+		{
+			TestStatementsCS2VB("int a = 5;\n" +
+			                    "int c = a / a * a;",
+			                    "Dim a As Integer = 5\n" +
+			                    "Dim c As Integer = (a \\ a) * a\n");
+		}
+		
 		#region Casting
 		[Test]
 		public void CastToEnum()

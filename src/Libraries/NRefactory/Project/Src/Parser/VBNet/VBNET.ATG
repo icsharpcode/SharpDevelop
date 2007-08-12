@@ -201,6 +201,7 @@ TOKENS
 	"WithEvents"
 	"WriteOnly"
 	"Xor"
+	"Rem"
 	"Continue"
 	"Operator"
 	"Using"

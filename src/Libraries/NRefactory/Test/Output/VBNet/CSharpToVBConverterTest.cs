@@ -425,12 +425,6 @@ End Class
 		}
 		
 		[Test]
-		public void PrimitiveCast()
-		{
-			TestStatement("a = (int)number;", "a = CInt(number)");
-		}
-		
-		[Test]
 		public void CaseConflictingMethod()
 		{
 			TestMember("void T(int v) { int V = v; M(V, v); }",
@@ -452,6 +446,14 @@ End Class
 		}
 		
 		[Test]
+		public void VariableNamedRem()
+		{
+			TestStatement("int rem;", "Dim [rem] As Integer");
+			TestStatement("int Rem;", "Dim [Rem] As Integer");
+			TestStatement("int a = rem;", "Dim a As Integer = [rem]");
+		}
+		
+		[Test]
 		public void ArrayCast()
 		{
 			TestStatement("string[] i = (string[])obj;",
@@ -460,6 +462,25 @@ End Class
 			// ensure the converter does not use CInt:
 			TestStatement("int[] i = (int[])obj;",
 			              "Dim i As Integer() = DirectCast(obj, Integer())");
+		}
+		
+		
+		[Test]
+		public void PrimitiveCast()
+		{
+			TestStatement("int a = (int)number;", "Dim a As Integer = CInt(number)");
+			TestStatement("byte i = (byte)obj;", "Dim i As Byte = CByte(obj)");
+			TestStatement("short i = (short)obj;", "Dim i As Short = CShort(obj)");
+			TestStatement("long i = (long)obj;", "Dim i As Long = CLng(obj)");
+		}
+		
+		[Test]
+		public void PrimitiveUnsignedCast()
+		{
+			TestStatement("uint i = (uint)obj;", "Dim i As UInteger = CUInt(obj)");
+			TestStatement("sbyte i = (sbyte)obj;", "Dim i As SByte = CSByte(obj)");
+			TestStatement("ushort i = (ushort)obj;", "Dim i As UShort = CUShort(obj)");
+			TestStatement("ulong i = (ulong)obj;", "Dim i As ULong = CULng(obj)");
 		}
 		
 		[Test]
@@ -479,6 +500,18 @@ End Class
 	End Function
 End Class
 ");
+		}
+		
+		[Test]
+		public void StandaloneBlockStatement()
+		{
+			TestStatement("{ int a; } { string a; }",
+			              "If True Then\n" +
+			              "\tDim a As Integer\n" +
+			              "End If\n" +
+			              "If True Then\n" +
+			              "\tDim a As String\n" +
+			              "End If");
 		}
 	}
 }
