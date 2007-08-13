@@ -231,51 +231,6 @@
 										<File Source="..\..\bin\Tools\ComponentInspector\log4net.dll" Name="log4net.dll" Id="ComponentInspector.log4net.dll" Assembly=".net" AssemblyApplication="ComponentInspector.log4net.dll" AssemblyManifest="ComponentInspector.log4net.dll" KeyPath="yes" />
 									</Component>
 								</Directory>
-								<Directory Id="NDocFolder" Name="NDoc">
-									<Component Guid="9949F648-9A56-44FF-830A-84E69067960A" Id="NDocMSHelpCompilerDll" DiskId="1">
-										<File Source="..\..\bin\Tools\NDoc\Interop.MSHelpCompiler.dll" Name="imshc.dll" Id="Interop.MSHelpCompiler.dll" LongName="Interop.MSHelpCompiler.dll" Assembly=".net" AssemblyApplication="Interop.MSHelpCompiler.dll" AssemblyManifest="Interop.MSHelpCompiler.dll" KeyPath="yes" />
-									</Component>
-									<Component Id="NDocCoreDll" Guid="BF737A93-534B-4F21-9D61-26429397E6C5" DiskId="1">
-										<File Source="..\..\bin\Tools\NDoc\NDoc.Core.dll" Name="ndcore.dll" Id="NDoc.Core.dll" LongName="NDoc.Core.dll" Assembly=".net" AssemblyApplication="NDoc.Core.dll" AssemblyManifest="NDoc.Core.dll" KeyPath="yes" />
-									</Component>
-									<Component Id="NDocDocumenterIntellisenseDll" Guid="A7AF6CA5-5212-4C6C-9A64-C8A0896C1B8B" DiskId="1">
-										<File Source="..\..\bin\Tools\NDoc\NDoc.Documenter.Intellisense.dll" Name="nddi.dll" Id="NDoc.Documenter.Intellisense.dll" LongName="NDoc.Documenter.Intellisense.dll" Assembly=".net" AssemblyApplication="NDoc.Documenter.Intellisense.dll" AssemblyManifest="NDoc.Documenter.Intellisense.dll" KeyPath="yes" />
-									</Component>
-									<Component Id="NDocDocumenterJavaDocDll" Guid="D0DEBB76-B53B-4370-BB35-379202F06E02" DiskId="1">
-										<File Source="..\..\bin\Tools\NDoc\NDoc.Documenter.JavaDoc.dll" Name="ndjd.dll" Id="NDoc.Documenter.JavaDoc.dll" LongName="NDoc.Documenter.JavaDoc.dll" Assembly=".net" AssemblyApplication="NDoc.Documenter.JavaDoc.dll" AssemblyManifest="NDoc.Documenter.JavaDoc.dll" KeyPath="yes" />
-									</Component>
-									<Component Id="NDocDocumenterLatexDll" Guid="D109A803-9057-4763-AFC0-FC86E3297D41" DiskId="1">
-										<File Source="..\..\bin\Tools\NDoc\NDoc.Documenter.Latex.dll" Name="nddl.dll" Id="NDoc.Documenter.Latex.dll" LongName="NDoc.Documenter.Latex.dll" Assembly=".net" AssemblyApplication="NDoc.Documenter.Latex.dll" AssemblyManifest="NDoc.Documenter.Latex.dll" KeyPath="yes" />
-									</Component>
-									<Component Id="NDocDocumenterLinearHtmlDll" Guid="FF26AE7B-72C9-4C95-A6D7-2C2967FB32FF" DiskId="1">
-										<File Source="..\..\bin\Tools\NDoc\NDoc.Documenter.LinearHtml.dll" Name="nddlh.dll" Id="NDoc.Documenter.LinearHtml.dll" LongName="NDoc.Documenter.LinearHtml.dll" Assembly=".net" AssemblyApplication="NDoc.Documenter.LinearHtml.dll" AssemblyManifest="NDoc.Documenter.LinearHtml.dll" KeyPath="yes" />
-									</Component>
-									<Component Id="NDocDocumenterMsdn2Dll" Guid="C95C3278-EF9E-4633-A6D4-A530925A9F4C" DiskId="1">
-										<File Source="..\..\bin\Tools\NDoc\NDoc.Documenter.Msdn2.dll" Name="nddm2.dll" Id="NDoc.Documenter.Msdn2.dll" LongName="NDoc.Documenter.Msdn2.dll" Assembly=".net" AssemblyApplication="NDoc.Documenter.Msdn2.dll" AssemblyManifest="NDoc.Documenter.Msdn2.dll" KeyPath="yes" />
-									</Component>
-									<Component Id="NDocDocumenterMsdnDll" Guid="0DB24405-64BD-4DC6-8072-14F4A88EB27E" DiskId="1">
-										<File Source="..\..\bin\Tools\NDoc\NDoc.Documenter.Msdn.dll" Name="nddm.dll" Id="NDoc.Documenter.Msdn.dll" LongName="NDoc.Documenter.Msdn.dll" Assembly=".net" AssemblyApplication="NDoc.Documenter.Msdn.dll" AssemblyManifest="NDoc.Documenter.Msdn.dll" KeyPath="yes" />
-									</Component>
-									<Component Id="NDocDocumenterNativeHtmlHelp2Dll" Guid="D25910E9-A585-4CE8-8CB6-FAB47DF959F5" DiskId="1">
-										<File Source="..\..\bin\Tools\NDoc\NDoc.Documenter.NativeHtmlHelp2.dll" Name="nddnhh.dll" Id="NDoc.Documenter.NativeHtmlHelp2.dll" LongName="NDoc.Documenter.NativeHtmlHelp2.dll" Assembly=".net" AssemblyApplication="NDoc.Documenter.NativeHtmlHelp2.dll" AssemblyManifest="NDoc.Documenter.NativeHtmlHelp2.dll" KeyPath="yes" />
-									</Component>
-									<Component Id="NDocDocumenterXmlDll" Guid="CAAAA822-BD7C-405D-A836-D51D824E1924" DiskId="1">
-										<File Source="..\..\bin\Tools\NDoc\NDoc.Documenter.Xml.dll" Name="nddx.dll" Id="NDoc.Documenter.Xml.dll" LongName="NDoc.Documenter.Xml.dll" Assembly=".net" AssemblyApplication="NDoc.Documenter.Xml.dll" AssemblyManifest="NDoc.Documenter.Xml.dll" KeyPath="yes" />
-									</Component>
-									<Component Id="NDocExtendedUIDll" Guid="6F87B911-E2B9-4250-97EC-C1FBF0CF6F04" DiskId="1">
-										<File Source="..\..\bin\Tools\NDoc\NDoc.ExtendedUI.dll" Name="dneui.dll" Id="NDoc.ExtendedUI.dll" LongName="NDoc.ExtendedUI.dll" Assembly=".net" AssemblyApplication="NDoc.ExtendedUI.dll" AssemblyManifest="NDoc.ExtendedUI.dll" KeyPath="yes" />
-									</Component>
-									<Component Id="NDocVisualStudioDll" Guid="51657055-2768-431C-971C-A1D6476CF5B6" DiskId="1">
-										<File Source="..\..\bin\Tools\NDoc\NDoc.VisualStudio.dll" Name="ndvs.dll" Id="NDoc.VisualStudio.dll" LongName="NDoc.VisualStudio.dll" Assembly=".net" AssemblyApplication="NDoc.VisualStudio.dll" AssemblyManifest="NDoc.VisualStudio.dll" KeyPath="yes" />
-									</Component>
-									<Component Id="NDocConsoleExe" Guid="BC452BE8-85F2-4FED-9F25-8D6ABCA0660D" DiskId="1">
-										<File Source="..\..\bin\Tools\NDoc\NDocConsole.exe" Name="ndcons.exe" Id="NDocConsole.exe" LongName="NDocConsole.exe" Assembly=".net" AssemblyApplication="NDocConsole.exe" AssemblyManifest="NDocConsole.exe" KeyPath="yes" />
-									</Component>
-									<Component Id="NDocGuiExe" Guid="6B6B1B57-EA70-40F0-9415-DD50D77D9F20" DiskId="1">
-										<File Source="..\..\bin\Tools\NDoc\NDocGui.exe" Name="NDocGui.exe" Id="NDocGui.exe" Assembly=".net" AssemblyApplication="NDocGui.exe" AssemblyManifest="NDocGui.exe" KeyPath="yes" />
-										<File Source="..\..\bin\Tools\NDoc\NDocGui.exe.manifest" Name="ndgui.man" Id="NDocGui.exe.manifest" LongName="NDocGui.exe.manifest" />
-									</Component>
-								</Directory>
 								<Directory Id="WixFolder" Name="Wix">
 									<Component Guid="78F8DB04-62B1-4A2F-A0D5-D8D890FE5D02" Id="WixVSExtension" DiskId="1">
 										<File Source="..\..\bin\Tools\Wix\WixVSExtension.dll" Name="WIXVSE_1.DLL" Id="WixVSExtension.dll" LongName="WixVSExtension.dll" Assembly=".net" AssemblyApplication="WixVSExtension.dll" AssemblyManifest="WixVSExtension.dll" KeyPath="yes" />
@@ -464,6 +419,81 @@
 										</Component>
 										<Component Guid="A1F0ABAB-3E44-4BD3-B2E1-13B9E4F28DA5" Id="NUnitFrameworkDllNetv11" DiskId="1">
 											<File Source="..\..\bin\Tools\NUnit\Net-1.1\nunit.framework.dll" Name="nuframe.dll" Id="Net_1.1.nunit.framework.dll" LongName="nunit.framework.dll" />
+										</Component>
+									</Directory>
+								</Directory>
+								<Directory Id="SHFBFolder" Name="SHFB">
+									<Component Guid="7D55B020-A0B6-4B6E-82CC-16EF853AFD49" Id="SHFBMain" DiskId="1">
+										<File Source="..\Tools\SHFB\ColorizerLibrary.dll" Name="COLORI_1.DLL" Id="ColorizerLibrary.dll" LongName="ColorizerLibrary.dll" />
+										<File Source="..\Tools\SHFB\ColorizerLibrary.xml" Name="COLORI_1.XML" Id="ColorizerLibrary.xml" LongName="ColorizerLibrary.xml" />
+										<File Source="..\Tools\SHFB\Help.ico" Name="Help.ico" Id="Help.ico" />
+										<File Source="..\Tools\SHFB\SandcastleBuilder.chm" Name="SANDCA_1.CHM" Id="SandcastleBuilder.chm" LongName="SandcastleBuilder.chm" />
+										<File Source="..\Tools\SHFB\SandcastleBuilder.Components.dll" Name="SANDCA_1.DLL" Id="SandcastleBuilder.Components.dll" LongName="SandcastleBuilder.Components.dll" />
+										<File Source="..\Tools\SHFB\SandcastleBuilder.Components.xml" Name="SANDCA_1.XML" Id="SandcastleBuilder.Components.xml" LongName="SandcastleBuilder.Components.xml" />
+										<File Source="..\Tools\SHFB\SandcastleBuilder.ico" Name="SANDCA_1.ICO" Id="SandcastleBuilder.ico" LongName="SandcastleBuilder.ico" />
+										<File Source="..\Tools\SHFB\SandcastleBuilder.Utils.dll" Name="SANDCA_2.DLL" Id="SandcastleBuilder.Utils.dll" LongName="SandcastleBuilder.Utils.dll" />
+										<File Source="..\Tools\SHFB\SandcastleBuilder.Utils.xml" Name="SANDCA_2.XML" Id="SandcastleBuilder.Utils.xml" LongName="SandcastleBuilder.Utils.xml" />
+										<File Source="..\Tools\SHFB\SandcastleBuilderConsole.exe" Name="SANDCA_1.EXE" Id="SandcastleBuilderConsole.exe" LongName="SandcastleBuilderConsole.exe" />
+										<File Source="..\Tools\SHFB\SandcastleBuilderConsole.xml" Name="SANDCA_3.XML" Id="SandcastleBuilderConsole.xml" LongName="SandcastleBuilderConsole.xml" />
+										<File Source="..\Tools\SHFB\SandcastleBuilderGUI.exe" Name="SANDCA_2.EXE" Id="SandcastleBuilderGUI.exe" LongName="SandcastleBuilderGUI.exe" />
+										<File Source="..\Tools\SHFB\SandcastleBuilderGUI.exe.config" Name="SANDCA_1.CON" Id="SandcastleBuilderGUI.exe.config" LongName="SandcastleBuilderGUI.exe.config" />
+										<File Source="..\Tools\SHFB\SandcastleBuilderGUI.xml" Name="SANDCA_4.XML" Id="SandcastleBuilderGUI.xml" LongName="SandcastleBuilderGUI.xml" />
+									</Component>
+									<Directory Id="Colorizer" Name="Colorize" LongName="Colorizer">
+										<Component Guid="6E02A66F-E38C-4458-B405-24A6DCE34225" Id="SHFBColorizer" DiskId="1">
+											<File Source="..\Tools\SHFB\Colorizer\CopyCode.gif" Name="CopyCode.gif" Id="CopyCode.gif" />
+											<File Source="..\Tools\SHFB\Colorizer\highlight.css" Name="HIGHLI_1.CSS" Id="highlight.css" LongName="highlight.css" />
+											<File Source="..\Tools\SHFB\Colorizer\highlight.js" Name="HIGHLI_1.JS" Id="highlight.js" LongName="highlight.js" />
+											<File Source="..\Tools\SHFB\Colorizer\highlight.xml" Name="HIGHLI_1.XML" Id="highlight.xml" LongName="highlight.xml" />
+											<File Source="..\Tools\SHFB\Colorizer\highlight.xsl" Name="HIGHLI_1.XSL" Id="highlight.xsl" LongName="highlight.xsl" />
+										</Component>
+									</Directory>
+									<Directory Id="Templates" Name="Template" LongName="Templates">
+										<Component Guid="B9EEB02C-9DF4-4772-98C2-DC6F789BAD72" Id="SHFBTemplates" DiskId="1">
+											<File Source="..\Tools\SHFB\Templates\Build1xHelpFile.bat" Name="BUILD1_1.BAT" Id="Build1xHelpFile.bat" LongName="Build1xHelpFile.bat" />
+											<File Source="..\Tools\SHFB\Templates\Build2xHelpFile.bat" Name="BUILD2_1.BAT" Id="Build2xHelpFile.bat" LongName="Build2xHelpFile.bat" />
+											<File Source="..\Tools\SHFB\Templates\BuildHelpTopics.bat" Name="BUILDH_1.BAT" Id="BuildHelpTopics.bat" LongName="BuildHelpTopics.bat" />
+											<File Source="..\Tools\SHFB\Templates\FullTextExclusions.txt" Name="FULLTE_1.TXT" Id="FullTextExclusions.txt" LongName="FullTextExclusions.txt" />
+											<File Source="..\Tools\SHFB\Templates\Generate1xIndex.bat" Name="GENERA_1.BAT" Id="Generate1xIndex.bat" LongName="Generate1xIndex.bat" />
+											<File Source="..\Tools\SHFB\Templates\Generate1xTOC.bat" Name="GENERA_2.BAT" Id="Generate1xTOC.bat" LongName="Generate1xTOC.bat" />
+											<File Source="..\Tools\SHFB\Templates\Generate2xTOC.bat" Name="GENERA_3.BAT" Id="Generate2xTOC.bat" LongName="Generate2xTOC.bat" />
+											<File Source="..\Tools\SHFB\Templates\GenerateRefInfo.bat" Name="GENERA_4.BAT" Id="GenerateRefInfo.bat" LongName="GenerateRefInfo.bat" />
+											<File Source="..\Tools\SHFB\Templates\Hana.config" Name="HANA.CON" Id="Hana.config" LongName="Hana.config" />
+											<File Source="..\Tools\SHFB\Templates\Help1x.hhp" Name="Help1x.hhp" Id="Help1x.hhp" />
+											<File Source="..\Tools\SHFB\Templates\Help2x.hxc" Name="Help2x.hxc" Id="Help2x.hxc" />
+											<File Source="..\Tools\SHFB\Templates\Help2x.hxf" Name="Help2x.hxf" Id="Help2x.hxf" />
+											<File Source="..\Tools\SHFB\Templates\Help2x_a.hxk" Name="Help2x_a.hxk" Id="Help2x_a.hxk" />
+											<File Source="..\Tools\SHFB\Templates\Help2x_b.hxk" Name="Help2x_b.hxk" Id="Help2x_b.hxk" />
+											<File Source="..\Tools\SHFB\Templates\Help2x_f.hxk" Name="Help2x_f.hxk" Id="Help2x_f.hxk" />
+											<File Source="..\Tools\SHFB\Templates\Help2x_k.hxk" Name="Help2x_k.hxk" Id="Help2x_k.hxk" />
+											<File Source="..\Tools\SHFB\Templates\Help2x_n.hxk" Name="Help2x_n.hxk" Id="Help2x_n.hxk" />
+											<File Source="..\Tools\SHFB\Templates\Help2x_s.hxk" Name="Help2x_s.hxk" Id="Help2x_s.hxk" />
+											<File Source="..\Tools\SHFB\Templates\MRefBuilder.config" Name="MREFBU_1.CON" Id="MRefBuilder.config" LongName="MRefBuilder.config" />
+											<File Source="..\Tools\SHFB\Templates\Prototype.config" Name="PROTOT_1.CON" Id="Prototype.config" LongName="Prototype.config" />
+											<File Source="..\Tools\SHFB\Templates\SharedBuilderContent.xml" Name="SHARED_1.XML" Id="SharedBuilderContent.xml" LongName="SharedBuilderContent.xml" />
+											<File Source="..\Tools\SHFB\Templates\TocToWebContents.xsl" Name="TOCTOW_1.XSL" Id="TocToWebContents.xsl" LongName="TocToWebContents.xsl" />
+											<File Source="..\Tools\SHFB\Templates\TransformManifest.bat" Name="TRANSF_1.BAT" Id="TransformManifest.bat" LongName="TransformManifest.bat" />
+											<File Source="..\Tools\SHFB\Templates\VS2005.config" Name="VS2005.CON" Id="VS2005.config" LongName="VS2005.config" />
+										</Component>
+									</Directory>
+									<Directory Id="Web" Name="Web">
+										<Component Guid="9BC7F30B-EEF3-4141-A7AC-DD1970B63227" Id="SHFBWeb" DiskId="1">
+											<File Source="..\Tools\SHFB\Web\CloseSearch.png" Name="CLOSES_1.PNG" Id="CloseSearch.png" LongName="CloseSearch.png" />
+											<File Source="..\Tools\SHFB\Web\CollapseAll.bmp" Name="COLLAP_1.BMP" Id="CollapseAll.bmp" LongName="CollapseAll.bmp" />
+											<File Source="..\Tools\SHFB\Web\Collapsed.gif" Name="COLLAP_1.GIF" Id="Collapsed.gif" LongName="Collapsed.gif" />
+											<File Source="..\Tools\SHFB\Web\ExpandAll.bmp" Name="EXPAND_1.BMP" Id="ExpandAll.bmp" LongName="ExpandAll.bmp" />
+											<File Source="..\Tools\SHFB\Web\Expanded.gif" Name="Expanded.gif" Id="Expanded.gif" />
+											<File Source="..\Tools\SHFB\Web\FillNode.aspx" Name="FILLNODE.ASP" Id="FillNode.aspx" LongName="FillNode.aspx" />
+											<File Source="..\Tools\SHFB\Web\Index.aspx" Name="INDEX.ASP" Id="Index.aspx" LongName="Index.aspx" />
+											<File Source="..\Tools\SHFB\Web\Index.html" Name="INDEX.HTM" Id="Index.html" LongName="Index.html" />
+											<File Source="..\Tools\SHFB\Web\Item.gif" Name="Item.gif" Id="Item.gif" />
+											<File Source="..\Tools\SHFB\Web\Search.gif" Name="Search.gif" Id="Search.gif" />
+											<File Source="..\Tools\SHFB\Web\SearchHelp.aspx" Name="SEARCH_1.ASP" Id="SearchHelp.aspx" LongName="SearchHelp.aspx" />
+											<File Source="..\Tools\SHFB\Web\Splitter.gif" Name="Splitter.gif" Id="Splitter.gif" />
+											<File Source="..\Tools\SHFB\Web\SyncTOC.gif" Name="SyncTOC.gif" Id="SyncTOC.gif" />
+											<File Source="..\Tools\SHFB\Web\TOC.css" Name="TOC.css" Id="TOC.css" />
+											<File Source="..\Tools\SHFB\Web\TOC.js" Name="TOC.js" Id="TOC.js" />
+											<File Source="..\Tools\SHFB\Web\Web.Config" Name="WEB.CON" Id="Web.Config" LongName="Web.Config" />
 										</Component>
 									</Directory>
 								</Directory>

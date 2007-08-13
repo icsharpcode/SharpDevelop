@@ -1,6 +1,9 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTarget="Build">
 	<ItemGroup>
-		<NDocFiles Include="ndoc\bin\*"/>
+		<SHFBFiles Include="SHFB\*"/>
+		<SHFBColorizerFiles Include="SHFB\Colorizer\*"/>
+		<SHFBTemplatesFiles Include="SHFB\Templates\*"/>
+		<SHFBWebFiles Include="SHFB\Web\*"/>
 		<WixFiles Include="wix\*"/>
 		<WixBitmapFiles Include="wix\Bitmaps\*"/>
 		<WixDocFiles Include="wix\doc\*"/>
@@ -12,7 +15,10 @@
 	</ItemGroup>
 	
 	<Target Name="Build">
-		<Copy SourceFiles="@(NDocFiles)" DestinationFolder="..\..\bin\Tools\NDoc" SkipUnchangedFiles="true"/>
+		<Copy SourceFiles="@(SHFBFiles)" DestinationFolder="..\..\bin\Tools\SHFB" SkipUnchangedFiles="true"/>
+		<Copy SourceFiles="@(SHFBColorizerFiles)" DestinationFolder="..\..\bin\Tools\SHFB\Colorizer" SkipUnchangedFiles="true"/>
+		<Copy SourceFiles="@(SHFBTemplatesFiles)" DestinationFolder="..\..\bin\Tools\SHFB\Templates" SkipUnchangedFiles="true"/>
+		<Copy SourceFiles="@(SHFBWebFiles)" DestinationFolder="..\..\bin\Tools\SHFB\Web" SkipUnchangedFiles="true"/>
 		<Copy SourceFiles="@(WixFiles)" DestinationFolder="..\..\bin\Tools\Wix" SkipUnchangedFiles="true"/>
 		<Copy SourceFiles="@(WixDocFiles)" DestinationFolder="..\..\bin\Tools\Wix\doc" SkipUnchangedFiles="true"/>
 		<Copy SourceFiles="@(WixBitmapFiles)" DestinationFolder="..\..\bin\Tools\Wix\Bitmaps" SkipUnchangedFiles="true"/>

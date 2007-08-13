@@ -191,20 +191,12 @@
 				<ComponentRef Id="ComponentInspectorLog4NetDll"/>
 				<ComponentRef Id="SharpDevelopProgramMenuItems"/>
 				<ComponentRef Id="DesktopFolderItems"/>
-				<ComponentRef Id="NDocGuiExe"/>
-				<ComponentRef Id="NDocMSHelpCompilerDll"/>
-				<ComponentRef Id="NDocCoreDll"/>
-				<ComponentRef Id="NDocDocumenterIntellisenseDll"/>
-				<ComponentRef Id="NDocDocumenterJavaDocDll"/>
-				<ComponentRef Id="NDocDocumenterLatexDll"/>
-				<ComponentRef Id="NDocDocumenterMsdn2Dll"/>
-				<ComponentRef Id="NDocDocumenterMsdnDll"/>
-				<ComponentRef Id="NDocDocumenterLinearHtmlDll"/>
-				<ComponentRef Id="NDocDocumenterNativeHtmlHelp2Dll"/>
-				<ComponentRef Id="NDocDocumenterXmlDll"/>
-				<ComponentRef Id="NDocExtendedUIDll"/>
-				<ComponentRef Id="NDocVisualStudioDll"/>
-				<ComponentRef Id="NDocConsoleExe"/>
+
+				<ComponentRef Id="SHFBMain"/>
+				<ComponentRef Id="SHFBColorizer"/>
+				<ComponentRef Id="SHFBTemplates"/>
+				<ComponentRef Id="SHFBWeb"/>
+
 				<ComponentRef Id="WixLicenseFiles"/>
 				<ComponentRef Id="WixBitmapFiles"/>
 				<ComponentRef Id="WixDocFiles"/>
