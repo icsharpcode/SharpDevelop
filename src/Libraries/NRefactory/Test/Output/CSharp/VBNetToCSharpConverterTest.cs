@@ -17,7 +17,7 @@ using ICSharpCode.NRefactory.Visitors;
 namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 {
 	[TestFixture]
-	public class VBToCSharpConverterTest
+	public class VBNetToCSharpConverterTest
 	{
 		public void TestProgram(string input, string expectedOutput)
 		{
@@ -27,6 +27,8 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			parser.CompilationUnit.AcceptVisitor(new VBNetConstructsConvertVisitor(), null);
 			parser.CompilationUnit.AcceptVisitor(new ToCSharpConvertVisitor(), null);
 			CSharpOutputVisitor outputVisitor = new CSharpOutputVisitor();
+			outputVisitor.Options.IndentationChar = ' ';
+			outputVisitor.Options.IndentSize = 2;
 			outputVisitor.VisitCompilationUnit(parser.CompilationUnit, null);
 			Assert.AreEqual("", outputVisitor.Errors.ErrorOutput);
 			Assert.AreEqual(expectedOutput, outputVisitor.Text);
@@ -50,7 +52,7 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			using (StringReader r = new StringReader(expectedOutput)) {
 				string line;
 				while ((line = r.ReadLine()) != null) {
-					b.Append("\t");
+					b.Append("  ");
 					b.AppendLine(line);
 				}
 			}
@@ -63,16 +65,16 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			StringBuilder b = new StringBuilder();
 			b.AppendLine("class tmp1");
 			b.AppendLine("{");
-			b.AppendLine("\tpublic void tmp2()");
-			b.AppendLine("\t{");
+			b.AppendLine("  public void tmp2()");
+			b.AppendLine("  {");
 			using (StringReader r = new StringReader(expectedOutput)) {
 				string line;
 				while ((line = r.ReadLine()) != null) {
-					b.Append("\t\t");
+					b.Append("    ");
 					b.AppendLine(line);
 				}
 			}
-			b.AppendLine("\t}");
+			b.AppendLine("  }");
 			b.AppendLine("}");
 			TestProgram("Class tmp1 \n Sub tmp2() \n" + input + "\n End Sub \n End Class", b.ToString());
 		}
@@ -116,7 +118,7 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		public void RaiseEvent()
 		{
 			TestStatement("RaiseEvent someEvent(Me, EventArgs.Empty)",
-			              "if (someEvent != null) {\n\tsomeEvent(this, EventArgs.Empty);\n}");
+			              "if (someEvent != null) {\n  someEvent(this, EventArgs.Empty);\n}");
 		}
 		
 		[Test]
@@ -145,42 +147,42 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		public void Property()
 		{
 			TestMember("ReadOnly Property A()\nGet\nReturn Nothing\nEnd Get\nEnd Property",
-			           "public object A {\n\tget { return null; }\n}");
+			           "public object A {\n  get { return null; }\n}");
 		}
 		
 		[Test]
 		public void ValueInPropertySetter()
 		{
 			TestMember("WriteOnly Property A()\nSet\nDim x As Object = Value\nEnd Set\nEnd Property",
-			           "public object A {\n\tset {\n\t\tobject x = value;\n\t}\n}");
+			           "public object A {\n  set {\n    object x = value;\n  }\n}");
 		}
 		
 		[Test]
 		public void ValueInPropertySetter2()
 		{
 			TestMember("WriteOnly Property A()\nSet(ByVal otherName)\nDim x As Object = otherName\nEnd Set\nEnd Property",
-			           "public object A {\n\tset {\n\t\tobject x = value;\n\t}\n}");
+			           "public object A {\n  set {\n    object x = value;\n  }\n}");
 		}
 		
 		[Test]
 		public void AbstractProperty1()
 		{
 			TestMember("Public MustOverride Property Salary() As Decimal",
-			           "public abstract decimal Salary {\n\tget;\n\tset;\n}");
+			           "public abstract decimal Salary {\n  get;\n  set;\n}");
 		}
 		
 		[Test]
 		public void AbstractProperty2()
 		{
 			TestMember("Public ReadOnly MustOverride Property Salary() As Decimal",
-			           "public abstract decimal Salary {\n\tget;\n}");
+			           "public abstract decimal Salary {\n  get;\n}");
 		}
 		
 		[Test]
 		public void AbstractProperty3()
 		{
 			TestMember("Public WriteOnly MustOverride Property Salary() As Decimal",
-			           "public abstract decimal Salary {\n\tset;\n}");
+			           "public abstract decimal Salary {\n  set;\n}");
 		}
 		
 		[Test]
@@ -243,9 +245,9 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		[Test]
 		public void Constructor()
 		{
-			TestMember("Sub New()\n\tMyBase.New(1)\nEnd Sub",
+			TestMember("Sub New()\n  MyBase.New(1)\nEnd Sub",
 			           "public tmp1() : base(1)\n{\n}");
-			TestMember("Public Sub New()\n\tMe.New(1)\nEnd Sub",
+			TestMember("Public Sub New()\n  Me.New(1)\nEnd Sub",
 			           "public tmp1() : this(1)\n{\n}");
 		}
 		
@@ -260,16 +262,16 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		public void Destructor()
 		{
 			TestMember("Protected Overrides Sub Finalize()\n" +
-			           "\tTry\n" +
-			           "\t\tDead()\n" +
-			           "\tFinally\n" +
-			           "\t\tMyBase.Finalize()\n" +
-			           "\tEnd Try\n" +
+			           "  Try\n" +
+			           "    Dead()\n" +
+			           "  Finally\n" +
+			           "    MyBase.Finalize()\n" +
+			           "  End Try\n" +
 			           "End Sub",
 			           
 			           "~tmp1()\n" +
 			           "{\n" +
-			           "\tDead();\n" +
+			           "  Dead();\n" +
 			           "}");
 		}
 		
@@ -370,8 +372,8 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			TestStatement("Using r1 As New StreamReader(file1), r2 As New StreamReader(file2)\n" +
 			              "End Using",
 			              "using (StreamReader r1 = new StreamReader(file1)) {\n" +
-			              "\tusing (StreamReader r2 = new StreamReader(file2)) {\n" +
-			              "\t}\n" +
+			              "  using (StreamReader r2 = new StreamReader(file2)) {\n" +
+			              "  }\n" +
 			              "}");
 		}
 		
@@ -387,20 +389,20 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
                         i = 9
             End Select",
 			              "switch (i) {\n" +
-			              "\tcase 0:\n" +
-			              "\tcase 1:\n" +
-			              "\tcase 2:\n" +
-			              "\tcase 3:\n" +
-			              "\tcase 4:\n" +
-			              "\tcase 5:\n" +
-			              "\t\ti = 10;\n" +
-			              "\t\tbreak;\n" +
-			              "\tcase 11:\n" +
-			              "\t\ti = 0;\n" +
-			              "\t\tbreak;\n" +
-			              "\tdefault:\n" +
-			              "\t\ti = 9;\n" +
-			              "\t\tbreak;\n" +
+			              "  case 0:\n" +
+			              "  case 1:\n" +
+			              "  case 2:\n" +
+			              "  case 3:\n" +
+			              "  case 4:\n" +
+			              "  case 5:\n" +
+			              "    i = 10;\n" +
+			              "    break;\n" +
+			              "  case 11:\n" +
+			              "    i = 0;\n" +
+			              "    break;\n" +
+			              "  default:\n" +
+			              "    i = 9;\n" +
+			              "    break;\n" +
 			              "}");
 		}
 		
@@ -412,7 +414,7 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			           "End Function",
 			           "public int run(int i)\n" +
 			           "{\n" +
-			           "\treturn 0;\n" +
+			           "  return 0;\n" +
 			           "}");
 		}
 		
@@ -424,7 +426,7 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			           "End Function",
 			           "public int run(int i)\n" +
 			           "{\n" +
-			           "\treturn 0;\n" +
+			           "  return 0;\n" +
 			           "}");
 		}
 		
@@ -438,11 +440,11 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			           "End Function",
 			           "public int run(int i)\n" +
 			           "{\n" +
-			           "\tint " + VBNetConstructsConvertVisitor.FunctionReturnValueName + " = 0;\n" +
-			           "\twhile (something) {\n" +
-			           "\t\t" + VBNetConstructsConvertVisitor.FunctionReturnValueName + " += i;\n" +
-			           "\t}\n" +
-			           "\treturn " + VBNetConstructsConvertVisitor.FunctionReturnValueName + ";\n" +
+			           "  int " + VBNetConstructsConvertVisitor.FunctionReturnValueName + " = 0;\n" +
+			           "  while (something) {\n" +
+			           "    " + VBNetConstructsConvertVisitor.FunctionReturnValueName + " += i;\n" +
+			           "  }\n" +
+			           "  return " + VBNetConstructsConvertVisitor.FunctionReturnValueName + ";\n" +
 			           "}");
 		}
 		
@@ -457,11 +459,11 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			           "End Function",
 			           "public int run(int i)\n" +
 			           "{\n" +
-			           "\tint " + ReturnValueName + " = 0;\n" +
-			           "\twhile (something) {\n" +
-			           "\t\t" + ReturnValueName + " = " + ReturnValueName + " + run(i - 1);\n" +
-			           "\t}\n" +
-			           "\treturn " + ReturnValueName + ";\n" +
+			           "  int " + ReturnValueName + " = 0;\n" +
+			           "  while (something) {\n" +
+			           "    " + ReturnValueName + " = " + ReturnValueName + " + run(i - 1);\n" +
+			           "  }\n" +
+			           "  return " + ReturnValueName + ";\n" +
 			           "}");
 		}
 		
@@ -475,11 +477,11 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			           "End Function",
 			           "public CustomType run(int i)\n" +
 			           "{\n" +
-			           "\tCustomType " + VBNetConstructsConvertVisitor.FunctionReturnValueName + " = default(CustomType);\n" +
-			           "\twhile (something) {\n" +
-			           "\t\t" + VBNetConstructsConvertVisitor.FunctionReturnValueName + " = new CustomType();\n" +
-			           "\t}\n" +
-			           "\treturn " + VBNetConstructsConvertVisitor.FunctionReturnValueName + ";\n" +
+			           "  CustomType " + VBNetConstructsConvertVisitor.FunctionReturnValueName + " = default(CustomType);\n" +
+			           "  while (something) {\n" +
+			           "    " + VBNetConstructsConvertVisitor.FunctionReturnValueName + " = new CustomType();\n" +
+			           "  }\n" +
+			           "  return " + VBNetConstructsConvertVisitor.FunctionReturnValueName + ";\n" +
 			           "}");
 		}
 		
@@ -512,7 +514,7 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 End Sub",
 			           @"private void Test()
 {
-	static_Test_j += 1;
+  static_Test_j += 1;
 }
 static int static_Test_j = 0;");
 		}
@@ -530,12 +532,12 @@ Private Sub Test2
 End Sub",
 			           @"private void Test()
 {
-	static_Test_j += 1;
+  static_Test_j += 1;
 }
 static int static_Test_j = 0;
 private void Test2()
 {
-	static_Test2_j += 2;
+  static_Test2_j += 2;
 }
 static int static_Test2_j = 0;");
 		}
@@ -551,9 +553,9 @@ static int static_Test2_j = 0;");
 		public void WithStatementTest()
 		{
 			TestStatement("With Ejes\n" +
-			              "\t.AddLine(p1, p2)\n" +
+			              "  .AddLine(p1, p2)\n" +
 			              "End With",
-			              "{\n\tEjes.AddLine(p1, p2);\n}");
+			              "{\n  Ejes.AddLine(p1, p2);\n}");
 		}
 		
 		[Test]
@@ -566,7 +568,7 @@ static int static_Test2_j = 0;");
 				"  End With\n" +
 				"End With",
 				
-				"{\n\t{\n\t\ttb1.Font.Italic = true;\n\t}\n}");
+				"{\n  {\n    tb1.Font.Italic = true;\n  }\n}");
 		}
 		
 		[Test]
@@ -579,14 +581,14 @@ static int static_Test2_j = 0;");
 				"  End With\n" +
 				"End With",
 				
-				"{\n\t{\n\t\ttb1.Something.Font.Italic = true;\n\t}\n}");
+				"{\n  {\n    tb1.Something.Font.Italic = true;\n  }\n}");
 		}
 		
 		[Test]
 		public void StructureWithImplicitPublicField()
 		{
 			TestMember("Public Structure Example \n Dim x As Object \n End Structure",
-			           "public struct Example\n{\n\tpublic object x;\n}");
+			           "public struct Example\n{\n  public object x;\n}");
 		}
 		
 		[Test]
@@ -607,16 +609,16 @@ static int static_Test2_j = 0;");
 		public void InterfaceVisibility()
 		{
 			TestMember("Public Interface ITest\n" +
-			           "\tSub Test()\n" +
-			           "\tProperty Name As String\n" +
+			           "  Sub Test()\n" +
+			           "  Property Name As String\n" +
 			           "End Interface",
 			           "public interface ITest\n" +
 			           "{\n" +
-			           "\tvoid Test();\n" +
-			           "\tstring Name {\n" +
-			           "\t\tget;\n" +
-			           "\t\tset;\n" +
-			           "\t}\n" +
+			           "  void Test();\n" +
+			           "  string Name {\n" +
+			           "    get;\n" +
+			           "    set;\n" +
+			           "  }\n" +
 			           "}");
 		}
 		
@@ -646,6 +648,18 @@ static int static_Test2_j = 0;");
 			
 			TestStatement("If \"\" = a Then Return", "if (string.IsNullOrEmpty(a)) return; ");
 			TestStatement("If \"\" <> a Then Return", "if (!string.IsNullOrEmpty(a)) return; ");
+		}
+		
+		[Test]
+		public void ElseIfConversion()
+		{
+			TestStatement("If a Then\nElse If b Then\nElse\nEnd If",
+			              "if (a) {\n" +
+			              "}\n" +
+			              "else if (b) {\n" +
+			              "}\n" +
+			              "else {\n" +
+			              "}");
 		}
 		
 		[Test]

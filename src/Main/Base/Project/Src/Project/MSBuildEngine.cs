@@ -162,11 +162,12 @@ namespace ICSharpCode.SharpDevelop.Project
 			{
 				try {
 					PrepareBuild();
+					
+					if (MSBuildEngine.isRunning) {
+						StartWorkerBuild();
+					}
 				} catch (Exception ex) {
 					MessageService.ShowError(ex);
-				}
-				if (MSBuildEngine.isRunning) {
-					StartWorkerBuild();
 				}
 			}
 			

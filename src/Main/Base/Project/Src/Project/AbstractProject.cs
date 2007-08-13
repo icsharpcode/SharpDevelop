@@ -114,7 +114,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			set {
 				WorkbenchSingleton.AssertMainThread();
-				Debug.Assert(Path.IsPathRooted(value));
+				Debug.Assert(FileUtility.IsUrl(value) || Path.IsPathRooted(value));
 				
 				lock (SyncRoot) { // locking still required for Directory
 					fileName = value;

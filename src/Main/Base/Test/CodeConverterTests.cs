@@ -216,7 +216,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 			                 "  Private Function M() As Object\n" +
 			                 "    Return New MatchEvaluator(AddressOf X)\n" +
 			                 "  End Function\n" +
-			                 "  Private Function X(ByVal match As Match) As String\n" +
+			                 "  Private Function X(match As Match) As String\n" +
 			                 "  End Function\n" +
 			                 "End Class");
 		}
@@ -234,10 +234,10 @@ namespace ICSharpCode.SharpDevelop.Tests
 			                 "Imports System\n" +
 			                 "Imports System.Text.RegularExpressions\n" +
 			                 "Class Test\n" +
-			                 "  Private Sub M(ByVal regex As Regex, ByVal text As String)\n" +
+			                 "  Private Sub M(regex As Regex, text As String)\n" +
 			                 "    regex.Replace(text, AddressOf X)\n" +
 			                 "  End Sub\n" +
-			                 "  Private Function X(ByVal match As Match) As String\n" +
+			                 "  Private Function X(match As Match) As String\n" +
 			                 "  End Function\n" +
 			                 "End Class");
 		}
@@ -600,9 +600,9 @@ namespace ICSharpCode.SharpDevelop.Tests
 			                 "Imports System\n" +
 			                 "Class Test\n" +
 			                 "  Implements IServiceProvider\n" +
-			                 "  Public Function GetService(ByVal a As IntPtr) As Object\n" +
+			                 "  Public Function GetService(a As IntPtr) As Object\n" +
 			                 "  End Function\n" +
-			                 "  Public Function GetService(ByVal a As Type) As Object Implements IServiceProvider.GetService\n" +
+			                 "  Public Function GetService(a As Type) As Object Implements IServiceProvider.GetService\n" +
 			                 "  End Function\n" +
 			                 "End Class");
 		}
@@ -683,19 +683,19 @@ namespace ICSharpCode.SharpDevelop.Tests
 			                 "}",
 			                 "Imports System\n" +
 			                 "Interface IObj\n" +
-			                 "  Sub T(ByVal a As Object)\n" +
+			                 "  Sub T(a As Object)\n" +
 			                 "End Interface\n" +
 			                 "Interface IStr\n" +
-			                 "  Sub T(ByVal a As String)\n" +
+			                 "  Sub T(a As String)\n" +
 			                 "End Interface\n" +
 			                 "Class Test\n" +
 			                 "  Implements IObj\n" +
 			                 "  Implements IStr\n" +
-			                 "  Public Sub T(ByVal a As String) Implements IStr.T\n" +
+			                 "  Public Sub T(a As String) Implements IStr.T\n" +
 			                 "  End Sub\n" +
-			                 "  Public Sub T(ByVal a As Integer)\n" +
+			                 "  Public Sub T(a As Integer)\n" +
 			                 "  End Sub\n" +
-			                 "  Public Sub T(ByVal a As Object) Implements IObj.T\n" +
+			                 "  Public Sub T(a As Object) Implements IObj.T\n" +
 			                 "  End Sub\n" +
 			                 "End Class");
 		}

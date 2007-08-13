@@ -1159,7 +1159,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.PrintToken(Tokens.OpenCurlyBrace);
 			}
 			foreach (Statement stmt in statements) {
-				TrackVisit(stmt, null);
+				TrackVisit(stmt, prettyPrintOptions.StatementBraceStyle);
 			}
 			if (statements.Count != 1) {
 				outputFormatter.PrintToken(Tokens.CloseCurlyBrace);
@@ -1171,6 +1171,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public override object TrackedVisitElseIfSection(ElseIfSection elseIfSection, object data)
 		{
+			outputFormatter.Indent();
 			outputFormatter.PrintToken(Tokens.Else);
 			outputFormatter.Space();
 			outputFormatter.PrintToken(Tokens.If);

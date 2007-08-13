@@ -14,8 +14,9 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 	/// </summary>
 	public class VBNetPrettyPrintOptions : AbstractPrettyPrintOptions
 	{
-		public VBNetPrettyPrintOptions()
-		{
-		}
+		/// <summary>
+		/// Gets/Sets if the optional "ByVal" modifier should be written.
+		/// </summary>
+		public bool OutputByValModifier { get; set; }
 	}
 }

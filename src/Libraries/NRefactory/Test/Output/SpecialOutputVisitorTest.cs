@@ -63,7 +63,6 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			List<ISpecial> specials = parser.Lexer.SpecialTracker.RetrieveSpecials();
 			PreprocessingDirective.CSharpToVB(specials);
 			outputVisitor.Options.IndentationChar = ' ';
-			outputVisitor.Options.TabSize = 2;
 			outputVisitor.Options.IndentSize = 2;
 			using (SpecialNodesInserter.Install(specials, outputVisitor)) {
 				outputVisitor.VisitCompilationUnit(parser.CompilationUnit, null);
@@ -180,7 +179,7 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		public void CommentsInsideMethodVB()
 		{
 			TestProgramVB(@"Public Class Class1
-  Private Function test(ByVal l As Integer, ByVal lvw As Integer) As Boolean
+  Private Function test(l As Integer, lvw As Integer) As Boolean
     ' Begin
     Dim i As Integer = 1
     Return False
@@ -212,7 +211,7 @@ End Class");
 			                 "Class A\n" +
 			                 "    ' comment\n" +
 			                 "  <PreserveSig()> _\n" +
-			                 "  Public Sub B(ByVal c As Integer)\n" +
+			                 "  Public Sub B(c As Integer)\n" +
 			                 "  End Sub\n" +
 			                 "End Class");
 		}

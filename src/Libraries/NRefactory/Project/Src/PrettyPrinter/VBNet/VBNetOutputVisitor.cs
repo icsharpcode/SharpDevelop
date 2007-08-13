@@ -1441,6 +1441,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public override object TrackedVisitElseIfSection(ElseIfSection elseIfSection, object data)
 		{
+			outputFormatter.Indent();
 			outputFormatter.PrintToken(Tokens.ElseIf);
 			outputFormatter.Space();
 			TrackedVisit(elseIfSection.Condition, data);
@@ -2585,26 +2586,32 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			switch (modifier) {
 				case ParameterModifiers.None:
 				case ParameterModifiers.In:
-					outputFormatter.PrintToken(Tokens.ByVal);
+					if (prettyPrintOptions.OutputByValModifier) {
+						outputFormatter.PrintToken(Tokens.ByVal);
+						outputFormatter.Space();
+					}
 					break;
 				case ParameterModifiers.Out:
-					Error("Out parameter converted to ByRef", position);
+					//Error("Out parameter converted to ByRef", position);
 					outputFormatter.PrintToken(Tokens.ByRef);
+					outputFormatter.Space();
 					break;
 				case ParameterModifiers.Params:
 					outputFormatter.PrintToken(Tokens.ParamArray);
+					outputFormatter.Space();
 					break;
 				case ParameterModifiers.Ref:
 					outputFormatter.PrintToken(Tokens.ByRef);
+					outputFormatter.Space();
 					break;
 				case ParameterModifiers.Optional:
 					outputFormatter.PrintToken(Tokens.Optional);
+					outputFormatter.Space();
 					break;
 				default:
 					Error(String.Format("Unsupported modifier : {0}", modifier), position);
 					break;
 			}
-			outputFormatter.Space();
 		}
 		
 		void OutputModifier(Modifiers modifier)

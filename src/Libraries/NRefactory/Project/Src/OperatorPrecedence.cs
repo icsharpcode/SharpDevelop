@@ -36,6 +36,22 @@ namespace ICSharpCode.NRefactory
 			new BinaryOperatorType[] { BinaryOperatorType.ExclusiveOr }
 		);
 		
+		static readonly Dictionary<BinaryOperatorType, int> csharpDict = MakePrecedenceTable(
+			new BinaryOperatorType[] { BinaryOperatorType.Multiply, BinaryOperatorType.Divide, BinaryOperatorType.Modulus },
+			new BinaryOperatorType[] { BinaryOperatorType.Add, BinaryOperatorType.Subtract },
+			new BinaryOperatorType[] { BinaryOperatorType.ShiftLeft, BinaryOperatorType.ShiftRight },
+			new BinaryOperatorType[] {
+				BinaryOperatorType.LessThan, BinaryOperatorType.LessThanOrEqual,
+				BinaryOperatorType.GreaterThan, BinaryOperatorType.GreaterThanOrEqual,
+			},
+			new BinaryOperatorType[] { BinaryOperatorType.Equality, BinaryOperatorType.InEquality },
+			new BinaryOperatorType[] { BinaryOperatorType.BitwiseAnd },
+			new BinaryOperatorType[] { BinaryOperatorType.ExclusiveOr },
+			new BinaryOperatorType[] { BinaryOperatorType.BitwiseOr },
+			new BinaryOperatorType[] { BinaryOperatorType.LogicalAnd, BinaryOperatorType.LogicalOr },
+			new BinaryOperatorType[] { BinaryOperatorType.NullCoalescing }
+		);
+		
 		// create a dictionary operator->precedence (higher value = higher precedence)
 		static Dictionary<BinaryOperatorType, int> MakePrecedenceTable(params BinaryOperatorType[][] input)
 		{
@@ -49,6 +65,13 @@ namespace ICSharpCode.NRefactory
 		}
 		
 		public static int ComparePrecedenceVB(BinaryOperatorType op1, BinaryOperatorType op2)
+		{
+			int p1 = GetOperatorPrecedence(vbDict, op1);
+			int p2 = GetOperatorPrecedence(vbDict, op2);
+			return p1.CompareTo(p2);
+		}
+		
+		public static int ComparePrecedenceCSharp(BinaryOperatorType op1, BinaryOperatorType op2)
 		{
 			int p1 = GetOperatorPrecedence(vbDict, op1);
 			int p2 = GetOperatorPrecedence(vbDict, op2);

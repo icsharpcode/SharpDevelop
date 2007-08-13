@@ -17,7 +17,7 @@ using ICSharpCode.NRefactory.Visitors;
 namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 {
 	[TestFixture]
-	public class CSharpToVBConverterTest
+	public class CSharpToVBNetConverterTest
 	{
 		public void TestProgram(string input, string expectedOutput)
 		{
@@ -27,6 +27,9 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			parser.CompilationUnit.AcceptVisitor(new CSharpConstructsConvertVisitor(), null);
 			parser.CompilationUnit.AcceptVisitor(new ToVBNetConvertVisitor(), null);
 			VBNetOutputVisitor outputVisitor = new VBNetOutputVisitor();
+			outputVisitor.Options.IndentationChar = ' ';
+			outputVisitor.Options.IndentSize = 2;
+			outputVisitor.Options.OutputByValModifier = true;
 			outputVisitor.VisitCompilationUnit(parser.CompilationUnit, null);
 			Assert.AreEqual("", outputVisitor.Errors.ErrorOutput);
 			Assert.AreEqual(expectedOutput, outputVisitor.Text);
@@ -39,7 +42,7 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			using (StringReader r = new StringReader(expectedOutput)) {
 				string line;
 				while ((line = r.ReadLine()) != null) {
-					b.Append("\t");
+					b.Append("  ");
 					b.AppendLine(line);
 				}
 			}
@@ -51,15 +54,15 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		{
 			StringBuilder b = new StringBuilder();
 			b.AppendLine("Class tmp1");
-			b.AppendLine("\tPrivate Sub tmp2()");
+			b.AppendLine("  Private Sub tmp2()");
 			using (StringReader r = new StringReader(expectedOutput)) {
 				string line;
 				while ((line = r.ReadLine()) != null) {
-					b.Append("\t\t");
+					b.Append("    ");
 					b.AppendLine(line);
 				}
 			}
-			b.AppendLine("\tEnd Sub");
+			b.AppendLine("  End Sub");
 			b.AppendLine("End Class");
 			TestProgram("class tmp1 { void tmp2() {\n" + input + "\n}}", b.ToString());
 		}
@@ -78,7 +81,7 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		{
 			TestProgram("class test : IComparable { }",
 			            "Class test\r\n" +
-			            "\tImplements IComparable\r\n" +
+			            "  Implements IComparable\r\n" +
 			            "End Class\r\n");
 		}
 		
@@ -87,7 +90,7 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		{
 			TestProgram("class test : System.IComparable { }",
 			            "Class test\r\n" +
-			            "\tImplements System.IComparable\r\n" +
+			            "  Implements System.IComparable\r\n" +
 			            "End Class\r\n");
 		}
 		
@@ -96,7 +99,7 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		{
 			TestProgram("class test : InvalidDataException { }",
 			            "Class test\r\n" +
-			            "\tInherits InvalidDataException\r\n" +
+			            "  Inherits InvalidDataException\r\n" +
 			            "End Class\r\n");
 		}
 		
@@ -105,7 +108,7 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		{
 			TestProgram("class test : System.IO.InvalidDataException { }",
 			            "Class test\r\n" +
-			            "\tInherits System.IO.InvalidDataException\r\n" +
+			            "  Inherits System.IO.InvalidDataException\r\n" +
 			            "End Class\r\n");
 		}
 		
@@ -115,8 +118,8 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			TestStatement("for (i = 0; unknownCondition; i++) b[i] = s[i];",
 			              "i = 0\n" +
 			              "While unknownCondition\n" +
-			              "\tb(i) = s(i)\n" +
-			              "\ti += 1\n" +
+			              "  b(i) = s(i)\n" +
+			              "  i += 1\n" +
 			              "End While");
 		}
 		
@@ -126,8 +129,8 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			TestStatement("for (i = 0; unknownCondition; i++) { b[i] = s[i]; }",
 			              "i = 0\n" +
 			              "While unknownCondition\n" +
-			              "\tb(i) = s(i)\n" +
-			              "\ti += 1\n" +
+			              "  b(i) = s(i)\n" +
+			              "  i += 1\n" +
 			              "End While");
 		}
 		
@@ -136,7 +139,7 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		{
 			TestStatement("for (i = 0; i < end; i++) b[i] = s[i];",
 			              "For i = 0 To [end] - 1\n" +
-			              "\tb(i) = s(i)\n" +
+			              "  b(i) = s(i)\n" +
 			              "Next");
 		}
 		[Test]
@@ -144,7 +147,7 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		{
 			TestStatement("for (i = 0; i < end; i++) { b[i] = s[i]; }",
 			              "For i = 0 To [end] - 1\n" +
-			              "\tb(i) = s(i)\n" +
+			              "  b(i) = s(i)\n" +
 			              "Next");
 		}
 		
@@ -170,28 +173,38 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		{
 			TestStatement("if (FullImage != null) DrawImage();",
 			              "If FullImage IsNot Nothing Then\n" +
-			              "\tDrawImage()\n" +
+			              "  DrawImage()\n" +
 			              "End If");
 			// regression test:
 			TestStatement("if (FullImage != null) e.DrawImage();",
 			              "If FullImage IsNot Nothing Then\n" +
-			              "\te.DrawImage()\n" +
+			              "  e.DrawImage()\n" +
 			              "End If");
 			// with braces:
 			TestStatement("if (FullImage != null) { DrawImage(); }",
 			              "If FullImage IsNot Nothing Then\n" +
-			              "\tDrawImage()\n" +
+			              "  DrawImage()\n" +
 			              "End If");
 			TestStatement("if (FullImage != null) { e.DrawImage(); }",
 			              "If FullImage IsNot Nothing Then\n" +
-			              "\te.DrawImage()\n" +
+			              "  e.DrawImage()\n" +
 			              "End If");
 			// another bug related to the IfStatement code:
 			TestStatement("if (Tiles != null) foreach (Tile t in Tiles) this.TileTray.Controls.Remove(t);",
 			              "If Tiles IsNot Nothing Then\n" +
-			              "\tFor Each t As Tile In Tiles\n" +
-			              "\t\tMe.TileTray.Controls.Remove(t)\n" +
-			              "\tNext\n" +
+			              "  For Each t As Tile In Tiles\n" +
+			              "    Me.TileTray.Controls.Remove(t)\n" +
+			              "  Next\n" +
+			              "End If");
+		}
+		
+		[Test]
+		public void ElseIfStatement()
+		{
+			TestStatement("if (a) {} else if (b) {} else {}",
+			              "If a Then\n" +
+			              "ElseIf b Then\n" +
+			              "Else\n" +
 			              "End If");
 		}
 		
@@ -200,7 +213,7 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		{
 			TestMember("void A() { Converter<int, int> i = delegate(int argument) { return argument * 2; }; }",
 			           "Private Sub A()\n" +
-			           "\tDim i As Converter(Of Integer, Integer) = Function(ByVal argument As Integer) argument * 2\n" +
+			           "  Dim i As Converter(Of Integer, Integer) = Function(ByVal argument As Integer) argument * 2\n" +
 			           "End Sub");
 		}
 		
@@ -241,9 +254,9 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		public void Constructor()
 		{
 			TestMember("public tmp1() : base(1) { }",
-			           "Public Sub New()\n\tMyBase.New(1)\nEnd Sub");
+			           "Public Sub New()\n  MyBase.New(1)\nEnd Sub");
 			TestMember("public tmp1() : this(1) { }",
-			           "Public Sub New()\n\tMe.New(1)\nEnd Sub");
+			           "Public Sub New()\n  Me.New(1)\nEnd Sub");
 		}
 		
 		[Test]
@@ -258,11 +271,11 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		{
 			TestMember("~tmp1() { Dead(); }",
 			           "Protected Overrides Sub Finalize()\n" +
-			           "\tTry\n" +
-			           "\t\tDead()\n" +
-			           "\tFinally\n" +
-			           "\t\tMyBase.Finalize()\n" +
-			           "\tEnd Try\n" +
+			           "  Try\n" +
+			           "    Dead()\n" +
+			           "  Finally\n" +
+			           "    MyBase.Finalize()\n" +
+			           "  End Try\n" +
 			           "End Sub");
 		}
 		
@@ -271,9 +284,9 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		{
 			TestMember("public CategoryInfo this[int index] { get { return List[index] as CategoryInfo; } }",
 			           "Public Default ReadOnly Property Item(ByVal index As Integer) As CategoryInfo\n" +
-			           "\tGet\n" +
-			           "\t\tReturn TryCast(List(index), CategoryInfo)\n" +
-			           "\tEnd Get\n" +
+			           "  Get\n" +
+			           "    Return TryCast(List(index), CategoryInfo)\n" +
+			           "  End Get\n" +
 			           "End Property");
 		}
 		
@@ -288,21 +301,21 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			           
 			           "Private m_count As Integer\n" +
 			           "Public ReadOnly Property Count() As Integer\n" +
-			           "\tGet\n" +
-			           "\t\tReturn m_count\n" +
-			           "\tEnd Get\n" +
+			           "  Get\n" +
+			           "    Return m_count\n" +
+			           "  End Get\n" +
 			           "End Property\n" +
 			           "Private Sub Test1(ByVal count As Integer)\n" +
-			           "\tcount = 3\n" +
+			           "  count = 3\n" +
 			           "End Sub\n" +
 			           "Private Sub Test2()\n" +
-			           "\tDim count As Integer\n" +
-			           "\tcount = 3\n" +
+			           "  Dim count As Integer\n" +
+			           "  count = 3\n" +
 			           "End Sub\n" +
 			           "Private Sub Test3()\n" +
-			           "\tFor Each count As Integer In someList\n" +
-			           "\t\tcount = 3\n" +
-			           "\tNext\n" +
+			           "  For Each count As Integer In someList\n" +
+			           "    count = 3\n" +
+			           "  Next\n" +
 			           "End Sub");
 		}
 		
@@ -325,7 +338,7 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		{
 			TestStatement("while (cond) example();",
 			              "While cond\n" +
-			              "\texample()\n" +
+			              "  example()\n" +
 			              "End While");
 		}
 		
@@ -340,7 +353,7 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		{
 			TestStatement("while (test != null) { break; }",
 			              "While test IsNot Nothing\n" +
-			              "\tExit While\n" +
+			              "  Exit While\n" +
 			              "End While");
 		}
 		
@@ -349,7 +362,7 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		{
 			TestStatement("do { break; } while (test != null);",
 			              "Do\n" +
-			              "\tExit Do\n" +
+			              "  Exit Do\n" +
 			              "Loop While test IsNot Nothing");
 		}
 		
@@ -358,7 +371,7 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		{
 			TestMember("public struct A { int field; }",
 			           "Public Structure A\n" +
-			           "\tPrivate field As Integer\n" +
+			           "  Private field As Integer\n" +
 			           "End Structure");
 		}
 		
@@ -385,8 +398,8 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			           "  string Name { get; set; }\n" +
 			           "}",
 			           "Public Interface ITest\n" +
-			           "\tSub Test()\n" +
-			           "\tProperty Name() As String\n" +
+			           "  Sub Test()\n" +
+			           "  Property Name() As String\n" +
 			           "End Interface");
 		}
 		
@@ -406,8 +419,8 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		public void StaticClass()
 		{
 			TestProgram("public static class Test {}", @"Public NotInheritable Class Test
-	Private Sub New()
-	End Sub
+  Private Sub New()
+  End Sub
 End Class
 ");
 		}
@@ -429,8 +442,8 @@ End Class
 		{
 			TestMember("void T(int v) { int V = v; M(V, v); }",
 			           "Private Sub T(ByVal v__1 As Integer)\n" +
-			           "\tDim V__2 As Integer = v__1\n" +
-			           "\tM(V__2, v__1)\n" +
+			           "  Dim V__2 As Integer = v__1\n" +
+			           "  M(V__2, v__1)\n" +
 			           "End Sub");
 		}
 		
@@ -488,16 +501,16 @@ End Class
 		{
 			TestProgram(@"public class Convert { void Run(string s) { char c; if ((c = s[0]) == '\n') { c = ' '; } } }",
 			            @"Public Class Convert
-	Private Sub Run(ByVal s As String)
-		Dim c As Char
-		If (InlineAssignHelper(c, s(0))) = Chr(10) Then
-			c = "" ""C
-		End If
-	End Sub
-	Private Shared Function InlineAssignHelper(Of T)(ByRef target As T, ByVal value As T) As T
-		target = value
-		Return value
-	End Function
+  Private Sub Run(ByVal s As String)
+    Dim c As Char
+    If (InlineAssignHelper(c, s(0))) = Chr(10) Then
+      c = "" ""C
+    End If
+  End Sub
+  Private Shared Function InlineAssignHelper(Of T)(ByRef target As T, ByVal value As T) As T
+    target = value
+    Return value
+  End Function
 End Class
 ");
 		}
@@ -507,10 +520,10 @@ End Class
 		{
 			TestStatement("{ int a; } { string a; }",
 			              "If True Then\n" +
-			              "\tDim a As Integer\n" +
+			              "  Dim a As Integer\n" +
 			              "End If\n" +
 			              "If True Then\n" +
-			              "\tDim a As String\n" +
+			              "  Dim a As String\n" +
 			              "End If");
 		}
 	}
