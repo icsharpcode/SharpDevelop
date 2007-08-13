@@ -48,7 +48,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			cancelButton.Text = ResourceService.GetString("Global.CancelButtonText");
 			
 //			selectionListBox.Sorted = true;
-			Point caretPos  = textEditorControl.ActiveTextAreaControl.Caret.Position;
+			TextLocation caretPos  = textEditorControl.ActiveTextAreaControl.Caret.Position;
 			TextArea textArea = textEditorControl.ActiveTextAreaControl.TextArea;
 			TextView textView = textArea.TextView;
 			Point visualPos;

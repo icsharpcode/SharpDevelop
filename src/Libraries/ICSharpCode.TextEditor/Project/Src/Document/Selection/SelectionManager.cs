@@ -17,7 +17,7 @@ namespace ICSharpCode.TextEditor.Document
 	/// </summary>
 	public class SelectionManager : IDisposable
 	{
-		internal Point selectionStart;
+		internal TextLocation selectionStart;
 		IDocument document;
 		TextArea textArea;
 		internal SelectFrom selectFrom = new SelectFrom();
@@ -142,17 +142,17 @@ namespace ICSharpCode.TextEditor.Document
 			}
 		}
 		
-		public void SetSelection(Point startPosition, Point endPosition)
+		public void SetSelection(TextLocation startPosition, TextLocation endPosition)
 		{
 			SetSelection(new DefaultSelection(document, startPosition, endPosition));
 		}
 		
-		public bool GreaterEqPos(Point p1, Point p2)
+		public bool GreaterEqPos(TextLocation p1, TextLocation p2)
 		{
 			return p1.Y > p2.Y || p1.Y == p2.Y && p1.X >= p2.X;
 		}
 		
-		public void ExtendSelection(Point oldPosition, Point newPosition)
+		public void ExtendSelection(TextLocation oldPosition, TextLocation newPosition)
 		{
 			// where oldposition is where the cursor was,
 			// and newposition is where it has ended up from a click (both zero based)
@@ -162,8 +162,8 @@ namespace ICSharpCode.TextEditor.Document
 				return;
 			}
 
-			Point min;
-			Point max;
+			TextLocation min;
+			TextLocation max;
 			int oldnewX = newPosition.X;
 			bool  oldIsGreater = GreaterEqPos(oldPosition, newPosition);
 			if (oldIsGreater) {
@@ -205,7 +205,7 @@ namespace ICSharpCode.TextEditor.Document
 					selection.StartPosition = selectionStart;
 					// this handles last line selection
 					if (selectFrom.where == WhereFrom.Gutter ) //&& newPosition.Y != oldPosition.Y)
-						selection.EndPosition = new Point(textArea.Caret.Column, textArea.Caret.Line);
+						selection.EndPosition = new TextLocation(textArea.Caret.Column, textArea.Caret.Line);
 					else {
 						newPosition.X = oldnewX;
 						selection.EndPosition = newPosition;
@@ -230,12 +230,12 @@ namespace ICSharpCode.TextEditor.Document
 		// - checks that there are more lines available after the current one
 		// - if there are then the next line is returned
 		// - if there are NOT then the last position on the given line is returned
-		public Point NextValidPosition(int line)
+		public TextLocation NextValidPosition(int line)
 		{
 			if (line < document.TotalNumberOfLines - 1)
-				return new Point(0, line + 1);
+				return new TextLocation(0, line + 1);
 			else
-				return new Point(document.GetLineSegment(document.TotalNumberOfLines - 1).Length + 1, line);
+				return new TextLocation(document.GetLineSegment(document.TotalNumberOfLines - 1).Length + 1, line);
 		}
 
 		void ClearWithoutUpdate()

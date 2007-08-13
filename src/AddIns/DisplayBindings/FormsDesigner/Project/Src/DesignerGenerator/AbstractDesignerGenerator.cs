@@ -20,6 +20,7 @@ using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
 using ReflectionLayer = ICSharpCode.SharpDevelop.Dom.ReflectionLayer;
 
@@ -74,8 +75,8 @@ namespace ICSharpCode.FormsDesigner
 				Reparse();
 				IField field = GetField(formClass, fieldName);
 				if (field != null) {
-					int startOffset = document.PositionToOffset(new Point(0, field.Region.BeginLine - 1));
-					int endOffset   = document.PositionToOffset(new Point(0, field.Region.EndLine));
+					int startOffset = document.PositionToOffset(new TextLocation(0, field.Region.BeginLine - 1));
+					int endOffset   = document.PositionToOffset(new TextLocation(0, field.Region.EndLine));
 					document.Remove(startOffset, endOffset - startOffset);
 				} else if ((field = GetField(completeClass, fieldName)) != null) {
 					// TODO: Remove the field in the part where it is declared
@@ -112,15 +113,15 @@ namespace ICSharpCode.FormsDesigner
 				Reparse();
 				IField oldField = GetField(formClass, newField.Name);
 				if (oldField != null) {
-					int startOffset = document.PositionToOffset(new Point(0, oldField.Region.BeginLine - 1));
-					int endOffset   = document.PositionToOffset(new Point(0, oldField.Region.EndLine));
+					int startOffset = document.PositionToOffset(new TextLocation(0, oldField.Region.BeginLine - 1));
+					int endOffset   = document.PositionToOffset(new TextLocation(0, oldField.Region.EndLine));
 					document.Replace(startOffset, endOffset - startOffset, tabs + GenerateFieldDeclaration(domGenerator, newField) + Environment.NewLine);
 				} else {
 					if ((oldField = GetField(completeClass, newField.Name)) != null) {
 						// TODO: Replace the field in the part where it is declared
 						LoggingService.Warn("Field declaration replacement in non-designer part currently not supported");
 					} else {
-						int endOffset = document.PositionToOffset(new Point(0, initializeComponents.BodyRegion.EndLine));
+						int endOffset = document.PositionToOffset(new TextLocation(0, initializeComponents.BodyRegion.EndLine));
 						document.Insert(endOffset, tabs + GenerateFieldDeclaration(domGenerator, newField) + Environment.NewLine);
 					}
 				}
@@ -184,8 +185,8 @@ namespace ICSharpCode.FormsDesigner
 			DomRegion bodyRegion = GetReplaceRegion(document, initializeComponents);
 			if (bodyRegion.BeginColumn <= 0 || bodyRegion.EndColumn <= 0)
 				throw new InvalidOperationException("Column must be > 0");
-			int startOffset = document.PositionToOffset(new Point(bodyRegion.BeginColumn - 1, bodyRegion.BeginLine - 1));
-			int endOffset   = document.PositionToOffset(new Point(bodyRegion.EndColumn - 1, bodyRegion.EndLine - 1));
+			int startOffset = document.PositionToOffset(new TextLocation(bodyRegion.BeginColumn - 1, bodyRegion.BeginLine - 1));
+			int endOffset   = document.PositionToOffset(new TextLocation(bodyRegion.EndColumn - 1, bodyRegion.EndLine - 1));
 			
 			document.Replace(startOffset, endOffset - startOffset, statements);
 			SaveDocument();

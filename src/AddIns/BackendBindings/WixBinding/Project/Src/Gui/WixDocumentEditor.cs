@@ -80,8 +80,8 @@ namespace ICSharpCode.WixBinding
 		static void SelectText(SelectionManager selectionManager, IDocument document, int startOffset, int length)
 		{
 			selectionManager.ClearSelection();
-			Point selectionStart = document.OffsetToPosition(startOffset);
-			Point selectionEnd = document.OffsetToPosition(startOffset + length);
+			TextLocation selectionStart = document.OffsetToPosition(startOffset);
+			TextLocation selectionEnd = document.OffsetToPosition(startOffset + length);
 			selectionManager.SetSelection(selectionStart, selectionEnd);
 		}
 						

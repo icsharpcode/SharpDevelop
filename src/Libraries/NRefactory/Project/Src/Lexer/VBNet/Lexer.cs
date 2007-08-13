@@ -83,6 +83,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 						}
 						ch = (char)ReaderRead();
 						
+						bool oldLineEnd = lineEnd;
 						lineEnd = false;
 						while (Char.IsWhiteSpace(ch)) {
 							if (HandleLineEnd(ch)) {
@@ -99,7 +100,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 						if (!lineEnd) {
 							errors.Error(Line, Col, String.Format("Return expected"));
 						}
-						lineEnd = false;
+						lineEnd = oldLineEnd;
 						continue;
 					}
 					

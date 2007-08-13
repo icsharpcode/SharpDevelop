@@ -1,4 +1,4 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -20,6 +20,7 @@
     <BaseAddress>98041856</BaseAddress>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <FileAlignment>4096</FileAlignment>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <Optimize>False</Optimize>
@@ -59,6 +60,7 @@
     <Compile Include="Src\Document\IDocument.cs" />
     <Compile Include="Src\Document\ISegment.cs" />
     <Compile Include="Src\Document\LineManager\LineSegmentTree.cs" />
+    <Compile Include="Src\Document\TextLocation.cs" />
     <Compile Include="Src\Document\TextUtilities.cs" />
     <Compile Include="Src\Document\BookmarkManager\BookmarkManager.cs" />
     <Compile Include="Src\Document\CustomLineManager\CustomLineManager.cs" />

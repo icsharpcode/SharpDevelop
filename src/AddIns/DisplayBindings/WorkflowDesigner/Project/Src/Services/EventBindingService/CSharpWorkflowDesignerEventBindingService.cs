@@ -10,6 +10,7 @@ using System.Drawing;
 using System.Text;
 using System.ComponentModel;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
 using ICSharpCode.NRefactory.PrettyPrinter;
 using ICSharpCode.NRefactory.Ast;
@@ -34,7 +35,7 @@ namespace WorkflowDesigner
 		protected override int GetCursorLine(IDocument document, IMethod method)
 		{
 			DomRegion r = method.BodyRegion;
-			int offset = document.PositionToOffset(new Point(r.BeginColumn - 1, r.BeginLine - 1));
+			int offset = document.PositionToOffset(new TextLocation(r.BeginColumn - 1, r.BeginLine - 1));
 			while (offset < document.TextLength) {
 				char c = document.GetCharAt(offset++);
 				if (c == '{') {

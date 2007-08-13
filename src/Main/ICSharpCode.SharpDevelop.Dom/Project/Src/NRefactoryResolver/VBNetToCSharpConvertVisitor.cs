@@ -22,6 +22,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		// Adds using statements for the default usings
 		// Convert "ReDim" statement
 		// Convert "WithEvents" fields/"Handles" clauses
+		// Insert InitializeComponents() call into default constructor
 		
 		public string NamespacePrefixToAdd { get; set; }
 		
@@ -31,9 +32,9 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		public VBNetToCSharpConvertVisitor(IProjectContent pc, ParseInformation parseInfo)
 		{
-			resolver = new NRefactoryResolver(LanguageProperties.VBNet);
-			projectContent = pc;
-			parseInformation = parseInfo;
+			this.resolver = new NRefactoryResolver(LanguageProperties.VBNet);
+			this.projectContent = pc;
+			this.parseInformation = parseInfo;
 		}
 		
 		public override object VisitCompilationUnit(CompilationUnit compilationUnit, object data)
@@ -45,10 +46,9 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					if (ns != null) {
 						ns.Name = NamespacePrefixToAdd + "." + ns.Name;
 					}
-					TypeDeclaration td = compilationUnit.Children[i] as TypeDeclaration;
-					if (td != null) {
+					if (compilationUnit.Children[i] is TypeDeclaration || compilationUnit.Children[i] is DelegateDeclaration) {
 						ns = new NamespaceDeclaration(NamespacePrefixToAdd);
-						ns.AddChild(td);
+						ns.AddChild(compilationUnit.Children[i]);
 						compilationUnit.Children[i] = ns;
 					}
 				}
@@ -61,6 +61,32 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				foreach (string u in projectContent.DefaultImports.Usings) {
 					compilationUnit.Children.Insert(index++, new UsingDeclaration(u));
 				}
+			}
+			return null;
+		}
+		
+		public override object VisitUsing(Using @using, object data)
+		{
+			base.VisitUsing(@using, data);
+			if (projectContent != null && projectContent.DefaultImports != null) {
+				if (!@using.IsAlias) {
+					// remove using if it is already part of the project-wide imports
+					foreach (string defaultImport in projectContent.DefaultImports.Usings) {
+						if (resolver.IsSameName(defaultImport, @using.Name)) {
+							RemoveCurrentNode();
+							break;
+						}
+					}
+				}
+			}
+			return null;
+		}
+		
+		public override object VisitUsingDeclaration(UsingDeclaration usingDeclaration, object data)
+		{
+			base.VisitUsingDeclaration(usingDeclaration, data);
+			if (usingDeclaration.Usings.Count == 0) {
+				RemoveCurrentNode();
 			}
 			return null;
 		}
@@ -87,20 +113,66 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 						containsClassHandlesClauses |= !handles.Contains(".");
 					}
 				}
+				// ensure the type has at least one constructor to which the AddHandlerStatements can be added
 				CompoundClass compoundClass = callingClass as CompoundClass;
-				if (containsClassHandlesClauses && !hasConstructors) {
-					// ensure the type has at least one constructor to which the AddHandlerStatements can be added
+				if (!hasConstructors) {
 					// add constructor only to one part
 					if (compoundClass == null || compoundClass.GetParts()[0] == resolver.CallingClass) {
-						ConstructorDeclaration cd = new ConstructorDeclaration(typeDeclaration.Name, Modifiers.Public, null, null);
-						cd.Body = new BlockStatement();
-						typeDeclaration.AddChild(cd);
+						if (containsClassHandlesClauses || RequiresConstructor(callingClass)) {
+							AddDefaultConstructor(callingClass, typeDeclaration);
+						}
 					}
 				}
 			}
 			
 			base.VisitTypeDeclaration(typeDeclaration, data);
 			return null;
+		}
+		
+		/// <summary>
+		/// Gets if the converter should add a default constructor to the current class if the
+		/// class does not have any constructors.
+		/// </summary>
+		protected virtual bool RequiresConstructor(IClass currentClass)
+		{
+			// the VB compiler automatically adds the InitializeComponents() call to the
+			// default constructor, so the converter has to an explicit constructor
+			// and place the call there
+			return IsAutomaticallyCallingInitializeComponent(currentClass);
+		}
+		
+		bool IsAutomaticallyCallingInitializeComponent(IClass currentClass)
+		{
+			if (currentClass != null) {
+				if (currentClass.SearchMember("InitializeComponent", LanguageProperties.VBNet) is IMethod) {
+					foreach (IAttribute at in currentClass.Attributes) {
+						if (at.AttributeType.FullyQualifiedName == "Microsoft.VisualBasic.CompilerServices.DesignerGeneratedAttribute") {
+							return true;
+						}
+					}
+				}
+			}
+			return false;
+		}
+		
+		/// <summary>
+		/// Adds a default constructor to the type.
+		/// </summary>
+		protected virtual ConstructorDeclaration AddDefaultConstructor(IClass currentClass, TypeDeclaration typeDeclaration)
+		{
+			ConstructorDeclaration cd = new ConstructorDeclaration(typeDeclaration.Name, Modifiers.Public, null, null);
+			cd.Body = new BlockStatement();
+			// location is required to make Resolve() work in the constructor
+			cd.StartLocation = cd.Body.StartLocation = cd.EndLocation = cd.Body.EndLocation = typeDeclaration.BodyStartLocation;
+			typeDeclaration.AddChild(cd);
+			if (IsAutomaticallyCallingInitializeComponent(currentClass)) {
+				// the VB compiler automatically adds the InitializeComponents() call to the
+				// default constructor, so the converter has to add the call when creating an explicit
+				// constructor
+				cd.Body.Children.Add(new ExpressionStatement(
+					new InvocationExpression(new IdentifierExpression("InitializeComponent"))));
+			}
+			return cd;
 		}
 		
 		public override object VisitMethodDeclaration(MethodDeclaration methodDeclaration, object data)
@@ -268,7 +340,10 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (ident != null) {
 				identifierExpression.Identifier = ident;
 			}
-			FullyQualifyModuleMemberReference(identifierExpression, rr);
+			
+			if (ReplaceWithInvocation(identifierExpression, rr)) {}
+			else if (FullyQualifyModuleMemberReference(identifierExpression, rr)) {}
+			
 			return null;
 		}
 
@@ -279,23 +354,44 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (resolver.CompilationUnit == null)
 				return null;
 			
-			ResolveResult rr = resolver.ResolveInternal(fieldReferenceExpression, ExpressionContext.Default);
+			ResolveResult rr = Resolve(fieldReferenceExpression);
 			string ident = GetIdentifierFromResult(rr);
 			if (ident != null) {
 				fieldReferenceExpression.FieldName = ident;
 			}
-			
-			if (rr is MethodResolveResult
-			    && !(fieldReferenceExpression.Parent is AddressOfExpression)
-			    && !(fieldReferenceExpression.Parent is InvocationExpression))
-			{
-				InvocationExpression ie = new InvocationExpression(fieldReferenceExpression);
-				ReplaceCurrentNode(ie);
-			} else {
-				FullyQualifyModuleMemberReference(fieldReferenceExpression, rr);
-			}
+			if (ReplaceWithInvocation(fieldReferenceExpression, rr)) {}
+			else if (FullyQualifyModuleMemberReference(fieldReferenceExpression, rr)) {}
 			
 			return rr;
+		}
+		
+		protected bool IsReferenceToInstanceMember(ResolveResult rr)
+		{
+			MemberResolveResult memberRR = rr as MemberResolveResult;
+			if (memberRR != null)
+				return memberRR.ResolvedMember.IsStatic == false;
+			MethodResolveResult methodRR = rr as MethodResolveResult;
+			if (methodRR != null && methodRR.ContainingType != null) {
+				foreach (IMethod m in methodRR.ContainingType.GetMethods()) {
+					if (resolver.IsSameName(m.Name, methodRR.Name)) {
+						return !m.IsStatic;
+					}
+				}
+			}
+			return false;
+		}
+		
+		bool ReplaceWithInvocation(Expression expression, ResolveResult rr)
+		{
+			if (rr is MethodResolveResult
+			    && !(expression.Parent is AddressOfExpression)
+			    && !(expression.Parent is InvocationExpression))
+			{
+				InvocationExpression ie = new InvocationExpression(expression);
+				ReplaceCurrentNode(ie);
+				return true;
+			}
+			return false;
 		}
 		
 		IReturnType GetContainingTypeOfStaticMember(ResolveResult rr)
@@ -311,31 +407,39 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return null;
 		}
 		
-		void FullyQualifyModuleMemberReference(IdentifierExpression ident, ResolveResult rr)
+		bool FullyQualifyModuleMemberReference(IdentifierExpression ident, ResolveResult rr)
 		{
 			IReturnType containingType = GetContainingTypeOfStaticMember(rr);
 			if (containingType == null)
-				return;
+				return false;
 			if (resolver.CallingClass != null) {
 				if (resolver.CallingClass.IsTypeInInheritanceTree(containingType.GetUnderlyingClass()))
-					return;
+					return false;
 			}
 			ReplaceCurrentNode(new FieldReferenceExpression(
-				new TypeReferenceExpression(Refactoring.CodeGenerator.ConvertType(containingType, CreateContext())),
+				new TypeReferenceExpression(ConvertType(containingType)),
 				ident.Identifier
 			));
+			return true;
 		}
 		
-		void FullyQualifyModuleMemberReference(FieldReferenceExpression fre, ResolveResult rr)
+		TypeReference ConvertType(IReturnType type)
+		{
+			return Refactoring.CodeGenerator.ConvertType(type, CreateContext());
+		}
+		
+		bool FullyQualifyModuleMemberReference(FieldReferenceExpression fre, ResolveResult rr)
 		{
 			IReturnType containingType = GetContainingTypeOfStaticMember(rr);
 			if (containingType == null)
-				return;
+				return false;
 			
 			ResolveResult targetRR = resolver.ResolveInternal(fre.TargetObject, ExpressionContext.Default);
 			if (targetRR is NamespaceResolveResult) {
-				fre.TargetObject = new TypeReferenceExpression(Refactoring.CodeGenerator.ConvertType(containingType, CreateContext()));
+				fre.TargetObject = new TypeReferenceExpression(ConvertType(containingType));
+				return true;
 			}
+			return false;
 		}
 
 		public override object VisitInvocationExpression(InvocationExpression invocationExpression, object data)
@@ -353,13 +457,32 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return null;
 		}
 		
+		protected ResolveResult Resolve(Expression expression)
+		{
+			if (resolver.CompilationUnit == null) {
+				return null;
+			} else {
+				return resolver.ResolveInternal(expression, ExpressionContext.Default);
+			}
+		}
+		
 		void ProcessInvocationExpression(InvocationExpression invocationExpression)
 		{
-			MemberResolveResult rr = resolver.ResolveInternal(invocationExpression, ExpressionContext.Default) as MemberResolveResult;
+			MemberResolveResult rr = Resolve(invocationExpression) as MemberResolveResult;
 			if (rr != null) {
 				IProperty p = rr.ResolvedMember as IProperty;
 				if (p != null && invocationExpression.Arguments.Count > 0) {
-					ReplaceCurrentNode(new IndexerExpression(invocationExpression.TargetObject, invocationExpression.Arguments));
+					// col(i) -> col[i] or col.Items(i) -> col[i] ?
+					Expression targetObject = invocationExpression.TargetObject;
+					FieldReferenceExpression targetObjectFre = targetObject as FieldReferenceExpression;
+					if (p.IsIndexer && targetObjectFre != null) {
+						MemberResolveResult rr2 = Resolve(targetObjectFre) as MemberResolveResult;
+						if (rr2 != null && rr2.ResolvedMember == rr.ResolvedMember) {
+							// remove ".Items"
+							targetObject = targetObjectFre.TargetObject;
+						}
+					}
+					ReplaceCurrentNode(new IndexerExpression(targetObject, invocationExpression.Arguments));
 				}
 				IMethod m = rr.ResolvedMember as IMethod;
 				if (m != null && invocationExpression.Arguments.Count == m.Parameters.Count) {
@@ -397,11 +520,9 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					// replace with:
 					// MyArray = (int[,])Microsoft.VisualBasic.CompilerServices.Utils.CopyArray(MyArray, new int[dim1+1, dim2+1]);
 					
-					ResolveResult rr = resolver.ResolveInternal(reDimStatement.ReDimClauses[0].TargetObject, ExpressionContext.Default);
+					ResolveResult rr = Resolve(reDimStatement.ReDimClauses[0].TargetObject);
 					if (rr != null && rr.ResolvedType != null && rr.ResolvedType.IsArrayReturnType) {
-						ArrayCreateExpression ace = new ArrayCreateExpression(
-							Refactoring.CodeGenerator.ConvertType(rr.ResolvedType, CreateContext())
-						);
+						ArrayCreateExpression ace = new ArrayCreateExpression(ConvertType(rr.ResolvedType));
 						foreach (Expression arg in reDimStatement.ReDimClauses[0].Arguments) {
 							ace.Arguments.Add(Expression.AddInteger(arg, 1));
 						}
@@ -427,11 +548,9 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			} else {
 				// replace with array create expression
 				
-				ResolveResult rr = resolver.ResolveInternal(reDimStatement.ReDimClauses[0].TargetObject, ExpressionContext.Default);
+				ResolveResult rr = Resolve(reDimStatement.ReDimClauses[0].TargetObject);
 				if (rr != null && rr.ResolvedType != null && rr.ResolvedType.IsArrayReturnType) {
-					ArrayCreateExpression ace = new ArrayCreateExpression(
-						Refactoring.CodeGenerator.ConvertType(rr.ResolvedType, CreateContext())
-					);
+					ArrayCreateExpression ace = new ArrayCreateExpression(ConvertType(rr.ResolvedType));
 					foreach (Expression arg in reDimStatement.ReDimClauses[0].Arguments) {
 						ace.Arguments.Add(Expression.AddInteger(arg, 1));
 					}
@@ -509,6 +628,40 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			TypeResolveResult trr = rr as TypeResolveResult;
 			if (trr != null && trr.ResolvedClass != null)
 				return trr.ResolvedClass.Name;
+			return null;
+		}
+		
+		public override object VisitForeachStatement(ForeachStatement foreachStatement, object data)
+		{
+			base.VisitForeachStatement(foreachStatement, data);
+			
+			if (resolver.CompilationUnit == null)
+				return null;
+			
+			if (foreachStatement.TypeReference.IsNull) {
+				ResolveResult rr = resolver.ResolveIdentifier(foreachStatement.VariableName, foreachStatement.StartLocation, ExpressionContext.Default);
+				if (rr != null && rr.ResolvedType != null) {
+					BlockStatement blockStatement = foreachStatement.EmbeddedStatement as BlockStatement;
+					if (blockStatement == null) {
+						blockStatement = new BlockStatement();
+						blockStatement.AddChild(foreachStatement.EmbeddedStatement);
+						foreachStatement.EmbeddedStatement = blockStatement;
+					}
+					
+					string newVariableName = foreachStatement.VariableName + "_loopVariable";
+					
+					ExpressionStatement st = new ExpressionStatement(
+						new AssignmentExpression(
+							new IdentifierExpression(foreachStatement.VariableName),
+							AssignmentOperatorType.Assign,
+							new IdentifierExpression(newVariableName)));
+					blockStatement.Children.Insert(0, st);
+					st.Parent = blockStatement;
+					
+					foreachStatement.VariableName = newVariableName;
+					foreachStatement.TypeReference = ConvertType(rr.ResolvedType);
+				}
+			}
 			return null;
 		}
 	}

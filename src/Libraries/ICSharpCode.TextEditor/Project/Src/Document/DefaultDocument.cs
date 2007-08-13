@@ -341,14 +341,14 @@ namespace ICSharpCode.TextEditor.Document
 			return lineTrackingStrategy.GetNextVisibleLineBelow(lineNumber, lineCount);
 		}
 		
-		public Point OffsetToPosition(int offset)
+		public TextLocation OffsetToPosition(int offset)
 		{
 			int lineNr = GetLineNumberForOffset(offset);
 			LineSegment line = GetLineSegment(lineNr);
-			return new Point(offset - line.Offset, lineNr);
+			return new TextLocation(offset - line.Offset, lineNr);
 		}
 		
-		public int PositionToOffset(Point p)
+		public int PositionToOffset(TextLocation p)
 		{
 			if (p.Y >= this.TotalNumberOfLines) {
 				return 0;

@@ -221,7 +221,7 @@ namespace ICSharpCode.TextEditor
 		
 		void TextContentChanged(object sender, EventArgs e)
 		{
-			Caret.Position = new Point(0, 0);
+			Caret.Position = new TextLocation(0, 0);
 			SelectionManager.SelectionCollection.Clear();
 		}
 		void SearchMatchingBracket(object sender, EventArgs e)
@@ -409,8 +409,8 @@ namespace ICSharpCode.TextEditor
 			
 			toolTipRectangle = new Rectangle(mousePos.X - 4, mousePos.Y - 4, 8, 8);
 			
-			Point logicPos = textView.GetLogicalPosition(mousePos.X - textView.DrawingPosition.Left,
-			                                             mousePos.Y - textView.DrawingPosition.Top);
+			TextLocation logicPos = textView.GetLogicalPosition(mousePos.X - textView.DrawingPosition.Left,
+			                                                    mousePos.Y - textView.DrawingPosition.Top);
 			bool inDocument = textView.DrawingPosition.Contains(mousePos)
 				&& logicPos.Y >= 0 && logicPos.Y < Document.TotalNumberOfLines;
 			ToolTipRequestEventArgs args = new ToolTipRequestEventArgs(mousePos, logicPos, inDocument);
@@ -456,7 +456,7 @@ namespace ICSharpCode.TextEditor
 				lastMouseInMargin = null;
 			}
 			if (textView.DrawingPosition.Contains(e.X, e.Y)) {
-				Point realmousepos = TextView.GetLogicalPosition(e.X - TextView.DrawingPosition.X, e.Y - TextView.DrawingPosition.Y);
+				TextLocation realmousepos = TextView.GetLogicalPosition(e.X - TextView.DrawingPosition.X, e.Y - TextView.DrawingPosition.Y);
 				if(SelectionManager.IsSelected(Document.PositionToOffset(realmousepos)) && MouseButtons == MouseButtons.None) {
 					// mouse is hovering over a selection, so show default mouse
 					this.Cursor = Cursors.Default;

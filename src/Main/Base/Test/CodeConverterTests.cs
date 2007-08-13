@@ -41,7 +41,9 @@ namespace ICSharpCode.SharpDevelop.Tests
 		{
 			DefaultProjectContent pc = new DefaultProjectContent();
 			pc.ReferencedContents.Add(projectContentRegistry.Mscorlib);
+			pc.ReferencedContents.Add(projectContentRegistry.GetProjectContentForReference("System.Windows.Forms", "System.Windows.Forms"));
 			if (sourceLanguage == SupportedLanguage.VBNet) {
+				pc.ReferencedContents.Add(projectContentRegistry.GetProjectContentForReference("Microsoft.VisualBasic", "Microsoft.VisualBasic"));
 				pc.DefaultImports = new DefaultUsing(pc);
 				pc.DefaultImports.Usings.Add("System");
 				pc.DefaultImports.Usings.Add("Microsoft.VisualBasic");
@@ -239,6 +241,35 @@ namespace ICSharpCode.SharpDevelop.Tests
 			                 "  End Function\n" +
 			                 "End Class");
 		}
+		
+		[Test]
+		public void HandlesClassEvent()
+		{
+			TestProgramVB2CS("Imports System.Windows.Forms\n" +
+			                 "Class Test\n" +
+			                 "  Inherits Form\n" +
+			                 "  Sub Me_Load(sender As Object, e As EventArgs) Handles Me.Load\n" +
+			                 "  End Sub\n" +
+			                 "  Sub Base_Paint(sender As Object, e As PaintEventArgs) Handles MyBase.Paint\n" +
+			                 "  End Sub\n" +
+			                 "End Class",
+			                 DefaultUsingsCSharp +
+			                 "using System.Windows.Forms;\n" +
+			                 "class Test : Form\n" +
+			                 "{\n" +
+			                 "  public void Me_Load(object sender, EventArgs e)\n" +
+			                 "  {\n" +
+			                 "  }\n" +
+			                 "  public void Base_Paint(object sender, PaintEventArgs e)\n" +
+			                 "  {\n" +
+			                 "  }\n" +
+			                 "  public Test()\n" +
+			                 "  {\n" +
+			                 "    Paint += Base_Paint;\n" +
+			                 "    Load += Me_Load;\n" +
+			                 "  }\n" +
+			                 "}");
+		}
 		#endregion
 		
 		#region ReferenceEqualityAndValueEquality
@@ -296,6 +327,20 @@ namespace ICSharpCode.SharpDevelop.Tests
 			TestStatementsVB2CS("Dim i as Integer = appdomain.getcurrentthreadid",
 			                    "int i = AppDomain.GetCurrentThreadId();");
 		}
+		
+		[Test]
+		public void FixVBCasingAndAddMethodCallParenthesis2()
+		{
+			TestStatementsVB2CS("console.writeline(appdomain.getcurrentthreadid)",
+			                    "Console.WriteLine(AppDomain.GetCurrentThreadId());");
+		}
+		
+		[Test]
+		public void FixVBCasingAndAddMethodCallParenthesis3()
+		{
+			TestStatementsVB2CS("console.writeline(T)",
+			                    "Console.WriteLine(T());");
+		}
 		#endregion
 		
 		#region Redim
@@ -337,6 +382,31 @@ namespace ICSharpCode.SharpDevelop.Tests
 		#endregion
 		
 		[Test]
+		public void AutomaticInitializeComponentCall()
+		{
+			TestProgramVB2CS("Imports System.Windows.Forms\n" +
+			                 "<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _\n" +
+			                 "Class Test\n" +
+			                 "  Inherits Form\n" +
+			                 "  Private Sub InitializeComponent()\n" +
+			                 "  End Sub\n" +
+			                 "End Class",
+			                 DefaultUsingsCSharp +
+			                 "using System.Windows.Forms;\n" +
+			                 "[Microsoft.VisualBasic.CompilerServices.DesignerGenerated()]\n" +
+			                 "class Test : Form\n" +
+			                 "{\n" +
+			                 "  private void InitializeComponent()\n" +
+			                 "  {\n" +
+			                 "  }\n" +
+			                 "  public Test()\n" +
+			                 "  {\n" +
+			                 "    InitializeComponent();\n" +
+			                 "  }\n" +
+			                 "}");
+		}
+		
+		[Test]
 		public void IndexerExpression()
 		{
 			TestStatementsVB2CS("Dim i(10) as Integer\n" +
@@ -373,6 +443,36 @@ namespace ICSharpCode.SharpDevelop.Tests
 			                    "int c = a / a * a;",
 			                    "Dim a As Integer = 5\n" +
 			                    "Dim c As Integer = (a \\ a) * a\n");
+		}
+		
+		[Test]
+		public void ForeachOnExistingVariable()
+		{
+			TestStatementsVB2CS("Dim a As String\n" +
+			                    "For Each a In b\n" +
+			                    "  Console.WriteLine(a)\n" +
+			                    "Next",
+			                    "string a = null;\n" +
+			                    "foreach (string a_loopVariable in b) {\n" +
+			                    "  a = a_loopVariable;\n" +
+			                    "  Console.WriteLine(a);\n" +
+			                    "}");
+		}
+		
+		[Test]
+		public void ConvertDefaultPropertyToIndexer()
+		{
+			TestStatementsVB2CS("Dim c As Collection\n" +
+			                    "a = c.Item(2)",
+			                    "Collection c = null;\n" +
+			                    "a = c[2];");
+		}
+		
+		[Test]
+		public void RemoveImportDuplicatedByProjectLevelImport()
+		{
+			TestProgramVB2CS("Imports System\nClass Test\nEnd Class",
+			                 DefaultUsingsCSharp + "class Test\n{\n}");
 		}
 		
 		#region Casting
@@ -508,7 +608,6 @@ namespace ICSharpCode.SharpDevelop.Tests
 		}
 		
 		const string VBIEnumeratorOfStringImplementation =
-			"Imports System\n" +
 			"Imports System.Collections.Generic\n" +
 			"Class Test\n" +
 			"  Implements IEnumerator(Of String)\n" +
@@ -524,14 +623,14 @@ namespace ICSharpCode.SharpDevelop.Tests
 			"  End Function\n" +
 			"  Public Sub Reset() Implements System.Collections.IEnumerator.Reset\n" +
 			"  End Sub\n" +
-			"  Public Sub Dispose() Implements IDisposable.Dispose\n" +
+			"  Public Sub Dispose() Implements System.IDisposable.Dispose\n" +
 			"  End Sub\n" +
 			"End Class";
 		
 		[Test]
 		public void InterfaceImplementation3()
 		{
-			TestProgramCS2VB("using System; using System.Collections.Generic;\n" +
+			TestProgramCS2VB("using System.Collections.Generic;\n" +
 			                 "class Test : IEnumerator<string> {\n" +
 			                 "  public string Current { get { } }\n" +
 			                 "  object System.Collections.IEnumerator.Current { get { } }\n" +
@@ -547,7 +646,6 @@ namespace ICSharpCode.SharpDevelop.Tests
 		{
 			TestProgramVB2CS(VBIEnumeratorOfStringImplementation,
 			                 DefaultUsingsCSharp +
-			                 "using System;\n" +
 			                 "using System.Collections.Generic;\n" +
 			                 "class Test : IEnumerator<string>\n" +
 			                 "{\n" +

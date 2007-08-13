@@ -39,7 +39,7 @@ namespace HtmlHelp2
 	{
 		HtmlHelp2DynamicHelpBrowserControl dynamicHelpBrowser;
 		private StringCollection dynamicHelpTerms   = new StringCollection();
-		private Point lastPoint                     = Point.Empty;
+		private TextLocation lastPoint              = TextLocation.Empty;
 		private string debugPreElement              = String.Empty;
 		private bool enableDebugInfo                = HtmlHelp2Environment.Config.DynamicHelpDebugInfos;
 

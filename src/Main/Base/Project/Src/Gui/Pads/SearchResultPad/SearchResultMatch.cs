@@ -7,6 +7,7 @@
 
 using System;
 using System.Drawing;
+using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
 
 namespace SearchAndReplace
@@ -61,12 +62,12 @@ namespace SearchAndReplace
 			this.length   = length;
 		}
 		
-		public virtual Point GetStartPosition(IDocument document)
+		public virtual TextLocation GetStartPosition(IDocument document)
 		{
 			return document.OffsetToPosition(Offset);
 		}
 		
-		public virtual Point GetEndPosition(IDocument document)
+		public virtual TextLocation GetEndPosition(IDocument document)
 		{
 			return document.OffsetToPosition(Offset + Length);
 		}
@@ -90,14 +91,14 @@ namespace SearchAndReplace
 	
 	public class SimpleSearchResultMatch : SearchResultMatch
 	{
-		Point position;
+		TextLocation position;
 		
-		public override Point GetStartPosition(IDocument doc)
+		public override TextLocation GetStartPosition(IDocument doc)
 		{
 			return position;
 		}
 		
-		public override Point GetEndPosition(IDocument doc)
+		public override TextLocation GetEndPosition(IDocument doc)
 		{
 			return position;
 		}
@@ -110,7 +111,7 @@ namespace SearchAndReplace
 			}
 		}
 		
-		public SimpleSearchResultMatch(string displayText, Point position) : base(0, 0)
+		public SimpleSearchResultMatch(string displayText, TextLocation position) : base(0, 0)
 		{
 			this.position = position;
 			this.displayText = displayText;

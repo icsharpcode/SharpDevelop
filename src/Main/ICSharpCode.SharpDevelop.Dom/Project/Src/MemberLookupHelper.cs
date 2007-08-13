@@ -620,6 +620,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		static bool IsConstructedConversionToGenericReturnType(IReturnType from, IReturnType to, bool allowGenericTarget)
 		{
+			// null could be passed when type arguments could not be resolved/inferred
+			if (from == null && to == null)
+				return true;
+			if (from == null || to == null)
+				return false;
+			
 			if (from.Equals(to))
 				return true;
 			

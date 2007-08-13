@@ -61,6 +61,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 			};
 			pc.ReferencedContents.Add(projectContentRegistry.Mscorlib);
 			pc.ReferencedContents.Add(projectContentRegistry.GetProjectContentForReference("System.Windows.Forms", "System.Windows.Forms"));
+			pc.ReferencedContents.Add(projectContentRegistry.GetProjectContentForReference("Microsoft.VisualBasic", "Microsoft.VisualBasic"));
 			pc.Language = LanguageProperties.VBNet;
 			lastPC = pc;
 			NRefactoryASTConvertVisitor visitor = new NRefactoryASTConvertVisitor(pc);
@@ -678,6 +679,50 @@ class C : B {
 			Assert.IsTrue(Refactoring.RefactoringService.IsReferenceToMember(bCtor, mrr));
 			Assert.IsFalse(Refactoring.RefactoringService.IsReferenceToMember(aCtor, mrr));
 		}
+		
+		[Test]
+		public void VBIndexerCall()
+		{
+			string program = @"Imports Microsoft.VisualBasic
+Class A
+	Sub Method()
+		Dim c As Collection
+		
+	End Sub
+End Class
+";
+			MemberResolveResult result = ResolveVB<MemberResolveResult>(program, "c(3)", 5);
+			Assert.AreEqual("Microsoft.VisualBasic.Collection.Item", result.ResolvedMember.FullyQualifiedName);
+			IProperty p = (IProperty)result.ResolvedMember;
+			Assert.IsTrue(p.IsIndexer);
+			
+			result = ResolveVB<MemberResolveResult>(program, "c.Item(3)", 5);
+			Assert.AreEqual("Microsoft.VisualBasic.Collection.Item", result.ResolvedMember.FullyQualifiedName);
+			p = (IProperty)result.ResolvedMember;
+			Assert.IsTrue(p.IsIndexer);
+		}
+		
+		[Test]
+		public void VBPInvokeCall()
+		{
+			string program = @"Imports Microsoft.VisualBasic
+Class A
+	Declare Function GetRectangleArea Lib ""..\..\PinvokeLib.dll"" (ByRef rectangle As MyRectangle) As Integer
+	Sub Method(r1 As MyRectangle)
+		
+	End Sub
+End Class
+";
+			MemberResolveResult result = ResolveVB<MemberResolveResult>(program, "GetRectangleArea(r1)", 5);
+			Assert.AreEqual("A.GetRectangleArea", result.ResolvedMember.FullyQualifiedName);
+			
+			IMethod m = (IMethod)result.ResolvedMember;
+			Assert.IsTrue(m.IsStatic);
+			Assert.AreEqual("System.Int32", m.ReturnType.FullyQualifiedName);
+			Assert.AreEqual(1, m.Parameters.Count);
+			Assert.AreEqual("rectangle", m.Parameters[0].Name);
+			Assert.IsTrue(m.Parameters[0].IsRef);
+		}
 		#endregion
 		
 		#region Import namespace tests
@@ -1048,6 +1093,25 @@ class B {
 					count += 1;
 			}
 			Assert.AreEqual(1, count);
+		}
+		
+		[Test]
+		public void ShadowingTest()
+		{
+			string program = @"Imports System.Windows.Forms
+Class F
+  Inherits Form
+	Sub M
+	  
+	End Sub
+	Friend WithEvents Shadows cancelButton As Button
+End Class
+";
+			MemberResolveResult result = ResolveVB<MemberResolveResult>(program, "CancelButton", 5);
+			Assert.AreEqual("F.cancelButton", result.ResolvedMember.FullyQualifiedName);
+			
+			result = ResolveVB<MemberResolveResult>(program, "MyBase.CancelButton", 5);
+			Assert.AreEqual("System.Windows.Forms.Form.CancelButton", result.ResolvedMember.FullyQualifiedName);
 		}
 		#endregion
 		

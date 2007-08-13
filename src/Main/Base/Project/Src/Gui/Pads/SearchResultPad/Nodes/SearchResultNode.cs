@@ -25,7 +25,7 @@ namespace SearchAndReplace
 	{
 		SearchResultMatch result;
 		
-		Point startPosition;
+		TextLocation startPosition;
 		string positionText;
 		string displayText;
 		string specialText;
@@ -58,7 +58,7 @@ namespace SearchAndReplace
 			drawDefault = false;
 			this.result = result;
 			startPosition = result.GetStartPosition(document);
-			Point endPosition = result.GetEndPosition(document);
+			TextLocation endPosition = result.GetEndPosition(document);
 			positionText =  "(" + (startPosition.Y + 1) + ", " + (startPosition.X + 1) + ") ";
 			
 			LineSegment line = document.GetLineSegment(startPosition.Y);

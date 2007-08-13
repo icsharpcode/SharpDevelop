@@ -202,12 +202,12 @@ namespace ICSharpCode.SharpDevelop.Tests.Utils
 			throw new NotImplementedException();
 		}
 		
-		public System.Drawing.Point OffsetToPosition(int offset)
+		public ICSharpCode.TextEditor.TextLocation OffsetToPosition(int offset)
 		{
 			throw new NotImplementedException();
 		}
 		
-		public int PositionToOffset(System.Drawing.Point p)
+		public int PositionToOffset(ICSharpCode.TextEditor.TextLocation p)
 		{
 			throw new NotImplementedException();
 		}

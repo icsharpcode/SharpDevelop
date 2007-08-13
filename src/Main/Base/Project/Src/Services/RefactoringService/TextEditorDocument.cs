@@ -72,7 +72,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		
 		public int PositionToOffset(int line, int column)
 		{
-			return doc.PositionToOffset(new Point(column - 1, line - 1));
+			return doc.PositionToOffset(new TextLocation(column - 1, line - 1));
 		}
 		
 		public void Insert(int offset, string text)

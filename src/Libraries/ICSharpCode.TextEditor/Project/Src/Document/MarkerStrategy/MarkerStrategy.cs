@@ -100,7 +100,7 @@ namespace ICSharpCode.TextEditor.Document
 			return markers;
 		}
 		
-		public List<TextMarker> GetMarkers(Point position)
+		public List<TextMarker> GetMarkers(TextLocation position)
 		{
 			if (position.Y >= document.TotalNumberOfLines || position.Y < 0) {
 				return new List<TextMarker>();

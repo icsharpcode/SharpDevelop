@@ -353,7 +353,12 @@ namespace ICSharpCode.SharpDevelop.Project
 					}
 				}
 			}
-			var referenceDict = references.ToDictionary(item => item.Include);
+			var referenceDict = new Dictionary<string, ReferenceProjectItem>();
+			foreach (ReferenceProjectItem item in references) {
+				// references could be duplicate, so we cannot use referenceDict.Add or reference.ToDictionary
+				referenceDict[item.Include] = item;
+			}
+			
 			
 			#if DEBUG
 			//engine.RegisterLogger(new MSBuild.ConsoleLogger(Microsoft.Build.Framework.LoggerVerbosity.Detailed));

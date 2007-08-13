@@ -70,7 +70,7 @@ namespace CSharpBinding
 						if (myFormsClass != null) {
 							string indentation = line.Substring(0, line.Length - trimmedLine.Length);
 							foreach (IProperty p in myFormsClass.Properties) {
-								string typeName = p.ReturnType.FullyQualifiedName;
+								string typeName = "global::" + p.ReturnType.FullyQualifiedName;
 								output.AppendLine(indentation + typeName + " " + p.Name + "_instance;");
 								output.AppendLine(indentation + "bool " + p.Name + "_isCreating;");
 								output.AppendLine(indentation + "public " + typeName + " " + p.Name + " {");

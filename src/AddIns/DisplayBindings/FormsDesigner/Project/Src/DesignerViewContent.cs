@@ -234,6 +234,7 @@ namespace ICSharpCode.FormsDesigner
 			} catch (Exception e) {
 				failedDesignerInitialize = true;
 				TextBox errorText = new TextBox();
+				errorText.ScrollBars = ScrollBars.Both;
 				errorText.Multiline = true;
 				if (e.InnerException is FormsDesignerLoadException) {
 					errorText.Text = e.InnerException.Message;

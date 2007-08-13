@@ -225,18 +225,48 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return c.Methods.FindAll(delegate(IMethod m) { return m.IsConstructor; });
 		}
 		
-		IProperty GetVisualBasicIndexer(InvocationExpression invocationExpression)
-		{
-			return GetIndexer(new IndexerExpression(invocationExpression.TargetObject, invocationExpression.Arguments));
-		}
-		
 		public IProperty GetIndexer(IndexerExpression indexerExpression)
 		{
-			IReturnType type = (IReturnType)indexerExpression.TargetObject.AcceptVisitor(this, null);
-			if (type == null) {
+			IReturnType targetObjectType = (IReturnType)indexerExpression.TargetObject.AcceptVisitor(this, null);
+			return GetIndexer(indexerExpression, targetObjectType);
+		}
+		
+		IProperty GetVisualBasicIndexer(InvocationExpression invocationExpression)
+		{
+			ResolveResult targetRR = resolver.ResolveInternal(invocationExpression.TargetObject, ExpressionContext.Default);
+			if (targetRR != null) {
+				// Visual Basic can call indexers in two ways:
+				// collection(index) - use indexer
+				// collection.Item(index) - use parametrized property
+				
+				if (invocationExpression.TargetObject is IdentifierExpression || invocationExpression.TargetObject is FieldReferenceExpression) {
+					// only IdentifierExpression/FieldReferenceExpression can represent a parametrized property
+					// - the check is necessary because collection.Items and collection.Item(index) both
+					// resolve to the same property, but we want to use the default indexer for the second call in
+					// collection.Item(index1)(index2)
+					MemberResolveResult memberRR = targetRR as MemberResolveResult;
+					if (memberRR != null)  {
+						IProperty p = memberRR.ResolvedMember as IProperty;
+						if (p != null && p.Parameters.Count > 0) {
+							// this is a parametrized property
+							return p;
+						}
+					}
+				}
+				// not a parametrized property - try normal indexer
+				return GetIndexer(new IndexerExpression(invocationExpression.TargetObject, invocationExpression.Arguments),
+				                  targetRR.ResolvedType);
+			} else {
 				return null;
 			}
-			List<IProperty> indexers = type.GetProperties();
+		}
+		
+		IProperty GetIndexer(IndexerExpression indexerExpression, IReturnType targetObjectType)
+		{
+			if (targetObjectType == null) {
+				return null;
+			}
+			List<IProperty> indexers = targetObjectType.GetProperties();
 			// remove non-indexers:
 			for (int i = 0; i < indexers.Count; i++) {
 				if (!indexers[i].IsIndexer)

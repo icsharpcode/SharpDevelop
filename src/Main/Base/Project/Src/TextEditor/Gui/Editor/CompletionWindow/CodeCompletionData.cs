@@ -195,8 +195,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			}
 			if (c != null && text.Length > c.Name.Length) {
 				textArea.InsertString(text.Substring(0, c.Name.Length + 1));
-				Point start = textArea.Caret.Position;
-				Point end;
+				TextLocation start = textArea.Caret.Position;
+				TextLocation end;
 				int pos = text.IndexOf(',');
 				if (pos < 0) {
 					textArea.InsertString(text.Substring(c.Name.Length + 1));

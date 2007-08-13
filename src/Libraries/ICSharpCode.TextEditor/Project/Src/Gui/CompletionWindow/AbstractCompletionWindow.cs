@@ -39,7 +39,7 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 		protected virtual void SetLocation()
 		{
 			TextArea textArea = control.ActiveTextAreaControl.TextArea;
-			Point caretPos  = textArea.Caret.Position;
+			TextLocation caretPos  = textArea.Caret.Position;
 			
 			int xpos = textArea.TextView.GetDrawingXPos(caretPos.Y, caretPos.X);
 			int rulerHeight = textArea.TextEditorProperties.ShowHorizontalRuler ? textArea.TextView.FontHeight : 0;

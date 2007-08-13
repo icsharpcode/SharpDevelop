@@ -417,7 +417,7 @@ namespace ICSharpCode.TextEditor
 		{
 			textArea.Focus();
 			textArea.SelectionManager.ClearSelection();
-			textArea.Caret.Position = new Point(column, line);
+			textArea.Caret.Position = new TextLocation(column, line);
 			textArea.SetDesiredColumn();
 			ScrollToCaret();
 		}

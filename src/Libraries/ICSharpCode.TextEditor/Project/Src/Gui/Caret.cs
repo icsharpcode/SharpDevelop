@@ -95,9 +95,9 @@ namespace ICSharpCode.TextEditor
 			}
 		}
 		
-		public Point Position {
+		public TextLocation Position {
 			get {
-				return new Point(column, line);
+				return new TextLocation(column, line);
 			}
 			set {
 				line   = value.Y;
@@ -130,7 +130,7 @@ namespace ICSharpCode.TextEditor
 //			caretCreated = false;
 		}
 		
-		public Point ValidatePosition(Point pos)
+		public TextLocation ValidatePosition(TextLocation pos)
 		{
 			int line   = Math.Max(0, Math.Min(textArea.Document.TotalNumberOfLines - 1, pos.Y));
 			int column = Math.Max(0, pos.X);
@@ -139,7 +139,7 @@ namespace ICSharpCode.TextEditor
 				LineSegment lineSegment = textArea.Document.GetLineSegment(line);
 				column = Math.Min(column, lineSegment.Length);
 			}
-			return new Point(column, line);
+			return new TextLocation(column, line);
 		}
 		
 		/// <remarks>

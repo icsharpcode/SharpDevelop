@@ -27,7 +27,7 @@ namespace ICSharpCode.TextEditor
 	/// </summary>
 	public class TextAreaUpdate
 	{
-		Point              position;
+		TextLocation position;
 		TextAreaUpdateType type;
 		
 		public TextAreaUpdateType TextAreaUpdateType {
@@ -36,7 +36,7 @@ namespace ICSharpCode.TextEditor
 			}
 		}
 		
-		public Point Position {
+		public TextLocation Position {
 			get {
 				return position;
 			}
@@ -44,7 +44,7 @@ namespace ICSharpCode.TextEditor
 		
 		/// <summary>
 		/// Creates a new instance of <see cref="TextAreaUpdate"/>
-		/// </summary>	
+		/// </summary>
 		public TextAreaUpdate(TextAreaUpdateType type)
 		{
 			this.type = type;
@@ -52,8 +52,8 @@ namespace ICSharpCode.TextEditor
 		
 		/// <summary>
 		/// Creates a new instance of <see cref="TextAreaUpdate"/>
-		/// </summary>	
-		public TextAreaUpdate(TextAreaUpdateType type, Point position)
+		/// </summary>
+		public TextAreaUpdate(TextAreaUpdateType type, TextLocation position)
 		{
 			this.type     = type;
 			this.position = position;
@@ -61,20 +61,20 @@ namespace ICSharpCode.TextEditor
 		
 		/// <summary>
 		/// Creates a new instance of <see cref="TextAreaUpdate"/>
-		/// </summary>	
+		/// </summary>
 		public TextAreaUpdate(TextAreaUpdateType type, int startLine, int endLine)
 		{
 			this.type     = type;
-			this.position = new Point(startLine, endLine);
+			this.position = new TextLocation(startLine, endLine);
 		}
 		
 		/// <summary>
 		/// Creates a new instance of <see cref="TextAreaUpdate"/>
-		/// </summary>	
+		/// </summary>
 		public TextAreaUpdate(TextAreaUpdateType type, int singleLine)
 		{
 			this.type     = type;
-			this.position = new Point(0, singleLine);
+			this.position = new TextLocation(0, singleLine);
 		}
 		
 		public override string ToString()

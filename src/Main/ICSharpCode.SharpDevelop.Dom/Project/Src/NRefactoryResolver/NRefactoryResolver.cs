@@ -603,7 +603,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		}
 		
 		#region Resolve Identifier
-		ResolveResult ResolveIdentifier(string identifier, NR.Location position, ExpressionContext context)
+		public ResolveResult ResolveIdentifier(string identifier, NR.Location position, ExpressionContext context)
 		{
 			ResolveResult result = ResolveIdentifierInternal(identifier, position);
 			if (result is TypeResolveResult)
@@ -980,22 +980,37 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			bool isClassInInheritanceTree = false;
 			if (callingClass != null)
 				isClassInInheritanceTree = callingClass.IsTypeInInheritanceTree(type.GetUnderlyingClass());
+			
+			// when there are multiple possible members, use the member from the more derived class
+			// (this is necessary to support a field shadowing a property)
+			IMember result = null;
 			foreach (IProperty p in type.GetProperties()) {
 				if (IsSameName(p.Name, memberName)) {
-					return p;
+					result = GetMoreDerivedMember(result, p);
 				}
 			}
 			foreach (IField f in type.GetFields()) {
 				if (IsSameName(f.Name, memberName)) {
-					return f;
+					result = GetMoreDerivedMember(result, f);
 				}
 			}
 			foreach (IEvent e in type.GetEvents()) {
 				if (IsSameName(e.Name, memberName)) {
-					return e;
+					result = GetMoreDerivedMember(result, e);
 				}
 			}
-			return null;
+			return result;
+		}
+		
+		IMember GetMoreDerivedMember(IMember m1, IMember m2)
+		{
+			if (m1 == null) return m2;
+			if (m2 == null) return m1;
+			
+			if (m1.DeclaringType.IsTypeInInheritanceTree(m2.DeclaringType))
+				return m1;
+			else
+				return m2;
 		}
 		#endregion
 		

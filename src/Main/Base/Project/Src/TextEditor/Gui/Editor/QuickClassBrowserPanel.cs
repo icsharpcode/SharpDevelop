@@ -14,6 +14,7 @@ using System.Windows.Forms;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.TextEditor;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 {
@@ -475,7 +476,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			if (autoselect) {
 				ComboBoxItem item = (ComboBoxItem)comboBox.Items[comboBox.SelectedIndex];
 				if (item.IsInCurrentPart) {
-					textAreaControl.ActiveTextAreaControl.Caret.Position = new Point(item.Column, item.Line);
+					textAreaControl.ActiveTextAreaControl.Caret.Position = new TextLocation(item.Column, item.Line);
 					textAreaControl.ActiveTextAreaControl.TextArea.Focus();
 				} else {
 					IMember m = item.Item as IMember;

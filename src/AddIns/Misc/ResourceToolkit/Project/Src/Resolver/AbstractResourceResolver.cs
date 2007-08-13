@@ -41,7 +41,7 @@ namespace Hornung.ResourceToolkit.Resolver
 				LoggingService.Debug("ResourceToolkit: "+this.GetType().ToString()+".Resolve called with invalid position arguments");
 				return null;
 			}
-			return this.Resolve(fileName, document, caretLine, caretColumn, document.PositionToOffset(new Point(caretColumn, caretLine)), charTyped);
+			return this.Resolve(fileName, document, caretLine, caretColumn, document.PositionToOffset(new TextLocation(caretColumn, caretLine)), charTyped);
 		}
 		
 		/// <summary>

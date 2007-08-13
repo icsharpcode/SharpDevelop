@@ -11,18 +11,18 @@ using System.Drawing;
 
 using ICSharpCode.TextEditor.Document;
 
-namespace ICSharpCode.TextEditor.Actions 
+namespace ICSharpCode.TextEditor.Actions
 {
 	public class Home : AbstractEditAction
 	{
 		public override void Execute(TextArea textArea)
 		{
 			LineSegment curLine;
-			Point       newPos = textArea.Caret.Position;
+			TextLocation       newPos = textArea.Caret.Position;
 			bool        jumpedIntoFolding = false;
 			do {
 				curLine = textArea.Document.GetLineSegment(newPos.Y);
-						
+				
 				if (TextUtilities.IsEmptyLine(textArea.Document, newPos.Y)) {
 					if (newPos.X != 0) {
 						newPos.X = 0;
@@ -43,7 +43,7 @@ namespace ICSharpCode.TextEditor.Actions
 				jumpedIntoFolding = false;
 				foreach (FoldMarker foldMarker in foldings) {
 					if (foldMarker.IsFolded) {
-						newPos = new Point(foldMarker.StartColumn, foldMarker.StartLine);
+						newPos = new TextLocation(foldMarker.StartColumn, foldMarker.StartLine);
 						jumpedIntoFolding = true;
 						break;
 					}
@@ -63,8 +63,8 @@ namespace ICSharpCode.TextEditor.Actions
 		public override void Execute(TextArea textArea)
 		{
 			LineSegment curLine;
-			Point       newPos = textArea.Caret.Position;
-			bool        jumpedIntoFolding = false;
+			TextLocation newPos = textArea.Caret.Position;
+			bool jumpedIntoFolding = false;
 			do {
 				curLine  = textArea.Document.GetLineSegment(newPos.Y);
 				newPos.X = curLine.Length;
@@ -73,7 +73,7 @@ namespace ICSharpCode.TextEditor.Actions
 				jumpedIntoFolding = false;
 				foreach (FoldMarker foldMarker in foldings) {
 					if (foldMarker.IsFolded) {
-						newPos = new Point(foldMarker.EndColumn, foldMarker.EndLine);
+						newPos = new TextLocation(foldMarker.EndColumn, foldMarker.EndLine);
 						jumpedIntoFolding = true;
 						break;
 					}
@@ -93,7 +93,7 @@ namespace ICSharpCode.TextEditor.Actions
 		public override void Execute(TextArea textArea)
 		{
 			if (textArea.Caret.Line != 0 || textArea.Caret.Column != 0) {
-				textArea.Caret.Position = new Point(0, 0);
+				textArea.Caret.Position = new TextLocation(0, 0);
 				textArea.SetDesiredColumn();
 			}
 		}
@@ -104,7 +104,7 @@ namespace ICSharpCode.TextEditor.Actions
 	{
 		public override void Execute(TextArea textArea)
 		{
-			Point endPos = textArea.Document.OffsetToPosition(textArea.Document.TextLength);
+			TextLocation endPos = textArea.Document.OffsetToPosition(textArea.Document.TextLength);
 			if (textArea.Caret.Position != endPos) {
 				textArea.Caret.Position = endPos;
 				textArea.SetDesiredColumn();

@@ -13,6 +13,7 @@ using System.Text;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.TextEditor;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.PrettyPrinter;
 
@@ -56,7 +57,7 @@ namespace ICSharpCode.FormsDesigner
 		protected override int GetCursorLine(ICSharpCode.TextEditor.Document.IDocument document, IMethod method)
 		{
 			DomRegion r = method.BodyRegion;
-			int offset = document.PositionToOffset(new Point(r.BeginColumn - 1, r.BeginLine - 1));
+			int offset = document.PositionToOffset(new TextLocation(r.BeginColumn - 1, r.BeginLine - 1));
 			string tmp = document.GetText(offset, 10);
 			while (offset < document.TextLength) {
 				char c = document.GetCharAt(offset++);

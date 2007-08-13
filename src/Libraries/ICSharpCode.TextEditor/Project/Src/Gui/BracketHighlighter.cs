@@ -13,30 +13,13 @@ namespace ICSharpCode.TextEditor
 {
 	public class Highlight
 	{
-		Point openBrace;
-		Point closeBrace;
+		public TextLocation OpenBrace { get; set; }
+		public TextLocation CloseBrace { get; set; }
 		
-		public Point OpenBrace {
-			get {
-				return openBrace;
-			}
-			set {
-				openBrace = value;
-			}
-		}
-		public Point CloseBrace {
-			get {
-				return closeBrace;
-			}
-			set {
-				closeBrace = value;
-			}
-		}
-		
-		public Highlight(Point openBrace, Point closeBrace)
+		public Highlight(TextLocation openBrace, TextLocation closeBrace)
 		{
-			this.openBrace = openBrace;
-			this.closeBrace = closeBrace;
+			this.OpenBrace = openBrace;
+			this.CloseBrace = closeBrace;
 		}
 	}
 	
@@ -79,12 +62,12 @@ namespace ICSharpCode.TextEditor
 			}
 			char word = document.GetCharAt(Math.Max(0, Math.Min(document.TextLength - 1, searchOffset)));
 			
-			Point endP = document.OffsetToPosition(searchOffset);
+			TextLocation endP = document.OffsetToPosition(searchOffset);
 			if (word == opentag) {
 				if (searchOffset < document.TextLength) {
 					int bracketOffset = TextUtilities.SearchBracketForward(document, searchOffset + 1, opentag, closingtag);
 					if (bracketOffset >= 0) {
-						Point p = document.OffsetToPosition(bracketOffset);
+						TextLocation p = document.OffsetToPosition(bracketOffset);
 						return new Highlight(p, endP);
 					}
 				}
@@ -92,7 +75,7 @@ namespace ICSharpCode.TextEditor
 				if (searchOffset > 0) {
 					int bracketOffset = TextUtilities.SearchBracketBackward(document, searchOffset - 1, opentag, closingtag);
 					if (bracketOffset >= 0) {
-						Point p = document.OffsetToPosition(bracketOffset);
+						TextLocation p = document.OffsetToPosition(bracketOffset);
 						return new Highlight(p, endP);
 					}
 				}

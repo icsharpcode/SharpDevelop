@@ -183,7 +183,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 				if (derivedClass.CompilationUnit.FileName == null) continue;
 				IMember m = MemberLookupHelper.FindSimilarMember(derivedClass, member);
 				if (m != null && !m.Region.IsEmpty) {
-					SearchResultMatch res = new SimpleSearchResultMatch(m.FullyQualifiedName, new Point(m.Region.BeginColumn - 1, m.Region.BeginLine - 1));
+					SearchResultMatch res = new SimpleSearchResultMatch(m.FullyQualifiedName, new TextLocation(m.Region.BeginColumn - 1, m.Region.BeginLine - 1));
 					res.ProvidedDocumentInformation = FindReferencesAndRenameHelper.GetDocumentInformation(derivedClass.CompilationUnit.FileName);
 					results.Add(res);
 				}

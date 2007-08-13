@@ -23,6 +23,7 @@ using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Refactoring;
 using ICSharpCode.TextEditor.Document;
 using SearchAndReplace;
+using ICSharpCode.TextEditor;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 {
@@ -311,7 +312,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 				if (derivedClass.CompilationUnit == null) continue;
 				if (derivedClass.CompilationUnit.FileName == null) continue;
 				
-				SearchResultMatch res = new SimpleSearchResultMatch(derivedClass.FullyQualifiedName, new Point(derivedClass.Region.BeginColumn - 1, derivedClass.Region.BeginLine - 1));
+				SearchResultMatch res = new SimpleSearchResultMatch(derivedClass.FullyQualifiedName, new TextLocation(derivedClass.Region.BeginColumn - 1, derivedClass.Region.BeginLine - 1));
 				res.ProvidedDocumentInformation = FindReferencesAndRenameHelper.GetDocumentInformation(derivedClass.CompilationUnit.FileName);
 				results.Add(res);
 			}

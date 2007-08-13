@@ -595,15 +595,15 @@ namespace ICSharpCode.TextEditor.Actions
 						int lineEndOffset = line.Offset + line.Length;
 						int lineLength = line.Length;
 						textArea.Document.Remove(lineEndOffset, curLineOffset - lineEndOffset);
-						textArea.Caret.Position = new Point(lineLength, curLineNr - 1);
-						textArea.Document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.PositionToEnd, new Point(0, curLineNr - 1)));
+						textArea.Caret.Position = new TextLocation(lineLength, curLineNr - 1);
+						textArea.Document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.PositionToEnd, new TextLocation(0, curLineNr - 1)));
 						textArea.EndUpdate();
 					} else {
 						int caretOffset = textArea.Caret.Offset - 1;
 						textArea.Caret.Position = textArea.Document.OffsetToPosition(caretOffset);
 						textArea.Document.Remove(caretOffset, 1);
 						
-						textArea.Document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.PositionToLineEnd, new Point(textArea.Caret.Offset - textArea.Document.GetLineSegment(curLineNr).Offset, curLineNr)));
+						textArea.Document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.PositionToLineEnd, new TextLocation(textArea.Caret.Offset - textArea.Document.GetLineSegment(curLineNr).Offset, curLineNr)));
 						textArea.EndUpdate();
 					}
 				}
@@ -640,11 +640,11 @@ namespace ICSharpCode.TextEditor.Actions
 							LineSegment nextLine = textArea.Document.GetLineSegment(curLineNr + 1);
 							
 							textArea.Document.Remove(textArea.Caret.Offset, nextLine.Offset - textArea.Caret.Offset);
-							textArea.Document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.PositionToEnd, new Point(0, curLineNr)));
+							textArea.Document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.PositionToEnd, new TextLocation(0, curLineNr)));
 						}
 					} else {
 						textArea.Document.Remove(textArea.Caret.Offset, 1);
-//						textArea.Document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.PositionToLineEnd, new Point(textArea.Caret.Offset - textArea.Document.GetLineSegment(curLineNr).Offset, curLineNr)));
+//						textArea.Document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.PositionToLineEnd, new TextLocation(textArea.Caret.Offset - textArea.Document.GetLineSegment(curLineNr).Offset, curLineNr)));
 					}
 					textArea.UpdateMatchingBracket();
 					textArea.EndUpdate();
@@ -665,7 +665,7 @@ namespace ICSharpCode.TextEditor.Actions
 			int requestedLineNumber = Math.Min(textArea.Document.GetNextVisibleLineAbove(curLineNr, textArea.TextView.VisibleLineCount), textArea.Document.TotalNumberOfLines - 1);
 			
 			if (curLineNr != requestedLineNumber) {
-				textArea.Caret.Position = new Point(textArea.Caret.DesiredColumn, requestedLineNumber);
+				textArea.Caret.Position = new TextLocation(textArea.Caret.DesiredColumn, requestedLineNumber);
 			}
 		}
 	}
@@ -682,7 +682,7 @@ namespace ICSharpCode.TextEditor.Actions
 			int requestedLineNumber = Math.Max(textArea.Document.GetNextVisibleLineBelow(curLineNr, textArea.TextView.VisibleLineCount), 0);
 			
 			if (curLineNr != requestedLineNumber) {
-				textArea.Caret.Position = new Point(textArea.Caret.DesiredColumn, requestedLineNumber);
+				textArea.Caret.Position = new TextLocation(textArea.Caret.DesiredColumn, requestedLineNumber);
 			}
 		}
 	}
@@ -710,7 +710,7 @@ namespace ICSharpCode.TextEditor.Actions
 				textArea.SetDesiredColumn();
 				
 				textArea.Document.UpdateQueue.Clear();
-				textArea.Document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.PositionToEnd, new Point(0, curLineNr - 1)));
+				textArea.Document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.PositionToEnd, new TextLocation(0, curLineNr - 1)));
 			} finally {
 				textArea.Document.UndoStack.EndUndoGroup();
 				textArea.EndUpdate();
@@ -815,7 +815,7 @@ namespace ICSharpCode.TextEditor.Actions
 			textArea.SetDesiredColumn();
 			textArea.EndUpdate();
 			// if there are now less lines, we need this or there are redraw problems
-			textArea.Document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.PositionToEnd, new Point(0, textArea.Document.GetLineNumberForOffset(textArea.Caret.Offset))));
+			textArea.Document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.PositionToEnd, new TextLocation(0, textArea.Document.GetLineNumberForOffset(textArea.Caret.Offset))));
 			textArea.Document.CommitUpdate();
 		}
 	}
@@ -858,7 +858,7 @@ namespace ICSharpCode.TextEditor.Actions
 			textArea.UpdateMatchingBracket();
 			textArea.EndUpdate();
 			// if there are now less lines, we need this or there are redraw problems
-			textArea.Document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.PositionToEnd, new Point(0, textArea.Document.GetLineNumberForOffset(textArea.Caret.Offset))));
+			textArea.Document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.PositionToEnd, new TextLocation(0, textArea.Document.GetLineNumberForOffset(textArea.Caret.Offset))));
 			textArea.Document.CommitUpdate();
 		}
 	}
@@ -872,7 +872,7 @@ namespace ICSharpCode.TextEditor.Actions
 			textArea.Document.Remove(line.Offset, line.TotalLength);
 			textArea.Caret.Position = textArea.Document.OffsetToPosition(line.Offset);
 
-			textArea.Document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.PositionToEnd, new Point(0, lineNr)));
+			textArea.Document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.PositionToEnd, new TextLocation(0, lineNr)));
 			textArea.UpdateMatchingBracket();
 			textArea.Document.CommitUpdate();
 		}
@@ -888,7 +888,7 @@ namespace ICSharpCode.TextEditor.Actions
 			int numRemove = (line.Offset + line.Length) - textArea.Caret.Offset;
 			if (numRemove > 0) {
 				textArea.Document.Remove(textArea.Caret.Offset, numRemove);
-				textArea.Document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.SingleLine, new Point(0, lineNr)));
+				textArea.Document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.SingleLine, new TextLocation(0, lineNr)));
 				textArea.Document.CommitUpdate();
 			}
 		}
@@ -900,19 +900,19 @@ namespace ICSharpCode.TextEditor.Actions
 		{
 			Highlight highlight = textArea.FindMatchingBracketHighlight();
 			if (highlight != null) {
-				Point p1 = new Point(highlight.CloseBrace.X + 1, highlight.CloseBrace.Y);
-				Point p2 = new Point(highlight.OpenBrace.X + 1, highlight.OpenBrace.Y);
+				TextLocation p1 = new TextLocation(highlight.CloseBrace.X + 1, highlight.CloseBrace.Y);
+				TextLocation p2 = new TextLocation(highlight.OpenBrace.X + 1, highlight.OpenBrace.Y);
 				if (p1 == textArea.Caret.Position) {
 					if (textArea.Document.TextEditorProperties.BracketMatchingStyle == BracketMatchingStyle.After) {
 						textArea.Caret.Position = p2;
 					} else {
-						textArea.Caret.Position = new Point(p2.X - 1, p2.Y);
+						textArea.Caret.Position = new TextLocation(p2.X - 1, p2.Y);
 					}
 				} else {
 					if (textArea.Document.TextEditorProperties.BracketMatchingStyle == BracketMatchingStyle.After) {
 						textArea.Caret.Position = p1;
 					} else {
-						textArea.Caret.Position = new Point(p1.X - 1, p1.Y);
+						textArea.Caret.Position = new TextLocation(p1.X - 1, p1.Y);
 					}
 				}
 				textArea.SetDesiredColumn();

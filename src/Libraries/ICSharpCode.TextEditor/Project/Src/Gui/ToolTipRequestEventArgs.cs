@@ -15,7 +15,7 @@ namespace ICSharpCode.TextEditor
 	public class ToolTipRequestEventArgs
 	{
 		Point mousePosition;
-		Point logicalPosition;
+		TextLocation logicalPosition;
 		bool inDocument;
 		
 		public Point MousePosition {
@@ -24,7 +24,7 @@ namespace ICSharpCode.TextEditor
 			}
 		}
 		
-		public Point LogicalPosition {
+		public TextLocation LogicalPosition {
 			get {
 				return logicalPosition;
 			}
@@ -52,7 +52,7 @@ namespace ICSharpCode.TextEditor
 			toolTipText = text;
 		}
 		
-		public ToolTipRequestEventArgs(Point mousePosition, Point logicalPosition, bool inDocument)
+		public ToolTipRequestEventArgs(Point mousePosition, TextLocation logicalPosition, bool inDocument)
 		{
 			this.mousePosition = mousePosition;
 			this.logicalPosition = logicalPosition;

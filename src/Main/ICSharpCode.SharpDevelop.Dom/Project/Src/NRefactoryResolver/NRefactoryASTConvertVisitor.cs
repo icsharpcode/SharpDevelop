@@ -484,6 +484,26 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return null;
 		}
 		
+		public override object VisitDeclareDeclaration(AST.DeclareDeclaration declareDeclaration, object data)
+		{
+			DefaultClass currentClass = GetCurrentClass();
+			
+			DomRegion region = GetRegion(declareDeclaration.StartLocation, declareDeclaration.EndLocation);
+			DefaultMethod method = new DefaultMethod(declareDeclaration.Name, null, ConvertModifier(declareDeclaration.Modifier), region, DomRegion.Empty, currentClass);
+			method.Documentation = GetDocumentation(region.BeginLine, declareDeclaration.Attributes);
+			method.Modifiers |= ModifierEnum.Extern | ModifierEnum.Static;
+			
+			method.ReturnType = CreateReturnType(declareDeclaration.TypeReference, method);
+			ConvertAttributes(declareDeclaration, method);
+			
+			foreach (AST.ParameterDeclarationExpression par in declareDeclaration.Parameters) {
+				method.Parameters.Add(CreateParameter(par, method));
+			}
+			
+			currentClass.Methods.Add(method);
+			return null;
+		}
+		
 		public override object VisitOperatorDeclaration(AST.OperatorDeclaration operatorDeclaration, object data)
 		{
 			DefaultClass c  = GetCurrentClass();

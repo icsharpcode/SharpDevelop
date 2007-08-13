@@ -90,7 +90,7 @@ namespace ICSharpCode.TextEditor.Document
 //			get;
 //		}
 		
-#region ILineManager interface
+		#region ILineManager interface
 		/// <value>
 		/// A collection of all line segments
 		/// </value>
@@ -104,7 +104,7 @@ namespace ICSharpCode.TextEditor.Document
 		}
 		
 		/// <value>
-		/// The total number of lines, this may be != ArrayList.Count 
+		/// The total number of lines, this may be != ArrayList.Count
 		/// if the last line ends with a delimiter.
 		/// </value>
 		int TotalNumberOfLines {
@@ -189,9 +189,9 @@ namespace ICSharpCode.TextEditor.Document
 		/// Get the next visible line below lineNumber
 		/// </remarks>
 		int GetNextVisibleLineBelow(int lineNumber, int lineCount);
-#endregion
+		#endregion
 
-#region ITextBufferStrategy interface
+		#region ITextBufferStrategy interface
 		/// <value>
 		/// Get the whole text as string.
 		/// When setting the text using the TextContent property, the undo stack is cleared.
@@ -264,20 +264,20 @@ namespace ICSharpCode.TextEditor.Document
 		/// number of characters to copy.
 		/// </param>
 		string GetText(int offset, int length);
-#endregion
+		#endregion
 		string GetText(ISegment segment);
 		
-#region ITextModel interface
+		#region ITextModel interface
 		/// <summary>
 		/// returns the logical line/column position from an offset
 		/// </summary>
-		Point OffsetToPosition(int offset);
+		TextLocation OffsetToPosition(int offset);
 		
 		/// <summary>
 		/// returns the offset from a logical line/column position
 		/// </summary>
-		int PositionToOffset(Point p);
-#endregion
+		int PositionToOffset(TextLocation p);
+		#endregion
 		/// <value>
 		/// A container where all TextAreaUpdate objects get stored
 		/// </value>

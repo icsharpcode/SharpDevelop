@@ -2,22 +2,25 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
-//     <version>$Revision$</version>
+//     <version>$Revision: 2658$</version>
 // </file>
 
 using System;
 
-namespace ICSharpCode.NRefactory
+namespace ICSharpCode.TextEditor
 {
 	/// <summary>
 	/// A line/column position.
-	/// NRefactory lines/columns are counting from one.
+	/// Text editor lines/columns are counting from zero.
 	/// </summary>
-	public struct Location : IComparable<Location>, IEquatable<Location>
+	public struct TextLocation : IComparable<TextLocation>, IEquatable<TextLocation>
 	{
-		public static readonly Location Empty = new Location(-1, -1);
+		/// <summary>
+		/// Represents no text location (-1, -1).
+		/// </summary>
+		public static readonly TextLocation Empty = new TextLocation(-1, -1);
 		
-		public Location(int column, int line)
+		public TextLocation(int column, int line)
 		{
 			x = column;
 			y = line;
@@ -63,26 +66,26 @@ namespace ICSharpCode.NRefactory
 		
 		public override bool Equals(object obj)
 		{
-			if (!(obj is Location)) return false;
-			return (Location)obj == this;
+			if (!(obj is TextLocation)) return false;
+			return (TextLocation)obj == this;
 		}
 		
-		public bool Equals(Location other)
+		public bool Equals(TextLocation other)
 		{
 			return this == other;
 		}
 		
-		public static bool operator ==(Location a, Location b)
+		public static bool operator ==(TextLocation a, TextLocation b)
 		{
 			return a.x == b.x && a.y == b.y;
 		}
 		
-		public static bool operator !=(Location a, Location b)
+		public static bool operator !=(TextLocation a, TextLocation b)
 		{
 			return a.x != b.x || a.y != b.y;
 		}
 		
-		public static bool operator <(Location a, Location b)
+		public static bool operator <(TextLocation a, TextLocation b)
 		{
 			if (a.y < b.y)
 				return true;
@@ -92,7 +95,7 @@ namespace ICSharpCode.NRefactory
 				return false;
 		}
 		
-		public static bool operator >(Location a, Location b)
+		public static bool operator >(TextLocation a, TextLocation b)
 		{
 			if (a.y > b.y)
 				return true;
@@ -102,17 +105,17 @@ namespace ICSharpCode.NRefactory
 				return false;
 		}
 		
-		public static bool operator <=(Location a, Location b)
+		public static bool operator <=(TextLocation a, TextLocation b)
 		{
 			return !(a > b);
 		}
 		
-		public static bool operator >=(Location a, Location b)
+		public static bool operator >=(TextLocation a, TextLocation b)
 		{
 			return !(a < b);
 		}
 		
-		public int CompareTo(Location other)
+		public int CompareTo(TextLocation other)
 		{
 			if (this == other)
 				return 0;

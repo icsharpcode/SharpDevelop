@@ -11,13 +11,13 @@ using System.Drawing;
 
 using ICSharpCode.TextEditor.Document;
 
-namespace ICSharpCode.TextEditor.Actions 
+namespace ICSharpCode.TextEditor.Actions
 {
 	public class CaretLeft : AbstractEditAction
 	{
 		public override void Execute(TextArea textArea)
 		{
-			Point position = textArea.Caret.Position;
+			TextLocation position = textArea.Caret.Position;
 			List<FoldMarker> foldings = textArea.Document.FoldingManager.GetFoldedFoldingsWithEnd(position.Y);
 			FoldMarker justBeforeCaret = null;
 			foreach (FoldMarker fm in foldings) {
@@ -35,7 +35,7 @@ namespace ICSharpCode.TextEditor.Actions
 					--position.X;
 				} else if (position.Y  > 0) {
 					LineSegment lineAbove = textArea.Document.GetLineSegment(position.Y - 1);
-					position = new Point(lineAbove.Length, position.Y - 1);
+					position = new TextLocation(lineAbove.Length, position.Y - 1);
 				}
 			}
 			
@@ -49,7 +49,7 @@ namespace ICSharpCode.TextEditor.Actions
 		public override void Execute(TextArea textArea)
 		{
 			LineSegment curLine = textArea.Document.GetLineSegment(textArea.Caret.Line);
-			Point position = textArea.Caret.Position;
+			TextLocation position = textArea.Caret.Position;
 			List<FoldMarker> foldings = textArea.Document.FoldingManager.GetFoldedFoldingsWithStart(position.Y);
 			FoldMarker justBehindCaret = null;
 			foreach (FoldMarker fm in foldings) {
@@ -78,13 +78,13 @@ namespace ICSharpCode.TextEditor.Actions
 	{
 		public override void Execute(TextArea textArea)
 		{
-			Point position = textArea.Caret.Position;
+			TextLocation position = textArea.Caret.Position;
 			int lineNr = position.Y;
 			int visualLine = textArea.Document.GetVisibleLine(lineNr);
 			if (visualLine > 0) {
 				int xpos = textArea.TextView.GetDrawingXPos(lineNr, position.X);
-				Point pos = new Point(xpos,
-				                      textArea.TextView.DrawingPosition.Y + (visualLine - 1) * textArea.TextView.FontHeight - textArea.TextView.TextArea.VirtualTop.Y);
+				TextLocation pos = new TextLocation(xpos,
+				                                    textArea.TextView.DrawingPosition.Y + (visualLine - 1) * textArea.TextView.FontHeight - textArea.TextView.TextArea.VirtualTop.Y);
 				textArea.Caret.Position = textArea.TextView.GetLogicalPosition(pos.X, pos.Y);
 				textArea.SetCaretToDesiredColumn();
 			}
@@ -98,13 +98,13 @@ namespace ICSharpCode.TextEditor.Actions
 	{
 		public override void Execute(TextArea textArea)
 		{
-			Point position = textArea.Caret.Position;
+			TextLocation position = textArea.Caret.Position;
 			int lineNr = position.Y;
 			int visualLine = textArea.Document.GetVisibleLine(lineNr);
 			if (visualLine < textArea.Document.GetVisibleLine(textArea.Document.TotalNumberOfLines)) {
 				int xpos = textArea.TextView.GetDrawingXPos(lineNr, position.X);
-				Point pos = new Point(xpos,
-				                      textArea.TextView.DrawingPosition.Y + (visualLine + 1) * textArea.TextView.FontHeight - textArea.TextView.TextArea.VirtualTop.Y);
+				TextLocation pos = new TextLocation(xpos,
+				                                    textArea.TextView.DrawingPosition.Y + (visualLine + 1) * textArea.TextView.FontHeight - textArea.TextView.TextArea.VirtualTop.Y);
 				textArea.Caret.Position = textArea.TextView.GetLogicalPosition(pos.X, pos.Y);
 				textArea.SetCaretToDesiredColumn();
 			}
@@ -119,10 +119,10 @@ namespace ICSharpCode.TextEditor.Actions
 		public override void Execute(TextArea textArea)
 		{
 			LineSegment line   = textArea.Document.GetLineSegment(textArea.Caret.Position.Y);
-			Point oldPos = textArea.Caret.Position;
-			Point newPos;
+			TextLocation oldPos = textArea.Caret.Position;
+			TextLocation newPos;
 			if (textArea.Caret.Column >= line.Length) {
-				newPos = new Point(0, textArea.Caret.Line + 1);
+				newPos = new TextLocation(0, textArea.Caret.Line + 1);
 			} else {
 				int nextWordStart = TextUtilities.FindNextWordStart(textArea.Document, textArea.Caret.Offset);
 				newPos = textArea.Document.OffsetToPosition(nextWordStart);
@@ -133,9 +133,9 @@ namespace ICSharpCode.TextEditor.Actions
 			foreach (FoldMarker marker in foldings) {
 				if (marker.IsFolded) {
 					if (oldPos.X == marker.StartColumn && oldPos.Y == marker.StartLine) {
-						newPos = new Point(marker.EndColumn, marker.EndLine);
+						newPos = new TextLocation(marker.EndColumn, marker.EndLine);
 					} else {
-						newPos = new Point(marker.StartColumn, marker.StartLine);
+						newPos = new TextLocation(marker.StartColumn, marker.StartLine);
 					}
 					break;
 				}
@@ -150,7 +150,7 @@ namespace ICSharpCode.TextEditor.Actions
 	{
 		public override void Execute(TextArea textArea)
 		{
-			Point oldPos = textArea.Caret.Position;
+			TextLocation oldPos = textArea.Caret.Position;
 			if (textArea.Caret.Column == 0) {
 				base.Execute(textArea);
 			} else {
@@ -158,16 +158,16 @@ namespace ICSharpCode.TextEditor.Actions
 				
 				int prevWordStart = TextUtilities.FindPrevWordStart(textArea.Document, textArea.Caret.Offset);
 				
-				Point newPos = textArea.Document.OffsetToPosition(prevWordStart);
+				TextLocation newPos = textArea.Document.OffsetToPosition(prevWordStart);
 				
 				// handle fold markers
 				List<FoldMarker> foldings = textArea.Document.FoldingManager.GetFoldingsFromPosition(newPos.Y, newPos.X);
 				foreach (FoldMarker marker in foldings) {
 					if (marker.IsFolded) {
 						if (oldPos.X == marker.EndColumn && oldPos.Y == marker.EndLine) {
-							newPos = new Point(marker.StartColumn, marker.StartLine);
+							newPos = new TextLocation(marker.StartColumn, marker.StartLine);
 						} else {
-							newPos = new Point(marker.EndColumn, marker.EndLine);
+							newPos = new TextLocation(marker.EndColumn, marker.EndLine);
 						}
 						break;
 					}

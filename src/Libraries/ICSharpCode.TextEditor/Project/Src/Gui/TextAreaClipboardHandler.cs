@@ -152,7 +152,7 @@ namespace ICSharpCode.TextEditor
 					textArea.BeginUpdate();
 					textArea.Caret.Position = textArea.Document.OffsetToPosition(lineWhereCaretIs.Offset);
 					textArea.SelectionManager.RemoveSelectedText();
-					textArea.Document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.PositionToEnd, new Point(0, curLineNr)));
+					textArea.Document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.PositionToEnd, new TextLocation(0, curLineNr)));
 					textArea.EndUpdate();
 				}
 			}

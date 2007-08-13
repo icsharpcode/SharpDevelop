@@ -280,7 +280,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		{
 			if (mouseButtons != MouseButtons.Left) return;
 			Rectangle viewRect = iconBar.TextArea.TextView.DrawingPosition;
-			Point logicPos = iconBar.TextArea.TextView.GetLogicalPosition(0, mousepos.Y - viewRect.Top);
+			TextLocation logicPos = iconBar.TextArea.TextView.GetLogicalPosition(0, mousepos.Y - viewRect.Top);
 			
 			if (logicPos.Y >= 0 && logicPos.Y < iconBar.TextArea.Document.TotalNumberOfLines) {
 				ToggleBreakpointAt(iconBar.TextArea.Document, iconBar.TextArea.MotherTextEditorControl.FileName, logicPos.Y);
@@ -372,7 +372,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		/// </summary>
 		internal static ToolTipInfo GetToolTipInfo(TextArea textArea, ToolTipRequestEventArgs e)
 		{
-			Point logicPos = e.LogicalPosition;
+			TextLocation logicPos = e.LogicalPosition;
 			IDocument doc = textArea.Document;
 			IExpressionFinder expressionFinder = ParserService.GetExpressionFinder(textArea.MotherTextEditorControl.FileName);
 			if (expressionFinder == null)

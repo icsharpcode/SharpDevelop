@@ -22,7 +22,7 @@ namespace Hornung.ResourceToolkit.ToolTips
 		
 		public ToolTipInfo GetToolTipInfo(TextArea textArea, ToolTipRequestEventArgs e)
 		{
-			Point logicPos = e.LogicalPosition;
+			TextLocation logicPos = e.LogicalPosition;
 			IDocument doc = textArea.Document;
 			if (logicPos.X > doc.GetLineSegment(logicPos.Y).Length - 1) {
 				return null;

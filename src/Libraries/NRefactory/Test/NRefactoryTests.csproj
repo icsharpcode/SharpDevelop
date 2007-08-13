@@ -46,6 +46,7 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Lexer\CSharp\LexerTests.cs" />
     <Compile Include="General\UnitTest.cs" />
+    <Compile Include="Lexer\VBNet\CustomLexerTests.cs" />
     <Compile Include="Parser\Expressions\LambdaExpressionTests.cs" />
     <Compile Include="Parser\Expressions\QueryExpressionTests.cs" />
     <Compile Include="Output\SnippetConversion.cs" />

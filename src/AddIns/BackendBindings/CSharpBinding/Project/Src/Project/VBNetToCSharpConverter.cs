@@ -52,7 +52,14 @@ namespace CSharpBinding
 		protected override void CopyProperties(IProject sourceProject, IProject targetProject)
 		{
 			base.CopyProperties(sourceProject, targetProject);
-			FixProperty((CSharpProject)targetProject, "DefineConstants",
+			
+			CSharpProject project = (CSharpProject)targetProject;
+			// 1591 = missing XML comment - the VB compiler does not have this warning
+			// we disable it by default because many VB projects have XML documentation turned on
+			// even though only few members are commented
+			project.SetProperty("NoWarn", "1591"); 
+			
+			FixProperty(project, "DefineConstants",
 			            delegate(string v) { return v.Replace(',', ';'); });
 		}
 		

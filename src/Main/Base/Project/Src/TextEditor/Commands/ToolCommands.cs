@@ -57,7 +57,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 					textarea.Document.Insert(textarea.ActiveTextAreaControl.Caret.Offset, colorstr);
 					int lineNumber = textarea.Document.GetLineNumberForOffset(textarea.ActiveTextAreaControl.Caret.Offset);
 					textarea.ActiveTextAreaControl.Caret.Column += colorstr.Length;
-					textarea.Document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.SingleLine, new Point(0, lineNumber)));
+					textarea.Document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.SingleLine, new TextLocation(0, lineNumber)));
 					textarea.Document.CommitUpdate();
 				}
 			}

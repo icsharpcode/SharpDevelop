@@ -596,8 +596,8 @@ namespace ICSharpCode.XmlEditor
 				if (length > 0 && line < textAreaControl.Document.TotalNumberOfLines) {
 					SelectionManager selectionManager = textAreaControl.SelectionManager;
 					selectionManager.ClearSelection();
-					Point startPos = new Point(column, line);
-					Point endPos = new Point(column + length, line);
+					TextLocation startPos = new TextLocation(column, line);
+					TextLocation endPos = new TextLocation(column + length, line);
 					selectionManager.SetSelection(startPos, endPos);
 				}
 				line = Math.Min(line, textAreaControl.Document.TotalNumberOfLines - 1);

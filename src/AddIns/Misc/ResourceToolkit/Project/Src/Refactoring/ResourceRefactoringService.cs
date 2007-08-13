@@ -18,6 +18,7 @@ using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Refactoring;
+using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
 using SearchAndReplace;
 
@@ -103,7 +104,7 @@ namespace Hornung.ResourceToolkit.Refactoring
 					int pos = -1;
 					while ((pos = finder.GetNextPossibleOffset(fileName, fileContent, pos)) >= 0) {
 						
-						Point docPos = doc.OffsetToPosition(pos);
+						TextLocation docPos = doc.OffsetToPosition(pos);
 						ResourceResolveResult rrr = ResourceResolverService.Resolve(fileName, doc, docPos.Y, docPos.X, null);
 						
 						if (rrr != null && rrr.ResourceFileContent != null && rrr.Key != null) {

@@ -91,6 +91,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (errorTextBox == null) {
 				errorTextBox = new TextBox();
 				errorTextBox.Multiline = true;
+				errorTextBox.ScrollBars = ScrollBars.Both;
 				errorTextBox.ReadOnly = true;
 				errorTextBox.BackColor = SystemColors.Window;
 				errorTextBox.Dock = DockStyle.Fill;

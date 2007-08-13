@@ -37,16 +37,31 @@ namespace CSharpBinding
 		{
 			base.VisitAssignmentExpression(assignmentExpression, data);
 			
-			if (resolver.CompilationUnit == null)
-				return null;
-			
 			if (vbMyFormsClass != null) {
-				TypeResolveResult trr = resolver.ResolveInternal(assignmentExpression.Right, ExpressionContext.Default) as TypeResolveResult;
+				TypeResolveResult trr = Resolve(assignmentExpression.Right) as TypeResolveResult;
 				if (trr != null && trr.ResolvedClass != null) {
 					foreach (IProperty p in vbMyFormsClass.Properties) {
 						if (p.ReturnType.FullyQualifiedName == trr.ResolvedClass.FullyQualifiedName) {
 							assignmentExpression.Right = MakeFieldReferenceExpression("My.MyProject.Forms." + p.Name);
 							break;
+						}
+					}
+				}
+			}
+			
+			return null;
+		}
+		
+		public override object VisitFieldReferenceExpression(FieldReferenceExpression fieldReferenceExpression, object data)
+		{
+			ResolveResult fieldRR = base.VisitFieldReferenceExpression(fieldReferenceExpression, data) as ResolveResult;
+			
+			if (vbMyFormsClass != null && IsReferenceToInstanceMember(fieldRR)) {
+				TypeResolveResult trr = Resolve(fieldReferenceExpression.TargetObject) as TypeResolveResult;
+				if (trr != null && trr.ResolvedClass != null) {
+					foreach (IProperty p in vbMyFormsClass.Properties) {
+						if (p.ReturnType.FullyQualifiedName == trr.ResolvedClass.FullyQualifiedName) {
+							fieldReferenceExpression.TargetObject = MakeFieldReferenceExpression("My.MyProject.Forms." + p.Name);
 						}
 					}
 				}

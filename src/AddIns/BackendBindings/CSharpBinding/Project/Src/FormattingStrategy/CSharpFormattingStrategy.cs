@@ -60,7 +60,7 @@ namespace CSharpBinding.FormattingStrategy
 				if (oldIndentLength != newIndentLength && lineNr == textArea.Caret.Position.Y) {
 					// fix cursor position if indentation was changed
 					int newX = textArea.Caret.Position.X - oldIndentLength + newIndentLength;
-					textArea.Caret.Position = new Point(Math.Max(newX, 0), lineNr);
+					textArea.Caret.Position = new TextLocation(Math.Max(newX, 0), lineNr);
 				}
 				return newIndentLength;
 			}
@@ -92,7 +92,7 @@ namespace CSharpBinding.FormattingStrategy
 				if (oldIndentLength != newIndentLength) {
 					// fix cursor position if indentation was changed
 					int newX = textArea.Caret.Position.X - oldIndentLength + newIndentLength;
-					textArea.Caret.Position = new Point(Math.Max(newX, 0), cursorPos);
+					textArea.Caret.Position = new TextLocation(Math.Max(newX, 0), cursorPos);
 				}
 			}
 		}

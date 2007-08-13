@@ -194,10 +194,10 @@ namespace ICSharpCode.TextEditor.Undo
 		class UndoableSetCaretPosition : IUndoableOperation
 		{
 			UndoStack stack;
-			Point pos;
-			Point redoPos;
+			TextLocation pos;
+			TextLocation redoPos;
 			
-			public UndoableSetCaretPosition(UndoStack stack, Point pos)
+			public UndoableSetCaretPosition(UndoStack stack, TextLocation pos)
 			{
 				this.stack = stack;
 				this.pos = pos;

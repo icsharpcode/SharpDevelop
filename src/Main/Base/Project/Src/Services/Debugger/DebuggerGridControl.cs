@@ -11,6 +11,7 @@ using System.Drawing;
 using System.Windows.Forms;
 
 using ICSharpCode.SharpDevelop.Widgets.TreeGrid;
+using ICSharpCode.TextEditor;
 
 namespace ICSharpCode.SharpDevelop.Debugging
 {
@@ -71,7 +72,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		
 		DynamicTreeRow.ChildForm frm;
 		
-		public void ShowForm(ICSharpCode.TextEditor.TextArea textArea, Point logicTextPos)
+		public void ShowForm(ICSharpCode.TextEditor.TextArea textArea, TextLocation logicTextPos)
 		{
 			frm = new DynamicTreeRow.ChildForm();
 			frm.AllowResizing = false;

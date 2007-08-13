@@ -726,12 +726,12 @@ namespace ICSharpCode.TextEditor
 		/// <summary>
 		/// returns line/column for a visual point position
 		/// </summary>
-		public Point GetLogicalPosition(int xPos, int yPos)
+		public TextLocation GetLogicalPosition(int xPos, int yPos)
 		{
 			xPos += (int)(textArea.VirtualTop.X * WideSpaceWidth);
 			int clickedVisualLine = Math.Max(0, (yPos + this.textArea.VirtualTop.Y) / fontHeight);
 			int logicalLine       = Document.GetFirstLogicalLine(clickedVisualLine);
-			Point pos = GetLogicalColumn(logicalLine, xPos);
+			TextLocation pos = GetLogicalColumn(logicalLine, xPos);
 			return pos;
 		}
 		
@@ -744,12 +744,12 @@ namespace ICSharpCode.TextEditor
 			return Document.GetFirstLogicalLine(clickedVisualLine);
 		}
 		
-		public Point GetLogicalColumn(int firstLogicalLine, int xPos)
+		public TextLocation GetLogicalColumn(int firstLogicalLine, int xPos)
 		{
 			float spaceWidth = WideSpaceWidth;
 			LineSegment line = firstLogicalLine < Document.TotalNumberOfLines ? Document.GetLineSegment(firstLogicalLine) : null;
 			if (line == null) {
-				return new Point((int)(xPos / spaceWidth), firstLogicalLine);
+				return new TextLocation((int)(xPos / spaceWidth), firstLogicalLine);
 			}
 			
 			int lineNumber    = firstLogicalLine;
@@ -771,7 +771,7 @@ namespace ICSharpCode.TextEditor
 							paintPos     += folding.FoldText.Length * spaceWidth;
 							// special case when xPos is inside the fold marker
 							if (xPos <= paintPos - (paintPos - oldPaintPos) / 2) {
-								return new Point(logicalColumn, lineNumber);
+								return new TextLocation(logicalColumn, lineNumber);
 							}
 							logicalColumn = folding.EndColumn;
 							if (lineNumber != folding.EndLine) {
@@ -801,7 +801,7 @@ namespace ICSharpCode.TextEditor
 				
 				// when the paint position is reached, give it back otherwise advance to the next char
 				if (xPos <= paintPos - (paintPos - oldPaintPos) / 2) {
-					return new Point(logicalColumn, lineNumber);
+					return new TextLocation(logicalColumn, lineNumber);
 				}
 				
 				++logicalColumn;

@@ -17,10 +17,10 @@ namespace ICSharpCode.TextEditor.Document
 	{
 		IDocument document;
 		bool      isRectangularSelection;
-		Point     startPosition;
-		Point     endPosition;
+		TextLocation     startPosition;
+		TextLocation     endPosition;
 		
-		public Point StartPosition {
+		public TextLocation StartPosition {
 			get {
 				return startPosition;
 			}
@@ -29,7 +29,7 @@ namespace ICSharpCode.TextEditor.Document
 			}
 		}
 		
-		public Point EndPosition {
+		public TextLocation EndPosition {
 			get {
 				return endPosition;
 			}
@@ -96,7 +96,7 @@ namespace ICSharpCode.TextEditor.Document
 		/// <summary>
 		/// Creates a new instance of <see cref="DefaultSelection"/>
 		/// </summary>
-		public DefaultSelection(IDocument document, Point startPosition, Point endPosition)
+		public DefaultSelection(IDocument document, TextLocation startPosition, TextLocation endPosition)
 		{
 			this.document      = document;
 			this.startPosition = startPosition;
@@ -110,7 +110,7 @@ namespace ICSharpCode.TextEditor.Document
 		{
 			return String.Format("[DefaultSelection : StartPosition={0}, EndPosition={1}]", startPosition, endPosition);
 		}
-		public bool ContainsPosition(Point position)
+		public bool ContainsPosition(TextLocation position)
 		{
 			if (this.IsEmpty)
 				return false;

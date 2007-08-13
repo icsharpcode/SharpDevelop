@@ -60,7 +60,7 @@ namespace ICSharpCode.TextEditor.Gui.InsightWindow
 		protected override void CaretOffsetChanged(object sender, EventArgs e)
 		{
 			// move the window under the caret (don't change the x position)
-			Point caretPos  = control.ActiveTextAreaControl.Caret.Position;
+			TextLocation caretPos  = control.ActiveTextAreaControl.Caret.Position;
 			int y = (int)((1 + caretPos.Y) * control.ActiveTextAreaControl.TextArea.TextView.FontHeight) - control.ActiveTextAreaControl.TextArea.VirtualTop.Y - 1 + control.ActiveTextAreaControl.TextArea.TextView.DrawingPosition.Y;
 			
 			int xpos = control.ActiveTextAreaControl.TextArea.TextView.GetDrawingXPos(caretPos.Y, caretPos.X);

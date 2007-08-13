@@ -112,11 +112,11 @@ namespace ICSharpCode.TextEditor
 			Point p = textArea.PointToClient(new Point(e.X, e.Y));
 			
 			if (textArea.TextView.DrawingPosition.Contains(p.X, p.Y)) {
-				Point realmousepos= textArea.TextView.GetLogicalPosition(p.X - textArea.TextView.DrawingPosition.X,
-				                                                         p.Y - textArea.TextView.DrawingPosition.Y);
+				TextLocation realmousepos= textArea.TextView.GetLogicalPosition(p.X - textArea.TextView.DrawingPosition.X,
+				                                                                p.Y - textArea.TextView.DrawingPosition.Y);
 				int lineNr = Math.Min(textArea.Document.TotalNumberOfLines - 1, Math.Max(0, realmousepos.Y));
 				
-				textArea.Caret.Position = new Point(realmousepos.X, lineNr);
+				textArea.Caret.Position = new TextLocation(realmousepos.X, lineNr);
 				textArea.SetDesiredColumn();
 				if (e.Data.GetDataPresent(typeof(string))) {
 					e.Effect = GetDragDropEffect(e);

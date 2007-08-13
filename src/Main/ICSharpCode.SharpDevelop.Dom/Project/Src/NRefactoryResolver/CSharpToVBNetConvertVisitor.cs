@@ -18,18 +18,18 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 	/// </summary>
 	public class CSharpToVBNetConvertVisitor : CSharpConstructsConvertVisitor
 	{
-		NRefactoryResolver _resolver;
-		ParseInformation _parseInfo;
-		IProjectContent _pc;
+		NRefactoryResolver resolver;
+		ParseInformation parseInformation;
+		IProjectContent projectContent;
 		public string RootNamespaceToRemove { get; set; }
 		public string StartupObjectToMakePublic { get; set; }
 		public IList<string> DefaultImportsToRemove { get; set; }
 		
 		public CSharpToVBNetConvertVisitor(IProjectContent pc, ParseInformation parseInfo)
 		{
-			_resolver = new NRefactoryResolver(LanguageProperties.CSharp);
-			_pc = pc;
-			_parseInfo = parseInfo;
+			this.resolver = new NRefactoryResolver(LanguageProperties.CSharp);
+			this.projectContent = pc;
+			this.parseInformation = parseInfo;
 		}
 		
 		public override object VisitCompilationUnit(CompilationUnit compilationUnit, object data)
@@ -42,7 +42,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		IReturnType ResolveType(TypeReference typeRef)
 		{
-			return TypeVisitor.CreateReturnType(typeRef, _resolver);
+			return TypeVisitor.CreateReturnType(typeRef, resolver);
 		}
 		
 		public override object VisitNamespaceDeclaration(NamespaceDeclaration namespaceDeclaration, object data)
@@ -103,11 +103,11 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		{
 			// Initialize resolver for method:
 			if (!methodDeclaration.Body.IsNull) {
-				if (_resolver.Initialize(_parseInfo, methodDeclaration.Body.StartLocation.Y, methodDeclaration.Body.StartLocation.X)) {
-					_resolver.RunLookupTableVisitor(methodDeclaration);
+				if (resolver.Initialize(parseInformation, methodDeclaration.Body.StartLocation.Y, methodDeclaration.Body.StartLocation.X)) {
+					resolver.RunLookupTableVisitor(methodDeclaration);
 				}
 			}
-			IMethod currentMethod = _resolver.CallingMember as IMethod;
+			IMethod currentMethod = resolver.CallingMember as IMethod;
 			CreateInterfaceImplementations(currentMethod, methodDeclaration, methodDeclaration.InterfaceImplementations);
 			if (currentMethod != null && currentMethod.Name == "Main") {
 				if (currentMethod.DeclaringType.FullyQualifiedName == StartupObjectToMakePublic) {
@@ -122,7 +122,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		ClassFinder CreateContext()
 		{
-			return new ClassFinder(_resolver.CallingClass, _resolver.CallingMember, _resolver.CaretLine, _resolver.CaretColumn);
+			return new ClassFinder(resolver.CallingClass, resolver.CallingMember, resolver.CaretLine, resolver.CaretColumn);
 		}
 		
 		void CreateInterfaceImplementations(IMember currentMember, ParametrizedNode memberDecl, List<InterfaceImplementation> interfaceImplementations)
@@ -186,8 +186,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		public override object VisitConstructorDeclaration(ConstructorDeclaration constructorDeclaration, object data)
 		{
 			if (!constructorDeclaration.Body.IsNull) {
-				if (_resolver.Initialize(_parseInfo, constructorDeclaration.Body.StartLocation.Y, constructorDeclaration.Body.StartLocation.X)) {
-					_resolver.RunLookupTableVisitor(constructorDeclaration);
+				if (resolver.Initialize(parseInformation, constructorDeclaration.Body.StartLocation.Y, constructorDeclaration.Body.StartLocation.X)) {
+					resolver.RunLookupTableVisitor(constructorDeclaration);
 				}
 			}
 			return base.VisitConstructorDeclaration(constructorDeclaration, data);
@@ -195,23 +195,23 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		public override object VisitPropertyDeclaration(PropertyDeclaration propertyDeclaration, object data)
 		{
-			if (_resolver.Initialize(_parseInfo, propertyDeclaration.BodyStart.Y, propertyDeclaration.BodyStart.X)) {
-				_resolver.RunLookupTableVisitor(propertyDeclaration);
+			if (resolver.Initialize(parseInformation, propertyDeclaration.BodyStart.Y, propertyDeclaration.BodyStart.X)) {
+				resolver.RunLookupTableVisitor(propertyDeclaration);
 			}
-			IProperty currentProperty = _resolver.CallingMember as IProperty;
+			IProperty currentProperty = resolver.CallingMember as IProperty;
 			CreateInterfaceImplementations(currentProperty, propertyDeclaration, propertyDeclaration.InterfaceImplementations);
 			return base.VisitPropertyDeclaration(propertyDeclaration, data);
 		}
 		
 		public override object VisitExpressionStatement(ExpressionStatement expressionStatement, object data)
 		{
-			if (_resolver.CompilationUnit == null)
+			if (resolver.CompilationUnit == null)
 				return base.VisitExpressionStatement(expressionStatement, data);
 			
 			// Transform event invocations that aren't already transformed by a parent IfStatement to RaiseEvent statement
 			InvocationExpression eventInvocation = expressionStatement.Expression as InvocationExpression;
 			if (eventInvocation != null && eventInvocation.TargetObject is IdentifierExpression) {
-				MemberResolveResult mrr = _resolver.ResolveInternal(eventInvocation.TargetObject, ExpressionContext.Default) as MemberResolveResult;
+				MemberResolveResult mrr = resolver.ResolveInternal(eventInvocation.TargetObject, ExpressionContext.Default) as MemberResolveResult;
 				if (mrr != null && mrr.ResolvedMember is IEvent) {
 					ReplaceCurrentNode(new RaiseEventStatement(
 						((IdentifierExpression)eventInvocation.TargetObject).Identifier,
@@ -228,7 +228,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		{
 			base.VisitBinaryOperatorExpression(binaryOperatorExpression, data);
 			
-			if (_resolver.CompilationUnit == null)
+			if (resolver.CompilationUnit == null)
 				return null;
 			
 			switch (binaryOperatorExpression.Op) {
@@ -249,8 +249,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		void ConvertEqualityToReferenceEqualityIfRequired(BinaryOperatorExpression binaryOperatorExpression)
 		{
 			// maybe we have to convert Equality operator to ReferenceEquality
-			ResolveResult left = _resolver.ResolveInternal(binaryOperatorExpression.Left, ExpressionContext.Default);
-			ResolveResult right = _resolver.ResolveInternal(binaryOperatorExpression.Right, ExpressionContext.Default);
+			ResolveResult left = resolver.ResolveInternal(binaryOperatorExpression.Left, ExpressionContext.Default);
+			ResolveResult right = resolver.ResolveInternal(binaryOperatorExpression.Right, ExpressionContext.Default);
 			if (left != null && right != null && left.ResolvedType != null && right.ResolvedType != null) {
 				IClass cLeft = left.ResolvedType.GetUnderlyingClass();
 				IClass cRight = right.ResolvedType.GetUnderlyingClass();
@@ -274,8 +274,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		void ConvertArgumentsForStringConcatenationIfRequired(BinaryOperatorExpression binaryOperatorExpression)
 		{
-			ResolveResult left = _resolver.ResolveInternal(binaryOperatorExpression.Left, ExpressionContext.Default);
-			ResolveResult right = _resolver.ResolveInternal(binaryOperatorExpression.Right, ExpressionContext.Default);
+			ResolveResult left = resolver.ResolveInternal(binaryOperatorExpression.Left, ExpressionContext.Default);
+			ResolveResult right = resolver.ResolveInternal(binaryOperatorExpression.Right, ExpressionContext.Default);
 			
 			if (left != null && right != null) {
 				if (IsString(left.ResolvedType)) {
@@ -294,8 +294,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		void ConvertDivisionToIntegerDivisionIfRequired(BinaryOperatorExpression binaryOperatorExpression)
 		{
-			ResolveResult left = _resolver.ResolveInternal(binaryOperatorExpression.Left, ExpressionContext.Default);
-			ResolveResult right = _resolver.ResolveInternal(binaryOperatorExpression.Right, ExpressionContext.Default);
+			ResolveResult left = resolver.ResolveInternal(binaryOperatorExpression.Left, ExpressionContext.Default);
+			ResolveResult right = resolver.ResolveInternal(binaryOperatorExpression.Right, ExpressionContext.Default);
 			
 			if (left != null && right != null) {
 				if (IsInteger(left.ResolvedType) && IsInteger(right.ResolvedType)) {
@@ -358,14 +358,14 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		public override object VisitIdentifierExpression(IdentifierExpression identifierExpression, object data)
 		{
 			base.VisitIdentifierExpression(identifierExpression, data);
-			if (_resolver.CompilationUnit == null)
+			if (resolver.CompilationUnit == null)
 				return null;
 			
 			InvocationExpression parentIE = identifierExpression.Parent as InvocationExpression;
 			if (!(identifierExpression.Parent is AddressOfExpression)
 			    && (parentIE == null || parentIE.TargetObject != identifierExpression))
 			{
-				ResolveResult rr = _resolver.ResolveInternal(identifierExpression, ExpressionContext.Default);
+				ResolveResult rr = resolver.ResolveInternal(identifierExpression, ExpressionContext.Default);
 				if (rr is MethodResolveResult) {
 					ReplaceCurrentNode(new AddressOfExpression(identifierExpression));
 				}
@@ -377,14 +377,14 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		{
 			base.VisitFieldReferenceExpression(fieldReferenceExpression, data);
 			
-			if (_resolver.CompilationUnit == null)
+			if (resolver.CompilationUnit == null)
 				return null;
 			
 			InvocationExpression parentIE = fieldReferenceExpression.Parent as InvocationExpression;
 			if (!(fieldReferenceExpression.Parent is AddressOfExpression)
 			    && (parentIE == null || parentIE.TargetObject != fieldReferenceExpression))
 			{
-				ResolveResult rr = _resolver.ResolveInternal(fieldReferenceExpression, ExpressionContext.Default);
+				ResolveResult rr = resolver.ResolveInternal(fieldReferenceExpression, ExpressionContext.Default);
 				if (rr is MethodResolveResult) {
 					ReplaceCurrentNode(new AddressOfExpression(fieldReferenceExpression));
 				}
@@ -395,11 +395,11 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		void HandleAssignmentStatement(AssignmentExpression assignmentExpression)
 		{
-			if (_resolver.CompilationUnit == null || assignmentExpression == null)
+			if (resolver.CompilationUnit == null || assignmentExpression == null)
 				return;
 			
 			if (assignmentExpression.Op == AssignmentOperatorType.Add || assignmentExpression.Op == AssignmentOperatorType.Subtract) {
-				ResolveResult rr = _resolver.ResolveInternal(assignmentExpression.Left, ExpressionContext.Default);
+				ResolveResult rr = resolver.ResolveInternal(assignmentExpression.Left, ExpressionContext.Default);
 				if (rr is MemberResolveResult && (rr as MemberResolveResult).ResolvedMember is IEvent) {
 					if (assignmentExpression.Op == AssignmentOperatorType.Add) {
 						ReplaceCurrentNode(new AddHandlerStatement(assignmentExpression.Left, assignmentExpression.Right));
@@ -429,7 +429,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		{
 			base.VisitCastExpression(castExpression, data);
 			
-			if (_resolver.CompilationUnit == null)
+			if (resolver.CompilationUnit == null)
 				return null;
 			
 			// cast to value type is a conversion

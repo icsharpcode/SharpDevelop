@@ -14,12 +14,12 @@ namespace ICSharpCode.TextEditor.Document
 	/// </summary>
 	public interface ISelection
 	{
-		Point StartPosition {
+		TextLocation StartPosition {
 			get;
 			set;
 		}
 		
-		Point EndPosition {
+		TextLocation EndPosition {
 			get;
 			set;
 		}
@@ -59,6 +59,6 @@ namespace ICSharpCode.TextEditor.Document
 		
 		bool ContainsOffset(int offset);
 		
-		bool ContainsPosition(Point position);
+		bool ContainsPosition(TextLocation position);
 	}
 }

@@ -60,7 +60,7 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			if (item.ItemType == ItemType.Compile) {
 				return 50;
 			} else if (ItemType.DefaultFileItems.Contains(item.ItemType)) {
-				return 10;
+				return 4;
 			} else {
 				return 1;
 			}
@@ -137,7 +137,7 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 				totalWork += GetRequiredWork(item);
 			}
 			
-			monitor.BeginTask("Converting", sourceItems.Count, true);
+			monitor.BeginTask("Converting", totalWork, true);
 			int workDone = 0;
 			foreach (ProjectItem item in sourceItems) {
 				FileProjectItem fileItem = item as FileProjectItem;
@@ -272,6 +272,17 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			} else {
 				base.ConvertFile(sourceItem, targetItem);
 			}
+		}
+		
+		protected override void CopyProperties(IProject sourceProject, IProject targetProject)
+		{
+			base.CopyProperties(sourceProject, targetProject);
+			
+			// WarningsAsErrors/NoWarn refers to warning numbers that are completely different for
+			// the two compilers.
+			MSBuildBasedProject p = (MSBuildBasedProject)targetProject;
+			p.SetProperty("WarningsAsErrors", null);
+			p.SetProperty("NoWarn", null);
 		}
 	}
 }
