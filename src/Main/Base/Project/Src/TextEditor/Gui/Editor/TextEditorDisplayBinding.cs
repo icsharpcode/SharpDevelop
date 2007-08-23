@@ -203,6 +203,9 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		
 		public override void Save(OpenedFile file, Stream stream)
 		{
+			if (file != PrimaryFile)
+				throw new ArgumentException("file != PrimaryFile");
+			
 			if (!textEditorControl.CanSaveWithCurrentEncoding()) {
 				if (MessageService.AskQuestion("The file cannot be saved with the current encoding " +
 				                               textEditorControl.Encoding.EncodingName + " without losing data." +
@@ -216,6 +219,9 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		
 		public override void Load(OpenedFile file, Stream stream)
 		{
+			if (file != PrimaryFile)
+				throw new ArgumentException("file != PrimaryFile");
+			
 			if (!file.IsUntitled) {
 				textEditorControl.IsReadOnly = (File.GetAttributes(file.FileName) & FileAttributes.ReadOnly) == FileAttributes.ReadOnly;
 			}

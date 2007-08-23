@@ -122,7 +122,7 @@ namespace WorkflowDesigner
 			}
 
 			// Attach the handlers.
-			viewContent.SwitchedTo += ViewContentActivatedEventHandler;
+			//viewContent.SwitchedTo += ViewContentActivatedEventHandler;
 			viewContent.Disposed += ViewContentDisposedEventHandler;
 			
 			ViewCount++;

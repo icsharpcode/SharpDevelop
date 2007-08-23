@@ -133,12 +133,12 @@ namespace ICSharpCode.WpfDesign.AddIn
 			base.Dispose();
 		}
 		
-		protected override void OnSwitchedTo(EventArgs e)
-		{
-			base.OnSwitchedTo(e);
-			if (designer != null && designer.DesignContext != null) {
-				WpfToolbox.Instance.ToolService = designer.DesignContext.Services.Tool;
-			}
-		}
+//		protected override void OnSwitchedTo(EventArgs e)
+//		{
+//			base.OnSwitchedTo(e);
+//			if (designer != null && designer.DesignContext != null) {
+//				WpfToolbox.Instance.ToolService = designer.DesignContext.Services.Tool;
+//			}
+//		}
 	}
 }

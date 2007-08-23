@@ -48,7 +48,6 @@ namespace ICSharpCode.SharpDevelop
 		
 		/// <summary>
 		/// Creates a dummy opened file instance. Use for unit tests only!
-		/// Do not call UnregisterView or CloseIfAllViewsClosed on the dummy opened file!!!
 		/// </summary>
 		public static OpenedFile CreateDummyOpenedFile(string name, bool isUntitled)
 		{
@@ -120,6 +119,28 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
+		/// <summary>
+		/// Sets the internally stored data to the specified byte array.
+		/// This method should only be used when there is no current view or by the
+		/// current view.
+		/// </summary>
+		/// <remarks>
+		/// Use this method to specify the initial file content if you use a OpenedFile instance
+		/// for a file that doesn't exist on disk but should be automatically created when a view
+		/// with the file is saved, e.g. for .resx files created by the forms designer.
+		/// </remarks>
+		public void SetData(byte[] fileData)
+		{
+			if (fileData == null)
+				throw new ArgumentNullException("fileData");
+			if (inLoadOperation)
+				throw new InvalidOperationException("SetData cannot be used while loading");
+			if (inSaveOperation)
+				throw new InvalidOperationException("SetData cannot be used while saving");
+			
+			this.fileData = fileData;
+		}
+		
 		public void SaveToDisk(string newFileName)
 		{
 			this.FileName = newFileName;
@@ -166,11 +187,18 @@ namespace ICSharpCode.SharpDevelop
 //		/// </summary>
 //		public event EventHandler SavedCurrentView;
 		
+		bool inSaveOperation;
+		
 		void SaveCurrentViewToStream(Stream stream)
 		{
 //			if (SavingCurrentView != null)
 //				SavingCurrentView(this, EventArgs.Empty);
-			currentView.Save(this, stream);
+			inSaveOperation = true;
+			try {
+				currentView.Save(this, stream);
+			} finally {
+				inSaveOperation = false;
+			}
 //			if (SavedCurrentView != null)
 //				SavedCurrentView(this, EventArgs.Empty);
 		}
@@ -191,7 +219,10 @@ namespace ICSharpCode.SharpDevelop
 			
 			registeredViews.Add(view);
 			
-			view.SwitchedTo += SwitchedToView;
+			WorkbenchSingleton.Workbench.ActiveViewContentChanged += WorkbenchActiveViewContentChanged;
+			if (WorkbenchSingleton.Workbench.ActiveViewContent == view) {
+				SwitchedToView(view);
+			}
 			#if DEBUG
 			view.Disposed += ViewDisposed;
 			#endif
@@ -203,7 +234,7 @@ namespace ICSharpCode.SharpDevelop
 				throw new ArgumentNullException("view");
 			Debug.Assert(registeredViews.Contains(view));
 			
-			view.SwitchedTo -= SwitchedToView;
+			WorkbenchSingleton.Workbench.ActiveViewContentChanged -= WorkbenchActiveViewContentChanged;
 			#if DEBUG
 			view.Disposed -= ViewDisposed;
 			#endif
@@ -249,7 +280,7 @@ namespace ICSharpCode.SharpDevelop
 			
 			if (currentView != view) {
 				if (currentView == null) {
-					SwitchedToView(view, EventArgs.Empty);
+					SwitchedToView(view);
 				} else {
 					try {
 						inLoadOperation = true;
@@ -263,9 +294,18 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
-		void SwitchedToView(object sender, EventArgs e)
+		void WorkbenchActiveViewContentChanged(object sender, EventArgs e)
 		{
-			IViewContent newView = (IViewContent)sender;
+			IViewContent newView = WorkbenchSingleton.Workbench.ActiveViewContent;
+			
+			if (!registeredViews.Contains(newView))
+				return;
+			
+			SwitchedToView(newView);
+		}
+		
+		void SwitchedToView(IViewContent newView)
+		{
 			if (currentView != null) {
 				if (newView.SupportsSwitchToThisWithoutSaveLoad(this, currentView)
 				    || currentView.SupportsSwitchFromThisWithoutSaveLoad(this, newView))

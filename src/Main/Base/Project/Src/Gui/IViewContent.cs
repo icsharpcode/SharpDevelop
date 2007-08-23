@@ -66,16 +66,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		
 		/// <summary>
-		/// Used internally.
-		/// Is called when the window is switched to.
-		/// -> Inside the tab (on SelectedIndexChanged of the tab control)
-		/// -> Inside the workbench (focus change in the docking library).
-		/// </summary>
-		void OnSwitchedTo();
-		
-		event EventHandler SwitchedTo;
-		
-		/// <summary>
 		/// Reinitializes the content. (Re-initializes all add-in tree stuff)
 		/// and redraws the content.
 		/// Called on certain actions like changing the UI language.

@@ -212,6 +212,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 						                                          "${res:ProjectComponent.ContextMenu.AddExistingFiles.Link}",
 						                                          "${res:Global.CancelButtonText}");
 						if (res == 1) {
+							// Link
 							foreach (KeyValuePair<string, string> pair in fileNames) {
 								string fileName = pair.Key;
 								string relFileName = FileUtility.GetRelativePath(node.Project.Directory, fileName);
@@ -229,6 +230,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 							return;
 						}
 						if (res == 2) {
+							// Cancel
 							return;
 						}
 						// only continue for res==0 (Copy)

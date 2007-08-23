@@ -45,28 +45,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.Files.Add(file);
 		}
 		
-		public event EventHandler SwitchedTo;
-		
-		/// <summary>
-		/// Is called when the window is switched to.
-		/// -> Inside the tab (on SelectedIndexChanged of the tab control)
-		/// -> Inside the workbench (focus change in the docking library).
-		/// 
-		/// You <b>must</b> call base.OnViewActivated if you override this method, otherwise the <see cref="SwitchedTo"/>
-		/// event will not fire and <see cref="OpenedFile"/> will not work correctly.
-		/// </summary>
-		protected virtual void OnSwitchedTo(EventArgs e)
-		{
-			if (SwitchedTo != null) {
-				SwitchedTo(this, e);
-			}
-		}
-		
-		void IViewContent.OnSwitchedTo()
-		{
-			OnSwitchedTo(EventArgs.Empty);
-		}
-		
 		public abstract Control Control {
 			get;
 		}

@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.ComponentModel.Design.Serialization;
@@ -65,6 +66,10 @@ namespace ICSharpCode.FormsDesigner
 			}
 		}
 		
+		internal new ICollection<OpenedFile> Files {
+			get { return base.Files; }
+		}
+		
 		public IDesignerHost Host {
 			get {
 				if (designSurface == null)
@@ -110,7 +115,7 @@ namespace ICSharpCode.FormsDesigner
 			// may not have been written to disk yet if the user switched
 			// between source and design view without saving.
 			if (designerResourceService == null) {
-				designerResourceService = new DesignerResourceService(viewContent.PrimaryFileName);
+				designerResourceService = new DesignerResourceService(this);
 			}
 			serviceContainer.AddService(typeof(System.ComponentModel.Design.IResourceService), designerResourceService);
 			AmbientProperties ambientProperties = new AmbientProperties();
@@ -127,8 +132,6 @@ namespace ICSharpCode.FormsDesigner
 			ICSharpCode.FormsDesigner.Services.EventBindingService eventBindingService = new ICSharpCode.FormsDesigner.Services.EventBindingService(designSurface);
 			serviceContainer.AddService(typeof(System.ComponentModel.Design.IEventBindingService), eventBindingService);
 			
-			designerResourceService.Host = Host;
-			
 			DesignerLoader designerLoader = loaderProvider.CreateLoader(generator);
 			designSurface.BeginLoad(designerLoader);
 			
@@ -137,7 +140,7 @@ namespace ICSharpCode.FormsDesigner
 			undoEngine = new FormsDesignerUndoEngine(Host);
 			
 			IComponentChangeService componentChangeService = (IComponentChangeService)designSurface.GetService(typeof(IComponentChangeService));
-			componentChangeService.ComponentChanged += delegate { this.PrimaryFile.MakeDirty(); };
+			componentChangeService.ComponentChanged += MakeDirty;
 			componentChangeService.ComponentAdded   += ComponentListChanged;
 			componentChangeService.ComponentRemoved += ComponentListChanged;
 			componentChangeService.ComponentRename  += ComponentListChanged;
@@ -153,7 +156,37 @@ namespace ICSharpCode.FormsDesigner
 			
 			UpdatePropertyPad();
 			
+			hasUnmergedChanges = false;
+			
 			LoggingService.Info("Form Designer: END INITIALIZE");
+		}
+		
+		bool hasUnmergedChanges;
+		
+		void MakeDirty(object sender, ComponentChangedEventArgs args)
+		{
+			hasUnmergedChanges = true;
+			this.PrimaryFile.MakeDirty();
+			designerResourceService.MarkResourceFilesAsDirty();
+		}
+		
+		public override void Load(OpenedFile file, System.IO.Stream stream)
+		{
+			if (file == PrimaryFile) {
+				base.Load(file, stream);
+			} else {
+				designerResourceService.Load(file, stream);
+			}
+		}
+		
+		public override void Save(OpenedFile file, System.IO.Stream stream)
+		{
+			if (file == PrimaryFile) {
+				base.Save(file, stream);
+			} else {
+				if (hasUnmergedChanges) SaveToPrimary();
+				designerResourceService.Save(file, stream);
+			}
 		}
 		
 		bool shouldUpdateSelectableObjects = false;
@@ -268,6 +301,7 @@ namespace ICSharpCode.FormsDesigner
 			LoggingService.Info("Merging form changes...");
 			designSurface.Flush();
 			LoggingService.Info("Finished merging form changes");
+			hasUnmergedChanges = false;
 			this.PrimaryFile.IsDirty = isDirty;
 		}
 		
@@ -320,7 +354,7 @@ namespace ICSharpCode.FormsDesigner
 			UpdatePropertyPad();
 			LoggingService.Info("Designer.OnViewActived 3");
 		}
-		*/
+		 */
 		
 		/*
 		protected override void OnViewDeactivated(EventArgs e)
@@ -352,7 +386,7 @@ namespace ICSharpCode.FormsDesigner
 			UnloadDesigner();
 			LoggingService.Info("Unloading form designer finished");
 		}
-		*/
+		 */
 		
 		public override void Dispose()
 		{

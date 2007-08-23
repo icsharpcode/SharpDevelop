@@ -88,10 +88,10 @@ namespace ICSharpCode.SharpDevelop
 		/// <summary>
 		/// Gets or creates an opened file.
 		/// Warning: the opened file will be a file without any views attached.
-		/// Make sure to attach a view to it, or call CloseIfAllViewsClosed on the OpenedFile if you
-		/// are not sure that views were attached to it.
+		/// Make sure to attach a view to it, or call CloseIfAllViewsClosed on the OpenedFile to
+		/// unload the OpenedFile instance if no views were attached to it.
 		/// </summary>
-		internal static OpenedFile GetOrCreateOpenedFile(string fileName)
+		public static OpenedFile GetOrCreateOpenedFile(string fileName)
 		{
 			if (fileName == null)
 				throw new ArgumentNullException("fileName");
@@ -105,15 +105,16 @@ namespace ICSharpCode.SharpDevelop
 		}
 		
 		/// <summary>
-		/// Attaches the view to the opened file. Creates a new OpenedFile instance if necessary.
+		/// Creates a new untitled OpenedFile.
 		/// </summary>
-		public static OpenedFile AttachToOpenedFile(string fileName, IViewContent view)
+		public static OpenedFile CreateUntitledOpenedFile(string defaultName, byte[] content)
 		{
-			if (view == null)
-				throw new ArgumentNullException("view");
+			if (defaultName == null)
+				throw new ArgumentNullException("defaultName");
 			
-			OpenedFile file = GetOrCreateOpenedFile(fileName);
-			file.RegisterView(view);
+			OpenedFile file = new OpenedFile(content);
+			file.FileName = file.GetHashCode() + "/" + defaultName;
+			openedFileDict[file.FileName] = file;
 			return file;
 		}
 		
@@ -248,13 +249,12 @@ namespace ICSharpCode.SharpDevelop
 			IDisplayBinding binding = DisplayBindingService.GetBindingPerFileName(defaultName);
 			
 			if (binding != null) {
-				OpenedFile file = new OpenedFile(content);
-				file.FileName = file.GetHashCode() + "/" + defaultName;
-				openedFileDict[file.FileName] = file;
+				OpenedFile file = CreateUntitledOpenedFile(defaultName, content);
 				
 				IViewContent newContent = binding.CreateContentForFile(file);
 				if (newContent == null) {
 					LoggingService.Warn("Created view content was null - DefaultName:" + defaultName);
+					file.CloseIfAllViewsClosed();
 					return null;
 				}
 				

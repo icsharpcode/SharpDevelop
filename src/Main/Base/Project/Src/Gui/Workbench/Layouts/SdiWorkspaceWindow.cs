@@ -245,7 +245,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 				this.Controls.Add(viewTabControl);
 				
 				viewTabControl.SelectedIndexChanged += delegate {
-					this.ActiveViewContent.OnSwitchedTo();
 					UpdateActiveViewContent();
 				};
 			}

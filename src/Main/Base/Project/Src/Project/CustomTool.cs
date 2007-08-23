@@ -145,6 +145,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				outputItem.FileName = outputFileName;
 				outputItem.DependentUpon = Path.GetFileName(baseItem.FileName);
 				ProjectService.AddProjectItem(project, outputItem);
+				FileService.FireFileCreated(outputFileName);
 				project.Save();
 				ProjectBrowserPad.Instance.ProjectBrowserControl.RefreshView();
 			}

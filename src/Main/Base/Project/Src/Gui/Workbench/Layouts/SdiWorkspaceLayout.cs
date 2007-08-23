@@ -619,7 +619,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 			oldSelectedWindow = newWindow;
 			if (newWindow != null && newWindow.ActiveViewContent != null) {
-				newWindow.ActiveViewContent.OnSwitchedTo();
 				newWindow.OnWindowSelected(EventArgs.Empty);
 			}
 		}
