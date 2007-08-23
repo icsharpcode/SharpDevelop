@@ -99,7 +99,7 @@ namespace ICSharpCode.SharpDevelop
 			fileName = FileUtility.NormalizePath(fileName);
 			OpenedFile file;
 			if (!openedFileDict.TryGetValue(fileName, out file)) {
-				openedFileDict[fileName] = file = new OpenedFile(fileName);
+				openedFileDict[fileName] = file = new FileServiceOpenedFile(fileName);
 			}
 			return file;
 		}
@@ -112,7 +112,7 @@ namespace ICSharpCode.SharpDevelop
 			if (defaultName == null)
 				throw new ArgumentNullException("defaultName");
 			
-			OpenedFile file = new OpenedFile(content);
+			OpenedFile file = new FileServiceOpenedFile(content);
 			file.FileName = file.GetHashCode() + "/" + defaultName;
 			openedFileDict[file.FileName] = file;
 			return file;

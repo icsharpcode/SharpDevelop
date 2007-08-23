@@ -35,16 +35,17 @@ namespace XmlEditor.Tests.Tree
 		[SetUp]
 		public void SetUp()
 		{
+			MockOpenedFile openedFile = new MockOpenedFile("test.xml");
 			XmlSchemaCompletionDataCollection schemas = new XmlSchemaCompletionDataCollection();
 			xmlView = new XmlView(new DefaultTextEditorProperties(), schemas);
-			xmlView.SetPrimaryFileUnitTestMode(OpenedFile.CreateDummyOpenedFile("test.xml", true));
+			xmlView.SetPrimaryFileUnitTestMode(openedFile);
 			view = new XmlTreeView(xmlView, null, null);
 			treeViewContainer = (XmlTreeViewContainerControl)view.Control;
 			treeView = treeViewContainer.TreeView;
 			clipboardHandler = view as IClipboardHandler;
 			
 			xmlView.XmlEditor.Text = "<html><body><p></p></body></html>";
-			((IViewContent)view).OnSwitchedTo();
+			openedFile.SwitchToView(view);
 			
 			htmlTreeNode = treeView.Nodes[0] as XmlElementTreeNode;
 			htmlTreeNode.PerformInitialization();

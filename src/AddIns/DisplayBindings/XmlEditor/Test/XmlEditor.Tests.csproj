@@ -94,6 +94,7 @@
     <Compile Include="Utils\DerivedXmlTreeView.cs" />
     <Compile Include="Utils\DerivedXmlTreeViewContainerControl.cs" />
     <Compile Include="Utils\MockAddXmlNodeDialog.cs" />
+    <Compile Include="Utils\MockOpenedFile.cs" />
     <Compile Include="Utils\ResourceManager.cs" />
     <Compile Include="Schema\XhtmlStrictSchemaTestFixture.cs" />
     <Compile Include="Schema\XsdSchemaTestFixture.cs" />

@@ -155,6 +155,7 @@ namespace ICSharpCode.FormsDesigner
 			}
 			
 			UpdatePropertyPad();
+			PropertyPad.PropertyValueChanged += PropertyValueChanged;
 			
 			hasUnmergedChanges = false;
 			
@@ -208,6 +209,7 @@ namespace ICSharpCode.FormsDesigner
 		
 		void UnloadDesigner()
 		{
+			PropertyPad.PropertyValueChanged -= PropertyValueChanged;
 			generator.Detach();
 			bool savedIsDirty = this.PrimaryFile.IsDirty;
 			p.Controls.Clear();
@@ -578,6 +580,8 @@ namespace ICSharpCode.FormsDesigner
 		void PropertyValueChanged(object source, PropertyValueChangedEventArgs e)
 		{
 			if (e.ChangedItem == null || e.OldValue == null)
+				return;
+			if (!propertyContainer.IsActivePropertyContainer)
 				return;
 			if (e.ChangedItem.GridItemType == GridItemType.Property) {
 				if (e.ChangedItem.PropertyDescriptor.Name == "Language") {

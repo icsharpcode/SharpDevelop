@@ -26,6 +26,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		PropertyContainer activeContainer;
 		
+		internal static PropertyContainer ActiveContainer {
+			get { return instance.activeContainer; }
+		}
+		
 		void SetActiveContainer(PropertyContainer pc)
 		{
 			if (activeContainer == pc)

@@ -49,6 +49,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
+		/// <summary>
+		/// Gets if this property container is currently shown in the property grid.
+		/// </summary>
+		public bool IsActivePropertyContainer {
+			get { return PropertyPad.ActiveContainer == this; }
+		}
+		
 		object selectedObject;
 		object[] selectedObjects;
 		

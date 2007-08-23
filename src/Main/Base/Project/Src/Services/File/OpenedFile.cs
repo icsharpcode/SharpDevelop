@@ -17,14 +17,11 @@ namespace ICSharpCode.SharpDevelop
 	/// <summary>
 	/// Represents an opened file.
 	/// </summary>
-	public sealed class OpenedFile : ICanBeDirty
+	public abstract class OpenedFile : ICanBeDirty
 	{
-		bool isConnectedWithFileService = true;
-		string fileName;
-		
-		IViewContent currentView;
-		bool isUntitled;
-		List<IViewContent> registeredViews = new List<IViewContent>();
+		protected IViewContent currentView;
+		bool inLoadOperation;
+		bool inSaveOperation;
 		
 		/// <summary>
 		/// holds unsaved file content in memory when view containing the file was closed but no other view
@@ -32,41 +29,52 @@ namespace ICSharpCode.SharpDevelop
 		/// </summary>
 		byte[] fileData;
 		
-		internal OpenedFile(string fileName)
-		{
-			this.fileName = fileName;
-			isUntitled = false;
-		}
-		
-		internal OpenedFile(byte[] fileData)
-		{
-			this.fileName = null;
-			this.fileData = fileData;
-			isUntitled = true;
-			MakeDirty();
-		}
+		#region IsDirty
+		bool isDirty;
+		public event EventHandler IsDirtyChanged;
 		
 		/// <summary>
-		/// Creates a dummy opened file instance. Use for unit tests only!
+		/// Gets/sets if the file is has unsaved changes.
 		/// </summary>
-		public static OpenedFile CreateDummyOpenedFile(string name, bool isUntitled)
-		{
-			if (isUntitled) {
-				OpenedFile f = new OpenedFile(new byte[0]);
-				f.isConnectedWithFileService = false;
-				f.FileName = name;
-				return f;
-			} else {
-				OpenedFile f = new OpenedFile(name);
-				f.isConnectedWithFileService = false;
-				return f;
+		public bool IsDirty {
+			get { return isDirty;}
+			set {
+				if (isDirty != value) {
+					isDirty = value;
+					
+					if (IsDirtyChanged != null) {
+						IsDirtyChanged(this, EventArgs.Empty);
+					}
+				}
 			}
 		}
 		
+		/// <summary>
+		/// Marks the file as dirty if it currently is not in a load operation.
+		/// </summary>
+		public virtual void MakeDirty()
+		{
+			if (!inLoadOperation) {
+				this.IsDirty = true;
+			}
+		}
+		#endregion
+		
+		bool isUntitled;
+		
+		/// <summary>
+		/// Gets if the file is untitled. Untitled files show a "Save as" dialog when they are saved.
+		/// </summary>
 		public bool IsUntitled {
 			get { return isUntitled; }
+			protected set { isUntitled = value; }
 		}
 		
+		string fileName;
+		
+		/// <summary>
+		/// Gets the name of the file.
+		/// </summary>
 		public string FileName {
 			get { return fileName; }
 			set {
@@ -75,25 +83,71 @@ namespace ICSharpCode.SharpDevelop
 				value = FileUtility.NormalizePath(value);
 				
 				if (fileName != value) {
-					if (isConnectedWithFileService) {
-						FileService.OpenedFileFileNameChange(this, fileName, value);
-					}
-					fileName = value;
-					
-					if (FileNameChanged != null) {
-						FileNameChanged(this, EventArgs.Empty);
+					ChangeFileName(value);
+				}
+			}
+		}
+		
+		protected virtual void ChangeFileName(string newValue)
+		{
+			fileName = newValue;
+			
+			if (FileNameChanged != null) {
+				FileNameChanged(this, EventArgs.Empty);
+			}
+		}
+		
+		/// <summary>
+		/// Occurs when the file name has changed.
+		/// </summary>
+		public event EventHandler FileNameChanged;
+		
+		/// <summary>
+		/// Use this method to save the file to disk using a new name.
+		/// </summary>
+		public void SaveToDisk(string newFileName)
+		{
+			this.FileName = newFileName;
+			this.IsUntitled = false;
+			SaveToDisk();
+		}
+		
+		public abstract void RegisterView(IViewContent view);
+		public abstract void UnregisterView(IViewContent view);
+		
+		public virtual void CloseIfAllViewsClosed()
+		{
+		}
+		
+		/// <summary>
+		/// Forces initialization of the specified view.
+		/// </summary>
+		public virtual void ForceInitializeView(IViewContent view)
+		{
+			if (view == null)
+				throw new ArgumentNullException("view");
+			
+			if (currentView != view) {
+				if (currentView == null) {
+					SwitchedToView(view);
+				} else {
+					try {
+						inLoadOperation = true;
+						using (Stream sourceStream = OpenRead()) {
+							view.Load(this, sourceStream);
+						}
+					} finally {
+						inLoadOperation = false;
 					}
 				}
 			}
 		}
 		
-		public event EventHandler FileNameChanged;
-		
 		/// <summary>
 		/// Gets the list of view contents registered with this opened file.
 		/// </summary>
-		public IList<IViewContent> RegisteredViewContents {
-			get { return registeredViews.AsReadOnly(); }
+		public abstract IList<IViewContent> RegisteredViewContents {
+			get;
 		}
 		
 		/// <summary>
@@ -110,12 +164,12 @@ namespace ICSharpCode.SharpDevelop
 		/// <summary>
 		/// Opens the file for reading.
 		/// </summary>
-		public Stream OpenRead()
+		public virtual Stream OpenRead()
 		{
 			if (fileData != null) {
 				return new MemoryStream(fileData, false);
 			} else {
-				return new FileStream(fileName, FileMode.Open, FileAccess.Read);
+				return new FileStream(FileName, FileMode.Open, FileAccess.Read);
 			}
 		}
 		
@@ -129,7 +183,7 @@ namespace ICSharpCode.SharpDevelop
 		/// for a file that doesn't exist on disk but should be automatically created when a view
 		/// with the file is saved, e.g. for .resx files created by the forms designer.
 		/// </remarks>
-		public void SetData(byte[] fileData)
+		public virtual void SetData(byte[] fileData)
 		{
 			if (fileData == null)
 				throw new ArgumentNullException("fileData");
@@ -141,16 +195,12 @@ namespace ICSharpCode.SharpDevelop
 			this.fileData = fileData;
 		}
 		
-		public void SaveToDisk(string newFileName)
+		/// <summary>
+		/// Save the file to disk using the current name.
+		/// </summary>
+		public virtual void SaveToDisk()
 		{
-			this.FileName = newFileName;
-			isUntitled = false;
-			SaveToDisk();
-		}
-		
-		public void SaveToDisk()
-		{
-			if (isUntitled)
+			if (IsUntitled)
 				throw new InvalidOperationException("Cannot save an untitled file to disk!");
 			
 			/*
@@ -167,7 +217,7 @@ namespace ICSharpCode.SharpDevelop
 				}
 			}
 			 */
-			using (FileStream fs = new FileStream(fileName, FileMode.Create, FileAccess.Write)) {
+			using (FileStream fs = new FileStream(FileName, FileMode.Create, FileAccess.Write)) {
 				if (currentView != null) {
 					SaveCurrentViewToStream(fs);
 				} else {
@@ -187,7 +237,6 @@ namespace ICSharpCode.SharpDevelop
 //		/// </summary>
 //		public event EventHandler SavedCurrentView;
 		
-		bool inSaveOperation;
 		
 		void SaveCurrentViewToStream(Stream stream)
 		{
@@ -203,7 +252,7 @@ namespace ICSharpCode.SharpDevelop
 //				SavedCurrentView(this, EventArgs.Empty);
 		}
 		
-		void SaveCurrentView()
+		protected void SaveCurrentView()
 		{
 			using (MemoryStream memoryStream = new MemoryStream()) {
 				SaveCurrentViewToStream(memoryStream);
@@ -211,100 +260,8 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
-		public void RegisterView(IViewContent view)
-		{
-			if (view == null)
-				throw new ArgumentNullException("view");
-			Debug.Assert(!registeredViews.Contains(view));
-			
-			registeredViews.Add(view);
-			
-			WorkbenchSingleton.Workbench.ActiveViewContentChanged += WorkbenchActiveViewContentChanged;
-			if (WorkbenchSingleton.Workbench.ActiveViewContent == view) {
-				SwitchedToView(view);
-			}
-			#if DEBUG
-			view.Disposed += ViewDisposed;
-			#endif
-		}
 		
-		public void UnregisterView(IViewContent view)
-		{
-			if (view == null)
-				throw new ArgumentNullException("view");
-			Debug.Assert(registeredViews.Contains(view));
-			
-			WorkbenchSingleton.Workbench.ActiveViewContentChanged -= WorkbenchActiveViewContentChanged;
-			#if DEBUG
-			view.Disposed -= ViewDisposed;
-			#endif
-			
-			registeredViews.Remove(view);
-			if (registeredViews.Count > 0) {
-				if (currentView == view) {
-					SaveCurrentView();
-					currentView = null;
-				}
-			} else {
-				// all views to the file were closed
-				if (isConnectedWithFileService) {
-					FileService.OpenedFileClosed(this);
-				}
-			}
-		}
-		
-		internal void CloseIfAllViewsClosed()
-		{
-			if (registeredViews.Count == 0) {
-				if (isConnectedWithFileService) {
-					FileService.OpenedFileClosed(this);
-				}
-			}
-		}
-		
-		#if DEBUG
-		void ViewDisposed(object sender, EventArgs e)
-		{
-			Debug.Fail("View was disposed while still registered with OpenedFile!");
-		}
-		#endif
-		
-		/// <summary>
-		/// Forces initialization of the specified view.
-		/// </summary>
-		public void ForceInitializeView(IViewContent view)
-		{
-			if (view == null)
-				throw new ArgumentNullException("view");
-			Debug.Assert(registeredViews.Contains(view));
-			
-			if (currentView != view) {
-				if (currentView == null) {
-					SwitchedToView(view);
-				} else {
-					try {
-						inLoadOperation = true;
-						using (Stream sourceStream = OpenRead()) {
-							view.Load(this, sourceStream);
-						}
-					} finally {
-						inLoadOperation = false;
-					}
-				}
-			}
-		}
-		
-		void WorkbenchActiveViewContentChanged(object sender, EventArgs e)
-		{
-			IViewContent newView = WorkbenchSingleton.Workbench.ActiveViewContent;
-			
-			if (!registeredViews.Contains(newView))
-				return;
-			
-			SwitchedToView(newView);
-		}
-		
-		void SwitchedToView(IViewContent newView)
+		protected void SwitchedToView(IViewContent newView)
 		{
 			if (currentView != null) {
 				if (newView.SupportsSwitchToThisWithoutSaveLoad(this, currentView)
@@ -333,7 +290,7 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
-		public void ReloadFromDisk()
+		public virtual void ReloadFromDisk()
 		{
 			fileData = null;
 			if (currentView != null) {
@@ -347,157 +304,116 @@ namespace ICSharpCode.SharpDevelop
 				}
 			}
 		}
+	}
+	
+	sealed class FileServiceOpenedFile : OpenedFile
+	{
+		List<IViewContent> registeredViews = new List<IViewContent>();
 		
-		/*
-		internal void ChangeView(IViewContent newView)
+		protected override void ChangeFileName(string newValue)
 		{
-			if (currentView != null && currentView != newView) {
-				SaveCurrentView();
-			}
-			using (Stream sourceStream = OpenRead()) {
-				currentView = newView;
-				fileData = null;
-				newView.Load(this, sourceStream);
-			}
-		}
-		 */
-		
-		bool isDirty;
-		public event EventHandler IsDirtyChanged;
-		
-		public bool IsDirty {
-			get { return isDirty;}
-			set {
-				if (isDirty != value) {
-					isDirty = value;
-					
-					if (IsDirtyChanged != null) {
-						IsDirtyChanged(this, EventArgs.Empty);
-					}
-				}
-			}
+			FileService.OpenedFileFileNameChange(this, this.FileName, newValue);
+			base.ChangeFileName(newValue);
 		}
 		
-		bool inLoadOperation;
+		internal FileServiceOpenedFile(string fileName)
+		{
+			this.FileName = fileName;
+			IsUntitled = false;
+		}
+		
+		internal FileServiceOpenedFile(byte[] fileData)
+		{
+			this.FileName = null;
+			SetData(fileData);
+			IsUntitled = true;
+			MakeDirty();
+		}
 		
 		/// <summary>
-		/// Marks the file as dirty if it currently is not in a load operation.
+		/// Gets the list of view contents registered with this opened file.
 		/// </summary>
-		public void MakeDirty()
+		public override IList<IViewContent> RegisteredViewContents {
+			get { return registeredViews.AsReadOnly(); }
+		}
+		
+		public override void ForceInitializeView(IViewContent view)
 		{
-			if (!inLoadOperation) {
-				this.IsDirty = true;
+			if (view == null)
+				throw new ArgumentNullException("view");
+			if (!registeredViews.Contains(view))
+				throw new ArgumentException("registeredViews must contain view");
+			
+			base.ForceInitializeView(view);
+		}
+		
+		public override void RegisterView(IViewContent view)
+		{
+			if (view == null)
+				throw new ArgumentNullException("view");
+			if (registeredViews.Contains(view))
+				throw new ArgumentException("registeredViews already contains view");
+			
+			registeredViews.Add(view);
+			
+			if (WorkbenchSingleton.Workbench != null) {
+				WorkbenchSingleton.Workbench.ActiveViewContentChanged += WorkbenchActiveViewContentChanged;
+				if (WorkbenchSingleton.Workbench.ActiveViewContent == view) {
+					SwitchedToView(view);
+				}
+			}
+			#if DEBUG
+			view.Disposed += ViewDisposed;
+			#endif
+		}
+		
+		public override void UnregisterView(IViewContent view)
+		{
+			if (view == null)
+				throw new ArgumentNullException("view");
+			Debug.Assert(registeredViews.Contains(view));
+			
+			if (WorkbenchSingleton.Workbench != null) {
+				WorkbenchSingleton.Workbench.ActiveViewContentChanged -= WorkbenchActiveViewContentChanged;
+			}
+			#if DEBUG
+			view.Disposed -= ViewDisposed;
+			#endif
+			
+			registeredViews.Remove(view);
+			if (registeredViews.Count > 0) {
+				if (currentView == view) {
+					SaveCurrentView();
+					currentView = null;
+				}
+			} else {
+				// all views to the file were closed
+				FileService.OpenedFileClosed(this);
 			}
 		}
 		
-		#region FileChangeWatcher
-		internal sealed class FileChangeWatcher //: IDisposable
+		public override void CloseIfAllViewsClosed()
 		{
-			/*FileSystemWatcher watcher;
-			bool wasChangedExternally = false;
-			string fileName;
-			AbstractViewContent viewContent;
-			
-			public FileChangeWatcher(AbstractViewContent viewContent)
-			{
-				this.viewContent = viewContent;
-				WorkbenchSingleton.MainForm.Activated += GotFocusEvent;
+			if (registeredViews.Count == 0) {
+				FileService.OpenedFileClosed(this);
 			}
-			 */
-			
-			public static bool DetectExternalChangesOption {
-				get {
-					return PropertyService.Get("SharpDevelop.FileChangeWatcher.DetectExternalChanges", true);
-				}
-				set {
-					PropertyService.Set("SharpDevelop.FileChangeWatcher.DetectExternalChanges", value);
-				}
-			}
-			
-			public static bool AutoLoadExternalChangesOption {
-				get {
-					return PropertyService.Get("SharpDevelop.FileChangeWatcher.AutoLoadExternalChanges", true);
-				}
-				set {
-					PropertyService.Set("SharpDevelop.FileChangeWatcher.AutoLoadExternalChanges", value);
-				}
-			}
-			
-			/*
-			public void Dispose()
-			{
-				WorkbenchSingleton.MainForm.Activated -= GotFocusEvent;
-				if (watcher != null) {
-					watcher.Dispose();
-				}
-			}
-			
-			public void Disable()
-			{
-				if (watcher != null) {
-					watcher.EnableRaisingEvents = false;
-				}
-			}
-			
-			public void SetWatcher(string fileName)
-			{
-				this.fileName = fileName;
-				if (DetectExternalChangesOption == false)
-					return;
-				try {
-					if (this.watcher == null) {
-						this.watcher = new FileSystemWatcher();
-						this.watcher.SynchronizingObject = WorkbenchSingleton.MainForm;
-						this.watcher.Changed += new FileSystemEventHandler(this.OnFileChangedEvent);
-					} else {
-						this.watcher.EnableRaisingEvents = false;
-					}
-					this.watcher.Path = Path.GetDirectoryName(fileName);
-					this.watcher.Filter = Path.GetFileName(fileName);
-					this.watcher.NotifyFilter = NotifyFilters.LastWrite;
-					this.watcher.EnableRaisingEvents = true;
-				} catch (PlatformNotSupportedException) {
-					if (watcher != null) {
-						watcher.Dispose();
-					}
-					watcher = null;
-				}
-			}
-			
-			void OnFileChangedEvent(object sender, FileSystemEventArgs e)
-			{
-				if (e.ChangeType != WatcherChangeTypes.Deleted) {
-					wasChangedExternally = true;
-					if (ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.Workbench.IsActiveWindow) {
-						// delay showing message a bit, prevents showing two messages
-						// when the file changes twice in quick succession
-						WorkbenchSingleton.SafeThreadAsyncCall(GotFocusEvent, this, EventArgs.Empty);
-					}
-				}
-			}
-			
-			void GotFocusEvent(object sender, EventArgs e)
-			{
-				if (wasChangedExternally) {
-					wasChangedExternally = false;
-					
-					string message = StringParser.Parse("${res:ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.TextEditorDisplayBinding.FileAlteredMessage}", new string[,] {{"File", Path.GetFullPath(fileName)}});
-					if ((AutoLoadExternalChangesOption && viewContent.IsDirty == false)
-					    || MessageBox.Show(message,
-					                       StringParser.Parse("${res:MainWindow.DialogName}"),
-					                       MessageBoxButtons.YesNo,
-					                       MessageBoxIcon.Question) == DialogResult.Yes)
-					{
-						if (File.Exists(fileName)) {
-							viewContent.Load(fileName);
-						}
-					} else {
-						viewContent.IsDirty = true;
-					}
-				}
-			}
-			 */
 		}
-		#endregion
+		
+		#if DEBUG
+		void ViewDisposed(object sender, EventArgs e)
+		{
+			Debug.Fail("View was disposed while still registered with OpenedFile!");
+		}
+		#endif
+		
+		void WorkbenchActiveViewContentChanged(object sender, EventArgs e)
+		{
+			IViewContent newView = WorkbenchSingleton.Workbench.ActiveViewContent;
+			
+			if (!registeredViews.Contains(newView))
+				return;
+			
+			SwitchedToView(newView);
+		}
 	}
 }

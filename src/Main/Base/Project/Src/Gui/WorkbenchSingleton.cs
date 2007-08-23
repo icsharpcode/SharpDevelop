@@ -21,9 +21,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 		static STAThreadCaller caller;
 		static DefaultWorkbench workbench;
 		
+		/// <summary>
+		/// Gets the main form. Returns null in unit-testing mode.
+		/// </summary>
 		public static Form MainForm {
 			get {
-				return (Form)workbench;
+				return workbench as Form;
 			}
 		}
 		

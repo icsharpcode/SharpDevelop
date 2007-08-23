@@ -29,17 +29,39 @@ namespace WixBinding.Tests.Utils
 		
 		public void SetName(string fileName)
 		{
-			primaryFile = OpenedFile.CreateDummyOpenedFile(fileName, false);
+			primaryFile = new MockOpenedFile(fileName, false);
 		}
 		
 		public void SetUntitledName(string fileName)
 		{
-			primaryFile = OpenedFile.CreateDummyOpenedFile(fileName, true);
+			primaryFile = new MockOpenedFile(fileName, true);
+		}
+		
+		class MockOpenedFile : OpenedFile
+		{
+			public MockOpenedFile(string fileName, bool isUntitled)
+			{
+				base.FileName = fileName;
+				base.IsUntitled = isUntitled;
+			}
+			
+			public override IList<IViewContent> RegisteredViewContents {
+				get {
+					throw new NotImplementedException();
+				}
+			}
+			
+			public override void RegisterView(IViewContent view)
+			{
+			}
+			
+			public override void UnregisterView(IViewContent view)
+			{
+			}
 		}
 		
 		#pragma warning disable 67
 		public event EventHandler TabPageTextChanged;
-		public event EventHandler SwitchedTo;
 		public event EventHandler Disposed;
 		public event EventHandler IsDirtyChanged;
 		public event EventHandler TitleNameChanged;
@@ -142,11 +164,6 @@ namespace WixBinding.Tests.Utils
 			get {
 				throw new NotImplementedException();
 			}
-		}
-		
-		public void OnSwitchedTo()
-		{
-			throw new NotImplementedException();
 		}
 		
 		public void RedrawContent()
