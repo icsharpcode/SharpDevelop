@@ -333,7 +333,10 @@ namespace Grunwald.BooBinding.Designer
 		
 		public override void OnIntegerLiteralExpression(IntegerLiteralExpression node)
 		{
-			_expression = new CodePrimitiveExpression(node.Value);
+			if (node.IsLong || node.Value < int.MinValue || node.Value > int.MaxValue)
+				_expression = new CodePrimitiveExpression(node.Value);
+			else
+				_expression = new CodePrimitiveExpression((int)node.Value);
 		}
 		
 		public override void OnDoubleLiteralExpression(DoubleLiteralExpression node)
@@ -443,7 +446,7 @@ namespace Grunwald.BooBinding.Designer
 				if (me.IsStatic == isStatic && me.Name == name) {
 					_fieldReferenceType = me.ReturnType;
 					CodeMethodReferenceExpression cmre = new CodeMethodReferenceExpression(target, name);
-					cmre.UserData["method"] = me;
+					cmre.UserData["methodUserData"] = me;
 					return cmre;
 				}
 			}
@@ -500,7 +503,7 @@ namespace Grunwald.BooBinding.Designer
 		/// </summary>
 		void FixArrayArguments(CodeMethodInvokeExpression cmie)
 		{
-			IMethod m = cmie.Method.UserData["method"] as IMethod;
+			IMethod m = cmie.Method.UserData["methodUserData"] as IMethod;
 			if (m != null) {
 				int count = Math.Min(m.Parameters.Count, cmie.Parameters.Count);
 				for (int i = 0; i < count; i++) {

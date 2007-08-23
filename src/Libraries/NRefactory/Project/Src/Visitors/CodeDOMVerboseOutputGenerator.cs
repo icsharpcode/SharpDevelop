@@ -314,6 +314,17 @@ namespace ICSharpCode.NRefactory.Visitors
 			Output.WriteLine("[CodeAttributeDeclarationCollection: {0}]", attributes.ToString());
 		}
 		
+		protected override void GeneratePrimitiveExpression(CodePrimitiveExpression e)
+		{
+			if (e.Value == null) {
+				Output.WriteLine("[CodePrimitiveExpression: null]");
+			} else {
+				Output.Write("[CodePrimitiveExpression: ");
+				base.GeneratePrimitiveExpression(e);
+				Output.WriteLine(" (" + e.Value.GetType().Name + ")]");
+			}
+		}
+		
 		protected override bool Supports(GeneratorSupport support)
 		{
 			return true;

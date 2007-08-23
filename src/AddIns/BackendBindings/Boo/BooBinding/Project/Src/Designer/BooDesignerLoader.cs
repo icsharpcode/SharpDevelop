@@ -30,7 +30,6 @@ namespace Grunwald.BooBinding.Designer
 		IDesignerLoaderHost   designerLoaderHost    = null;
 		IDesignerGenerator    generator;
 		ITypeResolutionService typeResolutionService = null;
-		CodeDomProvider       provider = new Microsoft.CSharp.CSharpCodeProvider();
 		
 		TextEditorControl textEditorControl;
 		
@@ -54,7 +53,7 @@ namespace Grunwald.BooBinding.Designer
 		
 		protected override CodeDomProvider CodeDomProvider {
 			get {
-				return provider;
+				return generator.CodeDomProvider;
 			}
 		}
 		
@@ -182,7 +181,8 @@ namespace Grunwald.BooBinding.Designer
 						// output generated CodeDOM to the console :
 						ICSharpCode.NRefactory.Visitors.CodeDomVerboseOutputGenerator outputGenerator = new ICSharpCode.NRefactory.Visitors.CodeDomVerboseOutputGenerator();
 						outputGenerator.GenerateCodeFromMember(visitor.OutputCompileUnit.Namespaces[0].Types[0], Console.Out, null);
-						provider.GenerateCodeFromCompileUnit(visitor.OutputCompileUnit, Console.Out, null);
+						CodeDomProvider cSharpProvider = new Microsoft.CSharp.CSharpCodeProvider();
+						cSharpProvider.GenerateCodeFromCompileUnit(visitor.OutputCompileUnit, Console.Out, null);
 						#endif
 						
 						return visitor.OutputCompileUnit;
