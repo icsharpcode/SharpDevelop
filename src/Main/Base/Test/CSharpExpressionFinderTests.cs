@@ -224,7 +224,7 @@ class Main {
 		}
 		
 		[Test]
-		public void IdentifierAfterByLessThan()
+		public void IdentifierAfterLessThan()
 		{
 			FindFull(program3, "oo1)", "foo1", ExpressionContext.Default);
 		}
@@ -236,7 +236,7 @@ class Main {
 		}
 		
 		[Test]
-		public void IdentifierAfterByGreaterThan()
+		public void IdentifierAfterGreaterThan()
 		{
 			FindFull(program3, "oo2)", "foo2", ExpressionContext.Default);
 		}
@@ -349,6 +349,113 @@ class Main {
 			FindExpr(program, " 2", null, ExpressionContext.Default);
 			FindFull(program, "taticMethod", "StaticMethod(  2)", ExpressionContext.Default);
 			FindExpr(program, " 3", null, ExpressionContext.Default);
+		}
+		
+		[Test]
+		public void ExpressionContextInConstructorDeclaration()
+		{
+			const string program = @"using System; using System.Text;
+class Main {
+	public Main() : base(arg) {
+		body;
+} }";
+			
+			FindFull(program, "base", "base(arg)", ExpressionContext.BaseConstructorCall);
+			FindFull(program, "body", "body", ExpressionContext.MethodBody);
+			FindFull(program, "arg", "arg", ExpressionContext.Default);
+		}
+		
+		[Test]
+		public void FieldInGenericClass()
+		{
+			const string program = @"using System;
+class MyList<T> where T : IComparable<T> {
+  List<T> ";
+			ExpressionResult result = ef.FindExpression(program, program.Length);
+			Assert.AreEqual("List<T> ", result.Expression);
+			Assert.AreEqual(ExpressionContext.IdentifierExpected.ToString(), result.Context.ToString());
+		}
+		
+		[Test]
+		public void MultipleFields()
+		{
+			const string program = @"using System;
+class MyClass {
+  List<T> field1, ";
+			ExpressionResult result = ef.FindExpression(program, program.Length);
+			Assert.AreEqual(null, result.Expression);
+			Assert.AreEqual(ExpressionContext.IdentifierExpected.ToString(), result.Context.ToString());
+		}
+		
+		[Test]
+		public void MultipleFieldsWithInitializers()
+		{
+			const string program = @"using System;
+class MyClass {
+  int field1 = 1, ";
+			ExpressionResult result = ef.FindExpression(program, program.Length);
+			Assert.AreEqual(null, result.Expression);
+			Assert.AreEqual(ExpressionContext.IdentifierExpected.ToString(), result.Context.ToString());
+		}
+		
+		[Test]
+		public void GenericClassDeclaration()
+		{
+			const string program = @"using System;
+class List<";
+			ExpressionResult result = ef.FindExpression(program, program.Length);
+			Assert.AreEqual(null, result.Expression);
+			Assert.AreEqual(ExpressionContext.IdentifierExpected.ToString(), result.Context.ToString());
+		}
+		
+		[Test]
+		public void GenericClassDeclaration2()
+		{
+			const string program = @"using System;
+class Dictionary<K, ";
+			ExpressionResult result = ef.FindExpression(program, program.Length);
+			Assert.AreEqual(null, result.Expression);
+			Assert.AreEqual(ExpressionContext.IdentifierExpected.ToString(), result.Context.ToString());
+		}
+		
+		[Test]
+		public void GenericClassDeclaration3()
+		{
+			const string program = @"using System;
+class List<T> ";
+			ExpressionResult result = ef.FindExpression(program, program.Length);
+			Assert.AreEqual("List<T> ", result.Expression);
+			Assert.AreEqual(ExpressionContext.ConstraintsStart.ToString(), result.Context.ToString());
+		}
+		
+		[Test]
+		public void GenericClassDeclaration4()
+		{
+			const string program = @"using System;
+class List<T> where ";
+			ExpressionResult result = ef.FindExpression(program, program.Length);
+			Assert.AreEqual("where ", result.Expression);
+			Assert.AreEqual(ExpressionContext.Constraints.ToString(), result.Context.ToString());
+		}
+		
+		[Test]
+		public void GenericClassDeclaration5()
+		{
+			const string program = @"using System;
+class List<T> where T : ";
+			ExpressionResult result = ef.FindExpression(program, program.Length);
+			Assert.AreEqual(null, result.Expression);
+			Assert.AreEqual(ExpressionContext.Constraints.ToString(), result.Context.ToString());
+		}
+		
+		[Test]
+		public void GenericClassDeclaration6()
+		{
+			const string program = @"using System;
+class List<T> where T : class, ";
+			ExpressionResult result = ef.FindExpression(program, program.Length);
+			Assert.AreEqual(null, result.Expression);
+			Assert.AreEqual(ExpressionContext.Constraints.ToString(), result.Context.ToString());
 		}
 	}
 }

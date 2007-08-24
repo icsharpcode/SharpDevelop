@@ -92,6 +92,15 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// <example>void Main () { *expr* }</example>
 		public static ExpressionContext MethodBody = new DefaultExpressionContext("MethodBody");
 		
+		/// <summary>The context is after the type parameters of a type/method declaration.
+		/// The only valid keyword is "where"</summary>
+		/// <example>class &lt;T&gt; *expr*</example>
+		public static ExpressionContext ConstraintsStart = new DefaultExpressionContext("ConstraintsStart");
+		
+		/// <summary>The context is after the 'where' of a constraints list.</summary>
+		/// <example>class &lt;T&gt; where *expr*</example>
+		public static ExpressionContext Constraints = new NonStaticTypeExpressionContext("Constraints", false);
+		
 		
 		/// <summary>The context is the body of a type declaration.</summary>
 		public static ExpressionContext TypeDeclaration = new NonStaticTypeExpressionContext("TypeDeclaration", true);

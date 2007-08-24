@@ -1142,6 +1142,19 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				} else if (context == ExpressionContext.BaseConstructorCall) {
 					result.Add("this");
 					result.Add("base");
+				} else if (context == ExpressionContext.ConstraintsStart) {
+					result.Add("where");
+				} else if (context == ExpressionContext.Constraints) {
+					result.Add("where");
+					result.Add("new");
+					result.Add("struct");
+					result.Add("class");
+					AddCSharpPrimitiveTypes(result);
+					CtrlSpaceInternal(result, fileContent);
+				} else if (context == ExpressionContext.InheritableType) {
+					result.Add("where"); // the inheritance list can be followed by constraints
+					AddCSharpPrimitiveTypes(result);
+					CtrlSpaceInternal(result, fileContent);
 				} else if (context == ExpressionContext.PropertyDeclaration) {
 					AddCSharpKeywords(result, NR.Parser.CSharp.Tokens.InPropertyDeclaration);
 				} else if (context == ExpressionContext.EventDeclaration) {

@@ -54,6 +54,7 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 			Event,
 			Statements,
 			Expression,
+			TypeParameterDecl,
 			Popped
 		}
 		
@@ -80,7 +81,7 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 			/// </summary>
 			FieldDecl,
 			/// <summary>
-			/// parsing a method delcaration (Interface+TypeDecl)
+			/// parsing a method declaration (Interface+TypeDecl)
 			/// </summary>
 			MethodDecl,
 			/// <summary>
@@ -90,7 +91,11 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 			/// <summary>
 			/// Between class/struct/enum keyword and body of the type declaration
 			/// </summary>
-			TypeDecl
+			TypeDecl,
+			/// <summary>
+			/// Between "where" and start of the generic method/class
+			/// </summary>
+			Constraints
 		}
 		
 		/// <summary>
@@ -101,7 +106,8 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 		{
 			internal Frame parent;
 			internal FrameType type;
-			internal FrameType childType;
+			internal FrameType parenthesisChildType;
+			internal FrameType curlyChildType;
 			internal FrameState state;
 			internal char bracketType;
 			internal ExpressionContext context;
@@ -109,7 +115,7 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 			
 			internal bool InExpressionMode {
 				get {
-					return type == FrameType.Statements 
+					return type == FrameType.Statements
 						|| type == FrameType.Expression
 						|| state == FrameState.Initializer;
 				}
@@ -128,13 +134,15 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 			internal void SetDefaultContext()
 			{
 				if (state == FrameState.InheritanceList) {
-					if (childType == FrameType.Enum) {
+					if (curlyChildType == FrameType.Enum) {
 						SetContext(ExpressionContext.EnumBaseType);
-					} else if (childType == FrameType.Interface) {
+					} else if (curlyChildType == FrameType.Interface) {
 						SetContext(ExpressionContext.Interface);
 					} else {
 						SetContext(ExpressionContext.InheritableType);
 					}
+				} else if (state == FrameState.Constraints) {
+					SetContext(ExpressionContext.Constraints);
 				} else {
 					switch (type) {
 						case FrameType.Global:
@@ -144,6 +152,7 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 							SetContext(ExpressionContext.TypeDeclaration);
 							break;
 						case FrameType.Enum:
+						case FrameType.TypeParameterDecl:
 							SetContext(ExpressionContext.IdentifierExpected);
 							break;
 						case FrameType.Interface:
@@ -174,37 +183,49 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 			
 			internal Location lastExpressionStart;
 			
-			public Frame(Frame parent)
+			public Frame() : this(null, '\0') {}
+			
+			public Frame(Frame parent, char bracketType)
 			{
 				this.parent = parent;
+				this.bracketType = bracketType;
 				if (parent != null) {
-					this.type = parent.childType;
+					if (bracketType == '{') {
+						this.type = parent.curlyChildType;
+					} else if (bracketType == '(') {
+						this.type = parent.parenthesisChildType;
+					} else {
+						this.type = parent.type;
+					}
 				}
-				ResetChildType();
+				ResetCurlyChildType();
+				ResetParenthesisChildType();
 				SetDefaultContext();
 			}
 			
-			public void ResetChildType()
+			public void ResetCurlyChildType()
 			{
 				if (parent != null) {
 					switch (this.type) {
 						case FrameType.Property:
 						case FrameType.Event:
-							this.childType = FrameType.Statements;
+							this.curlyChildType = FrameType.Statements;
 							break;
-						case FrameType.TypeDecl:
-							if (state == FrameState.Initializer) {
-								this.childType = FrameType.Expression;
-								break;
-							} else {
-								goto default;
-							}
 						default:
-							this.childType = this.type;
+							this.curlyChildType = this.type;
 							break;
 					}
 				} else {
-					this.childType = this.type;
+					this.curlyChildType = this.type;
+				}
+			}
+			
+			public void ResetParenthesisChildType()
+			{
+				if (state == FrameState.Initializer) {
+					this.parenthesisChildType = FrameType.Expression;
+				} else {
+					this.parenthesisChildType = this.type;
 				}
 			}
 		}
@@ -229,7 +250,7 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 				targetPosition = new Location(offset - lineOffsets[lineOffsets.Count - 1] + 1, lineOffsets.Count);
 			}
 			
-			frame = new Frame(null);
+			frame = new Frame();
 			lastToken = Tokens.EOF;
 		}
 		
@@ -284,9 +305,8 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 			switch (token.kind) {
 				case Tokens.OpenCurlyBrace:
 					frame.lastExpressionStart = Location.Empty;
-					frame = new Frame(frame);
-					frame.parent.ResetChildType();
-					frame.bracketType = '{';
+					frame = new Frame(frame, '{');
+					frame.parent.ResetCurlyChildType();
 					break;
 				case Tokens.CloseCurlyBrace:
 					while (frame.parent != null) {
@@ -304,9 +324,8 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 				case Tokens.OpenSquareBracket:
 					if (frame.lastExpressionStart.IsEmpty && token.kind == Tokens.OpenParenthesis)
 						frame.lastExpressionStart = token.Location;
-					frame = new Frame(frame);
-					frame.parent.ResetChildType();
-					frame.bracketType = '(';
+					frame = new Frame(frame, '(');
+					frame.parent.ResetParenthesisChildType();
 					break;
 				case Tokens.CloseParenthesis:
 				case Tokens.CloseSquareBracket:
@@ -317,10 +336,15 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 					break;
 				case Tokens.LessThan:
 					if (Tokens.ValidInsideTypeName[lastToken]) {
-						frame = new Frame(frame);
-						frame.bracketType = '<';
-						if (frame.parent.type == FrameType.Statements || frame.parent.type == FrameType.Expression) {
+						frame = new Frame(frame, '<');
+						if (frame.parent.InExpressionMode) {
 							frame.SetContext(ExpressionContext.Default);
+						} else if ((frame.parent.state == FrameState.TypeDecl || frame.parent.state == FrameState.MethodDecl)
+						           && frame.parent.context == ExpressionContext.IdentifierExpected)
+						{
+							frame.type = FrameType.TypeParameterDecl;
+							frame.SetContext(ExpressionContext.IdentifierExpected);
+							frame.parent.SetContext(ExpressionContext.ConstraintsStart);
 						} else {
 							frame.SetContext(ExpressionContext.Type);
 						}
@@ -386,7 +410,7 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 					} else if (frame.type == FrameType.TypeDecl) {
 						frame.SetContext(ExpressionContext.Default);
 						frame.state = FrameState.Initializer;
-						frame.ResetChildType();
+						frame.ResetParenthesisChildType();
 						break;
 					} else {
 						goto default;
@@ -394,50 +418,62 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 				case Tokens.Colon:
 					if (frame.state == FrameState.MethodDecl && lastToken == Tokens.CloseParenthesis) {
 						frame.SetContext(ExpressionContext.BaseConstructorCall);
-						//frame.childType = FrameType.Expression;
+						frame.parenthesisChildType = FrameType.Expression;
 					} else {
-						if (frame.childType == FrameType.TypeDecl || frame.childType == FrameType.Interface || frame.childType == FrameType.Enum) {
-							frame.state = FrameState.InheritanceList;
-							frame.SetDefaultContext();
+						if (frame.curlyChildType == FrameType.TypeDecl || frame.curlyChildType == FrameType.Interface || frame.curlyChildType == FrameType.Enum) {
+							if (frame.state != FrameState.Constraints) {
+								frame.state = FrameState.InheritanceList;
+								frame.SetDefaultContext();
+							}
 						}
 					}
 					break;
 				case Tokens.Class:
 				case Tokens.Struct:
 					if (frame.type == FrameType.Global || frame.type == FrameType.TypeDecl) {
-						frame.state = FrameState.TypeDecl;
-						frame.childType = FrameType.TypeDecl;
-						frame.SetContext(ExpressionContext.IdentifierExpected);
+						if (frame.state != FrameState.Constraints) {
+							frame.state = FrameState.TypeDecl;
+							frame.curlyChildType = FrameType.TypeDecl;
+							frame.SetContext(ExpressionContext.IdentifierExpected);
+						}
 					}
 					break;
 				case Tokens.Interface:
 					if (frame.type == FrameType.Global || frame.type == FrameType.TypeDecl) {
 						frame.state = FrameState.TypeDecl;
-						frame.childType = FrameType.Interface;
+						frame.curlyChildType = FrameType.Interface;
 						frame.SetContext(ExpressionContext.IdentifierExpected);
 					}
 					break;
 				case Tokens.Enum:
 					if (frame.type == FrameType.Global || frame.type == FrameType.TypeDecl) {
 						frame.state = FrameState.TypeDecl;
-						frame.childType = FrameType.Enum;
+						frame.curlyChildType = FrameType.Enum;
 						frame.SetContext(ExpressionContext.IdentifierExpected);
 					}
 					break;
 				case Tokens.Delegate:
 					if (frame.type == FrameType.Global || frame.type == FrameType.TypeDecl) {
-						frame.childType = FrameType.ParameterList;
+						frame.parenthesisChildType = FrameType.ParameterList;
 						frame.SetContext(ExpressionContext.Type);
 					}
 					break;
 				case Tokens.Event:
 					frame.SetContext(ExpressionContext.DelegateType);
-					frame.childType = FrameType.Event;
+					frame.curlyChildType = FrameType.Event;
 					frame.state = FrameState.EventDecl;
 					break;
 				case Tokens.Comma:
-					frame.lastExpressionStart = Location.Empty;
-					frame.SetDefaultContext();
+					if (frame.state == FrameState.FieldDecl || frame.state == FrameState.Initializer) {
+						frame.state = FrameState.FieldDecl;
+						frame.SetContext(ExpressionContext.IdentifierExpected);
+					}
+					break;
+				case Tokens.Where:
+					if (!frame.InExpressionMode && (frame.type == FrameType.Global || frame.type == FrameType.TypeDecl)) {
+						frame.state = FrameState.Constraints;
+						frame.SetDefaultContext();
+					}
 					break;
 				case Tokens.CloseCurlyBrace:
 				case Tokens.Semicolon:
@@ -449,14 +485,14 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 						frame.type = FrameType.ParameterList;
 						frame.SetContext(ExpressionContext.FirstParameterType);
 						frame.parent.state = FrameState.MethodDecl;
-						frame.parent.childType = FrameType.Statements;
+						frame.parent.curlyChildType = FrameType.Statements;
 					}
 					break;
 				case Tokens.If:
 				case Tokens.While:
 				case Tokens.Switch:
 					if (frame.type == FrameType.Statements) {
-						frame.childType = FrameType.Expression;
+						frame.parenthesisChildType = FrameType.Expression;
 					}
 					break;
 				default:
@@ -464,7 +500,7 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 						if (frame.type == FrameType.Interface || frame.type == FrameType.TypeDecl) {
 							if (frame.state == FrameState.Normal) {
 								frame.state = FrameState.FieldDecl;
-								frame.childType = FrameType.Property;
+								frame.curlyChildType = FrameType.Property;
 							}
 							if (!(frame.state == FrameState.Initializer && frame.context.IsObjectCreation)) {
 								frame.SetContext(ExpressionContext.IdentifierExpected);
@@ -491,9 +527,9 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 		/// </summary>
 		public ExpressionResult FindFullExpressionInTypeDeclaration(string text, int offset)
 		{
-			Frame root = new Frame(null);
-			root.childType = FrameType.TypeDecl;
-			Frame typeDecl = new Frame(root);
+			Frame root = new Frame();
+			root.curlyChildType = FrameType.TypeDecl;
+			Frame typeDecl = new Frame(root, '{');
 			return FindFullExpression(text, offset, typeDecl);
 		}
 		
@@ -503,11 +539,11 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 		/// </summary>
 		public ExpressionResult FindFullExpressionInMethod(string text, int offset)
 		{
-			Frame root = new Frame(null);
-			root.childType = FrameType.TypeDecl;
-			Frame typeDecl = new Frame(root);
-			typeDecl.childType = FrameType.Statements;
-			Frame methodBody = new Frame(typeDecl);
+			Frame root = new Frame();
+			root.curlyChildType = FrameType.TypeDecl;
+			Frame typeDecl = new Frame(root, '{');
+			typeDecl.curlyChildType = FrameType.Statements;
+			Frame methodBody = new Frame(typeDecl, '{');
 			return FindFullExpression(text, offset, methodBody);
 		}
 		
