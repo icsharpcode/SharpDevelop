@@ -52,69 +52,75 @@ namespace ICSharpCode.Core
 
 		public string[] Elements
 		{
-			get
-			{
-				List<string> ret = new List<string>();
-				foreach (KeyValuePair<string, object> property in properties)
-					ret.Add(property.Key);
-				return ret.ToArray();
+			get {
+				lock (properties) {
+					List<string> ret = new List<string>();
+					foreach (KeyValuePair<string, object> property in properties)
+						ret.Add(property.Key);
+					return ret.ToArray();
+				}
 			}
 		}
 		
 		public object Get(string property)
 		{
-			if (!properties.ContainsKey(property)) {
-				return null;
+			lock (properties) {
+				object val;
+				properties.TryGetValue(property, out val);
+				return val;
 			}
-			return properties[property];
 		}
 		
 		public void Set<T>(string property, T value)
 		{
 			T oldValue = default(T);
-			if (!properties.ContainsKey(property)) {
-				properties.Add(property, value);
-			} else {
-				oldValue = Get<T>(property, value);
-				properties[property] = value;
+			lock (properties) {
+				if (!properties.ContainsKey(property)) {
+					properties.Add(property, value);
+				} else {
+					oldValue = Get<T>(property, value);
+					properties[property] = value;
+				}
 			}
 			OnPropertyChanged(new PropertyChangedEventArgs(this, property, oldValue, value));
 		}
 		
 		public bool Contains(string property)
 		{
-			return properties.ContainsKey(property);
+			lock (properties) {
+				return properties.ContainsKey(property);
+			}
 		}
 
-		public int Count
-		{
-			get
-			{
-				return properties.Count;
+		public int Count {
+			get {
+				lock (properties) {
+					return properties.Count;
+				}
 			}
 		}
 		
 		public bool Remove(string property)
 		{
-			return properties.Remove(property);
-		}
-		
-		public Properties()
-		{
+			lock (properties) {
+				return properties.Remove(property);
+			}
 		}
 		
 		public override string ToString()
 		{
-			StringBuilder sb = new StringBuilder();
-			sb.Append("[Properties:{");
-			foreach (KeyValuePair<string, object> entry in properties) {
-				sb.Append(entry.Key);
-				sb.Append("=");
-				sb.Append(entry.Value);
-				sb.Append(",");
+			lock (properties) {
+				StringBuilder sb = new StringBuilder();
+				sb.Append("[Properties:{");
+				foreach (KeyValuePair<string, object> entry in properties) {
+					sb.Append(entry.Key);
+					sb.Append("=");
+					sb.Append(entry.Value);
+					sb.Append(",");
+				}
+				sb.Append("}]");
+				return sb.ToString();
 			}
-			sb.Append("}]");
-			return sb.ToString();
 		}
 		
 		public static Properties ReadFromAttributes(XmlReader reader)
@@ -130,7 +136,7 @@ namespace ICSharpCode.Core
 			return properties;
 		}
 		
-		public void ReadProperties(XmlReader reader, string endElement)
+		internal void ReadProperties(XmlReader reader, string endElement)
 		{
 			if (reader.IsEmptyElement) {
 				return;
@@ -182,26 +188,28 @@ namespace ICSharpCode.Core
 		
 		public void WriteProperties(XmlWriter writer)
 		{
-			foreach (KeyValuePair<string, object> entry in properties) {
-				object val = entry.Value;
-				if (val is Properties) {
-					writer.WriteStartElement("Properties");
-					writer.WriteAttributeString("name", entry.Key);
-					((Properties)val).WriteProperties(writer);
-					writer.WriteEndElement();
-				} else if (val is Array || val is ArrayList) {
-					writer.WriteStartElement("Array");
-					writer.WriteAttributeString("name", entry.Key);
-					foreach (object o in (IEnumerable)val) {
-						writer.WriteStartElement("Element");
-						WriteValue(writer, o);
+			lock (properties) {
+				foreach (KeyValuePair<string, object> entry in properties) {
+					object val = entry.Value;
+					if (val is Properties) {
+						writer.WriteStartElement("Properties");
+						writer.WriteAttributeString("name", entry.Key);
+						((Properties)val).WriteProperties(writer);
+						writer.WriteEndElement();
+					} else if (val is Array || val is ArrayList) {
+						writer.WriteStartElement("Array");
+						writer.WriteAttributeString("name", entry.Key);
+						foreach (object o in (IEnumerable)val) {
+							writer.WriteStartElement("Element");
+							WriteValue(writer, o);
+							writer.WriteEndElement();
+						}
+						writer.WriteEndElement();
+					} else {
+						writer.WriteStartElement(entry.Key);
+						WriteValue(writer, val);
 						writer.WriteEndElement();
 					}
-					writer.WriteEndElement();
-				} else {
-					writer.WriteStartElement(entry.Key);
-					WriteValue(writer, val);
-					writer.WriteEndElement();
 				}
 			}
 		}
@@ -259,51 +267,53 @@ namespace ICSharpCode.Core
 		
 		public T Get<T>(string property, T defaultValue)
 		{
-			if (!properties.ContainsKey(property)) {
-				properties.Add(property, defaultValue);
-				return defaultValue;
-			}
-			object o = properties[property];
-			
-			if (o is string && typeof(T) != typeof(string)) {
-				TypeConverter c = TypeDescriptor.GetConverter(typeof(T));
-				try {
-					o = c.ConvertFromInvariantString(o.ToString());
-				} catch (Exception ex) {
-					MessageService.ShowWarning("Error loading property '" + property + "': " + ex.Message);
-					o = defaultValue;
+			lock (properties) {
+				object o;
+				if (!properties.TryGetValue(property, out o)) {
+					properties.Add(property, defaultValue);
+					return defaultValue;
 				}
-				properties[property] = o; // store for future look up
-			} else if (o is ArrayList && typeof(T).IsArray) {
-				ArrayList list = (ArrayList)o;
-				Type elementType = typeof(T).GetElementType();
-				Array arr = System.Array.CreateInstance(elementType, list.Count);
-				TypeConverter c = TypeDescriptor.GetConverter(elementType);
-				try {
-					for (int i = 0; i < arr.Length; ++i) {
-						if (list[i] != null) {
-							arr.SetValue(c.ConvertFromInvariantString(list[i].ToString()), i);
-						}
+				
+				if (o is string && typeof(T) != typeof(string)) {
+					TypeConverter c = TypeDescriptor.GetConverter(typeof(T));
+					try {
+						o = c.ConvertFromInvariantString(o.ToString());
+					} catch (Exception ex) {
+						MessageService.ShowWarning("Error loading property '" + property + "': " + ex.Message);
+						o = defaultValue;
 					}
-					o = arr;
-				} catch (Exception ex) {
-					MessageService.ShowWarning("Error loading property '" + property + "': " + ex.Message);
-					o = defaultValue;
+					properties[property] = o; // store for future look up
+				} else if (o is ArrayList && typeof(T).IsArray) {
+					ArrayList list = (ArrayList)o;
+					Type elementType = typeof(T).GetElementType();
+					Array arr = System.Array.CreateInstance(elementType, list.Count);
+					TypeConverter c = TypeDescriptor.GetConverter(elementType);
+					try {
+						for (int i = 0; i < arr.Length; ++i) {
+							if (list[i] != null) {
+								arr.SetValue(c.ConvertFromInvariantString(list[i].ToString()), i);
+							}
+						}
+						o = arr;
+					} catch (Exception ex) {
+						MessageService.ShowWarning("Error loading property '" + property + "': " + ex.Message);
+						o = defaultValue;
+					}
+					properties[property] = o; // store for future look up
+				} else if (!(o is string) && typeof(T) == typeof(string)) {
+					TypeConverter c = TypeDescriptor.GetConverter(typeof(T));
+					if (c.CanConvertTo(typeof(string))) {
+						o = c.ConvertToInvariantString(o);
+					} else {
+						o = o.ToString();
+					}
 				}
-				properties[property] = o; // store for future look up
-			} else if (!(o is string) && typeof(T) == typeof(string)) {
-				TypeConverter c = TypeDescriptor.GetConverter(typeof(T));
-				if (c.CanConvertTo(typeof(string))) {
-					o = c.ConvertToInvariantString(o);
-				} else {
-					o = o.ToString();
+				try {
+					return (T)o;
+				} catch (NullReferenceException) {
+					// can happen when configuration is invalid -> o is null and a value type is expected
+					return defaultValue;
 				}
-			}
-			try {
-				return (T)o;
-			} catch (NullReferenceException) {
-				// can happen when configuration is invalid -> o is null and a value type is expected
-				return defaultValue;
 			}
 		}
 		

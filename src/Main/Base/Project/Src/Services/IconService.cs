@@ -25,15 +25,6 @@ namespace ICSharpCode.SharpDevelop
 		
 		static IconService()
 		{
-			Thread myThread = new Thread(new ThreadStart(LoadThread));
-			myThread.Name = "IconLoader";
-			myThread.IsBackground = true;
-			myThread.Priority = ThreadPriority.Normal;
-			myThread.Start();
-		}
-		
-		static void LoadThread()
-		{
 			try {
 				InitializeIcons(AddInTree.GetTreeNode("/Workspace/Icons"));
 			} catch (TreePathNotFoundException) {
