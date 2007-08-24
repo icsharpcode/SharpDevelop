@@ -64,10 +64,12 @@ namespace ICSharpCode.SharpDevelop
 		
 		/// <summary>
 		/// Gets a collection containing all currently opened files.
+		/// The returned collection is a read-only copy of the currently opened files -
+		/// it will not reflect future changes of the list of opened files.
 		/// </summary>
 		public static ICollection<OpenedFile> OpenedFiles {
 			get {
-				return openedFileDict.Values;
+				return openedFileDict.Values.ToArray();
 			}
 		}
 		

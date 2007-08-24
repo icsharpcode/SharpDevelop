@@ -50,10 +50,12 @@ namespace ICSharpCode.TextEditor.Document
 		{
 			#if DEBUG
 			CheckThread();
+			#endif
+			
 			if (offset < 0 || offset >= Length) {
 				throw new ArgumentOutOfRangeException("offset", offset, "0 <= offset < " + Length.ToString());
 			}
-			#endif
+			
 			return offset < gapBeginOffset ? buffer[offset] : buffer[offset + gapLength];
 		}
 		
@@ -61,13 +63,15 @@ namespace ICSharpCode.TextEditor.Document
 		{
 			#if DEBUG
 			CheckThread();
+			#endif
+			
 			if (offset < 0 || offset > Length) {
 				throw new ArgumentOutOfRangeException("offset", offset, "0 <= offset <= " + Length.ToString());
 			}
 			if (length < 0 || offset + length > Length) {
 				throw new ArgumentOutOfRangeException("length", length, "0 <= length, offset(" + offset + ")+length <= " + Length.ToString());
 			}
-			#endif
+			
 			int end = offset + length;
 			
 			if (end < gapBeginOffset) {
@@ -105,13 +109,14 @@ namespace ICSharpCode.TextEditor.Document
 			
 			#if DEBUG
 			CheckThread();
+			#endif
+			
 			if (offset < 0 || offset > Length) {
 				throw new ArgumentOutOfRangeException("offset", offset, "0 <= offset <= " + Length.ToString());
 			}
 			if (length < 0 || offset + length > Length) {
 				throw new ArgumentOutOfRangeException("length", length, "0 <= length, offset+length <= " + Length.ToString());
 			}
-			#endif
 			
 			// Math.Max is used so that if we need to resize the array
 			// the new array has enough space for all old chars

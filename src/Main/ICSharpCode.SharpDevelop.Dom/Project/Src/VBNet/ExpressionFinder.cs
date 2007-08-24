@@ -33,7 +33,7 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 		public string FindExpressionInternal(string inText, int offset)
 		{
 			offset--; // earlier all ExpressionFinder calls had an inexplicable "cursor - 1".
-			// The IExpressionFinder API to use normal cursor offsets, so we need to adjust the offset
+			// The IExpressionFinder API now uses normal cursor offsets, so we need to adjust the offset
 			// because VBExpressionFinder still uses an implementation that expects old offsets
 			
 			this.text = FilterComments(inText, ref offset);

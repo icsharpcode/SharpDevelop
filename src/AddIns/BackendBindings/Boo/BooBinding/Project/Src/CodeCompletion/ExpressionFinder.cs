@@ -81,7 +81,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 		public ExpressionResult FindExpression(string inText, int offset)
 		{
 			offset--; // earlier all ExpressionFinder calls had an inexplicable "cursor - 1".
-			// The IExpressionFinder API to use normal cursor offsets, so we need to adjust the offset
+			// The IExpressionFinder API now uses normal cursor offsets, so we need to adjust the offset
 			// because Boo ExpressionFinder still uses an implementation that expects old offsets
 			
 			if (inText == null || offset >= inText.Length)
@@ -244,7 +244,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 			StringBuilder b = new StringBuilder(result.Expression);
 			//  accepting current identifier
 			int i;
-			for (i = offset + 1; i < inText.Length; i++) {
+			for (i = offset; i < inText.Length; i++) {
 				char c = inText[i];
 				if (!char.IsLetterOrDigit(c) && c != '_') {
 					break;
@@ -264,7 +264,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 					bracketStack.Push(bracket);
 				} else {
 					if (bracketStack.Count == 0) {
-						b.Append(inText, offset + 1, i - offset - 1);
+						b.Append(inText, offset, i - offset);
 						result.Expression = b.ToString();
 						return result;
 					} else if (c == '\0') {

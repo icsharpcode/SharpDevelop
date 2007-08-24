@@ -456,7 +456,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void CheckRemovedOrReplacedFile(object sender, FileEventArgs e)
 		{
-			foreach (OpenedFile file in FileService.OpenedFiles.ToArray()) {
+			foreach (OpenedFile file in FileService.OpenedFiles) {
 				if (FileUtility.IsBaseDirectory(e.FileName, file.FileName)) {
 					foreach (IViewContent content in file.RegisteredViewContents.ToArray()) {
 						content.WorkbenchWindow.CloseWindow(true);

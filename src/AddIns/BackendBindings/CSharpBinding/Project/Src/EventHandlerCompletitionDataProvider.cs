@@ -97,7 +97,7 @@ namespace CSharpBinding
 				newHandlerCodeBuilder.Append(ambience.Convert(invoke.ReturnType)).Append(" ").Append(newHandlerName);
 				newHandlerCodeBuilder.Append("(").Append(parameterString.ToString()).AppendLine(")");
 				newHandlerCodeBuilder.AppendLine("{");
-				newHandlerCodeBuilder.Append("throw new NotImplementedException(\"").Append(ResourceService.GetString("CSharpBinding.MethodIsNotImplemented")).AppendLine("\");");
+				newHandlerCodeBuilder.AppendLine("throw new NotImplementedException();");
 				newHandlerCodeBuilder.Append("}");
 
 				// ...and add it to the completionData.
@@ -105,7 +105,7 @@ namespace CSharpBinding
 					newHandlerTextBuilder.ToString(),
 					2+newHandlerName.Length,
 					newHandlerName.Length,
-					"new " + eventHandlerFullyQualifiedTypeName + "(" + newHandlerName + ")" +"\n"+ResourceService.GetString("CSharpBinding.GenerateNewHandlerInstructions") + "\n" + CodeCompletionData.GetDocumentation(resolvedClass.Documentation),
+					"new " + eventHandlerFullyQualifiedTypeName + "(" + newHandlerName +StringParser.Parse(")\n${res:CSharpBinding.GenerateNewHandlerInstructions}\n") + CodeCompletionData.GetDocumentation(resolvedClass.Documentation),
 					resolveResult,
 					newHandlerCodeBuilder.ToString()
 				));

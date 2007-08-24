@@ -56,6 +56,11 @@ namespace ICSharpCode.FormsDesigner
 		
 		protected override int GetCursorLine(ICSharpCode.TextEditor.Document.IDocument document, IMethod method)
 		{
+			if (document == null)
+				throw new ArgumentNullException("document");
+			if (method == null)
+				throw new ArgumentNullException("method");
+			
 			DomRegion r = method.BodyRegion;
 			int offset = document.PositionToOffset(new TextLocation(r.BeginColumn - 1, r.BeginLine - 1));
 			string tmp = document.GetText(offset, 10);

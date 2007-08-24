@@ -100,6 +100,7 @@ namespace ICSharpCode.TextEditor
 			Controls.Add(this.hScrollBar);
 			ResizeRedraw = true;
 			
+			Document.TextContentChanged += DocumentTextContentChanged;
 			Document.DocumentChanged += AdjustScrollBarsOnDocumentChange;
 			Document.UpdateCommited  += AdjustScrollBarsOnCommittedUpdate;
 		}
@@ -109,6 +110,7 @@ namespace ICSharpCode.TextEditor
 			if (disposing) {
 				if (!disposed) {
 					disposed = true;
+					Document.TextContentChanged -= DocumentTextContentChanged;
 					Document.DocumentChanged -= AdjustScrollBarsOnDocumentChange;
 					Document.UpdateCommited  -= AdjustScrollBarsOnCommittedUpdate;
 					motherTextEditorControl = null;
@@ -127,6 +129,14 @@ namespace ICSharpCode.TextEditor
 				}
 			}
 			base.Dispose(disposing);
+		}
+		
+		void DocumentTextContentChanged(object sender, EventArgs e)
+		{
+			// after the text content is changed abruptly, we need to validate the
+			// caret position - otherwise the caret position is invalid for a short amount
+			// of time, which can break client code that expects that the caret position is always valid
+			Caret.ValidateCaretPos();
 		}
 		
 		protected override void OnResize(System.EventArgs e)
