@@ -60,7 +60,9 @@ namespace SearchAndReplace
 		
 		public ForwardTextIterator(ProvidedDocumentInformation info)
 		{
-			Debug.Assert(info != null);
+			if (info == null)
+				throw new ArgumentNullException("info");
+			
 			this.info       = info;
 			this.textBuffer = info.TextBuffer;
 			this.position   = info.CurrentOffset;

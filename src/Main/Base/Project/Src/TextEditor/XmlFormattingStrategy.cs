@@ -116,6 +116,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor
 			// TextReader line number begin with 1, #dev line numbers with 0
 			using (StringReader stringReader = new StringReader(document.TextContent)) {
 				XmlTextReader r = new XmlTextReader(stringReader);
+				r.XmlResolver = null; // prevent XmlTextReader from loading external DTDs
 				while (r.Read()) {
 					if (wasEmptyElement) {
 						wasEmptyElement = false;

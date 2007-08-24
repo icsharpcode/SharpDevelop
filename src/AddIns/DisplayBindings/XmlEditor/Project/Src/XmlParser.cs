@@ -139,7 +139,7 @@ namespace ICSharpCode.XmlEditor
 			try {
 				StringReader reader = new StringReader(xml);
 				XmlTextReader xmlReader = new XmlTextReader(reader);
-				xmlReader.XmlResolver = null;
+				xmlReader.XmlResolver = null; // prevent XmlTextReader from loading external DTDs
 				while (xmlReader.Read()) {
 					switch (xmlReader.NodeType) {
 						case XmlNodeType.Element:
@@ -154,8 +154,6 @@ namespace ICSharpCode.XmlEditor
 					}
 				}
 			} catch (XmlException) { 
-				// Do nothing.
-			} catch (WebException) {
 				// Do nothing.
 			}
 			
