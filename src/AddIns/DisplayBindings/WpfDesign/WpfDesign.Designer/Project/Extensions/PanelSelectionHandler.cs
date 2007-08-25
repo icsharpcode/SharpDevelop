@@ -34,7 +34,10 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		
 		public void HandleSelectionMouseDown(IDesignPanel designPanel, MouseButtonEventArgs e, DesignPanelHitTestResult result)
 		{
-			new RangeSelectionGesture(result.ModelHit).Start(designPanel, e);
+			if (e.ChangedButton == MouseButton.Left && MouseGestureBase.IsOnlyButtonPressed(e, MouseButton.Left)) {
+				e.Handled = true;
+				new RangeSelectionGesture(result.ModelHit).Start(designPanel, e);
+			}
 		}
 	}
 	

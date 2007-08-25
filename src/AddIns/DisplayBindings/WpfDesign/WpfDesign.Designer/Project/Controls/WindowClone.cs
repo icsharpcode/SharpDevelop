@@ -155,6 +155,50 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 			get { return (WindowStyle)GetValue(Window.WindowStyleProperty); }
 			set { SetValue(Window.WindowStyleProperty, value); }
 		}
+		
+		#pragma warning disable 0067
+		// disable "event is never used" warning
+		
+		/// <summary>
+		/// This event is never raised. (for compatibility with <see cref="Window"/> only).
+		/// </summary>
+		public event EventHandler Activated;
+		
+		/// <summary>
+		/// This event is never raised. (for compatibility with <see cref="Window"/> only).
+		/// </summary>
+		public event EventHandler Closed;
+		
+		/// <summary>
+		/// This event is never raised. (for compatibility with <see cref="Window"/> only).
+		/// </summary>
+		public event EventHandler Closing;
+		
+		/// <summary>
+		/// This event is never raised. (for compatibility with <see cref="Window"/> only).
+		/// </summary>
+		public event EventHandler ContentRendered;
+		
+		/// <summary>
+		/// This event is never raised. (for compatibility with <see cref="Window"/> only).
+		/// </summary>
+		public event EventHandler Deactivated;
+		
+		/// <summary>
+		/// This event is never raised. (for compatibility with <see cref="Window"/> only).
+		/// </summary>
+		public event EventHandler LocationChanged;
+		
+		/// <summary>
+		/// This event is never raised. (for compatibility with <see cref="Window"/> only).
+		/// </summary>
+		public event EventHandler SourceInitialized;
+		
+		/// <summary>
+		/// This event is never raised. (for compatibility with <see cref="Window"/> only).
+		/// </summary>
+		public event EventHandler StateChanged;
+		#pragma warning restore
 	}
 	
 	/// <summary>

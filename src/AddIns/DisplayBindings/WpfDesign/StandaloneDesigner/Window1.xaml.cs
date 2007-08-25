@@ -8,6 +8,7 @@ using System.Xml;
 
 using ICSharpCode.WpfDesign;
 using ICSharpCode.WpfDesign.Designer;
+using ICSharpCode.WpfDesign.Designer.Xaml;
 using ICSharpCode.WpfDesign.PropertyEditor;
 using System.Threading;
 using System.Windows.Threading;
@@ -41,7 +42,13 @@ namespace StandaloneDesigner
 		{
 			if (e.Source != tabControl) return;
 			if (tabControl.SelectedItem == designTab) {
-				designSurface.LoadDesigner(new XmlTextReader(new StringReader(CodeTextBox.Text)), null);
+				XamlLoadSettings settings = new XamlLoadSettings();
+				settings.CustomServiceRegisterFunctions.Add(
+					delegate(XamlDesignContext context) {
+						context.Services.AddService(typeof(IEventHandlerService), new EventHandlerService(this));
+					});
+				
+				designSurface.LoadDesigner(new XmlTextReader(new StringReader(CodeTextBox.Text)), settings);
 				designSurface.DesignContext.Services.Selection.SelectionChanged += OnSelectionChanged;
 				toolbox.ToolService = designSurface.DesignContext.Services.Tool;
 			} else {

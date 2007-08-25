@@ -134,5 +134,10 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 		{
 			return null;
 		}
+		
+		/// <summary>See <see cref="IPropertyEditorDataSource"/></summary>
+		public ICollection<IPropertyEditorDataEvent> Events {
+			get { return new IPropertyEditorDataEvent[0]; }
+		}
 	}
 }

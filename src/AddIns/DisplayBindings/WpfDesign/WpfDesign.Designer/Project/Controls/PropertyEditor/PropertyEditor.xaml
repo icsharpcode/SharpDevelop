@@ -24,7 +24,8 @@
 							<RowDefinition Height="0.5*" />
 						</Grid.RowDefinitions>
 						<Label Grid.Column="0" Grid.Row="0" Target="{Binding ElementName=nameTextBox}">_Name:</Label>
-						<TextBox Grid.Column="1" Grid.Row="0" Name="nameTextBox" SizeChanged="nameTextBox_SizeChanged"
+						<TextBox Grid.Column="1" Grid.Row="0" Name="nameTextBox"
+						         SizeChanged="nameTextBox_SizeChanged" KeyDown="nameTextBox_KeyDown"
 						         Text="{Binding ElementName=userControl, Path=EditedObject.Name}"/>
 						<Label Grid.Column="0" Grid.Row="1">Type:</Label>
 						<Label Grid.Column="1" Grid.Row="1" Name="typeLabel"

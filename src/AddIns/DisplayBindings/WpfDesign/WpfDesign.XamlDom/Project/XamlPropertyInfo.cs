@@ -182,7 +182,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		
 		public override object GetValue(object instance)
 		{
-			return null;
+			throw new NotSupportedException();
 		}
 		
 		public override void SetValue(object instance, object value)

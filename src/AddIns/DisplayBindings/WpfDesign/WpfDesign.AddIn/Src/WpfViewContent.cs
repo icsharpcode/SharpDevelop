@@ -34,6 +34,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 		public WpfViewContent(OpenedFile file) : base(file)
 		{
 			this.TabPageText = "${res:FormsDesigner.DesignTabPages.DesignTabPage}";
+			this.IsActiveViewContentChanged += OnIsActiveViewContentChanged;
 		}
 		
 		protected override void LoadInternal(OpenedFile file, System.IO.Stream stream)
@@ -53,12 +54,14 @@ namespace ICSharpCode.WpfDesign.AddIn
 				settings.CustomServiceRegisterFunctions.Add(
 					delegate(XamlDesignContext context) {
 						context.Services.AddService(typeof(IUriContext), new FileUriContext(this.PrimaryFile));
+						context.Services.AddService(typeof(IPropertyDescriptionService), new PropertyDescriptionService(this.PrimaryFile));
+						context.Services.AddService(typeof(IEventHandlerService), new EventHandlerService(this));
+						context.Services.AddService(typeof(ITopLevelWindowService), new WpfAndWinFormsTopLevelWindowService());
 					});
 				settings.TypeFinder = MyTypeFinder.Create(this.PrimaryFile);
 				
 				designer.LoadDesigner(r, settings);
 				
-				designer.DesignContext.Services.AddService(typeof(IPropertyDescriptionService), new PropertyDescriptionService(this.PrimaryFile));
 				designer.DesignContext.Services.Selection.SelectionChanged += OnSelectionChanged;
 				designer.DesignContext.Services.GetService<UndoService>().UndoStackChanged += OnUndoStackChanged;
 			}
@@ -66,8 +69,12 @@ namespace ICSharpCode.WpfDesign.AddIn
 		
 		protected override void SaveInternal(OpenedFile file, System.IO.Stream stream)
 		{
-			using (XmlTextWriter xmlWriter = new XmlTextWriter(stream, Encoding.UTF8)) {
-				xmlWriter.Formatting = Formatting.Indented;
+			XmlWriterSettings settings = new XmlWriterSettings();
+			settings.Encoding = Encoding.UTF8;
+			settings.Indent = true;
+			settings.IndentChars = ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.SharpDevelopTextEditorProperties.Instance.IndentationString;
+			settings.NewLineOnAttributes = true;
+			using (XmlWriter xmlWriter = XmlTextWriter.Create(stream, settings)) {
 				designer.SaveDesigner(xmlWriter);
 			}
 		}
@@ -116,6 +123,10 @@ namespace ICSharpCode.WpfDesign.AddIn
 			return true;
 		}
 		
+		public Designer.PropertyEditor PropertyEditor {
+			get { return propertyEditor; }
+		}
+		
 		PropertyContainer propertyContainer = new PropertyContainer();
 		
 		public PropertyContainer PropertyContainer {
@@ -133,12 +144,13 @@ namespace ICSharpCode.WpfDesign.AddIn
 			base.Dispose();
 		}
 		
-//		protected override void OnSwitchedTo(EventArgs e)
-//		{
-//			base.OnSwitchedTo(e);
-//			if (designer != null && designer.DesignContext != null) {
-//				WpfToolbox.Instance.ToolService = designer.DesignContext.Services.Tool;
-//			}
-//		}
+		void OnIsActiveViewContentChanged(object sender, EventArgs e)
+		{
+			if (IsActiveViewContent) {
+				if (designer != null && designer.DesignContext != null) {
+					WpfToolbox.Instance.ToolService = designer.DesignContext.Services.Tool;
+				}
+			}
+		}
 	}
 }

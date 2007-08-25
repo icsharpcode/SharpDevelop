@@ -1352,7 +1352,7 @@ CollectionInitializer<out Expression outExpr>
 	CollectionInitializerExpression initializer = new CollectionInitializerExpression();
 .)
 =
-	"{"
+	"{" (. initializer.StartLocation = t.Location; .)
 	[	VariableInitializer<out expr>
 		(. if (expr != null) { initializer.CreateExpressions.Add(expr); } .)
 		{ IF (NotFinalComma())
@@ -1361,7 +1361,7 @@ CollectionInitializer<out Expression outExpr>
 		}
 		[ "," ]
 	]
-	"}" (. outExpr = initializer; .)
+	"}" (. initializer.EndLocation = t.Location; outExpr = initializer; .)
 .
 
 CollectionOrObjectInitializer<out Expression outExpr>
@@ -1370,7 +1370,7 @@ CollectionOrObjectInitializer<out Expression outExpr>
 	CollectionInitializerExpression initializer = new CollectionInitializerExpression();
 .)
 =
-	"{"
+	"{" (. initializer.StartLocation = t.Location; .)
 	[	ObjectPropertyInitializerOrVariableInitializer<out expr>
 		(. if (expr != null) { initializer.CreateExpressions.Add(expr); } .)
 		{ IF (NotFinalComma())
@@ -1379,7 +1379,7 @@ CollectionOrObjectInitializer<out Expression outExpr>
 		}
 		[ "," ]
 	]
-	"}" (. outExpr = initializer; .)
+	"}" (. initializer.EndLocation = t.Location; outExpr = initializer; .)
 .
 
 ObjectPropertyInitializerOrVariableInitializer<out Expression expr>
@@ -1387,11 +1387,14 @@ ObjectPropertyInitializerOrVariableInitializer<out Expression expr>
 =
 ( IF (IdentAndAsgn())
 	Identifier
-	(. IdentifierExpression l = new IdentifierExpression(t.val);
-	   l.StartLocation = t.Location; l.EndLocation = t.EndLocation;
+	(. NamedArgumentExpression nae = new NamedArgumentExpression(t.val, null);
+	   nae.StartLocation = t.Location;
 	   Expression r = null; .)
-	"=" VariableInitializer <out r>
-	(. expr = new AssignmentExpression(l, AssignmentOperatorType.Assign, r); .)
+	"=" 
+	( CollectionOrObjectInitializer<out r>
+	| VariableInitializer <out r> )
+	(. nae.Expression = r; nae.EndLocation = t.EndLocation; expr = nae; .)
+	
 |	VariableInitializer <out expr>
 )
 .
@@ -2063,12 +2066,12 @@ RelationalExpr<ref Expression outExpr>
 	|
 		(	"is"
 			TypeWithRestriction<out type, false, false>
-			[ IF (la.kind == Tokens.Question && Tokens.CastFollower[Peek(1).kind] == false)
+			[ IF (la.kind == Tokens.Question && !IsPossibleExpressionStart(Peek(1).kind))
 				NullableQuestionMark<ref type> ]
 			(. outExpr = new TypeOfIsExpression(outExpr, type); .)
 		|	"as"
 			TypeWithRestriction<out type, false, false>
-			[ IF (la.kind == Tokens.Question && Tokens.CastFollower[Peek(1).kind] == false)
+			[ IF (la.kind == Tokens.Question && !IsPossibleExpressionStart(Peek(1).kind))
 				NullableQuestionMark<ref type> ]
 			(. outExpr = new CastExpression(type, outExpr, CastType.TryCast); .)
 		)

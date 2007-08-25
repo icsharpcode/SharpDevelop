@@ -6,11 +6,11 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Media;
-using System.Collections.Generic;
 
 namespace ICSharpCode.WpfDesign.PropertyEditor
 {
@@ -21,6 +21,7 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 	{
 		readonly DesignItem item;
 		readonly List<IPropertyEditorDataProperty> properties = new List<IPropertyEditorDataProperty>();
+		readonly List<IPropertyEditorDataEvent> events = new List<IPropertyEditorDataEvent>();
 		
 		#region Available properties
 		// cache properties available for a type - retrieving this list takes ~100ms on my machine, so
@@ -50,6 +51,32 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 		}
 		#endregion
 		
+		#region Available events
+		// cache events available for a type
+		static readonly Dictionary<Type, string[]> availableEvents = new Dictionary<Type, string[]>();
+		
+		static string[] GetAvailableEvents(Type forType)
+		{
+			Debug.Assert(forType != null);
+			string[] result;
+			lock (availableEvents) {
+				if (availableEvents.TryGetValue(forType, out result))
+					return result;
+			}
+			List<string> names = new List<string>();
+			foreach (EventDescriptor p in TypeDescriptor.GetEvents(forType)) {
+				if (!p.IsBrowsable) continue;
+				if (p.Name.Contains(".")) continue;
+				names.Add(p.Name);
+			}
+			result = names.ToArray();
+			lock (availableEvents) {
+				availableEvents[forType] = result;
+			}
+			return result;
+		}
+		#endregion
+		
 		/// <summary>
 		/// Constructs a new DesignItemDataSource for the specified design item.
 		/// </summary>
@@ -63,10 +90,17 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 			foreach (string name in GetAvailableProperties(item.ComponentType)) {
 				designItemProperties.Add(item.Properties[name]);
 			}
+			foreach (string name in GetAvailableEvents(item.ComponentType)) {
+				designItemProperties.Add(item.Properties[name]);
+			}
 			designItemProperties.AddRange(item.Properties);
 			
 			foreach (DesignItemProperty p in Func.Distinct(designItemProperties)) {
-				properties.Add(new DesignItemDataProperty(this, p));
+				if (p.IsEvent) {
+					events.Add(new DesignItemDataEvent(this, p));
+				} else {
+					properties.Add(new DesignItemDataProperty(this, p));
+				}
 			}
 		}
 		
@@ -137,6 +171,11 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 		/// <summary>See <see cref="IPropertyEditorDataSource"/></summary>
 		public ICollection<IPropertyEditorDataProperty> Properties {
 			get { return properties.AsReadOnly(); }
+		}
+		
+		/// <summary>See <see cref="IPropertyEditorDataSource"/></summary>
+		public ICollection<IPropertyEditorDataEvent> Events {
+			get { return events.AsReadOnly(); }
 		}
 		
 		/// <summary>See <see cref="IPropertyEditorDataSource"/></summary>

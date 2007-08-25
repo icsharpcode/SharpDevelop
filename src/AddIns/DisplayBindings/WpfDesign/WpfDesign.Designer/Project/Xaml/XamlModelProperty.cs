@@ -60,6 +60,10 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			get { return _property.IsCollection; }
 		}
 		
+		public override bool IsEvent {
+			get { return _property.IsEvent; }
+		}
+		
 		public override Type ReturnType {
 			get { return _property.ReturnType; }
 		}
@@ -125,7 +129,9 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 		}
 		
 		public override object ValueOnInstance {
-			get { return _property.ValueOnInstance; }
+			get {
+					return _property.ValueOnInstance;
+			}
 			set { _property.ValueOnInstance = value; }
 		}
 		

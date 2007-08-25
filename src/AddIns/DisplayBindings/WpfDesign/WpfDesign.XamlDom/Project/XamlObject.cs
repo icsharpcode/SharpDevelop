@@ -118,10 +118,18 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			}
 			PropertyDescriptorCollection propertyDescriptors = TypeDescriptor.GetProperties(instance);
 			PropertyDescriptor propertyInfo = propertyDescriptors[propertyName];
-			if (propertyInfo == null) {
-				throw new ArgumentException("The property '" + propertyName + "' doesn't exist on " + elementType.FullName, "propertyName");
+			XamlProperty newProperty;
+			if (propertyInfo != null) {
+				newProperty = new XamlProperty(this, new XamlNormalPropertyInfo(propertyInfo));
+			} else {
+				EventDescriptorCollection events = TypeDescriptor.GetEvents(instance);
+				EventDescriptor eventInfo = events[propertyName];
+				if (eventInfo != null) {
+					newProperty = new XamlProperty(this, new XamlEventPropertyInfo(eventInfo));
+				} else {
+					throw new ArgumentException("The property '" + propertyName + "' doesn't exist on " + elementType.FullName, "propertyName");
+				}
 			}
-			XamlProperty newProperty = new XamlProperty(this, new XamlNormalPropertyInfo(propertyInfo));
 			properties.Add(newProperty);
 			return newProperty;
 		}
@@ -147,6 +155,25 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			XamlProperty newProperty = new XamlProperty(this, info);
 			properties.Add(newProperty);
 			return newProperty;
+		}
+		
+		/// <summary>
+		/// Gets an attribute in the x:-namespace.
+		/// </summary>
+		public string GetXamlAttribute(string name)
+		{
+			return element.GetAttribute(name, XamlConstants.XamlNamespace);
+		}
+		
+		/// <summary>
+		/// Sets an attribute in the x:-namespace.
+		/// </summary>
+		public void SetXamlAttribute(string name, string value)
+		{
+			if (value == null)
+				element.RemoveAttribute(name, XamlConstants.XamlNamespace);
+			else
+				element.SetAttribute(name, XamlConstants.XamlNamespace, value);
 		}
 	}
 }

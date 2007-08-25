@@ -217,7 +217,7 @@ namespace ICSharpCode.WpfDesign.Extensions
 		}
 		#endregion
 		
-		#region Special extensions (Instance Factory)
+		#region Special extensions (CustomInstanceFactory and DefaultInitializer)
 		static readonly object[] emptyObjectArray = new object[0];
 		
 		/// <summary>
@@ -238,6 +238,22 @@ namespace ICSharpCode.WpfDesign.Extensions
 				}
 			}
 			return CustomInstanceFactory.DefaultInstanceFactory.CreateInstance(instanceType, arguments);
+		}
+		
+		/// <summary>
+		/// Applies all DefaultInitializer extensions on the design item.
+		/// </summary>
+		public void ApplyDefaultInitializers(DesignItem item)
+		{
+			if (item == null)
+				throw new ArgumentNullException("item");
+			
+			foreach (ExtensionEntry entry in GetExtensionEntries(item)) {
+				if (typeof(DefaultInitializer).IsAssignableFrom(entry.ExtensionType)) {
+					DefaultInitializer initializer = (DefaultInitializer)Activator.CreateInstance(entry.ExtensionType);
+					initializer.InitializeDefaults(item);
+				}
+			}
 		}
 		#endregion
 	}

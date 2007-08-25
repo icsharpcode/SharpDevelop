@@ -457,30 +457,6 @@ namespace ICSharpCode.FormsDesigner
 			return compatibleMethods;
 		}
 		
-		public virtual ICollection GetCompatibleMethods(EventInfo edesc)
-		{
-			Reparse();
-			ArrayList compatibleMethods = new ArrayList();
-			MethodInfo methodInfo = edesc.GetAddMethod();
-			ParameterInfo pInfo = methodInfo.GetParameters()[0];
-			string eventName = pInfo.ParameterType.ToString().Replace("EventHandler", "EventArgs");
-			
-			foreach (IMethod method in completeClass.Methods) {
-				if (method.Parameters.Count == 2) {
-					bool found = true;
-					
-					IParameter p = method.Parameters[1];
-					if (p.ReturnType.FullyQualifiedName != eventName) {
-						found = false;
-					}
-					if (found) {
-						compatibleMethods.Add(method.Name);
-					}
-				}
-			}
-			return compatibleMethods;
-		}
-		
 		protected IField GetField(IClass c, string name)
 		{
 			foreach (IField field in c.Fields) {

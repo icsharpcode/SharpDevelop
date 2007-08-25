@@ -52,6 +52,13 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 			}
 		}
 		
+		ServiceContainer services;
+		
+		public DefaultErrorService(DesignContext context)
+		{
+			this.services = context.Services;
+		}
+		
 		public void ShowErrorTooltip(FrameworkElement attachTo, UIElement errorElement)
 		{
 			if (attachTo == null)
@@ -64,8 +71,11 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 			b.Left = pos.X;
 			b.Top = pos.Y - 8;
 			b.Focusable = false;
-			Window ownerWindow = Window.GetWindow(attachTo);
-			b.Owner = ownerWindow;
+			ITopLevelWindowService windowService = services.GetService<ITopLevelWindowService>();
+			ITopLevelWindow ownerWindow = (windowService != null) ? windowService.GetTopLevelWindow(attachTo) : null;
+			if (ownerWindow != null) {
+				ownerWindow.SetOwner(b);
+			}
 			b.Show();
 			
 			if (ownerWindow != null) {

@@ -44,6 +44,11 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 		ICollection<IPropertyEditorDataProperty> Properties { get; }
 		
 		/// <summary>
+		/// Gets the collection of events.
+		/// </summary>
+		ICollection<IPropertyEditorDataEvent> Events { get; }
+		
+		/// <summary>
 		/// Gets if adding attached properties is supported.
 		/// </summary>
 		bool CanAddAttachedProperties { get; }
@@ -60,9 +65,9 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 	}
 	
 	/// <summary>
-	/// Represents a property inside a <see cref="IPropertyEditorDataSource"/>.
+	/// Represents a property or event inside a <see cref="IPropertyEditorDataSource"/>.
 	/// </summary>
-	public interface IPropertyEditorDataProperty
+	public interface IPropertyEditorDataMember
 	{
 		/// <summary>
 		/// Gets the data source that own this property.
@@ -70,19 +75,9 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 		IPropertyEditorDataSource OwnerDataSource { get; }
 		
 		/// <summary>
-		/// Gets the category this property uses.
-		/// </summary>
-		string Category { get; }
-		
-		/// <summary>
 		/// Gets the name of the property.
 		/// </summary>
 		string Name { get; }
-		
-		/// <summary>
-		/// Gets the type of the property value.
-		/// </summary>
-		Type ReturnType { get; }
 		
 		/// <summary>
 		/// Gets the type that declares the property.
@@ -90,9 +85,9 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 		Type DeclaringType { get; }
 		
 		/// <summary>
-		/// Gets the type converter used to convert property values to/from string.
+		/// Gets the type of the property value / the type of the event delegate.
 		/// </summary>
-		TypeConverter TypeConverter { get; }
+		Type ReturnType { get; }
 		
 		/// <summary>
 		/// Gets the description of the property. The returned object should be something that
@@ -100,6 +95,22 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 		/// </summary>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
 		object GetDescription(); // is not a property because it can create a new instance on every call
+	}
+	
+	/// <summary>
+	/// Represents a property inside a <see cref="IPropertyEditorDataSource"/>.
+	/// </summary>
+	public interface IPropertyEditorDataProperty : IPropertyEditorDataMember
+	{
+		/// <summary>
+		/// Gets the category this property uses.
+		/// </summary>
+		string Category { get; }
+		
+		/// <summary>
+		/// Gets the type converter used to convert property values to/from string.
+		/// </summary>
+		TypeConverter TypeConverter { get; }
 		
 		/// <summary>
 		/// Gets/Sets if the property has been assigned a local value.
@@ -142,5 +153,26 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 		/// Creates a UIElement that can edit the property value.
 		/// </summary>
 		UIElement CreateEditor();
+	}
+	
+	/// <summary>
+	/// Represents an event inside a <see cref="IPropertyEditorDataSource"/>.
+	/// </summary>
+	public interface IPropertyEditorDataEvent : IPropertyEditorDataMember
+	{
+		/// <summary>
+		/// Gets/Sets the name of the event handler.
+		/// </summary>
+		string HandlerName { get; set; }
+		
+		/// <summary>
+		/// Is raised when the HandlerName property has changed.
+		/// </summary>
+		event EventHandler HandlerNameChanged;
+		
+		/// <summary>
+		/// Goes to the event handler, creating it when necessary.
+		/// </summary>
+		void GoToHandler();
 	}
 }

@@ -22,12 +22,14 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 		readonly DesignItem clickedOn;
 		PlacementOperation operation;
 		ICollection<DesignItem> selectedItems;
+		bool isDoubleClick;
 		
-		internal DragMoveMouseGesture(DesignItem clickedOn)
+		internal DragMoveMouseGesture(DesignItem clickedOn, bool isDoubleClick)
 		{
 			Debug.Assert(clickedOn != null);
 			
 			this.clickedOn = clickedOn;
+			this.isDoubleClick = isDoubleClick;
 			
 			if (clickedOn.Parent != null)
 				this.positionRelativeTo = clickedOn.Parent.View;
@@ -116,6 +118,11 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 		
 		protected override void OnMouseUp(object sender, MouseButtonEventArgs e)
 		{
+			if (!hasDragStarted && isDoubleClick) {
+				// user made a double-click
+				Debug.Assert(operation == null);
+				HandleDoubleClick();
+			}
 			if (operation != null) {
 				operation.Commit();
 				operation = null;
@@ -128,6 +135,19 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 			if (operation != null) {
 				operation.Abort();
 				operation = null;
+			}
+		}
+		
+		void HandleDoubleClick()
+		{
+			if (selectedItems.Count == 1) {
+				IEventHandlerService ehs = services.GetService<IEventHandlerService>();
+				if (ehs != null) {
+					DesignItemProperty defaultEvent = ehs.GetDefaultEvent(clickedOn);
+					if (defaultEvent != null) {
+						ehs.CreateEventHandler(clickedOn, defaultEvent);
+					}
+				}
 			}
 		}
 	}

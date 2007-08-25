@@ -78,6 +78,13 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		}
 		
 		/// <summary>
+		/// Gets if this property is an event.
+		/// </summary>
+		public bool IsEvent {
+			get { return propertyInfo.IsEvent; }
+		}
+		
+		/// <summary>
 		/// Gets the return type of the property.
 		/// </summary>
 		public Type ReturnType {
@@ -276,8 +283,15 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		/// Gets/Sets the value of the property on the instance without updating the XAML document.
 		/// </summary>
 		public object ValueOnInstance {
-			get{
-				return propertyInfo.GetValue(parentObject.Instance);
+			get {
+				if (IsEvent) {
+					if (propertyValue != null)
+						return propertyValue.GetValueFor(null);
+					else
+						return null;
+				} else {
+					return propertyInfo.GetValue(parentObject.Instance);
+				}
 			}
 			set {
 				propertyInfo.SetValue(parentObject.Instance, value);

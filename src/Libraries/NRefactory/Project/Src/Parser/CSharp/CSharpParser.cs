@@ -213,9 +213,17 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			}
 			// check successor
 			pt = Peek();
-			return Tokens.CastFollower[pt.kind] || (Tokens.TypeKW[pt.kind] && lexer.Peek().kind == Tokens.Dot);
+			return Tokens.CastFollower[pt.kind];
 		}
 		// END IsTypeCast
+		
+		// Gets if the token is a possible token for an expression start
+		// Is used to determine if "a is Type ? token" a the start of a ternary
+		// expression or a type test for Nullable<Type>
+		bool IsPossibleExpressionStart(int token)
+		{
+			return Tokens.CastFollower[token] || Tokens.UnaryOp[token];
+		}
 		
 		// ( { [TypeNameOrKWForTypeCast] ident "," } )
 		bool IsLambdaExpression()

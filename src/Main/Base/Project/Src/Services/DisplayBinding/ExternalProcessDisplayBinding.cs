@@ -40,29 +40,30 @@ namespace ICSharpCode.SharpDevelop
 					cmd = CommandLine.Replace("%1", file.FileName);
 				else
 					cmd = CommandLine + " \"" + file.FileName + "\"";
-				StartCommandLine(cmd);
+				StartCommandLine(cmd, Path.GetDirectoryName(file.FileName));
 			} catch (Exception ex) {
 				MessageService.ShowError(ex.Message);
 			}
 			return null;
 		}
 		
-		static void StartCommandLine(string cmd)
+		static void StartCommandLine(string cmd, string workingDir)
 		{
 			LoggingService.Debug("ExternalProcessDisplayBinding> " + cmd);
 			cmd = cmd.Trim();
 			if (cmd.Length == 0) return;
-			string program, arguments;
+			ProcessStartInfo info = new ProcessStartInfo();
 			if (cmd[0] == '"') {
 				int pos = cmd.IndexOf('"', 1);
-				program = cmd.Substring(1, pos - 1);
-				arguments = cmd.Substring(pos + 1).TrimStart();
+				info.FileName = cmd.Substring(1, pos - 1);
+				info.Arguments = cmd.Substring(pos + 1).TrimStart();
 			} else {
 				int pos = cmd.IndexOf(' ', 0);
-				program = cmd.Substring(0, pos);
-				arguments = cmd.Substring(pos + 1);
+				info.FileName = cmd.Substring(0, pos);
+				info.Arguments = cmd.Substring(pos + 1);
 			}
-			Process.Start(program, arguments);
+			info.WorkingDirectory = workingDir;
+			Process.Start(info);
 		}
 	}
 	

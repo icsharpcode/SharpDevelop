@@ -63,6 +63,53 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 		}
 		
 		[Test]
+		public void ButtonClickEventHandler()
+		{
+			DesignItem button = CreateCanvasContext("<Button Click='OnClick'/>");
+			Assert.AreEqual("OnClick", button.Properties["Click"].ValueOnInstance);
+			
+			button.Properties["Click"].Reset();
+			button.Properties["KeyDown"].SetValue("ButtonKeyDown");
+			
+			AssertCanvasDesignerOutput(@"<Button KeyDown=""ButtonKeyDown"" />", button.Context);
+			AssertLog("");
+		}
+		
+		[Test]
+		public void ButtonClickEventHandlerUndoRedo()
+		{
+			DesignItem button = CreateCanvasContext("<Button/>");
+			UndoService s = button.Context.Services.GetService<UndoService>();
+			Assert.IsFalse(s.CanUndo);
+			Assert.IsFalse(s.CanRedo);
+			button.Properties["Click"].SetValue("OnClick");
+			Assert.IsTrue(s.CanUndo);
+			Assert.IsFalse(s.CanRedo);
+			AssertCanvasDesignerOutput(@"<Button Click=""OnClick"" />", button.Context);
+			
+			button.Properties["Click"].SetValue("OnClick2");
+			Assert.IsTrue(s.CanUndo);
+			Assert.IsFalse(s.CanRedo);
+			AssertCanvasDesignerOutput(@"<Button Click=""OnClick2"" />", button.Context);
+			
+			s.Undo();
+			Assert.IsTrue(s.CanUndo);
+			Assert.IsTrue(s.CanRedo);
+			AssertCanvasDesignerOutput(@"<Button Click=""OnClick"" />", button.Context);
+			
+			s.Undo();
+			Assert.IsFalse(s.CanUndo);
+			Assert.IsTrue(s.CanRedo);
+			AssertCanvasDesignerOutput(@"<Button />", button.Context);
+			
+			s.Redo();
+			Assert.IsTrue(s.CanUndo);
+			Assert.IsTrue(s.CanRedo);
+			AssertCanvasDesignerOutput(@"<Button Click=""OnClick"" />", button.Context);
+			AssertLog("");
+		}
+		
+		[Test]
 		public void UndoRedoChangeGroupTest()
 		{
 			DesignItem button = CreateCanvasContext("<Button/>");

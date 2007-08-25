@@ -31,6 +31,14 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 		}
 		
 		/// <summary>
+		/// Gets/Sets the value of the "x:class" property on the root item.
+		/// </summary>
+		public string ClassName {
+			get { return _doc.RootElement.GetXamlAttribute("class"); }
+			set { _doc.RootElement.SetXamlAttribute("class", value); }
+		}
+		
+		/// <summary>
 		/// Creates a new XamlDesignContext instance.
 		/// </summary>
 		public XamlDesignContext(XmlReader xamlReader, XamlLoadSettings loadSettings)
@@ -43,7 +51,7 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			this.Services.AddService(typeof(ISelectionService), new DefaultSelectionService());
 			this.Services.AddService(typeof(IToolService), new DefaultToolService(this));
 			this.Services.AddService(typeof(UndoService), new UndoService());
-			this.Services.AddService(typeof(IErrorService), new DefaultErrorService());
+			this.Services.AddService(typeof(IErrorService), new DefaultErrorService(this));
 			this.Services.AddService(typeof(ViewService), new DefaultViewService(this));
 			this.Services.AddService(typeof(OptionService), new OptionService());
 			
@@ -55,6 +63,11 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			
 			foreach (Action<XamlDesignContext> action in loadSettings.CustomServiceRegisterFunctions) {
 				action(this);
+			}
+			
+			// register default versions of overridable services:
+			if (this.Services.GetService(typeof(ITopLevelWindowService)) == null) {
+				this.Services.AddService(typeof(ITopLevelWindowService), new WpfTopLevelWindowService());
 			}
 			
 			// register extensions from the designer assemblies:

@@ -186,7 +186,7 @@ OverloadableBinaryOp("+", "-", "*", "/", "%", "&", "|", "^", "<<", "==", "!=", "
 TypeKW("char", "bool", "object", "string", "sbyte", "byte", "short", "ushort", "int", "uint", "long", "ulong", "float", "double", "decimal")
 UnaryHead("+", "-", "!", "~", "*", "++", "--", "&")
 AssnStartOp("+", "-", "!", "~", "*")
-CastFollower(@IdentifierTokens, Literal, "(", "new", "this", "base", "null", "checked", "unchecked", "typeof", "sizeof", "delegate", @OverloadableUnaryOp, @UnaryOp)
+CastFollower(@SimpleTypeName, Literal, "(", "~", "!", @ExpressionStart)
 AssgnOps("=", "+=", "-=", "*=", "/=", "%=", "&=", "|=", "<<=")
 UnaryOp("+", "-", "!", "~", "*", "++", "--", "&")
 TypeDeclarationKW("class", "interface", "struct", "enum", "delegate")

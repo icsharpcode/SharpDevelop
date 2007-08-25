@@ -12,41 +12,18 @@ using System.Windows;
 namespace ICSharpCode.WpfDesign.PropertyEditor
 {
 	/// <summary>
-	/// wraps a DesignItemDataProperty for the property editor/grid.
+	/// wraps a DesignItemDataProperty (with IsEvent=false) for the property editor/grid.
 	/// </summary>
-	sealed class DesignItemDataProperty : IPropertyEditorDataProperty
+	sealed class DesignItemDataProperty : DesignItemDataMember, IPropertyEditorDataProperty
 	{
-		readonly DesignItemDataSource ownerDataSource;
-		readonly DesignItemProperty property;
-		
 		internal DesignItemDataProperty(DesignItemDataSource ownerDataSource, DesignItemProperty property)
+			: base(ownerDataSource, property)
 		{
-			Debug.Assert(ownerDataSource != null);
-			Debug.Assert(property != null);
-			
-			this.ownerDataSource = ownerDataSource;
-			this.property = property;
-		}
-		
-		public IPropertyEditorDataSource OwnerDataSource {
-			get { return ownerDataSource; }
+			Debug.Assert(!property.IsEvent);
 		}
 		
 		public string Category {
 			get { return property.Category; }
-		}
-		
-		public string Name {
-			get { return property.Name; }
-		}
-		
-		public object GetDescription()
-		{
-			IPropertyDescriptionService p = ownerDataSource.DesignItem.Services.GetService<IPropertyDescriptionService>();
-			if (p != null)
-				return p.GetDescription(property);
-			else
-				return null;
 		}
 		
 		public System.ComponentModel.TypeConverter TypeConverter {
@@ -90,20 +67,6 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 		public event EventHandler ValueChanged {
 			add { property.ValueChanged += value; }
 			remove { property.ValueChanged -= value; }
-		}
-		
-		/// <summary>
-		/// Gets the type of the property value.
-		/// </summary>
-		public Type ReturnType {
-			get { return property.ReturnType; }
-		}
-		
-		/// <summary>
-		/// Gets the type that declares the property.
-		/// </summary>
-		public Type DeclaringType {
-			get { return property.DeclaringType; }
 		}
 		
 		public bool CanUseCustomExpression {

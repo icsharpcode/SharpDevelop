@@ -361,6 +361,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public virtual void Dispose()
 		{
 			workbenchWindow = null;
+			UnregisterOnActiveViewContentChanged();
 			if (AutomaticallyRegisterViewOnFiles) {
 				this.Files.Clear();
 			}
@@ -408,6 +409,55 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		
 		public event EventHandler IsDirtyChanged;
+		#endregion
+		
+		#region IsActiveViewContent
+		EventHandler isActiveViewContentChanged;
+		bool registeredOnViewContentChange;
+		bool wasActiveViewContent;
+		
+		/// <summary>
+		/// Gets if this view content is the active view content.
+		/// </summary>
+		protected bool IsActiveViewContent {
+			get { return WorkbenchSingleton.Workbench.ActiveViewContent == this; }
+		}
+		
+		/// <summary>
+		/// Is raised when the value of the IsActiveViewContent property changes.
+		/// </summary>
+		protected event EventHandler IsActiveViewContentChanged {
+			add {
+				if (!registeredOnViewContentChange) {
+					// register WorkbenchSingleton.Workbench.ActiveViewContentChanged only on demand
+					wasActiveViewContent = IsActiveViewContent;
+					WorkbenchSingleton.Workbench.ActiveViewContentChanged += OnActiveViewContentChanged;
+					registeredOnViewContentChange = true;
+				}
+				isActiveViewContentChanged += value;
+			}
+			remove {
+				isActiveViewContentChanged -= value;
+			}
+		}
+		
+		void UnregisterOnActiveViewContentChanged()
+		{
+			if (registeredOnViewContentChange) {
+				WorkbenchSingleton.Workbench.ActiveViewContentChanged -= OnActiveViewContentChanged;
+				registeredOnViewContentChange = false;
+			}
+		}
+		
+		void OnActiveViewContentChanged(object sender, EventArgs e)
+		{
+			bool isActiveViewContent = IsActiveViewContent;
+			if (isActiveViewContent != wasActiveViewContent) {
+				wasActiveViewContent = isActiveViewContent;
+				if (isActiveViewContentChanged != null)
+					isActiveViewContentChanged(this, e);
+			}
+		}
 		#endregion
 		
 		public virtual void RedrawContent()

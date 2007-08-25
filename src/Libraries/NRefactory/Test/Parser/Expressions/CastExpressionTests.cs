@@ -107,6 +107,40 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			Assert.IsTrue(ce.Expression is FieldReferenceExpression);
 			Assert.AreEqual(CastType.Cast, ce.CastType);
 		}
+		
+		[Test]
+		public void CSharpTryCastParenthesizedExpression()
+		{
+			CastExpression ce = ParseUtilCSharp.ParseExpression<CastExpression>("(o) as string");
+			Assert.AreEqual("string", ce.CastTo.ToString());
+			Assert.IsTrue(ce.Expression is ParenthesizedExpression);
+			Assert.AreEqual(CastType.TryCast, ce.CastType);
+		}
+		
+		[Test]
+		public void CSharpCastNegation()
+		{
+			CastExpression ce = ParseUtilCSharp.ParseExpression<CastExpression>("(uint)-negativeValue");
+			Assert.AreEqual("uint", ce.CastTo.ToString());
+			Assert.IsTrue(ce.Expression is UnaryOperatorExpression);
+			Assert.AreEqual(CastType.Cast, ce.CastType);
+		}
+		
+		[Test]
+		public void CSharpSubtractionIsNotCast()
+		{
+			BinaryOperatorExpression boe = ParseUtilCSharp.ParseExpression<BinaryOperatorExpression>("(BigInt)-negativeValue");
+			Assert.IsTrue(boe.Left is ParenthesizedExpression);
+			Assert.IsTrue(boe.Right is IdentifierExpression);
+		}
+		
+		[Test]
+		public void CSharpIntMaxValueToBigInt()
+		{
+			CastExpression ce = ParseUtilCSharp.ParseExpression<CastExpression>("(BigInt)int.MaxValue");
+			Assert.AreEqual("BigInt", ce.CastTo.ToString());
+			Assert.IsTrue(ce.Expression is FieldReferenceExpression);
+		}
 		#endregion
 		
 		#region VB.NET

@@ -77,11 +77,9 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		
 		Expression CheckPropertyInitializationExpression(Expression e, string name)
 		{
-			Assert.IsInstanceOfType(typeof(AssignmentExpression), e);
-			Expression left = ((AssignmentExpression)e).Left;
-			Assert.IsInstanceOfType(typeof(IdentifierExpression), left);
-			Assert.AreEqual(name, ((IdentifierExpression)left).Identifier);
-			return ((AssignmentExpression)e).Right;
+			Assert.IsInstanceOfType(typeof(NamedArgumentExpression), e);
+			Assert.AreEqual(name, ((NamedArgumentExpression)e).Name);
+			return ((NamedArgumentExpression)e).Expression;
 		}
 		
 		void CheckPointObjectCreation(ObjectCreateExpression oce)

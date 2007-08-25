@@ -24,6 +24,5 @@ namespace ICSharpCode.FormsDesigner
 		void MergeFormChanges(CodeCompileUnit unit);
 		bool InsertComponentEvent(IComponent component, EventDescriptor edesc, string eventMethodName, string body, out string file, out int position);
 		ICollection GetCompatibleMethods(EventDescriptor edesc);
-		ICollection GetCompatibleMethods(EventInfo edesc);
 	}
 }

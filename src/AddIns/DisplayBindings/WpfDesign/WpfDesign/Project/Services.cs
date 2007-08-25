@@ -141,7 +141,7 @@ namespace ICSharpCode.WpfDesign
 		}
 	}
 	#endregion
-
+	
 	#region IPropertyDescriptionService
 	/// <summary>
 	/// Used to get a description for properties.
@@ -165,6 +165,56 @@ namespace ICSharpCode.WpfDesign
 		/// Shows an error tool tip.
 		/// </summary>
 		void ShowErrorTooltip(FrameworkElement attachTo, UIElement errorElement);
+	}
+	#endregion
+	
+	#region IEventHandlerService
+	/// <summary>
+	/// Service for providing the designer with information about available event handlers.
+	/// </summary>
+	public interface IEventHandlerService
+	{
+		/// <summary>
+		/// Creates an event handler for the specified event.
+		/// </summary>
+		void CreateEventHandler(DesignItem item, DesignItemProperty eventProperty);
+		
+		/// <summary>
+		/// Gets the default event of the specified design item.
+		/// </summary>
+		DesignItemProperty GetDefaultEvent(DesignItem item);
+	}
+	#endregion
+	
+	#region ITopLevelWindowService
+	/// <summary>
+	/// Represents a top level window.
+	/// </summary>
+	public interface ITopLevelWindow
+	{
+		/// <summary>
+		/// Sets child.Owner to the top level window.
+		/// </summary>
+		void SetOwner(Window child);
+		
+		/// <summary>
+		/// Activates the window.
+		/// </summary>
+		bool Activate();
+	}
+	
+	/// <summary>
+	/// Provides a method to get the top-level-window of any UIElement.
+	/// If the WPF Designer is hosted inside a Windows.Forms application, the hosting environment
+	/// should specify a ITopLevelWindowService implementation that works with <b>both</b> WPF and Windows.Forms
+	/// top-level-windows.
+	/// </summary>
+	public interface ITopLevelWindowService
+	{
+		/// <summary>
+		/// Gets the top level window that contains the specified element.
+		/// </summary>
+		ITopLevelWindow GetTopLevelWindow(UIElement element);
 	}
 	#endregion
 }

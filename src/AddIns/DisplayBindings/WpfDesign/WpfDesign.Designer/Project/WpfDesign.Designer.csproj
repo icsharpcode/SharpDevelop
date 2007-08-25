@@ -60,6 +60,7 @@
     <Compile Include="Controls\AdornerLayer.cs" />
     <Compile Include="Controls\ContainerDragHandle.cs" />
     <Compile Include="Controls\GridAdorner.cs" />
+    <Compile Include="Controls\PropertyEditor\EventHandlerEditor.cs" />
     <Compile Include="Controls\SelectionFrame.cs" />
     <Compile Include="Controls\ErrorBalloon.cs" />
     <Compile Include="Controls\GrayOutDesignerExceptActiveArea.cs" />
@@ -75,6 +76,7 @@
     <Compile Include="Controls\WindowClone.cs" />
     <Compile Include="DesignPanel.cs" />
     <Compile Include="DragDropExceptionHandler.cs" />
+    <Compile Include="Extensions\ContentControlDefaultInitializer.cs" />
     <Compile Include="Extensions\GridAdornerProvider.cs" />
     <Compile Include="Extensions\GridPlacementSupport.cs" />
     <Compile Include="ModelTools.cs" />
@@ -100,6 +102,7 @@
     <Compile Include="Services\UndoService.cs" />
     <Compile Include="Services\ViewService.cs" />
     <Compile Include="DesignSurface.cs" />
+    <Compile Include="Services\WpfTopLevelWindowService.cs" />
     <Compile Include="SharedInstances.cs" />
     <Compile Include="Xaml\XamlLoadSettings.cs" />
     <Compile Include="Xaml\XamlModelCollectionElementsCollection.cs" />

@@ -1,4 +1,4 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
     <ProjectGuid>{9A9D6FD4-6A2E-455D-ACC3-DDA775FE9865}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -11,6 +11,7 @@
     <NoStdLib>False</NoStdLib>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -52,10 +53,12 @@
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="Src\EventHandlerService.cs" />
     <Compile Include="Src\FileUriContext.cs" />
     <Compile Include="Src\MyTypeFinder.cs" />
     <Compile Include="Src\PropertyDescriptionService.cs" />
     <Compile Include="Src\SharpDevelopElementHost.cs" />
+    <Compile Include="Src\WpfAndWinFormsTopLevelWindowService.cs" />
     <Compile Include="Src\WpfDisplayBinding.cs" />
     <Compile Include="Src\WpfSideTabItem.cs" />
     <Compile Include="Src\WpfToolbox.cs" />

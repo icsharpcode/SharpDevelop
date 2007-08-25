@@ -17,12 +17,12 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 	// Creates ToolTip and ContextMenu objects on-demand.
 	sealed class PropertyNameTextBlock : TextBlock
 	{
-		readonly IPropertyEditorDataProperty property;
+		readonly IPropertyEditorDataMember property;
 		readonly DockPanel toolTipDockPanel;
 		bool toolTipInitialized;
 		internal DependencyPropertyDotButton ContextMenuProvider;
 		
-		public PropertyNameTextBlock(IPropertyEditorDataProperty property)
+		public PropertyNameTextBlock(IPropertyEditorDataMember property)
 			: base(new Run(property.Name))
 		{
 			this.property = property;

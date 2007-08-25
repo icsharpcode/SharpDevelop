@@ -55,6 +55,11 @@ namespace ICSharpCode.WpfDesign
 		public abstract bool IsCollection { get; }
 		
 		/// <summary>
+		/// Gets if the property represents an event.
+		/// </summary>
+		public abstract bool IsEvent { get; }
+		
+		/// <summary>
 		/// Gets the elements represented by the collection.
 		/// </summary>
 		public abstract IList<DesignItem> CollectionElements { get; }

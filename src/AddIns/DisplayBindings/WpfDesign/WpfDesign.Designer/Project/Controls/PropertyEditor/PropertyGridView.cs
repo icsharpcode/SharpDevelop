@@ -8,6 +8,7 @@
 using System;
 using System.Windows;
 using System.Windows.Documents;
+using System.Windows.Input;
 using System.Windows.Data;
 using System.Windows.Controls;
 using ICSharpCode.WpfDesign.PropertyEditor;
@@ -66,6 +67,36 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 			SetColumn(dotButton, 2);
 			this.Children.Add(dotButton);
 			propertyNameText.ContextMenuProvider = dotButton;
+		}
+		
+		/// <summary>
+		/// Adds a new event to the PropertyGridView.
+		/// </summary>
+		public void AddEvent(IPropertyEditorDataEvent dataEvent)
+		{
+			this.RowDefinitions.Add(new RowDefinition());
+			
+			// Column 0: name of the event
+			PropertyNameTextBlock propertyNameText = new PropertyNameTextBlock(dataEvent);
+			propertyNameText.Margin = new Thickness(0, 0, 2, 0);
+			SetRow(propertyNameText, this.RowDefinitions.Count - 1);
+			SetColumn(propertyNameText, 0);
+			this.Children.Add(propertyNameText);
+			
+			// Column 1: the actual property editor
+			EventHandlerEditor editor = new EventHandlerEditor(dataEvent);
+			SetRow(editor, this.RowDefinitions.Count - 1);
+			SetColumn(editor, 1);
+			this.Children.Add(editor);
+			
+			propertyNameText.MouseDown += delegate(object sender, MouseButtonEventArgs e) {
+				if (e.ChangedButton == MouseButton.Left && e.ClickCount == 2) {
+					e.Handled = true;
+					editor.DoubleClick();
+				}
+			};
+			
+			// Column 2: empty
 		}
 	}
 }

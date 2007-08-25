@@ -79,7 +79,7 @@ namespace ICSharpCode.WpfDesign.Designer
 		
 		void ShowEventsButton_Click(object sender, RoutedEventArgs e)
 		{
-			
+			ShowEvents(this.EditedObject);
 		}
 		
 		bool useCategories = false;
@@ -92,7 +92,7 @@ namespace ICSharpCode.WpfDesign.Designer
 			
 			if (useCategories) {
 				List<PropertyEditorCategoryView> categories = new List<PropertyEditorCategoryView>();
-				foreach (IPropertyEditorDataProperty p in Func.Sort(dataSource.Properties, ComparePropertyNames)) {
+				foreach (IPropertyEditorDataProperty p in Func.Sort(dataSource.Properties, CompareMemberNames)) {
 					if (p.Name == "Name") {
 						continue;
 					}
@@ -111,7 +111,7 @@ namespace ICSharpCode.WpfDesign.Designer
 			} else {
 				PropertyGridView grid = new PropertyGridView();
 				contentStackPanel.Children.Add(grid);
-				foreach (IPropertyEditorDataProperty p in Func.Sort(dataSource.Properties, ComparePropertyNames)) {
+				foreach (IPropertyEditorDataProperty p in Func.Sort(dataSource.Properties, CompareMemberNames)) {
 					if (p.Name == "Name") {
 						continue;
 					}
@@ -120,7 +120,20 @@ namespace ICSharpCode.WpfDesign.Designer
 			}
 		}
 		
-		static int ComparePropertyNames(IPropertyEditorDataProperty p1, IPropertyEditorDataProperty p2)
+		void ShowEvents(IPropertyEditorDataSource dataSource)
+		{
+			contentStackPanel.Children.Clear();
+			if (dataSource == null)
+				return;
+			
+			PropertyGridView grid = new PropertyGridView();
+			contentStackPanel.Children.Add(grid);
+			foreach (IPropertyEditorDataEvent e in Func.Sort(dataSource.Events, CompareMemberNames)) {
+				grid.AddEvent(e);
+			}
+		}
+		
+		static int CompareMemberNames(IPropertyEditorDataMember p1, IPropertyEditorDataMember p2)
 		{
 			return p1.Name.CompareTo(p2.Name);
 		}
@@ -168,6 +181,20 @@ namespace ICSharpCode.WpfDesign.Designer
 					componentImage.Visibility = Visibility.Visible;
 				}
 			}
+		}
+		
+		void nameTextBox_KeyDown(object sender, KeyEventArgs e)
+		{
+			if (e.Handled) return;
+			if (e.Key == Key.Enter) {
+				nameTextBox.GetBindingExpression(TextBox.TextProperty).UpdateSource();
+			} else if (e.Key == Key.Escape) {
+				nameTextBox.GetBindingExpression(TextBox.TextProperty).UpdateTarget();
+			}
+		}
+		
+		public TextBox NameTextBox {
+			get { return nameTextBox; }
 		}
 	}
 }

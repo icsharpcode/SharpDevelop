@@ -337,11 +337,6 @@ namespace ICSharpCode.FormsDesigner
 			return generator.GetCompatibleMethods(edesc);
 		}
 		
-		public ICollection GetCompatibleMethods(EventInfo edesc)
-		{
-			return generator.GetCompatibleMethods(edesc);
-		}
-		
 		/*
 		protected override void OnViewActivated(EventArgs e)
 		{
