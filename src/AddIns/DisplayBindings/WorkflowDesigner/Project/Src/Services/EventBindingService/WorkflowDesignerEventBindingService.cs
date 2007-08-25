@@ -45,14 +45,14 @@ namespace WorkflowDesigner
 	{
 		string codeFileName;
 
-		protected WorkflowDesignerEventBindingService(IServiceProvider provider, string codeSeparationFileName)
+		protected WorkflowDesignerEventBindingService(IServiceProvider provider, string codeFileName)
 		{
 			this.provider = provider;
-			this.codeFileName = codeSeparationFileName;
+			this.codeFileName = codeFileName;
 		}
 
 
-		#region IWorkflowDesignerEventBinginService implementation
+		#region IWorkflowDesignerEventBindingService implementation
 		public void UpdateCodeCompileUnit()
 		{
 			LoggingService.Debug("UpdateCCU");
@@ -368,6 +368,7 @@ namespace WorkflowDesigner
 		public bool UseMethod(IComponent component, EventDescriptor eventDescriptor, string methodName)
 		{
 			LoggingService.DebugFormatted("UseMethod {0}", methodName);
+			LoggingService.DebugFormatted("CodeFileName={0}", this.codeFileName);
 			IClass  completeClass;
 
 			IDesignerHost designerHost = (IDesignerHost)this.GetService(typeof(IDesignerHost));
@@ -382,45 +383,41 @@ namespace WorkflowDesigner
 				ICompilationUnit cu = (ICompilationUnit)info.BestCompilationUnit;
 				MethodInfo methodInfo = eventDescriptor.EventType.GetMethod("Invoke");
 				
-				foreach (IClass c in cu.Classes) {
-					if (c.Name == rootDesigner.Component.Site.Name){
-						LoggingService.DebugFormatted("Got designer class!");
-						completeClass = c.GetCompoundClass();
-						
-						LoggingService.DebugFormatted("Looking for matching methods...");
-						
-						
-						foreach (IMethod method in completeClass.Methods) {
-							if ((method.Name == methodName) &&
-							    (method.Parameters.Count == methodInfo.GetParameters().Length)) {
-								bool found = true;
-								LoggingService.DebugFormatted("Name & nbr parms match, checking types...");
-								for (int i = 0; i < methodInfo.GetParameters().Length; ++i) {
-									ParameterInfo pInfo = methodInfo.GetParameters()[i];
-									IParameter p = method.Parameters[i];
-									if (p.ReturnType.FullyQualifiedName != pInfo.ParameterType.ToString()) {
-										found = false;
-										break;
-									}
-								}
-								if (found) {
-									LoggingService.DebugFormatted("Found matching method {0}", method.Name);
-									int position = GetCursorLine(t.TextEditorControl.Document, method);
-									t.TextEditorControl.ActiveTextAreaControl.JumpTo(position-1);
-									return true;
-								}
+				completeClass = cu.Classes[0].GetCompoundClass();
+				
+				LoggingService.DebugFormatted("Looking for matching methods...");
+				
+				
+				foreach (IMethod method in completeClass.Methods) {
+					if ((method.Name == methodName) &&
+					    (method.Parameters.Count == methodInfo.GetParameters().Length)) {
+						bool found = true;
+						LoggingService.DebugFormatted("Name & nbr parms match, checking types...");
+						for (int i = 0; i < methodInfo.GetParameters().Length; ++i) {
+							ParameterInfo pInfo = methodInfo.GetParameters()[i];
+							IParameter p = method.Parameters[i];
+							if (p.ReturnType.FullyQualifiedName != pInfo.ParameterType.ToString()) {
+								found = false;
+								break;
 							}
-
 						}
-						
-						LoggingService.DebugFormatted("Creating new method...");
-						int line = GetEventHandlerInsertionLine(c);
-						int offset = t.TextEditorControl.Document.GetLineSegment(line - 1).Offset;
-						t.TextEditorControl.Document.Insert(offset, CreateEventHandler(completeClass, eventDescriptor, methodName, "", "\t\t"));
-						UpdateCodeCompileUnit();
-						return ShowCode(component, eventDescriptor, methodName);
+						if (found) {
+							LoggingService.DebugFormatted("Found matching method {0}", method.Name);
+							int position = GetCursorLine(t.TextEditorControl.Document, method);
+							t.TextEditorControl.ActiveTextAreaControl.JumpTo(position-1);
+							
+							return true;
+						}
 					}
+
 				}
+				
+				LoggingService.DebugFormatted("Creating new method...");
+				int line = GetEventHandlerInsertionLine(cu.Classes[0]);
+				int offset = t.TextEditorControl.Document.GetLineSegment(line - 1).Offset;
+				t.TextEditorControl.Document.Insert(offset, CreateEventHandler(completeClass, eventDescriptor, methodName, "", "\t\t"));
+				UpdateCodeCompileUnit();
+				return ShowCode(component, eventDescriptor, methodName);
 			}
 			
 			return false;

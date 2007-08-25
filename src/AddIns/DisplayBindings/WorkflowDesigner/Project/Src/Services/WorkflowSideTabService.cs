@@ -89,7 +89,8 @@ namespace WorkflowDesigner
 				Debug.Assert(WorkbenchSingleton.InvokeRequired == false);
 				if (workflowSideBar == null) {
 					workflowSideBar = new SharpDevelopSideBar();
-					
+					workflowSideBar.Tabs.Add(standardSideTab);
+					WorkflowSideBar.ActiveTab = standardSideTab;
 				}
 				return workflowSideBar;
 			}
@@ -105,6 +106,7 @@ namespace WorkflowDesigner
 			ProjectService.SolutionClosing += SolutionClosingEventHandler;
 			
 			initialised = true;
+			
 		}
 		
 		public static void AddViewContent(IViewContent viewContent)
@@ -117,13 +119,13 @@ namespace WorkflowDesigner
 			
 			// Make sure the standard workflow sidebar exists
 			if (standardSideTab == null) {
+				LoggingService.Debug("Creating standard workflow sidetab");
 				standardSideTab = CreateSideTabFromAssembly("Workflow", new AssemblyName("System.Workflow.Activities, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35"));
 				LoadSideTabItemsFromAssembly(new AssemblyName("System.Workflow.ComponentModel, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35"), standardSideTab);
 			}
 
 			// Attach the handlers.
-			//viewContent.SwitchedTo += ViewContentActivatedEventHandler;
-			viewContent.Disposed += ViewContentDisposedEventHandler;
+			//viewContent.Disposed += ViewContentDisposedEventHandler;
 			
 			ViewCount++;
 		}
@@ -289,7 +291,9 @@ namespace WorkflowDesigner
 		{
 			foreach (ProjectItem item in project.Items) {
 				if (item is ProjectReferenceProjectItem) {
-					tabs.Add(item as ReferenceProjectItem, CreateSideTabForProjectItem(item));
+					if (File.Exists(((ProjectReferenceProjectItem)item).ReferencedProject.OutputAssemblyFullPath)){
+						tabs.Add(item as ReferenceProjectItem, CreateSideTabForProjectItem(item));
+					}
 					
 				} else 	if (item is ReferenceProjectItem) {
 					if (!item.Include.StartsWith("System")){
@@ -306,7 +310,6 @@ namespace WorkflowDesigner
 			if (item is ProjectReferenceProjectItem) {
 				ProjectReferenceProjectItem pitem = item as ProjectReferenceProjectItem;
 				assemblyName = new AssemblyName();
-				
 				assemblyName.CodeBase = pitem.ReferencedProject.OutputAssemblyFullPath;
 				return CreateSideTabFromAssembly(pitem.ReferencedProject.Name, assemblyName);
 				

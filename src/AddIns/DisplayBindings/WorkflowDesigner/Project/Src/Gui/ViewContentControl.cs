@@ -19,6 +19,7 @@ using System.Drawing.Design;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
@@ -37,6 +38,7 @@ namespace WorkflowDesigner
 		private DesignSurface designSurface;
 		private	BasicDesignerLoader loader;
 		private IViewContent viewContent;
+		private bool addedSideTab;
 
 		public ViewContentControl(IViewContent viewContent)
 		{
@@ -46,8 +48,6 @@ namespace WorkflowDesigner
 			InitializeComponent();
 			
 			this.viewContent = viewContent;
-
-			WorkflowSideTabService.AddViewContent(this.viewContent);
 			
 		}
 		
@@ -80,7 +80,16 @@ namespace WorkflowDesigner
 		
 		internal void LoadWorkflow(BasicDesignerLoader loader)
 		{
+
+			StatusBarService.SetMessage("Loading workflow " + Path.GetFileName(viewContent.PrimaryFileName) + "...");
+			Application.UseWaitCursor = true;
+			Application.DoEvents();
 			
+			if (!addedSideTab){
+				WorkflowSideTabService.AddViewContent(this.viewContent);
+				addedSideTab = true;
+			}
+
 			this.loader = loader;
 
 			try {
@@ -96,6 +105,7 @@ namespace WorkflowDesigner
 			} catch (Exception e) {
 				TextBox errorText = new TextBox();
 				errorText.Multiline = true;
+				errorText.ScrollBars = ScrollBars.Both;
 				if (!designSurface.IsLoaded && designSurface.LoadErrors != null) {
 					errorText.Text = "Error loading designer:\r\n\r\n";
 					foreach(Exception le in designSurface.LoadErrors) {
@@ -113,6 +123,9 @@ namespace WorkflowDesigner
 				title.Text = "Failed to load designer. Check the source code for syntax errors and check if all references are available.";
 				title.Dock = DockStyle.Top;
 				Controls.Add(title);
+			} finally {
+				StatusBarService.SetMessage(String.Empty);
+				Application.UseWaitCursor = false;
 			}
 		}
 		

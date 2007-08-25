@@ -160,12 +160,13 @@ namespace WorkflowDesigner
 			
 			if (item is ProjectReferenceProjectItem) {
 				ProjectReferenceProjectItem pitem = item as ProjectReferenceProjectItem;
-				AssemblyName name = new AssemblyName();
-				name.CodeBase = pitem.ReferencedProject.OutputAssemblyFullPath;
 				
 				// TODO: This is only a temporary solution so the assembly is not locked.
 				// Need to look at this in terms of using a separate domain.
-				assembly = appDomain.Load(File.ReadAllBytes(pitem.ReferencedProject.OutputAssemblyFullPath));
+				if (File.Exists(pitem.ReferencedProject.OutputAssemblyFullPath))
+					assembly = appDomain.Load(File.ReadAllBytes(pitem.ReferencedProject.OutputAssemblyFullPath));
+				
+	
 
 			} else if (item is ReferenceProjectItem) {
 				assembly = ReflectionLoader.ReflectionLoadGacAssembly(item.Include, false);
@@ -184,10 +185,8 @@ namespace WorkflowDesigner
 		private static void SolutionClosingEventHandler(object sender, SolutionEventArgs e)
 		{
 			// Remove unsed providers for closed projects.
-			foreach (IProject project in e.Solution.Projects)
-			{
-				if (Providers.ContainsKey(project))
-				{
+			foreach (IProject project in e.Solution.Projects) {
+				if (Providers.ContainsKey(project))	{
 					Providers[project].Dispose();
 					Providers.Remove(project);
 				}
@@ -222,7 +221,7 @@ namespace WorkflowDesigner
 			}
 
 			CodeCompileUnit ccu;
-	
+			
 			if (files.Count > 0) {
 				string[] s = new string[files.Count];
 				for (int i = 0; i < files.Count; i++)
@@ -238,12 +237,14 @@ namespace WorkflowDesigner
 			// Now create one ccu for each source file.
 			foreach (ProjectItem item in project.GetItemsOfType(ItemType.Compile)){
 				ICSharpCode.Core.LoggingService.Debug(item.FileName);
-				if (item is FileProjectItem) {
-					ccu = Parse(item.FileName);
-					if (ccu != null) {
-						typeProvider.AddCodeCompileUnit(ccu);
-						cp.UserCodeCompileUnits.Add(ccu);
-						CodeCompileUnits.Add(item as FileProjectItem, ccu);
+				if (item is FileProjectItem){
+					if (!Path.GetFileName(item.FileName).StartsWith("AssemblyInfo")){
+						ccu = Parse(item.FileName);
+						if (ccu != null) {
+							typeProvider.AddCodeCompileUnit(ccu);
+							cp.UserCodeCompileUnits.Add(ccu);
+							CodeCompileUnits.Add(item as FileProjectItem, ccu);
+						}
 					}
 				}
 			}
@@ -344,4 +345,5 @@ namespace WorkflowDesigner
 		}
 		
 	}
+
 }
