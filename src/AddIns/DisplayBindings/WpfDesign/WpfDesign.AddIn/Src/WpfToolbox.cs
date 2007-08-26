@@ -45,11 +45,8 @@ namespace ICSharpCode.WpfDesign.AddIn
 			sideTab.ChoosedItemChanged += OnChoosedItemChanged;
 			
 			sideTab.Items.Add(new WpfSideTabItem());
-			sideTab.Items.Add(new WpfSideTabItem(typeof(WPF.Button)));
-			sideTab.Items.Add(new WpfSideTabItem(typeof(WPF.CheckBox)));
-			sideTab.Items.Add(new WpfSideTabItem(typeof(WPF.TextBox)));
-			sideTab.Items.Add(new WpfSideTabItem(typeof(WPF.Grid)));
-			sideTab.Items.Add(new WpfSideTabItem(typeof(WPF.Canvas)));
+			foreach (Type t in Designer.DesignSurface.SupportedToolboxControls)
+				sideTab.Items.Add(new WpfSideTabItem(t));
 			
 			sideBar.Tabs.Add(sideTab);
 			sideBar.ActiveTab = sideTab;

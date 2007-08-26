@@ -24,7 +24,7 @@ using ICSharpCode.WpfDesign.PropertyEditor;
 namespace ICSharpCode.WpfDesign.AddIn
 {
 	/// <summary>
-	/// Description of WpfViewContent.
+	/// IViewContent implementation that hosts the WPF designer.
 	/// </summary>
 	public class WpfViewContent : AbstractViewContentHandlingLoadErrors, IHasPropertyContainer, IToolsHost
 	{

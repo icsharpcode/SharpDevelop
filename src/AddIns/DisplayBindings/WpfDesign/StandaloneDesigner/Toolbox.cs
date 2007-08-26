@@ -12,6 +12,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ICSharpCode.WpfDesign;
+using ICSharpCode.WpfDesign.Designer;
 using ICSharpCode.WpfDesign.Designer.Services;
 
 namespace StandaloneDesigner
@@ -35,12 +36,10 @@ namespace StandaloneDesigner
 				this.Items.Clear();
 				if (toolService != null) {
 					AddTool("Pointer", toolService.PointerTool);
-					AddTool(typeof(Button));
-					AddTool(typeof(TextBox));
-					AddTool(typeof(CheckBox));
-					AddTool(typeof(Label));
-					AddTool(typeof(Canvas));
-					AddTool(typeof(Grid));
+					
+					foreach (Type t in DesignSurface.SupportedToolboxControls)
+						AddTool(t);
+					
 					toolService.CurrentToolChanged += OnCurrentToolChanged;
 					OnCurrentToolChanged(null, null);
 				}

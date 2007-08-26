@@ -23,6 +23,38 @@ namespace ICSharpCode.WpfDesign.Designer
 	/// </summary>
 	public sealed class DesignSurface : SingleVisualChildElement
 	{
+		public static Type[] SupportedToolboxControls = {
+			typeof(Button),
+			typeof(CheckBox),
+			typeof(ComboBox),
+			typeof(Label),
+			typeof(TextBox),
+			typeof(RadioButton),
+			typeof(Canvas),
+			typeof(Grid),
+			typeof(Border),
+			typeof(DockPanel),
+			typeof(Expander),
+			typeof(GroupBox),
+			typeof(Image),
+			typeof(InkCanvas),
+			typeof(ListBox),
+			typeof(ListView),
+			typeof(Menu),
+			typeof(PasswordBox),
+			typeof(ProgressBar),
+			typeof(RichTextBox),
+			typeof(ScrollViewer),
+			typeof(Slider),
+			typeof(StackPanel),
+			typeof(TabControl),
+			typeof(ToolBar),
+			typeof(TreeView),
+			typeof(Viewbox),
+			typeof(Viewport3D),
+			typeof(WrapPanel)
+		};
+		
 		readonly ScrollViewer _scrollViewer;
 		readonly DesignPanel _designPanel;
 		DesignContext _designContext;

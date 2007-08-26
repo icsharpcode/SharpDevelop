@@ -109,7 +109,6 @@ namespace ICSharpCode.WpfDesign.Designer.Controls.TypeEditors
 			{
 			}
 			
-			EventHandler valueChangedListeners;
 			internal bool preventSetValue;
 			
 			public override object Value {
@@ -121,10 +120,8 @@ namespace ICSharpCode.WpfDesign.Designer.Controls.TypeEditors
 				}
 			}
 			
-			public override event EventHandler ValueChanged {
-				add    { valueChangedListeners += value; }
-				remove { valueChangedListeners -= value; }
-			}
+			// don't forward add/remove calls to the underlying property, but register them here
+			public override event EventHandler ValueChanged;
 			
 			public override System.ComponentModel.TypeConverter TypeConverter {
 				get { return System.ComponentModel.TypeDescriptor.GetConverter(typeof(string)); }
@@ -132,8 +129,8 @@ namespace ICSharpCode.WpfDesign.Designer.Controls.TypeEditors
 			
 			internal void RaiseValueChanged()
 			{
-				if (valueChangedListeners != null) {
-					valueChangedListeners(this, EventArgs.Empty);
+				if (ValueChanged != null) {
+					ValueChanged(this, EventArgs.Empty);
 				}
 			}
 		}

@@ -73,6 +73,8 @@
     <Compile Include="Controls\SingleVisualChildElement.cs" />
     <Compile Include="Controls\TypeEditors\BrushEditor.cs" />
     <Compile Include="Controls\TypeEditors\ContentEditor.cs" />
+    <Compile Include="Controls\TypeEditors\CursorEditor.cs" />
+    <Compile Include="Controls\TypeEditors\NullableBoolEditor.cs" />
     <Compile Include="Controls\WindowClone.cs" />
     <Compile Include="DesignPanel.cs" />
     <Compile Include="DragDropExceptionHandler.cs" />
