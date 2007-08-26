@@ -80,6 +80,8 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		/// </summary>
 		public static List<Reference> FindReferences(IMember member, IProgressMonitor progressMonitor)
 		{
+			if (member == null)
+				throw new ArgumentNullException("member");
 			return RunFindReferences(member.DeclaringType, member, false, progressMonitor);
 		}
 		

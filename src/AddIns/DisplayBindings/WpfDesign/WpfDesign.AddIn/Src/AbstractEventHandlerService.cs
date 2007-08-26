@@ -7,26 +7,28 @@
 
 using System;
 using System.ComponentModel;
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Project;
-using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.Core;
+using System.IO;
 using System.Windows.Controls;
+
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.WpfDesign.AddIn
 {
-	sealed class EventHandlerService : IEventHandlerService
+	abstract class AbstractEventHandlerService : IEventHandlerService
 	{
 		WpfViewContent viewContent;
 		
-		public EventHandlerService(WpfViewContent viewContent)
+		protected AbstractEventHandlerService(WpfViewContent viewContent)
 		{
 			if (viewContent == null)
 				throw new ArgumentNullException("viewContent");
 			this.viewContent = viewContent;
 		}
 		
-		IProjectContent GetProjectContent()
+		protected IProjectContent GetProjectContent()
 		{
 			IProject p = ProjectService.OpenSolution.FindProjectContainingFile(viewContent.PrimaryFileName);
 			if (p != null)
@@ -35,25 +37,47 @@ namespace ICSharpCode.WpfDesign.AddIn
 				return ParserService.DefaultProjectContent;
 		}
 		
-		public void CreateEventHandler(DesignItem item, DesignItemProperty eventProperty)
+		protected IClass GetDesignedClass()
 		{
-			/*Designer.Xaml.XamlDesignContext xamlContext = item.Context as Designer.Xaml.XamlDesignContext;
+			Designer.Xaml.XamlDesignContext xamlContext = viewContent.DesignContext as Designer.Xaml.XamlDesignContext;
 			if (xamlContext != null) {
 				string className = xamlContext.ClassName;
 				if (!string.IsNullOrEmpty(className)) {
-					IClass c = GetProjectContent().GetClass(className, 0);
-					if (c != null && !string.IsNullOrEmpty(c.CompilationUnit.FileName)) {
-						
-					}
+					return GetProjectContent().GetClass(className, 0);
 				}
 			}
-			
-			return;
-			*/
-			
+			return null;
+		}
+		
+		protected IClass GetDesignedClassCodeBehindPart(IClass c)
+		{
+			CompoundClass compound = c as CompoundClass;
+			if (compound != null) {
+				c = null;
+				foreach (IClass part in compound.GetParts()) {
+					if (string.IsNullOrEmpty(part.CompilationUnit.FileName))
+						continue;
+					if (".xaml".Equals(Path.GetExtension(part.CompilationUnit.FileName), StringComparison.OrdinalIgnoreCase))
+						continue;
+					if (c == null || c.CompilationUnit.FileName.Length > part.CompilationUnit.FileName.Length)
+						c = part;
+				}
+			}
+			return c;
+		}
+		
+		protected abstract void CreateEventHandlerInternal(Type eventHandlerType, string handlerName);
+		
+		public void CreateEventHandler(DesignItem item, DesignItemProperty eventProperty)
+		{
 			string handlerName = (string)eventProperty.ValueOnInstance;
 			if (string.IsNullOrEmpty(handlerName)) {
 				if (string.IsNullOrEmpty(item.Name)) {
+					PadDescriptor padContent = WorkbenchSingleton.Workbench.GetPad(typeof(PropertyPad));
+					if (padContent != null) {
+						padContent.BringPadToFront();
+					}
+					
 					// cannot create event for unnamed controls
 					if (viewContent.PropertyEditor.NameTextBox.Focus()) {
 						IErrorService errorService = item.Context.Services.GetService<IErrorService>();
@@ -69,8 +93,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 				handlerName = item.Name + eventProperty.Name;
 				eventProperty.SetValue(handlerName);
 			}
-			
-			//viewContent.PrimaryFileName + ".cs"
+			CreateEventHandlerInternal(eventProperty.ReturnType, handlerName);
 		}
 		
 		public DesignItemProperty GetDefaultEvent(DesignItem item)

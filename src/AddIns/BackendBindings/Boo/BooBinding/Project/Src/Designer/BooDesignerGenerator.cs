@@ -106,10 +106,10 @@ namespace Grunwald.BooBinding.Designer
 			return null;
 		}
 		
-		protected override string CreateEventHandler(EventDescriptor edesc, string eventMethodName, string body, string indentation)
+		protected override string CreateEventHandler(Type eventType, string eventMethodName, string body, string indentation)
 		{
 			if (string.IsNullOrEmpty(body)) body = "pass";
-			string param = GenerateParams(edesc);
+			string param = GenerateParams(eventType);
 			
 			StringBuilder b = new StringBuilder();
 			b.AppendLine(indentation);
@@ -134,10 +134,9 @@ namespace Grunwald.BooBinding.Designer
 			return c.Region.EndLine + 1;
 		}
 		
-		protected static string GenerateParams(EventDescriptor edesc)
+		protected static string GenerateParams(Type eventType)
 		{
-			Type type =  edesc.EventType;
-			MethodInfo mInfo = type.GetMethod("Invoke");
+			MethodInfo mInfo = eventType.GetMethod("Invoke");
 			string param = "";
 			
 			for (int i = 0; i < mInfo.GetParameters().Length; ++i)  {

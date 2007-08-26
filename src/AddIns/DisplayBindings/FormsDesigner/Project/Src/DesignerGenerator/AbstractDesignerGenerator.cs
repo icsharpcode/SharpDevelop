@@ -29,7 +29,7 @@ namespace ICSharpCode.FormsDesigner
 	public abstract class AbstractDesignerGenerator : IDesignerGenerator
 	{
 		/// <summary>The currently open part of the class being designed.</summary>
-		IClass  c;
+		protected IClass currentClassPart;
 		/// <summary>The complete class being designed.</summary>
 		IClass  completeClass;
 		/// <summary>The class part containing the designer code.</summary>
@@ -341,9 +341,9 @@ namespace ICSharpCode.FormsDesigner
 							for (int i = 1; i < count; i++)
 								r.ReadLine();
 							string line = r.ReadLine();
-							tabs = line.Substring(0, line.Length - line.TrimStart().Length);
+							tabs = GetIndentation(line);
 						}
-						this.c = c;
+						this.currentClassPart = c;
 						this.completeClass = c.GetCompoundClass();
 						this.formClass = initializeComponents.DeclaringType;
 						break;
@@ -352,7 +352,12 @@ namespace ICSharpCode.FormsDesigner
 			}
 		}
 		
-		protected abstract string CreateEventHandler(EventDescriptor edesc, string eventMethodName, string body, string indentation);
+		protected static string GetIndentation(string line)
+		{
+			return line.Substring(0, line.Length - line.TrimStart().Length);
+		}
+		
+		protected abstract string CreateEventHandler(Type eventType, string eventMethodName, string body, string indentation);
 		
 		protected virtual int GetCursorLine(IDocument document, IMethod method)
 		{
@@ -374,7 +379,7 @@ namespace ICSharpCode.FormsDesigner
 		{
 			if (this.failedDesignerInitialize) {
 				position = 0;
-				file = c.CompilationUnit.FileName;
+				file = currentClassPart.CompilationUnit.FileName;
 				return false;
 			}
 
@@ -390,12 +395,12 @@ namespace ICSharpCode.FormsDesigner
 			viewContent.MergeFormChanges();
 			Reparse();
 			
-			file = c.CompilationUnit.FileName;
-			int line = GetEventHandlerInsertionLine(c);
+			file = currentClassPart.CompilationUnit.FileName;
+			int line = GetEventHandlerInsertionLine(currentClassPart);
 			
 			int offset = viewContent.Document.GetLineSegment(line - 1).Offset;
 			
-			viewContent.Document.Insert(offset, CreateEventHandler(edesc, eventMethodName, body, tabs));
+			viewContent.Document.Insert(offset, CreateEventHandler(edesc.EventType, eventMethodName, body, tabs));
 			position = line + GetCursorLineAfterEventHandlerCreation();
 			
 			return true;
@@ -404,10 +409,10 @@ namespace ICSharpCode.FormsDesigner
 		/// <summary>
 		/// Gets a method implementing the signature specified by the event descriptor
 		/// </summary>
-		protected IMethod ConvertDescriptorToDom(EventDescriptor edesc, string methodName)
+		protected static IMethod ConvertEventInvokeMethodToDom(IClass declaringType, Type eventType, string methodName)
 		{
-			MethodInfo mInfo = edesc.EventType.GetMethod("Invoke");
-			DefaultMethod m = new DefaultMethod(completeClass, methodName);
+			MethodInfo mInfo = eventType.GetMethod("Invoke");
+			DefaultMethod m = new DefaultMethod(declaringType, methodName);
 			m.ReturnType = ReflectionLayer.ReflectionReturnType.Create(m, mInfo.ReturnType, false);
 			foreach (ParameterInfo pInfo in mInfo.GetParameters()) {
 				m.Parameters.Add(new ReflectionLayer.ReflectionParameter(pInfo, m));
@@ -418,12 +423,15 @@ namespace ICSharpCode.FormsDesigner
 		/// <summary>
 		/// Gets a method implementing the signature specified by the event descriptor
 		/// </summary>
-		protected ICSharpCode.NRefactory.Ast.MethodDeclaration
-			ConvertDescriptorToNRefactory(EventDescriptor edesc, string methodName)
+		protected static ICSharpCode.NRefactory.Ast.MethodDeclaration
+			ConvertEventInvokeMethodToNRefactory(IClass context, Type eventType, string methodName)
 		{
+			if (context == null)
+				throw new ArgumentNullException("context");
+			
 			return ICSharpCode.SharpDevelop.Dom.Refactoring.CodeGenerator.ConvertMember(
-				ConvertDescriptorToDom(edesc, methodName),
-				new ClassFinder(c, c.BodyRegion.BeginLine + 1, 1)
+				ConvertEventInvokeMethodToDom(context, eventType, methodName),
+				new ClassFinder(context, context.BodyRegion.BeginLine + 1, 1)
 			) as ICSharpCode.NRefactory.Ast.MethodDeclaration;
 		}
 		

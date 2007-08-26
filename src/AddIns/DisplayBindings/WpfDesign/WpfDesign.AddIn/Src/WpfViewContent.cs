@@ -31,6 +31,10 @@ namespace ICSharpCode.WpfDesign.AddIn
 		ElementHost wpfHost;
 		DesignSurface designer;
 		
+		public DesignContext DesignContext {
+			get { return designer.DesignContext; }
+		}
+		
 		public WpfViewContent(OpenedFile file) : base(file)
 		{
 			this.TabPageText = "${res:FormsDesigner.DesignTabPages.DesignTabPage}";
@@ -55,7 +59,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 					delegate(XamlDesignContext context) {
 						context.Services.AddService(typeof(IUriContext), new FileUriContext(this.PrimaryFile));
 						context.Services.AddService(typeof(IPropertyDescriptionService), new PropertyDescriptionService(this.PrimaryFile));
-						context.Services.AddService(typeof(IEventHandlerService), new EventHandlerService(this));
+						context.Services.AddService(typeof(IEventHandlerService), new CSharpEventHandlerService(this));
 						context.Services.AddService(typeof(ITopLevelWindowService), new WpfAndWinFormsTopLevelWindowService());
 					});
 				settings.TypeFinder = MyTypeFinder.Create(this.PrimaryFile);

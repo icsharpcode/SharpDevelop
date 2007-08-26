@@ -34,8 +34,8 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 		/// Gets/Sets the value of the "x:class" property on the root item.
 		/// </summary>
 		public string ClassName {
-			get { return _doc.RootElement.GetXamlAttribute("class"); }
-			set { _doc.RootElement.SetXamlAttribute("class", value); }
+			get { return _doc.RootElement.GetXamlAttribute("Class"); }
+			//set { _doc.RootElement.SetXamlAttribute("Class", value); }
 		}
 		
 		/// <summary>

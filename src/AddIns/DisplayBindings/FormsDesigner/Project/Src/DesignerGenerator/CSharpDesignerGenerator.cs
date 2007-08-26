@@ -14,6 +14,7 @@ using System.Text;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.TextEditor;
+using ICSharpCode.TextEditor.Document;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.PrettyPrinter;
 
@@ -21,7 +22,7 @@ namespace ICSharpCode.FormsDesigner
 {
 	public class CSharpDesignerGenerator : AbstractDesignerGenerator
 	{
-		protected override DomRegion GetReplaceRegion(ICSharpCode.TextEditor.Document.IDocument document, IMethod method)
+		protected override DomRegion GetReplaceRegion(IDocument document, IMethod method)
 		{
 			return new DomRegion(GetCursorLine(document, method), 1, method.BodyRegion.EndLine, 1);
 		}
@@ -31,9 +32,9 @@ namespace ICSharpCode.FormsDesigner
 			return new Microsoft.CSharp.CSharpCodeProvider();
 		}
 		
-		protected override string CreateEventHandler(EventDescriptor edesc, string eventMethodName, string body, string indentation)
+		protected override string CreateEventHandler(Type eventType, string eventMethodName, string body, string indentation)
 		{
-			string param = GenerateParams(edesc, true);
+			string param = GenerateParams(eventType, true);
 			
 			StringBuilder b = new StringBuilder();
 			b.AppendLine(indentation);
@@ -54,7 +55,7 @@ namespace ICSharpCode.FormsDesigner
 			return 3;
 		}
 		
-		protected override int GetCursorLine(ICSharpCode.TextEditor.Document.IDocument document, IMethod method)
+		protected override int GetCursorLine(IDocument document, IMethod method)
 		{
 			if (document == null)
 				throw new ArgumentNullException("document");
@@ -76,14 +77,40 @@ namespace ICSharpCode.FormsDesigner
 			return r.BeginLine + 2;
 		}
 		
-		protected string GenerateParams(EventDescriptor edesc, bool paramNames)
+		protected string GenerateParams(Type eventType, bool paramNames)
 		{
 			CSharpOutputVisitor v = new CSharpOutputVisitor();
-			MethodDeclaration md = ConvertDescriptorToNRefactory(edesc, "name");
+			MethodDeclaration md = ConvertEventInvokeMethodToNRefactory(currentClassPart, eventType, "name");
 			if (md != null) {
 				v.AppendCommaSeparatedList(md.Parameters);
 			}
 			return v.Text;
+		}
+		
+		// static method that for use by the WPF designer
+		public static void CreateComponentEvent(
+			IClass c, IDocument document,
+			Type eventType, string eventMethodName, string body, out int lineNumber)
+		{
+			if (c == null)
+				throw new ArgumentNullException("c");
+			if (document == null)
+				throw new ArgumentNullException("document");
+			if (eventType == null)
+				throw new ArgumentNullException("edesc");
+			
+			CSharpDesignerGenerator gen = new CSharpDesignerGenerator();
+			
+			gen.currentClassPart = c;
+			int line = gen.GetEventHandlerInsertionLine(c);
+			
+			int offset = document.GetLineSegment(line - 1).Offset;
+			
+			string tabs = SharpDevelop.DefaultEditor.Gui.Editor.SharpDevelopTextEditorProperties.Instance.IndentationString;
+			tabs += tabs;
+			
+			document.Insert(offset, gen.CreateEventHandler(eventType, eventMethodName, body, tabs));
+			lineNumber = line + gen.GetCursorLineAfterEventHandlerCreation();
 		}
 	}
 }

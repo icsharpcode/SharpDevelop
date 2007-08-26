@@ -30,9 +30,9 @@ namespace ICSharpCode.FormsDesigner
 			return new DomRegion(r.BeginLine + 1, 1, r.EndLine, 1);
 		}
 		
-		protected override string CreateEventHandler(EventDescriptor edesc, string eventMethodName, string body, string indentation)
+		protected override string CreateEventHandler(Type eventType, string eventMethodName, string body, string indentation)
 		{
-			string param = GenerateParams(edesc);
+			string param = GenerateParams(eventType);
 			
 			StringBuilder b = new StringBuilder();
 			b.AppendLine(indentation);
@@ -47,10 +47,10 @@ namespace ICSharpCode.FormsDesigner
 			return b.ToString();
 		}
 		
-		protected string GenerateParams(EventDescriptor edesc)
+		protected string GenerateParams(Type eventType)
 		{
 			VBNetOutputVisitor v = new VBNetOutputVisitor();
-			MethodDeclaration md = ConvertDescriptorToNRefactory(edesc, "name");
+			MethodDeclaration md = ConvertEventInvokeMethodToNRefactory(currentClassPart, eventType, "name");
 			if (md != null) {
 				v.AppendCommaSeparatedList(md.Parameters);
 			}
