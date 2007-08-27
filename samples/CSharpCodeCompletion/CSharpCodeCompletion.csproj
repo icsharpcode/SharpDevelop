@@ -51,6 +51,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CodeCompletionData.cs" />
     <Compile Include="MainForm.cs" />
     <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
@@ -62,6 +63,7 @@
     <Compile Include="CodeCompletionProvider.cs" />
     <Compile Include="CodeCompletionKeyHandler.cs" />
     <Compile Include="HostCallbackImplementation.cs" />
+    <Compile Include="ToolTipProvider.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

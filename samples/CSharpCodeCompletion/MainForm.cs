@@ -80,8 +80,9 @@ class MainClass
 ";
 			textEditorControl1.SetHighlighting("C#");
 			textEditorControl1.ShowEOLMarkers = false;
-			CodeCompletionKeyHandler.Attach(this, textEditorControl1);
 			HostCallbackImplementation.Register(this);
+			CodeCompletionKeyHandler.Attach(this, textEditorControl1);
+			ToolTipProvider.Attach(this, textEditorControl1);
 			
 			pcRegistry = new Dom.ProjectContentRegistry(); // Default .NET 2.0 registry
 			
