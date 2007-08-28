@@ -80,6 +80,7 @@ class MainClass
 ";
 			textEditorControl1.SetHighlighting("C#");
 			textEditorControl1.ShowEOLMarkers = false;
+			textEditorControl1.ShowInvalidLines = false;
 			HostCallbackImplementation.Register(this);
 			CodeCompletionKeyHandler.Attach(this, textEditorControl1);
 			ToolTipProvider.Attach(this, textEditorControl1);
@@ -118,11 +119,13 @@ class MainClass
 				"System", "System.Data", "System.Drawing", "System.Xml", "System.Windows.Forms"
 			};
 			foreach (string assemblyName in referencedAssemblies) {
-				{ // block for anonymous method
-					string assemblyNameCopy = assemblyName;
-					BeginInvoke(new MethodInvoker(delegate { parserThreadLabel.Text = "Loading " + assemblyNameCopy + "..."; }));
+				string assemblyNameCopy = assemblyName; // copy for anonymous method
+				BeginInvoke(new MethodInvoker(delegate { parserThreadLabel.Text = "Loading " + assemblyNameCopy + "..."; }));
+				Dom.IProjectContent referenceProjectContent = pcRegistry.GetProjectContentForReference(assemblyName, assemblyName);
+				myProjectContent.AddReferencedContent(referenceProjectContent);
+				if (referenceProjectContent is Dom.ReflectionProjectContent) {
+					(referenceProjectContent as Dom.ReflectionProjectContent).InitializeReferences();
 				}
-				myProjectContent.AddReferencedContent(pcRegistry.GetProjectContentForReference(assemblyName, assemblyName));
 			}
 			BeginInvoke(new MethodInvoker(delegate { parserThreadLabel.Text = "Ready"; }));
 			

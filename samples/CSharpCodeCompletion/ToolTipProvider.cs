@@ -64,8 +64,8 @@ namespace CSharpEditor
 				TextEditor.TextArea textArea = editor.ActiveTextAreaControl.TextArea;
 				NRefactoryResolver resolver = new NRefactoryResolver(mainForm.myProjectContent, mainForm.myProjectContent.Language);
 				ResolveResult rr = resolver.Resolve(expression,
-				                                    textArea.Caret.Line,
-				                                    textArea.Caret.Column,
+				                                    e.LogicalPosition.Y + 1,
+				                                    e.LogicalPosition.X + 1,
 				                                    MainForm.DummyFileName,
 				                                    textArea.MotherTextEditorControl.Text);
 				string toolTipText = GetText(rr);
