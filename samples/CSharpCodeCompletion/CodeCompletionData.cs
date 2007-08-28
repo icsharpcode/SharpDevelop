@@ -8,9 +8,13 @@
  */
 
 using System;
-using ICSharpCode.TextEditor.Gui.CompletionWindow;
+using System.IO;
+using System.Text;
+using System.Xml;
+
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.CSharp;
+using ICSharpCode.TextEditor.Gui.CompletionWindow;
 
 namespace CSharpEditor
 {
@@ -106,7 +110,54 @@ namespace CSharpEditor
 		
 		public static string XmlDocumentationToText(string xmlDoc)
 		{
-			return xmlDoc;
+			System.Diagnostics.Debug.WriteLine(xmlDoc);
+			StringBuilder b = new StringBuilder();
+			try {
+				using (XmlTextReader reader = new XmlTextReader(new StringReader("<root>" + xmlDoc + "</root>"))) {
+					reader.XmlResolver = null;
+					while (reader.Read()) {
+						switch (reader.NodeType) {
+							case XmlNodeType.Text:
+								b.Append(reader.Value);
+								break;
+							case XmlNodeType.Element:
+								switch (reader.Name) {
+									case "filterpriority":
+										reader.Skip();
+										break;
+									case "returns":
+										b.AppendLine();
+										b.Append("Returns: ");
+										break;
+									case "param":
+										b.AppendLine();
+										b.Append(reader.GetAttribute("name") + ": ");
+										break;
+									case "remarks":
+										b.AppendLine();
+										b.Append("Remarks: ");
+										break;
+									case "see":
+										if (reader.IsEmptyElement) {
+											b.Append(reader.GetAttribute("cref"));
+										} else {
+											reader.MoveToContent();
+											if (reader.HasValue) {
+												b.Append(reader.Value);
+											} else {
+												b.Append(reader.GetAttribute("cref"));
+											}
+										}
+										break;
+								}
+								break;
+						}
+					}
+				}
+				return b.ToString();
+			} catch (XmlException) {
+				return xmlDoc;
+			}
 		}
 	}
 }
