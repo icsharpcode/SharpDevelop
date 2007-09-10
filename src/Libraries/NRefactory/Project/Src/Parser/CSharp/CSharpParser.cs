@@ -567,7 +567,12 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		
 		bool StartOfQueryExpression()
 		{
-			return la.kind == Tokens.From && IsIdentifierToken(Peek(1));
+			if (la.kind == Tokens.From) {
+				Token p = Peek(1);
+				if (IsIdentifierToken(p) || Tokens.TypeKW[p.kind])
+					return true;
+			}
+			return false;
 		}
 		
 		static bool IsIdentifierToken(Token tk)

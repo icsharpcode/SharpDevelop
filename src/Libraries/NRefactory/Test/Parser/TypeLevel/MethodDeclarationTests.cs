@@ -25,6 +25,40 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		}
 		
 		[Test]
+		public void CSharpAbstractMethodDeclarationTest()
+		{
+			MethodDeclaration md = ParseUtilCSharp.ParseTypeMember<MethodDeclaration>("abstract void MyMethod();");
+			Assert.AreEqual("void", md.TypeReference.Type);
+			Assert.AreEqual(0, md.Parameters.Count);
+			Assert.IsFalse(md.IsExtensionMethod);
+			Assert.IsTrue(md.Body.IsNull);
+			Assert.AreEqual(Modifiers.Abstract, md.Modifier);
+		}
+		
+		[Test]
+		public void CSharpDefiningPartialMethodDeclarationTest()
+		{
+			MethodDeclaration md = ParseUtilCSharp.ParseTypeMember<MethodDeclaration>("partial void MyMethod();");
+			Assert.AreEqual("void", md.TypeReference.Type);
+			Assert.AreEqual(0, md.Parameters.Count);
+			Assert.IsFalse(md.IsExtensionMethod);
+			Assert.IsTrue(md.Body.IsNull);
+			Assert.AreEqual(Modifiers.Partial, md.Modifier);
+		}
+		
+		
+		[Test]
+		public void CSharpImplementingPartialMethodDeclarationTest()
+		{
+			MethodDeclaration md = ParseUtilCSharp.ParseTypeMember<MethodDeclaration>("partial void MyMethod() { }");
+			Assert.AreEqual("void", md.TypeReference.Type);
+			Assert.AreEqual(0, md.Parameters.Count);
+			Assert.IsFalse(md.IsExtensionMethod);
+			Assert.IsFalse(md.Body.IsNull);
+			Assert.AreEqual(Modifiers.Partial, md.Modifier);
+		}
+		
+		[Test]
 		public void CSharpSimpleMethodRegionTest()
 		{
 			const string program = @"
@@ -146,6 +180,20 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			Assert.AreEqual("T", md.Templates[0].Name);
 			Assert.AreEqual(1, md.Templates[0].Bases.Count);
 			Assert.AreEqual("ISomeInterface", md.Templates[0].Bases[0].Type);
+		}
+		
+		[Test]
+		public void CSharpShadowingMethodInInterface()
+		{
+			const string program = @"interface MyInterface : IDisposable {
+	new void Dispose();
+}
+";
+			TypeDeclaration td = ParseUtilCSharp.ParseGlobal<TypeDeclaration>(program);
+			MethodDeclaration md = (MethodDeclaration)td.Children[0];
+			Assert.AreEqual("void", md.TypeReference.Type);
+			Assert.AreEqual(0, md.Parameters.Count);
+			Assert.AreEqual(Modifiers.New, md.Modifier);
 		}
 		
 		[Test]

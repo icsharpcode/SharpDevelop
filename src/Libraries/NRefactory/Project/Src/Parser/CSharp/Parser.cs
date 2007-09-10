@@ -5579,6 +5579,16 @@ QueryExpressionFromOrJoinClause fjc) {
 
 #line  2306 "cs.ATG" 
 		fjc.Type = null; 
+		if (
+#line  2307 "cs.ATG" 
+IsLocalVarDecl()) {
+			Type(
+#line  2307 "cs.ATG" 
+out type);
+
+#line  2307 "cs.ATG" 
+			fjc.Type = type; 
+		}
 		Identifier();
 
 #line  2308 "cs.ATG" 

@@ -32,6 +32,43 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		}
 		
 		[Test]
+		public void ExpressionWithType1()
+		{
+			QueryExpression qe = ParseUtilCSharp.ParseExpression<QueryExpression>(
+				"from Customer c in customers select c"
+			);
+			Assert.AreEqual("c", qe.FromClause.Identifier);
+			Assert.AreEqual("Customer", qe.FromClause.Type.ToString());
+			Assert.AreEqual("customers", ((IdentifierExpression)qe.FromClause.InExpression).Identifier);
+			Assert.IsInstanceOfType(typeof(QueryExpressionSelectClause), qe.SelectOrGroupClause);
+		}
+		
+		[Test]
+		public void ExpressionWithType2()
+		{
+			QueryExpression qe = ParseUtilCSharp.ParseExpression<QueryExpression>(
+				"from int c in customers select c"
+			);
+			Assert.AreEqual("c", qe.FromClause.Identifier);
+			Assert.AreEqual("System.Int32", qe.FromClause.Type.SystemType);
+			Assert.AreEqual("customers", ((IdentifierExpression)qe.FromClause.InExpression).Identifier);
+			Assert.IsInstanceOfType(typeof(QueryExpressionSelectClause), qe.SelectOrGroupClause);
+		}
+		
+		
+		[Test]
+		public void ExpressionWithType3()
+		{
+			QueryExpression qe = ParseUtilCSharp.ParseExpression<QueryExpression>(
+				"from S<int[]>? c in customers select c"
+			);
+			Assert.AreEqual("c", qe.FromClause.Identifier);
+			Assert.AreEqual("System.Nullable<S<int[]>>", qe.FromClause.Type.ToString());
+			Assert.AreEqual("customers", ((IdentifierExpression)qe.FromClause.InExpression).Identifier);
+			Assert.IsInstanceOfType(typeof(QueryExpressionSelectClause), qe.SelectOrGroupClause);
+		}
+		
+		[Test]
 		public void MultipleGenerators()
 		{
 			QueryExpression qe = ParseUtilCSharp.ParseExpression<QueryExpression>(@"

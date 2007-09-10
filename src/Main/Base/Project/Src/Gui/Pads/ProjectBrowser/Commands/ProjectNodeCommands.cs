@@ -36,7 +36,13 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 				return;
 			}
 			if (node.Project.IsStartable) {
-				node.Project.Start(true);
+				BuildProject build = new BuildProject(node.Project);
+				build.BuildComplete += delegate {
+					if (build.LastBuildResults.ErrorCount == 0) {
+						node.Project.Start(true);
+					}
+				};
+				build.Run();
 			} else {
 				MessageService.ShowError("${res:BackendBindings.ExecutionManager.CantExecuteDLLError}");
 			}

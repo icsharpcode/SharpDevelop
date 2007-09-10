@@ -126,6 +126,19 @@
 				<Key word = "partial" />
 				<Key word = "global" />
 				<Key word = "where" />
+				<Key word = "select" />
+				<Key word = "group" />
+				<Key word = "by" />
+				<Key word = "into" />
+				<Key word = "from" />
+				<Key word = "ascending" />
+				<Key word = "descending" />
+				<Key word = "orderby" />
+				<Key word = "let" />
+				<Key word = "join" />
+				<Key word = "on" />
+				<Key word = "equals" />
+				<Key word = "var" />
 			</KeyWords>
 			
 			<KeyWords name = "ExceptionHandlingStatements" bold="true" italic="false" color="Teal">

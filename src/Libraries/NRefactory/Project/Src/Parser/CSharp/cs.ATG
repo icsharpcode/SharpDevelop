@@ -2304,7 +2304,7 @@ QueryExpressionFromOrJoinClause<QueryExpressionFromOrJoinClause fjc>
 (. TypeReference type; Expression expr; .)
 =
 	(. fjc.Type = null; .)
-	/*[ Type<out type> (. fjc.Type = type; .) ]*/
+	[ IF (IsLocalVarDecl()) Type<out type> (. fjc.Type = type; .) ]
 	Identifier  (. fjc.Identifier = t.val; .)
 	"in"
 	Expr<out expr> (. fjc.InExpression = expr; .)
