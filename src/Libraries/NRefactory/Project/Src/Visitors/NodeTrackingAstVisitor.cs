@@ -318,13 +318,6 @@ namespace ICSharpCode.NRefactory.Visitors {
 			return result;
 		}
 		
-		public sealed override object VisitFieldReferenceExpression(FieldReferenceExpression fieldReferenceExpression, object data) {
-			this.BeginVisit(fieldReferenceExpression);
-			object result = this.TrackedVisitFieldReferenceExpression(fieldReferenceExpression, data);
-			this.EndVisit(fieldReferenceExpression);
-			return result;
-		}
-		
 		public sealed override object VisitFixedStatement(FixedStatement fixedStatement, object data) {
 			this.BeginVisit(fixedStatement);
 			object result = this.TrackedVisitFixedStatement(fixedStatement, data);
@@ -441,6 +434,13 @@ namespace ICSharpCode.NRefactory.Visitors {
 			this.BeginVisit(lockStatement);
 			object result = this.TrackedVisitLockStatement(lockStatement, data);
 			this.EndVisit(lockStatement);
+			return result;
+		}
+		
+		public sealed override object VisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression, object data) {
+			this.BeginVisit(memberReferenceExpression);
+			object result = this.TrackedVisitMemberReferenceExpression(memberReferenceExpression, data);
+			this.EndVisit(memberReferenceExpression);
 			return result;
 		}
 		
@@ -972,10 +972,6 @@ namespace ICSharpCode.NRefactory.Visitors {
 			return base.VisitFieldDeclaration(fieldDeclaration, data);
 		}
 		
-		public virtual object TrackedVisitFieldReferenceExpression(FieldReferenceExpression fieldReferenceExpression, object data) {
-			return base.VisitFieldReferenceExpression(fieldReferenceExpression, data);
-		}
-		
 		public virtual object TrackedVisitFixedStatement(FixedStatement fixedStatement, object data) {
 			return base.VisitFixedStatement(fixedStatement, data);
 		}
@@ -1042,6 +1038,10 @@ namespace ICSharpCode.NRefactory.Visitors {
 		
 		public virtual object TrackedVisitLockStatement(LockStatement lockStatement, object data) {
 			return base.VisitLockStatement(lockStatement, data);
+		}
+		
+		public virtual object TrackedVisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression, object data) {
+			return base.VisitMemberReferenceExpression(memberReferenceExpression, data);
 		}
 		
 		public virtual object TrackedVisitMethodDeclaration(MethodDeclaration methodDeclaration, object data) {

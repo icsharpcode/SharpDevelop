@@ -124,7 +124,7 @@ namespace ICSharpCode.NRefactory.Visitors
 			IdentifierExpression ident = expr as IdentifierExpression;
 			if (ident != null)
 				return ident.Identifier;
-			FieldReferenceExpression fre = expr as FieldReferenceExpression;
+			MemberReferenceExpression fre = expr as MemberReferenceExpression;
 			if (fre != null && fre.TargetObject is ThisReferenceExpression)
 				return fre.FieldName;
 			return null;
@@ -256,7 +256,7 @@ namespace ICSharpCode.NRefactory.Visitors
 						break;
 					case "CharSet":
 						{
-							FieldReferenceExpression fre = arg.Expression as FieldReferenceExpression;
+							MemberReferenceExpression fre = arg.Expression as MemberReferenceExpression;
 							if (fre == null || !(fre.TargetObject is IdentifierExpression))
 								return false;
 							if ((fre.TargetObject as IdentifierExpression).Identifier != "CharSet")

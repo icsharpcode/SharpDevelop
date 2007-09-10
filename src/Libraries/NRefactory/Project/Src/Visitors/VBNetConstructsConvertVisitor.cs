@@ -108,7 +108,7 @@ namespace ICSharpCode.NRefactory.Visitors
 				if (se != null) {
 					InvocationExpression ie = se.Expression as InvocationExpression;
 					if (ie != null) {
-						FieldReferenceExpression fre = ie.TargetObject as FieldReferenceExpression;
+						MemberReferenceExpression fre = ie.TargetObject as MemberReferenceExpression;
 						if (fre != null && "New".Equals(fre.FieldName, StringComparison.InvariantCultureIgnoreCase)) {
 							if (fre.TargetObject is BaseReferenceExpression || fre.TargetObject is ClassReferenceExpression || fre.TargetObject is ThisReferenceExpression) {
 								body.Children.RemoveAt(0);
@@ -159,17 +159,17 @@ namespace ICSharpCode.NRefactory.Visitors
 			switch (declareDeclaration.Charset) {
 				case CharsetModifier.Auto:
 					att.NamedArguments.Add(new NamedArgumentExpression("CharSet",
-					                                                   new FieldReferenceExpression(new IdentifierExpression("CharSet"),
+					                                                   new MemberReferenceExpression(new IdentifierExpression("CharSet"),
 					                                                                                "Auto")));
 					break;
 				case CharsetModifier.Unicode:
 					att.NamedArguments.Add(new NamedArgumentExpression("CharSet",
-					                                                   new FieldReferenceExpression(new IdentifierExpression("CharSet"),
+					                                                   new MemberReferenceExpression(new IdentifierExpression("CharSet"),
 					                                                                                "Unicode")));
 					break;
 				default:
 					att.NamedArguments.Add(new NamedArgumentExpression("CharSet",
-					                                                   new FieldReferenceExpression(new IdentifierExpression("CharSet"),
+					                                                   new MemberReferenceExpression(new IdentifierExpression("CharSet"),
 					                                                                                "Ansi")));
 					break;
 			}
@@ -209,9 +209,9 @@ namespace ICSharpCode.NRefactory.Visitors
 						InvocationExpression ie = se.Expression as InvocationExpression;
 						if (ie != null
 						    && ie.Arguments.Count == 0
-						    && ie.TargetObject is FieldReferenceExpression
-						    && (ie.TargetObject as FieldReferenceExpression).TargetObject is BaseReferenceExpression
-						    && "Finalize".Equals((ie.TargetObject as FieldReferenceExpression).FieldName, StringComparison.InvariantCultureIgnoreCase))
+						    && ie.TargetObject is MemberReferenceExpression
+						    && (ie.TargetObject as MemberReferenceExpression).TargetObject is BaseReferenceExpression
+						    && "Finalize".Equals((ie.TargetObject as MemberReferenceExpression).FieldName, StringComparison.InvariantCultureIgnoreCase))
 						{
 							DestructorDeclaration des = new DestructorDeclaration("Destructor", Modifiers.None, methodDeclaration.Attributes);
 							ReplaceCurrentNode(des);
@@ -364,9 +364,9 @@ namespace ICSharpCode.NRefactory.Visitors
 			}
 			Expression expr;
 			if (constantTable.TryGetValue(identifierExpression.Identifier, out expr)) {
-				FieldReferenceExpression fre = new FieldReferenceExpression(expr, identifierExpression.Identifier);
+				MemberReferenceExpression fre = new MemberReferenceExpression(expr, identifierExpression.Identifier);
 				ReplaceCurrentNode(fre);
-				return base.VisitFieldReferenceExpression(fre, data);
+				return base.VisitMemberReferenceExpression(fre, data);
 			}
 			return base.VisitIdentifierExpression(identifierExpression, data);
 		}
@@ -399,7 +399,7 @@ namespace ICSharpCode.NRefactory.Visitors
 				}
 				Expression expr;
 				if (methodTable.TryGetValue(ident.Identifier, out expr)) {
-					FieldReferenceExpression fre = new FieldReferenceExpression(expr, ident.Identifier);
+					MemberReferenceExpression fre = new MemberReferenceExpression(expr, ident.Identifier);
 					invocationExpression.TargetObject = fre;
 				}
 			}
@@ -467,7 +467,7 @@ namespace ICSharpCode.NRefactory.Visitors
 			List<Expression> arguments = new List<Expression>();
 			arguments.Add(stringVariable);
 			return new InvocationExpression(
-				new FieldReferenceExpression(new TypeReferenceExpression("System.String"), "IsNullOrEmpty"),
+				new MemberReferenceExpression(new TypeReferenceExpression("System.String"), "IsNullOrEmpty"),
 				arguments);
 		}
 		

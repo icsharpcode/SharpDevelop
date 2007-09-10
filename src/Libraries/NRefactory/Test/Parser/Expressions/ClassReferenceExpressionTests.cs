@@ -24,7 +24,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		[Test]
 		public void VBNetClassReferenceExpressionTest1()
 		{
-			FieldReferenceExpression fre = ParseUtilVBNet.ParseExpression<FieldReferenceExpression>("MyClass.myField");
+			MemberReferenceExpression fre = ParseUtilVBNet.ParseExpression<MemberReferenceExpression>("MyClass.myField");
 			Assert.IsTrue(fre.TargetObject is ClassReferenceExpression);
 		}
 		#endregion

@@ -171,11 +171,16 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			DomRegion fullRegion = language.RefactoringProvider.GetFullCodeRangeForType(existingCode, c);
 			if (fullRegion.IsEmpty) return;
 			
-			string newCode = ExtractCode(c, fullRegion, c.BodyRegion.BeginLine);
+			Action removeExtractedCodeAction;
+			string newCode = ExtractCode(c, fullRegion, c.BodyRegion.BeginLine, out removeExtractedCodeAction);
 			
 			newCode = language.RefactoringProvider.CreateNewFileLikeExisting(existingCode, newCode);
+			if (newCode == null)
+				return;
 			IViewContent viewContent = FileService.NewFile(newFileName, newCode);
 			viewContent.PrimaryFile.SaveToDisk(newFileName);
+			// now that the code is saved in the other file, remove it from the original document
+			removeExtractedCodeAction();
 			
 			IProject project = (IProject)c.ProjectContent.Project;
 			if (project != null) {
@@ -188,7 +193,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			}
 		}
 		
-		static string ExtractCode(IClass c, DomRegion codeRegion, int indentationLine)
+		static string ExtractCode(IClass c, DomRegion codeRegion, int indentationLine, out Action removeExtractedCodeAction)
 		{
 			ICSharpCode.TextEditor.Document.IDocument doc = GetDocument(c);
 			if (indentationLine < 1) indentationLine = 1;
@@ -204,9 +209,11 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			int endOffset = segment.Offset + segment.Length;
 			
 			StringReader reader = new StringReader(doc.GetText(startOffset, endOffset - startOffset));
-			doc.Remove(startOffset, endOffset - startOffset);
-			doc.RequestUpdate(new ICSharpCode.TextEditor.TextAreaUpdate(ICSharpCode.TextEditor.TextAreaUpdateType.WholeTextArea));
-			doc.CommitUpdate();
+			removeExtractedCodeAction = delegate {
+				doc.Remove(startOffset, endOffset - startOffset);
+				doc.RequestUpdate(new ICSharpCode.TextEditor.TextAreaUpdate(ICSharpCode.TextEditor.TextAreaUpdateType.WholeTextArea));
+				doc.CommitUpdate();
+			};
 			
 			// now remove indentation from extracted source code
 			string line;

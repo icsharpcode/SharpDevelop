@@ -205,8 +205,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					while (tmp != null) {
 						if (tmp is IdentifierExpression)
 							return ResolveInternal(expr, ExpressionContext.Type);
-						if (tmp is FieldReferenceExpression)
-							tmp = (tmp as FieldReferenceExpression).TargetObject;
+						if (tmp is MemberReferenceExpression)
+							tmp = (tmp as MemberReferenceExpression).TargetObject;
 						else
 							break;
 					}
@@ -259,13 +259,13 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		}
 		private class DummyFindVisitor : AbstractAstVisitor {
 			internal const string dummyName = "___withStatementExpressionDummy";
-			internal FieldReferenceExpression result;
-			public override object VisitFieldReferenceExpression(FieldReferenceExpression fieldReferenceExpression, object data)
+			internal MemberReferenceExpression result;
+			public override object VisitMemberReferenceExpression(MemberReferenceExpression fieldReferenceExpression, object data)
 			{
 				IdentifierExpression ie = fieldReferenceExpression.TargetObject as IdentifierExpression;
 				if (ie != null && ie.Identifier == dummyName)
 					result = fieldReferenceExpression;
-				return base.VisitFieldReferenceExpression(fieldReferenceExpression, data);
+				return base.VisitMemberReferenceExpression(fieldReferenceExpression, data);
 			}
 		}
 		
@@ -315,9 +315,9 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		{
 			if (expr is IdentifierExpression) {
 				return (expr as IdentifierExpression).Identifier;
-			} else if (expr is FieldReferenceExpression) {
+			} else if (expr is MemberReferenceExpression) {
 				TypeVisitor typeVisitor = new TypeVisitor(this);
-				FieldReferenceExpression fieldReferenceExpression = (FieldReferenceExpression)expr;
+				MemberReferenceExpression fieldReferenceExpression = (MemberReferenceExpression)expr;
 				IReturnType type = fieldReferenceExpression.TargetObject.AcceptVisitor(typeVisitor, null) as IReturnType;
 				if (type is TypeVisitor.NamespaceReturnType) {
 					return type.FullyQualifiedName + "." + fieldReferenceExpression.FieldName;
@@ -397,8 +397,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				}
 			} else if (expr is IndexerExpression) {
 				return CreateMemberResolveResult(typeVisitor.GetIndexer(expr as IndexerExpression));
-			} else if (expr is FieldReferenceExpression) {
-				FieldReferenceExpression fieldReferenceExpression = (FieldReferenceExpression)expr;
+			} else if (expr is MemberReferenceExpression) {
+				MemberReferenceExpression fieldReferenceExpression = (MemberReferenceExpression)expr;
 				if (fieldReferenceExpression.FieldName == null || fieldReferenceExpression.FieldName.Length == 0) {
 					// NRefactory creates this "dummy" fieldReferenceExpression when it should
 					// parse a primitive type name (int, short; Integer, Decimal)
@@ -471,16 +471,16 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return new ResolveResult(callingClass, callingMember, type);
 		}
 		
-		ResolveResult ResolveMemberReferenceExpression(IReturnType type, FieldReferenceExpression fieldReferenceExpression)
+		ResolveResult ResolveMemberReferenceExpression(IReturnType type, MemberReferenceExpression memberReferenceExpression)
 		{
 			IClass c;
 			IMember member;
 			if (type is TypeVisitor.NamespaceReturnType) {
 				string combinedName;
 				if (type.FullyQualifiedName == "")
-					combinedName = fieldReferenceExpression.FieldName;
+					combinedName = memberReferenceExpression.FieldName;
 				else
-					combinedName = type.FullyQualifiedName + "." + fieldReferenceExpression.FieldName;
+					combinedName = type.FullyQualifiedName + "." + memberReferenceExpression.FieldName;
 				if (projectContent.NamespaceExists(combinedName)) {
 					return new NamespaceResolveResult(callingClass, callingMember, combinedName);
 				}
@@ -492,14 +492,14 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					// go through the members of the modules
 					foreach (object o in projectContent.GetNamespaceContents(type.FullyQualifiedName)) {
 						member = o as IMember;
-						if (member != null && IsSameName(member.Name, fieldReferenceExpression.FieldName)) {
+						if (member != null && IsSameName(member.Name, memberReferenceExpression.FieldName)) {
 							return CreateMemberResolveResult(member);
 						}
 					}
 				}
 				return null;
 			}
-			member = GetMember(type, fieldReferenceExpression.FieldName);
+			member = GetMember(type, memberReferenceExpression.FieldName);
 			if (member != null)
 				return CreateMemberResolveResult(member);
 			c = type.GetUnderlyingClass();
@@ -508,14 +508,14 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					List<IClass> innerClasses = baseClass.InnerClasses;
 					if (innerClasses != null) {
 						foreach (IClass innerClass in innerClasses) {
-							if (IsSameName(innerClass.Name, fieldReferenceExpression.FieldName)) {
+							if (IsSameName(innerClass.Name, memberReferenceExpression.FieldName)) {
 								return new TypeResolveResult(callingClass, callingMember, innerClass);
 							}
 						}
 					}
 				}
 			}
-			return ResolveMethod(type, fieldReferenceExpression.FieldName);
+			return ResolveMethod(type, memberReferenceExpression.FieldName);
 		}
 		
 		public TextReader ExtractCurrentMethod(string fileContent)
@@ -773,7 +773,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			} else if (language == NR.SupportedLanguage.CSharp) {
 				// generic type names are no expressions, only property access on them is an expression
 				if (expression.EndsWith(">")) {
-					FieldReferenceExpression expr = ParseExpression(expression + ".Prop") as FieldReferenceExpression;
+					MemberReferenceExpression expr = ParseExpression(expression + ".Prop") as MemberReferenceExpression;
 					if (expr != null) {
 						return expr.TargetObject;
 					}

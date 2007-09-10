@@ -265,13 +265,13 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 								// insert code to remove the event handler
 								IfElseStatement ies = (IfElseStatement)createdProperty.SetRegion.Block.Children[0];
 								ies.TrueStatement[0].AddChild(new RemoveHandlerStatement(
-									new FieldReferenceExpression(backingFieldNameExpression, eventName),
+									new MemberReferenceExpression(backingFieldNameExpression, eventName),
 									new AddressOfExpression(new IdentifierExpression(m.Name))));
 								
 								// insert code to add the event handler
 								ies = (IfElseStatement)createdProperty.SetRegion.Block.Children[2];
 								ies.TrueStatement[0].AddChild(new AddHandlerStatement(
-									new FieldReferenceExpression(backingFieldNameExpression, eventName),
+									new MemberReferenceExpression(backingFieldNameExpression, eventName),
 									new AddressOfExpression(new IdentifierExpression(m.Name))));
 							}
 						}
@@ -347,20 +347,20 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return null;
 		}
 
-		public override object VisitFieldReferenceExpression(FieldReferenceExpression fieldReferenceExpression, object data)
+		public override object VisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression, object data)
 		{
-			base.VisitFieldReferenceExpression(fieldReferenceExpression, data);
+			base.VisitMemberReferenceExpression(memberReferenceExpression, data);
 			
 			if (resolver.CompilationUnit == null)
 				return null;
 			
-			ResolveResult rr = Resolve(fieldReferenceExpression);
+			ResolveResult rr = Resolve(memberReferenceExpression);
 			string ident = GetIdentifierFromResult(rr);
 			if (ident != null) {
-				fieldReferenceExpression.FieldName = ident;
+				memberReferenceExpression.FieldName = ident;
 			}
-			if (ReplaceWithInvocation(fieldReferenceExpression, rr)) {}
-			else if (FullyQualifyModuleMemberReference(fieldReferenceExpression, rr)) {}
+			if (ReplaceWithInvocation(memberReferenceExpression, rr)) {}
+			else if (FullyQualifyModuleMemberReference(memberReferenceExpression, rr)) {}
 			
 			return rr;
 		}
@@ -416,7 +416,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				if (resolver.CallingClass.IsTypeInInheritanceTree(containingType.GetUnderlyingClass()))
 					return false;
 			}
-			ReplaceCurrentNode(new FieldReferenceExpression(
+			ReplaceCurrentNode(new MemberReferenceExpression(
 				new TypeReferenceExpression(ConvertType(containingType)),
 				ident.Identifier
 			));
@@ -428,15 +428,15 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return Refactoring.CodeGenerator.ConvertType(type, CreateContext());
 		}
 		
-		bool FullyQualifyModuleMemberReference(FieldReferenceExpression fre, ResolveResult rr)
+		bool FullyQualifyModuleMemberReference(MemberReferenceExpression mre, ResolveResult rr)
 		{
 			IReturnType containingType = GetContainingTypeOfStaticMember(rr);
 			if (containingType == null)
 				return false;
 			
-			ResolveResult targetRR = resolver.ResolveInternal(fre.TargetObject, ExpressionContext.Default);
+			ResolveResult targetRR = resolver.ResolveInternal(mre.TargetObject, ExpressionContext.Default);
 			if (targetRR is NamespaceResolveResult) {
-				fre.TargetObject = new TypeReferenceExpression(ConvertType(containingType));
+				mre.TargetObject = new TypeReferenceExpression(ConvertType(containingType));
 				return true;
 			}
 			return false;
@@ -474,7 +474,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				if (p != null && invocationExpression.Arguments.Count > 0) {
 					// col(i) -> col[i] or col.Items(i) -> col[i] ?
 					Expression targetObject = invocationExpression.TargetObject;
-					FieldReferenceExpression targetObjectFre = targetObject as FieldReferenceExpression;
+					MemberReferenceExpression targetObjectFre = targetObject as MemberReferenceExpression;
 					if (p.IsIndexer && targetObjectFre != null) {
 						MemberResolveResult rr2 = Resolve(targetObjectFre) as MemberResolveResult;
 						if (rr2 != null && rr2.ResolvedMember == rr.ResolvedMember) {
@@ -569,7 +569,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				if (e == null)
 					e = new IdentifierExpression(n);
 				else
-					e = new FieldReferenceExpression(e, n);
+					e = new MemberReferenceExpression(e, n);
 			}
 			return e;
 		}

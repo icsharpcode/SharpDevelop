@@ -22,8 +22,8 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		{
 			InvocationExpression invExpr = ParseUtilCSharp.ParseExpression<InvocationExpression>("0xAFFE.ToString()");
 			Assert.AreEqual(0, invExpr.Arguments.Count);
-			Assert.IsTrue(invExpr.TargetObject is FieldReferenceExpression);
-			FieldReferenceExpression fre = invExpr.TargetObject as FieldReferenceExpression;
+			Assert.IsTrue(invExpr.TargetObject is MemberReferenceExpression);
+			MemberReferenceExpression fre = invExpr.TargetObject as MemberReferenceExpression;
 			Assert.AreEqual("ToString", fre.FieldName);
 			
 			Assert.IsTrue(fre.TargetObject is PrimitiveExpression);

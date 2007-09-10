@@ -1792,45 +1792,6 @@ namespace ICSharpCode.NRefactory.Ast {
 		}
 	}
 	
-	public class FieldReferenceExpression : Expression {
-		
-		Expression targetObject;
-		
-		string fieldName;
-		
-		public Expression TargetObject {
-			get {
-				return targetObject;
-			}
-			set {
-				targetObject = value ?? Expression.Null;
-				if (!targetObject.IsNull) targetObject.Parent = this;
-			}
-		}
-		
-		public string FieldName {
-			get {
-				return fieldName;
-			}
-			set {
-				fieldName = value ?? "";
-			}
-		}
-		
-		public FieldReferenceExpression(Expression targetObject, string fieldName) {
-			TargetObject = targetObject;
-			FieldName = fieldName;
-		}
-		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.VisitFieldReferenceExpression(this, data);
-		}
-		
-		public override string ToString() {
-			return string.Format("[FieldReferenceExpression TargetObject={0} FieldName={1}]", TargetObject, FieldName);
-		}
-	}
-	
 	public class FixedStatement : StatementWithEmbeddedStatement {
 		
 		TypeReference typeReference;
@@ -2150,6 +2111,8 @@ namespace ICSharpCode.NRefactory.Ast {
 		
 		string identifier;
 		
+		List<TypeReference> typeArguments;
+		
 		public string Identifier {
 			get {
 				return identifier;
@@ -2159,8 +2122,18 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 		}
 		
+		public List<TypeReference> TypeArguments {
+			get {
+				return typeArguments;
+			}
+			set {
+				typeArguments = value ?? new List<TypeReference>();
+			}
+		}
+		
 		public IdentifierExpression(string identifier) {
 			Identifier = identifier;
+			typeArguments = new List<TypeReference>();
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
@@ -2168,7 +2141,7 @@ namespace ICSharpCode.NRefactory.Ast {
 		}
 		
 		public override string ToString() {
-			return string.Format("[IdentifierExpression Identifier={0}]", Identifier);
+			return string.Format("[IdentifierExpression Identifier={0} TypeArguments={1}]", Identifier, GetCollectionString(TypeArguments));
 		}
 	}
 	
@@ -2232,6 +2205,12 @@ namespace ICSharpCode.NRefactory.Ast {
 				this.trueStatement.Add(Statement.CheckNull(trueStatement));
 			}
 		
+		public bool HasElseIfSections {
+			get {
+				return elseIfSections.Count > 0;
+			}
+		}
+		
 
 			public IfElseStatement(Expression condition, Statement trueStatement, Statement falseStatement)
 				: this(condition) {
@@ -2242,12 +2221,6 @@ namespace ICSharpCode.NRefactory.Ast {
 		public bool HasElseStatements {
 			get {
 				return falseStatement.Count > 0;
-			}
-		}
-		
-		public bool HasElseIfSections {
-			get {
-				return elseIfSections.Count > 0;
 			}
 		}
 		
@@ -2482,8 +2455,6 @@ namespace ICSharpCode.NRefactory.Ast {
 		
 		List<Expression> arguments;
 		
-		List<TypeReference> typeArguments;
-		
 		public Expression TargetObject {
 			get {
 				return targetObject;
@@ -2503,31 +2474,14 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 		}
 		
-		public List<TypeReference> TypeArguments {
-			get {
-				return typeArguments;
-			}
-			set {
-				typeArguments = value ?? new List<TypeReference>();
-			}
-		}
-		
 		public InvocationExpression(Expression targetObject) {
 			TargetObject = targetObject;
 			arguments = new List<Expression>();
-			typeArguments = new List<TypeReference>();
 		}
 		
 		public InvocationExpression(Expression targetObject, List<Expression> arguments) {
 			TargetObject = targetObject;
 			Arguments = arguments;
-			typeArguments = new List<TypeReference>();
-		}
-		
-		public InvocationExpression(Expression targetObject, List<Expression> arguments, List<TypeReference> typeArguments) {
-			TargetObject = targetObject;
-			Arguments = arguments;
-			TypeArguments = typeArguments;
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
@@ -2535,7 +2489,7 @@ namespace ICSharpCode.NRefactory.Ast {
 		}
 		
 		public override string ToString() {
-			return string.Format("[InvocationExpression TargetObject={0} Arguments={1} TypeArguments={2}]", TargetObject, GetCollectionString(Arguments), GetCollectionString(TypeArguments));
+			return string.Format("[InvocationExpression TargetObject={0} Arguments={1}]", TargetObject, GetCollectionString(Arguments));
 		}
 	}
 	
@@ -2681,6 +2635,57 @@ namespace ICSharpCode.NRefactory.Ast {
 			Parameters = parameters;
 			interfaceImplementations = new List<InterfaceImplementation>();
 			typeReference = TypeReference.Null;
+		}
+	}
+	
+	public class MemberReferenceExpression : Expression {
+		
+		Expression targetObject;
+		
+		string fieldName;
+		
+		List<TypeReference> typeArguments;
+		
+		public Expression TargetObject {
+			get {
+				return targetObject;
+			}
+			set {
+				targetObject = value ?? Expression.Null;
+				if (!targetObject.IsNull) targetObject.Parent = this;
+			}
+		}
+		
+		public string FieldName {
+			get {
+				return fieldName;
+			}
+			set {
+				fieldName = value ?? "";
+			}
+		}
+		
+		public List<TypeReference> TypeArguments {
+			get {
+				return typeArguments;
+			}
+			set {
+				typeArguments = value ?? new List<TypeReference>();
+			}
+		}
+		
+		public MemberReferenceExpression(Expression targetObject, string fieldName) {
+			TargetObject = targetObject;
+			FieldName = fieldName;
+			typeArguments = new List<TypeReference>();
+		}
+		
+		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+			return visitor.VisitMemberReferenceExpression(this, data);
+		}
+		
+		public override string ToString() {
+			return string.Format("[MemberReferenceExpression TargetObject={0} FieldName={1} TypeArguments={2}]", TargetObject, FieldName, GetCollectionString(TypeArguments));
 		}
 	}
 	

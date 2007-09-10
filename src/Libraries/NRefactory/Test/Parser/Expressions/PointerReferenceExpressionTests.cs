@@ -21,7 +21,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		public void CSharpPointerReferenceExpressionTest()
 		{
 			PointerReferenceExpression pre = ParseUtilCSharp.ParseExpression<PointerReferenceExpression>("myObj.field->b");
-			Assert.IsTrue(pre.TargetObject is FieldReferenceExpression);
+			Assert.IsTrue(pre.TargetObject is MemberReferenceExpression);
 			Assert.AreEqual("b", pre.Identifier);
 		}
 		#endregion

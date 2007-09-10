@@ -52,9 +52,9 @@ namespace CSharpBinding
 			return null;
 		}
 		
-		public override object VisitFieldReferenceExpression(FieldReferenceExpression fieldReferenceExpression, object data)
+		public override object VisitMemberReferenceExpression(MemberReferenceExpression fieldReferenceExpression, object data)
 		{
-			ResolveResult fieldRR = base.VisitFieldReferenceExpression(fieldReferenceExpression, data) as ResolveResult;
+			ResolveResult fieldRR = base.VisitMemberReferenceExpression(fieldReferenceExpression, data) as ResolveResult;
 			
 			if (vbMyFormsClass != null && IsReferenceToInstanceMember(fieldRR)) {
 				TypeResolveResult trr = Resolve(fieldReferenceExpression.TargetObject) as TypeResolveResult;

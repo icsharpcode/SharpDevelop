@@ -325,13 +325,14 @@ namespace NRefactoryToBooConverter
 				AddError(reDimStatement, "Redim Preserve is not supported.");
 			ArrayList list = new ArrayList();
 			foreach (InvocationExpression o in reDimStatement.ReDimClauses) {
-				if (o.TypeArguments != null && o.TypeArguments.Count > 0) {
-					AddError(o, "Type parameter are not allowed here.");
-				}
 				IdentifierExpression identifier = o.TargetObject as IdentifierExpression;
 				if (identifier == null) {
 					AddError(o, "Sorry, that expression is too complex to be resolved by the converter.");
 				} else {
+					if (identifier.TypeArguments != null && identifier.TypeArguments.Count > 0) {
+						AddError(o, "Type parameters are not allowed here.");
+					}
+					
 					// first we need to find out the array type
 					VariableResolver resolver = new VariableResolver(nameComparer);
 					TypeReference r = resolver.FindType(identifier.Identifier, reDimStatement);

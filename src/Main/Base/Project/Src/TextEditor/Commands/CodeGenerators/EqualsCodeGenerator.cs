@@ -43,7 +43,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 				
 				expr = new AssignmentExpression(new IdentifierExpression(var.Name),
 				                                AssignmentOperatorType.ExclusiveOr,
-				                                new InvocationExpression(new FieldReferenceExpression(new IdentifierExpression(field.Name), "GetHashCode")));
+				                                new InvocationExpression(new MemberReferenceExpression(new IdentifierExpression(field.Name), "GetHashCode")));
 				if (IsValueType(field.ReturnType)) {
 					method.Body.AddChild(new ExpressionStatement(expr));
 				} else {
@@ -124,15 +124,15 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 		static Expression TestEquality(string other, IField field)
 		{
 			if (CanCompareEqualityWithOperator(field.ReturnType)) {
-				return new BinaryOperatorExpression(new FieldReferenceExpression(new ThisReferenceExpression(), field.Name),
+				return new BinaryOperatorExpression(new MemberReferenceExpression(new ThisReferenceExpression(), field.Name),
 				                                    BinaryOperatorType.Equality,
-				                                    new FieldReferenceExpression(new IdentifierExpression(other), field.Name));
+				                                    new MemberReferenceExpression(new IdentifierExpression(other), field.Name));
 			} else {
 				InvocationExpression ie = new InvocationExpression(
-					new FieldReferenceExpression(new TypeReferenceExpression("System.Object"), "Equals")
+					new MemberReferenceExpression(new TypeReferenceExpression("System.Object"), "Equals")
 				);
-				ie.Arguments.Add(new FieldReferenceExpression(new ThisReferenceExpression(), field.Name));
-				ie.Arguments.Add(new FieldReferenceExpression(new IdentifierExpression(other), field.Name));
+				ie.Arguments.Add(new MemberReferenceExpression(new ThisReferenceExpression(), field.Name));
+				ie.Arguments.Add(new MemberReferenceExpression(new IdentifierExpression(other), field.Name));
 				return ie;
 			}
 		}

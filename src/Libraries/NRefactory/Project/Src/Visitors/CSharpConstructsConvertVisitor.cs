@@ -107,7 +107,7 @@ namespace ICSharpCode.NRefactory.Visitors
 			IdentifierExpression ident = expression as IdentifierExpression;
 			if (ident != null)
 				return ident.Identifier;
-			FieldReferenceExpression fre = expression as FieldReferenceExpression;
+			MemberReferenceExpression fre = expression as MemberReferenceExpression;
 			if (fre != null && fre.TargetObject is ThisReferenceExpression)
 				return fre.FieldName;
 			return null;

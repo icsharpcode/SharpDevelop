@@ -391,7 +391,7 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 				arguments.Add(new PrimitiveExpression(null, "null"));
 			else
 				arguments.Add(new ThisReferenceExpression());
-			arguments.Add(new FieldReferenceExpression(new IdentifierExpression("EventArgs"), "Empty"));
+			arguments.Add(new MemberReferenceExpression(new IdentifierExpression("EventArgs"), "Empty"));
 			InsertCodeAtEnd(property.SetterRegion, document,
 			                new RaiseEventStatement(name, arguments));
 		}
@@ -617,8 +617,8 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 				}
 				PropertyDeclaration property = node as PropertyDeclaration;
 				if (property != null) {
-					Expression field = new FieldReferenceExpression(new BaseReferenceExpression(),
-					                                                property.Name);
+					Expression field = new MemberReferenceExpression(new BaseReferenceExpression(),
+					                                                 property.Name);
 					if (!property.GetRegion.Block.IsNull) {
 						property.GetRegion.Block.Children.Clear();
 						property.GetRegion.Block.AddChild(new ReturnStatement(field));
@@ -637,8 +637,8 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 		
 		static InvocationExpression CreateForwardingMethodCall(MethodDeclaration method)
 		{
-			Expression methodName = new FieldReferenceExpression(new BaseReferenceExpression(),
-			                                                     method.Name);
+			Expression methodName = new MemberReferenceExpression(new BaseReferenceExpression(),
+			                                                      method.Name);
 			InvocationExpression ie = new InvocationExpression(methodName, null);
 			foreach (ParameterDeclarationExpression param in method.Parameters) {
 				Expression expr = new IdentifierExpression(param.ParameterName);

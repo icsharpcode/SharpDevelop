@@ -176,6 +176,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		public static BitArray AssgnOps = NewSet(Assign, PlusAssign, MinusAssign, TimesAssign, DivAssign, ModAssign, BitwiseAndAssign, BitwiseOrAssign, ShiftLeftAssign);
 		public static BitArray UnaryOp = NewSet(Plus, Minus, Not, BitwiseComplement, Times, Increment, Decrement, BitwiseAnd);
 		public static BitArray TypeDeclarationKW = NewSet(Class, Interface, Struct, Enum, Delegate);
+		public static BitArray GenericFollower = NewSet(OpenParenthesis, CloseParenthesis, CloseSquareBracket, CloseCurlyBrace, Colon, Semicolon, Comma, Dot, Question, Equal, NotEqual);
 		public static BitArray ValidInsideTypeName = NewSet(Identifier, Partial, Where, Get, Set, Add, Remove, Yield, Select, Group, By, Into, From, Ascending, Descending, Orderby, Let, Join, On, Equals, Char, Bool, Object, String, Sbyte, Byte, Short, Ushort, Int, Uint, Long, Ulong, Float, Double, Decimal, LessThan, GreaterThan, Dot, Question, OpenSquareBracket, Comma, CloseSquareBracket, Times, DoubleColon);
 		public static BitArray KCCClassModifiers = NewSet(Abstract, Sealed, Static, Unsafe, Partial);
 		public static BitArray KCCTypeDeclarationStart = NewSet(Public, Internal, Class, Interface, Struct, Enum, Delegate, Abstract, Sealed, Static, Unsafe, Partial);

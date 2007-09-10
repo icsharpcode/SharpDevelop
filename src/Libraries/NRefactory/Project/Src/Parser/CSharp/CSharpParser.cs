@@ -448,13 +448,14 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			return IsTypeNameOrKWForTypeCast(ref pt) && IsIdentifierToken(pt);
 		}
 
-		/* True if lookahead is type parameters (<...>) followed by the specified token */
-		bool IsGenericFollowedBy(int token)
+		/* True if lookahead is a type argument list (<...>) followed by
+		 * one of "(  )  ]  }  :  ;  ,  .  ?  ==  !=" */
+		bool IsGenericInSimpleNameOrMemberAccess()
 		{
 			Token t = la;
 			if (t.kind != Tokens.LessThan) return false;
 			StartPeek();
-			return SkipGeneric(ref t) && t.kind == token;
+			return SkipGeneric(ref t) && Tokens.GenericFollower[t.kind];
 		}
 
 		bool IsExplicitInterfaceImplementation()
@@ -497,61 +498,50 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			return (la.kind == Tokens.GreaterThan && next.kind == Tokens.GreaterThan);
 		}
 
-		bool IsTypeReferenceExpression(Expression expr)
+		bool IsGenericExpression(Expression expr)
 		{
-			if (expr is TypeReferenceExpression) return ((TypeReferenceExpression)expr).TypeReference.GenericTypes.Count == 0;
-			while (expr is FieldReferenceExpression) {
-				expr = ((FieldReferenceExpression)expr).TargetObject;
-				if (expr is TypeReferenceExpression) return true;
-			}
-			return expr is IdentifierExpression;
-		}
-
-		TypeReferenceExpression GetTypeReferenceExpression(Expression expr, List<TypeReference> genericTypes)
-		{
-			TypeReferenceExpression	tre = expr as TypeReferenceExpression;
-			if (tre != null) {
-				return new TypeReferenceExpression(new TypeReference(tre.TypeReference.Type, tre.TypeReference.PointerNestingLevel, tre.TypeReference.RankSpecifier, genericTypes));
-			}
-			StringBuilder b = new StringBuilder();
-			if (!WriteFullTypeName(b, expr)) {
-				// there is some TypeReferenceExpression hidden in the expression
-				while (expr is FieldReferenceExpression) {
-					expr = ((FieldReferenceExpression)expr).TargetObject;
-				}
-				tre = expr as TypeReferenceExpression;
-				if (tre != null) {
-					TypeReference typeRef = tre.TypeReference;
-					if (typeRef.GenericTypes.Count == 0) {
-						typeRef = typeRef.Clone();
-						typeRef.Type += "." + b.ToString();
-						typeRef.GenericTypes.AddRange(genericTypes);
-					} else {
-						typeRef = new InnerClassTypeReference(typeRef, b.ToString(), genericTypes);
-					}
-					return new TypeReferenceExpression(typeRef);
-				}
-			}
-			return new TypeReferenceExpression(new TypeReference(b.ToString(), 0, null, genericTypes));
-		}
-
-		/* Writes the type name represented through the expression into the string builder. */
-		/* Returns true when the expression was converted successfully, returns false when */
-		/* There was an unknown expression (e.g. TypeReferenceExpression) in it */
-		bool WriteFullTypeName(StringBuilder b, Expression expr)
-		{
-			FieldReferenceExpression fre = expr as FieldReferenceExpression;
-			if (fre != null) {
-				bool result = WriteFullTypeName(b, fre.TargetObject);
-				if (b.Length > 0) b.Append('.');
-				b.Append(fre.FieldName);
-				return result;
-			} else if (expr is IdentifierExpression) {
-				b.Append(((IdentifierExpression)expr).Identifier);
-				return true;
-			} else {
+			if (expr is IdentifierExpression)
+				return ((IdentifierExpression)expr).TypeArguments.Count > 0;
+			else if (expr is MemberReferenceExpression)
+				return ((MemberReferenceExpression)expr).TypeArguments.Count > 0;
+			else
 				return false;
+		}
+
+		bool ShouldConvertTargetExpressionToTypeReference(Expression targetExpr)
+		{
+			if (targetExpr is IdentifierExpression)
+				return ((IdentifierExpression)targetExpr).TypeArguments.Count > 0;
+			else if (targetExpr is MemberReferenceExpression)
+				return ((MemberReferenceExpression)targetExpr).TypeArguments.Count > 0;
+			else
+				return false;
+		}
+		
+		TypeReference GetTypeReferenceFromExpression(Expression expr)
+		{
+			if (expr is TypeReferenceExpression)
+				return (expr as TypeReferenceExpression).TypeReference;
+			
+			IdentifierExpression ident = expr as IdentifierExpression;
+			if (ident != null) {
+				return new TypeReference(ident.Identifier, ident.TypeArguments);
 			}
+			
+			MemberReferenceExpression member = expr as MemberReferenceExpression;
+			if (member != null) {
+				TypeReference targetType = GetTypeReferenceFromExpression(member.TargetObject);
+				if (targetType != null) {
+					if (targetType.GenericTypes.Count == 0 && targetType.IsArrayType == false) {
+						TypeReference tr = new TypeReference(targetType.Type + "." + member.FieldName, member.TypeArguments);
+						tr.IsGlobal = targetType.IsGlobal;
+						return tr;
+					} else {
+						return new InnerClassTypeReference(targetType, member.FieldName, member.TypeArguments);
+					}
+				}
+			}
+			return null;
 		}
 		
 		bool IsMostNegativeIntegerWithoutTypeSuffix()

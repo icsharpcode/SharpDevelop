@@ -30,6 +30,14 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			IdentifierExpression ident = ParseUtilCSharp.ParseExpression<IdentifierExpression>("@public");
 			Assert.AreEqual("public", ident.Identifier);
 		}
+		
+		[Test]
+		public void CSharpGenericMethodReference()
+		{
+			IdentifierExpression ident = ParseUtilCSharp.ParseExpression<IdentifierExpression>("M<int>");
+			Assert.AreEqual("M", ident.Identifier);
+			Assert.AreEqual(1, ident.TypeArguments.Count);
+		}
 		#endregion
 		
 		#region VB.NET

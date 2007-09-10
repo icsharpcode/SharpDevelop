@@ -35,7 +35,7 @@ namespace ICSharpCode.NRefactory.Tests.Output.CodeDom.Tests
 		public void MethodOnThisReferenceInvocation()
 		{
 			// InitializeComponents();
-			FieldReferenceExpression field = new FieldReferenceExpression(new ThisReferenceExpression(), "InitializeComponents");
+			MemberReferenceExpression field = new MemberReferenceExpression(new ThisReferenceExpression(), "InitializeComponents");
 			InvocationExpression invocation = new InvocationExpression(field, new List<Expression>());
 			object output = invocation.AcceptVisitor(new CodeDomVisitor(), null);
 			Assert.IsTrue(output is CodeMethodInvokeExpression);
@@ -48,9 +48,9 @@ namespace ICSharpCode.NRefactory.Tests.Output.CodeDom.Tests
 		public void InvocationOfStaticMethod()
 		{
 			// System.Drawing.Color.FromArgb();
-			FieldReferenceExpression field = new FieldReferenceExpression(new IdentifierExpression("System"), "Drawing");
-			field = new FieldReferenceExpression(field, "Color");
-			field = new FieldReferenceExpression(field, "FromArgb");
+			MemberReferenceExpression field = new MemberReferenceExpression(new IdentifierExpression("System"), "Drawing");
+			field = new MemberReferenceExpression(field, "Color");
+			field = new MemberReferenceExpression(field, "FromArgb");
 			InvocationExpression invocation = new InvocationExpression(field, new List<Expression>());
 			object output = invocation.AcceptVisitor(new CodeDomVisitor(), null);
 			Assert.IsTrue(output is CodeMethodInvokeExpression);

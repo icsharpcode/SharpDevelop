@@ -1748,7 +1748,6 @@ UnaryExpr<out Expression uExpr>
 PrimaryExpr<out Expression pexpr>
 (.
 	TypeReference type = null;
-	List<TypeReference> typeList = null;
 	Expression expr;
 	pexpr = null;
 .)
@@ -1769,7 +1768,12 @@ PrimaryExpr<out Expression pexpr>
 			(. pexpr = new IdentifierExpression(t.val); .)
 			(. pexpr.StartLocation = t.Location; pexpr.EndLocation = t.EndLocation; .)
 			
-			[ ShortedLambdaExpression<(IdentifierExpression)pexpr, out pexpr> ]
+			[	ShortedLambdaExpression<(IdentifierExpression)pexpr, out pexpr> 
+			| IF (IsGenericInSimpleNameOrMemberAccess())
+				(. List<TypeReference> typeList; .)
+				TypeArgumentList<out typeList, false>
+				(. ((IdentifierExpression)pexpr).TypeArguments = typeList; .)
+			]
 		| IF (IsLambdaExpression()) /* Lambda expression */
 			LambdaExpression<out pexpr>
 		/*--- parenthesized expression: */
@@ -1792,13 +1796,14 @@ PrimaryExpr<out Expression pexpr>
 			| "uint"  (. val = "uint"; .)
 			| "ulong"    (. val = "ulong"; .)
 			| "ushort" (. val = "ushort"; .)
-		) (. t.val = ""; .) "." Identifier (. pexpr = new FieldReferenceExpression(new TypeReferenceExpression(val), t.val); .)
+		) 
+			MemberAccess<out pexpr, new TypeReferenceExpression(val)>
 		/*--- this access: */
 		| "this"                              (. pexpr = new ThisReferenceExpression(); .)
 		/*--- base access: */
 		| "base"                              (. Expression retExpr = new BaseReferenceExpression(); .)
 		(
-			"." Identifier                    (. retExpr = new FieldReferenceExpression(retExpr, t.val); .)
+			MemberAccess<out retExpr, retExpr>
 			| "[" Expr<out expr>              (. List<Expression> indices = new List<Expression>(); if (expr != null) { indices.Add(expr); } .)
 			{ "," Expr<out expr>              (. if (expr != null) { indices.Add(expr); } .) }
 			"]"                               (. retExpr = new IndexerExpression(retExpr, indices); .)
@@ -1825,23 +1830,14 @@ PrimaryExpr<out Expression pexpr>
 			| "--" (. pexpr = new UnaryOperatorExpression(pexpr, UnaryOperatorType.PostDecrement); .)
 		)
 		/*--- member access */
-		| "->" Identifier (. pexpr = new PointerReferenceExpression(pexpr, t.val); .)
-		| "." Identifier  (. pexpr = new FieldReferenceExpression(pexpr, t.val);.)
-		/* member access on generic type */
-		|   ( IF (IsGenericFollowedBy(Tokens.Dot) && IsTypeReferenceExpression(pexpr))
-				TypeArgumentList<out typeList, false> )
-				"." Identifier
-				(. pexpr = new FieldReferenceExpression(GetTypeReferenceExpression(pexpr, typeList), t.val);.)
+		| PointerMemberAccess<out pexpr, pexpr>
+		| MemberAccess<out pexpr, pexpr>
+			
 		/*--- invocation expression: */
 		| "("                        (. List<Expression> parameters = new List<Expression>(); .)
 			[ Argument<out expr>     (. if (expr != null) {parameters.Add(expr);} .)
 			{ "," Argument<out expr> (. if (expr != null) {parameters.Add(expr);} .)
 			} ] ")"                  (. pexpr = new InvocationExpression(pexpr, parameters); .)
-		|   ( IF (IsGenericFollowedBy(Tokens.OpenParenthesis)) TypeArgumentList<out typeList, false> )
-			"("                      (. List<Expression> parameters = new List<Expression>(); .)
-			[ Argument<out expr>     (. if (expr != null) {parameters.Add(expr);} .)
-			{ "," Argument<out expr> (. if (expr != null) {parameters.Add(expr);} .)
-			} ] ")"                  (. pexpr = new InvocationExpression(pexpr, parameters, typeList); .)
 		/*--- element access */
 		|  (. /*if (isArrayCreation) Error("element access not allow on array creation");*/
 		      List<Expression> indices = new List<Expression>();
@@ -1850,6 +1846,38 @@ PrimaryExpr<out Expression pexpr>
 		{ "," Expr<out expr> (. if (expr != null) { indices.Add(expr); } .)
 		} "]" (. pexpr = new IndexerExpression(pexpr, indices); .)
 	}
+.
+
+MemberAccess<out Expression expr, Expression target>
+(. List<TypeReference> typeList; .)
+=
+	(.	if (ShouldConvertTargetExpressionToTypeReference(target)) {
+			TypeReference type = GetTypeReferenceFromExpression(target);
+			if (type != null) {
+				target = new TypeReferenceExpression(type);
+			}
+		}
+		t.val = ""; // required for TypeReferenceExpressionTests.StandaloneIntReferenceExpression hack
+	.)
+	"."
+	Identifier
+	(. expr = new MemberReferenceExpression(target, t.val); .)
+	[ IF (IsGenericInSimpleNameOrMemberAccess())
+		TypeArgumentList<out typeList, false>
+		(. ((MemberReferenceExpression)expr).TypeArguments = typeList; .)
+	]
+.
+
+PointerMemberAccess<out Expression expr, Expression target>
+(. List<TypeReference> typeList; .)
+=
+	"->"
+	Identifier
+	(. expr = new PointerReferenceExpression(target, t.val); .)
+	[ IF (IsGenericInSimpleNameOrMemberAccess())
+		TypeArgumentList<out typeList, false>
+		(. ((MemberReferenceExpression)expr).TypeArguments = typeList; .)
+	]
 .
 
 NewExpression<out Expression pexpr>

@@ -218,8 +218,8 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			StringBuilder b = new StringBuilder();
 			if (!WriteFullTypeName(b, expr)) {
 				// there is some TypeReferenceExpression hidden in the expression
-				while (expr is FieldReferenceExpression) {
-					expr = ((FieldReferenceExpression)expr).TargetObject;
+				while (expr is MemberReferenceExpression) {
+					expr = ((MemberReferenceExpression)expr).TargetObject;
 				}
 				tre = expr as TypeReferenceExpression;
 				if (tre != null) {
@@ -242,7 +242,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 		/* There was an unknown expression (e.g. TypeReferenceExpression) in it */
 		bool WriteFullTypeName(StringBuilder b, Expression expr)
 		{
-			FieldReferenceExpression fre = expr as FieldReferenceExpression;
+			MemberReferenceExpression fre = expr as MemberReferenceExpression;
 			if (fre != null) {
 				bool result = WriteFullTypeName(b, fre.TargetObject);
 				if (b.Length > 0) b.Append('.');
@@ -270,6 +270,20 @@ namespace ICSharpCode.NRefactory.Parser.VB
 		{
 			if (!(expr is PrimitiveExpression) || (expr as PrimitiveExpression).StringValue != "0")
 				Error("lower bound of array must be zero");
+		}
+		
+		InvocationExpression CreateInvocationExpression(Expression target, List<Expression> parameters, List<TypeReference> typeArguments)
+		{
+			if (typeArguments != null && typeArguments.Count > 0) {
+				if (target is IdentifierExpression) {
+					((IdentifierExpression)target).TypeArguments = typeArguments;
+				} else if (target is MemberReferenceExpression) {
+					((MemberReferenceExpression)target).TypeArguments = typeArguments;
+				} else {
+					Error("Type arguments only allowed on IdentifierExpression and MemberReferenceExpression");
+				}
+			}
+			return new InvocationExpression(target, parameters);
 		}
 		
 		/// <summary>

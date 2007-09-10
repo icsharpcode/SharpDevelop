@@ -104,7 +104,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			// yes, we really wanted to evaluate .Member on expr and THEN cast the result to MyType
 			CastExpression ce = ParseUtilCSharp.ParseExpression<CastExpression>("(MyType)(expr).Member");
 			Assert.AreEqual("MyType", ce.CastTo.Type);
-			Assert.IsTrue(ce.Expression is FieldReferenceExpression);
+			Assert.IsTrue(ce.Expression is MemberReferenceExpression);
 			Assert.AreEqual(CastType.Cast, ce.CastType);
 		}
 		
@@ -139,7 +139,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		{
 			CastExpression ce = ParseUtilCSharp.ParseExpression<CastExpression>("(BigInt)int.MaxValue");
 			Assert.AreEqual("BigInt", ce.CastTo.ToString());
-			Assert.IsTrue(ce.Expression is FieldReferenceExpression);
+			Assert.IsTrue(ce.Expression is MemberReferenceExpression);
 		}
 		#endregion
 		

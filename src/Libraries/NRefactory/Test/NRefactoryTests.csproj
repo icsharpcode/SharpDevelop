@@ -62,7 +62,7 @@
     <Compile Include="Parser\Expressions\BinaryOperatorExpressionTests.cs" />
     <Compile Include="Parser\Expressions\UnaryOperatorExpressionTests.cs" />
     <Compile Include="Parser\Expressions\CastExpressionTests.cs" />
-    <Compile Include="Parser\Expressions\FieldReferenceExpressionTests.cs" />
+    <Compile Include="Parser\Expressions\MemberReferenceExpressionTests.cs" />
     <Compile Include="Parser\Expressions\InvocationExpressionTests.cs" />
     <Compile Include="Parser\Expressions\TypeOfExpressionTests.cs" />
     <Compile Include="Parser\Expressions\ArrayCreateExpressionTests.cs" />

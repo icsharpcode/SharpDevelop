@@ -101,16 +101,26 @@ namespace NRefactoryASTGenerator.Ast
 		public CastExpression(TypeReference castTo, Expression expression, CastType castType) {}
 	}
 	
-	class FieldReferenceExpression : Expression
+	class MemberReferenceExpression : Expression
 	{
 		Expression targetObject;
 		string     fieldName;
+		List<TypeReference> typeArguments;
 		
-		public FieldReferenceExpression(Expression targetObject, string fieldName) {}
+		public MemberReferenceExpression(Expression targetObject, string fieldName) {}
+	}
+	
+	class PointerReferenceExpression : Expression {
+		Expression targetObject;
+		string     identifier;
+		List<TypeReference> typeArguments;
+		
+		public PointerReferenceExpression(Expression targetObject, string identifier) {}
 	}
 	
 	class IdentifierExpression : Expression {
 		string identifier;
+		List<TypeReference> typeArguments;
 		
 		public IdentifierExpression(string identifier) {}
 	}
@@ -118,11 +128,9 @@ namespace NRefactoryASTGenerator.Ast
 	class InvocationExpression : Expression {
 		Expression          targetObject;
 		List<Expression>    arguments;
-		List<TypeReference> typeArguments;
 		
 		public InvocationExpression(Expression targetObject) {}
 		public InvocationExpression(Expression targetObject, List<Expression> arguments) {}
-		public InvocationExpression(Expression targetObject, List<Expression> arguments, List<TypeReference> typeArguments) {}
 	}
 	
 	class ParenthesizedExpression : Expression {
@@ -202,13 +210,6 @@ namespace NRefactoryASTGenerator.Ast
 		List<Expression> indexes;
 		
 		public IndexerExpression(Expression targetObject, List<Expression> indexes) {}
-	}
-	
-	class PointerReferenceExpression : Expression {
-		Expression targetObject;
-		string     identifier;
-		
-		public PointerReferenceExpression(Expression targetObject, string identifier) {}
 	}
 	
 	class SizeOfExpression : Expression {

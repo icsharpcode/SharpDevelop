@@ -97,8 +97,6 @@ namespace ICSharpCode.NRefactory {
 		
 		object VisitFieldDeclaration(FieldDeclaration fieldDeclaration, object data);
 		
-		object VisitFieldReferenceExpression(FieldReferenceExpression fieldReferenceExpression, object data);
-		
 		object VisitFixedStatement(FixedStatement fixedStatement, object data);
 		
 		object VisitForeachStatement(ForeachStatement foreachStatement, object data);
@@ -132,6 +130,8 @@ namespace ICSharpCode.NRefactory {
 		object VisitLocalVariableDeclaration(LocalVariableDeclaration localVariableDeclaration, object data);
 		
 		object VisitLockStatement(LockStatement lockStatement, object data);
+		
+		object VisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression, object data);
 		
 		object VisitMethodDeclaration(MethodDeclaration methodDeclaration, object data);
 		

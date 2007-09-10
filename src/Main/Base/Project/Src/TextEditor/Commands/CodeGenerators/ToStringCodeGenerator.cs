@@ -25,8 +25,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 				TypeReference = stringReference,
 			};
 			method.Body = new BlockStatement();
-			Expression target = new FieldReferenceExpression(new TypeReferenceExpression(stringReference),
-			                                                 "Format");
+			Expression target = new MemberReferenceExpression(new TypeReferenceExpression(stringReference),
+			                                                  "Format");
 			InvocationExpression methodCall = new InvocationExpression(target);
 			StringBuilder formatString = new StringBuilder();
 			formatString.Append('[');
@@ -41,7 +41,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			formatString.Append(']');
 			methodCall.Arguments.Add(new PrimitiveExpression(formatString.ToString(), formatString.ToString()));
 			foreach (FieldWrapper w in items) {
-				methodCall.Arguments.Add(new FieldReferenceExpression(new ThisReferenceExpression(), w.Field.Name));
+				methodCall.Arguments.Add(new MemberReferenceExpression(new ThisReferenceExpression(), w.Field.Name));
 			}
 			method.Body.AddChild(new ReturnStatement(methodCall));
 			nodes.Add(method);

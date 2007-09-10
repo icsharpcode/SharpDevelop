@@ -350,7 +350,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		Expression CreateExplicitConversionToString(Expression expr)
 		{
 			InvocationExpression ie = new InvocationExpression(
-				new FieldReferenceExpression(new IdentifierExpression("Convert"), "ToString"));
+				new MemberReferenceExpression(new IdentifierExpression("Convert"), "ToString"));
 			ie.Arguments.Add(expr);
 			return ie;
 		}
@@ -373,9 +373,9 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return null;
 		}
 		
-		public override object VisitFieldReferenceExpression(FieldReferenceExpression fieldReferenceExpression, object data)
+		public override object VisitMemberReferenceExpression(MemberReferenceExpression fieldReferenceExpression, object data)
 		{
-			base.VisitFieldReferenceExpression(fieldReferenceExpression, data);
+			base.VisitMemberReferenceExpression(fieldReferenceExpression, data);
 			
 			if (resolver.CompilationUnit == null)
 				return null;
@@ -410,7 +410,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					IClass c = rr.ResolvedType.GetUnderlyingClass();
 					if (c.ClassType == ClassType.Delegate) {
 						InvocationExpression invocation = new InvocationExpression(
-							new FieldReferenceExpression(
+							new MemberReferenceExpression(
 								new IdentifierExpression("Delegate"),
 								assignmentExpression.Op == AssignmentOperatorType.Add ? "Combine" : "Remove"));
 						invocation.Arguments.Add(assignmentExpression.Left);

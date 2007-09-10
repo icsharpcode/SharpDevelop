@@ -1585,7 +1585,7 @@ SimpleExpr<out Expression pexpr>
 =
 	SimpleNonInvocationExpression<out pexpr>
 	{		(. string name; .)
-		"." IdentifierOrKeyword<out name> (. pexpr = new FieldReferenceExpression(pexpr, name); .)
+		"." IdentifierOrKeyword<out name> (. pexpr = new MemberReferenceExpression(pexpr, name); .)
 	|	InvocationExpression<ref pexpr>
 	}
 .
@@ -1617,13 +1617,13 @@ SimpleNonInvocationExpression<out Expression pexpr>
 				(. pexpr.StartLocation = t.Location; pexpr.EndLocation = t.EndLocation; .)
 		|	(. string val = String.Empty; .)
 			( PrimitiveTypeName<out val> | "Object" (. val = "Object"; .) )
-			"." (. t.val = ""; .) Identifier (. pexpr = new FieldReferenceExpression(new TypeReferenceExpression(val), t.val); .)
+			"." (. t.val = ""; .) Identifier (. pexpr = new MemberReferenceExpression(new TypeReferenceExpression(val), t.val); .)
 		|	"Me"							(. pexpr = new ThisReferenceExpression(); .)
 		|	(. Expression retExpr = null; .)
 			( "MyBase"										(. retExpr = new BaseReferenceExpression(); .)
 			| "MyClass"										(. retExpr = new ClassReferenceExpression(); .)
 			)
-			"." IdentifierOrKeyword<out name>				(. pexpr = new FieldReferenceExpression(retExpr, name); .)
+			"." IdentifierOrKeyword<out name>				(. pexpr = new MemberReferenceExpression(retExpr, name); .)
 		|	"Global" "."
 			Identifier (. type = new TypeReference(t.val ?? ""); .)
 			/* fallback to "" is required if the token wasn't an identifier (->parser error but no exception) */
@@ -1645,7 +1645,7 @@ SimpleNonInvocationExpression<out Expression pexpr>
 		)
 	|
 		/* this form only occurs in WithStatements*/
-		"." IdentifierOrKeyword<out name> (. pexpr = new FieldReferenceExpression(null, name);.)
+		"." IdentifierOrKeyword<out name> (. pexpr = new MemberReferenceExpression(null, name);.)
 	)
 .
 
@@ -1664,15 +1664,15 @@ InvocationExpression<ref Expression pexpr>
 		")"
 		(
 			"." Identifier
-			(. pexpr = new FieldReferenceExpression(GetTypeReferenceExpression(pexpr, typeParameters), t.val); .)
+			(. pexpr = new MemberReferenceExpression(GetTypeReferenceExpression(pexpr, typeParameters), t.val); .)
 		|	"("
 			ArgumentList<out parameters>
 			")"
-			(. pexpr = new InvocationExpression(pexpr, parameters, typeParameters); .)
+			(. pexpr = CreateInvocationExpression(pexpr, parameters, typeParameters); .)
 		)
 	|	ArgumentList<out parameters>
 		")"
-		(. pexpr = new InvocationExpression(pexpr, parameters, typeParameters); .)
+		(. pexpr = CreateInvocationExpression(pexpr, parameters, typeParameters); .)
 	)
 	(. pexpr.StartLocation = start; pexpr.EndLocation = t.Location; .)
 .
@@ -2530,7 +2530,7 @@ EmbeddedStatement<out Statement statement>
 		(.
 			// a field reference expression that stands alone is a
 			// invocation expression without parantheses and arguments
-			if(expr is FieldReferenceExpression || expr is IdentifierExpression) {
+			if(expr is MemberReferenceExpression || expr is IdentifierExpression) {
 				expr = new InvocationExpression(expr);
 			}
 			statement = new ExpressionStatement(expr);
@@ -2655,7 +2655,7 @@ ReDimClause<out Expression expr>
 ReDimClauseInternal<ref Expression expr>
 (. List<Expression> arguments; bool canBeNormal; bool canBeRedim; string name; .)
 =
-	{	"." IdentifierOrKeyword<out name> (. expr = new FieldReferenceExpression(expr, name); .)
+	{	"." IdentifierOrKeyword<out name> (. expr = new MemberReferenceExpression(expr, name); .)
 	|  IF (la.kind == Tokens.OpenParenthesis && Peek(1).kind == Tokens.Of)
 		InvocationExpression<ref expr>
 	}

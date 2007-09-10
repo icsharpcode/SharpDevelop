@@ -190,6 +190,8 @@ CastFollower(@SimpleTypeName, Literal, "(", "~", "!", @ExpressionStart)
 AssgnOps("=", "+=", "-=", "*=", "/=", "%=", "&=", "|=", "<<=")
 UnaryOp("+", "-", "!", "~", "*", "++", "--", "&")
 TypeDeclarationKW("class", "interface", "struct", "enum", "delegate")
+# for §7.5.4.2 "Grammar ambiguities" disambiguation for F(G<A,B>(7))
+GenericFollower("(", ")", "]", "}", ":", ";", Comma, ".", "?", "==", "!=")
 
 ValidInsideTypeName(@IdentifierTokens, @TypeKW, "<", ">", ".", "?", "[", Comma, "]", "*", "::")
 

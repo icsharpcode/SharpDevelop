@@ -37,6 +37,22 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			Assert.AreEqual(ConstructorInitializerType.Base, cd.ConstructorInitializer.ConstructorInitializerType);
 			Assert.AreEqual(3, cd.ConstructorInitializer.Arguments.Count);
 		}
+		
+		[Test]
+		public void CSharpStaticConstructorDeclarationTest1()
+		{
+			ConstructorDeclaration cd = ParseUtilCSharp.ParseTypeMember<ConstructorDeclaration>("static MyClass() {}");
+			Assert.IsTrue(cd.ConstructorInitializer.IsNull);
+			Assert.AreEqual(Modifiers.Static, cd.Modifier);
+		}
+		
+		[Test]
+		public void CSharpExternStaticConstructorDeclarationTest()
+		{
+			ConstructorDeclaration cd = ParseUtilCSharp.ParseTypeMember<ConstructorDeclaration>("extern static MyClass();");
+			Assert.IsTrue(cd.ConstructorInitializer.IsNull);
+			Assert.AreEqual(Modifiers.Static | Modifiers.Extern, cd.Modifier);
+		}
 		#endregion
 		
 		#region VB.NET
@@ -58,6 +74,6 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			Assert.AreEqual("String", cd.Parameters[1].TypeReference.Type);
 			Assert.AreEqual(ParameterModifiers.Optional, cd.Parameters[1].ParamModifier & ParameterModifiers.Optional);
 		}
-		#endregion 
+		#endregion
 	}
 }

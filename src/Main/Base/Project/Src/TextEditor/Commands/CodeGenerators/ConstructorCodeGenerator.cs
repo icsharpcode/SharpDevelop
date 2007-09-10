@@ -41,7 +41,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 				string parameterName = codeGen.GetParameterName(w.Field.Name);
 				ctor.Parameters.Add(new ParameterDeclarationExpression(ConvertType(w.Field.ReturnType),
 				                                                       parameterName));
-				Expression left  = new FieldReferenceExpression(new ThisReferenceExpression(), w.Field.Name);
+				Expression left  = new MemberReferenceExpression(new ThisReferenceExpression(), w.Field.Name);
 				Expression right = new IdentifierExpression(parameterName);
 				Expression expr  = new AssignmentExpression(left, AssignmentOperatorType.Assign, right);
 				ctor.Body.AddChild(new ExpressionStatement(expr));

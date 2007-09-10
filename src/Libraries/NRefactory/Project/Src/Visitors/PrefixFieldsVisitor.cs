@@ -121,7 +121,7 @@ namespace ICSharpCode.NRefactory.Visitors
 			return base.VisitIdentifierExpression(identifierExpression, data);
 		}
 		
-		public override object VisitFieldReferenceExpression(FieldReferenceExpression fieldReferenceExpression, object data)
+		public override object VisitMemberReferenceExpression(MemberReferenceExpression fieldReferenceExpression, object data)
 		{
 			if (fieldReferenceExpression.TargetObject is ThisReferenceExpression) {
 				string name = fieldReferenceExpression.FieldName;
@@ -132,7 +132,7 @@ namespace ICSharpCode.NRefactory.Visitors
 					}
 				}
 			}
-			return base.VisitFieldReferenceExpression(fieldReferenceExpression, data);
+			return base.VisitMemberReferenceExpression(fieldReferenceExpression, data);
 		}
 		
 		bool IsLocal(string name)

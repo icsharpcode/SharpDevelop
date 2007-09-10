@@ -359,6 +359,10 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 						frame.SetDefaultContext();
 					}
 					break;
+				case Tokens.Question:
+					// do not reset context - TrackCurrentContext will take care of this
+					frame.lastExpressionStart = Location.Empty;
+					break;
 				case Tokens.Dot:
 				case Tokens.DoubleColon:
 					// let the current expression continue
@@ -493,6 +497,12 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 				case Tokens.Switch:
 					if (frame.type == FrameType.Statements) {
 						frame.parenthesisChildType = FrameType.Expression;
+					}
+					break;
+				case Tokens.Question:
+					// IdentifierExpected = this is after a type name = the ? was a nullable marker
+					if (frame.context != ExpressionContext.IdentifierExpected) {
+						frame.SetDefaultContext();
 					}
 					break;
 				default:

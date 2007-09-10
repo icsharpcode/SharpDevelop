@@ -179,13 +179,13 @@ namespace ICSharpCode.NRefactory.Visitors
 				this.replaceWith = replaceWith;
 			}
 			
-			public override object VisitFieldReferenceExpression(FieldReferenceExpression fieldReferenceExpression, object data)
+			public override object VisitMemberReferenceExpression(MemberReferenceExpression fieldReferenceExpression, object data)
 			{
 				if (fieldReferenceExpression.TargetObject.IsNull) {
 					fieldReferenceExpression.TargetObject = replaceWith;
 					return null;
 				} else {
-					return base.VisitFieldReferenceExpression(fieldReferenceExpression, data);
+					return base.VisitMemberReferenceExpression(fieldReferenceExpression, data);
 				}
 			}
 			

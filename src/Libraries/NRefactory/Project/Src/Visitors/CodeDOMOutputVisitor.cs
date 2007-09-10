@@ -9,6 +9,7 @@ using System;
 using System.CodeDom;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text;
 
 using ICSharpCode.NRefactory.Ast;
@@ -103,6 +104,24 @@ namespace ICSharpCode.NRefactory.Visitors
 			return attr;
 		}
 		
+		static TypeAttributes ConvTypeAttributes(Modifiers modifier)
+		{
+			TypeAttributes attr = (TypeAttributes)0;
+			if ((modifier & Modifiers.Abstract) != 0)
+				attr |= TypeAttributes.Abstract;
+			if ((modifier & Modifiers.Sealed) != 0)
+				attr |= TypeAttributes.Sealed;
+			if ((modifier & Modifiers.Static) != 0)
+				attr |= TypeAttributes.Abstract | TypeAttributes.Sealed;
+			
+			if ((modifier & Modifiers.Public) != 0)
+				attr |= TypeAttributes.Public;
+			else
+				attr |= TypeAttributes.NotPublic;
+			
+			return attr;
+		}
+		
 		#region ICSharpCode.SharpRefactory.Parser.IASTVisitor interface implementation
 		public override object VisitCompilationUnit(CompilationUnit compilationUnit, object data)
 		{
@@ -153,10 +172,12 @@ namespace ICSharpCode.NRefactory.Visitors
 			TypeDeclaration oldTypeDeclaration = currentTypeDeclaration;
 			this.currentTypeDeclaration = typeDeclaration;
 			CodeTypeDeclaration codeTypeDeclaration = new CodeTypeDeclaration(typeDeclaration.Name);
+			codeTypeDeclaration.TypeAttributes = ConvTypeAttributes(typeDeclaration.Modifier);
 			codeTypeDeclaration.IsClass     = typeDeclaration.Type == ClassType.Class;
 			codeTypeDeclaration.IsEnum      = typeDeclaration.Type == ClassType.Enum;
 			codeTypeDeclaration.IsInterface = typeDeclaration.Type == ClassType.Interface;
 			codeTypeDeclaration.IsStruct    = typeDeclaration.Type == ClassType.Struct;
+			codeTypeDeclaration.IsPartial = (typeDeclaration.Modifier & Modifiers.Partial) != 0;
 			
 			if (typeDeclaration.BaseTypes != null) {
 				foreach (TypeReference typeRef in typeDeclaration.BaseTypes) {
@@ -558,12 +579,12 @@ namespace ICSharpCode.NRefactory.Visitors
 			string         methodName = null;
 			if (target == null) {
 				targetExpr = new CodeThisReferenceExpression();
-			} else if (target is FieldReferenceExpression) {
-				FieldReferenceExpression fRef = (FieldReferenceExpression)target;
+			} else if (target is MemberReferenceExpression) {
+				MemberReferenceExpression fRef = (MemberReferenceExpression)target;
 				targetExpr = null;
-				if (fRef.TargetObject is FieldReferenceExpression) {
-					if (IsPossibleTypeReference((FieldReferenceExpression)fRef.TargetObject)) {
-						targetExpr = ConvertToTypeReference((FieldReferenceExpression)fRef.TargetObject);
+				if (fRef.TargetObject is MemberReferenceExpression) {
+					if (IsPossibleTypeReference((MemberReferenceExpression)fRef.TargetObject)) {
+						targetExpr = ConvertToTypeReference((MemberReferenceExpression)fRef.TargetObject);
 					}
 				}
 				if (targetExpr == null)
@@ -678,7 +699,7 @@ namespace ICSharpCode.NRefactory.Visitors
 				AddStmt(new CodeAttachEventStatement(new CodeEventReferenceExpression(new CodeThisReferenceExpression(), ((IdentifierExpression)eventExpr).Identifier),
 				                                     methodInvoker));
 			} else {
-				FieldReferenceExpression fr = (FieldReferenceExpression)eventExpr;
+				MemberReferenceExpression fr = (MemberReferenceExpression)eventExpr;
 				AddStmt(new CodeAttachEventStatement(new CodeEventReferenceExpression((CodeExpression)fr.TargetObject.AcceptVisitor(this, data), fr.FieldName),
 				                                     methodInvoker));
 			}
@@ -771,7 +792,7 @@ namespace ICSharpCode.NRefactory.Visitors
 			return isField;
 		}
 		
-		bool IsFieldReferenceExpression(FieldReferenceExpression fieldReferenceExpression)
+		bool IsFieldReferenceExpression(MemberReferenceExpression fieldReferenceExpression)
 		{
 			if (fieldReferenceExpression.TargetObject is ThisReferenceExpression
 			    || fieldReferenceExpression.TargetObject is BaseReferenceExpression)
@@ -782,7 +803,7 @@ namespace ICSharpCode.NRefactory.Visitors
 			return false;
 		}
 		
-		public override object VisitFieldReferenceExpression(FieldReferenceExpression fieldReferenceExpression, object data)
+		public override object VisitMemberReferenceExpression(MemberReferenceExpression fieldReferenceExpression, object data)
 		{
 			if (methodReference) {
 				methodReference = false;
@@ -792,9 +813,9 @@ namespace ICSharpCode.NRefactory.Visitors
 				return new CodeFieldReferenceExpression((CodeExpression)fieldReferenceExpression.TargetObject.AcceptVisitor(this, data),
 				                                        fieldReferenceExpression.FieldName);
 			} else {
-				if (fieldReferenceExpression.TargetObject is FieldReferenceExpression) {
-					if (IsPossibleTypeReference((FieldReferenceExpression)fieldReferenceExpression.TargetObject)) {
-						CodeTypeReferenceExpression typeRef = ConvertToTypeReference((FieldReferenceExpression)fieldReferenceExpression.TargetObject);
+				if (fieldReferenceExpression.TargetObject is MemberReferenceExpression) {
+					if (IsPossibleTypeReference((MemberReferenceExpression)fieldReferenceExpression.TargetObject)) {
+						CodeTypeReferenceExpression typeRef = ConvertToTypeReference((MemberReferenceExpression)fieldReferenceExpression.TargetObject);
 						if (IsField(typeRef.Type.BaseType, typeRef.Type.TypeArguments.Count, fieldReferenceExpression.FieldName)) {
 							return new CodeFieldReferenceExpression(typeRef,
 							                                        fieldReferenceExpression.FieldName);
@@ -813,10 +834,10 @@ namespace ICSharpCode.NRefactory.Visitors
 		#endregion
 		
 		#endregion
-		bool IsPossibleTypeReference(FieldReferenceExpression fieldReferenceExpression)
+		bool IsPossibleTypeReference(MemberReferenceExpression fieldReferenceExpression)
 		{
-			while (fieldReferenceExpression.TargetObject is FieldReferenceExpression) {
-				fieldReferenceExpression = (FieldReferenceExpression)fieldReferenceExpression.TargetObject;
+			while (fieldReferenceExpression.TargetObject is MemberReferenceExpression) {
+				fieldReferenceExpression = (MemberReferenceExpression)fieldReferenceExpression.TargetObject;
 			}
 			IdentifierExpression identifier = fieldReferenceExpression.TargetObject as IdentifierExpression;
 			if (identifier != null)
@@ -855,14 +876,14 @@ namespace ICSharpCode.NRefactory.Visitors
 			return false;
 		}
 		
-		static CodeTypeReferenceExpression ConvertToTypeReference(FieldReferenceExpression fieldReferenceExpression)
+		static CodeTypeReferenceExpression ConvertToTypeReference(MemberReferenceExpression fieldReferenceExpression)
 		{
 			StringBuilder type = new StringBuilder("");
 			
-			while (fieldReferenceExpression.TargetObject is FieldReferenceExpression) {
+			while (fieldReferenceExpression.TargetObject is MemberReferenceExpression) {
 				type.Insert(0,'.');
 				type.Insert(1,fieldReferenceExpression.FieldName.ToCharArray());
-				fieldReferenceExpression = (FieldReferenceExpression)fieldReferenceExpression.TargetObject;
+				fieldReferenceExpression = (MemberReferenceExpression)fieldReferenceExpression.TargetObject;
 			}
 			
 			type.Insert(0,'.');

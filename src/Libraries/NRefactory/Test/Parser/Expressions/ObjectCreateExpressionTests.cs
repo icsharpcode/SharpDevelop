@@ -185,7 +185,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			Assert.AreEqual(3, oce.ObjectInitializer.CreateExpressions.Count);
 			Assert.IsInstanceOfType(typeof(PrimitiveExpression), CheckPropertyInitializationExpression(oce.ObjectInitializer.CreateExpressions[0], "Name"));
 			Assert.IsInstanceOfType(typeof(IdentifierExpression), oce.ObjectInitializer.CreateExpressions[1]);
-			Assert.IsInstanceOfType(typeof(FieldReferenceExpression), oce.ObjectInitializer.CreateExpressions[2]);
+			Assert.IsInstanceOfType(typeof(MemberReferenceExpression), oce.ObjectInitializer.CreateExpressions[2]);
 		}
 		#endregion
 		

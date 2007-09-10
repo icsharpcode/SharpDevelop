@@ -765,15 +765,6 @@ namespace ICSharpCode.NRefactory.Visitors {
 			return null;
 		}
 		
-		public virtual object VisitFieldReferenceExpression(FieldReferenceExpression fieldReferenceExpression, object data) {
-			Debug.Assert((fieldReferenceExpression != null));
-			Debug.Assert((fieldReferenceExpression.TargetObject != null));
-			nodeStack.Push(fieldReferenceExpression.TargetObject);
-			fieldReferenceExpression.TargetObject.AcceptVisitor(this, data);
-			fieldReferenceExpression.TargetObject = ((Expression)(nodeStack.Pop()));
-			return null;
-		}
-		
 		public virtual object VisitFixedStatement(FixedStatement fixedStatement, object data) {
 			Debug.Assert((fixedStatement != null));
 			Debug.Assert((fixedStatement.TypeReference != null));
@@ -910,6 +901,18 @@ namespace ICSharpCode.NRefactory.Visitors {
 		
 		public virtual object VisitIdentifierExpression(IdentifierExpression identifierExpression, object data) {
 			Debug.Assert((identifierExpression != null));
+			Debug.Assert((identifierExpression.TypeArguments != null));
+			for (int i = 0; i < identifierExpression.TypeArguments.Count; i++) {
+				TypeReference o = identifierExpression.TypeArguments[i];
+				Debug.Assert(o != null);
+				nodeStack.Push(o);
+				o.AcceptVisitor(this, data);
+				o = (TypeReference)nodeStack.Pop();
+				if (o == null)
+					identifierExpression.TypeArguments.RemoveAt(i--);
+				else
+					identifierExpression.TypeArguments[i] = o;
+			}
 			return null;
 		}
 		
@@ -1066,7 +1069,6 @@ namespace ICSharpCode.NRefactory.Visitors {
 			Debug.Assert((invocationExpression != null));
 			Debug.Assert((invocationExpression.TargetObject != null));
 			Debug.Assert((invocationExpression.Arguments != null));
-			Debug.Assert((invocationExpression.TypeArguments != null));
 			nodeStack.Push(invocationExpression.TargetObject);
 			invocationExpression.TargetObject.AcceptVisitor(this, data);
 			invocationExpression.TargetObject = ((Expression)(nodeStack.Pop()));
@@ -1080,17 +1082,6 @@ namespace ICSharpCode.NRefactory.Visitors {
 					invocationExpression.Arguments.RemoveAt(i--);
 				else
 					invocationExpression.Arguments[i] = o;
-			}
-			for (int i = 0; i < invocationExpression.TypeArguments.Count; i++) {
-				TypeReference o = invocationExpression.TypeArguments[i];
-				Debug.Assert(o != null);
-				nodeStack.Push(o);
-				o.AcceptVisitor(this, data);
-				o = (TypeReference)nodeStack.Pop();
-				if (o == null)
-					invocationExpression.TypeArguments.RemoveAt(i--);
-				else
-					invocationExpression.TypeArguments[i] = o;
 			}
 			return null;
 		}
@@ -1156,6 +1147,27 @@ namespace ICSharpCode.NRefactory.Visitors {
 			nodeStack.Push(lockStatement.EmbeddedStatement);
 			lockStatement.EmbeddedStatement.AcceptVisitor(this, data);
 			lockStatement.EmbeddedStatement = ((Statement)(nodeStack.Pop()));
+			return null;
+		}
+		
+		public virtual object VisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression, object data) {
+			Debug.Assert((memberReferenceExpression != null));
+			Debug.Assert((memberReferenceExpression.TargetObject != null));
+			Debug.Assert((memberReferenceExpression.TypeArguments != null));
+			nodeStack.Push(memberReferenceExpression.TargetObject);
+			memberReferenceExpression.TargetObject.AcceptVisitor(this, data);
+			memberReferenceExpression.TargetObject = ((Expression)(nodeStack.Pop()));
+			for (int i = 0; i < memberReferenceExpression.TypeArguments.Count; i++) {
+				TypeReference o = memberReferenceExpression.TypeArguments[i];
+				Debug.Assert(o != null);
+				nodeStack.Push(o);
+				o.AcceptVisitor(this, data);
+				o = (TypeReference)nodeStack.Pop();
+				if (o == null)
+					memberReferenceExpression.TypeArguments.RemoveAt(i--);
+				else
+					memberReferenceExpression.TypeArguments[i] = o;
+			}
 			return null;
 		}
 		

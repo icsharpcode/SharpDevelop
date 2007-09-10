@@ -2183,22 +2183,27 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		public override object TrackedVisitInvocationExpression(InvocationExpression invocationExpression, object data)
 		{
 			TrackedVisit(invocationExpression.TargetObject, data);
-			if (invocationExpression.TypeArguments != null && invocationExpression.TypeArguments.Count > 0) {
-				outputFormatter.PrintToken(Tokens.OpenParenthesis);
-				outputFormatter.PrintToken(Tokens.Of);
-				outputFormatter.Space();
-				AppendCommaSeparatedList(invocationExpression.TypeArguments);
-				outputFormatter.PrintToken(Tokens.CloseParenthesis);
-			}
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);
 			AppendCommaSeparatedList(invocationExpression.Arguments);
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
 			return null;
 		}
 		
+		void PrintTypeArguments(List<TypeReference> typeArguments)
+		{
+			if (typeArguments != null && typeArguments.Count > 0) {
+				outputFormatter.PrintToken(Tokens.OpenParenthesis);
+				outputFormatter.PrintToken(Tokens.Of);
+				outputFormatter.Space();
+				AppendCommaSeparatedList(typeArguments);
+				outputFormatter.PrintToken(Tokens.CloseParenthesis);
+			}
+		}
+		
 		public override object TrackedVisitIdentifierExpression(IdentifierExpression identifierExpression, object data)
 		{
 			outputFormatter.PrintIdentifier(identifierExpression.Identifier);
+			PrintTypeArguments(identifierExpression.TypeArguments);
 			return null;
 		}
 		
@@ -2546,11 +2551,12 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public override object TrackedVisitFieldReferenceExpression(FieldReferenceExpression fieldReferenceExpression, object data)
+		public override object TrackedVisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression, object data)
 		{
-			TrackedVisit(fieldReferenceExpression.TargetObject, data);
+			TrackedVisit(memberReferenceExpression.TargetObject, data);
 			outputFormatter.PrintToken(Tokens.Dot);
-			outputFormatter.PrintIdentifier(fieldReferenceExpression.FieldName);
+			outputFormatter.PrintIdentifier(memberReferenceExpression.FieldName);
+			PrintTypeArguments(memberReferenceExpression.TypeArguments);
 			return null;
 		}
 		

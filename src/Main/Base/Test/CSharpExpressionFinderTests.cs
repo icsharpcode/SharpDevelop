@@ -399,6 +399,26 @@ class MyClass {
 		}
 		
 		[Test]
+		public void FieldWithNullableType()
+		{
+			const string program = @"using System;
+class MyClass {
+  int? ";
+			ExpressionResult result = ef.FindExpression(program, program.Length);
+			Assert.AreEqual(ExpressionContext.IdentifierExpected.ToString(), result.Context.ToString());
+		}
+		
+		[Test]
+		public void FieldWithArrayType()
+		{
+			const string program = @"using System;
+class MyClass {
+  int[,][] ";
+			ExpressionResult result = ef.FindExpression(program, program.Length);
+			Assert.AreEqual(ExpressionContext.IdentifierExpected.ToString(), result.Context.ToString());
+		}
+		
+		[Test]
 		public void GenericClassDeclaration()
 		{
 			const string program = @"using System;

@@ -20,10 +20,24 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		{
 			DestructorDeclaration dd = ParseUtilCSharp.ParseTypeMember<DestructorDeclaration>("~MyClass() {}");
 		}
+		
+		[Test]
+		public void CSharpExternDestructorDeclarationTest()
+		{
+			DestructorDeclaration dd = ParseUtilCSharp.ParseTypeMember<DestructorDeclaration>("extern ~MyClass();");
+			Assert.AreEqual(Modifiers.Extern, dd.Modifier);
+		}
+		
+		[Test]
+		public void CSharpUnsafeDestructorDeclarationTest()
+		{
+			DestructorDeclaration dd = ParseUtilCSharp.ParseTypeMember<DestructorDeclaration>("unsafe ~MyClass() {}");
+			Assert.AreEqual(Modifiers.Unsafe, dd.Modifier);
+		}
 		#endregion
 		
 		#region VB.NET
 		// No VB.NET representation
-		#endregion 
+		#endregion
 	}
 }

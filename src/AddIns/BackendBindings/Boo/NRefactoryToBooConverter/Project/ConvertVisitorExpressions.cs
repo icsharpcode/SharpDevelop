@@ -133,20 +133,20 @@ namespace NRefactoryToBooConverter
 			return new B.ReferenceExpression(GetLexicalInfo(identifierExpression), identifierExpression.Identifier);
 		}
 		
-		public object VisitFieldReferenceExpression(FieldReferenceExpression fre, object data)
+		public object VisitMemberReferenceExpression(MemberReferenceExpression mre, object data)
 		{
 			B.Expression target = null;
-			if (fre.TargetObject is TypeReferenceExpression) {
+			if (mre.TargetObject is TypeReferenceExpression) {
 				// not typeof, so this is something like int.Parse() or Class<string>.StaticMethod
-				TypeReference typeRef = ((TypeReferenceExpression)fre.TargetObject).TypeReference;
+				TypeReference typeRef = ((TypeReferenceExpression)mre.TargetObject).TypeReference;
 				if (!typeRef.IsArrayType)
 					target = MakeReferenceExpression(typeRef);
 			}
 			if (target == null) {
-				target = (B.Expression)fre.TargetObject.AcceptVisitor(this, data);
+				target = (B.Expression)mre.TargetObject.AcceptVisitor(this, data);
 				if (target == null) return null;
 			}
-			return new B.MemberReferenceExpression(GetLexicalInfo(fre), target, fre.FieldName);
+			return new B.MemberReferenceExpression(GetLexicalInfo(mre), target, mre.FieldName);
 		}
 		
 		public object VisitClassReferenceExpression(ClassReferenceExpression classReferenceExpression, object data)
@@ -331,9 +331,6 @@ namespace NRefactoryToBooConverter
 		
 		public object VisitInvocationExpression(InvocationExpression ie, object data)
 		{
-			if (ie.TypeArguments != null && ie.TypeArguments.Count > 0) {
-				AddError(ie, "Generic method calls are not supported.");
-			}
 			B.Expression e = ConvertExpression(ie.TargetObject);
 			if (e == null)
 				return null;

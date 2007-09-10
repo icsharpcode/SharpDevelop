@@ -423,12 +423,6 @@ namespace ICSharpCode.NRefactory.Visitors {
 			return null;
 		}
 		
-		public virtual object VisitFieldReferenceExpression(FieldReferenceExpression fieldReferenceExpression, object data) {
-			Debug.Assert((fieldReferenceExpression != null));
-			Debug.Assert((fieldReferenceExpression.TargetObject != null));
-			return fieldReferenceExpression.TargetObject.AcceptVisitor(this, data);
-		}
-		
 		public virtual object VisitFixedStatement(FixedStatement fixedStatement, object data) {
 			Debug.Assert((fixedStatement != null));
 			Debug.Assert((fixedStatement.TypeReference != null));
@@ -504,6 +498,11 @@ namespace ICSharpCode.NRefactory.Visitors {
 		
 		public virtual object VisitIdentifierExpression(IdentifierExpression identifierExpression, object data) {
 			Debug.Assert((identifierExpression != null));
+			Debug.Assert((identifierExpression.TypeArguments != null));
+			foreach (TypeReference o in identifierExpression.TypeArguments) {
+				Debug.Assert(o != null);
+				o.AcceptVisitor(this, data);
+			}
 			return null;
 		}
 		
@@ -587,13 +586,8 @@ namespace ICSharpCode.NRefactory.Visitors {
 			Debug.Assert((invocationExpression != null));
 			Debug.Assert((invocationExpression.TargetObject != null));
 			Debug.Assert((invocationExpression.Arguments != null));
-			Debug.Assert((invocationExpression.TypeArguments != null));
 			invocationExpression.TargetObject.AcceptVisitor(this, data);
 			foreach (Expression o in invocationExpression.Arguments) {
-				Debug.Assert(o != null);
-				o.AcceptVisitor(this, data);
-			}
-			foreach (TypeReference o in invocationExpression.TypeArguments) {
 				Debug.Assert(o != null);
 				o.AcceptVisitor(this, data);
 			}
@@ -636,6 +630,18 @@ namespace ICSharpCode.NRefactory.Visitors {
 			Debug.Assert((lockStatement.EmbeddedStatement != null));
 			lockStatement.LockExpression.AcceptVisitor(this, data);
 			return lockStatement.EmbeddedStatement.AcceptVisitor(this, data);
+		}
+		
+		public virtual object VisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression, object data) {
+			Debug.Assert((memberReferenceExpression != null));
+			Debug.Assert((memberReferenceExpression.TargetObject != null));
+			Debug.Assert((memberReferenceExpression.TypeArguments != null));
+			memberReferenceExpression.TargetObject.AcceptVisitor(this, data);
+			foreach (TypeReference o in memberReferenceExpression.TypeArguments) {
+				Debug.Assert(o != null);
+				o.AcceptVisitor(this, data);
+			}
+			return null;
 		}
 		
 		public virtual object VisitMethodDeclaration(MethodDeclaration methodDeclaration, object data) {

@@ -3536,7 +3536,7 @@ out pexpr);
 out name);
 
 #line  1588 "VBNET.ATG" 
-				pexpr = new FieldReferenceExpression(pexpr, name); 
+				pexpr = new MemberReferenceExpression(pexpr, name); 
 			} else {
 				InvocationExpression(
 #line  1589 "VBNET.ATG" 
@@ -3669,7 +3669,7 @@ out val);
 				Identifier();
 
 #line  1620 "VBNET.ATG" 
-				pexpr = new FieldReferenceExpression(new TypeReferenceExpression(val), t.val); 
+				pexpr = new MemberReferenceExpression(new TypeReferenceExpression(val), t.val); 
 				break;
 			}
 			case 119: {
@@ -3700,7 +3700,7 @@ out val);
 out name);
 
 #line  1626 "VBNET.ATG" 
-				pexpr = new FieldReferenceExpression(retExpr, name); 
+				pexpr = new MemberReferenceExpression(retExpr, name); 
 				break;
 			}
 			case 199: {
@@ -3816,7 +3816,7 @@ out type);
 out name);
 
 #line  1648 "VBNET.ATG" 
-			pexpr = new FieldReferenceExpression(null, name);
+			pexpr = new MemberReferenceExpression(null, name);
 		} else SynErr(243);
 	}
 
@@ -3855,7 +3855,7 @@ out type);
 				Identifier();
 
 #line  1667 "VBNET.ATG" 
-				pexpr = new FieldReferenceExpression(GetTypeReferenceExpression(pexpr, typeParameters), t.val); 
+				pexpr = new MemberReferenceExpression(GetTypeReferenceExpression(pexpr, typeParameters), t.val); 
 			} else if (la.kind == 24) {
 				lexer.NextToken();
 				ArgumentList(
@@ -3864,7 +3864,7 @@ out parameters);
 				Expect(25);
 
 #line  1671 "VBNET.ATG" 
-				pexpr = new InvocationExpression(pexpr, parameters, typeParameters); 
+				pexpr = CreateInvocationExpression(pexpr, parameters, typeParameters); 
 			} else SynErr(244);
 		} else if (StartOf(30)) {
 			ArgumentList(
@@ -3873,7 +3873,7 @@ out parameters);
 			Expect(25);
 
 #line  1675 "VBNET.ATG" 
-			pexpr = new InvocationExpression(pexpr, parameters, typeParameters); 
+			pexpr = CreateInvocationExpression(pexpr, parameters, typeParameters); 
 		} else SynErr(245);
 
 #line  1677 "VBNET.ATG" 
@@ -5647,7 +5647,7 @@ out val);
 #line  2531 "VBNET.ATG" 
 			// a field reference expression that stands alone is a
 			// invocation expression without parantheses and arguments
-			if(expr is FieldReferenceExpression || expr is IdentifierExpression) {
+			if(expr is MemberReferenceExpression || expr is IdentifierExpression) {
 				expr = new InvocationExpression(expr);
 			}
 			statement = new ExpressionStatement(expr);
@@ -6079,7 +6079,7 @@ la.kind == Tokens.OpenParenthesis && Peek(1).kind == Tokens.Of) {
 out name);
 
 #line  2658 "VBNET.ATG" 
-				expr = new FieldReferenceExpression(expr, name); 
+				expr = new MemberReferenceExpression(expr, name); 
 			} else {
 				InvocationExpression(
 #line  2660 "VBNET.ATG" 

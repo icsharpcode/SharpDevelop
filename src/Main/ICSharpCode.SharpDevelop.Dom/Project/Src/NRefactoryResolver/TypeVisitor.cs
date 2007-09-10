@@ -170,15 +170,25 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 		}
 		
+		List<TypeReference> GetTypeArguments(Expression expr)
+		{
+			if (expr is IdentifierExpression)
+				return ((IdentifierExpression)expr).TypeArguments;
+			else if (expr is MemberReferenceExpression)
+				return ((MemberReferenceExpression)expr).TypeArguments;
+			else
+				return null;
+		}
+		
 		/// <summary>
 		/// Gets the method called by the InvocationExpression. In Visual Basic, the result
 		/// can also be an Indexer.
 		/// </summary>
 		public IMethodOrProperty GetMethod(InvocationExpression invocationExpression)
 		{
-			IReturnType[] typeParameters = CreateReturnTypes(invocationExpression.TypeArguments);
-			if (invocationExpression.TargetObject is FieldReferenceExpression) {
-				FieldReferenceExpression field = (FieldReferenceExpression)invocationExpression.TargetObject;
+			IReturnType[] typeParameters = CreateReturnTypes(GetTypeArguments(invocationExpression.TargetObject));
+			if (invocationExpression.TargetObject is MemberReferenceExpression) {
+				MemberReferenceExpression field = (MemberReferenceExpression)invocationExpression.TargetObject;
 				IReturnType targetType = field.TargetObject.AcceptVisitor(this, null) as IReturnType;
 				
 				List<IMethod> methods = resolver.SearchMethod(targetType, field.FieldName);
@@ -239,8 +249,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				// collection(index) - use indexer
 				// collection.Item(index) - use parametrized property
 				
-				if (invocationExpression.TargetObject is IdentifierExpression || invocationExpression.TargetObject is FieldReferenceExpression) {
-					// only IdentifierExpression/FieldReferenceExpression can represent a parametrized property
+				if (invocationExpression.TargetObject is IdentifierExpression || invocationExpression.TargetObject is MemberReferenceExpression) {
+					// only IdentifierExpression/MemberReferenceExpression can represent a parametrized property
 					// - the check is necessary because collection.Items and collection.Item(index) both
 					// resolve to the same property, but we want to use the default indexer for the second call in
 					// collection.Item(index1)(index2)
@@ -281,26 +291,26 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return MemberLookupHelper.FindOverload(indexers.ToArray(), parameters);
 		}
 		
-		public override object VisitFieldReferenceExpression(FieldReferenceExpression fieldReferenceExpression, object data)
+		public override object VisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression, object data)
 		{
-			if (fieldReferenceExpression == null) {
+			if (memberReferenceExpression == null) {
 				return null;
 			}
 			// int. generates a FieldreferenceExpression with TargetObject TypeReferenceExpression and no FieldName
-			if (fieldReferenceExpression.FieldName == null || fieldReferenceExpression.FieldName == "") {
-				if (fieldReferenceExpression.TargetObject is TypeReferenceExpression) {
-					return CreateReturnType(((TypeReferenceExpression)fieldReferenceExpression.TargetObject).TypeReference);
+			if (memberReferenceExpression.FieldName == null || memberReferenceExpression.FieldName == "") {
+				if (memberReferenceExpression.TargetObject is TypeReferenceExpression) {
+					return CreateReturnType(((TypeReferenceExpression)memberReferenceExpression.TargetObject).TypeReference);
 				}
 			}
-			IReturnType returnType = fieldReferenceExpression.TargetObject.AcceptVisitor(this, data) as IReturnType;
+			IReturnType returnType = memberReferenceExpression.TargetObject.AcceptVisitor(this, data) as IReturnType;
 			if (returnType != null) {
 				if (returnType is NamespaceReturnType) {
 					string name = returnType.FullyQualifiedName;
 					string combinedName;
 					if (name.Length == 0)
-						combinedName = fieldReferenceExpression.FieldName;
+						combinedName = memberReferenceExpression.FieldName;
 					else
-						combinedName = name + "." + fieldReferenceExpression.FieldName;
+						combinedName = name + "." + memberReferenceExpression.FieldName;
 					if (resolver.ProjectContent.NamespaceExists(combinedName)) {
 						return new NamespaceReturnType(combinedName);
 					}
@@ -312,13 +322,13 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 						// go through the members of the modules
 						foreach (object o in resolver.ProjectContent.GetNamespaceContents(name)) {
 							IMember member = o as IMember;
-							if (member != null && resolver.IsSameName(member.Name, fieldReferenceExpression.FieldName))
+							if (member != null && resolver.IsSameName(member.Name, memberReferenceExpression.FieldName))
 								return member.ReturnType;
 						}
 					}
 					return null;
 				}
-				return resolver.SearchMember(returnType, fieldReferenceExpression.FieldName);
+				return resolver.SearchMember(returnType, memberReferenceExpression.FieldName);
 			}
 			return null;
 		}
@@ -485,8 +495,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		static string GetAnonymousTypeFieldName(Expression expr)
 		{
-			if (expr is FieldReferenceExpression) {
-				return ((FieldReferenceExpression)expr).FieldName;
+			if (expr is MemberReferenceExpression) {
+				return ((MemberReferenceExpression)expr).FieldName;
 			}
 			if (expr is AssignmentExpression) {
 				expr = ((AssignmentExpression)expr).Left; // use left side if it is an IdentifierExpression

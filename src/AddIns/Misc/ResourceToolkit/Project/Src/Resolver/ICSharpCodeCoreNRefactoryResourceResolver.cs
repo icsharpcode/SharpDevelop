@@ -100,7 +100,7 @@ namespace Hornung.ResourceToolkit.Resolver
 			
 			InvocationExpression invocation = expr as InvocationExpression;
 			if (invocation != null) {
-				FieldReferenceExpression fre = invocation.TargetObject as FieldReferenceExpression;
+				MemberReferenceExpression fre = invocation.TargetObject as MemberReferenceExpression;
 				if (fre != null) {
 					if (fre.FieldName == "GetString") {
 						if (invocation.Arguments.Count > 0) {
