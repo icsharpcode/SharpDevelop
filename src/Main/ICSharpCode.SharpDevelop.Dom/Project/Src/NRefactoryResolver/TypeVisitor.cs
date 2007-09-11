@@ -488,7 +488,10 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			DefaultClass c = new DefaultClass(new DefaultCompilationUnit(resolver.ProjectContent), nameBuilder.ToString());
 			c.Modifiers = ModifierEnum.Internal | ModifierEnum.Synthetic | ModifierEnum.Sealed;
 			for (int i = 0; i < fieldTypes.Count; i++) {
-				c.Fields.Add(new DefaultField(fieldTypes[i], fieldNames[i], ModifierEnum.Public | ModifierEnum.Synthetic, DomRegion.Empty, c));
+				DefaultProperty p = new DefaultProperty(fieldNames[i], fieldTypes[i], ModifierEnum.Public | ModifierEnum.Synthetic, DomRegion.Empty, DomRegion.Empty, c);
+				p.CanGet = true;
+				p.CanSet = false;
+				c.Properties.Add(p);
 			}
 			return c;
 		}

@@ -342,6 +342,9 @@ namespace ICSharpCode.SharpDevelop.Project
 					
 					// replace all references in the project with the referenceReplacements
 					foreach (MSBuild.BuildItemGroup itemGroup in tempProject.ItemGroups) {
+						// skip item groups from imported projects
+						if (itemGroup.IsImported)
+							continue;
 						foreach (MSBuild.BuildItem item in itemGroup.ToArray()) {
 							if (item.Name == ItemType.Reference.ItemName) {
 								itemGroup.RemoveItem(item);
