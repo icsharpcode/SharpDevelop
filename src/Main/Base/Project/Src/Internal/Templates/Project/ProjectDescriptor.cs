@@ -358,6 +358,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 							// Textual content
 							StreamWriter sr = new StreamWriter(File.Create(fileName), ParserService.DefaultFileEncoding);
 							string fileContent = StringParser.Parse(file.Content, new string[,] { {"ProjectName", projectCreateInformation.ProjectName}, {"FileName", fileName}});
+							fileContent = StringParser.Parse(fileContent);
 							if (SharpDevelopTextEditorProperties.Instance.IndentationString != "\t") {
 								fileContent = fileContent.Replace("\t", SharpDevelopTextEditorProperties.Instance.IndentationString);
 							}

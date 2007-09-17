@@ -165,19 +165,19 @@ namespace HtmlHelp2
 					tocControl.EndInit();
 					Controls.Add(tocControl);
 					tocControl.CreateControl();
-	
+					
 					tocControl.Visible = false;
 					tocControl.BorderStyle = HxBorderStyle.HxBorderStyle_FixedSingle;
 					tocControl.FontSource = HxFontSourceConstant.HxFontExternal;
 					tocControl.TreeStyle =
 						(HtmlHelp2Environment.Config.TocPictures)?TSC.HxTreeStyle_TreelinesPlusMinusPictureText:TSC.HxTreeStyle_TreelinesPlusMinusText;
-	
+					
 					printTopic.Image = ResourcesHelper.GetBitmap("HtmlHelp2.16x16.Print.bmp");
 					printTopic.DisplayStyle = ToolStripItemDisplayStyle.ImageAndText;
 					printTopic.Text = StringParser.Parse("${res:AddIns.HtmlHelp2.PrintTopic}");
 					printTopic.Click += new EventHandler(this.PrintTopic);
 					printContextMenu.Items.Add(printTopic);
-	
+					
 					printTopicAndSubTopics.Text = StringParser.Parse("${res:AddIns.HtmlHelp2.PrintSubtopics}");
 					printTopicAndSubTopics.Click += new EventHandler(this.PrintTopicAndSubTopics);
 					printContextMenu.Items.Add(printTopicAndSubTopics);
@@ -286,7 +286,7 @@ namespace HtmlHelp2
 				filterCombobox.SelectedIndexChanged += new EventHandler(this.FilterChanged);
 			}
 		}
-	
+		
 		private bool SetToc(string filterName)
 		{
 			try
@@ -336,8 +336,10 @@ namespace HtmlHelp2
 		{
 			this.UpdateControl();
 
-			tocControl.TreeStyle =
-				(HtmlHelp2Environment.Config.TocPictures)?TSC.HxTreeStyle_TreelinesPlusMinusPictureText:TSC.HxTreeStyle_TreelinesPlusMinusText;
+			if (tocControl != null) {
+				tocControl.TreeStyle =
+					(HtmlHelp2Environment.Config.TocPictures)?TSC.HxTreeStyle_TreelinesPlusMinusPictureText:TSC.HxTreeStyle_TreelinesPlusMinusText;
+			}
 		}
 		#endregion
 

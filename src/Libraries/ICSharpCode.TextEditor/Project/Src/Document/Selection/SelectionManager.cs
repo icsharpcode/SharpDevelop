@@ -17,7 +17,15 @@ namespace ICSharpCode.TextEditor.Document
 	/// </summary>
 	public class SelectionManager : IDisposable
 	{
-		internal TextLocation selectionStart;
+		TextLocation selectionStart;
+		
+		internal TextLocation SelectionStart {
+			get { return selectionStart; }
+			set {
+				DefaultDocument.ValidatePosition(document, value);
+				selectionStart = value;
+			}
+		}
 		IDocument document;
 		TextArea textArea;
 		internal SelectFrom selectFrom = new SelectFrom();
@@ -183,7 +191,7 @@ namespace ICSharpCode.TextEditor.Document
 				SetSelection(new DefaultSelection(document, min, max));
 				// initialise selectFrom for a cursor selection
 				if (selectFrom.where == WhereFrom.None)
-					selectionStart = oldPosition; //textArea.Caret.Position;
+					SelectionStart = oldPosition; //textArea.Caret.Position;
 				return;
 			}
 
@@ -200,9 +208,9 @@ namespace ICSharpCode.TextEditor.Document
 					newPosition.X = 0;
 				}
 
-				if (GreaterEqPos(newPosition, selectionStart)) // selecting forward
+				if (GreaterEqPos(newPosition, SelectionStart)) // selecting forward
 				{
-					selection.StartPosition = selectionStart;
+					selection.StartPosition = SelectionStart;
 					// this handles last line selection
 					if (selectFrom.where == WhereFrom.Gutter ) //&& newPosition.Y != oldPosition.Y)
 						selection.EndPosition = new TextLocation(textArea.Caret.Column, textArea.Caret.Line);
@@ -213,9 +221,9 @@ namespace ICSharpCode.TextEditor.Document
 				} else { // selecting back
 					if (selectFrom.where == WhereFrom.Gutter && selectFrom.first == WhereFrom.Gutter)
 					{ // gutter selection
-						selection.EndPosition = NextValidPosition(selectionStart.Y);
+						selection.EndPosition = NextValidPosition(SelectionStart.Y);
 					} else { // internal text selection
-						selection.EndPosition = selectionStart; //selection.StartPosition;
+						selection.EndPosition = SelectionStart; //selection.StartPosition;
 					}
 					selection.StartPosition = newPosition;
 				}
@@ -257,11 +265,16 @@ namespace ICSharpCode.TextEditor.Document
 			// this is the most logical place to reset selection starting
 			// positions because it is always called before a new selection
 			selectFrom.first = selectFrom.where;
-			selectionStart = textArea.TextView.GetLogicalPosition(mousepos.X - textArea.TextView.DrawingPosition.X, mousepos.Y - textArea.TextView.DrawingPosition.Y);
-			if(selectFrom.where == WhereFrom.Gutter) {
-				selectionStart.X = 0;
+			TextLocation newSelectionStart = textArea.TextView.GetLogicalPosition(mousepos.X - textArea.TextView.DrawingPosition.X, mousepos.Y - textArea.TextView.DrawingPosition.Y);
+			if (selectFrom.where == WhereFrom.Gutter) {
+				newSelectionStart.X = 0;
 //				selectionStart.Y = -1;
 			}
+			if (newSelectionStart.Line >= document.TotalNumberOfLines) {
+				newSelectionStart.Line = document.TotalNumberOfLines-1;
+				newSelectionStart.Column = document.GetLineSegment(document.TotalNumberOfLines-1).Length;
+			}
+			this.SelectionStart = newSelectionStart;
 
 			ClearWithoutUpdate();
 			document.CommitUpdate();

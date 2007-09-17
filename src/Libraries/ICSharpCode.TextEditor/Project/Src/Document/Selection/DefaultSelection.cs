@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Diagnostics;
 using System.Drawing;
 
 namespace ICSharpCode.TextEditor.Document
@@ -25,6 +26,7 @@ namespace ICSharpCode.TextEditor.Document
 				return startPosition;
 			}
 			set {
+				DefaultDocument.ValidatePosition(document, value);
 				startPosition = value;
 			}
 		}
@@ -34,6 +36,7 @@ namespace ICSharpCode.TextEditor.Document
 				return endPosition;
 			}
 			set {
+				DefaultDocument.ValidatePosition(document, value);
 				endPosition = value;
 			}
 		}
@@ -98,6 +101,9 @@ namespace ICSharpCode.TextEditor.Document
 		/// </summary>
 		public DefaultSelection(IDocument document, TextLocation startPosition, TextLocation endPosition)
 		{
+			DefaultDocument.ValidatePosition(document, startPosition);
+			DefaultDocument.ValidatePosition(document, endPosition);
+			Debug.Assert(startPosition <= endPosition);
 			this.document      = document;
 			this.startPosition = startPosition;
 			this.endPosition   = endPosition;

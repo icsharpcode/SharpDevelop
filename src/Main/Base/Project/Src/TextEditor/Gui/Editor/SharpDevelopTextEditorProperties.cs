@@ -70,9 +70,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		public string IndentationString {
 			get {
 				if (indentationString == null) {
-					SharpDevelopTextEditorProperties p = new SharpDevelopTextEditorProperties();
-					if (p.ConvertTabsToSpaces)
-						return new string(' ', p.IndentationSize);
+					if (ConvertTabsToSpaces)
+						return new string(' ', IndentationSize);
 					else
 						return "\t";
 				}

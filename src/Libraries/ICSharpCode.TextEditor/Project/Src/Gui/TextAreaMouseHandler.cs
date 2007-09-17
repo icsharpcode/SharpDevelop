@@ -213,7 +213,7 @@ namespace ICSharpCode.TextEditor
 
 			// the selection is from the gutter
 			if (textArea.SelectionManager.selectFrom.where == WhereFrom.Gutter) {
-				if(realmousepos.Y < textArea.SelectionManager.selectionStart.Y) {
+				if(realmousepos.Y < textArea.SelectionManager.SelectionStart.Y) {
 					// the selection has moved above the startpoint
 					textArea.Caret.Position = new TextLocation(0, realmousepos.Y);
 				} else {
@@ -287,7 +287,7 @@ namespace ICSharpCode.TextEditor
 					
 					selection.StartPosition = minSelection;
 					selection.EndPosition = maxSelection;
-					textArea.SelectionManager.selectionStart = minSelection;
+					textArea.SelectionManager.SelectionStart = minSelection;
 				}
 
 				// after a double-click selection, the caret is placed correctly,
@@ -341,7 +341,7 @@ namespace ICSharpCode.TextEditor
 							if (!minSelection.IsEmpty && !maxSelection.IsEmpty && textArea.SelectionManager.SelectionCollection.Count > 0) {
 								textArea.SelectionManager.SelectionCollection[0].StartPosition = minSelection;
 								textArea.SelectionManager.SelectionCollection[0].EndPosition = maxSelection;
-								textArea.SelectionManager.selectionStart = minSelection;
+								textArea.SelectionManager.SelectionStart = minSelection;
 
 								minSelection = TextLocation.Empty;
 								maxSelection = TextLocation.Empty;

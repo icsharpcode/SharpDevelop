@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
+using System.Runtime.Serialization;
 
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.Core;
@@ -149,7 +150,11 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 						if (!Directory.Exists(Path.GetDirectoryName(targetItem.FileName))) {
 							Directory.CreateDirectory(Path.GetDirectoryName(targetItem.FileName));
 						}
-						ConvertFile(fileItem, targetItem);
+						try {
+							ConvertFile(fileItem, targetItem);
+						} catch (Exception ex) {
+							throw new ConversionException("Error converting " + fileItem.FileName, ex);
+						}
 					}
 					targetProjectItems.AddProjectItem(targetItem);
 				} else {
@@ -283,6 +288,29 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			MSBuildBasedProject p = (MSBuildBasedProject)targetProject;
 			p.SetProperty("WarningsAsErrors", null);
 			p.SetProperty("NoWarn", null);
+		}
+	}
+	
+	/// <summary>
+	/// Exception used when converting a file fails.
+	/// </summary>
+	[Serializable]
+	public class ConversionException : Exception
+	{
+		public ConversionException() : base()
+		{
+		}
+		
+		public ConversionException(string message) : base(message)
+		{
+		}
+		
+		public ConversionException(string message, Exception innerException) : base(message, innerException)
+		{
+		}
+		
+		protected ConversionException(SerializationInfo info, StreamingContext context) : base(info, context)
+		{
 		}
 	}
 }
