@@ -184,6 +184,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 			} catch (EndOfStreamException) {
 				LoggingService.Warn("Read dom: EndOfStreamException");
 				return null;
+			} catch (Exception ex) {
+				HostCallback.ShowMessage("Error loading cached code-completion data.\n" +
+				                         "The cached file might be corrupted and will be regenerated.\n\n" +
+				                         ex.ToString());
+				return null;
 			}
 			// do not close the stream
 		}

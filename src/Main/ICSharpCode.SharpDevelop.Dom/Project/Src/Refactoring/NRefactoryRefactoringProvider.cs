@@ -309,7 +309,8 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 			int lastLineBefore = lastPos.IsEmpty ? 0 : lastPos.Y;
 			int firstLineAfter = t.EndLocation.IsEmpty ? int.MaxValue : t.EndLocation.Y;
 			
-			lexer.Dispose(); lexer = null;
+			lexer.Dispose();
+			lexer = null;
 			
 			StringReader myReader = new StringReader(fileContent);
 			
@@ -328,12 +329,21 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 					string trimLine = line.TrimStart();
 					if (trimLine.Length == 0) {
 						if (++emptyLinesInRow > largestEmptyLineCount) {
-							resultBeginLine = lineNumber;
+							largestEmptyLineCount = emptyLinesInRow;
+							resultBeginLine = lineNumber + 1;
+						}
+					} else {
+						emptyLinesInRow = 0;
+						if (IsEndDirective(trimLine)) {
+							largestEmptyLineCount = 0;
+							resultBeginLine = lineNumber + 1;
 						}
 					}
 				} else if (lineNumber == type.Region.BeginLine) {
 					mainLine = line;
-				} else if (lineNumber == type.BodyRegion.EndLine) {
+				}
+				// Region.BeginLine could be BodyRegion.EndLine
+				if (lineNumber == type.BodyRegion.EndLine) {
 					largestEmptyLineCount = 0;
 					emptyLinesInRow = 0;
 					resultEndLine = lineNumber;
@@ -343,8 +353,13 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 					string trimLine = line.TrimStart();
 					if (trimLine.Length == 0) {
 						if (++emptyLinesInRow > largestEmptyLineCount) {
-							emptyLinesInRow = largestEmptyLineCount;
+							largestEmptyLineCount = emptyLinesInRow;
 							resultEndLine = lineNumber - emptyLinesInRow;
+						}
+					} else {
+						emptyLinesInRow = 0;
+						if (IsStartDirective(trimLine)) {
+							break;
 						}
 					}
 				}
@@ -352,6 +367,16 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 			
 			myReader.Dispose();
 			return new DomRegion(resultBeginLine, 0, resultEndLine, int.MaxValue);
+		}
+		
+		static bool IsEndDirective(string trimLine)
+		{
+			return trimLine.StartsWith("#endregion") || trimLine.StartsWith("#endif");
+		}
+		
+		static bool IsStartDirective(string trimLine)
+		{
+			return trimLine.StartsWith("#region") || trimLine.StartsWith("#if");
 		}
 		#endregion
 	}

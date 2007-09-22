@@ -95,7 +95,7 @@ namespace ICSharpCode.TextEditor
 			TextLocation selectionStartPos;
 
 			textArea.SelectionManager.selectFrom.where = WhereFrom.Gutter;
-			int realline = textArea.TextView.GetLogicalLine(mousepos);
+			int realline = textArea.TextView.GetLogicalLine(mousepos.Y);
 			if (realline >= 0 && realline < textArea.Document.TotalNumberOfLines) {
 				// shift-select
 				if((Control.ModifierKeys & Keys.Shift) != 0) {

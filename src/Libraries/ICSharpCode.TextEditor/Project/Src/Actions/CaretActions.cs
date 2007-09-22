@@ -82,10 +82,9 @@ namespace ICSharpCode.TextEditor.Actions
 			int lineNr = position.Y;
 			int visualLine = textArea.Document.GetVisibleLine(lineNr);
 			if (visualLine > 0) {
-				int xpos = textArea.TextView.GetDrawingXPos(lineNr, position.X);
-				TextLocation pos = new TextLocation(xpos,
-				                                    textArea.TextView.DrawingPosition.Y + (visualLine - 1) * textArea.TextView.FontHeight - textArea.TextView.TextArea.VirtualTop.Y);
-				textArea.Caret.Position = textArea.TextView.GetLogicalPosition(pos.X, pos.Y);
+				Point pos = new Point(textArea.TextView.GetDrawingXPos(lineNr, position.X),
+				                      textArea.TextView.DrawingPosition.Y + (visualLine - 1) * textArea.TextView.FontHeight - textArea.TextView.TextArea.VirtualTop.Y);
+				textArea.Caret.Position = textArea.TextView.GetLogicalPosition(pos);
 				textArea.SetCaretToDesiredColumn();
 			}
 //			if (textArea.Caret.Line  > 0) {
@@ -102,10 +101,9 @@ namespace ICSharpCode.TextEditor.Actions
 			int lineNr = position.Y;
 			int visualLine = textArea.Document.GetVisibleLine(lineNr);
 			if (visualLine < textArea.Document.GetVisibleLine(textArea.Document.TotalNumberOfLines)) {
-				int xpos = textArea.TextView.GetDrawingXPos(lineNr, position.X);
-				TextLocation pos = new TextLocation(xpos,
-				                                    textArea.TextView.DrawingPosition.Y + (visualLine + 1) * textArea.TextView.FontHeight - textArea.TextView.TextArea.VirtualTop.Y);
-				textArea.Caret.Position = textArea.TextView.GetLogicalPosition(pos.X, pos.Y);
+				Point pos = new Point(textArea.TextView.GetDrawingXPos(lineNr, position.X),
+				                      textArea.TextView.DrawingPosition.Y + (visualLine + 1) * textArea.TextView.FontHeight - textArea.TextView.TextArea.VirtualTop.Y);
+				textArea.Caret.Position = textArea.TextView.GetLogicalPosition(pos);
 				textArea.SetCaretToDesiredColumn();
 			}
 //			if (textArea.Caret.Line + 1 < textArea.Document.TotalNumberOfLines) {

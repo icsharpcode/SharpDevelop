@@ -272,7 +272,8 @@ namespace ICSharpCode.TextEditor
 		
 		public void SetCaretToDesiredColumn()
 		{
-			Caret.Position = textView.GetLogicalColumn(Caret.Line, Caret.DesiredColumn + (int)(VirtualTop.X * textView.WideSpaceWidth));
+			FoldMarker dummy;
+			Caret.Position = textView.GetLogicalColumn(Caret.Line, Caret.DesiredColumn + (int)(VirtualTop.X * textView.WideSpaceWidth), out dummy);
 		}
 		
 		public void OptionsChanged()

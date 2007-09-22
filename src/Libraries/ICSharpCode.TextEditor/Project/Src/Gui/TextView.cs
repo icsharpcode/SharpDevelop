@@ -726,160 +726,164 @@ namespace ICSharpCode.TextEditor
 		/// <summary>
 		/// returns line/column for a visual point position
 		/// </summary>
-		public TextLocation GetLogicalPosition(int xPos, int yPos)
+		public TextLocation GetLogicalPosition(Point mousePosition)
 		{
-			xPos += (int)(textArea.VirtualTop.X * WideSpaceWidth);
-			int clickedVisualLine = Math.Max(0, (yPos + this.textArea.VirtualTop.Y) / fontHeight);
-			int logicalLine       = Document.GetFirstLogicalLine(clickedVisualLine);
-			TextLocation pos = GetLogicalColumn(logicalLine, xPos);
-			return pos;
-		}
-		
-		/// <summary>
-		/// returns logical line number for a visual point
-		/// </summary>
-		public int GetLogicalLine(Point mousepos)
-		{
-			int clickedVisualLine = Math.Max(0, (mousepos.Y + this.textArea.VirtualTop.Y) / fontHeight);
-			return Document.GetFirstLogicalLine(clickedVisualLine);
-		}
-		
-		public TextLocation GetLogicalColumn(int firstLogicalLine, int xPos)
-		{
-			float spaceWidth = WideSpaceWidth;
-			LineSegment line = firstLogicalLine < Document.TotalNumberOfLines ? Document.GetLineSegment(firstLogicalLine) : null;
-			if (line == null) {
-				return new TextLocation((int)(xPos / spaceWidth), firstLogicalLine);
-			}
-			
-			int lineNumber    = firstLogicalLine;
-			int tabIndent     = Document.TextEditorProperties.TabIndent;
-			int column        = 0;
-			int logicalColumn = 0;
-			float paintPos    = 0;
-			
-			List<FoldMarker> starts = textArea.Document.FoldingManager.GetFoldedFoldingsWithStart(lineNumber);
-			while (true) {
-				// save current paint position
-				float oldPaintPos = paintPos;
-				
-				// search for folding
-				if (starts.Count > 0) {
-					foreach (FoldMarker folding in starts) {
-						if (folding.IsFolded && logicalColumn >= folding.StartColumn && (logicalColumn < folding.EndColumn || lineNumber != folding.EndLine)) {
-							column       += folding.FoldText.Length;
-							paintPos     += folding.FoldText.Length * spaceWidth;
-							// special case when xPos is inside the fold marker
-							if (xPos <= paintPos - (paintPos - oldPaintPos) / 2) {
-								return new TextLocation(logicalColumn, lineNumber);
-							}
-							logicalColumn = folding.EndColumn;
-							if (lineNumber != folding.EndLine) {
-								lineNumber    = folding.EndLine;
-								line          = Document.GetLineSegment(lineNumber);
-								starts        = textArea.Document.FoldingManager.GetFoldedFoldingsWithStart(lineNumber);
-							}
-							break;
-						}
-					}
-				}
-				
-				// --> no folding, going on with the count
-				char ch = logicalColumn >= line.Length ? ' ' : Document.GetCharAt(line.Offset + logicalColumn);
-				switch (ch) {
-					case '\t':
-						int oldColumn = column;
-						column += tabIndent;
-						column = (column / tabIndent) * tabIndent;
-						paintPos += (column - oldColumn) * spaceWidth;
-						break;
-					default:
-						paintPos += GetWidth(ch, TextEditorProperties.FontContainer.RegularFont);
-						++column;
-						break;
-				}
-				
-				// when the paint position is reached, give it back otherwise advance to the next char
-				if (xPos <= paintPos - (paintPos - oldPaintPos) / 2) {
-					return new TextLocation(logicalColumn, lineNumber);
-				}
-				
-				++logicalColumn;
-			}
+			FoldMarker dummy;
+			return GetLogicalColumn(GetLogicalLine(mousePosition.Y), mousePosition.X, out dummy);
 		}
 		
 		/// <summary>
 		/// returns line/column for a visual point position
 		/// </summary>
-		public FoldMarker GetFoldMarkerFromPosition(int xPos, int yPos)
+		public TextLocation GetLogicalPosition(int visualPosX, int visualPosY)
 		{
-			xPos += (int)(textArea.VirtualTop.X * WideSpaceWidth);
-			int clickedVisualLine = (yPos + this.textArea.VirtualTop.Y) / fontHeight;
-			int logicalLine       = Document.GetFirstLogicalLine(clickedVisualLine);
-			return GetFoldMarkerFromColumn(logicalLine, xPos);
+			FoldMarker dummy;
+			return GetLogicalColumn(GetLogicalLine(visualPosY), visualPosX, out dummy);
 		}
 		
-		FoldMarker GetFoldMarkerFromColumn(int firstLogicalLine, int xPos)
+		/// <summary>
+		/// returns line/column for a visual point position
+		/// </summary>
+		public FoldMarker GetFoldMarkerFromPosition(int visualPosX, int visualPosY)
 		{
-			LineSegment line = firstLogicalLine < Document.TotalNumberOfLines ? Document.GetLineSegment(firstLogicalLine) : null;
-			if (line == null) {
-				return null;
+			FoldMarker foldMarker;
+			GetLogicalColumn(GetLogicalLine(visualPosY), visualPosX, out foldMarker);
+			return foldMarker;
+		}
+		
+		/// <summary>
+		/// returns logical line number for a visual point
+		/// </summary>
+		public int GetLogicalLine(int visualPosY)
+		{
+			int clickedVisualLine = Math.Max(0, (visualPosY + this.textArea.VirtualTop.Y) / fontHeight);
+			return Document.GetFirstLogicalLine(clickedVisualLine);
+		}
+		
+		internal TextLocation GetLogicalColumn(int lineNumber, int visualPosX, out FoldMarker inFoldMarker)
+		{
+			inFoldMarker = null;
+			if (lineNumber >= Document.TotalNumberOfLines) {
+				return new TextLocation((int)(visualPosX / WideSpaceWidth), lineNumber);
+			}
+			if (visualPosX <= 0) {
+				return new TextLocation(0, lineNumber);
 			}
 			
-			int lineNumber    = firstLogicalLine;
-			int tabIndent     = Document.TextEditorProperties.TabIndent;
-			int column        = 0;
-			int logicalColumn = 0;
-			float paintPos    = 0;
+			int start = 0; // column
+			int posX = 0; // visual position
 			
-			List<FoldMarker> starts = textArea.Document.FoldingManager.GetFoldedFoldingsWithStart(lineNumber);
-			while (true) {
-				// save current paint position
-				float oldPaintPos = paintPos;
-				
-				// search for folding
-				if (starts.Count > 0) {
-					foreach (FoldMarker folding in starts) {
-						if (folding.IsFolded && logicalColumn >= folding.StartColumn && (logicalColumn < folding.EndColumn || lineNumber != folding.EndLine)) {
-							column       += folding.FoldText.Length;
-							paintPos     += folding.FoldText.Length * WideSpaceWidth;
-							// special case when xPos is inside the fold marker
-							if (xPos <= paintPos) {
-								return folding;
-							}
-							logicalColumn = folding.EndColumn;
-							if (lineNumber != folding.EndLine) {
-								lineNumber    = folding.EndLine;
-								line          = Document.GetLineSegment(lineNumber);
-								starts        = textArea.Document.FoldingManager.GetFoldedFoldingsWithStart(lineNumber);
+			int result;
+			using (Graphics g = textArea.CreateGraphics()) {
+				do {
+					LineSegment line = Document.GetLineSegment(lineNumber);
+					FoldMarker nextFolding = FindNextFoldedFoldingOnLineAfterColumn(lineNumber, start-1);
+					int end = nextFolding != null ? nextFolding.StartColumn : int.MaxValue;
+					result = GetLogicalColumnInternal(g, line, start, end, ref posX, visualPosX);
+					if (result < 0) {
+						// reached fold marker
+						lineNumber = nextFolding.EndLine;
+						start = nextFolding.EndColumn;
+						int newPosX = posX + 1 + MeasureStringWidth(g, nextFolding.FoldText, TextEditorProperties.FontContainer.RegularFont);
+						if (newPosX >= visualPosX) {
+							inFoldMarker = nextFolding;
+							if (IsNearerToAThanB(visualPosX, posX, newPosX))
+								return new TextLocation(nextFolding.StartColumn, nextFolding.StartLine);
+							else
+								return new TextLocation(nextFolding.EndColumn, nextFolding.EndLine);
+						}
+						posX = newPosX;
+					}
+				} while (result < 0);
+			}
+			return new TextLocation(result, lineNumber);
+		}
+		
+		int GetLogicalColumnInternal(Graphics g, LineSegment line, int start, int end, ref int drawingPos, int targetVisualPosX)
+		{
+			if (start == end)
+				return -1;
+			Debug.Assert(start < end);
+			Debug.Assert(drawingPos < targetVisualPosX);
+			
+			int tabIndent = Document.TextEditorProperties.TabIndent;
+			
+			/*float spaceWidth = SpaceWidth;
+			float drawingPos = 0;
+			LineSegment currentLine = Document.GetLineSegment(logicalLine);
+			List<TextWord> words = currentLine.Words;
+			if (words == null) return 0;
+			int wordCount = words.Count;
+			int wordOffset = 0;
+			FontContainer fontContainer = TextEditorProperties.FontContainer;
+			 */
+			FontContainer fontContainer = TextEditorProperties.FontContainer;
+			
+			List<TextWord> words = line.Words;
+			if (words == null) return 0;
+			int wordOffset = 0;
+			for (int i = 0; i < words.Count; i++) {
+				TextWord word = words[i];
+				if (wordOffset >= end) {
+					return -1;
+				}
+				if (wordOffset + word.Length >= start) {
+					int newDrawingPos;
+					switch (word.Type) {
+						case TextWordType.Space:
+							newDrawingPos = drawingPos + spaceWidth;
+							if (newDrawingPos >= targetVisualPosX)
+								return IsNearerToAThanB(targetVisualPosX, drawingPos, newDrawingPos) ? wordOffset : wordOffset+1;
+							break;
+						case TextWordType.Tab:
+							// go to next tab position
+							drawingPos = (int)((drawingPos + MinTabWidth) / tabIndent / WideSpaceWidth) * tabIndent * WideSpaceWidth;
+							newDrawingPos = drawingPos + tabIndent * WideSpaceWidth;
+							if (newDrawingPos >= targetVisualPosX)
+								return IsNearerToAThanB(targetVisualPosX, drawingPos, newDrawingPos) ? wordOffset : wordOffset+1;
+							break;
+						case TextWordType.Word:
+							int wordStart = Math.Max(wordOffset, start);
+							int wordLength = Math.Min(wordOffset + word.Length, end) - wordStart;
+							string text = Document.GetText(line.Offset + wordStart, wordLength);
+							Font font = word.GetFont(fontContainer) ?? fontContainer.RegularFont;
+							newDrawingPos = drawingPos + MeasureStringWidth(g, text, font);
+							if (newDrawingPos >= targetVisualPosX) {
+								for (int j = 0; j < text.Length; j++) {
+									newDrawingPos = drawingPos + MeasureStringWidth(g, text[j].ToString(), font);
+									if (newDrawingPos >= targetVisualPosX) {
+										if (IsNearerToAThanB(targetVisualPosX, drawingPos, newDrawingPos))
+											return wordStart + j;
+										else
+											return wordStart + j + 1;
+									}
+									drawingPos = newDrawingPos;
+								}
+								return wordStart + text.Length;
 							}
 							break;
-						}
+						default:
+							throw new NotSupportedException();
 					}
+					drawingPos = newDrawingPos;
 				}
-				
-				// --> no folding, going on with the count
-				char ch = logicalColumn >= line.Length ? ' ' : Document.GetCharAt(line.Offset + logicalColumn);
-				switch (ch) {
-					case '\t':
-						int oldColumn = column;
-						column += tabIndent;
-						column = (column / tabIndent) * tabIndent;
-						paintPos += (column - oldColumn) * WideSpaceWidth;
-						break;
-					default:
-						paintPos += GetWidth(ch, TextEditorProperties.FontContainer.RegularFont);
-						++column;
-						break;
-				}
-				
-				// when the paint position is reached, give it back otherwise advance to the next char
-				if (xPos <= paintPos - (paintPos - oldPaintPos) / 2) {
-					return null;
-				}
-				
-				++logicalColumn;
+				wordOffset += word.Length;
 			}
+			return wordOffset;
+		}
+		
+		static bool IsNearerToAThanB(int num, int a, int b)
+		{
+			return Math.Abs(a - num) < Math.Abs(b - num);
+		}
+		
+		FoldMarker FindNextFoldedFoldingOnLineAfterColumn(int lineNumber, int column)
+		{
+			List<FoldMarker> list = Document.FoldingManager.GetFoldedFoldingsWithStartAfterColumn(lineNumber, column);
+			if (list.Count != 0)
+				return list[0];
+			else
+				return null;
 		}
 		
 		const int MinTabWidth = 4;
@@ -901,23 +905,23 @@ namespace ICSharpCode.TextEditor
 				TextWord word = words[i];
 				if (wordOffset >= end)
 					break;
-				if (wordOffset + word.Length < start)
-					continue;
-				switch (word.Type) {
-					case TextWordType.Space:
-						drawingPos += spaceWidth;
-						break;
-					case TextWordType.Tab:
-						// go to next tab position
-						drawingPos = (int)((drawingPos + MinTabWidth) / tabIndent / WideSpaceWidth) * tabIndent * WideSpaceWidth;
-						drawingPos += tabIndent * WideSpaceWidth;
-						break;
-					case TextWordType.Word:
-						int wordStart = Math.Max(wordOffset, start);
-						int wordLength = Math.Min(wordOffset + word.Length, end) - wordStart;
-						string text = Document.GetText(currentLine.Offset + wordStart, wordLength);
-						drawingPos += MeasureStringWidth(g, text, word.GetFont(fontContainer) ?? fontContainer.RegularFont);
-						break;
+				if (wordOffset + word.Length >= start) {
+					switch (word.Type) {
+						case TextWordType.Space:
+							drawingPos += spaceWidth;
+							break;
+						case TextWordType.Tab:
+							// go to next tab position
+							drawingPos = (int)((drawingPos + MinTabWidth) / tabIndent / WideSpaceWidth) * tabIndent * WideSpaceWidth;
+							drawingPos += tabIndent * WideSpaceWidth;
+							break;
+						case TextWordType.Word:
+							int wordStart = Math.Max(wordOffset, start);
+							int wordLength = Math.Min(wordOffset + word.Length, end) - wordStart;
+							string text = Document.GetText(currentLine.Offset + wordStart, wordLength);
+							drawingPos += MeasureStringWidth(g, text, word.GetFont(fontContainer) ?? fontContainer.RegularFont);
+							break;
+					}
 				}
 				wordOffset += word.Length;
 			}

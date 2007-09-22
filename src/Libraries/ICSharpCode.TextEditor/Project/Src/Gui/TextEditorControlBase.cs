@@ -104,12 +104,23 @@ namespace ICSharpCode.TextEditor
 				return document;
 			}
 			set {
+				if (value == null)
+					throw new ArgumentNullException("value");
+				if (document != null) {
+					document.DocumentChanged -= OnDocumentChanged;
+				}
 				document = value;
 				document.UndoStack.TextEditorControl = this;
+				document.DocumentChanged += OnDocumentChanged;
 			}
 		}
 		
-		[Browsable(true)]
+		void OnDocumentChanged(object sender, EventArgs e)
+		{
+			OnTextChanged(e);
+		}
+		
+		[EditorBrowsable(EditorBrowsableState.Always), Browsable(true)]
 		[DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
 		public override string Text {
 			get {
@@ -118,6 +129,13 @@ namespace ICSharpCode.TextEditor
 			set {
 				Document.TextContent = value;
 			}
+		}
+		
+		[EditorBrowsable(EditorBrowsableState.Always), Browsable(true)]
+		public new event EventHandler TextChanged
+		{
+			add { base.TextChanged += value; }
+			remove { base.TextChanged -= value; }
 		}
 		
 		static Font ParseFont(string font)

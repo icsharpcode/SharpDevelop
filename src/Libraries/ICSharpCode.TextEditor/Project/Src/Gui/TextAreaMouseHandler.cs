@@ -305,7 +305,6 @@ namespace ICSharpCode.TextEditor
 			}
 		}
 
-		DateTime lastTime = DateTime.Now;
 		void OnMouseDown(object sender, MouseEventArgs e)
 		{
 			Point mousepos;
@@ -328,13 +327,12 @@ namespace ICSharpCode.TextEditor
 				button = e.Button;
 				
 				// double-click
-				if (button == MouseButtons.Left && (DateTime.Now - lastTime).Milliseconds < SystemInformation.DoubleClickTime) {
+				if (button == MouseButtons.Left && e.Clicks == 2) {
 					int deltaX   = Math.Abs(lastmousedownpos.X - e.X);
 					int deltaY   = Math.Abs(lastmousedownpos.Y - e.Y);
 					if (deltaX <= SystemInformation.DoubleClickSize.Width &&
 					    deltaY <= SystemInformation.DoubleClickSize.Height) {
 						DoubleClickSelectionExtend();
-						lastTime = DateTime.Now;
 						lastmousedownpos = new Point(e.X, e.Y);
 
 						if (textArea.SelectionManager.selectFrom.where == WhereFrom.Gutter) {
@@ -353,7 +351,6 @@ namespace ICSharpCode.TextEditor
 				minSelection = TextLocation.Empty;
 				maxSelection = TextLocation.Empty;
 				
-				lastTime = DateTime.Now;
 				lastmousedownpos = mousedownpos = new Point(e.X, e.Y);
 				
 				if (button == MouseButtons.Left) {
