@@ -151,7 +151,7 @@ namespace ICSharpCode.TextEditor
 				textArea.Invalidate();
 			}
 			
-			int horizontalDelta = (int)(textArea.VirtualTop.X * WideSpaceWidth);
+			int horizontalDelta = textArea.VirtualTop.X;
 			if (horizontalDelta > 0) {
 				g.SetClip(this.DrawingPosition);
 			}
@@ -762,6 +762,8 @@ namespace ICSharpCode.TextEditor
 		
 		internal TextLocation GetLogicalColumn(int lineNumber, int visualPosX, out FoldMarker inFoldMarker)
 		{
+			visualPosX += textArea.VirtualTop.X;
+			
 			inFoldMarker = null;
 			if (lineNumber >= Document.TotalNumberOfLines) {
 				return new TextLocation((int)(visualPosX / WideSpaceWidth), lineNumber);
@@ -987,7 +989,7 @@ namespace ICSharpCode.TextEditor
 			// if no folding is interresting
 			if (f == null || !(f.StartLine < logicalLine || f.StartLine == logicalLine && f.StartColumn < logicalColumn)) {
 				drawingPos = CountColumns(ref column, 0, logicalColumn, logicalLine, g);
-				return (int)(drawingPos - textArea.VirtualTop.X * WideSpaceWidth);
+				return (int)(drawingPos - textArea.VirtualTop.X);
 			}
 			
 			// if logicalLine/logicalColumn is in folding
@@ -1009,7 +1011,7 @@ namespace ICSharpCode.TextEditor
 			
 			if (lastFolding < firstFolding) {
 				drawingPos = CountColumns(ref column, 0, logicalColumn, logicalLine, g);
-				return (int)(drawingPos - textArea.VirtualTop.X * WideSpaceWidth);
+				return (int)(drawingPos - textArea.VirtualTop.X);
 			}
 			
 			int foldEnd      = 0;
@@ -1024,7 +1026,7 @@ namespace ICSharpCode.TextEditor
 			}
 			drawingPos += CountColumns(ref column, foldEnd, logicalColumn, logicalLine, g);
 			g.Dispose();
-			return (int)(drawingPos - textArea.VirtualTop.X * WideSpaceWidth);
+			return (int)(drawingPos - textArea.VirtualTop.X);
 		}
 		#endregion
 		
@@ -1072,16 +1074,16 @@ namespace ICSharpCode.TextEditor
 		
 		void DrawVerticalRuler(Graphics g, Rectangle lineRectangle)
 		{
-			if (TextEditorProperties.VerticalRulerRow < textArea.VirtualTop.X) {
+			int xpos = WideSpaceWidth * TextEditorProperties.VerticalRulerRow - textArea.VirtualTop.X;
+			if (xpos <= 0) {
 				return;
 			}
 			HighlightColor vRulerColor = textArea.Document.HighlightingStrategy.GetColorFor("VRuler");
 			
-			int xpos = (int)(drawingPosition.Left + WideSpaceWidth * (TextEditorProperties.VerticalRulerRow - textArea.VirtualTop.X));
 			g.DrawLine(BrushRegistry.GetPen(vRulerColor.Color),
-			           xpos,
+			           drawingPosition.Left + xpos,
 			           lineRectangle.Top,
-			           xpos,
+			           drawingPosition.Left + xpos,
 			           lineRectangle.Bottom);
 		}
 		#endregion

@@ -102,7 +102,9 @@ namespace ICSharpCode.TextEditor.Actions
 			int visualLine = textArea.Document.GetVisibleLine(lineNr);
 			if (visualLine < textArea.Document.GetVisibleLine(textArea.Document.TotalNumberOfLines)) {
 				Point pos = new Point(textArea.TextView.GetDrawingXPos(lineNr, position.X),
-				                      textArea.TextView.DrawingPosition.Y + (visualLine + 1) * textArea.TextView.FontHeight - textArea.TextView.TextArea.VirtualTop.Y);
+				                      textArea.TextView.DrawingPosition.Y
+				                      + (visualLine + 1) * textArea.TextView.FontHeight
+				                      - textArea.TextView.TextArea.VirtualTop.Y);
 				textArea.Caret.Position = textArea.TextView.GetLogicalPosition(pos);
 				textArea.SetCaretToDesiredColumn();
 			}
@@ -184,7 +186,8 @@ namespace ICSharpCode.TextEditor.Actions
 		{
 			textArea.AutoClearSelection = false;
 			
-			textArea.MotherTextAreaControl.VScrollBar.Value = Math.Max(textArea.MotherTextAreaControl.VScrollBar.Minimum, textArea.VirtualTop.Y - textArea.TextView.FontHeight);
+			textArea.MotherTextAreaControl.VScrollBar.Value = Math.Max(textArea.MotherTextAreaControl.VScrollBar.Minimum,
+			                                                           textArea.VirtualTop.Y - textArea.TextView.FontHeight);
 		}
 	}
 	
@@ -193,7 +196,8 @@ namespace ICSharpCode.TextEditor.Actions
 		public override void Execute(TextArea textArea)
 		{
 			textArea.AutoClearSelection = false;
-			textArea.MotherTextAreaControl.VScrollBar.Value = Math.Min(textArea.MotherTextAreaControl.VScrollBar.Maximum, textArea.VirtualTop.Y + textArea.TextView.FontHeight);
+			textArea.MotherTextAreaControl.VScrollBar.Value = Math.Min(textArea.MotherTextAreaControl.VScrollBar.Maximum,
+			                                                           textArea.VirtualTop.Y + textArea.TextView.FontHeight);
 		}
 	}
 }

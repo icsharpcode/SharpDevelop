@@ -267,13 +267,13 @@ namespace ICSharpCode.TextEditor
 		
 		public void SetDesiredColumn()
 		{
-			Caret.DesiredColumn = TextView.GetDrawingXPos(Caret.Line, Caret.Column) + (int)(VirtualTop.X * textView.WideSpaceWidth);
+			Caret.DesiredColumn = TextView.GetDrawingXPos(Caret.Line, Caret.Column) + VirtualTop.X;
 		}
 		
 		public void SetCaretToDesiredColumn()
 		{
 			FoldMarker dummy;
-			Caret.Position = textView.GetLogicalColumn(Caret.Line, Caret.DesiredColumn + (int)(VirtualTop.X * textView.WideSpaceWidth), out dummy);
+			Caret.Position = textView.GetLogicalColumn(Caret.Line, Caret.DesiredColumn + VirtualTop.X, out dummy);
 		}
 		
 		public void OptionsChanged()

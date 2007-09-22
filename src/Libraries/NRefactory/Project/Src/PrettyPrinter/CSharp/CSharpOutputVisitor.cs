@@ -625,6 +625,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		public override object TrackedVisitParameterDeclarationExpression(ParameterDeclarationExpression parameterDeclarationExpression, object data)
 		{
 			VisitAttributes(parameterDeclarationExpression.Attributes, data);
+			if (!parameterDeclarationExpression.DefaultValue.IsNull) {
+				outputFormatter.PrintText("[System.Runtime.InteropServices.OptionalAttribute, System.Runtime.InteropServices.DefaultParameterValueAttribute(");
+				TrackVisit(parameterDeclarationExpression.DefaultValue, data);
+				outputFormatter.PrintText(")] ");
+			}
 			OutputModifier(parameterDeclarationExpression.ParamModifier, parameterDeclarationExpression);
 			if (!parameterDeclarationExpression.TypeReference.IsNull) {
 				TrackVisit(parameterDeclarationExpression.TypeReference, data);
@@ -2484,28 +2489,19 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		void OutputModifier(ParameterModifiers modifier, INode node)
 		{
-			switch (modifier) {
-				case ParameterModifiers.None:
-				case ParameterModifiers.In:
-					break;
-				case ParameterModifiers.Out:
-					outputFormatter.PrintToken(Tokens.Out);
-					outputFormatter.Space();
-					break;
-				case ParameterModifiers.Params:
-					outputFormatter.PrintToken(Tokens.Params);
-					outputFormatter.Space();
-					break;
-				case ParameterModifiers.Ref:
-					outputFormatter.PrintToken(Tokens.Ref);
-					outputFormatter.Space();
-					break;
-				case ParameterModifiers.Optional:
-					Error(node, String.Format("Optional parameters aren't supported in C#"));
-					break;
-				default:
-					Error(node, String.Format("Unsupported modifier : {0}", modifier));
-					break;
+			if ((modifier & ParameterModifiers.Ref) == ParameterModifiers.Ref) {
+				outputFormatter.PrintToken(Tokens.Ref);
+				outputFormatter.Space();
+			} else if ((modifier & ParameterModifiers.Out) == ParameterModifiers.Out) {
+				outputFormatter.PrintToken(Tokens.Out);
+				outputFormatter.Space();
+			}
+			if ((modifier & ParameterModifiers.Params) == ParameterModifiers.Params) {
+				outputFormatter.PrintToken(Tokens.Params);
+				outputFormatter.Space();
+			}
+			if ((modifier & ParameterModifiers.Optional) == ParameterModifiers.Optional) {
+				Error(node, String.Format("Optional parameters aren't supported in C#"));
 			}
 		}
 		

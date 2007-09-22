@@ -44,7 +44,8 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			int xpos = textArea.TextView.GetDrawingXPos(caretPos.Y, caretPos.X);
 			int rulerHeight = textArea.TextEditorProperties.ShowHorizontalRuler ? textArea.TextView.FontHeight : 0;
 			Point pos = new Point(textArea.TextView.DrawingPosition.X + xpos,
-			                      textArea.TextView.DrawingPosition.Y + (textArea.Document.GetVisibleLine(caretPos.Y)) * textArea.TextView.FontHeight - textArea.TextView.TextArea.VirtualTop.Y + textArea.TextView.FontHeight + rulerHeight);
+			                      textArea.TextView.DrawingPosition.Y + (textArea.Document.GetVisibleLine(caretPos.Y)) * textArea.TextView.FontHeight 
+			                      - textArea.TextView.TextArea.VirtualTop.Y + textArea.TextView.FontHeight + rulerHeight);
 			
 			Point location = control.ActiveTextAreaControl.PointToScreen(pos);
 			

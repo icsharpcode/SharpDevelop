@@ -61,10 +61,13 @@ namespace ICSharpCode.TextEditor.Gui.InsightWindow
 		{
 			// move the window under the caret (don't change the x position)
 			TextLocation caretPos  = control.ActiveTextAreaControl.Caret.Position;
-			int y = (int)((1 + caretPos.Y) * control.ActiveTextAreaControl.TextArea.TextView.FontHeight) - control.ActiveTextAreaControl.TextArea.VirtualTop.Y - 1 + control.ActiveTextAreaControl.TextArea.TextView.DrawingPosition.Y;
+			int y = (int)((1 + caretPos.Y) * control.ActiveTextAreaControl.TextArea.TextView.FontHeight) 
+				- control.ActiveTextAreaControl.TextArea.VirtualTop.Y - 1 
+				+ control.ActiveTextAreaControl.TextArea.TextView.DrawingPosition.Y;
 			
 			int xpos = control.ActiveTextAreaControl.TextArea.TextView.GetDrawingXPos(caretPos.Y, caretPos.X);
-			int ypos = (control.ActiveTextAreaControl.Document.GetVisibleLine(caretPos.Y) + 1) * control.ActiveTextAreaControl.TextArea.TextView.FontHeight - control.ActiveTextAreaControl.TextArea.VirtualTop.Y;
+			int ypos = (control.ActiveTextAreaControl.Document.GetVisibleLine(caretPos.Y) + 1) * control.ActiveTextAreaControl.TextArea.TextView.FontHeight 
+				- control.ActiveTextAreaControl.TextArea.VirtualTop.Y;
 			int rulerHeight = control.TextEditorProperties.ShowHorizontalRuler ? control.ActiveTextAreaControl.TextArea.TextView.FontHeight : 0;
 			
 			Point p = control.ActiveTextAreaControl.PointToScreen(new Point(xpos, ypos + rulerHeight));

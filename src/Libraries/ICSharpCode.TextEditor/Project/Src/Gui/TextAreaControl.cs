@@ -286,7 +286,7 @@ namespace ICSharpCode.TextEditor
 		
 		void HScrollBarValueChanged(object sender, EventArgs e)
 		{
-			textArea.VirtualTop = new Point(hScrollBar.Value, textArea.VirtualTop.Y);
+			textArea.VirtualTop = new Point(hScrollBar.Value * textArea.TextView.WideSpaceWidth, textArea.VirtualTop.Y);
 			textArea.Invalidate();
 		}
 		

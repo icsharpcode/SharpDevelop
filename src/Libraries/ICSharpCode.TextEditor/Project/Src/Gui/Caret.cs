@@ -211,7 +211,9 @@ namespace ICSharpCode.TextEditor
 			get {
 				int xpos = textArea.TextView.GetDrawingXPos(this.line, this.column);
 				return new Point(textArea.TextView.DrawingPosition.X + xpos,
-				                 textArea.TextView.DrawingPosition.Y + (textArea.Document.GetVisibleLine(this.line)) * textArea.TextView.FontHeight - textArea.TextView.TextArea.VirtualTop.Y);
+				                 textArea.TextView.DrawingPosition.Y
+				                 + (textArea.Document.GetVisibleLine(this.line)) * textArea.TextView.FontHeight
+				                 - textArea.TextView.TextArea.VirtualTop.Y);
 			}
 		}
 		int oldLine = -1;
