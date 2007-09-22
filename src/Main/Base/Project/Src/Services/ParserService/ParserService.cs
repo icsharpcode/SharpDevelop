@@ -623,8 +623,7 @@ namespace ICSharpCode.SharpDevelop
 			//	return res;
 			
 			// load file
-			Encoding tmp = DefaultFileEncoding;
-			return ICSharpCode.TextEditor.Util.FileReader.ReadFileContent(fileName, ref tmp, tmp);
+			return ICSharpCode.TextEditor.Util.FileReader.ReadFileContent(fileName, DefaultFileEncoding);
 		}
 		
 		public static Encoding DefaultFileEncoding {

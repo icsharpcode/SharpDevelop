@@ -72,18 +72,14 @@ namespace ICSharpCode.TextEditor.Document
 		{
 		}
 		
-		StringTextBufferStrategy(string fileName)
-		{
-			Encoding encoding = Encoding.Default;
-			SetContent(Util.FileReader.ReadFileContent(fileName, ref encoding, encoding));
-		}
-		
 		public static ITextBufferStrategy CreateTextBufferFromFile(string fileName)
 		{
 			if (!File.Exists(fileName)) {
 				throw new System.IO.FileNotFoundException(fileName);
 			}
-			return new StringTextBufferStrategy(fileName);
+			StringTextBufferStrategy s = new StringTextBufferStrategy();
+			s.SetContent(Util.FileReader.ReadFileContent(fileName, Encoding.Default));
+			return s;
 		}
 	}
 }

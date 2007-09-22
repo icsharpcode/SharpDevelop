@@ -282,11 +282,10 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			
 			conversion.basePath = Path.GetDirectoryName(fileName);
 			
-			Encoding tmp = Encoding.Default;
-			string content = ICSharpCode.TextEditor.Util.FileReader.ReadFileContent(old, ref tmp, tmp);
+			string content = ICSharpCode.TextEditor.Util.FileReader.ReadFileContent(old, Encoding.Default);
 			RunConverter(new StringReader(content), fileName, "vsnet2msbuild.xsl", conversion);
 			if (File.Exists(oldUserFile)) {
-				content = ICSharpCode.TextEditor.Util.FileReader.ReadFileContent(oldUserFile, ref tmp, tmp);
+				content = ICSharpCode.TextEditor.Util.FileReader.ReadFileContent(oldUserFile, Encoding.Default);
 				RunConverter(new StringReader(content), userFile, "vsnet2msbuild_user.xsl", conversion);
 			}
 		}

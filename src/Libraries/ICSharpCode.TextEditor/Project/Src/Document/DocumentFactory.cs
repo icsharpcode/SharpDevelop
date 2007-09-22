@@ -51,8 +51,7 @@ namespace ICSharpCode.TextEditor.Document
 		public IDocument CreateFromFile(string fileName)
 		{
 			IDocument document = CreateDocument();
-			Encoding encoding = Encoding.Default;
-			document.TextContent = Util.FileReader.ReadFileContent(fileName, ref encoding, encoding);
+			document.TextContent = Util.FileReader.ReadFileContent(fileName, Encoding.Default);
 			return document;
 		}
 	}

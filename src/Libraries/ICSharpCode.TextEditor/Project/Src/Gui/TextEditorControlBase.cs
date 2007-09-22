@@ -654,7 +654,7 @@ namespace ICSharpCode.TextEditor
 			
 			if (autodetectEncoding) {
 				Encoding encoding = this.Encoding;
-				Document.TextContent = Util.FileReader.ReadFileContent(stream, ref encoding, this.TextEditorProperties.Encoding);
+				Document.TextContent = Util.FileReader.ReadFileContent(stream, ref encoding);
 				this.Encoding = encoding;
 			} else {
 				using (StreamReader reader = new StreamReader(fileName, this.Encoding)) {

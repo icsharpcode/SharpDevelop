@@ -84,8 +84,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			// While one file is parsed, the next is already loaded from disk.
 			
 			// load file
-			Encoding tmp = defaultEncoding;
-			return ICSharpCode.TextEditor.Util.FileReader.ReadFileContent(fileName, ref tmp, defaultEncoding);
+			return ICSharpCode.TextEditor.Util.FileReader.ReadFileContent(fileName, defaultEncoding);
 		}
 		
 		ProjectItem nextItem;

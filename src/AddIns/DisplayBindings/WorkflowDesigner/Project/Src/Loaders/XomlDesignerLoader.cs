@@ -61,7 +61,7 @@ namespace WorkflowDesigner.Loaders
 		public XomlDesignerLoader(IViewContent viewContent, Stream stream) : this(viewContent)
 		{
 			Encoding encoding = ICSharpCode.SharpDevelop.ParserService.DefaultFileEncoding;
-			xoml = ICSharpCode.TextEditor.Util.FileReader.ReadFileContent(stream, ref encoding, encoding);
+			xoml = ICSharpCode.TextEditor.Util.FileReader.ReadFileContent(stream, ref encoding);
 		}
 
 		public string Xoml {
