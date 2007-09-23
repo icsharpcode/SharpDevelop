@@ -1,0 +1,18 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+# SharpDevelop 3.0.0.2677
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextEditorAnchors", "TextEditorAnchors.csproj", "{BC48E973-B9B5-4331-B67B-1609B1AF0B9B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BC48E973-B9B5-4331-B67B-1609B1AF0B9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC48E973-B9B5-4331-B67B-1609B1AF0B9B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC48E973-B9B5-4331-B67B-1609B1AF0B9B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC48E973-B9B5-4331-B67B-1609B1AF0B9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+EndGlobal
