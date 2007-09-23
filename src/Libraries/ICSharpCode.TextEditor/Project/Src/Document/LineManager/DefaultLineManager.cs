@@ -136,8 +136,8 @@ namespace ICSharpCode.TextEditor.Document
 			do {
 				segmentToRemove = it.Current;
 				it.MoveNext();
-				segmentToRemove.Deleted();
 				lineCollection.RemoveSegment(segmentToRemove);
+				segmentToRemove.Deleted();
 			} while (segmentToRemove != endSegment);
 		}
 		
