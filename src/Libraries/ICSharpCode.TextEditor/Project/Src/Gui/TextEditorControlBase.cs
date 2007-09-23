@@ -37,6 +37,7 @@ namespace ICSharpCode.TextEditor
 		/// </summary>
 		protected Dictionary<Keys, IEditAction> editactions = new Dictionary<Keys, IEditAction>();
 		
+		[Browsable(false)]
 		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public ITextEditorProperties TextEditorProperties {
 			get {
@@ -84,17 +85,6 @@ namespace ICSharpCode.TextEditor
 		}
 		
 		/// <value>
-		/// true, if the textarea is updating it's status, while
-		/// it updates it status no redraw operation occurs.
-		/// </value>
-		[Browsable(false)]
-		public bool IsUpdating {
-			get {
-				return updateLevel > 0;
-			}
-		}
-		
-		/// <value>
 		/// The current document
 		/// </value>
 		[Browsable(false)]
@@ -122,6 +112,7 @@ namespace ICSharpCode.TextEditor
 		
 		[EditorBrowsable(EditorBrowsableState.Always), Browsable(true)]
 		[DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
+		[Editor("System.ComponentModel.Design.MultilineStringEditor, System.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a", typeof(System.Drawing.Design.UITypeEditor))]
 		public override string Text {
 			get {
 				return Document.TextContent;
@@ -158,10 +149,14 @@ namespace ICSharpCode.TextEditor
 			}
 		}
 		
+		/// <value>
+		/// true, if the textarea is updating it's status, while
+		/// it updates it status no redraw operation occurs.
+		/// </value>
 		[Browsable(false)]
 		public bool IsInUpdate {
 			get {
-				return this.updateLevel > 0;
+				return updateLevel > 0;
 			}
 		}
 		
@@ -260,7 +255,7 @@ namespace ICSharpCode.TextEditor
 		/// If true the vertical ruler is shown in the textarea
 		/// </value>
 		[Category("Appearance")]
-		[DefaultValue(false)]
+		[DefaultValue(true)]
 		[Description("If true the vertical ruler is shown in the textarea")]
 		public bool ShowVRuler {
 			get {
@@ -308,7 +303,7 @@ namespace ICSharpCode.TextEditor
 		/// If true invalid lines are marked in the textarea
 		/// </value>
 		[Category("Appearance")]
-		[DefaultValue(true)]
+		[DefaultValue(false)]
 		[Description("If true invalid lines are marked in the textarea")]
 		public bool ShowInvalidLines {
 			get {
@@ -350,7 +345,7 @@ namespace ICSharpCode.TextEditor
 		}
 		
 		[Category("Appearance")]
-		[DefaultValue(true)]
+		[DefaultValue(false)]
 		[Description("If true the icon bar is displayed")]
 		public bool IsIconBarVisible {
 			get {
@@ -732,7 +727,7 @@ namespace ICSharpCode.TextEditor
 		/// </remarks>
 		public override void Refresh()
 		{
-			if (IsUpdating) {
+			if (IsInUpdate) {
 				return;
 			}
 			base.Refresh();
@@ -755,14 +750,6 @@ namespace ICSharpCode.TextEditor
 			}
 		}
 		
-		protected virtual void OnChanged(EventArgs e)
-		{
-			if (Changed != null) {
-				Changed(this, e);
-			}
-		}
-		
 		public event EventHandler FileNameChanged;
-		public event EventHandler Changed;
 	}
 }

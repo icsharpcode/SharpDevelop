@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -620,9 +621,9 @@ namespace ICSharpCode.TextEditor.Document
 							// Check for SPAN ENDs
 							if (inSpan) {
 								if (activeSpan.End != null && activeSpan.End.Length > 0) {
-									if (currentLine.MatchExpr(activeSpan.End, i, document, activeSpan.IgnoreCase)) {
+									if (MatchExpr(currentLine, activeSpan.End, i, document, activeSpan.IgnoreCase)) {
 										PushCurWord(document, ref markNext, words);
-										string regex = currentLine.GetRegString(activeSpan.End, i, document);
+										string regex = GetRegString(currentLine, activeSpan.End, i, document);
 										currentLength += regex.Length;
 										words.Add(new TextWord(document, currentLine, currentOffset, currentLength, activeSpan.EndColor, false));
 										currentOffset += currentLength;
@@ -640,9 +641,9 @@ namespace ICSharpCode.TextEditor.Document
 								foreach (Span span in activeRuleSet.Spans) {
 									if ((!span.IsBeginSingleWord || currentLength == 0)
 									    && (!span.IsBeginStartOfLine.HasValue || span.IsBeginStartOfLine.Value == (currentLength == 0 && words.TrueForAll(delegate(TextWord textWord) { return textWord.Type != TextWordType.Word; })))
-									    && currentLine.MatchExpr(span.Begin, i, document, activeRuleSet.IgnoreCase)) {
+									    && MatchExpr(currentLine, span.Begin, i, document, activeRuleSet.IgnoreCase)) {
 										PushCurWord(document, ref markNext, words);
-										string regex = currentLine.GetRegString(span.Begin, i, document);
+										string regex = GetRegString(currentLine, span.Begin, i, document);
 										
 										if (!OverrideSpan(regex, document, words, span, ref i)) {
 											currentLength += regex.Length;
@@ -768,5 +769,138 @@ namespace ICSharpCode.TextEditor.Document
 				currentLength = 0;
 			}
 		}
+		
+		#region Matching
+		/// <summary>
+		/// get the string, which matches the regular expression expr,
+		/// in string s2 at index
+		/// </summary>
+		static string GetRegString(LineSegment lineSegment, char[] expr, int index, IDocument document)
+		{
+			int j = 0;
+			StringBuilder regexpr = new StringBuilder();
+			
+			for (int i = 0; i < expr.Length; ++i, ++j) {
+				if (index + j >= lineSegment.Length)
+					break;
+				
+				switch (expr[i]) {
+					case '@': // "special" meaning
+						++i;
+						switch (expr[i]) {
+							case '!': // don't match the following expression
+								StringBuilder whatmatch = new StringBuilder();
+								++i;
+								while (i < expr.Length && expr[i] != '@') {
+									whatmatch.Append(expr[i++]);
+								}
+								break;
+							case '@': // matches @
+								regexpr.Append(document.GetCharAt(lineSegment.Offset + index + j));
+								break;
+						}
+						break;
+					default:
+						if (expr[i] != document.GetCharAt(lineSegment.Offset + index + j)) {
+							return regexpr.ToString();
+						}
+						regexpr.Append(document.GetCharAt(lineSegment.Offset + index + j));
+						break;
+				}
+			}
+			return regexpr.ToString();
+		}
+		
+		/// <summary>
+		/// returns true, if the get the string s2 at index matches the expression expr
+		/// </summary>
+		static bool MatchExpr(LineSegment lineSegment, char[] expr, int index, IDocument document, bool ignoreCase)
+		{
+			for (int i = 0, j = 0; i < expr.Length; ++i, ++j) {
+				switch (expr[i]) {
+					case '@': // "special" meaning
+						++i;
+						if (i < expr.Length) {
+							switch (expr[i]) {
+								case 'C': // match whitespace or punctuation
+									if (index + j == lineSegment.Offset || index + j >= lineSegment.Offset + lineSegment.Length) {
+										// nothing (EOL or SOL)
+									} else {
+										char ch = document.GetCharAt(lineSegment.Offset + index + j);
+										if (!Char.IsWhiteSpace(ch) && !Char.IsPunctuation(ch)) {
+											return false;
+										}
+									}
+									break;
+								case '!': // don't match the following expression
+									{
+										StringBuilder whatmatch = new StringBuilder();
+										++i;
+										while (i < expr.Length && expr[i] != '@') {
+											whatmatch.Append(expr[i++]);
+										}
+										if (lineSegment.Offset + index + j + whatmatch.Length < document.TextLength) {
+											int k = 0;
+											for (; k < whatmatch.Length; ++k) {
+												char docChar = ignoreCase ? Char.ToUpperInvariant(document.GetCharAt(lineSegment.Offset + index + j + k)) : document.GetCharAt(lineSegment.Offset + index + j + k);
+												char spanChar = ignoreCase ? Char.ToUpperInvariant(whatmatch[k]) : whatmatch[k];
+												if (docChar != spanChar) {
+													break;
+												}
+											}
+											if (k >= whatmatch.Length) {
+												return false;
+											}
+										}
+//									--j;
+										break;
+									}
+								case '-': // don't match the  expression before
+									{
+										StringBuilder whatmatch = new StringBuilder();
+										++i;
+										while (i < expr.Length && expr[i] != '@') {
+											whatmatch.Append(expr[i++]);
+										}
+										if (index - whatmatch.Length >= 0) {
+											int k = 0;
+											for (; k < whatmatch.Length; ++k) {
+												char docChar = ignoreCase ? Char.ToUpperInvariant(document.GetCharAt(lineSegment.Offset + index - whatmatch.Length + k)) : document.GetCharAt(lineSegment.Offset + index - whatmatch.Length + k);
+												char spanChar = ignoreCase ? Char.ToUpperInvariant(whatmatch[k]) : whatmatch[k];
+												if (docChar != spanChar)
+													break;
+											}
+											if (k >= whatmatch.Length) {
+												return false;
+											}
+										}
+//									--j;
+										break;
+									}
+								case '@': // matches @
+									if (index + j >= lineSegment.Length || '@' != document.GetCharAt(lineSegment.Offset + index + j)) {
+										return false;
+									}
+									break;
+							}
+						}
+						break;
+					default:
+						{
+							if (index + j >= lineSegment.Length) {
+								return false;
+							}
+							char docChar = ignoreCase ? Char.ToUpperInvariant(document.GetCharAt(lineSegment.Offset + index + j)) : document.GetCharAt(lineSegment.Offset + index + j);
+							char spanChar = ignoreCase ? Char.ToUpperInvariant(expr[i]) : expr[i];
+							if (docChar != spanChar) {
+								return false;
+							}
+							break;
+						}
+				}
+			}
+			return true;
+		}
+		#endregion
 	}
 }

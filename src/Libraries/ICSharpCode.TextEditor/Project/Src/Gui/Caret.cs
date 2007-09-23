@@ -195,7 +195,7 @@ namespace ICSharpCode.TextEditor
 		void GotFocus(object sender, EventArgs e)
 		{
 			hidden = false;
-			if (!textArea.MotherTextEditorControl.IsUpdating) {
+			if (!textArea.MotherTextEditorControl.IsInUpdate) {
 				CreateCaret();
 				UpdateCaretPosition();
 			}
@@ -226,7 +226,7 @@ namespace ICSharpCode.TextEditor
 			oldLine = line;
 			
 			
-			if (hidden || textArea.MotherTextEditorControl.IsUpdating) {
+			if (hidden || textArea.MotherTextEditorControl.IsInUpdate) {
 				return;
 			}
 			if (!caretCreated) {

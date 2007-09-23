@@ -741,7 +741,7 @@ namespace ICSharpCode.TextEditor
 		/// </remarks>
 		public void InsertChar(char ch)
 		{
-			bool updating = motherTextEditorControl.IsUpdating;
+			bool updating = motherTextEditorControl.IsInUpdate;
 			if (!updating) {
 				BeginUpdate();
 			}
@@ -783,7 +783,7 @@ namespace ICSharpCode.TextEditor
 		/// </remarks>
 		public void InsertString(string str)
 		{
-			bool updating = motherTextEditorControl.IsUpdating;
+			bool updating = motherTextEditorControl.IsInUpdate;
 			if (!updating) {
 				BeginUpdate();
 			}
@@ -824,7 +824,7 @@ namespace ICSharpCode.TextEditor
 		/// </remarks>
 		public void ReplaceChar(char ch)
 		{
-			bool updating = motherTextEditorControl.IsUpdating;
+			bool updating = motherTextEditorControl.IsInUpdate;
 			if (!updating) {
 				BeginUpdate();
 			}

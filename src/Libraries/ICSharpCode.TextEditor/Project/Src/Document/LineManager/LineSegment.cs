@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Diagnostics;
 using System.Text;
 
 namespace ICSharpCode.TextEditor.Document
@@ -30,6 +31,10 @@ namespace ICSharpCode.TextEditor.Document
 				curColumn += word.Length;
 			}
 			return null;
+		}
+		
+		public bool IsDeleted {
+			get { return !treeEntry.IsValid; }
 		}
 		
 		public int LineNumber {
@@ -60,7 +65,7 @@ namespace ICSharpCode.TextEditor.Document
 		
 		public int DelimiterLength {
 			get { return delimiterLength; }
-			set { delimiterLength = value; }
+			internal set { delimiterLength = value; }
 		}
 		
 		// highlighting information
@@ -104,137 +109,140 @@ namespace ICSharpCode.TextEditor.Document
 			return "[LineSegment: Offset = "+ Offset +", Length = " + Length + ", TotalLength = " + TotalLength + ", DelimiterLength = " + delimiterLength + "]";
 		}
 		
-		// Svante Lidman: reconsider whether it was the right descision to move these methids here.
+		#region Anchor management
+		Util.WeakCollection<TextAnchor> anchors;
 		
-		/// <summary>
-		/// get the string, which matches the regular expression expr,
-		/// in string s2 at index
-		/// </summary>
-		internal string GetRegString(char[] expr, int index, IDocument document)
+		public TextAnchor CreateAnchor(int column)
 		{
-			int j = 0;
-			StringBuilder regexpr = new StringBuilder();;
+			TextAnchor anchor = new TextAnchor(this, column);
+			AddAnchor(anchor);
+			return anchor;
+		}
+		
+		void AddAnchor(TextAnchor anchor)
+		{
+			Debug.Assert(anchor.Line == this);
 			
-			for (int i = 0; i < expr.Length; ++i, ++j) {
-				if (index + j >= this.Length)
-					break;
-				
-				switch (expr[i]) {
-					case '@': // "special" meaning
-						++i;
-						switch (expr[i]) {
-							case '!': // don't match the following expression
-								StringBuilder whatmatch = new StringBuilder();
-								++i;
-								while (i < expr.Length && expr[i] != '@') {
-									whatmatch.Append(expr[i++]);
-								}
-								break;
-							case '@': // matches @
-								regexpr.Append(document.GetCharAt(this.Offset + index + j));
-								break;
-						}
-						break;
-					default:
-						if (expr[i] != document.GetCharAt(this.Offset + index + j)) {
-							return regexpr.ToString();
-						}
-						regexpr.Append(document.GetCharAt(this.Offset + index + j));
-						break;
-				}
-			}
-			return regexpr.ToString();
+			if (anchors == null)
+				anchors = new Util.WeakCollection<TextAnchor>();
+			
+			anchors.Add(anchor);
 		}
 		
 		/// <summary>
-		/// returns true, if the get the string s2 at index matches the expression expr
+		/// Is called when the LineSegment is deleted.
 		/// </summary>
-		internal bool MatchExpr(char[] expr, int index, IDocument document, bool ignoreCase)
+		internal void Deleted()
 		{
-			for (int i = 0, j = 0; i < expr.Length; ++i, ++j) {
-				switch (expr[i]) {
-					case '@': // "special" meaning
-						++i;
-						if (i < expr.Length) {
-							switch (expr[i]) {
-								case 'C': // match whitespace or punctuation
-									if (index + j == this.Offset || index + j >= this.Offset + this.Length) {
-										// nothing (EOL or SOL)
-									} else {
-										char ch = document.GetCharAt(this.Offset + index + j);
-										if (!Char.IsWhiteSpace(ch) && !Char.IsPunctuation(ch)) {
-											return false;
-										}
-									}
-									break;
-								case '!': // don't match the following expression
-									{
-										StringBuilder whatmatch = new StringBuilder();
-										++i;
-										while (i < expr.Length && expr[i] != '@') {
-											whatmatch.Append(expr[i++]);
-										}
-										if (this.Offset + index + j + whatmatch.Length < document.TextLength) {
-											int k = 0;
-											for (; k < whatmatch.Length; ++k) {
-												char docChar = ignoreCase ? Char.ToUpperInvariant(document.GetCharAt(this.Offset + index + j + k)) : document.GetCharAt(this.Offset + index + j + k);
-												char spanChar = ignoreCase ? Char.ToUpperInvariant(whatmatch[k]) : whatmatch[k];
-												if (docChar != spanChar) {
-													break;
-												}
-											}
-											if (k >= whatmatch.Length) {
-												return false;
-											}
-										}
-//									--j;
-										break;
-									}
-								case '-': // don't match the  expression before
-									{
-										StringBuilder whatmatch = new StringBuilder();
-										++i;
-										while (i < expr.Length && expr[i] != '@') {
-											whatmatch.Append(expr[i++]);
-										}
-										if (index - whatmatch.Length >= 0) {
-											int k = 0;
-											for (; k < whatmatch.Length; ++k) {
-												char docChar = ignoreCase ? Char.ToUpperInvariant(document.GetCharAt(this.Offset + index - whatmatch.Length + k)) : document.GetCharAt(this.Offset + index - whatmatch.Length + k);
-												char spanChar = ignoreCase ? Char.ToUpperInvariant(whatmatch[k]) : whatmatch[k];
-												if (docChar != spanChar)
-													break;
-											}
-											if (k >= whatmatch.Length) {
-												return false;
-											}
-										}
-//									--j;
-										break;
-									}
-								case '@': // matches @
-									if (index + j >= this.Length || '@' != document.GetCharAt(this.Offset + index + j)) {
-										return false;
-									}
-									break;
-							}
+			//Console.WriteLine("Deleted");
+			treeEntry = LineSegmentTree.Enumerator.Invalid;
+			if (anchors != null) {
+				foreach (TextAnchor a in anchors) {
+					a.Deleted();
+				}
+				anchors = null;
+			}
+		}
+		
+		/// <summary>
+		/// Is called when a part of the line is removed.
+		/// </summary>
+		internal void RemovedLinePart(int startColumn, int length)
+		{
+			if (length == 0)
+				return;
+			Debug.Assert(length > 0);
+			
+			//Console.WriteLine("RemovedLinePart " + startColumn + ", " + length);
+			if (anchors != null) {
+				List<TextAnchor> deletedAnchors = null;
+				foreach (TextAnchor a in anchors) {
+					if (a.ColumnNumber > startColumn) {
+						if (a.ColumnNumber >= startColumn + length) {
+							a.ColumnNumber -= length;
+						} else {
+							if (deletedAnchors == null)
+								deletedAnchors = new List<TextAnchor>();
+							a.Deleted();
+							deletedAnchors.Add(a);
 						}
-						break;
-					default:
-						{
-							if (index + j >= this.Length) {
-								return false;
-							}
-							char docChar = ignoreCase ? Char.ToUpperInvariant(document.GetCharAt(this.Offset + index + j)) : document.GetCharAt(this.Offset + index + j);
-							char spanChar = ignoreCase ? Char.ToUpperInvariant(expr[i]) : expr[i];
-							if (docChar != spanChar) {
-								return false;
-							}
-							break;
-						}
+					}
+				}
+				if (deletedAnchors != null) {
+					foreach (TextAnchor a in deletedAnchors) {
+						anchors.Remove(a);
+					}
 				}
 			}
-			return true;
 		}
+		
+		/// <summary>
+		/// Is called when a part of the line is inserted.
+		/// </summary>
+		internal void InsertedLinePart(int startColumn, int length)
+		{
+			if (length == 0)
+				return;
+			Debug.Assert(length > 0);
+			
+			//Console.WriteLine("InsertedLinePart " + startColumn + ", " + length);
+			if (anchors != null) {
+				foreach (TextAnchor a in anchors) {
+					if (a.ColumnNumber >= startColumn) {
+						a.ColumnNumber += length;
+					}
+				}
+			}
+		}
+		
+		/// <summary>
+		/// Is called after another line's content is appended to this line because the newline in between
+		/// was deleted.
+		/// The DefaultLineManager will call Deleted() on the deletedLine after the MergedWith call.
+		/// 
+		/// firstLineLength: the length of the line before the merge.
+		/// </summary>
+		internal void MergedWith(LineSegment deletedLine, int firstLineLength)
+		{
+			//Console.WriteLine("MergedWith");
+			
+			if (deletedLine.anchors != null) {
+				foreach (TextAnchor a in deletedLine.anchors) {
+					a.Line = this;
+					AddAnchor(a);
+					a.ColumnNumber += firstLineLength;
+				}
+				deletedLine.anchors = null;
+			}
+		}
+		
+		/// <summary>
+		/// Is called after a newline was inserted into this line, splitting it into this and followingLine.
+		/// </summary>
+		internal void SplitTo(LineSegment followingLine)
+		{
+			//Console.WriteLine("SplitTo");
+			
+			if (anchors != null) {
+				List<TextAnchor> movedAnchors = null;
+				foreach (TextAnchor a in anchors) {
+					if (a.ColumnNumber > this.Length) {
+						a.Line = followingLine;
+						followingLine.AddAnchor(a);
+						a.ColumnNumber -= this.Length;
+						
+						if (movedAnchors == null)
+							movedAnchors = new List<TextAnchor>();
+						movedAnchors.Add(a);
+					}
+				}
+				if (movedAnchors != null) {
+					foreach (TextAnchor a in movedAnchors) {
+						anchors.Remove(a);
+					}
+				}
+			}
+		}
+		#endregion
 	}
 }

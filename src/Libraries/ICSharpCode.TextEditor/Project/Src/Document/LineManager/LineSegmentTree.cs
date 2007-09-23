@@ -377,6 +377,12 @@ namespace ICSharpCode.TextEditor.Document
 		
 		public struct Enumerator : IEnumerator<LineSegment>
 		{
+			/// <summary>
+			/// An invalid enumerator value. Calling MoveNext on the invalid enumerator
+			/// will always return false, accessing Current will throw an exception.
+			/// </summary>
+			public static readonly Enumerator Invalid = default(Enumerator);
+			
 			internal RedBlackTreeIterator<RBNode> it;
 			
 			internal Enumerator(RedBlackTreeIterator<RBNode> it)

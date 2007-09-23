@@ -29,6 +29,7 @@ namespace ICSharpCode.TextEditor
 		
 		PrintDocument   printDocument = null;
 		
+		[Browsable(false)]
 		public PrintDocument PrintDocument {
 			get {
 				if (printDocument == null) {
@@ -128,11 +129,14 @@ namespace ICSharpCode.TextEditor
 			}
 		}
 		
+		[Browsable(false)]
 		public bool EnableUndo {
 			get {
 				return Document.UndoStack.CanUndo;
 			}
 		}
+		
+		[Browsable(false)]
 		public bool EnableRedo {
 			get {
 				return Document.UndoStack.CanRedo;
@@ -216,7 +220,7 @@ namespace ICSharpCode.TextEditor
 		
 		void CommitUpdateRequested(object sender, EventArgs e)
 		{
-			if (IsUpdating) {
+			if (IsInUpdate) {
 				return;
 			}
 			foreach (TextAreaUpdate update in Document.UpdateQueue) {

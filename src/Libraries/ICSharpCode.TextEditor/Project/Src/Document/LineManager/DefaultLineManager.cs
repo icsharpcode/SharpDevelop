@@ -77,7 +77,7 @@ namespace ICSharpCode.TextEditor.Document
 		
 		public void Replace(int offset, int length, string text)
 		{
-//			Console.WriteLine("Replace offset="+offset+" length="+length+" text.Length="+text.Length);
+			Console.WriteLine("Replace offset="+offset+" length="+length+" text.Length="+text.Length);
 			int lineStart = GetLineNumberForOffset(offset);
 			int oldNumberOfLines = this.TotalNumberOfLines;
 			RemoveInternal(offset, length);
@@ -106,6 +106,7 @@ namespace ICSharpCode.TextEditor.Document
 			int startSegmentOffset = startSegment.Offset;
 			if (offset + length < startSegmentOffset + startSegment.TotalLength) {
 				// just removing a part of this line segment
+				startSegment.RemovedLinePart(offset - startSegmentOffset, length);
 				SetSegmentLength(startSegment, startSegment.TotalLength - length);
 				return;
 			}
@@ -113,6 +114,7 @@ namespace ICSharpCode.TextEditor.Document
 			// possibly remove lines in between if multiple delimiters were deleted
 			int charactersRemovedInStartLine = startSegmentOffset + startSegment.TotalLength - offset;
 			Debug.Assert(charactersRemovedInStartLine > 0);
+			startSegment.RemovedLinePart(offset - startSegmentOffset, charactersRemovedInStartLine);
 			
 			
 			LineSegment endSegment = lineCollection.GetByOffset(offset + length);
@@ -124,6 +126,8 @@ namespace ICSharpCode.TextEditor.Document
 			}
 			int endSegmentOffset = endSegment.Offset;
 			int charactersLeftInEndLine = endSegmentOffset + endSegment.TotalLength - (offset + length);
+			endSegment.RemovedLinePart(0, endSegment.TotalLength - charactersLeftInEndLine);
+			startSegment.MergedWith(endSegment, offset - startSegmentOffset);
 			SetSegmentLength(startSegment, startSegment.TotalLength - charactersRemovedInStartLine + charactersLeftInEndLine);
 			startSegment.DelimiterLength = endSegment.DelimiterLength;
 			// remove all segments between startSegment (excl.) and endSegment (incl.)
@@ -132,6 +136,7 @@ namespace ICSharpCode.TextEditor.Document
 			do {
 				segmentToRemove = it.Current;
 				it.MoveNext();
+				segmentToRemove.Deleted();
 				lineCollection.RemoveSegment(segmentToRemove);
 			} while (segmentToRemove != endSegment);
 		}
@@ -139,9 +144,17 @@ namespace ICSharpCode.TextEditor.Document
 		void InsertInternal(int offset, string text)
 		{
 			LineSegment segment = lineCollection.GetByOffset(offset);
+			DelimiterSegment ds = NextDelimiter(text, 0);
+			if (ds == null) {
+				// no newline is being inserted, all text is inserted in a single line
+				segment.InsertedLinePart(offset - segment.Offset, text.Length);
+				SetSegmentLength(segment, segment.TotalLength + text.Length);
+				return;
+			}
+			LineSegment firstLine = segment;
+			firstLine.InsertedLinePart(offset - firstLine.Offset, ds.Offset);
 			int lastDelimiterEnd = 0;
-			DelimiterSegment ds;
-			while ((ds = NextDelimiter(text, lastDelimiterEnd)) != null) {
+			while (ds != null) {
 				// split line segment at line delimiter
 				int lineBreakOffset = offset + ds.Offset + ds.Length;
 				int segmentOffset = segment.Offset;
@@ -152,9 +165,13 @@ namespace ICSharpCode.TextEditor.Document
 				
 				segment = newSegment;
 				lastDelimiterEnd = ds.Offset + ds.Length;
+				
+				ds = NextDelimiter(text, lastDelimiterEnd);
 			}
+			firstLine.SplitTo(segment);
 			// insert rest after last delimiter
 			if (lastDelimiterEnd != text.Length) {
+				segment.InsertedLinePart(0, text.Length - lastDelimiterEnd);
 				SetSegmentLength(segment, segment.TotalLength + text.Length - lastDelimiterEnd);
 			}
 		}

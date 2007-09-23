@@ -40,13 +40,13 @@ namespace ICSharpCode.TextEditor.Document
 		bool        showMatchingBracket = true;
 		bool        showLineNumbers     = true;
 		
-		bool        showSpaces          = true;
-		bool        showTabs            = true;
-		bool        showEOLMarker       = true;
+		bool        showSpaces          = false;
+		bool        showTabs            = false;
+		bool        showEOLMarker       = false;
 		
-		bool        showInvalidLines    = true;
+		bool        showInvalidLines    = false;
 		
-		bool        isIconBarVisible    = true;
+		bool        isIconBarVisible    = false;
 		bool        enableFolding       = true;
 		bool        showHorizontalRuler = false;
 		bool        showVerticalRuler   = true;
