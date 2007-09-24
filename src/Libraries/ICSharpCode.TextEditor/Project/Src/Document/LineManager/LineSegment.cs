@@ -106,7 +106,10 @@ namespace ICSharpCode.TextEditor.Document
 		/// </summary>
 		public override string ToString()
 		{
-			return "[LineSegment: Offset = "+ Offset +", Length = " + Length + ", TotalLength = " + TotalLength + ", DelimiterLength = " + delimiterLength + "]";
+			if (IsDeleted)
+				return "[LineSegment: (deleted) Length = " + Length + ", TotalLength = " + TotalLength + ", DelimiterLength = " + delimiterLength + "]";
+			else
+				return "[LineSegment: LineNumber=" + LineNumber + ", Offset = "+ Offset +", Length = " + Length + ", TotalLength = " + TotalLength + ", DelimiterLength = " + delimiterLength + "]";
 		}
 		
 		#region Anchor management

@@ -104,8 +104,7 @@ namespace ICSharpCode.TextEditor.Document
 		}
 		
 		/// <value>
-		/// The total number of lines, this may be != ArrayList.Count
-		/// if the last line ends with a delimiter.
+		/// The total number of lines in the document.
 		/// </value>
 		int TotalNumberOfLines {
 			get;
@@ -189,6 +188,10 @@ namespace ICSharpCode.TextEditor.Document
 		/// Get the next visible line below lineNumber
 		/// </remarks>
 		int GetNextVisibleLineBelow(int lineNumber, int lineCount);
+		
+		event EventHandler<LineLengthChangeEventArgs> LineLengthChanged;
+		event EventHandler<LineCountChangeEventArgs> LineCountChanged;
+		event EventHandler<LineEventArgs> LineDeleted;
 		#endregion
 
 		#region ITextBufferStrategy interface

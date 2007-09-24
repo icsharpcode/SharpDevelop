@@ -47,9 +47,9 @@ namespace ICSharpCode.TextEditor.Document
 		/// <summary>
 		/// Creates a new instance of <see cref="CustomLineManager"/>
 		/// </summary>
-		public CustomLineManager(ILineManager lineTracker)
+		internal CustomLineManager(LineManager lineTracker)
 		{
-			lineTracker.LineCountChanged += new LineManagerEventHandler(MoveIndices);
+			lineTracker.LineCountChanged += MoveIndices;
 		}
 
 		/// <value>
@@ -178,7 +178,7 @@ namespace ICSharpCode.TextEditor.Document
 		/// This method moves all indices from index upward count lines
 		/// (useful for deletion/insertion of text)
 		/// </summary>
-		void MoveIndices(object sender,LineManagerEventArgs e)
+		void MoveIndices(object sender, LineCountChangeEventArgs e)
 		{
 			bool changed = false;
 			OnBeforeChanged();

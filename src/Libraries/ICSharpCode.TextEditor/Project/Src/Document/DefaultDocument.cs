@@ -90,27 +90,41 @@ namespace ICSharpCode.TextEditor.Document
 	/// <summary>
 	/// The default <see cref="IDocument"/> implementation.
 	/// </summary>
-	internal class DefaultDocument : IDocument
+	internal sealed class DefaultDocument : IDocument
 	{
 		bool readOnly = false;
 		
-		ILineManager          lineTrackingStrategy = null;
-		ICustomLineManager    customLineManager    = null;
-		BookmarkManager       bookmarkManager      = null;
-		ITextBufferStrategy   textBufferStrategy   = null;
-		IFormattingStrategy   formattingStrategy   = null;
-		FoldingManager        foldingManager       = null;
-		UndoStack             undoStack            = new UndoStack();
+		LineManager           lineTrackingStrategy;
+		ICustomLineManager    customLineManager;
+		BookmarkManager       bookmarkManager;
+		ITextBufferStrategy   textBufferStrategy;
+		IFormattingStrategy   formattingStrategy;
+		FoldingManager        foldingManager;
+		UndoStack             undoStack = new UndoStack();
 		ITextEditorProperties textEditorProperties = new DefaultTextEditorProperties();
-		MarkerStrategy        markerStrategy = null;
+		MarkerStrategy        markerStrategy;
+		
+		public LineManager LineManager {
+			get { return lineTrackingStrategy; }
+			set { lineTrackingStrategy = value; }
+		}
+		
+		public event EventHandler<LineLengthChangeEventArgs> LineLengthChanged {
+			add { lineTrackingStrategy.LineLengthChanged += value; }
+			remove { lineTrackingStrategy.LineLengthChanged -= value; }
+		}
+		public event EventHandler<LineCountChangeEventArgs> LineCountChanged {
+			add { lineTrackingStrategy.LineCountChanged += value; }
+			remove { lineTrackingStrategy.LineCountChanged -= value; }
+		}
+		public event EventHandler<LineEventArgs> LineDeleted {
+			add { lineTrackingStrategy.LineDeleted += value; }
+			remove { lineTrackingStrategy.LineDeleted -= value; }
+		}
 		
 		public MarkerStrategy MarkerStrategy {
-			get {
-				return markerStrategy;
-			}
-			set {
-				markerStrategy = value;
-			}
+			get { return markerStrategy; }
+			set { markerStrategy = value; }
 		}
 		
 		public ITextEditorProperties TextEditorProperties {
@@ -140,15 +154,6 @@ namespace ICSharpCode.TextEditor.Document
 			}
 			set {
 				readOnly = value;
-			}
-		}
-		
-		public ILineManager LineManager {
-			get {
-				return lineTrackingStrategy;
-			}
-			set {
-				lineTrackingStrategy = value;
 			}
 		}
 		
@@ -390,14 +395,14 @@ namespace ICSharpCode.TextEditor.Document
 			}
 		}
 		
-		protected void OnDocumentAboutToBeChanged(DocumentEventArgs e)
+		void OnDocumentAboutToBeChanged(DocumentEventArgs e)
 		{
 			if (DocumentAboutToBeChanged != null) {
 				DocumentAboutToBeChanged(this, e);
 			}
 		}
 		
-		protected void OnDocumentChanged(DocumentEventArgs e)
+		void OnDocumentChanged(DocumentEventArgs e)
 		{
 			if (DocumentChanged != null) {
 				DocumentChanged(this, e);
@@ -436,7 +441,7 @@ namespace ICSharpCode.TextEditor.Document
 			}
 		}
 		
-		protected virtual void OnTextContentChanged(EventArgs e)
+		void OnTextContentChanged(EventArgs e)
 		{
 			if (TextContentChanged != null) {
 				TextContentChanged(this, e);

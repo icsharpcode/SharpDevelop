@@ -75,8 +75,8 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		{
 			Graphics g = e.Graphics;
 			int x = MeasureTextWidth(g, positionText, BoldMonospacedFont);
-			if (line != null) {
-				x += MeasureTextWidth(g, bookmark.Document.GetText(line).Replace("\t", "   "), BoldMonospacedFont);
+			if (line != null && !line.IsDeleted) {
+				x += MeasureTextWidth(g, bookmark.Document.GetText(line).Replace("\t", "    "), BoldMonospacedFont);
 			}
 			return x;
 		}
@@ -89,7 +89,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			
 			spaceSize = g.MeasureString("-", RegularBigFont,  new PointF(0, 0), StringFormat.GenericTypographic);
 			
-			if (line != null) {
+			if (line != null && !line.IsDeleted) {
 				DrawLine(g, line, e.Bounds.Y, x, e.State);
 			}
 		}

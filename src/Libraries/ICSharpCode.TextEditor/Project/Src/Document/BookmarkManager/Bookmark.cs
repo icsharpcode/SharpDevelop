@@ -17,8 +17,9 @@ namespace ICSharpCode.TextEditor.Document
 	public class Bookmark
 	{
 		IDocument document;
-		int       lineNumber;
-		bool      isEnabled = true;
+		LineSegment line;
+		int lineNumber;
+		bool isEnabled = true;
 		
 		public IDocument Document {
 			get {
@@ -26,7 +27,14 @@ namespace ICSharpCode.TextEditor.Document
 			}
 			set {
 				if (document != value) {
+					if (line != null) {
+						lineNumber = line.LineNumber;
+						line = null;
+					}
 					document = value;
+					if (document != null) {
+						line = document.GetLineSegment(Math.Min(lineNumber, document.TotalNumberOfLines-1));
+					}
 					OnDocumentChanged(EventArgs.Empty);
 				}
 			}
@@ -66,26 +74,29 @@ namespace ICSharpCode.TextEditor.Document
 			}
 		}
 		
+		/// <summary>
+		/// Gets the line the bookmark belongs to.
+		/// Is null if the bookmark is not connected to a document.
+		/// </summary>
+		public LineSegment Line {
+			get { return line; }
+		}
+		
 		public int LineNumber {
 			get {
-				return lineNumber;
+				if (line != null)
+					return line.LineNumber;
+				else
+					return lineNumber;
 			}
 			set {
 				if (value < 0)
 					throw new ArgumentOutOfRangeException("value", value, "line number must be >= 0");
-				if (lineNumber != value) {
+				if (document == null) {
 					lineNumber = value;
-					OnLineNumberChanged(EventArgs.Empty);
+				} else {
+					line = document.GetLineSegment(value);
 				}
-			}
-		}
-		
-		public event EventHandler LineNumberChanged;
-		
-		protected virtual void OnLineNumberChanged(EventArgs e)
-		{
-			if (LineNumberChanged != null) {
-				LineNumberChanged(this, e);
 			}
 		}
 		
@@ -104,11 +115,9 @@ namespace ICSharpCode.TextEditor.Document
 		
 		public Bookmark(IDocument document, int lineNumber, bool isEnabled)
 		{
-			if (lineNumber < 0)
-				throw new ArgumentOutOfRangeException("lineNumber", lineNumber, "line number must be >= 0");
 			this.document   = document;
-			this.lineNumber = lineNumber;
 			this.isEnabled  = isEnabled;
+			this.LineNumber = lineNumber;
 		}
 		
 		public virtual bool Click(SWF.Control parent, SWF.MouseEventArgs e)

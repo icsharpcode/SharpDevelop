@@ -46,6 +46,14 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			}
 		}
 		
+		public event EventHandler LineNumberChanged;
+		
+		internal void RaiseLineNumberChanged()
+		{
+			if (LineNumberChanged != null)
+				LineNumberChanged(this, EventArgs.Empty);
+		}
+		
 		bool isSaved = true;
 		
 		/// <summary>

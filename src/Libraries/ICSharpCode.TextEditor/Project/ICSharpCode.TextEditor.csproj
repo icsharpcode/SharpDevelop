@@ -84,8 +84,7 @@
     <Compile Include="Src\Document\HighlightingStrategy\PrevMarker.cs" />
     <Compile Include="Src\Document\HighlightingStrategy\Span.cs" />
     <Compile Include="Src\Document\HighlightingStrategy\TextWord.cs" />
-    <Compile Include="Src\Document\LineManager\DefaultLineManager.cs" />
-    <Compile Include="Src\Document\LineManager\ILineManager.cs" />
+    <Compile Include="Src\Document\LineManager\LineManager.cs" />
     <Compile Include="Src\Document\LineManager\LineSegment.cs" />
     <Compile Include="Src\Document\LineManager\LineManagerEventArgs.cs" />
     <Compile Include="Src\Document\TextBufferStrategy\GapTextBufferStrategy.cs" />

@@ -36,9 +36,9 @@ namespace ICSharpCode.WixBinding
 			ISegment segment = WixDocument.ConvertRegionToSegment(document, region);
 						
 			// Replace the original xml with the new xml and indent it.
-			int originalLineCount = document.LineSegmentCollection.Count;
+			int originalLineCount = document.TotalNumberOfLines;
 			document.Replace(segment.Offset, segment.Length, xml);
-			int addedLineCount = document.LineSegmentCollection.Count - originalLineCount;
+			int addedLineCount = document.TotalNumberOfLines - originalLineCount;
 			
 			// Make sure the text inserted is visible.
 			textAreaControl.ScrollTo(region.BeginLine);
@@ -59,10 +59,10 @@ namespace ICSharpCode.WixBinding
 			ISegment segment = document.GetLineSegment(line);
 						
 			// Insert the xml and indent it.
-			int originalLineCount = document.LineSegmentCollection.Count;
+			int originalLineCount = document.TotalNumberOfLines;
 			int offset = segment.Offset + column;
 			document.Insert(offset, xml);
-			int addedLineCount = document.LineSegmentCollection.Count - originalLineCount;
+			int addedLineCount = document.TotalNumberOfLines - originalLineCount;
 			
 			// Make sure the text inserted is visible.
 			textAreaControl.ScrollTo(line);

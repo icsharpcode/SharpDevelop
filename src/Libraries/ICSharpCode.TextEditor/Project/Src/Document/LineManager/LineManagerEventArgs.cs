@@ -9,10 +9,7 @@ using System;
 
 namespace ICSharpCode.TextEditor.Document
 {
-	public delegate void LineManagerEventHandler(object sender, LineManagerEventArgs e);
-	public delegate void LineLengthEventHandler(object sender, LineLengthEventArgs e);
-	
-	public class LineManagerEventArgs : EventArgs
+	public class LineCountChangeEventArgs : EventArgs
 	{
 		IDocument document;
 		int       start;
@@ -45,7 +42,7 @@ namespace ICSharpCode.TextEditor.Document
 			}
 		}
 		
-		public LineManagerEventArgs(IDocument document, int lineStart, int linesMoved)
+		public LineCountChangeEventArgs(IDocument document, int lineStart, int linesMoved)
 		{
 			this.document = document;
 			this.start    = lineStart;
@@ -53,11 +50,10 @@ namespace ICSharpCode.TextEditor.Document
 		}
 	}
 	
-	public class LineLengthEventArgs : EventArgs
+	public class LineEventArgs : EventArgs
 	{
 		IDocument document;
 		LineSegment lineSegment;
-		int lengthDelta;
 		
 		public IDocument Document {
 			get { return document; }
@@ -67,20 +63,35 @@ namespace ICSharpCode.TextEditor.Document
 			get { return lineSegment; }
 		}
 		
+		public LineEventArgs(IDocument document, LineSegment lineSegment)
+		{
+			this.document = document;
+			this.lineSegment = lineSegment;
+		}
+		
+		public override string ToString()
+		{
+			return string.Format("[LineEventArgs Document={0} LineSegment={1}]", this.document, this.lineSegment);
+		}
+	}
+	
+	public class LineLengthChangeEventArgs : LineEventArgs
+	{
+		int lengthDelta;
+		
 		public int LengthDelta {
 			get { return lengthDelta; }
 		}
 		
-		public LineLengthEventArgs(IDocument document, LineSegment lineSegment, int moved)
+		public LineLengthChangeEventArgs(IDocument document, LineSegment lineSegment, int moved)
+			: base(document, lineSegment)
 		{
-			this.document = document;
-			this.lineSegment = lineSegment;
 			this.lengthDelta = moved;
 		}
 		
 		public override string ToString()
 		{
-			return string.Format("[LineLengthEventArgs Document={0} LineSegment={1} LengthDelta={2}]", this.document, this.lineSegment, this.lengthDelta);
+			return string.Format("[LineLengthEventArgs Document={0} LineSegment={1} LengthDelta={2}]", this.Document, this.LineSegment, this.lengthDelta);
 		}
 	}
 }

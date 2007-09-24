@@ -41,10 +41,18 @@ namespace ICSharpCode.TextEditor.Document
 		/// <summary>
 		/// Creates a new instance of <see cref="BookmarkManager"/>
 		/// </summary>
-		public BookmarkManager(IDocument document, ILineManager lineTracker)
+		internal BookmarkManager(IDocument document, LineManager lineTracker)
 		{
 			this.document = document;
-			lineTracker.LineCountChanged += new LineManagerEventHandler(MoveIndices);
+			lineTracker.LineDeleted += delegate(object sender, LineEventArgs e) {
+				for (int i = 0; i < bookmark.Count; i++) {
+					Bookmark b = bookmark[i];
+					if (b.Line == e.LineSegment) {
+						bookmark.RemoveAt(i--);
+						OnRemoved(new BookmarkEventArgs(b));
+					}
+				}
+			};
 		}
 		
 		IBookmarkFactory factory;
@@ -78,28 +86,24 @@ namespace ICSharpCode.TextEditor.Document
 				if (mark.LineNumber == lineNr && mark.CanToggle && mark.GetType() == newMarkType) {
 					bookmark.RemoveAt(i);
 					OnRemoved(new BookmarkEventArgs(mark));
-					OnChanged(EventArgs.Empty);
 					return;
 				}
 			}
 			
 			bookmark.Add(newMark);
 			OnAdded(new BookmarkEventArgs(newMark));
-			OnChanged(EventArgs.Empty);
 		}
 		
 		public void AddMark(Bookmark mark)
 		{
 			bookmark.Add(mark);
 			OnAdded(new BookmarkEventArgs(mark));
-			OnChanged(EventArgs.Empty);
 		}
 		
 		public void RemoveMark(Bookmark mark)
 		{
 			bookmark.Remove(mark);
 			OnRemoved(new BookmarkEventArgs(mark));
-			OnChanged(EventArgs.Empty);
 		}
 		
 		public void RemoveMarks(Predicate<Bookmark> predicate)
@@ -111,7 +115,6 @@ namespace ICSharpCode.TextEditor.Document
 					OnRemoved(new BookmarkEventArgs(bm));
 				}
 			}
-			OnChanged(EventArgs.Empty);
 		}
 		
 		/// <returns>
@@ -127,38 +130,6 @@ namespace ICSharpCode.TextEditor.Document
 			return false;
 		}
 		
-		/// <summary>
-		/// This method moves all indices from index upward count lines
-		/// (useful for deletion/insertion of text)
-		/// </summary>
-		void MoveIndices(object sender,LineManagerEventArgs e)
-		{
-			bool changed = false;
-			for (int i = 0; i < bookmark.Count; ++i) {
-				Bookmark mark = bookmark[i];
-				if (e.LinesMoved < 0 && mark.LineNumber == e.LineStart) {
-					bookmark.RemoveAt(i);
-					OnRemoved(new BookmarkEventArgs(mark));
-					--i;
-					changed = true;
-				} else if (mark.LineNumber > e.LineStart) {
-					changed = true;
-					int newLine = mark.LineNumber + e.LinesMoved;
-					if (newLine >= 0) {
-						bookmark[i].LineNumber = newLine;
-					} else {
-						bookmark.RemoveAt(i);
-						OnRemoved(new BookmarkEventArgs(mark));
-						--i;
-					}
-				}
-			}
-			
-			if (changed) {
-				OnChanged(EventArgs.Empty);
-			}
-		}
-		
 		/// <remarks>
 		/// Clears all bookmark
 		/// </remarks>
@@ -168,7 +139,6 @@ namespace ICSharpCode.TextEditor.Document
 				OnRemoved(new BookmarkEventArgs(mark));
 			}
 			bookmark.Clear();
-			OnChanged(EventArgs.Empty);
 		}
 		
 		/// <value>
@@ -264,21 +234,12 @@ namespace ICSharpCode.TextEditor.Document
 			return prev;
 		}
 		
-		protected virtual void OnChanged(EventArgs e)
-		{
-			if (Changed != null) {
-				Changed(this, e);
-			}
-		}
-		
-		
 		protected virtual void OnRemoved(BookmarkEventArgs e)
 		{
 			if (Removed != null) {
 				Removed(this, e);
 			}
 		}
-		
 		
 		protected virtual void OnAdded(BookmarkEventArgs e)
 		{
@@ -289,10 +250,5 @@ namespace ICSharpCode.TextEditor.Document
 		
 		public event BookmarkEventHandler Removed;
 		public event BookmarkEventHandler Added;
-		
-		/// <summary>
-		/// Is fired after the bookmarks change
-		/// </summary>
-		public event EventHandler Changed;
 	}
 }

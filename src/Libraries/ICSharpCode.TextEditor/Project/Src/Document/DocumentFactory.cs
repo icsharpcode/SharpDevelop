@@ -25,7 +25,7 @@ namespace ICSharpCode.TextEditor.Document
 			DefaultDocument doc = new DefaultDocument();
 			doc.TextBufferStrategy  = new GapTextBufferStrategy();
 			doc.FormattingStrategy  = new DefaultFormattingStrategy();
-			doc.LineManager         = new DefaultLineManager(doc, null);
+			doc.LineManager         = new LineManager(doc, null);
 			doc.FoldingManager      = new FoldingManager(doc, doc.LineManager);
 			doc.FoldingManager.FoldingStrategy       = null; //new ParserFoldingStrategy();
 			doc.MarkerStrategy      = new MarkerStrategy(doc);

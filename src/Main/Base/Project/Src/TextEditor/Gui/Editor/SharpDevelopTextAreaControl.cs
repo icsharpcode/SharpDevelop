@@ -58,6 +58,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			Document.BookmarkManager.Factory = new Bookmarks.SDBookmarkFactory(Document.BookmarkManager);
 			Document.BookmarkManager.Added   += new BookmarkEventHandler(BookmarkAdded);
 			Document.BookmarkManager.Removed += new BookmarkEventHandler(BookmarkRemoved);
+			Document.LineCountChanged += BookmarkLineCountChanged;
 			GenerateEditActions();
 			
 			TextEditorProperties = SharpDevelopTextEditorProperties.Instance;
@@ -76,6 +77,18 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			Bookmarks.SDBookmark b = e.Bookmark as Bookmarks.SDBookmark;
 			if (b != null) {
 				Bookmarks.BookmarkManager.RemoveMark(b);
+			}
+		}
+		
+		void BookmarkLineCountChanged(object sender, LineCountChangeEventArgs e)
+		{
+			foreach (Bookmark b in Document.BookmarkManager.Marks) {
+				if (b.LineNumber >= e.LineStart) {
+					Bookmarks.SDBookmark sdb = b as Bookmarks.SDBookmark;
+					if (sdb != null) {
+						sdb.RaiseLineNumberChanged();
+					}
+				}
 			}
 		}
 		
