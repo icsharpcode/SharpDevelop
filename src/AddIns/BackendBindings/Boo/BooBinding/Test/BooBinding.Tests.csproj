@@ -46,6 +46,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Class1.cs" />
+    <Compile Include="MyNewClass.cs" />
     <Compile Include="ResolverTests.cs" />
   </ItemGroup>
   <ItemGroup>

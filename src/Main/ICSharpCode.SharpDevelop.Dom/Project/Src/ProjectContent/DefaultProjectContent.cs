@@ -342,7 +342,15 @@ namespace ICSharpCode.SharpDevelop.Dom
 					}
 					//LoggingService.Debug("Added new part!");
 					return;
-				} else if (addClass.IsPartial || language.ImplicitPartialClasses) {
+				} else {
+					
+					if (addClass.IsPartial || language.ImplicitPartialClasses) {
+						LoggingService.Info("Duplicate class " + fullyQualifiedName);
+					}
+					
+					// Instead of overwriting a class with another, treat both parts as partial.
+					// This fixes SD2-1217.
+					
 					// Merge existing non-partial class with addClass
 					
 					// Ensure partial modifier is set everywhere:
