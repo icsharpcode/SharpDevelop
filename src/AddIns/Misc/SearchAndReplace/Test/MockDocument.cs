@@ -19,10 +19,15 @@ namespace ICSharpCode.SharpDevelop.Tests.Utils
 		{
 		}
 		
+		// disable "event not used" warning
+		#pragma warning disable 67
 		public event EventHandler UpdateCommited;
 		public event DocumentEventHandler DocumentAboutToBeChanged;
 		public event DocumentEventHandler DocumentChanged;
 		public event EventHandler TextContentChanged;
+		public event EventHandler<LineLengthChangeEventArgs> LineLengthChanged;
+		public event EventHandler<LineCountChangeEventArgs> LineCountChanged;
+		public event EventHandler<LineEventArgs> LineDeleted;
 		
 		public ITextEditorProperties TextEditorProperties {
 			get {
@@ -225,30 +230,6 @@ namespace ICSharpCode.SharpDevelop.Tests.Utils
 		public void UpdateSegmentListOnDocumentChange<T>(System.Collections.Generic.List<T> list, DocumentEventArgs e) where T : ISegment
 		{
 			throw new NotImplementedException();
-		}
-		
-		void OnUpdateCommited()
-		{
-			if (UpdateCommited != null) {
-			}
-		}
-		
-		void OnDocumentAboutToBeChanged()
-		{
-			if (DocumentAboutToBeChanged != null) {
-			}
-		}
-
-		void OnDocumentChanged()
-		{
-			if (DocumentChanged != null) {
-			}
-		}
-		
-		void OnTextContentChanged()
-		{
-			if (TextContentChanged != null) {
-			}
 		}
 	}
 }
