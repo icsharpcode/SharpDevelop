@@ -154,6 +154,7 @@ namespace ICSharpCode.SharpDevelop
 		
 		static void LoadSolutionProjectsInternal()
 		{
+			IProgressMonitor progressMonitor = StatusBarService.ProgressMonitor;
 			List<ParseProjectContent> createdContents = new List<ParseProjectContent>();
 			foreach (IProject project in ProjectService.OpenSolution.Projects) {
 				try {
@@ -173,31 +174,32 @@ namespace ICSharpCode.SharpDevelop
 			foreach (ParseProjectContent newContent in createdContents) {
 				if (abortLoadSolutionProjectsThread) return;
 				try {
-					newContent.Initialize1();
+					newContent.Initialize1(progressMonitor);
 					workAmount += newContent.GetInitializationWorkAmount();
 				} catch (Exception e) {
 					MessageService.ShowError(e, "Error while initializing project references:" + newContent);
 				}
 			}
-			StatusBarService.ProgressMonitor.BeginTask("${res:ICSharpCode.SharpDevelop.Internal.ParserService.Parsing}...", workAmount, false);
+			progressMonitor.BeginTask("${res:ICSharpCode.SharpDevelop.Internal.ParserService.Parsing}...", workAmount, false);
 			foreach (ParseProjectContent newContent in createdContents) {
 				if (abortLoadSolutionProjectsThread) break;
 				try {
-					newContent.Initialize2();
+					newContent.Initialize2(progressMonitor);
 				} catch (Exception e) {
 					MessageService.ShowError(e, "Error while initializing project contents:" + newContent);
 				}
 			}
-			StatusBarService.ProgressMonitor.Done();
+			progressMonitor.Done();
 		}
 		
 		static void InitAddedProject(object state)
 		{
 			ParseProjectContent newContent = (ParseProjectContent)state;
-			newContent.Initialize1();
-			StatusBarService.ProgressMonitor.BeginTask("${res:ICSharpCode.SharpDevelop.Internal.ParserService.Parsing}...", newContent.GetInitializationWorkAmount(), false);
-			newContent.Initialize2();
-			StatusBarService.ProgressMonitor.Done();
+			IProgressMonitor progressMonitor = StatusBarService.ProgressMonitor;
+			newContent.Initialize1(progressMonitor);
+			progressMonitor.BeginTask("${res:ICSharpCode.SharpDevelop.Internal.ParserService.Parsing}...", newContent.GetInitializationWorkAmount(), false);
+			newContent.Initialize2(progressMonitor);
+			progressMonitor.Done();
 		}
 		
 		#region Reparse projects
@@ -223,13 +225,14 @@ namespace ICSharpCode.SharpDevelop
 		{
 			bool parsing = false;
 			ParseProjectContent job;
+			IProgressMonitor progressMonitor = StatusBarService.ProgressMonitor;
 			
 			while (true) {
 				// get next job
 				lock (reParse1) {
 					if (reParse1.Count > 0) {
 						if (parsing) {
-							StatusBarService.ProgressMonitor.Done();
+							progressMonitor.Done();
 						}
 						parsing = false;
 						job = reParse1.Dequeue();
@@ -239,7 +242,7 @@ namespace ICSharpCode.SharpDevelop
 							foreach (ParseProjectContent ppc in reParse2) {
 								workAmount += ppc.GetInitializationWorkAmount();
 							}
-							StatusBarService.ProgressMonitor.BeginTask("${res:ICSharpCode.SharpDevelop.Internal.ParserService.Parsing}...", workAmount, false);
+							progressMonitor.BeginTask("${res:ICSharpCode.SharpDevelop.Internal.ParserService.Parsing}...", workAmount, false);
 						}
 						parsing = true;
 						job = reParse2.Dequeue();
@@ -247,7 +250,7 @@ namespace ICSharpCode.SharpDevelop
 						// all jobs done
 						reParseThread = null;
 						if (parsing) {
-							StatusBarService.ProgressMonitor.Done();
+							progressMonitor.Done();
 						}
 						LoggingService.Info("reParse thread finished all jobs");
 						return;
@@ -257,10 +260,10 @@ namespace ICSharpCode.SharpDevelop
 				// execute job
 				if (parsing) {
 					LoggingService.Info("reparsing code for " + job.Project);
-					job.ReInitialize2();
+					job.ReInitialize2(progressMonitor);
 				} else {
 					LoggingService.Debug("reloading references for " + job.Project);
-					job.ReInitialize1();
+					job.ReInitialize1(progressMonitor);
 				}
 			}
 		}

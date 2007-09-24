@@ -456,7 +456,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					run.context.MessageView.AppendLine("Custom tool '" + run.baseItem.CustomTool + "' failed.");
 					if (run.showMessageBoxOnErrors) {
 						MessageService.ShowError("Custom tool '" + run.baseItem.CustomTool
-						                         + "'failed:" + Environment.NewLine + ex.ToString());
+						                         + "' failed:" + Environment.NewLine + ex.ToString());
 					}
 				}
 				if (run.context.RunningSeparateThread) {

@@ -98,7 +98,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			if (highlighted) {
 				txtStatusBarPanel.BackColor = SystemColors.Highlight;
-				txtStatusBarPanel.ForeColor = Color.White;		
+				txtStatusBarPanel.ForeColor = Color.White;
 			} else if (txtStatusBarPanel.BackColor == SystemColors.Highlight) {
 				txtStatusBarPanel.BackColor = SystemColors.Control;
 				txtStatusBarPanel.ForeColor = SystemColors.ControlText;
@@ -126,6 +126,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			taskName = name;
 			this.totalWork = totalWork;
+			this.workDone = 0;
 			if (this.IsHandleCreated) {
 				this.BeginInvoke(new MethodInvoker(MakeVisible));
 			}

@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop
 {
@@ -41,15 +42,15 @@ namespace ICSharpCode.SharpDevelop
 			return string.Format("[{0}: {1}]", GetType().Name, project.Name);
 		}
 		
-		internal void Initialize1()
+		internal void Initialize1(IProgressMonitor progressMonitor)
 		{
 			ICollection<ProjectItem> items = project.Items;
 			ProjectService.ProjectItemAdded   += OnProjectItemAdded;
 			ProjectService.ProjectItemRemoved += OnProjectItemRemoved;
 			UpdateDefaultImports(items);
-			StatusBarService.ProgressMonitor.BeginTask("Resolving references for " + project.Name, 0, false);
+			progressMonitor.BeginTask("Resolving references for " + project.Name, 0, false);
 			project.ResolveAssemblyReferences();
-			StatusBarService.ProgressMonitor.Done();
+			progressMonitor.Done();
 			foreach (ProjectItem item in items) {
 				if (!initializing) return; // abort initialization
 				if (item.ItemType == ItemType.Reference
@@ -63,7 +64,7 @@ namespace ICSharpCode.SharpDevelop
 			OnReferencedContentsChanged(EventArgs.Empty);
 		}
 		
-		internal void ReInitialize1()
+		internal void ReInitialize1(IProgressMonitor progressMonitor)
 		{
 			lock (ReferencedContents) {
 				ReferencedContents.Clear();
@@ -73,7 +74,7 @@ namespace ICSharpCode.SharpDevelop
 			ProjectService.ProjectItemAdded   -= OnProjectItemAdded;
 			ProjectService.ProjectItemRemoved -= OnProjectItemRemoved;
 			initializing = true;
-			Initialize1();
+			Initialize1(progressMonitor);
 			initializing = false;
 		}
 		
@@ -212,20 +213,20 @@ namespace ICSharpCode.SharpDevelop
 			return project.Items.Count;
 		}
 		
-		internal void ReInitialize2()
+		internal void ReInitialize2(IProgressMonitor progressMonitor)
 		{
 			if (initializing) return;
 			initializing = true;
-			Initialize2();
+			Initialize2(progressMonitor);
 		}
 		
-		internal void Initialize2()
+		internal void Initialize2(IProgressMonitor progressMonitor)
 		{
 			if (!initializing) return;
-			int progressStart = StatusBarService.ProgressMonitor.WorkDone;
+			int progressStart = progressMonitor.WorkDone;
 			ParseableFileContentEnumerator enumerator = new ParseableFileContentEnumerator(project);
 			try {
-				StatusBarService.ProgressMonitor.TaskName = "${res:ICSharpCode.SharpDevelop.Internal.ParserService.Parsing} " + project.Name + "...";
+				progressMonitor.TaskName = "${res:ICSharpCode.SharpDevelop.Internal.ParserService.Parsing} " + project.Name + "...";
 				
 				IProjectContent[] referencedContents;
 				lock (this.ReferencedContents) {
@@ -242,7 +243,7 @@ namespace ICSharpCode.SharpDevelop
 				while (enumerator.MoveNext()) {
 					int i = enumerator.Index;
 					if ((i % 5) == 2)
-						StatusBarService.ProgressMonitor.WorkDone = progressStart + i;
+						progressMonitor.WorkDone = progressStart + i;
 					
 					ParserService.ParseFile(this, enumerator.CurrentFileName, enumerator.CurrentFileContent, true);
 					
@@ -250,7 +251,7 @@ namespace ICSharpCode.SharpDevelop
 				}
 			} finally {
 				initializing = false;
-				StatusBarService.ProgressMonitor.WorkDone = progressStart + enumerator.ItemCount;
+				progressMonitor.WorkDone = progressStart + enumerator.ItemCount;
 				enumerator.Dispose();
 			}
 		}
