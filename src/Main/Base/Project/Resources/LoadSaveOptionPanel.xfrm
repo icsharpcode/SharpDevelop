@@ -1,31 +1,50 @@
 <Components version="1.0">
 	<System.Windows.Forms.UserControl>
 		<Name value="MyUserControl" />
-		<ClientSize value="{Width=280, Height=233}" />
+		<ClientSize value="{Width=280, Height=332}" />
 		<Controls>
+			<System.Windows.Forms.GroupBox>
+				<Name value="groupBox1" />
+				<Location value="8, 226" />
+				<Text value="Delete" />
+				<Size value="264, 51" />
+				<Anchor value="Top, Left, Right" />
+				<TabIndex value="2" />
+				<Controls>
+					<System.Windows.Forms.CheckBox>
+						<Name value="useRecycleBinCheckBox" />
+						<Location value="8, 19" />
+						<Text value="Use recycle bin when deleting files" />
+						<TabIndex value="0" />
+						<Size value="248, 24" />
+						<UseVisualStyleBackColor value="True" />
+						<Anchor value="Top, Left, Right" />
+					</System.Windows.Forms.CheckBox>
+				</Controls>
+			</System.Windows.Forms.GroupBox>
 			<System.Windows.Forms.GroupBox>
 				<Name value="groupBox2" />
 				<Location value="8, 108" />
 				<Text value="${res:Dialog.Options.IDEOptions.LoadSaveOptions.SaveLabel}" />
-				<Anchor value="Top, Left, Right" />
 				<Size value="264, 112" />
+				<Anchor value="Top, Left, Right" />
 				<TabIndex value="1" />
 				<Controls>
 					<System.Windows.Forms.ComboBox>
 						<Name value="lineTerminatorStyleComboBox" />
-						<Size value="104, 21" />
 						<TabIndex value="2" />
-						<DropDownStyle value="DropDownList" />
 						<Location value="8, 72" />
 						<Anchor value="Top, Left, Right" />
+						<Size value="104, 21" />
+						<DropDownStyle value="DropDownList" />
 					</System.Windows.Forms.ComboBox>
 					<System.Windows.Forms.Label>
 						<Name value="label" />
 						<Location value="8, 49" />
 						<Text value="${res:Dialog.Options.IDEOptions.LoadSaveOptions.LineTerminatorStyleGroupBox}" />
-						<Anchor value="Top, Left, Right" />
-						<TextAlign value="BottomLeft" />
 						<Size value="248, 23" />
+						<TextAlign value="BottomLeft" />
+						<Anchor value="Top, Left, Right" />
 						<TabIndex value="1" />
 					</System.Windows.Forms.Label>
 					<System.Windows.Forms.CheckBox>
@@ -42,8 +61,8 @@
 				<Name value="groupBox" />
 				<Location value="8, 8" />
 				<Text value="${res:Dialog.Options.IDEOptions.LoadSaveOptions.LoadLabel}" />
-				<Anchor value="Top, Left, Right" />
 				<Size value="264, 94" />
+				<Anchor value="Top, Left, Right" />
 				<TabIndex value="0" />
 				<Controls>
 					<System.Windows.Forms.CheckBox>

@@ -294,6 +294,15 @@ namespace ICSharpCode.SharpDevelop
 			return null;
 		}
 		
+		public static bool DeleteToRecycleBin {
+			get {
+				return PropertyService.Get("SharpDevelop.DeleteToRecycleBin", true);
+			}
+			set {
+				PropertyService.Set("SharpDevelop.DeleteToRecycleBin", value);
+			}
+		}
+		
 		/// <summary>
 		/// Removes a file, raising the appropriate events. This method may show message boxes.
 		/// </summary>
@@ -307,7 +316,10 @@ namespace ICSharpCode.SharpDevelop
 				if (isDirectory) {
 					try {
 						if (Directory.Exists(fileName)) {
-							Directory.Delete(fileName, true);
+							if (DeleteToRecycleBin)
+								NativeMethods.DeleteToRecycleBin(fileName);
+							else
+								Directory.Delete(fileName, true);
 						}
 					} catch (Exception e) {
 						MessageService.ShowError(e, "Can't remove directory " + fileName);
@@ -316,7 +328,10 @@ namespace ICSharpCode.SharpDevelop
 				} else {
 					try {
 						if (File.Exists(fileName)) {
-							File.Delete(fileName);
+							if (DeleteToRecycleBin)
+								NativeMethods.DeleteToRecycleBin(fileName);
+							else
+								File.Delete(fileName);
 						}
 					} catch (Exception e) {
 						MessageService.ShowError(e, "Can't remove file " + fileName);

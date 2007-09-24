@@ -512,7 +512,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		void RemoveClass(IClass @class)
+		protected void RemoveClass(IClass @class)
 		{
 			string fullyQualifiedName = @class.FullyQualifiedName;
 			int typeParameterCount = @class.TypeParameters.Count;

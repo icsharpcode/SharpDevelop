@@ -27,7 +27,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		const string createBackupCopyCheckBox    = "createBackupCopyCheckBox";
 		const string lineTerminatorStyleComboBox = "lineTerminatorStyleComboBox";
 		
-		CheckBox autoLoadExternalChangesCheckBox, detectExternalChangesCheckBox;
+		CheckBox autoLoadExternalChangesCheckBox, detectExternalChangesCheckBox, useRecycleBinCheckBox;
 		
 		public override void LoadPanelContents()
 		{
@@ -44,6 +44,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			
 			autoLoadExternalChangesCheckBox = Get<CheckBox>("autoLoadExternalChanges");
 			detectExternalChangesCheckBox = Get<CheckBox>("detectExternalChanges");
+			useRecycleBinCheckBox = Get<CheckBox>("useRecycleBin");
 			
 			detectExternalChangesCheckBox.CheckedChanged += delegate {
 				autoLoadExternalChangesCheckBox.Enabled = detectExternalChangesCheckBox.Checked;
@@ -52,6 +53,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			
 			detectExternalChangesCheckBox.Checked = FileChangeWatcher.DetectExternalChangesOption;
 			autoLoadExternalChangesCheckBox.Checked = FileChangeWatcher.AutoLoadExternalChangesOption;
+			useRecycleBinCheckBox.Checked = FileService.DeleteToRecycleBin;
 		}
 		
 		public override bool StorePanelContents()
@@ -62,6 +64,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			
 			FileChangeWatcher.DetectExternalChangesOption = detectExternalChangesCheckBox.Checked;
 			FileChangeWatcher.AutoLoadExternalChangesOption = autoLoadExternalChangesCheckBox.Checked;
+			FileService.DeleteToRecycleBin = useRecycleBinCheckBox.Checked;
 			
 			return true;
 		}

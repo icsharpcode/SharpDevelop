@@ -130,7 +130,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public void InitializeSpecialClasses()
 		{
-			if (GetClassInternal(VoidClass.VoidName, 0, Language) != null) {
+			// Replace the class representing System.Void with VoidClass.Instance
+			IClass voidClass = GetClassInternal(VoidClass.VoidName, 0, Language);
+			if (voidClass != null) {
+				RemoveClass(voidClass);
 				AddClassToNamespaceList(VoidClass.Instance);
 			}
 		}

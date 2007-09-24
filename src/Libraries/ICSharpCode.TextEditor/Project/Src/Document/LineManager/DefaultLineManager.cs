@@ -77,7 +77,7 @@ namespace ICSharpCode.TextEditor.Document
 		
 		public void Replace(int offset, int length, string text)
 		{
-			Console.WriteLine("Replace offset="+offset+" length="+length+" text.Length="+text.Length);
+//			Console.WriteLine("Replace offset="+offset+" length="+length+" text.Length="+text.Length);
 			int lineStart = GetLineNumberForOffset(offset);
 			int oldNumberOfLines = this.TotalNumberOfLines;
 			RemoveInternal(offset, length);
