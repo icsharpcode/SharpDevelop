@@ -459,7 +459,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 			foreach (OpenedFile file in FileService.OpenedFiles) {
 				if (FileUtility.IsBaseDirectory(e.FileName, file.FileName)) {
 					foreach (IViewContent content in file.RegisteredViewContents.ToArray()) {
-						content.WorkbenchWindow.CloseWindow(true);
+						// content.WorkbenchWindow can be null if multiple view contents
+						// were in the same WorkbenchWindow and both should be closed
+						// (e.g. Windows Forms Designer, Subversion History View)
+						if (content.WorkbenchWindow != null) {
+							content.WorkbenchWindow.CloseWindow(true);
+						}
 					}
 				}
 			}
