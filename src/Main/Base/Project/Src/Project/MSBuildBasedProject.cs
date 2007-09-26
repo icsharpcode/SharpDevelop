@@ -816,24 +816,34 @@ namespace ICSharpCode.SharpDevelop.Project
 		#endregion
 		
 		#region Building
-		public override void StartBuild(BuildOptions options)
+		public override ICollection<IBuildable> GetBuildDependencies(ProjectBuildOptions buildOptions)
 		{
-			RunMSBuild(this.ParentSolution, this,
-			           this.ParentSolution.Preferences.ActiveConfiguration,
-			           this.ParentSolution.Preferences.ActivePlatform,
-			           options);
+			ICollection<IBuildable> result = base.GetBuildDependencies(buildOptions);
+			foreach (ProjectItem item in GetItemsOfType(ItemType.ProjectReference)) {
+				ProjectReferenceProjectItem prpi = item as ProjectReferenceProjectItem;
+				if (prpi != null && prpi.ReferencedProject != null)
+					result.Add(prpi.ReferencedProject);
+			}
+			return result;
 		}
 		
+		public override void StartBuild(ProjectBuildOptions options, IBuildFeedbackSink feedbackSink)
+		{
+			MSBuildEngine.Build(this, options, feedbackSink);
+		}
+		
+		/*
 		internal static void RunMSBuild(Solution solution, IProject project,
 		                                string configuration, string platform, BuildOptions options)
 		{
 			WorkbenchSingleton.Workbench.GetPad(typeof(CompilerMessageView)).BringPadToFront();
-			MSBuildEngine engine = new MSBuildEngine();
+			oldMSBuildEngine engine = new oldMSBuildEngine();
 			engine.Configuration = configuration;
 			engine.Platform = platform;
 			engine.MessageView = TaskService.BuildMessageViewCategory;
 			engine.Run(solution, project, options);
 		}
+		*/
 		#endregion
 		
 		#region Loading

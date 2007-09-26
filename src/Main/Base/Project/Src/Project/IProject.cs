@@ -22,7 +22,7 @@ namespace ICSharpCode.SharpDevelop.Project
 	/// When you implement IProject, you should also implement IProjectItemListProvider and IProjectAllowChangeConfigurations
 	/// </summary>
 	public interface IProject
-		: ISolutionFolder, IDisposable, IMementoCapable
+		: IBuildable, ISolutionFolder, IDisposable, IMementoCapable
 	{
 		/// <summary>
 		/// Gets the list of items in the project. This member is thread-safe.
@@ -203,11 +203,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		ParseProjectContent CreateProjectContent();
 		
 		/// <summary>
-		/// Starts building the project using the specified options.
-		/// </summary>
-		void StartBuild(BuildOptions options);
-		
-		/// <summary>
 		/// Creates a new ProjectItem for the passed MSBuild item.
 		/// </summary>
 		ProjectItem CreateProjectItem(Microsoft.Build.BuildEngine.BuildItem item);
@@ -222,6 +217,23 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// This method is thread safe.
 		/// </summary>
 		void ResolveAssemblyReferences();
+	}
+	
+	/// <summary>
+	/// A project or solution.
+	/// </summary>
+	public interface IBuildable : ISolutionFolder
+	{
+		/// <summary>
+		/// Gets the list of projects on which this project depends.
+		/// </summary>
+		ICollection<IBuildable> GetBuildDependencies(ProjectBuildOptions buildOptions);
+		
+		/// <summary>
+		/// Starts building the project using the specified options.
+		/// This member must be implemented thread-safe.
+		/// </summary>
+		void StartBuild(ProjectBuildOptions buildOptions, IBuildFeedbackSink feedbackSink);
 	}
 	
 	/// <summary>

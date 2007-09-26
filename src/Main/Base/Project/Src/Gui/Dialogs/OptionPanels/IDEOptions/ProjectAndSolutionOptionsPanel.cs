@@ -21,11 +21,12 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			
 			// read properties
 			ControlDictionary["projectLocationTextBox"].Text = PropertyService.Get("ICSharpCode.SharpDevelop.Gui.Dialogs.NewProjectDialog.DefaultPath",
-				Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal),
-				"SharpDevelop Projects")).ToString();
-						
+			                                                                       Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal),
+			                                                                                    "SharpDevelop Projects")).ToString();
+			
 			((CheckBox)ControlDictionary["loadPrevProjectCheckBox"]).Checked = PropertyService.Get("SharpDevelop.LoadPrevProjectOnStartup", false);
-			((CheckBox)ControlDictionary["showErrorListCheckBox"]).Checked = ErrorListPad.ShowAfterBuild;
+			((CheckBox)ControlDictionary["showErrorListCheckBox"]).Checked = Project.BuildOptions.ShowErrorListAfterBuild;
+			((NumericUpDown)ControlDictionary["parallelBuildNumericUpDown"]).Value = Project.BuildOptions.DefaultParallelProjectCount;
 			
 			((Button)ControlDictionary["selectProjectLocationButton"]).Click += new EventHandler(SelectProjectLocationButtonClicked);
 		}
@@ -42,9 +43,10 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			}
 			
 			// set properties
-			PropertyService.Set("ICSharpCode.SharpDevelop.Gui.Dialogs.NewProjectDialog.DefaultPath", projectPath);			
+			PropertyService.Set("ICSharpCode.SharpDevelop.Gui.Dialogs.NewProjectDialog.DefaultPath", projectPath);
 			PropertyService.Set("SharpDevelop.LoadPrevProjectOnStartup", ((CheckBox)ControlDictionary["loadPrevProjectCheckBox"]).Checked);
-			ErrorListPad.ShowAfterBuild = ((CheckBox)ControlDictionary["showErrorListCheckBox"]).Checked;
+			Project.BuildOptions.ShowErrorListAfterBuild = ((CheckBox)ControlDictionary["showErrorListCheckBox"]).Checked;
+			Project.BuildOptions.DefaultParallelProjectCount = (int)((NumericUpDown)ControlDictionary["parallelBuildNumericUpDown"]).Value;
 			
 			return true;
 		}

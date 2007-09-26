@@ -401,10 +401,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			return null;
 		}
 		
-		public virtual void StartBuild(BuildOptions options)
-		{
-		}
-		
 		/// <summary>
 		/// Creates a new projectItem for the passed itemType
 		/// </summary>
@@ -451,6 +447,30 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public virtual void ResolveAssemblyReferences()
 		{
+		}
+		
+		public virtual void StartBuild(ProjectBuildOptions options, IBuildFeedbackSink feedbackSink)
+		{
+			feedbackSink.ReportError(new BuildError { ErrorText = "Building project " + Name + " is not supported.", IsWarning = true });
+			// we don't know how to build anything, report that we're done.
+			feedbackSink.Done(true);
+		}
+		
+		public virtual ICollection<IBuildable> GetBuildDependencies(ProjectBuildOptions buildOptions)
+		{
+			List<IBuildable> result = new List<IBuildable>();
+			foreach (ProjectSection section in this.ProjectSections) {
+				if (section.Name == "ProjectDependencies") {
+					foreach (SolutionItem item in section.Items) {
+						foreach (IProject p in ParentSolution.Projects) {
+							if (p.IdGuid == item.Name) {
+								result.Add(p);
+							}
+						}
+					}
+				}
+			}
+			return result;
 		}
 	}
 }

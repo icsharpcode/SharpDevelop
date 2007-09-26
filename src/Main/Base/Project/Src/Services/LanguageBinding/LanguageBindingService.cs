@@ -129,8 +129,16 @@ namespace ICSharpCode.SharpDevelop
 						newProject.TypeGuid = projectTypeGuid;
 					}
 				} else {
-					newProject = new UnknownProject(location, title);
-					newProject.TypeGuid = projectTypeGuid;
+					string ext = Path.GetExtension(location);
+					if (".proj".Equals(ext, StringComparison.OrdinalIgnoreCase)
+					    || ".build".Equals(ext, StringComparison.OrdinalIgnoreCase))
+					{
+						newProject = new MSBuildFileProject(location, title);
+						newProject.TypeGuid = projectTypeGuid;
+					} else {
+						newProject = new UnknownProject(location, title);
+						newProject.TypeGuid = projectTypeGuid;
+					}
 				}
 			}
 			return newProject;

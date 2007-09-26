@@ -17,16 +17,16 @@ namespace ICSharpCode.CodeAnalysis
 {
 	public class FxCopLogger : IMSBuildAdditionalLogger
 	{
-		public ILogger CreateLogger(MSBuildEngineWorker engineWorker)
+		public ILogger CreateLogger(MSBuildEngine engineWorker)
 		{
 			return new FxCopLoggerImpl(engineWorker);
 		}
 		
 		private class FxCopLoggerImpl : ILogger
 		{
-			MSBuildEngineWorker engineWorker;
+			MSBuildEngine engineWorker;
 			
-			public FxCopLoggerImpl(MSBuildEngineWorker engineWorker)
+			public FxCopLoggerImpl(MSBuildEngine engineWorker)
 			{
 				this.engineWorker = engineWorker;
 			}
@@ -54,7 +54,7 @@ namespace ICSharpCode.CodeAnalysis
 			public void Initialize(IEventSource eventSource)
 			{
 				this.eventSource = eventSource;
-				engineWorker.OutputText("${res:ICSharpCode.CodeAnalysis.RunningFxCopOn} " + Path.GetFileNameWithoutExtension(engineWorker.CurrentProjectFile) + "\r\n");
+				engineWorker.OutputText("${res:ICSharpCode.CodeAnalysis.RunningFxCopOn} " + Path.GetFileNameWithoutExtension(engineWorker.CurrentProjectFile));
 				eventSource.ErrorRaised += OnError;
 				eventSource.WarningRaised += OnWarning;
 			}

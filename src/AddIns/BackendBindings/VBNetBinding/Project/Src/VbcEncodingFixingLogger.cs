@@ -18,16 +18,16 @@ namespace VBNetBinding
 	/// </summary>
 	public class VbcEncodingFixingLogger : IMSBuildAdditionalLogger
 	{
-		public ILogger CreateLogger(MSBuildEngineWorker engineWorker)
+		public ILogger CreateLogger(MSBuildEngine engineWorker)
 		{
 			return new VbcLoggerImpl(engineWorker);
 		}
 		
 		private class VbcLoggerImpl : ILogger
 		{
-			MSBuildEngineWorker engineWorker;
+			MSBuildEngine engineWorker;
 			
-			public VbcLoggerImpl(MSBuildEngineWorker engineWorker)
+			public VbcLoggerImpl(MSBuildEngine engineWorker)
 			{
 				this.engineWorker = engineWorker;
 			}

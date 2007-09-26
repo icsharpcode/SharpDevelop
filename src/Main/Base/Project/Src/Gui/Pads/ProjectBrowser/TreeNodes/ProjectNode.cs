@@ -112,7 +112,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public override void ActivateItem()
 		{
-			if (project is UnknownProject && Nodes.Count == 0) {
+			if (project is MSBuildFileProject) {
 				FileService.OpenFile(project.FileName);
 			}
 		}

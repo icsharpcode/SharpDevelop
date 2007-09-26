@@ -16,7 +16,7 @@ namespace ICSharpCode.SharpDevelop.Project
 	/// </summary>
 	public interface IMSBuildAdditionalLogger
 	{
-		ILogger CreateLogger(MSBuildEngineWorker engineWorker);
+		ILogger CreateLogger(MSBuildEngine engine);
 	}
 	
 	/// <summary>
@@ -67,23 +67,23 @@ namespace ICSharpCode.SharpDevelop.Project
 				addIn = codon.AddIn;
 			}
 			
-			public ILogger CreateLogger(MSBuildEngineWorker engineWorker)
+			public ILogger CreateLogger(MSBuildEngine engine)
 			{
-				return new TaskBoundAdditionalLogger(this, engineWorker);
+				return new TaskBoundAdditionalLogger(this, engine);
 			}
 		}
 		
 		private class TaskBoundAdditionalLogger : ILogger
 		{
 			TaskBoundAdditionalLoggerDescriptor desc;
-			MSBuildEngineWorker engineWorker;
+			MSBuildEngine engine;
 			ILogger baseLogger;
 			bool isActive;
 			
-			public TaskBoundAdditionalLogger(TaskBoundAdditionalLoggerDescriptor desc, MSBuildEngineWorker engineWorker)
+			public TaskBoundAdditionalLogger(TaskBoundAdditionalLoggerDescriptor desc, MSBuildEngine engine)
 			{
 				this.desc = desc;
-				this.engineWorker = engineWorker;
+				this.engine = engine;
 			}
 			
 			void CreateBaseLogger()
@@ -93,7 +93,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					baseLogger = obj as ILogger;
 					IMSBuildAdditionalLogger addLog = obj as IMSBuildAdditionalLogger;
 					if (addLog != null) {
-						baseLogger = addLog.CreateLogger(engineWorker);
+						baseLogger = addLog.CreateLogger(engine);
 					}
 				}
 			}

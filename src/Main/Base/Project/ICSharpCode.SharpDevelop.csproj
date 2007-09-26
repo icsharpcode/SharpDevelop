@@ -95,7 +95,9 @@
     <Compile Include="Src\Internal\Undo\IUndoableOperation.cs" />
     <Compile Include="Src\Internal\Undo\UndoQueue.cs" />
     <Compile Include="Src\Internal\Undo\UndoStack.cs" />
-    <Compile Include="Src\Project\MSBuildEngineWorker.cs" />
+    <Compile Include="Src\Project\BuildEngine.cs" />
+    <Compile Include="Src\Project\IBuildFeedbackSink.cs" />
+    <Compile Include="Src\Project\MSBuildFileProject.cs" />
     <Compile Include="Src\Project\ProjectPropertyChangedEventArgs.cs" />
     <Compile Include="Src\Services\Debugger\BreakpointBookmark.cs" />
     <Compile Include="Src\Services\Debugger\BreakpointBookmarkEventArgs.cs" />
@@ -715,6 +717,10 @@
     <Folder Include="Src\Util" />
     <Folder Include="Src\Gui\Pads\ClassBrowser\NodeBuilder" />
     <Folder Include="Src\Services\NavigationService" />
+    <ProjectReference Include="..\..\ICSharpCode.SharpDevelop.BuildWorker\ICSharpCode.SharpDevelop.BuildWorker.csproj">
+      <Project>{C3CBC8E3-81D8-4C5B-9941-DCCD12D50B1F}</Project>
+      <Name>ICSharpCode.SharpDevelop.BuildWorker</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
       <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
       <Name>ICSharpCode.SharpDevelop.Dom</Name>

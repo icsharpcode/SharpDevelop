@@ -132,7 +132,7 @@ namespace ICSharpCode.SharpDevelop
 								}
 							}
 						};
-						project.StartBuild(new BuildOptions(BuildTarget.ResolveComReferences, afterBuildCallback));
+						BuildEngine.BuildInGui(project, new BuildOptions(BuildTarget.ResolveComReferences, afterBuildCallback));
 					};
 					
 					// enqueue actions when adding multiple COM references so that multiple builds of the same project

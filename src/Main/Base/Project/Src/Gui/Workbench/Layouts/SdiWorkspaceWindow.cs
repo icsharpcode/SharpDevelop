@@ -332,7 +332,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					case DialogResult.Yes:
 						if (ActiveViewContent.PrimaryFile != null) {
 							while (true) {
-								ActiveViewContent.Files.Apply(ICSharpCode.SharpDevelop.Commands.SaveFile.Save);
+								ActiveViewContent.Files.Foreach(ICSharpCode.SharpDevelop.Commands.SaveFile.Save);
 								if (ActiveViewContent.IsDirty) {
 									
 									if (MessageService.AskQuestion("${res:MainWindow.DiscardChangesMessage}")) {

@@ -31,18 +31,13 @@ namespace ICSharpCode.SharpDevelop.Project
 				missingNode.Text = ResourceService.GetString("ICSharpCode.SharpDevelop.Commands.ProjectBrowser.ProjectFileNotFound");
 				missingNode.AddTo(projectNode);
 			} else if (project is UnknownProject) {
-				string ext = Path.GetExtension(project.FileName);
-				if (".proj".Equals(ext, StringComparison.OrdinalIgnoreCase)
-				    || ".build".Equals(ext, StringComparison.OrdinalIgnoreCase))
-				{
-					projectNode.OpenedImage = projectNode.ClosedImage = "Icons.16x16.XMLFileIcon";
-					projectNode.Nodes.Clear();
-				} else {
-					CustomNode unknownNode = new CustomNode();
-					unknownNode.SetIcon("Icons.16x16.Warning");
-					unknownNode.Text = StringParser.Parse(((UnknownProject)project).WarningText);
-					unknownNode.AddTo(projectNode);
-				}
+				CustomNode unknownNode = new CustomNode();
+				unknownNode.SetIcon("Icons.16x16.Warning");
+				unknownNode.Text = StringParser.Parse(((UnknownProject)project).WarningText);
+				unknownNode.AddTo(projectNode);
+			} else if (project is MSBuildFileProject) {
+				projectNode.OpenedImage = projectNode.ClosedImage = "Icons.16x16.XMLFileIcon";
+				projectNode.Nodes.Clear();
 			} else {
 				new ReferenceFolder(project).AddTo(projectNode);
 			}

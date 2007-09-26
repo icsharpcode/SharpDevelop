@@ -106,7 +106,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		public override void StartBuild()
 		{
 			ProjectService.RaiseEventStartBuild();
-			ProjectService.OpenSolution.StartBuild(new BuildOptions(BuildTarget.Build, CallbackMethod));
+			BuildEngine.BuildInGui(ProjectService.OpenSolution, new BuildOptions(BuildTarget.Build, CallbackMethod));
 		}
 		
 		public override void AfterBuild()
@@ -120,7 +120,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		public override void StartBuild()
 		{
 			ProjectService.RaiseEventStartBuild();
-			ProjectService.OpenSolution.StartBuild(new BuildOptions(BuildTarget.Rebuild, CallbackMethod));
+			BuildEngine.BuildInGui(ProjectService.OpenSolution, new BuildOptions(BuildTarget.Rebuild, CallbackMethod));
 		}
 		
 		public override void AfterBuild()
@@ -133,7 +133,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void StartBuild()
 		{
-			ProjectService.OpenSolution.StartBuild(new BuildOptions(BuildTarget.Clean, CallbackMethod));
+			BuildEngine.BuildInGui(ProjectService.OpenSolution, new BuildOptions(BuildTarget.Clean, CallbackMethod));
 		}
 	}
 	
@@ -173,7 +173,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		public override void StartBuild()
 		{
 			ProjectService.RaiseEventStartBuild();
-			this.ProjectToBuild.StartBuild(new BuildOptions(BuildTarget.Build, CallbackMethod, AdditionalProperties));
+			BuildEngine.BuildInGui(this.ProjectToBuild, new BuildOptions(BuildTarget.Build, CallbackMethod, AdditionalProperties));
 		}
 		
 		public override void AfterBuild()
@@ -190,7 +190,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		public override void StartBuild()
 		{
 			ProjectService.RaiseEventStartBuild();
-			this.ProjectToBuild.StartBuild(new BuildOptions(BuildTarget.Rebuild, CallbackMethod, AdditionalProperties));
+			BuildEngine.BuildInGui(this.ProjectToBuild, new BuildOptions(BuildTarget.Rebuild, CallbackMethod, AdditionalProperties));
 		}
 	}
 	
@@ -198,7 +198,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void StartBuild()
 		{
-			this.ProjectToBuild.StartBuild(new BuildOptions(BuildTarget.Clean, CallbackMethod, null));
+			BuildEngine.BuildInGui(this.ProjectToBuild, new BuildOptions(BuildTarget.Clean, CallbackMethod));
 		}
 	}
 	

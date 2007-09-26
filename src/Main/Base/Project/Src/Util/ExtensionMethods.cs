@@ -18,9 +18,9 @@ namespace ICSharpCode.SharpDevelop
 	public static class ExtensionMethods
 	{
 		/// <summary>
-		/// Applies an action to all elements in the input.
+		/// Runs an action for all elements in the input.
 		/// </summary>
-		public static void Apply<T>(this IEnumerable<T> input, Action<T> action)
+		public static void Foreach<T>(this IEnumerable<T> input, Action<T> action)
 		{
 			if (input == null)
 				throw new ArgumentNullException("input");

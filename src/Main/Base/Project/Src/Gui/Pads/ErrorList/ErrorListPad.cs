@@ -63,10 +63,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public static bool ShowAfterBuild {
 			get {
-				return PropertyService.Get("SharpDevelop.ShowErrorListAfterBuild", true);
+				return Project.BuildOptions.ShowErrorListAfterBuild;
 			}
 			set {
-				PropertyService.Set("SharpDevelop.ShowErrorListAfterBuild", value);
+				Project.BuildOptions.ShowErrorListAfterBuild = value;
 			}
 		}
 		

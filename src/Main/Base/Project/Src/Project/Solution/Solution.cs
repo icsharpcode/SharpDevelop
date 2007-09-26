@@ -26,7 +26,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 	}
 	
-	public class Solution : SolutionFolder, IDisposable, IMSBuildEngineProvider
+	public class Solution : SolutionFolder, IDisposable, IMSBuildEngineProvider, IBuildable
 	{
 		/// <summary>contains <guid>, (IProject/ISolutionFolder) pairs.</summary>
 		Dictionary<string, ISolutionFolder> guidDictionary = new Dictionary<string, ISolutionFolder>();
@@ -1142,12 +1142,20 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		#endregion
 		
-		public void StartBuild(BuildOptions options)
+		#region Building
+		ICollection<IBuildable> IBuildable.GetBuildDependencies(ProjectBuildOptions buildOptions)
 		{
-			MSBuildBasedProject.RunMSBuild(this, null,
-			                               this.Preferences.ActiveConfiguration,
-			                               this.Preferences.ActivePlatform,
-			                               options);
+			List<IBuildable> result = new List<IBuildable>();
+			foreach (IProject p in this.Projects)
+				result.Add(p);
+			return result;
 		}
+		
+		void IBuildable.StartBuild(ProjectBuildOptions buildOptions, IBuildFeedbackSink feedbackSink)
+		{
+			// building a solution finishes immediately: we only care for the dependencies
+			feedbackSink.Done(true);
+		}
+		#endregion
 	}
 }

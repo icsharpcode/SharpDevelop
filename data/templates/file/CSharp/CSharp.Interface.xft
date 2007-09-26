@@ -30,7 +30,7 @@ namespace ${StandardNamespace}
 	/// <summary>
 	/// Description of ${ClassName}.
 	/// </summary>
-	public interface I${ClassName}
+	public interface ${ClassName}
 	{
 		
 	}
