@@ -61,7 +61,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public static int DefaultParallelProjectCount {
 			get {
-				return PropertyService.Get("SharpDevelop.BuildParallelProjectCount", Environment.ProcessorCount);
+				return PropertyService.Get("SharpDevelop.BuildParallelProjectCount", Environment.ProcessorCount >= 2 ? 2: 1);
 			}
 			set {
 				PropertyService.Set("SharpDevelop.BuildParallelProjectCount", value);

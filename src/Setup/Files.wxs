@@ -501,6 +501,10 @@
 							<Component Guid="3730EF42-5257-4EB2-9DA1-57151E5EB5A3" Id="AgaControlsDll" DiskId="1">
 								<File Source="..\..\bin\Aga.Controls.dll" Name="AGACON.DLL" Id="Aga.Controls.dll" LongName="Aga.Controls.dll" Assembly=".net" AssemblyApplication="Aga.Controls.dll" AssemblyManifest="Aga.Controls.dll" KeyPath="yes" />
 							</Component>
+							<Component Guid="28E09E1C-B1E4-4ABC-9EA8-D37255CDD9E3" Id="BuildWorkerFiles" DiskId="1">
+								<File Source="..\..\bin\ICSharpCode.SharpDevelop.BuildWorker.exe" Name="ICSHAR_1.EXE" Id="ICSharpCode.SharpDevelop.BuildWorker.exe" LongName="ICSharpCode.SharpDevelop.BuildWorker.exe" />
+								<File Source="..\..\bin\ICSharpCode.SharpDevelop.BuildWorker.exe.config" Name="ICSHAR_1.CON" Id="ICSharpCode.SharpDevelop.BuildWorker.exe.config" LongName="ICSharpCode.SharpDevelop.BuildWorker.exe.config" />
+							</Component>
 						</Directory>
 						<Directory Id="DocFolder" Name="doc">
 							<Component Guid="370DE542-C4A9-48DA-ACF8-09949CDCD808" Id="SharpDevelopDocFiles" DiskId="1">

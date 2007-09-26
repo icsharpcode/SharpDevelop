@@ -173,6 +173,7 @@
 				<ComponentRef Id="SharpDevelopDocFiles"/>
 				<ComponentRef Id="ICSharpCodeBuildTasksDll"/>
 				<ComponentRef Id="BuildTasksTargetFiles"/>
+				<ComponentRef Id="BuildWorkerFiles"/>
 				<ComponentRef Id="ICSharpCodeCoreDll"/>
 				<ComponentRef Id="ICSharpCodeNRefactoryDll"/>
 				<ComponentRef Id="ICSharpCodeSharpDevelopDll"/>
