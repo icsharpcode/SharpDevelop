@@ -32,9 +32,18 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		}
 		
 		public ClassMemberBookmark(IDocument document, IMember member)
-			: base(document, Math.Min(document.TotalNumberOfLines - 1, member.Region.BeginLine - 1))
+			: base(document, GetLineNumberFromMember(document, member))
 		{
 			this.member = member;
+		}
+		
+		static int GetLineNumberFromMember(IDocument document, IMember member)
+		{
+			int line = member.Region.BeginLine - 1;
+			if (document != null && line >= document.TotalNumberOfLines)
+				return document.TotalNumberOfLines - 1;
+			else
+				return line;
 		}
 		
 		public const string ContextMenuPath = "/SharpDevelop/ViewContent/DefaultTextEditor/ClassMemberContextMenu";

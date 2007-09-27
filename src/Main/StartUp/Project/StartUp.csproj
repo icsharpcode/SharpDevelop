@@ -1,4 +1,4 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -22,6 +22,8 @@
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <DelaySign>False</DelaySign>
     <AssemblyOriginatorKeyMode>File</AssemblyOriginatorKeyMode>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>Full</DebugType>
@@ -51,12 +53,16 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="SharpDevelopMain.cs" />
-    <EmbeddedResource Include="Resources\BitmapResources.resources" />
-    <None Include="SharpDevelop.exe.manifest">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <EmbeddedResource Include="Resources\BitmapResources.resources">
+      <LogicalName>Resources.BitmapResources.resources</LogicalName>
+    </EmbeddedResource>
+    <None Include="app.manifest">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
     <EmbeddedResource Include="Resources\SplashScreen.jpg" />
-    <EmbeddedResource Include="Resources\StringResources.resources" />
+    <EmbeddedResource Include="Resources\StringResources.resources">
+      <LogicalName>Resources.StringResources.resources</LogicalName>
+    </EmbeddedResource>
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <None Include="SharpDevelop.exe.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

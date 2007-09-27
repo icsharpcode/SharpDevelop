@@ -168,7 +168,6 @@
 							</Component>
 							<Component Id="SharpDevelopExeFiles" Guid="B9427DC8-6C86-4D1A-B3DC-1B0E0F1F1DC1" DiskId="1">
 								<File Source="..\..\bin\SharpDevelop.exe.config" Name="sharpdev.con" Id="SharpDevelop.exe.config" LongName="SharpDevelop.exe.config" />
-								<File Source="..\..\bin\SharpDevelop.exe.manifest" Name="sharpdev.man" Id="SharpDevelop.exe.manifest" LongName="SharpDevelop.exe.manifest" />
 							</Component>
 							<Component Id="ICSharpCodeBuildTasksDll" Guid="E94FCC8C-9741-45EF-AFDA-9F9CF02BF3F7" DiskId="1">
 								<File Source="..\..\bin\ICSharpCode.Build.Tasks.dll" Name="ICBuild.dll" Id="ICSharpCode.Build.Tasks.dll" LongName="ICSharpCode.Build.Tasks.dll" Assembly=".net" AssemblyApplication="ICSharpCode.Build.Tasks.dll" AssemblyManifest="ICSharpCode.Build.Tasks.dll" KeyPath="yes" />
