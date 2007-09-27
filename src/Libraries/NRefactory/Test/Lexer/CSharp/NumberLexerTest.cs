@@ -144,6 +144,27 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 		}
 		
 		[Test]
+		public void TestInvalidString()
+		{
+			// ensure that line numbers are correct after newline in string
+			ILexer l = GenerateLexer(new StringReader("\"\n\"\n;"));
+			Token t = l.NextToken();
+			Assert.AreEqual(Tokens.Literal, t.kind);
+			Assert.AreEqual(new Location(1, 1), t.Location);
+			
+			t = l.NextToken();
+			Assert.AreEqual(Tokens.Literal, t.kind);
+			Assert.AreEqual(new Location(1, 2), t.Location);
+			
+			t = l.NextToken();
+			Assert.AreEqual(Tokens.Semicolon, t.kind);
+			Assert.AreEqual(new Location(1, 3), t.Location);
+			
+			t = l.NextToken();
+			Assert.AreEqual(Tokens.EOF, t.kind);
+		}
+		
+		[Test]
 		public void TestCharLiteral()
 		{
 			CheckToken(@"'a'", 'a');

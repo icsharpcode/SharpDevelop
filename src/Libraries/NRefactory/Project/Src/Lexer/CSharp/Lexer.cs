@@ -421,6 +421,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 						sb.Append(ch);
 					}
 				} else if (ch == '\n') {
+					HandleLineEnd(ch); // ensure line numbers are still correct after the error
 					errors.Error(y, x, String.Format("No new line is allowed inside a string literal"));
 					break;
 				} else {

@@ -441,6 +441,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			return ItemType.None;
 		}
 		
+		[Browsable(false)]
 		public virtual int MinimumSolutionVersion {
 			get { return 9; }
 		}
