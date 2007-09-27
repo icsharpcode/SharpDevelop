@@ -20,6 +20,16 @@ namespace ICSharpCode.SharpDevelop.BuildWorker
 		public string ProjectFileName { get; set; }
 		public string Target { get; set; }
 		
+		EventTypes eventMask = EventTypes.All;
+		
+		/// <summary>
+		/// Gets/Sets the mask that controls which events are reported back to the host.
+		/// </summary>
+		public EventTypes EventMask {
+			get { return eventMask; }
+			set { eventMask = value; }
+		}
+		
 		Dictionary<string, string> properties = new Dictionary<string, string>();
 		
 		public Dictionary<string, string> Properties {
@@ -30,6 +40,12 @@ namespace ICSharpCode.SharpDevelop.BuildWorker
 		
 		public List<string> AdditionalImports {
 			get { return additionalImports; }
+		}
+		
+		HashSet<string> interestingTaskNames = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
+		
+		public ICollection<string> InterestingTaskNames {
+			get { return interestingTaskNames; }
 		}
 		
 		public override string ToString()
@@ -45,6 +61,10 @@ namespace ICSharpCode.SharpDevelop.BuildWorker
 			b.AppendLine("  " + AdditionalImports.Count + " Additional Imports:");
 			foreach (string import in AdditionalImports) {
 				b.AppendLine("    " + import);
+			}
+			b.AppendLine("  " + InterestingTaskNames.Count + " Interesting Task Names:");
+			foreach (string name in InterestingTaskNames) {
+				b.AppendLine("    " + name);
 			}
 			return b.ToString();
 		}

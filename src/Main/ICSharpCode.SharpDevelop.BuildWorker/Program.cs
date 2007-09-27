@@ -5,6 +5,9 @@
 //     <version>$Revision$</version>
 // </file>
 
+// activate this define to see the build worker window
+//#define WORKERDEBUG
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,9 +16,6 @@ using System.Threading;
 using ICSharpCode.SharpDevelop.BuildWorker.Interprocess;
 using Microsoft.Build.Framework;
 using Microsoft.Build.BuildEngine;
-
-// activate this define to see the build worker window
-//#define WORKERDEBUG
 
 namespace ICSharpCode.SharpDevelop.BuildWorker
 {
@@ -48,6 +48,10 @@ namespace ICSharpCode.SharpDevelop.BuildWorker
 		{
 			ShowMessageBox(e.ExceptionObject.ToString());
 		}
+		
+		#if RELEASE && WORKERDEBUG
+		#error WORKERDEBUG must not be defined if RELEASE is defined
+		#endif
 		
 		internal static ProcessStartInfo CreateStartInfo()
 		{
@@ -86,7 +90,7 @@ namespace ICSharpCode.SharpDevelop.BuildWorker
 				currentJob = job;
 				requestCancellation = false;
 			}
-			#if DEBUG && WORKERDEBUG
+			#if WORKERDEBUG
 			Console.Title = "BuildWorker - " + Path.GetFileName(job.ProjectFileName);
 			#endif
 			Program.Log("Got job:");
@@ -122,8 +126,9 @@ namespace ICSharpCode.SharpDevelop.BuildWorker
 			} finally {
 				Program.Log("BuildDone");
 				
-				#if DEBUG && WORKERDEBUG
+				#if WORKERDEBUG
 				Console.Title = "BuildWorker - no job";
+				DisplayEventCounts();
 				#endif
 				
 				lock (this) {
@@ -144,7 +149,7 @@ namespace ICSharpCode.SharpDevelop.BuildWorker
 			return engine;
 		}
 		
-		InProcessLogger inProcessLogger;
+		EventSource hostEventSource;
 		
 		internal void BuildInProcess(BuildSettings settings, BuildJob job)
 		{
@@ -153,7 +158,7 @@ namespace ICSharpCode.SharpDevelop.BuildWorker
 					throw new InvalidOperationException("Already running a job");
 				currentJob = job;
 				requestCancellation = false;
-				inProcessLogger = new InProcessLogger();
+				hostEventSource = new EventSource();
 			}
 			bool success = false;
 			try {
@@ -162,9 +167,9 @@ namespace ICSharpCode.SharpDevelop.BuildWorker
 					                    | ToolsetDefinitionLocations.ConfigurationFile);
 				}
 				engine.UnregisterAllLoggers();
-				engine.RegisterLogger(inProcessLogger);
+				engine.RegisterLogger(new ForwardingLogger(this));
 				foreach (ILogger logger in settings.Logger) {
-					logger.Initialize(inProcessLogger.EventSource);
+					logger.Initialize(hostEventSource);
 				}
 				success = DoBuild();
 				foreach (ILogger logger in settings.Logger) {
@@ -239,20 +244,20 @@ namespace ICSharpCode.SharpDevelop.BuildWorker
 		
 		void ReportError(BuildErrorEventArgs e)
 		{
-			if (host != null) {
-				HostReportEvent(e);
-			} else {
-				// enable error reporting for in-process builds
-				InProcessLogger logger = inProcessLogger;
-				if (logger != null) {
-					logger.EventSource.RaiseEvent(e);
-				}
-			}
+			HostReportEvent(e);
 		}
 		
 		void HostReportEvent(BuildEventArgs e)
 		{
-			host.CallMethodOnHost("ReportEvent", e);
+			if (host != null) {
+				host.CallMethodOnHost("ReportEvent", e);
+			} else {
+				// enable error reporting for in-process builds
+				EventSource eventSource = hostEventSource;
+				if (eventSource != null) {
+					eventSource.RaiseEvent(e);
+				}
+			}
 		}
 		
 		sealed class ForwardingLogger : ILogger
@@ -272,48 +277,152 @@ namespace ICSharpCode.SharpDevelop.BuildWorker
 			public void Initialize(IEventSource eventSource)
 			{
 				this.eventSource = eventSource;
-				eventSource.AnyEventRaised += OnAnyEventRaised;
+				EventTypes eventMask = program.currentJob.EventMask;
+				if ((eventMask & EventTypes.Message) != 0)
+					eventSource.MessageRaised += OnEvent;
+				if ((eventMask & EventTypes.Error) != 0)
+					eventSource.ErrorRaised += OnEvent;
+				if ((eventMask & EventTypes.Warning) != 0)
+					eventSource.WarningRaised += OnEvent;
+				if ((eventMask & EventTypes.BuildStarted) != 0)
+					eventSource.BuildStarted += OnEvent;
+				if ((eventMask & EventTypes.BuildFinished) != 0)
+					eventSource.BuildFinished += OnEvent;
+				if ((eventMask & EventTypes.ProjectStarted) != 0)
+					eventSource.ProjectStarted += OnEvent;
+				if ((eventMask & EventTypes.ProjectFinished) != 0)
+					eventSource.ProjectFinished += OnEvent;
+				if ((eventMask & EventTypes.TargetStarted) != 0)
+					eventSource.TargetStarted += OnEvent;
+				if ((eventMask & EventTypes.TargetFinished) != 0)
+					eventSource.TargetFinished += OnEvent;
+				if ((eventMask & EventTypes.TaskStarted) != 0)
+					eventSource.TaskStarted += OnEvent;
+				else
+					eventSource.TaskStarted += OnTaskStarted;
+				if ((eventMask & EventTypes.TaskFinished) != 0)
+					eventSource.TaskFinished += OnEvent;
+				else
+					eventSource.TaskFinished += OnTaskFinished;
+				if ((eventMask & EventTypes.Custom) != 0)
+					eventSource.CustomEventRaised += OnEvent;
+				if ((eventMask & EventTypes.Unknown) != 0)
+					eventSource.AnyEventRaised += OnUnknownEventRaised;
+				if (eventMask != EventTypes.All)
+					eventSource.AnyEventRaised += OnAnyEvent;
+				
+				#if WORKERDEBUG
+				eventSource.AnyEventRaised += CountEvent;
+				#endif
 			}
 			
 			public void Shutdown()
 			{
-				eventSource.AnyEventRaised -= OnAnyEventRaised;
+				EventTypes eventMask = program.currentJob.EventMask;
+				if ((eventMask & EventTypes.Message) != 0)
+					eventSource.MessageRaised -= OnEvent;
+				if ((eventMask & EventTypes.Error) != 0)
+					eventSource.ErrorRaised -= OnEvent;
+				if ((eventMask & EventTypes.Warning) != 0)
+					eventSource.WarningRaised -= OnEvent;
+				if ((eventMask & EventTypes.BuildStarted) != 0)
+					eventSource.BuildStarted -= OnEvent;
+				if ((eventMask & EventTypes.BuildFinished) != 0)
+					eventSource.BuildFinished -= OnEvent;
+				if ((eventMask & EventTypes.ProjectStarted) != 0)
+					eventSource.ProjectStarted -= OnEvent;
+				if ((eventMask & EventTypes.ProjectFinished) != 0)
+					eventSource.ProjectFinished -= OnEvent;
+				if ((eventMask & EventTypes.TargetStarted) != 0)
+					eventSource.TargetStarted -= OnEvent;
+				if ((eventMask & EventTypes.TargetFinished) != 0)
+					eventSource.TargetFinished -= OnEvent;
+				if ((eventMask & EventTypes.TaskStarted) != 0)
+					eventSource.TaskStarted -= OnEvent;
+				else
+					eventSource.TaskStarted -= OnTaskStarted;
+				if ((eventMask & EventTypes.TaskFinished) != 0)
+					eventSource.TaskFinished -= OnEvent;
+				else
+					eventSource.TaskFinished -= OnTaskFinished;
+				if ((eventMask & EventTypes.Custom) != 0)
+					eventSource.CustomEventRaised -= OnEvent;
+				if ((eventMask & EventTypes.Unknown) != 0)
+					eventSource.AnyEventRaised -= OnUnknownEventRaised;
+				if (eventMask != EventTypes.All)
+					eventSource.AnyEventRaised -= OnAnyEvent;
+				
+				#if WORKERDEBUG
+				eventSource.AnyEventRaised -= CountEvent;
+				#endif
 			}
 			
-			void OnAnyEventRaised(object sender, BuildEventArgs e)
+			// registered for AnyEventRaised to support build cancellation.
+			// is not registered if all events should be forwarded, in that case, OnEvent
+			// already handles build cancellation
+			void OnAnyEvent(object sender, BuildEventArgs e)
+			{
+				if (program.requestCancellation)
+					throw new BuildCancelException();
+			}
+			
+			// used for all events that should be forwarded
+			void OnEvent(object sender, BuildEventArgs e)
 			{
 				if (program.requestCancellation)
 					throw new BuildCancelException();
 				program.HostReportEvent(e);
 			}
+			
+			// registered for AnyEventRaised to forward unknown events
+			void OnUnknownEventRaised(object sender, BuildEventArgs e)
+			{
+				if (EventSource.GetEventType(e) == EventTypes.Unknown)
+					OnEvent(sender, e);
+			}
+			
+			// registered when only specific tasks should be forwarded
+			void OnTaskStarted(object sender, TaskStartedEventArgs e)
+			{
+				if (program.currentJob.InterestingTaskNames.Contains(e.TaskName))
+					OnEvent(sender, e);
+			}
+			
+			// registered when only specific tasks should be forwarded
+			void OnTaskFinished(object sender, TaskFinishedEventArgs e)
+			{
+				if (program.currentJob.InterestingTaskNames.Contains(e.TaskName))
+					OnEvent(sender, e);
+			}
+			
+			
+			#if WORKERDEBUG
+			void CountEvent(object sender, BuildEventArgs e)
+			{
+				Program.CountEvent(EventSource.GetEventType(e));
+			}
+			#endif
 		}
 		
-		sealed class InProcessLogger : ILogger
+		#if WORKERDEBUG
+		static Dictionary<EventTypes, int> eventCounts = new Dictionary<EventTypes, int>();
+		
+		static void CountEvent(EventTypes e)
 		{
-			public readonly EventSource EventSource = new EventSource();
-			
-			public LoggerVerbosity Verbosity { get; set; }
-			
-			public string Parameters { get; set; }
-			
-			IEventSource realEventSource;
-			
-			public void Initialize(IEventSource eventSource)
-			{
-				this.realEventSource = eventSource;
-				this.realEventSource.AnyEventRaised += OnAnyEventRaised;
-			}
-			
-			public void Shutdown()
-			{
-				this.realEventSource.AnyEventRaised -= OnAnyEventRaised;
-			}
-			
-			void OnAnyEventRaised(object sender, BuildEventArgs e)
-			{
-				this.EventSource.RaiseEvent(e);
+			if (eventCounts.ContainsKey(e))
+				eventCounts[e] += 1;
+			else
+				eventCounts[e] = 1;
+		}
+		
+		static void DisplayEventCounts()
+		{
+			foreach (var pair in eventCounts) {
+				Console.WriteLine("    " + pair.Key.ToString() + ": " + pair.Value.ToString());
 			}
 		}
+		#endif
+		
 		
 		[Serializable]
 		sealed class BuildCancelException : Exception

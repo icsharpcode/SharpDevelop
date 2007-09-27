@@ -69,6 +69,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			public ILogger CreateLogger(MSBuildEngine engine)
 			{
+				engine.InterestingTasks.Add(taskname);
 				return new TaskBoundAdditionalLogger(this, engine);
 			}
 		}

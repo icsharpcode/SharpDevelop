@@ -98,18 +98,95 @@ namespace ICSharpCode.SharpDevelop.Project
 			this.feedbackSink = feedbackSink;
 		}
 		
+		const EventTypes ControllableEvents = EventTypes.Message
+			| EventTypes.TargetStarted | EventTypes.TargetFinished
+			| EventTypes.TaskStarted | EventTypes.TaskFinished
+			| EventTypes.Unknown;
+		
+		/// <summary>
+		/// Controls whether messages should be made available to loggers.
+		/// Logger AddIns should set this property in their CreateLogger method.
+		/// </summary>
+		public bool ReportMessageEvents { get; set; }
+		
+		/// <summary>
+		/// Controls whether the TargetStarted event should be made available to loggers.
+		/// Logger AddIns should set this property in their CreateLogger method.
+		/// </summary>
+		public bool ReportTargetStartedEvents { get; set; }
+		
+		/// <summary>
+		/// Controls whether the TargetStarted event should be made available to loggers.
+		/// Logger AddIns should set this property in their CreateLogger method.
+		/// </summary>
+		public bool ReportTargetFinishedEvents { get; set; }
+		
+		/// <summary>
+		/// Controls whether all TaskStarted events should be made available to loggers.
+		/// Logger AddIns should set this property in their CreateLogger method.
+		/// </summary>
+		public bool ReportAllTaskStartedEvents { get; set; }
+		
+		/// <summary>
+		/// Controls whether all TaskFinished events should be made available to loggers.
+		/// Logger AddIns should set this property in their CreateLogger method.
+		/// </summary>
+		public bool ReportAllTaskFinishedEvents { get; set; }
+		
+		/// <summary>
+		/// Controls whether the AnyEventRaised and StatusEventRaised events should
+		/// be called for unknown events.
+		/// Logger AddIns should set this property in their CreateLogger method.
+		/// </summary>
+		public bool ReportUnknownEvents { get; set; }
+		
+		List<string> interestingTasks = new List<string>();
+		
+		/// <summary>
+		/// The list of task names for which TaskStarted and TaskFinished events should be
+		/// made available to loggers.
+		/// Logger AddIns should add entries in their CreateLogger method.
+		/// </summary>
+		public ICollection<string> InterestingTasks {
+			get { return interestingTasks; }
+		}
+		
 		void StartBuild()
 		{
 			WorkerManager.ShowError = MessageService.ShowError;
 			BuildWorker.BuildSettings settings = new BuildWorker.BuildSettings();
 			SharpDevelopLogger logger = new SharpDevelopLogger(this);
 			settings.Logger.Add(logger);
+			
+			foreach (string compileTaskName in MSBuildEngine.CompileTaskNames) {
+				InterestingTasks.Add(compileTaskName);
+			}
 			foreach (IMSBuildAdditionalLogger loggerProvider in MSBuildEngine.AdditionalMSBuildLoggers) {
 				settings.Logger.Add(loggerProvider.CreateLogger(this));
 			}
 			
 			BuildJob job = new BuildJob();
 			job.ProjectFileName = project.FileName;
+			job.EventMask = EventTypes.All & ~ControllableEvents;
+			if (ReportMessageEvents)
+				job.EventMask |= EventTypes.Message;
+			if (ReportTargetStartedEvents)
+				job.EventMask |= EventTypes.TargetStarted;
+			if (ReportTargetFinishedEvents)
+				job.EventMask |= EventTypes.TargetFinished;
+			if (ReportAllTaskStartedEvents)
+				job.EventMask |= EventTypes.TaskStarted;
+			if (ReportAllTaskFinishedEvents)
+				job.EventMask |= EventTypes.TaskFinished;
+			if (ReportUnknownEvents)
+				job.EventMask |= EventTypes.Unknown;
+			
+			if (!(ReportAllTaskStartedEvents && ReportAllTaskFinishedEvents)) {
+				// just some TaskStarted & TaskFinished events should be reported
+				foreach (string taskName in InterestingTasks) {
+					job.InterestingTaskNames.Add(taskName);
+				}
+			}
 			
 			BuildPropertyGroup pg = new BuildPropertyGroup();
 			MSBuildBasedProject.InitializeMSBuildProjectProperties(pg);
@@ -166,7 +243,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		static int isBuildingInProcess;
+		static int isBuildingInProcess = 0;
 		
 		static string EnsureBackslash(string path)
 		{
@@ -293,20 +370,29 @@ namespace ICSharpCode.SharpDevelop.Project
 			public LoggerVerbosity Verbosity { get; set; }
 			public string Parameters { get; set; }
 			
+			IEventSource eventSource;
+			
 			public void Initialize(IEventSource eventSource)
 			{
-				eventSource.ProjectStarted  += new ProjectStartedEventHandler(OnProjectStarted);
-				eventSource.ProjectFinished += new ProjectFinishedEventHandler(OnProjectFinished);
-				eventSource.TaskStarted     += new TaskStartedEventHandler(OnTaskStarted);
-				eventSource.TaskFinished    += new TaskFinishedEventHandler(OnTaskFinished);
+				this.eventSource = eventSource;
+				eventSource.ProjectStarted  += OnProjectStarted;
+				eventSource.ProjectFinished += OnProjectFinished;
+				eventSource.TaskStarted     += OnTaskStarted;
+				eventSource.TaskFinished    += OnTaskFinished;
 				
-				eventSource.ErrorRaised     += new BuildErrorEventHandler(OnError);
-				eventSource.WarningRaised   += new BuildWarningEventHandler(OnWarning);
+				eventSource.ErrorRaised     += OnError;
+				eventSource.WarningRaised   += OnWarning;
 			}
 			
 			public void Shutdown()
 			{
+				eventSource.ProjectStarted  -= OnProjectStarted;
+				eventSource.ProjectFinished -= OnProjectFinished;
+				eventSource.TaskStarted     -= OnTaskStarted;
+				eventSource.TaskFinished    -= OnTaskFinished;
 				
+				eventSource.ErrorRaised     -= OnError;
+				eventSource.WarningRaised   -= OnWarning;
 			}
 			#endregion
 		}
