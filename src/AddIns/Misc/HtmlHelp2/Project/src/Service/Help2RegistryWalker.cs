@@ -143,25 +143,24 @@ namespace HtmlHelp2.Environment
 			{
 				registryWalker = new HxRegistryWalkerClass();
 				help2Namespaces = registryWalker.get_RegisteredNamespaceList("");
+
+				if (registryWalker == null || help2Namespaces == null || help2Namespaces.Count == 0 || string.IsNullOrEmpty(matchingName))
+				{
+					return string.Empty;
+				}
+				foreach (IHxRegNamespace currentNamespace in help2Namespaces)
+				{
+					if (NativeMethods.PathMatchSpec(currentNamespace.Name, matchingName))
+					{
+						return currentNamespace.Name;
+					}
+				}
+				return help2Namespaces.ItemAt(1).Name;
 			}
 			catch (System.Runtime.InteropServices.COMException)
 			{
-				help2Namespaces = null;
-				registryWalker = null;
-			}
-
-			if (registryWalker == null || help2Namespaces == null || help2Namespaces.Count == 0 || string.IsNullOrEmpty(matchingName))
-			{
 				return string.Empty;
 			}
-			foreach (IHxRegNamespace currentNamespace in help2Namespaces)
-			{
-				if (NativeMethods.PathMatchSpec(currentNamespace.Name, matchingName))
-				{
-					return currentNamespace.Name;
-				}
-			}
-			return help2Namespaces.ItemAt(1).Name;
 		}
 
 	}

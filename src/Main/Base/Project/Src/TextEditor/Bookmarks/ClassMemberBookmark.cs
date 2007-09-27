@@ -32,7 +32,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		}
 		
 		public ClassMemberBookmark(IDocument document, IMember member)
-			: base(document, member.Region.BeginLine - 1)
+			: base(document, Math.Min(document.TotalNumberOfLines - 1, member.Region.BeginLine - 1))
 		{
 			this.member = member;
 		}

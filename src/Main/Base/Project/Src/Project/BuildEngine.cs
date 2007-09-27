@@ -30,6 +30,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				results.Result = BuildResultCode.MSBuildAlreadyRunning;
 				options.Callback(results);
 			} else {
+				guiBuildRunning = true;
 				Gui.WorkbenchSingleton.Workbench.GetPad(typeof(Gui.CompilerMessageView)).BringPadToFront();
 				StartBuild(project, options, new MessageViewSink(TaskService.BuildMessageViewCategory));
 			}

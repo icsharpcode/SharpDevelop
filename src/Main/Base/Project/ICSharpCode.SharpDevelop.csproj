@@ -690,6 +690,7 @@
     <Compile Include="Src\Util\GenericConverter.cs" />
     <Compile Include="Src\Internal\Templates\TemplateLoadException.cs" />
     <Compile Include="Src\Util\UnclosableStream.cs" />
+    <EmbeddedResource Include="Resources\DefaultManifest.manifest" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj">

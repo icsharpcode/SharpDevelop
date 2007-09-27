@@ -31,7 +31,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			helper.AddConfigurationSelector(this);
 		}
 		
-		public class SemicolonSeparatedStringListBinding : ConfigurationGuiBinding
+		sealed class SemicolonSeparatedStringListBinding : ConfigurationGuiBinding
 		{
 			StringListEditor editor;
 			
