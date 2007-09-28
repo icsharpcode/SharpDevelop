@@ -42,23 +42,25 @@ namespace ICSharpCode.SharpDevelop.Project
 		public static readonly ICollection<string> CompileTaskNames;
 		
 		/// <summary>
-		/// Gets a list where addins can add additional properties for use in MsBuild.
+		/// Gets a list where addins can add additional properties for use in MSBuild.
+		/// You can add items to this dictionary by putting strings into
+		/// "/SharpDevelop/MSBuildEngine/AdditionalProperties".
 		/// </summary>
-		public static readonly SortedList<string, string> MSBuildProperties;
+		public static readonly IDictionary<string, string> MSBuildProperties;
 		
 		/// <summary>
 		/// Gets a list of additional target files that are automatically loaded into all projects.
 		/// You can add items into this list by putting strings into
 		/// "/SharpDevelop/MSBuildEngine/AdditionalTargetFiles"
 		/// </summary>
-		public static readonly List<string> AdditionalTargetFiles;
+		public static readonly IList<string> AdditionalTargetFiles;
 		
 		/// <summary>
 		/// Gets a list of additional MSBuild loggers.
 		/// You can register your loggers by putting them into
 		/// "/SharpDevelop/MSBuildEngine/AdditionalLoggers"
 		/// </summary>
-		public static readonly List<IMSBuildAdditionalLogger> AdditionalMSBuildLoggers;
+		public static readonly IList<IMSBuildAdditionalLogger> AdditionalMSBuildLoggers;
 		
 		static MSBuildEngine()
 		{

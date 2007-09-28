@@ -76,6 +76,7 @@
 		      resource   = "Boo.FileIcon"/>
 	</Path>
 	
+	
 	<Path name = "/SharpDevelop/BackendBindings/Templates">
 		<Directory id = "Boo" path = "./Templates" />
 	</Path>

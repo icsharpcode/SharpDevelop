@@ -96,7 +96,7 @@ namespace ICSharpCode.SharpDevelop
 		
 		public static void DeleteToRecycleBin(string fileName)
 		{
-			if (!File.Exists(fileName))
+			if (!File.Exists(fileName) && !Directory.Exists(fileName))
 				throw new FileNotFoundException("File not found.", fileName);
 			SHFILEOPSTRUCT info = new SHFILEOPSTRUCT();
 			info.hwnd = Gui.WorkbenchSingleton.MainForm.Handle;
