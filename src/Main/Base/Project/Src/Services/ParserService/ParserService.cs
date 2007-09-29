@@ -154,7 +154,7 @@ namespace ICSharpCode.SharpDevelop
 		
 		static void LoadSolutionProjectsInternal()
 		{
-			IProgressMonitor progressMonitor = StatusBarService.ProgressMonitor;
+			IProgressMonitor progressMonitor = StatusBarService.CreateProgressMonitor();
 			List<ParseProjectContent> createdContents = new List<ParseProjectContent>();
 			foreach (IProject project in ProjectService.OpenSolution.Projects) {
 				try {
@@ -195,7 +195,7 @@ namespace ICSharpCode.SharpDevelop
 		static void InitAddedProject(object state)
 		{
 			ParseProjectContent newContent = (ParseProjectContent)state;
-			IProgressMonitor progressMonitor = StatusBarService.ProgressMonitor;
+			IProgressMonitor progressMonitor = StatusBarService.CreateProgressMonitor();
 			newContent.Initialize1(progressMonitor);
 			progressMonitor.BeginTask("${res:ICSharpCode.SharpDevelop.Internal.ParserService.Parsing}...", newContent.GetInitializationWorkAmount(), false);
 			newContent.Initialize2(progressMonitor);
@@ -225,7 +225,7 @@ namespace ICSharpCode.SharpDevelop
 		{
 			bool parsing = false;
 			ParseProjectContent job;
-			IProgressMonitor progressMonitor = StatusBarService.ProgressMonitor;
+			IProgressMonitor progressMonitor = StatusBarService.CreateProgressMonitor();
 			
 			while (true) {
 				// get next job

@@ -165,6 +165,13 @@ namespace ICSharpCode.SharpDevelop.BuildWorker
 				requestCancellation = false;
 				hostEventSource = new EventSource();
 			}
+			job.CancelCallback = delegate {
+				lock (this) {
+					if (currentJob == job) {
+						requestCancellation = true;
+					}
+				}
+			};
 			bool success = false;
 			try {
 				if (engine == null) {

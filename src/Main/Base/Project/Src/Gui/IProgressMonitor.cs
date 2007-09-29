@@ -1,9 +1,11 @@
 ﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
+//     <owner name="Daniel Grunwald"/>
 //     <version>$Revision$</version>
 // </file>
+
+using System;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -43,8 +45,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		
 		/// <summary>
-		/// Gets/sets if the task current shows a modal dialog. Set this property to true to make progress dialogs windows
-		/// temporarily invisible while your modal dialog is showing.
+		/// Gets/sets if the task current shows a modal dialog. Set this property to true to make progress
+		/// dialogs windows temporarily invisible while your modal dialog is showing.
 		/// </summary>
 		bool ShowingDialog {
 			get;
@@ -57,6 +59,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 		bool IsCancelled {
 			get;
 		}
+		
+		/// <summary>
+		/// Occurs when the user cancels the operation.
+		/// This event could be raised on any thread.
+		/// </summary>
+		event EventHandler Cancelled;
 	}
 	
 	internal class DummyProgressMonitor : IProgressMonitor
@@ -93,5 +101,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			get { return showingDialog; }
 			set { showingDialog = value; }
 		}
+		
+		public event EventHandler Cancelled { add { } remove { } }
 	}
 }

@@ -21,11 +21,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			InitializeComponent();
 			cancelButton.Text = ResourceService.GetString("Global.CancelButtonText");
 		}
-		
-		void CancelButtonClick(object sender, System.EventArgs e)
-		{
-			cancelButton.Enabled = false;
-		}
 	}
 	
 	/// <summary>
@@ -100,7 +95,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					return;
 				dlg = new AsynchronousWaitDialogForm();
 				dlg.Text = StringParser.Parse(titleName);
-				dlg.cancelButton.Click += delegate { cancelled = true; };
+				dlg.cancelButton.Click += CancelButtonClick;
 				UpdateTask();
 				dlg.CreateControl();
 				IntPtr h = dlg.Handle; // force handle creation
@@ -257,10 +252,24 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
+		void CancelButtonClick(object sender, EventArgs e)
+		{
+			dlg.cancelButton.Enabled = false;
+			if (!cancelled) {
+				cancelled = true;
+				EventHandler eh = Cancelled;
+				if (eh != null) {
+					eh(this, e);
+				}
+			}
+		}
+		
 		public bool IsCancelled {
 			get {
 				return cancelled;
 			}
 		}
+		
+		public event EventHandler Cancelled;
 	}
 }

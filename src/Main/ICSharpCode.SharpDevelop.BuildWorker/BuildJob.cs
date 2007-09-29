@@ -68,5 +68,15 @@ namespace ICSharpCode.SharpDevelop.BuildWorker
 			}
 			return b.ToString();
 		}
+		
+		[NonSerialized]
+		internal Action CancelCallback;
+		
+		public void Cancel()
+		{
+			if (CancelCallback != null) {
+				CancelCallback();
+			}
+		}
 	}
 }

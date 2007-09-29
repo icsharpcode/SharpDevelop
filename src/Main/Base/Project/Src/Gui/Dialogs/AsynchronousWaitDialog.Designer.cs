@@ -68,7 +68,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.cancelButton.TabIndex = 2;
 			this.cancelButton.Text = "button1";
 			this.cancelButton.UseVisualStyleBackColor = true;
-			this.cancelButton.Click += new System.EventHandler(this.CancelButtonClick);
 			// 
 			// AsynchronousWaitDialogForm
 			// 

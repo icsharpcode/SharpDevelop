@@ -1,7 +1,7 @@
 ﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
+//     <owner name="Daniel Grunwald"/>
 //     <version>$Revision$</version>
 // </file>
 
@@ -13,15 +13,15 @@ using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
-	public class SdStatusBar : StatusStrip, IProgressMonitor
+	public class SdStatusBar : StatusStrip
 	{
-		ToolStripProgressBar statusProgressBar     = new ToolStripProgressBar();
-		ToolStripStatusLabel jobNamePanel          = new ToolStripStatusLabel();
+		ToolStripProgressBar statusProgressBar = new ToolStripProgressBar();
+		ToolStripStatusLabel jobNamePanel      = new ToolStripStatusLabel();
 		
-		ToolStripStatusLabel  txtStatusBarPanel    = new ToolStripStatusLabel();
-		ToolStripStatusLabel  cursorStatusBarPanel = new ToolStripStatusLabel();
-		ToolStripStatusLabel  modeStatusBarPanel   = new ToolStripStatusLabel();
-		ToolStripStatusLabel springLabel = new ToolStripStatusLabel();
+		ToolStripStatusLabel txtStatusBarPanel    = new ToolStripStatusLabel();
+		ToolStripStatusLabel cursorStatusBarPanel = new ToolStripStatusLabel();
+		ToolStripStatusLabel modeStatusBarPanel   = new ToolStripStatusLabel();
+		ToolStripStatusLabel springLabel          = new ToolStripStatusLabel();
 		
 		public ToolStripStatusLabel  CursorStatusBarPanel {
 			get {
@@ -38,27 +38,27 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public SdStatusBar()
 		{
 			
-//			txtStatusBarPanel.Width = 500;
-//			txtStatusBarPanel.AutoSize = StatusBarPanelAutoSize.Spring;
-//			Panels.Add(txtStatusBarPanel);
-//	//		manager.Add(new StatusBarContributionItem("TextPanel", txtStatusBarPanel));
-//
-//			statusProgressBar.Width  = 200;
-//			statusProgressBar.Height = 14;
-//			statusProgressBar.Location = new Point(160, 6);
-//			statusProgressBar.Minimum = 0;
-//			statusProgressBar.Visible = false;
-//			Controls.Add(statusProgressBar);
-//
-//			cursorStatusBarPanel.Width = 200;
-//			cursorStatusBarPanel.AutoSize = StatusBarPanelAutoSize.None;
-//			cursorStatusBarPanel.Alignment = HorizontalAlignment.Left;
-//			Panels.Add(cursorStatusBarPanel);
-//
-//			modeStatusBarPanel.Width = 44;
-//			modeStatusBarPanel.AutoSize = StatusBarPanelAutoSize.None;
-//			modeStatusBarPanel.Alignment = HorizontalAlignment.Right;
-//			Panels.Add(modeStatusBarPanel);
+			//			txtStatusBarPanel.Width = 500;
+			//			txtStatusBarPanel.AutoSize = StatusBarPanelAutoSize.Spring;
+			//			Panels.Add(txtStatusBarPanel);
+			//	//		manager.Add(new StatusBarContributionItem("TextPanel", txtStatusBarPanel));
+			//
+			//			statusProgressBar.Width  = 200;
+			//			statusProgressBar.Height = 14;
+			//			statusProgressBar.Location = new Point(160, 6);
+			//			statusProgressBar.Minimum = 0;
+			//			statusProgressBar.Visible = false;
+			//			Controls.Add(statusProgressBar);
+			//
+			//			cursorStatusBarPanel.Width = 200;
+			//			cursorStatusBarPanel.AutoSize = StatusBarPanelAutoSize.None;
+			//			cursorStatusBarPanel.Alignment = HorizontalAlignment.Left;
+			//			Panels.Add(cursorStatusBarPanel);
+			//
+			//			modeStatusBarPanel.Width = 44;
+			//			modeStatusBarPanel.AutoSize = StatusBarPanelAutoSize.None;
+			//			modeStatusBarPanel.Alignment = HorizontalAlignment.Right;
+			//			Panels.Add(modeStatusBarPanel);
 			
 			springLabel.Spring = true;
 			cursorStatusBarPanel.AutoSize = false;
@@ -71,12 +71,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			Items.AddRange(new ToolStripItem[] { txtStatusBarPanel, springLabel, jobNamePanel, statusProgressBar, cursorStatusBarPanel, modeStatusBarPanel });
 		}
 		
-		protected override void OnHandleCreated(EventArgs e)
-		{
-			base.OnHandleCreated(e);
-			UpdateText();
-		}
-		
 		public void ShowErrorMessage(string message)
 		{
 			SetMessage("Error : " + message);
@@ -87,8 +81,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			SetMessage(image, "Error : " + message);
 		}
 		
-		string currentMessage;
-		
 		public void SetMessage(string message)
 		{
 			SetMessage(message, false);
@@ -96,22 +88,20 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public void SetMessage(string message, bool highlighted)
 		{
-			if (highlighted) {
-				txtStatusBarPanel.BackColor = SystemColors.Highlight;
-				txtStatusBarPanel.ForeColor = Color.White;
-			} else if (txtStatusBarPanel.BackColor == SystemColors.Highlight) {
-				txtStatusBarPanel.BackColor = SystemColors.Control;
-				txtStatusBarPanel.ForeColor = SystemColors.ControlText;
-			}
-
-			currentMessage = message;
-			if (this.IsHandleCreated)
-				BeginInvoke(new MethodInvoker(UpdateText));
-		}
-		
-		void UpdateText()
-		{
-			txtStatusBarPanel.Text = currentMessage;
+			Action setMessageAction = delegate {
+				if (highlighted) {
+					txtStatusBarPanel.BackColor = SystemColors.Highlight;
+					txtStatusBarPanel.ForeColor = Color.White;
+				} else if (txtStatusBarPanel.BackColor == SystemColors.Highlight) {
+					txtStatusBarPanel.BackColor = SystemColors.Control;
+					txtStatusBarPanel.ForeColor = SystemColors.ControlText;
+				}
+				txtStatusBarPanel.Text = message;
+			};
+			if (WorkbenchSingleton.InvokeRequired)
+				WorkbenchSingleton.SafeThreadAsyncCall(setMessageAction);
+			else
+				setMessageAction();
 		}
 		
 		public void SetMessage(Image image, string message)
@@ -119,90 +109,56 @@ namespace ICSharpCode.SharpDevelop.Gui
 			SetMessage(message);
 		}
 		
-		// Progress Monitor implementation
-		int totalWork;
+		// Displaying progress
 		
-		public void BeginTask(string name, int totalWork, bool allowCancel)
+		bool statusProgressBarIsVisible;
+		string currentTaskName;
+		
+		public void DisplayProgress(string taskName, int workDone, int totalWork)
 		{
-			taskName = name;
-			this.totalWork = totalWork;
-			this.workDone = 0;
-			if (this.IsHandleCreated) {
-				this.BeginInvoke(new MethodInvoker(MakeVisible));
-			}
+			if (taskName == null)
+				taskName = "";
+			if (totalWork < 0)
+				totalWork = 0;
+			if (workDone < 0)
+				workDone = 0;
+			if (workDone > totalWork)
+				workDone = totalWork;
+			
+			WorkbenchSingleton.SafeThreadAsyncCall(
+				delegate {
+					if (!statusProgressBarIsVisible) {
+						statusProgressBar.Visible = true;
+						statusProgressBarIsVisible = true;
+					}
+					
+					if (totalWork == 0) {
+						statusProgressBar.Style = ProgressBarStyle.Marquee;
+					} else {
+						statusProgressBar.Style = ProgressBarStyle.Continuous;
+						if (statusProgressBar.Maximum != totalWork) {
+							if (statusProgressBar.Value > totalWork)
+								statusProgressBar.Value = 0;
+							statusProgressBar.Maximum = totalWork;
+						}
+						statusProgressBar.Value = workDone;
+					}
+					
+					if (currentTaskName != taskName) {
+						currentTaskName = taskName;
+						jobNamePanel.Text = StringParser.Parse(taskName);
+					}
+				});
 		}
 		
-		void MakeVisible()
+		public void HideProgress()
 		{
-			statusProgressBar.Value = 0;
-			statusProgressBar.Maximum = totalWork;
-			SetTaskName();
-			jobNamePanel.Visible = true;
-			statusProgressBar.Visible = true;
-		}
-		
-		void MakeInvisible()
-		{
-			// Setting jobNamePanel.Visible = false will also hide the other labels to the right (WinForms Bug?)
-			jobNamePanel.Text = "";
-			statusProgressBar.Visible = false;
-		}
-		
-		int workDone;
-		
-		public int WorkDone {
-			get {
-				return workDone;
-			}
-			set {
-				if (workDone == value) return;
-				workDone = value;
-				this.BeginInvoke(new MethodInvoker(SetWorkDone));
-			}
-		}
-		
-		void SetWorkDone()
-		{
-			if (workDone < statusProgressBar.Maximum) {
-				statusProgressBar.Value = workDone;
-			}
-		}
-		
-		public void Done()
-		{
-			taskName = null;
-			if (this.IsHandleCreated) {
-				this.BeginInvoke(new MethodInvoker(MakeInvisible));
-			}
-		}
-		
-		string taskName;
-		
-		public string TaskName {
-			get {
-				return taskName;
-			}
-			set {
-				if (taskName == value) return;
-				taskName = value;
-				this.BeginInvoke(new MethodInvoker(SetTaskName));
-			}
-		}
-		
-		void SetTaskName()
-		{
-			jobNamePanel.Text = StringParser.Parse(taskName);
-		}
-		
-		bool showingDialog;
-		
-		public bool ShowingDialog {
-			get { return showingDialog; }
-			set { showingDialog = value; }
-		}
-		
-		public bool IsCancelled {
-			get { return false; }
+			WorkbenchSingleton.SafeThreadAsyncCall(
+				delegate {
+					statusProgressBarIsVisible = false;
+					statusProgressBar.Visible = false;
+					jobNamePanel.Text = currentTaskName = "";
+				});
 		}
 	}
 }

@@ -9,6 +9,7 @@ using System;
 using System.Collections;
 using System.Collections.ObjectModel;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ICSharpCode.SharpDevelop
 {
@@ -32,6 +33,11 @@ namespace ICSharpCode.SharpDevelop
 		public static ReadOnlyCollection<T> AsReadOnly<T>(this T[] arr)
 		{
 			return Array.AsReadOnly(arr);
+		}
+		
+		public static string Join(this IEnumerable<string> input, string separator)
+		{
+			return string.Join(separator, input.ToArray());
 		}
 	}
 }

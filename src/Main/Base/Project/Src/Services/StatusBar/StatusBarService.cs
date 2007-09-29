@@ -1,11 +1,12 @@
 ﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
+//     <owner name="Daniel Grunwald"/>
 //     <version>$Revision$</version>
 // </file>
 
 using System;
+using System.Linq;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -41,19 +42,15 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
-		public static IProgressMonitor ProgressMonitor {
-			get { 
-				System.Diagnostics.Debug.Assert(statusBar != null);
-				return statusBar;
-			}
-		}
-		
 		public static void SetCaretPosition(int x, int y, int charOffset)
 		{
-			statusBar.CursorStatusBarPanel.Text = StringParser.Parse("${res:StatusBarService.CursorStatusBarPanelText}", 
-			                                                                new string[,] { {"Line", String.Format("{0,-10}", y + 1)}, 
-			                                                                                {"Column", String.Format("{0,-5}", x + 1)}, 
-			                                                                                {"Character", String.Format("{0,-5}", charOffset + 1)}});
+			statusBar.CursorStatusBarPanel.Text = StringParser.Parse(
+				"${res:StatusBarService.CursorStatusBarPanelText}",
+				new string[,] {
+					{"Line", String.Format("{0,-10}", y + 1)},
+					{"Column", String.Format("{0,-5}", x + 1)},
+					{"Character", String.Format("{0,-5}", charOffset + 1)}
+				});
 		}
 		
 		public static void SetInsertMode(bool insertMode)
@@ -102,7 +99,7 @@ namespace ICSharpCode.SharpDevelop
 		public static void Update()
 		{
 			System.Diagnostics.Debug.Assert(statusBar != null);
-	/*		statusBar.Panels.Clear();
+			/*		statusBar.Panels.Clear();
 			statusBar.Controls.Clear();
 			
 			foreach (StatusBarContributionItem item in Items) {
@@ -115,5 +112,92 @@ namespace ICSharpCode.SharpDevelop
 				}
 			}*/
 		}
+		
+		#region Progress Monitor
+		static HashSet<StatusBarProgressMonitor> activeProgressMonitors = new HashSet<StatusBarProgressMonitor>();
+		static StatusBarProgressMonitor currentProgressMonitor;
+		
+		public static IProgressMonitor CreateProgressMonitor()
+		{
+			System.Diagnostics.Debug.Assert(statusBar != null);
+			return new StatusBarProgressMonitor();
+		}
+		
+		sealed class StatusBarProgressMonitor : IProgressMonitor
+		{
+			int workDone, totalWork;
+			
+			public int WorkDone {
+				get { return workDone; }
+				set {
+					if (workDone == value)
+						return;
+					workDone = value;
+					lock (activeProgressMonitors) {
+						if (currentProgressMonitor == this) {
+							UpdateDisplay();
+						}
+					}
+				}
+			}
+			
+			void UpdateDisplay()
+			{
+				statusBar.DisplayProgress(taskName, workDone, totalWork);
+			}
+			
+			string taskName;
+			
+			public string TaskName {
+				get { return taskName; }
+				set {
+					if (taskName == value)
+						return;
+					taskName = value;
+					lock (activeProgressMonitors) {
+						if (currentProgressMonitor == this) {
+							UpdateDisplay();
+						}
+					}
+				}
+			}
+			
+			public bool ShowingDialog { get; set; }
+			
+			public bool IsCancelled {
+				get { return false; }
+			}
+			
+			public void BeginTask(string name, int totalWork, bool allowCancel)
+			{
+				lock (activeProgressMonitors) {
+					activeProgressMonitors.Add(this);
+					currentProgressMonitor = this;
+					this.taskName = name;
+					this.workDone = 0;
+					this.totalWork = totalWork;
+					UpdateDisplay();
+				}
+			}
+			
+			public void Done()
+			{
+				lock (activeProgressMonitors) {
+					activeProgressMonitors.Remove(this);
+					if (currentProgressMonitor == this) {
+						if (activeProgressMonitors.Count > 0) {
+							currentProgressMonitor = activeProgressMonitors.First();
+							currentProgressMonitor.UpdateDisplay();
+						} else {
+							currentProgressMonitor = null;
+							statusBar.HideProgress();
+						}
+					}
+				}
+			}
+			
+			public event EventHandler Cancelled { add { } remove { } }
+		}
+		#endregion
 	}
 }

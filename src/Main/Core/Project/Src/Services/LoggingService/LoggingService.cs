@@ -7,6 +7,7 @@
 
 using System;
 using System.IO;
+using System.Diagnostics;
 using log4net;
 using log4net.Config;
 
