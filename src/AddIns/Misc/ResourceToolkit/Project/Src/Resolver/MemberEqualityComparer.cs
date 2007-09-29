@@ -22,7 +22,7 @@ namespace Hornung.ResourceToolkit.Resolver
 			if (x == null || y == null) {
 				return false;
 			}
-			if (x.Region.CompareTo(y.Region) != 0) {
+			if (x.Region != y.Region) {
 				return false;
 			}
 			IComparer<string> nameComparer;
@@ -41,10 +41,7 @@ namespace Hornung.ResourceToolkit.Resolver
 			if (obj == null) {
 				return 0;
 			}
-			return obj.Region.BeginLine ^
-				obj.Region.BeginColumn ^
-				obj.Region.EndLine ^
-				obj.Region.EndColumn ^
+			return obj.Region.GetHashCode() ^
 				obj.FullyQualifiedName.GetHashCode();
 		}
 	}

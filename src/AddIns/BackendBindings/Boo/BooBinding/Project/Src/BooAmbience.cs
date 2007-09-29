@@ -120,7 +120,7 @@ namespace Grunwald.BooBinding
 		{
 			string ret = "";
 			
-			if (IncludeHTMLMarkup) {
+			if (IncludeHtmlMarkup) {
 				ret += "<i>";
 			}
 			if (decoration.IsStatic) {
@@ -132,7 +132,7 @@ namespace Grunwald.BooBinding
 			} else if (decoration.IsNew) {
 				ret += "new ";
 			}
-			if (IncludeHTMLMarkup) {
+			if (IncludeHtmlMarkup) {
 				ret += "</i>";
 			}
 			return ret;
@@ -145,7 +145,7 @@ namespace Grunwald.BooBinding
 			
 			builder.Append(ConvertAccessibility(c.Modifiers));
 			
-			if (IncludeHTMLMarkup) {
+			if (IncludeHtmlMarkup) {
 				builder.Append("<i>");
 			}
 			
@@ -166,7 +166,7 @@ namespace Grunwald.BooBinding
 				}
 			}
 			
-			if (IncludeHTMLMarkup) {
+			if (IncludeHtmlMarkup) {
 				builder.Append("</i>");
 			}
 			
@@ -192,7 +192,7 @@ namespace Grunwald.BooBinding
 				builder.Append(' ');
 			}
 			
-			if (IncludeHTMLMarkup) {
+			if (IncludeHtmlMarkup) {
 				builder.Append("<b>");
 			}
 			
@@ -202,7 +202,7 @@ namespace Grunwald.BooBinding
 				builder.Append(c.Name);
 			}
 			
-			if (IncludeHTMLMarkup) {
+			if (IncludeHtmlMarkup) {
 				builder.Append("</b>");
 			}
 			if (ShowTypeParameterList && c.TypeParameters.Count > 0) {
@@ -216,18 +216,18 @@ namespace Grunwald.BooBinding
 			
 			if (ShowParameterList && c.ClassType == ClassType.Delegate) {
 				builder.Append(" (");
-				if (IncludeHTMLMarkup) builder.Append("<br>");
+				if (IncludeHtmlMarkup) builder.Append("<br>");
 				
 				foreach(IMethod m in c.Methods) {
 					if (m.Name != "Invoke") continue;
 					
 					for (int i = 0; i < m.Parameters.Count; ++i) {
-						if (IncludeHTMLMarkup) builder.Append("&nbsp;&nbsp;&nbsp;");
+						if (IncludeHtmlMarkup) builder.Append("&nbsp;&nbsp;&nbsp;");
 						
 						builder.Append(Convert(m.Parameters[i]));
 						if (i + 1 < m.Parameters.Count) builder.Append(", ");
 						
-						if (IncludeHTMLMarkup) builder.Append("<br>");
+						if (IncludeHtmlMarkup) builder.Append("<br>");
 					}
 				}
 				builder.Append(')');
@@ -271,7 +271,7 @@ namespace Grunwald.BooBinding
 			
 			builder.Append(ConvertAccessibility(field.Modifiers));
 			
-			if (IncludeHTMLMarkup) {
+			if (IncludeHtmlMarkup) {
 				builder.Append("<i>");
 			}
 			
@@ -287,11 +287,11 @@ namespace Grunwald.BooBinding
 				}
 			}
 			
-			if (IncludeHTMLMarkup) {
+			if (IncludeHtmlMarkup) {
 				builder.Append("</i>");
 			}
 			
-			if (IncludeHTMLMarkup) {
+			if (IncludeHtmlMarkup) {
 				builder.Append("<b>");
 			}
 			
@@ -301,7 +301,7 @@ namespace Grunwald.BooBinding
 				builder.Append(field.Name);
 			}
 			
-			if (IncludeHTMLMarkup) {
+			if (IncludeHtmlMarkup) {
 				builder.Append("</b>");
 			}
 			
@@ -334,7 +334,7 @@ namespace Grunwald.BooBinding
 				}
 				builder.Append("self");
 			} else {
-				if (IncludeHTMLMarkup) {
+				if (IncludeHtmlMarkup) {
 					builder.Append("<b>");
 				}
 				if (UseFullyQualifiedMemberNames) {
@@ -342,22 +342,22 @@ namespace Grunwald.BooBinding
 				} else {
 					builder.Append(property.Name);
 				}
-				if (IncludeHTMLMarkup) {
+				if (IncludeHtmlMarkup) {
 					builder.Append("</b>");
 				}
 			}
 			
 			if (ShowParameterList && property.Parameters.Count > 0) {
 				builder.Append('[');
-				if (IncludeHTMLMarkup) builder.Append("<br>");
+				if (IncludeHtmlMarkup) builder.Append("<br>");
 				
 				for (int i = 0; i < property.Parameters.Count; ++i) {
-					if (IncludeHTMLMarkup) builder.Append("&nbsp;&nbsp;&nbsp;");
+					if (IncludeHtmlMarkup) builder.Append("&nbsp;&nbsp;&nbsp;");
 					builder.Append(Convert(property.Parameters[i]));
 					if (i + 1 < property.Parameters.Count) {
 						builder.Append(", ");
 					}
-					if (IncludeHTMLMarkup) builder.Append("<br>");
+					if (IncludeHtmlMarkup) builder.Append("<br>");
 				}
 				
 				builder.Append(']');
@@ -396,7 +396,7 @@ namespace Grunwald.BooBinding
 				builder.Append("event ");
 			}
 			
-			if (IncludeHTMLMarkup) {
+			if (IncludeHtmlMarkup) {
 				builder.Append("<b>");
 			}
 			
@@ -406,7 +406,7 @@ namespace Grunwald.BooBinding
 				builder.Append(e.Name);
 			}
 			
-			if (IncludeHTMLMarkup) {
+			if (IncludeHtmlMarkup) {
 				builder.Append("</b>");
 			}
 			
@@ -435,7 +435,7 @@ namespace Grunwald.BooBinding
 				builder.Append("def ");
 			}
 			
-			if (IncludeHTMLMarkup) {
+			if (IncludeHtmlMarkup) {
 				builder.Append("<b>");
 			}
 			
@@ -449,7 +449,7 @@ namespace Grunwald.BooBinding
 				}
 			}
 			
-			if (IncludeHTMLMarkup) {
+			if (IncludeHtmlMarkup) {
 				builder.Append("</b>");
 			}
 			
@@ -464,15 +464,15 @@ namespace Grunwald.BooBinding
 			
 			if (ShowParameterList) {
 				builder.Append("(");
-				if (IncludeHTMLMarkup) builder.Append("<br>");
+				if (IncludeHtmlMarkup) builder.Append("<br>");
 				
 				for (int i = 0; i < m.Parameters.Count; ++i) {
-					if (IncludeHTMLMarkup) builder.Append("&nbsp;&nbsp;&nbsp;");
+					if (IncludeHtmlMarkup) builder.Append("&nbsp;&nbsp;&nbsp;");
 					builder.Append(Convert(m.Parameters[i]));
 					if (i + 1 < m.Parameters.Count) {
 						builder.Append(", ");
 					}
-					if (IncludeHTMLMarkup) builder.Append("<br>");
+					if (IncludeHtmlMarkup) builder.Append("<br>");
 				}
 				
 				builder.Append(')');
@@ -539,7 +539,7 @@ namespace Grunwald.BooBinding
 		{
 			StringBuilder builder = new StringBuilder();
 			
-			if (IncludeHTMLMarkup) {
+			if (IncludeHtmlMarkup) {
 				builder.Append("<i>");
 			}
 			
@@ -551,7 +551,7 @@ namespace Grunwald.BooBinding
 				builder.Append("*");
 			}
 			
-			if (IncludeHTMLMarkup) {
+			if (IncludeHtmlMarkup) {
 				builder.Append("</i>");
 			}
 			

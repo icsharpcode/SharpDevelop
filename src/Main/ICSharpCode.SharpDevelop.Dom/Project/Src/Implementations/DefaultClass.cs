@@ -191,10 +191,17 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public override string DotNetName {
 			get {
-				if (typeParameters == null || typeParameters.Count == 0) {
-					return FullyQualifiedName;
+				string fullName;
+				if (this.DeclaringType != null) {
+					fullName = this.DeclaringType.DotNetName + "+" + this.Name;
 				} else {
-					return FullyQualifiedName + "`" + typeParameters.Count;
+					fullName = this.FullyQualifiedName;
+				}
+				IList<ITypeParameter> typeParameters = this.TypeParameters;
+				if (typeParameters == null || typeParameters.Count == 0) {
+					return fullName;
+				} else {
+					return fullName + "`" + typeParameters.Count;
 				}
 			}
 		}

@@ -45,7 +45,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ReflectionLayer
 				}
 				int i = 0;
 				foreach (Type g in methodBase.GetGenericArguments()) {
-					declaringType.AddConstraintsFromType(this.TypeParameters[i++], g);
+					ReflectionClass.AddConstraintsFromType(this.TypeParameters[i++], g);
 				}
 			}
 			

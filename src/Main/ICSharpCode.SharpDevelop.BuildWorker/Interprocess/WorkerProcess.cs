@@ -9,6 +9,7 @@ using System;
 using System.Diagnostics;
 using System.Reflection;
 using System.Net;
+using System.Globalization;
 using System.Net.Sockets;
 using System.IO;
 using System.Runtime.Serialization.Formatters;
@@ -21,14 +22,15 @@ namespace ICSharpCode.SharpDevelop.BuildWorker.Interprocess
 	/// <summary>
 	/// Manages a worker process that communicates with the host using a local TCP connection.
 	/// </summary>
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable")]
 	public sealed class WorkerProcess
 	{
-		object hostObject;
+		readonly object hostObject;
 		
 		public WorkerProcess(IHostObject hostObject)
 		{
 			if (hostObject == null)
-				throw new ArgumentException("hostObject");
+				throw new ArgumentNullException("hostObject");
 			this.hostObject = hostObject;
 		}
 		
@@ -41,9 +43,12 @@ namespace ICSharpCode.SharpDevelop.BuildWorker.Interprocess
 		
 		public void Start(ProcessStartInfo info)
 		{
+			if (info == null)
+				throw new ArgumentNullException("info");
+			
 			listener = new TcpListener(IPAddress.Loopback, 0);
 			listener.Start();
-			string argument = ((IPEndPoint)listener.LocalEndpoint).Port.ToString();
+			string argument = ((IPEndPoint)listener.LocalEndpoint).Port.ToString(CultureInfo.InvariantCulture);
 			
 			string oldArguments = info.Arguments;
 			info.Arguments += " " + argument;
@@ -217,7 +222,7 @@ namespace ICSharpCode.SharpDevelop.BuildWorker.Interprocess
 			{
 				target.GetType().InvokeMember(MethodName,
 				                              BindingFlags.InvokeMethod | BindingFlags.Public | BindingFlags.Instance,
-				                              null, target, Arguments);
+				                              null, target, Arguments, CultureInfo.InvariantCulture);
 			}
 		}
 	}

@@ -31,23 +31,8 @@ namespace ICSharpCode.CodeAnalysis
 				this.engineWorker = engineWorker;
 			}
 			
-			public LoggerVerbosity Verbosity {
-				get {
-					throw new NotImplementedException();
-				}
-				set {
-					throw new NotImplementedException();
-				}
-			}
-			
-			public string Parameters {
-				get {
-					throw new NotImplementedException();
-				}
-				set {
-					throw new NotImplementedException();
-				}
-			}
+			public LoggerVerbosity Verbosity { get; set; }
+			public string Parameters { get; set; }
 			
 			IEventSource eventSource;
 			
@@ -84,10 +69,19 @@ namespace ICSharpCode.CodeAnalysis
 			                 string message, bool isWarning,
 			                 string category, string checkId, string subcategory)
 			{
+				LoggingService.Debug("Got " + (isWarning ? "warning" : "error") + ":\n"
+				                     + "  file: " + file + "\n"
+				                     + "  line: " + lineNumber + ", col: " + columnNumber + "\n"
+				                     + "  message: " + message + "\n"
+				                     + "  category: " + category + "\n"
+				                     + "  checkId: " + checkId + "\n"
+				                     + "  subcategory: " + subcategory);
+				
 				string[] moreData = (subcategory ?? "").Split('|');
 				BuildError err = engineWorker.CurrentErrorOrWarning;
 				if (FileUtility.IsValidPath(file) &&
-				    Path.GetFileName(file) == "SharpDevelop.CodeAnalysis.targets") {
+				    Path.GetFileName(file) == "SharpDevelop.CodeAnalysis.targets")
+				{
 					err.FileName = null;
 				}
 				IProject project = ProjectService.GetProject(engineWorker.CurrentProjectFile);

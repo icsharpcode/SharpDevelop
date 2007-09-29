@@ -68,8 +68,12 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 			}
 		}
 		
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1725:ParameterNamesShouldMatchBaseDeclaration", MessageId = "0#")]
 		public ExpressionResult FindFullExpression(string inText, int offset)
 		{
+			if (inText == null)
+				throw new ArgumentNullException("inText");
+			
 			string expressionBeforeOffset = FindExpressionInternal(inText, offset + 1);
 			if (expressionBeforeOffset == null || expressionBeforeOffset.Length == 0)
 				return CreateResult(null);
@@ -101,7 +105,7 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 		}
 		
 		// Like VBNetFormattingStrategy.SearchBracketForward, but operates on a string.
-		private int SearchBracketForward(string text, int offset, char openBracket, char closingBracket)
+		static int SearchBracketForward(string text, int offset, char openBracket, char closingBracket)
 		{
 			bool inString  = false;
 			bool inComment = false;
@@ -136,6 +140,9 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 		/// </example>
 		public string RemoveLastPart(string expression)
 		{
+			if (expression == null)
+				throw new ArgumentNullException("expression");
+			
 			text = expression;
 			offset = text.Length - 1;
 			ReadNextToken();
@@ -148,6 +155,9 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 		int initialOffset;
 		public string FilterComments(string text, ref int offset)
 		{
+			if (text == null)
+				throw new ArgumentNullException("text");
+			
 			if (text.Length <= offset)
 				return null;
 			this.initialOffset = offset;
@@ -249,25 +259,6 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 			}
 			return false;
 		}
-		
-		bool ReadMultiLineComment(string text, ref int curOffset, ref int offset)
-		{
-			while (curOffset <= initialOffset)
-			{
-				char ch = text[curOffset++];
-				--offset;
-				if (ch == '*')
-				{
-					if (curOffset < text.Length && text[curOffset] == '/')
-					{
-						++curOffset;
-						--offset;
-						return true;
-					}
-				}
-			}
-			return false;
-		}
 		#endregion
 		
 		#region mini backward lexer
@@ -292,30 +283,22 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 			return '\0';
 		}
 		
-		void UnGet()
-		{
-			++offset;
-		}
+//		void UnGet()
+//		{
+//			++offset;
+//		}
 		
 		// tokens for our lexer
-		static int Err = 0;
-		static int Dot = 1;
-		static int StrLit = 2;
-		static int Ident = 3;
-		static int New = 4;
-		//		static int Bracket = 5;
-		static int Parent = 6;
-		static int Curly = 7;
-		static int Using = 8;
+		const int Err = 0;
+		const int Dot = 1;
+		const int StrLit = 2;
+		const int Ident = 3;
+		const int New = 4;
+		//		const int Bracket = 5;
+		const int Parent = 6;
+		const int Curly = 7;
+		const int Using = 8;
 		int curTokenType;
-		
-		readonly static string[] tokenStateName = new string[] {
-			"Err", "Dot", "StrLit", "Ident", "New", "Bracket", "Paren", "Curly", "Using"
-		};
-		string GetTokenName(int state)
-		{
-			return tokenStateName[state];
-		}
 		
 		string lastIdentifier;
 		
@@ -340,19 +323,19 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 			switch (ch)
 			{
 				case '}':
-					if (ReadBracket('{', '}'))
+					if (ReadBracket('{'))
 					{
 						curTokenType = Curly;
 					}
 					break;
 				case ')':
-					if (ReadBracket('(', ')'))
+					if (ReadBracket('('))
 					{
 						curTokenType = Parent;
 					}
 					break;
 				case ']':
-					if (ReadBracket('[', ']'))
+					if (ReadBracket('['))
 					{
 						curTokenType = Ident;
 					}
@@ -371,20 +354,14 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 					if (IsIdentifierPart(ch))
 					{
 						string ident = ReadIdentifier(ch);
-						if (ident != null)
-						{
-							switch (ident.ToLowerInvariant())
-							{
-								case "new":
-									curTokenType = New;
-									break;
-								case "imports":
-									curTokenType = Using;
-									break;
-								default:
-									lastIdentifier = ident;
-									curTokenType = Ident;
-									break;
+						if (ident != null) {
+							if (string.Equals(ident, "new", StringComparison.InvariantCultureIgnoreCase)) {
+								curTokenType = New;
+							} else if (string.Equals(ident, "imports", StringComparison.InvariantCultureIgnoreCase)) {
+								curTokenType = Using;
+							} else {
+								lastIdentifier = ident;
+								curTokenType = Ident;
 							}
 						}
 					}
@@ -412,7 +389,7 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 			}
 		}
 		
-		bool ReadBracket(char openBracket, char closingBracket)
+		bool ReadBracket(char openBracket)
 		{
 			int curlyBraceLevel = 0;
 			int squareBracketLevel = 0;
@@ -472,45 +449,29 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 			return identifier;
 		}
 		
-		bool IsIdentifierPart(char ch)
+		static bool IsIdentifierPart(char ch)
 		{
 			return Char.IsLetterOrDigit(ch) || ch == '_';
 		}
 		#endregion
 		
 		#region finite state machine
-		readonly static int ERROR = 0;
-		readonly static int START = 1;
-		readonly static int DOT = 2;
-		readonly static int MORE = 3;
-		readonly static int CURLY = 4;
-		readonly static int CURLY2 = 5;
-		readonly static int CURLY3 = 6;
+		const int ERROR = 0;
+		const int START = 1;
+		const int DOT = 2;
+		const int MORE = 3;
+		const int CURLY = 4;
+		const int CURLY2 = 5;
+		const int CURLY3 = 6;
 		
-		readonly static int ACCEPT = 7;
-		readonly static int ACCEPTNOMORE = 8;
-		readonly static int ACCEPT2 = 9;
+		const int ACCEPT = 7;
+		const int ACCEPTNOMORE = 8;
+		const int ACCEPT2 = 9;
 		
-		readonly static string[] stateName = new string[] {
-			"ERROR",
-			"START",
-			"DOT",
-			"MORE",
-			"CURLY",
-			"CURLY2",
-			"CURLY3",
-			"ACCEPT",
-			"ACCEPTNOMORE",
-			"ACCEPT2"
-		};
+		int state;
+		int lastAccept;
 		
-		string GetStateName(int state)
-		{
-			return stateName[state];
-		}
-		
-		int state = 0;
-		int lastAccept = 0;
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1814:PreferJaggedArraysOverMultidimensional", MessageId = "Member")]
 		static int[,] stateTable = new int[,] {
 			//                   Err,     Dot,     Str,      ID,         New,     Brk,     Par,     Cur,   Using
 			/*ERROR*/        { ERROR,   ERROR,   ERROR,   ERROR,        ERROR,  ERROR,   ERROR,   ERROR,   ERROR},

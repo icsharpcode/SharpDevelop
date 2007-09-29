@@ -174,7 +174,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ReflectionLayer
 			InitMembers(type);
 		}
 		
-		internal void AddConstraintsFromType(ITypeParameter tp, Type type)
+		internal static void AddConstraintsFromType(ITypeParameter tp, Type type)
 		{
 			foreach (Type constraint in type.GetGenericParameterConstraints()) {
 				if (tp.Method != null) {

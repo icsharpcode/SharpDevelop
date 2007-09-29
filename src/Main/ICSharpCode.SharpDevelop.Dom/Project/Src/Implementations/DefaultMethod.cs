@@ -31,6 +31,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// </summary>
 		public static Constructor CreateDefault(IClass c)
 		{
+			if (c == null)
+				throw new ArgumentNullException("c");
+			
 			Constructor con = new Constructor(ModifierEnum.Public, c.Region, c.Region, c);
 			con.Documentation = "Default constructor of " + c.Name;
 			return con;

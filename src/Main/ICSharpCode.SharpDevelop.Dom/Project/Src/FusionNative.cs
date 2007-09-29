@@ -192,11 +192,11 @@ namespace MSjogren.GacTool.FusionNative
 		
 	}
 	
-	internal class Fusion
+	internal static class Fusion
 	{
 		[DllImport("fusion.dll", CharSet=CharSet.Auto)]
 		internal static extern int CreateAssemblyCache(out IAssemblyCache ppAsmCache,
-		                                             uint dwReserved);
+		                                               uint dwReserved);
 		
 		
 		//
@@ -206,20 +206,20 @@ namespace MSjogren.GacTool.FusionNative
 		//
 		[DllImport("fusion.dll", CharSet=CharSet.Auto)]
 		internal static extern int CreateAssemblyEnum(out IAssemblyEnum ppEnum,
-		                                            IApplicationContext pAppCtx,
-		                                            IAssemblyName pName,
-		                                            uint dwFlags,
-		                                            int pvReserved);
+		                                              IApplicationContext pAppCtx,
+		                                              IAssemblyName pName,
+		                                              uint dwFlags,
+		                                              int pvReserved);
 		
 		[DllImport("fusion.dll", CharSet=CharSet.Auto)]
 		internal static extern int CreateAssemblyNameObject(out IAssemblyName ppName,
-		                                                  string szAssemblyName,
-		                                                  uint dwFlags,
-		                                                  int pvReserved);
+		                                                    string szAssemblyName,
+		                                                    uint dwFlags,
+		                                                    int pvReserved);
 		
 		[DllImport("fusion.dll", CharSet=CharSet.Auto)]
 		internal static extern int CreateHistoryReader(string wzFilePath,
-		                                             out IHistoryReader ppHistReader);
+		                                               out IHistoryReader ppHistReader);
 		
 		// Retrieves the path of the ApplicationHistory folder, typically
 		// Documents and Settings\<user>\Local Settings\Application Data\ApplicationHistory
@@ -230,7 +230,7 @@ namespace MSjogren.GacTool.FusionNative
 		//
 		[DllImport("fusion.dll", CharSet=CharSet.Unicode)]
 		internal static extern int GetHistoryFileDirectory([MarshalAs(UnmanagedType.LPWStr)] StringBuilder wzDir,
-		                                                 ref uint pdwSize);
+		                                                   ref uint pdwSize);
 		
 		[DllImport("fusion.dll")]
 		internal static extern int NukeDownloadedCache();
@@ -238,12 +238,12 @@ namespace MSjogren.GacTool.FusionNative
 		// ?????
 		[DllImport("fusion.dll")]
 		internal static extern int CreateApplicationContext(out IApplicationContext ppAppContext,
-		                                                  uint dw);
+		                                                    uint dw);
 		
 		[DllImport("fusion.dll")]
 		internal static extern int GetCachePath(uint flags,
-		                                      [MarshalAs(UnmanagedType.LPWStr)] StringBuilder wzDir,
-		                                      ref uint pdwSize);
+		                                        [MarshalAs(UnmanagedType.LPWStr)] StringBuilder wzDir,
+		                                        ref uint pdwSize);
 		
 		public static string GetGacPath()
 		{
@@ -267,9 +267,9 @@ namespace MSjogren.GacTool.FusionNative
 		//
 		[DllImport("shfusion.dll", CharSet=CharSet.Unicode)]
 		internal static extern uint PolicyManager(IntPtr hWndParent,
-		                                        string pwzFullyQualifiedAppPath,
-		                                        string pwzAppName,
-		                                        int dwFlags);
+		                                          string pwzFullyQualifiedAppPath,
+		                                          string pwzAppName,
+		                                          int dwFlags);
 		
 	}
 }

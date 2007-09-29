@@ -11,7 +11,7 @@ using Location = ICSharpCode.NRefactory.Location;
 namespace ICSharpCode.SharpDevelop.Dom
 {
 	[Serializable]
-	public struct DomRegion : IComparable, IComparable<DomRegion>
+	public struct DomRegion : IEquatable<DomRegion>
 	{
 		readonly int beginLine;
 		readonly int endLine;
@@ -102,26 +102,32 @@ namespace ICSharpCode.SharpDevelop.Dom
 			                     endColumn);
 		}
 		
-		public int CompareTo(DomRegion value)
+		public override bool Equals(object obj)
 		{
-			int cmp;
-			if (0 != (cmp = (BeginLine - value.BeginLine))) {
-				return cmp;
-			}
-			
-			if (0 != (cmp = (BeginColumn - value.BeginColumn))) {
-				return cmp;
-			}
-			
-			if (0 != (cmp = (EndLine - value.EndLine))) {
-				return cmp;
-			}
-			
-			return EndColumn - value.EndColumn;
+			return obj is DomRegion && Equals((DomRegion)obj);
 		}
 		
-		int IComparable.CompareTo(object value) {
-			return CompareTo((DomRegion)value);
+		public override int GetHashCode()
+		{
+			unchecked {
+				return BeginColumn + 1100009 * BeginLine + 1200007 * BeginColumn + 1300021 * EndColumn;
+			}
+		}
+		
+		public bool Equals(DomRegion other)
+		{
+			return BeginLine == other.BeginLine && BeginColumn == other.BeginColumn
+				&& EndLine == other.EndLine && EndColumn == other.EndColumn;
+		}
+		
+		public static bool operator ==(DomRegion lhs, DomRegion rhs)
+		{
+			return lhs.Equals(rhs);
+		}
+		
+		public static bool operator !=(DomRegion lhs, DomRegion rhs)
+		{
+			return !lhs.Equals(rhs);
 		}
 	}
 }

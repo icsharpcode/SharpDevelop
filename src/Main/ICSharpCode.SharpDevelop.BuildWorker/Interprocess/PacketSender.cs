@@ -50,7 +50,10 @@ namespace ICSharpCode.SharpDevelop.BuildWorker.Interprocess
 			} while (c > 0);
 			try {
 				targetStream.Write(buffer, 0, buffer.Length);
-			} catch (Exception ex) {
+			} catch (IOException ex) {
+				ICSharpCode.SharpDevelop.BuildWorker.Program.Log(ex.ToString());
+				OnWriteFailed();
+			} catch (ObjectDisposedException ex) {
 				ICSharpCode.SharpDevelop.BuildWorker.Program.Log(ex.ToString());
 				OnWriteFailed();
 			}

@@ -52,7 +52,7 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 		{
 			string ret = "";
 			
-			if (IncludeHTMLMarkup) {
+			if (IncludeHtmlMarkup) {
 				ret += "<i>";
 			}
 			
@@ -68,7 +68,7 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 				ret += "new ";
 			}
 			
-			if (IncludeHTMLMarkup) {
+			if (IncludeHtmlMarkup) {
 				ret += "</i>";
 			}
 			
@@ -82,7 +82,7 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 			
 			builder.Append(ConvertAccessibility(c.Modifiers));
 			
-			if (IncludeHTMLMarkup) {
+			if (IncludeHtmlMarkup) {
 				builder.Append("<i>");
 			}
 			
@@ -103,7 +103,7 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 				}
 			}
 			
-			if (IncludeHTMLMarkup) {
+			if (IncludeHtmlMarkup) {
 				builder.Append("</i>");
 			}
 			
@@ -137,7 +137,7 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 				}
 			}
 			
-			if (IncludeHTMLMarkup) {
+			if (IncludeHtmlMarkup) {
 				builder.Append("<b>");
 			}
 			
@@ -147,7 +147,7 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 				builder.Append(c.Name);
 			}
 			
-			if (IncludeHTMLMarkup) {
+			if (IncludeHtmlMarkup) {
 				builder.Append("</b>");
 			}
 			if (ShowTypeParameterList && c.TypeParameters.Count > 0) {
@@ -161,18 +161,18 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 			
 			if (ShowParameterList && c.ClassType == ClassType.Delegate) {
 				builder.Append(" (");
-				if (IncludeHTMLMarkup) builder.Append("<br>");
+				if (IncludeHtmlMarkup) builder.Append("<br>");
 				
 				foreach(IMethod m in c.Methods) {
 					if (m.Name != "Invoke") continue;
 					
 					for (int i = 0; i < m.Parameters.Count; ++i) {
-						if (IncludeHTMLMarkup) builder.Append("&nbsp;&nbsp;&nbsp;");
+						if (IncludeHtmlMarkup) builder.Append("&nbsp;&nbsp;&nbsp;");
 						
 						builder.Append(Convert(m.Parameters[i]));
 						if (i + 1 < m.Parameters.Count) builder.Append(", ");
 						
-						if (IncludeHTMLMarkup) builder.Append("<br>");
+						if (IncludeHtmlMarkup) builder.Append("<br>");
 					}
 				}
 				builder.Append(')');
@@ -207,7 +207,7 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 			
 			builder.Append(ConvertAccessibility(field.Modifiers));
 			
-			if (IncludeHTMLMarkup) {
+			if (IncludeHtmlMarkup) {
 				builder.Append("<i>");
 			}
 			
@@ -229,7 +229,7 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 				}
 			}
 			
-			if (IncludeHTMLMarkup) {
+			if (IncludeHtmlMarkup) {
 				builder.Append("</i>");
 			}
 			
@@ -238,7 +238,7 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 				builder.Append(' ');
 			}
 			
-			if (IncludeHTMLMarkup) {
+			if (IncludeHtmlMarkup) {
 				builder.Append("<b>");
 			}
 			
@@ -248,7 +248,7 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 				builder.Append(field.Name);
 			}
 			
-			if (IncludeHTMLMarkup) {
+			if (IncludeHtmlMarkup) {
 				builder.Append("</b>");
 			}
 			
@@ -279,7 +279,7 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 				}
 				builder.Append("this");
 			} else {
-				if (IncludeHTMLMarkup) {
+				if (IncludeHtmlMarkup) {
 					builder.Append("<b>");
 				}
 				if (UseFullyQualifiedMemberNames) {
@@ -287,22 +287,22 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 				} else {
 					builder.Append(property.Name);
 				}
-				if (IncludeHTMLMarkup) {
+				if (IncludeHtmlMarkup) {
 					builder.Append("</b>");
 				}
 			}
 			
 			if (property.Parameters.Count > 0 && ShowParameterList) {
 				builder.Append(property.IsIndexer ? '[' : '(');
-				if (IncludeHTMLMarkup) builder.Append("<br>");
+				if (IncludeHtmlMarkup) builder.Append("<br>");
 				
 				for (int i = 0; i < property.Parameters.Count; ++i) {
-					if (IncludeHTMLMarkup) builder.Append("&nbsp;&nbsp;&nbsp;");
+					if (IncludeHtmlMarkup) builder.Append("&nbsp;&nbsp;&nbsp;");
 					builder.Append(Convert(property.Parameters[i]));
 					if (i + 1 < property.Parameters.Count) {
 						builder.Append(", ");
 					}
-					if (IncludeHTMLMarkup) builder.Append("<br>");
+					if (IncludeHtmlMarkup) builder.Append("<br>");
 				}
 				
 				builder.Append(property.IsIndexer ? ']' : ')');
@@ -343,7 +343,7 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 				builder.Append(' ');
 			}
 			
-			if (IncludeHTMLMarkup) {
+			if (IncludeHtmlMarkup) {
 				builder.Append("<b>");
 			}
 			
@@ -353,7 +353,7 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 				builder.Append(e.Name);
 			}
 			
-			if (IncludeHTMLMarkup) {
+			if (IncludeHtmlMarkup) {
 				builder.Append("</b>");
 			}
 			
@@ -376,7 +376,7 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 				builder.Append(' ');
 			}
 			
-			if (IncludeHTMLMarkup) {
+			if (IncludeHtmlMarkup) {
 				builder.Append("<b>");
 			}
 			
@@ -394,7 +394,7 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 				}
 			}
 			
-			if (IncludeHTMLMarkup) {
+			if (IncludeHtmlMarkup) {
 				builder.Append("</b>");
 			}
 			
@@ -409,17 +409,17 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 			
 			if (ShowParameterList) {
 				builder.Append("(");
-				if (IncludeHTMLMarkup) builder.Append("<br>");
+				if (IncludeHtmlMarkup) builder.Append("<br>");
 				
 				if (m.IsExtensionMethod) builder.Append("this ");
 				
 				for (int i = 0; i < m.Parameters.Count; ++i) {
-					if (IncludeHTMLMarkup) builder.Append("&nbsp;&nbsp;&nbsp;");
+					if (IncludeHtmlMarkup) builder.Append("&nbsp;&nbsp;&nbsp;");
 					builder.Append(Convert(m.Parameters[i]));
 					if (i + 1 < m.Parameters.Count) {
 						builder.Append(", ");
 					}
-					if (IncludeHTMLMarkup) builder.Append("<br>");
+					if (IncludeHtmlMarkup) builder.Append("<br>");
 				}
 				
 				builder.Append(')');
@@ -494,7 +494,7 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 		{
 			StringBuilder builder = new StringBuilder();
 			
-			if (IncludeHTMLMarkup) {
+			if (IncludeHtmlMarkup) {
 				builder.Append("<i>");
 			}
 			
@@ -506,7 +506,7 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 				builder.Append("params ");
 			}
 			
-			if (IncludeHTMLMarkup) {
+			if (IncludeHtmlMarkup) {
 				builder.Append("</i>");
 			}
 			

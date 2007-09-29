@@ -40,7 +40,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			unchecked {
 				int res = 0;
 				foreach (IReturnType rt in baseTypes) {
-					res *= 27;
+					res *= 1300027;
 					res += rt.GetHashCode();
 				}
 				return res;

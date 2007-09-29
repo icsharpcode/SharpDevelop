@@ -166,6 +166,8 @@ namespace ICSharpCode.Build.Tasks
 					if (parent.Name == "Member" || parent.Name == "Type" || parent.Name == "Namespace") {
 						if (memberName == null)
 							memberName = ((XmlElement)parent).GetAttribute("Name");
+						else if (memberName.StartsWith(".ctor") || memberName.StartsWith(".cctor"))
+							memberName = ((XmlElement)parent).GetAttribute("Name") + ".#" + memberName.Substring(1);
 						else
 							memberName = ((XmlElement)parent).GetAttribute("Name") + "." + memberName;
 					}

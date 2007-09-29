@@ -7,23 +7,28 @@
 
 using System;
 using System.Diagnostics;
+using System.Globalization;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
-using System.IO;
-using System.Threading;
 using System.Reflection;
+using System.Threading;
 
 namespace ICSharpCode.SharpDevelop.BuildWorker.Interprocess
 {
 	/// <summary>
 	/// Used in the worker process to refer to the host.
 	/// </summary>
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable")]
 	public class HostProcess
 	{
-		object workerObject;
+		readonly object workerObject;
 		
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1720:AvoidTypeNamesInParameters")]
 		public HostProcess(object workerObject)
 		{
+			if (workerObject == null)
+				throw new ArgumentNullException("workerObject");
 			this.workerObject = workerObject;
 		}
 		
@@ -38,7 +43,7 @@ namespace ICSharpCode.SharpDevelop.BuildWorker.Interprocess
 		
 		public void WorkerProcessMain(string argument)
 		{
-			int port = int.Parse(argument);
+			int port = int.Parse(argument, CultureInfo.InvariantCulture);
 			
 			client = new TcpClient();
 			client.Connect(new IPEndPoint(IPAddress.Loopback, port));
@@ -82,6 +87,7 @@ namespace ICSharpCode.SharpDevelop.BuildWorker.Interprocess
 			}
 		}
 		
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		void OnPacketReceived(object sender, PacketReceivedEventArgs e)
 		{
 			Program.Log("OnPacketReceived");

@@ -25,6 +25,7 @@ namespace ICSharpCode.SharpDevelop.BuildWorker
 		BuildJob currentJob;
 		bool requestCancellation;
 		
+		[STAThread]
 		internal static void Main(string[] args)
 		{
 			AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(AppDomain_CurrentDomain_UnhandledException);
@@ -65,6 +66,7 @@ namespace ICSharpCode.SharpDevelop.BuildWorker
 			return info;
 		}
 		
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1300:SpecifyMessageBoxOptions")]
 		internal static void ShowMessageBox(string text)
 		{
 			System.Windows.Forms.MessageBox.Show(text, "SharpDevelop Build Worker Process");
@@ -80,6 +82,7 @@ namespace ICSharpCode.SharpDevelop.BuildWorker
 		}
 		
 		// Called with CallMethodOnWorker
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
 		public void StartBuild(BuildJob job)
 		{
 			if (job == null)
@@ -103,6 +106,7 @@ namespace ICSharpCode.SharpDevelop.BuildWorker
 		}
 		
 		// Called with CallMethodOnWorker
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
 		public void CancelBuild()
 		{
 			lock (this) {
@@ -112,6 +116,7 @@ namespace ICSharpCode.SharpDevelop.BuildWorker
 		
 		Engine engine;
 		
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		void RunThread()
 		{
 			Program.Log("In build thread");
@@ -176,11 +181,6 @@ namespace ICSharpCode.SharpDevelop.BuildWorker
 					logger.Shutdown();
 				}
 				engine.UnregisterAllLoggers();
-			} catch (Exception ex) {
-				if (WorkerManager.ShowError != null)
-					WorkerManager.ShowError(ex);
-				else
-					Program.ShowMessageBox(ex.ToString());
 			} finally {
 				lock (this) {
 					currentJob = null;
@@ -423,8 +423,8 @@ namespace ICSharpCode.SharpDevelop.BuildWorker
 		}
 		#endif
 		
-		
 		[Serializable]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1064:ExceptionsShouldBePublic")]
 		sealed class BuildCancelException : Exception
 		{
 		}

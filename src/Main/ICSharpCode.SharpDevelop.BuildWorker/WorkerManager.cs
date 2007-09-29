@@ -216,6 +216,7 @@ namespace ICSharpCode.SharpDevelop.BuildWorker
 			}
 			
 			// Called with CallMethodOnHost
+			[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
 			public void ReportEvent(BuildEventArgs e)
 			{
 				BuildRun buildRun = currentBuildRun;
@@ -225,6 +226,7 @@ namespace ICSharpCode.SharpDevelop.BuildWorker
 			}
 			
 			// Called with CallMethodOnHost
+			[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
 			public void BuildDone(bool success)
 			{
 				BuildRun buildRun = Interlocked.Exchange(ref currentBuildRun, null);
@@ -238,6 +240,7 @@ namespace ICSharpCode.SharpDevelop.BuildWorker
 				}
 			}
 			
+			[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 			public void ReportException(Exception ex)
 			{
 				// shutdown worker if it produced an exception

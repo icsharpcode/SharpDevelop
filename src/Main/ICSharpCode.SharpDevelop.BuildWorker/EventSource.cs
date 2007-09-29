@@ -48,6 +48,7 @@ namespace ICSharpCode.SharpDevelop.BuildWorker
 		
 		public event AnyEventHandler AnyEventRaised;
 		
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1800:DoNotCastUnnecessarily")]
 		public void RaiseEvent(BuildEventArgs e)
 		{
 			if (e is BuildStatusEventArgs) {

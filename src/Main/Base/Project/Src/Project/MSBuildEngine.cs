@@ -165,9 +165,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			SharpDevelopLogger logger = new SharpDevelopLogger(this);
 			settings.Logger.Add(logger);
 			
-			foreach (string compileTaskName in MSBuildEngine.CompileTaskNames) {
-				InterestingTasks.Add(compileTaskName);
-			}
+			MSBuildEngine.CompileTaskNames.Foreach(InterestingTasks.Add);
 			foreach (IMSBuildAdditionalLogger loggerProvider in MSBuildEngine.AdditionalMSBuildLoggers) {
 				settings.Logger.Add(loggerProvider.CreateLogger(this));
 			}
@@ -190,12 +188,10 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			if (!(ReportAllTaskStartedEvents && ReportAllTaskFinishedEvents)) {
 				// just some TaskStarted & TaskFinished events should be reported
-				foreach (string taskName in InterestingTasks) {
-					job.InterestingTaskNames.Add(taskName);
-				}
+				InterestingTasks.Foreach(job.InterestingTaskNames.Add);
 			}
 			
-			job.AdditionalImports.AddRange(additionalTargetFiles);
+			additionalTargetFiles.Foreach(job.AdditionalImports.Add);
 			
 			BuildPropertyGroup pg = new BuildPropertyGroup();
 			MSBuildBasedProject.InitializeMSBuildProjectProperties(pg);

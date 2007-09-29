@@ -16,6 +16,8 @@
     <AssemblyOriginatorKeyFile>..\ICSharpCode.SharpDevelop.snk</AssemblyOriginatorKeyFile>
     <DelaySign>False</DelaySign>
     <AssemblyOriginatorKeyMode>File</AssemblyOriginatorKeyMode>
+    <RunCodeAnalysis>False</RunCodeAnalysis>
+    <CodeAnalysisRules>-Microsoft.Globalization#CA1303</CodeAnalysisRules>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -64,6 +66,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="WorkerManager.cs" />
     <None Include="app.config" />
+    <Content Include="ICSharpCode.SharpDevelop.BuildWorker.cd" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Configuration" />

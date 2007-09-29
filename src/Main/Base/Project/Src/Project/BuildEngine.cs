@@ -437,7 +437,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		void ReportMessage(BuildNode source, string message)
 		{
-			Console.WriteLine(source.project.Name + " reports " + message);
 			bool hasOutputLock;
 			lock (this) {
 				if (nodeWithOutputLock == null) {

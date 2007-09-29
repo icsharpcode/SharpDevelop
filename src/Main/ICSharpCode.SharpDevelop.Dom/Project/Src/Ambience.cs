@@ -44,7 +44,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// Show the inheritance declaration
 		/// </summary>
 		ShowInheritanceList    = 0x40,
-		IncludeHTMLMarkup      = 0x80,
+		
+		IncludeHtmlMarkup      = 0x80,
 		/// <summary>
 		/// Show the return type
 		/// </summary>
@@ -163,9 +164,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public bool IncludeHTMLMarkup {
+		public bool IncludeHtmlMarkup {
 			get {
-				return (conversionFlags & ConversionFlags.IncludeHTMLMarkup) == ConversionFlags.IncludeHTMLMarkup;
+				return (conversionFlags & ConversionFlags.IncludeHtmlMarkup) == ConversionFlags.IncludeHtmlMarkup;
 			}
 		}
 		

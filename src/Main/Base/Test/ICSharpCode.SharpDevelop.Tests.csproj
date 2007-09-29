@@ -56,6 +56,7 @@
     <Compile Include="CSharpExpressionFinderTests.cs" />
     <Compile Include="ExceptionClassOverridesTestFixture.cs" />
     <Compile Include="GenerateOverrideMethodTests.cs" />
+    <Compile Include="GetElementByReflectionNameTests.cs" />
     <Compile Include="NRefactoryResolverTests.cs" />
     <Compile Include="CollectionClassOverridesTestFixture.cs" />
     <Compile Include="OverridableMethodsTestFixture.cs" />

@@ -38,7 +38,7 @@ namespace ICSharpCode.SharpDevelop.BuildWorker
 		
 		List<string> additionalImports = new List<string>();
 		
-		public List<string> AdditionalImports {
+		public IList<string> AdditionalImports {
 			get { return additionalImports; }
 		}
 		

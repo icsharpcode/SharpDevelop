@@ -10,7 +10,7 @@ using ICSharpCode.NRefactory;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {
-	public struct FilePosition
+	public struct FilePosition : IEquatable<FilePosition>
 	{
 		string filename;
 		Location position;
@@ -92,14 +92,27 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public override bool Equals(object obj)
 		{
-			if (!(obj is FilePosition)) return false;
-			FilePosition b = (FilePosition)obj;
-			return this.FileName == b.FileName && this.Position == b.Position;
+			return obj is FilePosition && Equals((FilePosition)obj);
+		}
+		
+		public bool Equals(FilePosition other)
+		{
+			return this.FileName == other.FileName && this.Position == other.Position;
 		}
 		
 		public override int GetHashCode()
 		{
 			return filename.GetHashCode() ^ position.GetHashCode();
+		}
+		
+		public static bool operator ==(FilePosition lhs, FilePosition rhs)
+		{
+			return lhs.Equals(rhs);
+		}
+		
+		public static bool operator !=(FilePosition lhs, FilePosition rhs)
+		{
+			return !lhs.Equals(rhs);
 		}
 	}
 }

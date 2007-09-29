@@ -28,7 +28,7 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 		{
 			StringBuilder builder = new StringBuilder();
 			
-			if (IncludeHTMLMarkup) {
+			if (IncludeHtmlMarkup) {
 				builder.Append("<i>");
 			}
 			
@@ -49,7 +49,7 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 				builder.Append("Shadows ");
 			}
 			
-			if (IncludeHTMLMarkup) {
+			if (IncludeHtmlMarkup) {
 				builder.Append("</i>");
 			}
 			
@@ -82,7 +82,7 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 			
 			builder.Append(ConvertAccessibility(c.Modifiers));
 			
-			if (IncludeHTMLMarkup) {
+			if (IncludeHtmlMarkup) {
 				builder.Append("<i>");
 			}
 			
@@ -96,7 +96,7 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 				}
 			}
 			
-			if (IncludeHTMLMarkup) {
+			if (IncludeHtmlMarkup) {
 				builder.Append("</i>");
 			}
 			
@@ -137,7 +137,7 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 				builder.Append(' ');
 			}
 			
-			if (IncludeHTMLMarkup) {
+			if (IncludeHtmlMarkup) {
 				builder.Append("<b>");
 			}
 			
@@ -147,7 +147,7 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 				builder.Append(c.Name);
 			}
 			
-			if (IncludeHTMLMarkup) {
+			if (IncludeHtmlMarkup) {
 				builder.Append("</b>");
 			}
 			
@@ -162,18 +162,18 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 			
 			if (ShowParameterList && c.ClassType == ClassType.Delegate) {
 				builder.Append("(");
-				if (IncludeHTMLMarkup) builder.Append("<br>");
+				if (IncludeHtmlMarkup) builder.Append("<br>");
 				
 				foreach (IMethod m in c.Methods) {
 					if (m.Name != "Invoke") continue;
 					
 					for (int i = 0; i < m.Parameters.Count; ++i) {
-						if (IncludeHTMLMarkup) builder.Append("&nbsp;&nbsp;&nbsp;");
+						if (IncludeHtmlMarkup) builder.Append("&nbsp;&nbsp;&nbsp;");
 						
 						builder.Append(Convert(m.Parameters[i]));
 						if (i + 1 < m.Parameters.Count) builder.Append(", ");
 
-						if (IncludeHTMLMarkup) builder.Append("<br>");
+						if (IncludeHtmlMarkup) builder.Append("<br>");
 					}
 				}
 
@@ -208,6 +208,9 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 		
 		public override string ConvertEnd(IClass c)
 		{
+			if (c == null)
+				throw new ArgumentNullException("c");
+			
 			StringBuilder builder = new StringBuilder();
 			
 			builder.Append("End ");
@@ -238,11 +241,14 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 		
 		public override string Convert(IField field)
 		{
+			if (field == null)
+				throw new ArgumentNullException("field");
+			
 			StringBuilder builder = new StringBuilder();
 			
 			builder.Append(ConvertAccessibility(field.Modifiers));
 			
-			if (IncludeHTMLMarkup) {
+			if (IncludeHtmlMarkup) {
 				builder.Append("<i>");
 			}
 			
@@ -254,7 +260,7 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 				}
 			}
 			
-			if (IncludeHTMLMarkup) {
+			if (IncludeHtmlMarkup) {
 				builder.Append("</i>");
 				builder.Append("<b>");
 			}
@@ -265,7 +271,7 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 				builder.Append(field.Name);
 			}
 			
-			if (IncludeHTMLMarkup) {
+			if (IncludeHtmlMarkup) {
 				builder.Append("</b>");
 			}
 			
@@ -302,7 +308,7 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 				builder.Append("Property ");
 			}
 			
-			if (IncludeHTMLMarkup) {
+			if (IncludeHtmlMarkup) {
 				builder.Append("<b>");
 			}
 			
@@ -312,21 +318,21 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 				builder.Append(property.Name);
 			}
 			
-			if (IncludeHTMLMarkup) {
+			if (IncludeHtmlMarkup) {
 				builder.Append("</b>");
 			}
 			
 			if (ShowParameterList && property.Parameters.Count > 0) {
 				builder.Append("(");
-				if (IncludeHTMLMarkup) builder.Append("<br>");
+				if (IncludeHtmlMarkup) builder.Append("<br>");
 				
 				for (int i = 0; i < property.Parameters.Count; ++i) {
-					if (IncludeHTMLMarkup) builder.Append("&nbsp;&nbsp;&nbsp;");
+					if (IncludeHtmlMarkup) builder.Append("&nbsp;&nbsp;&nbsp;");
 					builder.Append(Convert(property.Parameters[i]));
 					if (i + 1 < property.Parameters.Count) {
 						builder.Append(", ");
 					}
-					if (IncludeHTMLMarkup) builder.Append("<br>");
+					if (IncludeHtmlMarkup) builder.Append("<br>");
 				}
 				
 				builder.Append(')');
@@ -342,6 +348,9 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 		
 		public override string Convert(IEvent e)
 		{
+			if (e == null)
+				throw new ArgumentNullException("e");
+			
 			StringBuilder builder = new StringBuilder();
 			
 			builder.Append(ConvertAccessibility(e.Modifiers));
@@ -354,7 +363,7 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 				builder.Append("Event ");
 			}
 			
-			if (IncludeHTMLMarkup) {
+			if (IncludeHtmlMarkup) {
 				builder.Append("<b>");
 			}
 			
@@ -364,7 +373,7 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 				builder.Append(e.Name);
 			}
 			
-			if (IncludeHTMLMarkup) {
+			if (IncludeHtmlMarkup) {
 				builder.Append("</b>");
 			}
 			
@@ -401,13 +410,13 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 				dispName = "New";
 			}
 			
-			if (IncludeHTMLMarkup) {
+			if (IncludeHtmlMarkup) {
 				builder.Append("<b>");
 			}
 			
 			builder.Append(dispName);
 			
-			if (IncludeHTMLMarkup) {
+			if (IncludeHtmlMarkup) {
 				builder.Append("</b>");
 			}
 			
@@ -422,15 +431,15 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 			
 			if (ShowParameterList) {
 				builder.Append("(");
-				if (IncludeHTMLMarkup) builder.Append("<br>");
+				if (IncludeHtmlMarkup) builder.Append("<br>");
 
 				for (int i = 0; i < m.Parameters.Count; ++i) {
-					if (IncludeHTMLMarkup) builder.Append("&nbsp;&nbsp;&nbsp;");
+					if (IncludeHtmlMarkup) builder.Append("&nbsp;&nbsp;&nbsp;");
 					builder.Append(Convert(m.Parameters[i]));
 					if (i + 1 < m.Parameters.Count) {
 						builder.Append(", ");
 					}
-					if (IncludeHTMLMarkup) builder.Append("<br>");
+					if (IncludeHtmlMarkup) builder.Append("<br>");
 				}
 				
 				builder.Append(')');
@@ -446,6 +455,9 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 		
 		public override string ConvertEnd(IMethod m)
 		{
+			if (m == null)
+				throw new ArgumentNullException("m");
+			
 			if (m.ReturnType == null || m.ReturnType.FullyQualifiedName == "System.Void") {
 				return "End Sub";
 			} else {
@@ -501,8 +513,11 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 		
 		public override string Convert(IParameter param)
 		{
+			if (param == null)
+				throw new ArgumentNullException("param");
+			
 			StringBuilder builder = new StringBuilder();
-			if (IncludeHTMLMarkup) {
+			if (IncludeHtmlMarkup) {
 				builder.Append("<i>");
 			}
 			
@@ -514,7 +529,7 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 			} else if (param.IsParams) {
 				builder.Append("ParamArray ");
 			}
-			if (IncludeHTMLMarkup) {
+			if (IncludeHtmlMarkup) {
 				builder.Append("</i>");
 			}
 			
