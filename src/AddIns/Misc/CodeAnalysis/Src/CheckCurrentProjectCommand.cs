@@ -12,15 +12,14 @@ using ICSharpCode.SharpDevelop.Project.Commands;
 
 namespace ICSharpCode.CodeAnalysis
 {
-	public class CheckCurrentProjectCommand : AbstractMenuCommand
+	public class CheckCurrentProjectCommand : BuildProject
 	{
-		public override void Run()
+		public override void StartBuild()
 		{
-			IProject p = ProjectService.CurrentProject;
-			if (p == null) return;
-			RebuildProject build = new RebuildProject(p);
-			build.AdditionalProperties.Add("RunCodeAnalysis", "true");
-			build.Run();
+			BuildOptions options = new BuildOptions(BuildTarget.Rebuild, CallbackMethod);
+			options.TargetForDependencies = BuildTarget.Build;
+			options.ProjectAdditionalProperties["RunCodeAnalysis"] = "true";
+			BuildEngine.BuildInGui(this.ProjectToBuild, options);
 		}
 	}
 }

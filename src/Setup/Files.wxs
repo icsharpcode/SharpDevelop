@@ -181,6 +181,7 @@
 								<File Source="..\..\bin\SharpDevelop.Build.MSIL.targets" Name="Msil.tgt" Id="SharpDevelop.Build.MSIL.targets" LongName="SharpDevelop.Build.MSIL.targets" />
 								<File Source="..\..\bin\SharpDevelop.Build.VisualBasic.targets" Name="VB.tgt" Id="SharpDevelop.Build.VisualBasic.targets" LongName="SharpDevelop.Build.VisualBasic.targets" />
 								<File Source="..\..\bin\SharpDevelop.CodeAnalysis.targets" Name="analysis.tgt" Id="SharpDevelop.CodeAnalysis.targets" LongName="SharpDevelop.CodeAnalysis.targets" />
+								<File Source="..\..\bin\SharpDevelop.CheckMSBuild35Features.targets" Name="SHARPD_1.TAR" Id="SharpDevelop.CheckMSBuild35Features.targets" LongName="SharpDevelop.CheckMSBuild35Features.targets" />
 							</Component>
 							<Component Id="ICSharpCodeCoreDll" Guid="DFD67330-0F6D-4069-9B03-90E2BB7B9273" DiskId="1">
 								<File Source="..\..\bin\ICSharpCode.Core.dll" Name="ICCore.DLL" Id="ICSharpCode.Core.dll" LongName="ICSharpCode.Core.dll" Assembly=".net" AssemblyApplication="ICSharpCode.Core.dll" AssemblyManifest="ICSharpCode.Core.dll" KeyPath="yes" />

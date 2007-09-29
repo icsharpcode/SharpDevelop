@@ -24,7 +24,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public override void StartBuild(ProjectBuildOptions options, IBuildFeedbackSink feedbackSink)
 		{
-			MSBuildEngine.Build(this, options, feedbackSink);
+			MSBuildEngine.StartBuild(this, options, feedbackSink, MSBuildEngine.AdditionalTargetFiles);
 		}
 	}
 }

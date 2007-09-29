@@ -83,6 +83,9 @@
     <None Include="SharpDevelop.Build.Mono.Mbas.targets">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="SharpDevelop.CheckMSBuild35Features.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <Compile Include="MonoBasicCompilerResultsParser.cs" />
     <Compile Include="MonoCSharpCompilerTask.cs" />
     <Compile Include="FxCop.cs" />

@@ -76,7 +76,8 @@ namespace ICSharpCode.SharpDevelop.Project
 			MSBuildProperties.Add("BuildingInsideVisualStudio", "true");
 		}
 		
-		public static void Build(IProject project, ProjectBuildOptions options, IBuildFeedbackSink feedbackSink)
+		
+		public static void StartBuild(IProject project, ProjectBuildOptions options, IBuildFeedbackSink feedbackSink, IEnumerable<string> additionalTargetFiles)
 		{
 			if (project == null)
 				throw new ArgumentNullException("project");
@@ -84,14 +85,18 @@ namespace ICSharpCode.SharpDevelop.Project
 				throw new ArgumentNullException("options");
 			if (feedbackSink == null)
 				throw new ArgumentNullException("feedbackSink");
+			if (additionalTargetFiles == null)
+				throw new ArgumentNullException("additionalTargetFiles");
 			
 			MSBuildEngine engine = new MSBuildEngine(project, options, feedbackSink);
+			engine.additionalTargetFiles = additionalTargetFiles;
 			engine.StartBuild();
 		}
 		
 		IProject project;
 		ProjectBuildOptions options;
 		IBuildFeedbackSink feedbackSink;
+		IEnumerable<string> additionalTargetFiles;
 		
 		private MSBuildEngine(IProject project, ProjectBuildOptions options, IBuildFeedbackSink feedbackSink)
 		{
@@ -190,6 +195,8 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 			}
 			
+			job.AdditionalImports.AddRange(additionalTargetFiles);
+			
 			BuildPropertyGroup pg = new BuildPropertyGroup();
 			MSBuildBasedProject.InitializeMSBuildProjectProperties(pg);
 			foreach (BuildProperty p in pg) {
@@ -216,6 +223,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (Interlocked.CompareExchange(ref isBuildingInProcess, 1, 0) == 0) {
 				buildInProcess = true;
 			}
+			LoggingService.Info("Start job (buildInProcess=" + buildInProcess + "): " + job.ToString());
 			
 			if (buildInProcess) {
 				settings.BuildDoneCallback = delegate(bool success) {

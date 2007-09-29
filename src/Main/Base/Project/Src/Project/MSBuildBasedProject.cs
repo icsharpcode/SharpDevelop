@@ -64,12 +64,14 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public override int MinimumSolutionVersion {
 			get {
-				if (string.IsNullOrEmpty(project.DefaultToolsVersion)
-				    || project.DefaultToolsVersion == "2.0")
-				{
-					return 9;
-				} else {
-					return 10;
+				lock (SyncRoot) {
+					if (string.IsNullOrEmpty(project.DefaultToolsVersion)
+					    || project.DefaultToolsVersion == "2.0")
+					{
+						return 9;
+					} else {
+						return 10;
+					}
 				}
 			}
 		}
@@ -829,7 +831,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public override void StartBuild(ProjectBuildOptions options, IBuildFeedbackSink feedbackSink)
 		{
-			MSBuildEngine.Build(this, options, feedbackSink);
+			MSBuildEngine.StartBuild(this, options, feedbackSink, MSBuildEngine.AdditionalTargetFiles);
 		}
 		
 		/*
@@ -843,7 +845,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			engine.MessageView = TaskService.BuildMessageViewCategory;
 			engine.Run(solution, project, options);
 		}
-		*/
+		 */
 		#endregion
 		
 		#region Loading

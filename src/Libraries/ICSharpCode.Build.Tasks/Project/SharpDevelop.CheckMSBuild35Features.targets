@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTarget="Build">
+	<!-- This target file is automatically included into C# and VB projects that use MSBuild 2.0 -->
+	<!-- It causes build warning when using features that are not supported in the MSBuild -->
+	<!-- version coming with .NET 2.0 -->
+	<PropertyGroup>
+		<BuildDependsOn>SharpDevelopCheckMSBuild35Features;$(BuildDependsOn)</BuildDependsOn>
+	</PropertyGroup>
+	
+	<Target Name="SharpDevelopCheckMSBuild35Features">
+		<Warning Text="Embedding application manifests requires using the C# 3.0 / VB 9 compiler."
+		         Condition="'$(ApplicationManifest)' != ''"/>
+		
+		<Warning Text="The application is configured to compile for .NET 2.0, but you referenced the assembly @(Reference) which requires .NET %(Reference.RequiredTargetFramework)."
+		         Condition="'%(Reference.RequiredTargetFramework)' != ''"/>
+	</Target>
+</Project>

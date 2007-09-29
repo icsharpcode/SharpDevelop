@@ -220,7 +220,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			IBuildable project = node.project;
 			// Create options for building the project
-			node.options = new ProjectBuildOptions(options.Target);
+			node.options = new ProjectBuildOptions(project == rootProject ? options.ProjectTarget : options.TargetForDependencies);
 			// find the project configuration
 			foreach (var matching in configMatchings) {
 				if (matching.Project == project) {

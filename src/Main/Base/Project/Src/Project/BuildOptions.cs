@@ -68,8 +68,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		BuildCallback callback;
-		BuildTarget target;
 		IDictionary<string, string> globalAdditionalProperties = new SortedList<string, string>();
 		IDictionary<string, string> projectAdditionalProperties = new SortedList<string, string>();
 		
@@ -96,31 +94,46 @@ namespace ICSharpCode.SharpDevelop.Project
 		public BuildOptions(BuildTarget target, BuildCallback callback)
 		{
 			this.callback = callback;
-			this.target = target;
+			this.projectTarget = target;
+			this.TargetForDependencies = target;
+			
 			this.BuildDependentProjects = true;
 			this.ParallelProjectCount = DefaultParallelProjectCount;
 		}
 		
-		public BuildOptions(BuildTarget target, BuildCallback callback, IDictionary<string, string> projectAdditionalProperties)
-			: this(target, callback)
-		{
-			if (projectAdditionalProperties == null)
-				throw new ArgumentNullException("projectAdditionalProperties");
-			this.projectAdditionalProperties = projectAdditionalProperties;
-		}
+		readonly BuildCallback callback;
 		
+		/// <summary>
+		/// Gets the method to call when the build has finished.
+		/// </summary>
 		public BuildCallback Callback {
 			get { return callback; }
 		}
 		
-		public BuildTarget Target {
-			get { return target; }
+		readonly BuildTarget projectTarget;
+		
+		/// <summary>
+		/// The target to build for the project being built.
+		/// </summary>
+		public BuildTarget ProjectTarget {
+			get { return projectTarget; }
 		}
 		
+		/// <summary>
+		/// The target to build for dependencies of the project being built.
+		/// </summary>
+		public BuildTarget TargetForDependencies { get; set; }
+		
+		/// <summary>
+		/// Additional properties used for the build, both for the project being built and its dependencies.
+		/// </summary>
 		public IDictionary<string, string> GlobalAdditionalProperties {
 			get { return globalAdditionalProperties; }
 		}
 		
+		/// <summary>
+		/// Additional properties used only for the project being built but not for its dependencies.
+		/// </summary>
 		public IDictionary<string, string> ProjectAdditionalProperties {
 			get { return projectAdditionalProperties; }
 		}

@@ -101,35 +101,35 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		}
 	}
 	
-	public sealed class Build : AbstractBuildMenuCommand
+	public class Build : AbstractBuildMenuCommand
 	{
+		public override void BeforeBuild()
+		{
+			base.BeforeBuild();
+			ProjectService.RaiseEventStartBuild();
+		}
+		
 		public override void StartBuild()
 		{
-			ProjectService.RaiseEventStartBuild();
 			BuildEngine.BuildInGui(ProjectService.OpenSolution, new BuildOptions(BuildTarget.Build, CallbackMethod));
 		}
 		
 		public override void AfterBuild()
 		{
 			ProjectService.RaiseEventEndBuild();
+			base.AfterBuild();
 		}
 	}
 	
-	public sealed class Rebuild : AbstractBuildMenuCommand
+	public class Rebuild : Build
 	{
 		public override void StartBuild()
 		{
-			ProjectService.RaiseEventStartBuild();
 			BuildEngine.BuildInGui(ProjectService.OpenSolution, new BuildOptions(BuildTarget.Rebuild, CallbackMethod));
-		}
-		
-		public override void AfterBuild()
-		{
-			ProjectService.RaiseEventEndBuild();
 		}
 	}
 	
-	public sealed class Clean : AbstractBuildMenuCommand
+	public class Clean : AbstractBuildMenuCommand
 	{
 		public override void StartBuild()
 		{
@@ -154,14 +154,6 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	}
 	public class BuildProject : AbstractProjectBuildMenuCommand
 	{
-		IDictionary<string, string> additionalProperties = new SortedList<string, string>();
-		
-		public IDictionary<string, string> AdditionalProperties {
-			get {
-				return additionalProperties;
-			}
-		}
-		
 		public BuildProject()
 		{
 		}
@@ -170,27 +162,32 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			this.targetProject = targetProject;
 		}
 		
+		public override void BeforeBuild()
+		{
+			base.BeforeBuild();
+			ProjectService.RaiseEventStartBuild();
+		}
+		
 		public override void StartBuild()
 		{
-			ProjectService.RaiseEventStartBuild();
-			BuildEngine.BuildInGui(this.ProjectToBuild, new BuildOptions(BuildTarget.Build, CallbackMethod, AdditionalProperties));
+			BuildEngine.BuildInGui(this.ProjectToBuild, new BuildOptions(BuildTarget.Build, CallbackMethod));
 		}
 		
 		public override void AfterBuild()
 		{
 			ProjectService.RaiseEventEndBuild();
+			base.AfterBuild();
 		}
 	}
 	
-	public sealed class RebuildProject : BuildProject
+	public class RebuildProject : BuildProject
 	{
 		public RebuildProject() {}
 		public RebuildProject(IProject targetProject) : base(targetProject) {}
 		
 		public override void StartBuild()
 		{
-			ProjectService.RaiseEventStartBuild();
-			BuildEngine.BuildInGui(this.ProjectToBuild, new BuildOptions(BuildTarget.Rebuild, CallbackMethod, AdditionalProperties));
+			BuildEngine.BuildInGui(this.ProjectToBuild, new BuildOptions(BuildTarget.Rebuild, CallbackMethod));
 		}
 	}
 	

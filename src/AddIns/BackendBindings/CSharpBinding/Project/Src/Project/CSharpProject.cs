@@ -7,6 +7,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Linq;
 using System.IO;
 
 using ICSharpCode.SharpDevelop.Dom;
@@ -80,6 +81,19 @@ namespace CSharpBinding
 				return ItemType.Compile;
 			else
 				return base.GetDefaultItemType(fileName);
+		}
+		
+		public override void StartBuild(ProjectBuildOptions options, IBuildFeedbackSink feedbackSink)
+		{
+			if (this.MinimumSolutionVersion == 9) {
+				MSBuildEngine.StartBuild(this,
+				                         options,
+				                         feedbackSink,
+				                         MSBuildEngine.AdditionalTargetFiles.Concat(
+				                         	new [] { "$(SharpDevelopBinPath)/SharpDevelop.CheckMSBuild35Features.targets" }));
+			} else {
+				base.StartBuild(options, feedbackSink);
+			}
 		}
 	}
 }
