@@ -460,6 +460,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public static void CloseSolution()
 		{
+			// If a build is running, cancel it.
+			// If we would let a build run but unload the MSBuild projects, the next project.StartBuild call
+			// could cause an exception.
+			BuildEngine.CancelGuiBuild();
+			
 			if (openSolution != null) {
 				CurrentProject = null;
 				OnSolutionClosing(new SolutionEventArgs(openSolution));

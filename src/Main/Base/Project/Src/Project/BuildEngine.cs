@@ -106,8 +106,8 @@ namespace ICSharpCode.SharpDevelop.Project
 			{
 				EventHandler eh = null;
 				lock (lockObject) {
-					if (isCancelAllowed) {
-						ICSharpCode.Core.LoggingService.Debug("");
+					if (isCancelAllowed && !isCancelled) {
+						ICSharpCode.Core.LoggingService.Debug("Cancel build");
 						isCancelled = true;
 						eh = Cancelled;
 					}
@@ -493,9 +493,11 @@ namespace ICSharpCode.SharpDevelop.Project
 					return;
 				buildIsDone = true;
 			}
-			foreach (BuildNode n in nodeDict.Values) {
-				if (!n.buildFinished) {
-					throw new Exception("All workers done, but a project did not finish building");
+			if (!buildIsCancelled) {
+				foreach (BuildNode n in nodeDict.Values) {
+					if (!n.buildFinished) {
+						throw new Exception("All workers done, but a project did not finish building");
+					}
 				}
 			}
 			string buildTime = " (" + (DateTime.Now - buildStart).ToString() + ")";
