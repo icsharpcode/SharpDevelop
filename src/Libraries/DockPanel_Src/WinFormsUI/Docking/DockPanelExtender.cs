@@ -1,84 +1,45 @@
-// *****************************************************************************
-// 
-//  Copyright 2004, Weifen Luo
-//  All rights reserved. The software and associated documentation 
-//  supplied hereunder are the proprietary information of Weifen Luo
-//  and are supplied subject to licence terms.
-// 
-//  WinFormsUI Library Version 1.0
-// *****************************************************************************
 using System;
 using System.Drawing;
+using System.Diagnostics.CodeAnalysis;
 
-namespace WeifenLuo.WinFormsUI
+namespace WeifenLuo.WinFormsUI.Docking
 {
-	/// <include file='CodeDoc/DockPanelExtender.xml' path='//CodeDoc/Class[@name="DockPanelExtender"]/ClassDef/*'/>
 	public sealed class DockPanelExtender
 	{
-		/// <include file='CodeDoc\DockPanelExtender.xml' path='//CodeDoc/Class[@name="DockPanelExtender"]/Interface[@name="IDockPaneFactory"]/InterfaceDef/*'/>
-		public interface IDockPaneFactory
+        [SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
+        public interface IDockPaneFactory
 		{
-			/// <include file='CodeDoc\DockPanelExtender.xml' path='//CodeDoc/Class[@name="DockPanelExtender"]/Interface[@name="IDockPaneFactory"]/Method[@name="CreateDockPane"]/*'/>
-			/// <include file='CodeDoc\DockPanelExtender.xml' path='//CodeDoc/Class[@name="DockPanelExtender"]/Interface[@name="IDockPaneFactory"]/Method[@name="CreateDockPane(IDockContent, DockState, bool)"]/*'/>
 			DockPane CreateDockPane(IDockContent content, DockState visibleState, bool show);
-			/// <include file='CodeDoc\DockPanelExtender.xml' path='//CodeDoc/Class[@name="DockPanelExtender"]/Interface[@name="IDockPaneFactory"]/Method[@name="CreateDockPane(IDockContent, FloatWindow, bool)"]/*'/>
+            [SuppressMessage("Microsoft.Naming", "CA1720:AvoidTypeNamesInParameters", MessageId = "1#")]            
 			DockPane CreateDockPane(IDockContent content, FloatWindow floatWindow, bool show);
-			/// <include file='CodeDoc\DockPanelExtender.xml' path='//CodeDoc/Class[@name="DockPanelExtender"]/Interface[@name="IDockPaneFactory"]/Method[@name="CreateDockPane(IDockContent, DockPane, DockAlignment, double, bool)"]/*'/>
-			DockPane CreateDockPane(IDockContent content, DockPane prevPane, DockAlignment alignment, double proportion, bool show);
-			/// <include file='CodeDoc\DockPanelExtender.xml' path='//CodeDoc/Class[@name="DockPanelExtender"]/Interface[@name="IDockPaneFactory"]/Method[@name="CreateDockPane(IDockContent, Rectangle, bool)"]/*'/>
+			DockPane CreateDockPane(IDockContent content, DockPane previousPane, DockAlignment alignment, double proportion, bool show);
+            [SuppressMessage("Microsoft.Naming", "CA1720:AvoidTypeNamesInParameters", MessageId = "1#")]            
 			DockPane CreateDockPane(IDockContent content, Rectangle floatWindowBounds, bool show);
 		}
 
-		/// <include file='CodeDoc\DockPanelExtender.xml' path='//CodeDoc/Class[@name="DockPanelExtender"]/Interface[@name="IFloatWindowFactory"]/InterfaceDef/*'/>
-		public interface IFloatWindowFactory
+        [SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
+        public interface IFloatWindowFactory
 		{
-			/// <include file='CodeDoc\DockPanelExtender.xml' path='//CodeDoc/Class[@name="DockPanelExtender"]/Interface[@name="IFloatWindowFactory"]/Method[@name="CreateFloatWindow"]/*'/>
-			/// <include file='CodeDoc\DockPanelExtender.xml' path='//CodeDoc/Class[@name="DockPanelExtender"]/Interface[@name="IFloatWindowFactory"]/Method[@name="CreateFloatWindow(DockPanel, DockPane)"]/*'/>
 			FloatWindow CreateFloatWindow(DockPanel dockPanel, DockPane pane);
-			/// <include file='CodeDoc\DockPanelExtender.xml' path='//CodeDoc/Class[@name="DockPanelExtender"]/Interface[@name="IFloatWindowFactory"]/Method[@name="CreateFloatWindow(DockPanel, DockPane, Rectangle)"]/*'/>
 			FloatWindow CreateFloatWindow(DockPanel dockPanel, DockPane pane, Rectangle bounds);
 		}
 
-		/// <include file='CodeDoc\DockPanelExtender.xml' path='//CodeDoc/Class[@name="DockPanelExtender"]/Interface[@name="IDockPaneCaptionFactory"]/InterfaceDef/*'/>
-		public interface IDockPaneCaptionFactory
+        [SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
+        public interface IDockPaneCaptionFactory
 		{
-			/// <include file='CodeDoc\DockPanelExtender.xml' path='//CodeDoc/Class[@name="DockPanelExtender"]/Interface[@name="IDockPaneCaptionFactory"]/Method[@name="CreateDockPaneCaption(DockPane)"]/*'/>
 			DockPaneCaptionBase CreateDockPaneCaption(DockPane pane);
 		}
 
-		/// <include file='CodeDoc\DockPanelExtender.xml' path='//CodeDoc/Class[@name="DockPanelExtender"]/Interface[@name="IDockPaneStripFactory"]/InterfaceDef/*'/>
-		public interface IDockPaneStripFactory
+        [SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
+        public interface IDockPaneStripFactory
 		{
-			/// <include file='CodeDoc\DockPanelExtender.xml' path='//CodeDoc/Class[@name="DockPanelExtender"]/Interface[@name="IDockPaneStripFactory"]/Method[@name="CreateDockPaneStrip(DockPane)"]/*'/>
 			DockPaneStripBase CreateDockPaneStrip(DockPane pane);
 		}
 
-		/// <include file='CodeDoc\DockPanelExtender.xml' path='//CodeDoc/Class[@name="DockPanelExtender"]/Interface[@name="IAutoHideStripFactory"]/InterfaceDef/*'/>
-		public interface IAutoHideStripFactory
+        [SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
+        public interface IAutoHideStripFactory
 		{
-			/// <include file='CodeDoc\DockPanelExtender.xml' path='//CodeDoc/Class[@name="DockPanelExtender"]/Interface[@name="IAutoHideStripFactory"]/Method[@name="CreateAutoHideStrip(DockPanel)"]/*'/>
 			AutoHideStripBase CreateAutoHideStrip(DockPanel panel);
-		}
-
-		/// <include file='CodeDoc\DockPanelExtender.xml' path='//CodeDoc/Class[@name="DockPanelExtender"]/Interface[@name="IAutoHideTabFactory"]/InterfaceDef/*'/>
-		public interface IAutoHideTabFactory
-		{
-			/// <include file='CodeDoc\DockPanelExtender.xml' path='//CodeDoc/Class[@name="DockPanelExtender"]/Interface[@name="IAutoHideTabFactory"]/Method[@name="CreateAutoHideTab(IDockContent)"]/*'/>
-			AutoHideTab CreateAutoHideTab(IDockContent content);
-		}
-
-		/// <include file='CodeDoc\DockPanelExtender.xml' path='//CodeDoc/Class[@name="DockPanelExtender"]/Interface[@name="IAutoHidePaneFactory"]/InterfaceDef/*'/>
-		public interface IAutoHidePaneFactory
-		{
-			/// <include file='CodeDoc\DockPanelExtender.xml' path='//CodeDoc/Class[@name="DockPanelExtender"]/Interface[@name="IAutoHidePaneFactory"]/Method[@name="CreateAutoHidePane(DockPane)"]/*'/>
-			AutoHidePane CreateAutoHidePane(DockPane pane);
-		}
-
-		/// <include file='CodeDoc\DockPanelExtender.xml' path='//CodeDoc/Class[@name="DockPanelExtender"]/Interface[@name="IDockPaneTabFactory"]/InterfaceDef/*'/>
-		public interface IDockPaneTabFactory
-		{
-			/// <include file='CodeDoc\DockPanelExtender.xml' path='//CodeDoc/Class[@name="DockPanelExtender"]/Interface[@name="IDockPaneTabFactory"]/Method[@name="CreateDockPaneTab(IDockContent)"]/*'/>
-			DockPaneTab CreateDockPaneTab(IDockContent content);
 		}
 
 		#region DefaultDockPaneFactory
@@ -126,17 +87,7 @@ namespace WeifenLuo.WinFormsUI
 		{
 			public DockPaneCaptionBase CreateDockPaneCaption(DockPane pane)
 			{
-				return new DockPaneCaptionVS2003(pane);
-			}
-		}
-		#endregion
-
-		#region DefaultDockPaneTabFactory
-		private class DefaultDockPaneTabFactory : IDockPaneTabFactory
-		{
-			public DockPaneTab CreateDockPaneTab(IDockContent content)
-			{
-				return new DockPaneTabVS2003(content);
+				return new VS2005DockPaneCaption(pane);
 			}
 		}
 		#endregion
@@ -146,27 +97,7 @@ namespace WeifenLuo.WinFormsUI
 		{
 			public DockPaneStripBase CreateDockPaneStrip(DockPane pane)
 			{
-				return new DockPaneStripVS2003(pane);
-			}
-		}
-		#endregion
-
-		#region DefaultAutoHidePaneFactory
-		private class DefaultAutoHidePaneFactory : IAutoHidePaneFactory
-		{
-			public AutoHidePane CreateAutoHidePane(DockPane pane)
-			{
-				return new AutoHidePane(pane);
-			}
-		}
-		#endregion
-
-		#region DefaultAutoHideTabFactory
-		private class DefaultAutoHideTabFactory : IAutoHideTabFactory
-		{
-			public AutoHideTab CreateAutoHideTab(IDockContent content)
-			{
-				return new AutoHideTabVS2003(content);
+				return new VS2005DockPaneStrip(pane);
 			}
 		}
 		#endregion
@@ -176,7 +107,7 @@ namespace WeifenLuo.WinFormsUI
 		{
 			public AutoHideStripBase CreateAutoHideStrip(DockPanel panel)
 			{
-				return new AutoHideStripVS2003(panel);
+				return new VS2005AutoHideStrip(panel);
 			}
 		}
 		#endregion
@@ -193,7 +124,6 @@ namespace WeifenLuo.WinFormsUI
 		}
 
 		private IDockPaneFactory m_dockPaneFactory = null;
-		/// <include file='CodeDoc/DockPanelExtender.xml' path='//CodeDoc/Class[@name="DockPanelExtender"]/Property[@name="DockPaneFactory"]/*'/>
 		public IDockPaneFactory DockPaneFactory
 		{
 			get
@@ -213,7 +143,6 @@ namespace WeifenLuo.WinFormsUI
 		}
 
 		private IFloatWindowFactory m_floatWindowFactory = null;
-		/// <include file='CodeDoc/DockPanelExtender.xml' path='//CodeDoc/Class[@name="DockPanelExtender"]/Property[@name="FloatWindowFactory"]/*'/>
 		public IFloatWindowFactory FloatWindowFactory
 		{
 			get
@@ -233,7 +162,6 @@ namespace WeifenLuo.WinFormsUI
 		}
 
 		private IDockPaneCaptionFactory m_dockPaneCaptionFactory = null;
-		/// <include file='CodeDoc/DockPanelExtender.xml' path='//CodeDoc/Class[@name="DockPanelExtender"]/Property[@name="DockPaneCaptionFactory"]/*'/>
 		public IDockPaneCaptionFactory DockPaneCaptionFactory
 		{	
 			get
@@ -252,28 +180,7 @@ namespace WeifenLuo.WinFormsUI
 			}
 		}
 
-		private IDockPaneTabFactory m_dockPaneTabFactory = null;
-		/// <include file='CodeDoc/DockPanelExtender.xml' path='//CodeDoc/Class[@name="DockPanelExtender"]/Property[@name="DockPaneTabFactory"]/*'/>
-		public IDockPaneTabFactory DockPaneTabFactory
-		{
-			get
-			{
-				if (m_dockPaneTabFactory == null)
-					m_dockPaneTabFactory = new DefaultDockPaneTabFactory();
-
-				return m_dockPaneTabFactory;
-			}
-			set
-			{
-				if (DockPanel.Contents.Count > 0)
-					throw new InvalidOperationException();
-
-				m_dockPaneTabFactory = value;
-			}
-		}
-
 		private IDockPaneStripFactory m_dockPaneStripFactory = null;
-		/// <include file='CodeDoc/DockPanelExtender.xml' path='//CodeDoc/Class[@name="DockPanelExtender"]/Property[@name="DockPaneStripFactory"]/*'/>
 		public IDockPaneStripFactory DockPaneStripFactory
 		{
 			get
@@ -292,48 +199,7 @@ namespace WeifenLuo.WinFormsUI
 			}
 		}
 
-		private IAutoHidePaneFactory m_autoHidePaneFactory = null;
-		/// <include file='CodeDoc/DockPanelExtender.xml' path='//CodeDoc/Class[@name="DockPanelExtender"]/Property[@name="AutoHidePaneFactory"]/*'/>
-		public IAutoHidePaneFactory AutoHidePaneFactory
-		{
-			get
-			{
-				if (m_autoHidePaneFactory == null)
-					m_autoHidePaneFactory = new DefaultAutoHidePaneFactory();
-
-				return m_autoHidePaneFactory;
-			}
-			set
-			{
-				if (DockPanel.Contents.Count > 0)
-					throw new InvalidOperationException();
-
-				m_autoHidePaneFactory = value;
-			}
-		}
-
-		private IAutoHideTabFactory m_autoHideTabFactory = null;
-		/// <include file='CodeDoc/DockPanelExtender.xml' path='//CodeDoc/Class[@name="DockPanelExtender"]/Property[@name="AutoHideTabFactory"]/*'/>
-		public IAutoHideTabFactory AutoHideTabFactory
-		{
-			get
-			{
-				if (m_autoHideTabFactory == null)
-					m_autoHideTabFactory = new DefaultAutoHideTabFactory();
-
-				return m_autoHideTabFactory;
-			}
-			set
-			{
-				if (DockPanel.Contents.Count > 0)
-					throw new InvalidOperationException();
-
-				m_autoHideTabFactory = value;
-			}
-		}
-
 		private IAutoHideStripFactory m_autoHideStripFactory = null;
-		/// <include file='CodeDoc/DockPanelExtender.xml' path='//CodeDoc/Class[@name="DockPanelExtender"]/Property[@name="AutoHideStripFactory"]/*'/>
 		public IAutoHideStripFactory AutoHideStripFactory
 		{	
 			get
@@ -352,7 +218,6 @@ namespace WeifenLuo.WinFormsUI
 					return;
 
 				m_autoHideStripFactory = value;
-				DockPanel.ReCreateAutoHideStripControl();
 			}
 		}
 	}
