@@ -157,6 +157,9 @@
     </Compile>
     <Compile Include="Docking\Win32\Enums.cs" />
     <Compile Include="Docking\Win32\NativeMethods.cs" />
+    <None Include="..\patchnotes.txt">
+      <Link>patchnotes.txt</Link>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Docking\Resources.resx">

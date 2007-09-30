@@ -422,7 +422,7 @@ namespace WeifenLuo.WinFormsUI.Docking
 
         private static Brush BrushToolWindowActiveBackground
         {
-            get { return SystemBrushes.Control; }
+            get { return SystemBrushes.ControlLightLight; }
         }
 
         private static Brush BrushDocumentActiveBackground
