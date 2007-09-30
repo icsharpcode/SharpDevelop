@@ -136,7 +136,7 @@
     <Compile Include="Src\Services\AmbienceService\CodeDOMGeneratorUtility.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\WindowOpenEvaluator.cs" />
     <Compile Include="Src\Internal\Templates\Project\ProjectDescriptor.cs" />
-    <Compile Include="Src\Internal\Templates\Project\CombineDescriptor.cs" />
+    <Compile Include="Src\Internal\Templates\Project\SolutionDescriptor.cs" />
     <Compile Include="Src\Gui\IProgressMonitor.cs" />
     <Compile Include="Src\Gui\IViewContent.cs" />
     <Compile Include="Src\Gui\IWorkbench.cs" />

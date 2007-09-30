@@ -17,7 +17,7 @@ namespace ICSharpCode.SharpDevelop
 	public static class ClassBrowserIconService
 	{
 		public const int NamespaceIndex = 3;
-		public const int CombineIndex   = 14;
+		public const int SolutionIndex  = 14;
 		public const int ConstIndex   = 15;
 		public const int GotoArrowIndex = 13;
 		

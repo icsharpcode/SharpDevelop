@@ -29,8 +29,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			TaskService.Added   += new TaskEventHandler(TaskServiceAdded);
 			TaskService.Removed += new TaskEventHandler(TaskServiceRemoved);
 			
-			ProjectService.SolutionLoaded += OnCombineOpen;
-			ProjectService.SolutionClosed += OnCombineClosed;
+			ProjectService.SolutionLoaded += OnSolutionOpen;
+			ProjectService.SolutionClosed += OnSolutionClosed;
 			
 			InternalShowResults(null, null);
 		}
@@ -40,12 +40,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 			taskView.RefreshColumnNames();
 		}
 		
-		void OnCombineOpen(object sender, SolutionEventArgs e)
+		void OnSolutionOpen(object sender, SolutionEventArgs e)
 		{
 			taskView.ClearTasks();
 		}
 		
-		void OnCombineClosed(object sender, EventArgs e)
+		void OnSolutionClosed(object sender, EventArgs e)
 		{
 			taskView.ClearTasks();
 		}

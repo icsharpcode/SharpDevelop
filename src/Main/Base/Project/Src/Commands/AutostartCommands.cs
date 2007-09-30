@@ -79,12 +79,12 @@ namespace ICSharpCode.SharpDevelop.Commands
 		{
 			//WorkbenchSingleton.MainForm.Show();
 			
-			bool didLoadCombineOrFile = false;
+			bool didLoadSolutionOrFile = false;
 		
 			NavigationService.SuspendLogging();
 			
 			foreach (string file in fileList) {
-				didLoadCombineOrFile = true;
+				didLoadSolutionOrFile = true;
 				try {
 					IProjectLoader loader = ProjectService.GetProjectLoader(file);
 					if (loader != null) {
@@ -97,15 +97,15 @@ namespace ICSharpCode.SharpDevelop.Commands
 				}
 			}
 			
-			// load previous combine
-			if (!didLoadCombineOrFile && PropertyService.Get("SharpDevelop.LoadPrevProjectOnStartup", false)) {
+			// load previous solution
+			if (!didLoadSolutionOrFile && PropertyService.Get("SharpDevelop.LoadPrevProjectOnStartup", false)) {
 				if (FileService.RecentOpen.RecentProject.Count > 0) {
 					ProjectService.LoadSolution(FileService.RecentOpen.RecentProject[0].ToString());
-					didLoadCombineOrFile = true;
+					didLoadSolutionOrFile = true;
 				}
 			}
 			
-			if (!didLoadCombineOrFile) {
+			if (!didLoadSolutionOrFile) {
 				foreach (ICommand command in AddInTree.BuildItems("/Workspace/AutostartNothingLoaded", null, false)) {
 					command.Run();
 				}

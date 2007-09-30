@@ -116,7 +116,7 @@ namespace ICSharpCode.SharpDevelop
 		{
 			if (loadSolutionProjectsThread != null) {
 				if (!abortLoadSolutionProjectsThread)
-					throw new InvalidOperationException("Cannot open new combine without closing old combine!");
+					throw new InvalidOperationException("Cannot open new solution without closing old solution!");
 				if (!loadSolutionProjectsThread.Join(50)) {
 					// loadSolutionProjects might be waiting for main thread, so give it
 					// a chance to complete safethread calls by putting this method at
@@ -412,6 +412,7 @@ namespace ICSharpCode.SharpDevelop
 			}
 			IEditable editable = activeViewContent as IEditable;
 			if (editable != null) {
+				#warning PrimaryFileName is not thread-safe, move all property accesses that are not guaranteed to be thread-safe into GetActiveViewContent
 				string fileName = activeViewContent.PrimaryFileName;
 				string text = null;
 				

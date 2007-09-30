@@ -87,7 +87,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		
 		ArrayList actions      = new ArrayList();
 		
-		CombineDescriptor combineDescriptor = null;
+		SolutionDescriptor solutionDescriptor = null;
 		ProjectDescriptor projectDescriptor = null;
 		
 		#region Template Properties
@@ -159,9 +159,9 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		
 		
 		[Browsable(false)]
-		public CombineDescriptor CombineDescriptor {
+		public SolutionDescriptor SolutionDescriptor {
 			get {
-				return combineDescriptor;
+				return solutionDescriptor;
 			}
 		}
 		
@@ -221,9 +221,9 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			
 			string hintPath = Path.GetDirectoryName(xmlFileName);
 			if (templateElement["Solution"] != null) {
-				combineDescriptor = CombineDescriptor.CreateCombineDescriptor(templateElement["Solution"], hintPath);
+				solutionDescriptor = SolutionDescriptor.CreateSolutionDescriptor(templateElement["Solution"], hintPath);
 			} else if (templateElement["Combine"] != null) {
-				combineDescriptor = CombineDescriptor.CreateCombineDescriptor(templateElement["Combine"], hintPath);
+				solutionDescriptor = SolutionDescriptor.CreateSolutionDescriptor(templateElement["Combine"], hintPath);
 				WarnObsoleteNode(templateElement["Combine"], "Use <Solution> instead!");
 			}
 			
@@ -231,8 +231,8 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				projectDescriptor = new ProjectDescriptor(templateElement["Project"], hintPath);
 			}
 			
-			if (combineDescriptor == null && projectDescriptor == null
-			    || combineDescriptor != null && projectDescriptor != null)
+			if (solutionDescriptor == null && projectDescriptor == null
+			    || solutionDescriptor != null && projectDescriptor != null)
 			{
 				throw new TemplateLoadException("Template must contain either Project or Solution node!");
 			}
@@ -281,8 +281,8 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 					return null;
 				}
 			}
-			if (combineDescriptor != null) {
-				return combineDescriptor.CreateSolution(projectCreateInformation, this.languagename);
+			if (solutionDescriptor != null) {
+				return solutionDescriptor.CreateSolution(projectCreateInformation, this.languagename);
 			} else if (projectDescriptor != null) {
 				projectCreateInformation.Solution = new Solution();
 				IProject project = projectDescriptor.CreateProject(projectCreateInformation, this.languagename);

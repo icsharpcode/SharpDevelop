@@ -131,7 +131,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 							break;
 						}
 						total = new Report(StringParser.Parse("${res:Dialog.WordCountDialog.TotalText}"), 0, 0, 0);
-						CountCombine(ProjectService.OpenSolution, ref total);
+						CountSolution(ProjectService.OpenSolution, ref total);
 						// ((ListView)ControlDictionary["resultListView"]).Items.Add(new ListViewItem(""));
 						// ((ListView)ControlDictionary["resultListView"]).Items.Add(all.ToListItem());
 						break;
@@ -140,9 +140,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 			UpdateList(0);
 		}
 		
-		void CountCombine(Solution combine, ref Report all)
+		void CountSolution(Solution solution, ref Report all)
 		{
-			foreach (IProject project in combine.Projects) {
+			foreach (IProject project in solution.Projects) {
 				foreach (ProjectItem item in project.Items) {
 					if (item.ItemType == ItemType.Compile) {
 						Report r = GetReport(item.FileName);

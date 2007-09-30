@@ -183,7 +183,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			panel.Controls.Add(grid);
 			panel.Controls.Add(comboBox);
 			
-			ProjectService.SolutionClosed += CombineClosedEvent;
+			ProjectService.SolutionClosed += SolutionClosedEvent;
 			
 			grid.PropertyValueChanged += new PropertyValueChangedEventHandler(PropertyChanged);
 			grid.ContextMenuStrip = MenuService.CreateContextMenu(this, "/SharpDevelop/Views/PropertyPad/ContextMenu");
@@ -197,7 +197,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			WorkbenchActiveContentChanged(null, null);
 		}
 		
-		void CombineClosedEvent(object sender, EventArgs e)
+		void SolutionClosedEvent(object sender, EventArgs e)
 		{
 			SetDesignableObjects(null);
 		}
@@ -300,7 +300,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			base.Dispose();
 			if (grid != null) {
-				ProjectService.SolutionClosed -= CombineClosedEvent;
+				ProjectService.SolutionClosed -= SolutionClosedEvent;
 				try {
 					grid.SelectedObjects = null;
 				} catch {}

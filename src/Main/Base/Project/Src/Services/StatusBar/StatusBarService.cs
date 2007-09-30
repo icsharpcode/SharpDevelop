@@ -47,9 +47,9 @@ namespace ICSharpCode.SharpDevelop
 			statusBar.CursorStatusBarPanel.Text = StringParser.Parse(
 				"${res:StatusBarService.CursorStatusBarPanelText}",
 				new string[,] {
-					{"Line", String.Format("{0,-10}", y + 1)},
-					{"Column", String.Format("{0,-5}", x + 1)},
-					{"Character", String.Format("{0,-5}", charOffset + 1)}
+					{"Line", String.Format("{0,-10}", y)},
+					{"Column", String.Format("{0,-5}", x)},
+					{"Character", String.Format("{0,-5}", charOffset)}
 				});
 		}
 		

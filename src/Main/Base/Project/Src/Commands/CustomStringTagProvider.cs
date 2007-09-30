@@ -24,6 +24,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 			"CurrentProjectName",
 			"ProjectDir", "ProjectFilename",
 			"CombineDir", "CombineFilename",
+			"SolutionDir", "SolutionFilename",
 			"Startuppath",
 			"TaskService.Warnings", "TaskService.Errors", "TaskService.Messages",
 			"NetSdkDir"
@@ -92,14 +93,28 @@ namespace ICSharpCode.SharpDevelop.Commands
 					} catch (Exception) {}
 					break;
 					
-					// TODO:
 				case "CURLINE":
-					return String.Empty;
+					{
+						IPositionable positionable = WorkbenchSingleton.Workbench.ActiveViewContent as IPositionable;
+						if (positionable != null)
+							return (positionable.Line + 1).ToString();
+						break;
+					}
 				case "CURCOL":
-					return String.Empty;
+					{
+						IPositionable positionable = WorkbenchSingleton.Workbench.ActiveViewContent as IPositionable;
+						if (positionable != null)
+							return (positionable.Column + 1).ToString();
+						break;
+					}
 				case "CURTEXT":
-					return String.Empty;
-					
+					{
+						var tecp = WorkbenchSingleton.Workbench.ActiveViewContent as DefaultEditor.Gui.Editor.ITextEditorControlProvider;
+						if (tecp != null) {
+							return tecp.TextEditorControl.ActiveTextAreaControl.SelectionManager.SelectedText;
+						}
+						break;
+					}
 				case "TARGETPATH":
 					try {
 						return GetCurrentTargetPath();
@@ -135,7 +150,9 @@ namespace ICSharpCode.SharpDevelop.Commands
 					break;
 					
 				case "COMBINEDIR":
+				case "SOLUTIONDIR":
 					return Path.GetDirectoryName(ProjectService.OpenSolution.FileName);
+				case "SOLUTIONFILENAME":
 				case "COMBINEFILENAME":
 					try {
 						return Path.GetFileName(ProjectService.OpenSolution.FileName);

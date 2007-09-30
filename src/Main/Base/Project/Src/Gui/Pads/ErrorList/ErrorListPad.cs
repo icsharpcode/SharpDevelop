@@ -91,8 +91,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			};
 			
 			ProjectService.EndBuild       += ProjectServiceEndBuild;
-			ProjectService.SolutionLoaded += OnCombineOpen;
-			ProjectService.SolutionClosed += OnCombineClosed;
+			ProjectService.SolutionLoaded += OnSolutionOpen;
+			ProjectService.SolutionClosed += OnSolutionClosed;
 			
 			taskView.CreateControl();
 			contentPanel.Controls.Add(taskView);
@@ -111,13 +111,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 			taskView.RefreshColumnNames();
 		}
 		
-		void OnCombineOpen(object sender, SolutionEventArgs e)
+		void OnSolutionOpen(object sender, SolutionEventArgs e)
 		{
 			taskView.ClearTasks();
 			UpdateToolstripStatus();
 		}
 		
-		void OnCombineClosed(object sender, EventArgs e)
+		void OnSolutionClosed(object sender, EventArgs e)
 		{
 			try {
 				taskView.ClearTasks();

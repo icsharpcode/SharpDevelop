@@ -35,8 +35,8 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			{"${res:Dialog.Options.ExternalTool.QuickInsertMenu.ProjectDirectory}", "${ProjectDir}"},
 			{"${res:Dialog.Options.ExternalTool.QuickInsertMenu.ProjectFileName}",  "${ProjectFileName}"},
 			{"-", ""},
-			{"${res:Dialog.Options.ExternalTool.QuickInsertMenu.CombineDirectory}", "${CombineDir}"},
-			{"${res:Dialog.Options.ExternalTool.QuickInsertMenu.CombineFileName}",  "${CombineFileName}"},
+			{"${res:Dialog.Options.ExternalTool.QuickInsertMenu.CombineDirectory}", "${SolutionDir}"},
+			{"${res:Dialog.Options.ExternalTool.QuickInsertMenu.CombineFileName}",  "${SolutionFileName}"},
 			{"-", ""},
 			{"${res:Dialog.Options.ExternalTool.QuickInsertMenu.SharpDevelopStartupPath}",  "${StartupPath}"},
 		};
@@ -49,7 +49,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			{"-", ""},
 			{"${res:Dialog.Options.ExternalTool.QuickInsertMenu.ProjectDirectory}", "${ProjectDir}"},
 			{"-", ""},
-			{"${res:Dialog.Options.ExternalTool.QuickInsertMenu.CombineDirectory}", "${CombineDir}"},
+			{"${res:Dialog.Options.ExternalTool.QuickInsertMenu.CombineDirectory}", "${SolutionDir}"},
 			{"-", ""},
 			{"${res:Dialog.Options.ExternalTool.QuickInsertMenu.SharpDevelopStartupPath}",  "${StartupPath}"},
 		};

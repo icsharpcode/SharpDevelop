@@ -288,7 +288,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			TextAreaControl activeTextAreaControl = textEditorControl.ActiveTextAreaControl;
 			int line = activeTextAreaControl.Caret.Line;
 			int col = activeTextAreaControl.Caret.Column;
-			StatusBarService.SetCaretPosition(activeTextAreaControl.TextArea.TextView.GetVisualColumn(line, col), line, col);
+			StatusBarService.SetCaretPosition(activeTextAreaControl.TextArea.TextView.GetVisualColumn(line, col) + 1, line + 1, col + 1);
 			NavigationService.Log(this.BuildNavPoint());
 		}
 		

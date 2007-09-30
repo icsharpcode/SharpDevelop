@@ -235,33 +235,6 @@ namespace ICSharpCode.SharpDevelop.Commands
 				if (item.Text == ToolLoader.Tool[i].ToString()) {
 					ExternalTool tool = (ExternalTool)ToolLoader.Tool[i];
 					
-					string fileName = WorkbenchSingleton.Workbench.ActiveViewContent.PrimaryFileName;
-					StringParser.Properties["ItemPath"]        = fileName == null ? String.Empty : fileName;
-					StringParser.Properties["ItemDir"]         = fileName == null ? String.Empty : Path.GetDirectoryName(fileName);
-					StringParser.Properties["ItemFileName"]    = fileName == null ? String.Empty : Path.GetFileName(fileName);
-					StringParser.Properties["ItemExt"]         = fileName == null ? String.Empty : Path.GetExtension(fileName);
-					
-					// TODO:
-					StringParser.Properties["CurLine"]         = "0";
-					StringParser.Properties["CurCol"]          = "0";
-					StringParser.Properties["CurText"]         = "0";
-					
-					string targetPath = ProjectService.CurrentProject == null ? null : ProjectService.CurrentProject.OutputAssemblyFullPath;
-					StringParser.Properties["TargetPath"]      = targetPath == null ? String.Empty : targetPath;
-					StringParser.Properties["TargetDir"]       = targetPath == null ? String.Empty : Path.GetDirectoryName(targetPath);
-					StringParser.Properties["TargetName"]      = targetPath == null ? String.Empty : Path.GetFileName(targetPath);
-					StringParser.Properties["TargetExt"]       = targetPath == null ? String.Empty : Path.GetExtension(targetPath);
-					
-					string projectFileName = ProjectService.CurrentProject == null ? null : ProjectService.CurrentProject.FileName;
-					StringParser.Properties["ProjectDir"]      = projectFileName == null ? null : Path.GetDirectoryName(projectFileName);
-					StringParser.Properties["ProjectFileName"] = projectFileName == null ? null : projectFileName;
-					
-					string combineFileName = ProjectService.OpenSolution == null ? null : ProjectService.OpenSolution.FileName;
-					StringParser.Properties["CombineDir"]      = combineFileName == null ? null : Path.GetDirectoryName(combineFileName);
-					StringParser.Properties["CombineFileName"] = combineFileName == null ? null : combineFileName;
-					
-					StringParser.Properties["StartupPath"]     = Application.StartupPath;
-					
 					string command = StringParser.Parse(tool.Command);
 					string args    = StringParser.Parse(tool.Arguments);
 					

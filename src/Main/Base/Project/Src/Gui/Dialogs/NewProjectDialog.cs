@@ -258,7 +258,7 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 		}
 		
 		public string NewProjectLocation;
-		public string NewCombineLocation;
+		public string NewSolutionLocation;
 		
 		void OpenEvent(object sender, EventArgs e)
 		{
@@ -313,12 +313,12 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 				
 				cinfo.ProjectName     = name;
 				
-				NewCombineLocation = item.Template.CreateProject(cinfo);
-				if (NewCombineLocation == null || NewCombineLocation.Length == 0) {
+				NewSolutionLocation = item.Template.CreateProject(cinfo);
+				if (NewSolutionLocation == null || NewSolutionLocation.Length == 0) {
 					return;
 				}
 				if (createNewSolution) {
-					ProjectService.LoadSolutionOrProject(NewCombineLocation);
+					ProjectService.LoadSolutionOrProject(NewSolutionLocation);
 					item.Template.RunOpenActions(cinfo);
 				}
 				

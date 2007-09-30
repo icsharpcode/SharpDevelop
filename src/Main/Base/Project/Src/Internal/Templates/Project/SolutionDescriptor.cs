@@ -15,7 +15,7 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Internal.Templates
 {
-	public class CombineDescriptor
+	public class SolutionDescriptor
 	{
 		SolutionFolderDescriptor mainFolder = new SolutionFolderDescriptor("");
 		
@@ -87,7 +87,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		}
 		#endregion
 
-		protected CombineDescriptor(string name)
+		protected SolutionDescriptor(string name)
 		{
 			this.name = name;
 		}
@@ -97,11 +97,11 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			Solution newSolution = new Solution();
 			projectCreateInformation.Solution = newSolution;
 			
-			string newCombineName = StringParser.Parse(name, new string[,] {
+			string newSolutionName = StringParser.Parse(name, new string[,] {
 			                                           	{"ProjectName", projectCreateInformation.ProjectName}
 			                                           });
 			
-			newSolution.Name = newCombineName;
+			newSolution.Name = newSolutionName;
 			
 			string oldCombinePath = projectCreateInformation.SolutionPath;
 			string oldProjectPath = projectCreateInformation.ProjectBasePath;
@@ -124,35 +124,35 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				return null;
 			}
 			
-			string combineLocation = Path.Combine(projectCreateInformation.SolutionPath, newCombineName + ".sln");
-			// Save combine
-			if (File.Exists(combineLocation)) {
+			string solutionLocation = Path.Combine(projectCreateInformation.SolutionPath, newSolutionName + ".sln");
+			// Save solution
+			if (File.Exists(solutionLocation)) {
 				
-				StringParser.Properties["combineLocation"] = combineLocation;
+				StringParser.Properties["combineLocation"] = solutionLocation;
 				if (MessageService.AskQuestion("${res:ICSharpCode.SharpDevelop.Internal.Templates.CombineDescriptor.OverwriteProjectQuestion}")) {
-					newSolution.Save(combineLocation);
+					newSolution.Save(solutionLocation);
 				}
 			} else {
-				newSolution.Save(combineLocation);
+				newSolution.Save(solutionLocation);
 			}
 			newSolution.Dispose();
-			return combineLocation;
+			return solutionLocation;
 		}
 		
-		public static CombineDescriptor CreateCombineDescriptor(XmlElement element, string hintPath)
+		public static SolutionDescriptor CreateSolutionDescriptor(XmlElement element, string hintPath)
 		{
-			CombineDescriptor combineDescriptor = new CombineDescriptor(element.Attributes["name"].InnerText);
+			SolutionDescriptor solutionDescriptor = new SolutionDescriptor(element.Attributes["name"].InnerText);
 			
 			if (element.Attributes["directory"] != null) {
-				combineDescriptor.relativeDirectory = element.Attributes["directory"].InnerText;
+				solutionDescriptor.relativeDirectory = element.Attributes["directory"].InnerText;
 			}
 			
 			if (element["Options"] != null && element["Options"]["StartupProject"] != null) {
-				combineDescriptor.startupProject = element["Options"]["StartupProject"].InnerText;
+				solutionDescriptor.startupProject = element["Options"]["StartupProject"].InnerText;
 			}
 			
-			combineDescriptor.mainFolder.Read(element, hintPath);
-			return combineDescriptor;
+			solutionDescriptor.mainFolder.Read(element, hintPath);
+			return solutionDescriptor;
 		}
 	}
 }

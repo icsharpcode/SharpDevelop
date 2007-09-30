@@ -22,7 +22,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 	public class ProjectCreateInformation
 	{
 		string projectName;
-		string combinePath;
+		string solutionPath;
 		string projectBasePath;
 		string outputProjectFileName;
 		string rootNamespace;
@@ -59,10 +59,10 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		
 		public string SolutionPath {
 			get {
-				return combinePath;
+				return solutionPath;
 			}
 			set {
-				combinePath = value;
+				solutionPath = value;
 			}
 		}
 		

@@ -20,7 +20,7 @@ using MSBuild = Microsoft.Build.BuildEngine;
 namespace ICSharpCode.SharpDevelop.Internal.Templates
 {
 	/// <summary>
-	/// This class is used inside the combine templates for projects.
+	/// This class is used inside the solution templates for projects.
 	/// </summary>
 	public sealed class ProjectDescriptor
 	{

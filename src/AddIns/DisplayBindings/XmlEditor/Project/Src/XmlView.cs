@@ -154,7 +154,7 @@ namespace ICSharpCode.XmlEditor
 		}
 		
 		public override bool IsReadOnly {
-			get { 
+			get {
 				return xmlEditor.IsReadOnly;
 			}
 		}
@@ -782,7 +782,7 @@ namespace ICSharpCode.XmlEditor
 			TextAreaControl activeTextAreaControl = xmlEditor.ActiveTextAreaControl;
 			int line = activeTextAreaControl.Caret.Line;
 			int col = activeTextAreaControl.Caret.Column;
-			StatusBarService.SetCaretPosition(activeTextAreaControl.TextArea.TextView.GetVisualColumn(line, col), line, col);
+			StatusBarService.SetCaretPosition(activeTextAreaControl.TextArea.TextView.GetVisualColumn(line, col) + 1, line + 1, col = 1);
 		}
 		
 		/// <summary>
