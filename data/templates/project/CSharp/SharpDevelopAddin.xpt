@@ -33,127 +33,20 @@
 		
 		<Files>
 			<File name="${ProjectName}.addin" CopyToOutputDirectory="Always"><![CDATA[<AddIn name        = "${ProjectName}"
-   author      = "${USER}"
-   url         = ""
-   description = "TODO: Put description here">
-
-<Runtime>
-    <Import assembly = "${ProjectName}.dll"/>
-</Runtime>
-
-<Path name = "/SharpDevelop/Workbench/Pads">
-    <Pad id       = "${ProjectName}Pad"
-         category = "Main"
-         title    = "${ProjectName}Pad"
-         icon     = "PadIcons.Output"
-         shortcut = "Control|Alt|T"
-         class    = "${ProjectName}.TestPad"/>
-</Path>
+       author      = "${USER}"
+       url         = ""
+       description = "TODO: Put description here">
+	
+	<Runtime>
+		<Import assembly = "${ProjectName}.dll"/>
+	</Runtime>
+	
+	<!-- Extend the SharpDevelop AddIn-Tree like this:
+	<Path name = ...>
+		<.../>
+	</Path>
+	-->
 </AddIn>
-]]></File>
-    <File name="Resources/MyUserControl.xfrm" buildAction="EmbeddedResource">
-        <![CDATA[<?xml version="1.0" encoding="utf-8"?>
-<Components version="1.0">
-<System.Windows.Forms.UserControl>
-<Name value="MyUserControl" />
-<ClientSize value="{Width=230, Height=160}" />
-<Controls>
-  <System.Windows.Forms.Button>
-    <Name value="testButton" />
-    <Location value="{X=63,Y=97}" />
-    <Text value="A button" />
-    <Size value="{Width=75, Height=23}" />
-    <Anchor value="None" />
-    <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
-    <TabIndex value="1" />
-  </System.Windows.Forms.Button>
-  <System.Windows.Forms.Label>
-    <Name value="label1" />
-    <Location value="{X=38,Y=19}" />
-    <Text value="Hello, World!" />
-    <Size value="{Width=100, Height=23}" />
-    <TabIndex value="0" />
-  </System.Windows.Forms.Label>
-</Controls>
-</System.Windows.Forms.UserControl>
-</Components>
-]]></File>
-    <File name="Src/MyUserControl.cs">
-        <![CDATA[${StandardHeader.C#}
-
-using System;
-using System.Windows.Forms;
-using ICSharpCode.SharpDevelop.Gui.XmlForms;
-
-namespace ${ProjectName}
-{
-public class MyUserControl : BaseSharpDevelopUserControl
-{
-    public MyUserControl()
-    {
-        SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("${ProjectName}.Resources.MyUserControl.xfrm"));
-        Get<Button>("test").Click += ButtonClick;
-    }
-    
-    void ButtonClick(object sender, EventArgs e)
-    {
-        System.Windows.Forms.MessageBox.Show("The button was clicked!");
-    }
-}
-}
-]]></File>
-    <File name="Src/TestPad.cs">
-        <![CDATA[${StandardHeader.C#}
-
-using System;
-using System.Windows.Forms;
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Gui;
-
-namespace ${ProjectName}
-{
-/// <summary>
-/// Description of the pad content
-/// </summary>
-public class TestPad : AbstractPadContent
-{
-    MyUserControl ctl;
-    
-    /// <summary>
-    /// Creates a new TestPad object
-    /// </summary>
-    public TestPad()
-    {
-        ctl = new MyUserControl();
-    }
-    
-    /// <summary>
-    /// The <see cref="System.Windows.Forms.Control"/> representing the pad
-    /// </summary>
-    public override Control Control {
-        get {
-            return ctl;
-        }
-    }
-    
-    /// <summary>
-    /// Refreshes the pad
-    /// </summary>
-    public override void RedrawContent()
-    {
-        // TODO: Refresh the whole pad control here, renew all resource strings whatever
-        //       Note that you do not need to recreate the control.
-    }
-    
-    /// <summary>
-    /// Cleans up all used resources
-    /// </summary>
-    public override void Dispose()
-    {
-        ctl.Dispose();
-    }
-}
-}
 ]]></File>
 			<File name="Configuration/AssemblyInfo.cs" src="DefaultAssemblyInfo.cs"/>
 			<File name="AddInWritingHelp.txt" src="..\AddInWritingHelp.txt"/>

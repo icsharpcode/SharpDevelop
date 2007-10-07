@@ -19,7 +19,7 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
-	public class DriveObject
+	sealed class DriveObject
 	{
 		DriveInfo driveInfo;
 		string text  = null;
@@ -64,7 +64,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 	}
 	
-	class IconManager
+	sealed class IconManager
 	{
 		private static ImageList icons = new ImageList();
 		private static Hashtable iconIndecies = new Hashtable();
@@ -110,7 +110,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 	}
 	
-	public class FileList : ListView
+	sealed class FileList : ListView
 	{
 		private FileSystemWatcher watcher;
 		
@@ -305,7 +305,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			EndUpdate();
 		}
 		
-		public class FileListItem : ListViewItem
+		internal class FileListItem : ListViewItem
 		{
 			string fullname;
 			public string FullName {
@@ -403,7 +403,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 	}
 	
-	public class ShellTree : TreeView
+	sealed class ShellTree : TreeView
 	{
 		public string NodePath {
 			get {

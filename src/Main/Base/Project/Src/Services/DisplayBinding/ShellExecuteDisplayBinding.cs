@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.IO;
 using ICSharpCode.Core;
 using System.Diagnostics;
 
@@ -27,7 +28,9 @@ namespace ICSharpCode.SharpDevelop
 				// TODO: warn user that the file must be saved
 			}
 			try {
-				Process.Start(file.FileName);
+				Process.Start(new ProcessStartInfo(file.FileName) {
+				              	WorkingDirectory = Path.GetDirectoryName(file.FileName)
+				              });
 			} catch (Exception ex) {
 				MessageService.ShowError(ex.Message);
 			}

@@ -337,6 +337,19 @@ class Main {
 		}
 		
 		[Test]
+		public void FindObjectCreationContextForConstructorInsight4()
+		{
+			const string program = @"using System; using System.Text;
+class Main {
+	void M() {
+		StringBuilder b = new StringBuilderBla";
+			
+			ExpressionResult result = ef.FindExpression(program, program.Length - 3);
+			Assert.AreEqual("StringBuilder", result.Expression);
+			Assert.AreEqual(ExpressionContext.ObjectCreation.ToString(), result.Context.ToString());
+		}
+		
+		[Test]
 		public void ExpressionContextInFieldInitializer()
 		{
 			const string program = @"using System; using System.Collections.Generic;

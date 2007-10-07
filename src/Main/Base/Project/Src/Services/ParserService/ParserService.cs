@@ -388,11 +388,6 @@ namespace ICSharpCode.SharpDevelop
 			LoggingService.Info("ParserUpdateThread stopped");
 		}
 		
-		static IViewContent GetActiveViewContent()
-		{
-			return WorkbenchSingleton.Workbench.ActiveViewContent;
-		}
-		
 		public static void ParseCurrentViewContent()
 		{
 			ParserUpdateStep();
@@ -400,9 +395,22 @@ namespace ICSharpCode.SharpDevelop
 		
 		static void ParserUpdateStep()
 		{
-			IViewContent activeViewContent;
+			IViewContent activeViewContent = null;
+			string fileName = null;
+			bool isUntitled = false;
 			try {
-				activeViewContent = WorkbenchSingleton.SafeThreadFunction<IViewContent>(GetActiveViewContent);
+				WorkbenchSingleton.SafeThreadCall(
+					delegate {
+						try {
+							activeViewContent = WorkbenchSingleton.Workbench.ActiveViewContent;
+							if (activeViewContent != null && activeViewContent.PrimaryFile != null) {
+								fileName = activeViewContent.PrimaryFileName;
+								isUntitled = activeViewContent.PrimaryFile.IsUntitled;
+							}
+						} catch (Exception ex) {
+							MessageService.ShowError(ex.ToString());
+						}
+					});
 			} catch (InvalidOperationException) { // includes ObjectDisposedException
 				// maybe workbench has been disposed while waiting for the SafeThreadCall
 				// can occur after workbench unload or after aborting SharpDevelop with
@@ -412,8 +420,6 @@ namespace ICSharpCode.SharpDevelop
 			}
 			IEditable editable = activeViewContent as IEditable;
 			if (editable != null) {
-				#warning PrimaryFileName is not thread-safe, move all property accesses that are not guaranteed to be thread-safe into GetActiveViewContent
-				string fileName = activeViewContent.PrimaryFileName;
 				string text = null;
 				
 				if (!(fileName == null || fileName.Length == 0)) {
@@ -425,7 +431,7 @@ namespace ICSharpCode.SharpDevelop
 					}
 					int hash = text.GetHashCode();
 					if (!lastUpdateHash.ContainsKey(fileName) || lastUpdateHash[fileName] != hash) {
-						parseInformation = ParseFile(fileName, text, !activeViewContent.PrimaryFile.IsUntitled);
+						parseInformation = ParseFile(fileName, text, !isUntitled);
 						lastUpdateHash[fileName] = hash;
 						updated = true;
 					}

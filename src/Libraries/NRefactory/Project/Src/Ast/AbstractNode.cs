@@ -15,38 +15,12 @@ namespace ICSharpCode.NRefactory.Ast
 {
 	public abstract class AbstractNode : INode
 	{
-		INode       parent;
 		List<INode> children = new List<INode>();
 		
-		Location startLocation;
-		Location endLocation;
-		
-		public INode Parent {
-			get	{
-				return parent;
-			}
-			set {
-				parent = value;
-			}
-		}
-		
-		public Location StartLocation {
-			get {
-				return startLocation;
-			}
-			set {
-				startLocation = value;
-			}
-		}
-		
-		public Location EndLocation {
-			get {
-				return endLocation;
-			}
-			set {
-				endLocation = value;
-			}
-		}
+		public INode Parent { get; set; }
+		public Location StartLocation { get; set; }
+		public Location EndLocation { get; set; }
+		public object UserData { get; set; }
 		
 		public List<INode> Children {
 			get {

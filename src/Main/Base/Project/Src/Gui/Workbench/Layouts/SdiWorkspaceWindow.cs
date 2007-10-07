@@ -66,7 +66,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public IViewContent ActiveViewContent {
 			get {
 				Debug.Assert(WorkbenchSingleton.InvokeRequired == false);
-				if (viewTabControl != null && viewTabControl.SelectedIndex >= 0) {
+				if (viewTabControl != null && viewTabControl.SelectedIndex >= 0 && viewTabControl.SelectedIndex < ViewContents.Count) {
 					return ViewContents[viewTabControl.SelectedIndex];
 				} else if (ViewContents.Count == 1) {
 					return ViewContents[0];

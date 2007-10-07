@@ -39,6 +39,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		
 		/// <summary>
+		/// Gets/Sets the icon of the view content.
+		/// </summary>
+		System.Drawing.Icon Icon {
+			get;
+			set;
+		}
+		
+		/// <summary>
 		/// Is raised when the ActiveViewContent property has changed.
 		/// </summary>
 		event EventHandler ActiveViewContentChanged;

@@ -312,10 +312,27 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				}
 			}
 			
-			ParserService.ClearParseInformation(oldFileName);
+			SetIcon();
 			
+			ParserService.ClearParseInformation(oldFileName);
 			textEditorControl.FileName = newFileName;
 			ParserService.ParseViewContent(this);
+		}
+		
+		protected override void OnWorkbenchWindowChanged()
+		{
+			base.OnWorkbenchWindowChanged();
+			SetIcon();
+		}
+		
+		void SetIcon()
+		{
+			if (this.WorkbenchWindow != null) {
+				System.Drawing.Icon icon = ResourceService.GetIcon(IconService.GetImageForFile(this.PrimaryFileName));
+				if (icon != null) {
+					this.WorkbenchWindow.Icon = icon;
+				}
+			}
 		}
 		
 		#region IPositionable implementation

@@ -144,6 +144,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			public STAThreadCaller(Control ctl)
 			{
+				if (ctl == null)
+					throw new ArgumentNullException("ctl");
 				this.ctl = ctl;
 			}
 			

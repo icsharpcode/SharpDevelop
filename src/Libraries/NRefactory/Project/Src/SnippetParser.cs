@@ -117,6 +117,8 @@ namespace ICSharpCode.NRefactory
 				set { throw new NotSupportedException(); }
 			}
 			
+			public object UserData { get; set; }
+			
 			public object AcceptChildren(IAstVisitor visitor, object data)
 			{
 				foreach (INode n in nodes) {

@@ -453,7 +453,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				
 				if (field.IsLiteral)
 					m |= ModifierEnum.Const;
-				else if (field.IsReadOnly)
+				else if (field.IsInitOnly)
 					m |= ModifierEnum.Readonly;
 				
 				if ((field.Attributes & FieldAttributes.Public) == FieldAttributes.Public)

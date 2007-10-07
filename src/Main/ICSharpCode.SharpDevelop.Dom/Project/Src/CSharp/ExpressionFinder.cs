@@ -264,10 +264,13 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 			while ((token = lexer.NextToken()) != null) {
 				if (token.kind == Tokens.EOF) break;
 				
-				if (targetPosition < token.EndLocation) {
+				if (targetPosition <= token.Location) {
 					break;
 				}
 				ApplyToken(token);
+				if (targetPosition < token.EndLocation) {
+					break;
+				}
 				lastToken = token.kind;
 			}
 			

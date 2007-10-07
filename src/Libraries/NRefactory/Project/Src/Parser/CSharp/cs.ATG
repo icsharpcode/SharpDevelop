@@ -362,7 +362,9 @@ TypeDecl<ModifierList m, List<AttributeSection> attributes>
 	{ TypeParameterConstraintsClause<templates> }
 	
 	(. newType.BodyStartLocation = t.EndLocation; .)
-	"{" ClassBody "}"
+	"{"
+	ClassBody
+	"}"
 	[ ";" ]                         (. newType.EndLocation = t.Location; 
 	                                   compilationUnit.BlockEnd();
 	                                .)
@@ -478,6 +480,7 @@ ClassBody
 	{                                  (.List<AttributeSection> attributes = new List<AttributeSection>();
 		                                 ModifierList m = new ModifierList();
 		                               .)
+		SYNC
 		{ AttributeSection<out section> (. attributes.Add(section); .) }
 		MemberModifiers<m>
 		ClassMemberDecl<m, attributes> 
@@ -505,7 +508,7 @@ StructBody
 		MemberModifiers<m>
 		StructMemberDecl<m, attributes> 
 	}
-	"}" 
+	"}"
 .
 
 InterfaceBase<out List<TypeReference> names>
@@ -520,7 +523,7 @@ InterfaceBase<out List<TypeReference> names>
 
 InterfaceBody
 = "{"
-  { InterfaceMemberDecl }
+  { SYNC InterfaceMemberDecl }
   "}"
 .
 
@@ -531,7 +534,8 @@ EnumBody                                 (. FieldDeclaration f; .)
 	{ IF (NotFinalComma()) ","
 		EnumMemberDecl<out f> (. compilationUnit.AddChild(f); .)
 	}
-	[","] ] "}"
+	[","] ]
+	"}"
 .
 
 Type<out TypeReference type>
@@ -1326,7 +1330,8 @@ Argument<out Expression argumentexpr>
 		"ref" (. fd = FieldDirection.Ref; .)
 		| "out" (. fd = FieldDirection.Out; .)
 	]
-	Expr<out expr> (. argumentexpr = fd != FieldDirection.None ? argumentexpr = new DirectionExpression(fd, expr) : expr; .)
+	Expr<out expr>
+	(. argumentexpr = fd != FieldDirection.None ? argumentexpr = new DirectionExpression(fd, expr) : expr; .)
 .
 
 AssignmentOperator<out AssignmentOperatorType op>
@@ -1415,7 +1420,8 @@ LocalVariableDecl<out Statement stmt>
 LocalVariableDeclarator<out VariableDeclaration var>
 (. Expression expr = null; .)
 =
-	Identifier (. var = new VariableDeclaration(t.val); .) [ "=" VariableInitializer<out expr> (. var.Initializer = expr; .) ]
+	Identifier (. var = new VariableDeclaration(t.val); .)
+	[ "=" VariableInitializer<out expr> (. var.Initializer = expr; .) ]
 .
 
 Statement
@@ -1426,6 +1432,7 @@ Statement
 	Location startPos = la.Location;
 .)
 =
+	SYNC
 	(
 		/*--- labeled statement: */
 		IF (IsLabel()) Identifier (. compilationUnit.AddChild(new LabelStatement(t.val)); .)
@@ -1436,9 +1443,11 @@ Statement
 		  "=" Expr<out expr> (. var.Variables.Add(new VariableDeclaration(ident, expr)); .)
 		  { "," Identifier (. ident = t.val; .) "=" Expr<out expr> (. var.Variables.Add(new VariableDeclaration(ident, expr)); .) }
 		  ";" (. compilationUnit.AddChild(var); .)
+
 		/*--- local variable declaration: */
-		| IF (IsLocalVarDecl()) LocalVariableDecl<out stmt> ";" (. compilationUnit.AddChild(stmt); .)
-		| EmbeddedStatement<out stmt> (. compilationUnit.AddChild(stmt); .)
+	|	IF (IsLocalVarDecl()) LocalVariableDecl<out stmt> ";" (. compilationUnit.AddChild(stmt); .)
+	
+	|	EmbeddedStatement<out stmt> (. compilationUnit.AddChild(stmt); .)
 		/* LL(1) confict: LocalVariableDecl *
 		 *            <-> StatementExpr     *
 		 * ident {"." ident} { "[" Expr ... */
@@ -1459,17 +1468,108 @@ EmbeddedStatement<out Statement statement>
 	statement = null;
 .)
 =
-  Block<out statement>
-	/*--- empty statement: */
-  | ";"                       (. statement = new EmptyStatement(); .)
-	/*--- checked / unchecked statement: */
-  | IF (UnCheckedAndLBrace()) (. Statement block; bool isChecked = true; .)
-	("checked" | "unchecked"    (. isChecked = false;.) )
-	Block<out block>            (. statement = isChecked ? (Statement)new CheckedStatement(block) : (Statement)new UncheckedStatement(block); .)
-	/*--- selection statements (if, switch): */
-  | "if"                      (. Statement elseStatement = null; .)
+	(. Location startLocation = la.Location; .)
+	(
+		Block<out statement>
+	
+		/*--- empty statement: */
+	|	";"                       (. statement = new EmptyStatement(); .)
+	
+		/*--- checked / unchecked statement: */
+	|	IF (UnCheckedAndLBrace()) (. Statement block; bool isChecked = true; .)
+		("checked" | "unchecked"    (. isChecked = false;.) )
+		Block<out block>            (. statement = isChecked ? (Statement)new CheckedStatement(block) : (Statement)new UncheckedStatement(block); .)
+	
+		/*--- selection statements (if, switch): */
+	|	IfStatement<out statement>
+	
+	|	"switch" (. List<SwitchSection> switchSections = new List<SwitchSection>(); .)
+		  "(" Expr<out expr> ")"
+		  "{" SwitchSections<switchSections>
+		  "}"  (. statement = new SwitchStatement(expr, switchSections); .)
+	
+		/*--- iteration statements (while, do, for, foreach): */
+	|	"while" "(" Expr<out expr> ")"
+		EmbeddedStatement<out embeddedStatement>
+		(. statement = new DoLoopStatement(expr, embeddedStatement, ConditionType.While, ConditionPosition.Start);.)
+	
+	|	"do" EmbeddedStatement<out embeddedStatement> "while"
+		"(" Expr<out expr> ")" ";" 
+		(. statement = new DoLoopStatement(expr, embeddedStatement, ConditionType.While, ConditionPosition.End); .)
+	
+	|	"for" (. List<Statement> initializer = null; List<Statement> iterator = null; .)
+		  "(" [ ForInitializer<out initializer> ] ";"
+		  [ Expr<out expr> ] ";"
+		  [ ForIterator<out iterator> ] ")"
+		  EmbeddedStatement<out embeddedStatement> (. statement = new ForStatement(initializer, expr, iterator, embeddedStatement); .)
+	
+	|	"foreach" "(" Type<out type> Identifier   (. string varName = t.val; .)
+		"in" Expr<out expr> ")"
+		EmbeddedStatement<out embeddedStatement>
+		(.  statement = new ForeachStatement(type, varName , expr, embeddedStatement); .)
+	
+		/*--- jump statements (break, contine, goto, return, throw): */
+	|	"break" ";"               (. statement = new BreakStatement(); .)
+	|	"continue" ";"            (. statement = new ContinueStatement(); .)
+	|	GotoStatement<out statement>
+	
+	|	IF (IsYieldStatement()) "yield"
+		( "return" Expr<out expr> (. statement = new YieldStatement(new ReturnStatement(expr)); .)
+		| "break" (. statement = new YieldStatement(new BreakStatement()); .) )
+		";"
+	
+	|	"return" [ Expr<out expr> ] ";"    (. statement = new ReturnStatement(expr); .)
+	|	"throw" [ Expr<out expr> ] ";"     (. statement = new ThrowStatement(expr); .)
+	  
+		/*--- expression statement: */
+	|	StatementExpr<out statement> SYNC ";"
+	
+		/*--- try statement: */
+	|	TryStatement<out statement>
+	
+		/*--- lock satement: */
+	|	"lock" "(" Expr<out expr> ")"
+		EmbeddedStatement<out embeddedStatement> (. statement = new LockStatement(expr, embeddedStatement); .)
+	
+		/*--- using statement: */
+	|	(.Statement resourceAcquisitionStmt = null; .)
+		"using" "("
+		ResourceAcquisition<out resourceAcquisitionStmt> ")"
+		EmbeddedStatement<out embeddedStatement> (. statement = new UsingStatement(resourceAcquisitionStmt, embeddedStatement); .)
+	
+		/*--- unsafe statement: */
+	|	"unsafe" Block<out embeddedStatement>  (. statement = new UnsafeStatement(embeddedStatement); .)
+		/*--- fixed statement: */
+	|	"fixed"
+		"(" Type<out type>     (. if (type.PointerNestingLevel == 0) Error("can only fix pointer types");
+		                          List<VariableDeclaration> pointerDeclarators = new List<VariableDeclaration>(1);
+		                       .)
+		Identifier             (. string identifier = t.val; .)
+		"=" Expr<out expr>     (. pointerDeclarators.Add(new VariableDeclaration(identifier, expr)); .)
+		{
+			"," Identifier     (. identifier = t.val; .)
+			"=" Expr<out expr> (. pointerDeclarators.Add(new VariableDeclaration(identifier, expr)); .)
+		}
+		")" EmbeddedStatement<out embeddedStatement>  (. statement = new FixedStatement(type, pointerDeclarators, embeddedStatement); .)
+	)
+	(.	if (statement != null) {
+			statement.StartLocation = startLocation;
+			statement.EndLocation = t.EndLocation;
+		}
+	.)
+.
+
+IfStatement<out Statement statement>
+(.
+	Expression expr = null;
+	Statement embeddedStatement = null;
+	statement = null;
+.)
+=
+	"if"
 	"(" Expr<out expr> ")"
 	EmbeddedStatement<out embeddedStatement>
+	(. Statement elseStatement = null; .)
 	[ "else" EmbeddedStatement<out elseStatement> ]
 	(. statement = elseStatement != null ? new IfElseStatement(expr, embeddedStatement, elseStatement) : new IfElseStatement(expr, embeddedStatement); .)
 	(. if (elseStatement is IfElseStatement && (elseStatement as IfElseStatement).TrueStatement.Count == 1) {
@@ -1479,62 +1579,8 @@ EmbeddedStatement<out Statement statement>
 		                               (elseStatement as IfElseStatement).TrueStatement[0]));
 		(statement as IfElseStatement).ElseIfSections.AddRange((elseStatement as IfElseStatement).ElseIfSections);
 		(statement as IfElseStatement).FalseStatement = (elseStatement as IfElseStatement).FalseStatement;
-	} .)
-  | "switch" (. List<SwitchSection> switchSections = new List<SwitchSection>(); .)
-	  "(" Expr<out expr> ")"
-	  "{" SwitchSections<switchSections>
-	  "}"  (. statement = new SwitchStatement(expr, switchSections); .)
-	/*--- iteration statements (while, do, for, foreach): */
-  | "while" "(" Expr<out expr> ")"
-	
-	EmbeddedStatement<out embeddedStatement> (. statement = new DoLoopStatement(expr, embeddedStatement, ConditionType.While, ConditionPosition.Start);.)
-  | "do" EmbeddedStatement<out embeddedStatement> "while"
-	"(" Expr<out expr> ")" ";"  (. statement = new DoLoopStatement(expr, embeddedStatement, ConditionType.While, ConditionPosition.End); .)
-  | "for" (. List<Statement> initializer = null; List<Statement> iterator = null; .)
-	  "(" [ ForInitializer<out initializer> ] ";"
-	  [ Expr<out expr> ] ";"
-	  [ ForIterator<out iterator> ] ")"
-	  EmbeddedStatement<out embeddedStatement> (. statement = new ForStatement(initializer, expr, iterator, embeddedStatement); .)
-  | "foreach" "(" Type<out type> Identifier   (. string varName = t.val; Location start = t.Location;.)
-	"in" Expr<out expr> ")"
-	EmbeddedStatement<out embeddedStatement> (.  statement = new ForeachStatement(type, varName , expr, embeddedStatement); 
-	                                             statement.EndLocation = t.EndLocation;
-	                                         .)
-	/*--- jump statements (break, contine, goto, return, throw): */
-  | "break" ";"               (. statement = new BreakStatement(); .)
-  | "continue" ";"            (. statement = new ContinueStatement(); .)
-  | GotoStatement<out statement>
-  | IF (IsYieldStatement()) "yield" ( "return" Expr<out expr> (. statement = new YieldStatement(new ReturnStatement(expr)); .)
-	                                | "break" (. statement = new YieldStatement(new BreakStatement()); .) ) ";"
-  | "return" [ Expr<out expr> ] ";"    (. statement = new ReturnStatement(expr); .)
-  | "throw" [ Expr<out expr> ] ";"     (. statement = new ThrowStatement(expr); .)
-  
-  /*--- expression statement: */
-  | StatementExpr<out statement> ";"
-  /*--- try statement: */
-  | TryStatement<out statement>
-  /*--- lock satement: */
-  | "lock" "(" Expr<out expr> ")"
-  EmbeddedStatement<out embeddedStatement> (. statement = new LockStatement(expr, embeddedStatement); .)
-  /*--- using statement: */
-  | (.Statement resourceAcquisitionStmt = null; .)
-	"using" "("
-	ResourceAcquisition<out resourceAcquisitionStmt> ")"
-	EmbeddedStatement<out embeddedStatement> (. statement = new UsingStatement(resourceAcquisitionStmt, embeddedStatement); .)
-  /*--- unsafe statement: */
-  | "unsafe" Block<out embeddedStatement>  (. statement = new UnsafeStatement(embeddedStatement); .)
-  /*--- fixed statement: */
-  | "fixed"
-	"(" Type<out type>     (. if (type.PointerNestingLevel == 0) Error("can only fix pointer types");
-	                          List<VariableDeclaration> pointerDeclarators = new List<VariableDeclaration>(1);
-	                       .)
-	Identifier             (. string identifier = t.val; .)
-	"=" Expr<out expr>     (. pointerDeclarators.Add(new VariableDeclaration(identifier, expr)); .)
-	{
-		"," Identifier     (. identifier = t.val; .)
-		"=" Expr<out expr> (. pointerDeclarators.Add(new VariableDeclaration(identifier, expr)); .)
-	}
-	")" EmbeddedStatement<out embeddedStatement>  (. statement = new FixedStatement(type, pointerDeclarators, embeddedStatement); .)
+		}
+	.)
 .
 
 ForInitializer<out List<Statement> initializer>
@@ -1670,6 +1716,7 @@ StatementExpr<out Statement stmt>
 Expr<out Expression expr>
 (. expr = null; Expression expr1 = null, expr2 = null; AssignmentOperatorType op; .)
 =
+	(. Location startLocation = la.Location; .)
 	UnaryExpr<out expr>
 	/*--- conditional expression: */
 	(	
@@ -1682,6 +1729,11 @@ Expr<out Expression expr>
 			[ "?" Expr<out expr1> ":" Expr<out expr2> (. expr = new ConditionalExpression(expr, expr1, expr2);  .) ]
 		)
 	)
+	(.	if (expr != null) {
+			expr.StartLocation = startLocation;
+			expr.EndLocation = t.EndLocation;
+		}
+	.)
 .
 
 
@@ -1752,79 +1804,83 @@ PrimaryExpr<out Expression pexpr>
 	pexpr = null;
 .)
 =
+	(. Location startLocation = la.Location; .)
 	(
 		"true"                              (.pexpr = new PrimitiveExpression(true, "true");  .)
-		| "false"                           (.pexpr = new PrimitiveExpression(false, "false"); .)
-		| "null"                            (.pexpr = new PrimitiveExpression(null, "null");  .)          /* from literal token */
-		| Literal                           (.pexpr = new PrimitiveExpression(t.literalValue, t.val);  .)
-		| IF (StartOfQueryExpression())
-			QueryExpression<out pexpr>
-		| IF (IdentAndDoubleColon())
-			Identifier (. type = new TypeReference(t.val); .)
-			"::"  (. pexpr = new TypeReferenceExpression(type); .)
-			Identifier (. if (type.Type == "global") { type.IsGlobal = true; type.Type = (t.val ?? "?"); } else type.Type += "." + (t.val ?? "?"); .)
+	|	"false"                           (.pexpr = new PrimitiveExpression(false, "false"); .)
+	|	"null"                            (.pexpr = new PrimitiveExpression(null, "null");  .)          /* from literal token */
+	|	Literal                           (.pexpr = new PrimitiveExpression(t.literalValue, t.val);  .)
+	| IF (StartOfQueryExpression())
+		QueryExpression<out pexpr>
+	| IF (IdentAndDoubleColon())
+		Identifier (. type = new TypeReference(t.val); .)
+		"::"  (. pexpr = new TypeReferenceExpression(type); .)
+		Identifier (. if (type.Type == "global") { type.IsGlobal = true; type.Type = (t.val ?? "?"); } else type.Type += "." + (t.val ?? "?"); .)
+
 		/*--- simple name (IdentifierExpression): */
-		| Identifier
-			(. pexpr = new IdentifierExpression(t.val); .)
-			(. pexpr.StartLocation = t.Location; pexpr.EndLocation = t.EndLocation; .)
-			
-			[	ShortedLambdaExpression<(IdentifierExpression)pexpr, out pexpr> 
-			| IF (IsGenericInSimpleNameOrMemberAccess())
-				(. List<TypeReference> typeList; .)
-				TypeArgumentList<out typeList, false>
-				(. ((IdentifierExpression)pexpr).TypeArguments = typeList; .)
-			]
-		| IF (IsLambdaExpression()) /* Lambda expression */
-			LambdaExpression<out pexpr>
+	|	Identifier
+		(. pexpr = new IdentifierExpression(t.val); .)
+		
+		[	ShortedLambdaExpression<(IdentifierExpression)pexpr, out pexpr> 
+		| IF (IsGenericInSimpleNameOrMemberAccess())
+			(. List<TypeReference> typeList; .)
+			TypeArgumentList<out typeList, false>
+			(. ((IdentifierExpression)pexpr).TypeArguments = typeList; .)
+		]
+	| IF (IsLambdaExpression()) /* Lambda expression */
+		LambdaExpression<out pexpr>
+
 		/*--- parenthesized expression: */
-		| "(" Expr<out expr> ")" (. pexpr = new ParenthesizedExpression(expr); .)
-		| /*--- predefined type member access: */
+	|	"(" Expr<out expr> ")" (. pexpr = new ParenthesizedExpression(expr); .)
+	
+	| /*--- predefined type member access: */
 		(. string val = null; .)
-		(
-			  "bool" (. val = "bool"; .) 
-			| "byte" (. val = "byte"; .)   
-			| "char" (. val = "char"; .)
-			| "decimal" (. val = "decimal"; .)
-			| "double"  (. val = "double"; .)
-			| "float"   (. val = "float"; .)
-			| "int"     (. val = "int"; .)
-			| "long"  (. val = "long"; .)
-			| "object"   (. val = "object"; .)
-			| "sbyte" (. val = "sbyte"; .)
-			| "short"   (. val = "short"; .)
-			| "string"  (. val = "string"; .)
-			| "uint"  (. val = "uint"; .)
-			| "ulong"    (. val = "ulong"; .)
-			| "ushort" (. val = "ushort"; .)
-		) 
-			MemberAccess<out pexpr, new TypeReferenceExpression(val)>
+		( "bool" (. val = "bool"; .) 
+		| "byte" (. val = "byte"; .)   
+		| "char" (. val = "char"; .)
+		| "decimal" (. val = "decimal"; .)
+		| "double"  (. val = "double"; .)
+		| "float"   (. val = "float"; .)
+		| "int"     (. val = "int"; .)
+		| "long"  (. val = "long"; .)
+		| "object"   (. val = "object"; .)
+		| "sbyte" (. val = "sbyte"; .)
+		| "short"   (. val = "short"; .)
+		| "string"  (. val = "string"; .)
+		| "uint"  (. val = "uint"; .)
+		| "ulong"    (. val = "ulong"; .)
+		| "ushort" (. val = "ushort"; .)
+		)
+		MemberAccess<out pexpr, new TypeReferenceExpression(val)>
+		
 		/*--- this access: */
-		| "this"                              (. pexpr = new ThisReferenceExpression(); .)
+	|	"this"                              (. pexpr = new ThisReferenceExpression(); .)
 		/*--- base access: */
-		| "base"                              (. Expression retExpr = new BaseReferenceExpression(); .)
-		(
-			MemberAccess<out retExpr, retExpr>
-			| "[" Expr<out expr>              (. List<Expression> indices = new List<Expression>(); if (expr != null) { indices.Add(expr); } .)
-			{ "," Expr<out expr>              (. if (expr != null) { indices.Add(expr); } .) }
-			"]"                               (. retExpr = new IndexerExpression(retExpr, indices); .)
-		)                                     (. pexpr = retExpr; .)
-		
+	|	"base"                              (. pexpr = new BaseReferenceExpression(); .)
+	
 		/* new ... - ObjectCreationExpression or ArrayCreateExpression */
-		| NewExpression<out expr>  (.pexpr = expr; .)
-		
-		| "typeof" "("
+	|	NewExpression<out pexpr>
+	
+	|	"typeof" "("
 		(
 			IF (NotVoidPointer()) "void" (. type = new TypeReference("void"); .)
-			| TypeWithRestriction<out type, true, true>
-		) ")"                            (. pexpr = new TypeOfExpression(type); .)
+		|	TypeWithRestriction<out type, true, true>
+		)
+		")"                            (. pexpr = new TypeOfExpression(type); .)
 		
-		| "default" "(" Type<out type> ")" (. pexpr = new DefaultValueExpression(type); .)
-		| "sizeof" "(" Type<out type> ")" (. pexpr = new SizeOfExpression(type); .)
-		| "checked" "(" Expr<out expr> ")" (. pexpr = new CheckedExpression(expr); .)
-		| "unchecked" "(" Expr<out expr> ")" (. pexpr = new UncheckedExpression(expr); .)
-		| "delegate" AnonymousMethodExpr<out expr> (. pexpr = expr; .)
+	|	"default" "(" Type<out type> ")" (. pexpr = new DefaultValueExpression(type); .)
+	|	"sizeof" "(" Type<out type> ")" (. pexpr = new SizeOfExpression(type); .)
+	|	"checked" "(" Expr<out expr> ")" (. pexpr = new CheckedExpression(expr); .)
+	|	"unchecked" "(" Expr<out expr> ")" (. pexpr = new UncheckedExpression(expr); .)
+	|	"delegate" AnonymousMethodExpr<out expr> (. pexpr = expr; .)
 	)
+	(.	if (pexpr != null) {
+			pexpr.StartLocation = startLocation;
+			pexpr.EndLocation = t.EndLocation;
+		}
+	.)
 	{
+		(. startLocation = la.Location; .)
 		(
 			"++"   (. pexpr = new UnaryOperatorExpression(pexpr, UnaryOperatorType.PostIncrement); .)
 			| "--" (. pexpr = new UnaryOperatorExpression(pexpr, UnaryOperatorType.PostDecrement); .)
@@ -1836,8 +1892,10 @@ PrimaryExpr<out Expression pexpr>
 		/*--- invocation expression: */
 		| "("                        (. List<Expression> parameters = new List<Expression>(); .)
 			[ Argument<out expr>     (. if (expr != null) {parameters.Add(expr);} .)
-			{ "," Argument<out expr> (. if (expr != null) {parameters.Add(expr);} .)
-			} ] ")"                  (. pexpr = new InvocationExpression(pexpr, parameters); .)
+			  { "," Argument<out expr> (. if (expr != null) {parameters.Add(expr);} .)
+			  }
+			]
+			")" (. pexpr = new InvocationExpression(pexpr, parameters); .)
 		/*--- element access */
 		|  (. /*if (isArrayCreation) Error("element access not allow on array creation");*/
 		      List<Expression> indices = new List<Expression>();
@@ -1845,6 +1903,12 @@ PrimaryExpr<out Expression pexpr>
 		"[" Expr<out expr> (. if (expr != null) { indices.Add(expr); } .)
 		{ "," Expr<out expr> (. if (expr != null) { indices.Add(expr); } .)
 		} "]" (. pexpr = new IndexerExpression(pexpr, indices); .)
+		
+		(.	if (pexpr != null) {
+				pexpr.StartLocation = startLocation;
+				pexpr.EndLocation = t.EndLocation;
+			}
+		.)
 	}
 .
 

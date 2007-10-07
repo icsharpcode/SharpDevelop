@@ -31,6 +31,11 @@ namespace ICSharpCode.NRefactory.Ast
 			set;
 		}
 		
+		object UserData {
+			get;
+			set;
+		}
+		
 		/// <summary>
 		/// Visits all children
 		/// </summary>

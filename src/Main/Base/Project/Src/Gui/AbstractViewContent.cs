@@ -53,11 +53,20 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		IWorkbenchWindow IViewContent.WorkbenchWindow {
 			get { return workbenchWindow; }
-			set { workbenchWindow = value; }
+			set {
+				if (workbenchWindow != value) {
+					workbenchWindow = value;
+					OnWorkbenchWindowChanged();
+				}
+			}
 		}
 		
 		public IWorkbenchWindow WorkbenchWindow {
 			get { return workbenchWindow; }
+		}
+		
+		protected virtual void OnWorkbenchWindowChanged()
+		{
 		}
 		
 		string tabPageText = "TabPageText";
