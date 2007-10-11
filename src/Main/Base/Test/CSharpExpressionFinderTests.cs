@@ -490,6 +490,175 @@ class List<T> where T : class, ";
 			Assert.AreEqual(null, result.Expression);
 			Assert.AreEqual(ExpressionContext.Constraints.ToString(), result.Context.ToString());
 		}
+		
+		[Test]
+		public void ObjectInitializer1()
+		{
+			const string program = @"using System;
+class Main {
+	void M() {
+		a = new MyType { ";
+			
+			ExpressionResult result = ef.FindExpression(program, program.Length);
+			Assert.AreEqual(ExpressionContext.ObjectInitializer.ToString(), result.Context.ToString());
+		}
+		
+		[Test]
+		public void ObjectInitializer1b()
+		{
+			const string program = @"using System;
+class Main {
+	void M() {
+		a = new MyType<TypeArgument[], int?> { ";
+			
+			ExpressionResult result = ef.FindExpression(program, program.Length);
+			Assert.AreEqual(ExpressionContext.ObjectInitializer.ToString(), result.Context.ToString());
+		}
+		
+		[Test]
+		public void ObjectInitializer1c()
+		{
+			const string program = @"using System;
+class Main {
+	void M() {
+		a = new global::MyNamespace.MyType { ";
+			
+			ExpressionResult result = ef.FindExpression(program, program.Length);
+			Assert.AreEqual(ExpressionContext.ObjectInitializer.ToString(), result.Context.ToString());
+		}
+		
+		[Test]
+		public void ObjectInitializer2()
+		{
+			const string program = @"using System;
+class Main {
+	void M() {
+		a = new MyType(){ ";
+			
+			ExpressionResult result = ef.FindExpression(program, program.Length);
+			Assert.AreEqual(ExpressionContext.ObjectInitializer.ToString(), result.Context.ToString());
+		}
+		
+		[Test]
+		public void ObjectInitializer2b()
+		{
+			const string program = @"using System;
+class Main {
+	void M() {
+		a = new MyType<TypeArgument[], int?> (){ ";
+			
+			ExpressionResult result = ef.FindExpression(program, program.Length);
+			Assert.AreEqual(ExpressionContext.ObjectInitializer.ToString(), result.Context.ToString());
+		}
+		
+		[Test]
+		public void ObjectInitializer3()
+		{
+			const string program = @"using System;
+class Main {
+	void M() {
+		a = new MyType(arg1, ')', arg3) { ";
+			
+			ExpressionResult result = ef.FindExpression(program, program.Length);
+			Assert.AreEqual(ExpressionContext.ObjectInitializer.ToString(), result.Context.ToString());
+		}
+		
+		[Test]
+		public void ObjectInitializer4()
+		{
+			const string program = @"using System;
+class Main {
+	void M() {
+		a = new MyType { P1 = expr, ";
+			
+			ExpressionResult result = ef.FindExpression(program, program.Length);
+			Assert.AreEqual(ExpressionContext.ObjectInitializer.ToString(), result.Context.ToString());
+		}
+		
+		[Test]
+		public void ObjectInitializer5()
+		{
+			const string program = @"using System;
+class Main {
+	void M() {
+		a = new MyType { P1 = ";
+			
+			ExpressionResult result = ef.FindExpression(program, program.Length);
+			Assert.AreEqual(ExpressionContext.Default.ToString(), result.Context.ToString());
+		}
+		
+		[Test]
+		public void ObjectInitializer6()
+		{
+			const string program = @"using System;
+class Main {
+	void M() {
+		a = new { ";
+			
+			ExpressionResult result = ef.FindExpression(program, program.Length);
+			Assert.AreEqual(ExpressionContext.ObjectInitializer.ToString(), result.Context.ToString());
+		}
+		
+		[Test]
+		public void ObjectInitializer7()
+		{
+			const string program = @"using System;
+class Main {
+	void M() {
+		a = new { a.B, ";
+			
+			ExpressionResult result = ef.FindExpression(program, program.Length);
+			Assert.AreEqual(ExpressionContext.ObjectInitializer.ToString(), result.Context.ToString());
+		}
+		
+		[Test]
+		public void ObjectInitializer8()
+		{
+			const string program = @"using System;
+class Main {
+	void M() {
+		a = new SomeType { SomeProperty = { ";
+			
+			ExpressionResult result = ef.FindExpression(program, program.Length);
+			Assert.AreEqual(ExpressionContext.ObjectInitializer.ToString(), result.Context.ToString());
+		}
+		
+		[Test]
+		public void ObjectInitializer8b()
+		{
+			const string program = @"using System;
+class Main {
+	void M() {
+		a = new SomeType { SomeProperty = new SomeOtherType { ";
+			
+			ExpressionResult result = ef.FindExpression(program, program.Length);
+			Assert.AreEqual(ExpressionContext.ObjectInitializer.ToString(), result.Context.ToString());
+		}
+		
+		[Test]
+		public void ArrayInitializer()
+		{
+			const string program = @"using System;
+class Main {
+	void M() {
+		a = new [] { ";
+			
+			ExpressionResult result = ef.FindExpression(program, program.Length);
+			Assert.AreEqual(ExpressionContext.MethodBody.ToString(), result.Context.ToString());
+		}
+		
+		[Test]
+		public void ArrayInitializer2()
+		{
+			const string program = @"using System;
+class Main {
+	void M() {
+		a = new SomeType [] { ";
+			
+			ExpressionResult result = ef.FindExpression(program, program.Length);
+			Assert.AreEqual(ExpressionContext.MethodBody.ToString(), result.Context.ToString());
+		}
+		
 	}
 }
 

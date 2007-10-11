@@ -217,13 +217,20 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				}
 			}
 			
+			ResolveResult rr;
 			if (expressionResult.Context.IsAttributeContext) {
 				return ResolveAttribute(expr, new NR.Location(caretColumn, caretLineNumber));
+			} else if (expressionResult.Context == ExpressionContext.ObjectInitializer && expr is IdentifierExpression) {
+				bool isCollectionInitializer;
+				rr = ResolveObjectInitializer((expr as IdentifierExpression).Identifier, fileContent, out isCollectionInitializer);
+				if (!isCollectionInitializer || rr != null) {
+					return rr;
+				}
 			}
 			
 			RunLookupTableVisitor(fileContent);
 			
-			ResolveResult rr = CtrlSpaceResolveHelper.GetResultFromDeclarationLine(callingClass, callingMember as IMethodOrProperty, caretLine, caretColumn, expressionResult);
+			rr = CtrlSpaceResolveHelper.GetResultFromDeclarationLine(callingClass, callingMember as IMethodOrProperty, caretLine, caretColumn, expressionResult);
 			if (rr != null) return rr;
 			
 			return ResolveInternal(expr, expressionResult.Context);
@@ -761,6 +768,101 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		}
 		#endregion
 		
+		#region Resolve In Object Initializer
+		ResolveResult ResolveObjectInitializer(string identifier, string fileContent, out bool isCollectionInitializer)
+		{
+			foreach (IMember m in ObjectInitializerCtrlSpace(fileContent, out isCollectionInitializer)) {
+				if (IsSameName(m.Name, identifier))
+					return CreateMemberResolveResult(m);
+			}
+			return null;
+		}
+		
+		List<IMember> ObjectInitializerCtrlSpace(string fileContent, out bool isCollectionInitializer)
+		{
+			isCollectionInitializer = true;
+			if (callingMember == null) {
+				return new List<IMember>();
+			}
+			CompilationUnit parsedCu = ParseCurrentMemberAsCompilationUnit(fileContent);
+			if (parsedCu == null) {
+				return new List<IMember>();
+			}
+			return ObjectInitializerCtrlSpace(parsedCu, new NR.Location(caretColumn, caretLine), out isCollectionInitializer);
+		}
+		
+		List<IMember> ObjectInitializerCtrlSpace(CompilationUnit parsedCu, NR.Location location, out bool isCollectionInitializer)
+		{
+			List<IMember> results = new List<IMember>();
+			isCollectionInitializer = true;
+			FindObjectInitializerExpressionContainingCaretVisitor v = new FindObjectInitializerExpressionContainingCaretVisitor(location);
+			parsedCu.AcceptVisitor(v, null);
+			if (v.result != null) {
+				ObjectCreateExpression oce = v.result.Parent as ObjectCreateExpression;
+				NamedArgumentExpression nae = v.result.Parent as NamedArgumentExpression;
+				if (oce != null && !oce.IsAnonymousType) {
+					IReturnType resolvedType = TypeVisitor.CreateReturnType(oce.CreateType, this);
+					ObjectInitializerCtrlSpaceInternal(results, resolvedType, out isCollectionInitializer);
+				} else if (nae != null) {
+					bool tmp;
+					IMember member = ObjectInitializerCtrlSpace(parsedCu, nae.StartLocation, out tmp).Find(m => IsSameName(m.Name, nae.Name));
+					if (member != null) {
+						ObjectInitializerCtrlSpaceInternal(results, member.ReturnType, out isCollectionInitializer);
+					}
+				}
+			}
+			return results;
+		}
+		
+		void ObjectInitializerCtrlSpaceInternal(List<IMember> results, IReturnType resolvedType, out bool isCollectionInitializer)
+		{
+			isCollectionInitializer = MemberLookupHelper.ConversionExists(resolvedType, new GetClassReturnType(projectContent, "System.Collections.IEnumerable", 0));
+			if (resolvedType != null) {
+				bool isClassInInheritanceTree = false;
+				if (callingClass != null)
+					isClassInInheritanceTree = callingClass.IsTypeInInheritanceTree(resolvedType.GetUnderlyingClass());
+				foreach (IField f in resolvedType.GetFields()) {
+					if (languageProperties.ShowMember(f, false)
+					    && f.IsAccessible(callingClass, isClassInInheritanceTree))
+					{
+						results.Add(f);
+					}
+				}
+				foreach (IProperty p in resolvedType.GetProperties()) {
+					if (languageProperties.ShowMember(p, false)
+					    && p.IsAccessible(callingClass, isClassInInheritanceTree))
+					{
+						results.Add(p);
+					}
+				}
+			}
+		}
+		
+		// Finds the inner most CollectionInitializerExpression containing the specified caret position
+		sealed class FindObjectInitializerExpressionContainingCaretVisitor : AbstractAstVisitor
+		{
+			NR.Location caretPosition;
+			internal CollectionInitializerExpression result;
+			
+			public FindObjectInitializerExpressionContainingCaretVisitor(ICSharpCode.NRefactory.Location caretPosition)
+			{
+				this.caretPosition = caretPosition;
+			}
+			
+			public override object VisitCollectionInitializerExpression(CollectionInitializerExpression collectionInitializerExpression, object data)
+			{
+				base.VisitCollectionInitializerExpression(collectionInitializerExpression, data);
+				if (result == null
+				    && collectionInitializerExpression.StartLocation <= caretPosition
+				    && collectionInitializerExpression.EndLocation >= caretPosition)
+				{
+					result = collectionInitializerExpression;
+				}
+				return null;
+			}
+		}
+		#endregion
+		
 		Expression SpecialConstructs(string expression)
 		{
 			if (language == NR.SupportedLanguage.VBNet) {
@@ -1172,6 +1274,14 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					}
 					AddCSharpPrimitiveTypes(result);
 					CtrlSpaceInternal(result, fileContent);
+				} else if (context == ExpressionContext.ObjectInitializer) {
+					bool isCollectionInitializer;
+					result.AddRange(ObjectInitializerCtrlSpace(fileContent, out isCollectionInitializer));
+					if (isCollectionInitializer) {
+						AddCSharpKeywords(result, NR.Parser.CSharp.Tokens.ExpressionStart);
+						AddCSharpPrimitiveTypes(result);
+						CtrlSpaceInternal(result, fileContent);
+					}
 				} else if (context == ExpressionContext.Default) {
 					AddCSharpKeywords(result, NR.Parser.CSharp.Tokens.ExpressionStart);
 					AddCSharpKeywords(result, NR.Parser.CSharp.Tokens.ExpressionContent);

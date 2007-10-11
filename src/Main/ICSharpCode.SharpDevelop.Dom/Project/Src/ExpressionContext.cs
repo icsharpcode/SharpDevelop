@@ -123,6 +123,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// <summary>Context expects a fully qualified type name.</summary>
 		/// <example>using Alias = *expr*;</example>
 		public static ExpressionContext FullyQualifiedType = new DefaultExpressionContext("FullyQualifiedType");
+		
+		/// <summary>Context expects is a property name in an object initializer.</summary>
+		/// <example>new *type* [(args)] { *expr* = ... }</example>
+		public static ExpressionContext ObjectInitializer = new DefaultExpressionContext("ObjectInitializer");
 		#endregion
 		
 		#region Default contexts (public static fields)

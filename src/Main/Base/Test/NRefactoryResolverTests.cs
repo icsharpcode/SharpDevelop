@@ -473,7 +473,7 @@ class A {
 			Assert.AreEqual("System.String.ToString", mrr.ResolvedMember.FullyQualifiedName);
 			
 			int valueParameterCount = 0;
-			foreach (object o in CtrlSpaceResolveCSharp(program, 4)) {
+			foreach (object o in CtrlSpaceResolveCSharp(program, 4, ExpressionContext.Default)) {
 				IField f = o as IField;
 				if (f != null && f.Name == "value") {
 					valueParameterCount++;
@@ -765,19 +765,17 @@ namespace Root.Child {
 			Assert.AreEqual("Root.Alpha", result.ResolvedType.FullyQualifiedName);
 		}
 		
-		ArrayList CtrlSpaceResolveCSharp(string program, int line)
+		ArrayList CtrlSpaceResolveCSharp(string program, int line, ExpressionContext context)
 		{
 			ParseInformation parseInfo = AddCompilationUnit(Parse("a.cs", program), "a.cs");
 			
 			NRefactoryResolver resolver = new NRefactoryResolver(LanguageProperties.CSharp);
-			return resolver.CtrlSpace(line, 0, parseInfo, program, ExpressionContext.Default);
+			return resolver.CtrlSpace(line, 0, parseInfo, program, context);
 		}
 		
 		[Test]
 		public void ParentNamespaceCtrlSpace()
 		{
-			// Classes in the current namespace are preferred over classes from
-			// imported namespaces
 			string program = @"using System;
 namespace Root {
   class Alpha {}
@@ -788,8 +786,8 @@ namespace Root.Child {
   }
 }
 ";
-			ArrayList m = CtrlSpaceResolveCSharp(program, 7);
-			Assert.IsTrue(TypeExists(m, "Beta"), "Meta must exist");
+			ArrayList m = CtrlSpaceResolveCSharp(program, 7, ExpressionContext.Default);
+			Assert.IsTrue(TypeExists(m, "Beta"), "Beta must exist");
 			Assert.IsTrue(TypeExists(m, "Alpha"), "Alpha must exist");
 		}
 		
@@ -1327,6 +1325,81 @@ class TestClass {
 			lrr = Resolve<LocalResolveResult>(program, "r", 7);
 			Assert.AreEqual("System.Collections.Generic.IEnumerable", lrr.ResolvedType.FullyQualifiedName);
 			Assert.AreEqual("System.String", lrr.ResolvedType.CastToConstructedReturnType().TypeArguments[0].FullyQualifiedName);
+		}
+		
+		const string objectInitializerTestProgram = @"using System; using System.Threading;
+class TestClass {
+	static void Test() {
+		Rectangle r1 = new Rectangle {
+			
+		};
+		Rectangle r2 = new Rectangle {
+			P1 = {
+				
+			}
+		};
+		MyCollectionType mct = new MyCollectionType {
+			
+		};
+	}
+}
+public class Point
+{
+	int x;
+	public int X { get { return x; } set { x = value; } }
+	public int Y;
+}
+public class Rectangle
+{
+	Point p1 = new Point();
+	Point p2 = new Point();
+	public Point P1 { get { return p1; } }
+	public Point P2 { get { return p2; } }
+}
+public class MyCollectionType : System.Collections.IEnumerable
+{
+	public void Add(object o) {}
+	public int Field;
+}
+";
+		
+		[Test]
+		public void ObjectInitializerCtrlSpaceCompletion()
+		{
+			ArrayList results = CtrlSpaceResolveCSharp(objectInitializerTestProgram, 5, ExpressionContext.ObjectInitializer);
+			Assert.AreEqual(new[] { "P1", "P2" }, (from IMember p in results orderby p.Name select p.Name).ToArray() );
+			
+			results = CtrlSpaceResolveCSharp(objectInitializerTestProgram, 9, ExpressionContext.ObjectInitializer);
+			Assert.AreEqual(new[] { "X", "Y" }, (from IMember p in results orderby p.Name select p.Name).ToArray() );
+			
+			results = CtrlSpaceResolveCSharp(objectInitializerTestProgram, 13, ExpressionContext.ObjectInitializer);
+			// collection type: expect system types
+			results.OfType<IClass>().Any((IClass c) => c.FullyQualifiedName == "System.Int32");
+			results.OfType<IClass>().Any((IClass c) => c.FullyQualifiedName == "System.AppDomain");
+			// expect local variables
+			results.OfType<IField>().Any((IField f) => f.IsLocalVariable && f.Name == "r1");
+			// but also expect MyCollectionType.Field
+			results.OfType<IField>().Any((IField f) => f.FullyQualifiedName == "MyCollectionType.Field");
+		}
+		
+		[Test]
+		public void ObjectInitializerCompletion()
+		{
+			MemberResolveResult mrr = (MemberResolveResult)Resolve(objectInitializerTestProgram, "P2", 5, 1, ExpressionContext.ObjectInitializer);
+			Assert.IsNotNull(mrr);
+			Assert.AreEqual("Rectangle.P2", mrr.ResolvedMember.FullyQualifiedName);
+			
+			mrr = (MemberResolveResult)Resolve(objectInitializerTestProgram, "X", 9, 1, ExpressionContext.ObjectInitializer);
+			Assert.IsNotNull(mrr);
+			Assert.AreEqual("Point.X", mrr.ResolvedMember.FullyQualifiedName);
+			
+			mrr = (MemberResolveResult)Resolve(objectInitializerTestProgram, "Field", 13, 1, ExpressionContext.ObjectInitializer);
+			Assert.IsNotNull(mrr);
+			Assert.AreEqual("MyCollectionType.Field", mrr.ResolvedMember.FullyQualifiedName);
+			
+			LocalResolveResult lrr = (LocalResolveResult)Resolve(objectInitializerTestProgram, "r1", 13, 1, ExpressionContext.ObjectInitializer);
+			Assert.IsNotNull(lrr);
+			Assert.AreEqual("r1", lrr.Field.Name);
 		}
 		#endregion
 	}
