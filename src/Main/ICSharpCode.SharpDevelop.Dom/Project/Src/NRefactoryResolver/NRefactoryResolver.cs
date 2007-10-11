@@ -823,19 +823,29 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					isClassInInheritanceTree = callingClass.IsTypeInInheritanceTree(resolvedType.GetUnderlyingClass());
 				foreach (IField f in resolvedType.GetFields()) {
 					if (languageProperties.ShowMember(f, false)
-					    && f.IsAccessible(callingClass, isClassInInheritanceTree))
+					    && f.IsAccessible(callingClass, isClassInInheritanceTree)
+					    && !(f.IsReadonly && IsValueType(f.ReturnType)))
 					{
 						results.Add(f);
 					}
 				}
 				foreach (IProperty p in resolvedType.GetProperties()) {
 					if (languageProperties.ShowMember(p, false)
-					    && p.IsAccessible(callingClass, isClassInInheritanceTree))
+					    && p.IsAccessible(callingClass, isClassInInheritanceTree)
+					    && !(p.CanSet == false && IsValueType(p.ReturnType)))
 					{
 						results.Add(p);
 					}
 				}
 			}
+		}
+		
+		static bool IsValueType(IReturnType rt)
+		{
+			if (rt == null)
+				return false;
+			IClass c = rt.GetUnderlyingClass();
+			return c != null && (c.ClassType == ClassType.Struct || c.ClassType == ClassType.Enum);
 		}
 		
 		// Finds the inner most CollectionInitializerExpression containing the specified caret position

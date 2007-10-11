@@ -1360,6 +1360,8 @@ public class MyCollectionType : System.Collections.IEnumerable
 {
 	public void Add(object o) {}
 	public int Field;
+	public readonly int ReadOnlyValueTypeField;
+	public int ReadOnlyValueTypeProperty { get; }
 }
 ";
 		
@@ -1374,12 +1376,14 @@ public class MyCollectionType : System.Collections.IEnumerable
 			
 			results = CtrlSpaceResolveCSharp(objectInitializerTestProgram, 13, ExpressionContext.ObjectInitializer);
 			// collection type: expect system types
-			results.OfType<IClass>().Any((IClass c) => c.FullyQualifiedName == "System.Int32");
-			results.OfType<IClass>().Any((IClass c) => c.FullyQualifiedName == "System.AppDomain");
+			Assert.IsTrue(results.OfType<IClass>().Any((IClass c) => c.FullyQualifiedName == "System.Int32"));
+			Assert.IsTrue(results.OfType<IClass>().Any((IClass c) => c.FullyQualifiedName == "System.AppDomain"));
 			// expect local variables
-			results.OfType<IField>().Any((IField f) => f.IsLocalVariable && f.Name == "r1");
+			Assert.IsTrue(results.OfType<IField>().Any((IField f) => f.IsLocalVariable && f.Name == "r1"));
 			// but also expect MyCollectionType.Field
-			results.OfType<IField>().Any((IField f) => f.FullyQualifiedName == "MyCollectionType.Field");
+			Assert.IsTrue(results.OfType<IField>().Any((IField f) => f.FullyQualifiedName == "MyCollectionType.Field"));
+			Assert.IsFalse(results.OfType<IField>().Any((IField f) => f.FullyQualifiedName == "MyCollectionType.ReadOnlyValueTypeField"));
+			Assert.IsFalse(results.OfType<IProperty>().Any((IProperty f) => f.FullyQualifiedName == "MyCollectionType.ReadOnlyValueTypeProperty"));
 		}
 		
 		[Test]
