@@ -615,9 +615,17 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
+		public event KeyEventHandler ProcessCommandKey;
+		
 		// Handle keyboard shortcuts
 		protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
 		{
+			if (ProcessCommandKey != null) {
+				KeyEventArgs e = new KeyEventArgs(keyData);
+				ProcessCommandKey(this, e);
+				if (e.Handled || e.SuppressKeyPress)
+					return true;
+			}
 			if (IsAltGRPressed)
 				return false;
 			return base.ProcessCmdKey(ref msg, keyData);
