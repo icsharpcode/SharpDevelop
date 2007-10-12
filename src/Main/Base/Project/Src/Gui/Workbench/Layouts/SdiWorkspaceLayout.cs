@@ -26,9 +26,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		DockPanel dockPanel;
 		Dictionary<string, PadContentWrapper> contentHash = new Dictionary<string, PadContentWrapper>();
-		ToolStripContainer toolStripContainer;
 		AutoHideMenuStripContainer mainMenuContainer;
 		AutoHideStatusStripContainer statusStripContainer;
+		ToolStripPanel toolBarPanel;
+		
 		#if DEBUG
 		static bool firstTimeError = true; // TODO: Debug statement only, remove me
 		#endif
@@ -88,29 +89,27 @@ namespace ICSharpCode.SharpDevelop.Gui
 			wbForm = (DefaultWorkbench)workbench;
 			wbForm.SuspendLayout();
 			wbForm.Controls.Clear();
-			toolStripContainer = new ToolStripContainer();
-			toolStripContainer.SuspendLayout();
-			toolStripContainer.Dock = DockStyle.Fill;
 			
-			mainMenuContainer = new AutoHideMenuStripContainer(((DefaultWorkbench)wbForm).TopMenu);
+			mainMenuContainer = new AutoHideMenuStripContainer(wbForm.TopMenu);
 			mainMenuContainer.Dock = DockStyle.Top;
 			
 			statusStripContainer = new AutoHideStatusStripContainer((StatusStrip)StatusBarService.Control);
 			statusStripContainer.Dock = DockStyle.Bottom;
 			
+			toolBarPanel = new ToolStripPanel();
+			toolBarPanel.Controls.AddRange(wbForm.ToolBars);
+			toolBarPanel.Dock = DockStyle.Top;
+			
 			dockPanel = new DockPanel();
-			dockPanel.DocumentStyle = DocumentStyle.DockingWindow;
-			this.dockPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+			dockPanel.Dock = DockStyle.Fill;
+			dockPanel.RightToLeftLayout = true;
 			
-			Panel helperPanel = new Panel();
-			helperPanel.Dock = DockStyle.Fill;
-			helperPanel.Controls.Add(dockPanel);
-			toolStripContainer.ContentPanel.Controls.Add(helperPanel);
-			
-			toolStripContainer.ContentPanel.Controls.Add(mainMenuContainer);
-			toolStripContainer.ContentPanel.Controls.Add(statusStripContainer);
-			
-			wbForm.Controls.Add(toolStripContainer);
+			wbForm.IsMdiContainer = true;
+			wbForm.Controls.Add(dockPanel);
+			wbForm.Controls.Add(toolBarPanel);
+			wbForm.Controls.Add(mainMenuContainer);
+			wbForm.Controls.Add(statusStripContainer);
+			wbForm.MainMenuStrip = wbForm.TopMenu;
 			// dock panel has to be added to the form before LoadLayoutConfiguration is called to fix SD2-463
 			
 			LoadLayoutConfiguration();
@@ -124,7 +123,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			dockPanel.ActiveContentChanged += new EventHandler(ActiveContentChanged);
 			ActiveMdiChanged(this, EventArgs.Empty);
 			
-			toolStripContainer.ResumeLayout(false);
 			wbForm.ResumeLayout(false);
 			
 			Properties fullscreenProperties = PropertyService.Get("ICSharpCode.SharpDevelop.Gui.FullscreenOptions", new Properties());
@@ -182,7 +180,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 				} else {
 					LoadDefaultLayoutConfiguration();
 				}
-			} catch {
+			} catch (Exception ex) {
+				MessageService.ShowError(ex);
 				// ignore errors loading configuration
 			}
 		}
@@ -201,37 +200,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			//    at the same time => open stream with shared read access.
 			using (FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read)) {
 				dockPanel.LoadFromXml(fs, new DeserializeDockContent(GetContent));
-			}
-		}
-		
-		void ShowToolBars()
-		{
-			if (wbForm.ToolBars != null) {
-				ArrayList oldControls = new ArrayList();
-				foreach (Control ctl in toolStripContainer.ContentPanel.Controls) {
-					oldControls.Add(ctl);
-				}
-				toolStripContainer.ContentPanel.Controls.Clear();
-				toolStripContainer.ContentPanel.Controls.Add(oldControls[0] as Control);
-				foreach (ToolStrip toolBar in wbForm.ToolBars) {
-					if (!toolStripContainer.ContentPanel.Controls.Contains(toolBar)) {
-						toolStripContainer.ContentPanel.Controls.Add(toolBar);
-					}
-				}
-				for (int i = 1; i < oldControls.Count; i++) {
-					toolStripContainer.ContentPanel.Controls.Add(oldControls[i] as Control);
-				}
-			}
-		}
-		
-		void HideToolBars()
-		{
-			if (wbForm.ToolBars != null) {
-				foreach (ToolStrip toolBar in wbForm.ToolBars) {
-					if (toolStripContainer.ContentPanel.Controls.Contains(toolBar)) {
-						toolStripContainer.ContentPanel.Controls.Remove(toolBar);
-					}
-				}
 			}
 		}
 		
@@ -530,15 +498,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			bool hideInFullscreen = fullscreenProperties.Get("HideToolbars", true);
 			bool toolBarVisible = PropertyService.Get("ICSharpCode.SharpDevelop.Gui.ToolBarVisible", true);
 			
-			if (toolBarVisible) {
-				if (wbForm.FullScreen && hideInFullscreen) {
-					HideToolBars();
-				} else {
-					ShowToolBars();
-				}
-			} else {
-				HideToolBars();
-			}
+			toolBarPanel.Visible = toolBarVisible && !(wbForm.FullScreen && hideInFullscreen);
 		}
 		
 		void RedrawStatusBar()

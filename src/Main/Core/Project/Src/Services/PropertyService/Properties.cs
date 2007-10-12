@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Text;
+using System.Linq;
 using System.Xml;
 
 namespace ICSharpCode.Core
@@ -189,7 +190,7 @@ namespace ICSharpCode.Core
 		public void WriteProperties(XmlWriter writer)
 		{
 			lock (properties) {
-				foreach (KeyValuePair<string, object> entry in properties) {
+				foreach (KeyValuePair<string, object> entry in properties.OrderBy(e=>e.Key)) {
 					object val = entry.Value;
 					if (val is Properties) {
 						writer.WriteStartElement("Properties");
