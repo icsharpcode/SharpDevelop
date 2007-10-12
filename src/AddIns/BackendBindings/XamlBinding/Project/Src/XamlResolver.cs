@@ -36,12 +36,12 @@ namespace XamlBinding
 				return false;
 		}
 		
-		public ResolveResult Resolve(ExpressionResult expressionResult, int caretLineNumber, int caretColumn, ParseInformation parseInfo, string fileContent)
+		public ResolveResult Resolve(ExpressionResult expressionResult, ParseInformation parseInfo, string fileContent)
 		{
 			this.resolveExpression = expressionResult.Expression;
 			this.parseInfo = parseInfo;
-			this.caretLineNumber = caretLineNumber;
-			this.caretColumn = caretColumn;
+			this.caretLineNumber = expressionResult.Region.BeginLine;
+			this.caretColumn = expressionResult.Region.BeginColumn;
 			this.callingClass = parseInfo.BestCompilationUnit.GetInnermostClass(caretLineNumber, caretColumn);
 			this.context = expressionResult.Context as XamlExpressionContext;
 			if (context == null)

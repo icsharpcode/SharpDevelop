@@ -17,9 +17,9 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 			if (expression == null)
 				return ExpressionResult.Empty;
 			if (expression.Length > 8 && expression.Substring(0, 8).Equals("Imports ", StringComparison.InvariantCultureIgnoreCase))
-				return new ExpressionResult(expression.Substring(8).TrimStart(), ExpressionContext.Type, null);
+				return new ExpressionResult(expression.Substring(8).TrimStart(), ExpressionContext.Type);
 			if (expression.Length > 4 && expression.Substring(0, 4).Equals("New ", StringComparison.InvariantCultureIgnoreCase))
-				return new ExpressionResult(expression.Substring(4).TrimStart(), ExpressionContext.ObjectCreation, null);
+				return new ExpressionResult(expression.Substring(4).TrimStart(), ExpressionContext.ObjectCreation);
 			if (curTokenType == Ident && lastIdentifier.Equals("as", StringComparison.InvariantCultureIgnoreCase))
 				return new ExpressionResult(expression, ExpressionContext.Type);
 			return new ExpressionResult(expression);

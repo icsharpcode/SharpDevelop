@@ -81,9 +81,10 @@ namespace Grunwald.BooBinding.Tests
 			Register(prog);
 			int line, column;
 			GetPos(prog, marker, out line, out column);
+			er.Region = new DomRegion(line, column);
 			
 			BooResolver r = new BooResolver();
-			return r.Resolve(er, line, column, ParserService.GetParseInformation(fileName), prog);
+			return r.Resolve(er, ParserService.GetParseInformation(fileName), prog);
 		}
 		#endregion
 		

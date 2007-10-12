@@ -64,6 +64,7 @@ class Main {
 			if (expectedContext != null) {
 				Assert.AreEqual(expectedContext.ToString(), er.Context.ToString());
 			}
+			Assert.AreEqual(expectedExpression, ExtractRegion(program, er.Region));
 		}
 		
 		void FindExpr(string program, string location, string expectedExpression, ExpressionContext expectedContext)
@@ -73,6 +74,32 @@ class Main {
 			ExpressionResult er = ef.FindExpression(program, pos);
 			Assert.AreEqual(expectedExpression, er.Expression);
 			Assert.AreEqual(expectedContext.ToString(), er.Context.ToString());
+			Assert.AreEqual(expectedExpression, ExtractRegion(program, er.Region));
+		}
+		
+		static string ExtractRegion(string text, DomRegion region)
+		{
+			if (region.IsEmpty)
+				return null;
+			int start = GetOffsetByPosition(text, region.BeginLine, region.BeginColumn);
+			int end = GetOffsetByPosition(text, region.EndLine, region.EndColumn);
+			return text.Substring(start, end - start);
+		}
+		
+		static int GetOffsetByPosition(string text, int line, int column)
+		{
+			if (line < 1)
+				throw new ArgumentOutOfRangeException("line");
+			if (line == 1)
+				return column - 1;
+			for (int i = 0; i < text.Length; i++) {
+				if (text[i] == '\n') {
+					if (--line == 1) {
+						return i + column;
+					}
+				}
+			}
+			throw new ArgumentOutOfRangeException("line");
 		}
 		
 		[Test]
@@ -308,6 +335,7 @@ class Main {
 			
 			ExpressionResult result = ef.FindExpression(program, program.Length);
 			Assert.AreEqual("StringBuilder", result.Expression);
+			Assert.AreEqual("StringBuilder", ExtractRegion(program, result.Region));
 			Assert.AreEqual(ExpressionContext.ObjectCreation.ToString(), result.Context.ToString());
 		}
 		

@@ -724,9 +724,13 @@ namespace ICSharpCode.SharpDevelop
 		                                    int caretLineNumber, int caretColumn,
 		                                    string fileName, string fileContent)
 		{
+			if (expressionResult.Region.IsEmpty) {
+				expressionResult.Region = new DomRegion(caretLineNumber, caretColumn);
+			}
 			IResolver resolver = CreateResolver(fileName);
 			if (resolver != null) {
-				return resolver.Resolve(expressionResult, caretLineNumber, caretColumn, GetParseInformation(fileName), fileContent);
+				ParseInformation parseInfo = GetParseInformation(fileName);
+				return resolver.Resolve(expressionResult, parseInfo, fileContent);
 			}
 			return null;
 		}

@@ -41,18 +41,20 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		/// <summary>The expression that has been found at the specified offset.</summary>
 		public string Expression;
+		/// <summary>The exact source code location of the expression.</summary>
+		public DomRegion Region;
 		/// <summary>Specifies the context in which the expression was found.</summary>
 		public ExpressionContext Context;
 		/// <summary>An object carrying additional language-dependend data.</summary>
 		public object Tag;
 		
-		public ExpressionResult(string expression) : this(expression, ExpressionContext.Default, null) {}
-		public ExpressionResult(string expression, ExpressionContext context) : this(expression, context, null) {}
-		public ExpressionResult(string expression, object tag) : this(expression, ExpressionContext.Default, tag)  {}
+		public ExpressionResult(string expression) : this(expression, DomRegion.Empty, ExpressionContext.Default, null) {}
+		public ExpressionResult(string expression, ExpressionContext context) : this(expression, DomRegion.Empty, context, null) {}
 		
-		public ExpressionResult(string expression, ExpressionContext context, object tag)
+		public ExpressionResult(string expression, DomRegion region, ExpressionContext context, object tag)
 		{
 			this.Expression = expression;
+			this.Region = region;
 			this.Context = context;
 			this.Tag = tag;
 		}

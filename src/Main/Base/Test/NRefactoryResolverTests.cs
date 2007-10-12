@@ -91,8 +91,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 			ParseInformation parseInfo = AddCompilationUnit(Parse("a.cs", program), "a.cs");
 			
 			NRefactoryResolver resolver = new NRefactoryResolver(LanguageProperties.CSharp);
-			return resolver.Resolve(new ExpressionResult(expression, context),
-			                        line, column,
+			return resolver.Resolve(new ExpressionResult(expression, new DomRegion(line, column), context, null),
 			                        parseInfo,
 			                        program);
 		}
@@ -102,8 +101,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 			ParseInformation parseInfo = AddCompilationUnit(ParseVB("a.vb", program), "a.vb");
 			
 			NRefactoryResolver resolver = new NRefactoryResolver(LanguageProperties.VBNet);
-			return resolver.Resolve(new ExpressionResult(expression),
-			                        line, 0,
+			return resolver.Resolve(new ExpressionResult(expression, new DomRegion(line, 0), ExpressionContext.Default, null),
 			                        parseInfo,
 			                        program);
 		}
@@ -1325,6 +1323,24 @@ class TestClass {
 			lrr = Resolve<LocalResolveResult>(program, "r", 7);
 			Assert.AreEqual("System.Collections.Generic.IEnumerable", lrr.ResolvedType.FullyQualifiedName);
 			Assert.AreEqual("System.String", lrr.ResolvedType.CastToConstructedReturnType().TypeArguments[0].FullyQualifiedName);
+		}
+		
+		[Test]
+		public void ParenthesizedLinqTest()
+		{
+			string program = @"using System; using System.Linq;
+class TestClass {
+	void Test(string[] input) {
+		(from e in input select e.Length)
+	}
+}
+";
+			ResolveResult rr = Resolve(program,
+			                           "(from e in input select e.Length)",
+			                           4, 3, ExpressionContext.Default);
+			Assert.IsNotNull(rr);
+			Assert.AreEqual("System.Collections.Generic.IEnumerable", rr.ResolvedType.FullyQualifiedName);
+			Assert.AreEqual("System.Int32", rr.ResolvedType.CastToConstructedReturnType().TypeArguments[0].FullyQualifiedName);
 		}
 		
 		const string objectInitializerTestProgram = @"using System; using System.Threading;

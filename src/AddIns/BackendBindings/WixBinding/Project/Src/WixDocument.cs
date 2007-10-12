@@ -412,7 +412,7 @@ namespace ICSharpCode.WixBinding
 										nestedElementsCount = 0;
 										if (isEmptyElement) {
 											Location endLocation = GetEmptyElementEnd(reader);
-											return new DomRegion(startLocation, endLocation);
+											return DomRegion.FromLocation(startLocation, endLocation);
 										}
 									}
 								} else if (!reader.IsEmptyElement) {
@@ -424,7 +424,7 @@ namespace ICSharpCode.WixBinding
 							if (!startLocation.IsEmpty && IsElementMatch(elementName, reader.LocalName)) {
 								if (nestedElementsCount == 0) {
 									Location endLocation = GetEndElementEnd(reader);
-									return new DomRegion(startLocation, endLocation);
+									return DomRegion.FromLocation(startLocation, endLocation);
 								}
 								--nestedElementsCount;
 							}

@@ -286,7 +286,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		static DomRegion GetRegion(RefParser.Location start, RefParser.Location end)
 		{
-			return new DomRegion(start, end);
+			return DomRegion.FromLocation(start, end);
 		}
 		
 		public override object VisitTypeDeclaration(AST.TypeDeclaration typeDeclaration, object data)

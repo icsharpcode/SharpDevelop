@@ -74,7 +74,7 @@ namespace VBNetBinding.Parser
 										if (nextDirective.Arg.Equals("region", StringComparison.OrdinalIgnoreCase)) {
 											--deep;
 											if (deep == 0) {
-												cu.FoldingRegions.Add(new FoldingRegion(directive.Arg.Trim('"'), new DomRegion(directive.StartPosition, nextDirective.EndPosition)));
+												cu.FoldingRegions.Add(new FoldingRegion(directive.Arg.Trim('"'), DomRegion.FromLocation(directive.StartPosition, nextDirective.EndPosition)));
 												goto end;
 											}
 										}

@@ -118,28 +118,37 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				using (NR.IParser p = NR.ParserFactory.CreateParser(language, new System.IO.StringReader(expression))) {
 					expr = p.ParseExpression();
 					if (expr != null) {
-						expr.AcceptVisitor(new SetAllNodePoints(new NR.Location(caretColumn, caretLine),
-						                                        new NR.Location(caretColumn + 1, caretLine)), null);
+						expr.AcceptVisitor(new FixAllNodeLocations(new NR.Location(caretColumn, caretLine)), null);
 					}
 				}
 			}
 			return expr;
 		}
 		
-		sealed class SetAllNodePoints : NodeTrackingAstVisitor
+		sealed class FixAllNodeLocations : NodeTrackingAstVisitor
 		{
-			readonly NR.Location start, end;
+			readonly NR.Location expressionStart;
 			
-			public SetAllNodePoints(ICSharpCode.NRefactory.Location start, ICSharpCode.NRefactory.Location end)
+			public FixAllNodeLocations(ICSharpCode.NRefactory.Location expressionStart)
 			{
-				this.start = start;
-				this.end = end;
+				this.expressionStart = expressionStart;
 			}
 			
 			protected override void BeginVisit(INode node)
 			{
-				node.StartLocation = start;
-				node.EndLocation = end;
+				node.StartLocation = FixLocation(node.StartLocation);
+				node.EndLocation = FixLocation(node.EndLocation);
+			}
+			
+			NR.Location FixLocation(NR.Location location)
+			{
+				if (location.IsEmpty) {
+					return expressionStart;
+				} else if (location.Line == 1) {
+					return new NR.Location(location.Column - 1 + expressionStart.Column, expressionStart.Line);
+				} else {
+					return new NR.Location(location.Column, location.Line - 1 + expressionStart.Line);
+				}
 			}
 		}
 		
@@ -154,9 +163,9 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return expression;
 		}
 		
-		public bool Initialize(ParseInformation parseInfo, int caretLineNumber, int caretColumn)
+		public bool Initialize(ParseInformation parseInfo, int caretLine, int caretColumn)
 		{
-			this.caretLine   = caretLineNumber;
+			this.caretLine   = caretLine;
 			this.caretColumn = caretColumn;
 			callingClass = null;
 			callingMember = null;
@@ -177,14 +186,12 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		}
 		
 		public ResolveResult Resolve(ExpressionResult expressionResult,
-		                             int caretLineNumber,
-		                             int caretColumn,
 		                             ParseInformation parseInfo,
 		                             string fileContent)
 		{
 			string expression = GetFixedExpression(expressionResult);
 			
-			if (!Initialize(parseInfo, caretLineNumber, caretColumn))
+			if (!Initialize(parseInfo, expressionResult.Region.BeginLine, expressionResult.Region.BeginColumn))
 				return null;
 			
 			Expression expr = null;
@@ -219,7 +226,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			
 			ResolveResult rr;
 			if (expressionResult.Context.IsAttributeContext) {
-				return ResolveAttribute(expr, new NR.Location(caretColumn, caretLineNumber));
+				return ResolveAttribute(expr, new NR.Location(caretColumn, caretLine));
 			} else if (expressionResult.Context == ExpressionContext.ObjectInitializer && expr is IdentifierExpression) {
 				bool isCollectionInitializer;
 				rr = ResolveObjectInitializer((expr as IdentifierExpression).Identifier, fileContent, out isCollectionInitializer);
@@ -648,7 +655,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		IField CreateLocalVariableField(LocalLookupVariable var)
 		{
 			IReturnType type = GetVariableType(var);
-			IField f = new DefaultField.LocalVariableField(type, var.Name, new DomRegion(var.StartPos, var.EndPos), callingClass);
+			IField f = new DefaultField.LocalVariableField(type, var.Name, DomRegion.FromLocation(var.StartPos, var.EndPos), callingClass);
 			if (var.IsConst) {
 				f.Modifiers |= ModifierEnum.Const;
 			}

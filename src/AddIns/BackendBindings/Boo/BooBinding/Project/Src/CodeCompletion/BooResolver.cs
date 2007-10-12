@@ -192,10 +192,9 @@ namespace Grunwald.BooBinding.CodeCompletion
 		
 		#region Resolve
 		public ResolveResult Resolve(ExpressionResult expressionResult,
-		                             int caretLineNumber, int caretColumn,
 		                             ParseInformation parseInfo, string fileContent)
 		{
-			if (!Initialize(parseInfo, caretLineNumber, caretColumn))
+			if (!Initialize(parseInfo, expressionResult.Region.BeginLine, expressionResult.Region.BeginColumn))
 				return null;
 			LoggingService.Debug("Resolve " + expressionResult.ToString());
 			if (expressionResult.Expression == "__GlobalNamespace") { // used for "import" completion

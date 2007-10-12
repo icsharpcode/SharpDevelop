@@ -58,9 +58,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public DomRegion(Location start, Location end)
-			: this(start.Y, start.X, end.Y, end.X)
+		public static DomRegion FromLocation(Location start, Location end)
 		{
+			return new DomRegion(start.Y, start.X, end.Y, end.X);
 		}
 		
 		public DomRegion(int beginLine, int beginColumn, int endLine, int endColumn)

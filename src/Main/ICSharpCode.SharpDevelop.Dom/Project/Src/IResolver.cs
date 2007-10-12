@@ -20,8 +20,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// The caretLineNumber and caretColumn is 1 based.
 		/// </summary>
 		ResolveResult Resolve(ExpressionResult expressionResult,
-		                      int caretLineNumber,
-		                      int caretColumn,
 		                      ParseInformation parseInfo,
 		                      string fileContent);
 		

@@ -43,6 +43,15 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 			return lineOffsets[location.Line - 1] + location.Column - 1;
 		}
 		
+		Location OffsetToLocation(int offset)
+		{
+			int lineNumber = lineOffsets.BinarySearch(offset);
+			if (lineNumber < 0) {
+				lineNumber = (~lineNumber) - 1;
+			}
+			return new Location(offset - lineOffsets[lineNumber] + 1, lineNumber + 1);
+		}
+		
 		enum FrameType
 		{
 			Global,
@@ -288,10 +297,10 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 			if (lastExpressionStartOffset >= 0) {
 				if (offset < tokenOffset) {
 					// offset is in front of this token
-					return new ExpressionResult(text.Substring(lastExpressionStartOffset, tokenOffset - lastExpressionStartOffset), frame.context);
+					return MakeResult(text, lastExpressionStartOffset, tokenOffset, frame.context);
 				} else {
 					// offset is IN this token
-					return new ExpressionResult(text.Substring(lastExpressionStartOffset, offset - lastExpressionStartOffset), frame.context);
+					return MakeResult(text, lastExpressionStartOffset, offset, frame.context);
 				}
 			} else {
 				return new ExpressionResult(null, frame.context);
@@ -639,10 +648,10 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 						} else if (resultFrame.bracketType == '<' && token.kind == Tokens.GreaterThan) {
 							// expression was a type argument
 							resultContext = ExpressionContext.Type;
-							return new ExpressionResult(text.Substring(resultStartOffset, resultEndOffset - resultStartOffset), resultContext);
+							return MakeResult(text, resultStartOffset, resultEndOffset, resultContext);
 						}
 						if (frame == resultFrame || resultFrame.type == FrameType.Popped) {
-							return new ExpressionResult(text.Substring(resultStartOffset, resultEndOffset - resultStartOffset), resultContext);
+							return MakeResult(text, resultStartOffset, resultEndOffset, resultContext);
 						}
 					} else {
 						if (frame.bracketType != '<') {
@@ -654,6 +663,13 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 			}
 			// offset is behind all tokens -> cannot find any expression
 			return new ExpressionResult(null, frame.context);
+		}
+		
+		ExpressionResult MakeResult(string text, int startOffset, int endOffset, ExpressionContext context)
+		{
+			return new ExpressionResult(text.Substring(startOffset, endOffset - startOffset),
+			                            DomRegion.FromLocation(OffsetToLocation(startOffset), OffsetToLocation(endOffset)),
+			                            context, null);
 		}
 		
 		public string RemoveLastPart(string expression)

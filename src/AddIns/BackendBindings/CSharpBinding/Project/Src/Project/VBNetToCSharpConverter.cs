@@ -96,7 +96,7 @@ namespace CSharpBinding
 										} else {
 											// remove ifdef including the code
 											compilationUnit.AcceptVisitor(new RemoveMembersInRangeVisitor(
-												new DomRegion(specials[i].StartPosition, specials[j].EndPosition)), null);
+												DomRegion.FromLocation(specials[i].StartPosition, specials[j].EndPosition)), null);
 											specials.RemoveRange(i, j - i + 1);
 										}
 										i--;
