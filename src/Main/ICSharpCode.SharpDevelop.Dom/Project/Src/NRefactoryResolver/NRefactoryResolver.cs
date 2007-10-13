@@ -1081,17 +1081,6 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		#region SearchMember
 		// no methods or indexer
-		public IReturnType SearchMember(IReturnType type, string memberName)
-		{
-			if (type == null)
-				return null;
-			IMember member = GetMember(type, memberName);
-			if (member == null)
-				return null;
-			else
-				return member.ReturnType;
-		}
-		
 		public IMember GetMember(IReturnType type, string memberName)
 		{
 			if (type == null)

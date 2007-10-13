@@ -721,6 +721,34 @@ End Class
 			Assert.AreEqual("rectangle", m.Parameters[0].Name);
 			Assert.IsTrue(m.Parameters[0].IsRef);
 		}
+		
+		[Test]
+		public void NestedInnerClasses()
+		{
+			string program = @"using System;
+public sealed class GL {
+	void Test() {
+		
+	}
+	
+	public class Enums
+	{
+		public enum BeginMode {QUADS, LINES }
+	}
+}
+";
+			TypeResolveResult trr = Resolve<TypeResolveResult>(program, "GL.Enums.BeginMode", 4);
+			Assert.AreEqual("GL.Enums.BeginMode", trr.ResolvedClass.FullyQualifiedName);
+			
+			trr = Resolve<TypeResolveResult>(program, "Enums.BeginMode", 4);
+			Assert.AreEqual("GL.Enums.BeginMode", trr.ResolvedClass.FullyQualifiedName);
+			
+			MemberResolveResult mrr = Resolve<MemberResolveResult>(program, "GL.Enums.BeginMode.LINES", 4);
+			Assert.AreEqual("GL.Enums.BeginMode.LINES", mrr.ResolvedMember.FullyQualifiedName);
+			
+			mrr = Resolve<MemberResolveResult>(program, "Enums.BeginMode.LINES", 4);
+			Assert.AreEqual("GL.Enums.BeginMode.LINES", mrr.ResolvedMember.FullyQualifiedName);
+		}
 		#endregion
 		
 		#region Import namespace tests

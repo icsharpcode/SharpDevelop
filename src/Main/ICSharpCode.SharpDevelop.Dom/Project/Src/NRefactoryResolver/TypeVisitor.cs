@@ -326,9 +326,21 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 								return member.ReturnType;
 						}
 					}
-					return null;
+				} else {
+					IMember member = resolver.GetMember(returnType, memberReferenceExpression.FieldName);
+					if (member != null) {
+						return member.ReturnType;
+					} else {
+						IClass c = returnType.GetUnderlyingClass();
+						if (c != null) {
+							foreach (IClass innerClass in c.InnerClasses) {
+								if (resolver.IsSameName(innerClass.Name, memberReferenceExpression.FieldName)) {
+									return innerClass.DefaultReturnType;
+								}
+							}
+						}
+					}
 				}
-				return resolver.SearchMember(returnType, memberReferenceExpression.FieldName);
 			}
 			return null;
 		}
