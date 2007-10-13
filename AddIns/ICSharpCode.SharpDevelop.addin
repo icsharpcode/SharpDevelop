@@ -1412,10 +1412,17 @@
 					          class = "ICSharpCode.SharpDevelop.Project.Commands.PublishProject"/>-->
 				</Condition>
 				<MenuItem id = "Separator2" type = "Separator" />
+				<MenuItem id="AbortBuild" type="Builder" class="ICSharpCode.SharpDevelop.Project.Commands.AbortBuild"/>
+				<MenuItem id = "Separator3" type = "Separator" />
 				<MenuItem id = "SetConfiguration"
 				          label = "${res:XML.MainMenu.BuildMenu.SetConfiguration}"
 				          type = "Menu">
 					<MenuItem id = "ConfigurationBuilder" type = "Builder" class = "ICSharpCode.SharpDevelop.Project.Commands.SetConfigurationMenuBuilder"/>
+				</MenuItem>
+				<MenuItem id = "SetPlatform"
+				          label = "${res:XML.MainMenu.BuildMenu.SetPlatform}"
+				          type = "Menu">
+					<MenuItem id = "PlatformBuilder" type = "Builder" class = "ICSharpCode.SharpDevelop.Project.Commands.SetPlatformMenuBuilder"/>
 				</MenuItem>
 				<MenuItem id = "EditConfigurations"
 				          label = "${res:XML.MainMenu.BuildMenu.EditConfigurationsPlatforms}"
