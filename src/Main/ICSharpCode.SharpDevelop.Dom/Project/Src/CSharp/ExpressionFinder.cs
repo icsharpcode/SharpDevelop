@@ -64,6 +64,8 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 			Statements,
 			Expression,
 			ObjectInitializer,
+			AttributeSection,
+			AttributeArguments,
 			TypeParameterDecl,
 			Popped
 		}
@@ -131,6 +133,7 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 				get {
 					return type == FrameType.Statements
 						|| type == FrameType.Expression
+						|| type == FrameType.AttributeArguments
 						|| state == FrameState.Initializer
 						|| state == FrameState.ObjectCreation;
 				}
@@ -192,6 +195,9 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 						case FrameType.ObjectInitializer:
 							SetContext(ExpressionContext.ObjectInitializer);
 							break;
+						case FrameType.AttributeSection:
+							SetContext(ExpressionContext.Attribute);
+							break;
 						default:
 							SetContext(ExpressionContext.Default);
 							break;
@@ -238,6 +244,8 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 			{
 				if (state == FrameState.Initializer || type == FrameType.ObjectInitializer) {
 					this.parenthesisChildType = FrameType.Expression;
+				} else if (type == FrameType.AttributeSection) {
+					this.parenthesisChildType = FrameType.AttributeArguments;
 				} else {
 					this.parenthesisChildType = this.type;
 				}
@@ -343,6 +351,11 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 						frame.lastExpressionStart = token.Location;
 					frame = new Frame(frame, '(');
 					frame.parent.ResetParenthesisChildType();
+					if (token.kind == Tokens.OpenSquareBracket && !frame.parent.InExpressionMode) {
+						frame.type = FrameType.AttributeSection;
+						frame.ResetParenthesisChildType();
+						frame.SetDefaultContext();
+					}
 					break;
 				case Tokens.CloseParenthesis:
 				case Tokens.CloseSquareBracket:

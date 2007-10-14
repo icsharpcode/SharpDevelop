@@ -225,7 +225,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 			
 			ResolveResult rr;
-			if (expressionResult.Context.IsAttributeContext) {
+			if (expressionResult.Context == ExpressionContext.Attribute) {
 				return ResolveAttribute(expr, new NR.Location(caretColumn, caretLine));
 			} else if (expressionResult.Context == ExpressionContext.ObjectInitializer && expr is IdentifierExpression) {
 				bool isCollectionInitializer;
@@ -355,13 +355,20 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		ResolveResult ResolveAttribute(Expression expr, NR.Location position)
 		{
 			string attributeName = GetAttributeName(expr);
-			IClass c = GetAttribute(attributeName, position);
-			if (c != null) {
-				return new TypeResolveResult(callingClass, callingMember, c);
+			if (attributeName != null) {
+				IClass c = GetAttribute(attributeName, position);
+				if (c != null) {
+					return new TypeResolveResult(callingClass, callingMember, c);
+				} else {
+					string ns = SearchNamespace(attributeName, position);
+					if (ns != null) {
+						return new NamespaceResolveResult(callingClass, callingMember, ns);
+					}
+				}
 			} else if (expr is InvocationExpression) {
 				InvocationExpression ie = (InvocationExpression)expr;
 				attributeName = GetAttributeName(ie.TargetObject);
-				c = GetAttribute(attributeName, position);
+				IClass c = GetAttribute(attributeName, position);
 				if (c != null) {
 					List<IMethod> ctors = new List<IMethod>();
 					foreach (IMethod m in c.Methods) {

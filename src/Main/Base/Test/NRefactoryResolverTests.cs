@@ -114,6 +114,14 @@ namespace ICSharpCode.SharpDevelop.Tests
 			return (T)rr;
 		}
 		
+		public T Resolve<T>(string program, string expression, int line, int column, ExpressionContext context) where T : ResolveResult
+		{
+			ResolveResult rr = Resolve(program, expression, line, column, context);
+			Assert.IsNotNull(rr, "Resolve returned null");
+			Assert.AreEqual(typeof(T), rr.GetType());
+			return (T)rr;
+		}
+		
 		public T ResolveVB<T>(string program, string expression, int line) where T : ResolveResult
 		{
 			ResolveResult rr = ResolveVB(program, expression, line);
@@ -1250,6 +1258,43 @@ namespace OtherName { class Bla { } }
 			ResolveResult result = Resolve(mixedTypeTestProgram, "OtherName.Instance", 4);
 			Assert.IsInstanceOfType(typeof(MemberResolveResult), result);
 			Assert.AreEqual("Instance", (result as MemberResolveResult).ResolvedMember.Name);
+		}
+		#endregion
+		
+		#region Attribute tests
+		[Test]
+		public void NamespaceInAttributeContext()
+		{
+			// Classes in the current namespace are preferred over classes from
+			// imported namespaces
+			string program = @"using System;
+  class Test {
+
+}
+";
+			NamespaceResolveResult result = Resolve<NamespaceResolveResult>(program, "System", 2, 1, ExpressionContext.Attribute);
+			Assert.AreEqual("System", result.Name);
+			
+			result = Resolve<NamespaceResolveResult>(program, "System.Runtime", 2, 1, ExpressionContext.Attribute);
+			Assert.AreEqual("System.Runtime", result.Name);
+		}
+		
+		[Test]
+		public void AttributeWithShortName()
+		{
+			// Classes in the current namespace are preferred over classes from
+			// imported namespaces
+			string program = @"using System;
+  class Test {
+
+}
+";
+			
+			TypeResolveResult result = Resolve<TypeResolveResult>(program, "Obsolete", 2, 1, ExpressionContext.Attribute);
+			Assert.AreEqual("System.ObsoleteAttribute", result.ResolvedClass.FullyQualifiedName);
+			
+			result = Resolve<TypeResolveResult>(program, "System.Obsolete", 2, 1, ExpressionContext.Attribute);
+			Assert.AreEqual("System.ObsoleteAttribute", result.ResolvedClass.FullyQualifiedName);
 		}
 		#endregion
 		

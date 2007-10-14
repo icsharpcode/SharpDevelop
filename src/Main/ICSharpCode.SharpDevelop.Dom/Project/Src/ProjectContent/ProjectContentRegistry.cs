@@ -220,6 +220,23 @@ namespace ICSharpCode.SharpDevelop.Dom
 					return contents[fileNameOrAssemblyName];
 				}
 			}
+			
+			// GetProjectContentForReference supports redirecting .NET base assemblies to the correct version,
+			// so GetExistingProjectContent must support it, too (otherwise assembly interdependencies fail
+			// to resolve correctly when a .NET 1.0 assembly is used in a .NET 2.0 project)
+			int pos = fileNameOrAssemblyName.IndexOf(',');
+			if (pos > 0) {
+				string shortName = fileNameOrAssemblyName.Substring(0, pos);
+				Assembly assembly = GetDefaultAssembly(shortName);
+				if (assembly != null) {
+					lock (contents) {
+						if (contents.ContainsKey(assembly.FullName)) {
+							return contents[assembly.FullName];
+						}
+					}
+				}
+			}
+			
 			return null;
 		}
 		
@@ -351,6 +368,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 			// These assemblies are already loaded by SharpDevelop, so we
 			// don't need to load them in a separate AppDomain/with Cecil.
 			switch (shortName) {
+				case "mscorlib":
+					return MscorlibAssembly;
 				case "System": // System != mscorlib !!!
 					return SystemAssembly;
 				case "System.Xml":

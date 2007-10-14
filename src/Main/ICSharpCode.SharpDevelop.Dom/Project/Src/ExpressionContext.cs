@@ -54,15 +54,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		/// <summary>
-		/// Gets if the context expects an attribute.
-		/// </summary>
-		public virtual bool IsAttributeContext {
-			get {
-				return false;
-			}
-		}
-		
 		public virtual bool IsTypeContext {
 			get { return false; }
 		}
@@ -168,10 +159,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// <remarks>When using this context, a resolver should try resolving typenames with an
 		/// appended "Attribute" suffix and treat "invocations" of the attribute type as
 		/// object creation.</remarks>
-		public static ExpressionContext GetAttribute(IProjectContent projectContent)
-		{
-			return new TypeExpressionContext(projectContent.SystemTypes.Attribute, false, true);
-		}
+		public static ExpressionContext Attribute = new AttributeExpressionContext();
 		
 		/// <summary>Context expects a type name which has special base type</summary>
 		/// <param name="baseClass">The class the expression must derive from.</param>
@@ -210,7 +198,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			
 			public override string ToString()
 			{
-				return "[DefaultExpressionContext: " + name + "]";
+				return "[" + GetType().Name + ": " + name + "]";
 			}
 		}
 		#endregion
@@ -239,9 +227,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 			public override string ToString()
 			{
 				if (allowImportClasses)
-					return "[ImportableExpressionContext]";
+					return "[" + GetType().Name + " AllowImportClasses=true]";
 				else
-					return "[NamespaceExpressionContext]";
+					return "[" + GetType().Name + "]";
 			}
 		}
 		#endregion
@@ -288,12 +276,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 				}
 			}
 			
-			public override bool IsAttributeContext {
-				get {
-					return baseClass != null && baseClass.FullyQualifiedName == "System.Attribute";
-				}
-			}
-			
 			public override bool IsTypeContext {
 				get { return true; }
 			}
@@ -305,6 +287,18 @@ namespace ICSharpCode.SharpDevelop.Dom
 						+ " IsObjectCreation=" + IsObjectCreation + "]";
 				else
 					return "[" + GetType().Name + " IsObjectCreation=" + IsObjectCreation + "]";
+			}
+			
+			public override bool Equals(object obj)
+			{
+				TypeExpressionContext o = obj as TypeExpressionContext;
+				return o != null && object.Equals(baseClass, o.baseClass) && IsObjectCreation == o.IsObjectCreation;
+			}
+			
+			public override int GetHashCode()
+			{
+				return ((baseClass != null) ? baseClass.GetHashCode() : 0)
+					^ isObjectCreation.GetHashCode();
 			}
 		}
 		#endregion
@@ -346,19 +340,39 @@ namespace ICSharpCode.SharpDevelop.Dom
 			{
 				if (opType == 0)
 					return a.ShowEntry(o) || b.ShowEntry(o);
-				if (opType == 1)
+				else if (opType == 1)
 					return a.ShowEntry(o) && b.ShowEntry(o);
-				return a.ShowEntry(o) ^ b.ShowEntry(o);
+				else
+					return a.ShowEntry(o) ^ b.ShowEntry(o);
 			}
 			
 			public override string ToString()
 			{
-				string op = " XOR ";
+				string op;
 				if (opType == 0)
 					op = " OR ";
 				else if (opType == 1)
 					op = " AND ";
+				else
+					op = " XOR ";
 				return "[" + GetType().Name + ": " + a + op + b + "]";
+			}
+			
+			public override int GetHashCode()
+			{
+				int hashCode = 0;
+				unchecked {
+					hashCode += opType.GetHashCode();
+					if (a != null) hashCode += a.GetHashCode() * 3;
+					if (b != null) hashCode += b.GetHashCode() * 181247123;
+				}
+				return hashCode;
+			}
+			
+			public override bool Equals(object obj)
+			{
+				CombinedExpressionContext cec = obj as CombinedExpressionContext;
+				return cec != null && this.opType == cec.opType && object.Equals(this.a, cec.a) && object.Equals(this.b, cec.b);
 			}
 		}
 		#endregion
@@ -371,6 +385,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				IClass c = o as IClass;
 				if (c != null) {
 					// use this hack to show dummy classes like "short"
+					// (go from the dummy class to the real class)
 					if (c.Methods.Count > 0) {
 						c = c.Methods[0].DeclaringType;
 					}
@@ -390,6 +405,37 @@ namespace ICSharpCode.SharpDevelop.Dom
 				} else {
 					return false;
 				}
+			}
+			
+			public override string ToString()
+			{
+				return "[" + GetType().Name + "]";
+			}
+		}
+		#endregion
+		
+		#region AttributeExpressionContext
+		sealed class AttributeExpressionContext : ExpressionContext
+		{
+			public override bool ShowEntry(object o)
+			{
+				if (o is string)
+					return true;
+				IClass c = o as IClass;
+				if (c != null && !c.IsAbstract) {
+					return c.IsTypeInInheritanceTree(c.ProjectContent.SystemTypes.Attribute.GetUnderlyingClass());
+				} else {
+					return false;
+				}
+			}
+			
+			public override bool IsTypeContext {
+				get { return true; }
+			}
+			
+			public override string ToString()
+			{
+				return "[" + GetType().Name + "]";
 			}
 		}
 		#endregion
@@ -411,6 +457,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 					}
 				}
 				return false;
+			}
+			
+			public override string ToString()
+			{
+				return "[" + GetType().Name + "]";
 			}
 		}
 		#endregion

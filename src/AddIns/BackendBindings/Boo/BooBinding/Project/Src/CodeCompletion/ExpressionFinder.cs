@@ -218,19 +218,15 @@ namespace Grunwald.BooBinding.CodeCompletion
 				IClass c = o as IClass;
 				if (c != null && c.IsAbstract)
 					return false;
-				if (ExpressionContext.GetAttribute(ParserService.CurrentProjectContent).ShowEntry(o))
+				if (ExpressionContext.Attribute.ShowEntry(o))
 					return true;
 				if (c == null)
 					return false;
-				if (BooProject.BooCompilerPC != null) {
-					return c.IsTypeInInheritanceTree(BooProject.BooCompilerPC.GetClass("Boo.Lang.Compiler.AbstractAstAttribute", 0));
-				} else {
-					foreach (IReturnType baseType in c.BaseTypes) {
-						if (baseType.FullyQualifiedName == "Boo.Lang.Compiler.AbstractAstAttribute")
-							return true;
-					}
-					return false;
+				foreach (IClass baseType in c.ClassInheritanceTree) {
+					if (baseType.FullyQualifiedName == "Boo.Lang.Compiler.AbstractAstAttribute")
+						return true;
 				}
+				return false;
 			}
 		}
 		#endregion
