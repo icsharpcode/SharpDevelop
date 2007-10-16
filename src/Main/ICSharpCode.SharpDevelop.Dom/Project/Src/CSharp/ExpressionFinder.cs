@@ -229,14 +229,18 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 			
 			public void ResetCurlyChildType()
 			{
-				switch (this.type) {
-					case FrameType.Property:
-					case FrameType.Event:
-						this.curlyChildType = FrameType.Statements;
-						break;
-					default:
-						this.curlyChildType = this.type;
-						break;
+				if (state == FrameState.Initializer) {
+					this.curlyChildType = FrameType.Expression;
+				} else {
+					switch (this.type) {
+						case FrameType.Property:
+						case FrameType.Event:
+							this.curlyChildType = FrameType.Statements;
+							break;
+						default:
+							this.curlyChildType = this.type;
+							break;
+					}
 				}
 			}
 			
@@ -459,6 +463,7 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 						frame.SetContext(ExpressionContext.Default);
 						frame.state = FrameState.Initializer;
 						frame.ResetParenthesisChildType();
+						frame.ResetCurlyChildType();
 						break;
 					} else if (frame.type == FrameType.ObjectInitializer) {
 						frame.SetContext(ExpressionContext.Default);

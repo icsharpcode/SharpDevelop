@@ -920,18 +920,16 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return false;
 			if (member1.IsStatic != member2.IsStatic)
 				return false;
-			if (member1 is IMethod) {
-				if (member2 is IMethod) {
-					if (DiffUtility.Compare(((IMethod)member1).Parameters, ((IMethod)member2).Parameters) != 0)
+			IMethodOrProperty m1 = member1 as IMethodOrProperty;
+			IMethodOrProperty m2 = member2 as IMethodOrProperty;
+			if (m1 != null || m2 != null) {
+				if (m1 != null && m2 != null) {
+					if (DiffUtility.Compare(m1.Parameters, m2.Parameters) != 0)
 						return false;
-				} else {
-					return false;
-				}
-			}
-			if (member1 is IProperty) {
-				if (member2 is IProperty) {
-					if (DiffUtility.Compare(((IProperty)member1).Parameters, ((IProperty)member2).Parameters) != 0)
-						return false;
+					if (m1 is IMethod && m2 is IMethod) {
+						if ((m1 as IMethod).TypeParameters.Count != (m2 as IMethod).TypeParameters.Count)
+							return false;
+					}
 				} else {
 					return false;
 				}

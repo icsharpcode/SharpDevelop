@@ -284,6 +284,44 @@ class TestClass {
 			// to the generic method.
 			Assert.IsTrue(Refactoring.RefactoringService.IsReferenceToMember(genericMethod, mrr));
 		}
+		
+		[Test]
+		public void BothGenericAndNonGenericMethod()
+		{
+			string program = @"using System;
+class TestClass {
+	void Main() {
+		
+	}
+	static object GetSomething() {
+		return null;
+	}
+	static T GetSomething<T>() {
+		return default(T);
+	}
+}
+";
+			
+			MemberResolveResult mrr = Resolve<MemberResolveResult>(program, "GetSomething()", 4);
+			
+			IMethod nonGenericMethod = mrr.ResolvedMember.DeclaringType.Methods[1];
+			Assert.AreEqual("System.Object", nonGenericMethod.ReturnType.FullyQualifiedName);
+			
+			IMethod genericMethod = mrr.ResolvedMember.DeclaringType.Methods[2];
+			Assert.AreEqual("T", genericMethod.ReturnType.FullyQualifiedName);
+			
+			Assert.AreSame(nonGenericMethod, mrr.ResolvedMember);
+			
+			Assert.IsTrue(Refactoring.RefactoringService.IsReferenceToMember(nonGenericMethod, mrr));
+			Assert.IsFalse(Refactoring.RefactoringService.IsReferenceToMember(genericMethod, mrr));
+			
+			mrr = Resolve<MemberResolveResult>(program, "GetSomething<int>()", 4);
+			Assert.AreEqual("System.Int32", mrr.ResolvedType.FullyQualifiedName);
+			Assert.AreEqual("System.Int32", mrr.ResolvedMember.ReturnType.FullyQualifiedName);
+			
+			Assert.IsTrue(Refactoring.RefactoringService.IsReferenceToMember(genericMethod, mrr));
+			Assert.IsFalse(Refactoring.RefactoringService.IsReferenceToMember(nonGenericMethod, mrr));
+		}
 		#endregion
 	}
 }

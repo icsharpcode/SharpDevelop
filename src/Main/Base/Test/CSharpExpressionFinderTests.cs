@@ -688,6 +688,17 @@ class Main {
 		}
 		
 		[Test]
+		public void FieldArrayInitializer()
+		{
+			const string program = @"using System;
+class Main {
+	int[] myField = { ";
+			
+			ExpressionResult result = ef.FindExpression(program, program.Length);
+			Assert.AreEqual(ExpressionContext.Default, result.Context);
+		}
+		
+		[Test]
 		public void GlobalAttribute1()
 		{
 			const string program = @"using System;
@@ -697,7 +708,7 @@ class Main {
 			Assert.AreEqual(ExpressionContext.Attribute, result.Context);
 		}
 		
-				[Test]
+		[Test]
 		public void GlobalAttribute2()
 		{
 			const string program = @"using System;
