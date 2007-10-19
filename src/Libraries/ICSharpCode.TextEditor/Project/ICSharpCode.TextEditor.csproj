@@ -91,6 +91,7 @@
     <Compile Include="Src\Document\TextBufferStrategy\ITextBufferStrategy.cs" />
     <Compile Include="Src\Document\TextBufferStrategy\StringTextBufferStrategy.cs" />
     <Compile Include="Src\Util\AugmentableRedBlackTree.cs" />
+    <Compile Include="Src\Util\LoggingService.cs" />
     <Compile Include="Src\Util\LookupTable.cs" />
     <Compile Include="Src\Util\RedBlackTreeIterator.cs" />
     <Compile Include="Src\Util\TextUtility.cs" />

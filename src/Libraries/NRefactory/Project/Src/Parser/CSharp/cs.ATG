@@ -210,7 +210,7 @@ UsingDirective
 GlobalAttributeSection
 =
 	"[" (. Location startPos = t.Location; .) Identifier
-	                            (. if (t.val != "assembly") Error("global attribute target specifier (\"assembly\") expected");
+	                            (. if (t.val != "assembly" && t.val != "module") Error("global attribute target specifier (assembly or module) expected");
 	                               string attributeTarget = t.val;
 	                               List<ASTAttribute> attributes = new List<ASTAttribute>();
 	                               ASTAttribute attribute;
@@ -288,11 +288,10 @@ AttributeSection<out AttributeSection section>
 	[ IF (IsLocalAttrTarget())
 		( "event"                       (. attributeTarget = "event";.)
 		| "return"                      (. attributeTarget = "return";.)
-		| Identifier                    (. if (t.val != "field"    || t.val != "method" ||
-		                                      t.val != "module"   || t.val != "param"  ||
-		                                      t.val != "property" || t.val != "type")
-		                                    Error("attribute target specifier (event, return, field," +
-		                                          "method, module, param, property, or type) expected");
+		| Identifier                    (. if (t.val != "field"   && t.val != "method" &&
+		                                      t.val != "param" &&
+		                                      t.val != "property" && t.val != "type")
+		                                    Error("attribute target specifier (field, event, method, param, property, return or type) expected");
 		                                   attributeTarget = t.val;
 		                                .)
 		) ":" 

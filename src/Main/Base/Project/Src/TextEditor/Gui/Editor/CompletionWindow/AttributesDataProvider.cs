@@ -18,7 +18,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 	public class AttributesDataProvider : CtrlSpaceCompletionDataProvider
 	{
 		public AttributesDataProvider(IProjectContent pc)
-			: this(ExpressionContext.TypeDerivingFrom(pc.SystemTypes.Attribute, true))
+			: this(ExpressionContext.Attribute)
 		{
 		}
 		

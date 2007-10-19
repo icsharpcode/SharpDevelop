@@ -70,15 +70,6 @@ namespace ICSharpCode.TextEditor.Undo
 			}
 		}
 		
-//		/// <summary>
-//		/// You call this method to pool the last x operations from the undo stack
-//		/// to make 1 operation from it.
-//		/// </summary>
-//		public void CombineLast(int actionCount)
-//		{
-//			undostack.Push(new UndoQueue(undostack, actionCount));
-//		}
-		
 		int undoGroupDepth;
 		int actionCountInUndoGroup;
 		
@@ -88,6 +79,7 @@ namespace ICSharpCode.TextEditor.Undo
 				actionCountInUndoGroup = 0;
 			}
 			undoGroupDepth++;
+			Util.LoggingService.Debug("Open undo group (new depth=" + undoGroupDepth + ")");
 		}
 		
 		public void EndUndoGroup()
@@ -95,8 +87,16 @@ namespace ICSharpCode.TextEditor.Undo
 			if (undoGroupDepth == 0)
 				throw new InvalidOperationException("There are no open undo groups");
 			undoGroupDepth--;
+			Util.LoggingService.Debug("Close undo group (new depth=" + undoGroupDepth + ")");
 			if (undoGroupDepth == 0 && actionCountInUndoGroup > 1) {
 				undostack.Push(new UndoQueue(undostack, actionCountInUndoGroup));
+			}
+		}
+		
+		public void AssertNoUndoGroupOpen()
+		{
+			if (undoGroupDepth != 0) {
+				throw new InvalidOperationException("No undo group should be open at this point");
 			}
 		}
 		
@@ -105,9 +105,7 @@ namespace ICSharpCode.TextEditor.Undo
 		/// </summary>
 		public void Undo()
 		{
-			if (undoGroupDepth != 0) {
-				throw new InvalidOperationException("cannot perform Undo/Redo while undo group is open");
-			}
+			AssertNoUndoGroupOpen();
 			if (undostack.Count > 0) {
 				IUndoableOperation uedit = (IUndoableOperation)undostack.Pop();
 				redostack.Push(uedit);
@@ -121,9 +119,7 @@ namespace ICSharpCode.TextEditor.Undo
 		/// </summary>
 		public void Redo()
 		{
-			if (undoGroupDepth != 0) {
-				throw new InvalidOperationException("cannot perform Undo/Redo while undo group is open");
-			}
+			AssertNoUndoGroupOpen();
 			if (redostack.Count > 0) {
 				IUndoableOperation uedit = (IUndoableOperation)redostack.Pop();
 				undostack.Push(uedit);
@@ -139,7 +135,7 @@ namespace ICSharpCode.TextEditor.Undo
 		public void Push(IUndoableOperation operation)
 		{
 			if (operation == null) {
-				throw new ArgumentNullException("UndoStack.Push(UndoableOperation operation) : operation can't be null");
+				throw new ArgumentNullException("operation");
 			}
 			
 			if (AcceptChanges) {
@@ -168,6 +164,7 @@ namespace ICSharpCode.TextEditor.Undo
 		/// </summary>
 		public void ClearAll()
 		{
+			AssertNoUndoGroupOpen();
 			undostack.Clear();
 			redostack.Clear();
 			actionCountInUndoGroup = 0;

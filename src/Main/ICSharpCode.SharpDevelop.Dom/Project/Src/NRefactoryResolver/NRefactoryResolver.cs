@@ -1295,6 +1295,17 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 						AddCSharpPrimitiveTypes(result);
 						CtrlSpaceInternal(result, fileContent);
 					}
+				} else if (context == ExpressionContext.Attribute) {
+					CtrlSpaceInternal(result, fileContent);
+					result.Add("assembly");
+					result.Add("module");
+					result.Add("field");
+					result.Add("event");
+					result.Add("method");
+					result.Add("param");
+					result.Add("property");
+					result.Add("return");
+					result.Add("type");
 				} else if (context == ExpressionContext.Default) {
 					AddCSharpKeywords(result, NR.Parser.CSharp.Tokens.ExpressionStart);
 					AddCSharpKeywords(result, NR.Parser.CSharp.Tokens.ExpressionContent);

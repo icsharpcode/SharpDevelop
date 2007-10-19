@@ -187,19 +187,22 @@ namespace ICSharpCode.TextEditor
 						string text = (string)data.GetData(DataFormats.UnicodeText);
 						if (text.Length > 0) {
 							textArea.Document.UndoStack.StartUndoGroup();
-							if (textArea.SelectionManager.HasSomethingSelected) {
-								Delete(sender, e);
+							try {
+								if (textArea.SelectionManager.HasSomethingSelected) {
+									Delete(sender, e);
+								}
+								if (fullLine) {
+									int col = textArea.Caret.Column;
+									textArea.Caret.Column = 0;
+									textArea.InsertString(text);
+									textArea.Caret.Column = col;
+								}
+								else {
+									textArea.InsertString(text);
+								}
+							} finally {
+								textArea.Document.UndoStack.EndUndoGroup();
 							}
-							if (fullLine) {
-								int col = textArea.Caret.Column;
-								textArea.Caret.Column = 0;
-								textArea.InsertString(text);
-								textArea.Caret.Column = col;
-							}
-							else {
-								textArea.InsertString(text);
-							}
-							textArea.Document.UndoStack.EndUndoGroup();
 						}
 					}
 					return;

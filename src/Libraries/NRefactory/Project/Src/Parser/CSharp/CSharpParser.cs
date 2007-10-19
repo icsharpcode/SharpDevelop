@@ -394,7 +394,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		bool IsGlobalAttrTarget () {
 			Token pt = Peek(1);
 			return la.kind == Tokens.OpenSquareBracket &&
-				IsIdentifierToken(pt) && pt.val == "assembly";
+				IsIdentifierToken(pt) && (pt.val == "assembly" || pt.val == "module");
 		}
 
 		/* True, if "[" is followed by "," or "]" */

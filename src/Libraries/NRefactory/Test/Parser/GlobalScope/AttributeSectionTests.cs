@@ -82,6 +82,25 @@ public class Form1 {
 		}
 		
 		[Test]
+		public void ModuleAttributeCSharp()
+		{
+			string program = @"[module: System.Attribute()]";
+			AttributeSection decl = ParseUtilCSharp.ParseGlobal<AttributeSection>(program);
+			Assert.AreEqual(new Location(1, 1), decl.StartLocation);
+			Assert.AreEqual("module", decl.AttributeTarget);
+		}
+		
+		[Test]
+		public void TypeAttributeCSharp()
+		{
+			string program = @"[type: System.Attribute()] class Test {}";
+			TypeDeclaration type = ParseUtilCSharp.ParseGlobal<TypeDeclaration>(program);
+			AttributeSection decl = type.Attributes[0];
+			Assert.AreEqual(new Location(1, 1), decl.StartLocation);
+			Assert.AreEqual("type", decl.AttributeTarget);
+		}
+		
+		[Test]
 		public void AssemblyAttributeVBNet()
 		{
 			string program = @"<assembly: System.Attribute()>";

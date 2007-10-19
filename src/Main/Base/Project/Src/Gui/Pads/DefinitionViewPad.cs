@@ -98,6 +98,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (expressionFinder == null) return null;
 			Caret caret = ctl.ActiveTextAreaControl.Caret;
 			string content = (e == null) ? ctl.Text : e.Content;
+			if (caret.Offset >= content.Length) {
+				#if DEBUG
+				// the caret offset should not be invalid here - try to find out the when the text editor
+				// doesn't validate the caret position
+				System.Diagnostics.Debugger.Break();
+				#endif
+				return null;
+			}
 			ExpressionResult expr = expressionFinder.FindFullExpression(content, caret.Offset);
 			if (expr.Expression == null) return null;
 			return ParserService.Resolve(expr, caret.Line + 1, caret.Column + 1, fileName, content);
