@@ -538,6 +538,7 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 			foreach (IEvent e in interf.GetEvents()) {
 				if (!InterfaceMemberAlreadyImplemented(targetClassEvents, e, out requireAlternativeImplementation)) {
 					EventDeclaration ed = ConvertMember(e, context);
+					ed.Attributes.Clear();
 					if (explicitImpl || requireAlternativeImplementation) {
 						ed.InterfaceImplementations.Add(CreateInterfaceImplementation(e, context));
 						
@@ -561,6 +562,7 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 			foreach (IProperty p in interf.GetProperties()) {
 				if (!InterfaceMemberAlreadyImplemented(targetClassProperties, p, out requireAlternativeImplementation)) {
 					AttributedNode pd = ConvertMember(p, context);
+					pd.Attributes.Clear();
 					if (explicitImpl || requireAlternativeImplementation) {
 						InterfaceImplementation impl = CreateInterfaceImplementation(p, context);
 						if (pd is IndexerDeclaration) {
@@ -581,6 +583,7 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 			foreach (IMethod m in interf.GetMethods()) {
 				if (!InterfaceMemberAlreadyImplemented(targetClassMethods, m, out requireAlternativeImplementation)) {
 					MethodDeclaration md = ConvertMember(m, context) as MethodDeclaration;
+					md.Attributes.Clear();
 					if (md != null) {
 						if (explicitImpl || requireAlternativeImplementation) {
 							md.InterfaceImplementations.Add(CreateInterfaceImplementation(m, context));

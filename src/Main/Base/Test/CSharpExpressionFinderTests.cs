@@ -717,6 +717,87 @@ public class X { }";
 			
 			FindFull(program, "stFix", "TestFixture", ExpressionContext.Attribute);
 		}
+		
+		[Test]
+		public void Indexer1()
+		{
+			const string program = @"using System;
+class Main {
+	public int this[";
+			
+			ExpressionResult result = ef.FindExpression(program, program.Length);
+			Assert.AreEqual(ExpressionContext.ParameterType, result.Context);
+		}
+		
+		[Test]
+		public void Indexer2()
+		{
+			const string program = @"using System;
+class Main {
+	public int this[int index] { ";
+			
+			ExpressionResult result = ef.FindExpression(program, program.Length);
+			Assert.AreEqual(ExpressionContext.PropertyDeclaration, result.Context);
+		}
+		
+		[Test]
+		public void IndexerAccessInObjectInitializer()
+		{
+			const string program = @"using System;
+class Main {
+	void M() {
+		a = new SomeObject { b = c[ ";
+			
+			ExpressionResult result = ef.FindExpression(program, program.Length);
+			Assert.AreEqual(ExpressionContext.Default, result.Context);
+		}
+		
+		[Test]
+		public void ContextInCondition()
+		{
+			const string program = @"using System;
+class Main {
+	void M() {
+		if ( ";
+			
+			ExpressionResult result = ef.FindExpression(program, program.Length);
+			Assert.AreEqual(ExpressionContext.Default, result.Context);
+		}
+		
+		[Test]
+		public void ContextInCall()
+		{
+			const string program = @"using System;
+class Main {
+	void M() {
+		MethodCall( ";
+			
+			ExpressionResult result = ef.FindExpression(program, program.Length);
+			Assert.AreEqual(ExpressionContext.Default, result.Context);
+		}
+		
+		[Test]
+		public void BlockLambdaInCondition()
+		{
+			const string program = @"using System;
+class Main {
+	void M() {
+		if (Method(a => { ";
+			
+			ExpressionResult result = ef.FindExpression(program, program.Length);
+			Assert.AreEqual(ExpressionContext.MethodBody, result.Context);
+		}
+		
+		[Test]
+		public void BlockLambdaInField()
+		{
+			const string program = @"using System;
+class Main {
+	Func<int, int> f = a => { ";
+			
+			ExpressionResult result = ef.FindExpression(program, program.Length);
+			Assert.AreEqual(ExpressionContext.MethodBody, result.Context);
+		}
 	}
 }
 
