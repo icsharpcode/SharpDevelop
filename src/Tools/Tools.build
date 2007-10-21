@@ -2,6 +2,8 @@
 	<ItemGroup>
 		<SHFBFiles Include="SHFB\*"/>
 		<SHFBColorizerFiles Include="SHFB\Colorizer\*"/>
+		<SHFBPluginsFiles Include="SHFB\Plugins\*"/>
+		<SHFBSharedContentFiles Include="SHFB\SharedContent\*"/>
 		<SHFBTemplatesFiles Include="SHFB\Templates\*"/>
 		<SHFBWebFiles Include="SHFB\Web\*"/>
 		<WixFiles Include="wix\*"/>
@@ -17,8 +19,11 @@
 	<Target Name="Build">
 		<Copy SourceFiles="@(SHFBFiles)" DestinationFolder="..\..\bin\Tools\SHFB" SkipUnchangedFiles="true"/>
 		<Copy SourceFiles="@(SHFBColorizerFiles)" DestinationFolder="..\..\bin\Tools\SHFB\Colorizer" SkipUnchangedFiles="true"/>
+		<Copy SourceFiles="@(SHFBPluginsFiles)" DestinationFolder="..\..\bin\Tools\SHFB\PlugIns" SkipUnchangedFiles="true"/>
+		<Copy SourceFiles="@(SHFBSharedContentFiles)" DestinationFolder="..\..\bin\Tools\SHFB\SharedContent" SkipUnchangedFiles="true"/>
 		<Copy SourceFiles="@(SHFBTemplatesFiles)" DestinationFolder="..\..\bin\Tools\SHFB\Templates" SkipUnchangedFiles="true"/>
 		<Copy SourceFiles="@(SHFBWebFiles)" DestinationFolder="..\..\bin\Tools\SHFB\Web" SkipUnchangedFiles="true"/>
+
 		<Copy SourceFiles="@(WixFiles)" DestinationFolder="..\..\bin\Tools\Wix" SkipUnchangedFiles="true"/>
 		<Copy SourceFiles="@(WixDocFiles)" DestinationFolder="..\..\bin\Tools\Wix\doc" SkipUnchangedFiles="true"/>
 		<Copy SourceFiles="@(WixBitmapFiles)" DestinationFolder="..\..\bin\Tools\Wix\Bitmaps" SkipUnchangedFiles="true"/>
