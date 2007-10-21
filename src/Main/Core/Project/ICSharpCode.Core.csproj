@@ -123,6 +123,7 @@
     <Compile Include="Src\CoreException.cs" />
     <Compile Include="Src\Services\FileUtility\FileNameEventHandler.cs" />
     <Compile Include="Src\Services\FileUtility\FileUtility.cs" />
+    <Compile Include="Src\Services\FileUtility\FileUtility.Minimal.cs" />
     <Compile Include="Src\Services\FileUtility\SaveErrorChooseDialog.cs">
       <SubType>Form</SubType>
     </Compile>

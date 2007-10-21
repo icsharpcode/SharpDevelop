@@ -196,7 +196,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="license.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>

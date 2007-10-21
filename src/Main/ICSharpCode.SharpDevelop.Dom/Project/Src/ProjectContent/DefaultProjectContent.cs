@@ -315,6 +315,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
+		static bool IsEqualFileName(string fileName1, string fileName2)
+		{
+			return ICSharpCode.Core.FileUtility.IsEqualFileName(fileName1, fileName2);
+		}
+		
 		protected void AddClassToNamespaceListInternal(IClass addClass)
 		{
 			string fullyQualifiedName = addClass.FullyQualifiedName;
@@ -330,7 +335,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 					// possibly replace existing class (look for CU with same filename)
 					lock (compound) {
 						for (int i = 0; i < compound.parts.Count; i++) {
-							if (compound.parts[i].CompilationUnit.FileName == addClass.CompilationUnit.FileName) {
+							if (IsEqualFileName(compound.parts[i].CompilationUnit.FileName, addClass.CompilationUnit.FileName)) {
 								compound.parts[i] = addClass;
 								compound.UpdateInformationFromParts();
 								//LoggingService.Debug("Replaced old part!");
@@ -343,7 +348,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 					//LoggingService.Debug("Added new part!");
 					return;
 					
-				} else if (existingClass.CompilationUnit.FileName != addClass.CompilationUnit.FileName) {
+				} else if (!IsEqualFileName(existingClass.CompilationUnit.FileName, addClass.CompilationUnit.FileName)) {
 					// Instead of overwriting a class with another, treat both parts as partial.
 					// This fixes SD2-1217.
 					// But if the classes are in the same file, this is an update and we need to replace
