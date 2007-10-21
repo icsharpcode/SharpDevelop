@@ -192,9 +192,11 @@
 				<ComponentRef Id="ComponentInspectorLog4NetDll"/>
 				<ComponentRef Id="SharpDevelopProgramMenuItems"/>
 				<ComponentRef Id="DesktopFolderItems"/>
-
+				
 				<ComponentRef Id="SHFBMain"/>
 				<ComponentRef Id="SHFBColorizer"/>
+				<ComponentRef Id="SHFBPlugins"/>
+				<ComponentRef Id="SHFBSharedContent"/>
 				<ComponentRef Id="SHFBTemplates"/>
 				<ComponentRef Id="SHFBWeb"/>
 
