@@ -95,9 +95,9 @@ namespace ICSharpCode.TextEditor
 					}
 					textArea.SelectionManager.ClearSelection();
 					InsertString(offset, (string)e.Data.GetData(typeof(string)));
-					textArea.Document.UndoStack.EndUndoGroup();
 					textArea.Document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.WholeTextArea));
 				} finally {
+					textArea.Document.UndoStack.EndUndoGroup();
 					textArea.EndUpdate();
 				}
 			}
