@@ -610,7 +610,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 			MessageService.ShowError(error, "ResolveVisitor: error processing " + node);
 		}
 		
-		public override void OnCallableBlockExpression(CallableBlockExpression node)
+		public override void OnBlockExpression(BlockExpression node)
 		{
 			AnonymousMethodReturnType amrt = new AnonymousMethodReturnType(cu);
 			if (node.ReturnType != null) {

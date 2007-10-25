@@ -123,7 +123,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 				result = new ConstructedReturnType(enumerable, new IReturnType[] { returnType });
 			}
 			
-			public override void OnCallableBlockExpression(CallableBlockExpression node)
+			public override void OnBlockExpression(BlockExpression node)
 			{
 				// ignore return statements in callable blocks
 			}

@@ -29,8 +29,8 @@ namespace Grunwald.BooBinding.CodeCompletion
 		SourceLocation GetEndSourceLocation(Node node)
 		{
 			if (node.EndSourceLocation.IsValid) return node.EndSourceLocation;
-			if (node is CallableBlockExpression) {
-				return GetEndSourceLocation((node as CallableBlockExpression).Body);
+			if (node is BlockExpression) {
+				return GetEndSourceLocation((node as BlockExpression).Body);
 			} else if (node is ForStatement) {
 				return GetEndSourceLocation((node as ForStatement).Block);
 			} else if (node is ExceptionHandler) {
@@ -44,13 +44,13 @@ namespace Grunwald.BooBinding.CodeCompletion
 			return node.EndSourceLocation;
 		}
 		
-		public override void OnCallableBlockExpression(CallableBlockExpression node)
+		public override void OnBlockExpression(BlockExpression node)
 		{
 			if (node.LexicalInfo.Line <= resolver.CaretLine && GetEndSourceLocation(node).Line >= resolver.CaretLine - 1) {
 				foreach (ParameterDeclaration param in node.Parameters) {
 					DeclarationFound(param.Name, param.Type ?? (resolver.IsDucky ? new SimpleTypeReference("duck") : new SimpleTypeReference("object")), null, param.LexicalInfo);
 				}
-				base.OnCallableBlockExpression(node);
+				base.OnBlockExpression(node);
 			}
 		}
 		

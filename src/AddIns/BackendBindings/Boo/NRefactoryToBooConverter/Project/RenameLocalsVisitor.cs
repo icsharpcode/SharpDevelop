@@ -133,7 +133,7 @@ namespace NRefactoryToBooConverter
 		}
 		
 		public override void OnCallableDefinition(CallableDefinition node) { }
-		public override void OnCallableBlockExpression(CallableBlockExpression node) { }
+		public override void OnBlockExpression(BlockExpression node) { }
 		
 		public override void OnDeclarationStatement(DeclarationStatement node)
 		{

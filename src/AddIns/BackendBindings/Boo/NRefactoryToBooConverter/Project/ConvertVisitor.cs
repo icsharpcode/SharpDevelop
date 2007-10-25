@@ -192,12 +192,27 @@ namespace NRefactoryToBooConverter
 			if (settings.SimplifyTypeNames) {
 				if (intrinsicTypeDictionary == null) {
 					intrinsicTypeDictionary = new Dictionary<string, string>();
-					foreach (System.Collections.DictionaryEntry entry in new BooTypeSystemServices().Primitives) {
-						string fullName = ((Boo.Lang.Compiler.TypeSystem.IEntity)entry.Value).FullName;
-						string primitiveName = (string)entry.Key;
-						intrinsicTypeDictionary[fullName] = primitiveName;
-					}
-					intrinsicTypeDictionary["System.Object"] = "object"; // and not 'duck'
+					intrinsicTypeDictionary.Add("System.Void", "void");
+					intrinsicTypeDictionary.Add("System.Object", "object");
+					intrinsicTypeDictionary.Add("System.Boolean", "bool");
+					intrinsicTypeDictionary.Add("System.Byte", "byte");
+					intrinsicTypeDictionary.Add("System.SByte", "sbyte");
+					intrinsicTypeDictionary.Add("System.Char", "char");
+					intrinsicTypeDictionary.Add("System.Int16", "short");
+					intrinsicTypeDictionary.Add("System.Int32", "int");
+					intrinsicTypeDictionary.Add("System.Int64", "long");
+					intrinsicTypeDictionary.Add("System.UInt16", "ushort");
+					intrinsicTypeDictionary.Add("System.UInt32", "uint");
+					intrinsicTypeDictionary.Add("System.UInt64", "ulong");
+					intrinsicTypeDictionary.Add("System.Single", "single");
+					intrinsicTypeDictionary.Add("System.Double", "double");
+					intrinsicTypeDictionary.Add("System.Decimal", "decimal");
+					intrinsicTypeDictionary.Add("System.String", "string");
+					intrinsicTypeDictionary.Add("System.DateTime", "date");
+					intrinsicTypeDictionary.Add("System.TimeSpan", "timespan");
+					intrinsicTypeDictionary.Add("System.Type", "type");
+					intrinsicTypeDictionary.Add("System.Array", "array");
+					intrinsicTypeDictionary.Add("System.Text.RegularExpressions.Regex", "regex");
 				}
 				string result;
 				if (intrinsicTypeDictionary.TryGetValue(typeName, out result))

@@ -506,7 +506,7 @@ namespace NRefactoryToBooConverter
 		
 		public object VisitAnonymousMethodExpression(AnonymousMethodExpression anonymousMethodExpression, object data)
 		{
-			B.CallableBlockExpression cbe = new B.CallableBlockExpression(GetLexicalInfo(anonymousMethodExpression));
+			B.BlockExpression cbe = new B.BlockExpression(GetLexicalInfo(anonymousMethodExpression));
 			cbe.EndSourceLocation = GetLocation(anonymousMethodExpression.EndLocation);
 			cbe.Body = ConvertBlock(anonymousMethodExpression.Body);
 			ConvertParameters(anonymousMethodExpression.Parameters, cbe.Parameters);
@@ -515,7 +515,7 @@ namespace NRefactoryToBooConverter
 		
 		public object VisitLambdaExpression(LambdaExpression lambdaExpression, object data)
 		{
-			B.CallableBlockExpression cbe = new B.CallableBlockExpression(GetLexicalInfo(lambdaExpression));
+			B.BlockExpression cbe = new B.BlockExpression(GetLexicalInfo(lambdaExpression));
 			cbe.EndSourceLocation = GetLocation(lambdaExpression.EndLocation);
 			if (lambdaExpression.StatementBody.IsNull) {
 				cbe.Body = new B.Block();

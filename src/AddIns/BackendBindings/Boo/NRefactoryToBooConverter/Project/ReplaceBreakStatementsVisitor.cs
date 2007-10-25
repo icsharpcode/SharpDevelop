@@ -19,8 +19,6 @@ namespace NRefactoryToBooConverter
 			this.label = label;
 		}
 		
-		public override void OnGivenStatement(GivenStatement node) { }
-		
 		public override void OnForStatement(ForStatement node) { }
 		
 		public override void OnWhileStatement(WhileStatement node) { }

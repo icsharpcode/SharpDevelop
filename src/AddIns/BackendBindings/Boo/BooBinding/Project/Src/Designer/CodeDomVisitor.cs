@@ -463,7 +463,7 @@ namespace Grunwald.BooBinding.Designer
 				return new CodeFieldReferenceExpression(target, name);
 		}
 		
-		public override void OnAstLiteralExpression(AstLiteralExpression node)
+		public override void OnQuasiquoteExpression(QuasiquoteExpression node)
 		{
 			_expression = new CodeObjectCreateExpression(node.Node.GetType());
 		}

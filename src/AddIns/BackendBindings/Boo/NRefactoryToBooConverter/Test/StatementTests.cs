@@ -29,7 +29,12 @@ namespace NRefactoryToBooConverter.Tests
 		public void IfElseIfElseStatement()
 		{
 			TestStatement("if (a) C(); else if (b) D(); else E();",
-			              "if a:\n\tC()\nelse:\n\tif b:\n\t\tD()\n\telse:\n\t\tE()");
+			              "if a:\n" +
+			              "\tC()\n" +
+			              "elif b:\n" +
+			              "\tD()\n" +
+			              "else:\n" +
+			              "\tE()");
 		}
 		
 		[Test]
@@ -159,11 +164,10 @@ namespace NRefactoryToBooConverter.Tests
 			              "??1 = var\n" +
 			              "if ??1 == 1:\n" +
 			              "\tA1()\n" +
+			              "elif (??1 == 2) or (??1 == 3):\n" +
+			              "\tA2()\n" +
 			              "else:\n" +
-			              "\tif (??1 == 2) or (??1 == 3):\n" +
-			              "\t\tA2()\n" +
-			              "\telse:\n" +
-			              "\t\tA3()");
+			              "\tA3()");
 		}
 		
 		[Test]
@@ -173,11 +177,10 @@ namespace NRefactoryToBooConverter.Tests
 			              "??1 = var\n" +
 			              "if ??1 == 1:\n" +
 			              "\tA1()\n" +
+			              "elif (??1 == 2) or (??1 == 3):\n" +
+			              "\tA2()\n" +
 			              "else:\n" +
-			              "\tif (??1 == 2) or (??1 == 3):\n" +
-			              "\t\tA2()\n" +
-			              "\telse:\n" +
-			              "\t\tA3()");
+			              "\tA3()");
 		}
 		
 		[Test]
