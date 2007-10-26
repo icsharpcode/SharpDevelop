@@ -364,6 +364,10 @@ namespace ICSharpCode.SharpDevelop.Project
 					}
 					if (isShortFileName && !File.Exists(file)) {
 						file = "";
+					} else if (FileUtility.IsBaseDirectory(FileUtility.NETFrameworkInstallRoot, file)
+					           || FileUtility.IsBaseDirectory(FileUtility.ApplicationRootPath, file))
+					{
+						file = "";
 					}
 				}
 				FlushCurrentError();

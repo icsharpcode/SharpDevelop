@@ -59,6 +59,7 @@ namespace CSharpBinding
 		}
 		
 		public const string DefaultTargetsFile = @"$(MSBuildBinPath)\Microsoft.CSharp.Targets";
+		public const string ExtendedTargetsFile = @"$(SharpDevelopBinPath)\SharpDevelop.Build.CSharp.targets";
 		
 		protected override void Create(ProjectCreateInformation information)
 		{
@@ -94,6 +95,12 @@ namespace CSharpBinding
 			} else {
 				base.StartBuild(options, feedbackSink);
 			}
+		}
+		
+		public override void ConvertToMSBuild35(bool changeTargetFrameworkToNet35)
+		{
+			base.ConvertToMSBuild35(changeTargetFrameworkToNet35);
+			ConvertToMSBuild35(changeTargetFrameworkToNet35, DefaultTargetsFile, ExtendedTargetsFile);
 		}
 	}
 }

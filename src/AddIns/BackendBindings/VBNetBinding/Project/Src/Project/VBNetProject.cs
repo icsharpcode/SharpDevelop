@@ -57,6 +57,7 @@ namespace VBNetBinding
 		}
 		
 		public const string DefaultTargetsFile = @"$(MSBuildBinPath)\Microsoft.VisualBasic.Targets";
+		public const string ExtendedTargetsFile = @"$(SharpDevelopBinPath)\SharpDevelop.Build.VisualBasic.targets";
 		
 		public VBNetProject(ProjectCreateInformation info)
 			: base(info.Solution)
@@ -116,6 +117,12 @@ namespace VBNetBinding
 			} else {
 				base.StartBuild(options, feedbackSink);
 			}
+		}
+		
+		public override void ConvertToMSBuild35(bool changeTargetFrameworkToNet35)
+		{
+			base.ConvertToMSBuild35(changeTargetFrameworkToNet35);
+			ConvertToMSBuild35(changeTargetFrameworkToNet35, DefaultTargetsFile, ExtendedTargetsFile);
 		}
 	}
 }

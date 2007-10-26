@@ -4,155 +4,42 @@
 	<PropertyGroup>
 		<!--
 			Save original target framework version because we'll need to change it
-			to work around a problem in Microsoft's C# targets
  		-->
+		<TargetFrameworkVersion Condition=" '$(TargetFrameworkVersion)' == '' ">v2.0</TargetFrameworkVersion>
 		<SharpDevelopTargetFrameworkVersion>$(TargetFrameworkVersion)</SharpDevelopTargetFrameworkVersion>
+		<SharpDevelopTargetFrameworkClass>unknown</SharpDevelopTargetFrameworkClass>
 	</PropertyGroup>
 	
-	<PropertyGroup Condition=" '$(TargetFrameworkVersion)' == 'v1.0' ">
-		<VbcToolPath>$(SystemRoot)\Microsoft.NET\Framework\v1.0.3705</VbcToolPath>
-		<SharpDevelopUse1xCompiler>true</SharpDevelopUse1xCompiler>
-		<SharpDevelopUseMicrosoftFramework>true</SharpDevelopUseMicrosoftFramework>
-	</PropertyGroup>
-	<PropertyGroup Condition=" '$(TargetFrameworkVersion)' == 'v1.1' ">
-		<VbcToolPath>$(SystemRoot)\Microsoft.NET\Framework\v1.1.4322</VbcToolPath>
-		<SharpDevelopUse1xCompiler>true</SharpDevelopUse1xCompiler>
-		<SharpDevelopUseMicrosoftFramework>true</SharpDevelopUseMicrosoftFramework>
-	
-		<!-- Work around MsBuild problem: Microsoft.VisualBasic.targets adds NoWarn entries that -->
-		<!-- don't exist in v1.1 when version is set to anything else than v1.0 -->
-		<TargetFrameworkVersion>v1.0</TargetFrameworkVersion>
-	</PropertyGroup>
-	<PropertyGroup Condition=" '$(SharpDevelopUse1xCompiler)' == 'true' ">
-		<UseHostCompilerIfAvailable>false</UseHostCompilerIfAvailable>
-		<PlatformTarget/>
+	<PropertyGroup Condition=" ('$(SharpDevelopTargetFrameworkVersion)' == 'v2.0' or '$(SharpDevelopTargetFrameworkVersion)' == 'v3.0' or '$(SharpDevelopTargetFrameworkVersion)' == 'v3.5') ">
+		<SharpDevelopTargetFrameworkClass>v2</SharpDevelopTargetFrameworkClass>
 	</PropertyGroup>
 	
-	<PropertyGroup Condition=" ('$(TargetFrameworkVersion)' == 'v2.0') or ('$(TargetFrameworkVersion)' == '') ">
+	<PropertyGroup Condition=" '$(SharpDevelopTargetFrameworkVersion)' == 'CF 2.0' ">
 		<TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
-		<SharpDevelopUseMicrosoftFramework>true</SharpDevelopUseMicrosoftFramework>
+		<SharpDevelopTargetFrameworkClass>CF</SharpDevelopTargetFrameworkClass>
+	</PropertyGroup>
+	<PropertyGroup Condition=" ('$(SharpDevelopTargetFrameworkVersion)' == 'Mono v1.1') or ('$(SharpDevelopTargetFrameworkVersion)' == 'Mono v2.0') ">
+		<SharpDevelopTargetFrameworkClass>Mono</SharpDevelopTargetFrameworkClass>
 	</PropertyGroup>
 	
-	<PropertyGroup Condition=" '$(TargetFrameworkVersion)' == 'CF 1.0' ">
-		<TargetFrameworkVersion>v1.0</TargetFrameworkVersion>
-		<SharpDevelopUseCompactFramework>true</SharpDevelopUseCompactFramework>
-	</PropertyGroup>
-	<PropertyGroup Condition=" '$(TargetFrameworkVersion)' == 'CF 2.0' ">
-		<TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
-		<SharpDevelopUseCompactFramework>true</SharpDevelopUseCompactFramework>
-	</PropertyGroup>
+	<!-- Show an error when CF is not installed, or when the target framework is unknown. -->
+	<Target Name="Build">
+		<Error Text="'$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets' cannot be found." Condition=" ('$(SharpDevelopTargetFrameworkVersion)' == 'CF 2.0') and (!Exists('$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets')) "/>
+		<Error Text="Unknown target framework version '$(SharpDevelopTargetFrameworkVersion)'."/>
+	</Target>
+	
+	<Target Name="Rebuild">
+		<Error Text="'$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets' cannot be found." Condition=" ('$(SharpDevelopTargetFrameworkVersion)' == 'CF 2.0') and (!Exists('$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets')) "/>
+		<Error Text="Unknown target framework version '$(SharpDevelopTargetFrameworkVersion)'."/>
+	</Target>
+	
+	<Target Name="Clean">
+		<Error Text="'$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets' cannot be found." Condition=" ('$(SharpDevelopTargetFrameworkVersion)' == 'CF 2.0') and (!Exists('$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets')) "/>
+		<Error Text="Unknown target framework version '$(SharpDevelopTargetFrameworkVersion)'."/>
+	</Target>
 	
 	<!-- Use Microsoft's VB standard targets -->
-	<Import Condition=" '$(SharpDevelopUseMicrosoftFramework)' == 'true' " Project="$(MSBuildBinPath)\Microsoft.VisualBasic.targets" />
-	
-	<!-- Override properties created by Microsoft.VisualBasic.targets -->
-	<PropertyGroup Condition=" '$(SharpDevelopUse1xCompiler)' == 'true' ">
-		<AssemblySearchPaths>
-		{CandidateAssemblyFiles};
-		$(ReferencePath);
-		{HintPathFromItem};
-		{TargetFrameworkDirectory};
-		{AssemblyFolders};
-		$(OutputPath);
-		{GAC}
-		</AssemblySearchPaths>
-		
-		<TargetFrameworkDirectory>$(VbcToolPath)</TargetFrameworkDirectory>
-	</PropertyGroup>
-	
-	<ItemGroup Condition=" '$(SharpDevelopUse1xCompiler)' == 'true' ">
-		<TargetFrameworkDirectoryItem Include="$(VbcToolPath)">
-			<InProject>false</InProject>
-		</TargetFrameworkDirectoryItem>
-	</ItemGroup>
-	
-	<!-- GetFrameworkPaths overwrites TargetFrameworkDirectory, so modify it -->
-	<!-- to be inactive if SharpDevelopUse1xCompiler is set. -->
-	<Target Name="GetFrameworkPaths" DependsOnTargets="$(GetFrameworkPathsDependsOn)" Condition=" '$(SharpDevelopUseMicrosoftFramework)' == 'true' ">
-		<Error Condition=" ('$(SharpDevelopUse1xCompiler)' == 'true') And !Exists('$(VbcToolPath)\Vbc.exe') "
-		       Text="Could not find the VB.NET compiler in $(VbcToolPath)."/>
-		
-		<GetFrameworkPath Condition=" '$(SharpDevelopUse1xCompiler)' != 'true' ">
-			<Output TaskParameter="Path" PropertyName="TargetFrameworkDirectory"/>
-			<Output TaskParameter="Path" ItemName="TargetFrameworkDirectoryItem"/>
-		</GetFrameworkPath>
-		
-		<GetFrameworkSDKPath Condition=" '$(SharpDevelopUse1xCompiler)' != 'true' ">
-			<Output TaskParameter="Path" PropertyName="TargetFrameworkSDKDirectory"/>
-			<Output TaskParameter="Path" ItemName="TargetFrameworkSDKDirectoryItem"/>
-		</GetFrameworkSDKPath>
-	</Target>
-
-	<!-- Redefine the Vbc target and set noconfig to false - preventing the Vbc
-	task from passing the noconfig argument to the Vbc 1.1 compiler which does not
-	support it -->
-    <Target
-        Name="CoreCompile"
-        Inputs="$(MSBuildAllProjects);
-                @(Compile);
-                @(ManifestResourceWithNoCulture);
-                $(ApplicationIcon);
-                $(AssemblyOriginatorKeyFile);
-                @(ManifestNonResxWithNoCultureOnDisk);
-                @(ReferencePath);
-                @(CompiledLicenseFile);
-                @(EmbeddedDocumentation);
-                @(CustomAdditionalCompileInputs)"
-        Outputs="@(DocFileItem);
-                 @(IntermediateAssembly);
-                 $(NonExistentFile);
-                 @(CustomAdditionalCompileOutputs)"
-        DependsOnTargets="$(CoreCompileDependsOn)"
-    	Condition=" '$(SharpDevelopUseMicrosoftFramework)' == 'true' "
-    >
-    <Vbc
-              AdditionalLibPaths="$(AdditionalLibPaths)"
-              AddModules="@(AddModules)"
-              BaseAddress="$(BaseAddress)"          
-              CodePage="$(CodePage)"
-              DebugType="$(DebugType)"
-              DefineConstants="$(FinalDefineConstants)"
-              DelaySign="$(DelaySign)"
-              DisabledWarnings="$(NoWarn)"
-              DocumentationFile="@(DocFileItem)"
-              EmitDebugInformation="$(DebugSymbols)"
-              ErrorReport="$(ErrorReport)"
-              FileAlignment="$(FileAlignment)"
-              GenerateDocumentation="$(GenerateDocumentation)"
-              Imports="@(Import)"
-              KeyContainer="$(KeyContainerName)"
-              KeyFile="$(KeyOriginatorFile)"
-              MainEntryPoint="$(StartupObject)"
-              NoConfig="false"
-              NoStandardLib="$(NoStdLib)"
-              NoWarnings="$(_NoWarnings)"
-              Optimize="$(Optimize)"
-              OptionCompare="$(OptionCompare)"
-              OptionExplicit="$(OptionExplicit)"
-              OptionStrict="$(OptionStrict)"
-              OptionStrictType="$(OptionStrictType)" 
-              OutputAssembly="@(IntermediateAssembly)"
-              Platform="$(PlatformTarget)"
-              References="@(ReferencePath)"
-              RemoveIntegerChecks="$(RemoveIntegerChecks)"
-              Resources="@(ManifestResourceWithNoCulture);@(ManifestNonResxWithNoCultureOnDisk);@(CompiledLicenseFile)"
-              ResponseFiles="$(CompilerResponseFile)"
-              RootNamespace="$(RootNamespace)"
-              SdkPath="$(FrameworkPathOverride)"
-              Sources="@(Compile)"
-              TargetCompactFramework="$(TargetCompactFramework)"
-              TargetType="$(OutputType)"
-              ToolPath="$(VbcToolPath)"
-              TreatWarningsAsErrors="$(TreatWarningsAsErrors)"
-              UseHostCompilerIfAvailable="$(UseHostCompilerIfAvailable)"
-              Utf8Output="$(Utf8Output)"
-              Verbosity="$(VbcVerbosity)"
-              WarningsAsErrors="$(WarningsAsErrors)"
-              WarningsNotAsErrors="$(WarningsNotAsErrors)"
-              Win32Icon="$(ApplicationIcon)"
-              Win32Resource="$(Win32Resource)"
-              />
-    </Target>
+	<Import Condition=" '$(SharpDevelopTargetFrameworkClass)' == 'v2' " Project="$(MSBuildBinPath)\Microsoft.VisualBasic.targets" />
 	
 	<!-- Mono imports -->
 	<Import Condition=" '$(TargetFrameworkVersion)' == 'Mono v1.1' " Project="$(SharpDevelopBinPath)\SharpDevelop.Build.Mono.Mbas.targets"/>
@@ -161,7 +48,7 @@
 	<!-- Compact framework property adjustments: -->
 	<!-- When StdLib is not set, set it to true and add reference to mscorlib -->
 	<!-- Set PlatformFamilyName and PlatformID if required -->
-	<PropertyGroup Condition=" '$(SharpDevelopUseCompactFramework)' == 'true' ">
+	<PropertyGroup Condition=" '$(SharpDevelopTargetFrameworkClass)' == 'CF' ">
 		<PlatformFamilyName Condition=" '$(PlatformFamilyName)' == '' ">PocketPC</PlatformFamilyName>
 		<PlatformID Condition=" '$(PlatformID)' == '' ">WinCE</PlatformID>
 		
@@ -174,8 +61,6 @@
 	</ItemGroup>
 	
 	<!-- Compact framework imports -->
-	<Import Condition=" ('$(TargetFrameworkVersion)' == 'v1.0') And ('$(SharpDevelopUseCompactFramework)' == 'true') "
-	        Project="$(MSBuildBinPath)\Microsoft.CompactFramework.VisualBasic.v1.targets"/>
-	<Import Condition=" ('$(TargetFrameworkVersion)' == 'v2.0') And ('$(SharpDevelopUseCompactFramework)' == 'true') "
+	<Import Condition=" ('$(SharpDevelopTargetFrameworkVersion)' == 'CF 2.0') and (Exists('$(MSBuildBinPath)\Microsoft.CompactFramework.VisualBasic.targets')) "
 	        Project="$(MSBuildBinPath)\Microsoft.CompactFramework.VisualBasic.targets"/>
 </Project>

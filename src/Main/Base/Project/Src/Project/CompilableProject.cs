@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Linq;
 using System.IO;
 using System.ComponentModel;
 using ICSharpCode.Core;
@@ -340,6 +341,56 @@ namespace ICSharpCode.SharpDevelop.Project
 				return ItemType.Page;
 			} else {
 				return base.GetDefaultItemType(fileName);
+			}
+		}
+		
+		protected void ConvertToMSBuild35(bool changeTargetFrameworkToNet35, string DefaultTargetsFile, string ExtendedTargetsFile)
+		{
+			lock (SyncRoot) {
+				var winFxImport = MSBuildProject.Imports.Cast<Microsoft.Build.BuildEngine.Import>()
+					.Where(import => !import.IsImported)
+					.FirstOrDefault(import => string.Equals(import.ProjectPath, "$(MSBuildBinPath)\\Microsoft.WinFX.targets", StringComparison.OrdinalIgnoreCase));
+				if (winFxImport != null) {
+					MSBuildProject.Imports.RemoveImport(winFxImport);
+				}
+				bool needsExtensions = false;
+				if (changeTargetFrameworkToNet35) {
+					SetProperty(null, null, "TargetFrameworkVersion", "v3.5", PropertyStorageLocations.Base, true);
+					ReferenceProjectItem rpi = new ReferenceProjectItem(this, "System.Core");
+					rpi.SetMetadata("RequiredTargetFramework", "3.5");
+					ProjectService.AddProjectItem(this, rpi);
+				} else {
+					foreach (string config in ConfigurationNames) {
+						foreach (string platform in PlatformNames) {
+							PropertyStorageLocations loc;
+							string targetFrameworkVersion = GetProperty(config, platform, "TargetFrameworkVersion", out loc);
+							if (string.IsNullOrEmpty(targetFrameworkVersion))
+								targetFrameworkVersion = "v2.0";
+							switch (targetFrameworkVersion) {
+								case "CF 1.0":
+									targetFrameworkVersion = "CF 2.0";
+									break;
+								case "v1.0":
+								case "v1.1":
+									targetFrameworkVersion = "v2.0";
+									break;
+							}
+							if (targetFrameworkVersion == "v2.0" && winFxImport != null)
+								targetFrameworkVersion = "v3.0";
+							if (targetFrameworkVersion.StartsWith("CF") || targetFrameworkVersion.StartsWith("Mono"))
+								needsExtensions = true;
+							SetProperty(config, platform, "TargetFrameworkVersion", targetFrameworkVersion, loc, true);
+						}
+					}
+				}
+				if (!needsExtensions) {
+					foreach (Microsoft.Build.BuildEngine.Import import in MSBuildProject.Imports) {
+						if (ExtendedTargetsFile.Equals(import.ProjectPath, StringComparison.InvariantCultureIgnoreCase)) {
+							MSBuildInternals.SetImportProjectPath(this, import, DefaultTargetsFile);
+							break;
+						}
+					}
+				}
 			}
 		}
 	}

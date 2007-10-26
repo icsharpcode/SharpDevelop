@@ -24,7 +24,7 @@ namespace CSharpBinding.OptionPanels
 			InitOutputPath();
 			InitXmlDoc();
 			InitTargetFramework(CSharpProject.DefaultTargetsFile,
-			                    @"$(SharpDevelopBinPath)\SharpDevelop.Build.CSharp.targets");
+			                    CSharpProject.ExtendedTargetsFile);
 			
 			ConfigurationGuiBinding b;
 			

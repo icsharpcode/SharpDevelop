@@ -76,6 +76,13 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		public virtual void ConvertToMSBuild35(bool changeTargetFrameworkToNet35)
+		{
+			lock (SyncRoot) {
+				project.DefaultToolsVersion = "3.5";
+			}
+		}
+		
 		public override void ResolveAssemblyReferences()
 		{
 			MSBuildInternals.ResolveAssemblyReferences(this, null);
@@ -139,6 +146,8 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			Name = information.ProjectName;
 			FileName = information.OutputProjectFileName;
+			
+			project.DefaultToolsVersion = "3.5";
 			
 			base.IdGuid = "{" + Guid.NewGuid().ToString().ToUpperInvariant() + "}";
 			MSBuild.BuildPropertyGroup group = project.AddNewPropertyGroup(false);

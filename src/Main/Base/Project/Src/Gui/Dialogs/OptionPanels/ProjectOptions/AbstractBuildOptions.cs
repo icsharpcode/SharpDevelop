@@ -226,17 +226,34 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			}
 		}
 		
+		MethodInvoker reinitializeTargetFramework;
+		
 		protected void InitTargetFramework(string defaultTargets, string extendedTargets)
 		{
+			Button convertProjectToMSBuild35Button = (Button)ControlDictionary["convertProjectToMSBuild35Button"];
+			ComboBox targetFrameworkComboBox = (ComboBox)ControlDictionary["targetFrameworkComboBox"];
+			
+			if (convertProjectToMSBuild35Button != null) {
+				if (project.MinimumSolutionVersion == 9) {
+					// VS05 project
+					targetFrameworkComboBox.Enabled = false;
+					reinitializeTargetFramework = delegate { InitTargetFramework(defaultTargets, extendedTargets); };
+					convertProjectToMSBuild35Button.Click += OnConvertProjectToMSBuild35ButtonClick;
+					return;
+				} else {
+					// VS08 project
+					targetFrameworkComboBox.Enabled = true;
+					convertProjectToMSBuild35Button.Visible = false;
+				}
+			}
+			
 			const string TargetFrameworkProperty = "TargetFrameworkVersion";
 			ConfigurationGuiBinding targetFrameworkBinding;
 			targetFrameworkBinding = helper.BindStringEnum("targetFrameworkComboBox", TargetFrameworkProperty,
-			                                               "",
-			                                               new StringPair("", "C# 2.0 / .NET 2.0"),
-			                                               new StringPair("v2.0", "C# 3.0 / .NET 2.0"),
-			                                               new StringPair("v3.0", "C# 3.0 / .NET 3.0"),
-			                                               new StringPair("v3.5", "C# 3.0 / .NET 3.5"),
-			                                               new StringPair("CF 1.0", "Compact Framework 1.0"),
+			                                               "v2.0",
+			                                               new StringPair("v2.0", ".NET 2.0"),
+			                                               new StringPair("v3.0", ".NET 3.0"),
+			                                               new StringPair("v3.5", ".NET 3.5"),
 			                                               new StringPair("CF 2.0", "Compact Framework 2.0"),
 			                                               new StringPair("Mono v1.1", "Mono 1.1"),
 			                                               new StringPair("Mono v2.0", "Mono 2.0"));
@@ -245,23 +262,13 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 				MSBuildBasedProject project = helper.Project;
 				// Test if SharpDevelop-Build extensions are needed
 				bool needExtensions = false;
-				// Test if MSBuild 3.5 is required
-				bool needMSBuild35 = false;
 				
 				foreach (MSBuild.BuildProperty p in project.GetAllProperties(TargetFrameworkProperty)) {
 					if (p.IsImported == false) {
 						if (p.Value.StartsWith("CF") || p.Value.StartsWith("Mono")) {
 							needExtensions = true;
-						} else if (p.Value.StartsWith("v")) {
-							needMSBuild35 = true;
 						}
 					}
-				}
-				
-				string newToolsVersion = needMSBuild35 ? "3.5" : "2.0";
-				if (project.MSBuildProject.DefaultToolsVersion != newToolsVersion) {
-					project.MSBuildProject.DefaultToolsVersion = newToolsVersion;
-					project.ParentSolution.Save();
 				}
 				
 				foreach (MSBuild.Import import in project.MSBuildProject.Imports) {
@@ -280,6 +287,25 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 					}
 				}
 			};
+		}
+		
+		void OnConvertProjectToMSBuild35ButtonClick(object sender, EventArgs e)
+		{
+			using (ConvertToMSBuild35Dialog dlg = new ConvertToMSBuild35Dialog(project.Language + " newversion")) {
+				if (dlg.ShowDialog() == DialogResult.OK) {
+					if (dlg.ConvertAllProjects) {
+						foreach (IProject p in ProjectService.OpenSolution.Projects) {
+							MSBuildBasedProject msbp = p as MSBuildBasedProject;
+							if (msbp != null)
+								msbp.ConvertToMSBuild35(dlg.ChangeTargetFramework);
+						}
+					} else {
+						project.ConvertToMSBuild35(dlg.ChangeTargetFramework);
+					}
+					ProjectService.SaveSolution();
+					reinitializeTargetFramework();
+				}
+			}
 		}
 	}
 }
