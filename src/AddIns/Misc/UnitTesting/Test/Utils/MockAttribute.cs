@@ -42,5 +42,17 @@ namespace UnitTesting.Tests.Utils
 				throw new NotImplementedException();
 			}
 		}
+		
+		public ICompilationUnit CompilationUnit {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public DomRegion Region {
+			get {
+				throw new NotImplementedException();
+			}
+		}
 	}
 }
