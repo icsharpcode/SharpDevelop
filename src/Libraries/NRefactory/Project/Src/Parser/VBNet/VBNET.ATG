@@ -2064,9 +2064,12 @@ GlobalAttributeSection =
 	">"
 	EndOfStmt
 		(.
-			AttributeSection section = new AttributeSection(attributeTarget, attributes);
-			section.StartLocation = startPos;
-			section.EndLocation = t.EndLocation;
+			AttributeSection section = new AttributeSection {
+				AttributeTarget = attributeTarget,
+				Attributes = attributes,
+				StartLocation = startPos,
+				EndLocation = t.EndLocation
+			};
 			compilationUnit.AddChild(section);
 		.)
 	.
@@ -2149,9 +2152,12 @@ AttributeSection<out AttributeSection section>
 	[ "," ]
 	">"
 		(.
-			section = new AttributeSection(attributeTarget, attributes);
-			section.StartLocation = startPos;
-			section.EndLocation = t.EndLocation;
+			section = new AttributeSection {
+				AttributeTarget = attributeTarget,
+				Attributes = attributes,
+				StartLocation = startPos,
+				EndLocation = t.EndLocation
+			};
 		.)
 	.
 

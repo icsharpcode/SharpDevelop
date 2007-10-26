@@ -58,8 +58,6 @@ namespace NRefactoryASTGenerator.Ast
 	{
 		string attributeTarget;
 		List<Attribute> attributes;
-		
-		public AttributeSection(string attributeTarget, List<Attribute> attributes) {}
 	}
 	
 	class Attribute : AbstractNode
@@ -68,6 +66,7 @@ namespace NRefactoryASTGenerator.Ast
 		List<Expression> positionalArguments;
 		List<NamedArgumentExpression> namedArguments;
 		
+		public Attribute() {}
 		public Attribute(string name, List<Expression> positionalArguments, List<NamedArgumentExpression> namedArguments) {}
 	}
 }

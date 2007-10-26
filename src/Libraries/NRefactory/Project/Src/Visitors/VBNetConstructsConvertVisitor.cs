@@ -160,24 +160,22 @@ namespace ICSharpCode.NRefactory.Visitors
 				case CharsetModifier.Auto:
 					att.NamedArguments.Add(new NamedArgumentExpression("CharSet",
 					                                                   new MemberReferenceExpression(new IdentifierExpression("CharSet"),
-					                                                                                "Auto")));
+					                                                                                 "Auto")));
 					break;
 				case CharsetModifier.Unicode:
 					att.NamedArguments.Add(new NamedArgumentExpression("CharSet",
 					                                                   new MemberReferenceExpression(new IdentifierExpression("CharSet"),
-					                                                                                "Unicode")));
+					                                                                                 "Unicode")));
 					break;
 				default:
 					att.NamedArguments.Add(new NamedArgumentExpression("CharSet",
 					                                                   new MemberReferenceExpression(new IdentifierExpression("CharSet"),
-					                                                                                "Ansi")));
+					                                                                                 "Ansi")));
 					break;
 			}
 			att.NamedArguments.Add(new NamedArgumentExpression("SetLastError", new PrimitiveExpression(true, true.ToString())));
 			att.NamedArguments.Add(new NamedArgumentExpression("ExactSpelling", new PrimitiveExpression(true, true.ToString())));
-			AttributeSection sec = new AttributeSection(null, null);
-			sec.Attributes.Add(att);
-			method.Attributes.Add(sec);
+			method.Attributes.Add(new AttributeSection { Attributes = { att } });
 			ReplaceCurrentNode(method);
 			return base.VisitMethodDeclaration(method, data);
 		}

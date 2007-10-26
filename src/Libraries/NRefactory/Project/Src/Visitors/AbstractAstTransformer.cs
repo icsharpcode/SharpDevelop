@@ -1406,9 +1406,21 @@ namespace ICSharpCode.NRefactory.Visitors {
 		public virtual object VisitPointerReferenceExpression(PointerReferenceExpression pointerReferenceExpression, object data) {
 			Debug.Assert((pointerReferenceExpression != null));
 			Debug.Assert((pointerReferenceExpression.TargetObject != null));
+			Debug.Assert((pointerReferenceExpression.TypeArguments != null));
 			nodeStack.Push(pointerReferenceExpression.TargetObject);
 			pointerReferenceExpression.TargetObject.AcceptVisitor(this, data);
 			pointerReferenceExpression.TargetObject = ((Expression)(nodeStack.Pop()));
+			for (int i = 0; i < pointerReferenceExpression.TypeArguments.Count; i++) {
+				TypeReference o = pointerReferenceExpression.TypeArguments[i];
+				Debug.Assert(o != null);
+				nodeStack.Push(o);
+				o.AcceptVisitor(this, data);
+				o = (TypeReference)nodeStack.Pop();
+				if (o == null)
+					pointerReferenceExpression.TypeArguments.RemoveAt(i--);
+				else
+					pointerReferenceExpression.TypeArguments[i] = o;
+			}
 			return null;
 		}
 		

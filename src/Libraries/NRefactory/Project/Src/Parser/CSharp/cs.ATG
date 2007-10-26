@@ -218,9 +218,12 @@ GlobalAttributeSection
 	":" Attribute<out attribute> (. attributes.Add(attribute); .)
 	{ IF (NotFinalComma()) "," Attribute<out attribute> (. attributes.Add(attribute); .)}
 	[ "," ]
-	"]"                         (. AttributeSection section = new AttributeSection(attributeTarget, attributes);
-	                               section.StartLocation = startPos;
-	                               section.EndLocation = t.EndLocation;
+	"]"                         (. AttributeSection section = new AttributeSection {
+	                                   AttributeTarget = attributeTarget,
+	                                   Attributes = attributes,
+	                                   StartLocation = startPos,
+	                                   EndLocation = t.EndLocation
+	                               };
 	                               compilationUnit.AddChild(section);
 	                            .)
 .
@@ -230,6 +233,7 @@ Attribute<out ASTAttribute attribute>
    string alias = null;
 .)
 =
+	(. Location startPos = la.Location; .)
 	[ IF (IdentAndDoubleColon())
 		Identifier (. alias = t.val; .)
 		"::"
@@ -239,7 +243,11 @@ Attribute<out ASTAttribute attribute>
 	   List<NamedArgumentExpression> named = new List<NamedArgumentExpression>();
 	   string name = (alias != null && alias != "global") ? alias + "." + qualident : qualident;
 	.)
-	[ AttributeArguments<positional, named> ] (. attribute  = new ASTAttribute(name, positional, named);.)
+	[ AttributeArguments<positional, named> ]
+	(. attribute = new ASTAttribute(name, positional, named); 
+	   attribute.StartLocation = startPos;
+	   attribute.EndLocation = t.EndLocation;
+	.)
 .
 
 AttributeArguments<List<Expression> positional, List<NamedArgumentExpression> named>
@@ -300,9 +308,12 @@ AttributeSection<out AttributeSection section>
 	Attribute<out attribute>            (. attributes.Add(attribute); .)
 	{ IF (NotFinalComma()) "," Attribute<out attribute> (. attributes.Add(attribute); .)}
 	[ "," ]
-	"]"                         (. section = new AttributeSection(attributeTarget, attributes);
-	                               section.StartLocation = startPos;
-	                               section.EndLocation = t.EndLocation;
+	"]"                         (. section = new AttributeSection {
+	                                   AttributeTarget = attributeTarget,
+	                                   Attributes = attributes,
+	                                   StartLocation = startPos,
+	                                   EndLocation = t.EndLocation
+	                               };
 	                            .)
 .
 

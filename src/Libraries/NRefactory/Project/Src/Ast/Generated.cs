@@ -286,6 +286,12 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 		}
 		
+		public Attribute() {
+			name = "";
+			positionalArguments = new List<Expression>();
+			namedArguments = new List<NamedArgumentExpression>();
+		}
+		
 		public Attribute(string name, List<Expression> positionalArguments, List<NamedArgumentExpression> namedArguments) {
 			Name = name;
 			PositionalArguments = positionalArguments;
@@ -363,9 +369,9 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 		}
 		
-		public AttributeSection(string attributeTarget, List<ICSharpCode.NRefactory.Ast.Attribute> attributes) {
-			AttributeTarget = attributeTarget;
-			Attributes = attributes;
+		public AttributeSection() {
+			attributeTarget = "";
+			attributes = new List<Attribute>();
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
@@ -3146,6 +3152,8 @@ namespace ICSharpCode.NRefactory.Ast {
 		
 		string identifier;
 		
+		List<TypeReference> typeArguments;
+		
 		public Expression TargetObject {
 			get {
 				return targetObject;
@@ -3165,9 +3173,19 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 		}
 		
+		public List<TypeReference> TypeArguments {
+			get {
+				return typeArguments;
+			}
+			set {
+				typeArguments = value ?? new List<TypeReference>();
+			}
+		}
+		
 		public PointerReferenceExpression(Expression targetObject, string identifier) {
 			TargetObject = targetObject;
 			Identifier = identifier;
+			typeArguments = new List<TypeReference>();
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
@@ -3175,7 +3193,7 @@ namespace ICSharpCode.NRefactory.Ast {
 		}
 		
 		public override string ToString() {
-			return string.Format("[PointerReferenceExpression TargetObject={0} Identifier={1}]", TargetObject, Identifier);
+			return string.Format("[PointerReferenceExpression TargetObject={0} Identifier={1} TypeArguments={2}]", TargetObject, Identifier, GetCollectionString(TypeArguments));
 		}
 	}
 	

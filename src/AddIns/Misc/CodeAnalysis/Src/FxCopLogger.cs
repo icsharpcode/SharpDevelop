@@ -103,10 +103,12 @@ namespace ICSharpCode.CodeAnalysis
 						
 						if (moreData.Length > 0 && moreData[0].Length > 0) {
 							err.Tag = new FxCopTaskTag(pc, moreData[0], category, checkId);
-							err.ContextMenuAddInTreeEntry = "/SharpDevelop/Pads/ErrorList/CodeAnalysisTaskContextMenu";
-							if (moreData.Length > 1) {
-								(err.Tag as FxCopTaskTag).MessageID = moreData[1];
-							}
+						} else {
+							err.Tag = new FxCopTaskTag(pc, null, category, checkId);
+						}
+						err.ContextMenuAddInTreeEntry = "/SharpDevelop/Pads/ErrorList/CodeAnalysisTaskContextMenu";
+						if (moreData.Length > 1) {
+							(err.Tag as FxCopTaskTag).MessageID = moreData[1];
 						}
 					}
 				}

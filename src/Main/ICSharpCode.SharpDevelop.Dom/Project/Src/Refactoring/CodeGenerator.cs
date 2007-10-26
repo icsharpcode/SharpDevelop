@@ -138,7 +138,7 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 		
 		public static List<AttributeSection> ConvertAttributes(IList<IAttribute> attributes, ClassFinder targetContext)
 		{
-			AttributeSection sec = new AttributeSection(null, null);
+			AttributeSection sec = new AttributeSection();
 			foreach (IAttribute att in attributes) {
 				sec.Attributes.Add(new ICSharpCode.NRefactory.Ast.Attribute(ConvertType(att.AttributeType, targetContext).Type, null, null));
 			}

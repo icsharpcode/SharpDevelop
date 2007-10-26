@@ -12,6 +12,20 @@ namespace ICSharpCode.SharpDevelop.Dom
 {
 	public interface IAttribute
 	{
+		/// <summary>
+		/// Gets the compilation unit in which this attribute is defined.
+		/// </summary>
+		ICompilationUnit CompilationUnit {
+			get;
+		}
+		
+		/// <summary>
+		/// Gets the code region of this attribute.
+		/// </summary>
+		DomRegion Region {
+			get;
+		}
+		
 		AttributeTarget AttributeTarget {
 			get;
 		}

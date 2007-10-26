@@ -171,7 +171,10 @@ namespace Grunwald.BooBinding.CodeCompletion
 					context = new ClassFinder(to.DeclaringType, node.LexicalInfo.Line, node.LexicalInfo.Column);
 				}
 				foreach (AST.Attribute a in node.Attributes) {
-					to.Attributes.Add(new DefaultAttribute(new AttributeReturnType(context, a.Name)));
+					to.Attributes.Add(new DefaultAttribute(new AttributeReturnType(context, a.Name)) {
+					                  	CompilationUnit = _cu,
+					                  	Region = GetRegion(a)
+					                  });
 				}
 			}
 			to.Documentation = node.Documentation;

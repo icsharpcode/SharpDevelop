@@ -203,7 +203,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 		}
 		
-		List<IAttribute> VisitAttributes(List<AST.AttributeSection> attributes, ClassFinder context)
+		List<IAttribute> VisitAttributes(IList<AST.AttributeSection> attributes, ClassFinder context)
 		{
 			// TODO Expressions???
 			List<IAttribute> result = new List<IAttribute>();
@@ -247,10 +247,22 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				}
 				
 				foreach (AST.Attribute attribute in section.Attributes) {
-					result.Add(new DefaultAttribute(new AttributeReturnType(context, attribute.Name), target));
+					result.Add(new DefaultAttribute(new AttributeReturnType(context, attribute.Name), target) {
+					           	CompilationUnit = cu,
+					           	Region = GetRegion(attribute.StartLocation, attribute.EndLocation)
+					           });
 				}
 			}
 			return result;
+		}
+		
+		public override object VisitAttributeSection(ICSharpCode.NRefactory.Ast.AttributeSection attributeSection, object data)
+		{
+			if (GetCurrentClass() == null) {
+				ClassFinder cf = new ClassFinder(new DefaultClass(cu, "DummyClass"), attributeSection.StartLocation.Line, attributeSection.StartLocation.Column);
+				cu.Attributes.AddRange(VisitAttributes(new[] { attributeSection }, cf));
+			}
+			return null;
 		}
 		
 		public override object VisitNamespaceDeclaration(AST.NamespaceDeclaration namespaceDeclaration, object data)

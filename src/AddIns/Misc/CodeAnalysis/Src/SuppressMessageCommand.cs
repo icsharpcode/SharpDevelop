@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 using ICSharpCode.Core;
@@ -32,7 +33,11 @@ namespace ICSharpCode.CodeAnalysis
 				CodeGenerator codegen = tag.ProjectContent.Language.CodeGenerator;
 				if (codegen == null)
 					continue;
-				FilePosition p = tag.ProjectContent.GetPosition(tag.MemberName);
+				FilePosition p;
+				if (tag.MemberName == null)
+					p = GetAssemblyAttributeInsertionPosition(tag.ProjectContent);
+				else
+					p = tag.ProjectContent.GetPosition(tag.MemberName);
 				if (p.CompilationUnit == null || p.FileName == null || p.Line <= 0)
 					continue;
 				IViewContent viewContent = FileService.OpenFile(p.FileName);
@@ -56,9 +61,40 @@ namespace ICSharpCode.CodeAnalysis
 				document.Insert(line.Offset, code);
 				provider.TextEditorControl.ActiveTextAreaControl.Caret.Line = p.Line - 1;
 				provider.TextEditorControl.ActiveTextAreaControl.ScrollToCaret();
+				document.UpdateView();
 				TaskService.Remove(t);
 				ParserService.ParseViewContent(viewContent);
 			}
+		}
+		
+		FilePosition GetAssemblyAttributeInsertionPosition(IProjectContent pc)
+		{
+			FilePosition best = FilePosition.Empty;
+			foreach (IAttribute attrib in pc.GetAssemblyAttributes()) {
+				ICompilationUnit cu = attrib.CompilationUnit;
+				if (cu != null && !attrib.Region.IsEmpty) {
+					var newPos = new FilePosition(cu, attrib.Region.BeginLine, attrib.Region.BeginColumn);
+					if (IsBetterAssemblyAttributeInsertionPosition(newPos, best)) {
+						best = newPos;
+					}
+				}
+			}
+			return best;
+		}
+		
+		bool IsBetterAssemblyAttributeInsertionPosition(FilePosition a, FilePosition b)
+		{
+			if (b.IsEmpty)
+				return true;
+			
+			bool aIsAssemblyInfo = "AssemblyInfo".Equals(Path.GetFileNameWithoutExtension(a.FileName), StringComparison.OrdinalIgnoreCase);
+			bool bIsAssemblyInfo = "AssemblyInfo".Equals(Path.GetFileNameWithoutExtension(b.FileName), StringComparison.OrdinalIgnoreCase);
+			if (aIsAssemblyInfo && !bIsAssemblyInfo)
+				return true;
+			if (!aIsAssemblyInfo && bIsAssemblyInfo)
+				return false;
+			
+			return a.Line > b.Line;
 		}
 		
 		const string NamespaceName = "System.Diagnostics.CodeAnalysis";
@@ -67,28 +103,37 @@ namespace ICSharpCode.CodeAnalysis
 		static Ast.AbstractNode CreateSuppressAttribute(ICompilationUnit cu, FxCopTaskTag tag)
 		{
 			//System.Diagnostics.CodeAnalysis.SuppressMessageAttribute
-			bool importedCodeAnalysis = CheckImports(cu.ProjectContent.DefaultImports);
-			if (importedCodeAnalysis == false) {
-				foreach (IUsing u in cu.Usings) {
-					if (CheckImports(u)) {
-						importedCodeAnalysis = true;
-						break;
-					}
-				}
-			}
+			bool importedCodeAnalysis = CheckImports(cu);
 			
 			// [SuppressMessage("Microsoft.Performance", "CA1801:ReviewUnusedParameters", MessageId:="fileIdentifier"]
-			Ast.Attribute a = new Ast.Attribute(importedCodeAnalysis ? AttributeName : NamespaceName + "." + AttributeName, null, null);
-			a.PositionalArguments.Add(new Ast.PrimitiveExpression(tag.Category, tag.Category));
-			a.PositionalArguments.Add(new Ast.PrimitiveExpression(tag.CheckID, tag.CheckID));
+			Ast.Attribute a = new Ast.Attribute {
+				Name = importedCodeAnalysis ? AttributeName : NamespaceName + "." + AttributeName,
+				PositionalArguments = {
+					new Ast.PrimitiveExpression(tag.Category, tag.Category),
+					new Ast.PrimitiveExpression(tag.CheckID, tag.CheckID)
+				}
+			};
 			if (tag.MessageID != null) {
 				a.NamedArguments.Add(new Ast.NamedArgumentExpression("MessageId",
 				                                                     new Ast.PrimitiveExpression(tag.MessageID, tag.MessageID)));
 			}
 			
-			Ast.AttributeSection sec = new Ast.AttributeSection(null, null);
-			sec.Attributes.Add(a);
-			return sec;
+			return new Ast.AttributeSection {
+				AttributeTarget = tag.MemberName == null ? "assembly" : null,
+				Attributes = { a }
+			};
+		}
+		
+		static bool CheckImports(ICompilationUnit cu)
+		{
+			if (CheckImports(cu.ProjectContent.DefaultImports))
+				return true;
+			foreach (IUsing u in cu.Usings) {
+				if (CheckImports(u)) {
+					return true;
+				}
+			}
+			return false;
 		}
 		
 		static bool CheckImports(IUsing u)

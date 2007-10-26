@@ -764,7 +764,13 @@ namespace ICSharpCode.NRefactory.Visitors {
 		public virtual object VisitPointerReferenceExpression(PointerReferenceExpression pointerReferenceExpression, object data) {
 			Debug.Assert((pointerReferenceExpression != null));
 			Debug.Assert((pointerReferenceExpression.TargetObject != null));
-			return pointerReferenceExpression.TargetObject.AcceptVisitor(this, data);
+			Debug.Assert((pointerReferenceExpression.TypeArguments != null));
+			pointerReferenceExpression.TargetObject.AcceptVisitor(this, data);
+			foreach (TypeReference o in pointerReferenceExpression.TypeArguments) {
+				Debug.Assert(o != null);
+				o.AcceptVisitor(this, data);
+			}
+			return null;
 		}
 		
 		public virtual object VisitPrimitiveExpression(PrimitiveExpression primitiveExpression, object data) {

@@ -96,6 +96,7 @@ namespace ICSharpCode.TextEditor.Undo
 		public void AssertNoUndoGroupOpen()
 		{
 			if (undoGroupDepth != 0) {
+				undoGroupDepth = 0;
 				throw new InvalidOperationException("No undo group should be open at this point");
 			}
 		}

@@ -14,10 +14,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 	{
 		public static readonly IList<IAttribute> EmptyAttributeList = new List<IAttribute>().AsReadOnly();
 		
-		IReturnType attributeType;
 		IList<object> positionalArguments;
 		IDictionary<string, object> namedArguments;
-		AttributeTarget attributeTarget;
 		
 		public DefaultAttribute(IReturnType attributeType) : this(attributeType, AttributeTarget.None) {}
 		
@@ -30,22 +28,15 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			if (attributeType == null)
 				throw new ArgumentNullException("attributeType");
-			this.attributeType = attributeType;
-			this.attributeTarget = attributeTarget;
+			this.AttributeType = attributeType;
+			this.AttributeTarget = attributeTarget;
 			this.positionalArguments = positionalArguments ?? new List<object>();
 			this.namedArguments = namedArguments ?? new SortedList<string, object>();
 		}
 		
 		
-		public IReturnType AttributeType {
-			get { return attributeType; }
-			set { attributeType = value; }
-		}
-		
-		public AttributeTarget AttributeTarget {
-			get { return attributeTarget; }
-			set { attributeTarget = value; }
-		}
+		public IReturnType AttributeType { get; set; }
+		public AttributeTarget AttributeTarget { get; set; }
 		
 		public IList<object> PositionalArguments {
 			get { return positionalArguments; }
@@ -54,5 +45,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public IDictionary<string, object> NamedArguments {
 			get { return namedArguments; }
 		}
+		
+		public ICompilationUnit CompilationUnit { get; set; }
+		public DomRegion Region { get; set; }
 	}
 }

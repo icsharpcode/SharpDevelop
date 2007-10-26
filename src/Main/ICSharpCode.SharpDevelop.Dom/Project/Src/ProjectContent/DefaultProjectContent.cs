@@ -480,6 +480,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 				foreach (IClass c in unit.Classes) {
 					RemoveClass(c);
 				}
+				foreach (IAttribute attr in unit.Attributes)
+					assemblyAttributes.Remove(attr);
 			}
 			SearchClassReturnType.ClearCache();
 		}
@@ -489,11 +491,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 			lock (namespaces) {
 				if (oldUnit != null) {
 					RemoveClasses(oldUnit, parserOutput);
+					foreach (IAttribute attr in oldUnit.Attributes)
+						assemblyAttributes.Remove(attr);
 				}
 				
 				foreach (IClass c in parserOutput.Classes) {
 					AddClassToNamespaceListInternal(c);
 				}
+				assemblyAttributes.AddRange(parserOutput.Attributes);
 			}
 			SearchClassReturnType.ClearCache();
 		}

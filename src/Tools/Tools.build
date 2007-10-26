@@ -72,7 +72,7 @@
 	</ItemGroup>
 	
 	<Target Name="Clean">
-		<Exec Command="unregister.bat" WorkingDirectory="..\..\bin\setup\help" IgnoreExitCode = "true" Condition = "Exists('..\..\bin\setup\help\unregister.bat')"/>
+		<!-- <Exec Command="unregister.bat" WorkingDirectory="..\..\bin\setup\help" IgnoreExitCode = "true" Condition = "Exists('..\..\bin\setup\help\unregister.bat')"/> -->
 		<RemoveDir Directories="@(SpecialObjCleanupDirectories->'%(RelativeDir)')" />
 		<RemoveDir Directories="@(CleanupDirectories)" />
 		<Delete Files="@(CleanupFiles)" />
