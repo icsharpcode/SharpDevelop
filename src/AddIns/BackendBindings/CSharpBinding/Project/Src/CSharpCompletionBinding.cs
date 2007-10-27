@@ -162,13 +162,90 @@ namespace CSharpBinding
 		{
 			CSharpExpressionFinder ef = CreateExpressionFinder(editor.FileName);
 			int cursor = editor.ActiveTextAreaControl.Caret.Offset;
-			ExpressionResult expressionResult = ef.FindExpression(editor.Document.GetText(0, cursor), cursor);
+			string documentToCursor = editor.Document.GetText(0, cursor);
+			ExpressionResult expressionResult = ef.FindExpression(documentToCursor, cursor);
+			
 			LoggingService.Debug("ShowNewCompletion: expression is " + expressionResult);
 			if (expressionResult.Context.IsObjectCreation) {
+				LineSegment currentLine = editor.Document.GetLineSegmentForOffset(cursor);
+				string lineText = editor.Document.GetText(currentLine.Offset, cursor - currentLine.Offset);
+				// when the new follows an assignment, improve code-completion by detecting the
+				// type of the variable that is assigned to
+				if (lineText.Replace(" ", "").EndsWith("=new")) {
+					int pos = lineText.LastIndexOf('=');
+					ExpressionContext context = FindExactContextForNewCompletion(editor, documentToCursor,
+					                                                             currentLine, pos);
+					if (context != null)
+						expressionResult.Context = context;
+				}
 				editor.ShowCompletionWindow(new CtrlSpaceCompletionDataProvider(expressionResult.Context), ' ');
 				return true;
 			}
 			return false;
+		}
+		
+		ExpressionContext FindExactContextForNewCompletion(SharpDevelopTextAreaControl editor, string documentToCursor,
+		                                                   LineSegment currentLine, int pos)
+		{
+			CSharpExpressionFinder ef = CreateExpressionFinder(editor.FileName);
+			// find expression on left hand side of the assignment
+			ExpressionResult lhsExpr = ef.FindExpression(documentToCursor, currentLine.Offset + pos);
+			if (lhsExpr.Expression != null) {
+				ResolveResult rr = ParserService.Resolve(lhsExpr, currentLine.LineNumber, pos, editor.FileName, editor.Text);
+				if (rr != null && rr.ResolvedType != null) {
+					ExpressionContext context;
+					IClass c;
+					if (rr.ResolvedType.IsArrayReturnType) {
+						// when creating an array, all classes deriving from the array's element type are allowed
+						IReturnType elementType = rr.ResolvedType.CastToArrayReturnType().ArrayElementType;
+						c = elementType != null ? elementType.GetUnderlyingClass() : null;
+						context = ExpressionContext.TypeDerivingFrom(elementType, false);
+					} else {
+						// when creating a normal instance, all non-abstract classes deriving from the type
+						// are allowed
+						c = rr.ResolvedType.GetUnderlyingClass();
+						context = ExpressionContext.TypeDerivingFrom(rr.ResolvedType, true);
+					}
+					if (c != null && context.ShowEntry(c)) {
+						// Try to suggest an entry (List<int> a = new => suggest List<int>).
+						
+						string suggestedClassName = LanguageProperties.CSharp.CodeGenerator.GenerateCode(
+							CodeGenerator.ConvertType(
+								rr.ResolvedType,
+								new ClassFinder(ParserService.GetParseInformation(editor.FileName), editor.ActiveTextAreaControl.Caret.Line + 1, editor.ActiveTextAreaControl.Caret.Column + 1)
+							), "");
+						if (suggestedClassName != c.Name) {
+							// create an IClass instance that includes the type arguments in its name
+							context.SuggestedItem = new RenamedClass(c, suggestedClassName);
+						} else {
+							context.SuggestedItem = c;
+						}
+					}
+					return context;
+				}
+			}
+			return null;
+		}
+		
+		/// <summary>
+		/// A class that copies the properties important for the code completion display from another class,
+		/// but provides its own Name implementation.
+		/// Unlike the DefaultClass.Name implementation, here 'Name' may include the namespace or type arguments.
+		/// </summary>
+		sealed class RenamedClass : DefaultClass, IClass
+		{
+			string newName;
+			
+			public RenamedClass(IClass c, string newName) : base(c.CompilationUnit, c.ClassType, c.Modifiers, c.Region, c.DeclaringType)
+			{
+				this.newName = newName;
+				this.Documentation = c.Documentation;
+				this.FullyQualifiedName = c.FullyQualifiedName;
+			}
+			
+			string IClass.Name {
+				get { return newName; }
+			}
 		}
 		
 		#region "case"-keyword completion

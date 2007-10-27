@@ -77,6 +77,13 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			b.CreateLocationButton(applicationManifestComboBox);
 			applicationManifestComboBox.TextChanged += delegate { helper.IsDirty = true; };
 			
+			// embedding manifests requires the project to target MSBuild 3.5 or higher
+			// re-evaluate if the project has the minimum version whenever this options page gets visible
+			// because the "convert project" button on the compiling tab page might have updated the MSBuild version.
+			applicationManifestComboBox.VisibleChanged += delegate {
+				applicationManifestComboBox.Enabled = project.MinimumSolutionVersion >= 10;
+			};
+			
 			Get<TextBox>("projectFolder").Text = project.Directory;
 			Get<TextBox>("projectFile").Text = Path.GetFileName(project.FileName);
 			

@@ -251,9 +251,9 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			ConfigurationGuiBinding targetFrameworkBinding;
 			targetFrameworkBinding = helper.BindStringEnum("targetFrameworkComboBox", TargetFrameworkProperty,
 			                                               "v2.0",
-			                                               new StringPair("v2.0", ".NET 2.0"),
-			                                               new StringPair("v3.0", ".NET 3.0"),
-			                                               new StringPair("v3.5", ".NET 3.5"),
+			                                               new StringPair("v2.0", ".NET Framework 2.0"),
+			                                               new StringPair("v3.0", ".NET Framework 3.0"),
+			                                               new StringPair("v3.5", ".NET Framework 3.5"),
 			                                               new StringPair("CF 2.0", "Compact Framework 2.0"),
 			                                               new StringPair("Mono v1.1", "Mono 1.1"),
 			                                               new StringPair("Mono v2.0", "Mono 2.0"));
