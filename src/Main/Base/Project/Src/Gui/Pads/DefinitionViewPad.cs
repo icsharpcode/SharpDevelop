@@ -98,12 +98,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (expressionFinder == null) return null;
 			Caret caret = ctl.ActiveTextAreaControl.Caret;
 			string content = (e == null) ? ctl.Text : e.Content;
-			if (caret.Offset >= content.Length) {
-				#if DEBUG
-				// the caret offset should not be invalid here - try to find out the when the text editor
-				// doesn't validate the caret position
-				System.Diagnostics.Debugger.Break();
-				#endif
+			if (caret.Offset > content.Length) {
+				LoggingService.Debug("caret.Offset = " + caret.Offset + ", content.Length=" + content.Length);
 				return null;
 			}
 			ExpressionResult expr = expressionFinder.FindFullExpression(content, caret.Offset);

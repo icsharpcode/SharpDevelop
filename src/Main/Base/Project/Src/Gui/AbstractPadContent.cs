@@ -26,7 +26,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public bool IsVisible {
 			get {
-				return Control.Visible && Control.Width > 0 && Control.Height > 0;
+				Control ctl = this.Control;
+				return ctl.Visible && ctl.Width > 0 && ctl.Height > 0;
 			}
 		}
 	}

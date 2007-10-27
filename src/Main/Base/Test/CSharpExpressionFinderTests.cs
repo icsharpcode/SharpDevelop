@@ -616,6 +616,18 @@ class Main {
 		}
 		
 		[Test]
+		public void ObjectInitializer5b()
+		{
+			const string program = @"using System;
+class Main {
+	void M() {
+		a = new MyType { P1 = someBoolean == ";
+			
+			ExpressionResult result = ef.FindExpression(program, program.Length);
+			Assert.AreEqual(ExpressionContext.Default, result.Context);
+		}
+		
+		[Test]
 		public void ObjectInitializer6()
 		{
 			const string program = @"using System;
@@ -797,6 +809,18 @@ class Main {
 			
 			ExpressionResult result = ef.FindExpression(program, program.Length);
 			Assert.AreEqual(ExpressionContext.MethodBody, result.Context);
+		}
+		
+		[Test]
+		public void StringLiteral()
+		{
+			const string program = @"using System;
+class Main {
+	string a = ""hello, world!""";
+			
+			ExpressionResult result = ef.FindExpression(program, program.Length);
+			Assert.AreEqual("\"hello, world!\"", result.Expression);
+			Assert.AreEqual(ExpressionContext.Default, result.Context);
 		}
 	}
 }

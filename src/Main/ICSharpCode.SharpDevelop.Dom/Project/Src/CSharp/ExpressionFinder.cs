@@ -111,7 +111,11 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 			/// <summary>
 			/// Between "new" and "(" / "{".
 			/// </summary>
-			ObjectCreation
+			ObjectCreation,
+			/// <summary>
+			/// In object initializer, in the value part (after "=")
+			/// </summary>
+			ObjectInitializerValue
 		}
 		
 		/// <summary>
@@ -195,7 +199,11 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 							SetContext(ExpressionContext.ParameterType);
 							break;
 						case FrameType.ObjectInitializer:
-							SetContext(ExpressionContext.ObjectInitializer);
+							if (state == FrameState.ObjectInitializerValue) {
+								SetContext(ExpressionContext.Default);
+							} else {
+								SetContext(ExpressionContext.ObjectInitializer);
+							}
 							break;
 						case FrameType.AttributeSection:
 							SetContext(ExpressionContext.Attribute);
@@ -420,7 +428,7 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 							}
 							frame.lastExpressionStart = token.Location;
 						}
-					} else if (Tokens.SimpleTypeName[token.kind] || Tokens.ExpressionStart[token.kind]) {
+					} else if (Tokens.SimpleTypeName[token.kind] || Tokens.ExpressionStart[token.kind] || token.kind == Tokens.Literal) {
 						frame.lastExpressionStart = token.Location;
 					} else {
 						frame.lastExpressionStart = Location.Empty;
@@ -488,7 +496,8 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 						frame.ResetCurlyChildType();
 						break;
 					} else if (frame.type == FrameType.ObjectInitializer) {
-						frame.SetContext(ExpressionContext.Default);
+						frame.state = FrameState.ObjectInitializerValue;
+						frame.SetDefaultContext();
 						break;
 					} else {
 						goto default;
@@ -551,6 +560,9 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 					if (frame.state == FrameState.FieldDecl || frame.state == FrameState.Initializer) {
 						frame.state = FrameState.FieldDecl;
 						frame.SetContext(ExpressionContext.IdentifierExpected);
+					} else if (frame.state == FrameState.ObjectInitializerValue) {
+						frame.state = FrameState.Normal;
+						frame.SetDefaultContext();
 					}
 					break;
 				case Tokens.Where:
