@@ -8,3 +8,9 @@ Patch #1:
 	Remove redundant finalizers                - in AutoHideStripBase.cs, DockPaneStripBase.cs
 	Changed background color of inactive pads. - in VS2005DockPaneCaption.cs, VS2005DockPaneStip.cs
  Committed in revision 2706.
+
+Patch #2:
+	Prevent crash in DockPanel.FocusManager.Activate when active pane was removed (e.g. the pad
+	that was active when SharpDevelop was closed does not exist anymore after an AddIn was removed
+	manually or SharpDevelop was updated)
+ Committed in revision 2732.

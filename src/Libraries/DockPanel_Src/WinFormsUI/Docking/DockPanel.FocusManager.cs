@@ -165,6 +165,9 @@ namespace WeifenLuo.WinFormsUI.Docking
                     ContentActivating = content;
                     return;
                 }
+                
+                if (content.IsDisposed)
+                	return;
 
                 DockContentHandler handler = content.DockHandler;
                 if (ContentContains(content, handler.ActiveWindowHandle))
