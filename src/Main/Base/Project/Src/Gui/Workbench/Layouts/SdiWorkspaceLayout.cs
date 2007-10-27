@@ -104,7 +104,18 @@ namespace ICSharpCode.SharpDevelop.Gui
 			dockPanel.Dock = DockStyle.Fill;
 			dockPanel.RightToLeftLayout = true;
 			
-			wbForm.IsMdiContainer = true;
+			// Known issues with certain DocumentStyles:
+			//   DockingMdi:
+			//    - this is the default value
+			//    - after switching between layouts, text editor tooltips sometimes do not show up anymore
+			//   DockingSdi:
+			//    - in this mode, the tab bar is not shown when there is only one open window
+			//   DockingWindow:
+			//    - SharpDevelop 2.x used this mode
+			//    - it was also the only mode supported by the early DockPanelSuite versions used by SharpDevelop 1.x
+			
+			dockPanel.DocumentStyle = DocumentStyle.DockingWindow;
+			
 			wbForm.Controls.Add(dockPanel);
 			wbForm.Controls.Add(toolBarPanel);
 			wbForm.Controls.Add(mainMenuContainer);
