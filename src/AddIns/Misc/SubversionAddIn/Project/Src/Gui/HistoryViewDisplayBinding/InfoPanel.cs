@@ -1,19 +1,19 @@
-﻿// <file>
+// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
+//     <author name="Daniel Grunwald"/>
 //     <version>$Revision$</version>
 // </file>
 
 using System;
 using System.Collections;
+using System.ComponentModel;
 using System.Drawing;
 using System.Threading;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Gui.XmlForms;
 using NSvn.Core;
 
 namespace ICSharpCode.Svn
@@ -21,25 +21,19 @@ namespace ICSharpCode.Svn
 	/// <summary>
 	/// Description of InfoPanel.
 	/// </summary>
-	public class InfoPanel : BaseSharpDevelopUserControl
+	public partial class InfoPanel : UserControl
 	{
 		IViewContent viewContent;
-		ListView revisionList, changesList;
 		
 		public InfoPanel(IViewContent viewContent)
 		{
 			this.viewContent = viewContent;
 			
-			SetupFromXmlStream(GetType().Assembly.GetManifestResourceStream("ICSharpCode.Svn.Resources.InfoPanel.xfrm"));
+			InitializeComponent();
 			
-			revisionList = Get<ListView>("revision");
-			changesList  = Get<ListView>("changes");
-			revisionList.SelectedIndexChanged += RevisionListViewSelectionChanged;
-			ControlDictionary["commentRichTextBox"].Enabled = false;
-			ControlDictionary["commentRichTextBox"].Font = ResourceService.DefaultMonospacedFont;
-			
-			// Work around WinForms/XmlForms bug:
-			ControlDictionary["splitter1"].Height = 3;
+			revisionListView.SelectedIndexChanged += RevisionListViewSelectionChanged;
+			commentRichTextBox.Font = ResourceService.DefaultMonospacedFont;
+			commentRichTextBox.Enabled = false;
 		}
 		
 		public void ShowError(Exception ex)
@@ -58,7 +52,7 @@ namespace ICSharpCode.Svn
 				txt.Text += ex.ToString();
 			}
 			txt.Dock = DockStyle.Fill;
-			revisionList.Controls.Add(txt);
+			revisionListView.Controls.Add(txt);
 		}
 		
 		int lastRevision = -1;
@@ -74,24 +68,24 @@ namespace ICSharpCode.Svn
 			                                        	logMessage.Message
 			                                        });
 			newItem.Tag = logMessage;
-			revisionList.Items.Add(newItem);
+			revisionListView.Items.Add(newItem);
 		}
 		
 		void RevisionListViewSelectionChanged(object sender, EventArgs e)
 		{
-			changesList.Items.Clear();
-			if (revisionList.SelectedItems.Count == 0) {
-				ControlDictionary["commentRichTextBox"].Text = "";
-				ControlDictionary["commentRichTextBox"].Enabled = false;
+			changesListView.Items.Clear();
+			if (revisionListView.SelectedItems.Count == 0) {
+				commentRichTextBox.Text = "";
+				commentRichTextBox.Enabled = false;
 				return;
 			}
-			ControlDictionary["commentRichTextBox"].Enabled = true;
-			ListViewItem item = revisionList.SelectedItems[0];
+			commentRichTextBox.Enabled = true;
+			ListViewItem item = revisionListView.SelectedItems[0];
 			LogMessage logMessage = item.Tag as LogMessage;
-			ControlDictionary["commentRichTextBox"].Text = logMessage.Message;
+			commentRichTextBox.Text = logMessage.Message;
 			ChangedPathDictionary changes = logMessage.ChangedPaths;
 			if (changes == null) {
-				changesList.Items.Add("Loading...");
+				changesListView.Items.Add("Loading...");
 				if (!isLoadingChangedPaths) {
 					isLoadingChangedPaths = true;
 					loadChangedPathsItem = item;
@@ -104,7 +98,7 @@ namespace ICSharpCode.Svn
 					foreach (DictionaryEntry entry in changes) {
 						string path = (string)entry.Key;
 						path = path.Replace('\\', '/');
-						SizeF size = g.MeasureString(path, changesList.Font);
+						SizeF size = g.MeasureString(path, changesListView.Font);
 						if (size.Width + 4 > pathWidth)
 							pathWidth = (int)size.Width + 4;
 						ChangedPath change = (ChangedPath)entry.Value;
@@ -113,7 +107,7 @@ namespace ICSharpCode.Svn
 							copyFrom = string.Empty;
 						} else {
 							copyFrom = copyFrom + " : r" + change.CopyFromRevision;
-							size = g.MeasureString(copyFrom, changesList.Font);
+							size = g.MeasureString(copyFrom, changesListView.Font);
 							if (size.Width + 4 > copyFromWidth)
 								copyFromWidth = (int)size.Width + 4;
 						}
@@ -122,11 +116,11 @@ namespace ICSharpCode.Svn
 						                                        	path,
 						                                        	copyFrom
 						                                        });
-						changesList.Items.Add(newItem);
+						changesListView.Items.Add(newItem);
 					}
 				}
-				changesList.Columns[1].Width = pathWidth;
-				changesList.Columns[2].Width = copyFromWidth;
+				changesListView.Columns[1].Width = pathWidth;
+				changesListView.Columns[2].Width = copyFromWidth;
 			}
 		}
 		
@@ -182,7 +176,7 @@ namespace ICSharpCode.Svn
 		
 		void ReceiveAllChangedPathsInvoked(LogMessage logMessage)
 		{
-			foreach (ListViewItem item in revisionList.Items) {
+			foreach (ListViewItem item in revisionListView.Items) {
 				LogMessage oldMessage = (LogMessage)item.Tag;
 				if (oldMessage.Revision == logMessage.Revision) {
 					item.Tag = logMessage;

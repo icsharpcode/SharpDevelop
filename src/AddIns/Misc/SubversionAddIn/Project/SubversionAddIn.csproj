@@ -46,6 +46,10 @@
     <None Include="ICSharpCode.Svn.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Compile Include="Src\Gui\HistoryViewDisplayBinding\InfoPanel.cs" />
+    <Compile Include="Src\Gui\HistoryViewDisplayBinding\InfoPanel.Designer.cs">
+      <DependentUpon>InfoPanel.cs</DependentUpon>
+    </Compile>
     <Compile Include="Src\SvnClient.cs" />
     <Compile Include="Src\InOperationDialog.cs">
       <SubType>Form</SubType>
@@ -54,7 +58,6 @@
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <EmbeddedResource Include="Resources\ClientCertDialog.xfrm" />
     <EmbeddedResource Include="Resources\ClientCertPassphraseDialog.xfrm" />
-    <EmbeddedResource Include="Resources\InfoPanel.xfrm" />
     <EmbeddedResource Include="Resources\LoginDialog.xfrm" />
     <EmbeddedResource Include="Resources\SslServerTrustDialog.xfrm" />
     <EmbeddedResource Include="Resources\SubversionOptionsPanel.xfrm" />
@@ -77,9 +80,6 @@
     <Compile Include="Src\Gui\HistoryViewDisplayBinding\HistoryViewPanel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Src\Gui\HistoryViewDisplayBinding\InfoPanel.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
     <Compile Include="Src\Gui\ProjectBrowserVisitor\SvnProjectBrowserVisitor.cs" />
     <Compile Include="Src\Gui\SubversionOptionsPanel.cs">
       <SubType>UserControl</SubType>
@@ -99,6 +99,9 @@
     <Compile Include="Src\Gui\HistoryViewDisplayBinding\DiffPanel.cs" />
     <EmbeddedResource Include="Src\Gui\HistoryViewDisplayBinding\DiffPanel.resx">
       <DependentUpon>DiffPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Src\Gui\HistoryViewDisplayBinding\InfoPanel.resx">
+      <DependentUpon>InfoPanel.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

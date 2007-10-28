@@ -308,6 +308,10 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 		{
 			Init(text, offset);
 			Token token;
+			Location lastError = Location.Empty;
+			lexer.Errors.Error = delegate (int errorLine, int errorCol, string errorMsg) {
+				lastError = new Location(errorCol, errorLine);
+			};
 			while ((token = lexer.NextToken()) != null) {
 				if (token.kind == Tokens.EOF) break;
 				
@@ -315,7 +319,14 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 					break;
 				}
 				ApplyToken(token);
-				if (targetPosition < token.EndLocation) {
+				if (targetPosition <= token.EndLocation) {
+					if (token.kind == Tokens.Literal) {
+						// do not return string literal as expression if offset was inside the literal,
+						// or if it was at the end of the literal when the literal was not terminated correctly.
+						if (targetPosition < token.EndLocation || lastError == token.Location) {
+							frame.lastExpressionStart = Location.Empty;
+						}
+					}
 					break;
 				}
 				lastToken = token.kind;

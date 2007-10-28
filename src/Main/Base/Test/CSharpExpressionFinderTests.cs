@@ -822,6 +822,18 @@ class Main {
 			Assert.AreEqual("\"hello, world!\"", result.Expression);
 			Assert.AreEqual(ExpressionContext.Default, result.Context);
 		}
+		
+		[Test]
+		public void InsideStringLiteral()
+		{
+			const string program = @"using System;
+class Main {
+	string a = ""hello, ";
+			
+			ExpressionResult result = ef.FindExpression(program, program.Length);
+			Assert.IsNull(result.Expression);
+			Assert.AreEqual(ExpressionContext.Default, result.Context);
+		}
 	}
 }
 

@@ -45,19 +45,22 @@ namespace ICSharpCode.Svn
 			mainTab.Dock       = DockStyle.Fill;
 			mainTab.Alignment  = TabAlignment.Bottom;
 			
+			Controls.Add(mainTab);
 			
 			TabPage infoTabPage = new TabPage("Info");
 			infoPanel = new InfoPanel(viewContent);
-			infoPanel.Dock = DockStyle.Fill;
 			infoTabPage.Controls.Add(infoPanel);
 			mainTab.TabPages.Add(infoTabPage);
+			
+			infoPanel.Dock = DockStyle.Fill;
 			
 			
 			TabPage diffTabPage = new TabPage("Diff");
 			diffPanel = new DiffPanel(viewContent);
-			diffPanel.Dock  = DockStyle.Fill;
 			diffTabPage.Controls.Add(diffPanel);
 			mainTab.TabPages.Add(diffTabPage);
+			
+			diffPanel.Dock  = DockStyle.Fill;
 			
 			/*
 			TabPage conflictTabPage = new TabPage("Conflicts");
@@ -66,8 +69,6 @@ namespace ICSharpCode.Svn
 			conflictTabPage.Controls.Add(todoLabel);
 			mainTab.TabPages.Add(conflictTabPage);
 			*/
-			
-			Controls.Add(mainTab);
 			
 			Thread logMessageThread = new Thread(new ThreadStart(GetLogMessages));
 			logMessageThread.Name = "svnLogMessage";
