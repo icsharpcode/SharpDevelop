@@ -176,28 +176,35 @@ namespace ICSharpCode.SharpDevelop.Project
 		// that we can select it again on opening a folder
 		string lastSelectionTarget;
 		
+		bool inSelectFile;
+		
 		/// <summary>
 		/// Selects the deepest node open on the path to a particular file.
 		/// </summary>
 		public void SelectFile(string fileName)
 		{
-			lastSelectionTarget = fileName;
-			TreeNode node = FindFileNode(fileName);
-			
-			if (node != null) {
-				// select first parent that is not collapsed
-				TreeNode nodeToSelect = node;
-				TreeNode p = node.Parent;
-				while (p != null) {
-					if (!p.IsExpanded)
-						nodeToSelect = p;
-					p = p.Parent;
+			try {
+				inSelectFile = true;
+				lastSelectionTarget = fileName;
+				TreeNode node = FindFileNode(fileName);
+				
+				if (node != null) {
+					// select first parent that is not collapsed
+					TreeNode nodeToSelect = node;
+					TreeNode p = node.Parent;
+					while (p != null) {
+						if (!p.IsExpanded)
+							nodeToSelect = p;
+						p = p.Parent;
+					}
+					if (nodeToSelect != null) {
+						treeView.SelectedNode = nodeToSelect;
+					}
+				} else {
+					SelectDeepestOpenNodeForPath(fileName);
 				}
-				if (nodeToSelect != null) {
-					treeView.SelectedNode = nodeToSelect;
-				}
-			} else {
-				SelectDeepestOpenNodeForPath(fileName);
+			} finally {
+				inSelectFile = false;
 			}
 		}
 
@@ -400,7 +407,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (node == null) {
 				return;
 			}
-			ProjectService.CurrentProject = node.Project;
+			if (!inSelectFile) {
+				ProjectService.CurrentProject = node.Project;
+			}
 			propertyContainer.SelectedObject = node.Tag;
 		}
 		

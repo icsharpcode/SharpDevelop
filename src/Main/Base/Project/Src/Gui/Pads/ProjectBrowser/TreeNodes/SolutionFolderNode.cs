@@ -67,11 +67,10 @@ namespace ICSharpCode.SharpDevelop.Project
 			this.Tag       = folder;
 			Text           = folder.Name;
 			autoClearNodes = false;
-			if (!folder.IsEmpty) {
-				Nodes.Add(new CustomNode());
-			}
+			
 			OpenedImage = "ProjectBrowser.SolutionFolder.Open";
 			ClosedImage = "ProjectBrowser.SolutionFolder.Closed";
+			Initialize();
 		}
 		
 		public override void AfterLabelEdit(string newName)

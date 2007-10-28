@@ -517,53 +517,49 @@ namespace ICSharpCode.StartPage
 			builder.Append("</td>");
 			builder.Append("</tr></table></td></tr></table></td>");
 		}
-		public string[] projectFiles;
 		
-		StringBuilder projectSection = null;
+		internal string[] projectFiles;
+		
 		public void RenderSectionStartBody(StringBuilder builder)
 		{
+			StringBuilder projectSection = builder;
+			projectSection.Append("<DIV class='tablediv'><TABLE CLASS='dtTABLE' CELLSPACING='0'>\n");
+			projectSection.Append(String.Format("<TR><TH>{0}</TH><TH>{1}</TH><TH>{2}</TH></TR>\n",
+			                                    StringParser.Parse("${res:Global.Name}"),
+			                                    StringParser.Parse("${res:StartPage.StartMenu.ModifiedTable}"),
+			                                    StringParser.Parse("${res:StartPage.StartMenu.LocationTable}")
+			                                   ));
 			
-			if (projectSection == null) {
-				projectSection = new StringBuilder();
-				projectSection.Append("<DIV class='tablediv'><TABLE CLASS='dtTABLE' CELLSPACING='0'>\n");
-				projectSection.Append(String.Format("<TR><TH>{0}</TH><TH>{1}</TH><TH>{2}</TH></TR>\n",
-				                                    StringParser.Parse("${res:Global.Name}"),
-				                                    StringParser.Parse("${res:StartPage.StartMenu.ModifiedTable}"),
-				                                    StringParser.Parse("${res:StartPage.StartMenu.LocationTable}")
-				                                   ));
-				
-				try {
-					// Get the recent projects
-					projectFiles = new string[FileService.RecentOpen.RecentProject.Count];
-					for (int i = 0; i < FileService.RecentOpen.RecentProject.Count; ++i) {
-						string fileName = FileService.RecentOpen.RecentProject[i].ToString();
-						// if the file does not exist, goto next one
-						if (!System.IO.File.Exists(fileName)) {
-							continue;
-						}
-						projectFiles[i] = fileName;
-						projectSection.Append("<TR><TD>");
-						projectSection.Append("<a href=\"startpage://project/" + i + "\">");
-						projectSection.Append(Path.GetFileNameWithoutExtension(fileName));
-						projectSection.Append("</A>");
-						projectSection.Append("</TD><TD>");
-						System.IO.FileInfo fInfo = new System.IO.FileInfo(fileName);
-						projectSection.Append(fInfo.LastWriteTime.ToShortDateString());
-						projectSection.Append("</TD><TD>");
-						projectSection.Append(fileName);
-						projectSection.Append("</TD></TR>\n");
+			try {
+				// Get the recent projects
+				projectFiles = new string[FileService.RecentOpen.RecentProject.Count];
+				for (int i = 0; i < FileService.RecentOpen.RecentProject.Count; ++i) {
+					string fileName = FileService.RecentOpen.RecentProject[i].ToString();
+					// if the file does not exist, goto next one
+					if (!System.IO.File.Exists(fileName)) {
+						continue;
 					}
-				} catch {}
-				projectSection.Append("</TABLE></DIV><BR/><BR/>");
-				projectSection.Append(String.Format("<button id=\"opencombine\">{0}</button>\n",
-				                                    StringParser.Parse("${res:StartPage.StartMenu.OpenCombineButton}")
-				                                   ));
-				projectSection.Append(String.Format("<button id=\"newcombine\">{0}</button>\n",
-				                                    StringParser.Parse("${res:StartPage.StartMenu.NewCombineButton}")
-				                                   ));
-				projectSection.Append("<BR/><BR/><BR/>");
-			}
-			builder.Append(projectSection.ToString());
+					projectFiles[i] = fileName;
+					projectSection.Append("<TR><TD>");
+					projectSection.Append("<a href=\"startpage://project/" + i + "\">");
+					projectSection.Append(Path.GetFileNameWithoutExtension(fileName));
+					projectSection.Append("</A>");
+					projectSection.Append("</TD><TD>");
+					System.IO.FileInfo fInfo = new System.IO.FileInfo(fileName);
+					projectSection.Append(fInfo.LastWriteTime.ToShortDateString());
+					projectSection.Append("</TD><TD>");
+					projectSection.Append(fileName);
+					projectSection.Append("</TD></TR>\n");
+				}
+			} catch {}
+			projectSection.Append("</TABLE></DIV><BR/><BR/>");
+			projectSection.Append(String.Format("<button id=\"opencombine\">{0}</button>\n",
+			                                    StringParser.Parse("${res:StartPage.StartMenu.OpenCombineButton}")
+			                                   ));
+			projectSection.Append(String.Format("<button id=\"newcombine\">{0}</button>\n",
+			                                    StringParser.Parse("${res:StartPage.StartMenu.NewCombineButton}")
+			                                   ));
+			projectSection.Append("<BR/><BR/><BR/>");
 		}
 		
 		public void RenderSectionAuthorBody(StringBuilder builder)
