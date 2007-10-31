@@ -231,6 +231,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			
 			bool autodetectEncoding = true;
 			textEditorControl.LoadFile(file.FileName, stream, true, autodetectEncoding);
+			textEditorControl.FileLoaded();
 			foreach (Bookmarks.SDBookmark mark in Bookmarks.BookmarkManager.GetBookmarks(file.FileName)) {
 				mark.Document = textEditorControl.Document;
 				textEditorControl.Document.BookmarkManager.Marks.Add(mark);

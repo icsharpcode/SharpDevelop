@@ -50,7 +50,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			TaskService.Removed += new TaskEventHandler(OnRemoved);
 			TaskService.Cleared += new EventHandler(OnCleared);
 			TaskService.InUpdateChanged += OnInUpdateChanged;
-			textEditor.FileNameChanged += new EventHandler(SetErrors);
 			DebuggerService.DebugStarted += OnDebugStarted;
 			DebuggerService.DebugStopped += OnDebugStopped;
 		}
@@ -88,7 +87,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			TaskService.Removed -= new TaskEventHandler(OnRemoved);
 			TaskService.Cleared -= new EventHandler(OnCleared);
 			TaskService.InUpdateChanged -= OnInUpdateChanged;
-			textEditor.FileNameChanged -= new EventHandler(SetErrors);
 			DebuggerService.DebugStarted -= OnDebugStarted;
 			DebuggerService.DebugStopped -= OnDebugStopped;
 			ClearErrors();
@@ -182,7 +180,10 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			}
 		}
 		
-		void SetErrors(object sender, EventArgs e)
+		/// <summary>
+		/// Clears all errors and adds them again.
+		/// </summary>
+		public void UpdateErrors()
 		{
 			ClearErrors();
 			foreach (Task task in TaskService.Tasks) {

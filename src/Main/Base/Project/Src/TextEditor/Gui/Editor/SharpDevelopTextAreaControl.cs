@@ -193,6 +193,13 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			}
 		}
 		
+		internal void FileLoaded()
+		{
+			if (errorDrawer != null) {
+				errorDrawer.UpdateErrors();
+			}
+		}
+		
 		void GenerateEditActions()
 		{
 			#if DEBUG
