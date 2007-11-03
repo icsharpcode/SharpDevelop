@@ -426,7 +426,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		public void StoreViewState(Properties memento)
 		{
-			memento.Set("ProjectBrowserState", ExtTreeView.GetViewStateString(treeView));
+			memento.Set("ProjectBrowserState", TreeViewHelper.GetViewStateString(treeView));
 		}
 		
 		/// <summary>
@@ -434,7 +434,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		public void ReadViewState(Properties memento)
 		{
-			ExtTreeView.ApplyViewStateString(memento.Get("ProjectBrowserState", ""), treeView);
+			TreeViewHelper.ApplyViewStateString(memento.Get("ProjectBrowserState", ""), treeView);
 		}
 		
 		#region Windows Forms Designer generated code

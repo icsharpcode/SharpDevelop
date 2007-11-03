@@ -87,7 +87,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public void StoreViewState(Properties memento)
 		{
 			projectBrowserControl.StoreViewState(memento);
-			memento.Set("ProjectBrowserState", ExtTreeView.GetViewStateString(projectBrowserControl.TreeView));
+			memento.Set("ProjectBrowserState", TreeViewHelper.GetViewStateString(projectBrowserControl.TreeView));
 		}
 		
 		/// <summary>
@@ -96,7 +96,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public void ReadViewState(Properties memento)
 		{
 			projectBrowserControl.ReadViewState(memento);
-			ExtTreeView.ApplyViewStateString(memento.Get("ProjectBrowserState", ""), projectBrowserControl.TreeView);
+			TreeViewHelper.ApplyViewStateString(memento.Get("ProjectBrowserState", ""), projectBrowserControl.TreeView);
 		}
 		
 		public void Clear()

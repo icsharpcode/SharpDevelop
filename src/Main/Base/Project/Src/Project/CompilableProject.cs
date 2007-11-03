@@ -402,16 +402,12 @@ namespace ICSharpCode.SharpDevelop.Project
 			rpi.SetMetadata("RequiredTargetFramework", "3.5");
 			ProjectService.AddProjectItem(this, rpi);
 			
-			if (GetItemsOfType(ItemType.Reference).Cast<ReferenceProjectItem>()
-			    .Any(r => r.Include == "System.Data"))
-			{
+			if (GetItemsOfType(ItemType.Reference).Any(r => r.Include == "System.Data")) {
 				rpi = new ReferenceProjectItem(this, "System.Data.DataSetExtensions");
 				rpi.SetMetadata("RequiredTargetFramework", "3.5");
 				ProjectService.AddProjectItem(this, rpi);
 			}
-			if (GetItemsOfType(ItemType.Reference).Cast<ReferenceProjectItem>()
-			    .Any(r => r.Include == "System.Xml"))
-			{
+			if (GetItemsOfType(ItemType.Reference).Any(r => r.Include == "System.Xml")) {
 				rpi = new ReferenceProjectItem(this, "System.Xml.Linq");
 				rpi.SetMetadata("RequiredTargetFramework", "3.5");
 				ProjectService.AddProjectItem(this, rpi);

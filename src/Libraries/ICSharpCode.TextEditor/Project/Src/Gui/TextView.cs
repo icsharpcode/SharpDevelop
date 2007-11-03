@@ -273,7 +273,7 @@ namespace ICSharpCode.TextEditor
 				HighlightColor caretLine = textArea.Document.HighlightingStrategy.GetColorFor("CaretMarker");
 				return BrushRegistry.GetBrush(caretLine.Color);
 			}
-			HighlightBackground background = (HighlightBackground)textArea.Document.HighlightingStrategy.GetColorFor("Default");
+			HighlightColor background = textArea.Document.HighlightingStrategy.GetColorFor("Default");
 			Color bgColor = background.BackgroundColor;
 			if (textArea.MotherTextAreaControl.TextEditorProperties.UseCustomLine == true)
 			{

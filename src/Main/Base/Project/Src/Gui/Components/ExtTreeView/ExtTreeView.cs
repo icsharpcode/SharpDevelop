@@ -436,8 +436,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 				node.Delete();
 			}
 		}
-		
-		#region Static methods for saving/restoring expanded state
+	}
+	
+	public static class TreeViewHelper
+	{
+		#region Saving/restoring expanded state
 		// example ViewStateString:
 		// [Main[ICSharpCode.SharpDevelop[Src[Gui[Pads[ProjectBrowser[]]]]Services[]]]]
 		// -> every node name is terminated by opening bracket
@@ -449,16 +452,16 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			if (treeView.Nodes.Count == 0) return "";
 			StringBuilder b = new StringBuilder();
-			WriteViewStateString(b, treeView.Nodes[0]);
+			WriteViewStateString(b, treeView.Nodes);
 			return b.ToString();
 		}
-		static void WriteViewStateString(StringBuilder b, TreeNode node)
+		static void WriteViewStateString(StringBuilder b, TreeNodeCollection nodes)
 		{
 			b.Append('[');
-			foreach (TreeNode subNode in node.Nodes) {
+			foreach (TreeNode subNode in nodes) {
 				if (subNode.IsExpanded && subNode.Text.IndexOf('[') < 0) {
 					b.Append(subNode.Text);
-					WriteViewStateString(b, subNode);
+					WriteViewStateString(b, subNode.Nodes);
 				}
 			}
 			b.Append(']');
@@ -468,10 +471,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (viewState.Length == 0)
 				return;
 			int i = 0;
-			ApplyViewStateString(treeView.Nodes[0], viewState, ref i);
+			ApplyViewStateString(treeView.Nodes, viewState, ref i);
 			System.Diagnostics.Debug.Assert(i == viewState.Length - 1);
 		}
-		static void ApplyViewStateString(TreeNode node, string viewState, ref int pos)
+		static void ApplyViewStateString(TreeNodeCollection nodes, string viewState, ref int pos)
 		{
 			if (viewState[pos++] != '[')
 				throw new ArgumentException("pos must point to '['");
@@ -486,8 +489,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 				string nodeText = nameBuilder.ToString();
 				// find the node in question
 				TreeNode subNode = null;
-				if (node != null) {
-					foreach (TreeNode n in node.Nodes) {
+				if (nodes != null) {
+					foreach (TreeNode n in nodes) {
 						if (n.Text == nodeText) {
 							subNode = n;
 							break;
@@ -497,10 +500,43 @@ namespace ICSharpCode.SharpDevelop.Gui
 				if (subNode != null) {
 					subNode.Expand();
 				}
-				ApplyViewStateString(subNode, viewState, ref pos);
+				ApplyViewStateString(subNode != null ? subNode.Nodes : null, viewState, ref pos);
 				// pos now points to the closing bracket of the inner view state
 				pos += 1; // move to next character
 			}
+		}
+		#endregion
+		
+		#region GetNodeByPath
+		public static string GetPath(TreeNode node)
+		{
+			if (node == null)
+				return null;
+			if (node.Parent == null)
+				return node.Text;
+			else
+				return GetPath(node.Parent) + "\\" + node.Text;
+		}
+		
+		public static TreeNode GetNodeByPath(TreeView treeView, string path)
+		{
+			if (string.IsNullOrEmpty(path))
+				return null;
+			TreeNode result = null;
+			TreeNodeCollection nodes = treeView.Nodes;
+			foreach (string entry in path.Split('\\')) {
+				result = null;
+				foreach (TreeNode node in nodes) {
+					if (node.Text == entry) {
+						result = node;
+						break;
+					}
+				}
+				if (result != null) {
+					nodes = result.Nodes;
+				}
+			}
+			return result;
 		}
 		#endregion
 	}

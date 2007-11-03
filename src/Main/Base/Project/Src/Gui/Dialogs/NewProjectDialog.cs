@@ -95,7 +95,8 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 			InsertCategories(null, categories);
 			categoryTreeView.TreeViewNodeSorter = new TemplateCategoryComparer();
 			categoryTreeView.Sort();
-			SelectLastSelectedCategoryNode(categoryTreeView.Nodes, PropertyService.Get("Dialogs.NewProjectDialog.LastSelectedCategory", "C#"));
+			TreeViewHelper.ApplyViewStateString(PropertyService.Get("Dialogs.NewProjectDialog.CategoryTreeState", ""), categoryTreeView);
+			categoryTreeView.SelectedNode = TreeViewHelper.GetNodeByPath(categoryTreeView, PropertyService.Get("Dialogs.NewProjectDialog.LastSelectedCategory", "C#"));
 		}
 		
 		void InsertCategories(TreeNode node, IEnumerable<Category> catarray)
@@ -276,7 +277,8 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 		{
 			
 			if (categoryTreeView.SelectedNode != null) {
-				PropertyService.Set("Dialogs.NewProjectDialog.LastSelectedCategory", categoryTreeView.SelectedNode.Text);
+				PropertyService.Set("Dialogs.NewProjectDialog.LastSelectedCategory", TreeViewHelper.GetPath(categoryTreeView.SelectedNode));
+				PropertyService.Set("Dialogs.NewProjectDialog.CategoryTreeState", TreeViewHelper.GetViewStateString(categoryTreeView));
 				PropertyService.Set("Dialogs.NewProjectDialog.LargeImages", largeIconsRadioButton.Checked);
 			}
 			
@@ -362,22 +364,6 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 				descriptionLabel.Text = String.Empty;
 				openButton.Enabled = false;
 			}
-		}
-		
-		TreeNode SelectLastSelectedCategoryNode(TreeNodeCollection nodes, string name)
-		{
-			foreach (TreeNode node in nodes) {
-				if (node.Name == name) {
-					categoryTreeView.SelectedNode = node;
-					node.ExpandAll();
-					return node;
-				}
-				TreeNode selectedNode = SelectLastSelectedCategoryNode(node.Nodes, name);
-				if (selectedNode != null) {
-					return selectedNode;
-				}
-			}
-			return null;
 		}
 		
 		static bool CreateDirectoryForSolution {

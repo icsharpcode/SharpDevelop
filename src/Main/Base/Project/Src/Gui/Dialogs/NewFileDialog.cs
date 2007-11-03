@@ -96,10 +96,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 			((ListView)ControlDictionary["templateListView"]).SmallImageList = smalllist;
 			
 			InsertCategories(null, categories);
-			((TreeView)ControlDictionary["categoryTreeView"]).TreeViewNodeSorter = new TemplateCategoryComparer();
-			((TreeView)ControlDictionary["categoryTreeView"]).Sort();
+			TreeView categoryTreeView = ((TreeView)ControlDictionary["categoryTreeView"]);
+			categoryTreeView.TreeViewNodeSorter = new TemplateCategoryComparer();
+			categoryTreeView.Sort();
 			
-			SelectLastSelectedCategoryNode(((TreeView)ControlDictionary["categoryTreeView"]).Nodes, PropertyService.Get("Dialogs.NewFileDialog.LastSelectedCategory", "C#"));
+			TreeViewHelper.ApplyViewStateString(PropertyService.Get("Dialogs.NewFileDialog.CategoryViewState", ""), categoryTreeView);
+			categoryTreeView.SelectedNode = TreeViewHelper.GetNodeByPath(categoryTreeView, PropertyService.Get("Dialogs.NewFileDialog.LastSelectedCategory", "C#"));
 		}
 		
 		void InsertCategories(TreeNode node, ArrayList catarray)
@@ -112,22 +114,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 				}
 				InsertCategories(cat, cat.Categories);
 			}
-		}
-		
-		TreeNode SelectLastSelectedCategoryNode(TreeNodeCollection nodes, string name)
-		{
-			foreach (TreeNode node in nodes) {
-				if (node.Name == name) {
-					((TreeView)ControlDictionary["categoryTreeView"]).SelectedNode = node;
-					node.ExpandAll();
-					return node;
-				}
-				TreeNode selectedNode = SelectLastSelectedCategoryNode(node.Nodes, name);
-				if (selectedNode != null) {
-					return selectedNode;
-				}
-			}
-			return null;
 		}
 		
 		Category GetCategory(string categoryname, string subcategoryname)
@@ -437,10 +423,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void OpenEvent(object sender, EventArgs e)
 		{
-			if (((TreeView)ControlDictionary["categoryTreeView"]).SelectedNode != null) {
-				
+			TreeView categoryTreeView = ((TreeView)ControlDictionary["categoryTreeView"]);
+			if (categoryTreeView.SelectedNode != null) {
 				PropertyService.Set("Dialogs.NewProjectDialog.LargeImages", ((RadioButton)ControlDictionary["largeIconsRadioButton"]).Checked);
-				PropertyService.Set("Dialogs.NewFileDialog.LastSelectedCategory", ((TreeView)ControlDictionary["categoryTreeView"]).SelectedNode.Text);
+				PropertyService.Set("Dialogs.NewFileDialog.CategoryViewState", TreeViewHelper.GetViewStateString(categoryTreeView));
+				PropertyService.Set("Dialogs.NewFileDialog.LastSelectedCategory", TreeViewHelper.GetPath(categoryTreeView.SelectedNode));
 			}
 			createdFiles.Clear();
 			if (((ListView)ControlDictionary["templateListView"]).SelectedItems.Count == 1) {
