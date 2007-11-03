@@ -123,7 +123,7 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		public void SaveViewState(Properties properties)
 		{
-			properties.Set(ViewStatePropertyName, ExtTreeView.GetViewStateString(this));
+			properties.Set(ViewStatePropertyName, TreeViewHelper.GetViewStateString(this));
 		}
 		
 		/// <summary>
@@ -131,7 +131,7 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		public void RestoreViewState(Properties properties)
 		{
-			ExtTreeView.ApplyViewStateString(properties.Get(ViewStatePropertyName, String.Empty), this);
+			TreeViewHelper.ApplyViewStateString(properties.Get(ViewStatePropertyName, String.Empty), this);
 		}
 		
 		/// <summary>

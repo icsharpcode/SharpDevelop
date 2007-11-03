@@ -32,7 +32,7 @@ namespace XmlEditor.Tests.Tree
 				treeView.Document = doc;
 				ExtTreeNode node = (ExtTreeNode)treeView.Nodes[0];
 				node.Expanding();
-				expectedSavedViewState = ExtTreeView.GetViewStateString(treeView);
+				expectedSavedViewState = TreeViewHelper.GetViewStateString(treeView);
 				treeView.SaveViewState(savedProperties);
 			}
 			
