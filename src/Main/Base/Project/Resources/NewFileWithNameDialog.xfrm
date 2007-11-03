@@ -75,7 +75,6 @@
                 <TabIndex value="1" />
                 <Location value="{X=0,Y=23}" />
                 <Size value="{Width=381, Height=257}" />
-                <HoverSelection value="True" />
                 <HideSelection value="False" />
               </System.Windows.Forms.ListView>
               <System.Windows.Forms.Panel>

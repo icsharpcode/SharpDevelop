@@ -17,7 +17,6 @@
         <Size value="{Width=372, Height=106}" />
         <TabIndex value="5" />
         <MultiSelect value="False" />
-        <HoverSelection value="True" />
         <View value="Details" />
         <HeaderStyle value="None" />
         <Activation value="OneClick" />

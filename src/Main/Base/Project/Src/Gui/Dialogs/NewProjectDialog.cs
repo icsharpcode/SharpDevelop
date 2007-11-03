@@ -1,7 +1,7 @@
-﻿// <file>
+// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
+//     <author name="Daniel Grunwald"/>
 //     <version>$Revision$</version>
 // </file>
 
@@ -21,10 +21,9 @@ using ICSharpCode.SharpDevelop.Internal.Templates;
 namespace ICSharpCode.SharpDevelop.Project.Dialogs
 {
 	/// <summary>
-	/// This class displays a new project dialog and sets up and creates a a new project,
-	/// the project types are described in an XML options file
+	/// Description of NewProjectDialog.
 	/// </summary>
-	public class NewProjectDialog : BaseSharpDevelopForm
+	public partial class NewProjectDialog : Form
 	{
 		protected List<TemplateItem> alltemplates = new List<TemplateItem>();
 		protected List<Category> categories = new List<Category>();
@@ -35,27 +34,20 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 		protected bool createNewSolution;
 		
 		public string InitialProjectLocationDirectory {
-			get {
-				return ((TextBox)ControlDictionary["locationTextBox"]).Text;
-			}
-			set {
-				((TextBox)ControlDictionary["locationTextBox"]).Text = value;
-			}
+			get { return locationTextBox.Text; }
+			set { locationTextBox.Text = value; }
 		}
 		
 		public NewProjectDialog(bool createNewSolution)
 		{
 			StandardHeader.SetHeaders();
 			this.createNewSolution = createNewSolution;
-			InitializeComponents();
+			MyInitializeComponents();
 			
 			InitializeTemplates();
 			InitializeView();
 			
-			((TreeView)ControlDictionary["categoryTreeView"]).Select();
-			((TextBox)ControlDictionary["locationTextBox"]).Text = PropertyService.Get("ICSharpCode.SharpDevelop.Gui.Dialogs.NewProjectDialog.DefaultPath", Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SharpDevelop Projects"));
-			StartPosition = FormStartPosition.CenterParent;
-			Icon = null;
+			locationTextBox.Text = PropertyService.Get("ICSharpCode.SharpDevelop.Gui.Dialogs.NewProjectDialog.DefaultPath", Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SharpDevelop Projects"));
 		}
 		
 		protected virtual void InitializeView()
@@ -97,20 +89,20 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 				}
 			}
 			
-			((ListView)ControlDictionary["templateListView"]).LargeImageList = imglist;
-			((ListView)ControlDictionary["templateListView"]).SmallImageList = smalllist;
+			templateListView.LargeImageList = imglist;
+			templateListView.SmallImageList = smalllist;
 			
 			InsertCategories(null, categories);
-			((TreeView)ControlDictionary["categoryTreeView"]).TreeViewNodeSorter = new TemplateCategoryComparer();
-			((TreeView)ControlDictionary["categoryTreeView"]).Sort();
-			SelectLastSelectedCategoryNode(((TreeView)ControlDictionary["categoryTreeView"]).Nodes, PropertyService.Get("Dialogs.NewProjectDialog.LastSelectedCategory", "C#"));
+			categoryTreeView.TreeViewNodeSorter = new TemplateCategoryComparer();
+			categoryTreeView.Sort();
+			SelectLastSelectedCategoryNode(categoryTreeView.Nodes, PropertyService.Get("Dialogs.NewProjectDialog.LastSelectedCategory", "C#"));
 		}
 		
 		void InsertCategories(TreeNode node, IEnumerable<Category> catarray)
 		{
 			foreach (Category cat in catarray) {
 				if (node == null) {
-					((TreeView)ControlDictionary["categoryTreeView"]).Nodes.Add(cat);
+					categoryTreeView.Nodes.Add(cat);
 				} else {
 					node.Nodes.Add(cat);
 				}
@@ -171,10 +163,46 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 		
 		protected void CategoryChange(object sender, TreeViewEventArgs e)
 		{
-			((ListView)ControlDictionary["templateListView"]).Items.Clear();
-			if (((TreeView)ControlDictionary["categoryTreeView"]).SelectedNode != null) {
-				foreach (TemplateItem item in ((Category)((TreeView)ControlDictionary["categoryTreeView"]).SelectedNode).Templates) {
-					((ListView)ControlDictionary["templateListView"]).Items.Add(item);
+			targetFrameworkComboBox.SelectedIndexChanged -= TargetFrameworkComboBoxSelectedIndexChanged;
+			targetFrameworkComboBox.Items.Clear();
+			if (categoryTreeView.SelectedNode != null) {
+				foreach (TargetFramework fx in TargetFramework.TargetFrameworks) {
+					if (fx.DisplayName == null)
+						continue;
+					foreach (TemplateItem item in ((Category)categoryTreeView.SelectedNode).Templates) {
+						if (item.Template.HasSupportedTargetFrameworks && item.Template.SupportsTargetFramework(fx)) {
+							targetFrameworkComboBox.Items.Add(fx);
+							break;
+						}
+					}
+				}
+			}
+			if (targetFrameworkComboBox.Items.Count > 0) {
+				targetFrameworkComboBox.Visible = true;
+				targetFrameworkComboBox.SelectedIndex = 0;
+				string lastUsedTargetFramework = PropertyService.Get("Dialogs.NewProjectDialog.TargetFramework", TargetFramework.DefaultTargetFrameworkName);
+				for (int i = 0; i < targetFrameworkComboBox.Items.Count; i++) {
+					if (((TargetFramework)targetFrameworkComboBox.Items[i]).Name == lastUsedTargetFramework) {
+						targetFrameworkComboBox.SelectedIndex = i;
+						break;
+					}
+				}
+			} else {
+				targetFrameworkComboBox.Visible = false;
+			}
+			TargetFrameworkComboBoxSelectedIndexChanged(sender, e);
+			targetFrameworkComboBox.SelectedIndexChanged += TargetFrameworkComboBoxSelectedIndexChanged;
+		}
+		
+		void TargetFrameworkComboBoxSelectedIndexChanged(object sender, EventArgs e)
+		{
+			templateListView.Items.Clear();
+			if (categoryTreeView.SelectedNode != null) {
+				TargetFramework currentFramework = targetFrameworkComboBox.SelectedItem as TargetFramework;
+				foreach (TemplateItem item in ((Category)categoryTreeView.SelectedNode).Templates) {
+					if (currentFramework == null || item.Template.SupportsTargetFramework(currentFramework)) {
+						templateListView.Items.Add(item);
+					}
 				}
 			}
 			this.SelectedIndexChange(sender, e);
@@ -190,43 +218,27 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 			e.Node.ImageIndex = 0;
 		}
 		
-		void CheckedChange(object sender, EventArgs e)
-		{
-			((TextBox)ControlDictionary["solutionNameTextBox"]).ReadOnly = !((CheckBox)ControlDictionary["createSeparateDirCheckBox"]).Checked;
-			
-			if (((TextBox)ControlDictionary["solutionNameTextBox"]).ReadOnly) { // unchecked created own directory for solution
-				NameTextChanged(null, null);    // set the value of the ((TextBox)ControlDictionary["solutionNameTextBox"]) to ((TextBox)ControlDictionary["nameTextBox"])
-			}
-		}
-		
-		void NameTextChanged(object sender, EventArgs e)
-		{
-			if (!((CheckBox)ControlDictionary["createSeparateDirCheckBox"]).Checked) {
-				((TextBox)ControlDictionary["solutionNameTextBox"]).Text = ((TextBox)ControlDictionary["nameTextBox"]).Text.Trim();
-			}
-		}
-		
-		string ProjectSolution {
+		string NewProjectDirectory {
 			get {
-				string name = String.Empty;
-				if (((CheckBox)ControlDictionary["createSeparateDirCheckBox"]).Checked) {
-					name += Path.DirectorySeparatorChar + ((TextBox)ControlDictionary["solutionNameTextBox"]).Text.Trim();
+				if (createDirectoryForSolutionCheckBox.Checked) {
+					return Path.Combine(NewSolutionDirectory, nameTextBox.Text.Trim());
+				} else {
+					return NewSolutionDirectory;
 				}
-				return ProjectLocation + name;
 			}
 		}
 		
-		string ProjectLocation {
+		string NewSolutionDirectory {
 			get {
-				string location = ((TextBox)ControlDictionary["locationTextBox"]).Text.TrimEnd('\\', '/', Path.DirectorySeparatorChar);
-				string name     = ((TextBox)ControlDictionary["nameTextBox"]).Text.Trim();
-				return location.Trim() + (((CheckBox)ControlDictionary["autoCreateSubDirCheckBox"]).Checked ? Path.DirectorySeparatorChar + name : String.Empty);
+				string location = locationTextBox.Text;
+				string name = createDirectoryForSolutionCheckBox.Checked ? solutionNameTextBox.Text : nameTextBox.Text;
+				return Path.Combine(location.Trim(), name.Trim());
 			}
 		}
 		
 		void PathChanged(object sender, EventArgs e)
 		{
-			string solutionPath = ProjectSolution;
+			string solutionPath = NewProjectDirectory;
 			try {
 				if (solutionPath.Length > 3 && Path.IsPathRooted(solutionPath)) {
 					solutionPath = solutionPath.Substring(3);
@@ -240,21 +252,21 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 						solutionPath = solutionPath.Substring(idx);
 						didCut = true;
 					}
-					solutionPath = ProjectSolution.Substring(0, 3) + (didCut ? "..." : "") + solutionPath;
+					solutionPath = NewProjectDirectory.Substring(0, 3) + (didCut ? "..." : "") + solutionPath;
 					if (solutionPath.Length > maxLength + 6) {
 						solutionPath = solutionPath.Substring(0, maxLength + 3) + "...";
 					}
 				}
 			} catch (ArgumentException) {
-				ControlDictionary["createInLabel"].Text = ResourceService.GetString("ICSharpCode.SharpDevelop.Gui.Dialogs.NewProjectDialog.IllegalProjectNameError").Replace("\n", " ").Replace("\r", "");
+				createInLabel.Text = ResourceService.GetString("ICSharpCode.SharpDevelop.Gui.Dialogs.NewProjectDialog.IllegalProjectNameError").Replace("\n", " ").Replace("\r", "");
 				return;
 			}
-			ControlDictionary["createInLabel"].Text = ResourceService.GetString("Dialog.NewProject.ProjectAtDescription")+ " " + solutionPath;
+			createInLabel.Text = ResourceService.GetString("Dialog.NewProject.ProjectAtDescription")+ " " + solutionPath;
 		}
 		
 		void IconSizeChange(object sender, EventArgs e)
 		{
-			((ListView)ControlDictionary["templateListView"]).View = ((RadioButton)ControlDictionary["smallIconsRadioButton"]).Checked ? View.List : View.LargeIcon;
+			templateListView.View = smallIconsRadioButton.Checked ? View.List : View.LargeIcon;
 		}
 		
 		public string NewProjectLocation;
@@ -263,21 +275,17 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 		void OpenEvent(object sender, EventArgs e)
 		{
 			
-			if (((TreeView)ControlDictionary["categoryTreeView"]).SelectedNode != null) {
-				PropertyService.Set("Dialogs.NewProjectDialog.LastSelectedCategory", ((TreeView)ControlDictionary["categoryTreeView"]).SelectedNode.Text);
-				PropertyService.Set("Dialogs.NewProjectDialog.LargeImages", ((RadioButton)ControlDictionary["largeIconsRadioButton"]).Checked);
+			if (categoryTreeView.SelectedNode != null) {
+				PropertyService.Set("Dialogs.NewProjectDialog.LastSelectedCategory", categoryTreeView.SelectedNode.Text);
+				PropertyService.Set("Dialogs.NewProjectDialog.LargeImages", largeIconsRadioButton.Checked);
 			}
 			
 			
-			string solution = ((TextBox)ControlDictionary["solutionNameTextBox"]).Text.Trim();
-			string name     = ((TextBox)ControlDictionary["nameTextBox"]).Text.Trim();
-			string location = ((TextBox)ControlDictionary["locationTextBox"]).Text.Trim();
-			if (!FileUtility.IsValidPath(solution)
-			    || solution.IndexOf(Path.DirectorySeparatorChar) >= 0
-			    || solution.IndexOf(Path.AltDirectorySeparatorChar) >= 0
-			    || !FileUtility.IsValidPath(name)
-			    || name.IndexOf(Path.AltDirectorySeparatorChar) >= 0
-			    || name.IndexOf(Path.DirectorySeparatorChar) >= 0
+			string solution = solutionNameTextBox.Text.Trim();
+			string name     = nameTextBox.Text.Trim();
+			string location = locationTextBox.Text.Trim();
+			if (!FileUtility.IsValidDirectoryName(solution)
+			    || !FileUtility.IsValidDirectoryName(name)
 			    || !FileUtility.IsValidPath(location))
 			{
 				MessageService.ShowError("${res:ICSharpCode.SharpDevelop.Gui.Dialogs.NewProjectDialog.IllegalProjectNameError}");
@@ -292,11 +300,10 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 				return;
 			}
 			
-			PropertyService.Set("ICSharpCode.SharpDevelop.Gui.NewProjectDialog.AutoCreateProjectSubdir", ((CheckBox)ControlDictionary["autoCreateSubDirCheckBox"]).Checked);
-			if (((ListView)ControlDictionary["templateListView"]).SelectedItems.Count == 1 && ((TextBox)ControlDictionary["locationTextBox"]).Text.Length > 0 && ((TextBox)ControlDictionary["solutionNameTextBox"]).Text.Length > 0) {
-				TemplateItem item = (TemplateItem)((ListView)ControlDictionary["templateListView"]).SelectedItems[0];
+			if (templateListView.SelectedItems.Count == 1 && locationTextBox.Text.Length > 0 && solutionNameTextBox.Text.Length > 0) {
+				TemplateItem item = (TemplateItem)templateListView.SelectedItems[0];
 				try {
-					System.IO.Directory.CreateDirectory(ProjectSolution);
+					System.IO.Directory.CreateDirectory(NewProjectDirectory);
 				} catch (Exception) {
 					
 					MessageService.ShowError("${res:ICSharpCode.SharpDevelop.Gui.Dialogs.NewProjectDialog.CantCreateDirectoryError}");
@@ -306,11 +313,20 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 				ProjectCreateInformation cinfo = new ProjectCreateInformation();
 				if (!createNewSolution) {
 					cinfo.Solution = ProjectService.OpenSolution;
+					cinfo.SolutionPath = Path.GetDirectoryName(cinfo.Solution.FileName);
+					cinfo.SolutionName = cinfo.Solution.Name;
+				} else {
+					cinfo.SolutionPath = NewSolutionDirectory;
 				}
 				
-				cinfo.SolutionPath     = ProjectLocation;
-				cinfo.ProjectBasePath = ProjectSolution;
+				if (item.Template.HasSupportedTargetFrameworks) {
+					cinfo.TargetFramework = ((TargetFramework)targetFrameworkComboBox.SelectedItem).Name;
+					PropertyService.Set("Dialogs.NewProjectDialog.TargetFramework", cinfo.TargetFramework);
+				}
 				
+				cinfo.ProjectBasePath = NewProjectDirectory;
+				
+				cinfo.SolutionName    = solution;
 				cinfo.ProjectName     = name;
 				
 				NewSolutionLocation = item.Template.CreateProject(cinfo);
@@ -318,18 +334,17 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 					return;
 				}
 				if (createNewSolution) {
-					ProjectService.LoadSolutionOrProject(NewSolutionLocation);
+					ProjectService.LoadSolution(NewSolutionLocation);
 					item.Template.RunOpenActions(cinfo);
 				}
 				
-				NewProjectLocation = cinfo.CreatedProjects.Count > 0 ? cinfo.CreatedProjects[0] : "";
+				NewProjectLocation = cinfo.createdProjects.Count > 0 ? cinfo.createdProjects[0].FileName : "";
 				DialogResult = DialogResult.OK;
 			}
 		}
 		
 		void BrowseDirectories(object sender, EventArgs e)
 		{
-			TextBox locationTextBox = ((TextBox)ControlDictionary["locationTextBox"]);
 			using (FolderBrowserDialog fd = FileService.CreateFolderBrowserDialog("${res:Dialog.NewProject.SelectDirectoryForProject}", locationTextBox.Text)) {
 				if (fd.ShowDialog() == DialogResult.OK) {
 					locationTextBox.Text = fd.SelectedPath;
@@ -340,12 +355,12 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 		// list view event handlers
 		void SelectedIndexChange(object sender, EventArgs e)
 		{
-			if (((ListView)ControlDictionary["templateListView"]).SelectedItems.Count == 1) {
-				ControlDictionary["descriptionLabel"].Text = StringParser.Parse(((TemplateItem)((ListView)ControlDictionary["templateListView"]).SelectedItems[0]).Template.Description);
-				ControlDictionary["openButton"].Enabled = true;
+			if (templateListView.SelectedItems.Count == 1) {
+				descriptionLabel.Text = StringParser.Parse(((TemplateItem)templateListView.SelectedItems[0]).Template.Description);
+				openButton.Enabled = true;
 			} else {
-				ControlDictionary["descriptionLabel"].Text = String.Empty;
-				ControlDictionary["openButton"].Enabled = false;
+				descriptionLabel.Text = String.Empty;
+				openButton.Enabled = false;
 			}
 		}
 		
@@ -353,7 +368,7 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 		{
 			foreach (TreeNode node in nodes) {
 				if (node.Name == name) {
-					((TreeView)ControlDictionary["categoryTreeView"]).SelectedNode = node;
+					categoryTreeView.SelectedNode = node;
 					node.ExpandAll();
 					return node;
 				}
@@ -365,53 +380,66 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 			return null;
 		}
 		
-		protected void InitializeComponents()
+		static bool CreateDirectoryForSolution {
+			get { return PropertyService.Get("Dialogs.NewProjectDialog.CreateDirectoryForSolution", true); }
+			set { PropertyService.Set("Dialogs.NewProjectDialog.CreateDirectoryForSolution", value); }
+		}
+		
+		protected void MyInitializeComponents()
 		{
-			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("Resources.NewProjectDialog.xfrm"));
+			InitializeComponent();
+			
+			foreach (Control ctl in Controls.GetRecursive()) {
+				ctl.Text = StringParser.Parse(ctl.Text);
+			}
+			this.Text = StringParser.Parse(this.Text);
 			
 			ImageList imglist = new ImageList();
 			imglist.ColorDepth = ColorDepth.Depth32Bit;
 			imglist.Images.Add(IconService.GetBitmap("Icons.16x16.OpenFolderBitmap"));
 			imglist.Images.Add(IconService.GetBitmap("Icons.16x16.ClosedFolderBitmap"));
-			((TreeView)ControlDictionary["categoryTreeView"]).ImageList = imglist;
+			categoryTreeView.ImageList = imglist;
 			
-			((ListView)ControlDictionary["templateListView"]).DoubleClick += new EventHandler(OpenEvent);
-			((ListView)ControlDictionary["templateListView"]).SelectedIndexChanged += new EventHandler(SelectedIndexChange);
-			((TreeView)ControlDictionary["categoryTreeView"]).AfterSelect    += new TreeViewEventHandler(CategoryChange);
-			((TreeView)ControlDictionary["categoryTreeView"]).BeforeSelect   += new TreeViewCancelEventHandler(OnBeforeExpand);
-			((TreeView)ControlDictionary["categoryTreeView"]).BeforeExpand   += new TreeViewCancelEventHandler(OnBeforeExpand);
-			((TreeView)ControlDictionary["categoryTreeView"]).BeforeCollapse += new TreeViewCancelEventHandler(OnBeforeCollapse);
-			((TextBox)ControlDictionary["solutionNameTextBox"]).TextChanged += new EventHandler(PathChanged);
-			((TextBox)ControlDictionary["nameTextBox"]).TextChanged += new EventHandler(NameTextChanged);
-			((TextBox)ControlDictionary["nameTextBox"]).TextChanged += new EventHandler(PathChanged);
-			((TextBox)ControlDictionary["locationTextBox"]).TextChanged += new EventHandler(PathChanged);
+			templateListView.SelectedIndexChanged += new EventHandler(SelectedIndexChange);
+			categoryTreeView.AfterSelect    += new TreeViewEventHandler(CategoryChange);
+			categoryTreeView.BeforeSelect   += new TreeViewCancelEventHandler(OnBeforeExpand);
+			categoryTreeView.BeforeExpand   += new TreeViewCancelEventHandler(OnBeforeExpand);
+			categoryTreeView.BeforeCollapse += new TreeViewCancelEventHandler(OnBeforeCollapse);
+			solutionNameTextBox.TextChanged += new EventHandler(PathChanged);
+			nameTextBox.TextChanged += new EventHandler(PathChanged);
+			locationTextBox.TextChanged += new EventHandler(PathChanged);
 			
+			if (createNewSolution) {
+				createDirectoryForSolutionCheckBox.Checked = CreateDirectoryForSolution;
+				createDirectoryForSolutionCheckBox.CheckedChanged += delegate {
+					CreateDirectoryForSolution = createDirectoryForSolutionCheckBox.Checked;
+				};
+			} else {
+				solutionNameTextBox.Visible = false;
+				solutionNameLabel.Visible = false;
+				createDirectoryForSolutionCheckBox.Visible = false;
+				bottomPanel.Height -= solutionNameTextBox.Height;
+				
+				createDirectoryForSolutionCheckBox.Checked = false;
+			}
 			
-			((RadioButton)ControlDictionary["largeIconsRadioButton"]).Checked = PropertyService.Get("Dialogs.NewProjectDialog.LargeImages", true);
-			((RadioButton)ControlDictionary["largeIconsRadioButton"]).CheckedChanged += new EventHandler(IconSizeChange);
-			((RadioButton)ControlDictionary["largeIconsRadioButton"]).FlatStyle = FlatStyle.Standard;
-			((RadioButton)ControlDictionary["largeIconsRadioButton"]).Image  = IconService.GetBitmap("Icons.16x16.LargeIconsIcon");
+			largeIconsRadioButton.Checked = PropertyService.Get("Dialogs.NewProjectDialog.LargeImages", true);
+			largeIconsRadioButton.CheckedChanged += new EventHandler(IconSizeChange);
+			largeIconsRadioButton.Image = IconService.GetBitmap("Icons.16x16.LargeIconsIcon");
 			
-			((RadioButton)ControlDictionary["smallIconsRadioButton"]).Checked = !PropertyService.Get("Dialogs.NewProjectDialog.LargeImages", true);
-			((RadioButton)ControlDictionary["smallIconsRadioButton"]).CheckedChanged += new EventHandler(IconSizeChange);
-			((RadioButton)ControlDictionary["smallIconsRadioButton"]).FlatStyle = FlatStyle.Standard;
-			((RadioButton)ControlDictionary["smallIconsRadioButton"]).Image  = IconService.GetBitmap("Icons.16x16.SmallIconsIcon");
+			smallIconsRadioButton.Checked = !PropertyService.Get("Dialogs.NewProjectDialog.LargeImages", true);
+			smallIconsRadioButton.CheckedChanged += new EventHandler(IconSizeChange);
+			smallIconsRadioButton.Image = IconService.GetBitmap("Icons.16x16.SmallIconsIcon");
 			
-			ControlDictionary["openButton"] .Click += new EventHandler(OpenEvent);
-			ControlDictionary["browseButton"].Click += new EventHandler(BrowseDirectories);
-			((CheckBox)ControlDictionary["createSeparateDirCheckBox"]).CheckedChanged += new EventHandler(CheckedChange);
-			((CheckBox)ControlDictionary["createSeparateDirCheckBox"]).CheckedChanged += new EventHandler(PathChanged);
-			((CheckBox)ControlDictionary["autoCreateSubDirCheckBox"]).CheckedChanged  += new EventHandler(PathChanged);
+			openButton.Click += new EventHandler(OpenEvent);
+			browseButton.Click += new EventHandler(BrowseDirectories);
+			createDirectoryForSolutionCheckBox.CheckedChanged += new EventHandler(PathChanged);
 			
 			ToolTip tooltip = new ToolTip();
-			tooltip.SetToolTip(ControlDictionary["largeIconsRadioButton"], StringParser.Parse("${res:Global.LargeIconToolTip}"));
-			tooltip.SetToolTip(ControlDictionary["smallIconsRadioButton"], StringParser.Parse("${res:Global.SmallIconToolTip}"));
+			tooltip.SetToolTip(largeIconsRadioButton, StringParser.Parse("${res:Global.LargeIconToolTip}"));
+			tooltip.SetToolTip(smallIconsRadioButton, StringParser.Parse("${res:Global.SmallIconToolTip}"));
 			tooltip.Active = true;
-			Owner         = WorkbenchSingleton.MainForm;
-			StartPosition = FormStartPosition.CenterParent;
-			Icon          = null;
 			
-			CheckedChange(this, EventArgs.Empty);
 			IconSizeChange(this, EventArgs.Empty);
 		}
 		
@@ -472,6 +500,15 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 				get {
 					return template;
 				}
+			}
+		}
+		
+		string oldProjectName;
+		
+		void NameTextBoxTextChanged(object sender, EventArgs e)
+		{
+			if (solutionNameTextBox.Text == oldProjectName || solutionNameTextBox.TextLength == 0) {
+				solutionNameTextBox.Text = oldProjectName = nameTextBox.Text;
 			}
 		}
 	}

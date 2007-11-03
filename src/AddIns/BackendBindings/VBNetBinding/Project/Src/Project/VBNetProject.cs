@@ -63,14 +63,17 @@ namespace VBNetBinding
 			: base(info.Solution)
 		{
 			InitVB();
+			
+			this.AddImport(DefaultTargetsFile, null);
+			
+			// Add import before Create call - base.Create will call AddOrRemoveExtensions, which
+			// needs to change the import when the compact framework is targeted.
 			Create(info);
 			
 			SetProperty("Debug", null, "DefineConstants", "DEBUG=1,TRACE=1",
 			            PropertyStorageLocations.ConfigurationSpecific, true);
 			SetProperty("Release", null, "DefineConstants", "TRACE=1",
 			            PropertyStorageLocations.ConfigurationSpecific, true);
-			
-			this.AddImport(DefaultTargetsFile, null);
 		}
 		
 		protected override ParseProjectContent CreateProjectContent()
@@ -119,10 +122,34 @@ namespace VBNetBinding
 			}
 		}
 		
-		public override void ConvertToMSBuild35(bool changeTargetFrameworkToNet35)
+		protected override void AddOrRemoveExtensions()
 		{
-			base.ConvertToMSBuild35(changeTargetFrameworkToNet35);
-			ConvertToMSBuild35(changeTargetFrameworkToNet35, DefaultTargetsFile, ExtendedTargetsFile);
+			// Test if SharpDevelop-Build extensions are required
+			bool needExtensions = false;
+			
+			foreach (var p in GetAllProperties("TargetFrameworkVersion")) {
+				if (p.IsImported == false) {
+					if (p.Value.StartsWith("CF") || p.Value.StartsWith("Mono")) {
+						needExtensions = true;
+					}
+				}
+			}
+			
+			foreach (Microsoft.Build.BuildEngine.Import import in MSBuildProject.Imports) {
+				if (needExtensions) {
+					if (DefaultTargetsFile.Equals(import.ProjectPath, StringComparison.InvariantCultureIgnoreCase)) {
+						//import.ProjectPath = extendedTargets;
+						MSBuildInternals.SetImportProjectPath(this, import, ExtendedTargetsFile);
+						break;
+					}
+				} else {
+					if (ExtendedTargetsFile.Equals(import.ProjectPath, StringComparison.InvariantCultureIgnoreCase)) {
+						//import.ProjectPath = defaultTargets;
+						MSBuildInternals.SetImportProjectPath(this, import, DefaultTargetsFile);
+						break;
+					}
+				}
+			}
 		}
 	}
 }

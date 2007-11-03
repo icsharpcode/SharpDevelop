@@ -10,6 +10,7 @@
 		<Subcategory>Mono</Subcategory>
 		<Icon>C#.Project.Form</Icon>
 		<Description>${res:Templates.Project.GladeSharpProject.Description}</Description>
+		<SupportedTargetFrameworks>Mono</SupportedTargetFrameworks>
 	</TemplateConfiguration>
 	
 	<!-- Actions -->
@@ -20,12 +21,7 @@
 	<Project language = "C#">
 		<PropertyGroup>
 			<OutputType>WinExe</OutputType>
-			<TargetFrameworkVersion>Mono v1.1</TargetFrameworkVersion>
 		</PropertyGroup>
-		
-		<Imports clear="True">
-			<Import Project="$(SharpDevelopBinPath)\SharpDevelop.Build.CSharp.targets" />
-		</Imports>
 		
 		<ProjectItems>
 			<Reference Include="atk-sharp, Version=1.0.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />

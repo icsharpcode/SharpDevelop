@@ -68,9 +68,9 @@ namespace ICSharpCode.SharpDevelop.Project
 					if (string.IsNullOrEmpty(project.DefaultToolsVersion)
 					    || project.DefaultToolsVersion == "2.0")
 					{
-						return 9;
+						return Solution.SolutionVersionVS05;
 					} else {
-						return 10;
+						return Solution.SolutionVersionVS08;
 					}
 				}
 			}

@@ -10,6 +10,7 @@
 		<Subcategory>${res:Templates.File.Categories.WindowsApplications}</Subcategory>
 		<Icon>C#.Project.FullProject</Icon>
 		<Description>${res:Templates.Project.Direct3DApplication.Description}</Description>
+		<SupportedTargetFrameworks>v2.0</SupportedTargetFrameworks>
 	</TemplateConfiguration>
 	
 	<!-- Actions -->

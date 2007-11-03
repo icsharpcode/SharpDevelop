@@ -404,6 +404,10 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			BookmarkManager bm = textEditorControl.Document.BookmarkManager;
 			bm.RemoveMarks(new Predicate<Bookmark>(IsClassMemberBookmark));
 			if (parseInfo == null) return;
+			Debug.Assert(textEditorControl.Document.TotalNumberOfLines >= 1);
+			if (textEditorControl.Document.TotalNumberOfLines < 1) {
+				return;
+			}
 			foreach (IClass c in parseInfo.MostRecentCompilationUnit.Classes) {
 				AddClassMemberBookmarks(bm, c);
 			}

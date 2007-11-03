@@ -595,7 +595,20 @@ namespace ICSharpCode.SharpDevelop.Project
 				ProjectAdded(null, e);
 			}
 		}
+		internal static void OnProjectCreated(ProjectEventArgs e)
+		{
+			if (ProjectCreated != null) {
+				ProjectCreated(null, e);
+			}
+		}
 		
+		/// <summary>
+		/// Is raised when a new project is created.
+		/// </summary>
+		public static event ProjectEventHandler ProjectCreated;
+		/// <summary>
+		/// Is raised when a new or existing project is added to the solution.
+		/// </summary>
 		public static event ProjectEventHandler ProjectAdded;
 		public static event SolutionFolderEventHandler SolutionFolderRemoved;
 		

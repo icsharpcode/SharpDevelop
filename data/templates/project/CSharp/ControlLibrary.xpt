@@ -10,6 +10,7 @@
 		<Subcategory>${res:Templates.File.Categories.WindowsApplications}</Subcategory>
 		<Icon>C#.Project.ControlLibrary</Icon>
 		<Description>${res:Templates.Project.UserControlLibrary.Description}</Description>
+		<SupportedTargetFrameworks>v2.0</SupportedTargetFrameworks>
 	</TemplateConfiguration>
 	
 	<!-- Actions -->
@@ -58,7 +59,7 @@ namespace ${StandardNamespace}
 		}
 	}
 }]]></File>
-<File name="UserControl1.Designer.cs" DependentUpon="UserControl1.cs" language="C#"><![CDATA[${StandardHeader.C#}
+			<File name="UserControl1.Designer.cs" DependentUpon="UserControl1.cs" language="C#"><![CDATA[${StandardHeader.C#}
 namespace ${StandardNamespace}
 {
 	partial class UserControl1
@@ -98,7 +99,7 @@ namespace ${StandardNamespace}
 	}
 }
 ]]></File>
-		<File name="AssemblyInfo.cs" src="DefaultAssemblyInfo.cs"/>
+			<File name="AssemblyInfo.cs" src="DefaultAssemblyInfo.cs"/>
 		</Files>
 	</Project>
 </Template>

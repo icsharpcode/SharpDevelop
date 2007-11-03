@@ -98,12 +98,12 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			projectCreateInformation.Solution = newSolution;
 			
 			string newSolutionName = StringParser.Parse(name, new string[,] {
-			                                           	{"ProjectName", projectCreateInformation.ProjectName}
+			                                           	{"ProjectName", projectCreateInformation.SolutionName}
 			                                           });
 			
 			newSolution.Name = newSolutionName;
 			
-			string oldCombinePath = projectCreateInformation.SolutionPath;
+			string oldSolutionPath = projectCreateInformation.SolutionPath;
 			string oldProjectPath = projectCreateInformation.ProjectBasePath;
 			if (relativeDirectory != null && relativeDirectory.Length > 0 && relativeDirectory != ".") {
 				projectCreateInformation.SolutionPath     = Path.Combine(projectCreateInformation.SolutionPath, relativeDirectory);
@@ -116,7 +116,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				}
 			}
 			
-			projectCreateInformation.SolutionPath = oldCombinePath;
+			projectCreateInformation.SolutionPath = oldSolutionPath;
 			projectCreateInformation.ProjectBasePath = oldProjectPath;
 			
 			if (!mainFolder.AddContents(newSolution, projectCreateInformation, defaultLanguage, newSolution)) {

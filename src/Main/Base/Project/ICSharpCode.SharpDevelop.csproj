@@ -67,6 +67,10 @@
     <Compile Include="Src\Gui\Dialogs\AsynchronousWaitDialog.Designer.cs">
       <DependentUpon>AsynchronousWaitDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="Src\Gui\Dialogs\NewProjectDialog.cs" />
+    <Compile Include="Src\Gui\Dialogs\NewProjectDialog.Designer.cs">
+      <DependentUpon>NewProjectDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="Src\Gui\Dialogs\OpenWithDialog.cs" />
     <Compile Include="Src\Gui\Dialogs\OpenWithDialog.Designer.cs">
       <DependentUpon>OpenWithDialog.cs</DependentUpon>
@@ -343,9 +347,6 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Src\Gui\Pads\ProjectBrowser\ProjectBrowserPad.cs" />
-    <Compile Include="Src\Gui\Dialogs\NewProjectDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="Src\Project\Items\ProjectReferenceProjectItem.cs" />
     <Compile Include="Src\Gui\Pads\ProjectBrowser\TreeNodes\DirectoryNode.cs" />
     <Compile Include="Src\Gui\Pads\ProjectBrowser\TreeNodes\FileNode.cs" />
@@ -433,7 +434,6 @@
     <EmbeddedResource Include="Resources\InputBox.xfrm" />
     <EmbeddedResource Include="Resources\LoadSaveOptionPanel.xfrm" />
     <EmbeddedResource Include="Resources\NewFileDialog.xfrm" />
-    <EmbeddedResource Include="Resources\NewProjectDialog.xfrm" />
     <EmbeddedResource Include="Resources\OutputWindowOptionsPanel.xfrm" />
     <EmbeddedResource Include="Resources\SelectStylePanel.xfrm" />
     <EmbeddedResource Include="Resources\TabbedOptionsDialog.xfrm" />
@@ -695,6 +695,9 @@
     <Compile Include="Src\Internal\Templates\TemplateLoadException.cs" />
     <Compile Include="Src\Util\UnclosableStream.cs" />
     <EmbeddedResource Include="Resources\DefaultManifest.manifest" />
+    <EmbeddedResource Include="Src\Gui\Dialogs\NewProjectDialog.resx">
+      <DependentUpon>NewProjectDialog.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ConvertToMSBuild35Dialog.resx">
       <DependentUpon>ConvertToMSBuild35Dialog.cs</DependentUpon>
     </EmbeddedResource>

@@ -23,8 +23,7 @@ namespace CSharpBinding.OptionPanels
 			InitIntermediateOutputPath();
 			InitOutputPath();
 			InitXmlDoc();
-			InitTargetFramework(CSharpProject.DefaultTargetsFile,
-			                    CSharpProject.ExtendedTargetsFile);
+			InitTargetFramework();
 			
 			ConfigurationGuiBinding b;
 			

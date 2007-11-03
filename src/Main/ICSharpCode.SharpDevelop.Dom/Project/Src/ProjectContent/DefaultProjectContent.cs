@@ -333,7 +333,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 					addClass.IsPartial = true;
 					
 					// possibly replace existing class (look for CU with same filename)
-					lock (compound) {
+					lock (compound.parts) {
 						for (int i = 0; i < compound.parts.Count; i++) {
 							if (IsEqualFileName(compound.parts[i].CompilationUnit.FileName, addClass.CompilationUnit.FileName)) {
 								compound.parts[i] = addClass;

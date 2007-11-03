@@ -5,10 +5,10 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Dom;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-
 using ICSharpCode.NRefactory.Ast;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
@@ -47,6 +47,15 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 				ctor.Body.AddChild(new ExpressionStatement(expr));
 			}
 			nodes.Add(ctor);
+		}
+		
+		protected override void InitContent()
+		{
+			foreach (IField field in currentClass.Fields) {
+				if (!field.IsStatic) {
+					Content.Add(new FieldWrapper(field));
+				}
+			}
 		}
 	}
 }

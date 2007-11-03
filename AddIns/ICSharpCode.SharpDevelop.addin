@@ -2185,4 +2185,9 @@
 			</Condition>
 		</ComplexCondition>
 	</Path>
+	
+	<Path name = "/SharpDevelop/BackendBindings/TemplateCommands">
+		<Class id="AddDotNet35ReferencesIfTargetFrameworkIs35"
+		       class="ICSharpCode.SharpDevelop.Project.Commands.AddDotNet35ReferencesIfTargetFrameworkIs35Command"/>
+	</Path>
 </AddIn>

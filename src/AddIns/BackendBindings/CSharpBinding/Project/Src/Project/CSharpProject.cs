@@ -63,8 +63,12 @@ namespace CSharpBinding
 		
 		protected override void Create(ProjectCreateInformation information)
 		{
-			base.Create(information);
 			this.AddImport(DefaultTargetsFile, null);
+			
+			// Add import before base.Create call - base.Create will call AddOrRemoveExtensions, which
+			// needs to change the import when the compact framework is targeted.
+			base.Create(information);
+			
 			SetProperty("Debug", null, "CheckForOverflowUnderflow", "True",
 			            PropertyStorageLocations.ConfigurationSpecific, true);
 			SetProperty("Release", null, "CheckForOverflowUnderflow", "False",
@@ -97,10 +101,34 @@ namespace CSharpBinding
 			}
 		}
 		
-		public override void ConvertToMSBuild35(bool changeTargetFrameworkToNet35)
+		protected override void AddOrRemoveExtensions()
 		{
-			base.ConvertToMSBuild35(changeTargetFrameworkToNet35);
-			ConvertToMSBuild35(changeTargetFrameworkToNet35, DefaultTargetsFile, ExtendedTargetsFile);
+			// Test if SharpDevelop-Build extensions are required
+			bool needExtensions = false;
+			
+			foreach (var p in GetAllProperties("TargetFrameworkVersion")) {
+				if (p.IsImported == false) {
+					if (p.Value.StartsWith("CF") || p.Value.StartsWith("Mono")) {
+						needExtensions = true;
+					}
+				}
+			}
+			
+			foreach (Microsoft.Build.BuildEngine.Import import in MSBuildProject.Imports) {
+				if (needExtensions) {
+					if (DefaultTargetsFile.Equals(import.ProjectPath, StringComparison.InvariantCultureIgnoreCase)) {
+						//import.ProjectPath = extendedTargets;
+						MSBuildInternals.SetImportProjectPath(this, import, ExtendedTargetsFile);
+						break;
+					}
+				} else {
+					if (ExtendedTargetsFile.Equals(import.ProjectPath, StringComparison.InvariantCultureIgnoreCase)) {
+						//import.ProjectPath = defaultTargets;
+						MSBuildInternals.SetImportProjectPath(this, import, DefaultTargetsFile);
+						break;
+					}
+				}
+			}
 		}
 	}
 }

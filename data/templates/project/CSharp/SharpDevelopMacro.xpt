@@ -10,6 +10,7 @@
 		<Subcategory>SharpDevelop</Subcategory>
 		<Icon>C#.Project.ControlLibrary</Icon>
 		<Description>${res:Templates.Project.SharpDevelopMacro.Description}</Description>
+		<SupportedTargetFrameworks>v2.0</SupportedTargetFrameworks>
 	</TemplateConfiguration>
 	
 	<!-- Actions -->

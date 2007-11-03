@@ -28,6 +28,9 @@ namespace ICSharpCode.SharpDevelop.Project
 	
 	public class Solution : SolutionFolder, IDisposable, IMSBuildEngineProvider, IBuildable
 	{
+		public const int SolutionVersionVS05 = 9;
+		public const int SolutionVersionVS08 = 10;
+		
 		/// <summary>contains <guid>, (IProject/ISolutionFolder) pairs.</summary>
 		Dictionary<string, ISolutionFolder> guidDictionary = new Dictionary<string, ISolutionFolder>();
 		

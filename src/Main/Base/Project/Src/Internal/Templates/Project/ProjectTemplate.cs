@@ -10,6 +10,7 @@ using System.Collections;
 using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.ComponentModel;
 using System.IO;
 using System.Windows.Forms;
@@ -21,20 +22,66 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Internal.Templates
 {
-	public class OpenFileAction
+	sealed class TargetFramework
 	{
-		string fileName;
+		public readonly static TargetFramework Net20 = new TargetFramework("v2.0", ".NET Framework 2.0");
+		public readonly static TargetFramework Net30 = new TargetFramework("v3.0", ".NET Framework 3.0") { BasedOn = Net20 };
+		public readonly static TargetFramework Net35 = new TargetFramework("v3.5", ".NET Framework 3.5") { BasedOn = Net30 };
+		public readonly static TargetFramework CF = new TargetFramework("CF", null);
+		public readonly static TargetFramework CF20 = new TargetFramework("CF 2.0", "Compact Framework 2.0") { BasedOn = CF };
+		public readonly static TargetFramework Mono = new TargetFramework("Mono", null);
+		public readonly static TargetFramework Mono10 = new TargetFramework("Mono v1.1", "Mono 1.1") { BasedOn = Mono };
+		public readonly static TargetFramework Mono20 = new TargetFramework("Mono v2.0", "Mono 2.0") { BasedOn = Mono10 };
 		
-		public OpenFileAction(string fileName)
+		public readonly static TargetFramework[] TargetFrameworks = {
+			Net35, Net30, Net20,
+			CF, CF20,
+			Mono, Mono20, Mono10
+		};
+		
+		public const string DefaultTargetFrameworkName = "v3.5";
+		
+		public static TargetFramework GetByName(string name)
 		{
-			this.fileName = fileName;
+			foreach (TargetFramework tf in TargetFrameworks) {
+				if (tf.Name == name)
+					return tf;
+			}
+			throw new ArgumentException("No target framework '" + name + "' exists");
 		}
 		
-		public void Run(ProjectCreateInformation projectCreateInformation)
+		string name, displayName;
+		
+		public string Name {
+			get { return name; }
+		}
+		
+		public string DisplayName {
+			get { return displayName; }
+		}
+		
+		public TargetFramework BasedOn;
+		
+		public bool IsBasedOn(TargetFramework potentialBase)
 		{
-			string parsedFileName = StringParser.Parse(fileName, new string[,] { {"ProjectName", projectCreateInformation.ProjectName} });
-			string path = FileUtility.Combine(projectCreateInformation.ProjectBasePath, parsedFileName);
-			FileService.OpenFile(path);
+			TargetFramework tmp = this;
+			while (tmp != null) {
+				if (tmp == potentialBase)
+					return true;
+				tmp = tmp.BasedOn;
+			}
+			return false;
+		}
+		
+		public TargetFramework(string name, string displayName)
+		{
+			this.name = name;
+			this.displayName = displayName;
+		}
+		
+		public override string ToString()
+		{
+			return DisplayName;
 		}
 	}
 	
@@ -50,6 +97,8 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		/// </summary>
 		public static ReadOnlyCollection<ProjectTemplate> ProjectTemplates {
 			get {
+				WorkbenchSingleton.AssertMainThread();
+				
 				#if DEBUG
 				// Always reload project templates if debugging.
 				// TODO: Make this a configurable option.
@@ -63,16 +112,29 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			}
 		}
 		
-		string    originator    = null;
-		string    created       = null;
-		string    lastmodified  = null;
-		string    name          = null;
-		string    category      = null;
-		string    languagename  = null;
-		string    description   = null;
-		string    icon          = null;
-		string    wizardpath    = null;
-		string    subcategory   = null;
+		string originator;
+		string created;
+		string lastmodified;
+		string name;
+		string category;
+		string languagename;
+		string description;
+		string icon;
+		string wizardpath;
+		string subcategory;
+		TargetFramework[] supportedTargetFrameworks;
+		
+		internal bool HasSupportedTargetFrameworks {
+			get { return supportedTargetFrameworks != null; }
+		}
+		
+		internal bool SupportsTargetFramework(TargetFramework framework)
+		{
+			if (supportedTargetFrameworks == null)
+				return true;
+			// return true if framework is based on any of the supported target frameworks
+			return supportedTargetFrameworks.Any(framework.IsBasedOn);
+		}
 		
 		int IComparable.CompareTo(object other)
 		{
@@ -83,9 +145,9 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			return name.CompareTo(pt.name);
 		}
 		
-		bool   newProjectDialogVisible = true;
+		bool newProjectDialogVisible = true;
 		
-		ArrayList actions      = new ArrayList();
+		List<Action<ProjectCreateInformation>> actions = new List<Action<ProjectCreateInformation>>();
 		
 		SolutionDescriptor solutionDescriptor = null;
 		ProjectDescriptor projectDescriptor = null;
@@ -219,6 +281,12 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				icon = config["Icon"].InnerText;
 			}
 			
+			if (config["SupportedTargetFrameworks"] != null) {
+				supportedTargetFrameworks =
+					config["SupportedTargetFrameworks"].InnerText.Split(';')
+					.Select<string,TargetFramework>(TargetFramework.GetByName).ToArray();
+			}
+			
 			string hintPath = Path.GetDirectoryName(xmlFileName);
 			if (templateElement["Solution"] != null) {
 				solutionDescriptor = SolutionDescriptor.CreateSolutionDescriptor(templateElement["Solution"], hintPath);
@@ -240,8 +308,42 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			// Read Actions;
 			if (templateElement["Actions"] != null) {
 				foreach (XmlElement el in templateElement["Actions"]) {
-					actions.Add(new OpenFileAction(el.Attributes["filename"].InnerText));
+					ReadAction(el);
 				}
+			}
+		}
+		
+		void ReadAction(XmlElement el)
+		{
+			switch (el.Name) {
+				case "Open":
+					if (el.HasAttribute("filename")) {
+						string fileName = el.GetAttribute("filename");
+						actions.Add(
+							projectCreateInformation => {
+								string parsedFileName = StringParser.Parse(fileName, new string[,] { {"ProjectName", projectCreateInformation.ProjectName} });
+								string path = FileUtility.Combine(projectCreateInformation.ProjectBasePath, parsedFileName);
+								FileService.OpenFile(path);
+							});
+					} else {
+						WarnAttributeMissing(el, "filename");
+					}
+					break;
+				case "RunCommand":
+					if (el.HasAttribute("path")) {
+						ICommand command = (ICommand)AddInTree.BuildItem(el.GetAttribute("path"), null);
+						actions.Add(
+							projectCreateInformation => {
+								command.Owner = projectCreateInformation;
+								command.Run();
+							});
+					} else {
+						WarnAttributeMissing(el, "path");
+					}
+					break;
+				default:
+					WarnObsoleteNode(el, "Unknown action element is interpreted as <Open>");
+					goto case "Open";
 			}
 		}
 		
@@ -284,12 +386,22 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			if (solutionDescriptor != null) {
 				return solutionDescriptor.CreateSolution(projectCreateInformation, this.languagename);
 			} else if (projectDescriptor != null) {
-				projectCreateInformation.Solution = new Solution();
+				bool createNewSolution = projectCreateInformation.Solution == null;
+				if (createNewSolution) {
+					projectCreateInformation.Solution = new Solution();
+					projectCreateInformation.Solution.Name = projectCreateInformation.SolutionName;
+					projectCreateInformation.Solution.FileName = Path.Combine(projectCreateInformation.SolutionPath, projectCreateInformation.SolutionName + ".sln");
+				}
 				IProject project = projectDescriptor.CreateProject(projectCreateInformation, this.languagename);
-				if (project != null)
-					return project.FileName;
-				else
+				if (project != null) {
+					if (createNewSolution) {
+						projectCreateInformation.Solution.AddFolder(project);
+						projectCreateInformation.Solution.Save();
+					}
+					return projectCreateInformation.Solution.FileName;
+				} else {
 					return null;
+				}
 			} else {
 				return null;
 			}
@@ -297,8 +409,8 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		
 		public void RunOpenActions(ProjectCreateInformation projectCreateInformation)
 		{
-			foreach (OpenFileAction action in actions) {
-				action.Run(projectCreateInformation);
+			foreach (Action<ProjectCreateInformation> action in actions) {
+				action(projectCreateInformation);
 			}
 		}
 		

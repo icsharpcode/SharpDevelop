@@ -1,7 +1,5 @@
 <?xml version="1.0"?>
-<Template originator   = "Daniel Grunwald"
-          created      = "26/04/2005"
-          lastModified = "26/04/2005">
+<Template originator = "Daniel Grunwald" created = "26/04/2005">
 	
 	<!-- Template Header -->
 	<TemplateConfiguration>
@@ -10,6 +8,7 @@
 		<Subcategory>SharpDevelop</Subcategory>
 		<Icon>C#.Project.ControlLibrary</Icon>
 		<Description>${res:Templates.Project.SharpDevelopAddin.Description}</Description>
+		<SupportedTargetFrameworks>v2.0</SupportedTargetFrameworks>
 	</TemplateConfiguration>
 	
 	<!-- Actions -->

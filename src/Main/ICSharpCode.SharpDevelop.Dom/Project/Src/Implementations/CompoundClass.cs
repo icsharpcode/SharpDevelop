@@ -14,6 +14,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 {
 	/// <summary>
 	/// A class made up of multiple partial classes.
+	/// 
+	/// The class is thread-safe, accessing the Methods/Properties etc. collections
+	/// returns a copy of that collection. However, each access may return a different
+	/// collection when the parser thread updates a parts belonging to this class.
+	/// Therefore, code like "compoundClass.Methods[compoundClass.Methods.Count - 1]" is
+	/// not thread-safe! If you need to access one of the collections multiple times,
+	/// call the property getter only once and store the result in a local variable.
+	/// "var methods = compoundClass.Methods; return methods[methods.Count - 1];" is thread-safe.
 	/// </summary>
 	public class CompoundClass : DefaultClass
 	{
@@ -21,7 +29,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// The parts this class is based on.
 		/// Requires manual locking!
 		/// </summary>
-		internal List<IClass> parts = new List<IClass>();
+		internal readonly List<IClass> parts = new List<IClass>();
 		
 		/// <summary>
 		/// Gets the parts this class is based on. This method is thread-safe and
@@ -29,7 +37,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// </summary>
 		public IList<IClass> GetParts()
 		{
-			lock (this) {
+			lock (parts) {
 				return parts.ToArray();
 			}
 		}
@@ -95,7 +103,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// </summary>
 		public override IList<ITypeParameter> TypeParameters {
 			get {
-				lock (this) {
+				lock (parts) {
 					// Locking for the time of getting the reference to the sub-list is sufficient:
 					// Classes used for parts never change, instead the whole part is replaced with
 					// a new IClass instance.
@@ -117,7 +125,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public override List<IClass> InnerClasses {
 			get {
-				lock (this) {
+				lock (parts) {
 					List<IClass> l = new List<IClass>();
 					foreach (IClass part in parts) {
 						l.AddRange(part.InnerClasses);
@@ -129,7 +137,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public override List<IField> Fields {
 			get {
-				lock (this) {
+				lock (parts) {
 					List<IField> l = new List<IField>();
 					foreach (IClass part in parts) {
 						l.AddRange(part.Fields);
@@ -141,7 +149,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public override List<IProperty> Properties {
 			get {
-				lock (this) {
+				lock (parts) {
 					List<IProperty> l = new List<IProperty>();
 					foreach (IClass part in parts) {
 						l.AddRange(part.Properties);
@@ -153,7 +161,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public override List<IMethod> Methods {
 			get {
-				lock (this) {
+				lock (parts) {
 					List<IMethod> l = new List<IMethod>();
 					foreach (IClass part in parts) {
 						l.AddRange(part.Methods);
@@ -165,7 +173,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public override List<IEvent> Events {
 			get {
-				lock (this) {
+				lock (parts) {
 					List<IEvent> l = new List<IEvent>();
 					foreach (IClass part in parts) {
 						l.AddRange(part.Events);

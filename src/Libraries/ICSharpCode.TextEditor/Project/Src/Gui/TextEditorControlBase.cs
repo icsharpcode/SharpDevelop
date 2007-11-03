@@ -139,7 +139,6 @@ namespace ICSharpCode.TextEditor
 		/// If set to true the contents can't be altered.
 		/// </value>
 		[Browsable(false)]
-		[ReadOnly(true)]
 		public bool IsReadOnly {
 			get {
 				return Document.ReadOnly;
@@ -701,6 +700,9 @@ namespace ICSharpCode.TextEditor
 			foreach (LineSegment line in Document.LineSegmentCollection) {
 				streamWriter.Write(Document.GetText(line.Offset, line.Length));
 				if (line.DelimiterLength > 0) {
+					char charAfterLine = Document.GetCharAt(line.Offset + line.Length);
+					if (charAfterLine != '\n' && charAfterLine != '\r')
+						throw new InvalidOperationException("The document cannot be saved because it is corrupted.");
 					// only save line terminator if the line has one
 					streamWriter.Write(document.TextEditorProperties.LineTerminator);
 				}

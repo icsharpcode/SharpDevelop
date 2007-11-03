@@ -6,9 +6,10 @@
 // </file>
 
 using System;
-
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
+
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Internal.Templates
@@ -21,63 +22,19 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 	/// </summary>
 	public class ProjectCreateInformation
 	{
-		string projectName;
-		string solutionPath;
-		string projectBasePath;
-		string outputProjectFileName;
-		string rootNamespace;
-		Solution solution;
+		internal List<IProject> createdProjects = new List<IProject>();
 		
-		internal List<string> CreatedProjects = new List<string>();
-		
-		public string OutputProjectFileName {
-			get {
-				return outputProjectFileName;
-			}
-			set {
-				outputProjectFileName = value;
-			}
+		public ReadOnlyCollection<IProject> CreatedProjects {
+			get { return createdProjects.AsReadOnly(); }
 		}
 		
-		public string ProjectName {
-			get {
-				return projectName;
-			}
-			set {
-				projectName = value;
-			}
-		}
-		
-		public string RootNamespace {
-			get {
-				return rootNamespace;
-			}
-			set {
-				rootNamespace = value;
-			}
-		}
-		
-		public string SolutionPath {
-			get {
-				return solutionPath;
-			}
-			set {
-				solutionPath = value;
-			}
-		}
-		
-		public string ProjectBasePath {
-			get {
-				return projectBasePath;
-			}
-			set {
-				projectBasePath = value;
-			}
-		}
-		
-		public Solution Solution {
-			get { return solution; }
-			set { solution = value; }
-		}
+		public string OutputProjectFileName { get; set; }
+		public string ProjectName { get; set; }
+		public string SolutionName { get; set; }
+		public string RootNamespace { get; set; }
+		public string SolutionPath { get; set; }
+		public string ProjectBasePath { get; set; }
+		public string TargetFramework { get; set; }
+		public Solution Solution { get; set; }
 	}
 }

@@ -5,14 +5,15 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Internal.Templates;
 using System;
-using System.Linq;
-using System.IO;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Debugging;
-using System.Diagnostics;
-using System.Collections.Generic;
 using MSBuild = Microsoft.Build.BuildEngine;
 
 namespace ICSharpCode.SharpDevelop.Project
@@ -78,6 +79,11 @@ namespace ICSharpCode.SharpDevelop.Project
 			this.RootNamespace = information.RootNamespace;
 			this.AssemblyName = information.ProjectName;
 			
+			if (!string.IsNullOrEmpty(information.TargetFramework)) {
+				this.TargetFrameworkVersion = information.TargetFramework;
+				AddOrRemoveExtensions();
+			}
+			
 			SetProperty("Debug", null, "OutputPath", @"bin\Debug\",
 			            PropertyStorageLocations.ConfigurationSpecific, true);
 			SetProperty("Release", null, "OutputPath", @"bin\Release\",
@@ -139,6 +145,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public abstract override ICSharpCode.SharpDevelop.Dom.LanguageProperties LanguageProperties {
 			get;
+		}
+		
+		public string TargetFrameworkVersion {
+			get { return GetEvaluatedProperty("TargetFrameworkVersion") ?? "v2.0"; }
+			set { SetProperty("TargetFrameworkVersion", value); }
 		}
 		
 		public override string AssemblyName {
@@ -344,21 +355,21 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		protected void ConvertToMSBuild35(bool changeTargetFrameworkToNet35, string DefaultTargetsFile, string ExtendedTargetsFile)
+		public override void ConvertToMSBuild35(bool changeTargetFrameworkToNet35)
 		{
 			lock (SyncRoot) {
+				base.ConvertToMSBuild35(changeTargetFrameworkToNet35);
+				
 				var winFxImport = MSBuildProject.Imports.Cast<Microsoft.Build.BuildEngine.Import>()
 					.Where(import => !import.IsImported)
 					.FirstOrDefault(import => string.Equals(import.ProjectPath, "$(MSBuildBinPath)\\Microsoft.WinFX.targets", StringComparison.OrdinalIgnoreCase));
 				if (winFxImport != null) {
 					MSBuildProject.Imports.RemoveImport(winFxImport);
 				}
-				bool needsExtensions = false;
 				if (changeTargetFrameworkToNet35) {
 					SetProperty(null, null, "TargetFrameworkVersion", "v3.5", PropertyStorageLocations.Base, true);
-					ReferenceProjectItem rpi = new ReferenceProjectItem(this, "System.Core");
-					rpi.SetMetadata("RequiredTargetFramework", "3.5");
-					ProjectService.AddProjectItem(this, rpi);
+					
+					AddDotnet35References();
 				} else {
 					foreach (string config in ConfigurationNames) {
 						foreach (string platform in PlatformNames) {
@@ -377,18 +388,52 @@ namespace ICSharpCode.SharpDevelop.Project
 							}
 							if (targetFrameworkVersion == "v2.0" && winFxImport != null)
 								targetFrameworkVersion = "v3.0";
-							if (targetFrameworkVersion.StartsWith("CF") || targetFrameworkVersion.StartsWith("Mono"))
-								needsExtensions = true;
 							SetProperty(config, platform, "TargetFrameworkVersion", targetFrameworkVersion, loc, true);
 						}
 					}
 				}
-				if (!needsExtensions) {
-					foreach (Microsoft.Build.BuildEngine.Import import in MSBuildProject.Imports) {
-						if (ExtendedTargetsFile.Equals(import.ProjectPath, StringComparison.InvariantCultureIgnoreCase)) {
-							MSBuildInternals.SetImportProjectPath(this, import, DefaultTargetsFile);
-							break;
-						}
+			}
+			AddOrRemoveExtensions();
+		}
+		
+		protected internal virtual void AddDotnet35References()
+		{
+			ReferenceProjectItem rpi = new ReferenceProjectItem(this, "System.Core");
+			rpi.SetMetadata("RequiredTargetFramework", "3.5");
+			ProjectService.AddProjectItem(this, rpi);
+			
+			if (GetItemsOfType(ItemType.Reference).Cast<ReferenceProjectItem>()
+			    .Any(r => r.Include == "System.Data"))
+			{
+				rpi = new ReferenceProjectItem(this, "System.Data.DataSetExtensions");
+				rpi.SetMetadata("RequiredTargetFramework", "3.5");
+				ProjectService.AddProjectItem(this, rpi);
+			}
+			if (GetItemsOfType(ItemType.Reference).Cast<ReferenceProjectItem>()
+			    .Any(r => r.Include == "System.Xml"))
+			{
+				rpi = new ReferenceProjectItem(this, "System.Xml.Linq");
+				rpi.SetMetadata("RequiredTargetFramework", "3.5");
+				ProjectService.AddProjectItem(this, rpi);
+			}
+		}
+		
+		protected internal virtual void AddOrRemoveExtensions()
+		{
+		}
+	}
+	
+	namespace Commands
+	{
+		public class AddDotNet35ReferencesIfTargetFrameworkIs35Command : AbstractCommand
+		{
+			public override void Run()
+			{
+				ProjectCreateInformation pci = (ProjectCreateInformation)Owner;
+				foreach (IProject p in pci.CreatedProjects) {
+					CompilableProject cp = p as CompilableProject;
+					if (cp != null && cp.TargetFrameworkVersion == "v3.5") {
+						cp.AddDotnet35References();
 					}
 				}
 			}

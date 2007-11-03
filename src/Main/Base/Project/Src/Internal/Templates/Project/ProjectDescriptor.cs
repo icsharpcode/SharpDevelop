@@ -381,7 +381,8 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 					project.Save();
 				}
 				
-				projectCreateInformation.CreatedProjects.Add(project.FileName);
+				projectCreateInformation.createdProjects.Add(project);
+				ProjectService.OnProjectCreated(new ProjectEventArgs(project));
 				return project;
 			}
 			finally

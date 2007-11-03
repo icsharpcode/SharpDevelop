@@ -50,8 +50,7 @@ namespace VBNetBinding.OptionPanels
 			InitIntermediateOutputPath();
 			InitOutputPath();
 			InitXmlDoc();
-			InitTargetFramework(VBNetProject.DefaultTargetsFile,
-			                    VBNetProject.ExtendedTargetsFile);
+			InitTargetFramework();
 
 			InitDebugInfo();
 			InitAdvanced();

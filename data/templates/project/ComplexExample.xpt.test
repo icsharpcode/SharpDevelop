@@ -19,7 +19,6 @@
 	</Actions>
 	
 	<!-- Template Content -->
-	<!-- for compatibility reasons, the root node is allowed to be called either Solution or Combine -->
 	<Solution name = "${ProjectName}" directory = ".">
 		
 		<!-- the startup project can be specified like this: -->

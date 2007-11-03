@@ -10,11 +10,13 @@
 		<Subcategory>${res:Templates.File.Categories.WindowsApplications}</Subcategory>
 		<Icon>C#.Project.ServiceProject</Icon>
 		<Description>${res:Templates.Project.WindowsService.Description}</Description>
+		<SupportedTargetFrameworks>v2.0</SupportedTargetFrameworks>
 	</TemplateConfiguration>
 	
 	<!-- Actions -->
 	<Actions>
 		<Open filename = "${ProjectName}.cs"/>
+		<RunCommand path = "/SharpDevelop/BackendBindings/TemplateCommands/AddDotNet35ReferencesIfTargetFrameworkIs35"/>
 	</Actions>
 
 	<!-- Template Content -->

@@ -7,6 +7,7 @@
 
 using System;
 using System.CodeDom.Compiler;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Text;
@@ -38,48 +39,51 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			return file.Content;
 		}
 		
-		// TODO: AppDomain loading !!!5
-		byte[] GetBytes(string fileName)
+		static Dictionary<string, Assembly> cachedAssemblies = new Dictionary<string, Assembly>();
+		
+		static Assembly CompileAssembly(string fileContent)
 		{
-			using (FileStream fs = new FileStream(fileName, FileMode.Open)) {
-				long size = fs.Length;
-				byte[] outArray = new byte[size];
-				fs.Read(outArray, 0, (int)size);
-				fs.Close();
-				return outArray;
+			if (cachedAssemblies.ContainsKey(fileContent))
+				return cachedAssemblies[fileContent];
+			
+			using (TempFileCollection tf = new TempFileCollection()) {
+				string path = Path.Combine(tf.BasePath, tf.TempDir);
+				Directory.CreateDirectory(path);
+				string generatedScript = Path.Combine(path, "InternalGeneratedScript.cs");
+				string generatedDLL    = Path.Combine(path, "A.DLL");
+				tf.AddFile(generatedScript, false);
+				tf.AddFile(generatedDLL, false);
+				
+				StreamWriter sw = new StreamWriter(generatedScript);
+				sw.Write(fileContent);
+				sw.Close();
+				
+				string output = String.Empty;
+				string error  = String.Empty;
+				
+				Executor.ExecWaitWithCapture(GetCompilerName() + " /target:library \"/out:" + generatedDLL + "\" \"" + generatedScript +"\"", tf, ref output, ref error);
+				
+				if (!File.Exists(generatedDLL)) {
+					
+					StreamReader sr = File.OpenText(output);
+					string errorMessage = sr.ReadToEnd();
+					sr.Close();
+					MessageService.ShowMessage(errorMessage);
+					return null;
+				}
+				
+				Assembly asm = Assembly.Load(File.ReadAllBytes(generatedDLL));
+				cachedAssemblies[fileContent] = asm;
+				return asm;
 			}
 		}
 		
 		string CompileAndGetOutput(string fileContent)
 		{
-			TempFileCollection  tf = new TempFileCollection ();
-			
-			string path = Path.Combine(tf.BasePath, tf.TempDir);
-			Directory.CreateDirectory(path);
-			string generatedScript = Path.Combine(path, "InternalGeneratedScript.cs");
-			string generatedDLL    = Path.Combine(path, "A.DLL");
-			tf.AddFile(generatedScript, false);
-			tf.AddFile(generatedDLL, false);
-			
-			StreamWriter sw = new StreamWriter(generatedScript);
-			sw.Write(fileContent);
-			sw.Close();
-			
-			string output = String.Empty;
-			string error  = String.Empty;
-			
-			Executor.ExecWaitWithCapture(GetCompilerName() + " /target:library \"/out:" + generatedDLL + "\" \"" + generatedScript +"\"", tf, ref output, ref error);
-			
-			if (!File.Exists(generatedDLL)) {
-				
-				StreamReader sr = File.OpenText(output);
-				string errorMessage = sr.ReadToEnd();
-				sr.Close();
-				MessageService.ShowMessage(errorMessage);
+			Assembly asm = CompileAssembly(fileContent);
+			if (asm == null) {
 				return ">>>>ERROR IN CODE GENERATION GENERATED SCRIPT WAS:\n" + fileContent + "\n>>>>END";
 			}
-			
-			Assembly asm = Assembly.Load(GetBytes(generatedDLL));
 			
 			object templateInstance = asm.CreateInstance("Template");
 			
@@ -90,11 +94,10 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			}
 			MethodInfo methodInfo = templateInstance.GetType().GetMethod("GenerateOutput");
 			string ret = methodInfo.Invoke(templateInstance, null).ToString();
-			tf.Delete();
 			return ret;
 		}
 		
-		string GetCompilerName()
+		static string GetCompilerName()
 		{
 			string runtimeDirectory = System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory();
 			return '"' + Path.Combine(runtimeDirectory, "csc.exe") + '"';

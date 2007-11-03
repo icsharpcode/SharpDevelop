@@ -7,9 +7,10 @@
 
 using System;
 using System.Collections;
-using System.Collections.ObjectModel;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
+using System.Windows.Forms;
 
 namespace ICSharpCode.SharpDevelop
 {
@@ -38,6 +39,16 @@ namespace ICSharpCode.SharpDevelop
 		public static string Join(this IEnumerable<string> input, string separator)
 		{
 			return string.Join(separator, input.ToArray());
+		}
+		
+		public static IEnumerable<Control> GetRecursive(this Control.ControlCollection collection)
+		{
+			foreach (Control ctl in collection) {
+				yield return ctl;
+				foreach (Control subCtl in ctl.Controls.GetRecursive()) {
+					yield return subCtl;
+				}
+			}
 		}
 	}
 }

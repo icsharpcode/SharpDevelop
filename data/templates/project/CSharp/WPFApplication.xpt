@@ -1,7 +1,5 @@
 <?xml version="1.0"?>
-<Template originator   = "Mathias Simmack"
-          created      = "26/10/2005"
-          lastModified = "02/06/2006">
+<Template originator = "Mathias Simmack" created = "26/10/2005">
 	
 	<!-- Template Header -->
 	<TemplateConfiguration>
@@ -10,10 +8,13 @@
 		<Subcategory>.NET 3.0</Subcategory>
 		<Icon>C#.Project.Form</Icon>
 		<Description>${res:Templates.Project.WinFXApplication.Description}</Description>
+		<SupportedTargetFrameworks>v3.0</SupportedTargetFrameworks>
 	</TemplateConfiguration>
 	
 	<!-- Actions -->
 	<Actions>
+		<Open filename = "Window1.xaml"/>
+		<RunCommand path = "/SharpDevelop/BackendBindings/TemplateCommands/AddDotNet35ReferencesIfTargetFrameworkIs35"/>
 	</Actions>
 	
 	<Project language = "C#">
@@ -21,16 +22,15 @@
 			<Reference Include="System" />
 			<Reference Include="System.Data" />
 			<Reference Include="System.Xml" />
-			<Reference Include="WindowsBase" />
-			<Reference Include="PresentationCore" />
-			<Reference Include="PresentationFramework" />
-			<Reference Include="UIAutomationProvider" />
-			<Reference Include="UIAutomationTypes" />
-			<Reference Include="ReachFramework" />
-			<Reference Include="System.Printing" />
-			<Reference Include="System.ServiceModel" />
-			<Reference Include="System.Runtime.Serialization" />
-			<Reference Include="System.IdentityModel" />
+			<Reference Include="PresentationCore">
+				<RequiredTargetFramework>3.0</RequiredTargetFramework>
+			</Reference>
+			<Reference Include="PresentationFramework">
+				<RequiredTargetFramework>3.0</RequiredTargetFramework>
+			</Reference>
+			<Reference Include="WindowsBase">
+				<RequiredTargetFramework>3.0</RequiredTargetFramework>
+			</Reference>
 		</ProjectItems>
 		
 		<PropertyGroup>
@@ -47,7 +47,7 @@
          
     </Application.Resources>
 </Application>]]></File>
-				<File name="App.xaml.cs" SubType="Code" DependentUpon="App.xaml"><![CDATA[using System;
+			<File name="App.xaml.cs" SubType="Code" DependentUpon="App.xaml"><![CDATA[using System;
 using System.Windows;
 using System.Data;
 using System.Xml;
@@ -66,7 +66,7 @@ namespace ${StandardNamespace}
 		}
 	}
 }]]></File>
-				<File name="Window1.xaml" buildAction="Page" language="XML"><![CDATA[<Window x:Class="${StandardNamespace}.Window1"
+			<File name="Window1.xaml" buildAction="Page" language="XML"><![CDATA[<Window x:Class="${StandardNamespace}.Window1"
 	xmlns="http://schemas.microsoft.com/netfx/2007/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	Title="${StandardNamespace}" Height="300" Width="300"
@@ -75,7 +75,7 @@ namespace ${StandardNamespace}
 		
 	</Grid>
 </Window>]]></File>
-				<File name="Window1.xaml.cs" SubType="Code" DependentUpon="Window1.xaml"><![CDATA[using System;
+			<File name="Window1.xaml.cs" SubType="Code" DependentUpon="Window1.xaml"><![CDATA[using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows;
@@ -100,7 +100,7 @@ namespace ${StandardNamespace}
 		}
 	}
 }]]></File>
-				<File name="AssemblyInfo.cs" src="WPFAssemblyInfo.cs" />
+			<File name="AssemblyInfo.cs" src="WPFAssemblyInfo.cs" />
 		</Files>
 	</Project>
 </Template>

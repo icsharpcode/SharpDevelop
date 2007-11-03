@@ -13,6 +13,7 @@
 		<Category>C#</Category>
 		<Icon>C#.Project.Library</Icon>
 		<Description>${res:Templates.Project.SharedAddin.Description}</Description>
+		<SupportedTargetFrameworks>v2.0</SupportedTargetFrameworks>
 	</TemplateConfiguration>
 	
 	<!-- Actions -->

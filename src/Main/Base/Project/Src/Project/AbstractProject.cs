@@ -443,7 +443,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		[Browsable(false)]
 		public virtual int MinimumSolutionVersion {
-			get { return 9; }
+			get { return Solution.SolutionVersionVS05; }
 		}
 		
 		public virtual void ResolveAssemblyReferences()

@@ -9,6 +9,7 @@
 		<Category>C#</Category>
 		<Icon>C#.Project.EmptyProject</Icon>
 		<Description>${res:Templates.Project.EmptyProject.Description}</Description>
+		<SupportedTargetFrameworks>v2.0;Mono;CF</SupportedTargetFrameworks>
 	</TemplateConfiguration>
 	
 	<Project language = "C#">
