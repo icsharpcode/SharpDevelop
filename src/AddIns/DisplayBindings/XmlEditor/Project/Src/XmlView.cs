@@ -762,7 +762,9 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		void DocumentChanged(object sender, DocumentEventArgs e)
 		{
-			this.PrimaryFile.MakeDirty();
+			if (PrimaryFile != null) {
+				PrimaryFile.MakeDirty();
+			}
 		}
 		
 		/// <summary>

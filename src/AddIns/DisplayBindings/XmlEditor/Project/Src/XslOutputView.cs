@@ -18,7 +18,8 @@ namespace ICSharpCode.XmlEditor
 	{
 		public XslOutputView()
 		{
-			this.TitleName = StringParser.Parse("${res:ICSharpCode.XmlEditor.XslOutputView.Title}");
+			TitleName = StringParser.Parse("${res:ICSharpCode.XmlEditor.XslOutputView.Title}");
+			TextEditorControl.FileName = String.Empty;
 		}
 		
 		public static XslOutputView Instance {
