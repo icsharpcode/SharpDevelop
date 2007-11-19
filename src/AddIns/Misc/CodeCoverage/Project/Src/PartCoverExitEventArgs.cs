@@ -5,26 +5,27 @@
 //     <version>$Revision$</version>
 // </file>
 
+
 using System;
 
 namespace ICSharpCode.CodeCoverage
 {
 	/// <summary>
 	/// Represents the method that will handle the 
-	/// <see cref="NCoverRunner.NCoverExit"/> event.
+	/// <see cref="PartCoverRunner.Exited"/> event.
 	/// </summary>
-	public delegate void NCoverExitEventHandler(object sender, NCoverExitEventArgs e);
+	public delegate void PartCoverExitEventHandler(object sender, PartCoverExitEventArgs e);
 	
 	/// <summary>
-	/// The <see cref="NCoverRunner.NCoverExit"/> event arguments.
+	/// The <see cref="PartCoverRunner.Exited"/> event arguments.
 	/// </summary>
-	public class NCoverExitEventArgs : EventArgs
+	public class PartCoverExitEventArgs : EventArgs
 	{
 		string output;
 		int exitCode;
 		string error;
 		
-		public NCoverExitEventArgs(string output, string error, int exitCode)
+		public PartCoverExitEventArgs(string output, string error, int exitCode)
 		{
 			this.output = output;
 			this.error = error;
@@ -32,27 +33,24 @@ namespace ICSharpCode.CodeCoverage
 		}
 		
 		/// <summary>
-		/// Gets the command line output from NAnt.
+		/// Gets the command line output from PartCover.
 		/// </summary>
 		public string Output {
-			get {
-				return output;
-			}
+			get { return output; }
 		}
-		
+	
+		/// <summary>
+		/// Gets the standard error output from PartCover.
+		/// </summary>
 		public string Error {
-			get {
-				return error;
-			}
+			get { return error; }
 		}
 		
 		/// <summary>
 		/// Gets the exit code.
 		/// </summary>
 		public int ExitCode {
-			get {
-				return exitCode;
-			}
+			get { return exitCode; }
 		}
 	}
 }

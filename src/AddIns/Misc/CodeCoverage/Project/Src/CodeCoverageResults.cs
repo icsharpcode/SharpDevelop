@@ -12,11 +12,16 @@ using System.Xml;
 
 namespace ICSharpCode.CodeCoverage
 {
+	/// <summary>
+	/// Reads the code coverage results from the output xml file.
+	/// </summary>
 	public class CodeCoverageResults
 	{
 		List<CodeCoverageModule> modules = new List<CodeCoverageModule>();
+		Dictionary<string, string> fileNames = new Dictionary<string, string>();
 		
-		public CodeCoverageResults(string fileName) : this(new StreamReader(fileName, true))
+		public CodeCoverageResults(string fileName)
+			: this(new StreamReader(fileName, true))
 		{
 		}
 		
@@ -25,7 +30,8 @@ namespace ICSharpCode.CodeCoverage
 			ReadResults(reader);
 		}
 		
-		public CodeCoverageResults(TextReader reader) : this(new XmlTextReader(reader))
+		public CodeCoverageResults(TextReader reader)
+			: this(new XmlTextReader(reader))
 		{
 		}
 		
@@ -39,59 +45,89 @@ namespace ICSharpCode.CodeCoverage
 		}
 		
 		public List<CodeCoverageModule> Modules {
-			get {
-				return modules;
-			}
+			get { return modules; }
 		}
 		
 		void ReadResults(XmlReader reader)
-		{
+		{			
 			CodeCoverageModule currentModule = null;
 			CodeCoverageMethod currentMethod = null;
+			string currentClassName = String.Empty;
 			
 			while (reader.Read()) {
 				switch (reader.NodeType) {
 					case XmlNodeType.Element:
-						if (reader.Name == "module") {
+						if (reader.Name == "type") {
 							currentModule = AddModule(reader);
+							currentClassName = reader.GetAttribute("name");
 						} else if (reader.Name == "method" && currentModule != null) {
-							currentMethod = AddMethod(currentModule, reader);
-						} else if (reader.Name == "seqpnt" && currentMethod != null) {
+							currentMethod = AddMethod(currentModule, currentClassName, reader);
+						} else if (reader.Name == "pt" && currentMethod != null) {
 							AddSequencePoint(currentMethod, reader);
+						} else if (reader.Name == "file") {
+							AddFileName(reader);
+						}
+						break;
+					case XmlNodeType.EndElement:
+						if (currentMethod != null && reader.Name == "method" && currentMethod.SequencePoints.Count == 0) {
+							// Remove method that has no sequence points.
+							currentModule.Methods.Remove(currentMethod);
 						}
 						break;
 				}
 			}
 			reader.Close();
 			
-			RemoveExcludedModules();
-			RemoveExcludedMethods();
+			RemoveModulesWithNoMethods();
+			
+//			RemoveExcludedModules();
+//			RemoveExcludedMethods();
 		}
 		
+		/// <summary>
+		/// Add module if it does not already exist.
+		/// </summary>
 		CodeCoverageModule AddModule(XmlReader reader)
 		{
-			CodeCoverageModule module = new CodeCoverageModule(reader.GetAttribute("assembly"));
+			string assembly = reader.GetAttribute("asm");
+			foreach (CodeCoverageModule existingModule in modules) {
+				if (existingModule.Name == assembly) {
+					return existingModule;
+				}
+			}
+			
+			CodeCoverageModule module = new CodeCoverageModule(assembly);
 			modules.Add(module);
 			return module;
 		}
 		
-		CodeCoverageMethod AddMethod(CodeCoverageModule module, XmlReader reader)
+		CodeCoverageMethod AddMethod(CodeCoverageModule module, string className, XmlReader reader)
 		{
-			CodeCoverageMethod method = new CodeCoverageMethod(reader.GetAttribute("name"), reader.GetAttribute("class"));
+			CodeCoverageMethod method = new CodeCoverageMethod(reader.GetAttribute("name"), className);
 			module.Methods.Add(method);
 			return method;
 		}
 		
+		/// <summary>
+		/// Sequence points that do not have a file id are not
+		/// added to the code coverage method. Typically these are
+		/// for types that are not part of the project but types from
+		/// the .NET framework. 
+		/// </summary>
 		void AddSequencePoint(CodeCoverageMethod method, XmlReader reader)
 		{
-			CodeCoverageSequencePoint sequencePoint = new CodeCoverageSequencePoint(reader.GetAttribute("document"), 
-				GetInteger(reader.GetAttribute("visitcount")),
-				GetInteger(reader.GetAttribute("line")),
-				GetInteger(reader.GetAttribute("column")),
-				GetInteger(reader.GetAttribute("endline")),
-				GetInteger(reader.GetAttribute("endcolumn")),
-				IsExcluded(reader));
-			method.SequencePoints.Add(sequencePoint);
+			string fileId = reader.GetAttribute("fid");
+			if (fileId != null) {
+				string fileName = GetFileName(fileId);
+				CodeCoverageSequencePoint sequencePoint = new CodeCoverageSequencePoint(fileName,
+					GetInteger(reader.GetAttribute("visit")),
+					GetInteger(reader.GetAttribute("sl")),
+					GetInteger(reader.GetAttribute("sc")),
+					GetInteger(reader.GetAttribute("el")),
+					GetInteger(reader.GetAttribute("ec")),
+					false);
+				method.SequencePoints.Add(sequencePoint);
+			}
 		}
 		
 		int GetInteger(string s)
@@ -103,47 +139,83 @@ namespace ICSharpCode.CodeCoverage
 			return 0;
 		}
 		
-		void RemoveExcludedModules()
+//		void RemoveExcludedModules()
+//		{
+//			List<CodeCoverageModule> excludedModules = new List<CodeCoverageModule>();
+//			
+//			foreach (CodeCoverageModule module in modules) {
+//				if (module.IsExcluded) {
+//					excludedModules.Add(module);
+//				}
+//			}
+//			
+//			foreach (CodeCoverageModule excludedModule in excludedModules) {
+//				modules.Remove(excludedModule);
+//			}
+//		}
+//		
+//		void RemoveExcludedMethods()
+//		{
+//			List<CodeCoverageMethod> excludedMethods = new List<CodeCoverageMethod>();
+//			
+//			foreach (CodeCoverageModule module in modules) {
+//				foreach (CodeCoverageMethod method in module.Methods) {
+//					if (method.IsExcluded) {
+//						excludedMethods.Add(method);
+//					}
+//				}
+//				foreach (CodeCoverageMethod excludedMethod in excludedMethods) {
+//					module.Methods.Remove(excludedMethod);
+//				}
+//			}
+//		}
+//		
+//		bool IsExcluded(XmlReader reader)
+//		{
+//			string excludedValue = reader.GetAttribute("excluded");
+//			if (excludedValue != null) {
+//				bool excluded;
+//				if (Boolean.TryParse(excludedValue, out excluded)) {
+//					return excluded;
+//				}
+//			}
+//			return false;
+//		}
+		
+		/// <summary>
+		/// Returns a filename based on the file id. The filenames are stored in the
+		/// PartCover results xml at the start of the file each with its own
+		/// id.
+		/// </summary>
+		string GetFileName(string id)
 		{
-			List<CodeCoverageModule> excludedModules = new List<CodeCoverageModule>();
-			
-			foreach (CodeCoverageModule module in modules) {
-				if (module.IsExcluded) {
-					excludedModules.Add(module);
-				}
+			if (fileNames.ContainsKey(id)) {
+				return fileNames[id];
 			}
-			
-			foreach (CodeCoverageModule excludedModule in excludedModules) {
-				modules.Remove(excludedModule);
-			}
+			return String.Empty;
 		}
 		
-		void RemoveExcludedMethods()
+		/// <summary>
+		/// Saves the filename and its associated id for reference.
+		/// </summary>
+		void AddFileName(XmlReader reader)
 		{
-			List<CodeCoverageMethod> excludedMethods = new List<CodeCoverageMethod>();
-			
-			foreach (CodeCoverageModule module in modules) {
-				foreach (CodeCoverageMethod method in module.Methods) {
-					if (method.IsExcluded) {
-						excludedMethods.Add(method);
-					}
-				}
-				foreach (CodeCoverageMethod excludedMethod in excludedMethods) {
-					module.Methods.Remove(excludedMethod);
-				}
-			}
+			string id = reader.GetAttribute("id");
+			string fileName = reader.GetAttribute("url");
+			fileNames.Add(id, fileName);
 		}
 		
-		bool IsExcluded(XmlReader reader)
+		/// <summary>
+		/// Removes any modules that do not contain any methods.
+		/// </summary>
+		void RemoveModulesWithNoMethods()
 		{
-			string excludedValue = reader.GetAttribute("excluded");
-			if (excludedValue != null) {
-				bool excluded;
-				if (Boolean.TryParse(excludedValue, out excluded)) {
-					return excluded;
+			for (int i = modules.Count - 1; i >= 0; --i) {
+				CodeCoverageModule module = modules[i];
+				if (module.Methods.Count == 0) {
+					modules.Remove(module);
 				}
 			}
-			return false;
 		}
 	}
 }

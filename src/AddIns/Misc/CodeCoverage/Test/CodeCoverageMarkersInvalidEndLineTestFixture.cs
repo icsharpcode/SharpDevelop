@@ -34,14 +34,16 @@ namespace ICSharpCode.CodeCoverage.Tests
 			MarkerStrategy markerStrategy = new MarkerStrategy(document);
 			
 			string xml = "<coverage>\r\n" +
-				"\t<module name=\"C:\\Projects\\XmlEditor\\Test\\XmlEditor.Tests.dll\" assembly=\"XmlEditor.Tests\">\r\n" +
-				"\t\t<method name=\"GetSchema\" class=\"XmlEditor.Tests.Schema.SingleElementSchemaTestFixture\">\r\n" +
-				"\t\t\t<seqpnt visitcount=\"1\" line=\"3\" column=\"3\" endline=\"4\" endcolumn=\"4\" document=\"c:\\Projects\\XmlEditor\\Test\\Schema\\SingleElementSchemaTestFixture.cs\" />\r\n" +
-				"\t\t\t<seqpnt visitcount=\"1\" line=\"1\" column=\"4\" endline=\"5\" endcolumn=\"20\" document=\"c:\\Projects\\XmlEditor\\Test\\Schema\\SingleElementSchemaTestFixture.cs\" />\r\n" +
-				"\t\t\t<seqpnt visitcount=\"1\" line=\"1\" column=\"4\" endline=\"-1\" endcolumn=\"20\" document=\"c:\\Projects\\XmlEditor\\Test\\Schema\\SingleElementSchemaTestFixture.cs\" />\r\n" +
-				"\t\t\t<seqpnt visitcount=\"1\" line=\"1\" column=\"4\" endline=\"0\" endcolumn=\"20\" document=\"c:\\Projects\\XmlEditor\\Test\\Schema\\SingleElementSchemaTestFixture.cs\" />\r\n" +
+				"\t<type name=\"XmlEditor.Tests.Schema.SingleElementSchemaTestFixture\" asm=\"XmlEditor.Tests\">\r\n" +
+				"\t\t<method name=\"GetSchema\">\r\n" +
+				"\t\t\t<code>\r\n" +
+				"\t\t\t<pt visit=\"1\" fid=\"1\" sl=\"3\" sc=\"3\" el=\"4\" ec=\"4\" />\r\n" +
+				"\t\t\t<pt visit=\"1\" fid=\"1\" sl=\"1\" sc=\"4\" el=\"5\" ec=\"20\" />\r\n" +
+				"\t\t\t<pt visit=\"1\" fid=\"1\" sl=\"1\" sc=\"4\" el=\"-1\" ec=\"20\" />\r\n" +
+				"\t\t\t<pt visit=\"1\" fid=\"1\" sl=\"1\" sc=\"4\" el=\"0\" ec=\"20\" />\r\n" +
+				"\t\t\t</code>\r\n" +
 				"\t\t</method>\r\n" +
-				"\t</module>\r\n" +
+				"\t</type>\r\n" +
 				"</coverage>";
 			
 			CodeCoverageResults results = new CodeCoverageResults(new StringReader(xml));

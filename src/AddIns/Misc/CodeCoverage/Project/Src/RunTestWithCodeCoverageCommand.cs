@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections.Specialized;
 using System.IO;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
@@ -24,20 +25,19 @@ namespace ICSharpCode.CodeCoverage
 	public class RunTestWithCodeCoverageCommand : AbstractRunTestCommand
 	{
 		static MessageViewCategory category;
-		NCoverRunner runner;
-		string ncoverFileName;
+		PartCoverRunner runner;
 		
 		public RunTestWithCodeCoverageCommand()
 		{
-			runner = new NCoverRunner();
-			runner.NCoverExited += new NCoverExitEventHandler(NCoverExited);
-			runner.OutputLineReceived += new LineReceivedEventHandler(OutputLineReceived);
+			runner = new PartCoverRunner();
+			runner.Exited += PartCoverExited;
+			runner.OutputLineReceived += OutputLineReceived;
 		}
 		
 		protected override void RunTests(UnitTestApplicationStartHelper helper)
 		{
-			SetNCoverRunnerProperties(ncoverFileName, helper);
-			RunNCover();
+			SetPartCoverRunnerProperties(helper);
+			RunPartCover();
 		}
 		
 		protected override void OnStop()
@@ -51,16 +51,8 @@ namespace ICSharpCode.CodeCoverage
 		/// </summary>
 		protected override void OnBeforeRunTests()
 		{
-			ncoverFileName = GetNCoverFileName();
-			if (ncoverFileName != null) {
-				WorkbenchSingleton.SafeThreadAsyncCall(Category.ClearText);
-				WorkbenchSingleton.SafeThreadAsyncCall(CodeCoverageService.ClearResults);
-			} else {
-				using (CodeCoverageRunnerNotFoundForm form = new CodeCoverageRunnerNotFoundForm()) {
-					form.ShowDialog();
-				}
-				Stop();
-			}
+			WorkbenchSingleton.SafeThreadAsyncCall(Category.ClearText);
+			WorkbenchSingleton.SafeThreadAsyncCall(CodeCoverageService.ClearResults);
 		}
 		
 		/// <summary>
@@ -87,37 +79,41 @@ namespace ICSharpCode.CodeCoverage
 				return category;
 			}
 		}
-		
-		bool FileNameExists(string fileName)
+				
+		void SetPartCoverRunnerProperties(UnitTestApplicationStartHelper helper)
 		{
-			return fileName.Length > 0 && File.Exists(fileName);
-		}
-		
-		void SetNCoverRunnerProperties(string ncoverFileName, UnitTestApplicationStartHelper helper)
-		{
-			string ncoverOutputDirectory = GetNCoverOutputDirectory(helper.Project);
-			NCoverSettings settings = GetNCoverSettings(helper.Project);
-					
-			runner.NCoverFileName = ncoverFileName;
-			runner.ProfiledApplicationCommand = UnitTestApplicationStartHelper.UnitTestConsoleApplication;
-			runner.ProfiledApplicationCommandLineArguments = helper.GetArguments();
-			runner.WorkingDirectory = Path.GetDirectoryName(helper.Assemblies[0]);
-			runner.CoverageResultsFileName = Path.Combine(ncoverOutputDirectory, "Coverage.Xml");
-			runner.LogFileName = Path.Combine(ncoverOutputDirectory, "Coverage.log");
-			runner.AssemblyList = settings.AssemblyList;
-			runner.ExcludedAttributesList = settings.ExcludedAttributesList;
-		}
-		
-		void RunNCover()
-		{
-			// Remove existing coverage results file.
-			if (File.Exists(runner.CoverageResultsFileName)) {
-				File.Delete(runner.CoverageResultsFileName);
+			string partCoverOutputDirectory = GetPartCoverOutputDirectory(helper.Project);
+			PartCoverSettings settings = GetPartCoverSettings(helper.Project);
+			
+			// By default get the code coverage for everything if
+			// no include or exclude regular expressions have been
+			// set for this project. Note that the CodeCoverageResults
+			// will ignore any type that has no source code available
+			// for it even though the type may be in the Part Cover 
+			// results file.
+			if (settings.Include.Count + settings.Exclude.Count == 0) {
+				settings.Include.Add("[*]*");
 			}
 			
-			// Create NCover output directory.
-			if (!Directory.Exists(Path.GetDirectoryName(runner.CoverageResultsFileName))) {
-				Directory.CreateDirectory(Path.GetDirectoryName(runner.CoverageResultsFileName));
+			runner.PartCoverFileName = GetPartCoverFileName();
+			runner.Target = UnitTestApplicationStartHelper.UnitTestConsoleApplication;
+			runner.TargetArguments = helper.GetArguments();
+			runner.TargetWorkingDirectory = Path.GetDirectoryName(helper.Assemblies[0]);
+			runner.Output = Path.Combine(partCoverOutputDirectory, "Coverage.Xml");
+			AddStringsToCollection(settings.Include, runner.Include);
+			AddStringsToCollection(settings.Exclude, runner.Exclude);
+		}
+		
+		void RunPartCover()
+		{
+			// Remove existing coverage results file.
+			if (File.Exists(runner.Output)) {
+				File.Delete(runner.Output);
+			}
+			
+			// Create PartCover output directory.
+			if (!Directory.Exists(Path.GetDirectoryName(runner.Output))) {
+				Directory.CreateDirectory(Path.GetDirectoryName(runner.Output));
 			}
 			
 			Category.AppendLine(StringParser.Parse("${res:ICSharpCode.CodeCoverage.RunningCodeCoverage}"));
@@ -127,15 +123,13 @@ namespace ICSharpCode.CodeCoverage
 		}
 		
 		/// <summary>
-		/// Displays the output from NCover after it has exited.
+		/// Displays the output from PartCover after it has exited.
 		/// </summary>
 		/// <param name="sender">The event source.</param>
-		/// <param name="e">The NCover exit event arguments.</param>
-		void NCoverExited(object sender, NCoverExitEventArgs e)
+		/// <param name="e">The PartCover exit event arguments.</param>
+		void PartCoverExited(object sender, PartCoverExitEventArgs e)
 		{
-			System.Diagnostics.Debug.Assert(e.Error.Length == 0);
-			
-			DisplayCoverageResults(runner.CoverageResultsFileName);
+			DisplayCoverageResults(runner.Output);
 			WorkbenchSingleton.SafeThreadAsyncCall(TestsFinished);
 		}
 		
@@ -157,44 +151,37 @@ namespace ICSharpCode.CodeCoverage
 		}
 		
 		/// <summary>
-		/// Returns the full path to the NCover console application if it
+		/// Returns the full path to the PartCover console application if it
 		/// exists.
 		/// </summary>
-		string GetNCoverFileName()
+		/// <remarks>
+		/// Use Path.GetFullPath otherwise we end up with a filename path like:
+		/// C:\Program Files\SharpDevelop\bin\..\bin\Tools\PartCover\PartCover.exe
+		/// </remarks>
+		string GetPartCoverFileName()
 		{
-			string ncoverFileName = CodeCoverageOptions.NCoverFileName;
-			if (FileNameExists(ncoverFileName)) {
-				return ncoverFileName;
-			} else {
-				ncoverFileName = GetDefaultNCoverFileName();
-				if (FileNameExists(ncoverFileName)) {
-					return ncoverFileName;
-				}
-			}
-			return null;
+			return Path.GetFullPath(Path.Combine(FileUtility.ApplicationRootPath, @"bin\Tools\PartCover\PartCover.exe"));
 		}
 		
-		/// <summary>
-		/// Returns the default full path to the NCover console application.
-		/// </summary>
-		string GetDefaultNCoverFileName()
+		string GetPartCoverOutputDirectory(IProject project)
 		{
-			string programFilesPath = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
-			return Path.Combine(programFilesPath, @"NCover\NCover.Console.exe");
+			return Path.Combine(project.Directory, "PartCover");
 		}
 		
-		string GetNCoverOutputDirectory(IProject project)
+		PartCoverSettings GetPartCoverSettings(IProject project)
 		{
-			return Path.Combine(project.Directory, "NCover");
-		}
-		
-		NCoverSettings GetNCoverSettings(IProject project)
-		{
-			string fileName = NCoverSettings.GetFileName(project);
+			string fileName = PartCoverSettings.GetFileName(project);
 			if (File.Exists(fileName)) {
-				return new NCoverSettings(fileName);
+				return new PartCoverSettings(fileName);
 			}
-			return new NCoverSettings();
+			return new PartCoverSettings();
+		}
+		
+		void AddStringsToCollection(StringCollection source, StringCollection target)
+		{
+			foreach (string item in source) {
+				target.Add(item);
+			}
 		}
 	}
 }

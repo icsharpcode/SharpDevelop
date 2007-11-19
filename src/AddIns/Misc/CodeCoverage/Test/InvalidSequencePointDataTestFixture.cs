@@ -24,19 +24,26 @@ namespace ICSharpCode.CodeCoverage.Tests
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			string xml = "<coverage>\r\n" +
-				"\t<module name=\"C:\\Projects\\Foo.Tests\\bin\\Debug\\Foo.Tests.dll\" assembly=\"Foo.Tests\">\r\n" +
-				"\t\t<method name=\"InvalidVisitCount\" class=\"Foo.Tests.FooTestFixture\">\r\n" +
-				"\t\t\t<seqpnt visitcount=\"a\" line=\"10\" column=\"3\" endline=\"20\" endcolumn=\"4\" document=\"c:\\Projects\\Foo\\FooTestFixture.cs\" />\r\n" +
+			string xml = "<PartCoverReport>\r\n" +
+				"\t<file id=\"1\" url=\"c:\\Projects\\Foo\\SimpleTestFixture.cs\"/>\r\n" +
+				"\t<type name=\"Foo.Tests.FooTestFixture\" asm=\"Foo.Tests\">\r\n" +
+				"\t\t<method name=\"InvalidVisitCount\">\r\n" +
+				"\t\t\t<code>\r\n" +
+				"\t\t\t<pt visit=\"a\" fid=\"1\" sl=\"10\" sc=\"3\" el=\"20\" ec=\"4\"/>\r\n" +
+				"\t\t\t</code>\r\n" +
 				"\t\t</method>\r\n" +
-				"\t\t<method name=\"InvalidLine\" class=\"Foo.Tests.FooTestFixture\">\r\n" +
-				"\t\t\t<seqpnt visitcount=\"2\" line=\"b\" column=\"3\" endline=\"20\" endcolumn=\"4\" document=\"c:\\Projects\\Foo\\SimpleTestFixture.cs\" />\r\n" +
+				"\t\t<method name=\"InvalidLine\">\r\n" +
+				"\t\t\t<code>\r\n" +
+				"\t\t\t<pt visit=\"2\" fid=\"1\" sl=\"b\" sc=\"3\" el=\"20\" ec=\"4\"/>\r\n" +
+				"\t\t\t</code>\r\n" +
 				"\t\t</method>\r\n" +
-				"\t\t<method name=\"InvalidColumn\" class=\"Foo.Tests.FooTestFixture\">\r\n" +
-				"\t\t\t<seqpnt visitcount=\"1\" line=\"20\" column=\"c\" endline=\"d\" endcolumn=\"e\" document=\"c:\\Projects\\Foo\\SimpleTestFixture.cs\" />\r\n" +
+				"\t\t<method name=\"InvalidColumn\">\r\n" +
+				"\t\t\t<code>\r\n" +
+				"\t\t\t<pt visit=\"1\" fid=\"1\" sl=\"20\" sc=\"c\" el=\"d\" ec=\"e\"/>\r\n" +
+				"\t\t\t</code>\r\n" +
 				"\t\t</method>\r\n" +
-				"\t</module>\r\n" +
-				"</coverage>";
+				"\t</type>\r\n" +
+				"</PartCoverReport>";
 			
 			results = new CodeCoverageResults(new StringReader(xml));
 			invalidVisitCountSequencePoint = results.Modules[0].Methods[0].SequencePoints[0];

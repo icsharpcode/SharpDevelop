@@ -1,7 +1,7 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 9.00
-# Visual Studio 2005
-# SharpDevelop 2.1.0.2312
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+# SharpDevelop 3.0.0.2743
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCoverage", "Project\CodeCoverage.csproj", "{08CE9972-283B-44F4-82FA-966F7DFA6B7A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCoverage.Tests", "Test\CodeCoverage.Tests.csproj", "{A5C0E8F8-9D04-46ED-91D6-1DEF1575313B}"

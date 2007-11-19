@@ -523,6 +523,75 @@
 										</Component>
 									</Directory>
 								</Directory>
+								<Directory Id="PartCover" Name="PrtCover" LongName="PartCover">
+									<Component Guid="CD9AB556-51BD-4DB2-9AC5-C047022991DD" Id="InteropPartCoverDll" DiskId="1">
+										<File Source="..\..\bin\Tools\PartCover\Interop.PartCover.dll" Name="IOPPCVR.DLL" Id="Interop.PartCover.dll" LongName="Interop.PartCover.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Interop.PartCover.dll" AssemblyManifest="Interop.PartCover.dll" />
+									</Component>
+									<Component Guid="DA202409-86C7-4E13-9D12-26926A6F770B" Id="PartCoverBrowserManualRtf" DiskId="1">
+										<File Source="..\..\bin\Tools\PartCover\PartCover Browser Manual.rtf" Name="PCBMAN.RTF" Id="PartCover_Browser_Manual.rtf" LongName="PartCover Browser Manual.rtf" KeyPath="yes" />
+									</Component>
+									<Component Guid="2748871F-77C1-4107-A004-869CF09CCFE2" Id="PartCoverConsoleManualRtf" DiskId="1">
+										<File Source="..\..\bin\Tools\PartCover\PartCover Console Manual.rtf" Name="PCCSMAN.RTF" Id="PartCover_Console_Manual.rtf" LongName="PartCover Console Manual.rtf" KeyPath="yes" />
+									</Component>
+									<Component Guid="82F8BEA9-C5FD-48B8-9A4D-AED613DF664A" Id="PartCoverCorDriverDll" DiskId="1">
+										<File Source="..\..\bin\Tools\PartCover\PartCover.CorDriver.dll" Name="PCVRDRVR.DLL" Id="PartCover.CorDriver.dll" LongName="PartCover.CorDriver.dll" KeyPath="yes" />
+										<Registry Id="PartCoverCorDriverRegistryAppIdGuid" Root="HKCR" Type="string" Key="AppId\7D0E6AAB-C5FC-4103-AAD4-8BF3112A56C4" Value="PartCoverCorDriver" />
+										<Registry Id="PartCoverCorDriverRegistryAppIdDriverDll" Root="HKCR" Type="string" Key="AppId\PartCoverCorDriver.DLL" Name="AppId" Value="7D0E6AAB-C5FC-4103-AAD4-8BF3112A56C4" />
+										<Registry Id="PartCoverCorDriverRegistryClsIdGuid" Root="HKCR" Type="string" Key="CLSID\{6F6225EA-0897-41fa-B1EF-8B4D3E15325E}" Value="PartCoverConnector Object" />
+										<Registry Id="PartCoverCorDriverRegistryClsIdGuidAppId" Root="HKCR" Type="string" Key="CLSID\{6F6225EA-0897-41fa-B1EF-8B4D3E15325E}" Name="AppId" Value="7D0E6AAB-C5FC-4103-AAD4-8BF3112A56C4" />
+										<Registry Id="PartCoverCorDriverRegistryClsIdGuidInProcServer" Root="HKCR" Type="string" Key="CLSID\{6F6225EA-0897-41fa-B1EF-8B4D3E15325E}\InProcServer32" Value="[#PartCover.CorDriver.dll]" />
+										<Registry Id="PartCoverCorDriverRegistryClsIdGuidInProcServerThreadingModel" Root="HKCR" Type="string" Key="CLSID\{6F6225EA-0897-41fa-B1EF-8B4D3E15325E}\InProcServer32" Name="ThreadingModel" Value="both" />
+										<Registry Id="PartCoverCorDriverRegistryClsIdGuidProgID" Root="HKCR" Type="string" Key="CLSID\{6F6225EA-0897-41fa-B1EF-8B4D3E15325E}\ProgID" Value="PartCover.CorDriver.Connector.2" />									
+										<Registry Id="PartCoverCorDriverRegistryClsIdGuidProgrammable" Root="HKCR" Type="string" Key="CLSID\{6F6225EA-0897-41fa-B1EF-8B4D3E15325E}\Programmable" Value=" " />
+										<Registry Id="PartCoverCorDriverRegistryClsIdGuidTypeLib" Root="HKCR" Type="string" Key="CLSID\{6F6225EA-0897-41fa-B1EF-8B4D3E15325E}\TypeLib" Value="{7D0E6AAB-C5FC-4103-AAD4-8BF3112A56C4}" />
+										<Registry Id="PartCoverCorDriverRegistryClsIdGuidVersionIndependentProgID" Root="HKCR" Type="string" Key="CLSID\{6F6225EA-0897-41fa-B1EF-8B4D3E15325E}\VersionIndependentProgID" Value="PartCover.CorDriver.Connector" />
+										<Registry Id="PartCoverCorProfilerRegistryClsIdGuid" Root="HKCR" Type="string" Key="CLSID\{717FF691-2ADF-4ac0-985F-1DD3C42FDF90}" Value="CorProfiler Object" />
+										<Registry Id="PartCoverCorProfilerRegistryClsIdGuidAppId" Root="HKCR" Type="string" Key="CLSID\{717FF691-2ADF-4ac0-985F-1DD3C42FDF90}\AppId" Value="7D0E6AAB-C5FC-4103-AAD4-8BF3112A56C4" />
+										<Registry Id="PartCoverCorProfilerRegistryClsIdGuidInprocServer32" Root="HKCR" Type="string" Key="CLSID\{717FF691-2ADF-4ac0-985F-1DD3C42FDF90}\InprocServer32" Value="[#PartCover.CorDriver.dll]" />
+										<Registry Id="PartCoverCorProfilerRegistryClsIdGuidInprocServer32ThreadingModel" Root="HKCR" Type="string" Key="CLSID\{717FF691-2ADF-4ac0-985F-1DD3C42FDF90}\InprocServer32" Name="ThreadingModel" Value="both" />
+										<Registry Id="PartCoverCorProfilerRegistryClsIdGuidProgId" Root="HKCR" Type="string" Key="CLSID\{717FF691-2ADF-4ac0-985F-1DD3C42FDF90}\ProgId" Value="PartCover.CorDriver.CorProfiler.2" />
+										<Registry Id="PartCoverCorProfilerRegistryClsIdGuidProgrammable" Root="HKCR" Type="string" Key="CLSID\{717FF691-2ADF-4ac0-985F-1DD3C42FDF90}\Programmable" Value=" " />
+										<Registry Id="PartCoverCorProfilerRegistryClsIdGuidTypeLib" Root="HKCR" Type="string" Key="CLSID\{717FF691-2ADF-4ac0-985F-1DD3C42FDF90}\TypeLib" Value="{7D0E6AAB-C5FC-4103-AAD4-8BF3112A56C4}" />
+										<Registry Id="PartCoverCorProfilerRegistryClsIdGuidVersionIndependentProgID" Root="HKCR" Type="string" Key="CLSID\{717FF691-2ADF-4ac0-985F-1DD3C42FDF90}\VersionIndependentProgID" Value="PartCover.CorDriver.CorProfiler" />
+										<Registry Id="PartCoverCorConnectorRegistry" Root="HKCR" Type="string" Key="PartCover.CorDriver.Connector" Value="PartCoverConnector Object" />
+										<Registry Id="PartCoverCorConnectorRegistryClsId" Root="HKCR" Type="string" Key="PartCover.CorDriver.Connector\CLSID" Value="{6F6225EA-0897-41fa-B1EF-8B4D3E15325E}" />
+										<Registry Id="PartCoverCorConnectorRegistryCurVer" Root="HKCR" Type="string" Key="PartCover.CorDriver.Connector\CurVer" Value="PartCover.CorDriver.Connector.2" />
+										<Registry Id="PartCoverCorConnectorRegistry2" Root="HKCR" Type="string" Key="PartCover.CorDriver.Connector.2" Value="PartCoverConnector Object" />
+										<Registry Id="PartCoverCorConnectorRegistry2ClsId" Root="HKCR" Type="string" Key="PartCover.CorDriver.Connector.2\CLSID" Value="{6F6225EA-0897-41fa-B1EF-8B4D3E15325E}" />
+										<Registry Id="PartCoverCorProfilerRegistryName" Root="HKCR" Type="string" Key="PartCover.CorDriver.CorProfiler" Value="CorProfiler Object" />
+										<Registry Id="PartCoverCorProfilerRegistryNameClsId" Root="HKCR" Type="string" Key="PartCover.CorDriver.CorProfiler\CLSID" Value="{717FF691-2ADF-4ac0-985F-1DD3C42FDF90}" />
+										<Registry Id="PartCoverCorProfilerRegistryNameCurVer" Root="HKCR" Type="string" Key="PartCover.CorDriver.CorProfiler\CurVer" Value="PartCover.CorDriver.CorProfiler.2" />
+										<Registry Id="PartCoverCorProfilerRegistry2" Root="HKCR" Type="string" Key="PartCover.CorDriver.CorProfiler.2" Value="CorProfiler Object" />
+										<Registry Id="PartCoverCorProfilerRegistry2ClsId" Root="HKCR" Type="string" Key="PartCover.CorDriver.CorProfiler.2\CLSID" Value="{717FF691-2ADF-4ac0-985F-1DD3C42FDF90}" />
+										<Registry Id="PartCoverTypeLibRegistryGuid" Root="HKCR" Type="string" Key="TypeLib\{7D0E6AAB-C5FC-4103-AAD4-8BF3112A56C4}\2.0" Value="PartCover module" />
+										<Registry Id="PartCoverTypeLibRegistryGuidWin32" Root="HKCR" Type="string" Key="TypeLib\{7D0E6AAB-C5FC-4103-AAD4-8BF3112A56C4}\2.0\0\win32" Value="[#PartCover.CorDriver.dll]" />
+										<Registry Id="PartCoverTypeLibRegistryGuidFlags" Root="HKCR" Type="string" Key="TypeLib\{7D0E6AAB-C5FC-4103-AAD4-8BF3112A56C4}\2.0\FLAGS" Value="0" />
+										<Registry Id="PartCoverTypeLibRegistryGuidHelp" Root="HKCR" Type="string" Key="TypeLib\{7D0E6AAB-C5FC-4103-AAD4-8BF3112A56C4}\2.0\HELPDIR" Value=" " />
+									</Component>
+									<Component Guid="BEF3D893-B7BA-4487-BDF4-5E8E31AF4C6B" Id="PartCoverCoverageBrowserExe" DiskId="1">
+										<File Source="..\..\bin\Tools\PartCover\PartCover.Coverage.Browser.exe" Name="PCVRBRW.EXE" Id="PartCover.Coverage.Browser.exe" LongName="PartCover.Coverage.Browser.exe" KeyPath="yes" Assembly=".net" AssemblyApplication="PartCover.Coverage.Browser.exe" AssemblyManifest="PartCover.Coverage.Browser.exe" />
+									</Component>
+									<Component Guid="BE28BCAE-B6D2-430E-8591-95C095BDACD7" Id="PartCoverCoverageBrowserExeConfig" DiskId="1">
+										<File Source="..\..\bin\Tools\PartCover\PartCover.Coverage.Browser.exe.config" Name="PCBRW.CON" Id="PartCover.Coverage.Browser.exe.config" LongName="PartCover.Coverage.Browser.exe.config" KeyPath="yes" />
+									</Component>
+									<Component Guid="429867BD-2DC0-4934-BED7-70A17978A57C" Id="PartCoverExe" DiskId="1">
+										<File Source="..\..\bin\Tools\PartCover\PartCover.exe" Name="PARTCVR.EXE" Id="PartCover.exe" LongName="PartCover.exe" Assembly=".net" KeyPath="yes" AssemblyApplication="PartCover.exe" AssemblyManifest="PartCover.exe" />
+									</Component>
+									<Component Guid="1C2BDE86-9B7C-4DA3-BFC2-AD92EB27890B" Id="PartCoverExeConfig" DiskId="1">
+										<File Source="..\..\bin\Tools\PartCover\PartCover.exe.config" Name="PARTCVR.CON" Id="PartCover.exe.config" LongName="PartCover.exe.config" KeyPath="yes" />
+									</Component>
+									<Component Guid="9C5C2A46-D501-495C-A72A-977B0C67217D" Id="PartCoverFrameworkDll" DiskId="1">
+										<File Source="..\..\bin\Tools\PartCover\PartCover.Framework.dll" Name="PCFWRK.DLL" Id="PartCover.Framework.dll" LongName="PartCover.Framework.dll" KeyPath="yes" />
+									</Component>
+									<Directory Id="Xslt" Name="Xslt">
+										<Component Guid="00708219-F106-4A0E-8CDA-E41DE2C0D611" Id="AssemblyReportXslt" DiskId="1">
+											<File Source="..\..\bin\Tools\PartCover\Xslt\assembly.report.xslt" Name="ASMRPRT.XSL" Id="assembly.report.xslt" LongName="assembly.report.xslt" KeyPath="yes" />
+										</Component>
+										<Component Guid="55D89B3C-F9F7-48CD-983A-27EBB09AEF72" Id="ClassReportXslt" DiskId="1">
+											<File Source="..\..\bin\Tools\PartCover\Xslt\class.report.xslt" Name="CLSRPT.XSL" Id="class.report.xslt" LongName="class.report.xslt" KeyPath="yes" />
+										</Component>
+									</Directory>
+								</Directory>
 							</Directory>
 							<Component Guid="3730EF42-5257-4EB2-9DA1-57151E5EB5A3" Id="AgaControlsDll" DiskId="1">
 								<File Source="..\..\bin\Aga.Controls.dll" Name="AGACON.DLL" Id="Aga.Controls.dll" LongName="Aga.Controls.dll" Assembly=".net" AssemblyApplication="Aga.Controls.dll" AssemblyManifest="Aga.Controls.dll" KeyPath="yes" />

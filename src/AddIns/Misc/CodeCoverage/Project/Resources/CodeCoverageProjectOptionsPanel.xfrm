@@ -1,37 +1,45 @@
 <Components version="1.0">
   <System.Windows.Forms.UserControl>
     <Name value="CodeCoverageProjectOptionsPanel" />
-    <ClientSize value="{Width=342, Height=266}" />
+    <ClientSize value="{Width=342, Height=396}" />
     <Controls>
       <System.Windows.Forms.TextBox>
-        <Name value="excludedAttributesTextBox" />
+        <Name value="excludeListTextBox" />
         <TabIndex value="3" />
-        <Size value="{Width=317, Height=21}" />
-        <Location value="{X=12,Y=92}" />
+        <Location value="12, 229" />
+        <WordWrap value="False" />
         <Anchor value="Top, Left, Right" />
+        <ScrollBars value="Vertical" />
+        <AcceptsReturn value="True" />
+        <Size value="317, 154" />
+        <Multiline value="True" />
       </System.Windows.Forms.TextBox>
       <System.Windows.Forms.Label>
-        <Name value="excludedAttributesListLabel" />
-        <Location value="{X=12,Y=69}" />
-        <Text value="${res:ICSharpCode.CodeCoverage.ProjectOptionsPanel.ExcludeAttributes}:" />
+        <Name value="excludeListLabel" />
+        <Location value="12, 206" />
+        <Text value="${res:ICSharpCode.CodeCoverage.ProjectOptionsPanel.ExcludeListLabel}:" />
+        <Size value="317, 20" />
         <Anchor value="Top, Left, Right" />
-        <Size value="{Width=317, Height=20}" />
         <TabIndex value="2" />
       </System.Windows.Forms.Label>
       <System.Windows.Forms.TextBox>
-        <Name value="assemblyListTextBox" />
+        <Name value="includeListTextBox" />
         <TabIndex value="1" />
-        <Size value="{Width=317, Height=21}" />
-        <Location value="{X=12,Y=36}" />
+        <Location value="12, 36" />
+        <WordWrap value="False" />
         <Anchor value="Top, Left, Right" />
+        <ScrollBars value="Vertical" />
+        <AcceptsReturn value="True" />
+        <Size value="317, 154" />
+        <Multiline value="True" />
       </System.Windows.Forms.TextBox>
       <System.Windows.Forms.Label>
-        <Name value="assemblyListLabel" />
-        <Location value="{X=12,Y=12}" />
+        <Name value="includeListLabel" />
+        <Location value="12, 12" />
         <UseCompatibleTextRendering value="True" />
-        <Text value="${res:ICSharpCode.CodeCoverage.ProjectOptionsPanel.AssemblyListLabel}" />
+        <Text value="${res:ICSharpCode.CodeCoverage.ProjectOptionsPanel.IncludeListLabel}" />
+        <Size value="317, 21" />
         <Anchor value="Top, Left, Right" />
-        <Size value="{Width=317, Height=21}" />
         <TabIndex value="0" />
       </System.Windows.Forms.Label>
     </Controls>

@@ -53,6 +53,9 @@
     <Compile Include="Src\CodeCoverageMethodTreeNode.cs" />
     <Compile Include="Src\CodeCoverageClassTreeNode.cs" />
     <Compile Include="Src\CodeCoverageNamespaceTreeNode.cs" />
+    <Compile Include="Src\PartCoverExitEventArgs.cs" />
+    <Compile Include="Src\PartCoverRunner.cs" />
+    <Compile Include="Src\PartCoverSettings.cs" />
     <Compile Include="Src\SequencePointListViewSorter.cs" />
     <Compile Include="Src\ToggleCodeCoverageCommand.cs" />
     <Compile Include="Src\CodeCoverageHighlighter.cs" />
@@ -62,11 +65,8 @@
     <EmbeddedResource Include="Resources\CodeCoverageOptionsPanel.xfrm" />
     <Compile Include="Src\CodeCoverageDisplayItem.cs" />
     <Compile Include="Src\ColorPickerComboBox.cs" />
-    <Compile Include="Src\NCoverRunner.cs" />
-    <Compile Include="Src\NCoverExitEventArgs.cs" />
     <Compile Include="Src\CodeCoverageProjectOptionsPanel.cs" />
     <EmbeddedResource Include="Resources\CodeCoverageProjectOptionsPanel.xfrm" />
-    <Compile Include="Src\NCoverSettings.cs" />
     <Compile Include="Src\CodeCoverageService.cs" />
     <Compile Include="Src\RunTestWithCodeCoverageCommand.cs" />
     <EmbeddedResource Include="Resources\CodeCoverageRunnerNotFoundForm.xfrm" />

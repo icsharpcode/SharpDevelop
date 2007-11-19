@@ -1,7 +1,7 @@
 <AddIn name        = "CodeCoverageAddIn"
        author      = "Matt Ward"
-       url         = "http://ncover.org"
-       description = "Code Coverage AddIn for SharpDevelop using NCover">
+       copyright   = "prj:///doc/copyright.txt"
+       description = "Code Coverage AddIn for SharpDevelop using PartCover">
 	
 	<Manifest>
 		<Identity   name  = "ICSharpCode.CodeCoverage"/>
@@ -49,7 +49,7 @@
 	<Path name = "/SharpDevelop/Dialogs/OptionsDialog/ToolsOptions">
 		<DialogPanel id          = "CodeCoverageOptionsPanel"
 		             label       = "${res:ICSharpCode.UnitTesting.CodeCoverage}"
-		             insertafter = "NAnt"
+		             insertafter = "CodeAnalysisOptionPanel"
 		             class       = "ICSharpCode.CodeCoverage.CodeCoverageOptionsPanel"/>
 	</Path>
 	

@@ -39,15 +39,18 @@ namespace ICSharpCode.CodeCoverage.Tests
 			document.TextContent = code;
 			markerStrategy = new MarkerStrategy(document);
 			
-			string xml = "<coverage>\r\n" +
-				"\t<module name=\"C:\\Projects\\Foo.Tests\\bin\\Debug\\Foo.Tests.dll\" assembly=\"Foo.Tests\">\r\n" +
-				"\t\t<method name=\"SimpleTest\" class=\"Foo.Tests.FooTestFixture\">\r\n" +
-				"\t\t\t<seqpnt visitcount=\"1\" line=\"1\" column=\"3\" endline=\"1\" endcolumn=\"4\" document=\"c:\\Projects\\Foo\\FooTestFixture.cs\" />\r\n" +
-				"\t\t\t<seqpnt visitcount=\"1\" line=\"2\" column=\"4\" endline=\"2\" endcolumn=\"18\" document=\"c:\\Projects\\Foo\\FooTestFixture.cs\" />\r\n" +
-				"\t\t\t<seqpnt visitcount=\"0\" line=\"3\" column=\"3\" endline=\"3\" endcolumn=\"4\" document=\"c:\\Projects\\Foo\\FooTestFixture.cs\" />\r\n" +
+			string xml = "<PartCoverReport>\r\n" +
+				"<file id=\"1\" url=\"c:\\Projects\\Foo\\FooTestFixture.cs\" />\r\n" +
+				"\t<type asm=\"Foo.Tests\" name=\"Foo.Tests.FooTestFixture\" flags=\"1232592\">\r\n" +
+				"\t\t<method name=\"SimpleTest\">\r\n" +
+				"\t\t\t<code>\r\n" +
+				"\t\t\t\t<pt visit=\"1\" sl=\"1\" fid=\"1\" sc=\"3\" el=\"1\" ec=\"4\" document=\"c:\\Projects\\Foo\\FooTestFixture.cs\" />\r\n" +
+				"\t\t\t\t<pt visit=\"1\" sl=\"2\" fid=\"1\" sc=\"4\" el=\"2\" ec=\"18\" document=\"c:\\Projects\\Foo\\FooTestFixture.cs\" />\r\n" +
+				"\t\t\t\t<pt visit=\"0\" sl=\"3\" fid=\"1\" sc=\"3\" el=\"3\" ec=\"4\" document=\"c:\\Projects\\Foo\\FooTestFixture.cs\" />\r\n" +
+				"\t\t\t</code>\r\n" +
 				"\t\t</method>\r\n" +
-				"\t</module>\r\n" +
-				"</coverage>";
+				"\t</type>\r\n" +
+				"</PartCoverReport>";
 			CodeCoverageResults results = new CodeCoverageResults(new StringReader(xml));
 			CodeCoverageMethod method = results.Modules[0].Methods[0];
 			CodeCoverageHighlighter highlighter = new CodeCoverageHighlighter();

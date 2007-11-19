@@ -32,16 +32,19 @@ namespace ICSharpCode.CodeCoverage.Tests
 			document.TextContent = "abcdefg\r\nabc";
 			MarkerStrategy markerStrategy = new MarkerStrategy(document);
 			
-			string xml = "<coverage>\r\n" +
-				"\t<module name=\"C:\\Projects\\XmlEditor\\Test\\XmlEditor.Tests.dll\" assembly=\"XmlEditor.Tests\">\r\n" +
-				"\t\t<method name=\"GetSchema\" class=\"XmlEditor.Tests.Schema.SingleElementSchemaTestFixture\">\r\n" +
-				"\t\t\t<seqpnt visitcount=\"1\" line=\"1\" column=\"1\" endline=\"1\" endcolumn=\"9\" document=\"c:\\Projects\\XmlEditor\\Test\\Schema\\SingleElementSchemaTestFixture.cs\" />\r\n" +
-				"\t\t\t<seqpnt visitcount=\"1\" line=\"1\" column=\"1\" endline=\"1\" endcolumn=\"0\" document=\"c:\\Projects\\XmlEditor\\Test\\Schema\\SingleElementSchemaTestFixture.cs\" />\r\n" +
-				"\t\t\t<seqpnt visitcount=\"1\" line=\"1\" column=\"1\" endline=\"1\" endcolumn=\"-1\" document=\"c:\\Projects\\XmlEditor\\Test\\Schema\\SingleElementSchemaTestFixture.cs\" />\r\n" +
-				"\t\t\t<seqpnt visitcount=\"1\" line=\"1\" column=\"3\" endline=\"1\" endcolumn=\"2\" document=\"c:\\Projects\\XmlEditor\\Test\\Schema\\SingleElementSchemaTestFixture.cs\" />\r\n" +
+			string xml = "<PartCoverReport>\r\n" +
+				"\t<file id=\"1\" url=\"c:\\Projects\\XmlEditor\\Test\\Schema\\SingleElementSchemaTestFixture.cs\" />\r\n" +
+				"\t<type name=\"XmlEditor.Tests.Schema.SingleElementSchemaTestFixture\" asm=\"XmlEditor.Tests\">\r\n" +
+				"\t\t<method name=\"GetSchema\">\r\n" +
+				"\t\t\t<code>\r\n" +
+				"\t\t\t<pt visit=\"1\" fid=\"1\" sl=\"1\" sc=\"1\" el=\"1\" ec=\"9\"/>\r\n" +
+				"\t\t\t<pt visit=\"1\" fid=\"1\" sl=\"1\" sc=\"1\" el=\"1\" ec=\"0\" />\r\n" +
+				"\t\t\t<pt visit=\"1\" fid=\"1\" sl=\"1\" sc=\"1\" el=\"1\" ec=\"-1\" />\r\n" +
+				"\t\t\t<pt visit=\"1\" fid=\"1\" sl=\"1\" sc=\"3\" el=\"1\" ec=\"2\" />\r\n" +
+				"\t\t\t</code>\r\n" +
 				"\t\t</method>\r\n" +
-				"\t</module>\r\n" +
-				"</coverage>";
+				"\t</type>\r\n" +
+				"</PartCoverReport>";
 			
 			CodeCoverageResults results = new CodeCoverageResults(new StringReader(xml));
 			CodeCoverageMethod method = results.Modules[0].Methods[0];

@@ -22,22 +22,18 @@ namespace ICSharpCode.CodeCoverage
 		static readonly string backgroundColourComboBoxName = "backgroundColorPickerComboBox";
 		static readonly string displayItemsListBoxName = "displayItemsListBox";
 		static readonly string sampleTextLabelName = "sampleTextLabel";
-		static readonly string browseButtonName = "browseButton";
-		static readonly string commandTextBoxName = "commandTextBox";
 
 		ColorPickerComboBox foregroundColorPickerComboBox;
 		ColorPickerComboBox backgroundColorPickerComboBox;
 		ListBox displayItemsListBox;
 		Label sampleTextLabel;
-		TextBox commandTextBox;
 
 		public override void LoadPanelContents()
 		{
 			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("ICSharpCode.CodeCoverage.Resources.CodeCoverageOptionsPanel.xfrm"));
 						
-			ControlDictionary[foregroundCustomColourButtonName].Click += new EventHandler(ForegroundCustomColourButtonClick);
-			ControlDictionary[backgroundCustomColourButtonName].Click += new EventHandler(BackgroundCustomColourButtonClick);
-			ControlDictionary[browseButtonName].Click += new EventHandler(BrowseButtonClick);
+			ControlDictionary[foregroundCustomColourButtonName].Click += ForegroundCustomColourButtonClick;
+			ControlDictionary[backgroundCustomColourButtonName].Click += BackgroundCustomColourButtonClick;
 			
 			foregroundColorPickerComboBox = (ColorPickerComboBox)ControlDictionary[foregroundColourComboBoxName];
 			foregroundColorPickerComboBox.SelectedIndexChanged += ForegroundColorPickerComboBoxSelectedIndexChanged;
@@ -46,10 +42,7 @@ namespace ICSharpCode.CodeCoverage
 			backgroundColorPickerComboBox.SelectedIndexChanged += BackgroundColorPickerComboBoxSelectedIndexChanged;
 
 			sampleTextLabel = (Label)ControlDictionary[sampleTextLabelName];
-			
-			commandTextBox = (TextBox)ControlDictionary[commandTextBoxName];
-			commandTextBox.Text = CodeCoverageOptions.NCoverFileName;
-			
+						
 			displayItemsListBox = (ListBox)ControlDictionary[displayItemsListBoxName];
 			displayItemsListBox.Items.Add(new CodeCoverageDisplayItem(StringParser.Parse("${res:ICSharpCode.CodeCoverage.CodeCovered}"), CodeCoverageOptions.VisitedColorProperty, CodeCoverageOptions.VisitedColor, CodeCoverageOptions.VisitedForeColorProperty, CodeCoverageOptions.VisitedForeColor));
 			displayItemsListBox.Items.Add(new CodeCoverageDisplayItem(StringParser.Parse("${res:ICSharpCode.CodeCoverage.CodeNotCovered}"), CodeCoverageOptions.NotVisitedColorProperty, CodeCoverageOptions.NotVisitedColor, CodeCoverageOptions.NotVisitedForeColorProperty, CodeCoverageOptions.NotVisitedForeColor));
@@ -72,8 +65,6 @@ namespace ICSharpCode.CodeCoverage
 			if (codeCoverageColorsChanged) {
 				CodeCoverageService.RefreshCodeCoverageHighlights();
 			}
-			
-			CodeCoverageOptions.NCoverFileName = commandTextBox.Text;
 
 			return true;
 		}
@@ -120,17 +111,6 @@ namespace ICSharpCode.CodeCoverage
 			CodeCoverageDisplayItem item = (CodeCoverageDisplayItem)displayItemsListBox.SelectedItem;
 			sampleTextLabel.BackColor = backgroundColorPickerComboBox.SelectedColor;
 			item.BackColor = backgroundColorPickerComboBox.SelectedColor;
-		}
-		
-		void BrowseButtonClick(object sender, EventArgs e)
-		{
-			using (OpenFileDialog openFileDialog  = new OpenFileDialog()) {
-				openFileDialog.CheckFileExists = true;
-				openFileDialog.Filter = StringParser.Parse("${res:SharpDevelop.FileFilter.ExecutableFiles}|*.exe|${res:SharpDevelop.FileFilter.AllFiles}|*.*");
-				if (openFileDialog.ShowDialog() == DialogResult.OK) {
-					ControlDictionary[commandTextBoxName].Text = openFileDialog.FileName;
-				}
-			}
 		}
 	}
 }

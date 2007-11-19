@@ -25,22 +25,30 @@ namespace ICSharpCode.CodeCoverage.Tests
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			string xml = "<coverage>\r\n" +
-				"\t<module name=\"C:\\Projects\\Foo.Tests\\bin\\Debug\\Foo.Tests.dll\" assembly=\"Foo.Tests\">\r\n" +
-				"\t\t<method name=\"SimpleTest\" class=\"Foo.Tests.FooTestFixture\">\r\n" +
-				"\t\t\t<seqpnt visitcount=\"1\" line=\"20\" column=\"3\" endline=\"20\" endcolumn=\"4\" document=\"c:\\Projects\\Foo\\FooTestFixture.cs\" />\r\n" +
-				"\t\t\t<seqpnt visitcount=\"1\" line=\"21\" column=\"13\" endline=\"21\" endcolumn=\"32\" document=\"c:\\Projects\\Foo\\FooTestFixture.cs\" />\r\n" +
-				"\t\t\t<seqpnt visitcount=\"0\" line=\"24\" column=\"3\" endline=\"24\" endcolumn=\"4\" document=\"c:\\Projects\\Foo\\FooTestFixture.cs\" />\r\n" +
+			string xml = "<PartCoverReport ver=\"1.0.2796.35184\">\r\n" +
+				"\t<file id=\"1\" url=\"c:\\Projects\\Foo\\FooTestFixture.cs\" />\r\n" +
+				"\t<type asm=\"Foo.Tests\" name=\"Foo.Tests.FooTestFixture\" flags=\"1232592\">\r\n" +
+				"\t\t<method name=\"SimpleTest\" sig=\"void  ()\" flags=\"2182\" iflags=\"0\">\r\n" +
+				"\t\t\t<code>\r\n" +
+				"\t\t\t\t<pt visit=\"1\" pos=\"0\" len=\"1\" fid=\"1\" sl=\"20\" sc=\"3\" el=\"20\" ec=\"4\" />\r\n" +
+				"\t\t\t\t<pt visit=\"1\" pos=\"0\" len=\"1\" fid=\"1\" sl=\"21\" sc=\"13\" el=\"21\" ec=\"32\" />\r\n" +
+				"\t\t\t\t<pt visit=\"0\" pos=\"0\" len=\"1\" fid=\"1\" sl=\"24\" sc=\"3\" el=\"24\" ec=\"4\" />\r\n" +
+				"\t\t\t</code>\r\n" +
 				"\t\t</method>\r\n" +
-				"\t</module>\r\n" +
-				"</coverage>";
+				"\t</type>\r\n" +
+				"</PartCoverReport>";
 			results = new CodeCoverageResults(new StringReader(xml));
-			module = results.Modules[0];
-			method = module.Methods[0];
-			
-			point1 = method.SequencePoints[0];
-			point2 = method.SequencePoints[1];
-			point3 = method.SequencePoints[2];
+			if (results.Modules.Count > 0) {
+				module = results.Modules[0];
+				if (module.Methods.Count > 0) {
+					method = module.Methods[0];
+					if (method.SequencePoints.Count == 3) {
+						point1 = method.SequencePoints[0];
+						point2 = method.SequencePoints[1];
+						point3 = method.SequencePoints[2];
+					}
+				}			
+			}
 		}
 		
 		[Test]

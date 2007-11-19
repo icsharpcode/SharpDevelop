@@ -20,7 +20,6 @@ namespace ICSharpCode.CodeCoverage
 		public static readonly string VisitedForeColorProperty        = "VisitedForeColor";
 		public static readonly string NotVisitedColorProperty         = "NotVisitedColor";
 		public static readonly string NotVisitedForeColorProperty     = "NotVisitedForeColor";
-		public static readonly string NCoverFileNameProperty          = "NCoverFileName";
 		
 		// This name is also referenced by CodeCoverage.addin
 		public static readonly string CodeCoverageHighlightedProperty = "CodeCoverageHighlighted";
@@ -36,116 +35,66 @@ namespace ICSharpCode.CodeCoverage
 		}
 
 		public static Properties Properties {
-			get {
-				return properties;
-			}
+			get { return properties; }
 		}
-		
-		/// <summary>
-		/// The full path to the NCover console executable.
-		/// </summary>
-		public static string NCoverFileName {
-			get {
-				return Properties.Get<String>(NCoverFileNameProperty, String.Empty);
-			}
-			set {
-				Properties.Set<String>(NCoverFileNameProperty, value);
-			}
-		}
-		
+				
 		/// <summary>
 		/// Enables/disables code coverage highlighting.
 		/// </summary>
 		public static bool CodeCoverageHighlighted {
-			get {
-				return Properties.Get<bool>(CodeCoverageHighlightedProperty, false);
-			}
-			set {
-				Properties.Set<bool>(CodeCoverageHighlightedProperty, value);
-			}
+			get { return Properties.Get<bool>(CodeCoverageHighlightedProperty, false); }
+			set { Properties.Set<bool>(CodeCoverageHighlightedProperty, value); }
 		}
 		
 		/// <summary>
 		/// Shows/hides the source code panel in the code coverage pad.
 		/// </summary>
 		public static bool ShowSourceCodePanel {
-			get {
-				return Properties.Get<bool>(ShowSourceCodePanelProperty, false);
-			}
-			set {
-				Properties.Set<bool>(ShowSourceCodePanelProperty, value);
-			}
+			get { return Properties.Get<bool>(ShowSourceCodePanelProperty, false); }
+			set { Properties.Set<bool>(ShowSourceCodePanelProperty, value); }
 		}
 
 		/// <summary>
 		/// Shows/hides the visit count panel in the code coverage pad.
 		/// </summary>
 		public static bool ShowVisitCountPanel {
-			get {
-				return Properties.Get<bool>(ShowVisitCountPanelProperty, true);
-			}
-			set {
-				Properties.Set<bool>(ShowVisitCountPanelProperty, value);
-			}
+			get { return Properties.Get<bool>(ShowVisitCountPanelProperty, true); }
+			set { Properties.Set<bool>(ShowVisitCountPanelProperty, value);	}
 		}
 
 		/// <summary>
 		/// Gets the colour that will be used when highlighting visited code.
 		/// </summary>
-		public static Color VisitedColor
-		{
-			get {
-				return Properties.Get<Color>(VisitedColorProperty, Color.Lime);
-			}
-			
-			set {
-				Properties.Set<Color>(VisitedColorProperty, value);
-			}
+		public static Color VisitedColor {
+			get { return Properties.Get<Color>(VisitedColorProperty, Color.Lime); }
+			set { Properties.Set<Color>(VisitedColorProperty, value); }
 		}
 		
 		/// <summary>
 		/// Gets the foreground colour that will be used when highlighting
 		/// visited code.
 		/// </summary>
-		public static Color VisitedForeColor
-		{
-			get {
-				return Properties.Get<Color>(VisitedForeColorProperty, Color.Black);
-			}
-			
-			set {
-				Properties.Set<Color>(VisitedForeColorProperty, value);
-			}
+		public static Color VisitedForeColor {
+			get { return Properties.Get<Color>(VisitedForeColorProperty, Color.Black); }
+			set { Properties.Set<Color>(VisitedForeColorProperty, value); }
 		}
 		
 		/// <summary>
 		/// Gets the colour that will be used when highlighting code that has not
 		/// been visited.
 		/// </summary>
-		public static Color NotVisitedColor
-		{
-			get {
-				return Properties.Get<Color>(NotVisitedColorProperty, Color.Red);
-			}
-			
-			set {
-				Properties.Set<Color>(NotVisitedColorProperty, value);
-			}
+		public static Color NotVisitedColor {
+			get { return Properties.Get<Color>(NotVisitedColorProperty, Color.Red); }
+			set { Properties.Set<Color>(NotVisitedColorProperty, value); }
 		}
 		
 		/// <summary>
 		/// Gets the foreground colour that will be used when highlighting
 		/// code that has not been visited.
 		/// </summary>
-		public static Color NotVisitedForeColor
-		{
-			get {
-				return Properties.Get<Color>(NotVisitedForeColorProperty, Color.White);
-			}
-			
-			set {
-				Properties.Set<Color>(NotVisitedForeColorProperty, value);
-			}
+		public static Color NotVisitedForeColor {
+			get { return Properties.Get<Color>(NotVisitedForeColorProperty, Color.White); }
+			set { Properties.Set<Color>(NotVisitedForeColorProperty, value); }
 		}
 	}
 }

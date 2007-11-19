@@ -50,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="CodeCoverageResultsMissingFileIdTestFixture.cs" />
     <Compile Include="CodeCoverageResultsTestFixture.cs" />
     <Compile Include="CodeCoverageTreeViewTestFixture.cs" />
     <Compile Include="DerivedCodeCoverageTreeView.cs" />
@@ -57,6 +58,10 @@
     <Compile Include="ModuleVisitedSequencePointsTestFixture.cs" />
     <Compile Include="AddCodeCoverageMarkersTestFixture.cs" />
     <Compile Include="MockDocument.cs" />
+    <Compile Include="PartCoverCommandLineTests.cs" />
+    <Compile Include="PartCoverExitEventArgsTestFixture.cs" />
+    <Compile Include="PartCoverSettingsMissingRulePrefixTestFixture.cs" />
+    <Compile Include="PartCoverSettingsTestFixture.cs" />
     <Compile Include="RemoveCodeCoverageMarkersTestFixture.cs" />
     <Compile Include="CodeCoverageMarkersCoverTwoLinesTestFixture.cs" />
     <Compile Include="CodeCoverageMarkersCoverMultipleLinesTestFixture.cs" />
@@ -65,7 +70,6 @@
     <Compile Include="CodeCoverageMarkersInvalidEndLineTestFixture.cs" />
     <Compile Include="CodeCoverageMarkersInvalidStartColumnTestFixture.cs" />
     <Compile Include="CodeCoverageMarkersInvalidEndColumnTestFixture.cs" />
-    <Compile Include="NCoverSettingsTestFixture.cs" />
     <None Include="Strings.resources" />
     <Compile Include="TreeViewAfterSelectTestFixture.cs" />
     <Compile Include="TreeViewSortingTestFixture.cs" />
@@ -75,10 +79,7 @@
     <Compile Include="DisplayItemTestFixture.cs" />
     <Compile Include="CodeCoverageNamespaceTestFixture.cs" />
     <Compile Include="ClassWithNoNamespaceInTreeViewTestFixture.cs" />
-    <Compile Include="ExcludedModuleResultsTestFixture.cs" />
-    <Compile Include="ExcludedMethodTestFixture.cs" />
     <Compile Include="ExcludedModuleTestFixture.cs" />
-    <Compile Include="ExcludedMethodResultsTestFixture.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
