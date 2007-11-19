@@ -49,15 +49,27 @@ namespace ICSharpCode.Core
 			}
 		}
 		
+		static string GetPathFromRegistry(string key, string valueName)
+		{
+			using (RegistryKey installRootKey = Registry.LocalMachine.OpenSubKey(key)) {
+				if (installRootKey != null) {
+					object o = installRootKey.GetValue(valueName);
+					if (o != null) {
+						string r = o.ToString();
+						if (!string.IsNullOrEmpty(r))
+							return r;
+					}
+				}
+			}
+			return null;
+		}
+		
 		/// <summary>
 		/// Gets the installation root of the .NET Framework (@"C:\Windows\Microsoft.NET\Framework\")
 		/// </summary>
 		public static string NETFrameworkInstallRoot {
 			get {
-				using (RegistryKey installRootKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\.NETFramework")) {
-					object o = installRootKey.GetValue("InstallRoot");
-					return o == null ? String.Empty : o.ToString();
-				}
+				return GetPathFromRegistry(@"SOFTWARE\Microsoft\.NETFramework", "InstallRoot") ?? string.Empty;
 			}
 		}
 		
@@ -67,23 +79,10 @@ namespace ICSharpCode.Core
 		/// </summary>
 		public static string NetSdkInstallRoot {
 			get {
-				string val = String.Empty;
-				RegistryKey sdkRootKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Microsoft SDKs\Windows\v6.0");
-				if (sdkRootKey != null) {
-					object o = sdkRootKey.GetValue("InstallationFolder");
-					val = o == null ? String.Empty : o.ToString();
-					sdkRootKey.Close();
-				}
-				
-				if (val.Length == 0) {
-					RegistryKey installRootKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\.NETFramework");
-					if (installRootKey != null) {
-						object o = installRootKey.GetValue("sdkInstallRootv2.0");
-						val = o == null ? String.Empty : o.ToString();
-						installRootKey.Close();
-					}
-				}
-				return val;
+				return GetPathFromRegistry(@"SOFTWARE\Microsoft\Microsoft SDKs\Windows\v6.0a", "InstallationFolder")
+					?? GetPathFromRegistry(@"SOFTWARE\Microsoft\Microsoft SDKs\Windows\v6.0", "InstallationFolder")
+					?? GetPathFromRegistry(@"SOFTWARE\Microsoft\.NETFramework", "sdkInstallRootv2.0")
+					?? string.Empty;
 			}
 		}
 		
@@ -252,10 +251,10 @@ namespace ICSharpCode.Core
 		/// </summary>
 		static void SearchDirectory(string directory, string filemask, List<string> collection, bool searchSubdirectories, bool ignoreHidden)
 		{
-			// If Directory.GetFiles() searches the 8.3 name as well as the full name so if the filemask is 
+			// If Directory.GetFiles() searches the 8.3 name as well as the full name so if the filemask is
 			// "*.xpt" it will return "Template.xpt~"
 			bool isExtMatch = Regex.IsMatch(filemask, @"^\*\..{3}$");
-			string ext = null; 
+			string ext = null;
 			string[] file = Directory.GetFiles(directory, filemask);
 			if (isExtMatch) ext = filemask.Remove(0,1);
 			

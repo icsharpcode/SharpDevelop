@@ -18,23 +18,27 @@
 		<TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
 		<SharpDevelopTargetFrameworkClass>CF</SharpDevelopTargetFrameworkClass>
 	</PropertyGroup>
+	<PropertyGroup Condition=" '$(SharpDevelopTargetFrameworkVersion)' == 'CF 3.5' ">
+		<TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+		<SharpDevelopTargetFrameworkClass>CF</SharpDevelopTargetFrameworkClass>
+	</PropertyGroup>
 	<PropertyGroup Condition=" ('$(SharpDevelopTargetFrameworkVersion)' == 'Mono v1.1') or ('$(SharpDevelopTargetFrameworkVersion)' == 'Mono v2.0') ">
 		<SharpDevelopTargetFrameworkClass>Mono</SharpDevelopTargetFrameworkClass>
 	</PropertyGroup>
 	
 	<!-- Show an error when CF is not installed, or when the target framework is unknown. -->
 	<Target Name="Build">
-		<Error Text="'$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets' cannot be found." Condition=" ('$(SharpDevelopTargetFrameworkVersion)' == 'CF 2.0') and (!Exists('$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets')) "/>
+		<Error Text="'$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets' cannot be found." Condition=" ('$(SharpDevelopTargetFrameworkClass)' == 'CF') and (!Exists('$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets')) "/>
 		<Error Text="Unknown target framework version '$(SharpDevelopTargetFrameworkVersion)'."/>
 	</Target>
 	
 	<Target Name="Rebuild">
-		<Error Text="'$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets' cannot be found." Condition=" ('$(SharpDevelopTargetFrameworkVersion)' == 'CF 2.0') and (!Exists('$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets')) "/>
+		<Error Text="'$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets' cannot be found." Condition=" ('$(SharpDevelopTargetFrameworkClass)' == 'CF') and (!Exists('$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets')) "/>
 		<Error Text="Unknown target framework version '$(SharpDevelopTargetFrameworkVersion)'."/>
 	</Target>
 	
 	<Target Name="Clean">
-		<Error Text="'$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets' cannot be found." Condition=" ('$(SharpDevelopTargetFrameworkVersion)' == 'CF 2.0') and (!Exists('$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets')) "/>
+		<Error Text="'$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets' cannot be found." Condition=" ('$(SharpDevelopTargetFrameworkClass)' == 'CF') and (!Exists('$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets')) "/>
 		<Error Text="Unknown target framework version '$(SharpDevelopTargetFrameworkVersion)'."/>
 	</Target>
 	
@@ -62,6 +66,6 @@
 	</ItemGroup>
 	
 	<!-- Compact framework imports -->
-	<Import Condition=" ('$(SharpDevelopTargetFrameworkVersion)' == 'CF 2.0') and (Exists('$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets')) "
+	<Import Condition=" ('$(SharpDevelopTargetFrameworkClass)' == 'CF') and (Exists('$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets')) "
 	        Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets"/>
 </Project>

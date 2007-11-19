@@ -38,10 +38,10 @@ namespace ICSharpCode.SharpDevelop.BuildWorker
 					ShowMessageBox(ex.ToString());
 				}
 			} else {
-				Program.Log("ICSharpCode.SharpDevelop.BuildWorker.exe is used to compile " +
-				            "MSBuild projects inside SharpDevelop.");
-				Program.Log("If you want to compile projects on the command line, use " +
-				            "MSBuild.exe (part of the .NET Framework)");
+				Console.WriteLine("ICSharpCode.SharpDevelop.BuildWorker.exe is used to compile " +
+				                  "MSBuild projects inside SharpDevelop.");
+				Console.WriteLine("If you want to compile projects on the command line, use " +
+				                  "MSBuild.exe (part of the .NET Framework)");
 			}
 		}
 		

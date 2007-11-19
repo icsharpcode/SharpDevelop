@@ -18,9 +18,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 	/// </summary>
 	public sealed class XmlDoc : IDisposable
 	{
-		static readonly List<string> xmlDocLookupDirectories = new List<string>(
-			new string[] { System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory() }
-		);
+		static readonly List<string> xmlDocLookupDirectories = new List<string> {
+			System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory()
+		};
 		
 		public static IList<string> XmlDocLookupDirectories {
 			get { return xmlDocLookupDirectories; }
@@ -247,6 +247,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public static XmlDoc Load(string fileName, string cachePath)
 		{
+			return Load(fileName, cachePath, true);
+		}
+		
+		static XmlDoc Load(string fileName, string cachePath, bool allowRedirect)
+		{
 			//LoggingService.Debug("Loading XmlDoc for " + fileName);
 			XmlDoc doc;
 			string cacheName = null;
@@ -270,6 +275,17 @@ namespace ICSharpCode.SharpDevelop.Dom
 			
 			try {
 				using (XmlTextReader xmlReader = new XmlTextReader(fileName)) {
+					xmlReader.MoveToContent();
+					if (allowRedirect && !string.IsNullOrEmpty(xmlReader.GetAttribute("redirect"))) {
+						string redirectionTarget = GetRedirectionTarget(xmlReader.GetAttribute("redirect"));
+						if (redirectionTarget != null) {
+							LoggingService.Info("XmlDoc " + fileName + " is redirecting to " + redirectionTarget);
+							return Load(redirectionTarget, cachePath, false);
+						} else {
+							LoggingService.Warn("XmlDoc " + fileName + " is redirecting to " + xmlReader.GetAttribute("redirect") + ", but that file was not found.");
+							return new XmlDoc();
+						}
+					}
 					doc = Load(xmlReader);
 				}
 			} catch (XmlException ex) {
@@ -291,6 +307,52 @@ namespace ICSharpCode.SharpDevelop.Dom
 				doc.LoadFromBinary(cacheName, date);
 			}
 			return doc;
+		}
+		
+		static string GetRedirectionTarget(string target)
+		{
+			string programFilesDir = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
+			if (!programFilesDir.EndsWith("\\") && !programFilesDir.EndsWith("/"))
+				programFilesDir += "\\";
+			
+			string corSysDir = System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory();
+			if (!corSysDir.EndsWith("\\") && !corSysDir.EndsWith("/"))
+				corSysDir += "\\";
+			
+			return LookupLocalizedXmlDoc(target.Replace("%PROGRAMFILESDIR%", programFilesDir)
+			                             .Replace("%CORSYSDIR%", corSysDir));
+		}
+		
+		internal static string LookupLocalizedXmlDoc(string fileName)
+		{
+			string xmlFileName = Path.ChangeExtension(fileName, ".xml");
+			string currentCulture = System.Threading.Thread.CurrentThread.CurrentUICulture.TwoLetterISOLanguageName;
+			string localizedXmlDocFile = GetLocalizedName(xmlFileName, currentCulture);
+			
+			LoggingService.Debug("Try find XMLDoc @" + localizedXmlDocFile);
+			if (File.Exists(localizedXmlDocFile)) {
+				return localizedXmlDocFile;
+			}
+			LoggingService.Debug("Try find XMLDoc @" + xmlFileName);
+			if (File.Exists(xmlFileName)) {
+				return xmlFileName;
+			}
+			if (currentCulture != "en") {
+				string englishXmlDocFile = GetLocalizedName(xmlFileName, "en");
+				LoggingService.Debug("Try find XMLDoc @" + englishXmlDocFile);
+				if (File.Exists(englishXmlDocFile)) {
+					return englishXmlDocFile;
+				}
+			}
+			return null;
+		}
+		
+		static string GetLocalizedName(string fileName, string language)
+		{
+			string localizedXmlDocFile = Path.GetDirectoryName(fileName);
+			localizedXmlDocFile = Path.Combine(localizedXmlDocFile, language);
+			localizedXmlDocFile = Path.Combine(localizedXmlDocFile, Path.GetFileName(fileName));
+			return localizedXmlDocFile;
 		}
 	}
 }

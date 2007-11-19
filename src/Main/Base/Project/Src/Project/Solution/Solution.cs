@@ -261,7 +261,7 @@ namespace ICSharpCode.SharpDevelop.Project
 						new string [] {fileName});
 					if (attemptOverwrite) {
 						try {
-							attributes = (int) attributes - FileAttributes.ReadOnly;
+							attributes &= ~FileAttributes.ReadOnly;
 							File.SetAttributes(fileName, attributes);
 							Save(fileName);
 							return;
@@ -356,16 +356,16 @@ namespace ICSharpCode.SharpDevelop.Project
 			// we need to specify UTF8 because MSBuild needs the BOM
 			using (StreamWriter sw = new StreamWriter(fileName, false, Encoding.UTF8)) {
 				sw.WriteLine();
-				int versionNumber = 9;
+				int versionNumber = SolutionVersionVS05;
 				foreach (IProject p in this.Projects) {
 					if (p.MinimumSolutionVersion > versionNumber)
 						versionNumber = p.MinimumSolutionVersion;
 				}
 				
 				sw.WriteLine("Microsoft Visual Studio Solution File, Format Version " + versionNumber + ".00");
-				if (versionNumber == 9) {
+				if (versionNumber == SolutionVersionVS05) {
 					sw.WriteLine("# Visual Studio 2005");
-				} else if (versionNumber == 10) {
+				} else if (versionNumber == SolutionVersionVS08) {
 					sw.WriteLine("# Visual Studio 2008");
 				}
 				sw.WriteLine("# SharpDevelop " + RevisionClass.FullVersion);

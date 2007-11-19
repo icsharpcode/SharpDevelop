@@ -109,11 +109,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 				LoggingService.Warn(ex);
 			}
 			
-			string fileName = LookupLocalizedXmlDoc(assemblyLocation);
+			string fileName = XmlDoc.LookupLocalizedXmlDoc(assemblyLocation);
 			if (fileName == null) {
 				// Not found -> look in other directories:
 				foreach (string testDirectory in XmlDoc.XmlDocLookupDirectories) {
-					fileName = LookupLocalizedXmlDoc(Path.Combine(testDirectory, Path.GetFileName(assemblyLocation)));
+					fileName = XmlDoc.LookupLocalizedXmlDoc(Path.Combine(testDirectory, Path.GetFileName(assemblyLocation)));
 					if (fileName != null)
 						break;
 				}

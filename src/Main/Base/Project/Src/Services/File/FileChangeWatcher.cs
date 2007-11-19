@@ -14,7 +14,6 @@ using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop
 {
-	#region FileChangeWatcher
 	internal sealed class FileChangeWatcher //: IDisposable
 	{
 		/*FileSystemWatcher watcher;
@@ -122,5 +121,4 @@ namespace ICSharpCode.SharpDevelop
 		}
 		 */
 	}
-	#endregion
 }

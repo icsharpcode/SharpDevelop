@@ -219,21 +219,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return null;
 		}
 		
-		protected static string LookupLocalizedXmlDoc(string fileName)
-		{
-			string xmlFileName         = Path.ChangeExtension(fileName, ".xml");
-			string localizedXmlDocFile = Path.GetDirectoryName(fileName);
-			localizedXmlDocFile = Path.Combine(localizedXmlDocFile, Thread.CurrentThread.CurrentUICulture.TwoLetterISOLanguageName);
-			localizedXmlDocFile = Path.Combine(localizedXmlDocFile, Path.GetFileName(xmlFileName));
-			if (File.Exists(localizedXmlDocFile)) {
-				return localizedXmlDocFile;
-			}
-			if (File.Exists(xmlFileName)) {
-				return xmlFileName;
-			}
-			return null;
-		}
-		
 		public virtual void Dispose()
 		{
 			xmlDoc.Dispose();

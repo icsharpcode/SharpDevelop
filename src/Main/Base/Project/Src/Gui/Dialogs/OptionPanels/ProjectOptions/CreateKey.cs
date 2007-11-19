@@ -99,7 +99,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		
 		public static string StrongNameTool {
 			get {
-				return FileUtility.NetSdkInstallRoot + "bin\\sn.exe";
+				return Path.Combine(FileUtility.NetSdkInstallRoot, "bin\\sn.exe");
 			}
 		}
 	}

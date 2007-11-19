@@ -363,7 +363,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		static Assembly GetDefaultAssembly(string shortName)
+		protected virtual Assembly GetDefaultAssembly(string shortName)
 		{
 			// These assemblies are already loaded by SharpDevelop, so we
 			// don't need to load them in a separate AppDomain/with Cecil.
@@ -400,4 +400,5 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 	}
 }
+
 

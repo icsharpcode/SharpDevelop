@@ -29,13 +29,14 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		public readonly static TargetFramework Net35 = new TargetFramework("v3.5", ".NET Framework 3.5") { BasedOn = Net30 };
 		public readonly static TargetFramework CF = new TargetFramework("CF", null);
 		public readonly static TargetFramework CF20 = new TargetFramework("CF 2.0", "Compact Framework 2.0") { BasedOn = CF };
+		public readonly static TargetFramework CF35 = new TargetFramework("CF 3.5", "Compact Framework 3.5") { BasedOn = CF20 };
 		public readonly static TargetFramework Mono = new TargetFramework("Mono", null);
 		public readonly static TargetFramework Mono10 = new TargetFramework("Mono v1.1", "Mono 1.1") { BasedOn = Mono };
 		public readonly static TargetFramework Mono20 = new TargetFramework("Mono v2.0", "Mono 2.0") { BasedOn = Mono10 };
 		
 		public readonly static TargetFramework[] TargetFrameworks = {
 			Net35, Net30, Net20,
-			CF, CF20,
+			CF, CF35, CF20,
 			Mono, Mono20, Mono10
 		};
 		
