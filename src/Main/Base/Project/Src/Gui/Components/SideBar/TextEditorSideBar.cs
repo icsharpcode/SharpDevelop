@@ -60,6 +60,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 				} else {
 					LoadSideBarConfig(doc.DocumentElement["SideBar"]);
 				}
+			} catch (FileNotFoundException) {
+				// do not show a warning when the side bar file does not exist
+				GenerateStandardSideBar();
 			} catch (Exception ex) {
 				MessageService.ShowWarning(ex.ToString());
 				GenerateStandardSideBar();
