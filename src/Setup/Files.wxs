@@ -394,33 +394,9 @@
 											<File Source="..\..\bin\Tools\NUnit\nunit.framework.dll" Name="nuframg.dll" Id="nunit.framework.gac.dll" LongName="nunit.framework.dll" Assembly=".net" AssemblyManifest="nunit.framework.gac.dll" KeyPath="yes" />
 										</Component>
 									</Directory>
-									<Directory Id="Net_1.1" Name="Net-1.1">
-										<Component Guid="68CCA177-12B4-4EDE-9912-D60845D8CC06" Id="NUnitConsoleRunnerDllNetv11" DiskId="1">
-											<File Source="..\..\bin\Tools\NUnit\Net-1.1\nunit-console-runner.dll" Name="nucrun2.dll" Id="Net_1.1.nunit_console_runner.dll" LongName="nunit-console-runner.dll" AssemblyApplication="Net_1.1.nunit_console_runner.dll" AssemblyManifest="Net_1.1.nunit_console_runner.dll" Assembly=".net" KeyPath="yes" />
-										</Component>
-										<Component Guid="5B5D5C28-416C-4EF1-9476-CD120A1AC1B0" Id="NUnitConsoleNetv11Files" DiskId="1">
-											<File Source="..\..\bin\Tools\NUnit\Net-1.1\nunit-console.exe" Name="nucons2.exe" Id="Net_1.1.nunit_console.exe" LongName="nunit-console.exe" AssemblyApplication="Net_1.1.nunit_console.exe" AssemblyManifest="Net_1.1.nunit_console.exe" Assembly=".net" KeyPath="yes" />
-											<File Source="..\..\bin\Tools\NUnit\Net-1.1\nunit-console.exe.config" Name="nucons2.con" Id="Net_1.1.nunit_console.exe1.config" LongName="nunit-console.exe.config" />
-										</Component>
-										<Component Guid="1615EFF3-D86A-4F7E-A1C7-4417EB420002" Id="NUnitCoreDllNetv11" DiskId="1">
-											<File Source="..\..\bin\Tools\NUnit\Net-1.1\nunit.core.dll" Name="nucore2.dll" Id="Net_1.1.nunit.core.dll" LongName="nunit.core.dll" Assembly=".net" AssemblyApplication="Net_1.1.nunit.core.dll" AssemblyManifest="Net_1.1.nunit.core.dll" KeyPath="yes" />
-										</Component>
-										<Component Guid="EA6D0786-6103-42DE-8E49-A65FC622D181" Id="NUnitUiKitDllNetv11" DiskId="1">
-											<File Source="..\..\bin\Tools\NUnit\Net-1.1\nunit.uikit.dll" Name="nuuikit.dll" Id="Net_1.1.nunit.uikit.dll" LongName="nunit.uikit.dll" Assembly=".net" AssemblyApplication="Net_1.1.nunit.uikit.dll" AssemblyManifest="Net_1.1.nunit.uikit.dll" KeyPath="yes" />
-										</Component>
-										<Component Guid="3D66D8B1-5C03-404B-882B-105715A598CD" Id="NUnitUtilDllNetv11" DiskId="1">
-											<File Source="..\..\bin\Tools\NUnit\Net-1.1\nunit.util.dll" Name="nuutil2.dll" Id="Net_1.1.nunit.util.dll" LongName="nunit.util.dll" Assembly=".net" AssemblyApplication="Net_1.1.nunit.util.dll" AssemblyManifest="Net_1.1.nunit.util.dll" KeyPath="yes" />
-										</Component>
-										<Component Guid="6B1EB863-88A1-4B3F-95C5-FCAC7C525998" Id="NUnitCoreInterfacesDllNetv11" DiskId="1">
-											<File Source="..\..\bin\Tools\NUnit\Net-1.1\nunit.core.interfaces.dll" Name="nucori2.dll" Id="Net_1.1.nunit.core.interfaces.dll" LongName="nunit.core.interfaces.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Net_1.1.nunit.core.interfaces.dll" AssemblyManifest="Net_1.1.nunit.core.interfaces.dll" />
-										</Component>
-										<Component Guid="F81843D5-CECB-431C-A940-33E8CC478D01" Id="NUnitCoreExtensionsDllNetv11" DiskId="1">
-											<File Source="..\..\bin\Tools\NUnit\Net-1.1\nunit.core.extensions.dll" Name="NCOREX1.DLL" Id="Net_1.1.nunit.core.extensions.dll" LongName="nunit.core.extensions.dll" Assembly=".net" KeyPath="yes" AssemblyApplication="Net_1.1.nunit.core.extensions.dll" AssemblyManifest="Net_1.1.nunit.core.extensions.dll" />
-										</Component>
-										<Component Guid="A1F0ABAB-3E44-4BD3-B2E1-13B9E4F28DA5" Id="NUnitFrameworkDllNetv11" DiskId="1">
-											<File Source="..\..\bin\Tools\NUnit\Net-1.1\nunit.framework.dll" Name="nuframe.dll" Id="Net_1.1.nunit.framework.dll" LongName="nunit.framework.dll" />
-										</Component>
-									</Directory>
+									<Component Guid="1746BE13-1435-4547-B46C-9B0222736EE9" Id="NUnitLog4NetDll" DiskId="1">
+										<File Source="..\..\bin\Tools\NUnit\log4net.dll" Name="log4net.dll" Id="NUnit.log4net.dll" Assembly=".net" AssemblyApplication="NUnit.log4net.dll" AssemblyManifest="NUnit.log4net.dll" KeyPath="yes" />
+									</Component>
 								</Directory>
 								<Directory Id="SHFB" Name="SHFB">
 									<Component Guid="9BA72447-B0B2-4782-93A2-A321E3377F3A" Id="SHFBMain" DiskId="1">
@@ -541,7 +517,7 @@
 										<Registry Id="PartCoverCorDriverRegistryClsIdGuidAppId" Root="HKCR" Type="string" Key="CLSID\{6F6225EA-0897-41fa-B1EF-8B4D3E15325E}" Name="AppId" Value="7D0E6AAB-C5FC-4103-AAD4-8BF3112A56C4" />
 										<Registry Id="PartCoverCorDriverRegistryClsIdGuidInProcServer" Root="HKCR" Type="string" Key="CLSID\{6F6225EA-0897-41fa-B1EF-8B4D3E15325E}\InProcServer32" Value="[#PartCover.CorDriver.dll]" />
 										<Registry Id="PartCoverCorDriverRegistryClsIdGuidInProcServerThreadingModel" Root="HKCR" Type="string" Key="CLSID\{6F6225EA-0897-41fa-B1EF-8B4D3E15325E}\InProcServer32" Name="ThreadingModel" Value="both" />
-										<Registry Id="PartCoverCorDriverRegistryClsIdGuidProgID" Root="HKCR" Type="string" Key="CLSID\{6F6225EA-0897-41fa-B1EF-8B4D3E15325E}\ProgID" Value="PartCover.CorDriver.Connector.2" />									
+										<Registry Id="PartCoverCorDriverRegistryClsIdGuidProgID" Root="HKCR" Type="string" Key="CLSID\{6F6225EA-0897-41fa-B1EF-8B4D3E15325E}\ProgID" Value="PartCover.CorDriver.Connector.2" />
 										<Registry Id="PartCoverCorDriverRegistryClsIdGuidProgrammable" Root="HKCR" Type="string" Key="CLSID\{6F6225EA-0897-41fa-B1EF-8B4D3E15325E}\Programmable" Value=" " />
 										<Registry Id="PartCoverCorDriverRegistryClsIdGuidTypeLib" Root="HKCR" Type="string" Key="CLSID\{6F6225EA-0897-41fa-B1EF-8B4D3E15325E}\TypeLib" Value="{7D0E6AAB-C5FC-4103-AAD4-8BF3112A56C4}" />
 										<Registry Id="PartCoverCorDriverRegistryClsIdGuidVersionIndependentProgID" Root="HKCR" Type="string" Key="CLSID\{6F6225EA-0897-41fa-B1EF-8B4D3E15325E}\VersionIndependentProgID" Value="PartCover.CorDriver.Connector" />
