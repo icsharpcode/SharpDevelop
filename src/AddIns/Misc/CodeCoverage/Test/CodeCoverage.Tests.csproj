@@ -71,6 +71,7 @@
     <Compile Include="CodeCoverageMarkersInvalidStartColumnTestFixture.cs" />
     <Compile Include="CodeCoverageMarkersInvalidEndColumnTestFixture.cs" />
     <None Include="Strings.resources" />
+    <Compile Include="SimilarRootNamespaceTestFixture.cs" />
     <Compile Include="TreeViewAfterSelectTestFixture.cs" />
     <Compile Include="TreeViewSortingTestFixture.cs" />
     <Compile Include="ZeroCodeCoverageTreeViewTestFixture.cs" />

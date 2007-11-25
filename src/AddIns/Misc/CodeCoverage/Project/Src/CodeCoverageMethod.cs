@@ -166,7 +166,8 @@ namespace ICSharpCode.CodeCoverage
 			List<string> items = new List<string>();
 			foreach (CodeCoverageMethod method in methods) {
 				string classNamespace = method.ClassNamespace;
-				if (classNamespace.Length > parentNamespace.Length && classNamespace.StartsWith(parentNamespace)) {
+				string dottedParentNamespace = parentNamespace + ".";
+				if (classNamespace.Length > parentNamespace.Length && classNamespace.StartsWith(dottedParentNamespace)) {
 					string ns = CodeCoverageMethod.GetChildNamespace(method.ClassNamespace, parentNamespace);
 					if (!items.Contains(ns)) {
 						items.Add(ns);
