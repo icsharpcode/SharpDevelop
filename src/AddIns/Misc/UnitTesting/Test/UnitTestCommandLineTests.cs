@@ -173,44 +173,6 @@ namespace UnitTesting.Tests
 		{
 			helper.Initialize(project, null, null);
 			Assert.AreSame(project, helper.Project);
-		}
-		
-		/// <summary>
-		/// Here the project specifies that it is to be compiled
-		/// against the .NET 1.1 framework so for testing we use the
-		/// nunit-console.exe that runs against that framework.
-		/// </summary>
-		[Test]
-		public void Netv11TargetFramework()
-		{
-			project.SetProperty("TargetFrameworkVersion", "v1.1");
-						
-			helper.Initialize(project, null, null);
-			helper.ShadowCopy = true;
-			
-			FileUtility.ApplicationRootPath = @"C:\SharpDevelop";
-			
-			string expectedFullCommandLine = "\"C:\\SharpDevelop\\bin\\Tools\\NUnit\\Net-1.1\\nunit-console.exe\" \"C:\\Projects\\MyTests\\MyTests.dll\"";
-			Assert.AreEqual(expectedFullCommandLine, helper.GetCommandLine());
-		}
-		
-		/// <summary>
-		/// Here the project specifies that it is to be compiled
-		/// against the .NET 1.0 framework. We do not support .NET 1.0
-		/// so we return the nunit-console that runs against .NET 2.0.
-		/// </summary>
-		[Test]
-		public void Netv10TargetFramework()
-		{
-			project.SetProperty("TargetFrameworkVersion", "v1.0");
-						
-			helper.Initialize(project, null, null);
-			helper.ShadowCopy = true;
-			
-			FileUtility.ApplicationRootPath = @"C:\SharpDevelop";
-			
-			string expectedFullCommandLine = "\"C:\\SharpDevelop\\bin\\Tools\\NUnit\\nunit-console.exe\" \"C:\\Projects\\MyTests\\MyTests.dll\"";
-			Assert.AreEqual(expectedFullCommandLine, helper.GetCommandLine());
-		}
+		}		
 	}
 }

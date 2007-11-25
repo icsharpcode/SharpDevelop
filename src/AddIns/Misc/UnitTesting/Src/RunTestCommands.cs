@@ -432,7 +432,7 @@ namespace ICSharpCode.UnitTesting
 		protected override void RunTests(UnitTestApplicationStartHelper helper)
 		{										
 			TestRunnerCategory.AppendLine(helper.GetCommandLine());
-			runner.Start(helper.GetUnitTestConsoleApplication(), helper.GetArguments());
+			runner.Start(UnitTestApplicationStartHelper.UnitTestConsoleApplication, helper.GetArguments());
 		}
 		
 		protected override void OnStop()
