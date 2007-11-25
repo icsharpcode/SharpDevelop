@@ -80,6 +80,11 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		bool SetInstructionPointer(string filename, int line, int column);
 		
 		/// <summary>
+		/// Ocurrs when the debugger is starting.
+		/// </summary>
+		event EventHandler DebugStarting;
+		
+		/// <summary>
 		/// Ocurrs after the debugger has started.
 		/// </summary>
 		event EventHandler DebugStarted;

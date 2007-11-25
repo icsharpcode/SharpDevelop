@@ -704,17 +704,17 @@ namespace WeifenLuo.WinFormsUI.Docking
             // Change the parent of a control with focus may result in the first
             // MDI child form get activated. 
             //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            bool bRestoreFocus = false;
-            if (Form.ContainsFocus)
-            {
-                if (value == null)
-                    DockPanel.ContentFocusManager.GiveUpFocus(this.Content);
-                else
-                {
-                    DockPanel.SaveFocus();
-                    bRestoreFocus = true;
-                }
-            }
+//            bool bRestoreFocus = false;
+//            if (Form.ContainsFocus)
+//            {
+//                if (value == null)
+//                    DockPanel.ContentFocusManager.GiveUpFocus(this.Content);
+//                else
+//                {
+//                    DockPanel.SaveFocus();
+//                    bRestoreFocus = true;
+//                }
+//            }
             //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
             Form.Parent = value;
@@ -724,8 +724,27 @@ namespace WeifenLuo.WinFormsUI.Docking
             // Change the parent of a control with focus may result in the first
             // MDI child form get activated. 
             //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+/*          Workaround disabled: in SharpDevelop, the Activate() call causes an exception on layout changes
+                                 iff no document is open and a pad has the focus.
+            I don't think we need this workaround because we don't use MDI.
+            
+System.InvalidOperationException: Invalid Content: ActiveContent must be one ofthe visible contents, or null if there is no visible content.
+	at WeifenLuo.WinFormsUI.Docking.DockPane.set_ActiveContent(IDockContent value) in d:\SD\3.0\SharpDevelop\src\Libraries\DockPanel_Src\WinFormsUI\Docking\DockPane.cs:line 162
+	at WeifenLuo.WinFormsUI.Docking.DockContentHandler.Activate() in d:\SD\3.0\SharpDevelop\src\Libraries\DockPanel_Src\WinFormsUI\Docking\DockContentHandler.cs:line 618
+	at WeifenLuo.WinFormsUI.Docking.DockContentHandler.SetParent(Control value) in d:\SD\3.0\SharpDevelop\src\Libraries\DockPanel_Src\WinFormsUI\Docking\DockContentHandler.cs:line 728
+	at WeifenLuo.WinFormsUI.Docking.DockContentHandler.SetPane(DockPane pane) in d:\SD\3.0\SharpDevelop\src\Libraries\DockPanel_Src\WinFormsUI\Docking\DockContentHandler.cs:line 674
+	at WeifenLuo.WinFormsUI.Docking.DockContentHandler.SetPaneAndVisible(DockPane pane) in d:\SD\3.0\SharpDevelop\src\Libraries\DockPanel_Src\WinFormsUI\Docking\DockContentHandler.cs:line 651
+	at WeifenLuo.WinFormsUI.Docking.DockContentHandler.SetDockState(Boolean isHidden, DockState visibleState, DockPane oldPane) in d:\SD\3.0\SharpDevelop\src\Libraries\DockPanel_Src\WinFormsUI\Docking\DockContentHandler.cs:line 504
+	at WeifenLuo.WinFormsUI.Docking.DockContentHandler.set_PanelPane(DockPane value) in d:\SD\3.0\SharpDevelop\src\Libraries\DockPanel_Src\WinFormsUI\Docking\DockContentHandler.cs:line 388
+	at WeifenLuo.WinFormsUI.Docking.DockPanel.Persistor.LoadFromXml(DockPanel dockPanel, Stream stream, DeserializeDockContent deserializeContent, Boolean closeStream) in d:\SD\3.0\SharpDevelop\src\Libraries\DockPanel_Src\WinFormsUI\Docking\DockPanel.Persistor.cs:line 614
+	at WeifenLuo.WinFormsUI.Docking.DockPanel.Persistor.LoadFromXml(DockPanel dockPanel, Stream stream, DeserializeDockContent deserializeContent) in d:\SD\3.0\SharpDevelop\src\Libraries\DockPanel_Src\WinFormsUI\Docking\DockPanel.Persistor.cs:line 378
+	at WeifenLuo.WinFormsUI.Docking.DockPanel.LoadFromXml(Stream stream, DeserializeDockContent deserializeContent) in d:\SD\3.0\SharpDevelop\src\Libraries\DockPanel_Src\WinFormsUI\Docking\DockPanel.Persistor.cs:line 772
+	at ICSharpCode.SharpDevelop.Gui.SdiWorkbenchLayout.LoadDockPanelLayout(String fileName) in d:\SD\3.0\SharpDevelop\src\Main\Base\Project\Src\Gui\Workbench\Layouts\SdiWorkspaceLayout.cs:line 213
+	at ICSharpCode.SharpDevelop.Gui.SdiWorkbenchLayout.LoadLayoutConfiguration()in d:\SD\3.0\SharpDevelop\src\Main\Base\Project\Src\Gui\Workbench\Layouts\SdiWorkspaceLayout.cs:line 190
+
             if (bRestoreFocus)
                 Activate();
+            */
             //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         }
 

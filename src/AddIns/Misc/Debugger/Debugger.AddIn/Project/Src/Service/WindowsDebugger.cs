@@ -138,6 +138,9 @@ namespace ICSharpCode.SharpDevelop.Services
 			} else if (version == null || version.Length == 0) {
 				MessageService.ShowMessage("${res:XML.MainMenu.DebugMenu.Error.BadAssembly}");
 			} else {
+				if (DebugStarting != null)
+					DebugStarting(this, EventArgs.Empty);
+				
 				Debugger.Process process = debugger.Start(processStartInfo.FileName,
 				                                          processStartInfo.WorkingDirectory,
 				                                          processStartInfo.Arguments);
@@ -228,6 +231,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			}
 		}
 		
+		public event EventHandler DebugStarting;
 		public event EventHandler DebugStarted;
 		public event EventHandler DebugStopped;
 		public event EventHandler IsProcessRunningChanged;

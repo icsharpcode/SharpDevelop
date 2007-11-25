@@ -72,6 +72,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			get {
 				if (currentDebugger == null) {
 					currentDebugger = GetCompatibleDebugger();
+					currentDebugger.DebugStarting += new EventHandler(OnDebugStarting);
 					currentDebugger.DebugStarted += new EventHandler(OnDebugStarted);
 					currentDebugger.DebugStopped += new EventHandler(OnDebugStopped);
 				}
@@ -97,25 +98,25 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			}
 		}
 		
+		public static event EventHandler DebugStarting;
 		public static event EventHandler DebugStarted;
 		public static event EventHandler DebugStopped;
 		
-		static void OnDebugStarted(object sender, EventArgs e)
-		{
-			// OnDebugStarted runs on the main thread, but for some reason we
-			// have to delay the layout change a bit to work around SD2-1325
-			WorkbenchSingleton.SafeThreadAsyncCall(OnDebugStartedInvoked);
-			if (DebugStarted != null)
-				DebugStarted(null, EventArgs.Empty);
-		}
-		
-		static void OnDebugStartedInvoked()
+		static void OnDebugStarting(object sender, EventArgs e)
 		{
 			WorkbenchSingleton.Workbench.WorkbenchLayout.StoreConfiguration();
-			oldLayoutConfiguration = LayoutConfiguration.CurrentLayoutName;
 			LayoutConfiguration.CurrentLayoutName = "Debug";
 
 			ClearDebugMessages();
+			
+			if (DebugStarting != null)
+				DebugStarting(null, e);
+		}
+		
+		static void OnDebugStarted(object sender, EventArgs e)
+		{
+			if (DebugStarted != null)
+				DebugStarted(null, e);
 		}
 		
 		static void OnDebugStopped(object sender, EventArgs e)
@@ -311,7 +312,6 @@ namespace ICSharpCode.SharpDevelop.Debugging
 				}
 				
 				if (e.InDocument) {
-					
 					// Query all registered tooltip providers using the AddInTree.
 					// The first one that does not return null will be used.
 					ToolTipInfo ti = null;
@@ -335,7 +335,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 					
 				}
 			} catch (Exception ex) {
-				ICSharpCode.Core.MessageService.ShowError(ex);
+				ICSharpCode.Core.MessageService.ShowError(ex, "Error while requesting tooltip for location " + e.LogicalPosition);
 			} finally {
 				if (toolTipControl == null && CanCloseOldToolTip)
 					CloseOldToolTip();

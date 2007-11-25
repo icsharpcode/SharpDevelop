@@ -14,3 +14,9 @@ Patch #2:
 	that was active when SharpDevelop was closed does not exist anymore after an AddIn was removed
 	manually or SharpDevelop was updated)
  Committed in revision 2732.
+
+Patch #3:
+	Disable MDI focus workaround in DockContentHandler.cs
+	This fixes the System.InvalidOperationException: Invalid Content: ActiveContent must be one ofthe visible contents, or null if there is no visible content.
+	that occurs on layout changes iff no document is open and a pad has the focus.
+ Committed in revision 2751.

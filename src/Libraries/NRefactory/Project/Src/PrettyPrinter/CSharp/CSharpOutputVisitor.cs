@@ -2623,7 +2623,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public override object TrackedVisitQueryExpressionJoinClause(QueryExpressionJoinClause joinClause, object data)
 		{
-			outputFormatter.PrintToken(Tokens.From);
+			outputFormatter.PrintToken(Tokens.Join);
 			outputFormatter.Space();
 			VisitQueryExpressionFromOrJoinClause(joinClause, data);
 			outputFormatter.Space();

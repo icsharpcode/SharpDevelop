@@ -2775,47 +2775,126 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public override object TrackedVisitQueryExpression(QueryExpression queryExpression, object data)
 		{
-			throw new NotImplementedException();
+			outputFormatter.IndentationLevel++;
+			queryExpression.FromClause.AcceptVisitor(this, data);
+			queryExpression.FromLetWhereClauses.ForEach(PrintClause);
+			if (queryExpression.Orderings.Count > 0) {
+				outputFormatter.NewLine();
+				outputFormatter.Indent();
+				outputFormatter.PrintText("Order By");
+				outputFormatter.Space();
+				AppendCommaSeparatedList(queryExpression.Orderings);
+			}
+			PrintClause(queryExpression.SelectOrGroupClause);
+			PrintClause(queryExpression.IntoClause);
+			outputFormatter.IndentationLevel--;
+			return null;
 		}
 		
-		public override object TrackedVisitQueryExpressionFromClause(QueryExpressionFromClause queryExpressionFromClause, object data)
+		void PrintClause(QueryExpressionClause clause)
 		{
-			throw new NotImplementedException();
+			if (!clause.IsNull) {
+				outputFormatter.PrintLineContinuation();
+				outputFormatter.Indent();
+				clause.AcceptVisitor(this, null);
+			}
 		}
 		
-		public override object TrackedVisitQueryExpressionGroupClause(QueryExpressionGroupClause queryExpressionGroupClause, object data)
+		public override object TrackedVisitQueryExpressionFromClause(QueryExpressionFromClause fromClause, object data)
 		{
-			throw new NotImplementedException();
+			outputFormatter.PrintText("From");
+			outputFormatter.Space();
+			VisitQueryExpressionFromOrJoinClause(fromClause, data);
+			return null;
 		}
 		
-		public override object TrackedVisitQueryExpressionIntoClause(QueryExpressionIntoClause queryExpressionIntoClause, object data)
+		public override object TrackedVisitQueryExpressionJoinClause(QueryExpressionJoinClause joinClause, object data)
 		{
-			throw new NotImplementedException();
+			outputFormatter.PrintText("Join");
+			outputFormatter.Space();
+			VisitQueryExpressionFromOrJoinClause(joinClause, data);
+			outputFormatter.Space();
+			outputFormatter.PrintToken(Tokens.On);
+			outputFormatter.Space();
+			joinClause.OnExpression.AcceptVisitor(this, data);
+			outputFormatter.Space();
+			outputFormatter.PrintToken(Tokens.Assign);
+			outputFormatter.Space();
+			joinClause.EqualsExpression.AcceptVisitor(this, data);
+			if (!string.IsNullOrEmpty(joinClause.IntoIdentifier)) {
+				outputFormatter.Space();
+				outputFormatter.PrintText("Into");
+				outputFormatter.Space();
+				outputFormatter.PrintIdentifier(joinClause.IntoIdentifier);
+			}
+			return null;
 		}
 		
-		public override object TrackedVisitQueryExpressionOrdering(QueryExpressionOrdering queryExpressionOrdering, object data)
+		void VisitQueryExpressionFromOrJoinClause(QueryExpressionFromOrJoinClause clause, object data)
 		{
-			throw new NotImplementedException();
+			outputFormatter.PrintIdentifier(clause.Identifier);
+			outputFormatter.Space();
+			outputFormatter.PrintToken(Tokens.In);
+			outputFormatter.Space();
+			clause.InExpression.AcceptVisitor(this, data);
 		}
 		
-		public override object TrackedVisitQueryExpressionSelectClause(QueryExpressionSelectClause queryExpressionSelectClause, object data)
+		public override object TrackedVisitQueryExpressionLetClause(QueryExpressionLetClause letClause, object data)
 		{
-			throw new NotImplementedException();
+			outputFormatter.PrintToken(Tokens.Let);
+			outputFormatter.Space();
+			outputFormatter.PrintIdentifier(letClause.Identifier);
+			outputFormatter.Space();
+			outputFormatter.PrintToken(Tokens.Assign);
+			outputFormatter.Space();
+			return letClause.Expression.AcceptVisitor(this, data);
 		}
 		
-		public override object TrackedVisitQueryExpressionWhereClause(QueryExpressionWhereClause queryExpressionWhereClause, object data)
+		public override object TrackedVisitQueryExpressionGroupClause(QueryExpressionGroupClause groupClause, object data)
 		{
-			throw new NotImplementedException();
+			outputFormatter.PrintText("Group");
+			outputFormatter.Space();
+			groupClause.Projection.AcceptVisitor(this, data);
+			outputFormatter.Space();
+			outputFormatter.PrintText("By");
+			outputFormatter.Space();
+			return groupClause.GroupBy.AcceptVisitor(this, data);
 		}
 		
-		public override object TrackedVisitQueryExpressionJoinClause(QueryExpressionJoinClause queryExpressionJoinClause, object data)
+		public override object TrackedVisitQueryExpressionIntoClause(QueryExpressionIntoClause intoClause, object data)
 		{
-			throw new NotImplementedException();
+			outputFormatter.PrintText("Into");
+			outputFormatter.Space();
+			outputFormatter.PrintIdentifier(intoClause.IntoIdentifier);
+			outputFormatter.Space();
+			return intoClause.ContinuedQuery.AcceptVisitor(this, data);
 		}
 		
-		public override object TrackedVisitQueryExpressionLetClause(QueryExpressionLetClause queryExpressionLetClause, object data)
+		public override object TrackedVisitQueryExpressionOrdering(QueryExpressionOrdering ordering, object data)
 		{
-			throw new NotImplementedException();
+			ordering.Criteria.AcceptVisitor(this, data);
+			if (ordering.Direction == QueryExpressionOrderingDirection.Ascending) {
+				outputFormatter.Space();
+				outputFormatter.PrintText("Ascending");
+			} else if (ordering.Direction == QueryExpressionOrderingDirection.Descending) {
+				outputFormatter.Space();
+				outputFormatter.PrintText("Descending");
+			}
+			return null;
+		}
+		
+		public override object TrackedVisitQueryExpressionSelectClause(QueryExpressionSelectClause selectClause, object data)
+		{
+			outputFormatter.PrintToken(Tokens.Select);
+			outputFormatter.Space();
+			return selectClause.Projection.AcceptVisitor(this, data);
+		}
+		
+		public override object TrackedVisitQueryExpressionWhereClause(QueryExpressionWhereClause whereClause, object data)
+		{
+			outputFormatter.PrintText("Where");
+			outputFormatter.Space();
+			return whereClause.Condition.AcceptVisitor(this, data);
 		}
 	}
 }

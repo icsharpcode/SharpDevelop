@@ -39,6 +39,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 		public override void Run()
 		{
 			if (editingLayout) return;
+			LoggingService.Debug("ChooseLayoutCommand.Run()");
 			
 			ComboBox comboBox = ((ToolBarComboBox)Owner).ComboBox;
 			string dataPath   = Path.Combine(PropertyService.DataDirectory, "resources" + Path.DirectorySeparatorChar + "layouts");
@@ -147,15 +148,14 @@ namespace ICSharpCode.SharpDevelop.Commands
 						} catch (Exception) {}
 					}
 				}
-				WorkbenchSingleton.Workbench.WorkbenchLayout.LoadConfiguration();
-				
-				LayoutChanged(null, null);
+				LayoutConfiguration.ReloadDefaultLayout();
 			}
 		}
 		
 		void LayoutChanged(object sender, EventArgs e)
 		{
 			if (editingLayout) return;
+			LoggingService.Debug("ChooseLayoutCommand.LayoutChanged(object,EventArgs)");
 			ToolBarComboBox toolbarItem = (ToolBarComboBox)Owner;
 			ComboBox comboBox = toolbarItem.ComboBox;
 			for (int i = 0; i < comboBox.Items.Count; ++i) {

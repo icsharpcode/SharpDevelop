@@ -39,6 +39,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 				return;
 			}
 			
+			OnDebugStarting(EventArgs.Empty);
 			try {
 				attachedProcess = new Process();
 				attachedProcess.StartInfo = processStartInfo;
@@ -47,6 +48,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 				attachedProcess.Start();
 				OnDebugStarted(EventArgs.Empty);
 			} catch (Exception) {
+				OnDebugStopped(EventArgs.Empty);
 				throw new ApplicationException("Can't execute " + "\"" + processStartInfo.FileName + "\"\n");
 			}
 		}
@@ -158,6 +160,15 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		{
 			if (DebugStopped != null) {
 				DebugStopped(this, e);
+			}
+		}
+		
+		public event EventHandler DebugStarting;
+		
+		protected virtual void OnDebugStarting(EventArgs e)
+		{
+			if (DebugStarting != null) {
+				DebugStarting(this, e);
 			}
 		}
 		
