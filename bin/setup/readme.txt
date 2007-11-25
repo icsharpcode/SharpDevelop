@@ -1,1 +1,0 @@
-This folder is exlusively used by the setup program of #develop

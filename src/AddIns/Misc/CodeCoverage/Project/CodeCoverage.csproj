@@ -69,8 +69,6 @@
     <EmbeddedResource Include="Resources\CodeCoverageProjectOptionsPanel.xfrm" />
     <Compile Include="Src\CodeCoverageService.cs" />
     <Compile Include="Src\RunTestWithCodeCoverageCommand.cs" />
-    <EmbeddedResource Include="Resources\CodeCoverageRunnerNotFoundForm.xfrm" />
-    <Compile Include="Src\CodeCoverageRunnerNotFoundForm.cs" />
     <None Include="CodeCoverage.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
