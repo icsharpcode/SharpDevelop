@@ -71,5 +71,12 @@ namespace XmlEditor.Tests.Paths
 		{
 			Assert.AreEqual(path.Elements.GetHashCode(), path.GetHashCode());
 		}
+		
+		[Test]
+		public void PathToString()
+		{
+			string expectedToString = String.Empty;
+			Assert.AreEqual(expectedToString, path.ToString());
+		}
 	}
 }

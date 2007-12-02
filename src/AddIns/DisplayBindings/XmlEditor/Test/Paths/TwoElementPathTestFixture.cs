@@ -93,5 +93,12 @@ namespace XmlEditor.Tests.Paths
 			path.Compact();
 			Assert.IsTrue(newPath.Equals(path), "Should be equal.");
 		}
+
+		[Test]
+		public void PathToString()
+		{
+			string expectedToString = "f:foo > b:bar";
+			Assert.AreEqual(expectedToString, path.ToString());
+		}
 	}
 }

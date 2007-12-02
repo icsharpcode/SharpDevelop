@@ -87,36 +87,41 @@ namespace ICSharpCode.XmlEditor
 		/// Gets the namespace of the qualified name.
 		/// </summary>
 		public string Namespace {
-			get {
-				return xmlQualifiedName.Namespace;
-			}
-			set {
-				xmlQualifiedName = new XmlQualifiedName(xmlQualifiedName.Name, value);
-			}
+			get { return xmlQualifiedName.Namespace; }
+			set { xmlQualifiedName = new XmlQualifiedName(xmlQualifiedName.Name, value); }
 		}
 		
 		/// <summary>
 		/// Gets the name of the element.
 		/// </summary>
 		public string Name {
-			get {
-				return xmlQualifiedName.Name;
-			}
-			set {
-				xmlQualifiedName = new XmlQualifiedName(value, xmlQualifiedName.Namespace);
-			}
+			get { return xmlQualifiedName.Name; }
+			set { xmlQualifiedName = new XmlQualifiedName(value, xmlQualifiedName.Namespace); }
 		}
 		
 		/// <summary>
 		/// Gets the namespace prefix used.
 		/// </summary>
 		public string Prefix {
-			get {
-				return prefix;
+			get { return prefix; }
+			set { prefix = value; }
+		}
+		
+		/// <summary>
+		/// Returns a string that represents the QualifiedName.
+		/// </summary>
+		public override string ToString()
+		{			
+			if (xmlQualifiedName.Namespace.Length > 0) {
+				string prefixToString = String.Empty;
+				if (!String.IsNullOrEmpty(prefix)) {
+					prefixToString = prefix + ":";
+				}
+				return String.Concat(prefixToString, xmlQualifiedName.Name, " [", xmlQualifiedName.Namespace, "]");
+			} else if (!String.IsNullOrEmpty(prefix)) {
+				return prefix + ":" + xmlQualifiedName.Name;
 			}
-			set {
-				prefix = value;
-			}
+			return xmlQualifiedName.Name;
 		}
 	}
 }

@@ -207,14 +207,11 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		public string LastPrefix {
 			get {
-				string prefix = String.Empty;
-				
 				if (Count > 0) {
 					QualifiedName name = this[Count - 1];
-					prefix = name.Prefix;
+					return name.Prefix;
 				}
-				
-				return prefix;
+				return String.Empty;
 			}
 		}
 		

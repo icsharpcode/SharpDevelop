@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Text;
 
 namespace ICSharpCode.XmlEditor
 {
@@ -26,9 +27,7 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		/// <remarks>The order of the elements determines the path.</remarks>
 		public QualifiedNameCollection Elements {
-			get {
-				return elements;
-			}
+			get { return elements; }
 		}
 		
 		/// <summary>
@@ -55,8 +54,8 @@ namespace ICSharpCode.XmlEditor
 		/// An xml element path is considered to be equal if 
 		/// each path item has the same name and namespace.
 		/// </summary>
-		public override bool Equals(object obj) {
-			
+		public override bool Equals(object obj) 
+		{	
 			if (!(obj is XmlElementPath)) return false;
 			if (this == obj) return true;
 			
@@ -74,8 +73,32 @@ namespace ICSharpCode.XmlEditor
 			return false;
 		}
 		
-		public override int GetHashCode() {
+		public override int GetHashCode() 
+		{
 			return elements.GetHashCode();
+		}
+		
+		
+		/// <summary>
+		/// Gets a string that represents the XmlElementPath.
+		/// </summary>
+		public override string ToString()
+		{
+			if (elements.Count > 0) {
+				StringBuilder toString = new StringBuilder();
+				int lastIndex = elements.Count - 1;
+				for (int i = 0; i < elements.Count; ++i) {
+					string elementToString = GetElementToString(elements[i]);
+					if (i == lastIndex) {
+						toString.Append(elementToString);
+					} else {
+						toString.Append(elementToString);
+						toString.Append(" > ");
+					}
+				}
+				return toString.ToString();
+			}
+			return String.Empty;
 		}
 		
 		/// <summary>
@@ -108,6 +131,19 @@ namespace ICSharpCode.XmlEditor
 				}
 			}
 			return index;
+		}
+		
+		/// <summary>
+		/// Returns the qualified name as a string. If the name has a 
+		/// prefix then it returns "prefix:element" otherwise it returns
+		/// just the element name.
+		/// </summary>
+		static string GetElementToString(QualifiedName name)
+		{
+			if (name.Prefix.Length > 0) {
+				return name.Prefix + ":" + name.Name;
+			}
+			return name.Name;
 		}
 	}
 }

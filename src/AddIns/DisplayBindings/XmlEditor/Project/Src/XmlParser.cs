@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
@@ -45,18 +46,12 @@ namespace ICSharpCode.XmlEditor
 			}
 			
 			public string Namespace {
-				get {
-					return namespaceURI;
-				}
-				set {
-					namespaceURI = value;
-				}
+				get { return namespaceURI; }
+				set { namespaceURI = value; }
 			}
 			
 			public string Prefix {
-				get {
-					return prefix;
-				}
+				get { return prefix; }
 				set {
 					prefix = value;
 					if (prefix == null) {
@@ -64,12 +59,20 @@ namespace ICSharpCode.XmlEditor
 					}
 				}
 			}
+			
+			public override string ToString()
+			{
+				if (!String.IsNullOrEmpty(prefix)) {
+					return prefix + ":" + namespaceURI;
+				}
+				return namespaceURI;
+			}
 		}
 		
 		XmlParser()
 		{
 		}
-		
+
 		/// <summary>
 		/// Gets path of the xml element start tag that the specified 
 		/// <paramref name="index"/> is currently inside.
@@ -78,30 +81,10 @@ namespace ICSharpCode.XmlEditor
 		/// is returned.</remarks>
 		public static XmlElementPath GetActiveElementStartPath(string xml, int index)
 		{
-			XmlElementPath path = new XmlElementPath();
-			
-			string elementText = GetActiveElementStartText(xml, index);
-			
-			if (elementText != null) {
-				QualifiedName elementName = GetElementName(elementText);
-				NamespaceURI elementNamespace = GetElementNamespace(elementText);
-							
-				path = GetParentElementPath(xml.Substring(0, index));
-				if (elementNamespace.Namespace.Length == 0) {
-					if (path.Elements.Count > 0) {
-						QualifiedName parentName = path.Elements[path.Elements.Count - 1];
-						elementNamespace.Namespace = parentName.Namespace;
-						elementNamespace.Prefix = parentName.Prefix;
-					}
-				}
-				
-				path.Elements.Add(new QualifiedName(elementName.Name, elementNamespace.Namespace, elementNamespace.Prefix));		
-				path.Compact();
-			}
-			
-			return path;
+			QualifiedNameCollection namespaces = new QualifiedNameCollection();
+			return GetActiveElementStartPath(xml, index, namespaces);
 		}
-		
+				
 		/// <summary>
 		/// Gets path of the xml element start tag that the specified 
 		/// <paramref name="index"/> is currently located. This is different to the
@@ -112,56 +95,21 @@ namespace ICSharpCode.XmlEditor
 		/// is returned.</remarks>
 		public static XmlElementPath GetActiveElementStartPathAtIndex(string xml, int index)
 		{
-			// Find first non xml element name character to the right of the index.
-			index = GetCorrectedIndex(xml.Length, index);
-			int currentIndex = index;
-			for (; currentIndex < xml.Length; ++currentIndex) {
-				char ch = xml[currentIndex];
-				if (!IsXmlNameChar(ch)) {
-					break;
-				}
-			}
-		
-			string elementText = GetElementNameAtIndex(xml, currentIndex);
-			if (elementText != null) {
-				return GetActiveElementStartPath(xml, currentIndex, elementText);
-			}
-			return new XmlElementPath();
+			QualifiedNameCollection namespaces = new QualifiedNameCollection();
+			return GetActiveElementStartPathAtIndex(xml, index, namespaces);
 		}
-		
+
 		/// <summary>
 		/// Gets the parent element path based on the index position.
 		/// </summary>
 		public static XmlElementPath GetParentElementPath(string xml)
 		{
-			XmlElementPath path = new XmlElementPath();
-			
-			try {
-				StringReader reader = new StringReader(xml);
-				XmlTextReader xmlReader = new XmlTextReader(reader);
-				xmlReader.XmlResolver = null; // prevent XmlTextReader from loading external DTDs
-				while (xmlReader.Read()) {
-					switch (xmlReader.NodeType) {
-						case XmlNodeType.Element:
-							if (!xmlReader.IsEmptyElement) {
-								QualifiedName elementName = new QualifiedName(xmlReader.LocalName, xmlReader.NamespaceURI, xmlReader.Prefix);
-								path.Elements.Add(elementName);
-							}
-							break;
-						case XmlNodeType.EndElement:
-							path.Elements.RemoveLast();
-							break;
-					}
-				}
-			} catch (XmlException) { 
-				// Do nothing.
-			}
-			
+			QualifiedNameCollection namespaces = new QualifiedNameCollection();
+			XmlElementPath path = GetFullParentElementPath(xml, namespaces);
 			path.Compact();
-			
 			return path;
-		}			
-		
+		}
+				
 		/// <summary>
 		/// Checks whether the attribute at the end of the string is a 
 		/// namespace declaration.
@@ -242,15 +190,32 @@ namespace ICSharpCode.XmlEditor
 			index = GetCorrectedIndex(xml.Length, index);
 			return GetAttributeName(xml, index, true, true, true);
 		}
+
+		/// <summary>
+		/// Gets the name of the attribute and its prefix at the specified index. The index
+		/// can be anywhere inside the attribute name or in the attribute value. 
+		/// The namespace for the element containing the attribute will also be determined
+		/// if the includeNamespace flag is set to true.
+		/// </summary>
+		public static QualifiedName GetQualifiedAttributeNameAtIndex(string xml, int index, bool includeNamespace)
+		{
+			string name = GetAttributeNameAtIndex(xml, index);
+			QualifiedName qualifiedName = GetQualifiedName(name);
+			if (String.IsNullOrEmpty(qualifiedName.Namespace) && includeNamespace) {
+				QualifiedNameCollection namespaces = new QualifiedNameCollection();
+				XmlElementPath path = GetActiveElementStartPathAtIndex(xml, index, namespaces);
+				qualifiedName.Namespace = GetNamespaceForPrefix(namespaces, path.Elements.LastPrefix);
+			}
+			return qualifiedName;
+		}
 		
 		/// <summary>
 		/// Gets the name of the attribute and its prefix at the specified index. The index
-		/// can be anywhere inside the attribute name or in the attribute value.
+		/// can be anywhere inside the attribute name or in the attribute value. 
 		/// </summary>
 		public static QualifiedName GetQualifiedAttributeNameAtIndex(string xml, int index)
 		{
-			string name = GetAttributeNameAtIndex(xml, index);
-			return GetQualifiedName(name);
+			return GetQualifiedAttributeNameAtIndex(xml, index, false);
 		}
 		
 		/// <summary>
@@ -601,12 +566,20 @@ namespace ICSharpCode.XmlEditor
 		/// <summary>
 		/// Gets the active element path given the element text.
 		/// </summary>
-		static XmlElementPath GetActiveElementStartPath(string xml, int index, string elementText)
+		static XmlElementPath GetActiveElementStartPath(string xml, int index, string elementText, QualifiedNameCollection namespaces)
 		{
 			QualifiedName elementName = GetElementName(elementText);
 			NamespaceURI elementNamespace = GetElementNamespace(elementText);
 						
-			XmlElementPath path = GetParentElementPath(xml.Substring(0, index));
+			XmlElementPath path = GetFullParentElementPath(xml.Substring(0, index), namespaces);
+			
+			// Try to get a namespace for the active element's prefix.
+			if (elementName.Prefix.Length > 0 && elementNamespace.Namespace.Length == 0) {
+				elementName.Namespace = GetNamespaceForPrefix(namespaces, elementName.Prefix);
+				elementNamespace.Namespace = elementName.Namespace;
+				elementNamespace.Prefix = elementName.Prefix;
+			}
+			
 			if (elementNamespace.Namespace.Length == 0) {
 				if (path.Elements.Count > 0) {
 					QualifiedName parentName = path.Elements[path.Elements.Count - 1];
@@ -712,6 +685,106 @@ namespace ICSharpCode.XmlEditor
 			}
 			return qualifiedName;
 		}
+	
+		/// <summary>
+		/// Gets the parent element path based on the index position. This
+		/// method does not compact the path so it will include all elements
+		/// including those in another namespace in the path.
+		/// </summary>
+		static XmlElementPath GetFullParentElementPath(string xml, QualifiedNameCollection namespaces)
+		{
+			XmlElementPath path = new XmlElementPath();
+			IDictionary<string,string> namespacesInScope = null;
+			using (StringReader reader = new StringReader(xml)) {
+				using (XmlTextReader xmlReader = new XmlTextReader(reader)) {
+					try {
+						xmlReader.XmlResolver = null; // prevent XmlTextReader from loading external DTDs
+						while (xmlReader.Read()) {
+							switch (xmlReader.NodeType) {
+								case XmlNodeType.Element:
+									if (!xmlReader.IsEmptyElement) {
+										QualifiedName elementName = new QualifiedName(xmlReader.LocalName, xmlReader.NamespaceURI, xmlReader.Prefix);
+										path.Elements.Add(elementName);
+									}
+									break;
+								case XmlNodeType.EndElement:
+									path.Elements.RemoveLast();
+									break;
+							}
+						}
+					} catch (XmlException) { 
+						namespacesInScope = xmlReader.GetNamespacesInScope(XmlNamespaceScope.All);
+					}
+				}
+			}
+			
+			// Add namespaces in scope for the last element read.
+			if (namespacesInScope != null) {
+				foreach (KeyValuePair<string, string> ns in namespacesInScope) {
+					namespaces.Add(new QualifiedName(String.Empty, ns.Value, ns.Key));
+				}
+			}
+			
+			return path;
+		}
+			
+		/// <summary>
+		/// Finds the namespace for the specified prefix.
+		/// </summary>
+		static string GetNamespaceForPrefix(QualifiedNameCollection namespaces, string prefix)
+		{
+			foreach (QualifiedName name in namespaces) {
+				if (name.Prefix == prefix) {
+					return name.Namespace;
+				}
+			}
+			return String.Empty;
+		}
+		
+		/// <summary>
+		/// Gets path of the xml element start tag that the specified 
+		/// <paramref name="index"/> is currently inside.
+		/// </summary>
+		/// <remarks>If the index outside the start tag then an empty path
+		/// is returned.</remarks>
+		/// <param name="namespaces">Returns the namespaces that are
+		/// exist in the xml.</param>
+		static XmlElementPath GetActiveElementStartPath(string xml, int index, QualifiedNameCollection namespaces)
+		{
+			XmlElementPath path = new XmlElementPath();
+			string elementText = GetActiveElementStartText(xml, index);
+			if (elementText != null) {
+				path = GetActiveElementStartPath(xml, index, elementText, namespaces);
+			}
+			return path;
+		}		
+		
+		/// <summary>
+		/// Gets path of the xml element start tag that the specified 
+		/// <paramref name="index"/> is currently located. This is different to the
+		/// GetActiveElementStartPath method since the index can be inside the element 
+		/// name.
+		/// </summary>
+		/// <remarks>If the index outside the start tag then an empty path
+		/// is returned.</remarks>
+		static XmlElementPath GetActiveElementStartPathAtIndex(string xml, int index, QualifiedNameCollection namespaces)
+		{
+			// Find first non xml element name character to the right of the index.
+			index = GetCorrectedIndex(xml.Length, index);
+			int currentIndex = index;
+			for (; currentIndex < xml.Length; ++currentIndex) {
+				char ch = xml[currentIndex];
+				if (!IsXmlNameChar(ch)) {
+					break;
+				}
+			}
+		
+			string elementText = GetElementNameAtIndex(xml, currentIndex);
+			if (elementText != null) {
+				return GetActiveElementStartPath(xml, currentIndex, elementText, namespaces);
+			}
+			return new XmlElementPath();
+		}		
 	}
 }
 

@@ -63,5 +63,20 @@ namespace XmlEditor.Tests.Paths
 			path.Compact();
 			Equality();
 		}
+		
+		[Test]
+		public void PathToString()
+		{
+			string expectedToString = "foo";
+			Assert.AreEqual(expectedToString, path.ToString());
+		}
+		
+		[Test]
+		public void TwoElementsPathToString()
+		{
+			QualifiedName qualifiedName = new QualifiedName("bar", "http://foo");
+			path.Elements.Add(qualifiedName);
+			Assert.AreEqual("foo > bar", path.ToString());
+		}
 	}
 }
