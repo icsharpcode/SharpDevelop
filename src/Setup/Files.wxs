@@ -103,6 +103,13 @@
 								</Registry>
 								<Registry Id="SD.prjxfile.association" Root="HKCR" Type="string" Key=".prjx" Value="SD.prjxfile" />
 							</Component>
+							<Component Id="PythonProjectFileAssociation" Guid="6BA02209-9C7A-42A3-85BC-407FA4C0B646" DiskId="1">
+								<Registry Id="SD.pyprojfile" Root="HKCR" Type="string" Key="SD.pyprojfile" Value="Python Project File" KeyPath="yes">
+									<Registry Id="SD.pyprojfile.command" Type="string" Key="shell\open\command" Value="&quot;[#SharpDevelop.exe]&quot; &quot;%1&quot;" />
+									<Registry Id="SD.pyprojfile.icon" Type="string" Key="DefaultIcon" Value="&quot;[#prjx.ico]&quot;" />
+								</Registry>
+								<Registry Id="SD.pyprojfile.association" Root="HKCR" Type="string" Key=".pyproj" Value="SD.pyprojfile" />
+							</Component>
 							<Component Id="ResxFileAssociation" Guid="EA3BA93F-C2EE-4FB2-AEA7-A661A3054AB1" DiskId="1">
 								<Registry Id="SD.resxfile" Root="HKCR" Type="string" Key="SD.resxfile" Value="Resx File" KeyPath="yes">
 									<Registry Id="SD.resxfile.command" Type="string" Key="shell\open\command" Value="&quot;[#SharpDevelop.exe]&quot; &quot;%1&quot;" />
@@ -1044,6 +1051,49 @@
 											<File Source="..\..\AddIns\AddIns\BackendBindings\XamlBinding\XamlBinding.addin" Name="XAMLBI_1.ADD" Id="XamlBinding.addin" LongName="XamlBinding.addin" />
 											<File Source="..\..\AddIns\AddIns\BackendBindings\XamlBinding\XamlBinding.dll" Name="XAMLBI_1.DLL" Id="XamlBinding.dll" LongName="XamlBinding.dll" />
 										</Component>
+									</Directory>
+									<Directory Id="PythonBinding" Name="Python" LongName="PythonBinding">
+										<Component Guid="AF97A77A-F986-4284-BC0A-9568B1419FC1" Id="IpyExe" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\BackendBindings\PythonBinding\ipy.exe" Name="ipy.exe" Id="ipy.exe" KeyPath="yes" Assembly=".net" AssemblyApplication="ipy.exe" AssemblyManifest="ipy.exe" />
+										</Component>
+										<Component Guid="F3D35EE6-D6F3-4D3A-9613-70E01C780057" Id="IronMathDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\BackendBindings\PythonBinding\IronMath.dll" Name="IronMath.dll" Id="IronMath.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="IronMath.dll" AssemblyManifest="IronMath.dll" />
+										</Component>
+										<Component Guid="A7C0416F-8B3F-4C64-A25C-8B48AADD957D" Id="IronPythonDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\BackendBindings\PythonBinding\IronPython.dll" Name="ipy.dll" Id="IronPython.dll" LongName="IronPython.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="IronPython.dll" AssemblyManifest="IronPython.dll" />
+										</Component>
+										<Component Guid="ADBB3544-DE83-4676-A95E-3BC497ABC94D" Id="PythonBuildTasksDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\BackendBindings\PythonBinding\Python.Build.Tasks.dll" Name="pytask.dll" Id="Python.Build.Tasks.dll" LongName="Python.Build.Tasks.dll" Assembly=".net" AssemblyApplication="Python.Build.Tasks.dll" AssemblyManifest="Python.Build.Tasks.dll" KeyPath="yes" />
+										</Component>
+										<Component Guid="CD84F3F1-F3E8-4EF2-A1BD-8092076EBBB8" Id="PythonBindingAddin" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\BackendBindings\PythonBinding\PythonBinding.addin" Name="python.add" Id="PythonBinding.addin" LongName="PythonBinding.addin" KeyPath="yes" />
+										</Component>
+										<Component Guid="AE71C296-051C-4C19-90B0-2C261D58CCFA" Id="PythonBindingDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\BackendBindings\PythonBinding\PythonBinding.dll" Name="python.dll" Id="PythonBinding.dll" LongName="PythonBinding.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="PythonBinding.dll" AssemblyManifest="PythonBinding.dll" />
+										</Component>
+										<Component Guid="A74FF259-8D05-4FA5-9664-63F2ECB6E568" Id="SharpDevelopBuildPythonTargets" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\BackendBindings\PythonBinding\SharpDevelop.Build.Python.targets" Name="python.tgt" Id="SharpDevelop.Build.Python.targets" LongName="SharpDevelop.Build.Python.targets" KeyPath="yes" />
+										</Component>
+										<Directory Id="PythonTemplates" Name="Template" LongName="Templates">
+											<Component Guid="2F5F1DC5-A04F-4FF2-8B68-BC803B19F80A" Id="PythonConsoleProjectTemplate" DiskId="1">
+												<File Source="..\..\AddIns\AddIns\BackendBindings\PythonBinding\Templates\ConsoleProject.xpt" Name="consprj.xpt" Id="Templates.ConsoleProject.xpt" LongName="ConsoleProject.xpt" KeyPath="yes" />
+											</Component>
+											<Component Guid="1F303642-32B5-4B95-A8A8-3EEB2ED76F21" Id="PythonEmptyFileTemplate" DiskId="1">
+												<File Source="..\..\AddIns\AddIns\BackendBindings\PythonBinding\Templates\Empty.xft" Name="Empty.xft" Id="Templates.Empty.xft" KeyPath="yes" />
+											</Component>
+											<Component Guid="99E81C31-321C-4A15-A502-7E5E27891810" Id="PythonEmptyClassTemplate" DiskId="1">
+												<File Source="..\..\AddIns\AddIns\BackendBindings\PythonBinding\Templates\EmptyClass.xft" Name="class.xft" Id="Templates.EmptyClass.xft" LongName="EmptyClass.xft" KeyPath="yes" />
+											</Component>
+											<Component Guid="C7F4F370-4070-4BFD-9325-2D2FFEC27A5A" Id="PythonEmptyFormTemplate" DiskId="1">
+												<File Source="..\..\AddIns\AddIns\BackendBindings\PythonBinding\Templates\EmptyForm.xft" Name="frm.xft" Id="EmptyForm.xft" LongName="EmptyForm.xft" KeyPath="yes" />
+											</Component>
+											<Component Guid="FBEF6AC5-7658-46C3-9805-239B4223CAB3" Id="PythonEmptyUserControlTemplate" DiskId="1">
+												<File Source="..\..\AddIns\AddIns\BackendBindings\PythonBinding\Templates\EmptyUserControl.xft" Name="usrctrl.xft" Id="EmptyUserControl.xft" LongName="EmptyUserControl.xft" KeyPath="yes" />
+											</Component>
+											<Component Guid="C077D46F-D6EF-4187-9715-3EAD8A43A1EC" Id="PythonFormsProjectTemplate" DiskId="1">
+												<File Source="..\..\AddIns\AddIns\BackendBindings\PythonBinding\Templates\FormsProject.xpt" Name="frmprj.xpt" Id="Templates.FormsProject.xpt" LongName="FormsProject.xpt" KeyPath="yes" />
+											</Component>
+										</Directory>
 									</Directory>
 								</Directory>
 								<Directory Id="DisplayBindingsFolder" Name="display" LongName="DisplayBindings">

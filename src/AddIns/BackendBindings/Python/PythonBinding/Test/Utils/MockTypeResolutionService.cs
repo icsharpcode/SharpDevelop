@@ -1,0 +1,62 @@
+﻿// <file>
+//     <copyright see="prj:///doc/copyright.txt"/>
+//     <license see="prj:///doc/license.txt"/>
+//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
+//     <version>$Revision$</version>
+// </file>
+
+using System;
+using System.ComponentModel.Design;
+using System.Reflection;
+
+namespace PythonBinding.Tests.Utils
+{
+	/// <summary>
+	/// Mock implementation of the ITypeResolutionService interface.
+	/// </summary>
+	public class MockTypeResolutionService : ITypeResolutionService
+	{
+		public MockTypeResolutionService()
+		{
+		}
+		
+		public Assembly GetAssembly(AssemblyName name)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public Assembly GetAssembly(AssemblyName name, bool throwOnError)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public Type GetType(string name)
+		{
+			Console.WriteLine("TypeResolutionService.GetType: " + name);
+			if (name == "Form") {
+				return typeof(System.Windows.Forms.Form);
+			}
+			return Type.GetType(name);
+		}
+		
+		public Type GetType(string name, bool throwOnError)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public Type GetType(string name, bool throwOnError, bool ignoreCase)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public void ReferenceAssembly(AssemblyName name)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public string GetPathOfAssembly(AssemblyName name)
+		{
+			throw new NotImplementedException();
+		}
+	}
+}

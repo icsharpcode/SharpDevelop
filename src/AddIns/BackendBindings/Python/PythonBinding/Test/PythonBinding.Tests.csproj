@@ -1,0 +1,229 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <ProjectGuid>{23B517C9-1ECC-4419-A13F-0B7136D085CB}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <OutputType>Library</OutputType>
+    <RootNamespace>PythonBinding.Tests</RootNamespace>
+    <AssemblyName>PythonBinding.Tests</AssemblyName>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <NoStdLib>False</NoStdLib>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <OutputPath>..\..\..\..\..\..\bin\UnitTests\</OutputPath>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <Optimize>False</Optimize>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <OutputPath>..\..\..\..\..\..\bin\UnitTests\</OutputPath>
+    <DebugSymbols>false</DebugSymbols>
+    <DebugType>None</DebugType>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>False</Optimize>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>4194304</BaseAddress>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <FileAlignment>4096</FileAlignment>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+  <ItemGroup>
+    <Reference Include="IronMath">
+      <HintPath>..\..\RequiredLibraries\IronMath.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="IronPython">
+      <HintPath>..\..\RequiredLibraries\IronPython.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="Microsoft.Build.Engine" />
+    <Reference Include="Microsoft.Build.Framework" />
+    <Reference Include="Microsoft.Build.Tasks" />
+    <Reference Include="Microsoft.Build.Utilities" />
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\..\..\..\Tools\NUnit\nunit.framework.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Design" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AddInOptionsTestFixture.cs" />
+    <Compile Include="AppSettingsPanelTestFixture.cs" />
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="AddInFileTestFixture.cs" />
+    <Compile Include="CompilingOptionsPanelTestFixture.cs" />
+    <Compile Include="Converter\AddHandlerConversionTestFixture.cs" />
+    <Compile Include="Converter\ArrayConversionTestFixture.cs" />
+    <Compile Include="Converter\BaseClassReferenceTestFixture.cs" />
+    <Compile Include="Converter\BinaryOperatorConversionTests.cs" />
+    <Compile Include="Converter\ClassConstructorConversionTestFixture.cs" />
+    <Compile Include="Converter\ConvertVBNetToPythonMenuCommandTestFixture.cs" />
+    <Compile Include="Converter\ElseIfStatementConversionTestFixture.cs" />
+    <Compile Include="Converter\FieldDeclarationWithNoInitializerTestFixture.cs" />
+    <Compile Include="Converter\ForeachConversionTestFixture.cs" />
+    <Compile Include="Converter\ForLoopConversionTestFixture.cs" />
+    <Compile Include="Converter\IfBlockStatementConversionTestFixture.cs" />
+    <Compile Include="Converter\IncrementAndDecrementConversionTests.cs" />
+    <Compile Include="Converter\IntegerClassFieldConversionTestFixture.cs" />
+    <Compile Include="Converter\IntegerClassFieldInitializedInConstructorTestFixture.cs" />
+    <Compile Include="Converter\IntegerClassFieldWithConstructorTestFixture.cs" />
+    <Compile Include="Converter\LocalVariableAssignedInConstructorTestFixture.cs" />
+    <Compile Include="Converter\LocalVariableDeclarationInIfStatementTestFixture.cs" />
+    <Compile Include="Converter\MethodParameterConversionTestFixture.cs" />
+    <Compile Include="Converter\MethodReturnValueConversionTestFixture.cs" />
+    <Compile Include="Converter\MethodWithBodyConversionTestFixture.cs" />
+    <Compile Include="Converter\IfStatementConversionTestFixture.cs" />
+    <Compile Include="Converter\NestedIfStatementConversionTestFixture.cs" />
+    <Compile Include="Converter\ObjectCreationTestFixture.cs" />
+    <Compile Include="Converter\PropertyConversionTestFixture.cs" />
+    <Compile Include="Converter\PropertyWithGetSetStatementsTestfixture.cs" />
+    <Compile Include="Converter\RemoveHandlerConversionTestFixture.cs" />
+    <Compile Include="Converter\SingleClassMethodConversionTestFixture.cs" />
+    <Compile Include="Converter\ConvertCSharpToPythonMenuCommandTestFixture.cs" />
+    <Compile Include="Converter\CSharpClassWithNamespaceConversionTestFixture.cs" />
+    <Compile Include="Converter\EmptyCSharpClassConversionTestFixture.cs" />
+    <Compile Include="Converter\StaticClassReferenceTestFixture.cs" />
+    <Compile Include="Converter\ThrowExceptionConversionTestFixture.cs" />
+    <Compile Include="Converter\TryCatchFinallyConversionTestFixture.cs" />
+    <Compile Include="Converter\UsingStatementConversionTestFixture.cs" />
+    <Compile Include="Converter\VBClassConversionTestFixture.cs" />
+    <Compile Include="Designer\DocumentRegionTests.cs" />
+    <Compile Include="Designer\FindInitializeComponentMethodTestFixture.cs" />
+    <Compile Include="Designer\FormCodeTypeRefHasFullyQualifiedBaseClassTestFixture.cs" />
+    <Compile Include="Designer\GeneratorCannotFindFormTestFixture.cs" />
+    <Compile Include="Designer\GeneratorMergeFindsInitializeComponentsTestFixture.cs" />
+    <Compile Include="Designer\InsertNewEventHandlerTestFixture.cs" />
+    <Compile Include="Designer\IsFullyQualifiedBaseClassFormDesignableTestFixture.cs" />
+    <Compile Include="Designer\MergeFormTestFixture.cs" />
+    <Compile Include="Designer\OneCompatibleMethodTestFixture.cs" />
+    <Compile Include="Designer\PythonGeneratorTestFixture.cs" />
+    <Compile Include="Designer\IsFormDesignableTestFixture.cs" />
+    <Compile Include="Designer\NullDocumentPassedToLoader.cs" />
+    <Compile Include="Designer\NullGeneratorPassedToLoader.cs" />
+    <Compile Include="Designer\PythonDesignerLoaderProviderTestFixture.cs" />
+    <Compile Include="Designer\PythonDesignerLoaderTestFixture.cs" />
+    <Compile Include="Designer\TextBoxOnFormTestFixture.cs" />
+    <Compile Include="Designer\UserControlCodeDomQualifiedBaseTypeTestFixture.cs" />
+    <Compile Include="Expressions\FindImportExpressionTestFixture.cs" />
+    <Compile Include="Expressions\FindSystemConsoleExpressionTestFixture.cs" />
+    <Compile Include="Expressions\RemoveLastPartTests.cs" />
+    <Compile Include="FormBaseClassReturnedFromPythonProviderTestFixture.cs" />
+    <Compile Include="FormsDesignerDisplayBindingTestFixture.cs" />
+    <Compile Include="FromImportCompletion.cs" />
+    <Compile Include="ImportCompletionTestFixture.cs" />
+    <Compile Include="LanguageBindingTestFixture.cs" />
+    <Compile Include="Parsing\ClassWithBaseClassTestFixture.cs" />
+    <Compile Include="Parsing\IronPythonParserTestFixture.cs" />
+    <Compile Include="Parsing\MethodWithParametersTestFixture.cs" />
+    <Compile Include="Parsing\ParseClassWithCtorTestFixture.cs" />
+    <Compile Include="Parsing\ParseClassWithMethodTestFixture.cs" />
+    <Compile Include="Parsing\ParseImportTestFixture.cs" />
+    <Compile Include="Parsing\ParseInvalidPythonCodeTestFixture.cs" />
+    <Compile Include="Parsing\ParserTestFixture.cs" />
+    <Compile Include="Parsing\ParseSingleClassTestFixture.cs" />
+    <Compile Include="Parsing\InvalidClassTestFixture.cs" />
+    <Compile Include="PythonBindingAddInFile.cs" />
+    <Compile Include="PythonOptionsPanelTestFixture.cs" />
+    <Compile Include="CreateNewPythonProjectTestFixture.cs" />
+    <Compile Include="PythonSyntaxModeTestFixture.cs" />
+    <Compile Include="Resolver\GetPythonModulesTestFixture.cs" />
+    <Compile Include="Resolver\InvalidResolveInputsTestFixture.cs" />
+    <Compile Include="Resolver\NamespaceContentsAddedToCtrlSpaceTestFixture.cs" />
+    <Compile Include="Resolver\ResolveConsoleTestFixture.cs" />
+    <Compile Include="Resolver\ResolveConsoleWriteLineTestFixture.cs" />
+    <Compile Include="Resolver\ResolveFromImportTestFixture.cs" />
+    <Compile Include="Resolver\ResolveImportsTestFixture.cs" />
+    <Compile Include="Resolver\ResolveSystemConsoleOutsideClassTestFixture.cs" />
+    <Compile Include="Resolver\ResolveSystemConsoleTestFixture.cs" />
+    <Compile Include="Resolver\ResolveSystemImportTestFixture.cs" />
+    <Compile Include="Resolver\ResolveSystemNamespaceTestFixture.cs" />
+    <Compile Include="Resolver\ResolveUnknownNamespaceTestFixture.cs" />
+    <Compile Include="RunPythonCommandTestFixture.cs" />
+    <Compile Include="StopPythonCommandTestFixture.cs" />
+    <Compile Include="Utils\BrowseButtonInfo.cs" />
+    <Compile Include="Utils\BrowseFolderButtonInfo.cs" />
+    <Compile Include="Utils\DerivedAddInOptions.cs" />
+    <Compile Include="Utils\DerivedApplicationSettingsPanel.cs" />
+    <Compile Include="Utils\DerivedCompilingOptionsPanel.cs" />
+    <Compile Include="Utils\DerivedFormDesignerViewContent.cs" />
+    <Compile Include="Utils\DerivedPythonCodeCompletionBinding.cs" />
+    <Compile Include="Utils\DerivedPythonDesignerGenerator.cs" />
+    <Compile Include="Utils\DerivedPythonDesignerLoader.cs" />
+    <Compile Include="Utils\DerivedPythonFormsDesignerDisplayBinding.cs" />
+    <Compile Include="Utils\MockClass.cs" />
+    <Compile Include="Utils\MockDesignerGenerator.cs" />
+    <Compile Include="Utils\MockDesignerLoaderHost.cs" />
+    <Compile Include="Utils\MockEditableViewContent.cs" />
+    <Compile Include="Utils\MockEventDescriptor.cs" />
+    <Compile Include="Utils\MockExtenderProviderService.cs" />
+    <Compile Include="Utils\MockMethod.cs" />
+    <Compile Include="Utils\MockOpenedFile.cs" />
+    <Compile Include="Utils\MockPadDescriptor.cs" />
+    <Compile Include="Utils\MockProcessRunner.cs" />
+    <Compile Include="Utils\MockProject.cs" />
+    <Compile Include="Utils\MockProjectContent.cs" />
+    <Compile Include="Utils\MockTextEditorViewContent.cs" />
+    <Compile Include="Utils\MockTypeResolutionService.cs" />
+    <Compile Include="Utils\MockViewContent.cs" />
+    <Compile Include="Utils\MockWorkbench.cs" />
+    <Compile Include="Utils\MockWorkbenchWindow.cs" />
+    <Compile Include="Utils\MSBuildEngineHelper.cs" />
+    <EmbeddedResource Include="..\Project\PythonBinding.addin">
+      <Link>PythonBinding.addin</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\Project\Templates\Empty.xft">
+      <Link>Empty.xft</Link>
+    </EmbeddedResource>
+    <None Include="app.config" />
+    <None Include="TODO.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj">
+      <Project>{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D}</Project>
+      <Name>ICSharpCode.TextEditor</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
+      <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
+      <Name>NRefactory</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
+      <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
+      <Name>ICSharpCode.SharpDevelop</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
+      <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
+      <Name>ICSharpCode.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
+      <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
+      <Name>ICSharpCode.SharpDevelop.Dom</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\DisplayBindings\FormsDesigner\Project\FormsDesigner.csproj">
+      <Project>{7D7E92DF-ACEB-4B69-92C8-8AC7A703CD57}</Project>
+      <Name>FormsDesigner</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Project\PythonBinding.csproj">
+      <Project>{8D732610-8FC6-43BA-94C9-7126FD7FE361}</Project>
+      <Name>PythonBinding</Name>
+    </ProjectReference>
+    <Folder Include="Expressions" />
+    <Folder Include="Designer" />
+    <Folder Include="Converter" />
+    <Folder Include="Parsing" />
+    <Folder Include="Resolver" />
+    <Folder Include="Utils" />
+  </ItemGroup>
+</Project>

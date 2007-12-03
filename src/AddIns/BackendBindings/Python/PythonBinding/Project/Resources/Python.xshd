@@ -1,0 +1,100 @@
+﻿<SyntaxDefinition name="Python" extensions=".py">
+	
+	<Properties>
+		<Property name="LineComment" value="#"/>
+	</Properties>
+	
+	<Digits name="Digits" color="DarkBlue"/>
+
+	<RuleSets>
+		<RuleSet ignorecase="false">
+			
+			<Delimiters>()[]{}@,:.`=;+-*/% &amp;|^&gt;&lt;</Delimiters>
+			
+			<Span name="Char" stopateol="true" color="Magenta" escapecharacter="\">
+				<Begin>'</Begin>
+				<End>'</End>
+			</Span>
+			
+			<Span name="DocComment" color="Green">
+				<Begin>"""</Begin>
+				<End>"""</End>
+			</Span>
+			
+			<Span name="LineComment" stopateol="true" color="Green">
+				<Begin>#</Begin>
+			</Span>
+			
+			<Span name="String" stopateol="true" color="Blue" escapecharacter="\">
+				<Begin>"</Begin>
+				<End>"</End>
+			</Span>
+			
+			<MarkPrevious bold="true" color="MidnightBlue">(</MarkPrevious>
+
+			<KeyWords name="BuiltInStatements" bold="true" color="MidnightBlue">
+				<Key word="assert"/>
+				<Key word="del"/>
+				<Key word="exec"/>
+				<Key word="global"/>
+				<Key word="lambda"/>
+				<Key word="print"/>
+			</KeyWords>
+			
+			<KeyWords name="ClassStatement" color="Blue" bold="true">
+				<Key word="class"/>
+			</KeyWords>
+			
+			<KeyWords name="ExceptionHandlingStatements" bold="true" color="Teal">
+				<Key word="except"/>
+				<Key word="finally"/>
+				<Key word="raise"/>
+				<Key word="try"/>
+			</KeyWords>
+			
+			<KeyWords name="FunctionDefinition" bold="true" color="Blue">
+				<Key word="def"/>
+			</KeyWords>
+			
+			<KeyWords name="Imports" bold="true" color="Green">
+				<Key word="import"/>
+				<Key word="from"/>
+			</KeyWords>
+			
+			<KeyWords name="IterationStatements" bold="true" color="Blue">
+				<Key word="for"/>
+				<Key word="in"/>
+				<Key word="while"/>
+			</KeyWords>
+			
+			<KeyWords name="JumpStatements" color="Navy">
+				<Key word="break"/>
+				<Key word="continue"/>
+				<Key word="yield"/>
+				<Key word="return"/>
+			</KeyWords>
+		
+			<KeyWords name="OperatorStatements" bold="true" color="DarkCyan">
+				<Key word="and"/>
+				<Key word="as"/>
+				<Key word="is"/>
+				<Key word="not"/>
+				<Key word="or"/>
+			</KeyWords>
+			
+			<KeyWords name="PassStatement" color="Gray">
+				<Key word="pass"/>
+			</KeyWords>			
+		
+			<KeyWords name="SelectionStatements" bold="true" color="Blue">
+				<Key word="elif"/>
+				<Key word="else"/>
+				<Key word="if"/>
+			</KeyWords>
+		
+			<KeyWords name="WithStatement" color="DarkViolet">
+				<Key word="with"/>
+			</KeyWords>
+		</RuleSet>
+	</RuleSets>
+</SyntaxDefinition>

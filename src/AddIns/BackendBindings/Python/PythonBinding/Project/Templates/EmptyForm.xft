@@ -1,0 +1,27 @@
+﻿<Template author="Matt Ward" version="1.0">
+	<Config name      = "${res:Templates.File.WindowsForm.Name}"
+		  icon        = "Icons.32x32.EmptyFileIcon"
+		  category    = "Python"
+		  defaultname = "Form${Number}.py"
+		  language    = "Python"/>
+	 
+	<Description>${res:Templates.File.WindowsForm.Description}</Description>
+	
+	<Files>
+		<File name="${FullName}" language="Python">
+import System.Drawing
+import System.Windows.Forms
+
+from System.Drawing import *
+from System.Windows.Forms import *
+
+class ${ClassName}(Form):
+	def __init__(self):
+		self.InitializeComponent()
+	
+	def InitializeComponent(self):
+		pass
+</File>
+	</Files>
+	<AdditionalOptions/>
+</Template>

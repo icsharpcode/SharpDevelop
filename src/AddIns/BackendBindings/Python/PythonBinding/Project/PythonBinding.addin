@@ -1,0 +1,154 @@
+﻿<AddIn name        = "Python Binding"
+       author      = "Matt Ward"
+       copyright   = "prj:///doc/copyright.txt"
+       description = "Backend binding for IronPython">
+	
+	<Manifest>
+		<Identity name="ICSharpCode.PythonBinding"/>
+		<Dependency addin="ICSharpCode.FormsDesigner"/>
+	</Manifest>
+	
+	<Runtime>
+		<Import assembly=":ICSharpCode.SharpDevelop"/>
+		<Import assembly="$ICSharpCode.FormsDesigner/FormsDesigner.dll"/>
+		<Import assembly="PythonBinding.dll">
+			<ConditionEvaluator name="IsPythonRunning" class="ICSharpCode.PythonBinding.IsPythonRunningCondition"/>
+		</Import>
+	</Runtime>
+
+	<Path name="/SharpDevelop/ViewContent/DefaultTextEditor/SyntaxModes">
+		<SyntaxMode id="Python.SyntaxMode" 
+		            extensions=".py" 
+		            name="Python"
+		            resource="ICSharpCode.PythonBinding.Resources.Python.xshd"/>
+	</Path>
+
+	<!-- Add the "Python" entry to the Open File Dialog -->
+	<Path name="/SharpDevelop/Workbench/FileFilter">
+		<FileFilter id="Python"
+		            insertbefore="Resources"
+		            insertafter="Icons"
+		            name="Python Files (*.py)"
+		            extensions="*.py"/>
+	</Path>
+
+	<!-- Add the "Python" entry to the Open Project Dialog -->
+	<Path name = "/SharpDevelop/Workbench/Combine/FileFilter">
+		<FileFilter id="PythonProject"
+		            insertbefore="AllFiles"
+		            name="Python Project Files (*.pyproj)"
+		            class="ICSharpCode.SharpDevelop.Project.LoadProject"
+		            extensions="*.pyproj"/>
+	</Path>
+	
+	<!-- File templates -->
+	<Path name="/SharpDevelop/BackendBindings/Templates">
+		<Directory id="Python" path="./Templates" />
+	</Path>
+
+	<!-- Python menu -->
+	<Path name="/SharpDevelop/Workbench/MainMenu">
+		<Condition name="ActiveContentExtension" activeextension=".py">
+			<MenuItem id="Python" 
+		              insertafter="Search" 
+			          insertbefore="Tools" 
+			          label="&amp;Python" 
+			          type="Menu">
+				<ComplexCondition action="Disable">
+					<Not>
+						<Condition name="IsPythonRunning"/>
+					</Not>
+					<MenuItem id="Run"
+					          icon="Icons.16x16.RunProgramIcon"
+					          class="ICSharpCode.PythonBinding.RunPythonCommand"
+						      label="&amp;Run"
+					          shortcut="Control|Shift|R"/>
+				</ComplexCondition>
+				<Condition name="IsPythonRunning" action="Disable">
+					<MenuItem id="Stop"
+					          icon="Icons.16x16.Debug.StopProcess"
+					          class="ICSharpCode.PythonBinding.StopPythonCommand"
+					          label="&amp;Stop"/>
+				</Condition>
+			</MenuItem>
+		</Condition>
+	</Path>
+	
+	<!-- Python parser -->
+	<Path name="/Workspace/Parser">
+		<Parser id="Python"
+		        supportedextensions=".py"
+		        projectfileextension=".pyproj"
+		        class="ICSharpCode.PythonBinding.PythonParser"/>
+	</Path>
+	
+	<!-- Register Python MSBuild project (.pyproj) -->
+	<Path name="/SharpDevelop/Workbench/LanguageBindings">
+		<LanguageBinding id="Python"
+		                 guid="{FD48973F-F585-4F70-812B-4D0503B36CE9}"
+		                 supportedextensions=".py"
+		                 projectfileextension=".pyproj"
+		                 class="ICSharpCode.PythonBinding.PythonLanguageBinding" />
+	</Path>
+	
+	<!-- The Python code completion binding -->
+	<Path name = "/AddIns/DefaultTextEditor/CodeCompletion">
+		<CodeCompletionBinding id="Python" 
+			                   extensions=".py" 
+			                   class="ICSharpCode.PythonBinding.PythonCodeCompletionBinding"/>
+	</Path>
+	
+	<!-- 
+		Register path to SharpDevelop.Build.Python.targets for the MSBuild engine.
+		SharpDevelop.Build.Python.targets is in the PythonBinding AddIn directory 
+	-->
+	<Path name="/SharpDevelop/MSBuildEngine/AdditionalProperties">
+		<String id="PythonBinPath" text="${AddInPath:ICSharpCode.PythonBinding}"/>
+	</Path>	
+	
+	<!-- Options panel -->
+	<Path name="/SharpDevelop/Dialogs/OptionsDialog/ToolsOptions">
+		<DialogPanel id="PythonOptionsPanel"
+		       	     label="Python"
+		       	     class="ICSharpCode.PythonBinding.PythonOptionsPanel"/>
+	</Path>
+
+	<!-- Project options panels -->
+	<Path path="/SharpDevelop/BackendBindings/ProjectOptions/Python">
+		<DialogPanel id="Application"
+		             label="${res:Dialog.ProjectOptions.ApplicationSettings}"
+		             class="ICSharpCode.PythonBinding.ApplicationSettingsPanel"/>
+		<DialogPanel id="BuildEvents"
+		             label="${res:Dialog.ProjectOptions.BuildEvents}"
+		             class="ICSharpCode.SharpDevelop.Gui.OptionPanels.BuildEvents"/>
+		<DialogPanel id="CompilingOptions"
+		             label="${res:Dialog.ProjectOptions.BuildOptions}"
+		             class="ICSharpCode.PythonBinding.CompilingOptionsPanel"/>
+		<DialogPanel id="DebugOptions"
+		             label="${res:Dialog.ProjectOptions.DebugOptions}"
+		             class="ICSharpCode.SharpDevelop.Gui.OptionPanels.DebugOptions"/>
+	</Path>
+
+	<!-- Python display binding -->
+	<Path name="/SharpDevelop/Workbench/DisplayBindings">
+		<DisplayBinding id="PythonDisplayBinding"
+		                type="Secondary"
+		                fileNamePattern="\.py$"
+		                languagePattern="^Python$"
+		                class="ICSharpCode.PythonBinding.PythonFormsDesignerDisplayBinding" />
+	</Path>
+
+	<Path name="/SharpDevelop/Workbench/MainMenu/Tools/ConvertCode">
+		<ComplexCondition action="Disable">
+			<Or>
+				<Condition name="ActiveContentExtension" activeextension=".cs"/>
+				<Condition name="ActiveContentExtension" activeextension=".vb"/>
+			</Or>
+			<MenuItem id="ConvertToPython"
+			          insertafter="CSharp"
+			          insertbefore="VBNet"
+			          label="Python"
+			          class="ICSharpCode.PythonBinding.ConvertToPythonMenuCommand"/>
+		</ComplexCondition>
+	</Path>
+</AddIn>

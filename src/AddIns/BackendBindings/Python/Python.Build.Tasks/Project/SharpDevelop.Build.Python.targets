@@ -1,0 +1,93 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
+	<UsingTask TaskName="ICSharpCode.Python.Build.Tasks.PythonCompilerTask"
+	           AssemblyFile="$(PythonBinPath)\Python.Build.Tasks.dll"/>
+	<UsingTask TaskName="CreateCSharpManifestResourceName"
+	           AssemblyName="Microsoft.Build.Tasks, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"/>
+	
+	<PropertyGroup>
+		<MSBuildAllProjects>$(MSBuildAllProjects);$(PythonBinPath)\SharpDevelop.Build.Python.targets</MSBuildAllProjects>
+		<DefaultLanguageSourceExtension>.py</DefaultLanguageSourceExtension>
+		<Language>Python</Language>
+	</PropertyGroup>
+	
+	<PropertyGroup>
+		<CreateManifestResourceNamesDependsOn></CreateManifestResourceNamesDependsOn>
+	</PropertyGroup>
+	<Target
+		Name="CreateManifestResourceNames"
+		Condition="'@(ResxWithNoCulture)@(ResxWithCulture)@(NonResxWithNoCulture)@(NonResxWithCulture)'!=''"
+		DependsOnTargets="$(CreateManifestResourceNamesDependsOn)"
+	>
+		
+		<!-- Create the target resource names for non-culture resx files. -->
+		<CreateCSharpManifestResourceName Condition="'@(ResxWithNoCulture)'!=''"
+			ResourceFiles="@(ResxWithNoCulture)"
+			RootNamespace="$(RootNamespace)">
+			
+			<Output TaskParameter="ManifestResourceNames" ItemName="ManifestResourceWithNoCultureName"/>
+		
+		</CreateCSharpManifestResourceName>
+		
+		<!-- Create the target resource names for culture resx files. -->
+		<CreateCSharpManifestResourceName Condition="'@(ResxWithCulture)'!=''"
+			ResourceFiles="@(ResxWithCulture)"
+			RootNamespace="$(RootNamespace)">
+			
+			<Output TaskParameter="ManifestResourceNames" ItemName="ManifestResourceWithCultureName"/>
+		
+		</CreateCSharpManifestResourceName>
+		
+		<!-- Create the target resource names for non-culture non-resx files. -->
+		<CreateCSharpManifestResourceName Condition="'@(NonResxWithNoCulture)'!=''"
+			ResourceFiles="@(NonResxWithNoCulture)"
+			RootNamespace="$(RootNamespace)">
+			
+			<Output TaskParameter="ManifestResourceNames" ItemName="ManifestNonResxWithNoCulture"/>
+		
+		</CreateCSharpManifestResourceName>
+		
+		<!-- Create the target resource names for culture non-resx files. -->
+		<CreateCSharpManifestResourceName Condition="'@(NonResxWithCulture)'!=''"
+			ResourceFiles="@(NonResxWithCulture)"
+			RootNamespace="$(RootNamespace)">
+			
+			<Output TaskParameter="ManifestResourceNames" ItemName="ManifestNonResxWithCulture"/>
+		
+		</CreateCSharpManifestResourceName>
+	</Target>
+	
+	<Target
+		Name="CoreCompile"
+		Inputs="$(MSBuildAllProjects);
+		@(Compile);
+		@(ReferencePath);"
+		Outputs="@(IntermediateAssembly)"
+		DependsOnTargets="$(CoreCompileDependsOn)"
+	>
+		<PythonCompilerTask
+			EmitDebugInformation="$(DebugSymbols)"
+			MainFile="$(MainFile)"
+			OutputAssembly="@(IntermediateAssembly)"
+			References="@(ReferencePath)"
+			Resources="@(ManifestResourceWithNoCulture);@(ManifestNonResxWithNoCultureOnDisk);@(CompiledLicenseFile)"
+			Sources="@(Compile)"
+			TargetType="$(OutputType)"/>
+		<!--
+	    bool AutoImportAll { get; set; }
+	    CompilerSink CompilerSink { get; set; }
+	    PortableExecutableKinds ExecutableKind { get; set; }
+	    bool IncludeDebugInformation { get; set; }
+	    ImageFileMachine Machine { get; set; }
+	    string MainFile { get; set; }
+	    string OutputAssembly { get; set; }
+	    IList<string> ReferencedAssemblies { get; set; }
+	    IList<ResourceFile> ResourceFiles { get; set; }
+	    IList<string> SourceFiles { get; set; }
+	    bool StaticTypes { get; set; }
+	    PEFileKinds TargetKind { get; set; }
+	-->
+	
+	</Target>
+	
+	<Import Project="$(MSBuildBinPath)\Microsoft.Common.targets"/>
+</Project>

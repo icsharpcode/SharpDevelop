@@ -1,0 +1,80 @@
+﻿// <file>
+//     <copyright see="prj:///doc/copyright.txt"/>
+//     <license see="prj:///doc/license.txt"/>
+//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
+//     <version>$Revision$</version>
+// </file>
+
+using System;
+using ICSharpCode.PythonBinding;
+using ICSharpCode.SharpDevelop.Dom;
+using NUnit.Framework;
+using PythonBinding.Tests;
+
+namespace PythonBinding.Tests.Parsing
+{
+	/// <summary>
+	/// Tests that the PythonParser class has a class in the returned
+	/// CompilationUnit.
+	/// </summary>
+	[TestFixture]
+	public class ParseSingleClassTestFixture
+	{
+		ICompilationUnit compilationUnit;
+		IClass c;
+		
+		[TestFixtureSetUp]
+		public void SetUpFixture()
+		{
+			string python = "class Test:\r\n" +
+							"\tpass";
+			
+			DefaultProjectContent projectContent = new DefaultProjectContent();
+			PythonParser parser = new PythonParser();
+			compilationUnit = parser.Parse(projectContent, @"C:\test.py", python);			
+			if (compilationUnit.Classes.Count > 0) {
+				c = compilationUnit.Classes[0];
+			}
+		}
+		
+		[Test]
+		public void OneClass()
+		{
+			Assert.AreEqual(1, compilationUnit.Classes.Count);
+		}
+		
+		[Test]
+		public void ClassName()
+		{
+			Assert.AreEqual("Test", c.Name);
+		}
+		
+		[Test]
+		public void CompilationUnitFileName()
+		{
+			Assert.AreEqual(@"C:\test.py", compilationUnit.FileName);
+		}
+		
+		[Test]
+		public void ClassBodyRegion()
+		{
+			int startLine = 1;
+			int startColumn = 12;
+			int endLine = 2;
+			int endColumn = 6;
+			DomRegion region = new DomRegion(startLine, startColumn, endLine, endColumn);
+			Assert.AreEqual(region.ToString(), c.BodyRegion.ToString());
+		}
+		
+		[Test]
+		public void ClassRegion()
+		{
+			int startLine = 1;
+			int startColumn = 1;
+			int endLine = 1;
+			int endColumn = 11;
+			DomRegion region = new DomRegion(startLine, startColumn, endLine, endColumn);
+			Assert.AreEqual(region.ToString(), c.Region.ToString());
+		}		
+	}
+}

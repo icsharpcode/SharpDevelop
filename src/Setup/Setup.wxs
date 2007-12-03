@@ -367,6 +367,19 @@
 				<ComponentRef Id="PartCoverFrameworkDll"/>
 				<ComponentRef Id="AssemblyReportXslt"/>
 				<ComponentRef Id="ClassReportXslt"/>		
+				<ComponentRef Id="PythonConsoleProjectTemplate"/>	
+				<ComponentRef Id="PythonEmptyClassTemplate"/>	
+				<ComponentRef Id="PythonEmptyFormTemplate"/>	
+				<ComponentRef Id="PythonEmptyUserControlTemplate"/>	
+				<ComponentRef Id="PythonEmptyFileTemplate"/>	
+				<ComponentRef Id="PythonFormsProjectTemplate"/>	
+				<ComponentRef Id="IpyExe"/>	
+				<ComponentRef Id="IronMathDll"/>	
+				<ComponentRef Id="IronPythonDll"/>	
+				<ComponentRef Id="PythonBuildTasksDll"/>	
+				<ComponentRef Id="PythonBindingAddin"/>	
+				<ComponentRef Id="PythonBindingDll"/>	
+				<ComponentRef Id="SharpDevelopBuildPythonTargets"/>	
 			</Feature>
 			<Feature Id="SharpDevelopFileAssociations"
 			         Level="1"
@@ -411,6 +424,14 @@
 				         Title="C# Projects (.csproj)"
 				         Description="Associates C# Projects (.csproj) with SharpDevelop">
 					<ComponentRef Id="SharpDevelopCSharpProjectFileAssociation"/>
+				</Feature>
+				<Feature Id="PythonProjectFileAssociation"
+				         Level="1"
+				         AllowAdvertise="no"
+				         InstallDefault="local"
+				         Title="Python Project Files (.pyproj)"
+				         Description="Associates Python Projects (.pyproj) with SharpDevelop">
+					<ComponentRef Id="PythonProjectFileAssociation"/>
 				</Feature>
 				<Feature Id="SD11ProjectFileAssociation"
 				         Level="1"

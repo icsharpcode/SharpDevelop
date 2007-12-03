@@ -1,0 +1,54 @@
+﻿<Components version="1.0">
+  <System.Windows.Forms.UserControl>
+    <Name value="compilingOptionsPanel" />
+    <ClientSize value="{Width=510, Height=358}" />
+    <Controls>
+      <System.Windows.Forms.GroupBox>
+        <Name value="outputGroupBox" />
+        <Location value="3, -2" />
+        <UseCompatibleTextRendering value="True" />
+        <Text value="${res:Dialog.ProjectOptions.Build.Output}" />
+        <Anchor value="Top, Left, Right" />
+        <Size value="504, 362" />
+        <TabIndex value="2" />
+        <Controls>
+          <System.Windows.Forms.CheckBox>
+            <Name value="debugInfoCheckBox" />
+            <CheckAlign value="MiddleRight" />
+            <Location value="12, 63" />
+            <Text value="Debug info:" />
+            <TabIndex value="12" />
+            <Size value="147, 21" />
+            <UseCompatibleTextRendering value="True" />
+          </System.Windows.Forms.CheckBox>
+          <System.Windows.Forms.Label>
+            <Name value="outputPathLabel" />
+            <Location value="12, 17" />
+            <UseCompatibleTextRendering value="True" />
+            <Text value="${res:Dialog.ProjectOptions.Build.OutputPath}" />
+            <Anchor value="Top, Left, Right" />
+            <TextAlign value="BottomLeft" />
+            <Size value="492, 16" />
+            <TabIndex value="3" />
+          </System.Windows.Forms.Label>
+          <System.Windows.Forms.TextBox>
+            <Name value="outputPathTextBox" />
+            <TabIndex value="4" />
+            <Size value="448, 20" />
+            <Location value="12, 37" />
+            <Anchor value="Top, Left, Right" />
+          </System.Windows.Forms.TextBox>
+          <System.Windows.Forms.Button>
+            <Name value="outputPathBrowseButton" />
+            <Location value="464, 37" />
+            <UseCompatibleTextRendering value="True" />
+            <Text value="..." />
+            <Anchor value="Top, Right" />
+            <Size value="40, 21" />
+            <TabIndex value="5" />
+          </System.Windows.Forms.Button>
+        </Controls>
+      </System.Windows.Forms.GroupBox>
+    </Controls>
+  </System.Windows.Forms.UserControl>
+</Components>
