@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+<Template originator   = "Matt Ward"
+          created      = "01/01/2006"
+          lastModified = "14/06/2006">
+	
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<Name>Gtk# Application</Name>
+		<Category>C#</Category>
+		<Subcategory>Mono</Subcategory>
+		<Icon>C#.Project.Form</Icon>
+		<Description>A project that creates a Gtk# application.</Description>
+	</TemplateConfiguration>
+	
+	<!-- Actions -->
+	<Actions>
+		<Open filename = "MainWindow.cs"/>
+	</Actions>
+	
+	<Project language = "C#">
+		<PropertyGroup>
+			<OutputType>WinExe</OutputType>
+			<MonoTargetFrameworkVersion>v2.0</MonoTargetFrameworkVersion>
+		</PropertyGroup>
+		
+		<Imports clear="True">
+			<Import Project="$(MonoBuildTasksPath)\Mono.Build.CSharp.targets" />
+		</Imports>
+		
+		<ProjectItems>
+			<Reference Include="atk-sharp" />
+			<Reference Include="gdk-sharp" />
+			<Reference Include="glib-sharp" />
+			<Reference Include="gtk-sharp" />
+			<Reference Include="pango-sharp" />
+			<Reference Include="System" />
+		</ProjectItems>
+		
+		<Files>
+			<File name="MainWindow.cs"><![CDATA[${StandardHeader.C#}
+
+using Gtk;
+using System;
+
+namespace ${StandardNamespace}
+{
+/// <summary>
+/// Description of MainWindow.
+/// </summary>
+public class MainWindow : Window
+{
+	public MainWindow() : base("MainWindow")
+	{
+		DeleteEvent += new DeleteEventHandler(MainWindowDeleteEvent);
+		ShowAll();
+	}
+	
+	[STAThread]
+	public static void Main(string[] arg)
+	{
+		Application.Init();
+		new MainWindow();
+		Application.Run();
+	}
+	
+	void MainWindowDeleteEvent(object o, DeleteEventArgs args)
+	{
+		Application.Quit();
+		args.RetVal = true;
+	}
+}
+}]]></File>
+			<File name="AssemblyInfo.cs" src="DefaultAssemblyInfo.cs"/>
+			<File name="app.config" src="DefaultApp.config"/>
+		</Files>
+	</Project>
+</Template>

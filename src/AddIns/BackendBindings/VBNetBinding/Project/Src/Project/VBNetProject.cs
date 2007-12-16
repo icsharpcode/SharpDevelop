@@ -129,7 +129,7 @@ namespace VBNetBinding
 			
 			foreach (var p in GetAllProperties("TargetFrameworkVersion")) {
 				if (p.IsImported == false) {
-					if (p.Value.StartsWith("CF") || p.Value.StartsWith("Mono")) {
+					if (p.Value.StartsWith("CF")) {
 						needExtensions = true;
 					}
 				}

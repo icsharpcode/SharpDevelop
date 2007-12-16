@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<Template author="Matt Ward" version="1.0">
+	
+	<Config
+		  name        = "Gtk# Window"
+		  icon        = "C#.File.Form"
+		  category    = "C#"
+		  subcategory = "Mono"
+		  defaultname = "Window${Number}.cs"
+		  language    = "C#"/>
+	 
+	<Description>A window for a Gtk# application.</Description>
+	
+	<!-- 
+	Special new file templates:
+		${StandardNamespace}        -> Standardnamespace of the current project or FileNameWithoutExtension
+		${FullName}                 -> Full generated path name
+		${FileName}                 -> File name with extension
+		${FileNameWithoutExtension} -> File name without extension
+		${Extension}                -> Extension in the form ".cs"
+		${Path}                     -> Full path of the file
+		${ClassName}                -> Class name (generally FileNameWithoutExtension w/o 'bad' characters)
+	 -->
+	<Files>
+		<File name="${FullName}" language="C#"><![CDATA[${StandardHeader.C#}
+
+using Gtk;
+using System;
+
+namespace ${StandardNamespace}
+{
+	/// <summary>
+	/// Description of ${ClassName}.
+	/// </summary>
+	public class ${ClassName} : Window
+	{
+		public ${ClassName}() : base("${ClassName}")
+		{
+		}
+	}
+}
+]]></File>
+	</Files>
+	
+	<AdditionalOptions/>
+</Template>

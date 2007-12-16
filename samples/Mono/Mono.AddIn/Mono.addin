@@ -1,0 +1,76 @@
+<AddIn name        = "Mono AddIn"
+       author      = "Matt Ward"
+       copyright   = ""
+       description = "Mono support for SharpDevelop">
+	
+	<Manifest>
+		<Identity name="Mono.AddIn"/>
+	</Manifest>
+	
+	<Runtime>
+		<Import assembly="Mono.AddIn.dll">
+			<ConditionEvaluator name="IsMonoInstalled" class="Mono.AddIn.IsMonoInstalledCondition"/>
+			<ConditionEvaluator name="IsMonoProject" class="Mono.AddIn.IsMonoProjectCondition"/>
+		</Import>
+	</Runtime>
+	
+	<Path path="/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ProjectNode">
+		<Condition name="IsMonoInstalled" action="Exclude">
+			<MenuItem id="AddMonoReference"
+			          label="Add Mono Reference"
+			          insertafter="AddReference"
+			          insertbefore="AddWebReference"
+			          class="Mono.AddIn.AddMonoReferenceCommand"/>
+		</Condition>
+	</Path>
+	
+	<Path name="/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ReferenceFolderNode">
+		<Condition name="IsMonoInstalled" action="Exclude">
+			<MenuItem id="AddMonoReference"
+			          label="Add Mono Reference"
+			          insertafter="AddReference"
+			          insertbefore="AddWebReference"
+			          class="Mono.AddIn.AddMonoReferenceCommand"/>
+		</Condition>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Workbench/MainMenu/Project">
+		<Condition name="IsMonoInstalled" action="Exclude">
+			<Condition name = "ProjectActive" activeproject="*">
+				<MenuItem id="AddMonoReference"
+				          label="Add Mono Reference"
+				          insertafter="AddReference"
+				          insertbefore="AddWebReference"
+				          class="ICSharpCode.MonoAddIn.AddMonoReferenceCommand"/>
+			</Condition>
+		</Condition>
+	</Path>
+	
+	<Path name = "/Workspace/ProjectContentRegistry">
+		<ComplexCondition>
+			<And>
+				<Or>
+					<Condition name="CompareProjectProperty" property="MonoTargetFrameworkVersion" equals="v1.1"/>
+					<Condition name="CompareProjectProperty" property="MonoTargetFrameworkVersion" equals="v2.0"/>
+				</Or>
+				<Or>
+					<Condition name="ProjectActive" activeproject="C#"/>
+					<Condition name="ProjectActive" activeproject="VBNet"/>
+				</Or>
+			</And>
+			<ProjectContentRegistry id="MonoGac" class="Mono.AddIn.MonoProjectContentRegistry"/>
+		</ComplexCondition>
+	</Path>
+
+	<!-- 
+		Register path to SharpDevelop.Build.Mono.*.targets for the MSBuild engine.
+		SharpDevelop.Build.Mono.*.targets is in the Mono.AddIn directory 
+	-->
+	<Path name="/SharpDevelop/MSBuildEngine/AdditionalProperties">
+		<String id="MonoBuildTasksPath" text="${AddInPath:Mono.AddIn}"/>
+	</Path>	
+
+	<Path name="/SharpDevelop/BackendBindings/Templates">
+		<Directory id="Mono" path="./Templates"/>
+	</Path>
+</AddIn>

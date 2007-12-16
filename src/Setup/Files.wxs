@@ -179,12 +179,9 @@
 							<Component Id="ICSharpCodeBuildTasksDll" Guid="E94FCC8C-9741-45EF-AFDA-9F9CF02BF3F7" DiskId="1">
 								<File Source="..\..\bin\ICSharpCode.Build.Tasks.dll" Name="ICBuild.dll" Id="ICSharpCode.Build.Tasks.dll" LongName="ICSharpCode.Build.Tasks.dll" Assembly=".net" AssemblyApplication="ICSharpCode.Build.Tasks.dll" AssemblyManifest="ICSharpCode.Build.Tasks.dll" KeyPath="yes" />
 							</Component>
-							<Component Id="BuildTasksTargetFiles" Guid="5BED648E-FF11-4E6A-A966-0901FA915BA8" DiskId="1">
+							<Component Id="BuildTasksTargetFiles" DiskId="1" Guid="51BA4DA3-F0C0-4B4D-B988-5500876AE5C8">
 								<File Source="..\..\bin\SharpDevelop.Build.Common.targets" Name="Common.tgt" Id="SharpDevelop.Build.Common.targets" LongName="SharpDevelop.Build.Common.targets" />
 								<File Source="..\..\bin\SharpDevelop.Build.CSharp.targets" Name="CSharp.tgt" Id="SharpDevelop.Build.CSharp.targets" LongName="SharpDevelop.Build.CSharp.targets" />
-								<File Source="..\..\bin\SharpDevelop.Build.Mono.Gmcs.targets" Name="Gmcs.tgt" Id="SharpDevelop.Build.Mono.Gmcs.targets" LongName="SharpDevelop.Build.Mono.Gmcs.targets" />
-								<File Source="..\..\bin\SharpDevelop.Build.Mono.Mbas.targets" Name="Mbas.tgt" Id="SharpDevelop.Build.Mono.Mbas.targets" LongName="SharpDevelop.Build.Mono.Mbas.targets" />
-								<File Source="..\..\bin\SharpDevelop.Build.Mono.Mcs.targets" Name="Mcs.tgt" Id="SharpDevelop.Build.Mono.Mcs.targets" LongName="SharpDevelop.Build.Mono.Mcs.targets" />
 								<File Source="..\..\bin\SharpDevelop.Build.MSIL.targets" Name="Msil.tgt" Id="SharpDevelop.Build.MSIL.targets" LongName="SharpDevelop.Build.MSIL.targets" />
 								<File Source="..\..\bin\SharpDevelop.Build.VisualBasic.targets" Name="VB.tgt" Id="SharpDevelop.Build.VisualBasic.targets" LongName="SharpDevelop.Build.VisualBasic.targets" />
 								<File Source="..\..\bin\SharpDevelop.CodeAnalysis.targets" Name="analysis.tgt" Id="SharpDevelop.CodeAnalysis.targets" LongName="SharpDevelop.CodeAnalysis.targets" />
@@ -801,13 +798,12 @@
 							<Directory Id="TemplatesFolder" Name="template" LongName="templates">
 								<Directory Id="FileTemplatesFolder" Name="file">
 									<Directory Id="CSharpFileTemplatesFolder" Name="CSharp">
-										<Component Guid="178B7A4B-FEE8-432D-A014-256FAA5441BE" Id="CSharpFileTemplates" DiskId="1">
+										<Component Guid="3B4FEE71-8C15-4430-B5ED-FD010280C35C" Id="CSharpFileTemplates" DiskId="1">
 											<File Source="..\..\data\templates\file\CSharp\FileCategorySortOrder.xml" Name="FILECA_1.XML" Id="CSharpFileCategorySortOrder.xml" LongName="FileCategorySortOrder.xml" />
 											<File Source="..\..\data\templates\file\CSharp\CSharp.Empty.xft" Name="CSHARP_1.XFT" Id="CSharp.Empty.xft" LongName="CSharp.Empty.xft" />
 											<File Source="..\..\data\templates\file\CSharp\CSharp.EmptyClass.xft" Name="CSHARP_2.XFT" Id="CSharp.EmptyClass.xft" LongName="CSharp.EmptyClass.xft" />
 											<File Source="..\..\data\templates\file\CSharp\CSharp.Forms.Form.xft" Name="CSHARP_3.XFT" Id="CSharp.Forms.Form.xft" LongName="CSharp.Forms.Form.xft" />
 											<File Source="..\..\data\templates\file\CSharp\CSharp.Forms.UserControl.xft" Name="CSHARP_4.XFT" Id="CSharp.Forms.UserControl.xft" LongName="CSharp.Forms.UserControl.xft" />
-											<File Source="..\..\data\templates\file\CSharp\CSharp.Gtk.Window.xft" Name="CSHARP_5.XFT" Id="CSharp.Gtk.Window.xft" LongName="CSharp.Gtk.Window.xft" />
 											<File Source="..\..\data\templates\file\CSharp\CSharp.Interface.xft" Name="CSHARP_6.XFT" Id="CSharp.Interface.xft" LongName="CSharp.Interface.xft" />
 											<File Source="..\..\data\templates\file\CSharp\CSharp.Patterns.Singleton.xft" Name="CSHARP_7.XFT" Id="CSharp.Patterns.Singleton.xft" LongName="CSharp.Patterns.Singleton.xft" />
 											<File Source="..\..\data\templates\file\CSharp\CSharp.UnitTest.xft" Name="CSHARP_8.XFT" Id="CSharp.UnitTest.xft" LongName="CSharp.UnitTest.xft" />
@@ -860,14 +856,13 @@
 										</Component>
 									</Directory>
 									<Directory Id="VBNetFileTemplatesFolder" Name="VBNet">
-										<Component Guid="723F072E-0B63-45B5-B396-51BF819A1C5A" Id="VBNetFileTemplates" DiskId="1">
+										<Component Id="VBNetFileTemplates" DiskId="1" Guid="EAD6810A-9009-43C8-9970-ABB18D0C8DFB">
 											<File Source="..\..\data\templates\file\VBNet\VBNet.UnitTest.xft" Name="VBUT_1.XFT" Id="VBNet.UnitTest.xft" LongName="VBNet.UnitTest.xft" />
 											<File Source="..\..\data\templates\file\VBNet\FileCategorySortOrder.xml" Name="FILECA_1.XML" Id="VBNetFileCategorySortOrder.xml" LongName="FileCategorySortOrder.xml" />
 											<File Source="..\..\data\templates\file\VBNet\VBNet.Empty.xft" Name="VBEMP_2.XFT" Id="VBNet.Empty.xft" LongName="VBNet.Empty.xft" />
 											<File Source="..\..\data\templates\file\VBNet\VBNet.EmptyClass.xft" Name="VBNET_3.XFT" Id="VBNet.EmptyClass.xft" LongName="VBNet.EmptyClass.xft" />
 											<File Source="..\..\data\templates\file\VBNet\VBNet.Forms.Form.xft" Name="VBNET_4.XFT" Id="VBNet.Forms.Form.xft" LongName="VBNet.Forms.Form.xft" />
 											<File Source="..\..\data\templates\file\VBNet\VBNet.Forms.UserControl.xft" Name="VBNET_5.XFT" Id="VBNet.Forms.UserControl.xft" LongName="VBNet.Forms.UserControl.xft" />
-											<File Source="..\..\data\templates\file\VBNet\VBNet.Gtk.Window.xft" Name="VBNET_6.XFT" Id="VBNet.Gtk.Window.xft" LongName="VBNet.Gtk.Window.xft" />
 											<File Source="..\..\data\templates\file\VBNet\VBNet.Interface.xft" Name="VBNET_7.XFT" Id="VBNet.Interface.xft" LongName="VBNet.Interface.xft" />
 											<File Source="..\..\data\templates\file\VBNet\VBNet.Module.xft" Name="VBNET_8.XFT" Id="VBNet.Module.xft" LongName="VBNet.Module.xft" />
 											<File Source="..\..\data\templates\file\VBNet\VBNet.MyExtensionClass.xft" Name="VBNET_9.XFT" Id="VBNet.MyExtensionClass.xft" LongName="VBNet.MyExtensionClass.xft" />
@@ -877,7 +872,7 @@
 								</Directory>
 								<Directory Id="ProjectTemplatesFolder" Name="project">
 									<Directory Id="CSharpProjectTemplatesFolder" Name="CSharp">
-										<Component Guid="309F59FF-78DD-45F5-96D9-676295400A19" Id="CSharpProjectTemplates" DiskId="1">
+										<Component Guid="888085CF-91C6-4669-97AF-BA99B3D9D38B" Id="CSharpProjectTemplates" DiskId="1">
 											<File Source="..\..\data\templates\project\CSharp\WPFNavigationApplication.xpt" Name="WPFNAV_1.XPT" Id="CSharpWPFNavigationApplication.xpt" LongName="WPFNavigationApplication.xpt" />
 											<File Source="..\..\data\templates\project\CSharp\CompactFormsProject.xpt" Name="COMPAC_1.XPT" Id="CSharpCompactFormsProject.xpt" LongName="CompactFormsProject.xpt" />
 											<File Source="..\..\data\templates\project\CSharp\ConsoleProject.xpt" Name="CONSOL_1.XPT" Id="CSharpConsoleProject.xpt" LongName="ConsoleProject.xpt" />
@@ -886,8 +881,6 @@
 											<File Source="..\..\data\templates\project\CSharp\Direct3DProject.xpt" Name="DIRECT_1.XPT" Id="CSharpDirect3DProject.xpt" LongName="Direct3DProject.xpt" />
 											<File Source="..\..\data\templates\project\CSharp\EmptyProject.xpt" Name="EMPTYP_1.XPT" Id="CSharpEmptyProject.xpt" LongName="EmptyProject.xpt" />
 											<File Source="..\..\data\templates\project\CSharp\FormsProject.xpt" Name="FORMSP_1.XPT" Id="CSharpFormsProject.xpt" LongName="FormsProject.xpt" />
-											<File Source="..\..\data\templates\project\CSharp\GladeProject.xpt" Name="GLADEP_1.XPT" Id="GladeProject.xpt" LongName="GladeProject.xpt" />
-											<File Source="..\..\data\templates\project\CSharp\GtkProject.xpt" Name="GTKPRO_1.XPT" Id="CSharpGtkProject.xpt" LongName="GtkProject.xpt" />
 											<File Source="..\..\data\templates\project\CSharp\Library.xpt" Name="Library.xpt" Id="CSharpLibrary.xpt" />
 											<File Source="..\..\data\templates\project\CSharp\ProjectCategorySortOrder.xml" Name="PROJEC_1.XML" Id="CSharpProjectCategorySortOrder.xml" LongName="ProjectCategorySortOrder.xml" />
 											<File Source="..\..\data\templates\project\CSharp\Service.xpt" Name="Service.xpt" Id="CSharpService.xpt" />
@@ -918,7 +911,7 @@
 										</Component>
 									</Directory>
 									<Directory Id="VBNetProjectTemplatesFolder" Name="VBNet">
-										<Component Guid="A1AC7093-AD88-4125-9D40-16ED5D9D358F" Id="VBNetProjectTemplates" DiskId="1">
+										<Component Guid="56C1A294-4C66-49AE-B5B4-2EA43E9FD028" Id="VBNetProjectTemplates" DiskId="1">
 											<File Source="..\..\data\templates\project\VBNet\SharpDevelopMacro.xpt" Name="SHARPD_3.XPT" Id="VBNetSharpDevelopMacro.xpt" LongName="SharpDevelopMacro.xpt" />
 											<File Source="..\..\data\templates\project\VBNet\ConsoleProject.xpt" Name="CONSOL_1.XPT" Id="VBNetConsoleProject.xpt" LongName="ConsoleProject.xpt" />
 											<File Source="..\..\data\templates\project\VBNet\ControlLibrary.xpt" Name="CONTRO_1.XPT" Id="VBNetControlLibrary.xpt" LongName="ControlLibrary.xpt" />
@@ -926,7 +919,6 @@
 											<File Source="..\..\data\templates\project\VBNet\Direct3DProject.xpt" Name="DIRECT_1.XPT" Id="VBNetDirect3DProject.xpt" LongName="Direct3DProject.xpt" />
 											<File Source="..\..\data\templates\project\VBNet\EmptyProject.xpt" Name="EMPTYP_1.XPT" Id="VBNetEmptyProject.xpt" LongName="EmptyProject.xpt" />
 											<File Source="..\..\data\templates\project\VBNet\FormsProject.xpt" Name="FORMSP_1.XPT" Id="VBNetFormsProject.xpt" LongName="FormsProject.xpt" />
-											<File Source="..\..\data\templates\project\VBNet\GtkProject.xpt" Name="GTKPRO_1.XPT" Id="VBNetGtkProject.xpt" LongName="GtkProject.xpt" />
 											<File Source="..\..\data\templates\project\VBNet\Library.xpt" Name="Library.xpt" Id="VBNetLibrary.xpt" />
 											<File Source="..\..\data\templates\project\VBNet\ProjectCategorySortOrder.xml" Name="PROJEC_1.XML" Id="VBNetProjectCategorySortOrder.xml" LongName="ProjectCategorySortOrder.xml" />
 											<File Source="..\..\data\templates\project\VBNet\Service.xpt" Name="Service.xpt" Id="VBNetService.xpt" />
@@ -1271,12 +1263,6 @@
 											<File Source="..\..\AddIns\AddIns\Misc\HtmlHelp2\HtmlHelp2JScriptGlobals.dll" Name="HTMLHE_2.DLL" Id="HtmlHelp2JScriptGlobals.dll" LongName="HtmlHelp2JScriptGlobals.dll" />
 											<File Source="..\..\AddIns\AddIns\Misc\HtmlHelp2\MSHelpControls.dll" Name="MSHELP_1.DLL" Id="MSHelpControls.dll" LongName="MSHelpControls.dll" />
 											<File Source="..\..\AddIns\AddIns\Misc\HtmlHelp2\MSHelpServices.dll" Name="MSHELP_2.DLL" Id="MSHelpServices.dll" LongName="MSHelpServices.dll" />
-										</Component>
-									</Directory>
-									<Directory Id="MonoAddInFolder" LongName="MonoAddIn" Name="Mono">
-										<Component Guid="1BF9CC7D-360C-4F48-A407-9CAF86BE85E7" Id="MonoAddInFiles" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\Misc\MonoAddIn\MonoAddIn.addin" Name="MONOAD_1.ADD" Id="MonoAddIn.addin" LongName="MonoAddIn.addin" />
-											<File Source="..\..\AddIns\AddIns\Misc\MonoAddIn\MonoAddIn.dll" Name="MONOAD_1.DLL" Id="MonoAddIn.dll" LongName="MonoAddIn.dll" Assembly=".net" AssemblyApplication="MonoAddIn.dll" AssemblyManifest="MonoAddIn.dll" KeyPath="yes" />
 										</Component>
 									</Directory>
 									<Directory Id="PInvokeAddInFolder" LongName="PInvokeAddIn" Name="PInvoke">

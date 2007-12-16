@@ -1,0 +1,106 @@
+<?xml version="1.0"?>
+<Template originator   = "Matt Ward"
+          created      = "01/10/2001"
+          lastModified = "14/01/2006">
+	
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<Name>Glade# Application</Name>
+		<Category>C#</Category>
+		<Subcategory>Mono</Subcategory>
+		<Icon>C#.Project.Form</Icon>
+		<Description>A project that creates a Glade# application.</Description>
+	</TemplateConfiguration>
+	
+	<!-- Actions -->
+	<Actions>
+		<Open filename = "MainWindow.cs"/>
+	</Actions>
+	
+	<Project language = "C#">
+		<PropertyGroup>
+			<OutputType>WinExe</OutputType>
+			<MonoTargetFrameworkVersion>v2.0</MonoTargetFrameworkVersion>
+		</PropertyGroup>
+		
+		<Imports clear="True">
+			<Import Project="$(MonoBuildTasksPath)\Mono.Build.CSharp.targets" />
+		</Imports>
+		
+		<ProjectItems>
+			<Reference Include="atk-sharp" />
+			<Reference Include="gdk-sharp" />
+			<Reference Include="glade-sharp" />
+			<Reference Include="glib-sharp" />
+			<Reference Include="gtk-sharp" />
+			<Reference Include="pango-sharp" />
+			<Reference Include="System" />
+		</ProjectItems>
+				
+		<Files>
+			<File name="MainWindow.cs"><![CDATA[${StandardHeader.C#}
+
+using Glade;
+using Gtk;
+using System;
+
+namespace ${StandardNamespace}
+{
+	/// <summary>
+	/// Description of MainWindow.
+	/// </summary>
+	public class MainWindow
+	{
+		public MainWindow()
+		{
+			Glade.XML gxml = new Glade.XML(null, "glade.xml", "MainWindow", null);
+			gxml.Autoconnect(this);
+		}
+		
+		[STAThread]
+		public static void Main(string[] args)
+		{
+			Application.Init();
+			new MainWindow();
+			Application.Run();
+		}
+
+		void MainWindowDeleteEvent(object o, DeleteEventArgs args) 
+		{
+			Application.Quit();
+			args.RetVal = true;
+		}
+	}
+}]]></File>
+			<File name="glade.xml" buildAction="EmbeddedResource"><![CDATA[<?xml version="1.0" standalone="no"?> <!--*- mode: xml -*-->
+<!DOCTYPE glade-interface SYSTEM "http://glade.gnome.org/glade-2.0.dtd">
+
+<glade-interface>
+
+<widget class="GtkWindow" id="MainWindow">
+  <property name="visible">True</property>
+  <property name="title" translatable="yes">MainWindow</property>
+  <property name="type">GTK_WINDOW_TOPLEVEL</property>
+  <property name="window_position">GTK_WIN_POS_NONE</property>
+  <property name="modal">False</property>
+  <property name="resizable">True</property>
+  <property name="destroy_with_parent">False</property>
+  <property name="decorated">True</property>
+  <property name="skip_taskbar_hint">False</property>
+  <property name="skip_pager_hint">False</property>
+  <property name="type_hint">GDK_WINDOW_TYPE_HINT_NORMAL</property>
+  <property name="gravity">GDK_GRAVITY_NORTH_WEST</property>
+  <signal name="delete_event" handler="MainWindowDeleteEvent" last_modification_time="Sun, 01 Jan 2006 13:24:18 GMT"/>
+
+  <child>
+    <placeholder/>
+  </child>
+</widget>
+
+</glade-interface>
+]]></File>
+		<File name="AssemblyInfo.cs" src="DefaultAssemblyInfo.cs"/>
+		<File name="app.config" src="DefaultApp.config"/>
+		</Files>
+	</Project>
+</Template>

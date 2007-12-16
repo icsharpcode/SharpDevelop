@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<Template originator   = "Shinsaku Nakagawa"
+          created      = "11/28/2002"
+          lastModified = "07/20/2005">
+
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<Name>Console Application</Name>
+		<Category>VBNet</Category>
+		<Subcategory>Mono</Subcategory>
+		<Icon>VBNet.Project.DOSProject</Icon>
+		<Description>Console project for Mono.</Description>
+	</TemplateConfiguration>
+	
+	<!-- Actions -->
+	<Actions>
+		<Open filename = "Program.vb"/>
+	</Actions>
+	
+	<!-- Template Content -->
+	<Project language = "VBNet">
+		<PropertyGroup>
+			<OutputType>Exe</OutputType>
+			<MonoTargetFrameworkVersion>v2.0</MonoTargetFrameworkVersion>
+		</PropertyGroup>
+		
+		<ProjectItems>
+			<Reference Include="System" />
+			<Reference Include="System.Data" />
+			<Reference Include="System.Xml" />
+			
+			<Import Include="Microsoft.VisualBasic" />
+			<Import Include="System" />
+			<Import Include="System.Collections" />
+			<Import Include="System.Collections.Generic" />
+			<Import Include="System.Data" />
+			<Import Include="System.Diagnostics" />
+		</ProjectItems>
+
+		<Imports clear="True">
+			<Import Project="$(MonoBuildTasksPath)\Mono.Build.VBNet.targets" />
+		</Imports>
+		
+		<Files>
+	<File name="Program.vb">
+			<![CDATA[${StandardHeader.VBNET}
+
+Module Program
+	Sub Main()
+		Console.WriteLine("Hello World!")
+		
+		' TODO: Implement Functionality Here
+	End Sub
+End Module
+]]></File>
+			<File name="AssemblyInfo.vb" src="DefaultAssemblyInfo.vb"/>
+		</Files>
+	</Project>
+</Template>

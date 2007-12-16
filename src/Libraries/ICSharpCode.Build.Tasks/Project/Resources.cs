@@ -11,17 +11,7 @@ using System.Reflection;
 namespace ICSharpCode.Build.Tasks
 {
 	internal static class Resources
-	{
-		public static string MonoIsNotInstalled {
-			get { return GetTranslation("${res:ICSharpCode.Build.MonoIsNotInstalled}")
-					?? "Mono is not installed."; }
-		}
-		
-		public static string UnknownTargetMonoFrameworkVersion {
-			get { return GetTranslation("${res:ICSharpCode.Build.UnknownTargetMonoFrameworkVersion}")
-					?? "Unknown Target Mono Framework Version:"; }
-		}
-		
+	{		
 		public static string RunningCodeAnalysis {
 			get { return GetTranslation("${res:ICSharpCode.Build.RunningCodeAnalysis}")
 					?? "Running Code Analysis..."; }

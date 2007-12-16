@@ -54,40 +54,15 @@
     </None>
     <Compile Include="Constants.cs" />
     <Compile Include="MyToolTask.cs" />
-    <None Include="SharpDevelop.Build.Mono.Mcs.targets">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <Compile Include="Mcs.cs" />
-    <Compile Include="MonoCompilerTask.cs" />
-    <Compile Include="CompilerCommandLineArguments.cs" />
-    <Compile Include="MonoCSharpCompilerResultsParser.cs" />
-    <Compile Include="Gmcs.cs" />
-    <None Include="SharpDevelop.Build.Mono.Gmcs.targets">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <Compile Include="MonoToolLocationHelper.cs" />
-    <Compile Include="MonoGlobalAssemblyCache.cs" />
-    <Compile Include="MonoAssemblyName.cs" />
-    <Compile Include="GetMonoFrameworkPath.cs" />
-    <Compile Include="GetMonoFrameworkSdkPath.cs" />
-    <Compile Include="TargetMonoFrameworkVersion.cs" />
-    <Compile Include="AddMonoAssemblySearchPaths.cs" />
-    <Compile Include="MonoGacDirectory.cs" />
     <Compile Include="..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>GlobalAssemblyInfo.cs</Link>
     </Compile>
     <None Include="SharpDevelop.Build.VisualBasic.targets">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <Compile Include="Mbas.cs" />
-    <None Include="SharpDevelop.Build.Mono.Mbas.targets">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Include="SharpDevelop.CheckMSBuild35Features.targets">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <Compile Include="MonoBasicCompilerResultsParser.cs" />
-    <Compile Include="MonoCSharpCompilerTask.cs" />
     <Compile Include="FxCop.cs" />
     <Compile Include="Resources.cs" />
   </ItemGroup>

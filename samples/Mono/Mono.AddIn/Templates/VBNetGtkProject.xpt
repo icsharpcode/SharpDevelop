@@ -1,0 +1,73 @@
+<?xml version="1.0"?>
+<Template originator   = "Matt Ward"
+          created      = "15/02/2006"
+          lastModified = "15/02/2006">
+	
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<Name>Gtk# Application</Name>
+		<Category>VBNet</Category>
+		<Subcategory>Mono</Subcategory>
+		<Icon>VBNet.Project.Form</Icon>
+		<Description>A project that creates a Gtk# application.</Description>
+	</TemplateConfiguration>
+	
+	<!-- Actions -->
+	<Actions>
+		<Open filename = "MainWindow.vb"/>
+	</Actions>
+	
+	<Project language="VBNet">
+		<PropertyGroup>
+			<OutputType>WinExe</OutputType>
+			<MonoTargetFrameworkVersion>v2.0</MonoTargetFrameworkVersion>
+			<StartupObject>${StandardNamespace}.MainWindow</StartupObject>
+		</PropertyGroup>
+		
+		<Imports clear="True">
+			<Import Project="$(MonoBuildTasksPath)\Mono.Build.VBNet.targets" />
+		</Imports>
+		
+		<ProjectItems>
+			<Reference Include="atk-sharp" />
+			<Reference Include="gdk-sharp" />
+			<Reference Include="glib-sharp" />
+			<Reference Include="gtk-sharp" />
+			<Reference Include="pango-sharp" />
+			<Reference Include="System" />
+
+			<Import Include="System" />
+			<Import Include="System.Collections" />
+		</ProjectItems>
+		
+		<Files>
+			<File name="MainWindow.vb"><![CDATA[${StandardHeader.VBNET}
+Imports Gtk
+Imports System
+
+Public Class MainWindow
+	Inherits Window
+	
+	Public Sub New
+		MyBase.New("MainWindow")
+		AddHandler MyBase.DeleteEvent, AddressOf MainWindowDelete
+		Me.ShowAll()
+	End Sub
+	
+	Public Shared Sub Main
+		Application.Init()
+		Dim mainWindow As New MainWindow
+		Application.Run()
+	End Sub
+	
+	Private Sub MainWindowDelete(ByVal o As Object, ByVal args As DeleteEventArgs)
+		Application.Quit()
+		args.RetVal = true
+	End Sub
+End Class
+]]></File>
+			<File name="AssemblyInfo.vb" src="DefaultAssemblyInfo.vb"/>
+			<File name="app.config" src="DefaultApp.config"/>
+		</Files>
+	</Project>
+</Template>

@@ -18,9 +18,6 @@
 		<TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
 		<SharpDevelopTargetFrameworkClass>CF</SharpDevelopTargetFrameworkClass>
 	</PropertyGroup>
-	<PropertyGroup Condition=" ('$(SharpDevelopTargetFrameworkVersion)' == 'Mono v1.1') or ('$(SharpDevelopTargetFrameworkVersion)' == 'Mono v2.0') ">
-		<SharpDevelopTargetFrameworkClass>Mono</SharpDevelopTargetFrameworkClass>
-	</PropertyGroup>
 	
 	<!-- Show an error when CF is not installed, or when the target framework is unknown. -->
 	<Target Name="Build">
@@ -40,11 +37,7 @@
 	
 	<!-- Use Microsoft's VB standard targets -->
 	<Import Condition=" '$(SharpDevelopTargetFrameworkClass)' == 'v2' " Project="$(MSBuildBinPath)\Microsoft.VisualBasic.targets" />
-	
-	<!-- Mono imports -->
-	<Import Condition=" '$(TargetFrameworkVersion)' == 'Mono v1.1' " Project="$(SharpDevelopBinPath)\SharpDevelop.Build.Mono.Mbas.targets"/>
-	<Import Condition=" '$(TargetFrameworkVersion)' == 'Mono v2.0' " Project="$(SharpDevelopBinPath)\SharpDevelop.Build.Mono.Mbas.targets"/>
-	
+		
 	<!-- Compact framework property adjustments: -->
 	<!-- When StdLib is not set, set it to true and add reference to mscorlib -->
 	<!-- Set PlatformFamilyName and PlatformID if required -->

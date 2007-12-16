@@ -1,0 +1,113 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
+
+	<UsingTask TaskName="Mono.Build.Tasks.Mcs"
+	           AssemblyFile="$(MonoBuildTasksPath)\Mono.Build.Tasks.dll"/>
+ 	<UsingTask TaskName="Mono.Build.Tasks.GetMonoFrameworkPath"
+	           AssemblyFile="$(MonoBuildTasksPath)\Mono.Build.Tasks.dll"/>
+ 	<UsingTask TaskName="Mono.Build.Tasks.GetMonoFrameworkSdkPath"
+	           AssemblyFile="$(MonoBuildTasksPath)\Mono.Build.Tasks.dll"/>
+ 	<UsingTask TaskName="Mono.Build.Tasks.AddMonoAssemblySearchPaths"
+	           AssemblyFile="$(MonoBuildTasksPath)\Mono.Build.Tasks.dll"/>
+
+	<PropertyGroup>
+        <MSBuildAllProjects>$(MSBuildAllProjects);$(MonoBuildTasksPath)\SharpDevelop.Build.Mono.Mcs.targets</MSBuildAllProjects>
+        <DefaultLanguageSourceExtension>.cs</DefaultLanguageSourceExtension>
+        <Language>C#</Language>
+    </PropertyGroup>
+	
+	<!-- Override AssemblySearchPaths property and remove Microsoft specific search paths -->
+	<PropertyGroup>
+		<AssemblySearchPaths>
+			{CandidateAssemblyFiles};
+			$(ReferencePath);
+			{HintPathFromItem};
+			{TargetFrameworkDirectory};
+			{MonoGAC};
+			{RawFileName};
+			$(OutputPath)
+		</AssemblySearchPaths> 
+	</PropertyGroup>
+	
+	<Target	Name="GetFrameworkPaths">
+		<!-- Get the path to the target Mono Framework directory. -->
+		<GetMonoFrameworkPath TargetFrameworkVersion="$(MonoTargetFrameworkVersion)">
+			<Output TaskParameter="Path" PropertyName="TargetFrameworkDirectory"/>
+			<Output TaskParameter="Path" ItemName="_TargetFrameworkDirectoryItem"/>
+		</GetMonoFrameworkPath>
+	
+		<!-- Get the path to the target the Mono SDK directory. -->
+		<GetMonoFrameworkSDKPath>
+			<Output TaskParameter="Path" PropertyName="TargetFrameworkSDKDirectory"/>
+			<Output TaskParameter="Path" ItemName="_TargetFrameworkSDKDirectoryItem"/>
+		</GetMonoFrameworkSDKPath>
+	</Target>
+	
+	<!-- Modify what the ResolveAssemblyReferences tasks depends on so the
+	     AssemblySearchPaths can be modified to use the Mono GAC -->
+	<PropertyGroup>
+		<ResolveAssemblyReferencesDependsOn>
+			GetFrameworkPaths;
+            GetReferenceAssemblyPaths;
+			PrepareForBuild;
+			AddMonoAssemblySearchPaths
+		</ResolveAssemblyReferencesDependsOn>
+	</PropertyGroup>
+	<Target Name="AddMonoAssemblySearchPaths">
+		<AddMonoAssemblySearchPaths 
+			Assemblies="@(Reference)"
+			Paths="$(AssemblySearchPaths)">
+			
+			<Output TaskParameter="Paths" PropertyName="AssemblySearchPaths"/>
+		</AddMonoAssemblySearchPaths>
+	</Target>
+    
+	<Target
+        Name="CoreCompile"
+        Inputs="$(MSBuildAllProjects);
+                @(Compile);
+                @(ManifestResourceWithNoCulture);
+                $(ApplicationIcon);
+                $(AssemblyOriginatorKeyFile);
+                @(ManifestNonResxWithNoCultureOnDisk);
+                @(ReferencePath);
+                @(CompiledLicenseFile)"
+        Outputs="@(DocFileItem);
+                 @(IntermediateAssembly);
+                 $(NonExistentFile)"
+        DependsOnTargets="$(CoreCompileDependsOn)"
+    >
+       
+        <Mcs
+              AdditionalLibPaths="$(AdditionalLibPaths)"
+              AddModules="@(AddModules)"
+              AllowUnsafeBlocks="$(AllowUnsafeBlocks)"
+              CheckForOverflowUnderflow="$(CheckForOverflowUnderflow)"
+              CodePage="$(CodePage)"
+              DebugType="$(DebugType)"
+              DefineConstants="$(DefineConstants)"
+              DelaySign="$(DelaySign)"
+              DisabledWarnings="$(NoWarn)"
+              DocumentationFile="@(DocFileItem)"
+              EmitDebugInformation="$(DebugSymbols)"
+              KeyContainer="$(KeyContainerName)"
+              KeyFile="$(KeyOriginatorFile)"
+              LangVersion="$(LangVersion)"
+              MainEntryPoint="$(StartupObject)"
+              NoConfig="true"
+              NoLogo="$(NoLogo)"
+              NoStandardLib="$(NoStdLib)"
+              Optimize="$(Optimize)"
+              OutputAssembly="@(IntermediateAssembly)"
+              References="@(ReferencePath)"
+              Resources="@(ManifestResourceWithNoCulture);@(ManifestNonResxWithNoCultureOnDisk);@(CompiledLicenseFile)"
+              ResponseFiles="$(CompilerResponseFile)"
+              Sources="@(Compile)"
+              TargetType="$(OutputType)"
+              ToolPath="$(McsToolPath)"
+              TreatWarningsAsErrors="$(TreatWarningsAsErrors)"
+              WarningLevel="$(WarningLevel)"
+              Win32Icon="$(ApplicationIcon)"
+              Win32Resource="$(Win32Resource)" />
+    </Target>
+	
+</Project>
