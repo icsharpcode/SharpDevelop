@@ -97,7 +97,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 			statusStripContainer.Dock = DockStyle.Bottom;
 			
 			toolBarPanel = new ToolStripPanel();
-			toolBarPanel.Controls.AddRange(wbForm.ToolBars);
+			if (wbForm.ToolBars != null) {
+				toolBarPanel.Controls.AddRange(wbForm.ToolBars);
+			}
 			toolBarPanel.Dock = DockStyle.Top;
 			
 			dockPanel = new DockPanel();
