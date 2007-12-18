@@ -26,9 +26,12 @@
 // OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 using System;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Windows.Forms;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ImageViewer
@@ -36,36 +39,54 @@ namespace ImageViewer
 	public class ImageViewContent : AbstractViewContent
 	{
 		PictureBox box = new PictureBox();
+		ImageFormat format;
+		
+		public ImageViewContent(OpenedFile file)
+		{
+			this.TabPageText = "Image Viewer";
+			this.Files.Add(file);
+			file.ForceInitializeView(this);
+		}
+		
 		public override Control Control {
 			get {
 				return box;
 			}
 		}
-		public override string TabPageText {
-			get {
-				return "Image Viewer";
-			}
-		}
-		public override void Load(string fileName) {
-			this.IsDirty = false;
-			this.FileName = fileName;
-			this.TitleName = Path.GetFileName(fileName);
-			box.SizeMode = PictureBoxSizeMode.Zoom;
-			box.Load(fileName);
-		}
-		
-		public override void Save(string fileName) {
-			this.IsDirty = false;
-			this.FileName = fileName;
-			this.TitleName = Path.GetFileName(fileName);
-			box.Image.Save(fileName);
-		}
 		
 		public override bool IsReadOnly {
 			get {
-				return (File.GetAttributes(this.FileName)
-				        & FileAttributes.ReadOnly) != 0;
+				if (File.Exists(PrimaryFile.FileName)) {
+					return (File.GetAttributes(PrimaryFile.FileName)
+				    	    & FileAttributes.ReadOnly) != 0;
+				}
+				return false;
 			}
+		}
+			
+		/// <summary>
+		/// The load method takes a copy of the image and saves the
+		/// image format so the image can be saved later without throwing
+		/// a GDI+ exception. This is because the stream is disposed during
+		/// the lifetime of the image:
+		/// 
+		/// http://support.microsoft.com/?id=814675
+		/// </summary>
+		public override void Load(OpenedFile file, Stream stream)
+		{
+			Image image = Image.FromStream(stream);
+			format = image.RawFormat;
+			
+			box.SizeMode = PictureBoxSizeMode.Zoom;
+			box.Image = new Bitmap(image.Width, image.Height);
+			using (Graphics graphics = Graphics.FromImage(box.Image)) {
+				graphics.DrawImage(image, 0, 0);
+			}
+		}
+		
+		public override void Save(OpenedFile file, Stream stream)
+		{
+			box.Image.Save(stream, format);
 		}
 	}
 }

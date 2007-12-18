@@ -59,7 +59,7 @@ namespace NRefactoryExample
 			cd.Parameters.Add(new ParameterDeclarationExpression(fd.TypeReference,
 			                                                     "wrappedObject"));
 			// this.wrappedObject = wrappedObject;
-			Expression fieldReference = new FieldReferenceExpression(new ThisReferenceExpression(),
+			Expression fieldReference = new MemberReferenceExpression(new ThisReferenceExpression(),
 			                                                         "wrappedObject");
 			Expression assignment = new AssignmentExpression(fieldReference,
 			                                                 AssignmentOperatorType.Assign,
@@ -122,7 +122,7 @@ namespace NRefactoryExample
 		static InvocationExpression CreateMethodCall(MethodDeclaration method)
 		{
 			IdentifierExpression wrappedObject = new IdentifierExpression("wrappedObject");
-			FieldReferenceExpression methodName = new FieldReferenceExpression(wrappedObject, method.Name);
+			MemberReferenceExpression methodName = new MemberReferenceExpression(wrappedObject, method.Name);
 			InvocationExpression ie = new InvocationExpression(methodName, null);
 			foreach (ParameterDeclarationExpression param in method.Parameters) {
 				Expression expr = new IdentifierExpression(param.ParameterName);

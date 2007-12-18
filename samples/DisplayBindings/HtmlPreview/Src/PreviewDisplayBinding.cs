@@ -47,8 +47,8 @@ namespace HtmlPreview
 			return true;
 		}
 		
-		public ISecondaryViewContent[] CreateSecondaryViewContent(IViewContent viewContent) {
-			return new ISecondaryViewContent[] { new PreviewViewContent() };
+		public IViewContent[] CreateSecondaryViewContent(IViewContent viewContent) {
+			return new IViewContent[] { new PreviewViewContent(viewContent) };
 		}
 	}
 }

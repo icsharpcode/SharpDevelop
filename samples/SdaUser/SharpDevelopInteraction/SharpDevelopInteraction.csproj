@@ -1,4 +1,4 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <RootNamespace>SharpDevelopInteraction</RootNamespace>
@@ -15,6 +15,7 @@
     <FileAlignment>4096</FileAlignment>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
@@ -38,6 +39,12 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="ICSharpCode.Core">
       <HintPath>..\..\..\bin\ICSharpCode.Core.dll</HintPath>
@@ -54,6 +61,9 @@
       <HintPath>..\..\..\bin\ICSharpCode.SharpDevelop.Dom.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
   </ItemGroup>
   <ItemGroup>

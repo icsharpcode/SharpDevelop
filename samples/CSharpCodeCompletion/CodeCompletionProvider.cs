@@ -94,8 +94,6 @@ namespace CSharpEditor
 			
 			NRefactoryResolver resolver = new NRefactoryResolver(mainForm.myProjectContent.Language);
 			Dom.ResolveResult rr = resolver.Resolve(FindExpression(textArea),
-			                                        textArea.Caret.Line + 1,
-			                                        textArea.Caret.Column + 1,
 			                                        mainForm.parseInformation,
 			                                        textArea.MotherTextEditorControl.Text);
 			List<ICompletionData> resultList = new List<ICompletionData>();

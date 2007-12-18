@@ -25,9 +25,11 @@
 // IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 // OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using System;
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 
 namespace CustomView
@@ -63,11 +65,11 @@ namespace CustomView
 			}
 		}
 		
-		public override void Save(string fileName)
+		public override void Load(OpenedFile file, Stream stream)
 		{
 		}
-		
-		public override void Load(string fileName)
+
+		public override void Save(OpenedFile file, Stream stream)
 		{
 		}
 		

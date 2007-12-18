@@ -25,8 +25,10 @@
 // IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 // OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using System;
+using System.IO;
 using System.Windows.Forms;
 
 namespace AlternateEditor
@@ -47,9 +49,14 @@ namespace AlternateEditor
 			}
 		}
 		
-		public Editor()
-		{
+		public Editor(OpenedFile file)
+		{			
+			Files.Add(file);
+			OnFileNameChanged(file);
+			file.ForceInitializeView(this);
+
 			rtb.Dock = DockStyle.Fill;
+			rtb.TextChanged += TextChanged;			
 		}
 		
 		public override void RedrawContent()
@@ -61,19 +68,24 @@ namespace AlternateEditor
 		{
 			rtb.Dispose();
 		}
-		
-		public override void Save(string fileName)
+
+		public override void Save(OpenedFile file, Stream stream)
 		{
-			rtb.SaveFile(fileName, RichTextBoxStreamType.PlainText);
-			TitleName = fileName;
-			IsDirty     = false;
+			rtb.SaveFile(stream, RichTextBoxStreamType.PlainText);
+			TitleName = file.FileName;
 		}
 		
-		public override void Load(string fileName)
+		public override void Load(OpenedFile file, Stream stream)
 		{
-			rtb.LoadFile(fileName, RichTextBoxStreamType.PlainText);
-			TitleName = fileName;
-			IsDirty     = false;
+			rtb.LoadFile(stream, RichTextBoxStreamType.PlainText);
+			TitleName = file.FileName;
+		}
+		
+		void TextChanged(object source, EventArgs e)
+		{
+			if (PrimaryFile != null) {
+				PrimaryFile.MakeDirty();
+			}
 		}
 	}
 }

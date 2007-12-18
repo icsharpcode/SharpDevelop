@@ -37,16 +37,10 @@ namespace ImageViewer
 		public bool CanCreateContentForFile(string fileName) {
 			return true;
 		}
-		public IViewContent CreateContentForFile(string fileName) {
-			ImageViewContent vc = new ImageViewContent();
-			vc.Load(fileName);
+		
+		public IViewContent CreateContentForFile(OpenedFile file) {
+			ImageViewContent vc = new ImageViewContent(file);
 			return vc;
-		}
-		public bool CanCreateContentForLanguage(string languageName) {
-			return false;
-		}
-		public IViewContent CreateContentForLanguage(string languageName, string content) {
-			throw new NotImplementedException();
 		}
 	}
 }

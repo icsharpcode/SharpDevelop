@@ -1,5 +1,7 @@
-﻿Microsoft Visual Studio Solution File, Format Version 9.00
-# SharpDevelop 2.1.0.1602
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+# SharpDevelop 3.0.0.2745
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SdaUser", "SdaUser.csproj", "{3FF48818-69D2-4884-8F4F-62EC72F0D5F0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpDevelopInteraction", "SharpDevelopInteraction\SharpDevelopInteraction.csproj", "{84054D5E-0B81-4C4B-AABB-DCC43030830B}"

@@ -235,4 +235,15 @@
 			          class = "ICSharpCode.SharpDevelop.Commands.OptionsCommand"/>
 		</MenuItem>
 	</Path>
+
+	<Path name="/SharpDevelop/Workbench/ToolBar">
+		<ToolbarItem id      = "New"
+		             icon    = "Icons.16x16.NewDocumentIcon"
+		             tooltip = "${res:XML.MainMenu.FileMenu.New.File.Description}"
+		             class   = "ICSharpCode.SharpDevelop.Commands.CreateNewFile"/>
+		<ToolbarItem id      = "Open"
+		             icon    = "Icons.16x16.OpenFileIcon"
+		             tooltip = "${res:XML.MainMenu.FileMenu.Open.File.Description}"
+		             class   = "ICSharpCode.SharpDevelop.Commands.OpenFile"/>		
+	</Path>
 </AddIn>

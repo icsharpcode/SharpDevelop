@@ -37,8 +37,12 @@ namespace HtmlPreview
 	/// </summary>
 	public class PreviewViewContent : AbstractSecondaryViewContent
 	{
-		public PreviewViewContent()
+		IEditable editable;
+		
+		public PreviewViewContent(IViewContent viewContent) : base(viewContent)
 		{
+			TabPageText = "Preview";
+			editable = viewContent as IEditable;
 		}
 		
 		WebBrowser browser = new WebBrowser();
@@ -48,24 +52,18 @@ namespace HtmlPreview
 			get {
 				return browser;
 			}
-		}
+		}		
 		
-		public override string TabPageText {
-			get {
-				return "Preview";
+		protected override void LoadFromPrimary()
+		{
+			if (editable != null) {
+				browser.DocumentText = editable.Text;		
 			}
 		}
 		
-		public override void Deselected() {
-			browser.DocumentText = "";
-			base.Deselected();
-		}
-		public override void Selected() {
-			IViewContent viewContent = this.WorkbenchWindow.ViewContent;
-			IEditable editable = (IEditable)viewContent;
-			browser.DocumentText = editable.Text;
-			base.Selected();
-		}
+		protected override void SaveToPrimary()
+		{
+		}		
 		
 		#endregion
 		
