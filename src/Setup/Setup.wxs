@@ -258,7 +258,11 @@
 				<ComponentRef Id="SchemaFiles"/>
 				<ComponentRef Id="CSharpFileTemplates"/>
 				<ComponentRef Id="VBNetFileTemplates"/>
-				<ComponentRef Id="MiscFileTemplates"/>
+				<ComponentRef Id="EmptyHTMLFileTemplate"/>
+				<ComponentRef Id="EmptyMsBuildFileTemplate"/>
+				<ComponentRef Id="EmptyResourceFileTemplate"/>
+				<ComponentRef Id="EmptyTextFileTemplate"/>
+				<ComponentRef Id="EmptyXMLFileTemplate"/>
 				<ComponentRef Id="SharpDevelopFileTemplates"/>
 				<ComponentRef Id="SharpDevelopReportTemplate"/>
 				<ComponentRef Id="CSharpProjectTemplates"/>

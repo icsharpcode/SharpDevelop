@@ -830,12 +830,19 @@
 										</Component>
 									</Directory>
 									<Directory Id="MiscFileTemplatesFolder" Name="Misc">
-										<Component Guid="130935E4-EDDA-4382-A74D-644437638872" Id="MiscFileTemplates" DiskId="1">
+										<Component Guid="F47EE9EB-321F-4D98-A373-BFE2C2D801D0" Id="EmptyHTMLFileTemplate" DiskId="1">
 											<File Source="..\..\data\templates\file\Misc\EmptyHTMLFile.xft" Name="EMPTYH_2.XFT" Id="EmptyHTMLFile.xft" LongName="EmptyHTMLFile.xft" />
+										</Component>
+										<Component Guid="861BC115-F99D-4492-AB4E-E7DA2DF0C60A" Id="EmptyMsBuildFileTemplate" DiskId="1">
 											<File Source="..\..\data\templates\file\Misc\EmptyMsBuildFile.xft" Name="EMPTYM_3.XFT" Id="EmptyMsBuildFile.xft" LongName="EmptyMsBuildFile.xft" />
-											<File Source="..\..\data\templates\file\Misc\EmptyNAntBuildFile.xft" Name="EMPTYN_4.XFT" Id="EmptyNAntBuildFile.xft" LongName="EmptyNAntBuildFile.xft" />
+										</Component>
+										<Component Guid="AE6F11B0-7C9F-49F8-A0EA-7140A399F670" Id="EmptyResourceFileTemplate" DiskId="1">
 											<File Source="..\..\data\templates\file\Misc\EmptyResourceFile.xft" Name="EMPTYR_5.XFT" Id="EmptyResourceFile.xft" LongName="EmptyResourceFile.xft" />
+										</Component>
+										<Component Guid="1D716764-378A-4539-80B2-98D6BA4C2FAB" Id="EmptyTextFileTemplate" DiskId="1">
 											<File Source="..\..\data\templates\file\Misc\EmptyTextFile.xft" Name="EMPTYT_7.XFT" Id="EmptyTextFile.xft" LongName="EmptyTextFile.xft" />
+										</Component>
+										<Component Guid="4E281CDB-E0FB-4583-9B06-A01C5778DE60" Id="EmptyXMLFileTemplate" DiskId="1">
 											<File Source="..\..\data\templates\file\Misc\EmptyXMLFile.xft" Name="EMPTYX_8.XFT" Id="EmptyXMLFile.xft" LongName="EmptyXMLFile.xft" />
 										</Component>
 										<Component Guid="4431463D-4FA8-48A5-9D92-D1FDA818B324" Id="SharpDevelopReportTemplate" DiskId="1">
