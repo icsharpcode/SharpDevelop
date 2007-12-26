@@ -2,13 +2,13 @@
 <Template author="Matt Ward" version="1.0">
 	
 	<Config
-		  name        = "${res:Templates.File.NAnt.NAntBuildFile.Name}"
-		  icon        = "Icons.32x32.NAntBuildFileIcon"
+		  name        = "NAnt Build File"
+		  icon        = "NAnt.AddIn.Icons.32x32.NAntBuildFileIcon"
 		  category    = "${res:Templates.File.Categories.Misc}"
 		  defaultname = "NAnt${Number}.build"
 		  language    = "XML"/>
 	 
-	<Description>${res:Templates.File.NAnt.NAntBuildFile.Description}</Description>
+	<Description>Creates a new NAnt build file.</Description>
 	<Files>
 		<File name="${FullName}" language="XML"><![CDATA[<?xml version="1.0"?>
 <project name="${FileNameWithoutExtension}" default="build">	

@@ -1,0 +1,24 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+# SharpDevelop 3.0.0.2745
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NAnt.AddIn", "NAnt.AddIn\NAnt.AddIn.csproj", "{1DB3CAD2-38E8-4C5E-8E1B-0E37B1A5C006}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NAnt.AddIn.Tests", "NAnt.AddIn.Tests\NAnt.AddIn.Tests.csproj", "{13AB8351-39E5-4F9D-A59C-B30D60CF6B8C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1DB3CAD2-38E8-4C5E-8E1B-0E37B1A5C006}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1DB3CAD2-38E8-4C5E-8E1B-0E37B1A5C006}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1DB3CAD2-38E8-4C5E-8E1B-0E37B1A5C006}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1DB3CAD2-38E8-4C5E-8E1B-0E37B1A5C006}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{13AB8351-39E5-4F9D-A59C-B30D60CF6B8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{13AB8351-39E5-4F9D-A59C-B30D60CF6B8C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{13AB8351-39E5-4F9D-A59C-B30D60CF6B8C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{13AB8351-39E5-4F9D-A59C-B30D60CF6B8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+EndGlobal

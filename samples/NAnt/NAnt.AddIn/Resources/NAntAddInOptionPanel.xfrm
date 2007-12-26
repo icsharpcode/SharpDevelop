@@ -1,0 +1,93 @@
+<Components version="1.0">
+  <System.Windows.Forms.UserControl>
+    <Name value="NAntAddInOptionPanel" />
+    <ClientSize value="{Width=464, Height=344}" />
+    <Controls>
+      <System.Windows.Forms.GroupBox>
+        <Name value="nantConfigurationGroupBox" />
+        <Location value="{X=3,Y=3}" />
+        <Text value="NAnt Configuration" />
+        <Size value="{Width=448, Height=192}" />
+        <TabIndex value="2" />
+        <Anchor value="Top, Left, Right" />
+        <Controls>
+          <System.Windows.Forms.CheckBox>
+            <Name value="debugModeCheckBox" />
+            <CheckAlign value="MiddleRight" />
+            <Location value="{X=8,Y=160}" />
+            <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
+            <Text value="&amp;Debug" />
+            <TabIndex value="9" />
+            <Size value="{Width=120, Height=24}" />
+          </System.Windows.Forms.CheckBox>
+          <System.Windows.Forms.CheckBox>
+            <Name value="quietCheckBox" />
+            <CheckAlign value="MiddleRight" />
+            <Location value="{X=8,Y=88}" />
+            <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
+            <Text value="&amp;Quiet" />
+            <TabIndex value="6" />
+            <Size value="{Width=120, Height=24}" />
+          </System.Windows.Forms.CheckBox>
+          <System.Windows.Forms.CheckBox>
+            <Name value="verboseCheckBox" />
+            <CheckAlign value="MiddleRight" />
+            <Location value="{X=8,Y=136}" />
+            <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
+            <Text value="Ver&amp;bose" />
+            <TabIndex value="8" />
+            <Size value="{Width=120, Height=24}" />
+          </System.Windows.Forms.CheckBox>
+          <System.Windows.Forms.CheckBox>
+            <Name value="showLogoCheckBox" />
+            <CheckAlign value="MiddleRight" />
+            <Location value="{X=8,Y=112}" />
+            <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
+            <Text value="Show &amp;Logo" />
+            <TabIndex value="7" />
+            <Size value="{Width=120, Height=24}" />
+          </System.Windows.Forms.CheckBox>
+          <System.Windows.Forms.Button>
+            <Name value="browseButton" />
+            <Location value="{X=408,Y=36}" />
+            <Text value="..." />
+            <Size value="{Width=32, Height=23}" />
+            <Anchor value="Top, Right" />
+            <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
+            <TabIndex value="3" />
+          </System.Windows.Forms.Button>
+          <System.Windows.Forms.TextBox>
+            <Name value="argumentsTextBox" />
+            <TabIndex value="5" />
+            <Anchor value="Top, Left, Right" />
+            <Size value="{Width=328, Height=21}" />
+            <Location value="{X=112,Y=64}" />
+          </System.Windows.Forms.TextBox>
+          <System.Windows.Forms.Label>
+            <Name value="nantArgumentsLabel" />
+            <Location value="{X=8,Y=64}" />
+            <Text value="&amp;Arguments" />
+            <TextAlign value="MiddleLeft" />
+            <Size value="{Width=64, Height=16}" />
+            <TabIndex value="4" />
+          </System.Windows.Forms.Label>
+          <System.Windows.Forms.TextBox>
+            <Name value="nantCommandTextBox" />
+            <TabIndex value="2" />
+            <Anchor value="Top, Left, Right" />
+            <Size value="{Width=288, Height=21}" />
+            <Location value="{X=112,Y=36}" />
+          </System.Windows.Forms.TextBox>
+          <System.Windows.Forms.Label>
+            <Name value="nantCommandLabel" />
+            <Location value="{X=8,Y=34}" />
+            <Text value="&amp;Command" />
+            <TextAlign value="MiddleLeft" />
+            <Size value="{Width=56, Height=16}" />
+            <TabIndex value="1" />
+          </System.Windows.Forms.Label>
+        </Controls>
+      </System.Windows.Forms.GroupBox>
+    </Controls>
+  </System.Windows.Forms.UserControl>
+</Components>

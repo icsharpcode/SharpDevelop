@@ -445,7 +445,6 @@ Icons.32x32.TextFileIcon                          = backendicons\miscFiles\Icons
 Icons.32x32.EmptyProjectIcon                      = backendicons\miscFiles\Icons.32x32.EmptyProjectIcon.png
 Icons.32x32.CombineIcon                           = backendicons\miscFiles\Icons.32x32.CombineIcon.png
 Icons.32x32.ResourceFileIcon                      = backendicons\miscFiles\Icons.32x32.ResourceFileIcon.png
-Icons.32x32.NAntBuildFileIcon                     = backendicons\miscFiles\Icons.32x32.NAntBuildFileIcon.png
 
 Icons.16x16.AddInIcon = backendicons\miscFiles\AddIn16.png
 Icons.32x32.AddInIcon = backendicons\miscFiles\AddIn32.png
@@ -469,17 +468,6 @@ HtmlHelp2.16x16.Search        = PadIcons\HtmlHelp2.16x16.Search.png
 HtmlHelp2.16x16.SearchResults = PadIcons\HtmlHelp2.16x16.SearchResults.png
 HtmlHelp2.16x16.Toc           = PadIcons\HtmlHelp2.16x16.Toc.png
 
-NAntAddIn.Icons.16x16.BuildFile          = NAntIcons\NAntAddIn.Icons.16x16.BuildFile.png
-NAntAddIn.Icons.16x16.BuildFileError     = NAntIcons\NAntAddIn.Icons.16x16.BuildFileError.png
-NAntAddIn.Icons.16x16.BuildTarget        = NAntIcons\NAntAddIn.Icons.16x16.BuildTarget.png
-NAntAddIn.Icons.16x16.BuildTargetError   = NAntIcons\NAntAddIn.Icons.16x16.BuildTargetError.png
-NAntAddIn.Icons.16x16.DefaultBuildTarget = NAntIcons\NAntAddIn.Icons.16x16.DefaultBuildTarget.png
-NAntAddIn.Icons.16x16.NAntPad            = NAntIcons\NAntAddIn.Icons.16x16.NAntPad.png
-NAntAddIn.Icons.16x16.NewBuildFile       = NAntIcons\NAntAddIn.Icons.16x16.NewBuildFile.png
-NAntAddIn.Icons.16x16.RunNAnt            = NAntIcons\NAntAddIn.Icons.16x16.RunNAnt.png
-NAntAddIn.Icons.16x16.RunNAntClean       = NAntIcons\NAntAddIn.Icons.16x16.RunNAntClean.png
-NAntAddIn.Icons.16x16.StopNAnt           = NAntIcons\NAntAddIn.Icons.16x16.StopNAnt.png
-
 CodeCoverage.Icons.16x16.Pad             = CodeCoverageIcons\CodeCoverage.Icons.16x16.Pad.png
 CodeCoverage.Icons.16x16.File            = CodeCoverageIcons\CodeCoverage.Icons.16x16.File.png
 CodeCoverage.Icons.16x16.Run             = CodeCoverageIcons\CodeCoverage.Icons.16x16.Run.png
@@ -500,3 +488,6 @@ Icons.16x16.NavigateForward              = NavigationIcons\Icons.16x16.NavigateF
 #Setup icons (Wix)
 Setup.Icons.16x16.SetupDialogsPad = SetupIcons\Setup.Icons.16x16.SetupDialogsPad.png
 Setup.Icons.16x16.Component = SetupIcons\Setup.Icons.16x16.Component.png
+
+#Server Tools
+ServerTool.Server = ServerTool\server.png

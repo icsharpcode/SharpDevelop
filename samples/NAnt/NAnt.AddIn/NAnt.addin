@@ -1,0 +1,168 @@
+<AddIn name="NAnt AddIn"
+       author="Matt Ward"
+       copyright="prj:///doc/copyright.txt"
+       description="NAnt integration for SharpDevelop.">
+
+	<Manifest>
+		<Identity name="NAnt.AddIn"/>
+	</Manifest>
+	
+	<Runtime>
+		<Import assembly="NAnt.AddIn.dll">
+			<ConditionEvaluator name="IsNAntRunning" class="ICSharpCode.NAnt.IsNAntRunningCondition"/>
+		</Import>
+	</Runtime>
+
+	<!-- NAnt file filter -->
+	<Path name = "/SharpDevelop/Workbench/FileFilter">
+		<FileFilter id="NAnt"
+	                insertbefore="AllFiles"
+	                name="NAnt Build Files (*.build;*.include)"
+	                extensions="*.build;*.include"/>
+	</Path>
+	
+	<!-- Menu options -->
+	<Path name="/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ProjectActions">
+		<MenuItem id="NAnt"
+		          label="&amp;NAnt"
+		          icon="NAnt.AddIn.Icons.16x16.NAntPad"
+		          type="Menu">
+			<ComplexCondition action="Disable">
+				<And>
+					<Not>
+						<Condition name="IsNAntRunning"/>
+					</Not>
+				</And>
+				<MenuItem id="RunNAnt"
+			 	    icon="NAnt.AddIn.Icons.16x16.RunNAnt"
+				    label="Run Default &amp;Target" 
+				    description="Runs NAnt on the build file contained in a SharpDevelop project file." 
+				    class="ICSharpCode.NAnt.Commands.RunNAntCommand"
+				/>
+				<MenuItem id="RunNAntCleanTarget"
+				    icon="NAnt.AddIn.Icons.16x16.RunNAntClean"
+				    insertafter="RunNAnt"
+				    label="Run &amp;Clean Target" 
+				    description="Runs the clean target on the build file." 
+				    class="ICSharpCode.NAnt.Commands.RunNAntCleanTargetCommand"
+				/>
+			</ComplexCondition>
+			<ComplexCondition action="Disable">
+				<And>
+					<Condition name="IsNAntRunning"/>
+				</And>
+				<MenuItem id="StopNAnt"
+				    icon="NAnt.AddIn.Icons.16x16.StopNAnt"
+				    insertafter="RunNAntCleanTarget"
+				    label="&amp;Stop NAnt" 
+				    description="Stops the currently running build." 
+				    class="ICSharpCode.NAnt.Commands.StopNAntCommand"
+				/>
+			</ComplexCondition>
+		</MenuItem>
+	</Path>
+	
+	<!-- Project browser icons -->
+	<Path name="/Workspace/Icons">
+		<Icon id="NAntBuildFileIcon"
+		      extensions=".build"
+		      resource="NAnt.AddIn.Icons.16x16.BuildFile" />
+		<Icon id="NAntBuildIncludeFileIcon"
+		      extensions=".include"
+		      resource="NAnt.AddIn.Icons.16x16.BuildFile" />
+	</Path>
+
+	<!-- Options panel -->
+	<Path name="/SharpDevelop/Dialogs/OptionsDialog/ToolsOptions">
+		<DialogPanel id="NAntAddInOptionPanel"
+		       	     label="NAnt"
+		       	     class="ICSharpCode.NAnt.Gui.NAntAddInOptionPanel"/>
+	</Path>
+
+	<!-- NAnt pad -->
+	<Path name="/SharpDevelop/Workbench/Pads">
+		<Pad id="NAntPad"
+		     category="Tools"
+		     title="NAnt"
+		     icon="NAnt.AddIn.Icons.16x16.NAntPad"
+		     class="ICSharpCode.NAnt.Gui.NAntPadContent"/>
+	</Path>
+
+	<!-- NAnt pad toolbar -->
+	<Path name="/SharpDevelop/Pads/NAntPad/Toolbar">
+		<ComplexCondition action="Disable">
+			<And>
+				<Not>
+					<Condition name="IsNAntRunning"/>
+				</Not>
+			</And>
+			<ToolbarItem id="Run"
+			             icon="Icons.16x16.RunProgramIcon"
+			             tooltip="Runs the selected target"
+			             class="ICSharpCode.NAnt.Commands.RunSelectedNAntTargetCommand"/>
+		</ComplexCondition>
+		<ToolbarItem id="Refresh"
+		             icon="Icons.16x16.BrowserRefresh"
+		             tooltip="Reloads the build files"
+		             class="ICSharpCode.NAnt.Commands.RefreshNAntPadCommand"/>
+		<ComplexCondition action="Disable">
+			<And>
+				<Condition name="IsNAntRunning"/>
+			</And>
+			<ToolbarItem id="Stop"
+			             icon="Icons.16x16.Debug.StopProcess"
+			             tooltip="Stops the current build"
+			             class="ICSharpCode.NAnt.Commands.StopNAntCommand"/>
+		</ComplexCondition>
+	</Path>
+	
+	<!-- NAnt pad tree view context menu -->
+	<Path name="/SharpDevelop/Pads/NAntPad/ContextMenu">
+		<Condition name="Ownerstate" ownerstate="BuildFileSelected">
+			<MenuItem id="RunDefaultTarget"
+				icon="NAnt.AddIn.Icons.16x16.RunNAnt"
+				label="Run Default &amp;Target"
+		    	class="ICSharpCode.NAnt.Commands.RunSelectedNAntTargetCommand"/>
+			<MenuItem id="RunNAntCleanTarget"
+			    icon="NAnt.AddIn.Icons.16x16.RunNAntClean"
+			    label="Run &amp;Clean Target" 
+			    description="Runs the clean target on the build file." 
+			    class="ICSharpCode.NAnt.Commands.RunSelectedNAntCleanTargetCommand"/>
+		</Condition>
+		<Condition name="Ownerstate" ownerstate="BuildFileSelected">
+			<MenuItem id="StopNAnt"
+			    icon="NAnt.AddIn.Icons.16x16.StopNAnt"
+			    label="&amp;Stop NAnt" 
+			    description="Stops the currently running build." 
+			    class="ICSharpCode.NAnt.Commands.StopNAntCommand"/>
+		</Condition>
+		<Condition name="Ownerstate" ownerstate="TargetSelected">
+			<MenuItem id="RunTarget"
+			          icon="Icons.16x16.RunProgramIcon"
+			          label="Run &amp;Target"
+			          class="ICSharpCode.NAnt.Commands.RunSelectedNAntTargetCommand"/>
+		</Condition>
+		<MenuItem id="OpenBuildFile"
+		          icon="Icons.16x16.OpenFileIcon"
+                  label="Open"
+                  class="ICSharpCode.NAnt.Commands.OpenNAntBuildFileCommand"/>
+		<Condition name="Ownerstate" ownerstate="TargetSelected">
+			<MenuItem id="GoToTargetDefinition"
+        	          label="&amp;Goto Definition"
+                	  class="ICSharpCode.NAnt.Commands.GoToTargetDefinitionCommand"/>
+		</Condition>
+		<Condition name="Ownerstate" ownerstate="ErrorSelected">
+			<MenuItem id="GoToError"
+        	          label="&amp;Goto Error"
+                	  class="ICSharpCode.NAnt.Commands.GoToErrorCommand"/>
+		</Condition>
+	</Path>
+
+	<!-- NAnt templates -->
+	<Path name="/SharpDevelop/BackendBindings/Templates">
+		<Directory id="NAnt" path="./Templates"/>
+	</Path>
+
+	<!-- Bitmap resources -->
+	<BitmapResources file="Resources\BitmapResources.resources" />
+</AddIn>
