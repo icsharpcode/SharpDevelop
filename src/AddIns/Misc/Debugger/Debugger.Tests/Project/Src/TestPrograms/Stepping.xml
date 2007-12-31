@@ -16,23 +16,23 @@
         <NextStatement>Start=16,4 End=16,40</NextStatement>
         <ThisValue exception="Static method does not have 'this'." />
         <ContaingClassVariables>
-          <NamedValueCollection>
+          <ValueCollection>
             <Count>0</Count>
             <Items />
-          </NamedValueCollection>
+          </ValueCollection>
         </ContaingClassVariables>
         <ArgumentCount>0</ArgumentCount>
         <Arguments>
-          <NamedValueCollection>
+          <ValueCollection>
             <Count>0</Count>
             <Items />
-          </NamedValueCollection>
+          </ValueCollection>
         </Arguments>
         <LocalVariables>
-          <NamedValueCollection>
+          <ValueCollection>
             <Count>0</Count>
             <Items />
-          </NamedValueCollection>
+          </ValueCollection>
         </LocalVariables>
       </Function>
     </ObjectDump>
@@ -47,23 +47,23 @@
         <NextStatement>Start=17,4 End=17,44</NextStatement>
         <ThisValue exception="Static method does not have 'this'." />
         <ContaingClassVariables>
-          <NamedValueCollection>
+          <ValueCollection>
             <Count>0</Count>
             <Items />
-          </NamedValueCollection>
+          </ValueCollection>
         </ContaingClassVariables>
         <ArgumentCount>0</ArgumentCount>
         <Arguments>
-          <NamedValueCollection>
+          <ValueCollection>
             <Count>0</Count>
             <Items />
-          </NamedValueCollection>
+          </ValueCollection>
         </Arguments>
         <LocalVariables>
-          <NamedValueCollection>
+          <ValueCollection>
             <Count>0</Count>
             <Items />
-          </NamedValueCollection>
+          </ValueCollection>
         </LocalVariables>
       </Function>
     </ObjectDump>
@@ -81,23 +81,23 @@
         <NextStatement>Start=18,4 End=18,10</NextStatement>
         <ThisValue exception="Static method does not have 'this'." />
         <ContaingClassVariables>
-          <NamedValueCollection>
+          <ValueCollection>
             <Count>0</Count>
             <Items />
-          </NamedValueCollection>
+          </ValueCollection>
         </ContaingClassVariables>
         <ArgumentCount>0</ArgumentCount>
         <Arguments>
-          <NamedValueCollection>
+          <ValueCollection>
             <Count>0</Count>
             <Items />
-          </NamedValueCollection>
+          </ValueCollection>
         </Arguments>
         <LocalVariables>
-          <NamedValueCollection>
+          <ValueCollection>
             <Count>0</Count>
             <Items />
-          </NamedValueCollection>
+          </ValueCollection>
         </LocalVariables>
       </Function>
     </ObjectDump>
@@ -112,23 +112,23 @@
         <NextStatement>Start=23,3 End=23,4</NextStatement>
         <ThisValue exception="Static method does not have 'this'." />
         <ContaingClassVariables>
-          <NamedValueCollection>
+          <ValueCollection>
             <Count>0</Count>
             <Items />
-          </NamedValueCollection>
+          </ValueCollection>
         </ContaingClassVariables>
         <ArgumentCount>0</ArgumentCount>
         <Arguments>
-          <NamedValueCollection>
+          <ValueCollection>
             <Count>0</Count>
             <Items />
-          </NamedValueCollection>
+          </ValueCollection>
         </Arguments>
         <LocalVariables>
-          <NamedValueCollection>
+          <ValueCollection>
             <Count>0</Count>
             <Items />
-          </NamedValueCollection>
+          </ValueCollection>
         </LocalVariables>
       </Function>
     </ObjectDump>
@@ -143,23 +143,23 @@
         <NextStatement>Start=24,4 End=24,44</NextStatement>
         <ThisValue exception="Static method does not have 'this'." />
         <ContaingClassVariables>
-          <NamedValueCollection>
+          <ValueCollection>
             <Count>0</Count>
             <Items />
-          </NamedValueCollection>
+          </ValueCollection>
         </ContaingClassVariables>
         <ArgumentCount>0</ArgumentCount>
         <Arguments>
-          <NamedValueCollection>
+          <ValueCollection>
             <Count>0</Count>
             <Items />
-          </NamedValueCollection>
+          </ValueCollection>
         </Arguments>
         <LocalVariables>
-          <NamedValueCollection>
+          <ValueCollection>
             <Count>0</Count>
             <Items />
-          </NamedValueCollection>
+          </ValueCollection>
         </LocalVariables>
       </Function>
     </ObjectDump>
@@ -175,23 +175,23 @@
         <NextStatement>Start=25,4 End=25,44</NextStatement>
         <ThisValue exception="Static method does not have 'this'." />
         <ContaingClassVariables>
-          <NamedValueCollection>
+          <ValueCollection>
             <Count>0</Count>
             <Items />
-          </NamedValueCollection>
+          </ValueCollection>
         </ContaingClassVariables>
         <ArgumentCount>0</ArgumentCount>
         <Arguments>
-          <NamedValueCollection>
+          <ValueCollection>
             <Count>0</Count>
             <Items />
-          </NamedValueCollection>
+          </ValueCollection>
         </Arguments>
         <LocalVariables>
-          <NamedValueCollection>
+          <ValueCollection>
             <Count>0</Count>
             <Items />
-          </NamedValueCollection>
+          </ValueCollection>
         </LocalVariables>
       </Function>
     </ObjectDump>
@@ -208,23 +208,23 @@
         <NextStatement>Start=18,4 End=18,10</NextStatement>
         <ThisValue exception="Static method does not have 'this'." />
         <ContaingClassVariables>
-          <NamedValueCollection>
+          <ValueCollection>
             <Count>0</Count>
             <Items />
-          </NamedValueCollection>
+          </ValueCollection>
         </ContaingClassVariables>
         <ArgumentCount>0</ArgumentCount>
         <Arguments>
-          <NamedValueCollection>
+          <ValueCollection>
             <Count>0</Count>
             <Items />
-          </NamedValueCollection>
+          </ValueCollection>
         </Arguments>
         <LocalVariables>
-          <NamedValueCollection>
+          <ValueCollection>
             <Count>0</Count>
             <Items />
-          </NamedValueCollection>
+          </ValueCollection>
         </LocalVariables>
       </Function>
     </ObjectDump>
@@ -239,23 +239,23 @@
         <NextStatement>Start=19,4 End=19,11</NextStatement>
         <ThisValue exception="Static method does not have 'this'." />
         <ContaingClassVariables>
-          <NamedValueCollection>
+          <ValueCollection>
             <Count>0</Count>
             <Items />
-          </NamedValueCollection>
+          </ValueCollection>
         </ContaingClassVariables>
         <ArgumentCount>0</ArgumentCount>
         <Arguments>
-          <NamedValueCollection>
+          <ValueCollection>
             <Count>0</Count>
             <Items />
-          </NamedValueCollection>
+          </ValueCollection>
         </Arguments>
         <LocalVariables>
-          <NamedValueCollection>
+          <ValueCollection>
             <Count>0</Count>
             <Items />
-          </NamedValueCollection>
+          </ValueCollection>
         </LocalVariables>
       </Function>
     </ObjectDump>
@@ -271,23 +271,23 @@
         <NextStatement>Start=20,3 End=20,4</NextStatement>
         <ThisValue exception="Static method does not have 'this'." />
         <ContaingClassVariables>
-          <NamedValueCollection>
+          <ValueCollection>
             <Count>0</Count>
             <Items />
-          </NamedValueCollection>
+          </ValueCollection>
         </ContaingClassVariables>
         <ArgumentCount>0</ArgumentCount>
         <Arguments>
-          <NamedValueCollection>
+          <ValueCollection>
             <Count>0</Count>
             <Items />
-          </NamedValueCollection>
+          </ValueCollection>
         </Arguments>
         <LocalVariables>
-          <NamedValueCollection>
+          <ValueCollection>
             <Count>0</Count>
             <Items />
-          </NamedValueCollection>
+          </ValueCollection>
         </LocalVariables>
       </Function>
     </ObjectDump>

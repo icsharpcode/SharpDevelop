@@ -15,19 +15,17 @@
         <NextStatement>Start=22,4 End=22,40</NextStatement>
         <ThisValue exception="Static method does not have 'this'." />
         <ContaingClassVariables>
-          <NamedValueCollection>
+          <ValueCollection>
             <Count>0</Count>
             <Items />
-          </NamedValueCollection>
+          </ValueCollection>
         </ContaingClassVariables>
         <ArgumentCount>1</ArgumentCount>
         <Arguments>
-          <NamedValueCollection>
+          <ValueCollection>
             <Count>1</Count>
             <Items>
-              <MethodArgument>
-                <Index>0</Index>
-                <Name>i</Name>
+              <Value>
                 <IsArray>False</IsArray>
                 <ArrayLenght exception="Value is not an array" />
                 <ArrayRank exception="Value is not an array" />
@@ -38,17 +36,19 @@
                 <IsPrimitive>True</IsPrimitive>
                 <IsInteger>True</IsInteger>
                 <PrimitiveValue>1</PrimitiveValue>
+                <Name>i</Name>
+                <Expression>i</Expression>
                 <HasExpired>False</HasExpired>
                 <Type>System.Int32</Type>
-              </MethodArgument>
+              </Value>
             </Items>
-          </NamedValueCollection>
+          </ValueCollection>
         </Arguments>
         <LocalVariables>
-          <NamedValueCollection>
+          <ValueCollection>
             <Count>0</Count>
             <Items />
-          </NamedValueCollection>
+          </ValueCollection>
         </LocalVariables>
       </Function>
     </ObjectDump>
@@ -63,19 +63,17 @@
         <NextStatement>Start=23,4 End=23,18</NextStatement>
         <ThisValue exception="Static method does not have 'this'." />
         <ContaingClassVariables>
-          <NamedValueCollection>
+          <ValueCollection>
             <Count>0</Count>
             <Items />
-          </NamedValueCollection>
+          </ValueCollection>
         </ContaingClassVariables>
         <ArgumentCount>1</ArgumentCount>
         <Arguments>
-          <NamedValueCollection>
+          <ValueCollection>
             <Count>1</Count>
             <Items>
-              <MethodArgument>
-                <Index>0</Index>
-                <Name>i</Name>
+              <Value>
                 <IsArray>False</IsArray>
                 <ArrayLenght exception="Value is not an array" />
                 <ArrayRank exception="Value is not an array" />
@@ -86,17 +84,19 @@
                 <IsPrimitive>True</IsPrimitive>
                 <IsInteger>True</IsInteger>
                 <PrimitiveValue>1</PrimitiveValue>
+                <Name>i</Name>
+                <Expression>i</Expression>
                 <HasExpired>False</HasExpired>
                 <Type>System.Int32</Type>
-              </MethodArgument>
+              </Value>
             </Items>
-          </NamedValueCollection>
+          </ValueCollection>
         </Arguments>
         <LocalVariables>
-          <NamedValueCollection>
+          <ValueCollection>
             <Count>0</Count>
             <Items />
-          </NamedValueCollection>
+          </ValueCollection>
         </LocalVariables>
       </Function>
     </ObjectDump>
@@ -110,23 +110,23 @@
         <NextStatement>Start=29,4 End=29,40</NextStatement>
         <ThisValue exception="Static method does not have 'this'." />
         <ContaingClassVariables>
-          <NamedValueCollection>
+          <ValueCollection>
             <Count>0</Count>
             <Items />
-          </NamedValueCollection>
+          </ValueCollection>
         </ContaingClassVariables>
         <ArgumentCount>0</ArgumentCount>
         <Arguments>
-          <NamedValueCollection>
+          <ValueCollection>
             <Count>0</Count>
             <Items />
-          </NamedValueCollection>
+          </ValueCollection>
         </Arguments>
         <LocalVariables>
-          <NamedValueCollection>
+          <ValueCollection>
             <Count>0</Count>
             <Items />
-          </NamedValueCollection>
+          </ValueCollection>
         </LocalVariables>
       </Function>
     </ObjectDump>
@@ -141,19 +141,17 @@
         <NextStatement>Start=24,4 End=24,40</NextStatement>
         <ThisValue exception="Static method does not have 'this'." />
         <ContaingClassVariables>
-          <NamedValueCollection>
+          <ValueCollection>
             <Count>0</Count>
             <Items />
-          </NamedValueCollection>
+          </ValueCollection>
         </ContaingClassVariables>
         <ArgumentCount>1</ArgumentCount>
         <Arguments>
-          <NamedValueCollection>
+          <ValueCollection>
             <Count>1</Count>
             <Items>
-              <MethodArgument>
-                <Index>0</Index>
-                <Name>i</Name>
+              <Value>
                 <IsArray>False</IsArray>
                 <ArrayLenght exception="Value is not an array" />
                 <ArrayRank exception="Value is not an array" />
@@ -164,17 +162,19 @@
                 <IsPrimitive>True</IsPrimitive>
                 <IsInteger>True</IsInteger>
                 <PrimitiveValue>1</PrimitiveValue>
+                <Name>i</Name>
+                <Expression>i</Expression>
                 <HasExpired>False</HasExpired>
                 <Type>System.Int32</Type>
-              </MethodArgument>
+              </Value>
             </Items>
-          </NamedValueCollection>
+          </ValueCollection>
         </Arguments>
         <LocalVariables>
-          <NamedValueCollection>
+          <ValueCollection>
             <Count>0</Count>
             <Items />
-          </NamedValueCollection>
+          </ValueCollection>
         </LocalVariables>
       </Function>
     </ObjectDump>
@@ -189,23 +189,23 @@
         <NextStatement>Start=17,4 End=17,40</NextStatement>
         <ThisValue exception="Static method does not have 'this'." />
         <ContaingClassVariables>
-          <NamedValueCollection>
+          <ValueCollection>
             <Count>0</Count>
             <Items />
-          </NamedValueCollection>
+          </ValueCollection>
         </ContaingClassVariables>
         <ArgumentCount>0</ArgumentCount>
         <Arguments>
-          <NamedValueCollection>
+          <ValueCollection>
             <Count>0</Count>
             <Items />
-          </NamedValueCollection>
+          </ValueCollection>
         </Arguments>
         <LocalVariables>
-          <NamedValueCollection>
+          <ValueCollection>
             <Count>0</Count>
             <Items />
-          </NamedValueCollection>
+          </ValueCollection>
         </LocalVariables>
       </Function>
     </ObjectDump>
@@ -219,19 +219,17 @@
         <NextStatement exception="Function has expired" />
         <ThisValue exception="Static method does not have 'this'." />
         <ContaingClassVariables>
-          <NamedValueCollection>
+          <ValueCollection>
             <Count>0</Count>
             <Items />
-          </NamedValueCollection>
+          </ValueCollection>
         </ContaingClassVariables>
         <ArgumentCount exception="Function has expired" />
         <Arguments>
-          <NamedValueCollection>
+          <ValueCollection>
             <Count>1</Count>
             <Items>
-              <MethodArgument>
-                <Index>0</Index>
-                <Name>i</Name>
+              <Value>
                 <IsArray exception="Value has expired" />
                 <ArrayLenght exception="Value has expired" />
                 <ArrayRank exception="Value has expired" />
@@ -242,17 +240,19 @@
                 <IsPrimitive exception="Value has expired" />
                 <IsInteger exception="Value has expired" />
                 <PrimitiveValue exception="Value has expired" />
+                <Name>i</Name>
+                <Expression>i</Expression>
                 <HasExpired>True</HasExpired>
                 <Type exception="Value has expired" />
-              </MethodArgument>
+              </Value>
             </Items>
-          </NamedValueCollection>
+          </ValueCollection>
         </Arguments>
         <LocalVariables>
-          <NamedValueCollection>
+          <ValueCollection>
             <Count>0</Count>
             <Items />
-          </NamedValueCollection>
+          </ValueCollection>
         </LocalVariables>
       </Function>
     </ObjectDump>

@@ -16,19 +16,17 @@
         <NextStatement>Start=28,4 End=28,40</NextStatement>
         <ThisValue exception="Static method does not have 'this'." />
         <ContaingClassVariables>
-          <NamedValueCollection>
+          <ValueCollection>
             <Count>0</Count>
             <Items />
-          </NamedValueCollection>
+          </ValueCollection>
         </ContaingClassVariables>
         <ArgumentCount>3</ArgumentCount>
         <Arguments>
-          <NamedValueCollection>
+          <ValueCollection>
             <Count>3</Count>
             <Items>
-              <MethodArgument>
-                <Index>0</Index>
-                <Name>i</Name>
+              <Value>
                 <IsArray>False</IsArray>
                 <ArrayLenght exception="Value is not an array" />
                 <ArrayRank exception="Value is not an array" />
@@ -39,12 +37,12 @@
                 <IsPrimitive>True</IsPrimitive>
                 <IsInteger>True</IsInteger>
                 <PrimitiveValue>0</PrimitiveValue>
+                <Name>i</Name>
+                <Expression>i</Expression>
                 <HasExpired>False</HasExpired>
                 <Type>System.Int32</Type>
-              </MethodArgument>
-              <MethodArgument>
-                <Index>1</Index>
-                <Name>s</Name>
+              </Value>
+              <Value>
                 <IsArray>False</IsArray>
                 <ArrayLenght exception="Value is not an array" />
                 <ArrayRank exception="Value is not an array" />
@@ -55,12 +53,12 @@
                 <IsPrimitive>True</IsPrimitive>
                 <IsInteger>False</IsInteger>
                 <PrimitiveValue>S</PrimitiveValue>
+                <Name>s</Name>
+                <Expression>s</Expression>
                 <HasExpired>False</HasExpired>
                 <Type>System.String</Type>
-              </MethodArgument>
-              <MethodArgument>
-                <Index>2</Index>
-                <Name>args</Name>
+              </Value>
+              <Value>
                 <IsArray>True</IsArray>
                 <ArrayLenght>0</ArrayLenght>
                 <ArrayRank>1</ArrayRank>
@@ -71,17 +69,19 @@
                 <IsPrimitive>False</IsPrimitive>
                 <IsInteger>False</IsInteger>
                 <PrimitiveValue exception="Value is not a primitive type" />
+                <Name>args</Name>
+                <Expression>args</Expression>
                 <HasExpired>False</HasExpired>
                 <Type>System.String[]</Type>
-              </MethodArgument>
+              </Value>
             </Items>
-          </NamedValueCollection>
+          </ValueCollection>
         </Arguments>
         <LocalVariables>
-          <NamedValueCollection>
+          <ValueCollection>
             <Count>0</Count>
             <Items />
-          </NamedValueCollection>
+          </ValueCollection>
         </LocalVariables>
       </Function>
     </ObjectDump>
@@ -96,19 +96,17 @@
         <NextStatement>Start=28,4 End=28,40</NextStatement>
         <ThisValue exception="Static method does not have 'this'." />
         <ContaingClassVariables>
-          <NamedValueCollection>
+          <ValueCollection>
             <Count>0</Count>
             <Items />
-          </NamedValueCollection>
+          </ValueCollection>
         </ContaingClassVariables>
         <ArgumentCount>3</ArgumentCount>
         <Arguments>
-          <NamedValueCollection>
+          <ValueCollection>
             <Count>3</Count>
             <Items>
-              <MethodArgument>
-                <Index>0</Index>
-                <Name>i</Name>
+              <Value>
                 <IsArray>False</IsArray>
                 <ArrayLenght exception="Value is not an array" />
                 <ArrayRank exception="Value is not an array" />
@@ -119,12 +117,12 @@
                 <IsPrimitive>True</IsPrimitive>
                 <IsInteger>True</IsInteger>
                 <PrimitiveValue>1</PrimitiveValue>
+                <Name>i</Name>
+                <Expression>i</Expression>
                 <HasExpired>False</HasExpired>
                 <Type>System.Int32</Type>
-              </MethodArgument>
-              <MethodArgument>
-                <Index>1</Index>
-                <Name>s</Name>
+              </Value>
+              <Value>
                 <IsArray>False</IsArray>
                 <ArrayLenght exception="Value is not an array" />
                 <ArrayRank exception="Value is not an array" />
@@ -135,12 +133,12 @@
                 <IsPrimitive>True</IsPrimitive>
                 <IsInteger>False</IsInteger>
                 <PrimitiveValue>S</PrimitiveValue>
+                <Name>s</Name>
+                <Expression>s</Expression>
                 <HasExpired>False</HasExpired>
                 <Type>System.String</Type>
-              </MethodArgument>
-              <MethodArgument>
-                <Index>2</Index>
-                <Name>args</Name>
+              </Value>
+              <Value>
                 <IsArray>True</IsArray>
                 <ArrayLenght>1</ArrayLenght>
                 <ArrayRank>1</ArrayRank>
@@ -151,17 +149,19 @@
                 <IsPrimitive>False</IsPrimitive>
                 <IsInteger>False</IsInteger>
                 <PrimitiveValue exception="Value is not a primitive type" />
+                <Name>args</Name>
+                <Expression>args</Expression>
                 <HasExpired>False</HasExpired>
                 <Type>System.String[]</Type>
-              </MethodArgument>
+              </Value>
             </Items>
-          </NamedValueCollection>
+          </ValueCollection>
         </Arguments>
         <LocalVariables>
-          <NamedValueCollection>
+          <ValueCollection>
             <Count>0</Count>
             <Items />
-          </NamedValueCollection>
+          </ValueCollection>
         </LocalVariables>
       </Function>
     </ObjectDump>
@@ -176,19 +176,17 @@
         <NextStatement>Start=28,4 End=28,40</NextStatement>
         <ThisValue exception="Static method does not have 'this'." />
         <ContaingClassVariables>
-          <NamedValueCollection>
+          <ValueCollection>
             <Count>0</Count>
             <Items />
-          </NamedValueCollection>
+          </ValueCollection>
         </ContaingClassVariables>
         <ArgumentCount>3</ArgumentCount>
         <Arguments>
-          <NamedValueCollection>
+          <ValueCollection>
             <Count>3</Count>
             <Items>
-              <MethodArgument>
-                <Index>0</Index>
-                <Name>i</Name>
+              <Value>
                 <IsArray>False</IsArray>
                 <ArrayLenght exception="Value is not an array" />
                 <ArrayRank exception="Value is not an array" />
@@ -199,12 +197,12 @@
                 <IsPrimitive>True</IsPrimitive>
                 <IsInteger>True</IsInteger>
                 <PrimitiveValue>2</PrimitiveValue>
+                <Name>i</Name>
+                <Expression>i</Expression>
                 <HasExpired>False</HasExpired>
                 <Type>System.Int32</Type>
-              </MethodArgument>
-              <MethodArgument>
-                <Index>1</Index>
-                <Name>s</Name>
+              </Value>
+              <Value>
                 <IsArray>False</IsArray>
                 <ArrayLenght exception="Value is not an array" />
                 <ArrayRank exception="Value is not an array" />
@@ -215,12 +213,12 @@
                 <IsPrimitive>False</IsPrimitive>
                 <IsInteger>False</IsInteger>
                 <PrimitiveValue exception="Value is not a primitive type" />
+                <Name>s</Name>
+                <Expression>s</Expression>
                 <HasExpired>False</HasExpired>
                 <Type>System.String</Type>
-              </MethodArgument>
-              <MethodArgument>
-                <Index>2</Index>
-                <Name>args</Name>
+              </Value>
+              <Value>
                 <IsArray>True</IsArray>
                 <ArrayLenght>2</ArrayLenght>
                 <ArrayRank>1</ArrayRank>
@@ -231,17 +229,19 @@
                 <IsPrimitive>False</IsPrimitive>
                 <IsInteger>False</IsInteger>
                 <PrimitiveValue exception="Value is not a primitive type" />
+                <Name>args</Name>
+                <Expression>args</Expression>
                 <HasExpired>False</HasExpired>
                 <Type>System.String[]</Type>
-              </MethodArgument>
+              </Value>
             </Items>
-          </NamedValueCollection>
+          </ValueCollection>
         </Arguments>
         <LocalVariables>
-          <NamedValueCollection>
+          <ValueCollection>
             <Count>0</Count>
             <Items />
-          </NamedValueCollection>
+          </ValueCollection>
         </LocalVariables>
       </Function>
     </ObjectDump>
@@ -255,8 +255,7 @@
         <HasExpired>False</HasExpired>
         <NextStatement>Start=33,4 End=33,40</NextStatement>
         <ThisValue>
-          <NamedValue>
-            <Name>this</Name>
+          <Value>
             <IsArray>False</IsArray>
             <ArrayLenght exception="Value is not an array" />
             <ArrayRank exception="Value is not an array" />
@@ -267,24 +266,24 @@
             <IsPrimitive>False</IsPrimitive>
             <IsInteger>False</IsInteger>
             <PrimitiveValue exception="Value is not a primitive type" />
+            <Name>this</Name>
+            <Expression>this</Expression>
             <HasExpired>False</HasExpired>
             <Type>Debugger.Tests.TestPrograms.FunctionArgumentVariables</Type>
-          </NamedValue>
+          </Value>
         </ThisValue>
         <ContaingClassVariables>
-          <NamedValueCollection>
+          <ValueCollection>
             <Count>0</Count>
             <Items />
-          </NamedValueCollection>
+          </ValueCollection>
         </ContaingClassVariables>
         <ArgumentCount>3</ArgumentCount>
         <Arguments>
-          <NamedValueCollection>
+          <ValueCollection>
             <Count>3</Count>
             <Items>
-              <MethodArgument>
-                <Index>0</Index>
-                <Name>i</Name>
+              <Value>
                 <IsArray>False</IsArray>
                 <ArrayLenght exception="Value is not an array" />
                 <ArrayRank exception="Value is not an array" />
@@ -295,12 +294,12 @@
                 <IsPrimitive>True</IsPrimitive>
                 <IsInteger>True</IsInteger>
                 <PrimitiveValue>0</PrimitiveValue>
+                <Name>i</Name>
+                <Expression>i</Expression>
                 <HasExpired>False</HasExpired>
                 <Type>System.Int32</Type>
-              </MethodArgument>
-              <MethodArgument>
-                <Index>1</Index>
-                <Name>s</Name>
+              </Value>
+              <Value>
                 <IsArray>False</IsArray>
                 <ArrayLenght exception="Value is not an array" />
                 <ArrayRank exception="Value is not an array" />
@@ -311,12 +310,12 @@
                 <IsPrimitive>True</IsPrimitive>
                 <IsInteger>False</IsInteger>
                 <PrimitiveValue>S</PrimitiveValue>
+                <Name>s</Name>
+                <Expression>s</Expression>
                 <HasExpired>False</HasExpired>
                 <Type>System.String</Type>
-              </MethodArgument>
-              <MethodArgument>
-                <Index>2</Index>
-                <Name>args</Name>
+              </Value>
+              <Value>
                 <IsArray>True</IsArray>
                 <ArrayLenght>0</ArrayLenght>
                 <ArrayRank>1</ArrayRank>
@@ -327,17 +326,19 @@
                 <IsPrimitive>False</IsPrimitive>
                 <IsInteger>False</IsInteger>
                 <PrimitiveValue exception="Value is not a primitive type" />
+                <Name>args</Name>
+                <Expression>args</Expression>
                 <HasExpired>False</HasExpired>
                 <Type>System.String[]</Type>
-              </MethodArgument>
+              </Value>
             </Items>
-          </NamedValueCollection>
+          </ValueCollection>
         </Arguments>
         <LocalVariables>
-          <NamedValueCollection>
+          <ValueCollection>
             <Count>0</Count>
             <Items />
-          </NamedValueCollection>
+          </ValueCollection>
         </LocalVariables>
       </Function>
     </ObjectDump>
@@ -351,8 +352,7 @@
         <HasExpired>False</HasExpired>
         <NextStatement>Start=33,4 End=33,40</NextStatement>
         <ThisValue>
-          <NamedValue>
-            <Name>this</Name>
+          <Value>
             <IsArray>False</IsArray>
             <ArrayLenght exception="Value is not an array" />
             <ArrayRank exception="Value is not an array" />
@@ -363,24 +363,24 @@
             <IsPrimitive>False</IsPrimitive>
             <IsInteger>False</IsInteger>
             <PrimitiveValue exception="Value is not a primitive type" />
+            <Name>this</Name>
+            <Expression>this</Expression>
             <HasExpired>False</HasExpired>
             <Type>Debugger.Tests.TestPrograms.FunctionArgumentVariables</Type>
-          </NamedValue>
+          </Value>
         </ThisValue>
         <ContaingClassVariables>
-          <NamedValueCollection>
+          <ValueCollection>
             <Count>0</Count>
             <Items />
-          </NamedValueCollection>
+          </ValueCollection>
         </ContaingClassVariables>
         <ArgumentCount>3</ArgumentCount>
         <Arguments>
-          <NamedValueCollection>
+          <ValueCollection>
             <Count>3</Count>
             <Items>
-              <MethodArgument>
-                <Index>0</Index>
-                <Name>i</Name>
+              <Value>
                 <IsArray>False</IsArray>
                 <ArrayLenght exception="Value is not an array" />
                 <ArrayRank exception="Value is not an array" />
@@ -391,12 +391,12 @@
                 <IsPrimitive>True</IsPrimitive>
                 <IsInteger>True</IsInteger>
                 <PrimitiveValue>1</PrimitiveValue>
+                <Name>i</Name>
+                <Expression>i</Expression>
                 <HasExpired>False</HasExpired>
                 <Type>System.Int32</Type>
-              </MethodArgument>
-              <MethodArgument>
-                <Index>1</Index>
-                <Name>s</Name>
+              </Value>
+              <Value>
                 <IsArray>False</IsArray>
                 <ArrayLenght exception="Value is not an array" />
                 <ArrayRank exception="Value is not an array" />
@@ -407,12 +407,12 @@
                 <IsPrimitive>True</IsPrimitive>
                 <IsInteger>False</IsInteger>
                 <PrimitiveValue>S</PrimitiveValue>
+                <Name>s</Name>
+                <Expression>s</Expression>
                 <HasExpired>False</HasExpired>
                 <Type>System.String</Type>
-              </MethodArgument>
-              <MethodArgument>
-                <Index>2</Index>
-                <Name>args</Name>
+              </Value>
+              <Value>
                 <IsArray>True</IsArray>
                 <ArrayLenght>1</ArrayLenght>
                 <ArrayRank>1</ArrayRank>
@@ -423,17 +423,19 @@
                 <IsPrimitive>False</IsPrimitive>
                 <IsInteger>False</IsInteger>
                 <PrimitiveValue exception="Value is not a primitive type" />
+                <Name>args</Name>
+                <Expression>args</Expression>
                 <HasExpired>False</HasExpired>
                 <Type>System.String[]</Type>
-              </MethodArgument>
+              </Value>
             </Items>
-          </NamedValueCollection>
+          </ValueCollection>
         </Arguments>
         <LocalVariables>
-          <NamedValueCollection>
+          <ValueCollection>
             <Count>0</Count>
             <Items />
-          </NamedValueCollection>
+          </ValueCollection>
         </LocalVariables>
       </Function>
     </ObjectDump>
@@ -447,8 +449,7 @@
         <HasExpired>False</HasExpired>
         <NextStatement>Start=33,4 End=33,40</NextStatement>
         <ThisValue>
-          <NamedValue>
-            <Name>this</Name>
+          <Value>
             <IsArray>False</IsArray>
             <ArrayLenght exception="Value is not an array" />
             <ArrayRank exception="Value is not an array" />
@@ -459,24 +460,24 @@
             <IsPrimitive>False</IsPrimitive>
             <IsInteger>False</IsInteger>
             <PrimitiveValue exception="Value is not a primitive type" />
+            <Name>this</Name>
+            <Expression>this</Expression>
             <HasExpired>False</HasExpired>
             <Type>Debugger.Tests.TestPrograms.FunctionArgumentVariables</Type>
-          </NamedValue>
+          </Value>
         </ThisValue>
         <ContaingClassVariables>
-          <NamedValueCollection>
+          <ValueCollection>
             <Count>0</Count>
             <Items />
-          </NamedValueCollection>
+          </ValueCollection>
         </ContaingClassVariables>
         <ArgumentCount>3</ArgumentCount>
         <Arguments>
-          <NamedValueCollection>
+          <ValueCollection>
             <Count>3</Count>
             <Items>
-              <MethodArgument>
-                <Index>0</Index>
-                <Name>i</Name>
+              <Value>
                 <IsArray>False</IsArray>
                 <ArrayLenght exception="Value is not an array" />
                 <ArrayRank exception="Value is not an array" />
@@ -487,12 +488,12 @@
                 <IsPrimitive>True</IsPrimitive>
                 <IsInteger>True</IsInteger>
                 <PrimitiveValue>2</PrimitiveValue>
+                <Name>i</Name>
+                <Expression>i</Expression>
                 <HasExpired>False</HasExpired>
                 <Type>System.Int32</Type>
-              </MethodArgument>
-              <MethodArgument>
-                <Index>1</Index>
-                <Name>s</Name>
+              </Value>
+              <Value>
                 <IsArray>False</IsArray>
                 <ArrayLenght exception="Value is not an array" />
                 <ArrayRank exception="Value is not an array" />
@@ -503,12 +504,12 @@
                 <IsPrimitive>False</IsPrimitive>
                 <IsInteger>False</IsInteger>
                 <PrimitiveValue exception="Value is not a primitive type" />
+                <Name>s</Name>
+                <Expression>s</Expression>
                 <HasExpired>False</HasExpired>
                 <Type>System.String</Type>
-              </MethodArgument>
-              <MethodArgument>
-                <Index>2</Index>
-                <Name>args</Name>
+              </Value>
+              <Value>
                 <IsArray>True</IsArray>
                 <ArrayLenght>2</ArrayLenght>
                 <ArrayRank>1</ArrayRank>
@@ -519,17 +520,19 @@
                 <IsPrimitive>False</IsPrimitive>
                 <IsInteger>False</IsInteger>
                 <PrimitiveValue exception="Value is not a primitive type" />
+                <Name>args</Name>
+                <Expression>args</Expression>
                 <HasExpired>False</HasExpired>
                 <Type>System.String[]</Type>
-              </MethodArgument>
+              </Value>
             </Items>
-          </NamedValueCollection>
+          </ValueCollection>
         </Arguments>
         <LocalVariables>
-          <NamedValueCollection>
+          <ValueCollection>
             <Count>0</Count>
             <Items />
-          </NamedValueCollection>
+          </ValueCollection>
         </LocalVariables>
       </Function>
     </ObjectDump>

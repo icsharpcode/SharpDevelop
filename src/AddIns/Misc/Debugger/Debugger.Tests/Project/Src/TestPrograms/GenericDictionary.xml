@@ -6,8 +6,7 @@
     <ModuleLoaded symbols="True">GenericDictionary.exe</ModuleLoaded>
     <DebuggingPaused>Break</DebuggingPaused>
     <ObjectDump name="dict">
-      <LocalVariable>
-        <Name>dict</Name>
+      <Value>
         <IsArray>False</IsArray>
         <ArrayLenght exception="Value is not an array" />
         <ArrayRank exception="Value is not an array" />
@@ -18,27 +17,17 @@
         <IsPrimitive>False</IsPrimitive>
         <IsInteger>False</IsInteger>
         <PrimitiveValue exception="Value is not a primitive type" />
+        <Name>dict</Name>
+        <Expression>dict</Expression>
         <HasExpired>False</HasExpired>
         <Type>System.Collections.Generic.Dictionary&lt;System.String,System.Int32&gt;</Type>
-      </LocalVariable>
+      </Value>
     </ObjectDump>
     <ObjectDump name="dict members">
-      <NamedValueCollection>
+      <ValueCollection>
         <Count>16</Count>
         <Items>
-          <MemberValue>
-            <MemberInfo>
-              <FieldInfo>
-                <IsLiteral>False</IsLiteral>
-                <IsPrivate>True</IsPrivate>
-                <IsPublic>False</IsPublic>
-                <IsStatic>False</IsStatic>
-                <Name>buckets</Name>
-                <DeclaringType>System.Collections.Generic.Dictionary&lt;System.String,System.Int32&gt;</DeclaringType>
-                <Module>mscorlib.dll</Module>
-              </FieldInfo>
-            </MemberInfo>
-            <Name>buckets</Name>
+          <Value>
             <IsArray>True</IsArray>
             <ArrayLenght>3</ArrayLenght>
             <ArrayRank>1</ArrayRank>
@@ -49,22 +38,12 @@
             <IsPrimitive>False</IsPrimitive>
             <IsInteger>False</IsInteger>
             <PrimitiveValue exception="Value is not a primitive type" />
+            <Name>buckets</Name>
+            <Expression>parent.buckets</Expression>
             <HasExpired>False</HasExpired>
             <Type>System.Int32[]</Type>
-          </MemberValue>
-          <MemberValue>
-            <MemberInfo>
-              <FieldInfo>
-                <IsLiteral>False</IsLiteral>
-                <IsPrivate>True</IsPrivate>
-                <IsPublic>False</IsPublic>
-                <IsStatic>False</IsStatic>
-                <Name>entries</Name>
-                <DeclaringType>System.Collections.Generic.Dictionary&lt;System.String,System.Int32&gt;</DeclaringType>
-                <Module>mscorlib.dll</Module>
-              </FieldInfo>
-            </MemberInfo>
-            <Name>entries</Name>
+          </Value>
+          <Value>
             <IsArray>True</IsArray>
             <ArrayLenght>3</ArrayLenght>
             <ArrayRank>1</ArrayRank>
@@ -75,22 +54,28 @@
             <IsPrimitive>False</IsPrimitive>
             <IsInteger>False</IsInteger>
             <PrimitiveValue exception="Value is not a primitive type" />
+            <Name>entries</Name>
+            <Expression>parent.entries</Expression>
             <HasExpired>False</HasExpired>
             <Type>Entry&lt;System.String,System.Int32&gt;[]</Type>
-          </MemberValue>
-          <MemberValue>
-            <MemberInfo>
-              <FieldInfo>
-                <IsLiteral>False</IsLiteral>
-                <IsPrivate>True</IsPrivate>
-                <IsPublic>False</IsPublic>
-                <IsStatic>False</IsStatic>
-                <Name>count</Name>
-                <DeclaringType>System.Collections.Generic.Dictionary&lt;System.String,System.Int32&gt;</DeclaringType>
-                <Module>mscorlib.dll</Module>
-              </FieldInfo>
-            </MemberInfo>
+          </Value>
+          <Value>
+            <IsArray>False</IsArray>
+            <ArrayLenght exception="Value is not an array" />
+            <ArrayRank exception="Value is not an array" />
+            <ArrayDimensions exception="Value is not an array" />
+            <IsNull>False</IsNull>
+            <AsString>3</AsString>
+            <IsObject>False</IsObject>
+            <IsPrimitive>True</IsPrimitive>
+            <IsInteger>True</IsInteger>
+            <PrimitiveValue>3</PrimitiveValue>
             <Name>count</Name>
+            <Expression>parent.count</Expression>
+            <HasExpired>False</HasExpired>
+            <Type>System.Int32</Type>
+          </Value>
+          <Value>
             <IsArray>False</IsArray>
             <ArrayLenght exception="Value is not an array" />
             <ArrayRank exception="Value is not an array" />
@@ -101,48 +86,12 @@
             <IsPrimitive>True</IsPrimitive>
             <IsInteger>True</IsInteger>
             <PrimitiveValue>3</PrimitiveValue>
-            <HasExpired>False</HasExpired>
-            <Type>System.Int32</Type>
-          </MemberValue>
-          <MemberValue>
-            <MemberInfo>
-              <FieldInfo>
-                <IsLiteral>False</IsLiteral>
-                <IsPrivate>True</IsPrivate>
-                <IsPublic>False</IsPublic>
-                <IsStatic>False</IsStatic>
-                <Name>version</Name>
-                <DeclaringType>System.Collections.Generic.Dictionary&lt;System.String,System.Int32&gt;</DeclaringType>
-                <Module>mscorlib.dll</Module>
-              </FieldInfo>
-            </MemberInfo>
             <Name>version</Name>
-            <IsArray>False</IsArray>
-            <ArrayLenght exception="Value is not an array" />
-            <ArrayRank exception="Value is not an array" />
-            <ArrayDimensions exception="Value is not an array" />
-            <IsNull>False</IsNull>
-            <AsString>3</AsString>
-            <IsObject>False</IsObject>
-            <IsPrimitive>True</IsPrimitive>
-            <IsInteger>True</IsInteger>
-            <PrimitiveValue>3</PrimitiveValue>
+            <Expression>parent.version</Expression>
             <HasExpired>False</HasExpired>
             <Type>System.Int32</Type>
-          </MemberValue>
-          <MemberValue>
-            <MemberInfo>
-              <FieldInfo>
-                <IsLiteral>False</IsLiteral>
-                <IsPrivate>True</IsPrivate>
-                <IsPublic>False</IsPublic>
-                <IsStatic>False</IsStatic>
-                <Name>freeList</Name>
-                <DeclaringType>System.Collections.Generic.Dictionary&lt;System.String,System.Int32&gt;</DeclaringType>
-                <Module>mscorlib.dll</Module>
-              </FieldInfo>
-            </MemberInfo>
-            <Name>freeList</Name>
+          </Value>
+          <Value>
             <IsArray>False</IsArray>
             <ArrayLenght exception="Value is not an array" />
             <ArrayRank exception="Value is not an array" />
@@ -153,22 +102,12 @@
             <IsPrimitive>True</IsPrimitive>
             <IsInteger>True</IsInteger>
             <PrimitiveValue>-1</PrimitiveValue>
+            <Name>freeList</Name>
+            <Expression>parent.freeList</Expression>
             <HasExpired>False</HasExpired>
             <Type>System.Int32</Type>
-          </MemberValue>
-          <MemberValue>
-            <MemberInfo>
-              <FieldInfo>
-                <IsLiteral>False</IsLiteral>
-                <IsPrivate>True</IsPrivate>
-                <IsPublic>False</IsPublic>
-                <IsStatic>False</IsStatic>
-                <Name>freeCount</Name>
-                <DeclaringType>System.Collections.Generic.Dictionary&lt;System.String,System.Int32&gt;</DeclaringType>
-                <Module>mscorlib.dll</Module>
-              </FieldInfo>
-            </MemberInfo>
-            <Name>freeCount</Name>
+          </Value>
+          <Value>
             <IsArray>False</IsArray>
             <ArrayLenght exception="Value is not an array" />
             <ArrayRank exception="Value is not an array" />
@@ -179,22 +118,12 @@
             <IsPrimitive>True</IsPrimitive>
             <IsInteger>True</IsInteger>
             <PrimitiveValue>0</PrimitiveValue>
+            <Name>freeCount</Name>
+            <Expression>parent.freeCount</Expression>
             <HasExpired>False</HasExpired>
             <Type>System.Int32</Type>
-          </MemberValue>
-          <MemberValue>
-            <MemberInfo>
-              <FieldInfo>
-                <IsLiteral>False</IsLiteral>
-                <IsPrivate>True</IsPrivate>
-                <IsPublic>False</IsPublic>
-                <IsStatic>False</IsStatic>
-                <Name>comparer</Name>
-                <DeclaringType>System.Collections.Generic.Dictionary&lt;System.String,System.Int32&gt;</DeclaringType>
-                <Module>mscorlib.dll</Module>
-              </FieldInfo>
-            </MemberInfo>
-            <Name>comparer</Name>
+          </Value>
+          <Value>
             <IsArray>False</IsArray>
             <ArrayLenght exception="Value is not an array" />
             <ArrayRank exception="Value is not an array" />
@@ -205,22 +134,12 @@
             <IsPrimitive>False</IsPrimitive>
             <IsInteger>False</IsInteger>
             <PrimitiveValue exception="Value is not a primitive type" />
+            <Name>comparer</Name>
+            <Expression>parent.comparer</Expression>
             <HasExpired>False</HasExpired>
             <Type>System.Collections.Generic.GenericEqualityComparer&lt;System.String&gt;</Type>
-          </MemberValue>
-          <MemberValue>
-            <MemberInfo>
-              <FieldInfo>
-                <IsLiteral>False</IsLiteral>
-                <IsPrivate>True</IsPrivate>
-                <IsPublic>False</IsPublic>
-                <IsStatic>False</IsStatic>
-                <Name>keys</Name>
-                <DeclaringType>System.Collections.Generic.Dictionary&lt;System.String,System.Int32&gt;</DeclaringType>
-                <Module>mscorlib.dll</Module>
-              </FieldInfo>
-            </MemberInfo>
-            <Name>keys</Name>
+          </Value>
+          <Value>
             <IsArray>False</IsArray>
             <ArrayLenght exception="Value is not an array" />
             <ArrayRank exception="Value is not an array" />
@@ -231,22 +150,12 @@
             <IsPrimitive>False</IsPrimitive>
             <IsInteger>False</IsInteger>
             <PrimitiveValue exception="Value is not a primitive type" />
+            <Name>keys</Name>
+            <Expression>parent.keys</Expression>
             <HasExpired>False</HasExpired>
             <Type>KeyCollection&lt;System.String,System.Int32&gt;</Type>
-          </MemberValue>
-          <MemberValue>
-            <MemberInfo>
-              <FieldInfo>
-                <IsLiteral>False</IsLiteral>
-                <IsPrivate>True</IsPrivate>
-                <IsPublic>False</IsPublic>
-                <IsStatic>False</IsStatic>
-                <Name>values</Name>
-                <DeclaringType>System.Collections.Generic.Dictionary&lt;System.String,System.Int32&gt;</DeclaringType>
-                <Module>mscorlib.dll</Module>
-              </FieldInfo>
-            </MemberInfo>
-            <Name>values</Name>
+          </Value>
+          <Value>
             <IsArray>False</IsArray>
             <ArrayLenght exception="Value is not an array" />
             <ArrayRank exception="Value is not an array" />
@@ -257,22 +166,12 @@
             <IsPrimitive>False</IsPrimitive>
             <IsInteger>False</IsInteger>
             <PrimitiveValue exception="Value is not a primitive type" />
+            <Name>values</Name>
+            <Expression>parent.values</Expression>
             <HasExpired>False</HasExpired>
             <Type>ValueCollection&lt;System.String,System.Int32&gt;</Type>
-          </MemberValue>
-          <MemberValue>
-            <MemberInfo>
-              <FieldInfo>
-                <IsLiteral>False</IsLiteral>
-                <IsPrivate>True</IsPrivate>
-                <IsPublic>False</IsPublic>
-                <IsStatic>False</IsStatic>
-                <Name>_syncRoot</Name>
-                <DeclaringType>System.Collections.Generic.Dictionary&lt;System.String,System.Int32&gt;</DeclaringType>
-                <Module>mscorlib.dll</Module>
-              </FieldInfo>
-            </MemberInfo>
-            <Name>_syncRoot</Name>
+          </Value>
+          <Value>
             <IsArray>False</IsArray>
             <ArrayLenght exception="Value is not an array" />
             <ArrayRank exception="Value is not an array" />
@@ -283,22 +182,12 @@
             <IsPrimitive>False</IsPrimitive>
             <IsInteger>False</IsInteger>
             <PrimitiveValue exception="Value is not a primitive type" />
+            <Name>_syncRoot</Name>
+            <Expression>parent._syncRoot</Expression>
             <HasExpired>False</HasExpired>
             <Type>System.Object</Type>
-          </MemberValue>
-          <MemberValue>
-            <MemberInfo>
-              <FieldInfo>
-                <IsLiteral>False</IsLiteral>
-                <IsPrivate>True</IsPrivate>
-                <IsPublic>False</IsPublic>
-                <IsStatic>False</IsStatic>
-                <Name>m_siInfo</Name>
-                <DeclaringType>System.Collections.Generic.Dictionary&lt;System.String,System.Int32&gt;</DeclaringType>
-                <Module>mscorlib.dll</Module>
-              </FieldInfo>
-            </MemberInfo>
-            <Name>m_siInfo</Name>
+          </Value>
+          <Value>
             <IsArray>False</IsArray>
             <ArrayLenght exception="Value is not an array" />
             <ArrayRank exception="Value is not an array" />
@@ -309,21 +198,28 @@
             <IsPrimitive>False</IsPrimitive>
             <IsInteger>False</IsInteger>
             <PrimitiveValue exception="Value is not a primitive type" />
+            <Name>m_siInfo</Name>
+            <Expression>parent.m_siInfo</Expression>
             <HasExpired>False</HasExpired>
             <Type>System.Runtime.Serialization.SerializationInfo</Type>
-          </MemberValue>
-          <MemberValue>
-            <MemberInfo>
-              <PropertyInfo>
-                <IsPrivate>False</IsPrivate>
-                <IsPublic>True</IsPublic>
-                <IsStatic>False</IsStatic>
-                <Name>Comparer</Name>
-                <DeclaringType>System.Collections.Generic.Dictionary&lt;System.String,System.Int32&gt;</DeclaringType>
-                <Module>mscorlib.dll</Module>
-              </PropertyInfo>
-            </MemberInfo>
+          </Value>
+          <Value>
+            <IsArray>False</IsArray>
+            <ArrayLenght exception="Value is not an array" />
+            <ArrayRank exception="Value is not an array" />
+            <ArrayDimensions exception="Value is not an array" />
+            <IsNull>False</IsNull>
+            <AsString>{System.TypeLoadException}</AsString>
+            <IsObject>True</IsObject>
+            <IsPrimitive>False</IsPrimitive>
+            <IsInteger>False</IsInteger>
+            <PrimitiveValue exception="Value is not a primitive type" />
             <Name>Comparer</Name>
+            <Expression>parent.Comparer</Expression>
+            <HasExpired>False</HasExpired>
+            <Type>System.TypeLoadException</Type>
+          </Value>
+          <Value>
             <IsArray>False</IsArray>
             <ArrayLenght exception="Value is not an array" />
             <ArrayRank exception="Value is not an array" />
@@ -334,21 +230,12 @@
             <IsPrimitive>False</IsPrimitive>
             <IsInteger>False</IsInteger>
             <PrimitiveValue exception="Value is not a primitive type" />
-            <HasExpired>False</HasExpired>
-            <Type>System.TypeLoadException</Type>
-          </MemberValue>
-          <MemberValue>
-            <MemberInfo>
-              <PropertyInfo>
-                <IsPrivate>False</IsPrivate>
-                <IsPublic>True</IsPublic>
-                <IsStatic>False</IsStatic>
-                <Name>Count</Name>
-                <DeclaringType>System.Collections.Generic.Dictionary&lt;System.String,System.Int32&gt;</DeclaringType>
-                <Module>mscorlib.dll</Module>
-              </PropertyInfo>
-            </MemberInfo>
             <Name>Count</Name>
+            <Expression>parent.Count</Expression>
+            <HasExpired>False</HasExpired>
+            <Type>System.TypeLoadException</Type>
+          </Value>
+          <Value>
             <IsArray>False</IsArray>
             <ArrayLenght exception="Value is not an array" />
             <ArrayRank exception="Value is not an array" />
@@ -359,21 +246,12 @@
             <IsPrimitive>False</IsPrimitive>
             <IsInteger>False</IsInteger>
             <PrimitiveValue exception="Value is not a primitive type" />
-            <HasExpired>False</HasExpired>
-            <Type>System.TypeLoadException</Type>
-          </MemberValue>
-          <MemberValue>
-            <MemberInfo>
-              <PropertyInfo>
-                <IsPrivate>False</IsPrivate>
-                <IsPublic>True</IsPublic>
-                <IsStatic>False</IsStatic>
-                <Name>Keys</Name>
-                <DeclaringType>System.Collections.Generic.Dictionary&lt;System.String,System.Int32&gt;</DeclaringType>
-                <Module>mscorlib.dll</Module>
-              </PropertyInfo>
-            </MemberInfo>
             <Name>Keys</Name>
+            <Expression>parent.Keys</Expression>
+            <HasExpired>False</HasExpired>
+            <Type>System.TypeLoadException</Type>
+          </Value>
+          <Value>
             <IsArray>False</IsArray>
             <ArrayLenght exception="Value is not an array" />
             <ArrayRank exception="Value is not an array" />
@@ -384,21 +262,12 @@
             <IsPrimitive>False</IsPrimitive>
             <IsInteger>False</IsInteger>
             <PrimitiveValue exception="Value is not a primitive type" />
-            <HasExpired>False</HasExpired>
-            <Type>System.TypeLoadException</Type>
-          </MemberValue>
-          <MemberValue>
-            <MemberInfo>
-              <PropertyInfo>
-                <IsPrivate>False</IsPrivate>
-                <IsPublic>True</IsPublic>
-                <IsStatic>False</IsStatic>
-                <Name>Values</Name>
-                <DeclaringType>System.Collections.Generic.Dictionary&lt;System.String,System.Int32&gt;</DeclaringType>
-                <Module>mscorlib.dll</Module>
-              </PropertyInfo>
-            </MemberInfo>
             <Name>Values</Name>
+            <Expression>parent.Values</Expression>
+            <HasExpired>False</HasExpired>
+            <Type>System.TypeLoadException</Type>
+          </Value>
+          <Value>
             <IsArray>False</IsArray>
             <ArrayLenght exception="Value is not an array" />
             <ArrayRank exception="Value is not an array" />
@@ -409,36 +278,13 @@
             <IsPrimitive>False</IsPrimitive>
             <IsInteger>False</IsInteger>
             <PrimitiveValue exception="Value is not a primitive type" />
-            <HasExpired>False</HasExpired>
-            <Type>System.TypeLoadException</Type>
-          </MemberValue>
-          <MemberValue>
-            <MemberInfo>
-              <PropertyInfo>
-                <IsPrivate>False</IsPrivate>
-                <IsPublic>True</IsPublic>
-                <IsStatic>False</IsStatic>
-                <Name>Item</Name>
-                <DeclaringType>System.Collections.Generic.Dictionary&lt;System.String,System.Int32&gt;</DeclaringType>
-                <Module>mscorlib.dll</Module>
-              </PropertyInfo>
-            </MemberInfo>
             <Name>Item</Name>
-            <IsArray>False</IsArray>
-            <ArrayLenght exception="Value is not an array" />
-            <ArrayRank exception="Value is not an array" />
-            <ArrayDimensions exception="Value is not an array" />
-            <IsNull>False</IsNull>
-            <AsString>{System.TypeLoadException}</AsString>
-            <IsObject>True</IsObject>
-            <IsPrimitive>False</IsPrimitive>
-            <IsInteger>False</IsInteger>
-            <PrimitiveValue exception="Value is not a primitive type" />
+            <Expression>parent.Item</Expression>
             <HasExpired>False</HasExpired>
             <Type>System.TypeLoadException</Type>
-          </MemberValue>
+          </Value>
         </Items>
-      </NamedValueCollection>
+      </ValueCollection>
     </ObjectDump>
     <DebuggingPaused>EvalComplete</DebuggingPaused>
     <DebuggingPaused>EvalComplete</DebuggingPaused>

@@ -6,8 +6,7 @@
     <ModuleLoaded symbols="True">ArrayValue.exe</ModuleLoaded>
     <DebuggingPaused>Break</DebuggingPaused>
     <ObjectDump name="array">
-      <LocalVariable>
-        <Name>array</Name>
+      <Value>
         <IsArray>True</IsArray>
         <ArrayLenght>5</ArrayLenght>
         <ArrayRank>1</ArrayRank>
@@ -18,17 +17,17 @@
         <IsPrimitive>False</IsPrimitive>
         <IsInteger>False</IsInteger>
         <PrimitiveValue exception="Value is not a primitive type" />
+        <Name>array</Name>
+        <Expression>array</Expression>
         <HasExpired>False</HasExpired>
         <Type>System.Int32[]</Type>
-      </LocalVariable>
+      </Value>
     </ObjectDump>
     <ObjectDump name="array elements">
-      <NamedValueCollection>
+      <ValueCollection>
         <Count>5</Count>
         <Items>
-          <ArrayElement>
-            <Indicies>System.UInt32[]</Indicies>
-            <Name>[0]</Name>
+          <Value>
             <IsArray>False</IsArray>
             <ArrayLenght exception="Value is not an array" />
             <ArrayRank exception="Value is not an array" />
@@ -39,12 +38,12 @@
             <IsPrimitive>True</IsPrimitive>
             <IsInteger>True</IsInteger>
             <PrimitiveValue>0</PrimitiveValue>
+            <Name>[0]</Name>
+            <Expression>parent[0u]</Expression>
             <HasExpired>False</HasExpired>
             <Type>System.Int32</Type>
-          </ArrayElement>
-          <ArrayElement>
-            <Indicies>System.UInt32[]</Indicies>
-            <Name>[1]</Name>
+          </Value>
+          <Value>
             <IsArray>False</IsArray>
             <ArrayLenght exception="Value is not an array" />
             <ArrayRank exception="Value is not an array" />
@@ -55,12 +54,12 @@
             <IsPrimitive>True</IsPrimitive>
             <IsInteger>True</IsInteger>
             <PrimitiveValue>1</PrimitiveValue>
+            <Name>[1]</Name>
+            <Expression>parent[1u]</Expression>
             <HasExpired>False</HasExpired>
             <Type>System.Int32</Type>
-          </ArrayElement>
-          <ArrayElement>
-            <Indicies>System.UInt32[]</Indicies>
-            <Name>[2]</Name>
+          </Value>
+          <Value>
             <IsArray>False</IsArray>
             <ArrayLenght exception="Value is not an array" />
             <ArrayRank exception="Value is not an array" />
@@ -71,12 +70,12 @@
             <IsPrimitive>True</IsPrimitive>
             <IsInteger>True</IsInteger>
             <PrimitiveValue>2</PrimitiveValue>
+            <Name>[2]</Name>
+            <Expression>parent[2u]</Expression>
             <HasExpired>False</HasExpired>
             <Type>System.Int32</Type>
-          </ArrayElement>
-          <ArrayElement>
-            <Indicies>System.UInt32[]</Indicies>
-            <Name>[3]</Name>
+          </Value>
+          <Value>
             <IsArray>False</IsArray>
             <ArrayLenght exception="Value is not an array" />
             <ArrayRank exception="Value is not an array" />
@@ -87,12 +86,12 @@
             <IsPrimitive>True</IsPrimitive>
             <IsInteger>True</IsInteger>
             <PrimitiveValue>3</PrimitiveValue>
+            <Name>[3]</Name>
+            <Expression>parent[3u]</Expression>
             <HasExpired>False</HasExpired>
             <Type>System.Int32</Type>
-          </ArrayElement>
-          <ArrayElement>
-            <Indicies>System.UInt32[]</Indicies>
-            <Name>[4]</Name>
+          </Value>
+          <Value>
             <IsArray>False</IsArray>
             <ArrayLenght exception="Value is not an array" />
             <ArrayRank exception="Value is not an array" />
@@ -103,11 +102,13 @@
             <IsPrimitive>True</IsPrimitive>
             <IsInteger>True</IsInteger>
             <PrimitiveValue>4</PrimitiveValue>
+            <Name>[4]</Name>
+            <Expression>parent[4u]</Expression>
             <HasExpired>False</HasExpired>
             <Type>System.Int32</Type>
-          </ArrayElement>
+          </Value>
         </Items>
-      </NamedValueCollection>
+      </ValueCollection>
     </ObjectDump>
     <ProcessExited />
   </Test>

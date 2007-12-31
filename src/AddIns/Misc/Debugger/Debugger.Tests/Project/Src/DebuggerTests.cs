@@ -216,10 +216,10 @@ namespace Debugger.Tests
 		[Test]
 		public void FunctionVariablesLifetime()
 		{
-			NamedValue argument = null;
-			NamedValue local    = null;
-			NamedValue localInSubFunction = null;
-			NamedValue @class   = null;
+			Value argument = null;
+			Value local    = null;
+			Value localInSubFunction = null;
+			Value @class   = null;
 			
 			StartTest("FunctionVariablesLifetime"); // 1 - Enter program
 			WaitForPause();
@@ -271,7 +271,7 @@ namespace Debugger.Tests
 		{
 			StartTest("ArrayValue");
 			WaitForPause();
-			NamedValue array = process.SelectedFunction.LocalVariables["array"];
+			Value array = process.SelectedFunction.LocalVariables["array"];
 			ObjectDump("array", array);
 			ObjectDump("array elements", array.GetArrayElements());
 			
@@ -283,7 +283,7 @@ namespace Debugger.Tests
 		[Test]
 		public void ObjectValue()
 		{
-			NamedValue val = null;
+			Value val = null;
 			
 			StartTest("ObjectValue");
 			WaitForPause();

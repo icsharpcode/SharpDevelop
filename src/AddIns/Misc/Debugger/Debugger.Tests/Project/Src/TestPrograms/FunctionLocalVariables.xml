@@ -15,24 +15,23 @@
         <NextStatement>Start=23,4 End=23,40</NextStatement>
         <ThisValue exception="Static method does not have 'this'." />
         <ContaingClassVariables>
-          <NamedValueCollection>
+          <ValueCollection>
             <Count>0</Count>
             <Items />
-          </NamedValueCollection>
+          </ValueCollection>
         </ContaingClassVariables>
         <ArgumentCount>0</ArgumentCount>
         <Arguments>
-          <NamedValueCollection>
+          <ValueCollection>
             <Count>0</Count>
             <Items />
-          </NamedValueCollection>
+          </ValueCollection>
         </Arguments>
         <LocalVariables>
-          <NamedValueCollection>
+          <ValueCollection>
             <Count>5</Count>
             <Items>
-              <LocalVariable>
-                <Name>i</Name>
+              <Value>
                 <IsArray>False</IsArray>
                 <ArrayLenght exception="Value is not an array" />
                 <ArrayRank exception="Value is not an array" />
@@ -43,11 +42,12 @@
                 <IsPrimitive>True</IsPrimitive>
                 <IsInteger>True</IsInteger>
                 <PrimitiveValue>0</PrimitiveValue>
+                <Name>i</Name>
+                <Expression>i</Expression>
                 <HasExpired>False</HasExpired>
                 <Type>System.Int32</Type>
-              </LocalVariable>
-              <LocalVariable>
-                <Name>s</Name>
+              </Value>
+              <Value>
                 <IsArray>False</IsArray>
                 <ArrayLenght exception="Value is not an array" />
                 <ArrayRank exception="Value is not an array" />
@@ -58,11 +58,12 @@
                 <IsPrimitive>True</IsPrimitive>
                 <IsInteger>False</IsInteger>
                 <PrimitiveValue>S</PrimitiveValue>
+                <Name>s</Name>
+                <Expression>s</Expression>
                 <HasExpired>False</HasExpired>
                 <Type>System.String</Type>
-              </LocalVariable>
-              <LocalVariable>
-                <Name>args</Name>
+              </Value>
+              <Value>
                 <IsArray>True</IsArray>
                 <ArrayLenght>1</ArrayLenght>
                 <ArrayRank>1</ArrayRank>
@@ -73,11 +74,12 @@
                 <IsPrimitive>False</IsPrimitive>
                 <IsInteger>False</IsInteger>
                 <PrimitiveValue exception="Value is not a primitive type" />
+                <Name>args</Name>
+                <Expression>args</Expression>
                 <HasExpired>False</HasExpired>
                 <Type>System.String[]</Type>
-              </LocalVariable>
-              <LocalVariable>
-                <Name>n</Name>
+              </Value>
+              <Value>
                 <IsArray>False</IsArray>
                 <ArrayLenght exception="Value is not an array" />
                 <ArrayRank exception="Value is not an array" />
@@ -88,11 +90,12 @@
                 <IsPrimitive>False</IsPrimitive>
                 <IsInteger>False</IsInteger>
                 <PrimitiveValue exception="Value is not a primitive type" />
+                <Name>n</Name>
+                <Expression>n</Expression>
                 <HasExpired>False</HasExpired>
                 <Type>System.Object</Type>
-              </LocalVariable>
-              <LocalVariable>
-                <Name>o</Name>
+              </Value>
+              <Value>
                 <IsArray>False</IsArray>
                 <ArrayLenght exception="Value is not an array" />
                 <ArrayRank exception="Value is not an array" />
@@ -103,11 +106,13 @@
                 <IsPrimitive>False</IsPrimitive>
                 <IsInteger>False</IsInteger>
                 <PrimitiveValue exception="Value is not a primitive type" />
+                <Name>o</Name>
+                <Expression>o</Expression>
                 <HasExpired>False</HasExpired>
                 <Type>System.Object</Type>
-              </LocalVariable>
+              </Value>
             </Items>
-          </NamedValueCollection>
+          </ValueCollection>
         </LocalVariables>
       </Function>
     </ObjectDump>
