@@ -13,6 +13,8 @@ using Debugger.Wrappers.CorDebug;
 using Debugger.Wrappers.CorSym;
 using Debugger.Wrappers.MetaData;
 
+using Ast = ICSharpCode.NRefactory.Ast;
+
 namespace Debugger
 {
 	/// <summary>
@@ -507,12 +509,12 @@ namespace Debugger
 		
 		/// <summary> Gets argument with a given index </summary>
 		/// <param name="index"> Zero-based index </param>
-		public MethodArgument GetArgument(int index)
+		public Value GetArgument(int index)
 		{
-			return new MethodArgument(
-				GetParameterName(index),
-				index,
+			return new Value(
 				process,
+				GetParameterName(index),
+				new Ast.IdentifierExpression(GetParameterName(index)),
 				new IExpirable[] {this},
 				new IMutable[] {process.DebugeeState},
 				delegate { return GetArgumentCorValue(index); }
@@ -578,7 +580,7 @@ namespace Debugger
 			get {
 				if (symMethod != null) { // TODO: Is this needed?
 					ISymUnmanagedScope symRootScope = symMethod.RootScope;
-					foreach(LocalVariable var in GetLocalVariablesInScope(symRootScope)) {
+					foreach(Value var in GetLocalVariablesInScope(symRootScope)) {
 						if (!var.Name.StartsWith("CS$")) { // TODO: Generalize
 							yield return var;
 						}
@@ -587,23 +589,24 @@ namespace Debugger
 			}
 		}
 		
-		IEnumerable<LocalVariable> GetLocalVariablesInScope(ISymUnmanagedScope symScope)
+		IEnumerable<Value> GetLocalVariablesInScope(ISymUnmanagedScope symScope)
 		{
 			foreach (ISymUnmanagedVariable symVar in symScope.Locals) {
 				yield return GetLocalVariable(symVar);
 			}
 			foreach(ISymUnmanagedScope childScope in symScope.Children) {
-				foreach(LocalVariable var in GetLocalVariablesInScope(childScope)) {
+				foreach(Value var in GetLocalVariablesInScope(childScope)) {
 					yield return var;
 				}
 			}
 		}
 		
-		LocalVariable GetLocalVariable(ISymUnmanagedVariable symVar)
+		Value GetLocalVariable(ISymUnmanagedVariable symVar)
 		{
-			return new LocalVariable(
-				symVar.Name,
+			return new Value(
 				process,
+				symVar.Name,
+				new Ast.IdentifierExpression(symVar.Name),
 				new IExpirable[] {this},
 				new IMutable[] {process.DebugeeState},
 				delegate { return GetCorValueOfLocalVariable(symVar); }

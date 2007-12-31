@@ -10,6 +10,8 @@ using System.Collections.Generic;
 using Debugger.Wrappers.CorDebug;
 using Debugger.Wrappers.MetaData;
 
+using Ast = ICSharpCode.NRefactory.Ast;
+
 namespace Debugger
 {
 	/// <summary>
@@ -70,10 +72,14 @@ namespace Debugger
 		/// <summary>
 		/// Given an object of correct type, get the value of this field
 		/// </summary>
-		public MemberValue GetValue(Value objectInstance) {
-			return new MemberValue(
-				this,
+		public Value GetValue(Value objectInstance) {
+			return new Value(
 				this.Process,
+				this.Name,
+				new Ast.MemberReferenceExpression(
+					new Ast.IdentifierExpression("parent"), // TODO
+					this.Name
+				),
 				new IExpirable[] {objectInstance},
 				new IMutable[] {objectInstance},
 				delegate { return GetCorValue(objectInstance); }

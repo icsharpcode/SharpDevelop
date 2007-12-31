@@ -10,6 +10,8 @@ using System.Collections.Generic;
 using Debugger.Wrappers.CorDebug;
 using Debugger.Wrappers.MetaData;
 
+using Ast = ICSharpCode.NRefactory.Ast;
+
 namespace Debugger
 {
 	/// <summary>
@@ -78,13 +80,13 @@ namespace Debugger
 		}
 		
 		/// <summary> Get the value of the property using the get accessor </summary>
-		public MemberValue GetValue(Value objectInstance)
+		public Value GetValue(Value objectInstance)
 		{
 			return GetValue(objectInstance, null);
 		}
 		
 		/// <summary> Get the value of indexer property </summary>
-		public MemberValue GetValue(Value objectInstance, Value[] parameters)
+		public Value GetValue(Value objectInstance, Value[] parameters)
 		{
 			if (getMethod == null) throw new CannotGetValueException("Property does not have a get method");
 			parameters = parameters ?? new Value[0];
@@ -93,9 +95,13 @@ namespace Debugger
 			dependencies.Add(objectInstance);
 			dependencies.AddRange(parameters);
 			
-			return new MemberValue(
-				this,
+			return new Value(
 				this.Process,
+				this.Name,
+				new Ast.MemberReferenceExpression(
+					new Ast.IdentifierExpression("parent"), // TODO
+					this.Name
+				),
 				dependencies.ToArray(),
 				dependencies.ToArray(),
 				delegate { return getMethod.Invoke(objectInstance, parameters).RawCorValue; }
