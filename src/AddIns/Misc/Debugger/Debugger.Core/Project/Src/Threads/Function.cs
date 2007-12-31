@@ -438,12 +438,19 @@ namespace Debugger
 					thisValueCache = new NamedValue(
 						"this",
 						process,
+						ThisExpresson,
 						new IExpirable[] {this},
 						new IMutable[] {},
 						delegate { return ThisCorValue; }
 					);
 				}
 				return thisValueCache;
+			}
+		}
+		
+		static private Expression ThisExpresson {
+			get {
+				return new Expression(new ICSharpCode.NRefactory.Ast.ThisReferenceExpression());
 			}
 		}
 		

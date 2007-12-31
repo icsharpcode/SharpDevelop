@@ -37,6 +37,7 @@ namespace Debugger
 	public partial class Value: DebuggerObject, IExpirable, IMutable
 	{
 		Process process;
+		Expression expression;
 		
 		CorValueGetter corValueGetter;
 		
@@ -99,6 +100,13 @@ namespace Debugger
 			}
 		}
 		
+		/// <summary> Expression that has lead to this value. </summary>
+		/// <returns> Expression or null if the exression can not
+		/// be obtained. </returns>
+		public Expression Expression {
+			get { return expression; }
+		}
+		
 		/// <summary> Returns true if the Value have expired
 		/// and can not be used anymore </summary>
 		public bool HasExpired {
@@ -149,9 +157,24 @@ namespace Debugger
 		internal Value(Process process,
 		               IExpirable[] expireDependencies,
 		               IMutable[] mutateDependencies,
+		               CorValueGetter corValueGetter):
+			this(process,
+			     null,
+			     expireDependencies,
+			     mutateDependencies,
+			     corValueGetter)
+		{
+			
+		}
+		
+		internal Value(Process process,
+		               Expression expression,
+		               IExpirable[] expireDependencies,
+		               IMutable[] mutateDependencies,
 		               CorValueGetter corValueGetter)
 		{
 			this.process = process;
+			this.expression = expression;
 			
 			AddExpireDependency(process);
 			foreach(IExpirable exp in expireDependencies) {

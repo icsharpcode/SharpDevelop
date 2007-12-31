@@ -8,6 +8,8 @@
 using System;
 using System.Collections.Generic;
 
+using Ast = ICSharpCode.NRefactory.Ast;
+
 using Debugger.Wrappers.CorDebug;
 
 namespace Debugger
@@ -36,6 +38,7 @@ namespace Debugger
 		                      CorValueGetter corValueGetter)
 			:base (GetNameFromIndices(indicies),
 			       process,
+			       GetExpressionFromIndices(indicies),
 			       expireDependencies,
 			       mutateDependencies,
 			       corValueGetter)
@@ -51,6 +54,18 @@ namespace Debugger
 			}
 			elementName = elementName.TrimEnd(new char[] {','}) + "]";
 			return elementName;
+		}
+		
+		static Expression GetExpressionFromIndices(uint[] indices)
+		{
+			List<Ast.Expression> indicesAst = new List<Ast.Expression>();
+			foreach(uint indice in indices) {
+				indicesAst.Add(new Ast.PrimitiveExpression(indice, indice.ToString()));
+			}
+			return new Ast.IndexerExpression(
+				new Ast.IdentifierExpression("parent"), // TODO
+				indicesAst
+			);
 		}
 	}
 }

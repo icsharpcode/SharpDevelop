@@ -29,10 +29,12 @@ namespace Debugger
 		
 		internal NamedValue(string name,
 		                    Process process,
+		                    Expression expression,
 		                    IExpirable[] expireDependencies,
 		                    IMutable[] mutateDependencies,
 		                    CorValueGetter corValueGetter)
 			:base (process,
+			       expression,
 			       expireDependencies,
 			       mutateDependencies,
 			       corValueGetter)

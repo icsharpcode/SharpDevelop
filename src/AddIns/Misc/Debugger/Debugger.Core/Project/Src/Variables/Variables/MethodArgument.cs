@@ -10,6 +10,8 @@ using System.Collections.Generic;
 
 using Debugger.Wrappers.CorDebug;
 
+using Ast = ICSharpCode.NRefactory.Ast;
+
 namespace Debugger
 {
 	/// <summary>
@@ -40,6 +42,7 @@ namespace Debugger
 		                        CorValueGetter corValueGetter)
 			:base (name,
 			       process,
+			       new Ast.IdentifierExpression(name),
 			       expireDependencies,
 			       mutateDependencies,
 			       corValueGetter)

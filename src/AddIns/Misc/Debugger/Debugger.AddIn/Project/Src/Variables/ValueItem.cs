@@ -79,7 +79,12 @@ namespace Debugger
 		
 		public override string Name {
 			get {
-				return val.Name;
+				//return val.Name;
+				if (val.Expression != null) {
+					return val.Expression.Code;
+				} else {
+					return "N/A";
+				}
 			}
 		}
 		
