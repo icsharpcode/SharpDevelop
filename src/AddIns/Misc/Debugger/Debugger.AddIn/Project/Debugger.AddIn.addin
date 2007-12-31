@@ -4,7 +4,7 @@
 	</Manifest>
 	
 	<Runtime>
-		<DisableAddIn message="Debugger disabled, it is too unstabled"/>
+		<!--<DisableAddIn message="Debugger disabled, it is too unstable"/>-->
 		<Import assembly="Debugger.AddIn.dll"/>
 		<Import assembly="Debugger.Core.dll"/>
 		<Import assembly="TreeListView.dll"/>
