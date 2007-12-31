@@ -42,7 +42,7 @@ namespace XmlEditor.Tests.Completion
 			provider = new XmlCompletionDataProvider(schemas, schema, String.Empty);
 			TextEditorControl textEditor = new TextEditorControl();
 			completionDataItems = provider.GenerateCompletionData(@"C:\Test.xml", textEditor.ActiveTextAreaControl.TextArea, '<');
-			using (ICSharpCode.XmlEditor.CodeCompletionWindow completionWindow = ICSharpCode.XmlEditor.CodeCompletionWindow.ShowCompletionWindow(parentForm, textEditor, @"C:\Test.xml", provider, '<')) {
+			using (CodeCompletionWindow completionWindow = CodeCompletionWindow.ShowCompletionWindow(parentForm, textEditor, @"C:\Test.xml", provider, '<')) {
 				CodeCompletionListView listView = (CodeCompletionListView)completionWindow.Controls[0];
 				selectedCompletionData = listView.SelectedCompletionData;
 				completionWindow.Close();

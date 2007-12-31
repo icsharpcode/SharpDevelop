@@ -45,6 +45,7 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Completion\FirstCompletionListItemSelectedTestFixture.cs" />
+    <Compile Include="Completion\ProcessKeyTests.cs" />
     <Compile Include="Parser\XamlMixedNamespaceTestFixture.cs" />
     <Compile Include="Paths\QualifiedNameToStringTests.cs" />
     <Compile Include="Schema\SingleElementSchemaTestFixture.cs" />

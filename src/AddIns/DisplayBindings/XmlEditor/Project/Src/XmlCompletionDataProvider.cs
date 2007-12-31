@@ -36,6 +36,18 @@ namespace ICSharpCode.XmlEditor
 				return XmlCompletionDataImageList.GetImageList();
 			}
 		}
+
+		/// <summary>
+		/// Overrides the default behaviour and allows special xml
+		/// characters such as '.' and ':' to be used as completion data.
+		/// </summary>
+		public override CompletionDataProviderKeyResult ProcessKey(char key)
+		{
+			if (key == '\r' || key == '\t') {
+				return CompletionDataProviderKeyResult.InsertionKey;
+			}
+			return CompletionDataProviderKeyResult.NormalKey;
+		}
 		
 		public override ICompletionData[] GenerateCompletionData(string fileName, TextArea textArea, char charTyped)
 		{

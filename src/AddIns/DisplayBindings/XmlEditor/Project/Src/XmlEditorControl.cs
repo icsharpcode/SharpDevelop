@@ -15,6 +15,7 @@ using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Actions;
 using ICSharpCode.TextEditor.Document;
+using ICSharpCode.TextEditor.Gui.CompletionWindow;
 
 namespace ICSharpCode.XmlEditor
 {
@@ -221,7 +222,7 @@ namespace ICSharpCode.XmlEditor
 			
 			if (IsCodeCompletionEnabled) {
 				XmlCompletionDataProvider completionDataProvider = new XmlCompletionDataProvider(schemaCompletionDataItems, defaultSchemaCompletionData, defaultNamespacePrefix);
-				codeCompletionWindow = CodeCompletionWindow.ShowCompletionWindow(ParentForm, this, FileName, completionDataProvider, ch, XmlEditorAddInOptions.ShowSchemaAnnotation);
+				codeCompletionWindow = CodeCompletionWindow.ShowCompletionWindow(ParentForm, this, FileName, completionDataProvider, ch, XmlEditorAddInOptions.ShowSchemaAnnotation, false);
 				
 				if (codeCompletionWindow != null) {
 					codeCompletionWindow.Closed += new EventHandler(CodeCompletionWindowClosed);

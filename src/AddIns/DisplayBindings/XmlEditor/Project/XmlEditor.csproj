@@ -88,9 +88,6 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Src\XmlSchemaListBoxItem.cs" />
-    <Compile Include="Src\CodeCompletionWindow.cs">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="Src\XmlEditorAddInOptions.cs" />
     <Compile Include="Src\SelectXmlSchemaForm.cs">
       <SubType>Form</SubType>
