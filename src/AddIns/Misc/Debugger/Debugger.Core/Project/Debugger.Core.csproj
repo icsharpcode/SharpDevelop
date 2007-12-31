@@ -229,8 +229,7 @@
     <Compile Include="Src\Variables\Types\MemberInfo.cs" />
     <Compile Include="Src\Variables\Types\MethodInfo.cs" />
     <Compile Include="Src\Variables\Types\PropertyInfo.cs" />
-    <Compile Include="Src\Variables\Values\NamedValue.cs" />
-    <Compile Include="Src\Variables\Values\NamedValueCollection.cs" />
+    <Compile Include="Src\Variables\Values\ValueCollection.cs" />
     <Compile Include="Src\Variables\Values\Value-Array.cs" />
     <Compile Include="Src\Variables\Values\Value-Common.cs" />
     <Compile Include="Src\Variables\Values\Value-Helpers.cs" />

@@ -34,7 +34,7 @@ namespace Debugger
 		/// <summary>
 		/// Get a field or property of an object with a given name.
 		/// </summary>
-		public NamedValue GetMember(string name)
+		public Value GetMember(string name)
 		{
 			DebugType currentType = this.Type;
 			while (currentType != null) {
@@ -54,7 +54,7 @@ namespace Debugger
 		/// <summary>
 		/// Get all fields and properties of an object.
 		/// </summary>
-		public NamedValueCollection GetMembers()
+		public ValueCollection GetMembers()
 		{
 			return GetMembers(null, BindingFlags.All);
 		}
@@ -64,16 +64,16 @@ namespace Debugger
 		/// </summary>
 		/// <param name="type"> Limit to type, null for all types </param>
 		/// <param name="bindingFlags"> Get only members with certain flags </param>
-		public NamedValueCollection GetMembers(DebugType type, BindingFlags bindingFlags)
+		public ValueCollection GetMembers(DebugType type, BindingFlags bindingFlags)
 		{
 			if (IsObject) {
-				return new NamedValueCollection(GetObjectMembersEnum(type, bindingFlags));
+				return new ValueCollection(GetObjectMembersEnum(type, bindingFlags));
 			} else {
-				return NamedValueCollection.Empty;
+				return ValueCollection.Empty;
 			}
 		}
 		
-		IEnumerable<NamedValue> GetObjectMembersEnum(DebugType type, BindingFlags bindingFlags)
+		IEnumerable<Value> GetObjectMembersEnum(DebugType type, BindingFlags bindingFlags)
 		{
 			DebugType currentType = type ?? this.Type;
 			while (currentType != null) {

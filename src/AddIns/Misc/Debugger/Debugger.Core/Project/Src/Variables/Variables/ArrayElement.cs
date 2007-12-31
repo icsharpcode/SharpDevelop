@@ -17,7 +17,7 @@ namespace Debugger
 	/// <summary>
 	/// Represents an element of an array
 	/// </summary>
-	public class ArrayElement: NamedValue
+	public class ArrayElement: Value
 	{
 		uint[] indicies;
 		
@@ -36,8 +36,8 @@ namespace Debugger
 		                      IExpirable[] expireDependencies,
 		                      IMutable[] mutateDependencies,
 		                      CorValueGetter corValueGetter)
-			:base (GetNameFromIndices(indicies),
-			       process,
+			:base (process,
+			       GetNameFromIndices(indicies),
 			       GetExpressionFromIndices(indicies),
 			       expireDependencies,
 			       mutateDependencies,

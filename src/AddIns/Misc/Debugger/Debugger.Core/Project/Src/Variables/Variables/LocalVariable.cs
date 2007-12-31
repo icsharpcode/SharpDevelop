@@ -17,15 +17,15 @@ namespace Debugger
 	/// <summary>
 	/// Represents a local variable in a function
 	/// </summary>
-	public class LocalVariable: NamedValue
+	public class LocalVariable: Value
 	{
 		internal LocalVariable(string name,
 		                       Process process,
 		                       IExpirable[] expireDependencies,
 		                       IMutable[] mutateDependencies,
 		                       CorValueGetter corValueGetter)
-			:base (name,
-			       process,
+			:base (process,
+			       name,
 			       new Ast.IdentifierExpression(name),
 			       expireDependencies,
 			       mutateDependencies,

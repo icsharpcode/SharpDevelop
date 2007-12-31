@@ -36,6 +36,7 @@ namespace Debugger
 	/// </remarks>
 	public partial class Value: DebuggerObject, IExpirable, IMutable
 	{
+		string name;
 		Process process;
 		Expression expression;
 		
@@ -85,10 +86,17 @@ namespace Debugger
 					if (IsPrimitive) cache.AsString = PrimitiveValue != null ? PrimitiveValue.ToString() : String.Empty;
 					
 					TimeSpan totalTime = Util.HighPrecisionTimer.Now - startTime;
-					string name = this is NamedValue ? ((NamedValue)this).Name + " = " : String.Empty;
+					string name = this is Value ? ((Value)this).Name + " = " : String.Empty;
 					process.TraceMessage("Obtained value: " + name + cache.AsString + " (" + totalTime.TotalMilliseconds + " ms)");
 				}
 				return cache;
+			}
+		}
+		
+		/// <summary> Gets the name associated with the value </summary>
+		public string Name {
+			get {
+				return name;
 			}
 		}
 		
@@ -155,24 +163,22 @@ namespace Debugger
 		}
 		
 		internal Value(Process process,
-		               IExpirable[] expireDependencies,
-		               IMutable[] mutateDependencies,
-		               CorValueGetter corValueGetter):
-			this(process,
-			     null,
-			     expireDependencies,
-			     mutateDependencies,
-			     corValueGetter)
-		{
-			
-		}
-		
-		internal Value(Process process,
+		               string name,
 		               Expression expression,
 		               IExpirable[] expireDependencies,
 		               IMutable[] mutateDependencies,
 		               CorValueGetter corValueGetter)
 		{
+			this.name = name;
+			
+			// TODO: clean up
+			if (name.StartsWith("<") && name.Contains(">") && name != "<Base class>") {
+				string middle = name.TrimStart('<').Split('>')[0]; // Get text between '<' and '>'
+				if (middle != "") {
+					this.name = middle;
+				}
+			}
+			
 			this.process = process;
 			this.expression = expression;
 			

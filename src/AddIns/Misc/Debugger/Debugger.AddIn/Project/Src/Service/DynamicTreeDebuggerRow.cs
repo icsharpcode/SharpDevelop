@@ -70,7 +70,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			}
 		}
 		
-		public DynamicTreeDebuggerRow(NamedValue val): this(new ValueItem(val))
+		public DynamicTreeDebuggerRow(Value val): this(new ValueItem(val))
 		{
 			
 		}

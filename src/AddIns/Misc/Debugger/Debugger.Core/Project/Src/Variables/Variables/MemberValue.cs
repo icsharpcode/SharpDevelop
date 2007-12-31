@@ -18,7 +18,7 @@ namespace Debugger
 	/// Represents a member of class or value type - 
 	/// that is, a field or a property
 	/// </summary>
-	public class MemberValue: NamedValue
+	public class MemberValue: Value
 	{	
 		MemberInfo memberInfo;
 		
@@ -37,8 +37,8 @@ namespace Debugger
 		                     IExpirable[] expireDependencies,
 		                     IMutable[] mutateDependencies,
 		                     CorValueGetter corValueGetter)
-			:base (memberInfo.Name,
-			       process,
+			:base (process,
+			       memberInfo.Name,
 			       new Ast.MemberReferenceExpression(
 			           new Ast.IdentifierExpression("parent"), // TODO
 			           memberInfo.Name

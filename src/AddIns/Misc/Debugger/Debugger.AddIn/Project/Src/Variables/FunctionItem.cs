@@ -91,7 +91,7 @@ namespace Debugger
 		public override IList<ListItem> SubItems {
 			get {
 				List<ListItem> ret = new List<ListItem>();
-				foreach(NamedValue val in function.LocalVariables) {
+				foreach(Value val in function.LocalVariables) {
 					ret.Add(new ValueItem(val));
 				}
 				return ret.AsReadOnly();

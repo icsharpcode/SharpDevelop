@@ -46,10 +46,10 @@ namespace Debugger
 {
 	public class BaseTypeItem: ListItem
 	{
-		NamedValue val;
+		Value val;
 		DebugType type;
 		
-		public NamedValue Value {
+		public Value Value {
 			get {
 				return val;
 			}
@@ -103,7 +103,7 @@ namespace Debugger
 			}
 		}
 		
-		public BaseTypeItem(NamedValue val, DebugType type)
+		public BaseTypeItem(Value val, DebugType type)
 		{
 			this.val = val;
 			this.type = type;
@@ -112,7 +112,7 @@ namespace Debugger
 		List<ListItem> GetMembers(BindingFlags flags)
 		{
 			List<ListItem> list = new List<ListItem>();
-			foreach(NamedValue v in val.GetMembers(type, flags)) {
+			foreach(Value v in val.GetMembers(type, flags)) {
 				list.Add(new ValueItem(v));
 			}
 			return list;

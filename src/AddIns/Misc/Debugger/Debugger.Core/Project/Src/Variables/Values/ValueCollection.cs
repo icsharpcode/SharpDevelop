@@ -14,35 +14,35 @@ namespace Debugger
 	/// <summary>
 	/// An enumerable collection of values accessible by name.
 	/// </summary>
-	public class NamedValueCollection: DebuggerObject, IEnumerable<NamedValue>, IEnumerable
+	public class ValueCollection: DebuggerObject, IEnumerable<Value>, IEnumerable
 	{
-		internal static NamedValueCollection Empty = new NamedValueCollection(new NamedValue[0]);
+		internal static ValueCollection Empty = new ValueCollection(new Value[0]);
 		
-		List<NamedValue> list = new List<NamedValue>();
-		Dictionary<string, List<NamedValue>> hashtable = new Dictionary<string, List<NamedValue>>();
+		List<Value> list = new List<Value>();
+		Dictionary<string, List<Value>> hashtable = new Dictionary<string, List<Value>>();
 		
-		IEnumerator<NamedValue> IEnumerable<NamedValue>.GetEnumerator()
+		IEnumerator<Value> IEnumerable<Value>.GetEnumerator()
 		{
-			foreach(NamedValue namedValue in list) {
+			foreach(Value namedValue in list) {
 				yield return namedValue;
 			}
 		}
 		
 		IEnumerator IEnumerable.GetEnumerator()
 		{
-			foreach(NamedValue namedValue in list) {
+			foreach(Value namedValue in list) {
 				yield return namedValue;
 			}
 		}
 		
-		internal NamedValueCollection(IEnumerable<NamedValue> namedValues)
+		internal ValueCollection(IEnumerable<Value> namedValues)
 		{
-			foreach(NamedValue namedValue in namedValues) {
+			foreach(Value namedValue in namedValues) {
 				string name = namedValue.Name;
 				if (hashtable.ContainsKey(name)) {
 					hashtable[name].Add(namedValue);
 				} else {
-					hashtable[name] = new List<NamedValue>(new NamedValue[] {namedValue});
+					hashtable[name] = new List<Value>(new Value[] {namedValue});
 				}
 				list.Add(namedValue);
 			}
@@ -69,7 +69,7 @@ namespace Debugger
 		/// <summary>
 		/// Gets a value by index
 		/// </summary>
-		public NamedValue this[int i] {
+		public Value this[int i] {
 			get {
 				return list[i];
 			}
@@ -78,11 +78,11 @@ namespace Debugger
 		/// <summary>
 		/// Gets a value by its name.
 		/// </summary>
-		public NamedValue this[string variableName] {
+		public Value this[string variableName] {
 			get {
 				if (hashtable.ContainsKey(variableName)) {
-					foreach(NamedValue namedValue in hashtable[variableName]) {
-						return namedValue;
+					foreach(Value val in hashtable[variableName]) {
+						return val;
 					}
 				}
 				

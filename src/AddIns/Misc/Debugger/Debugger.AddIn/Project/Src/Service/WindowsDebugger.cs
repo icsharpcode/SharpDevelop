@@ -247,7 +247,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		/// Gets variable of given name.
 		/// Returns null if unsuccessful.
 		/// </summary>
-		public NamedValue GetVariableFromName(string variableName)
+		public Value GetVariableFromName(string variableName)
 		{
 			if (debuggedProcess == null || debuggedProcess.IsRunning) { 
 				return null;
@@ -263,7 +263,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		/// </summary>
 		public string GetValueAsString(string variableName)
 		{
-			NamedValue val = GetVariableFromName(variableName);
+			Value val = GetVariableFromName(variableName);
 			
 			if (val == null) {
 				return null;
@@ -278,7 +278,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		/// </summary>
 		public DebuggerGridControl GetTooltipControl(string variableName)
 		{
-			NamedValue val = GetVariableFromName(variableName.Trim());
+			Value val = GetVariableFromName(variableName.Trim());
 			
 			if (val == null) {
 				return null;

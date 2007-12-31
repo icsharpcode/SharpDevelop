@@ -20,6 +20,8 @@ namespace Debugger
 	/// </summary>
 	public class Expression
 	{
+		public static Expression Empty = null;
+		
 		Ast.Expression expressionAst;
 		
 		public string Code {

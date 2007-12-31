@@ -50,9 +50,9 @@ namespace Debugger
 {
 	class ValueItem: ListItem
 	{
-		NamedValue val;
+		Value val;
 		
-		public NamedValue Value {
+		public Value Value {
 			get {
 				return val;
 			}
@@ -124,7 +124,7 @@ namespace Debugger
 			get {
 				List<ListItem> list = new List<ListItem>();
 				if (val.IsArray) {
-					foreach(NamedValue element in val.GetArrayElements()) {
+					foreach(Value element in val.GetArrayElements()) {
 						list.Add(new ValueItem(element));
 					}
 				}
@@ -135,7 +135,7 @@ namespace Debugger
 			}
 		}
 		
-		public ValueItem(NamedValue val)
+		public ValueItem(Value val)
 		{
 			this.val = val;
 			

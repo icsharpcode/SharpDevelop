@@ -102,12 +102,12 @@ namespace Debugger
 		}
 		
 		/// <summary> Returns all elements in the array </summary>
-		public NamedValueCollection GetArrayElements()
+		public ValueCollection GetArrayElements()
 		{
-			return new NamedValueCollection(GetArrayElementsEnum());
+			return new ValueCollection(GetArrayElementsEnum());
 		}
 		
-		IEnumerable<NamedValue> GetArrayElementsEnum()
+		IEnumerable<Value> GetArrayElementsEnum()
 		{
 			uint[] indices = new uint[ArrayRank];
 			uint rank = ArrayRank;

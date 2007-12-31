@@ -18,7 +18,7 @@ namespace Debugger
 	/// Represents an argument of a function. That is, it refers to
 	/// the runtime value of function parameter.
 	/// </summary>
-	public class MethodArgument: NamedValue
+	public class MethodArgument: Value
 	{
 		int index;
 		
@@ -40,8 +40,8 @@ namespace Debugger
 		                        IExpirable[] expireDependencies,
 		                        IMutable[] mutateDependencies,
 		                        CorValueGetter corValueGetter)
-			:base (name,
-			       process,
+			:base (process,
+			       name,
 			       new Ast.IdentifierExpression(name),
 			       expireDependencies,
 			       mutateDependencies,

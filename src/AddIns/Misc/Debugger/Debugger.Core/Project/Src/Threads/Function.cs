@@ -381,7 +381,7 @@ namespace Debugger
 		
 		/// <summary> Gets value of given name which is accessible from this function </summary>
 		/// <returns> Null if not found </returns>
-		public NamedValue GetValue(string name)
+		public Value GetValue(string name)
 		{
 			if (name == "this") {
 				return ThisValue;
@@ -403,41 +403,41 @@ namespace Debugger
 		/// That is, arguments, local variables and varables of the containing class.
 		/// </summary>
 		[Debugger.Tests.Ignore] // Accessible though others
-		public NamedValueCollection Variables {
+		public ValueCollection Variables {
 			get {
-				return new NamedValueCollection(GetVariables());
+				return new ValueCollection(GetVariables());
 			}
 		}
 		
-		IEnumerable<NamedValue> GetVariables() 
+		IEnumerable<Value> GetVariables() 
 		{
 			if (!IsStatic) {
 				yield return ThisValue;
 			}
-			foreach(NamedValue namedValue in Arguments) {
-				yield return namedValue;
+			foreach(Value val in Arguments) {
+				yield return val;
 			}
-			foreach(NamedValue namedValue in LocalVariables) {
-				yield return namedValue;
+			foreach(Value val in LocalVariables) {
+				yield return val;
 			}
-			foreach(NamedValue namedValue in ContaingClassVariables) {
-				yield return namedValue;
+			foreach(Value val in ContaingClassVariables) {
+				yield return val;
 			}
 		}
 		
-		NamedValue thisValueCache;
+		Value thisValueCache;
 		
 		/// <summary> 
 		/// Gets the instance of the class asociated with the current frame.
 		/// That is, 'this' in C#.
 		/// </summary>
-		public NamedValue ThisValue {
+		public Value ThisValue {
 			get {
 				if (IsStatic) throw new DebuggerException("Static method does not have 'this'.");
 				if (thisValueCache == null) {
-					thisValueCache = new NamedValue(
-						"this",
+					thisValueCache = new Value(
 						process,
+						"this",
 						ThisExpresson,
 						new IExpirable[] {this},
 						new IMutable[] {},
@@ -470,13 +470,13 @@ namespace Debugger
 		/// <summary>
 		/// Gets all accessible members of the class that defines this function.
 		/// </summary>
-		public NamedValueCollection ContaingClassVariables {
+		public ValueCollection ContaingClassVariables {
 			get {
 				// TODO: Should work for static
 				if (!IsStatic) {
 					return ThisValue.GetMembers();
 				} else {
-					return NamedValueCollection.Empty;
+					return ValueCollection.Empty;
 				}
 			}
 		}
@@ -532,15 +532,15 @@ namespace Debugger
 			}
 		}
 		
-		NamedValueCollection argumentsCache;
+		ValueCollection argumentsCache;
 		
 		/// <summary> Gets all arguments of the function. </summary>
-		public NamedValueCollection Arguments {
+		public ValueCollection Arguments {
 			get {
 				if (argumentsCache == null) {
 					DateTime startTime = Util.HighPrecisionTimer.Now;
 					
-					argumentsCache = new NamedValueCollection(ArgumentsEnum);
+					argumentsCache = new ValueCollection(ArgumentsEnum);
 					
 					TimeSpan totalTime = Util.HighPrecisionTimer.Now - startTime;
 					process.TraceMessage("Loaded Arguments for " + this.ToString() + " (" + totalTime.TotalMilliseconds + " ms)");
@@ -549,7 +549,7 @@ namespace Debugger
 			}
 		}
 		
-		IEnumerable<NamedValue> ArgumentsEnum {
+		IEnumerable<Value> ArgumentsEnum {
 			get {
 				for (int i = 0; i < ArgumentCount; i++) {
 					yield return GetArgument(i);
@@ -557,15 +557,15 @@ namespace Debugger
 			}
 		}
 		
-		NamedValueCollection localVariablesCache;
+		ValueCollection localVariablesCache;
 		
 		/// <summary> Gets all local variables of the function. </summary>
-		public NamedValueCollection LocalVariables {
+		public ValueCollection LocalVariables {
 			get {
 				if (localVariablesCache == null) {
 					DateTime startTime = Util.HighPrecisionTimer.Now;
 					
-					localVariablesCache = new NamedValueCollection(LocalVariablesEnum);
+					localVariablesCache = new ValueCollection(LocalVariablesEnum);
 					
 					TimeSpan totalTime = Util.HighPrecisionTimer.Now - startTime;
 					process.TraceMessage("Loaded LocalVariables for " + this.ToString() + " (" + totalTime.TotalMilliseconds + " ms)");
@@ -574,7 +574,7 @@ namespace Debugger
 			}
 		}
 		
-		IEnumerable<NamedValue> LocalVariablesEnum {
+		IEnumerable<Value> LocalVariablesEnum {
 			get {
 				if (symMethod != null) { // TODO: Is this needed?
 					ISymUnmanagedScope symRootScope = symMethod.RootScope;

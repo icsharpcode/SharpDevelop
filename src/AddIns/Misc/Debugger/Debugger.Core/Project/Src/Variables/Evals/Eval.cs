@@ -233,6 +233,8 @@ namespace Debugger
 					state = EvalState.EvaluatedException;
 				}
 				result = new Value(process,
+				                   string.Empty,
+				                   Expression.Empty,
 				                   new IExpirable[] {},
 				                   new IMutable[] {},
 				                   delegate { return corEval.Result; });

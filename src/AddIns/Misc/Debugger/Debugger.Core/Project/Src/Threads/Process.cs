@@ -240,10 +240,10 @@ namespace Debugger
 			}
 		}
 		
-		public NamedValueCollection LocalVariables { 
+		public ValueCollection LocalVariables { 
 			get {
 				if (SelectedFunction == null || IsRunning) {
-					return NamedValueCollection.Empty;
+					return ValueCollection.Empty;
 				} else {
 					return SelectedFunction.Variables;
 				}
@@ -252,7 +252,7 @@ namespace Debugger
 		
 		/// <summary> Gets value of given name which is accessible from selected function </summary>
 		/// <returns> Null if not found </returns>
-		public NamedValue GetValue(string name)
+		public Value GetValue(string name)
 		{
 			if (SelectedFunction == null || IsRunning) {
 				return null;

@@ -166,6 +166,8 @@ namespace Debugger
 				
 				return new Value(
 					process,
+					string.Empty,
+					Expression.Empty,
 					new IExpirable[] {process.PauseSession},
 					new IMutable[] {},
 					delegate { return CorThread.Object;}

@@ -37,6 +37,8 @@ namespace Debugger
 			corValue = thread.CorThread.CurrentException;
 			exceptionType = thread.CurrentExceptionType;
 			Value runtimeValue = new Value(process,
+			                               string.Empty,
+			                               Expression.Empty,
 			                               new IExpirable[] {process.PauseSession},
 			                               new IMutable[] {},
 			                               delegate { return corValue; } );
