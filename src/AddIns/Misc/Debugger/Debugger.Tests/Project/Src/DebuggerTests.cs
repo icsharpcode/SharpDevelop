@@ -425,5 +425,21 @@ namespace Debugger.Tests
 			process.WaitForExit();
 			CheckXmlOutput();
 		}
+		
+		[Test]
+		public void Expressions()
+		{
+			StartTest("Expressions");
+			WaitForPause();
+			
+			ObjectDump("Variables", process.SelectedFunction.Variables);
+			ObjectDump("array", process.SelectedFunction.Variables["array"].GetArrayElements());
+			ObjectDump("array2", process.SelectedFunction.Variables["array2"].GetArrayElements());
+			ObjectDump("this", process.SelectedFunction.ThisValue.GetMembers());
+			
+			process.Continue();
+			process.WaitForExit();
+			CheckXmlOutput();
+		}
 	}
 }
