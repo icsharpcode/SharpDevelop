@@ -18,7 +18,7 @@ namespace Debugger
 	/// Represents a piece of code that can be evaluated.
 	/// For example "a[15] + 15".
 	/// </summary>
-	public class Expression
+	public class Expression: DebuggerObject
 	{
 		public static Expression Empty = null;
 		
@@ -32,7 +32,7 @@ namespace Debugger
 			}
 		}
 		
-		public Ast.Expression ExpressionAst {
+		public Ast.Expression AbstractSynatxTree {
 			get { return expressionAst; }
 		}
 		

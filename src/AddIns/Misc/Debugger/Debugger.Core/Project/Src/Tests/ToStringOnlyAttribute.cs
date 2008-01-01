@@ -10,7 +10,7 @@ using System;
 namespace Debugger.Tests
 {
 	[AttributeUsage(AttributeTargets.Property)]
-	public class SummaryOnlyAttribute: Attribute
+	public class ToStringOnlyAttribute: Attribute
 	{
 		
 	}

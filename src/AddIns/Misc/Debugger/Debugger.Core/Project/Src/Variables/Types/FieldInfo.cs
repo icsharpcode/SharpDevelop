@@ -76,9 +76,9 @@ namespace Debugger
 			return new Value(
 				this.Process,
 				this.Name,
-				new Ast.MemberReferenceExpression(
+				new Ast.FieldReferenceExpression(
 					new Ast.IdentifierExpression("parent"), // TODO
-					this.Name
+					this
 				),
 				new IExpirable[] {objectInstance},
 				new IMutable[] {objectInstance},

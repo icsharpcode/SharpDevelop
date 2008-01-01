@@ -62,7 +62,7 @@ namespace Debugger
 		}
 		
 		/// <summary> A module in which the function is defined </summary>
-		[Debugger.Tests.SummaryOnly]
+		[Debugger.Tests.ToStringOnly]
 		public Module Module {
 			get { 
 				return module; 
@@ -511,10 +511,12 @@ namespace Debugger
 		/// <param name="index"> Zero-based index </param>
 		public Value GetArgument(int index)
 		{
+			string name = GetParameterName(index);
+			
 			return new Value(
 				process,
-				GetParameterName(index),
-				new Ast.IdentifierExpression(GetParameterName(index)),
+				name,
+				new Ast.ParameterIdentifierExpression(index, name),
 				new IExpirable[] {this},
 				new IMutable[] {process.DebugeeState},
 				delegate { return GetArgumentCorValue(index); }
@@ -606,7 +608,7 @@ namespace Debugger
 			return new Value(
 				process,
 				symVar.Name,
-				new Ast.IdentifierExpression(symVar.Name),
+				new Ast.LocalVariableIdentifierExpression(symVar),
 				new IExpirable[] {this},
 				new IMutable[] {process.DebugeeState},
 				delegate { return GetCorValueOfLocalVariable(symVar); }

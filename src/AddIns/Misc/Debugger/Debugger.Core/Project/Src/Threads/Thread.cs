@@ -359,7 +359,7 @@ namespace Debugger
 			}
 		}
 		
-		[Debugger.Tests.SummaryOnly]
+		[Debugger.Tests.ToStringOnly]
 		public Function SelectedFunction {
 			get {
 				return selectedFunction;
@@ -373,7 +373,7 @@ namespace Debugger
 			}
 		}
 		
-		[Debugger.Tests.SummaryOnly]
+		[Debugger.Tests.ToStringOnly]
 		public Function LastFunctionWithLoadedSymbols {
 			get {
 				foreach (Function function in CallstackEnum) {
@@ -389,7 +389,7 @@ namespace Debugger
 		/// Returns the most recent function on callstack.
 		/// Returns null if callstack is empty.
 		/// </summary>
-		[Debugger.Tests.SummaryOnly]
+		[Debugger.Tests.ToStringOnly]
 		public Function LastFunction {
 			get {
 				foreach(Function function in CallstackEnum) {
@@ -402,7 +402,7 @@ namespace Debugger
 		/// <summary>
 		/// Returns the first function that was called on thread
 		/// </summary>
-		[Debugger.Tests.SummaryOnly]
+		[Debugger.Tests.ToStringOnly]
 		public Function FirstFunction {
 			get {
 				Function first = null;

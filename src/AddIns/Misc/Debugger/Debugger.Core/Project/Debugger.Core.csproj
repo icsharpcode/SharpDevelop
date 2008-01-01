@@ -201,8 +201,9 @@
     <Compile Include="Src\Modules\Module.cs" />
     <Compile Include="Src\Modules\ModuleEventArgs.cs" />
     <Compile Include="Src\Modules\Process-Modules.cs" />
+    <Compile Include="Src\Tests\ExpandAttribute.cs" />
     <Compile Include="Src\Tests\IgnoreAttribute.cs" />
-    <Compile Include="Src\Tests\SummaryOnlyAttribute.cs" />
+    <Compile Include="Src\Tests\ToStringOnlyAttribute.cs" />
     <Compile Include="Src\Threads\Exception.cs" />
     <Compile Include="Src\Threads\ExceptionType.cs" />
     <Compile Include="Src\Threads\FrameID.cs" />
@@ -221,7 +222,11 @@
     <Compile Include="Src\Variables\Evals\Eval.cs" />
     <Compile Include="Src\Variables\Evals\EvalEventArgs.cs" />
     <Compile Include="Src\Variables\Evals\Process-Evals.cs" />
-    <Compile Include="Src\Variables\Expression.cs" />
+    <Compile Include="Src\Variables\Expressions\Ast\FieldReferenceExpression.cs" />
+    <Compile Include="Src\Variables\Expressions\Ast\LocalVariableIdentifierExpression.cs" />
+    <Compile Include="Src\Variables\Expressions\Ast\ParameterIdentifierExpression.cs" />
+    <Compile Include="Src\Variables\Expressions\Ast\PropertyReferenceExpression.cs" />
+    <Compile Include="Src\Variables\Expressions\Expression.cs" />
     <Compile Include="Src\Variables\Types\BindingFlags.cs" />
     <Compile Include="Src\Variables\Types\DebugType-Helpers.cs" />
     <Compile Include="Src\Variables\Types\DebugType.cs" />
@@ -398,6 +403,8 @@
     <Folder Include="Src\Util" />
     <Folder Include="Src\Variables" />
     <Folder Include="Src\Variables\Evals" />
+    <Folder Include="Src\Variables\Expressions" />
+    <Folder Include="Src\Variables\Expressions\Ast" />
     <Folder Include="Src\Variables\Types" />
     <Folder Include="Src\Variables\Values" />
     <Folder Include="Src\Wrappers" />

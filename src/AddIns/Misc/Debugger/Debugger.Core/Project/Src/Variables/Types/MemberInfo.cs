@@ -29,7 +29,7 @@ namespace Debugger
 		}
 		
 		/// <summary> Gets the type that declares this member element </summary>
-		[Debugger.Tests.SummaryOnly]
+		[Debugger.Tests.ToStringOnly]
 		public DebugType DeclaringType {
 			get {
 				return declaringType;
@@ -53,7 +53,7 @@ namespace Debugger
 		public abstract string Name { get; }
 		
 		/// <summary> Gets the module in which this member is defined </summary>
-		[Debugger.Tests.SummaryOnly]
+		[Debugger.Tests.ToStringOnly]
 		public Module Module {
 			get {
 				return declaringType.Module;

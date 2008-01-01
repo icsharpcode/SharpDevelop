@@ -7,13 +7,10 @@
 
 using System;
 
-namespace Debugger
+namespace Debugger.Tests
 {
-	/// <summary>
-	/// A base class for all classes declared by the debugger
-	/// </summary>
-	[Debugger.Tests.Expand]
-	public class DebuggerObject: MarshalByRefObject
+	[AttributeUsage(AttributeTargets.Class)]
+	public class ExpandAttribute: Attribute
 	{
 		
 	}

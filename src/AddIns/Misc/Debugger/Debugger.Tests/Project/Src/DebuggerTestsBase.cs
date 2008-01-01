@@ -151,7 +151,7 @@ namespace Debugger.Tests
 		
 		static bool ShouldExpandType(Type type)
 		{
-			return type.IsSubclassOf(typeof(DebuggerObject)) ||
+			return type.GetCustomAttributes(typeof(ExpandAttribute), true).Length > 0 ||
 			       ( typeof(IEnumerable).IsAssignableFrom(type) &&
 			         type.Namespace != "System"
 			       );
@@ -193,7 +193,7 @@ namespace Debugger.Tests
 				}
 				if (val == null) {
 					propertyNode.AppendChild(doc.CreateTextNode("null"));
-				} else if (!ShouldExpandType(val.GetType()) || property.GetCustomAttributes(typeof(Debugger.Tests.SummaryOnlyAttribute), true).Length > 0) {
+				} else if (!ShouldExpandType(val.GetType()) || property.GetCustomAttributes(typeof(Debugger.Tests.ToStringOnlyAttribute), true).Length > 0) {
 					// Only write ToString() text
 					propertyNode.AppendChild(doc.CreateTextNode(val.ToString()));
 				} else {

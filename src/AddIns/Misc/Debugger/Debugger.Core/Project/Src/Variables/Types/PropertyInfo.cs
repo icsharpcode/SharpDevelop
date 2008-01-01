@@ -98,9 +98,9 @@ namespace Debugger
 			return new Value(
 				this.Process,
 				this.Name,
-				new Ast.MemberReferenceExpression(
+				new Ast.PropertyReferenceExpression(
 					new Ast.IdentifierExpression("parent"), // TODO
-					this.Name
+					this
 				),
 				dependencies.ToArray(),
 				dependencies.ToArray(),

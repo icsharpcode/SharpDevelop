@@ -111,6 +111,7 @@ namespace Debugger
 		/// <summary> Expression that has lead to this value. </summary>
 		/// <returns> Expression or null if the exression can not
 		/// be obtained. </returns>
+		[Debugger.Tests.ToStringOnly]
 		public Expression Expression {
 			get { return expression; }
 		}
@@ -242,7 +243,7 @@ namespace Debugger
 		}
 		
 		/// <summary> Returns the <see cref="Debugger.DebugType"/> of the value </summary>
-		[Debugger.Tests.SummaryOnly]
+		[Debugger.Tests.ToStringOnly]
 		public DebugType Type {
 			get {
 				return Cache.Type;
