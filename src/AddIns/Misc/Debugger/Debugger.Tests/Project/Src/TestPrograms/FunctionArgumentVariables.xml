@@ -31,13 +31,13 @@
                 <ArrayLenght exception="Value is not an array" />
                 <ArrayRank exception="Value is not an array" />
                 <ArrayDimensions exception="Value is not an array" />
-                <IsNull>False</IsNull>
-                <AsString>0</AsString>
                 <IsObject>False</IsObject>
                 <IsPrimitive>True</IsPrimitive>
                 <IsInteger>True</IsInteger>
                 <PrimitiveValue>0</PrimitiveValue>
                 <Name>i</Name>
+                <IsNull>False</IsNull>
+                <AsString>0</AsString>
                 <Expression>i</Expression>
                 <HasExpired>False</HasExpired>
                 <Type>System.Int32</Type>
@@ -47,13 +47,13 @@
                 <ArrayLenght exception="Value is not an array" />
                 <ArrayRank exception="Value is not an array" />
                 <ArrayDimensions exception="Value is not an array" />
-                <IsNull>False</IsNull>
-                <AsString>S</AsString>
                 <IsObject>False</IsObject>
                 <IsPrimitive>True</IsPrimitive>
                 <IsInteger>False</IsInteger>
                 <PrimitiveValue>S</PrimitiveValue>
                 <Name>s</Name>
+                <IsNull>False</IsNull>
+                <AsString>S</AsString>
                 <Expression>s</Expression>
                 <HasExpired>False</HasExpired>
                 <Type>System.String</Type>
@@ -63,13 +63,13 @@
                 <ArrayLenght>0</ArrayLenght>
                 <ArrayRank>1</ArrayRank>
                 <ArrayDimensions>System.UInt32[]</ArrayDimensions>
-                <IsNull>False</IsNull>
-                <AsString>{System.String[]}</AsString>
                 <IsObject>False</IsObject>
                 <IsPrimitive>False</IsPrimitive>
                 <IsInteger>False</IsInteger>
                 <PrimitiveValue exception="Value is not a primitive type" />
                 <Name>args</Name>
+                <IsNull>False</IsNull>
+                <AsString>{System.String[]}</AsString>
                 <Expression>args</Expression>
                 <HasExpired>False</HasExpired>
                 <Type>System.String[]</Type>
@@ -111,13 +111,13 @@
                 <ArrayLenght exception="Value is not an array" />
                 <ArrayRank exception="Value is not an array" />
                 <ArrayDimensions exception="Value is not an array" />
-                <IsNull>False</IsNull>
-                <AsString>1</AsString>
                 <IsObject>False</IsObject>
                 <IsPrimitive>True</IsPrimitive>
                 <IsInteger>True</IsInteger>
                 <PrimitiveValue>1</PrimitiveValue>
                 <Name>i</Name>
+                <IsNull>False</IsNull>
+                <AsString>1</AsString>
                 <Expression>i</Expression>
                 <HasExpired>False</HasExpired>
                 <Type>System.Int32</Type>
@@ -127,13 +127,13 @@
                 <ArrayLenght exception="Value is not an array" />
                 <ArrayRank exception="Value is not an array" />
                 <ArrayDimensions exception="Value is not an array" />
-                <IsNull>False</IsNull>
-                <AsString>S</AsString>
                 <IsObject>False</IsObject>
                 <IsPrimitive>True</IsPrimitive>
                 <IsInteger>False</IsInteger>
                 <PrimitiveValue>S</PrimitiveValue>
                 <Name>s</Name>
+                <IsNull>False</IsNull>
+                <AsString>S</AsString>
                 <Expression>s</Expression>
                 <HasExpired>False</HasExpired>
                 <Type>System.String</Type>
@@ -143,13 +143,13 @@
                 <ArrayLenght>1</ArrayLenght>
                 <ArrayRank>1</ArrayRank>
                 <ArrayDimensions>System.UInt32[]</ArrayDimensions>
-                <IsNull>False</IsNull>
-                <AsString>{System.String[]}</AsString>
                 <IsObject>False</IsObject>
                 <IsPrimitive>False</IsPrimitive>
                 <IsInteger>False</IsInteger>
                 <PrimitiveValue exception="Value is not a primitive type" />
                 <Name>args</Name>
+                <IsNull>False</IsNull>
+                <AsString>{System.String[]}</AsString>
                 <Expression>args</Expression>
                 <HasExpired>False</HasExpired>
                 <Type>System.String[]</Type>
@@ -191,13 +191,13 @@
                 <ArrayLenght exception="Value is not an array" />
                 <ArrayRank exception="Value is not an array" />
                 <ArrayDimensions exception="Value is not an array" />
-                <IsNull>False</IsNull>
-                <AsString>2</AsString>
                 <IsObject>False</IsObject>
                 <IsPrimitive>True</IsPrimitive>
                 <IsInteger>True</IsInteger>
                 <PrimitiveValue>2</PrimitiveValue>
                 <Name>i</Name>
+                <IsNull>False</IsNull>
+                <AsString>2</AsString>
                 <Expression>i</Expression>
                 <HasExpired>False</HasExpired>
                 <Type>System.Int32</Type>
@@ -207,13 +207,13 @@
                 <ArrayLenght exception="Value is not an array" />
                 <ArrayRank exception="Value is not an array" />
                 <ArrayDimensions exception="Value is not an array" />
-                <IsNull>True</IsNull>
-                <AsString>&lt;null&gt;</AsString>
                 <IsObject>False</IsObject>
                 <IsPrimitive>False</IsPrimitive>
                 <IsInteger>False</IsInteger>
                 <PrimitiveValue exception="Value is not a primitive type" />
                 <Name>s</Name>
+                <IsNull>True</IsNull>
+                <AsString>&lt;null&gt;</AsString>
                 <Expression>s</Expression>
                 <HasExpired>False</HasExpired>
                 <Type>System.String</Type>
@@ -223,13 +223,13 @@
                 <ArrayLenght>2</ArrayLenght>
                 <ArrayRank>1</ArrayRank>
                 <ArrayDimensions>System.UInt32[]</ArrayDimensions>
-                <IsNull>False</IsNull>
-                <AsString>{System.String[]}</AsString>
                 <IsObject>False</IsObject>
                 <IsPrimitive>False</IsPrimitive>
                 <IsInteger>False</IsInteger>
                 <PrimitiveValue exception="Value is not a primitive type" />
                 <Name>args</Name>
+                <IsNull>False</IsNull>
+                <AsString>{System.String[]}</AsString>
                 <Expression>args</Expression>
                 <HasExpired>False</HasExpired>
                 <Type>System.String[]</Type>
@@ -260,13 +260,13 @@
             <ArrayLenght exception="Value is not an array" />
             <ArrayRank exception="Value is not an array" />
             <ArrayDimensions exception="Value is not an array" />
-            <IsNull>False</IsNull>
-            <AsString>{Debugger.Tests.TestPrograms.FunctionArgumentVariables}</AsString>
             <IsObject>True</IsObject>
             <IsPrimitive>False</IsPrimitive>
             <IsInteger>False</IsInteger>
             <PrimitiveValue exception="Value is not a primitive type" />
             <Name>this</Name>
+            <IsNull>False</IsNull>
+            <AsString>{Debugger.Tests.TestPrograms.FunctionArgumentVariables}</AsString>
             <Expression>this</Expression>
             <HasExpired>False</HasExpired>
             <Type>Debugger.Tests.TestPrograms.FunctionArgumentVariables</Type>
@@ -288,13 +288,13 @@
                 <ArrayLenght exception="Value is not an array" />
                 <ArrayRank exception="Value is not an array" />
                 <ArrayDimensions exception="Value is not an array" />
-                <IsNull>False</IsNull>
-                <AsString>0</AsString>
                 <IsObject>False</IsObject>
                 <IsPrimitive>True</IsPrimitive>
                 <IsInteger>True</IsInteger>
                 <PrimitiveValue>0</PrimitiveValue>
                 <Name>i</Name>
+                <IsNull>False</IsNull>
+                <AsString>0</AsString>
                 <Expression>i</Expression>
                 <HasExpired>False</HasExpired>
                 <Type>System.Int32</Type>
@@ -304,13 +304,13 @@
                 <ArrayLenght exception="Value is not an array" />
                 <ArrayRank exception="Value is not an array" />
                 <ArrayDimensions exception="Value is not an array" />
-                <IsNull>False</IsNull>
-                <AsString>S</AsString>
                 <IsObject>False</IsObject>
                 <IsPrimitive>True</IsPrimitive>
                 <IsInteger>False</IsInteger>
                 <PrimitiveValue>S</PrimitiveValue>
                 <Name>s</Name>
+                <IsNull>False</IsNull>
+                <AsString>S</AsString>
                 <Expression>s</Expression>
                 <HasExpired>False</HasExpired>
                 <Type>System.String</Type>
@@ -320,13 +320,13 @@
                 <ArrayLenght>0</ArrayLenght>
                 <ArrayRank>1</ArrayRank>
                 <ArrayDimensions>System.UInt32[]</ArrayDimensions>
-                <IsNull>False</IsNull>
-                <AsString>{System.String[]}</AsString>
                 <IsObject>False</IsObject>
                 <IsPrimitive>False</IsPrimitive>
                 <IsInteger>False</IsInteger>
                 <PrimitiveValue exception="Value is not a primitive type" />
                 <Name>args</Name>
+                <IsNull>False</IsNull>
+                <AsString>{System.String[]}</AsString>
                 <Expression>args</Expression>
                 <HasExpired>False</HasExpired>
                 <Type>System.String[]</Type>
@@ -357,13 +357,13 @@
             <ArrayLenght exception="Value is not an array" />
             <ArrayRank exception="Value is not an array" />
             <ArrayDimensions exception="Value is not an array" />
-            <IsNull>False</IsNull>
-            <AsString>{Debugger.Tests.TestPrograms.FunctionArgumentVariables}</AsString>
             <IsObject>True</IsObject>
             <IsPrimitive>False</IsPrimitive>
             <IsInteger>False</IsInteger>
             <PrimitiveValue exception="Value is not a primitive type" />
             <Name>this</Name>
+            <IsNull>False</IsNull>
+            <AsString>{Debugger.Tests.TestPrograms.FunctionArgumentVariables}</AsString>
             <Expression>this</Expression>
             <HasExpired>False</HasExpired>
             <Type>Debugger.Tests.TestPrograms.FunctionArgumentVariables</Type>
@@ -385,13 +385,13 @@
                 <ArrayLenght exception="Value is not an array" />
                 <ArrayRank exception="Value is not an array" />
                 <ArrayDimensions exception="Value is not an array" />
-                <IsNull>False</IsNull>
-                <AsString>1</AsString>
                 <IsObject>False</IsObject>
                 <IsPrimitive>True</IsPrimitive>
                 <IsInteger>True</IsInteger>
                 <PrimitiveValue>1</PrimitiveValue>
                 <Name>i</Name>
+                <IsNull>False</IsNull>
+                <AsString>1</AsString>
                 <Expression>i</Expression>
                 <HasExpired>False</HasExpired>
                 <Type>System.Int32</Type>
@@ -401,13 +401,13 @@
                 <ArrayLenght exception="Value is not an array" />
                 <ArrayRank exception="Value is not an array" />
                 <ArrayDimensions exception="Value is not an array" />
-                <IsNull>False</IsNull>
-                <AsString>S</AsString>
                 <IsObject>False</IsObject>
                 <IsPrimitive>True</IsPrimitive>
                 <IsInteger>False</IsInteger>
                 <PrimitiveValue>S</PrimitiveValue>
                 <Name>s</Name>
+                <IsNull>False</IsNull>
+                <AsString>S</AsString>
                 <Expression>s</Expression>
                 <HasExpired>False</HasExpired>
                 <Type>System.String</Type>
@@ -417,13 +417,13 @@
                 <ArrayLenght>1</ArrayLenght>
                 <ArrayRank>1</ArrayRank>
                 <ArrayDimensions>System.UInt32[]</ArrayDimensions>
-                <IsNull>False</IsNull>
-                <AsString>{System.String[]}</AsString>
                 <IsObject>False</IsObject>
                 <IsPrimitive>False</IsPrimitive>
                 <IsInteger>False</IsInteger>
                 <PrimitiveValue exception="Value is not a primitive type" />
                 <Name>args</Name>
+                <IsNull>False</IsNull>
+                <AsString>{System.String[]}</AsString>
                 <Expression>args</Expression>
                 <HasExpired>False</HasExpired>
                 <Type>System.String[]</Type>
@@ -454,13 +454,13 @@
             <ArrayLenght exception="Value is not an array" />
             <ArrayRank exception="Value is not an array" />
             <ArrayDimensions exception="Value is not an array" />
-            <IsNull>False</IsNull>
-            <AsString>{Debugger.Tests.TestPrograms.FunctionArgumentVariables}</AsString>
             <IsObject>True</IsObject>
             <IsPrimitive>False</IsPrimitive>
             <IsInteger>False</IsInteger>
             <PrimitiveValue exception="Value is not a primitive type" />
             <Name>this</Name>
+            <IsNull>False</IsNull>
+            <AsString>{Debugger.Tests.TestPrograms.FunctionArgumentVariables}</AsString>
             <Expression>this</Expression>
             <HasExpired>False</HasExpired>
             <Type>Debugger.Tests.TestPrograms.FunctionArgumentVariables</Type>
@@ -482,13 +482,13 @@
                 <ArrayLenght exception="Value is not an array" />
                 <ArrayRank exception="Value is not an array" />
                 <ArrayDimensions exception="Value is not an array" />
-                <IsNull>False</IsNull>
-                <AsString>2</AsString>
                 <IsObject>False</IsObject>
                 <IsPrimitive>True</IsPrimitive>
                 <IsInteger>True</IsInteger>
                 <PrimitiveValue>2</PrimitiveValue>
                 <Name>i</Name>
+                <IsNull>False</IsNull>
+                <AsString>2</AsString>
                 <Expression>i</Expression>
                 <HasExpired>False</HasExpired>
                 <Type>System.Int32</Type>
@@ -498,13 +498,13 @@
                 <ArrayLenght exception="Value is not an array" />
                 <ArrayRank exception="Value is not an array" />
                 <ArrayDimensions exception="Value is not an array" />
-                <IsNull>True</IsNull>
-                <AsString>&lt;null&gt;</AsString>
                 <IsObject>False</IsObject>
                 <IsPrimitive>False</IsPrimitive>
                 <IsInteger>False</IsInteger>
                 <PrimitiveValue exception="Value is not a primitive type" />
                 <Name>s</Name>
+                <IsNull>True</IsNull>
+                <AsString>&lt;null&gt;</AsString>
                 <Expression>s</Expression>
                 <HasExpired>False</HasExpired>
                 <Type>System.String</Type>
@@ -514,13 +514,13 @@
                 <ArrayLenght>2</ArrayLenght>
                 <ArrayRank>1</ArrayRank>
                 <ArrayDimensions>System.UInt32[]</ArrayDimensions>
-                <IsNull>False</IsNull>
-                <AsString>{System.String[]}</AsString>
                 <IsObject>False</IsObject>
                 <IsPrimitive>False</IsPrimitive>
                 <IsInteger>False</IsInteger>
                 <PrimitiveValue exception="Value is not a primitive type" />
                 <Name>args</Name>
+                <IsNull>False</IsNull>
+                <AsString>{System.String[]}</AsString>
                 <Expression>args</Expression>
                 <HasExpired>False</HasExpired>
                 <Type>System.String[]</Type>

@@ -236,7 +236,6 @@
     <Compile Include="Src\Variables\Types\PropertyInfo.cs" />
     <Compile Include="Src\Variables\Values\ValueCollection.cs" />
     <Compile Include="Src\Variables\Values\Value.Array.cs" />
-    <Compile Include="Src\Variables\Values\Value.Common.cs" />
     <Compile Include="Src\Variables\Values\Value.Helpers.cs" />
     <Compile Include="Src\Variables\Values\Value.Object.cs" />
     <Compile Include="Src\Variables\Values\Value.Primitive.cs" />

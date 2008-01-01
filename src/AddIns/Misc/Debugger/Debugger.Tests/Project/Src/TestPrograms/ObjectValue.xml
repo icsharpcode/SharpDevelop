@@ -11,13 +11,13 @@
         <ArrayLenght exception="Value is not an array" />
         <ArrayRank exception="Value is not an array" />
         <ArrayDimensions exception="Value is not an array" />
-        <IsNull>False</IsNull>
-        <AsString>{Debugger.Tests.TestPrograms.ObjectValue}</AsString>
         <IsObject>True</IsObject>
         <IsPrimitive>False</IsPrimitive>
         <IsInteger>False</IsInteger>
         <PrimitiveValue exception="Value is not a primitive type" />
         <Name>val</Name>
+        <IsNull>False</IsNull>
+        <AsString>{Debugger.Tests.TestPrograms.ObjectValue}</AsString>
         <Expression>val</Expression>
         <HasExpired>False</HasExpired>
         <Type>Debugger.Tests.TestPrograms.ObjectValue</Type>
@@ -32,13 +32,13 @@
             <ArrayLenght exception="Value is not an array" />
             <ArrayRank exception="Value is not an array" />
             <ArrayDimensions exception="Value is not an array" />
-            <IsNull>False</IsNull>
-            <AsString>private</AsString>
             <IsObject>False</IsObject>
             <IsPrimitive>True</IsPrimitive>
             <IsInteger>False</IsInteger>
             <PrimitiveValue>private</PrimitiveValue>
             <Name>privateField</Name>
+            <IsNull>False</IsNull>
+            <AsString>private</AsString>
             <Expression>parent.privateField</Expression>
             <HasExpired>False</HasExpired>
             <Type>System.String</Type>
@@ -48,13 +48,13 @@
             <ArrayLenght exception="Value is not an array" />
             <ArrayRank exception="Value is not an array" />
             <ArrayDimensions exception="Value is not an array" />
-            <IsNull>False</IsNull>
-            <AsString>public</AsString>
             <IsObject>False</IsObject>
             <IsPrimitive>True</IsPrimitive>
             <IsInteger>False</IsInteger>
             <PrimitiveValue>public</PrimitiveValue>
             <Name>publicFiled</Name>
+            <IsNull>False</IsNull>
+            <AsString>public</AsString>
             <Expression>parent.publicFiled</Expression>
             <HasExpired>False</HasExpired>
             <Type>System.String</Type>
@@ -64,13 +64,13 @@
             <ArrayLenght exception="Value is not an array" />
             <ArrayRank exception="Value is not an array" />
             <ArrayDimensions exception="Value is not an array" />
-            <IsNull>False</IsNull>
-            <AsString>private</AsString>
             <IsObject>False</IsObject>
             <IsPrimitive>True</IsPrimitive>
             <IsInteger>False</IsInteger>
             <PrimitiveValue>private</PrimitiveValue>
             <Name>PublicProperty</Name>
+            <IsNull>False</IsNull>
+            <AsString>private</AsString>
             <Expression>parent.PublicProperty</Expression>
             <HasExpired>False</HasExpired>
             <Type>System.String</Type>
@@ -80,13 +80,13 @@
             <ArrayLenght exception="Value is not an array" />
             <ArrayRank exception="Value is not an array" />
             <ArrayDimensions exception="Value is not an array" />
-            <IsNull>False</IsNull>
-            <AsString>a</AsString>
             <IsObject>False</IsObject>
             <IsPrimitive>True</IsPrimitive>
             <IsInteger>False</IsInteger>
             <PrimitiveValue>a</PrimitiveValue>
             <Name>basePublic</Name>
+            <IsNull>False</IsNull>
+            <AsString>a</AsString>
             <Expression>parent.basePublic</Expression>
             <HasExpired>False</HasExpired>
             <Type>System.String</Type>
@@ -96,13 +96,13 @@
             <ArrayLenght exception="Value is not an array" />
             <ArrayRank exception="Value is not an array" />
             <ArrayDimensions exception="Value is not an array" />
-            <IsNull>False</IsNull>
-            <AsString>b</AsString>
             <IsObject>False</IsObject>
             <IsPrimitive>True</IsPrimitive>
             <IsInteger>False</IsInteger>
             <PrimitiveValue>b</PrimitiveValue>
             <Name>basePrivate</Name>
+            <IsNull>False</IsNull>
+            <AsString>b</AsString>
             <Expression>parent.basePrivate</Expression>
             <HasExpired>False</HasExpired>
             <Type>System.String</Type>
@@ -118,13 +118,13 @@
         <ArrayLenght exception="Value is not an array" />
         <ArrayRank exception="Value is not an array" />
         <ArrayDimensions exception="Value is not an array" />
-        <IsNull>False</IsNull>
-        <AsString>{Debugger.Tests.TestPrograms.ObjectValue}</AsString>
         <IsObject>True</IsObject>
         <IsPrimitive>False</IsPrimitive>
         <IsInteger>False</IsInteger>
         <PrimitiveValue exception="Value is not a primitive type" />
         <Name>val</Name>
+        <IsNull>False</IsNull>
+        <AsString>{Debugger.Tests.TestPrograms.ObjectValue}</AsString>
         <Expression>val</Expression>
         <HasExpired>False</HasExpired>
         <Type>Debugger.Tests.TestPrograms.ObjectValue</Type>
@@ -139,13 +139,13 @@
             <ArrayLenght exception="Value is not an array" />
             <ArrayRank exception="Value is not an array" />
             <ArrayDimensions exception="Value is not an array" />
-            <IsNull>False</IsNull>
-            <AsString>new private</AsString>
             <IsObject>False</IsObject>
             <IsPrimitive>True</IsPrimitive>
             <IsInteger>False</IsInteger>
             <PrimitiveValue>new private</PrimitiveValue>
             <Name>privateField</Name>
+            <IsNull>False</IsNull>
+            <AsString>new private</AsString>
             <Expression>parent.privateField</Expression>
             <HasExpired>False</HasExpired>
             <Type>System.String</Type>
@@ -155,13 +155,13 @@
             <ArrayLenght exception="Value is not an array" />
             <ArrayRank exception="Value is not an array" />
             <ArrayDimensions exception="Value is not an array" />
-            <IsNull>False</IsNull>
-            <AsString>public</AsString>
             <IsObject>False</IsObject>
             <IsPrimitive>True</IsPrimitive>
             <IsInteger>False</IsInteger>
             <PrimitiveValue>public</PrimitiveValue>
             <Name>publicFiled</Name>
+            <IsNull>False</IsNull>
+            <AsString>public</AsString>
             <Expression>parent.publicFiled</Expression>
             <HasExpired>False</HasExpired>
             <Type>System.String</Type>
@@ -171,13 +171,13 @@
             <ArrayLenght exception="Value is not an array" />
             <ArrayRank exception="Value is not an array" />
             <ArrayDimensions exception="Value is not an array" />
-            <IsNull>False</IsNull>
-            <AsString>new private</AsString>
             <IsObject>False</IsObject>
             <IsPrimitive>True</IsPrimitive>
             <IsInteger>False</IsInteger>
             <PrimitiveValue>new private</PrimitiveValue>
             <Name>PublicProperty</Name>
+            <IsNull>False</IsNull>
+            <AsString>new private</AsString>
             <Expression>parent.PublicProperty</Expression>
             <HasExpired>False</HasExpired>
             <Type>System.String</Type>
@@ -187,13 +187,13 @@
             <ArrayLenght exception="Value is not an array" />
             <ArrayRank exception="Value is not an array" />
             <ArrayDimensions exception="Value is not an array" />
-            <IsNull>False</IsNull>
-            <AsString>a</AsString>
             <IsObject>False</IsObject>
             <IsPrimitive>True</IsPrimitive>
             <IsInteger>False</IsInteger>
             <PrimitiveValue>a</PrimitiveValue>
             <Name>basePublic</Name>
+            <IsNull>False</IsNull>
+            <AsString>a</AsString>
             <Expression>parent.basePublic</Expression>
             <HasExpired>False</HasExpired>
             <Type>System.String</Type>
@@ -203,13 +203,13 @@
             <ArrayLenght exception="Value is not an array" />
             <ArrayRank exception="Value is not an array" />
             <ArrayDimensions exception="Value is not an array" />
-            <IsNull>False</IsNull>
-            <AsString>b</AsString>
             <IsObject>False</IsObject>
             <IsPrimitive>True</IsPrimitive>
             <IsInteger>False</IsInteger>
             <PrimitiveValue>b</PrimitiveValue>
             <Name>basePrivate</Name>
+            <IsNull>False</IsNull>
+            <AsString>b</AsString>
             <Expression>parent.basePrivate</Expression>
             <HasExpired>False</HasExpired>
             <Type>System.String</Type>

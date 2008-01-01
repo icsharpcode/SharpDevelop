@@ -11,13 +11,13 @@
         <ArrayLenght>5</ArrayLenght>
         <ArrayRank>1</ArrayRank>
         <ArrayDimensions>System.UInt32[]</ArrayDimensions>
-        <IsNull>False</IsNull>
-        <AsString>{System.Int32[]}</AsString>
         <IsObject>False</IsObject>
         <IsPrimitive>False</IsPrimitive>
         <IsInteger>False</IsInteger>
         <PrimitiveValue exception="Value is not a primitive type" />
         <Name>array</Name>
+        <IsNull>False</IsNull>
+        <AsString>{System.Int32[]}</AsString>
         <Expression>array</Expression>
         <HasExpired>False</HasExpired>
         <Type>System.Int32[]</Type>
@@ -32,13 +32,13 @@
             <ArrayLenght exception="Value is not an array" />
             <ArrayRank exception="Value is not an array" />
             <ArrayDimensions exception="Value is not an array" />
-            <IsNull>False</IsNull>
-            <AsString>0</AsString>
             <IsObject>False</IsObject>
             <IsPrimitive>True</IsPrimitive>
             <IsInteger>True</IsInteger>
             <PrimitiveValue>0</PrimitiveValue>
             <Name>[0]</Name>
+            <IsNull>False</IsNull>
+            <AsString>0</AsString>
             <Expression>parent[0u]</Expression>
             <HasExpired>False</HasExpired>
             <Type>System.Int32</Type>
@@ -48,13 +48,13 @@
             <ArrayLenght exception="Value is not an array" />
             <ArrayRank exception="Value is not an array" />
             <ArrayDimensions exception="Value is not an array" />
-            <IsNull>False</IsNull>
-            <AsString>1</AsString>
             <IsObject>False</IsObject>
             <IsPrimitive>True</IsPrimitive>
             <IsInteger>True</IsInteger>
             <PrimitiveValue>1</PrimitiveValue>
             <Name>[1]</Name>
+            <IsNull>False</IsNull>
+            <AsString>1</AsString>
             <Expression>parent[1u]</Expression>
             <HasExpired>False</HasExpired>
             <Type>System.Int32</Type>
@@ -64,13 +64,13 @@
             <ArrayLenght exception="Value is not an array" />
             <ArrayRank exception="Value is not an array" />
             <ArrayDimensions exception="Value is not an array" />
-            <IsNull>False</IsNull>
-            <AsString>2</AsString>
             <IsObject>False</IsObject>
             <IsPrimitive>True</IsPrimitive>
             <IsInteger>True</IsInteger>
             <PrimitiveValue>2</PrimitiveValue>
             <Name>[2]</Name>
+            <IsNull>False</IsNull>
+            <AsString>2</AsString>
             <Expression>parent[2u]</Expression>
             <HasExpired>False</HasExpired>
             <Type>System.Int32</Type>
@@ -80,13 +80,13 @@
             <ArrayLenght exception="Value is not an array" />
             <ArrayRank exception="Value is not an array" />
             <ArrayDimensions exception="Value is not an array" />
-            <IsNull>False</IsNull>
-            <AsString>3</AsString>
             <IsObject>False</IsObject>
             <IsPrimitive>True</IsPrimitive>
             <IsInteger>True</IsInteger>
             <PrimitiveValue>3</PrimitiveValue>
             <Name>[3]</Name>
+            <IsNull>False</IsNull>
+            <AsString>3</AsString>
             <Expression>parent[3u]</Expression>
             <HasExpired>False</HasExpired>
             <Type>System.Int32</Type>
@@ -96,13 +96,13 @@
             <ArrayLenght exception="Value is not an array" />
             <ArrayRank exception="Value is not an array" />
             <ArrayDimensions exception="Value is not an array" />
-            <IsNull>False</IsNull>
-            <AsString>4</AsString>
             <IsObject>False</IsObject>
             <IsPrimitive>True</IsPrimitive>
             <IsInteger>True</IsInteger>
             <PrimitiveValue>4</PrimitiveValue>
             <Name>[4]</Name>
+            <IsNull>False</IsNull>
+            <AsString>4</AsString>
             <Expression>parent[4u]</Expression>
             <HasExpired>False</HasExpired>
             <Type>System.Int32</Type>

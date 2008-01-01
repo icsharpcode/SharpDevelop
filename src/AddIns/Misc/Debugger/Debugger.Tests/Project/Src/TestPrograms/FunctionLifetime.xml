@@ -30,13 +30,13 @@
                 <ArrayLenght exception="Value is not an array" />
                 <ArrayRank exception="Value is not an array" />
                 <ArrayDimensions exception="Value is not an array" />
-                <IsNull>False</IsNull>
-                <AsString>1</AsString>
                 <IsObject>False</IsObject>
                 <IsPrimitive>True</IsPrimitive>
                 <IsInteger>True</IsInteger>
                 <PrimitiveValue>1</PrimitiveValue>
                 <Name>i</Name>
+                <IsNull>False</IsNull>
+                <AsString>1</AsString>
                 <Expression>i</Expression>
                 <HasExpired>False</HasExpired>
                 <Type>System.Int32</Type>
@@ -78,13 +78,13 @@
                 <ArrayLenght exception="Value is not an array" />
                 <ArrayRank exception="Value is not an array" />
                 <ArrayDimensions exception="Value is not an array" />
-                <IsNull>False</IsNull>
-                <AsString>1</AsString>
                 <IsObject>False</IsObject>
                 <IsPrimitive>True</IsPrimitive>
                 <IsInteger>True</IsInteger>
                 <PrimitiveValue>1</PrimitiveValue>
                 <Name>i</Name>
+                <IsNull>False</IsNull>
+                <AsString>1</AsString>
                 <Expression>i</Expression>
                 <HasExpired>False</HasExpired>
                 <Type>System.Int32</Type>
@@ -156,13 +156,13 @@
                 <ArrayLenght exception="Value is not an array" />
                 <ArrayRank exception="Value is not an array" />
                 <ArrayDimensions exception="Value is not an array" />
-                <IsNull>False</IsNull>
-                <AsString>1</AsString>
                 <IsObject>False</IsObject>
                 <IsPrimitive>True</IsPrimitive>
                 <IsInteger>True</IsInteger>
                 <PrimitiveValue>1</PrimitiveValue>
                 <Name>i</Name>
+                <IsNull>False</IsNull>
+                <AsString>1</AsString>
                 <Expression>i</Expression>
                 <HasExpired>False</HasExpired>
                 <Type>System.Int32</Type>
@@ -234,13 +234,13 @@
                 <ArrayLenght exception="Value has expired" />
                 <ArrayRank exception="Value has expired" />
                 <ArrayDimensions exception="Value has expired" />
-                <IsNull exception="Value has expired" />
-                <AsString exception="Value has expired" />
                 <IsObject exception="Value has expired" />
                 <IsPrimitive exception="Value has expired" />
                 <IsInteger exception="Value has expired" />
                 <PrimitiveValue exception="Value has expired" />
                 <Name>i</Name>
+                <IsNull exception="Value has expired" />
+                <AsString exception="Value has expired" />
                 <Expression>i</Expression>
                 <HasExpired>True</HasExpired>
                 <Type exception="Value has expired" />

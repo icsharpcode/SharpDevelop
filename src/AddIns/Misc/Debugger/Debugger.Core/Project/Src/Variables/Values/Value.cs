@@ -100,6 +100,20 @@ namespace Debugger
 			}
 		}
 		
+		/// <summary> Returns true if the value is null </summary>
+		public bool IsNull {
+			get {
+				return CorValue == null;
+			}
+		}
+		
+		/// <summary> Gets a string representation of the value </summary>
+		public string AsString {
+			get {
+				return Cache.AsString;
+			}
+		}
+		
 		/// <summary> The process that owns the value </summary>
 		[Debugger.Tests.Ignore]
 		public Process Process {
