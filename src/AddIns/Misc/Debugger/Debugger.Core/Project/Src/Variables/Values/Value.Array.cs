@@ -80,7 +80,6 @@ namespace Debugger
 				Process,
 				GetNameFromIndices(indices),
 				GetExpressionFromIndices(indices),
-				new IExpirable[] {this},
 				delegate { return GetCorValueOfArrayElement(indices); }
 			);
 		}

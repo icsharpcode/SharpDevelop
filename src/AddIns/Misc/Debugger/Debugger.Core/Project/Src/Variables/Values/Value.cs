@@ -42,7 +42,7 @@ namespace Debugger
 		
 		CorValueGetter corValueGetter;
 		
-		/// <summary> Occurs when the Value can not be used anymore </summary>
+		/// <summary> Occurs when the Value can not be used </summary>
 		public event EventHandler Expired;
 		
 		bool isExpired = false;
@@ -177,10 +177,12 @@ namespace Debugger
 		internal Value(Process process,
 		               string name,
 		               Expression expression,
-		               IExpirable[] expireDependencies,
 		               CorValueGetter corValueGetter)
 		{
+			this.process = process;
 			this.name = name;
+			this.expression = expression;
+			this.corValueGetter = corValueGetter;
 			
 			// TODO: clean up
 			if (name.StartsWith("<") && name.Contains(">") && name != "<Base class>") {
@@ -190,36 +192,13 @@ namespace Debugger
 				}
 			}
 			
-			this.process = process;
-			this.expression = expression;
-			
-			AddExpireDependency(process);
-			foreach(IExpirable exp in expireDependencies) {
-				AddExpireDependency(exp);
-			}
-			
-			this.corValueGetter = corValueGetter;
+			process.DebuggingResumed += delegate {
+				this.isExpired = true;
+				OnExpired(EventArgs.Empty);
+			};
 		}
 		
-		void AddExpireDependency(IExpirable dependency)
-		{
-			if (dependency.HasExpired) {
-				MakeExpired();
-			} else {
-				dependency.Expired += delegate { MakeExpired(); };
-			}
-		}
-		
-		void MakeExpired()
-		{
-			if (!isExpired) {
-				isExpired = true;
-				OnExpired(new ValueEventArgs(this));
-			}
-		}
-		
-		/// <summary> Is called when the value expires and can not be 
-		/// used anymore </summary>
+		/// <summary> Is called when the value expires and can not be used </summary>
 		protected virtual void OnExpired(EventArgs e)
 		{
 			if (Expired != null) {

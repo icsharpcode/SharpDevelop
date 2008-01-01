@@ -235,7 +235,6 @@ namespace Debugger
 				result = new Value(process,
 				                   string.Empty,
 				                   Expression.Empty,
-				                   new IExpirable[] {},
 				                   delegate { return corEval.Result; });
 			}
 		}

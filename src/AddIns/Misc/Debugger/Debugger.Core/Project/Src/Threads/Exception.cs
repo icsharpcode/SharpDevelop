@@ -39,7 +39,6 @@ namespace Debugger
 			Value runtimeValue = new Value(process,
 			                               string.Empty,
 			                               Expression.Empty,
-			                               new IExpirable[] {process.PauseSession},
 			                               delegate { return corValue; } );
 			message = runtimeValue.GetMember("_message").AsString;
 			

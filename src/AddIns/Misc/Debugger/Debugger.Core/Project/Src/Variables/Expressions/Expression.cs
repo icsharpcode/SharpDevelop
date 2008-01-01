@@ -20,15 +20,19 @@ namespace Debugger
 	/// </summary>
 	public class Expression: DebuggerObject
 	{
-		public static Expression Empty = null;
+		public static Expression Empty = new Expression(null);
 		
 		Ast.Expression expressionAst;
 		
 		public string Code {
 			get {
-				CSharpOutputVisitor csOutVisitor = new CSharpOutputVisitor();
-				expressionAst.AcceptVisitor(csOutVisitor, null);
-				return csOutVisitor.Text;
+				if (expressionAst != null) {
+					CSharpOutputVisitor csOutVisitor = new CSharpOutputVisitor();
+					expressionAst.AcceptVisitor(csOutVisitor, null);
+					return csOutVisitor.Text;
+				} else {
+					return string.Empty;
+				}
 			}
 		}
 		

@@ -441,7 +441,6 @@ namespace Debugger
 						process,
 						"this",
 						new Ast.ThisReferenceExpression(),
-						new IExpirable[] {this},
 						delegate { return ThisCorValue; }
 					);
 				}
@@ -510,7 +509,6 @@ namespace Debugger
 				process,
 				name,
 				new Ast.ParameterIdentifierExpression(index, name),
-				new IExpirable[] {this},
 				delegate { return GetArgumentCorValue(index); }
 			);
 		}
@@ -601,7 +599,6 @@ namespace Debugger
 				process,
 				symVar.Name,
 				new Ast.LocalVariableIdentifierExpression(symVar),
-				new IExpirable[] {this},
 				delegate { return GetCorValueOfLocalVariable(symVar); }
 			);
 		}
