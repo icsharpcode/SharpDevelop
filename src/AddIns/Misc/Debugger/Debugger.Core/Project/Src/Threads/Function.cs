@@ -379,25 +379,6 @@ namespace Debugger
 			}
 		}
 		
-		/// <summary> Gets value of given name which is accessible from this function </summary>
-		/// <returns> Null if not found </returns>
-		public Value GetValue(string name)
-		{
-			if (name == "this") {
-				return ThisValue;
-			}
-			if (Arguments.Contains(name)) {
-				return Arguments[name];
-			}
-			if (LocalVariables.Contains(name)) {
-				return LocalVariables[name];
-			}
-			if (ContaingClassVariables.Contains(name)) {
-				return ContaingClassVariables[name];
-			}
-			return null;
-		}
-		
 		/// <summary>
 		/// Gets all variables in the lexical scope of the function. 
 		/// That is, arguments, local variables and varables of the containing class.
@@ -565,9 +546,8 @@ namespace Debugger
 				if (symMethod != null) { // TODO: Is this needed?
 					ISymUnmanagedScope symRootScope = symMethod.RootScope;
 					foreach(Value var in GetLocalVariablesInScope(symRootScope)) {
-						if (!var.Name.StartsWith("CS$")) { // TODO: Generalize
-							yield return var;
-						}
+						// TODO: Compiler generated variables
+						yield return var;
 					}
 				}
 			}

@@ -81,8 +81,7 @@ namespace Debugger
 					if (IsPrimitive) cache.AsString = PrimitiveValue != null ? PrimitiveValue.ToString() : String.Empty;
 					
 					TimeSpan totalTime = Util.HighPrecisionTimer.Now - startTime;
-					string name = this is Value ? ((Value)this).Name + " = " : String.Empty;
-					process.TraceMessage("Obtained value: " + name + cache.AsString + " (" + totalTime.TotalMilliseconds + " ms)");
+					process.TraceMessage("Obtained value: " + cache.AsString + " (" + totalTime.TotalMilliseconds + " ms)");
 				}
 				return cache;
 			}
@@ -162,14 +161,6 @@ namespace Debugger
 		{
 			this.process = process;
 			this.corValueGetter = corValueGetter;
-			
-			// TODO: clean up
-			if (name.StartsWith("<") && name.Contains(">") && name != "<Base class>") {
-				string middle = name.TrimStart('<').Split('>')[0]; // Get text between '<' and '>'
-				if (middle != "") {
-					this.name = middle;
-				}
-			}
 			
 			process.DebuggingResumed += delegate {
 				this.isExpired = true;
