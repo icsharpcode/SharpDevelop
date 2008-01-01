@@ -9,8 +9,6 @@ using System;
 using System.Collections.Generic;
 using Debugger.Wrappers.CorDebug;
 
-using Ast = ICSharpCode.NRefactory.Ast;
-
 //TODO: Support for lower bound
 
 namespace Debugger
@@ -79,7 +77,6 @@ namespace Debugger
 			return new Value(
 				Process,
 				GetNameFromIndices(indices),
-				GetExpressionFromIndices(indices),
 				delegate { return GetCorValueOfArrayElement(indices); }
 			);
 		}
@@ -92,18 +89,6 @@ namespace Debugger
 			}
 			elementName = elementName.TrimEnd(new char[] {','}) + "]";
 			return elementName;
-		}
-		
-		Expression GetExpressionFromIndices(uint[] indices)
-		{
-			List<Ast.Expression> indicesAst = new List<Ast.Expression>();
-			foreach(uint indice in indices) {
-				indicesAst.Add(new Ast.PrimitiveExpression((int)indice, ((int)indice).ToString()));
-			}
-			return new Ast.IndexerExpression(
-				this.Expression,
-				indicesAst
-			);
 		}
 		
 		// May be called later

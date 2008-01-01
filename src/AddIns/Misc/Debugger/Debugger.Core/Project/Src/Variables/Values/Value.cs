@@ -38,7 +38,6 @@ namespace Debugger
 	{
 		string name;
 		Process process;
-		Expression expression;
 		
 		CorValueGetter corValueGetter;
 		
@@ -119,14 +118,6 @@ namespace Debugger
 			}
 		}
 		
-		/// <summary> Expression that has lead to this value. </summary>
-		/// <returns> Expression or null if the exression can not
-		/// be obtained. </returns>
-		[Debugger.Tests.ToStringOnly]
-		public Expression Expression {
-			get { return expression; }
-		}
-		
 		/// <summary> Returns true if the Value have expired
 		/// and can not be used anymore </summary>
 		public bool HasExpired {
@@ -176,12 +167,10 @@ namespace Debugger
 		
 		internal Value(Process process,
 		               string name,
-		               Expression expression,
 		               CorValueGetter corValueGetter)
 		{
 			this.process = process;
 			this.name = name;
-			this.expression = expression;
 			this.corValueGetter = corValueGetter;
 			
 			// TODO: clean up

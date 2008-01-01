@@ -234,7 +234,6 @@ namespace Debugger
 				}
 				result = new Value(process,
 				                   string.Empty,
-				                   Expression.Empty,
 				                   delegate { return corEval.Result; });
 			}
 		}

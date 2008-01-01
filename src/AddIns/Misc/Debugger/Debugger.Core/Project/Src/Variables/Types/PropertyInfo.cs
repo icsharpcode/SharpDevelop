@@ -10,8 +10,6 @@ using System.Collections.Generic;
 using Debugger.Wrappers.CorDebug;
 using Debugger.Wrappers.MetaData;
 
-using Ast = ICSharpCode.NRefactory.Ast;
-
 namespace Debugger
 {
 	/// <summary>

@@ -9,8 +9,6 @@ using System;
 using System.Collections.Generic;
 using Debugger.Wrappers.CorDebug;
 
-using Ast = ICSharpCode.NRefactory.Ast;
-
 namespace Debugger
 {
 	// This part of the class provides support for classes and structures
@@ -52,10 +50,6 @@ namespace Debugger
 			return new Value(
 				objectInstance.Process,
 				fieldInfo.Name,
-				new Ast.FieldReferenceExpression(
-					objectInstance.Expression,
-					fieldInfo
-				),
 				delegate { return GetFieldCorValue(objectInstance, fieldInfo); }
 			);
 		}
@@ -118,10 +112,6 @@ namespace Debugger
 			return new Value(
 				objectInstance.Process,
 				propertyInfo.Name,
-				new Ast.PropertyReferenceExpression(
-					objectInstance.Expression,
-					propertyInfo
-				),
 				delegate { return Value.InvokeMethod(objectInstance, propertyInfo.GetMethod, arguments).RawCorValue; }
 			);
 		}

@@ -20,7 +20,7 @@ using System.Threading;
 
 namespace Debugger.Tests
 {
-	[TestFixture]
+	//[TestFixture]
 	public class DebuggerTests: DebuggerTestsBase
 	{
 		[Test]

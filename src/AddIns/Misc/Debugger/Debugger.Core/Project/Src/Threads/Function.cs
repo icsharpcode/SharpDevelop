@@ -13,8 +13,6 @@ using Debugger.Wrappers.CorDebug;
 using Debugger.Wrappers.CorSym;
 using Debugger.Wrappers.MetaData;
 
-using Ast = ICSharpCode.NRefactory.Ast;
-
 namespace Debugger
 {
 	/// <summary>
@@ -440,7 +438,6 @@ namespace Debugger
 					thisValueCache = new Value(
 						process,
 						"this",
-						new Ast.ThisReferenceExpression(),
 						delegate { return ThisCorValue; }
 					);
 				}
@@ -508,7 +505,6 @@ namespace Debugger
 			return new Value(
 				process,
 				name,
-				new Ast.ParameterIdentifierExpression(index, name),
 				delegate { return GetArgumentCorValue(index); }
 			);
 		}
@@ -598,7 +594,6 @@ namespace Debugger
 			return new Value(
 				process,
 				symVar.Name,
-				new Ast.LocalVariableIdentifierExpression(symVar),
 				delegate { return GetCorValueOfLocalVariable(symVar); }
 			);
 		}
