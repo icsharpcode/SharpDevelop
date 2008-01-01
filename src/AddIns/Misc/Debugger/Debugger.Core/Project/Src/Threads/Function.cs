@@ -437,7 +437,6 @@ namespace Debugger
 				if (thisValueCache == null) {
 					thisValueCache = new Value(
 						process,
-						"this",
 						delegate { return ThisCorValue; }
 					);
 				}
@@ -500,11 +499,8 @@ namespace Debugger
 		/// <param name="index"> Zero-based index </param>
 		public Value GetArgument(int index)
 		{
-			string name = GetParameterName(index);
-			
 			return new Value(
 				process,
-				name,
 				delegate { return GetArgumentCorValue(index); }
 			);
 		}
@@ -593,7 +589,6 @@ namespace Debugger
 		{
 			return new Value(
 				process,
-				symVar.Name,
 				delegate { return GetCorValueOfLocalVariable(symVar); }
 			);
 		}

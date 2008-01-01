@@ -37,7 +37,6 @@ namespace Debugger
 			corValue = thread.CorThread.CurrentException;
 			exceptionType = thread.CurrentExceptionType;
 			Value runtimeValue = new Value(process,
-			                               string.Empty,
 			                               delegate { return corValue; } );
 			message = runtimeValue.GetMember("_message").AsString;
 			

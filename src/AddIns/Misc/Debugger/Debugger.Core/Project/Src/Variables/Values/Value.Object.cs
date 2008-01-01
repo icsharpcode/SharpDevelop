@@ -49,7 +49,6 @@ namespace Debugger
 		{
 			return new Value(
 				objectInstance.Process,
-				fieldInfo.Name,
 				delegate { return GetFieldCorValue(objectInstance, fieldInfo); }
 			);
 		}
@@ -111,7 +110,6 @@ namespace Debugger
 			
 			return new Value(
 				objectInstance.Process,
-				propertyInfo.Name,
 				delegate { return Value.InvokeMethod(objectInstance, propertyInfo.GetMethod, arguments).RawCorValue; }
 			);
 		}

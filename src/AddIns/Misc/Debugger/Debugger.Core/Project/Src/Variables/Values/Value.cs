@@ -36,7 +36,6 @@ namespace Debugger
 	/// </remarks>
 	public partial class Value: DebuggerObject, IExpirable
 	{
-		string name;
 		Process process;
 		
 		CorValueGetter corValueGetter;
@@ -86,13 +85,6 @@ namespace Debugger
 					process.TraceMessage("Obtained value: " + name + cache.AsString + " (" + totalTime.TotalMilliseconds + " ms)");
 				}
 				return cache;
-			}
-		}
-		
-		/// <summary> Gets the name associated with the value </summary>
-		public string Name {
-			get {
-				return name;
 			}
 		}
 		
@@ -166,11 +158,9 @@ namespace Debugger
 		}
 		
 		internal Value(Process process,
-		               string name,
 		               CorValueGetter corValueGetter)
 		{
 			this.process = process;
-			this.name = name;
 			this.corValueGetter = corValueGetter;
 			
 			// TODO: clean up

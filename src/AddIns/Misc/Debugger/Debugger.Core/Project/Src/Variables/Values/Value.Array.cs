@@ -76,19 +76,8 @@ namespace Debugger
 			
 			return new Value(
 				Process,
-				GetNameFromIndices(indices),
 				delegate { return GetCorValueOfArrayElement(indices); }
 			);
-		}
-		
-		static string GetNameFromIndices(uint[] indices)
-		{
-			string elementName = "[";
-			for (int i = 0; i < indices.Length; i++) {
-				elementName += indices[i].ToString() + ",";
-			}
-			elementName = elementName.TrimEnd(new char[] {','}) + "]";
-			return elementName;
 		}
 		
 		// May be called later
