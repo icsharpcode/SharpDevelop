@@ -39,7 +39,7 @@
             <Name>buckets</Name>
             <IsNull>False</IsNull>
             <AsString>{System.Int32[]}</AsString>
-            <Expression>parent.buckets</Expression>
+            <Expression>dict.buckets</Expression>
             <HasExpired>False</HasExpired>
             <Type>System.Int32[]</Type>
           </Value>
@@ -55,7 +55,7 @@
             <Name>entries</Name>
             <IsNull>False</IsNull>
             <AsString>{Entry&lt;System.String,System.Int32&gt;[]}</AsString>
-            <Expression>parent.entries</Expression>
+            <Expression>dict.entries</Expression>
             <HasExpired>False</HasExpired>
             <Type>Entry&lt;System.String,System.Int32&gt;[]</Type>
           </Value>
@@ -71,7 +71,7 @@
             <Name>count</Name>
             <IsNull>False</IsNull>
             <AsString>3</AsString>
-            <Expression>parent.count</Expression>
+            <Expression>dict.count</Expression>
             <HasExpired>False</HasExpired>
             <Type>System.Int32</Type>
           </Value>
@@ -87,7 +87,7 @@
             <Name>version</Name>
             <IsNull>False</IsNull>
             <AsString>3</AsString>
-            <Expression>parent.version</Expression>
+            <Expression>dict.version</Expression>
             <HasExpired>False</HasExpired>
             <Type>System.Int32</Type>
           </Value>
@@ -103,7 +103,7 @@
             <Name>freeList</Name>
             <IsNull>False</IsNull>
             <AsString>-1</AsString>
-            <Expression>parent.freeList</Expression>
+            <Expression>dict.freeList</Expression>
             <HasExpired>False</HasExpired>
             <Type>System.Int32</Type>
           </Value>
@@ -119,7 +119,7 @@
             <Name>freeCount</Name>
             <IsNull>False</IsNull>
             <AsString>0</AsString>
-            <Expression>parent.freeCount</Expression>
+            <Expression>dict.freeCount</Expression>
             <HasExpired>False</HasExpired>
             <Type>System.Int32</Type>
           </Value>
@@ -135,7 +135,7 @@
             <Name>comparer</Name>
             <IsNull>False</IsNull>
             <AsString>{System.Collections.Generic.GenericEqualityComparer&lt;System.String&gt;}</AsString>
-            <Expression>parent.comparer</Expression>
+            <Expression>dict.comparer</Expression>
             <HasExpired>False</HasExpired>
             <Type>System.Collections.Generic.GenericEqualityComparer&lt;System.String&gt;</Type>
           </Value>
@@ -151,7 +151,7 @@
             <Name>keys</Name>
             <IsNull>True</IsNull>
             <AsString>&lt;null&gt;</AsString>
-            <Expression>parent.keys</Expression>
+            <Expression>dict.keys</Expression>
             <HasExpired>False</HasExpired>
             <Type>KeyCollection&lt;System.String,System.Int32&gt;</Type>
           </Value>
@@ -167,7 +167,7 @@
             <Name>values</Name>
             <IsNull>True</IsNull>
             <AsString>&lt;null&gt;</AsString>
-            <Expression>parent.values</Expression>
+            <Expression>dict.values</Expression>
             <HasExpired>False</HasExpired>
             <Type>ValueCollection&lt;System.String,System.Int32&gt;</Type>
           </Value>
@@ -183,7 +183,7 @@
             <Name>_syncRoot</Name>
             <IsNull>True</IsNull>
             <AsString>&lt;null&gt;</AsString>
-            <Expression>parent._syncRoot</Expression>
+            <Expression>dict._syncRoot</Expression>
             <HasExpired>False</HasExpired>
             <Type>System.Object</Type>
           </Value>
@@ -199,7 +199,7 @@
             <Name>m_siInfo</Name>
             <IsNull>True</IsNull>
             <AsString>&lt;null&gt;</AsString>
-            <Expression>parent.m_siInfo</Expression>
+            <Expression>dict.m_siInfo</Expression>
             <HasExpired>False</HasExpired>
             <Type>System.Runtime.Serialization.SerializationInfo</Type>
           </Value>
@@ -215,7 +215,7 @@
             <Name>Comparer</Name>
             <IsNull>False</IsNull>
             <AsString>{System.TypeLoadException}</AsString>
-            <Expression>parent.Comparer</Expression>
+            <Expression>dict.Comparer</Expression>
             <HasExpired>False</HasExpired>
             <Type>System.TypeLoadException</Type>
           </Value>
@@ -231,7 +231,7 @@
             <Name>Count</Name>
             <IsNull>False</IsNull>
             <AsString>{System.TypeLoadException}</AsString>
-            <Expression>parent.Count</Expression>
+            <Expression>dict.Count</Expression>
             <HasExpired>False</HasExpired>
             <Type>System.TypeLoadException</Type>
           </Value>
@@ -247,7 +247,7 @@
             <Name>Keys</Name>
             <IsNull>False</IsNull>
             <AsString>{System.TypeLoadException}</AsString>
-            <Expression>parent.Keys</Expression>
+            <Expression>dict.Keys</Expression>
             <HasExpired>False</HasExpired>
             <Type>System.TypeLoadException</Type>
           </Value>
@@ -263,7 +263,7 @@
             <Name>Values</Name>
             <IsNull>False</IsNull>
             <AsString>{System.TypeLoadException}</AsString>
-            <Expression>parent.Values</Expression>
+            <Expression>dict.Values</Expression>
             <HasExpired>False</HasExpired>
             <Type>System.TypeLoadException</Type>
           </Value>
@@ -279,7 +279,7 @@
             <Name>Item</Name>
             <IsNull>False</IsNull>
             <AsString>{System.TypeLoadException}</AsString>
-            <Expression>parent.Item</Expression>
+            <Expression>dict.Item</Expression>
             <HasExpired>False</HasExpired>
             <Type>System.TypeLoadException</Type>
           </Value>

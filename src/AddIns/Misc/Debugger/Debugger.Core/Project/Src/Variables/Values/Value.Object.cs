@@ -53,7 +53,7 @@ namespace Debugger
 				objectInstance.Process,
 				fieldInfo.Name,
 				new Ast.FieldReferenceExpression(
-					new Ast.IdentifierExpression("parent"), // TODO
+					objectInstance.Expression,
 					fieldInfo
 				),
 				new IExpirable[] {objectInstance},
@@ -121,7 +121,7 @@ namespace Debugger
 				objectInstance.Process,
 				propertyInfo.Name,
 				new Ast.PropertyReferenceExpression(
-					new Ast.IdentifierExpression("parent"), // TODO
+					objectInstance.Expression,
 					propertyInfo
 				),
 				dependencies.ToArray(),

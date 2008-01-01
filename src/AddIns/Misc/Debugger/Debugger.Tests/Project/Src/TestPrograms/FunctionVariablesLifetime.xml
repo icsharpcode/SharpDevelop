@@ -54,7 +54,7 @@
         <Name>class</Name>
         <IsNull>False</IsNull>
         <AsString>3</AsString>
-        <Expression>parent.@class</Expression>
+        <Expression>this.@class</Expression>
         <HasExpired>False</HasExpired>
         <Type>System.Int32</Type>
       </Value>
@@ -109,7 +109,7 @@
         <Name>class</Name>
         <IsNull>False</IsNull>
         <AsString>3</AsString>
-        <Expression>parent.@class</Expression>
+        <Expression>this.@class</Expression>
         <HasExpired>False</HasExpired>
         <Type>System.Int32</Type>
       </Value>
@@ -182,7 +182,7 @@
         <Name>class</Name>
         <IsNull>False</IsNull>
         <AsString>3</AsString>
-        <Expression>parent.@class</Expression>
+        <Expression>this.@class</Expression>
         <HasExpired>False</HasExpired>
         <Type>System.Int32</Type>
       </Value>
@@ -255,7 +255,7 @@
         <Name>class</Name>
         <IsNull>False</IsNull>
         <AsString>3</AsString>
-        <Expression>parent.@class</Expression>
+        <Expression>this.@class</Expression>
         <HasExpired>False</HasExpired>
         <Type>System.Int32</Type>
       </Value>
@@ -346,7 +346,7 @@
         <Name>class</Name>
         <IsNull exception="Value has expired" />
         <AsString exception="Value has expired" />
-        <Expression>parent.@class</Expression>
+        <Expression>this.@class</Expression>
         <HasExpired>True</HasExpired>
         <Type exception="Value has expired" />
       </Value>

@@ -46,6 +46,15 @@ namespace Debugger
 			return new Expression(expressionAst);
 		}
 		
+		public static implicit operator ICSharpCode.NRefactory.Ast.Expression(Expression expression)
+		{
+			if (expression == null) {
+				return null;
+			} else {
+				return expression.AbstractSynatxTree;
+			}
+		}
+		
 		public override string ToString()
 		{
 			return this.Code;

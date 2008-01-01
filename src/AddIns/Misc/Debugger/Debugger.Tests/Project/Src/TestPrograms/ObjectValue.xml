@@ -39,7 +39,7 @@
             <Name>privateField</Name>
             <IsNull>False</IsNull>
             <AsString>private</AsString>
-            <Expression>parent.privateField</Expression>
+            <Expression>val.privateField</Expression>
             <HasExpired>False</HasExpired>
             <Type>System.String</Type>
           </Value>
@@ -55,7 +55,7 @@
             <Name>publicFiled</Name>
             <IsNull>False</IsNull>
             <AsString>public</AsString>
-            <Expression>parent.publicFiled</Expression>
+            <Expression>val.publicFiled</Expression>
             <HasExpired>False</HasExpired>
             <Type>System.String</Type>
           </Value>
@@ -71,7 +71,7 @@
             <Name>PublicProperty</Name>
             <IsNull>False</IsNull>
             <AsString>private</AsString>
-            <Expression>parent.PublicProperty</Expression>
+            <Expression>val.PublicProperty</Expression>
             <HasExpired>False</HasExpired>
             <Type>System.String</Type>
           </Value>
@@ -87,7 +87,7 @@
             <Name>basePublic</Name>
             <IsNull>False</IsNull>
             <AsString>a</AsString>
-            <Expression>parent.basePublic</Expression>
+            <Expression>val.basePublic</Expression>
             <HasExpired>False</HasExpired>
             <Type>System.String</Type>
           </Value>
@@ -103,7 +103,7 @@
             <Name>basePrivate</Name>
             <IsNull>False</IsNull>
             <AsString>b</AsString>
-            <Expression>parent.basePrivate</Expression>
+            <Expression>val.basePrivate</Expression>
             <HasExpired>False</HasExpired>
             <Type>System.String</Type>
           </Value>
@@ -146,7 +146,7 @@
             <Name>privateField</Name>
             <IsNull>False</IsNull>
             <AsString>new private</AsString>
-            <Expression>parent.privateField</Expression>
+            <Expression>val.privateField</Expression>
             <HasExpired>False</HasExpired>
             <Type>System.String</Type>
           </Value>
@@ -162,7 +162,7 @@
             <Name>publicFiled</Name>
             <IsNull>False</IsNull>
             <AsString>public</AsString>
-            <Expression>parent.publicFiled</Expression>
+            <Expression>val.publicFiled</Expression>
             <HasExpired>False</HasExpired>
             <Type>System.String</Type>
           </Value>
@@ -178,7 +178,7 @@
             <Name>PublicProperty</Name>
             <IsNull>False</IsNull>
             <AsString>new private</AsString>
-            <Expression>parent.PublicProperty</Expression>
+            <Expression>val.PublicProperty</Expression>
             <HasExpired>False</HasExpired>
             <Type>System.String</Type>
           </Value>
@@ -194,7 +194,7 @@
             <Name>basePublic</Name>
             <IsNull>False</IsNull>
             <AsString>a</AsString>
-            <Expression>parent.basePublic</Expression>
+            <Expression>val.basePublic</Expression>
             <HasExpired>False</HasExpired>
             <Type>System.String</Type>
           </Value>
@@ -210,7 +210,7 @@
             <Name>basePrivate</Name>
             <IsNull>False</IsNull>
             <AsString>b</AsString>
-            <Expression>parent.basePrivate</Expression>
+            <Expression>val.basePrivate</Expression>
             <HasExpired>False</HasExpired>
             <Type>System.String</Type>
           </Value>

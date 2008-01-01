@@ -96,14 +96,14 @@ namespace Debugger
 			return elementName;
 		}
 		
-		static Expression GetExpressionFromIndices(uint[] indices)
+		Expression GetExpressionFromIndices(uint[] indices)
 		{
 			List<Ast.Expression> indicesAst = new List<Ast.Expression>();
 			foreach(uint indice in indices) {
-				indicesAst.Add(new Ast.PrimitiveExpression(indice, indice.ToString()));
+				indicesAst.Add(new Ast.PrimitiveExpression((int)indice, ((int)indice).ToString()));
 			}
 			return new Ast.IndexerExpression(
-				new Ast.IdentifierExpression("parent"), // TODO
+				this.Expression,
 				indicesAst
 			);
 		}
