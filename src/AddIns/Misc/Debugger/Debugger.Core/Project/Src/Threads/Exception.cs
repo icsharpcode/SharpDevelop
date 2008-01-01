@@ -40,7 +40,6 @@ namespace Debugger
 			                               string.Empty,
 			                               Expression.Empty,
 			                               new IExpirable[] {process.PauseSession},
-			                               new IMutable[] {},
 			                               delegate { return corValue; } );
 			message = runtimeValue.GetMember("_message").AsString;
 			

@@ -81,7 +81,6 @@ namespace Debugger
 				GetNameFromIndices(indices),
 				GetExpressionFromIndices(indices),
 				new IExpirable[] {this},
-				new IMutable[] {this},
 				delegate { return GetCorValueOfArrayElement(indices); }
 			);
 		}

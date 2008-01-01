@@ -169,7 +169,6 @@ namespace Debugger
 					string.Empty,
 					Expression.Empty,
 					new IExpirable[] {process.PauseSession},
-					new IMutable[] {},
 					delegate { return CorThread.Object;}
 				);
 			}

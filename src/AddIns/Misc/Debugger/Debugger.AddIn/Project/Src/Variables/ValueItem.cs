@@ -138,8 +138,6 @@ namespace Debugger
 		public ValueItem(Value val)
 		{
 			this.val = val;
-			
-			val.Changed += delegate { OnChanged(new ListItemEventArgs(this)); };
 		}
 		
 		public override bool SetText(string newValue)

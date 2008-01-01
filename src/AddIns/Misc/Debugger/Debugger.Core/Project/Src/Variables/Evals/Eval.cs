@@ -236,7 +236,6 @@ namespace Debugger
 				                   string.Empty,
 				                   Expression.Empty,
 				                   new IExpirable[] {},
-				                   new IMutable[] {},
 				                   delegate { return corEval.Result; });
 			}
 		}

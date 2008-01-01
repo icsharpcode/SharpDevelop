@@ -69,7 +69,6 @@ namespace Debugger
 				} else {
 					CorGenericValue.Value = newValue;
 				}
-				NotifyChange();
 			}
 		}
 	}

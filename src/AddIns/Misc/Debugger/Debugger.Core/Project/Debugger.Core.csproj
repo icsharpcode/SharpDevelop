@@ -55,7 +55,6 @@
     <Compile Include="Src\Debugger\ExceptionEventArgs.cs" />
     <Compile Include="Src\Debugger\Exceptions.cs" />
     <Compile Include="Src\Debugger\IExpirable.cs" />
-    <Compile Include="Src\Debugger\IMutable.cs" />
     <Compile Include="Src\Debugger\Internal\ManagedCallback.cs" />
     <Compile Include="Src\Debugger\Internal\ManagedCallbackProxy.cs" />
     <Compile Include="Src\Debugger\Internal\ManagedCallbackSwitch.cs" />

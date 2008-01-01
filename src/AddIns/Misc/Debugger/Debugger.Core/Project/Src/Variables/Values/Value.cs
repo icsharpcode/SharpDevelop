@@ -34,7 +34,7 @@ namespace Debugger
 	/// called and internal value is neutred, new copy will be obatined)
 	/// </para>
 	/// </remarks>
-	public partial class Value: DebuggerObject, IExpirable, IMutable
+	public partial class Value: DebuggerObject, IExpirable
 	{
 		string name;
 		Process process;
@@ -44,9 +44,6 @@ namespace Debugger
 		
 		/// <summary> Occurs when the Value can not be used anymore </summary>
 		public event EventHandler Expired;
-		
-		/// <summary> Occurs when the Value have potentialy changed </summary>
-		public event EventHandler<ProcessEventArgs> Changed;
 		
 		bool isExpired = false;
 		
@@ -181,7 +178,6 @@ namespace Debugger
 		               string name,
 		               Expression expression,
 		               IExpirable[] expireDependencies,
-		               IMutable[] mutateDependencies,
 		               CorValueGetter corValueGetter)
 		{
 			this.name = name;
@@ -202,10 +198,6 @@ namespace Debugger
 				AddExpireDependency(exp);
 			}
 			
-			foreach(IMutable mut in mutateDependencies) {
-				AddMutateDependency(mut);
-			}
-			
 			this.corValueGetter = corValueGetter;
 		}
 		
@@ -223,27 +215,6 @@ namespace Debugger
 			if (!isExpired) {
 				isExpired = true;
 				OnExpired(new ValueEventArgs(this));
-			}
-		}
-		
-		void AddMutateDependency(IMutable dependency)
-		{
-			dependency.Changed += delegate { NotifyChange(); };
-		}
-		
-		internal void NotifyChange()
-		{
-			cache = null;
-			if (!isExpired) {
-				OnChanged(new ValueEventArgs(this));
-			}
-		}
-		
-		/// <summary> Is called when the value changes </summary>
-		protected virtual void OnChanged(ProcessEventArgs e)
-		{
-			if (Changed != null) {
-				Changed(this, e);
 			}
 		}
 		

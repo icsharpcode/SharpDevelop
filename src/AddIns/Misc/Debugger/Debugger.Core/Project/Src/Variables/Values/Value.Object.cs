@@ -57,7 +57,6 @@ namespace Debugger
 					fieldInfo
 				),
 				new IExpirable[] {objectInstance},
-				new IMutable[] {objectInstance},
 				delegate { return GetFieldCorValue(objectInstance, fieldInfo); }
 			);
 		}
@@ -124,7 +123,6 @@ namespace Debugger
 					objectInstance.Expression,
 					propertyInfo
 				),
-				dependencies.ToArray(),
 				dependencies.ToArray(),
 				delegate { return Value.InvokeMethod(objectInstance, propertyInfo.GetMethod, arguments).RawCorValue; }
 			);

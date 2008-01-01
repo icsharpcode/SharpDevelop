@@ -13,21 +13,12 @@ namespace Debugger
 	/// Unique identifier of the state of the debugee.
 	/// Changes when debuggee is stepped, but not when properity is evaluated.
 	/// </summary>
-	public class DebugeeState: IExpirable, IMutable
+	public class DebugeeState: IExpirable
 	{
 		Process process;
 		bool hasExpired = false;
 		
 		public event EventHandler Expired;
-		
-		public event EventHandler<ProcessEventArgs> Changed {
-			add {
-				process.DebuggeeStateChanged += value;
-			}
-			remove {
-				process.DebuggeeStateChanged -= value;
-			}
-		}
 		
 		[Debugger.Tests.Ignore]
 		public Process Process {
