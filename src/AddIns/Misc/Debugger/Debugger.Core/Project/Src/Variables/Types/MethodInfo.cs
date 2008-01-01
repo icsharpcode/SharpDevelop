@@ -99,29 +99,5 @@ namespace Debugger
 			}
 			throw new DebuggerException("Not found");
 		}
-		
-		/// <summary>
-		/// Synchronously invoke the method of an a given object
-		/// </summary>
-		public Value Invoke(Value objectInstance, Value[] arguments)
-		{
-			return Eval.InvokeMethod(
-				this,
-				this.IsStatic ? null : objectInstance,
-				arguments ?? new Value[0]
-			);
-		}
-		
-		/// <summary>
-		/// Asynchronously invoke the method of an a given object
-		/// </summary>
-		public Eval AsyncInvoke(Value objectInstance, Value[] arguments)
-		{
-			return Eval.AsyncInvokeMethod(
-				this,
-				this.IsStatic ? null : objectInstance,
-				arguments ?? new Value[0]
-			);
-		}
 	}
 }

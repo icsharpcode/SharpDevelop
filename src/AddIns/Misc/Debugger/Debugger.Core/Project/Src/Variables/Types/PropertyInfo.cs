@@ -68,63 +68,17 @@ namespace Debugger
 		}
 		
 		/// <summary> Get the get accessor of the property </summary>
-		public MethodInfo GetGetMethod()
-		{
-			return getMethod;
+		public MethodInfo GetMethod {
+			get {
+				return getMethod;
+			}
 		}
 		
 		/// <summary> Get the set accessor of the property </summary>
-		public MethodInfo GetSetMethod()
-		{
-			return setMethod;
-		}
-		
-		/// <summary> Get the value of the property using the get accessor </summary>
-		public Value GetValue(Value objectInstance)
-		{
-			return GetValue(objectInstance, null);
-		}
-		
-		/// <summary> Get the value of indexer property </summary>
-		public Value GetValue(Value objectInstance, Value[] parameters)
-		{
-			if (getMethod == null) throw new CannotGetValueException("Property does not have a get method");
-			parameters = parameters ?? new Value[0];
-			
-			List<Value> dependencies = new List<Value>();
-			dependencies.Add(objectInstance);
-			dependencies.AddRange(parameters);
-			
-			return new Value(
-				this.Process,
-				this.Name,
-				new Ast.PropertyReferenceExpression(
-					new Ast.IdentifierExpression("parent"), // TODO
-					this
-				),
-				dependencies.ToArray(),
-				dependencies.ToArray(),
-				delegate { return getMethod.Invoke(objectInstance, parameters).RawCorValue; }
-			);
-		}
-		
-		/// <summary> Set the value of the property using the set accessor </summary>
-		public Value SetValue(Value objectInstance, Value newValue)
-		{
-			return SetValue(objectInstance, newValue, null);
-		}
-		
-		/// <summary> Set the value of indexer property </summary>
-		public Value SetValue(Value objectInstance, Value newValue, Value[] parameters)
-		{
-			if (setMethod == null) throw new CannotGetValueException("Property does not have a set method");
-			
-			parameters = parameters ?? new Value[0];
-			Value[] allParams = new Value[1 + parameters.Length];
-			allParams[0] = newValue;
-			parameters.CopyTo(allParams, 1);
-			
-			return setMethod.Invoke(objectInstance, allParams);
+		public MethodInfo SetMethod {
+			get {
+				return setMethod;
+			}
 		}
 	}
 }

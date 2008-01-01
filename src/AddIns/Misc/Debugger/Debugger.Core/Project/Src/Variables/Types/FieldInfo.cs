@@ -68,49 +68,5 @@ namespace Debugger
 		{
 			this.fieldProps = fieldProps;
 		}
-		
-		/// <summary>
-		/// Given an object of correct type, get the value of this field
-		/// </summary>
-		public Value GetValue(Value objectInstance) {
-			return new Value(
-				this.Process,
-				this.Name,
-				new Ast.FieldReferenceExpression(
-					new Ast.IdentifierExpression("parent"), // TODO
-					this
-				),
-				new IExpirable[] {objectInstance},
-				new IMutable[] {objectInstance},
-				delegate { return GetCorValue(objectInstance); }
-			);
-		}
-		
-		ICorDebugValue GetCorValue(Value objectInstance)
-		{
-			if (!DeclaringType.IsInstanceOfType(objectInstance)) {
-				throw new CannotGetValueException("Object is not of type " + DeclaringType.FullName);
-			}
-			
-			// Current frame is used to resolve context specific static values (eg. ThreadStatic)
-			ICorDebugFrame curFrame = null;
-			if (this.Process.IsPaused &&
-			    this.Process.SelectedThread != null &&
-			    this.Process.SelectedThread.LastFunction != null && 
-			    this.Process.SelectedThread.LastFunction.CorILFrame != null) {
-				
-				curFrame = this.Process.SelectedThread.LastFunction.CorILFrame.CastTo<ICorDebugFrame>();
-			}
-			
-			try {
-				if (this.IsStatic) {
-					return DeclaringType.CorType.GetStaticFieldValue(MetadataToken, curFrame);
-				} else {
-					return objectInstance.CorObjectValue.GetFieldValue(DeclaringType.CorType.Class, MetadataToken);
-				}
-			} catch {
-				throw new CannotGetValueException("Can not get value of field");
-			}
-		}
 	}
 }

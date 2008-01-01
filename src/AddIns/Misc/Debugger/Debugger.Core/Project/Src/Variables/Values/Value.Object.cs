@@ -9,6 +9,8 @@ using System;
 using System.Collections.Generic;
 using Debugger.Wrappers.CorDebug;
 
+using Ast = ICSharpCode.NRefactory.Ast;
+
 namespace Debugger
 {
 	// This part of the class provides support for classes and structures
@@ -32,6 +34,166 @@ namespace Debugger
 		}
 		
 		/// <summary>
+		/// Get the value of given field.
+		/// Field may be static
+		/// </summary>
+		public Value GetFieldValue(FieldInfo fieldInfo)
+		{
+			return Value.GetFieldValue(this, fieldInfo);
+		}
+		
+		/// <summary>
+		/// Get the value of given field.
+		/// objectInstance must not be null.
+		/// Field may be static
+		/// </summary>
+		public static Value GetFieldValue(Value objectInstance, FieldInfo fieldInfo)
+		{
+			return new Value(
+				objectInstance.Process,
+				fieldInfo.Name,
+				new Ast.FieldReferenceExpression(
+					new Ast.IdentifierExpression("parent"), // TODO
+					fieldInfo
+				),
+				new IExpirable[] {objectInstance},
+				new IMutable[] {objectInstance},
+				delegate { return GetFieldCorValue(objectInstance, fieldInfo); }
+			);
+		}
+		
+		static ICorDebugValue GetFieldCorValue(Value objectInstance, FieldInfo fieldInfo)
+		{
+			if (!fieldInfo.DeclaringType.IsInstanceOfType(objectInstance)) {
+				throw new CannotGetValueException("Object is not of type " + fieldInfo.DeclaringType.FullName);
+			}
+			
+			// Current frame is used to resolve context specific static values (eg. ThreadStatic)
+			ICorDebugFrame curFrame = null;
+			if (objectInstance.Process.IsPaused &&
+			    objectInstance.Process.SelectedThread != null &&
+			    objectInstance.Process.SelectedThread.LastFunction != null && 
+			    objectInstance.Process.SelectedThread.LastFunction.CorILFrame != null) {
+				
+				curFrame = objectInstance.Process.SelectedThread.LastFunction.CorILFrame.CastTo<ICorDebugFrame>();
+			}
+			
+			try {
+				if (fieldInfo.IsStatic) {
+					return fieldInfo.DeclaringType.CorType.GetStaticFieldValue(fieldInfo.MetadataToken, curFrame);
+				} else {
+					return objectInstance.CorObjectValue.GetFieldValue(fieldInfo.DeclaringType.CorType.Class, fieldInfo.MetadataToken);
+				}
+			} catch {
+				throw new CannotGetValueException("Can not get value of field");
+			}
+		}
+		
+		/// <summary> Get the value of the property using the get accessor </summary>
+		public Value GetPropertyValue(PropertyInfo propertyInfo)
+		{
+			return GetPropertyValue(this, propertyInfo, null);
+		}
+		
+		/// <summary> Get the value of the property using the get accessor </summary>
+		public Value GetPropertyValue(PropertyInfo propertyInfo, Value[] arguments)
+		{
+			return GetPropertyValue(this, propertyInfo, arguments);
+		}
+		
+		/// <summary> Get the value of the property using the get accessor </summary>
+		public static Value GetPropertyValue(Value objectInstance, PropertyInfo propertyInfo)
+		{
+			return GetPropertyValue(objectInstance, propertyInfo, null);
+		}
+		
+		/// <summary> Get the value of the property using the get accessor </summary>
+		public static Value GetPropertyValue(Value objectInstance, PropertyInfo propertyInfo, Value[] arguments)
+		{
+			if (propertyInfo.GetMethod == null) throw new CannotGetValueException("Property does not have a get method");
+			arguments = arguments ?? new Value[0];
+			
+			List<Value> dependencies = new List<Value>();
+			dependencies.Add(objectInstance);
+			dependencies.AddRange(arguments);
+			
+			return new Value(
+				objectInstance.Process,
+				propertyInfo.Name,
+				new Ast.PropertyReferenceExpression(
+					new Ast.IdentifierExpression("parent"), // TODO
+					propertyInfo
+				),
+				dependencies.ToArray(),
+				dependencies.ToArray(),
+				delegate { return Value.InvokeMethod(objectInstance, propertyInfo.GetMethod, arguments).RawCorValue; }
+			);
+		}
+		
+		/// <summary> Set the value of the property using the set accessor </summary>
+		public Value SetPropertyValue(PropertyInfo propertyInfo, Value newValue)
+		{
+			return SetPropertyValue(this, propertyInfo, null, newValue);
+		}
+		
+		/// <summary> Set the value of the property using the set accessor </summary>
+		public Value SetPropertyValue(PropertyInfo propertyInfo, Value[] arguments, Value newValue)
+		{
+			return SetPropertyValue(this, propertyInfo, arguments, newValue);
+		}
+		
+		/// <summary> Set the value of the property using the set accessor </summary>
+		public static Value SetPropertyValue(Value objectInstance, PropertyInfo propertyInfo, Value newValue)
+		{
+			return SetPropertyValue(objectInstance, propertyInfo, null, newValue);
+		}
+		
+		/// <summary> Set the value of the property using the set accessor </summary>
+		public static Value SetPropertyValue(Value objectInstance, PropertyInfo propertyInfo, Value[] arguments, Value newValue)
+		{
+			if (propertyInfo.SetMethod == null) throw new CannotGetValueException("Property does not have a set method");
+			
+			arguments = arguments ?? new Value[0];
+			Value[] allParams = new Value[1 + arguments.Length];
+			allParams[0] = newValue;
+			arguments.CopyTo(allParams, 1);
+			
+			return Value.InvokeMethod(objectInstance, propertyInfo.SetMethod, allParams);
+		}
+		
+		/// <summary> Synchronously invoke the method </summary>
+		public Value InvokeMethod(MethodInfo methodInfo, params Value[] arguments)
+		{
+			return InvokeMethod(this, methodInfo, arguments);
+		}
+		
+		/// <summary> Synchronously invoke the method </summary>
+		public static Value InvokeMethod(Value objectInstance, MethodInfo methodInfo, params Value[] arguments)
+		{
+			return Eval.InvokeMethod(
+				methodInfo,
+				methodInfo.IsStatic ? null : objectInstance,
+				arguments ?? new Value[0]
+			);
+		}
+		
+		/// <summary> Asynchronously invoke the method </summary>
+		public Eval AsyncInvokeMethod(MethodInfo methodInfo, params Value[] arguments)
+		{
+			return AsyncInvokeMethod(this, methodInfo, arguments);
+		}
+		
+		/// <summary> Asynchronously invoke the method </summary>
+		public static Eval AsyncInvokeMethod(Value objectInstance, MethodInfo methodInfo, params Value[] arguments)
+		{
+			return Eval.AsyncInvokeMethod(
+				methodInfo,
+				methodInfo.IsStatic ? null : objectInstance,
+				arguments ?? new Value[0]
+			);
+		}
+		
+		/// <summary>
 		/// Get a field or property of an object with a given name.
 		/// </summary>
 		public Value GetMember(string name)
@@ -40,10 +202,10 @@ namespace Debugger
 			while (currentType != null) {
 				foreach(MemberInfo memberInfo in currentType.GetMember(name, BindingFlags.All)) {
 					if (memberInfo is FieldInfo) {
-						return ((FieldInfo)memberInfo).GetValue(this);
+						return this.GetFieldValue((FieldInfo)memberInfo);
 					}
 					if (memberInfo is PropertyInfo) {
-						return ((PropertyInfo)memberInfo).GetValue(this);
+						return this.GetPropertyValue((PropertyInfo)memberInfo);
 					}
 				}
 				currentType = currentType.BaseType;
@@ -78,10 +240,10 @@ namespace Debugger
 			DebugType currentType = type ?? this.Type;
 			while (currentType != null) {
 				foreach(FieldInfo field in currentType.GetFields(bindingFlags)) {
-					yield return field.GetValue(this);
+					yield return this.GetFieldValue(field);
 				}
 				foreach(PropertyInfo property in currentType.GetProperties(bindingFlags)) {
-					yield return property.GetValue(this);
+					yield return this.GetPropertyValue(property);
 				}
 				if (type == null) {
 					currentType = currentType.BaseType;
