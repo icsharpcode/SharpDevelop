@@ -37,7 +37,6 @@
                 <Name>i</Name>
                 <IsNull>False</IsNull>
                 <AsString>1</AsString>
-                <Expression>i</Expression>
                 <HasExpired>False</HasExpired>
                 <Type>System.Int32</Type>
               </Value>
@@ -74,19 +73,18 @@
             <Count>1</Count>
             <Items>
               <Value>
-                <IsArray>False</IsArray>
-                <ArrayLenght exception="Value is not an array" />
-                <ArrayRank exception="Value is not an array" />
-                <ArrayDimensions exception="Value is not an array" />
-                <IsObject>False</IsObject>
-                <IsPrimitive>True</IsPrimitive>
-                <IsInteger>True</IsInteger>
-                <PrimitiveValue>1</PrimitiveValue>
+                <IsArray exception="Value has expired" />
+                <ArrayLenght exception="Value has expired" />
+                <ArrayRank exception="Value has expired" />
+                <ArrayDimensions exception="Value has expired" />
+                <IsObject exception="Value has expired" />
+                <IsPrimitive exception="Value has expired" />
+                <IsInteger exception="Value has expired" />
+                <PrimitiveValue exception="Value has expired" />
                 <Name>i</Name>
-                <IsNull>False</IsNull>
-                <AsString>1</AsString>
-                <Expression>i</Expression>
-                <HasExpired>False</HasExpired>
+                <IsNull exception="Value has expired" />
+                <AsString exception="Value has expired" />
+                <HasExpired>True</HasExpired>
                 <Type>System.Int32</Type>
               </Value>
             </Items>
@@ -152,19 +150,18 @@
             <Count>1</Count>
             <Items>
               <Value>
-                <IsArray>False</IsArray>
-                <ArrayLenght exception="Value is not an array" />
-                <ArrayRank exception="Value is not an array" />
-                <ArrayDimensions exception="Value is not an array" />
-                <IsObject>False</IsObject>
-                <IsPrimitive>True</IsPrimitive>
-                <IsInteger>True</IsInteger>
-                <PrimitiveValue>1</PrimitiveValue>
+                <IsArray exception="Value has expired" />
+                <ArrayLenght exception="Value has expired" />
+                <ArrayRank exception="Value has expired" />
+                <ArrayDimensions exception="Value has expired" />
+                <IsObject exception="Value has expired" />
+                <IsPrimitive exception="Value has expired" />
+                <IsInteger exception="Value has expired" />
+                <PrimitiveValue exception="Value has expired" />
                 <Name>i</Name>
-                <IsNull>False</IsNull>
-                <AsString>1</AsString>
-                <Expression>i</Expression>
-                <HasExpired>False</HasExpired>
+                <IsNull exception="Value has expired" />
+                <AsString exception="Value has expired" />
+                <HasExpired>True</HasExpired>
                 <Type>System.Int32</Type>
               </Value>
             </Items>
@@ -241,9 +238,8 @@
                 <Name>i</Name>
                 <IsNull exception="Value has expired" />
                 <AsString exception="Value has expired" />
-                <Expression>i</Expression>
                 <HasExpired>True</HasExpired>
-                <Type exception="Value has expired" />
+                <Type>System.Int32</Type>
               </Value>
             </Items>
           </ValueCollection>

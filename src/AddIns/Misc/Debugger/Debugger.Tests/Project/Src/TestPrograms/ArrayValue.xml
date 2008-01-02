@@ -18,7 +18,6 @@
         <Name>array</Name>
         <IsNull>False</IsNull>
         <AsString>{System.Int32[]}</AsString>
-        <Expression>array</Expression>
         <HasExpired>False</HasExpired>
         <Type>System.Int32[]</Type>
       </Value>
@@ -39,7 +38,6 @@
             <Name>[0]</Name>
             <IsNull>False</IsNull>
             <AsString>0</AsString>
-            <Expression>array[0]</Expression>
             <HasExpired>False</HasExpired>
             <Type>System.Int32</Type>
           </Value>
@@ -55,7 +53,6 @@
             <Name>[1]</Name>
             <IsNull>False</IsNull>
             <AsString>1</AsString>
-            <Expression>array[1]</Expression>
             <HasExpired>False</HasExpired>
             <Type>System.Int32</Type>
           </Value>
@@ -71,7 +68,6 @@
             <Name>[2]</Name>
             <IsNull>False</IsNull>
             <AsString>2</AsString>
-            <Expression>array[2]</Expression>
             <HasExpired>False</HasExpired>
             <Type>System.Int32</Type>
           </Value>
@@ -87,7 +83,6 @@
             <Name>[3]</Name>
             <IsNull>False</IsNull>
             <AsString>3</AsString>
-            <Expression>array[3]</Expression>
             <HasExpired>False</HasExpired>
             <Type>System.Int32</Type>
           </Value>
@@ -103,7 +98,6 @@
             <Name>[4]</Name>
             <IsNull>False</IsNull>
             <AsString>4</AsString>
-            <Expression>array[4]</Expression>
             <HasExpired>False</HasExpired>
             <Type>System.Int32</Type>
           </Value>

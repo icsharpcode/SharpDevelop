@@ -38,7 +38,6 @@
                 <Name>i</Name>
                 <IsNull>False</IsNull>
                 <AsString>0</AsString>
-                <Expression>i</Expression>
                 <HasExpired>False</HasExpired>
                 <Type>System.Int32</Type>
               </Value>
@@ -54,7 +53,6 @@
                 <Name>s</Name>
                 <IsNull>False</IsNull>
                 <AsString>S</AsString>
-                <Expression>s</Expression>
                 <HasExpired>False</HasExpired>
                 <Type>System.String</Type>
               </Value>
@@ -70,7 +68,6 @@
                 <Name>args</Name>
                 <IsNull>False</IsNull>
                 <AsString>{System.String[]}</AsString>
-                <Expression>args</Expression>
                 <HasExpired>False</HasExpired>
                 <Type>System.String[]</Type>
               </Value>
@@ -118,7 +115,6 @@
                 <Name>i</Name>
                 <IsNull>False</IsNull>
                 <AsString>1</AsString>
-                <Expression>i</Expression>
                 <HasExpired>False</HasExpired>
                 <Type>System.Int32</Type>
               </Value>
@@ -134,7 +130,6 @@
                 <Name>s</Name>
                 <IsNull>False</IsNull>
                 <AsString>S</AsString>
-                <Expression>s</Expression>
                 <HasExpired>False</HasExpired>
                 <Type>System.String</Type>
               </Value>
@@ -150,7 +145,6 @@
                 <Name>args</Name>
                 <IsNull>False</IsNull>
                 <AsString>{System.String[]}</AsString>
-                <Expression>args</Expression>
                 <HasExpired>False</HasExpired>
                 <Type>System.String[]</Type>
               </Value>
@@ -198,7 +192,6 @@
                 <Name>i</Name>
                 <IsNull>False</IsNull>
                 <AsString>2</AsString>
-                <Expression>i</Expression>
                 <HasExpired>False</HasExpired>
                 <Type>System.Int32</Type>
               </Value>
@@ -214,7 +207,6 @@
                 <Name>s</Name>
                 <IsNull>True</IsNull>
                 <AsString>&lt;null&gt;</AsString>
-                <Expression>s</Expression>
                 <HasExpired>False</HasExpired>
                 <Type>System.String</Type>
               </Value>
@@ -230,7 +222,6 @@
                 <Name>args</Name>
                 <IsNull>False</IsNull>
                 <AsString>{System.String[]}</AsString>
-                <Expression>args</Expression>
                 <HasExpired>False</HasExpired>
                 <Type>System.String[]</Type>
               </Value>
@@ -267,7 +258,6 @@
             <Name>this</Name>
             <IsNull>False</IsNull>
             <AsString>{Debugger.Tests.TestPrograms.FunctionArgumentVariables}</AsString>
-            <Expression>this</Expression>
             <HasExpired>False</HasExpired>
             <Type>Debugger.Tests.TestPrograms.FunctionArgumentVariables</Type>
           </Value>
@@ -295,7 +285,6 @@
                 <Name>i</Name>
                 <IsNull>False</IsNull>
                 <AsString>0</AsString>
-                <Expression>i</Expression>
                 <HasExpired>False</HasExpired>
                 <Type>System.Int32</Type>
               </Value>
@@ -311,7 +300,6 @@
                 <Name>s</Name>
                 <IsNull>False</IsNull>
                 <AsString>S</AsString>
-                <Expression>s</Expression>
                 <HasExpired>False</HasExpired>
                 <Type>System.String</Type>
               </Value>
@@ -327,7 +315,6 @@
                 <Name>args</Name>
                 <IsNull>False</IsNull>
                 <AsString>{System.String[]}</AsString>
-                <Expression>args</Expression>
                 <HasExpired>False</HasExpired>
                 <Type>System.String[]</Type>
               </Value>
@@ -364,7 +351,6 @@
             <Name>this</Name>
             <IsNull>False</IsNull>
             <AsString>{Debugger.Tests.TestPrograms.FunctionArgumentVariables}</AsString>
-            <Expression>this</Expression>
             <HasExpired>False</HasExpired>
             <Type>Debugger.Tests.TestPrograms.FunctionArgumentVariables</Type>
           </Value>
@@ -392,7 +378,6 @@
                 <Name>i</Name>
                 <IsNull>False</IsNull>
                 <AsString>1</AsString>
-                <Expression>i</Expression>
                 <HasExpired>False</HasExpired>
                 <Type>System.Int32</Type>
               </Value>
@@ -408,7 +393,6 @@
                 <Name>s</Name>
                 <IsNull>False</IsNull>
                 <AsString>S</AsString>
-                <Expression>s</Expression>
                 <HasExpired>False</HasExpired>
                 <Type>System.String</Type>
               </Value>
@@ -424,7 +408,6 @@
                 <Name>args</Name>
                 <IsNull>False</IsNull>
                 <AsString>{System.String[]}</AsString>
-                <Expression>args</Expression>
                 <HasExpired>False</HasExpired>
                 <Type>System.String[]</Type>
               </Value>
@@ -461,7 +444,6 @@
             <Name>this</Name>
             <IsNull>False</IsNull>
             <AsString>{Debugger.Tests.TestPrograms.FunctionArgumentVariables}</AsString>
-            <Expression>this</Expression>
             <HasExpired>False</HasExpired>
             <Type>Debugger.Tests.TestPrograms.FunctionArgumentVariables</Type>
           </Value>
@@ -489,7 +471,6 @@
                 <Name>i</Name>
                 <IsNull>False</IsNull>
                 <AsString>2</AsString>
-                <Expression>i</Expression>
                 <HasExpired>False</HasExpired>
                 <Type>System.Int32</Type>
               </Value>
@@ -505,7 +486,6 @@
                 <Name>s</Name>
                 <IsNull>True</IsNull>
                 <AsString>&lt;null&gt;</AsString>
-                <Expression>s</Expression>
                 <HasExpired>False</HasExpired>
                 <Type>System.String</Type>
               </Value>
@@ -521,7 +501,6 @@
                 <Name>args</Name>
                 <IsNull>False</IsNull>
                 <AsString>{System.String[]}</AsString>
-                <Expression>args</Expression>
                 <HasExpired>False</HasExpired>
                 <Type>System.String[]</Type>
               </Value>

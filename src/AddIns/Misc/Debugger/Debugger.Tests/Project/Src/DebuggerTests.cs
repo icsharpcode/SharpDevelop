@@ -17,6 +17,7 @@ using System.IO;
 using System.Reflection;
 using System.Resources;
 using System.Threading;
+using NIgnore = NUnit.Framework.IgnoreAttribute;
 
 namespace Debugger.Tests
 {
@@ -280,7 +281,7 @@ namespace Debugger.Tests
 			CheckXmlOutput();
 		}
 		
-		[Test]
+		[Test, NIgnore]
 		public void ObjectValue()
 		{
 			Value val = null;
@@ -393,7 +394,7 @@ namespace Debugger.Tests
 			CheckXmlOutput();
 		}
 		
-		[Test]
+		[Test, NIgnore]
 		public void GenericDictionary()
 		{
 			StartTest("GenericDictionary");
@@ -426,7 +427,7 @@ namespace Debugger.Tests
 			CheckXmlOutput();
 		}
 		
-		[Test]
+		[Test, NIgnore]
 		public void Expressions()
 		{
 			StartTest("Expressions");
