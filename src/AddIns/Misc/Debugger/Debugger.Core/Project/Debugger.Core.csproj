@@ -326,6 +326,7 @@
     <Compile Include="Src\Wrappers\CorDebug\ICorDebugArrayValue.cs" />
     <Compile Include="Src\Wrappers\CorDebug\ICorDebugChain.cs" />
     <Compile Include="Src\Wrappers\CorDebug\ICorDebugChainEnum.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\ICorDebugClass2.cs" />
     <Compile Include="Src\Wrappers\CorDebug\ICorDebugFrame.cs" />
     <Compile Include="Src\Wrappers\CorDebug\ICorDebugFrameEnum.cs" />
     <Compile Include="Src\Wrappers\CorDebug\ICorDebugGenericValue.cs" />

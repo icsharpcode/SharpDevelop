@@ -119,6 +119,12 @@ namespace Debugger
 			}
 		}
 		
+		DebugType type;
+		
+		public DebugType Type {
+			get { return type; }
+		}
+		
 		internal Function(Thread thread, FrameID frameID, ICorDebugILFrame corILFrame)
 		{
 			this.process = thread.Process;
@@ -129,6 +135,9 @@ namespace Debugger
 			module = process.GetModule(corFunction.Module);
 			
 			methodProps = module.MetaData.GetMethodProps(corFunction.Token);
+			
+			List<ICorDebugType> corTypes = corILFrame.CastTo<ICorDebugILFrame2>().EnumerateTypeParameters().ToList();
+			type = DebugType.Create(this.Process, corFunction.Class, corTypes);
 			
 			// Force some callback when function steps out so that we can expire it
 			stepOutStepper = new Stepper(this, "Function Tracker");

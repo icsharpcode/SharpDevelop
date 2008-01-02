@@ -140,6 +140,25 @@ namespace Debugger.Interop.MetaData
         void GetNativeCallConvFromSig([In] IntPtr pvSig, [In] uint cbSig, out uint pCallConv);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
         void IsGlobal([In] uint pd, out int pbGlobal);
+        
+        // IMetaDataImport2
+        
+        [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
+        void EnumGenericParams([In, Out] ref IntPtr hEnum, uint tk, out uint rGenericParams, uint cMax, out uint pcGenericParams);    
+
+        void GetGenericParamProps();
+        
+        void GetMethodSpecProps();
+
+        void EnumGenericParamConstraints();
+        
+        void GetGenericParamConstraintProps();
+        
+        void GetPEKind();
+
+        void GetVersionString();
+
+        void EnumMethodSpecs();
     }
 }
 

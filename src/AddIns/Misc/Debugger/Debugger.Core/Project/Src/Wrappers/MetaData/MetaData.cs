@@ -230,6 +230,28 @@ namespace Debugger.Wrappers.MetaData
 			metaData.FindTypeDefByName(typeName, enclosingClassToken, out typeDefToken);
 			return GetTypeDefProps(typeDefToken);
 		}
+		
+		public int GetGenericParamCount(uint typeDef_methodDef)
+		{
+			int count = 0;
+			foreach(uint genericParam in EnumGenericParams(typeDef_methodDef)) count++;
+			return count;
+		}
+		
+		public IEnumerable<uint> EnumGenericParams(uint typeDef_methodDef)
+		{
+			IntPtr enumerator = IntPtr.Zero;
+			while(true) {
+				uint token;
+				uint fetched;
+				metaData.EnumGenericParams(ref enumerator, typeDef_methodDef, out token, 1, out fetched);
+				if (fetched == 0) {
+					metaData.CloseEnum(enumerator);
+					break;
+				}
+				yield return token;
+			}
+		}
 	}
 }
 

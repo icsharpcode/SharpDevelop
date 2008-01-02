@@ -39,6 +39,11 @@ namespace Debugger.Wrappers.CorDebug
 				return corTypes[0];
 			}
 		}
+		
+		public List<ICorDebugType> ToList()
+		{
+			return new List<ICorDebugType>(this.Enumerator);
+		}
 	}
 }
 

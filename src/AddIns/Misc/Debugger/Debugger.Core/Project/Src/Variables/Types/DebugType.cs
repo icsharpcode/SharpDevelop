@@ -242,6 +242,33 @@ namespace Debugger
 			this.fullName = GetFullName();
 		}
 		
+		static internal DebugType Create(Process process, ICorDebugClass corClass, List<ICorDebugType> typeArguments)
+		{
+			MetaData metaData = process.GetModule(corClass.Module).MetaData;
+			
+			bool isValueType = false;
+			uint superClassToken = metaData.GetTypeDefProps(corClass.Token).SuperClassToken;
+			if ((superClassToken & 0xFF000000) == 0x02000000) { // TypeDef
+				if (metaData.GetTypeDefProps(superClassToken).Name == "System.ValueType") {
+					isValueType = true;
+				}
+			}
+			if ((superClassToken & 0xFF000000) == 0x01000000) { // TypeRef
+				if (metaData.GetTypeRefProps(superClassToken).Name == "System.ValueType") {
+					isValueType = true;
+				}
+			}
+			
+			int getArgsCount = metaData.GetGenericParamCount(corClass.Token);
+			
+			ICorDebugType corType = corClass.CastTo<ICorDebugClass2>().GetParameterizedType(
+				isValueType ? (uint)CorElementType.VALUETYPE : (uint)CorElementType.CLASS,
+				typeArguments.GetRange(0, getArgsCount).ToArray()
+			);
+			
+			return Create(process, corType);
+		}
+		
 		/// <summary> Obtains instance of DebugType. Same types will return identical instance. </summary>
 		static internal DebugType Create(Process process, ICorDebugType corType)
 		{
