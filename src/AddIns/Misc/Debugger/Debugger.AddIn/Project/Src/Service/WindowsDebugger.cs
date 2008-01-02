@@ -198,7 +198,7 @@ namespace ICSharpCode.SharpDevelop.Services
 				MessageService.ShowMessage(errorNotDebugging, "${res:XML.MainMenu.DebugMenu.StepInto}");
 				return;
 			}
-			if (debuggedProcess.SelectedFunction == null || debuggedProcess.IsRunning) {
+			if (debuggedProcess.SelectedStackFrame == null || debuggedProcess.IsRunning) {
 				MessageService.ShowMessage(errorCannotStepNoActiveFunction, "${res:XML.MainMenu.DebugMenu.StepInto}");
 			} else {
 				debuggedProcess.StepInto();
@@ -211,7 +211,7 @@ namespace ICSharpCode.SharpDevelop.Services
 				MessageService.ShowMessage(errorNotDebugging, "${res:XML.MainMenu.DebugMenu.StepOver}");
 				return;
 			}
-			if (debuggedProcess.SelectedFunction == null || debuggedProcess.IsRunning) {
+			if (debuggedProcess.SelectedStackFrame == null || debuggedProcess.IsRunning) {
 				MessageService.ShowMessage(errorCannotStepNoActiveFunction, "${res:XML.MainMenu.DebugMenu.StepOver}");
 			} else {
 				debuggedProcess.StepOver();
@@ -224,7 +224,7 @@ namespace ICSharpCode.SharpDevelop.Services
 				MessageService.ShowMessage(errorNotDebugging, "${res:XML.MainMenu.DebugMenu.StepOut}");
 				return;
 			}
-			if (debuggedProcess.SelectedFunction == null || debuggedProcess.IsRunning) {
+			if (debuggedProcess.SelectedStackFrame == null || debuggedProcess.IsRunning) {
 				MessageService.ShowMessage(errorCannotStepNoActiveFunction, "${res:XML.MainMenu.DebugMenu.StepOut}");
 			} else {
 				debuggedProcess.StepOut();
@@ -289,8 +289,8 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		public bool CanSetInstructionPointer(string filename, int line, int column)
 		{
-			if (debuggedProcess != null && debuggedProcess.IsPaused && debuggedProcess.SelectedFunction != null) {
-				SourcecodeSegment seg = debuggedProcess.SelectedFunction.CanSetIP(filename, line, column);
+			if (debuggedProcess != null && debuggedProcess.IsPaused && debuggedProcess.SelectedStackFrame != null) {
+				SourcecodeSegment seg = debuggedProcess.SelectedStackFrame.CanSetIP(filename, line, column);
 				return seg != null;
 			} else {
 				return false;
@@ -300,7 +300,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		public bool SetInstructionPointer(string filename, int line, int column)
 		{
 			if (CanSetInstructionPointer(filename, line, column)) {
-				SourcecodeSegment seg = debuggedProcess.SelectedFunction.SetIP(filename, line, column);
+				SourcecodeSegment seg = debuggedProcess.SelectedStackFrame.SetIP(filename, line, column);
 				return seg != null;
 			} else {
 				return false;

@@ -69,7 +69,7 @@
     <Compile Include="Src\Variables\FixedItem.cs" />
     <Compile Include="Src\Variables\ListItem.cs" />
     <Compile Include="Src\Variables\ListItemEventArgs.cs" />
-    <Compile Include="Src\Variables\FunctionItem.cs" />
+    <Compile Include="Src\Variables\StackFrameItem.cs" />
     <Compile Include="Src\Variables\TreeViewNode.cs" />
     <Compile Include="Src\Variables\ValueItem.cs" />
   </ItemGroup>

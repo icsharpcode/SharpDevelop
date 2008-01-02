@@ -7,7 +7,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading;
 
@@ -34,7 +33,7 @@ namespace Debugger
 		bool hasExpired = false;
 		bool nativeThreadExited = false;
 
-		Function selectedFunction;
+		StackFrame selectedFunction;
 		
 		public event EventHandler Expired;
 		public event EventHandler<ThreadEventArgs> NativeThreadExited;
@@ -103,7 +102,7 @@ namespace Debugger
 		
 		void Expire()
 		{
-			Debug.Assert(!this.hasExpired);
+			System.Diagnostics.Debug.Assert(!this.hasExpired);
 			
 			process.TraceMessage("Thread " + this.ID + " expired");
 			this.hasExpired = true;
@@ -184,10 +183,10 @@ namespace Debugger
 		public bool InterceptCurrentException()
 		{
 			if (!CorThread.Is<ICorDebugThread2>()) return false; // Is the debuggee .NET 2.0?
-			if (LastFunction == null) return false; // Is frame available?  It is not at StackOverflow
+			if (LastStackFrame == null) return false; // Is frame available?  It is not at StackOverflow
 			
 			try {
-				CorThread.CastTo<ICorDebugThread2>().InterceptCurrentException(LastFunction.CorILFrame.CastTo<ICorDebugFrame>());
+				CorThread.CastTo<ICorDebugThread2>().InterceptCurrentException(LastStackFrame.CorILFrame.CastTo<ICorDebugFrame>());
 				return true;
 			} catch (COMException e) {
 				// 0x80131C02: Cannot intercept this exception
@@ -236,13 +235,13 @@ namespace Debugger
 			}
 		}
 		
-		public IList<Function> Callstack {
+		public IList<StackFrame> Callstack {
 			get {
-				return new List<Function>(CallstackEnum).AsReadOnly();
+				return new List<StackFrame>(CallstackEnum).AsReadOnly();
 			}
 		}
 		
-		IEnumerable<Function> CallstackEnum {
+		IEnumerable<StackFrame> CallstackEnum {
 			get {
 				process.AssertPaused();
 				
@@ -250,31 +249,31 @@ namespace Debugger
 					if (corChain.IsManaged == 0) continue; // Only managed ones
 					foreach(ICorDebugFrame corFrame in corChain.EnumerateFrames().Enumerator) {
 						if (corFrame.Is<ICorDebugILFrame>()) {
-							Function function;
+							StackFrame stackFrame;
 							try {
-								function = GetFunctionFromCache(new FrameID(corChain.Index, corFrame.Index), corFrame.As<ICorDebugILFrame>());
+								stackFrame = GetStackFrameFromCache(new FrameID(corChain.Index, corFrame.Index), corFrame.As<ICorDebugILFrame>());
 							} catch (COMException) { // TODO
 								continue;
 							};
-							yield return function;
+							yield return stackFrame;
 						}
 					}
 				}
 			}
 		}
 		
-		Dictionary<FrameID, Function> functionCache = new Dictionary<FrameID, Function>();
+		Dictionary<FrameID, StackFrame> functionCache = new Dictionary<FrameID, StackFrame>();
 		
-		Function GetFunctionFromCache(FrameID frameID, ICorDebugILFrame corFrame)
+		StackFrame GetStackFrameFromCache(FrameID frameID, ICorDebugILFrame corFrame)
 		{
-			Function function;
-			if (functionCache.TryGetValue(frameID, out function) && !function.HasExpired) {
-				function.CorILFrame = corFrame;
-				return function;
+			StackFrame stackFrame;
+			if (functionCache.TryGetValue(frameID, out stackFrame) && !stackFrame.HasExpired) {
+				stackFrame.CorILFrame = corFrame;
+				return stackFrame;
 			} else {
-				function = new Function(this, frameID, corFrame);
-				functionCache[frameID] = function;
-				return function;
+				stackFrame = new StackFrame(this, frameID, corFrame);
+				functionCache[frameID] = stackFrame;
+				return stackFrame;
 			}
 		}
 		
@@ -326,34 +325,34 @@ namespace Debugger
 			
 			ICorDebugFrame lastFrame = corFrameEnum.Next();
 			
-			// Check the token of the current function - function can change if there are multiple handlers for an event
-			Function function;
+			// Check the token of the current stack frame - stack frame can change if there are multiple handlers for an event
+			StackFrame stackFrame;
 			if (lastFrame != null && 
-			    functionCache.TryGetValue(new FrameID((uint)maxChainIndex, (uint)maxFrameIndex), out function) &&
-			    function.MethodInfo.MetadataToken != lastFrame.FunctionToken) {
+			    functionCache.TryGetValue(new FrameID((uint)maxChainIndex, (uint)maxFrameIndex), out stackFrame) &&
+			    stackFrame.MethodInfo.MetadataToken != lastFrame.FunctionToken) {
 				
 				functionCache.Remove(new FrameID((uint)maxChainIndex, (uint)maxFrameIndex));
-				function.OnExpired(EventArgs.Empty);
+				stackFrame.OnExpired(EventArgs.Empty);
 			}
 
 			// Expire all functions behind the current maximum
 			// Multiple functions can expire at once (test case: Step out of Button1Click in simple winforms application)
-			List<KeyValuePair<FrameID, Function>> toBeRemoved = new List<KeyValuePair<FrameID, Function>>();
-			foreach(KeyValuePair<FrameID, Function> kvp in functionCache) {
+			List<KeyValuePair<FrameID, StackFrame>> toBeRemoved = new List<KeyValuePair<FrameID, StackFrame>>();
+			foreach(KeyValuePair<FrameID, StackFrame> kvp in functionCache) {
 				if ((kvp.Key.ChainIndex > maxChainIndex) ||
 				    (kvp.Key.ChainIndex == maxChainIndex && kvp.Key.FrameIndex > maxFrameIndex)) {
 					
 					toBeRemoved.Add(kvp);
 				}
 			}
-			foreach(KeyValuePair<FrameID, Function> kvp in toBeRemoved){
+			foreach(KeyValuePair<FrameID, StackFrame> kvp in toBeRemoved){
 				functionCache.Remove(kvp.Key);
 				kvp.Value.OnExpired(EventArgs.Empty);
 			}
 		}
 		
 		[Debugger.Tests.ToStringOnly]
-		public Function SelectedFunction {
+		public StackFrame SelectedStackFrame {
 			get {
 				return selectedFunction;
 			}
@@ -367,11 +366,11 @@ namespace Debugger
 		}
 		
 		[Debugger.Tests.ToStringOnly]
-		public Function LastFunctionWithLoadedSymbols {
+		public StackFrame LastStackFrameWithLoadedSymbols {
 			get {
-				foreach (Function function in CallstackEnum) {
-					if (function.HasSymbols) {
-						return function;
+				foreach (StackFrame stackFrame in CallstackEnum) {
+					if (stackFrame.HasSymbols) {
+						return stackFrame;
 					}
 				}
 				return null;
@@ -379,34 +378,34 @@ namespace Debugger
 		}
 		
 		/// <summary>
-		/// Returns the most recent function on callstack.
+		/// Returns the most recent stack frame on callstack.
 		/// Returns null if callstack is empty.
 		/// </summary>
 		[Debugger.Tests.ToStringOnly]
-		public Function LastFunction {
+		public StackFrame LastStackFrame {
 			get {
-				foreach(Function function in CallstackEnum) {
-					return function;
+				foreach(StackFrame stackFrame in CallstackEnum) {
+					return stackFrame;
 				}
 				return null;
 			}
 		}
 		
 		/// <summary>
-		/// Returns the first function that was called on thread
+		/// Returns the first stack frame that was called on thread
 		/// </summary>
 		[Debugger.Tests.ToStringOnly]
-		public Function FirstFunction {
+		public StackFrame FirstStackFrame {
 			get {
-				Function first = null;
-				foreach(Function function in Callstack) {
-					first = function;
+				StackFrame first = null;
+				foreach(StackFrame stackFrame in Callstack) {
+					first = stackFrame;
 				}
 				return first;
 			}
 		}
 		
-		public bool IsLastFunctionNative {
+		public bool IsLastStackFrameNative {
 			get {
 				process.AssertPaused();
 				return corThread.ActiveChain.IsManaged == 0;

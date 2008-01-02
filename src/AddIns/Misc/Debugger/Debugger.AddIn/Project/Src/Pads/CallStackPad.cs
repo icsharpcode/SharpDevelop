@@ -106,10 +106,10 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		void CallStackListItemActivate(object sender, EventArgs e)
 		{
 			if (debuggedProcess.IsPaused) {
-				Function f = (Function)(callStackList.SelectedItems[0].Tag);
+				StackFrame f = (StackFrame)(callStackList.SelectedItems[0].Tag);
 				if (f.HasSymbols) {
 					if (debuggedProcess.SelectedThread != null) {
-						debuggedProcess.SelectedThread.SelectedFunction = f;
+						debuggedProcess.SelectedThread.SelectedStackFrame = f;
 						debuggedProcess.OnDebuggeeStateChanged(); // Force refresh of pads
 					}
 				} else {
@@ -131,7 +131,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			callStackList.BeginUpdate();
 			callStackList.Items.Clear();
 			if (debuggedProcess != null && debuggedProcess.SelectedThread != null && debuggedProcess.IsPaused) {
-				foreach (Function f in debuggedProcess.SelectedThread.Callstack) {
+				foreach (StackFrame f in debuggedProcess.SelectedThread.Callstack) {
 					ListViewItem item;
 					if (f.HasSymbols || showExternalMethods) {
 						// Show the method in the list

@@ -64,10 +64,10 @@ namespace Debugger
 			ICorDebugFrame curFrame = null;
 			if (objectInstance.Process.IsPaused &&
 			    objectInstance.Process.SelectedThread != null &&
-			    objectInstance.Process.SelectedThread.LastFunction != null && 
-			    objectInstance.Process.SelectedThread.LastFunction.CorILFrame != null) {
+			    objectInstance.Process.SelectedThread.LastStackFrame != null && 
+			    objectInstance.Process.SelectedThread.LastStackFrame.CorILFrame != null) {
 				
-				curFrame = objectInstance.Process.SelectedThread.LastFunction.CorILFrame.CastTo<ICorDebugFrame>();
+				curFrame = objectInstance.Process.SelectedThread.LastStackFrame.CorILFrame.CastTo<ICorDebugFrame>();
 			}
 			
 			try {

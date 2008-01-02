@@ -5,8 +5,8 @@
     <ModuleLoaded symbols="False">mscorlib.dll</ModuleLoaded>
     <ModuleLoaded symbols="True">Generics.exe</ModuleLoaded>
     <DebuggingPaused>Break</DebuggingPaused>
-    <ObjectDump name="SelectedFunction">
-      <Function>
+    <ObjectDump name="SelectedStackFrame">
+      <StackFrame>
         <MethodInfo>
           <MethodInfo>
             <IsPrivate>False</IsPrivate>
@@ -88,11 +88,11 @@
             <Items />
           </ValueCollection>
         </LocalVariables>
-      </Function>
+      </StackFrame>
     </ObjectDump>
     <DebuggingPaused>Break</DebuggingPaused>
-    <ObjectDump name="SelectedFunction">
-      <Function>
+    <ObjectDump name="SelectedStackFrame">
+      <StackFrame>
         <MethodInfo>
           <MethodInfo>
             <IsPrivate>False</IsPrivate>
@@ -174,11 +174,11 @@
             <Items />
           </ValueCollection>
         </LocalVariables>
-      </Function>
+      </StackFrame>
     </ObjectDump>
     <DebuggingPaused>Break</DebuggingPaused>
-    <ObjectDump name="SelectedFunction">
-      <Function>
+    <ObjectDump name="SelectedStackFrame">
+      <StackFrame>
         <MethodInfo>
           <MethodInfo>
             <IsPrivate>False</IsPrivate>
@@ -244,11 +244,11 @@
             <Items />
           </ValueCollection>
         </LocalVariables>
-      </Function>
+      </StackFrame>
     </ObjectDump>
     <DebuggingPaused>Break</DebuggingPaused>
-    <ObjectDump name="SelectedFunction">
-      <Function>
+    <ObjectDump name="SelectedStackFrame">
+      <StackFrame>
         <MethodInfo>
           <MethodInfo>
             <IsPrivate>False</IsPrivate>
@@ -314,11 +314,11 @@
             <Items />
           </ValueCollection>
         </LocalVariables>
-      </Function>
+      </StackFrame>
     </ObjectDump>
     <DebuggingPaused>Break</DebuggingPaused>
-    <ObjectDump name="SelectedFunction">
-      <Function>
+    <ObjectDump name="SelectedStackFrame">
+      <StackFrame>
         <MethodInfo>
           <MethodInfo>
             <IsPrivate>False</IsPrivate>
@@ -379,11 +379,11 @@
             <Items />
           </ValueCollection>
         </LocalVariables>
-      </Function>
+      </StackFrame>
     </ObjectDump>
     <DebuggingPaused>Break</DebuggingPaused>
-    <ObjectDump name="SelectedFunction">
-      <Function>
+    <ObjectDump name="SelectedStackFrame">
+      <StackFrame>
         <MethodInfo>
           <MethodInfo>
             <IsPrivate>False</IsPrivate>
@@ -444,11 +444,11 @@
             <Items />
           </ValueCollection>
         </LocalVariables>
-      </Function>
+      </StackFrame>
     </ObjectDump>
     <DebuggingPaused>Break</DebuggingPaused>
-    <ObjectDump name="SelectedFunction">
-      <Function>
+    <ObjectDump name="SelectedStackFrame">
+      <StackFrame>
         <MethodInfo>
           <MethodInfo>
             <IsPrivate>False</IsPrivate>
@@ -514,11 +514,11 @@
             <Items />
           </ValueCollection>
         </LocalVariables>
-      </Function>
+      </StackFrame>
     </ObjectDump>
     <DebuggingPaused>Break</DebuggingPaused>
-    <ObjectDump name="SelectedFunction">
-      <Function>
+    <ObjectDump name="SelectedStackFrame">
+      <StackFrame>
         <MethodInfo>
           <MethodInfo>
             <IsPrivate>False</IsPrivate>
@@ -584,7 +584,7 @@
             <Items />
           </ValueCollection>
         </LocalVariables>
-      </Function>
+      </StackFrame>
     </ObjectDump>
     <DebuggingPaused>Break</DebuggingPaused>
     <ProcessExited />

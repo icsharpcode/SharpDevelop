@@ -15,7 +15,7 @@ namespace Debugger
 	{
 		public enum StepperOperation {Idle, StepIn, StepOver, StepOut};
 			
-		Function function;
+		StackFrame stackFrame;
 		string name;
 		ICorDebugStepper corStepper;
 		StepperOperation operation = StepperOperation.Idle;
@@ -26,13 +26,13 @@ namespace Debugger
 		[Debugger.Tests.Ignore]
 		public Process Process {
 			get {
-				return function.Process;
+				return stackFrame.Process;
 			}
 		}
 		
-		public Function Function {
+		public StackFrame StackFrame {
 			get {
-				return function;
+				return stackFrame;
 			}
 		}
 		
@@ -66,20 +66,20 @@ namespace Debugger
 			}
 		}
 		
-		public Stepper(Function function, string name): this(function)
+		public Stepper(StackFrame stackFrame, string name): this(stackFrame)
 		{
 			this.name = name;
 		}
 		
-		public Stepper(Function function)
+		public Stepper(StackFrame stackFrame)
 		{
-			this.function = function;
+			this.stackFrame = stackFrame;
 			
-			corStepper = function.CorILFrame.CreateStepper();
+			corStepper = stackFrame.CorILFrame.CreateStepper();
 			
 			JustMyCode = true;
 			
-			function.Thread.Steppers.Add(this);
+			stackFrame.Thread.Steppers.Add(this);
 		}
 		
 		protected internal virtual void OnStepComplete() {
@@ -114,7 +114,7 @@ namespace Debugger
 		
 		public override string ToString()
 		{
-			return string.Format("{0} in {1} pause={2} \"{3}\"", Operation, Function.ToString(), PauseWhenComplete, name);
+			return string.Format("{0} in {1} pause={2} \"{3}\"", Operation, StackFrame.ToString(), PauseWhenComplete, name);
 		}
 	}
 }

@@ -39,20 +39,20 @@ namespace Debugger
 			Value runtimeValue = new Value(process, corValue);
 			message = runtimeValue.GetMember("_message").AsString;
 			
-			if (thread.LastFunctionWithLoadedSymbols != null) {
-				location = thread.LastFunctionWithLoadedSymbols.NextStatement;
+			if (thread.LastStackFrameWithLoadedSymbols != null) {
+				location = thread.LastStackFrameWithLoadedSymbols.NextStatement;
 			}
 			
 			callstack = "";
 			int callstackItems = 0;
-			foreach(Function function in thread.Callstack) {
+			foreach(StackFrame stackFrame in thread.Callstack) {
 				if (callstackItems >= 100) {
 					callstack += "...\n";
 					break;
 				}
 				
-				SourcecodeSegment loc = function.NextStatement;
-				callstack += function.MethodInfo.Name + "()";
+				SourcecodeSegment loc = stackFrame.NextStatement;
+				callstack += stackFrame.MethodInfo.Name + "()";
 				if (loc != null) {
 					callstack += " - " + loc.SourceFullFilename + ":" + loc.StartLine + "," + loc.StartColumn;
 				}

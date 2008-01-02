@@ -176,8 +176,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		public override void RefreshPad()
 		{
 			DateTime start = Debugger.Util.HighPrecisionTimer.Now;
-			if (debuggedProcess != null && debuggedProcess.SelectedFunction != null) {
-				TreeViewNode.UpdateNodes(localVarList, localVarList.Root.Children, new FunctionItem(debuggedProcess.SelectedFunction).SubItems);
+			if (debuggedProcess != null && debuggedProcess.SelectedStackFrame != null) {
+				TreeViewNode.UpdateNodes(localVarList, localVarList.Root.Children, new StackFrameItem(debuggedProcess.SelectedStackFrame).SubItems);
 			} else {
 				TreeViewNode.UpdateNodes(localVarList, localVarList.Root.Children, new ListItem[0]);
 			}

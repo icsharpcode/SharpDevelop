@@ -5,8 +5,8 @@
     <ModuleLoaded symbols="False">mscorlib.dll</ModuleLoaded>
     <ModuleLoaded symbols="True">FunctionLifetime.exe</ModuleLoaded>
     <DebuggingPaused>Break</DebuggingPaused>
-    <ObjectDump name="Function">
-      <Function>
+    <ObjectDump name="StackFrame">
+      <StackFrame>
         <MethodInfo>
           <MethodInfo>
             <IsPrivate>True</IsPrivate>
@@ -57,11 +57,11 @@
             <Items />
           </ValueCollection>
         </LocalVariables>
-      </Function>
+      </StackFrame>
     </ObjectDump>
     <DebuggingPaused>Break</DebuggingPaused>
-    <ObjectDump name="Function">
-      <Function>
+    <ObjectDump name="StackFrame">
+      <StackFrame>
         <MethodInfo>
           <MethodInfo>
             <IsPrivate>True</IsPrivate>
@@ -112,10 +112,10 @@
             <Items />
           </ValueCollection>
         </LocalVariables>
-      </Function>
+      </StackFrame>
     </ObjectDump>
-    <ObjectDump name="SubFunction">
-      <Function>
+    <ObjectDump name="SubStackFrame">
+      <StackFrame>
         <MethodInfo>
           <MethodInfo>
             <IsPrivate>True</IsPrivate>
@@ -150,11 +150,11 @@
             <Items />
           </ValueCollection>
         </LocalVariables>
-      </Function>
+      </StackFrame>
     </ObjectDump>
     <DebuggingPaused>Break</DebuggingPaused>
-    <ObjectDump name="Function">
-      <Function>
+    <ObjectDump name="StackFrame">
+      <StackFrame>
         <MethodInfo>
           <MethodInfo>
             <IsPrivate>True</IsPrivate>
@@ -205,11 +205,11 @@
             <Items />
           </ValueCollection>
         </LocalVariables>
-      </Function>
+      </StackFrame>
     </ObjectDump>
     <DebuggingPaused>Break</DebuggingPaused>
     <ObjectDump name="Main">
-      <Function>
+      <StackFrame>
         <MethodInfo>
           <MethodInfo>
             <IsPrivate>False</IsPrivate>
@@ -244,10 +244,10 @@
             <Items />
           </ValueCollection>
         </LocalVariables>
-      </Function>
+      </StackFrame>
     </ObjectDump>
-    <ObjectDump name="Function">
-      <Function>
+    <ObjectDump name="StackFrame">
+      <StackFrame>
         <MethodInfo>
           <MethodInfo>
             <IsPrivate>True</IsPrivate>
@@ -261,7 +261,7 @@
         </MethodInfo>
         <HasSymbols>True</HasSymbols>
         <HasExpired>True</HasExpired>
-        <NextStatement exception="Function has expired" />
+        <NextStatement exception="StackFrame has expired" />
         <ThisValue exception="Static method does not have 'this'." />
         <ContaingClassVariables>
           <ValueCollection>
@@ -269,7 +269,7 @@
             <Items />
           </ValueCollection>
         </ContaingClassVariables>
-        <ArgumentCount exception="Function has expired" />
+        <ArgumentCount exception="StackFrame has expired" />
         <Arguments>
           <ValueCollection>
             <Count>1</Count>
@@ -298,7 +298,7 @@
             <Items />
           </ValueCollection>
         </LocalVariables>
-      </Function>
+      </StackFrame>
     </ObjectDump>
     <ProcessExited />
   </Test>

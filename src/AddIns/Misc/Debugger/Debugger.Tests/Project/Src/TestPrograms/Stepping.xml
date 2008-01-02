@@ -6,8 +6,8 @@
     <ModuleLoaded symbols="True">Stepping.exe</ModuleLoaded>
     <ModuleLoaded symbols="False">System.dll</ModuleLoaded>
     <DebuggingPaused>Break</DebuggingPaused>
-    <ObjectDump name="SelectedFunction">
-      <Function>
+    <ObjectDump name="SelectedStackFrame">
+      <StackFrame>
         <MethodInfo>
           <MethodInfo>
             <IsPrivate>False</IsPrivate>
@@ -42,11 +42,11 @@
             <Items />
           </ValueCollection>
         </LocalVariables>
-      </Function>
+      </StackFrame>
     </ObjectDump>
     <DebuggingPaused>StepComplete</DebuggingPaused>
-    <ObjectDump name="SelectedFunction">
-      <Function>
+    <ObjectDump name="SelectedStackFrame">
+      <StackFrame>
         <MethodInfo>
           <MethodInfo>
             <IsPrivate>False</IsPrivate>
@@ -81,14 +81,14 @@
             <Items />
           </ValueCollection>
         </LocalVariables>
-      </Function>
+      </StackFrame>
     </ObjectDump>
     <ModuleLoaded symbols="False">System.Configuration.dll</ModuleLoaded>
     <ModuleLoaded symbols="False">System.Xml.dll</ModuleLoaded>
     <LogMessage>1\r\n</LogMessage>
     <DebuggingPaused>StepComplete</DebuggingPaused>
-    <ObjectDump name="SelectedFunction">
-      <Function>
+    <ObjectDump name="SelectedStackFrame">
+      <StackFrame>
         <MethodInfo>
           <MethodInfo>
             <IsPrivate>False</IsPrivate>
@@ -123,11 +123,11 @@
             <Items />
           </ValueCollection>
         </LocalVariables>
-      </Function>
+      </StackFrame>
     </ObjectDump>
     <DebuggingPaused>StepComplete</DebuggingPaused>
-    <ObjectDump name="SelectedFunction">
-      <Function>
+    <ObjectDump name="SelectedStackFrame">
+      <StackFrame>
         <MethodInfo>
           <MethodInfo>
             <IsPrivate>False</IsPrivate>
@@ -162,11 +162,11 @@
             <Items />
           </ValueCollection>
         </LocalVariables>
-      </Function>
+      </StackFrame>
     </ObjectDump>
     <DebuggingPaused>StepComplete</DebuggingPaused>
-    <ObjectDump name="SelectedFunction">
-      <Function>
+    <ObjectDump name="SelectedStackFrame">
+      <StackFrame>
         <MethodInfo>
           <MethodInfo>
             <IsPrivate>False</IsPrivate>
@@ -201,12 +201,12 @@
             <Items />
           </ValueCollection>
         </LocalVariables>
-      </Function>
+      </StackFrame>
     </ObjectDump>
     <LogMessage>2\r\n</LogMessage>
     <DebuggingPaused>StepComplete</DebuggingPaused>
-    <ObjectDump name="SelectedFunction">
-      <Function>
+    <ObjectDump name="SelectedStackFrame">
+      <StackFrame>
         <MethodInfo>
           <MethodInfo>
             <IsPrivate>False</IsPrivate>
@@ -241,13 +241,13 @@
             <Items />
           </ValueCollection>
         </LocalVariables>
-      </Function>
+      </StackFrame>
     </ObjectDump>
     <LogMessage>3\r\n</LogMessage>
     <LogMessage>4\r\n</LogMessage>
     <DebuggingPaused>StepComplete</DebuggingPaused>
-    <ObjectDump name="SelectedFunction">
-      <Function>
+    <ObjectDump name="SelectedStackFrame">
+      <StackFrame>
         <MethodInfo>
           <MethodInfo>
             <IsPrivate>False</IsPrivate>
@@ -282,11 +282,11 @@
             <Items />
           </ValueCollection>
         </LocalVariables>
-      </Function>
+      </StackFrame>
     </ObjectDump>
     <DebuggingPaused>StepComplete</DebuggingPaused>
-    <ObjectDump name="SelectedFunction">
-      <Function>
+    <ObjectDump name="SelectedStackFrame">
+      <StackFrame>
         <MethodInfo>
           <MethodInfo>
             <IsPrivate>False</IsPrivate>
@@ -321,12 +321,12 @@
             <Items />
           </ValueCollection>
         </LocalVariables>
-      </Function>
+      </StackFrame>
     </ObjectDump>
     <LogMessage>5\r\n</LogMessage>
     <DebuggingPaused>StepComplete</DebuggingPaused>
-    <ObjectDump name="SelectedFunction">
-      <Function>
+    <ObjectDump name="SelectedStackFrame">
+      <StackFrame>
         <MethodInfo>
           <MethodInfo>
             <IsPrivate>False</IsPrivate>
@@ -361,7 +361,7 @@
             <Items />
           </ValueCollection>
         </LocalVariables>
-      </Function>
+      </StackFrame>
     </ObjectDump>
     <ProcessExited />
   </Test>

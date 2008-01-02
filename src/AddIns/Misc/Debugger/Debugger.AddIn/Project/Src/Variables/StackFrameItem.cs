@@ -42,13 +42,13 @@ using System.Collections.Generic;
 
 namespace Debugger
 {
-	public class FunctionItem: ListItem
+	public class StackFrameItem: ListItem
 	{
-		Function function;
+		StackFrame stackFrame;
 		
-		public Function Function {
+		public StackFrame StackFrame {
 			get {
-				return function;
+				return stackFrame;
 			}
 		}
 		
@@ -60,7 +60,7 @@ namespace Debugger
 		
 		public override string Name {
 			get {
-				return function.MethodInfo.Name;
+				return stackFrame.MethodInfo.Name;
 			}
 		}
 		
@@ -91,17 +91,17 @@ namespace Debugger
 		public override IList<ListItem> SubItems {
 			get {
 				List<ListItem> ret = new List<ListItem>();
-				foreach(Value val in function.LocalVariables) {
+				foreach(Value val in stackFrame.LocalVariables) {
 					ret.Add(new ValueItem(val));
 				}
 				return ret.AsReadOnly();
 			}
 		}
 		
-		public FunctionItem(Function function)
+		public StackFrameItem(StackFrame stackFrame)
 		{
-			this.function = function;
-			this.function.Process.DebuggeeStateChanged += delegate {
+			this.stackFrame = stackFrame;
+			this.stackFrame.Process.DebuggeeStateChanged += delegate {
 				this.OnChanged(new ListItemEventArgs(this));
 			};
 		}

@@ -17,13 +17,13 @@ namespace Debugger
 {
 	class EvaluateAstVisitor: NotImplementedAstVisitor
 	{
-		Function stackFrame;
+		StackFrame stackFrame;
 		
-		public Function StackFrame {
+		public StackFrame StackFrame {
 			get { return stackFrame; }
 		}
 		
-		public EvaluateAstVisitor(Function stackFrame)
+		public EvaluateAstVisitor(StackFrame stackFrame)
 		{
 			this.stackFrame = stackFrame;
 		}

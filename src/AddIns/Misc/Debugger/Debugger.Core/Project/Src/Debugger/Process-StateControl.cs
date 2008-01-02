@@ -62,12 +62,12 @@ namespace Debugger
 			}
 		}
 		
-		public Function SelectedFunction {
+		public StackFrame SelectedStackFrame {
 			get {
 				if (SelectedThread == null) {
 					return null;
 				} else {
-					return SelectedThread.SelectedFunction;
+					return SelectedThread.SelectedStackFrame;
 				}
 			}
 		}
@@ -99,12 +99,12 @@ namespace Debugger
 			}
 			
 			if (this.SelectedThread != null) {
-				// Disable all steppers - do not Deactivate since function tracking still needs them
+				// Disable all steppers - do not Deactivate since stack frame tracking still needs them
 				foreach(Stepper s in this.SelectedThread.Steppers) {
 					s.PauseWhenComplete = false;
 				}
 				
-				this.SelectedThread.SelectedFunction = this.SelectedThread.LastFunctionWithLoadedSymbols;
+				this.SelectedThread.SelectedStackFrame = this.SelectedThread.LastStackFrameWithLoadedSymbols;
 			}
 			
 			if (debuggeeStateChanged) {
@@ -151,17 +151,17 @@ namespace Debugger
 		
 		public void StepInto()
 		{
-			SelectedFunction.StepInto();
+			SelectedStackFrame.StepInto();
 		}
 		
 		public void StepOver()
 		{
-			SelectedFunction.StepOver();
+			SelectedStackFrame.StepOver();
 		}
 		
 		public void StepOut()
 		{
-			SelectedFunction.StepOut();
+			SelectedStackFrame.StepOut();
 		}
 	}
 }

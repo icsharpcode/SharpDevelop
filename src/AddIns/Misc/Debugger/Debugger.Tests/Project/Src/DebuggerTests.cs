@@ -96,39 +96,39 @@ namespace Debugger.Tests
 		{
 			StartTest("Stepping");
 			WaitForPause();
-			ObjectDump("SelectedFunction", process.SelectedFunction);
+			ObjectDump("SelectedStackFrame", process.SelectedStackFrame);
 			
 			process.StepOver(); // Debugger.Break
 			WaitForPause();
-			ObjectDump("SelectedFunction", process.SelectedFunction);
+			ObjectDump("SelectedStackFrame", process.SelectedStackFrame);
 			
 			process.StepOver(); // Debug.WriteLine 1
 			WaitForPause();
-			ObjectDump("SelectedFunction", process.SelectedFunction);
+			ObjectDump("SelectedStackFrame", process.SelectedStackFrame);
 			
 			process.StepInto(); // Method Sub
 			WaitForPause();
-			ObjectDump("SelectedFunction", process.SelectedFunction);
+			ObjectDump("SelectedStackFrame", process.SelectedStackFrame);
 			
 			process.StepInto(); // '{'
 			WaitForPause();
-			ObjectDump("SelectedFunction", process.SelectedFunction);
+			ObjectDump("SelectedStackFrame", process.SelectedStackFrame);
 			
 			process.StepInto(); // Debug.WriteLine 2
 			WaitForPause();
-			ObjectDump("SelectedFunction", process.SelectedFunction);
+			ObjectDump("SelectedStackFrame", process.SelectedStackFrame);
 			
 			process.StepOut(); // Method Sub
 			WaitForPause();
-			ObjectDump("SelectedFunction", process.SelectedFunction);
+			ObjectDump("SelectedStackFrame", process.SelectedStackFrame);
 			
 			process.StepOver(); // Method Sub
 			WaitForPause();
-			ObjectDump("SelectedFunction", process.SelectedFunction);
+			ObjectDump("SelectedStackFrame", process.SelectedStackFrame);
 			
 			process.StepOver(); // Method Sub2
 			WaitForPause();
-			ObjectDump("SelectedFunction", process.SelectedFunction);
+			ObjectDump("SelectedStackFrame", process.SelectedStackFrame);
 			
 			process.Continue();
 			process.WaitForExit();
@@ -164,7 +164,7 @@ namespace Debugger.Tests
 			for(int i = 0; i < 6; i++) {
 				process.Continue();
 				WaitForPause();
-				ObjectDump("SelectedFunction", process.SelectedFunction);
+				ObjectDump("SelectedStackFrame", process.SelectedStackFrame);
 			}
 			
 			process.Continue();
@@ -177,7 +177,7 @@ namespace Debugger.Tests
 		{
 			StartTest("FunctionLocalVariables");
 			WaitForPause();
-			ObjectDump("SelectedFunction", process.SelectedFunction);
+			ObjectDump("SelectedStackFrame", process.SelectedStackFrame);
 			
 			process.Continue();
 			process.WaitForExit();
@@ -187,27 +187,27 @@ namespace Debugger.Tests
 		[Test]
 		public void FunctionLifetime()
 		{
-			Function function;
+			StackFrame stackFrame;
 			
 			StartTest("FunctionLifetime");
 			WaitForPause();
-			function = process.SelectedFunction;
-			ObjectDump("Function", function);
+			stackFrame = process.SelectedStackFrame;
+			ObjectDump("StackFrame", stackFrame);
 			
 			process.Continue(); // Go to the SubFunction
 			WaitForPause();
-			ObjectDump("Function", function);
-			ObjectDump("SubFunction", process.SelectedFunction);
+			ObjectDump("StackFrame", stackFrame);
+			ObjectDump("SubStackFrame", process.SelectedStackFrame);
 			
 			process.Continue(); // Go back to Function
 			WaitForPause();
-			Assert.AreEqual(function, process.SelectedFunction);
-			ObjectDump("Function", function);
+			Assert.AreEqual(stackFrame, process.SelectedStackFrame);
+			ObjectDump("StackFrame", stackFrame);
 			
 			process.Continue(); // Setp out of function
 			WaitForPause();
-			ObjectDump("Main", process.SelectedFunction);
-			ObjectDump("Function", function);
+			ObjectDump("Main", process.SelectedStackFrame);
+			ObjectDump("StackFrame", stackFrame);
 			
 			process.Continue();
 			process.WaitForExit();
@@ -224,16 +224,16 @@ namespace Debugger.Tests
 			
 			StartTest("FunctionVariablesLifetime"); // 1 - Enter program
 			WaitForPause();
-			argument = process.SelectedFunction.GetArgument(0);
-			local = process.SelectedFunction.LocalVariables["local"];
-			@class = process.SelectedFunction.ContaingClassVariables["class"];
+			argument = process.SelectedStackFrame.GetArgument(0);
+			local = process.SelectedStackFrame.LocalVariables["local"];
+			@class = process.SelectedStackFrame.ContaingClassVariables["class"];
 			ObjectDump("argument", argument);
 			ObjectDump("local", local);
 			ObjectDump("@class", @class);
 			
 			process.Continue(); // 2 - Go to the SubFunction
 			WaitForPause();
-			localInSubFunction = process.SelectedFunction.LocalVariables["localInSubFunction"];
+			localInSubFunction = process.SelectedStackFrame.LocalVariables["localInSubFunction"];
 			ObjectDump("argument", argument);
 			ObjectDump("local", local);
 			ObjectDump("@class", @class);
@@ -252,7 +252,7 @@ namespace Debugger.Tests
 			ObjectDump("local", local);
 			ObjectDump("@class", @class);
 			ObjectDump("localInSubFunction", @localInSubFunction);
-			localInSubFunction = process.SelectedFunction.LocalVariables["localInSubFunction"];
+			localInSubFunction = process.SelectedStackFrame.LocalVariables["localInSubFunction"];
 			ObjectDump("localInSubFunction(new)", @localInSubFunction);
 			
 			process.Continue(); // 5 - Setp out of both functions
@@ -272,7 +272,7 @@ namespace Debugger.Tests
 		{
 			StartTest("ArrayValue");
 			WaitForPause();
-			Value array = process.SelectedFunction.LocalVariables["array"];
+			Value array = process.SelectedStackFrame.LocalVariables["array"];
 			ObjectDump("array", array);
 			ObjectDump("array elements", array.GetArrayElements());
 			
@@ -288,7 +288,7 @@ namespace Debugger.Tests
 			
 			StartTest("ObjectValue");
 			WaitForPause();
-			val = process.SelectedFunction.LocalVariables["val"];
+			val = process.SelectedStackFrame.LocalVariables["val"];
 			ObjectDump("val", val);
 			ObjectDump("val members", val.GetMembers(null, Debugger.BindingFlags.All));
 			//ObjectDump("typeof(val)", val.Type);
@@ -382,9 +382,9 @@ namespace Debugger.Tests
 			StartTest("SetIP");
 			WaitForPause();
 			
-			Assert.IsNotNull(process.SelectedFunction.CanSetIP("SetIP.cs", 16, 0));
-			Assert.IsNull(process.SelectedFunction.CanSetIP("SetIP.cs", 100, 0));
-			process.SelectedFunction.SetIP("SetIP.cs", 16, 0);
+			Assert.IsNotNull(process.SelectedStackFrame.CanSetIP("SetIP.cs", 16, 0));
+			Assert.IsNull(process.SelectedStackFrame.CanSetIP("SetIP.cs", 100, 0));
+			process.SelectedStackFrame.SetIP("SetIP.cs", 16, 0);
 			process.Continue();
 			WaitForPause();
 			Assert.AreEqual("1\r\n1\r\n", log);
@@ -399,8 +399,8 @@ namespace Debugger.Tests
 		{
 			StartTest("GenericDictionary");
 			WaitForPause();
-			ObjectDump("dict", process.SelectedFunction.LocalVariables["dict"]);
-			ObjectDump("dict members", process.SelectedFunction.LocalVariables["dict"].GetMembers(null, BindingFlags.All));
+			ObjectDump("dict", process.SelectedStackFrame.LocalVariables["dict"]);
+			ObjectDump("dict members", process.SelectedStackFrame.LocalVariables["dict"].GetMembers(null, BindingFlags.All));
 			
 			process.Continue();
 			process.WaitForExit();
@@ -433,10 +433,10 @@ namespace Debugger.Tests
 			StartTest("Expressions");
 			WaitForPause();
 			
-			ObjectDump("Variables", process.SelectedFunction.Variables);
-			ObjectDump("array", process.SelectedFunction.Variables["array"].GetArrayElements());
-			ObjectDump("array2", process.SelectedFunction.Variables["array2"].GetArrayElements());
-			ObjectDump("this", process.SelectedFunction.ThisValue.GetMembers());
+			ObjectDump("Variables", process.SelectedStackFrame.Variables);
+			ObjectDump("array", process.SelectedStackFrame.Variables["array"].GetArrayElements());
+			ObjectDump("array2", process.SelectedStackFrame.Variables["array2"].GetArrayElements());
+			ObjectDump("this", process.SelectedStackFrame.ThisValue.GetMembers());
 			
 			process.Continue();
 			process.WaitForExit();
@@ -450,7 +450,7 @@ namespace Debugger.Tests
 			
 			for(int i = 0; i < 8; i++) {
 				WaitForPause();
-				ObjectDump("SelectedFunction", process.SelectedFunction);
+				ObjectDump("SelectedStackFrame", process.SelectedStackFrame);
 				process.Continue();
 			}
 			

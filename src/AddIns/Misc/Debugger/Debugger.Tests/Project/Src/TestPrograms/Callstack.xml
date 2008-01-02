@@ -9,7 +9,7 @@
       <ReadOnlyCollection_x0060_1>
         <Count>3</Count>
         <Items>
-          <Function>
+          <StackFrame>
             <MethodInfo>
               <MethodInfo>
                 <IsPrivate>True</IsPrivate>
@@ -44,8 +44,8 @@
                 <Items />
               </ValueCollection>
             </LocalVariables>
-          </Function>
-          <Function>
+          </StackFrame>
+          <StackFrame>
             <MethodInfo>
               <MethodInfo>
                 <IsPrivate>True</IsPrivate>
@@ -80,8 +80,8 @@
                 <Items />
               </ValueCollection>
             </LocalVariables>
-          </Function>
-          <Function>
+          </StackFrame>
+          <StackFrame>
             <MethodInfo>
               <MethodInfo>
                 <IsPrivate>False</IsPrivate>
@@ -116,7 +116,7 @@
                 <Items />
               </ValueCollection>
             </LocalVariables>
-          </Function>
+          </StackFrame>
         </Items>
       </ReadOnlyCollection_x0060_1>
     </ObjectDump>
@@ -125,7 +125,7 @@
       <ReadOnlyCollection_x0060_1>
         <Count>2</Count>
         <Items>
-          <Function>
+          <StackFrame>
             <MethodInfo>
               <MethodInfo>
                 <IsPrivate>True</IsPrivate>
@@ -160,8 +160,8 @@
                 <Items />
               </ValueCollection>
             </LocalVariables>
-          </Function>
-          <Function>
+          </StackFrame>
+          <StackFrame>
             <MethodInfo>
               <MethodInfo>
                 <IsPrivate>False</IsPrivate>
@@ -196,7 +196,7 @@
                 <Items />
               </ValueCollection>
             </LocalVariables>
-          </Function>
+          </StackFrame>
         </Items>
       </ReadOnlyCollection_x0060_1>
     </ObjectDump>
@@ -205,7 +205,7 @@
       <ReadOnlyCollection_x0060_1>
         <Count>1</Count>
         <Items>
-          <Function>
+          <StackFrame>
             <MethodInfo>
               <MethodInfo>
                 <IsPrivate>False</IsPrivate>
@@ -240,7 +240,7 @@
                 <Items />
               </ValueCollection>
             </LocalVariables>
-          </Function>
+          </StackFrame>
         </Items>
       </ReadOnlyCollection_x0060_1>
     </ObjectDump>

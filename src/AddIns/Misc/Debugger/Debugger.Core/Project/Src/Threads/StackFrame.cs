@@ -16,10 +16,10 @@ using Debugger.Wrappers.MetaData;
 namespace Debugger
 {
 	/// <summary>
-	/// A function (or also a method or frame) which is being executed on
-	/// some thread. Use to obtain arguments or local variables.
+	/// A stack frame which is being executed on some thread.
+	/// Use to obtain arguments or local variables.
 	/// </summary>
-	public class Function: DebuggerObject, IExpirable
+	public class StackFrame: DebuggerObject, IExpirable
 	{	
 		Process process;
 		
@@ -35,7 +35,7 @@ namespace Debugger
 		Thread thread;
 		FrameID frameID;
 		
-		/// <summary> The process in which this function is executed </summary>
+		/// <summary> The process in which this stack frame is executed </summary>
 		[Debugger.Tests.Ignore]
 		public Process Process {
 			get {
@@ -48,7 +48,7 @@ namespace Debugger
 			get { return methodInfo; }
 		}
 		
-		/// <summary> A thread in which the function is executed </summary>
+		/// <summary> A thread in which the stack frame is executed </summary>
 		[Debugger.Tests.Ignore]
 		public Thread Thread {
 			get {
@@ -56,7 +56,7 @@ namespace Debugger
 			}
 		}
 		
-		/// <summary> True if the function has symbols defined. 
+		/// <summary> True if the stack frame has symbols defined. 
 		/// (That is has accesss to the .pdb file) </summary>
 		public bool HasSymbols {
 			get {
@@ -64,29 +64,29 @@ namespace Debugger
 			}
 		}
 		
-		/// <summary> True if function stepped out and is not longer valid. </summary>
+		/// <summary> True if stack frame stepped out and is not longer valid. </summary>
 		public bool HasExpired {
 			get {
 				return steppedOut || this.MethodInfo.Module.Unloaded;
 			}
 		}
 		
-		/// <summary> Occurs when function expires and is no longer usable </summary>
+		/// <summary> Occurs when stack frame expires and is no longer usable </summary>
 		public event EventHandler Expired;
 		
-		/// <summary> Is called when function expires and is no longer usable </summary>
+		/// <summary> Is called when stack frame expires and is no longer usable </summary>
 		internal protected virtual void OnExpired(EventArgs e)
 		{
 			if (!steppedOut) {
 				steppedOut = true;
-				process.TraceMessage("Function " + this.ToString() + " expired");
+				process.TraceMessage("StackFrame " + this.ToString() + " expired");
 				if (Expired != null) {
 					Expired(this, e);
 				}
 			}
 		}
 		
-		internal Function(Thread thread, FrameID frameID, ICorDebugILFrame corILFrame)
+		internal StackFrame(Thread thread, FrameID frameID, ICorDebugILFrame corILFrame)
 		{
 			this.process = thread.Process;
 			this.thread = thread;
@@ -102,12 +102,12 @@ namespace Debugger
 			MethodProps methodProps = process.GetModule(corFunction.Module).MetaData.GetMethodProps(corFunction.Token);
 			this.methodInfo = new MethodInfo(debugType, methodProps);
 			                                 
-			// Force some callback when function steps out so that we can expire it
-			stepOutStepper = new Stepper(this, "Function Tracker");
+			// Force some callback when stack frame steps out so that we can expire it
+			stepOutStepper = new Stepper(this, "StackFrame Tracker");
 			stepOutStepper.StepOut();
 			stepOutStepper.PauseWhenComplete = false;
 			
-			process.TraceMessage("Function " + this.ToString() + " created");
+			process.TraceMessage("StackFrame " + this.ToString() + " created");
 		}
 		
 		/// <summary> Returns diagnostic description of the frame </summary>
@@ -118,7 +118,7 @@ namespace Debugger
 		
 		internal ICorDebugILFrame CorILFrame {
 			get {
-				if (HasExpired) throw new DebuggerException("Function has expired");
+				if (HasExpired) throw new DebuggerException("StackFrame has expired");
 				if (corILFramePauseSession != process.PauseSession) {
 					CorILFrame = thread.GetFrameAt(frameID).As<ICorDebugILFrame>();
 				}
@@ -151,10 +151,10 @@ namespace Debugger
 			Step(false);
 		}
 		
-		/// <summary> Step out of the function </summary>
+		/// <summary> Step out of the stack frame </summary>
 		public void StepOut()
 		{
-			new Stepper(this, "Function step out").StepOut();
+			new Stepper(this, "StackFrame step out").StepOut();
 			process.Continue();
 		}
 
@@ -172,12 +172,12 @@ namespace Debugger
 			}
 			
 			if (stepIn) {
-				new Stepper(this, "Function step in").StepIn(nextSt.StepRanges);
+				new Stepper(this, "StackFrame step in").StepIn(nextSt.StepRanges);
 				// Without JMC step in which ends in code without symblols is cotinued.
 				// The next step over ensures that we at least do step over.
 				new Stepper(this, "Safety step over").StepOver(nextSt.StepRanges);
 			} else {
-				new Stepper(this, "Function step over").StepOver(nextSt.StepRanges);
+				new Stepper(this, "StackFrame step over").StepOver(nextSt.StepRanges);
 			}
 			
 			process.Continue();
@@ -328,7 +328,7 @@ namespace Debugger
 			}
 		}
 		
-		/// <summary> Gets value of given name which is accessible from this function </summary>
+		/// <summary> Gets value of given name which is accessible from this stack frame </summary>
 		/// <returns> Null if not found </returns>
 		public Value GetValue(string name)
 		{
@@ -348,7 +348,7 @@ namespace Debugger
 		}
 		
 		/// <summary>
-		/// Gets all variables in the lexical scope of the function. 
+		/// Gets all variables in the lexical scope of the stack frame. 
 		/// That is, arguments, local variables and varables of the containing class.
 		/// </summary>
 		[Debugger.Tests.Ignore] // Accessible though others
@@ -392,7 +392,7 @@ namespace Debugger
 		
 		ICorDebugValue ThisCorValue {
 			get {
-				if (this.HasExpired) throw new CannotGetValueException("Function has expired");
+				if (this.HasExpired) throw new CannotGetValueException("StackFrame has expired");
 				try {
 					return CorILFrame.GetArgument(0);
 				} catch (COMException e) {
@@ -404,7 +404,7 @@ namespace Debugger
 		}
 		
 		/// <summary>
-		/// Gets all accessible members of the class that defines this function.
+		/// Gets all accessible members of the class that defines this stack frame.
 		/// </summary>
 		public ValueCollection ContaingClassVariables {
 			get {
@@ -438,10 +438,10 @@ namespace Debugger
 		
 		ICorDebugValue GetArgumentCorValue(int index)
 		{
-			if (this.HasExpired) throw new CannotGetValueException("Function has expired");
+			if (this.HasExpired) throw new CannotGetValueException("StackFrame has expired");
 			
 			try {
-				// Non-static functions include 'this' as first argument
+				// Non-static methods include 'this' as first argument
 				return CorILFrame.GetArgument((uint)(this.MethodInfo.IsStatic? index : (index + 1)));
 			} catch (COMException e) {
 				if ((uint)e.ErrorCode == 0x80131304) throw new CannotGetValueException("Unavailable in optimized code");
@@ -451,7 +451,7 @@ namespace Debugger
 		
 		ValueCollection argumentsCache;
 		
-		/// <summary> Gets all arguments of the function. </summary>
+		/// <summary> Gets all arguments of the stack frame. </summary>
 		public ValueCollection Arguments {
 			get {
 				if (argumentsCache == null) {
@@ -476,7 +476,7 @@ namespace Debugger
 		
 		ValueCollection localVariablesCache;
 		
-		/// <summary> Gets all local variables of the function. </summary>
+		/// <summary> Gets all local variables of the stack frame. </summary>
 		public ValueCollection LocalVariables {
 			get {
 				if (localVariablesCache == null) {
@@ -501,7 +501,7 @@ namespace Debugger
 		
 		ICorDebugValue GetCorValueOfLocalVariable(ISymUnmanagedVariable symVar)
 		{
-			if (this.HasExpired) throw new CannotGetValueException("Function has expired");
+			if (this.HasExpired) throw new CannotGetValueException("StackFrame has expired");
 			
 			try {
 				return CorILFrame.GetLocalVariable((uint)symVar.AddressField1);

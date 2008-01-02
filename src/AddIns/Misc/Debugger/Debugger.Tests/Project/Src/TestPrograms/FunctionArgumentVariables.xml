@@ -6,8 +6,8 @@
     <ModuleLoaded symbols="True">FunctionArgumentVariables.exe</ModuleLoaded>
     <DebuggingPaused>Break</DebuggingPaused>
     <DebuggingPaused>Break</DebuggingPaused>
-    <ObjectDump name="SelectedFunction">
-      <Function>
+    <ObjectDump name="SelectedStackFrame">
+      <StackFrame>
         <MethodInfo>
           <MethodInfo>
             <IsPrivate>True</IsPrivate>
@@ -88,11 +88,11 @@
             <Items />
           </ValueCollection>
         </LocalVariables>
-      </Function>
+      </StackFrame>
     </ObjectDump>
     <DebuggingPaused>Break</DebuggingPaused>
-    <ObjectDump name="SelectedFunction">
-      <Function>
+    <ObjectDump name="SelectedStackFrame">
+      <StackFrame>
         <MethodInfo>
           <MethodInfo>
             <IsPrivate>True</IsPrivate>
@@ -173,11 +173,11 @@
             <Items />
           </ValueCollection>
         </LocalVariables>
-      </Function>
+      </StackFrame>
     </ObjectDump>
     <DebuggingPaused>Break</DebuggingPaused>
-    <ObjectDump name="SelectedFunction">
-      <Function>
+    <ObjectDump name="SelectedStackFrame">
+      <StackFrame>
         <MethodInfo>
           <MethodInfo>
             <IsPrivate>True</IsPrivate>
@@ -258,11 +258,11 @@
             <Items />
           </ValueCollection>
         </LocalVariables>
-      </Function>
+      </StackFrame>
     </ObjectDump>
     <DebuggingPaused>Break</DebuggingPaused>
-    <ObjectDump name="SelectedFunction">
-      <Function>
+    <ObjectDump name="SelectedStackFrame">
+      <StackFrame>
         <MethodInfo>
           <MethodInfo>
             <IsPrivate>True</IsPrivate>
@@ -359,11 +359,11 @@
             <Items />
           </ValueCollection>
         </LocalVariables>
-      </Function>
+      </StackFrame>
     </ObjectDump>
     <DebuggingPaused>Break</DebuggingPaused>
-    <ObjectDump name="SelectedFunction">
-      <Function>
+    <ObjectDump name="SelectedStackFrame">
+      <StackFrame>
         <MethodInfo>
           <MethodInfo>
             <IsPrivate>True</IsPrivate>
@@ -460,11 +460,11 @@
             <Items />
           </ValueCollection>
         </LocalVariables>
-      </Function>
+      </StackFrame>
     </ObjectDump>
     <DebuggingPaused>Break</DebuggingPaused>
-    <ObjectDump name="SelectedFunction">
-      <Function>
+    <ObjectDump name="SelectedStackFrame">
+      <StackFrame>
         <MethodInfo>
           <MethodInfo>
             <IsPrivate>True</IsPrivate>
@@ -561,7 +561,7 @@
             <Items />
           </ValueCollection>
         </LocalVariables>
-      </Function>
+      </StackFrame>
     </ObjectDump>
     <ProcessExited />
   </Test>

@@ -159,11 +159,11 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 					item.Text = thread.ID.ToString();
 					item.Tag = thread;
 					item.SubItems.Add(thread.Name);
-					Function location = null;
+					StackFrame location = null;
 					if (thread.Process.IsPaused) {
-						location = thread.LastFunctionWithLoadedSymbols;
+						location = thread.LastStackFrameWithLoadedSymbols;
 						if (location == null) {
-							location = thread.LastFunction;
+							location = thread.LastStackFrame;
 						}
 					}
 					if (location != null) {

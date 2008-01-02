@@ -45,22 +45,22 @@ namespace Debugger
 			);
 		}
 		
-		public static ExpressionCollection StackFrameVariables(Function stackFrame)
+		public static ExpressionCollection StackFrameVariables(StackFrame stackFrame)
 		{
 			throw new NotImplementedException();
 		}
 		
-		public static Expression StackFrameThis(Function stackFrame)
+		public static Expression StackFrameThis(StackFrame stackFrame)
 		{
 			throw new NotImplementedException();
 		}
 		
-		public static ExpressionCollection StackFrameParameters(Function stackFrame)
+		public static ExpressionCollection StackFrameParameters(StackFrame stackFrame)
 		{
 			throw new NotImplementedException();
 		}
 		
-		public static ExpressionCollection StackFrameLocalVariables(Function stackFrame)
+		public static ExpressionCollection StackFrameLocalVariables(StackFrame stackFrame)
 		{
 			throw new NotImplementedException();
 		}

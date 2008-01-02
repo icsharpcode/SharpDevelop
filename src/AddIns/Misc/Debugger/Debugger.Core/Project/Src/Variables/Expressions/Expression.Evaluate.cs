@@ -22,7 +22,7 @@ namespace Debugger
 			return Evaluate(null);
 		}
 		
-		Value Evaluate(Function stackFrame)
+		Value Evaluate(StackFrame stackFrame)
 		{
 			EvaluateAstVisitor astVisitor = new EvaluateAstVisitor(stackFrame);
 			return (Value)this.AbstractSynatxTree.AcceptVisitor(astVisitor, null);

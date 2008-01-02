@@ -232,32 +232,32 @@ namespace Debugger
 		
 		public SourcecodeSegment NextStatement { 
 			get {
-				if (SelectedFunction == null || IsRunning) {
+				if (SelectedStackFrame == null || IsRunning) {
 					return null;
 				} else {
-					return SelectedFunction.NextStatement;
+					return SelectedStackFrame.NextStatement;
 				}
 			}
 		}
 		
 		public ValueCollection LocalVariables { 
 			get {
-				if (SelectedFunction == null || IsRunning) {
+				if (SelectedStackFrame == null || IsRunning) {
 					return ValueCollection.Empty;
 				} else {
-					return SelectedFunction.Variables;
+					return SelectedStackFrame.Variables;
 				}
 			}
 		}
 		
-		/// <summary> Gets value of given name which is accessible from selected function </summary>
+		/// <summary> Gets value of given name which is accessible from selected stack frame </summary>
 		/// <returns> Null if not found </returns>
 		public Value GetValue(string name)
 		{
-			if (SelectedFunction == null || IsRunning) {
+			if (SelectedStackFrame == null || IsRunning) {
 				return null;
 			} else {
-				return SelectedFunction.GetValue(name);
+				return SelectedStackFrame.GetValue(name);
 			}
 		}
 	}
