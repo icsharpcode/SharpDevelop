@@ -23,7 +23,8 @@ namespace Debugger
 	{	
 		Process process;
 		
-		Module module;
+		MethodInfo methodInfo;
+		
 		ICorDebugFunction corFunction;
 		ICorDebugILFrame  corILFrame;
 		object            corILFramePauseSession;
@@ -34,8 +35,6 @@ namespace Debugger
 		Thread thread;
 		FrameID frameID;
 		
-		MethodProps methodProps;
-		
 		/// <summary> The process in which this function is executed </summary>
 		[Debugger.Tests.Ignore]
 		public Process Process {
@@ -43,28 +42,10 @@ namespace Debugger
 				return process;
 			}
 		}
-
-		/// <summary> The name of the function (eg "ToString") </summary>
-		public string Name { 
-			get { 
-				return methodProps.Name;
-			} 
-		}
 		
-		/// <summary> Metadata token of the function </summary>
-		[Debugger.Tests.Ignore]
-		public uint Token {
-			get {
-				return methodProps.Token;
-			}
-		}
-		
-		/// <summary> A module in which the function is defined </summary>
-		[Debugger.Tests.ToStringOnly]
-		public Module Module {
-			get { 
-				return module; 
-			} 
+		/// <summary> Get the method which this stack frame is executing </summary>
+		public MethodInfo MethodInfo {
+			get { return methodInfo; }
 		}
 		
 		/// <summary> A thread in which the function is executed </summary>
@@ -72,13 +53,6 @@ namespace Debugger
 		public Thread Thread {
 			get {
 				return thread;
-			}
-		}
-		
-		/// <summary> True if the function is static </summary>
-		public bool IsStatic {
-			get {
-				return methodProps.IsStatic;
 			}
 		}
 		
@@ -90,17 +64,10 @@ namespace Debugger
 			}
 		}
 		
-		/// <summary> The class that defines this function </summary>
-		internal ICorDebugClass ContaingClass { // TODO: Use DebugType
-			get {
-				return corFunction.Class;
-			}
-		}
-		
 		/// <summary> True if function stepped out and is not longer valid. </summary>
 		public bool HasExpired {
 			get {
-				return steppedOut || Module.Unloaded;
+				return steppedOut || this.MethodInfo.Module.Unloaded;
 			}
 		}
 		
@@ -119,12 +86,6 @@ namespace Debugger
 			}
 		}
 		
-		DebugType type;
-		
-		public DebugType Type {
-			get { return type; }
-		}
-		
 		internal Function(Thread thread, FrameID frameID, ICorDebugILFrame corILFrame)
 		{
 			this.process = thread.Process;
@@ -132,13 +93,15 @@ namespace Debugger
 			this.frameID = frameID;
 			this.CorILFrame = corILFrame;
 			corFunction = corILFrame.Function;
-			module = process.GetModule(corFunction.Module);
 			
-			methodProps = module.MetaData.GetMethodProps(corFunction.Token);
-			
-			List<ICorDebugType> corTypes = corILFrame.CastTo<ICorDebugILFrame2>().EnumerateTypeParameters().ToList();
-			type = DebugType.Create(this.Process, corFunction.Class, corTypes);
-			
+			DebugType debugType = DebugType.Create(
+				this.Process, 
+				corFunction.Class,
+				corILFrame.CastTo<ICorDebugILFrame2>().EnumerateTypeParameters().ToList()
+			);
+			MethodProps methodProps = process.GetModule(corFunction.Module).MetaData.GetMethodProps(corFunction.Token);
+			this.methodInfo = new MethodInfo(debugType, methodProps);
+			                                 
 			// Force some callback when function steps out so that we can expire it
 			stepOutStepper = new Stepper(this, "Function Tracker");
 			stepOutStepper.StepOut();
@@ -150,7 +113,7 @@ namespace Debugger
 		/// <summary> Returns diagnostic description of the frame </summary>
 		public override string ToString()
 		{
-			return methodProps.Name + "(" + frameID.ToString() + ")";
+			return this.MethodInfo.Name + "(" + frameID.ToString() + ")";
 		}
 		
 		internal ICorDebugILFrame CorILFrame {
@@ -168,33 +131,11 @@ namespace Debugger
 			}
 		}
 		
-		internal uint corInstructionPtr {
-			get	{
+		internal uint CorInstructionPtr {
+			get {
 				uint corInstructionPtr;
 				CorILFrame.GetIP(out corInstructionPtr);
 				return corInstructionPtr;
-			}
-		}
-		
-		internal ISymUnmanagedReader symReader {
-			get	{
-				if (module.SymbolsLoaded == false) return null;
-				if (module.SymReader == null) return null;
-				return module.SymReader;
-			}
-		}
-		
-		internal ISymUnmanagedMethod symMethod {
-			get	{
-				if (symReader == null) {
-					return null;
-				} else {
-					try {
-						return symReader.GetMethod(methodProps.Token);
-					} catch {
-						return null;
-					}
-				}
 			}
 		}
 		
@@ -219,7 +160,7 @@ namespace Debugger
 
 		private unsafe void Step(bool stepIn)
 		{
-			if (Module.SymbolsLoaded == false) {
+			if (this.MethodInfo.Module.SymbolsLoaded == false) {
 				throw new DebuggerException("Unable to step. No symbols loaded.");
 			}
 
@@ -249,7 +190,7 @@ namespace Debugger
 		/// </summary>
 		public SourcecodeSegment NextStatement {
 			get {
-				return GetSegmentForOffet(corInstructionPtr);
+				return GetSegmentForOffet(CorInstructionPtr);
 			}
 		}
 
@@ -261,9 +202,8 @@ namespace Debugger
 		/// </summary>
 		SourcecodeSegment GetSegmentForOffet(uint offset)
 		{
-			ISymUnmanagedMethod symMethod;
+			ISymUnmanagedMethod symMethod = this.MethodInfo.SymMethod;
 			
-			symMethod = this.symMethod;
 			if (symMethod == null) {
 				return null;
 			}
@@ -303,7 +243,7 @@ namespace Debugger
 						return null;
 					}
 					
-					retVal.ModuleFilename = module.FullPath;
+					retVal.ModuleFilename = this.MethodInfo.Module.FullPath;
 					
 					retVal.SourceFullFilename = sequencePoints[i].Document.URL;
 					
@@ -336,7 +276,7 @@ namespace Debugger
 					retVal.StepRanges = stepRanges.ToArray();
 					
 					return retVal;
-				}			
+				}
 			return null;
 		}
 		
@@ -365,10 +305,10 @@ namespace Debugger
 			SourcecodeSegment suggestion = new SourcecodeSegment(filename, line, column, column);
 			ICorDebugFunction corFunction;
 			int ilOffset;
-			if (!suggestion.GetFunctionAndOffset(this.Module, false, out corFunction, out ilOffset)) {
+			if (!suggestion.GetFunctionAndOffset(this.MethodInfo.Module, false, out corFunction, out ilOffset)) {
 				return null;
 			} else {
-				if (corFunction.Token != methodProps.Token) {
+				if (corFunction.Token != this.MethodInfo.MetadataToken) {
 					return null;
 				} else {
 					try {
@@ -420,7 +360,7 @@ namespace Debugger
 		
 		IEnumerable<Value> GetVariables() 
 		{
-			if (!IsStatic) {
+			if (!this.MethodInfo.IsStatic) {
 				yield return ThisValue;
 			}
 			foreach(Value val in Arguments) {
@@ -442,7 +382,7 @@ namespace Debugger
 		/// </summary>
 		public Value ThisValue {
 			get {
-				if (IsStatic) throw new DebuggerException("Static method does not have 'this'.");
+				if (this.MethodInfo.IsStatic) throw new DebuggerException("Static method does not have 'this'.");
 				if (thisValueCache == null) {
 					thisValueCache = new Value(process, "this", ThisCorValue);
 				}
@@ -469,23 +409,11 @@ namespace Debugger
 		public ValueCollection ContaingClassVariables {
 			get {
 				// TODO: Should work for static
-				if (!IsStatic) {
+				if (!this.MethodInfo.IsStatic) {
 					return ThisValue.GetMembers();
 				} else {
 					return ValueCollection.Empty;
 				}
-			}
-		}
-		
-		/// <summary> Gets the name of given parameter </summary>
-		/// <param name="index"> Zero-based index </param>
-		public string GetParameterName(int index)
-		{
-			// index = 0 is return parameter
-			try {
-				return module.MetaData.GetParamForMethodIndex(methodProps.Token, (uint)index + 1).Name;
-			} catch {
-				return String.Empty;
 			}
 		}
 		
@@ -494,7 +422,7 @@ namespace Debugger
 			get {
 				ICorDebugValueEnum argumentEnum = CorILFrame.EnumerateArguments();
 				uint argCount = argumentEnum.Count;
-				if (!IsStatic) {
+				if (!this.MethodInfo.IsStatic) {
 					argCount--; // Remove 'this' from count
 				}
 				return (int)argCount;
@@ -505,7 +433,7 @@ namespace Debugger
 		/// <param name="index"> Zero-based index </param>
 		public Value GetArgument(int index)
 		{
-			return new Value(process, GetParameterName(index), GetArgumentCorValue(index));
+			return new Value(process, this.MethodInfo.GetParameterName(index), GetArgumentCorValue(index));
 		}
 		
 		ICorDebugValue GetArgumentCorValue(int index)
@@ -514,7 +442,7 @@ namespace Debugger
 			
 			try {
 				// Non-static functions include 'this' as first argument
-				return CorILFrame.GetArgument((uint)(IsStatic? index : (index + 1)));
+				return CorILFrame.GetArgument((uint)(this.MethodInfo.IsStatic? index : (index + 1)));
 			} catch (COMException e) {
 				if ((uint)e.ErrorCode == 0x80131304) throw new CannotGetValueException("Unavailable in optimized code");
 				throw;
@@ -565,32 +493,10 @@ namespace Debugger
 		
 		IEnumerable<Value> LocalVariablesEnum {
 			get {
-				if (symMethod != null) { // TODO: Is this needed?
-					ISymUnmanagedScope symRootScope = symMethod.RootScope;
-					foreach(Value var in GetLocalVariablesInScope(symRootScope)) {
-						if (!var.Name.StartsWith("CS$")) { // TODO: Generalize
-							yield return var;
-						}
-					}
+				foreach(ISymUnmanagedVariable symVar in this.MethodInfo.LocalVariables) {
+					yield return new Value(process, symVar.Name, GetCorValueOfLocalVariable(symVar));
 				}
 			}
-		}
-		
-		IEnumerable<Value> GetLocalVariablesInScope(ISymUnmanagedScope symScope)
-		{
-			foreach (ISymUnmanagedVariable symVar in symScope.Locals) {
-				yield return GetLocalVariable(symVar);
-			}
-			foreach(ISymUnmanagedScope childScope in symScope.Children) {
-				foreach(Value var in GetLocalVariablesInScope(childScope)) {
-					yield return var;
-				}
-			}
-		}
-		
-		Value GetLocalVariable(ISymUnmanagedVariable symVar)
-		{
-			return new Value(process, symVar.Name, GetCorValueOfLocalVariable(symVar));
 		}
 		
 		ICorDebugValue GetCorValueOfLocalVariable(ISymUnmanagedVariable symVar)

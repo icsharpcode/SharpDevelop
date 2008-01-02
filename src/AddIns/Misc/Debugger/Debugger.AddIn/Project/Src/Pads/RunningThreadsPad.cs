@@ -167,7 +167,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 						}
 					}
 					if (location != null) {
-						item.SubItems.Add(location.Name);
+						item.SubItems.Add(location.MethodInfo.Name);
 					} else {
 						item.SubItems.Add(ResourceService.GetString("Global.NA"));
 					}

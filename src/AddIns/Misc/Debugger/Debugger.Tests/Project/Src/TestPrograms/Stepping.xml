@@ -8,9 +8,17 @@
     <DebuggingPaused>Break</DebuggingPaused>
     <ObjectDump name="SelectedFunction">
       <Function>
-        <Name>Main</Name>
-        <Module>Stepping.exe</Module>
-        <IsStatic>True</IsStatic>
+        <MethodInfo>
+          <MethodInfo>
+            <IsPrivate>False</IsPrivate>
+            <IsPublic>True</IsPublic>
+            <IsSpecialName>False</IsSpecialName>
+            <IsStatic>True</IsStatic>
+            <Name>Main</Name>
+            <Module>Stepping.exe</Module>
+            <DeclaringType>Debugger.Tests.TestPrograms.Stepping</DeclaringType>
+          </MethodInfo>
+        </MethodInfo>
         <HasSymbols>True</HasSymbols>
         <HasExpired>False</HasExpired>
         <NextStatement>Start=16,4 End=16,40</NextStatement>
@@ -39,9 +47,17 @@
     <DebuggingPaused>StepComplete</DebuggingPaused>
     <ObjectDump name="SelectedFunction">
       <Function>
-        <Name>Main</Name>
-        <Module>Stepping.exe</Module>
-        <IsStatic>True</IsStatic>
+        <MethodInfo>
+          <MethodInfo>
+            <IsPrivate>False</IsPrivate>
+            <IsPublic>True</IsPublic>
+            <IsSpecialName>False</IsSpecialName>
+            <IsStatic>True</IsStatic>
+            <Name>Main</Name>
+            <Module>Stepping.exe</Module>
+            <DeclaringType>Debugger.Tests.TestPrograms.Stepping</DeclaringType>
+          </MethodInfo>
+        </MethodInfo>
         <HasSymbols>True</HasSymbols>
         <HasExpired>False</HasExpired>
         <NextStatement>Start=17,4 End=17,44</NextStatement>
@@ -73,9 +89,17 @@
     <DebuggingPaused>StepComplete</DebuggingPaused>
     <ObjectDump name="SelectedFunction">
       <Function>
-        <Name>Main</Name>
-        <Module>Stepping.exe</Module>
-        <IsStatic>True</IsStatic>
+        <MethodInfo>
+          <MethodInfo>
+            <IsPrivate>False</IsPrivate>
+            <IsPublic>True</IsPublic>
+            <IsSpecialName>False</IsSpecialName>
+            <IsStatic>True</IsStatic>
+            <Name>Main</Name>
+            <Module>Stepping.exe</Module>
+            <DeclaringType>Debugger.Tests.TestPrograms.Stepping</DeclaringType>
+          </MethodInfo>
+        </MethodInfo>
         <HasSymbols>True</HasSymbols>
         <HasExpired>False</HasExpired>
         <NextStatement>Start=18,4 End=18,10</NextStatement>
@@ -104,9 +128,17 @@
     <DebuggingPaused>StepComplete</DebuggingPaused>
     <ObjectDump name="SelectedFunction">
       <Function>
-        <Name>Sub</Name>
-        <Module>Stepping.exe</Module>
-        <IsStatic>True</IsStatic>
+        <MethodInfo>
+          <MethodInfo>
+            <IsPrivate>False</IsPrivate>
+            <IsPublic>True</IsPublic>
+            <IsSpecialName>False</IsSpecialName>
+            <IsStatic>True</IsStatic>
+            <Name>Sub</Name>
+            <Module>Stepping.exe</Module>
+            <DeclaringType>Debugger.Tests.TestPrograms.Stepping</DeclaringType>
+          </MethodInfo>
+        </MethodInfo>
         <HasSymbols>True</HasSymbols>
         <HasExpired>False</HasExpired>
         <NextStatement>Start=23,3 End=23,4</NextStatement>
@@ -135,9 +167,17 @@
     <DebuggingPaused>StepComplete</DebuggingPaused>
     <ObjectDump name="SelectedFunction">
       <Function>
-        <Name>Sub</Name>
-        <Module>Stepping.exe</Module>
-        <IsStatic>True</IsStatic>
+        <MethodInfo>
+          <MethodInfo>
+            <IsPrivate>False</IsPrivate>
+            <IsPublic>True</IsPublic>
+            <IsSpecialName>False</IsSpecialName>
+            <IsStatic>True</IsStatic>
+            <Name>Sub</Name>
+            <Module>Stepping.exe</Module>
+            <DeclaringType>Debugger.Tests.TestPrograms.Stepping</DeclaringType>
+          </MethodInfo>
+        </MethodInfo>
         <HasSymbols>True</HasSymbols>
         <HasExpired>False</HasExpired>
         <NextStatement>Start=24,4 End=24,44</NextStatement>
@@ -167,9 +207,17 @@
     <DebuggingPaused>StepComplete</DebuggingPaused>
     <ObjectDump name="SelectedFunction">
       <Function>
-        <Name>Sub</Name>
-        <Module>Stepping.exe</Module>
-        <IsStatic>True</IsStatic>
+        <MethodInfo>
+          <MethodInfo>
+            <IsPrivate>False</IsPrivate>
+            <IsPublic>True</IsPublic>
+            <IsSpecialName>False</IsSpecialName>
+            <IsStatic>True</IsStatic>
+            <Name>Sub</Name>
+            <Module>Stepping.exe</Module>
+            <DeclaringType>Debugger.Tests.TestPrograms.Stepping</DeclaringType>
+          </MethodInfo>
+        </MethodInfo>
         <HasSymbols>True</HasSymbols>
         <HasExpired>False</HasExpired>
         <NextStatement>Start=25,4 End=25,44</NextStatement>
@@ -200,9 +248,17 @@
     <DebuggingPaused>StepComplete</DebuggingPaused>
     <ObjectDump name="SelectedFunction">
       <Function>
-        <Name>Main</Name>
-        <Module>Stepping.exe</Module>
-        <IsStatic>True</IsStatic>
+        <MethodInfo>
+          <MethodInfo>
+            <IsPrivate>False</IsPrivate>
+            <IsPublic>True</IsPublic>
+            <IsSpecialName>False</IsSpecialName>
+            <IsStatic>True</IsStatic>
+            <Name>Main</Name>
+            <Module>Stepping.exe</Module>
+            <DeclaringType>Debugger.Tests.TestPrograms.Stepping</DeclaringType>
+          </MethodInfo>
+        </MethodInfo>
         <HasSymbols>True</HasSymbols>
         <HasExpired>False</HasExpired>
         <NextStatement>Start=18,4 End=18,10</NextStatement>
@@ -231,9 +287,17 @@
     <DebuggingPaused>StepComplete</DebuggingPaused>
     <ObjectDump name="SelectedFunction">
       <Function>
-        <Name>Main</Name>
-        <Module>Stepping.exe</Module>
-        <IsStatic>True</IsStatic>
+        <MethodInfo>
+          <MethodInfo>
+            <IsPrivate>False</IsPrivate>
+            <IsPublic>True</IsPublic>
+            <IsSpecialName>False</IsSpecialName>
+            <IsStatic>True</IsStatic>
+            <Name>Main</Name>
+            <Module>Stepping.exe</Module>
+            <DeclaringType>Debugger.Tests.TestPrograms.Stepping</DeclaringType>
+          </MethodInfo>
+        </MethodInfo>
         <HasSymbols>True</HasSymbols>
         <HasExpired>False</HasExpired>
         <NextStatement>Start=19,4 End=19,11</NextStatement>
@@ -263,9 +327,17 @@
     <DebuggingPaused>StepComplete</DebuggingPaused>
     <ObjectDump name="SelectedFunction">
       <Function>
-        <Name>Main</Name>
-        <Module>Stepping.exe</Module>
-        <IsStatic>True</IsStatic>
+        <MethodInfo>
+          <MethodInfo>
+            <IsPrivate>False</IsPrivate>
+            <IsPublic>True</IsPublic>
+            <IsSpecialName>False</IsSpecialName>
+            <IsStatic>True</IsStatic>
+            <Name>Main</Name>
+            <Module>Stepping.exe</Module>
+            <DeclaringType>Debugger.Tests.TestPrograms.Stepping</DeclaringType>
+          </MethodInfo>
+        </MethodInfo>
         <HasSymbols>True</HasSymbols>
         <HasExpired>False</HasExpired>
         <NextStatement>Start=20,3 End=20,4</NextStatement>

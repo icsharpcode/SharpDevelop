@@ -7,9 +7,17 @@
     <DebuggingPaused>Break</DebuggingPaused>
     <ObjectDump name="SelectedFunction">
       <Function>
-        <Name>Main</Name>
-        <Module>FunctionLocalVariables.exe</Module>
-        <IsStatic>True</IsStatic>
+        <MethodInfo>
+          <MethodInfo>
+            <IsPrivate>False</IsPrivate>
+            <IsPublic>True</IsPublic>
+            <IsSpecialName>False</IsSpecialName>
+            <IsStatic>True</IsStatic>
+            <Name>Main</Name>
+            <Module>FunctionLocalVariables.exe</Module>
+            <DeclaringType>Debugger.Tests.TestPrograms.FunctionLocalVariables</DeclaringType>
+          </MethodInfo>
+        </MethodInfo>
         <HasSymbols>True</HasSymbols>
         <HasExpired>False</HasExpired>
         <NextStatement>Start=23,4 End=23,40</NextStatement>

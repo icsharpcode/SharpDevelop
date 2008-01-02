@@ -330,7 +330,7 @@ namespace Debugger
 			Function function;
 			if (lastFrame != null && 
 			    functionCache.TryGetValue(new FrameID((uint)maxChainIndex, (uint)maxFrameIndex), out function) &&
-			    function.Token != lastFrame.FunctionToken) {
+			    function.MethodInfo.MetadataToken != lastFrame.FunctionToken) {
 				
 				functionCache.Remove(new FrameID((uint)maxChainIndex, (uint)maxFrameIndex));
 				function.OnExpired(EventArgs.Empty);

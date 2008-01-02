@@ -7,9 +7,17 @@
     <DebuggingPaused>Break</DebuggingPaused>
     <ObjectDump name="Function">
       <Function>
-        <Name>Function</Name>
-        <Module>FunctionLifetime.exe</Module>
-        <IsStatic>True</IsStatic>
+        <MethodInfo>
+          <MethodInfo>
+            <IsPrivate>True</IsPrivate>
+            <IsPublic>False</IsPublic>
+            <IsSpecialName>False</IsSpecialName>
+            <IsStatic>True</IsStatic>
+            <Name>Function</Name>
+            <Module>FunctionLifetime.exe</Module>
+            <DeclaringType>Debugger.Tests.TestPrograms.FunctionLifetime</DeclaringType>
+          </MethodInfo>
+        </MethodInfo>
         <HasSymbols>True</HasSymbols>
         <HasExpired>False</HasExpired>
         <NextStatement>Start=22,4 End=22,40</NextStatement>
@@ -54,9 +62,17 @@
     <DebuggingPaused>Break</DebuggingPaused>
     <ObjectDump name="Function">
       <Function>
-        <Name>Function</Name>
-        <Module>FunctionLifetime.exe</Module>
-        <IsStatic>True</IsStatic>
+        <MethodInfo>
+          <MethodInfo>
+            <IsPrivate>True</IsPrivate>
+            <IsPublic>False</IsPublic>
+            <IsSpecialName>False</IsSpecialName>
+            <IsStatic>True</IsStatic>
+            <Name>Function</Name>
+            <Module>FunctionLifetime.exe</Module>
+            <DeclaringType>Debugger.Tests.TestPrograms.FunctionLifetime</DeclaringType>
+          </MethodInfo>
+        </MethodInfo>
         <HasSymbols>True</HasSymbols>
         <HasExpired>False</HasExpired>
         <NextStatement>Start=23,4 End=23,18</NextStatement>
@@ -100,9 +116,17 @@
     </ObjectDump>
     <ObjectDump name="SubFunction">
       <Function>
-        <Name>SubFunction</Name>
-        <Module>FunctionLifetime.exe</Module>
-        <IsStatic>True</IsStatic>
+        <MethodInfo>
+          <MethodInfo>
+            <IsPrivate>True</IsPrivate>
+            <IsPublic>False</IsPublic>
+            <IsSpecialName>False</IsSpecialName>
+            <IsStatic>True</IsStatic>
+            <Name>SubFunction</Name>
+            <Module>FunctionLifetime.exe</Module>
+            <DeclaringType>Debugger.Tests.TestPrograms.FunctionLifetime</DeclaringType>
+          </MethodInfo>
+        </MethodInfo>
         <HasSymbols>True</HasSymbols>
         <HasExpired>False</HasExpired>
         <NextStatement>Start=29,4 End=29,40</NextStatement>
@@ -131,9 +155,17 @@
     <DebuggingPaused>Break</DebuggingPaused>
     <ObjectDump name="Function">
       <Function>
-        <Name>Function</Name>
-        <Module>FunctionLifetime.exe</Module>
-        <IsStatic>True</IsStatic>
+        <MethodInfo>
+          <MethodInfo>
+            <IsPrivate>True</IsPrivate>
+            <IsPublic>False</IsPublic>
+            <IsSpecialName>False</IsSpecialName>
+            <IsStatic>True</IsStatic>
+            <Name>Function</Name>
+            <Module>FunctionLifetime.exe</Module>
+            <DeclaringType>Debugger.Tests.TestPrograms.FunctionLifetime</DeclaringType>
+          </MethodInfo>
+        </MethodInfo>
         <HasSymbols>True</HasSymbols>
         <HasExpired>False</HasExpired>
         <NextStatement>Start=24,4 End=24,40</NextStatement>
@@ -178,9 +210,17 @@
     <DebuggingPaused>Break</DebuggingPaused>
     <ObjectDump name="Main">
       <Function>
-        <Name>Main</Name>
-        <Module>FunctionLifetime.exe</Module>
-        <IsStatic>True</IsStatic>
+        <MethodInfo>
+          <MethodInfo>
+            <IsPrivate>False</IsPrivate>
+            <IsPublic>True</IsPublic>
+            <IsSpecialName>False</IsSpecialName>
+            <IsStatic>True</IsStatic>
+            <Name>Main</Name>
+            <Module>FunctionLifetime.exe</Module>
+            <DeclaringType>Debugger.Tests.TestPrograms.FunctionLifetime</DeclaringType>
+          </MethodInfo>
+        </MethodInfo>
         <HasSymbols>True</HasSymbols>
         <HasExpired>False</HasExpired>
         <NextStatement>Start=17,4 End=17,40</NextStatement>
@@ -208,9 +248,17 @@
     </ObjectDump>
     <ObjectDump name="Function">
       <Function>
-        <Name>Function</Name>
-        <Module>FunctionLifetime.exe</Module>
-        <IsStatic>True</IsStatic>
+        <MethodInfo>
+          <MethodInfo>
+            <IsPrivate>True</IsPrivate>
+            <IsPublic>False</IsPublic>
+            <IsSpecialName>False</IsSpecialName>
+            <IsStatic>True</IsStatic>
+            <Name>Function</Name>
+            <Module>FunctionLifetime.exe</Module>
+            <DeclaringType>Debugger.Tests.TestPrograms.FunctionLifetime</DeclaringType>
+          </MethodInfo>
+        </MethodInfo>
         <HasSymbols>True</HasSymbols>
         <HasExpired>True</HasExpired>
         <NextStatement exception="Function has expired" />

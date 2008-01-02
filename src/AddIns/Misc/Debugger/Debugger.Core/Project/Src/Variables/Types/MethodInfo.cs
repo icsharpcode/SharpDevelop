@@ -7,7 +7,9 @@
 
 using System;
 using System.Collections.Generic;
+
 using Debugger.Wrappers.CorDebug;
+using Debugger.Wrappers.CorSym;
 using Debugger.Wrappers.MetaData;
 
 namespace Debugger
@@ -98,6 +100,54 @@ namespace Debugger
 				}
 			}
 			throw new DebuggerException("Not found");
+		}
+		
+		internal ISymUnmanagedMethod SymMethod {
+			get {
+				if (this.Module.SymReader == null) return null;
+				try {
+					return this.Module.SymReader.GetMethod(this.MetadataToken);
+				} catch {
+					return null;
+				}
+			}
+		}
+		
+		/// <summary> Gets the name of given parameter </summary>
+		/// <param name="index"> Zero-based index </param>
+		public string GetParameterName(int index)
+		{
+			// index = 0 is return parameter
+			try {
+				return this.Module.MetaData.GetParamForMethodIndex(this.MetadataToken, (uint)index + 1).Name;
+			} catch {
+				return String.Empty;
+			}
+		}
+		
+		[Debugger.Tests.Ignore]
+		public List<ISymUnmanagedVariable> LocalVariables {
+			get {
+				if (this.SymMethod != null) { // TODO: Is this needed?
+					return GetLocalVariablesInScope(this.SymMethod.RootScope);
+				} else {
+					return new List<ISymUnmanagedVariable>();
+				}
+			}
+		}
+		
+		List<ISymUnmanagedVariable> GetLocalVariablesInScope(ISymUnmanagedScope symScope)
+		{
+			List<ISymUnmanagedVariable> vars = new List<ISymUnmanagedVariable>();
+			foreach (ISymUnmanagedVariable symVar in symScope.Locals) {
+				if (!symVar.Name.StartsWith("CS$")) { // TODO: Generalize
+					vars.Add(symVar);
+				}
+			}
+			foreach(ISymUnmanagedScope childScope in symScope.Children) {
+				vars.AddRange(GetLocalVariablesInScope(childScope));
+			}
+			return vars;
 		}
 	}
 }

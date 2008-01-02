@@ -8,9 +8,17 @@
     <DebuggingPaused>Break</DebuggingPaused>
     <ObjectDump name="SelectedFunction">
       <Function>
-        <Name>StaticFunction</Name>
-        <Module>FunctionArgumentVariables.exe</Module>
-        <IsStatic>True</IsStatic>
+        <MethodInfo>
+          <MethodInfo>
+            <IsPrivate>True</IsPrivate>
+            <IsPublic>False</IsPublic>
+            <IsSpecialName>False</IsSpecialName>
+            <IsStatic>True</IsStatic>
+            <Name>StaticFunction</Name>
+            <Module>FunctionArgumentVariables.exe</Module>
+            <DeclaringType>Debugger.Tests.TestPrograms.FunctionArgumentVariables</DeclaringType>
+          </MethodInfo>
+        </MethodInfo>
         <HasSymbols>True</HasSymbols>
         <HasExpired>False</HasExpired>
         <NextStatement>Start=28,4 End=28,40</NextStatement>
@@ -85,9 +93,17 @@
     <DebuggingPaused>Break</DebuggingPaused>
     <ObjectDump name="SelectedFunction">
       <Function>
-        <Name>StaticFunction</Name>
-        <Module>FunctionArgumentVariables.exe</Module>
-        <IsStatic>True</IsStatic>
+        <MethodInfo>
+          <MethodInfo>
+            <IsPrivate>True</IsPrivate>
+            <IsPublic>False</IsPublic>
+            <IsSpecialName>False</IsSpecialName>
+            <IsStatic>True</IsStatic>
+            <Name>StaticFunction</Name>
+            <Module>FunctionArgumentVariables.exe</Module>
+            <DeclaringType>Debugger.Tests.TestPrograms.FunctionArgumentVariables</DeclaringType>
+          </MethodInfo>
+        </MethodInfo>
         <HasSymbols>True</HasSymbols>
         <HasExpired>False</HasExpired>
         <NextStatement>Start=28,4 End=28,40</NextStatement>
@@ -162,9 +178,17 @@
     <DebuggingPaused>Break</DebuggingPaused>
     <ObjectDump name="SelectedFunction">
       <Function>
-        <Name>StaticFunction</Name>
-        <Module>FunctionArgumentVariables.exe</Module>
-        <IsStatic>True</IsStatic>
+        <MethodInfo>
+          <MethodInfo>
+            <IsPrivate>True</IsPrivate>
+            <IsPublic>False</IsPublic>
+            <IsSpecialName>False</IsSpecialName>
+            <IsStatic>True</IsStatic>
+            <Name>StaticFunction</Name>
+            <Module>FunctionArgumentVariables.exe</Module>
+            <DeclaringType>Debugger.Tests.TestPrograms.FunctionArgumentVariables</DeclaringType>
+          </MethodInfo>
+        </MethodInfo>
         <HasSymbols>True</HasSymbols>
         <HasExpired>False</HasExpired>
         <NextStatement>Start=28,4 End=28,40</NextStatement>
@@ -239,9 +263,17 @@
     <DebuggingPaused>Break</DebuggingPaused>
     <ObjectDump name="SelectedFunction">
       <Function>
-        <Name>Function</Name>
-        <Module>FunctionArgumentVariables.exe</Module>
-        <IsStatic>False</IsStatic>
+        <MethodInfo>
+          <MethodInfo>
+            <IsPrivate>True</IsPrivate>
+            <IsPublic>False</IsPublic>
+            <IsSpecialName>False</IsSpecialName>
+            <IsStatic>False</IsStatic>
+            <Name>Function</Name>
+            <Module>FunctionArgumentVariables.exe</Module>
+            <DeclaringType>Debugger.Tests.TestPrograms.FunctionArgumentVariables</DeclaringType>
+          </MethodInfo>
+        </MethodInfo>
         <HasSymbols>True</HasSymbols>
         <HasExpired>False</HasExpired>
         <NextStatement>Start=33,4 End=33,40</NextStatement>
@@ -332,9 +364,17 @@
     <DebuggingPaused>Break</DebuggingPaused>
     <ObjectDump name="SelectedFunction">
       <Function>
-        <Name>Function</Name>
-        <Module>FunctionArgumentVariables.exe</Module>
-        <IsStatic>False</IsStatic>
+        <MethodInfo>
+          <MethodInfo>
+            <IsPrivate>True</IsPrivate>
+            <IsPublic>False</IsPublic>
+            <IsSpecialName>False</IsSpecialName>
+            <IsStatic>False</IsStatic>
+            <Name>Function</Name>
+            <Module>FunctionArgumentVariables.exe</Module>
+            <DeclaringType>Debugger.Tests.TestPrograms.FunctionArgumentVariables</DeclaringType>
+          </MethodInfo>
+        </MethodInfo>
         <HasSymbols>True</HasSymbols>
         <HasExpired>False</HasExpired>
         <NextStatement>Start=33,4 End=33,40</NextStatement>
@@ -425,9 +465,17 @@
     <DebuggingPaused>Break</DebuggingPaused>
     <ObjectDump name="SelectedFunction">
       <Function>
-        <Name>Function</Name>
-        <Module>FunctionArgumentVariables.exe</Module>
-        <IsStatic>False</IsStatic>
+        <MethodInfo>
+          <MethodInfo>
+            <IsPrivate>True</IsPrivate>
+            <IsPublic>False</IsPublic>
+            <IsSpecialName>False</IsSpecialName>
+            <IsStatic>False</IsStatic>
+            <Name>Function</Name>
+            <Module>FunctionArgumentVariables.exe</Module>
+            <DeclaringType>Debugger.Tests.TestPrograms.FunctionArgumentVariables</DeclaringType>
+          </MethodInfo>
+        </MethodInfo>
         <HasSymbols>True</HasSymbols>
         <HasExpired>False</HasExpired>
         <NextStatement>Start=33,4 End=33,40</NextStatement>

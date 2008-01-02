@@ -52,7 +52,7 @@ namespace Debugger
 				}
 				
 				SourcecodeSegment loc = function.NextStatement;
-				callstack += function.Name + "()";
+				callstack += function.MethodInfo.Name + "()";
 				if (loc != null) {
 					callstack += " - " + loc.SourceFullFilename + ":" + loc.StartLine + "," + loc.StartColumn;
 				}

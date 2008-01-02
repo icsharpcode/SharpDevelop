@@ -60,7 +60,7 @@ namespace Debugger
 		
 		public override string Name {
 			get {
-				return function.Name;
+				return function.MethodInfo.Name;
 			}
 		}
 		

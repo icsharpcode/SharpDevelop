@@ -10,9 +10,17 @@
         <Count>3</Count>
         <Items>
           <Function>
-            <Name>Sub2</Name>
-            <Module>Callstack.exe</Module>
-            <IsStatic>True</IsStatic>
+            <MethodInfo>
+              <MethodInfo>
+                <IsPrivate>True</IsPrivate>
+                <IsPublic>False</IsPublic>
+                <IsSpecialName>False</IsSpecialName>
+                <IsStatic>True</IsStatic>
+                <Name>Sub2</Name>
+                <Module>Callstack.exe</Module>
+                <DeclaringType>Debugger.Tests.TestPrograms.Callstack</DeclaringType>
+              </MethodInfo>
+            </MethodInfo>
             <HasSymbols>True</HasSymbols>
             <HasExpired>False</HasExpired>
             <NextStatement>Start=26,4 End=26,40</NextStatement>
@@ -38,9 +46,17 @@
             </LocalVariables>
           </Function>
           <Function>
-            <Name>Sub1</Name>
-            <Module>Callstack.exe</Module>
-            <IsStatic>True</IsStatic>
+            <MethodInfo>
+              <MethodInfo>
+                <IsPrivate>True</IsPrivate>
+                <IsPublic>False</IsPublic>
+                <IsSpecialName>False</IsSpecialName>
+                <IsStatic>True</IsStatic>
+                <Name>Sub1</Name>
+                <Module>Callstack.exe</Module>
+                <DeclaringType>Debugger.Tests.TestPrograms.Callstack</DeclaringType>
+              </MethodInfo>
+            </MethodInfo>
             <HasSymbols>True</HasSymbols>
             <HasExpired>False</HasExpired>
             <NextStatement>Start=21,4 End=21,11</NextStatement>
@@ -66,9 +82,17 @@
             </LocalVariables>
           </Function>
           <Function>
-            <Name>Main</Name>
-            <Module>Callstack.exe</Module>
-            <IsStatic>True</IsStatic>
+            <MethodInfo>
+              <MethodInfo>
+                <IsPrivate>False</IsPrivate>
+                <IsPublic>True</IsPublic>
+                <IsSpecialName>False</IsSpecialName>
+                <IsStatic>True</IsStatic>
+                <Name>Main</Name>
+                <Module>Callstack.exe</Module>
+                <DeclaringType>Debugger.Tests.TestPrograms.Callstack</DeclaringType>
+              </MethodInfo>
+            </MethodInfo>
             <HasSymbols>True</HasSymbols>
             <HasExpired>False</HasExpired>
             <NextStatement>Start=16,4 End=16,11</NextStatement>
@@ -102,9 +126,17 @@
         <Count>2</Count>
         <Items>
           <Function>
-            <Name>Sub1</Name>
-            <Module>Callstack.exe</Module>
-            <IsStatic>True</IsStatic>
+            <MethodInfo>
+              <MethodInfo>
+                <IsPrivate>True</IsPrivate>
+                <IsPublic>False</IsPublic>
+                <IsSpecialName>False</IsSpecialName>
+                <IsStatic>True</IsStatic>
+                <Name>Sub1</Name>
+                <Module>Callstack.exe</Module>
+                <DeclaringType>Debugger.Tests.TestPrograms.Callstack</DeclaringType>
+              </MethodInfo>
+            </MethodInfo>
             <HasSymbols>True</HasSymbols>
             <HasExpired>False</HasExpired>
             <NextStatement>Start=21,4 End=21,11</NextStatement>
@@ -130,9 +162,17 @@
             </LocalVariables>
           </Function>
           <Function>
-            <Name>Main</Name>
-            <Module>Callstack.exe</Module>
-            <IsStatic>True</IsStatic>
+            <MethodInfo>
+              <MethodInfo>
+                <IsPrivate>False</IsPrivate>
+                <IsPublic>True</IsPublic>
+                <IsSpecialName>False</IsSpecialName>
+                <IsStatic>True</IsStatic>
+                <Name>Main</Name>
+                <Module>Callstack.exe</Module>
+                <DeclaringType>Debugger.Tests.TestPrograms.Callstack</DeclaringType>
+              </MethodInfo>
+            </MethodInfo>
             <HasSymbols>True</HasSymbols>
             <HasExpired>False</HasExpired>
             <NextStatement>Start=16,4 End=16,11</NextStatement>
@@ -166,9 +206,17 @@
         <Count>1</Count>
         <Items>
           <Function>
-            <Name>Main</Name>
-            <Module>Callstack.exe</Module>
-            <IsStatic>True</IsStatic>
+            <MethodInfo>
+              <MethodInfo>
+                <IsPrivate>False</IsPrivate>
+                <IsPublic>True</IsPublic>
+                <IsSpecialName>False</IsSpecialName>
+                <IsStatic>True</IsStatic>
+                <Name>Main</Name>
+                <Module>Callstack.exe</Module>
+                <DeclaringType>Debugger.Tests.TestPrograms.Callstack</DeclaringType>
+              </MethodInfo>
+            </MethodInfo>
             <HasSymbols>True</HasSymbols>
             <HasExpired>False</HasExpired>
             <NextStatement>Start=16,4 End=16,11</NextStatement>

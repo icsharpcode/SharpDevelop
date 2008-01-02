@@ -28,6 +28,17 @@ namespace Debugger
 			}
 		}
 		
+		/// <summary> Gets the name of this member </summary>
+		public abstract string Name { get; }
+		
+		/// <summary> Gets the module in which this member is defined </summary>
+		[Debugger.Tests.ToStringOnly]
+		public Module Module {
+			get {
+				return declaringType.Module;
+			}
+		}
+		
 		/// <summary> Gets the type that declares this member element </summary>
 		[Debugger.Tests.ToStringOnly]
 		public DebugType DeclaringType {
@@ -48,17 +59,6 @@ namespace Debugger
 		/// <summary> Gets the metadata token associated with this member </summary>
 		[Debugger.Tests.Ignore]
 		public abstract uint MetadataToken { get; }
-		
-		/// <summary> Gets the name of this member </summary>
-		public abstract string Name { get; }
-		
-		/// <summary> Gets the module in which this member is defined </summary>
-		[Debugger.Tests.ToStringOnly]
-		public Module Module {
-			get {
-				return declaringType.Module;
-			}
-		}
 		
 		internal MemberInfo(DebugType declaringType)
 		{

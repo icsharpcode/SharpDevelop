@@ -135,7 +135,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 					ListViewItem item;
 					if (f.HasSymbols || showExternalMethods) {
 						// Show the method in the list
-						string name = f.Name;
+						string name = f.MethodInfo.Name;
 						if (showArgumentNames || showArgumentValues) {
 							name += "(";
 							for (int i = 0; i < f.ArgumentCount; i++) {
@@ -143,7 +143,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 								string argValue = null;
 								if (showArgumentNames) {
 									try {
-										parameterName = f.GetParameterName(i);
+										parameterName = f.MethodInfo.GetParameterName(i);
 									} catch { }
 									if (parameterName == "") parameterName = null;
 								}
