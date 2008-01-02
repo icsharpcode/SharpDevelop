@@ -166,6 +166,7 @@ namespace Debugger
 				
 				return new Value(
 					process,
+					string.Empty,
 					delegate { return CorThread.Object;}
 				);
 			}

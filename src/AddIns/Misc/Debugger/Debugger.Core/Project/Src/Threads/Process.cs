@@ -254,7 +254,11 @@ namespace Debugger
 		/// <returns> Null if not found </returns>
 		public Value GetValue(string name)
 		{
-			return null; // TODO
+			if (SelectedFunction == null || IsRunning) {
+				return null;
+			} else {
+				return SelectedFunction.GetValue(name);
+			}
 		}
 	}
 }

@@ -64,16 +64,6 @@ namespace Debugger
 			return this.Code;
 		}
 		
-		static string GetNameFromIndices(uint[] indices)
-		{
-			string elementName = "[";
-			for (int i = 0; i < indices.Length; i++) {
-				elementName += indices[i].ToString() + ",";
-			}
-			elementName = elementName.TrimEnd(new char[] {','}) + "]";
-			return elementName;
-		}
-		
 		Expression GetExpressionFromIndices(uint[] indices)
 		{
 			List<Ast.Expression> indicesAst = new List<Ast.Expression>();

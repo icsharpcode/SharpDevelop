@@ -36,6 +36,7 @@ namespace Debugger
 	/// </remarks>
 	public partial class Value: DebuggerObject, IExpirable
 	{
+		string name;
 		Process process;
 		
 		CorValueGetter corValueGetter;
@@ -81,9 +82,17 @@ namespace Debugger
 					if (IsPrimitive) cache.AsString = PrimitiveValue != null ? PrimitiveValue.ToString() : String.Empty;
 					
 					TimeSpan totalTime = Util.HighPrecisionTimer.Now - startTime;
-					process.TraceMessage("Obtained value: " + cache.AsString + " (" + totalTime.TotalMilliseconds + " ms)");
+					string name = this is Value ? ((Value)this).Name + " = " : String.Empty;
+					process.TraceMessage("Obtained value: " + name + cache.AsString + " (" + totalTime.TotalMilliseconds + " ms)");
 				}
 				return cache;
+			}
+		}
+		
+		/// <summary> Gets the name associated with the value </summary>
+		public string Name {
+			get {
+				return name;
 			}
 		}
 		
@@ -157,10 +166,20 @@ namespace Debugger
 		}
 		
 		internal Value(Process process,
+		               string name,
 		               CorValueGetter corValueGetter)
 		{
 			this.process = process;
+			this.name = name;
 			this.corValueGetter = corValueGetter;
+			
+			// TODO: clean up
+			if (name.StartsWith("<") && name.Contains(">") && name != "<Base class>") {
+				string middle = name.TrimStart('<').Split('>')[0]; // Get text between '<' and '>'
+				if (middle != "") {
+					this.name = middle;
+				}
+			}
 			
 			process.DebuggingResumed += delegate {
 				this.isExpired = true;

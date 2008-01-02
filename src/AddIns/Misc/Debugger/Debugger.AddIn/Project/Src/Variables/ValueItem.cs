@@ -79,7 +79,7 @@ namespace Debugger
 		
 		public override string Name {
 			get {
-				return string.Empty; // TODO
+				return val.Name;
 			}
 		}
 		
