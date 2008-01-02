@@ -1,0 +1,1116 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DebuggerTests>
+  <Test name="Generics">
+    <ProcessStarted />
+    <ModuleLoaded symbols="False">mscorlib.dll</ModuleLoaded>
+    <ModuleLoaded symbols="True">Generics.exe</ModuleLoaded>
+    <DebuggingPaused>Break</DebuggingPaused>
+    <ObjectDump name="SelectedFunction">
+      <Function>
+        <Name>Metod</Name>
+        <Module>Generics.exe</Module>
+        <IsStatic>False</IsStatic>
+        <HasSymbols>True</HasSymbols>
+        <HasExpired>False</HasExpired>
+        <Type>
+          <DebugType>
+            <ManagedType>null</ManagedType>
+            <Module>
+              <Module>
+                <Unloaded>False</Unloaded>
+                <SymReader>Debugger.Wrappers.CorSym.ISymUnmanagedReader</SymReader>
+                <CorModule>Debugger.Wrappers.CorDebug.ICorDebugModule</CorModule>
+                <BaseAdress>4194304</BaseAdress>
+                <IsDynamic>False</IsDynamic>
+                <IsInMemory>False</IsInMemory>
+                <FullPath>C:\Documents and Settings\User\Local Settings\Temp\SharpDevelop\DebuggerTests\1BB0DE2859DD9A8A9B239F74810B2C2A\Generics.exe</FullPath>
+                <Filename>Generics.exe</Filename>
+                <DirectoryName>C:\Documents and Settings\User\Local Settings\Temp\SharpDevelop\DebuggerTests\1BB0DE2859DD9A8A9B239F74810B2C2A</DirectoryName>
+                <SymbolsLoaded>True</SymbolsLoaded>
+                <OrderOfLoading>1</OrderOfLoading>
+              </Module>
+            </Module>
+            <MetadataToken>33554435</MetadataToken>
+            <FullName>Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;</FullName>
+            <HasElementType>False</HasElementType>
+            <IsArray>False</IsArray>
+            <IsGenericType>True</IsGenericType>
+            <IsClass>True</IsClass>
+            <IsValueType>False</IsValueType>
+            <IsPrimitive>False</IsPrimitive>
+            <IsInteger>False</IsInteger>
+            <BaseType>
+              <DebugType>
+                <ManagedType>null</ManagedType>
+                <Module>
+                  <Module>
+                    <Unloaded>False</Unloaded>
+                    <SymReader>null</SymReader>
+                    <CorModule>Debugger.Wrappers.CorDebug.ICorDebugModule</CorModule>
+                    <BaseAdress>2030829568</BaseAdress>
+                    <IsDynamic>False</IsDynamic>
+                    <IsInMemory>False</IsInMemory>
+                    <FullPath>C:\WINDOWS\assembly\GAC_32\mscorlib\2.0.0.0__b77a5c561934e089\mscorlib.dll</FullPath>
+                    <Filename>mscorlib.dll</Filename>
+                    <DirectoryName>C:\WINDOWS\assembly\GAC_32\mscorlib\2.0.0.0__b77a5c561934e089</DirectoryName>
+                    <SymbolsLoaded>False</SymbolsLoaded>
+                    <OrderOfLoading>0</OrderOfLoading>
+                  </Module>
+                </Module>
+                <MetadataToken>33554434</MetadataToken>
+                <FullName>System.Object</FullName>
+                <HasElementType>False</HasElementType>
+                <IsArray>False</IsArray>
+                <IsGenericType>False</IsGenericType>
+                <IsClass>True</IsClass>
+                <IsValueType>False</IsValueType>
+                <IsPrimitive>False</IsPrimitive>
+                <IsInteger>False</IsInteger>
+                <BaseType>null</BaseType>
+              </DebugType>
+            </BaseType>
+          </DebugType>
+        </Type>
+        <NextStatement>Start=36,4 End=36,40</NextStatement>
+        <ThisValue>
+          <Value>
+            <IsArray>False</IsArray>
+            <ArrayLenght exception="Value is not an array" />
+            <ArrayRank exception="Value is not an array" />
+            <ArrayDimensions exception="Value is not an array" />
+            <IsObject>True</IsObject>
+            <IsPrimitive>False</IsPrimitive>
+            <IsInteger>False</IsInteger>
+            <PrimitiveValue exception="Value is not a primitive type" />
+            <Name>this</Name>
+            <IsNull>False</IsNull>
+            <AsString>{Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;}</AsString>
+            <HasExpired>False</HasExpired>
+            <Type>Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;</Type>
+          </Value>
+        </ThisValue>
+        <ContaingClassVariables>
+          <ValueCollection>
+            <Count>0</Count>
+            <Items />
+          </ValueCollection>
+        </ContaingClassVariables>
+        <ArgumentCount>2</ArgumentCount>
+        <Arguments>
+          <ValueCollection>
+            <Count>2</Count>
+            <Items>
+              <Value>
+                <IsArray>False</IsArray>
+                <ArrayLenght exception="Value is not an array" />
+                <ArrayRank exception="Value is not an array" />
+                <ArrayDimensions exception="Value is not an array" />
+                <IsObject>False</IsObject>
+                <IsPrimitive>True</IsPrimitive>
+                <IsInteger>True</IsInteger>
+                <PrimitiveValue>1</PrimitiveValue>
+                <Name>v</Name>
+                <IsNull>False</IsNull>
+                <AsString>1</AsString>
+                <HasExpired>False</HasExpired>
+                <Type>System.Int32</Type>
+              </Value>
+              <Value>
+                <IsArray>False</IsArray>
+                <ArrayLenght exception="Value is not an array" />
+                <ArrayRank exception="Value is not an array" />
+                <ArrayDimensions exception="Value is not an array" />
+                <IsObject>False</IsObject>
+                <IsPrimitive>True</IsPrimitive>
+                <IsInteger>False</IsInteger>
+                <PrimitiveValue>1!</PrimitiveValue>
+                <Name>k</Name>
+                <IsNull>False</IsNull>
+                <AsString>1!</AsString>
+                <HasExpired>False</HasExpired>
+                <Type>System.String</Type>
+              </Value>
+            </Items>
+          </ValueCollection>
+        </Arguments>
+        <LocalVariables>
+          <ValueCollection>
+            <Count>0</Count>
+            <Items />
+          </ValueCollection>
+        </LocalVariables>
+      </Function>
+    </ObjectDump>
+    <DebuggingPaused>Break</DebuggingPaused>
+    <ObjectDump name="SelectedFunction">
+      <Function>
+        <Name>GenericMethod</Name>
+        <Module>Generics.exe</Module>
+        <IsStatic>False</IsStatic>
+        <HasSymbols>True</HasSymbols>
+        <HasExpired>False</HasExpired>
+        <Type>
+          <DebugType>
+            <ManagedType>null</ManagedType>
+            <Module>
+              <Module>
+                <Unloaded>False</Unloaded>
+                <SymReader>Debugger.Wrappers.CorSym.ISymUnmanagedReader</SymReader>
+                <CorModule>Debugger.Wrappers.CorDebug.ICorDebugModule</CorModule>
+                <BaseAdress>4194304</BaseAdress>
+                <IsDynamic>False</IsDynamic>
+                <IsInMemory>False</IsInMemory>
+                <FullPath>C:\Documents and Settings\User\Local Settings\Temp\SharpDevelop\DebuggerTests\1BB0DE2859DD9A8A9B239F74810B2C2A\Generics.exe</FullPath>
+                <Filename>Generics.exe</Filename>
+                <DirectoryName>C:\Documents and Settings\User\Local Settings\Temp\SharpDevelop\DebuggerTests\1BB0DE2859DD9A8A9B239F74810B2C2A</DirectoryName>
+                <SymbolsLoaded>True</SymbolsLoaded>
+                <OrderOfLoading>1</OrderOfLoading>
+              </Module>
+            </Module>
+            <MetadataToken>33554435</MetadataToken>
+            <FullName>Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;</FullName>
+            <HasElementType>False</HasElementType>
+            <IsArray>False</IsArray>
+            <IsGenericType>True</IsGenericType>
+            <IsClass>True</IsClass>
+            <IsValueType>False</IsValueType>
+            <IsPrimitive>False</IsPrimitive>
+            <IsInteger>False</IsInteger>
+            <BaseType>
+              <DebugType>
+                <ManagedType>null</ManagedType>
+                <Module>
+                  <Module>
+                    <Unloaded>False</Unloaded>
+                    <SymReader>null</SymReader>
+                    <CorModule>Debugger.Wrappers.CorDebug.ICorDebugModule</CorModule>
+                    <BaseAdress>2030829568</BaseAdress>
+                    <IsDynamic>False</IsDynamic>
+                    <IsInMemory>False</IsInMemory>
+                    <FullPath>C:\WINDOWS\assembly\GAC_32\mscorlib\2.0.0.0__b77a5c561934e089\mscorlib.dll</FullPath>
+                    <Filename>mscorlib.dll</Filename>
+                    <DirectoryName>C:\WINDOWS\assembly\GAC_32\mscorlib\2.0.0.0__b77a5c561934e089</DirectoryName>
+                    <SymbolsLoaded>False</SymbolsLoaded>
+                    <OrderOfLoading>0</OrderOfLoading>
+                  </Module>
+                </Module>
+                <MetadataToken>33554434</MetadataToken>
+                <FullName>System.Object</FullName>
+                <HasElementType>False</HasElementType>
+                <IsArray>False</IsArray>
+                <IsGenericType>False</IsGenericType>
+                <IsClass>True</IsClass>
+                <IsValueType>False</IsValueType>
+                <IsPrimitive>False</IsPrimitive>
+                <IsInteger>False</IsInteger>
+                <BaseType>null</BaseType>
+              </DebugType>
+            </BaseType>
+          </DebugType>
+        </Type>
+        <NextStatement>Start=42,4 End=42,40</NextStatement>
+        <ThisValue>
+          <Value>
+            <IsArray>False</IsArray>
+            <ArrayLenght exception="Value is not an array" />
+            <ArrayRank exception="Value is not an array" />
+            <ArrayDimensions exception="Value is not an array" />
+            <IsObject>True</IsObject>
+            <IsPrimitive>False</IsPrimitive>
+            <IsInteger>False</IsInteger>
+            <PrimitiveValue exception="Value is not a primitive type" />
+            <Name>this</Name>
+            <IsNull>False</IsNull>
+            <AsString>{Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;}</AsString>
+            <HasExpired>False</HasExpired>
+            <Type>Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;</Type>
+          </Value>
+        </ThisValue>
+        <ContaingClassVariables>
+          <ValueCollection>
+            <Count>0</Count>
+            <Items />
+          </ValueCollection>
+        </ContaingClassVariables>
+        <ArgumentCount>2</ArgumentCount>
+        <Arguments>
+          <ValueCollection>
+            <Count>2</Count>
+            <Items>
+              <Value>
+                <IsArray>False</IsArray>
+                <ArrayLenght exception="Value is not an array" />
+                <ArrayRank exception="Value is not an array" />
+                <ArrayDimensions exception="Value is not an array" />
+                <IsObject>False</IsObject>
+                <IsPrimitive>True</IsPrimitive>
+                <IsInteger>True</IsInteger>
+                <PrimitiveValue>1</PrimitiveValue>
+                <Name>v</Name>
+                <IsNull>False</IsNull>
+                <AsString>1</AsString>
+                <HasExpired>False</HasExpired>
+                <Type>System.Int32</Type>
+              </Value>
+              <Value>
+                <IsArray>False</IsArray>
+                <ArrayLenght exception="Value is not an array" />
+                <ArrayRank exception="Value is not an array" />
+                <ArrayDimensions exception="Value is not an array" />
+                <IsObject>False</IsObject>
+                <IsPrimitive>True</IsPrimitive>
+                <IsInteger>False</IsInteger>
+                <PrimitiveValue>1!</PrimitiveValue>
+                <Name>k</Name>
+                <IsNull>False</IsNull>
+                <AsString>1!</AsString>
+                <HasExpired>False</HasExpired>
+                <Type>System.String</Type>
+              </Value>
+            </Items>
+          </ValueCollection>
+        </Arguments>
+        <LocalVariables>
+          <ValueCollection>
+            <Count>0</Count>
+            <Items />
+          </ValueCollection>
+        </LocalVariables>
+      </Function>
+    </ObjectDump>
+    <DebuggingPaused>Break</DebuggingPaused>
+    <ObjectDump name="SelectedFunction">
+      <Function>
+        <Name>StaticMetod</Name>
+        <Module>Generics.exe</Module>
+        <IsStatic>True</IsStatic>
+        <HasSymbols>True</HasSymbols>
+        <HasExpired>False</HasExpired>
+        <Type>
+          <DebugType>
+            <ManagedType>null</ManagedType>
+            <Module>
+              <Module>
+                <Unloaded>False</Unloaded>
+                <SymReader>Debugger.Wrappers.CorSym.ISymUnmanagedReader</SymReader>
+                <CorModule>Debugger.Wrappers.CorDebug.ICorDebugModule</CorModule>
+                <BaseAdress>4194304</BaseAdress>
+                <IsDynamic>False</IsDynamic>
+                <IsInMemory>False</IsInMemory>
+                <FullPath>C:\Documents and Settings\User\Local Settings\Temp\SharpDevelop\DebuggerTests\1BB0DE2859DD9A8A9B239F74810B2C2A\Generics.exe</FullPath>
+                <Filename>Generics.exe</Filename>
+                <DirectoryName>C:\Documents and Settings\User\Local Settings\Temp\SharpDevelop\DebuggerTests\1BB0DE2859DD9A8A9B239F74810B2C2A</DirectoryName>
+                <SymbolsLoaded>True</SymbolsLoaded>
+                <OrderOfLoading>1</OrderOfLoading>
+              </Module>
+            </Module>
+            <MetadataToken>33554435</MetadataToken>
+            <FullName>Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;</FullName>
+            <HasElementType>False</HasElementType>
+            <IsArray>False</IsArray>
+            <IsGenericType>True</IsGenericType>
+            <IsClass>True</IsClass>
+            <IsValueType>False</IsValueType>
+            <IsPrimitive>False</IsPrimitive>
+            <IsInteger>False</IsInteger>
+            <BaseType>
+              <DebugType>
+                <ManagedType>null</ManagedType>
+                <Module>
+                  <Module>
+                    <Unloaded>False</Unloaded>
+                    <SymReader>null</SymReader>
+                    <CorModule>Debugger.Wrappers.CorDebug.ICorDebugModule</CorModule>
+                    <BaseAdress>2030829568</BaseAdress>
+                    <IsDynamic>False</IsDynamic>
+                    <IsInMemory>False</IsInMemory>
+                    <FullPath>C:\WINDOWS\assembly\GAC_32\mscorlib\2.0.0.0__b77a5c561934e089\mscorlib.dll</FullPath>
+                    <Filename>mscorlib.dll</Filename>
+                    <DirectoryName>C:\WINDOWS\assembly\GAC_32\mscorlib\2.0.0.0__b77a5c561934e089</DirectoryName>
+                    <SymbolsLoaded>False</SymbolsLoaded>
+                    <OrderOfLoading>0</OrderOfLoading>
+                  </Module>
+                </Module>
+                <MetadataToken>33554434</MetadataToken>
+                <FullName>System.Object</FullName>
+                <HasElementType>False</HasElementType>
+                <IsArray>False</IsArray>
+                <IsGenericType>False</IsGenericType>
+                <IsClass>True</IsClass>
+                <IsValueType>False</IsValueType>
+                <IsPrimitive>False</IsPrimitive>
+                <IsInteger>False</IsInteger>
+                <BaseType>null</BaseType>
+              </DebugType>
+            </BaseType>
+          </DebugType>
+        </Type>
+        <NextStatement>Start=48,4 End=48,40</NextStatement>
+        <ThisValue exception="Static method does not have 'this'." />
+        <ContaingClassVariables>
+          <ValueCollection>
+            <Count>0</Count>
+            <Items />
+          </ValueCollection>
+        </ContaingClassVariables>
+        <ArgumentCount>2</ArgumentCount>
+        <Arguments>
+          <ValueCollection>
+            <Count>2</Count>
+            <Items>
+              <Value>
+                <IsArray>False</IsArray>
+                <ArrayLenght exception="Value is not an array" />
+                <ArrayRank exception="Value is not an array" />
+                <ArrayDimensions exception="Value is not an array" />
+                <IsObject>False</IsObject>
+                <IsPrimitive>True</IsPrimitive>
+                <IsInteger>True</IsInteger>
+                <PrimitiveValue>1</PrimitiveValue>
+                <Name>v</Name>
+                <IsNull>False</IsNull>
+                <AsString>1</AsString>
+                <HasExpired>False</HasExpired>
+                <Type>System.Int32</Type>
+              </Value>
+              <Value>
+                <IsArray>False</IsArray>
+                <ArrayLenght exception="Value is not an array" />
+                <ArrayRank exception="Value is not an array" />
+                <ArrayDimensions exception="Value is not an array" />
+                <IsObject>False</IsObject>
+                <IsPrimitive>True</IsPrimitive>
+                <IsInteger>False</IsInteger>
+                <PrimitiveValue>1!</PrimitiveValue>
+                <Name>k</Name>
+                <IsNull>False</IsNull>
+                <AsString>1!</AsString>
+                <HasExpired>False</HasExpired>
+                <Type>System.String</Type>
+              </Value>
+            </Items>
+          </ValueCollection>
+        </Arguments>
+        <LocalVariables>
+          <ValueCollection>
+            <Count>0</Count>
+            <Items />
+          </ValueCollection>
+        </LocalVariables>
+      </Function>
+    </ObjectDump>
+    <DebuggingPaused>Break</DebuggingPaused>
+    <ObjectDump name="SelectedFunction">
+      <Function>
+        <Name>StaticGenericMethod</Name>
+        <Module>Generics.exe</Module>
+        <IsStatic>True</IsStatic>
+        <HasSymbols>True</HasSymbols>
+        <HasExpired>False</HasExpired>
+        <Type>
+          <DebugType>
+            <ManagedType>null</ManagedType>
+            <Module>
+              <Module>
+                <Unloaded>False</Unloaded>
+                <SymReader>Debugger.Wrappers.CorSym.ISymUnmanagedReader</SymReader>
+                <CorModule>Debugger.Wrappers.CorDebug.ICorDebugModule</CorModule>
+                <BaseAdress>4194304</BaseAdress>
+                <IsDynamic>False</IsDynamic>
+                <IsInMemory>False</IsInMemory>
+                <FullPath>C:\Documents and Settings\User\Local Settings\Temp\SharpDevelop\DebuggerTests\1BB0DE2859DD9A8A9B239F74810B2C2A\Generics.exe</FullPath>
+                <Filename>Generics.exe</Filename>
+                <DirectoryName>C:\Documents and Settings\User\Local Settings\Temp\SharpDevelop\DebuggerTests\1BB0DE2859DD9A8A9B239F74810B2C2A</DirectoryName>
+                <SymbolsLoaded>True</SymbolsLoaded>
+                <OrderOfLoading>1</OrderOfLoading>
+              </Module>
+            </Module>
+            <MetadataToken>33554435</MetadataToken>
+            <FullName>Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;</FullName>
+            <HasElementType>False</HasElementType>
+            <IsArray>False</IsArray>
+            <IsGenericType>True</IsGenericType>
+            <IsClass>True</IsClass>
+            <IsValueType>False</IsValueType>
+            <IsPrimitive>False</IsPrimitive>
+            <IsInteger>False</IsInteger>
+            <BaseType>
+              <DebugType>
+                <ManagedType>null</ManagedType>
+                <Module>
+                  <Module>
+                    <Unloaded>False</Unloaded>
+                    <SymReader>null</SymReader>
+                    <CorModule>Debugger.Wrappers.CorDebug.ICorDebugModule</CorModule>
+                    <BaseAdress>2030829568</BaseAdress>
+                    <IsDynamic>False</IsDynamic>
+                    <IsInMemory>False</IsInMemory>
+                    <FullPath>C:\WINDOWS\assembly\GAC_32\mscorlib\2.0.0.0__b77a5c561934e089\mscorlib.dll</FullPath>
+                    <Filename>mscorlib.dll</Filename>
+                    <DirectoryName>C:\WINDOWS\assembly\GAC_32\mscorlib\2.0.0.0__b77a5c561934e089</DirectoryName>
+                    <SymbolsLoaded>False</SymbolsLoaded>
+                    <OrderOfLoading>0</OrderOfLoading>
+                  </Module>
+                </Module>
+                <MetadataToken>33554434</MetadataToken>
+                <FullName>System.Object</FullName>
+                <HasElementType>False</HasElementType>
+                <IsArray>False</IsArray>
+                <IsGenericType>False</IsGenericType>
+                <IsClass>True</IsClass>
+                <IsValueType>False</IsValueType>
+                <IsPrimitive>False</IsPrimitive>
+                <IsInteger>False</IsInteger>
+                <BaseType>null</BaseType>
+              </DebugType>
+            </BaseType>
+          </DebugType>
+        </Type>
+        <NextStatement>Start=54,4 End=54,40</NextStatement>
+        <ThisValue exception="Static method does not have 'this'." />
+        <ContaingClassVariables>
+          <ValueCollection>
+            <Count>0</Count>
+            <Items />
+          </ValueCollection>
+        </ContaingClassVariables>
+        <ArgumentCount>2</ArgumentCount>
+        <Arguments>
+          <ValueCollection>
+            <Count>2</Count>
+            <Items>
+              <Value>
+                <IsArray>False</IsArray>
+                <ArrayLenght exception="Value is not an array" />
+                <ArrayRank exception="Value is not an array" />
+                <ArrayDimensions exception="Value is not an array" />
+                <IsObject>False</IsObject>
+                <IsPrimitive>True</IsPrimitive>
+                <IsInteger>True</IsInteger>
+                <PrimitiveValue>1</PrimitiveValue>
+                <Name>v</Name>
+                <IsNull>False</IsNull>
+                <AsString>1</AsString>
+                <HasExpired>False</HasExpired>
+                <Type>System.Int32</Type>
+              </Value>
+              <Value>
+                <IsArray>False</IsArray>
+                <ArrayLenght exception="Value is not an array" />
+                <ArrayRank exception="Value is not an array" />
+                <ArrayDimensions exception="Value is not an array" />
+                <IsObject>False</IsObject>
+                <IsPrimitive>True</IsPrimitive>
+                <IsInteger>False</IsInteger>
+                <PrimitiveValue>1!</PrimitiveValue>
+                <Name>k</Name>
+                <IsNull>False</IsNull>
+                <AsString>1!</AsString>
+                <HasExpired>False</HasExpired>
+                <Type>System.String</Type>
+              </Value>
+            </Items>
+          </ValueCollection>
+        </Arguments>
+        <LocalVariables>
+          <ValueCollection>
+            <Count>0</Count>
+            <Items />
+          </ValueCollection>
+        </LocalVariables>
+      </Function>
+    </ObjectDump>
+    <DebuggingPaused>Break</DebuggingPaused>
+    <ObjectDump name="SelectedFunction">
+      <Function>
+        <Name>Metod</Name>
+        <Module>Generics.exe</Module>
+        <IsStatic>False</IsStatic>
+        <HasSymbols>True</HasSymbols>
+        <HasExpired>False</HasExpired>
+        <Type>
+          <DebugType>
+            <ManagedType>null</ManagedType>
+            <Module>
+              <Module>
+                <Unloaded>False</Unloaded>
+                <SymReader>Debugger.Wrappers.CorSym.ISymUnmanagedReader</SymReader>
+                <CorModule>Debugger.Wrappers.CorDebug.ICorDebugModule</CorModule>
+                <BaseAdress>4194304</BaseAdress>
+                <IsDynamic>False</IsDynamic>
+                <IsInMemory>False</IsInMemory>
+                <FullPath>C:\Documents and Settings\User\Local Settings\Temp\SharpDevelop\DebuggerTests\1BB0DE2859DD9A8A9B239F74810B2C2A\Generics.exe</FullPath>
+                <Filename>Generics.exe</Filename>
+                <DirectoryName>C:\Documents and Settings\User\Local Settings\Temp\SharpDevelop\DebuggerTests\1BB0DE2859DD9A8A9B239F74810B2C2A</DirectoryName>
+                <SymbolsLoaded>True</SymbolsLoaded>
+                <OrderOfLoading>1</OrderOfLoading>
+              </Module>
+            </Module>
+            <MetadataToken>33554436</MetadataToken>
+            <FullName>Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;</FullName>
+            <HasElementType>False</HasElementType>
+            <IsArray>False</IsArray>
+            <IsGenericType>True</IsGenericType>
+            <IsClass>False</IsClass>
+            <IsValueType>True</IsValueType>
+            <IsPrimitive>False</IsPrimitive>
+            <IsInteger>False</IsInteger>
+            <BaseType>
+              <DebugType>
+                <ManagedType>null</ManagedType>
+                <Module>
+                  <Module>
+                    <Unloaded>False</Unloaded>
+                    <SymReader>null</SymReader>
+                    <CorModule>Debugger.Wrappers.CorDebug.ICorDebugModule</CorModule>
+                    <BaseAdress>2030829568</BaseAdress>
+                    <IsDynamic>False</IsDynamic>
+                    <IsInMemory>False</IsInMemory>
+                    <FullPath>C:\WINDOWS\assembly\GAC_32\mscorlib\2.0.0.0__b77a5c561934e089\mscorlib.dll</FullPath>
+                    <Filename>mscorlib.dll</Filename>
+                    <DirectoryName>C:\WINDOWS\assembly\GAC_32\mscorlib\2.0.0.0__b77a5c561934e089</DirectoryName>
+                    <SymbolsLoaded>False</SymbolsLoaded>
+                    <OrderOfLoading>0</OrderOfLoading>
+                  </Module>
+                </Module>
+                <MetadataToken>33554446</MetadataToken>
+                <FullName>System.ValueType</FullName>
+                <HasElementType>False</HasElementType>
+                <IsArray>False</IsArray>
+                <IsGenericType>False</IsGenericType>
+                <IsClass>True</IsClass>
+                <IsValueType>False</IsValueType>
+                <IsPrimitive>False</IsPrimitive>
+                <IsInteger>False</IsInteger>
+                <BaseType>
+                  <DebugType>
+                    <ManagedType>null</ManagedType>
+                    <Module>
+                      <Module>
+                        <Unloaded>False</Unloaded>
+                        <SymReader>null</SymReader>
+                        <CorModule>Debugger.Wrappers.CorDebug.ICorDebugModule</CorModule>
+                        <BaseAdress>2030829568</BaseAdress>
+                        <IsDynamic>False</IsDynamic>
+                        <IsInMemory>False</IsInMemory>
+                        <FullPath>C:\WINDOWS\assembly\GAC_32\mscorlib\2.0.0.0__b77a5c561934e089\mscorlib.dll</FullPath>
+                        <Filename>mscorlib.dll</Filename>
+                        <DirectoryName>C:\WINDOWS\assembly\GAC_32\mscorlib\2.0.0.0__b77a5c561934e089</DirectoryName>
+                        <SymbolsLoaded>False</SymbolsLoaded>
+                        <OrderOfLoading>0</OrderOfLoading>
+                      </Module>
+                    </Module>
+                    <MetadataToken>33554434</MetadataToken>
+                    <FullName>System.Object</FullName>
+                    <HasElementType>False</HasElementType>
+                    <IsArray>False</IsArray>
+                    <IsGenericType>False</IsGenericType>
+                    <IsClass>True</IsClass>
+                    <IsValueType>False</IsValueType>
+                    <IsPrimitive>False</IsPrimitive>
+                    <IsInteger>False</IsInteger>
+                    <BaseType>null</BaseType>
+                  </DebugType>
+                </BaseType>
+              </DebugType>
+            </BaseType>
+          </DebugType>
+        </Type>
+        <NextStatement>Start=63,4 End=63,40</NextStatement>
+        <ThisValue exception="Unknown type" />
+        <ContaingClassVariables exception="Unknown type" />
+        <ArgumentCount>2</ArgumentCount>
+        <Arguments>
+          <ValueCollection>
+            <Count>2</Count>
+            <Items>
+              <Value>
+                <IsArray>False</IsArray>
+                <ArrayLenght exception="Value is not an array" />
+                <ArrayRank exception="Value is not an array" />
+                <ArrayDimensions exception="Value is not an array" />
+                <IsObject>False</IsObject>
+                <IsPrimitive>True</IsPrimitive>
+                <IsInteger>True</IsInteger>
+                <PrimitiveValue>1</PrimitiveValue>
+                <Name>v</Name>
+                <IsNull>False</IsNull>
+                <AsString>1</AsString>
+                <HasExpired>False</HasExpired>
+                <Type>System.Int32</Type>
+              </Value>
+              <Value>
+                <IsArray>False</IsArray>
+                <ArrayLenght exception="Value is not an array" />
+                <ArrayRank exception="Value is not an array" />
+                <ArrayDimensions exception="Value is not an array" />
+                <IsObject>False</IsObject>
+                <IsPrimitive>True</IsPrimitive>
+                <IsInteger>False</IsInteger>
+                <PrimitiveValue>1!</PrimitiveValue>
+                <Name>k</Name>
+                <IsNull>False</IsNull>
+                <AsString>1!</AsString>
+                <HasExpired>False</HasExpired>
+                <Type>System.String</Type>
+              </Value>
+            </Items>
+          </ValueCollection>
+        </Arguments>
+        <LocalVariables>
+          <ValueCollection>
+            <Count>0</Count>
+            <Items />
+          </ValueCollection>
+        </LocalVariables>
+      </Function>
+    </ObjectDump>
+    <DebuggingPaused>Break</DebuggingPaused>
+    <ObjectDump name="SelectedFunction">
+      <Function>
+        <Name>GenericMethod</Name>
+        <Module>Generics.exe</Module>
+        <IsStatic>False</IsStatic>
+        <HasSymbols>True</HasSymbols>
+        <HasExpired>False</HasExpired>
+        <Type>
+          <DebugType>
+            <ManagedType>null</ManagedType>
+            <Module>
+              <Module>
+                <Unloaded>False</Unloaded>
+                <SymReader>Debugger.Wrappers.CorSym.ISymUnmanagedReader</SymReader>
+                <CorModule>Debugger.Wrappers.CorDebug.ICorDebugModule</CorModule>
+                <BaseAdress>4194304</BaseAdress>
+                <IsDynamic>False</IsDynamic>
+                <IsInMemory>False</IsInMemory>
+                <FullPath>C:\Documents and Settings\User\Local Settings\Temp\SharpDevelop\DebuggerTests\1BB0DE2859DD9A8A9B239F74810B2C2A\Generics.exe</FullPath>
+                <Filename>Generics.exe</Filename>
+                <DirectoryName>C:\Documents and Settings\User\Local Settings\Temp\SharpDevelop\DebuggerTests\1BB0DE2859DD9A8A9B239F74810B2C2A</DirectoryName>
+                <SymbolsLoaded>True</SymbolsLoaded>
+                <OrderOfLoading>1</OrderOfLoading>
+              </Module>
+            </Module>
+            <MetadataToken>33554436</MetadataToken>
+            <FullName>Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;</FullName>
+            <HasElementType>False</HasElementType>
+            <IsArray>False</IsArray>
+            <IsGenericType>True</IsGenericType>
+            <IsClass>False</IsClass>
+            <IsValueType>True</IsValueType>
+            <IsPrimitive>False</IsPrimitive>
+            <IsInteger>False</IsInteger>
+            <BaseType>
+              <DebugType>
+                <ManagedType>null</ManagedType>
+                <Module>
+                  <Module>
+                    <Unloaded>False</Unloaded>
+                    <SymReader>null</SymReader>
+                    <CorModule>Debugger.Wrappers.CorDebug.ICorDebugModule</CorModule>
+                    <BaseAdress>2030829568</BaseAdress>
+                    <IsDynamic>False</IsDynamic>
+                    <IsInMemory>False</IsInMemory>
+                    <FullPath>C:\WINDOWS\assembly\GAC_32\mscorlib\2.0.0.0__b77a5c561934e089\mscorlib.dll</FullPath>
+                    <Filename>mscorlib.dll</Filename>
+                    <DirectoryName>C:\WINDOWS\assembly\GAC_32\mscorlib\2.0.0.0__b77a5c561934e089</DirectoryName>
+                    <SymbolsLoaded>False</SymbolsLoaded>
+                    <OrderOfLoading>0</OrderOfLoading>
+                  </Module>
+                </Module>
+                <MetadataToken>33554446</MetadataToken>
+                <FullName>System.ValueType</FullName>
+                <HasElementType>False</HasElementType>
+                <IsArray>False</IsArray>
+                <IsGenericType>False</IsGenericType>
+                <IsClass>True</IsClass>
+                <IsValueType>False</IsValueType>
+                <IsPrimitive>False</IsPrimitive>
+                <IsInteger>False</IsInteger>
+                <BaseType>
+                  <DebugType>
+                    <ManagedType>null</ManagedType>
+                    <Module>
+                      <Module>
+                        <Unloaded>False</Unloaded>
+                        <SymReader>null</SymReader>
+                        <CorModule>Debugger.Wrappers.CorDebug.ICorDebugModule</CorModule>
+                        <BaseAdress>2030829568</BaseAdress>
+                        <IsDynamic>False</IsDynamic>
+                        <IsInMemory>False</IsInMemory>
+                        <FullPath>C:\WINDOWS\assembly\GAC_32\mscorlib\2.0.0.0__b77a5c561934e089\mscorlib.dll</FullPath>
+                        <Filename>mscorlib.dll</Filename>
+                        <DirectoryName>C:\WINDOWS\assembly\GAC_32\mscorlib\2.0.0.0__b77a5c561934e089</DirectoryName>
+                        <SymbolsLoaded>False</SymbolsLoaded>
+                        <OrderOfLoading>0</OrderOfLoading>
+                      </Module>
+                    </Module>
+                    <MetadataToken>33554434</MetadataToken>
+                    <FullName>System.Object</FullName>
+                    <HasElementType>False</HasElementType>
+                    <IsArray>False</IsArray>
+                    <IsGenericType>False</IsGenericType>
+                    <IsClass>True</IsClass>
+                    <IsValueType>False</IsValueType>
+                    <IsPrimitive>False</IsPrimitive>
+                    <IsInteger>False</IsInteger>
+                    <BaseType>null</BaseType>
+                  </DebugType>
+                </BaseType>
+              </DebugType>
+            </BaseType>
+          </DebugType>
+        </Type>
+        <NextStatement>Start=69,4 End=69,40</NextStatement>
+        <ThisValue exception="Unknown type" />
+        <ContaingClassVariables exception="Unknown type" />
+        <ArgumentCount>2</ArgumentCount>
+        <Arguments>
+          <ValueCollection>
+            <Count>2</Count>
+            <Items>
+              <Value>
+                <IsArray>False</IsArray>
+                <ArrayLenght exception="Value is not an array" />
+                <ArrayRank exception="Value is not an array" />
+                <ArrayDimensions exception="Value is not an array" />
+                <IsObject>False</IsObject>
+                <IsPrimitive>True</IsPrimitive>
+                <IsInteger>True</IsInteger>
+                <PrimitiveValue>1</PrimitiveValue>
+                <Name>v</Name>
+                <IsNull>False</IsNull>
+                <AsString>1</AsString>
+                <HasExpired>False</HasExpired>
+                <Type>System.Int32</Type>
+              </Value>
+              <Value>
+                <IsArray>False</IsArray>
+                <ArrayLenght exception="Value is not an array" />
+                <ArrayRank exception="Value is not an array" />
+                <ArrayDimensions exception="Value is not an array" />
+                <IsObject>False</IsObject>
+                <IsPrimitive>True</IsPrimitive>
+                <IsInteger>False</IsInteger>
+                <PrimitiveValue>1!</PrimitiveValue>
+                <Name>k</Name>
+                <IsNull>False</IsNull>
+                <AsString>1!</AsString>
+                <HasExpired>False</HasExpired>
+                <Type>System.String</Type>
+              </Value>
+            </Items>
+          </ValueCollection>
+        </Arguments>
+        <LocalVariables>
+          <ValueCollection>
+            <Count>0</Count>
+            <Items />
+          </ValueCollection>
+        </LocalVariables>
+      </Function>
+    </ObjectDump>
+    <DebuggingPaused>Break</DebuggingPaused>
+    <ObjectDump name="SelectedFunction">
+      <Function>
+        <Name>StaticMetod</Name>
+        <Module>Generics.exe</Module>
+        <IsStatic>True</IsStatic>
+        <HasSymbols>True</HasSymbols>
+        <HasExpired>False</HasExpired>
+        <Type>
+          <DebugType>
+            <ManagedType>null</ManagedType>
+            <Module>
+              <Module>
+                <Unloaded>False</Unloaded>
+                <SymReader>Debugger.Wrappers.CorSym.ISymUnmanagedReader</SymReader>
+                <CorModule>Debugger.Wrappers.CorDebug.ICorDebugModule</CorModule>
+                <BaseAdress>4194304</BaseAdress>
+                <IsDynamic>False</IsDynamic>
+                <IsInMemory>False</IsInMemory>
+                <FullPath>C:\Documents and Settings\User\Local Settings\Temp\SharpDevelop\DebuggerTests\1BB0DE2859DD9A8A9B239F74810B2C2A\Generics.exe</FullPath>
+                <Filename>Generics.exe</Filename>
+                <DirectoryName>C:\Documents and Settings\User\Local Settings\Temp\SharpDevelop\DebuggerTests\1BB0DE2859DD9A8A9B239F74810B2C2A</DirectoryName>
+                <SymbolsLoaded>True</SymbolsLoaded>
+                <OrderOfLoading>1</OrderOfLoading>
+              </Module>
+            </Module>
+            <MetadataToken>33554436</MetadataToken>
+            <FullName>Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;</FullName>
+            <HasElementType>False</HasElementType>
+            <IsArray>False</IsArray>
+            <IsGenericType>True</IsGenericType>
+            <IsClass>False</IsClass>
+            <IsValueType>True</IsValueType>
+            <IsPrimitive>False</IsPrimitive>
+            <IsInteger>False</IsInteger>
+            <BaseType>
+              <DebugType>
+                <ManagedType>null</ManagedType>
+                <Module>
+                  <Module>
+                    <Unloaded>False</Unloaded>
+                    <SymReader>null</SymReader>
+                    <CorModule>Debugger.Wrappers.CorDebug.ICorDebugModule</CorModule>
+                    <BaseAdress>2030829568</BaseAdress>
+                    <IsDynamic>False</IsDynamic>
+                    <IsInMemory>False</IsInMemory>
+                    <FullPath>C:\WINDOWS\assembly\GAC_32\mscorlib\2.0.0.0__b77a5c561934e089\mscorlib.dll</FullPath>
+                    <Filename>mscorlib.dll</Filename>
+                    <DirectoryName>C:\WINDOWS\assembly\GAC_32\mscorlib\2.0.0.0__b77a5c561934e089</DirectoryName>
+                    <SymbolsLoaded>False</SymbolsLoaded>
+                    <OrderOfLoading>0</OrderOfLoading>
+                  </Module>
+                </Module>
+                <MetadataToken>33554446</MetadataToken>
+                <FullName>System.ValueType</FullName>
+                <HasElementType>False</HasElementType>
+                <IsArray>False</IsArray>
+                <IsGenericType>False</IsGenericType>
+                <IsClass>True</IsClass>
+                <IsValueType>False</IsValueType>
+                <IsPrimitive>False</IsPrimitive>
+                <IsInteger>False</IsInteger>
+                <BaseType>
+                  <DebugType>
+                    <ManagedType>null</ManagedType>
+                    <Module>
+                      <Module>
+                        <Unloaded>False</Unloaded>
+                        <SymReader>null</SymReader>
+                        <CorModule>Debugger.Wrappers.CorDebug.ICorDebugModule</CorModule>
+                        <BaseAdress>2030829568</BaseAdress>
+                        <IsDynamic>False</IsDynamic>
+                        <IsInMemory>False</IsInMemory>
+                        <FullPath>C:\WINDOWS\assembly\GAC_32\mscorlib\2.0.0.0__b77a5c561934e089\mscorlib.dll</FullPath>
+                        <Filename>mscorlib.dll</Filename>
+                        <DirectoryName>C:\WINDOWS\assembly\GAC_32\mscorlib\2.0.0.0__b77a5c561934e089</DirectoryName>
+                        <SymbolsLoaded>False</SymbolsLoaded>
+                        <OrderOfLoading>0</OrderOfLoading>
+                      </Module>
+                    </Module>
+                    <MetadataToken>33554434</MetadataToken>
+                    <FullName>System.Object</FullName>
+                    <HasElementType>False</HasElementType>
+                    <IsArray>False</IsArray>
+                    <IsGenericType>False</IsGenericType>
+                    <IsClass>True</IsClass>
+                    <IsValueType>False</IsValueType>
+                    <IsPrimitive>False</IsPrimitive>
+                    <IsInteger>False</IsInteger>
+                    <BaseType>null</BaseType>
+                  </DebugType>
+                </BaseType>
+              </DebugType>
+            </BaseType>
+          </DebugType>
+        </Type>
+        <NextStatement>Start=75,4 End=75,40</NextStatement>
+        <ThisValue exception="Static method does not have 'this'." />
+        <ContaingClassVariables>
+          <ValueCollection>
+            <Count>0</Count>
+            <Items />
+          </ValueCollection>
+        </ContaingClassVariables>
+        <ArgumentCount>2</ArgumentCount>
+        <Arguments>
+          <ValueCollection>
+            <Count>2</Count>
+            <Items>
+              <Value>
+                <IsArray>False</IsArray>
+                <ArrayLenght exception="Value is not an array" />
+                <ArrayRank exception="Value is not an array" />
+                <ArrayDimensions exception="Value is not an array" />
+                <IsObject>False</IsObject>
+                <IsPrimitive>True</IsPrimitive>
+                <IsInteger>True</IsInteger>
+                <PrimitiveValue>1</PrimitiveValue>
+                <Name>v</Name>
+                <IsNull>False</IsNull>
+                <AsString>1</AsString>
+                <HasExpired>False</HasExpired>
+                <Type>System.Int32</Type>
+              </Value>
+              <Value>
+                <IsArray>False</IsArray>
+                <ArrayLenght exception="Value is not an array" />
+                <ArrayRank exception="Value is not an array" />
+                <ArrayDimensions exception="Value is not an array" />
+                <IsObject>False</IsObject>
+                <IsPrimitive>True</IsPrimitive>
+                <IsInteger>False</IsInteger>
+                <PrimitiveValue>1!</PrimitiveValue>
+                <Name>k</Name>
+                <IsNull>False</IsNull>
+                <AsString>1!</AsString>
+                <HasExpired>False</HasExpired>
+                <Type>System.String</Type>
+              </Value>
+            </Items>
+          </ValueCollection>
+        </Arguments>
+        <LocalVariables>
+          <ValueCollection>
+            <Count>0</Count>
+            <Items />
+          </ValueCollection>
+        </LocalVariables>
+      </Function>
+    </ObjectDump>
+    <DebuggingPaused>Break</DebuggingPaused>
+    <ObjectDump name="SelectedFunction">
+      <Function>
+        <Name>StaticGenericMethod</Name>
+        <Module>Generics.exe</Module>
+        <IsStatic>True</IsStatic>
+        <HasSymbols>True</HasSymbols>
+        <HasExpired>False</HasExpired>
+        <Type>
+          <DebugType>
+            <ManagedType>null</ManagedType>
+            <Module>
+              <Module>
+                <Unloaded>False</Unloaded>
+                <SymReader>Debugger.Wrappers.CorSym.ISymUnmanagedReader</SymReader>
+                <CorModule>Debugger.Wrappers.CorDebug.ICorDebugModule</CorModule>
+                <BaseAdress>4194304</BaseAdress>
+                <IsDynamic>False</IsDynamic>
+                <IsInMemory>False</IsInMemory>
+                <FullPath>C:\Documents and Settings\User\Local Settings\Temp\SharpDevelop\DebuggerTests\1BB0DE2859DD9A8A9B239F74810B2C2A\Generics.exe</FullPath>
+                <Filename>Generics.exe</Filename>
+                <DirectoryName>C:\Documents and Settings\User\Local Settings\Temp\SharpDevelop\DebuggerTests\1BB0DE2859DD9A8A9B239F74810B2C2A</DirectoryName>
+                <SymbolsLoaded>True</SymbolsLoaded>
+                <OrderOfLoading>1</OrderOfLoading>
+              </Module>
+            </Module>
+            <MetadataToken>33554436</MetadataToken>
+            <FullName>Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;</FullName>
+            <HasElementType>False</HasElementType>
+            <IsArray>False</IsArray>
+            <IsGenericType>True</IsGenericType>
+            <IsClass>False</IsClass>
+            <IsValueType>True</IsValueType>
+            <IsPrimitive>False</IsPrimitive>
+            <IsInteger>False</IsInteger>
+            <BaseType>
+              <DebugType>
+                <ManagedType>null</ManagedType>
+                <Module>
+                  <Module>
+                    <Unloaded>False</Unloaded>
+                    <SymReader>null</SymReader>
+                    <CorModule>Debugger.Wrappers.CorDebug.ICorDebugModule</CorModule>
+                    <BaseAdress>2030829568</BaseAdress>
+                    <IsDynamic>False</IsDynamic>
+                    <IsInMemory>False</IsInMemory>
+                    <FullPath>C:\WINDOWS\assembly\GAC_32\mscorlib\2.0.0.0__b77a5c561934e089\mscorlib.dll</FullPath>
+                    <Filename>mscorlib.dll</Filename>
+                    <DirectoryName>C:\WINDOWS\assembly\GAC_32\mscorlib\2.0.0.0__b77a5c561934e089</DirectoryName>
+                    <SymbolsLoaded>False</SymbolsLoaded>
+                    <OrderOfLoading>0</OrderOfLoading>
+                  </Module>
+                </Module>
+                <MetadataToken>33554446</MetadataToken>
+                <FullName>System.ValueType</FullName>
+                <HasElementType>False</HasElementType>
+                <IsArray>False</IsArray>
+                <IsGenericType>False</IsGenericType>
+                <IsClass>True</IsClass>
+                <IsValueType>False</IsValueType>
+                <IsPrimitive>False</IsPrimitive>
+                <IsInteger>False</IsInteger>
+                <BaseType>
+                  <DebugType>
+                    <ManagedType>null</ManagedType>
+                    <Module>
+                      <Module>
+                        <Unloaded>False</Unloaded>
+                        <SymReader>null</SymReader>
+                        <CorModule>Debugger.Wrappers.CorDebug.ICorDebugModule</CorModule>
+                        <BaseAdress>2030829568</BaseAdress>
+                        <IsDynamic>False</IsDynamic>
+                        <IsInMemory>False</IsInMemory>
+                        <FullPath>C:\WINDOWS\assembly\GAC_32\mscorlib\2.0.0.0__b77a5c561934e089\mscorlib.dll</FullPath>
+                        <Filename>mscorlib.dll</Filename>
+                        <DirectoryName>C:\WINDOWS\assembly\GAC_32\mscorlib\2.0.0.0__b77a5c561934e089</DirectoryName>
+                        <SymbolsLoaded>False</SymbolsLoaded>
+                        <OrderOfLoading>0</OrderOfLoading>
+                      </Module>
+                    </Module>
+                    <MetadataToken>33554434</MetadataToken>
+                    <FullName>System.Object</FullName>
+                    <HasElementType>False</HasElementType>
+                    <IsArray>False</IsArray>
+                    <IsGenericType>False</IsGenericType>
+                    <IsClass>True</IsClass>
+                    <IsValueType>False</IsValueType>
+                    <IsPrimitive>False</IsPrimitive>
+                    <IsInteger>False</IsInteger>
+                    <BaseType>null</BaseType>
+                  </DebugType>
+                </BaseType>
+              </DebugType>
+            </BaseType>
+          </DebugType>
+        </Type>
+        <NextStatement>Start=81,4 End=81,40</NextStatement>
+        <ThisValue exception="Static method does not have 'this'." />
+        <ContaingClassVariables>
+          <ValueCollection>
+            <Count>0</Count>
+            <Items />
+          </ValueCollection>
+        </ContaingClassVariables>
+        <ArgumentCount>2</ArgumentCount>
+        <Arguments>
+          <ValueCollection>
+            <Count>2</Count>
+            <Items>
+              <Value>
+                <IsArray>False</IsArray>
+                <ArrayLenght exception="Value is not an array" />
+                <ArrayRank exception="Value is not an array" />
+                <ArrayDimensions exception="Value is not an array" />
+                <IsObject>False</IsObject>
+                <IsPrimitive>True</IsPrimitive>
+                <IsInteger>True</IsInteger>
+                <PrimitiveValue>1</PrimitiveValue>
+                <Name>v</Name>
+                <IsNull>False</IsNull>
+                <AsString>1</AsString>
+                <HasExpired>False</HasExpired>
+                <Type>System.Int32</Type>
+              </Value>
+              <Value>
+                <IsArray>False</IsArray>
+                <ArrayLenght exception="Value is not an array" />
+                <ArrayRank exception="Value is not an array" />
+                <ArrayDimensions exception="Value is not an array" />
+                <IsObject>False</IsObject>
+                <IsPrimitive>True</IsPrimitive>
+                <IsInteger>False</IsInteger>
+                <PrimitiveValue>1!</PrimitiveValue>
+                <Name>k</Name>
+                <IsNull>False</IsNull>
+                <AsString>1!</AsString>
+                <HasExpired>False</HasExpired>
+                <Type>System.String</Type>
+              </Value>
+            </Items>
+          </ValueCollection>
+        </Arguments>
+        <LocalVariables>
+          <ValueCollection>
+            <Count>0</Count>
+            <Items />
+          </ValueCollection>
+        </LocalVariables>
+      </Function>
+    </ObjectDump>
+    <DebuggingPaused>Break</DebuggingPaused>
+    <ProcessExited />
+  </Test>
+</DebuggerTests>

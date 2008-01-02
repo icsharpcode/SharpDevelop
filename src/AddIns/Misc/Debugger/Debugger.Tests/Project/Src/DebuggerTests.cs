@@ -442,5 +442,22 @@ namespace Debugger.Tests
 			process.WaitForExit();
 			CheckXmlOutput();
 		}
+		
+		[Test]
+		public void Generics()
+		{
+			StartTest("Generics");
+			
+			for(int i = 0; i < 8; i++) {
+				WaitForPause();
+				ObjectDump("SelectedFunction", process.SelectedFunction);
+				process.Continue();
+			}
+			
+			WaitForPause();
+			process.Continue();
+			process.WaitForExit();
+			CheckXmlOutput();
+		}
 	}
 }

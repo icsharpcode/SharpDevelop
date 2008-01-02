@@ -43,6 +43,7 @@
     <Compile Include="Src\TestPrograms\Exception.cs" />
     <Compile Include="Src\TestPrograms\ExceptionCustom.cs" />
     <Compile Include="Src\TestPrograms\GenericDictionary.cs" />
+    <Compile Include="Src\TestPrograms\Generics.cs" />
     <EmbeddedResource Include="Src\TestPrograms\*.cs" />
     <EmbeddedResource Include="Src\TestPrograms\*.xml" />
   </ItemGroup>
