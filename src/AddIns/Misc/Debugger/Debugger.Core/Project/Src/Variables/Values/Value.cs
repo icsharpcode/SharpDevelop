@@ -36,58 +36,18 @@ namespace Debugger
 	/// </remarks>
 	public partial class Value: DebuggerObject, IExpirable
 	{
-		string name;
-		Process process;
+		Process        process;
+		string         name;
+		ICorDebugValue rawCorValue;
 		
-		CorValueGetter corValueGetter;
+		ICorDebugValue corValue;
+		PauseSession   corValue_pauseSession;
+		DebugType      type;
 		
 		/// <summary> Occurs when the Value can not be used </summary>
 		public event EventHandler Expired;
 		
-		bool isExpired = false;
-		
-		ValueCache cache;
-		
-		private class ValueCache
-		{
-			public PauseSession   PauseSession;
-			public ICorDebugValue RawCorValue;
-			public ICorDebugValue CorValue;
-			public DebugType      Type;
-			public string         AsString = String.Empty;
-		}
-		
-		/// <summary>
-		/// Cache stores expensive or commonly used information about the value
-		/// </summary>
-		ValueCache Cache {
-			get {
-				if (this.HasExpired) throw new CannotGetValueException("Value has expired");
-				
-				if (cache == null || (cache.PauseSession != process.PauseSession && !cache.RawCorValue.Is<ICorDebugHandleValue>())) {
-					DateTime startTime = Util.HighPrecisionTimer.Now;
-					
-					ValueCache newCache = new ValueCache();
-					newCache.RawCorValue = corValueGetter();
-					newCache.PauseSession = process.PauseSession;
-					newCache.CorValue = DereferenceUnbox(newCache.RawCorValue);
-					newCache.Type = DebugType.Create(process, newCache.RawCorValue.As<ICorDebugValue2>().ExactType);
-					cache = newCache;
-					
-					// AsString representation
-					if (IsNull)      cache.AsString = "<null>";
-					if (IsArray)     cache.AsString = "{" + this.Type.FullName + "}";
-					if (IsObject)    cache.AsString = "{" + this.Type.FullName + "}";
-					//if (IsObject)    cache.AsString = Eval.InvokeMethod(Process, typeof(object), "ToString", this, new Value[] {}).AsString;
-					if (IsPrimitive) cache.AsString = PrimitiveValue != null ? PrimitiveValue.ToString() : String.Empty;
-					
-					TimeSpan totalTime = Util.HighPrecisionTimer.Now - startTime;
-					string name = this is Value ? ((Value)this).Name + " = " : String.Empty;
-					process.TraceMessage("Obtained value: " + name + cache.AsString + " (" + totalTime.TotalMilliseconds + " ms)");
-				}
-				return cache;
-			}
-		}
+		bool hasExpired = false;
 		
 		/// <summary> Gets the name associated with the value </summary>
 		public string Name {
@@ -106,7 +66,12 @@ namespace Debugger
 		/// <summary> Gets a string representation of the value </summary>
 		public string AsString {
 			get {
-				return Cache.AsString;
+				if (IsNull)      return "<null>";
+				if (IsArray)     return "{" + this.Type.FullName + "}";
+				if (IsObject)    return "{" + this.Type.FullName + "}";
+				//if (IsObject)    return Eval.InvokeMethod(Process, typeof(object), "ToString", this, new Value[] {}).AsString;
+				if (IsPrimitive) return PrimitiveValue != null ? PrimitiveValue.ToString() : String.Empty;
+				throw new DebuggerException("Unknown value type");
 			}
 		}
 		
@@ -118,23 +83,31 @@ namespace Debugger
 			}
 		}
 		
-		/// <summary> Returns true if the Value have expired
+		/// <summary> Returns true if the Value has expired
 		/// and can not be used anymore </summary>
 		public bool HasExpired {
 			get {
-				return isExpired;
+				return hasExpired;
 			}
 		}
 		
 		internal ICorDebugValue RawCorValue {
 			get {
-				return Cache.RawCorValue;
+				if (this.HasExpired) throw new CannotGetValueException("Value has expired");
+				
+				return rawCorValue;
 			}
 		}
 		
 		internal ICorDebugValue CorValue {
 			get {
-				return Cache.CorValue;
+				if (this.HasExpired) throw new CannotGetValueException("Value has expired");
+				
+				if (corValue_pauseSession != process.PauseSession) {
+					corValue = DereferenceUnbox(rawCorValue);
+					corValue_pauseSession = process.PauseSession;
+				}
+				return corValue;
 			}
 		}
 		
@@ -150,9 +123,7 @@ namespace Debugger
 		
 		internal ICorDebugValue SoftReference {
 			get {
-				if (this.HasExpired) throw new DebuggerException("CorValue has expired");
-				
-				ICorDebugValue corValue = RawCorValue;
+				ICorDebugValue corValue = this.RawCorValue;
 				if (corValue != null && corValue.Is<ICorDebugHandleValue>()) {
 					return corValue;
 				}
@@ -166,12 +137,19 @@ namespace Debugger
 		}
 		
 		internal Value(Process process,
+		               ICorDebugValue rawCorValue)
+			:this (process, string.Empty, rawCorValue)
+		{
+			
+		}
+		
+		internal Value(Process process,
 		               string name,
-		               CorValueGetter corValueGetter)
+		               ICorDebugValue rawCorValue)
 		{
 			this.process = process;
 			this.name = name;
-			this.corValueGetter = corValueGetter;
+			this.rawCorValue = rawCorValue;
 			
 			// TODO: clean up
 			if (name.StartsWith("<") && name.Contains(">") && name != "<Base class>") {
@@ -181,17 +159,19 @@ namespace Debugger
 				}
 			}
 			
-			process.DebuggingResumed += delegate {
-				this.isExpired = true;
-				OnExpired(EventArgs.Empty);
-			};
+			type = DebugType.Create(process, rawCorValue.As<ICorDebugValue2>().ExactType);
+			
+			if (!rawCorValue.Is<ICorDebugHandleValue>()) {
+				process.DebuggingResumed += Process_DebuggingResumed;
+			}
 		}
 		
-		/// <summary> Is called when the value expires and can not be used </summary>
-		protected virtual void OnExpired(EventArgs e)
+		void Process_DebuggingResumed(object sender, ProcessEventArgs args)
 		{
+			process.DebuggingResumed -= Process_DebuggingResumed;
+			this.hasExpired = true;
 			if (Expired != null) {
-				Expired(this, e);
+				Expired(this, EventArgs.Empty);
 			}
 		}
 		
@@ -199,7 +179,7 @@ namespace Debugger
 		[Debugger.Tests.ToStringOnly]
 		public DebugType Type {
 			get {
-				return Cache.Type;
+				return type;
 			}
 		}
 		

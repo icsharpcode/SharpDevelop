@@ -74,11 +74,7 @@ namespace Debugger
 		{
 			uint[] indices = (uint[])elementIndices.Clone();
 			
-			return new Value(
-				Process,
-				GetNameFromIndices(indices),
-				delegate { return GetCorValueOfArrayElement(indices); }
-			);
+			return new Value(Process, GetNameFromIndices(indices), GetCorValueOfArrayElement(indices));
 		}
 		
 		static string GetNameFromIndices(uint[] indices)

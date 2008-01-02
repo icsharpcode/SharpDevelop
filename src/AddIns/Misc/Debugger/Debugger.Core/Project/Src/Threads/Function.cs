@@ -435,11 +435,7 @@ namespace Debugger
 			get {
 				if (IsStatic) throw new DebuggerException("Static method does not have 'this'.");
 				if (thisValueCache == null) {
-					thisValueCache = new Value(
-						process,
-						"this",
-						delegate { return ThisCorValue; }
-					);
+					thisValueCache = new Value(process, "this", ThisCorValue);
 				}
 				return thisValueCache;
 			}
@@ -500,13 +496,7 @@ namespace Debugger
 		/// <param name="index"> Zero-based index </param>
 		public Value GetArgument(int index)
 		{
-			string name = GetParameterName(index);
-			
-			return new Value(
-				process,
-				name,
-				delegate { return GetArgumentCorValue(index); }
-			);
+			return new Value(process, GetParameterName(index), GetArgumentCorValue(index));
 		}
 		
 		ICorDebugValue GetArgumentCorValue(int index)
@@ -591,11 +581,7 @@ namespace Debugger
 		
 		Value GetLocalVariable(ISymUnmanagedVariable symVar)
 		{
-			return new Value(
-				process,
-				symVar.Name,
-				delegate { return GetCorValueOfLocalVariable(symVar); }
-			);
+			return new Value(process, symVar.Name, GetCorValueOfLocalVariable(symVar));
 		}
 		
 		ICorDebugValue GetCorValueOfLocalVariable(ISymUnmanagedVariable symVar)
