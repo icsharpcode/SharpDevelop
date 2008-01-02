@@ -28,10 +28,11 @@ namespace WixBinding.Tests.PackageFiles
 		public void DirectoryChildElements()
 		{
 			string[] childElements = schema.GetChildElements("Directory");
-			Assert.AreEqual(3, childElements.Length);
+			Assert.AreEqual(4, childElements.Length);
 			Assert.Contains("Component", childElements);
 			Assert.Contains("Directory", childElements);
 			Assert.Contains("Merge", childElements);
+			Assert.Contains("SymbolPath", childElements);
 		}
 		
 		[Test]
@@ -65,7 +66,7 @@ namespace WixBinding.Tests.PackageFiles
 		public void ProductAutogenuuidAttributeType()
 		{
 			QualifiedName attributeName = schema.GetAttributeType("Product", "Id");
-			Assert.AreEqual("autogenuuid", attributeName.Name);
+			Assert.AreEqual("AutogenGuid", attributeName.Name);
 		}
 		
 		[Test]

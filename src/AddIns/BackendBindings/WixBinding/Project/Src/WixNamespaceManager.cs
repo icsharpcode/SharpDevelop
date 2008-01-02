@@ -13,7 +13,7 @@ namespace ICSharpCode.WixBinding
 	public class WixNamespaceManager : XmlNamespaceManager
 	{
 		public const string Prefix = "w";
-		public const string Namespace = "http://schemas.microsoft.com/wix/2003/01/wi";
+		public const string Namespace = "http://schemas.microsoft.com/wix/2006/wi";
 		
 		public WixNamespaceManager(XmlNameTable nameTable) : base(nameTable)
 		{

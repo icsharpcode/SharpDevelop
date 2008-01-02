@@ -61,7 +61,7 @@ namespace WixBinding.Tests.Gui
 		
 		string IWixDialogDesigner.GetDocumentXml()
 		{
-			return "<Wix xmlns=\"http://schemas.microsoft.com/wix/2003/01/wi\">\r\n" +
+			return "<Wix xmlns=\"http://schemas.microsoft.com/wix/2006/wi\">\r\n" +
 				"\t<Fragment>\r\n" +
 				"\t\t<UI>\r\n" +
 				"\t\t\t<Dialog Id=\"WelcomeDialog\" Height=\"100\" Width=\"200\"/>\r\n" +

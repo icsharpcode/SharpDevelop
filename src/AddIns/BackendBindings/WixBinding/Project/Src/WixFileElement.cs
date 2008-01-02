@@ -65,45 +65,22 @@ namespace ICSharpCode.WixBinding
 		/// File element is a part of.
 		/// </summary>
 		public string Source {
-			get {
-				return GetAttribute("Source");
-			}
-			set {
-				SetAttribute("Source", value);
-			}
+			get { return GetAttribute("Source"); }
+			set { SetAttribute("Source", value); }
 		}
-		
-		/// <summary>
-		/// Gets the short name (8.3) of the file.
-		/// </summary>
-		public string ShortName {
-			get {
-				return GetAttribute("Name");
-			}
-			set {
-				SetAttribute("Name", value);
-			}
-		}
-		
+				
 		public string Id {
-			get {
-				return GetAttribute("Id");
-			}
-			set {
-				SetAttribute("Id", value);
-			}
+			get { return GetAttribute("Id"); }
+			set { SetAttribute("Id", value); }
 		}
 		
 		/// <summary>
-		/// The is the filename that will be used when installing the file.
+		/// Gets the name of the file without any path information.
+		/// This is the name that will be used when installing the file.
 		/// </summary>
-		public string LongName {
-			get {
-				return GetAttribute("LongName");
-			}
-			set {
-				SetAttribute("LongName", value);
-			}
+		public string FileName {
+			get { return GetAttribute("Name"); }
+			set { SetAttribute("Name", value); }
 		}
 		
 		/// <summary>
@@ -111,7 +88,7 @@ namespace ICSharpCode.WixBinding
 		/// has no filename then the relative path as stored in the 
 		/// wix document is returned.
 		/// </summary>
-		public string FileName {
+		public string SourceFullPath {
 			get {
 				WixDocument document = OwnerDocument as WixDocument;
 				if (document != null && !String.IsNullOrEmpty(document.FileName)) {
@@ -181,22 +158,11 @@ namespace ICSharpCode.WixBinding
 			string sourceFileName = FileUtility.GetRelativePath(baseDirectory, fileName);
 
 			Source = sourceFileName;
+			FileName = Path.GetFileName(fileName);
 			
-			string longFileName = null;
-			string shortFileName = Path.GetFileName(sourceFileName);
-			string idFileName = shortFileName;
-			if (ShortFileName.IsLongFileName(shortFileName)) {
-				longFileName = shortFileName;
-				shortFileName = ShortFileName.Convert(shortFileName, ShortFileNameExists);
-				idFileName = longFileName;
-			}
-			
-			ShortName = shortFileName;
-			Id = GenerateUniqueId(Path.GetDirectoryName(fileName), idFileName);
-			
-			if (longFileName != null) {
-				LongName = longFileName;				
-			} 
+			// Generate a unique id from the filename.
+			string id = FileName;
+			Id = GenerateUniqueId(Path.GetDirectoryName(fileName), id);			
 		}
 		
 		/// <summary>
@@ -235,18 +201,6 @@ namespace ICSharpCode.WixBinding
 			} while (document.FileIdExists(id));
 			
 			return id;
-		}
-		
-		/// <summary>
-		/// Determines if the short filename already exists in the document.
-		/// </summary>
-		bool ShortFileNameExists(string fileName)
-		{
-			if (parentComponent == null) {
-				return false;
-			}
-			WixDirectoryElement directoryElement = parentComponent.ParentNode as WixDirectoryElement;
-			return directoryElement.ShortFileNameExists(fileName);
 		}
 	}
 }

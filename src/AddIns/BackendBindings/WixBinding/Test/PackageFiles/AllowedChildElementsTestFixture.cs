@@ -32,7 +32,8 @@ namespace WixBinding.Tests.PackageFiles
 			base.InitFixture();
 			childElementAllowedWhenNoItemSelected = new string[view.AllowedChildElements.Count];
 			view.AllowedChildElements.CopyTo(childElementAllowedWhenNoItemSelected, 0);
-			XmlElement directoryElement = (XmlElement)editor.Document.RootDirectory.ChildNodes[0];
+			WixDirectoryElement rootDir = editor.Document.RootDirectory;
+			XmlElement directoryElement = (XmlElement)rootDir.ChildNodes[0];
 			view.SelectedElement = directoryElement;
 			editor.SelectedElementChanged();
 			childElementsAllowedWhenDirectoryElementSelected = view.AllowedChildElements;
@@ -69,7 +70,7 @@ namespace WixBinding.Tests.PackageFiles
 		
 		protected override string GetWixXml()
 		{
-			return "<Wix xmlns=\"http://schemas.microsoft.com/wix/2003/01/wi\">\r\n" +
+			return "<Wix xmlns=\"http://schemas.microsoft.com/wix/2006/wi\">\r\n" +
 				"\t<Product Name=\"MySetup\" \r\n" +
 				"\t         Manufacturer=\"\" \r\n" +
 				"\t         Id=\"F4A71A3A-C271-4BE8-B72C-F47CC956B3AA\" \r\n" +

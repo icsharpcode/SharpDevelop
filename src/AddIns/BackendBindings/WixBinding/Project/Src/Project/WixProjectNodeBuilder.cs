@@ -22,6 +22,10 @@ namespace ICSharpCode.WixBinding
 			return project is WixProject;
 		}
 		
+		/// <summary>
+		/// Adds a WixProjectNode to the tree. This node will have a
+		/// References node, a Wix Extensions node and a Wix Libraries node.
+		/// </summary>
 		public TreeNode AddProjectNode(TreeNode motherNode, IProject project)
 		{
 			ProjectNode projectNode = new ProjectNode(project);
@@ -29,9 +33,13 @@ namespace ICSharpCode.WixBinding
 			
 			ReferenceFolder referenceFolderNode = new ReferenceFolder(project);
 			referenceFolderNode.AddTo(projectNode);
-						
+
+			WixExtensionFolderNode extensionNode = new WixExtensionFolderNode(project);
+			extensionNode.AddTo(projectNode);
+			
 			WixLibraryFolderNode libraryNode = new WixLibraryFolderNode(project);
 			libraryNode.AddTo(projectNode);
+
 			
 			return projectNode;
 		}

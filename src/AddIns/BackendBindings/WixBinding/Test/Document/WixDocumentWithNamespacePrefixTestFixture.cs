@@ -72,7 +72,7 @@ namespace WixBinding.Tests.Document
 		
 		string GetWixXml()
 		{
-			return "<w:Wix xmlns:w='http://schemas.microsoft.com/wix/2003/01/wi'>\r\n" +
+			return "<w:Wix xmlns:w='http://schemas.microsoft.com/wix/2006/wi'>\r\n" +
 				"\t<w:Product Name='DialogTest' \r\n" +
 				"\t         Version='1.0' \r\n" +
 				"\t         Language='1013' \r\n" +

@@ -19,24 +19,14 @@ namespace ICSharpCode.WixBinding
 	/// </summary>
 	public abstract class WixDirectoryElementBase : XmlElement
 	{
-		/// <summary>
-		/// Maximum short name length that the directory element will use when
-		/// generating a short name from the long name.
-		/// </summary>
-		public const int MaximumDirectoryShortNameLength = 8;
-		
 		public WixDirectoryElementBase(string localName, WixDocument document)
 			: base(document.WixNamespacePrefix, localName, WixNamespaceManager.Namespace, document)
 		{
 		}
 		
 		public string Id {
-			get {
-				return GetAttribute("Id");
-			}
-			set {
-				SetAttribute("Id", value);
-			}
+			get { return GetAttribute("Id"); }
+			set { SetAttribute("Id", value); }
 		}
 		
 		/// <summary>
@@ -79,44 +69,8 @@ namespace ICSharpCode.WixBinding
 		{
 			WixDirectoryElement directoryElement = new WixDirectoryElement((WixDocument)OwnerDocument);
 			directoryElement.Id = WixFileElement.GenerateId(name);
-			SetDirectoryName(directoryElement, name);
+			directoryElement.DirectoryName = name;
 			return (WixDirectoryElement)AppendChild(directoryElement);
-		}
-		
-		/// <summary>
-		/// Sets the directory name. Generates a short name if required.
-		/// </summary>
-		void SetDirectoryName(WixDirectoryElement directoryElement, string name)
-		{
-			if (name.Length > MaximumDirectoryShortNameLength) {
-				directoryElement.ShortName = GetUniqueShortName(name);
-				directoryElement.LongName = name;
-			} else {
-				directoryElement.ShortName = name;
-			}
-		}
-		
-		string GetUniqueShortName(string name)
-		{	
-			// Try the truncated name on its own first.
-			name = name.Replace(".", String.Empty);
-			name = name.Substring(0, MaximumDirectoryShortNameLength);
-			if (!ShortNameExists(name)) {
-				return name;
-			}
-			
-			// Add a digit to the name until a unique one is found.
-			return ShortFileName.GetUniqueName(name.Substring(0, name.Length - 1), ShortNameExists);
-		}
-		
-		/// <summary>
-		/// Checks whether the short directory name exists in the document.
-		/// </summary>
-		bool ShortNameExists(string name)
-		{
-			string xpath = String.Concat("w:Directory[@Name='", XmlEncoder.Encode(name, '\''), "']");
-			XmlNodeList nodes = SelectNodes(xpath, new WixNamespaceManager(OwnerDocument.NameTable));
-			return nodes.Count > 0;
-		}
+		}		
 	}
 }

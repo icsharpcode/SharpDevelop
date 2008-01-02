@@ -64,37 +64,15 @@ namespace ICSharpCode.WixBinding
 		}
 		
 		public string SourceName {
-			get {
-				return GetAttribute("SourceName");
-			}
-			set {
-				SetAttribute("SourceName", value);
-			}
-		}
-		
-		public string LongName {
-			get {
-				return GetAttribute("LongName");
-			}
-			set {
-				SetAttribute("LongName", value);
-			}
-		}
-		
-		public string ShortName {
-			get {
-				return GetAttribute("Name");
-			}
-			set {
-				SetAttribute("Name", value);
-			}
+			get { return GetAttribute("SourceName"); }
+			set { SetAttribute("SourceName", value); }
 		}
 			
 		/// <summary>
 		/// Gets the directory name.
 		/// </summary>
 		/// <returns>
-		/// Returns the long name if defined, otherwise the name. If the directory Id
+		/// Returns the directory name. If the directory Id
 		/// is a special case (e.g. "ProgramFilesFolder") it returns this id slightly 
 		/// modified (e.g. "Program Files").
 		/// </returns>
@@ -104,23 +82,9 @@ namespace ICSharpCode.WixBinding
 				if (name != null) {
 					return name;
 				}
-				name = LongName;
-				if (name.Length > 0) {
-					return name;
-				}
-				return ShortName;
+				return GetAttribute("Name");
 			}
-		}
-		
-		/// <summary>
-		/// Checks to see if a File element exists with the specified
-		/// short filename.
-		/// </summary>
-		public bool ShortFileNameExists(string fileName)
-		{
-			string xpath = String.Concat("w:Component/w:File[@Name='", XmlEncoder.Encode(fileName, '\''), "']");
-			XmlNodeList nodes = SelectNodes(xpath, new WixNamespaceManager(OwnerDocument.NameTable));
-			return nodes.Count > 0;
+			set { SetAttribute("Name", value); }
 		}
 		
 		/// <summary>

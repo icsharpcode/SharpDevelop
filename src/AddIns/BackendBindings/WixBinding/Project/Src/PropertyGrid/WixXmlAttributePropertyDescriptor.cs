@@ -109,8 +109,8 @@ namespace ICSharpCode.WixBinding
 			List<Attribute> attributes = new List<Attribute>();
 			switch (wixXmlAttribute.AttributeType) {
 				case WixXmlAttributeType.ComponentGuid:
-				case WixXmlAttributeType.AutogenUuid:
-				case WixXmlAttributeType.Uuid:
+				case WixXmlAttributeType.AutogenGuid:
+				case WixXmlAttributeType.Guid:
 					attributes.Add(new EditorAttribute(typeof(GuidEditor), typeof(UITypeEditor)));
 					break;
 				case WixXmlAttributeType.FileName:

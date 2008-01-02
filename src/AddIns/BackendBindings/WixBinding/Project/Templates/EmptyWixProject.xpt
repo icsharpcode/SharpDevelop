@@ -15,15 +15,14 @@
 		<Files>
 			<File name="Setup.wxs">
 <![CDATA[<?xml version="1.0"?>
-<Wix xmlns="http://schemas.microsoft.com/wix/2003/01/wi">
-	<Product Id="${GUID}"
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+	<Product Id="*"
 		Name=""
 		Language="1033"
 		Version="1.0.0.0"
 		UpgradeCode="${GUID}"
 		Manufacturer="">
-		<Package Id="${GUID}"
-			Description=""
+		<Package Description=""
 			Comments= "Comments"
 			InstallerVersion="200"
 			Compressed="yes"

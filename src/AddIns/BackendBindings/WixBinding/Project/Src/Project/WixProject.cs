@@ -20,16 +20,16 @@ namespace ICSharpCode.WixBinding
 {
 	public enum WixOutputType {
 		[Description("${res:ICSharpCode.WixBinding.ProjectOptions.OutputType.Installer} (.msi)")]
-		package,
+		Package,
 		[Description("${res:ICSharpCode.WixBinding.ProjectOptions.OutputType.MergeModule} (.msm)")]
-		module,
+		Module,
 		[Description("${res:ICSharpCode.WixBinding.ProjectOptions.OutputType.WixLibrary} (.wixlib)")]
-		library
+		Library
 	}
 	
 	public class WixProject : CompilableProject, IWixPropertyValueProvider
 	{
-		public const string DefaultTargetsFile = @"$(WixMSBuildExtensionsPath)\wix.targets";
+		public const string DefaultTargetsFile = @"$(WixToolPath)\wix.targets";
 		public const string FileNameExtension = ".wixproj";
 		
 		delegate bool IsFileNameMatch(string fileName);
@@ -94,12 +94,8 @@ namespace ICSharpCode.WixBinding
 			switch (item.Name) {
 				case WixItemType.LibraryName:
 					return new WixLibraryProjectItem(this, item);
-				case WixItemType.CompileExtensionName:
-					return new WixCompilerExtensionProjectItem(this, item);
-				case WixItemType.LibExtensionName:
-					return new WixLibraryExtensionProjectItem(this, item);
-				case WixItemType.LinkExtensionName:
-					return new WixLinkerExtensionProjectItem(this, item);
+				case WixItemType.ExtensionName:
+					return new WixExtensionProjectItem(this, item);
 				default:
 					return base.CreateProjectItem(item);
 			}
@@ -138,53 +134,49 @@ namespace ICSharpCode.WixBinding
 			projectItem.FileName = fileName;
 			ProjectService.AddProjectItem(this, projectItem);
 		}
+
+		/// <summary>
+		/// Adds a set of Wix extensions to the project.
+		/// </summary>
+		public void AddWixExtensions(string[] files)
+		{
+			foreach (string fileName in files) {
+				AddWixExtension(fileName);
+			}
+		}
+		
+		/// <summary>
+		/// Adds a Wix extension to the project.
+		/// </summary>
+		public void AddWixExtension(string fileName)
+		{
+			WixExtensionProjectItem projectItem = new WixExtensionProjectItem(this);
+			projectItem.FileName = fileName;
+			ProjectService.AddProjectItem(this, projectItem);
+		}
 		
 		/// <summary>
 		/// Returns the file project items that are Wix documents based on
 		/// their filename.
 		/// </summary>
 		public ReadOnlyCollection<FileProjectItem> WixFiles {
-			get {
-				return GetMatchingFiles(WixDocument.IsWixFileName);
-			}
+			get { return GetMatchingFiles(WixDocument.IsWixFileName); }
 		}
 		
 		/// <summary>
 		/// Returns the file project items that are Wix source files (.wxs).
 		/// </summary>
 		public ReadOnlyCollection<FileProjectItem> WixSourceFiles {
-			get {
-				return GetMatchingFiles(WixDocument.IsWixSourceFileName);
-			}
+			get { return GetMatchingFiles(WixDocument.IsWixSourceFileName); }
 		}
 		
 		/// <summary>
 		/// Returns the compiler extension project items.
 		/// </summary>
-		public ReadOnlyCollection<WixExtensionProjectItem> WixCompilerExtensions {
-			get {
-				return GetExtensions(typeof(WixCompilerExtensionProjectItem));
-			}
+		public ReadOnlyCollection<WixExtensionProjectItem> WixExtensions {
+			get { return GetExtensions(); }
 		}
-		
-		/// <summary>
-		/// Returns the linker extension project items.
-		/// </summary>
-		public ReadOnlyCollection<WixExtensionProjectItem> WixLinkerExtensions {
-			get {
-				return GetExtensions(typeof(WixLinkerExtensionProjectItem));
-			}
-		}
-		
-		/// <summary>
-		/// Returns the library extension project items.
-		/// </summary>
-		public ReadOnlyCollection<WixExtensionProjectItem> WixLibraryExtensions {
-			get {
-				return GetExtensions(typeof(WixLibraryExtensionProjectItem));
-			}
-		}
-		
+
 		/// <summary>
 		/// Gets a preprocessor variable value with the given name.
 		/// </summary>
@@ -235,12 +227,12 @@ namespace ICSharpCode.WixBinding
 		{
 			base.Create(information);
 			
-			SetProperty("OutputType", "package");
+			SetProperty("OutputType", "Package");
 			
 			string wixToolPath = @"$(SharpDevelopBinPath)\Tools\Wix";
 			AddGuardedProperty("WixToolPath", wixToolPath, false);
-			SetProperty("ToolPath", "$(WixToolPath)", false);
-			AddGuardedProperty("WixMSBuildExtensionsPath", wixToolPath, false);
+			AddGuardedProperty("WixTargetsPath", @"$(WixToolPath)\wix.targets", false);
+			AddGuardedProperty("WixTasksPath", @"$(WixToolPath)\WixTasks.dll", false);
 			
 			this.AddImport(DefaultTargetsFile, null);
 		}
@@ -275,15 +267,13 @@ namespace ICSharpCode.WixBinding
 		/// Returns a collection of compiler extension items that match the specified
 		/// type.
 		/// </summary>
-		ReadOnlyCollection<WixExtensionProjectItem> GetExtensions(Type type)
+		ReadOnlyCollection<WixExtensionProjectItem> GetExtensions()
 		{
 			List<WixExtensionProjectItem> items = new List<WixExtensionProjectItem>();
 			foreach (ProjectItem projectItem in Items) {
 				WixExtensionProjectItem item = projectItem as WixExtensionProjectItem;
 				if (item != null) {
-					if (item.GetType() == type) {
-						items.Add(item);
-					}
+					items.Add(item);
 				}
 			}
 			return new ReadOnlyCollection<WixExtensionProjectItem>(items);

@@ -45,10 +45,13 @@
     <Reference Include="Microsoft.Build.Engine" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Src\Commands\AddWixExtensionToProject.cs" />
+    <Compile Include="Src\Commands\AddWixItemToProjectBaseCommand.cs" />
+    <Compile Include="Src\Project\WixExtensionFolderNode.cs" />
+    <Compile Include="Src\Project\WixExtensionNode.cs" />
     <Compile Include="Src\WixLanguageBinding.cs" />
     <Compile Include="Src\Project\WixProject.cs" />
     <Compile Include="Src\Gui\CompilerParametersPanel.cs" />
-    <Compile Include="Src\Gui\LinkerParametersPanel.cs" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
@@ -56,7 +59,6 @@
     <Compile Include="Src\Gui\ApplicationSettingsPanel.cs" />
     <EmbeddedResource Include="Resources\ApplicationSettingsPanel.xfrm" />
     <EmbeddedResource Include="Resources\CompilerParametersPanel.xfrm" />
-    <EmbeddedResource Include="Resources\LinkerParametersPanel.xfrm" />
     <Compile Include="Src\Gui\PreprocessorVariablesPanel.cs" />
     <Compile Include="Src\Gui\NameValueListEditor.cs" />
     <Compile Include="Src\Gui\SemicolonSeparatedNameValueListBinding.cs" />
@@ -128,16 +130,7 @@
     <Compile Include="Src\WixBinaries.cs" />
     <Compile Include="Src\WixBinaryElement.cs" />
     <Compile Include="Src\Gui\WixTreeNodeBuilder.cs" />
-    <Compile Include="Src\Gui\WixCompilerExtensionPicker.cs" />
-    <Compile Include="Src\Gui\WixCompilerExtensionBinding.cs" />
-    <Compile Include="Src\Project\WixCompilerExtensionProjectItem.cs" />
     <Compile Include="Src\Project\WixExtensionProjectItem.cs" />
-    <Compile Include="Src\Project\WixLinkerExtensionProjectItem.cs" />
-    <Compile Include="Src\Project\WixLibraryExtensionProjectItem.cs" />
-    <Compile Include="Src\Gui\AddCompilerExtensionsDialog.cs" />
-    <Compile Include="Src\Project\WixCompilerExtensionName.cs" />
-    <EmbeddedResource Include="Resources\LibraryParametersPanel.xfrm" />
-    <Compile Include="Src\Gui\LibraryParametersPanel.cs" />
     <Compile Include="Src\IDirectoryReader.cs" />
     <Compile Include="Src\Commands\AddDirectoryCommand.cs" />
     <Compile Include="Src\PropertyGrid\GuidEditor.cs" />
@@ -151,48 +144,12 @@
     <Compile Include="Src\Gui\WixPackageFilesDiffControl.cs" />
     <Compile Include="Src\Commands\HideDiffCommand.cs" />
     <Compile Include="Src\ExcludedNames.cs" />
-    <Content Include="Templates\DefaultBrowseDialog.wxs">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Templates\DefaultCancelDialog.wxs">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Templates\DefaultExitDialog.wxs">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Templates\DefaultFatalErrorDialog.wxs">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Templates\DefaultOutOfDiskSpaceDialog.wxs">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Templates\DefaultOutOfRollbackDiskSpaceDialog.wxs">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Templates\DefaultProgressDialog.wxs">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Templates\DefaultSelectFolderDialog.wxs">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Templates\DefaultUserExitDialog.wxs">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Templates\DefaultUserInterface.wxs">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Templates\DefaultVerifyReadyDialog.wxs">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Templates\DefaultViewLicenseAgreementDIalog.wxs">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Templates\DefaultWelcomeDialog.wxs">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="Templates\DefaultLicense.rtf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="Templates\WixGraphicalDialog.xft">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Templates\WixUIFeatureTreeProject.xpt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -208,9 +165,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="WixBinding.addin">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Templates\WixProject.xpt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">

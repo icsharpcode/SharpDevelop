@@ -82,7 +82,7 @@ namespace WixBinding.Tests.PackageFiles
 		
 		protected override string GetWixXml()
 		{
-			return "<Wix xmlns=\"http://schemas.microsoft.com/wix/2003/01/wi\">\r\n" +
+			return "<Wix xmlns=\"http://schemas.microsoft.com/wix/2006/wi\">\r\n" +
 				"\t<Fragment>\r\n" +
 				"\t\t<DirectoryRef Id=\"TARGETDIR\"/>\r\n" +
 				"\t</Fragment>\r\n" +

@@ -1,8 +1,6 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <SetupProductBuildVersion>$INSERTPRODUCTBUILDVERSION$</SetupProductBuildVersion>
-    <SetupProductCodeGuid>$INSERTPRODUCTCODEGUID$</SetupProductCodeGuid>
-    <SetupPackageCodeGuid>$INSERTPACKAGECODEGUID$</SetupPackageCodeGuid>
-    <DefineConstants>PACKAGECODEGUID=$(SetupPackageCodeGuid);PRODUCTCODEGUID=$(SetupProductCodeGuid);PRODUCTBUILDVERSION=$(SetupProductBuildVersion)</DefineConstants>
+    <DefineConstants>PRODUCTBUILDVERSION=$(SetupProductBuildVersion)</DefineConstants>
   </PropertyGroup>
 </Project>

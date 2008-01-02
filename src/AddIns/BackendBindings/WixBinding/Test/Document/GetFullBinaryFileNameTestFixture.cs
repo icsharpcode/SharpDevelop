@@ -47,7 +47,7 @@ namespace WixBinding.Tests.Document
 		
 		string GetWixXml()
 		{
-			return "<Wix xmlns='http://schemas.microsoft.com/wix/2003/01/wi'>\r\n" +
+			return "<Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>\r\n" +
 				"\t<Fragment>\r\n" +
 				"\t\t<Binary Id='Banner' SourceFile='Bitmaps/Banner.bmp'/>\r\n" +
 				"\t\t<Binary Id='Info' src='C:/Program Files/SharpDevelop/Bitmaps/Info.ico'/>\r\n" +

@@ -25,7 +25,7 @@ namespace WixBinding.Tests.Document
 		[Test]
 		public void DialogSpansTwoLines()
 		{
-			string xml = "<Wix xmlns='http://schemas.microsoft.com/wix/2003/01/wi'>\r\n" +
+			string xml = "<Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>\r\n" +
 				"\t<Fragment>\r\n" +
 				"\t\t<UI>\r\n" +
 				"\t\t\t<Dialog Id='WelcomeDialog' Height='100' Width='200'>\r\n" +
@@ -41,7 +41,7 @@ namespace WixBinding.Tests.Document
 		[Test]
 		public void DialogSpansOneLine()
 		{
-			string xml = "<Wix xmlns='http://schemas.microsoft.com/wix/2003/01/wi'>\r\n" +
+			string xml = "<Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>\r\n" +
 				"\t<Fragment>\r\n" +
 				"\t\t<UI>\r\n" +
 				"<Dialog Id='WelcomeDialog'></Dialog>\r\n" +
@@ -56,7 +56,7 @@ namespace WixBinding.Tests.Document
 		[Test]
 		public void EmptyDialogElement()
 		{
-			string xml = "<Wix xmlns='http://schemas.microsoft.com/wix/2003/01/wi'>\r\n" +
+			string xml = "<Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>\r\n" +
 				"\t<Fragment>\r\n" +
 				"\t\t<UI>\r\n" +
 				"<Dialog Id='WelcomeDialog'/>\r\n" +
@@ -71,7 +71,7 @@ namespace WixBinding.Tests.Document
 		[Test]
 		public void ElementStartsImmediatelyAfterDialogEndElement()
 		{
-			string xml = "<Wix xmlns='http://schemas.microsoft.com/wix/2003/01/wi'>\r\n" +
+			string xml = "<Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>\r\n" +
 				"\t<Fragment>\r\n" +
 				"\t\t<UI>\r\n" +
 				"<Dialog Id='WelcomeDialog'></Dialog><Property/>\r\n" +
@@ -86,7 +86,7 @@ namespace WixBinding.Tests.Document
 		[Test]
 		public void TwoDialogs()
 		{
-			string xml = "<Wix xmlns='http://schemas.microsoft.com/wix/2003/01/wi'>\r\n" +
+			string xml = "<Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>\r\n" +
 				"\t<Fragment>\r\n" +
 				"\t\t<UI>\r\n" +
 				"\t\t\t<Dialog Id='IgnoreThisDialog' Height='100' Width='200'>\r\n" +

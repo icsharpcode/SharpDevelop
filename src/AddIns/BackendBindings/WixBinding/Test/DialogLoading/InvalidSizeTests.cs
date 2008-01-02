@@ -37,7 +37,7 @@ namespace WixBinding.Tests.DialogLoading
 		{
 			WixProject project = WixBindingTestsHelper.CreateEmptyWixProject();
 			WixDocument doc = new WixDocument(project);
-			string xml = "<Wix xmlns='http://schemas.microsoft.com/wix/2003/01/wi'>\r\n" +
+			string xml = "<Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>\r\n" +
 				"\t<Fragment>\r\n" +
 				"\t\t<UI>\r\n" +
 				"\t\t\t<Dialog Id='WelcomeDialog' Width='370'/>\r\n" +
@@ -61,7 +61,7 @@ namespace WixBinding.Tests.DialogLoading
 		{
 			WixProject project = WixBindingTestsHelper.CreateEmptyWixProject();
 			WixDocument doc = new WixDocument(project);
-			string xml = "<Wix xmlns='http://schemas.microsoft.com/wix/2003/01/wi'>\r\n" +
+			string xml = "<Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>\r\n" +
 				"\t<Fragment>\r\n" +
 				"\t\t<UI>\r\n" +
 				"\t\t\t<Dialog Id='WelcomeDialog' Height='370'/>\r\n" +
@@ -85,7 +85,7 @@ namespace WixBinding.Tests.DialogLoading
 		{
 			WixProject project = WixBindingTestsHelper.CreateEmptyWixProject();
 			WixDocument doc = new WixDocument(project);
-			string xml = "<Wix xmlns='http://schemas.microsoft.com/wix/2003/01/wi'>\r\n" +
+			string xml = "<Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>\r\n" +
 				"\t<Fragment>\r\n" +
 				"\t\t<UI>\r\n" +
 				"\t\t\t<Dialog Id='WelcomeDialog' Height='f' Width='370'/>\r\n" +
@@ -109,7 +109,7 @@ namespace WixBinding.Tests.DialogLoading
 		{
 			WixProject project = WixBindingTestsHelper.CreateEmptyWixProject();
 			WixDocument doc = new WixDocument(project);
-			string xml = "<Wix xmlns='http://schemas.microsoft.com/wix/2003/01/wi'>\r\n" +
+			string xml = "<Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>\r\n" +
 				"\t<Fragment>\r\n" +
 				"\t\t<UI>\r\n" +
 				"\t\t\t<Dialog Id='WelcomeDialog' Height='100' Width='f'/>\r\n" +

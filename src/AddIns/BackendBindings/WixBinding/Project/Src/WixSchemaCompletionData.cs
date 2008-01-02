@@ -228,10 +228,10 @@ namespace ICSharpCode.WixBinding
 			QualifiedName attributeTypeName = GetAttributeType(elementName, attributeName);
 			if (attributeTypeName != null) {
 				switch (attributeTypeName.Name) {
-					case "autogenuuid":
-						return WixXmlAttributeType.AutogenUuid;
-					case "uuid":
-						return WixXmlAttributeType.Uuid;
+					case "AutogenGuid":
+						return WixXmlAttributeType.AutogenGuid;
+					case "Guid":
+						return WixXmlAttributeType.Guid;
 					case "ComponentGuid":
 						return WixXmlAttributeType.ComponentGuid;
 				}

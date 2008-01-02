@@ -121,7 +121,7 @@ namespace ICSharpCode.WixBinding
 		{
 			List<string> fileNames = new List<string>();
 			foreach (WixFileElement fileElement in fileElements) {
-				fileNames.Add(fileElement.FileName);
+				fileNames.Add(fileElement.SourceFullPath);
 			}
 			return fileNames;
 		}

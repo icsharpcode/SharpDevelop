@@ -62,7 +62,7 @@ namespace WixBinding.Tests.PackageFiles
 			if (Path.GetFileName(fileName) == "Setup.wxs") {
 				return new StringReader(GetWixXml());
 			}
-			return new StringReader("<Wix xmlns='http://schemas.microsoft.com/wix/2003/01/wi'/>");
+			return new StringReader("<Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'/>");
 		}
 		
 		public void Write(WixDocument document)
@@ -71,7 +71,7 @@ namespace WixBinding.Tests.PackageFiles
 		
 		string GetWixXml()
 		{
-			return "<Wix xmlns=\"http://schemas.microsoft.com/wix/2003/01/wi\">\r\n" +
+			return "<Wix xmlns=\"http://schemas.microsoft.com/wix/2006/wi\">\r\n" +
 				"\t<Product Name=\"MySetup\" \r\n" +
 				"\t         Manufacturer=\"\" \r\n" +
 				"\t         Id=\"F4A71A3A-C271-4BE8-B72C-F47CC956B3AA\" \r\n" +

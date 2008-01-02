@@ -1,21 +1,21 @@
 ﻿<!--
 	Installer for SharpDevelop.
 -->
-<Wix xmlns="http://schemas.microsoft.com/wix/2003/01/wi">
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
 	<!--
 		Windows Installer only recognises 3 digits for the product version (Major.Minor.Build) 
 		so the third digit must be the Subversion revision. 
 	-->
-	<Product Id="$(var.PRODUCTCODEGUID)"
+
+	<Product Id="*" 
 		Name="SharpDevelop 3.0 Alpha"
 		Manufacturer="ic#code"
 		Language="1033"
 		Codepage="1252"
 		UpgradeCode="757486BE-1F27-4BED-9A3B-737906728F1C"
 		Version="3.0.$(var.PRODUCTBUILDVERSION)">
-		
-		<Package Id="$(var.PACKAGECODEGUID)"
-			Description="SharpDevelop 3.0.0.$(var.PRODUCTBUILDVERSION)"
+
+		<Package Description="SharpDevelop 3.0.0.$(var.PRODUCTBUILDVERSION)"
 			InstallerVersion="300"
 			Compressed="yes"/>
 		
@@ -49,13 +49,8 @@
 		<!--
 			Check for .NET 3.0 
 			http://msdn2.microsoft.com/en-us/library/aa480198.aspx#netfx30_topic14
-
-			Note that SharpDevelop 3.0 will eventually use WiX 3.0 where the
-			NETFRAMEWORK30 property is already defined.
 		-->
-		<Property Id="NETFRAMEWORK35">
-			<RegistrySearch Id="NetFramework35" Root="HKLM" Key="SOFTWARE\Microsoft\NET Framework Setup\NDP\v3.5" Name="Install" Type="raw" />
-		</Property>
+		<PropertyRef Id="NETFRAMEWORK35" />
 		<Condition Message="This setup requires the .NET Framework 3.5 to be installed.">
 			Installed OR NETFRAMEWORK35
 		</Condition>
@@ -200,35 +195,60 @@
 				<ComponentRef Id="SHFBTemplates"/>
 				<ComponentRef Id="SHFBWeb"/>
 
+				<ComponentRef Id="DIfxAppXsd"/>
+				<ComponentRef Id="IisXsd"/>
+				<ComponentRef Id="PsXsd"/>
+				<ComponentRef Id="SqlXsd"/>
+				<ComponentRef Id="UtilXsd"/>
+				<ComponentRef Id="DariceCub"/>
+				<ComponentRef Id="NetFxSchema"/>
+				<ComponentRef Id="HeatExe"/>
+				<ComponentRef Id="MeltExe"/>
+				<ComponentRef Id="MergeModCub"/>
+				<ComponentRef Id="MSPatchCDll"/>
+				<ComponentRef Id="PyroExe"/>
+				<ComponentRef Id="SmokeExe"/>
+				<ComponentRef Id="TorchExe"/>
+				<ComponentRef Id="WConsoleDll"/>
+				<ComponentRef Id="WuiDll"/>
+				<ComponentRef Id="WixDifxAppExtensionDll"/>
+				<ComponentRef Id="WixIIsExtensionDll"/>
+				<ComponentRef Id="WixIsolatedAppExtensionDll"/>
+				<ComponentRef Id="WixOfficeExtensionDll"/>
+				<ComponentRef Id="WixPSExtensionDll"/>
+				<ComponentRef Id="WixSqlExtensionDll"/>
+				<ComponentRef Id="WixUIExtensionDll"/>
+				<ComponentRef Id="WixUtilExtensionDll"/>
+				<ComponentRef Id="WixDIfxAppSchema"/>
+				<ComponentRef Id="WixIisSchema"/>
+				<ComponentRef Id="WixNetFxSchema"/>
+				<ComponentRef Id="WixPSSchema"/>
+				<ComponentRef Id="WixSqlSchema"/>
+				<ComponentRef Id="WixUtilSchema"/>
+				<ComponentRef Id="WixVSSchema"/>
+				<ComponentRef Id="VSExtensionSchema"/>
 				<ComponentRef Id="WixLicenseFiles"/>
 				<ComponentRef Id="WixBitmapFiles"/>
 				<ComponentRef Id="WixDocFiles"/>
-				<ComponentRef Id="NetFxSchema"/>
-				<ComponentRef Id="VSExtensionSchema"/>
 				<ComponentRef Id="WixVSExtension"/>
+				<ComponentRef Id="EmptyWixFileTemplate"/>				
+				<ComponentRef Id="WixDefaultLicenseRtf"/>				
+				<ComponentRef Id="EmptyWixProjectTemplate"/>				
+				<ComponentRef Id="EmptyWixDialogTemplate"/>				
+				<ComponentRef Id="WixDialogTemplate"/>				
+
 				<ComponentRef Id="CandleExe"/>
 				<ComponentRef Id="DarkExe"/>
 				<ComponentRef Id="LightExe"/>
 				<ComponentRef Id="LitExe"/>
 				<ComponentRef Id="MergeModDll"/>
 				<ComponentRef Id="MicrosoftToolsWindowsInstallerXmlNAntTasksDll"/>
-				<ComponentRef Id="NetFxWixLib"/>
-				<ComponentRef Id="NetFxCaDll"/>
-				<ComponentRef Id="ScaWixLib"/>
-				<ComponentRef Id="ScaExecDll"/>
-				<ComponentRef Id="ScashedDll"/>
-				<ComponentRef Id="TallowExe"/>
-				<ComponentRef Id="VsWixLib"/>
 				<ComponentRef Id="WInteropDll"/>
 				<ComponentRef Id="WixDll"/>
-				<ComponentRef Id="WixCaDll"/>
-				<ComponentRef Id="WixCaWixLib"/>
 				<ComponentRef Id="WixCopExe"/>
-				<ComponentRef Id="WixMMCExtensionDll"/>
 				<ComponentRef Id="WixNetFxExtensionDll"/>
 				<ComponentRef Id="WixTasksDll"/>
-				<ComponentRef Id="WixUiWixLib"/>
-				<ComponentRef Id="WixUiEnUsWxl"/>
+
 				<ComponentRef Id="NUnitCoreExtensionsDll"/>
 				<ComponentRef Id="NUnitUiKitDll"/>
 				<ComponentRef Id="NUnitUtilDll"/>
@@ -257,6 +277,9 @@
 				<ComponentRef Id="StringResourceFiles"/>
 				<ComponentRef Id="SchemaFiles"/>
 				<ComponentRef Id="CSharpFileTemplates"/>
+				<ComponentRef Id="CSharpRecentFilesCollectionTemplate"/>				
+				<ComponentRef Id="CSharpRecentFilesCollectionTemplateRecentFileElementClass"/>				
+				<ComponentRef Id="CSharpRecentFilesCollectionTemplateRecentFilesCollectionClass"/>				
 				<ComponentRef Id="VBNetFileTemplates"/>
 				<ComponentRef Id="EmptyHTMLFileTemplate"/>
 				<ComponentRef Id="EmptyMsBuildFileTemplate"/>
@@ -281,7 +304,6 @@
 				<ComponentRef Id="ILAsmBindingFiles"/>
 				<ComponentRef Id="VBNetBindingFiles"/>
 				<ComponentRef Id="WixBindingFiles"/>
-				<ComponentRef Id="WixBindingTemplates"/>
 				<ComponentRef Id="WixUIMondoProjectTemplate"/>
 				<ComponentRef Id="WixUIMinimalProjectTemplate"/>
 				<ComponentRef Id="WixUIInstallDirProjectTemplate"/>
@@ -350,7 +372,6 @@
 				<ComponentRef Id="SyntaxModesFiles"/>
 				<ComponentRef Id="SharpDevelopWebsiteShortcut"/>
 				<ComponentRef Id="SharpDevelopAppPathRegistrySetting"/>
-				<ComponentRef Id="WixProjectIncludes"/>
 				<ComponentRef Id="WPFAssemblyInfoTemplate"/>
 				<ComponentRef Id="AddInWritingHelp"/>
 				<ComponentRef Id="CSharpProjectSharpDevelopCustomToolTemplates"/>

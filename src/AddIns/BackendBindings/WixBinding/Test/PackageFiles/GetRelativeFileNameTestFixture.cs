@@ -27,7 +27,7 @@ namespace WixBinding.Tests.PackageFiles
 			string fullFileName = @"C:\Projects\MySetup\Test\Test.exe";
 			relativePathBeforeWixDocumentLoaded = doc.GetRelativePath(fullFileName);
 
-			doc.LoadXml("<Wix xmlns='http://schemas.microsoft.com/wix/2003/01/wi'></Wix>");
+			doc.LoadXml("<Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'></Wix>");
 			doc.FileName = @"C:\Projects\Test\Setup.wxs";
 		}
 		

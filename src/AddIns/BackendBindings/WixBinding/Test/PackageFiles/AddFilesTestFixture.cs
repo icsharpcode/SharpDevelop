@@ -74,15 +74,15 @@ namespace WixBinding.Tests.PackageFiles
 		}
 		
 		[Test]
-		public void ExeFileLongName()
+		public void ExeFileLongNameAttributeDoesNotExist()
 		{
-			Assert.AreEqual("TestApplication.exe", exeFileElement.GetAttribute("LongName"));
+			Assert.IsFalse(exeFileElement.HasAttribute("LongName"));
 		}
 		
 		[Test]
-		public void ExeFileShortName()
+		public void ExeFileName()
 		{
-			Assert.AreEqual("TESTAP_1.EXE", exeFileElement.GetAttribute("Name"));
+			Assert.AreEqual("TestApplication.exe", exeFileElement.GetAttribute("Name"));
 		}
 		
 		[Test]
@@ -129,7 +129,7 @@ namespace WixBinding.Tests.PackageFiles
 
 		protected override string GetWixXml()
 		{
-			return "<Wix xmlns=\"http://schemas.microsoft.com/wix/2003/01/wi\">\r\n" +
+			return "<Wix xmlns=\"http://schemas.microsoft.com/wix/2006/wi\">\r\n" +
 				"\t<Product Name=\"MySetup\" \r\n" +
 				"\t         Manufacturer=\"\" \r\n" +
 				"\t         Id=\"F4A71A3A-C271-4BE8-B72C-F47CC956B3AA\" \r\n" +

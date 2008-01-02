@@ -26,6 +26,8 @@ namespace WixBinding.Tests.Gui
 		WixLibraryFolderNode wixLibraryFolderNode;
 		WixLibraryProjectItem firstWixLibraryItem;
 		WixLibraryProjectItem secondWixLibraryItem;
+		WixExtensionFolderNode wixExtensionFolderNode;
+		WixExtensionProjectItem firstWixExtensionItem;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
@@ -42,7 +44,13 @@ namespace WixBinding.Tests.Gui
 			secondWixLibraryItem.Include = "second.wixlib";
 			ProjectService.AddProjectItem(wixProject, secondWixLibraryItem);
 			
+			// Add a wix extension item.
+			firstWixExtensionItem = new WixExtensionProjectItem(wixProject);
+			firstWixExtensionItem.Include = "first-ext.dll";
+			ProjectService.AddProjectItem(wixProject, firstWixExtensionItem);
+			
 			wixLibraryFolderNode = new WixLibraryFolderNode(wixProject);
+			wixExtensionFolderNode = new WixExtensionFolderNode(wixProject);
 		}
 		
 		/// <summary>
@@ -50,10 +58,17 @@ namespace WixBinding.Tests.Gui
 		/// by the user in the tree view.
 		/// </summary>
 		[Test]
-		public void SingleCustomNodeChild()
+		public void SingleCustomNodeChildForLibraryFolderNode()
 		{
 			CustomNode childNode = wixLibraryFolderNode.Nodes[0] as CustomNode;
 			Assert.IsNotNull(childNode);
 		}
+		
+		[Test]
+		public void SingleCustomNodeChildForExtensionFolderNode()
+		{
+			CustomNode childNode = wixExtensionFolderNode.Nodes[0] as CustomNode;
+			Assert.IsNotNull(childNode);
+		}		
 	}
 }

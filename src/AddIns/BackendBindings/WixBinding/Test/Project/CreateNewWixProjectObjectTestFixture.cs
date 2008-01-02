@@ -62,7 +62,7 @@ namespace WixBinding.Tests.Project
 		[Test]
 		public void OutputType()
 		{
-			Assert.AreEqual(WixOutputType.package.ToString(), project.GetEvaluatedProperty("OutputType"));
+			Assert.AreEqual(WixOutputType.Package.ToString(), project.GetEvaluatedProperty("OutputType"));
 		}
 		
 		[Test]
@@ -79,7 +79,6 @@ namespace WixBinding.Tests.Project
 			}
 			
 			Assert.Contains(WixProject.DefaultTargetsFile, paths);
-			Assert.Contains(@"$(MSBuildBinPath)\Microsoft.Common.targets", paths);
 		}
 		
 		[Test]
@@ -96,31 +95,43 @@ namespace WixBinding.Tests.Project
 		}
 		
 		[Test]
-		public void ToolPath()
+		public void ToolPathDoesNotExist()
 		{
-			Assert.AreEqual(@"$(WixToolPath)", project.GetUnevalatedProperty("ToolPath"));
+			Assert.IsNull(project.GetUnevalatedProperty("ToolPath"));
 		}
-		
+				
 		[Test]
-		public void ToolPathHasNoCondition()
+		public void WixMSBuildExtensionsPathShouldNotExist()
 		{
-			MSBuild.BuildProperty property = GetMSBuildProperty("ToolPath");
-			Assert.IsTrue(String.IsNullOrEmpty(property.Condition), "ToolPath should not have a condition: " + property.Condition);
+			Assert.IsNull(project.GetUnevalatedProperty("WixMSBuildExtensionsPath"));
 		}
-		
+			
 		[Test]
-		public void WixMSBuildExtensionsPath()
+		public void WixTargetsPath()
 		{
-			Assert.AreEqual(@"$(SharpDevelopBinPath)\Tools\Wix", project.GetUnevalatedProperty("WixMSBuildExtensionsPath"));
+			Assert.AreEqual(@"$(WixToolPath)\wix.targets", project.GetUnevalatedProperty("WixTargetsPath"));
 		}
-		
+
 		[Test]
-		public void WixMSBuildExtensionsPathCondition()
+		public void WixTargetsPathCondition()
 		{
-			MSBuild.BuildProperty property = GetMSBuildProperty("WixMSBuildExtensionsPath");
-			Assert.AreEqual(" '$(WixMSBuildExtensionsPath)' == '' ", property.Condition);
+			MSBuild.BuildProperty property = GetMSBuildProperty("WixTargetsPath");
+			Assert.AreEqual(" '$(WixTargetsPath)' == '' ", property.Condition);
 		}
-		
+
+		[Test]
+		public void WixTasksPath()
+		{
+			Assert.AreEqual(@"$(WixToolPath)\WixTasks.dll", project.GetUnevalatedProperty("WixTasksPath"));
+		}
+
+		[Test]
+		public void WixTasksPathCondition()
+		{
+			MSBuild.BuildProperty property = GetMSBuildProperty("WixTasksPath");
+			Assert.AreEqual(" '$(WixTasksPath)' == '' ", property.Condition);
+		}
+
 		[Test]
 		public void DebugConfiguration()
 		{

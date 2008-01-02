@@ -53,7 +53,7 @@ namespace WixBinding.Tests.DialogLoading
 				
 		string GetWixXml()
 		{
-			return "<Wix xmlns='http://schemas.microsoft.com/wix/2003/01/wi'>\r\n" +
+			return "<Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>\r\n" +
 				"\t<Fragment>\r\n" +
 				"\t\t<UI>\r\n" +
 				"\t\t\t<Property Id='SmallFont'>{\\SmallFontStyle}</Property>\r\n" +

@@ -36,39 +36,16 @@ namespace ICSharpCode.WixBinding
 			b = helper.BindString("wixToolPathTextBox", "WixToolPath", TextBoxEditMode.EditRawProperty);
 			ConnectBrowseFolder("wixToolPathBrowseButton", "wixToolPathTextBox", String.Empty, TextBoxEditMode.EditRawProperty);
 			
-			b = helper.BindString("wixMSBuildExtensionsPathTextBox", "WixMSBuildExtensionsPath", TextBoxEditMode.EditRawProperty);
-			ConnectBrowseFolder("wixMSBuildExtensionsPathBrowseButton", "wixMSBuildExtensionsPathTextBox", String.Empty, TextBoxEditMode.EditRawProperty);
+			b = helper.BindString("wixTargetsPathTextBox", "WixTargetsPath", TextBoxEditMode.EditRawProperty);
+			ConnectBrowseButton("wixTargetsPathBrowseButton", "wixTargetsPathTextBox", "${res:ICSharpCode.WixBinding.WixTargetsFileFilterName} (wix.targets)|wix.targets|${res:SharpDevelop.FileFilter.AllFiles}|*.*", TextBoxEditMode.EditRawProperty);
 
-			// Add the extension picker in manually since the anchoring does not
-			// work if we add the picker into the XML of the CompilerParametersPanel.xfrm file.
-			WixCompilerExtensionPicker extensionPicker = new WixCompilerExtensionPicker();
-			extensionPicker.Dock = DockStyle.Fill;
-			ControlDictionary["compilerExtensionsGroupBox"].Controls.Add(extensionPicker);
+			b = helper.BindString("wixTasksPathTextBox", "WixTasksPath", TextBoxEditMode.EditRawProperty);
+			ConnectBrowseButton("wixTasksPathBrowseButton", "wixTasksPathTextBox", "${res:ICSharpCode.WixBinding.WixTasksFileFilterName} (wixtasks.dll)|wixtasks.dll|${res:SharpDevelop.FileFilter.AllFiles}|*.*", TextBoxEditMode.EditRawProperty);
 
-			b = new WixCompilerExtensionBinding(extensionPicker);
-			helper.AddBinding("CompileExtension", b);
-			extensionPicker.ExtensionsChanged += CompilerExtensionsChanged;
-
-			InitWarnings();
+			b = helper.BindString("suppressWarningsTextBox", "SuppressIces", TextBoxEditMode.EditRawProperty);
+			b = helper.BindString("wixVariablesTextBox", "WixVariables", TextBoxEditMode.EditRawProperty);
 
 			helper.AddConfigurationSelector(this);
-		}
-		
-		void InitWarnings()
-		{
-			ConfigurationGuiBinding b;
-			b = helper.BindStringEnum("warningLevelComboBox", "WarningLevel",
-			                          "4",
-			                          new StringPair("0", "0"),
-			                          new StringPair("1", "1"),
-			                          new StringPair("2", "2"),
-			                          new StringPair("3", "3"));
-			ChooseStorageLocationButton locationButton = b.CreateLocationButtonInPanel("errorsAndWarningsGroupBox");
-			b = helper.BindString("suppressWarningsTextBox", "NoWarn", TextBoxEditMode.EditEvaluatedProperty);
-			b.RegisterLocationButton(locationButton);
-			
-			b = helper.BindBoolean("treatWarningsAsErrorsCheckBox", "TreatWarningsAsErrors", false);
-			b.RegisterLocationButton(locationButton);
 		}
 		
 		void CompilerExtensionsChanged(object source, EventArgs e)

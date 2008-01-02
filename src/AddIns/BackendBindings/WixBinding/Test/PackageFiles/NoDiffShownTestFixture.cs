@@ -40,7 +40,7 @@ namespace WixBinding.Tests.PackageFiles
 
 		protected override string GetWixXml()
 		{
-			return "<Wix xmlns='http://schemas.microsoft.com/wix/2003/01/wi'>\r\n" +
+			return "<Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>\r\n" +
 				"\t<Product Name='Test' \r\n" +
 				"\t         Version='1.0' \r\n" +
 				"\t         Language='1013' \r\n" +

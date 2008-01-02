@@ -25,11 +25,7 @@ namespace ICSharpCode.WixBinding
 			b = helper.BindString("outputNameTextBox", "OutputName", TextBoxEditMode.EditEvaluatedProperty);
 			b.CreateLocationButton("outputNameTextBox");
 			Get<TextBox>("outputName").TextChanged += RefreshOutputFileNameTextBox;
-			
-			ConnectBrowseButton("localizedStringFileBrowseButton", "localizedStringFileTextBox", "${res:ICSharpCode.WixBinding.WixLocalizationFileFilterName} (*.wxl)|*.wxl|${res:SharpDevelop.FileFilter.AllFiles}|*.*", TextBoxEditMode.EditEvaluatedProperty);
-			b = helper.BindString("localizedStringFileTextBox", "LocalizedStringFile", TextBoxEditMode.EditRawProperty);
-			b.CreateLocationButton("localizedStringFileTextBox");
-			
+						
 			b = helper.BindEnum<WixOutputType>("outputTypeComboBox", "OutputType");
 			b.CreateLocationButton("outputTypeComboBox");
 			Get<ComboBox>("outputType").SelectedIndexChanged += RefreshOutputFileNameTextBox;

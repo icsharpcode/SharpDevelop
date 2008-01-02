@@ -86,7 +86,7 @@ namespace WixBinding.Tests.Document
 		
 		string GetMainWixXml()
 		{
-			return "<Wix xmlns='http://schemas.microsoft.com/wix/2003/01/wi'>\r\n" +
+			return "<Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>\r\n" +
 				"\t<Fragment>\r\n" +
 				"\t\t<UI>\r\n" +
 				"\t\t\t<Dialog Id='WelcomeDialog' Height='270' Width='370'>\r\n" +
@@ -99,7 +99,7 @@ namespace WixBinding.Tests.Document
 		
 		string GetWixFragmentXml()
 		{
-			return "<Wix xmlns=\"http://schemas.microsoft.com/wix/2003/01/wi\">\r\n" +
+			return "<Wix xmlns=\"http://schemas.microsoft.com/wix/2006/wi\">\r\n" +
 				"\t<Fragment>\r\n" +
 				"\t\t<Binary Id='DialogBitmap.bmp' SourceFile='Bitmaps/DialogBitmap.bmp'/>\r\n" +
 				"\t\t<Binary Id='Browse' src='Bitmaps/Browse.bmp'/>\r\n" +

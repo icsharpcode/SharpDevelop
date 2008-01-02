@@ -1,9 +1,9 @@
 ﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <OutputType>package</OutputType>
+    <OutputType>Package</OutputType>
     <WixToolPath Condition=" '$(WixToolPath)' == '' ">$(SharpDevelopBinPath)\Tools\Wix</WixToolPath>
-    <ToolPath Condition=" '$(ToolPath)' == '' ">$(WixToolPath)</ToolPath>
-    <WixMSBuildExtensionsPath>$(SharpDevelopBinPath)\Tools\Wix</WixMSBuildExtensionsPath>
+    <WixTargetsPath>$(WixToolPath)\Wix.targets</WixTargetsPath>
+    <WixTasksPath>$(WixToolPath)\WixTasks.dll</WixTasksPath>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <RootNamespace>SharpDevelop.Setup</RootNamespace>
     <ProjectGuid>{FFC0F136-2F91-4F2E-8D8B-DD435F01A7E6}</ProjectGuid>
@@ -11,7 +11,8 @@
     <OutputPath>bin\</OutputPath>
     <WarningLevel>0</WarningLevel>
     <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
-    <LocalizedStringFile>$(WixToolPath)\WixUI_en-us.wxl</LocalizedStringFile>
+    <SuppressIces>ICE45;ICE69</SuppressIces>
+    <WixVariables>WixUIDialogBmp=Bitmaps\dlgbmp.bmp;WixUILicenseRtf=License.rtf</WixVariables>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <BaseOutputPath>obj\</BaseOutputPath>
@@ -24,20 +25,11 @@
   <ItemGroup>
     <Compile Include="Setup.wxs" />
     <Compile Include="Files.wxs" />
-    <WixLibrary Include="$(WixToolPath)\wixui.wixlib" />
-    <Compile Include="NetFxExtension.wxs" />
     <None Include="Readme.txt" />
   </ItemGroup>
   <ItemGroup>
-    <CompileExtension Include="WixNetFxExtension">
-      <Class>Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler</Class>
-    </CompileExtension>
-    <LibExtension Include="WixNetFxExtension">
-      <Class>Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler</Class>
-    </LibExtension>
-    <LinkExtension Include="WixNetFxExtension">
-      <Class>Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler</Class>
-    </LinkExtension>
+    <WixExtension Include="$(WixToolPath)\WixUIExtension.dll" />
+    <WixExtension Include="$(WixToolPath)\WixNetFxExtension.dll" />
   </ItemGroup>
-  <Import Project="$(WixMSBuildExtensionsPath)\wix.targets" />
+  <Import Project="$(WixTargetsPath)" Condition="Exists('$(WixTargetsPath)')" />
 </Project>

@@ -49,7 +49,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Document\NewWixFileElementTests.cs" />
     <Compile Include="Gui\AddDialogsToSetupDialogListTestFixture.cs" />
+    <Compile Include="Gui\DeleteWixExtensionNodeTestFixture.cs" />
+    <Compile Include="Gui\WixFileTreeNodeTestFixture.cs" />
+    <Compile Include="Gui\WixProjectWithWixExtensionItemsTestFixture.cs" />
+    <Compile Include="Project\AddWixExtensionTestFixture.cs" />
     <Compile Include="Project\AddWixLibraryTestFixture.cs" />
     <Compile Include="Gui\AddWixProjectNodeTestFixture.cs" />
     <Compile Include="Gui\CanAttachToFileNameTests.cs" />
@@ -58,6 +63,7 @@
     <Compile Include="Project\CreateWixProjectItemTests.cs" />
     <Compile Include="Gui\DeleteWixLibraryNodeTestFixture.cs" />
     <Compile Include="Gui\GetWixDesignerFromViewTests.cs" />
+    <Compile Include="Project\GetWixExtensionsTestFixture.cs" />
     <Compile Include="Project\GetWixFileProjectItemsTestFixture.cs" />
     <Compile Include="Project\WixBuilderCannotBuildNonWixProjectTestFixture.cs" />
     <Compile Include="Gui\WixProjectWithUnexpandedLibraryItemsTestFixture.cs" />
@@ -65,6 +71,7 @@
     <Compile Include="Utils\MockViewContent.cs" />
     <Compile Include="Utils\MockTextEditorViewContent.cs" />
     <Compile Include="Project\WixNodeBuilderCanBuildWixProjectTestFixture.cs" />
+    <Compile Include="Utils\WixExtensionFolderNodeTester.cs" />
     <Compile Include="Utils\WixLibraryFolderNodeTester.cs" />
     <Compile Include="Gui\WixProjectWithLibraryItemsTestFixture.cs" />
     <Compile Include="Utils\WixProjectWithOverriddenSave.cs" />
@@ -178,7 +185,6 @@
     <Compile Include="PackageFiles\WixSchemaTests.cs" />
     <Compile Include="PackageFiles\RemoveWhenNothingSelectedTestFixture.cs" />
     <Compile Include="PackageFiles\AddFilesTestFixture.cs" />
-    <Compile Include="PackageFiles\ShortFileNameGeneratorTests.cs" />
     <Compile Include="PackageFiles\FileIdGenerationTests.cs" />
     <Compile Include="Document\WixDocumentWithNamespacePrefixTestFixture.cs" />
     <Compile Include="Document\ChildDirectoriesTestFixture.cs" />
@@ -194,17 +200,13 @@
     <Compile Include="Document\GetBinaryFileNameFromProjectTestFixture.cs" />
     <Compile Include="DialogLoading\BitmapFromProjectTestFixture.cs" />
     <Compile Include="Document\DirectoryNameTests.cs" />
-    <Compile Include="Project\GetWixCompilerExtensionsTestFixture.cs" />
-    <Compile Include="Project\WixCompilerExtensionNameTests.cs" />
     <Compile Include="PackageFiles\ComponentDiskIdSetBeforeFilesAddedTestFixture.cs" />
     <Compile Include="Document\ExistingFileIdGenerationTests.cs" />
-    <Compile Include="Document\ExistingShortFileNameTests.cs" />
     <Compile Include="Document\AddRootDirectoryWithNoProductElementTestFixture.cs" />
     <Compile Include="DirectoryImport\AddDirectoryTestFixture.cs" />
     <Compile Include="DirectoryImport\AddSubDirectoryTestFixture.cs" />
     <Compile Include="PackageFiles\GenerateComponentIdTests.cs" />
     <Compile Include="DirectoryImport\DuplicateComponentIdTestFixture.cs" />
-    <Compile Include="DirectoryImport\DuplicateShortDirectoryNameTestFixture.cs" />
     <Compile Include="DirectoryImport\ExcludedItemsTestFixture.cs" />
     <EmbeddedResource Include="Strings.resx" />
     <Compile Include="PropertyGrid\GuidTypeEditorTestFixture.cs" />
@@ -216,7 +218,6 @@
     <Compile Include="PropertyGrid\DropDownTypeEditorTestFixture.cs" />
     <Compile Include="PropertyGrid\DropDownPropertyDescriptorTestFixture.cs" />
     <Compile Include="DirectoryImport\AddDirectoryWithSpecialXmlCharsTestFixture.cs" />
-    <Compile Include="DirectoryImport\ShortFileNameExistsWithSpecialXmlCharsTestFixture.cs" />
     <Compile Include="DialogXmlGeneration\RadioButtonGroupPropertyWithSpecialXmlCharTestFixture.cs" />
     <Compile Include="DialogXmlGeneration\ListBoxPropertyWithSpecialXmlCharsTestFixture.cs" />
     <Compile Include="DialogXmlGeneration\ComboBoxPropertyWithSpecialXmlCharsTestFixture.cs" />

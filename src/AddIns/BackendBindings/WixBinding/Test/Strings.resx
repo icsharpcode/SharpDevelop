@@ -201,4 +201,7 @@
   <data name="ICSharpCode.WixBinding.WixLibraryFolderNode.Text" xml:space="preserve">
     <value>WiX Libraries</value>
   </data>
+  <data name="ICSharpCode.WixBinding.WixExtensionsFolderNode.Text" xml:space="preserve">
+    <value>WiX Extensions</value>
+  </data>
 </root>

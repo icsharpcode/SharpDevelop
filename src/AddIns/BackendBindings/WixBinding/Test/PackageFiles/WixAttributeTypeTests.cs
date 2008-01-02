@@ -49,7 +49,7 @@ namespace WixBinding.Tests.PackageFiles
 		[Test]
 		public void ProductIdAttributeIsAutogenUuid()
 		{
-			Assert.AreEqual(WixXmlAttributeType.AutogenUuid, productIdAttribute.AttributeType);
+			Assert.AreEqual(WixXmlAttributeType.AutogenGuid, productIdAttribute.AttributeType);
 		}
 
 		[Test]
@@ -61,7 +61,7 @@ namespace WixBinding.Tests.PackageFiles
 		[Test]
 		public void UpgradeCodeAttributeIsUuid()
 		{
-			Assert.AreEqual(WixXmlAttributeType.Uuid, productUpgradeCodeAttribute.AttributeType);
+			Assert.AreEqual(WixXmlAttributeType.Guid, productUpgradeCodeAttribute.AttributeType);
 		}
 		
 		[Test]
@@ -92,7 +92,7 @@ namespace WixBinding.Tests.PackageFiles
 
 		string GetWixXml()
 		{
-			return "<Wix xmlns='http://schemas.microsoft.com/wix/2003/01/wi'>\r\n" +
+			return "<Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>\r\n" +
 				"\t<Product Name='DialogTest' \r\n" +
 				"\t         Version='1.0' \r\n" +
 				"\t         Language='1013' \r\n" +

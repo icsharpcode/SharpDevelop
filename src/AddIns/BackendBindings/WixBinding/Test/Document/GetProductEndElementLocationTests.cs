@@ -25,7 +25,7 @@ namespace WixBinding.Tests.Document
 		[Test]
 		public void EndElementOnOwnLine()
 		{
-			string xml = "<Wix xmlns='http://schemas.microsoft.com/wix/2003/01/wi'>\r\n" +
+			string xml = "<Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>\r\n" +
 				"\t<Product Name='DialogTest' \r\n" +
 				"\t         Version='1.0' \r\n" +
 				"\t         Language='1013' \r\n" +
@@ -44,7 +44,7 @@ namespace WixBinding.Tests.Document
 		[Test]
 		public void EmptyElement()
 		{
-			string xml = "<Wix xmlns='http://schemas.microsoft.com/wix/2003/01/wi'>\r\n" +
+			string xml = "<Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>\r\n" +
 				"\t<Product Name='DialogTest' \r\n" +
 				"\t         Version='1.0' \r\n" +
 				"\t         Language='1013' \r\n" +

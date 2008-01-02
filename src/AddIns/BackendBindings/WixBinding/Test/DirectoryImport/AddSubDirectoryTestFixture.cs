@@ -58,13 +58,19 @@ namespace WixBinding.Tests.DirectoryImport
 		[Test]
 		public void AppDirectoryName()
 		{
-			Assert.AreEqual("MyApplic", appDirectoryElement.ShortName);
+			Assert.AreEqual("MyApplication", appDirectoryElement.DirectoryName);
 		}
 		
 		[Test]
-		public void AppDirectoryLongName()
+		public void AppDirectoryNameAttributeMatchesDirectoryName()
 		{
-			Assert.AreEqual("MyApplication", appDirectoryElement.LongName);
+			Assert.AreEqual("MyApplication", appDirectoryElement.GetAttribute("Name"));
+		}
+		
+		[Test]
+		public void AppDirectoryLongNameAttributeDoesNotExist()
+		{
+			Assert.IsFalse(appDirectoryElement.HasAttribute("LongName"));
 		}
 		
 		[Test]
@@ -82,8 +88,6 @@ namespace WixBinding.Tests.DirectoryImport
 		/// <summary>
 		/// Gets the MyApp directory files.
 		/// </summary>
-		/// <param name="path"></param>
-		/// <returns></returns>
 		public override string[] GetFiles(string path)
 		{
 			return files;
@@ -91,7 +95,7 @@ namespace WixBinding.Tests.DirectoryImport
 
 		protected override string GetWixXml()
 		{
-			return "<Wix xmlns=\"http://schemas.microsoft.com/wix/2003/01/wi\">\r\n" +
+			return "<Wix xmlns=\"http://schemas.microsoft.com/wix/2006/wi\">\r\n" +
 				"\t<Product Name=\"MySetup\" \r\n" +
 				"\t         Manufacturer=\"\" \r\n" +
 				"\t         Id=\"F4A71A3A-C271-4BE8-B72C-F47CC956B3AA\" \r\n" +

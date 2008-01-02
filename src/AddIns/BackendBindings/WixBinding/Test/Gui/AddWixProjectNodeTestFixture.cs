@@ -28,6 +28,7 @@ namespace WixBinding.Tests.Gui
 		WixProject wixProject;
 		ProjectNode wixProjectNode;
 		WixLibraryFolderNode wixLibraryFolderNode;
+		WixExtensionFolderNode wixExtensionFolderNode;
 		ReferenceFolder referenceFolderNode;
 		
 		[TestFixtureSetUp]
@@ -42,9 +43,10 @@ namespace WixBinding.Tests.Gui
 			wixProjectNode = builder.AddProjectNode(parentNode, wixProject) as ProjectNode;
 			
 			foreach (TreeNode node in wixProjectNode.Nodes) {
-				wixLibraryFolderNode = node as WixLibraryFolderNode;
-				if (wixLibraryFolderNode != null) {
-					break;
+				if (node is WixLibraryFolderNode) {
+					wixLibraryFolderNode = node as WixLibraryFolderNode;
+				} else if (node is WixExtensionFolderNode) {
+					wixExtensionFolderNode = node as WixExtensionFolderNode;
 				}
 			}
 			
@@ -94,9 +96,21 @@ namespace WixBinding.Tests.Gui
 		}
 		
 		[Test]
+		public void WixExtensionFolderNodeName()
+		{
+			Assert.AreEqual("WiX Extensions", wixExtensionFolderNode.Text);
+		}
+		
+		[Test]
 		public void WixLibraryFolderNodeHasNoChildren()
 		{
 			Assert.AreEqual(0, wixLibraryFolderNode.Nodes.Count);
+		}
+		
+		[Test]
+		public void WixExtensionFolderNodeHasNoChildren()
+		{
+			Assert.AreEqual(0, wixExtensionFolderNode.Nodes.Count);
 		}
 		
 		[Test]
@@ -112,9 +126,27 @@ namespace WixBinding.Tests.Gui
 		}
 		
 		[Test]
+		public void WixExtensionFolderNodeOpenImage()
+		{
+			Assert.AreEqual("ProjectBrowser.ReferenceFolder.Open", wixExtensionFolderNode.OpenedImage);
+		}
+		
+		[Test]
+		public void WixExtensionFolderNodeClosedImage()
+		{
+			Assert.AreEqual("ProjectBrowser.ReferenceFolder.Closed", wixExtensionFolderNode.ClosedImage);
+		}
+		
+		[Test]
 		public void WixLibraryContextMenuPath()
 		{
 			Assert.AreEqual("/SharpDevelop/Pads/ProjectBrowser/ContextMenu/WixLibraryFolderNode", wixLibraryFolderNode.ContextmenuAddinTreePath);
+		}
+
+		[Test]
+		public void WixExtensionContextMenuPath()
+		{
+			Assert.AreEqual("/SharpDevelop/Pads/ProjectBrowser/ContextMenu/WixExtensionFolderNode", wixExtensionFolderNode.ContextmenuAddinTreePath);
 		}
 		
 		[Test]

@@ -65,12 +65,6 @@
 		<DialogPanel id    = "DebugOptions"
 		             label = "${res:Dialog.ProjectOptions.DebugOptions}"
 		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.DebugOptions"/>
-		<DialogPanel id = "WixLibrary"
-			         label = "${res:ICSharpCode.WixBinding.LibraryParametersPanel}"
-			         class = "ICSharpCode.WixBinding.LibraryParametersPanel"/>
-		<DialogPanel id = "WixLinker"
-			         label = "${res:ICSharpCode.WixBinding.LinkerParametersPanel}"
-			         class = "ICSharpCode.WixBinding.LinkerParametersPanel"/>
 		<DialogPanel id    = "PreprocessorVariables"
 		             label = "${res:ICSharpCode.WixBinding.PreprocessorVariablesPanel}"
 		             class = "ICSharpCode.WixBinding.PreprocessorVariablesPanel"/>
@@ -93,9 +87,14 @@
 	
 	<Path path = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ProjectNode">
 		<Condition name = "ProjectActive" activeproject="Wix">
+			<MenuItem id = "AddWixExtension"
+			          label = "${res:ICSharpCode.WixBinding.ProjectBrowser.ContextMenu.AddWixExtension}"
+			          insertafter = "AddWebReference"
+			          insertbefore = "AddSeparator"
+			          class = "ICSharpCode.WixBinding.AddWixExtensionToProject"/>		
 			<MenuItem id = "AddWixLibrary"
 			          label = "${res:ICSharpCode.WixBinding.ProjectBrowser.ContextMenu.AddWixLibrary}"
-			          insertafter = "AddWebReference"
+			          insertafter = "AddWixExtension"
 			          insertbefore = "AddSeparator"
 			          class = "ICSharpCode.WixBinding.AddWixLibraryToProject"/>		
 		</Condition>	       
@@ -106,8 +105,28 @@
 		          label = "${res:ICSharpCode.WixBinding.ProjectBrowser.ContextMenu.AddWixLibrary}"
 		          class = "ICSharpCode.WixBinding.AddWixLibraryToProject"/>		
 	</Path>
+
+	<Path path = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/WixExtensionFolderNode">
+		<MenuItem id = "AddWixExtension"
+		          label = "${res:ICSharpCode.WixBinding.ProjectBrowser.ContextMenu.AddWixExtension}"
+		          class = "ICSharpCode.WixBinding.AddWixExtensionToProject"/>		
+	</Path>
 	
 	<Path path = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/WixLibraryNode">
+		<MenuItem id = "Remove"
+		          label = "${res:Global.RemoveButtonText}"
+		          type = "Item"
+		          icon  = "Icons.16x16.DeleteIcon"
+		          loadclasslazy = "false"
+		          class = "ICSharpCode.SharpDevelop.Project.Commands.DeleteProjectBrowserNode"/>		
+		<MenuItem id = "PropertiesSeparator" type = "Separator"/>
+		<MenuItem id    = "Properties"
+		          icon  = "Icons.16x16.PropertiesIcon"
+		          label = "${res:XML.MainMenu.FormatMenu.ShowProperties}"
+		          class = "ICSharpCode.SharpDevelop.Project.Commands.ShowPropertiesForNode"/>
+	</Path>
+
+	<Path path = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/WixExtensionNode">
 		<MenuItem id = "Remove"
 		          label = "${res:Global.RemoveButtonText}"
 		          type = "Item"
@@ -124,9 +143,14 @@
 	<!-- Project Explorer context menu item -->
 	<Path name = "/SharpDevelop/Workbench/MainMenu/Project">
 		<Condition name = "ProjectActive" activeproject="Wix">
+			<MenuItem id = "AddWixExtension"
+			          label = "${res:ICSharpCode.WixBinding.ProjectBrowser.ContextMenu.AddWixExtension}"
+			          insertafter = "AddWebReference"
+			          insertbefore = "AddSeparator"
+			          class = "ICSharpCode.WixBinding.AddWixExtensionToProject"/>		
 			<MenuItem id = "AddWixLibrary"
 			          label = "${res:ICSharpCode.WixBinding.ProjectBrowser.ContextMenu.AddWixLibrary}"
-			          insertafter = "AddWebReference"
+			          insertafter = "AddWixExtension"
 			          insertbefore = "AddSeparator"
 			          class = "ICSharpCode.WixBinding.AddWixLibraryToProject"/>		
 		</Condition>
@@ -163,9 +187,6 @@
 	<!-- Setup menu items that are created in the View menu -->
 	<Path name = "/SharpDevelop/Workbench/MainMenu/View">
 		<MenuItem id = "Setup" label = "${res:XML.MainMenu.ViewMenu.SetupMenu}" type = "Menu" insertbefore = "Tools">
-			<!--<MenuItem id = "SetupViewMenuBuilder"
-				type  = "Builder"
-				class = "ICSharpCode.WixBinding.SetupViewMenuBuilder" />-->
 			<Include id="View" path="/AddIns/WixBinding/View"/>
 		</MenuItem>
 	</Path>
@@ -255,16 +276,6 @@
 		<MenuItem id = "HideDiffControl"
 			label = "${res:Global.CloseButtonText}"
 			class = "ICSharpCode.WixBinding.HideDiffCommand"/>
-	</Path>
-	
-	<!-- 
-		Standard compiler extensions. These are displayed in the add 
-		compiler extensions dialog.
- 	-->
-	<Path name="/AddIns/WixBinding/CompilerExtensions">
-		<String id="NetFx" text="Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension|${res:ICSharpCode.WixBinding.WixNetFxExtensionTitle}"/>
-		<String id="PubCa" text="Microsoft.Tools.WindowsInstallerXml.PcaCompiler, pcaext|${res:ICSharpCode.WixBinding.WixPubcaExtensionTitle}"/>
-		<String id="VS" text="Microsoft.Tools.WindowsInstallerXml.Extensions.VSCompiler, WixVSExtension|${res:ICSharpCode.WixBinding.WixVisualStudioExtensionTitle}"/>
 	</Path>
 
 	<!-- 

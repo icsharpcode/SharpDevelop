@@ -103,19 +103,11 @@ namespace UpdateSetupInfo
 			// Get current revision.
 			string currentRevision = GetCurrentRevision();
 			
-			if (RevisionExists(currentRevision)) {
-				Console.WriteLine(String.Concat("Not updating setup guids for previously seen revision ", currentRevision));
-				return 0;
-			}
-			
 			// Populate setup template.
 			template = PopulateSetupTemplate(template, currentRevision);
 			
 			// Create setup user file.
 			SaveSetupUserFile(template);
-			
-			// Save revision.
-			SaveRevision(currentRevision);
 			
 			return 0;
 		}
@@ -140,9 +132,7 @@ namespace UpdateSetupInfo
 		
 		string PopulateSetupTemplate(string template, string revision)
 		{
-			string updatedTemplate = template.Replace("$INSERTPRODUCTBUILDVERSION$", revision);
-			updatedTemplate = updatedTemplate.Replace("$INSERTPRODUCTCODEGUID$", GetNewGuid());
-			return updatedTemplate.Replace("$INSERTPACKAGECODEGUID$", GetNewGuid());
+			return template.Replace("$INSERTPRODUCTBUILDVERSION$", revision);
 		}
 		
 		string GetNewGuid()
@@ -156,21 +146,7 @@ namespace UpdateSetupInfo
 				writer.Write(contents);
 			}
 		}
-		
-		/// <summary>
-		/// Writes the revision just used to generate the SharpDevelop.Setup.wixproj.user
-		/// file so we do not regenerate the product guid for the same revision.
-		/// </summary>
-		void SaveRevision(string revision)
-		{
-			if (!Directory.Exists(previousRevisionFolder)) {
-				Directory.CreateDirectory(previousRevisionFolder);
-			}
-			using (StreamWriter writer = new StreamWriter(previousRevisionFileName, false, Encoding.UTF8)) {
-				writer.Write(revision);
-			}
-		}
-		
+				
 		/// <summary>
 		/// Code taken directly from UpdateAssemblyInfo and the paths slightly modified.
 		/// </summary>

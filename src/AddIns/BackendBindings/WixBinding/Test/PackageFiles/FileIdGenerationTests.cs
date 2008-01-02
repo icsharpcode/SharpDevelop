@@ -22,7 +22,7 @@ namespace WixBinding.Tests.PackageFiles
 		{
 			doc = new WixDocument();
 			doc.FileName = @"C:\Projects\Setup\Setup.wxs";
-			doc.LoadXml("<Wix xmlns='http://schemas.microsoft.com/wix/2003/01/wi'/>");
+			doc.LoadXml("<Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'/>");
 		}
 		
 		[Test]
@@ -37,7 +37,7 @@ namespace WixBinding.Tests.PackageFiles
 		{
 			Assert.AreEqual(String.Empty, WixFileElement.GenerateId(null));
 		}
-		
+				
 		[Test]
 		public void TruncatedShortFileName()
 		{
@@ -72,5 +72,12 @@ namespace WixBinding.Tests.PackageFiles
 			WixFileElement fileElement = new WixFileElement(doc, @"C:\Projects\Setup\Files\readme.txt");
 			Assert.AreEqual("readme.txt", fileElement.Id);
 		}
+		
+		[Test]
+		public void LongFileName()
+		{
+			WixFileElement fileElement = new WixFileElement(doc, @"C:\Projects\Setup\Files\LongFileName.LongExtension");
+			Assert.AreEqual("LongFileName.LongExtension", fileElement.Id);
+		}		
 	}
 }

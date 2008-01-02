@@ -50,7 +50,7 @@ namespace WixBinding.Tests.PropertyGrid
 		[Test]
 		public void AutogenUuid()
 		{
-			WixXmlAttribute attribute = new WixXmlAttribute("Id", WixXmlAttributeType.AutogenUuid);
+			WixXmlAttribute attribute = new WixXmlAttribute("Id", WixXmlAttributeType.AutogenGuid);
 			propertyDescriptor = new WixXmlAttributePropertyDescriptor(attribute);
 			EditorAttribute editorAttribute = WixBindingTestsHelper.GetEditorAttribute(propertyDescriptor.Attributes);
 			
@@ -61,7 +61,7 @@ namespace WixBinding.Tests.PropertyGrid
 		[Test]
 		public void Uuid()
 		{
-			WixXmlAttribute attribute = new WixXmlAttribute("Id", WixXmlAttributeType.Uuid);
+			WixXmlAttribute attribute = new WixXmlAttribute("Id", WixXmlAttributeType.Guid);
 			propertyDescriptor = new WixXmlAttributePropertyDescriptor(attribute);
 			EditorAttribute editorAttribute = WixBindingTestsHelper.GetEditorAttribute(propertyDescriptor.Attributes);
 			

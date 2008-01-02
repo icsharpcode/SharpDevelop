@@ -25,7 +25,7 @@ namespace WixBinding.Tests.Document
 		[Test]
 		public void SingleDirectoryElement()
 		{
-			string xml = "<Wix xmlns='http://schemas.microsoft.com/wix/2003/01/wi'>\r\n" +
+			string xml = "<Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>\r\n" +
 				"\t<Fragment>\r\n" +
 				"\t\t<Directory Id='TARGETDIR' Name='SourceDir'>\r\n" +
 				"\t\t</Directory>\r\n" +
@@ -39,7 +39,7 @@ namespace WixBinding.Tests.Document
 		[Test]
 		public void OneNestedDirectoryElement()
 		{
-			string xml = "<Wix xmlns='http://schemas.microsoft.com/wix/2003/01/wi'>\r\n" +
+			string xml = "<Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>\r\n" +
 				"\t<Fragment>\r\n" +
 				"\t\t<Directory Id='TARGETDIR' Name='SourceDir'>\r\n" +
 				"\t\t\t<Directory Id='ProgramFiles' Name='PFiles'>\r\n" +
@@ -55,7 +55,7 @@ namespace WixBinding.Tests.Document
 		[Test]
 		public void OneNestedEmptyDirectoryElement()
 		{
-			string xml = "<Wix xmlns='http://schemas.microsoft.com/wix/2003/01/wi'>\r\n" +
+			string xml = "<Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>\r\n" +
 				"\t<Fragment>\r\n" +
 				"\t\t<Directory Id='TARGETDIR' Name='SourceDir'>\r\n" +
 				"\t\t\t<Directory Id='ProgramFiles' Name='PFiles'/>\r\n" +

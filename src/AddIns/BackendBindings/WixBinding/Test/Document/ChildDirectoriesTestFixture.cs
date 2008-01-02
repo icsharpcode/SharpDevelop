@@ -90,7 +90,7 @@ namespace WixBinding.Tests.Document
 		
 		string GetWixXml()
 		{
-			return "<Wix xmlns='http://schemas.microsoft.com/wix/2003/01/wi'>\r\n" +
+			return "<Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>\r\n" +
 				"\t<Product Name='DialogTest' \r\n" +
 				"\t         Version='1.0' \r\n" +
 				"\t         Language='1013' \r\n" +
@@ -99,7 +99,7 @@ namespace WixBinding.Tests.Document
 				"\t\t<Package/>\r\n" +
 				"\t\t<Directory Id=\"TARGETDIR\" SourceName=\"SourceDir\">\r\n" +
 				"\t\t\t<Directory Id=\"ProgramFilesFolder\" Name=\"PFiles\">\r\n" +
-				"\t\t\t\t<Directory Id=\"MyApp\" SourceName=\"MyAppSrc\" Name=\"MyApp\" LongName=\"My Application\">\r\n" +
+				"\t\t\t\t<Directory Id=\"MyApp\" SourceName=\"MyAppSrc\" Name=\"My Application\">\r\n" +
 				"\t\t\t\t</Directory>\r\n" +
 				"\t\t\t</Directory>\r\n" +
 				"\t\t\t<Directory Id=\"Test\" SourceName=\"Test\" Name=\"App\"/>\r\n" +

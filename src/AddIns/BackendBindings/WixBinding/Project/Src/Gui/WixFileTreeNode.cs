@@ -23,33 +23,17 @@ namespace ICSharpCode.WixBinding
 		
 		public override void Refresh()
 		{
-			Text = GetDisplayText();
+			Text = fileElement.FileName;
 			SetIcon(IconService.GetImageForFile(GetFileName()));
 		}
 		
 		string GetFileName()
 		{
-			string source = fileElement.Source;
-			if (!String.IsNullOrEmpty(source)) {
-				return source;
+			string fileName = fileElement.FileName;
+			if (!String.IsNullOrEmpty(fileName)) {
+				return fileName;
 			}
-			string longName = fileElement.LongName;
-			if (!String.IsNullOrEmpty(longName)) {
-				return longName;
-			}
-			return fileElement.ShortName;
-		}
-		
-		/// <summary>
-		/// Gets the text that will be displayed for the tree node.
-		/// </summary>
-		string GetDisplayText()
-		{
-			string longName = fileElement.LongName;
-			if (!String.IsNullOrEmpty(longName)) {
-				return longName;
-			}
-			return fileElement.ShortName;
+			return fileElement.Source;
 		}
 	}
 }

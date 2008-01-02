@@ -48,13 +48,13 @@ namespace WixBinding.Tests.Document
 		[Test]
 		public void FirstFileElementFileName()
 		{
-			Assert.AreEqual(@"C:\Projects\doc\license.rtf", files[0].FileName);
+			Assert.AreEqual(@"C:\Projects\doc\license.rtf", files[0].SourceFullPath);
 		}
 		
 		[Test]
 		public void SecondFileElementFileName()
 		{
-			Assert.AreEqual(@"C:\Projects\Setup\bin\myapp.exe", files[1].FileName);
+			Assert.AreEqual(@"C:\Projects\Setup\bin\myapp.exe", files[1].SourceFullPath);
 		}
 		
 		/// <summary>
@@ -65,13 +65,27 @@ namespace WixBinding.Tests.Document
 		public void RelativeFileNameUsed()
 		{
 			doc.FileName = String.Empty;
-			Assert.AreEqual(@"..\doc\license.rtf", files[0].FileName);
-			Assert.AreEqual(@"bin\myapp.exe", files[1].FileName);
+			Assert.AreEqual(@"..\doc\license.rtf", files[0].SourceFullPath);
+			Assert.AreEqual(@"bin\myapp.exe", files[1].SourceFullPath);
+		}
+		
+		[Test]
+		public void SourceAttributeUsed()
+		{
+			Assert.AreEqual(@"..\doc\license.rtf", files[0].Source);
+			Assert.AreEqual(@"bin\myapp.exe", files[1].Source);
+		}
+
+		[Test]
+		public void NameAttributeUsed()
+		{
+			Assert.AreEqual(@"License.rtf", files[0].FileName);
+			Assert.AreEqual(@"MyApp.exe", files[1].FileName);
 		}
 		
 		string GetWixXml()
 		{
-			return "<Wix xmlns=\"http://schemas.microsoft.com/wix/2003/01/wi\">\r\n" +
+			return "<Wix xmlns=\"http://schemas.microsoft.com/wix/2006/wi\">\r\n" +
 				"\t<Product Name=\"MySetup\" \r\n" +
 				"\t         Manufacturer=\"\" \r\n" +
 				"\t         Id=\"F4A71A3A-C271-4BE8-B72C-F47CC956B3AA\" \r\n" +
@@ -82,7 +96,7 @@ namespace WixBinding.Tests.Document
 				"\t\t\t<Directory Id=\"ProgramFilesFolder\" Name=\"PFiles\">\r\n" +
 				"\t\t\t\t<Directory Id=\"INSTALLDIR\" Name=\"MyApp\">\r\n" +
 				"\t\t\t\t\t<Component Id=\"CoreComponents\">\r\n" +
-				"\t\t\t\t\t\t<File Id=\"LicenseFile\" Name=\"license.rtf\" Source=\"..\\doc\\license.rtf\" />\r\n" +
+				"\t\t\t\t\t\t<File Id=\"LicenseFile\" Name=\"License.rtf\" Source=\"..\\doc\\license.rtf\" />\r\n" +
 				"\t\t\t\t\t\t<File Id=\"ExeFile\" Name=\"MyApp.exe\" Source=\"bin\\myapp.exe\" />\r\n" +
 				"\t\t\t\t\t</Component>\r\n" +
 				"\t\t\t\t</Directory>\r\n" +
