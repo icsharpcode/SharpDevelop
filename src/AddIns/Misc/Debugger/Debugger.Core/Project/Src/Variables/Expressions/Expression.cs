@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.PrettyPrinter;
 using Ast = ICSharpCode.NRefactory.Ast;
+using Debugger.Wrappers.CorSym;
 
 namespace Debugger
 {
@@ -18,17 +19,15 @@ namespace Debugger
 	/// Represents a piece of code that can be evaluated.
 	/// For example "a[15] + 15".
 	/// </summary>
-	public class Expression: DebuggerObject
+	public partial class Expression: DebuggerObject
 	{
-		public static Expression Empty = new Expression(null);
-		
-		Ast.Expression expressionAst;
+		Ast.Expression abstractSynatxTree;
 		
 		public string Code {
 			get {
-				if (expressionAst != null) {
+				if (abstractSynatxTree != null) {
 					CSharpOutputVisitor csOutVisitor = new CSharpOutputVisitor();
-					expressionAst.AcceptVisitor(csOutVisitor, null);
+					abstractSynatxTree.AcceptVisitor(csOutVisitor, null);
 					return csOutVisitor.Text;
 				} else {
 					return string.Empty;
@@ -37,20 +36,25 @@ namespace Debugger
 		}
 		
 		public Ast.Expression AbstractSynatxTree {
-			get { return expressionAst; }
+			get { return abstractSynatxTree; }
 		}
 		
-		public Expression(ICSharpCode.NRefactory.Ast.Expression expressionAst)
+		public Expression(Ast.Expression abstractSynatxTree)
 		{
-			this.expressionAst = expressionAst;
+			this.abstractSynatxTree = abstractSynatxTree;
 		}
 		
-		public static implicit operator Expression(ICSharpCode.NRefactory.Ast.Expression expressionAst)
+		public Expression(string code)
 		{
-			return new Expression(expressionAst);
+			throw new NotImplementedException();
 		}
 		
-		public static implicit operator ICSharpCode.NRefactory.Ast.Expression(Expression expression)
+		public static implicit operator Expression(Ast.Expression abstractSynatxTree)
+		{
+			return new Expression(abstractSynatxTree);
+		}
+		
+		public static implicit operator Ast.Expression(Expression expression)
 		{
 			if (expression == null) {
 				return null;
@@ -62,18 +66,6 @@ namespace Debugger
 		public override string ToString()
 		{
 			return this.Code;
-		}
-		
-		Expression GetExpressionFromIndices(uint[] indices)
-		{
-			List<Ast.Expression> indicesAst = new List<Ast.Expression>();
-			foreach(uint indice in indices) {
-				indicesAst.Add(new Ast.PrimitiveExpression((int)indice, ((int)indice).ToString()));
-			}
-			return new Ast.IndexerExpression(
-				this.Expression,
-				indicesAst
-			);
 		}
 	}
 }
