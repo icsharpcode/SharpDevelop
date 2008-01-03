@@ -45,44 +45,92 @@ namespace Debugger
 			);
 		}
 		
-		public static ExpressionCollection StackFrameVariables(StackFrame stackFrame)
+		/// <summary> Get all variables for a method - this; parameters; local variables </summary>
+		public static ExpressionCollection MethodVariables(MethodInfo methodInfo)
 		{
-			throw new NotImplementedException();
+			ExpressionCollection vars = new ExpressionCollection();
+			
+			vars.Add(MethodThis(methodInfo));
+			vars.AddRange(MethodParameters(methodInfo));
+			vars.AddRange(MethodLocalVariables(methodInfo));
+			
+			return vars;
 		}
 		
-		public static Expression StackFrameThis(StackFrame stackFrame)
+		/// <summary> Get 'this' variable for a method </summary>
+		public static Expression MethodThis(MethodInfo methodInfo)
 		{
-			throw new NotImplementedException();
+			if (methodInfo.IsStatic) throw new DebuggerException(methodInfo.FullName + " is static method");
+			
+			return new Ast.ThisReferenceExpression();
 		}
 		
-		public static ExpressionCollection StackFrameParameters(StackFrame stackFrame)
+		/// <summary> Get parameters of a method </summary>
+		public static ExpressionCollection MethodParameters(MethodInfo methodInfo)
 		{
-			throw new NotImplementedException();
+			ExpressionCollection pars = new ExpressionCollection();
+			
+			for(int i = 0; i < methodInfo.ParameterCount; i++) {
+				pars.Add(new Ast.ParameterIdentifierExpression(i, methodInfo.GetParameterName(i)));
+			}
+			
+			return pars;
 		}
 		
-		public static ExpressionCollection StackFrameLocalVariables(StackFrame stackFrame)
+		/// <summary> Get local variables of a method </summary>
+		public static ExpressionCollection MethodLocalVariables(MethodInfo methodInfo)
 		{
-			throw new NotImplementedException();
+			ExpressionCollection vars = new ExpressionCollection();
+			
+			foreach(ISymUnmanagedVariable var in methodInfo.LocalVariables) {
+				vars.Add(new Ast.LocalVariableIdentifierExpression(var));
+			}
+			
+			return vars;
 		}
 		
-		public ValueCollection GetArrayElements()
+		/// <summary>
+		/// Evaluate the expression and return expressions for all array elements.
+		/// The expression must evaluate to array.
+		/// </summary>
+		public ExpressionCollection EvaluateAndGetArrayElements()
 		{
-			throw new NotImplementedException();
+			ExpressionCollection elements = new ExpressionCollection();
+			foreach(uint[] indices in this.Evaluate().ArrayIndices) {
+				elements.Add(this.AppendIndexer(indices));
+			}
+			return elements;
 		}
 		
-		public ExpressionCollection GetObjectMembers()
+		/// <summary>
+		/// Evaluate the expression and return object members.
+		/// The expression must evaluate to object.
+		/// </summary>
+		public ExpressionCollection EvaluateAndGetObjectMembers(BindingFlags bindingFlags)
 		{
-			throw new NotImplementedException();
-		}
-		
-		public ExpressionCollection GetObjectMembers(BindingFlags bindingFlags)
-		{
-			throw new NotImplementedException();
+			ExpressionCollection members = new ExpressionCollection();
+			
+			DebugType currentType = this.Evaluate().Type;
+			while (currentType != null) {
+				members.AddRange(GetObjectMembers(currentType, bindingFlags));
+				currentType = currentType.BaseType;
+			}
+			
+			return members;
 		}
 		
 		public ExpressionCollection GetObjectMembers(DebugType type, BindingFlags bindingFlags)
 		{
-			throw new NotImplementedException();
+			ExpressionCollection members = new ExpressionCollection();
+			
+			foreach(FieldInfo field in type.GetFields(bindingFlags)) {
+				members.Add(this.AppendFieldReference(field));
+			}
+			foreach(PropertyInfo property in type.GetProperties(bindingFlags)) {
+				members.Add(this.AppendPropertyReference(property));
+			}
+			
+			return members;
 		}
 	}
 }

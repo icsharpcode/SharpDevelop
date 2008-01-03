@@ -17,12 +17,12 @@ namespace Debugger
 {
 	public partial class Expression: DebuggerObject
 	{
-		public Value GetValue()
+		public Value Evaluate()
 		{
 			return Evaluate(null);
 		}
 		
-		Value Evaluate(StackFrame stackFrame)
+		public Value Evaluate(StackFrame stackFrame)
 		{
 			EvaluateAstVisitor astVisitor = new EvaluateAstVisitor(stackFrame);
 			return (Value)this.AbstractSynatxTree.AcceptVisitor(astVisitor, null);

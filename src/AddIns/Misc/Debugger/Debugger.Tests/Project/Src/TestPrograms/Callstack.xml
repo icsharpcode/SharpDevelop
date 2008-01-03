@@ -12,11 +12,12 @@
           <StackFrame>
             <MethodInfo>
               <MethodInfo>
+                <Name>Sub2</Name>
+                <FullName>Debugger.Tests.TestPrograms.Callstack.Sub2</FullName>
                 <IsPrivate>True</IsPrivate>
                 <IsPublic>False</IsPublic>
                 <IsSpecialName>False</IsSpecialName>
                 <IsStatic>True</IsStatic>
-                <Name>Sub2</Name>
                 <Module>Callstack.exe</Module>
                 <DeclaringType>Debugger.Tests.TestPrograms.Callstack</DeclaringType>
               </MethodInfo>
@@ -48,11 +49,12 @@
           <StackFrame>
             <MethodInfo>
               <MethodInfo>
+                <Name>Sub1</Name>
+                <FullName>Debugger.Tests.TestPrograms.Callstack.Sub1</FullName>
                 <IsPrivate>True</IsPrivate>
                 <IsPublic>False</IsPublic>
                 <IsSpecialName>False</IsSpecialName>
                 <IsStatic>True</IsStatic>
-                <Name>Sub1</Name>
                 <Module>Callstack.exe</Module>
                 <DeclaringType>Debugger.Tests.TestPrograms.Callstack</DeclaringType>
               </MethodInfo>
@@ -84,11 +86,12 @@
           <StackFrame>
             <MethodInfo>
               <MethodInfo>
+                <Name>Main</Name>
+                <FullName>Debugger.Tests.TestPrograms.Callstack.Main</FullName>
                 <IsPrivate>False</IsPrivate>
                 <IsPublic>True</IsPublic>
                 <IsSpecialName>False</IsSpecialName>
                 <IsStatic>True</IsStatic>
-                <Name>Main</Name>
                 <Module>Callstack.exe</Module>
                 <DeclaringType>Debugger.Tests.TestPrograms.Callstack</DeclaringType>
               </MethodInfo>
@@ -128,11 +131,12 @@
           <StackFrame>
             <MethodInfo>
               <MethodInfo>
+                <Name>Sub1</Name>
+                <FullName>Debugger.Tests.TestPrograms.Callstack.Sub1</FullName>
                 <IsPrivate>True</IsPrivate>
                 <IsPublic>False</IsPublic>
                 <IsSpecialName>False</IsSpecialName>
                 <IsStatic>True</IsStatic>
-                <Name>Sub1</Name>
                 <Module>Callstack.exe</Module>
                 <DeclaringType>Debugger.Tests.TestPrograms.Callstack</DeclaringType>
               </MethodInfo>
@@ -164,11 +168,12 @@
           <StackFrame>
             <MethodInfo>
               <MethodInfo>
+                <Name>Main</Name>
+                <FullName>Debugger.Tests.TestPrograms.Callstack.Main</FullName>
                 <IsPrivate>False</IsPrivate>
                 <IsPublic>True</IsPublic>
                 <IsSpecialName>False</IsSpecialName>
                 <IsStatic>True</IsStatic>
-                <Name>Main</Name>
                 <Module>Callstack.exe</Module>
                 <DeclaringType>Debugger.Tests.TestPrograms.Callstack</DeclaringType>
               </MethodInfo>
@@ -208,11 +213,12 @@
           <StackFrame>
             <MethodInfo>
               <MethodInfo>
+                <Name>Main</Name>
+                <FullName>Debugger.Tests.TestPrograms.Callstack.Main</FullName>
                 <IsPrivate>False</IsPrivate>
                 <IsPublic>True</IsPublic>
                 <IsSpecialName>False</IsSpecialName>
                 <IsStatic>True</IsStatic>
-                <Name>Main</Name>
                 <Module>Callstack.exe</Module>
                 <DeclaringType>Debugger.Tests.TestPrograms.Callstack</DeclaringType>
               </MethodInfo>

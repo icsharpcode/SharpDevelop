@@ -223,18 +223,23 @@ namespace Debugger
 		
 		IEnumerable<Value> GetObjectMembersEnum(DebugType type, BindingFlags bindingFlags)
 		{
-			DebugType currentType = type ?? this.Type;
-			while (currentType != null) {
-				foreach(FieldInfo field in currentType.GetFields(bindingFlags)) {
+			if (type != null) {
+				foreach(FieldInfo field in type.GetFields(bindingFlags)) {
 					yield return this.GetFieldValue(field);
 				}
-				foreach(PropertyInfo property in currentType.GetProperties(bindingFlags)) {
+				foreach(PropertyInfo property in type.GetProperties(bindingFlags)) {
 					yield return this.GetPropertyValue(property);
 				}
-				if (type == null) {
+			} else {
+				DebugType currentType = this.Type;
+				while (currentType != null) {
+					foreach(FieldInfo field in currentType.GetFields(bindingFlags)) {
+						yield return this.GetFieldValue(field);
+					}
+					foreach(PropertyInfo property in currentType.GetProperties(bindingFlags)) {
+						yield return this.GetPropertyValue(property);
+					}
 					currentType = currentType.BaseType;
-				} else {
-					yield break;
 				}
 			}
 		}

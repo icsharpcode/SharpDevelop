@@ -10,11 +10,12 @@
       <StackFrame>
         <MethodInfo>
           <MethodInfo>
+            <Name>Main</Name>
+            <FullName>Debugger.Tests.TestPrograms.Stepping.Main</FullName>
             <IsPrivate>False</IsPrivate>
             <IsPublic>True</IsPublic>
             <IsSpecialName>False</IsSpecialName>
             <IsStatic>True</IsStatic>
-            <Name>Main</Name>
             <Module>Stepping.exe</Module>
             <DeclaringType>Debugger.Tests.TestPrograms.Stepping</DeclaringType>
           </MethodInfo>
@@ -49,11 +50,12 @@
       <StackFrame>
         <MethodInfo>
           <MethodInfo>
+            <Name>Main</Name>
+            <FullName>Debugger.Tests.TestPrograms.Stepping.Main</FullName>
             <IsPrivate>False</IsPrivate>
             <IsPublic>True</IsPublic>
             <IsSpecialName>False</IsSpecialName>
             <IsStatic>True</IsStatic>
-            <Name>Main</Name>
             <Module>Stepping.exe</Module>
             <DeclaringType>Debugger.Tests.TestPrograms.Stepping</DeclaringType>
           </MethodInfo>
@@ -91,11 +93,12 @@
       <StackFrame>
         <MethodInfo>
           <MethodInfo>
+            <Name>Main</Name>
+            <FullName>Debugger.Tests.TestPrograms.Stepping.Main</FullName>
             <IsPrivate>False</IsPrivate>
             <IsPublic>True</IsPublic>
             <IsSpecialName>False</IsSpecialName>
             <IsStatic>True</IsStatic>
-            <Name>Main</Name>
             <Module>Stepping.exe</Module>
             <DeclaringType>Debugger.Tests.TestPrograms.Stepping</DeclaringType>
           </MethodInfo>
@@ -130,11 +133,12 @@
       <StackFrame>
         <MethodInfo>
           <MethodInfo>
+            <Name>Sub</Name>
+            <FullName>Debugger.Tests.TestPrograms.Stepping.Sub</FullName>
             <IsPrivate>False</IsPrivate>
             <IsPublic>True</IsPublic>
             <IsSpecialName>False</IsSpecialName>
             <IsStatic>True</IsStatic>
-            <Name>Sub</Name>
             <Module>Stepping.exe</Module>
             <DeclaringType>Debugger.Tests.TestPrograms.Stepping</DeclaringType>
           </MethodInfo>
@@ -169,11 +173,12 @@
       <StackFrame>
         <MethodInfo>
           <MethodInfo>
+            <Name>Sub</Name>
+            <FullName>Debugger.Tests.TestPrograms.Stepping.Sub</FullName>
             <IsPrivate>False</IsPrivate>
             <IsPublic>True</IsPublic>
             <IsSpecialName>False</IsSpecialName>
             <IsStatic>True</IsStatic>
-            <Name>Sub</Name>
             <Module>Stepping.exe</Module>
             <DeclaringType>Debugger.Tests.TestPrograms.Stepping</DeclaringType>
           </MethodInfo>
@@ -209,11 +214,12 @@
       <StackFrame>
         <MethodInfo>
           <MethodInfo>
+            <Name>Sub</Name>
+            <FullName>Debugger.Tests.TestPrograms.Stepping.Sub</FullName>
             <IsPrivate>False</IsPrivate>
             <IsPublic>True</IsPublic>
             <IsSpecialName>False</IsSpecialName>
             <IsStatic>True</IsStatic>
-            <Name>Sub</Name>
             <Module>Stepping.exe</Module>
             <DeclaringType>Debugger.Tests.TestPrograms.Stepping</DeclaringType>
           </MethodInfo>
@@ -250,11 +256,12 @@
       <StackFrame>
         <MethodInfo>
           <MethodInfo>
+            <Name>Main</Name>
+            <FullName>Debugger.Tests.TestPrograms.Stepping.Main</FullName>
             <IsPrivate>False</IsPrivate>
             <IsPublic>True</IsPublic>
             <IsSpecialName>False</IsSpecialName>
             <IsStatic>True</IsStatic>
-            <Name>Main</Name>
             <Module>Stepping.exe</Module>
             <DeclaringType>Debugger.Tests.TestPrograms.Stepping</DeclaringType>
           </MethodInfo>
@@ -289,11 +296,12 @@
       <StackFrame>
         <MethodInfo>
           <MethodInfo>
+            <Name>Main</Name>
+            <FullName>Debugger.Tests.TestPrograms.Stepping.Main</FullName>
             <IsPrivate>False</IsPrivate>
             <IsPublic>True</IsPublic>
             <IsSpecialName>False</IsSpecialName>
             <IsStatic>True</IsStatic>
-            <Name>Main</Name>
             <Module>Stepping.exe</Module>
             <DeclaringType>Debugger.Tests.TestPrograms.Stepping</DeclaringType>
           </MethodInfo>
@@ -329,11 +337,12 @@
       <StackFrame>
         <MethodInfo>
           <MethodInfo>
+            <Name>Main</Name>
+            <FullName>Debugger.Tests.TestPrograms.Stepping.Main</FullName>
             <IsPrivate>False</IsPrivate>
             <IsPublic>True</IsPublic>
             <IsSpecialName>False</IsSpecialName>
             <IsStatic>True</IsStatic>
-            <Name>Main</Name>
             <Module>Stepping.exe</Module>
             <DeclaringType>Debugger.Tests.TestPrograms.Stepping</DeclaringType>
           </MethodInfo>

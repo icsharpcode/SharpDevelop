@@ -9,11 +9,12 @@
       <StackFrame>
         <MethodInfo>
           <MethodInfo>
+            <Name>Function</Name>
+            <FullName>Debugger.Tests.TestPrograms.FunctionLifetime.Function</FullName>
             <IsPrivate>True</IsPrivate>
             <IsPublic>False</IsPublic>
             <IsSpecialName>False</IsSpecialName>
             <IsStatic>True</IsStatic>
-            <Name>Function</Name>
             <Module>FunctionLifetime.exe</Module>
             <DeclaringType>Debugger.Tests.TestPrograms.FunctionLifetime</DeclaringType>
           </MethodInfo>
@@ -64,11 +65,12 @@
       <StackFrame>
         <MethodInfo>
           <MethodInfo>
+            <Name>Function</Name>
+            <FullName>Debugger.Tests.TestPrograms.FunctionLifetime.Function</FullName>
             <IsPrivate>True</IsPrivate>
             <IsPublic>False</IsPublic>
             <IsSpecialName>False</IsSpecialName>
             <IsStatic>True</IsStatic>
-            <Name>Function</Name>
             <Module>FunctionLifetime.exe</Module>
             <DeclaringType>Debugger.Tests.TestPrograms.FunctionLifetime</DeclaringType>
           </MethodInfo>
@@ -118,11 +120,12 @@
       <StackFrame>
         <MethodInfo>
           <MethodInfo>
+            <Name>SubFunction</Name>
+            <FullName>Debugger.Tests.TestPrograms.FunctionLifetime.SubFunction</FullName>
             <IsPrivate>True</IsPrivate>
             <IsPublic>False</IsPublic>
             <IsSpecialName>False</IsSpecialName>
             <IsStatic>True</IsStatic>
-            <Name>SubFunction</Name>
             <Module>FunctionLifetime.exe</Module>
             <DeclaringType>Debugger.Tests.TestPrograms.FunctionLifetime</DeclaringType>
           </MethodInfo>
@@ -157,11 +160,12 @@
       <StackFrame>
         <MethodInfo>
           <MethodInfo>
+            <Name>Function</Name>
+            <FullName>Debugger.Tests.TestPrograms.FunctionLifetime.Function</FullName>
             <IsPrivate>True</IsPrivate>
             <IsPublic>False</IsPublic>
             <IsSpecialName>False</IsSpecialName>
             <IsStatic>True</IsStatic>
-            <Name>Function</Name>
             <Module>FunctionLifetime.exe</Module>
             <DeclaringType>Debugger.Tests.TestPrograms.FunctionLifetime</DeclaringType>
           </MethodInfo>
@@ -212,11 +216,12 @@
       <StackFrame>
         <MethodInfo>
           <MethodInfo>
+            <Name>Main</Name>
+            <FullName>Debugger.Tests.TestPrograms.FunctionLifetime.Main</FullName>
             <IsPrivate>False</IsPrivate>
             <IsPublic>True</IsPublic>
             <IsSpecialName>False</IsSpecialName>
             <IsStatic>True</IsStatic>
-            <Name>Main</Name>
             <Module>FunctionLifetime.exe</Module>
             <DeclaringType>Debugger.Tests.TestPrograms.FunctionLifetime</DeclaringType>
           </MethodInfo>
@@ -250,11 +255,12 @@
       <StackFrame>
         <MethodInfo>
           <MethodInfo>
+            <Name>Function</Name>
+            <FullName>Debugger.Tests.TestPrograms.FunctionLifetime.Function</FullName>
             <IsPrivate>True</IsPrivate>
             <IsPublic>False</IsPublic>
             <IsSpecialName>False</IsSpecialName>
             <IsStatic>True</IsStatic>
-            <Name>Function</Name>
             <Module>FunctionLifetime.exe</Module>
             <DeclaringType>Debugger.Tests.TestPrograms.FunctionLifetime</DeclaringType>
           </MethodInfo>

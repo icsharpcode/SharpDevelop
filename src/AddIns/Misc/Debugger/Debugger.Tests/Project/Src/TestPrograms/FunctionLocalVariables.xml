@@ -9,11 +9,12 @@
       <StackFrame>
         <MethodInfo>
           <MethodInfo>
+            <Name>Main</Name>
+            <FullName>Debugger.Tests.TestPrograms.FunctionLocalVariables.Main</FullName>
             <IsPrivate>False</IsPrivate>
             <IsPublic>True</IsPublic>
             <IsSpecialName>False</IsSpecialName>
             <IsStatic>True</IsStatic>
-            <Name>Main</Name>
             <Module>FunctionLocalVariables.exe</Module>
             <DeclaringType>Debugger.Tests.TestPrograms.FunctionLocalVariables</DeclaringType>
           </MethodInfo>

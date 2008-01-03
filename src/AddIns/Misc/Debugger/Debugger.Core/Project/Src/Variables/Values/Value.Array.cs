@@ -34,7 +34,7 @@ namespace Debugger
 		}
 		
 		/// <summary>
-		/// Gets the number of elements the array can store.
+		/// Gets the number of elements in the array.
 		/// eg new object[4,5] returns 20
 		/// </summary>
 		public uint ArrayLenght {
@@ -108,27 +108,40 @@ namespace Debugger
 		/// <summary> Returns all elements in the array </summary>
 		public ValueCollection GetArrayElements()
 		{
-			return new ValueCollection(GetArrayElementsEnum());
+			return new ValueCollection(this.ArrayElements);
 		}
 		
-		IEnumerable<Value> GetArrayElementsEnum()
-		{
-			uint[] indices = new uint[ArrayRank];
-			uint rank = ArrayRank;
-			uint[] dimensions = ArrayDimensions;
-			
-			while(true) { // Go thought all combinations
-				for (uint i = rank - 1; i >= 1; i--) {
-					if (indices[i] >= dimensions[i]) {
-						indices[i] = 0;
-						indices[i-1]++;
-					}
+		/// <summary> Enumerate over all array elements </summary>
+		[Debugger.Tests.Ignore]
+		public IEnumerable<Value> ArrayElements {
+			get {
+				foreach(uint[] indices in ArrayIndices) {
+					yield return GetArrayElement(indices);
 				}
-				if (indices[0] >= dimensions[0]) break; // We are done
+			}
+		}
+		
+		/// <summary> Enumerate over all array indices </summary>
+		[Debugger.Tests.Ignore]
+		public IEnumerable<uint[]> ArrayIndices {
+			get {
+				uint[] indices = new uint[ArrayRank];
+				uint rank = ArrayRank;
+				uint[] dimensions = ArrayDimensions;
 				
-				yield return GetArrayElement(indices);
-				
-				indices[rank - 1]++;
+				while(true) { // Go thought all combinations
+					for (uint i = rank - 1; i >= 1; i--) {
+						if (indices[i] >= dimensions[i]) {
+							indices[i] = 0;
+							indices[i-1]++;
+						}
+					}
+					if (indices[0] >= dimensions[0]) break; // We are done
+					
+					yield return (uint[])indices.Clone();
+					
+					indices[rank - 1]++;
+				}
 			}
 		}
 	}

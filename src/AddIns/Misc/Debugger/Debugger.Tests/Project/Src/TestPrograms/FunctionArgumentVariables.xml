@@ -10,11 +10,12 @@
       <StackFrame>
         <MethodInfo>
           <MethodInfo>
+            <Name>StaticFunction</Name>
+            <FullName>Debugger.Tests.TestPrograms.FunctionArgumentVariables.StaticFunction</FullName>
             <IsPrivate>True</IsPrivate>
             <IsPublic>False</IsPublic>
             <IsSpecialName>False</IsSpecialName>
             <IsStatic>True</IsStatic>
-            <Name>StaticFunction</Name>
             <Module>FunctionArgumentVariables.exe</Module>
             <DeclaringType>Debugger.Tests.TestPrograms.FunctionArgumentVariables</DeclaringType>
           </MethodInfo>
@@ -95,11 +96,12 @@
       <StackFrame>
         <MethodInfo>
           <MethodInfo>
+            <Name>StaticFunction</Name>
+            <FullName>Debugger.Tests.TestPrograms.FunctionArgumentVariables.StaticFunction</FullName>
             <IsPrivate>True</IsPrivate>
             <IsPublic>False</IsPublic>
             <IsSpecialName>False</IsSpecialName>
             <IsStatic>True</IsStatic>
-            <Name>StaticFunction</Name>
             <Module>FunctionArgumentVariables.exe</Module>
             <DeclaringType>Debugger.Tests.TestPrograms.FunctionArgumentVariables</DeclaringType>
           </MethodInfo>
@@ -180,11 +182,12 @@
       <StackFrame>
         <MethodInfo>
           <MethodInfo>
+            <Name>StaticFunction</Name>
+            <FullName>Debugger.Tests.TestPrograms.FunctionArgumentVariables.StaticFunction</FullName>
             <IsPrivate>True</IsPrivate>
             <IsPublic>False</IsPublic>
             <IsSpecialName>False</IsSpecialName>
             <IsStatic>True</IsStatic>
-            <Name>StaticFunction</Name>
             <Module>FunctionArgumentVariables.exe</Module>
             <DeclaringType>Debugger.Tests.TestPrograms.FunctionArgumentVariables</DeclaringType>
           </MethodInfo>
@@ -265,11 +268,12 @@
       <StackFrame>
         <MethodInfo>
           <MethodInfo>
+            <Name>Function</Name>
+            <FullName>Debugger.Tests.TestPrograms.FunctionArgumentVariables.Function</FullName>
             <IsPrivate>True</IsPrivate>
             <IsPublic>False</IsPublic>
             <IsSpecialName>False</IsSpecialName>
             <IsStatic>False</IsStatic>
-            <Name>Function</Name>
             <Module>FunctionArgumentVariables.exe</Module>
             <DeclaringType>Debugger.Tests.TestPrograms.FunctionArgumentVariables</DeclaringType>
           </MethodInfo>
@@ -366,11 +370,12 @@
       <StackFrame>
         <MethodInfo>
           <MethodInfo>
+            <Name>Function</Name>
+            <FullName>Debugger.Tests.TestPrograms.FunctionArgumentVariables.Function</FullName>
             <IsPrivate>True</IsPrivate>
             <IsPublic>False</IsPublic>
             <IsSpecialName>False</IsSpecialName>
             <IsStatic>False</IsStatic>
-            <Name>Function</Name>
             <Module>FunctionArgumentVariables.exe</Module>
             <DeclaringType>Debugger.Tests.TestPrograms.FunctionArgumentVariables</DeclaringType>
           </MethodInfo>
@@ -467,11 +472,12 @@
       <StackFrame>
         <MethodInfo>
           <MethodInfo>
+            <Name>Function</Name>
+            <FullName>Debugger.Tests.TestPrograms.FunctionArgumentVariables.Function</FullName>
             <IsPrivate>True</IsPrivate>
             <IsPublic>False</IsPublic>
             <IsSpecialName>False</IsSpecialName>
             <IsStatic>False</IsStatic>
-            <Name>Function</Name>
             <Module>FunctionArgumentVariables.exe</Module>
             <DeclaringType>Debugger.Tests.TestPrograms.FunctionArgumentVariables</DeclaringType>
           </MethodInfo>

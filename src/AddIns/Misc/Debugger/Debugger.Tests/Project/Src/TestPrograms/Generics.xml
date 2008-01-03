@@ -9,11 +9,12 @@
       <StackFrame>
         <MethodInfo>
           <MethodInfo>
+            <Name>Metod</Name>
+            <FullName>Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;.Metod</FullName>
             <IsPrivate>False</IsPrivate>
             <IsPublic>True</IsPublic>
             <IsSpecialName>False</IsSpecialName>
             <IsStatic>False</IsStatic>
-            <Name>Metod</Name>
             <Module>Generics.exe</Module>
             <DeclaringType>Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;</DeclaringType>
           </MethodInfo>
@@ -95,11 +96,12 @@
       <StackFrame>
         <MethodInfo>
           <MethodInfo>
+            <Name>GenericMethod</Name>
+            <FullName>Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;.GenericMethod</FullName>
             <IsPrivate>False</IsPrivate>
             <IsPublic>True</IsPublic>
             <IsSpecialName>False</IsSpecialName>
             <IsStatic>False</IsStatic>
-            <Name>GenericMethod</Name>
             <Module>Generics.exe</Module>
             <DeclaringType>Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;</DeclaringType>
           </MethodInfo>
@@ -181,11 +183,12 @@
       <StackFrame>
         <MethodInfo>
           <MethodInfo>
+            <Name>StaticMetod</Name>
+            <FullName>Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;.StaticMetod</FullName>
             <IsPrivate>False</IsPrivate>
             <IsPublic>True</IsPublic>
             <IsSpecialName>False</IsSpecialName>
             <IsStatic>True</IsStatic>
-            <Name>StaticMetod</Name>
             <Module>Generics.exe</Module>
             <DeclaringType>Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;</DeclaringType>
           </MethodInfo>
@@ -251,11 +254,12 @@
       <StackFrame>
         <MethodInfo>
           <MethodInfo>
+            <Name>StaticGenericMethod</Name>
+            <FullName>Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;.StaticGenericMethod</FullName>
             <IsPrivate>False</IsPrivate>
             <IsPublic>True</IsPublic>
             <IsSpecialName>False</IsSpecialName>
             <IsStatic>True</IsStatic>
-            <Name>StaticGenericMethod</Name>
             <Module>Generics.exe</Module>
             <DeclaringType>Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;</DeclaringType>
           </MethodInfo>
@@ -321,11 +325,12 @@
       <StackFrame>
         <MethodInfo>
           <MethodInfo>
+            <Name>Metod</Name>
+            <FullName>Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;.Metod</FullName>
             <IsPrivate>False</IsPrivate>
             <IsPublic>True</IsPublic>
             <IsSpecialName>False</IsSpecialName>
             <IsStatic>False</IsStatic>
-            <Name>Metod</Name>
             <Module>Generics.exe</Module>
             <DeclaringType>Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;</DeclaringType>
           </MethodInfo>
@@ -386,11 +391,12 @@
       <StackFrame>
         <MethodInfo>
           <MethodInfo>
+            <Name>GenericMethod</Name>
+            <FullName>Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;.GenericMethod</FullName>
             <IsPrivate>False</IsPrivate>
             <IsPublic>True</IsPublic>
             <IsSpecialName>False</IsSpecialName>
             <IsStatic>False</IsStatic>
-            <Name>GenericMethod</Name>
             <Module>Generics.exe</Module>
             <DeclaringType>Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;</DeclaringType>
           </MethodInfo>
@@ -451,11 +457,12 @@
       <StackFrame>
         <MethodInfo>
           <MethodInfo>
+            <Name>StaticMetod</Name>
+            <FullName>Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;.StaticMetod</FullName>
             <IsPrivate>False</IsPrivate>
             <IsPublic>True</IsPublic>
             <IsSpecialName>False</IsSpecialName>
             <IsStatic>True</IsStatic>
-            <Name>StaticMetod</Name>
             <Module>Generics.exe</Module>
             <DeclaringType>Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;</DeclaringType>
           </MethodInfo>
@@ -521,11 +528,12 @@
       <StackFrame>
         <MethodInfo>
           <MethodInfo>
+            <Name>StaticGenericMethod</Name>
+            <FullName>Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;.StaticGenericMethod</FullName>
             <IsPrivate>False</IsPrivate>
             <IsPublic>True</IsPublic>
             <IsSpecialName>False</IsSpecialName>
             <IsStatic>True</IsStatic>
-            <Name>StaticGenericMethod</Name>
             <Module>Generics.exe</Module>
             <DeclaringType>Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;</DeclaringType>
           </MethodInfo>
