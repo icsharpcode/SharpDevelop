@@ -10,7 +10,7 @@
         <IsArray>True</IsArray>
         <ArrayLenght>5</ArrayLenght>
         <ArrayRank>1</ArrayRank>
-        <ArrayDimensions>System.UInt32[]</ArrayDimensions>
+        <ArrayDimensions>[5]</ArrayDimensions>
         <IsObject>False</IsObject>
         <IsPrimitive>False</IsPrimitive>
         <IsInteger>False</IsInteger>

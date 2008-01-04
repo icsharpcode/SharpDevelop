@@ -23,7 +23,24 @@ namespace Debugger.Wrappers.CorDebug
 			}
 		}
 		
+		public unsafe uint[] BaseIndicies {
+			get {
+				uint[] baseIndicies = new uint[this.Rank];
+				fixed (void* pBaseIndicies = baseIndicies) {
+					this.GetBaseIndicies((uint)baseIndicies.Length, new IntPtr(pBaseIndicies));
+				}
+				return baseIndicies;
+			}
+		}
+		
 		public unsafe ICorDebugValue GetElement(uint[] indices)
+		{
+			fixed (void* pIndices = indices) {
+				return this.GetElement((uint)indices.Length, new IntPtr(pIndices));
+			}
+		}
+		
+		public unsafe ICorDebugValue GetElement(int[] indices)
 		{
 			fixed (void* pIndices = indices) {
 				return this.GetElement((uint)indices.Length, new IntPtr(pIndices));

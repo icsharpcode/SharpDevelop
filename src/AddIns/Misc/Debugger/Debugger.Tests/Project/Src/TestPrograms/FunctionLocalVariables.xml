@@ -74,7 +74,7 @@
                 <IsArray>True</IsArray>
                 <ArrayLenght>1</ArrayLenght>
                 <ArrayRank>1</ArrayRank>
-                <ArrayDimensions>System.UInt32[]</ArrayDimensions>
+                <ArrayDimensions>[1]</ArrayDimensions>
                 <IsObject>False</IsObject>
                 <IsPrimitive>False</IsPrimitive>
                 <IsInteger>False</IsInteger>

@@ -235,6 +235,8 @@
     <Compile Include="Src\Variables\Types\MemberInfo.cs" />
     <Compile Include="Src\Variables\Types\MethodInfo.cs" />
     <Compile Include="Src\Variables\Types\PropertyInfo.cs" />
+    <Compile Include="Src\Variables\Values\ArrayDimension.cs" />
+    <Compile Include="Src\Variables\Values\ArrayDimensions.cs" />
     <Compile Include="Src\Variables\Values\Value.Array.cs" />
     <Compile Include="Src\Variables\Values\Value.Helpers.cs" />
     <Compile Include="Src\Variables\Values\Value.Object.cs" />

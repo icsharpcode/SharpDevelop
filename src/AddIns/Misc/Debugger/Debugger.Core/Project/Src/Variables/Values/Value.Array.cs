@@ -9,7 +9,8 @@ using System;
 using System.Collections.Generic;
 using Debugger.Wrappers.CorDebug;
 
-//TODO: Support for lower bound
+// TODO: Test non-zero LowerBound
+// TODO: Test very large arrays (Length > Int32.MaxValue)
 
 namespace Debugger
 {
@@ -37,9 +38,9 @@ namespace Debugger
 		/// Gets the number of elements in the array.
 		/// eg new object[4,5] returns 20
 		/// </summary>
-		public uint ArrayLenght {
+		public int ArrayLenght {
 			get {
-				return CorArrayValue.Count;
+				return (int)CorArrayValue.Count;
 			}
 		}
 		
@@ -47,37 +48,49 @@ namespace Debugger
 		/// Gets the number of dimensions of the array.
 		/// eg new object[4,5] returns 2
 		/// </summary>
-		public uint ArrayRank { 
+		public int ArrayRank { 
 			get {
-				return CorArrayValue.Rank;
+				return (int)CorArrayValue.Rank;
 			}
 		}
 		
-		/// <summary>
-		/// Gets the lengths of individual dimensions.
-		/// eg new object[4,5] returns {4,5};
-		/// </summary>
-		public uint[] ArrayDimensions {
+		/// <summary> Gets the dimensions of the array  </summary>
+		[Debugger.Tests.ToStringOnly]
+		public ArrayDimensions ArrayDimensions {
 			get {
-				return CorArrayValue.Dimensions;
+				int rank = this.ArrayRank;
+				uint[] baseIndicies;
+				if (CorArrayValue.HasBaseIndicies() == 1) {
+					baseIndicies = CorArrayValue.BaseIndicies;
+				} else {
+					baseIndicies = new uint[this.ArrayRank];
+				}
+				uint[] dimensionCounts = CorArrayValue.Dimensions;
+				
+				List<ArrayDimension> dimensions = new List<ArrayDimension>();
+				for(int i = 0; i < rank; i++) {
+					dimensions.Add(new ArrayDimension((int)baseIndicies[i], (int)baseIndicies[i] + (int)dimensionCounts[i] - 1));
+				}
+				
+				return new ArrayDimensions(dimensions);
 			}
 		}
 		
 		/// <summary> Returns an element of a single-dimensional array </summary>
-		public Value GetArrayElement(uint index)
+		public Value GetArrayElement(int index)
 		{
-			return GetArrayElement(new uint[] {index});
+			return GetArrayElement(new int[] {index});
 		}
 		
 		/// <summary> Returns an element of an array </summary>
-		public Value GetArrayElement(uint[] elementIndices)
+		public Value GetArrayElement(int[] elementIndices)
 		{
-			uint[] indices = (uint[])elementIndices.Clone();
+			int[] indices = (int[])elementIndices.Clone();
 			
 			return new Value(Process, GetNameFromIndices(indices), GetCorValueOfArrayElement(indices));
 		}
 		
-		static string GetNameFromIndices(uint[] indices)
+		static string GetNameFromIndices(int[] indices)
 		{
 			string elementName = "[";
 			for (int i = 0; i < indices.Length; i++) {
@@ -88,7 +101,7 @@ namespace Debugger
 		}
 		
 		// May be called later
-		ICorDebugValue GetCorValueOfArrayElement(uint[] indices)
+		ICorDebugValue GetCorValueOfArrayElement(int[] indices)
 		{
 			if (!IsArray) {
 				throw new CannotGetValueException("The value is not an array");
@@ -96,10 +109,8 @@ namespace Debugger
 			if (indices.Length != ArrayRank) {
 				throw new CannotGetValueException("Given indicies do not have the same dimension as array.");
 			}
-			for (int i = 0; i < indices.Length; i++) {
-				if (indices[i] > ArrayDimensions[i]) {
-					throw new CannotGetValueException("Given indices are out of range of the array");
-				}
+			if (!this.ArrayDimensions.IsIndexValid(indices)) {
+				throw new CannotGetValueException("Given indices are out of range of the array");
 			}
 			
 			return CorArrayValue.GetElement(indices);
@@ -115,32 +126,8 @@ namespace Debugger
 		[Debugger.Tests.Ignore]
 		public IEnumerable<Value> ArrayElements {
 			get {
-				foreach(uint[] indices in ArrayIndices) {
+				foreach(int[] indices in this.ArrayDimensions.Indices) {
 					yield return GetArrayElement(indices);
-				}
-			}
-		}
-		
-		/// <summary> Enumerate over all array indices </summary>
-		[Debugger.Tests.Ignore]
-		public IEnumerable<uint[]> ArrayIndices {
-			get {
-				uint[] indices = new uint[ArrayRank];
-				uint rank = ArrayRank;
-				uint[] dimensions = ArrayDimensions;
-				
-				while(true) { // Go thought all combinations
-					for (uint i = rank - 1; i >= 1; i--) {
-						if (indices[i] >= dimensions[i]) {
-							indices[i] = 0;
-							indices[i-1]++;
-						}
-					}
-					if (indices[0] >= dimensions[0]) break; // We are done
-					
-					yield return (uint[])indices.Clone();
-					
-					indices[rank - 1]++;
 				}
 			}
 		}

@@ -17,11 +17,11 @@ namespace Debugger
 {
 	public partial class Expression: DebuggerObject
 	{
-		public Expression AppendIndexer(params uint[] indices)
+		public Expression AppendIndexer(params int[] indices)
 		{
 			List<Ast.Expression> indicesAst = new List<Ast.Expression>();
-			foreach(uint indice in indices) {
-				indicesAst.Add(new Ast.PrimitiveExpression((int)indice, ((int)indice).ToString()));
+			foreach(int indice in indices) {
+				indicesAst.Add(new Ast.PrimitiveExpression(indice, indice.ToString()));
 			}
 			return new Ast.IndexerExpression(
 				this.AbstractSynatxTree,
@@ -96,7 +96,7 @@ namespace Debugger
 		public ExpressionCollection EvaluateAndGetArrayElements()
 		{
 			ExpressionCollection elements = new ExpressionCollection();
-			foreach(uint[] indices in this.Evaluate().ArrayIndices) {
+			foreach(int[] indices in this.Evaluate().ArrayDimensions.Indices) {
 				elements.Add(this.AppendIndexer(indices));
 			}
 			return elements;
