@@ -29,6 +29,15 @@ namespace Debugger
 			);
 		}
 		
+		public ExpressionCollection AppendIndexers(ArrayDimensions dimensions)
+		{
+			ExpressionCollection elements = new ExpressionCollection();
+			foreach(int[] indices in dimensions.Indices) {
+				elements.Add(this.AppendIndexer(indices));
+			}
+			return elements;
+		}
+		
 		public Expression AppendFieldReference(FieldInfo fieldInfo)
 		{
 			return new Ast.FieldReferenceExpression(
@@ -43,6 +52,20 @@ namespace Debugger
 				this.AbstractSynatxTree,
 				propertyInfo
 			);
+		}
+		
+		public ExpressionCollection AppendObjectMembers(DebugType type, BindingFlags bindingFlags)
+		{
+			ExpressionCollection members = new ExpressionCollection();
+			
+			foreach(FieldInfo field in type.GetFields(bindingFlags)) {
+				members.Add(this.AppendFieldReference(field));
+			}
+			foreach(PropertyInfo property in type.GetProperties(bindingFlags)) {
+				members.Add(this.AppendPropertyReference(property));
+			}
+			
+			return members;
 		}
 		
 		/// <summary> Get all variables for a method - this; parameters; local variables </summary>
@@ -87,50 +110,6 @@ namespace Debugger
 			}
 			
 			return vars;
-		}
-		
-		/// <summary>
-		/// Evaluate the expression and return expressions for all array elements.
-		/// The expression must evaluate to array.
-		/// </summary>
-		public ExpressionCollection EvaluateAndGetArrayElements()
-		{
-			ExpressionCollection elements = new ExpressionCollection();
-			foreach(int[] indices in this.Evaluate().ArrayDimensions.Indices) {
-				elements.Add(this.AppendIndexer(indices));
-			}
-			return elements;
-		}
-		
-		/// <summary>
-		/// Evaluate the expression and return object members.
-		/// The expression must evaluate to object.
-		/// </summary>
-		public ExpressionCollection EvaluateAndGetObjectMembers(BindingFlags bindingFlags)
-		{
-			ExpressionCollection members = new ExpressionCollection();
-			
-			DebugType currentType = this.Evaluate().Type;
-			while (currentType != null) {
-				members.AddRange(GetObjectMembers(currentType, bindingFlags));
-				currentType = currentType.BaseType;
-			}
-			
-			return members;
-		}
-		
-		public ExpressionCollection GetObjectMembers(DebugType type, BindingFlags bindingFlags)
-		{
-			ExpressionCollection members = new ExpressionCollection();
-			
-			foreach(FieldInfo field in type.GetFields(bindingFlags)) {
-				members.Add(this.AppendFieldReference(field));
-			}
-			foreach(PropertyInfo property in type.GetProperties(bindingFlags)) {
-				members.Add(this.AppendPropertyReference(property));
-			}
-			
-			return members;
 		}
 	}
 }
