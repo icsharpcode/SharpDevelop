@@ -17,9 +17,16 @@ namespace Debugger
 {
 	public partial class Expression: DebuggerObject
 	{
-		public Value Evaluate()
+		public Value Evaluate(Process process)
 		{
-			return Evaluate(null);
+			if (process != null &&
+			    process.SelectedThread != null &&
+			    process.SelectedThread.SelectedStackFrame != null)
+			{
+				return Evaluate(process.SelectedThread.SelectedStackFrame);
+			} else {
+				return null;
+			}
 		}
 		
 		public Value Evaluate(StackFrame stackFrame)

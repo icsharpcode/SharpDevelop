@@ -494,9 +494,14 @@ namespace Debugger
 		IEnumerable<Value> LocalVariablesEnum {
 			get {
 				foreach(ISymUnmanagedVariable symVar in this.MethodInfo.LocalVariables) {
-					yield return new Value(process, symVar.Name, GetCorValueOfLocalVariable(symVar));
+					yield return GetLocalVariableValue(symVar);
 				}
 			}
+		}
+		
+		public Value GetLocalVariableValue(ISymUnmanagedVariable symVar)
+		{
+			return new Value(this.Process, symVar.Name, GetCorValueOfLocalVariable(symVar));
 		}
 		
 		ICorDebugValue GetCorValueOfLocalVariable(ISymUnmanagedVariable symVar)
