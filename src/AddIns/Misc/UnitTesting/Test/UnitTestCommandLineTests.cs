@@ -84,7 +84,19 @@ namespace UnitTesting.Tests
 			helper.ShadowCopy = true;
 			helper.Fixture = "TestFixture";
 			
-			string expectedCommandLine = "\"C:\\Projects\\MyTests\\MyTests.dll\" /fixture=\"TestFixture\"";
+			string expectedCommandLine = "\"C:\\Projects\\MyTests\\MyTests.dll\" /run=\"TestFixture\"";
+			Assert.AreEqual(expectedCommandLine, helper.GetArguments());
+		}
+
+		[Test]
+		public void TestNamespace()
+		{
+			helper.Initialize(project, null, null);
+			helper.NoLogo = false;
+			helper.ShadowCopy = true;
+			helper.NamespaceFilter = "TestFixture";
+			
+			string expectedCommandLine = "\"C:\\Projects\\MyTests\\MyTests.dll\" /run=\"TestFixture\"";
 			Assert.AreEqual(expectedCommandLine, helper.GetArguments());
 		}
 		
@@ -109,7 +121,7 @@ namespace UnitTesting.Tests
 			helper.Fixture = "TestFixture";
 			helper.Test = "Test";
 			
-			string expectedCommandLine = "\"C:\\Projects\\MyTests\\MyTests.dll\" /fixture=\"TestFixture\" /testMethodName=\"TestFixture.Test\"";
+			string expectedCommandLine = "\"C:\\Projects\\MyTests\\MyTests.dll\" /run=\"TestFixture.Test\"";
 			Assert.AreEqual(expectedCommandLine, helper.GetArguments());
 		}
 		
@@ -122,7 +134,7 @@ namespace UnitTesting.Tests
 			helper.NoLogo = false;
 			helper.ShadowCopy = true;
 			
-			string expectedCommandLine = "\"C:\\Projects\\MyTests\\MyTests.dll\" /fixture=\"TestFixture\" /testMethodName=\"TestFixture.Test\"";
+			string expectedCommandLine = "\"C:\\Projects\\MyTests\\MyTests.dll\" /run=\"TestFixture.Test\"";
 			Assert.AreEqual(expectedCommandLine, helper.GetArguments());
 		}
 		
@@ -133,7 +145,7 @@ namespace UnitTesting.Tests
 			helper.NoLogo = false;
 			helper.ShadowCopy = true;
 			
-			string expectedCommandLine = "\"C:\\Projects\\MyTests\\MyTests.dll\" /namespaceFilter=\"Project.MyTests\"";
+			string expectedCommandLine = "\"C:\\Projects\\MyTests\\MyTests.dll\" /run=\"Project.MyTests\"";
 			Assert.AreEqual(expectedCommandLine, helper.GetArguments());
 		}
 		

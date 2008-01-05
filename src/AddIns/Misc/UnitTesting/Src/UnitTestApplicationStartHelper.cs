@@ -156,22 +156,22 @@ namespace ICSharpCode.UnitTesting
 				b.Append(Results);
 				b.Append('"');
 			}
+			string run = null;
 			if (NamespaceFilter != null) {
-				b.Append(" /namespaceFilter=\"");
-				b.Append(NamespaceFilter);
-				b.Append('"');
-			}
-			if (Fixture != null) {
-				b.Append(" /fixture=\"");
-				b.Append(Fixture);
-				b.Append('"');
+				run = NamespaceFilter;
+			} else if (Fixture != null) {
 				if (Test != null) {
-					b.Append(" /testMethodName=\"");
-					b.Append(Fixture);
-					b.Append('.');
-					b.Append(Test);
-					b.Append('"');
+					run = Fixture + "." + Test;
+				} else {
+					run = Fixture;
 				}
+			} else if (Test != null) {
+				run = Test;
+			}
+			if (run != null) {
+				b.Append(" /run=\"");
+				b.Append(run);
+				b.Append('"');
 			}
 			return b.ToString();
 		}
