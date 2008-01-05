@@ -56,7 +56,6 @@
     <EmbeddedResource Include="Src\Service\ExceptionForm.resx">
       <DependentUpon>ExceptionForm.cs</DependentUpon>
     </EmbeddedResource>
-    <Compile Include="Src\Service\DynamicTreeDebuggerRow.cs" />
     <Compile Include="Src\Service\SetCurrentStatementCommand.cs" />
     <Compile Include="Src\Service\DebuggerIcons.cs" />
     <Compile Include="..\..\..\..\..\Main\GlobalAssemblyInfo.cs">
@@ -65,13 +64,16 @@
     <Compile Include="Src\Pads\DebuggerPad.cs" />
     <Compile Include="Src\Pads\CallStackPad.Menu.cs" />
     <Compile Include="Src\Pads\RunningThreadsPad.Menu.cs" />
-    <Compile Include="Src\Variables\BaseTypeItem.cs" />
-    <Compile Include="Src\Variables\FixedItem.cs" />
-    <Compile Include="Src\Variables\ListItem.cs" />
-    <Compile Include="Src\Variables\ListItemEventArgs.cs" />
-    <Compile Include="Src\Variables\StackFrameItem.cs" />
-    <Compile Include="Src\Variables\TreeViewNode.cs" />
-    <Compile Include="Src\Variables\ValueItem.cs" />
+    <Compile Include="Src\TreeModel\AbstractNode.cs" />
+    <Compile Include="Src\TreeModel\Adapters\DynamicTreeDebuggerRow.cs" />
+    <Compile Include="Src\TreeModel\Adapters\TreeViewNode.cs" />
+    <Compile Include="Src\TreeModel\ArrayRangeNode.cs" />
+    <Compile Include="Src\TreeModel\ExpressionNode.cs" />
+    <Compile Include="Src\TreeModel\IContextMenu.cs" />
+    <Compile Include="Src\TreeModel\ISetText.cs" />
+    <Compile Include="Src\TreeModel\ChildNodesOfObject.cs" />
+    <Compile Include="Src\TreeModel\StackFrameNode.cs" />
+    <None Include="COPYING" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Client.config">
@@ -117,6 +119,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Src\TreeModel" />
+    <Folder Include="Src\TreeModel\Adapters" />
     <Folder Include="Src\Variables" />
     <ProjectReference Include="..\..\..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
       <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>

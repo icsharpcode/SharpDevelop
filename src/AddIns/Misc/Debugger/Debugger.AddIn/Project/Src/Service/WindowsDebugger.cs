@@ -42,6 +42,7 @@ using System.Diagnostics;
 using System.Windows.Forms;
 
 using Debugger;
+using Debugger.AddIn.TreeModel;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
@@ -247,12 +248,12 @@ namespace ICSharpCode.SharpDevelop.Services
 		/// Gets variable of given name.
 		/// Returns null if unsuccessful.
 		/// </summary>
-		public Value GetVariableFromName(string variableName)
+		public Expression GetExpressionFromName(string variableName)
 		{
 			if (debuggedProcess == null || debuggedProcess.IsRunning) { 
 				return null;
 			} else {
-				return debuggedProcess.GetValue(variableName);
+				return new Expression(variableName);
 			}
 		}
 		
@@ -263,12 +264,12 @@ namespace ICSharpCode.SharpDevelop.Services
 		/// </summary>
 		public string GetValueAsString(string variableName)
 		{
-			Value val = GetVariableFromName(variableName);
+			Expression expression = GetExpressionFromName(variableName);
 			
-			if (val == null) {
+			if (expression == null) {
 				return null;
 			} else {
-				return val.AsString;
+				return expression.Evaluate(this.DebuggedProcess.SelectedStackFrame).AsString;
 			}
 		}
 		
@@ -278,12 +279,12 @@ namespace ICSharpCode.SharpDevelop.Services
 		/// </summary>
 		public DebuggerGridControl GetTooltipControl(string variableName)
 		{
-			Value val = GetVariableFromName(variableName.Trim());
+			Expression expression = GetExpressionFromName(variableName);
 			
-			if (val == null) {
+			if (expression == null) {
 				return null;
 			} else {
-				return new DebuggerGridControl(new DynamicTreeDebuggerRow(val));
+				return new DebuggerGridControl(new DynamicTreeDebuggerRow(new ExpressionNode(expression)));
 			}
 		}
 		

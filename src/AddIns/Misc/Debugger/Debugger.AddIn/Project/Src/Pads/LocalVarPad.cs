@@ -47,6 +47,7 @@ using Aga.Controls.Tree;
 using Aga.Controls.Tree.NodeControls;
 
 using Debugger;
+using Debugger.AddIn.TreeModel;
 
 namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
@@ -55,7 +56,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		class ItemIcon: NodeIcon {
 			protected override System.Drawing.Image GetIcon(TreeNodeAdv node)
 			{
-				return ((TreeViewNode)node).Icon;
+				return ((TreeViewNode)node).Content.Image;
 			}
 		}
 		
@@ -66,18 +67,18 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			}
 			public override object GetValue(TreeNodeAdv node)
 			{
-				return ((TreeViewNode)node).Name;
+				return ((TreeViewNode)node).Content.Name;
 			}
 		}
 		
 		class ItemText: NodeTextBox {
 			protected override bool CanEdit(TreeNodeAdv node)
 			{
-				return ((TreeViewNode)node).CanEditText;
+				return ((TreeViewNode)node).Content is ISetText;
 			}
 			public override object GetValue(TreeNodeAdv node)
 			{
-				return ((TreeViewNode)node).Text;
+				return ((TreeViewNode)node).Content.Text;
 			}
 		}
 		
@@ -88,7 +89,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			}
 			public override object GetValue(TreeNodeAdv node)
 			{
-				return ((TreeViewNode)node).Type;
+				return ((TreeViewNode)node).Content.Type;
 			}
 		}
 		
@@ -177,9 +178,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		{
 			DateTime start = Debugger.Util.HighPrecisionTimer.Now;
 			if (debuggedProcess != null && debuggedProcess.SelectedStackFrame != null) {
-				TreeViewNode.UpdateNodes(localVarList, localVarList.Root.Children, new StackFrameItem(debuggedProcess.SelectedStackFrame).SubItems);
+				TreeViewNode.OverwriteNodes(localVarList, localVarList.Root.Children, new StackFrameNode(debuggedProcess.SelectedStackFrame).ChildNodes);
 			} else {
-				TreeViewNode.UpdateNodes(localVarList, localVarList.Root.Children, new ListItem[0]);
+				TreeViewNode.OverwriteNodes(localVarList, localVarList.Root.Children, null);
 			}
 			DateTime end = Debugger.Util.HighPrecisionTimer.Now;
 			LoggingService.InfoFormatted("Local Variables pad refreshed ({0} ms)", (end - start).TotalMilliseconds);

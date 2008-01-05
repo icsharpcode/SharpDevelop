@@ -17,21 +17,9 @@ namespace Debugger
 {
 	public partial class Expression: DebuggerObject
 	{
-		public Value Evaluate(Process process)
+		public Value Evaluate(StackFrame context)
 		{
-			if (process != null &&
-			    process.SelectedThread != null &&
-			    process.SelectedThread.SelectedStackFrame != null)
-			{
-				return Evaluate(process.SelectedThread.SelectedStackFrame);
-			} else {
-				return null;
-			}
-		}
-		
-		public Value Evaluate(StackFrame stackFrame)
-		{
-			EvaluateAstVisitor astVisitor = new EvaluateAstVisitor(stackFrame);
+			EvaluateAstVisitor astVisitor = new EvaluateAstVisitor(context);
 			return (Value)this.AbstractSynatxTree.AcceptVisitor(astVisitor, null);
 		}
 	}
