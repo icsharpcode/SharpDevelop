@@ -28,8 +28,7 @@ namespace Debugger.AddIn.TreeModel
 		
 		AbstractNode content;
 		
-		bool populated = false;
-		bool visible = true;
+		bool loadChildsWhenExpanding;
 		
 		public AbstractNode Content {
 			get { return content; }
@@ -37,35 +36,25 @@ namespace Debugger.AddIn.TreeModel
 		
 		public DynamicTreeDebuggerRow(AbstractNode content)
 		{
-			this.content = content;
-			
-			this.Shown += delegate {
-				visible = true;
-				WindowsDebugger.DoInPausedState( delegate { Update(); } );
-			};
-			this.Hidden += delegate {
-				visible = false;
-			};
-			
 			DebuggerGridControl.AddColumns(this.ChildColumns);
 			
 			this[1].Paint += OnIconPaint;
 			this[3].FinishLabelEdit += OnLabelEdited;
 			this[3].MouseDown += OnMouseDown;
 			
-			Update();
+			SetContent(content);
 		}
 		
-		void Update()
+		public void SetContent(AbstractNode content)
 		{
-			if (!visible) return;
+			this.content = content;
 			
 			this[1].Text = ""; // Icon
 			this[2].Text = content.Name;
 			this[3].Text = content.Text;
 			this[3].AllowLabelEdit = content is ISetText;
 			
-			this.ShowPlus = content.ChildNodes != null;
+			this.ShowPlus = (content.ChildNodes != null);
 			this.ShowMinusWhileExpanded = true;
 		}
 		
@@ -97,18 +86,13 @@ namespace Debugger.AddIn.TreeModel
 		/// </summary>
 		protected override void OnExpanding(DynamicListEventArgs e)
 		{
-			if (!populated) {
-				WindowsDebugger.DoInPausedState(delegate { Populate(); });
+			if (loadChildsWhenExpanding) {
+				loadChildsWhenExpanding = false;
+				this.ChildRows.Clear();
+				foreach(AbstractNode childNode in content.ChildNodes) {
+					this.ChildRows.Add(new DynamicTreeDebuggerRow(childNode));
+				}
 			}
-		}
-		
-		void Populate()
-		{
-			this.ChildRows.Clear();
-			foreach(AbstractNode childNode in content.ChildNodes) {
-				this.ChildRows.Add(new DynamicTreeDebuggerRow(childNode));
-			}
-			populated = true;
 		}
 	}
 }
