@@ -19,8 +19,11 @@ namespace Debugger
 	{
 		public Value Evaluate(StackFrame context)
 		{
+			context.Process.TraceMessage("Evaluating " + this.Code);
 			EvaluateAstVisitor astVisitor = new EvaluateAstVisitor(context);
-			return (Value)this.AbstractSynatxTree.AcceptVisitor(astVisitor, null);
+			Value result = (Value)this.AbstractSynatxTree.AcceptVisitor(astVisitor, null);
+			context.Process.TraceMessage("Evaluated " + this.Code);
+			return result;
 		}
 	}
 }

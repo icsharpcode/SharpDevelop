@@ -18,68 +18,98 @@ namespace Debugger.AddIn.TreeModel
 {
 	public partial class TreeViewNode: TreeNodeAdv
 	{
+		static Dictionary<string, bool> expandedNodes = new Dictionary<string, bool>();
+		
 		AbstractNode content;
 		
-		bool populated = false;
+		bool loadChildsWhenExpanding;
 		
 		public AbstractNode Content {
 			get { return content; }
-			set { content = value; }
+		}
+		
+		string FullName {
+			get {
+				if (this.Parent != null && this.Parent is TreeViewNode) {
+					return ((TreeViewNode)this.Parent).FullName + "." + Content.Name;
+				} else {
+					return Content.Name;
+				}
+			}
 		}
 		
 		public TreeViewNode(TreeViewAdv tree, AbstractNode content): base(tree, new object())
 		{
+			SetContentRecursive(content);
+		}
+		
+		public void SetContentRecursive(AbstractNode content)
+		{
 			this.content = content;
+			this.IsLeaf = (content.ChildNodes == null);
+			this.IsExpanded = (content.ChildNodes != null && expandedNodes.ContainsKey(this.FullName) && expandedNodes[this.FullName]);
+			if (this.IsExpanded) {
+				loadChildsWhenExpanding = false;
+				SetContentRecursive(this.Tree, this.Children, this.Content.ChildNodes);
+			} else {
+				loadChildsWhenExpanding = true;
+				this.Children.Clear();
+			}
+		}
+		
+		public static void SetContentRecursive(TreeViewAdv tree, Collection<TreeNodeAdv> childNodes, IEnumerable<AbstractNode> contentEnum)
+		{
+			contentEnum = contentEnum ?? new AbstractNode[0];
 			
-			this.IsLeaf = content.ChildNodes == null;
+			DoEvents();
+			int index = 0;
+			foreach(AbstractNode content in contentEnum) {
+				// Add or overwrite existing items
+				if (index < childNodes.Count) {
+					// Overwrite
+					((TreeViewNode)childNodes[index]).SetContentRecursive(content);
+				} else {
+					// Add
+					childNodes.Add(new TreeViewNode(tree, content));
+				}
+				DoEvents();
+				index++;
+			}
+			int count = index;
+			// Delete other nodes
+			while(childNodes.Count > count) {
+				childNodes.RemoveAt(count);
+			}
 		}
 		
 		public void OnExpanding()
 		{
-			if (!populated) {
-				foreach(AbstractNode childNode in this.Content.ChildNodes) {
-					Children.Add(new TreeViewNode(Tree, childNode));
-				}
-				populated = true;
+			if (loadChildsWhenExpanding) {
+				loadChildsWhenExpanding = false;
+				SetContentRecursive(this.Tree, this.Children, this.Content.ChildNodes);
 				this.IsExpandedOnce = true;
 				this.Tree.UpdateSelection();
 				this.Tree.FullUpdate();
 			}
 		}
 		
-		public static void OverwriteNodes(TreeViewAdv tree, Collection<TreeNodeAdv> treeNodes, IEnumerable<AbstractNode> modelNodes)
+		public void OnExpanded()
 		{
-			modelNodes = modelNodes ?? new AbstractNode[0];
-			
-			int index = 0;
-			foreach(AbstractNode modelNode in modelNodes) {
-				// Add or overwrite existing items
-				if (index < treeNodes.Count) {
-					// Overwrite
-					((TreeViewNode)treeNodes[index]).Content = modelNode;
-				} else {
-					// Add
-					treeNodes.Add(new TreeViewNode(tree, modelNode));
-				}
-				index++;
-			}
-			int count = index;
-			// Delete other nodes
-			while(treeNodes.Count > count) {
-				treeNodes.RemoveAt(count);
-			}
-			
-			tree.FullUpdate();
+			expandedNodes[FullName] = true;
 		}
 		
-		#region DoApplicationEvents()
+		public void OnCollapsed()
+		{
+			expandedNodes[FullName] = false;
+		}
+		
 		
 		static DateTime nextDoEventsTime = Debugger.Util.HighPrecisionTimer.Now;
 		const double workLoad    = 0.75; // Fraction of getting variables vs. repainting
-		const double maxFPS      = 30;   // ms  this prevents too much drawing on good machine
+		const double maxFPS      = 30;   // this prevents too much drawing on good machine
 		const double maxWorkTime = 250;  // ms  this ensures minimal response on bad machine
 		
-		void DoApplicationEvents()
+		static void DoEvents()
 		{
 			if (Debugger.Util.HighPrecisionTimer.Now > nextDoEventsTime) {
 				DateTime start = Debugger.Util.HighPrecisionTimer.Now;
@@ -94,40 +124,5 @@ namespace Debugger.AddIn.TreeModel
 				LoggingService.InfoFormatted("Rendering: {0} ms => work budget: {1} ms ({2:f1} FPS)", doEventsDuration, workTime, fps);
 			}
 		}
-		
-		#endregion
-		
-		#region Maintain expanded state
-		
-		static Dictionary<string, bool> expandedNodes = new Dictionary<string, bool>();
-		
-		string FullName {
-			get {
-				if (this.Parent != null && this.Parent is TreeViewNode) {
-					return ((TreeViewNode)this.Parent).FullName + "." + Content.Name;
-				} else {
-					return Content.Name;
-				}
-			}
-		}
-		
-		public void OnExpanded()
-		{
-			expandedNodes[FullName] = true;
-			// Expand children as well
-			foreach(TreeViewNode child in Children) {
-				string name = child.FullName;
-				if (expandedNodes.ContainsKey(name) && expandedNodes[name]) {
-					child.IsExpanded = true;
-				}
-			}
-		}
-		
-		public void OnCollapsed()
-		{
-			expandedNodes[FullName] = false;
-		}
-		
-		#endregion
 	}
 }

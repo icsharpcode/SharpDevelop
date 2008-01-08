@@ -250,11 +250,12 @@ namespace ICSharpCode.SharpDevelop.Services
 		/// </summary>
 		public Expression GetExpressionFromName(string variableName)
 		{
-			if (debuggedProcess == null || debuggedProcess.IsRunning) { 
-				return null;
-			} else {
-				return new Expression(variableName);
-			}
+			return null;
+//			if (debuggedProcess == null || debuggedProcess.IsRunning) { 
+//				return null;
+//			} else {
+//				return new Expression(variableName);
+//			}
 		}
 		
 		

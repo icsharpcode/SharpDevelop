@@ -178,9 +178,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		{
 			DateTime start = Debugger.Util.HighPrecisionTimer.Now;
 			if (debuggedProcess != null && debuggedProcess.SelectedStackFrame != null) {
-				TreeViewNode.OverwriteNodes(localVarList, localVarList.Root.Children, new StackFrameNode(debuggedProcess.SelectedStackFrame).ChildNodes);
+				TreeViewNode.SetContentRecursive(localVarList, localVarList.Root.Children, new StackFrameNode(debuggedProcess.SelectedStackFrame).ChildNodes);
 			} else {
-				TreeViewNode.OverwriteNodes(localVarList, localVarList.Root.Children, null);
+				TreeViewNode.SetContentRecursive(localVarList, localVarList.Root.Children, null);
 			}
 			DateTime end = Debugger.Util.HighPrecisionTimer.Now;
 			LoggingService.InfoFormatted("Local Variables pad refreshed ({0} ms)", (end - start).TotalMilliseconds);
