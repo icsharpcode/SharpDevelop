@@ -72,6 +72,7 @@ namespace Debugger.AddIn.TreeModel
 					// Add
 					childNodes.Add(new TreeViewNode(tree, content));
 				}
+				tree.FullUpdate();
 				DoEvents();
 				index++;
 			}
@@ -80,6 +81,8 @@ namespace Debugger.AddIn.TreeModel
 			while(childNodes.Count > count) {
 				childNodes.RemoveAt(count);
 			}
+			tree.FullUpdate();
+			DoEvents();
 		}
 		
 		public void OnExpanding()
