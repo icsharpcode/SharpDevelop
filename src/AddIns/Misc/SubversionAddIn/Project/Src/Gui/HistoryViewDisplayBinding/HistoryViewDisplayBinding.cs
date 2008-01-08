@@ -43,7 +43,11 @@ namespace ICSharpCode.Svn
 			{
 				if (client == null) {
 					LoggingService.Info("SVN: HistoryViewDisplayBinding initializes client");
-					client = new Client();
+					try {
+						client = new Client();
+					} catch (Exception ex) {
+						LoggingService.Warn(ex);
+					}
 				}
 				try {
 					Status status = client.SingleStatus(Path.GetFullPath(fileName));

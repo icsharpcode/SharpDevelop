@@ -169,6 +169,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			// We cannot call MarkLine inside lock(lockObject) because then the main
 			// thread could deadlock with the highlighter thread.
 			foreach (KeyValuePair<LineSegment, List<TextWord>> pair in oldOutstanding) {
+				if (pair.Key.IsDeleted)
+					continue;
 				int offset = pair.Key.Offset;
 				if (offset < 0 || offset >= document.TextLength)
 					continue;

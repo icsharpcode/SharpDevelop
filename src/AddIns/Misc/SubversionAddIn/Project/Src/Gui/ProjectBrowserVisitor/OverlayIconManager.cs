@@ -88,6 +88,8 @@ namespace ICSharpCode.Svn
 		
 		public static void Enqueue(AbstractProjectBrowserTreeNode node)
 		{
+			if (subversionDisabled)
+				return;
 			lock (queue) {
 				queue.Enqueue(node);
 				if (queue.Count == 1) {
@@ -98,6 +100,8 @@ namespace ICSharpCode.Svn
 		
 		public static void EnqueueRecursive(AbstractProjectBrowserTreeNode node)
 		{
+			if (subversionDisabled)
+				return;
 			lock (queue) {
 				bool wasEmpty = queue.Count == 0;
 				
@@ -123,6 +127,7 @@ namespace ICSharpCode.Svn
 		}
 		
 		static Client client;
+		static bool subversionDisabled;
 		
 		static void Run(object state)
 		{
@@ -153,9 +158,18 @@ namespace ICSharpCode.Svn
 		
 		static void RunStep(AbstractProjectBrowserTreeNode node)
 		{
-			if (node.IsDisposed) return;
+			if (subversionDisabled || node.IsDisposed) return;
 			if (client == null) {
-				client = new Client();
+				try {
+					client = new Client();
+				} catch (Exception ex) {
+					SharpDevelop.Gui.WorkbenchSingleton.SafeThreadAsyncCall(
+						MessageService.ShowWarning,
+						"Error initializing Subversion library:\n" + ex.ToString()
+					);
+					subversionDisabled = true;
+					return;
+				}
 			}
 			FileNode fileNode = node as FileNode;
 			Status status;

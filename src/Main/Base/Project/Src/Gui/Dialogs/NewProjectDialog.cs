@@ -337,8 +337,8 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 				}
 				if (createNewSolution) {
 					ProjectService.LoadSolution(NewSolutionLocation);
-					item.Template.RunOpenActions(cinfo);
 				}
+				item.Template.RunOpenActions(cinfo);
 				
 				NewProjectLocation = cinfo.createdProjects.Count > 0 ? cinfo.createdProjects[0].FileName : "";
 				DialogResult = DialogResult.OK;

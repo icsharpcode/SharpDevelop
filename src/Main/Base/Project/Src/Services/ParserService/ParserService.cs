@@ -588,7 +588,7 @@ namespace ICSharpCode.SharpDevelop
 				}
 				return UpdateParseInformation(parserOutput, fileName, updateCommentTags);
 			} catch (Exception e) {
-				MessageService.ShowError(e);
+				MessageService.ShowError(e, "Error parsing " + fileName);
 			}
 			return null;
 		}
