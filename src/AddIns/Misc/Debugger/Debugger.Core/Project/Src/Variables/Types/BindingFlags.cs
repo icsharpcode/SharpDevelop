@@ -27,6 +27,10 @@ namespace Debugger
 		/// Return members which are not public
 		NonPublic = 8,
 		/// Return all members
-		All = Instance | Static | Public | NonPublic
+		All = Instance | Static | Public | NonPublic,
+		PublicInstance = Public | Instance,
+		PublicStatic = Public | Static,
+		NonPublicInstance = NonPublic | Instance,
+		NonPublicStatic = NonPublic | Static
 	};
 }

@@ -405,7 +405,7 @@ namespace Debugger
 		/// <summary> Return all public fields.</summary>
 		public IList<FieldInfo> GetFields()
 		{
-			return GetFields(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static);
+			return GetFields(BindingFlags.Public);
 		}
 		
 		/// <summary> Return all fields satisfing binding flags.</summary>
@@ -417,7 +417,7 @@ namespace Debugger
 		/// <summary> Return all public methods.</summary>
 		public IList<MethodInfo> GetMethods()
 		{
-			return GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static);
+			return GetMethods(BindingFlags.Public);
 		}
 		
 		/// <summary> Return all methods satisfing binding flags.</summary>
@@ -429,7 +429,7 @@ namespace Debugger
 		/// <summary> Return all public properties.</summary>
 		public IList<PropertyInfo> GetProperties()
 		{
-			return GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static);
+			return GetProperties(BindingFlags.Public);
 		}
 		
 		/// <summary> Return all properties satisfing binding flags.</summary>
@@ -447,13 +447,19 @@ namespace Debugger
 		/// <summary> Return all public members.</summary>
 		public IList<MemberInfo> GetMembers()
 		{
-			return GetMembers(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static);
+			return GetMembers(BindingFlags.Public);
 		}
 		
 		/// <summary> Return all members satisfing binding flags.</summary>
 		public IList<MemberInfo> GetMembers(BindingFlags bindingFlags)
 		{
 			return FilterMemberInfo(members, bindingFlags);
+		}
+		
+		/// <summary> Return whether the type has any members stisfing the given flags </summary>
+		public bool HasMembers(BindingFlags bindingFlags)
+		{
+			return (GetMembers(bindingFlags).Count > 0);
 		}
 		
 		/// <summary> Compares two types </summary>

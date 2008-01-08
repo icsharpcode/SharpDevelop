@@ -29,15 +29,24 @@ namespace Debugger
 		{
 			List<T> filtered = new List<T>();
 			foreach(T memberInfo in input) {
-				if (memberInfo.IsStatic  && ((bindingFlags & BindingFlags.Static)    != 0) ||
-					!memberInfo.IsStatic && ((bindingFlags & BindingFlags.Instance)  != 0)) {
-					
-					if (memberInfo.IsPrivate && ((bindingFlags & BindingFlags.NonPublic) != 0) ||
-					    memberInfo.IsPublic  && ((bindingFlags & BindingFlags.Public)    != 0)) {
-						
-						filtered.Add(memberInfo);
+				// Filter by access
+				if ((bindingFlags & (BindingFlags.Public | BindingFlags.NonPublic)) != 0) {
+					if (memberInfo.IsPublic) {
+						// If we do not want public members
+						if ((bindingFlags & BindingFlags.Public) == 0) continue; // Reject item
+					} else {
+						if ((bindingFlags & BindingFlags.NonPublic) == 0) continue; // Reject item
 					}
 				}
+				// Filter by static / instance
+				if ((bindingFlags & (BindingFlags.Static | BindingFlags.Instance)) != 0) {
+					if (memberInfo.IsStatic) {
+						if ((bindingFlags & BindingFlags.Static) == 0) continue; // Reject item
+					} else {
+						if ((bindingFlags & BindingFlags.Instance) == 0) continue; // Reject item
+					}
+				}
+				filtered.Add(memberInfo);
 			}
 			return filtered.AsReadOnly();
 		}
