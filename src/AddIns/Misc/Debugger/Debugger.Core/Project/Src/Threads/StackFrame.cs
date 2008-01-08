@@ -374,8 +374,6 @@ namespace Debugger
 			}
 		}
 		
-		Value thisValueCache;
-		
 		/// <summary> 
 		/// Gets the instance of the class asociated with the current frame.
 		/// That is, 'this' in C#.
@@ -383,10 +381,7 @@ namespace Debugger
 		public Value ThisValue {
 			get {
 				if (this.MethodInfo.IsStatic) throw new DebuggerException("Static method does not have 'this'.");
-				if (thisValueCache == null) {
-					thisValueCache = new Value(process, "this", ThisCorValue);
-				}
-				return thisValueCache;
+				return new Value(process, "this", ThisCorValue);
 			}
 		}
 		
@@ -449,20 +444,10 @@ namespace Debugger
 			}
 		}
 		
-		ValueCollection argumentsCache;
-		
 		/// <summary> Gets all arguments of the stack frame. </summary>
 		public ValueCollection Arguments {
 			get {
-				if (argumentsCache == null) {
-					DateTime startTime = Util.HighPrecisionTimer.Now;
-					
-					argumentsCache = new ValueCollection(ArgumentsEnum);
-					
-					TimeSpan totalTime = Util.HighPrecisionTimer.Now - startTime;
-					process.TraceMessage("Loaded Arguments for " + this.ToString() + " (" + totalTime.TotalMilliseconds + " ms)");
-				}
-				return argumentsCache;
+				return new ValueCollection(ArgumentsEnum);
 			}
 		}
 		
@@ -474,20 +459,10 @@ namespace Debugger
 			}
 		}
 		
-		ValueCollection localVariablesCache;
-		
 		/// <summary> Gets all local variables of the stack frame. </summary>
 		public ValueCollection LocalVariables {
 			get {
-				if (localVariablesCache == null) {
-					DateTime startTime = Util.HighPrecisionTimer.Now;
-					
-					localVariablesCache = new ValueCollection(LocalVariablesEnum);
-					
-					TimeSpan totalTime = Util.HighPrecisionTimer.Now - startTime;
-					process.TraceMessage("Loaded LocalVariables for " + this.ToString() + " (" + totalTime.TotalMilliseconds + " ms)");
-				}
-				return localVariablesCache;
+				return new ValueCollection(LocalVariablesEnum);
 			}
 		}
 		
