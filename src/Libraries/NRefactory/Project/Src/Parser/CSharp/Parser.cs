@@ -3809,7 +3809,7 @@ out embeddedStatement);
 out type);
 
 #line  1554 "cs.ATG" 
-			if (type.PointerNestingLevel == 0) Error("can only fix pointer types");
+			if (type == null || type.PointerNestingLevel == 0) Error("can only fix pointer types");
 			List<VariableDeclaration> pointerDeclarators = new List<VariableDeclaration>(1);
 			
 			Identifier();

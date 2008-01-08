@@ -1551,7 +1551,7 @@ EmbeddedStatement<out Statement statement>
 	|	"unsafe" Block<out embeddedStatement>  (. statement = new UnsafeStatement(embeddedStatement); .)
 		/*--- fixed statement: */
 	|	"fixed"
-		"(" Type<out type>     (. if (type.PointerNestingLevel == 0) Error("can only fix pointer types");
+		"(" Type<out type>     (. if (type == null || type.PointerNestingLevel == 0) Error("can only fix pointer types");
 		                          List<VariableDeclaration> pointerDeclarators = new List<VariableDeclaration>(1);
 		                       .)
 		Identifier             (. string identifier = t.val; .)
