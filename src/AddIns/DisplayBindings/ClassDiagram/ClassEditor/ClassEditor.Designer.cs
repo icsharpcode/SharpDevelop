@@ -72,8 +72,6 @@ namespace ClassDiagram
 			this.membersList.NodeControls.Add(this._modifiers);
 			this.membersList.NodeControls.Add(this._summary);
 			this.membersList.NodeControls.Add(this._paramModifiers);
-			this.membersList.Search.BackColor = System.Drawing.Color.Pink;
-			this.membersList.Search.FontColor = System.Drawing.Color.Black;
 			this.membersList.SelectedNode = null;
 			this.membersList.ShowLines = false;
 			this.membersList.Size = new System.Drawing.Size(603, 299);

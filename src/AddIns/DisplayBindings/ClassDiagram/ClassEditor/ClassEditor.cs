@@ -580,7 +580,7 @@ namespace ClassDiagram
 		void _nameDrawText(object sender, DrawEventArgs e)
 		{
 			if ((e.Node.Tag is GroupNode || e.Node.Tag is AddParameterNode || e.Node.Tag is AddMemberNode) && e.Node.IsSelected == false)
-				e.TextBrush = Brushes.Gray;
+				e.TextColor = Color.Gray;
 		}
 	}
 
