@@ -22,7 +22,7 @@ namespace Debugger.AddIn.TreeModel
 		
 		AbstractNode content;
 		
-		bool loadChildsWhenExpanding;
+		bool childsLoaded;
 		
 		public AbstractNode Content {
 			get { return content; }
@@ -47,13 +47,15 @@ namespace Debugger.AddIn.TreeModel
 		{
 			this.content = content;
 			this.IsLeaf = (content.ChildNodes == null);
-			loadChildsWhenExpanding = true;
+			childsLoaded = false;
 			if (content.ChildNodes != null && expandedNodes.ContainsKey(this.FullName) && expandedNodes[this.FullName]) {
+				LoadChilds();
 				this.Expand();
 			} else {
-				this.Collapse();
 				this.Children.Clear();
+				this.Collapse();
 			}
+			this.Tree.Invalidate();
 		}
 		
 		public static void SetContentRecursive(TreeViewAdv tree, IList<TreeNodeAdv> childNodes, IEnumerable<AbstractNode> contentEnum)
@@ -85,8 +87,13 @@ namespace Debugger.AddIn.TreeModel
 		protected override void OnExpanding()
 		{
 			base.OnExpanding();
-			if (loadChildsWhenExpanding) {
-				loadChildsWhenExpanding = false;
+			LoadChilds();
+		}
+		
+		void LoadChilds()
+		{
+			if (!childsLoaded) {
+				childsLoaded = true;
 				SetContentRecursive(this.Tree, this.Children, this.Content.ChildNodes);
 				this.IsExpandedOnce = true;
 			}
@@ -127,7 +134,7 @@ namespace Debugger.AddIn.TreeModel
 				workTime = Math.Max(minWorkTime, Math.Min(maxWorkTime, workTime)); // Clamp
 				nextDoEventsTime = end.AddMilliseconds(workTime);
 				double fps = 1000 / (doEventsDuration + workTime);
-				LoggingService.InfoFormatted("Rendering: {0} ms => work budget: {1} ms ({2:f1} FPS)", doEventsDuration, workTime, fps);
+				// LoggingService.InfoFormatted("Rendering: {0} ms => work budget: {1} ms ({2:f1} FPS)", doEventsDuration, workTime, fps);
 			}
 		}
 	}
