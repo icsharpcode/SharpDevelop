@@ -186,6 +186,26 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		}
 		
 		[Test]
+		public void Switch()
+		{
+			TestStatement("switch (a) {" +
+			              " case 0:" +
+			              " case 1:" +
+			              "  break;" +
+			              " case 2:" +
+			              "  return;" +
+			              " default:" +
+			              "  throw new Exception(); " +
+			              "}");
+		}
+		
+		[Test]
+		public void MultipleVariableForLoop()
+		{
+			TestStatement("for (int a = 0, b = 0; b < 100; ++b,a--) { }");
+		}
+		
+		[Test]
 		public void SizeOf()
 		{
 			TestExpression("sizeof(IntPtr)");
@@ -225,13 +245,13 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		[Test]
 		public void LongInteger()
 		{
-			TestExpression("12l");
+			TestExpression("12L");
 		}
 		
 		[Test]
 		public void LongUnsignedInteger()
 		{
-			TestExpression("12ul");
+			TestExpression("12uL");
 		}
 		
 		[Test]

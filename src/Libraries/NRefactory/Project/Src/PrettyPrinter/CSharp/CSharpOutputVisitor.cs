@@ -1088,6 +1088,22 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public override object TrackedVisitLocalVariableDeclaration(LocalVariableDeclaration localVariableDeclaration, object data)
 		{
+			TypeReference type = localVariableDeclaration.GetTypeForVariable(0);
+			for (int i = 1; i < localVariableDeclaration.Variables.Count; ++i) {
+				if (localVariableDeclaration.GetTypeForVariable(i) != type)
+					return TrackedVisitLocalVariableDeclarationSeparateTypes(localVariableDeclaration, data);
+			}
+			// all variables have the same type
+			OutputModifier(localVariableDeclaration.Modifier);
+			TrackVisit(type ?? new TypeReference("object"), data);
+			outputFormatter.Space();
+			AppendCommaSeparatedList(localVariableDeclaration.Variables);
+			outputFormatter.PrintToken(Tokens.Semicolon);
+			return null;
+		}
+		
+		object TrackedVisitLocalVariableDeclarationSeparateTypes(LocalVariableDeclaration localVariableDeclaration, object data)
+		{
 			for (int i = 0; i < localVariableDeclaration.Variables.Count; ++i) {
 				VariableDeclaration v = (VariableDeclaration)localVariableDeclaration.Variables[i];
 				if (i > 0) {
@@ -1307,18 +1323,6 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				TrackVisit(stmt, data);
 				outputFormatter.NewLine();
 			}
-			
-			// Check if a 'break' should be auto inserted.
-			if (switchSection.Children.Count == 0 ||
-			    !(switchSection.Children[switchSection.Children.Count - 1] is BreakStatement ||
-			      switchSection.Children[switchSection.Children.Count - 1] is ContinueStatement ||
-			      switchSection.Children[switchSection.Children.Count - 1] is ReturnStatement)) {
-				outputFormatter.Indent();
-				outputFormatter.PrintToken(Tokens.Break);
-				outputFormatter.PrintToken(Tokens.Semicolon);
-				outputFormatter.NewLine();
-			}
-			
 			--outputFormatter.IndentationLevel;
 			return null;
 		}
@@ -1780,7 +1784,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					outputFormatter.PrintText("u");
 				}
 				if (val is long || val is ulong) {
-					outputFormatter.PrintText("l");
+					outputFormatter.PrintText("L");
 				}
 			} else {
 				outputFormatter.PrintText(val.ToString());

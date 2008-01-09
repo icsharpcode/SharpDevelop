@@ -286,10 +286,10 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 						islong = true;
 						if (!isunsigned && (peek == 'u' || peek == 'U')) {
 							ReaderRead();
-							suffix = "lu";
+							suffix = "Lu";
 							isunsigned = true;
 						} else {
-							suffix = isunsigned ? "ul" : "l";
+							suffix = isunsigned ? "uL" : "L";
 						}
 					}
 				}
@@ -344,7 +344,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 					isunsigned = true;
 				} else if (result > uint.MaxValue) {
 					islong = true;
-				} else if (result > int.MaxValue) {
+				} else if (islong == false && result > int.MaxValue) {
 					isunsigned = true;
 				}
 				

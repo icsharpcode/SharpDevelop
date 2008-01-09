@@ -74,6 +74,9 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 		{
 			CheckToken("0x99F", 0x99F);
 			CheckToken("0xAB1f", 0xAB1f);
+			CheckToken("0xffffffff", 0xffffffff);
+			CheckToken("0xffffffffL", 0xffffffffL);
+			CheckToken("0xffffffffuL", 0xffffffffuL);
 		}
 		
 		[Test]

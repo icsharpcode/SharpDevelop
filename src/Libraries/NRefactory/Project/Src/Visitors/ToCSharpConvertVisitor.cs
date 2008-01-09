@@ -211,5 +211,19 @@ namespace ICSharpCode.NRefactory.Visitors
 			else
 				throw new ArgumentException();
 		}
+		
+		public override object VisitSwitchSection(SwitchSection switchSection, object data)
+		{
+			// Check if a 'break' should be auto inserted.
+			if (switchSection.Children.Count == 0 ||
+			    !(switchSection.Children[switchSection.Children.Count - 1] is BreakStatement ||
+			      switchSection.Children[switchSection.Children.Count - 1] is ContinueStatement ||
+			      switchSection.Children[switchSection.Children.Count - 1] is ThrowStatement ||
+			      switchSection.Children[switchSection.Children.Count - 1] is ReturnStatement))
+			{
+				switchSection.Children.Add(new BreakStatement());
+			}
+			return base.VisitSwitchSection(switchSection, data);
+		}
 	}
 }
