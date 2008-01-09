@@ -58,11 +58,6 @@ namespace Debugger
 					pauseProcessInsteadOfContinue = false;
 				}
 				
-				// Remove expired threads and functions
-				foreach(Thread thread in process.Threads) {
-					thread.CheckExpiration();
-				}
-				
 				process.NotifyPaused(new PauseSession(pausedReason));
 			} else {
 				throw new DebuggerException("Invalid state at the start of callback");

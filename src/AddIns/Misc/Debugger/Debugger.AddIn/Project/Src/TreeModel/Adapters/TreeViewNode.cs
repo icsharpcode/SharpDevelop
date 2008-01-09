@@ -88,6 +88,7 @@ namespace Debugger.AddIn.TreeModel
 			if (loadChildsWhenExpanding) {
 				loadChildsWhenExpanding = false;
 				SetContentRecursive(this.Tree, this.Children, this.Content.ChildNodes);
+				this.IsExpandedOnce = true;
 			}
 		}
 		

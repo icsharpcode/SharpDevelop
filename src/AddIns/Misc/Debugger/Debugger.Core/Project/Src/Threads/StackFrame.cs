@@ -19,21 +19,16 @@ namespace Debugger
 	/// A stack frame which is being executed on some thread.
 	/// Use to obtain arguments or local variables.
 	/// </summary>
-	public class StackFrame: DebuggerObject, IExpirable
+	public class StackFrame: DebuggerObject
 	{	
 		Process process;
+		Thread thread;
 		
-		MethodInfo methodInfo;
-		
-		ICorDebugFunction corFunction;
 		ICorDebugILFrame  corILFrame;
 		object            corILFramePauseSession;
+		ICorDebugFunction corFunction;
 		
-		Stepper stepOutStepper;
-		
-		bool steppedOut = false;
-		Thread thread;
-		FrameID frameID;
+		MethodInfo methodInfo;
 		
 		/// <summary> The process in which this stack frame is executed </summary>
 		[Debugger.Tests.Ignore]
@@ -67,32 +62,17 @@ namespace Debugger
 		/// <summary> True if stack frame stepped out and is not longer valid. </summary>
 		public bool HasExpired {
 			get {
-				return steppedOut || this.MethodInfo.Module.Unloaded;
+				return this.corILFramePauseSession != process.PauseSession;
 			}
 		}
 		
-		/// <summary> Occurs when stack frame expires and is no longer usable </summary>
-		public event EventHandler Expired;
-		
-		/// <summary> Is called when stack frame expires and is no longer usable </summary>
-		internal protected virtual void OnExpired(EventArgs e)
-		{
-			if (!steppedOut) {
-				steppedOut = true;
-				process.TraceMessage("StackFrame " + this.ToString() + " expired");
-				if (Expired != null) {
-					Expired(this, e);
-				}
-			}
-		}
-		
-		internal StackFrame(Thread thread, FrameID frameID, ICorDebugILFrame corILFrame)
+		internal StackFrame(Thread thread, ICorDebugILFrame corILFrame)
 		{
 			this.process = thread.Process;
 			this.thread = thread;
-			this.frameID = frameID;
-			this.CorILFrame = corILFrame;
-			corFunction = corILFrame.Function;
+			this.corILFrame = corILFrame;
+			this.corILFramePauseSession = process.PauseSession;
+			this.corFunction = corILFrame.Function;
 			
 			DebugType debugType = DebugType.Create(
 				this.Process, 
@@ -101,33 +81,18 @@ namespace Debugger
 			);
 			MethodProps methodProps = process.GetModule(corFunction.Module).MetaData.GetMethodProps(corFunction.Token);
 			this.methodInfo = new MethodInfo(debugType, methodProps);
-			                                 
-			// Force some callback when stack frame steps out so that we can expire it
-			stepOutStepper = new Stepper(this, "StackFrame Tracker");
-			stepOutStepper.StepOut();
-			stepOutStepper.PauseWhenComplete = false;
-			
-			process.TraceMessage("StackFrame " + this.ToString() + " created");
 		}
 		
 		/// <summary> Returns diagnostic description of the frame </summary>
 		public override string ToString()
 		{
-			return this.MethodInfo.Name + "(" + frameID.ToString() + ")";
+			return this.MethodInfo.FullName;
 		}
 		
 		internal ICorDebugILFrame CorILFrame {
 			get {
 				if (HasExpired) throw new DebuggerException("StackFrame has expired");
-				if (corILFramePauseSession != process.PauseSession) {
-					CorILFrame = thread.GetFrameAt(frameID).As<ICorDebugILFrame>();
-				}
 				return corILFrame;
-			}
-			set {
-				if (value == null) throw new DebuggerException("Can not set frame to null");
-				corILFrame = value;
-				corILFramePauseSession = process.PauseSession;
 			}
 		}
 		

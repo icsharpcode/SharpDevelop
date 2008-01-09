@@ -14,7 +14,7 @@ using Debugger.Wrappers.CorDebug;
 
 namespace Debugger
 {
-	public partial class Thread: DebuggerObject, IExpirable
+	public partial class Thread: DebuggerObject
 	{
 		Process process;
 
@@ -251,7 +251,7 @@ namespace Debugger
 						if (corFrame.Is<ICorDebugILFrame>()) {
 							StackFrame stackFrame;
 							try {
-								stackFrame = GetStackFrameFromCache(new FrameID(corChain.Index, corFrame.Index), corFrame.As<ICorDebugILFrame>());
+								stackFrame = new StackFrame(this, corFrame.CastTo<ICorDebugILFrame>());
 							} catch (COMException) { // TODO
 								continue;
 							};
@@ -259,95 +259,6 @@ namespace Debugger
 						}
 					}
 				}
-			}
-		}
-		
-		Dictionary<FrameID, StackFrame> functionCache = new Dictionary<FrameID, StackFrame>();
-		
-		StackFrame GetStackFrameFromCache(FrameID frameID, ICorDebugILFrame corFrame)
-		{
-			StackFrame stackFrame;
-			if (functionCache.TryGetValue(frameID, out stackFrame) && !stackFrame.HasExpired) {
-				stackFrame.CorILFrame = corFrame;
-				return stackFrame;
-			} else {
-				stackFrame = new StackFrame(this, frameID, corFrame);
-				functionCache[frameID] = stackFrame;
-				return stackFrame;
-			}
-		}
-		
-		internal ICorDebugFrame GetFrameAt(FrameID frameID)
-		{
-			process.AssertPaused();
-			
-			ICorDebugChainEnum corChainEnum = CorThread.EnumerateChains();
-			if (frameID.ChainIndex >= corChainEnum.Count) throw new ArgumentException("Chain index too big", "chainIndex");
-			corChainEnum.Skip(corChainEnum.Count - frameID.ChainIndex - 1);
-			
-			ICorDebugChain corChain = corChainEnum.Next();
-			
-			if (corChain.IsManaged == 0) throw new ArgumentException("Chain is not managed", "chainIndex");
-			
-			ICorDebugFrameEnum corFrameEnum = corChain.EnumerateFrames();
-			if (frameID.FrameIndex >= corFrameEnum.Count) throw new ArgumentException("Frame index too big", "frameIndex");
-			corFrameEnum.Skip(corFrameEnum.Count - frameID.FrameIndex - 1);
-			
-			return corFrameEnum.Next();
-		}
-		
-		// See docs\Stepping.txt
-		internal void CheckExpiration()
-		{
-			try {
-				ICorDebugChainEnum chainEnum = CorThread.EnumerateChains();
-			} catch (COMException e) {
-				// 0x8013132D: The state of the thread is invalid.
-				// 0x8013134F: Object is in a zombie state
-				// 0x80131301: Process was terminated.
-				if ((uint)e.ErrorCode == 0x8013132D ||
-				    (uint)e.ErrorCode == 0x8013134F ||
-				    (uint)e.ErrorCode == 0x80131301) {
-					
-					this.Expire();
-					return;
-				} else throw;
-			}
-			
-			if (process.Evaluating) return;
-			
-			ICorDebugChainEnum corChainEnum = CorThread.EnumerateChains();
-			int maxChainIndex = (int)corChainEnum.Count - 1;
-			
-			ICorDebugFrameEnum corFrameEnum = corChainEnum.Next().EnumerateFrames();
-			// corFrameEnum.Count can return 0 in ExitThread callback
-			int maxFrameIndex = (int)corFrameEnum.Count - 1;
-			
-			ICorDebugFrame lastFrame = corFrameEnum.Next();
-			
-			// Check the token of the current stack frame - stack frame can change if there are multiple handlers for an event
-			StackFrame stackFrame;
-			if (lastFrame != null && 
-			    functionCache.TryGetValue(new FrameID((uint)maxChainIndex, (uint)maxFrameIndex), out stackFrame) &&
-			    stackFrame.MethodInfo.MetadataToken != lastFrame.FunctionToken) {
-				
-				functionCache.Remove(new FrameID((uint)maxChainIndex, (uint)maxFrameIndex));
-				stackFrame.OnExpired(EventArgs.Empty);
-			}
-
-			// Expire all functions behind the current maximum
-			// Multiple functions can expire at once (test case: Step out of Button1Click in simple winforms application)
-			List<KeyValuePair<FrameID, StackFrame>> toBeRemoved = new List<KeyValuePair<FrameID, StackFrame>>();
-			foreach(KeyValuePair<FrameID, StackFrame> kvp in functionCache) {
-				if ((kvp.Key.ChainIndex > maxChainIndex) ||
-				    (kvp.Key.ChainIndex == maxChainIndex && kvp.Key.FrameIndex > maxFrameIndex)) {
-					
-					toBeRemoved.Add(kvp);
-				}
-			}
-			foreach(KeyValuePair<FrameID, StackFrame> kvp in toBeRemoved){
-				functionCache.Remove(kvp.Key);
-				kvp.Value.OnExpired(EventArgs.Empty);
 			}
 		}
 		

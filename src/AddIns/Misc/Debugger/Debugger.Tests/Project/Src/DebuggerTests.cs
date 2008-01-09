@@ -187,27 +187,26 @@ namespace Debugger.Tests
 		[Test]
 		public void FunctionLifetime()
 		{
-			StackFrame stackFrame;
-			
 			StartTest("FunctionLifetime");
 			WaitForPause();
-			stackFrame = process.SelectedStackFrame;
-			ObjectDump("StackFrame", stackFrame);
+			StackFrame stackFrame = process.SelectedStackFrame;
+			ObjectDump("SelectedStackFrame", process.SelectedStackFrame);
 			
 			process.Continue(); // Go to the SubFunction
 			WaitForPause();
-			ObjectDump("StackFrame", stackFrame);
-			ObjectDump("SubStackFrame", process.SelectedStackFrame);
+			ObjectDump("Old StackFrame", stackFrame);
+			ObjectDump("SelectedStackFrame", process.SelectedStackFrame);
 			
 			process.Continue(); // Go back to Function
 			WaitForPause();
-			Assert.AreEqual(stackFrame, process.SelectedStackFrame);
-			ObjectDump("StackFrame", stackFrame);
+			ObjectDump("Old StackFrame", stackFrame);
+			ObjectDump("SelectedStackFrame", process.SelectedStackFrame);
 			
 			process.Continue(); // Setp out of function
 			WaitForPause();
 			ObjectDump("Main", process.SelectedStackFrame);
-			ObjectDump("StackFrame", stackFrame);
+			ObjectDump("Old StackFrame", stackFrame);
+			ObjectDump("SelectedStackFrame", process.SelectedStackFrame);
 			
 			process.Continue();
 			process.WaitForExit();

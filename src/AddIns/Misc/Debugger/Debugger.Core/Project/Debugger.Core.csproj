@@ -202,7 +202,6 @@
     <Compile Include="Src\Tests\ToStringOnlyAttribute.cs" />
     <Compile Include="Src\Threads\Exception.cs" />
     <Compile Include="Src\Threads\ExceptionType.cs" />
-    <Compile Include="Src\Threads\FrameID.cs" />
     <Compile Include="Src\Threads\StackFrame.cs" />
     <Compile Include="Src\Threads\NDebugger-Processes.cs" />
     <Compile Include="Src\Threads\Process-Threads.cs" />

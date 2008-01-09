@@ -5,7 +5,7 @@
     <ModuleLoaded symbols="False">mscorlib.dll</ModuleLoaded>
     <ModuleLoaded symbols="True">FunctionLifetime.exe</ModuleLoaded>
     <DebuggingPaused>Break</DebuggingPaused>
-    <ObjectDump name="StackFrame">
+    <ObjectDump name="SelectedStackFrame">
       <StackFrame>
         <MethodInfo>
           <MethodInfo>
@@ -61,7 +61,7 @@
       </StackFrame>
     </ObjectDump>
     <DebuggingPaused>Break</DebuggingPaused>
-    <ObjectDump name="StackFrame">
+    <ObjectDump name="Old StackFrame">
       <StackFrame>
         <MethodInfo>
           <MethodInfo>
@@ -76,8 +76,8 @@
           </MethodInfo>
         </MethodInfo>
         <HasSymbols>True</HasSymbols>
-        <HasExpired>False</HasExpired>
-        <NextStatement>Start=23,4 End=23,18</NextStatement>
+        <HasExpired>True</HasExpired>
+        <NextStatement exception="StackFrame has expired" />
         <ThisValue exception="Static method does not have 'this'." />
         <ContaingClassVariables>
           <ValueCollection>
@@ -85,29 +85,8 @@
             <Items />
           </ValueCollection>
         </ContaingClassVariables>
-        <ArgumentCount>1</ArgumentCount>
-        <Arguments>
-          <ValueCollection>
-            <Count>1</Count>
-            <Items>
-              <Value>
-                <IsArray>False</IsArray>
-                <ArrayLenght exception="Value is not an array" />
-                <ArrayRank exception="Value is not an array" />
-                <ArrayDimensions exception="Value is not an array" />
-                <IsObject>False</IsObject>
-                <IsPrimitive>True</IsPrimitive>
-                <IsInteger>True</IsInteger>
-                <PrimitiveValue>1</PrimitiveValue>
-                <Name>i</Name>
-                <IsNull>False</IsNull>
-                <AsString>1</AsString>
-                <HasExpired>False</HasExpired>
-                <Type>System.Int32</Type>
-              </Value>
-            </Items>
-          </ValueCollection>
-        </Arguments>
+        <ArgumentCount exception="StackFrame has expired" />
+        <Arguments exception="StackFrame has expired" />
         <LocalVariables>
           <ValueCollection>
             <Count>0</Count>
@@ -116,7 +95,7 @@
         </LocalVariables>
       </StackFrame>
     </ObjectDump>
-    <ObjectDump name="SubStackFrame">
+    <ObjectDump name="SelectedStackFrame">
       <StackFrame>
         <MethodInfo>
           <MethodInfo>
@@ -156,7 +135,41 @@
       </StackFrame>
     </ObjectDump>
     <DebuggingPaused>Break</DebuggingPaused>
-    <ObjectDump name="StackFrame">
+    <ObjectDump name="Old StackFrame">
+      <StackFrame>
+        <MethodInfo>
+          <MethodInfo>
+            <Name>Function</Name>
+            <FullName>Debugger.Tests.TestPrograms.FunctionLifetime.Function</FullName>
+            <IsPrivate>True</IsPrivate>
+            <IsPublic>False</IsPublic>
+            <IsSpecialName>False</IsSpecialName>
+            <IsStatic>True</IsStatic>
+            <Module>FunctionLifetime.exe</Module>
+            <DeclaringType>Debugger.Tests.TestPrograms.FunctionLifetime</DeclaringType>
+          </MethodInfo>
+        </MethodInfo>
+        <HasSymbols>True</HasSymbols>
+        <HasExpired>True</HasExpired>
+        <NextStatement exception="StackFrame has expired" />
+        <ThisValue exception="Static method does not have 'this'." />
+        <ContaingClassVariables>
+          <ValueCollection>
+            <Count>0</Count>
+            <Items />
+          </ValueCollection>
+        </ContaingClassVariables>
+        <ArgumentCount exception="StackFrame has expired" />
+        <Arguments exception="StackFrame has expired" />
+        <LocalVariables>
+          <ValueCollection>
+            <Count>0</Count>
+            <Items />
+          </ValueCollection>
+        </LocalVariables>
+      </StackFrame>
+    </ObjectDump>
+    <ObjectDump name="SelectedStackFrame">
       <StackFrame>
         <MethodInfo>
           <MethodInfo>
@@ -251,7 +264,7 @@
         </LocalVariables>
       </StackFrame>
     </ObjectDump>
-    <ObjectDump name="StackFrame">
+    <ObjectDump name="Old StackFrame">
       <StackFrame>
         <MethodInfo>
           <MethodInfo>
@@ -277,6 +290,45 @@
         </ContaingClassVariables>
         <ArgumentCount exception="StackFrame has expired" />
         <Arguments exception="StackFrame has expired" />
+        <LocalVariables>
+          <ValueCollection>
+            <Count>0</Count>
+            <Items />
+          </ValueCollection>
+        </LocalVariables>
+      </StackFrame>
+    </ObjectDump>
+    <ObjectDump name="SelectedStackFrame">
+      <StackFrame>
+        <MethodInfo>
+          <MethodInfo>
+            <Name>Main</Name>
+            <FullName>Debugger.Tests.TestPrograms.FunctionLifetime.Main</FullName>
+            <IsPrivate>False</IsPrivate>
+            <IsPublic>True</IsPublic>
+            <IsSpecialName>False</IsSpecialName>
+            <IsStatic>True</IsStatic>
+            <Module>FunctionLifetime.exe</Module>
+            <DeclaringType>Debugger.Tests.TestPrograms.FunctionLifetime</DeclaringType>
+          </MethodInfo>
+        </MethodInfo>
+        <HasSymbols>True</HasSymbols>
+        <HasExpired>False</HasExpired>
+        <NextStatement>Start=17,4 End=17,40</NextStatement>
+        <ThisValue exception="Static method does not have 'this'." />
+        <ContaingClassVariables>
+          <ValueCollection>
+            <Count>0</Count>
+            <Items />
+          </ValueCollection>
+        </ContaingClassVariables>
+        <ArgumentCount>0</ArgumentCount>
+        <Arguments>
+          <ValueCollection>
+            <Count>0</Count>
+            <Items />
+          </ValueCollection>
+        </Arguments>
         <LocalVariables>
           <ValueCollection>
             <Count>0</Count>
