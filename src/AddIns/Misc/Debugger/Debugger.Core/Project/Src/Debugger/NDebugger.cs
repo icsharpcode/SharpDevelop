@@ -77,6 +77,7 @@ namespace Debugger
 			NativeMethods.GetRequestedRuntimeVersion(exeFilename, null, 0, out size);
 			StringBuilder sb = new StringBuilder(size);
 			NativeMethods.GetRequestedRuntimeVersion(exeFilename, sb, sb.Capacity, out size);
+			sb.Length = size; // TODO: What is the last char?  What is the result for unmanaged apps?
 			return sb.ToString();
 		}
 		
@@ -87,13 +88,12 @@ namespace Debugger
 		/// If null, the version of the executing process will be used</param>
 		internal void InitDebugger(string debuggeeVersion)
 		{
-			if (debuggeeVersion != null && debuggeeVersion.Length > 1) {
-				this.debuggeeVersion = debuggeeVersion;
-			} else {
-				this.debuggeeVersion = GetDebuggerVersion();
+			if (string.IsNullOrEmpty(debuggeeVersion)) {
+				debuggeeVersion = GetDebuggerVersion();
 			}
+			this.debuggeeVersion = debuggeeVersion;
 			
-			corDebug = new ICorDebug(NativeMethods.CreateDebuggingInterfaceFromVersion(3, this.debuggeeVersion));
+			corDebug = new ICorDebug(NativeMethods.CreateDebuggingInterfaceFromVersion(3, debuggeeVersion));
 			
 			managedCallbackSwitch = new ManagedCallbackSwitch(this);
 			managedCallbackProxy = new ManagedCallbackProxy(this, managedCallbackSwitch);

@@ -136,8 +136,8 @@ namespace ICSharpCode.SharpDevelop.Services
 			string version = debugger.GetProgramVersion(processStartInfo.FileName);
 			if (version.StartsWith("v1.0")) {
 				MessageService.ShowMessage("${res:XML.MainMenu.DebugMenu.Error.Net10NotSupported}");
-			} else if (version == null || version.Length == 0) {
-				MessageService.ShowMessage("${res:XML.MainMenu.DebugMenu.Error.BadAssembly}");
+			//} else if (string.IsNullOrEmpty(version)) {
+			//	MessageService.ShowMessage("${res:XML.MainMenu.DebugMenu.Error.BadAssembly}");
 			} else {
 				if (DebugStarting != null)
 					DebugStarting(this, EventArgs.Empty);
