@@ -91,18 +91,18 @@
             <Count>1</Count>
             <Items>
               <Value>
-                <IsArray exception="Value has expired" />
-                <ArrayLenght exception="Value has expired" />
-                <ArrayRank exception="Value has expired" />
-                <ArrayDimensions exception="Value has expired" />
-                <IsObject exception="Value has expired" />
-                <IsPrimitive exception="Value has expired" />
-                <IsInteger exception="Value has expired" />
-                <PrimitiveValue exception="Value has expired" />
+                <IsArray>False</IsArray>
+                <ArrayLenght exception="Value is not an array" />
+                <ArrayRank exception="Value is not an array" />
+                <ArrayDimensions exception="Value is not an array" />
+                <IsObject>False</IsObject>
+                <IsPrimitive>True</IsPrimitive>
+                <IsInteger>True</IsInteger>
+                <PrimitiveValue>1</PrimitiveValue>
                 <Name>i</Name>
-                <IsNull exception="Value has expired" />
-                <AsString exception="Value has expired" />
-                <HasExpired>True</HasExpired>
+                <IsNull>False</IsNull>
+                <AsString>1</AsString>
+                <HasExpired>False</HasExpired>
                 <Type>System.Int32</Type>
               </Value>
             </Items>
@@ -186,18 +186,18 @@
             <Count>1</Count>
             <Items>
               <Value>
-                <IsArray exception="Value has expired" />
-                <ArrayLenght exception="Value has expired" />
-                <ArrayRank exception="Value has expired" />
-                <ArrayDimensions exception="Value has expired" />
-                <IsObject exception="Value has expired" />
-                <IsPrimitive exception="Value has expired" />
-                <IsInteger exception="Value has expired" />
-                <PrimitiveValue exception="Value has expired" />
+                <IsArray>False</IsArray>
+                <ArrayLenght exception="Value is not an array" />
+                <ArrayRank exception="Value is not an array" />
+                <ArrayDimensions exception="Value is not an array" />
+                <IsObject>False</IsObject>
+                <IsPrimitive>True</IsPrimitive>
+                <IsInteger>True</IsInteger>
+                <PrimitiveValue>1</PrimitiveValue>
                 <Name>i</Name>
-                <IsNull exception="Value has expired" />
-                <AsString exception="Value has expired" />
-                <HasExpired>True</HasExpired>
+                <IsNull>False</IsNull>
+                <AsString>1</AsString>
+                <HasExpired>False</HasExpired>
                 <Type>System.Int32</Type>
               </Value>
             </Items>
@@ -276,28 +276,7 @@
           </ValueCollection>
         </ContaingClassVariables>
         <ArgumentCount exception="StackFrame has expired" />
-        <Arguments>
-          <ValueCollection>
-            <Count>1</Count>
-            <Items>
-              <Value>
-                <IsArray exception="Value has expired" />
-                <ArrayLenght exception="Value has expired" />
-                <ArrayRank exception="Value has expired" />
-                <ArrayDimensions exception="Value has expired" />
-                <IsObject exception="Value has expired" />
-                <IsPrimitive exception="Value has expired" />
-                <IsInteger exception="Value has expired" />
-                <PrimitiveValue exception="Value has expired" />
-                <Name>i</Name>
-                <IsNull exception="Value has expired" />
-                <AsString exception="Value has expired" />
-                <HasExpired>True</HasExpired>
-                <Type>System.Int32</Type>
-              </Value>
-            </Items>
-          </ValueCollection>
-        </Arguments>
+        <Arguments exception="StackFrame has expired" />
         <LocalVariables>
           <ValueCollection>
             <Count>0</Count>
