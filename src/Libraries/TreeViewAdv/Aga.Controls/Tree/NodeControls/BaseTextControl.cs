@@ -10,8 +10,10 @@ namespace Aga.Controls.Tree.NodeControls
 {
 	public abstract class BaseTextControl : EditableControl
 	{
+		private TextFormatFlags _baseFormatFlags;
+        private TextFormatFlags _formatFlags;
+        private Pen _focusPen;
 		private StringFormat _format;
-		private Pen _focusPen;
 
 		#region Properties
 
@@ -44,7 +46,11 @@ namespace Aga.Controls.Tree.NodeControls
 		public HorizontalAlignment TextAlign
 		{
 			get { return _textAlign; }
-			set { _textAlign = value; }
+			set 
+			{ 
+				_textAlign = value;
+				SetFormatFlags();
+			}
 		}
 
 		private StringTrimming _trimming = StringTrimming.None;
@@ -52,7 +58,11 @@ namespace Aga.Controls.Tree.NodeControls
 		public StringTrimming Trimming
 		{
 			get { return _trimming; }
-			set { _trimming = value; }
+			set 
+			{ 
+				_trimming = value;
+				SetFormatFlags();
+			}
 		}
 
 		private bool _displayHiddenContentInToolTip = true;
@@ -63,6 +73,14 @@ namespace Aga.Controls.Tree.NodeControls
 			set { _displayHiddenContentInToolTip = value; }
 		}
 
+		private bool _useCompatibleTextRendering = false;
+		[DefaultValue(false)]
+		public bool UseCompatibleTextRendering
+		{
+			get { return _useCompatibleTextRendering; }
+			set { _useCompatibleTextRendering = value; }
+		}
+
 		#endregion
 
 		protected BaseTextControl()
@@ -71,8 +89,20 @@ namespace Aga.Controls.Tree.NodeControls
 			_focusPen = new Pen(Color.Black);
 			_focusPen.DashStyle = System.Drawing.Drawing2D.DashStyle.Dot;
 
-			_format = new StringFormat(StringFormatFlags.NoWrap | StringFormatFlags.NoClip | StringFormatFlags.FitBlackBox);
-			_format.LineAlignment = StringAlignment.Center;
+			_format = new StringFormat(StringFormatFlags.NoClip | StringFormatFlags.FitBlackBox | StringFormatFlags.MeasureTrailingSpaces);
+			_baseFormatFlags = TextFormatFlags.PreserveGraphicsClipping | TextFormatFlags.NoPrefix |
+                           TextFormatFlags.PreserveGraphicsTranslateTransform;
+			SetFormatFlags();
+			LeftMargin = 3;
+		}
+
+		private void SetFormatFlags()
+		{
+			_format.Alignment = TextHelper.TranslateAligment(TextAlign);
+			_format.Trimming = Trimming;
+
+			_formatFlags = _baseFormatFlags | TextHelper.TranslateAligmentToFlag(TextAlign)
+				| TextHelper.TranslateTrimmingToFlag(Trimming);
 		}
 
 		public override Size MeasureSize(TreeNodeAdv node, DrawContext context)
@@ -82,19 +112,49 @@ namespace Aga.Controls.Tree.NodeControls
 
 		protected Size GetLabelSize(TreeNodeAdv node, DrawContext context)
 		{
+			return GetLabelSize(node, context, GetLabel(node));
+		}
+
+		protected Size GetLabelSize(TreeNodeAdv node, DrawContext context, string label)
+		{
+			PerformanceAnalyzer.Start("GetLabelSize");
+			CheckThread();
+			Font font = GetDrawingFont(node, context, label);
+			Size s = Size.Empty;
+			if (UseCompatibleTextRendering)
+				s = TextRenderer.MeasureText(label, font);
+			else
+			{
+				SizeF sf = context.Graphics.MeasureString(label, font);
+				s = Size.Ceiling(sf); 
+			}
+			PerformanceAnalyzer.Finish("GetLabelSize");
+
+			if (!s.IsEmpty)
+				return s;
+			else
+				return new Size(10, Font.Height);
+		}
+
+		protected Font GetDrawingFont(TreeNodeAdv node, DrawContext context, string label)
+		{
 			Font font = context.Font;
 			if (DrawText != null)
 			{
-				DrawEventArgs args = new DrawEventArgs(node, context);
+				DrawEventArgs args = new DrawEventArgs(node, context, label);
 				args.Font = context.Font;
 				OnDrawText(args);
 				font = args.Font;
 			}
-			SizeF s = context.Graphics.MeasureString(GetLabel(node), font);
-			if (!s.IsEmpty)
-				return new Size((int)s.Width, (int)s.Height);
-			else
-				return new Size(10, Font.Height);
+			return font;
+		}
+
+		protected void SetEditControlProperties(Control control, TreeNodeAdv node)
+		{
+			string label = GetLabel(node);
+			DrawContext context = new DrawContext();
+			context.Font = control.Font;
+			control.Font = GetDrawingFont(node, context, label);
 		}
 
 		public override void Draw(TreeNodeAdv node, DrawContext context)
@@ -102,16 +162,16 @@ namespace Aga.Controls.Tree.NodeControls
 			if (context.CurrentEditorOwner == this && node == Parent.CurrentNode)
 				return;
 
-			_format.Alignment = TextHelper.TranslateAligment(TextAlign);
-			_format.Trimming = Trimming;
+			PerformanceAnalyzer.Start("BaseTextControl.Draw");
 			string label = GetLabel(node);
 			Rectangle bounds = GetBounds(node, context);
-			Rectangle focusRect = new Rectangle(context.Bounds.Location,
-				new Size(bounds.Width, context.Bounds.Height));
+			Rectangle focusRect = new Rectangle(bounds.X, context.Bounds.Y,	
+				bounds.Width, context.Bounds.Height);
 
-			Brush textBrush, backgroundBrush;
+			Brush backgroundBrush;
+			Color textColor;
 			Font font;
-			CreateBrushes(node, context, out textBrush, out backgroundBrush, out font);
+			CreateBrushes(node, context, label, out backgroundBrush, out textColor, out font, ref label);
 
 			if (backgroundBrush != null)
 				context.Graphics.FillRectangle(backgroundBrush, focusRect);
@@ -119,49 +179,77 @@ namespace Aga.Controls.Tree.NodeControls
 			{
 				focusRect.Width--;
 				focusRect.Height--;
-				context.Graphics.DrawRectangle(Pens.Gray, focusRect);
+				if (context.DrawSelection == DrawSelectionMode.None)
+					_focusPen.Color = SystemColors.ControlText;
+				else
+					_focusPen.Color = SystemColors.InactiveCaption;
 				context.Graphics.DrawRectangle(_focusPen, focusRect);
 			}
-			context.Graphics.DrawString(label, font, textBrush, bounds, _format);
+			
+			PerformanceAnalyzer.Start("BaseTextControl.DrawText");
+			if (UseCompatibleTextRendering)
+				TextRenderer.DrawText(context.Graphics, label, font, bounds, textColor, _formatFlags);
+			else
+				context.Graphics.DrawString(label, font, GetFrush(textColor), bounds, _format);
+			PerformanceAnalyzer.Finish("BaseTextControl.DrawText");
+
+			PerformanceAnalyzer.Finish("BaseTextControl.Draw");
 		}
 
-		private void CreateBrushes(TreeNodeAdv node, DrawContext context, out Brush textBrush, out Brush backgroundBrush, out Font font)
+		private static Dictionary<Color, Brush> _brushes = new Dictionary<Color,Brush>();
+		private static Brush GetFrush(Color color)
 		{
-			textBrush = SystemBrushes.ControlText;
+			Brush br;
+			if (_brushes.ContainsKey(color))
+				br = _brushes[color];
+			else
+			{
+				br = new SolidBrush(color);
+				_brushes.Add(color, br);
+			}
+			return br;
+		}
+
+		private void CreateBrushes(TreeNodeAdv node, DrawContext context, string text, out Brush backgroundBrush, out Color textColor, out Font font, ref string label)
+		{
+			textColor = SystemColors.ControlText;
 			backgroundBrush = null;
 			font = context.Font;
 			if (context.DrawSelection == DrawSelectionMode.Active)
 			{
-				textBrush = SystemBrushes.HighlightText;
-				backgroundBrush = SystemBrushes.Highlight;
+				textColor = SystemColors.HighlightText;
+                backgroundBrush = SystemBrushes.Highlight;
 			}
 			else if (context.DrawSelection == DrawSelectionMode.Inactive)
 			{
-				textBrush = SystemBrushes.ControlText;
-				backgroundBrush = SystemBrushes.InactiveBorder;
+				textColor = SystemColors.ControlText;
+                backgroundBrush = SystemBrushes.InactiveBorder;
 			}
 			else if (context.DrawSelection == DrawSelectionMode.FullRowSelect)
-				textBrush = SystemBrushes.HighlightText;
+				textColor = SystemColors.HighlightText;
 
 			if (!context.Enabled)
-				textBrush = SystemBrushes.GrayText;
+				textColor = SystemColors.GrayText;
 
 			if (DrawText != null)
 			{
-				DrawEventArgs args = new DrawEventArgs(node, context);
-				args.TextBrush = textBrush;
+				DrawEventArgs args = new DrawEventArgs(node, context, text);
+				args.TextColor = textColor;
 				args.BackgroundBrush = backgroundBrush;
 				args.Font = font;
+
 				OnDrawText(args);
-				textBrush = args.TextBrush;
+
+				textColor = args.TextColor;
 				backgroundBrush = args.BackgroundBrush;
 				font = args.Font;
+				label = args.Text;
 			}
 		}
 
 		public string GetLabel(TreeNodeAdv node)
 		{
-			if (node.Tag != null)
+			if (node != null && node.Tag != null)
 			{
 				object obj = GetValue(node);
 				if (obj != null)

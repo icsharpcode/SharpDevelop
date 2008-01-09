@@ -5,6 +5,11 @@ using System.Collections.ObjectModel;
 
 namespace Aga.Controls.Tree
 {
+	/// <summary>
+	/// Provides a simple ready to use implementation of ITreeModel. Warning: this class is not optimized 
+	/// to work with big amount of data. In this case create you own implementation of ITreeModel, and pay attention
+	/// on GetChildren and IsLeaf methods.
+	/// </summary>
 	public class TreeModel : ITreeModel
 	{
 		private Node _root;

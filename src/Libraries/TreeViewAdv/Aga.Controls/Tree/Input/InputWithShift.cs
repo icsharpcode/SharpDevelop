@@ -56,7 +56,7 @@ namespace Aga.Controls.Tree
 
 		private void SelectAllFromStart(TreeNodeAdv node)
 		{
-			Tree.ClearSelection();
+			Tree.ClearSelectionInternal();
 			int a = node.Row;
 			int b = Tree.SelectionStart.Row;
 			for (int i = Math.Min(a, b); i <= Math.Max(a, b); i++)

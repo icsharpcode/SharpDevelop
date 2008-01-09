@@ -19,8 +19,6 @@
     </SccProvider>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile>
-    <NoStdLib>False</NoStdLib>
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -30,7 +28,7 @@
     <DefineConstants>TRACE;DEBUG;PERF_TEST</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <CodeAnalysisRules>-Microsoft.Design#CA1020;-Microsoft.Design#CA1060;-Microsoft.Design#CA1062;-Microsoft.Globalization#CA1301;-Microsoft.Globalization#CA1302;-Microsoft.Globalization#CA1303;-Microsoft.Globalization#CA1306;-Microsoft.Globalization#CA1304;-Microsoft.Globalization#CA1305;-Microsoft.Globalization#CA1300;-Microsoft.Mobility#CA1601;-Microsoft.Performance#CA1805;-Microsoft.Performance#CA1815;-Microsoft.Performance#CA1819;-Microsoft.Usage#CA2208</CodeAnalysisRules>
+    <CodeAnalysisRules>-Microsoft.Design#CA1020;-Microsoft.Design#CA1060;-Microsoft.Design#CA1062;-Microsoft.Globalization#CA1301;-Microsoft.Globalization#CA1302;-Microsoft.Globalization#CA1303;-Microsoft.Globalization#CA1306;-Microsoft.Globalization#CA1304;-Microsoft.Globalization#CA1305;-Microsoft.Globalization#CA1300;-Microsoft.Maintainability#CA1501;-Microsoft.Mobility#CA1601;-Microsoft.Performance#CA1805;-Microsoft.Performance#CA1815;-Microsoft.Performance#CA1819;-Microsoft.Usage#CA2208</CodeAnalysisRules>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -41,20 +39,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DebugSymbols>false</DebugSymbols>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
-    <RegisterForComInterop>False</RegisterForComInterop>
-    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
-    <BaseAddress>4194304</BaseAddress>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <FileAlignment>4096</FileAlignment>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -65,6 +49,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GifDecoder.cs" />
+    <Compile Include="PerformanceAnalyzer.cs" />
+    <Compile Include="ResourceHelper.cs" />
     <Compile Include="StringCollectionEditor.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -72,8 +59,26 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="BitmapHelper.cs" />
+    <Compile Include="Threading\AbortableThreadPool.cs" />
+    <Compile Include="Threading\WorkItemStatus.cs" />
+    <Compile Include="Threading\WorkItem.cs" />
     <Compile Include="TimeCounter.cs" />
     <Compile Include="Tree\Input\ReorderColumnState.cs" />
+    <Compile Include="Tree\NodeControls\NodeIntegerTextBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Tree\NodeControls\NodeDecimalTextBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="NumericTextBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Tree\NodeControls\ExpandingIcon.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Tree\NodeControls\InteractiveControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Tree\NodeControls\DrawEventArgs.cs" />
     <Compile Include="Tree\NodeControls\NodeEventArgs.cs" />
     <Compile Include="Tree\SortedTreeModel.cs" />
@@ -122,6 +127,7 @@
     <Compile Include="Tree\TreeColumnEventArgs.cs" />
     <Compile Include="Tree\TreeModel.cs" />
     <Compile Include="Tree\TreeViewAdvCancelEventArgs.cs" />
+    <Compile Include="Tree\DropNodeValidatingEventArgs.cs" />
     <Compile Include="Tree\TreeViewAdvEventArgs.cs" />
     <Compile Include="Tree\TreePathEventArgs.cs" />
     <Compile Include="Tree\EditorContext.cs" />
@@ -163,6 +169,7 @@
     <Compile Include="Tree\TreeViewAdv.Designer.cs">
       <DependentUpon>TreeViewAdv.cs</DependentUpon>
     </Compile>
+    <Compile Include="Tree\TreeViewRowDrawEventArgs.cs" />
     <Service Include="{94E38DFF-614B-4cbd-B67C-F211BB35CE8B}" />
     <Service Include="{B4F97281-0DBD-4835-9ED8-7DFB966E87FF}" />
   </ItemGroup>
@@ -184,9 +191,13 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\loading_icon" />
     <None Include="Tree\ClassDiagram.cd" />
     <None Include="Tree\NodeControls\ClassDiagram.cd" />
     <None Include="Resources\unknown.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\DVSplit.cur" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

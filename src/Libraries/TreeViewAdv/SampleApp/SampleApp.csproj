@@ -36,6 +36,32 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AdvancedExample.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="AdvancedExample.Designer.cs">
+      <DependentUpon>AdvancedExample.cs</DependentUpon>
+    </Compile>
+    <Compile Include="BackgroundExpand.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="BackgroundExpand.Designer.cs">
+      <DependentUpon>BackgroundExpand.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ColumnHandling.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ColumnHandling.Designer.cs">
+      <DependentUpon>ColumnHandling.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DataTableExample\DataRowNode.cs" />
+    <Compile Include="DataTableExample\DataTableTreeExample.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="DataTableExample\DataTableTreeExample.designer.cs">
+      <DependentUpon>DataTableTreeExample.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DataTableExample\DataTableTreeModel.cs" />
     <Compile Include="FolderItemSorter.cs" />
     <Compile Include="FolderItems.cs" />
     <Compile Include="FolderBrowser.cs">
@@ -51,15 +77,38 @@
     <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="MyNode.cs" />
+    <Compile Include="PerformanceTest.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="PerformanceTest.Designer.cs">
+      <DependentUpon>PerformanceTest.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="AdvancedExample.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>AdvancedExample.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="BackgroundExpand.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>BackgroundExpand.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FolderBrowser.resx">
       <SubType>Designer</SubType>
       <DependentUpon>FolderBrowser.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="ColumnHandling.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>ColumnHandling.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <SubType>Designer</SubType>
       <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PerformanceTest.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>PerformanceTest.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -90,6 +139,7 @@
     <Compile Include="SimpleExample.Designer.cs">
       <DependentUpon>SimpleExample.cs</DependentUpon>
     </Compile>
+    <Compile Include="SlowModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Aga.Controls\Aga.Controls.csproj">
@@ -99,6 +149,13 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{B4F97281-0DBD-4835-9ED8-7DFB966E87FF}" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="DataTableExample\DataTableTreeExample.resx">
+      <DependentUpon>DataTableTreeExample.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\loading_icon" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

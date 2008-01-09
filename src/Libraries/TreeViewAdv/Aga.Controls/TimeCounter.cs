@@ -4,7 +4,7 @@ using System.Text;
 using System.Runtime.InteropServices;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Aga.Controls.Tree
+namespace Aga.Controls
 {
 	/// <summary>
 	/// High resolution timer, used to test performance
@@ -22,18 +22,30 @@ namespace Aga.Controls.Tree
 			QueryPerformanceCounter(ref _start);
 		}
 
+		public static Int64 GetStartValue()
+		{
+			Int64 t = 0;
+			QueryPerformanceCounter(ref t);
+			return t;
+		}
+
 		/// <summary>
 		/// Finish time counting
 		/// </summary>
 		/// <returns>time in seconds elapsed from Start till Finish	</returns>
-		public static float Finish()
+		public static double Finish()
+		{
+			return Finish(_start);
+		}
+
+		public static double Finish(Int64 start)
 		{
 			Int64 finish = 0;
 			QueryPerformanceCounter(ref finish);
 
 			Int64 freq = 0;
 			QueryPerformanceFrequency(ref freq);
-			return (((float)(finish - _start) / (float)freq));
+			return (finish - start) / (double)freq;
 		}
 
 		[DllImport("Kernel32.dll")]

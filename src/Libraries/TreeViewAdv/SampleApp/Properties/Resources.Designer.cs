@@ -59,5 +59,12 @@ namespace SampleApp.Properties {
                 resourceCulture = value;
             }
         }
+        
+        internal static byte[] loading_icon {
+            get {
+                object obj = ResourceManager.GetObject("loading_icon", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
     }
 }

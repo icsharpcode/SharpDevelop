@@ -31,6 +31,7 @@ namespace Aga.Controls.Tree
 			this._vScrollBar.Size = new System.Drawing.Size(13, 80);
 			this._vScrollBar.TabIndex = 1;
 			this._vScrollBar.ValueChanged += new System.EventHandler(this._vScrollBar_ValueChanged);
+            this._vScrollBar.Scroll += new ScrollEventHandler(this._vScrollBar_Scroll);
 			// 
 			// _hScrollBar
 			// 
@@ -41,6 +42,7 @@ namespace Aga.Controls.Tree
 			this._hScrollBar.Size = new System.Drawing.Size(80, 13);
 			this._hScrollBar.TabIndex = 2;
 			this._hScrollBar.ValueChanged += new System.EventHandler(this._hScrollBar_ValueChanged);
+            this._hScrollBar.Scroll += new ScrollEventHandler(this._hScrollBar_Scroll);
 			// 
 			// TreeViewAdv
 			// 

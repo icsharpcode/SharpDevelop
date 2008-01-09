@@ -7,6 +7,8 @@ using System.Text;
 using System.Windows.Forms;
 using Aga.Controls.Tree;
 using Aga.Controls.Tree.NodeControls;
+using System.Threading;
+using Aga.Controls;
 
 namespace SampleApp
 {
@@ -20,28 +22,6 @@ namespace SampleApp
 			}
 		}
 
-		private class MyNode : Node
-		{
-			public override string Text
-			{
-				get
-				{
-					return base.Text;
-				}
-				set
-				{
-					if (string.IsNullOrEmpty(value))
-						throw new ArgumentNullException();
-
-					base.Text = value;
-				}
-			}
-
-			public MyNode(string text): base(text)
-			{
-			}
-		}
-
 		private TreeModel _model;
 		private Font _childFont;
 
@@ -49,18 +29,20 @@ namespace SampleApp
 		{
 			InitializeComponent();
 
+			_tree.NodeMouseClick += new EventHandler<TreeNodeAdvMouseEventArgs>(_tree_NodeMouseClick);
+
 			_nodeTextBox.ToolTipProvider = new ToolTipProvider();
-			_nodeTextBox.DrawText += new EventHandler<DrawEventArgs>(_nodeTextBox_DrawText);
+            _nodeTextBox.DrawText += new EventHandler<DrawEventArgs>(_nodeTextBox_DrawText);
 			_model = new TreeModel();
+			_childFont = new Font(_tree.Font.FontFamily, 18, FontStyle.Bold);
 			_tree.Model = _model;
-			_childFont = new Font(_tree.Font.FontFamily, 12, FontStyle.Bold);
 			ChangeButtons();
 
 			_tree.BeginUpdate();
-			for (int i = 0; i < 5; i++)
+			for (int i = 0; i < 10; i++)
 			{
 				Node node = AddRoot();
-				for (int n = 0; n < 5; n++)
+				for (int n = 0; n < 500; n++)
 				{
 					Node child = AddChild(node);
 					for (int k = 0; k < 5; k++)
@@ -75,13 +57,18 @@ namespace SampleApp
 				model2.Nodes.Add(new MyNode("Node" + i.ToString()));
 		}
 
+		void _tree_NodeMouseClick(object sender, TreeNodeAdvMouseEventArgs e)
+		{
+			Console.WriteLine("NodeMouseClick at " + e.Node.Index.ToString());
+		}
+
 		void _nodeTextBox_DrawText(object sender, DrawEventArgs e)
 		{
-			if ((e.Node.Tag as MyNode).Text.StartsWith("Child"))
-			{
-				e.TextBrush = Brushes.Red;
-				e.Font = _childFont;
-			}
+            if ((e.Node.Tag as MyNode).Text.StartsWith("Child"))
+            {
+                e.TextColor = Color.Red;
+                e.Font = _childFont;
+            }
 		}
 
 		private Node AddRoot()
@@ -94,7 +81,7 @@ namespace SampleApp
 		private Node AddChild(Node parent)
 		{
 			Node node = new MyNode("Child Node " + parent.Nodes.Count.ToString());
-			parent.Nodes.Add(node);
+            parent.Nodes.Add(node);
 			return node;
 		}
 
@@ -133,7 +120,14 @@ namespace SampleApp
 
 		private void ChangeButtons()
 		{
-			_addChild.Enabled = _deleteNode.Enabled = (_tree.SelectedNode != null);
+            _addChild.Enabled = (_tree.SelectedNode != null);
+            _deleteNode.Enabled = (_tree.SelectedNode != null);
+            
+            btnExpNode.Enabled = (_tree.SelectedNode != null);
+            btnExpNodes.Enabled = (_tree.SelectedNode != null);
+
+            btnCollNode.Enabled = (_tree.SelectedNode != null);
+            btnCollNodes.Enabled = (_tree.SelectedNode != null);
 		}
 
 		private void _tree_ItemDrag(object sender, ItemDragEventArgs e)
@@ -175,6 +169,8 @@ namespace SampleApp
 
 		private void _tree_DragDrop(object sender, DragEventArgs e)
 		{
+			_tree.BeginUpdate();
+
 			TreeNodeAdv[] nodes = (TreeNodeAdv[])e.Data.GetData(typeof(TreeNodeAdv[]));
 			Node dropNode = _tree.DropPosition.Node.Tag as Node;
 			if (_tree.DropPosition.Position == NodePosition.Inside)
@@ -209,6 +205,8 @@ namespace SampleApp
 					}
 				}
 			}
+
+			_tree.EndUpdate();
 		}
 
 		private void _timer_Tick(object sender, EventArgs e)
@@ -244,7 +242,10 @@ namespace SampleApp
 
 		private void button1_Click(object sender, EventArgs e)
 		{
-			_model.OnStructureChanged(new TreePathEventArgs());
+			TimeCounter.Start();
+			_tree.FullUpdate();
+			//_model.Root.Nodes[0].Text = "Child";
+			button1.Text = TimeCounter.Finish().ToString();
 		}
 
 		private void button2_Click(object sender, EventArgs e)
@@ -256,6 +257,31 @@ namespace SampleApp
 				else
 					_tree.ExpandAll();
 			}
+		}
+
+        private void btnExpNode_Click(object sender, EventArgs e)
+        {
+            _tree.SelectedNode.Expand();
+        }
+
+        private void btnExpNodes_Click(object sender, EventArgs e)
+        {
+            _tree.SelectedNode.ExpandAll();
+        }
+
+        private void btnCollNode_Click(object sender, EventArgs e)
+        {
+            _tree.SelectedNode.Collapse();
+        }
+
+        private void btnCollNodes_Click(object sender, EventArgs e)
+        {
+            _tree.SelectedNode.CollapseAll();
+        }
+
+		private void button3_Click(object sender, EventArgs e)
+		{
+			_tree.ClearSelection();
 		}
 	}
 }

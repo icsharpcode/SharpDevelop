@@ -30,8 +30,7 @@ namespace Aga.Controls.Tree.NodeControls
 				return context.Bounds.Size;
 			else
 			{
-				TextBox textBox = context.Editor as TextBox;
-				Size size = GetLabelSize(context.CurrentNode, context.DrawContext);
+				Size size = GetLabelSize(context.CurrentNode, context.DrawContext, _label);
 				int width = Math.Max(size.Width + Font.Height, MinTextBoxWidth); // reserve a place for new typed character
 				return new Size(width, size.Height);
 			}
@@ -42,19 +41,25 @@ namespace Aga.Controls.Tree.NodeControls
 			if (args.KeyCode == Keys.F2 && Parent.CurrentNode != null)
 			{
 				args.Handled = true;
-				BeginEdit();
+				BeginEditByUser();
 			}
 		}
 
 		protected override Control CreateEditor(TreeNodeAdv node)
 		{
-			TextBox textBox = new TextBox();
+			TextBox textBox = CreateTextBox();
 			textBox.TextAlign = TextAlign;
 			textBox.Text = GetLabel(node);
 			textBox.BorderStyle = BorderStyle.FixedSingle;
 			textBox.TextChanged += new EventHandler(textBox_TextChanged);
 			_label = textBox.Text;
+			SetEditControlProperties(textBox, node);
 			return textBox;
+		}
+
+		protected virtual TextBox CreateTextBox()
+		{
+			return new TextBox();
 		}
 
 		private string _label;

@@ -99,6 +99,7 @@ namespace Aga.Controls.Tree.NodeControls
 			num.Minimum = Minimum;
 			num.Maximum = Maximum;
 			num.Value = (decimal)GetValue(node);
+			SetEditControlProperties(num, node);
 			return num;
 		}
 

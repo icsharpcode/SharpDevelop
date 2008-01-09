@@ -8,8 +8,6 @@ namespace Aga.Controls.Tree
 {
 	internal class ReorderColumnState : ColumnState
 	{
-		private Point _initLocation;
-
 		#region Properties
 
 		private Point _location;
@@ -30,12 +28,19 @@ namespace Aga.Controls.Tree
 			get { return _dropColumn; }
 		}
 
+		private int _dragOffset;
+		public int DragOffset
+		{
+			get { return _dragOffset; }
+		}
+
 		#endregion
 
-		public ReorderColumnState(TreeViewAdv tree, TreeColumn column, Point p)
+		public ReorderColumnState(TreeViewAdv tree, TreeColumn column, Point initialMouseLocation)
 			: base(tree, column)
 		{
-			_location = _initLocation = new Point(p.X, 0);
+			_location = new Point(initialMouseLocation.X + Tree.OffsetX, 0);
+			_dragOffset = tree.GetColumnX(column) - initialMouseLocation.X;
 			_ghostImage = column.CreateGhostImage(new Rectangle(0, 0, column.Width, tree.ColumnHeaderHeight), tree.Font);
 		}
 

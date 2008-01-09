@@ -96,16 +96,20 @@ namespace Aga.Controls.Tree
 		{
 			if (rowNo < _treeView.RowMap.Count)
 			{
-				_measureContext.Font = _treeView.Font;
 				TreeNodeAdv node = _treeView.RowMap[rowNo];
-				int res = 0;
-				foreach (NodeControl nc in _treeView.NodeControls)
+				if (node.Height == null)
 				{
-					int h = nc.MeasureSize(node, _measureContext).Height;
-					if (h > res)
-						res = h;
+					int res = 0;
+					_measureContext.Font = _treeView.Font;
+					foreach (NodeControl nc in _treeView.NodeControls)
+					{
+						int h = nc.GetActualSize(node, _measureContext).Height;
+						if (h > res)
+							res = h;
+					}
+					node.Height = res;
 				}
-				return res;
+				return node.Height.Value;
 			}
 			else
 				return 0;

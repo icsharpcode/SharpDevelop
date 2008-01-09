@@ -67,6 +67,13 @@ namespace Aga.Controls.Properties {
             }
         }
         
+        internal static byte[] DVSplit {
+            get {
+                object obj = ResourceManager.GetObject("DVSplit", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap Folder {
             get {
                 object obj = ResourceManager.GetObject("Folder", resourceCulture);
@@ -85,6 +92,13 @@ namespace Aga.Controls.Properties {
             get {
                 object obj = ResourceManager.GetObject("Leaf", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static byte[] loading_icon {
+            get {
+                object obj = ResourceManager.GetObject("loading_icon", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         

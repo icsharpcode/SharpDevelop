@@ -52,6 +52,7 @@ namespace Aga.Controls.Tree.NodeControls
 			comboBox.SelectedItem = GetValue(node);
 			comboBox.DropDownStyle = ComboBoxStyle.DropDownList;
 			comboBox.DropDownClosed += new EventHandler(EditorDropDownClosed);
+			SetEditControlProperties(comboBox, node);
 			return comboBox;
 		}
 
@@ -68,6 +69,12 @@ namespace Aga.Controls.Tree.NodeControls
 		protected override void DoApplyChanges(TreeNodeAdv node, Control editor)
 		{
 			SetValue(node, (editor as ComboBox).SelectedItem);
+		}
+
+		public override void MouseUp(TreeNodeAdvMouseEventArgs args)
+		{
+			if (args.Node != null && args.Node.IsSelected) //Workaround of specific ComboBox control behaviour
+				base.MouseUp(args);
 		}
 	}
 }

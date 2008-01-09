@@ -19,9 +19,9 @@ namespace Aga.Controls.Tree
 		{
 			get
 			{
-				if (_innerCursor != null)
-					return _innerCursor;
-				else
+                if (_innerCursor != null)
+                    return _innerCursor;
+                else
 					return base.Cursor;
 			}
 			set
@@ -32,6 +32,8 @@ namespace Aga.Controls.Tree
 
 		#region Internal Properties
 
+		private IRowLayout _rowLayout;
+
 		private bool _dragMode;
 		private bool DragMode
 		{
@@ -39,13 +41,15 @@ namespace Aga.Controls.Tree
 			set
 			{
 				_dragMode = value;
-				_dragTimer.Enabled = value;
 				if (!value)
 				{
+					StopDragTimer();
 					if (_dragBitmap != null)
 						_dragBitmap.Dispose();
 					_dragBitmap = null;
 				}
+				else
+					StartDragTimer();
 			}
 		}
 
@@ -83,9 +87,12 @@ namespace Aga.Controls.Tree
 			get { return _suspendSelectionEvent; }
 			set
 			{
-				_suspendSelectionEvent = value;
-				if (!_suspendSelectionEvent && _fireSelectionEvent)
-					OnSelectionChanged();
+				if (value != _suspendSelectionEvent)
+				{
+					_suspendSelectionEvent = value;
+					if (!_suspendSelectionEvent && _fireSelectionEvent)
+						OnSelectionChanged();
+				}
 			}
 		}
 
@@ -145,7 +152,7 @@ namespace Aga.Controls.Tree
 		{
 			get
 			{
-				return _rowMap.Count;
+				return RowMap.Count;
 			}
 		}
 
@@ -171,7 +178,7 @@ namespace Aga.Controls.Tree
 		}
 
 		private int _offsetX;
-		internal int OffsetX
+		public int OffsetX
 		{
 			get { return _offsetX; }
 			private set
@@ -206,22 +213,6 @@ namespace Aga.Controls.Tree
 		#region Public Properties
 
 		#region DesignTime
-
-		private IncrementalSearch _search;
-		[Category("Behavior"), TypeConverter(typeof(ExpandableObjectConverter))]
-		[DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
-		public IncrementalSearch Search
-		{
-			get { return _search; }
-			set 
-			{
-				if (value == null)
-					throw new ArgumentNullException("value");
-
-				_search = value;
-				_search.Tree = this;
-			}
-		}
 
 		private bool _displayDraggingNodes;
 		[DefaultValue(false), Category("Behavior")]
@@ -295,7 +286,7 @@ namespace Aga.Controls.Tree
 			set { _showNodeToolTips = value; }
 		}
 
-		[DefaultValue(true), Category("Behavior"), Obsolete("No longer used")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "value"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic"), DefaultValue(true), Category("Behavior"), Obsolete("No longer used")]
 		public bool KeepNodesExpanded
 		{
 			get { return true; }
@@ -311,6 +302,7 @@ namespace Aga.Controls.Tree
 			{
 				if (_model != value)
 				{
+					AbortBackgroundExpandingThreads();
 					if (_model != null)
 						UnbindModelEvents();
 					_model = value;
@@ -322,7 +314,39 @@ namespace Aga.Controls.Tree
 			}
 		}
 
-		private BorderStyle _borderStyle;
+        // Font proprety for Tahoma as default font
+        private static Font _font = new Font("Tahoma", 8.25F, FontStyle.Regular, GraphicsUnit.Point, ((byte)(0)), false);
+        [Category("Appearance")]
+        public override Font Font
+        {
+            get
+            {
+                return (base.Font);
+            }
+            set
+            {
+                if (value == null)
+                    base.Font = _font;
+                else
+                {
+                    if (value == System.Windows.Forms.Control.DefaultFont)
+                        base.Font = _font;
+                    else
+                        base.Font = value;
+                }
+            }
+        }
+        public override void ResetFont()
+        {
+            Font = null;
+        }
+        private bool ShouldSerializeFont()
+        {
+            return (!Font.Equals(_font));
+        }
+        // End font property
+
+		private BorderStyle _borderStyle = BorderStyle.Fixed3D;
 		[DefaultValue(BorderStyle.Fixed3D), Category("Appearance")]
 		public BorderStyle BorderStyle
 		{
@@ -358,6 +382,25 @@ namespace Aga.Controls.Tree
 				FullUpdate();
 			}
 		}
+
+        private GridLineStyle _gridLineStyle = GridLineStyle.None;
+        [DefaultValue(GridLineStyle.None), Category("Appearance")]
+        public GridLineStyle GridLineStyle
+        {
+            get
+            {
+                return _gridLineStyle;
+            }
+            set
+            {
+				if (value != _gridLineStyle)
+				{
+					_gridLineStyle = value;
+					UpdateView();
+					OnGridLineStyleChanged();
+				}
+            }
+        }
 
 		private int _rowHeight = 16;
 		[DefaultValue(16), Category("Appearance")]
@@ -432,6 +475,14 @@ namespace Aga.Controls.Tree
 			set { _loadOnDemand = value; }
 		}
 
+		private bool _unloadCollapsedOnReload = false;
+		[DefaultValue(false), Category("Behavior")]
+		public bool UnloadCollapsedOnReload
+		{
+			get { return _unloadCollapsedOnReload; }
+			set { _unloadCollapsedOnReload = value; }
+		}
+
 		private int _indent = 19;
 		[DefaultValue(19), Category("Behavior")]
 		public int Indent
@@ -481,6 +532,14 @@ namespace Aga.Controls.Tree
 			}
 		}
 
+		private bool _highlightDropPosition = true;
+		[DefaultValue(true), Category("Behavior")]
+		public bool HighlightDropPosition
+		{
+			get { return _highlightDropPosition; }
+			set { _highlightDropPosition = value; }
+		}
+
 		private TreeColumnCollection _columns;
 		[Category("Behavior"), DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
 		public Collection<TreeColumn> Columns
@@ -497,6 +556,18 @@ namespace Aga.Controls.Tree
 			{
 				return _controls;
 			}
+		}
+
+		private bool _asyncExpanding;
+		/// <summary>
+		/// When set to true, node contents will be read in background thread
+		/// </summary>
+		[Category("Behavior")]
+		[DefaultValue(false)]
+		public bool AsyncExpanding
+		{
+			get { return _asyncExpanding; }
+			set { _asyncExpanding = value; }
 		}
 
 		#endregion
@@ -583,14 +654,14 @@ namespace Aga.Controls.Tree
 				{
 					if (value == null)
 					{
-						ClearSelection();
+						ClearSelectionInternal();
 					}
 					else
 					{
 						if (!IsMyNode(value))
 							throw new ArgumentException();
 
-						ClearSelection();
+						ClearSelectionInternal();
 						value.IsSelected = true;
 						CurrentNode = value;
 						EnsureVisible(value);
@@ -611,6 +682,26 @@ namespace Aga.Controls.Tree
 			internal set { _currentNode = value; }
 		}
 
+        [Browsable(false)]
+        public int ItemCount
+        {
+            get { return RowMap.Count; }
+        }
+
+		/// <summary>
+		/// Indicates the distance the content is scrolled to the left
+		/// </summary>
+		[Browsable(false)]
+		public int HorizontalScrollPosition
+		{
+			get
+			{
+				if (_hScrollBar.Visible)
+					return _hScrollBar.Value;
+				else
+					return 0;
+			}
+		}
 
 		#endregion
 

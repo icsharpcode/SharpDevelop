@@ -7,7 +7,7 @@ using System.ComponentModel;
 
 namespace Aga.Controls.Tree.NodeControls
 {
-	public abstract class EditableControl : BindableControl
+	public abstract class EditableControl : InteractiveControl
 	{
 		private Timer _timer;
 		private bool _editFlag;
@@ -24,14 +24,6 @@ namespace Aga.Controls.Tree.NodeControls
 		protected Control CurrentEditor
 		{
 			get { return _editor; }
-		}
-
-		private bool _editEnabled = false;
-		[DefaultValue(false)]
-		public bool EditEnabled
-		{
-			get { return _editEnabled; }
-			set { _editEnabled = value; }
 		}
 
 		private bool _editOnClick = false;
@@ -55,7 +47,7 @@ namespace Aga.Controls.Tree.NodeControls
 		{
 			_timer.Stop();
 			if (_editFlag)
-				BeginEdit();
+				BeginEditByUser();
 			_editFlag = false;
 		}
 
@@ -70,12 +62,18 @@ namespace Aga.Controls.Tree.NodeControls
 
 		protected virtual bool CanEdit(TreeNodeAdv node)
 		{
-			return (node.Tag != null);
+			return (node.Tag != null) && IsEditEnabled(node);
+		}
+
+		protected void BeginEditByUser()
+		{
+			if (EditEnabled)
+				BeginEdit();
 		}
 
 		public void BeginEdit()
 		{
-			if (EditEnabled && Parent.CurrentNode != null && CanEdit(Parent.CurrentNode))
+			if (Parent.CurrentNode != null && CanEdit(Parent.CurrentNode))
 			{
 				CancelEventArgs args = new CancelEventArgs();
 				OnEditorShowing(args);
@@ -100,7 +98,8 @@ namespace Aga.Controls.Tree.NodeControls
 
 		private void EditorValidating(object sender, CancelEventArgs e)
 		{
-			ApplyChanges();
+			if (_editNode != null)
+				ApplyChanges();
 		}
 
 		internal void HideEditor(Control editor)
@@ -123,7 +122,7 @@ namespace Aga.Controls.Tree.NodeControls
 		{
 		}
 
-		protected virtual void ApplyChanges()
+		public virtual void ApplyChanges()
 		{
 			try
 			{

@@ -10,7 +10,7 @@ using System.ComponentModel;
 
 namespace Aga.Controls.Tree.NodeControls
 {
-	public class NodeCheckBox : BindableControl
+	public class NodeCheckBox : InteractiveControl
 	{
 		public const int ImageSize = 13;
 
@@ -28,14 +28,6 @@ namespace Aga.Controls.Tree.NodeControls
 			set { _threeState = value; }
 		}
 
-		private bool _editEnabled = true;
-		[DefaultValue(true)]
-		public bool EditEnabled
-		{
-			get { return _editEnabled; }
-			set { _editEnabled = value; }
-		}
-
 		#endregion
 
 		public NodeCheckBox()
@@ -49,6 +41,7 @@ namespace Aga.Controls.Tree.NodeControls
 			_uncheck = Resources.uncheck;
 			_unknown = Resources.unknown;
 			DataPropertyName = propertyName;
+			LeftMargin = 0;
 		}
 
 		public override Size MeasureSize(TreeNodeAdv node, DrawContext context)
@@ -97,22 +90,30 @@ namespace Aga.Controls.Tree.NodeControls
 
 		protected virtual void SetCheckState(TreeNodeAdv node, CheckState value)
 		{
-			Type type = GetPropertyType(node);
-			if (type == typeof(CheckState))
+			if (VirtualMode)
 			{
 				SetValue(node, value);
 				OnCheckStateChanged(node);
 			}
-			else if (type == typeof(bool))
+			else
 			{
-				SetValue(node, value != CheckState.Unchecked);
-				OnCheckStateChanged(node);
+				Type type = GetPropertyType(node);
+				if (type == typeof(CheckState))
+				{
+					SetValue(node, value);
+					OnCheckStateChanged(node);
+				}
+				else if (type == typeof(bool))
+				{
+					SetValue(node, value != CheckState.Unchecked);
+					OnCheckStateChanged(node);
+				}
 			}
 		}
 
 		public override void MouseDown(TreeNodeAdvMouseEventArgs args)
 		{
-			if (args.Button == MouseButtons.Left && EditEnabled)
+			if (args.Button == MouseButtons.Left && IsEditEnabled(args.Node))
 			{
 				DrawContext context = new DrawContext();
 				context.Bounds = args.ControlBounds;
@@ -154,7 +155,8 @@ namespace Aga.Controls.Tree.NodeControls
 					{
 						CheckState value = GetNewState(GetCheckState(Parent.CurrentNode));
 						foreach (TreeNodeAdv node in Parent.Selection)
-							SetCheckState(node, value);
+							if (IsEditEnabled(node))
+								SetCheckState(node, value);
 					}
 				}
 				finally

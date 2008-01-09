@@ -9,8 +9,6 @@ namespace Aga.Controls.Tree
 {
 	internal class ResizeColumnState: ColumnState
 	{
-		private const int MinColumnWidth = 10;
-
 		private Point _initLocation;
 		private int _initWidth;
 
@@ -44,12 +42,11 @@ namespace Aga.Controls.Tree
 			Tree.OnColumnWidthChanged(Column);
 		}
 
-		public override bool MouseMove(MouseEventArgs args)
-		{
-			int w = _initWidth + args.Location.X - _initLocation.X;
-			Column.Width = Math.Max(MinColumnWidth, w);
-			Tree.UpdateView();
-			return true;
-		}
+        public override bool MouseMove(MouseEventArgs args)
+        {
+			Column.Width = _initWidth + args.Location.X - _initLocation.X;
+            Tree.UpdateView();
+            return true;
+        }
 	}
 }

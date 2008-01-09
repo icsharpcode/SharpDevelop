@@ -18,5 +18,4 @@ namespace Aga.Controls.Tree.NodeControls
 		{
 		}
 	}
-
 }

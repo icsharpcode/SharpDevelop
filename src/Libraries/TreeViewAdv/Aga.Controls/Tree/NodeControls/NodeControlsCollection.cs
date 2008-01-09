@@ -81,8 +81,9 @@ namespace Aga.Controls.Tree.NodeControls
 		public NodeControlCollectionEditor(Type type)
 			: base(type)
 		{
-			_types = new Type[] { typeof(NodeTextBox), typeof(NodeComboBox), typeof(NodeCheckBox),
-				typeof(NodeStateIcon), typeof(NodeIcon), typeof(NodeNumericUpDown)  };
+			_types = new Type[] { typeof(NodeTextBox), typeof(NodeIntegerTextBox), typeof(NodeDecimalTextBox), 
+				typeof(NodeComboBox), typeof(NodeCheckBox),
+				typeof(NodeStateIcon), typeof(NodeIcon), typeof(NodeNumericUpDown), typeof(ExpandingIcon)  };
 		}
 
 		protected override System.Type[] CreateNewItemTypes()

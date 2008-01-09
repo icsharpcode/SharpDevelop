@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Collections.ObjectModel;
 using System.Windows.Forms;
+using System.Drawing;
 
 namespace Aga.Controls.Tree
 {
@@ -35,6 +36,9 @@ namespace Aga.Controls.Tree
 					if (item.Parent != null)
 						item.Parent.Nodes.Remove(item);
 					item._parent = _owner;
+					item._index = index;
+					for (int i = index; i < Count; i++)
+						this[i]._index++;
 					base.InsertItem(index, item);
 
 					TreeModel model = _owner.FindModel();
@@ -47,6 +51,9 @@ namespace Aga.Controls.Tree
 			{
 				Node item = this[index];
 				item._parent = null;
+				item._index = -1;
+				for (int i = index + 1; i < Count; i++)
+					this[i]._index--;
 				base.RemoveItem(index);
 
 				TreeModel model = _owner.FindModel();
@@ -98,14 +105,12 @@ namespace Aga.Controls.Tree
 			}
 		}
 
+		private int _index = -1;
 		public int Index
 		{
 			get
 			{
-				if (_parent != null)
-					return _parent.Nodes.IndexOf(this);
-				else
-					return -1;
+				return _index;
 			}
 		}
 
@@ -159,6 +164,27 @@ namespace Aga.Controls.Tree
 					NotifyModel();
 				}
 			}
+		}
+
+		private Image _image;
+		public Image Image
+		{
+			get { return _image; }
+			set 
+			{
+				if (_image != value)
+				{
+					_image = value;
+					NotifyModel();
+				}
+			}
+		}
+
+		private object _tag;
+		public object Tag
+		{
+			get { return _tag; }
+			set { _tag = value; }
 		}
 
 		public bool IsChecked

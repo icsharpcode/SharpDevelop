@@ -62,6 +62,25 @@ namespace Aga.Controls.Tree
 							FocusRow(Tree.RowMap[Tree.RowMap.Count-1]);
 						args.Handled = true;
 						break;
+					case Keys.Subtract:
+						Tree.CurrentNode.Collapse();
+						args.Handled = true;
+						args.SuppressKeyPress = true;
+						break;
+					case Keys.Add:
+						Tree.CurrentNode.Expand();
+						args.Handled = true;
+						args.SuppressKeyPress = true;
+						break;
+					case Keys.Multiply:
+						Tree.CurrentNode.ExpandAll();
+						args.Handled = true;
+						args.SuppressKeyPress = true;
+						break;
+					case Keys.A:
+						if (args.Modifiers == Keys.Control)
+							Tree.SelectAllNodes();
+						break;
 				}
 			}
 		}
@@ -139,7 +158,7 @@ namespace Aga.Controls.Tree
 			Tree.SuspendSelectionEvent = true;
 			try
 			{
-				Tree.ClearSelection();
+				Tree.ClearSelectionInternal();
 				Tree.CurrentNode = node;
 				Tree.SelectionStart = node;
 				node.IsSelected = true;
@@ -163,10 +182,13 @@ namespace Aga.Controls.Tree
 
 		protected virtual void DoMouseOperation(TreeNodeAdvMouseEventArgs args)
 		{
+			if (Tree.SelectedNodes.Count == 1 && args.Node != null && args.Node.IsSelected)
+				return;
+
 			Tree.SuspendSelectionEvent = true;
 			try
 			{
-				Tree.ClearSelection();
+				Tree.ClearSelectionInternal();
 				if (args.Node != null)
 					args.Node.IsSelected = true;
 				Tree.SelectionStart = args.Node;
