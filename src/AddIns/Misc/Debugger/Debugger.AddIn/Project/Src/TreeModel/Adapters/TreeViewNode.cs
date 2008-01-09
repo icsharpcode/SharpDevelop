@@ -47,17 +47,16 @@ namespace Debugger.AddIn.TreeModel
 		{
 			this.content = content;
 			this.IsLeaf = (content.ChildNodes == null);
-			this.IsExpanded = (content.ChildNodes != null && expandedNodes.ContainsKey(this.FullName) && expandedNodes[this.FullName]);
-			if (this.IsExpanded) {
-				loadChildsWhenExpanding = false;
-				SetContentRecursive(this.Tree, this.Children, this.Content.ChildNodes);
+			loadChildsWhenExpanding = true;
+			if (content.ChildNodes != null && expandedNodes.ContainsKey(this.FullName) && expandedNodes[this.FullName]) {
+				this.Expand();
 			} else {
-				loadChildsWhenExpanding = true;
+				this.Collapse();
 				this.Children.Clear();
 			}
 		}
 		
-		public static void SetContentRecursive(TreeViewAdv tree, Collection<TreeNodeAdv> childNodes, IEnumerable<AbstractNode> contentEnum)
+		public static void SetContentRecursive(TreeViewAdv tree, IList<TreeNodeAdv> childNodes, IEnumerable<AbstractNode> contentEnum)
 		{
 			contentEnum = contentEnum ?? new AbstractNode[0];
 			
@@ -72,7 +71,6 @@ namespace Debugger.AddIn.TreeModel
 					// Add
 					childNodes.Add(new TreeViewNode(tree, content));
 				}
-				tree.FullUpdate();
 				DoEvents();
 				index++;
 			}
@@ -81,28 +79,32 @@ namespace Debugger.AddIn.TreeModel
 			while(childNodes.Count > count) {
 				childNodes.RemoveAt(count);
 			}
-			tree.FullUpdate();
 			DoEvents();
 		}
 		
-		public void OnExpanding()
+		protected override void OnExpanding()
 		{
+			base.OnExpanding();
 			if (loadChildsWhenExpanding) {
 				loadChildsWhenExpanding = false;
 				SetContentRecursive(this.Tree, this.Children, this.Content.ChildNodes);
-				this.IsExpandedOnce = true;
-				this.Tree.UpdateSelection();
-				this.Tree.FullUpdate();
 			}
 		}
 		
-		public void OnExpanded()
+		protected override void OnExpanded()
 		{
+			base.OnExpanded();
 			expandedNodes[FullName] = true;
 		}
 		
-		public void OnCollapsed()
+		protected override void OnCollapsing()
 		{
+			base.OnCollapsing();
+		}
+		
+		protected override void OnCollapsed()
+		{
+			base.OnCollapsed();
 			expandedNodes[FullName] = false;
 		}
 		

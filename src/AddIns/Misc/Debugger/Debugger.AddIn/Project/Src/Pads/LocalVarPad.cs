@@ -118,16 +118,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			localVarList.VisibleChanged += delegate { if (localVarList.Visible) RefreshPad(); };
 			localVarList.SizeChanged += delegate { RefreshPad(); };
 			
-			localVarList.Expanding += delegate(object sender, TreeViewAdvEventArgs e) {
-				if (e.Node is TreeViewNode) ((TreeViewNode)e.Node).OnExpanding();
-			};
-			localVarList.Expanded += delegate(object sender, TreeViewAdvEventArgs e) {
-				if (e.Node is TreeViewNode) ((TreeViewNode)e.Node).OnExpanded();
-			};
-			localVarList.Collapsed += delegate(object sender, TreeViewAdvEventArgs e) {
-				if (e.Node is TreeViewNode) ((TreeViewNode)e.Node).OnCollapsed();
-			};
-			
 			NodeIcon iconControl = new ItemIcon();
 			iconControl.ParentColumn = nameColumn;
 			localVarList.NodeControls.Add(iconControl);
