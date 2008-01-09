@@ -1,3 +1,5 @@
+#pragma warning disable 675 // Bitwise-or operator used on a sign-extended operand
+
 #region Java Info
 /**
  * Class GifDecoder - Decodes a GIF file into one or more frames.

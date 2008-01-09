@@ -10,7 +10,7 @@ using System.Security.Permissions;
 namespace Aga.Controls.Tree
 {
 	[Serializable]
-	public sealed class TreeNodeAdv : ISerializable
+	public class TreeNodeAdv : ISerializable
 	{
 		#region NodeCollection
 		private class NodeCollection : Collection<TreeNodeAdv>
@@ -43,6 +43,10 @@ namespace Aga.Controls.Tree
 						this[i]._index++;
 					base.InsertItem(index, item);
 				}
+				
+				if (_owner.Tree != null && _owner.Tree.Model == null) {
+					_owner.Tree.SmartFullUpdate();
+				}
 			}
 
 			protected override void RemoveItem(int index)
@@ -53,6 +57,11 @@ namespace Aga.Controls.Tree
 				for (int i = index + 1; i < Count; i++)
 					this[i]._index--;
 				base.RemoveItem(index);
+				
+				if (_owner.Tree != null && _owner.Tree.Model == null) {
+					_owner.Tree.UpdateSelection();
+					_owner.Tree.SmartFullUpdate();
+				}
 			}
 
 			protected override void SetItem(int index, TreeNodeAdv item)
@@ -65,10 +74,42 @@ namespace Aga.Controls.Tree
 		}
 		#endregion
 
+		#region Events
+		
+		public event EventHandler<TreeViewAdvEventArgs> Collapsing;
+		internal protected virtual void OnCollapsing()
+		{
+			if (Collapsing != null)
+				Collapsing(this, new TreeViewAdvEventArgs(this));
+		}
+
+		public event EventHandler<TreeViewAdvEventArgs> Collapsed;
+		internal protected virtual void OnCollapsed()
+		{
+			if (Collapsed != null)
+				Collapsed(this, new TreeViewAdvEventArgs(this));
+		}
+
+		public event EventHandler<TreeViewAdvEventArgs> Expanding;
+		internal protected virtual void OnExpanding()
+		{
+			if (Expanding != null)
+				Expanding(this, new TreeViewAdvEventArgs(this));
+		}
+
+		public event EventHandler<TreeViewAdvEventArgs> Expanded;
+		internal protected virtual void OnExpanded()
+		{
+			if (Expanded != null)
+				Expanded(this, new TreeViewAdvEventArgs(this));
+		}
+		
+		#endregion
+		
 		#region Properties
 
 		private TreeViewAdv _tree;
-		internal TreeViewAdv Tree
+		public TreeViewAdv Tree
 		{
 			get { return _tree; }
 		}
@@ -140,14 +181,14 @@ namespace Aga.Controls.Tree
 		public bool IsLeaf
 		{
 			get { return _isLeaf; }
-			internal set { _isLeaf = value; }
+			internal protected set { _isLeaf = value; }
 		}
 
 		private bool _isExpandedOnce;
 		public bool IsExpandedOnce
 		{
 			get { return _isExpandedOnce; }
-			internal set { _isExpandedOnce = value; }
+			internal protected set { _isExpandedOnce = value; }
 		}
 
 		private bool _isExpanded;
@@ -252,8 +293,8 @@ namespace Aga.Controls.Tree
 			get { return _nodes; }
 		}
 
-		private ReadOnlyCollection<TreeNodeAdv> _children;
-		public ReadOnlyCollection<TreeNodeAdv> Children
+		private IList<TreeNodeAdv> _children;
+		public IList<TreeNodeAdv> Children
 		{
 			get
 			{
@@ -288,12 +329,16 @@ namespace Aga.Controls.Tree
 		{
 		}
 
-		internal TreeNodeAdv(TreeViewAdv tree, object tag)
+		internal protected TreeNodeAdv(TreeViewAdv tree, object tag)
 		{
 			_row = -1;
 			_tree = tree;
 			_nodes = new NodeCollection(this);
-			_children = new ReadOnlyCollection<TreeNodeAdv>(_nodes);
+			if (tree.Model != null) {
+				_children = new ReadOnlyCollection<TreeNodeAdv>(_nodes);
+			} else {
+				_children = _nodes;
+			}
 			_tag = tag;
         }
 

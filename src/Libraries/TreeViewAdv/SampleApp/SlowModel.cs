@@ -1,3 +1,5 @@
+#pragma warning disable 67  // Event never used
+
 using System;
 using System.Collections.Generic;
 using System.Text;

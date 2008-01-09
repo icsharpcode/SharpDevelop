@@ -779,10 +779,13 @@ namespace Aga.Controls.Tree
 			if (Root == node && !value)
 				return; //Can't collapse root node
 
-			if (value)
+			if (value) {
 				OnExpanding(node);
-			else
+				node.OnExpanding();
+			} else {
 				OnCollapsing(node);
+				node.OnCollapsing();
+			}
 
 			if (value && !node.IsExpandedOnce)
 			{
@@ -798,10 +801,13 @@ namespace Aga.Controls.Tree
 			node.AssignIsExpanded(value);
 			SmartFullUpdate();
 
-			if (value)
+			if (value) {
 				OnExpanded(node);
-			else
+				node.OnExpanded();
+			} else {
 				OnCollapsed(node);
+				node.OnCollapsed();
+			}
 		}
 
 		private void RemoveExpandingNode(TreeNodeAdv node)
@@ -923,7 +929,7 @@ namespace Aga.Controls.Tree
 			return node == _root;
 		}
 
-		private void UpdateSelection()
+		internal void UpdateSelection()
 		{
 			bool flag = false;
 
