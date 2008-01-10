@@ -395,37 +395,6 @@
 									<Component Guid="D67E8EC9-2D98-4889-856F-78FD2BE35947" Id="NUnitCoreInterfacesDll" DiskId="1">
 										<File Id="nunit.core.interfaces.dll" KeyPath="yes" Name="nunit.core.interfaces.dll" Assembly=".net" AssemblyApplication="nunit.core.interfaces.dll" AssemblyManifest="nunit.core.interfaces.dll" Source="..\..\bin\Tools\NUnit\nunit.core.interfaces.dll" />
 									</Component>
-									<Directory Id="NUnitGacFolder" Name="GAC">
-										<!--
-											This is a dummy folder since if we just add the 
-											assemblies to the GAC then the files are not 
-											copied to the disk so we need to have the NUnit 
-											dlls specified in two places. Having them in two
- 											places but specified as belonging to the same
-											directory triggers ICE30 so we have a dummy GAC 
-											directory which should be deleted by the 
-											installer after the install completes since it 
-											is empty.
-						
-											http://msdn.microsoft.com/library/en-us/msi/setup/ice30.asp
-	 									-->
-										<Component Guid="5EB28F57-9CF9-41E0-9A76-563546BDA355" Id="NUnitCoreGacDll" DiskId="1">
-											<!--
-												Only add NUnit.Core to the GAC if the user 
-												has Admin rights.
-											-->
-											<Condition>Privileged</Condition>
-											<File Source="..\..\bin\Tools\NUnit\nunit.core.dll" Id="nunit.core.gac.dll" Name="nunit.core.dll" Assembly=".net" AssemblyManifest="nunit.core.gac.dll" KeyPath="yes" />
-										</Component>
-										<Component Guid="C67FD446-8BCD-491B-98A2-ED179FF397B2" Id="NUnitFrameworkGacDll" DiskId="1">
-											<!--
-												Only add NUnit.Core to the GAC if the user 
-												has Admin rights.
-											-->
-											<Condition>Privileged</Condition>
-											<File Source="..\..\bin\Tools\NUnit\nunit.framework.dll" Id="nunit.framework.gac.dll" Name="nunit.framework.dll" Assembly=".net" AssemblyManifest="nunit.framework.gac.dll" KeyPath="yes" />
-										</Component>
-									</Directory>
 									<Component Guid="1746BE13-1435-4547-B46C-9B0222736EE9" Id="NUnitLog4NetDll" DiskId="1">
 										<File Source="..\..\bin\Tools\NUnit\log4net.dll" Name="log4net.dll" Id="NUnit.log4net.dll" Assembly=".net" AssemblyApplication="NUnit.log4net.dll" AssemblyManifest="NUnit.log4net.dll" KeyPath="yes" />
 									</Component>

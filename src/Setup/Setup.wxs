@@ -255,8 +255,6 @@
 				<ComponentRef Id="NUnitConsoleFiles"/>
 				<ComponentRef Id="NUnitCoreDll"/>
 				<ComponentRef Id="NUnitFrameworkDll"/>
-				<ComponentRef Id="NUnitCoreGacDll"/>
-				<ComponentRef Id="NUnitFrameworkGacDll"/>
 				<ComponentRef Id="NunitConsoleRunnerDll"/>
 				<ComponentRef Id="NUnitCoreInterfacesDll"/>
 				<ComponentRef Id="NUnitLog4NetDll"/>
