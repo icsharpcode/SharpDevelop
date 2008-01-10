@@ -33,7 +33,7 @@ namespace Debugger
 		bool hasExpired = false;
 		bool nativeThreadExited = false;
 
-		StackFrame selectedFunction;
+		StackFrame selectedStackFrame;
 		
 		public event EventHandler Expired;
 		public event EventHandler<ThreadEventArgs> NativeThreadExited;
@@ -265,14 +265,15 @@ namespace Debugger
 		[Debugger.Tests.ToStringOnly]
 		public StackFrame SelectedStackFrame {
 			get {
-				return selectedFunction;
+				// Forum-20456: Do not return expired StackFrame
+				if (selectedStackFrame.HasExpired) return null;
+				return selectedStackFrame;
 			}
 			set {
 				if (value != null && !value.HasSymbols) {
 					throw new DebuggerException("SelectedFunction must have symbols");
 				}
-				
-				selectedFunction = value;
+				selectedStackFrame = value;
 			}
 		}
 		

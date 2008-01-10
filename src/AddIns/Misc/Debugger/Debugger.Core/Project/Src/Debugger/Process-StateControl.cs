@@ -151,16 +151,19 @@ namespace Debugger
 		
 		public void StepInto()
 		{
+			AssertPaused();
 			SelectedStackFrame.StepInto();
 		}
 		
 		public void StepOver()
 		{
+			AssertPaused();
 			SelectedStackFrame.StepOver();
 		}
 		
 		public void StepOut()
 		{
+			AssertPaused();
 			SelectedStackFrame.StepOut();
 		}
 	}
