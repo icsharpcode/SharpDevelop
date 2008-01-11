@@ -6,10 +6,12 @@
 // </file>
 
 using System;
+using System.Globalization;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Windows.Forms;
+using System.Diagnostics.CodeAnalysis;
 
 using ICSharpCode.Core;
 
@@ -24,8 +26,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		TextBox    versionTextBox = new TextBox();
 		
 		Label      sponsorLabel   = new Label();
-		
-		Button     throwExceptionButton = new Button();
+		TextBox    versionInfoTextBox = new TextBox();
 		
 		public AboutSharpDevelopTabPage()
 		{
@@ -61,14 +62,19 @@ namespace ICSharpCode.SharpDevelop.Gui
 			sponsorLabel.Size = new System.Drawing.Size(362, 24);
 			sponsorLabel.TabIndex = 8;
 			Controls.Add(sponsorLabel);
-			Dock = DockStyle.Fill;
 			
-			throwExceptionButton.Location = new System.Drawing.Point(8, sponsorLabel.Bounds.Bottom + 1);
-			throwExceptionButton.AutoSize = true;
-			throwExceptionButton.Text = ResourceService.GetString("Dialog.About.ThrowExceptionButton");
-			throwExceptionButton.Size = new System.Drawing.Size(96, 24);
-			throwExceptionButton.Click += new EventHandler(ThrowExceptionButtonClick);
-			Controls.Add(throwExceptionButton);
+			versionInfoTextBox.Location = new System.Drawing.Point(8, 34 + 28);
+			versionInfoTextBox.Size = new System.Drawing.Size(362, 100);
+			versionInfoTextBox.Multiline = true;
+			versionInfoTextBox.ReadOnly = true;
+			versionInfoTextBox.WordWrap = false;
+			versionInfoTextBox.Text = GetVersionInformationString();
+			versionInfoTextBox.ScrollBars = ScrollBars.Both;
+			versionInfoTextBox.TabIndex = 9;
+			versionInfoTextBox.Font = ResourceService.LoadFont("Courier New", 8);
+			Controls.Add(versionInfoTextBox);
+			
+			Dock = DockStyle.Fill;
 		}
 		
 		public static string LicenseSentence {
@@ -78,29 +84,44 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		[Serializable()]
-		class ClownFishException : System.Exception
+		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		public static string GetVersionInformationString()
 		{
-			public ClownFishException() : base()
-			{
-			}
-			
-			public ClownFishException(string message) : base(message)
-			{
-			}
-			
-			public ClownFishException(string message, Exception innerException) : base(message, innerException)
-			{
-			}
-			
-			protected ClownFishException(SerializationInfo info, StreamingContext context) : base(info, context)
-			{
-			}
-		}
-		
-		void ThrowExceptionButtonClick(object sender, EventArgs e)
-		{
-			throw new ClownFishException();
+			string str = "";
+			Version v = typeof(AboutSharpDevelopTabPage).Assembly.GetName().Version;
+			str += "SharpDevelop Version : " + v.ToString() + Environment.NewLine;
+			str += ".NET Version         : " + Environment.Version.ToString() + Environment.NewLine;
+			str += "OS Version           : " + Environment.OSVersion.ToString() + Environment.NewLine;
+			string cultureName = null;
+			try {
+				cultureName = CultureInfo.CurrentCulture.Name;
+				str += "Current culture      : " + CultureInfo.CurrentCulture.EnglishName + " (" + cultureName + ")" + Environment.NewLine;
+			} catch {}
+			try {
+				if (cultureName == null || !cultureName.StartsWith(ResourceService.Language)) {
+					str += "Current UI language  : " + ResourceService.Language + Environment.NewLine;
+				}
+			} catch {}
+			try {
+				if (IntPtr.Size != 4) {
+					str += "Running as " + (IntPtr.Size * 8) + " bit process" + Environment.NewLine;
+				}
+				string PROCESSOR_ARCHITEW6432 = Environment.GetEnvironmentVariable("PROCESSOR_ARCHITEW6432");
+				if (!string.IsNullOrEmpty(PROCESSOR_ARCHITEW6432)) {
+					str += "Running under WOW6432, processor architecture: " + PROCESSOR_ARCHITEW6432;
+				}
+			} catch {}
+			try {
+				if (SystemInformation.TerminalServerSession) {
+					str += "Terminal Server Session" + Environment.NewLine;
+				}
+				if (SystemInformation.BootMode != BootMode.Normal) {
+					str += "Boot Mode            : " + SystemInformation.BootMode + Environment.NewLine;
+				}
+			} catch {}
+			str += "Working Set Memory   : " + (Environment.WorkingSet / 1024) + "kb" + Environment.NewLine;
+			str += "GC Heap Memory       : " + (GC.GetTotalMemory(false) / 1024) + "kb" + Environment.NewLine;
+			return str;
 		}
 	}
 	

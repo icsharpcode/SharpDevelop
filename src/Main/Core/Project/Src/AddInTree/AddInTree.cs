@@ -416,7 +416,13 @@ namespace ICSharpCode.Core
 				}
 			}
 			foreach (AddIn addIn in list) {
-				InsertAddIn(addIn);
+				try {
+					InsertAddIn(addIn);
+				} catch (AddInLoadException ex) {
+					LoggingService.Error(ex);
+					MessageService.ShowError("Error loading AddIn " + addIn.FileName + ":\n"
+					                         + ex.Message);
+				}
 			}
 		}
 	}

@@ -64,7 +64,13 @@ namespace ICSharpCode.SharpDevelop
 		
 		public static Bitmap GetBitmap(string name)
 		{
-			Bitmap bmp = ResourceService.GetBitmap(name);
+			Bitmap bmp;
+			try {
+				bmp = ResourceService.GetBitmap(name);
+			} catch (ResourceNotFoundException ex) {
+				LoggingService.Warn(ex);
+				bmp = null;
+			}
 			if (bmp != null) {
 				return bmp;
 			}

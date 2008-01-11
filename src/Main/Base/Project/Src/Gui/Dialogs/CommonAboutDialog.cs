@@ -7,6 +7,7 @@
 
 using System;
 using System.Drawing;
+using System.Runtime.Serialization;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
@@ -68,10 +69,23 @@ namespace ICSharpCode.SharpDevelop.Gui
 				"On two occasions, I have been asked [by members of Parliament], 'Pray, Mr. Babbage, if you put into the machine wrong figures, will the right answers come out?' I am not able to rightly apprehend the kind of confusion of ideas that could provoke such a question.\"\n   -- Charles Babbage (1791-1871)"
 			};
 			
+			// randomize the order in which the texts are displayed
+			Random rnd = new Random();
+			for (int i = 0; i < text.Length; i++) {
+				Swap(ref text[i], ref text[rnd.Next(i, text.Length)]);
+			}
+			
 			timer = new Timer();
 			timer.Interval = 40;
 			timer.Tick += new EventHandler(ScrollDown);
 			timer.Start();
+		}
+		
+		void Swap(ref string a, ref string b)
+		{
+			string c = a;
+			a = b;
+			b = c;
 		}
 		
 		void ScrollDown(object sender, EventArgs e)
@@ -91,14 +105,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			Graphics g = pe.Graphics;
 			if (textHeights == null) {
-				textHeights = new int[text.Length]; 
+				textHeights = new int[text.Length];
 				for (int i = 0; i < text.Length; ++i) {
 					textHeights[i] = (int)g.MeasureString(text[i], Font, new SizeF(Width / 2, Height * 2)).Height;
 				}
 			}
 			g.DrawString(text[curText],
 			             Font,
-			             Brushes.Black, 
+			             Brushes.Black,
 			             new Rectangle(Width / 2, 0 - scroll, Width / 2, Height * 2));
 			
 			if (scroll > textHeights[curText]) {

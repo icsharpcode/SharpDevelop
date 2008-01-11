@@ -147,6 +147,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			get;
 		}
 		
+		[Browsable(false)]
 		public string TargetFrameworkVersion {
 			get { return GetEvaluatedProperty("TargetFrameworkVersion") ?? "v2.0"; }
 			set { SetProperty("TargetFrameworkVersion", value); }

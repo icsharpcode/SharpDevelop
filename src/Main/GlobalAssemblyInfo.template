@@ -19,7 +19,7 @@ using System.Reflection;
 [assembly: System.Runtime.InteropServices.ComVisible(false)]
 [assembly: AssemblyCompany("ic#code")]
 [assembly: AssemblyProduct("SharpDevelop")]
-[assembly: AssemblyCopyright("2000-2007 AlphaSierraPapa")]
+[assembly: AssemblyCopyright("2000-2008 AlphaSierraPapa")]
 [assembly: AssemblyVersion(RevisionClass.FullVersion)]
 
 internal static class RevisionClass
