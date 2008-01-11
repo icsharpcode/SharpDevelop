@@ -10,27 +10,42 @@ using System.Collections.Generic;
 
 using Debugger.Wrappers.CorSym;
 
-namespace ICSharpCode.NRefactory.Ast
+namespace Debugger.Expressions
 {
 	/// <summary>
 	/// Identifier of a local variable
 	/// </summary>
-	public class LocalVariableIdentifierExpression: IdentifierExpression
+	public class LocalVariableIdentifierExpression: Expression
 	{
+		MethodInfo method;
 		ISymUnmanagedVariable symVar;
+		
+		public MethodInfo Method {
+			get { return method; }
+		}
 		
 		public ISymUnmanagedVariable SymVar {
 			get { return symVar; }
 		}
 		
-		public LocalVariableIdentifierExpression(ISymUnmanagedVariable symVar)
-			:base (symVar.Name)
+		public LocalVariableIdentifierExpression(MethodInfo method, ISymUnmanagedVariable symVar)
 		{
+			this.method = method;
 			this.symVar = symVar;
 		}
 		
-		public override string ToString() {
-			return string.Format("[LocalVariableIdentifierExpression Identifier={0} TypeArguments={1}]", Identifier, GetCollectionString(TypeArguments));
+		public override string Code {
+			get {
+				return this.SymVar.Name;
+			}
+		}
+		
+		protected override Value EvaluateInternal(StackFrame context)
+		{
+			if (context.MethodInfo != this.Method) {
+				throw new ExpressionEvaluateException(this, "Method " + this.Method.FullName + " expected, " + context.MethodInfo.FullName + " seen");
+			}
+			return context.GetLocalVariableValue(this.SymVar);
 		}
 	}
 }

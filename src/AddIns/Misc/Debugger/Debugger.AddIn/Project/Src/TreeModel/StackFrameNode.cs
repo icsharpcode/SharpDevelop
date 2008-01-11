@@ -9,6 +9,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 using Debugger;
+using Debugger.Expressions;
 
 namespace Debugger.AddIn.TreeModel
 {

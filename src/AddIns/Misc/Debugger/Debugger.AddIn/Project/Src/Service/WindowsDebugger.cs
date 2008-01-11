@@ -42,6 +42,7 @@ using System.Diagnostics;
 using System.Windows.Forms;
 
 using Debugger;
+using Debugger.Expressions;
 using Debugger.AddIn.TreeModel;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;

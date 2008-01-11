@@ -8,25 +8,19 @@
 using System;
 using System.Collections.Generic;
 
-using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.PrettyPrinter;
-using Ast = ICSharpCode.NRefactory.Ast;
 using Debugger.Wrappers.CorSym;
 
-namespace Debugger
+namespace Debugger.Expressions
 {
 	public partial class Expression: DebuggerObject
 	{
 		public Expression AppendIndexer(params int[] indices)
 		{
-			List<Ast.Expression> indicesAst = new List<Ast.Expression>();
+			List<Expression> indicesAst = new List<Expression>();
 			foreach(int indice in indices) {
-				indicesAst.Add(new Ast.PrimitiveExpression(indice, indice.ToString()));
+				indicesAst.Add(new PrimitiveExpression(indice));
 			}
-			return new Ast.IndexerExpression(
-				this.AbstractSynatxTree,
-				indicesAst
-			);
+			return new IndexerExpression(this, indicesAst.ToArray());
 		}
 		
 		public ExpressionCollection AppendIndexers(ArrayDimensions dimensions)
@@ -40,18 +34,12 @@ namespace Debugger
 		
 		public Expression AppendFieldReference(FieldInfo fieldInfo)
 		{
-			return new Ast.FieldReferenceExpression(
-				this.AbstractSynatxTree,
-				fieldInfo
-			);
+			return new MemberReferenceExpression(this, fieldInfo);
 		}
 		
 		public Expression AppendPropertyReference(PropertyInfo propertyInfo)
 		{
-			return new Ast.PropertyReferenceExpression(
-				this.AbstractSynatxTree,
-				propertyInfo
-			);
+			return new MemberReferenceExpression(this, propertyInfo);
 		}
 		
 		public ExpressionCollection AppendObjectMembers(DebugType type, BindingFlags bindingFlags)
@@ -87,7 +75,7 @@ namespace Debugger
 		{
 			if (methodInfo.IsStatic) throw new DebuggerException(methodInfo.FullName + " is static method");
 			
-			return new Ast.ThisReferenceExpression();
+			return new ThisReferenceExpression();
 		}
 		
 		/// <summary> Get parameters of a method </summary>
@@ -96,7 +84,7 @@ namespace Debugger
 			ExpressionCollection pars = new ExpressionCollection();
 			
 			for(int i = 0; i < methodInfo.ParameterCount; i++) {
-				pars.Add(new Ast.ParameterIdentifierExpression(i, methodInfo.GetParameterName(i)));
+				pars.Add(new ParameterIdentifierExpression(methodInfo, i, methodInfo.GetParameterName(i)));
 			}
 			
 			return pars;
@@ -108,7 +96,7 @@ namespace Debugger
 			ExpressionCollection vars = new ExpressionCollection();
 			
 			foreach(ISymUnmanagedVariable var in methodInfo.LocalVariables) {
-				vars.Add(new Ast.LocalVariableIdentifierExpression(var));
+				vars.Add(new LocalVariableIdentifierExpression(methodInfo, var));
 			}
 			
 			return vars;

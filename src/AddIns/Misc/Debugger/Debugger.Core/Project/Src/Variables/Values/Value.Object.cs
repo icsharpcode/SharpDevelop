@@ -32,6 +32,24 @@ namespace Debugger
 		}
 		
 		/// <summary>
+		/// Get the value of given member.
+		/// </summary>
+		public Value GetMemberValue(MemberInfo memberInfo, Value[] arguments)
+		{
+			return GetMemberValue(this, memberInfo, arguments);
+		}
+		
+		public static Value GetMemberValue(Value objectInstance, MemberInfo memberInfo, Value[] arguments)
+		{
+			if (memberInfo is FieldInfo) {
+				return GetFieldValue(objectInstance, (FieldInfo)memberInfo);
+			} else if (memberInfo is PropertyInfo) {
+				return GetPropertyValue(objectInstance, (PropertyInfo)memberInfo);
+			}
+			throw new DebuggerException("Bad member type: " + memberInfo.GetType());
+		}
+		
+		/// <summary>
 		/// Get the value of given field.
 		/// Field may be static
 		/// </summary>

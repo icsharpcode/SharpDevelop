@@ -8,27 +8,48 @@
 using System;
 using System.Collections.Generic;
 
-namespace ICSharpCode.NRefactory.Ast
+namespace Debugger.Expressions
 {
 	/// <summary>
 	/// Identifier of a method parameter
 	/// </summary>
-	public class ParameterIdentifierExpression: IdentifierExpression
+	public class ParameterIdentifierExpression: Expression
 	{
-		int parameterIndex;
+		MethodInfo method;
+		int index;
+		string name;
 		
-		public int ParameterIndex {
-			get { return parameterIndex; }
+		public MethodInfo Method {
+			get { return method; }
 		}
 		
-		public ParameterIdentifierExpression(int parameterIndex, string identifier)
-			:base (identifier)
+		public int Index {
+			get { return index; }
+		}
+		
+		public string Name {
+			get { return name; }
+		}
+		
+		public ParameterIdentifierExpression(MethodInfo method, int index, string name)
 		{
-			this.parameterIndex = parameterIndex;
+			this.method = method;
+			this.index = index;
+			this.name = name;
 		}
 		
-		public override string ToString() {
-			return string.Format("[ParameterIdentifierExpression Index={0} Identifier={1} TypeArguments={2}]", ParameterIndex, Identifier, GetCollectionString(TypeArguments));
+		public override string Code {
+			get {
+				return this.Name;
+			}
+		}
+		
+		protected override Value EvaluateInternal(StackFrame context)
+		{
+			if (context.MethodInfo != this.Method) {
+				throw new ExpressionEvaluateException(this, "Method " + this.Method.FullName + " expected, " + context.MethodInfo.FullName + " seen");
+			}
+			return context.GetArgument(this.Index);
 		}
 	}
 }

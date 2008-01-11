@@ -8,12 +8,7 @@
 using System;
 using System.Collections.Generic;
 
-using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.PrettyPrinter;
-using Ast = ICSharpCode.NRefactory.Ast;
-using Debugger.Wrappers.CorSym;
-
-namespace Debugger
+namespace Debugger.Expressions
 {
 	public class ExpressionCollection: List<Expression>
 	{
