@@ -13,6 +13,7 @@ using System.Windows.Forms;
 using Aga.Controls.Tree;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Gui.Pads;
 
 namespace Debugger.AddIn.TreeModel
 {
@@ -20,6 +21,7 @@ namespace Debugger.AddIn.TreeModel
 	{
 		static Dictionary<string, bool> expandedNodes = new Dictionary<string, bool>();
 		
+		LocalVarPad localVarPad;
 		AbstractNode content;
 		
 		bool childsLoaded;
@@ -38,8 +40,9 @@ namespace Debugger.AddIn.TreeModel
 			}
 		}
 		
-		public TreeViewNode(TreeViewAdv tree, AbstractNode content): base(tree, new object())
+		public TreeViewNode(LocalVarPad localVarPad, AbstractNode content): base(localVarPad.LocalVarList, new object())
 		{
+			this.localVarPad = localVarPad;
 			SetContentRecursive(content);
 		}
 		
@@ -56,13 +59,19 @@ namespace Debugger.AddIn.TreeModel
 				this.Collapse();
 			}
 			this.Tree.Invalidate();
+			// Repaint and process user commands
+			DebugeeState state = localVarPad.Process.DebugeeState;
+			Util.DoEvents();
+			if (state.HasExpired) {
+				LoggingService.Info("Debugger: Aborted refresh because debugee state expired");
+				throw new AbortedBecauseDebugeeStateExpiredException();
+			}
 		}
 		
-		public static void SetContentRecursive(TreeViewAdv tree, IList<TreeNodeAdv> childNodes, IEnumerable<AbstractNode> contentEnum)
+		public static void SetContentRecursive(LocalVarPad localVarPad, IList<TreeNodeAdv> childNodes, IEnumerable<AbstractNode> contentEnum)
 		{
 			contentEnum = contentEnum ?? new AbstractNode[0];
 			
-			DoEvents();
 			int index = 0;
 			foreach(AbstractNode content in contentEnum) {
 				// Add or overwrite existing items
@@ -71,9 +80,8 @@ namespace Debugger.AddIn.TreeModel
 					((TreeViewNode)childNodes[index]).SetContentRecursive(content);
 				} else {
 					// Add
-					childNodes.Add(new TreeViewNode(tree, content));
+					childNodes.Add(new TreeViewNode(localVarPad, content));
 				}
-				DoEvents();
 				index++;
 			}
 			int count = index;
@@ -81,20 +89,22 @@ namespace Debugger.AddIn.TreeModel
 			while(childNodes.Count > count) {
 				childNodes.RemoveAt(count);
 			}
-			DoEvents();
 		}
 		
 		protected override void OnExpanding()
 		{
 			base.OnExpanding();
-			LoadChilds();
+			try {
+				LoadChilds();
+			} catch (AbortedBecauseDebugeeStateExpiredException) {
+			}
 		}
 		
 		void LoadChilds()
 		{
 			if (!childsLoaded) {
 				childsLoaded = true;
-				SetContentRecursive(this.Tree, this.Children, this.Content.ChildNodes);
+				SetContentRecursive(localVarPad, this.Children, this.Content.ChildNodes);
 				this.IsExpandedOnce = true;
 			}
 		}
@@ -114,28 +124,6 @@ namespace Debugger.AddIn.TreeModel
 		{
 			base.OnCollapsed();
 			expandedNodes[FullName] = false;
-		}
-		
-		
-		static DateTime nextDoEventsTime = Debugger.Util.HighPrecisionTimer.Now;
-		const double workLoad    = 0.75; // Fraction of getting variables vs. repainting
-		const double maxFPS      = 30;   // this prevents too much drawing on good machine
-		const double maxWorkTime = 250;  // ms  this ensures minimal response on bad machine
-		
-		static void DoEvents()
-		{
-			if (Debugger.Util.HighPrecisionTimer.Now > nextDoEventsTime) {
-				DateTime start = Debugger.Util.HighPrecisionTimer.Now;
-				Application.DoEvents();
-				DateTime end = Debugger.Util.HighPrecisionTimer.Now;
-				double doEventsDuration = (end - start).TotalMilliseconds;
-				double minWorkTime = 1000 / maxFPS - doEventsDuration; // ms
-				double workTime = (doEventsDuration / (1 - workLoad)) * workLoad;
-				workTime = Math.Max(minWorkTime, Math.Min(maxWorkTime, workTime)); // Clamp
-				nextDoEventsTime = end.AddMilliseconds(workTime);
-				double fps = 1000 / (doEventsDuration + workTime);
-				// LoggingService.InfoFormatted("Rendering: {0} ms => work budget: {1} ms ({2:f1} FPS)", doEventsDuration, workTime, fps);
-			}
 		}
 	}
 }

@@ -19,7 +19,8 @@ namespace Debugger
 	{
 		public Value Evaluate(StackFrame context)
 		{
-			// context.Process.TraceMessage("Evaluating " + this.Code);
+			if (context == null) throw new ArgumentNullException("context");
+			
 			EvaluateAstVisitor astVisitor = new EvaluateAstVisitor(context);
 			Value result = (Value)this.AbstractSynatxTree.AcceptVisitor(astVisitor, null);
 			context.Process.TraceMessage("Evaluated " + this.Code);

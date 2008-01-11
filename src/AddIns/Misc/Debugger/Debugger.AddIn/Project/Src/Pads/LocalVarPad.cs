@@ -106,6 +106,14 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			}
 		}
 		
+		public TreeViewAdv LocalVarList {
+			get { return localVarList; }
+		}
+		
+		public Process Process {
+			get { return debuggedProcess; }
+		}
+		
 		protected override void InitializeComponents()
 		{
 			localVarList = new TreeViewAdv();
@@ -167,10 +175,13 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		public override void RefreshPad()
 		{
 			DateTime start = Debugger.Util.HighPrecisionTimer.Now;
-			if (debuggedProcess != null && debuggedProcess.SelectedStackFrame != null) {
-				TreeViewNode.SetContentRecursive(localVarList, localVarList.Root.Children, new StackFrameNode(debuggedProcess.SelectedStackFrame).ChildNodes);
-			} else {
-				TreeViewNode.SetContentRecursive(localVarList, localVarList.Root.Children, null);
+			try {
+				if (debuggedProcess != null && debuggedProcess.SelectedStackFrame != null) {
+					TreeViewNode.SetContentRecursive(this, localVarList.Root.Children, new StackFrameNode(debuggedProcess.SelectedStackFrame).ChildNodes);
+				} else {
+					TreeViewNode.SetContentRecursive(this, localVarList.Root.Children, null);
+				}
+			} catch(AbortedBecauseDebugeeStateExpiredException) {
 			}
 			DateTime end = Debugger.Util.HighPrecisionTimer.Now;
 			LoggingService.InfoFormatted("Local Variables pad refreshed ({0} ms)", (end - start).TotalMilliseconds);
