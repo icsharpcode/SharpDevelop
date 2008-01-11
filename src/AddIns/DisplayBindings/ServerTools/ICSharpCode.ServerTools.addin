@@ -19,6 +19,6 @@
 		     title    = "Server Explorer"
 		     icon     = "ServerTool.Server"
 		     shortcut = "Control|Alt|D"
-		     class    = "ICSharpCode.ServerTools.ServerControl"/>
+		     class    = "ICSharpCode.ServerTools.ServerBrowserHost"/>
 	</Path>
 </AddIn>

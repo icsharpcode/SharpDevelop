@@ -10,9 +10,9 @@ using System.Windows.Forms;
 using System.Windows.Forms.Integration;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.ServerTools.Servers;
+using ICSharpCode.ServerTools;
 
-namespace ICSharpCode.ServerTools.Forms
+namespace ICSharpCode.ServerTools
 {
 	/// <summary>
 	/// Enables a user to browse metadata associated with a db server and to open resources
