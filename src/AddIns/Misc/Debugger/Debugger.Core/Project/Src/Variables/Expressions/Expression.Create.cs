@@ -73,7 +73,9 @@ namespace Debugger
 		{
 			ExpressionCollection vars = new ExpressionCollection();
 			
-			vars.Add(MethodThis(methodInfo));
+			if (!methodInfo.IsStatic) {
+				vars.Add(MethodThis(methodInfo));
+			}
 			vars.AddRange(MethodParameters(methodInfo));
 			vars.AddRange(MethodLocalVariables(methodInfo));
 			
