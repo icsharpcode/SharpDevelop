@@ -2555,7 +2555,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		{
 			TrackedVisit(memberReferenceExpression.TargetObject, data);
 			outputFormatter.PrintToken(Tokens.Dot);
-			outputFormatter.PrintIdentifier(memberReferenceExpression.FieldName);
+			outputFormatter.PrintIdentifier(memberReferenceExpression.MemberName);
 			PrintTypeArguments(memberReferenceExpression.TypeArguments);
 			return null;
 		}

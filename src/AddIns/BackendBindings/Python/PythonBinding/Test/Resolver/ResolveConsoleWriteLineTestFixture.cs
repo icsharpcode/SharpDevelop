@@ -27,7 +27,7 @@ namespace PythonBinding.Tests.Resolver
 		ResolveResult resolveResult;
 		ICompilationUnit compilationUnit;
 		MockClass systemConsoleClass;
-		MethodResolveResult methodResolveResult;
+		MethodGroupResolveResult methodResolveResult;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
@@ -47,7 +47,7 @@ namespace PythonBinding.Tests.Resolver
 							"Console.WriteLine\r\n";
 			ExpressionResult expressionResult = new ExpressionResult("Console.WriteLine", new DomRegion(2, 2), null, null);
 			resolveResult = resolver.Resolve(expressionResult, parseInfo, python);
-			methodResolveResult = resolveResult as MethodResolveResult;
+			methodResolveResult = resolveResult as MethodGroupResolveResult;
 		}
 		
 		[Test]

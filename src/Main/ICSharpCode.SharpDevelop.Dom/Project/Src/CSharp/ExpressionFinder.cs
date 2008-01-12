@@ -55,18 +55,61 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 		enum FrameType
 		{
 			Global,
+			/// <summary>
+			/// "class C { * }"
+			/// </summary>
 			TypeDecl,
+			/// <summary>
+			/// "interface I { * }"
+			/// </summary>
 			Interface,
+			/// <summary>
+			/// "enum E { * }"
+			/// </summary>
 			Enum,
+			/// <summary>
+			/// "void Method(*) {}"
+			/// </summary>
 			ParameterList,
+			/// <summary>
+			/// "public string Property { * }"
+			/// </summary>
 			Property,
+			/// <summary>
+			/// "public event EventHandler SomethingChanged { * }"
+			/// </summary>
 			Event,
+			/// <summary>
+			/// "void Method() { * }"
+			/// </summary>
 			Statements,
+			/// <summary>
+			/// "if (*) {}"
+			/// </summary>
 			Expression,
+			/// <summary>
+			/// "new T { * }"
+			/// </summary>
 			ObjectInitializer,
+			/// <summary>
+			/// "[*] class ..."
+			/// </summary>
 			AttributeSection,
+			/// <summary>
+			/// "[Obsolete(*)] class ..."
+			/// </summary>
 			AttributeArguments,
+			/// <summary>
+			/// Type reference frame "typeof(*)"
+			/// </summary>
+			TypeReference,
+			/// <summary>
+			/// Type parameter declaration, "class C&lt;*gt;"
+			/// </summary>
 			TypeParameterDecl,
+			/// <summary>
+			/// The Frame is no longer active.
+			/// </summary>
 			Popped
 		}
 		
@@ -207,6 +250,9 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 							break;
 						case FrameType.AttributeSection:
 							SetContext(ExpressionContext.Attribute);
+							break;
+						case FrameType.TypeReference:
+							SetContext(ExpressionContext.Type);
 							break;
 						default:
 							SetContext(ExpressionContext.Default);
@@ -610,6 +656,13 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 				case Tokens.Goto:
 					frame.SetContext(ExpressionContext.IdentifierExpected);
 					break;
+				case Tokens.As:
+				case Tokens.Is:
+					frame.SetContext(ExpressionContext.Type);
+					break;
+				case Tokens.Typeof:
+					frame.parenthesisChildType = FrameType.TypeReference;
+					break;
 				default:
 					if (Tokens.SimpleTypeName[token.kind]) {
 						if (frame.type == FrameType.Interface || frame.type == FrameType.TypeDecl) {
@@ -933,4 +986,5 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 		#endregion
 	}
 }
+
 

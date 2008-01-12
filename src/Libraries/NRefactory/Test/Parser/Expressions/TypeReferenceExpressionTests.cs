@@ -46,7 +46,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		public void IntReferenceExpression()
 		{
 			MemberReferenceExpression fre = ParseUtilCSharp.ParseExpression<MemberReferenceExpression>("int.MaxValue");
-			Assert.AreEqual("MaxValue", fre.FieldName);
+			Assert.AreEqual("MaxValue", fre.MemberName);
 			Assert.AreEqual("System.Int32", ((TypeReferenceExpression)fre.TargetObject).TypeReference.SystemType);
 		}
 		
@@ -57,7 +57,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			// reference, but it has to stay consistent because NRefactoryResolver depends
 			// on this trick.
 			MemberReferenceExpression fre = ParseUtilCSharp.ParseExpression<MemberReferenceExpression>("int", true);
-			Assert.AreEqual("", fre.FieldName);
+			Assert.AreEqual("", fre.MemberName);
 			Assert.AreEqual("System.Int32", ((TypeReferenceExpression)fre.TargetObject).TypeReference.SystemType);
 		}
 		#endregion
@@ -67,7 +67,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		public void VBIntReferenceExpression()
 		{
 			MemberReferenceExpression fre = ParseUtilVBNet.ParseExpression<MemberReferenceExpression>("inTeGer.MaxValue");
-			Assert.AreEqual("MaxValue", fre.FieldName);
+			Assert.AreEqual("MaxValue", fre.MemberName);
 			Assert.AreEqual("System.Int32", ((TypeReferenceExpression)fre.TargetObject).TypeReference.SystemType);
 		}
 		
@@ -78,7 +78,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			// reference, but it has to stay consistent because NRefactoryResolver depends
 			// on this trick.
 			MemberReferenceExpression fre = ParseUtilVBNet.ParseExpression<MemberReferenceExpression>("inTeGer", true);
-			Assert.AreEqual("", fre.FieldName);
+			Assert.AreEqual("", fre.MemberName);
 			Assert.AreEqual("System.Int32", ((TypeReferenceExpression)fre.TargetObject).TypeReference.SystemType);
 		}
 		
@@ -86,7 +86,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		public void VBObjectReferenceExpression()
 		{
 			MemberReferenceExpression fre = ParseUtilVBNet.ParseExpression<MemberReferenceExpression>("Object.ReferenceEquals");
-			Assert.AreEqual("ReferenceEquals", fre.FieldName);
+			Assert.AreEqual("ReferenceEquals", fre.MemberName);
 			Assert.AreEqual("System.Object", ((TypeReferenceExpression)fre.TargetObject).TypeReference.SystemType);
 		}
 		
@@ -97,7 +97,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			// reference, but it has to stay consistent because NRefactoryResolver depends
 			// on this trick.
 			MemberReferenceExpression fre = ParseUtilVBNet.ParseExpression<MemberReferenceExpression>("obJeCt", true);
-			Assert.AreEqual("", fre.FieldName);
+			Assert.AreEqual("", fre.MemberName);
 			Assert.AreEqual("System.Object", ((TypeReferenceExpression)fre.TargetObject).TypeReference.SystemType);
 		}
 		#endregion

@@ -60,13 +60,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public override int GetHashCode()
 		{
-			int code = baseType.GetHashCode();
-			foreach (IReturnType t in typeArguments) {
-				if (t != null) {
-					code ^= t.GetHashCode();
-				}
-			}
-			return code;
+			return this.DotNetName.GetHashCode();
 		}
 		
 		public override IReturnType BaseType {

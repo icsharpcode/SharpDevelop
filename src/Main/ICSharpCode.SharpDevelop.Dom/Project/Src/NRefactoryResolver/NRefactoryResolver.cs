@@ -11,6 +11,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.IO;
 using System.Diagnostics;
+using System.Linq;
 
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.Visitors;
@@ -115,6 +116,9 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		{
 			Expression expr = SpecialConstructs(expression);
 			if (expr == null) {
+				// SEMICOLON HACK: Parsing expressions without trailing semicolon does not work correctly
+				if (language == NR.SupportedLanguage.CSharp && !expression.EndsWith(";"))
+					expression += ";";
 				using (NR.IParser p = NR.ParserFactory.CreateParser(language, new System.IO.StringReader(expression))) {
 					expr = p.ParseExpression();
 					if (expr != null) {
@@ -330,11 +334,11 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (expr is IdentifierExpression) {
 				return (expr as IdentifierExpression).Identifier;
 			} else if (expr is MemberReferenceExpression) {
-				TypeVisitor typeVisitor = new TypeVisitor(this);
+				ResolveVisitor typeVisitor = new ResolveVisitor(this);
 				MemberReferenceExpression fieldReferenceExpression = (MemberReferenceExpression)expr;
-				IReturnType type = fieldReferenceExpression.TargetObject.AcceptVisitor(typeVisitor, null) as IReturnType;
-				if (type is TypeVisitor.NamespaceReturnType) {
-					return type.FullyQualifiedName + "." + fieldReferenceExpression.FieldName;
+				ResolveResult rr = typeVisitor.Resolve(fieldReferenceExpression.TargetObject);
+				if (rr is NamespaceResolveResult) {
+					return ((NamespaceResolveResult)rr).Name + "." + fieldReferenceExpression.MemberName;
 				}
 			}
 			return null;
@@ -344,12 +348,12 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		{
 			if (name == null)
 				return null;
-			IClass c = SearchClass(name, position);
+			IClass c = SearchClass(name, 0, position);
 			if (c != null) {
 				if (c.IsTypeInInheritanceTree(c.ProjectContent.SystemTypes.Attribute.GetUnderlyingClass()))
 					return c;
 			}
-			return SearchClass(name + "Attribute", position);
+			return SearchClass(name + "Attribute", 0, position);
 		}
 		
 		ResolveResult ResolveAttribute(Expression expr, NR.Location position)
@@ -375,8 +379,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 						if (m.IsConstructor && !m.IsStatic)
 							ctors.Add(m);
 					}
-					TypeVisitor typeVisitor = new TypeVisitor(this);
-					return CreateMemberResolveResult(typeVisitor.FindOverload(ctors, null, ie.Arguments));
+					//TypeVisitor typeVisitor = new TypeVisitor(this);
+					//return CreateMemberResolveResult(typeVisitor.FindOverload(ctors, null, ie.Arguments));
 				}
 			}
 			return null;
@@ -384,6 +388,12 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		public ResolveResult ResolveInternal(Expression expr, ExpressionContext context)
 		{
+			if (expr is IdentifierExpression)
+				return ResolveIdentifier(expr as IdentifierExpression, context);
+			
+			ResolveVisitor resolveVisitor = new ResolveVisitor(this);
+			return resolveVisitor.Resolve(expr);
+			/*
 			TypeVisitor typeVisitor = new TypeVisitor(this);
 			IReturnType type;
 			
@@ -437,7 +447,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 						return result;
 				}
 			} else if (expr is IdentifierExpression) {
-				ResolveResult result = ResolveIdentifier(((IdentifierExpression)expr).Identifier, expr.StartLocation, context);
+				ResolveResult result = ResolveIdentifier(((IdentifierExpression)expr), context);
 				if (result != null)
 					return result;
 				else
@@ -490,9 +500,11 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				return rr;
 			}
 			return new ResolveResult(callingClass, callingMember, type);
+			 */
 		}
 		
-		ResolveResult ResolveMemberReferenceExpression(IReturnType type, MemberReferenceExpression memberReferenceExpression)
+		/*
+		internal ResolveResult ResolveMemberReferenceExpression(IReturnType type, MemberReferenceExpression memberReferenceExpression)
 		{
 			IClass c;
 			IMember member;
@@ -538,6 +550,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 			return ResolveMethod(type, memberReferenceExpression.FieldName);
 		}
+		 */
 		
 		public TextReader ExtractCurrentMethod(string fileContent)
 		{
@@ -588,8 +601,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			
 			// Fix for SD2-511 (Code completion in inserted line)
 			if (language == NR.SupportedLanguage.CSharp) {
-				// Do not do this for VB: the parser does not correct create the
-				// ForEachStatement when the method in truncated in the middle
+				// Do not do this for VB: the parser does not correctly create the
+				// ForEachStatement when the method in truncated in the middle.
 				// VB does not have the "inserted line looks like variable declaration"-problem
 				// anyways.
 				if (caretLine > startLine && caretLine < endLine)
@@ -624,17 +637,27 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		}
 		
 		#region Resolve Identifier
-		public ResolveResult ResolveIdentifier(string identifier, NR.Location position, ExpressionContext context)
+		internal IReturnType ConstructType(IReturnType baseType, List<TypeReference> typeArguments)
 		{
-			ResolveResult result = ResolveIdentifierInternal(identifier, position);
+			if (typeArguments == null || typeArguments.Count == 0)
+				return baseType;
+			return new ConstructedReturnType(baseType,
+			                                 typeArguments.ConvertAll(r => TypeVisitor.CreateReturnType(r, this)));
+		}
+		
+		public ResolveResult ResolveIdentifier(IdentifierExpression expr, ExpressionContext context)
+		{
+			ResolveResult result = ResolveIdentifierInternal(expr);
 			if (result is TypeResolveResult)
 				return result;
 			
+			NR.Location position = expr.StartLocation;
+			string identifier = expr.Identifier;
 			ResolveResult result2 = null;
 			
-			IReturnType t = SearchType(identifier, position);
+			IReturnType t = SearchType(identifier, expr.TypeArguments.Count, position);
 			if (t != null) {
-				result2 = new TypeResolveResult(callingClass, callingMember, t);
+				result2 = new TypeResolveResult(callingClass, callingMember, ConstructType(t, expr.TypeArguments));
 			} else {
 				if (callingClass != null) {
 					if (callingMember is IMethod) {
@@ -659,6 +682,11 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return new MixedResolveResult(result, result2);
 		}
 		
+		public ResolveResult ResolveIdentifier(string identifier, NR.Location position, ExpressionContext context)
+		{
+			return ResolveIdentifier(new IdentifierExpression(identifier) { StartLocation = position }, context);
+		}
+		
 		IField CreateLocalVariableField(LocalLookupVariable var)
 		{
 			IReturnType type = GetVariableType(var);
@@ -669,8 +697,10 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return f;
 		}
 		
-		ResolveResult ResolveIdentifierInternal(string identifier, NR.Location position)
+		ResolveResult ResolveIdentifierInternal(IdentifierExpression identifierExpression)
 		{
+			NR.Location position = identifierExpression.StartLocation;
+			string identifier = identifierExpression.Identifier;
 			if (callingMember != null) { // LocalResolveResult requires callingMember to be set
 				LocalLookupVariable var = SearchVariable(identifier, position);
 				if (var != null) {
@@ -690,23 +720,17 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				}
 			}
 			if (callingClass != null) {
-				IMember member = GetMember(callingClass.DefaultReturnType, identifier);
-				if (member != null) {
-					return CreateMemberResolveResult(member);
-				}
-				ResolveResult result = ResolveMethod(callingClass.DefaultReturnType, identifier);
-				if (result != null)
-					return result;
-				
-				// try if there exists a static member in outer classes named typeName
-				IClass tmp = callingClass.DeclaringType;
-				while (tmp != null) {
-					member = GetMember(tmp.DefaultReturnType, identifier);
-					if (member != null && member.IsStatic) {
-						return new MemberResolveResult(callingClass, callingMember, member);
-					}
+				IClass tmp = callingClass;
+				do {
+					ResolveResult rr = ResolveMember(tmp.DefaultReturnType, identifier,
+					                                 identifierExpression.TypeArguments,
+					                                 identifierExpression.Parent is InvocationExpression,
+					                                 false);
+					if (rr != null && rr.IsValid)
+						return rr;
+					// also try to resolve the member in outer classes
 					tmp = tmp.DeclaringType;
-				}
+				} while (tmp != null);
 			}
 			
 			string namespaceName = SearchNamespace(identifier, position);
@@ -717,15 +741,14 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (languageProperties.CanImportClasses) {
 				foreach (IUsing @using in cu.Usings) {
 					foreach (string import in @using.Usings) {
-						IClass c = GetClass(import);
+						IClass c = GetClass(import, 0);
 						if (c != null) {
-							IMember member = GetMember(c.DefaultReturnType, identifier);
-							if (member != null) {
-								return CreateMemberResolveResult(member);
-							}
-							ResolveResult result = ResolveMethod(c.DefaultReturnType, identifier);
-							if (result != null)
-								return result;
+							ResolveResult rr = ResolveMember(c.DefaultReturnType, identifier,
+							                                 identifierExpression.TypeArguments,
+							                                 identifierExpression.Parent is InvocationExpression,
+							                                 false);
+							if (rr != null && rr.IsValid)
+								return rr;
 						}
 					}
 				}
@@ -734,6 +757,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (languageProperties.ImportModules) {
 				ArrayList list = new ArrayList();
 				CtrlSpaceResolveHelper.AddImportedNamespaceContents(list, cu, callingClass);
+				List<IMember> resultMembers = new List<IMember>();
 				foreach (object o in list) {
 					IClass c = o as IClass;
 					if (c != null && IsSameName(identifier, c.Name)) {
@@ -741,13 +765,10 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					}
 					IMember member = o as IMember;
 					if (member != null && IsSameName(identifier, member.Name)) {
-						if (member is IMethod) {
-							return new MethodResolveResult(callingClass, callingMember, member.DeclaringType.DefaultReturnType, member.Name);
-						} else {
-							return CreateMemberResolveResult(member);
-						}
+						resultMembers.Add(member);
 					}
 				}
+				return CreateMemberOrMethodGroupResolveResult(null, identifier, resultMembers, false);
 			}
 			
 			return null;
@@ -760,25 +781,59 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return new MemberResolveResult(callingClass, callingMember, member);
 		}
 		
-		#region ResolveMethod
-		ResolveResult ResolveMethod(IReturnType type, string identifier)
+		#region ResolveMember
+		internal ResolveResult ResolveMember(IReturnType declaringType, string memberName,
+		                                     List<TypeReference> typeArguments, bool isInvocation,
+		                                     bool allowExtensionMethods)
 		{
-			if (type == null)
-				return null;
-			foreach (IMethod method in type.GetMethods()) {
-				if (IsSameName(identifier, method.Name))
-					return new MethodResolveResult(callingClass, callingMember, type, method.Name);
+			List<IMember> members = MemberLookupHelper.LookupMember(declaringType, memberName, callingClass, languageProperties, isInvocation);
+			if (members != null && typeArguments != null && typeArguments.Count != 0) {
+				List<IReturnType> typeArgs = typeArguments.ConvertAll(r => TypeVisitor.CreateReturnType(r, this));
+				
+				members = members.OfType<IMethod>()
+					.Where((IMethod m) => m.TypeParameters.Count == typeArgs.Count)
+					.Select((IMethod originalMethod) => {
+					        	IMethod m = (IMethod)originalMethod.CreateSpecializedMember();
+					        	m.ReturnType = ConstructedReturnType.TranslateType(m.ReturnType, typeArgs, true);
+					        	for (int j = 0; j < m.Parameters.Count; ++j) {
+					        		m.Parameters[j].ReturnType = ConstructedReturnType.TranslateType(m.Parameters[j].ReturnType, typeArgs, true);
+					        	}
+					        	return (IMember)m;
+					        })
+					.ToList();
 			}
-			if (languageProperties.SupportsExtensionMethods && callingClass != null) {
-				ArrayList list = new ArrayList();
-				ResolveResult.AddExtensions(languageProperties, list, callingClass, type);
-				foreach (IMethodOrProperty mp in list) {
-					if (mp is IMethod && IsSameName(mp.Name, identifier)) {
-						return new MethodResolveResult(callingClass, callingMember, type, mp.Name);
-					}
+			if (language == NR.SupportedLanguage.VBNet && members != null && members.Count > 0) {
+				// use the correct casing of the member name
+				memberName = members[0].Name;
+			}
+			return CreateMemberOrMethodGroupResolveResult(declaringType, memberName, members, allowExtensionMethods);
+		}
+		
+		internal ResolveResult CreateMemberOrMethodGroupResolveResult(IReturnType declaringType, string memberName, List<IMember> members, bool allowExtensionMethods)
+		{
+			List<IMethod> methods = new List<IMethod>();
+			if (members != null) {
+				foreach (IMember m in members) {
+					if (m is IMethod)
+						methods.Add(m as IMethod);
+					else
+						return new MemberResolveResult(callingClass, callingMember, m);
 				}
 			}
-			return null;
+			if (allowExtensionMethods == false || declaringType == null) {
+				if (methods.Count == 0)
+					return null;
+				else
+					return new MethodGroupResolveResult(callingClass, callingMember,
+					                                    declaringType ?? methods[0].DeclaringTypeReference,
+					                                    memberName, methods,
+					                                    emptyMethodList);
+			} else {
+				return new MethodGroupResolveResult(callingClass, callingMember,
+				                                    declaringType,
+				                                    memberName, methods,
+				                                    new LazyList<IMethod>(() => SearchExtensionMethods(memberName)));
+			}
 		}
 		#endregion
 		
@@ -896,15 +951,6 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				} else if ("myclass".Equals(expression, StringComparison.InvariantCultureIgnoreCase)) {
 					return new ClassReferenceExpression();
 				} // Global is handled in Resolve() because we don't need an expression for that
-			} else if (language == NR.SupportedLanguage.CSharp) {
-				// generic type names are no expressions, only property access on them is an expression
-				if (expression.EndsWith(">")) {
-					MemberReferenceExpression expr = ParseExpression(expression + ".Prop") as MemberReferenceExpression;
-					if (expr != null) {
-						return expr.TargetObject;
-					}
-				}
-				return null;
 			}
 			return null;
 		}
@@ -959,103 +1005,26 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return projectContent.SearchNamespace(name, callingClass, cu, position.Line, position.Column);
 		}
 		
-		public IClass GetClass(string fullName)
+		public IClass GetClass(string fullName, int typeArgumentCount)
 		{
-			return projectContent.GetClass(fullName, 0);
+			return projectContent.GetClass(fullName, typeArgumentCount);
 		}
 		
 		/// <remarks>
 		/// use the usings and the name of the namespace to find a class
 		/// </remarks>
-		public IClass SearchClass(string name, NR.Location position)
+		public IClass SearchClass(string name, int typeArgumentCount, NR.Location position)
 		{
-			IReturnType t = SearchType(name, position);
+			IReturnType t = SearchType(name, typeArgumentCount, position);
 			return (t != null) ? t.GetUnderlyingClass() : null;
 		}
 		
-		public IReturnType SearchType(string name, NR.Location position)
+		public IReturnType SearchType(string name, int typeArgumentCount, NR.Location position)
 		{
 			if (position.IsEmpty)
-				return projectContent.SearchType(new SearchTypeRequest(name, 0, callingClass, cu, caretLine, caretColumn)).Result;
+				return projectContent.SearchType(new SearchTypeRequest(name, typeArgumentCount, callingClass, cu, caretLine, caretColumn)).Result;
 			else
-				return projectContent.SearchType(new SearchTypeRequest(name, 0, callingClass, cu, position.Line, position.Column)).Result;
-		}
-		
-		#region Helper for TypeVisitor
-		#region SearchMethod
-		
-		public List<IMethod> SearchMethod(string memberName)
-		{
-			List<IMethod> methods = null;
-			
-			// Search for the method in the callingClass and outer classes
-			IClass tmp = callingClass;
-			while (tmp != null) {
-				methods = SearchMethod(tmp.DefaultReturnType, memberName);
-				if (methods.Count > 0)
-					return methods;
-				tmp = tmp.DeclaringType;
-			}
-			
-			if (languageProperties.CanImportClasses) {
-				foreach (IUsing @using in cu.Usings) {
-					foreach (string import in @using.Usings) {
-						IClass c = projectContent.GetClass(import, 0);
-						if (c != null) {
-							methods = SearchMethod(c.DefaultReturnType, memberName);
-							if (methods.Count > 0)
-								return methods;
-						}
-					}
-				}
-			}
-			
-			if (methods == null)
-				methods = new List<IMethod>();
-			
-			if (languageProperties.ImportModules) {
-				ArrayList list = new ArrayList();
-				CtrlSpaceResolveHelper.AddImportedNamespaceContents(list, cu, callingClass);
-				foreach (object o in list) {
-					IMethod m = o as IMethod;
-					if (m != null && IsSameName(m.Name, memberName)) {
-						methods.Add(m);
-					}
-				}
-			}
-			return methods;
-		}
-		
-		/// <summary>
-		/// Gets the list of methods on the return type that have the specified name.
-		/// </summary>
-		public List<IMethod> SearchMethod(IReturnType type, string memberName)
-		{
-			List<IMethod> methods = new List<IMethod>();
-			if (type == null)
-				return methods;
-			
-			bool isClassInInheritanceTree = false;
-			if (callingClass != null)
-				isClassInInheritanceTree = callingClass.IsTypeInInheritanceTree(type.GetUnderlyingClass());
-			
-			if (language == NR.SupportedLanguage.VBNet && IsSameName(memberName, "New")) {
-				foreach (IMethod m in type.GetMethods()) {
-					if (m.IsConstructor && m.IsAccessible(callingClass, isClassInInheritanceTree)) {
-						methods.Add(m);
-					}
-				}
-			}
-			
-			foreach (IMethod m in type.GetMethods()) {
-				if (IsSameName(m.Name, memberName)
-				    && m.IsAccessible(callingClass, isClassInInheritanceTree)
-				   ) {
-					methods.Add(m);
-				}
-			}
-			
-			return methods;
+				return projectContent.SearchType(new SearchTypeRequest(name, typeArgumentCount, callingClass, cu, position.Line, position.Column)).Result;
 		}
 		
 		public IList<IMethod> SearchExtensionMethods(string name)
@@ -1072,6 +1041,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		ReadOnlyCollection<IMethodOrProperty> cachedExtensionMethods;
 		IClass cachedExtensionMethods_LastClass; // invalidate cache when callingClass != LastClass
 		
+		static readonly IMethod[] emptyMethodList = new IMethod[0];
 		static readonly ReadOnlyCollection<IMethodOrProperty> emptyMethodOrPropertyList = new ReadOnlyCollection<IMethodOrProperty>(new IMethodOrProperty[0]);
 		
 		public ReadOnlyCollection<IMethodOrProperty> SearchAllExtensionMethods()
@@ -1084,52 +1054,9 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 			return cachedExtensionMethods;
 		}
-		#endregion
-		
-		#region SearchMember
-		// no methods or indexer
-		public IMember GetMember(IReturnType type, string memberName)
-		{
-			if (type == null)
-				return null;
-			bool isClassInInheritanceTree = false;
-			if (callingClass != null)
-				isClassInInheritanceTree = callingClass.IsTypeInInheritanceTree(type.GetUnderlyingClass());
-			
-			// when there are multiple possible members, use the member from the more derived class
-			// (this is necessary to support a field shadowing a property)
-			IMember result = null;
-			foreach (IProperty p in type.GetProperties()) {
-				if (IsSameName(p.Name, memberName)) {
-					result = GetMoreDerivedMember(result, p);
-				}
-			}
-			foreach (IField f in type.GetFields()) {
-				if (IsSameName(f.Name, memberName)) {
-					result = GetMoreDerivedMember(result, f);
-				}
-			}
-			foreach (IEvent e in type.GetEvents()) {
-				if (IsSameName(e.Name, memberName)) {
-					result = GetMoreDerivedMember(result, e);
-				}
-			}
-			return result;
-		}
-		
-		IMember GetMoreDerivedMember(IMember m1, IMember m2)
-		{
-			if (m1 == null) return m2;
-			if (m2 == null) return m1;
-			
-			if (m1.DeclaringType.IsTypeInInheritanceTree(m2.DeclaringType))
-				return m1;
-			else
-				return m2;
-		}
-		#endregion
 		
 		#region DynamicLookup
+		/*
 		/// <remarks>
 		/// does the dynamic lookup for the identifier
 		/// </remarks>
@@ -1141,6 +1068,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 			return (rr != null) ? rr.ResolvedType : null;
 		}
+		 */
 		
 		IParameter SearchMethodParameter(string parameter)
 		{
@@ -1190,7 +1118,6 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 			return null;
 		}
-		#endregion
 		#endregion
 		
 		IClass GetPrimitiveClass(string systemType, string newName)
@@ -1363,4 +1290,5 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		}
 	}
 }
+
 

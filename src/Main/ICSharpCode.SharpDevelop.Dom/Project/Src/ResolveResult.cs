@@ -19,7 +19,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 	/// The ResolveResult specified the location where Resolve was called (Class+Member)
 	/// and the type of the resolved expression.
 	/// </summary>
-	public class ResolveResult
+	public class ResolveResult : ICloneable
 	{
 		IClass callingClass;
 		IMember callingMember;
@@ -41,9 +41,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// Can be null when the class is unknown.
 		/// </summary>
 		public IClass CallingClass {
-			get {
-				return callingClass;
-			}
+			get { return callingClass; }
 		}
 		
 		/// <summary>
@@ -52,9 +50,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// Can be null when the expression was not inside a member or the member is unknown.
 		/// </summary>
 		public IMember CallingMember {
-			get {
-				return callingMember;
-			}
+			get { return callingMember; }
 		}
 		
 		/// <summary>
@@ -63,12 +59,18 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// expression was a namespace name).
 		/// </summary>
 		public IReturnType ResolvedType {
-			get {
-				return resolvedType;
-			}
-			set {
-				resolvedType = value;
-			}
+			get { return resolvedType; }
+			set { resolvedType = value; }
+		}
+		
+		public virtual ResolveResult Clone()
+		{
+			return new ResolveResult(callingClass, callingMember, resolvedType);
+		}
+		
+		object ICloneable.Clone()
+		{
+			return this.Clone();
 		}
 		
 		public virtual ArrayList GetCompletionData(IProjectContent projectContent)
@@ -80,24 +82,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			if (resolvedType == null) return null;
 			ArrayList res = new ArrayList();
-			bool isClassInInheritanceTree = false;
-			if (callingClass != null)
-				isClassInInheritanceTree = callingClass.IsTypeInInheritanceTree(resolvedType.GetUnderlyingClass());
-			foreach (IMethod m in resolvedType.GetMethods()) {
-				if (language.ShowMember(m, showStatic) && m.IsAccessible(callingClass, isClassInInheritanceTree) && !m.IsConstructor)
+			
+			foreach (IMember m in MemberLookupHelper.GetAccessibleMembers(resolvedType, callingClass, language)) {
+				if (language.ShowMember(m, showStatic))
 					res.Add(m);
-			}
-			foreach (IEvent e in resolvedType.GetEvents()) {
-				if (language.ShowMember(e, showStatic) && e.IsAccessible(callingClass, isClassInInheritanceTree))
-					res.Add(e);
-			}
-			foreach (IField f in resolvedType.GetFields()) {
-				if (language.ShowMember(f, showStatic) && f.IsAccessible(callingClass, isClassInInheritanceTree))
-					res.Add(f);
-			}
-			foreach (IProperty p in resolvedType.GetProperties()) {
-				if (language.ShowMember(p, showStatic) && p.IsAccessible(callingClass, isClassInInheritanceTree))
-					res.Add(p);
 			}
 			
 			if (!showStatic && callingClass != null) {
@@ -213,6 +201,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 			return result;
 		}
+		
+		public override ResolveResult Clone()
+		{
+			return new MixedResolveResult(primaryResult.Clone(), secondaryResult.Clone());
+		}
 	}
 	#endregion
 	
@@ -246,7 +239,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public LocalResolveResult(IMember callingMember, IParameter parameter)
 			: this(callingMember, new DefaultField.ParameterField(parameter.ReturnType, parameter.Name, parameter.Region, callingMember.DeclaringType))
-		{}
+		{
+		}
+		
+		public override ResolveResult Clone()
+		{
+			return new LocalResolveResult(this.CallingMember, this.Field);
+		}
 		
 		/// <summary>
 		/// Gets the field representing the local variable.
@@ -322,6 +321,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			return projectContent.GetNamespaceContents(name);
 		}
+		
+		public override ResolveResult Clone()
+		{
+			return new NamespaceResolveResult(this.CallingClass, this.CallingMember, this.Name);
+		}
 	}
 	#endregion
 	
@@ -341,6 +345,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public override ArrayList GetCompletionData(IProjectContent projectContent)
 		{
 			return null;
+		}
+		
+		public override ResolveResult Clone()
+		{
+			return new IntegerLiteralResolveResult(this.CallingClass, this.CallingMember, this.ResolvedType);
 		}
 	}
 	#endregion
@@ -376,6 +385,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 			: base(callingClass, callingMember, resolvedType)
 		{
 			this.resolvedClass = resolvedType.GetUnderlyingClass();
+		}
+		
+		public override ResolveResult Clone()
+		{
+			return new TypeResolveResult(this.CallingClass, this.CallingMember, this.ResolvedType, this.ResolvedClass);
 		}
 		
 		/// <summary>
@@ -446,13 +460,16 @@ namespace ICSharpCode.SharpDevelop.Dom
 			this.resolvedMember = resolvedMember;
 		}
 		
+		public override ResolveResult Clone()
+		{
+			return new MemberResolveResult(this.CallingClass, this.CallingMember, this.ResolvedMember);
+		}
+		
 		/// <summary>
 		/// Gets the member that was resolved.
 		/// </summary>
 		public IMember ResolvedMember {
-			get {
-				return resolvedMember;
-			}
+			get { return resolvedMember; }
 		}
 		
 		public override FilePosition GetDefinitionPosition()
@@ -494,12 +511,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 	/// "a.Add"      (where a is List&lt;string&gt;)
 	/// "SomeMethod" (when SomeMethod is a method in the current class)
 	/// </example>
-	public class MethodResolveResult : ResolveResult
+	public class MethodGroupResolveResult : ResolveResult
 	{
 		string name;
 		IReturnType containingType;
+		IList<IMethod> possibleMethods;
+		IList<IMethod> possibleExtensionMethods;
 		
-		public MethodResolveResult(IClass callingClass, IMember callingMember, IReturnType containingType, string name)
+		public MethodGroupResolveResult(IClass callingClass, IMember callingMember, IReturnType containingType, string name)
 			: base(callingClass, callingMember, null)
 		{
 			if (containingType == null)
@@ -508,32 +527,68 @@ namespace ICSharpCode.SharpDevelop.Dom
 				throw new ArgumentNullException("name");
 			this.containingType = containingType;
 			this.name = name;
+			this.possibleExtensionMethods = new IMethod[0];
+		}
+		
+		public MethodGroupResolveResult(IClass callingClass, IMember callingMember, IReturnType containingType, string name,
+		                                IList<IMethod> possibleMethods, IList<IMethod> possibleExtensionMethods)
+			: base(callingClass, callingMember, null)
+		{
+			if (containingType == null)
+				throw new ArgumentNullException("containingType");
+			if (name == null)
+				throw new ArgumentNullException("name");
+			if (possibleMethods == null)
+				throw new ArgumentNullException("possibleMethods");
+			if (possibleExtensionMethods == null)
+				throw new ArgumentNullException("possibleExtensionMethods");
+			this.containingType = containingType;
+			this.name = name;
+			this.possibleMethods = possibleMethods;
+			this.possibleExtensionMethods = possibleExtensionMethods;
+		}
+		
+		public override ResolveResult Clone()
+		{
+			return new MethodGroupResolveResult(this.CallingClass, this.CallingMember, this.ContainingType, this.Name, this.Methods, this.PossibleExtensionMethods);
 		}
 		
 		/// <summary>
 		/// Gets the name of the method.
 		/// </summary>
 		public string Name {
-			get {
-				return name;
-			}
+			get { return name; }
 		}
 		
 		/// <summary>
 		/// Gets the class that contains the method.
 		/// </summary>
 		public IReturnType ContainingType {
+			get { return containingType; }
+		}
+		
+		/// <summary>
+		/// The list of possible methods.
+		/// </summary>
+		public IList<IMethod> Methods {
 			get {
-				return containingType;
+				if (possibleMethods == null)
+					possibleMethods = containingType.GetMethods().FindAll((IMethod m) => m.Name == this.name);
+				return possibleMethods;
 			}
+		}
+		
+		/// <summary>
+		/// The list of possible extension methods.
+		/// </summary>
+		public IList<IMethod> PossibleExtensionMethods {
+			get { return possibleExtensionMethods; }
 		}
 		
 		public IMethod GetMethodIfSingleOverload()
 		{
-			List<IMethod> methods = containingType.GetMethods();
-			methods = methods.FindAll(delegate(IMethod m) { return m.Name == this.Name; });
-			if (methods.Count == 1)
-				return methods[0];
+			if (this.Methods.Count == 1)
+				return this.Methods[0];
 			else
 				return null;
 		}
@@ -569,6 +624,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 			return res;
 		}
+		
+		public override ResolveResult Clone()
+		{
+			return new VBBaseOrThisReferenceInConstructorResolveResult(this.CallingClass, this.CallingMember, this.ResolvedType);
+		}
 	}
 	#endregion
 	
@@ -590,7 +650,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public override bool IsValid {
 			get { return false; }
 		}
+		
+		public override ResolveResult Clone()
+		{
+			return new UnknownIdentifierResolveResult(this.CallingClass, this.CallingMember, this.Identifier);
+		}
 	}
 	#endregion
 }
+
 

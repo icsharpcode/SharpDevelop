@@ -533,11 +533,11 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 				TypeReference targetType = GetTypeReferenceFromExpression(member.TargetObject);
 				if (targetType != null) {
 					if (targetType.GenericTypes.Count == 0 && targetType.IsArrayType == false) {
-						TypeReference tr = new TypeReference(targetType.Type + "." + member.FieldName, member.TypeArguments);
+						TypeReference tr = new TypeReference(targetType.Type + "." + member.MemberName, member.TypeArguments);
 						tr.IsGlobal = targetType.IsGlobal;
 						return tr;
 					} else {
-						return new InnerClassTypeReference(targetType, member.FieldName, member.TypeArguments);
+						return new InnerClassTypeReference(targetType, member.MemberName, member.TypeArguments);
 					}
 				}
 			}

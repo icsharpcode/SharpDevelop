@@ -84,5 +84,10 @@ namespace Hornung.ResourceToolkit.Resolver
 			this.key = key;
 		}
 		
+		public override ResolveResult Clone()
+		{
+			return new ResourceResolveResult(this.CallingClass, this.CallingMember, this.ResolvedType,
+			                                 this.ResourceSetReference, this.Key);
+		}
 	}
 }

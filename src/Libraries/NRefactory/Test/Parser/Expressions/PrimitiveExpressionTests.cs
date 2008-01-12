@@ -24,7 +24,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			Assert.AreEqual(0, invExpr.Arguments.Count);
 			Assert.IsTrue(invExpr.TargetObject is MemberReferenceExpression);
 			MemberReferenceExpression fre = invExpr.TargetObject as MemberReferenceExpression;
-			Assert.AreEqual("ToString", fre.FieldName);
+			Assert.AreEqual("ToString", fre.MemberName);
 			
 			Assert.IsTrue(fre.TargetObject is PrimitiveExpression);
 			PrimitiveExpression pe = fre.TargetObject as PrimitiveExpression;

@@ -71,9 +71,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		
 		public bool EnableUndo {
 			get {
-				#if DEBUG
-				textEditorControl.Document.UndoStack.AssertNoUndoGroupOpen();
-				#endif
 				return textEditorControl.EnableUndo;
 			}
 		}

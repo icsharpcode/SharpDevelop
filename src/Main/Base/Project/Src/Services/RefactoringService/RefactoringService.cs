@@ -108,8 +108,8 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				return FindReferences((entity as TypeResolveResult).ResolvedClass, progressMonitor);
 			} else if (entity is MemberResolveResult) {
 				return FindReferences((entity as MemberResolveResult).ResolvedMember, progressMonitor);
-			} else if (entity is MethodResolveResult) {
-				IMethod method = (entity as MethodResolveResult).GetMethodIfSingleOverload();
+			} else if (entity is MethodGroupResolveResult) {
+				IMethod method = (entity as MethodGroupResolveResult).GetMethodIfSingleOverload();
 				if (method != null) {
 					return FindReferences(method, progressMonitor);
 				}
@@ -416,8 +416,8 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			MemberResolveResult mrr = rr as MemberResolveResult;
 			if (mrr != null) {
 				return MemberLookupHelper.IsSimilarMember(mrr.ResolvedMember, member);
-			} else if (rr is MethodResolveResult) {
-				return MemberLookupHelper.IsSimilarMember((rr as MethodResolveResult).GetMethodIfSingleOverload(), member);
+			} else if (rr is MethodGroupResolveResult) {
+				return MemberLookupHelper.IsSimilarMember((rr as MethodGroupResolveResult).GetMethodIfSingleOverload(), member);
 			} else {
 				return false;
 			}
@@ -425,4 +425,5 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		#endregion
 	}
 }
+
 

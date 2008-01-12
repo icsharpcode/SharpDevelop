@@ -209,6 +209,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 			if (member is IProperty && ((IProperty)member).IsIndexer) {
 				return false;
 			}
+			if (member is IMethod && ((IMethod)member).IsConstructor) {
+				return false;
+			}
 			return member.IsStatic == showStatic;
 		}
 		#endregion
@@ -301,6 +304,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 			public override bool ShowMember(IMember member, bool showStatic)
 			{
 				if (member is ArrayReturnType.ArrayIndexer) {
+					return false;
+				}
+				if (member is IMethod && ((IMethod)member).IsConstructor) {
 					return false;
 				}
 				return member.IsStatic || !showStatic;

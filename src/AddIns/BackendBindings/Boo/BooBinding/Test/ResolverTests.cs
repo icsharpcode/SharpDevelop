@@ -226,7 +226,7 @@ namespace Grunwald.BooBinding.Tests
 		[Test]
 		public void MyMethodCompletion()
 		{
-			MethodResolveResult rr = Resolve<MethodResolveResult>(regressionProg, "MyMethod", "/*1*/");
+			MethodGroupResolveResult rr = Resolve<MethodGroupResolveResult>(regressionProg, "MyMethod", "/*1*/");
 			ArrayList arr = rr.GetCompletionData(lastPC);
 			Assert.IsNotNull(arr);
 			bool beginInvoke = false;

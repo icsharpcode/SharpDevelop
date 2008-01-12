@@ -124,10 +124,10 @@ namespace ICSharpCode.NRefactory.Visitors
 		public override object VisitMemberReferenceExpression(MemberReferenceExpression fieldReferenceExpression, object data)
 		{
 			if (fieldReferenceExpression.TargetObject is ThisReferenceExpression) {
-				string name = fieldReferenceExpression.FieldName;
+				string name = fieldReferenceExpression.MemberName;
 				foreach (VariableDeclaration var in fields) {
 					if (var.Name == name) {
-						fieldReferenceExpression.FieldName = prefix + name;
+						fieldReferenceExpression.MemberName = prefix + name;
 						break;
 					}
 				}

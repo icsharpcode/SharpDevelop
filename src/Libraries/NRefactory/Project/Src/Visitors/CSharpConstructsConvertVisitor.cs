@@ -109,7 +109,7 @@ namespace ICSharpCode.NRefactory.Visitors
 				return ident.Identifier;
 			MemberReferenceExpression fre = expression as MemberReferenceExpression;
 			if (fre != null && fre.TargetObject is ThisReferenceExpression)
-				return fre.FieldName;
+				return fre.MemberName;
 			return null;
 		}
 		

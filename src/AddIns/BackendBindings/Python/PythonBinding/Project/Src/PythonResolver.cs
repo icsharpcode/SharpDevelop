@@ -47,7 +47,7 @@ namespace ICSharpCode.PythonBinding
 			}
 			
 			// Search for a method.
-			MethodResolveResult resolveResult = GetMethodResolveResult(expressionResult.Expression);
+			MethodGroupResolveResult resolveResult = GetMethodResolveResult(expressionResult.Expression);
 			if (resolveResult != null) {
 				return resolveResult;
 			}
@@ -246,7 +246,7 @@ namespace ICSharpCode.PythonBinding
 		/// <summary>
 		/// Tries to resolve a method in the expression.
 		/// </summary>
-		MethodResolveResult GetMethodResolveResult(string expression)
+		MethodGroupResolveResult GetMethodResolveResult(string expression)
 		{
 			// Remove last part of the expression and try to
 			// find this class.
@@ -256,7 +256,7 @@ namespace ICSharpCode.PythonBinding
 				IClass matchingClass = GetClass(className);
 				if (matchingClass != null) {
 					string methodName = GetMethodName(expression);
-					return new MethodResolveResult(null, null, matchingClass.DefaultReturnType, methodName);
+					return new MethodGroupResolveResult(null, null, matchingClass.DefaultReturnType, methodName);
 				}
 			}
 			return null;

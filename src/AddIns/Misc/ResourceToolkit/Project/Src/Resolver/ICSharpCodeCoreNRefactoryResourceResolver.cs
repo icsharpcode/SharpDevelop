@@ -56,7 +56,7 @@ namespace Hornung.ResourceToolkit.Resolver
 				
 			} else {
 				
-				MethodResolveResult methrr = resolveResult as MethodResolveResult;
+				MethodGroupResolveResult methrr = resolveResult as MethodGroupResolveResult;
 				if (methrr != null) {
 					
 					// If it is a MethodResolveResult, the expression is incomplete.
@@ -102,7 +102,7 @@ namespace Hornung.ResourceToolkit.Resolver
 			if (invocation != null) {
 				MemberReferenceExpression fre = invocation.TargetObject as MemberReferenceExpression;
 				if (fre != null) {
-					if (fre.FieldName == "GetString") {
+					if (fre.MemberName == "GetString") {
 						if (invocation.Arguments.Count > 0) {
 							PrimitiveExpression p = invocation.Arguments[0] as PrimitiveExpression;
 							if (p != null) {

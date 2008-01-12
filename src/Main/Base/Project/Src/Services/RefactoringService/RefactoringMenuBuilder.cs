@@ -76,8 +76,8 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		repeatResolve:
 			rr = ResolveExpressionAtCaret(textArea, expressionResult);
 			item = null;
-			if (rr is MethodResolveResult) {
-				item = MakeItem(definitions, ((MethodResolveResult)rr).GetMethodIfSingleOverload());
+			if (rr is MethodGroupResolveResult) {
+				item = MakeItem(definitions, ((MethodGroupResolveResult)rr).GetMethodIfSingleOverload());
 			} else if (rr is MemberResolveResult) {
 				MemberResolveResult mrr = (MemberResolveResult)rr;
 				item = MakeItem(definitions, mrr.ResolvedMember);
@@ -278,6 +278,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		}
 	}
 }
+
 
 
 

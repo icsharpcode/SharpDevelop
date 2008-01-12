@@ -27,7 +27,18 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			if (rt == null || !rt.IsGenericReturnType)
 				return false;
-			return typeParameter.Equals(rt.CastToGenericReturnType().typeParameter);
+			GenericReturnType grt = rt.CastToGenericReturnType();
+			if ((typeParameter.Method == null) != (grt.typeParameter.Method == null))
+				return false;
+			return typeParameter.Index == grt.typeParameter.Index;
+		}
+		
+		public override int GetHashCode()
+		{
+			if (typeParameter.Method != null)
+				return 17491 + typeParameter.Index;
+			else
+				return 81871 + typeParameter.Index;
 		}
 		
 		public override T CastToDecoratingReturnType<T>()
@@ -37,11 +48,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 			} else {
 				return null;
 			}
-		}
-		
-		public override int GetHashCode()
-		{
-			return typeParameter.GetHashCode();
 		}
 		
 		public GenericReturnType(ITypeParameter typeParameter)

@@ -126,7 +126,7 @@ namespace ICSharpCode.NRefactory.Visitors
 				return ident.Identifier;
 			MemberReferenceExpression fre = expr as MemberReferenceExpression;
 			if (fre != null && fre.TargetObject is ThisReferenceExpression)
-				return fre.FieldName;
+				return fre.MemberName;
 			return null;
 		}
 		
@@ -261,7 +261,7 @@ namespace ICSharpCode.NRefactory.Visitors
 								return false;
 							if ((fre.TargetObject as IdentifierExpression).Identifier != "CharSet")
 								return false;
-							switch (fre.FieldName) {
+							switch (fre.MemberName) {
 								case "Unicode":
 									charSet = CharsetModifier.Unicode;
 									break;

@@ -64,7 +64,7 @@ namespace CSharpEditor
 		/// </summary>
 		public const string DummyFileName = "edited.cs";
 		
-		static readonly Dom.LanguageProperties CurrentLanguageProperties = Dom.LanguageProperties.CSharp;
+		static readonly Dom.LanguageProperties CurrentLanguageProperties = IsVisualBasic ? Dom.LanguageProperties.VBNet : Dom.LanguageProperties.CSharp;
 		
 		public MainForm()
 		{

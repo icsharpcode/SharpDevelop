@@ -322,6 +322,42 @@ class TestClass {
 			Assert.IsTrue(Refactoring.RefactoringService.IsReferenceToMember(genericMethod, mrr));
 			Assert.IsFalse(Refactoring.RefactoringService.IsReferenceToMember(nonGenericMethod, mrr));
 		}
+		
+		[Test]
+		public void OverrideGenericMethodTest()
+		{
+			string program = @"using System;
+class Program {
+	public static void Main() {
+		D d = new D();
+		
+		d.T<char, int>('a', 1);
+		d.T<int, char>('a', 2);
+	}
+	protected virtual void T<A, B>(A a, B b) {
+	}
+	protected virtual void T<X, Y>(Y a, X b) {
+	}
+}
+class D : Program  {
+	protected override void T<X, Y>(X a, Y b) {
+		// overrides T<A,B> - type arguments are identified by position
+	}
+}";
+			IAmbience ambience = Dom.CSharp.CSharpAmbience.Instance;
+			ambience.ConversionFlags = ConversionFlags.UseFullyQualifiedMemberNames | ConversionFlags.ShowTypeParameterList;
+			MemberResolveResult mrr;
+			
+			mrr = Resolve<MemberResolveResult>(program, "d.T<int, char>('a', 2)", 5);
+			Assert.AreEqual("Program.T<X, Y>", ambience.Convert((IMethod)mrr.ResolvedMember));
+			
+			mrr = Resolve<MemberResolveResult>(program, "d.T<char, int>('a', 1)", 6);
+			Assert.AreEqual("D.T<X, Y>", ambience.Convert((IMethod)mrr.ResolvedMember));
+			
+			IMember baseMember = MemberLookupHelper.FindBaseMember(mrr.ResolvedMember);
+			Assert.IsNotNull(baseMember);
+			Assert.AreEqual("Program.T<A, B>", ambience.Convert((IMethod)baseMember));
+		}
 		#endregion
 	}
 }

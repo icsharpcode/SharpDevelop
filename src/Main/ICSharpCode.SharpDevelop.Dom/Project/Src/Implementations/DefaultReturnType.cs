@@ -90,7 +90,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 					if (m.IsConstructor)
 						continue;
 					
-					bool ok = true;
+					/*bool ok = true;
 					if (m.IsOverridable) {
 						StringComparer comparer = m.DeclaringType.ProjectContent.Language.NameComparer;
 						foreach (IMethod oldMethod in c.Methods) {
@@ -105,7 +105,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 						}
 					}
 					if (ok)
-						l.Add(m);
+						l.Add(m);*/
+					l.Add(m);
 				}
 			}
 		}
@@ -131,7 +132,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			if (baseType != null) {
 				foreach (IProperty p in baseType.GetProperties()) {
-					bool ok = true;
+					/*bool ok = true;
 					if (p.IsOverridable) {
 						StringComparer comparer = p.DeclaringType.ProjectContent.Language.NameComparer;
 						foreach (IProperty oldProperty in c.Properties) {
@@ -146,7 +147,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 						}
 					}
 					if (ok)
-						l.Add(p);
+						l.Add(p);*/
+					l.Add(p);
 				}
 			}
 		}

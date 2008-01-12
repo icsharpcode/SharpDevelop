@@ -604,26 +604,29 @@ namespace ICSharpCode.TextEditor
 			
 			motherTextEditorControl.BeginUpdate();
 			Document.UndoStack.StartUndoGroup();
-			// INSERT char
-			if (!HandleKeyPress(ch)) {
-				switch (Caret.CaretMode) {
-					case CaretMode.InsertMode:
-						InsertChar(ch);
-						break;
-					case CaretMode.OverwriteMode:
-						ReplaceChar(ch);
-						break;
-					default:
-						Debug.Assert(false, "Unknown caret mode " + Caret.CaretMode);
-						break;
+			try {
+				// INSERT char
+				if (!HandleKeyPress(ch)) {
+					switch (Caret.CaretMode) {
+						case CaretMode.InsertMode:
+							InsertChar(ch);
+							break;
+						case CaretMode.OverwriteMode:
+							ReplaceChar(ch);
+							break;
+						default:
+							Debug.Assert(false, "Unknown caret mode " + Caret.CaretMode);
+							break;
+					}
 				}
+				
+				int currentLineNr = Caret.Line;
+				Document.FormattingStrategy.FormatLine(this, currentLineNr, Document.PositionToOffset(Caret.Position), ch);
+				
+				motherTextEditorControl.EndUpdate();
+			} finally {
+				Document.UndoStack.EndUndoGroup();
 			}
-			
-			int currentLineNr = Caret.Line;
-			Document.FormattingStrategy.FormatLine(this, currentLineNr, Document.PositionToOffset(Caret.Position), ch);
-			
-			motherTextEditorControl.EndUpdate();
-			Document.UndoStack.EndUndoGroup();
 		}
 		
 		protected override void OnKeyPress(KeyPressEventArgs e)

@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {
@@ -14,11 +15,180 @@ namespace ICSharpCode.SharpDevelop.Dom
 	/// Class with methods to help finding the correct overload for a member.
 	/// </summary>
 	/// <remarks>
-	/// This class does member lookup like specified by the C# spec (ECMA-334, § 14.3).
+	/// This class does member lookup as specified by the C# spec (ECMA-334, § 14.3).
 	/// Other languages might need custom lookup methods.
 	/// </remarks>
 	public static class MemberLookupHelper
 	{
+		static List<IMember> GetAllMembers(IReturnType rt)
+		{
+			List<IMember> members = new List<IMember>();
+			if (rt != null) {
+				rt.GetMethods().ForEach(members.Add);
+				rt.GetProperties().ForEach(members.Add);
+				rt.GetFields().ForEach(members.Add);
+				rt.GetEvents().ForEach(members.Add);
+			}
+			return members;
+		}
+		
+		public static List<IMember> LookupMember(IReturnType type, string name, IClass callingClass, LanguageProperties language, bool isInvocation)
+		{
+			if (language == null)
+				throw new ArgumentNullException("language");
+			
+			bool isClassInInheritanceTree = false;
+			IClass underlyingClass = type.GetUnderlyingClass();
+			if (underlyingClass != null)
+				isClassInInheritanceTree = underlyingClass.IsTypeInInheritanceTree(callingClass);
+			
+			IEnumerable<IMember> members;
+			if (language == LanguageProperties.VBNet && language.NameComparer.Equals(name, "New")) {
+				members = GetAllMembers(type).OfType<IMethod>().Where(m => m.IsConstructor).Select(m=>(IMember)m);
+			} else {
+				members = GetAllMembers(type).Where(m => language.NameComparer.Equals(m.Name, name));
+			}
+			
+			return LookupMember(members, callingClass, isClassInInheritanceTree, isInvocation);
+		}
+		
+		class SignatureComparer : IEqualityComparer<IMethod>
+		{
+			public bool Equals(IMethod x, IMethod y)
+			{
+				if (GetHashCode(x) != GetHashCode(y))
+					return false;
+				var paramsX = x.Parameters;
+				var paramsY = y.Parameters;
+				if (paramsX.Count != paramsY.Count)
+					return false;
+				if (x.TypeParameters.Count != y.TypeParameters.Count)
+					return false;
+				for (int i = 0; i < paramsX.Count; i++) {
+					IParameter px = paramsX[i];
+					IParameter py = paramsY[i];
+					if ((px.IsOut || px.IsRef) != (py.IsOut || py.IsRef))
+						return false;
+					if (!object.Equals(px.ReturnType, py.ReturnType))
+						return false;
+				}
+				return true;
+			}
+			
+			Dictionary<IMethod, int> cachedHashes = new Dictionary<IMethod, int>();
+			
+			public int GetHashCode(IMethod obj)
+			{
+				int hashCode;
+				if (cachedHashes.TryGetValue(obj, out hashCode))
+					return hashCode;
+				hashCode = obj.TypeParameters.Count;
+				unchecked {
+					foreach (IParameter p in obj.Parameters) {
+						hashCode *= 1000000579;
+						if (p.IsOut || p.IsRef)
+							hashCode += 1;
+						hashCode += p.ReturnType.GetHashCode();
+					}
+				}
+				cachedHashes[obj] = hashCode;
+				return hashCode;
+			}
+		}
+		
+		sealed class InheritanceLevelComparer : IComparer<IClass>
+		{
+			public readonly static InheritanceLevelComparer Instance = new InheritanceLevelComparer();
+			
+			public int Compare(IClass x, IClass y)
+			{
+				if (x == y)
+					return 0;
+				if (x.IsTypeInInheritanceTree(y))
+					return 1;
+				else
+					return -1;
+			}
+		}
+		
+		public static List<IMember> LookupMember(IEnumerable<IMember> possibleMembers, IClass callingClass,
+		                                         bool isClassInInheritanceTree, bool isInvocation)
+		{
+//			Console.WriteLine("Possible members:");
+//			foreach (IMember m in possibleMembers) {
+//				Console.WriteLine("  " + m.DotNetName);
+//			}
+			
+			IEnumerable<IMember> accessibleMembers = possibleMembers.Where(member => member.IsAccessible(callingClass, isClassInInheritanceTree));
+			if (isInvocation) {
+				accessibleMembers = accessibleMembers.Where(IsInvocable);
+			}
+			
+			// base most member => most derived member
+			//Dictionary<IMember, IMember> overrideDict = new Dictionary<IMember, IMember>();
+			
+			Dictionary<IMethod, IMethod> overrideMethodDict = new Dictionary<IMethod, IMethod>(new SignatureComparer());
+			IMember nonMethodOverride = null;
+			
+			List<IMember> results = new List<IMember>();
+			foreach (var group in accessibleMembers
+			         .GroupBy((IMember m) => m.DeclaringType.GetCompoundClass())
+			         .OrderByDescending(g => g.Key, InheritanceLevelComparer.Instance))
+			{
+				//Console.WriteLine("Member group " + group.Key);
+				foreach (IMember m in group) {
+					//Console.WriteLine("  " + m.DotNetName);
+					if (m.IsOverride) {
+						IMethod method = m as IMethod;
+						if (method != null)
+							overrideMethodDict[method] = method;
+						else
+							nonMethodOverride = m;
+					} else {
+						IMethod method = m as IMethod;
+						if (method != null && overrideMethodDict.TryGetValue(method, out method))
+							results.Add(method);
+						else
+							results.Add(m);
+					}
+				}
+				if (results.Count > 0)
+					break;
+			}
+			return results;
+		}
+		
+		static bool IsInvocable(IMember member)
+		{
+			if (member is IMethod || member is IEvent)
+				return true;
+			IProperty p = member as IProperty;
+			if (p != null && p.Parameters.Count > 0)
+				return true;
+			IClass c = member.ReturnType.GetUnderlyingClass();
+			return c != null && c.ClassType == ClassType.Delegate;
+		}
+		
+		/// <summary>
+		/// Gets all accessible members, including indexers and constructors.
+		/// </summary>
+		public static List<IMember> GetAccessibleMembers(IReturnType rt, IClass callingClass, LanguageProperties language)
+		{
+			if (language == null)
+				throw new ArgumentNullException("language");
+			
+			bool isClassInInheritanceTree = false;
+			IClass underlyingClass = rt.GetUnderlyingClass();
+			if (underlyingClass != null)
+				isClassInInheritanceTree = underlyingClass.IsTypeInInheritanceTree(callingClass);
+			
+			List<IMember> result = new List<IMember>();
+			foreach (var g in GetAllMembers(rt).GroupBy(m => m.Name, language.NameComparer)) {
+				result.AddRange(LookupMember(g, callingClass, isClassInInheritanceTree, false));
+			}
+			return result;
+		}
+		
 		#region FindOverload
 		/// <summary>
 		/// Finds the correct overload according to the C# specification.
@@ -26,18 +196,17 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// <param name="methods">List with the methods to check.<br/>
 		/// <b>Generic methods in the input type are replaced by methods with have the types substituted!</b>
 		/// </param>
-		/// <param name="typeParameters">The type parameters passed to the method.</param>
 		/// <param name="arguments">The types of the arguments passed to the method.</param>
 		/// <param name="resultIsAcceptable">Out parameter. Will be true if the resulting method
 		/// is an acceptable match, false if the resulting method is just a guess and will lead
 		/// to a compile error.</param>
 		/// <returns>The method that will be called.</returns>
-		public static IMethod FindOverload(IList<IMethod> methods, IReturnType[] typeParameters, IReturnType[] arguments, out bool resultIsAcceptable)
+		public static IMethod FindOverload(IList<IMethod> methods, IReturnType[] arguments, out bool resultIsAcceptable)
 		{
 			resultIsAcceptable = false;
 			if (methods.Count == 0)
 				return null;
-			int[] ranking = RankOverloads(methods, typeParameters, arguments, false, out resultIsAcceptable);
+			int[] ranking = RankOverloads(methods, arguments, false, out resultIsAcceptable);
 			int bestRanking = -1;
 			int best = 0;
 			for (int i = 0; i < ranking.Length; i++) {
@@ -76,8 +245,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// <param name="list">List with the methods to check.<br/>
 		/// <b>Generic methods in the input type are replaced by methods with have the types substituted!</b>
 		/// </param>
-		/// <param name="typeParameters">List with the type parameters passed to the method.
-		/// Can be null (=no type parameters)</param>
 		/// <param name="arguments">The types of the arguments passed to the method.
 		/// A null return type means any argument type is allowed.</param>
 		/// <param name="allowAdditionalArguments">Specifies whether the method can have
@@ -86,7 +253,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// method is acceptable for a method call (no invalid casts)</param>
 		/// <returns>Integer array. Each value in the array </returns>
 		public static int[] RankOverloads(IList<IMethod> list,
-		                                  IReturnType[] typeParameters,
 		                                  IReturnType[] arguments,
 		                                  bool allowAdditionalArguments,
 		                                  out bool acceptableMatch)
@@ -94,47 +260,21 @@ namespace ICSharpCode.SharpDevelop.Dom
 			acceptableMatch = false;
 			if (list.Count == 0) return new int[] {};
 			
-			List<IMethodOrProperty> l2 = new List<IMethodOrProperty>(list.Count);
 			IReturnType[][] inferredTypeParameters;
 			// See ECMA-334, § 14.3
 			
-			// If type parameters are specified, remove all methods from the list that do not
-			// use the specified number of parameters.
-			if (typeParameters != null && typeParameters.Length > 0) {
-				for (int i = 0; i < list.Count; i++) {
-					IMethod m = list[i];
-					if (m.TypeParameters.Count == typeParameters.Length) {
-						m = (IMethod)m.CreateSpecializedMember();
-						m.ReturnType = ConstructedReturnType.TranslateType(m.ReturnType, typeParameters, true);
-						for (int j = 0; j < m.Parameters.Count; ++j) {
-							m.Parameters[j].ReturnType = ConstructedReturnType.TranslateType(m.Parameters[j].ReturnType, typeParameters, true);
-						}
-						list[i] = m;
-						l2.Add(m);
-					}
-				}
-				
-				int[] innerRanking = RankOverloads(l2, arguments, allowAdditionalArguments, out acceptableMatch, out inferredTypeParameters);
-				int[] ranking = new int[list.Count];
-				int innerIndex = 0;
-				for (int i = 0; i < ranking.Length; i++) {
-					if (list[i].TypeParameters.Count == typeParameters.Length) {
-						ranking[i] = innerRanking[innerIndex++];
-					} else {
-						ranking[i] = 0;
-					}
-				}
-				return ranking;
-			} else {
-				// Note that when there are no type parameters, methods having type parameters
-				// are not removed, since the type inference process might be able to infer the
-				// type arguments.
-				foreach (IMethod m in list) l2.Add(m);
-				
-				int[] ranking = RankOverloads(l2, arguments, allowAdditionalArguments, out acceptableMatch, out inferredTypeParameters);
-				ApplyInferredTypeParameters(list, inferredTypeParameters);
-				return ranking;
-			}
+			// We longer pass the explicit type arguments to RankOverloads, this is now done when
+			// the method group is constructed.
+			
+			// Note that when there are no type parameters, methods having type parameters
+			// are not removed, since the type inference process might be able to infer the
+			// type arguments.
+			
+			List<IMethodOrProperty> l2 = new List<IMethodOrProperty>();
+			foreach (IMethod m in list) l2.Add(m);
+			int[] ranking = RankOverloads(l2, arguments, allowAdditionalArguments, out acceptableMatch, out inferredTypeParameters);
+			ApplyInferredTypeParameters(list, inferredTypeParameters);
+			return ranking;
 		}
 		
 		static void ApplyInferredTypeParameters(IList<IMethod> list, IReturnType[][] inferredTypeParameters)
@@ -939,6 +1079,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public static IMember FindSimilarMember(IClass type, IMember member)
 		{
+			member = GetGenericMember(member);
 			if (member is IMethod) {
 				IMethod parentMethod = (IMethod)member;
 				foreach (IMethod m in type.Methods) {

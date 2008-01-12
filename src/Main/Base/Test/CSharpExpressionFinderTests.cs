@@ -834,6 +834,46 @@ class Main {
 			Assert.IsNull(result.Expression);
 			Assert.AreEqual(ExpressionContext.Default, result.Context);
 		}
+		
+		[Test]
+		public void IsOperatorTest()
+		{
+			const string program = @"using System;
+class Main {
+	void M() {
+		if (x is ";
+			
+			ExpressionResult result = ef.FindExpression(program, program.Length);
+			Assert.IsNull(result.Expression);
+			Assert.AreEqual(ExpressionContext.Type, result.Context);
+		}
+		
+		[Test]
+		public void TypeOfTest()
+		{
+			const string program = @"using System;
+class Main {
+	void M() {
+		Type t = typeof(";
+			
+			ExpressionResult result = ef.FindExpression(program, program.Length);
+			Assert.IsNull(result.Expression);
+			Assert.AreEqual(ExpressionContext.Type, result.Context);
+		}
+		
+		[Test]
+		public void AsOperatorTest()
+		{
+			const string program = @"using System;
+class Main {
+	void M() {
+		X x = a as ";
+			
+			ExpressionResult result = ef.FindExpression(program, program.Length);
+			Assert.IsNull(result.Expression);
+			Assert.AreEqual(ExpressionContext.Type, result.Context);
+		}
 	}
 }
+
 

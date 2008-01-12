@@ -83,8 +83,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 			OpenFile(pos);
 		}
 		
+		bool disableDefinitionView;
+		
 		ResolveResult ResolveAtCaret(ParserUpdateStepEventArgs e)
 		{
+			if (disableDefinitionView)
+				return null;
 			IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
 			if (window == null) return null;
 			ITextEditorControlProvider provider = window.ActiveViewContent as ITextEditorControlProvider;
@@ -102,9 +106,17 @@ namespace ICSharpCode.SharpDevelop.Gui
 				LoggingService.Debug("caret.Offset = " + caret.Offset + ", content.Length=" + content.Length);
 				return null;
 			}
-			ExpressionResult expr = expressionFinder.FindFullExpression(content, caret.Offset);
-			if (expr.Expression == null) return null;
-			return ParserService.Resolve(expr, caret.Line + 1, caret.Column + 1, fileName, content);
+			try {
+				ExpressionResult expr = expressionFinder.FindFullExpression(content, caret.Offset);
+				if (expr.Expression == null) return null;
+				return ParserService.Resolve(expr, caret.Line + 1, caret.Column + 1, fileName, content);
+			} catch (Exception ex) {
+				disableDefinitionView = true;
+				this.Control.Visible = false;
+				MessageService.ShowError(ex, "Error resolving at " + (caret.Line + 1) + "/" + (caret.Column + 1)
+				                         + ". DefinitionViewPad is disabled until you restart SharpDevelop.");
+				return null;
+			}
 		}
 		
 		FilePosition oldPosition;

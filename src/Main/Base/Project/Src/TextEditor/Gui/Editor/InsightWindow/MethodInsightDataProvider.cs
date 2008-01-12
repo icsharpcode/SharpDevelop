@@ -115,10 +115,10 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 					LoggingService.DebugFormatted("ShowInsight for >>{0}<<, context={1}", expressionResult.Expression, expressionResult.Context);
 			}
 			
+			int caretLineNumber = document.GetLineNumberForOffset(useOffset);
+			int caretColumn     = useOffset - document.GetLineSegment(caretLineNumber).Offset;
 			// the parser works with 1 based coordinates
-			int caretLineNumber = document.GetLineNumberForOffset(useOffset) + 1;
-			int caretColumn     = useOffset - document.GetLineSegment(caretLineNumber).Offset + 1;
-			SetupDataProvider(fileName, document, expressionResult, caretLineNumber, caretColumn);
+			SetupDataProvider(fileName, document, expressionResult, caretLineNumber + 1, caretColumn + 1);
 		}
 		
 		protected virtual void SetupDataProvider(string fileName, IDocument document, ExpressionResult expressionResult, int caretLineNumber, int caretColumn)
@@ -155,7 +155,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 					methods.Add(Constructor.CreateDefault(trr.ResolvedClass));
 				}
 			} else {
-				MethodResolveResult result = results as MethodResolveResult;
+				MethodGroupResolveResult result = results as MethodGroupResolveResult;
 				if (result == null)
 					return;
 				bool classIsInInheritanceTree = false;

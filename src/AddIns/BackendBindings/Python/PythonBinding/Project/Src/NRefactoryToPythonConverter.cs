@@ -700,7 +700,7 @@ namespace ICSharpCode.PythonBinding
 			
 			// Create method ref.
 			CodeMethodReferenceExpression methodRef = new CodeMethodReferenceExpression();
-			methodRef.MethodName = memberRefExpression.FieldName;
+			methodRef.MethodName = memberRefExpression.MemberName;
 			methodRef.TargetObject = targetObjectExpression;
 			
 			// Create method invoke.
@@ -1147,7 +1147,7 @@ namespace ICSharpCode.PythonBinding
 		public object VisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression, object data)
 		{
 			CodeFieldReferenceExpression codeFieldReferenceExpression = new CodeFieldReferenceExpression();
-			codeFieldReferenceExpression.FieldName = memberReferenceExpression.FieldName;
+			codeFieldReferenceExpression.FieldName = memberReferenceExpression.MemberName;
 			codeFieldReferenceExpression.TargetObject = (CodeExpression)memberReferenceExpression.TargetObject.AcceptVisitor(this, data);
 			return codeFieldReferenceExpression;
 		}

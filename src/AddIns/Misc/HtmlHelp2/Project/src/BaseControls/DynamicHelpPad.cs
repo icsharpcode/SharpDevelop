@@ -165,10 +165,10 @@ namespace HtmlHelp2
 				this.AddToStringCollection(res.ResolvedType.FullyQualifiedName);
 			}
 
-			MemberResolveResult member    = res as MemberResolveResult;
-			NamespaceResolveResult nspace = res as NamespaceResolveResult;
-			MethodResolveResult method    = res as MethodResolveResult;
-			TypeResolveResult types       = res as TypeResolveResult;
+			MemberResolveResult member      = res as MemberResolveResult;
+			NamespaceResolveResult nspace   = res as NamespaceResolveResult;
+			MethodGroupResolveResult method = res as MethodGroupResolveResult;
+			TypeResolveResult types         = res as TypeResolveResult;
 
 			if (member != null && member.ResolvedMember != null)
 			{

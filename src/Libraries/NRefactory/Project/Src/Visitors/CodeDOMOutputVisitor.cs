@@ -1126,7 +1126,7 @@ namespace ICSharpCode.NRefactory.Visitors
 				if (targetExpr == null)
 					targetExpr = (CodeExpression)fRef.TargetObject.AcceptVisitor(this, data);
 				
-				methodName = fRef.FieldName;
+				methodName = fRef.MemberName;
 				// HACK for : Microsoft.VisualBasic.ChrW(NUMBER)
 				if (methodName == "ChrW") {
 					return new CodeCastExpression("System.Char", GetExpressionList(invocationExpression.Arguments)[0]);
@@ -1306,7 +1306,7 @@ namespace ICSharpCode.NRefactory.Visitors
 				                                     methodInvoker));
 			} else {
 				MemberReferenceExpression fr = (MemberReferenceExpression)eventExpr;
-				AddStmt(new CodeAttachEventStatement(new CodeEventReferenceExpression((CodeExpression)fr.TargetObject.AcceptVisitor(this, data), fr.FieldName),
+				AddStmt(new CodeAttachEventStatement(new CodeEventReferenceExpression((CodeExpression)fr.TargetObject.AcceptVisitor(this, data), fr.MemberName),
 				                                     methodInvoker));
 			}
 		}
@@ -1531,7 +1531,7 @@ namespace ICSharpCode.NRefactory.Visitors
 			    || fieldReferenceExpression.TargetObject is BaseReferenceExpression)
 			{
 				//field detection for fields\props inherited from base classes
-				return IsField(fieldReferenceExpression.FieldName);
+				return IsField(fieldReferenceExpression.MemberName);
 			}
 			return false;
 		}
@@ -1540,28 +1540,28 @@ namespace ICSharpCode.NRefactory.Visitors
 		{
 			if (methodReference) {
 				methodReference = false;
-				return new CodeMethodReferenceExpression((CodeExpression)fieldReferenceExpression.TargetObject.AcceptVisitor(this, data), fieldReferenceExpression.FieldName);
+				return new CodeMethodReferenceExpression((CodeExpression)fieldReferenceExpression.TargetObject.AcceptVisitor(this, data), fieldReferenceExpression.MemberName);
 			}
 			if (IsFieldReferenceExpression(fieldReferenceExpression)) {
 				return new CodeFieldReferenceExpression((CodeExpression)fieldReferenceExpression.TargetObject.AcceptVisitor(this, data),
-				                                        fieldReferenceExpression.FieldName);
+				                                        fieldReferenceExpression.MemberName);
 			} else {
 				if (fieldReferenceExpression.TargetObject is MemberReferenceExpression) {
 					if (IsPossibleTypeReference((MemberReferenceExpression)fieldReferenceExpression.TargetObject)) {
 						CodeTypeReferenceExpression typeRef = ConvertToTypeReference((MemberReferenceExpression)fieldReferenceExpression.TargetObject);
-						if (IsField(typeRef.Type.BaseType, typeRef.Type.TypeArguments.Count, fieldReferenceExpression.FieldName)) {
+						if (IsField(typeRef.Type.BaseType, typeRef.Type.TypeArguments.Count, fieldReferenceExpression.MemberName)) {
 							return new CodeFieldReferenceExpression(typeRef,
-							                                        fieldReferenceExpression.FieldName);
+							                                        fieldReferenceExpression.MemberName);
 						} else {
 							return new CodePropertyReferenceExpression(typeRef,
-							                                           fieldReferenceExpression.FieldName);
+							                                           fieldReferenceExpression.MemberName);
 						}
 					}
 				}
 				
 				CodeExpression codeExpression = (CodeExpression)fieldReferenceExpression.TargetObject.AcceptVisitor(this, data);
 				return new CodePropertyReferenceExpression(codeExpression,
-				                                           fieldReferenceExpression.FieldName);
+				                                           fieldReferenceExpression.MemberName);
 			}
 		}
 
@@ -1623,12 +1623,12 @@ namespace ICSharpCode.NRefactory.Visitors
 			
 			while (fieldReferenceExpression.TargetObject is MemberReferenceExpression) {
 				type.Insert(0,'.');
-				type.Insert(1,fieldReferenceExpression.FieldName.ToCharArray());
+				type.Insert(1,fieldReferenceExpression.MemberName.ToCharArray());
 				fieldReferenceExpression = (MemberReferenceExpression)fieldReferenceExpression.TargetObject;
 			}
 			
 			type.Insert(0,'.');
-			type.Insert(1,fieldReferenceExpression.FieldName.ToCharArray());
+			type.Insert(1,fieldReferenceExpression.MemberName.ToCharArray());
 			
 			if (fieldReferenceExpression.TargetObject is IdentifierExpression) {
 				type.Insert(0, ((IdentifierExpression)fieldReferenceExpression.TargetObject).Identifier.ToCharArray());

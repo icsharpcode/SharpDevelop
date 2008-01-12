@@ -63,7 +63,7 @@ namespace Hornung.ResourceToolkit.Resolver
 				// (MemberResolveResult) to the method reference by passing '(' as
 				// charTyped explicitly.
 				
-				MethodResolveResult methrr = resolveResult as MethodResolveResult;
+				MethodGroupResolveResult methrr = resolveResult as MethodGroupResolveResult;
 				if (methrr != null) {
 					if ((methrr.Name == "GetString" || methrr.Name == "GetObject" || methrr.Name == "GetStream") &&
 					    (resolveResult = NRefactoryAstCacheService.ResolveNextOuterExpression(ref expressionResult, caretLine, caretColumn, fileName, expressionFinder)) != null) {
@@ -108,7 +108,7 @@ namespace Hornung.ResourceToolkit.Resolver
 						
 						if ((resolveResult = NRefactoryAstCacheService.ResolveNextOuterExpression(ref expressionResult, caretLine, caretColumn, fileName, expressionFinder)) != null) {
 							
-							if (resolveResult is MethodResolveResult) {
+							if (resolveResult is MethodGroupResolveResult) {
 								return this.Resolve(expressionResult, expr, resolveResult, caretLine, caretColumn, fileName, fileContent, expressionFinder, '(');
 							} else {
 								return ResolveResource(resolveResult, expr);
@@ -689,7 +689,7 @@ namespace Hornung.ResourceToolkit.Resolver
 			if (invocation != null) {
 				MemberReferenceExpression fre = invocation.TargetObject as MemberReferenceExpression;
 				if (fre != null) {
-					if (fre.FieldName == "GetString" || fre.FieldName == "GetObject" || fre.FieldName == "GetStream") {
+					if (fre.MemberName == "GetString" || fre.MemberName == "GetObject" || fre.MemberName == "GetStream") {
 						if (invocation.Arguments.Count > 0) {
 							PrimitiveExpression p = invocation.Arguments[0] as PrimitiveExpression;
 							if (p != null) {

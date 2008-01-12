@@ -109,7 +109,7 @@ namespace ICSharpCode.NRefactory.Visitors
 					InvocationExpression ie = se.Expression as InvocationExpression;
 					if (ie != null) {
 						MemberReferenceExpression fre = ie.TargetObject as MemberReferenceExpression;
-						if (fre != null && "New".Equals(fre.FieldName, StringComparison.InvariantCultureIgnoreCase)) {
+						if (fre != null && "New".Equals(fre.MemberName, StringComparison.InvariantCultureIgnoreCase)) {
 							if (fre.TargetObject is BaseReferenceExpression || fre.TargetObject is ClassReferenceExpression || fre.TargetObject is ThisReferenceExpression) {
 								body.Children.RemoveAt(0);
 								ConstructorInitializer ci = new ConstructorInitializer();
@@ -209,7 +209,7 @@ namespace ICSharpCode.NRefactory.Visitors
 						    && ie.Arguments.Count == 0
 						    && ie.TargetObject is MemberReferenceExpression
 						    && (ie.TargetObject as MemberReferenceExpression).TargetObject is BaseReferenceExpression
-						    && "Finalize".Equals((ie.TargetObject as MemberReferenceExpression).FieldName, StringComparison.InvariantCultureIgnoreCase))
+						    && "Finalize".Equals((ie.TargetObject as MemberReferenceExpression).MemberName, StringComparison.InvariantCultureIgnoreCase))
 						{
 							DestructorDeclaration des = new DestructorDeclaration("Destructor", Modifiers.None, methodDeclaration.Attributes);
 							ReplaceCurrentNode(des);

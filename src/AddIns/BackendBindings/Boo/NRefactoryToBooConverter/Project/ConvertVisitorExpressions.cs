@@ -146,7 +146,7 @@ namespace NRefactoryToBooConverter
 				target = (B.Expression)mre.TargetObject.AcceptVisitor(this, data);
 				if (target == null) return null;
 			}
-			return new B.MemberReferenceExpression(GetLexicalInfo(mre), target, mre.FieldName);
+			return new B.MemberReferenceExpression(GetLexicalInfo(mre), target, mre.MemberName);
 		}
 		
 		public object VisitClassReferenceExpression(ClassReferenceExpression classReferenceExpression, object data)

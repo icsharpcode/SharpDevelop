@@ -1712,7 +1712,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					return "\\v";
 				default:
 					if (char.IsControl(ch)) {
-						return "\\u" + (int)ch;
+						return "\\u" + ((int)ch).ToString("x4");
 					} else {
 						return ch.ToString();
 					}
@@ -2435,7 +2435,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.PrintToken(Tokens.CloseParenthesis);
 			}
 			outputFormatter.PrintToken(Tokens.Dot);
-			outputFormatter.PrintIdentifier(memberReferenceExpression.FieldName);
+			outputFormatter.PrintIdentifier(memberReferenceExpression.MemberName);
 			PrintTypeArgumentList(memberReferenceExpression.TypeArguments);
 			return null;
 		}

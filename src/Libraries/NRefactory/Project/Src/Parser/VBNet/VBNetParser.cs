@@ -246,7 +246,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			if (fre != null) {
 				bool result = WriteFullTypeName(b, fre.TargetObject);
 				if (b.Length > 0) b.Append('.');
-				b.Append(fre.FieldName);
+				b.Append(fre.MemberName);
 				return result;
 			} else if (expr is IdentifierExpression) {
 				b.Append(((IdentifierExpression)expr).Identifier);

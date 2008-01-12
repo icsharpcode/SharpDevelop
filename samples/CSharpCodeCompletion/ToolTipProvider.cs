@@ -29,6 +29,7 @@ using System;
 using System.Text;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.CSharp;
+using ICSharpCode.SharpDevelop.Dom.VBNet;
 using TextEditor = ICSharpCode.TextEditor;
 using NRefactoryResolver = ICSharpCode.SharpDevelop.Dom.NRefactoryResolver.NRefactoryResolver;
 
@@ -54,7 +55,12 @@ namespace CSharpEditor
 		void OnToolTipRequest(object sender, TextEditor.ToolTipRequestEventArgs e)
 		{
 			if (e.InDocument && !e.ToolTipShown) {
-				CSharpExpressionFinder expressionFinder = new CSharpExpressionFinder(mainForm.parseInformation);
+				IExpressionFinder expressionFinder;
+				if (MainForm.IsVisualBasic) {
+					expressionFinder = new VBExpressionFinder();
+				} else {
+					expressionFinder = new CSharpExpressionFinder(mainForm.parseInformation);
+				}
 				ExpressionResult expression = expressionFinder.FindFullExpression(
 					editor.Text,
 					editor.Document.PositionToOffset(e.LogicalPosition));
@@ -78,7 +84,7 @@ namespace CSharpEditor
 			}
 			if (result is MixedResolveResult)
 				return GetText(((MixedResolveResult)result).PrimaryResult);
-			IAmbience ambience = new CSharpAmbience();
+			IAmbience ambience = MainForm.IsVisualBasic ? (IAmbience)new VBNetAmbience() : new CSharpAmbience();
 			ambience.ConversionFlags = ConversionFlags.StandardConversionFlags | ConversionFlags.ShowAccessibility;
 			if (result is MemberResolveResult) {
 				return GetMemberText(ambience, ((MemberResolveResult)result).ResolvedMember);
@@ -101,8 +107,8 @@ namespace CSharpEditor
 					return GetMemberText(ambience, c);
 				else
 					return ambience.Convert(result.ResolvedType);
-			} else if (result is MethodResolveResult) {
-				MethodResolveResult mrr = result as MethodResolveResult;
+			} else if (result is MethodGroupResolveResult) {
+				MethodGroupResolveResult mrr = result as MethodGroupResolveResult;
 				IMethod m = mrr.GetMethodIfSingleOverload();
 				if (m != null)
 					return GetMemberText(ambience, m);

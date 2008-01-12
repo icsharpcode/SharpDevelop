@@ -105,6 +105,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 		
 		bool IsAccessible(IClass callingClass, bool isClassInInheritanceTree);
-		bool MustBeShown(IClass callingClass, bool showStatic, bool isClassInInheritanceTree);
+		//bool MustBeShown(IClass callingClass, bool showStatic, bool isClassInInheritanceTree);
 	}
 }

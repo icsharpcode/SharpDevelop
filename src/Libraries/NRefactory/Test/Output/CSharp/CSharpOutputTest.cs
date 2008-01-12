@@ -268,6 +268,12 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		}
 		
 		[Test]
+		public void StringWithUnicodeLiteral()
+		{
+			TestExpression(@"""\u0001""");
+		}
+		
+		[Test]
 		public void GenericMethodInvocation()
 		{
 			TestExpression("GenericMethod<T>(arg)");

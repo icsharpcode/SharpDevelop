@@ -162,5 +162,23 @@ class C : A {
 			}
 			Assert.Fail("Inherited inner class not visible.");
 		}
+		
+		[Test]
+		public void NestedClassHidingHidesAllMethods()
+		{
+			string program = @"using System;
+class A {
+	static void Test(int arg) {}
+	static void Test(string arg) {}
+	class B {
+		void MyMethod() {
+		
+		}
+		static void Test(long arg) {}
+	}
+}";
+			MemberResolveResult result = Resolve<MemberResolveResult>(program, "Test(4)", 7);
+			Assert.AreEqual("A.B.Test", result.ResolvedMember.FullyQualifiedName);
+		}
 	}
 }

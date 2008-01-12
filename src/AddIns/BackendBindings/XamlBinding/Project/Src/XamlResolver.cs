@@ -146,7 +146,7 @@ namespace XamlBinding
 			if (propertyOrEvent == null)
 				return null;
 			if (propertyOrEvent is IEvent) {
-				return new MethodResolveResult(callingClass, null, callingClass.DefaultReturnType, expression);
+				return new MethodGroupResolveResult(callingClass, null, callingClass.DefaultReturnType, expression);
 			}
 			
 			if (propertyOrEvent.Name == "Name") {

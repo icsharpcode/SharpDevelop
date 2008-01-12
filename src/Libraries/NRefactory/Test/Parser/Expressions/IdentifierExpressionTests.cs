@@ -38,6 +38,14 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			Assert.AreEqual("M", ident.Identifier);
 			Assert.AreEqual(1, ident.TypeArguments.Count);
 		}
+		
+		[Test]
+		public void CSharpGenericMethodReference2()
+		{
+			IdentifierExpression ident = ParseUtilCSharp.ParseExpression<IdentifierExpression>("TargetMethod<string>");
+			Assert.AreEqual("TargetMethod", ident.Identifier);
+			Assert.AreEqual(1, ident.TypeArguments.Count);
+		}
 		#endregion
 		
 		#region VB.NET

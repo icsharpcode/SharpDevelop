@@ -366,7 +366,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			    && (parentIE == null || parentIE.TargetObject != identifierExpression))
 			{
 				ResolveResult rr = resolver.ResolveInternal(identifierExpression, ExpressionContext.Default);
-				if (rr is MethodResolveResult) {
+				if (rr is MethodGroupResolveResult) {
 					ReplaceCurrentNode(new AddressOfExpression(identifierExpression));
 				}
 			}
@@ -385,7 +385,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			    && (parentIE == null || parentIE.TargetObject != fieldReferenceExpression))
 			{
 				ResolveResult rr = resolver.ResolveInternal(fieldReferenceExpression, ExpressionContext.Default);
-				if (rr is MethodResolveResult) {
+				if (rr is MethodGroupResolveResult) {
 					ReplaceCurrentNode(new AddressOfExpression(fieldReferenceExpression));
 				}
 			}

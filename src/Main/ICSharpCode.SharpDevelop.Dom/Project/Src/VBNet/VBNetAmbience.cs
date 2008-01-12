@@ -406,7 +406,7 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 			}
 
 			string dispName = UseFullyQualifiedMemberNames ? m.FullyQualifiedName : m.Name;
-			if (m.Name == "#ctor" || m.Name == "#cctor" || m.IsConstructor) {
+			if (m.IsConstructor) {
 				dispName = "New";
 			}
 			

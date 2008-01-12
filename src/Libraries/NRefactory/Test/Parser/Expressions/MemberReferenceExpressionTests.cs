@@ -21,7 +21,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		public void CSharpSimpleFieldReferenceExpressionTest()
 		{
 			MemberReferenceExpression fre = ParseUtilCSharp.ParseExpression<MemberReferenceExpression>("myTargetObject.myField");
-			Assert.AreEqual("myField", fre.FieldName);
+			Assert.AreEqual("myField", fre.MemberName);
 			Assert.IsTrue(fre.TargetObject is IdentifierExpression);
 			Assert.AreEqual("myTargetObject", ((IdentifierExpression)fre.TargetObject).Identifier);
 		}
@@ -30,7 +30,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		public void CSharpGenericFieldReferenceExpressionTest()
 		{
 			MemberReferenceExpression fre = ParseUtilCSharp.ParseExpression<MemberReferenceExpression>("SomeClass<string>.myField");
-			Assert.AreEqual("myField", fre.FieldName);
+			Assert.AreEqual("myField", fre.MemberName);
 			Assert.IsTrue(fre.TargetObject is TypeReferenceExpression);
 			TypeReference tr = ((TypeReferenceExpression)fre.TargetObject).TypeReference;
 			Assert.AreEqual("SomeClass", tr.Type);
@@ -42,7 +42,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		public void CSharpFullNamespaceGenericFieldReferenceExpressionTest()
 		{
 			MemberReferenceExpression fre = ParseUtilCSharp.ParseExpression<MemberReferenceExpression>("Namespace.Subnamespace.SomeClass<string>.myField");
-			Assert.AreEqual("myField", fre.FieldName);
+			Assert.AreEqual("myField", fre.MemberName);
 			Assert.IsTrue(fre.TargetObject is TypeReferenceExpression);
 			TypeReference tr = ((TypeReferenceExpression)fre.TargetObject).TypeReference;
 			Assert.AreEqual("Namespace.Subnamespace.SomeClass", tr.Type);
@@ -54,7 +54,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		public void CSharpGlobalFullNamespaceGenericFieldReferenceExpressionTest()
 		{
 			MemberReferenceExpression fre = ParseUtilCSharp.ParseExpression<MemberReferenceExpression>("global::Namespace.Subnamespace.SomeClass<string>.myField");
-			Assert.AreEqual("myField", fre.FieldName);
+			Assert.AreEqual("myField", fre.MemberName);
 			Assert.IsTrue(fre.TargetObject is TypeReferenceExpression);
 			TypeReference tr = ((TypeReferenceExpression)fre.TargetObject).TypeReference;
 			Assert.IsFalse(tr is InnerClassTypeReference);
@@ -68,7 +68,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		public void CSharpNestedGenericFieldReferenceExpressionTest()
 		{
 			MemberReferenceExpression fre = ParseUtilCSharp.ParseExpression<MemberReferenceExpression>("MyType<string>.InnerClass<int>.myField");
-			Assert.AreEqual("myField", fre.FieldName);
+			Assert.AreEqual("myField", fre.MemberName);
 			Assert.IsTrue(fre.TargetObject is TypeReferenceExpression);
 			InnerClassTypeReference ic = (InnerClassTypeReference)((TypeReferenceExpression)fre.TargetObject).TypeReference;
 			Assert.AreEqual("InnerClass", ic.Type);
@@ -85,7 +85,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		public void VBNetSimpleFieldReferenceExpressionTest()
 		{
 			MemberReferenceExpression fre = ParseUtilVBNet.ParseExpression<MemberReferenceExpression>("myTargetObject.myField");
-			Assert.AreEqual("myField", fre.FieldName);
+			Assert.AreEqual("myField", fre.MemberName);
 			Assert.IsTrue(fre.TargetObject is IdentifierExpression);
 			Assert.AreEqual("myTargetObject", ((IdentifierExpression)fre.TargetObject).Identifier);
 		}
@@ -94,7 +94,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		public void VBNetFieldReferenceExpressionWithoutTargetTest()
 		{
 			MemberReferenceExpression fre = ParseUtilVBNet.ParseExpression<MemberReferenceExpression>(".myField");
-			Assert.AreEqual("myField", fre.FieldName);
+			Assert.AreEqual("myField", fre.MemberName);
 			Assert.IsTrue(fre.TargetObject.IsNull);
 		}
 		
@@ -102,7 +102,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		public void VBNetGenericFieldReferenceExpressionTest()
 		{
 			MemberReferenceExpression fre = ParseUtilVBNet.ParseExpression<MemberReferenceExpression>("SomeClass(of string).myField");
-			Assert.AreEqual("myField", fre.FieldName);
+			Assert.AreEqual("myField", fre.MemberName);
 			Assert.IsTrue(fre.TargetObject is TypeReferenceExpression);
 			TypeReference tr = ((TypeReferenceExpression)fre.TargetObject).TypeReference;
 			Assert.AreEqual("SomeClass", tr.Type);
@@ -114,7 +114,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		public void VBNetFullNamespaceGenericFieldReferenceExpressionTest()
 		{
 			MemberReferenceExpression fre = ParseUtilVBNet.ParseExpression<MemberReferenceExpression>("System.Subnamespace.SomeClass(of string).myField");
-			Assert.AreEqual("myField", fre.FieldName);
+			Assert.AreEqual("myField", fre.MemberName);
 			Assert.IsTrue(fre.TargetObject is TypeReferenceExpression);
 			TypeReference tr = ((TypeReferenceExpression)fre.TargetObject).TypeReference;
 			Assert.AreEqual("System.Subnamespace.SomeClass", tr.Type);
@@ -126,7 +126,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		public void VBNetGlobalFullNamespaceGenericFieldReferenceExpressionTest()
 		{
 			MemberReferenceExpression fre = ParseUtilVBNet.ParseExpression<MemberReferenceExpression>("Global.System.Subnamespace.SomeClass(of string).myField");
-			Assert.AreEqual("myField", fre.FieldName);
+			Assert.AreEqual("myField", fre.MemberName);
 			Assert.IsTrue(fre.TargetObject is TypeReferenceExpression);
 			TypeReference tr = ((TypeReferenceExpression)fre.TargetObject).TypeReference;
 			Assert.IsFalse(tr is InnerClassTypeReference);
@@ -140,7 +140,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		public void VBNetNestedGenericFieldReferenceExpressionTest()
 		{
 			MemberReferenceExpression fre = ParseUtilVBNet.ParseExpression<MemberReferenceExpression>("MyType(of string).InnerClass(of integer).myField");
-			Assert.AreEqual("myField", fre.FieldName);
+			Assert.AreEqual("myField", fre.MemberName);
 			Assert.IsTrue(fre.TargetObject is TypeReferenceExpression);
 			InnerClassTypeReference ic = (InnerClassTypeReference)((TypeReferenceExpression)fre.TargetObject).TypeReference;
 			Assert.AreEqual("InnerClass", ic.Type);

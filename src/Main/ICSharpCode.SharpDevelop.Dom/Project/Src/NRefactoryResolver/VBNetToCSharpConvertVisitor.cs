@@ -357,7 +357,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			ResolveResult rr = Resolve(memberReferenceExpression);
 			string ident = GetIdentifierFromResult(rr);
 			if (ident != null) {
-				memberReferenceExpression.FieldName = ident;
+				memberReferenceExpression.MemberName = ident;
 			}
 			if (ReplaceWithInvocation(memberReferenceExpression, rr)) {}
 			else if (FullyQualifyModuleMemberReference(memberReferenceExpression, rr)) {}
@@ -370,7 +370,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			MemberResolveResult memberRR = rr as MemberResolveResult;
 			if (memberRR != null)
 				return memberRR.ResolvedMember.IsStatic == false;
-			MethodResolveResult methodRR = rr as MethodResolveResult;
+			MethodGroupResolveResult methodRR = rr as MethodGroupResolveResult;
 			if (methodRR != null && methodRR.ContainingType != null) {
 				foreach (IMethod m in methodRR.ContainingType.GetMethods()) {
 					if (resolver.IsSameName(m.Name, methodRR.Name)) {
@@ -383,7 +383,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		bool ReplaceWithInvocation(Expression expression, ResolveResult rr)
 		{
-			if (rr is MethodResolveResult
+			if (rr is MethodGroupResolveResult
 			    && !(expression.Parent is AddressOfExpression)
 			    && !(expression.Parent is InvocationExpression))
 			{
@@ -396,7 +396,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		IReturnType GetContainingTypeOfStaticMember(ResolveResult rr)
 		{
-			MethodResolveResult methodRR = rr as MethodResolveResult;
+			MethodGroupResolveResult methodRR = rr as MethodGroupResolveResult;
 			if (methodRR != null) {
 				return methodRR.ContainingType;
 			}
@@ -602,7 +602,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		{
 			if (resolver.CompilationUnit == null) return null;
 			if (tr.IsNull) return null;
-			IReturnType rt = resolver.SearchType(tr.SystemType, loc);
+			IReturnType rt = resolver.SearchType(tr.SystemType, tr.GenericTypes.Count, loc);
 			if (rt != null) {
 				IClass c = rt.GetUnderlyingClass();
 				if (c != null) {
@@ -622,7 +622,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			MemberResolveResult mrr = rr as MemberResolveResult;
 			if (mrr != null)
 				return mrr.ResolvedMember.Name;
-			MethodResolveResult mtrr = rr as MethodResolveResult;
+			MethodGroupResolveResult mtrr = rr as MethodGroupResolveResult;
 			if (mtrr != null)
 				return mtrr.Name;
 			TypeResolveResult trr = rr as TypeResolveResult;

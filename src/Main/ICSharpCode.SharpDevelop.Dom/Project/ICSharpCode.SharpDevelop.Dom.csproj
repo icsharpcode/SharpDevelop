@@ -99,6 +99,7 @@
     <Compile Include="Src\NRefactoryResolver\NRefactoryASTConvertVisitor.cs" />
     <Compile Include="Src\NRefactoryResolver\NRefactoryInformationProvider.cs" />
     <Compile Include="Src\NRefactoryResolver\NRefactoryResolver.cs" />
+    <Compile Include="Src\NRefactoryResolver\ResolveVisitor.cs" />
     <Compile Include="Src\NRefactoryResolver\TypeVisitor.cs" />
     <Compile Include="Src\NRefactoryResolver\VBNetToCSharpConvertVisitor.cs" />
     <Compile Include="Src\ProjectContent\DomAssemblyName.cs" />

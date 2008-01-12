@@ -89,8 +89,8 @@ namespace Grunwald.BooBinding.CodeCompletion
 		
 		void MakeMethodResult(IReturnType type, string methodName)
 		{
-			resolveResult = new MethodResolveResult(callingClass, resolver.CallingMember, type, methodName);
-			IMethod m = (resolveResult as MethodResolveResult).GetMethodIfSingleOverload();
+			resolveResult = new MethodGroupResolveResult(callingClass, resolver.CallingMember, type, methodName);
+			IMethod m = (resolveResult as MethodGroupResolveResult).GetMethodIfSingleOverload();
 			if (m != null) {
 				AnonymousMethodReturnType amrt = new AnonymousMethodReturnType(cu);
 				amrt.MethodReturnType = m.ReturnType;
@@ -389,7 +389,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 				MixedResolveResult mixed = (MixedResolveResult)resolveResult;
 				resolveResult = mixed.TypeResult;
 				foreach (ResolveResult rr in mixed.Results) {
-					if (rr is MethodResolveResult) {
+					if (rr is MethodGroupResolveResult) {
 						resolveResult = rr;
 						break;
 					}
@@ -398,10 +398,10 @@ namespace Grunwald.BooBinding.CodeCompletion
 			if (resolveResult == null)
 				return;
 			
-			if (resolveResult is MethodResolveResult) {
+			if (resolveResult is MethodGroupResolveResult) {
 				// normal method call
-				string methodName = ((MethodResolveResult)resolveResult).Name;
-				IReturnType containingType = ((MethodResolveResult)resolveResult).ContainingType;
+				string methodName = ((MethodGroupResolveResult)resolveResult).Name;
+				IReturnType containingType = ((MethodGroupResolveResult)resolveResult).ContainingType;
 				
 				ResolveMethodInType(containingType, methodName, node.Arguments);
 			} else if (resolveResult is TypeResolveResult) {
@@ -513,7 +513,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 				ClearResult();
 			}
 			bool resultIsAcceptable;
-			MakeResult(MemberLookupHelper.FindOverload(methods, new IReturnType[0], types, out resultIsAcceptable));
+			MakeResult(MemberLookupHelper.FindOverload(methods, types, out resultIsAcceptable));
 		}
 		#endregion
 		

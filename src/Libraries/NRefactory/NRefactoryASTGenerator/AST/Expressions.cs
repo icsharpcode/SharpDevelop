@@ -101,13 +101,14 @@ namespace NRefactoryASTGenerator.Ast
 		public CastExpression(TypeReference castTo, Expression expression, CastType castType) {}
 	}
 	
+	[IncludeMember("[Obsolete] public string FieldName { get { return MemberName; } set { MemberName = value; } }")]
 	class MemberReferenceExpression : Expression
 	{
 		Expression targetObject;
-		string     fieldName;
+		string     memberName;
 		List<TypeReference> typeArguments;
 		
-		public MemberReferenceExpression(Expression targetObject, string fieldName) {}
+		public MemberReferenceExpression(Expression targetObject, string memberName) {}
 	}
 	
 	class PointerReferenceExpression : Expression {

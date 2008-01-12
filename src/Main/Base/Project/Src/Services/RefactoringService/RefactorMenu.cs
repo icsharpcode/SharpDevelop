@@ -117,8 +117,8 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				Rename((rr as TypeResolveResult).ResolvedClass);
 			} else if (rr is MemberResolveResult) {
 				Rename((rr as MemberResolveResult).ResolvedMember);
-			} else if (rr is MethodResolveResult) {
-				Rename((rr as MethodResolveResult).GetMethodIfSingleOverload());
+			} else if (rr is MethodGroupResolveResult) {
+				Rename((rr as MethodGroupResolveResult).GetMethodIfSingleOverload());
 			} else if (rr is LocalResolveResult) {
 				RenameLocalVariableCommand.Run(rr as LocalResolveResult);
 			} else {

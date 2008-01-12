@@ -448,8 +448,8 @@ namespace ICSharpCode.SharpDevelop.Debugging
 					return GetMemberText(ambience, c, expression, out debuggerCanShowValue);
 				else
 					return ambience.Convert(result.ResolvedType);
-			} else if (result is MethodResolveResult) {
-				MethodResolveResult mrr = result as MethodResolveResult;
+			} else if (result is MethodGroupResolveResult) {
+				MethodGroupResolveResult mrr = result as MethodGroupResolveResult;
 				IMethod m = mrr.GetMethodIfSingleOverload();
 				if (m != null)
 					return GetMemberText(ambience, m, expression, out debuggerCanShowValue);
