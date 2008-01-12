@@ -350,11 +350,13 @@
 				<ComponentRef Id="PdfSharpDll"/>
 				<ComponentRef Id="PdfSharpDeResources"/>
 				-->
+				
+<!-- Disabled SharpServerTools
 				<ComponentRef Id="DataToolsModelDll"/>
 				<ComponentRef Id="ServerBrowserToolDll"/>
 				<ComponentRef Id="DataToolsAddinDll"/>
 				<ComponentRef Id="DataToolsUIDll"/>
-
+-->
 				<ComponentRef Id="StartPageAddInFiles"/>
 				<ComponentRef Id="SubversionAddInDll"/>
 				<ComponentRef Id="SubversionUtilsDll"/>

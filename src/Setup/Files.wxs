@@ -1362,6 +1362,7 @@
 											<File Source="..\..\AddIns\AddIns\Misc\CodeCoverage\CodeCoverage.addin" Id="CodeCoverage.addin" Name="CodeCoverage.addin" />
 										</Component>
 									</Directory>
+<!-- Disabled SharpServerTools temporarily									
 									<Directory Id="SharpServerTools" Name="SharpServerTools">
 										<Component Guid="222C0F80-D2BC-4C35-B829-64E33CED573D" Id="DataToolsModelDll" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\Misc\SharpServerTools\ICSharpCode.DataTools.Model.dll" Id="ICSharpCode.DataTools.Model.dll" Name="ICSharpCode.DataTools.Model.dll" Assembly=".net" AssemblyApplication="ICSharpCode.DataTools.Model.dll" AssemblyManifest="ICSharpCode.DataTools.Model.dll" KeyPath="yes" />
@@ -1377,6 +1378,7 @@
 											<File Source="..\..\AddIns\AddIns\Misc\SharpServerTools\ICSharpCode.DataTools.UI.dll" Id="ICSharpCode.DataTools.UI.dll" Name="ICSharpCode.DataTools.UI.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="ICSharpCode.DataTools.UI.dll" AssemblyManifest="ICSharpCode.DataTools.UI.dll" />
 										</Component>
 									</Directory>
+-->
 									<Directory Id="SearchAndReplace" Name="SearchAndReplace">
 										<Component Guid="A76D4EB6-0EBB-49D7-9528-2FA87C983703" Id="SearchAndReplaceFiles" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\Misc\SearchAndReplace\SearchAndReplace.addin" Id="SearchAndReplace.addin" Name="SearchAndReplace.addin" />
