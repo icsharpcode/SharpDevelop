@@ -511,6 +511,63 @@ class A {
 		}
 		
 		[Test]
+		public void ValueInsideEventTest()
+		{
+			string program = @"using System; class A {
+	public event EventHandler Ev {
+		add {
+			
+		}
+		remove {}
+	}
+}
+";
+			LocalResolveResult result = Resolve<LocalResolveResult>(program, "value", 4);
+			Assert.AreEqual("System.EventHandler", result.ResolvedType.FullyQualifiedName);
+			MemberResolveResult mrr = Resolve<MemberResolveResult>(program, "value.DynamicInvoke(null)", 4);
+			Assert.AreEqual("System.Delegate.DynamicInvoke", mrr.ResolvedMember.FullyQualifiedName);
+			
+			int valueParameterCount = 0;
+			foreach (object o in CtrlSpaceResolveCSharp(program, 4, ExpressionContext.Default)) {
+				IField f = o as IField;
+				if (f != null && f.Name == "value") {
+					valueParameterCount++;
+					Assert.IsTrue(f.IsParameter);
+					Assert.AreEqual("System.EventHandler", f.ReturnType.FullyQualifiedName);
+				}
+			}
+			Assert.IsTrue(valueParameterCount == 1);
+		}
+		
+		[Test]
+		public void ValueInsideIndexerSetterTest()
+		{
+			string program = @"using System; class A {
+		public string this[int arg] {
+			set {
+				
+			}
+		}
+}
+";
+			LocalResolveResult result = Resolve<LocalResolveResult>(program, "value", 4);
+			Assert.AreEqual("System.String", result.ResolvedType.FullyQualifiedName);
+			MemberResolveResult mrr = Resolve<MemberResolveResult>(program, "value.ToString()", 4);
+			Assert.AreEqual("System.String.ToString", mrr.ResolvedMember.FullyQualifiedName);
+			
+			int valueParameterCount = 0;
+			foreach (object o in CtrlSpaceResolveCSharp(program, 4, ExpressionContext.Default)) {
+				IField f = o as IField;
+				if (f != null && f.Name == "value") {
+					valueParameterCount++;
+					Assert.IsTrue(f.IsParameter);
+					Assert.AreEqual("System.String", f.ReturnType.FullyQualifiedName);
+				}
+			}
+			Assert.IsTrue(valueParameterCount == 1);
+		}
+		
+		[Test]
 		public void AnonymousMethodParameters()
 		{
 			string program = @"using System;
@@ -1673,7 +1730,6 @@ public class MyCollectionType : System.Collections.IEnumerable
 		}
 		
 		[Test]
-		[Ignore("not implemented")]
 		public void TestOverloadingByRef()
 		{
 			string program = @"using System;

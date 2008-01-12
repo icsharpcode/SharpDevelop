@@ -201,7 +201,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		public override object VisitDirectionExpression(DirectionExpression directionExpression, object data)
 		{
-			return CreateResolveResult(directionExpression.Expression);
+			return CreateResolveResult(new ReferenceReturnType(ResolveType(directionExpression.Expression)));
 		}
 		
 		public override object VisitIdentifierExpression(IdentifierExpression identifierExpression, object data)

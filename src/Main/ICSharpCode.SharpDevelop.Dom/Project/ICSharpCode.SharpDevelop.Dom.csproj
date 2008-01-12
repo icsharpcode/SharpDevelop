@@ -90,6 +90,7 @@
     <Compile Include="Src\Implementations\GetClassReturnType.cs" />
     <Compile Include="Src\Implementations\NullReturnType.cs" />
     <Compile Include="Src\Implementations\ProxyReturnType.cs" />
+    <Compile Include="Src\Implementations\ReferenceReturnType.cs" />
     <Compile Include="Src\Implementations\SearchClassReturnType.cs" />
     <Compile Include="Src\Implementations\SystemTypes.cs" />
     <Compile Include="Src\Interfaces\ExplicitInterfaceImplementation.cs" />

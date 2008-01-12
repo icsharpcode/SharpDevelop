@@ -31,7 +31,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get {
 				return bodyRegion;
 			}
-			protected set {
+			set {
 				bodyRegion = value;
 			}
 		}

@@ -68,7 +68,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get {
 				return addMethod;
 			}
-			protected set {
+			set {
 				addMethod = value;
 			}
 		}
@@ -77,7 +77,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get {
 				return removeMethod;
 			}
-			protected set {
+			set {
 				removeMethod = value;
 			}
 		}
@@ -86,7 +86,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get {
 				return raiseMethod;
 			}
-			protected set {
+			set {
 				raiseMethod = value;
 			}
 		}

@@ -609,7 +609,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 		                         out bool expanded)
 		{
 			// see ECMA-334, § 14.4.2.1
-			// TODO: recognize ref/out (needs info about passing mode for arguments, you have to introduce RefReturnType)
 			
 			expanded = false;
 			score = 0;
@@ -622,7 +621,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			// check all arguments except the last
 			bool ok = true;
 			for (int i = 0; i < Math.Min(lastParameter, arguments.Length); i++) {
-				if (IsApplicable(arguments[i], parameters[i].ReturnType)) {
+				if (IsApplicable(arguments[i], parameters[i])) {
 					score++;
 				} else {
 					ok = false;
@@ -633,7 +632,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 			if (parameters.Count == arguments.Length) {
 				// try if method is applicable in normal form by checking last argument
-				if (IsApplicable(arguments[lastParameter], parameters[lastParameter].ReturnType)) {
+				if (IsApplicable(arguments[lastParameter], parameters[lastParameter])) {
 					return true;
 				}
 			}
@@ -658,6 +657,19 @@ namespace ICSharpCode.SharpDevelop.Dom
 				}
 			}
 			return ok;
+		}
+		
+		static bool IsApplicable(IReturnType argument, IParameter expected)
+		{
+			bool parameterIsRefOrOut = expected.IsRef || expected.IsOut;
+			bool argumentIsRefOrOut = argument != null && argument.IsDecoratingReturnType<ReferenceReturnType>();
+			if (parameterIsRefOrOut != argumentIsRefOrOut)
+				return false;
+			if (parameterIsRefOrOut) {
+				return object.Equals(argument, expected.ReturnType);
+			} else {
+				return IsApplicable(argument, expected.ReturnType);
+			}
 		}
 		
 		public static bool IsApplicable(IReturnType argument, IReturnType expected)

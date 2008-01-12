@@ -629,6 +629,34 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return null;
 		}
 		
+		public override object VisitIndexerDeclaration(AST.IndexerDeclaration indexerDeclaration, object data)
+		{
+			DomRegion region     = GetRegion(indexerDeclaration.StartLocation, indexerDeclaration.EndLocation);
+			DomRegion bodyRegion = GetRegion(indexerDeclaration.BodyStart,     indexerDeclaration.BodyEnd);
+			DefaultProperty i = new DefaultProperty("Indexer", CreateReturnType(indexerDeclaration.TypeReference), ConvertModifier(indexerDeclaration.Modifier), region, bodyRegion, GetCurrentClass());
+			i.IsIndexer = true;
+			if (indexerDeclaration.HasGetRegion) {
+				i.GetterRegion = GetRegion(indexerDeclaration.GetRegion.StartLocation, indexerDeclaration.GetRegion.EndLocation);
+				i.CanGet = true;
+				i.GetterModifiers = ConvertModifier(indexerDeclaration.GetRegion.Modifier, ModifierEnum.None);
+			}
+			if (indexerDeclaration.HasSetRegion) {
+				i.SetterRegion = GetRegion(indexerDeclaration.SetRegion.StartLocation, indexerDeclaration.SetRegion.EndLocation);
+				i.CanSet = true;
+				i.SetterModifiers = ConvertModifier(indexerDeclaration.SetRegion.Modifier, ModifierEnum.None);
+			}
+			i.Documentation = GetDocumentation(region.BeginLine, indexerDeclaration.Attributes);
+			ConvertAttributes(indexerDeclaration, i);
+			if (indexerDeclaration.Parameters != null) {
+				foreach (AST.ParameterDeclarationExpression par in indexerDeclaration.Parameters) {
+					i.Parameters.Add(CreateParameter(par));
+				}
+			}
+			DefaultClass c = GetCurrentClass();
+			c.Properties.Add(i);
+			return null;
+		}
+		
 		public override object VisitEventDeclaration(AST.EventDeclaration eventDeclaration, object data)
 		{
 			DomRegion region     = GetRegion(eventDeclaration.StartLocation, eventDeclaration.EndLocation);
@@ -652,29 +680,22 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			DefaultEvent e = new DefaultEvent(eventDeclaration.Name, type, ConvertModifier(eventDeclaration.Modifier), region, bodyRegion, c);
 			ConvertAttributes(eventDeclaration, e);
 			c.Events.Add(e);
-			if (e != null) {
-				e.Documentation = GetDocumentation(region.BeginLine, eventDeclaration.Attributes);
-			} else {
-				LoggingService.Warn("NRefactoryASTConvertVisitor: " + eventDeclaration + " has no events!");
+			
+			e.Documentation = GetDocumentation(region.BeginLine, eventDeclaration.Attributes);
+			if (eventDeclaration.HasAddRegion) {
+				e.AddMethod = new DefaultMethod(e.DeclaringType, "add_" + e.Name) {
+					Parameters = { new DefaultParameter("value", e.ReturnType, DomRegion.Empty) },
+					Region = GetRegion(eventDeclaration.AddRegion.StartLocation, eventDeclaration.AddRegion.EndLocation),
+					BodyRegion = GetRegion(eventDeclaration.AddRegion.Block.StartLocation, eventDeclaration.AddRegion.Block.EndLocation)
+				};
 			}
-			return null;
-		}
-		
-		public override object VisitIndexerDeclaration(AST.IndexerDeclaration indexerDeclaration, object data)
-		{
-			DomRegion region     = GetRegion(indexerDeclaration.StartLocation, indexerDeclaration.EndLocation);
-			DomRegion bodyRegion = GetRegion(indexerDeclaration.BodyStart,     indexerDeclaration.BodyEnd);
-			DefaultProperty i = new DefaultProperty("Indexer", CreateReturnType(indexerDeclaration.TypeReference), ConvertModifier(indexerDeclaration.Modifier), region, bodyRegion, GetCurrentClass());
-			i.IsIndexer = true;
-			i.Documentation = GetDocumentation(region.BeginLine, indexerDeclaration.Attributes);
-			ConvertAttributes(indexerDeclaration, i);
-			if (indexerDeclaration.Parameters != null) {
-				foreach (AST.ParameterDeclarationExpression par in indexerDeclaration.Parameters) {
-					i.Parameters.Add(CreateParameter(par));
-				}
+			if (eventDeclaration.HasRemoveRegion) {
+				e.RemoveMethod = new DefaultMethod(e.DeclaringType, "remove_" + e.Name) {
+					Parameters = { new DefaultParameter("value", e.ReturnType, DomRegion.Empty) },
+					Region = GetRegion(eventDeclaration.RemoveRegion.StartLocation, eventDeclaration.RemoveRegion.EndLocation),
+					BodyRegion = GetRegion(eventDeclaration.RemoveRegion.Block.StartLocation, eventDeclaration.RemoveRegion.Block.EndLocation)
+				};
 			}
-			DefaultClass c = GetCurrentClass();
-			c.Properties.Add(i);
 			return null;
 		}
 		

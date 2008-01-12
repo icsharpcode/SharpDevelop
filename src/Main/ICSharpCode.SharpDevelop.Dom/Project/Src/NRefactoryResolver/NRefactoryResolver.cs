@@ -185,7 +185,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			this.ProjectContent = cu.ProjectContent;
 			
 			callingClass = cu.GetInnermostClass(caretLine, caretColumn);
-			callingMember = GetCurrentMember();
+			callingMember = GetCallingMember();
 			return true;
 		}
 		
@@ -393,164 +393,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			
 			ResolveVisitor resolveVisitor = new ResolveVisitor(this);
 			return resolveVisitor.Resolve(expr);
-			/*
-			TypeVisitor typeVisitor = new TypeVisitor(this);
-			IReturnType type;
-			
-			if (expr is PrimitiveExpression) {
-				if (((PrimitiveExpression)expr).Value is int)
-					return new IntegerLiteralResolveResult(callingClass, callingMember, projectContent.SystemTypes.Int32);
-			} else if (expr is InvocationExpression) {
-				IMethodOrProperty method = typeVisitor.GetMethod(expr as InvocationExpression);
-				if (method != null) {
-					return CreateMemberResolveResult(method);
-				} else {
-					// InvocationExpression can also be a delegate/event call
-					ResolveResult invocationTarget = ResolveInternal((expr as InvocationExpression).TargetObject, ExpressionContext.Default);
-					if (invocationTarget == null)
-						return null;
-					type = invocationTarget.ResolvedType;
-					if (type == null)
-						return null;
-					IClass c = type.GetUnderlyingClass();
-					if (c == null || c.ClassType != ClassType.Delegate)
-						return null;
-					// We don't want to show "System.EventHandler.Invoke" in the tooltip
-					// of "EventCall(this, EventArgs.Empty)", we just show the event/delegate for now
-					
-					// but for DelegateCall(params).* completion, we use the delegate's
-					// return type instead of the delegate type itself
-					method = c.Methods.Find(delegate(IMethod innerMethod) { return innerMethod.Name == "Invoke"; });
-					if (method != null)
-						invocationTarget.ResolvedType = method.ReturnType;
-					
-					return invocationTarget;
-				}
-			} else if (expr is IndexerExpression) {
-				return CreateMemberResolveResult(typeVisitor.GetIndexer(expr as IndexerExpression));
-			} else if (expr is MemberReferenceExpression) {
-				MemberReferenceExpression fieldReferenceExpression = (MemberReferenceExpression)expr;
-				if (fieldReferenceExpression.FieldName == null || fieldReferenceExpression.FieldName.Length == 0) {
-					// NRefactory creates this "dummy" fieldReferenceExpression when it should
-					// parse a primitive type name (int, short; Integer, Decimal)
-					if (fieldReferenceExpression.TargetObject is TypeReferenceExpression) {
-						type = TypeVisitor.CreateReturnType(((TypeReferenceExpression)fieldReferenceExpression.TargetObject).TypeReference, this);
-						if (type != null) {
-							return new TypeResolveResult(callingClass, callingMember, type);
-						}
-					}
-				}
-				type = fieldReferenceExpression.TargetObject.AcceptVisitor(typeVisitor, null) as IReturnType;
-				if (type != null) {
-					ResolveResult result = ResolveMemberReferenceExpression(type, fieldReferenceExpression);
-					if (result != null)
-						return result;
-				}
-			} else if (expr is IdentifierExpression) {
-				ResolveResult result = ResolveIdentifier(((IdentifierExpression)expr), context);
-				if (result != null)
-					return result;
-				else
-					return new UnknownIdentifierResolveResult(callingClass, callingMember, ((IdentifierExpression)expr).Identifier);
-			} else if (expr is TypeReferenceExpression) {
-				type = TypeVisitor.CreateReturnType(((TypeReferenceExpression)expr).TypeReference, this);
-				if (type != null) {
-					if (type is TypeVisitor.NamespaceReturnType)
-						return new NamespaceResolveResult(callingClass, callingMember, type.FullyQualifiedName);
-					IClass c = type.GetUnderlyingClass();
-					if (c != null)
-						return new TypeResolveResult(callingClass, callingMember, type, c);
-				}
-				return null;
-			}
-			type = expr.AcceptVisitor(typeVisitor, null) as IReturnType;
-			
-			if (type == null || type.FullyQualifiedName == "") {
-				return null;
-			}
-			if (language == NR.SupportedLanguage.VBNet
-			    && callingMember is IMethod && (callingMember as IMethod).IsConstructor
-			    && (expr is BaseReferenceExpression || expr is ThisReferenceExpression))
-			{
-				return new VBBaseOrThisReferenceInConstructorResolveResult(callingClass, callingMember, type);
-			}
-			if (expr is ObjectCreateExpression) {
-				List<IMethod> constructors = new List<IMethod>();
-				foreach (IMethod m in type.GetMethods()) {
-					if (m.IsConstructor && !m.IsStatic)
-						constructors.Add(m);
-				}
-				
-				if (constructors.Count == 0) {
-					// Class has no constructors -> create default constructor
-					IClass c = type.GetUnderlyingClass();
-					if (c != null) {
-						return CreateMemberResolveResult(Constructor.CreateDefault(c));
-					}
-				}
-				IReturnType[] typeParameters = null;
-				if (type.IsConstructedReturnType) {
-					typeParameters = new IReturnType[type.CastToConstructedReturnType().TypeArguments.Count];
-					type.CastToConstructedReturnType().TypeArguments.CopyTo(typeParameters, 0);
-				}
-				ResolveResult rr = CreateMemberResolveResult(typeVisitor.FindOverload(constructors, typeParameters, ((ObjectCreateExpression)expr).Parameters));
-				if (rr != null) {
-					rr.ResolvedType = type;
-				}
-				return rr;
-			}
-			return new ResolveResult(callingClass, callingMember, type);
-			 */
 		}
-		
-		/*
-		internal ResolveResult ResolveMemberReferenceExpression(IReturnType type, MemberReferenceExpression memberReferenceExpression)
-		{
-			IClass c;
-			IMember member;
-			if (type is TypeVisitor.NamespaceReturnType) {
-				string combinedName;
-				if (type.FullyQualifiedName == "")
-					combinedName = memberReferenceExpression.FieldName;
-				else
-					combinedName = type.FullyQualifiedName + "." + memberReferenceExpression.FieldName;
-				if (projectContent.NamespaceExists(combinedName)) {
-					return new NamespaceResolveResult(callingClass, callingMember, combinedName);
-				}
-				c = GetClass(combinedName);
-				if (c != null) {
-					return new TypeResolveResult(callingClass, callingMember, c);
-				}
-				if (languageProperties.ImportModules) {
-					// go through the members of the modules
-					foreach (object o in projectContent.GetNamespaceContents(type.FullyQualifiedName)) {
-						member = o as IMember;
-						if (member != null && IsSameName(member.Name, memberReferenceExpression.FieldName)) {
-							return CreateMemberResolveResult(member);
-						}
-					}
-				}
-				return null;
-			}
-			member = GetMember(type, memberReferenceExpression.FieldName);
-			if (member != null)
-				return CreateMemberResolveResult(member);
-			c = type.GetUnderlyingClass();
-			if (c != null) {
-				foreach (IClass baseClass in c.ClassInheritanceTree) {
-					List<IClass> innerClasses = baseClass.InnerClasses;
-					if (innerClasses != null) {
-						foreach (IClass innerClass in innerClasses) {
-							if (IsSameName(innerClass.Name, memberReferenceExpression.FieldName)) {
-								return new TypeResolveResult(callingClass, callingMember, innerClass);
-							}
-						}
-					}
-				}
-			}
-			return ResolveMethod(type, memberReferenceExpression.FieldName);
-		}
-		 */
 		
 		public TextReader ExtractCurrentMethod(string fileContent)
 		{
@@ -713,8 +556,10 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				}
 				if (IsSameName(identifier, "value")) {
 					IProperty property = callingMember as IProperty;
-					if (property != null && property.SetterRegion.IsInside(position.Line, position.Column)) {
-						IField field = new DefaultField.ParameterField(property.ReturnType, "value", property.Region, callingClass);
+					if (property != null && property.SetterRegion.IsInside(position.Line, position.Column)
+					   || callingMember is IEvent)
+					{
+						IField field = new DefaultField.ParameterField(callingMember.ReturnType, "value", callingMember.Region, callingClass);
 						return new LocalResolveResult(callingMember, field);
 					}
 				}
@@ -980,7 +825,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return between.Y < end.Y || between.X <= end.X;
 		}
 		
-		IMember GetCurrentMember()
+		IMember GetCallingMember()
 		{
 			if (callingClass == null)
 				return null;
@@ -992,6 +837,11 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			foreach (IProperty property in callingClass.Properties) {
 				if (property.Region.IsInside(caretLine, caretColumn) || property.BodyRegion.IsInside(caretLine, caretColumn)) {
 					return property;
+				}
+			}
+			foreach (IEvent ev in callingClass.Events) {
+				if (ev.Region.IsInside(caretLine, caretColumn) || ev.BodyRegion.IsInside(caretLine, caretColumn)) {
+					return ev;
 				}
 			}
 			return null;
@@ -1284,6 +1134,9 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				if (property.SetterRegion.IsInside(caretLine, caretColumn)) {
 					result.Add(new DefaultField.ParameterField(property.ReturnType, "value", property.Region, callingClass));
 				}
+			}
+			if (callingMember is IEvent) {
+				result.Add(new DefaultField.ParameterField(callingMember.ReturnType, "value", callingMember.Region, callingClass));
 			}
 			
 			CtrlSpaceResolveHelper.AddImportedNamespaceContents(result, cu, callingClass);
