@@ -374,13 +374,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				attributeName = GetAttributeName(ie.TargetObject);
 				IClass c = GetAttribute(attributeName, position);
 				if (c != null) {
-					List<IMethod> ctors = new List<IMethod>();
-					foreach (IMethod m in c.Methods) {
-						if (m.IsConstructor && !m.IsStatic)
-							ctors.Add(m);
-					}
-					//TypeVisitor typeVisitor = new TypeVisitor(this);
-					//return CreateMemberResolveResult(typeVisitor.FindOverload(ctors, null, ie.Arguments));
+					ResolveVisitor resolveVisitor = new ResolveVisitor(this);
+					return resolveVisitor.ResolveConstructorOverload(c, ie.Arguments);
 				}
 			}
 			return null;

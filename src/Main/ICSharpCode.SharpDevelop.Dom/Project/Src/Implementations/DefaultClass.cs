@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace ICSharpCode.SharpDevelop.Dom
@@ -452,11 +453,17 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public IClass GetInnermostClass(int caretLine, int caretColumn)
 		{
 			foreach (IClass c in InnerClasses) {
-				if (c != null && c.Region.IsInside(caretLine, caretColumn)) {
+				if (c != null && IsInside(c, caretLine, caretColumn)) {
 					return c.GetInnermostClass(caretLine, caretColumn);
 				}
 			}
 			return this;
+		}
+		
+		internal static bool IsInside(IClass c, int caretLine, int caretColumn)
+		{
+			return c.Region.IsInside(caretLine, caretColumn)
+				|| c.Attributes.Any((IAttribute a) => a.Region.IsInside(caretLine, caretColumn));
 		}
 		
 		public List<IClass> GetAccessibleTypes(IClass callingClass)

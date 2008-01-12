@@ -622,7 +622,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			int lastIndex = typeName.LastIndexOf('.');
 			if (lastIndex > 0) {
 				string outerName = typeName.Substring(0, lastIndex);
-				IClass upperClass = GetClassInternal(outerName, typeParameterCount, language);
+				IClass upperClass = GetClass(outerName, typeParameterCount, language, lookInReferences);
 				if (upperClass != null) {
 					foreach (IClass upperBaseClass in upperClass.ClassInheritanceTree) {
 						List<IClass> innerClasses = upperBaseClass.InnerClasses;

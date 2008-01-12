@@ -35,6 +35,18 @@ namespace ICSharpCode.SharpDevelop.Tests
 		#endregion
 		
 		[Test]
+		public void InnerClassTest()
+		{
+			string program = @"using System;
+class A {
+	
+}
+";
+			ResolveResult result = Resolve<TypeResolveResult>(program, "Environment.SpecialFolder", 3);
+			Assert.AreEqual("System.Environment.SpecialFolder", result.ResolvedType.FullyQualifiedName);
+		}
+		
+		[Test]
 		public void SimpleInnerClass()
 		{
 			string program = @"class A {
@@ -179,6 +191,39 @@ class A {
 }";
 			MemberResolveResult result = Resolve<MemberResolveResult>(program, "Test(4)", 7);
 			Assert.AreEqual("A.B.Test", result.ResolvedMember.FullyQualifiedName);
+		}
+		
+		[Test]
+		public void NestedInnerClasses()
+		{
+			string program = @"using System;
+public sealed class GL {
+	void Test() {
+		
+	}
+	
+	public class Enums
+	{
+		public enum BeginMode {QUADS, LINES }
+	}
+}
+";
+			TypeResolveResult trr = Resolve<TypeResolveResult>(program, "GL.Enums.BeginMode", 4);
+			Assert.AreEqual("GL.Enums.BeginMode", trr.ResolvedClass.FullyQualifiedName);
+			
+			trr = Resolve<TypeResolveResult>(program, "Enums.BeginMode", 4);
+			Assert.AreEqual("GL.Enums.BeginMode", trr.ResolvedClass.FullyQualifiedName);
+			
+			MemberResolveResult mrr = Resolve<MemberResolveResult>(program, "GL.Enums.BeginMode.LINES", 4);
+			Assert.AreEqual("GL.Enums.BeginMode.LINES", mrr.ResolvedMember.FullyQualifiedName);
+			
+			mrr = Resolve<MemberResolveResult>(program, "Enums.BeginMode.LINES", 4);
+			Assert.AreEqual("GL.Enums.BeginMode.LINES", mrr.ResolvedMember.FullyQualifiedName);
+			
+			// ensure that GetClass works correctly:
+			IClass c = trr.ResolvedClass.ProjectContent.GetClass("GL.Enums.BeginMode", 0);
+			Assert.IsNotNull(c);
+			Assert.AreEqual("GL.Enums.BeginMode", c.FullyQualifiedName);
 		}
 	}
 }

@@ -115,7 +115,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public IClass GetInnermostClass(int caretLine, int caretColumn)
 		{
 			foreach (IClass c in Classes) {
-				if (c != null && c.Region.IsInside(caretLine, caretColumn)) {
+				if (c != null && DefaultClass.IsInside(c, caretLine, caretColumn)) {
 					return c.GetInnermostClass(caretLine, caretColumn);
 				}
 			}

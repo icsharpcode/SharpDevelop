@@ -658,18 +658,6 @@ class B {
 		}
 		
 		[Test]
-		public void InnerClassTest()
-		{
-			string program = @"using System;
-class A {
-	
-}
-";
-			ResolveResult result = Resolve<TypeResolveResult>(program, "Environment.SpecialFolder", 3);
-			Assert.AreEqual("System.Environment.SpecialFolder", result.ResolvedType.FullyQualifiedName);
-		}
-		
-		[Test]
 		public void LoopVariableScopeTest()
 		{
 			string program = @"using System;
@@ -805,34 +793,6 @@ End Class
 			Assert.AreEqual(1, m.Parameters.Count);
 			Assert.AreEqual("rectangle", m.Parameters[0].Name);
 			Assert.IsTrue(m.Parameters[0].IsRef);
-		}
-		
-		[Test]
-		public void NestedInnerClasses()
-		{
-			string program = @"using System;
-public sealed class GL {
-	void Test() {
-		
-	}
-	
-	public class Enums
-	{
-		public enum BeginMode {QUADS, LINES }
-	}
-}
-";
-			TypeResolveResult trr = Resolve<TypeResolveResult>(program, "GL.Enums.BeginMode", 4);
-			Assert.AreEqual("GL.Enums.BeginMode", trr.ResolvedClass.FullyQualifiedName);
-			
-			trr = Resolve<TypeResolveResult>(program, "Enums.BeginMode", 4);
-			Assert.AreEqual("GL.Enums.BeginMode", trr.ResolvedClass.FullyQualifiedName);
-			
-			MemberResolveResult mrr = Resolve<MemberResolveResult>(program, "GL.Enums.BeginMode.LINES", 4);
-			Assert.AreEqual("GL.Enums.BeginMode.LINES", mrr.ResolvedMember.FullyQualifiedName);
-			
-			mrr = Resolve<MemberResolveResult>(program, "Enums.BeginMode.LINES", 4);
-			Assert.AreEqual("GL.Enums.BeginMode.LINES", mrr.ResolvedMember.FullyQualifiedName);
 		}
 		#endregion
 		
@@ -1382,8 +1342,6 @@ namespace OtherName { class Bla { } }
 		[Test]
 		public void NamespaceInAttributeContext()
 		{
-			// Classes in the current namespace are preferred over classes from
-			// imported namespaces
 			string program = @"using System;
   class Test {
 
@@ -1399,8 +1357,6 @@ namespace OtherName { class Bla { } }
 		[Test]
 		public void AttributeWithShortName()
 		{
-			// Classes in the current namespace are preferred over classes from
-			// imported namespaces
 			string program = @"using System;
   class Test {
 
@@ -1412,6 +1368,51 @@ namespace OtherName { class Bla { } }
 			
 			result = Resolve<TypeResolveResult>(program, "System.Obsolete", 2, 1, ExpressionContext.Attribute);
 			Assert.AreEqual("System.ObsoleteAttribute", result.ResolvedClass.FullyQualifiedName);
+		}
+		
+		[Test]
+		public void AttributeConstructor()
+		{
+			string program = @"using System;
+  class Test {
+
+}
+";
+			
+			MemberResolveResult result = Resolve<MemberResolveResult>(program, "LoaderOptimization(3)", 2, 1, ExpressionContext.Attribute);
+			Assert.AreEqual("System.Byte", ((IMethod)result.ResolvedMember).Parameters[0].ReturnType.FullyQualifiedName);
+			
+			result = Resolve<MemberResolveResult>(program, "LoaderOptimization(LoaderOptimization.NotSpecified)", 2, 1, ExpressionContext.Attribute);
+			Assert.AreEqual("System.LoaderOptimization", ((IMethod)result.ResolvedMember).Parameters[0].ReturnType.FullyQualifiedName);
+			
+			result = Resolve<MemberResolveResult>(program, "LoaderOptimizationAttribute(0)", 2, 1, ExpressionContext.Attribute);
+			Assert.AreEqual("System.Byte", ((IMethod)result.ResolvedMember).Parameters[0].ReturnType.FullyQualifiedName);
+		}
+		
+		[Test]
+		public void AttributeArgumentInClassContext1()
+		{
+			string program = @"using System;
+[AttributeUsage(XXX)] class MyAttribute : Attribute {
+	public const AttributeTargets XXX = AttributeTargets.All;
+}
+";
+			MemberResolveResult result = Resolve<MemberResolveResult>(program, "XXX", 2, 17, ExpressionContext.Default);
+			Assert.AreEqual("MyAttribute.XXX", result.ResolvedMember.FullyQualifiedName);
+		}
+		
+		[Test]
+		public void AttributeArgumentInClassContext2()
+		{
+			string program = @"using System; namespace MyNamespace {
+[SomeAttribute(E.A)] class Test {
+	
+}
+enum E { A, B }
+}
+";
+			MemberResolveResult result = Resolve<MemberResolveResult>(program, "E.A", 2, 16, ExpressionContext.Default);
+			Assert.AreEqual("MyNamespace.E.A", result.ResolvedMember.FullyQualifiedName);
 		}
 		#endregion
 		

@@ -404,7 +404,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 		}
 		
-		ResolveResult ResolveConstructorOverload(IClass c, List<Expression> arguments)
+		internal ResolveResult ResolveConstructorOverload(IClass c, List<Expression> arguments)
 		{
 			if (c == null)
 				return null;
