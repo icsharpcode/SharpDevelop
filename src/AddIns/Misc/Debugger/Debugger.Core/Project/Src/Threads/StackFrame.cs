@@ -351,8 +351,8 @@ namespace Debugger
 		
 		ICorDebugValue ThisCorValue {
 			get {
-				if (this.HasExpired) throw new GetValueException("StackFrame has expired");
 				if (this.MethodInfo.IsStatic) throw new GetValueException("Static method does not have 'this'.");
+				if (this.HasExpired) throw new GetValueException("StackFrame has expired");
 				try {
 					return CorILFrame.GetArgument(0);
 				} catch (COMException e) {
