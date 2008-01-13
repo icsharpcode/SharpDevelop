@@ -9,7 +9,7 @@ using System;
 
 namespace Debugger.Expressions
 {
-	public class ExpressionEvaluateException: CannotGetValueException
+	public class ExpressionEvaluateException: GetValueException
 	{
 		Expression expression;
 		string error;

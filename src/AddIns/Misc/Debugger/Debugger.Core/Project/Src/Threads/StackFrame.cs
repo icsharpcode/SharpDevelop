@@ -351,13 +351,13 @@ namespace Debugger
 		
 		ICorDebugValue ThisCorValue {
 			get {
-				if (this.HasExpired) throw new CannotGetValueException("StackFrame has expired");
-				if (this.MethodInfo.IsStatic) throw new CannotGetValueException("Static method does not have 'this'.");
+				if (this.HasExpired) throw new GetValueException("StackFrame has expired");
+				if (this.MethodInfo.IsStatic) throw new GetValueException("Static method does not have 'this'.");
 				try {
 					return CorILFrame.GetArgument(0);
 				} catch (COMException e) {
 					// System.Runtime.InteropServices.COMException (0x80131304): An IL variable is not available at the current native IP. (See Forum-8640)
-					if ((uint)e.ErrorCode == 0x80131304) throw new CannotGetValueException("Not available in the current state");
+					if ((uint)e.ErrorCode == 0x80131304) throw new GetValueException("Not available in the current state");
 					throw;
 				}
 			}
@@ -398,13 +398,13 @@ namespace Debugger
 		
 		ICorDebugValue GetArgumentCorValue(int index)
 		{
-			if (this.HasExpired) throw new CannotGetValueException("StackFrame has expired");
+			if (this.HasExpired) throw new GetValueException("StackFrame has expired");
 			
 			try {
 				// Non-static methods include 'this' as first argument
 				return CorILFrame.GetArgument((uint)(this.MethodInfo.IsStatic? index : (index + 1)));
 			} catch (COMException e) {
-				if ((uint)e.ErrorCode == 0x80131304) throw new CannotGetValueException("Unavailable in optimized code");
+				if ((uint)e.ErrorCode == 0x80131304) throw new GetValueException("Unavailable in optimized code");
 				throw;
 			}
 		}
@@ -446,12 +446,12 @@ namespace Debugger
 		
 		ICorDebugValue GetCorValueOfLocalVariable(ISymUnmanagedVariable symVar)
 		{
-			if (this.HasExpired) throw new CannotGetValueException("StackFrame has expired");
+			if (this.HasExpired) throw new GetValueException("StackFrame has expired");
 			
 			try {
 				return CorILFrame.GetLocalVariable((uint)symVar.AddressField1);
 			} catch (COMException e) {
-				if ((uint)e.ErrorCode == 0x80131304) throw new CannotGetValueException("Unavailable in optimized code");
+				if ((uint)e.ErrorCode == 0x80131304) throw new GetValueException("Unavailable in optimized code");
 				throw;
 			}
 		}

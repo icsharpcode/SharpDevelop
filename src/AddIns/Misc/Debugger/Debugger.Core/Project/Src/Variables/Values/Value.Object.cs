@@ -75,7 +75,7 @@ namespace Debugger
 		static ICorDebugValue GetFieldCorValue(Value objectInstance, FieldInfo fieldInfo)
 		{
 			if (!fieldInfo.DeclaringType.IsInstanceOfType(objectInstance)) {
-				throw new CannotGetValueException("Object is not of type " + fieldInfo.DeclaringType.FullName);
+				throw new GetValueException("Object is not of type " + fieldInfo.DeclaringType.FullName);
 			}
 			
 			// Current frame is used to resolve context specific static values (eg. ThreadStatic)
@@ -95,7 +95,7 @@ namespace Debugger
 					return objectInstance.CorObjectValue.GetFieldValue(fieldInfo.DeclaringType.CorType.Class, fieldInfo.MetadataToken);
 				}
 			} catch {
-				throw new CannotGetValueException("Can not get value of field");
+				throw new GetValueException("Can not get value of field");
 			}
 		}
 		
@@ -120,7 +120,7 @@ namespace Debugger
 		/// <summary> Get the value of the property using the get accessor </summary>
 		public static Value GetPropertyValue(Value objectInstance, PropertyInfo propertyInfo, Value[] arguments)
 		{
-			if (propertyInfo.GetMethod == null) throw new CannotGetValueException("Property does not have a get method");
+			if (propertyInfo.GetMethod == null) throw new GetValueException("Property does not have a get method");
 			arguments = arguments ?? new Value[0];
 			
 			List<Value> dependencies = new List<Value>();
@@ -155,7 +155,7 @@ namespace Debugger
 		/// <summary> Set the value of the property using the set accessor </summary>
 		public static Value SetPropertyValue(Value objectInstance, PropertyInfo propertyInfo, Value[] arguments, Value newValue)
 		{
-			if (propertyInfo.SetMethod == null) throw new CannotGetValueException("Property does not have a set method");
+			if (propertyInfo.SetMethod == null) throw new GetValueException("Property does not have a set method");
 			
 			arguments = arguments ?? new Value[0];
 			Value[] allParams = new Value[1 + arguments.Length];

@@ -104,13 +104,13 @@ namespace Debugger
 		ICorDebugValue GetCorValueOfArrayElement(int[] indices)
 		{
 			if (!IsArray) {
-				throw new CannotGetValueException("The value is not an array");
+				throw new GetValueException("The value is not an array");
 			}
 			if (indices.Length != ArrayRank) {
-				throw new CannotGetValueException("Given indicies do not have the same dimension as array.");
+				throw new GetValueException("Given indicies do not have the same dimension as array.");
 			}
 			if (!this.ArrayDimensions.IsIndexValid(indices)) {
-				throw new CannotGetValueException("Given indices are out of range of the array");
+				throw new GetValueException("Given indices are out of range of the array");
 			}
 			
 			return CorArrayValue.GetElement(indices);

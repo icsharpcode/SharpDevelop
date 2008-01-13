@@ -33,7 +33,7 @@ namespace Debugger.Expressions
 			Value result;
 			try {
 				result = EvaluateInternal(context);
-			} catch (CannotGetValueException e) {
+			} catch (GetValueException e) {
 				throw new ExpressionEvaluateException(this, e.Message);
 			}
 			

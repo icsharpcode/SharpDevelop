@@ -47,12 +47,12 @@ namespace Debugger
 		public Value Result {
 			get {
 				switch(this.State) {
-					case EvalState.EvaluationScheduled:   throw new CannotGetValueException("Evaluation pending");
-					case EvalState.Evaluating:            throw new CannotGetValueException("Evaluating...");
+					case EvalState.EvaluationScheduled:   throw new GetValueException("Evaluation pending");
+					case EvalState.Evaluating:            throw new GetValueException("Evaluating...");
 					case EvalState.EvaluatedSuccessfully: return result;
 					case EvalState.EvaluatedException:    return result;
-					case EvalState.EvaluatedNoResult:     throw new CannotGetValueException("No return value");
-					case EvalState.EvaluatedError:        throw new CannotGetValueException(errorMsg);
+					case EvalState.EvaluatedNoResult:     throw new GetValueException("No return value");
+					case EvalState.EvaluatedError:        throw new GetValueException(errorMsg);
 					default: throw new DebuggerException("Unknown state");
 				}
 			}
@@ -134,7 +134,7 @@ namespace Debugger
 				foreach(Value arg in args) {
 					corArgs.Add(arg.SoftReference);
 				}
-			} catch (CannotGetValueException e) {
+			} catch (GetValueException e) {
 				throw new EvalSetupException(e.Message);
 			}
 			

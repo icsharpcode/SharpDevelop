@@ -93,7 +93,7 @@ namespace Debugger
 		
 		internal ICorDebugValue RawCorValue {
 			get {
-				if (this.HasExpired) throw new CannotGetValueException("Value has expired");
+				if (this.HasExpired) throw new GetValueException("Value has expired");
 				
 				return rawCorValue;
 			}
@@ -101,7 +101,7 @@ namespace Debugger
 		
 		internal ICorDebugValue CorValue {
 			get {
-				if (this.HasExpired) throw new CannotGetValueException("Value has expired");
+				if (this.HasExpired) throw new GetValueException("Value has expired");
 				
 				if (corValue_pauseSession != process.PauseSession) {
 					corValue = DereferenceUnbox(rawCorValue);
@@ -206,9 +206,9 @@ namespace Debugger
 		}
 	}
 	
-	public class CannotGetValueException: DebuggerException
+	public class GetValueException: DebuggerException
 	{
-		public CannotGetValueException(string message):base(message)
+		public GetValueException(string message):base(message)
 		{
 			
 		}
