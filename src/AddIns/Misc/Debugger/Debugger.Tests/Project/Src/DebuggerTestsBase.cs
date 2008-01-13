@@ -258,6 +258,51 @@ namespace Debugger.Tests
 			return exeFilename;
 		}
 		
+		string CopyThisAssembly()
+		{
+			Assembly assembly = Assembly.GetExecutingAssembly();
+			string md5 = ToHexadecimal(new MD5CryptoServiceProvider().ComputeHash(File.ReadAllBytes(assembly.Location)));
+			
+			string exeName = Path.GetFileName(assembly.Location);
+			string pdbName = Path.GetFileNameWithoutExtension(assembly.Location) + ".pdb";
+			
+			string oldDir = Path.GetDirectoryName(assembly.Location);
+			
+			string newDir = Path.GetTempPath();
+			newDir = Path.Combine(newDir, "SharpDevelop3.0");
+			newDir = Path.Combine(newDir, "DebuggerTests");
+			newDir = Path.Combine(newDir, md5);
+			Directory.CreateDirectory(newDir);
+			
+			if (!File.Exists(Path.Combine(newDir, exeName))) {
+				File.Copy(Path.Combine(oldDir, exeName), Path.Combine(newDir, exeName));
+			}
+			
+			if (!File.Exists(Path.Combine(newDir, pdbName))) {
+				File.Copy(Path.Combine(oldDir, pdbName), Path.Combine(newDir, pdbName));
+			}
+			
+			return Path.Combine(newDir, exeName);
+		}
+		
+		void CopyPdb()
+		{
+			Assembly assembly = Assembly.GetExecutingAssembly();
+			string dir = Path.GetDirectoryName(assembly.Location);
+			string iniFilePath = Path.Combine(dir, "__AssemblyInfo__.ini");
+			string iniFileContent = File.ReadAllText(iniFilePath, Encoding.Unicode);
+			
+			string originalExePath = iniFileContent.Remove(0, iniFileContent.IndexOf("file:///") + "file:///".Length).TrimEnd(' ', '\0');
+			string originalDir = Path.GetDirectoryName(originalExePath);
+			string originalPdbPath = Path.Combine(originalDir, Path.GetFileNameWithoutExtension(originalExePath) + ".pdb");
+			
+			string pdbPath = Path.Combine(dir, Path.GetFileNameWithoutExtension(originalExePath) + ".pdb");
+			
+			if (!File.Exists(pdbPath)) {
+				File.Copy(originalPdbPath, pdbPath);
+			}
+		}
+		
 		static string ToHexadecimal(byte[] bytes)
 		{
 			char[] chars = new char[] {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F',};
@@ -267,6 +312,14 @@ namespace Debugger.Tests
 				hex += chars[b & 0x0F];
 			}
 			return hex;
+		}
+		
+		public static void Main(string[] args)
+		{
+			if (args.Length != 1) throw new System.Exception("Needs test name as argument");
+			string testName = args[0];
+			Type type = Type.GetType(testName);
+			type.GetMethod("Main").Invoke(null, new object[0]);
 		}
 	}
 }
