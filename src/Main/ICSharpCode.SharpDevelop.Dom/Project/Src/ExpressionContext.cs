@@ -164,7 +164,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// <summary>Context expects a type name which has special base type</summary>
 		/// <param name="baseClass">The class the expression must derive from.</param>
 		/// <param name="isObjectCreation">Specifies whether classes must be constructable.</param>
-		/// <example>catch(*expr* ...), using(*expr* ...), throw new ***</example>
+		/// <example>catch(*expr* ...), using(*expr* ...), throw new *expr*();</example>
 		public static ExpressionContext TypeDerivingFrom(IReturnType baseType, bool isObjectCreation)
 		{
 			return new TypeExpressionContext(baseType, isObjectCreation, false);

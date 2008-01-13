@@ -552,7 +552,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				if (IsSameName(identifier, "value")) {
 					IProperty property = callingMember as IProperty;
 					if (property != null && property.SetterRegion.IsInside(position.Line, position.Column)
-					   || callingMember is IEvent)
+					    || callingMember is IEvent)
 					{
 						IField field = new DefaultField.ParameterField(callingMember.ReturnType, "value", callingMember.Region, callingClass);
 						return new LocalResolveResult(callingMember, field);
@@ -608,7 +608,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 						resultMembers.Add(member);
 					}
 				}
-				return CreateMemberOrMethodGroupResolveResult(null, identifier, resultMembers, false);
+				return CreateMemberOrMethodGroupResolveResult(null, identifier, new IList<IMember>[] { resultMembers }, false);
 			}
 			
 			return null;
@@ -626,38 +626,50 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		                                     List<TypeReference> typeArguments, bool isInvocation,
 		                                     bool allowExtensionMethods)
 		{
-			List<IMember> members = MemberLookupHelper.LookupMember(declaringType, memberName, callingClass, languageProperties, isInvocation);
+			List<IList<IMember>> members = MemberLookupHelper.LookupMember(declaringType, memberName, callingClass, languageProperties, isInvocation);
 			if (members != null && typeArguments != null && typeArguments.Count != 0) {
 				List<IReturnType> typeArgs = typeArguments.ConvertAll(r => TypeVisitor.CreateReturnType(r, this));
 				
-				members = members.OfType<IMethod>()
-					.Where((IMethod m) => m.TypeParameters.Count == typeArgs.Count)
-					.Select((IMethod originalMethod) => {
-					        	IMethod m = (IMethod)originalMethod.CreateSpecializedMember();
-					        	m.ReturnType = ConstructedReturnType.TranslateType(m.ReturnType, typeArgs, true);
-					        	for (int j = 0; j < m.Parameters.Count; ++j) {
-					        		m.Parameters[j].ReturnType = ConstructedReturnType.TranslateType(m.Parameters[j].ReturnType, typeArgs, true);
-					        	}
-					        	return (IMember)m;
-					        })
+				members = members.Select
+					(
+						(IList<IMember> memberGroup) => (IList<IMember>)
+						memberGroup.OfType<IMethod>()
+						.Where((IMethod m) => m.TypeParameters.Count == typeArgs.Count)
+						.Select((IMethod originalMethod) => {
+						        	IMethod m = (IMethod)originalMethod.CreateSpecializedMember();
+						        	m.ReturnType = ConstructedReturnType.TranslateType(m.ReturnType, typeArgs, true);
+						        	for (int j = 0; j < m.Parameters.Count; ++j) {
+						        		m.Parameters[j].ReturnType = ConstructedReturnType.TranslateType(m.Parameters[j].ReturnType, typeArgs, true);
+						        	}
+						        	return (IMember)m;
+						        })
+						.ToList()
+					)
+					.Where((IList<IMember> memberGroup) => memberGroup.Count > 0)
 					.ToList();
 			}
 			if (language == NR.SupportedLanguage.VBNet && members != null && members.Count > 0) {
 				// use the correct casing of the member name
-				memberName = members[0].Name;
+				memberName = members[0][0].Name;
 			}
 			return CreateMemberOrMethodGroupResolveResult(declaringType, memberName, members, allowExtensionMethods);
 		}
 		
-		internal ResolveResult CreateMemberOrMethodGroupResolveResult(IReturnType declaringType, string memberName, List<IMember> members, bool allowExtensionMethods)
+		internal ResolveResult CreateMemberOrMethodGroupResolveResult(IReturnType declaringType, string memberName, IList<IList<IMember>> members, bool allowExtensionMethods)
 		{
-			List<IMethod> methods = new List<IMethod>();
+			List<MethodGroup> methods = new List<MethodGroup>();
 			if (members != null) {
-				foreach (IMember m in members) {
-					if (m is IMethod)
-						methods.Add(m as IMethod);
-					else
-						return new MemberResolveResult(callingClass, callingMember, m);
+				foreach (IList<IMember> memberGroup in members) {
+					if (memberGroup != null && memberGroup.Count > 0) {
+						MethodGroup methodGroup = new MethodGroup();
+						foreach (IMember m in memberGroup) {
+							if (m is IMethod)
+								methodGroup.Add(m as IMethod);
+							else
+								return new MemberResolveResult(callingClass, callingMember, m);
+						}
+						methods.Add(methodGroup);
+					}
 				}
 			}
 			if (allowExtensionMethods == false || declaringType == null) {
@@ -665,14 +677,14 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					return null;
 				else
 					return new MethodGroupResolveResult(callingClass, callingMember,
-					                                    declaringType ?? methods[0].DeclaringTypeReference,
-					                                    memberName, methods,
-					                                    emptyMethodList);
+					                                    declaringType ?? methods[0][0].DeclaringTypeReference,
+					                                    memberName, methods);
 			} else {
+				methods.Add(new MethodGroup(new LazyList<IMethod>(() => SearchExtensionMethods(memberName)))
+				            { IsExtensionMethodGroup = true });
 				return new MethodGroupResolveResult(callingClass, callingMember,
 				                                    declaringType,
-				                                    memberName, methods,
-				                                    new LazyList<IMethod>(() => SearchExtensionMethods(memberName)));
+				                                    memberName, methods);
 			}
 		}
 		#endregion

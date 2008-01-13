@@ -261,7 +261,11 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 				}
 			}
 			
+			/// <summary>start of the expression currently being tracked</summary>
 			internal Location lastExpressionStart;
+			
+			/// <summary>Position of the last "new" keyword</summary>
+			internal Location lastNewTokenStart;
 			
 			public Frame() : this(null, '\0') {}
 			
@@ -498,9 +502,15 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 		void TrackCurrentContext(Token token)
 		{
 			if (frame.state == FrameState.ObjectCreation) {
-				if (token.kind == Tokens.GreaterThan || token.kind == Tokens.CloseParenthesis
-				    || token.kind == Tokens.DoubleColon || token.kind == Tokens.Dot
-				    || Tokens.SimpleTypeName[token.kind])
+				if (token.kind == Tokens.CloseParenthesis) {
+					if (frame.context.IsObjectCreation) {
+						frame.context = ExpressionContext.Default;
+						frame.lastExpressionStart = frame.lastNewTokenStart;
+					}
+					// keep frame.state
+				} else if (token.kind == Tokens.GreaterThan
+				           || token.kind == Tokens.DoubleColon || token.kind == Tokens.Dot
+				           || Tokens.SimpleTypeName[token.kind])
 				{
 					// keep frame.state == FrameState.ObjectCreationInType
 				} else {
@@ -533,6 +543,7 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 						frame.SetContext(ExpressionContext.TypeDerivingFrom(frame.expectedType, true));
 						frame.state = FrameState.ObjectCreation;
 						frame.curlyChildType = FrameType.ObjectInitializer;
+						frame.lastNewTokenStart = token.Location;
 					}
 					break;
 				case Tokens.Namespace:
@@ -728,6 +739,7 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 			int state = SEARCHING_OFFSET;
 			Frame resultFrame = frame;
 			int resultStartOffset = -1;
+			int alternateResultStartOffset = -1;
 			int resultEndOffset = -1;
 			ExpressionContext prevContext = ExpressionContext.Default;
 			ExpressionContext resultContext = ExpressionContext.Default;
@@ -741,6 +753,7 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 						resultFrame = frame;
 						resultContext = frame.context;
 						resultStartOffset = LocationToOffset(frame.lastExpressionStart);
+						alternateResultStartOffset = LocationToOffset(frame.lastNewTokenStart);
 						if (resultStartOffset < 0)
 							break;
 						resultEndOffset = LocationToOffset(token.Location);
@@ -754,16 +767,21 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 						resultFrame = frame;
 						resultContext = prevContext;
 						resultStartOffset = LocationToOffset(frame.lastExpressionStart);
+						alternateResultStartOffset = LocationToOffset(frame.lastNewTokenStart);
 						resultEndOffset = LocationToOffset(token.EndLocation);
 						if (resultStartOffset < 0)
 							break;
 						state = SEARCHING_END;
 					}
 				} else if (state == SEARCHING_END) {
+					int lastExpressionStartOffset = LocationToOffset(resultFrame.lastExpressionStart);
+					if (lastExpressionStartOffset == alternateResultStartOffset && alternateResultStartOffset >= 0)
+						resultStartOffset = lastExpressionStartOffset;
 					if (resultFrame.type == FrameType.Popped ||
-					    resultStartOffset != LocationToOffset(resultFrame.lastExpressionStart) ||
+					    lastExpressionStartOffset != resultStartOffset ||
 					    token.kind == Tokens.Dot || token.kind == Tokens.DoubleColon)
 					{
+						
 						// now we can change the context based on the next token
 						if (frame == resultFrame && Tokens.IdentifierTokens[token.kind]) {
 							// the expression got aborted because of an identifier. This means the

@@ -32,7 +32,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return members;
 		}
 		
-		public static List<IMember> LookupMember(IReturnType type, string name, IClass callingClass, LanguageProperties language, bool isInvocation)
+		public static List<IList<IMember>> LookupMember(
+			IReturnType type, string name, IClass callingClass,
+			LanguageProperties language, bool isInvocation)
 		{
 			if (language == null)
 				throw new ArgumentNullException("language");
@@ -111,8 +113,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public static List<IMember> LookupMember(IEnumerable<IMember> possibleMembers, IClass callingClass,
-		                                         bool isClassInInheritanceTree, bool isInvocation)
+		public static List<IList<IMember>> LookupMember(
+			IEnumerable<IMember> possibleMembers, IClass callingClass,
+			bool isClassInInheritanceTree, bool isInvocation)
 		{
 //			Console.WriteLine("Possible members:");
 //			foreach (IMember m in possibleMembers) {
@@ -130,6 +133,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			Dictionary<IMethod, IMethod> overrideMethodDict = new Dictionary<IMethod, IMethod>(new SignatureComparer());
 			IMember nonMethodOverride = null;
 			
+			List<IList<IMember>> allResults = new List<IList<IMember>>();
 			List<IMember> results = new List<IMember>();
 			foreach (var group in accessibleMembers
 			         .GroupBy((IMember m) => m.DeclaringType.GetCompoundClass())
@@ -152,10 +156,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 							results.Add(m);
 					}
 				}
-				if (results.Count > 0)
-					break;
+				if (results.Count > 0) {
+					allResults.Add(results);
+					results = new List<IMember>();
+				}
 			}
-			return results;
+			return allResults;
 		}
 		
 		static bool IsInvocable(IMember member)
@@ -184,7 +190,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 			
 			List<IMember> result = new List<IMember>();
 			foreach (var g in GetAllMembers(rt).GroupBy(m => m.Name, language.NameComparer)) {
-				result.AddRange(LookupMember(g, callingClass, isClassInInheritanceTree, false));
+				foreach (var group in LookupMember(g, callingClass, isClassInInheritanceTree, false)) {
+					result.AddRange(group);
+				}
 			}
 			return result;
 		}

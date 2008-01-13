@@ -274,29 +274,29 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			ResolveResult rr = Resolve(invocationExpression.TargetObject);
 			MethodGroupResolveResult mgrr = rr as MethodGroupResolveResult;
 			if (mgrr != null) {
-				if (mgrr.Methods.Count == 0 && resolver.Language == SupportedLanguage.VBNet && mgrr.PossibleExtensionMethods.Count == 0)
+				if (resolver.Language == SupportedLanguage.VBNet && mgrr.Methods.All(mg => mg.Count == 0))
 					return CreateMemberResolveResult(GetVisualBasicIndexer(invocationExpression));
 				
 				IReturnType[] argumentTypes = invocationExpression.Arguments.Select<Expression, IReturnType>(ResolveType).ToArray();
 				
-				bool resultIsAcceptable;
-				IMethod result = MemberLookupHelper.FindOverload(mgrr.Methods, argumentTypes, out resultIsAcceptable);
-				if (resultIsAcceptable)
-					return CreateMemberResolveResult(result);
-				
-				if (mgrr.PossibleExtensionMethods.Count > 0) {
-					IReturnType[] extendedTypes = new IReturnType[argumentTypes.Length + 1];
-					extendedTypes[0] = mgrr.ContainingType;
-					argumentTypes.CopyTo(extendedTypes, 1);
-					
-					IMethod extensionResult = MemberLookupHelper.FindOverload(mgrr.PossibleExtensionMethods, extendedTypes, out resultIsAcceptable);
+				IMethod firstResult = null;
+				foreach (MethodGroup methodGroup in mgrr.Methods) {
+					bool resultIsAcceptable;
+					IMethod result;
+					if (methodGroup.IsExtensionMethodGroup) {
+						IReturnType[] extendedTypes = new IReturnType[argumentTypes.Length + 1];
+						extendedTypes[0] = mgrr.ContainingType;
+						argumentTypes.CopyTo(extendedTypes, 1);
+						result = MemberLookupHelper.FindOverload(methodGroup, extendedTypes, out resultIsAcceptable);
+					} else {
+						result = MemberLookupHelper.FindOverload(methodGroup, argumentTypes, out resultIsAcceptable);
+					}
 					if (resultIsAcceptable)
-						return CreateMemberResolveResult(extensionResult);
-					else
-						return CreateMemberResolveResult(result ?? extensionResult);
-				} else {
-					return CreateMemberResolveResult(result);
+						return CreateMemberResolveResult(result);
+					if (firstResult == null)
+						firstResult = result;
 				}
+				return CreateMemberResolveResult(firstResult);
 			} else if (rr != null && rr.ResolvedType != null) {
 				IClass c = rr.ResolvedType.GetUnderlyingClass();
 				if (c != null && c.ClassType == ClassType.Delegate) {
@@ -385,7 +385,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 						possibleMembers.Add(member);
 					}
 				}
-				return resolver.CreateMemberOrMethodGroupResolveResult(null, mre.MemberName, possibleMembers, false);
+				return resolver.CreateMemberOrMethodGroupResolveResult(
+					null, mre.MemberName, new IList<IMember>[] { possibleMembers }, false);
 			}
 			return null;
 		}

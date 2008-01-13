@@ -500,6 +500,86 @@ namespace ICSharpCode.SharpDevelop.Dom
 	#endregion
 	
 	#region MethodResolveResult
+	public class MethodGroup : IList<IMethod>
+	{
+		public bool IsExtensionMethodGroup { get; set; }
+		IList<IMethod> innerList;
+		
+		public MethodGroup() : this(new List<IMethod>())
+		{
+		}
+		
+		public MethodGroup(IList<IMethod> innerList)
+		{
+			if (innerList == null)
+				throw new ArgumentNullException("innerList");
+			this.innerList = innerList;
+		}
+		
+		public IMethod this[int index] {
+			get { return innerList[index]; }
+			set { innerList[index] = value; }
+		}
+		
+		public int Count {
+			get { return innerList.Count; }
+		}
+		
+		public bool IsReadOnly {
+			get { return innerList.IsReadOnly; }
+		}
+		
+		public int IndexOf(IMethod item)
+		{
+			return innerList.IndexOf(item);
+		}
+		
+		public void Insert(int index, IMethod item)
+		{
+			innerList.Insert(index, item);
+		}
+		
+		public void RemoveAt(int index)
+		{
+			innerList.RemoveAt(index);
+		}
+		
+		public void Add(IMethod item)
+		{
+			innerList.Add(item);
+		}
+		
+		public void Clear()
+		{
+			innerList.Clear();
+		}
+		
+		public bool Contains(IMethod item)
+		{
+			return innerList.Contains(item);
+		}
+		
+		public void CopyTo(IMethod[] array, int arrayIndex)
+		{
+			innerList.CopyTo(array, arrayIndex);
+		}
+		
+		public bool Remove(IMethod item)
+		{
+			return innerList.Remove(item);
+		}
+		
+		public IEnumerator<IMethod> GetEnumerator()
+		{
+			return innerList.GetEnumerator();
+		}
+		
+		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+		{
+			return this.GetEnumerator();
+		}
+	}
+	
 	/// <summary>
 	/// The MethodResolveResult is used when an expression was the name of a method,
 	/// but there were no parameters specified so the exact overload could not be found.
@@ -515,8 +595,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 	{
 		string name;
 		IReturnType containingType;
-		IList<IMethod> possibleMethods;
-		IList<IMethod> possibleExtensionMethods;
+		IList<MethodGroup> possibleMethods;
 		
 		public MethodGroupResolveResult(IClass callingClass, IMember callingMember, IReturnType containingType, string name)
 			: base(callingClass, callingMember, null)
@@ -527,11 +606,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 				throw new ArgumentNullException("name");
 			this.containingType = containingType;
 			this.name = name;
-			this.possibleExtensionMethods = new IMethod[0];
 		}
 		
 		public MethodGroupResolveResult(IClass callingClass, IMember callingMember, IReturnType containingType, string name,
-		                                IList<IMethod> possibleMethods, IList<IMethod> possibleExtensionMethods)
+		                                IList<MethodGroup> possibleMethods)
 			: base(callingClass, callingMember, null)
 		{
 			if (containingType == null)
@@ -540,17 +618,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 				throw new ArgumentNullException("name");
 			if (possibleMethods == null)
 				throw new ArgumentNullException("possibleMethods");
-			if (possibleExtensionMethods == null)
-				throw new ArgumentNullException("possibleExtensionMethods");
 			this.containingType = containingType;
 			this.name = name;
 			this.possibleMethods = possibleMethods;
-			this.possibleExtensionMethods = possibleExtensionMethods;
 		}
 		
 		public override ResolveResult Clone()
 		{
-			return new MethodGroupResolveResult(this.CallingClass, this.CallingMember, this.ContainingType, this.Name, this.Methods, this.PossibleExtensionMethods);
+			return new MethodGroupResolveResult(this.CallingClass, this.CallingMember, this.ContainingType, this.Name, this.Methods);
 		}
 		
 		/// <summary>
@@ -570,25 +645,23 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// <summary>
 		/// The list of possible methods.
 		/// </summary>
-		public IList<IMethod> Methods {
+		public IList<MethodGroup> Methods {
 			get {
-				if (possibleMethods == null)
-					possibleMethods = containingType.GetMethods().FindAll((IMethod m) => m.Name == this.name);
+				if (possibleMethods == null) {
+					possibleMethods = new MethodGroup[] {
+						new MethodGroup(
+							containingType.GetMethods().FindAll((IMethod m) => m.Name == this.name)
+						)
+					};
+				}
 				return possibleMethods;
 			}
 		}
 		
-		/// <summary>
-		/// The list of possible extension methods.
-		/// </summary>
-		public IList<IMethod> PossibleExtensionMethods {
-			get { return possibleExtensionMethods; }
-		}
-		
 		public IMethod GetMethodIfSingleOverload()
 		{
-			if (this.Methods.Count == 1)
-				return this.Methods[0];
+			if (this.Methods.Count > 0 && this.Methods[0].Count == 1)
+				return this.Methods[0][0];
 			else
 				return null;
 		}
@@ -658,5 +731,3 @@ namespace ICSharpCode.SharpDevelop.Dom
 	}
 	#endregion
 }
-
-

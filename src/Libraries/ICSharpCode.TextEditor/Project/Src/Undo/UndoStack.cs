@@ -79,7 +79,7 @@ namespace ICSharpCode.TextEditor.Undo
 				actionCountInUndoGroup = 0;
 			}
 			undoGroupDepth++;
-			Util.LoggingService.Debug("Open undo group (new depth=" + undoGroupDepth + ")");
+			//Util.LoggingService.Debug("Open undo group (new depth=" + undoGroupDepth + ")");
 		}
 		
 		public void EndUndoGroup()
@@ -87,7 +87,7 @@ namespace ICSharpCode.TextEditor.Undo
 			if (undoGroupDepth == 0)
 				throw new InvalidOperationException("There are no open undo groups");
 			undoGroupDepth--;
-			Util.LoggingService.Debug("Close undo group (new depth=" + undoGroupDepth + ")");
+			//Util.LoggingService.Debug("Close undo group (new depth=" + undoGroupDepth + ")");
 			if (undoGroupDepth == 0 && actionCountInUndoGroup > 1) {
 				undostack.Push(new UndoQueue(undostack, actionCountInUndoGroup));
 			}

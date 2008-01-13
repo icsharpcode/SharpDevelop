@@ -310,11 +310,11 @@ interface IInterface2 {
 ";
 			MethodGroupResolveResult result = Resolve<MethodGroupResolveResult>(program, "TargetMethod", 3);
 			Assert.AreEqual("TargetMethod", result.Name);
-			Assert.AreEqual(2, result.Methods.Count);
+			Assert.AreEqual(2, result.Methods[0].Count);
 			
 			result = Resolve<MethodGroupResolveResult>(program, "TargetMethod<string>", 3);
 			Assert.AreEqual("TargetMethod", result.Name);
-			Assert.AreEqual(1, result.Methods.Count);
+			Assert.AreEqual(1, result.Methods[0].Count);
 			Assert.AreEqual("System.String", result.GetMethodIfSingleOverload().Parameters[0].ReturnType.FullyQualifiedName);
 		}
 		
@@ -456,6 +456,7 @@ class A {
 			IMethod m = (IMethod)result.ResolvedMember;
 			Assert.IsFalse(m.IsStatic, "new A() is static");
 			Assert.AreEqual(0, m.Parameters.Count, "new A() parameter count");
+			Assert.AreEqual("A", result.ResolvedType.FullyQualifiedName);
 			
 			result = Resolve<MemberResolveResult>(program, "new A(10)", 3);
 			m = (IMethod)result.ResolvedMember;
@@ -480,6 +481,10 @@ class A {
 			MemberResolveResult result = Resolve<MemberResolveResult>(program, "new A()", 3);
 			IMethod m = (IMethod)result.ResolvedMember;
 			Assert.IsNotNull(m);
+			Assert.AreEqual("A", result.ResolvedType.FullyQualifiedName);
+			
+			ArrayList ar = result.GetCompletionData(result.CallingClass.ProjectContent);
+			Assert.IsTrue(ContainsMember(ar, "A.Method"));
 		}
 		
 		[Test]
@@ -1765,6 +1770,26 @@ class DerivedClass : BaseClass {
 	public void Test(object a) { }
 }";
 			MemberResolveResult mrr = Resolve<MemberResolveResult>(program, "new DerivedClass().Test(3);", 4);
+			Assert.AreEqual("DerivedClass.Test", (mrr.ResolvedMember).FullyQualifiedName);
+		}
+		
+		[Test]
+		public void AddedNonApplicableOverload()
+		{
+			string program = @"class BaseClass {
+	static void Main() {
+		new DerivedClass().Test(3);
+		Console.ReadKey();
+	}
+	public void Test(int a) { }
+}
+class DerivedClass : BaseClass {
+	public void Test(string a) { }
+}";
+			MemberResolveResult mrr = Resolve<MemberResolveResult>(program, "new DerivedClass().Test(3);", 4);
+			Assert.AreEqual("BaseClass.Test", (mrr.ResolvedMember).FullyQualifiedName);
+			
+			mrr = Resolve<MemberResolveResult>(program, "new DerivedClass().Test(\"3\");", 4);
 			Assert.AreEqual("DerivedClass.Test", (mrr.ResolvedMember).FullyQualifiedName);
 		}
 		

@@ -171,7 +171,8 @@ class Main {
 		[Test]
 		public void NewException()
 		{
-			FindFull(program2, "otFoundException", "NotFoundException()", ExpressionContext.TypeDerivingFrom(ParserService.DefaultProjectContentRegistry.Mscorlib.SystemTypes.Exception, true));
+			FindExpr(program2, "oundException", "NotF", ExpressionContext.TypeDerivingFrom(ParserService.DefaultProjectContentRegistry.Mscorlib.SystemTypes.Exception, true));
+			FindFull(program2, "oundException", "new NotFoundException()", ExpressionContext.TypeDerivingFrom(ParserService.DefaultProjectContentRegistry.Mscorlib.SystemTypes.Exception, true));
 		}
 		
 		[Test]
@@ -374,6 +375,44 @@ class Main {
 			
 			ExpressionResult result = ef.FindExpression(program, program.Length - 3);
 			Assert.AreEqual("StringBuilder", result.Expression);
+			Assert.AreEqual(ExpressionContext.ObjectCreation, result.Context);
+		}
+		
+		[Test]
+		public void FindDefaultContextAfterConstructorCall()
+		{
+			const string program = @"using System; using System.Text;
+class Main {
+	void M() {
+		StringBuilder b = new StringBuilder()";
+			
+			ExpressionResult result = ef.FindExpression(program, program.Length);
+			Assert.AreEqual("new StringBuilder()", result.Expression);
+			Assert.AreEqual(ExpressionContext.Default, result.Context);
+		}
+		
+		[Test]
+		public void FindDefaultContextAfterConstructorCall2()
+		{
+			const string program = @"using System; using System.Text;
+class Main {
+	void M() {
+		new StringBuilder().Property.Method";
+			
+			ExpressionResult result = ef.FindExpression(program, program.Length);
+			Assert.AreEqual("new StringBuilder().Property.Method", result.Expression);
+		}
+		
+		[Test]
+		public void FindFullExpressionAfterConstructorCall()
+		{
+			const string program = @"using System; using System.Text;
+class Main {
+	void M() {
+		new StringBuilder().Property.MethodCall()";
+			
+			ExpressionResult result = ef.FindFullExpression(program, program.IndexOf("ringBuilder"));
+			Assert.AreEqual("new StringBuilder()", result.Expression);
 			Assert.AreEqual(ExpressionContext.ObjectCreation, result.Context);
 		}
 		
