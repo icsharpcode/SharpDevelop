@@ -11,6 +11,10 @@ using System.Text;
 
 namespace Debugger.Expressions
 {
+	/// <summary>
+	/// Reference to a member of a class.
+	/// Can be field, property or a method.
+	/// </summary>
 	public class MemberReferenceExpression: Expression
 	{
 		Expression targetObject;
@@ -29,30 +33,31 @@ namespace Debugger.Expressions
 			get { return arguments; }
 		}
 		
-		public MemberReferenceExpression(Expression targetObject, MemberInfo memberInfo)
-			:this(targetObject, memberInfo, new Expression[0])
-		{
-		}
-		
 		public MemberReferenceExpression(Expression targetObject, MemberInfo memberInfo, Expression[] arguments)
 		{
+			if (memberInfo == null) throw new ArgumentNullException("memberInfo");
+			
 			this.targetObject = targetObject;
 			this.memberInfo = memberInfo;
-			this.arguments = arguments;
+			this.arguments = arguments ?? new Expression[0];
 		}
 		
 		public override string Code {
 			get {
 				StringBuilder sb = new StringBuilder();
-				if (targetObject != null) {
-					sb.Append(targetObject.Code);
-				} else {
+				if (memberInfo.IsStatic) {
 					sb.Append(memberInfo.DeclaringType.FullName);
+				} else {
+					sb.Append(targetObject.Code);
 				}
 				sb.Append(".");
 				sb.Append(memberInfo.Name);
-				if (memberInfo is MethodInfo) {
-					sb.Append("(");
+				if (arguments.Length > 0) {
+					if (memberInfo is PropertyInfo) {
+						sb.Append("[");
+					} else {
+						sb.Append("(");
+					}
 					bool isFirst = true;
 					foreach(Expression argument in arguments) {
 						if (isFirst) {
@@ -62,7 +67,11 @@ namespace Debugger.Expressions
 						}
 						sb.Append(argument.Code);
 					}
-					sb.Append(")");
+					if (memberInfo is PropertyInfo) {
+						sb.Append("]");
+					} else {
+						sb.Append(")");
+					}
 				}
 				return sb.ToString();
 			}
@@ -70,33 +79,20 @@ namespace Debugger.Expressions
 		
 		protected override Value EvaluateInternal(StackFrame context)
 		{
-			if (memberInfo.IsStatic) {
-				if (targetObject != null) {
-					throw new ExpressionEvaluateException(this, "Target not expected for static member");
-				}
-			} else {
+			Value targetValue = null;
+			if (!memberInfo.IsStatic) {
 				if (targetObject == null) {
 					throw new ExpressionEvaluateException(this, "Target expected for instance member");
 				}
+				targetValue = targetObject.Evaluate(context);
 			}
+			
 			List<Value> argumentValues = new List<Value>();
 			foreach(Expression argument in arguments) {
 				argumentValues.Add(argument.Evaluate(context));
 			}
-			if (memberInfo.IsStatic) {
-				try {
-					return Value.GetMemberValue(null, memberInfo, argumentValues.ToArray());
-				} catch (CannotGetValueException e) {
-					throw new ExpressionEvaluateException(this, e.Message);
-				}
-			} else {
-				Value targetValue = targetObject.Evaluate(context);
-				try {
-					return targetValue.GetMemberValue(memberInfo, argumentValues.ToArray());
-				} catch (CannotGetValueException e) {
-					throw new ExpressionEvaluateException(this, e.Message);
-				}
-			}
+			
+			return Value.GetMemberValue(targetValue, memberInfo, argumentValues.ToArray());
 		}
 	}
 }

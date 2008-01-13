@@ -11,7 +11,7 @@ using System.Collections.Generic;
 namespace Debugger.Expressions
 {
 	/// <summary>
-	/// Identifier of a method parameter
+	/// Identifier of a parameter within a givne method.
 	/// </summary>
 	public class ParameterIdentifierExpression: Expression
 	{
@@ -33,6 +33,8 @@ namespace Debugger.Expressions
 		
 		public ParameterIdentifierExpression(MethodInfo method, int index, string name)
 		{
+			if (method == null) throw new ArgumentNullException("method");
+			
 			this.method = method;
 			this.index = index;
 			this.name = name;
@@ -40,16 +42,17 @@ namespace Debugger.Expressions
 		
 		public override string Code {
 			get {
-				return this.Name;
+				return name;
 			}
 		}
 		
 		protected override Value EvaluateInternal(StackFrame context)
 		{
-			if (context.MethodInfo != this.Method) {
-				throw new ExpressionEvaluateException(this, "Method " + this.Method.FullName + " expected, " + context.MethodInfo.FullName + " seen");
+			if (context.MethodInfo != method) {
+				throw new ExpressionEvaluateException(this, "Method " + method.FullName + " expected, " + context.MethodInfo.FullName + " seen");
 			}
-			return context.GetArgument(this.Index);
+			
+			return context.GetArgument(index);
 		}
 	}
 }

@@ -11,7 +11,10 @@ using System.Collections.Generic;
 
 namespace Debugger.Expressions
 {
-	public class IndexerExpression: Expression
+	/// <summary>
+	/// Indexer to an element of an array.
+	/// </summary>
+	public class ArrayIndexerExpression: Expression
 	{
 		Expression targetObject;
 		Expression[] arguments;
@@ -24,8 +27,11 @@ namespace Debugger.Expressions
 			get { return arguments; }
 		}
 		
-		public IndexerExpression(Expression targetObject, Expression[] arguments)
+		public ArrayIndexerExpression(Expression targetObject, Expression[] arguments)
 		{
+			if (targetObject == null) throw new ArgumentNullException("targetObject");
+			if (arguments == null) throw new ArgumentNullException("arguments");
+			
 			this.targetObject = targetObject;
 			this.arguments = arguments;
 		}
@@ -52,6 +58,7 @@ namespace Debugger.Expressions
 		protected override Value EvaluateInternal(StackFrame context)
 		{
 			Value targetValue = targetObject.Evaluate(context);
+			
 			List<int> indicies = new List<int>();
 			foreach(Expression argument in arguments) {
 				if (argument is PrimitiveExpression) {
@@ -60,13 +67,10 @@ namespace Debugger.Expressions
 						indicies.Add((int)primitiveExpression.Value);
 					}
 				}
-				throw new ExpressionEvaluateException(this, "Integer index expected");
+				throw new ExpressionEvaluateException(this, "Literal integer index expected");
 			}
-			try {
-				return targetValue.GetArrayElement(indicies.ToArray());
-			} catch (CannotGetValueException e) {
-				throw new ExpressionEvaluateException(this, e.Message);
-			}
+			
+			return targetValue.GetArrayElement(indicies.ToArray());
 		}
 	}
 }

@@ -20,7 +20,7 @@ namespace Debugger.Expressions
 			foreach(int indice in indices) {
 				indicesAst.Add(new PrimitiveExpression(indice));
 			}
-			return new IndexerExpression(this, indicesAst.ToArray());
+			return new ArrayIndexerExpression(this, indicesAst.ToArray());
 		}
 		
 		public ExpressionCollection AppendIndexers(ArrayDimensions dimensions)
@@ -34,12 +34,12 @@ namespace Debugger.Expressions
 		
 		public Expression AppendFieldReference(FieldInfo fieldInfo)
 		{
-			return new MemberReferenceExpression(this, fieldInfo);
+			return new MemberReferenceExpression(this, fieldInfo, null);
 		}
 		
 		public Expression AppendPropertyReference(PropertyInfo propertyInfo)
 		{
-			return new MemberReferenceExpression(this, propertyInfo);
+			return new MemberReferenceExpression(this, propertyInfo, null);
 		}
 		
 		public ExpressionCollection AppendObjectMembers(DebugType type, BindingFlags bindingFlags)
@@ -62,7 +62,7 @@ namespace Debugger.Expressions
 			ExpressionCollection vars = new ExpressionCollection();
 			
 			if (!methodInfo.IsStatic) {
-				vars.Add(MethodThis(methodInfo));
+				vars.Add(MethodThis());
 			}
 			vars.AddRange(MethodParameters(methodInfo));
 			vars.AddRange(MethodLocalVariables(methodInfo));
@@ -71,10 +71,8 @@ namespace Debugger.Expressions
 		}
 		
 		/// <summary> Get 'this' variable for a method </summary>
-		public static Expression MethodThis(MethodInfo methodInfo)
+		public static Expression MethodThis()
 		{
-			if (methodInfo.IsStatic) throw new DebuggerException(methodInfo.FullName + " is static method");
-			
 			return new ThisReferenceExpression();
 		}
 		

@@ -28,9 +28,14 @@ namespace Debugger.Expressions
 		public Value Evaluate(StackFrame context)
 		{
 			if (context == null) throw new ArgumentNullException("context");
-			if (context.HasExpired) throw new DebuggerException("context is expired StackFrame");
+			if (context.HasExpired) throw new DebuggerException("Context is expired StackFrame");
 			
-			Value result = EvaluateInternal(context);
+			Value result;
+			try {
+				result = EvaluateInternal(context);
+			} catch (CannotGetValueException e) {
+				throw new ExpressionEvaluateException(this, e.Message);
+			}
 			
 			context.Process.TraceMessage("Evaluated " + this.Code);
 			return result;

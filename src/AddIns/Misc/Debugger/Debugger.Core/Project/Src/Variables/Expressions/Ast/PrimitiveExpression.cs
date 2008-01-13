@@ -9,6 +9,9 @@ using System;
 
 namespace Debugger.Expressions
 {
+	/// <summary>
+	/// Literal expression
+	/// </summary>
 	public class PrimitiveExpression: Expression
 	{
 		object value;
@@ -34,7 +37,8 @@ namespace Debugger.Expressions
 		
 		protected override Value EvaluateInternal(StackFrame context)
 		{
-			throw new ExpressionEvaluateException(this, "Primitive value can not be evaluated");
+			// TODO: Need for literal method arguments.  Use Eval to create value.
+			throw new NotImplementedException();
 		}
 	}
 }

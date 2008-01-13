@@ -9,6 +9,9 @@ using System;
 
 namespace Debugger.Expressions
 {
+	/// <summary>
+	/// 'this' regerence of a non-static method.
+	/// </summary>
 	public class ThisReferenceExpression: Expression
 	{
 		public override string Code {
@@ -19,9 +22,6 @@ namespace Debugger.Expressions
 		
 		protected override Value EvaluateInternal(StackFrame context)
 		{
-			if (context.MethodInfo.IsStatic) {
-				throw new ExpressionEvaluateException(this, "'this' is not valid in static method");
-			}
 			return context.ThisValue;
 		}
 	}

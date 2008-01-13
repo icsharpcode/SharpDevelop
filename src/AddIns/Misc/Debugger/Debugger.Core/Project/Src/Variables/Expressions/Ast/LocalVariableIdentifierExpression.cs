@@ -13,7 +13,7 @@ using Debugger.Wrappers.CorSym;
 namespace Debugger.Expressions
 {
 	/// <summary>
-	/// Identifier of a local variable
+	/// Identifier of a local variable within a given method.
 	/// </summary>
 	public class LocalVariableIdentifierExpression: Expression
 	{
@@ -30,22 +30,26 @@ namespace Debugger.Expressions
 		
 		public LocalVariableIdentifierExpression(MethodInfo method, ISymUnmanagedVariable symVar)
 		{
+			if (method == null) throw new ArgumentNullException("method");
+			if (symVar == null) throw new ArgumentNullException("symVar");
+			
 			this.method = method;
 			this.symVar = symVar;
 		}
 		
 		public override string Code {
 			get {
-				return this.SymVar.Name;
+				return symVar.Name;
 			}
 		}
 		
 		protected override Value EvaluateInternal(StackFrame context)
 		{
-			if (context.MethodInfo != this.Method) {
-				throw new ExpressionEvaluateException(this, "Method " + this.Method.FullName + " expected, " + context.MethodInfo.FullName + " seen");
+			if (context.MethodInfo != method) {
+				throw new ExpressionEvaluateException(this, "Method " + method.FullName + " expected, " + context.MethodInfo.FullName + " seen");
 			}
-			return context.GetLocalVariableValue(this.SymVar);
+			
+			return context.GetLocalVariableValue(symVar);
 		}
 	}
 }

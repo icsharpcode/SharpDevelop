@@ -345,7 +345,6 @@ namespace Debugger
 		/// </summary>
 		public Value ThisValue {
 			get {
-				if (this.MethodInfo.IsStatic) throw new DebuggerException("Static method does not have 'this'.");
 				return new Value(process, "this", ThisCorValue);
 			}
 		}
@@ -353,6 +352,7 @@ namespace Debugger
 		ICorDebugValue ThisCorValue {
 			get {
 				if (this.HasExpired) throw new CannotGetValueException("StackFrame has expired");
+				if (this.MethodInfo.IsStatic) throw new CannotGetValueException("Static method does not have 'this'.");
 				try {
 					return CorILFrame.GetArgument(0);
 				} catch (COMException e) {
