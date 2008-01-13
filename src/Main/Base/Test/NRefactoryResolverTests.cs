@@ -1423,6 +1423,34 @@ enum E { A, B }
 		
 		#region C# 3.0 tests
 		[Test]
+		public void TypeInferenceTest()
+		{
+			string program = @"class TestClass {
+	static void Test() {
+		var a = 3;
+		
+	}
+}
+";
+			var lrr = Resolve<LocalResolveResult>(program, "a", 4);
+			Assert.AreEqual("System.Int32", lrr.ResolvedType.FullyQualifiedName);
+		}
+		
+		[Test]
+		public void TypeInferenceCycleTest()
+		{
+			string program = @"class TestClass {
+	static void Test() {
+		var a = a;
+		
+	}
+}
+";
+			var lrr = Resolve<LocalResolveResult>(program, "a", 4);
+			Assert.IsNull(lrr.ResolvedType.GetUnderlyingClass());
+		}
+		
+		[Test]
 		public void ExtensionMethodsTest()
 		{
 			string program = @"using XN;

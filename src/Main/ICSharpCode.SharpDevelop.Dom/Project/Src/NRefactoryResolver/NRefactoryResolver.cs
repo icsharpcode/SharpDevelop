@@ -915,20 +915,6 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		}
 		
 		#region DynamicLookup
-		/*
-		/// <remarks>
-		/// does the dynamic lookup for the identifier
-		/// </remarks>
-		public IReturnType DynamicLookup(string identifier, NR.Location position)
-		{
-			ResolveResult rr = ResolveIdentifierInternal(identifier, position);
-			if (rr is NamespaceResolveResult) {
-				return new TypeVisitor.NamespaceReturnType((rr as NamespaceResolveResult).Name);
-			}
-			return (rr != null) ? rr.ResolvedType : null;
-		}
-		 */
-		
 		IParameter SearchMethodParameter(string parameter)
 		{
 			IMethodOrProperty method = callingMember as IMethodOrProperty;
@@ -943,22 +929,32 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return null;
 		}
 		
+		Dictionary<LocalLookupVariable, IReturnType> variableReturnTypeCache = new Dictionary<LocalLookupVariable, IReturnType>();
+		
 		IReturnType GetVariableType(LocalLookupVariable v)
 		{
 			if (v == null) {
 				return null;
 			}
 			
+			// Don't create multiple IReturnType's for the same local variable.
+			// This is required to ensure that the protection against infinite recursion
+			// for type inference cycles in InferredReturnType works correctly.
+			// It also helps performance if we infer every local variable only once.
+			IReturnType rt;
+			if (variableReturnTypeCache.TryGetValue(v, out rt))
+				return rt;
+			
 			if (v.TypeRef == null || v.TypeRef.IsNull || v.TypeRef.Type == "var") {
+				rt = new InferredReturnType(v.Initializer, this);
 				if (v.IsLoopVariable) {
-					return new ElementReturnType(this.projectContent,
-					                             new InferredReturnType(v.Initializer, this));
-				} else {
-					return new InferredReturnType(v.Initializer, this);
+					rt = new ElementReturnType(this.projectContent, rt);
 				}
 			} else {
-				return TypeVisitor.CreateReturnType(v.TypeRef, this);
+				rt = TypeVisitor.CreateReturnType(v.TypeRef, this);
 			}
+			variableReturnTypeCache[v] = rt;
+			return rt;
 		}
 		
 		LocalLookupVariable SearchVariable(string name, NR.Location position)

@@ -32,9 +32,13 @@ namespace ICSharpCode.SharpDevelop.Gui.ClassBrowser
 		
 		internal static string GetText(IClass c)
 		{
-			IAmbience ambience = AmbienceService.CurrentAmbience;
-			ambience.ConversionFlags = ConversionFlags.ShowTypeParameterList;
-			return ambience.Convert(c);
+			if (ICSharpCode.Core.PropertyService.Initialized) {
+				IAmbience ambience = AmbienceService.CurrentAmbience;
+				ambience.ConversionFlags = ConversionFlags.ShowTypeParameterList;
+				return ambience.Convert(c);
+			} else {
+				return c.Name;
+			}
 		}
 		
 		public ClassNode(IProject project, IClass c)
