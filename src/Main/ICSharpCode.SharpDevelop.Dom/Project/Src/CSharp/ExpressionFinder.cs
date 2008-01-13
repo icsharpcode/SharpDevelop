@@ -132,11 +132,16 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 			EventDecl,
 			/// <summary>
 			/// parsing a field declaration (Interface+TypeDecl).
-			/// Could also be a property declaration
+			/// Could also be a method or property declaration.
 			/// </summary>
 			FieldDecl,
 			/// <summary>
-			/// parsing a method declaration (Interface+TypeDecl)
+			/// parsing a field declaration, the field name was already specified (Interface+TypeDecl).
+			/// Could also be a method or property declaration.
+			/// </summary>
+			FieldDeclAfterIdentifier,
+			/// <summary>
+			/// parsing a method declaration (Interface+TypeDecl) or a delegate declaration (Global+TypeDecl)
 			/// </summary>
 			MethodDecl,
 			/// <summary>
@@ -453,7 +458,9 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 						frame = new Frame(frame, '<');
 						if (frame.parent.InExpressionMode) {
 							frame.SetContext(ExpressionContext.Default);
-						} else if ((frame.parent.state == FrameState.TypeDecl || frame.parent.state == FrameState.MethodDecl)
+						} else if ((frame.parent.state == FrameState.TypeDecl
+						            || frame.parent.state == FrameState.MethodDecl
+						            || frame.parent.state == FrameState.FieldDeclAfterIdentifier)
 						           && frame.parent.context == ExpressionContext.IdentifierExpected)
 						{
 							frame.type = FrameType.TypeParameterDecl;
@@ -613,6 +620,7 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 						frame.curlyChildType = FrameType.Statements;
 					} else if (frame.type == FrameType.Global || frame.type == FrameType.TypeDecl) {
 						frame.parenthesisChildType = FrameType.ParameterList;
+						frame.state = FrameState.MethodDecl;
 						frame.SetContext(ExpressionContext.Type);
 					}
 					break;
@@ -625,7 +633,10 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 					frame.state = FrameState.EventDecl;
 					break;
 				case Tokens.Comma:
-					if (frame.state == FrameState.FieldDecl || frame.state == FrameState.Initializer) {
+					if (frame.state == FrameState.FieldDecl
+					    || frame.state == FrameState.FieldDeclAfterIdentifier
+					    || frame.state == FrameState.Initializer)
+					{
 						frame.state = FrameState.FieldDecl;
 						frame.SetContext(ExpressionContext.IdentifierExpected);
 					} else if (frame.state == FrameState.ObjectInitializerValue) {
@@ -645,7 +656,9 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 					frame.SetDefaultContext();
 					break;
 				case Tokens.OpenParenthesis:
-					if (frame.parent != null && frame.parent.state == FrameState.FieldDecl) {
+					if (frame.parent != null && (frame.parent.state == FrameState.FieldDeclAfterIdentifier
+					                             || frame.parent.state == FrameState.FieldDecl))
+					{
 						frame.type = FrameType.ParameterList;
 						frame.SetContext(ExpressionContext.FirstParameterType);
 						frame.parent.state = FrameState.MethodDecl;
@@ -662,6 +675,7 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 					if (frame.state == FrameState.FieldDecl) {
 						// this is an indexer declaration
 						frame.squareBracketChildType = FrameType.ParameterList;
+						frame.state = FrameState.FieldDeclAfterIdentifier;
 					}
 					break;
 				case Tokens.Goto:
@@ -680,12 +694,15 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 							if (frame.state == FrameState.Normal) {
 								frame.state = FrameState.FieldDecl;
 								frame.curlyChildType = FrameType.Property;
+							} else if (frame.state == FrameState.FieldDecl && Tokens.IdentifierTokens[token.kind]) {
+								frame.state = FrameState.FieldDeclAfterIdentifier;
 							}
 							if (frame.state != FrameState.ObjectCreation) {
 								frame.SetContext(ExpressionContext.IdentifierExpected);
 							}
 						} else if (frame.type == FrameType.ParameterList
-						           || frame.type == FrameType.Statements)
+						           || frame.type == FrameType.Statements
+						           || frame.type == FrameType.Global)
 						{
 							if (!frame.context.IsObjectCreation) {
 								frame.SetContext(ExpressionContext.IdentifierExpected);

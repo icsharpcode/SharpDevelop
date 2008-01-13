@@ -61,7 +61,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// </summary>
 		IncludeBody = 0x400,
 		/// <summary>
-		/// Show the list of type arguments on method and class declarations.
+		/// Show the list of type parameters on method and class declarations.
 		/// Type arguments for parameter/return types are always shown.
 		/// </summary>
 		ShowTypeParameterList = 0x800,

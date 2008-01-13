@@ -161,7 +161,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			string ToStringInternal()
 			{
 				IAmbience ambience = AmbienceService.CurrentAmbience;
-				ambience.ConversionFlags = ConversionFlags.ShowParameterList | ConversionFlags.ShowParameterNames;
+				ambience.ConversionFlags = ConversionFlags.ShowTypeParameterList | ConversionFlags.ShowParameterList | ConversionFlags.ShowParameterNames;
 				if (item is IMethod) {
 					return ambience.Convert((IMethod)item);
 				}
@@ -387,7 +387,9 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		void AddClasses(ArrayList items, ICollection classes)
 		{
 			foreach (IClass c in classes) {
-				items.Add(new ComboBoxItem(c, c.FullyQualifiedName, ClassBrowserIconService.GetIcon(c), true));
+				IAmbience ambience = AmbienceService.CurrentAmbience;
+				ambience.ConversionFlags = ConversionFlags.UseFullyQualifiedMemberNames | ConversionFlags.ShowTypeParameterList;
+				items.Add(new ComboBoxItem(c, ambience.Convert(c), ClassBrowserIconService.GetIcon(c), true));
 				AddClasses(items, c.InnerClasses);
 			}
 		}

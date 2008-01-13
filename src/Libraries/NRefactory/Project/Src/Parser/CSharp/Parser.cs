@@ -4537,7 +4537,7 @@ out expr);
 			}
 			MemberAccess(
 #line  1864 "cs.ATG" 
-out pexpr, new TypeReferenceExpression(val));
+out pexpr, new TypeReferenceExpression(val) { StartLocation = t.Location, EndLocation = t.EndLocation } );
 		} else if (la.kind == 111) {
 			lexer.NextToken();
 
@@ -4841,7 +4841,7 @@ out Expression expr, Expression target) {
 		if (ShouldConvertTargetExpressionToTypeReference(target)) {
 		TypeReference type = GetTypeReferenceFromExpression(target);
 		if (type != null) {
-			target = new TypeReferenceExpression(type);
+			target = new TypeReferenceExpression(type) { StartLocation = t.Location, EndLocation = t.EndLocation };
 		}
 		}
 		t.val = ""; // required for TypeReferenceExpressionTests.StandaloneIntReferenceExpression hack

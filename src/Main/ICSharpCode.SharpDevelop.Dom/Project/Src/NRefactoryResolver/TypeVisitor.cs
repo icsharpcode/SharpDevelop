@@ -80,17 +80,6 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 							t = projectContent.SearchType(new SearchTypeRequest(reference.SystemType, typeParameterCount, callingClass, caretLine, caretColumn)).Result;
 						}
 						if (t == null) {
-							if (reference.GenericTypes.Count == 0 && !reference.IsArrayType) {
-								// reference to namespace is possible
-								if (reference.IsGlobal) {
-									//if (projectContent.NamespaceExists(reference.Type))
-									//	return new NamespaceReturnType(reference.Type);
-								} else {
-									string name = projectContent.SearchNamespace(reference.Type, callingClass, (callingClass == null) ? null : callingClass.CompilationUnit, caretLine, caretColumn);
-									//if (name != null)
-									//	return new NamespaceReturnType(name);
-								}
-							}
 							return null;
 						}
 					}

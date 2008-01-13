@@ -161,11 +161,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 				expression = expression.Substring(0, pos);
 			}
 			expression = expression.Trim();
-			if (!callingClass.BodyRegion.IsInside(caretLine, caretColumn)
-			    && callingClass.ProjectContent.Language.NameComparer.Equals(expression, callingClass.Name))
-			{
-				return new TypeResolveResult(callingClass, callingMember, callingClass);
-			}
+//			if (!callingClass.BodyRegion.IsInside(caretLine, caretColumn)
+//			    && callingClass.ProjectContent.Language.NameComparer.Equals(expression, callingClass.Name))
+//			{
+//				return new TypeResolveResult(callingClass, callingMember, callingClass);
+//			}
 			if (expressionResult.Context != ExpressionContext.Type) {
 				if (callingMember != null
 				    && !callingMember.BodyRegion.IsInside(caretLine, caretColumn)

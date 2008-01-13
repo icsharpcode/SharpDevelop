@@ -27,6 +27,11 @@ namespace ICSharpCode.SharpDevelop.Tests
 			return nrrt.Resolve<RR>(program, expression, line);
 		}
 		
+		RR Resolve<RR>(string program, string expression, int line, int column) where RR : ResolveResult
+		{
+			return nrrt.Resolve<RR>(program, expression, line, column, ExpressionContext.Default);
+		}
+		
 		ResolveResult ResolveVB(string program, string expression, int line)
 		{
 			return nrrt.ResolveVB(program, expression, line);
@@ -254,6 +259,18 @@ public class GenericClass<T> where T : IDisposable {
 			Assert.IsNotNull(rr);
 			Assert.IsTrue(rr is LocalResolveResult);
 			Assert.IsTrue(rr.ResolvedType is GenericReturnType);
+		}
+		
+		[Test]
+		public void ResolveGenericClassInDeclarationLine()
+		{
+			const string program = @"using System;
+public abstract class Sorter { }
+public abstract class Sorter<T> : Sorter, IComparer<T> { }
+";
+			
+			TypeResolveResult trr = Resolve<TypeResolveResult>(program, "Sorter", 3, 37);
+			Assert.AreEqual(0, trr.ResolvedClass.TypeParameters.Count);
 		}
 		#endregion
 		

@@ -104,11 +104,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public static ExpressionContext BaseConstructorCall = new DefaultExpressionContext("BaseConstructorCall");
 		
 		/// <summary>The first parameter</summary>
-		/// <example>MethodName(*expr*)</example>
+		/// <example>void MethodName(*expr*)</example>
 		public static ExpressionContext FirstParameterType = new NonStaticTypeExpressionContext("FirstParameterType", false);
 		
 		/// <summary>Another parameter</summary>
-		/// <example>MethodName(..., *expr*)</example>
+		/// <example>void MethodName(..., *expr*)</example>
 		public static ExpressionContext ParameterType = new NonStaticTypeExpressionContext("ParameterType", false);
 		
 		/// <summary>Context expects a fully qualified type name.</summary>

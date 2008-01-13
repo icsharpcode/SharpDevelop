@@ -1620,6 +1620,31 @@ public class MyCollectionType : System.Collections.IEnumerable
 		#endregion
 		
 		[Test]
+		public void ClassWithSameNameAsNamespace()
+		{
+			string program = @"using System; namespace XX {
+	class Test {
+		static void X() {
+			
+		}
+	}
+	class XX {
+		public static void Test() {}
+	} }";
+			TypeResolveResult trr = Resolve<TypeResolveResult>(program, "XX", 4);
+			Assert.AreEqual("XX.XX", trr.ResolvedClass.FullyQualifiedName);
+
+			NamespaceResolveResult nrr = Resolve<NamespaceResolveResult>(program, "global::XX", 4);
+			Assert.AreEqual("XX", nrr.Name);
+			
+			trr = Resolve<TypeResolveResult>(program, "global::XX.XX", 4);
+			Assert.AreEqual("XX.XX", trr.ResolvedClass.FullyQualifiedName);
+			
+			MemberResolveResult mrr = Resolve<MemberResolveResult>(program, "XX.Test()", 4);
+			Assert.AreEqual("XX.XX.Test", mrr.ResolvedMember.FullyQualifiedName);
+		}
+		
+		[Test]
 		public void InvocableRule()
 		{
 			string program = @"using System;

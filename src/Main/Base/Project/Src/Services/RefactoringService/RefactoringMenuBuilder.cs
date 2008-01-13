@@ -58,7 +58,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 					}
 					if (type != null) {
 						definitions.Add(type.DotNetName);
-						item = new ToolStripMenuItem(type.Name, ClassBrowserIconService.ImageList.Images[ClassBrowserIconService.GetIcon(type)]);
+						item = new ToolStripMenuItem(ClassNode.GetText(type), ClassBrowserIconService.ImageList.Images[ClassBrowserIconService.GetIcon(type)]);
 						MenuService.AddItemsToMenu(item.DropDown.Items,
 						                           cb ?? new ClassBookmark(textArea.Document, type),
 						                           ClassBookmark.ContextMenuPath);
@@ -211,7 +211,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			if (member == null) return null;
 			if (definitions.Contains(member.DotNetName)) return null;
 			definitions.Add(member.DotNetName);
-			ToolStripMenuItem item = MakeItem(member.FullyQualifiedName, MemberNode.Create(member), member.DeclaringType.CompilationUnit, member.Region);
+			ToolStripMenuItem item = MakeItem(MemberNode.Create(member), member.DeclaringType.CompilationUnit, member.Region);
 			ToolStripMenuItem declaringType = MakeItem(null, member.DeclaringType);
 			if (declaringType != null) {
 				item.DropDown.Items.Add(new ToolStripSeparator());
@@ -228,7 +228,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				if (definitions.Contains(c.DotNetName)) return null;
 				definitions.Add(c.DotNetName);
 			}
-			return MakeItem(c.FullyQualifiedName, new ClassNode((IProject)c.ProjectContent.Project, c), c.CompilationUnit, c.Region);
+			return MakeItem(new ClassNode((IProject)c.ProjectContent.Project, c), c.CompilationUnit, c.Region);
 		}
 		
 		ToolStripMenuItem MakeItemInternal(string title, int imageIndex, ICompilationUnit cu, DomRegion region)
@@ -253,7 +253,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			return item;
 		}
 		
-		ToolStripMenuItem MakeItem(string title, ExtTreeNode classBrowserTreeNode, ICompilationUnit cu, DomRegion region)
+		ToolStripMenuItem MakeItem(ExtTreeNode classBrowserTreeNode, ICompilationUnit cu, DomRegion region)
 		{
 			ToolStripMenuItem item = MakeItemInternal(classBrowserTreeNode.Text, classBrowserTreeNode.ImageIndex, cu, region);
 			MenuService.AddItemsToMenu(item.DropDown.Items, classBrowserTreeNode, classBrowserTreeNode.ContextmenuAddinTreePath);

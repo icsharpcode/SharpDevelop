@@ -30,6 +30,13 @@ namespace ICSharpCode.SharpDevelop.Gui.ClassBrowser
 			}
 		}
 		
+		internal static string GetText(IClass c)
+		{
+			IAmbience ambience = AmbienceService.CurrentAmbience;
+			ambience.ConversionFlags = ConversionFlags.ShowTypeParameterList;
+			return ambience.Convert(c);
+		}
+		
 		public ClassNode(IProject project, IClass c)
 		{
 			sortOrder = 3;
@@ -37,7 +44,8 @@ namespace ICSharpCode.SharpDevelop.Gui.ClassBrowser
 			this.ContextmenuAddinTreePath = "/SharpDevelop/Pads/ClassBrowser/ClassContextMenu";
 			this.project = project;
 			this.c       = c;
-			Text = c.Name;
+			
+			Text = GetText(c);
 			SelectedImageIndex = ImageIndex = ClassBrowserIconService.GetIcon(c);
 			
 			if (c.ClassType != ClassType.Delegate) {

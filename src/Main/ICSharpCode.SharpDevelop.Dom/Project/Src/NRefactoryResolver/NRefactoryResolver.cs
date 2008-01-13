@@ -513,6 +513,13 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				}
 			}
 			
+			if (result == null && result2 == null) {
+				string namespaceName = SearchNamespace(identifier, position);
+				if (namespaceName != null && namespaceName.Length > 0) {
+					return new NamespaceResolveResult(callingClass, callingMember, namespaceName);
+				}
+			}
+			
 			if (result == null)  return result2;
 			if (result2 == null) return result;
 			if (context == ExpressionContext.Type)
@@ -571,11 +578,6 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					// also try to resolve the member in outer classes
 					tmp = tmp.DeclaringType;
 				} while (tmp != null);
-			}
-			
-			string namespaceName = SearchNamespace(identifier, position);
-			if (namespaceName != null && namespaceName.Length > 0) {
-				return new NamespaceResolveResult(callingClass, callingMember, namespaceName);
 			}
 			
 			if (languageProperties.CanImportClasses) {

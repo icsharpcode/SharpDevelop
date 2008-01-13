@@ -1861,7 +1861,7 @@ PrimaryExpr<out Expression pexpr>
 		| "ulong"    (. val = "ulong"; .)
 		| "ushort" (. val = "ushort"; .)
 		)
-		MemberAccess<out pexpr, new TypeReferenceExpression(val)>
+		MemberAccess<out pexpr, new TypeReferenceExpression(val) { StartLocation = t.Location, EndLocation = t.EndLocation } >
 		
 		/*--- this access: */
 	|	"this"                              (. pexpr = new ThisReferenceExpression(); .)
@@ -1928,7 +1928,7 @@ MemberAccess<out Expression expr, Expression target>
 	(.	if (ShouldConvertTargetExpressionToTypeReference(target)) {
 			TypeReference type = GetTypeReferenceFromExpression(target);
 			if (type != null) {
-				target = new TypeReferenceExpression(type);
+				target = new TypeReferenceExpression(type) { StartLocation = t.Location, EndLocation = t.EndLocation };
 			}
 		}
 		t.val = ""; // required for TypeReferenceExpressionTests.StandaloneIntReferenceExpression hack

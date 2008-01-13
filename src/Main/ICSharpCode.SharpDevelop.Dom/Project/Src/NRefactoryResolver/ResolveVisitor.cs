@@ -555,7 +555,20 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		public override object VisitTypeReferenceExpression(TypeReferenceExpression typeReferenceExpression, object data)
 		{
-			return CreateResolveResult(typeReferenceExpression.TypeReference);
+			TypeReference reference = typeReferenceExpression.TypeReference;
+			ResolveResult rr = CreateResolveResult(reference);
+			if (rr == null && reference.GenericTypes.Count == 0 && !reference.IsArrayType) {
+				// reference to namespace is possible
+				if (reference.IsGlobal) {
+					if (resolver.ProjectContent.NamespaceExists(reference.Type))
+						return new NamespaceResolveResult(resolver.CallingClass, resolver.CallingMember, reference.Type);
+				} else {
+					string name = resolver.SearchNamespace(reference.Type, typeReferenceExpression.StartLocation);
+					if (name != null)
+						return new NamespaceResolveResult(resolver.CallingClass, resolver.CallingMember, name);
+				}
+			}
+			return rr;
 		}
 		
 		public override object VisitUnaryOperatorExpression(UnaryOperatorExpression unaryOperatorExpression, object data)

@@ -912,6 +912,161 @@ class Main {
 			Assert.IsNull(result.Expression);
 			Assert.AreEqual(ExpressionContext.Type, result.Context);
 		}
+		
+		[Test]
+		public void DelegateTest1()
+		{
+			const string program = @"using System;
+delegate ";
+			
+			ExpressionResult result = ef.FindExpression(program, program.Length);
+			Assert.AreEqual("delegate ", result.Expression);
+			Assert.AreEqual(ExpressionContext.Type, result.Context);
+		}
+		
+		
+		[Test]
+		public void DelegateTest2()
+		{
+			const string program = @"using System;
+delegate void ";
+			
+			ExpressionResult result = ef.FindExpression(program, program.Length);
+			Assert.AreEqual("void ", result.Expression);
+			Assert.AreEqual(ExpressionContext.IdentifierExpected, result.Context);
+		}
+		
+		[Test]
+		public void GenericDelegateTest1()
+		{
+			const string program = @"using System;
+delegate void Test<";
+			
+			ExpressionResult result = ef.FindExpression(program, program.Length);
+			Assert.IsNull(result.Expression);
+			Assert.AreEqual(ExpressionContext.IdentifierExpected, result.Context);
+		}
+		
+		[Test]
+		public void GenericDelegateTest2()
+		{
+			const string program = @"using System;
+delegate void Test<T>(";
+			
+			ExpressionResult result = ef.FindExpression(program, program.Length);
+			Assert.IsNull(result.Expression);
+			Assert.AreEqual(ExpressionContext.ParameterType, result.Context);
+		}
+		
+		[Test]
+		public void GenericDelegateTest3()
+		{
+			const string program = @"using System;
+delegate void Test<T>(ref ";
+			
+			ExpressionResult result = ef.FindExpression(program, program.Length);
+			Assert.IsNull(result.Expression);
+			Assert.AreEqual(ExpressionContext.ParameterType, result.Context);
+		}
+		
+		[Test]
+		public void GenericDelegateTest4()
+		{
+			const string program = @"using System;
+delegate void Test<T>(ref T ";
+			
+			ExpressionResult result = ef.FindExpression(program, program.Length);
+			Assert.AreEqual("T ", result.Expression);
+			Assert.AreEqual(ExpressionContext.IdentifierExpected, result.Context);
+		}
+		
+		[Test]
+		public void GenericDelegateTest5()
+		{
+			const string program = @"using System;
+delegate void Test<T>(ref T name) ";
+			
+			ExpressionResult result = ef.FindExpression(program, program.Length);
+			Assert.AreEqual("Test<T>(ref T name) ", result.Expression);
+			Assert.AreEqual(ExpressionContext.ConstraintsStart, result.Context);
+		}
+		
+		[Test]
+		public void GenericDelegateTest6()
+		{
+			const string program = @"using System;
+delegate void Test<T>(ref T name) where ";
+			
+			ExpressionResult result = ef.FindExpression(program, program.Length);
+			Assert.AreEqual("where ", result.Expression);
+			Assert.AreEqual(ExpressionContext.Constraints, result.Context);
+		}
+		
+		[Test]
+		public void GenericMethodTest1()
+		{
+			const string program = @"using System; class T {
+void Test<";
+			
+			ExpressionResult result = ef.FindExpression(program, program.Length);
+			Assert.IsNull(result.Expression);
+			Assert.AreEqual(ExpressionContext.IdentifierExpected, result.Context);
+		}
+		
+		[Test]
+		public void GenericMethodTest2()
+		{
+			const string program = @"using System; class T {
+void Test<T>(";
+			
+			ExpressionResult result = ef.FindExpression(program, program.Length);
+			Assert.IsNull(result.Expression);
+			Assert.AreEqual(ExpressionContext.FirstParameterType, result.Context);
+		}
+		
+		[Test]
+		public void GenericMethodTest3()
+		{
+			const string program = @"using System; class T {
+void Test<T>(ref ";
+			
+			ExpressionResult result = ef.FindExpression(program, program.Length);
+			Assert.IsNull(result.Expression);
+			Assert.AreEqual(ExpressionContext.ParameterType, result.Context);
+		}
+		
+		[Test]
+		public void GenericMethodTest4()
+		{
+			const string program = @"using System; class T {
+void Test<T>(ref T ";
+			
+			ExpressionResult result = ef.FindExpression(program, program.Length);
+			Assert.AreEqual("T ", result.Expression);
+			Assert.AreEqual(ExpressionContext.IdentifierExpected, result.Context);
+		}
+		
+		[Test]
+		public void GenericMethodTest5()
+		{
+			const string program = @"using System; class T {
+void Test<T>(ref T name) ";
+			
+			ExpressionResult result = ef.FindExpression(program, program.Length);
+			Assert.AreEqual("Test<T>(ref T name) ", result.Expression);
+			Assert.AreEqual(ExpressionContext.ConstraintsStart, result.Context);
+		}
+		
+		[Test]
+		public void GenericMethodTest6()
+		{
+			const string program = @"using System; class T {
+void Test<T>(ref T name) where ";
+			
+			ExpressionResult result = ef.FindExpression(program, program.Length);
+			Assert.AreEqual("where ", result.Expression);
+			Assert.AreEqual(ExpressionContext.Constraints, result.Context);
+		}
 	}
 }
 
