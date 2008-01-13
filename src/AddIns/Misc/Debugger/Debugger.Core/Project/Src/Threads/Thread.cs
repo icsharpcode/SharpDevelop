@@ -153,7 +153,7 @@ namespace Debugger
 
 				Value runTimeValue = RuntimeValue;
 				if (runTimeValue.IsNull) return ThreadPriority.Normal;
-				lastPriority = (ThreadPriority)(int)runTimeValue.GetMember("m_Priority").PrimitiveValue;
+				lastPriority = (ThreadPriority)(int)runTimeValue.GetMemberValue("m_Priority").PrimitiveValue;
 				return lastPriority;
 			}
 		}
@@ -173,7 +173,7 @@ namespace Debugger
 				if (process.IsRunning) return lastName;
 				Value runtimeValue  = RuntimeValue;
 				if (runtimeValue.IsNull) return lastName;
-				Value runtimeName = runtimeValue.GetMember("m_Name");
+				Value runtimeName = runtimeValue.GetMemberValue("m_Name");
 				if (runtimeName.IsNull) return string.Empty;
 				lastName = runtimeName.AsString.ToString();
 				return lastName;

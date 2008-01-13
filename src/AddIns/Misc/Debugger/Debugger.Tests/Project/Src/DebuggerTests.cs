@@ -289,13 +289,13 @@ namespace Debugger.Tests
 			WaitForPause();
 			val = process.SelectedStackFrame.LocalVariables["val"];
 			ObjectDump("val", val);
-			ObjectDump("val members", val.GetMembers(null, Debugger.BindingFlags.All));
+			ObjectDump("val members", val.GetMemberValues(null, Debugger.BindingFlags.All));
 			//ObjectDump("typeof(val)", val.Type);
 			
 			process.Continue();
 			WaitForPause();
 			ObjectDump("val", val);
-			ObjectDump("val members", val.GetMembers(null, Debugger.BindingFlags.All));
+			ObjectDump("val members", val.GetMemberValues(null, Debugger.BindingFlags.All));
 			
 			process.Continue();
 			process.WaitForExit();
@@ -399,7 +399,7 @@ namespace Debugger.Tests
 			StartTest("GenericDictionary");
 			WaitForPause();
 			ObjectDump("dict", process.SelectedStackFrame.LocalVariables["dict"]);
-			ObjectDump("dict members", process.SelectedStackFrame.LocalVariables["dict"].GetMembers(null, BindingFlags.All));
+			ObjectDump("dict members", process.SelectedStackFrame.LocalVariables["dict"].GetMemberValues(null, BindingFlags.All));
 			
 			process.Continue();
 			process.WaitForExit();
@@ -435,7 +435,7 @@ namespace Debugger.Tests
 			ObjectDump("Variables", process.SelectedStackFrame.Variables);
 			ObjectDump("array", process.SelectedStackFrame.Variables["array"].GetArrayElements());
 			ObjectDump("array2", process.SelectedStackFrame.Variables["array2"].GetArrayElements());
-			ObjectDump("this", process.SelectedStackFrame.ThisValue.GetMembers());
+			ObjectDump("this", process.SelectedStackFrame.ThisValue.GetMemberValues());
 			
 			process.Continue();
 			process.WaitForExit();

@@ -31,42 +31,72 @@ namespace Debugger
 			}
 		}
 		
-		/// <summary>
-		/// Get the value of given member.
-		/// </summary>
+		static void CheckObject(Value objectInstance, MemberInfo memberInfo)
+		{
+			if (!memberInfo.IsStatic) {
+				if (objectInstance == null) {
+					throw new DebuggerException("No target object specified");
+				}
+				if (objectInstance.IsNull) {
+					throw new GetValueException("Null reference");
+				}
+				if (!objectInstance.IsObject) {
+					throw new GetValueException("Target object is not class or value type");
+				}
+				if (!memberInfo.DeclaringType.IsInstanceOfType(objectInstance)) {
+					throw new GetValueException("Object is not of type " + memberInfo.DeclaringType.FullName);
+				}
+			}
+		}
+		
+		#region Convenience overload methods
+		
+		/// <summary> Get the value of given member. </summary>
+		public Value GetMemberValue(MemberInfo memberInfo)
+		{
+			return GetMemberValue(this, memberInfo, null);
+		}
+		
+		/// <summary> Get the value of given member. </summary>
 		public Value GetMemberValue(MemberInfo memberInfo, Value[] arguments)
 		{
 			return GetMemberValue(this, memberInfo, arguments);
 		}
 		
+		#endregion
+		
+		/// <summary> Get the value of given member. </summary>
+		/// <param name="objectInstance">null if member is static</param>
 		public static Value GetMemberValue(Value objectInstance, MemberInfo memberInfo, Value[] arguments)
 		{
+			arguments = arguments ?? new Value[0];
 			if (memberInfo is FieldInfo) {
+				if (arguments.Length > 0) throw new GetValueException("Arguments can not be used for a field");
 				return GetFieldValue(objectInstance, (FieldInfo)memberInfo);
 			} else if (memberInfo is PropertyInfo) {
-				return GetPropertyValue(objectInstance, (PropertyInfo)memberInfo);
+				return GetPropertyValue(objectInstance, (PropertyInfo)memberInfo, arguments);
+			} else if (memberInfo is MethodInfo) {
+				return InvokeMethod(objectInstance, (MethodInfo)memberInfo, arguments);
 			}
-			throw new DebuggerException("Bad member type: " + memberInfo.GetType());
+			throw new DebuggerException("Unknown member type: " + memberInfo.GetType());
 		}
 		
-		/// <summary>
-		/// Get the value of given field.
-		/// Field may be static
-		/// </summary>
+		#region Convenience overload methods
+		
+		/// <summary> Get the value of given field. </summary>
 		public Value GetFieldValue(FieldInfo fieldInfo)
 		{
 			return Value.GetFieldValue(this, fieldInfo);
 		}
 		
-		/// <summary>
-		/// Get the value of given field.
-		/// objectInstance must not be null.
-		/// Field may be static
-		/// </summary>
+		#endregion
+		
+		/// <summary> Get the value of given field. </summary>
+		/// <param name="objectInstance">null if field is static</param>
 		public static Value GetFieldValue(Value objectInstance, FieldInfo fieldInfo)
 		{
 			return new Value(
-				objectInstance.Process,
+				fieldInfo.Process,
 				fieldInfo.Name,
 				GetFieldCorValue(objectInstance, fieldInfo)
 			);
@@ -74,16 +104,14 @@ namespace Debugger
 		
 		static ICorDebugValue GetFieldCorValue(Value objectInstance, FieldInfo fieldInfo)
 		{
-			if (!fieldInfo.DeclaringType.IsInstanceOfType(objectInstance)) {
-				throw new GetValueException("Object is not of type " + fieldInfo.DeclaringType.FullName);
-			}
+			CheckObject(objectInstance, fieldInfo);
 			
 			// Current frame is used to resolve context specific static values (eg. ThreadStatic)
 			ICorDebugFrame curFrame = null;
-			if (objectInstance.Process.IsPaused &&
-			    objectInstance.Process.SelectedThread != null &&
-			    objectInstance.Process.SelectedThread.LastStackFrame != null && 
-			    objectInstance.Process.SelectedThread.LastStackFrame.CorILFrame != null) {
+			if (fieldInfo.Process.IsPaused &&
+			    fieldInfo.Process.SelectedThread != null &&
+			    fieldInfo.Process.SelectedThread.LastStackFrame != null && 
+			    fieldInfo.Process.SelectedThread.LastStackFrame.CorILFrame != null) {
 				
 				curFrame = objectInstance.Process.SelectedThread.LastStackFrame.CorILFrame.CastTo<ICorDebugFrame>();
 			}
@@ -98,6 +126,8 @@ namespace Debugger
 				throw new GetValueException("Can not get value of field");
 			}
 		}
+		
+		#region Convenience overload methods
 		
 		/// <summary> Get the value of the property using the get accessor </summary>
 		public Value GetPropertyValue(PropertyInfo propertyInfo)
@@ -117,22 +147,24 @@ namespace Debugger
 			return GetPropertyValue(objectInstance, propertyInfo, null);
 		}
 		
+		#endregion
+		
 		/// <summary> Get the value of the property using the get accessor </summary>
 		public static Value GetPropertyValue(Value objectInstance, PropertyInfo propertyInfo, Value[] arguments)
 		{
+			CheckObject(objectInstance, propertyInfo);
+			
 			if (propertyInfo.GetMethod == null) throw new GetValueException("Property does not have a get method");
 			arguments = arguments ?? new Value[0];
 			
-			List<Value> dependencies = new List<Value>();
-			dependencies.Add(objectInstance);
-			dependencies.AddRange(arguments);
-			
 			return new Value(
-				objectInstance.Process,
+				propertyInfo.Process,
 				propertyInfo.Name,
 				Value.InvokeMethod(objectInstance, propertyInfo.GetMethod, arguments).RawCorValue
 			);
 		}
+		
+		#region Convenience overload methods
 		
 		/// <summary> Set the value of the property using the set accessor </summary>
 		public Value SetPropertyValue(PropertyInfo propertyInfo, Value newValue)
@@ -152,12 +184,17 @@ namespace Debugger
 			return SetPropertyValue(objectInstance, propertyInfo, null, newValue);
 		}
 		
+		#endregion
+		
 		/// <summary> Set the value of the property using the set accessor </summary>
 		public static Value SetPropertyValue(Value objectInstance, PropertyInfo propertyInfo, Value[] arguments, Value newValue)
 		{
+			CheckObject(objectInstance, propertyInfo);
+			
 			if (propertyInfo.SetMethod == null) throw new GetValueException("Property does not have a set method");
 			
 			arguments = arguments ?? new Value[0];
+			
 			Value[] allParams = new Value[1 + arguments.Length];
 			allParams[0] = newValue;
 			arguments.CopyTo(allParams, 1);
@@ -165,15 +202,21 @@ namespace Debugger
 			return Value.InvokeMethod(objectInstance, propertyInfo.SetMethod, allParams);
 		}
 		
+		#region Convenience overload methods
+		
 		/// <summary> Synchronously invoke the method </summary>
 		public Value InvokeMethod(MethodInfo methodInfo, params Value[] arguments)
 		{
 			return InvokeMethod(this, methodInfo, arguments);
 		}
 		
+		#endregion
+		
 		/// <summary> Synchronously invoke the method </summary>
 		public static Value InvokeMethod(Value objectInstance, MethodInfo methodInfo, params Value[] arguments)
 		{
+			CheckObject(objectInstance, methodInfo);
+			
 			return Eval.InvokeMethod(
 				methodInfo,
 				methodInfo.IsStatic ? null : objectInstance,
@@ -181,15 +224,21 @@ namespace Debugger
 			);
 		}
 		
+		#region Convenience overload methods
+		
 		/// <summary> Asynchronously invoke the method </summary>
 		public Eval AsyncInvokeMethod(MethodInfo methodInfo, params Value[] arguments)
 		{
 			return AsyncInvokeMethod(this, methodInfo, arguments);
 		}
 		
+		#endregion
+		
 		/// <summary> Asynchronously invoke the method </summary>
 		public static Eval AsyncInvokeMethod(Value objectInstance, MethodInfo methodInfo, params Value[] arguments)
 		{
+			CheckObject(objectInstance, methodInfo);
+			
 			return Eval.AsyncInvokeMethod(
 				methodInfo,
 				methodInfo.IsStatic ? null : objectInstance,
@@ -200,7 +249,7 @@ namespace Debugger
 		/// <summary>
 		/// Get a field or property of an object with a given name.
 		/// </summary>
-		public Value GetMember(string name)
+		public Value GetMemberValue(string name)
 		{
 			DebugType currentType = this.Type;
 			while (currentType != null) {
@@ -220,9 +269,9 @@ namespace Debugger
 		/// <summary>
 		/// Get all fields and properties of an object.
 		/// </summary>
-		public ValueCollection GetMembers()
+		public ValueCollection GetMemberValues()
 		{
-			return GetMembers(null, BindingFlags.All);
+			return GetMemberValues(null, BindingFlags.All);
 		}
 		
 		/// <summary>
@@ -230,7 +279,7 @@ namespace Debugger
 		/// </summary>
 		/// <param name="type"> Limit to type, null for all types </param>
 		/// <param name="bindingFlags"> Get only members with certain flags </param>
-		public ValueCollection GetMembers(DebugType type, BindingFlags bindingFlags)
+		public ValueCollection GetMemberValues(DebugType type, BindingFlags bindingFlags)
 		{
 			if (IsObject) {
 				return new ValueCollection(GetObjectMembersEnum(type, bindingFlags));

@@ -103,6 +103,9 @@ namespace Debugger
 		// May be called later
 		ICorDebugValue GetCorValueOfArrayElement(int[] indices)
 		{
+			if (IsNull) {
+				throw new GetValueException("Null reference");
+			}
 			if (!IsArray) {
 				throw new GetValueException("The value is not an array");
 			}

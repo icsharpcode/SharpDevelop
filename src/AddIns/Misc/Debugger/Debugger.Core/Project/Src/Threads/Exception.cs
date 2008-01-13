@@ -37,7 +37,7 @@ namespace Debugger
 			corValue = thread.CorThread.CurrentException;
 			exceptionType = thread.CurrentExceptionType;
 			Value runtimeValue = new Value(process, corValue);
-			message = runtimeValue.GetMember("_message").AsString;
+			message = runtimeValue.GetMemberValue("_message").AsString;
 			
 			if (thread.LastStackFrameWithLoadedSymbols != null) {
 				location = thread.LastStackFrameWithLoadedSymbols.NextStatement;

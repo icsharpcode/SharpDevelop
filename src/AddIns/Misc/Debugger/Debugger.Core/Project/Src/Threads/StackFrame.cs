@@ -370,7 +370,7 @@ namespace Debugger
 			get {
 				// TODO: Should work for static
 				if (!this.MethodInfo.IsStatic) {
-					return ThisValue.GetMembers();
+					return ThisValue.GetMemberValues();
 				} else {
 					return ValueCollection.Empty;
 				}
