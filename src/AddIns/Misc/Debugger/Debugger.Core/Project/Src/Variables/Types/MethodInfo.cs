@@ -102,7 +102,7 @@ namespace Debugger
 						ICorDebugType corType = corClass.GetParameterizedType(type.IsValueType ? (uint)CorElementType.VALUETYPE : (uint)CorElementType.CLASS,
 						                                                      0,
 						                                                      new ICorDebugType[] {});
-						return new MethodInfo(DebugType.Create(process, corType), methodProps);
+						return DebugType.Create(process, corType).GetMethod(methodProps.Token);
 					}
 				}
 			}

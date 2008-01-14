@@ -79,8 +79,7 @@ namespace Debugger
 				corFunction.Class,
 				corILFrame.CastTo<ICorDebugILFrame2>().EnumerateTypeParameters().ToList().ToArray()
 			);
-			MethodProps methodProps = process.GetModule(corFunction.Module).MetaData.GetMethodProps(corFunction.Token);
-			this.methodInfo = new MethodInfo(debugType, methodProps);
+			this.methodInfo = debugType.GetMethod(corFunction.Token);
 		}
 		
 		/// <summary> Returns diagnostic description of the frame </summary>
