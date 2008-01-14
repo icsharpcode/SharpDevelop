@@ -67,7 +67,7 @@ namespace Debugger.Expressions
 						indicies.Add((int)primitiveExpression.Value);
 					}
 				}
-				throw new ExpressionEvaluateException(this, "Literal integer index expected");
+				throw new GetValueException("Literal integer index expected");
 			}
 			
 			return targetValue.GetArrayElement(indicies.ToArray());

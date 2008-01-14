@@ -34,7 +34,10 @@ namespace Debugger.Expressions
 			try {
 				result = EvaluateInternal(context);
 			} catch (GetValueException e) {
-				throw new ExpressionEvaluateException(this, e.Message);
+				if (e.Expression == null) {
+					e.Expression = this;
+				}
+				throw;
 			}
 			
 			context.Process.TraceMessage("Evaluated " + this.Code);

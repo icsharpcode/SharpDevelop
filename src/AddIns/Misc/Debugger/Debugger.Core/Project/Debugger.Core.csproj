@@ -226,7 +226,6 @@
     <Compile Include="Src\Variables\Expressions\Expression.Create.cs" />
     <Compile Include="Src\Variables\Expressions\Expression.cs" />
     <Compile Include="Src\Variables\Expressions\ExpressionCollection.cs" />
-    <Compile Include="Src\Variables\Expressions\ExpressionEvaluateException.cs" />
     <Compile Include="Src\Variables\Types\BindingFlags.cs" />
     <Compile Include="Src\Variables\Types\DebugType-Helpers.cs" />
     <Compile Include="Src\Variables\Types\DebugType.cs" />

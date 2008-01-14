@@ -46,7 +46,7 @@ namespace Debugger.Expressions
 		protected override Value EvaluateInternal(StackFrame context)
 		{
 			if (context.MethodInfo != method) {
-				throw new ExpressionEvaluateException(this, "Method " + method.FullName + " expected, " + context.MethodInfo.FullName + " seen");
+				throw new GetValueException("Method " + method.FullName + " expected, " + context.MethodInfo.FullName + " seen");
 			}
 			
 			return context.GetLocalVariableValue(symVar);

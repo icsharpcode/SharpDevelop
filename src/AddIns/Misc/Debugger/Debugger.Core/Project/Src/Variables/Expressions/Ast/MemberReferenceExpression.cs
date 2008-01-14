@@ -82,7 +82,7 @@ namespace Debugger.Expressions
 			Value targetValue = null;
 			if (!memberInfo.IsStatic) {
 				if (targetObject == null) {
-					throw new ExpressionEvaluateException(this, "Target expected for instance member");
+					throw new GetValueException("Target expected for instance member");
 				}
 				targetValue = targetObject.Evaluate(context);
 			}

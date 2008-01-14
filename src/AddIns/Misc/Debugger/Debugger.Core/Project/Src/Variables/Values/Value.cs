@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 
+using Debugger.Expressions;
 using Debugger.Wrappers.CorDebug;
 
 namespace Debugger
@@ -212,6 +213,24 @@ namespace Debugger
 	
 	public class GetValueException: DebuggerException
 	{
+		Expression expression;
+		
+		/// <summary> Expression that has caused this exception to occur </summary>
+		public Expression Expression {
+			get { return expression; }
+			set { expression = value; }
+		}
+		
+		public override string Message {
+			get {
+				if (expression == null) {
+					return base.Message;
+				} else {
+					return String.Format("Error evaluating \"{0}\": {1}", expression.Code, base.Message);
+				}
+			}
+		}
+		
 		public GetValueException(string message):base(message)
 		{
 			
