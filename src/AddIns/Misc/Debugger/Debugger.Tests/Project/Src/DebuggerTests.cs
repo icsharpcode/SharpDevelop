@@ -22,7 +22,7 @@ using NIgnore = NUnit.Framework.IgnoreAttribute;
 namespace Debugger.Tests
 {
 	[TestFixture]
-	public class DebuggerTests: DebuggerTestsBase
+	public partial class DebuggerTests: DebuggerTestsBase
 	{
 		[Test]
 		public void SimpleProgram()

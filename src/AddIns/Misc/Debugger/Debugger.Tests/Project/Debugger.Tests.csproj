@@ -20,9 +20,10 @@
     <BaseAddress>4194304</BaseAddress>
     <FileAlignment>4096</FileAlignment>
     <DebugSymbols>true</DebugSymbols>
+    <NoWarn>219,414</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;TESTS</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DefineConstants>TRACE</DefineConstants>
@@ -40,21 +41,41 @@
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\DebuggerTests.cs" />
     <Compile Include="Src\DebuggerTestsBase.cs" />
+    <Compile Include="Src\TestPrograms\ArrayValue.cs" />
+    <Compile Include="Src\TestPrograms\Break.cs" />
+    <Compile Include="Src\TestPrograms\Breakpoint.cs" />
+    <Compile Include="Src\TestPrograms\Callstack.cs" />
+    <Compile Include="Src\TestPrograms\DebuggeeKilled.cs" />
     <Compile Include="Src\TestPrograms\Exception.cs" />
     <Compile Include="Src\TestPrograms\ExceptionCustom.cs" />
+    <Compile Include="Src\TestPrograms\Expressions.cs" />
+    <Compile Include="Src\TestPrograms\FileRelease.cs" />
+    <Compile Include="Src\TestPrograms\FunctionArgumentVariables.cs" />
+    <Compile Include="Src\TestPrograms\FunctionLifetime.cs" />
+    <Compile Include="Src\TestPrograms\FunctionLocalVariables.cs" />
+    <Compile Include="Src\TestPrograms\FunctionVariablesLifetime.cs" />
     <Compile Include="Src\TestPrograms\GenericDictionary.cs" />
     <Compile Include="Src\TestPrograms\Generics.cs" />
-    <EmbeddedResource Include="Src\TestPrograms\*.cs" />
+    <Compile Include="Src\TestPrograms\HelloWorld.cs" />
+    <Compile Include="Src\TestPrograms\ObjectValue.cs" />
+    <Compile Include="Src\TestPrograms\PropertyVariable.cs" />
+    <Compile Include="Src\TestPrograms\PropertyVariableForm.cs" />
+    <Compile Include="Src\TestPrograms\SetIP.cs" />
+    <Compile Include="Src\TestPrograms\SimpleProgram.cs" />
+    <Compile Include="Src\TestPrograms\Stepping.cs" />
+    <Compile Include="Src\TestPrograms\Symbols.cs" />
+    <Compile Include="Src\TestPrograms\_Template.cs" />
     <EmbeddedResource Include="Src\TestPrograms\*.xml" />
+    <EmbeddedResource Include="Src\TestPrograms\*.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Src" />
     <Folder Include="Configuration" />
+    <Folder Include="Src\TestPrograms" />
     <ProjectReference Include="..\..\Debugger.Core\Project\Debugger.Core.csproj">
       <Project>{1D18D788-F7EE-4585-A23B-34DC8EC63CB8}</Project>
       <Name>Debugger.Core</Name>
     </ProjectReference>
-    <Folder Include="Src\TestPrograms" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

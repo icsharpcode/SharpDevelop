@@ -71,10 +71,13 @@ namespace Debugger.Tests
 //				debugger.Processes[0].Terminate();
 //				debugger.Processes[0].WaitForExit();
 //			}
-			string path = Path.GetTempPath();
-			path = Path.Combine(path, "SharpDevelop");
-			path = Path.Combine(path, "DebuggerTestResults");
-			Directory.CreateDirectory(path);
+			string path = Environment.GetEnvironmentVariable("SD_TESTS_DEBUGGER_XML_OUT");
+			if (path == null) {
+				path = Path.GetTempPath();
+				path = Path.Combine(path, "SharpDevelop");
+				path = Path.Combine(path, "DebuggerTestResults");
+				Directory.CreateDirectory(path);
+			}
 			testDoc.Save(Path.Combine(path, testName + ".xml"));
 			
 			string oldXml = GetResource(testName + ".xml");
@@ -82,7 +85,9 @@ namespace Debugger.Tests
 			testDoc.Save(newXmlStream);
 			newXmlStream.Seek(0, SeekOrigin.Begin);
 			string newXml = new StreamReader(newXmlStream).ReadToEnd();
-			Assert.AreEqual(oldXml, newXml);
+			if (oldXml != newXml) {
+				Assert.Fail("Test " + testName + " failed.  XML output differs.");
+			}
 		}
 		
 		protected void StartTest(string testName)
@@ -247,6 +252,7 @@ namespace Debugger.Tests
 			compParams.IncludeDebugInformation = true;
 			compParams.ReferencedAssemblies.Add("System.dll");
 			compParams.OutputAssembly = exeFilename;
+			compParams.ReferencedAssemblies.Add(typeof(TestFixtureAttribute).Assembly.Location);
 			
 			CSharpCodeProvider compiler = new CSharpCodeProvider();
 			CompilerResults result = compiler.CompileAssemblyFromFile(compParams, codeFilename);

@@ -9,13 +9,13 @@ using System;
 
 namespace Debugger.Tests.TestPrograms
 {
-	public class BaseClass
+	public class BaseClass2
 	{
 		public string basePublic = "a";
 		string basePrivate = "b";
 	}
 	
-	public class ObjectValue: BaseClass
+	public class ObjectValue: BaseClass2
 	{
 		string privateField = "private";
 		public string publicFiled = "public";
