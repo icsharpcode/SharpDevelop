@@ -14,21 +14,79 @@ namespace Debugger
 {
 	public partial class DebugType
 	{
-		IList<T> FilterMemberInfo<T>(IList<T> input, string name) where T:MemberInfo
-		{
-			List<T> filtered = new List<T>();
-			foreach(T memberInfo in input) {
-				if (memberInfo.Name == name) {
-					filtered.Add(memberInfo);
-				}
+		class Query {
+			public Type MemberType;
+			public BindingFlags BindingFlags;
+			public string Name;
+			public uint? Token;
+			
+			public Query(Type memberType, BindingFlags bindingFlags, string name, Nullable<uint> token)
+			{
+				this.MemberType = memberType;
+				this.BindingFlags = bindingFlags;
+				this.Name = name;
+				this.Token = token;
 			}
-			return filtered.AsReadOnly();
+			
+			public override int GetHashCode()
+			{
+				int hashCode = 0;
+				unchecked {
+					if (MemberType != null) hashCode += 1000000007 * MemberType.GetHashCode(); 
+					hashCode += 1000000009 * BindingFlags.GetHashCode();
+					if (Name != null) hashCode += 1000000021 * Name.GetHashCode(); 
+					hashCode += 1000000033 * Token.GetHashCode();
+				}
+				return hashCode;
+			}
+			
+			public override bool Equals(object obj)
+			{
+				Query other = obj as Query;
+				if (other == null) return false; 
+				return object.Equals(this.MemberType, other.MemberType) && this.BindingFlags == other.BindingFlags && this.Name == other.Name && this.Token == other.Token;
+			}
 		}
 		
-		IList<T> FilterMemberInfo<T>(IList<T> input, BindingFlags bindingFlags) where T:MemberInfo
+		Dictionary<Query, object> queries = new Dictionary<Query, object>();
+		
+		List<T> QueryMembers<T>(BindingFlags bindingFlags) where T:MemberInfo
 		{
-			List<T> filtered = new List<T>();
-			foreach(T memberInfo in input) {
+			return QueryMembers<T>(bindingFlags, null, null);
+		}
+		
+		T QueryMember<T>(string name) where T:MemberInfo
+		{
+			List<T> result = QueryMembers<T>(BindingFlags.All, name, null);
+			if (result.Count > 0) {
+				return result[0];
+			} else {
+				return null;
+			}
+		}
+		
+		T QueryMember<T>(uint token) where T:MemberInfo
+		{
+			List<T> result = QueryMembers<T>(BindingFlags.All, null, token);
+			if (result.Count > 0) {
+				return result[0];
+			} else {
+				return null;
+			}
+		}
+		
+		List<T> QueryMembers<T>(BindingFlags bindingFlags, string name, Nullable<uint> token) where T:MemberInfo
+		{
+			Query query = new Query(typeof(T), bindingFlags, name, token);
+			
+			if (queries.ContainsKey(query)) {
+				return (List<T>)queries[query];
+			}
+			
+			List<T> results = new List<T>();
+			foreach(MemberInfo memberInfo in members) {
+				// Filter by type
+				if (!(memberInfo is T)) continue; // Reject item
 				// Filter by access
 				if ((bindingFlags & (BindingFlags.Public | BindingFlags.NonPublic)) != 0) {
 					if (memberInfo.IsPublic) {
@@ -46,10 +104,123 @@ namespace Debugger
 						if ((bindingFlags & BindingFlags.Instance) == 0) continue; // Reject item
 					}
 				}
-				filtered.Add(memberInfo);
+				// Filter by name
+				if (name != null) {
+					if (memberInfo.Name != name) continue; // Reject item
+				}
+				// Filter by token
+				if (token.HasValue) {
+					if (memberInfo.MetadataToken != token.Value) continue; // Reject item
+				}
+				results.Add((T)memberInfo);
 			}
-			return filtered.AsReadOnly();
+			
+			queries[query] = results;
+			return results;
 		}
+		
+		#region Queries
+		
+		/// <summary> Return all public members.</summary>
+		public IList<MemberInfo> GetMembers()
+		{
+			return QueryMembers<MemberInfo>(BindingFlags.Public);
+		}
+		
+		/// <summary> Return all members satisfing binding flags.</summary>
+		public IList<MemberInfo> GetMembers(BindingFlags bindingFlags)
+		{
+			return QueryMembers<MemberInfo>(bindingFlags);
+		}
+		
+		/// <summary> Return first member with the given name</summary>
+		public MemberInfo GetMember(string name)
+		{
+			return QueryMember<MemberInfo>(name);
+		}
+		
+		/// <summary> Return first member with the given token</summary>
+		public MemberInfo GetMember(uint token)
+		{
+			return QueryMember<MemberInfo>(token);
+		}
+		
+		
+		/// <summary> Return all public fields.</summary>
+		public IList<FieldInfo> GetFields()
+		{
+			return QueryMembers<FieldInfo>(BindingFlags.Public);
+		}
+		
+		/// <summary> Return all fields satisfing binding flags.</summary>
+		public IList<FieldInfo> GetFields(BindingFlags bindingFlags)
+		{
+			return QueryMembers<FieldInfo>(bindingFlags);
+		}
+		
+		/// <summary> Return first field with the given name</summary>
+		public FieldInfo GetField(string name)
+		{
+			return QueryMember<FieldInfo>(name);
+		}
+		
+		/// <summary> Return first field with the given token</summary>
+		public FieldInfo GetField(uint token)
+		{
+			return QueryMember<FieldInfo>(token);
+		}
+		
+		
+		/// <summary> Return all public methods.</summary>
+		public IList<MethodInfo> GetMethods()
+		{
+			return QueryMembers<MethodInfo>(BindingFlags.Public);
+		}
+		
+		/// <summary> Return all methods satisfing binding flags.</summary>
+		public IList<MethodInfo> GetMethods(BindingFlags bindingFlags)
+		{
+			return QueryMembers<MethodInfo>(bindingFlags);
+		}
+		
+		/// <summary> Return first method with the given name</summary>
+		public MethodInfo GetMethod(string name)
+		{
+			return QueryMember<MethodInfo>(name);
+		}
+		
+		/// <summary> Return first method with the given token</summary>
+		public MethodInfo GetMethod(uint token)
+		{
+			return QueryMember<MethodInfo>(token);
+		}
+		
+		
+		/// <summary> Return all public properties.</summary>
+		public IList<PropertyInfo> GetProperties()
+		{
+			return QueryMembers<PropertyInfo>(BindingFlags.Public);
+		}
+		
+		/// <summary> Return all properties satisfing binding flags.</summary>
+		public IList<PropertyInfo> GetProperties(BindingFlags bindingFlags)
+		{
+			return QueryMembers<PropertyInfo>(bindingFlags);
+		}
+		
+		/// <summary> Return first property with the given name</summary>
+		public PropertyInfo GetProperty(string name)
+		{
+			return QueryMember<PropertyInfo>(name);
+		}
+		
+		/// <summary> Return first property with the given token</summary>
+		public PropertyInfo GetProperty(uint token)
+		{
+			return QueryMember<PropertyInfo>(token);
+		}
+		
+		#endregion
 		
 		/// <summary>
 		/// Returns simple managed type coresponding to the debug type.

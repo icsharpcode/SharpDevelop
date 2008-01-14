@@ -253,7 +253,8 @@ namespace Debugger
 		{
 			DebugType currentType = this.Type;
 			while (currentType != null) {
-				foreach(MemberInfo memberInfo in currentType.GetMember(name, BindingFlags.All)) {
+				MemberInfo memberInfo = currentType.GetMember(name);
+				if (memberInfo != null) {
 					if (memberInfo is FieldInfo) {
 						return this.GetFieldValue((FieldInfo)memberInfo);
 					}

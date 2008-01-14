@@ -32,11 +32,8 @@ namespace Debugger
 		// Class/ValueType/Array/Ref/Ptr specific
 		List<DebugType>    typeArguments = new List<DebugType>();
 		
-		// Members of the type; empty lists if not applicable
-		List<FieldInfo>    fields = new List<FieldInfo>();
-		List<MethodInfo>   methods = new List<MethodInfo>();
-		List<PropertyInfo> properties = new List<PropertyInfo>();
-		List<MemberInfo>   members = new List<MemberInfo>(); // All combined
+		// Members of the type; empty list if not applicable
+		List<MemberInfo>   members = new List<MemberInfo>();
 		
 		// Stores all DebugType instances. FullName is the key
 		static Dictionary<string, List<DebugType>> loadedTypes = new Dictionary<string, List<DebugType>>();
@@ -340,12 +337,12 @@ namespace Debugger
 			// Load fields
 			foreach(FieldProps field in module.MetaData.EnumFields(this.MetadataToken)) {
 				if (field.IsStatic && field.IsLiteral) continue; // Skip static literals TODO: Why?
-				fields.Add(new FieldInfo(this, field));
+				members.Add(new FieldInfo(this, field));
 			};
 			
 			// Load methods
 			foreach(MethodProps m in module.MetaData.EnumMethods(this.MetadataToken)) {
-				methods.Add(new MethodInfo(this, m));
+				members.Add(new MethodInfo(this, m));
 			}
 			
 			// Load properties
@@ -353,7 +350,7 @@ namespace Debugger
 			// Collect data
 			Dictionary<string, MethodInfo> accessors = new Dictionary<string, MethodInfo>();
 			Dictionary<string, object> propertyNames = new Dictionary<string, object>();
-			foreach(MethodInfo method in methods) {
+			foreach(MethodInfo method in this.GetMethods(BindingFlags.All)) {
 				if (method.IsSpecialName && (method.Name.StartsWith("get_") || method.Name.StartsWith("set_"))) {
 					// There can be many get_Items
 					// TODO: This returns only last, return all
@@ -367,18 +364,7 @@ namespace Debugger
 				MethodInfo setter = null;
 				accessors.TryGetValue("get_" + kvp.Key, out getter);
 				accessors.TryGetValue("set_" + kvp.Key, out setter);
-				properties.Add(new PropertyInfo(this, getter, setter));
-			}
-			
-			// Make a combined collection
-			foreach(FieldInfo field in fields) {
-				members.Add(field);
-			}
-			foreach(MemberInfo method in methods) {
-				members.Add(method);
-			}
-			foreach(PropertyInfo property in properties) {
-				members.Add(property);
+				members.Add(new PropertyInfo(this, getter, setter));
 			}
 		}
 		
@@ -401,60 +387,6 @@ namespace Debugger
 		{
 			return objectInstance.Type.Equals(this) ||
 			       objectInstance.Type.IsSubclassOf(this);
-		}
-		
-		/// <summary> Return all public fields.</summary>
-		public IList<FieldInfo> GetFields()
-		{
-			return GetFields(BindingFlags.Public);
-		}
-		
-		/// <summary> Return all fields satisfing binding flags.</summary>
-		public IList<FieldInfo> GetFields(BindingFlags bindingFlags)
-		{
-			return FilterMemberInfo(fields, bindingFlags);
-		}
-		
-		/// <summary> Return all public methods.</summary>
-		public IList<MethodInfo> GetMethods()
-		{
-			return GetMethods(BindingFlags.Public);
-		}
-		
-		/// <summary> Return all methods satisfing binding flags.</summary>
-		public IList<MethodInfo> GetMethods(BindingFlags bindingFlags)
-		{
-			return FilterMemberInfo(methods, bindingFlags);
-		}
-		
-		/// <summary> Return all public properties.</summary>
-		public IList<PropertyInfo> GetProperties()
-		{
-			return GetProperties(BindingFlags.Public);
-		}
-		
-		/// <summary> Return all properties satisfing binding flags.</summary>
-		public IList<PropertyInfo> GetProperties(BindingFlags bindingFlags)
-		{
-			return FilterMemberInfo(properties, bindingFlags);
-		}
-		
-		/// <summary> Return all members that have spefied name and satisfy binding flags </summary>
-		public IList<MemberInfo> GetMember(string name, BindingFlags bindingFlags)
-		{
-			return FilterMemberInfo(FilterMemberInfo(members, name), bindingFlags);
-		}
-		
-		/// <summary> Return all public members.</summary>
-		public IList<MemberInfo> GetMembers()
-		{
-			return GetMembers(BindingFlags.Public);
-		}
-		
-		/// <summary> Return all members satisfing binding flags.</summary>
-		public IList<MemberInfo> GetMembers(BindingFlags bindingFlags)
-		{
-			return FilterMemberInfo(members, bindingFlags);
 		}
 		
 		/// <summary> Return whether the type has any members stisfing the given flags </summary>
