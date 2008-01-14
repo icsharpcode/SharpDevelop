@@ -113,13 +113,16 @@ namespace Debugger
 				}
 				debugeeState = new DebugeeState(this);
 				OnDebuggeeStateChanged();
+				// The process might have been resumed by the event
 			}
-			OnDebuggingPaused();
-			if (PausedReason == PausedReason.Exception) {
-				ExceptionEventArgs args = new ExceptionEventArgs(this, SelectedThread.CurrentException);
-				OnExceptionThrown(args);
-				if (args.Continue) {
-					this.Continue();
+			if (IsPaused) {
+				OnDebuggingPaused();
+				if (PausedReason == PausedReason.Exception) {
+					ExceptionEventArgs args = new ExceptionEventArgs(this, SelectedThread.CurrentException);
+					OnExceptionThrown(args);
+					if (args.Continue) {
+						this.Continue();
+					}
 				}
 			}
 		}
