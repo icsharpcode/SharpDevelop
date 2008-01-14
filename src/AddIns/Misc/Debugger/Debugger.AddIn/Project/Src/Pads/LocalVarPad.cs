@@ -123,8 +123,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			localVarList.UseColumns = true;
 			localVarList.SelectionMode = TreeSelectionMode.Single;
 			localVarList.LoadOnDemand = true;
-			localVarList.VisibleChanged += delegate { if (localVarList.Visible) RefreshPad(); };
-			localVarList.SizeChanged += delegate { RefreshPad(); };
 			
 			NodeIcon iconControl = new ItemIcon();
 			iconControl.ParentColumn = nameColumn;
