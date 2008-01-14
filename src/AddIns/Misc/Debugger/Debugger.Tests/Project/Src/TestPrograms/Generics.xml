@@ -338,8 +338,29 @@
         <HasSymbols>True</HasSymbols>
         <HasExpired>False</HasExpired>
         <NextStatement>Start=63,4 End=63,40</NextStatement>
-        <ThisValue exception="Unknown type: BYREF" />
-        <ContaingClassVariables exception="Unknown type: BYREF" />
+        <ThisValue>
+          <Value>
+            <IsArray>False</IsArray>
+            <ArrayLenght exception="Value is not an array" />
+            <ArrayRank exception="Value is not an array" />
+            <ArrayDimensions exception="Value is not an array" />
+            <IsObject>True</IsObject>
+            <IsPrimitive>False</IsPrimitive>
+            <IsInteger>False</IsInteger>
+            <PrimitiveValue exception="Value is not a primitive type" />
+            <Name>this</Name>
+            <IsNull>False</IsNull>
+            <AsString>{Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;}</AsString>
+            <HasExpired>False</HasExpired>
+            <Type>Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;</Type>
+          </Value>
+        </ThisValue>
+        <ContaingClassVariables>
+          <ValueCollection>
+            <Count>0</Count>
+            <Items />
+          </ValueCollection>
+        </ContaingClassVariables>
         <ArgumentCount>2</ArgumentCount>
         <Arguments>
           <ValueCollection>
@@ -404,8 +425,29 @@
         <HasSymbols>True</HasSymbols>
         <HasExpired>False</HasExpired>
         <NextStatement>Start=69,4 End=69,40</NextStatement>
-        <ThisValue exception="Unknown type: BYREF" />
-        <ContaingClassVariables exception="Unknown type: BYREF" />
+        <ThisValue>
+          <Value>
+            <IsArray>False</IsArray>
+            <ArrayLenght exception="Value is not an array" />
+            <ArrayRank exception="Value is not an array" />
+            <ArrayDimensions exception="Value is not an array" />
+            <IsObject>True</IsObject>
+            <IsPrimitive>False</IsPrimitive>
+            <IsInteger>False</IsInteger>
+            <PrimitiveValue exception="Value is not a primitive type" />
+            <Name>this</Name>
+            <IsNull>False</IsNull>
+            <AsString>{Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;}</AsString>
+            <HasExpired>False</HasExpired>
+            <Type>Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;</Type>
+          </Value>
+        </ThisValue>
+        <ContaingClassVariables>
+          <ValueCollection>
+            <Count>0</Count>
+            <Items />
+          </ValueCollection>
+        </ContaingClassVariables>
         <ArgumentCount>2</ArgumentCount>
         <Arguments>
           <ValueCollection>

@@ -242,7 +242,7 @@ namespace Debugger
 			this.fullName = GetFullName();
 		}
 		
-		static internal DebugType Create(Process process, ICorDebugClass corClass, List<ICorDebugType> typeArguments)
+		static internal DebugType Create(Process process, ICorDebugClass corClass, params ICorDebugType[] typeArguments)
 		{
 			MetaData metaData = process.GetModule(corClass.Module).MetaData;
 			
@@ -261,9 +261,10 @@ namespace Debugger
 			
 			int getArgsCount = metaData.GetGenericParamCount(corClass.Token);
 			
+			Array.Resize(ref typeArguments, getArgsCount);
 			ICorDebugType corType = corClass.CastTo<ICorDebugClass2>().GetParameterizedType(
 				isValueType ? (uint)CorElementType.VALUETYPE : (uint)CorElementType.CLASS,
-				typeArguments.GetRange(0, getArgsCount).ToArray()
+				typeArguments
 			);
 			
 			return Create(process, corType);
@@ -485,6 +486,19 @@ namespace Debugger
 			} else {
 				return false;
 			}
+		}
+		
+		public static DebugType GetType(Process process, string fullTypeName)
+		{
+			foreach(Module module in process.Modules) {
+				try {
+					uint token = module.MetaData.FindTypeDefByName(fullTypeName, 0).Token;
+					return Create(process, module.CorModule.GetClassFromToken(token));
+				} catch {
+					continue;
+				}
+			}
+			return null;
 		}
 		
 		/// <summary> Get hash code of the object </summary>

@@ -31,7 +31,148 @@
           </ValueCollection>
         </ContaingClassVariables>
         <ArgumentCount>9</ArgumentCount>
-        <Arguments exception="Unknown type: BYREF" />
+        <Arguments>
+          <ValueCollection>
+            <Count>9</Count>
+            <Items>
+              <Value>
+                <IsArray>False</IsArray>
+                <ArrayLenght exception="Value is not an array" />
+                <ArrayRank exception="Value is not an array" />
+                <ArrayDimensions exception="Value is not an array" />
+                <IsObject>False</IsObject>
+                <IsPrimitive>True</IsPrimitive>
+                <IsInteger>True</IsInteger>
+                <PrimitiveValue>1</PrimitiveValue>
+                <Name>i</Name>
+                <IsNull>False</IsNull>
+                <AsString>1</AsString>
+                <HasExpired>False</HasExpired>
+                <Type>System.Int32</Type>
+              </Value>
+              <Value>
+                <IsArray>False</IsArray>
+                <ArrayLenght exception="Value is not an array" />
+                <ArrayRank exception="Value is not an array" />
+                <ArrayDimensions exception="Value is not an array" />
+                <IsObject>False</IsObject>
+                <IsPrimitive>True</IsPrimitive>
+                <IsInteger>False</IsInteger>
+                <PrimitiveValue>A</PrimitiveValue>
+                <Name>s</Name>
+                <IsNull>False</IsNull>
+                <AsString>A</AsString>
+                <HasExpired>False</HasExpired>
+                <Type>System.String</Type>
+              </Value>
+              <Value>
+                <IsArray>False</IsArray>
+                <ArrayLenght exception="Value is not an array" />
+                <ArrayRank exception="Value is not an array" />
+                <ArrayDimensions exception="Value is not an array" />
+                <IsObject>False</IsObject>
+                <IsPrimitive>False</IsPrimitive>
+                <IsInteger>False</IsInteger>
+                <PrimitiveValue exception="Value is not a primitive type" />
+                <Name>s_null</Name>
+                <IsNull>True</IsNull>
+                <AsString>&lt;null&gt;</AsString>
+                <HasExpired>False</HasExpired>
+                <Type>System.Object</Type>
+              </Value>
+              <Value>
+                <IsArray>False</IsArray>
+                <ArrayLenght exception="Value is not an array" />
+                <ArrayRank exception="Value is not an array" />
+                <ArrayDimensions exception="Value is not an array" />
+                <IsObject>False</IsObject>
+                <IsPrimitive>True</IsPrimitive>
+                <IsInteger>True</IsInteger>
+                <PrimitiveValue>2</PrimitiveValue>
+                <Name>ref_i</Name>
+                <IsNull>False</IsNull>
+                <AsString>2</AsString>
+                <HasExpired>False</HasExpired>
+                <Type>System.Int32</Type>
+              </Value>
+              <Value>
+                <IsArray>False</IsArray>
+                <ArrayLenght exception="Value is not an array" />
+                <ArrayRank exception="Value is not an array" />
+                <ArrayDimensions exception="Value is not an array" />
+                <IsObject>False</IsObject>
+                <IsPrimitive>True</IsPrimitive>
+                <IsInteger>True</IsInteger>
+                <PrimitiveValue>3</PrimitiveValue>
+                <Name>out_i</Name>
+                <IsNull>False</IsNull>
+                <AsString>3</AsString>
+                <HasExpired>False</HasExpired>
+                <Type>System.Int32</Type>
+              </Value>
+              <Value>
+                <IsArray>False</IsArray>
+                <ArrayLenght exception="Value is not an array" />
+                <ArrayRank exception="Value is not an array" />
+                <ArrayDimensions exception="Value is not an array" />
+                <IsObject>False</IsObject>
+                <IsPrimitive>True</IsPrimitive>
+                <IsInteger>True</IsInteger>
+                <PrimitiveValue>0</PrimitiveValue>
+                <Name>out_i2</Name>
+                <IsNull>False</IsNull>
+                <AsString>0</AsString>
+                <HasExpired>False</HasExpired>
+                <Type>System.Int32</Type>
+              </Value>
+              <Value>
+                <IsArray>False</IsArray>
+                <ArrayLenght exception="Value is not an array" />
+                <ArrayRank exception="Value is not an array" />
+                <ArrayDimensions exception="Value is not an array" />
+                <IsObject>False</IsObject>
+                <IsPrimitive>True</IsPrimitive>
+                <IsInteger>False</IsInteger>
+                <PrimitiveValue>B</PrimitiveValue>
+                <Name>ref_s</Name>
+                <IsNull>False</IsNull>
+                <AsString>B</AsString>
+                <HasExpired>False</HasExpired>
+                <Type>System.String</Type>
+              </Value>
+              <Value>
+                <IsArray>False</IsArray>
+                <ArrayLenght exception="Value is not an array" />
+                <ArrayRank exception="Value is not an array" />
+                <ArrayDimensions exception="Value is not an array" />
+                <IsObject>True</IsObject>
+                <IsPrimitive>False</IsPrimitive>
+                <IsInteger>False</IsInteger>
+                <PrimitiveValue exception="Value is not a primitive type" />
+                <Name>iNull</Name>
+                <IsNull>False</IsNull>
+                <AsString>{System.Nullable&lt;System.Int32&gt;}</AsString>
+                <HasExpired>False</HasExpired>
+                <Type>System.Nullable&lt;System.Int32&gt;</Type>
+              </Value>
+              <Value>
+                <IsArray>False</IsArray>
+                <ArrayLenght exception="Value is not an array" />
+                <ArrayRank exception="Value is not an array" />
+                <ArrayDimensions exception="Value is not an array" />
+                <IsObject>True</IsObject>
+                <IsPrimitive>False</IsPrimitive>
+                <IsInteger>False</IsInteger>
+                <PrimitiveValue exception="Value is not a primitive type" />
+                <Name>iNull_null</Name>
+                <IsNull>False</IsNull>
+                <AsString>{System.Nullable&lt;System.Int32&gt;}</AsString>
+                <HasExpired>False</HasExpired>
+                <Type>System.Nullable&lt;System.Int32&gt;</Type>
+              </Value>
+            </Items>
+          </ValueCollection>
+        </Arguments>
         <LocalVariables>
           <ValueCollection>
             <Count>0</Count>

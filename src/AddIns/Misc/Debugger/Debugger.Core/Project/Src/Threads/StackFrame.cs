@@ -77,7 +77,7 @@ namespace Debugger
 			DebugType debugType = DebugType.Create(
 				this.Process, 
 				corFunction.Class,
-				corILFrame.CastTo<ICorDebugILFrame2>().EnumerateTypeParameters().ToList()
+				corILFrame.CastTo<ICorDebugILFrame2>().EnumerateTypeParameters().ToList().ToArray()
 			);
 			MethodProps methodProps = process.GetModule(corFunction.Module).MetaData.GetMethodProps(corFunction.Token);
 			this.methodInfo = new MethodInfo(debugType, methodProps);

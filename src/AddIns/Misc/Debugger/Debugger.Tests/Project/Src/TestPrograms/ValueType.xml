@@ -33,9 +33,9 @@
             <BaseAdress>4194304</BaseAdress>
             <IsDynamic>False</IsDynamic>
             <IsInMemory>False</IsInMemory>
-            <FullPath>C:\Documents and Settings\User\Local Settings\Temp\SharpDevelop\DebuggerTests\CF84E3A5483D5467BB7AA26FC29FF265\ValueType.exe</FullPath>
+            <FullPath>C:\Documents and Settings\User\Local Settings\Temp\SharpDevelop\DebuggerTests\B0214D78938BD39D5579C5B2036C0B99\ValueType.exe</FullPath>
             <Filename>ValueType.exe</Filename>
-            <DirectoryName>C:\Documents and Settings\User\Local Settings\Temp\SharpDevelop\DebuggerTests\CF84E3A5483D5467BB7AA26FC29FF265</DirectoryName>
+            <DirectoryName>C:\Documents and Settings\User\Local Settings\Temp\SharpDevelop\DebuggerTests\B0214D78938BD39D5579C5B2036C0B99</DirectoryName>
             <SymbolsLoaded>True</SymbolsLoaded>
             <OrderOfLoading>1</OrderOfLoading>
           </Module>

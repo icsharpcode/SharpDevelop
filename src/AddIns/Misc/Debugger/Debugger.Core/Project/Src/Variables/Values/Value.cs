@@ -159,7 +159,11 @@ namespace Debugger
 				}
 			}
 			
-			type = DebugType.Create(process, rawCorValue.As<ICorDebugValue2>().ExactType);
+			if (this.CorValue == null) {
+				type = DebugType.GetType(this.Process, "System.Object");
+			} else {
+				type = DebugType.Create(process, this.CorValue.CastTo<ICorDebugValue2>().ExactType);
+			}
 			
 			if (!rawCorValue.Is<ICorDebugHandleValue>()) {
 				process.DebuggingResumed += Process_DebuggingResumed;
