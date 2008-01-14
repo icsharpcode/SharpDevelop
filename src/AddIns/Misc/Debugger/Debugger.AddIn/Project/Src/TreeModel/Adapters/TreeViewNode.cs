@@ -62,8 +62,7 @@ namespace Debugger.AddIn.TreeModel
 			// Repaint and process user commands
 			DebugeeState state = localVarPad.Process.DebugeeState;
 			Util.DoEvents();
-			if (state.HasExpired) {
-				LoggingService.Info("Debugger: Aborted refresh because debugee state expired");
+			if (localVarPad.Process.IsRunning || state.HasExpired) {
 				throw new AbortedBecauseDebugeeStateExpiredException();
 			}
 		}

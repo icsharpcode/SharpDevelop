@@ -7,6 +7,8 @@
 using System;
 using System.Windows.Forms;
 
+using ICSharpCode.Core;
+
 namespace Debugger.AddIn.TreeModel
 {
 	public static partial class Util
@@ -20,6 +22,7 @@ namespace Debugger.AddIn.TreeModel
 		{
 			if (Debugger.Util.HighPrecisionTimer.Now > nextDoEventsTime) {
 				DateTime start = Debugger.Util.HighPrecisionTimer.Now;
+				LoggingService.InfoFormatted("Application.DoEvents()");
 				Application.DoEvents();
 				DateTime end = Debugger.Util.HighPrecisionTimer.Now;
 				double doEventsDuration = (end - start).TotalMilliseconds;

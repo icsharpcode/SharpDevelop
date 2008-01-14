@@ -108,12 +108,11 @@ namespace Debugger
 			}
 			
 			if (debuggeeStateChanged) {
-				DebugeeState oldDebugeeState = debugeeState;
+				if (debugeeState != null) {
+					debugeeState.NotifyHasExpired();
+				}
 				debugeeState = new DebugeeState(this);
 				OnDebuggeeStateChanged();
-				if (oldDebugeeState != null) {
-					oldDebugeeState.NotifyHasExpired();
-				}
 			}
 			OnDebuggingPaused();
 			if (PausedReason == PausedReason.Exception) {

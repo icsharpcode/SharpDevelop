@@ -180,6 +180,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 					TreeViewNode.SetContentRecursive(this, localVarList.Root.Children, null);
 				}
 			} catch(AbortedBecauseDebugeeStateExpiredException) {
+				LoggingService.Info("Aborted variable refresh because debugee state expired");
 			}
 			DateTime end = Debugger.Util.HighPrecisionTimer.Now;
 			LoggingService.InfoFormatted("Local Variables pad refreshed ({0} ms)", (end - start).TotalMilliseconds);
