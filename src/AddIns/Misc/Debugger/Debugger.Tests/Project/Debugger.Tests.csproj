@@ -64,6 +64,7 @@
     <Compile Include="Src\TestPrograms\SimpleProgram.cs" />
     <Compile Include="Src\TestPrograms\Stepping.cs" />
     <Compile Include="Src\TestPrograms\Symbols.cs" />
+    <Compile Include="Src\TestPrograms\ValueType.cs" />
     <Compile Include="Src\TestPrograms\_Template.cs" />
     <EmbeddedResource Include="Src\TestPrograms\*.xml" />
     <EmbeddedResource Include="Src\TestPrograms\*.cs" />
