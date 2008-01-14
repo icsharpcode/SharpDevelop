@@ -156,23 +156,6 @@ namespace Debugger.Tests
 		}
 		
 		[Test]
-		public void FunctionArgumentVariables()
-		{
-			StartTest("FunctionArgumentVariables");
-			WaitForPause();
-			
-			for(int i = 0; i < 6; i++) {
-				process.Continue();
-				WaitForPause();
-				ObjectDump("SelectedStackFrame", process.SelectedStackFrame);
-			}
-			
-			process.Continue();
-			process.WaitForExit();
-			CheckXmlOutput();
-		}
-		
-		[Test]
 		public void FunctionLocalVariables()
 		{
 			StartTest("FunctionLocalVariables");

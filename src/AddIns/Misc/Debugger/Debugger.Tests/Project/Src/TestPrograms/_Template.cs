@@ -7,7 +7,7 @@
 
 using System;
 
-namespace Debugger.Tests
+namespace Debugger.Tests.TestPrograms
 {
 	public class Template
 	{
@@ -16,8 +16,10 @@ namespace Debugger.Tests
 			System.Diagnostics.Debugger.Break();
 		}
 	}
+}
 
 #if TESTS
+namespace Debugger.Tests {
 	public partial class DebuggerTests
 	{
 		[NUnit.Framework.Test]
@@ -31,5 +33,5 @@ namespace Debugger.Tests
 			CheckXmlOutput();
 		}
 	}
-#endif
 }
+#endif

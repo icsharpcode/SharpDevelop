@@ -338,8 +338,8 @@
         <HasSymbols>True</HasSymbols>
         <HasExpired>False</HasExpired>
         <NextStatement>Start=63,4 End=63,40</NextStatement>
-        <ThisValue exception="Unknown type" />
-        <ContaingClassVariables exception="Unknown type" />
+        <ThisValue exception="Unknown type: BYREF" />
+        <ContaingClassVariables exception="Unknown type: BYREF" />
         <ArgumentCount>2</ArgumentCount>
         <Arguments>
           <ValueCollection>
@@ -404,8 +404,8 @@
         <HasSymbols>True</HasSymbols>
         <HasExpired>False</HasExpired>
         <NextStatement>Start=69,4 End=69,40</NextStatement>
-        <ThisValue exception="Unknown type" />
-        <ContaingClassVariables exception="Unknown type" />
+        <ThisValue exception="Unknown type: BYREF" />
+        <ContaingClassVariables exception="Unknown type: BYREF" />
         <ArgumentCount>2</ArgumentCount>
         <Arguments>
           <ValueCollection>

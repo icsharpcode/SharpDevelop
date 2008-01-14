@@ -330,7 +330,7 @@ namespace Debugger
 			} else if (IsPrimitive) {
 				return this.ManagedType.ToString();
 			} else {
-				throw new DebuggerException("Unknown type");
+				throw new DebuggerException("Unknown type: " + this.corElementType.ToString());
 			}
 		}
 		
