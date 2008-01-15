@@ -35,3 +35,32 @@ namespace Debugger.Tests.TestPrograms
 		}
 	}
 }
+
+#if TESTS
+namespace Debugger.Tests {
+	public partial class DebuggerTests
+	{
+		[NUnit.Framework.Test, NUnit.Framework.Ignore]
+		public void ObjectValue()
+		{
+			Value val = null;
+			
+			StartTest("ObjectValue");
+			WaitForPause();
+			val = process.SelectedStackFrame.LocalVariables["val"];
+			ObjectDump("val", val);
+			ObjectDump("val members", val.GetMemberValues(null, Debugger.BindingFlags.All));
+			//ObjectDump("typeof(val)", val.Type);
+			
+			process.Continue();
+			WaitForPause();
+			ObjectDump("val", val);
+			ObjectDump("val members", val.GetMemberValues(null, Debugger.BindingFlags.All));
+			
+			process.Continue();
+			process.WaitForExit();
+			CheckXmlOutput();
+		}
+	}
+}
+#endif

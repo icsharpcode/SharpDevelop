@@ -21,8 +21,10 @@ namespace Debugger.Tests
 			System.Diagnostics.Debugger.Break();
 		}
 	}
+}
 
 #if TESTS
+namespace Debugger.Tests {
 	public partial class DebuggerTests
 	{
 		[NUnit.Framework.Test]
@@ -38,5 +40,5 @@ namespace Debugger.Tests
 			CheckXmlOutput();
 		}
 	}
-#endif
 }
+#endif

@@ -20,3 +20,33 @@ namespace Debugger.Tests.TestPrograms
 		}
 	}
 }
+
+#if TESTS
+namespace Debugger.Tests {
+	public partial class DebuggerTests
+	{
+		[NUnit.Framework.Test]
+		public void Breakpoint()
+		{
+			Breakpoint breakpoint = debugger.AddBreakpoint(@"F:\SharpDevelopTrunk\src\AddIns\Misc\Debugger\Debugger.Tests\Project\Src\TestPrograms\Breakpoint.cs", 18);
+			
+			StartTest("Breakpoint");
+			WaitForPause();
+			
+			ObjectDump(breakpoint);
+			
+			process.Continue();
+			WaitForPause();
+			
+			process.Continue();
+			WaitForPause();
+			
+			process.Continue();
+			process.WaitForExit();
+			
+			ObjectDump(breakpoint);
+			CheckXmlOutput();
+		}
+	}
+}
+#endif

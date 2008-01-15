@@ -17,3 +17,12 @@ namespace Debugger.Tests.TestPrograms
 		}
 	}
 }
+
+#if TESTS
+namespace Debugger.Tests {
+	public partial class DebuggerTests
+	{
+		
+	}
+}
+#endif

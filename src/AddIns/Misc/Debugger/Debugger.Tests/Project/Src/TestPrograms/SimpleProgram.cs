@@ -17,3 +17,18 @@ namespace Debugger.Tests.TestPrograms
 		}
 	}
 }
+
+#if TESTS
+namespace Debugger.Tests {
+	public partial class DebuggerTests
+	{
+		[NUnit.Framework.Test]
+		public void SimpleProgram()
+		{
+			StartTest("SimpleProgram");
+			process.WaitForExit();
+			CheckXmlOutput();
+		}
+	}
+}
+#endif

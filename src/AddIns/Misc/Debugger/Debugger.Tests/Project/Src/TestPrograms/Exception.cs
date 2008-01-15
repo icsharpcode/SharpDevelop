@@ -17,3 +17,20 @@ namespace Debugger.Tests.TestPrograms
 		}
 	}
 }
+
+#if TESTS
+namespace Debugger.Tests {
+	public partial class DebuggerTests
+	{
+		[NUnit.Framework.Test]
+		public void Exception()
+		{
+			StartTest("Exception");
+			WaitForPause();
+			process.Continue();
+			process.WaitForExit();
+			CheckXmlOutput();
+		}
+	}
+}
+#endif

@@ -48,3 +48,26 @@ namespace Debugger.Tests.TestPrograms
 		}
 	}
 }
+
+#if TESTS
+namespace Debugger.Tests {
+	public partial class DebuggerTests
+	{
+		[NUnit.Framework.Test, NUnit.Framework.Ignore]
+		public void Expressions()
+		{
+			StartTest("Expressions");
+			WaitForPause();
+			
+			ObjectDump("Variables", process.SelectedStackFrame.Variables);
+			ObjectDump("array", process.SelectedStackFrame.Variables["array"].GetArrayElements());
+			ObjectDump("array2", process.SelectedStackFrame.Variables["array2"].GetArrayElements());
+			ObjectDump("this", process.SelectedStackFrame.ThisValue.GetMemberValues());
+			
+			process.Continue();
+			process.WaitForExit();
+			CheckXmlOutput();
+		}
+	}
+}
+#endif

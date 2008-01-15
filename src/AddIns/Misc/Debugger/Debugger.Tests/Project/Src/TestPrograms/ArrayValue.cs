@@ -21,3 +21,24 @@ namespace Debugger.Tests.TestPrograms
 		}
 	}
 }
+
+#if TESTS
+namespace Debugger.Tests {
+	public partial class DebuggerTests
+	{
+		[NUnit.Framework.Test]
+		public void ArrayValue()
+		{
+			StartTest("ArrayValue");
+			WaitForPause();
+			Value array = process.SelectedStackFrame.LocalVariables["array"];
+			ObjectDump("array", array);
+			ObjectDump("array elements", array.GetArrayElements());
+			
+			process.Continue();
+			process.WaitForExit();
+			CheckXmlOutput();
+		}
+	}
+}
+#endif

@@ -18,7 +18,7 @@
       </MethodInfo>
       <HasSymbols>True</HasSymbols>
       <HasExpired>False</HasExpired>
-      <NextStatement>Start=23,4 End=23,40</NextStatement>
+      <NextStatement>Start=21,4 End=21,40</NextStatement>
       <ThisValue exception="Static method does not have 'this'." />
       <ContaingClassVariables Type="ValueCollection">
         <Count>0</Count>

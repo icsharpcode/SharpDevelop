@@ -32,3 +32,54 @@ namespace Debugger.Tests.TestPrograms
 		}
 	}
 }
+
+#if TESTS
+namespace Debugger.Tests {
+	public partial class DebuggerTests
+	{
+		[NUnit.Framework.Test]
+		public void Stepping()
+		{
+			StartTest("Stepping");
+			WaitForPause();
+			ObjectDump("SelectedStackFrame", process.SelectedStackFrame);
+			
+			process.StepOver(); // Debugger.Break
+			WaitForPause();
+			ObjectDump("SelectedStackFrame", process.SelectedStackFrame);
+			
+			process.StepOver(); // Debug.WriteLine 1
+			WaitForPause();
+			ObjectDump("SelectedStackFrame", process.SelectedStackFrame);
+			
+			process.StepInto(); // Method Sub
+			WaitForPause();
+			ObjectDump("SelectedStackFrame", process.SelectedStackFrame);
+			
+			process.StepInto(); // '{'
+			WaitForPause();
+			ObjectDump("SelectedStackFrame", process.SelectedStackFrame);
+			
+			process.StepInto(); // Debug.WriteLine 2
+			WaitForPause();
+			ObjectDump("SelectedStackFrame", process.SelectedStackFrame);
+			
+			process.StepOut(); // Method Sub
+			WaitForPause();
+			ObjectDump("SelectedStackFrame", process.SelectedStackFrame);
+			
+			process.StepOver(); // Method Sub
+			WaitForPause();
+			ObjectDump("SelectedStackFrame", process.SelectedStackFrame);
+			
+			process.StepOver(); // Method Sub2
+			WaitForPause();
+			ObjectDump("SelectedStackFrame", process.SelectedStackFrame);
+			
+			process.Continue();
+			process.WaitForExit();
+			CheckXmlOutput();
+		}
+	}
+}
+#endif

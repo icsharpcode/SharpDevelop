@@ -19,3 +19,21 @@ namespace Debugger.Tests.TestPrograms
 		}
 	}
 }
+
+#if TESTS
+namespace Debugger.Tests {
+	public partial class DebuggerTests
+	{
+//		[NUnit.Framework.Test]
+//		public void DebuggeeKilled()
+//		{
+//			StartTest("DebuggeeKilled");
+//			WaitForPause();
+//			Assert.AreNotEqual(null, lastLogMessage);
+//			System.Diagnostics.Process p = System.Diagnostics.Process.GetProcessById(int.Parse(lastLogMessage));
+//			p.Kill();
+//			process.WaitForExit();
+//		}
+	}
+}
+#endif

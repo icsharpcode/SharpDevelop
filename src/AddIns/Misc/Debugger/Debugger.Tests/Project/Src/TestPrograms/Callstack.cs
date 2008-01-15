@@ -27,3 +27,30 @@ namespace Debugger.Tests.TestPrograms
 		}
 	}
 }
+
+#if TESTS
+namespace Debugger.Tests {
+	public partial class DebuggerTests
+	{
+		[NUnit.Framework.Test]
+		public void Callstack()
+		{
+			StartTest("Callstack");
+			WaitForPause();
+			ObjectDump("Callstack", process.SelectedThread.Callstack);
+			
+			process.StepOut();
+			WaitForPause();
+			ObjectDump("Callstack", process.SelectedThread.Callstack);
+			
+			process.StepOut();
+			WaitForPause();
+			ObjectDump("Callstack", process.SelectedThread.Callstack);
+			
+			process.Continue();
+			process.WaitForExit();
+			CheckXmlOutput();
+		}
+	}
+}
+#endif

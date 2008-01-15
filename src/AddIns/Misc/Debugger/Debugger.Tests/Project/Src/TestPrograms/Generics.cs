@@ -83,3 +83,27 @@ namespace Debugger.Tests.TestPrograms
 		}
 	}
 }
+
+#if TESTS
+namespace Debugger.Tests {
+	public partial class DebuggerTests
+	{
+		[NUnit.Framework.Test]
+		public void Generics()
+		{
+			StartTest("Generics");
+			
+			for(int i = 0; i < 8; i++) {
+				WaitForPause();
+				ObjectDump("SelectedStackFrame", process.SelectedStackFrame);
+				process.Continue();
+			}
+			
+			WaitForPause();
+			process.Continue();
+			process.WaitForExit();
+			CheckXmlOutput();
+		}
+	}
+}
+#endif

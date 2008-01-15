@@ -43,3 +43,47 @@ namespace Debugger.Tests.TestPrograms
 		}
 	}
 }
+
+#if TESTS
+namespace Debugger.Tests {
+	public partial class DebuggerTests
+	{
+		/*
+		[NUnit.Framework.Test]
+		public void PropertyVariable()
+		{
+			StartProgram("PropertyVariable");
+			WaitForPause();
+			NamedValueCollection props = process.SelectedFunction.LocalVariables["var"].GetMembers(null, Debugger.BindingFlags.All);
+			
+			Assert.AreEqual(typeof(UnavailableValue), props["PrivateProperty"].Value.GetType());
+			process.StartEvaluation();
+			WaitForPause();
+			Assert.AreEqual("private", props["PrivateProperty"].AsString);
+			
+			Assert.AreEqual(typeof(UnavailableValue), props["PublicProperty"].Value.GetType());
+			process.StartEvaluation();
+			WaitForPause();
+			Assert.AreEqual("public", props["PublicProperty"].AsString);
+			
+			Assert.AreEqual(typeof(UnavailableValue), props["ExceptionProperty"].Value.GetType());
+			process.StartEvaluation();
+			WaitForPause();
+			Assert.AreEqual(typeof(UnavailableValue), props["ExceptionProperty"].Value.GetType());
+			
+			Assert.AreEqual(typeof(UnavailableValue), props["StaticProperty"].Value.GetType());
+			process.StartEvaluation();
+			WaitForPause();
+			Assert.AreEqual("static", props["StaticProperty"].AsString);
+			
+			process.Continue();
+			WaitForPause(PausedReason.Break, null);
+			
+			process.Continue();
+			process.WaitForPrecessExit();
+			CheckXmlOutput();
+		}
+		*/
+	}
+}
+#endif

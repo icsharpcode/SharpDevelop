@@ -22,3 +22,23 @@ namespace Debugger.Tests.TestPrograms
 		}
 	}
 }
+
+#if TESTS
+namespace Debugger.Tests {
+	public partial class DebuggerTests
+	{
+		[NUnit.Framework.Test, NUnit.Framework.Ignore]
+		public void GenericDictionary()
+		{
+			StartTest("GenericDictionary");
+			WaitForPause();
+			ObjectDump("dict", process.SelectedStackFrame.LocalVariables["dict"]);
+			ObjectDump("dict members", process.SelectedStackFrame.LocalVariables["dict"].GetMemberValues(null, BindingFlags.All));
+			
+			process.Continue();
+			process.WaitForExit();
+			CheckXmlOutput();
+		}
+	}
+}
+#endif

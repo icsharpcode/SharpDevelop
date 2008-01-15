@@ -7,10 +7,6 @@
 
 using System;
 
-//CS0219: The variable 'variable' is assigned but its value is never used
-//CS0414: The private field 'field' is assigned but its value is never used
-#pragma warning disable 0219, 0414
-
 namespace Debugger.Tests.TestPrograms
 {
 	public class FunctionVariablesLifetime
@@ -40,4 +36,62 @@ namespace Debugger.Tests.TestPrograms
 	}
 }
 
-#pragma warning restore 0219, 0414
+#if TESTS
+namespace Debugger.Tests {
+	public partial class DebuggerTests
+	{
+		[NUnit.Framework.Test]
+		public void FunctionVariablesLifetime()
+		{
+			Value argument = null;
+			Value local    = null;
+			Value localInSubFunction = null;
+			Value @class   = null;
+			
+			StartTest("FunctionVariablesLifetime"); // 1 - Enter program
+			WaitForPause();
+			argument = process.SelectedStackFrame.GetArgumentValue(0);
+			local = process.SelectedStackFrame.LocalVariables["local"];
+			@class = process.SelectedStackFrame.ContaingClassVariables["class"];
+			ObjectDump("argument", argument);
+			ObjectDump("local", local);
+			ObjectDump("@class", @class);
+			
+			process.Continue(); // 2 - Go to the SubFunction
+			WaitForPause();
+			localInSubFunction = process.SelectedStackFrame.LocalVariables["localInSubFunction"];
+			ObjectDump("argument", argument);
+			ObjectDump("local", local);
+			ObjectDump("@class", @class);
+			ObjectDump("localInSubFunction", @localInSubFunction);
+			
+			process.Continue(); // 3 - Go back to Function
+			WaitForPause();
+			ObjectDump("argument", argument);
+			ObjectDump("local", local);
+			ObjectDump("@class", @class);
+			ObjectDump("localInSubFunction", @localInSubFunction);
+			
+			process.Continue(); // 4 - Go to the SubFunction
+			WaitForPause();
+			ObjectDump("argument", argument);
+			ObjectDump("local", local);
+			ObjectDump("@class", @class);
+			ObjectDump("localInSubFunction", @localInSubFunction);
+			localInSubFunction = process.SelectedStackFrame.LocalVariables["localInSubFunction"];
+			ObjectDump("localInSubFunction(new)", @localInSubFunction);
+			
+			process.Continue(); // 5 - Setp out of both functions
+			WaitForPause();
+			ObjectDump("argument", argument);
+			ObjectDump("local", local);
+			ObjectDump("@class", @class);
+			ObjectDump("localInSubFunction", @localInSubFunction);
+			
+			process.Continue();
+			process.WaitForExit();
+			CheckXmlOutput();
+		}
+	}
+}
+#endif

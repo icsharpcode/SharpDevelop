@@ -7,8 +7,6 @@
 
 using System;
 
-#pragma warning disable 0219
-
 namespace Debugger.Tests.TestPrograms
 {
 	public class FunctionLocalVariables
@@ -25,4 +23,21 @@ namespace Debugger.Tests.TestPrograms
 	}
 }
 
-#pragma warning restore 0219
+#if TESTS
+namespace Debugger.Tests {
+	public partial class DebuggerTests
+	{
+		[NUnit.Framework.Test]
+		public void FunctionLocalVariables()
+		{
+			StartTest("FunctionLocalVariables");
+			WaitForPause();
+			ObjectDump("SelectedStackFrame", process.SelectedStackFrame);
+			
+			process.Continue();
+			process.WaitForExit();
+			CheckXmlOutput();
+		}
+	}
+}
+#endif

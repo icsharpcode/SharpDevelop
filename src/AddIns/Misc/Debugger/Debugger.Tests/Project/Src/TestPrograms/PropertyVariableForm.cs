@@ -20,3 +20,46 @@ namespace Debugger.Tests.TestPrograms
 		}
 	}
 }
+
+#if TESTS
+namespace Debugger.Tests {
+	public partial class DebuggerTests
+	{
+		/*
+		[NUnit.Framework.Test]
+		public void PropertyVariableForm()
+		{
+			Variable local = null;
+			
+			StartProgram("PropertyVariableForm");
+			WaitForPause();
+			foreach(Variable var in process.SelectedFunction.LocalVariables) {
+				local = var;
+			}
+			Assert.AreEqual("form", local.Name);
+			Assert.AreEqual(typeof(Variable), local.GetType());
+			
+			foreach(Variable var in local.Value.SubVariables) {
+				Assert.AreEqual(typeof(UnavailableValue), var.Value.GetType(), "Variable name: " + var.Name);
+				process.StartEvaluation();
+				WaitForPause();
+				Assert.AreNotEqual(null, var.Value.AsString, "Variable name: " + var.Name);
+			}
+			
+			process.Continue();
+			WaitForPause();
+			
+			foreach(Variable var in local.Value.SubVariables) {
+				Assert.AreEqual(typeof(UnavailableValue), var.Value.GetType(), "Variable name: " + var.Name);
+			}
+			process.StartEvaluation();
+			WaitForPause();
+			
+			process.Continue();
+			process.WaitForPrecessExit();
+			CheckXmlOutput();
+		}
+		*/
+	}
+}
+#endif
