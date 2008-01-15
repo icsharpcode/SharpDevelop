@@ -89,6 +89,18 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				}
 				base.OnDrawText(args);
 			}
+			public override void MouseDown(TreeNodeAdvMouseEventArgs args)
+			{
+				AbstractNode content = ((TreeViewNode)args.Node).Content;
+				if (content is IContextMenu && args.Button == MouseButtons.Right) {
+					ContextMenuStrip menu = ((IContextMenu)content).GetContextMenu();
+					if (menu != null) {
+						menu.Show(args.Node.Tree, args.Location);
+					}
+				} else {
+					base.MouseDown(args);
+				}
+			}
 		}
 		
 		class ItemType: NodeTextBox {

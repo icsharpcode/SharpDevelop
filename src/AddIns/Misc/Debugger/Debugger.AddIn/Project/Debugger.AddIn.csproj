@@ -137,6 +137,10 @@
       <Name>Aga.Controls</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\Main\ICSharpCode.SharpDevelop.Sda\ICSharpCode.SharpDevelop.Sda.csproj">
+      <Project>{80318B5F-A25D-45AB-8A95-EF31D2370A4C}</Project>
+      <Name>ICSharpCode.SharpDevelop.Sda</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <Import Project="PostBuildEvent.proj" />

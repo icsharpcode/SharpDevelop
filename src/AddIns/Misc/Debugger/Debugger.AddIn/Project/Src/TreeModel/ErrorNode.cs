@@ -7,13 +7,16 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Windows.Forms;
+
+using ICSharpCode.SharpDevelop.Sda;
 
 using Debugger;
 using Debugger.Expressions;
 
 namespace Debugger.AddIn.TreeModel
 {
-	public class ErrorNode: AbstractNode
+	public class ErrorNode: AbstractNode, IContextMenu
 	{
 		Expression targetObject;
 		GetValueException error;
@@ -33,6 +36,27 @@ namespace Debugger.AddIn.TreeModel
 			
 			this.Name = targetObject.CodeTail;
 			this.Text = error.Error;
+		}
+		
+		public ContextMenuStrip GetContextMenu()
+		{
+			ContextMenuStrip menu = new ContextMenuStrip();
+			
+			ToolStripMenuItem showError;
+			showError = new ToolStripMenuItem();
+			showError.Text = "Show full error...";
+			showError.Checked = false;
+			showError.Click += delegate {
+				using (ExceptionBox box = new ExceptionBox(error, null, false)) {
+					box.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm);
+				}
+			};
+			
+			menu.Items.AddRange(new ToolStripItem[] {
+			                    	showError
+			                    });
+			
+			return menu;
 		}
 	}
 }
