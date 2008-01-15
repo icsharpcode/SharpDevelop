@@ -44,6 +44,7 @@
                 <IsPrimitive>True</IsPrimitive>
                 <IsInteger>True</IsInteger>
                 <PrimitiveValue>1</PrimitiveValue>
+                <Expression>i</Expression>
                 <Name>i</Name>
                 <IsNull>False</IsNull>
                 <AsString>1</AsString>
@@ -59,6 +60,7 @@
                 <IsPrimitive>True</IsPrimitive>
                 <IsInteger>False</IsInteger>
                 <PrimitiveValue>A</PrimitiveValue>
+                <Expression>s</Expression>
                 <Name>s</Name>
                 <IsNull>False</IsNull>
                 <AsString>A</AsString>
@@ -74,6 +76,7 @@
                 <IsPrimitive>False</IsPrimitive>
                 <IsInteger>False</IsInteger>
                 <PrimitiveValue exception="Value is not a primitive type" />
+                <Expression>s_null</Expression>
                 <Name>s_null</Name>
                 <IsNull>True</IsNull>
                 <AsString>&lt;null&gt;</AsString>
@@ -89,6 +92,7 @@
                 <IsPrimitive>True</IsPrimitive>
                 <IsInteger>True</IsInteger>
                 <PrimitiveValue>2</PrimitiveValue>
+                <Expression>ref_i</Expression>
                 <Name>ref_i</Name>
                 <IsNull>False</IsNull>
                 <AsString>2</AsString>
@@ -104,6 +108,7 @@
                 <IsPrimitive>True</IsPrimitive>
                 <IsInteger>True</IsInteger>
                 <PrimitiveValue>3</PrimitiveValue>
+                <Expression>out_i</Expression>
                 <Name>out_i</Name>
                 <IsNull>False</IsNull>
                 <AsString>3</AsString>
@@ -119,6 +124,7 @@
                 <IsPrimitive>True</IsPrimitive>
                 <IsInteger>True</IsInteger>
                 <PrimitiveValue>0</PrimitiveValue>
+                <Expression>out_i2</Expression>
                 <Name>out_i2</Name>
                 <IsNull>False</IsNull>
                 <AsString>0</AsString>
@@ -134,6 +140,7 @@
                 <IsPrimitive>True</IsPrimitive>
                 <IsInteger>False</IsInteger>
                 <PrimitiveValue>B</PrimitiveValue>
+                <Expression>ref_s</Expression>
                 <Name>ref_s</Name>
                 <IsNull>False</IsNull>
                 <AsString>B</AsString>
@@ -149,6 +156,7 @@
                 <IsPrimitive>False</IsPrimitive>
                 <IsInteger>False</IsInteger>
                 <PrimitiveValue exception="Value is not a primitive type" />
+                <Expression>iNull</Expression>
                 <Name>iNull</Name>
                 <IsNull>False</IsNull>
                 <AsString>{System.Nullable&lt;System.Int32&gt;}</AsString>
@@ -164,6 +172,7 @@
                 <IsPrimitive>False</IsPrimitive>
                 <IsInteger>False</IsInteger>
                 <PrimitiveValue exception="Value is not a primitive type" />
+                <Expression>iNull_null</Expression>
                 <Name>iNull_null</Name>
                 <IsNull>False</IsNull>
                 <AsString>{System.Nullable&lt;System.Int32&gt;}</AsString>
@@ -220,6 +229,7 @@
                 <IsPrimitive>False</IsPrimitive>
                 <IsInteger>False</IsInteger>
                 <PrimitiveValue exception="Value is not a primitive type" />
+                <Expression>args</Expression>
                 <Name>args</Name>
                 <IsNull>False</IsNull>
                 <AsString>{System.String[]}</AsString>
@@ -276,6 +286,7 @@
                 <IsPrimitive>False</IsPrimitive>
                 <IsInteger>False</IsInteger>
                 <PrimitiveValue exception="Value is not a primitive type" />
+                <Expression>args</Expression>
                 <Name>args</Name>
                 <IsNull>False</IsNull>
                 <AsString>{System.String[]}</AsString>
@@ -332,6 +343,7 @@
                 <IsPrimitive>False</IsPrimitive>
                 <IsInteger>False</IsInteger>
                 <PrimitiveValue exception="Value is not a primitive type" />
+                <Expression>args</Expression>
                 <Name>args</Name>
                 <IsNull>False</IsNull>
                 <AsString>{System.String[]}</AsString>
@@ -377,6 +389,7 @@
             <IsPrimitive>False</IsPrimitive>
             <IsInteger>False</IsInteger>
             <PrimitiveValue exception="Value is not a primitive type" />
+            <Expression>this</Expression>
             <Name>this</Name>
             <IsNull>False</IsNull>
             <AsString>{Debugger.Tests.TestPrograms.FunctionArgumentVariables}</AsString>
@@ -404,6 +417,7 @@
                 <IsPrimitive>True</IsPrimitive>
                 <IsInteger>True</IsInteger>
                 <PrimitiveValue>1</PrimitiveValue>
+                <Expression>i</Expression>
                 <Name>i</Name>
                 <IsNull>False</IsNull>
                 <AsString>1</AsString>
@@ -419,6 +433,7 @@
                 <IsPrimitive>True</IsPrimitive>
                 <IsInteger>False</IsInteger>
                 <PrimitiveValue>A</PrimitiveValue>
+                <Expression>s</Expression>
                 <Name>s</Name>
                 <IsNull>False</IsNull>
                 <AsString>A</AsString>

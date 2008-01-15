@@ -15,6 +15,7 @@
         <IsPrimitive>True</IsPrimitive>
         <IsInteger>True</IsInteger>
         <PrimitiveValue>1</PrimitiveValue>
+        <Expression>argument</Expression>
         <Name>argument</Name>
         <IsNull>False</IsNull>
         <AsString>1</AsString>
@@ -32,6 +33,7 @@
         <IsPrimitive>True</IsPrimitive>
         <IsInteger>True</IsInteger>
         <PrimitiveValue>2</PrimitiveValue>
+        <Expression>local</Expression>
         <Name>local</Name>
         <IsNull>False</IsNull>
         <AsString>2</AsString>
@@ -49,6 +51,7 @@
         <IsPrimitive>True</IsPrimitive>
         <IsInteger>True</IsInteger>
         <PrimitiveValue>3</PrimitiveValue>
+        <Expression>this.class</Expression>
         <Name>class</Name>
         <IsNull>False</IsNull>
         <AsString>3</AsString>
@@ -67,6 +70,7 @@
         <IsPrimitive exception="Value has expired" />
         <IsInteger exception="Value has expired" />
         <PrimitiveValue exception="Value has expired" />
+        <Expression>argument</Expression>
         <Name>argument</Name>
         <IsNull exception="Value has expired" />
         <AsString exception="Value has expired" />
@@ -84,6 +88,7 @@
         <IsPrimitive exception="Value has expired" />
         <IsInteger exception="Value has expired" />
         <PrimitiveValue exception="Value has expired" />
+        <Expression>local</Expression>
         <Name>local</Name>
         <IsNull exception="Value has expired" />
         <AsString exception="Value has expired" />
@@ -101,6 +106,7 @@
         <IsPrimitive exception="Value has expired" />
         <IsInteger exception="Value has expired" />
         <PrimitiveValue exception="Value has expired" />
+        <Expression>this.class</Expression>
         <Name>class</Name>
         <IsNull exception="Value has expired" />
         <AsString exception="Value has expired" />
@@ -118,6 +124,7 @@
         <IsPrimitive>True</IsPrimitive>
         <IsInteger>True</IsInteger>
         <PrimitiveValue>4</PrimitiveValue>
+        <Expression>localInSubFunction</Expression>
         <Name>localInSubFunction</Name>
         <IsNull>False</IsNull>
         <AsString>4</AsString>
@@ -136,6 +143,7 @@
         <IsPrimitive exception="Value has expired" />
         <IsInteger exception="Value has expired" />
         <PrimitiveValue exception="Value has expired" />
+        <Expression>argument</Expression>
         <Name>argument</Name>
         <IsNull exception="Value has expired" />
         <AsString exception="Value has expired" />
@@ -153,6 +161,7 @@
         <IsPrimitive exception="Value has expired" />
         <IsInteger exception="Value has expired" />
         <PrimitiveValue exception="Value has expired" />
+        <Expression>local</Expression>
         <Name>local</Name>
         <IsNull exception="Value has expired" />
         <AsString exception="Value has expired" />
@@ -170,6 +179,7 @@
         <IsPrimitive exception="Value has expired" />
         <IsInteger exception="Value has expired" />
         <PrimitiveValue exception="Value has expired" />
+        <Expression>this.class</Expression>
         <Name>class</Name>
         <IsNull exception="Value has expired" />
         <AsString exception="Value has expired" />
@@ -187,6 +197,7 @@
         <IsPrimitive exception="Value has expired" />
         <IsInteger exception="Value has expired" />
         <PrimitiveValue exception="Value has expired" />
+        <Expression>localInSubFunction</Expression>
         <Name>localInSubFunction</Name>
         <IsNull exception="Value has expired" />
         <AsString exception="Value has expired" />
@@ -205,6 +216,7 @@
         <IsPrimitive exception="Value has expired" />
         <IsInteger exception="Value has expired" />
         <PrimitiveValue exception="Value has expired" />
+        <Expression>argument</Expression>
         <Name>argument</Name>
         <IsNull exception="Value has expired" />
         <AsString exception="Value has expired" />
@@ -222,6 +234,7 @@
         <IsPrimitive exception="Value has expired" />
         <IsInteger exception="Value has expired" />
         <PrimitiveValue exception="Value has expired" />
+        <Expression>local</Expression>
         <Name>local</Name>
         <IsNull exception="Value has expired" />
         <AsString exception="Value has expired" />
@@ -239,6 +252,7 @@
         <IsPrimitive exception="Value has expired" />
         <IsInteger exception="Value has expired" />
         <PrimitiveValue exception="Value has expired" />
+        <Expression>this.class</Expression>
         <Name>class</Name>
         <IsNull exception="Value has expired" />
         <AsString exception="Value has expired" />
@@ -256,6 +270,7 @@
         <IsPrimitive exception="Value has expired" />
         <IsInteger exception="Value has expired" />
         <PrimitiveValue exception="Value has expired" />
+        <Expression>localInSubFunction</Expression>
         <Name>localInSubFunction</Name>
         <IsNull exception="Value has expired" />
         <AsString exception="Value has expired" />
@@ -273,6 +288,7 @@
         <IsPrimitive>True</IsPrimitive>
         <IsInteger>True</IsInteger>
         <PrimitiveValue>4</PrimitiveValue>
+        <Expression>localInSubFunction</Expression>
         <Name>localInSubFunction</Name>
         <IsNull>False</IsNull>
         <AsString>4</AsString>
@@ -291,6 +307,7 @@
         <IsPrimitive exception="Value has expired" />
         <IsInteger exception="Value has expired" />
         <PrimitiveValue exception="Value has expired" />
+        <Expression>argument</Expression>
         <Name>argument</Name>
         <IsNull exception="Value has expired" />
         <AsString exception="Value has expired" />
@@ -308,6 +325,7 @@
         <IsPrimitive exception="Value has expired" />
         <IsInteger exception="Value has expired" />
         <PrimitiveValue exception="Value has expired" />
+        <Expression>local</Expression>
         <Name>local</Name>
         <IsNull exception="Value has expired" />
         <AsString exception="Value has expired" />
@@ -325,6 +343,7 @@
         <IsPrimitive exception="Value has expired" />
         <IsInteger exception="Value has expired" />
         <PrimitiveValue exception="Value has expired" />
+        <Expression>this.class</Expression>
         <Name>class</Name>
         <IsNull exception="Value has expired" />
         <AsString exception="Value has expired" />
@@ -342,6 +361,7 @@
         <IsPrimitive exception="Value has expired" />
         <IsInteger exception="Value has expired" />
         <PrimitiveValue exception="Value has expired" />
+        <Expression>localInSubFunction</Expression>
         <Name>localInSubFunction</Name>
         <IsNull exception="Value has expired" />
         <AsString exception="Value has expired" />

@@ -51,6 +51,7 @@ namespace Debugger
 		bool hasExpired = false;
 		
 		/// <summary> Expression which can be used to reobtain this value. </summary>
+		[Debugger.Tests.ToStringOnly]
 		public Expression Expression {
 			get { return expression; }
 		}

@@ -49,6 +49,7 @@
                 <IsPrimitive>True</IsPrimitive>
                 <IsInteger>True</IsInteger>
                 <PrimitiveValue>0</PrimitiveValue>
+                <Expression>i</Expression>
                 <Name>i</Name>
                 <IsNull>False</IsNull>
                 <AsString>0</AsString>
@@ -64,6 +65,7 @@
                 <IsPrimitive>True</IsPrimitive>
                 <IsInteger>False</IsInteger>
                 <PrimitiveValue>S</PrimitiveValue>
+                <Expression>s</Expression>
                 <Name>s</Name>
                 <IsNull>False</IsNull>
                 <AsString>S</AsString>
@@ -79,6 +81,7 @@
                 <IsPrimitive>False</IsPrimitive>
                 <IsInteger>False</IsInteger>
                 <PrimitiveValue exception="Value is not a primitive type" />
+                <Expression>args</Expression>
                 <Name>args</Name>
                 <IsNull>False</IsNull>
                 <AsString>{System.String[]}</AsString>
@@ -94,6 +97,7 @@
                 <IsPrimitive>False</IsPrimitive>
                 <IsInteger>False</IsInteger>
                 <PrimitiveValue exception="Value is not a primitive type" />
+                <Expression>n</Expression>
                 <Name>n</Name>
                 <IsNull>True</IsNull>
                 <AsString>&lt;null&gt;</AsString>
@@ -109,6 +113,7 @@
                 <IsPrimitive>False</IsPrimitive>
                 <IsInteger>False</IsInteger>
                 <PrimitiveValue exception="Value is not a primitive type" />
+                <Expression>o</Expression>
                 <Name>o</Name>
                 <IsNull>False</IsNull>
                 <AsString>{System.Object}</AsString>

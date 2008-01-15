@@ -9,6 +9,7 @@ using Microsoft.CSharp;
 using System;
 using System.CodeDom.Compiler;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
@@ -151,7 +152,7 @@ namespace Debugger.Tests
 			XmlElement dumpNode = testDoc.CreateElement("ObjectDump");
 			if (name != null) dumpNode.SetAttribute("name", name);
 			testNode.AppendChild(dumpNode);
-			Serialize(dumpNode, obj);
+			Serialize(dumpNode, obj, 16, new List<object>());
 		}
 		
 		static bool ShouldExpandType(Type type)
@@ -162,14 +163,27 @@ namespace Debugger.Tests
 			       );
 		}
 		
-		public static void Serialize(XmlNode parent, object obj)
+		public static void Serialize(XmlNode parent, object obj, int maxDepth, List<object> parents)
 		{
 			XmlDocument doc = parent.OwnerDocument;
+			
+			if (maxDepth == -1) {
+				parent.AppendChild(doc.CreateElement("MaxDepth_Reached"));
+				return;
+			}
 			
 			if (obj == null) {
 				parent.AppendChild(doc.CreateElement("Null"));
 				return;
 			}
+			
+			if (parents.Contains(obj)) {
+				parent.AppendChild(doc.CreateElement("RecusionDetected"));
+				return;
+			}
+			
+			parents = new List<object>(parents); // Clone
+			parents.Add(obj);
 			
 			Type type = obj.GetType();
 			
@@ -203,7 +217,7 @@ namespace Debugger.Tests
 					// Only write ToString() text
 					propertyNode.AppendChild(doc.CreateTextNode(val.ToString()));
 				} else {
-					Serialize(propertyNode, val);
+					Serialize(propertyNode, val, maxDepth - 1, parents);
 				}
 			}
 			
@@ -212,7 +226,7 @@ namespace Debugger.Tests
 				XmlElement enumRoot = doc.CreateElement("Items");
 				objectRoot.AppendChild(enumRoot);
 				foreach(object enumObject in (IEnumerable)obj) {
-					Serialize(enumRoot, enumObject);
+					Serialize(enumRoot, enumObject, maxDepth - 1, parents);
 				}
 			}
 		}
