@@ -1,4 +1,4 @@
-﻿// <file>
+// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
@@ -19,7 +19,7 @@ namespace Debugger.Tests.TestPrograms
 	}
 }
 
-#if TESTS
+#if TEST_CODE
 namespace Debugger.Tests {
 	using NUnit.Framework;
 	
@@ -45,3 +45,23 @@ namespace Debugger.Tests {
 	}
 }
 #endif
+
+#if EXPECTED_OUTPUT
+<?xml version="1.0" encoding="utf-8"?>
+<DebuggerTests>
+  <Test name="SetIP">
+    <ProcessStarted />
+    <ModuleLoaded symbols="False">mscorlib.dll</ModuleLoaded>
+    <ModuleLoaded symbols="True">SetIP.exe</ModuleLoaded>
+    <ModuleLoaded symbols="False">System.dll</ModuleLoaded>
+    <ModuleLoaded symbols="False">System.Configuration.dll</ModuleLoaded>
+    <ModuleLoaded symbols="False">System.Xml.dll</ModuleLoaded>
+    <LogMessage>1\r\n</LogMessage>
+    <DebuggingPaused>Break</DebuggingPaused>
+    <DebuggingPaused>SetIP</DebuggingPaused>
+    <LogMessage>1\r\n</LogMessage>
+    <DebuggingPaused>Break</DebuggingPaused>
+    <ProcessExited />
+  </Test>
+</DebuggerTests>
+#endif // EXPECTED_OUTPUT

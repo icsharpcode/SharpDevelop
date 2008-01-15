@@ -49,7 +49,7 @@ namespace Debugger.Tests.TestPrograms
 	}
 }
 
-#if TESTS
+#if TEST_CODE
 namespace Debugger.Tests {
 	public partial class DebuggerTests
 	{
@@ -71,3 +71,6 @@ namespace Debugger.Tests {
 	}
 }
 #endif
+
+#if EXPECTED_OUTPUT
+#endif // EXPECTED_OUTPUT

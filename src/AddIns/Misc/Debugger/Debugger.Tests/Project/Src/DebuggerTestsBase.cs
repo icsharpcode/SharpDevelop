@@ -68,26 +68,38 @@ namespace Debugger.Tests
 		
 		protected void CheckXmlOutput()
 		{
-//			while(debugger.Processes.Count > 0) {
-//				debugger.Processes[0].Terminate();
-//				debugger.Processes[0].WaitForExit();
-//			}
-			string path = Environment.GetEnvironmentVariable("SD_TESTS_DEBUGGER_XML_OUT");
-			if (path == null) {
-				path = Path.GetTempPath();
-				path = Path.Combine(path, "SharpDevelop");
-				path = Path.Combine(path, "DebuggerTestResults");
-				Directory.CreateDirectory(path);
-			}
-			testDoc.Save(Path.Combine(path, testName + ".xml"));
+			string startMark = "#if EXPECTED_OUTPUT\r\n";
+			string endMark = "#endif // EXPECTED_OUTPUT";
 			
-			string oldXml = GetResource(testName + ".xml");
 			MemoryStream newXmlStream = new MemoryStream();
 			testDoc.Save(newXmlStream);
 			newXmlStream.Seek(0, SeekOrigin.Begin);
-			string newXml = new StreamReader(newXmlStream).ReadToEnd();
-			if (oldXml != newXml) {
-				Assert.Fail("Test " + testName + " failed.  XML output differs.");
+			string actualXml = new StreamReader(newXmlStream).ReadToEnd() + "\r\n";
+			
+			string sourceCode = GetResource(testName + ".cs");
+			int startIndex = sourceCode.IndexOf(startMark);
+			int endIndex = sourceCode.IndexOf(endMark);
+			if (startIndex == -1 || endIndex == -1) {
+				Assert.Fail("Test " + testName + " failed.  Expected XML output not found.");
+			}
+			string expectedXml = sourceCode.Substring(startIndex + startMark.Length, endIndex - (startIndex + startMark.Length));
+			
+			if (actualXml != expectedXml) {
+				// Update the source code file with the new output
+				string path = Environment.GetEnvironmentVariable("SD_TESTS_DEBUGGER_XML_OUT");
+				if (path != null) {
+					string filename = Path.Combine(path, testName + ".cs");
+					string newSourceCode = File.ReadAllText(filename, Encoding.UTF8);
+					startIndex = newSourceCode.IndexOf(startMark);
+					endIndex = newSourceCode.IndexOf(endMark);
+					newSourceCode = 
+						newSourceCode.Substring(0, startIndex + startMark.Length) +
+						actualXml +
+						newSourceCode.Substring(endIndex);
+					File.WriteAllText(filename, newSourceCode, Encoding.UTF8);
+				}
+				
+				Assert.Fail("Test " + testName + " failed.  XML output differs from expected.");
 			}
 		}
 		

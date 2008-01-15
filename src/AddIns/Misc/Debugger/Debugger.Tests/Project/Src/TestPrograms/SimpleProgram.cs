@@ -1,4 +1,4 @@
-﻿// <file>
+// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
@@ -18,7 +18,7 @@ namespace Debugger.Tests.TestPrograms
 	}
 }
 
-#if TESTS
+#if TEST_CODE
 namespace Debugger.Tests {
 	public partial class DebuggerTests
 	{
@@ -32,3 +32,15 @@ namespace Debugger.Tests {
 	}
 }
 #endif
+
+#if EXPECTED_OUTPUT
+<?xml version="1.0" encoding="utf-8"?>
+<DebuggerTests>
+  <Test name="SimpleProgram">
+    <ProcessStarted />
+    <ModuleLoaded symbols="False">mscorlib.dll</ModuleLoaded>
+    <ModuleLoaded symbols="True">SimpleProgram.exe</ModuleLoaded>
+    <ProcessExited />
+  </Test>
+</DebuggerTests>
+#endif // EXPECTED_OUTPUT

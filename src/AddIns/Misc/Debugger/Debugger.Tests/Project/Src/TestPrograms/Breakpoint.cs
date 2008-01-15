@@ -1,4 +1,4 @@
-﻿// <file>
+// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
@@ -21,7 +21,7 @@ namespace Debugger.Tests.TestPrograms
 	}
 }
 
-#if TESTS
+#if TEST_CODE
 namespace Debugger.Tests {
 	public partial class DebuggerTests
 	{
@@ -50,3 +50,33 @@ namespace Debugger.Tests {
 	}
 }
 #endif
+
+#if EXPECTED_OUTPUT
+<?xml version="1.0" encoding="utf-8"?>
+<DebuggerTests>
+  <Test name="Breakpoint">
+    <ProcessStarted />
+    <ModuleLoaded symbols="False">mscorlib.dll</ModuleLoaded>
+    <ModuleLoaded symbols="True">Breakpoint.exe</ModuleLoaded>
+    <ModuleLoaded symbols="False">System.dll</ModuleLoaded>
+    <DebuggingPaused>Break</DebuggingPaused>
+    <ObjectDump Type="Breakpoint">
+      <SourcecodeSegment>Start=18,0 End=18,0</SourcecodeSegment>
+      <HadBeenSet>True</HadBeenSet>
+      <Enabled>True</Enabled>
+    </ObjectDump>
+    <ModuleLoaded symbols="False">System.Configuration.dll</ModuleLoaded>
+    <ModuleLoaded symbols="False">System.Xml.dll</ModuleLoaded>
+    <LogMessage>Mark 1\r\n</LogMessage>
+    <DebuggingPaused>Breakpoint</DebuggingPaused>
+    <LogMessage>Mark 2\r\n</LogMessage>
+    <DebuggingPaused>Break</DebuggingPaused>
+    <ProcessExited />
+    <ObjectDump Type="Breakpoint">
+      <SourcecodeSegment>Start=18,0 End=18,0</SourcecodeSegment>
+      <HadBeenSet>False</HadBeenSet>
+      <Enabled>True</Enabled>
+    </ObjectDump>
+  </Test>
+</DebuggerTests>
+#endif // EXPECTED_OUTPUT

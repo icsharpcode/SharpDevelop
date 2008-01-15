@@ -73,6 +73,7 @@ namespace Debugger
 			} 
 		}
 		
+		[Debugger.Tests.Ignore]
 		public string FullPath { 
 			get {
 				return fullPath;
@@ -86,6 +87,7 @@ namespace Debugger
 			}
 		}
 		
+		[Debugger.Tests.Ignore]
 		public string DirectoryName {
 			get {
 				if (IsDynamic || IsInMemory) return String.Empty;
