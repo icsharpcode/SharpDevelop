@@ -51,7 +51,8 @@ namespace Debugger.AddIn.TreeModel
 			this.content = content;
 			this.IsLeaf = (content.ChildNodes == null);
 			childsLoaded = false;
-			if (content.ChildNodes != null && expandedNodes.ContainsKey(this.FullName) && expandedNodes[this.FullName]) {
+			this.IsExpandedOnce = false;
+			if (!IsLeaf && expandedNodes.ContainsKey(this.FullName) && expandedNodes[this.FullName]) {
 				LoadChilds();
 				this.Expand();
 			} else {
@@ -103,8 +104,8 @@ namespace Debugger.AddIn.TreeModel
 		{
 			if (!childsLoaded) {
 				childsLoaded = true;
-				SetContentRecursive(localVarPad, this.Children, this.Content.ChildNodes);
 				this.IsExpandedOnce = true;
+				SetContentRecursive(localVarPad, this.Children, this.Content.ChildNodes);
 			}
 		}
 		

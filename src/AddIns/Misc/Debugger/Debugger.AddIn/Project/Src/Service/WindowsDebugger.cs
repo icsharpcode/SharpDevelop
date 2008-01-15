@@ -286,7 +286,11 @@ namespace ICSharpCode.SharpDevelop.Services
 			if (expression == null) {
 				return null;
 			} else {
-				return new DebuggerGridControl(new DynamicTreeDebuggerRow(new ExpressionNode(expression)));
+				try {
+					return new DebuggerGridControl(new DynamicTreeDebuggerRow(DebuggedProcess, new ExpressionNode(expression)));
+				} catch (AbortedBecauseDebugeeStateExpiredException) {
+					return null;
+				}
 			}
 		}
 		

@@ -25,27 +25,30 @@ namespace Debugger.AddIn.TreeModel
 		// 1 = icon
 		// 2 = text
 		// 3 = value
+		Process process;
 		
 		AbstractNode content;
 		
-		bool loadChildsWhenExpanding;
+		bool childsLoaded;
 		
 		public AbstractNode Content {
 			get { return content; }
 		}
 		
-		public DynamicTreeDebuggerRow(AbstractNode content)
+		public DynamicTreeDebuggerRow(Process process, AbstractNode content)
 		{
+			this.process = process;
+			
 			DebuggerGridControl.AddColumns(this.ChildColumns);
 			
 			this[1].Paint += OnIconPaint;
 			this[3].FinishLabelEdit += OnLabelEdited;
 			this[3].MouseDown += OnMouseDown;
 			
-			SetContent(content);
+			SetContentRecursive(content);
 		}
 		
-		public void SetContent(AbstractNode content)
+		public void SetContentRecursive(AbstractNode content)
 		{
 			this.content = content;
 			
@@ -56,6 +59,62 @@ namespace Debugger.AddIn.TreeModel
 			
 			this.ShowPlus = (content.ChildNodes != null);
 			this.ShowMinusWhileExpanded = true;
+			
+			childsLoaded = false;
+			if (content.ChildNodes != null && this.ChildRows.Count > 0) {
+				LoadChilds();
+			}
+			
+			// Repaint and process user commands
+			DebugeeState state = process.DebugeeState;
+			Util.DoEvents();
+			if (process.IsRunning || state.HasExpired) {
+				throw new AbortedBecauseDebugeeStateExpiredException();
+			}
+		}
+		
+		public void SetChildContentRecursive(IEnumerable<AbstractNode> contentEnum)
+		{
+			contentEnum = contentEnum ?? new AbstractNode[0];
+			
+			int index = 0;
+			foreach(AbstractNode content in contentEnum) {
+				// Add or overwrite existing items
+				if (index < ChildRows.Count) {
+					// Overwrite
+					((DynamicTreeDebuggerRow)ChildRows[index]).SetContentRecursive(content);
+				} else {
+					// Add
+					ChildRows.Add(new DynamicTreeDebuggerRow(process, content));
+				}
+				index++;
+			}
+			int count = index;
+			// Delete other nodes
+			while(ChildRows.Count > count) {
+				ChildRows.RemoveAt(count);
+			}
+		}
+		
+		/// <summary>
+		/// Called when plus is pressed in debugger tooltip.
+		/// Sets the data to be show in the next level.
+		/// </summary>
+		protected override void OnExpanding(DynamicListEventArgs e)
+		{
+			base.OnExpanding(e);
+			try {
+				LoadChilds();
+			} catch (AbortedBecauseDebugeeStateExpiredException) {
+			}
+		}
+		
+		void LoadChilds()
+		{
+			if (!childsLoaded) {
+				childsLoaded = true;
+				SetChildContentRecursive(content.ChildNodes);
+			}
 		}
 		
 		void OnIconPaint(object sender, ItemPaintEventArgs e)
@@ -76,21 +135,6 @@ namespace Debugger.AddIn.TreeModel
 				ContextMenuStrip menu = ((IContextMenu)content).GetContextMenu();
 				if (menu != null) {
 					menu.Show(e.List, e.Location);
-				}
-			}
-		}
-		
-		/// <summary>
-		/// Called when plus is pressed in debugger tooltip.
-		/// Sets the data to be show in the next level.
-		/// </summary>
-		protected override void OnExpanding(DynamicListEventArgs e)
-		{
-			if (loadChildsWhenExpanding) {
-				loadChildsWhenExpanding = false;
-				this.ChildRows.Clear();
-				foreach(AbstractNode childNode in content.ChildNodes) {
-					this.ChildRows.Add(new DynamicTreeDebuggerRow(childNode));
 				}
 			}
 		}
