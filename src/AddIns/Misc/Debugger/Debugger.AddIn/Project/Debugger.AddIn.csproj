@@ -42,6 +42,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="Src\Expressions\SimpleIdentifierExpression.cs" />
+    <Compile Include="Src\Expressions\SimpleMemberReferenceExpression.cs" />
+    <Compile Include="Src\Expressions\SimpleParser.cs" />
     <Compile Include="Src\Pads\BreakPointsPad.cs" />
     <Compile Include="Src\Pads\CallStackPad.cs" />
     <Compile Include="Src\Pads\ExceptionHistoryPad.cs" />
@@ -120,6 +123,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Src\Expressions" />
     <Folder Include="Src\TreeModel" />
     <Folder Include="Src\TreeModel\Adapters" />
     <Folder Include="Src\Variables" />

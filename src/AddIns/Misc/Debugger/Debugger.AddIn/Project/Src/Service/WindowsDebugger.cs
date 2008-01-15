@@ -251,12 +251,17 @@ namespace ICSharpCode.SharpDevelop.Services
 		/// </summary>
 		public Expression GetExpressionFromName(string variableName)
 		{
-			return null;
-//			if (debuggedProcess == null || debuggedProcess.IsRunning) { 
-//				return null;
-//			} else {
-//				return new Expression(variableName);
-//			}
+			if (debuggedProcess == null || debuggedProcess.IsRunning || debuggedProcess.SelectedStackFrame == null) { 
+				return null;
+			} else {
+				Expression expression = Debugger.Expressions.SimpleParser.Parse(variableName);
+				try {
+					expression.Evaluate(debuggedProcess.SelectedStackFrame);
+					return expression;
+				} catch (GetValueException) {
+					return null;
+				}
+			}
 		}
 		
 		

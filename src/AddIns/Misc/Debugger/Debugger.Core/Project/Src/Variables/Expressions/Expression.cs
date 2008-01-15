@@ -40,7 +40,7 @@ namespace Debugger.Expressions
 				throw;
 			}
 			
-			context.Process.TraceMessage("Evaluated " + this.Code);
+			context.Process.TraceMessage("Evaluated " + this.GetType().Name + ": "+ this.Code);
 			return result;
 		}
 		

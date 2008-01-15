@@ -264,7 +264,7 @@ namespace Debugger
 				}
 				currentType = currentType.BaseType;
 			}
-			throw new DebuggerException("Member " + name + " was not found");
+			throw new GetValueException("Member " + name + " was not found");
 		}
 		
 		/// <summary>
