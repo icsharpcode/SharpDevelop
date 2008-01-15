@@ -20,7 +20,7 @@ namespace Debugger.AddIn.TreeModel
 		public static IEnumerable<AbstractNode> GetChildNodesOfArray(Expression expression, ArrayDimensions dimensions)
 		{
 			foreach(Expression childExpr in expression.AppendIndexers(dimensions)) {
-				yield return new ExpressionNode(childExpr);
+				yield return Util.CreateNode(childExpr);
 			}
 		}
 	}

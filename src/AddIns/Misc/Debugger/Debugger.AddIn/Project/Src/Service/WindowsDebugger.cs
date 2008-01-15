@@ -249,15 +249,14 @@ namespace ICSharpCode.SharpDevelop.Services
 		/// Gets variable of given name.
 		/// Returns null if unsuccessful.
 		/// </summary>
-		public Expression GetExpressionFromName(string variableName)
+		public Value GetValueFromName(string variableName)
 		{
 			if (debuggedProcess == null || debuggedProcess.IsRunning || debuggedProcess.SelectedStackFrame == null) { 
 				return null;
 			} else {
 				Expression expression = Debugger.Expressions.SimpleParser.Parse(variableName);
 				try {
-					expression.Evaluate(debuggedProcess.SelectedStackFrame);
-					return expression;
+					return expression.Evaluate(debuggedProcess.SelectedStackFrame);
 				} catch (GetValueException) {
 					return null;
 				}
@@ -271,12 +270,12 @@ namespace ICSharpCode.SharpDevelop.Services
 		/// </summary>
 		public string GetValueAsString(string variableName)
 		{
-			Expression expression = GetExpressionFromName(variableName);
+			Value val = GetValueFromName(variableName);
 			
-			if (expression == null) {
+			if (val == null) {
 				return null;
 			} else {
-				return expression.Evaluate(this.DebuggedProcess.SelectedStackFrame).AsString;
+				return val.AsString;
 			}
 		}
 		
@@ -286,13 +285,13 @@ namespace ICSharpCode.SharpDevelop.Services
 		/// </summary>
 		public DebuggerGridControl GetTooltipControl(string variableName)
 		{
-			Expression expression = GetExpressionFromName(variableName);
+			Value val = GetValueFromName(variableName);
 			
-			if (expression == null) {
+			if (val == null) {
 				return null;
 			} else {
 				try {
-					return new DebuggerGridControl(new DynamicTreeDebuggerRow(DebuggedProcess, new ExpressionNode(expression)));
+					return new DebuggerGridControl(new DynamicTreeDebuggerRow(DebuggedProcess, new ValueNode(val)));
 				} catch (AbortedBecauseDebugeeStateExpiredException) {
 					return null;
 				}

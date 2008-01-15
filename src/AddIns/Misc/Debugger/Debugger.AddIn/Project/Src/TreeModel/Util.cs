@@ -8,6 +8,10 @@ using System;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Debugging;
+using ICSharpCode.SharpDevelop.Services;
+
+using Debugger.Expressions;
 
 namespace Debugger.AddIn.TreeModel
 {
@@ -32,6 +36,17 @@ namespace Debugger.AddIn.TreeModel
 				nextDoEventsTime = end.AddMilliseconds(workTime);
 				double fps = 1000 / (doEventsDuration + workTime);
 				// LoggingService.InfoFormatted("Rendering: {0} ms => work budget: {1} ms ({2:f1} FPS)", doEventsDuration, workTime, fps);
+			}
+		}
+		
+		public static AbstractNode CreateNode(Expression expression)
+		{
+			return new ValueNode(expression.Evaluate(WindowsDebugger.DebuggedProcess.SelectedStackFrame));
+		}
+		
+		public static WindowsDebugger WindowsDebugger {
+			get {
+				return (WindowsDebugger)DebuggerService.CurrentDebugger;
 			}
 		}
 	}

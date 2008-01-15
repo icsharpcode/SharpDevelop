@@ -71,7 +71,7 @@
     <Compile Include="Src\TreeModel\Adapters\DynamicTreeDebuggerRow.cs" />
     <Compile Include="Src\TreeModel\Adapters\TreeViewNode.cs" />
     <Compile Include="Src\TreeModel\ArrayRangeNode.cs" />
-    <Compile Include="Src\TreeModel\ExpressionNode.cs" />
+    <Compile Include="Src\TreeModel\ValueNode.cs" />
     <Compile Include="Src\TreeModel\IContextMenu.cs" />
     <Compile Include="Src\TreeModel\ISetText.cs" />
     <Compile Include="Src\TreeModel\ChildNodesOfObject.cs" />

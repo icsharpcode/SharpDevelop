@@ -18,7 +18,7 @@ using Debugger.Expressions;
 
 namespace Debugger.AddIn.TreeModel
 {
-	public class ExpressionNode: AbstractNode, ISetText, IContextMenu
+	public class ValueNode: AbstractNode, ISetText, IContextMenu
 	{
 		Expression expression;
 		
@@ -26,11 +26,9 @@ namespace Debugger.AddIn.TreeModel
 			get { return expression; }
 		}
 		
-		public ExpressionNode(Expression expression)
+		public ValueNode(Value val)
 		{
-			this.expression = expression;
-			
-			Value val = expression.Evaluate(WindowsDebugger.DebuggedProcess.SelectedStackFrame);
+			this.expression = val.Expression;
 			
 			if (val.IsObject) {
 				this.Image = DebuggerIcons.ImageList.Images[0]; // Class

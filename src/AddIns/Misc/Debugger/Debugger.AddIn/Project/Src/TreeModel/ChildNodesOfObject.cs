@@ -17,48 +17,48 @@ namespace Debugger.AddIn.TreeModel
 {
 	public partial class Util
 	{
-		public static IEnumerable<AbstractNode> GetChildNodesOfObject(Expression expression, DebugType shownType)
+		public static IEnumerable<AbstractNode> GetChildNodesOfObject(Expression targetObject, DebugType shownType)
 		{
 			if (shownType.BaseType != null) {
-				yield return new BaseClassNode(expression, shownType.BaseType);
+				yield return new BaseClassNode(targetObject, shownType.BaseType);
 			}
 			if (shownType.HasMembers(BindingFlags.NonPublicInstance)) {
-				yield return new NonPublicInstanceMembersNode(expression, shownType);
+				yield return new NonPublicInstanceMembersNode(targetObject, shownType);
 			}
 			if (shownType.HasMembers(BindingFlags.Static)) {
-				yield return new StaticMembersNode(expression, shownType);
+				yield return new StaticMembersNode(targetObject, shownType);
 			}
-			foreach(Expression childExpr in expression.AppendObjectMembers(shownType, BindingFlags.PublicInstance)) {
-				yield return new ExpressionNode(childExpr);
+			foreach(Expression childExpr in targetObject.AppendObjectMembers(shownType, BindingFlags.PublicInstance)) {
+				yield return Util.CreateNode(childExpr);
 			}
 		}
 	}
 	
 	public class BaseClassNode: AbstractNode
 	{
-		Expression expression;
+		Expression targetObject;
 		DebugType shownType;
 		
-		public BaseClassNode(Expression expression, DebugType shownType)
+		public BaseClassNode(Expression targetObject, DebugType shownType)
 		{
-			this.expression = expression;
+			this.targetObject = targetObject;
 			this.shownType = shownType;
 			
 			this.Image = DebuggerIcons.ImageList.Images[0]; // Class
 			this.Name = StringParser.Parse("${res:MainWindow.Windows.Debug.LocalVariables.BaseClass}");
 			this.Type = shownType.FullName;
-			this.ChildNodes = Util.GetChildNodesOfObject(expression, shownType);
+			this.ChildNodes = Util.GetChildNodesOfObject(targetObject, shownType);
 		}
 	}
 	
 	public class NonPublicInstanceMembersNode: AbstractNode
 	{
-		Expression expression;
+		Expression targetObject;
 		DebugType shownType;
 		
-		public NonPublicInstanceMembersNode(Expression expression, DebugType shownType)
+		public NonPublicInstanceMembersNode(Expression targetObject, DebugType shownType)
 		{
-			this.expression = expression;
+			this.targetObject = targetObject;
 			this.shownType = shownType;
 			
 			this.Name = StringParser.Parse("${res:MainWindow.Windows.Debug.LocalVariables.PrivateMembers}");
@@ -67,20 +67,20 @@ namespace Debugger.AddIn.TreeModel
 		
 		IEnumerable<AbstractNode> GetChildNodes()
 		{
-			foreach(Expression childExpr in expression.AppendObjectMembers(shownType, BindingFlags.NonPublicInstance)) {
-				yield return new ExpressionNode(childExpr);
+			foreach(Expression childExpr in targetObject.AppendObjectMembers(shownType, BindingFlags.NonPublicInstance)) {
+				yield return Util.CreateNode(childExpr);
 			}
 		}
 	}
 	
 	public class StaticMembersNode: AbstractNode
 	{
-		Expression expression;
+		Expression targetObject;
 		DebugType shownType;
 		
-		public StaticMembersNode(Expression expression, DebugType shownType)
+		public StaticMembersNode(Expression targetObject, DebugType shownType)
 		{
-			this.expression = expression;
+			this.targetObject = targetObject;
 			this.shownType = shownType;
 			
 			this.Name = StringParser.Parse("${res:MainWindow.Windows.Debug.LocalVariables.StaticMembers}");
@@ -90,22 +90,22 @@ namespace Debugger.AddIn.TreeModel
 		IEnumerable<AbstractNode> GetChildNodes()
 		{
 			if (shownType.HasMembers(BindingFlags.NonPublicStatic)) {
-				yield return new NonPublicStaticMembersNode(expression, shownType);
+				yield return new NonPublicStaticMembersNode(targetObject, shownType);
 			}
-			foreach(Expression childExpr in expression.AppendObjectMembers(shownType, BindingFlags.PublicStatic)) {
-				yield return new ExpressionNode(childExpr);
+			foreach(Expression childExpr in targetObject.AppendObjectMembers(shownType, BindingFlags.PublicStatic)) {
+				yield return Util.CreateNode(childExpr);
 			}
 		}
 	}
 	
 	public class NonPublicStaticMembersNode: AbstractNode
 	{
-		Expression expression;
+		Expression targetObject;
 		DebugType shownType;
 		
-		public NonPublicStaticMembersNode(Expression expression, DebugType shownType)
+		public NonPublicStaticMembersNode(Expression targetObject, DebugType shownType)
 		{
-			this.expression = expression;
+			this.targetObject = targetObject;
 			this.shownType = shownType;
 			
 			this.Name = StringParser.Parse("${res:MainWindow.Windows.Debug.LocalVariables.PrivateStaticMembers}");
@@ -114,8 +114,8 @@ namespace Debugger.AddIn.TreeModel
 		
 		IEnumerable<AbstractNode> GetChildNodes()
 		{
-			foreach(Expression childExpr in expression.AppendObjectMembers(shownType, BindingFlags.NonPublicStatic)) {
-				yield return new ExpressionNode(childExpr);
+			foreach(Expression childExpr in targetObject.AppendObjectMembers(shownType, BindingFlags.NonPublicStatic)) {
+				yield return Util.CreateNode(childExpr);
 			}
 		}
 	}
