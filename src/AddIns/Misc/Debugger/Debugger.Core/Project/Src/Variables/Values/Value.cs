@@ -211,6 +211,7 @@ namespace Debugger
 	public class GetValueException: DebuggerException
 	{
 		Expression expression;
+		string error;
 		
 		/// <summary> Expression that has caused this exception to occur </summary>
 		public Expression Expression {
@@ -218,19 +219,23 @@ namespace Debugger
 			set { expression = value; }
 		}
 		
+		public string Error {
+			get { return error; }
+		}
+		
 		public override string Message {
 			get {
 				if (expression == null) {
-					return base.Message;
+					return error;
 				} else {
-					return String.Format("Error evaluating \"{0}\": {1}", expression.Code, base.Message);
+					return String.Format("Error evaluating \"{0}\": {1}", expression.Code, error);
 				}
 			}
 		}
 		
-		public GetValueException(string message):base(message)
+		public GetValueException(string error):base(error)
 		{
-			
+			this.error = error;
 		}
 	}
 }

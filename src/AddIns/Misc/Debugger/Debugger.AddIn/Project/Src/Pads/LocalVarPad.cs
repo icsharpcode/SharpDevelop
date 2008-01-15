@@ -39,6 +39,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
@@ -79,6 +80,14 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			public override object GetValue(TreeNodeAdv node)
 			{
 				return ((TreeViewNode)node).Content.Text;
+			}
+			protected override void OnDrawText(DrawEventArgs args)
+			{
+				AbstractNode content = ((TreeViewNode)args.Node).Content;
+				if (content is ErrorNode) {
+					args.TextColor = Color.Red;
+				}
+				base.OnDrawText(args);
 			}
 		}
 		

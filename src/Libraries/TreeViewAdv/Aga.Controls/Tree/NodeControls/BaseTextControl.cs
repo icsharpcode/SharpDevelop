@@ -231,20 +231,17 @@ namespace Aga.Controls.Tree.NodeControls
 			if (!context.Enabled)
 				textColor = SystemColors.GrayText;
 
-			if (DrawText != null)
-			{
-				DrawEventArgs args = new DrawEventArgs(node, context, text);
-				args.TextColor = textColor;
-				args.BackgroundBrush = backgroundBrush;
-				args.Font = font;
+			DrawEventArgs args = new DrawEventArgs(node, context, text);
+			args.TextColor = textColor;
+			args.BackgroundBrush = backgroundBrush;
+			args.Font = font;
 
-				OnDrawText(args);
+			OnDrawText(args);
 
-				textColor = args.TextColor;
-				backgroundBrush = args.BackgroundBrush;
-				font = args.Font;
-				label = args.Text;
-			}
+			textColor = args.TextColor;
+			backgroundBrush = args.BackgroundBrush;
+			font = args.Font;
+			label = args.Text;
 		}
 
 		public string GetLabel(TreeNodeAdv node)
