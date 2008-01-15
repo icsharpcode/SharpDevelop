@@ -6,12 +6,10 @@
     <ModuleLoaded symbols="True">Breakpoint.exe</ModuleLoaded>
     <ModuleLoaded symbols="False">System.dll</ModuleLoaded>
     <DebuggingPaused>Break</DebuggingPaused>
-    <ObjectDump>
-      <Breakpoint>
-        <SourcecodeSegment>Start=18,0 End=18,0</SourcecodeSegment>
-        <HadBeenSet>True</HadBeenSet>
-        <Enabled>True</Enabled>
-      </Breakpoint>
+    <ObjectDump Type="Breakpoint">
+      <SourcecodeSegment>Start=18,0 End=18,0</SourcecodeSegment>
+      <HadBeenSet>True</HadBeenSet>
+      <Enabled>True</Enabled>
     </ObjectDump>
     <ModuleLoaded symbols="False">System.Configuration.dll</ModuleLoaded>
     <ModuleLoaded symbols="False">System.Xml.dll</ModuleLoaded>
@@ -20,12 +18,10 @@
     <LogMessage>Mark 2\r\n</LogMessage>
     <DebuggingPaused>Break</DebuggingPaused>
     <ProcessExited />
-    <ObjectDump>
-      <Breakpoint>
-        <SourcecodeSegment>Start=18,0 End=18,0</SourcecodeSegment>
-        <HadBeenSet>False</HadBeenSet>
-        <Enabled>True</Enabled>
-      </Breakpoint>
+    <ObjectDump Type="Breakpoint">
+      <SourcecodeSegment>Start=18,0 End=18,0</SourcecodeSegment>
+      <HadBeenSet>False</HadBeenSet>
+      <Enabled>True</Enabled>
     </ObjectDump>
   </Test>
 </DebuggerTests>

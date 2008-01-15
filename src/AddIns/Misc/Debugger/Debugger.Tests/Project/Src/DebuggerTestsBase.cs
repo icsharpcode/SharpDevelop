@@ -163,22 +163,22 @@ namespace Debugger.Tests
 			       );
 		}
 		
-		public static void Serialize(XmlNode parent, object obj, int maxDepth, List<object> parents)
+		public static void Serialize(XmlElement container, object obj, int maxDepth, List<object> parents)
 		{
-			XmlDocument doc = parent.OwnerDocument;
+			XmlDocument doc = container.OwnerDocument;
 			
 			if (maxDepth == -1) {
-				parent.AppendChild(doc.CreateElement("MaxDepth_Reached"));
+				container.AppendChild(doc.CreateElement("MaxDepthReached"));
 				return;
 			}
 			
 			if (obj == null) {
-				parent.AppendChild(doc.CreateElement("Null"));
+				container.AppendChild(doc.CreateElement("Null"));
 				return;
 			}
 			
 			if (parents.Contains(obj)) {
-				parent.AppendChild(doc.CreateElement("RecusionDetected"));
+				container.AppendChild(doc.CreateElement("RecusionDetected"));
 				return;
 			}
 			
@@ -187,11 +187,10 @@ namespace Debugger.Tests
 			
 			Type type = obj.GetType();
 			
-			XmlElement objectRoot = doc.CreateElement(XmlConvert.EncodeName(type.Name));
-			parent.AppendChild(objectRoot);
+			container.SetAttribute("Type", type.Name);
 			
 			if (!ShouldExpandType(type)) {
-				objectRoot.AppendChild(doc.CreateTextNode(obj.ToString()));
+				container.AppendChild(doc.CreateTextNode(obj.ToString()));
 				return;
 			}
 			
@@ -201,7 +200,7 @@ namespace Debugger.Tests
 				if (property.GetCustomAttributes(typeof(Debugger.Tests.IgnoreAttribute), true).Length > 0) continue;
 				
 				XmlElement propertyNode = doc.CreateElement(property.Name);
-				objectRoot.AppendChild(propertyNode);
+				container.AppendChild(propertyNode);
 				
 				object val;
 				try {
@@ -223,9 +222,9 @@ namespace Debugger.Tests
 			
 			// Save all objects of an enumerable object
 			if (obj is IEnumerable) {
-				XmlElement enumRoot = doc.CreateElement("Items");
-				objectRoot.AppendChild(enumRoot);
 				foreach(object enumObject in (IEnumerable)obj) {
+					XmlElement enumRoot = doc.CreateElement("Item");
+					container.AppendChild(enumRoot);
 					Serialize(enumRoot, enumObject, maxDepth - 1, parents);
 				}
 			}
