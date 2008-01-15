@@ -30,7 +30,7 @@ namespace Debugger.Tests {
 		[NUnit.Framework.Test]
 		public void ValueType()
 		{
-			StartTest("ValueType");
+			StartTest("ValueType.cs");
 			WaitForPause();
 			
 			ObjectDump("this", process.SelectedStackFrame.ThisValue);
@@ -46,7 +46,7 @@ namespace Debugger.Tests {
 #if EXPECTED_OUTPUT
 <?xml version="1.0" encoding="utf-8"?>
 <DebuggerTests>
-  <Test name="ValueType">
+  <Test name="ValueType.cs">
     <ProcessStarted />
     <ModuleLoaded symbols="False">mscorlib.dll</ModuleLoaded>
     <ModuleLoaded symbols="True">ValueType.exe</ModuleLoaded>

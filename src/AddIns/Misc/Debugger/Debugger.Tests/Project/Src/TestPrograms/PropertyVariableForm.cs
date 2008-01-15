@@ -31,7 +31,7 @@ namespace Debugger.Tests {
 		{
 			Variable local = null;
 			
-			StartProgram("PropertyVariableForm");
+			StartProgram("PropertyVariableForm.cs");
 			WaitForPause();
 			foreach(Variable var in process.SelectedFunction.LocalVariables) {
 				local = var;

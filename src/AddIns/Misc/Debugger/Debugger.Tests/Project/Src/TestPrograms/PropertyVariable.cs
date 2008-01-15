@@ -52,7 +52,7 @@ namespace Debugger.Tests {
 		[NUnit.Framework.Test]
 		public void PropertyVariable()
 		{
-			StartProgram("PropertyVariable");
+			StartProgram("PropertyVariable.cs");
 			WaitForPause();
 			NamedValueCollection props = process.SelectedFunction.LocalVariables["var"].GetMembers(null, Debugger.BindingFlags.All);
 			

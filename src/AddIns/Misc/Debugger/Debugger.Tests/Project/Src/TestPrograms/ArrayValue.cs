@@ -29,7 +29,7 @@ namespace Debugger.Tests {
 		[NUnit.Framework.Test]
 		public void ArrayValue()
 		{
-			StartTest("ArrayValue");
+			StartTest("ArrayValue.cs");
 			WaitForPause();
 			Value array = process.SelectedStackFrame.LocalVariables["array"];
 			ObjectDump("array", array);
@@ -46,7 +46,7 @@ namespace Debugger.Tests {
 #if EXPECTED_OUTPUT
 <?xml version="1.0" encoding="utf-8"?>
 <DebuggerTests>
-  <Test name="ArrayValue">
+  <Test name="ArrayValue.cs">
     <ProcessStarted />
     <ModuleLoaded symbols="False">mscorlib.dll</ModuleLoaded>
     <ModuleLoaded symbols="True">ArrayValue.exe</ModuleLoaded>

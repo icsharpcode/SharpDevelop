@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
@@ -38,7 +38,7 @@ namespace Debugger.Tests {
 		[NUnit.Framework.Test]
 		public void FunctionLifetime()
 		{
-			StartTest("FunctionLifetime");
+			StartTest("FunctionLifetime.cs");
 			WaitForPause();
 			StackFrame stackFrame = process.SelectedStackFrame;
 			ObjectDump("SelectedStackFrame", process.SelectedStackFrame);
@@ -70,7 +70,7 @@ namespace Debugger.Tests {
 #if EXPECTED_OUTPUT
 <?xml version="1.0" encoding="utf-8"?>
 <DebuggerTests>
-  <Test name="FunctionLifetime">
+  <Test name="FunctionLifetime.cs">
     <ProcessStarted />
     <ModuleLoaded symbols="False">mscorlib.dll</ModuleLoaded>
     <ModuleLoaded symbols="True">FunctionLifetime.exe</ModuleLoaded>

@@ -27,7 +27,7 @@ namespace Debugger.Tests {
 //		[NUnit.Framework.Test]
 //		public void DebuggeeKilled()
 //		{
-//			StartTest("DebuggeeKilled");
+//			StartTest("DebuggeeKilled.cs");
 //			WaitForPause();
 //			Assert.AreNotEqual(null, lastLogMessage);
 //			System.Diagnostics.Process p = System.Diagnostics.Process.GetProcessById(int.Parse(lastLogMessage));

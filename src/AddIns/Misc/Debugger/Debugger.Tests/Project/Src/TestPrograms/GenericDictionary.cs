@@ -30,7 +30,7 @@ namespace Debugger.Tests {
 		[NUnit.Framework.Test, NUnit.Framework.Ignore]
 		public void GenericDictionary()
 		{
-			StartTest("GenericDictionary");
+			StartTest("GenericDictionary.cs");
 			WaitForPause();
 			ObjectDump("dict", process.SelectedStackFrame.LocalVariables["dict"]);
 			ObjectDump("dict members", process.SelectedStackFrame.LocalVariables["dict"].GetMemberValues(null, BindingFlags.All));

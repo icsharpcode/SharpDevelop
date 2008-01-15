@@ -25,7 +25,7 @@ namespace Debugger.Tests {
 		[NUnit.Framework.Test]
 		public void Template()
 		{
-			StartTest("_Template");
+			StartTest("_Template.cs");
 			WaitForPause();
 			
 			process.Continue();
@@ -39,7 +39,7 @@ namespace Debugger.Tests {
 #if EXPECTED_OUTPUT
 <?xml version="1.0" encoding="utf-8"?>
 <DebuggerTests>
-  <Test name="_Template">
+  <Test name="_Template.cs">
     <ProcessStarted />
     <ModuleLoaded symbols="False">mscorlib.dll</ModuleLoaded>
     <ModuleLoaded symbols="True">_Template.exe</ModuleLoaded>

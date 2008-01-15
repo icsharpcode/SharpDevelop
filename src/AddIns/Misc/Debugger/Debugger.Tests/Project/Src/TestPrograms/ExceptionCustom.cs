@@ -33,7 +33,7 @@ namespace Debugger.Tests {
 		[NUnit.Framework.Test]
 		public void ExceptionCustom()
 		{
-			StartTest("ExceptionCustom");
+			StartTest("ExceptionCustom.cs");
 			WaitForPause();
 			process.Continue();
 			process.WaitForExit();
@@ -46,7 +46,7 @@ namespace Debugger.Tests {
 #if EXPECTED_OUTPUT
 <?xml version="1.0" encoding="utf-8"?>
 <DebuggerTests>
-  <Test name="ExceptionCustom">
+  <Test name="ExceptionCustom.cs">
     <ProcessStarted />
     <ModuleLoaded symbols="False">mscorlib.dll</ModuleLoaded>
     <ModuleLoaded symbols="True">ExceptionCustom.exe</ModuleLoaded>

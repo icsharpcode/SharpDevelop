@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
@@ -48,7 +48,7 @@ namespace Debugger.Tests {
 			Value localInSubFunction = null;
 			Value @class   = null;
 			
-			StartTest("FunctionVariablesLifetime"); // 1 - Enter program
+			StartTest("FunctionVariablesLifetime.cs"); // 1 - Enter program
 			WaitForPause();
 			argument = process.SelectedStackFrame.GetArgumentValue(0);
 			local = process.SelectedStackFrame.LocalVariables["local"];
@@ -99,7 +99,7 @@ namespace Debugger.Tests {
 #if EXPECTED_OUTPUT
 <?xml version="1.0" encoding="utf-8"?>
 <DebuggerTests>
-  <Test name="FunctionVariablesLifetime">
+  <Test name="FunctionVariablesLifetime.cs">
     <ProcessStarted />
     <ModuleLoaded symbols="False">mscorlib.dll</ModuleLoaded>
     <ModuleLoaded symbols="True">FunctionVariablesLifetime.exe</ModuleLoaded>

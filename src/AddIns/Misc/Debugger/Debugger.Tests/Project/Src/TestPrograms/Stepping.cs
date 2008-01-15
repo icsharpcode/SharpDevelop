@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
@@ -40,7 +40,7 @@ namespace Debugger.Tests {
 		[NUnit.Framework.Test]
 		public void Stepping()
 		{
-			StartTest("Stepping");
+			StartTest("Stepping.cs");
 			WaitForPause();
 			ObjectDump("SelectedStackFrame", process.SelectedStackFrame);
 			
@@ -87,7 +87,7 @@ namespace Debugger.Tests {
 #if EXPECTED_OUTPUT
 <?xml version="1.0" encoding="utf-8"?>
 <DebuggerTests>
-  <Test name="Stepping">
+  <Test name="Stepping.cs">
     <ProcessStarted />
     <ModuleLoaded symbols="False">mscorlib.dll</ModuleLoaded>
     <ModuleLoaded symbols="True">Stepping.exe</ModuleLoaded>

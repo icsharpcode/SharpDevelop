@@ -33,7 +33,7 @@ namespace Debugger.Tests {
 		[NUnit.Framework.Test]
 		public void MetadataIdentity()
 		{
-			StartTest("MetadataIdentity");
+			StartTest("MetadataIdentity.cs");
 			WaitForPause();
 			
 			DebugType type = process.SelectedStackFrame.ThisValue.Type;
@@ -54,7 +54,7 @@ namespace Debugger.Tests {
 #if EXPECTED_OUTPUT
 <?xml version="1.0" encoding="utf-8"?>
 <DebuggerTests>
-  <Test name="MetadataIdentity">
+  <Test name="MetadataIdentity.cs">
     <ProcessStarted />
     <ModuleLoaded symbols="False">mscorlib.dll</ModuleLoaded>
     <ModuleLoaded symbols="True">MetadataIdentity.exe</ModuleLoaded>

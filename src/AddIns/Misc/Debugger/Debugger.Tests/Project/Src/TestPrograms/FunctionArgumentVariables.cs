@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
@@ -71,7 +71,7 @@ namespace Debugger.Tests {
 		[NUnit.Framework.Test]
 		public void FunctionArgumentVariables()
 		{
-			StartTest("FunctionArgumentVariables");
+			StartTest("FunctionArgumentVariables.cs");
 			WaitForPause();
 			
 			for(int i = 0; i < 5; i++) {
@@ -91,7 +91,7 @@ namespace Debugger.Tests {
 #if EXPECTED_OUTPUT
 <?xml version="1.0" encoding="utf-8"?>
 <DebuggerTests>
-  <Test name="FunctionArgumentVariables">
+  <Test name="FunctionArgumentVariables.cs">
     <ProcessStarted />
     <ModuleLoaded symbols="False">mscorlib.dll</ModuleLoaded>
     <ModuleLoaded symbols="True">FunctionArgumentVariables.exe</ModuleLoaded>

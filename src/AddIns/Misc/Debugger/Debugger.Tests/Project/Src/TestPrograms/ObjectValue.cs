@@ -45,7 +45,7 @@ namespace Debugger.Tests {
 		{
 			Value val = null;
 			
-			StartTest("ObjectValue");
+			StartTest("ObjectValue.cs");
 			WaitForPause();
 			val = process.SelectedStackFrame.LocalVariables["val"];
 			ObjectDump("val", val);

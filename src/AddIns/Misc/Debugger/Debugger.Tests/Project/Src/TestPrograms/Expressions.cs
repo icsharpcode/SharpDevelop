@@ -56,7 +56,7 @@ namespace Debugger.Tests {
 		[NUnit.Framework.Test, NUnit.Framework.Ignore]
 		public void Expressions()
 		{
-			StartTest("Expressions");
+			StartTest("Expressions.cs");
 			WaitForPause();
 			
 			ObjectDump("Variables", process.SelectedStackFrame.Variables);

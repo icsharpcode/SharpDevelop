@@ -25,7 +25,7 @@ namespace Debugger.Tests {
 		[NUnit.Framework.Test]
 		public void Exception()
 		{
-			StartTest("Exception");
+			StartTest("Exception.cs");
 			WaitForPause();
 			process.Continue();
 			process.WaitForExit();
@@ -38,7 +38,7 @@ namespace Debugger.Tests {
 #if EXPECTED_OUTPUT
 <?xml version="1.0" encoding="utf-8"?>
 <DebuggerTests>
-  <Test name="Exception">
+  <Test name="Exception.cs">
     <ProcessStarted />
     <ModuleLoaded symbols="False">mscorlib.dll</ModuleLoaded>
     <ModuleLoaded symbols="True">Exception.exe</ModuleLoaded>

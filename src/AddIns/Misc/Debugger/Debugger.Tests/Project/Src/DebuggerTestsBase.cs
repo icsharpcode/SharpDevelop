@@ -76,7 +76,7 @@ namespace Debugger.Tests
 			newXmlStream.Seek(0, SeekOrigin.Begin);
 			string actualXml = new StreamReader(newXmlStream).ReadToEnd() + "\r\n";
 			
-			string sourceCode = GetResource(testName + ".cs");
+			string sourceCode = GetResource(testName);
 			int startIndex = sourceCode.IndexOf(startMark);
 			int endIndex = sourceCode.IndexOf(endMark);
 			if (startIndex == -1 || endIndex == -1) {
@@ -88,7 +88,7 @@ namespace Debugger.Tests
 				// Update the source code file with the new output
 				string path = Environment.GetEnvironmentVariable("SD_TESTS_DEBUGGER_XML_OUT");
 				if (path != null) {
-					string filename = Path.Combine(path, testName + ".cs");
+					string filename = Path.Combine(path, testName);
 					string newSourceCode = File.ReadAllText(filename, Encoding.UTF8);
 					startIndex = newSourceCode.IndexOf(startMark);
 					endIndex = newSourceCode.IndexOf(endMark);
@@ -253,7 +253,7 @@ namespace Debugger.Tests
 		
 		string CompileTest(string testName)
 		{
-			string code = GetResource(testName + ".cs");
+			string code = GetResource(testName);
 			
 			string md5 = ToHexadecimal(new MD5CryptoServiceProvider().ComputeHash(Encoding.UTF8.GetBytes(code)));
 			
@@ -263,8 +263,8 @@ namespace Debugger.Tests
 			path = Path.Combine(path, md5);
 			Directory.CreateDirectory(path);
 			
-			string codeFilename = Path.Combine(path, testName + ".cs");
-			string exeFilename = Path.Combine(path, testName + ".exe");
+			string codeFilename = Path.Combine(path, testName);
+			string exeFilename = Path.Combine(path, testName.Replace(".cs", ".exe"));
 			
 			StreamWriter file = new StreamWriter(codeFilename);
 			file.Write(code);

@@ -91,7 +91,7 @@ namespace Debugger.Tests {
 		[NUnit.Framework.Test]
 		public void Generics()
 		{
-			StartTest("Generics");
+			StartTest("Generics.cs");
 			
 			for(int i = 0; i < 8; i++) {
 				WaitForPause();
@@ -111,7 +111,7 @@ namespace Debugger.Tests {
 #if EXPECTED_OUTPUT
 <?xml version="1.0" encoding="utf-8"?>
 <DebuggerTests>
-  <Test name="Generics">
+  <Test name="Generics.cs">
     <ProcessStarted />
     <ModuleLoaded symbols="False">mscorlib.dll</ModuleLoaded>
     <ModuleLoaded symbols="True">Generics.exe</ModuleLoaded>
