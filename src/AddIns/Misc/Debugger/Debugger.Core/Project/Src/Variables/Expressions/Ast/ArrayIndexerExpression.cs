@@ -84,6 +84,7 @@ namespace Debugger.Expressions
 					PrimitiveExpression primitiveExpression = (PrimitiveExpression)argument;
 					if (primitiveExpression.Value is int) {
 						indicies.Add((int)primitiveExpression.Value);
+						continue;
 					}
 				}
 				throw new GetValueException("Literal integer index expected");
