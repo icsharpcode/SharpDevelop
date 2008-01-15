@@ -7,6 +7,8 @@
 
 using System;
 using System.Collections.Generic;
+
+using Debugger.Expressions;
 using Debugger.Wrappers.CorDebug;
 
 namespace Debugger
@@ -95,9 +97,10 @@ namespace Debugger
 		/// <param name="objectInstance">null if field is static</param>
 		public static Value GetFieldValue(Value objectInstance, FieldInfo fieldInfo)
 		{
+			Expression objectInstanceExpression = objectInstance != null ? objectInstance.Expression : new EmptyExpression();
 			return new Value(
 				fieldInfo.Process,
-				fieldInfo.Name,
+				new MemberReferenceExpression(objectInstanceExpression, fieldInfo, null),
 				GetFieldCorValue(objectInstance, fieldInfo)
 			);
 		}
@@ -157,9 +160,16 @@ namespace Debugger
 			if (propertyInfo.GetMethod == null) throw new GetValueException("Property does not have a get method");
 			arguments = arguments ?? new Value[0];
 			
+			Expression objectInstanceExpression = objectInstance != null ? objectInstance.Expression : new EmptyExpression();
+			
+			List<Expression> argumentExpressions = new List<Expression>();
+			foreach(Value argument in arguments) {
+				argumentExpressions.Add(argument.Expression);
+			}
+			
 			return new Value(
 				propertyInfo.Process,
-				propertyInfo.Name,
+				new MemberReferenceExpression(objectInstanceExpression, propertyInfo, argumentExpressions.ToArray()),
 				Value.InvokeMethod(objectInstance, propertyInfo.GetMethod, arguments).RawCorValue
 			);
 		}

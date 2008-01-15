@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
+using Debugger.Expressions;
 using Debugger.Wrappers.CorDebug;
 using Debugger.Wrappers.CorSym;
 using Debugger.Wrappers.MetaData;
@@ -344,7 +345,7 @@ namespace Debugger
 		/// </summary>
 		public Value ThisValue {
 			get {
-				return new Value(process, "this", ThisCorValue);
+				return new Value(process, new ThisReferenceExpression(), ThisCorValue);
 			}
 		}
 		
@@ -390,9 +391,9 @@ namespace Debugger
 		
 		/// <summary> Gets argument with a given index </summary>
 		/// <param name="index"> Zero-based index </param>
-		public Value GetArgument(int index)
+		public Value GetArgumentValue(int index)
 		{
-			return new Value(process, this.MethodInfo.GetParameterName(index), GetArgumentCorValue(index));
+			return new Value(process, new ParameterIdentifierExpression(this.MethodInfo, index), GetArgumentCorValue(index));
 		}
 		
 		ICorDebugValue GetArgumentCorValue(int index)
@@ -418,7 +419,7 @@ namespace Debugger
 		IEnumerable<Value> ArgumentsEnum {
 			get {
 				for (int i = 0; i < ArgumentCount; i++) {
-					yield return GetArgument(i);
+					yield return GetArgumentValue(i);
 				}
 			}
 		}
@@ -440,7 +441,7 @@ namespace Debugger
 		
 		public Value GetLocalVariableValue(ISymUnmanagedVariable symVar)
 		{
-			return new Value(this.Process, symVar.Name, GetCorValueOfLocalVariable(symVar));
+			return new Value(this.Process, new LocalVariableIdentifierExpression(MethodInfo, symVar), GetCorValueOfLocalVariable(symVar));
 		}
 		
 		ICorDebugValue GetCorValueOfLocalVariable(ISymUnmanagedVariable symVar)

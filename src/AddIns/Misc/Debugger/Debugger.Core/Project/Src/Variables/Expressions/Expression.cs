@@ -20,6 +20,12 @@ namespace Debugger.Expressions
 			get;
 		}
 		
+		public virtual string CodeTail {
+			get {
+				return this.Code;
+			}
+		}
+		
 		public override string ToString()
 		{
 			return this.Code;

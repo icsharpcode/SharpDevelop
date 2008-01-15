@@ -27,6 +27,20 @@ namespace Debugger.Expressions
 			get { return arguments; }
 		}
 		
+		public ArrayIndexerExpression(Expression targetObject, params int[] indices)
+		{
+			if (targetObject == null) throw new ArgumentNullException("targetObject");
+			if (indices == null) throw new ArgumentNullException("indices");
+			
+			this.targetObject = targetObject;
+			
+			List<Expression> indicesAst = new List<Expression>();
+			foreach(int indice in indices) {
+				indicesAst.Add(new PrimitiveExpression(indice));
+			}
+			this.arguments = indicesAst.ToArray();
+		}
+		
 		public ArrayIndexerExpression(Expression targetObject, Expression[] arguments)
 		{
 			if (targetObject == null) throw new ArgumentNullException("targetObject");
@@ -38,8 +52,13 @@ namespace Debugger.Expressions
 		
 		public override string Code {
 			get {
+				return targetObject.Code + this.CodeTail;
+			}
+		}
+		
+		public override string CodeTail {
+			get {
 				StringBuilder sb = new StringBuilder();
-				sb.Append(targetObject.Code);
 				sb.Append("[");
 				bool isFirst = true;
 				foreach(Expression argument in arguments) {

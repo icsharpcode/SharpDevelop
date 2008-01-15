@@ -31,13 +31,13 @@ namespace Debugger.Expressions
 			get { return name; }
 		}
 		
-		public ParameterIdentifierExpression(MethodInfo method, int index, string name)
+		public ParameterIdentifierExpression(MethodInfo method, int index)
 		{
 			if (method == null) throw new ArgumentNullException("method");
 			
 			this.method = method;
 			this.index = index;
-			this.name = name;
+			this.name = method.GetParameterName(index);
 		}
 		
 		public override string Code {
@@ -52,7 +52,7 @@ namespace Debugger.Expressions
 				throw new GetValueException("Method " + method.FullName + " expected, " + context.MethodInfo.FullName + " seen");
 			}
 			
-			return context.GetArgument(index);
+			return context.GetArgumentValue(index);
 		}
 	}
 }

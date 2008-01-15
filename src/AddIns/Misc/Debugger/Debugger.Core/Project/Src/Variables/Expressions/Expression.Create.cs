@@ -16,11 +16,7 @@ namespace Debugger.Expressions
 	{
 		public Expression AppendIndexer(params int[] indices)
 		{
-			List<Expression> indicesAst = new List<Expression>();
-			foreach(int indice in indices) {
-				indicesAst.Add(new PrimitiveExpression(indice));
-			}
-			return new ArrayIndexerExpression(this, indicesAst.ToArray());
+			return new ArrayIndexerExpression(this, indices);
 		}
 		
 		public ExpressionCollection AppendIndexers(ArrayDimensions dimensions)
@@ -82,7 +78,7 @@ namespace Debugger.Expressions
 			ExpressionCollection pars = new ExpressionCollection();
 			
 			for(int i = 0; i < methodInfo.ParameterCount; i++) {
-				pars.Add(new ParameterIdentifierExpression(methodInfo, i, methodInfo.GetParameterName(i)));
+				pars.Add(new ParameterIdentifierExpression(methodInfo, i));
 			}
 			
 			return pars;

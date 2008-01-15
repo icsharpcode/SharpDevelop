@@ -38,7 +38,7 @@ namespace Debugger
 	public partial class Value: DebuggerObject, IExpirable
 	{
 		Process        process;
-		string         name;
+		Expression     expression;
 		ICorDebugValue rawCorValue;
 		
 		ICorDebugValue corValue;
@@ -50,10 +50,15 @@ namespace Debugger
 		
 		bool hasExpired = false;
 		
+		/// <summary> Expression which can be used to reobtain this value. </summary>
+		public Expression Expression {
+			get { return expression; }
+		}
+		
 		/// <summary> Gets the name associated with the value </summary>
 		public string Name {
 			get {
-				return name;
+				return this.Expression.CodeTail;
 			}
 		}
 		
@@ -139,26 +144,18 @@ namespace Debugger
 		
 		internal Value(Process process,
 		               ICorDebugValue rawCorValue)
-			:this (process, string.Empty, rawCorValue)
+			:this (process, new EmptyExpression(), rawCorValue)
 		{
 			
 		}
 		
 		internal Value(Process process,
-		               string name,
+		               Expression expression,
 		               ICorDebugValue rawCorValue)
 		{
 			this.process = process;
-			this.name = name;
+			this.expression = expression;
 			this.rawCorValue = rawCorValue;
-			
-			// TODO: clean up
-			if (name.StartsWith("<") && name.Contains(">") && name != "<Base class>") {
-				string middle = name.TrimStart('<').Split('>')[0]; // Get text between '<' and '>'
-				if (middle != "") {
-					this.name = middle;
-				}
-			}
 			
 			if (this.CorValue == null) {
 				type = DebugType.GetType(this.Process, "System.Object");

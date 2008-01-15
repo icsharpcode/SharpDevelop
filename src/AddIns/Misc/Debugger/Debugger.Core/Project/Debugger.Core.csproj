@@ -218,6 +218,7 @@
     <Compile Include="Src\Variables\Evals\EvalEventArgs.cs" />
     <Compile Include="Src\Variables\Evals\Process-Evals.cs" />
     <Compile Include="Src\Variables\Expressions\Ast\ArrayIndexerExpression.cs" />
+    <Compile Include="Src\Variables\Expressions\Ast\EmptyExpression.cs" />
     <Compile Include="Src\Variables\Expressions\Ast\LocalVariableIdentifierExpression.cs" />
     <Compile Include="Src\Variables\Expressions\Ast\MemberReferenceExpression.cs" />
     <Compile Include="Src\Variables\Expressions\Ast\ParameterIdentifierExpression.cs" />

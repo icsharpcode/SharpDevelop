@@ -51,6 +51,14 @@ namespace Debugger.Expressions
 					sb.Append(targetObject.Code);
 				}
 				sb.Append(".");
+				sb.Append(this.CodeTail);
+				return sb.ToString();
+			}
+		}
+		
+		public override string CodeTail {
+			get {
+				StringBuilder sb = new StringBuilder();
 				sb.Append(memberInfo.Name);
 				if (arguments.Length > 0) {
 					if (memberInfo is PropertyInfo) {

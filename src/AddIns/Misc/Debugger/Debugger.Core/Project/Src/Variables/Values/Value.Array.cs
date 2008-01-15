@@ -7,6 +7,8 @@
 
 using System;
 using System.Collections.Generic;
+
+using Debugger.Expressions;
 using Debugger.Wrappers.CorDebug;
 
 // TODO: Test non-zero LowerBound
@@ -87,17 +89,7 @@ namespace Debugger
 		{
 			int[] indices = (int[])elementIndices.Clone();
 			
-			return new Value(Process, GetNameFromIndices(indices), GetCorValueOfArrayElement(indices));
-		}
-		
-		static string GetNameFromIndices(int[] indices)
-		{
-			string elementName = "[";
-			for (int i = 0; i < indices.Length; i++) {
-				elementName += indices[i].ToString() + ",";
-			}
-			elementName = elementName.TrimEnd(new char[] {','}) + "]";
-			return elementName;
+			return new Value(Process, new ArrayIndexerExpression(this.Expression, indices), GetCorValueOfArrayElement(indices));
 		}
 		
 		// May be called later

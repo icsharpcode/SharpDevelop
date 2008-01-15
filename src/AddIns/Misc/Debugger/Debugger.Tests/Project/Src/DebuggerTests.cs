@@ -206,7 +206,7 @@ namespace Debugger.Tests
 			
 			StartTest("FunctionVariablesLifetime"); // 1 - Enter program
 			WaitForPause();
-			argument = process.SelectedStackFrame.GetArgument(0);
+			argument = process.SelectedStackFrame.GetArgumentValue(0);
 			local = process.SelectedStackFrame.LocalVariables["local"];
 			@class = process.SelectedStackFrame.ContaingClassVariables["class"];
 			ObjectDump("argument", argument);
