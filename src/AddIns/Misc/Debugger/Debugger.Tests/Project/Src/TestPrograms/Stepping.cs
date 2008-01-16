@@ -42,39 +42,39 @@ namespace Debugger.Tests {
 		{
 			StartTest("Stepping.cs");
 			WaitForPause();
-			ObjectDump("SelectedStackFrame", process.SelectedStackFrame);
+			ObjectDumpToString("NextStatement", process.SelectedStackFrame.NextStatement);
 			
 			process.StepOver(); // Debugger.Break
 			WaitForPause();
-			ObjectDump("SelectedStackFrame", process.SelectedStackFrame);
+			ObjectDumpToString("NextStatement", process.SelectedStackFrame.NextStatement);
 			
 			process.StepOver(); // Debug.WriteLine 1
 			WaitForPause();
-			ObjectDump("SelectedStackFrame", process.SelectedStackFrame);
+			ObjectDumpToString("NextStatement", process.SelectedStackFrame.NextStatement);
 			
 			process.StepInto(); // Method Sub
 			WaitForPause();
-			ObjectDump("SelectedStackFrame", process.SelectedStackFrame);
+			ObjectDumpToString("NextStatement", process.SelectedStackFrame.NextStatement);
 			
 			process.StepInto(); // '{'
 			WaitForPause();
-			ObjectDump("SelectedStackFrame", process.SelectedStackFrame);
+			ObjectDumpToString("NextStatement", process.SelectedStackFrame.NextStatement);
 			
 			process.StepInto(); // Debug.WriteLine 2
 			WaitForPause();
-			ObjectDump("SelectedStackFrame", process.SelectedStackFrame);
+			ObjectDumpToString("NextStatement", process.SelectedStackFrame.NextStatement);
 			
 			process.StepOut(); // Method Sub
 			WaitForPause();
-			ObjectDump("SelectedStackFrame", process.SelectedStackFrame);
+			ObjectDumpToString("NextStatement", process.SelectedStackFrame.NextStatement);
 			
 			process.StepOver(); // Method Sub
 			WaitForPause();
-			ObjectDump("SelectedStackFrame", process.SelectedStackFrame);
+			ObjectDumpToString("NextStatement", process.SelectedStackFrame.NextStatement);
 			
 			process.StepOver(); // Method Sub2
 			WaitForPause();
-			ObjectDump("SelectedStackFrame", process.SelectedStackFrame);
+			ObjectDumpToString("NextStatement", process.SelectedStackFrame.NextStatement);
 			
 			process.Continue();
 			process.WaitForExit();
@@ -93,120 +93,30 @@ namespace Debugger.Tests {
     <ModuleLoaded symbols="True">Stepping.exe</ModuleLoaded>
     <ModuleLoaded symbols="False">System.dll</ModuleLoaded>
     <DebuggingPaused>Break</DebuggingPaused>
-    <Object name="SelectedStackFrame" Type="StackFrame" ToString="Debugger.Tests.TestPrograms.Stepping.Main">
-      <MethodInfo>Main</MethodInfo>
-      <HasSymbols>True</HasSymbols>
-      <HasExpired>False</HasExpired>
-      <NextStatement>Start=16,4 End=16,40</NextStatement>
-      <ThisValue exception="Static method does not have 'this'." />
-      <ContaingClassVariables>[ValueCollection Count=0]</ContaingClassVariables>
-      <ArgumentCount>0</ArgumentCount>
-      <Arguments>[ValueCollection Count=0]</Arguments>
-      <LocalVariables>[ValueCollection Count=0]</LocalVariables>
-    </Object>
+    <Object name="NextStatement">Start=16,4 End=16,40</Object>
     <DebuggingPaused>StepComplete</DebuggingPaused>
-    <Object name="SelectedStackFrame" Type="StackFrame" ToString="Debugger.Tests.TestPrograms.Stepping.Main">
-      <MethodInfo>Main</MethodInfo>
-      <HasSymbols>True</HasSymbols>
-      <HasExpired>False</HasExpired>
-      <NextStatement>Start=17,4 End=17,44</NextStatement>
-      <ThisValue exception="Static method does not have 'this'." />
-      <ContaingClassVariables>[ValueCollection Count=0]</ContaingClassVariables>
-      <ArgumentCount>0</ArgumentCount>
-      <Arguments>[ValueCollection Count=0]</Arguments>
-      <LocalVariables>[ValueCollection Count=0]</LocalVariables>
-    </Object>
+    <Object name="NextStatement">Start=17,4 End=17,44</Object>
     <ModuleLoaded symbols="False">System.Configuration.dll</ModuleLoaded>
     <ModuleLoaded symbols="False">System.Xml.dll</ModuleLoaded>
     <LogMessage>1\r\n</LogMessage>
     <DebuggingPaused>StepComplete</DebuggingPaused>
-    <Object name="SelectedStackFrame" Type="StackFrame" ToString="Debugger.Tests.TestPrograms.Stepping.Main">
-      <MethodInfo>Main</MethodInfo>
-      <HasSymbols>True</HasSymbols>
-      <HasExpired>False</HasExpired>
-      <NextStatement>Start=18,4 End=18,10</NextStatement>
-      <ThisValue exception="Static method does not have 'this'." />
-      <ContaingClassVariables>[ValueCollection Count=0]</ContaingClassVariables>
-      <ArgumentCount>0</ArgumentCount>
-      <Arguments>[ValueCollection Count=0]</Arguments>
-      <LocalVariables>[ValueCollection Count=0]</LocalVariables>
-    </Object>
+    <Object name="NextStatement">Start=18,4 End=18,10</Object>
     <DebuggingPaused>StepComplete</DebuggingPaused>
-    <Object name="SelectedStackFrame" Type="StackFrame" ToString="Debugger.Tests.TestPrograms.Stepping.Sub">
-      <MethodInfo>Sub</MethodInfo>
-      <HasSymbols>True</HasSymbols>
-      <HasExpired>False</HasExpired>
-      <NextStatement>Start=23,3 End=23,4</NextStatement>
-      <ThisValue exception="Static method does not have 'this'." />
-      <ContaingClassVariables>[ValueCollection Count=0]</ContaingClassVariables>
-      <ArgumentCount>0</ArgumentCount>
-      <Arguments>[ValueCollection Count=0]</Arguments>
-      <LocalVariables>[ValueCollection Count=0]</LocalVariables>
-    </Object>
+    <Object name="NextStatement">Start=23,3 End=23,4</Object>
     <DebuggingPaused>StepComplete</DebuggingPaused>
-    <Object name="SelectedStackFrame" Type="StackFrame" ToString="Debugger.Tests.TestPrograms.Stepping.Sub">
-      <MethodInfo>Sub</MethodInfo>
-      <HasSymbols>True</HasSymbols>
-      <HasExpired>False</HasExpired>
-      <NextStatement>Start=24,4 End=24,44</NextStatement>
-      <ThisValue exception="Static method does not have 'this'." />
-      <ContaingClassVariables>[ValueCollection Count=0]</ContaingClassVariables>
-      <ArgumentCount>0</ArgumentCount>
-      <Arguments>[ValueCollection Count=0]</Arguments>
-      <LocalVariables>[ValueCollection Count=0]</LocalVariables>
-    </Object>
+    <Object name="NextStatement">Start=24,4 End=24,44</Object>
     <LogMessage>2\r\n</LogMessage>
     <DebuggingPaused>StepComplete</DebuggingPaused>
-    <Object name="SelectedStackFrame" Type="StackFrame" ToString="Debugger.Tests.TestPrograms.Stepping.Sub">
-      <MethodInfo>Sub</MethodInfo>
-      <HasSymbols>True</HasSymbols>
-      <HasExpired>False</HasExpired>
-      <NextStatement>Start=25,4 End=25,44</NextStatement>
-      <ThisValue exception="Static method does not have 'this'." />
-      <ContaingClassVariables>[ValueCollection Count=0]</ContaingClassVariables>
-      <ArgumentCount>0</ArgumentCount>
-      <Arguments>[ValueCollection Count=0]</Arguments>
-      <LocalVariables>[ValueCollection Count=0]</LocalVariables>
-    </Object>
+    <Object name="NextStatement">Start=25,4 End=25,44</Object>
     <LogMessage>3\r\n</LogMessage>
     <LogMessage>4\r\n</LogMessage>
     <DebuggingPaused>StepComplete</DebuggingPaused>
-    <Object name="SelectedStackFrame" Type="StackFrame" ToString="Debugger.Tests.TestPrograms.Stepping.Main">
-      <MethodInfo>Main</MethodInfo>
-      <HasSymbols>True</HasSymbols>
-      <HasExpired>False</HasExpired>
-      <NextStatement>Start=18,4 End=18,10</NextStatement>
-      <ThisValue exception="Static method does not have 'this'." />
-      <ContaingClassVariables>[ValueCollection Count=0]</ContaingClassVariables>
-      <ArgumentCount>0</ArgumentCount>
-      <Arguments>[ValueCollection Count=0]</Arguments>
-      <LocalVariables>[ValueCollection Count=0]</LocalVariables>
-    </Object>
+    <Object name="NextStatement">Start=18,4 End=18,10</Object>
     <DebuggingPaused>StepComplete</DebuggingPaused>
-    <Object name="SelectedStackFrame" Type="StackFrame" ToString="Debugger.Tests.TestPrograms.Stepping.Main">
-      <MethodInfo>Main</MethodInfo>
-      <HasSymbols>True</HasSymbols>
-      <HasExpired>False</HasExpired>
-      <NextStatement>Start=19,4 End=19,11</NextStatement>
-      <ThisValue exception="Static method does not have 'this'." />
-      <ContaingClassVariables>[ValueCollection Count=0]</ContaingClassVariables>
-      <ArgumentCount>0</ArgumentCount>
-      <Arguments>[ValueCollection Count=0]</Arguments>
-      <LocalVariables>[ValueCollection Count=0]</LocalVariables>
-    </Object>
+    <Object name="NextStatement">Start=19,4 End=19,11</Object>
     <LogMessage>5\r\n</LogMessage>
     <DebuggingPaused>StepComplete</DebuggingPaused>
-    <Object name="SelectedStackFrame" Type="StackFrame" ToString="Debugger.Tests.TestPrograms.Stepping.Main">
-      <MethodInfo>Main</MethodInfo>
-      <HasSymbols>True</HasSymbols>
-      <HasExpired>False</HasExpired>
-      <NextStatement>Start=20,3 End=20,4</NextStatement>
-      <ThisValue exception="Static method does not have 'this'." />
-      <ContaingClassVariables>[ValueCollection Count=0]</ContaingClassVariables>
-      <ArgumentCount>0</ArgumentCount>
-      <Arguments>[ValueCollection Count=0]</Arguments>
-      <LocalVariables>[ValueCollection Count=0]</LocalVariables>
-    </Object>
+    <Object name="NextStatement">Start=20,3 End=20,4</Object>
     <ProcessExited />
   </Test>
 </DebuggerTests>

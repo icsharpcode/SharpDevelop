@@ -169,6 +169,18 @@ namespace Debugger.Tests
 			Serialize(dumpNode, obj, 16, new List<object>());
 		}
 		
+		public void ObjectDumpToString(string name, object obj)
+		{
+			XmlElement dumpNode = testDoc.CreateElement("Object");
+			if (name != null) dumpNode.SetAttribute("name", name);
+			testNode.AppendChild(dumpNode);
+			if (obj == null) {
+				dumpNode.AppendChild(dumpNode.OwnerDocument.CreateTextNode("null"));
+			} else {
+				dumpNode.AppendChild(dumpNode.OwnerDocument.CreateTextNode(obj.ToString()));
+			}
+		}
+		
 		List<string> expandProperties;
 		
 		protected void ExpandProperties(params string[] props)
