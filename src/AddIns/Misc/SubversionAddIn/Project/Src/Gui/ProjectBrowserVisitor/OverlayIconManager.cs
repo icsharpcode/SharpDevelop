@@ -192,11 +192,10 @@ namespace ICSharpCode.Svn
 			} catch (SvnException) {
 				return;
 			}
-			if (node.TreeView != null) {
-				node.TreeView.BeginInvoke(new MethodInvoker(delegate {
-				                                            	node.Overlay = GetImage(status);
-				                                            }));
-			}
+			SharpDevelop.Gui.WorkbenchSingleton.SafeThreadAsyncCall(
+				delegate {
+					node.Overlay = GetImage(status);
+				});
 		}
 	}
 }

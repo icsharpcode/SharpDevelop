@@ -259,7 +259,11 @@ namespace ICSharpCode.PInvokeAddIn
 		
 		void MoreInfoLinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		{
-			Process.Start(pinvokeUrl);
+			try {
+				Process.Start(pinvokeUrl);
+			} catch (Exception ex) {
+				LoggingService.Warn("Cannot start " + pinvokeUrl, ex);
+			}
 		}
 
 		/// <summary>

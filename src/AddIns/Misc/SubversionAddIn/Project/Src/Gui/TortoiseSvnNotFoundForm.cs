@@ -15,11 +15,11 @@ using ICSharpCode.SharpDevelop.Gui.XmlForms;
 namespace ICSharpCode.Svn
 {
 	public class TortoiseSvnNotFoundForm : BaseSharpDevelopForm
-	{		
+	{
 		public TortoiseSvnNotFoundForm()
 		{
 			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("ICSharpCode.Svn.Resources.TortoiseSvnNotFoundForm.xfrm"));
-		
+			
 			((Label)ControlDictionary["messageLabel"]).Text = StringParser.Parse("${res:AddIns.Subversion.TortoiseSVNRequired}");
 			((PictureBox)ControlDictionary["iconPictureBox"]).Image = ResourceService.GetBitmap("Icons.32x32.Information");
 			((LinkLabel)ControlDictionary["linkLabel"]).Click += LinkLabelClicked;
@@ -27,7 +27,11 @@ namespace ICSharpCode.Svn
 		
 		void LinkLabelClicked(object sender, EventArgs e)
 		{
-			Process.Start("http://tortoisesvn.tigris.org");
+			try {
+				Process.Start("http://tortoisesvn.tigris.org");
+			} catch (Exception ex) {
+				LoggingService.Warn("Cannot start http://tortoisesvn.tigris.org", ex);
+			}
 		}
 	}
 }
