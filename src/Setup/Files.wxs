@@ -1166,7 +1166,7 @@
 											<File Source="..\..\AddIns\AddIns\DisplayBindings\ClassDiagram\ClassEditor.dll" Id="ClassDiagram.ClassEditor.dll" Name="ClassEditor.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="ClassDiagram.ClassEditor.dll" AssemblyManifest="ClassDiagram.ClassEditor.dll" />
 										</Component>
 										<Component Guid="EF2B150B-B0C4-4884-800C-BE904E520CF4" Id="DiagramsDll" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\DisplayBindings\ClassDiagram\Diagrams.dll" Id="ClassDiagram.Diagrams.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="ClassDiagram.Diagrams.dll" AssemblyManifest="ClassDiagram.Diagrams.dll" />
+											<File Source="..\..\AddIns\AddIns\DisplayBindings\ClassDiagram\Diagrams.dll" Id="ClassDiagram.Diagrams.dll" Name="Diagrams.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="ClassDiagram.Diagrams.dll" AssemblyManifest="ClassDiagram.Diagrams.dll" />
 										</Component>
 									</Directory>
 									<Directory Id="WorkflowDesignerFolder" Name="WorkflowDesigner">
