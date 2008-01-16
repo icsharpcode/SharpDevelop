@@ -205,6 +205,11 @@ namespace Debugger
 				return false;
 			}
 		}
+		
+		public override string ToString()
+		{
+			return this.Expression.Code + " = " + this.AsString;
+		}
 	}
 	
 	public class GetValueException: DebuggerException

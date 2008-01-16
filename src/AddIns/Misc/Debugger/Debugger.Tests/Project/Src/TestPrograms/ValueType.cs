@@ -54,7 +54,7 @@ namespace Debugger.Tests {
     <ModuleLoaded symbols="False">mscorlib.dll</ModuleLoaded>
     <ModuleLoaded symbols="True">ValueType.exe</ModuleLoaded>
     <DebuggingPaused>Break</DebuggingPaused>
-    <ObjectDump name="this" Type="Value">
+    <Object name="this" Type="Value" ToString="this = {Debugger.Tests.ValueType}">
       <IsArray>False</IsArray>
       <ArrayLenght exception="Value is not an array" />
       <ArrayRank exception="Value is not an array" />
@@ -68,7 +68,7 @@ namespace Debugger.Tests {
       <IsNull>False</IsNull>
       <AsString>{Debugger.Tests.ValueType}</AsString>
       <HasExpired>False</HasExpired>
-      <Type Type="DebugType">
+      <Type Type="DebugType" ToString="Debugger.Tests.ValueType">
         <ManagedType>null</ManagedType>
         <Module>ValueType.exe</Module>
         <FullName>Debugger.Tests.ValueType</FullName>
@@ -79,7 +79,7 @@ namespace Debugger.Tests {
         <IsValueType>True</IsValueType>
         <IsPrimitive>False</IsPrimitive>
         <IsInteger>False</IsInteger>
-        <BaseType Type="DebugType">
+        <BaseType Type="DebugType" ToString="System.ValueType">
           <ManagedType>null</ManagedType>
           <Module>mscorlib.dll</Module>
           <FullName>System.ValueType</FullName>
@@ -90,7 +90,7 @@ namespace Debugger.Tests {
           <IsValueType>False</IsValueType>
           <IsPrimitive>False</IsPrimitive>
           <IsInteger>False</IsInteger>
-          <BaseType Type="DebugType">
+          <BaseType Type="DebugType" ToString="System.Object">
             <ManagedType>null</ManagedType>
             <Module>mscorlib.dll</Module>
             <FullName>System.Object</FullName>
@@ -105,7 +105,7 @@ namespace Debugger.Tests {
           </BaseType>
         </BaseType>
       </Type>
-    </ObjectDump>
+    </Object>
     <ProcessExited />
   </Test>
 </DebuggerTests>

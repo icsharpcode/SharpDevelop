@@ -60,11 +60,11 @@ namespace Debugger.Tests {
     <ModuleLoaded symbols="True">Breakpoint.exe</ModuleLoaded>
     <ModuleLoaded symbols="False">System.dll</ModuleLoaded>
     <DebuggingPaused>Break</DebuggingPaused>
-    <ObjectDump Type="Breakpoint">
+    <Object Type="Breakpoint" ToString="Debugger.Breakpoint">
       <SourcecodeSegment>Start=18,0 End=18,0</SourcecodeSegment>
       <HadBeenSet>True</HadBeenSet>
       <Enabled>True</Enabled>
-    </ObjectDump>
+    </Object>
     <ModuleLoaded symbols="False">System.Configuration.dll</ModuleLoaded>
     <ModuleLoaded symbols="False">System.Xml.dll</ModuleLoaded>
     <LogMessage>Mark 1\r\n</LogMessage>
@@ -72,11 +72,11 @@ namespace Debugger.Tests {
     <LogMessage>Mark 2\r\n</LogMessage>
     <DebuggingPaused>Break</DebuggingPaused>
     <ProcessExited />
-    <ObjectDump Type="Breakpoint">
+    <Object Type="Breakpoint" ToString="Debugger.Breakpoint">
       <SourcecodeSegment>Start=18,0 End=18,0</SourcecodeSegment>
       <HadBeenSet>False</HadBeenSet>
       <Enabled>True</Enabled>
-    </ObjectDump>
+    </Object>
   </Test>
 </DebuggerTests>
 #endif // EXPECTED_OUTPUT

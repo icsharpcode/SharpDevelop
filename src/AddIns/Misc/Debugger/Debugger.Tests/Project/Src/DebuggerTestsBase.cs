@@ -163,7 +163,7 @@ namespace Debugger.Tests
 		
 		public void ObjectDump(string name, object obj)
 		{
-			XmlElement dumpNode = testDoc.CreateElement("ObjectDump");
+			XmlElement dumpNode = testDoc.CreateElement("Object");
 			if (name != null) dumpNode.SetAttribute("name", name);
 			testNode.AppendChild(dumpNode);
 			Serialize(dumpNode, obj, 16, new List<object>());
@@ -219,6 +219,7 @@ namespace Debugger.Tests
 			
 			
 			container.SetAttribute("Type", type.Name);
+			container.SetAttribute("ToString", obj.ToString());
 			
 			foreach(System.Reflection.PropertyInfo property in type.GetProperties()) {
 				if (property.GetGetMethod() == null) continue;

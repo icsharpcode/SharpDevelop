@@ -51,7 +51,7 @@ namespace Debugger.Tests {
     <ModuleLoaded symbols="False">mscorlib.dll</ModuleLoaded>
     <ModuleLoaded symbols="True">ArrayValue.exe</ModuleLoaded>
     <DebuggingPaused>Break</DebuggingPaused>
-    <ObjectDump name="array" Type="Value">
+    <Object name="array" Type="Value" ToString="array = {System.Int32[]}">
       <IsArray>True</IsArray>
       <ArrayLenght>5</ArrayLenght>
       <ArrayRank>1</ArrayRank>
@@ -66,10 +66,10 @@ namespace Debugger.Tests {
       <AsString>{System.Int32[]}</AsString>
       <HasExpired>False</HasExpired>
       <Type>System.Int32[]</Type>
-    </ObjectDump>
-    <ObjectDump name="array elements" Type="ValueCollection">
+    </Object>
+    <Object name="array elements" Type="ValueCollection" ToString="[ValueCollection Count=5]">
       <Count>5</Count>
-      <Item Type="Value">
+      <Item Type="Value" ToString="array[0] = 0">
         <IsArray>False</IsArray>
         <ArrayLenght exception="Value is not an array" />
         <ArrayRank exception="Value is not an array" />
@@ -85,7 +85,7 @@ namespace Debugger.Tests {
         <HasExpired>False</HasExpired>
         <Type>System.Int32</Type>
       </Item>
-      <Item Type="Value">
+      <Item Type="Value" ToString="array[1] = 1">
         <IsArray>False</IsArray>
         <ArrayLenght exception="Value is not an array" />
         <ArrayRank exception="Value is not an array" />
@@ -101,7 +101,7 @@ namespace Debugger.Tests {
         <HasExpired>False</HasExpired>
         <Type>System.Int32</Type>
       </Item>
-      <Item Type="Value">
+      <Item Type="Value" ToString="array[2] = 2">
         <IsArray>False</IsArray>
         <ArrayLenght exception="Value is not an array" />
         <ArrayRank exception="Value is not an array" />
@@ -117,7 +117,7 @@ namespace Debugger.Tests {
         <HasExpired>False</HasExpired>
         <Type>System.Int32</Type>
       </Item>
-      <Item Type="Value">
+      <Item Type="Value" ToString="array[3] = 3">
         <IsArray>False</IsArray>
         <ArrayLenght exception="Value is not an array" />
         <ArrayRank exception="Value is not an array" />
@@ -133,7 +133,7 @@ namespace Debugger.Tests {
         <HasExpired>False</HasExpired>
         <Type>System.Int32</Type>
       </Item>
-      <Item Type="Value">
+      <Item Type="Value" ToString="array[4] = 4">
         <IsArray>False</IsArray>
         <ArrayLenght exception="Value is not an array" />
         <ArrayRank exception="Value is not an array" />
@@ -149,7 +149,7 @@ namespace Debugger.Tests {
         <HasExpired>False</HasExpired>
         <Type>System.Int32</Type>
       </Item>
-    </ObjectDump>
+    </Object>
     <ProcessExited />
   </Test>
 </DebuggerTests>

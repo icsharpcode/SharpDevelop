@@ -121,8 +121,8 @@ namespace Debugger.Tests {
     <ModuleLoaded symbols="False">mscorlib.dll</ModuleLoaded>
     <ModuleLoaded symbols="True">Generics.exe</ModuleLoaded>
     <DebuggingPaused>Break</DebuggingPaused>
-    <ObjectDump name="SelectedStackFrame" Type="StackFrame">
-      <MethodInfo Type="MethodInfo">
+    <Object name="SelectedStackFrame" Type="StackFrame" ToString="Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;.Metod">
+      <MethodInfo Type="MethodInfo" ToString="Metod">
         <Name>Metod</Name>
         <IsPrivate>False</IsPrivate>
         <IsPublic>True</IsPublic>
@@ -130,7 +130,7 @@ namespace Debugger.Tests {
         <IsStatic>False</IsStatic>
         <FullName>Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;.Metod</FullName>
         <Module>Generics.exe</Module>
-        <DeclaringType Type="DebugType">
+        <DeclaringType Type="DebugType" ToString="Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;">
           <ManagedType>null</ManagedType>
           <Module>Generics.exe</Module>
           <FullName>Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;</FullName>
@@ -147,12 +147,12 @@ namespace Debugger.Tests {
       <HasSymbols>True</HasSymbols>
       <HasExpired>False</HasExpired>
       <NextStatement>Start=36,4 End=36,40</NextStatement>
-      <ThisValue>Debugger.Value</ThisValue>
+      <ThisValue>this = {Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;}</ThisValue>
       <ContaingClassVariables>[ValueCollection Count=0]</ContaingClassVariables>
       <ArgumentCount>2</ArgumentCount>
-      <Arguments Type="ValueCollection">
+      <Arguments Type="ValueCollection" ToString="[ValueCollection Count=2]">
         <Count>2</Count>
-        <Item Type="Value">
+        <Item Type="Value" ToString="v = 1">
           <IsArray>False</IsArray>
           <ArrayLenght exception="Value is not an array" />
           <ArrayRank exception="Value is not an array" />
@@ -168,7 +168,7 @@ namespace Debugger.Tests {
           <HasExpired>False</HasExpired>
           <Type>System.Int32</Type>
         </Item>
-        <Item Type="Value">
+        <Item Type="Value" ToString="k = 1!">
           <IsArray>False</IsArray>
           <ArrayLenght exception="Value is not an array" />
           <ArrayRank exception="Value is not an array" />
@@ -186,10 +186,10 @@ namespace Debugger.Tests {
         </Item>
       </Arguments>
       <LocalVariables>[ValueCollection Count=0]</LocalVariables>
-    </ObjectDump>
+    </Object>
     <DebuggingPaused>Break</DebuggingPaused>
-    <ObjectDump name="SelectedStackFrame" Type="StackFrame">
-      <MethodInfo Type="MethodInfo">
+    <Object name="SelectedStackFrame" Type="StackFrame" ToString="Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;.GenericMethod">
+      <MethodInfo Type="MethodInfo" ToString="GenericMethod">
         <Name>GenericMethod</Name>
         <IsPrivate>False</IsPrivate>
         <IsPublic>True</IsPublic>
@@ -197,7 +197,7 @@ namespace Debugger.Tests {
         <IsStatic>False</IsStatic>
         <FullName>Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;.GenericMethod</FullName>
         <Module>Generics.exe</Module>
-        <DeclaringType Type="DebugType">
+        <DeclaringType Type="DebugType" ToString="Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;">
           <ManagedType>null</ManagedType>
           <Module>Generics.exe</Module>
           <FullName>Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;</FullName>
@@ -214,12 +214,12 @@ namespace Debugger.Tests {
       <HasSymbols>True</HasSymbols>
       <HasExpired>False</HasExpired>
       <NextStatement>Start=42,4 End=42,40</NextStatement>
-      <ThisValue>Debugger.Value</ThisValue>
+      <ThisValue>this = {Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;}</ThisValue>
       <ContaingClassVariables>[ValueCollection Count=0]</ContaingClassVariables>
       <ArgumentCount>2</ArgumentCount>
-      <Arguments Type="ValueCollection">
+      <Arguments Type="ValueCollection" ToString="[ValueCollection Count=2]">
         <Count>2</Count>
-        <Item Type="Value">
+        <Item Type="Value" ToString="v = 1">
           <IsArray>False</IsArray>
           <ArrayLenght exception="Value is not an array" />
           <ArrayRank exception="Value is not an array" />
@@ -235,7 +235,7 @@ namespace Debugger.Tests {
           <HasExpired>False</HasExpired>
           <Type>System.Int32</Type>
         </Item>
-        <Item Type="Value">
+        <Item Type="Value" ToString="k = 1!">
           <IsArray>False</IsArray>
           <ArrayLenght exception="Value is not an array" />
           <ArrayRank exception="Value is not an array" />
@@ -253,10 +253,10 @@ namespace Debugger.Tests {
         </Item>
       </Arguments>
       <LocalVariables>[ValueCollection Count=0]</LocalVariables>
-    </ObjectDump>
+    </Object>
     <DebuggingPaused>Break</DebuggingPaused>
-    <ObjectDump name="SelectedStackFrame" Type="StackFrame">
-      <MethodInfo Type="MethodInfo">
+    <Object name="SelectedStackFrame" Type="StackFrame" ToString="Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;.StaticMetod">
+      <MethodInfo Type="MethodInfo" ToString="StaticMetod">
         <Name>StaticMetod</Name>
         <IsPrivate>False</IsPrivate>
         <IsPublic>True</IsPublic>
@@ -264,7 +264,7 @@ namespace Debugger.Tests {
         <IsStatic>True</IsStatic>
         <FullName>Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;.StaticMetod</FullName>
         <Module>Generics.exe</Module>
-        <DeclaringType Type="DebugType">
+        <DeclaringType Type="DebugType" ToString="Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;">
           <ManagedType>null</ManagedType>
           <Module>Generics.exe</Module>
           <FullName>Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;</FullName>
@@ -284,9 +284,9 @@ namespace Debugger.Tests {
       <ThisValue exception="Static method does not have 'this'." />
       <ContaingClassVariables>[ValueCollection Count=0]</ContaingClassVariables>
       <ArgumentCount>2</ArgumentCount>
-      <Arguments Type="ValueCollection">
+      <Arguments Type="ValueCollection" ToString="[ValueCollection Count=2]">
         <Count>2</Count>
-        <Item Type="Value">
+        <Item Type="Value" ToString="v = 1">
           <IsArray>False</IsArray>
           <ArrayLenght exception="Value is not an array" />
           <ArrayRank exception="Value is not an array" />
@@ -302,7 +302,7 @@ namespace Debugger.Tests {
           <HasExpired>False</HasExpired>
           <Type>System.Int32</Type>
         </Item>
-        <Item Type="Value">
+        <Item Type="Value" ToString="k = 1!">
           <IsArray>False</IsArray>
           <ArrayLenght exception="Value is not an array" />
           <ArrayRank exception="Value is not an array" />
@@ -320,10 +320,10 @@ namespace Debugger.Tests {
         </Item>
       </Arguments>
       <LocalVariables>[ValueCollection Count=0]</LocalVariables>
-    </ObjectDump>
+    </Object>
     <DebuggingPaused>Break</DebuggingPaused>
-    <ObjectDump name="SelectedStackFrame" Type="StackFrame">
-      <MethodInfo Type="MethodInfo">
+    <Object name="SelectedStackFrame" Type="StackFrame" ToString="Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;.StaticGenericMethod">
+      <MethodInfo Type="MethodInfo" ToString="StaticGenericMethod">
         <Name>StaticGenericMethod</Name>
         <IsPrivate>False</IsPrivate>
         <IsPublic>True</IsPublic>
@@ -331,7 +331,7 @@ namespace Debugger.Tests {
         <IsStatic>True</IsStatic>
         <FullName>Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;.StaticGenericMethod</FullName>
         <Module>Generics.exe</Module>
-        <DeclaringType Type="DebugType">
+        <DeclaringType Type="DebugType" ToString="Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;">
           <ManagedType>null</ManagedType>
           <Module>Generics.exe</Module>
           <FullName>Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;</FullName>
@@ -351,9 +351,9 @@ namespace Debugger.Tests {
       <ThisValue exception="Static method does not have 'this'." />
       <ContaingClassVariables>[ValueCollection Count=0]</ContaingClassVariables>
       <ArgumentCount>2</ArgumentCount>
-      <Arguments Type="ValueCollection">
+      <Arguments Type="ValueCollection" ToString="[ValueCollection Count=2]">
         <Count>2</Count>
-        <Item Type="Value">
+        <Item Type="Value" ToString="v = 1">
           <IsArray>False</IsArray>
           <ArrayLenght exception="Value is not an array" />
           <ArrayRank exception="Value is not an array" />
@@ -369,7 +369,7 @@ namespace Debugger.Tests {
           <HasExpired>False</HasExpired>
           <Type>System.Int32</Type>
         </Item>
-        <Item Type="Value">
+        <Item Type="Value" ToString="k = 1!">
           <IsArray>False</IsArray>
           <ArrayLenght exception="Value is not an array" />
           <ArrayRank exception="Value is not an array" />
@@ -387,10 +387,10 @@ namespace Debugger.Tests {
         </Item>
       </Arguments>
       <LocalVariables>[ValueCollection Count=0]</LocalVariables>
-    </ObjectDump>
+    </Object>
     <DebuggingPaused>Break</DebuggingPaused>
-    <ObjectDump name="SelectedStackFrame" Type="StackFrame">
-      <MethodInfo Type="MethodInfo">
+    <Object name="SelectedStackFrame" Type="StackFrame" ToString="Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;.Metod">
+      <MethodInfo Type="MethodInfo" ToString="Metod">
         <Name>Metod</Name>
         <IsPrivate>False</IsPrivate>
         <IsPublic>True</IsPublic>
@@ -398,7 +398,7 @@ namespace Debugger.Tests {
         <IsStatic>False</IsStatic>
         <FullName>Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;.Metod</FullName>
         <Module>Generics.exe</Module>
-        <DeclaringType Type="DebugType">
+        <DeclaringType Type="DebugType" ToString="Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;">
           <ManagedType>null</ManagedType>
           <Module>Generics.exe</Module>
           <FullName>Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;</FullName>
@@ -415,12 +415,12 @@ namespace Debugger.Tests {
       <HasSymbols>True</HasSymbols>
       <HasExpired>False</HasExpired>
       <NextStatement>Start=63,4 End=63,40</NextStatement>
-      <ThisValue>Debugger.Value</ThisValue>
+      <ThisValue>this = {Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;}</ThisValue>
       <ContaingClassVariables>[ValueCollection Count=0]</ContaingClassVariables>
       <ArgumentCount>2</ArgumentCount>
-      <Arguments Type="ValueCollection">
+      <Arguments Type="ValueCollection" ToString="[ValueCollection Count=2]">
         <Count>2</Count>
-        <Item Type="Value">
+        <Item Type="Value" ToString="v = 1">
           <IsArray>False</IsArray>
           <ArrayLenght exception="Value is not an array" />
           <ArrayRank exception="Value is not an array" />
@@ -436,7 +436,7 @@ namespace Debugger.Tests {
           <HasExpired>False</HasExpired>
           <Type>System.Int32</Type>
         </Item>
-        <Item Type="Value">
+        <Item Type="Value" ToString="k = 1!">
           <IsArray>False</IsArray>
           <ArrayLenght exception="Value is not an array" />
           <ArrayRank exception="Value is not an array" />
@@ -454,10 +454,10 @@ namespace Debugger.Tests {
         </Item>
       </Arguments>
       <LocalVariables>[ValueCollection Count=0]</LocalVariables>
-    </ObjectDump>
+    </Object>
     <DebuggingPaused>Break</DebuggingPaused>
-    <ObjectDump name="SelectedStackFrame" Type="StackFrame">
-      <MethodInfo Type="MethodInfo">
+    <Object name="SelectedStackFrame" Type="StackFrame" ToString="Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;.GenericMethod">
+      <MethodInfo Type="MethodInfo" ToString="GenericMethod">
         <Name>GenericMethod</Name>
         <IsPrivate>False</IsPrivate>
         <IsPublic>True</IsPublic>
@@ -465,7 +465,7 @@ namespace Debugger.Tests {
         <IsStatic>False</IsStatic>
         <FullName>Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;.GenericMethod</FullName>
         <Module>Generics.exe</Module>
-        <DeclaringType Type="DebugType">
+        <DeclaringType Type="DebugType" ToString="Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;">
           <ManagedType>null</ManagedType>
           <Module>Generics.exe</Module>
           <FullName>Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;</FullName>
@@ -482,12 +482,12 @@ namespace Debugger.Tests {
       <HasSymbols>True</HasSymbols>
       <HasExpired>False</HasExpired>
       <NextStatement>Start=69,4 End=69,40</NextStatement>
-      <ThisValue>Debugger.Value</ThisValue>
+      <ThisValue>this = {Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;}</ThisValue>
       <ContaingClassVariables>[ValueCollection Count=0]</ContaingClassVariables>
       <ArgumentCount>2</ArgumentCount>
-      <Arguments Type="ValueCollection">
+      <Arguments Type="ValueCollection" ToString="[ValueCollection Count=2]">
         <Count>2</Count>
-        <Item Type="Value">
+        <Item Type="Value" ToString="v = 1">
           <IsArray>False</IsArray>
           <ArrayLenght exception="Value is not an array" />
           <ArrayRank exception="Value is not an array" />
@@ -503,7 +503,7 @@ namespace Debugger.Tests {
           <HasExpired>False</HasExpired>
           <Type>System.Int32</Type>
         </Item>
-        <Item Type="Value">
+        <Item Type="Value" ToString="k = 1!">
           <IsArray>False</IsArray>
           <ArrayLenght exception="Value is not an array" />
           <ArrayRank exception="Value is not an array" />
@@ -521,10 +521,10 @@ namespace Debugger.Tests {
         </Item>
       </Arguments>
       <LocalVariables>[ValueCollection Count=0]</LocalVariables>
-    </ObjectDump>
+    </Object>
     <DebuggingPaused>Break</DebuggingPaused>
-    <ObjectDump name="SelectedStackFrame" Type="StackFrame">
-      <MethodInfo Type="MethodInfo">
+    <Object name="SelectedStackFrame" Type="StackFrame" ToString="Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;.StaticMetod">
+      <MethodInfo Type="MethodInfo" ToString="StaticMetod">
         <Name>StaticMetod</Name>
         <IsPrivate>False</IsPrivate>
         <IsPublic>True</IsPublic>
@@ -532,7 +532,7 @@ namespace Debugger.Tests {
         <IsStatic>True</IsStatic>
         <FullName>Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;.StaticMetod</FullName>
         <Module>Generics.exe</Module>
-        <DeclaringType Type="DebugType">
+        <DeclaringType Type="DebugType" ToString="Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;">
           <ManagedType>null</ManagedType>
           <Module>Generics.exe</Module>
           <FullName>Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;</FullName>
@@ -552,9 +552,9 @@ namespace Debugger.Tests {
       <ThisValue exception="Static method does not have 'this'." />
       <ContaingClassVariables>[ValueCollection Count=0]</ContaingClassVariables>
       <ArgumentCount>2</ArgumentCount>
-      <Arguments Type="ValueCollection">
+      <Arguments Type="ValueCollection" ToString="[ValueCollection Count=2]">
         <Count>2</Count>
-        <Item Type="Value">
+        <Item Type="Value" ToString="v = 1">
           <IsArray>False</IsArray>
           <ArrayLenght exception="Value is not an array" />
           <ArrayRank exception="Value is not an array" />
@@ -570,7 +570,7 @@ namespace Debugger.Tests {
           <HasExpired>False</HasExpired>
           <Type>System.Int32</Type>
         </Item>
-        <Item Type="Value">
+        <Item Type="Value" ToString="k = 1!">
           <IsArray>False</IsArray>
           <ArrayLenght exception="Value is not an array" />
           <ArrayRank exception="Value is not an array" />
@@ -588,10 +588,10 @@ namespace Debugger.Tests {
         </Item>
       </Arguments>
       <LocalVariables>[ValueCollection Count=0]</LocalVariables>
-    </ObjectDump>
+    </Object>
     <DebuggingPaused>Break</DebuggingPaused>
-    <ObjectDump name="SelectedStackFrame" Type="StackFrame">
-      <MethodInfo Type="MethodInfo">
+    <Object name="SelectedStackFrame" Type="StackFrame" ToString="Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;.StaticGenericMethod">
+      <MethodInfo Type="MethodInfo" ToString="StaticGenericMethod">
         <Name>StaticGenericMethod</Name>
         <IsPrivate>False</IsPrivate>
         <IsPublic>True</IsPublic>
@@ -599,7 +599,7 @@ namespace Debugger.Tests {
         <IsStatic>True</IsStatic>
         <FullName>Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;.StaticGenericMethod</FullName>
         <Module>Generics.exe</Module>
-        <DeclaringType Type="DebugType">
+        <DeclaringType Type="DebugType" ToString="Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;">
           <ManagedType>null</ManagedType>
           <Module>Generics.exe</Module>
           <FullName>Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;</FullName>
@@ -619,9 +619,9 @@ namespace Debugger.Tests {
       <ThisValue exception="Static method does not have 'this'." />
       <ContaingClassVariables>[ValueCollection Count=0]</ContaingClassVariables>
       <ArgumentCount>2</ArgumentCount>
-      <Arguments Type="ValueCollection">
+      <Arguments Type="ValueCollection" ToString="[ValueCollection Count=2]">
         <Count>2</Count>
-        <Item Type="Value">
+        <Item Type="Value" ToString="v = 1">
           <IsArray>False</IsArray>
           <ArrayLenght exception="Value is not an array" />
           <ArrayRank exception="Value is not an array" />
@@ -637,7 +637,7 @@ namespace Debugger.Tests {
           <HasExpired>False</HasExpired>
           <Type>System.Int32</Type>
         </Item>
-        <Item Type="Value">
+        <Item Type="Value" ToString="k = 1!">
           <IsArray>False</IsArray>
           <ArrayLenght exception="Value is not an array" />
           <ArrayRank exception="Value is not an array" />
@@ -655,7 +655,7 @@ namespace Debugger.Tests {
         </Item>
       </Arguments>
       <LocalVariables>[ValueCollection Count=0]</LocalVariables>
-    </ObjectDump>
+    </Object>
     <DebuggingPaused>Break</DebuggingPaused>
     <ProcessExited />
   </Test>

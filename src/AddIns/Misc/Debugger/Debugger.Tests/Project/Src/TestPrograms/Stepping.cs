@@ -93,7 +93,7 @@ namespace Debugger.Tests {
     <ModuleLoaded symbols="True">Stepping.exe</ModuleLoaded>
     <ModuleLoaded symbols="False">System.dll</ModuleLoaded>
     <DebuggingPaused>Break</DebuggingPaused>
-    <ObjectDump name="SelectedStackFrame" Type="StackFrame">
+    <Object name="SelectedStackFrame" Type="StackFrame" ToString="Debugger.Tests.TestPrograms.Stepping.Main">
       <MethodInfo>Main</MethodInfo>
       <HasSymbols>True</HasSymbols>
       <HasExpired>False</HasExpired>
@@ -103,9 +103,9 @@ namespace Debugger.Tests {
       <ArgumentCount>0</ArgumentCount>
       <Arguments>[ValueCollection Count=0]</Arguments>
       <LocalVariables>[ValueCollection Count=0]</LocalVariables>
-    </ObjectDump>
+    </Object>
     <DebuggingPaused>StepComplete</DebuggingPaused>
-    <ObjectDump name="SelectedStackFrame" Type="StackFrame">
+    <Object name="SelectedStackFrame" Type="StackFrame" ToString="Debugger.Tests.TestPrograms.Stepping.Main">
       <MethodInfo>Main</MethodInfo>
       <HasSymbols>True</HasSymbols>
       <HasExpired>False</HasExpired>
@@ -115,12 +115,12 @@ namespace Debugger.Tests {
       <ArgumentCount>0</ArgumentCount>
       <Arguments>[ValueCollection Count=0]</Arguments>
       <LocalVariables>[ValueCollection Count=0]</LocalVariables>
-    </ObjectDump>
+    </Object>
     <ModuleLoaded symbols="False">System.Configuration.dll</ModuleLoaded>
     <ModuleLoaded symbols="False">System.Xml.dll</ModuleLoaded>
     <LogMessage>1\r\n</LogMessage>
     <DebuggingPaused>StepComplete</DebuggingPaused>
-    <ObjectDump name="SelectedStackFrame" Type="StackFrame">
+    <Object name="SelectedStackFrame" Type="StackFrame" ToString="Debugger.Tests.TestPrograms.Stepping.Main">
       <MethodInfo>Main</MethodInfo>
       <HasSymbols>True</HasSymbols>
       <HasExpired>False</HasExpired>
@@ -130,9 +130,9 @@ namespace Debugger.Tests {
       <ArgumentCount>0</ArgumentCount>
       <Arguments>[ValueCollection Count=0]</Arguments>
       <LocalVariables>[ValueCollection Count=0]</LocalVariables>
-    </ObjectDump>
+    </Object>
     <DebuggingPaused>StepComplete</DebuggingPaused>
-    <ObjectDump name="SelectedStackFrame" Type="StackFrame">
+    <Object name="SelectedStackFrame" Type="StackFrame" ToString="Debugger.Tests.TestPrograms.Stepping.Sub">
       <MethodInfo>Sub</MethodInfo>
       <HasSymbols>True</HasSymbols>
       <HasExpired>False</HasExpired>
@@ -142,9 +142,9 @@ namespace Debugger.Tests {
       <ArgumentCount>0</ArgumentCount>
       <Arguments>[ValueCollection Count=0]</Arguments>
       <LocalVariables>[ValueCollection Count=0]</LocalVariables>
-    </ObjectDump>
+    </Object>
     <DebuggingPaused>StepComplete</DebuggingPaused>
-    <ObjectDump name="SelectedStackFrame" Type="StackFrame">
+    <Object name="SelectedStackFrame" Type="StackFrame" ToString="Debugger.Tests.TestPrograms.Stepping.Sub">
       <MethodInfo>Sub</MethodInfo>
       <HasSymbols>True</HasSymbols>
       <HasExpired>False</HasExpired>
@@ -154,10 +154,10 @@ namespace Debugger.Tests {
       <ArgumentCount>0</ArgumentCount>
       <Arguments>[ValueCollection Count=0]</Arguments>
       <LocalVariables>[ValueCollection Count=0]</LocalVariables>
-    </ObjectDump>
+    </Object>
     <LogMessage>2\r\n</LogMessage>
     <DebuggingPaused>StepComplete</DebuggingPaused>
-    <ObjectDump name="SelectedStackFrame" Type="StackFrame">
+    <Object name="SelectedStackFrame" Type="StackFrame" ToString="Debugger.Tests.TestPrograms.Stepping.Sub">
       <MethodInfo>Sub</MethodInfo>
       <HasSymbols>True</HasSymbols>
       <HasExpired>False</HasExpired>
@@ -167,11 +167,11 @@ namespace Debugger.Tests {
       <ArgumentCount>0</ArgumentCount>
       <Arguments>[ValueCollection Count=0]</Arguments>
       <LocalVariables>[ValueCollection Count=0]</LocalVariables>
-    </ObjectDump>
+    </Object>
     <LogMessage>3\r\n</LogMessage>
     <LogMessage>4\r\n</LogMessage>
     <DebuggingPaused>StepComplete</DebuggingPaused>
-    <ObjectDump name="SelectedStackFrame" Type="StackFrame">
+    <Object name="SelectedStackFrame" Type="StackFrame" ToString="Debugger.Tests.TestPrograms.Stepping.Main">
       <MethodInfo>Main</MethodInfo>
       <HasSymbols>True</HasSymbols>
       <HasExpired>False</HasExpired>
@@ -181,9 +181,9 @@ namespace Debugger.Tests {
       <ArgumentCount>0</ArgumentCount>
       <Arguments>[ValueCollection Count=0]</Arguments>
       <LocalVariables>[ValueCollection Count=0]</LocalVariables>
-    </ObjectDump>
+    </Object>
     <DebuggingPaused>StepComplete</DebuggingPaused>
-    <ObjectDump name="SelectedStackFrame" Type="StackFrame">
+    <Object name="SelectedStackFrame" Type="StackFrame" ToString="Debugger.Tests.TestPrograms.Stepping.Main">
       <MethodInfo>Main</MethodInfo>
       <HasSymbols>True</HasSymbols>
       <HasExpired>False</HasExpired>
@@ -193,10 +193,10 @@ namespace Debugger.Tests {
       <ArgumentCount>0</ArgumentCount>
       <Arguments>[ValueCollection Count=0]</Arguments>
       <LocalVariables>[ValueCollection Count=0]</LocalVariables>
-    </ObjectDump>
+    </Object>
     <LogMessage>5\r\n</LogMessage>
     <DebuggingPaused>StepComplete</DebuggingPaused>
-    <ObjectDump name="SelectedStackFrame" Type="StackFrame">
+    <Object name="SelectedStackFrame" Type="StackFrame" ToString="Debugger.Tests.TestPrograms.Stepping.Main">
       <MethodInfo>Main</MethodInfo>
       <HasSymbols>True</HasSymbols>
       <HasExpired>False</HasExpired>
@@ -206,7 +206,7 @@ namespace Debugger.Tests {
       <ArgumentCount>0</ArgumentCount>
       <Arguments>[ValueCollection Count=0]</Arguments>
       <LocalVariables>[ValueCollection Count=0]</LocalVariables>
-    </ObjectDump>
+    </Object>
     <ProcessExited />
   </Test>
 </DebuggerTests>

@@ -63,9 +63,9 @@ namespace Debugger.Tests {
     <ModuleLoaded symbols="False">mscorlib.dll</ModuleLoaded>
     <ModuleLoaded symbols="True">Callstack.exe</ModuleLoaded>
     <DebuggingPaused>Break</DebuggingPaused>
-    <ObjectDump name="Callstack" Type="ReadOnlyCollection`1">
+    <Object name="Callstack" Type="ReadOnlyCollection`1" ToString="System.Collections.ObjectModel.ReadOnlyCollection`1[Debugger.StackFrame]">
       <Count>3</Count>
-      <Item Type="StackFrame">
+      <Item Type="StackFrame" ToString="Debugger.Tests.TestPrograms.Callstack.Sub2">
         <MethodInfo>Sub2</MethodInfo>
         <HasSymbols>True</HasSymbols>
         <HasExpired>False</HasExpired>
@@ -76,7 +76,7 @@ namespace Debugger.Tests {
         <Arguments>[ValueCollection Count=0]</Arguments>
         <LocalVariables>[ValueCollection Count=0]</LocalVariables>
       </Item>
-      <Item Type="StackFrame">
+      <Item Type="StackFrame" ToString="Debugger.Tests.TestPrograms.Callstack.Sub1">
         <MethodInfo>Sub1</MethodInfo>
         <HasSymbols>True</HasSymbols>
         <HasExpired>False</HasExpired>
@@ -87,7 +87,7 @@ namespace Debugger.Tests {
         <Arguments>[ValueCollection Count=0]</Arguments>
         <LocalVariables>[ValueCollection Count=0]</LocalVariables>
       </Item>
-      <Item Type="StackFrame">
+      <Item Type="StackFrame" ToString="Debugger.Tests.TestPrograms.Callstack.Main">
         <MethodInfo>Main</MethodInfo>
         <HasSymbols>True</HasSymbols>
         <HasExpired>False</HasExpired>
@@ -98,11 +98,11 @@ namespace Debugger.Tests {
         <Arguments>[ValueCollection Count=0]</Arguments>
         <LocalVariables>[ValueCollection Count=0]</LocalVariables>
       </Item>
-    </ObjectDump>
+    </Object>
     <DebuggingPaused>StepComplete</DebuggingPaused>
-    <ObjectDump name="Callstack" Type="ReadOnlyCollection`1">
+    <Object name="Callstack" Type="ReadOnlyCollection`1" ToString="System.Collections.ObjectModel.ReadOnlyCollection`1[Debugger.StackFrame]">
       <Count>2</Count>
-      <Item Type="StackFrame">
+      <Item Type="StackFrame" ToString="Debugger.Tests.TestPrograms.Callstack.Sub1">
         <MethodInfo>Sub1</MethodInfo>
         <HasSymbols>True</HasSymbols>
         <HasExpired>False</HasExpired>
@@ -113,7 +113,7 @@ namespace Debugger.Tests {
         <Arguments>[ValueCollection Count=0]</Arguments>
         <LocalVariables>[ValueCollection Count=0]</LocalVariables>
       </Item>
-      <Item Type="StackFrame">
+      <Item Type="StackFrame" ToString="Debugger.Tests.TestPrograms.Callstack.Main">
         <MethodInfo>Main</MethodInfo>
         <HasSymbols>True</HasSymbols>
         <HasExpired>False</HasExpired>
@@ -124,11 +124,11 @@ namespace Debugger.Tests {
         <Arguments>[ValueCollection Count=0]</Arguments>
         <LocalVariables>[ValueCollection Count=0]</LocalVariables>
       </Item>
-    </ObjectDump>
+    </Object>
     <DebuggingPaused>StepComplete</DebuggingPaused>
-    <ObjectDump name="Callstack" Type="ReadOnlyCollection`1">
+    <Object name="Callstack" Type="ReadOnlyCollection`1" ToString="System.Collections.ObjectModel.ReadOnlyCollection`1[Debugger.StackFrame]">
       <Count>1</Count>
-      <Item Type="StackFrame">
+      <Item Type="StackFrame" ToString="Debugger.Tests.TestPrograms.Callstack.Main">
         <MethodInfo>Main</MethodInfo>
         <HasSymbols>True</HasSymbols>
         <HasExpired>False</HasExpired>
@@ -139,7 +139,7 @@ namespace Debugger.Tests {
         <Arguments>[ValueCollection Count=0]</Arguments>
         <LocalVariables>[ValueCollection Count=0]</LocalVariables>
       </Item>
-    </ObjectDump>
+    </Object>
     <ProcessExited />
   </Test>
 </DebuggerTests>

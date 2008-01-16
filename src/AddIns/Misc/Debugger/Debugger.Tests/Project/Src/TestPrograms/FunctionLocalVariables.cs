@@ -50,9 +50,9 @@ namespace Debugger.Tests {
     <ModuleLoaded symbols="False">mscorlib.dll</ModuleLoaded>
     <ModuleLoaded symbols="True">FunctionLocalVariables.exe</ModuleLoaded>
     <DebuggingPaused>Break</DebuggingPaused>
-    <ObjectDump name="LocalVariables" Type="ValueCollection">
+    <Object name="LocalVariables" Type="ValueCollection" ToString="[ValueCollection Count=5]">
       <Count>5</Count>
-      <Item Type="Value">
+      <Item Type="Value" ToString="i = 0">
         <IsArray>False</IsArray>
         <ArrayLenght exception="Value is not an array" />
         <ArrayRank exception="Value is not an array" />
@@ -68,7 +68,7 @@ namespace Debugger.Tests {
         <HasExpired>False</HasExpired>
         <Type>System.Int32</Type>
       </Item>
-      <Item Type="Value">
+      <Item Type="Value" ToString="s = S">
         <IsArray>False</IsArray>
         <ArrayLenght exception="Value is not an array" />
         <ArrayRank exception="Value is not an array" />
@@ -84,7 +84,7 @@ namespace Debugger.Tests {
         <HasExpired>False</HasExpired>
         <Type>System.String</Type>
       </Item>
-      <Item Type="Value">
+      <Item Type="Value" ToString="args = {System.String[]}">
         <IsArray>True</IsArray>
         <ArrayLenght>1</ArrayLenght>
         <ArrayRank>1</ArrayRank>
@@ -100,7 +100,7 @@ namespace Debugger.Tests {
         <HasExpired>False</HasExpired>
         <Type>System.String[]</Type>
       </Item>
-      <Item Type="Value">
+      <Item Type="Value" ToString="n = &lt;null&gt;">
         <IsArray>False</IsArray>
         <ArrayLenght exception="Value is not an array" />
         <ArrayRank exception="Value is not an array" />
@@ -116,7 +116,7 @@ namespace Debugger.Tests {
         <HasExpired>False</HasExpired>
         <Type>System.Object</Type>
       </Item>
-      <Item Type="Value">
+      <Item Type="Value" ToString="o = {System.Object}">
         <IsArray>False</IsArray>
         <ArrayLenght exception="Value is not an array" />
         <ArrayRank exception="Value is not an array" />
@@ -132,7 +132,7 @@ namespace Debugger.Tests {
         <HasExpired>False</HasExpired>
         <Type>System.Object</Type>
       </Item>
-    </ObjectDump>
+    </Object>
     <ProcessExited />
   </Test>
 </DebuggerTests>
