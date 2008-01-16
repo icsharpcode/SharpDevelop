@@ -17,6 +17,7 @@ using System.Configuration;
 using System.Collections.Generic;
 
 using ICSharpCode.DataTools;
+using log = ICSharpCode.Core.LoggingService;
 
 namespace ICSharpCode.ServerTools
 {
@@ -33,13 +34,14 @@ namespace ICSharpCode.ServerTools
 
         public void Refresh()
         {
+        	log.Debug("refreshing ServerControl");
+        	log.Debug("loading oledb  connection strings");
             ConnectionStringSettingsCollection c
             = OleDbConnectionUtil.GetConnectionSettingsCollection();
             this.dbTree.Items.Clear();
             foreach (ConnectionStringSettings s in c)
             {
                 TreeViewItem n = new TreeViewItem();
-                //n.Name = s.Name;
                 n.Header = s.Name;
                 this.dbTree.Items.Add(n);                
             }
@@ -59,15 +61,31 @@ namespace ICSharpCode.ServerTools
 
             //Cast the generic object that PromptNew returns to an ADODB._Connection.
             aDOcon = (ADODB._Connection)mydlg.PromptNew();
+            if (aDOcon == null)
+            {
+            	return;
+            }
 
             oleCon.ConnectionString = aDOcon.ConnectionString;
             oleCon.Open();
 
             if (oleCon.State.ToString() == "Open")
             {
-                // TODO: add the oledb connection to the local config and
-                // refresh
-                OleDbConnectionUtil.Put("any name", oleCon.ConnectionString);
+                // If we get to here, we have a valid oledb
+                // connection string, at least on the basis of the current
+                // state of the platform that it refers to.
+                // Now construct a name for the connection string settings based on
+                // the attributes of the connection string and save it.
+                // VS08 assumes the following naming scheme:
+                // connection name ::= <provider name>.<host name>\<server name>.<catalog name>
+                
+                string provider = oleCon.Provider;
+                string source = oleCon.DataSource;
+                string catalogue = oleCon.Database;
+                string dbServerName = @provider + ":" + @source + "." + @catalogue;
+                
+                OleDbConnectionUtil.Put(dbServerName, oleCon.ConnectionString);
+                OleDbConnectionUtil.Save();
                 this.Refresh();
                 oleCon.Close();
             }

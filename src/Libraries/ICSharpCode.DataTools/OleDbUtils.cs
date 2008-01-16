@@ -25,9 +25,9 @@ namespace ICSharpCode.DataTools
         /// <exception cref="ArgumentException">thrown if the name of the connection is found, 
         /// but is not a valid oledb connection string</exception>
         /// 
-        public const string CONNECTION_STRINGS_FILE = "Connections.conf";
+        public const string CONNECTION_STRINGS_FILE = "DatabaseConnections.xml";
 
-        private static ConnectionStringSettingsCollection cssc;
+        private static ConnectionStringSettingsCollection cssc = null;
 
         public static bool TryGet(string connectionName, out OleDbConnection conn)
         {
@@ -46,11 +46,22 @@ namespace ICSharpCode.DataTools
                 return false;
             }
         }
-
+		
+        /// <summary>
+        /// Validates and adds an oledb connection string to the internal cache.
+        /// Note that this does not persist it - call Save() immediately after this
+        /// you want the connection string to be available between sessions.
+        /// </summary>
+        /// <param name="name">an arbitrary display for the connection which can be used to
+        /// display the connection. There can therefore be multiple instances of the same
+        /// connection in use.</param>
+        /// <param name="connectionString"></param>
         public static void Put(string name, string connectionString)
         {
             // check that it is an oledb connection string
             OleDbConnectionStringBuilder builder = new OleDbConnectionStringBuilder(connectionString);
+            // if an exception wasn't thrown then its a valid connection string, so add it to
+            // the cache
             ConnectionStringSettings st = new ConnectionStringSettings(name, connectionString);
             cssc.Add(st);
         }
@@ -92,7 +103,7 @@ namespace ICSharpCode.DataTools
 
             cssc = new ConnectionStringSettingsCollection();
 
-            // Does the connections file exist - if not return an emptry collection
+            // Does the connections file exist - if not return an empty collection
             string configPath = PropertyService.ConfigDirectory;
             string filePath = Path.Combine(configPath, CONNECTION_STRINGS_FILE);
 
@@ -106,8 +117,10 @@ namespace ICSharpCode.DataTools
                 {
                     while (sr.Length > 0)
                     {
-                        XmlSerializer x = new XmlSerializer(typeof(ConnectionStringSettings));
-                        ConnectionStringSettings cs = (ConnectionStringSettings)x.Deserialize(sr);
+                        XmlSerializer x = new XmlSerializer(typeof(ConnectionStringSettingsXMLSerializerWrapper));
+                        ConnectionStringSettingsXMLSerializerWrapper csw 
+                        	= (ConnectionStringSettingsXMLSerializerWrapper)x.Deserialize(sr);
+                        ConnectionStringSettings cs = csw.ConnectionStringSettings;
                         cssc.Add(cs);
                     }
                 }
@@ -128,33 +141,84 @@ namespace ICSharpCode.DataTools
         /// </summary>
         public static void Save()
         {
+        	log.Debug("persisting oledb connection strings");
             string configPath = PropertyService.ConfigDirectory;
             string filePath = Path.Combine(configPath, CONNECTION_STRINGS_FILE);
             try
             {
+            	log.Debug("existing file found, so deleting it to be replaced");
                 File.Delete(filePath);
             }
             catch (Exception)
             {
                 // this should just indicate that the file does not exist
-                log.Info("no connection settings file found while saving - will create a new one");
+                log.Debug("no connection settings file found while saving - will create a new one");
             }
 
             using (Stream sw = new FileStream(filePath, FileMode.CreateNew))
             {
-                XmlSerializer xs = new XmlSerializer(typeof(ConnectionStringSettings));
+                XmlSerializer xs = new XmlSerializer(typeof(ConnectionStringSettingsXMLSerializerWrapper));
                 foreach (ConnectionStringSettings cs in cssc)
                 {
                     try
                     {
-                        xs.Serialize(sw, cs);
+                    	log.Debug("serialising as xml and storing: " + cs.ToString());
+                    	ConnectionStringSettingsXMLSerializerWrapper csw 
+                    		= new ConnectionStringSettingsXMLSerializerWrapper(cs);
+                        xs.Serialize(sw, csw);
                     }
-                    catch
+                    catch(Exception e)
                     {
-                        log.Debug("failed to write ConnectionStringSettings: " + cs.ToString());
+                    	throw (e);
+                    		// TODO: do something sensible with the exception if it occurs
+                        //log.Debug("failed to write ConnectionStringSettings: " + cs.ToString());
+                        //log.Debug(e.StackTrace);
                     }
                 }
             }
         }
+    }
+    
+    public class ConnectionStringSettingsXMLSerializerWrapper
+    {
+    	private ConnectionStringSettings settings;
+    	
+    	public ConnectionStringSettingsXMLSerializerWrapper()
+    	{
+    		
+    	}
+    	
+    	public ConnectionStringSettingsXMLSerializerWrapper(ConnectionStringSettings settings)
+    	{
+    		this.settings = settings;
+    	}
+    	
+    	public string Name {
+    		get {
+    			return settings.Name;
+    		}
+    		set {
+				ConnectionStringSettings.Name = value;
+    		}
+    	}
+    	
+    	public string ConnectionString {
+    		get {
+    			return settings.ConnectionString;
+    		}
+    		set {
+    			ConnectionStringSettings.ConnectionString = value;
+    		}
+    	}
+    	
+    	[XmlIgnore]
+    	public ConnectionStringSettings ConnectionStringSettings {
+    		get {
+    			if (settings == null) {
+    				settings = new ConnectionStringSettings();
+    			}
+    			return settings;
+    		}
+    	}
     }
 }

@@ -80,6 +80,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Compile Include="DbControlNode.cs" />
+    <Compile Include="DbControlController.cs" />
     <Compile Include="ServerControl.xaml.cs">
       <DependentUpon>ServerControl.xaml</DependentUpon>
       <SubType>Code</SubType>
