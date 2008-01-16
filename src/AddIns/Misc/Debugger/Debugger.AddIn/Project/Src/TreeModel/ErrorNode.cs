@@ -9,6 +9,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Windows.Forms;
 
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Sda;
 
 using Debugger;
@@ -44,7 +45,7 @@ namespace Debugger.AddIn.TreeModel
 			
 			ToolStripMenuItem showError;
 			showError = new ToolStripMenuItem();
-			showError.Text = "Show full error...";
+			showError.Text = ResourceService.GetString("MainWindow.Windows.Debug.LocalVariables.ShowFullError");
 			showError.Checked = false;
 			showError.Click += delegate {
 				using (ExceptionBox box = new ExceptionBox(error, null, false)) {

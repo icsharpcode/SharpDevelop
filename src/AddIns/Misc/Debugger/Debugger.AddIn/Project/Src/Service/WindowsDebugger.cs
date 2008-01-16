@@ -454,17 +454,18 @@ namespace ICSharpCode.SharpDevelop.Services
 			if (process.HasExpired) return;
 			
 			switch (result) {
-				case ExceptionForm.Result.Break: 
-					break;
-				case ExceptionForm.Result.Continue:
-					e.Continue = true;
-					return;
-				case ExceptionForm.Result.Ignore:
+				case ExceptionForm.Result.Break:
 					if (e.Process.SelectedThread.InterceptCurrentException()) {
 						e.Continue = true; // HACK: Start interception
 					} else {
 						MessageService.ShowMessage("${res:MainWindow.Windows.Debug.ExceptionForm.Error.CannotInterceptException}", "${res:MainWindow.Windows.Debug.ExceptionForm.Title}");
 					}
+					break;
+				case ExceptionForm.Result.Continue:
+					e.Continue = true;
+					return;
+				case ExceptionForm.Result.Terminate:
+					process.Terminate();
 					break;
 			}
 		}

@@ -45,24 +45,23 @@ namespace ICSharpCode.SharpDevelop.Services
 {
 	public class ExceptionForm : System.Windows.Forms.Form
 	{
-		public enum Result {Break, Continue, Ignore};
-
-		private Result result = Result.Continue;
-
-		private System.Windows.Forms.TextBox textBox;
-		private System.Windows.Forms.Button buttonContinue;
-		private System.Windows.Forms.Button buttonIgnore;
+		public enum Result {Break, Continue, Terminate};
+		
+		private Result result = Result.Break; // Default
+		
 		private System.Windows.Forms.PictureBox pictureBox;
+		private System.Windows.Forms.TextBox textBox;
 		private System.Windows.Forms.Button buttonBreak;
-
-
+		private System.Windows.Forms.Button buttonContinue;
+		private System.Windows.Forms.Button buttonTerminate;
+		
 		private ExceptionForm()
 		{
 			InitializeComponent();
 			this.Text = StringParser.Parse(this.Text);
-			buttonContinue.Text = StringParser.Parse(buttonContinue.Text);
-			buttonIgnore.Text = StringParser.Parse(buttonIgnore.Text);
 			buttonBreak.Text = StringParser.Parse(buttonBreak.Text);
+			buttonContinue.Text = StringParser.Parse(buttonContinue.Text);
+			buttonTerminate.Text = StringParser.Parse(buttonTerminate.Text);
 		}
 		
 		public static Result Show(Debugger.Exception exception)
@@ -73,6 +72,7 @@ namespace ICSharpCode.SharpDevelop.Services
 					exception.Message + "\r\n\r\n" +
 					exception.Callstack.Replace("\n","\r\n");
 				form.pictureBox.Image = ResourceService.GetBitmap((exception.ExceptionType != ExceptionType.DEBUG_EXCEPTION_UNHANDLED)?"Icons.32x32.Warning":"Icons.32x32.Error");
+				form.buttonContinue.Enabled = exception.ExceptionType != ExceptionType.DEBUG_EXCEPTION_UNHANDLED;
 				form.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm);
 				return form.result;
 			}
@@ -87,7 +87,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		private void InitializeComponent() {
 			this.buttonBreak = new System.Windows.Forms.Button();
 			this.pictureBox = new System.Windows.Forms.PictureBox();
-			this.buttonIgnore = new System.Windows.Forms.Button();
+			this.buttonTerminate = new System.Windows.Forms.Button();
 			this.buttonContinue = new System.Windows.Forms.Button();
 			this.textBox = new System.Windows.Forms.TextBox();
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
@@ -100,7 +100,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			this.buttonBreak.Name = "buttonBreak";
 			this.buttonBreak.Size = new System.Drawing.Size(91, 32);
 			this.buttonBreak.TabIndex = 0;
-			this.buttonBreak.Text = "${res:XML.MainMenu.DebugMenu.Break}";
+			this.buttonBreak.Text = "${res:MainWindow.Windows.Debug.ExceptionForm.Break}";
 			this.buttonBreak.Click += new System.EventHandler(this.buttonBreak_Click);
 			// 
 			// pictureBox
@@ -112,16 +112,16 @@ namespace ICSharpCode.SharpDevelop.Services
 			this.pictureBox.TabIndex = 3;
 			this.pictureBox.TabStop = false;
 			// 
-			// buttonIgnore
+			// buttonTerminate
 			// 
-			this.buttonIgnore.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-			this.buttonIgnore.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.buttonIgnore.Location = new System.Drawing.Point(372, 160);
-			this.buttonIgnore.Name = "buttonIgnore";
-			this.buttonIgnore.Size = new System.Drawing.Size(91, 32);
-			this.buttonIgnore.TabIndex = 2;
-			this.buttonIgnore.Text = "${res:Global.IgnoreButtonText}";
-			this.buttonIgnore.Click += new System.EventHandler(this.buttonIgnore_Click);
+			this.buttonTerminate.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+			this.buttonTerminate.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this.buttonTerminate.Location = new System.Drawing.Point(372, 160);
+			this.buttonTerminate.Name = "buttonIgnore";
+			this.buttonTerminate.Size = new System.Drawing.Size(91, 32);
+			this.buttonTerminate.TabIndex = 2;
+			this.buttonTerminate.Text = "${res:MainWindow.Windows.Debug.ExceptionForm.Terminate}";
+			this.buttonTerminate.Click += new System.EventHandler(this.buttonTerminate_Click);
 			// 
 			// buttonContinue
 			// 
@@ -130,7 +130,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			this.buttonContinue.Name = "buttonContinue";
 			this.buttonContinue.Size = new System.Drawing.Size(91, 32);
 			this.buttonContinue.TabIndex = 1;
-			this.buttonContinue.Text = "${res:ICSharpCode.SharpDevelop.ExceptionBox.Continue}";
+			this.buttonContinue.Text = "${res:MainWindow.Windows.Debug.ExceptionForm.Continue}";
 			this.buttonContinue.Click += new System.EventHandler(this.buttonContinue_Click);
 			// 
 			// textBox
@@ -149,11 +149,11 @@ namespace ICSharpCode.SharpDevelop.Services
 			// 
 			// ExceptionForm
 			// 
-			this.CancelButton = this.buttonIgnore;
+			this.CancelButton = this.buttonBreak;
 			this.ClientSize = new System.Drawing.Size(638, 203);
 			this.Controls.Add(this.textBox);
 			this.Controls.Add(this.pictureBox);
-			this.Controls.Add(this.buttonIgnore);
+			this.Controls.Add(this.buttonTerminate);
 			this.Controls.Add(this.buttonContinue);
 			this.Controls.Add(this.buttonBreak);
 			this.MaximizeBox = false;
@@ -180,9 +180,9 @@ namespace ICSharpCode.SharpDevelop.Services
 			Close();
 		}
 
-		private void buttonIgnore_Click(object sender, System.EventArgs e)
+		private void buttonTerminate_Click(object sender, System.EventArgs e)
 		{
-			result = Result.Ignore;
+			result = Result.Terminate;
 			Close();
 		}
 	}
