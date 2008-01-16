@@ -14,41 +14,20 @@ using Debugger.Wrappers.CorDebug;
 namespace Debugger
 {
 	/// <summary>
-	/// Delegate that is used to get value. This delegate may be called at any time and should never return null.
+	/// Value class provides functions to examine value in the debuggee.
+	/// It has very life-time.  In general, value dies whenever debugger is
+	/// resumed (this includes method invocation and property evaluation).
+	/// You can use Expressions to reobtain the value.
 	/// </summary>
-	delegate ICorDebugValue CorValueGetter();
-	
-	/// <summary>
-	/// Value class holds data necessaty to obtain the value of a given object
-	/// even after continue. It provides functions to examine the object.
-	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// Expiration: Once value expires it can not be used anymore. 
-	/// Expiration is permanet - once value expires it stays expired. 
-	/// Value expires when any object specified in constructor expires 
-	/// or when process exits.
-	/// </para>
-	/// <para>
-	/// Mutation: As long as any dependecy does not mutate the last
-	/// obteined value is still considered up to date. (If continue is
-	/// called and internal value is neutred, new copy will be obatined)
-	/// </para>
-	/// </remarks>
-	public partial class Value: DebuggerObject, IExpirable
+	public partial class Value: DebuggerObject
 	{
 		Process        process;
 		Expression     expression;
 		ICorDebugValue rawCorValue;
-		
+		PauseSession   rawCorValue_pauseSession;
 		ICorDebugValue corValue;
 		PauseSession   corValue_pauseSession;
 		DebugType      type;
-		
-		/// <summary> Occurs when the Value can not be used </summary>
-		public event EventHandler Expired;
-		
-		bool hasExpired = false;
 		
 		/// <summary> Expression which can be used to reobtain this value. </summary>
 		public Expression Expression {
@@ -93,7 +72,8 @@ namespace Debugger
 		/// and can not be used anymore </summary>
 		public bool HasExpired {
 			get {
-				return hasExpired;
+				return rawCorValue_pauseSession != process.PauseSession &&
+				       !rawCorValue.Is<ICorDebugHandleValue>();
 			}
 		}
 		
@@ -156,24 +136,12 @@ namespace Debugger
 			this.process = process;
 			this.expression = expression;
 			this.rawCorValue = rawCorValue;
+			this.rawCorValue_pauseSession = process.PauseSession;
 			
 			if (this.CorValue == null) {
 				type = DebugType.GetType(this.Process, "System.Object");
 			} else {
 				type = DebugType.Create(process, this.CorValue.CastTo<ICorDebugValue2>().ExactType);
-			}
-			
-			if (!rawCorValue.Is<ICorDebugHandleValue>()) {
-				process.DebuggingResumed += Process_DebuggingResumed;
-			}
-		}
-		
-		void Process_DebuggingResumed(object sender, ProcessEventArgs args)
-		{
-			process.DebuggingResumed -= Process_DebuggingResumed;
-			this.hasExpired = true;
-			if (Expired != null) {
-				Expired(this, EventArgs.Empty);
 			}
 		}
 		

@@ -229,7 +229,12 @@ namespace Debugger.Tests
 			
 			
 			container.SetAttribute("Type", type.Name);
-			container.SetAttribute("ToString", obj.ToString());
+			try {
+				container.SetAttribute("ToString", obj.ToString());
+			} catch (System.Exception e) {
+				while(e.InnerException != null) e = e.InnerException;
+				container.SetAttribute("ToString_exception", e.Message);
+			}
 			
 			foreach(System.Reflection.PropertyInfo property in type.GetProperties()) {
 				if (property.GetGetMethod() == null) continue;

@@ -104,7 +104,7 @@ namespace Debugger.Tests {
     <ModuleLoaded symbols="False">mscorlib.dll</ModuleLoaded>
     <ModuleLoaded symbols="True">FunctionVariablesLifetime.exe</ModuleLoaded>
     <DebuggingPaused>Break</DebuggingPaused>
-    <ObjectDump name="argument" Type="Value">
+    <argument Type="Value" ToString="argument = 1">
       <IsArray>False</IsArray>
       <ArrayLenght exception="Value is not an array" />
       <ArrayRank exception="Value is not an array" />
@@ -119,8 +119,8 @@ namespace Debugger.Tests {
       <AsString>1</AsString>
       <HasExpired>False</HasExpired>
       <Type>System.Int32</Type>
-    </ObjectDump>
-    <ObjectDump name="local" Type="Value">
+    </argument>
+    <local Type="Value" ToString="local = 2">
       <IsArray>False</IsArray>
       <ArrayLenght exception="Value is not an array" />
       <ArrayRank exception="Value is not an array" />
@@ -135,8 +135,8 @@ namespace Debugger.Tests {
       <AsString>2</AsString>
       <HasExpired>False</HasExpired>
       <Type>System.Int32</Type>
-    </ObjectDump>
-    <ObjectDump name="@class" Type="Value">
+    </local>
+    <_x0040_class Type="Value" ToString="this.class = 3">
       <IsArray>False</IsArray>
       <ArrayLenght exception="Value is not an array" />
       <ArrayRank exception="Value is not an array" />
@@ -151,9 +151,9 @@ namespace Debugger.Tests {
       <AsString>3</AsString>
       <HasExpired>False</HasExpired>
       <Type>System.Int32</Type>
-    </ObjectDump>
+    </_x0040_class>
     <DebuggingPaused>Break</DebuggingPaused>
-    <ObjectDump name="argument" Type="Value">
+    <argument Type="Value" ToString_exception="Value has expired">
       <IsArray exception="Value has expired" />
       <ArrayLenght exception="Value has expired" />
       <ArrayRank exception="Value has expired" />
@@ -168,8 +168,8 @@ namespace Debugger.Tests {
       <AsString exception="Value has expired" />
       <HasExpired>True</HasExpired>
       <Type>System.Int32</Type>
-    </ObjectDump>
-    <ObjectDump name="local" Type="Value">
+    </argument>
+    <local Type="Value" ToString_exception="Value has expired">
       <IsArray exception="Value has expired" />
       <ArrayLenght exception="Value has expired" />
       <ArrayRank exception="Value has expired" />
@@ -184,8 +184,8 @@ namespace Debugger.Tests {
       <AsString exception="Value has expired" />
       <HasExpired>True</HasExpired>
       <Type>System.Int32</Type>
-    </ObjectDump>
-    <ObjectDump name="@class" Type="Value">
+    </local>
+    <_x0040_class Type="Value" ToString_exception="Value has expired">
       <IsArray exception="Value has expired" />
       <ArrayLenght exception="Value has expired" />
       <ArrayRank exception="Value has expired" />
@@ -200,8 +200,8 @@ namespace Debugger.Tests {
       <AsString exception="Value has expired" />
       <HasExpired>True</HasExpired>
       <Type>System.Int32</Type>
-    </ObjectDump>
-    <ObjectDump name="localInSubFunction" Type="Value">
+    </_x0040_class>
+    <localInSubFunction Type="Value" ToString="localInSubFunction = 4">
       <IsArray>False</IsArray>
       <ArrayLenght exception="Value is not an array" />
       <ArrayRank exception="Value is not an array" />
@@ -216,9 +216,9 @@ namespace Debugger.Tests {
       <AsString>4</AsString>
       <HasExpired>False</HasExpired>
       <Type>System.Int32</Type>
-    </ObjectDump>
+    </localInSubFunction>
     <DebuggingPaused>Break</DebuggingPaused>
-    <ObjectDump name="argument" Type="Value">
+    <argument Type="Value" ToString_exception="Value has expired">
       <IsArray exception="Value has expired" />
       <ArrayLenght exception="Value has expired" />
       <ArrayRank exception="Value has expired" />
@@ -233,8 +233,8 @@ namespace Debugger.Tests {
       <AsString exception="Value has expired" />
       <HasExpired>True</HasExpired>
       <Type>System.Int32</Type>
-    </ObjectDump>
-    <ObjectDump name="local" Type="Value">
+    </argument>
+    <local Type="Value" ToString_exception="Value has expired">
       <IsArray exception="Value has expired" />
       <ArrayLenght exception="Value has expired" />
       <ArrayRank exception="Value has expired" />
@@ -249,8 +249,8 @@ namespace Debugger.Tests {
       <AsString exception="Value has expired" />
       <HasExpired>True</HasExpired>
       <Type>System.Int32</Type>
-    </ObjectDump>
-    <ObjectDump name="@class" Type="Value">
+    </local>
+    <_x0040_class Type="Value" ToString_exception="Value has expired">
       <IsArray exception="Value has expired" />
       <ArrayLenght exception="Value has expired" />
       <ArrayRank exception="Value has expired" />
@@ -265,8 +265,8 @@ namespace Debugger.Tests {
       <AsString exception="Value has expired" />
       <HasExpired>True</HasExpired>
       <Type>System.Int32</Type>
-    </ObjectDump>
-    <ObjectDump name="localInSubFunction" Type="Value">
+    </_x0040_class>
+    <localInSubFunction Type="Value" ToString_exception="Value has expired">
       <IsArray exception="Value has expired" />
       <ArrayLenght exception="Value has expired" />
       <ArrayRank exception="Value has expired" />
@@ -281,9 +281,9 @@ namespace Debugger.Tests {
       <AsString exception="Value has expired" />
       <HasExpired>True</HasExpired>
       <Type>System.Int32</Type>
-    </ObjectDump>
+    </localInSubFunction>
     <DebuggingPaused>Break</DebuggingPaused>
-    <ObjectDump name="argument" Type="Value">
+    <argument Type="Value" ToString_exception="Value has expired">
       <IsArray exception="Value has expired" />
       <ArrayLenght exception="Value has expired" />
       <ArrayRank exception="Value has expired" />
@@ -298,8 +298,8 @@ namespace Debugger.Tests {
       <AsString exception="Value has expired" />
       <HasExpired>True</HasExpired>
       <Type>System.Int32</Type>
-    </ObjectDump>
-    <ObjectDump name="local" Type="Value">
+    </argument>
+    <local Type="Value" ToString_exception="Value has expired">
       <IsArray exception="Value has expired" />
       <ArrayLenght exception="Value has expired" />
       <ArrayRank exception="Value has expired" />
@@ -314,8 +314,8 @@ namespace Debugger.Tests {
       <AsString exception="Value has expired" />
       <HasExpired>True</HasExpired>
       <Type>System.Int32</Type>
-    </ObjectDump>
-    <ObjectDump name="@class" Type="Value">
+    </local>
+    <_x0040_class Type="Value" ToString_exception="Value has expired">
       <IsArray exception="Value has expired" />
       <ArrayLenght exception="Value has expired" />
       <ArrayRank exception="Value has expired" />
@@ -330,8 +330,8 @@ namespace Debugger.Tests {
       <AsString exception="Value has expired" />
       <HasExpired>True</HasExpired>
       <Type>System.Int32</Type>
-    </ObjectDump>
-    <ObjectDump name="localInSubFunction" Type="Value">
+    </_x0040_class>
+    <localInSubFunction Type="Value" ToString_exception="Value has expired">
       <IsArray exception="Value has expired" />
       <ArrayLenght exception="Value has expired" />
       <ArrayRank exception="Value has expired" />
@@ -346,8 +346,8 @@ namespace Debugger.Tests {
       <AsString exception="Value has expired" />
       <HasExpired>True</HasExpired>
       <Type>System.Int32</Type>
-    </ObjectDump>
-    <ObjectDump name="localInSubFunction(new)" Type="Value">
+    </localInSubFunction>
+    <localInSubFunction_x0028_new_x0029_ Type="Value" ToString="localInSubFunction = 4">
       <IsArray>False</IsArray>
       <ArrayLenght exception="Value is not an array" />
       <ArrayRank exception="Value is not an array" />
@@ -362,9 +362,9 @@ namespace Debugger.Tests {
       <AsString>4</AsString>
       <HasExpired>False</HasExpired>
       <Type>System.Int32</Type>
-    </ObjectDump>
+    </localInSubFunction_x0028_new_x0029_>
     <DebuggingPaused>Break</DebuggingPaused>
-    <ObjectDump name="argument" Type="Value">
+    <argument Type="Value" ToString_exception="Value has expired">
       <IsArray exception="Value has expired" />
       <ArrayLenght exception="Value has expired" />
       <ArrayRank exception="Value has expired" />
@@ -379,8 +379,8 @@ namespace Debugger.Tests {
       <AsString exception="Value has expired" />
       <HasExpired>True</HasExpired>
       <Type>System.Int32</Type>
-    </ObjectDump>
-    <ObjectDump name="local" Type="Value">
+    </argument>
+    <local Type="Value" ToString_exception="Value has expired">
       <IsArray exception="Value has expired" />
       <ArrayLenght exception="Value has expired" />
       <ArrayRank exception="Value has expired" />
@@ -395,8 +395,8 @@ namespace Debugger.Tests {
       <AsString exception="Value has expired" />
       <HasExpired>True</HasExpired>
       <Type>System.Int32</Type>
-    </ObjectDump>
-    <ObjectDump name="@class" Type="Value">
+    </local>
+    <_x0040_class Type="Value" ToString_exception="Value has expired">
       <IsArray exception="Value has expired" />
       <ArrayLenght exception="Value has expired" />
       <ArrayRank exception="Value has expired" />
@@ -411,8 +411,8 @@ namespace Debugger.Tests {
       <AsString exception="Value has expired" />
       <HasExpired>True</HasExpired>
       <Type>System.Int32</Type>
-    </ObjectDump>
-    <ObjectDump name="localInSubFunction" Type="Value">
+    </_x0040_class>
+    <localInSubFunction Type="Value" ToString_exception="Value has expired">
       <IsArray exception="Value has expired" />
       <ArrayLenght exception="Value has expired" />
       <ArrayRank exception="Value has expired" />
@@ -427,7 +427,7 @@ namespace Debugger.Tests {
       <AsString exception="Value has expired" />
       <HasExpired>True</HasExpired>
       <Type>System.Int32</Type>
-    </ObjectDump>
+    </localInSubFunction>
     <ProcessExited />
   </Test>
 </DebuggerTests>
