@@ -9,7 +9,7 @@ using System;
 
 namespace Debugger.Tests
 {
-	[AttributeUsage(AttributeTargets.Class)]
+	[AttributeUsage(AttributeTargets.Property)]
 	public class ExpandAttribute: Attribute
 	{
 		

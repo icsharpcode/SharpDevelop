@@ -31,8 +31,14 @@ namespace Debugger
 		/// <summary> Gets the name of this member </summary>
 		public abstract string Name { get; }
 		
+		/// <summary> Gets name of the method including the full name of the declaring type </summary>
+		public string FullName {
+			get {
+				return this.DeclaringType.FullName + "." + this.Name;
+			}
+		}
+		
 		/// <summary> Gets the module in which this member is defined </summary>
-		[Debugger.Tests.ToStringOnly]
 		public Module Module {
 			get {
 				return declaringType.Module;
@@ -40,7 +46,6 @@ namespace Debugger
 		}
 		
 		/// <summary> Gets the type that declares this member element </summary>
-		[Debugger.Tests.ToStringOnly]
 		public DebugType DeclaringType {
 			get {
 				return declaringType;
@@ -63,6 +68,11 @@ namespace Debugger
 		internal MemberInfo(DebugType declaringType)
 		{
 			this.declaringType = declaringType;
+		}
+		
+		public override string ToString()
+		{
+			return this.Name;
 		}
 	}
 }

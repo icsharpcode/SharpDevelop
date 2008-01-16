@@ -57,7 +57,6 @@ namespace Debugger
 		}
 		
 		/// <summary> Gets the dimensions of the array  </summary>
-		[Debugger.Tests.ToStringOnly]
 		public ArrayDimensions ArrayDimensions {
 			get {
 				int rank = this.ArrayRank;

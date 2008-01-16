@@ -262,7 +262,6 @@ namespace Debugger
 			}
 		}
 		
-		[Debugger.Tests.ToStringOnly]
 		public StackFrame SelectedStackFrame {
 			get {
 				// Forum-20456: Do not return expired StackFrame
@@ -277,7 +276,6 @@ namespace Debugger
 			}
 		}
 		
-		[Debugger.Tests.ToStringOnly]
 		public StackFrame LastStackFrameWithLoadedSymbols {
 			get {
 				foreach (StackFrame stackFrame in CallstackEnum) {
@@ -293,7 +291,6 @@ namespace Debugger
 		/// Returns the most recent stack frame on callstack.
 		/// Returns null if callstack is empty.
 		/// </summary>
-		[Debugger.Tests.ToStringOnly]
 		public StackFrame LastStackFrame {
 			get {
 				foreach(StackFrame stackFrame in CallstackEnum) {
@@ -306,7 +303,6 @@ namespace Debugger
 		/// <summary>
 		/// Returns the first stack frame that was called on thread
 		/// </summary>
-		[Debugger.Tests.ToStringOnly]
 		public StackFrame FirstStackFrame {
 			get {
 				StackFrame first = null;

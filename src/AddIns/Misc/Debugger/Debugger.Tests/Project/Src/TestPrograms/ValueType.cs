@@ -69,17 +69,7 @@ namespace Debugger.Tests {
     </ObjectDump>
     <ObjectDump name="typeof(this)" Type="DebugType">
       <ManagedType>null</ManagedType>
-      <Module Type="Module">
-        <Unloaded>False</Unloaded>
-        <SymReader>Debugger.Wrappers.CorSym.ISymUnmanagedReader</SymReader>
-        <CorModule>Debugger.Wrappers.CorDebug.ICorDebugModule</CorModule>
-        <BaseAdress>4194304</BaseAdress>
-        <IsDynamic>False</IsDynamic>
-        <IsInMemory>False</IsInMemory>
-        <Filename>ValueType.exe</Filename>
-        <SymbolsLoaded>True</SymbolsLoaded>
-        <OrderOfLoading>1</OrderOfLoading>
-      </Module>
+      <Module>ValueType.exe</Module>
       <MetadataToken>33554434</MetadataToken>
       <FullName>Debugger.Tests.ValueType</FullName>
       <HasElementType>False</HasElementType>
@@ -89,53 +79,7 @@ namespace Debugger.Tests {
       <IsValueType>True</IsValueType>
       <IsPrimitive>False</IsPrimitive>
       <IsInteger>False</IsInteger>
-      <BaseType Type="DebugType">
-        <ManagedType>null</ManagedType>
-        <Module Type="Module">
-          <Unloaded>False</Unloaded>
-          <SymReader>null</SymReader>
-          <CorModule>Debugger.Wrappers.CorDebug.ICorDebugModule</CorModule>
-          <BaseAdress>2030829568</BaseAdress>
-          <IsDynamic>False</IsDynamic>
-          <IsInMemory>False</IsInMemory>
-          <Filename>mscorlib.dll</Filename>
-          <SymbolsLoaded>False</SymbolsLoaded>
-          <OrderOfLoading>0</OrderOfLoading>
-        </Module>
-        <MetadataToken>33554446</MetadataToken>
-        <FullName>System.ValueType</FullName>
-        <HasElementType>False</HasElementType>
-        <IsArray>False</IsArray>
-        <IsGenericType>False</IsGenericType>
-        <IsClass>True</IsClass>
-        <IsValueType>False</IsValueType>
-        <IsPrimitive>False</IsPrimitive>
-        <IsInteger>False</IsInteger>
-        <BaseType Type="DebugType">
-          <ManagedType>null</ManagedType>
-          <Module Type="Module">
-            <Unloaded>False</Unloaded>
-            <SymReader>null</SymReader>
-            <CorModule>Debugger.Wrappers.CorDebug.ICorDebugModule</CorModule>
-            <BaseAdress>2030829568</BaseAdress>
-            <IsDynamic>False</IsDynamic>
-            <IsInMemory>False</IsInMemory>
-            <Filename>mscorlib.dll</Filename>
-            <SymbolsLoaded>False</SymbolsLoaded>
-            <OrderOfLoading>0</OrderOfLoading>
-          </Module>
-          <MetadataToken>33554434</MetadataToken>
-          <FullName>System.Object</FullName>
-          <HasElementType>False</HasElementType>
-          <IsArray>False</IsArray>
-          <IsGenericType>False</IsGenericType>
-          <IsClass>True</IsClass>
-          <IsValueType>False</IsValueType>
-          <IsPrimitive>False</IsPrimitive>
-          <IsInteger>False</IsInteger>
-          <BaseType>null</BaseType>
-        </BaseType>
-      </BaseType>
+      <BaseType>System.ValueType</BaseType>
     </ObjectDump>
     <ProcessExited />
   </Test>

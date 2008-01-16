@@ -96,5 +96,10 @@ namespace Debugger
 				throw new DebuggerException("Variable \"" + variableName + "\" is not in collection");
 			}
 		}
+		
+		public override string ToString()
+		{
+			return string.Format(@"[{0} Count={1}]", this.GetType().Name, this.Count);
+		}
 	}
 }

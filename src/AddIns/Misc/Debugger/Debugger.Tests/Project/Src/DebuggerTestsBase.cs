@@ -167,30 +167,24 @@ namespace Debugger.Tests
 			Serialize(dumpNode, obj, 16, new List<object>());
 		}
 		
-		static bool ShouldExpandType(Type type)
-		{
-			return type.GetCustomAttributes(typeof(ExpandAttribute), true).Length > 0 ||
-			       ( typeof(IEnumerable).IsAssignableFrom(type) &&
-			         type.Namespace != "System"
-			       );
-		}
-		
 		public static void Serialize(XmlElement container, object obj, int maxDepth, List<object> parents)
 		{
 			XmlDocument doc = container.OwnerDocument;
 			
-			if (maxDepth == -1) {
-				container.AppendChild(doc.CreateElement("MaxDepthReached"));
+			if (obj == null) {
+				container.AppendChild(doc.CreateTextNode("null"));
 				return;
 			}
 			
-			if (obj == null) {
-				container.AppendChild(doc.CreateElement("Null"));
+			if (maxDepth == -1) {
+				container.AppendChild(doc.CreateTextNode(obj.ToString()));
+				container.SetAttribute("warning", "max depth reached");
 				return;
 			}
 			
 			if (parents.Contains(obj)) {
-				container.AppendChild(doc.CreateElement("RecusionDetected"));
+				container.AppendChild(doc.CreateTextNode(obj.ToString()));
+				container.SetAttribute("warning", "recusion detected");
 				return;
 			}
 			
@@ -199,12 +193,13 @@ namespace Debugger.Tests
 			
 			Type type = obj.GetType();
 			
-			container.SetAttribute("Type", type.Name);
-			
-			if (!ShouldExpandType(type)) {
+			if (type.Namespace == "System") {
 				container.AppendChild(doc.CreateTextNode(obj.ToString()));
 				return;
 			}
+			
+			
+			container.SetAttribute("Type", type.Name);
 			
 			foreach(System.Reflection.PropertyInfo property in type.GetProperties()) {
 				if (property.GetGetMethod() == null) continue;
@@ -224,11 +219,10 @@ namespace Debugger.Tests
 				}
 				if (val == null) {
 					propertyNode.AppendChild(doc.CreateTextNode("null"));
-				} else if (!ShouldExpandType(val.GetType()) || property.GetCustomAttributes(typeof(Debugger.Tests.ToStringOnlyAttribute), true).Length > 0) {
-					// Only write ToString() text
-					propertyNode.AppendChild(doc.CreateTextNode(val.ToString()));
-				} else {
+				} else if (property.GetCustomAttributes(typeof(Debugger.Tests.ExpandAttribute), true).Length > 0) {
 					Serialize(propertyNode, val, maxDepth - 1, parents);
+				} else {
+					propertyNode.AppendChild(doc.CreateTextNode(val.ToString()));
 				}
 			}
 			

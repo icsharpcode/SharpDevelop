@@ -199,7 +199,6 @@
     <Compile Include="Src\Modules\Process-Modules.cs" />
     <Compile Include="Src\Tests\ExpandAttribute.cs" />
     <Compile Include="Src\Tests\IgnoreAttribute.cs" />
-    <Compile Include="Src\Tests\ToStringOnlyAttribute.cs" />
     <Compile Include="Src\Threads\Exception.cs" />
     <Compile Include="Src\Threads\ExceptionType.cs" />
     <Compile Include="Src\Threads\StackFrame.cs" />

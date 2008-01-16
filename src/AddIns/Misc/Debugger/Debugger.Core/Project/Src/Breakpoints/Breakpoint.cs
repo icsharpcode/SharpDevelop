@@ -27,7 +27,6 @@ namespace Debugger
 			}
 		}
 		
-		[Debugger.Tests.ToStringOnly]
 		public SourcecodeSegment SourcecodeSegment {
 			get {
 				return sourcecodeSegment;

@@ -28,13 +28,6 @@ namespace Debugger
 			}
 		}
 		
-		/// <summary> Gets name of the method including the full name of the declaring type </summary>
-		public string FullName {
-			get {
-				return this.DeclaringType.FullName + "." + methodProps.Name;
-			}
-		}
-		
 		/// <summary> Gets a value indicating whether this method is private </summary>
 		public override bool IsPrivate {
 			get {

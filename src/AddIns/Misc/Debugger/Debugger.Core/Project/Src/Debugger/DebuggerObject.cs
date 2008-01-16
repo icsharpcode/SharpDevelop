@@ -12,7 +12,6 @@ namespace Debugger
 	/// <summary>
 	/// A base class for all classes declared by the debugger
 	/// </summary>
-	[Debugger.Tests.Expand]
 	public class DebuggerObject: MarshalByRefObject
 	{
 		
