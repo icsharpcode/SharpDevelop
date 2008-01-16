@@ -30,11 +30,14 @@ namespace Debugger.Tests {
 		[NUnit.Framework.Test]
 		public void ValueType()
 		{
+			ExpandProperties(
+				"Value.Type",
+				"DebugType.BaseType"
+			);
 			StartTest("ValueType.cs");
 			WaitForPause();
 			
 			ObjectDump("this", process.SelectedStackFrame.ThisValue);
-			ObjectDump("typeof(this)", process.SelectedStackFrame.ThisValue.Type);
 			process.Continue();
 			process.WaitForExit();
 			CheckXmlOutput();
@@ -65,21 +68,43 @@ namespace Debugger.Tests {
       <IsNull>False</IsNull>
       <AsString>{Debugger.Tests.ValueType}</AsString>
       <HasExpired>False</HasExpired>
-      <Type>Debugger.Tests.ValueType</Type>
-    </ObjectDump>
-    <ObjectDump name="typeof(this)" Type="DebugType">
-      <ManagedType>null</ManagedType>
-      <Module>ValueType.exe</Module>
-      <MetadataToken>33554434</MetadataToken>
-      <FullName>Debugger.Tests.ValueType</FullName>
-      <HasElementType>False</HasElementType>
-      <IsArray>False</IsArray>
-      <IsGenericType>False</IsGenericType>
-      <IsClass>False</IsClass>
-      <IsValueType>True</IsValueType>
-      <IsPrimitive>False</IsPrimitive>
-      <IsInteger>False</IsInteger>
-      <BaseType>System.ValueType</BaseType>
+      <Type Type="DebugType">
+        <ManagedType>null</ManagedType>
+        <Module>ValueType.exe</Module>
+        <FullName>Debugger.Tests.ValueType</FullName>
+        <HasElementType>False</HasElementType>
+        <IsArray>False</IsArray>
+        <IsGenericType>False</IsGenericType>
+        <IsClass>False</IsClass>
+        <IsValueType>True</IsValueType>
+        <IsPrimitive>False</IsPrimitive>
+        <IsInteger>False</IsInteger>
+        <BaseType Type="DebugType">
+          <ManagedType>null</ManagedType>
+          <Module>mscorlib.dll</Module>
+          <FullName>System.ValueType</FullName>
+          <HasElementType>False</HasElementType>
+          <IsArray>False</IsArray>
+          <IsGenericType>False</IsGenericType>
+          <IsClass>True</IsClass>
+          <IsValueType>False</IsValueType>
+          <IsPrimitive>False</IsPrimitive>
+          <IsInteger>False</IsInteger>
+          <BaseType Type="DebugType">
+            <ManagedType>null</ManagedType>
+            <Module>mscorlib.dll</Module>
+            <FullName>System.Object</FullName>
+            <HasElementType>False</HasElementType>
+            <IsArray>False</IsArray>
+            <IsGenericType>False</IsGenericType>
+            <IsClass>True</IsClass>
+            <IsValueType>False</IsValueType>
+            <IsPrimitive>False</IsPrimitive>
+            <IsInteger>False</IsInteger>
+            <BaseType>null</BaseType>
+          </BaseType>
+        </BaseType>
+      </Type>
     </ObjectDump>
     <ProcessExited />
   </Test>

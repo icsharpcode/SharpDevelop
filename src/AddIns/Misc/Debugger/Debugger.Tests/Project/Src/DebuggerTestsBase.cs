@@ -53,6 +53,8 @@ namespace Debugger.Tests
 		{
 			testName = null;
 			
+			expandProperties = new List<string>();
+			
 			testDoc = new XmlDocument();
 			testDoc.AppendChild(testDoc.CreateXmlDeclaration("1.0","utf-8",null));
 			testDoc.AppendChild(testDoc.CreateElement("DebuggerTests"));
@@ -167,7 +169,24 @@ namespace Debugger.Tests
 			Serialize(dumpNode, obj, 16, new List<object>());
 		}
 		
-		public static void Serialize(XmlElement container, object obj, int maxDepth, List<object> parents)
+		List<string> expandProperties;
+		
+		protected void ExpandProperties(params string[] props)
+		{
+			expandProperties = new List<string>(props);
+		}
+		
+		bool ShouldExpandProperty(System.Reflection.PropertyInfo propertyInfo)
+		{
+			return
+				(propertyInfo.GetCustomAttributes(typeof(Debugger.Tests.ExpandAttribute), true).Length > 0) ||
+				expandProperties.Contains(propertyInfo.Name) ||
+				expandProperties.Contains("*") ||
+				expandProperties.Contains(propertyInfo.DeclaringType.Name + "." + propertyInfo.Name) ||
+				expandProperties.Contains(propertyInfo.DeclaringType.Name + ".*");
+		}
+		
+		public void Serialize(XmlElement container, object obj, int maxDepth, List<object> parents)
 		{
 			XmlDocument doc = container.OwnerDocument;
 			
@@ -219,7 +238,7 @@ namespace Debugger.Tests
 				}
 				if (val == null) {
 					propertyNode.AppendChild(doc.CreateTextNode("null"));
-				} else if (property.GetCustomAttributes(typeof(Debugger.Tests.ExpandAttribute), true).Length > 0) {
+				} else if (ShouldExpandProperty(property)) {
 					Serialize(propertyNode, val, maxDepth - 1, parents);
 				} else {
 					propertyNode.AppendChild(doc.CreateTextNode(val.ToString()));

@@ -74,6 +74,7 @@ namespace Debugger
 		/// Gets the metadata token of the class or value type.
 		/// <para> Only applicable to class or value type! </para>
 		/// </summary>
+		[Debugger.Tests.Ignore]
 		public uint MetadataToken {
 			get {
 				AssertClassOrValueType();

@@ -32,7 +32,7 @@ namespace Debugger.Tests {
 		{
 			StartTest("FunctionLocalVariables.cs");
 			WaitForPause();
-			ObjectDump("SelectedStackFrame", process.SelectedStackFrame);
+			ObjectDump("LocalVariables", process.SelectedStackFrame.LocalVariables);
 			
 			process.Continue();
 			process.WaitForExit();
@@ -50,16 +50,88 @@ namespace Debugger.Tests {
     <ModuleLoaded symbols="False">mscorlib.dll</ModuleLoaded>
     <ModuleLoaded symbols="True">FunctionLocalVariables.exe</ModuleLoaded>
     <DebuggingPaused>Break</DebuggingPaused>
-    <ObjectDump name="SelectedStackFrame" Type="StackFrame">
-      <MethodInfo>Main</MethodInfo>
-      <HasSymbols>True</HasSymbols>
-      <HasExpired>False</HasExpired>
-      <NextStatement>Start=21,4 End=21,40</NextStatement>
-      <ThisValue exception="Static method does not have 'this'." />
-      <ContaingClassVariables>[ValueCollection Count=0]</ContaingClassVariables>
-      <ArgumentCount>0</ArgumentCount>
-      <Arguments>[ValueCollection Count=0]</Arguments>
-      <LocalVariables>[ValueCollection Count=5]</LocalVariables>
+    <ObjectDump name="LocalVariables" Type="ValueCollection">
+      <Count>5</Count>
+      <Item Type="Value">
+        <IsArray>False</IsArray>
+        <ArrayLenght exception="Value is not an array" />
+        <ArrayRank exception="Value is not an array" />
+        <ArrayDimensions exception="Value is not an array" />
+        <IsObject>False</IsObject>
+        <IsPrimitive>True</IsPrimitive>
+        <IsInteger>True</IsInteger>
+        <PrimitiveValue>0</PrimitiveValue>
+        <Expression>i</Expression>
+        <Name>i</Name>
+        <IsNull>False</IsNull>
+        <AsString>0</AsString>
+        <HasExpired>False</HasExpired>
+        <Type>System.Int32</Type>
+      </Item>
+      <Item Type="Value">
+        <IsArray>False</IsArray>
+        <ArrayLenght exception="Value is not an array" />
+        <ArrayRank exception="Value is not an array" />
+        <ArrayDimensions exception="Value is not an array" />
+        <IsObject>False</IsObject>
+        <IsPrimitive>True</IsPrimitive>
+        <IsInteger>False</IsInteger>
+        <PrimitiveValue>S</PrimitiveValue>
+        <Expression>s</Expression>
+        <Name>s</Name>
+        <IsNull>False</IsNull>
+        <AsString>S</AsString>
+        <HasExpired>False</HasExpired>
+        <Type>System.String</Type>
+      </Item>
+      <Item Type="Value">
+        <IsArray>True</IsArray>
+        <ArrayLenght>1</ArrayLenght>
+        <ArrayRank>1</ArrayRank>
+        <ArrayDimensions>[1]</ArrayDimensions>
+        <IsObject>False</IsObject>
+        <IsPrimitive>False</IsPrimitive>
+        <IsInteger>False</IsInteger>
+        <PrimitiveValue exception="Value is not a primitive type" />
+        <Expression>args</Expression>
+        <Name>args</Name>
+        <IsNull>False</IsNull>
+        <AsString>{System.String[]}</AsString>
+        <HasExpired>False</HasExpired>
+        <Type>System.String[]</Type>
+      </Item>
+      <Item Type="Value">
+        <IsArray>False</IsArray>
+        <ArrayLenght exception="Value is not an array" />
+        <ArrayRank exception="Value is not an array" />
+        <ArrayDimensions exception="Value is not an array" />
+        <IsObject>False</IsObject>
+        <IsPrimitive>False</IsPrimitive>
+        <IsInteger>False</IsInteger>
+        <PrimitiveValue exception="Value is not a primitive type" />
+        <Expression>n</Expression>
+        <Name>n</Name>
+        <IsNull>True</IsNull>
+        <AsString>&lt;null&gt;</AsString>
+        <HasExpired>False</HasExpired>
+        <Type>System.Object</Type>
+      </Item>
+      <Item Type="Value">
+        <IsArray>False</IsArray>
+        <ArrayLenght exception="Value is not an array" />
+        <ArrayRank exception="Value is not an array" />
+        <ArrayDimensions exception="Value is not an array" />
+        <IsObject>True</IsObject>
+        <IsPrimitive>False</IsPrimitive>
+        <IsInteger>False</IsInteger>
+        <PrimitiveValue exception="Value is not a primitive type" />
+        <Expression>o</Expression>
+        <Name>o</Name>
+        <IsNull>False</IsNull>
+        <AsString>{System.Object}</AsString>
+        <HasExpired>False</HasExpired>
+        <Type>System.Object</Type>
+      </Item>
     </ObjectDump>
     <ProcessExited />
   </Test>
