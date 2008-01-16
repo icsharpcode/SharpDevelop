@@ -93,30 +93,30 @@ namespace Debugger.Tests {
     <ModuleLoaded symbols="True">Stepping.exe</ModuleLoaded>
     <ModuleLoaded symbols="False">System.dll</ModuleLoaded>
     <DebuggingPaused>Break</DebuggingPaused>
-    <Object name="NextStatement">Start=16,4 End=16,40</Object>
+    <NextStatement>Start=16,4 End=16,40</NextStatement>
     <DebuggingPaused>StepComplete</DebuggingPaused>
-    <Object name="NextStatement">Start=17,4 End=17,44</Object>
+    <NextStatement>Start=17,4 End=17,44</NextStatement>
     <ModuleLoaded symbols="False">System.Configuration.dll</ModuleLoaded>
     <ModuleLoaded symbols="False">System.Xml.dll</ModuleLoaded>
     <LogMessage>1\r\n</LogMessage>
     <DebuggingPaused>StepComplete</DebuggingPaused>
-    <Object name="NextStatement">Start=18,4 End=18,10</Object>
+    <NextStatement>Start=18,4 End=18,10</NextStatement>
     <DebuggingPaused>StepComplete</DebuggingPaused>
-    <Object name="NextStatement">Start=23,3 End=23,4</Object>
+    <NextStatement>Start=23,3 End=23,4</NextStatement>
     <DebuggingPaused>StepComplete</DebuggingPaused>
-    <Object name="NextStatement">Start=24,4 End=24,44</Object>
+    <NextStatement>Start=24,4 End=24,44</NextStatement>
     <LogMessage>2\r\n</LogMessage>
     <DebuggingPaused>StepComplete</DebuggingPaused>
-    <Object name="NextStatement">Start=25,4 End=25,44</Object>
+    <NextStatement>Start=25,4 End=25,44</NextStatement>
     <LogMessage>3\r\n</LogMessage>
     <LogMessage>4\r\n</LogMessage>
     <DebuggingPaused>StepComplete</DebuggingPaused>
-    <Object name="NextStatement">Start=18,4 End=18,10</Object>
+    <NextStatement>Start=18,4 End=18,10</NextStatement>
     <DebuggingPaused>StepComplete</DebuggingPaused>
-    <Object name="NextStatement">Start=19,4 End=19,11</Object>
+    <NextStatement>Start=19,4 End=19,11</NextStatement>
     <LogMessage>5\r\n</LogMessage>
     <DebuggingPaused>StepComplete</DebuggingPaused>
-    <Object name="NextStatement">Start=20,3 End=20,4</Object>
+    <NextStatement>Start=20,3 End=20,4</NextStatement>
     <ProcessExited />
   </Test>
 </DebuggerTests>

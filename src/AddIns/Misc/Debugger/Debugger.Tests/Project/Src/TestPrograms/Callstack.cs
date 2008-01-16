@@ -63,7 +63,7 @@ namespace Debugger.Tests {
     <ModuleLoaded symbols="False">mscorlib.dll</ModuleLoaded>
     <ModuleLoaded symbols="True">Callstack.exe</ModuleLoaded>
     <DebuggingPaused>Break</DebuggingPaused>
-    <Object name="Callstack" Type="ReadOnlyCollection`1" ToString="System.Collections.ObjectModel.ReadOnlyCollection`1[Debugger.StackFrame]">
+    <Callstack Type="ReadOnlyCollection`1" ToString="System.Collections.ObjectModel.ReadOnlyCollection`1[Debugger.StackFrame]">
       <Count>3</Count>
       <Item Type="StackFrame" ToString="Debugger.Tests.TestPrograms.Callstack.Sub2">
         <MethodInfo>Sub2</MethodInfo>
@@ -98,9 +98,9 @@ namespace Debugger.Tests {
         <Arguments>[ValueCollection Count=0]</Arguments>
         <LocalVariables>[ValueCollection Count=0]</LocalVariables>
       </Item>
-    </Object>
+    </Callstack>
     <DebuggingPaused>StepComplete</DebuggingPaused>
-    <Object name="Callstack" Type="ReadOnlyCollection`1" ToString="System.Collections.ObjectModel.ReadOnlyCollection`1[Debugger.StackFrame]">
+    <Callstack Type="ReadOnlyCollection`1" ToString="System.Collections.ObjectModel.ReadOnlyCollection`1[Debugger.StackFrame]">
       <Count>2</Count>
       <Item Type="StackFrame" ToString="Debugger.Tests.TestPrograms.Callstack.Sub1">
         <MethodInfo>Sub1</MethodInfo>
@@ -124,9 +124,9 @@ namespace Debugger.Tests {
         <Arguments>[ValueCollection Count=0]</Arguments>
         <LocalVariables>[ValueCollection Count=0]</LocalVariables>
       </Item>
-    </Object>
+    </Callstack>
     <DebuggingPaused>StepComplete</DebuggingPaused>
-    <Object name="Callstack" Type="ReadOnlyCollection`1" ToString="System.Collections.ObjectModel.ReadOnlyCollection`1[Debugger.StackFrame]">
+    <Callstack Type="ReadOnlyCollection`1" ToString="System.Collections.ObjectModel.ReadOnlyCollection`1[Debugger.StackFrame]">
       <Count>1</Count>
       <Item Type="StackFrame" ToString="Debugger.Tests.TestPrograms.Callstack.Main">
         <MethodInfo>Main</MethodInfo>
@@ -139,7 +139,7 @@ namespace Debugger.Tests {
         <Arguments>[ValueCollection Count=0]</Arguments>
         <LocalVariables>[ValueCollection Count=0]</LocalVariables>
       </Item>
-    </Object>
+    </Callstack>
     <ProcessExited />
   </Test>
 </DebuggerTests>

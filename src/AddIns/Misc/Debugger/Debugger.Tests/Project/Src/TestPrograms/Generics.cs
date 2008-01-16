@@ -121,7 +121,7 @@ namespace Debugger.Tests {
     <ModuleLoaded symbols="False">mscorlib.dll</ModuleLoaded>
     <ModuleLoaded symbols="True">Generics.exe</ModuleLoaded>
     <DebuggingPaused>Break</DebuggingPaused>
-    <Object name="SelectedStackFrame" Type="StackFrame" ToString="Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;.Metod">
+    <SelectedStackFrame Type="StackFrame" ToString="Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;.Metod">
       <MethodInfo Type="MethodInfo" ToString="Metod">
         <Name>Metod</Name>
         <IsPrivate>False</IsPrivate>
@@ -186,9 +186,9 @@ namespace Debugger.Tests {
         </Item>
       </Arguments>
       <LocalVariables>[ValueCollection Count=0]</LocalVariables>
-    </Object>
+    </SelectedStackFrame>
     <DebuggingPaused>Break</DebuggingPaused>
-    <Object name="SelectedStackFrame" Type="StackFrame" ToString="Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;.GenericMethod">
+    <SelectedStackFrame Type="StackFrame" ToString="Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;.GenericMethod">
       <MethodInfo Type="MethodInfo" ToString="GenericMethod">
         <Name>GenericMethod</Name>
         <IsPrivate>False</IsPrivate>
@@ -253,9 +253,9 @@ namespace Debugger.Tests {
         </Item>
       </Arguments>
       <LocalVariables>[ValueCollection Count=0]</LocalVariables>
-    </Object>
+    </SelectedStackFrame>
     <DebuggingPaused>Break</DebuggingPaused>
-    <Object name="SelectedStackFrame" Type="StackFrame" ToString="Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;.StaticMetod">
+    <SelectedStackFrame Type="StackFrame" ToString="Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;.StaticMetod">
       <MethodInfo Type="MethodInfo" ToString="StaticMetod">
         <Name>StaticMetod</Name>
         <IsPrivate>False</IsPrivate>
@@ -320,9 +320,9 @@ namespace Debugger.Tests {
         </Item>
       </Arguments>
       <LocalVariables>[ValueCollection Count=0]</LocalVariables>
-    </Object>
+    </SelectedStackFrame>
     <DebuggingPaused>Break</DebuggingPaused>
-    <Object name="SelectedStackFrame" Type="StackFrame" ToString="Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;.StaticGenericMethod">
+    <SelectedStackFrame Type="StackFrame" ToString="Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;.StaticGenericMethod">
       <MethodInfo Type="MethodInfo" ToString="StaticGenericMethod">
         <Name>StaticGenericMethod</Name>
         <IsPrivate>False</IsPrivate>
@@ -387,9 +387,9 @@ namespace Debugger.Tests {
         </Item>
       </Arguments>
       <LocalVariables>[ValueCollection Count=0]</LocalVariables>
-    </Object>
+    </SelectedStackFrame>
     <DebuggingPaused>Break</DebuggingPaused>
-    <Object name="SelectedStackFrame" Type="StackFrame" ToString="Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;.Metod">
+    <SelectedStackFrame Type="StackFrame" ToString="Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;.Metod">
       <MethodInfo Type="MethodInfo" ToString="Metod">
         <Name>Metod</Name>
         <IsPrivate>False</IsPrivate>
@@ -454,9 +454,9 @@ namespace Debugger.Tests {
         </Item>
       </Arguments>
       <LocalVariables>[ValueCollection Count=0]</LocalVariables>
-    </Object>
+    </SelectedStackFrame>
     <DebuggingPaused>Break</DebuggingPaused>
-    <Object name="SelectedStackFrame" Type="StackFrame" ToString="Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;.GenericMethod">
+    <SelectedStackFrame Type="StackFrame" ToString="Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;.GenericMethod">
       <MethodInfo Type="MethodInfo" ToString="GenericMethod">
         <Name>GenericMethod</Name>
         <IsPrivate>False</IsPrivate>
@@ -521,9 +521,9 @@ namespace Debugger.Tests {
         </Item>
       </Arguments>
       <LocalVariables>[ValueCollection Count=0]</LocalVariables>
-    </Object>
+    </SelectedStackFrame>
     <DebuggingPaused>Break</DebuggingPaused>
-    <Object name="SelectedStackFrame" Type="StackFrame" ToString="Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;.StaticMetod">
+    <SelectedStackFrame Type="StackFrame" ToString="Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;.StaticMetod">
       <MethodInfo Type="MethodInfo" ToString="StaticMetod">
         <Name>StaticMetod</Name>
         <IsPrivate>False</IsPrivate>
@@ -588,9 +588,9 @@ namespace Debugger.Tests {
         </Item>
       </Arguments>
       <LocalVariables>[ValueCollection Count=0]</LocalVariables>
-    </Object>
+    </SelectedStackFrame>
     <DebuggingPaused>Break</DebuggingPaused>
-    <Object name="SelectedStackFrame" Type="StackFrame" ToString="Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;.StaticGenericMethod">
+    <SelectedStackFrame Type="StackFrame" ToString="Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;.StaticGenericMethod">
       <MethodInfo Type="MethodInfo" ToString="StaticGenericMethod">
         <Name>StaticGenericMethod</Name>
         <IsPrivate>False</IsPrivate>
@@ -655,7 +655,7 @@ namespace Debugger.Tests {
         </Item>
       </Arguments>
       <LocalVariables>[ValueCollection Count=0]</LocalVariables>
-    </Object>
+    </SelectedStackFrame>
     <DebuggingPaused>Break</DebuggingPaused>
     <ProcessExited />
   </Test>

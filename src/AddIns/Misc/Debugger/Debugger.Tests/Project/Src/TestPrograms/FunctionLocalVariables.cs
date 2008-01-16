@@ -50,7 +50,7 @@ namespace Debugger.Tests {
     <ModuleLoaded symbols="False">mscorlib.dll</ModuleLoaded>
     <ModuleLoaded symbols="True">FunctionLocalVariables.exe</ModuleLoaded>
     <DebuggingPaused>Break</DebuggingPaused>
-    <Object name="LocalVariables" Type="ValueCollection" ToString="[ValueCollection Count=5]">
+    <LocalVariables Type="ValueCollection" ToString="[ValueCollection Count=5]">
       <Count>5</Count>
       <Item Type="Value" ToString="i = 0">
         <IsArray>False</IsArray>
@@ -132,7 +132,7 @@ namespace Debugger.Tests {
         <HasExpired>False</HasExpired>
         <Type>System.Object</Type>
       </Item>
-    </Object>
+    </LocalVariables>
     <ProcessExited />
   </Test>
 </DebuggerTests>

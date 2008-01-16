@@ -54,7 +54,7 @@ namespace Debugger.Tests {
     <ModuleLoaded symbols="False">mscorlib.dll</ModuleLoaded>
     <ModuleLoaded symbols="True">ValueType.exe</ModuleLoaded>
     <DebuggingPaused>Break</DebuggingPaused>
-    <Object name="this" Type="Value" ToString="this = {Debugger.Tests.ValueType}">
+    <this Type="Value" ToString="this = {Debugger.Tests.ValueType}">
       <IsArray>False</IsArray>
       <ArrayLenght exception="Value is not an array" />
       <ArrayRank exception="Value is not an array" />
@@ -105,7 +105,7 @@ namespace Debugger.Tests {
           </BaseType>
         </BaseType>
       </Type>
-    </Object>
+    </this>
     <ProcessExited />
   </Test>
 </DebuggerTests>

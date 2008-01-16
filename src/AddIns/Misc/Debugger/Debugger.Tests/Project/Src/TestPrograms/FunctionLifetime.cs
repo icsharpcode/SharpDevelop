@@ -75,7 +75,7 @@ namespace Debugger.Tests {
     <ModuleLoaded symbols="False">mscorlib.dll</ModuleLoaded>
     <ModuleLoaded symbols="True">FunctionLifetime.exe</ModuleLoaded>
     <DebuggingPaused>Break</DebuggingPaused>
-    <Object name="SelectedStackFrame" Type="StackFrame" ToString="Debugger.Tests.TestPrograms.FunctionLifetime.Function">
+    <SelectedStackFrame Type="StackFrame" ToString="Debugger.Tests.TestPrograms.FunctionLifetime.Function">
       <MethodInfo>Function</MethodInfo>
       <HasSymbols>True</HasSymbols>
       <HasExpired>False</HasExpired>
@@ -85,9 +85,9 @@ namespace Debugger.Tests {
       <ArgumentCount>1</ArgumentCount>
       <Arguments>[ValueCollection Count=1]</Arguments>
       <LocalVariables>[ValueCollection Count=0]</LocalVariables>
-    </Object>
+    </SelectedStackFrame>
     <DebuggingPaused>Break</DebuggingPaused>
-    <Object name="Old StackFrame" Type="StackFrame" ToString="Debugger.Tests.TestPrograms.FunctionLifetime.Function">
+    <Old_StackFrame Type="StackFrame" ToString="Debugger.Tests.TestPrograms.FunctionLifetime.Function">
       <MethodInfo>Function</MethodInfo>
       <HasSymbols>True</HasSymbols>
       <HasExpired>True</HasExpired>
@@ -97,8 +97,8 @@ namespace Debugger.Tests {
       <ArgumentCount exception="StackFrame has expired" />
       <Arguments exception="StackFrame has expired" />
       <LocalVariables>[ValueCollection Count=0]</LocalVariables>
-    </Object>
-    <Object name="SelectedStackFrame" Type="StackFrame" ToString="Debugger.Tests.TestPrograms.FunctionLifetime.SubFunction">
+    </Old_StackFrame>
+    <SelectedStackFrame Type="StackFrame" ToString="Debugger.Tests.TestPrograms.FunctionLifetime.SubFunction">
       <MethodInfo>SubFunction</MethodInfo>
       <HasSymbols>True</HasSymbols>
       <HasExpired>False</HasExpired>
@@ -108,9 +108,9 @@ namespace Debugger.Tests {
       <ArgumentCount>0</ArgumentCount>
       <Arguments>[ValueCollection Count=0]</Arguments>
       <LocalVariables>[ValueCollection Count=0]</LocalVariables>
-    </Object>
+    </SelectedStackFrame>
     <DebuggingPaused>Break</DebuggingPaused>
-    <Object name="Old StackFrame" Type="StackFrame" ToString="Debugger.Tests.TestPrograms.FunctionLifetime.Function">
+    <Old_StackFrame Type="StackFrame" ToString="Debugger.Tests.TestPrograms.FunctionLifetime.Function">
       <MethodInfo>Function</MethodInfo>
       <HasSymbols>True</HasSymbols>
       <HasExpired>True</HasExpired>
@@ -120,8 +120,8 @@ namespace Debugger.Tests {
       <ArgumentCount exception="StackFrame has expired" />
       <Arguments exception="StackFrame has expired" />
       <LocalVariables>[ValueCollection Count=0]</LocalVariables>
-    </Object>
-    <Object name="SelectedStackFrame" Type="StackFrame" ToString="Debugger.Tests.TestPrograms.FunctionLifetime.Function">
+    </Old_StackFrame>
+    <SelectedStackFrame Type="StackFrame" ToString="Debugger.Tests.TestPrograms.FunctionLifetime.Function">
       <MethodInfo>Function</MethodInfo>
       <HasSymbols>True</HasSymbols>
       <HasExpired>False</HasExpired>
@@ -131,9 +131,9 @@ namespace Debugger.Tests {
       <ArgumentCount>1</ArgumentCount>
       <Arguments>[ValueCollection Count=1]</Arguments>
       <LocalVariables>[ValueCollection Count=0]</LocalVariables>
-    </Object>
+    </SelectedStackFrame>
     <DebuggingPaused>Break</DebuggingPaused>
-    <Object name="Main" Type="StackFrame" ToString="Debugger.Tests.TestPrograms.FunctionLifetime.Main">
+    <Main Type="StackFrame" ToString="Debugger.Tests.TestPrograms.FunctionLifetime.Main">
       <MethodInfo>Main</MethodInfo>
       <HasSymbols>True</HasSymbols>
       <HasExpired>False</HasExpired>
@@ -143,8 +143,8 @@ namespace Debugger.Tests {
       <ArgumentCount>0</ArgumentCount>
       <Arguments>[ValueCollection Count=0]</Arguments>
       <LocalVariables>[ValueCollection Count=0]</LocalVariables>
-    </Object>
-    <Object name="Old StackFrame" Type="StackFrame" ToString="Debugger.Tests.TestPrograms.FunctionLifetime.Function">
+    </Main>
+    <Old_StackFrame Type="StackFrame" ToString="Debugger.Tests.TestPrograms.FunctionLifetime.Function">
       <MethodInfo>Function</MethodInfo>
       <HasSymbols>True</HasSymbols>
       <HasExpired>True</HasExpired>
@@ -154,8 +154,8 @@ namespace Debugger.Tests {
       <ArgumentCount exception="StackFrame has expired" />
       <Arguments exception="StackFrame has expired" />
       <LocalVariables>[ValueCollection Count=0]</LocalVariables>
-    </Object>
-    <Object name="SelectedStackFrame" Type="StackFrame" ToString="Debugger.Tests.TestPrograms.FunctionLifetime.Main">
+    </Old_StackFrame>
+    <SelectedStackFrame Type="StackFrame" ToString="Debugger.Tests.TestPrograms.FunctionLifetime.Main">
       <MethodInfo>Main</MethodInfo>
       <HasSymbols>True</HasSymbols>
       <HasExpired>False</HasExpired>
@@ -165,7 +165,7 @@ namespace Debugger.Tests {
       <ArgumentCount>0</ArgumentCount>
       <Arguments>[ValueCollection Count=0]</Arguments>
       <LocalVariables>[ValueCollection Count=0]</LocalVariables>
-    </Object>
+    </SelectedStackFrame>
     <ProcessExited />
   </Test>
 </DebuggerTests>

@@ -51,7 +51,7 @@ namespace Debugger.Tests {
     <ModuleLoaded symbols="False">mscorlib.dll</ModuleLoaded>
     <ModuleLoaded symbols="True">ArrayValue.exe</ModuleLoaded>
     <DebuggingPaused>Break</DebuggingPaused>
-    <Object name="array" Type="Value" ToString="array = {System.Int32[]}">
+    <array Type="Value" ToString="array = {System.Int32[]}">
       <IsArray>True</IsArray>
       <ArrayLenght>5</ArrayLenght>
       <ArrayRank>1</ArrayRank>
@@ -66,8 +66,8 @@ namespace Debugger.Tests {
       <AsString>{System.Int32[]}</AsString>
       <HasExpired>False</HasExpired>
       <Type>System.Int32[]</Type>
-    </Object>
-    <Object name="array elements" Type="ValueCollection" ToString="[ValueCollection Count=5]">
+    </array>
+    <array_elements Type="ValueCollection" ToString="[ValueCollection Count=5]">
       <Count>5</Count>
       <Item Type="Value" ToString="array[0] = 0">
         <IsArray>False</IsArray>
@@ -149,7 +149,7 @@ namespace Debugger.Tests {
         <HasExpired>False</HasExpired>
         <Type>System.Int32</Type>
       </Item>
-    </Object>
+    </array_elements>
     <ProcessExited />
   </Test>
 </DebuggerTests>

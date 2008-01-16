@@ -97,7 +97,7 @@ namespace Debugger.Tests {
     <ModuleLoaded symbols="True">FunctionArgumentVariables.exe</ModuleLoaded>
     <DebuggingPaused>Break</DebuggingPaused>
     <DebuggingPaused>Break</DebuggingPaused>
-    <Object name="Arguments" Type="ValueCollection" ToString="[ValueCollection Count=9]">
+    <Arguments Type="ValueCollection" ToString="[ValueCollection Count=9]">
       <Count>9</Count>
       <Item Type="Value" ToString="i = 1">
         <IsArray>False</IsArray>
@@ -243,9 +243,9 @@ namespace Debugger.Tests {
         <HasExpired>False</HasExpired>
         <Type>System.Nullable&lt;System.Int32&gt;</Type>
       </Item>
-    </Object>
+    </Arguments>
     <DebuggingPaused>Break</DebuggingPaused>
-    <Object name="Arguments" Type="ValueCollection" ToString="[ValueCollection Count=1]">
+    <Arguments Type="ValueCollection" ToString="[ValueCollection Count=1]">
       <Count>1</Count>
       <Item Type="Value" ToString="args = {System.String[]}">
         <IsArray>True</IsArray>
@@ -263,9 +263,9 @@ namespace Debugger.Tests {
         <HasExpired>False</HasExpired>
         <Type>System.String[]</Type>
       </Item>
-    </Object>
+    </Arguments>
     <DebuggingPaused>Break</DebuggingPaused>
-    <Object name="Arguments" Type="ValueCollection" ToString="[ValueCollection Count=1]">
+    <Arguments Type="ValueCollection" ToString="[ValueCollection Count=1]">
       <Count>1</Count>
       <Item Type="Value" ToString="args = {System.String[]}">
         <IsArray>True</IsArray>
@@ -283,9 +283,9 @@ namespace Debugger.Tests {
         <HasExpired>False</HasExpired>
         <Type>System.String[]</Type>
       </Item>
-    </Object>
+    </Arguments>
     <DebuggingPaused>Break</DebuggingPaused>
-    <Object name="Arguments" Type="ValueCollection" ToString="[ValueCollection Count=1]">
+    <Arguments Type="ValueCollection" ToString="[ValueCollection Count=1]">
       <Count>1</Count>
       <Item Type="Value" ToString="args = {System.String[]}">
         <IsArray>True</IsArray>
@@ -303,9 +303,9 @@ namespace Debugger.Tests {
         <HasExpired>False</HasExpired>
         <Type>System.String[]</Type>
       </Item>
-    </Object>
+    </Arguments>
     <DebuggingPaused>Break</DebuggingPaused>
-    <Object name="Arguments" Type="ValueCollection" ToString="[ValueCollection Count=2]">
+    <Arguments Type="ValueCollection" ToString="[ValueCollection Count=2]">
       <Count>2</Count>
       <Item Type="Value" ToString="i = 1">
         <IsArray>False</IsArray>
@@ -339,7 +339,7 @@ namespace Debugger.Tests {
         <HasExpired>False</HasExpired>
         <Type>System.String</Type>
       </Item>
-    </Object>
+    </Arguments>
     <ProcessExited />
   </Test>
 </DebuggerTests>

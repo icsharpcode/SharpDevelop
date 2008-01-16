@@ -158,21 +158,19 @@ namespace Debugger.Tests
 		
 		public void ObjectDump(object obj)
 		{
-			ObjectDump(null, obj);
+			ObjectDump("Object", obj);
 		}
 		
 		public void ObjectDump(string name, object obj)
 		{
-			XmlElement dumpNode = testDoc.CreateElement("Object");
-			if (name != null) dumpNode.SetAttribute("name", name);
+			XmlElement dumpNode = testDoc.CreateElement(XmlConvert.EncodeName(name.Replace(" ", "_")));
 			testNode.AppendChild(dumpNode);
 			Serialize(dumpNode, obj, 16, new List<object>());
 		}
 		
 		public void ObjectDumpToString(string name, object obj)
 		{
-			XmlElement dumpNode = testDoc.CreateElement("Object");
-			if (name != null) dumpNode.SetAttribute("name", name);
+			XmlElement dumpNode = testDoc.CreateElement(XmlConvert.EncodeName(name.Replace(" ", "_")));
 			testNode.AppendChild(dumpNode);
 			if (obj == null) {
 				dumpNode.AppendChild(dumpNode.OwnerDocument.CreateTextNode("null"));
