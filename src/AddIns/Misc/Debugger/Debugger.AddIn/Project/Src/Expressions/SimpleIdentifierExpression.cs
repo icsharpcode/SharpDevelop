@@ -31,11 +31,22 @@ namespace Debugger.Expressions
 		
 		protected override Value EvaluateInternal(StackFrame context)
 		{
-			Value value = context.GetValue(identifier);
-			if (value == null) {
-				throw new GetValueException("Identifier " + identifier + " not found");
+			if (identifier == "this") {
+				return context.GetThisValue();
 			}
-			return value;
+			
+			Value arg = context.GetArgumentValue(identifier);
+			if (arg != null) return arg;
+			
+			Value local = context.GetLocalVariableValue(identifier);
+			if (local != null) return local;
+			
+			if (!context.MethodInfo.IsStatic) {
+				Value member = context.GetThisValue().GetMemberValue(identifier);
+				if (member != null) return member;
+			}
+			
+			throw new GetValueException("Identifier " + identifier + " not found");
 		}
 	}
 }

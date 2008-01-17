@@ -36,12 +36,12 @@ namespace Debugger.Tests {
 			StartTest("MetadataIdentity.cs");
 			WaitForPause();
 			
-			DebugType type = process.SelectedStackFrame.ThisValue.Type;
+			DebugType type = process.SelectedStackFrame.GetThisValue().Type;
 			MethodInfo mainMethod = process.SelectedStackFrame.MethodInfo;
 			process.Continue();
 			WaitForPause();
 			
-			Assert.AreEqual(type, process.SelectedStackFrame.ThisValue.Type);
+			Assert.AreEqual(type, process.SelectedStackFrame.GetThisValue().Type);
 			Assert.AreEqual(mainMethod, process.SelectedStackFrame.MethodInfo);
 			process.Continue();
 			process.WaitForExit();

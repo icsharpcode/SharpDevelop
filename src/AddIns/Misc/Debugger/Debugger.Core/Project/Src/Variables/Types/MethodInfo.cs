@@ -113,6 +113,7 @@ namespace Debugger
 			}
 		}
 		
+		/// <summary> Gets the number of paramters of this method </summary>
 		[Debugger.Tests.Ignore]
 		public int ParameterCount {
 			get {
@@ -130,6 +131,16 @@ namespace Debugger
 			} catch {
 				return String.Empty;
 			}
+		}
+		
+		/// <summary> Get names of all parameters in order </summary>
+		public string[] GetParameterNames()
+		{
+			List<string> names = new List<string>();
+			for(int i = 0; i < ParameterCount; i++) {
+				names.Add(GetParameterName(i));
+			}
+			return names.ToArray();
 		}
 		
 		[Debugger.Tests.Ignore]

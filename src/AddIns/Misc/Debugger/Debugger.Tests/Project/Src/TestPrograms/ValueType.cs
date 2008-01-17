@@ -37,7 +37,7 @@ namespace Debugger.Tests {
 			StartTest("ValueType.cs");
 			WaitForPause();
 			
-			ObjectDump("this", process.SelectedStackFrame.ThisValue);
+			ObjectDump("this", process.SelectedStackFrame.GetThisValue());
 			process.Continue();
 			process.WaitForExit();
 			CheckXmlOutput();
@@ -64,7 +64,6 @@ namespace Debugger.Tests {
       <IsInteger>False</IsInteger>
       <PrimitiveValue exception="Value is not a primitive type" />
       <Expression>this</Expression>
-      <Name>this</Name>
       <IsNull>False</IsNull>
       <AsString>{Debugger.Tests.ValueType}</AsString>
       <HasExpired>False</HasExpired>

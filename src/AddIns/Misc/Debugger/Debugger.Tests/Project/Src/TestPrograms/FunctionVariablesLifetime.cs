@@ -51,15 +51,15 @@ namespace Debugger.Tests {
 			StartTest("FunctionVariablesLifetime.cs"); // 1 - Enter program
 			WaitForPause();
 			argument = process.SelectedStackFrame.GetArgumentValue(0);
-			local = process.SelectedStackFrame.LocalVariables["local"];
-			@class = process.SelectedStackFrame.ContaingClassVariables["class"];
+			local = process.SelectedStackFrame.GetLocalVariableValue("local");
+			@class = process.SelectedStackFrame.GetThisValue().GetMemberValue("class");
 			ObjectDump("argument", argument);
 			ObjectDump("local", local);
 			ObjectDump("@class", @class);
 			
 			process.Continue(); // 2 - Go to the SubFunction
 			WaitForPause();
-			localInSubFunction = process.SelectedStackFrame.LocalVariables["localInSubFunction"];
+			localInSubFunction = process.SelectedStackFrame.GetLocalVariableValue("localInSubFunction");
 			ObjectDump("argument", argument);
 			ObjectDump("local", local);
 			ObjectDump("@class", @class);
@@ -78,7 +78,7 @@ namespace Debugger.Tests {
 			ObjectDump("local", local);
 			ObjectDump("@class", @class);
 			ObjectDump("localInSubFunction", @localInSubFunction);
-			localInSubFunction = process.SelectedStackFrame.LocalVariables["localInSubFunction"];
+			localInSubFunction = process.SelectedStackFrame.GetLocalVariableValue("localInSubFunction");
 			ObjectDump("localInSubFunction(new)", @localInSubFunction);
 			
 			process.Continue(); // 5 - Setp out of both functions
@@ -114,7 +114,6 @@ namespace Debugger.Tests {
       <IsInteger>True</IsInteger>
       <PrimitiveValue>1</PrimitiveValue>
       <Expression>argument</Expression>
-      <Name>argument</Name>
       <IsNull>False</IsNull>
       <AsString>1</AsString>
       <HasExpired>False</HasExpired>
@@ -130,7 +129,6 @@ namespace Debugger.Tests {
       <IsInteger>True</IsInteger>
       <PrimitiveValue>2</PrimitiveValue>
       <Expression>local</Expression>
-      <Name>local</Name>
       <IsNull>False</IsNull>
       <AsString>2</AsString>
       <HasExpired>False</HasExpired>
@@ -146,7 +144,6 @@ namespace Debugger.Tests {
       <IsInteger>True</IsInteger>
       <PrimitiveValue>3</PrimitiveValue>
       <Expression>this.class</Expression>
-      <Name>class</Name>
       <IsNull>False</IsNull>
       <AsString>3</AsString>
       <HasExpired>False</HasExpired>
@@ -163,7 +160,6 @@ namespace Debugger.Tests {
       <IsInteger exception="Value has expired" />
       <PrimitiveValue exception="Value has expired" />
       <Expression>argument</Expression>
-      <Name>argument</Name>
       <IsNull exception="Value has expired" />
       <AsString exception="Value has expired" />
       <HasExpired>True</HasExpired>
@@ -179,7 +175,6 @@ namespace Debugger.Tests {
       <IsInteger exception="Value has expired" />
       <PrimitiveValue exception="Value has expired" />
       <Expression>local</Expression>
-      <Name>local</Name>
       <IsNull exception="Value has expired" />
       <AsString exception="Value has expired" />
       <HasExpired>True</HasExpired>
@@ -195,7 +190,6 @@ namespace Debugger.Tests {
       <IsInteger exception="Value has expired" />
       <PrimitiveValue exception="Value has expired" />
       <Expression>this.class</Expression>
-      <Name>class</Name>
       <IsNull exception="Value has expired" />
       <AsString exception="Value has expired" />
       <HasExpired>True</HasExpired>
@@ -211,7 +205,6 @@ namespace Debugger.Tests {
       <IsInteger>True</IsInteger>
       <PrimitiveValue>4</PrimitiveValue>
       <Expression>localInSubFunction</Expression>
-      <Name>localInSubFunction</Name>
       <IsNull>False</IsNull>
       <AsString>4</AsString>
       <HasExpired>False</HasExpired>
@@ -228,7 +221,6 @@ namespace Debugger.Tests {
       <IsInteger exception="Value has expired" />
       <PrimitiveValue exception="Value has expired" />
       <Expression>argument</Expression>
-      <Name>argument</Name>
       <IsNull exception="Value has expired" />
       <AsString exception="Value has expired" />
       <HasExpired>True</HasExpired>
@@ -244,7 +236,6 @@ namespace Debugger.Tests {
       <IsInteger exception="Value has expired" />
       <PrimitiveValue exception="Value has expired" />
       <Expression>local</Expression>
-      <Name>local</Name>
       <IsNull exception="Value has expired" />
       <AsString exception="Value has expired" />
       <HasExpired>True</HasExpired>
@@ -260,7 +251,6 @@ namespace Debugger.Tests {
       <IsInteger exception="Value has expired" />
       <PrimitiveValue exception="Value has expired" />
       <Expression>this.class</Expression>
-      <Name>class</Name>
       <IsNull exception="Value has expired" />
       <AsString exception="Value has expired" />
       <HasExpired>True</HasExpired>
@@ -276,7 +266,6 @@ namespace Debugger.Tests {
       <IsInteger exception="Value has expired" />
       <PrimitiveValue exception="Value has expired" />
       <Expression>localInSubFunction</Expression>
-      <Name>localInSubFunction</Name>
       <IsNull exception="Value has expired" />
       <AsString exception="Value has expired" />
       <HasExpired>True</HasExpired>
@@ -293,7 +282,6 @@ namespace Debugger.Tests {
       <IsInteger exception="Value has expired" />
       <PrimitiveValue exception="Value has expired" />
       <Expression>argument</Expression>
-      <Name>argument</Name>
       <IsNull exception="Value has expired" />
       <AsString exception="Value has expired" />
       <HasExpired>True</HasExpired>
@@ -309,7 +297,6 @@ namespace Debugger.Tests {
       <IsInteger exception="Value has expired" />
       <PrimitiveValue exception="Value has expired" />
       <Expression>local</Expression>
-      <Name>local</Name>
       <IsNull exception="Value has expired" />
       <AsString exception="Value has expired" />
       <HasExpired>True</HasExpired>
@@ -325,7 +312,6 @@ namespace Debugger.Tests {
       <IsInteger exception="Value has expired" />
       <PrimitiveValue exception="Value has expired" />
       <Expression>this.class</Expression>
-      <Name>class</Name>
       <IsNull exception="Value has expired" />
       <AsString exception="Value has expired" />
       <HasExpired>True</HasExpired>
@@ -341,7 +327,6 @@ namespace Debugger.Tests {
       <IsInteger exception="Value has expired" />
       <PrimitiveValue exception="Value has expired" />
       <Expression>localInSubFunction</Expression>
-      <Name>localInSubFunction</Name>
       <IsNull exception="Value has expired" />
       <AsString exception="Value has expired" />
       <HasExpired>True</HasExpired>
@@ -357,7 +342,6 @@ namespace Debugger.Tests {
       <IsInteger>True</IsInteger>
       <PrimitiveValue>4</PrimitiveValue>
       <Expression>localInSubFunction</Expression>
-      <Name>localInSubFunction</Name>
       <IsNull>False</IsNull>
       <AsString>4</AsString>
       <HasExpired>False</HasExpired>
@@ -374,7 +358,6 @@ namespace Debugger.Tests {
       <IsInteger exception="Value has expired" />
       <PrimitiveValue exception="Value has expired" />
       <Expression>argument</Expression>
-      <Name>argument</Name>
       <IsNull exception="Value has expired" />
       <AsString exception="Value has expired" />
       <HasExpired>True</HasExpired>
@@ -390,7 +373,6 @@ namespace Debugger.Tests {
       <IsInteger exception="Value has expired" />
       <PrimitiveValue exception="Value has expired" />
       <Expression>local</Expression>
-      <Name>local</Name>
       <IsNull exception="Value has expired" />
       <AsString exception="Value has expired" />
       <HasExpired>True</HasExpired>
@@ -406,7 +388,6 @@ namespace Debugger.Tests {
       <IsInteger exception="Value has expired" />
       <PrimitiveValue exception="Value has expired" />
       <Expression>this.class</Expression>
-      <Name>class</Name>
       <IsNull exception="Value has expired" />
       <AsString exception="Value has expired" />
       <HasExpired>True</HasExpired>
@@ -422,7 +403,6 @@ namespace Debugger.Tests {
       <IsInteger exception="Value has expired" />
       <PrimitiveValue exception="Value has expired" />
       <Expression>localInSubFunction</Expression>
-      <Name>localInSubFunction</Name>
       <IsNull exception="Value has expired" />
       <AsString exception="Value has expired" />
       <HasExpired>True</HasExpired>

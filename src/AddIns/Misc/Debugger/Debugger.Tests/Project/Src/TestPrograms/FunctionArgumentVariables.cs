@@ -77,7 +77,7 @@ namespace Debugger.Tests {
 			for(int i = 0; i < 5; i++) {
 				process.Continue();
 				WaitForPause();
-				ObjectDump("Arguments", process.SelectedStackFrame.Arguments);
+				ObjectDump("Arguments", process.SelectedStackFrame.GetArgumentValues());
 			}
 			
 			process.Continue();
@@ -97,8 +97,7 @@ namespace Debugger.Tests {
     <ModuleLoaded symbols="True">FunctionArgumentVariables.exe</ModuleLoaded>
     <DebuggingPaused>Break</DebuggingPaused>
     <DebuggingPaused>Break</DebuggingPaused>
-    <Arguments Type="ValueCollection" ToString="[ValueCollection Count=9]">
-      <Count>9</Count>
+    <Arguments Type="Value[]" ToString="Debugger.Value[]">
       <Item Type="Value" ToString="i = 1">
         <IsArray>False</IsArray>
         <ArrayLenght exception="Value is not an array" />
@@ -109,7 +108,6 @@ namespace Debugger.Tests {
         <IsInteger>True</IsInteger>
         <PrimitiveValue>1</PrimitiveValue>
         <Expression>i</Expression>
-        <Name>i</Name>
         <IsNull>False</IsNull>
         <AsString>1</AsString>
         <HasExpired>False</HasExpired>
@@ -125,7 +123,6 @@ namespace Debugger.Tests {
         <IsInteger>False</IsInteger>
         <PrimitiveValue>A</PrimitiveValue>
         <Expression>s</Expression>
-        <Name>s</Name>
         <IsNull>False</IsNull>
         <AsString>A</AsString>
         <HasExpired>False</HasExpired>
@@ -141,7 +138,6 @@ namespace Debugger.Tests {
         <IsInteger>False</IsInteger>
         <PrimitiveValue exception="Value is not a primitive type" />
         <Expression>s_null</Expression>
-        <Name>s_null</Name>
         <IsNull>True</IsNull>
         <AsString>&lt;null&gt;</AsString>
         <HasExpired>False</HasExpired>
@@ -157,7 +153,6 @@ namespace Debugger.Tests {
         <IsInteger>True</IsInteger>
         <PrimitiveValue>2</PrimitiveValue>
         <Expression>ref_i</Expression>
-        <Name>ref_i</Name>
         <IsNull>False</IsNull>
         <AsString>2</AsString>
         <HasExpired>False</HasExpired>
@@ -173,7 +168,6 @@ namespace Debugger.Tests {
         <IsInteger>True</IsInteger>
         <PrimitiveValue>3</PrimitiveValue>
         <Expression>out_i</Expression>
-        <Name>out_i</Name>
         <IsNull>False</IsNull>
         <AsString>3</AsString>
         <HasExpired>False</HasExpired>
@@ -189,7 +183,6 @@ namespace Debugger.Tests {
         <IsInteger>True</IsInteger>
         <PrimitiveValue>0</PrimitiveValue>
         <Expression>out_i2</Expression>
-        <Name>out_i2</Name>
         <IsNull>False</IsNull>
         <AsString>0</AsString>
         <HasExpired>False</HasExpired>
@@ -205,7 +198,6 @@ namespace Debugger.Tests {
         <IsInteger>False</IsInteger>
         <PrimitiveValue>B</PrimitiveValue>
         <Expression>ref_s</Expression>
-        <Name>ref_s</Name>
         <IsNull>False</IsNull>
         <AsString>B</AsString>
         <HasExpired>False</HasExpired>
@@ -221,7 +213,6 @@ namespace Debugger.Tests {
         <IsInteger>False</IsInteger>
         <PrimitiveValue exception="Value is not a primitive type" />
         <Expression>iNull</Expression>
-        <Name>iNull</Name>
         <IsNull>False</IsNull>
         <AsString>{System.Nullable&lt;System.Int32&gt;}</AsString>
         <HasExpired>False</HasExpired>
@@ -237,7 +228,6 @@ namespace Debugger.Tests {
         <IsInteger>False</IsInteger>
         <PrimitiveValue exception="Value is not a primitive type" />
         <Expression>iNull_null</Expression>
-        <Name>iNull_null</Name>
         <IsNull>False</IsNull>
         <AsString>{System.Nullable&lt;System.Int32&gt;}</AsString>
         <HasExpired>False</HasExpired>
@@ -245,8 +235,7 @@ namespace Debugger.Tests {
       </Item>
     </Arguments>
     <DebuggingPaused>Break</DebuggingPaused>
-    <Arguments Type="ValueCollection" ToString="[ValueCollection Count=1]">
-      <Count>1</Count>
+    <Arguments Type="Value[]" ToString="Debugger.Value[]">
       <Item Type="Value" ToString="args = {System.String[]}">
         <IsArray>True</IsArray>
         <ArrayLenght>0</ArrayLenght>
@@ -257,7 +246,6 @@ namespace Debugger.Tests {
         <IsInteger>False</IsInteger>
         <PrimitiveValue exception="Value is not a primitive type" />
         <Expression>args</Expression>
-        <Name>args</Name>
         <IsNull>False</IsNull>
         <AsString>{System.String[]}</AsString>
         <HasExpired>False</HasExpired>
@@ -265,8 +253,7 @@ namespace Debugger.Tests {
       </Item>
     </Arguments>
     <DebuggingPaused>Break</DebuggingPaused>
-    <Arguments Type="ValueCollection" ToString="[ValueCollection Count=1]">
-      <Count>1</Count>
+    <Arguments Type="Value[]" ToString="Debugger.Value[]">
       <Item Type="Value" ToString="args = {System.String[]}">
         <IsArray>True</IsArray>
         <ArrayLenght>1</ArrayLenght>
@@ -277,7 +264,6 @@ namespace Debugger.Tests {
         <IsInteger>False</IsInteger>
         <PrimitiveValue exception="Value is not a primitive type" />
         <Expression>args</Expression>
-        <Name>args</Name>
         <IsNull>False</IsNull>
         <AsString>{System.String[]}</AsString>
         <HasExpired>False</HasExpired>
@@ -285,8 +271,7 @@ namespace Debugger.Tests {
       </Item>
     </Arguments>
     <DebuggingPaused>Break</DebuggingPaused>
-    <Arguments Type="ValueCollection" ToString="[ValueCollection Count=1]">
-      <Count>1</Count>
+    <Arguments Type="Value[]" ToString="Debugger.Value[]">
       <Item Type="Value" ToString="args = {System.String[]}">
         <IsArray>True</IsArray>
         <ArrayLenght>2</ArrayLenght>
@@ -297,7 +282,6 @@ namespace Debugger.Tests {
         <IsInteger>False</IsInteger>
         <PrimitiveValue exception="Value is not a primitive type" />
         <Expression>args</Expression>
-        <Name>args</Name>
         <IsNull>False</IsNull>
         <AsString>{System.String[]}</AsString>
         <HasExpired>False</HasExpired>
@@ -305,8 +289,7 @@ namespace Debugger.Tests {
       </Item>
     </Arguments>
     <DebuggingPaused>Break</DebuggingPaused>
-    <Arguments Type="ValueCollection" ToString="[ValueCollection Count=2]">
-      <Count>2</Count>
+    <Arguments Type="Value[]" ToString="Debugger.Value[]">
       <Item Type="Value" ToString="i = 1">
         <IsArray>False</IsArray>
         <ArrayLenght exception="Value is not an array" />
@@ -317,7 +300,6 @@ namespace Debugger.Tests {
         <IsInteger>True</IsInteger>
         <PrimitiveValue>1</PrimitiveValue>
         <Expression>i</Expression>
-        <Name>i</Name>
         <IsNull>False</IsNull>
         <AsString>1</AsString>
         <HasExpired>False</HasExpired>
@@ -333,7 +315,6 @@ namespace Debugger.Tests {
         <IsInteger>False</IsInteger>
         <PrimitiveValue>A</PrimitiveValue>
         <Expression>s</Expression>
-        <Name>s</Name>
         <IsNull>False</IsNull>
         <AsString>A</AsString>
         <HasExpired>False</HasExpired>

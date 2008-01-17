@@ -111,19 +111,13 @@ namespace Debugger
 		}
 		
 		/// <summary> Returns all elements in the array </summary>
-		public ValueCollection GetArrayElements()
+		public Value[] GetArrayElements()
 		{
-			return new ValueCollection(this.ArrayElements);
-		}
-		
-		/// <summary> Enumerate over all array elements </summary>
-		[Debugger.Tests.Ignore]
-		public IEnumerable<Value> ArrayElements {
-			get {
-				foreach(int[] indices in this.ArrayDimensions.Indices) {
-					yield return GetArrayElement(indices);
-				}
+			List<Value> values = new List<Value>();
+			foreach(int[] indices in this.ArrayDimensions.Indices) {
+				values.Add(GetArrayElement(indices));
 			}
+			return values.ToArray();
 		}
 	}
 }

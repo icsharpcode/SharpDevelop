@@ -70,33 +70,21 @@ namespace Debugger.Tests {
         <HasSymbols>True</HasSymbols>
         <HasExpired>False</HasExpired>
         <NextStatement>Start=26,4 End=26,40</NextStatement>
-        <ThisValue exception="Static method does not have 'this'." />
-        <ContaingClassVariables>[ValueCollection Count=0]</ContaingClassVariables>
         <ArgumentCount>0</ArgumentCount>
-        <Arguments>[ValueCollection Count=0]</Arguments>
-        <LocalVariables>[ValueCollection Count=0]</LocalVariables>
       </Item>
       <Item Type="StackFrame" ToString="Debugger.Tests.TestPrograms.Callstack.Sub1">
         <MethodInfo>Sub1</MethodInfo>
         <HasSymbols>True</HasSymbols>
         <HasExpired>False</HasExpired>
         <NextStatement>Start=21,4 End=21,11</NextStatement>
-        <ThisValue exception="Static method does not have 'this'." />
-        <ContaingClassVariables>[ValueCollection Count=0]</ContaingClassVariables>
         <ArgumentCount>0</ArgumentCount>
-        <Arguments>[ValueCollection Count=0]</Arguments>
-        <LocalVariables>[ValueCollection Count=0]</LocalVariables>
       </Item>
       <Item Type="StackFrame" ToString="Debugger.Tests.TestPrograms.Callstack.Main">
         <MethodInfo>Main</MethodInfo>
         <HasSymbols>True</HasSymbols>
         <HasExpired>False</HasExpired>
         <NextStatement>Start=16,4 End=16,11</NextStatement>
-        <ThisValue exception="Static method does not have 'this'." />
-        <ContaingClassVariables>[ValueCollection Count=0]</ContaingClassVariables>
         <ArgumentCount>0</ArgumentCount>
-        <Arguments>[ValueCollection Count=0]</Arguments>
-        <LocalVariables>[ValueCollection Count=0]</LocalVariables>
       </Item>
     </Callstack>
     <DebuggingPaused>StepComplete</DebuggingPaused>
@@ -107,22 +95,14 @@ namespace Debugger.Tests {
         <HasSymbols>True</HasSymbols>
         <HasExpired>False</HasExpired>
         <NextStatement>Start=21,4 End=21,11</NextStatement>
-        <ThisValue exception="Static method does not have 'this'." />
-        <ContaingClassVariables>[ValueCollection Count=0]</ContaingClassVariables>
         <ArgumentCount>0</ArgumentCount>
-        <Arguments>[ValueCollection Count=0]</Arguments>
-        <LocalVariables>[ValueCollection Count=0]</LocalVariables>
       </Item>
       <Item Type="StackFrame" ToString="Debugger.Tests.TestPrograms.Callstack.Main">
         <MethodInfo>Main</MethodInfo>
         <HasSymbols>True</HasSymbols>
         <HasExpired>False</HasExpired>
         <NextStatement>Start=16,4 End=16,11</NextStatement>
-        <ThisValue exception="Static method does not have 'this'." />
-        <ContaingClassVariables>[ValueCollection Count=0]</ContaingClassVariables>
         <ArgumentCount>0</ArgumentCount>
-        <Arguments>[ValueCollection Count=0]</Arguments>
-        <LocalVariables>[ValueCollection Count=0]</LocalVariables>
       </Item>
     </Callstack>
     <DebuggingPaused>StepComplete</DebuggingPaused>
@@ -133,11 +113,7 @@ namespace Debugger.Tests {
         <HasSymbols>True</HasSymbols>
         <HasExpired>False</HasExpired>
         <NextStatement>Start=16,4 End=16,11</NextStatement>
-        <ThisValue exception="Static method does not have 'this'." />
-        <ContaingClassVariables>[ValueCollection Count=0]</ContaingClassVariables>
         <ArgumentCount>0</ArgumentCount>
-        <Arguments>[ValueCollection Count=0]</Arguments>
-        <LocalVariables>[ValueCollection Count=0]</LocalVariables>
       </Item>
     </Callstack>
     <ProcessExited />

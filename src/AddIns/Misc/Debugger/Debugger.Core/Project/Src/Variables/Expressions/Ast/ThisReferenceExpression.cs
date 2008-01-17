@@ -22,7 +22,7 @@ namespace Debugger.Expressions
 		
 		protected override Value EvaluateInternal(StackFrame context)
 		{
-			return context.ThisValue;
+			return context.GetThisValue();
 		}
 	}
 }

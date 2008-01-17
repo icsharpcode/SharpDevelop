@@ -36,7 +36,7 @@ namespace Debugger.AddIn.TreeModel
 				this.Image = DebuggerIcons.ImageList.Images[1]; // Field
 			}
 			
-			this.Name = val.Name;
+			this.Name = val.Expression.CodeTail;
 			
 			if (ShowValuesInHexadecimal && val.IsInteger) {
 				this.Text = String.Format("0x{0:X}", val.PrimitiveValue);

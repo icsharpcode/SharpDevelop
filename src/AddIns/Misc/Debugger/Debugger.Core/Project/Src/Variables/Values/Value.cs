@@ -34,13 +34,6 @@ namespace Debugger
 			get { return expression; }
 		}
 		
-		/// <summary> Gets the name associated with the value </summary>
-		public string Name {
-			get {
-				return this.Expression.CodeTail;
-			}
-		}
-		
 		/// <summary> Returns true if the value is null </summary>
 		public bool IsNull {
 			get {

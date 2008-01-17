@@ -31,7 +31,7 @@ namespace Debugger.Tests {
 		{
 			StartTest("ArrayValue.cs");
 			WaitForPause();
-			Value array = process.SelectedStackFrame.LocalVariables["array"];
+			Value array = process.SelectedStackFrame.GetLocalVariableValue("array");
 			ObjectDump("array", array);
 			ObjectDump("array elements", array.GetArrayElements());
 			
@@ -61,14 +61,12 @@ namespace Debugger.Tests {
       <IsInteger>False</IsInteger>
       <PrimitiveValue exception="Value is not a primitive type" />
       <Expression>array</Expression>
-      <Name>array</Name>
       <IsNull>False</IsNull>
       <AsString>{System.Int32[]}</AsString>
       <HasExpired>False</HasExpired>
       <Type>System.Int32[]</Type>
     </array>
-    <array_elements Type="ValueCollection" ToString="[ValueCollection Count=5]">
-      <Count>5</Count>
+    <array_elements Type="Value[]" ToString="Debugger.Value[]">
       <Item Type="Value" ToString="array[0] = 0">
         <IsArray>False</IsArray>
         <ArrayLenght exception="Value is not an array" />
@@ -79,7 +77,6 @@ namespace Debugger.Tests {
         <IsInteger>True</IsInteger>
         <PrimitiveValue>0</PrimitiveValue>
         <Expression>array[0]</Expression>
-        <Name>[0]</Name>
         <IsNull>False</IsNull>
         <AsString>0</AsString>
         <HasExpired>False</HasExpired>
@@ -95,7 +92,6 @@ namespace Debugger.Tests {
         <IsInteger>True</IsInteger>
         <PrimitiveValue>1</PrimitiveValue>
         <Expression>array[1]</Expression>
-        <Name>[1]</Name>
         <IsNull>False</IsNull>
         <AsString>1</AsString>
         <HasExpired>False</HasExpired>
@@ -111,7 +107,6 @@ namespace Debugger.Tests {
         <IsInteger>True</IsInteger>
         <PrimitiveValue>2</PrimitiveValue>
         <Expression>array[2]</Expression>
-        <Name>[2]</Name>
         <IsNull>False</IsNull>
         <AsString>2</AsString>
         <HasExpired>False</HasExpired>
@@ -127,7 +122,6 @@ namespace Debugger.Tests {
         <IsInteger>True</IsInteger>
         <PrimitiveValue>3</PrimitiveValue>
         <Expression>array[3]</Expression>
-        <Name>[3]</Name>
         <IsNull>False</IsNull>
         <AsString>3</AsString>
         <HasExpired>False</HasExpired>
@@ -143,7 +137,6 @@ namespace Debugger.Tests {
         <IsInteger>True</IsInteger>
         <PrimitiveValue>4</PrimitiveValue>
         <Expression>array[4]</Expression>
-        <Name>[4]</Name>
         <IsNull>False</IsNull>
         <AsString>4</AsString>
         <HasExpired>False</HasExpired>

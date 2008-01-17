@@ -293,87 +293,25 @@ namespace Debugger
 			}
 		}
 		
-		/// <summary> Gets value of given name which is accessible from this stack frame </summary>
-		/// <returns> Null if not found </returns>
-		public Value GetValue(string name)
-		{
-			if (name == "this") {
-				return ThisValue;
-			}
-			if (Arguments.Contains(name)) {
-				return Arguments[name];
-			}
-			if (LocalVariables.Contains(name)) {
-				return LocalVariables[name];
-			}
-			if (ContaingClassVariables.Contains(name)) {
-				return ContaingClassVariables[name];
-			}
-			return null;
-		}
-		
-		/// <summary>
-		/// Gets all variables in the lexical scope of the stack frame. 
-		/// That is, arguments, local variables and varables of the containing class.
-		/// </summary>
-		[Debugger.Tests.Ignore] // Accessible though others
-		public ValueCollection Variables {
-			get {
-				return new ValueCollection(GetVariables());
-			}
-		}
-		
-		IEnumerable<Value> GetVariables() 
-		{
-			if (!this.MethodInfo.IsStatic) {
-				yield return ThisValue;
-			}
-			foreach(Value val in Arguments) {
-				yield return val;
-			}
-			foreach(Value val in LocalVariables) {
-				yield return val;
-			}
-			foreach(Value val in ContaingClassVariables) {
-				yield return val;
-			}
-		}
-		
 		/// <summary> 
 		/// Gets the instance of the class asociated with the current frame.
 		/// That is, 'this' in C#.
 		/// </summary>
-		public Value ThisValue {
-			get {
-				return new Value(process, new ThisReferenceExpression(), ThisCorValue);
-			}
+		public Value GetThisValue()
+		{
+			return new Value(process, new ThisReferenceExpression(), GetThisCorValue());
 		}
 		
-		ICorDebugValue ThisCorValue {
-			get {
-				if (this.MethodInfo.IsStatic) throw new GetValueException("Static method does not have 'this'.");
-				if (this.HasExpired) throw new GetValueException("StackFrame has expired");
-				try {
-					return CorILFrame.GetArgument(0);
-				} catch (COMException e) {
-					// System.Runtime.InteropServices.COMException (0x80131304): An IL variable is not available at the current native IP. (See Forum-8640)
-					if ((uint)e.ErrorCode == 0x80131304) throw new GetValueException("Not available in the current state");
-					throw;
-				}
-			}
-		}
-		
-		/// <summary>
-		/// Gets all accessible members of the class that defines this stack frame.
-		/// </summary>
-		public ValueCollection ContaingClassVariables {
-			get {
-				// TODO: Should work for static
-				if (!this.MethodInfo.IsStatic) {
-					return ThisValue.GetMemberValues();
-				} else {
-					return ValueCollection.Empty;
-				}
+		ICorDebugValue GetThisCorValue()
+		{
+			if (this.MethodInfo.IsStatic) throw new GetValueException("Static method does not have 'this'.");
+			if (this.HasExpired) throw new GetValueException("StackFrame has expired");
+			try {
+				return CorILFrame.GetArgument(0);
+			} catch (COMException e) {
+				// System.Runtime.InteropServices.COMException (0x80131304): An IL variable is not available at the current native IP. (See Forum-8640)
+				if ((uint)e.ErrorCode == 0x80131304) throw new GetValueException("Not available in the current state");
+				throw;
 			}
 		}
 		
@@ -409,42 +347,38 @@ namespace Debugger
 			}
 		}
 		
+		#region Convenience methods
+		
+		/// <summary> Gets argument with a given name </summary>
+		/// <returns> Null if not found </returns>
+		public Value GetArgumentValue(string name)
+		{
+			for(int i = 0; i < this.ArgumentCount; i++) {
+				if (this.MethodInfo.GetParameterName(i) == name) {
+					return GetArgumentValue(i);
+				}
+			}
+			return null;
+		}
+		
 		/// <summary> Gets all arguments of the stack frame. </summary>
-		public ValueCollection Arguments {
-			get {
-				return new ValueCollection(ArgumentsEnum);
+		public Value[] GetArgumentValues()
+		{
+			List<Value> values = new List<Value>();
+			for (int i = 0; i < ArgumentCount; i++) {
+				values.Add(GetArgumentValue(i));
 			}
+			return values.ToArray();
 		}
 		
-		IEnumerable<Value> ArgumentsEnum {
-			get {
-				for (int i = 0; i < ArgumentCount; i++) {
-					yield return GetArgumentValue(i);
-				}
-			}
-		}
-		
-		/// <summary> Gets all local variables of the stack frame. </summary>
-		public ValueCollection LocalVariables {
-			get {
-				return new ValueCollection(LocalVariablesEnum);
-			}
-		}
-		
-		IEnumerable<Value> LocalVariablesEnum {
-			get {
-				foreach(ISymUnmanagedVariable symVar in this.MethodInfo.LocalVariables) {
-					yield return GetLocalVariableValue(symVar);
-				}
-			}
-		}
+		#endregion
 		
 		public Value GetLocalVariableValue(ISymUnmanagedVariable symVar)
 		{
-			return new Value(this.Process, new LocalVariableIdentifierExpression(MethodInfo, symVar), GetCorValueOfLocalVariable(symVar));
+			return new Value(this.Process, new LocalVariableIdentifierExpression(MethodInfo, symVar), GetLocalVariableCorValue(symVar));
 		}
 		
-		ICorDebugValue GetCorValueOfLocalVariable(ISymUnmanagedVariable symVar)
+		ICorDebugValue GetLocalVariableCorValue(ISymUnmanagedVariable symVar)
 		{
 			if (this.HasExpired) throw new GetValueException("StackFrame has expired");
 			
@@ -455,5 +389,31 @@ namespace Debugger
 				throw;
 			}
 		}
+		
+		#region Convenience methods
+		
+		/// <summary> Get local variable with given name </summary>
+		/// <returns> Null if not found </returns>
+		public Value GetLocalVariableValue(string name)
+		{
+			foreach(ISymUnmanagedVariable symVar in this.MethodInfo.LocalVariables) {
+				if (symVar.Name == name) {
+					return GetLocalVariableValue(symVar);
+				}
+			}
+			return null;
+		}
+		
+		/// <summary> Gets all local variables of the stack frame. </summary>
+		public Value[] GetLocalVariableValues()
+		{
+			List<Value> values = new List<Value>();
+			foreach(ISymUnmanagedVariable symVar in this.MethodInfo.LocalVariables) {
+				values.Add(GetLocalVariableValue(symVar));
+			}
+			return values.ToArray();
+		}
+		
+		#endregion
 	}
 }

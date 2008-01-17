@@ -256,9 +256,8 @@ namespace Debugger
 			);
 		}
 		
-		/// <summary>
-		/// Get a field or property of an object with a given name.
-		/// </summary>
+		/// <summary> Get a field or property of an object with a given name. </summary>
+		/// <returns> Null if not found </returns>
 		public Value GetMemberValue(string name)
 		{
 			DebugType currentType = this.Type;
@@ -274,13 +273,11 @@ namespace Debugger
 				}
 				currentType = currentType.BaseType;
 			}
-			throw new GetValueException("Member " + name + " was not found");
+			return null;
 		}
 		
-		/// <summary>
-		/// Get all fields and properties of an object.
-		/// </summary>
-		public ValueCollection GetMemberValues()
+		/// <summary> Get all fields and properties of an object. </summary>
+		public Value[] GetMemberValues()
 		{
 			return GetMemberValues(null, BindingFlags.All);
 		}
@@ -290,12 +287,12 @@ namespace Debugger
 		/// </summary>
 		/// <param name="type"> Limit to type, null for all types </param>
 		/// <param name="bindingFlags"> Get only members with certain flags </param>
-		public ValueCollection GetMemberValues(DebugType type, BindingFlags bindingFlags)
+		public Value[] GetMemberValues(DebugType type, BindingFlags bindingFlags)
 		{
 			if (IsObject) {
-				return new ValueCollection(GetObjectMembersEnum(type, bindingFlags));
+				return new List<Value>(GetObjectMembersEnum(type, bindingFlags)).ToArray();
 			} else {
-				return ValueCollection.Empty;
+				return new Value[0];
 			}
 		}
 		

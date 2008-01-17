@@ -59,10 +59,9 @@ namespace Debugger.Tests {
 			StartTest("Expressions.cs");
 			WaitForPause();
 			
-			ObjectDump("Variables", process.SelectedStackFrame.Variables);
-			ObjectDump("array", process.SelectedStackFrame.Variables["array"].GetArrayElements());
-			ObjectDump("array2", process.SelectedStackFrame.Variables["array2"].GetArrayElements());
-			ObjectDump("this", process.SelectedStackFrame.ThisValue.GetMemberValues());
+			ObjectDump("Arguments", process.SelectedStackFrame.GetArgumentValues());
+			ObjectDump("LocalVariables", process.SelectedStackFrame.GetLocalVariableValues());
+			ObjectDump("this", process.SelectedStackFrame.GetThisValue().GetMemberValues());
 			
 			process.Continue();
 			process.WaitForExit();

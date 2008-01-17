@@ -237,6 +237,7 @@ namespace Debugger.Tests
 			}
 			
 			foreach(System.Reflection.PropertyInfo property in type.GetProperties()) {
+				if (type.BaseType == typeof(Array)) continue;
 				if (property.GetGetMethod() == null) continue;
 				if (property.GetGetMethod().GetParameters().Length > 0) continue;
 				if (property.GetCustomAttributes(typeof(Debugger.Tests.IgnoreAttribute), true).Length > 0) continue;

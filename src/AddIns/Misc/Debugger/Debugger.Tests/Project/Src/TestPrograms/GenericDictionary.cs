@@ -32,8 +32,8 @@ namespace Debugger.Tests {
 		{
 			StartTest("GenericDictionary.cs");
 			WaitForPause();
-			ObjectDump("dict", process.SelectedStackFrame.LocalVariables["dict"]);
-			ObjectDump("dict members", process.SelectedStackFrame.LocalVariables["dict"].GetMemberValues(null, BindingFlags.All));
+			ObjectDump("dict", process.SelectedStackFrame.GetLocalVariableValue("dict"));
+			ObjectDump("dict members", process.SelectedStackFrame.GetLocalVariableValue("dict").GetMemberValues(null, BindingFlags.All));
 			
 			process.Continue();
 			process.WaitForExit();

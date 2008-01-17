@@ -147,45 +147,7 @@ namespace Debugger.Tests {
       <HasSymbols>True</HasSymbols>
       <HasExpired>False</HasExpired>
       <NextStatement>Start=36,4 End=36,40</NextStatement>
-      <ThisValue>this = {Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;}</ThisValue>
-      <ContaingClassVariables>[ValueCollection Count=0]</ContaingClassVariables>
       <ArgumentCount>2</ArgumentCount>
-      <Arguments Type="ValueCollection" ToString="[ValueCollection Count=2]">
-        <Count>2</Count>
-        <Item Type="Value" ToString="v = 1">
-          <IsArray>False</IsArray>
-          <ArrayLenght exception="Value is not an array" />
-          <ArrayRank exception="Value is not an array" />
-          <ArrayDimensions exception="Value is not an array" />
-          <IsObject>False</IsObject>
-          <IsPrimitive>True</IsPrimitive>
-          <IsInteger>True</IsInteger>
-          <PrimitiveValue>1</PrimitiveValue>
-          <Expression>v</Expression>
-          <Name>v</Name>
-          <IsNull>False</IsNull>
-          <AsString>1</AsString>
-          <HasExpired>False</HasExpired>
-          <Type>System.Int32</Type>
-        </Item>
-        <Item Type="Value" ToString="k = 1!">
-          <IsArray>False</IsArray>
-          <ArrayLenght exception="Value is not an array" />
-          <ArrayRank exception="Value is not an array" />
-          <ArrayDimensions exception="Value is not an array" />
-          <IsObject>False</IsObject>
-          <IsPrimitive>True</IsPrimitive>
-          <IsInteger>False</IsInteger>
-          <PrimitiveValue>1!</PrimitiveValue>
-          <Expression>k</Expression>
-          <Name>k</Name>
-          <IsNull>False</IsNull>
-          <AsString>1!</AsString>
-          <HasExpired>False</HasExpired>
-          <Type>System.String</Type>
-        </Item>
-      </Arguments>
-      <LocalVariables>[ValueCollection Count=0]</LocalVariables>
     </SelectedStackFrame>
     <DebuggingPaused>Break</DebuggingPaused>
     <SelectedStackFrame Type="StackFrame" ToString="Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;.GenericMethod">
@@ -214,45 +176,7 @@ namespace Debugger.Tests {
       <HasSymbols>True</HasSymbols>
       <HasExpired>False</HasExpired>
       <NextStatement>Start=42,4 End=42,40</NextStatement>
-      <ThisValue>this = {Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;}</ThisValue>
-      <ContaingClassVariables>[ValueCollection Count=0]</ContaingClassVariables>
       <ArgumentCount>2</ArgumentCount>
-      <Arguments Type="ValueCollection" ToString="[ValueCollection Count=2]">
-        <Count>2</Count>
-        <Item Type="Value" ToString="v = 1">
-          <IsArray>False</IsArray>
-          <ArrayLenght exception="Value is not an array" />
-          <ArrayRank exception="Value is not an array" />
-          <ArrayDimensions exception="Value is not an array" />
-          <IsObject>False</IsObject>
-          <IsPrimitive>True</IsPrimitive>
-          <IsInteger>True</IsInteger>
-          <PrimitiveValue>1</PrimitiveValue>
-          <Expression>v</Expression>
-          <Name>v</Name>
-          <IsNull>False</IsNull>
-          <AsString>1</AsString>
-          <HasExpired>False</HasExpired>
-          <Type>System.Int32</Type>
-        </Item>
-        <Item Type="Value" ToString="k = 1!">
-          <IsArray>False</IsArray>
-          <ArrayLenght exception="Value is not an array" />
-          <ArrayRank exception="Value is not an array" />
-          <ArrayDimensions exception="Value is not an array" />
-          <IsObject>False</IsObject>
-          <IsPrimitive>True</IsPrimitive>
-          <IsInteger>False</IsInteger>
-          <PrimitiveValue>1!</PrimitiveValue>
-          <Expression>k</Expression>
-          <Name>k</Name>
-          <IsNull>False</IsNull>
-          <AsString>1!</AsString>
-          <HasExpired>False</HasExpired>
-          <Type>System.String</Type>
-        </Item>
-      </Arguments>
-      <LocalVariables>[ValueCollection Count=0]</LocalVariables>
     </SelectedStackFrame>
     <DebuggingPaused>Break</DebuggingPaused>
     <SelectedStackFrame Type="StackFrame" ToString="Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;.StaticMetod">
@@ -281,45 +205,7 @@ namespace Debugger.Tests {
       <HasSymbols>True</HasSymbols>
       <HasExpired>False</HasExpired>
       <NextStatement>Start=48,4 End=48,40</NextStatement>
-      <ThisValue exception="Static method does not have 'this'." />
-      <ContaingClassVariables>[ValueCollection Count=0]</ContaingClassVariables>
       <ArgumentCount>2</ArgumentCount>
-      <Arguments Type="ValueCollection" ToString="[ValueCollection Count=2]">
-        <Count>2</Count>
-        <Item Type="Value" ToString="v = 1">
-          <IsArray>False</IsArray>
-          <ArrayLenght exception="Value is not an array" />
-          <ArrayRank exception="Value is not an array" />
-          <ArrayDimensions exception="Value is not an array" />
-          <IsObject>False</IsObject>
-          <IsPrimitive>True</IsPrimitive>
-          <IsInteger>True</IsInteger>
-          <PrimitiveValue>1</PrimitiveValue>
-          <Expression>v</Expression>
-          <Name>v</Name>
-          <IsNull>False</IsNull>
-          <AsString>1</AsString>
-          <HasExpired>False</HasExpired>
-          <Type>System.Int32</Type>
-        </Item>
-        <Item Type="Value" ToString="k = 1!">
-          <IsArray>False</IsArray>
-          <ArrayLenght exception="Value is not an array" />
-          <ArrayRank exception="Value is not an array" />
-          <ArrayDimensions exception="Value is not an array" />
-          <IsObject>False</IsObject>
-          <IsPrimitive>True</IsPrimitive>
-          <IsInteger>False</IsInteger>
-          <PrimitiveValue>1!</PrimitiveValue>
-          <Expression>k</Expression>
-          <Name>k</Name>
-          <IsNull>False</IsNull>
-          <AsString>1!</AsString>
-          <HasExpired>False</HasExpired>
-          <Type>System.String</Type>
-        </Item>
-      </Arguments>
-      <LocalVariables>[ValueCollection Count=0]</LocalVariables>
     </SelectedStackFrame>
     <DebuggingPaused>Break</DebuggingPaused>
     <SelectedStackFrame Type="StackFrame" ToString="Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;.StaticGenericMethod">
@@ -348,45 +234,7 @@ namespace Debugger.Tests {
       <HasSymbols>True</HasSymbols>
       <HasExpired>False</HasExpired>
       <NextStatement>Start=54,4 End=54,40</NextStatement>
-      <ThisValue exception="Static method does not have 'this'." />
-      <ContaingClassVariables>[ValueCollection Count=0]</ContaingClassVariables>
       <ArgumentCount>2</ArgumentCount>
-      <Arguments Type="ValueCollection" ToString="[ValueCollection Count=2]">
-        <Count>2</Count>
-        <Item Type="Value" ToString="v = 1">
-          <IsArray>False</IsArray>
-          <ArrayLenght exception="Value is not an array" />
-          <ArrayRank exception="Value is not an array" />
-          <ArrayDimensions exception="Value is not an array" />
-          <IsObject>False</IsObject>
-          <IsPrimitive>True</IsPrimitive>
-          <IsInteger>True</IsInteger>
-          <PrimitiveValue>1</PrimitiveValue>
-          <Expression>v</Expression>
-          <Name>v</Name>
-          <IsNull>False</IsNull>
-          <AsString>1</AsString>
-          <HasExpired>False</HasExpired>
-          <Type>System.Int32</Type>
-        </Item>
-        <Item Type="Value" ToString="k = 1!">
-          <IsArray>False</IsArray>
-          <ArrayLenght exception="Value is not an array" />
-          <ArrayRank exception="Value is not an array" />
-          <ArrayDimensions exception="Value is not an array" />
-          <IsObject>False</IsObject>
-          <IsPrimitive>True</IsPrimitive>
-          <IsInteger>False</IsInteger>
-          <PrimitiveValue>1!</PrimitiveValue>
-          <Expression>k</Expression>
-          <Name>k</Name>
-          <IsNull>False</IsNull>
-          <AsString>1!</AsString>
-          <HasExpired>False</HasExpired>
-          <Type>System.String</Type>
-        </Item>
-      </Arguments>
-      <LocalVariables>[ValueCollection Count=0]</LocalVariables>
     </SelectedStackFrame>
     <DebuggingPaused>Break</DebuggingPaused>
     <SelectedStackFrame Type="StackFrame" ToString="Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;.Metod">
@@ -415,45 +263,7 @@ namespace Debugger.Tests {
       <HasSymbols>True</HasSymbols>
       <HasExpired>False</HasExpired>
       <NextStatement>Start=63,4 End=63,40</NextStatement>
-      <ThisValue>this = {Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;}</ThisValue>
-      <ContaingClassVariables>[ValueCollection Count=0]</ContaingClassVariables>
       <ArgumentCount>2</ArgumentCount>
-      <Arguments Type="ValueCollection" ToString="[ValueCollection Count=2]">
-        <Count>2</Count>
-        <Item Type="Value" ToString="v = 1">
-          <IsArray>False</IsArray>
-          <ArrayLenght exception="Value is not an array" />
-          <ArrayRank exception="Value is not an array" />
-          <ArrayDimensions exception="Value is not an array" />
-          <IsObject>False</IsObject>
-          <IsPrimitive>True</IsPrimitive>
-          <IsInteger>True</IsInteger>
-          <PrimitiveValue>1</PrimitiveValue>
-          <Expression>v</Expression>
-          <Name>v</Name>
-          <IsNull>False</IsNull>
-          <AsString>1</AsString>
-          <HasExpired>False</HasExpired>
-          <Type>System.Int32</Type>
-        </Item>
-        <Item Type="Value" ToString="k = 1!">
-          <IsArray>False</IsArray>
-          <ArrayLenght exception="Value is not an array" />
-          <ArrayRank exception="Value is not an array" />
-          <ArrayDimensions exception="Value is not an array" />
-          <IsObject>False</IsObject>
-          <IsPrimitive>True</IsPrimitive>
-          <IsInteger>False</IsInteger>
-          <PrimitiveValue>1!</PrimitiveValue>
-          <Expression>k</Expression>
-          <Name>k</Name>
-          <IsNull>False</IsNull>
-          <AsString>1!</AsString>
-          <HasExpired>False</HasExpired>
-          <Type>System.String</Type>
-        </Item>
-      </Arguments>
-      <LocalVariables>[ValueCollection Count=0]</LocalVariables>
     </SelectedStackFrame>
     <DebuggingPaused>Break</DebuggingPaused>
     <SelectedStackFrame Type="StackFrame" ToString="Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;.GenericMethod">
@@ -482,45 +292,7 @@ namespace Debugger.Tests {
       <HasSymbols>True</HasSymbols>
       <HasExpired>False</HasExpired>
       <NextStatement>Start=69,4 End=69,40</NextStatement>
-      <ThisValue>this = {Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;}</ThisValue>
-      <ContaingClassVariables>[ValueCollection Count=0]</ContaingClassVariables>
       <ArgumentCount>2</ArgumentCount>
-      <Arguments Type="ValueCollection" ToString="[ValueCollection Count=2]">
-        <Count>2</Count>
-        <Item Type="Value" ToString="v = 1">
-          <IsArray>False</IsArray>
-          <ArrayLenght exception="Value is not an array" />
-          <ArrayRank exception="Value is not an array" />
-          <ArrayDimensions exception="Value is not an array" />
-          <IsObject>False</IsObject>
-          <IsPrimitive>True</IsPrimitive>
-          <IsInteger>True</IsInteger>
-          <PrimitiveValue>1</PrimitiveValue>
-          <Expression>v</Expression>
-          <Name>v</Name>
-          <IsNull>False</IsNull>
-          <AsString>1</AsString>
-          <HasExpired>False</HasExpired>
-          <Type>System.Int32</Type>
-        </Item>
-        <Item Type="Value" ToString="k = 1!">
-          <IsArray>False</IsArray>
-          <ArrayLenght exception="Value is not an array" />
-          <ArrayRank exception="Value is not an array" />
-          <ArrayDimensions exception="Value is not an array" />
-          <IsObject>False</IsObject>
-          <IsPrimitive>True</IsPrimitive>
-          <IsInteger>False</IsInteger>
-          <PrimitiveValue>1!</PrimitiveValue>
-          <Expression>k</Expression>
-          <Name>k</Name>
-          <IsNull>False</IsNull>
-          <AsString>1!</AsString>
-          <HasExpired>False</HasExpired>
-          <Type>System.String</Type>
-        </Item>
-      </Arguments>
-      <LocalVariables>[ValueCollection Count=0]</LocalVariables>
     </SelectedStackFrame>
     <DebuggingPaused>Break</DebuggingPaused>
     <SelectedStackFrame Type="StackFrame" ToString="Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;.StaticMetod">
@@ -549,45 +321,7 @@ namespace Debugger.Tests {
       <HasSymbols>True</HasSymbols>
       <HasExpired>False</HasExpired>
       <NextStatement>Start=75,4 End=75,40</NextStatement>
-      <ThisValue exception="Static method does not have 'this'." />
-      <ContaingClassVariables>[ValueCollection Count=0]</ContaingClassVariables>
       <ArgumentCount>2</ArgumentCount>
-      <Arguments Type="ValueCollection" ToString="[ValueCollection Count=2]">
-        <Count>2</Count>
-        <Item Type="Value" ToString="v = 1">
-          <IsArray>False</IsArray>
-          <ArrayLenght exception="Value is not an array" />
-          <ArrayRank exception="Value is not an array" />
-          <ArrayDimensions exception="Value is not an array" />
-          <IsObject>False</IsObject>
-          <IsPrimitive>True</IsPrimitive>
-          <IsInteger>True</IsInteger>
-          <PrimitiveValue>1</PrimitiveValue>
-          <Expression>v</Expression>
-          <Name>v</Name>
-          <IsNull>False</IsNull>
-          <AsString>1</AsString>
-          <HasExpired>False</HasExpired>
-          <Type>System.Int32</Type>
-        </Item>
-        <Item Type="Value" ToString="k = 1!">
-          <IsArray>False</IsArray>
-          <ArrayLenght exception="Value is not an array" />
-          <ArrayRank exception="Value is not an array" />
-          <ArrayDimensions exception="Value is not an array" />
-          <IsObject>False</IsObject>
-          <IsPrimitive>True</IsPrimitive>
-          <IsInteger>False</IsInteger>
-          <PrimitiveValue>1!</PrimitiveValue>
-          <Expression>k</Expression>
-          <Name>k</Name>
-          <IsNull>False</IsNull>
-          <AsString>1!</AsString>
-          <HasExpired>False</HasExpired>
-          <Type>System.String</Type>
-        </Item>
-      </Arguments>
-      <LocalVariables>[ValueCollection Count=0]</LocalVariables>
     </SelectedStackFrame>
     <DebuggingPaused>Break</DebuggingPaused>
     <SelectedStackFrame Type="StackFrame" ToString="Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;.StaticGenericMethod">
@@ -616,45 +350,7 @@ namespace Debugger.Tests {
       <HasSymbols>True</HasSymbols>
       <HasExpired>False</HasExpired>
       <NextStatement>Start=81,4 End=81,40</NextStatement>
-      <ThisValue exception="Static method does not have 'this'." />
-      <ContaingClassVariables>[ValueCollection Count=0]</ContaingClassVariables>
       <ArgumentCount>2</ArgumentCount>
-      <Arguments Type="ValueCollection" ToString="[ValueCollection Count=2]">
-        <Count>2</Count>
-        <Item Type="Value" ToString="v = 1">
-          <IsArray>False</IsArray>
-          <ArrayLenght exception="Value is not an array" />
-          <ArrayRank exception="Value is not an array" />
-          <ArrayDimensions exception="Value is not an array" />
-          <IsObject>False</IsObject>
-          <IsPrimitive>True</IsPrimitive>
-          <IsInteger>True</IsInteger>
-          <PrimitiveValue>1</PrimitiveValue>
-          <Expression>v</Expression>
-          <Name>v</Name>
-          <IsNull>False</IsNull>
-          <AsString>1</AsString>
-          <HasExpired>False</HasExpired>
-          <Type>System.Int32</Type>
-        </Item>
-        <Item Type="Value" ToString="k = 1!">
-          <IsArray>False</IsArray>
-          <ArrayLenght exception="Value is not an array" />
-          <ArrayRank exception="Value is not an array" />
-          <ArrayDimensions exception="Value is not an array" />
-          <IsObject>False</IsObject>
-          <IsPrimitive>True</IsPrimitive>
-          <IsInteger>False</IsInteger>
-          <PrimitiveValue>1!</PrimitiveValue>
-          <Expression>k</Expression>
-          <Name>k</Name>
-          <IsNull>False</IsNull>
-          <AsString>1!</AsString>
-          <HasExpired>False</HasExpired>
-          <Type>System.String</Type>
-        </Item>
-      </Arguments>
-      <LocalVariables>[ValueCollection Count=0]</LocalVariables>
     </SelectedStackFrame>
     <DebuggingPaused>Break</DebuggingPaused>
     <ProcessExited />

@@ -233,26 +233,5 @@ namespace Debugger
 				}
 			}
 		}
-		
-		public ValueCollection LocalVariables { 
-			get {
-				if (SelectedStackFrame == null || IsRunning) {
-					return ValueCollection.Empty;
-				} else {
-					return SelectedStackFrame.Variables;
-				}
-			}
-		}
-		
-		/// <summary> Gets value of given name which is accessible from selected stack frame </summary>
-		/// <returns> Null if not found </returns>
-		public Value GetValue(string name)
-		{
-			if (SelectedStackFrame == null || IsRunning) {
-				return null;
-			} else {
-				return SelectedStackFrame.GetValue(name);
-			}
-		}
 	}
 }

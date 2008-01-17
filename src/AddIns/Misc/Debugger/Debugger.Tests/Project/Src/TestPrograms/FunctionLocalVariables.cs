@@ -32,7 +32,7 @@ namespace Debugger.Tests {
 		{
 			StartTest("FunctionLocalVariables.cs");
 			WaitForPause();
-			ObjectDump("LocalVariables", process.SelectedStackFrame.LocalVariables);
+			ObjectDump("LocalVariables", process.SelectedStackFrame.GetLocalVariableValues());
 			
 			process.Continue();
 			process.WaitForExit();
@@ -50,8 +50,7 @@ namespace Debugger.Tests {
     <ModuleLoaded symbols="False">mscorlib.dll</ModuleLoaded>
     <ModuleLoaded symbols="True">FunctionLocalVariables.exe</ModuleLoaded>
     <DebuggingPaused>Break</DebuggingPaused>
-    <LocalVariables Type="ValueCollection" ToString="[ValueCollection Count=5]">
-      <Count>5</Count>
+    <LocalVariables Type="Value[]" ToString="Debugger.Value[]">
       <Item Type="Value" ToString="i = 0">
         <IsArray>False</IsArray>
         <ArrayLenght exception="Value is not an array" />
@@ -62,7 +61,6 @@ namespace Debugger.Tests {
         <IsInteger>True</IsInteger>
         <PrimitiveValue>0</PrimitiveValue>
         <Expression>i</Expression>
-        <Name>i</Name>
         <IsNull>False</IsNull>
         <AsString>0</AsString>
         <HasExpired>False</HasExpired>
@@ -78,7 +76,6 @@ namespace Debugger.Tests {
         <IsInteger>False</IsInteger>
         <PrimitiveValue>S</PrimitiveValue>
         <Expression>s</Expression>
-        <Name>s</Name>
         <IsNull>False</IsNull>
         <AsString>S</AsString>
         <HasExpired>False</HasExpired>
@@ -94,7 +91,6 @@ namespace Debugger.Tests {
         <IsInteger>False</IsInteger>
         <PrimitiveValue exception="Value is not a primitive type" />
         <Expression>args</Expression>
-        <Name>args</Name>
         <IsNull>False</IsNull>
         <AsString>{System.String[]}</AsString>
         <HasExpired>False</HasExpired>
@@ -110,7 +106,6 @@ namespace Debugger.Tests {
         <IsInteger>False</IsInteger>
         <PrimitiveValue exception="Value is not a primitive type" />
         <Expression>n</Expression>
-        <Name>n</Name>
         <IsNull>True</IsNull>
         <AsString>&lt;null&gt;</AsString>
         <HasExpired>False</HasExpired>
@@ -126,7 +121,6 @@ namespace Debugger.Tests {
         <IsInteger>False</IsInteger>
         <PrimitiveValue exception="Value is not a primitive type" />
         <Expression>o</Expression>
-        <Name>o</Name>
         <IsNull>False</IsNull>
         <AsString>{System.Object}</AsString>
         <HasExpired>False</HasExpired>
