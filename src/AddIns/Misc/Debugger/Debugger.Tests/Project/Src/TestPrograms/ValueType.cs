@@ -59,10 +59,6 @@ namespace Debugger.Tests {
       <ArrayLenght exception="Value is not an array" />
       <ArrayRank exception="Value is not an array" />
       <ArrayDimensions exception="Value is not an array" />
-      <IsObject>True</IsObject>
-      <IsPrimitive>False</IsPrimitive>
-      <IsInteger>False</IsInteger>
-      <PrimitiveValue exception="Value is not a primitive type" />
       <Expression>this</Expression>
       <IsNull>False</IsNull>
       <AsString>{Debugger.Tests.ValueType}</AsString>
@@ -104,6 +100,10 @@ namespace Debugger.Tests {
           </BaseType>
         </BaseType>
       </Type>
+      <IsObject>True</IsObject>
+      <IsPrimitive>False</IsPrimitive>
+      <IsInteger>False</IsInteger>
+      <PrimitiveValue exception="Value is not a primitive type" />
     </this>
     <ProcessExited />
   </Test>

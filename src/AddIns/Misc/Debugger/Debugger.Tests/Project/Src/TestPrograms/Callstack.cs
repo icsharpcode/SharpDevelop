@@ -63,10 +63,10 @@ namespace Debugger.Tests {
     <ModuleLoaded symbols="False">mscorlib.dll</ModuleLoaded>
     <ModuleLoaded symbols="True">Callstack.exe</ModuleLoaded>
     <DebuggingPaused>Break</DebuggingPaused>
-    <Callstack Type="ReadOnlyCollection`1" ToString="System.Collections.ObjectModel.ReadOnlyCollection`1[Debugger.StackFrame]">
-      <Count>3</Count>
+    <Callstack Type="&lt;get_CallstackEnum&gt;d__0" ToString="Debugger.Thread+&lt;get_CallstackEnum&gt;d__0">
       <Item Type="StackFrame" ToString="Debugger.Tests.TestPrograms.Callstack.Sub2">
         <MethodInfo>Sub2</MethodInfo>
+        <Depth>0</Depth>
         <HasSymbols>True</HasSymbols>
         <HasExpired>False</HasExpired>
         <NextStatement>Start=26,4 End=26,40</NextStatement>
@@ -74,6 +74,7 @@ namespace Debugger.Tests {
       </Item>
       <Item Type="StackFrame" ToString="Debugger.Tests.TestPrograms.Callstack.Sub1">
         <MethodInfo>Sub1</MethodInfo>
+        <Depth>1</Depth>
         <HasSymbols>True</HasSymbols>
         <HasExpired>False</HasExpired>
         <NextStatement>Start=21,4 End=21,11</NextStatement>
@@ -81,6 +82,7 @@ namespace Debugger.Tests {
       </Item>
       <Item Type="StackFrame" ToString="Debugger.Tests.TestPrograms.Callstack.Main">
         <MethodInfo>Main</MethodInfo>
+        <Depth>2</Depth>
         <HasSymbols>True</HasSymbols>
         <HasExpired>False</HasExpired>
         <NextStatement>Start=16,4 End=16,11</NextStatement>
@@ -88,10 +90,10 @@ namespace Debugger.Tests {
       </Item>
     </Callstack>
     <DebuggingPaused>StepComplete</DebuggingPaused>
-    <Callstack Type="ReadOnlyCollection`1" ToString="System.Collections.ObjectModel.ReadOnlyCollection`1[Debugger.StackFrame]">
-      <Count>2</Count>
+    <Callstack Type="&lt;get_CallstackEnum&gt;d__0" ToString="Debugger.Thread+&lt;get_CallstackEnum&gt;d__0">
       <Item Type="StackFrame" ToString="Debugger.Tests.TestPrograms.Callstack.Sub1">
         <MethodInfo>Sub1</MethodInfo>
+        <Depth>0</Depth>
         <HasSymbols>True</HasSymbols>
         <HasExpired>False</HasExpired>
         <NextStatement>Start=21,4 End=21,11</NextStatement>
@@ -99,6 +101,7 @@ namespace Debugger.Tests {
       </Item>
       <Item Type="StackFrame" ToString="Debugger.Tests.TestPrograms.Callstack.Main">
         <MethodInfo>Main</MethodInfo>
+        <Depth>1</Depth>
         <HasSymbols>True</HasSymbols>
         <HasExpired>False</HasExpired>
         <NextStatement>Start=16,4 End=16,11</NextStatement>
@@ -106,10 +109,10 @@ namespace Debugger.Tests {
       </Item>
     </Callstack>
     <DebuggingPaused>StepComplete</DebuggingPaused>
-    <Callstack Type="ReadOnlyCollection`1" ToString="System.Collections.ObjectModel.ReadOnlyCollection`1[Debugger.StackFrame]">
-      <Count>1</Count>
+    <Callstack Type="&lt;get_CallstackEnum&gt;d__0" ToString="Debugger.Thread+&lt;get_CallstackEnum&gt;d__0">
       <Item Type="StackFrame" ToString="Debugger.Tests.TestPrograms.Callstack.Main">
         <MethodInfo>Main</MethodInfo>
+        <Depth>0</Depth>
         <HasSymbols>True</HasSymbols>
         <HasExpired>False</HasExpired>
         <NextStatement>Start=16,4 End=16,11</NextStatement>

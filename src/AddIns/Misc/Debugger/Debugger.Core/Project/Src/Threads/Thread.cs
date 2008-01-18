@@ -235,9 +235,10 @@ namespace Debugger
 			}
 		}
 		
-		public IList<StackFrame> Callstack {
+		public IEnumerable<StackFrame> Callstack {
 			get {
-				return new List<StackFrame>(CallstackEnum).AsReadOnly();
+				// This should be enum since callstacks can get big
+				return CallstackEnum;
 			}
 		}
 		
@@ -267,7 +268,7 @@ namespace Debugger
 		public StackFrame SelectedStackFrame {
 			get {
 				// Forum-20456: Do not return expired StackFrame
-				if (selectedStackFrame.HasExpired) return null;
+				if (selectedStackFrame != null && selectedStackFrame.HasExpired) return null;
 				return selectedStackFrame;
 			}
 			set {

@@ -77,6 +77,7 @@ namespace Debugger.Tests {
     <DebuggingPaused>Break</DebuggingPaused>
     <SelectedStackFrame Type="StackFrame" ToString="Debugger.Tests.TestPrograms.FunctionLifetime.Function">
       <MethodInfo>Function</MethodInfo>
+      <Depth>0</Depth>
       <HasSymbols>True</HasSymbols>
       <HasExpired>False</HasExpired>
       <NextStatement>Start=22,4 End=22,40</NextStatement>
@@ -85,6 +86,7 @@ namespace Debugger.Tests {
     <DebuggingPaused>Break</DebuggingPaused>
     <Old_StackFrame Type="StackFrame" ToString="Debugger.Tests.TestPrograms.FunctionLifetime.Function">
       <MethodInfo>Function</MethodInfo>
+      <Depth>0</Depth>
       <HasSymbols>True</HasSymbols>
       <HasExpired>True</HasExpired>
       <NextStatement exception="StackFrame has expired" />
@@ -92,6 +94,7 @@ namespace Debugger.Tests {
     </Old_StackFrame>
     <SelectedStackFrame Type="StackFrame" ToString="Debugger.Tests.TestPrograms.FunctionLifetime.SubFunction">
       <MethodInfo>SubFunction</MethodInfo>
+      <Depth>0</Depth>
       <HasSymbols>True</HasSymbols>
       <HasExpired>False</HasExpired>
       <NextStatement>Start=29,4 End=29,40</NextStatement>
@@ -100,6 +103,7 @@ namespace Debugger.Tests {
     <DebuggingPaused>Break</DebuggingPaused>
     <Old_StackFrame Type="StackFrame" ToString="Debugger.Tests.TestPrograms.FunctionLifetime.Function">
       <MethodInfo>Function</MethodInfo>
+      <Depth>0</Depth>
       <HasSymbols>True</HasSymbols>
       <HasExpired>True</HasExpired>
       <NextStatement exception="StackFrame has expired" />
@@ -107,6 +111,7 @@ namespace Debugger.Tests {
     </Old_StackFrame>
     <SelectedStackFrame Type="StackFrame" ToString="Debugger.Tests.TestPrograms.FunctionLifetime.Function">
       <MethodInfo>Function</MethodInfo>
+      <Depth>0</Depth>
       <HasSymbols>True</HasSymbols>
       <HasExpired>False</HasExpired>
       <NextStatement>Start=24,4 End=24,40</NextStatement>
@@ -115,6 +120,7 @@ namespace Debugger.Tests {
     <DebuggingPaused>Break</DebuggingPaused>
     <Main Type="StackFrame" ToString="Debugger.Tests.TestPrograms.FunctionLifetime.Main">
       <MethodInfo>Main</MethodInfo>
+      <Depth>0</Depth>
       <HasSymbols>True</HasSymbols>
       <HasExpired>False</HasExpired>
       <NextStatement>Start=17,4 End=17,40</NextStatement>
@@ -122,6 +128,7 @@ namespace Debugger.Tests {
     </Main>
     <Old_StackFrame Type="StackFrame" ToString="Debugger.Tests.TestPrograms.FunctionLifetime.Function">
       <MethodInfo>Function</MethodInfo>
+      <Depth>0</Depth>
       <HasSymbols>True</HasSymbols>
       <HasExpired>True</HasExpired>
       <NextStatement exception="StackFrame has expired" />
@@ -129,6 +136,7 @@ namespace Debugger.Tests {
     </Old_StackFrame>
     <SelectedStackFrame Type="StackFrame" ToString="Debugger.Tests.TestPrograms.FunctionLifetime.Main">
       <MethodInfo>Main</MethodInfo>
+      <Depth>0</Depth>
       <HasSymbols>True</HasSymbols>
       <HasExpired>False</HasExpired>
       <NextStatement>Start=17,4 End=17,40</NextStatement>

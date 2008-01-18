@@ -159,6 +159,7 @@ namespace Debugger.Tests {
           <BaseType>System.Object</BaseType>
         </DeclaringType>
       </MethodInfo>
+      <Depth>0</Depth>
       <HasSymbols>True</HasSymbols>
       <HasExpired>False</HasExpired>
       <NextStatement>Start=48,4 End=48,40</NextStatement>
@@ -220,6 +221,7 @@ namespace Debugger.Tests {
           <BaseType>System.Object</BaseType>
         </DeclaringType>
       </MethodInfo>
+      <Depth>0</Depth>
       <HasSymbols>True</HasSymbols>
       <HasExpired>False</HasExpired>
       <NextStatement>Start=54,4 End=54,40</NextStatement>
@@ -281,6 +283,7 @@ namespace Debugger.Tests {
           <BaseType>System.Object</BaseType>
         </DeclaringType>
       </MethodInfo>
+      <Depth>0</Depth>
       <HasSymbols>True</HasSymbols>
       <HasExpired>False</HasExpired>
       <NextStatement>Start=60,4 End=60,40</NextStatement>
@@ -342,6 +345,7 @@ namespace Debugger.Tests {
           <BaseType>System.Object</BaseType>
         </DeclaringType>
       </MethodInfo>
+      <Depth>0</Depth>
       <HasSymbols>True</HasSymbols>
       <HasExpired>False</HasExpired>
       <NextStatement>Start=66,4 End=66,40</NextStatement>
@@ -403,6 +407,7 @@ namespace Debugger.Tests {
           <BaseType>System.ValueType</BaseType>
         </DeclaringType>
       </MethodInfo>
+      <Depth>0</Depth>
       <HasSymbols>True</HasSymbols>
       <HasExpired>False</HasExpired>
       <NextStatement>Start=75,4 End=75,40</NextStatement>
@@ -464,6 +469,7 @@ namespace Debugger.Tests {
           <BaseType>System.ValueType</BaseType>
         </DeclaringType>
       </MethodInfo>
+      <Depth>0</Depth>
       <HasSymbols>True</HasSymbols>
       <HasExpired>False</HasExpired>
       <NextStatement>Start=81,4 End=81,40</NextStatement>
@@ -525,6 +531,7 @@ namespace Debugger.Tests {
           <BaseType>System.ValueType</BaseType>
         </DeclaringType>
       </MethodInfo>
+      <Depth>0</Depth>
       <HasSymbols>True</HasSymbols>
       <HasExpired>False</HasExpired>
       <NextStatement>Start=87,4 End=87,40</NextStatement>
@@ -586,6 +593,7 @@ namespace Debugger.Tests {
           <BaseType>System.ValueType</BaseType>
         </DeclaringType>
       </MethodInfo>
+      <Depth>0</Depth>
       <HasSymbols>True</HasSymbols>
       <HasExpired>False</HasExpired>
       <NextStatement>Start=93,4 End=93,40</NextStatement>
