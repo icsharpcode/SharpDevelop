@@ -44,20 +44,13 @@ namespace Debugger
 			}
 			
 			callstack = "";
-			int callstackItems = 0;
-			foreach(StackFrame stackFrame in thread.Callstack) {
-				if (callstackItems >= 100) {
-					callstack += "...\n";
-					break;
-				}
-				
+			foreach(StackFrame stackFrame in thread.GetCallstack(100)) {
 				SourcecodeSegment loc = stackFrame.NextStatement;
 				callstack += stackFrame.MethodInfo.Name + "()";
 				if (loc != null) {
 					callstack += " - " + loc.SourceFullFilename + ":" + loc.StartLine + "," + loc.StartColumn;
 				}
 				callstack += "\n";
-				callstackItems++;
 			}
 			
 			type = runtimeValue.Type.FullName;

@@ -235,11 +235,23 @@ namespace Debugger
 			}
 		}
 		
-		public IEnumerable<StackFrame> Callstack {
-			get {
-				// This should be enum since callstacks can get big
-				return CallstackEnum;
+		/// <summary>
+		/// Gets the whole callstack of the Thread.
+		/// </summary>
+		public StackFrame[] GetCallstack()
+		{
+			return new List<StackFrame>(CallstackEnum).ToArray();
+		}
+		
+		/// <summary> Get given number of frames from the callstack </summary>
+		public StackFrame[] GetCallstack(int maxFrames)
+		{
+			List<StackFrame> frames = new List<StackFrame>();
+			foreach(StackFrame frame in CallstackEnum) {
+				frames.Add(frame);
+				if (frames.Count == maxFrames) break;
 			}
+			return frames.ToArray();
 		}
 		
 		IEnumerable<StackFrame> CallstackEnum {
@@ -309,7 +321,7 @@ namespace Debugger
 		public StackFrame OldestStackFrame {
 			get {
 				StackFrame first = null;
-				foreach(StackFrame stackFrame in Callstack) {
+				foreach(StackFrame stackFrame in CallstackEnum) {
 					first = stackFrame;
 				}
 				return first;

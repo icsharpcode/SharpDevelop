@@ -37,15 +37,15 @@ namespace Debugger.Tests {
 		{
 			StartTest("Callstack.cs");
 			WaitForPause();
-			ObjectDump("Callstack", process.SelectedThread.Callstack);
+			ObjectDump("Callstack", process.SelectedThread.GetCallstack());
 			
 			process.StepOut();
 			WaitForPause();
-			ObjectDump("Callstack", process.SelectedThread.Callstack);
+			ObjectDump("Callstack", process.SelectedThread.GetCallstack());
 			
 			process.StepOut();
 			WaitForPause();
-			ObjectDump("Callstack", process.SelectedThread.Callstack);
+			ObjectDump("Callstack", process.SelectedThread.GetCallstack());
 			
 			process.Continue();
 			process.WaitForExit();

@@ -39,6 +39,7 @@
 
 using System;
 using System.Drawing;
+using System.Text;
 using System.Windows.Forms;
 
 using Debugger;
@@ -122,54 +123,17 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		public override void RefreshPad()
 		{
-			bool showArgumentNames = ShowArgumentNames;
-			bool showArgumentValues = ShowArgumentValues;
 			bool showExternalMethods = ShowExternalMethods;
 			bool lastItemIsExternalMethod = false;
-			int callstackItems = 0;
 			
 			callStackList.BeginUpdate();
 			callStackList.Items.Clear();
 			if (debuggedProcess != null && debuggedProcess.SelectedThread != null && debuggedProcess.IsPaused) {
-				foreach (StackFrame f in debuggedProcess.SelectedThread.Callstack) {
+				foreach (StackFrame f in debuggedProcess.SelectedThread.GetCallstack(100)) {
 					ListViewItem item;
 					if (f.HasSymbols || showExternalMethods) {
 						// Show the method in the list
-						string name = f.MethodInfo.Name;
-						if (showArgumentNames || showArgumentValues) {
-							name += "(";
-							for (int i = 0; i < f.ArgumentCount; i++) {
-								string parameterName = null;
-								string argValue = null;
-								if (showArgumentNames) {
-									try {
-										parameterName = f.MethodInfo.GetParameterName(i);
-									} catch { }
-									if (parameterName == "") parameterName = null;
-								}
-								if (showArgumentValues) {
-									try {
-										argValue = f.GetArgumentValue(i).AsString;
-									} catch { }
-								}
-								if (parameterName != null && argValue != null) {
-									name += parameterName + "=" + argValue;
-								}
-								if (parameterName != null && argValue == null) {
-									name += parameterName;
-								}
-								if (parameterName == null && argValue != null) {
-									name += argValue;
-								}
-								if (parameterName == null && argValue == null) {
-									name += ResourceService.GetString("Global.NA");
-								}
-								if (i < f.ArgumentCount - 1) {
-									name += ", ";
-								}
-							}
-							name += ")";
-						}
+						string name = GetFullName(f);
 						item = new ListViewItem(new string[] { name, "" });
 						lastItemIsExternalMethod = false;
 					} else {
@@ -184,11 +148,55 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 					item.Tag = f;
 					item.ForeColor = f.HasSymbols ? Color.Black : Color.Gray;
 					callStackList.Items.Add(item);
-					callstackItems++;
-					if (callstackItems >= 100) break;
 				}
 			}
 			callStackList.EndUpdate();
+		}
+		
+		public string GetFullName(StackFrame frame)
+		{
+			bool showArgumentNames = ShowArgumentNames;
+			bool showArgumentValues = ShowArgumentValues;
+			
+			StringBuilder name = new StringBuilder();
+			name.Append(frame.MethodInfo.Name);
+			if (showArgumentNames || showArgumentValues) {
+				name.Append("(");
+				for (int i = 0; i < frame.ArgumentCount; i++) {
+					string parameterName = null;
+					string argValue = null;
+					if (showArgumentNames) {
+						try {
+							parameterName = frame.MethodInfo.GetParameterName(i);
+						} catch { }
+						if (parameterName == "") parameterName = null;
+					}
+					if (showArgumentValues) {
+						try {
+							argValue = frame.GetArgumentValue(i).AsString;
+						} catch { }
+					}
+					if (parameterName != null && argValue != null) {
+						name.Append(parameterName);
+						name.Append("=");
+						name.Append(argValue);
+					}
+					if (parameterName != null && argValue == null) {
+						name.Append(parameterName);
+					}
+					if (parameterName == null && argValue != null) {
+						name.Append(argValue);
+					}
+					if (parameterName == null && argValue == null) {
+						name.Append(ResourceService.GetString("Global.NA"));
+					}
+					if (i < frame.ArgumentCount - 1) {
+						name.Append(", ");
+					}
+				}
+				name.Append(")");
+			}
+			return name.ToString();
 		}
 	}
 }
