@@ -96,6 +96,8 @@ namespace Debugger
 			return this.corEval == corEval;
 		}
 		
+		#region Convenience methods
+		
 		/// <summary> Synchronously calls a function and returns its return value </summary>
 		public static Value InvokeMethod(Process process, System.Type type, string name, Value thisValue, Value[] args)
 		{
@@ -108,11 +110,13 @@ namespace Debugger
 			return AsyncInvokeMethod(method, thisValue, args).EvaluateNow();
 		}
 		
+		#endregion
+		
 		public static Eval AsyncInvokeMethod(MethodInfo method, Value thisValue, Value[] args)
 		{
 			return new Eval(
 				method.Process,
-				"Function call: " + method.DeclaringType.FullName + "." + method.Name,
+				"Function call: " + method.FullName,
 				delegate(ICorDebugEval corEval) { StartMethodInvoke(corEval, method, thisValue, args); }
 			);
 		}
@@ -121,6 +125,9 @@ namespace Debugger
 		{
 			List<ICorDebugValue> corArgs = new List<ICorDebugValue>();
 			args = args ?? new Value[0];
+			if (args.Length != method.ParameterCount) {
+				throw new EvalSetupException("Invalid parameter count");
+			}
 			try {
 				if (thisValue != null) {
 					if (!(thisValue.IsObject)) {
@@ -138,13 +145,22 @@ namespace Debugger
 				throw new EvalSetupException(e.Message);
 			}
 			
-			corEval.CallFunction(method.CorFunction, (uint)corArgs.Count, corArgs.ToArray());
+			ICorDebugType[] genericArgs = method.DeclaringType.GetGenericArgumentsAsCorDebugType();
+			corEval.CastTo<ICorDebugEval2>().CallParameterizedFunction(
+				method.CorFunction,
+				(uint)genericArgs.Length, genericArgs,
+				(uint)corArgs.Count, corArgs.ToArray()
+			);
 		}
+		
+		#region Convenience methods
 		
 		public static Value NewString(Process process, string textToCreate)
 		{
 			return AsyncNewString(process, textToCreate).EvaluateNow();
 		}
+		
+		#endregion
 		
 		public static Eval AsyncNewString(Process process, string textToCreate)
 		{
@@ -155,10 +171,14 @@ namespace Debugger
 			);
 		}
 		
+		#region Convenience methods
+		
 		public static Value NewObject(Process process, ICorDebugClass classToCreate)
 		{
 			return AsyncNewObject(process, classToCreate).EvaluateNow();
 		}
+		
+		#endregion
 		
 		public static Eval AsyncNewObject(Process process, ICorDebugClass classToCreate)
 		{

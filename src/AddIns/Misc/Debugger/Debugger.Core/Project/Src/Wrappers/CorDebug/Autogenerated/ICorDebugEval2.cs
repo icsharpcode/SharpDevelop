@@ -95,13 +95,45 @@ namespace Debugger.Wrappers.CorDebug
 		}
 		
 		
-		public void CallParameterizedFunction(ICorDebugFunction pFunction, uint nTypeArgs, ref ICorDebugType ppTypeArgs, uint nArgs, ref ICorDebugValue ppArgs)
+		public void CallParameterizedFunction(ICorDebugFunction pFunction, uint nTypeArgs, ICorDebugType[] ppTypeArgs, uint nArgs, ICorDebugValue[] ppArgs)
 		{
-			Debugger.Interop.CorDebug.ICorDebugType ref_ppTypeArgs = ppTypeArgs.WrappedObject;
-			Debugger.Interop.CorDebug.ICorDebugValue ref_ppArgs = ppArgs.WrappedObject;
-			this.WrappedObject.CallParameterizedFunction(pFunction.WrappedObject, nTypeArgs, ref ref_ppTypeArgs, nArgs, ref ref_ppArgs);
-			ppTypeArgs = ICorDebugType.Wrap(ref_ppTypeArgs);
-			ppArgs = ICorDebugValue.Wrap(ref_ppArgs);
+			Debugger.Interop.CorDebug.ICorDebugType[] array_ppTypeArgs = new Debugger.Interop.CorDebug.ICorDebugType[ppTypeArgs.Length];
+			for (int i = 0; (i < ppTypeArgs.Length); i = (i + 1))
+			{
+				if ((ppTypeArgs[i] != null))
+				{
+					array_ppTypeArgs[i] = ppTypeArgs[i].WrappedObject;
+				}
+			}
+			Debugger.Interop.CorDebug.ICorDebugValue[] array_ppArgs = new Debugger.Interop.CorDebug.ICorDebugValue[ppArgs.Length];
+			for (int i = 0; (i < ppArgs.Length); i = (i + 1))
+			{
+				if ((ppArgs[i] != null))
+				{
+					array_ppArgs[i] = ppArgs[i].WrappedObject;
+				}
+			}
+			this.WrappedObject.CallParameterizedFunction(pFunction.WrappedObject, nTypeArgs, array_ppTypeArgs, nArgs, array_ppArgs);
+			for (int i = 0; (i < ppTypeArgs.Length); i = (i + 1))
+			{
+				if ((array_ppTypeArgs[i] != null))
+				{
+					ppTypeArgs[i] = ICorDebugType.Wrap(array_ppTypeArgs[i]);
+				} else
+				{
+					ppTypeArgs[i] = null;
+				}
+			}
+			for (int i = 0; (i < ppArgs.Length); i = (i + 1))
+			{
+				if ((array_ppArgs[i] != null))
+				{
+					ppArgs[i] = ICorDebugValue.Wrap(array_ppArgs[i]);
+				} else
+				{
+					ppArgs[i] = null;
+				}
+			}
 		}
 		
 		public ICorDebugValue CreateValueForType(ICorDebugType pType)
@@ -113,20 +145,68 @@ namespace Debugger.Wrappers.CorDebug
 			return ppValue;
 		}
 		
-		public void NewParameterizedObject(ICorDebugFunction pConstructor, uint nTypeArgs, ref ICorDebugType ppTypeArgs, uint nArgs, ref ICorDebugValue ppArgs)
+		public void NewParameterizedObject(ICorDebugFunction pConstructor, uint nTypeArgs, ICorDebugType[] ppTypeArgs, uint nArgs, ICorDebugValue[] ppArgs)
 		{
-			Debugger.Interop.CorDebug.ICorDebugType ref_ppTypeArgs = ppTypeArgs.WrappedObject;
-			Debugger.Interop.CorDebug.ICorDebugValue ref_ppArgs = ppArgs.WrappedObject;
-			this.WrappedObject.NewParameterizedObject(pConstructor.WrappedObject, nTypeArgs, ref ref_ppTypeArgs, nArgs, ref ref_ppArgs);
-			ppTypeArgs = ICorDebugType.Wrap(ref_ppTypeArgs);
-			ppArgs = ICorDebugValue.Wrap(ref_ppArgs);
+			Debugger.Interop.CorDebug.ICorDebugType[] array_ppTypeArgs = new Debugger.Interop.CorDebug.ICorDebugType[ppTypeArgs.Length];
+			for (int i = 0; (i < ppTypeArgs.Length); i = (i + 1))
+			{
+				if ((ppTypeArgs[i] != null))
+				{
+					array_ppTypeArgs[i] = ppTypeArgs[i].WrappedObject;
+				}
+			}
+			Debugger.Interop.CorDebug.ICorDebugValue[] array_ppArgs = new Debugger.Interop.CorDebug.ICorDebugValue[ppArgs.Length];
+			for (int i = 0; (i < ppArgs.Length); i = (i + 1))
+			{
+				if ((ppArgs[i] != null))
+				{
+					array_ppArgs[i] = ppArgs[i].WrappedObject;
+				}
+			}
+			this.WrappedObject.NewParameterizedObject(pConstructor.WrappedObject, nTypeArgs, array_ppTypeArgs, nArgs, array_ppArgs);
+			for (int i = 0; (i < ppTypeArgs.Length); i = (i + 1))
+			{
+				if ((array_ppTypeArgs[i] != null))
+				{
+					ppTypeArgs[i] = ICorDebugType.Wrap(array_ppTypeArgs[i]);
+				} else
+				{
+					ppTypeArgs[i] = null;
+				}
+			}
+			for (int i = 0; (i < ppArgs.Length); i = (i + 1))
+			{
+				if ((array_ppArgs[i] != null))
+				{
+					ppArgs[i] = ICorDebugValue.Wrap(array_ppArgs[i]);
+				} else
+				{
+					ppArgs[i] = null;
+				}
+			}
 		}
 		
-		public void NewParameterizedObjectNoConstructor(ICorDebugClass pClass, uint nTypeArgs, ref ICorDebugType ppTypeArgs)
+		public void NewParameterizedObjectNoConstructor(ICorDebugClass pClass, uint nTypeArgs, ICorDebugType[] ppTypeArgs)
 		{
-			Debugger.Interop.CorDebug.ICorDebugType ref_ppTypeArgs = ppTypeArgs.WrappedObject;
-			this.WrappedObject.NewParameterizedObjectNoConstructor(pClass.WrappedObject, nTypeArgs, ref ref_ppTypeArgs);
-			ppTypeArgs = ICorDebugType.Wrap(ref_ppTypeArgs);
+			Debugger.Interop.CorDebug.ICorDebugType[] array_ppTypeArgs = new Debugger.Interop.CorDebug.ICorDebugType[ppTypeArgs.Length];
+			for (int i = 0; (i < ppTypeArgs.Length); i = (i + 1))
+			{
+				if ((ppTypeArgs[i] != null))
+				{
+					array_ppTypeArgs[i] = ppTypeArgs[i].WrappedObject;
+				}
+			}
+			this.WrappedObject.NewParameterizedObjectNoConstructor(pClass.WrappedObject, nTypeArgs, array_ppTypeArgs);
+			for (int i = 0; (i < ppTypeArgs.Length); i = (i + 1))
+			{
+				if ((array_ppTypeArgs[i] != null))
+				{
+					ppTypeArgs[i] = ICorDebugType.Wrap(array_ppTypeArgs[i]);
+				} else
+				{
+					ppTypeArgs[i] = null;
+				}
+			}
 		}
 		
 		public void NewParameterizedArray(ICorDebugType pElementType, uint rank, ref uint dims, ref uint lowBounds)

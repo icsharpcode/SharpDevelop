@@ -148,6 +148,15 @@ namespace Debugger
 			}
 		}
 		
+		internal ICorDebugType[] GetGenericArgumentsAsCorDebugType()
+		{
+			List<ICorDebugType> types = new List<ICorDebugType>();
+			foreach(DebugType arg in this.GetGenericArguments()) {
+				types.Add(arg.CorType);
+			}
+			return types.ToArray();
+		}
+		
 		/// <summary> Gets a value indicating whether the type is a class </summary>
 		public bool IsClass {
 			get { 
