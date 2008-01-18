@@ -56,17 +56,16 @@ namespace Debugger
 				}
 			}
 			set {
-				object newValue;
-				TypeConverter converter = TypeDescriptor.GetConverter(this.Type.ManagedType);
-				try {
-					newValue = converter.ConvertFrom(value);
-				} catch {
-					throw new NotSupportedException("Can not convert " + value.GetType().ToString() + " to " + this.Type.ManagedType.ToString());
-				}
-				
 				if (CorType == CorElementType.STRING) {
-					throw new NotSupportedException();
+					throw new NotImplementedException();
 				} else {
+					object newValue;
+					TypeConverter converter = TypeDescriptor.GetConverter(this.Type.ManagedType);
+					try {
+						newValue = converter.ConvertFrom(value);
+					} catch {
+						throw new NotSupportedException("Can not convert " + value.GetType().ToString() + " to " + this.Type.ManagedType.ToString());
+					}
 					CorGenericValue.Value = newValue;
 				}
 			}

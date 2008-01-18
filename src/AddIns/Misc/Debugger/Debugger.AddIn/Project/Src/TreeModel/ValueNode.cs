@@ -32,7 +32,7 @@ namespace Debugger.AddIn.TreeModel
 			this.expression = val.Expression;
 			
 			canSetText = false;
-			if (val.IsPrimitive) {
+			if (val.IsInteger) {
 				canSetText = 
 					(val.Expression is LocalVariableIdentifierExpression) ||
 					(val.Expression is ParameterIdentifierExpression) ||
