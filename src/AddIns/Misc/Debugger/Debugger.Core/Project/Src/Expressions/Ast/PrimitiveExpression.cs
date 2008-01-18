@@ -40,5 +40,25 @@ namespace Debugger.Expressions
 			// TODO: Need for literal method arguments.  Use Eval to create value.
 			throw new NotImplementedException();
 		}
+		
+		#region GetHashCode and Equals
+		
+		public override int GetHashCode()
+		{
+			int hashCode = 0;
+			unchecked {
+				if (value != null) hashCode += 1000000007 * value.GetHashCode(); 
+			}
+			return hashCode;
+		}
+		
+		public override bool Equals(object obj)
+		{
+			PrimitiveExpression other = obj as PrimitiveExpression;
+			if (other == null) return false; 
+			return object.Equals(this.value, other.value);
+		}
+		
+		#endregion
 	}
 }

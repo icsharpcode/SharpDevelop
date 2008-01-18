@@ -24,5 +24,19 @@ namespace Debugger.Expressions
 		{
 			return context.GetThisValue();
 		}
+		
+		#region GetHashCode and Equals
+		
+		public override int GetHashCode()
+		{
+			return typeof(ThisReferenceExpression).GetHashCode();
+		}
+		
+		public override bool Equals(object obj)
+		{
+			return obj is EmptyExpression;
+		}
+		
+		#endregion
 	}
 }

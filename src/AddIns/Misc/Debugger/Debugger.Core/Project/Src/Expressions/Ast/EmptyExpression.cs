@@ -25,5 +25,19 @@ namespace Debugger.Expressions
 		{
 			throw new GetValueException("Empty expression");
 		}
+		
+		#region GetHashCode and Equals
+		
+		public override int GetHashCode()
+		{
+			return typeof(EmptyExpression).GetHashCode();
+		}
+		
+		public override bool Equals(object obj)
+		{
+			return obj is EmptyExpression;
+		}
+		
+		#endregion
 	}
 }

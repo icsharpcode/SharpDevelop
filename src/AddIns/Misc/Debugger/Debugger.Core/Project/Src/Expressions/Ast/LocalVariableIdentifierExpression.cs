@@ -51,5 +51,28 @@ namespace Debugger.Expressions
 			
 			return context.GetLocalVariableValue(symVar);
 		}
+		
+		#region GetHashCode and Equals
+		
+		public override int GetHashCode()
+		{
+			int hashCode = 0;
+			unchecked {
+				if (method != null) hashCode += 1000000007 * method.GetHashCode(); 
+				if (symVar != null) hashCode += 1000000009 * symVar.AddressField1.GetHashCode();
+			}
+			return hashCode;
+		}
+		
+		public override bool Equals(object obj)
+		{
+			LocalVariableIdentifierExpression other = obj as LocalVariableIdentifierExpression;
+			if (other == null) return false; 
+			return
+				object.Equals(this.method, other.method) && 
+				object.Equals(this.symVar.AddressField1, other.symVar.AddressField1);
+		}
+		
+		#endregion
 	}
 }

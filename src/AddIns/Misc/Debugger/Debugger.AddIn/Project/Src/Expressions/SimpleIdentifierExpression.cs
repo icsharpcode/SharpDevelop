@@ -48,5 +48,25 @@ namespace Debugger.Expressions
 			
 			throw new GetValueException("Identifier " + identifier + " not found");
 		}
+		
+		#region GetHashCode and Equals
+		
+		public override int GetHashCode()
+		{
+			int hashCode = 0;
+			unchecked {
+				if (identifier != null) hashCode += 1000000007 * identifier.GetHashCode(); 
+			}
+			return hashCode;
+		}
+		
+		public override bool Equals(object obj)
+		{
+			SimpleIdentifierExpression other = obj as SimpleIdentifierExpression;
+			if (other == null) return false; 
+			return this.identifier == other.identifier;
+		}
+		
+		#region
 	}
 }

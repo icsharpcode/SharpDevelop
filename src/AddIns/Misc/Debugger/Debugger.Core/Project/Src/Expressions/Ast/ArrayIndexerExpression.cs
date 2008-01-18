@@ -92,5 +92,28 @@ namespace Debugger.Expressions
 			
 			return targetValue.GetArrayElement(indicies.ToArray());
 		}
+		
+		#region GetHashCode and Equals
+		
+		public override int GetHashCode()
+		{
+			int hashCode = 0;
+			unchecked {
+				if (targetObject != null) hashCode += 1000000007 * targetObject.GetHashCode(); 
+				if (arguments != null) hashCode += 1000000009 * GetArrayHashCode(arguments);
+			}
+			return hashCode;
+		}
+		
+		public override bool Equals(object obj)
+		{
+			ArrayIndexerExpression other = obj as ArrayIndexerExpression;
+			if (other == null) return false; 
+			return
+				object.Equals(this.targetObject, other.targetObject) &&
+				ArrayEquals(this.arguments, other.arguments);
+		}
+		
+		#endregion
 	}
 }

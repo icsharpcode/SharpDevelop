@@ -102,5 +102,30 @@ namespace Debugger.Expressions
 			
 			return Value.GetMemberValue(targetValue, memberInfo, argumentValues.ToArray());
 		}
+		
+		#region GetHashCode and Equals
+		
+		public override int GetHashCode()
+		{
+			int hashCode = 0;
+			unchecked {
+				if (targetObject != null) hashCode += 1000000007 * targetObject.GetHashCode(); 
+				if (memberInfo != null) hashCode += 1000000009 * memberInfo.GetHashCode(); 
+				if (arguments != null) hashCode += 1000000021 * GetArrayHashCode(arguments);
+			}
+			return hashCode;
+		}
+		
+		public override bool Equals(object obj)
+		{
+			MemberReferenceExpression other = obj as MemberReferenceExpression;
+			if (other == null) return false; 
+			return
+				object.Equals(this.targetObject, other.targetObject) &&
+				object.Equals(this.memberInfo, other.memberInfo) &&
+				ArrayEquals(this.arguments, other.arguments);
+		}
+		
+		#endregion
 	}
 }

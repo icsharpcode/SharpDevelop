@@ -54,5 +54,30 @@ namespace Debugger.Expressions
 			
 			return context.GetArgumentValue(index);
 		}
+		
+		#region GetHashCode and Equals
+		
+		public override int GetHashCode()
+		{
+			int hashCode = 0;
+			unchecked {
+				if (method != null) hashCode += 1000000007 * method.GetHashCode(); 
+				hashCode += 1000000009 * index.GetHashCode();
+				if (name != null) hashCode += 1000000021 * name.GetHashCode(); 
+			}
+			return hashCode;
+		}
+		
+		public override bool Equals(object obj)
+		{
+			ParameterIdentifierExpression other = obj as ParameterIdentifierExpression;
+			if (other == null) return false; 
+			return
+				object.Equals(this.method, other.method) &&
+				this.index == other.index &&
+				this.name == other.name;
+		}
+		
+		#endregion
 	}
 }

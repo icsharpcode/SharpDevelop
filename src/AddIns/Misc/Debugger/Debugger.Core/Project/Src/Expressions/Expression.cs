@@ -51,5 +51,31 @@ namespace Debugger.Expressions
 		}
 		
 		protected abstract Value EvaluateInternal(StackFrame context);
+		
+		protected static int GetArrayHashCode<T>(T[] array)
+		{
+			int hashCode = 0;
+			unchecked {
+				if (array != null) {
+					foreach(T element in array) {
+						 hashCode += element.GetHashCode(); 
+					}
+				}
+			}
+			return hashCode;
+		}
+		
+		protected static bool ArrayEquals<T>(T[] a, T[] b)
+		{
+			if (a == null && b == null) return true;
+			if (a != null && b == null) return false;
+			if (a == null && b != null) return false;
+			// Both not null
+			if (a.Length != b.Length) return false;
+			for(int i = 0; i < a.Length; i++) {
+				if (!a[i].Equals(b[i])) return false;
+			}
+			return true;
+		}
 	}
 }

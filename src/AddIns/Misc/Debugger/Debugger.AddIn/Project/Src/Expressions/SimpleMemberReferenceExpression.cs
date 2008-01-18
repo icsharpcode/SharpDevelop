@@ -40,5 +40,26 @@ namespace Debugger.Expressions
 			Value targetValue = targetObject.Evaluate(context);
 			return targetValue.GetMemberValue(member);
 		}
+		
+		#region GetHashCode and Equals
+		
+		public override int GetHashCode()
+		{
+			int hashCode = 0;
+			unchecked {
+				if (targetObject != null) hashCode += 1000000007 * targetObject.GetHashCode(); 
+				if (member != null) hashCode += 1000000009 * member.GetHashCode(); 
+			}
+			return hashCode;
+		}
+		
+		public override bool Equals(object obj)
+		{
+			SimpleMemberReferenceExpression other = obj as SimpleMemberReferenceExpression;
+			if (other == null) return false; 
+			return object.Equals(this.targetObject, other.targetObject) && this.member == other.member;
+		}
+		
+		#endregion
 	}
 }
