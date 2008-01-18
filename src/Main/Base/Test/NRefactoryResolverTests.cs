@@ -757,6 +757,21 @@ class C : B {
 		}
 		
 		[Test]
+		public void ConstructorCallInCreationContext()
+		{
+			string program = @"using System;
+class A {
+	public A(int a) {}
+}
+";
+			MemberResolveResult mrr = Resolve<MemberResolveResult>(program, "new A(2)", 3, 0, ExpressionContext.ObjectCreation);
+			Assert.AreEqual("A.#ctor", mrr.ResolvedMember.FullyQualifiedName);
+			
+			mrr = Resolve<MemberResolveResult>(program, "A(2)", 3, 0, ExpressionContext.ObjectCreation);
+			Assert.AreEqual("A.#ctor", mrr.ResolvedMember.FullyQualifiedName);
+		}
+		
+		[Test]
 		public void VBIndexerCall()
 		{
 			string program = @"Imports Microsoft.VisualBasic

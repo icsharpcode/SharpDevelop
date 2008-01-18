@@ -211,7 +211,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				if (expr == null) {
 					return null;
 				}
-				if (expressionResult.Context.IsObjectCreation) {
+				if (expressionResult.Context.IsObjectCreation && !(expr is ObjectCreateExpression)) {
 					Expression tmp = expr;
 					while (tmp != null) {
 						if (tmp is IdentifierExpression)
