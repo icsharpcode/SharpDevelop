@@ -67,6 +67,6 @@ namespace Debugger.Expressions
 			return this.identifier == other.identifier;
 		}
 		
-		#region
+		#endregion
 	}
 }
