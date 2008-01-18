@@ -116,7 +116,7 @@ namespace Debugger
 			    fieldInfo.Process.SelectedThread.LastStackFrame != null && 
 			    fieldInfo.Process.SelectedThread.LastStackFrame.CorILFrame != null) {
 				
-				curFrame = objectInstance.Process.SelectedThread.LastStackFrame.CorILFrame.CastTo<ICorDebugFrame>();
+				curFrame = fieldInfo.Process.SelectedThread.LastStackFrame.CorILFrame.CastTo<ICorDebugFrame>();
 			}
 			
 			try {
