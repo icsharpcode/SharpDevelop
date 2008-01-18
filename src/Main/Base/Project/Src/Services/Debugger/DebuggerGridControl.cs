@@ -70,11 +70,42 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			EndUpdate();
 		}
 		
-		DynamicTreeRow.ChildForm frm;
+		class TooltipForm : DynamicTreeRow.ChildForm
+		{
+			protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+			{
+				if (base.ProcessCmdKey(ref msg, keyData)) {
+					return true;
+				} else {
+					Console.WriteLine("Handling " + keyData);
+					var i = FindItemByShortcut(Gui.WorkbenchSingleton.MainForm.MainMenuStrip.Items, keyData);
+					if (i != null)
+						i.PerformClick();
+					return false;
+				}
+			}
+			
+			static ToolStripMenuItem FindItemByShortcut(ToolStripItemCollection c, Keys shortcut)
+			{
+				foreach (ToolStripItem i in c) {
+					ToolStripMenuItem mi = i as ToolStripMenuItem;
+					if (mi != null) {
+						if (mi.ShortcutKeys == shortcut && mi.Enabled)
+							return mi;
+						mi = FindItemByShortcut(mi.DropDownItems, shortcut);
+						if (mi != null)
+							return mi;
+					}
+				}
+				return null;
+			}
+		}
+		
+		TooltipForm frm;
 		
 		public void ShowForm(ICSharpCode.TextEditor.TextArea textArea, TextLocation logicTextPos)
 		{
-			frm = new DynamicTreeRow.ChildForm();
+			frm = new TooltipForm();
 			frm.AllowResizing = false;
 			frm.Owner = textArea.FindForm();
 			int ypos = (textArea.Document.GetVisibleLine(logicTextPos.Y) + 1) * textArea.TextView.FontHeight - textArea.VirtualTop.Y;

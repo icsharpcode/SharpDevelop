@@ -213,7 +213,7 @@ namespace ICSharpCode.SharpDevelop.Widgets.TreeGrid
 				plus.RaiseItemChanged();
 				Timer timer = new Timer();
 				timer.Interval = 85;
-				timer.Tick += delegate(object sender2, EventArgs e2) { 
+				timer.Tick += delegate(object sender2, EventArgs e2) {
 					((Timer)sender2).Stop();
 					((Timer)sender2).Dispose();
 					blockClickEvent = false;
@@ -439,6 +439,18 @@ namespace ICSharpCode.SharpDevelop.Widgets.TreeGrid
 						owner.CloseOnDeactivate();
 				} else {
 					Close();
+				}
+			}
+			
+			protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+			{
+				if (base.ProcessCmdKey(ref msg, keyData)) {
+					return true;
+				} else {
+					ChildForm owner = Owner as ChildForm;
+					if (owner != null)
+						return owner.ProcessCmdKey(ref msg, keyData);
+					return false;
 				}
 			}
 		}

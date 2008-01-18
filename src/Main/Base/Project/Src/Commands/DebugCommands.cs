@@ -25,6 +25,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 				if (build.LastBuildResults.ErrorCount == 0) {
 					IProject startupProject = ProjectService.OpenSolution.StartupProject;
 					if (startupProject != null) {
+						LoggingService.Info("Debugger Command: Start (withDebugger=" + withDebugger + ")");
 						startupProject.Start(withDebugger);
 					} else {
 						MessageService.ShowError("${res:BackendBindings.ExecutionManager.CantExecuteDLLError}");
@@ -47,6 +48,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void Run()
 		{
+			LoggingService.Info("Debugger Command: Continue");
 			DebuggerService.CurrentDebugger.Continue();
 		}
 	}
@@ -55,6 +57,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void Run()
 		{
+			LoggingService.Info("Debugger Command: Break");
 			DebuggerService.CurrentDebugger.Break();
 		}
 	}
@@ -63,6 +66,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void Run()
 		{
+			LoggingService.Info("Debugger Command: Stop");
 			DebuggerService.CurrentDebugger.Stop();
 		}
 	}
@@ -71,6 +75,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void Run()
 		{
+			LoggingService.Info("Debugger Command: StepOver");
 			DebuggerService.CurrentDebugger.StepOver();
 		}
 	}
@@ -79,6 +84,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void Run()
 		{
+			LoggingService.Info("Debugger Command: StepInto");
 			DebuggerService.CurrentDebugger.StepInto();
 		}
 	}
@@ -87,6 +93,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void Run()
 		{
+			LoggingService.Info("Debugger Command: StepOut");
 			DebuggerService.CurrentDebugger.StepOut();
 		}
 	}
