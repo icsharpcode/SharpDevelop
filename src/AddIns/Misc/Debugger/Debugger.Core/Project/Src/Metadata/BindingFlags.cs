@@ -17,20 +17,22 @@ namespace Debugger
 	/// <para> Use 'or' operation to combine flags. </para>
 	/// </summary>
 	[Flags]
-	public enum BindingFlags {
-		/// Return instance (ie non-static members) members
-		Instance = 1,
-		/// Return static members
-		Static = 2,
-		/// Return public members
-		Public = 4,
-		/// Return members which are not public
-		NonPublic = 8,
+	public enum BindingFlags: uint {
 		/// Return all members
-		All = Instance | Static | Public | NonPublic,
-		PublicInstance = Public | Instance,
-		PublicStatic = Public | Static,
-		NonPublicInstance = NonPublic | Instance,
-		NonPublicStatic = NonPublic | Static
+		All = 0xFFFF,
+		
+		AccessMask = 0x0F,
+		Public     = 0x01,
+		NonPublic  = 0x02,
+		
+		InstanceStaticMask = 0xF0,
+		Instance           = 0x10,
+		Static             = 0x20,
+		
+		TypeMask    = 0x0F00,
+		Field       = 0x0100,
+		Property    = 0x0200,
+		Method      = 0x0400,
+		GetProperty = 0x0800
 	};
 }

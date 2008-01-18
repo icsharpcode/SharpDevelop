@@ -87,31 +87,49 @@ namespace Debugger
 			foreach(MemberInfo memberInfo in members) {
 				// Filter by type
 				if (!(memberInfo is T)) continue; // Reject item
+				
 				// Filter by access
-				if ((bindingFlags & (BindingFlags.Public | BindingFlags.NonPublic)) != 0) {
-					if (memberInfo.IsPublic) {
-						// If we do not want public members
-						if ((bindingFlags & BindingFlags.Public) == 0) continue; // Reject item
-					} else {
-						if ((bindingFlags & BindingFlags.NonPublic) == 0) continue; // Reject item
-					}
+				if ((bindingFlags & BindingFlags.AccessMask) != 0) {
+					bool accept = false;
+					if ((bindingFlags & BindingFlags.Public) != 0 && memberInfo.IsPublic) accept = true;
+					if ((bindingFlags & BindingFlags.NonPublic) != 0 && !memberInfo.IsPublic) accept = true;
+					if (!accept) continue; // Reject item
 				}
+				
 				// Filter by static / instance
-				if ((bindingFlags & (BindingFlags.Static | BindingFlags.Instance)) != 0) {
-					if (memberInfo.IsStatic) {
-						if ((bindingFlags & BindingFlags.Static) == 0) continue; // Reject item
-					} else {
-						if ((bindingFlags & BindingFlags.Instance) == 0) continue; // Reject item
-					}
+				if ((bindingFlags & BindingFlags.InstanceStaticMask) != 0) {
+					bool accept = false;
+					if ((bindingFlags & BindingFlags.Static) != 0 && memberInfo.IsStatic) accept = true;
+					if ((bindingFlags & BindingFlags.Instance) != 0 && !memberInfo.IsStatic) accept = true;
+					if (!accept) continue; // Reject item
 				}
+				
+				// Filter by type
+				if ((bindingFlags & BindingFlags.TypeMask) != 0) {
+					bool accept = false;
+					if ((bindingFlags & BindingFlags.Field) != 0 && memberInfo is FieldInfo) accept = true;
+					if ((bindingFlags & BindingFlags.Property) != 0 && memberInfo is PropertyInfo) accept = true;
+					if ((bindingFlags & BindingFlags.Method) != 0 && memberInfo is MethodInfo) accept = true;
+					if ((bindingFlags & BindingFlags.GetProperty) != 0 &&
+					    memberInfo is PropertyInfo &&
+					    ((PropertyInfo)memberInfo).GetMethod != null &&
+					    ((PropertyInfo)memberInfo).GetMethod.ParameterCount == 0) 
+					{
+						accept = true;
+					}
+					if (!accept) continue; // Reject item
+				}
+				
 				// Filter by name
 				if (name != null) {
 					if (memberInfo.Name != name) continue; // Reject item
 				}
+				
 				// Filter by token
 				if (token.HasValue) {
 					if (memberInfo.MetadataToken != token.Value) continue; // Reject item
 				}
+				
 				results.Add((T)memberInfo);
 			}
 			
