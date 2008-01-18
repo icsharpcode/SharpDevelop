@@ -221,6 +221,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		public override void RefreshPad()
 		{
+			Debugger.AddIn.TreeModel.Util.ResetDoEventsStartTime();
 			DateTime start = Debugger.Util.HighPrecisionTimer.Now;
 			try {
 				if (debuggedProcess != null && debuggedProcess.SelectedStackFrame != null) {

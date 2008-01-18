@@ -245,13 +245,15 @@ namespace Debugger
 			get {
 				process.AssertPaused();
 				
+				int depth = 0;
 				foreach(ICorDebugChain corChain in CorThread.EnumerateChains().Enumerator) {
 					if (corChain.IsManaged == 0) continue; // Only managed ones
 					foreach(ICorDebugFrame corFrame in corChain.EnumerateFrames().Enumerator) {
 						if (corFrame.Is<ICorDebugILFrame>()) {
 							StackFrame stackFrame;
 							try {
-								stackFrame = new StackFrame(this, corFrame.CastTo<ICorDebugILFrame>());
+								stackFrame = new StackFrame(this, corFrame.CastTo<ICorDebugILFrame>(), depth);
+								depth++;
 							} catch (COMException) { // TODO
 								continue;
 							};

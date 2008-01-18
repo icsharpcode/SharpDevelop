@@ -16,6 +16,11 @@ namespace Debugger.Expressions
 	/// </summary>
 	public abstract partial class Expression: DebuggerObject
 	{
+		static Dictionary<Expression, Value> expressionCache;
+		static DebugeeState expressionCache_debuggerState;
+		static Thread expressionCache_thread;
+		static int expressionCache_stackDepth;
+		
 		public abstract string Code {
 			get;
 		}
@@ -31,12 +36,42 @@ namespace Debugger.Expressions
 			return this.Code;
 		}
 		
+		Value GetFromCache(StackFrame context)
+		{
+			if (expressionCache == null ||
+				expressionCache_debuggerState != context.Process.DebugeeState ||
+				expressionCache_thread != context.Thread ||
+				expressionCache_stackDepth != context.Depth)
+			{
+				expressionCache = new Dictionary<Expression, Value>();
+				expressionCache_debuggerState = context.Process.DebugeeState;
+				expressionCache_thread = context.Thread;
+				expressionCache_stackDepth = context.Depth;
+				context.Process.TraceMessage("Expression cache cleared");
+			}
+			if (expressionCache.ContainsKey(this)) {
+				Value cachedResult = expressionCache[this];
+				if (!cachedResult.HasExpired) {
+					return cachedResult;
+				}
+			}
+			return null;
+		}
+		
 		public Value Evaluate(StackFrame context)
 		{
 			if (context == null) throw new ArgumentNullException("context");
 			if (context.HasExpired) throw new DebuggerException("Context is expired StackFrame");
 			
 			Value result;
+			
+			result = GetFromCache(context);
+			if (result != null) {
+				context.Process.TraceMessage(string.Format("Cached:    {0,-12} ({1})", this.Code, this.GetType().Name));
+				return result;
+			}
+			
+			DateTime start = Debugger.Util.HighPrecisionTimer.Now;
 			try {
 				result = EvaluateInternal(context);
 			} catch (GetValueException e) {
@@ -45,8 +80,10 @@ namespace Debugger.Expressions
 				}
 				throw;
 			}
+			DateTime end = Debugger.Util.HighPrecisionTimer.Now;
+			expressionCache[this] = result;
 			
-			context.Process.TraceMessage("Evaluated " + this.GetType().Name + ": "+ this.Code);
+			context.Process.TraceMessage(string.Format("Evaluated: {0,-12} ({1}) ({2} ms)", this.Code, this.GetType().Name, (end - start).TotalMilliseconds));
 			return result;
 		}
 		

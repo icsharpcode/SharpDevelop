@@ -30,6 +30,7 @@ namespace Debugger
 		ICorDebugFunction corFunction;
 		
 		MethodInfo methodInfo;
+		int depth;
 		
 		/// <summary> The process in which this stack frame is executed </summary>
 		[Debugger.Tests.Ignore]
@@ -52,6 +53,13 @@ namespace Debugger
 			}
 		}
 		
+		/// <summary>
+		/// The depth of this frame.  First frame has depth of 0.
+		/// </summary>
+		public int Depth {
+			get { return depth; }
+		}
+		
 		/// <summary> True if the stack frame has symbols defined. 
 		/// (That is has accesss to the .pdb file) </summary>
 		public bool HasSymbols {
@@ -67,13 +75,14 @@ namespace Debugger
 			}
 		}
 		
-		internal StackFrame(Thread thread, ICorDebugILFrame corILFrame)
+		internal StackFrame(Thread thread, ICorDebugILFrame corILFrame, int depth)
 		{
 			this.process = thread.Process;
 			this.thread = thread;
 			this.corILFrame = corILFrame;
 			this.corILFramePauseSession = process.PauseSession;
 			this.corFunction = corILFrame.Function;
+			this.depth = depth;
 			
 			DebugType debugType = DebugType.Create(
 				this.Process, 

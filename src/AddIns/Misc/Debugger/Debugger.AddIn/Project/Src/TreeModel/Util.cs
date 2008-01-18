@@ -22,6 +22,11 @@ namespace Debugger.AddIn.TreeModel
 		const double maxFPS      = 30;   // this prevents too much drawing on good machine
 		const double maxWorkTime = 250;  // ms  this ensures minimal response on bad machine
 		
+		public static void ResetDoEventsStartTime()
+		{
+			nextDoEventsTime = Debugger.Util.HighPrecisionTimer.Now.AddMilliseconds(1000 / maxFPS);
+		}
+		
 		public static void DoEvents()
 		{
 			if (Debugger.Util.HighPrecisionTimer.Now > nextDoEventsTime) {

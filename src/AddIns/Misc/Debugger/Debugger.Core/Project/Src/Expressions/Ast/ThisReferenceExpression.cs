@@ -34,7 +34,7 @@ namespace Debugger.Expressions
 		
 		public override bool Equals(object obj)
 		{
-			return obj is EmptyExpression;
+			return obj is ThisReferenceExpression;
 		}
 		
 		#endregion
