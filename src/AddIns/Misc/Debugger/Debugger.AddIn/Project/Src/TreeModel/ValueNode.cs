@@ -82,6 +82,7 @@ namespace Debugger.AddIn.TreeModel
 			try {
 				val = this.Expression.Evaluate(WindowsDebugger.DebuggedProcess.SelectedStackFrame);
 				val.PrimitiveValue = newText;
+				this.Text = newText;
 				return true;
 			} catch (NotSupportedException) {
 				string format = ResourceService.GetString("MainWindow.Windows.Debug.LocalVariables.CannotSetValue.BadFormat");

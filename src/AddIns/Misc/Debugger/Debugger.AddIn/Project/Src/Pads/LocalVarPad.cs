@@ -68,18 +68,41 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			}
 			public override object GetValue(TreeNodeAdv node)
 			{
-				return ((TreeViewNode)node).Content.Name;
+				if (node is TreeViewNode) {
+					return ((TreeViewNode)node).Content.Name;
+				} else {
+					// Happens during incremental search
+					return base.GetValue(node);
+				}
 			}
 		}
 		
 		class ItemText: NodeTextBox {
+			public ItemText()
+			{
+				this.EditEnabled = true;
+				this.EditOnClick = true;
+			}
 			protected override bool CanEdit(TreeNodeAdv node)
 			{
-				return ((TreeViewNode)node).Content is ISetText;
+				AbstractNode content = ((TreeViewNode)node).Content;
+				return (content is ISetText) && ((ISetText)content).CanSetText;
 			}
 			public override object GetValue(TreeNodeAdv node)
 			{
-				return ((TreeViewNode)node).Content.Text;
+				if (node is TreeViewNode) {
+					return ((TreeViewNode)node).Content.Text;
+				} else {
+					// Happens during incremental search
+					return base.GetValue(node);
+				}
+			}
+			public override void SetValue(TreeNodeAdv node, object value)
+			{
+				ISetText content = (ISetText)((TreeViewNode)node).Content;
+				if (content.CanSetText) {
+					content.SetText(value.ToString());
+				}
 			}
 			protected override void OnDrawText(DrawEventArgs args)
 			{
@@ -110,7 +133,12 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			}
 			public override object GetValue(TreeNodeAdv node)
 			{
-				return ((TreeViewNode)node).Content.Type;
+				if (node is TreeViewNode) {
+					return ((TreeViewNode)node).Content.Type;
+				} else {
+					// Happens during incremental search
+					return base.GetValue(node);
+				}
 			}
 		}
 		
