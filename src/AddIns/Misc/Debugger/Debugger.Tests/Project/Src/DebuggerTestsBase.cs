@@ -20,6 +20,7 @@ using NUnit.Framework;
 
 using Debugger;
 using Debugger.Interop;
+using SRPropertyInfo = System.Reflection.PropertyInfo;
 
 namespace Debugger.Tests
 {
@@ -236,7 +237,11 @@ namespace Debugger.Tests
 				container.SetAttribute("ToString_exception", e.Message);
 			}
 			
-			foreach(System.Reflection.PropertyInfo property in type.GetProperties()) {
+			List<SRPropertyInfo> properties = new List<SRPropertyInfo>();
+			properties.AddRange(type.GetProperties());
+			properties.Sort(delegate(SRPropertyInfo a, SRPropertyInfo b) { return a.Name.CompareTo(b.Name);});
+			
+			foreach(SRPropertyInfo property in properties) {
 				if (type.BaseType == typeof(Array)) continue;
 				if (property.GetGetMethod() == null) continue;
 				if (property.GetGetMethod().GetParameters().Length > 0) continue;

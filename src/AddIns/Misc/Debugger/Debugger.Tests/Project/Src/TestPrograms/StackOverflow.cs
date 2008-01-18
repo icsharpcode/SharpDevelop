@@ -55,12 +55,12 @@ namespace Debugger.Tests {
     <DebuggingPaused>Exception</DebuggingPaused>
     <ExceptionThrown>&lt;null&gt;</ExceptionThrown>
     <LastStackFrame Type="StackFrame" ToString="Debugger.Tests.TestPrograms.StackOverflow.Fun">
-      <MethodInfo>Fun</MethodInfo>
-      <Depth>0</Depth>
-      <HasSymbols>True</HasSymbols>
-      <HasExpired>False</HasExpired>
-      <NextStatement>Start=21,3 End=21,4</NextStatement>
       <ArgumentCount>1</ArgumentCount>
+      <Depth>0</Depth>
+      <HasExpired>False</HasExpired>
+      <HasSymbols>True</HasSymbols>
+      <MethodInfo>Fun</MethodInfo>
+      <NextStatement>Start=21,3 End=21,4</NextStatement>
     </LastStackFrame>
   </Test>
 </DebuggerTests>

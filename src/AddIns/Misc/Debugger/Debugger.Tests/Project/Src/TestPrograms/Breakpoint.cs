@@ -61,9 +61,9 @@ namespace Debugger.Tests {
     <ModuleLoaded symbols="False">System.dll</ModuleLoaded>
     <DebuggingPaused>Break</DebuggingPaused>
     <Object Type="Breakpoint" ToString="Debugger.Breakpoint">
-      <SourcecodeSegment>Start=18,0 End=18,0</SourcecodeSegment>
-      <HadBeenSet>True</HadBeenSet>
       <Enabled>True</Enabled>
+      <HadBeenSet>True</HadBeenSet>
+      <SourcecodeSegment>Start=18,0 End=18,0</SourcecodeSegment>
     </Object>
     <ModuleLoaded symbols="False">System.Configuration.dll</ModuleLoaded>
     <ModuleLoaded symbols="False">System.Xml.dll</ModuleLoaded>
@@ -73,9 +73,9 @@ namespace Debugger.Tests {
     <DebuggingPaused>Break</DebuggingPaused>
     <ProcessExited />
     <Object Type="Breakpoint" ToString="Debugger.Breakpoint">
-      <SourcecodeSegment>Start=18,0 End=18,0</SourcecodeSegment>
-      <HadBeenSet>False</HadBeenSet>
       <Enabled>True</Enabled>
+      <HadBeenSet>False</HadBeenSet>
+      <SourcecodeSegment>Start=18,0 End=18,0</SourcecodeSegment>
     </Object>
   </Test>
 </DebuggerTests>

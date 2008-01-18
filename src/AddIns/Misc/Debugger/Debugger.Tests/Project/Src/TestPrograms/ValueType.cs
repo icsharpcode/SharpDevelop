@@ -55,55 +55,55 @@ namespace Debugger.Tests {
     <ModuleLoaded symbols="True">ValueType.exe</ModuleLoaded>
     <DebuggingPaused>Break</DebuggingPaused>
     <this Type="Value" ToString="this = {Debugger.Tests.ValueType}">
-      <IsArray>False</IsArray>
+      <ArrayDimensions exception="Value is not an array" />
       <ArrayLenght exception="Value is not an array" />
       <ArrayRank exception="Value is not an array" />
-      <ArrayDimensions exception="Value is not an array" />
-      <Expression>this</Expression>
-      <IsNull>False</IsNull>
       <AsString>{Debugger.Tests.ValueType}</AsString>
+      <Expression>this</Expression>
       <HasExpired>False</HasExpired>
+      <IsArray>False</IsArray>
+      <IsInteger>False</IsInteger>
+      <IsNull>False</IsNull>
+      <IsObject>True</IsObject>
+      <IsPrimitive>False</IsPrimitive>
+      <PrimitiveValue exception="Value is not a primitive type" />
       <Type Type="DebugType" ToString="Debugger.Tests.ValueType">
-        <ManagedType>null</ManagedType>
-        <Module>ValueType.exe</Module>
-        <FullName>Debugger.Tests.ValueType</FullName>
-        <HasElementType>False</HasElementType>
-        <IsArray>False</IsArray>
-        <IsGenericType>False</IsGenericType>
-        <IsClass>False</IsClass>
-        <IsValueType>True</IsValueType>
-        <IsPrimitive>False</IsPrimitive>
-        <IsInteger>False</IsInteger>
         <BaseType Type="DebugType" ToString="System.ValueType">
-          <ManagedType>null</ManagedType>
-          <Module>mscorlib.dll</Module>
-          <FullName>System.ValueType</FullName>
-          <HasElementType>False</HasElementType>
-          <IsArray>False</IsArray>
-          <IsGenericType>False</IsGenericType>
-          <IsClass>True</IsClass>
-          <IsValueType>False</IsValueType>
-          <IsPrimitive>False</IsPrimitive>
-          <IsInteger>False</IsInteger>
           <BaseType Type="DebugType" ToString="System.Object">
-            <ManagedType>null</ManagedType>
-            <Module>mscorlib.dll</Module>
+            <BaseType>null</BaseType>
             <FullName>System.Object</FullName>
             <HasElementType>False</HasElementType>
             <IsArray>False</IsArray>
-            <IsGenericType>False</IsGenericType>
             <IsClass>True</IsClass>
-            <IsValueType>False</IsValueType>
-            <IsPrimitive>False</IsPrimitive>
+            <IsGenericType>False</IsGenericType>
             <IsInteger>False</IsInteger>
-            <BaseType>null</BaseType>
+            <IsPrimitive>False</IsPrimitive>
+            <IsValueType>False</IsValueType>
+            <ManagedType>null</ManagedType>
+            <Module>mscorlib.dll</Module>
           </BaseType>
+          <FullName>System.ValueType</FullName>
+          <HasElementType>False</HasElementType>
+          <IsArray>False</IsArray>
+          <IsClass>True</IsClass>
+          <IsGenericType>False</IsGenericType>
+          <IsInteger>False</IsInteger>
+          <IsPrimitive>False</IsPrimitive>
+          <IsValueType>False</IsValueType>
+          <ManagedType>null</ManagedType>
+          <Module>mscorlib.dll</Module>
         </BaseType>
+        <FullName>Debugger.Tests.ValueType</FullName>
+        <HasElementType>False</HasElementType>
+        <IsArray>False</IsArray>
+        <IsClass>False</IsClass>
+        <IsGenericType>False</IsGenericType>
+        <IsInteger>False</IsInteger>
+        <IsPrimitive>False</IsPrimitive>
+        <IsValueType>True</IsValueType>
+        <ManagedType>null</ManagedType>
+        <Module>ValueType.exe</Module>
       </Type>
-      <IsObject>True</IsObject>
-      <IsPrimitive>False</IsPrimitive>
-      <IsInteger>False</IsInteger>
-      <PrimitiveValue exception="Value is not a primitive type" />
     </this>
     <ProcessExited />
   </Test>
