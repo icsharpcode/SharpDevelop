@@ -29,10 +29,20 @@ namespace Debugger.AddIn.TreeModel
 		
 		AbstractNode content;
 		
+		bool isShown;
+		bool isExpanded;
 		bool childsLoaded;
 		
 		public AbstractNode Content {
 			get { return content; }
+		}
+		
+		public bool IsShown {
+			get { return isShown; }
+		}
+		
+		public bool IsExpanded {
+			get { return isExpanded; }
 		}
 		
 		public DynamicTreeDebuggerRow(Process process, AbstractNode content)
@@ -44,6 +54,11 @@ namespace Debugger.AddIn.TreeModel
 			this[1].Paint += OnIconPaint;
 			this[3].FinishLabelEdit += OnLabelEdited;
 			this[3].MouseDown += OnMouseDown;
+			
+			this.Expanded += delegate { isExpanded = true; };
+			this.Collapsed += delegate { isExpanded = false; };
+			this.Shown += delegate { isShown = true; };
+			this.Hidden += delegate { isShown = false; };
 			
 			SetContentRecursive(content);
 		}
@@ -61,8 +76,10 @@ namespace Debugger.AddIn.TreeModel
 			this.ShowMinusWhileExpanded = true;
 			
 			childsLoaded = false;
-			if (content.ChildNodes != null && this.ChildRows.Count > 0) {
+			if (content.ChildNodes != null && isExpanded) {
 				LoadChilds();
+			} else {
+				this.ChildRows.Clear();
 			}
 			
 			// Repaint and process user commands

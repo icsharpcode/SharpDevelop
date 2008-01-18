@@ -62,6 +62,9 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		Debugger.Process debuggedProcess;
 		
+		DynamicTreeDebuggerRow currentTooltipRow;
+		Expression             currentTooltipExpression;
+		
 		public event EventHandler<ProcessEventArgs> ProcessSelected;
 		
 		public NDebugger DebuggerCore {
@@ -291,7 +294,9 @@ namespace ICSharpCode.SharpDevelop.Services
 				return null;
 			} else {
 				try {
-					return new DebuggerGridControl(new DynamicTreeDebuggerRow(DebuggedProcess, new ValueNode(val)));
+					currentTooltipExpression = val.Expression;
+					currentTooltipRow = new DynamicTreeDebuggerRow(DebuggedProcess, new ValueNode(val));
+					return new DebuggerGridControl(currentTooltipRow);
 				} catch (AbortedBecauseDebugeeStateExpiredException) {
 					return null;
 				}
@@ -473,6 +478,13 @@ namespace ICSharpCode.SharpDevelop.Services
 		void debuggedProcess_DebuggeeStateChanged(object sender, ProcessEventArgs e)
 		{
 			JumpToCurrentLine();
+			if (currentTooltipRow != null && currentTooltipRow.IsShown) {
+				AbstractNode updatedNode = Debugger.AddIn.TreeModel.Util.CreateNode(currentTooltipExpression);
+				try {
+					currentTooltipRow.SetContentRecursive(updatedNode);
+				} catch (AbortedBecauseDebugeeStateExpiredException) {
+				}
+			}
 		}
 		
 		void debuggedProcess_DebuggingResumed(object sender, ProcessEventArgs e)
