@@ -36,7 +36,7 @@ namespace Debugger.Tests {
 			
 			process.Continue();
 			WaitForPause();
-			ObjectDump("LastStackFrame", process.SelectedThread.LastStackFrame);
+			ObjectDump("LastStackFrame", process.SelectedThread.MostRecentStackFrame);
 			
 			CheckXmlOutput();
 		}

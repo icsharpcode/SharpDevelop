@@ -104,7 +104,7 @@ namespace Debugger
 					s.PauseWhenComplete = false;
 				}
 				
-				this.SelectedThread.SelectedStackFrame = this.SelectedThread.LastStackFrameWithLoadedSymbols;
+				this.SelectedThread.SelectedStackFrame = this.SelectedThread.MostRecentStackFrameWithLoadedSymbols;
 			}
 			
 			if (debuggeeStateChanged) {

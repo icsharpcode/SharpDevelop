@@ -195,7 +195,7 @@ namespace Debugger
 			process.AssertPaused();
 			
 			try {
-				if (targetThread.IsLastStackFrameNative) {
+				if (targetThread.IsMostRecentStackFrameNative) {
 					throw new EvalSetupException("Can not evaluate because native frame is on top of stack");
 				}
 				if (!targetThread.IsAtSafePoint) {

@@ -161,9 +161,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 					item.SubItems.Add(thread.Name);
 					StackFrame location = null;
 					if (thread.Process.IsPaused) {
-						location = thread.LastStackFrameWithLoadedSymbols;
+						location = thread.MostRecentStackFrameWithLoadedSymbols;
 						if (location == null) {
-							location = thread.LastStackFrame;
+							location = thread.MostRecentStackFrame;
 						}
 					}
 					if (location != null) {

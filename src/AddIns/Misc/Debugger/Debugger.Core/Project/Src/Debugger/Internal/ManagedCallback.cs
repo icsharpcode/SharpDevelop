@@ -110,14 +110,14 @@ namespace Debugger
 			stepper.OnStepComplete();
 			
 			if (stepper.PauseWhenComplete) {
-				if (process.SelectedThread.LastStackFrame.HasSymbols) {
+				if (process.SelectedThread.MostRecentStackFrame.HasSymbols) {
 					ExitCallback_Paused();
 				} else {
 					// This can only happen when JMC is disabled (ie NET1.1 or StepOut)
 					if (stepper.Operation == Stepper.StepperOperation.StepOut) {
 						// Create new stepper and keep going
-						process.TraceMessage(" - stepping out of code without symbols at " + process.SelectedThread.LastStackFrame.ToString());
-						new Stepper(process.SelectedThread.LastStackFrame, "Stepper out of code without symbols").StepOut();
+						process.TraceMessage(" - stepping out of code without symbols at " + process.SelectedThread.MostRecentStackFrame.ToString());
+						new Stepper(process.SelectedThread.MostRecentStackFrame, "Stepper out of code without symbols").StepOut();
 						ExitCallback_Continue();
 					} else {
 						// NET1.1: There is extra step over stepper, just keep going

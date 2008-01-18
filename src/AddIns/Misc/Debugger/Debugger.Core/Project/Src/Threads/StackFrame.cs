@@ -54,7 +54,8 @@ namespace Debugger
 		}
 		
 		/// <summary>
-		/// The depth of this frame.  First frame has depth of 0.
+		/// The depth of this frame.  Most recent stack frame has depth 0.
+		/// The frame that called it has depth 1 and so on.
 		/// </summary>
 		public int Depth {
 			get { return depth; }

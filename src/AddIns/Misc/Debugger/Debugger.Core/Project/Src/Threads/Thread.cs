@@ -183,10 +183,10 @@ namespace Debugger
 		public bool InterceptCurrentException()
 		{
 			if (!CorThread.Is<ICorDebugThread2>()) return false; // Is the debuggee .NET 2.0?
-			if (LastStackFrame == null) return false; // Is frame available?  It is not at StackOverflow
+			if (MostRecentStackFrame == null) return false; // Is frame available?  It is not at StackOverflow
 			
 			try {
-				CorThread.CastTo<ICorDebugThread2>().InterceptCurrentException(LastStackFrame.CorILFrame.CastTo<ICorDebugFrame>());
+				CorThread.CastTo<ICorDebugThread2>().InterceptCurrentException(MostRecentStackFrame.CorILFrame.CastTo<ICorDebugFrame>());
 				return true;
 			} catch (COMException e) {
 				// 0x80131C02: Cannot intercept this exception
@@ -279,7 +279,7 @@ namespace Debugger
 			}
 		}
 		
-		public StackFrame LastStackFrameWithLoadedSymbols {
+		public StackFrame MostRecentStackFrameWithLoadedSymbols {
 			get {
 				foreach (StackFrame stackFrame in CallstackEnum) {
 					if (stackFrame.HasSymbols) {
@@ -291,10 +291,10 @@ namespace Debugger
 		}
 		
 		/// <summary>
-		/// Returns the most recent stack frame on callstack.
+		/// Returns the most recent stack frame (the one that is currently executing).
 		/// Returns null if callstack is empty.
 		/// </summary>
-		public StackFrame LastStackFrame {
+		public StackFrame MostRecentStackFrame {
 			get {
 				foreach(StackFrame stackFrame in CallstackEnum) {
 					return stackFrame;
@@ -306,7 +306,7 @@ namespace Debugger
 		/// <summary>
 		/// Returns the first stack frame that was called on thread
 		/// </summary>
-		public StackFrame FirstStackFrame {
+		public StackFrame OldestStackFrame {
 			get {
 				StackFrame first = null;
 				foreach(StackFrame stackFrame in Callstack) {
@@ -316,7 +316,7 @@ namespace Debugger
 			}
 		}
 		
-		public bool IsLastStackFrameNative {
+		public bool IsMostRecentStackFrameNative {
 			get {
 				process.AssertPaused();
 				return corThread.ActiveChain.IsManaged == 0;

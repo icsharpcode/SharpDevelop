@@ -113,10 +113,10 @@ namespace Debugger
 			ICorDebugFrame curFrame = null;
 			if (fieldInfo.Process.IsPaused &&
 			    fieldInfo.Process.SelectedThread != null &&
-			    fieldInfo.Process.SelectedThread.LastStackFrame != null && 
-			    fieldInfo.Process.SelectedThread.LastStackFrame.CorILFrame != null) {
+			    fieldInfo.Process.SelectedThread.MostRecentStackFrame != null && 
+			    fieldInfo.Process.SelectedThread.MostRecentStackFrame.CorILFrame != null) {
 				
-				curFrame = fieldInfo.Process.SelectedThread.LastStackFrame.CorILFrame.CastTo<ICorDebugFrame>();
+				curFrame = fieldInfo.Process.SelectedThread.MostRecentStackFrame.CorILFrame.CastTo<ICorDebugFrame>();
 			}
 			
 			try {

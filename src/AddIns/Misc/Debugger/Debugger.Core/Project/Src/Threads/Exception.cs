@@ -39,8 +39,8 @@ namespace Debugger
 			Value runtimeValue = new Value(process, corValue);
 			message = runtimeValue.GetMemberValue("_message").AsString;
 			
-			if (thread.LastStackFrameWithLoadedSymbols != null) {
-				location = thread.LastStackFrameWithLoadedSymbols.NextStatement;
+			if (thread.MostRecentStackFrameWithLoadedSymbols != null) {
+				location = thread.MostRecentStackFrameWithLoadedSymbols.NextStatement;
 			}
 			
 			callstack = "";
