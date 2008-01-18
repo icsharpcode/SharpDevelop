@@ -21,6 +21,7 @@ namespace Debugger.AddIn.TreeModel
 	public class ValueNode: AbstractNode, ISetText, IContextMenu
 	{
 		Expression expression;
+		bool canSetText;
 		
 		public Expression Expression {
 			get { return expression; }
@@ -29,6 +30,15 @@ namespace Debugger.AddIn.TreeModel
 		public ValueNode(Value val)
 		{
 			this.expression = val.Expression;
+			
+			canSetText = false;
+			if (val.IsPrimitive) {
+				canSetText = 
+					(val.Expression is LocalVariableIdentifierExpression) ||
+					(val.Expression is ParameterIdentifierExpression) ||
+					(val.Expression is ArrayIndexerExpression) ||
+					(val.Expression is MemberReferenceExpression && ((MemberReferenceExpression)val.Expression).MemberInfo is FieldInfo);
+			}
 			
 			if (val.IsObject) {
 				this.Image = DebuggerIcons.ImageList.Images[0]; // Class
@@ -57,6 +67,12 @@ namespace Debugger.AddIn.TreeModel
 				this.ChildNodes = Util.GetChildNodesOfArray(this.Expression, val.ArrayDimensions);
 			} else {
 				this.ChildNodes = null;
+			}
+		}
+		
+		public bool CanSetText {
+			get {
+				return canSetText;
 			}
 		}
 		

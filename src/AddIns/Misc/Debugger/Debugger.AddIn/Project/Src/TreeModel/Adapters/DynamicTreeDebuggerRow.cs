@@ -55,7 +55,7 @@ namespace Debugger.AddIn.TreeModel
 			this[1].Text = ""; // Icon
 			this[2].Text = content.Name;
 			this[3].Text = content.Text;
-			this[3].AllowLabelEdit = content is ISetText;
+			this[3].AllowLabelEdit = (content is ISetText) && ((ISetText)content).CanSetText;
 			
 			this.ShowPlus = (content.ChildNodes != null);
 			this.ShowMinusWhileExpanded = true;
@@ -126,7 +126,9 @@ namespace Debugger.AddIn.TreeModel
 		
 		void OnLabelEdited(object sender, DynamicListEventArgs e)
 		{
-			((ISetText)content).SetText(((DynamicListItem)sender).Text);
+			if (((ISetText)content).CanSetText) {
+				((ISetText)content).SetText(((DynamicListItem)sender).Text);
+			}
 		}
 		
 		void OnMouseDown(object sender, DynamicListMouseEventArgs e)

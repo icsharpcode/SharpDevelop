@@ -12,6 +12,8 @@ namespace Debugger.AddIn.TreeModel
 {
 	public interface ISetText
 	{
+		bool CanSetText { get; }
+		
 		bool SetText(string text);
 	}
 }
