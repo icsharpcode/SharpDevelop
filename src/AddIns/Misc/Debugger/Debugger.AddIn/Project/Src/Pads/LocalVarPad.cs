@@ -109,6 +109,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				AbstractNode content = ((TreeViewNode)args.Node).Content;
 				if (content is ErrorNode) {
 					args.TextColor = Color.Red;
+				} else if (((TreeViewNode)args.Node).TextChanged) {
+					args.TextColor = Color.Blue;
 				}
 				base.OnDrawText(args);
 			}

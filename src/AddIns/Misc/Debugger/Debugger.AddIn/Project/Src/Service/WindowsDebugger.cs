@@ -463,6 +463,7 @@ namespace ICSharpCode.SharpDevelop.Services
 					if (e.Process.SelectedThread.InterceptCurrentException()) {
 						e.Continue = true; // HACK: Start interception
 					} else {
+						// For example, happens on stack overflow
 						MessageService.ShowMessage("${res:MainWindow.Windows.Debug.ExceptionForm.Error.CannotInterceptException}", "${res:MainWindow.Windows.Debug.ExceptionForm.Title}");
 					}
 					break;

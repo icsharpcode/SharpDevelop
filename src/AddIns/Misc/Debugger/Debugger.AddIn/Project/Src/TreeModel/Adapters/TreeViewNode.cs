@@ -25,9 +25,14 @@ namespace Debugger.AddIn.TreeModel
 		AbstractNode content;
 		
 		bool childsLoaded;
+		bool textChanged;
 		
 		public AbstractNode Content {
 			get { return content; }
+		}
+		
+		public bool TextChanged {
+			get { return textChanged; }
 		}
 		
 		string FullName {
@@ -48,6 +53,10 @@ namespace Debugger.AddIn.TreeModel
 		
 		public void SetContentRecursive(AbstractNode content)
 		{
+			this.textChanged =
+				this.content != null &&
+				this.content.Name == content.Name &&
+				this.content.Text != content.Text;
 			this.content = content;
 			this.IsLeaf = (content.ChildNodes == null);
 			childsLoaded = false;
