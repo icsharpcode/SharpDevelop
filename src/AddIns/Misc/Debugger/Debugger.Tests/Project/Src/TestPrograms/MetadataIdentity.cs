@@ -34,18 +34,15 @@ namespace Debugger.Tests {
 		public void MetadataIdentity()
 		{
 			StartTest("MetadataIdentity.cs");
-			WaitForPause();
 			
 			DebugType type = process.SelectedStackFrame.GetThisValue().Type;
 			MethodInfo mainMethod = process.SelectedStackFrame.MethodInfo;
-			process.AsyncContinue();
-			WaitForPause();
+			process.Continue();
 			
 			Assert.AreEqual(type, process.SelectedStackFrame.GetThisValue().Type);
 			Assert.AreEqual(mainMethod, process.SelectedStackFrame.MethodInfo);
-			process.AsyncContinue();
-			process.WaitForExit();
-			CheckXmlOutput();
+			
+			EndTest();
 		}
 	}
 }

@@ -29,18 +29,14 @@ namespace Debugger.Tests {
 		public void SetIP()
 		{
 			StartTest("SetIP.cs");
-			WaitForPause();
 			
 			Assert.IsNotNull(process.SelectedStackFrame.CanSetIP("SetIP.cs", 16, 0));
 			Assert.IsNull(process.SelectedStackFrame.CanSetIP("SetIP.cs", 100, 0));
 			process.SelectedStackFrame.SetIP("SetIP.cs", 16, 0);
-			process.AsyncContinue();
-			WaitForPause();
+			process.Continue();
 			Assert.AreEqual("1\r\n1\r\n", log);
 			
-			process.AsyncContinue();
-			process.WaitForExit();
-			CheckXmlOutput();
+			EndTest();
 		}
 	}
 }

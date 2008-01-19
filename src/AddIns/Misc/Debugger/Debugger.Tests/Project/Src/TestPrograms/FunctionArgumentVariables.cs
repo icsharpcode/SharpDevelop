@@ -72,17 +72,13 @@ namespace Debugger.Tests {
 		public void FunctionArgumentVariables()
 		{
 			StartTest("FunctionArgumentVariables.cs");
-			WaitForPause();
 			
 			for(int i = 0; i < 5; i++) {
-				process.AsyncContinue();
-				WaitForPause();
+				process.Continue();
 				ObjectDump("Arguments", process.SelectedStackFrame.GetArgumentValues());
 			}
 			
-			process.AsyncContinue();
-			process.WaitForExit();
-			CheckXmlOutput();
+			EndTest();
 		}
 	}
 }

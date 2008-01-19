@@ -49,7 +49,7 @@ namespace Debugger.Tests {
 			Value @class   = null;
 			
 			StartTest("FunctionVariablesLifetime.cs"); // 1 - Enter program
-			WaitForPause();
+			
 			argument = process.SelectedStackFrame.GetArgumentValue(0);
 			local = process.SelectedStackFrame.GetLocalVariableValue("local");
 			@class = process.SelectedStackFrame.GetThisValue().GetMemberValue("class");
@@ -57,23 +57,20 @@ namespace Debugger.Tests {
 			ObjectDump("local", local);
 			ObjectDump("@class", @class);
 			
-			process.AsyncContinue(); // 2 - Go to the SubFunction
-			WaitForPause();
+			process.Continue(); // 2 - Go to the SubFunction
 			localInSubFunction = process.SelectedStackFrame.GetLocalVariableValue("localInSubFunction");
 			ObjectDump("argument", argument);
 			ObjectDump("local", local);
 			ObjectDump("@class", @class);
 			ObjectDump("localInSubFunction", @localInSubFunction);
 			
-			process.AsyncContinue(); // 3 - Go back to Function
-			WaitForPause();
+			process.Continue(); // 3 - Go back to Function
 			ObjectDump("argument", argument);
 			ObjectDump("local", local);
 			ObjectDump("@class", @class);
 			ObjectDump("localInSubFunction", @localInSubFunction);
 			
-			process.AsyncContinue(); // 4 - Go to the SubFunction
-			WaitForPause();
+			process.Continue(); // 4 - Go to the SubFunction
 			ObjectDump("argument", argument);
 			ObjectDump("local", local);
 			ObjectDump("@class", @class);
@@ -81,16 +78,13 @@ namespace Debugger.Tests {
 			localInSubFunction = process.SelectedStackFrame.GetLocalVariableValue("localInSubFunction");
 			ObjectDump("localInSubFunction(new)", @localInSubFunction);
 			
-			process.AsyncContinue(); // 5 - Setp out of both functions
-			WaitForPause();
+			process.Continue(); // 5 - Setp out of both functions
 			ObjectDump("argument", argument);
 			ObjectDump("local", local);
 			ObjectDump("@class", @class);
 			ObjectDump("localInSubFunction", @localInSubFunction);
 			
-			process.AsyncContinue();
-			process.WaitForExit();
-			CheckXmlOutput();
+			EndTest();
 		}
 	}
 }

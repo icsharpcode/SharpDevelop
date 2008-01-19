@@ -31,12 +31,10 @@ namespace Debugger.Tests {
 		public void FunctionLocalVariables()
 		{
 			StartTest("FunctionLocalVariables.cs");
-			WaitForPause();
+			
 			ObjectDump("LocalVariables", process.SelectedStackFrame.GetLocalVariableValues());
 			
-			process.AsyncContinue();
-			process.WaitForExit();
-			CheckXmlOutput();
+			EndTest();
 		}
 	}
 }

@@ -26,11 +26,8 @@ namespace Debugger.Tests {
 		public void Template()
 		{
 			StartTest("_Template.cs");
-			WaitForPause();
 			
-			process.AsyncContinue();
-			process.WaitForExit();
-			CheckXmlOutput();
+			EndTest();
 		}
 	}
 }

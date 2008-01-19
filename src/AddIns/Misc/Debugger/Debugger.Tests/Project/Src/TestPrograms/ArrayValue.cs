@@ -30,14 +30,12 @@ namespace Debugger.Tests {
 		public void ArrayValue()
 		{
 			StartTest("ArrayValue.cs");
-			WaitForPause();
+			
 			Value array = process.SelectedStackFrame.GetLocalVariableValue("array");
 			ObjectDump("array", array);
 			ObjectDump("array elements", array.GetArrayElements());
 			
-			process.AsyncContinue();
-			process.WaitForExit();
-			CheckXmlOutput();
+			EndTest();
 		}
 	}
 }

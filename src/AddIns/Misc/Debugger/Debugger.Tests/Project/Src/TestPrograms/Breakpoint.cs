@@ -31,21 +31,15 @@ namespace Debugger.Tests {
 			Breakpoint breakpoint = debugger.AddBreakpoint(@"F:\SharpDevelopTrunk\src\AddIns\Misc\Debugger\Debugger.Tests\Project\Src\TestPrograms\Breakpoint.cs", 18);
 			
 			StartTest("Breakpoint.cs");
-			WaitForPause();
 			
 			ObjectDump(breakpoint);
-			
-			process.AsyncContinue();
-			WaitForPause();
-			
-			process.AsyncContinue();
-			WaitForPause();
-			
+			process.Continue();
+			process.Continue();
 			process.AsyncContinue();
 			process.WaitForExit();
-			
 			ObjectDump(breakpoint);
-			CheckXmlOutput();
+			
+			EndTest();
 		}
 	}
 }

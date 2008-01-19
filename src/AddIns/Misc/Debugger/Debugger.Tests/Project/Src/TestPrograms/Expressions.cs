@@ -57,15 +57,12 @@ namespace Debugger.Tests {
 		public void Expressions()
 		{
 			StartTest("Expressions.cs");
-			WaitForPause();
 			
 			ObjectDump("Arguments", process.SelectedStackFrame.GetArgumentValues());
 			ObjectDump("LocalVariables", process.SelectedStackFrame.GetLocalVariableValues());
 			ObjectDump("this", process.SelectedStackFrame.GetThisValue().GetMemberValues());
 			
-			process.AsyncContinue();
-			process.WaitForExit();
-			CheckXmlOutput();
+			EndTest();
 		}
 	}
 }

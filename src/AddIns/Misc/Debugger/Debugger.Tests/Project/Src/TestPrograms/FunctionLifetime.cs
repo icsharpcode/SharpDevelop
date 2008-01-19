@@ -39,29 +39,24 @@ namespace Debugger.Tests {
 		public void FunctionLifetime()
 		{
 			StartTest("FunctionLifetime.cs");
-			WaitForPause();
+			
 			StackFrame stackFrame = process.SelectedStackFrame;
 			ObjectDump("SelectedStackFrame", process.SelectedStackFrame);
 			
-			process.AsyncContinue(); // Go to the SubFunction
-			WaitForPause();
+			process.Continue(); // Go to the SubFunction
 			ObjectDump("Old StackFrame", stackFrame);
 			ObjectDump("SelectedStackFrame", process.SelectedStackFrame);
 			
-			process.AsyncContinue(); // Go back to Function
-			WaitForPause();
+			process.Continue(); // Go back to Function
 			ObjectDump("Old StackFrame", stackFrame);
 			ObjectDump("SelectedStackFrame", process.SelectedStackFrame);
 			
-			process.AsyncContinue(); // Setp out of function
-			WaitForPause();
+			process.Continue(); // Setp out of function
 			ObjectDump("Main", process.SelectedStackFrame);
 			ObjectDump("Old StackFrame", stackFrame);
 			ObjectDump("SelectedStackFrame", process.SelectedStackFrame);
 			
-			process.AsyncContinue();
-			process.WaitForExit();
-			CheckXmlOutput();
+			EndTest();
 		}
 	}
 }

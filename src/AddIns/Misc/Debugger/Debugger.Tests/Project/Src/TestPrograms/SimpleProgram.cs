@@ -25,9 +25,11 @@ namespace Debugger.Tests {
 		[NUnit.Framework.Test]
 		public void SimpleProgram()
 		{
-			StartTest("SimpleProgram.cs");
+			StartTest("SimpleProgram.cs", false);
+			
 			process.WaitForExit();
-			CheckXmlOutput();
+			
+			EndTest();
 		}
 	}
 }

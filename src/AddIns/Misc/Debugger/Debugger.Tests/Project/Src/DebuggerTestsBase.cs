@@ -69,7 +69,16 @@ namespace Debugger.Tests
 			
 		}
 		
-		protected void CheckXmlOutput()
+		protected void EndTest()
+		{
+			if (!process.HasExpired) {
+				process.AsyncContinue();
+				process.WaitForExit();
+			}
+			CheckXmlOutput();
+		}
+		
+		void CheckXmlOutput()
 		{
 			string startMark = "#if EXPECTED_OUTPUT\r\n";
 			string endMark = "#endif // EXPECTED_OUTPUT";
@@ -108,6 +117,11 @@ namespace Debugger.Tests
 		
 		protected void StartTest(string testName)
 		{
+			StartTest(testName, true);
+		}
+		
+		protected void StartTest(string testName, bool wait)
+		{
 			this.testName = testName;
 			string exeFilename = CompileTest(testName);
 			
@@ -139,6 +153,10 @@ namespace Debugger.Tests
 			};
 			
 			LogEvent("ProcessStarted", null);
+			
+			if (wait) {
+				process.WaitForPause();
+			}
 		}
 		
 		protected XmlElement LogEvent(string name, string content)
@@ -150,12 +168,6 @@ namespace Debugger.Tests
 			testNode.AppendChild(eventNode);
 			return eventNode;
 		}
-		
-		protected void WaitForPause()
-		{
-			process.WaitForPause();
-			Assert.AreEqual(true, process.IsPaused);
-		}	
 		
 		public void ObjectDump(object obj)
 		{

@@ -115,6 +115,27 @@ namespace Debugger
 		}
 		
 		/// <summary> Step into next instruction </summary>
+		public void StepInto()
+		{
+			AsyncStepInto();
+			this.Process.WaitForPause();
+		}
+		
+		/// <summary> Step over next instruction </summary>
+		public void StepOver()
+		{
+			AsyncStepOver();
+			this.Process.WaitForPause();
+		}
+		
+		/// <summary> Step out of the stack frame </summary>
+		public void StepOut()
+		{
+			AsyncStepOut();
+			this.Process.WaitForPause();
+		}
+		
+		/// <summary> Step into next instruction </summary>
 		public void AsyncStepInto()
 		{
 			AsyncStep(true);

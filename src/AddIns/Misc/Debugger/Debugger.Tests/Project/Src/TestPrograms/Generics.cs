@@ -110,19 +110,14 @@ namespace Debugger.Tests {
 			StartTest("Generics.cs");
 			
 			for(int i = 0; i < 8; i++) {
-				WaitForPause();
 				ObjectDump("SelectedStackFrame", process.SelectedStackFrame);
 				ObjectDump("SelectedStackFrame-GetArguments", process.SelectedStackFrame.GetArgumentValues());
-				process.AsyncContinue();
+				process.Continue();
 			}
-			
-			WaitForPause();
 			ObjectDump("Prop", process.SelectedStackFrame.GetLocalVariableValue("gClass").GetMemberValue("Prop"));
 			ObjectDump("StaticProp", process.SelectedStackFrame.GetLocalVariableValue("gClass").GetMemberValue("StaticProp"));
-			process.AsyncContinue();
 			
-			process.WaitForExit();
-			CheckXmlOutput();
+			EndTest();
 		}
 	}
 }

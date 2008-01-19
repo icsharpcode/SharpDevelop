@@ -150,23 +150,5 @@ namespace Debugger
 				debugger.MTA2STA.PerformAllCalls();
 			}
 		}
-		
-		public void StepInto()
-		{
-			AssertPaused();
-			SelectedStackFrame.AsyncStepInto();
-		}
-		
-		public void StepOver()
-		{
-			AssertPaused();
-			SelectedStackFrame.AsyncStepOver();
-		}
-		
-		public void StepOut()
-		{
-			AssertPaused();
-			SelectedStackFrame.AsyncStepOut();
-		}
 	}
 }

@@ -35,12 +35,10 @@ namespace Debugger.Tests {
 				"DebugType.BaseType"
 			);
 			StartTest("ValueType.cs");
-			WaitForPause();
 			
 			ObjectDump("this", process.SelectedStackFrame.GetThisValue());
-			process.AsyncContinue();
-			process.WaitForExit();
-			CheckXmlOutput();
+			
+			EndTest();
 		}
 	}
 }

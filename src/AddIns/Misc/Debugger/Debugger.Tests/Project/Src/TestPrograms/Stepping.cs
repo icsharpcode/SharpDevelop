@@ -41,44 +41,34 @@ namespace Debugger.Tests {
 		public void Stepping()
 		{
 			StartTest("Stepping.cs");
-			WaitForPause();
+			
 			ObjectDumpToString("NextStatement", process.SelectedStackFrame.NextStatement);
 			
-			process.StepOver(); // Debugger.Break
-			WaitForPause();
+			process.SelectedStackFrame.StepOver(); // Debugger.Break
 			ObjectDumpToString("NextStatement", process.SelectedStackFrame.NextStatement);
 			
-			process.StepOver(); // Debug.WriteLine 1
-			WaitForPause();
+			process.SelectedStackFrame.StepOver(); // Debug.WriteLine 1
 			ObjectDumpToString("NextStatement", process.SelectedStackFrame.NextStatement);
 			
-			process.StepInto(); // Method Sub
-			WaitForPause();
+			process.SelectedStackFrame.StepInto(); // Method Sub
 			ObjectDumpToString("NextStatement", process.SelectedStackFrame.NextStatement);
 			
-			process.StepInto(); // '{'
-			WaitForPause();
+			process.SelectedStackFrame.StepInto(); // '{'
 			ObjectDumpToString("NextStatement", process.SelectedStackFrame.NextStatement);
 			
-			process.StepInto(); // Debug.WriteLine 2
-			WaitForPause();
+			process.SelectedStackFrame.StepInto(); // Debug.WriteLine 2
 			ObjectDumpToString("NextStatement", process.SelectedStackFrame.NextStatement);
 			
-			process.StepOut(); // Method Sub
-			WaitForPause();
+			process.SelectedStackFrame.StepOut(); // Method Sub
 			ObjectDumpToString("NextStatement", process.SelectedStackFrame.NextStatement);
 			
-			process.StepOver(); // Method Sub
-			WaitForPause();
+			process.SelectedStackFrame.StepOver(); // Method Sub
 			ObjectDumpToString("NextStatement", process.SelectedStackFrame.NextStatement);
 			
-			process.StepOver(); // Method Sub2
-			WaitForPause();
+			process.SelectedStackFrame.StepOver(); // Method Sub2
 			ObjectDumpToString("NextStatement", process.SelectedStackFrame.NextStatement);
 			
-			process.AsyncContinue();
-			process.WaitForExit();
-			CheckXmlOutput();
+			EndTest();
 		}
 	}
 }

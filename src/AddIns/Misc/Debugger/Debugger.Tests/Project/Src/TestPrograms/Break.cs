@@ -26,11 +26,8 @@ namespace Debugger.Tests {
 		public void Break()
 		{
 			StartTest("Break.cs");
-			WaitForPause();
 			
-			process.AsyncContinue();
-			process.WaitForExit();
-			CheckXmlOutput();
+			EndTest();
 		}
 	}
 }

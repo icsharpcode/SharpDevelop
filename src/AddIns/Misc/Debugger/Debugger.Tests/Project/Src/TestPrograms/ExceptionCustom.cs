@@ -34,10 +34,8 @@ namespace Debugger.Tests {
 		public void ExceptionCustom()
 		{
 			StartTest("ExceptionCustom.cs");
-			WaitForPause();
-			process.AsyncContinue();
-			process.WaitForExit();
-			CheckXmlOutput();
+			
+			EndTest();
 		}
 	}
 }

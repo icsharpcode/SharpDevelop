@@ -145,6 +145,12 @@ namespace Debugger
 			Pause(true);
 		}
 		
+		public void Continue()
+		{
+			AsyncContinue();
+			WaitForPause();
+		}
+		
 		public void AsyncContinue()
 		{
 			AssertPaused();

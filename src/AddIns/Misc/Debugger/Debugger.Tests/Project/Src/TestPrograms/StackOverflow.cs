@@ -32,13 +32,11 @@ namespace Debugger.Tests {
 		public void StackOverflow()
 		{
 			StartTest("StackOverflow.cs");
-			WaitForPause();
 			
-			process.AsyncContinue();
-			WaitForPause();
+			process.Continue();
 			ObjectDump("LastStackFrame", process.SelectedThread.MostRecentStackFrame);
 			
-			CheckXmlOutput();
+			EndTest();
 		}
 	}
 }
@@ -62,6 +60,7 @@ namespace Debugger.Tests {
       <MethodInfo>Fun</MethodInfo>
       <NextStatement>Start=21,3 End=21,4</NextStatement>
     </LastStackFrame>
+    <ProcessExited />
   </Test>
 </DebuggerTests>
 #endif // EXPECTED_OUTPUT

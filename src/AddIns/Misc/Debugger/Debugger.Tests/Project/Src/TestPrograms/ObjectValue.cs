@@ -46,20 +46,16 @@ namespace Debugger.Tests {
 			Value val = null;
 			
 			StartTest("ObjectValue.cs");
-			WaitForPause();
+			
 			val = process.SelectedStackFrame.GetLocalVariableValue("val");
 			ObjectDump("val", val);
 			ObjectDump("val members", val.GetMemberValues(null, Debugger.BindingFlags.All));
-			//ObjectDump("typeof(val)", val.Type);
 			
-			process.AsyncContinue();
-			WaitForPause();
+			process.Continue();
 			ObjectDump("val", val);
 			ObjectDump("val members", val.GetMemberValues(null, Debugger.BindingFlags.All));
 			
-			process.AsyncContinue();
-			process.WaitForExit();
-			CheckXmlOutput();
+			EndTest();
 		}
 	}
 }

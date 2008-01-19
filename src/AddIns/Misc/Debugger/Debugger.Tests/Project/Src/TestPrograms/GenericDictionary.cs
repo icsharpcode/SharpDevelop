@@ -31,13 +31,11 @@ namespace Debugger.Tests {
 		public void GenericDictionary()
 		{
 			StartTest("GenericDictionary.cs");
-			WaitForPause();
+			
 			ObjectDump("dict", process.SelectedStackFrame.GetLocalVariableValue("dict"));
 			ObjectDump("dict members", process.SelectedStackFrame.GetLocalVariableValue("dict").GetMemberValues(null, BindingFlags.All));
 			
-			process.AsyncContinue();
-			process.WaitForExit();
-			CheckXmlOutput();
+			EndTest();
 		}
 	}
 }

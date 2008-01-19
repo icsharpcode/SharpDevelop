@@ -36,20 +36,14 @@ namespace Debugger.Tests {
 		public void Callstack()
 		{
 			StartTest("Callstack.cs");
-			WaitForPause();
+			
+			ObjectDump("Callstack", process.SelectedThread.GetCallstack());
+			process.SelectedStackFrame.StepOut();
+			ObjectDump("Callstack", process.SelectedThread.GetCallstack());
+			process.SelectedStackFrame.StepOut();
 			ObjectDump("Callstack", process.SelectedThread.GetCallstack());
 			
-			process.StepOut();
-			WaitForPause();
-			ObjectDump("Callstack", process.SelectedThread.GetCallstack());
-			
-			process.StepOut();
-			WaitForPause();
-			ObjectDump("Callstack", process.SelectedThread.GetCallstack());
-			
-			process.AsyncContinue();
-			process.WaitForExit();
-			CheckXmlOutput();
+			EndTest();
 		}
 	}
 }
