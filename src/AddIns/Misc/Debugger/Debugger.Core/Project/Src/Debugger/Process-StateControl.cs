@@ -121,7 +121,7 @@ namespace Debugger
 					ExceptionEventArgs args = new ExceptionEventArgs(this, SelectedThread.CurrentException);
 					OnExceptionThrown(args);
 					if (args.Continue) {
-						this.Continue();
+						this.AsyncContinue();
 					}
 				}
 			}
@@ -154,19 +154,19 @@ namespace Debugger
 		public void StepInto()
 		{
 			AssertPaused();
-			SelectedStackFrame.StepInto();
+			SelectedStackFrame.AsyncStepInto();
 		}
 		
 		public void StepOver()
 		{
 			AssertPaused();
-			SelectedStackFrame.StepOver();
+			SelectedStackFrame.AsyncStepOver();
 		}
 		
 		public void StepOut()
 		{
 			AssertPaused();
-			SelectedStackFrame.StepOut();
+			SelectedStackFrame.AsyncStepOut();
 		}
 	}
 }

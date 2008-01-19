@@ -57,7 +57,7 @@ namespace Debugger.Tests {
 			ObjectDump("local", local);
 			ObjectDump("@class", @class);
 			
-			process.Continue(); // 2 - Go to the SubFunction
+			process.AsyncContinue(); // 2 - Go to the SubFunction
 			WaitForPause();
 			localInSubFunction = process.SelectedStackFrame.GetLocalVariableValue("localInSubFunction");
 			ObjectDump("argument", argument);
@@ -65,14 +65,14 @@ namespace Debugger.Tests {
 			ObjectDump("@class", @class);
 			ObjectDump("localInSubFunction", @localInSubFunction);
 			
-			process.Continue(); // 3 - Go back to Function
+			process.AsyncContinue(); // 3 - Go back to Function
 			WaitForPause();
 			ObjectDump("argument", argument);
 			ObjectDump("local", local);
 			ObjectDump("@class", @class);
 			ObjectDump("localInSubFunction", @localInSubFunction);
 			
-			process.Continue(); // 4 - Go to the SubFunction
+			process.AsyncContinue(); // 4 - Go to the SubFunction
 			WaitForPause();
 			ObjectDump("argument", argument);
 			ObjectDump("local", local);
@@ -81,14 +81,14 @@ namespace Debugger.Tests {
 			localInSubFunction = process.SelectedStackFrame.GetLocalVariableValue("localInSubFunction");
 			ObjectDump("localInSubFunction(new)", @localInSubFunction);
 			
-			process.Continue(); // 5 - Setp out of both functions
+			process.AsyncContinue(); // 5 - Setp out of both functions
 			WaitForPause();
 			ObjectDump("argument", argument);
 			ObjectDump("local", local);
 			ObjectDump("@class", @class);
 			ObjectDump("localInSubFunction", @localInSubFunction);
 			
-			process.Continue();
+			process.AsyncContinue();
 			process.WaitForExit();
 			CheckXmlOutput();
 		}

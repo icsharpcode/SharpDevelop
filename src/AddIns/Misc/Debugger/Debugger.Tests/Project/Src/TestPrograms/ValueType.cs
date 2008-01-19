@@ -38,7 +38,7 @@ namespace Debugger.Tests {
 			WaitForPause();
 			
 			ObjectDump("this", process.SelectedStackFrame.GetThisValue());
-			process.Continue();
+			process.AsyncContinue();
 			process.WaitForExit();
 			CheckXmlOutput();
 		}

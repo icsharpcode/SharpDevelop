@@ -47,7 +47,7 @@ namespace Debugger.Tests {
 			WaitForPause();
 			ObjectDump("Callstack", process.SelectedThread.GetCallstack());
 			
-			process.Continue();
+			process.AsyncContinue();
 			process.WaitForExit();
 			CheckXmlOutput();
 		}

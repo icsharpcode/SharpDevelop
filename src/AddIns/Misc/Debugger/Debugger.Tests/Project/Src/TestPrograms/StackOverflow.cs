@@ -34,7 +34,7 @@ namespace Debugger.Tests {
 			StartTest("StackOverflow.cs");
 			WaitForPause();
 			
-			process.Continue();
+			process.AsyncContinue();
 			WaitForPause();
 			ObjectDump("LastStackFrame", process.SelectedThread.MostRecentStackFrame);
 			

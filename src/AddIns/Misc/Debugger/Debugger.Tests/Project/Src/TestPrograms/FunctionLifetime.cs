@@ -43,23 +43,23 @@ namespace Debugger.Tests {
 			StackFrame stackFrame = process.SelectedStackFrame;
 			ObjectDump("SelectedStackFrame", process.SelectedStackFrame);
 			
-			process.Continue(); // Go to the SubFunction
+			process.AsyncContinue(); // Go to the SubFunction
 			WaitForPause();
 			ObjectDump("Old StackFrame", stackFrame);
 			ObjectDump("SelectedStackFrame", process.SelectedStackFrame);
 			
-			process.Continue(); // Go back to Function
+			process.AsyncContinue(); // Go back to Function
 			WaitForPause();
 			ObjectDump("Old StackFrame", stackFrame);
 			ObjectDump("SelectedStackFrame", process.SelectedStackFrame);
 			
-			process.Continue(); // Setp out of function
+			process.AsyncContinue(); // Setp out of function
 			WaitForPause();
 			ObjectDump("Main", process.SelectedStackFrame);
 			ObjectDump("Old StackFrame", stackFrame);
 			ObjectDump("SelectedStackFrame", process.SelectedStackFrame);
 			
-			process.Continue();
+			process.AsyncContinue();
 			process.WaitForExit();
 			CheckXmlOutput();
 		}

@@ -35,7 +35,7 @@ namespace Debugger.Tests {
 			ObjectDump("array", array);
 			ObjectDump("array elements", array.GetArrayElements());
 			
-			process.Continue();
+			process.AsyncContinue();
 			process.WaitForExit();
 			CheckXmlOutput();
 		}

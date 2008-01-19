@@ -52,7 +52,7 @@ namespace Debugger
 				if (process.IsPaused && process.PauseSession.PausedReason == PausedReason.ForcedBreak && name != "ExitProcess") {
 					process.TraceMessage("Processing post-break callback");
 					// Continue the break, process is still breaked because of the callback
-					process.Continue();
+					process.AsyncContinue();
 					pauseProcessInsteadOfContinue = true;
 				} else {
 					pauseProcessInsteadOfContinue = false;
@@ -80,7 +80,7 @@ namespace Debugger
 			if (pauseProcessInsteadOfContinue) {
 				ExitCallback_Paused();
 			} else {
-				process.Continue();
+				process.AsyncContinue();
 			}
 		}
 		

@@ -76,7 +76,7 @@ namespace Debugger.Tests {
 			WaitForPause();
 			ObjectDumpToString("NextStatement", process.SelectedStackFrame.NextStatement);
 			
-			process.Continue();
+			process.AsyncContinue();
 			process.WaitForExit();
 			CheckXmlOutput();
 		}

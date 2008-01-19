@@ -34,11 +34,11 @@ namespace Debugger.Tests {
 			Assert.IsNotNull(process.SelectedStackFrame.CanSetIP("SetIP.cs", 16, 0));
 			Assert.IsNull(process.SelectedStackFrame.CanSetIP("SetIP.cs", 100, 0));
 			process.SelectedStackFrame.SetIP("SetIP.cs", 16, 0);
-			process.Continue();
+			process.AsyncContinue();
 			WaitForPause();
 			Assert.AreEqual("1\r\n1\r\n", log);
 			
-			process.Continue();
+			process.AsyncContinue();
 			process.WaitForExit();
 			CheckXmlOutput();
 		}

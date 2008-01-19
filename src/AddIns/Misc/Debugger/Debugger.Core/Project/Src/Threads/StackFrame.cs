@@ -115,30 +115,30 @@ namespace Debugger
 		}
 		
 		/// <summary> Step into next instruction </summary>
-		public void StepInto()
+		public void AsyncStepInto()
 		{
-			Step(true);
+			AsyncStep(true);
 		}
 		
 		/// <summary> Step over next instruction </summary>
-		public void StepOver()
+		public void AsyncStepOver()
 		{
-			Step(false);
+			AsyncStep(false);
 		}
 		
 		/// <summary> Step out of the stack frame </summary>
-		public void StepOut()
+		public void AsyncStepOut()
 		{
 			new Stepper(this, "StackFrame step out").StepOut();
-			process.Continue();
+			process.AsyncContinue();
 		}
-
-		private unsafe void Step(bool stepIn)
+		
+		void AsyncStep(bool stepIn)
 		{
 			if (this.MethodInfo.Module.SymbolsLoaded == false) {
 				throw new DebuggerException("Unable to step. No symbols loaded.");
 			}
-
+			
 			SourcecodeSegment nextSt;
 				
 			nextSt = NextStatement;
@@ -155,7 +155,7 @@ namespace Debugger
 				new Stepper(this, "StackFrame step over").StepOver(nextSt.StepRanges);
 			}
 			
-			process.Continue();
+			process.AsyncContinue();
 		}
 		
 		/// <summary>

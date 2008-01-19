@@ -40,7 +40,7 @@ namespace Debugger
 		{
 			if (this.IsPaused) {
 				if (this.SetupNextEvaluation()) {
-					this.Continue();
+					this.AsyncContinue();
 				}
 			}
 		}

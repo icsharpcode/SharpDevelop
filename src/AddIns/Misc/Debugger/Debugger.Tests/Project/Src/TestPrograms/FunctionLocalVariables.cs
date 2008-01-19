@@ -34,7 +34,7 @@ namespace Debugger.Tests {
 			WaitForPause();
 			ObjectDump("LocalVariables", process.SelectedStackFrame.GetLocalVariableValues());
 			
-			process.Continue();
+			process.AsyncContinue();
 			process.WaitForExit();
 			CheckXmlOutput();
 		}

@@ -113,13 +113,13 @@ namespace Debugger.Tests {
 				WaitForPause();
 				ObjectDump("SelectedStackFrame", process.SelectedStackFrame);
 				ObjectDump("SelectedStackFrame-GetArguments", process.SelectedStackFrame.GetArgumentValues());
-				process.Continue();
+				process.AsyncContinue();
 			}
 			
 			WaitForPause();
 			ObjectDump("Prop", process.SelectedStackFrame.GetLocalVariableValue("gClass").GetMemberValue("Prop"));
 			ObjectDump("StaticProp", process.SelectedStackFrame.GetLocalVariableValue("gClass").GetMemberValue("StaticProp"));
-			process.Continue();
+			process.AsyncContinue();
 			
 			process.WaitForExit();
 			CheckXmlOutput();

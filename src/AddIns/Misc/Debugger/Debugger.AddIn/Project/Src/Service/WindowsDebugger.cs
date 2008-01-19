@@ -192,7 +192,7 @@ namespace ICSharpCode.SharpDevelop.Services
 				MessageService.ShowMessage(errorProcessRunning, "${res:XML.MainMenu.DebugMenu.Continue}");
 				return;
 			}
-			debuggedProcess.Continue();
+			debuggedProcess.AsyncContinue();
 		}
 		
 		// Stepping:

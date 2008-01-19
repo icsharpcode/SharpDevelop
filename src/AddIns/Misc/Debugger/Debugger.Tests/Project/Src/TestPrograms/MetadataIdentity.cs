@@ -38,12 +38,12 @@ namespace Debugger.Tests {
 			
 			DebugType type = process.SelectedStackFrame.GetThisValue().Type;
 			MethodInfo mainMethod = process.SelectedStackFrame.MethodInfo;
-			process.Continue();
+			process.AsyncContinue();
 			WaitForPause();
 			
 			Assert.AreEqual(type, process.SelectedStackFrame.GetThisValue().Type);
 			Assert.AreEqual(mainMethod, process.SelectedStackFrame.MethodInfo);
-			process.Continue();
+			process.AsyncContinue();
 			process.WaitForExit();
 			CheckXmlOutput();
 		}

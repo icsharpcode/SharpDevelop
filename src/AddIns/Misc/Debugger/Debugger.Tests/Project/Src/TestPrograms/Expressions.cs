@@ -63,7 +63,7 @@ namespace Debugger.Tests {
 			ObjectDump("LocalVariables", process.SelectedStackFrame.GetLocalVariableValues());
 			ObjectDump("this", process.SelectedStackFrame.GetThisValue().GetMemberValues());
 			
-			process.Continue();
+			process.AsyncContinue();
 			process.WaitForExit();
 			CheckXmlOutput();
 		}

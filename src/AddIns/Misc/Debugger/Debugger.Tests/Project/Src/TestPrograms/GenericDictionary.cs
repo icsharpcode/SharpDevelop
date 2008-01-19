@@ -35,7 +35,7 @@ namespace Debugger.Tests {
 			ObjectDump("dict", process.SelectedStackFrame.GetLocalVariableValue("dict"));
 			ObjectDump("dict members", process.SelectedStackFrame.GetLocalVariableValue("dict").GetMemberValues(null, BindingFlags.All));
 			
-			process.Continue();
+			process.AsyncContinue();
 			process.WaitForExit();
 			CheckXmlOutput();
 		}

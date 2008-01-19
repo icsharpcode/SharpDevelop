@@ -35,13 +35,13 @@ namespace Debugger.Tests {
 			
 			ObjectDump(breakpoint);
 			
-			process.Continue();
+			process.AsyncContinue();
 			WaitForPause();
 			
-			process.Continue();
+			process.AsyncContinue();
 			WaitForPause();
 			
-			process.Continue();
+			process.AsyncContinue();
 			process.WaitForExit();
 			
 			ObjectDump(breakpoint);

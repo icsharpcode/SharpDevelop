@@ -27,7 +27,7 @@ namespace Debugger.Tests {
 		{
 			StartTest("Exception.cs");
 			WaitForPause();
-			process.Continue();
+			process.AsyncContinue();
 			process.WaitForExit();
 			CheckXmlOutput();
 		}

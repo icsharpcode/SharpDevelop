@@ -145,7 +145,7 @@ namespace Debugger
 			Pause(true);
 		}
 		
-		public void Continue()
+		public void AsyncContinue()
 		{
 			AssertPaused();
 
@@ -161,7 +161,7 @@ namespace Debugger
 			// Resume stoped tread
 			if (this.IsPaused) {
 				// We might get more callbacks so we should maintain consistent sate
-				this.Continue(); // TODO: Remove this...
+				this.AsyncContinue(); // TODO: Remove this...
 			}
 			
 			// Expose race condition - drain callback queue

@@ -52,12 +52,12 @@ namespace Debugger.Tests {
 			ObjectDump("val members", val.GetMemberValues(null, Debugger.BindingFlags.All));
 			//ObjectDump("typeof(val)", val.Type);
 			
-			process.Continue();
+			process.AsyncContinue();
 			WaitForPause();
 			ObjectDump("val", val);
 			ObjectDump("val members", val.GetMemberValues(null, Debugger.BindingFlags.All));
 			
-			process.Continue();
+			process.AsyncContinue();
 			process.WaitForExit();
 			CheckXmlOutput();
 		}

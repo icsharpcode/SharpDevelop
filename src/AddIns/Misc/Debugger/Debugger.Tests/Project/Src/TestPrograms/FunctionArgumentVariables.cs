@@ -75,12 +75,12 @@ namespace Debugger.Tests {
 			WaitForPause();
 			
 			for(int i = 0; i < 5; i++) {
-				process.Continue();
+				process.AsyncContinue();
 				WaitForPause();
 				ObjectDump("Arguments", process.SelectedStackFrame.GetArgumentValues());
 			}
 			
-			process.Continue();
+			process.AsyncContinue();
 			process.WaitForExit();
 			CheckXmlOutput();
 		}
