@@ -335,4 +335,22 @@ namespace Debugger
 			}
 		}
 	}
+	
+	[Serializable]
+	public class ThreadEventArgs : ProcessEventArgs
+	{
+		Thread thread;
+		
+		[Debugger.Tests.Ignore]
+		public Thread Thread {
+			get {
+				return thread;
+			}
+		}
+		
+		public ThreadEventArgs(Thread thread): base(thread.Process)
+		{
+			this.thread = thread;
+		}
+	}
 }

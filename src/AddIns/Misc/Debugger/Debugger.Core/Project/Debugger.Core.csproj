@@ -50,12 +50,9 @@
     <Compile Include="Src\Control\Process-StateControl.cs" />
     <Compile Include="Src\Control\Process-Threads.cs" />
     <Compile Include="Src\Control\Process.cs" />
-    <Compile Include="Src\Control\ProcessEventArgs.cs" />
     <Compile Include="Src\Control\StackFrame.cs" />
     <Compile Include="Src\Control\Stepper.cs" />
-    <Compile Include="Src\Control\StepperEventArgs.cs" />
     <Compile Include="Src\Control\Thread.cs" />
-    <Compile Include="Src\Control\ThreadEventArgs.cs" />
     <Compile Include="Src\Debugger\Breakpoint.cs" />
     <Compile Include="Src\Debugger\DebugeeState.cs" />
     <Compile Include="Src\Debugger\DebuggerException.cs" />
@@ -66,12 +63,6 @@
     <Compile Include="Src\Debugger\PausedReason.cs" />
     <Compile Include="Src\Debugger\PauseSession.cs" />
     <Compile Include="Src\Debugger\SourcecodeSegment.cs" />
-    <Compile Include="Src\EventArgs\BreakpointEventArgs.cs" />
-    <Compile Include="Src\EventArgs\DebuggerEventArgs.cs" />
-    <Compile Include="Src\EventArgs\EvalEventArgs.cs" />
-    <Compile Include="Src\EventArgs\ExceptionEventArgs.cs" />
-    <Compile Include="Src\EventArgs\MessageEventArgs.cs" />
-    <Compile Include="Src\EventArgs\ModuleEventArgs.cs" />
     <Compile Include="Src\Expressions\Ast\ArrayIndexerExpression.cs" />
     <Compile Include="Src\Expressions\Ast\EmptyExpression.cs" />
     <Compile Include="Src\Expressions\Ast\LocalVariableIdentifierExpression.cs" />
@@ -385,7 +376,6 @@
     <Folder Include="Src" />
     <Folder Include="Src\Control" />
     <Folder Include="Src\Debugger" />
-    <Folder Include="Src\EventArgs" />
     <Folder Include="Src\Expressions" />
     <Folder Include="Src\Expressions\Ast" />
     <Folder Include="Src\Internal" />

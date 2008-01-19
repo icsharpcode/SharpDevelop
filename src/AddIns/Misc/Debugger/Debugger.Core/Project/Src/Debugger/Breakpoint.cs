@@ -120,4 +120,21 @@ namespace Debugger
 			return true;
 		}
 	}
+	
+	[Serializable]
+	public class BreakpointEventArgs : DebuggerEventArgs
+	{
+		Breakpoint breakpoint;
+		
+		public Breakpoint Breakpoint {
+			get {
+				return breakpoint;
+			}
+		}
+		
+		public BreakpointEventArgs(Breakpoint breakpoint): base(breakpoint.Debugger)
+		{
+			this.breakpoint = breakpoint;
+		}
+	}
 }

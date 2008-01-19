@@ -155,4 +155,59 @@ namespace Debugger
 			return process;
 		}
 	}
+	
+	[Serializable]
+	public class DebuggerEventArgs : EventArgs 
+	{
+		NDebugger debugger;
+		
+		public NDebugger Debugger {
+			get {
+				return debugger;
+			}
+		}
+		
+		public DebuggerEventArgs(NDebugger debugger)
+		{
+			this.debugger = debugger;
+		}
+	}
+	
+	[Serializable]
+	public class MessageEventArgs : ProcessEventArgs
+	{
+		int level;
+		string message;
+		string category;
+		
+		public int Level {
+			get {
+				return level;
+			}
+		}
+		
+		public string Message {
+			get {
+				return message;
+			}
+		}
+		
+		public string Category {
+			get {
+				return category;
+			}
+		}
+		
+		public MessageEventArgs(Process process, string message): this(process, 0, message, String.Empty)
+		{
+			this.message = message;
+		}
+		
+		public MessageEventArgs(Process process, int level, string message, string category): base(process)
+		{
+			this.level = level;
+			this.message = message;
+			this.category = category;
+		}
+	}
 }

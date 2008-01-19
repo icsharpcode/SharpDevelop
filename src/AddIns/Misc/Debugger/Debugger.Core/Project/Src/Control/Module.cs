@@ -158,4 +158,21 @@ namespace Debugger
 			return string.Format("{0}", this.Filename);
 		}
 	}
+	
+	[Serializable]
+	public class ModuleEventArgs : ProcessEventArgs
+	{
+		Module module;
+		
+		public Module Module {
+			get {
+				return module;
+			}
+		}
+		
+		public ModuleEventArgs(Module module): base(module.Process)
+		{
+			this.module = module;
+		}
+	}
 }

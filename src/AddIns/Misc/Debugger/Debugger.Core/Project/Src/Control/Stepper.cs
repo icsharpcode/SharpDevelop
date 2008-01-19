@@ -117,4 +117,21 @@ namespace Debugger
 			return string.Format("{0} in {1} pause={2} \"{3}\"", Operation, StackFrame.ToString(), PauseWhenComplete, name);
 		}
 	}
+	
+	[Serializable]
+	public class StepperEventArgs: ProcessEventArgs
+	{
+		Stepper stepper;
+		
+		public Stepper Stepper {
+			get {
+				return stepper;
+			}
+		}
+		
+		public StepperEventArgs(Stepper stepper): base(stepper.Process)
+		{
+			this.stepper = stepper;
+		}
+	}
 }
