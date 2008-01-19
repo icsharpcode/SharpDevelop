@@ -20,12 +20,17 @@ namespace Debugger.MetaData
 	public class MethodInfo: MemberInfo
 	{
 		MethodProps methodProps;
+		FieldInfo backingField;
 		
 		/// <summary> Gets the name of this method </summary>
 		public override string Name {
 			get {
 				return methodProps.Name;
 			}
+		}
+		
+		internal FieldInfo BackingField {
+			get { return backingField; }
 		}
 		
 		/// <summary> Gets a value indicating whether this method is private </summary>
@@ -75,6 +80,64 @@ namespace Debugger.MetaData
 		internal MethodInfo(DebugType declaringType, MethodProps methodProps):base (declaringType)
 		{
 			this.methodProps = methodProps;
+			
+			this.backingField = GetBackingField();
+		}
+		
+		// Is this method in form 'return this.field;'?
+		FieldInfo GetBackingField()
+		{
+			if (this.IsStatic) return null;
+			if (this.ParameterCount != 0) return null;
+			
+			ICorDebugCode corCode;
+			try {
+				corCode = this.CorFunction.ILCode;
+			} catch {
+				return null;
+			}
+			
+			if (corCode == null) return null;
+			if (corCode.Size != 12) return null;
+			
+			byte[] code = corCode.GetCode();
+			
+			if (code == null) return null;
+			
+			/*
+			string codeTxt = "";
+			foreach(byte b in code) {
+				codeTxt += b.ToString("X2") + " ";
+			}
+			this.Process.TraceMessage("Code of " + Name + ": " + codeTxt);
+			*/
+			
+			if (code[00] == 0x00 && // nop
+			    code[01] == 0x02 && // ldarg.0
+			    code[02] == 0x7B && // ldfld
+			    code[06] == 0x04 && //   <field token>
+			    code[07] == 0x0A && // stloc.0
+			    code[08] == 0x2B && // br.s
+			    code[09] == 0x00 && //   offset+00
+			    code[10] == 0x06 && // ldloc.0
+			    code[11] == 0x2A)   // ret
+			{
+				uint token = 
+					((uint)code[06] << 24) +
+					((uint)code[05] << 16) +
+					((uint)code[04] << 8) +
+					((uint)code[03]);
+				// this.Process.TraceMessage("Token: " + token.ToString("x"));
+				
+				MemberInfo member = this.DeclaringType.GetMember(token);
+				
+				if (member == null) return null;
+				if (!(member is FieldInfo)) return null;
+				
+				this.Process.TraceMessage(string.Format("Found backing field for {0}: {1}", this.FullName, member.Name));
+				return (FieldInfo)member;
+			}
+			return null;
 		}
 		
 		/// <summary>

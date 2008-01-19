@@ -106,13 +106,17 @@ namespace Debugger
 			return InvokeMethod(MethodInfo.GetFromName(process, type, name, args.Length), thisValue, args);
 		}
 		
+		#endregion
+		
 		/// <summary> Synchronously calls a function and returns its return value </summary>
 		public static Value InvokeMethod(MethodInfo method, Value thisValue, Value[] args)
 		{
+			if (method.BackingField != null) {
+				method.Process.TraceMessage("Using backing field for " + method.FullName);
+				return Value.GetMemberValue(thisValue, method.BackingField, args);
+			}
 			return AsyncInvokeMethod(method, thisValue, args).EvaluateNow();
 		}
-		
-		#endregion
 		
 		public static Eval AsyncInvokeMethod(MethodInfo method, Value thisValue, Value[] args)
 		{
