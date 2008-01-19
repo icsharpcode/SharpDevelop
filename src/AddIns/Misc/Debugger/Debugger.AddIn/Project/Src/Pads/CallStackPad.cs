@@ -38,6 +38,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
@@ -107,10 +108,10 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		void CallStackListItemActivate(object sender, EventArgs e)
 		{
 			if (debuggedProcess.IsPaused) {
-				StackFrame f = (StackFrame)(callStackList.SelectedItems[0].Tag);
-				if (f.HasSymbols) {
+				StackFrame frame = (StackFrame)(callStackList.SelectedItems[0].Tag);
+				if (frame.HasSymbols) {
 					if (debuggedProcess.SelectedThread != null) {
-						debuggedProcess.SelectedThread.SelectedStackFrame = f;
+						debuggedProcess.SelectedThread.SelectedStackFrame = frame;
 						debuggedProcess.OnDebuggeeStateChanged(); // Force refresh of pads
 					}
 				} else {
@@ -126,29 +127,40 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			bool showExternalMethods = ShowExternalMethods;
 			bool lastItemIsExternalMethod = false;
 			
-			callStackList.BeginUpdate();
-			callStackList.Items.Clear();
+			List<ListViewItem> items = new List<ListViewItem>();
 			if (debuggedProcess != null && debuggedProcess.SelectedThread != null && debuggedProcess.IsPaused) {
-				foreach (StackFrame f in debuggedProcess.SelectedThread.GetCallstack(100)) {
+				foreach (StackFrame frame in debuggedProcess.SelectedThread.GetCallstack(100)) {
 					ListViewItem item;
-					if (f.HasSymbols || showExternalMethods) {
+					if (frame.HasSymbols || showExternalMethods) {
 						// Show the method in the list
-						string name = GetFullName(f);
-						item = new ListViewItem(new string[] { name, "" });
+						item = new ListViewItem(new string[] { GetFullName(frame), "" });
 						lastItemIsExternalMethod = false;
 					} else {
 						// Show [External methods] in the list
-						if (lastItemIsExternalMethod) {
-							continue;
-						} else {
-							item = new ListViewItem(new string[] { ResourceService.GetString("MainWindow.Windows.Debug.CallStack.ExternalMethods"), "" });
-							lastItemIsExternalMethod = true;
-						}
+						if (lastItemIsExternalMethod) continue;
+							
+						item = new ListViewItem(new string[] { ResourceService.GetString("MainWindow.Windows.Debug.CallStack.ExternalMethods"), "" });
+						lastItemIsExternalMethod = true;
 					}
-					item.Tag = f;
-					item.ForeColor = f.HasSymbols ? Color.Black : Color.Gray;
-					callStackList.Items.Add(item);
+					item.Tag = frame;
+					item.ForeColor = frame.HasSymbols ? Color.Black : Color.Gray;
+					items.Add(item);
 				}
+			}
+			callStackList.BeginUpdate();
+			// Adjust count
+			while (callStackList.Items.Count < items.Count) {
+				callStackList.Items.Insert(0, new ListViewItem(new string[2]));
+			}
+			while (callStackList.Items.Count > items.Count) {
+				callStackList.Items.RemoveAt(0);
+			}
+			// Overwrite
+			for(int i = 0; i < items.Count; i++) {
+				callStackList.Items[i].SubItems[0] = items[i].SubItems[0];
+				callStackList.Items[i].SubItems[1] = items[i].SubItems[1];
+				callStackList.Items[i].Tag         = items[i].Tag;
+				callStackList.Items[i].ForeColor   = items[i].ForeColor;
 			}
 			callStackList.EndUpdate();
 		}
