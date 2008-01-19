@@ -6,6 +6,8 @@
 // </file>
 
 using System;
+
+using Debugger.MetaData;
 using Debugger.Wrappers.CorDebug;
 using Debugger.Wrappers.CorSym;
 using Debugger.Wrappers.MetaData;
@@ -22,7 +24,7 @@ namespace Debugger
 		int orderOfLoading = 0;
 		ICorDebugModule corModule;
 		ISymUnmanagedReader symReader;
-		MetaData metaData;
+		Debugger.Wrappers.MetaData.MetaData metaData;
 		
 		[Debugger.Tests.Ignore]
 		public Process Process {
@@ -31,7 +33,7 @@ namespace Debugger
 			}
 		}
 		
-		internal MetaData MetaData {
+		internal Debugger.Wrappers.MetaData.MetaData MetaData {
 			get {
 				return metaData;
 			}
@@ -125,7 +127,7 @@ namespace Debugger
 			
 			corModule = pModule;
 			
-			metaData = new MetaData(pModule);
+			metaData = new Debugger.Wrappers.MetaData.MetaData(pModule);
 			
 			fullPath = pModule.Name;
 			

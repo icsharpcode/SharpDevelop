@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using Debugger.Wrappers.CorDebug;
 using Debugger.Wrappers.MetaData;
 
-namespace Debugger
+namespace Debugger.MetaData
 {
 	/// <summary>
 	/// Represents a type in a debugee. That is, a class, array, value type or a primitive type.
@@ -251,7 +251,7 @@ namespace Debugger
 		
 		static internal DebugType Create(Process process, ICorDebugClass corClass, params ICorDebugType[] typeArguments)
 		{
-			MetaData metaData = process.GetModule(corClass.Module).MetaData;
+			Debugger.Wrappers.MetaData.MetaData metaData = process.GetModule(corClass.Module).MetaData;
 			
 			bool isValueType = false;
 			uint superClassToken = metaData.GetTypeDefProps(corClass.Token).SuperClassToken;

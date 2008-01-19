@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 
+using Debugger.MetaData;
 using Debugger.Expressions;
 using Debugger.Wrappers.CorDebug;
 

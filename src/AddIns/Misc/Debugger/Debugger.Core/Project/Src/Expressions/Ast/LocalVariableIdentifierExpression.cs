@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 
+using Debugger.MetaData;
 using Debugger.Wrappers.CorSym;
 
 namespace Debugger.Expressions

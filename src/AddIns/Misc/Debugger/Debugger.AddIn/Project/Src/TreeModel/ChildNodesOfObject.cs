@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using ICSharpCode.Core;
 
 using Debugger;
+using Debugger.MetaData;
 using Debugger.Expressions;
 
 namespace Debugger.AddIn.TreeModel

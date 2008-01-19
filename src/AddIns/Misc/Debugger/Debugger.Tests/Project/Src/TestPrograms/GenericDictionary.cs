@@ -25,6 +25,8 @@ namespace Debugger.Tests.TestPrograms
 
 #if TEST_CODE
 namespace Debugger.Tests {
+	using Debugger.MetaData;
+	
 	public partial class DebuggerTests
 	{
 		[NUnit.Framework.Test, NUnit.Framework.Ignore]

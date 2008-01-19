@@ -8,6 +8,8 @@
 using System;
 using System.Collections.Generic;
 
+using Debugger.MetaData;
+
 namespace Debugger.Expressions
 {
 	/// <summary>

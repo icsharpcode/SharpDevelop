@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using Debugger.Wrappers.CorDebug;
 using Debugger.Wrappers.MetaData;
 
-namespace Debugger
+namespace Debugger.MetaData
 {
 	/// <summary>
 	/// Provides information about a member of some class

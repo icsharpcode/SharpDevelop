@@ -14,6 +14,7 @@ using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Services;
 
 using Debugger;
+using Debugger.MetaData;
 using Debugger.Expressions;
 
 namespace Debugger.AddIn.TreeModel

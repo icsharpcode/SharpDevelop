@@ -12,7 +12,7 @@ using Debugger.Wrappers.CorDebug;
 using Debugger.Wrappers.CorSym;
 using Debugger.Wrappers.MetaData;
 
-namespace Debugger
+namespace Debugger.MetaData
 {
 	/// <summary>
 	/// Provides information about a method in a class

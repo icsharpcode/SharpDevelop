@@ -38,6 +38,8 @@ namespace Debugger.Tests.TestPrograms
 
 #if TEST_CODE
 namespace Debugger.Tests {
+	using Debugger.MetaData;
+	
 	public partial class DebuggerTests
 	{
 		[NUnit.Framework.Test, NUnit.Framework.Ignore]
@@ -49,11 +51,11 @@ namespace Debugger.Tests {
 			
 			val = process.SelectedStackFrame.GetLocalVariableValue("val");
 			ObjectDump("val", val);
-			ObjectDump("val members", val.GetMemberValues(null, Debugger.BindingFlags.All));
+			ObjectDump("val members", val.GetMemberValues(null, BindingFlags.All));
 			
 			process.Continue();
 			ObjectDump("val", val);
-			ObjectDump("val members", val.GetMemberValues(null, Debugger.BindingFlags.All));
+			ObjectDump("val members", val.GetMemberValues(null, BindingFlags.All));
 			
 			EndTest();
 		}
