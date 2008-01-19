@@ -1253,7 +1253,6 @@
 											<File Source="..\..\AddIns\AddIns\Misc\Debugger\Debugger.BooInterpreter.dll" Id="Debugger.BooInterpreter.dll" Name="Debugger.BooInterpreter.dll" />
 											-->
 											<File Source="..\..\AddIns\AddIns\Misc\Debugger\Debugger.Core.dll" Id="Debugger.Core.dll" Name="Debugger.Core.dll" />
-											<File Source="..\..\AddIns\AddIns\Misc\Debugger\TreeListView.dll" Id="TreeListView.dll" Name="TreeListView.dll" />
 										</Component>
 									</Directory>
 									<Directory Id="FiletypeRegistererFolder" Name="FiletypeRegisterer">
