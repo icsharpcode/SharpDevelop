@@ -63,7 +63,7 @@ namespace Debugger.Tests {
     <ModuleLoaded symbols="False">mscorlib.dll</ModuleLoaded>
     <ModuleLoaded symbols="True">Callstack.exe</ModuleLoaded>
     <DebuggingPaused>Break</DebuggingPaused>
-    <Callstack Type="&lt;get_CallstackEnum&gt;d__0" ToString="Debugger.Thread+&lt;get_CallstackEnum&gt;d__0">
+    <Callstack Type="StackFrame[]" ToString="Debugger.StackFrame[]">
       <Item Type="StackFrame" ToString="Debugger.Tests.TestPrograms.Callstack.Sub2">
         <ArgumentCount>0</ArgumentCount>
         <Depth>0</Depth>
@@ -90,7 +90,7 @@ namespace Debugger.Tests {
       </Item>
     </Callstack>
     <DebuggingPaused>StepComplete</DebuggingPaused>
-    <Callstack Type="&lt;get_CallstackEnum&gt;d__0" ToString="Debugger.Thread+&lt;get_CallstackEnum&gt;d__0">
+    <Callstack Type="StackFrame[]" ToString="Debugger.StackFrame[]">
       <Item Type="StackFrame" ToString="Debugger.Tests.TestPrograms.Callstack.Sub1">
         <ArgumentCount>0</ArgumentCount>
         <Depth>0</Depth>
@@ -109,7 +109,7 @@ namespace Debugger.Tests {
       </Item>
     </Callstack>
     <DebuggingPaused>StepComplete</DebuggingPaused>
-    <Callstack Type="&lt;get_CallstackEnum&gt;d__0" ToString="Debugger.Thread+&lt;get_CallstackEnum&gt;d__0">
+    <Callstack Type="StackFrame[]" ToString="Debugger.StackFrame[]">
       <Item Type="StackFrame" ToString="Debugger.Tests.TestPrograms.Callstack.Main">
         <ArgumentCount>0</ArgumentCount>
         <Depth>0</Depth>
