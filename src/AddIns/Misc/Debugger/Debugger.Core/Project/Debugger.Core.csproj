@@ -39,7 +39,6 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="README.TXT" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\Breakpoints\Breakpoint.cs" />
     <Compile Include="Src\Breakpoints\BreakpointEventArgs.cs" />
