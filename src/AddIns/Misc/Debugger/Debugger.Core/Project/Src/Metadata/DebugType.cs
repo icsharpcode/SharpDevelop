@@ -251,7 +251,7 @@ namespace Debugger.MetaData
 		
 		static internal DebugType Create(Process process, ICorDebugClass corClass, params ICorDebugType[] typeArguments)
 		{
-			Debugger.Wrappers.MetaData.MetaData metaData = process.GetModule(corClass.Module).MetaData;
+			MetaDataImport metaData = process.GetModule(corClass.Module).MetaData;
 			
 			bool isValueType = false;
 			uint superClassToken = metaData.GetTypeDefProps(corClass.Token).SuperClassToken;

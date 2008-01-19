@@ -18,11 +18,11 @@ namespace Debugger.Wrappers.MetaData
 	/// <summary>
 	/// Wrapper for the unmanaged metadata API
 	/// </summary>
-	public class MetaData: IDisposable
+	public class MetaDataImport: IDisposable
 	{
 		IMetaDataImport metaData;
 		
-		public MetaData(ICorDebugModule pModule)
+		public MetaDataImport(ICorDebugModule pModule)
 		{
 			Guid guid = new Guid("{ 0x7dac8207, 0xd3ae, 0x4c75, { 0x9b, 0x67, 0x92, 0x80, 0x1a, 0x49, 0x7d, 0x44 } }");
 			metaData = (IMetaDataImport)pModule.GetMetaDataInterface(ref guid);
@@ -39,7 +39,7 @@ namespace Debugger.Wrappers.MetaData
 			}
 		}
 		
-		~MetaData()
+		~MetaDataImport()
 		{
 			Dispose();
 		}

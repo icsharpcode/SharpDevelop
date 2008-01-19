@@ -24,7 +24,7 @@ namespace Debugger
 		int orderOfLoading = 0;
 		ICorDebugModule corModule;
 		ISymUnmanagedReader symReader;
-		Debugger.Wrappers.MetaData.MetaData metaData;
+		MetaDataImport metaData;
 		
 		[Debugger.Tests.Ignore]
 		public Process Process {
@@ -33,7 +33,7 @@ namespace Debugger
 			}
 		}
 		
-		internal Debugger.Wrappers.MetaData.MetaData MetaData {
+		internal MetaDataImport MetaData {
 			get {
 				return metaData;
 			}
@@ -127,7 +127,7 @@ namespace Debugger
 			
 			corModule = pModule;
 			
-			metaData = new Debugger.Wrappers.MetaData.MetaData(pModule);
+			metaData = new MetaDataImport(pModule);
 			
 			fullPath = pModule.Name;
 			

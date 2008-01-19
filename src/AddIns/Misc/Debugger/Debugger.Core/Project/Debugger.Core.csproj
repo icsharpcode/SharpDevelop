@@ -231,7 +231,6 @@
     <Compile Include="Src\Threads\Thread.cs" />
     <Compile Include="Src\Threads\ThreadEventArgs.cs" />
     <Compile Include="Src\Util\HighPrecisionTimer.cs" />
-    <Compile Include="Src\Util\Lists.cs" />
     <Compile Include="Src\Values\ArrayDimension.cs" />
     <Compile Include="Src\Values\ArrayDimensions.cs" />
     <Compile Include="Src\Values\Value.Array.cs" />
@@ -371,7 +370,7 @@
     <Compile Include="Src\Wrappers\CorSym\SequencePoint.cs" />
     <Compile Include="Src\Wrappers\ICorDebugManagedCallbacks.cs" />
     <Compile Include="Src\Wrappers\MetaData\FieldProps.cs" />
-    <Compile Include="Src\Wrappers\MetaData\MetaData.cs" />
+    <Compile Include="Src\Wrappers\MetaData\MetaDataImport.cs" />
     <Compile Include="Src\Wrappers\MetaData\MethodProps.cs" />
     <Compile Include="Src\Wrappers\MetaData\ParamProps.cs" />
     <Compile Include="Src\Wrappers\MetaData\TypeDefProps.cs" />
