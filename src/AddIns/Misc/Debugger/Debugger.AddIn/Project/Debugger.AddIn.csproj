@@ -131,6 +131,7 @@
     <ProjectReference Include="..\..\..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
       <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
       <Name>NRefactory</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\Libraries\TreeViewAdv\Aga.Controls\Aga.Controls.csproj">
       <Project>{E73BB233-D88B-44A7-A98F-D71EE158381D}</Project>
@@ -140,6 +141,7 @@
     <ProjectReference Include="..\..\..\..\..\Main\ICSharpCode.SharpDevelop.Sda\ICSharpCode.SharpDevelop.Sda.csproj">
       <Project>{80318B5F-A25D-45AB-8A95-EF31D2370A4C}</Project>
       <Name>ICSharpCode.SharpDevelop.Sda</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />

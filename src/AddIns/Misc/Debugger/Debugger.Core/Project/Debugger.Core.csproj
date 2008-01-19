@@ -55,7 +55,6 @@
     <Compile Include="Src\Debugger\Internal\ManagedCallbackProxy.cs" />
     <Compile Include="Src\Debugger\Internal\ManagedCallbackSwitch.cs" />
     <Compile Include="Src\Debugger\Internal\MTA2STA.cs" />
-    <Compile Include="Src\Debugger\NamespaceDoc.cs" />
     <Compile Include="Src\Debugger\NDebugger.cs" />
     <Compile Include="Src\Debugger\PauseSession.cs" />
     <Compile Include="Src\Debugger\Process-StateControl.cs" />
