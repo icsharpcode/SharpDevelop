@@ -4,10 +4,8 @@
 	</Manifest>
 	
 	<Runtime>
-		<!--<DisableAddIn message="Debugger disabled, it is too unstable"/>-->
 		<Import assembly="Debugger.AddIn.dll"/>
 		<Import assembly="Debugger.Core.dll"/>
-		<Import assembly="TreeListView.dll"/>
 	</Runtime>
 	
 	<Path name="/SharpDevelop/Services/DebuggerService/Debugger">
