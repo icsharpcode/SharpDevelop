@@ -235,6 +235,15 @@ namespace Debugger
 			);
 		}
 		
+		/// <summary> Invoke the ToString() method </summary>
+		public string InvokeToString()
+		{
+			if (!IsObject) {
+				throw new DebuggerException("ToString can be only invoked on object");
+			}
+			return Eval.InvokeMethod(Process, typeof(object), "ToString", this, new Value[] {}).AsString;
+		}
+		
 		#region Convenience overload methods
 		
 		/// <summary> Asynchronously invoke the method </summary>

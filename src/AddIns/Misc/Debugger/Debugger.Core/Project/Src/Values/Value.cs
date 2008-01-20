@@ -45,10 +45,9 @@ namespace Debugger
 		/// <summary> Gets a string representation of the value </summary>
 		public string AsString {
 			get {
-				if (IsNull)      return "<null>";
+				if (IsNull)      return "null";
 				if (IsArray)     return "{" + this.Type.FullName + "}";
 				if (IsObject)    return "{" + this.Type.FullName + "}";
-				//if (IsObject)    return Eval.InvokeMethod(Process, typeof(object), "ToString", this, new Value[] {}).AsString;
 				if (IsPrimitive) return PrimitiveValue != null ? PrimitiveValue.ToString() : String.Empty;
 				throw new DebuggerException("Unknown value type");
 			}

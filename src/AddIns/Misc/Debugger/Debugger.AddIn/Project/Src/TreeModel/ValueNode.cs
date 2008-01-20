@@ -52,7 +52,7 @@ namespace Debugger.AddIn.TreeModel
 			if (ShowValuesInHexadecimal && val.IsInteger) {
 				this.Text = String.Format("0x{0:X}", val.PrimitiveValue);
 			} else {
-				this.Text =  val.AsString;
+				this.Text = val.AsString;
 			}
 			
 			if (val.Type != null) {
@@ -68,6 +68,11 @@ namespace Debugger.AddIn.TreeModel
 				this.ChildNodes = Util.GetChildNodesOfArray(this.Expression, val.ArrayDimensions);
 			} else {
 				this.ChildNodes = null;
+			}
+			
+			// Do last since it may expire the object
+			if (val.IsObject) {
+				this.Text = val.InvokeToString();
 			}
 		}
 		
