@@ -20,11 +20,17 @@ namespace Debugger.AddIn.TreeModel
 		static DateTime nextDoEventsTime = Debugger.Util.HighPrecisionTimer.Now;
 		const double workLoad    = 0.75; // Fraction of getting variables vs. repainting
 		const double maxFPS      = 30;   // this prevents too much drawing on good machine
-		const double maxWorkTime = 250;  // ms  this ensures minimal response on bad machine
+		const double maxWorkTime = 150;  // ms  this ensures minimal response on bad machine
 		
 		public static void ResetDoEventsStartTime()
 		{
 			nextDoEventsTime = Debugger.Util.HighPrecisionTimer.Now.AddMilliseconds(1000 / maxFPS);
+		}
+		
+		public static void ForceDoEvents()
+		{
+			nextDoEventsTime = DateTime.MinValue;
+			DoEvents();
 		}
 		
 		public static void DoEvents()

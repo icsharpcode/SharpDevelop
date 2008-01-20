@@ -223,13 +223,13 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		public override void RefreshPad()
 		{
-			Debugger.AddIn.TreeModel.Util.ResetDoEventsStartTime();
+			Debugger.AddIn.TreeModel.Util.ForceDoEvents();
 			DateTime start = Debugger.Util.HighPrecisionTimer.Now;
 			try {
 				if (debuggedProcess != null && debuggedProcess.SelectedStackFrame != null) {
 					TreeViewNode.SetContentRecursive(this, localVarList.Root.Children, new StackFrameNode(debuggedProcess.SelectedStackFrame).ChildNodes);
 				} else {
-					TreeViewNode.SetContentRecursive(this, localVarList.Root.Children, null);
+					//TreeViewNode.SetContentRecursive(this, localVarList.Root.Children, null);
 				}
 			} catch(AbortedBecauseDebugeeStateExpiredException) {
 				LoggingService.Info("Aborted variable refresh because debugee state expired");
