@@ -114,7 +114,7 @@ namespace Debugger
 			}
 			
 			thread.CurrentException = null;
-			Process.AsyncContinue();
+			Process.AsyncContinue_KeepDebuggeeState();
 			Process.WaitForPause();
 			return true;
 		}
@@ -122,17 +122,7 @@ namespace Debugger
 	
 	public class ExceptionEventArgs: ProcessEventArgs
 	{
-		bool @continue;
 		Exception exception;
-		
-		public bool Continue {
-			get {
-				return @continue;
-			}
-			set {
-				@continue = value;
-			}
-		}
 		
 		public Exception Exception {
 			get {

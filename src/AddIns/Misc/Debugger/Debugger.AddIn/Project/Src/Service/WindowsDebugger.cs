@@ -206,7 +206,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			if (debuggedProcess.SelectedStackFrame == null || debuggedProcess.IsRunning) {
 				MessageService.ShowMessage(errorCannotStepNoActiveFunction, "${res:XML.MainMenu.DebugMenu.StepInto}");
 			} else {
-				debuggedProcess.SelectedStackFrame.StepInto();
+				debuggedProcess.SelectedStackFrame.AsyncStepInto();
 			}
 		}
 		
@@ -219,7 +219,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			if (debuggedProcess.SelectedStackFrame == null || debuggedProcess.IsRunning) {
 				MessageService.ShowMessage(errorCannotStepNoActiveFunction, "${res:XML.MainMenu.DebugMenu.StepOver}");
 			} else {
-				debuggedProcess.SelectedStackFrame.StepOver();
+				debuggedProcess.SelectedStackFrame.AsyncStepOver();
 			}
 		}
 		
@@ -232,7 +232,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			if (debuggedProcess.SelectedStackFrame == null || debuggedProcess.IsRunning) {
 				MessageService.ShowMessage(errorCannotStepNoActiveFunction, "${res:XML.MainMenu.DebugMenu.StepOut}");
 			} else {
-				debuggedProcess.SelectedStackFrame.StepOut();
+				debuggedProcess.SelectedStackFrame.AsyncStepOut();
 			}
 		}
 		
@@ -305,12 +305,6 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		public bool CanSetInstructionPointer(string filename, int line, int column)
 		{
-			if (debuggedProcess.SelectedThread.CurrentException != null) {
-				if (!debuggedProcess.SelectedThread.CurrentException.Intercept()) {
-					// For example, happens on stack overflow
-					MessageService.ShowMessage("${res:MainWindow.Windows.Debug.ExceptionForm.Error.CannotInterceptException}", "${res:MainWindow.Windows.Debug.ExceptionForm.Title}");
-				}
-			}
 			if (debuggedProcess != null && debuggedProcess.IsPaused && debuggedProcess.SelectedStackFrame != null) {
 				SourcecodeSegment seg = debuggedProcess.SelectedStackFrame.CanSetIP(filename, line, column);
 				return seg != null;
@@ -426,17 +420,15 @@ namespace ICSharpCode.SharpDevelop.Services
 		public void SelectProcess(Debugger.Process process)
 		{
 			if (debuggedProcess != null) {
-				debuggedProcess.DebuggingPaused         -= debuggedProcess_DebuggingPaused;
+				debuggedProcess.Paused                  -= debuggedProcess_DebuggingPaused;
 				debuggedProcess.ExceptionThrown         -= debuggedProcess_ExceptionThrown;
-				debuggedProcess.DebuggeeStateChanged    -= debuggedProcess_DebuggeeStateChanged;
-				debuggedProcess.DebuggingResumed        -= debuggedProcess_DebuggingResumed;
+				debuggedProcess.Resumed                 -= debuggedProcess_DebuggingResumed;
 			}
 			debuggedProcess = process;
 			if (debuggedProcess != null) {
-				debuggedProcess.DebuggingPaused         += debuggedProcess_DebuggingPaused;
+				debuggedProcess.Paused                  += debuggedProcess_DebuggingPaused;
 				debuggedProcess.ExceptionThrown         += debuggedProcess_ExceptionThrown;
-				debuggedProcess.DebuggeeStateChanged    += debuggedProcess_DebuggeeStateChanged;
-				debuggedProcess.DebuggingResumed        += debuggedProcess_DebuggingResumed;
+				debuggedProcess.Resumed                 += debuggedProcess_DebuggingResumed;
 			}
 			JumpToCurrentLine();
 			OnProcessSelected(new ProcessEventArgs(process));
@@ -445,40 +437,6 @@ namespace ICSharpCode.SharpDevelop.Services
 		void debuggedProcess_DebuggingPaused(object sender, ProcessEventArgs e)
 		{
 			OnIsProcessRunningChanged(EventArgs.Empty);
-		}
-		
-		void debuggedProcess_ExceptionThrown(object sender, ExceptionEventArgs e)
-		{
-			if (!e.Exception.IsUnhandled) {
-				// Ignore the exception
-				e.Continue = true;
-				return;
-			}
-			
-			JumpToCurrentLine();
-			
-			Debugger.Process process = this.DebuggedProcess;
-			
-			ExceptionForm.Result result = ExceptionForm.Show(e.Exception);
-			
-			// If the process was killed while the exception form was shown
-			if (process.HasExpired) return;
-			
-			switch (result) {
-				case ExceptionForm.Result.Break:
-					e.Continue = false;
-					break;
-				case ExceptionForm.Result.Continue:
-					e.Continue = true;
-					break;
-				case ExceptionForm.Result.Terminate:
-					process.Terminate();
-					break;
-			}
-		}
-		
-		void debuggedProcess_DebuggeeStateChanged(object sender, ProcessEventArgs e)
-		{
 			JumpToCurrentLine();
 			if (currentTooltipRow != null && currentTooltipRow.IsShown) {
 				AbstractNode updatedNode = Debugger.AddIn.TreeModel.Util.CreateNode(currentTooltipExpression);
@@ -491,8 +449,38 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		void debuggedProcess_DebuggingResumed(object sender, ProcessEventArgs e)
 		{
-			if (!e.Process.Evaluating) {
-				DebuggerService.RemoveCurrentLineMarker();
+			DebuggerService.RemoveCurrentLineMarker();
+		}
+		
+		void debuggedProcess_ExceptionThrown(object sender, ExceptionEventArgs e)
+		{
+			if (!e.Exception.IsUnhandled) {
+				// Ignore the exception
+				e.Process.AsyncContinue();
+				return;
+			}
+			
+			JumpToCurrentLine();
+			
+			ExceptionForm.Result result = ExceptionForm.Show(e.Exception);
+			
+			// If the process was killed while the exception form was shown
+			if (e.Process.HasExpired) return;
+			
+			switch (result) {
+				case ExceptionForm.Result.Break:
+					// Need to intercept now so that we can evaluate properties in local variables pad
+					if (!e.Process.SelectedThread.CurrentException.Intercept()) {
+						// For example, happens on stack overflow
+						MessageService.ShowMessage("${res:MainWindow.Windows.Debug.ExceptionForm.Error.CannotInterceptException}", "${res:MainWindow.Windows.Debug.ExceptionForm.Title}");
+					}
+					break;
+				case ExceptionForm.Result.Continue:
+					e.Process.AsyncContinue();
+					break;
+				case ExceptionForm.Result.Terminate:
+					e.Process.Terminate();
+					break;
 			}
 		}
 		
@@ -505,21 +493,6 @@ namespace ICSharpCode.SharpDevelop.Services
 				if (nextStatement != null) {
 					DebuggerService.JumpToCurrentLine(nextStatement.SourceFullFilename, nextStatement.StartLine, nextStatement.StartColumn, nextStatement.EndLine, nextStatement.EndColumn);
 				}
-			}
-		}
-		
-		public static void DoInPausedState(MethodInvoker action)
-		{
-			Debugger.Process process = ((WindowsDebugger)DebuggerService.CurrentDebugger).DebuggedProcess;
-			if (process.IsPaused) {
-				action();
-			} else {
-				EventHandler<ProcessEventArgs> onDebuggingPaused = null;
-				onDebuggingPaused = delegate {
-					action();
-					process.DebuggingPaused -= onDebuggingPaused;
-				};
-				process.DebuggingPaused += onDebuggingPaused;
 			}
 		}
 	}

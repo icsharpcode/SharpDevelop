@@ -139,8 +139,8 @@ namespace Debugger.Tests
 			process.ModuleLoaded += delegate(object sender, ModuleEventArgs e) {
 				LogEvent("ModuleLoaded", e.Module.Filename).SetAttribute("symbols", e.Module.SymbolsLoaded.ToString());
 			};
-			process.DebuggingPaused += delegate(object sender, ProcessEventArgs e) {
-				LogEvent("DebuggingPaused", e.Process.PausedReason.ToString());
+			process.Paused += delegate(object sender, ProcessEventArgs e) {
+				LogEvent("DebuggingPaused", e.Process.PauseSession.PausedReason.ToString());
 			};
 //			process.DebuggingResumed += delegate(object sender, ProcessEventArgs e) {
 //				LogEvent("DebuggingResumed", e.Process.PausedReason.ToString());

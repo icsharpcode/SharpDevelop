@@ -12,14 +12,113 @@ namespace Debugger
 {
 	public partial class Process
 	{
+		// Order:
+		//  Update PauseSession
+		//  Update DebugSession
+		//  Raise event
+		
+		#region Events
+		
+		public event EventHandler<ProcessEventArgs> Paused;
+		public event EventHandler<ProcessEventArgs> Resumed;
+		
+		// HACK: public
+		public virtual void OnPaused()
+		{
+			TraceMessage ("Debugger event: OnPaused()");
+			if (Paused != null) {
+				Paused(this, new ProcessEventArgs(this));
+			}
+		}
+		
+		protected virtual void OnResumed()
+		{
+			TraceMessage ("Debugger event: OnResumed()");
+			if (Resumed != null) {
+				Resumed(this, new ProcessEventArgs(this));
+			}
+		}
+		
+		
+		#endregion
+		
+		#region PauseSession
+		
+		PauseSession pauseSession;
+		
+		/// <summary>
+		/// Indentification of the current debugger session. This value changes whenever debugger is continued
+		/// </summary>
+		public PauseSession PauseSession {
+			get {
+				return pauseSession;
+			}
+		}
+		
+		internal void CreatePauseSession(PausedReason pauseReason)
+		{
+			if (pauseSession != null) {
+				throw new DebuggerException("Pause session already created");
+			}
+			pauseSession = new PauseSession(pauseReason);
+		}
+		
+		internal void ExpirePauseSession()
+		{
+			if (pauseSession == null) {
+				throw new DebuggerException("Pause session already expired");
+			}
+			PauseSession oldPauseSession = pauseSession;
+			pauseSession = null;
+			oldPauseSession.NotifyHasExpired();
+		}
+		
+		#endregion
+		
+		#region DebugeeState
+		
+		DebuggeeState debuggeeState;
+		
+		/// <summary>
+		/// Indentification of the state of the debugee. This value changes whenever the state of the debugee significatntly changes
+		/// </summary>
+		public DebuggeeState DebuggeeState {
+			get {
+				return debuggeeState;
+			}
+		}
+		
+		internal void CreateDebuggeeState()
+		{
+			if (debuggeeState != null) {
+				throw new DebuggerException("Debugee state already created");
+			}
+			if (pauseSession == null) {
+				throw new DebuggerException("Pause session must exist");
+			}
+			debuggeeState = new DebuggeeState(this);
+		}
+		
+		internal void ExpireDebuggeeState()
+		{
+			if (debuggeeState == null) {
+				throw new DebuggerException("Debugee state already expired");
+			}
+			if (pauseSession != null) {
+				throw new DebuggerException("Pause session must not exist");
+			}
+			DebuggeeState oldDebugeeState = debuggeeState;
+			debuggeeState = null;
+			oldDebugeeState.NotifyHasExpired();
+		}
+		
+		#endregion
+		
+		#region Exceptions
+		
 		bool pauseOnHandledException = false;
 		
-		DebugeeState debugeeState;
-		
 		public event EventHandler<ExceptionEventArgs> ExceptionThrown;
-		public event EventHandler<ProcessEventArgs> DebuggingResumed;
-		public event EventHandler<ProcessEventArgs> DebuggingPaused;
-		public event EventHandler<ProcessEventArgs> DebuggeeStateChanged;
 		
 		public bool PauseOnHandledException {
 			get {
@@ -30,99 +129,124 @@ namespace Debugger
 			}
 		}
 		
-		protected virtual void OnExceptionThrown(ExceptionEventArgs e)
+		protected internal virtual void OnExceptionThrown(ExceptionEventArgs e)
 		{
+			TraceMessage ("Debugger event: OnExceptionThrown()");
 			if (ExceptionThrown != null) {
 				ExceptionThrown(this, e);
 			}
 		}
 		
-		internal virtual void OnDebuggingResumed()
+		#endregion
+		
+		internal void AssertPaused()
 		{
-			TraceMessage ("Debugger event: OnDebuggingResumed()");
-			if (DebuggingResumed != null) {
-				DebuggingResumed(this, new ProcessEventArgs(this));
+			if (IsRunning) {
+				throw new DebuggerException("Process is not paused.");
 			}
 		}
 		
-		protected virtual void OnDebuggingPaused()
+		internal void AssertRunning()
 		{
-			TraceMessage ("Debugger event: OnDebuggingPaused (" + PausedReason.ToString() + ")");
-			if (DebuggingPaused != null) {
-				DebuggingPaused(this, new ProcessEventArgs(this));
+			if (IsPaused) {
+				throw new DebuggerException("Process is not running.");
 			}
 		}
 		
-		// HACK: should not be public
-		public virtual void OnDebuggeeStateChanged()
+		public bool IsRunning { 
+			get {
+				return pauseSession == null;
+			}
+		}
+		
+		public bool IsPaused {
+			get {
+				return !IsRunning;
+			}
+		}
+		
+		public void Break()
 		{
-			TraceMessage ("Debugger event: OnDebuggeeStateChanged (" + PausedReason.ToString() + ")");
-			if (DebuggeeStateChanged != null) {
-				DebuggeeStateChanged(this, new ProcessEventArgs(this));
-			}
+			AssertRunning();
+			
+			corProcess.Stop(5000); // TODO: Hardcoded value
+			
+			CreatePauseSession(PausedReason.ForcedBreak);
+			CreateDebuggeeState();
+			
+			SelectMostRecentStackFrameWithLoadedSymbols();
+			DisableAllSteppers();
+			
+			OnPaused();
 		}
 		
-		public StackFrame SelectedStackFrame {
-			get {
-				if (SelectedThread == null) {
-					return null;
-				} else {
-					return SelectedThread.SelectedStackFrame;
-				}
-			}
+		#region Convenience methods
+		
+		public void Continue()
+		{
+			AsyncContinue();
+			WaitForPause();
 		}
 		
-		/// <summary>
-		/// Indentification of the state of the debugee. This value changes whenever the state of the debugee significatntly changes
-		/// </summary>
-		public DebugeeState DebugeeState {
-			get {
-				return debugeeState;
+		#endregion
+		
+		public void AsyncContinue()
+		{
+			AssertPaused();
+			
+			if (callbackInterface.IsInCallback) {
+				throw new DebuggerException("Can not continue from within callback.");
 			}
+			
+			ExpirePauseSession();
+			ExpireDebuggeeState();
+			OnResumed();
+			corProcess.Continue(0);
 		}
 		
-		/// <summary>
-		/// The reason why the debugger is paused.
-		/// Thows an DebuggerException if debugger is not paused.
-		/// </summary>
-		public PausedReason PausedReason {
-			get {
-				AssertPaused();
-				return PauseSession.PausedReason;
+		internal void AsyncContinue_KeepDebuggeeState()
+		{
+			AssertPaused();
+			
+			if (callbackInterface.IsInCallback) {
+				throw new DebuggerException("Can not continue from within callback.");
 			}
+			
+			ExpirePauseSession();
+			corProcess.Continue(0);
 		}
 		
-		internal void Pause(bool debuggeeStateChanged)
+		public void Terminate()
+		{
+			// Resume stoped tread
+			if (this.IsPaused) {
+				// We might get more callbacks so we should maintain consistent sate
+				AsyncContinue(); // TODO: Remove this...
+			}
+			
+			// Expose race condition - drain callback queue
+			System.Threading.Thread.Sleep(0);
+			
+			// Stop&terminate - both must be called
+			corProcess.Stop(5000); // TODO: ...and this
+			corProcess.Terminate(0);
+		}
+		
+		internal void SelectMostRecentStackFrameWithLoadedSymbols()
 		{
 			if (this.SelectedThread == null && this.Threads.Count > 0) {
 				this.SelectedThread = this.Threads[0];
 			}
-			
 			if (this.SelectedThread != null) {
-				// Disable all steppers - do not Deactivate since stack frame tracking still needs them
-				foreach(Stepper s in this.SelectedThread.Steppers) {
-					s.PauseWhenComplete = false;
-				}
-				
 				this.SelectedThread.SelectedStackFrame = this.SelectedThread.MostRecentStackFrameWithLoadedSymbols;
 			}
-			
-			if (debuggeeStateChanged) {
-				if (debugeeState != null) {
-					debugeeState.NotifyHasExpired();
-				}
-				debugeeState = new DebugeeState(this);
-				OnDebuggeeStateChanged();
-				// The process might have been resumed by the event
-			}
-			if (IsPaused) {
-				OnDebuggingPaused();
-				if (PausedReason == PausedReason.Exception) {
-					ExceptionEventArgs args = new ExceptionEventArgs(this, SelectedThread.CurrentException);
-					OnExceptionThrown(args);
-					if (args.Continue) {
-						this.AsyncContinue();
-					}
+		}
+		
+		internal void DisableAllSteppers()
+		{
+			foreach(Thread thread in this.Threads) {
+				foreach(Stepper stepper in thread.Steppers) {
+					stepper.PauseWhenComplete = false;
 				}
 			}
 		}

@@ -54,7 +54,7 @@
     <Compile Include="Src\Control\Stepper.cs" />
     <Compile Include="Src\Control\Thread.cs" />
     <Compile Include="Src\Debugger\Breakpoint.cs" />
-    <Compile Include="Src\Debugger\DebugeeState.cs" />
+    <Compile Include="Src\Debugger\DebuggeeState.cs" />
     <Compile Include="Src\Debugger\DebuggerException.cs" />
     <Compile Include="Src\Debugger\DebuggerObject.cs" />
     <Compile Include="Src\Debugger\Exception.cs" />

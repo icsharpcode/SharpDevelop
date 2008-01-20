@@ -250,8 +250,8 @@ namespace Debugger
 		
 		public StackFrame SelectedStackFrame {
 			get {
-				// Forum-20456: Do not return expired StackFrame
 				if (selectedStackFrame != null && selectedStackFrame.HasExpired) return null;
+				if (process.IsRunning) return null;
 				return selectedStackFrame;
 			}
 			set {

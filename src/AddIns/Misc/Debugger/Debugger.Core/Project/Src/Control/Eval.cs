@@ -115,7 +115,7 @@ namespace Debugger
 			}
 			
 			process.NotifyEvaluationStarted(newEval);
-			process.AsyncContinue();
+			process.AsyncContinue_KeepDebuggeeState();
 			
 			return newEval;
 		}

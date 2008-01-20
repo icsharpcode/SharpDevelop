@@ -25,12 +25,17 @@ namespace Debugger
 	{
 		Process process;
 		bool pauseProcessInsteadOfContinue;
+		bool isInCallback = false;
 		
 		[Debugger.Tests.Ignore]
 		public Process Process {
 			get {
 				return process;
 			}
+		}
+		
+		public bool IsInCallback {
+			get { return isInCallback; }
 		}
 		
 		public ManagedCallback(Process process)
@@ -40,28 +45,28 @@ namespace Debugger
 		
 		void EnterCallback(PausedReason pausedReason, string name, ICorDebugProcess pProcess)
 		{
+			isInCallback = true;
+			
 			process.TraceMessage("Callback: " + name);
 			System.Diagnostics.Debug.Assert(process.CorProcess == pProcess);
-			// Check state
-			if (process.IsRunning ||
-				// After break is pressed we may receive some messages that were already queued
-				process.PauseSession.PausedReason == PausedReason.ForcedBreak ||
-				// ExitProcess may be called at any time when debuggee is killed
-				name == "ExitProcess") {
-				
-				if (process.IsPaused && process.PauseSession.PausedReason == PausedReason.ForcedBreak && name != "ExitProcess") {
-					process.TraceMessage("Processing post-break callback");
-					// Continue the break, process is still breaked because of the callback
-					process.AsyncContinue();
-					pauseProcessInsteadOfContinue = true;
-				} else {
-					pauseProcessInsteadOfContinue = false;
-				}
-				
-				process.NotifyPaused(new PauseSession(pausedReason));
-			} else {
-				throw new DebuggerException("Invalid state at the start of callback");
+			
+			// After break is pressed we may receive some messages that were already queued
+			if (process.IsPaused && process.PauseSession.PausedReason == PausedReason.ForcedBreak) {
+				process.TraceMessage("Processing post-break callback");
+				// Continue the break, process is still breaked because of the callback
+				process.ExpirePauseSession();
+				process.CorProcess.Continue(0);
+				pauseProcessInsteadOfContinue = true;
+				process.CreatePauseSession(pausedReason);
+				return;
 			}
+			
+			if (process.IsRunning) {
+				process.CreatePauseSession(pausedReason);
+				return;
+			}
+			
+			throw new DebuggerException("Invalid state at the start of callback");
 		}
 		
 		void EnterCallback(PausedReason pausedReason, string name, ICorDebugAppDomain pAppDomain)
@@ -78,10 +83,15 @@ namespace Debugger
 		void ExitCallback_Continue()
 		{
 			if (pauseProcessInsteadOfContinue) {
+				pauseProcessInsteadOfContinue = false;
 				ExitCallback_Paused();
-			} else {
-				process.AsyncContinue();
+				return;
 			}
+			
+			process.ExpirePauseSession();
+			process.CorProcess.Continue(0);
+			
+			isInCallback = false;
 		}
 		
 		void ExitCallback_Paused()
@@ -89,8 +99,36 @@ namespace Debugger
 			if (process.Evaluating) {
 				// Ignore events during property evaluation
 				ExitCallback_Continue();
+				return;
+			}
+			
+			process.SelectMostRecentStackFrameWithLoadedSymbols();
+			process.DisableAllSteppers();
+			
+			if (process.PauseSession.PausedReason == PausedReason.EvalComplete ||
+			    process.PauseSession.PausedReason == PausedReason.ExceptionIntercepted) {
+				// Keep debugge state
+				// Do not raise events
 			} else {
-				process.Pause(process.PauseSession.PausedReason != PausedReason.EvalComplete);
+				process.CreateDebuggeeState();
+				// Raise the pause event outside the callback
+				process.Debugger.MTA2STA.AsyncCall(RaiseEvents);
+			}
+			
+			isInCallback = false;
+		}
+		
+		void RaiseEvents()
+		{
+			if (process.PauseSession.PausedReason == PausedReason.Exception) {
+				ExceptionEventArgs args = new ExceptionEventArgs(process, process.SelectedThread.CurrentException);
+				process.OnExceptionThrown(args);
+				// The event could have resumed the process
+			}
+			
+			if (process.IsPaused) {
+				process.OnPaused();
+				// The event could have resumed the process
 			}
 		}
 		
@@ -383,7 +421,8 @@ namespace Debugger
 		
 		public void ExitProcess(ICorDebugProcess pProcess)
 		{
-			EnterCallback(PausedReason.Other, "ExitProcess", pProcess);
+			// ExitProcess may be called at any time when debuggee is killed
+			process.TraceMessage("Callback: ExitProcess");
 			
 			process.NotifyHasExpired();
 		}

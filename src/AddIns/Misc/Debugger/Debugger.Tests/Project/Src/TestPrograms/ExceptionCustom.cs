@@ -48,8 +48,8 @@ namespace Debugger.Tests {
     <ProcessStarted />
     <ModuleLoaded symbols="False">mscorlib.dll</ModuleLoaded>
     <ModuleLoaded symbols="True">ExceptionCustom.exe</ModuleLoaded>
-    <DebuggingPaused>Exception</DebuggingPaused>
     <ExceptionThrown>test</ExceptionThrown>
+    <DebuggingPaused>Exception</DebuggingPaused>
     <ProcessExited />
   </Test>
 </DebuggerTests>

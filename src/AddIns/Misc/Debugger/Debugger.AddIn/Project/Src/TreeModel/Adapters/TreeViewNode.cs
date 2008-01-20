@@ -70,7 +70,7 @@ namespace Debugger.AddIn.TreeModel
 			}
 			this.Tree.Invalidate();
 			// Repaint and process user commands
-			DebugeeState state = localVarPad.Process.DebugeeState;
+			DebuggeeState state = localVarPad.Process.DebuggeeState;
 			Util.DoEvents();
 			if (localVarPad.Process.IsRunning || state.HasExpired) {
 				throw new AbortedBecauseDebugeeStateExpiredException();

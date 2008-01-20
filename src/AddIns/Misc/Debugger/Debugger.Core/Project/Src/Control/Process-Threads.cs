@@ -14,6 +14,7 @@ namespace Debugger
 {
 	public partial class Process
 	{
+		Thread selectedThread;
 		List<Thread> threadCollection = new List<Thread>();
 		
 		public event EventHandler<ThreadEventArgs> ThreadStarted;
@@ -22,6 +23,15 @@ namespace Debugger
 		{
 			if (ThreadStarted != null) {
 				ThreadStarted(this, new ThreadEventArgs(thread));
+			}
+		}
+		
+		public Thread SelectedThread {
+			get {
+				return selectedThread;
+			}
+			set {
+				selectedThread = value;
 			}
 		}
 		

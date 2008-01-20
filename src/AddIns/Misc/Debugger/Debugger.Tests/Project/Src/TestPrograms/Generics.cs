@@ -627,7 +627,6 @@ namespace Debugger.Tests {
       </Item>
     </SelectedStackFrame-GetArguments>
     <DebuggingPaused>Break</DebuggingPaused>
-    <DebuggingPaused>EvalComplete</DebuggingPaused>
     <Prop Type="Value" ToString="gClass.Prop = 0">
       <ArrayDimensions exception="Value is not an array" />
       <ArrayLenght exception="Value is not an array" />
@@ -643,7 +642,6 @@ namespace Debugger.Tests {
       <PrimitiveValue>0</PrimitiveValue>
       <Type>System.Int32</Type>
     </Prop>
-    <DebuggingPaused>EvalComplete</DebuggingPaused>
     <StaticProp Type="Value" ToString="Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;.StaticProp = 0">
       <ArrayDimensions exception="Value is not an array" />
       <ArrayLenght exception="Value is not an array" />

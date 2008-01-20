@@ -19,8 +19,7 @@ namespace Debugger
 		ICorDebugProcess corProcess;
 		ManagedCallback callbackInterface;
 		
-		Thread selectedThread;
-		PauseSession pauseSession;
+		#region IExpirable
 		
 		bool hasExpired = false;
 		
@@ -39,23 +38,17 @@ namespace Debugger
 				if (Expired != null) {
 					Expired(this, new ProcessEventArgs(this));
 				}
+				if (DebuggeeState != null) {
+					ExpireDebuggeeState();
+				}
+				if (PauseSession != null) {
+					ExpirePauseSession();
+				}
 				debugger.RemoveProcess(this);
 			}
 		}
 		
-		/// <summary>
-		/// Indentification of the current debugger session. This value changes whenever debugger is continued
-		/// </summary>
-		public PauseSession PauseSession {
-			get {
-				return pauseSession;
-			}
-		}
-		
-		internal void NotifyPaused(PauseSession pauseSession)
-		{
-			this.pauseSession = pauseSession;
-		}
+		#endregion
 		
 		public NDebugger Debugger {
 			get {
@@ -76,19 +69,10 @@ namespace Debugger
 			
 			this.callbackInterface = new ManagedCallback(this);
 		}
-
+		
 		internal ICorDebugProcess CorProcess {
 			get {
 				return corProcess;
-			}
-		}
-
-		public Thread SelectedThread {
-			get {
-				return selectedThread;
-			}
-			set {
-				selectedThread = value;
 			}
 		}
 		
@@ -134,80 +118,19 @@ namespace Debugger
 			return new Process(debugger, outProcess);
 		}
 		
-		public void Break()
-		{
-			AssertRunning();
-			
-			corProcess.Stop(5000); // TODO: Hardcoded value
-			
-			pauseSession = new PauseSession(PausedReason.ForcedBreak);
-			
-			Pause(true);
-		}
-		
-		public void Continue()
-		{
-			AsyncContinue();
-			WaitForPause();
-		}
-		
-		public void AsyncContinue()
-		{
-			AssertPaused();
-
-			pauseSession.NotifyHasExpired();
-			pauseSession = null;
-			OnDebuggingResumed();
-			
-			corProcess.Continue(0);
-		}
-		
-		public void Terminate()
-		{
-			// Resume stoped tread
-			if (this.IsPaused) {
-				// We might get more callbacks so we should maintain consistent sate
-				this.AsyncContinue(); // TODO: Remove this...
-			}
-			
-			// Expose race condition - drain callback queue
-			System.Threading.Thread.Sleep(0);
-			
-			// Stop&terminate - both must be called
-			corProcess.Stop(5000); // TODO: ...and this
-			corProcess.Terminate(0);
-		}
-
-		public bool IsRunning { 
-			get {
-				return pauseSession == null;
-			}
-		}
-		
-		public bool IsPaused {
-			get {
-				return !IsRunning;
-			}
-		}
-		
-		public void AssertPaused()
-		{
-			if (IsRunning) {
-				throw new DebuggerException("Process is not paused.");
-			}
-		}
-		
-		public void AssertRunning()
-		{
-			if (IsPaused) {
-				throw new DebuggerException("Process is not running.");
-			}
-		}
-		
-		
 		public string DebuggeeVersion {
 			get {
 				return debugger.DebuggeeVersion;
+			}
+		}
+		
+		public StackFrame SelectedStackFrame {
+			get {
+				if (SelectedThread == null) {
+					return null;
+				} else {
+					return SelectedThread.SelectedStackFrame;
+				}
 			}
 		}
 		

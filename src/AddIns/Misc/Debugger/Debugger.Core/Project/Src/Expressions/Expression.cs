@@ -17,7 +17,7 @@ namespace Debugger.Expressions
 	public abstract partial class Expression: DebuggerObject
 	{
 		static Dictionary<Expression, Value> expressionCache;
-		static DebugeeState expressionCache_debuggerState;
+		static DebuggeeState expressionCache_debuggerState;
 		static Thread expressionCache_thread;
 		static int expressionCache_stackDepth;
 		
@@ -39,12 +39,12 @@ namespace Debugger.Expressions
 		Value GetFromCache(StackFrame context)
 		{
 			if (expressionCache == null ||
-				expressionCache_debuggerState != context.Process.DebugeeState ||
+				expressionCache_debuggerState != context.Process.DebuggeeState ||
 				expressionCache_thread != context.Thread ||
 				expressionCache_stackDepth != context.Depth)
 			{
 				expressionCache = new Dictionary<Expression, Value>();
-				expressionCache_debuggerState = context.Process.DebugeeState;
+				expressionCache_debuggerState = context.Process.DebuggeeState;
 				expressionCache_thread = context.Thread;
 				expressionCache_stackDepth = context.Depth;
 				context.Process.TraceMessage("Expression cache cleared");

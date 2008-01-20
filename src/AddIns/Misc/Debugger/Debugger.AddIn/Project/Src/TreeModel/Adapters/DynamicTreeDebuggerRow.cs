@@ -83,7 +83,7 @@ namespace Debugger.AddIn.TreeModel
 			}
 			
 			// Repaint and process user commands
-			DebugeeState state = process.DebugeeState;
+			DebuggeeState state = process.DebuggeeState;
 			Util.DoEvents();
 			if (process.IsRunning || state.HasExpired) {
 				throw new AbortedBecauseDebugeeStateExpiredException();

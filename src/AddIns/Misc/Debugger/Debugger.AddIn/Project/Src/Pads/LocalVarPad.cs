@@ -207,16 +207,16 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		protected override void SelectProcess(Debugger.Process process)
 		{
 			if (debuggedProcess != null) {
-				debuggedProcess.DebuggeeStateChanged -= debuggedProcess_DebuggeeStateChanged;
+				debuggedProcess.Paused -= debuggedProcess_Paused;
 			}
 			debuggedProcess = process;
 			if (debuggedProcess != null) {
-				debuggedProcess.DebuggeeStateChanged += debuggedProcess_DebuggeeStateChanged;
+				debuggedProcess.Paused += debuggedProcess_Paused;
 			}
 			RefreshPad();
 		}
 		
-		void debuggedProcess_DebuggeeStateChanged(object sender, ProcessEventArgs e)
+		void debuggedProcess_Paused(object sender, ProcessEventArgs e)
 		{
 			RefreshPad();
 		}

@@ -13,7 +13,7 @@ namespace Debugger
 	/// Unique identifier of the state of the debugee.
 	/// Changes when debuggee is stepped, but not when properity is evaluated.
 	/// </summary>
-	public class DebugeeState: IExpirable
+	public class DebuggeeState: IExpirable
 	{
 		Process process;
 		bool hasExpired = false;
@@ -43,7 +43,7 @@ namespace Debugger
 			}
 		}
 		
-		public DebugeeState(Process process)
+		public DebuggeeState(Process process)
 		{
 			this.process = process;
 		}

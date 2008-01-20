@@ -142,7 +142,8 @@ namespace Debugger.Interop
 			if (!hasReturnValue && callMethod == CallMethod.HiddenFormWithTimeout) {
 				// Give it 5 seconds to run
 				if (!callDone.WaitOne(5000, true)) {
-					System.Console.WriteLine("Call time out! Continuing...");
+					System.Console.WriteLine("Call time out! (continuing)");
+					System.Console.WriteLine(new System.Diagnostics.StackTrace(true).ToString());
 				}
 			} else {
 				callDone.WaitOne();

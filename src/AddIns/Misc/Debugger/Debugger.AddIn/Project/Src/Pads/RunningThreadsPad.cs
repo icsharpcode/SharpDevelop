@@ -96,19 +96,19 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		protected override void SelectProcess(Debugger.Process process)
 		{
 			if (debuggedProcess != null) {
-				debuggedProcess.DebuggeeStateChanged -= debuggedProcess_DebuggeeStateChanged;
+				debuggedProcess.Paused               -= debuggedProcess_Paused;
 				debuggedProcess.ThreadStarted        -= debuggedProcess_ThreadStarted;
 			}
 			debuggedProcess = process;
 			if (debuggedProcess != null) {
-				debuggedProcess.DebuggeeStateChanged += debuggedProcess_DebuggeeStateChanged;
+				debuggedProcess.Paused               += debuggedProcess_Paused;
 				debuggedProcess.ThreadStarted        += debuggedProcess_ThreadStarted;
 			}
 			runningThreadsList.Items.Clear();
 			RefreshPad();
 		}
 		
-		void debuggedProcess_DebuggeeStateChanged(object sender, ProcessEventArgs e)
+		void debuggedProcess_Paused(object sender, ProcessEventArgs e)
 		{
 			RefreshPad();
 		}
@@ -132,7 +132,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			if (debuggedProcess.IsPaused) {
 				if (debuggedProcess != null) {
 					debuggedProcess.SelectedThread = (Thread)(runningThreadsList.SelectedItems[0].Tag);
-					debuggedProcess.OnDebuggeeStateChanged(); // Force refresh of pads
+					debuggedProcess.OnPaused(); // Force refresh of pads
 				}
 			} else {
 				MessageService.ShowMessage("${res:MainWindow.Windows.Debug.Threads.CannotSwitchWhileRunning}", "${res:MainWindow.Windows.Debug.Threads.ThreadSwitch}");
