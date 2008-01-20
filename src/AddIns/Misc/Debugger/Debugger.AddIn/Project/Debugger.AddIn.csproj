@@ -127,7 +127,6 @@
     <Folder Include="Src\Expressions" />
     <Folder Include="Src\TreeModel" />
     <Folder Include="Src\TreeModel\Adapters" />
-    <Folder Include="Src\Variables" />
     <ProjectReference Include="..\..\..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
       <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
       <Name>NRefactory</Name>

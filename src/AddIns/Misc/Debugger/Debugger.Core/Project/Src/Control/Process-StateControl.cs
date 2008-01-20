@@ -264,6 +264,19 @@ namespace Debugger
 			if (this.HasExpired) throw new DebuggerException("Process exited before pausing");
 		}
 		
+		public void WaitForPause(TimeSpan timeout)
+		{
+			DateTime endTime = Util.HighPrecisionTimer.Now + timeout;
+			while(this.IsRunning && !this.HasExpired) {
+				TimeSpan timeLeft = endTime - Util.HighPrecisionTimer.Now;
+				if (timeLeft <= TimeSpan.FromMilliseconds(10)) break;
+				//this.TraceMessage("Time left: " + timeLeft.TotalMilliseconds);
+				debugger.MTA2STA.WaitForCall(timeLeft);
+				debugger.MTA2STA.PerformCall();
+			}
+			if (this.HasExpired) throw new DebuggerException("Process exited before pausing");
+		}
+		
 		/// <summary>
 		/// Waits until the precesses exits.
 		/// </summary>

@@ -50,23 +50,39 @@ namespace Debugger.Interop
 			pendingCallsNotEmpty.WaitOne();
 		}
 		
+		public void WaitForCall(TimeSpan timeout)
+		{
+			pendingCallsNotEmpty.WaitOne(timeout, false);
+		}
+		
 		/// <summary>
 		/// Performs all waiting calls on the current thread
 		/// </summary>
 		public void PerformAllCalls()
 		{
 			while (true) {
-				MethodInvoker nextMethod;
-				lock (pendingCalls) {
-					if (pendingCalls.Count > 0) {
-						nextMethod = pendingCalls.Dequeue();
-					} else {
-						pendingCallsNotEmpty.Reset();
-						return;
-					}
+				if (!PerformCall()) {
+					return;
 				}
-				nextMethod();
 			}
+		}
+		
+		/// <summary>
+		/// Performs all waiting calls on the current thread
+		/// </summary>
+		public bool PerformCall()
+		{
+			MethodInvoker nextMethod;
+			lock (pendingCalls) {
+				if (pendingCalls.Count > 0) {
+					nextMethod = pendingCalls.Dequeue();
+				} else {
+					pendingCallsNotEmpty.Reset();
+					return false;
+				}
+			}
+			nextMethod();
+			return true;
 		}
 		
 		public CallMethod CallMethod {

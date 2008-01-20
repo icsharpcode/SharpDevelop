@@ -45,7 +45,7 @@ namespace Debugger.AddIn.TreeModel
 			
 			ToolStripMenuItem showError;
 			showError = new ToolStripMenuItem();
-			showError.Text = ResourceService.GetString("MainWindow.Windows.Debug.LocalVariables.ShowFullError");
+			showError.Text = StringParser.Parse("${res:MainWindow.Windows.Debug.LocalVariables.ShowFullError}");
 			showError.Checked = false;
 			showError.Click += delegate {
 				using (ExceptionBox box = new ExceptionBox(error, null, false)) {

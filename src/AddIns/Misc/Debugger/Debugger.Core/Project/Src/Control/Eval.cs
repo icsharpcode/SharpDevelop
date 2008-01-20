@@ -16,9 +16,10 @@ namespace Debugger
 {
 	public enum EvalState {
 		Evaluating,
-		EvaluatedSuccessfully, 
-		EvaluatedException, 
-		EvaluatedNoResult, 
+		EvaluatedSuccessfully,
+		EvaluatedException,
+		EvaluatedNoResult,
+		EvaluatedTimeOut,
 	};
 	
 	/// <summary>
@@ -54,6 +55,7 @@ namespace Debugger
 					case EvalState.EvaluatedSuccessfully: return result;
 					case EvalState.EvaluatedException:    return result;
 					case EvalState.EvaluatedNoResult:     throw new GetValueException("No return value");
+					case EvalState.EvaluatedTimeOut:      throw new GetValueException("Timeout");
 					default: throw new DebuggerException("Unknown state");
 				}
 			}
@@ -67,7 +69,8 @@ namespace Debugger
 			get {
 				return state == EvalState.EvaluatedSuccessfully ||
 				       state == EvalState.EvaluatedException ||
-				       state == EvalState.EvaluatedNoResult;
+				       state == EvalState.EvaluatedNoResult ||
+				       state == EvalState.EvaluatedTimeOut;
 			}
 		}
 		
@@ -127,6 +130,21 @@ namespace Debugger
 		
 		Value WaitForResult()
 		{
+			process.WaitForPause(TimeSpan.FromMilliseconds(500));
+			if (!Evaluated) {
+				state = EvalState.EvaluatedTimeOut;
+				process.TraceMessage("Aboring eval: " + Description);
+				corEval.Abort();
+				process.WaitForPause(TimeSpan.FromMilliseconds(500));
+				if (!Evaluated) {
+					process.TraceMessage("Rude aboring eval: " + Description);
+					corEval.CastTo<ICorDebugEval2>().RudeAbort();
+					process.WaitForPause(TimeSpan.FromMilliseconds(500));
+					if (!Evaluated) {
+						throw new DebuggerException("Evaluation can not be stopped");
+					}
+				}
+			}
 			process.WaitForPause();
 			return this.Result;
 		}
@@ -134,7 +152,9 @@ namespace Debugger
 		internal void NotifyEvaluationComplete(bool successful) 
 		{
 			// Eval result should be ICorDebugHandleValue so it should survive Continue()
-			
+			if (state == EvalState.EvaluatedTimeOut) {
+				return;
+			}
 			if (corEval.Result == null) {
 				state = EvalState.EvaluatedNoResult;
 			} else {
