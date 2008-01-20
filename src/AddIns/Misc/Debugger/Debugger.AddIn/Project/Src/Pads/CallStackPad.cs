@@ -124,6 +124,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		public override void RefreshPad()
 		{
+			DateTime start = Debugger.Util.HighPrecisionTimer.Now;
+			
+			
 			bool showExternalMethods = ShowExternalMethods;
 			bool lastItemIsExternalMethod = false;
 			
@@ -163,6 +166,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				callStackList.Items[i].ForeColor   = items[i].ForeColor;
 			}
 			callStackList.EndUpdate();
+			
+			DateTime end = Debugger.Util.HighPrecisionTimer.Now;
+			LoggingService.InfoFormatted("Callstack pad refreshed ({0} ms)", (end - start).TotalMilliseconds);
 		}
 		
 		public string GetFullName(StackFrame frame)
