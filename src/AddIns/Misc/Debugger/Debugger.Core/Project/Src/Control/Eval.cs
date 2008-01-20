@@ -14,88 +14,137 @@ using Debugger.Wrappers.CorDebug;
 
 namespace Debugger
 {
-	public enum EvalState {EvaluationScheduled, Evaluating, EvaluatedSuccessfully, EvaluatedException, EvaluatedNoResult, EvaluatedError};
+	public enum EvalState {
+		Evaluating,
+		EvaluatedSuccessfully, 
+		EvaluatedException, 
+		EvaluatedNoResult, 
+	};
 	
 	/// <summary>
 	/// This class holds information about function evaluation.
 	/// </summary>
 	public class Eval: DebuggerObject
 	{
-		delegate void EvaluationInvoker(ICorDebugEval corEval);
+		delegate void EvalStarter(Eval eval);
 		
-		class EvalSetupException: System.Exception
-		{
-			public EvalSetupException(string msg):base(msg)
-			{
-			}
-		}
-		
-		Process process;
-		Value   result;
-		string  description;
-		EvaluationInvoker evaluationInvoker;
-		
-		EvalState      state = EvalState.EvaluationScheduled;
-		ICorDebugEval  corEval;
-		string         errorMsg;
+		Process       process;
+		string        description;
+		ICorDebugEval corEval;
+		Value         result;
+		EvalState     state;
 		
 		[Debugger.Tests.Ignore]
 		public Process Process {
-			get {
-				return process;
-			}
+			get { return process; }
+		}
+		
+		public string Description {
+			get { return description; }
+		}
+		
+		ICorDebugEval CorEval {
+			get { return corEval; }
 		}
 		
 		public Value Result {
 			get {
 				switch(this.State) {
-					case EvalState.EvaluationScheduled:   throw new GetValueException("Evaluation pending");
 					case EvalState.Evaluating:            throw new GetValueException("Evaluating...");
 					case EvalState.EvaluatedSuccessfully: return result;
 					case EvalState.EvaluatedException:    return result;
 					case EvalState.EvaluatedNoResult:     throw new GetValueException("No return value");
-					case EvalState.EvaluatedError:        throw new GetValueException(errorMsg);
 					default: throw new DebuggerException("Unknown state");
 				}
 			}
 		}
 		
-		public string Description {
-			get {
-				return description;
-			}
-		}
-		
 		public EvalState State {
-			get {
-				return state;
-			}
+			get { return state; }
 		}
 		
 		public bool Evaluated {
 			get {
 				return state == EvalState.EvaluatedSuccessfully ||
 				       state == EvalState.EvaluatedException ||
-				       state == EvalState.EvaluatedNoResult ||
-				       state == EvalState.EvaluatedError;
+				       state == EvalState.EvaluatedNoResult;
 			}
 		}
 		
-		Eval(Process process,
-		     string description,
-		     EvaluationInvoker evaluationInvoker)
+		Eval(Process process, string description, ICorDebugEval corEval)
 		{
 			this.process = process;
 			this.description = description;
-			this.evaluationInvoker = evaluationInvoker;
+			this.corEval = corEval;
+			this.state = EvalState.Evaluating;
+		}
+		
+		static Eval CreateEval(Process process, string description, EvalStarter evalStarter)
+		{
+			process.AssertPaused();
 			
-			process.ScheduleEval(this);
-			process.Debugger.MTA2STA.AsyncCall(delegate { process.StartEvaluation(); });
+			Thread targetThread = process.SelectedThread;
+			
+			if (targetThread == null) {
+				throw new GetValueException("Can not evaluate because no thread is selected");
+			}
+			if (targetThread.IsMostRecentStackFrameNative) {
+				throw new GetValueException("Can not evaluate because native frame is on top of stack");
+			}
+			if (!targetThread.IsAtSafePoint) {
+				throw new GetValueException("Can not evaluate because thread is not at a safe point");
+			}
+			
+			ICorDebugEval corEval = targetThread.CorThread.CreateEval();
+			
+			Eval newEval = new Eval(process, description, corEval);
+			
+			try {
+				evalStarter(newEval);
+			} catch (COMException e) {
+				if ((uint)e.ErrorCode == 0x80131C26) {
+					throw new GetValueException("Can not evaluate in optimized code");
+				} else if ((uint)e.ErrorCode == 0x80131C28) {
+					throw new GetValueException("Object is in wrong AppDomain");
+				} else if ((uint)e.ErrorCode == 0x8013130A) {
+					// Happens on getting of Sytem.Threading.Thread.ManagedThreadId; See SD2-1116
+					throw new GetValueException("Function does not have IL code");
+				} else {
+					throw;
+				}
+			}
+			
+			process.NotifyEvaluationStarted(newEval);
+			process.AsyncContinue();
+			
+			return newEval;
 		}
 		
 		internal bool IsCorEval(ICorDebugEval corEval)
 		{
 			return this.corEval == corEval;
+		}
+		
+		Value WaitForResult()
+		{
+			process.WaitForPause();
+			return this.Result;
+		}
+		
+		internal void NotifyEvaluationComplete(bool successful) 
+		{
+			// Eval result should be ICorDebugHandleValue so it should survive Continue()
+			
+			if (corEval.Result == null) {
+				state = EvalState.EvaluatedNoResult;
+			} else {
+				if (successful) {
+					state = EvalState.EvaluatedSuccessfully;
+				} else {
+					state = EvalState.EvaluatedException;
+				}
+				result = new Value(process, corEval.Result);
+			}
 		}
 		
 		#region Convenience methods
@@ -115,44 +164,42 @@ namespace Debugger
 				method.Process.TraceMessage("Using backing field for " + method.FullName);
 				return Value.GetMemberValue(thisValue, method.BackingField, args);
 			}
-			return AsyncInvokeMethod(method, thisValue, args).EvaluateNow();
+			return AsyncInvokeMethod(method, thisValue, args).WaitForResult();
 		}
 		
 		public static Eval AsyncInvokeMethod(MethodInfo method, Value thisValue, Value[] args)
 		{
-			return new Eval(
+			return CreateEval(
 				method.Process,
 				"Function call: " + method.FullName,
-				delegate(ICorDebugEval corEval) { StartMethodInvoke(corEval, method, thisValue, args); }
+				delegate(Eval eval) {
+					MethodInvokeStarter(eval, method, thisValue, args);
+				}
 			);
 		}
 		
-		static void StartMethodInvoke(ICorDebugEval corEval, MethodInfo method, Value thisValue, Value[] args)
+		static void MethodInvokeStarter(Eval eval, MethodInfo method, Value thisValue, Value[] args)
 		{
 			List<ICorDebugValue> corArgs = new List<ICorDebugValue>();
 			args = args ?? new Value[0];
 			if (args.Length != method.ParameterCount) {
-				throw new EvalSetupException("Invalid parameter count");
+				throw new GetValueException("Invalid parameter count");
 			}
-			try {
-				if (thisValue != null) {
-					if (!(thisValue.IsObject)) {
-						throw new EvalSetupException("Can not evaluate on a value which is not an object");
-					}
-					if (!method.DeclaringType.IsInstanceOfType(thisValue)) {
-						throw new EvalSetupException("Can not evaluate because the object is not of proper type");
-					}
-					corArgs.Add(thisValue.SoftReference);
+			if (thisValue != null) {
+				if (!(thisValue.IsObject)) {
+					throw new GetValueException("Can not evaluate on a value which is not an object");
 				}
-				foreach(Value arg in args) {
-					corArgs.Add(arg.SoftReference);
+				if (!method.DeclaringType.IsInstanceOfType(thisValue)) {
+					throw new GetValueException("Can not evaluate because the object is not of proper type");
 				}
-			} catch (GetValueException e) {
-				throw new EvalSetupException(e.Message);
+				corArgs.Add(thisValue.SoftReference);
+			}
+			foreach(Value arg in args) {
+				corArgs.Add(arg.SoftReference);
 			}
 			
 			ICorDebugType[] genericArgs = method.DeclaringType.GetGenericArgumentsAsCorDebugType();
-			corEval.CastTo<ICorDebugEval2>().CallParameterizedFunction(
+			eval.CorEval.CastTo<ICorDebugEval2>().CallParameterizedFunction(
 				method.CorFunction,
 				(uint)genericArgs.Length, genericArgs,
 				(uint)corArgs.Count, corArgs.ToArray()
@@ -163,17 +210,19 @@ namespace Debugger
 		
 		public static Value NewString(Process process, string textToCreate)
 		{
-			return AsyncNewString(process, textToCreate).EvaluateNow();
+			return AsyncNewString(process, textToCreate).WaitForResult();
 		}
 		
 		#endregion
 		
 		public static Eval AsyncNewString(Process process, string textToCreate)
 		{
-			return new Eval(
+			return CreateEval(
 				process,
 				"New string: " + textToCreate,
-				delegate(ICorDebugEval corEval) { corEval.NewString(textToCreate); }
+				delegate(Eval eval) {
+					eval.CorEval.NewString(textToCreate);
+				}
 			);
 		}
 		
@@ -181,107 +230,20 @@ namespace Debugger
 		
 		public static Value NewObject(Process process, ICorDebugClass classToCreate)
 		{
-			return AsyncNewObject(process, classToCreate).EvaluateNow();
+			return AsyncNewObject(process, classToCreate).WaitForResult();
 		}
 		
 		#endregion
 		
 		public static Eval AsyncNewObject(Process process, ICorDebugClass classToCreate)
 		{
-			return new Eval(
+			return CreateEval(
 				process,
 				"New object: " + classToCreate.Token,
-				delegate(ICorDebugEval corEval) { corEval.NewObjectNoConstructor(classToCreate); }
+				delegate(Eval eval) {
+					eval.CorEval.NewObjectNoConstructor(classToCreate);
+				}
 			);
-		}
-		
-		/// <returns>True if setup was successful</returns>
-		internal bool SetupEvaluation(Thread targetThread)
-		{
-			process.AssertPaused();
-			
-			try {
-				if (targetThread.IsMostRecentStackFrameNative) {
-					throw new EvalSetupException("Can not evaluate because native frame is on top of stack");
-				}
-				if (!targetThread.IsAtSafePoint) {
-					throw new EvalSetupException("Can not evaluate because thread is not at a safe point");
-				}
-				
-				// TODO: What if this thread is not suitable?
-				corEval = targetThread.CorThread.CreateEval();
-				
-				try {
-					evaluationInvoker(corEval);
-				} catch (COMException e) {
-					if ((uint)e.ErrorCode == 0x80131C26) {
-						throw new EvalSetupException("Can not evaluate in optimized code");
-					} else if ((uint)e.ErrorCode == 0x80131C28) {
-						throw new EvalSetupException("Object is in wrong AppDomain");
-					} else if ((uint)e.ErrorCode == 0x8013130A) {
-						// Happens on getting of Sytem.Threading.Thread.ManagedThreadId; See SD2-1116
-						throw new EvalSetupException("Function does not have IL code");
-					}else {
-						throw;
-					}
-				}
-				
-				state = EvalState.Evaluating;
-				return true;
-			} catch (EvalSetupException e) {
-				state = EvalState.EvaluatedError;
-				errorMsg = e.Message;
-				return false;
-			}
-		}
-		
-		public Value EvaluateNow()
-		{
-			while (!Evaluated) {
-				if (process.IsPaused) { 
-					process.StartEvaluation();
-				}
-				process.WaitForPause();
-			}
-			return this.Result;
-		}
-		
-		internal void NotifyEvaluationComplete(bool successful) 
-		{
-			// Eval result should be ICorDebugHandleValue so it should survive Continue()
-			
-			if (corEval.Result == null) {
-				state = EvalState.EvaluatedNoResult;
-			} else {
-				if (successful) {
-					state = EvalState.EvaluatedSuccessfully;
-				} else {
-					state = EvalState.EvaluatedException;
-				}
-				result = new Value(process, corEval.Result);
-			}
-		}
-	}
-	
-	/// <summary>
-	/// Provides data related to evalution events
-	/// </summary>
-	[Serializable]
-	public class EvalEventArgs : ProcessEventArgs
-	{
-		Eval eval;
-		
-		/// <summary> The evaluation that caused the event </summary>
-		public Eval Eval {
-			get {
-				return eval;
-			}
-		}
-		
-		/// <summary> Initializes a new instance of the class </summary>
-		public EvalEventArgs(Eval eval): base(eval.Process)
-		{
-			this.eval = eval;
 		}
 	}
 }

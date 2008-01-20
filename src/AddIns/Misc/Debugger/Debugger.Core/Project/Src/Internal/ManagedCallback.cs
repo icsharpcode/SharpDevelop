@@ -230,11 +230,7 @@ namespace Debugger
 			eval.NotifyEvaluationComplete(!exception);
 			process.NotifyEvaluationComplete(eval);
 			
-			if (process.SetupNextEvaluation()) {
-				ExitCallback_Continue();
-			} else {
-				ExitCallback_Paused();
-			}
+			ExitCallback_Paused();
 		}
 		
 		public void DebuggerError(ICorDebugProcess pProcess, int errorHR, uint errorCode)

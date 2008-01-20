@@ -15,7 +15,6 @@ namespace Debugger
 	public partial class Process
 	{
 		List<Eval> activeEvals = new List<Eval>();
-		Queue<Eval> pendingEvalsCollection = new Queue<Eval>();
 		
 		public bool Evaluating {
 			get {
@@ -25,44 +24,22 @@ namespace Debugger
 		
 		internal Eval GetEval(ICorDebugEval corEval)
 		{
-			return activeEvals.Find(delegate (Eval eval) {return eval.IsCorEval(corEval);});
-		}
-		
-		/// <summary>
-		/// Adds eval to a list of pending evals.
-		/// </summary>
-		internal void ScheduleEval(Eval eval)
-		{
-			pendingEvalsCollection.Enqueue(eval);
-		}
-		
-		public void StartEvaluation()
-		{
-			if (this.IsPaused) {
-				if (this.SetupNextEvaluation()) {
-					this.AsyncContinue();
+			foreach(Eval eval in activeEvals) {
+				if (eval.IsCorEval(corEval)) {
+					return eval;
 				}
 			}
+			throw new DebuggerException("Eval not found for given ICorDebugEval");
+		}
+		
+		internal void NotifyEvaluationStarted(Eval eval)
+		{
+			activeEvals.Add(eval);
 		}
 		
 		internal void NotifyEvaluationComplete(Eval eval)
 		{
 			activeEvals.Remove(eval);
-		}
-		
-		// return true if there was eval to setup and it was setup
-		internal bool SetupNextEvaluation()
-		{
-			this.AssertPaused();
-			
-			while (pendingEvalsCollection.Count > 0) {
-				Eval nextEval = pendingEvalsCollection.Dequeue();
-				if (nextEval.SetupEvaluation(this.SelectedThread)) {
-					activeEvals.Add(nextEval);
-					return true;
-				}
-			}
-			return false;
 		}
 	}
 }
