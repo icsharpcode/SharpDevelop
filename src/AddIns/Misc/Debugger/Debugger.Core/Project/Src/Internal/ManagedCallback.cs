@@ -421,18 +421,16 @@ namespace Debugger
 			// Whatch out for the zeros and null!
 			// Exception -> Exception2(pAppDomain, pThread, null, 0, exceptionType, 0);
 			
-			process.SelectedThread.CurrentExceptionType = (ExceptionType)exceptionType;
+			process.SelectedThread.CurrentException = new Exception(process.SelectedThread, (ExceptionType)exceptionType);
 			
-			if (ExceptionType.DEBUG_EXCEPTION_UNHANDLED != (ExceptionType)exceptionType) {
-				// Handled exception
+			if (process.SelectedThread.CurrentException.IsUnhandled) {
+				ExitCallback_Paused();
+			} else {
 				if (process.PauseOnHandledException) {
 					ExitCallback_Paused();
 				} else {
 					ExitCallback_Continue();					
 				}
-			} else {
-				// Unhandled exception				
-				ExitCallback_Paused();
 			}
 		}
 

@@ -6,90 +6,117 @@
 // </file>
 
 using System;
+using System.Runtime.InteropServices;
+using System.Text;
+
 using Debugger.Wrappers.CorDebug;
 
 namespace Debugger
 {	
 	public class Exception: DebuggerObject
 	{
-		Process           process;
-		Thread            thread;
-		ICorDebugValue    corValue;
-		ExceptionType     exceptionType;
-		SourcecodeSegment location;
-		DateTime          creationTime;
-		string            callstack;
-		string            type;
-		string            message;
+		Thread thread;
+		ExceptionType exceptionType;
 		
 		[Debugger.Tests.Ignore]
 		public Process Process {
 			get {
-				return process;
+				return thread.Process;
 			}
 		}
 		
-		internal Exception(Thread thread)
+		ICorDebugValue CorValue {
+			get {
+				return thread.CorThread.CurrentException;
+			}
+		}
+		
+		internal Exception(Thread thread, ExceptionType exceptionType)
 		{
-			creationTime = DateTime.Now;
-			this.process = thread.Process;
 			this.thread = thread;
-			corValue = thread.CorThread.CurrentException;
-			exceptionType = thread.CurrentExceptionType;
-			Value runtimeValue = new Value(process, corValue);
-			message = runtimeValue.GetMemberValue("_message").AsString;
-			
-			if (thread.MostRecentStackFrameWithLoadedSymbols != null) {
-				location = thread.MostRecentStackFrameWithLoadedSymbols.NextStatement;
+			this.exceptionType = exceptionType;
+		}
+		
+		public Value RuntimeValue {
+			get {
+				return new Value(Process, CorValue);
 			}
-			
-			callstack = "";
-			foreach(StackFrame stackFrame in thread.GetCallstack(100)) {
-				SourcecodeSegment loc = stackFrame.NextStatement;
-				callstack += stackFrame.MethodInfo.Name + "()";
-				if (loc != null) {
-					callstack += " - " + loc.SourceFullFilename + ":" + loc.StartLine + "," + loc.StartColumn;
-				}
-				callstack += "\n";
-			}
-			
-			type = runtimeValue.Type.FullName;
 		}
 		
 		public string Type {
 			get {
-				return type;
+				return this.RuntimeValue.Type.FullName;
 			}
 		}
 		
 		public string Message {
 			get {
-				return message;
+				return this.RuntimeValue.GetMemberValue("_message").AsString;
+			}
+		}
+		
+		public ExceptionType ExceptionType {
+			get {
+				return exceptionType;
+			}
+		}
+		
+		public bool IsUnhandled {
+			get {
+				return ExceptionType == ExceptionType.DEBUG_EXCEPTION_UNHANDLED;
+			}
+		}
+		
+		public SourcecodeSegment Location {
+			get {
+				if (thread.MostRecentStackFrameWithLoadedSymbols != null) {
+					return thread.MostRecentStackFrameWithLoadedSymbols.NextStatement;
+				} else {
+					return null;
+				}
 			}
 		}
 		
 		public string Callstack {
 			get {
-				return callstack;
+				StringBuilder callstack = new StringBuilder();
+				foreach(StackFrame stackFrame in thread.GetCallstack(100)) {
+					callstack.Append(stackFrame.MethodInfo.Name);
+					callstack.Append("()");
+					SourcecodeSegment loc = stackFrame.NextStatement;
+					if (loc != null) {
+						callstack.Append(" - ");
+						callstack.Append(loc.SourceFullFilename);
+						callstack.Append(":");
+						callstack.Append(loc.StartLine);
+						callstack.Append(",");
+						callstack.Append(loc.StartColumn);
+					}
+					callstack.Append("\n");
+				}
+				return callstack.ToString();
 			}
 		}
-
-		public ExceptionType ExceptionType{
-			get {
-				return exceptionType;
+		
+		public bool Intercept()
+		{
+			if (!thread.CorThread.Is<ICorDebugThread2>()) return false; // Is the debuggee .NET 2.0?
+			if (thread.MostRecentStackFrame == null) return false; // Is frame available?  It is not at StackOverflow
+			
+			try {
+				thread.CorThread.CastTo<ICorDebugThread2>().InterceptCurrentException(thread.MostRecentStackFrame.CorILFrame.CastTo<ICorDebugFrame>());
+			} catch (COMException e) {
+				// 0x80131C02: Cannot intercept this exception
+				if ((uint)e.ErrorCode == 0x80131C02) {
+					return false;
+				}
+				throw;
 			}
-		}
-
-		public SourcecodeSegment Location {
-			get {
-				return location;
-			}
-		}
-
-		public DateTime CreationTime {
-			get {
-				return creationTime;
-			}
+			
+			thread.CurrentException = null;
+			Process.AsyncContinue();
+			Process.WaitForPause();
+			return true;
 		}
 	}
 	

@@ -305,6 +305,12 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		public bool CanSetInstructionPointer(string filename, int line, int column)
 		{
+			if (debuggedProcess.SelectedThread.CurrentException != null) {
+				if (!debuggedProcess.SelectedThread.CurrentException.Intercept()) {
+					// For example, happens on stack overflow
+					MessageService.ShowMessage("${res:MainWindow.Windows.Debug.ExceptionForm.Error.CannotInterceptException}", "${res:MainWindow.Windows.Debug.ExceptionForm.Title}");
+				}
+			}
 			if (debuggedProcess != null && debuggedProcess.IsPaused && debuggedProcess.SelectedStackFrame != null) {
 				SourcecodeSegment seg = debuggedProcess.SelectedStackFrame.CanSetIP(filename, line, column);
 				return seg != null;
@@ -443,7 +449,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		void debuggedProcess_ExceptionThrown(object sender, ExceptionEventArgs e)
 		{
-			if (e.Exception.ExceptionType != ExceptionType.DEBUG_EXCEPTION_UNHANDLED) {
+			if (!e.Exception.IsUnhandled) {
 				// Ignore the exception
 				e.Continue = true;
 				return;
@@ -460,16 +466,11 @@ namespace ICSharpCode.SharpDevelop.Services
 			
 			switch (result) {
 				case ExceptionForm.Result.Break:
-					if (e.Process.SelectedThread.InterceptCurrentException()) {
-						e.Continue = true; // HACK: Start interception
-					} else {
-						// For example, happens on stack overflow
-						MessageService.ShowMessage("${res:MainWindow.Windows.Debug.ExceptionForm.Error.CannotInterceptException}", "${res:MainWindow.Windows.Debug.ExceptionForm.Title}");
-					}
+					e.Continue = false;
 					break;
 				case ExceptionForm.Result.Continue:
 					e.Continue = true;
-					return;
+					break;
 				case ExceptionForm.Result.Terminate:
 					process.Terminate();
 					break;

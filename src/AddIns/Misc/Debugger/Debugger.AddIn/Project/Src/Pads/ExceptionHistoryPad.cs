@@ -138,7 +138,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 					location = ResourceService.GetString("Global.NA");
 				}
 				location += " (type=" + exception.ExceptionType.ToString() + ")";
-				ListViewItem item = new ListViewItem(new string[] {exception.CreationTime.ToLongTimeString() , exception.Type + " - " + exception.Message, location});
+				ListViewItem item = new ListViewItem(new string[] {"" , exception.Type + " - " + exception.Message, location});
 				item.Tag = exception;
 				item.ForeColor = Color.Black;
 				if (exception.ExceptionType == ExceptionType.DEBUG_EXCEPTION_UNHANDLED) {

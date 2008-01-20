@@ -20,7 +20,7 @@ namespace Debugger
 
 		ICorDebugThread corThread;
 
-		internal ExceptionType currentExceptionType;
+		Exception currentException;
 
 		List<Stepper> steppers = new List<Stepper>();
 
@@ -66,16 +66,6 @@ namespace Debugger
 			get{ 
 				return id; 
 			} 
-		}
-		
-		[Debugger.Tests.Ignore]
-		public ExceptionType CurrentExceptionType {
-			get {
-				return currentExceptionType;
-			}
-			set {
-				currentExceptionType = value;
-			}
 		}
 		
 		public bool IsAtSafePoint {
@@ -180,21 +170,9 @@ namespace Debugger
 			}
 		}
 		
-		public bool InterceptCurrentException()
-		{
-			if (!CorThread.Is<ICorDebugThread2>()) return false; // Is the debuggee .NET 2.0?
-			if (MostRecentStackFrame == null) return false; // Is frame available?  It is not at StackOverflow
-			
-			try {
-				CorThread.CastTo<ICorDebugThread2>().InterceptCurrentException(MostRecentStackFrame.CorILFrame.CastTo<ICorDebugFrame>());
-				return true;
-			} catch (COMException e) {
-				// 0x80131C02: Cannot intercept this exception
-				if ((uint)e.ErrorCode == 0x80131C02) {
-					return false;
-				}
-				throw;
-			}
+		public Exception CurrentException {
+			get { return currentException; }
+			internal set { currentException = value; }
 		}
 		
 		internal Stepper GetStepper(ICorDebugStepper corStepper)
@@ -226,13 +204,6 @@ namespace Debugger
 		public override string ToString()
 		{
 			return String.Format("ID = {0,-10} Name = {1,-20} Suspended = {2,-8}", ID, Name, Suspended);
-		}
-		
-		
-		public Exception CurrentException {
-			get {
-				return new Exception(this);
-			}
 		}
 		
 		/// <summary>
@@ -291,6 +262,8 @@ namespace Debugger
 			}
 		}
 		
+		#region Convenience methods
+		
 		public StackFrame MostRecentStackFrameWithLoadedSymbols {
 			get {
 				foreach (StackFrame stackFrame in CallstackEnum) {
@@ -327,6 +300,8 @@ namespace Debugger
 				return first;
 			}
 		}
+		
+		#endregion
 		
 		public bool IsMostRecentStackFrameNative {
 			get {
