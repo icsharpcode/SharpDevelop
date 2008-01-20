@@ -103,10 +103,6 @@ namespace Debugger.AddIn.TreeModel
 		protected override void OnExpanding()
 		{
 			base.OnExpanding();
-			try {
-				LoadChilds();
-			} catch (AbortedBecauseDebugeeStateExpiredException) {
-			}
 		}
 		
 		void LoadChilds()
@@ -122,6 +118,10 @@ namespace Debugger.AddIn.TreeModel
 		{
 			base.OnExpanded();
 			expandedNodes[FullName] = true;
+			try {
+				LoadChilds();
+			} catch (AbortedBecauseDebugeeStateExpiredException) {
+			}
 		}
 		
 		protected override void OnCollapsing()

@@ -277,7 +277,8 @@ namespace Aga.Controls.Tree
 		{
 			get
 			{
-				return (Nodes.Count > 0 || (!IsExpandedOnce && !IsLeaf));
+				// return (Nodes.Count > 0 || (!IsExpandedOnce && !IsLeaf));
+				return !IsLeaf;
 			}
 		}
 
