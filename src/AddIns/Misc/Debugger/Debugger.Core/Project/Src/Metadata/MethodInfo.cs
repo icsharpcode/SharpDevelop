@@ -98,7 +98,7 @@ namespace Debugger.MetaData
 			}
 			
 			if (corCode == null) return null;
-			if (corCode.Size != 12) return null;
+			if (corCode.Size != 7 && corCode.Size != 12) return null;
 			
 			byte[] code = corCode.GetCode();
 			
@@ -112,7 +112,10 @@ namespace Debugger.MetaData
 			this.Process.TraceMessage("Code of " + Name + ": " + codeTxt);
 			*/
 			
-			if (code[00] == 0x00 && // nop
+			uint token = 0;
+			
+			if (code.Length == 12 &&
+			    code[00] == 0x00 && // nop
 			    code[01] == 0x02 && // ldarg.0
 			    code[02] == 0x7B && // ldfld
 			    code[06] == 0x04 && //   <field token>
@@ -122,11 +125,27 @@ namespace Debugger.MetaData
 			    code[10] == 0x06 && // ldloc.0
 			    code[11] == 0x2A)   // ret
 			{
-				uint token = 
+				token = 
 					((uint)code[06] << 24) +
 					((uint)code[05] << 16) +
 					((uint)code[04] << 8) +
 					((uint)code[03]);
+			}
+			
+			if (code.Length == 7 &&
+			    code[00] == 0x02 && // ldarg.0
+			    code[01] == 0x7B && // ldfld
+			    code[05] == 0x04 && //   <field token>
+			    code[06] == 0x2A)   // ret
+			{
+				token = 
+					((uint)code[05] << 24) +
+					((uint)code[04] << 16) +
+					((uint)code[03] << 8) +
+					((uint)code[02]);
+			}
+			
+			if (token != 0) {
 				// this.Process.TraceMessage("Token: " + token.ToString("x"));
 				
 				MemberInfo member = this.DeclaringType.GetMember(token);
@@ -137,6 +156,7 @@ namespace Debugger.MetaData
 				this.Process.TraceMessage(string.Format("Found backing field for {0}: {1}", this.FullName, member.Name));
 				return (FieldInfo)member;
 			}
+			
 			return null;
 		}
 		
