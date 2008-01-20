@@ -199,6 +199,9 @@ namespace ICSharpCode.SharpDevelop.BuildWorker
 		
 		bool DoBuild()
 		{
+			if (currentJob.IntPtrSize != IntPtr.Size)
+				throw new ApplicationException("Incompatible IntPtr.Size between host and worker");
+			
 			engine.GlobalProperties.Clear();
 			foreach (KeyValuePair<string, string> pair in currentJob.Properties) {
 				engine.GlobalProperties.SetProperty(pair.Key, pair.Value);

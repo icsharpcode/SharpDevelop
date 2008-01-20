@@ -162,7 +162,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 				if (method == null) {
 					throw new ArgumentNullException("method");
 				}
-				ctl.BeginInvoke(method, arguments);
+				try {
+					ctl.BeginInvoke(method, arguments);
+				} catch (InvalidOperationException ex) {
+					LoggingService.Warn("Error in SafeThreadAsyncCall", ex);
+				}
 			}
 		}
 		

@@ -171,6 +171,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			
 			BuildJob job = new BuildJob();
+			job.IntPtrSize = IntPtr.Size;
 			job.ProjectFileName = project.FileName;
 			job.EventMask = EventTypes.All & ~ControllableEvents;
 			if (ReportMessageEvents)

@@ -17,6 +17,14 @@ namespace ICSharpCode.SharpDevelop.BuildWorker
 	[Serializable]
 	public class BuildJob
 	{
+		/// <summary>
+		/// The value of IntPtr.Size on the host. The build worker will report an error if its IntPtr.Size
+		/// doesn't match. This is a safety feature to prevent compiling half of a solution using 32-bit MSBuild
+		/// and the other half using 64-bit MSBuild.
+		/// </summary>
+		public int IntPtrSize { get; set; }
+		
+		
 		public string ProjectFileName { get; set; }
 		public string Target { get; set; }
 		
