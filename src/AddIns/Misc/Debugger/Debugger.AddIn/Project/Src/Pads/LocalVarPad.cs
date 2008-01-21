@@ -230,9 +230,12 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			
 			using(new PrintTimes("Local Variables refresh")) {
 				try {
+					localVarList.BeginUpdate();
 					Utils.DoEvents(debuggedProcess.DebuggeeState);
 					TreeViewNode.SetContentRecursive(this, localVarList.Root.Children, new StackFrameNode(debuggedProcess.SelectedStackFrame).ChildNodes);
 				} catch(AbortedBecauseDebuggeeResumedException) {
+				} finally {
+					localVarList.EndUpdate();
 				}
 			}
 		}

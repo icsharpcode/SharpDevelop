@@ -12,6 +12,8 @@ using System.Windows.Forms;
 
 using Aga.Controls.Tree;
 
+using Debugger.Util;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui.Pads;
 
@@ -51,6 +53,9 @@ namespace Debugger.AddIn.TreeModel
 			SetContentRecursive(content);
 		}
 		
+		static TimeSpan workTime = TimeSpan.FromMilliseconds(40);
+		static DateTime nextRepaintTime = DateTime.MinValue;
+		
 		public void SetContentRecursive(AbstractNode content)
 		{
 			this.textChanged =
@@ -68,9 +73,20 @@ namespace Debugger.AddIn.TreeModel
 				this.Children.Clear();
 				this.Collapse();
 			}
-			this.Tree.Invalidate();
-			// Repaint and process user commands
+			// Process user commands
 			Utils.DoEvents(localVarPad.Process.DebuggeeState);
+			// Repaint
+			if (HighPrecisionTimer.Now > nextRepaintTime) {
+				using(new PrintTime("Repainting Local Variables Pad")) {
+					try {
+						this.Tree.EndUpdate();   // Enable painting
+						Utils.DoEvents(localVarPad.Process.DebuggeeState); // Paint
+					} finally {
+						this.Tree.BeginUpdate(); // Disable painting
+						nextRepaintTime = HighPrecisionTimer.Now + workTime;
+					}
+				}
+			}
 		}
 		
 		public static void SetContentRecursive(LocalVarPad localVarPad, IList<TreeNodeAdv> childNodes, IEnumerable<AbstractNode> contentEnum)
@@ -115,8 +131,11 @@ namespace Debugger.AddIn.TreeModel
 			base.OnExpanded();
 			expandedNodes[FullName] = true;
 			try {
+				this.Tree.BeginUpdate();
 				LoadChilds();
 			} catch (AbortedBecauseDebuggeeResumedException) {
+			} finally {
+				this.Tree.EndUpdate();
 			}
 		}
 		

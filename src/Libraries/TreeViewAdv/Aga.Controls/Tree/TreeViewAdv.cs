@@ -29,7 +29,7 @@ namespace Aga.Controls.Tree
 
 		private Pen _linePen;
 		private Pen _markPen;
-		private bool _suspendUpdate;
+		private int _suspendUpdate = 0;
 		private bool _needFullUpdate;
 		private bool _fireSelectionEvent;
 		private NodePlusMinus _plusMinus;
@@ -318,18 +318,23 @@ namespace Aga.Controls.Tree
 
 		public void BeginUpdate()
 		{
-			_suspendUpdate = true;
+			_suspendUpdate++;
 			SuspendSelectionEvent = true;
 		}
 
 		public void EndUpdate()
 		{
-			_suspendUpdate = false;
-			if (_needFullUpdate)
-				FullUpdate();
-			else
-				UpdateView();
-			SuspendSelectionEvent = false;
+			if (_suspendUpdate == 0) {
+				throw new Exception("Number of calls to BeginUpdate does not match number of calls to EndUpdate.");
+			}
+			_suspendUpdate--;
+			if (_suspendUpdate == 0) {
+				if (_needFullUpdate)
+					FullUpdate();
+				else
+					UpdateView();
+				SuspendSelectionEvent = false;
+			}
 		}
 
 		public void ExpandAll()
@@ -620,7 +625,7 @@ namespace Aga.Controls.Tree
 
 		internal void UpdateView()
 		{
-			if (!_suspendUpdate)
+			if (_suspendUpdate == 0)
 				Invalidate(false);
 		}
 
@@ -909,7 +914,7 @@ namespace Aga.Controls.Tree
 
 		internal void SmartFullUpdate()
 		{
-			if (_suspendUpdate)
+			if (_suspendUpdate > 0)
 				_needFullUpdate = true;
 			else
 				FullUpdate();
