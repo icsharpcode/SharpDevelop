@@ -40,6 +40,7 @@
 using System;
 using System.Windows.Forms;
 using Debugger;
+using Debugger.AddIn.TreeModel;
 using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Gui.Pads
@@ -120,9 +121,20 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		public override void RefreshPad()
 		{
-			if (debuggedProcess != null) {
-				foreach (Thread t in debuggedProcess.Threads) {
-					RefreshThread(t);
+			if (debuggedProcess == null) {
+				runningThreadsList.Items.Clear();
+				return;
+			}
+			
+			using(new PrintTimes("Threads refresh")) {
+				try {
+					foreach (Thread t in debuggedProcess.Threads) {
+						if (debuggedProcess.IsPaused) {
+							Utils.DoEvents(debuggedProcess.DebuggeeState);
+						}
+						RefreshThread(t);
+					}
+				} catch(AbortedBecauseDebuggeeResumedException) {
 				}
 			}
 		}
@@ -151,51 +163,60 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			};
 		}
 		
-		void RefreshThread(Thread thread)
+		ListViewItem FindItem(Thread thread)
 		{
 			foreach (ListViewItem item in runningThreadsList.Items) {
-				if (thread.ID.ToString() == item.Text) {
-					item.SubItems.Clear();
-					item.Text = thread.ID.ToString();
-					item.Tag = thread;
-					item.SubItems.Add(thread.Name);
-					StackFrame location = null;
-					if (thread.Process.IsPaused) {
-						location = thread.MostRecentStackFrameWithLoadedSymbols;
-						if (location == null) {
-							location = thread.MostRecentStackFrame;
-						}
-					}
-					if (location != null) {
-						item.SubItems.Add(location.MethodInfo.Name);
-					} else {
-						item.SubItems.Add(ResourceService.GetString("Global.NA"));
-					}
-					switch (thread.Priority) {
-						case System.Threading.ThreadPriority.Highest:
-							item.SubItems.Add(ResourceService.GetString("MainWindow.Windows.Debug.Threads.Priority.Highest"));
-							break;
-						case System.Threading.ThreadPriority.AboveNormal:
-							item.SubItems.Add(ResourceService.GetString("MainWindow.Windows.Debug.Threads.Priority.AboveNormal"));
-							break;
-						case System.Threading.ThreadPriority.Normal:
-							item.SubItems.Add(ResourceService.GetString("MainWindow.Windows.Debug.Threads.Priority.Normal"));
-							break;
-						case System.Threading.ThreadPriority.BelowNormal:
-							item.SubItems.Add(ResourceService.GetString("MainWindow.Windows.Debug.Threads.Priority.BelowNormal"));
-							break;
-						case System.Threading.ThreadPriority.Lowest:
-							item.SubItems.Add(ResourceService.GetString("MainWindow.Windows.Debug.Threads.Priority.Lowest"));
-							break;
-						default:
-							item.SubItems.Add(thread.Priority.ToString());
-							break;
-					}
-					item.SubItems.Add(ResourceService.GetString(thread.Suspended ? "Global.Yes" : "Global.No"));
-					return;
+				if (item.Text == thread.ID.ToString()) {
+					return item;
 				}
 			}
-			AddThread(thread);
+			return null;
+		}
+		
+		void RefreshThread(Thread thread)
+		{
+			ListViewItem item = FindItem(thread);
+			if (item == null) {
+				AddThread(thread);
+				return;
+			}
+			item.SubItems.Clear();
+			item.Text = thread.ID.ToString();
+			item.Tag = thread;
+			item.SubItems.Add(thread.Name);
+			StackFrame location = null;
+			if (thread.Process.IsPaused) {
+				location = thread.MostRecentStackFrameWithLoadedSymbols;
+				if (location == null) {
+					location = thread.MostRecentStackFrame;
+				}
+			}
+			if (location != null) {
+				item.SubItems.Add(location.MethodInfo.Name);
+			} else {
+				item.SubItems.Add(ResourceService.GetString("Global.NA"));
+			}
+			switch (thread.Priority) {
+				case System.Threading.ThreadPriority.Highest:
+					item.SubItems.Add(ResourceService.GetString("MainWindow.Windows.Debug.Threads.Priority.Highest"));
+					break;
+				case System.Threading.ThreadPriority.AboveNormal:
+					item.SubItems.Add(ResourceService.GetString("MainWindow.Windows.Debug.Threads.Priority.AboveNormal"));
+					break;
+				case System.Threading.ThreadPriority.Normal:
+					item.SubItems.Add(ResourceService.GetString("MainWindow.Windows.Debug.Threads.Priority.Normal"));
+					break;
+				case System.Threading.ThreadPriority.BelowNormal:
+					item.SubItems.Add(ResourceService.GetString("MainWindow.Windows.Debug.Threads.Priority.BelowNormal"));
+					break;
+				case System.Threading.ThreadPriority.Lowest:
+					item.SubItems.Add(ResourceService.GetString("MainWindow.Windows.Debug.Threads.Priority.Lowest"));
+					break;
+				default:
+					item.SubItems.Add(thread.Priority.ToString());
+					break;
+			}
+			item.SubItems.Add(ResourceService.GetString(thread.Suspended ? "Global.Yes" : "Global.No"));
 		}
 		
 		void RemoveThread(Thread thread)
