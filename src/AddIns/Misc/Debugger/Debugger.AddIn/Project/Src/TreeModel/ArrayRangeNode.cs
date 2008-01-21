@@ -15,12 +15,12 @@ using Debugger.Expressions;
 
 namespace Debugger.AddIn.TreeModel
 {
-	public partial class Util
+	public partial class Utils
 	{
 		public static IEnumerable<AbstractNode> GetChildNodesOfArray(Expression expression, ArrayDimensions dimensions)
 		{
 			foreach(Expression childExpr in expression.AppendIndexers(dimensions)) {
-				yield return Util.CreateNode(childExpr);
+				yield return Utils.CreateNode(childExpr);
 			}
 		}
 	}

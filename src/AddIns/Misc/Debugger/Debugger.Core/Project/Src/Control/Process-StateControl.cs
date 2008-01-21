@@ -25,14 +25,22 @@ namespace Debugger
 		// HACK: public
 		public virtual void OnPaused()
 		{
+			AssertPaused();
 			TraceMessage ("Debugger event: OnPaused()");
 			if (Paused != null) {
-				Paused(this, new ProcessEventArgs(this));
+				foreach(Delegate d in Paused.GetInvocationList()) {
+					if (IsRunning) {
+						TraceMessage ("Skipping OnPaused delegate becuase process has resumed");
+						break;
+					}
+					d.DynamicInvoke(this, new ProcessEventArgs(this));
+				}
 			}
 		}
 		
 		protected virtual void OnResumed()
 		{
+			AssertRunning();
 			TraceMessage ("Debugger event: OnResumed()");
 			if (Resumed != null) {
 				Resumed(this, new ProcessEventArgs(this));

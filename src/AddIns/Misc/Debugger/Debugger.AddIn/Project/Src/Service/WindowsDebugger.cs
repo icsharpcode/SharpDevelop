@@ -297,7 +297,7 @@ namespace ICSharpCode.SharpDevelop.Services
 					currentTooltipExpression = val.Expression;
 					currentTooltipRow = new DynamicTreeDebuggerRow(DebuggedProcess, new ValueNode(val));
 					return new DebuggerGridControl(currentTooltipRow);
-				} catch (AbortedBecauseDebugeeStateExpiredException) {
+				} catch (AbortedBecauseDebuggeeResumedException) {
 					return null;
 				}
 			}
@@ -437,18 +437,25 @@ namespace ICSharpCode.SharpDevelop.Services
 		void debuggedProcess_DebuggingPaused(object sender, ProcessEventArgs e)
 		{
 			OnIsProcessRunningChanged(EventArgs.Empty);
-			JumpToCurrentLine();
+			
+			using(new PrintTimes("Jump to current line")) {
+				JumpToCurrentLine();
+			}
 			if (currentTooltipRow != null && currentTooltipRow.IsShown) {
-				AbstractNode updatedNode = Debugger.AddIn.TreeModel.Util.CreateNode(currentTooltipExpression);
-				try {
-					currentTooltipRow.SetContentRecursive(updatedNode);
-				} catch (AbortedBecauseDebugeeStateExpiredException) {
+				using(new PrintTimes("Update tooltip")) {
+					try {
+						Utils.DoEvents(debuggedProcess.DebuggeeState);
+						AbstractNode updatedNode = Debugger.AddIn.TreeModel.Utils.CreateNode(currentTooltipExpression);
+						currentTooltipRow.SetContentRecursive(updatedNode);
+					} catch (AbortedBecauseDebuggeeResumedException) {
+					}
 				}
 			}
 		}
 		
 		void debuggedProcess_DebuggingResumed(object sender, ProcessEventArgs e)
 		{
+			OnIsProcessRunningChanged(EventArgs.Empty);
 			DebuggerService.RemoveCurrentLineMarker();
 		}
 		

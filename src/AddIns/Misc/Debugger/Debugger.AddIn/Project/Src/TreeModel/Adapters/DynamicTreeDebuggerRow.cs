@@ -83,11 +83,7 @@ namespace Debugger.AddIn.TreeModel
 			}
 			
 			// Repaint and process user commands
-			DebuggeeState state = process.DebuggeeState;
-			Util.DoEvents();
-			if (process.IsRunning || state.HasExpired) {
-				throw new AbortedBecauseDebugeeStateExpiredException();
-			}
+			Utils.DoEvents(process.DebuggeeState);
 		}
 		
 		public void SetChildContentRecursive(IEnumerable<AbstractNode> contentEnum)
@@ -122,7 +118,7 @@ namespace Debugger.AddIn.TreeModel
 			base.OnExpanding(e);
 			try {
 				LoadChilds();
-			} catch (AbortedBecauseDebugeeStateExpiredException) {
+			} catch (AbortedBecauseDebuggeeResumedException) {
 			}
 		}
 		

@@ -77,7 +77,7 @@
     <Compile Include="Src\TreeModel\ISetText.cs" />
     <Compile Include="Src\TreeModel\ChildNodesOfObject.cs" />
     <Compile Include="Src\TreeModel\StackFrameNode.cs" />
-    <Compile Include="Src\TreeModel\Util.cs" />
+    <Compile Include="Src\TreeModel\Utils.cs" />
     <None Include="COPYING" />
   </ItemGroup>
   <ItemGroup>

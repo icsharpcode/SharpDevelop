@@ -70,11 +70,7 @@ namespace Debugger.AddIn.TreeModel
 			}
 			this.Tree.Invalidate();
 			// Repaint and process user commands
-			DebuggeeState state = localVarPad.Process.DebuggeeState;
-			Util.DoEvents();
-			if (localVarPad.Process.IsRunning || state.HasExpired) {
-				throw new AbortedBecauseDebugeeStateExpiredException();
-			}
+			Utils.DoEvents(localVarPad.Process.DebuggeeState);
 		}
 		
 		public static void SetContentRecursive(LocalVarPad localVarPad, IList<TreeNodeAdv> childNodes, IEnumerable<AbstractNode> contentEnum)
@@ -120,7 +116,7 @@ namespace Debugger.AddIn.TreeModel
 			expandedNodes[FullName] = true;
 			try {
 				LoadChilds();
-			} catch (AbortedBecauseDebugeeStateExpiredException) {
+			} catch (AbortedBecauseDebuggeeResumedException) {
 			}
 		}
 		

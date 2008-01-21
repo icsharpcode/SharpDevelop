@@ -223,19 +223,18 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		public override void RefreshPad()
 		{
-			Debugger.AddIn.TreeModel.Util.ForceDoEvents();
-			DateTime start = Debugger.Util.HighPrecisionTimer.Now;
-			try {
-				if (debuggedProcess != null && debuggedProcess.SelectedStackFrame != null) {
-					TreeViewNode.SetContentRecursive(this, localVarList.Root.Children, new StackFrameNode(debuggedProcess.SelectedStackFrame).ChildNodes);
-				} else {
-					//TreeViewNode.SetContentRecursive(this, localVarList.Root.Children, null);
-				}
-			} catch(AbortedBecauseDebugeeStateExpiredException) {
-				LoggingService.Info("Aborted variable refresh because debugee state expired");
+			if (debuggedProcess == null || debuggedProcess.IsRunning || debuggedProcess.SelectedStackFrame == null) {
+				localVarList.Root.Children.Clear();
+				return;
 			}
-			DateTime end = Debugger.Util.HighPrecisionTimer.Now;
-			LoggingService.InfoFormatted("Local Variables pad refreshed ({0} ms)", (end - start).TotalMilliseconds);
+			
+			using(new PrintTimes("Local Variables refresh")) {
+				try {
+					Utils.DoEvents(debuggedProcess.DebuggeeState);
+					TreeViewNode.SetContentRecursive(this, localVarList.Root.Children, new StackFrameNode(debuggedProcess.SelectedStackFrame).ChildNodes);
+				} catch(AbortedBecauseDebuggeeResumedException) {
+				}
+			}
 		}
 	}
 }

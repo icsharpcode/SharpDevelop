@@ -44,6 +44,7 @@ using System.Text;
 using System.Windows.Forms;
 
 using Debugger;
+using Debugger.AddIn.TreeModel;
 using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Gui.Pads
@@ -124,32 +125,52 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		public override void RefreshPad()
 		{
-			DateTime start = Debugger.Util.HighPrecisionTimer.Now;
+			if (debuggedProcess == null || debuggedProcess.IsRunning || debuggedProcess.SelectedThread == null) {
+				callStackList.Items.Clear();
+				return;
+			}
 			
-			
+			using(new PrintTimes("Callstack refresh")) {
+				try {
+					Utils.DoEvents(debuggedProcess.DebuggeeState);
+					List<ListViewItem> items = CreateItems();
+					UpdateItems(items);
+				} catch(AbortedBecauseDebuggeeResumedException) {
+				}
+			}
+		}
+		
+		public List<ListViewItem> CreateItems()
+		{
 			bool showExternalMethods = ShowExternalMethods;
 			bool lastItemIsExternalMethod = false;
 			
 			List<ListViewItem> items = new List<ListViewItem>();
-			if (debuggedProcess != null && debuggedProcess.SelectedThread != null && debuggedProcess.IsPaused) {
-				foreach (StackFrame frame in debuggedProcess.SelectedThread.GetCallstack(100)) {
-					ListViewItem item;
-					if (frame.HasSymbols || showExternalMethods) {
-						// Show the method in the list
-						item = new ListViewItem(new string[] { GetFullName(frame), "" });
-						lastItemIsExternalMethod = false;
-					} else {
-						// Show [External methods] in the list
-						if (lastItemIsExternalMethod) continue;
-							
-						item = new ListViewItem(new string[] { ResourceService.GetString("MainWindow.Windows.Debug.CallStack.ExternalMethods"), "" });
-						lastItemIsExternalMethod = true;
-					}
-					item.Tag = frame;
-					item.ForeColor = frame.HasSymbols ? Color.Black : Color.Gray;
-					items.Add(item);
+			foreach (StackFrame frame in debuggedProcess.SelectedThread.GetCallstack(100)) {
+				ListViewItem item;
+				if (frame.HasSymbols || showExternalMethods) {
+					// Show the method in the list
+					item = new ListViewItem(new string[] { GetFullName(frame), "" });
+					lastItemIsExternalMethod = false;
+				} else {
+					// Show [External methods] in the list
+					if (lastItemIsExternalMethod) continue;
+						
+					item = new ListViewItem(new string[] { ResourceService.GetString("MainWindow.Windows.Debug.CallStack.ExternalMethods"), "" });
+					lastItemIsExternalMethod = true;
 				}
+				item.Tag = frame;
+				item.ForeColor = frame.HasSymbols ? Color.Black : Color.Gray;
+				items.Add(item);
+				
+				Utils.DoEvents(debuggedProcess.DebuggeeState);
 			}
+			
+			return items;
+		}
+		
+		public void UpdateItems(List<ListViewItem> items)
+		{
 			callStackList.BeginUpdate();
 			// Adjust count
 			while (callStackList.Items.Count < items.Count) {
@@ -164,11 +185,10 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				callStackList.Items[i].SubItems[1] = items[i].SubItems[1];
 				callStackList.Items[i].Tag         = items[i].Tag;
 				callStackList.Items[i].ForeColor   = items[i].ForeColor;
+				
+				Utils.DoEvents(debuggedProcess.DebuggeeState);
 			}
 			callStackList.EndUpdate();
-			
-			DateTime end = Debugger.Util.HighPrecisionTimer.Now;
-			LoggingService.InfoFormatted("Callstack pad refreshed ({0} ms)", (end - start).TotalMilliseconds);
 		}
 		
 		public string GetFullName(StackFrame frame)

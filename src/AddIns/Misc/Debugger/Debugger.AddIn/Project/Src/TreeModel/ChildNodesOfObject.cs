@@ -16,7 +16,7 @@ using Debugger.Expressions;
 
 namespace Debugger.AddIn.TreeModel
 {
-	public partial class Util
+	public partial class Utils
 	{
 		public static IEnumerable<AbstractNode> GetChildNodesOfObject(Expression targetObject, DebugType shownType)
 		{
@@ -33,7 +33,7 @@ namespace Debugger.AddIn.TreeModel
 				yield return new StaticMembersNode(targetObject, shownType);
 			}
 			foreach(Expression childExpr in targetObject.AppendObjectMembers(shownType, Flags)) {
-				yield return Util.CreateNode(childExpr);
+				yield return Utils.CreateNode(childExpr);
 			}
 		}
 	}
@@ -51,7 +51,7 @@ namespace Debugger.AddIn.TreeModel
 			this.Image = DebuggerIcons.ImageList.Images[0]; // Class
 			this.Name = StringParser.Parse("${res:MainWindow.Windows.Debug.LocalVariables.BaseClass}");
 			this.Type = shownType.FullName;
-			this.ChildNodes = Util.GetChildNodesOfObject(targetObject, shownType);
+			this.ChildNodes = Utils.GetChildNodesOfObject(targetObject, shownType);
 		}
 	}
 	
@@ -74,7 +74,7 @@ namespace Debugger.AddIn.TreeModel
 		IEnumerable<AbstractNode> GetChildNodes()
 		{
 			foreach(Expression childExpr in targetObject.AppendObjectMembers(shownType, Flags)) {
-				yield return Util.CreateNode(childExpr);
+				yield return Utils.CreateNode(childExpr);
 			}
 		}
 	}
@@ -101,7 +101,7 @@ namespace Debugger.AddIn.TreeModel
 				yield return new NonPublicStaticMembersNode(targetObject, shownType);
 			}
 			foreach(Expression childExpr in targetObject.AppendObjectMembers(shownType, Flags)) {
-				yield return Util.CreateNode(childExpr);
+				yield return Utils.CreateNode(childExpr);
 			}
 		}
 	}
@@ -125,7 +125,7 @@ namespace Debugger.AddIn.TreeModel
 		IEnumerable<AbstractNode> GetChildNodes()
 		{
 			foreach(Expression childExpr in targetObject.AppendObjectMembers(shownType, Flags)) {
-				yield return Util.CreateNode(childExpr);
+				yield return Utils.CreateNode(childExpr);
 			}
 		}
 	}

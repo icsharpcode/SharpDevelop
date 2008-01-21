@@ -63,9 +63,9 @@ namespace Debugger.AddIn.TreeModel
 			
 			// Note that these return enumerators so they are lazy-evaluated
 			if (val.IsObject) {
-				this.ChildNodes = Util.GetChildNodesOfObject(this.Expression, val.Type);
+				this.ChildNodes = Utils.GetChildNodesOfObject(this.Expression, val.Type);
 			} else if (val.IsArray) {
-				this.ChildNodes = Util.GetChildNodesOfArray(this.Expression, val.ArrayDimensions);
+				this.ChildNodes = Utils.GetChildNodesOfArray(this.Expression, val.ArrayDimensions);
 			} else {
 				this.ChildNodes = null;
 			}
