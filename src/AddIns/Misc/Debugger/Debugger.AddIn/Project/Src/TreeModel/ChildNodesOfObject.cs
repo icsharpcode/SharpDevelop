@@ -51,7 +51,11 @@ namespace Debugger.AddIn.TreeModel
 			this.Image = DebuggerIcons.ImageList.Images[0]; // Class
 			this.Name = StringParser.Parse("${res:MainWindow.Windows.Debug.LocalVariables.BaseClass}");
 			this.Type = shownType.FullName;
-			this.ChildNodes = Utils.GetChildNodesOfObject(targetObject, shownType);
+			if (shownType.FullName == "System.Object") {
+				this.ChildNodes = null;
+			} else {
+				this.ChildNodes = Utils.GetChildNodesOfObject(targetObject, shownType);
+			}
 		}
 	}
 	
