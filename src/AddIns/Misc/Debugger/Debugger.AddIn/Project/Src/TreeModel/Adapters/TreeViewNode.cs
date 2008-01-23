@@ -130,6 +130,13 @@ namespace Debugger.AddIn.TreeModel
 		{
 			base.OnExpanded();
 			expandedNodes[FullName] = true;
+			if (localVarPad.Process.IsRunning) {
+				MessageService.ShowMessage(
+					"${res:MainWindow.Windows.Debug.LocalVariables.CannotExploreVariablesWhileRunning}",
+					"${res:MainWindow.Windows.Debug.LocalVariables}"
+				);
+				return;
+			}
 			try {
 				this.Tree.BeginUpdate();
 				LoadChilds();

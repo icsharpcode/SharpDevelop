@@ -116,6 +116,13 @@ namespace Debugger.AddIn.TreeModel
 		protected override void OnExpanding(DynamicListEventArgs e)
 		{
 			base.OnExpanding(e);
+			if (process.IsRunning) {
+				MessageService.ShowMessage(
+					"${res:MainWindow.Windows.Debug.LocalVariables.CannotExploreVariablesWhileRunning}",
+					"${res:MainWindow.Windows.Debug.LocalVariables}"
+				);
+				return;
+			}
 			try {
 				LoadChilds();
 			} catch (AbortedBecauseDebuggeeResumedException) {

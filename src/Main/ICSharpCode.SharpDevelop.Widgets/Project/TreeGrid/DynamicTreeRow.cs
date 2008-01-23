@@ -204,6 +204,8 @@ namespace ICSharpCode.SharpDevelop.Widgets.TreeGrid
 		{
 			if (blockClickEvent) { blockClickEvent = false; return; }
 			OnExpanding(e);
+			// If OnExpanding displaies an error message, focus is lost, form is closed and we can not access the handle anymore
+			if (e.List.IsDisposed) return;
 			ChildForm frm = new ChildForm();
 			frm.Closed += delegate {
 				blockClickEvent = true;
