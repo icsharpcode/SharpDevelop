@@ -71,7 +71,7 @@ namespace Debugger.AddIn.TreeModel
 			this.targetObject = targetObject;
 			this.shownType = shownType;
 			
-			this.Name = StringParser.Parse("${res:MainWindow.Windows.Debug.LocalVariables.PrivateMembers}");
+			this.Name = StringParser.Parse("${res:MainWindow.Windows.Debug.LocalVariables.NonPublicMembers}");
 			this.ChildNodes = GetChildNodes();
 		}
 		
@@ -122,7 +122,7 @@ namespace Debugger.AddIn.TreeModel
 			this.targetObject = targetObject;
 			this.shownType = shownType;
 			
-			this.Name = StringParser.Parse("${res:MainWindow.Windows.Debug.LocalVariables.PrivateStaticMembers}");
+			this.Name = StringParser.Parse("${res:MainWindow.Windows.Debug.LocalVariables.NonPublicStaticMembers}");
 			this.ChildNodes = GetChildNodes();
 		}
 		
