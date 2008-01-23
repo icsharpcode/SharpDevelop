@@ -188,12 +188,6 @@
 				<ComponentRef Id="SharpDevelopProgramMenuItems"/>
 				<ComponentRef Id="DesktopFolderItems"/>
 				
-				<ComponentRef Id="SHFBMain"/>
-				<ComponentRef Id="SHFBColorizer"/>
-				<ComponentRef Id="SHFBPlugins"/>
-				<ComponentRef Id="SHFBSharedContent"/>
-				<ComponentRef Id="SHFBTemplates"/>
-				<ComponentRef Id="SHFBWeb"/>
 
 				<ComponentRef Id="DIfxAppXsd"/>
 				<ComponentRef Id="IisXsd"/>
@@ -248,6 +242,14 @@
 				<ComponentRef Id="WixCopExe"/>
 				<ComponentRef Id="WixNetFxExtensionDll"/>
 				<ComponentRef Id="WixTasksDll"/>
+				
+				<ComponentRef Id="SHFBMain"/>
+				<ComponentRef Id="SHFBBuildComponents"/>
+				<ComponentRef Id="SHFBColorizer"/>
+				<ComponentRef Id="SHFBPlugins"/>
+				<ComponentRef Id="SHFBSharedContent"/>
+				<ComponentRef Id="SHFBTemplates"/>
+				<ComponentRef Id="SHFBWeb"/>
 
 				<ComponentRef Id="NUnitCoreExtensionsDll"/>
 				<ComponentRef Id="NUnitUiKitDll"/>

@@ -399,107 +399,6 @@
 										<File Source="..\..\bin\Tools\NUnit\log4net.dll" Name="log4net.dll" Id="NUnit.log4net.dll" Assembly=".net" AssemblyApplication="NUnit.log4net.dll" AssemblyManifest="NUnit.log4net.dll" KeyPath="yes" />
 									</Component>
 								</Directory>
-								<Directory Id="SHFB" Name="SHFB">
-									<Component Guid="9BA72447-B0B2-4782-93A2-A321E3377F3A" Id="SHFBMain" DiskId="1">
-										<File Source="..\..\bin\Tools\SHFB\BuildReflectionData.bat" Id="BuildReflectionData.bat" Name="BuildReflectionData.bat" />
-										<File Source="..\..\bin\Tools\SHFB\ColorizerLibrary.dll" Id="ColorizerLibrary.dll" Name="ColorizerLibrary.dll" />
-										<File Source="..\..\bin\Tools\SHFB\ColorizerLibrary.xml" Id="ColorizerLibrary.xml" Name="ColorizerLibrary.xml" />
-										<File Source="..\..\bin\Tools\SHFB\Help.ico" Name="Help.ico" Id="Help.ico" />
-										<File Source="..\..\bin\Tools\SHFB\SandcastleBuilder.chm" Id="SandcastleBuilder.chm" Name="SandcastleBuilder.chm" />
-										<File Source="..\..\bin\Tools\SHFB\SandcastleBuilder.Components.dll" Id="SandcastleBuilder.Components.dll" Name="SandcastleBuilder.Components.dll" />
-										<File Source="..\..\bin\Tools\SHFB\SandcastleBuilder.Components.xml" Id="SandcastleBuilder.Components.xml" Name="SandcastleBuilder.Components.xml" />
-										<File Source="..\..\bin\Tools\SHFB\SandcastleBuilder.ico" Id="SandcastleBuilder.ico" Name="SandcastleBuilder.ico" />
-										<File Source="..\..\bin\Tools\SHFB\SandcastleBuilder.Utils.dll" Id="SandcastleBuilder.Utils.dll" Name="SandcastleBuilder.Utils.dll" />
-										<File Source="..\..\bin\Tools\SHFB\SandcastleBuilder.Utils.xml" Id="SandcastleBuilder.Utils.xml" Name="SandcastleBuilder.Utils.xml" />
-										<File Source="..\..\bin\Tools\SHFB\SandcastleBuilderConsole.exe" Id="SandcastleBuilderConsole.exe" Name="SandcastleBuilderConsole.exe" />
-										<File Source="..\..\bin\Tools\SHFB\SandcastleBuilderConsole.xml" Id="SandcastleBuilderConsole.xml" Name="SandcastleBuilderConsole.xml" />
-										<File Source="..\..\bin\Tools\SHFB\SandcastleBuilderGUI.exe" Id="SandcastleBuilderGUI.exe" Name="SandcastleBuilderGUI.exe" />
-										<File Source="..\..\bin\Tools\SHFB\SandcastleBuilderGUI.exe.config" Id="SandcastleBuilderGUI.exe.config" Name="SandcastleBuilderGUI.exe.config" />
-										<File Source="..\..\bin\Tools\SHFB\SandcastleBuilderGUI.xml" Id="SandcastleBuilderGUI.xml" Name="SandcastleBuilderGUI.xml" />
-										<File Source="..\..\bin\Tools\SHFB\SHFB.url" Name="SHFB.url" Id="SHFB.url" />
-									</Component>
-									<Directory Id="Colorizer" Name="Colorizer">
-										<Component Guid="78E4EED3-4F02-46A5-A8BD-70F67A9F3AD4" Id="SHFBColorizer" DiskId="1">
-											<File Source="..\..\bin\Tools\SHFB\Colorizer\CopyCode.gif" Name="CopyCode.gif" Id="CopyCode.gif" />
-											<File Source="..\..\bin\Tools\SHFB\Colorizer\CopyCode_h.gif" Id="CopyCode_h.gif" Name="CopyCode_h.gif" />
-											<File Source="..\..\bin\Tools\SHFB\Colorizer\highlight.css" Id="highlight.css" Name="highlight.css" />
-											<File Source="..\..\bin\Tools\SHFB\Colorizer\highlight.js" Id="highlight.js" Name="highlight.js" />
-											<File Source="..\..\bin\Tools\SHFB\Colorizer\highlight.xml" Id="highlight.xml" Name="highlight.xml" />
-											<File Source="..\..\bin\Tools\SHFB\Colorizer\highlight.xsl" Id="highlight.xsl" Name="highlight.xsl" />
-										</Component>
-									</Directory>
-									<Directory Id="PlugIns" Name="PlugIns">
-										<Component Guid="5E9D91F8-41BF-40D2-A8A0-1A74F5F1A454" Id="SHFBPlugins" DiskId="1">
-											<File Source="..\..\bin\Tools\SHFB\PlugIns\SandcastleBuilder.PlugIns.dll" Id="SandcastleBuilder.PlugIns.dll" Name="SandcastleBuilder.PlugIns.dll" />
-										</Component>
-									</Directory>
-									<Directory Id="SharedContent" Name="SharedContent">
-										<Component Guid="22D1C189-9D57-43F0-B2AB-2C456D020E3E" Id="SHFBSharedContent" DiskId="1">
-											<File Source="..\..\bin\Tools\SHFB\SharedContent\SharedBuilderContent_de-DE.xml" Id="SharedBuilderContent_de_DE.xml" Name="SharedBuilderContent_de-DE.xml" />
-											<File Source="..\..\bin\Tools\SHFB\SharedContent\SharedBuilderContent_en-US.xml" Id="SharedBuilderContent_en_US.xml" Name="SharedBuilderContent_en-US.xml" />
-											<File Source="..\..\bin\Tools\SHFB\SharedContent\SharedBuilderContent_es-ES.xml" Id="SharedBuilderContent_es_ES.xml" Name="SharedBuilderContent_es-ES.xml" />
-											<File Source="..\..\bin\Tools\SHFB\SharedContent\SharedBuilderContent_fr-FR.xml" Id="SharedBuilderContent_fr_FR.xml" Name="SharedBuilderContent_fr-FR.xml" />
-											<File Source="..\..\bin\Tools\SHFB\SharedContent\SharedBuilderContent_it-IT.xml" Id="SharedBuilderContent_it_IT.xml" Name="SharedBuilderContent_it-IT.xml" />
-											<File Source="..\..\bin\Tools\SHFB\SharedContent\SharedBuilderContent_ko-KR.xml" Id="SharedBuilderContent_ko_KR.xml" Name="SharedBuilderContent_ko-KR.xml" />
-											<File Source="..\..\bin\Tools\SHFB\SharedContent\SharedBuilderContent_pt-BR.xml" Id="SharedBuilderContent_pt_BR.xml" Name="SharedBuilderContent_pt-BR.xml" />
-											<File Source="..\..\bin\Tools\SHFB\SharedContent\SharedBuilderContent_ru-RU.xml" Id="SharedBuilderContent_ru_RU.xml" Name="SharedBuilderContent_ru-RU.xml" />
-											<File Source="..\..\bin\Tools\SHFB\SharedContent\SharedBuilderContent_zh-CHS.xml" Id="SharedBuilderContent_zh_CHS.xml" Name="SharedBuilderContent_zh-CHS.xml" />
-											<File Source="..\..\bin\Tools\SHFB\SharedContent\SharedBuilderContent_zh-CN.xml" Id="SharedBuilderContent_zh_CN.xml" Name="SharedBuilderContent_zh-CN.xml" />
-										</Component>
-									</Directory>
-									<Directory Id="Templates" Name="Templates">
-										<Component Guid="F302AE09-50F7-4B61-B1AA-0014BF0F2472" Id="SHFBTemplates" DiskId="1">
-											<File Source="..\..\bin\Tools\SHFB\Templates\Build1xHelpFile.bat" Id="Build1xHelpFile.bat" Name="Build1xHelpFile.bat" />
-											<File Source="..\..\bin\Tools\SHFB\Templates\Build2xHelpFile.bat" Id="Build2xHelpFile.bat" Name="Build2xHelpFile.bat" />
-											<File Source="..\..\bin\Tools\SHFB\Templates\BuildHelpTopics.bat" Id="BuildHelpTopics.bat" Name="BuildHelpTopics.bat" />
-											<File Source="..\..\bin\Tools\SHFB\Templates\FullTextExclusions.txt" Id="FullTextExclusions.txt" Name="FullTextExclusions.txt" />
-											<File Source="..\..\bin\Tools\SHFB\Templates\Generate1xIndex.bat" Id="Generate1xIndex.bat" Name="Generate1xIndex.bat" />
-											<File Source="..\..\bin\Tools\SHFB\Templates\Generate1xTOC.bat" Id="Generate1xTOC.bat" Name="Generate1xTOC.bat" />
-											<File Source="..\..\bin\Tools\SHFB\Templates\Generate2xTOC.bat" Id="Generate2xTOC.bat" Name="Generate2xTOC.bat" />
-											<File Source="..\..\bin\Tools\SHFB\Templates\GenerateIntermediateTOC.bat" Id="GenerateIntermediateTOC.bat" Name="GenerateIntermediateTOC.bat" />
-											<File Source="..\..\bin\Tools\SHFB\Templates\GenerateRefInfo.bat" Id="GenerateRefInfo.bat" Name="GenerateRefInfo.bat" />
-											<File Source="..\..\bin\Tools\SHFB\Templates\GenerateWebsiteTOC.bat" Id="GenerateWebsiteTOC.bat" Name="GenerateWebsiteTOC.bat" />
-											<File Source="..\..\bin\Tools\SHFB\Templates\Hana.config" Id="Hana.config" Name="Hana.config" />
-											<File Source="..\..\bin\Tools\SHFB\Templates\Hana.xsl" Name="Hana.xsl" Id="Hana.xsl" />
-											<File Source="..\..\bin\Tools\SHFB\Templates\Help1x.hhp" Name="Help1x.hhp" Id="Help1x.hhp" />
-											<File Source="..\..\bin\Tools\SHFB\Templates\Help2x.hxc" Name="Help2x.hxc" Id="Help2x.hxc" />
-											<File Source="..\..\bin\Tools\SHFB\Templates\Help2x.hxf" Name="Help2x.hxf" Id="Help2x.hxf" />
-											<File Source="..\..\bin\Tools\SHFB\Templates\Help2x_a.hxk" Name="Help2x_a.hxk" Id="Help2x_a.hxk" />
-											<File Source="..\..\bin\Tools\SHFB\Templates\Help2x_b.hxk" Name="Help2x_b.hxk" Id="Help2x_b.hxk" />
-											<File Source="..\..\bin\Tools\SHFB\Templates\Help2x_f.hxk" Name="Help2x_f.hxk" Id="Help2x_f.hxk" />
-											<File Source="..\..\bin\Tools\SHFB\Templates\Help2x_k.hxk" Name="Help2x_k.hxk" Id="Help2x_k.hxk" />
-											<File Source="..\..\bin\Tools\SHFB\Templates\Help2x_n.hxk" Name="Help2x_n.hxk" Id="Help2x_n.hxk" />
-											<File Source="..\..\bin\Tools\SHFB\Templates\Help2x_s.hxk" Name="Help2x_s.hxk" Id="Help2x_s.hxk" />
-											<File Source="..\..\bin\Tools\SHFB\Templates\MRefBuilder.config" Id="MRefBuilder.config" Name="MRefBuilder.config" />
-											<File Source="..\..\bin\Tools\SHFB\Templates\Prototype.config" Id="Prototype.config" Name="Prototype.config" />
-											<File Source="..\..\bin\Tools\SHFB\Templates\Prototype.xsl" Id="Prototype.xsl" Name="Prototype.xsl" />
-											<File Source="..\..\bin\Tools\SHFB\Templates\TocToWebContents.xsl" Id="TocToWebContents.xsl" Name="TocToWebContents.xsl" />
-											<File Source="..\..\bin\Tools\SHFB\Templates\TransformManifest.bat" Id="TransformManifest.bat" Name="TransformManifest.bat" />
-											<File Source="..\..\bin\Tools\SHFB\Templates\VS2005.config" Id="VS2005.config" Name="VS2005.config" />
-											<File Source="..\..\bin\Tools\SHFB\Templates\VS2005.xsl" Name="VS2005.xsl" Id="VS2005.xsl" />
-										</Component>
-									</Directory>
-									<Directory Id="Web" Name="Web">
-										<Component Guid="C106F450-323B-4237-8D6A-668E6A4C56C3" Id="SHFBWeb" DiskId="1">
-											<File Source="..\..\bin\Tools\SHFB\Web\CloseSearch.png" Id="CloseSearch.png" Name="CloseSearch.png" />
-											<File Source="..\..\bin\Tools\SHFB\Web\CollapseAll.bmp" Id="CollapseAll.bmp" Name="CollapseAll.bmp" />
-											<File Source="..\..\bin\Tools\SHFB\Web\Collapsed.gif" Id="Collapsed.gif" Name="Collapsed.gif" />
-											<File Source="..\..\bin\Tools\SHFB\Web\ExpandAll.bmp" Id="ExpandAll.bmp" Name="ExpandAll.bmp" />
-											<File Source="..\..\bin\Tools\SHFB\Web\Expanded.gif" Name="Expanded.gif" Id="Expanded.gif" />
-											<File Source="..\..\bin\Tools\SHFB\Web\FillNode.aspx" Id="FillNode.aspx" Name="FillNode.aspx" />
-											<File Source="..\..\bin\Tools\SHFB\Web\Index.aspx" Id="Index.aspx" Name="Index.aspx" />
-											<File Source="..\..\bin\Tools\SHFB\Web\Index.html" Id="Index.html" Name="Index.html" />
-											<File Source="..\..\bin\Tools\SHFB\Web\Item.gif" Name="Item.gif" Id="Item.gif" />
-											<File Source="..\..\bin\Tools\SHFB\Web\Search.gif" Name="Search.gif" Id="Search.gif" />
-											<File Source="..\..\bin\Tools\SHFB\Web\SearchHelp.aspx" Id="SearchHelp.aspx" Name="SearchHelp.aspx" />
-											<File Source="..\..\bin\Tools\SHFB\Web\Splitter.gif" Name="Splitter.gif" Id="Splitter.gif" />
-											<File Source="..\..\bin\Tools\SHFB\Web\SyncTOC.gif" Name="SyncTOC.gif" Id="SyncTOC.gif" />
-											<File Source="..\..\bin\Tools\SHFB\Web\TOC.css" Name="TOC.css" Id="TOC.css" />
-											<File Source="..\..\bin\Tools\SHFB\Web\TOC.js" Name="TOC.js" Id="TOC.js" />
-											<File Source="..\..\bin\Tools\SHFB\Web\Web.Config" Id="Web.Config" Name="Web.Config" />
-										</Component>
-									</Directory>
-								</Directory>
 								<Directory Id="PartCover" Name="PartCover">
 									<Component Guid="CD9AB556-51BD-4DB2-9AC5-C047022991DD" Id="InteropPartCoverDll" DiskId="1">
 										<File Source="..\..\bin\Tools\PartCover\Interop.PartCover.dll" Id="Interop.PartCover.dll" Name="Interop.PartCover.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Interop.PartCover.dll" AssemblyManifest="Interop.PartCover.dll" />
@@ -566,6 +465,148 @@
 										</Component>
 										<Component Guid="55D89B3C-F9F7-48CD-983A-27EBB09AEF72" Id="ClassReportXslt" DiskId="1">
 											<File Source="..\..\bin\Tools\PartCover\Xslt\class.report.xslt" Id="class.report.xslt" Name="class.report.xslt" KeyPath="yes" />
+										</Component>
+									</Directory>
+								</Directory>
+								<Directory Id="SHFB" Name="SHFB">
+									<Component Guid="111F8CA7-80F2-4F13-8FBF-041B0D5A9134" Id="SHFBMain" DiskId="1">
+										<File Source="..\..\bin\Tools\SHFB\BuildReflectionData.bat" Name="BuildReflectionData.bat" Id="BuildReflectionData.bat" />
+										<File Source="..\..\bin\Tools\SHFB\ColorizerLibrary.dll" Name="ColorizerLibrary.dll" Id="ColorizerLibrary.dll" />
+										<File Source="..\..\bin\Tools\SHFB\ColorizerLibrary.xml" Name="ColorizerLibrary.xml" Id="ColorizerLibrary.xml" />
+										<File Source="..\..\bin\Tools\SHFB\Help.ico" Name="Help.ico" Id="Help.ico" />
+										<File Source="..\..\bin\Tools\SHFB\License.txt" Name="License.txt" Id="License.txt" />
+										<File Source="..\..\bin\Tools\SHFB\SandcastleBuilder.chm" Name="SandcastleBuilder.chm" Id="SandcastleBuilder.chm" />
+										<File Source="..\..\bin\Tools\SHFB\SandcastleBuilder.Components.dll" Name="SandcastleBuilder.Components.dll" Id="SandcastleBuilder.Components.dll" />
+										<File Source="..\..\bin\Tools\SHFB\SandcastleBuilder.Components.xml" Name="SandcastleBuilder.Components.xml" Id="SandcastleBuilder.Components.xml" />
+										<File Source="..\..\bin\Tools\SHFB\SandcastleBuilder.ico" Name="SandcastleBuilder.ico" Id="SandcastleBuilder.ico" />
+										<File Source="..\..\bin\Tools\SHFB\SandcastleBuilder.Utils.dll" Name="SandcastleBuilder.Utils.dll" Id="SandcastleBuilder.Utils.dll" />
+										<File Source="..\..\bin\Tools\SHFB\SandcastleBuilder.Utils.xml" Name="SandcastleBuilder.Utils.xml" Id="SandcastleBuilder.Utils.xml" />
+										<File Source="..\..\bin\Tools\SHFB\SandcastleBuilderConsole.exe" Name="SandcastleBuilderConsole.exe" Id="SandcastleBuilderConsole.exe" />
+										<File Source="..\..\bin\Tools\SHFB\SandcastleBuilderConsole.xml" Name="SandcastleBuilderConsole.xml" Id="SandcastleBuilderConsole.xml" />
+										<File Source="..\..\bin\Tools\SHFB\SandcastleBuilderGUI.exe" Name="SandcastleBuilderGUI.exe" Id="SandcastleBuilderGUI.exe" />
+										<File Source="..\..\bin\Tools\SHFB\SandcastleBuilderGUI.exe.config" Name="SandcastleBuilderGUI.exe.config" Id="SandcastleBuilderGUI.exe.config" />
+										<File Source="..\..\bin\Tools\SHFB\SandcastleBuilderGUI.xml" Name="SandcastleBuilderGUI.xml" Id="SandcastleBuilderGUI.xml" />
+										<File Source="..\..\bin\Tools\SHFB\SHFB.url" Name="SHFB.url" Id="SHFB.url" />
+									</Component>
+									<Directory Id="BuildComponents" Name="BuildComponents">
+										<Component Guid="A5AE6005-2642-45F3-AAA1-C2475AE9042F" Id="SHFBBuildComponents" DiskId="1">
+											<File Source="..\..\bin\Tools\SHFB\BuildComponents\SandcastleBuilder.Components.config" Name="SandcastleBuilder.Components.config" Id="SandcastleBuilder.Components.config" />
+										</Component>
+									</Directory>
+									<Directory Id="Colorizer" Name="Colorizer">
+										<Component Guid="C31A0586-663B-4D99-8D93-1960975A72BB" Id="SHFBColorizer" DiskId="1">
+											<File Source="..\..\bin\Tools\SHFB\Colorizer\CopyCode.gif" Name="CopyCode.gif" Id="CopyCode.gif" />
+											<File Source="..\..\bin\Tools\SHFB\Colorizer\CopyCode_h.gif" Name="CopyCode_h.gif" Id="CopyCode_h.gif" />
+											<File Source="..\..\bin\Tools\SHFB\Colorizer\highlight.css" Name="highlight.css" Id="highlight.css" />
+											<File Source="..\..\bin\Tools\SHFB\Colorizer\highlight.js" Name="highlight.js" Id="highlight.js" />
+											<File Source="..\..\bin\Tools\SHFB\Colorizer\highlight.xml" Name="highlight.xml" Id="highlight.xml" />
+											<File Source="..\..\bin\Tools\SHFB\Colorizer\highlight.xsl" Name="highlight.xsl" Id="highlight.xsl" />
+										</Component>
+									</Directory>
+									<Directory Id="PlugIns" Name="PlugIns">
+										<Component Guid="CB479EB2-CD07-4FA2-A3E1-52BACC46896F" Id="SHFBPlugins" DiskId="1">
+											<File Source="..\..\bin\Tools\SHFB\PlugIns\SandcastleBuilder.PlugIns.dll" Name="SandcastleBuilder.PlugIns.dll" Id="SandcastleBuilder.PlugIns.dll" />
+										</Component>
+									</Directory>
+									<Directory Id="SharedContent" Name="SharedContent">
+										<Component Guid="EF1F9FB6-B411-47AB-A5D3-342AEB8AA03A" Id="SHFBSharedContent" DiskId="1">
+											<File Source="..\..\bin\Tools\SHFB\SharedContent\HanaBuilderContent_de-DE.xml" Name="HanaBuilderContent_de-DE.xml" Id="HanaBuilderContent_de_DE.xml" />
+											<File Source="..\..\bin\Tools\SHFB\SharedContent\HanaBuilderContent_en-US.xml" Name="HanaBuilderContent_en-US.xml" Id="HanaBuilderContent_en_US.xml" />
+											<File Source="..\..\bin\Tools\SHFB\SharedContent\HanaBuilderContent_es-ES.xml" Name="HanaBuilderContent_es-ES.xml" Id="HanaBuilderContent_es_ES.xml" />
+											<File Source="..\..\bin\Tools\SHFB\SharedContent\HanaBuilderContent_fr-FR.xml" Name="HanaBuilderContent_fr-FR.xml" Id="HanaBuilderContent_fr_FR.xml" />
+											<File Source="..\..\bin\Tools\SHFB\SharedContent\HanaBuilderContent_it-IT.xml" Name="HanaBuilderContent_it-IT.xml" Id="HanaBuilderContent_it_IT.xml" />
+											<File Source="..\..\bin\Tools\SHFB\SharedContent\HanaBuilderContent_ja-JP.xml" Name="HanaBuilderContent_ja-JP.xml" Id="HanaBuilderContent_ja_JP.xml" />
+											<File Source="..\..\bin\Tools\SHFB\SharedContent\HanaBuilderContent_ko-KR.xml" Name="HanaBuilderContent_ko-KR.xml" Id="HanaBuilderContent_ko_KR.xml" />
+											<File Source="..\..\bin\Tools\SHFB\SharedContent\HanaBuilderContent_pt-BR.xml" Name="HanaBuilderContent_pt-BR.xml" Id="HanaBuilderContent_pt_BR.xml" />
+											<File Source="..\..\bin\Tools\SHFB\SharedContent\HanaBuilderContent_ru-RU.xml" Name="HanaBuilderContent_ru-RU.xml" Id="HanaBuilderContent_ru_RU.xml" />
+											<File Source="..\..\bin\Tools\SHFB\SharedContent\HanaBuilderContent_zh-CHS.xml" Name="HanaBuilderContent_zh-CHS.xml" Id="HanaBuilderContent_zh_CHS.xml" />
+											<File Source="..\..\bin\Tools\SHFB\SharedContent\HanaBuilderContent_zh-CN.xml" Name="HanaBuilderContent_zh-CN.xml" Id="HanaBuilderContent_zh_CN.xml" />
+											<File Source="..\..\bin\Tools\SHFB\SharedContent\PrototypeBuilderContent_de-DE.xml" Name="PrototypeBuilderContent_de-DE.xml" Id="PrototypeBuilderContent_de_DE.xml" />
+											<File Source="..\..\bin\Tools\SHFB\SharedContent\PrototypeBuilderContent_en-US.xml" Name="PrototypeBuilderContent_en-US.xml" Id="PrototypeBuilderContent_en_US.xml" />
+											<File Source="..\..\bin\Tools\SHFB\SharedContent\PrototypeBuilderContent_es-ES.xml" Name="PrototypeBuilderContent_es-ES.xml" Id="PrototypeBuilderContent_es_ES.xml" />
+											<File Source="..\..\bin\Tools\SHFB\SharedContent\PrototypeBuilderContent_fr-FR.xml" Name="PrototypeBuilderContent_fr-FR.xml" Id="PrototypeBuilderContent_fr_FR.xml" />
+											<File Source="..\..\bin\Tools\SHFB\SharedContent\PrototypeBuilderContent_it-IT.xml" Name="PrototypeBuilderContent_it-IT.xml" Id="PrototypeBuilderContent_it_IT.xml" />
+											<File Source="..\..\bin\Tools\SHFB\SharedContent\PrototypeBuilderContent_ja-JP.xml" Name="PrototypeBuilderContent_ja-JP.xml" Id="PrototypeBuilderContent_ja_JP.xml" />
+											<File Source="..\..\bin\Tools\SHFB\SharedContent\PrototypeBuilderContent_ko-KR.xml" Name="PrototypeBuilderContent_ko-KR.xml" Id="PrototypeBuilderContent_ko_KR.xml" />
+											<File Source="..\..\bin\Tools\SHFB\SharedContent\PrototypeBuilderContent_pt-BR.xml" Name="PrototypeBuilderContent_pt-BR.xml" Id="PrototypeBuilderContent_pt_BR.xml" />
+											<File Source="..\..\bin\Tools\SHFB\SharedContent\PrototypeBuilderContent_ru-RU.xml" Name="PrototypeBuilderContent_ru-RU.xml" Id="PrototypeBuilderContent_ru_RU.xml" />
+											<File Source="..\..\bin\Tools\SHFB\SharedContent\PrototypeBuilderContent_zh-CHS.xml" Name="PrototypeBuilderContent_zh-CHS.xml" Id="PrototypeBuilderContent_zh_CHS.xml" />
+											<File Source="..\..\bin\Tools\SHFB\SharedContent\PrototypeBuilderContent_zh-CN.xml" Name="PrototypeBuilderContent_zh-CN.xml" Id="PrototypeBuilderContent_zh_CN.xml" />
+											<File Source="..\..\bin\Tools\SHFB\SharedContent\SharedBuilderContent_de-DE.xml" Name="SharedBuilderContent_de-DE.xml" Id="SharedBuilderContent_de_DE.xml" />
+											<File Source="..\..\bin\Tools\SHFB\SharedContent\SharedBuilderContent_en-US.xml" Name="SharedBuilderContent_en-US.xml" Id="SharedBuilderContent_en_US.xml" />
+											<File Source="..\..\bin\Tools\SHFB\SharedContent\SharedBuilderContent_es-ES.xml" Name="SharedBuilderContent_es-ES.xml" Id="SharedBuilderContent_es_ES.xml" />
+											<File Source="..\..\bin\Tools\SHFB\SharedContent\SharedBuilderContent_fr-FR.xml" Name="SharedBuilderContent_fr-FR.xml" Id="SharedBuilderContent_fr_FR.xml" />
+											<File Source="..\..\bin\Tools\SHFB\SharedContent\SharedBuilderContent_it-IT.xml" Name="SharedBuilderContent_it-IT.xml" Id="SharedBuilderContent_it_IT.xml" />
+											<File Source="..\..\bin\Tools\SHFB\SharedContent\SharedBuilderContent_ja-JP.xml" Name="SharedBuilderContent_ja-JP.xml" Id="SharedBuilderContent_ja_JP.xml" />
+											<File Source="..\..\bin\Tools\SHFB\SharedContent\SharedBuilderContent_ko-KR.xml" Name="SharedBuilderContent_ko-KR.xml" Id="SharedBuilderContent_ko_KR.xml" />
+											<File Source="..\..\bin\Tools\SHFB\SharedContent\SharedBuilderContent_pt-BR.xml" Name="SharedBuilderContent_pt-BR.xml" Id="SharedBuilderContent_pt_BR.xml" />
+											<File Source="..\..\bin\Tools\SHFB\SharedContent\SharedBuilderContent_ru-RU.xml" Name="SharedBuilderContent_ru-RU.xml" Id="SharedBuilderContent_ru_RU.xml" />
+											<File Source="..\..\bin\Tools\SHFB\SharedContent\SharedBuilderContent_zh-CHS.xml" Name="SharedBuilderContent_zh-CHS.xml" Id="SharedBuilderContent_zh_CHS.xml" />
+											<File Source="..\..\bin\Tools\SHFB\SharedContent\SharedBuilderContent_zh-CN.xml" Name="SharedBuilderContent_zh-CN.xml" Id="SharedBuilderContent_zh_CN.xml" />
+											<File Source="..\..\bin\Tools\SHFB\SharedContent\VS2005BuilderContent_de-DE.xml" Name="VS2005BuilderContent_de-DE.xml" Id="VS2005BuilderContent_de_DE.xml" />
+											<File Source="..\..\bin\Tools\SHFB\SharedContent\VS2005BuilderContent_en-US.xml" Name="VS2005BuilderContent_en-US.xml" Id="VS2005BuilderContent_en_US.xml" />
+											<File Source="..\..\bin\Tools\SHFB\SharedContent\VS2005BuilderContent_es-ES.xml" Name="VS2005BuilderContent_es-ES.xml" Id="VS2005BuilderContent_es_ES.xml" />
+											<File Source="..\..\bin\Tools\SHFB\SharedContent\VS2005BuilderContent_fr-FR.xml" Name="VS2005BuilderContent_fr-FR.xml" Id="VS2005BuilderContent_fr_FR.xml" />
+											<File Source="..\..\bin\Tools\SHFB\SharedContent\VS2005BuilderContent_it-IT.xml" Name="VS2005BuilderContent_it-IT.xml" Id="VS2005BuilderContent_it_IT.xml" />
+											<File Source="..\..\bin\Tools\SHFB\SharedContent\VS2005BuilderContent_ja-JP.xml" Name="VS2005BuilderContent_ja-JP.xml" Id="VS2005BuilderContent_ja_JP.xml" />
+											<File Source="..\..\bin\Tools\SHFB\SharedContent\VS2005BuilderContent_ko-KR.xml" Name="VS2005BuilderContent_ko-KR.xml" Id="VS2005BuilderContent_ko_KR.xml" />
+											<File Source="..\..\bin\Tools\SHFB\SharedContent\VS2005BuilderContent_pt-BR.xml" Name="VS2005BuilderContent_pt-BR.xml" Id="VS2005BuilderContent_pt_BR.xml" />
+											<File Source="..\..\bin\Tools\SHFB\SharedContent\VS2005BuilderContent_ru-RU.xml" Name="VS2005BuilderContent_ru-RU.xml" Id="VS2005BuilderContent_ru_RU.xml" />
+											<File Source="..\..\bin\Tools\SHFB\SharedContent\VS2005BuilderContent_zh-CHS.xml" Name="VS2005BuilderContent_zh-CHS.xml" Id="VS2005BuilderContent_zh_CHS.xml" />
+											<File Source="..\..\bin\Tools\SHFB\SharedContent\VS2005BuilderContent_zh-CN.xml" Name="VS2005BuilderContent_zh-CN.xml" Id="VS2005BuilderContent_zh_CN.xml" />
+										</Component>
+									</Directory>
+									<Directory Id="Templates" Name="Templates">
+										<Component Guid="26880C19-9670-4B24-99F7-D15FBD37F78D" Id="SHFBTemplates" DiskId="1">
+											<File Source="..\..\bin\Tools\SHFB\Templates\Build1xHelpFile.bat" Name="Build1xHelpFile.bat" Id="Build1xHelpFile.bat" />
+											<File Source="..\..\bin\Tools\SHFB\Templates\Build2xHelpFile.bat" Name="Build2xHelpFile.bat" Id="Build2xHelpFile.bat" />
+											<File Source="..\..\bin\Tools\SHFB\Templates\BuildHelpTopics.bat" Name="BuildHelpTopics.bat" Id="BuildHelpTopics.bat" />
+											<File Source="..\..\bin\Tools\SHFB\Templates\FullTextExclusions.txt" Name="FullTextExclusions.txt" Id="FullTextExclusions.txt" />
+											<File Source="..\..\bin\Tools\SHFB\Templates\Generate1xIndex.bat" Name="Generate1xIndex.bat" Id="Generate1xIndex.bat" />
+											<File Source="..\..\bin\Tools\SHFB\Templates\Generate1xTOC.bat" Name="Generate1xTOC.bat" Id="Generate1xTOC.bat" />
+											<File Source="..\..\bin\Tools\SHFB\Templates\Generate2xTOC.bat" Name="Generate2xTOC.bat" Id="Generate2xTOC.bat" />
+											<File Source="..\..\bin\Tools\SHFB\Templates\GenerateIntermediateTOC.bat" Name="GenerateIntermediateTOC.bat" Id="GenerateIntermediateTOC.bat" />
+											<File Source="..\..\bin\Tools\SHFB\Templates\GenerateRefInfo.bat" Name="GenerateRefInfo.bat" Id="GenerateRefInfo.bat" />
+											<File Source="..\..\bin\Tools\SHFB\Templates\GenerateWebsiteTOC.bat" Name="GenerateWebsiteTOC.bat" Id="GenerateWebsiteTOC.bat" />
+											<File Source="..\..\bin\Tools\SHFB\Templates\Hana.config" Name="Hana.config" Id="Hana.config" />
+											<File Source="..\..\bin\Tools\SHFB\Templates\Hana.xsl" Name="Hana.xsl" Id="Hana.xsl" />
+											<File Source="..\..\bin\Tools\SHFB\Templates\Help1x.hhp" Name="Help1x.hhp" Id="Help1x.hhp" />
+											<File Source="..\..\bin\Tools\SHFB\Templates\Help2x.hxc" Name="Help2x.hxc" Id="Help2x.hxc" />
+											<File Source="..\..\bin\Tools\SHFB\Templates\Help2x.hxf" Name="Help2x.hxf" Id="Help2x.hxf" />
+											<File Source="..\..\bin\Tools\SHFB\Templates\Help2x_a.hxk" Name="Help2x_a.hxk" Id="Help2x_a.hxk" />
+											<File Source="..\..\bin\Tools\SHFB\Templates\Help2x_b.hxk" Name="Help2x_b.hxk" Id="Help2x_b.hxk" />
+											<File Source="..\..\bin\Tools\SHFB\Templates\Help2x_f.hxk" Name="Help2x_f.hxk" Id="Help2x_f.hxk" />
+											<File Source="..\..\bin\Tools\SHFB\Templates\Help2x_k.hxk" Name="Help2x_k.hxk" Id="Help2x_k.hxk" />
+											<File Source="..\..\bin\Tools\SHFB\Templates\Help2x_n.hxk" Name="Help2x_n.hxk" Id="Help2x_n.hxk" />
+											<File Source="..\..\bin\Tools\SHFB\Templates\Help2x_NamedURLIndex.hxk" Name="Help2x_NamedURLIndex.hxk" Id="Help2x_NamedURLIndex.hxk" />
+											<File Source="..\..\bin\Tools\SHFB\Templates\Help2x_s.hxk" Name="Help2x_s.hxk" Id="Help2x_s.hxk" />
+											<File Source="..\..\bin\Tools\SHFB\Templates\MRefBuilder.config" Name="MRefBuilder.config" Id="MRefBuilder.config" />
+											<File Source="..\..\bin\Tools\SHFB\Templates\Prototype.config" Name="Prototype.config" Id="Prototype.config" />
+											<File Source="..\..\bin\Tools\SHFB\Templates\Prototype.xsl" Name="Prototype.xsl" Id="Prototype.xsl" />
+											<File Source="..\..\bin\Tools\SHFB\Templates\TocToWebContents.xsl" Name="TocToWebContents.xsl" Id="TocToWebContents.xsl" />
+											<File Source="..\..\bin\Tools\SHFB\Templates\TransformManifest.bat" Name="TransformManifest.bat" Id="TransformManifest.bat" />
+											<File Source="..\..\bin\Tools\SHFB\Templates\VS2005.config" Name="VS2005.config" Id="VS2005.config" />
+											<File Source="..\..\bin\Tools\SHFB\Templates\VS2005.xsl" Name="VS2005.xsl" Id="VS2005.xsl" />
+										</Component>
+									</Directory>
+									<Directory Id="Web" Name="Web">
+										<Component Guid="54FE6E49-5F1E-4792-95CB-959999412D42" Id="SHFBWeb" DiskId="1">
+											<File Source="..\..\bin\Tools\SHFB\Web\CloseSearch.png" Name="CloseSearch.png" Id="CloseSearch.png" />
+											<File Source="..\..\bin\Tools\SHFB\Web\CollapseAll.bmp" Name="CollapseAll.bmp" Id="CollapseAll.bmp" />
+											<File Source="..\..\bin\Tools\SHFB\Web\Collapsed.gif" Name="Collapsed.gif" Id="Collapsed.gif" />
+											<File Source="..\..\bin\Tools\SHFB\Web\ExpandAll.bmp" Name="ExpandAll.bmp" Id="ExpandAll.bmp" />
+											<File Source="..\..\bin\Tools\SHFB\Web\Expanded.gif" Name="Expanded.gif" Id="Expanded.gif" />
+											<File Source="..\..\bin\Tools\SHFB\Web\FillNode.aspx" Name="FillNode.aspx" Id="FillNode.aspx" />
+											<File Source="..\..\bin\Tools\SHFB\Web\Index.aspx" Name="Index.aspx" Id="Index.aspx" />
+											<File Source="..\..\bin\Tools\SHFB\Web\Index.html" Name="Index.html" Id="Index.html" />
+											<File Source="..\..\bin\Tools\SHFB\Web\Item.gif" Name="Item.gif" Id="Item.gif" />
+											<File Source="..\..\bin\Tools\SHFB\Web\Search.gif" Name="Search.gif" Id="Search.gif" />
+											<File Source="..\..\bin\Tools\SHFB\Web\SearchHelp.aspx" Name="SearchHelp.aspx" Id="SearchHelp.aspx" />
+											<File Source="..\..\bin\Tools\SHFB\Web\Splitter.gif" Name="Splitter.gif" Id="Splitter.gif" />
+											<File Source="..\..\bin\Tools\SHFB\Web\SyncTOC.gif" Name="SyncTOC.gif" Id="SyncTOC.gif" />
+											<File Source="..\..\bin\Tools\SHFB\Web\TOC.css" Name="TOC.css" Id="TOC.css" />
+											<File Source="..\..\bin\Tools\SHFB\Web\TOC.js" Name="TOC.js" Id="TOC.js" />
+											<File Source="..\..\bin\Tools\SHFB\Web\Web.Config" Name="Web.Config" Id="Web.Config" />
 										</Component>
 									</Directory>
 								</Directory>
@@ -1361,7 +1402,7 @@
 											<File Source="..\..\AddIns\AddIns\Misc\CodeCoverage\CodeCoverage.addin" Id="CodeCoverage.addin" Name="CodeCoverage.addin" />
 										</Component>
 									</Directory>
-<!-- Disabled SharpServerTools temporarily									
+									<!-- Disabled SharpServerTools temporarily									
 									<Directory Id="SharpServerTools" Name="SharpServerTools">
 										<Component Guid="222C0F80-D2BC-4C35-B829-64E33CED573D" Id="DataToolsModelDll" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\Misc\SharpServerTools\ICSharpCode.DataTools.Model.dll" Id="ICSharpCode.DataTools.Model.dll" Name="ICSharpCode.DataTools.Model.dll" Assembly=".net" AssemblyApplication="ICSharpCode.DataTools.Model.dll" AssemblyManifest="ICSharpCode.DataTools.Model.dll" KeyPath="yes" />
