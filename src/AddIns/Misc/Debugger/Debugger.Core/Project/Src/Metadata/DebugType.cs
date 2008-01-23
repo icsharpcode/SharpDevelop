@@ -421,7 +421,9 @@ namespace Debugger.MetaData
 				}
 				if (this.IsClass || this.IsValueType) {
 					return (other.IsClass || other.IsValueType) &&
-					       other.Module == this.Module &&
+						   // Test fullpath since module can be loaded multiple times to different appdomains
+						   // eg during unit testing
+					       other.Module.FullPath == this.Module.FullPath &&
 					       other.MetadataToken == this.MetadataToken;
 				}
 				throw new DebuggerException("Unknown type");

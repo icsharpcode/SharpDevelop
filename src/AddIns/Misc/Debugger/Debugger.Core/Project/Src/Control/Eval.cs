@@ -210,7 +210,10 @@ namespace Debugger
 					throw new GetValueException("Can not evaluate on a value which is not an object");
 				}
 				if (!method.DeclaringType.IsInstanceOfType(thisValue)) {
-					throw new GetValueException("Can not evaluate because the object is not of proper type");
+					throw new GetValueException(
+						"Can not evaluate because the object is not of proper type.  " + 
+						"Expected: " + method.DeclaringType.FullName + "  Seen: " + thisValue.Type.FullName
+					);
 				}
 				corArgs.Add(thisValue.SoftReference);
 			}
