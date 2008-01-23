@@ -28,7 +28,18 @@ namespace Debugger.AddIn.TreeModel
 			get { return expression; }
 		}
 		
-		public ValueNode(Value val)
+		public static AbstractNode Create(Expression expression)
+		{
+			try {
+				Value val = expression.Evaluate(WindowsDebugger.DebuggedProcess.SelectedStackFrame);
+				return new ValueNode(val);
+			} catch (GetValueException e) {
+				return new ErrorNode(expression, e);
+			}
+		}
+		
+		// NB: This can also throw GetValueException on InvokeToString()
+		ValueNode(Value val)
 		{
 			this.expression = val.Expression;
 			

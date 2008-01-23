@@ -32,7 +32,7 @@ namespace Debugger.AddIn.TreeModel
 		IEnumerable<AbstractNode> GetChildNodes()
 		{
 			foreach(Expression expr in Expression.MethodVariables(stackFrame.MethodInfo)) {
-				yield return Utils.CreateNode(expr);
+				yield return ValueNode.Create(expr);
 			}
 		}
 	}

@@ -295,7 +295,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			} else {
 				try {
 					currentTooltipExpression = val.Expression;
-					currentTooltipRow = new DynamicTreeDebuggerRow(DebuggedProcess, new ValueNode(val));
+					currentTooltipRow = new DynamicTreeDebuggerRow(DebuggedProcess, ValueNode.Create(val.Expression));
 					return new DebuggerGridControl(currentTooltipRow);
 				} catch (AbortedBecauseDebuggeeResumedException) {
 					return null;
@@ -445,7 +445,7 @@ namespace ICSharpCode.SharpDevelop.Services
 				using(new PrintTimes("Update tooltip")) {
 					try {
 						Utils.DoEvents(debuggedProcess.DebuggeeState);
-						AbstractNode updatedNode = Debugger.AddIn.TreeModel.Utils.CreateNode(currentTooltipExpression);
+						AbstractNode updatedNode = ValueNode.Create(currentTooltipExpression);
 						currentTooltipRow.SetContentRecursive(updatedNode);
 					} catch (AbortedBecauseDebuggeeResumedException) {
 					}

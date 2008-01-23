@@ -35,16 +35,6 @@ namespace Debugger.AddIn.TreeModel
 			}
 		}
 		
-		public static AbstractNode CreateNode(Expression expression)
-		{
-			try {
-				Value val = expression.Evaluate(WindowsDebugger.DebuggedProcess.SelectedStackFrame);
-				return new ValueNode(val);
-			} catch (GetValueException e) {
-				return new ErrorNode(expression, e);
-			}
-		}
-		
 		public static WindowsDebugger WindowsDebugger {
 			get {
 				return (WindowsDebugger)DebuggerService.CurrentDebugger;

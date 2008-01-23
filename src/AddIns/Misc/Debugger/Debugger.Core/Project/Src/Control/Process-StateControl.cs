@@ -102,7 +102,7 @@ namespace Debugger
 				throw new DebuggerException("Debugee state already created");
 			}
 			if (pauseSession == null) {
-				throw new DebuggerException("Pause session must exist");
+				throw new DebuggerException("Pause session must exist (update order error)");
 			}
 			debuggeeState = new DebuggeeState(this);
 		}
@@ -113,7 +113,7 @@ namespace Debugger
 				throw new DebuggerException("Debugee state already expired");
 			}
 			if (pauseSession != null) {
-				throw new DebuggerException("Pause session must not exist");
+				throw new DebuggerException("Pause session must not exist (update order error)");
 			}
 			DebuggeeState oldDebugeeState = debuggeeState;
 			debuggeeState = null;

@@ -33,7 +33,7 @@ namespace Debugger.AddIn.TreeModel
 				yield return new StaticMembersNode(targetObject, shownType);
 			}
 			foreach(Expression childExpr in targetObject.AppendObjectMembers(shownType, Flags)) {
-				yield return Utils.CreateNode(childExpr);
+				yield return ValueNode.Create(childExpr);
 			}
 		}
 	}
@@ -78,7 +78,7 @@ namespace Debugger.AddIn.TreeModel
 		IEnumerable<AbstractNode> GetChildNodes()
 		{
 			foreach(Expression childExpr in targetObject.AppendObjectMembers(shownType, Flags)) {
-				yield return Utils.CreateNode(childExpr);
+				yield return ValueNode.Create(childExpr);
 			}
 		}
 	}
@@ -105,7 +105,7 @@ namespace Debugger.AddIn.TreeModel
 				yield return new NonPublicStaticMembersNode(targetObject, shownType);
 			}
 			foreach(Expression childExpr in targetObject.AppendObjectMembers(shownType, Flags)) {
-				yield return Utils.CreateNode(childExpr);
+				yield return ValueNode.Create(childExpr);
 			}
 		}
 	}
@@ -129,7 +129,7 @@ namespace Debugger.AddIn.TreeModel
 		IEnumerable<AbstractNode> GetChildNodes()
 		{
 			foreach(Expression childExpr in targetObject.AppendObjectMembers(shownType, Flags)) {
-				yield return Utils.CreateNode(childExpr);
+				yield return ValueNode.Create(childExpr);
 			}
 		}
 	}
