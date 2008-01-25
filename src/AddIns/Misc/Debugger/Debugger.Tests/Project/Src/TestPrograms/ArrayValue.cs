@@ -29,11 +29,15 @@ namespace Debugger.Tests {
 		[NUnit.Framework.Test]
 		public void ArrayValue()
 		{
+			ExpandProperties(
+				"DebugType.BaseType"
+			);
 			StartTest("ArrayValue.cs");
 			
 			Value array = process.SelectedStackFrame.GetLocalVariableValue("array");
 			ObjectDump("array", array);
 			ObjectDump("array elements", array.GetArrayElements());
+			ObjectDump("type", array.Type);
 			
 			EndTest();
 		}
@@ -141,6 +145,19 @@ namespace Debugger.Tests {
         <Type>System.Int32</Type>
       </Item>
     </array_elements>
+    <type Type="DebugType" ToString="System.Int32[]">
+      <BaseType exception="Value does not fall within the expected range." />
+      <FullName>System.Int32[]</FullName>
+      <HasElementType>True</HasElementType>
+      <IsArray>True</IsArray>
+      <IsClass>False</IsClass>
+      <IsGenericType>False</IsGenericType>
+      <IsInteger>False</IsInteger>
+      <IsPrimitive>False</IsPrimitive>
+      <IsValueType>False</IsValueType>
+      <ManagedType>System.Array</ManagedType>
+      <Module exception="The type is not a class or value type." />
+    </type>
     <ProcessExited />
   </Test>
 </DebuggerTests>
