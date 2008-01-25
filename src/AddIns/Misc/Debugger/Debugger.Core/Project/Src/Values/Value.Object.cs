@@ -43,9 +43,7 @@ namespace Debugger
 				if (objectInstance.IsNull) {
 					throw new GetValueException("Null reference");
 				}
-				if (!objectInstance.IsObject) {
-					throw new GetValueException("Target object is not class or value type");
-				}
+				//if (!objectInstance.IsObject) // eg Array.Length can be called
 				if (!memberInfo.DeclaringType.IsInstanceOfType(objectInstance)) {
 					throw new GetValueException("Object is not of type " + memberInfo.DeclaringType.FullName);
 				}
@@ -238,9 +236,8 @@ namespace Debugger
 		/// <summary> Invoke the ToString() method </summary>
 		public string InvokeToString()
 		{
-			if (!IsObject) {
-				throw new DebuggerException("ToString can be only invoked on object");
-			}
+			if (IsPrimitive) return AsString;
+			// if (!IsObject) // Can invoke on primitives
 			return Eval.InvokeMethod(Process, typeof(object), "ToString", this, new Value[] {}).AsString;
 		}
 		

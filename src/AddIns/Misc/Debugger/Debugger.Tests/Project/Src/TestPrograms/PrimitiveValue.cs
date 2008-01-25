@@ -36,6 +36,10 @@ namespace Debugger.Tests {
 			StartTest("PrimitiveValue.cs");
 			
 			ObjectDump("locals", process.SelectedStackFrame.GetLocalVariableValues());
+			// Test System.Object access
+			ObjectDump("b as string", process.SelectedStackFrame.GetLocalVariableValue("b").InvokeToString());
+			ObjectDump("i as string", process.SelectedStackFrame.GetLocalVariableValue("i").InvokeToString());
+			ObjectDump("s as string", process.SelectedStackFrame.GetLocalVariableValue("s").InvokeToString());
 			
 			EndTest();
 		}
@@ -66,7 +70,19 @@ namespace Debugger.Tests {
         <IsPrimitive>True</IsPrimitive>
         <PrimitiveValue>True</PrimitiveValue>
         <Type Type="DebugType" ToString="System.Boolean">
-          <BaseType exception="Value does not fall within the expected range." />
+          <BaseType Type="DebugType" ToString="System.Object">
+            <BaseType>null</BaseType>
+            <FullName>System.Object</FullName>
+            <HasElementType>False</HasElementType>
+            <IsArray>False</IsArray>
+            <IsClass>True</IsClass>
+            <IsGenericType>False</IsGenericType>
+            <IsInteger>False</IsInteger>
+            <IsPrimitive>False</IsPrimitive>
+            <IsValueType>False</IsValueType>
+            <ManagedType>null</ManagedType>
+            <Module>mscorlib.dll</Module>
+          </BaseType>
           <FullName>System.Boolean</FullName>
           <HasElementType>False</HasElementType>
           <IsArray>False</IsArray>
@@ -93,7 +109,19 @@ namespace Debugger.Tests {
         <IsPrimitive>True</IsPrimitive>
         <PrimitiveValue>5</PrimitiveValue>
         <Type Type="DebugType" ToString="System.Int32">
-          <BaseType exception="Value does not fall within the expected range." />
+          <BaseType Type="DebugType" ToString="System.Object">
+            <BaseType>null</BaseType>
+            <FullName>System.Object</FullName>
+            <HasElementType>False</HasElementType>
+            <IsArray>False</IsArray>
+            <IsClass>True</IsClass>
+            <IsGenericType>False</IsGenericType>
+            <IsInteger>False</IsInteger>
+            <IsPrimitive>False</IsPrimitive>
+            <IsValueType>False</IsValueType>
+            <ManagedType>null</ManagedType>
+            <Module>mscorlib.dll</Module>
+          </BaseType>
           <FullName>System.Int32</FullName>
           <HasElementType>False</HasElementType>
           <IsArray>False</IsArray>
@@ -120,7 +148,19 @@ namespace Debugger.Tests {
         <IsPrimitive>True</IsPrimitive>
         <PrimitiveValue>five</PrimitiveValue>
         <Type Type="DebugType" ToString="System.String">
-          <BaseType exception="Value does not fall within the expected range." />
+          <BaseType Type="DebugType" ToString="System.Object">
+            <BaseType>null</BaseType>
+            <FullName>System.Object</FullName>
+            <HasElementType>False</HasElementType>
+            <IsArray>False</IsArray>
+            <IsClass>True</IsClass>
+            <IsGenericType>False</IsGenericType>
+            <IsInteger>False</IsInteger>
+            <IsPrimitive>False</IsPrimitive>
+            <IsValueType>False</IsValueType>
+            <ManagedType>null</ManagedType>
+            <Module>mscorlib.dll</Module>
+          </BaseType>
           <FullName>System.String</FullName>
           <HasElementType>False</HasElementType>
           <IsArray>False</IsArray>
@@ -147,7 +187,19 @@ namespace Debugger.Tests {
         <IsPrimitive>True</IsPrimitive>
         <PrimitiveValue>5.5</PrimitiveValue>
         <Type Type="DebugType" ToString="System.Double">
-          <BaseType exception="Value does not fall within the expected range." />
+          <BaseType Type="DebugType" ToString="System.Object">
+            <BaseType>null</BaseType>
+            <FullName>System.Object</FullName>
+            <HasElementType>False</HasElementType>
+            <IsArray>False</IsArray>
+            <IsClass>True</IsClass>
+            <IsGenericType>False</IsGenericType>
+            <IsInteger>False</IsInteger>
+            <IsPrimitive>False</IsPrimitive>
+            <IsValueType>False</IsValueType>
+            <ManagedType>null</ManagedType>
+            <Module>mscorlib.dll</Module>
+          </BaseType>
           <FullName>System.Double</FullName>
           <HasElementType>False</HasElementType>
           <IsArray>False</IsArray>
@@ -161,6 +213,9 @@ namespace Debugger.Tests {
         </Type>
       </Item>
     </locals>
+    <b_as_string>True</b_as_string>
+    <i_as_string>5</i_as_string>
+    <s_as_string>five</s_as_string>
     <ProcessExited />
   </Test>
 </DebuggerTests>

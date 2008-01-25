@@ -217,6 +217,14 @@ namespace Debugger.MetaData
 		/// </summary>
 		public DebugType BaseType {
 			get {
+				// corType.Base does not work for arrays
+				if (this.IsArray) {
+					return DebugType.GetType(this.Process, "System.Array");
+				}
+				// corType.Base does not work for primitive types
+				if (this.IsPrimitive) {
+					return DebugType.GetType(this.Process, "System.Object");
+				}
 				ICorDebugType baseType = corType.Base;
 				if (baseType != null) {
 					return Create(process, baseType);

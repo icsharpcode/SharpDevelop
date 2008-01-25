@@ -206,9 +206,7 @@ namespace Debugger
 				throw new GetValueException("Invalid parameter count");
 			}
 			if (thisValue != null) {
-				if (!(thisValue.IsObject)) {
-					throw new GetValueException("Can not evaluate on a value which is not an object");
-				}
+				// if (!(thisValue.IsObject)) // eg Can evaluate on array
 				if (!method.DeclaringType.IsInstanceOfType(thisValue)) {
 					throw new GetValueException(
 						"Can not evaluate because the object is not of proper type.  " + 

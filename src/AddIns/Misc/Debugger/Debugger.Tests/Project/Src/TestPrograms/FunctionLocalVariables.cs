@@ -94,11 +94,11 @@ namespace Debugger.Tests {
         <PrimitiveValue exception="Value is not a primitive type" />
         <Type>System.String[]</Type>
       </Item>
-      <Item Type="Value" ToString="n = &lt;null&gt;">
+      <Item Type="Value" ToString="n = null">
         <ArrayDimensions exception="Value is not an array" />
         <ArrayLenght exception="Value is not an array" />
         <ArrayRank exception="Value is not an array" />
-        <AsString>&lt;null&gt;</AsString>
+        <AsString>null</AsString>
         <Expression>n</Expression>
         <HasExpired>False</HasExpired>
         <IsArray>False</IsArray>

@@ -38,6 +38,7 @@ namespace Debugger.Tests {
 			ObjectDump("array", array);
 			ObjectDump("array elements", array.GetArrayElements());
 			ObjectDump("type", array.Type);
+			ObjectDump("array.Length", array.GetMemberValue("Length"));
 			
 			EndTest();
 		}
@@ -146,7 +147,31 @@ namespace Debugger.Tests {
       </Item>
     </array_elements>
     <type Type="DebugType" ToString="System.Int32[]">
-      <BaseType exception="Value does not fall within the expected range." />
+      <BaseType Type="DebugType" ToString="System.Array">
+        <BaseType Type="DebugType" ToString="System.Object">
+          <BaseType>null</BaseType>
+          <FullName>System.Object</FullName>
+          <HasElementType>False</HasElementType>
+          <IsArray>False</IsArray>
+          <IsClass>True</IsClass>
+          <IsGenericType>False</IsGenericType>
+          <IsInteger>False</IsInteger>
+          <IsPrimitive>False</IsPrimitive>
+          <IsValueType>False</IsValueType>
+          <ManagedType>null</ManagedType>
+          <Module>mscorlib.dll</Module>
+        </BaseType>
+        <FullName>System.Array</FullName>
+        <HasElementType>False</HasElementType>
+        <IsArray>False</IsArray>
+        <IsClass>True</IsClass>
+        <IsGenericType>False</IsGenericType>
+        <IsInteger>False</IsInteger>
+        <IsPrimitive>False</IsPrimitive>
+        <IsValueType>False</IsValueType>
+        <ManagedType>null</ManagedType>
+        <Module>mscorlib.dll</Module>
+      </BaseType>
       <FullName>System.Int32[]</FullName>
       <HasElementType>True</HasElementType>
       <IsArray>True</IsArray>
@@ -158,6 +183,21 @@ namespace Debugger.Tests {
       <ManagedType>System.Array</ManagedType>
       <Module exception="The type is not a class or value type." />
     </type>
+    <array.Length Type="Value" ToString="array.Length = 5">
+      <ArrayDimensions exception="Value is not an array" />
+      <ArrayLenght exception="Value is not an array" />
+      <ArrayRank exception="Value is not an array" />
+      <AsString>5</AsString>
+      <Expression>array.Length</Expression>
+      <HasExpired>False</HasExpired>
+      <IsArray>False</IsArray>
+      <IsInteger>True</IsInteger>
+      <IsNull>False</IsNull>
+      <IsObject>False</IsObject>
+      <IsPrimitive>True</IsPrimitive>
+      <PrimitiveValue>5</PrimitiveValue>
+      <Type>System.Int32</Type>
+    </array.Length>
     <ProcessExited />
   </Test>
 </DebuggerTests>

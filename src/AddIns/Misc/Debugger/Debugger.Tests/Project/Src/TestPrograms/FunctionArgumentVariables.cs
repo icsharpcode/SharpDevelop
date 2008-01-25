@@ -124,11 +124,11 @@ namespace Debugger.Tests {
         <PrimitiveValue>A</PrimitiveValue>
         <Type>System.String</Type>
       </Item>
-      <Item Type="Value" ToString="s_null = &lt;null&gt;">
+      <Item Type="Value" ToString="s_null = null">
         <ArrayDimensions exception="Value is not an array" />
         <ArrayLenght exception="Value is not an array" />
         <ArrayRank exception="Value is not an array" />
-        <AsString>&lt;null&gt;</AsString>
+        <AsString>null</AsString>
         <Expression>s_null</Expression>
         <HasExpired>False</HasExpired>
         <IsArray>False</IsArray>
