@@ -16,7 +16,10 @@ namespace Debugger.MetaData
 	/// Represents a type in a debugee. That is, a class, array, value type or a primitive type.
 	/// This class mimics the <see cref="System.Type"/> class.
 	/// </summary>
-	/// <remarks> If two types are identical, the references to DebugType will also be identical </remarks>
+	/// <remarks>
+	/// If two types are identical, the references to DebugType will also be identical 
+	/// Type will be loaded once per each appdomain.
+	/// </remarks>
 	public partial class DebugType: DebuggerObject
 	{
 		Process process;
@@ -209,6 +212,16 @@ namespace Debugger.MetaData
 			}
 		}
 		
+		internal uint? AppDomainID {
+			get {
+				if (IsClass || IsValueType) {
+					return this.Module.CorModule.Assembly.AppDomain.ID;
+				} else {
+					return null;
+				}
+			}
+		}
+		
 		/// <summary>
 		/// Gets the type from which this type inherits. 
 		/// <para>
@@ -219,11 +232,11 @@ namespace Debugger.MetaData
 			get {
 				// corType.Base does not work for arrays
 				if (this.IsArray) {
-					return DebugType.GetType(this.Process, "System.Array");
+					return DebugType.GetType(this.Process, AppDomainID, "System.Array");
 				}
 				// corType.Base does not work for primitive types
 				if (this.IsPrimitive) {
-					return DebugType.GetType(this.Process, "System.Object");
+					return DebugType.GetType(this.Process, AppDomainID, "System.Object");
 				}
 				ICorDebugType baseType = corType.Base;
 				if (baseType != null) {
@@ -429,9 +442,7 @@ namespace Debugger.MetaData
 				}
 				if (this.IsClass || this.IsValueType) {
 					return (other.IsClass || other.IsValueType) &&
-						   // Test fullpath since module can be loaded multiple times to different appdomains
-						   // eg during unit testing
-					       other.Module.FullPath == this.Module.FullPath &&
+					       other.Module == this.Module &&
 					       other.MetadataToken == this.MetadataToken;
 				}
 				throw new DebuggerException("Unknown type");
@@ -440,14 +451,16 @@ namespace Debugger.MetaData
 			}
 		}
 		
-		public static DebugType GetType(Process process, string fullTypeName)
+		public static DebugType GetType(Process process, uint? domainID, string fullTypeName)
 		{
 			foreach(Module module in process.Modules) {
-				try {
-					uint token = module.MetaData.FindTypeDefByName(fullTypeName, 0).Token;
-					return Create(process, module.CorModule.GetClassFromToken(token));
-				} catch {
-					continue;
+				if (!domainID.HasValue || domainID == module.CorModule.Assembly.AppDomain.ID) {
+					try {
+						uint token = module.MetaData.FindTypeDefByName(fullTypeName, 0 /* enclosing class for nested */).Token;
+						return Create(process, module.CorModule.GetClassFromToken(token));
+					} catch {
+						continue;
+					}
 				}
 			}
 			return null;

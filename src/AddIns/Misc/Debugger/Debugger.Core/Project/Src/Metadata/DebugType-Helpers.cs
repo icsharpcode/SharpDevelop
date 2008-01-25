@@ -55,6 +55,11 @@ namespace Debugger.MetaData
 			return QueryMembers<T>(bindingFlags, null, null);
 		}
 		
+		List<T> QueryMembers<T>(string name) where T:MemberInfo
+		{
+			return QueryMembers<T>(BindingFlags.All, name, null);
+		}
+		
 		T QueryMember<T>(string name) where T:MemberInfo
 		{
 			List<T> result = QueryMembers<T>(BindingFlags.All, name, null);
@@ -145,6 +150,18 @@ namespace Debugger.MetaData
 			return QueryMembers<MemberInfo>(BindingFlags.Public);
 		}
 		
+		/// <summary> Return all members with the given name.</summary>
+		public IList<MemberInfo> GetMembers(string name)
+		{
+			return QueryMembers<MemberInfo>(name);
+		}
+		
+		/// <summary> Return all members satisfing binding flags.</summary>
+		public IList<MemberInfo> GetMembers(string name, BindingFlags bindingFlags)
+		{
+			return QueryMembers<MemberInfo>(bindingFlags, name, null);
+		}
+		
 		/// <summary> Return all members satisfing binding flags.</summary>
 		public IList<MemberInfo> GetMembers(BindingFlags bindingFlags)
 		{
@@ -182,6 +199,12 @@ namespace Debugger.MetaData
 			return QueryMember<FieldInfo>(name);
 		}
 		
+		/// <summary> Return fields with the given name</summary>
+		public IList<FieldInfo> GetFields(string name)
+		{
+			return QueryMembers<FieldInfo>(name);
+		}
+		
 		/// <summary> Return first field with the given token</summary>
 		public FieldInfo GetField(uint token)
 		{
@@ -207,6 +230,12 @@ namespace Debugger.MetaData
 			return QueryMember<MethodInfo>(name);
 		}
 		
+		/// <summary> Return methods with the given name</summary>
+		public IList<MethodInfo> GetMethods(string name)
+		{
+			return QueryMembers<MethodInfo>(name);
+		}
+		
 		/// <summary> Return first method with the given token</summary>
 		public MethodInfo GetMethod(uint token)
 		{
@@ -230,6 +259,12 @@ namespace Debugger.MetaData
 		public PropertyInfo GetProperty(string name)
 		{
 			return QueryMember<PropertyInfo>(name);
+		}
+		
+		/// <summary> Return propertyies with the given name</summary>
+		public IList<PropertyInfo> GetProperties(string name)
+		{
+			return QueryMembers<PropertyInfo>(name);
 		}
 		
 		/// <summary> Return first property with the given token</summary>

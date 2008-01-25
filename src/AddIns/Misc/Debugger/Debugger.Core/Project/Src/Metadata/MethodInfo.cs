@@ -163,26 +163,23 @@ namespace Debugger.MetaData
 		/// <summary>
 		/// Get a method from a managed type, method name and argument count
 		/// </summary>
-		public static MethodInfo GetFromName(Process process, System.Type type, string name, int paramCount)
+		public static MethodInfo GetFromName(Process process, uint? domainID, System.Type type, string methodName, int paramCount)
 		{
 			if (type.IsNested) throw new DebuggerException("Not implemented for nested types");
 			if (type.IsGenericType) throw new DebuggerException("Not implemented for generic types");
 			if (type.IsGenericParameter) throw new DebuggerException("Type can not be generic parameter");
 			
-			foreach(Module module in process.Modules) {
-				TypeDefProps typeDefProps = module.MetaData.FindTypeDefByName(type.FullName, 0 /* enclosing class for nested */);
-				foreach(MethodProps methodProps in module.MetaData.EnumMethodsWithName(typeDefProps.Token, name)) {
-					if (module.MetaData.GetParamCount(methodProps.Token) == paramCount) {
-						ICorDebugFunction corFunction = module.CorModule.GetFunctionFromToken(methodProps.Token);
-						ICorDebugClass2 corClass = corFunction.Class.As<ICorDebugClass2>();
-						ICorDebugType corType = corClass.GetParameterizedType(type.IsValueType ? (uint)CorElementType.VALUETYPE : (uint)CorElementType.CLASS,
-						                                                      0,
-						                                                      new ICorDebugType[] {});
-						return DebugType.Create(process, corType).GetMethod(methodProps.Token);
-					}
+			DebugType debugType = DebugType.GetType(process, domainID, type.FullName);
+			if (debugType == null) {
+				throw new DebuggerException("Type " + type.FullName + " not found");
+			}
+			
+			foreach(MethodInfo methodInfo in debugType.GetMethods(methodName)) {
+				if (methodInfo.ParameterCount == paramCount) {
+					return methodInfo;
 				}
 			}
-			throw new DebuggerException("Not found");
+			throw new DebuggerException("Method " + methodName + " not found");
 		}
 		
 		internal ISymUnmanagedMethod SymMethod {

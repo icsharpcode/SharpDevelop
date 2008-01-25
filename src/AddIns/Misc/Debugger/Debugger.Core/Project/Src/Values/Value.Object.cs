@@ -238,7 +238,7 @@ namespace Debugger
 		{
 			if (IsPrimitive) return AsString;
 			// if (!IsObject) // Can invoke on primitives
-			return Eval.InvokeMethod(Process, typeof(object), "ToString", this, new Value[] {}).AsString;
+			return Eval.InvokeMethod(Process, this.Type.AppDomainID, typeof(object), "ToString", this, new Value[] {}).AsString;
 		}
 		
 		#region Convenience overload methods

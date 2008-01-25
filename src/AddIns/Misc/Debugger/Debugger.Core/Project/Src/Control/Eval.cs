@@ -170,9 +170,9 @@ namespace Debugger
 		#region Convenience methods
 		
 		/// <summary> Synchronously calls a function and returns its return value </summary>
-		public static Value InvokeMethod(Process process, System.Type type, string name, Value thisValue, Value[] args)
+		public static Value InvokeMethod(Process process, uint? domainID, System.Type type, string name, Value thisValue, Value[] args)
 		{
-			return InvokeMethod(MethodInfo.GetFromName(process, type, name, args.Length), thisValue, args);
+			return InvokeMethod(MethodInfo.GetFromName(process, domainID, type, name, args.Length), thisValue, args);
 		}
 		
 		#endregion
