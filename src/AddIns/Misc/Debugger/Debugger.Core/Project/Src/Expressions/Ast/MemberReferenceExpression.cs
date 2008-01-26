@@ -35,7 +35,7 @@ namespace Debugger.Expressions
 			get { return arguments; }
 		}
 		
-		public MemberReferenceExpression(Expression targetObject, MemberInfo memberInfo, Expression[] arguments)
+		public MemberReferenceExpression(Expression targetObject, MemberInfo memberInfo, params Expression[] arguments)
 		{
 			if (memberInfo == null) throw new ArgumentNullException("memberInfo");
 			

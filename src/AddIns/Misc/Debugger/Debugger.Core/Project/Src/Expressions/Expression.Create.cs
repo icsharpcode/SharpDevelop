@@ -31,12 +31,17 @@ namespace Debugger.Expressions
 		
 		public Expression AppendFieldReference(FieldInfo fieldInfo)
 		{
-			return new MemberReferenceExpression(this, fieldInfo, null);
+			return AppendMemberReference(fieldInfo);
 		}
 		
 		public Expression AppendPropertyReference(PropertyInfo propertyInfo)
 		{
-			return new MemberReferenceExpression(this, propertyInfo, null);
+			return AppendMemberReference(propertyInfo);
+		}
+		
+		public Expression AppendMemberReference(MemberInfo memberInfo, params Expression[] args)
+		{
+			return new MemberReferenceExpression(this, memberInfo, args);
 		}
 		
 		public Expression[] AppendObjectMembers(DebugType type, BindingFlags bindingFlags)

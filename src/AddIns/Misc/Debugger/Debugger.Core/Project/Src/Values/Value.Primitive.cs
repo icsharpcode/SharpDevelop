@@ -59,10 +59,12 @@ namespace Debugger
 				if (CorType == CorElementType.STRING) {
 					throw new NotImplementedException();
 				} else {
+					if (value == null) {
+						throw new DebuggerException("Can not set primitive value to null");
+					}
 					object newValue;
-					TypeConverter converter = TypeDescriptor.GetConverter(this.Type.ManagedType);
 					try {
-						newValue = converter.ConvertFrom(value);
+						newValue = Convert.ChangeType(value, this.Type.ManagedType);
 					} catch {
 						throw new NotSupportedException("Can not convert " + value.GetType().ToString() + " to " + this.Type.ManagedType.ToString());
 					}

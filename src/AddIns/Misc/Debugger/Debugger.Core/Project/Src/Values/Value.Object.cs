@@ -99,7 +99,7 @@ namespace Debugger
 			Expression objectInstanceExpression = objectInstance != null ? objectInstance.Expression : new EmptyExpression();
 			return new Value(
 				fieldInfo.Process,
-				new MemberReferenceExpression(objectInstanceExpression, fieldInfo, null),
+				new MemberReferenceExpression(objectInstanceExpression, fieldInfo),
 				GetFieldCorValue(objectInstance, fieldInfo)
 			);
 		}

@@ -155,6 +155,18 @@ namespace Debugger.MetaData
 			}
 		}
 		
+		/// <summary> Return an interface with the given name </summary>
+		/// <returns> Null if not found </returns>
+		public DebugType GetInterface(string fullName)
+		{
+			foreach(DebugType inter in this.Interfaces) {
+				if (inter.FullName == fullName) {
+					return inter;
+				}
+			}
+			return null;
+		}
+		
 		/// <summary> Returns generics arguments for a type or an emtpy 
 		/// array for non-generic types. </summary>
 		public DebugType[] GetGenericArguments()
@@ -460,6 +472,12 @@ namespace Debugger.MetaData
 		/// <remarks> Returns false if the given type is same as the current type </remarks>
 		public bool IsSubclassOf(DebugType superType)
 		{
+			// Does this type implement the interface?
+			if (superType.IsInterface) {
+				foreach(DebugType inter in this.Interfaces) {
+					if (inter == superType) return true;
+				}
+			}
 			DebugType type = this.BaseType;
 			while (type != null) {
 				if (type.Equals(superType)) return true;

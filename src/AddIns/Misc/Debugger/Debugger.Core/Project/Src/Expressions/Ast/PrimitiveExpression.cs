@@ -7,6 +7,8 @@
 
 using System;
 
+using Debugger.MetaData;
+
 namespace Debugger.Expressions
 {
 	/// <summary>
@@ -37,8 +39,7 @@ namespace Debugger.Expressions
 		
 		protected override Value EvaluateInternal(StackFrame context)
 		{
-			// TODO: Need for literal method arguments.  Use Eval to create value.
-			throw new NotImplementedException();
+			return Eval.CreateValue(context.Process, value);
 		}
 		
 		#region GetHashCode and Equals

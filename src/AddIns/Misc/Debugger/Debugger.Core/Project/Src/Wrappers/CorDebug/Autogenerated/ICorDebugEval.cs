@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
@@ -183,7 +183,7 @@ namespace Debugger.Wrappers.CorDebug
 		{
 			ICorDebugValue ppValue;
 			Debugger.Interop.CorDebug.ICorDebugValue out_ppValue;
-			this.WrappedObject.CreateValue(elementType, pElementClass.WrappedObject, out out_ppValue);
+			this.WrappedObject.CreateValue(elementType, pElementClass == null ? null : pElementClass.WrappedObject, out out_ppValue);
 			ppValue = ICorDebugValue.Wrap(out_ppValue);
 			return ppValue;
 		}

@@ -82,7 +82,7 @@ namespace Debugger
 			this.state = EvalState.Evaluating;
 		}
 		
-		static Eval CreateEval(Process process, string description, EvalStarter evalStarter)
+		static ICorDebugEval CreateCorEval(Process process)
 		{
 			process.AssertPaused();
 			
@@ -98,7 +98,12 @@ namespace Debugger
 				throw new GetValueException("Can not evaluate because thread is not at a safe point");
 			}
 			
-			ICorDebugEval corEval = targetThread.CorThread.CreateEval();
+			return targetThread.CorThread.CreateEval();
+		}
+		
+		static Eval CreateEval(Process process, string description, EvalStarter evalStarter)
+		{
+			ICorDebugEval corEval = CreateCorEval(process);
 			
 			Eval newEval = new Eval(process, description, corEval);
 			
@@ -225,6 +230,28 @@ namespace Debugger
 				(uint)genericArgs.Length, genericArgs,
 				(uint)corArgs.Count, corArgs.ToArray()
 			);
+		}
+		
+		public static Value CreateValue(Process process, object value)
+		{
+			CorElementType corElemType; 
+			if (value is int) {
+				corElemType = CorElementType.I4;
+			} else {
+				throw new NotImplementedException();
+			}
+			ICorDebugEval corEval = CreateCorEval(process);
+			ICorDebugValue corValue = corEval.CreateValue((uint)corElemType, null);
+			Value v = new Value(process, new Expressions.PrimitiveExpression(value), corValue);
+			v.PrimitiveValue = value;
+			return v;
+		}
+		
+		public static Value CreateValueForType(Process process, DebugType debugType)
+		{
+			ICorDebugEval corEval = CreateCorEval(process);
+			ICorDebugValue corValue = corEval.CastTo<ICorDebugEval2>().CreateValueForType(debugType.CorType);
+			return new Value(process, corValue);
 		}
 		
 		#region Convenience methods

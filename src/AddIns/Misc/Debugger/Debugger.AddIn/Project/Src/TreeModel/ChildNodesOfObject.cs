@@ -32,6 +32,10 @@ namespace Debugger.AddIn.TreeModel
 			{
 				yield return new StaticMembersNode(targetObject, shownType);
 			}
+			DebugType iListType = shownType.GetInterface(typeof(IList).FullName);
+			if (iListType != null) {
+				yield return new IListNode(targetObject, iListType);
+			}
 			foreach(Expression childExpr in targetObject.AppendObjectMembers(shownType, Flags)) {
 				yield return ValueNode.Create(childExpr);
 			}
