@@ -11,15 +11,33 @@ using System.Diagnostics;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {
-	public class DefaultCompilationUnit : ICompilationUnit
+	public class DefaultCompilationUnit : AbstractFreezable, ICompilationUnit
 	{
-		public static readonly ICompilationUnit DummyCompilationUnit = new DefaultCompilationUnit(DefaultProjectContent.DummyProjectContent);
+		public static readonly ICompilationUnit DummyCompilationUnit = new DefaultCompilationUnit(DefaultProjectContent.DummyProjectContent).FreezeAndReturnSelf();
 		
-		List<IUsing> usings  = new List<IUsing>();
-		List<IClass> classes = new List<IClass>();
-		List<IAttribute> attributes = new List<IAttribute>();
-		List<FoldingRegion> foldingRegions = new List<FoldingRegion>();
-		List<TagComment> tagComments = new List<TagComment>();
+		DefaultCompilationUnit FreezeAndReturnSelf()
+		{
+			Freeze();
+			return this;
+		}
+		
+		IList<IUsing> usings  = new List<IUsing>();
+		IList<IClass> classes = new List<IClass>();
+		IList<IAttribute> attributes = new List<IAttribute>();
+		IList<FoldingRegion> foldingRegions = new List<FoldingRegion>();
+		IList<TagComment> tagComments = new List<TagComment>();
+		
+		protected override void FreezeInternal()
+		{
+			// Deep Freeze: freeze lists and their contents
+			usings = FreezeList(usings);
+			classes = FreezeList(classes);
+			attributes = FreezeList(attributes);
+			foldingRegions = FreezeList(foldingRegions);
+			tagComments = FreezeList(tagComments);
+			
+			base.FreezeInternal();
+		}
 		
 		bool errorsDuringCompile = false;
 		object tag               = null;
@@ -35,6 +53,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return fileName;
 			}
 			set {
+				CheckBeforeMutation();
 				fileName = value;
 			}
 		}
@@ -51,6 +70,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return errorsDuringCompile;
 			}
 			set {
+				CheckBeforeMutation();
 				errorsDuringCompile = value;
 			}
 		}
@@ -60,47 +80,48 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return tag;
 			}
 			set {
+				CheckBeforeMutation();
 				tag = value;
 			}
 		}
 		
-		public virtual List<IUsing> Usings {
+		public virtual IList<IUsing> Usings {
 			get {
 				return usings;
 			}
 		}
 
-		public virtual List<IAttribute> Attributes {
+		public virtual IList<IAttribute> Attributes {
 			get {
 				return attributes;
 			}
 		}
 
-		public virtual List<IClass> Classes {
+		public virtual IList<IClass> Classes {
 			get {
 				return classes;
 			}
 		}
 		
-		public List<FoldingRegion> FoldingRegions {
+		public IList<FoldingRegion> FoldingRegions {
 			get {
 				return foldingRegions;
 			}
 		}
 
-		public virtual List<IComment> MiscComments {
+		public virtual IList<IComment> MiscComments {
 			get {
 				return null;
 			}
 		}
 
-		public virtual List<IComment> DokuComments {
+		public virtual IList<IComment> DokuComments {
 			get {
 				return null;
 			}
 		}
 
-		public virtual List<TagComment> TagComments {
+		public virtual IList<TagComment> TagComments {
 			get {
 				return tagComments;
 			}

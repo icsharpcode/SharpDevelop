@@ -10,13 +10,13 @@ using System.Collections.Generic;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {
-	public interface IUsing
+	public interface IUsing : IFreezable
 	{
 		DomRegion Region {
 			get;
 		}
 		
-		List<string> Usings {
+		IList<string> Usings {
 			get;
 		}
 		
@@ -27,7 +27,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// <summary>
 		/// Gets the list of aliases. Can be null when there are no aliases!
 		/// </summary>
-		SortedList<string, IReturnType> Aliases {
+		IDictionary<string, IReturnType> Aliases {
 			get;
 		}
 		

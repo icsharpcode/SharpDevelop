@@ -10,9 +10,9 @@ using System.Collections.Generic;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {
-	public class DefaultParameter : IParameter
+	public class DefaultParameter : AbstractFreezable, IParameter
 	{
-		public static readonly IList<IParameter> EmptyParameterList = new List<IParameter>().AsReadOnly();
+		public static readonly IList<IParameter> EmptyParameterList = EmptyList<IParameter>.Instance;
 		
 		string name;
 		string documentation;
@@ -24,6 +24,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 		ParameterModifiers  modifier;
 		DomRegion           region;
 		IList<IAttribute>   attributes;
+		
+		protected override void FreezeInternal()
+		{
+			attributes = FreezeList(attributes);
+			base.FreezeInternal();
+		}
 		
 		protected DefaultParameter(string name)
 		{
@@ -76,6 +82,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 //				return (string)AbstractNamedEntity.fullyQualifiedNames[nameHashCode];
 			}
 			set {
+				CheckBeforeMutation();
 				name = value;
 //				nameHashCode = value.GetHashCode();
 //				if (AbstractNamedEntity.fullyQualifiedNames[nameHashCode] == null) {
@@ -89,6 +96,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return returnType;
 			}
 			set {
+				CheckBeforeMutation();
 				returnType = value;
 			}
 		}
@@ -101,6 +109,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return attributes;
 			}
 			set {
+				CheckBeforeMutation();
 				attributes = value;
 			}
 		}
@@ -110,6 +119,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return modifier;
 			}
 			set {
+				CheckBeforeMutation();
 				modifier = value;
 			}
 		}
@@ -123,6 +133,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 //				return (string)AbstractDecoration.documentationHashtable[documentationHash];
 			}
 			set {
+				CheckBeforeMutation();
 				documentation = value;
 //				documentationHash = value.GetHashCode();
 //				if (AbstractDecoration.documentationHashtable[documentationHash] == null) {

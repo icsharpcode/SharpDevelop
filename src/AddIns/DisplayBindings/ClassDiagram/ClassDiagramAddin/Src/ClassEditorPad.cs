@@ -77,7 +77,7 @@ namespace ClassDiagramAddin
 
 			if (e.Member.DeclaringType is CompoundClass)
 			{
-				foreach (IClass c in ((CompoundClass)e.Member.DeclaringType).GetParts())
+				foreach (IClass c in ((CompoundClass)e.Member.DeclaringType).Parts)
 				{
 					System.Diagnostics.Debug.WriteLine(c.Name+": " +c.Modifiers.ToString());
 				}

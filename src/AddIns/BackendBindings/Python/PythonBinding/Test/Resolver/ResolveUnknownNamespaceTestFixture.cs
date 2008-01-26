@@ -34,8 +34,8 @@ namespace PythonBinding.Tests.Resolver
 			mockProjectContent = new MockProjectContent();
 			mockProjectContent.NamespacesToAdd.Add("Test");
 
-			parseInfo.DirtyCompilationUnit = new DefaultCompilationUnit(mockProjectContent);
-						
+			parseInfo.SetCompilationUnit(new DefaultCompilationUnit(mockProjectContent) { ErrorsDuringCompile = true });
+			
 			string python = "import System\r\n" +
 							"class Test:\r\n" +
 							"\tdef __init__(self):\r\n" +

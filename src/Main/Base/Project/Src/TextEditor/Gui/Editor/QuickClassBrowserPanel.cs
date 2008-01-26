@@ -8,6 +8,7 @@
 // created on 07.03.2004 at 19:12
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
@@ -384,7 +385,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			}
 		}
 		
-		void AddClasses(ArrayList items, ICollection classes)
+		void AddClasses(ArrayList items, ICollection<IClass> classes)
 		{
 			foreach (IClass c in classes) {
 				IAmbience ambience = AmbienceService.CurrentAmbience;

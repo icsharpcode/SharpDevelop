@@ -41,7 +41,7 @@ namespace PythonBinding.Tests.Resolver
 			mockProjectContent.ClassToReturnFromGetClass = systemConsoleClass;
 			
 			compilationUnit = CreateCompilationUnit(mockProjectContent);
-			parseInfo.DirtyCompilationUnit = compilationUnit;
+			parseInfo.SetCompilationUnit(compilationUnit);
 			
 			
 			string python = GetPythonScript();
@@ -51,8 +51,8 @@ namespace PythonBinding.Tests.Resolver
 			// Here the most recent compilation unit is modified so it has no
 			// class information. The best compilation unit (i.e. the valid one) 
 			// should be used instead by the python resolver.
-			parseInfo.ValidCompilationUnit = compilationUnit;
-			parseInfo.DirtyCompilationUnit = new DefaultCompilationUnit(mockProjectContent);
+			parseInfo.SetCompilationUnit(compilationUnit);
+			parseInfo.SetCompilationUnit(new DefaultCompilationUnit(mockProjectContent) { ErrorsDuringCompile = true });
 			
 			// Check that the best compilation unit is used and the resolve
 			// still works.

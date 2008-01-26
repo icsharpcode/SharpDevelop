@@ -532,11 +532,11 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return ResolveIdentifier(new IdentifierExpression(identifier) { StartLocation = position }, context);
 		}
 		
-		IField CreateLocalVariableField(LocalLookupVariable var)
+		IField CreateLocalVariableField(LocalLookupVariable variable)
 		{
-			IReturnType type = GetVariableType(var);
-			IField f = new DefaultField.LocalVariableField(type, var.Name, DomRegion.FromLocation(var.StartPos, var.EndPos), callingClass);
-			if (var.IsConst) {
+			IReturnType type = GetVariableType(variable);
+			var f = new DefaultField.LocalVariableField(type, variable.Name, DomRegion.FromLocation(variable.StartPos, variable.EndPos), callingClass);
+			if (variable.IsConst) {
 				f.Modifiers |= ModifierEnum.Const;
 			}
 			return f;
@@ -900,13 +900,10 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		ReadOnlyCollection<IMethodOrProperty> cachedExtensionMethods;
 		IClass cachedExtensionMethods_LastClass; // invalidate cache when callingClass != LastClass
 		
-		static readonly IMethod[] emptyMethodList = new IMethod[0];
-		static readonly ReadOnlyCollection<IMethodOrProperty> emptyMethodOrPropertyList = new ReadOnlyCollection<IMethodOrProperty>(new IMethodOrProperty[0]);
-		
 		public ReadOnlyCollection<IMethodOrProperty> SearchAllExtensionMethods()
 		{
 			if (callingClass == null)
-				return emptyMethodOrPropertyList;
+				return EmptyList<IMethodOrProperty>.Instance;
 			if (callingClass != cachedExtensionMethods_LastClass) {
 				cachedExtensionMethods_LastClass = callingClass;
 				cachedExtensionMethods = new ReadOnlyCollection<IMethodOrProperty>(CtrlSpaceResolveHelper.FindAllExtensions(languageProperties, callingClass));

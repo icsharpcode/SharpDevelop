@@ -38,8 +38,8 @@ namespace PythonBinding.Tests.Resolver
 			myTestClass = new MockClass("MyTestClass");
 			mockProjectContent.NamespaceContentsToReturn.Add(myTestClass);
 
-			DefaultCompilationUnit cu = new DefaultCompilationUnit(mockProjectContent);
-			parseInfo.DirtyCompilationUnit = cu;
+			DefaultCompilationUnit cu = new DefaultCompilationUnit(mockProjectContent) { ErrorsDuringCompile = true };
+			parseInfo.SetCompilationUnit(cu);
 			
 			// Add usings.
 			DefaultUsing newUsing = new DefaultUsing(cu.ProjectContent);

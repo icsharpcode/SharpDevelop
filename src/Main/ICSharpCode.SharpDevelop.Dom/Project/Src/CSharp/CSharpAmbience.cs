@@ -9,6 +9,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using Alias = System.String;
 
 namespace ICSharpCode.SharpDevelop.Dom.CSharp
 {
@@ -101,6 +102,12 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 				} else if (c.IsAbstract && c.ClassType != ClassType.Interface) {
 					builder.Append("abstract ");
 				}
+				#if DEBUG
+				if (c.HasCompoundClass)
+					builder.Append("multiple_parts ");
+				if (c is CompoundClass)
+					builder.Append("compound ");
+				#endif
 			}
 			
 			if (IncludeHtmlMarkup) {

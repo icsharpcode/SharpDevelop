@@ -305,7 +305,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					
 					// but for DelegateCall(params).* completion, we use the delegate's
 					// return type instead of the delegate type itself
-					IMethod method = c.Methods.Find(innerMethod => innerMethod.Name == "Invoke");
+					IMethod method = c.Methods.FirstOrDefault(innerMethod => innerMethod.Name == "Invoke");
 					if (method != null) {
 						rr = rr.Clone();
 						rr.ResolvedType = method.ReturnType;

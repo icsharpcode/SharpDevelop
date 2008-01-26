@@ -19,14 +19,47 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		ICompilationUnit compilationUnit;
 		
-		List<IReturnType> baseTypes   = null;
+		IList<IReturnType> baseTypes;
 		
-		List<IClass>    innerClasses = null;
-		List<IField>    fields       = null;
-		List<IProperty> properties   = null;
-		List<IMethod>   methods      = null;
-		List<IEvent>    events       = null;
-		IList<ITypeParameter> typeParameters = null;
+		IList<IClass>    innerClasses;
+		IList<IField>    fields;
+		IList<IProperty> properties;
+		IList<IMethod>   methods;
+		IList<IEvent>    events;
+		IList<ITypeParameter> typeParameters;
+		
+		protected override void FreezeInternal()
+		{
+			baseTypes = FreezeList(baseTypes);
+			innerClasses = FreezeList(innerClasses);
+			fields = FreezeList(fields);
+			properties = FreezeList(properties);
+			methods = FreezeList(methods);
+			events = FreezeList(events);
+			typeParameters = FreezeList(typeParameters);
+			base.FreezeInternal();
+		}
+		
+		public virtual IClass Unfreeze()
+		{
+			DefaultClass copy = new DefaultClass(compilationUnit, DeclaringType);
+			copy.FullyQualifiedName = this.FullyQualifiedName;
+			copy.Attributes.AddRange(this.Attributes);
+			copy.BaseTypes.AddRange(this.BaseTypes);
+			copy.BodyRegion = this.BodyRegion;
+			copy.ClassType = this.ClassType;
+			copy.Documentation = this.Documentation;
+			copy.Events.AddRange(this.Events);
+			copy.Fields.AddRange(this.Fields);
+			copy.InnerClasses.AddRange(this.InnerClasses);
+			copy.Methods.AddRange(this.Methods);
+			copy.Modifiers = this.Modifiers;
+			copy.Properties.AddRange(this.Properties);
+			copy.Region = this.Region;
+			copy.TypeParameters.AddRange(this.TypeParameters);
+			copy.UserData = this.UserData;
+			return copy;
+		}
 		
 		byte flags;
 		const byte hasPublicOrInternalStaticMembersFlag = 0x02;
@@ -70,6 +103,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return flags;
 			}
 			set {
+				CheckBeforeMutation();
 				flags = value;
 			}
 		}
@@ -103,22 +137,42 @@ namespace ICSharpCode.SharpDevelop.Dom
 			Modifiers = modifiers;
 		}
 		
-		IReturnType defaultReturnType;
+		// fields must be volatile to ensure that the optimizer doesn't reorder accesses to it
+		// or causes DefaultReturnType to return null when the local copy of this.defaultReturnType is
+		// optimized away.
+		volatile IReturnType defaultReturnType;
+		bool hasCompoundClass;
 		
 		public IReturnType DefaultReturnType {
 			get {
-				if (defaultReturnType == null)
-					defaultReturnType = CreateDefaultReturnType();
+				IReturnType defaultReturnType = this.defaultReturnType;
+				if (defaultReturnType == null) {
+					lock (this) {
+						this.defaultReturnType = defaultReturnType = CreateDefaultReturnType();
+					}
+				}
 				return defaultReturnType;
 			}
 		}
 		
 		protected virtual IReturnType CreateDefaultReturnType()
 		{
-			if (IsPartial) {
+			if (hasCompoundClass) {
 				return new GetClassReturnType(ProjectContent, FullyQualifiedName, TypeParameters.Count);
 			} else {
 				return new DefaultReturnType(this);
+			}
+		}
+		
+		bool IClass.HasCompoundClass {
+			get { return hasCompoundClass; }
+			set {
+				if (hasCompoundClass != value) {
+					lock (this) {
+						hasCompoundClass = value;
+						defaultReturnType = null;
+					}
+				}
 			}
 		}
 		
@@ -127,11 +181,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return (this.Modifiers & ModifierEnum.Partial) == ModifierEnum.Partial;
 			}
 			set {
+				CheckBeforeMutation();
 				if (value)
 					this.Modifiers |= ModifierEnum.Partial;
 				else
 					this.Modifiers &= ~ModifierEnum.Partial;
-				defaultReturnType = null; // re-create default return type
 			}
 		}
 		
@@ -143,10 +197,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		protected override void OnFullyQualifiedNameChanged(EventArgs e)
 		{
 			base.OnFullyQualifiedNameChanged(e);
-			GetClassReturnType rt = defaultReturnType as GetClassReturnType;
-			if (rt != null) {
-				rt.SetFullyQualifiedName(FullyQualifiedName);
-			}
+			defaultReturnType = null; // re-create default return type
 		}
 		
 		public ICompilationUnit CompilationUnit {
@@ -168,6 +219,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return classType;
 			}
 			set {
+				CheckBeforeMutation();
 				classType = value;
 			}
 		}
@@ -177,6 +229,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return region;
 			}
 			set {
+				CheckBeforeMutation();
 				region = value;
 			}
 		}
@@ -186,6 +239,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return bodyRegion;
 			}
 			set {
+				CheckBeforeMutation();
 				bodyRegion = value;
 			}
 		}
@@ -213,7 +267,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public List<IReturnType> BaseTypes {
+		public IList<IReturnType> BaseTypes {
 			get {
 				if (baseTypes == null) {
 					baseTypes = new List<IReturnType>();
@@ -222,7 +276,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public virtual List<IClass> InnerClasses {
+		public virtual IList<IClass> InnerClasses {
 			get {
 				if (innerClasses == null) {
 					innerClasses = new List<IClass>();
@@ -231,7 +285,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public virtual List<IField> Fields {
+		public virtual IList<IField> Fields {
 			get {
 				if (fields == null) {
 					fields = new List<IField>();
@@ -240,7 +294,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public virtual List<IProperty> Properties {
+		public virtual IList<IProperty> Properties {
 			get {
 				if (properties == null) {
 					properties = new List<IProperty>();
@@ -249,7 +303,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public virtual List<IMethod> Methods {
+		public virtual IList<IMethod> Methods {
 			get {
 				if (methods == null) {
 					methods = new List<IMethod>();
@@ -258,7 +312,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public virtual List<IEvent> Events {
+		public virtual IList<IEvent> Events {
 			get {
 				if (events == null) {
 					events = new List<IEvent>();
@@ -275,6 +329,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return typeParameters;
 			}
 			set {
+				CheckBeforeMutation();
 				typeParameters = value;
 			}
 		}

@@ -127,7 +127,7 @@ namespace ICSharpCode.SharpDevelop.Gui.ClassBrowser
 		public void ParserServiceParseInformationUpdated(object sender, ParseInformationEventArgs e)
 		{
 			lock (pending) {
-				pending.Add(new ICompilationUnit[] { e.ParseInformation.MostRecentCompilationUnit as ICompilationUnit, e.CompilationUnit});
+				pending.Add(new ICompilationUnit[] { e.OldCompilationUnit, e.NewCompilationUnit});
 			}
 			WorkbenchSingleton.SafeThreadAsyncCall(UpdateThread);
 		}

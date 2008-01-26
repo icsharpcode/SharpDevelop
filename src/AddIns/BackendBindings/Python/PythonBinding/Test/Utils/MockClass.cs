@@ -17,30 +17,14 @@ namespace PythonBinding.Tests.Utils
 	public class MockClass : IClass
 	{
 		string fullyQualifiedName = String.Empty;
-		ICompilationUnit compilationUnit;
 		
 		public MockClass(string name)
 		{
 			fullyQualifiedName = name;
 		}
 		
-		public string FullyQualifiedName {
-			get {
-				throw new NotImplementedException();
-			}
-			set {
-				throw new NotImplementedException();
-			}
-		}
-		
 		public IReturnType DefaultReturnType {
 			get { return new DefaultReturnType(this); }
-		}
-		
-		public string DotNetName {
-			get {
-				throw new NotImplementedException();
-			}
 		}
 		
 		public string Name {
@@ -63,6 +47,29 @@ namespace PythonBinding.Tests.Utils
 			}
 		}
 		
+		public ICompilationUnit CompilationUnit { get; set; }
+		
+		public IClass DeclaringType {
+			get { return null; }
+		}
+		
+		public List<IClass> GetAccessibleTypes(IClass callingClass)
+		{
+			return new List<IClass>();
+		}
+		
+		public string FullyQualifiedName {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public string DotNetName {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
 		public ClassType ClassType {
 			get {
 				throw new NotImplementedException();
@@ -73,11 +80,6 @@ namespace PythonBinding.Tests.Utils
 			get {
 				throw new NotImplementedException();
 			}
-		}
-		
-		public ICompilationUnit CompilationUnit {
-			get { return compilationUnit; }
-			set { compilationUnit = value; }
 		}
 		
 		public DomRegion Region {
@@ -92,52 +94,72 @@ namespace PythonBinding.Tests.Utils
 			}
 		}
 		
-		public System.Collections.Generic.List<IReturnType> BaseTypes {
+		public IList<IReturnType> BaseTypes {
 			get {
 				throw new NotImplementedException();
 			}
 		}
 		
-		public System.Collections.Generic.List<IClass> InnerClasses {
+		public IList<IClass> InnerClasses {
 			get {
 				throw new NotImplementedException();
 			}
 		}
 		
-		public System.Collections.Generic.List<IField> Fields {
+		public IList<IField> Fields {
 			get {
 				throw new NotImplementedException();
 			}
 		}
 		
-		public System.Collections.Generic.List<IProperty> Properties {
+		public IList<IProperty> Properties {
 			get {
 				throw new NotImplementedException();
 			}
 		}
 		
-		public System.Collections.Generic.List<IMethod> Methods {
+		public IList<IMethod> Methods {
 			get {
 				throw new NotImplementedException();
 			}
 		}
 		
-		public System.Collections.Generic.List<IEvent> Events {
+		public IList<IEvent> Events {
 			get {
 				throw new NotImplementedException();
 			}
 		}
 		
-		public System.Collections.Generic.IList<ITypeParameter> TypeParameters {
+		public IList<ITypeParameter> TypeParameters {
 			get {
 				throw new NotImplementedException();
 			}
 		}
 		
-		public System.Collections.Generic.IEnumerable<IClass> ClassInheritanceTree {
+		public IEnumerable<IClass> ClassInheritanceTree {
 			get {
 				throw new NotImplementedException();
 			}
+		}
+		
+		public IMember SearchMember(string memberName, LanguageProperties language)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public bool IsTypeInInheritanceTree(IClass possibleBaseClass)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public bool IsAccessible(IClass callingClass, bool isClassInInheritanceTree)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public int CompareTo(object obj)
+		{
+			throw new NotImplementedException();
 		}
 		
 		public IClass BaseClass {
@@ -173,20 +195,13 @@ namespace PythonBinding.Tests.Utils
 			}
 		}
 		
-		public IClass DeclaringType {
-			get { return null; }
-		}
-		
 		public ModifierEnum Modifiers {
 			get {
 				throw new NotImplementedException();
 			}
-			set {
-				throw new NotImplementedException();
-			}
 		}
 		
-		public System.Collections.Generic.IList<IAttribute> Attributes {
+		public IList<IAttribute> Attributes {
 			get {
 				throw new NotImplementedException();
 			}
@@ -303,6 +318,12 @@ namespace PythonBinding.Tests.Utils
 			}
 		}
 		
+		public bool IsFrozen {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
 		public IReturnType GetBaseType(int index)
 		{
 			throw new NotImplementedException();
@@ -318,35 +339,18 @@ namespace PythonBinding.Tests.Utils
 			throw new NotImplementedException();
 		}
 		
-		public List<IClass> GetAccessibleTypes(IClass callingClass)
-		{
-			return new List<IClass>();
-		}
-		
-		public IMember SearchMember(string memberName, LanguageProperties language)
+		public void Freeze()
 		{
 			throw new NotImplementedException();
 		}
 		
-		public bool IsTypeInInheritanceTree(IClass possibleBaseClass)
-		{
-			throw new NotImplementedException();
+		public bool HasCompoundClass {
+			get {
+				throw new NotImplementedException();
+			}
+			set {
+				throw new NotImplementedException();
+			}
 		}
-		
-		public bool IsAccessible(IClass callingClass, bool isClassInInheritanceTree)
-		{
-			throw new NotImplementedException();
-		}
-		
-		public bool MustBeShown(IClass callingClass, bool showStatic, bool isClassInInheritanceTree)
-		{
-			throw new NotImplementedException();
-		}
-		
-		public int CompareTo(object obj)
-		{
-			throw new NotImplementedException();
-		}
-		
 	}
 }

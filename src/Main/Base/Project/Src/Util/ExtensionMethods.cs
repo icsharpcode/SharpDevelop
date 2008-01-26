@@ -31,6 +31,15 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
+		/// <summary>
+		/// Adds all <paramref name="elements"/> to <paramref name="list"/>.
+		/// </summary>
+		public static void AddRange<T>(this ICollection<T> list, IEnumerable<T> elements)
+		{
+			foreach (T o in elements)
+				list.Add(o);
+		}
+		
 		public static ReadOnlyCollection<T> AsReadOnly<T>(this T[] arr)
 		{
 			return Array.AsReadOnly(arr);

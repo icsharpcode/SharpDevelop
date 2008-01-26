@@ -79,7 +79,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			
 			public int GetHashCode(SearchClassReturnType obj)
 			{
-				return obj.GetHashCode();
+				return obj.GetObjectHashCode();
 			}
 		}
 		

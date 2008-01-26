@@ -11,7 +11,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 {
 	/// <summary>
 	/// The GetClassReturnType is used when the class should be resolved on demand, but the
-	/// full name is already known. Example: ReflectionReturnType
+	/// full name is already known.
 	/// </summary>
 	public sealed class GetClassReturnType : ProxyReturnType
 	{
@@ -66,7 +66,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public void SetFullyQualifiedName(string fullName)
+		void SetFullyQualifiedName(string fullName)
 		{
 			if (fullName == null)
 				throw new ArgumentNullException("fullName");

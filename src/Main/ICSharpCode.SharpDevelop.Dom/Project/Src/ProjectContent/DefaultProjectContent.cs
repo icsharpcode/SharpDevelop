@@ -307,57 +307,51 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		protected void AddClassToNamespaceListInternal(IClass addClass)
 		{
+			// Freeze the class when adding it to the project content
+			addClass.Freeze();
+			
+			Debug.Assert(!(addClass is CompoundClass));
+			Debug.Assert(!addClass.HasCompoundClass);
+			
 			string fullyQualifiedName = addClass.FullyQualifiedName;
 			IClass existingClass = GetClassInternal(fullyQualifiedName, addClass.TypeParameters.Count, language);
 			if (existingClass != null && existingClass.TypeParameters.Count == addClass.TypeParameters.Count) {
-				//LoggingService.Debug("Adding partial class " + addClass.Name + " from " + Path.GetFileName(addClass.CompilationUnit.FileName));
+				LoggingService.Debug("Adding existing class " + addClass.Name + " from " + Path.GetFileName(addClass.CompilationUnit.FileName));
 				CompoundClass compound = existingClass as CompoundClass;
 				if (compound != null) {
 					// mark the class as partial
 					// (VB allows specifying the 'partial' modifier only on one part)
-					addClass.IsPartial = true;
+					addClass.HasCompoundClass = true;
 					
-					// possibly replace existing class (look for CU with same filename)
-					lock (compound.parts) {
-						for (int i = 0; i < compound.parts.Count; i++) {
-							if (IsEqualFileName(compound.parts[i].CompilationUnit.FileName, addClass.CompilationUnit.FileName)) {
-								compound.parts[i] = addClass;
-								compound.UpdateInformationFromParts();
-								//LoggingService.Debug("Replaced old part!");
-								return;
-							}
-						}
-						compound.parts.Add(addClass);
-						compound.UpdateInformationFromParts();
-					}
-					//LoggingService.Debug("Added new part!");
-					return;
-					
-				} else if (!IsEqualFileName(existingClass.CompilationUnit.FileName, addClass.CompilationUnit.FileName)) {
+					// add the new class to the compound class
+					List<IClass> newParts = new List<IClass>(compound.Parts);
+					newParts.Add(addClass);
+					// construct a replacement CompoundClass with the new part list
+					addClass = CompoundClass.Create(newParts);
+					LoggingService.Debug("Added new part / Replaced part! (old part count=" + compound.Parts.Count +", new part count=" + newParts.Count + ")");
+				} else {
 					// Instead of overwriting a class with another, treat both parts as partial.
 					// This fixes SD2-1217.
-					// But if the classes are in the same file, this is an update and we need to replace
-					// the class!
 					
 					if (!(addClass.IsPartial || language.ImplicitPartialClasses)) {
-						LoggingService.Info("Duplicate class " + fullyQualifiedName);
+						LoggingService.Info("Duplicate class " + fullyQualifiedName + ", creating compound");
+					} else {
+						LoggingService.Debug("Creating compound for " + fullyQualifiedName);
 					}
 					
 					// Merge existing non-partial class with addClass
+					addClass.HasCompoundClass = true;
+					existingClass.HasCompoundClass = true;
 					
-					// Ensure partial modifier is set everywhere:
-					addClass.IsPartial = true;
-					existingClass.IsPartial = true;
-					
-					addClass = compound = new CompoundClass(addClass);
-					compound.parts.Add(existingClass);
-					compound.UpdateInformationFromParts();
+					addClass = CompoundClass.Create(new[] { addClass, existingClass });
 				}
-			} else if (addClass.IsPartial) {
-				addClass = new CompoundClass(addClass);
-				//LoggingService.Debug("Compound created!");
 			}
-			
+			AddClassToNamespaceListInternal2(addClass);
+		}
+		
+		void AddClassToNamespaceListInternal2(IClass addClass)
+		{
+			string fullyQualifiedName = addClass.FullyQualifiedName;
 			IClass oldDictionaryClass;
 			if (GetClasses(language).TryGetValue(fullyQualifiedName, out oldDictionaryClass)) {
 				GenericClassContainer gcc = oldDictionaryClass as GenericClassContainer;
@@ -373,7 +367,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 			
 			foreach (Dictionary<string, IClass> classes in ClassLists) {
-				classes[addClass.FullyQualifiedName] = addClass;
+				classes[fullyQualifiedName] = addClass;
 			}
 			string nSpace = addClass.Namespace;
 			if (nSpace == null) {
@@ -382,7 +376,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			CreateNamespace(nSpace);
 			List<IClass> classList = GetNamespaces(this.language)[nSpace].Classes;
 			for (int i = 0; i < classList.Count; i++) {
-				if (classList[i].FullyQualifiedName == addClass.FullyQualifiedName) {
+				if (classList[i].FullyQualifiedName == fullyQualifiedName) {
 					classList[i] = addClass;
 					return;
 				}
@@ -473,9 +467,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public void UpdateCompilationUnit(ICompilationUnit oldUnit, ICompilationUnit parserOutput, string fileName)
 		{
+			parserOutput.Freeze();
 			lock (namespaces) {
 				if (oldUnit != null) {
-					RemoveClasses(oldUnit, parserOutput);
+					foreach (IClass c in oldUnit.Classes)
+						RemoveClass(c);
 					foreach (IAttribute attr in oldUnit.Attributes)
 						assemblyAttributes.Remove(attr);
 				}
@@ -488,45 +484,37 @@ namespace ICSharpCode.SharpDevelop.Dom
 			SearchClassReturnType.ClearCache();
 		}
 		
-		void RemoveClasses(ICompilationUnit oldUnit, ICompilationUnit newUnit)
-		{
-			foreach (IClass c in oldUnit.Classes) {
-				bool found = false;
-				// Partial classes always have to be removed. Otherwise editing the type
-				// arguments of a partial would leave the class registered in the wrong compound
-				// class. See SD2-1149.
-				if (!c.IsPartial) {
-					foreach (IClass c2 in newUnit.Classes) {
-						if (c.FullyQualifiedName == c2.FullyQualifiedName) {
-							found = true;
-							break;
-						}
-					}
-				}
-				if (!found) {
-					RemoveClass(c);
-				}
-			}
-		}
-		
 		protected void RemoveClass(IClass @class)
 		{
 			string fullyQualifiedName = @class.FullyQualifiedName;
 			int typeParameterCount = @class.TypeParameters.Count;
-			if (@class.IsPartial) {
+			if (@class.HasCompoundClass) {
+				LoggingService.Debug("Removing part " + @class.CompilationUnit.FileName + " from compound class " + @class.FullyQualifiedName);
+				
 				// remove a part of a partial class
 				// Use "as" cast to fix SD2-680: the stored class might be a part not marked as partial
 				CompoundClass compound = GetClassInternal(fullyQualifiedName, typeParameterCount, language) as CompoundClass;
-				if (compound == null) return;
+				if (compound == null) {
+					LoggingService.Warn("compound class not found");
+					return;
+				}
 				typeParameterCount = compound.TypeParameters.Count;
-				lock (compound) {
-					compound.parts.Remove(@class);
-					if (compound.parts.Count > 0) {
-						compound.UpdateInformationFromParts();
-						return;
-					} else {
-						@class = compound; // all parts removed, remove compound class
-					}
+				
+				List<IClass> newParts = new List<IClass>(compound.Parts);
+				newParts.Remove(@class);
+				if (newParts.Count > 1) {
+					LoggingService.Debug("Part removed, old part count = " + compound.Parts.Count + ", new part count=" + newParts.Count);
+					AddClassToNamespaceListInternal2(CompoundClass.Create(newParts));
+					return;
+				} else if (newParts.Count == 1) {
+					LoggingService.Debug("Second-to-last part removed (old part count = " + compound.Parts.Count + "), overwriting compound with last part");
+					newParts[0].HasCompoundClass = false;
+					AddClassToNamespaceListInternal2(newParts[0]);
+					return;
+				} else { // newParts.Count == 0
+					// this should not be possible, the compound should have been destroyed when there was only 1 part left
+					LoggingService.Warn("All parts removed, remove compound");
+					@class = compound; // all parts removed, remove compound class
 				}
 			}
 			
@@ -625,7 +613,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				IClass upperClass = GetClass(outerName, typeParameterCount, language, lookInReferences);
 				if (upperClass != null) {
 					foreach (IClass upperBaseClass in upperClass.ClassInheritanceTree) {
-						List<IClass> innerClasses = upperBaseClass.InnerClasses;
+						IList<IClass> innerClasses = upperBaseClass.InnerClasses;
 						if (innerClasses != null) {
 							string innerName = typeName.Substring(lastIndex + 1);
 							foreach (IClass innerClass in innerClasses) {
@@ -793,7 +781,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			// Try if name is already the full type name
 			IClass c = GetClass(name, request.TypeParameterCount);
 			if (c != null) {
-				return new SearchTypeResult(c.DefaultReturnType);
+				return new SearchTypeResult(c);
 			}
 			// fallback-class if the one with the right type parameter count is not found.
 			SearchTypeResult fallbackResult = SearchTypeResult.Empty;
@@ -806,9 +794,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 					c = GetClass(nameSpace, request.TypeParameterCount);
 					if (c != null) {
 						if (c.TypeParameters.Count == request.TypeParameterCount)
-							return new SearchTypeResult(c.DefaultReturnType);
+							return new SearchTypeResult(c);
 						else
-							fallbackResult = new SearchTypeResult(c.DefaultReturnType);
+							fallbackResult = new SearchTypeResult(c);
 					}
 					
 					int pos = fullname.LastIndexOf('.');
@@ -826,7 +814,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 						if (baseClass.ClassType == ClassType.Class) {
 							foreach (IClass innerClass in baseClass.InnerClasses) {
 								if (language.NameComparer.Equals(innerClass.Name, name))
-									return new SearchTypeResult(innerClass.DefaultReturnType);
+									return new SearchTypeResult(innerClass);
 							}
 						}
 					}

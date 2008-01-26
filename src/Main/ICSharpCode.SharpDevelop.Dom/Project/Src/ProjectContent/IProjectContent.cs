@@ -148,12 +148,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 	
 	public struct SearchTypeResult
 	{
-		public static readonly SearchTypeResult Empty = new SearchTypeResult(null);
+		public static readonly SearchTypeResult Empty = new SearchTypeResult(null, null);
 		
 		readonly IReturnType result;
 		readonly IUsing usedUsing;
 		
 		public SearchTypeResult(IReturnType result) : this(result, null) {}
+		
+		public SearchTypeResult(IClass c) : this(c != null ? c.DefaultReturnType : null) {}
 		
 		public SearchTypeResult(IReturnType result, IUsing usedUsing)
 		{

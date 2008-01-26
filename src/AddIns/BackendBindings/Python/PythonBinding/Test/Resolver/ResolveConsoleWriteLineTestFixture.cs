@@ -41,7 +41,7 @@ namespace PythonBinding.Tests.Resolver
 			mockProjectContent.ClassNameForGetClass = "Console";
 			
 			compilationUnit = new DefaultCompilationUnit(mockProjectContent);
-			parseInfo.DirtyCompilationUnit = compilationUnit;
+			parseInfo.SetCompilationUnit(compilationUnit);
 			
 			string python = "import System\r\n" +
 							"Console.WriteLine\r\n";

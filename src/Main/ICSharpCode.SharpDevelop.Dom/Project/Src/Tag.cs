@@ -9,7 +9,7 @@ using System;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {
-	public sealed class TagComment
+	public sealed class TagComment : Immutable
 	{
 		string key;
 		
@@ -26,17 +26,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get {
 				return commentString;
 			}
-			set {
-				commentString = value;
-			}
 		}
 		
 		public DomRegion Region {
 			get {
 				return region;
-			}
-			set {
-				region = value;
 			}
 		}
 		
@@ -44,6 +38,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			this.key = key;
 			this.region = region;
+		}
+		
+		public TagComment(string key, DomRegion region, string commentString)
+		{
+			this.key = key;
+			this.region = region;
+			this.commentString = commentString;
 		}
 	}
 }

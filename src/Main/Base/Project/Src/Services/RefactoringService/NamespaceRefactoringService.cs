@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.TextEditor.Document;
@@ -34,7 +35,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				return a.Usings[0].CompareTo(b.Usings[0]);
 			}
 			if (a.Aliases.Count != 0 && b.Aliases.Count != 0) {
-				return a.Aliases.Keys[0].CompareTo(b.Aliases.Keys[0]);
+				return a.Aliases.Keys.First().CompareTo(b.Aliases.Keys.First());
 			}
 			return 0;
 		}

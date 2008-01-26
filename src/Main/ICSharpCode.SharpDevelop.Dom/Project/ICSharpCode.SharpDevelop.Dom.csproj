@@ -62,6 +62,7 @@
     <Compile Include="..\..\GlobalAssemblyInfo.cs">
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Src\ExtensionMethods.cs" />
     <Compile Include="Src\Implementations\AbstractDecoration.cs" />
     <Compile Include="Src\Implementations\AbstractMember.cs" />
     <Compile Include="Src\Implementations\AbstractNamedEntity.cs" />
@@ -94,6 +95,7 @@
     <Compile Include="Src\Implementations\SearchClassReturnType.cs" />
     <Compile Include="Src\Implementations\SystemTypes.cs" />
     <Compile Include="Src\Interfaces\ExplicitInterfaceImplementation.cs" />
+    <Compile Include="Src\Interfaces\IFreezable.cs" />
     <Compile Include="Src\LazyList.cs" />
     <Compile Include="Src\NRefactoryResolver\CSharpToVBNetConvertVisitor.cs" />
     <Compile Include="Src\NRefactoryResolver\InferredReturnType.cs" />
@@ -104,6 +106,7 @@
     <Compile Include="Src\NRefactoryResolver\TypeVisitor.cs" />
     <Compile Include="Src\NRefactoryResolver\VBNetToCSharpConvertVisitor.cs" />
     <Compile Include="Src\ProjectContent\DomAssemblyName.cs" />
+    <Compile Include="Src\ReadOnlyDictionary.cs" />
     <Compile Include="Src\Refactoring\CodeGeneratorOptions.cs" />
     <Compile Include="Src\Refactoring\TextFinder.cs" />
     <Compile Include="Src\ReflectionLayer\DomPersistence.cs" />

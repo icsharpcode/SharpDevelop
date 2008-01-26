@@ -41,7 +41,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			if (compound == null)
 				return possibleCompound;
 			
-			IList<IClass> parts = compound.GetParts();
+			IList<IClass> parts = compound.Parts;
 			if (!string.IsNullOrEmpty(fileName)) {
 				// get the part with the requested file name
 				foreach (IClass part in parts) {

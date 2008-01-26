@@ -16,7 +16,7 @@ namespace UnitTesting.Tests.Utils
 		IProjectContent projectContent;
 		DomRegion region = DomRegion.Empty;
 		IList<IAttribute> attributes = new List<IAttribute>();
-		List<IMethod> methods = new List<IMethod>();
+		IList<IMethod> methods = new List<IMethod>();
 		string fullyQualifiedName = String.Empty;
 		string name = String.Empty;
 		string ns = String.Empty;
@@ -45,18 +45,6 @@ namespace UnitTesting.Tests.Utils
 				} else {
 					name = fullyQualifiedName;
 				}
-			}
-		}
-		
-		public IReturnType DefaultReturnType {
-			get {
-				throw new NotImplementedException();
-			}
-		}
-		
-		public string DotNetName {
-			get {
-				throw new NotImplementedException();
 			}
 		}
 		
@@ -93,12 +81,6 @@ namespace UnitTesting.Tests.Utils
 			}
 		}
 		
-		public ICompilationUnit CompilationUnit {
-			get {
-				throw new NotImplementedException();
-			}
-		}
-		
 		public DomRegion Region {
 			get {
 				return region;
@@ -108,43 +90,94 @@ namespace UnitTesting.Tests.Utils
 			}
 		}
 		
+		public IList<IMethod> Methods {
+			get {
+				return methods;
+			}
+		}
+		
+		public IClass BaseClass {
+			get {
+				return baseClass;
+			}
+			set {
+				baseClass = value;
+			}
+		}
+		
+		public ModifierEnum Modifiers {
+			get {
+				return ModifierEnum.None;
+			}
+			set {
+			}
+		}
+		
+		public IList<IAttribute> Attributes {
+			get {
+				return attributes;
+			}
+		}
+		
+		public IClass GetCompoundClass()
+		{
+			return compoundClass;
+		}
+		
+		public void SetCompoundClass(IClass c)
+		{
+			compoundClass = c;
+		}
+		
+		public IReturnType DefaultReturnType {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public string DotNetName {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public ICompilationUnit CompilationUnit {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
 		public DomRegion BodyRegion {
 			get {
 				throw new NotImplementedException();
 			}
 		}
 		
-		public List<IReturnType> BaseTypes {
+		public IList<IReturnType> BaseTypes {
 			get {
 				throw new NotImplementedException();
 			}
 		}
 		
-		public List<IClass> InnerClasses {
+		public IList<IClass> InnerClasses {
 			get {
 				throw new NotImplementedException();
 			}
 		}
 		
-		public List<IField> Fields {
+		public IList<IField> Fields {
 			get {
 				throw new NotImplementedException();
 			}
 		}
 		
-		public List<IProperty> Properties {
+		public IList<IProperty> Properties {
 			get {
 				throw new NotImplementedException();
 			}
 		}
 		
-		public List<IMethod> Methods {
-			get {
-				return methods;
-			}
-		}
-		
-		public List<IEvent> Events {
+		public IList<IEvent> Events {
 			get {
 				throw new NotImplementedException();
 			}
@@ -159,15 +192,6 @@ namespace UnitTesting.Tests.Utils
 		public IEnumerable<IClass> ClassInheritanceTree {
 			get {
 				throw new NotImplementedException();
-			}
-		}
-		
-		public IClass BaseClass {
-			get {
-				return baseClass;
-			}
-			set {
-				baseClass = value;
 			}
 		}
 		
@@ -189,23 +213,18 @@ namespace UnitTesting.Tests.Utils
 			}
 		}
 		
-		public IClass DeclaringType {
+		public bool IsPartial {
 			get {
+				throw new NotImplementedException();
+			}
+			set {
 				throw new NotImplementedException();
 			}
 		}
 		
-		public ModifierEnum Modifiers {
+		public IClass DeclaringType {
 			get {
-				return ModifierEnum.None;
-			}
-			set {
-			}
-		}
-		
-		public IList<IAttribute> Attributes {
-			get {
-				return attributes;
+				throw new NotImplementedException();
 			}
 		}
 		
@@ -269,15 +288,6 @@ namespace UnitTesting.Tests.Utils
 			}
 		}
 		
-		public bool IsPartial {
-			get {
-				throw new NotImplementedException();
-			}
-			set {
-				throw new NotImplementedException();
-			}
-		}
-		
 		public bool IsReadonly {
 			get {
 				throw new NotImplementedException();
@@ -329,19 +339,15 @@ namespace UnitTesting.Tests.Utils
 			}
 		}
 		
+		public bool IsFrozen {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
 		public IReturnType GetBaseType(int index)
 		{
 			throw new NotImplementedException();
-		}
-		
-		public IClass GetCompoundClass()
-		{
-			return compoundClass;
-		}
-		
-		public void SetCompoundClass(IClass c)
-		{
-			compoundClass = c;
 		}
 		
 		public IClass GetInnermostClass(int caretLine, int caretColumn)
@@ -369,7 +375,7 @@ namespace UnitTesting.Tests.Utils
 			throw new NotImplementedException();
 		}
 		
-		public bool MustBeShown(IClass callingClass, bool showStatic, bool isClassInInheritanceTree)
+		public void Freeze()
 		{
 			throw new NotImplementedException();
 		}
@@ -377,6 +383,15 @@ namespace UnitTesting.Tests.Utils
 		public int CompareTo(object obj)
 		{
 			throw new NotImplementedException();
-		}		
+		}
+		
+		public bool HasCompoundClass {
+			get {
+				throw new NotImplementedException();
+			}
+			set {
+				throw new NotImplementedException();
+			}
+		}
 	}
 }

@@ -15,14 +15,21 @@ namespace ICSharpCode.SharpDevelop.Dom
 		IReturnType returnType;
 		DomRegion region;
 		DomRegion bodyRegion;
-		List<ExplicitInterfaceImplementation> interfaceImplementations;
+		IList<ExplicitInterfaceImplementation> interfaceImplementations;
 		IReturnType declaringTypeReference;
+		
+		protected override void FreezeInternal()
+		{
+			interfaceImplementations = FreezeList(interfaceImplementations);
+			base.FreezeInternal();
+		}
 		
 		public virtual DomRegion Region {
 			get {
 				return region;
 			}
 			set {
+				CheckBeforeMutation();
 				region = value;
 			}
 		}
@@ -32,6 +39,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return bodyRegion;
 			}
 			set {
+				CheckBeforeMutation();
 				bodyRegion = value;
 			}
 		}
@@ -41,6 +49,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return returnType;
 			}
 			set {
+				CheckBeforeMutation();
 				returnType = value;
 			}
 		}
@@ -53,6 +62,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return declaringTypeReference ?? this.DeclaringType.DefaultReturnType;
 			}
 			set {
+				CheckBeforeMutation();
 				declaringTypeReference = value;
 			}
 		}

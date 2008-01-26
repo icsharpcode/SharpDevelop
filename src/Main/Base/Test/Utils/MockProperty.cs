@@ -13,16 +13,23 @@ namespace ICSharpCode.SharpDevelop.Tests.Utils
 {
 	public class MockProperty : IProperty
 	{
-		bool overridable;
-		bool isConst;
-		bool isPrivate;
-		IClass declaringType;
 		string name = String.Empty;
 
 		public MockProperty(string name)
 		{
 			this.name = name;	
 		}
+		
+		public string Name {
+			get {
+				return name;
+			}
+		}
+		
+		public IClass DeclaringType { get; set; }
+		public bool IsConst { get; set; }
+		public bool IsPrivate { get; set;}
+		public bool IsOverridable { get; set;}
 		
 		public DomRegion GetterRegion {
 			get {
@@ -31,18 +38,6 @@ namespace ICSharpCode.SharpDevelop.Tests.Utils
 		}
 		
 		public DomRegion SetterRegion {
-			get {
-				throw new NotImplementedException();
-			}
-		}
-		
-		public ModifierEnum GetterModifiers {
-			get {
-				throw new NotImplementedException();
-			}
-		}
-		
-		public ModifierEnum SetterModifiers {
 			get {
 				throw new NotImplementedException();
 			}
@@ -61,6 +56,18 @@ namespace ICSharpCode.SharpDevelop.Tests.Utils
 		}
 		
 		public bool IsIndexer {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public ModifierEnum GetterModifiers {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public ModifierEnum SetterModifiers {
 			get {
 				throw new NotImplementedException();
 			}
@@ -93,15 +100,15 @@ namespace ICSharpCode.SharpDevelop.Tests.Utils
 			}
 		}
 		
-		public DomRegion Region {
+		public IMember GenericMember {
 			get {
 				throw new NotImplementedException();
 			}
 		}
 		
-		public string Name {
+		public DomRegion Region {
 			get {
-				return name;
+				throw new NotImplementedException();
 			}
 		}
 		
@@ -138,20 +145,8 @@ namespace ICSharpCode.SharpDevelop.Tests.Utils
 			}
 		}
 		
-		public IClass DeclaringType {
-			get {
-				return declaringType;
-			}
-			set {
-				declaringType = value;
-			}
-		}
-		
 		public ModifierEnum Modifiers {
 			get {
-				throw new NotImplementedException();
-			}
-			set {
 				throw new NotImplementedException();
 			}
 		}
@@ -186,15 +181,6 @@ namespace ICSharpCode.SharpDevelop.Tests.Utils
 			}
 		}
 		
-		public bool IsConst {
-			get {
-				return isConst;
-			}
-			set {
-				isConst = value;
-			}
-		}
-		
 		public bool IsVirtual {
 			get {
 				throw new NotImplementedException();
@@ -210,15 +196,6 @@ namespace ICSharpCode.SharpDevelop.Tests.Utils
 		public bool IsProtected {
 			get {
 				throw new NotImplementedException();
-			}
-		}
-		
-		public bool IsPrivate {
-			get {
-				return isPrivate;
-			}
-			set {
-				isPrivate = value;
 			}
 		}
 		
@@ -252,15 +229,6 @@ namespace ICSharpCode.SharpDevelop.Tests.Utils
 			}
 		}
 		
-		public bool IsOverridable {
-			get {
-				return overridable;
-			}
-			set {
-				overridable = value;
-			}
-		}
-		
 		public bool IsNew {
 			get {
 				throw new NotImplementedException();
@@ -282,12 +250,23 @@ namespace ICSharpCode.SharpDevelop.Tests.Utils
 			}
 		}
 		
+		public bool IsFrozen {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public IMember CreateSpecializedMember()
+		{
+			throw new NotImplementedException();
+		}
+		
 		public bool IsAccessible(IClass callingClass, bool isClassInInheritanceTree)
 		{
 			throw new NotImplementedException();
 		}
 		
-		public bool MustBeShown(IClass callingClass, bool showStatic, bool isClassInInheritanceTree)
+		public void Freeze()
 		{
 			throw new NotImplementedException();
 		}
@@ -302,15 +281,5 @@ namespace ICSharpCode.SharpDevelop.Tests.Utils
 			throw new NotImplementedException();
 		}
 		
-		public IMember GenericMember {
-			get {
-				throw new NotImplementedException();
-			}
-		}
-		
-		public IMember CreateSpecializedMember()
-		{
-			throw new NotImplementedException();
-		}
 	}
 }

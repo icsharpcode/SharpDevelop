@@ -340,16 +340,16 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			currentClass.Pop();
 			
 			if (c.ClassType == ClassType.Module) {
-				foreach (IField f in c.Fields) {
+				foreach (DefaultField f in c.Fields) {
 					f.Modifiers |= ModifierEnum.Static;
 				}
-				foreach (IMethod m in c.Methods) {
+				foreach (DefaultMethod m in c.Methods) {
 					m.Modifiers |= ModifierEnum.Static;
 				}
-				foreach (IProperty p in c.Properties) {
+				foreach (DefaultProperty p in c.Properties) {
 					p.Modifiers |= ModifierEnum.Static;
 				}
-				foreach (IEvent e in c.Events) {
+				foreach (DefaultEvent e in c.Events) {
 					e.Modifiers |= ModifierEnum.Static;
 				}
 			}
@@ -458,8 +458,6 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return p;
 		}
 		
-		static readonly IList<string> EmptyStringList = new List<string>().AsReadOnly();
-		
 		public override object VisitMethodDeclaration(AST.MethodDeclaration methodDeclaration, object data)
 		{
 			DomRegion region     = GetRegion(methodDeclaration.StartLocation, methodDeclaration.EndLocation);
@@ -489,7 +487,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 						method.HandlesClauses.Add(handlesClause);
 				}
 			} else {
-				method.HandlesClauses = EmptyStringList;
+				method.HandlesClauses = EmptyList<string>.Instance;
 			}
 			
 			currentClass.Methods.Add(method);

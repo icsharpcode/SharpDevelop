@@ -16,11 +16,11 @@ namespace PythonBinding.Tests.Utils
 	/// </summary>
 	public class MockMethod : IMethod
 	{
-		DomRegion bodyRegion;
-		
 		public MockMethod()
 		{
 		}
+		
+		public DomRegion BodyRegion { get; set; }
 		
 		public IList<ITypeParameter> TypeParameters {
 			get {
@@ -29,6 +29,12 @@ namespace PythonBinding.Tests.Utils
 		}
 		
 		public bool IsConstructor {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public IList<string> HandlesClauses {
 			get {
 				throw new NotImplementedException();
 			}
@@ -57,6 +63,12 @@ namespace PythonBinding.Tests.Utils
 				throw new NotImplementedException();
 			}
 			set {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public IMember GenericMember {
+			get {
 				throw new NotImplementedException();
 			}
 		}
@@ -94,11 +106,6 @@ namespace PythonBinding.Tests.Utils
 			}
 		}
 		
-		public DomRegion BodyRegion {
-			get { return bodyRegion; }
-			set { bodyRegion = value; }
-		}
-		
 		public IList<ExplicitInterfaceImplementation> InterfaceImplementations {
 			get {
 				throw new NotImplementedException();
@@ -113,9 +120,6 @@ namespace PythonBinding.Tests.Utils
 		
 		public ModifierEnum Modifiers {
 			get {
-				throw new NotImplementedException();
-			}
-			set {
 				throw new NotImplementedException();
 			}
 		}
@@ -237,12 +241,23 @@ namespace PythonBinding.Tests.Utils
 			}
 		}
 		
+		public bool IsFrozen {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public IMember CreateSpecializedMember()
+		{
+			throw new NotImplementedException();
+		}
+		
 		public bool IsAccessible(IClass callingClass, bool isClassInInheritanceTree)
 		{
 			throw new NotImplementedException();
 		}
 		
-		public bool MustBeShown(IClass callingClass, bool showStatic, bool isClassInInheritanceTree)
+		public void Freeze()
 		{
 			throw new NotImplementedException();
 		}
@@ -256,23 +271,6 @@ namespace PythonBinding.Tests.Utils
 		{
 			throw new NotImplementedException();
 		}
-		
-		public IList<string> HandlesClauses {
-			get {
-				throw new NotImplementedException();
-			}
-		}
-		
-		public IMember GenericMember {
-			get {
-				throw new NotImplementedException();
-			}
-		}
-		
-		public IMember CreateSpecializedMember()
-		{
-			throw new NotImplementedException();
-		}
-		
+			
 	}
 }

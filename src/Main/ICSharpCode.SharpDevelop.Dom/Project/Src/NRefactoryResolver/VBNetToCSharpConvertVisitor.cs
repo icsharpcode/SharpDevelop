@@ -117,7 +117,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				CompoundClass compoundClass = callingClass as CompoundClass;
 				if (!hasConstructors) {
 					// add constructor only to one part
-					if (compoundClass == null || compoundClass.GetParts()[0] == resolver.CallingClass) {
+					if (compoundClass == null || compoundClass.Parts[0] == resolver.CallingClass) {
 						if (containsClassHandlesClauses || RequiresConstructor(callingClass)) {
 							AddDefaultConstructor(callingClass, typeDeclaration);
 						}

@@ -68,7 +68,7 @@ namespace PythonBinding.Tests.Designer
 			ParseInformation parseInfo = new ParseInformation();
 			PythonParser parser = new PythonParser();
 			ICompilationUnit parserCompilationUnit = parser.Parse(new DefaultProjectContent(), "Test.py", GetTextEditorCode());
-			parseInfo.ValidCompilationUnit = parserCompilationUnit;
+			parseInfo.SetCompilationUnit(parserCompilationUnit);
 			generator.ParseInfoToReturnFromParseFileMethod = parseInfo;
 			
 			generator.MergeFormChanges(unit);

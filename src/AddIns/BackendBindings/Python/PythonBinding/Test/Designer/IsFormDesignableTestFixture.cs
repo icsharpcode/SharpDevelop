@@ -36,7 +36,7 @@ namespace PythonBinding.Tests.Designer
 			ICompilationUnit compilationUnit = parser.Parse(mockProjectContent, @"C:\Projects\Test\MainForm.py", GetPythonCode());
 
 			parseInfo = new ParseInformation();
-			parseInfo.ValidCompilationUnit = compilationUnit;
+			parseInfo.SetCompilationUnit(compilationUnit);
 			
 			if (compilationUnit.Classes.Count > 0) {
 				mainFormClass = compilationUnit.Classes[0];

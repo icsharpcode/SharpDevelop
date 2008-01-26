@@ -11,7 +11,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 {
 	public abstract class AbstractNamedEntity : AbstractDecoration
 	{
-		static char[] nameDelimiters = new char[] { '.', '+' };
+		static readonly char[] nameDelimiters = { '.', '+' };
 		string fullyQualifiedName = null;
 		string name               = null;
 		string nspace             = null;
@@ -28,6 +28,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return fullyQualifiedName;
 			}
 			set {
+				CheckBeforeMutation();
 				if (fullyQualifiedName == value)
 					return;
 				fullyQualifiedName = value;

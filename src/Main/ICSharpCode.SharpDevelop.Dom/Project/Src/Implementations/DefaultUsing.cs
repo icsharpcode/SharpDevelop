@@ -11,7 +11,7 @@ using System.Text;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {
-	public class DefaultUsing : IUsing
+	public class DefaultUsing : AbstractFreezable, IUsing
 	{
 		DomRegion region;
 		IProjectContent projectContent;
@@ -26,8 +26,16 @@ namespace ICSharpCode.SharpDevelop.Dom
 			this.region = region;
 		}
 		
-		List<string> usings  = new List<string>();
-		SortedList<string, IReturnType> aliases = null;
+		IList<string> usings  = new List<string>();
+		IDictionary<string, IReturnType> aliases = null;
+		
+		protected override void FreezeInternal()
+		{
+			usings = FreezeList(usings);
+			if (aliases != null)
+				aliases = new ReadOnlyDictionary<string, IReturnType>(aliases);
+			base.FreezeInternal();
+		}
 		
 		public DomRegion Region {
 			get {
@@ -35,13 +43,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public List<string> Usings {
+		public IList<string> Usings {
 			get {
 				return usings;
 			}
 		}
 		
-		public SortedList<string, IReturnType> Aliases {
+		public IDictionary<string, IReturnType> Aliases {
 			get {
 				return aliases;
 			}
@@ -55,6 +63,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public void AddAlias(string alias, IReturnType type)
 		{
+			CheckBeforeMutation();
 			if (aliases == null) aliases = new SortedList<string, IReturnType>();
 			aliases.Add(alias, type);
 		}

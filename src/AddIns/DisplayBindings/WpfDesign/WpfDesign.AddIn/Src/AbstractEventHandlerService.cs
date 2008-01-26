@@ -54,7 +54,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 			CompoundClass compound = c as CompoundClass;
 			if (compound != null) {
 				c = null;
-				foreach (IClass part in compound.GetParts()) {
+				foreach (IClass part in compound.Parts) {
 					if (string.IsNullOrEmpty(part.CompilationUnit.FileName))
 						continue;
 					if (".xaml".Equals(Path.GetExtension(part.CompilationUnit.FileName), StringComparison.OrdinalIgnoreCase))

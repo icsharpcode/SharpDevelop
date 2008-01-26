@@ -43,6 +43,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return tmp;
 		}
 		
+		protected int GetObjectHashCode()
+		{
+			return base.GetHashCode();
+		}
+		
 		// Required to prevent stack overflow on inferrence cycles
 		bool busy = false;
 		

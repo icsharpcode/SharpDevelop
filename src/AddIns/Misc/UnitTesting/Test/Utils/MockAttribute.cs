@@ -19,15 +19,27 @@ namespace UnitTesting.Tests.Utils
 			type = new DefaultReturnType(new MockClass(name));
 		}
 		
-		public AttributeTarget AttributeTarget {
+		public IReturnType AttributeType {
+			get {
+				return type;
+			}
+		}
+		
+		public ICompilationUnit CompilationUnit {
 			get {
 				throw new NotImplementedException();
 			}
 		}
 		
-		public IReturnType AttributeType {
+		public DomRegion Region {
 			get {
-				return type;
+				throw new NotImplementedException();
+			}
+		}
+		
+		public AttributeTarget AttributeTarget {
+			get {
+				throw new NotImplementedException();
 			}
 		}
 		
@@ -43,16 +55,15 @@ namespace UnitTesting.Tests.Utils
 			}
 		}
 		
-		public ICompilationUnit CompilationUnit {
+		public bool IsFrozen {
 			get {
 				throw new NotImplementedException();
 			}
 		}
 		
-		public DomRegion Region {
-			get {
-				throw new NotImplementedException();
-			}
+		public void Freeze()
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

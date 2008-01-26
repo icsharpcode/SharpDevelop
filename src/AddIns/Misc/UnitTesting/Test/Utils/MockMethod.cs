@@ -31,24 +31,6 @@ namespace UnitTesting.Tests.Utils
 			this.name = name;
 		}
 		
-		public IList<ITypeParameter> TypeParameters {
-			get {
-				throw new NotImplementedException();
-			}
-		}
-		
-		public IList<string> HandlesClauses {
-			get {
-				throw new NotImplementedException();
-			}
-		}
-		
-		public bool IsConstructor {
-			get {
-				throw new NotImplementedException();
-			}
-		}
-		
 		public DomRegion BodyRegion {
 			get {
 				return bodyRegion;
@@ -61,18 +43,6 @@ namespace UnitTesting.Tests.Utils
 		public IList<IParameter> Parameters {
 			get {
 				return parameters;
-			}
-		}
-		
-		public bool IsExtensionMethod {
-			get {
-				throw new NotImplementedException();
-			}
-		}
-		
-		public string FullyQualifiedName {
-			get {
-				throw new NotImplementedException();
 			}
 		}
 		
@@ -91,18 +61,6 @@ namespace UnitTesting.Tests.Utils
 			}
 			set {
 				name = value;
-			}
-		}
-		
-		public string Namespace {
-			get {
-				throw new NotImplementedException();
-			}
-		}
-		
-		public string DotNetName {
-			get {
-				throw new NotImplementedException();
 			}
 		}
 		
@@ -136,6 +94,69 @@ namespace UnitTesting.Tests.Utils
 		public IList<IAttribute> Attributes {
 			get {
 				return attributes;
+			}
+		}
+		
+		public IList<ITypeParameter> TypeParameters {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public bool IsConstructor {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public IList<string> HandlesClauses {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public bool IsExtensionMethod {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public string FullyQualifiedName {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public IReturnType DeclaringTypeReference {
+			get {
+				throw new NotImplementedException();
+			}
+			set {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public IMember GenericMember {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public string Namespace {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public string DotNetName {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public IList<ExplicitInterfaceImplementation> InterfaceImplementations {
+			get {
+				throw new NotImplementedException();
 			}
 		}
 		
@@ -199,12 +220,6 @@ namespace UnitTesting.Tests.Utils
 			}
 		}
 		
-		public bool IsPartial {
-			get {
-				throw new NotImplementedException();
-			}
-		}
-		
 		public bool IsReadonly {
 			get {
 				throw new NotImplementedException();
@@ -256,12 +271,23 @@ namespace UnitTesting.Tests.Utils
 			}
 		}
 		
+		public bool IsFrozen {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public IMember CreateSpecializedMember()
+		{
+			throw new NotImplementedException();
+		}
+		
 		public bool IsAccessible(IClass callingClass, bool isClassInInheritanceTree)
 		{
 			throw new NotImplementedException();
 		}
 		
-		public bool MustBeShown(IClass callingClass, bool showStatic, bool isClassInInheritanceTree)
+		public void Freeze()
 		{
 			throw new NotImplementedException();
 		}
@@ -276,30 +302,5 @@ namespace UnitTesting.Tests.Utils
 			throw new NotImplementedException();
 		}
 		
-		public IReturnType DeclaringTypeReference {
-			get {
-				throw new NotImplementedException();
-			}
-			set {
-				throw new NotImplementedException();
-			}
-		}
-		
-		public IList<ExplicitInterfaceImplementation> InterfaceImplementations {
-			get {
-				throw new NotImplementedException();
-			}
-		}
-		
-		public IMember GenericMember {
-			get {
-				throw new NotImplementedException();
-			}
-		}
-		
-		public IMember CreateSpecializedMember()
-		{
-			throw new NotImplementedException();
-		}
 	}
 }

@@ -45,10 +45,10 @@ namespace PythonBinding.Tests.Resolver
 			mockProjectContent.ClassesInProjectContent.Add(systemConsoleClass);
 			
 			testClass = new MockClass("Test");
-			compilationUnit = new DefaultCompilationUnit(mockProjectContent);
+			compilationUnit = new DefaultCompilationUnit(mockProjectContent) { ErrorsDuringCompile = true };
 			testClass.CompilationUnit = compilationUnit;
 			compilationUnit.Classes.Add(testClass);
-			parseInfo.DirtyCompilationUnit = compilationUnit;
+			parseInfo.SetCompilationUnit(compilationUnit);
 						
 			string python = "import System\r\n" +
 							"class Test:\r\n" +

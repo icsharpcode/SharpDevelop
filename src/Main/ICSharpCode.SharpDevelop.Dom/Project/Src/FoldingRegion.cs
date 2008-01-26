@@ -9,7 +9,7 @@ using System;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {
-	public sealed class FoldingRegion
+	public sealed class FoldingRegion : Immutable
 	{
 		string  name;
 		DomRegion region;

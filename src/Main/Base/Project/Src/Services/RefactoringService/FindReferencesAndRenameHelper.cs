@@ -59,7 +59,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		{
 			CompoundClass cc = c as CompoundClass;
 			if (cc != null) {
-				return cc.GetParts();
+				return cc.Parts;
 			} else {
 				return new IClass[] {c};
 			}

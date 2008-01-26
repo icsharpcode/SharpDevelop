@@ -9,6 +9,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 
 using Boo.Lang.Compiler.Ast;
 using ICSharpCode.Core;
@@ -439,7 +440,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 				if (c != null) {
 					if (c.ClassType == ClassType.Delegate) {
 						// find the delegate's invoke method
-						IMethod invoke = c.Methods.Find(delegate(IMethod innerMethod) { return innerMethod.Name == "Invoke"; });
+						IMethod invoke = c.Methods.FirstOrDefault((IMethod innerMethod) => innerMethod.Name == "Invoke");
 						if (invoke != null) {
 							resolveResult.ResolvedType = invoke.ReturnType;
 						}

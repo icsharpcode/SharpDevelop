@@ -10,7 +10,7 @@ using System.Collections.Generic;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {
-	public interface IAttribute
+	public interface IAttribute : IFreezable
 	{
 		/// <summary>
 		/// Gets the compilation unit in which this attribute is defined.

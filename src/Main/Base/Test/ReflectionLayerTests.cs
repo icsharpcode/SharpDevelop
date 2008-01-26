@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.IO;
 using System.Reflection;
 
@@ -65,7 +66,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 		}
 		
 		DefaultMethod GetMethod(IClass c, string name) {
-			IMethod result = c.Methods.Find(delegate(IMethod m) { return m.Name == name; });
+			IMethod result = c.Methods.FirstOrDefault(delegate(IMethod m) { return m.Name == name; });
 			Assert.IsNotNull(result, "Method " + name + " not found");
 			return (DefaultMethod)result;
 		}
@@ -142,7 +143,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 			Assert.AreSame(c, c.TypeParameters[1].Class);
 			Assert.AreSame(c.TypeParameters[1], ((GenericReturnType)c.TypeParameters[0].Constraints[0]).TypeParameter);
 			
-			IMethod m = c.Methods.Find(delegate(IMethod me) { return me.Name == "TestMethod"; });
+			IMethod m = c.Methods.First(delegate(IMethod me) { return me.Name == "TestMethod"; });
 			Assert.IsNotNull(m);
 			Assert.AreEqual("K", m.TypeParameters[0].Name);
 			Assert.AreEqual("V", m.TypeParameters[1].Name);
@@ -153,7 +154,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 			GenericReturnType kConst = (GenericReturnType)m.TypeParameters[1].Constraints[0];
 			Assert.AreSame(m.TypeParameters[0], kConst.TypeParameter);
 			
-			m = c.Methods.Find(delegate(IMethod me) { return me.Name == "GetIndex"; });
+			m = c.Methods.First(delegate(IMethod me) { return me.Name == "GetIndex"; });
 			Assert.IsNotNull(m);
 			Assert.AreEqual("T", m.TypeParameters[0].Name);
 			Assert.AreSame(m, m.TypeParameters[0].Method);

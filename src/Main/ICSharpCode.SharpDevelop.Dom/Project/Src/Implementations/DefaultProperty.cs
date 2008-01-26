@@ -23,24 +23,42 @@ namespace ICSharpCode.SharpDevelop.Dom {
 		const byte extensionFlag = 0x08;
 		ModifierEnum getterModifiers, setterModifiers;
 		
+		protected override void FreezeInternal()
+		{
+			parameters = FreezeList(parameters);
+			base.FreezeInternal();
+		}
+		
 		public bool IsIndexer {
 			get { return (accessFlags & indexerFlag) == indexerFlag; }
-			set { if (value) accessFlags |= indexerFlag; else accessFlags &= 255-indexerFlag; }
+			set {
+				CheckBeforeMutation();
+				if (value) accessFlags |= indexerFlag; else accessFlags &= 255-indexerFlag;
+			}
 		}
 		
 		public bool CanGet {
 			get { return (accessFlags & getterFlag) == getterFlag; }
-			set { if (value) accessFlags |= getterFlag; else accessFlags &= 255-getterFlag; }
+			set {
+				CheckBeforeMutation();
+				if (value) accessFlags |= getterFlag; else accessFlags &= 255-getterFlag;
+			}
 		}
 
 		public bool CanSet {
 			get { return (accessFlags & setterFlag) == setterFlag; }
-			set { if (value) accessFlags |= setterFlag; else accessFlags &= 255-setterFlag; }
+			set {
+				CheckBeforeMutation();
+				if (value) accessFlags |= setterFlag; else accessFlags &= 255-setterFlag;
+			}
 		}
 		
 		public bool IsExtensionMethod {
 			get { return (accessFlags & extensionFlag) == extensionFlag; }
-			set { if (value) accessFlags |= extensionFlag; else accessFlags &= 255-extensionFlag; }
+			set {
+				CheckBeforeMutation();
+				if (value) accessFlags |= extensionFlag; else accessFlags &= 255-extensionFlag;
+			}
 		}
 		
 		public override string DocumentationTag {
@@ -68,28 +86,41 @@ namespace ICSharpCode.SharpDevelop.Dom {
 				return parameters;
 			}
 			set {
+				CheckBeforeMutation();
 				parameters = value;
 			}
 		}
 		
 		public DomRegion GetterRegion {
 			get { return getterRegion; }
-			set { getterRegion = value; }
+			set { 
+				CheckBeforeMutation();
+				getterRegion = value; 
+			}
 		}
 		
 		public DomRegion SetterRegion {
 			get { return setterRegion; }
-			set { setterRegion = value; }
+			set { 
+				CheckBeforeMutation();
+				setterRegion = value; 
+			}
 		}
 		
 		public ModifierEnum GetterModifiers {
 			get { return getterModifiers; }
-			set { getterModifiers = value; }
+			set { 
+				CheckBeforeMutation();
+				getterModifiers = value; 
+			}
 		}
 		
 		public ModifierEnum SetterModifiers {
 			get { return setterModifiers; }
-			set { setterModifiers = value; }
+			set {
+				CheckBeforeMutation();
+				setterModifiers = value; 
+			}
 		}
 		
 		public DefaultProperty(IClass declaringType, string name) : base(declaringType, name)

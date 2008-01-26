@@ -159,7 +159,7 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
-		public static void UpdateCommentTags(string fileName, List<TagComment> tagComments)
+		public static void UpdateCommentTags(string fileName, IList<TagComment> tagComments)
 		{
 			if (fileName == null || tagComments == null) {
 				return;
@@ -167,7 +167,7 @@ namespace ICSharpCode.SharpDevelop
 			WorkbenchSingleton.SafeThreadAsyncCall(UpdateCommentTagsInvoked, fileName, tagComments);
 		}
 		
-		static void UpdateCommentTagsInvoked(string fileName, List<TagComment> tagComments)
+		static void UpdateCommentTagsInvoked(string fileName, IList<TagComment> tagComments)
 		{
 			List<Task> newTasks = new List<Task>();
 			foreach (TagComment tag in tagComments) {

@@ -7,15 +7,28 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {
-	public class DefaultAttribute : IAttribute
+	public class DefaultAttribute : AbstractFreezable, IAttribute
 	{
-		public static readonly IList<IAttribute> EmptyAttributeList = new List<IAttribute>().AsReadOnly();
+		public static readonly IList<IAttribute> EmptyAttributeList = EmptyList<IAttribute>.Instance;
 		
 		IList<object> positionalArguments;
 		IDictionary<string, object> namedArguments;
+		
+		protected override void FreezeInternal()
+		{
+			if (positionalArguments.Count == 0)
+				positionalArguments = EmptyList<object>.Instance;
+			else
+				positionalArguments = new ReadOnlyCollection<object>(positionalArguments);
+			
+			namedArguments = new ReadOnlyDictionary<string, object>(namedArguments);
+			
+			base.FreezeInternal();
+		}
 		
 		public DefaultAttribute(IReturnType attributeType) : this(attributeType, AttributeTarget.None) {}
 		
@@ -34,9 +47,22 @@ namespace ICSharpCode.SharpDevelop.Dom
 			this.namedArguments = namedArguments ?? new SortedList<string, object>();
 		}
 		
-		
-		public IReturnType AttributeType { get; set; }
-		public AttributeTarget AttributeTarget { get; set; }
+		IReturnType attributeType;
+		public IReturnType AttributeType {
+			get { return attributeType; }
+			set {
+				CheckBeforeMutation();
+				attributeType = value;
+			}
+		}
+		AttributeTarget attributeTarget;
+		public AttributeTarget AttributeTarget {
+			get { return attributeTarget; }
+			set {
+				CheckBeforeMutation();
+				attributeTarget = value;
+			}
+		}
 		
 		public IList<object> PositionalArguments {
 			get { return positionalArguments; }
@@ -46,7 +72,21 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get { return namedArguments; }
 		}
 		
-		public ICompilationUnit CompilationUnit { get; set; }
-		public DomRegion Region { get; set; }
+		ICompilationUnit compilationUnit;
+		public ICompilationUnit CompilationUnit {
+			get { return compilationUnit; }
+			set {
+				CheckBeforeMutation();
+				compilationUnit = value;
+			}
+		}
+		DomRegion region;
+		public DomRegion Region {
+			get { return region; }
+			set {
+				CheckBeforeMutation();
+				region = value;
+			}
+		}
 	}
 }

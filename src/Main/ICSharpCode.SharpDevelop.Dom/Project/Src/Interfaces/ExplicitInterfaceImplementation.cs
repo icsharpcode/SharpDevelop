@@ -10,7 +10,7 @@ using System.Collections.Generic;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {
-	public sealed class ExplicitInterfaceImplementation : IEquatable<ExplicitInterfaceImplementation>
+	public sealed class ExplicitInterfaceImplementation : Immutable, IEquatable<ExplicitInterfaceImplementation>
 	{
 		readonly IReturnType interfaceReference;
 		readonly string memberName;

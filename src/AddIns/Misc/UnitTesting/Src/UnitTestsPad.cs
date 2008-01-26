@@ -262,7 +262,7 @@ namespace ICSharpCode.UnitTesting
 		void ParseInformationUpdated(object source, ParseInformationEventArgs e)
 		{
 			lock (pending) {
-				ICompilationUnit[] units = new ICompilationUnit[] {e.ParseInformation.MostRecentCompilationUnit as ICompilationUnit, e.CompilationUnit};
+				ICompilationUnit[] units = new ICompilationUnit[] {e.OldCompilationUnit, e.NewCompilationUnit};
 				pending.Add(units);
 			}
 			WorkbenchSingleton.SafeThreadAsyncCall(UpdateParseInfo);

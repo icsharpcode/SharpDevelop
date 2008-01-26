@@ -365,6 +365,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 			{
 				Documentation = "Use late-binding to access members of this type.<br/>\n'If it walks like a duck and quacks like a duck, it must be a duck.'";
 				Modifiers = ModifierEnum.Public;
+				Freeze();
 			}
 			
 			protected override IReturnType CreateDefaultReturnType()

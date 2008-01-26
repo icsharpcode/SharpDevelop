@@ -37,8 +37,8 @@ namespace PythonBinding.Tests.Resolver
 			// Set the dirty compilation unit and the valid compilation unit
 			// so we make sure that the most recent compilation unit 
 			// (i.e the dirty compilation unit) is being taken.
-			parseInfo.DirtyCompilationUnit = new DefaultCompilationUnit(mockProjectContent);
-			parseInfo.ValidCompilationUnit = new DefaultCompilationUnit(new MockProjectContent());
+			parseInfo.SetCompilationUnit(new DefaultCompilationUnit(new MockProjectContent()));
+			parseInfo.SetCompilationUnit(new DefaultCompilationUnit(mockProjectContent) { ErrorsDuringCompile = true });
 			
 			results = resolver.CtrlSpace(0, "import".Length, parseInfo, "import", ExpressionContext.Importable);
 		}

@@ -128,8 +128,10 @@ namespace VBNetBinding
 		{
 			public MyFormsClass(ICompilationUnit cu, string fullName) : base(cu, fullName) {}
 			
-			public override List<IProperty> Properties {
+			public override IList<IProperty> Properties {
 				get {
+					// TODO: This class must be immutable when frozen, we cannot change the properties!
+					
 					List<IProperty> properties = new List<IProperty>();
 					IClass formClass = this.ProjectContent.GetClass("System.Windows.Forms.Form", 0);
 					if (formClass == null)

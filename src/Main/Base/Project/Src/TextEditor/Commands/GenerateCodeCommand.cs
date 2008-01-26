@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
@@ -69,7 +70,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			}
 			return null;
 		}
-		IClass FindClass(ICollection classes, int lineNr, int column)
+		IClass FindClass(ICollection<IClass> classes, int lineNr, int column)
 		{
 			foreach (IClass c in classes) {
 				if (c.Region.IsInside(lineNr, column)) {

@@ -145,9 +145,8 @@ namespace Grunwald.BooBinding.CodeCompletion
 					} else {
 						foreach (string tag in lexerTags) {
 							if (text.StartsWith(tag)) {
-								TagComment tagComment = new TagComment(tag, new DomRegion(line, commentStartColumn));
-								tagComment.CommentString = text.Substring(tag.Length);
-								cu.TagComments.Add(tagComment);
+								string commentString = text.Substring(tag.Length);
+								cu.TagComments.Add(new TagComment(tag, new DomRegion(line, commentStartColumn), commentString));
 								break;
 							}
 						}

@@ -552,7 +552,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			content.Control.Dock = DockStyle.Fill;
 			SdiWorkspaceWindow sdiWorkspaceWindow = new SdiWorkspaceWindow();
 			sdiWorkspaceWindow.ViewContents.Add(content);
-			content.SecondaryViewContents.Foreach(sdiWorkspaceWindow.ViewContents.Add);
+			sdiWorkspaceWindow.ViewContents.AddRange(content.SecondaryViewContents);
 			sdiWorkspaceWindow.CloseEvent += new EventHandler(CloseWindowEvent);
 			if (dockPanel != null) {
 				sdiWorkspaceWindow.Show(dockPanel);

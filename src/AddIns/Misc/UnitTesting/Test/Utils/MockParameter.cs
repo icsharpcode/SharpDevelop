@@ -84,5 +84,16 @@ namespace UnitTesting.Tests.Utils
 		{
 			throw new NotImplementedException();
 		}
+		
+		public bool IsFrozen {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public void Freeze()
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

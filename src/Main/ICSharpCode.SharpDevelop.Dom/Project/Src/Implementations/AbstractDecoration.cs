@@ -10,13 +10,19 @@ using System.Collections.Generic;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {
-	public abstract class AbstractDecoration : IDecoration
+	public abstract class AbstractDecoration : AbstractFreezable, IDecoration
 	{
-		ModifierEnum            modifiers  = ModifierEnum.None;
-		IList<IAttribute> attributes = null;
+		ModifierEnum modifiers = ModifierEnum.None;
+		IList<IAttribute> attributes;
 		
 		IClass declaringType;
 		object userData = null;
+		
+		protected override void FreezeInternal()
+		{
+			attributes = FreezeList(attributes);
+			base.FreezeInternal();
+		}
 		
 		public IClass DeclaringType {
 			get {
@@ -38,6 +44,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return modifiers;
 			}
 			set {
+				CheckBeforeMutation();
 				modifiers = value;
 			}
 		}
@@ -50,6 +57,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return attributes;
 			}
 			set {
+				CheckBeforeMutation();
 				attributes = value;
 			}
 		}
@@ -75,6 +83,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return documentation;
 			}
 			set {
+				CheckBeforeMutation();
 				documentation = value;
 			}
 		}

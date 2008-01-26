@@ -9,7 +9,7 @@ using System.Collections.Generic;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {
-	public interface ICompilationUnit
+	public interface ICompilationUnit : IFreezable
 	{
 		string FileName {
 			get;
@@ -30,34 +30,33 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get;
 		}
 		
-		List<IUsing> Usings {
+		IList<IUsing> Usings {
 			get;
 		}
 		
-		List<IAttribute> Attributes {
+		IList<IAttribute> Attributes {
 			get;
 		}
 		
-		List<IClass> Classes {
+		IList<IClass> Classes {
 			get;
 		}
 		
-		List<IComment> MiscComments {
+		IList<IComment> MiscComments {
 			get;
 		}
 		
-		List<IComment> DokuComments {
+		IList<IComment> DokuComments {
 			get;
 		}
 		
-		List<TagComment> TagComments {
+		IList<TagComment> TagComments {
 			get;
 		}
 		
-		List<FoldingRegion> FoldingRegions {
+		IList<FoldingRegion> FoldingRegions {
 			get;
 		}
-		
 		
 		/// <summary>
 		/// Returns the innerst class in which the carret currently is, returns null

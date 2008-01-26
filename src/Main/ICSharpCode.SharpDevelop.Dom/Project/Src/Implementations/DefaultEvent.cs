@@ -15,6 +15,17 @@ namespace ICSharpCode.SharpDevelop.Dom
 		IMethod  removeMethod;
 		IMethod  raiseMethod;
 		
+		protected override void FreezeInternal()
+		{
+			if (addMethod != null)
+				addMethod.Freeze();
+			if (removeMethod != null)
+				removeMethod.Freeze();
+			if (raiseMethod != null)
+				raiseMethod.Freeze();
+			base.FreezeInternal();
+		}
+		
 		public override string DocumentationTag {
 			get {
 				return "E:" + this.DotNetName;
@@ -27,6 +38,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 			foreach (ExplicitInterfaceImplementation eii in InterfaceImplementations) {
 				de.InterfaceImplementations.Add(eii.Clone());
 			}
+			if (addMethod != null)
+				de.addMethod = (IMethod)addMethod.Clone();
+			if (removeMethod != null)
+				de.removeMethod = (IMethod)removeMethod.Clone();
+			if (raiseMethod != null)
+				de.raiseMethod = (IMethod)raiseMethod.Clone();
 			return de;
 		}
 		
@@ -69,6 +86,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return addMethod;
 			}
 			set {
+				CheckBeforeMutation();
 				addMethod = value;
 			}
 		}
@@ -78,6 +96,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return removeMethod;
 			}
 			set {
+				CheckBeforeMutation();
 				removeMethod = value;
 			}
 		}
@@ -87,6 +106,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return raiseMethod;
 			}
 			set {
+				CheckBeforeMutation();
 				raiseMethod = value;
 			}
 		}

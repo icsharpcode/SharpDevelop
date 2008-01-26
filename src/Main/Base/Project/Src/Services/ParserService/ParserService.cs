@@ -99,6 +99,8 @@ namespace ICSharpCode.SharpDevelop
 					content.Dispose();
 				}
 				projectContents.Clear();
+			}
+			lock (parsings) {
 				parsings.Clear();
 			}
 			lock (parseQueue) {
@@ -576,45 +578,30 @@ namespace ICSharpCode.SharpDevelop
 					fileContent = GetParseableFileContent(fileName);
 				}
 				parserOutput = parser.Parse(fileProjectContent, fileName, fileContent);
+				parserOutput.Freeze();
 				
-				if (parsings.ContainsKey(fileName)) {
-					ParseInformation parseInformation = parsings[fileName];
-					fileProjectContent.UpdateCompilationUnit(parseInformation.MostRecentCompilationUnit, parserOutput, fileName);
-				} else {
-					fileProjectContent.UpdateCompilationUnit(null, parserOutput, fileName);
+				ParseInformation parseInformation;
+				lock (parsings) {
+					if (!parsings.TryGetValue(fileName, out parseInformation)) {
+						parsings[fileName] = parseInformation = new ParseInformation();
+					}
 				}
+				ICompilationUnit oldUnit = parseInformation.MostRecentCompilationUnit;
+				fileProjectContent.UpdateCompilationUnit(oldUnit, parserOutput, fileName);
+				parseInformation.SetCompilationUnit(parserOutput);
 				if (updateCommentTags) {
 					TaskService.UpdateCommentTags(fileName, parserOutput.TagComments);
 				}
-				return UpdateParseInformation(parserOutput, fileName, updateCommentTags);
+				try {
+					OnParseInformationUpdated(new ParseInformationEventArgs(fileName, oldUnit, parserOutput));
+				} catch (Exception e) {
+					MessageService.ShowError(e);
+				}
+				return parseInformation;
 			} catch (Exception e) {
 				MessageService.ShowError(e, "Error parsing " + fileName);
 			}
 			return null;
-		}
-		
-		public static ParseInformation UpdateParseInformation(ICompilationUnit parserOutput, string fileName, bool updateCommentTags)
-		{
-			if (!parsings.ContainsKey(fileName)) {
-				parsings[fileName] = new ParseInformation();
-			}
-			
-			ParseInformation parseInformation = parsings[fileName];
-			
-			try {
-				OnParseInformationUpdated(new ParseInformationEventArgs(fileName, parseInformation, parserOutput));
-			} catch (Exception e) {
-				MessageService.ShowError(e);
-			}
-			
-			if (parserOutput.ErrorsDuringCompile) {
-				parseInformation.DirtyCompilationUnit = parserOutput;
-			} else {
-				parseInformation.ValidCompilationUnit = parserOutput;
-				parseInformation.DirtyCompilationUnit = null;
-			}
-			
-			return parseInformation;
 		}
 		
 		/// <summary>
@@ -647,10 +634,27 @@ namespace ICSharpCode.SharpDevelop
 			if (fileName == null || fileName.Length == 0) {
 				return null;
 			}
-			if (!parsings.ContainsKey(fileName)) {
-				return ParseFile(fileName);
+			ParseInformation parseInfo;
+			lock (parsings) {
+				if (parsings.TryGetValue(fileName, out parseInfo))
+					return parseInfo;
 			}
-			return parsings[fileName];
+			return ParseFile(fileName);
+		}
+		
+		/// <summary>
+		/// Registers a compilation unit in the parser service. Used by unit tests.
+		/// </summary>
+		public static ParseInformation RegisterParseInformation(string fileName, ICompilationUnit cu)
+		{
+			ParseInformation parseInformation;
+			lock (parsings) {
+				if (!parsings.TryGetValue(fileName, out parseInformation)) {
+					parsings[fileName] = parseInformation = new ParseInformation();
+				}
+			}
+			parseInformation.SetCompilationUnit(cu);
+			return parseInformation;
 		}
 		
 		public static void ClearParseInformation(string fileName)
@@ -659,14 +663,18 @@ namespace ICSharpCode.SharpDevelop
 				return;
 			}
 			LoggingService.Info("ClearParseInformation: " + fileName);
-			if (parsings.ContainsKey(fileName)) {
-				ParseInformation parseInfo = parsings[fileName];
-				if (parseInfo != null && parseInfo.MostRecentCompilationUnit != null) {
-					parseInfo.MostRecentCompilationUnit.ProjectContent.RemoveCompilationUnit(parseInfo.MostRecentCompilationUnit);
-				}
-				parsings.Remove(fileName);
-				OnParseInformationUpdated(new ParseInformationEventArgs(fileName, parseInfo, null));
+			ParseInformation parseInfo;
+			lock (parsings) {
+				if (parsings.TryGetValue(fileName, out parseInfo))
+					parsings.Remove(fileName);
+				else
+					return;
 			}
+			ICompilationUnit oldUnit = parseInfo.MostRecentCompilationUnit;
+			if (oldUnit != null) {
+				parseInfo.MostRecentCompilationUnit.ProjectContent.RemoveCompilationUnit(oldUnit);
+			}
+			OnParseInformationUpdated(new ParseInformationEventArgs(fileName, oldUnit, null));
 		}
 		
 		public static IExpressionFinder GetExpressionFinder(string fileName)

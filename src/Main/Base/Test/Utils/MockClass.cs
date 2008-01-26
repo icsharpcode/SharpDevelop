@@ -13,36 +13,17 @@ namespace ICSharpCode.SharpDevelop.Tests.Utils
 {
 	/// <summary>
 	/// Dummy class that implements the IClass interface. The
-	/// only property this mock class implements is the DefaultReturnType
-	/// property.
+	/// only properties this mock class implements is DefaultReturnType and FullyQualifiedName.
 	/// </summary>
 	public class MockClass : IClass
 	{
-		IReturnType returnType;
-		string qualifiedName = String.Empty;
-		
 		public MockClass(string qualifiedName)
 		{
-			this.qualifiedName = qualifiedName;
+			this.FullyQualifiedName = qualifiedName;
 		}
 		
-		public string FullyQualifiedName {
-			get {
-				return qualifiedName;
-			}
-			set {
-				qualifiedName = value;
-			}
-		}
-		
-		public IReturnType DefaultReturnType {
-			get {
-				return returnType;
-			}
-			set {
-				returnType = value;
-			}
-		}
+		public string FullyQualifiedName { get; set; }
+		public IReturnType DefaultReturnType { get; set;}
 		
 		public string DotNetName {
 			get {
@@ -92,37 +73,37 @@ namespace ICSharpCode.SharpDevelop.Tests.Utils
 			}
 		}
 		
-		public List<IReturnType> BaseTypes {
+		public IList<IReturnType> BaseTypes {
 			get {
 				throw new NotImplementedException();
 			}
 		}
 		
-		public List<IClass> InnerClasses {
+		public IList<IClass> InnerClasses {
 			get {
 				throw new NotImplementedException();
 			}
 		}
 		
-		public List<IField> Fields {
+		public IList<IField> Fields {
 			get {
 				throw new NotImplementedException();
 			}
 		}
 		
-		public List<IProperty> Properties {
+		public IList<IProperty> Properties {
 			get {
 				throw new NotImplementedException();
 			}
 		}
 		
-		public List<IMethod> Methods {
+		public IList<IMethod> Methods {
 			get {
 				throw new NotImplementedException();
 			}
 		}
 		
-		public List<IEvent> Events {
+		public IList<IEvent> Events {
 			get {
 				throw new NotImplementedException();
 			}
@@ -181,9 +162,6 @@ namespace ICSharpCode.SharpDevelop.Tests.Utils
 		
 		public ModifierEnum Modifiers {
 			get {
-				throw new NotImplementedException();
-			}
-			set {
 				throw new NotImplementedException();
 			}
 		}
@@ -305,6 +283,12 @@ namespace ICSharpCode.SharpDevelop.Tests.Utils
 			}
 		}
 		
+		public bool IsFrozen {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
 		public IReturnType GetBaseType(int index)
 		{
 			throw new NotImplementedException();
@@ -340,7 +324,7 @@ namespace ICSharpCode.SharpDevelop.Tests.Utils
 			throw new NotImplementedException();
 		}
 		
-		public bool MustBeShown(IClass callingClass, bool showStatic, bool isClassInInheritanceTree)
+		public void Freeze()
 		{
 			throw new NotImplementedException();
 		}
@@ -350,5 +334,13 @@ namespace ICSharpCode.SharpDevelop.Tests.Utils
 			throw new NotImplementedException();
 		}
 		
+		public bool HasCompoundClass {
+			get {
+				throw new NotImplementedException();
+			}
+			set {
+				throw new NotImplementedException();
+			}
+		}
 	}
 }

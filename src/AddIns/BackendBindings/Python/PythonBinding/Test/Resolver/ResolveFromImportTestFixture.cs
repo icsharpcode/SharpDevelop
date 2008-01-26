@@ -33,7 +33,7 @@ namespace PythonBinding.Tests.Resolver
 			ParseInformation parseInfo = new ParseInformation();
 			mockProjectContent = new MockProjectContent();
 			mockProjectContent.SearchNamespaceToReturn = "System";
-			parseInfo.DirtyCompilationUnit = new DefaultCompilationUnit(mockProjectContent);
+			parseInfo.SetCompilationUnit(new DefaultCompilationUnit(mockProjectContent) { ErrorsDuringCompile = true });
 					
 			string python = "from System.";
 			ExpressionResult expressionResult = new ExpressionResult("from System", new DomRegion(1, 14), null, null);

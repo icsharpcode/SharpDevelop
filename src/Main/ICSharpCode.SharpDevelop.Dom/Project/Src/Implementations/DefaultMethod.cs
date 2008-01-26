@@ -56,6 +56,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 		IList<ITypeParameter> typeParameters;
 		IList<string> handlesClauses;
 		
+		protected override void FreezeInternal()
+		{
+			parameters = FreezeList(parameters);
+			typeParameters = FreezeList(typeParameters);
+			handlesClauses = FreezeList(handlesClauses);
+			base.FreezeInternal();
+		}
+		
 		bool isExtensionMethod;
 		
 		public bool IsExtensionMethod {
@@ -63,6 +71,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return isExtensionMethod;
 			}
 			set {
+				CheckBeforeMutation();
 				isExtensionMethod = value;
 			}
 		}
@@ -123,6 +132,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return typeParameters;
 			}
 			set {
+				CheckBeforeMutation();
 				typeParameters = value;
 			}
 		}
@@ -135,6 +145,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return parameters;
 			}
 			set {
+				CheckBeforeMutation();
 				parameters = value;
 			}
 		}
@@ -147,6 +158,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return handlesClauses;
 			}
 			set {
+				CheckBeforeMutation();
 				handlesClauses = value;
 			}
 		}

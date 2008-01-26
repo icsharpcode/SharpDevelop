@@ -122,6 +122,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			for (int i = 0; i < dimensions; ++i) {
 				property.Parameters.Add(new DefaultParameter("index", int32, DomRegion.Empty));
 			}
+			property.Freeze();
 			l.Add(property);
 			return l;
 		}

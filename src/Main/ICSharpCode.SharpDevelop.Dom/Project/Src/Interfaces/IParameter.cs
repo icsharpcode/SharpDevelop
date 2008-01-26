@@ -11,7 +11,7 @@ using System.Collections.Generic;
 namespace ICSharpCode.SharpDevelop.Dom
 {
 
-	public interface IParameter: IComparable
+	public interface IParameter : IFreezable, IComparable
 	{
 		string Name {
 			get;

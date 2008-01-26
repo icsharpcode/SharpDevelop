@@ -41,8 +41,8 @@ namespace PythonBinding.Tests.Designer
 			// Set the DirtyCompilationUnit to a non-null compilation unit
 			// but with no items in the project content to ensure
 			// that the BestCompilationUnit is used by the generator.
-			parseInfo.DirtyCompilationUnit = new DefaultCompilationUnit(new MockProjectContent());
-			parseInfo.ValidCompilationUnit = compilationUnit;
+			parseInfo.SetCompilationUnit(compilationUnit);
+			parseInfo.SetCompilationUnit(new DefaultCompilationUnit(new MockProjectContent()) { ErrorsDuringCompile = true });
 			
 			// Get the InitializeComponent method from the
 			// compilation unit.
@@ -72,7 +72,7 @@ namespace PythonBinding.Tests.Designer
 		public void GetInitializeComponentWhenNoClassesInCompilationUnit()
 		{
 			ParseInformation parseInfo = new ParseInformation();
-			parseInfo.ValidCompilationUnit = new DefaultCompilationUnit(new MockProjectContent());
+			parseInfo.SetCompilationUnit(new DefaultCompilationUnit(new MockProjectContent()));
 			Assert.IsNull(GeneratedInitializeComponentMethod.GetInitializeComponents(parseInfo));
 		}		
 		
@@ -88,7 +88,7 @@ namespace PythonBinding.Tests.Designer
 			string code = GetFormCode().Replace("InitializeComponent", "InitializeComponents");
 			ICompilationUnit compilationUnit = parser.Parse(mockProjectContent, @"C:\Projects\Test\MainForm.py", code);
 			ParseInformation parseInfo = new ParseInformation();
-			parseInfo.ValidCompilationUnit = compilationUnit;
+			parseInfo.SetCompilationUnit(compilationUnit);
 			IMethod expectedMethod = GetInitializeComponentMethod(compilationUnit);
 
 			IMethod method = GeneratedInitializeComponentMethod.GetInitializeComponents(parseInfo);

@@ -78,7 +78,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 		
 		ParseInformation AddCompilationUnit(ICompilationUnit parserOutput, string fileName)
 		{
-			return ParserService.UpdateParseInformation(parserOutput, fileName, false);
+			return ParserService.RegisterParseInformation(fileName, parserOutput);
 		}
 		
 		public ResolveResult Resolve(string program, string expression, int line)

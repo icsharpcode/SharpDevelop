@@ -65,7 +65,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 			}
 			
 			ParseInformation parseInfo = new ParseInformation();
-			parseInfo.ValidCompilationUnit = visitor.Cu;
+			parseInfo.SetCompilationUnit(visitor.Cu);
 			
 			if (sourceLanguage == SupportedLanguage.CSharp) {
 				CSharpToVBNetConvertVisitor convertVisitor = new CSharpToVBNetConvertVisitor(pc, parseInfo);

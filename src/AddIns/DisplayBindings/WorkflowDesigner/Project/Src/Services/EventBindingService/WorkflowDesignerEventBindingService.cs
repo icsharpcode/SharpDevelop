@@ -147,13 +147,11 @@ namespace WorkflowDesigner
 			// Initialize designer for formClass
 			formClass = formClass.GetCompoundClass();
 			if (formClass is CompoundClass) {
-				return (formClass as CompoundClass).GetParts();
+				return (formClass as CompoundClass).Parts;
 			} else {
 				return new IClass[] { formClass };
 			}
 		}
-
-		
 		
 		#region IServiceProvider implementation
 		IServiceProvider provider;

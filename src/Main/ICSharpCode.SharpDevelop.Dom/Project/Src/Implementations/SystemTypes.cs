@@ -87,6 +87,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			: base(DefaultCompilationUnit.DummyCompilationUnit, VoidName)
 		{
 			this.Modifiers = ModifierEnum.Public | ModifierEnum.Sealed;
+			Freeze();
 		}
 		
 		protected override IReturnType CreateDefaultReturnType()

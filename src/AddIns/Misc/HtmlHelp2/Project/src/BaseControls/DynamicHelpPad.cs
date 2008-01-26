@@ -569,7 +569,10 @@ namespace HtmlHelp2
 			try
 			{
 				this.internalIndex = 0;
-				axWebBrowser.Document.Body.InnerHtml = string.Empty;
+				var document = axWebBrowser != null ? axWebBrowser.Document : null;
+				var body = document != null ? document.Body : null;
+				if (body != null)
+					body.InnerHtml = string.Empty;
 			}
 			catch (System.NotSupportedException ex)
 			{

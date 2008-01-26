@@ -15,8 +15,8 @@ namespace ICSharpCode.SharpDevelop
 	public class ParseInformationEventArgs : EventArgs
 	{
 		string fileName;
-		ParseInformation parseInformation;
-		ICompilationUnit compilationUnit;
+		ICompilationUnit oldCompilationUnit;
+		ICompilationUnit newCompilationUnit;
 		
 		public string FileName {
 			get {
@@ -25,30 +25,28 @@ namespace ICSharpCode.SharpDevelop
 		}
 		
 		/// <summary>
-		/// Gets the parse information. The new compilation unit has not yet been added to the parse information
-		/// (but will be immediately after the event was executed, be careful when invoking back to the main thread),
-		/// you can use this property to get the previous compilation unit.
+		/// Gets the old compilation unit.
 		/// </summary>
-		public ParseInformation ParseInformation {
+		public ICompilationUnit OldCompilationUnit {
 			get {
-				return parseInformation;
+				return oldCompilationUnit;
 			}
 		}
 		
 		/// <summary>
 		/// The new compilation unit.
 		/// </summary>
-		public ICompilationUnit CompilationUnit {
+		public ICompilationUnit NewCompilationUnit {
 			get {
-				return compilationUnit;
+				return newCompilationUnit;
 			}
 		}
 		
-		public ParseInformationEventArgs(string fileName, ParseInformation parseInformation, ICompilationUnit compilationUnit)
+		public ParseInformationEventArgs(string fileName, ICompilationUnit oldCompilationUnit, ICompilationUnit newCompilationUnit)
 		{
-			this.fileName         = fileName;
-			this.parseInformation = parseInformation;
-			this.compilationUnit  = compilationUnit;
+			this.fileName = fileName;
+			this.oldCompilationUnit = oldCompilationUnit;
+			this.newCompilationUnit = newCompilationUnit;
 		}
 	}
 	

@@ -114,7 +114,7 @@ namespace VBNetBinding.Parser
 				rootNamespace = ((IProject)projectContent.Project).RootNamespace;
 			}
 			if (rootNamespace != null && rootNamespace.Length > 0) {
-				foreach (IClass c in visitor.Cu.Classes) {
+				foreach (DefaultClass c in visitor.Cu.Classes) {
 					c.FullyQualifiedName = rootNamespace + "." + c.FullyQualifiedName;
 				}
 			}
@@ -127,8 +127,7 @@ namespace VBNetBinding.Parser
 			foreach (ICSharpCode.NRefactory.Parser.TagComment tagComment in tagComments)
 			{
 				DomRegion tagRegion = new DomRegion(tagComment.StartPosition.Y, tagComment.StartPosition.X);
-				ICSharpCode.SharpDevelop.Dom.TagComment tag = new ICSharpCode.SharpDevelop.Dom.TagComment(tagComment.Tag, tagRegion);
-				tag.CommentString = tagComment.CommentText;
+				var tag = new ICSharpCode.SharpDevelop.Dom.TagComment(tagComment.Tag, tagRegion, tagComment.CommentText);
 				cu.TagComments.Add(tag);
 			}
 		}

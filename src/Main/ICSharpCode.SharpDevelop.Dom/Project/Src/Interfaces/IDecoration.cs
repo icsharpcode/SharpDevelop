@@ -10,7 +10,7 @@ using System.Collections.Generic;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {
-	public interface IDecoration: IComparable
+	public interface IDecoration : IFreezable, IComparable
 	{
 		IClass DeclaringType {
 			get;
@@ -18,7 +18,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		ModifierEnum Modifiers {
 			get;
-			set;
 		}
 		
 		IList<IAttribute> Attributes {
@@ -99,6 +98,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get;
 		}
 		
+		/// <summary>
+		/// This property can be used to attach any user-defined data to this class/method.
+		/// This property is mutable, it can be changed when the class/method is frozen.
+		/// </summary>
 		object UserData {
 			get;
 			set;
