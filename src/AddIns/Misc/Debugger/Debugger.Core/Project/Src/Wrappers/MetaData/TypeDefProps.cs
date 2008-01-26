@@ -17,6 +17,12 @@ namespace Debugger.Wrappers.MetaData
 		public string Name;
 		public uint Flags;
 		public uint SuperClassToken;
+		
+		public bool IsInterface {
+			get {
+				return (Flags & 0x00000020) != 0;
+			}
+		}
 	}
 }
 

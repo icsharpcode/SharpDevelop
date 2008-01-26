@@ -361,6 +361,7 @@
     <Compile Include="Src\Wrappers\CorSym\SequencePoint.cs" />
     <Compile Include="Src\Wrappers\ICorDebugManagedCallbacks.cs" />
     <Compile Include="Src\Wrappers\MetaData\FieldProps.cs" />
+    <Compile Include="Src\Wrappers\MetaData\InterfaceImplProps.cs" />
     <Compile Include="Src\Wrappers\MetaData\MetaDataImport.cs" />
     <Compile Include="Src\Wrappers\MetaData\MethodProps.cs" />
     <Compile Include="Src\Wrappers\MetaData\ParamProps.cs" />

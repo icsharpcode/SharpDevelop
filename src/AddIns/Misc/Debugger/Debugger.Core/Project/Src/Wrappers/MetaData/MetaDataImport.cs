@@ -217,6 +217,21 @@ namespace Debugger.Wrappers.MetaData
 			return EnumerateTokens(metaData.EnumGenericParams, typeDef_methodDef);
 		}
 		
+		public IEnumerable<InterfaceImplProps> EnumInterfaceImpls(uint typeDef)
+		{
+			foreach(uint token in EnumerateTokens(metaData.EnumInterfaceImpls, typeDef)) {
+				yield return GetInterfaceImplProps(token);
+			}
+		}
+		
+		public InterfaceImplProps GetInterfaceImplProps(uint token)
+		{
+			InterfaceImplProps implProps = new InterfaceImplProps();
+			implProps.Token = token;
+			metaData.GetInterfaceImplProps(token, out implProps.classTypeDef, out implProps.ptkIface);
+			return implProps;
+		}
+		
 		#region Util
 		
 		delegate void TokenEnumerator(ref IntPtr phEnum, uint parameter, out uint token, uint maxCount, out uint fetched);

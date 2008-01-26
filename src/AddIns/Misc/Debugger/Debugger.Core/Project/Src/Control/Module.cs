@@ -75,6 +75,12 @@ namespace Debugger
 			} 
 		}
 		
+		internal uint AppDomainID {
+			get {
+				return this.CorModule.Assembly.AppDomain.ID;
+			}
+		}
+		
 		[Debugger.Tests.Ignore]
 		public string FullPath { 
 			get {

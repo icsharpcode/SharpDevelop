@@ -25,7 +25,7 @@ namespace Debugger.Interop.MetaData
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
         void EnumTypeDefs([In, Out] ref IntPtr phEnum, ref uint rTypeDefs, uint cMax, ref uint pcTypeDefs);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void EnumInterfaceImpls([In, Out] ref IntPtr phEnum, uint td, ref uint rImpls, uint cMax, ref uint pcImpls);
+        void EnumInterfaceImpls([In, Out] ref IntPtr phEnum, uint td, out uint rImpls, uint cMax, out uint pcImpls);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
         void EnumTypeRefs([In, Out] ref IntPtr phEnum, ref uint rTypeRefs, uint cMax, ref uint pcTypeRefs);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]

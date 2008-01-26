@@ -169,7 +169,7 @@ namespace Debugger.MetaData
 			if (type.IsGenericType) throw new DebuggerException("Not implemented for generic types");
 			if (type.IsGenericParameter) throw new DebuggerException("Type can not be generic parameter");
 			
-			DebugType debugType = DebugType.GetType(process, domainID, type.FullName);
+			DebugType debugType = DebugType.Create(process, domainID, type.FullName);
 			if (debugType == null) {
 				throw new DebuggerException("Type " + type.FullName + " not found");
 			}

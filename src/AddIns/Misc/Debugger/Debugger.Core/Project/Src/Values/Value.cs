@@ -132,7 +132,7 @@ namespace Debugger
 			this.rawCorValue_pauseSession = process.PauseSession;
 			
 			if (this.CorValue == null) {
-				type = DebugType.GetType(this.Process, null, "System.Object");
+				type = DebugType.Create(this.Process, null, "System.Object");
 			} else {
 				ICorDebugType exactType = this.CorValue.CastTo<ICorDebugValue2>().ExactType;
 				type = DebugType.Create(this.Process, exactType);

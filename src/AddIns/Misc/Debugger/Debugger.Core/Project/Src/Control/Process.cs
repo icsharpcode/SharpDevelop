@@ -148,6 +148,11 @@ namespace Debugger
 			}
 		}
 		
+		public void TraceMessage(string message, params object[] args)
+		{
+			TraceMessage(string.Format(message, args));
+		}
+		
 		public void TraceMessage(string message)
 		{
 			System.Diagnostics.Debug.WriteLine("Debugger:" + message);

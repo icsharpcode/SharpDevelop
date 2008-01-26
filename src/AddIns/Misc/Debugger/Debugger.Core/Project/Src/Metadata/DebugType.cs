@@ -34,6 +34,7 @@ namespace Debugger.MetaData
 		
 		// Class/ValueType/Array/Ref/Ptr specific
 		List<DebugType>    typeArguments = new List<DebugType>();
+		List<DebugType>    interfaces = new List<DebugType>();
 		
 		// Members of the type; empty list if not applicable
 		List<MemberInfo>   members = new List<MemberInfo>();
@@ -82,6 +83,13 @@ namespace Debugger.MetaData
 			get {
 				AssertClassOrValueType();
 				return classProps.Token;
+			}
+		}
+		
+		/// <summary> Returns true if this type represents interface </summary>
+		public bool IsInterface {
+			get {
+				return IsClass && classProps.IsInterface;
 			}
 		}
 		
@@ -137,6 +145,13 @@ namespace Debugger.MetaData
 			get {
 				return (IsClass || IsValueType) &&
 				       typeArguments.Count > 0;
+			}
+		}
+		
+		/// <summary> Gets a list of all interfaces that this type implements </summary>
+		public List<DebugType> Interfaces {
+			get {
+				return interfaces;
 			}
 		}
 		
@@ -215,7 +230,7 @@ namespace Debugger.MetaData
 		internal uint? AppDomainID {
 			get {
 				if (IsClass || IsValueType) {
-					return this.Module.CorModule.Assembly.AppDomain.ID;
+					return this.Module.AppDomainID;
 				} else {
 					return null;
 				}
@@ -232,11 +247,11 @@ namespace Debugger.MetaData
 			get {
 				// corType.Base does not work for arrays
 				if (this.IsArray) {
-					return DebugType.GetType(this.Process, AppDomainID, "System.Array");
+					return DebugType.Create(this.Process, AppDomainID, "System.Array");
 				}
 				// corType.Base does not work for primitive types
 				if (this.IsPrimitive) {
-					return DebugType.GetType(this.Process, AppDomainID, "System.Object");
+					return DebugType.Create(this.Process, AppDomainID, "System.Object");
 				}
 				ICorDebugType baseType = corType.Base;
 				if (baseType != null) {
@@ -268,6 +283,34 @@ namespace Debugger.MetaData
 			}
 			
 			this.fullName = GetFullName();
+		}
+		
+		public static DebugType Create(Module module, uint token)
+		{
+			if ((token & 0xFF000000) == (uint)CorTokenType.TypeDef) {
+				return Create(module.Process, module.CorModule.GetClassFromToken(token));
+			} else if ((token & 0xFF000000) == (uint)CorTokenType.TypeRef) {
+				string fullName = module.MetaData.GetTypeRefProps(token).Name;
+				return Create(module.Process, module.AppDomainID, fullName);
+			} else {
+				throw new DebuggerException("Unknown token type");
+			}
+			
+		}
+		
+		public static DebugType Create(Process process, uint? domainID, string fullTypeName)
+		{
+			foreach(Module module in process.Modules) {
+				if (!domainID.HasValue || domainID == module.CorModule.Assembly.AppDomain.ID) {
+					try {
+						uint token = module.MetaData.FindTypeDefByName(fullTypeName, 0 /* enclosing class for nested */).Token;
+						return Create(process, module.CorModule.GetClassFromToken(token));
+					} catch {
+						continue;
+					}
+				}
+			}
+			throw new DebuggerException("Can not find type " + fullTypeName);
 		}
 		
 		static internal DebugType Create(Process process, ICorDebugClass corClass, params ICorDebugType[] typeArguments)
@@ -330,7 +373,11 @@ namespace Debugger.MetaData
 			type.Process.Expired += delegate { typesWithMatchingName.Remove(type); };
 			
 			TimeSpan totalTime2 = Util.HighPrecisionTimer.Now - startTime;
-			process.TraceMessage("Loaded type " + type.FullName + " (" + totalTime2.TotalMilliseconds + " ms)");
+			string prefix = type.IsInterface ? "interface" : "type";
+			process.TraceMessage("Loaded {0} {1} ({2} ms)", prefix, type.FullName, totalTime2.TotalMilliseconds);
+			foreach(DebugType inter in type.Interfaces) {
+				process.TraceMessage(" - Implements {0}", inter.FullName);
+			}
 			
 			return type;
 		}
@@ -365,6 +412,15 @@ namespace Debugger.MetaData
 		
 		void LoadMemberInfo()
 		{
+			// Load interfaces
+			foreach(InterfaceImplProps implProps in module.MetaData.EnumInterfaceImpls(this.MetadataToken)) {
+				if ((implProps.ptkIface & 0xFF000000) == (uint)CorTokenType.TypeDef ||
+					(implProps.ptkIface & 0xFF000000) == (uint)CorTokenType.TypeRef)
+				{
+					this.interfaces.Add(DebugType.Create(module, implProps.ptkIface));
+				}
+			}
+			
 			// Load fields
 			foreach(FieldProps field in module.MetaData.EnumFields(this.MetadataToken)) {
 				if (field.IsStatic && field.IsLiteral) continue; // Skip static literals TODO: Why?
@@ -449,21 +505,6 @@ namespace Debugger.MetaData
 			} else {
 				return false;
 			}
-		}
-		
-		public static DebugType GetType(Process process, uint? domainID, string fullTypeName)
-		{
-			foreach(Module module in process.Modules) {
-				if (!domainID.HasValue || domainID == module.CorModule.Assembly.AppDomain.ID) {
-					try {
-						uint token = module.MetaData.FindTypeDefByName(fullTypeName, 0 /* enclosing class for nested */).Token;
-						return Create(process, module.CorModule.GetClassFromToken(token));
-					} catch {
-						continue;
-					}
-				}
-			}
-			return null;
 		}
 		
 		/// <summary> Get hash code of the object </summary>
