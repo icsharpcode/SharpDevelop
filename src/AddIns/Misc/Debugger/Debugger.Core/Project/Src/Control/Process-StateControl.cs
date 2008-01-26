@@ -234,6 +234,8 @@ namespace Debugger
 			// Stop&terminate - both must be called
 			corProcess.Stop(uint.MaxValue);
 			corProcess.Terminate(0);
+			
+			this.NotifyHasExpired();
 		}
 		
 		internal void SelectMostRecentStackFrameWithLoadedSymbols()

@@ -45,7 +45,6 @@ namespace Debugger
 				if (DebuggeeState != null) {
 					ExpireDebuggeeState();
 				}
-				debugger.RemoveProcess(this);
 			}
 		}
 		

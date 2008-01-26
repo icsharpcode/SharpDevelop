@@ -55,6 +55,9 @@ namespace Debugger
 		public ManagedCallback GetProcessCallbackInterface(ICorDebugProcess pProcess)
 		{
 			Process process = debugger.GetProcess(pProcess);
+			if (process.HasExpired) {
+				return null;
+			}
 			try {
 				int isRunning = process.CorProcess.IsRunning;
 			} catch (COMException e) {
@@ -65,6 +68,12 @@ namespace Debugger
 				}
 			}
 			return process.CallbackInterface;
+		}
+		
+		public void ExitProcess(ICorDebugProcess pProcess)
+		{
+			ManagedCallback managedCallback = debugger.GetProcess(pProcess).CallbackInterface;
+			managedCallback.ExitProcess(pProcess);
 		}
 		
 		#region Program folow control
@@ -285,14 +294,6 @@ namespace Debugger
 			ManagedCallback managedCallback = GetProcessCallbackInterface(pProcess);
 			if (managedCallback != null) {
 				managedCallback.ExitAppDomain(pProcess, pAppDomain);
-			}
-		}
-		
-		public void ExitProcess(ICorDebugProcess pProcess)
-		{
-			ManagedCallback managedCallback = GetProcessCallbackInterface(pProcess);
-			if (managedCallback != null) {
-				managedCallback.ExitProcess(pProcess);
 			}
 		}
 		
