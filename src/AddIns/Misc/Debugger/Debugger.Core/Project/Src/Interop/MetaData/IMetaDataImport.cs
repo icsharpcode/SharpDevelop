@@ -23,11 +23,11 @@ namespace Debugger.Interop.MetaData
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
         void ResetEnum(IntPtr hEnum, uint ulPos);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void EnumTypeDefs(ref IntPtr phEnum, ref uint rTypeDefs, uint cMax, ref uint pcTypeDefs);
+        void EnumTypeDefs([In, Out] ref IntPtr phEnum, ref uint rTypeDefs, uint cMax, ref uint pcTypeDefs);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void EnumInterfaceImpls(ref IntPtr phEnum, uint td, ref uint rImpls, uint cMax, ref uint pcImpls);
+        void EnumInterfaceImpls([In, Out] ref IntPtr phEnum, uint td, ref uint rImpls, uint cMax, ref uint pcImpls);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void EnumTypeRefs(ref IntPtr phEnum, ref uint rTypeRefs, uint cMax, ref uint pcTypeRefs);
+        void EnumTypeRefs([In, Out] ref IntPtr phEnum, ref uint rTypeRefs, uint cMax, ref uint pcTypeRefs);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
         void FindTypeDefByName([In, MarshalAs(UnmanagedType.LPWStr)] string szTypeDef, [In] uint tkEnclosingClass, out uint ptd);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
@@ -43,21 +43,21 @@ namespace Debugger.Interop.MetaData
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
         void ResolveTypeRef(uint tr, ref Guid riid, [MarshalAs(UnmanagedType.IUnknown)] ref object ppIScope, ref uint ptd);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void EnumMembers([In] ref IntPtr phEnum, [In] uint cl, out uint rMembers, [In] uint cMax, out uint pcTokens);
+        void EnumMembers([In, Out] ref IntPtr phEnum, [In] uint cl, out uint rMembers, [In] uint cMax, out uint pcTokens);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
         void EnumMembersWithName([In, Out] ref IntPtr phEnum, [In] uint cl, [In, MarshalAs(UnmanagedType.LPWStr)] string szName, out uint rMembers, [In] uint cMax, out uint pcTokens);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void EnumMethods([In] ref IntPtr phEnum, [In] uint cl, out uint rMethods, [In] uint cMax, out uint pcTokens);
+        void EnumMethods([In, Out] ref IntPtr phEnum, [In] uint cl, out uint rMethods, [In] uint cMax, out uint pcTokens);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void EnumMethodsWithName([In] ref IntPtr phEnum, [In] uint cl, [In, MarshalAs(UnmanagedType.LPWStr)] string szName, out uint rMethods, [In] uint cMax, out uint pcTokens);
+        void EnumMethodsWithName([In, Out] ref IntPtr phEnum, [In] uint cl, [In, MarshalAs(UnmanagedType.LPWStr)] string szName, out uint rMethods, [In] uint cMax, out uint pcTokens);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
         void EnumFields([In, Out] ref IntPtr phEnum, [In] uint cl, out uint rFields, [In] uint cMax, out uint pcTokens);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
         void EnumFieldsWithName([In, Out] ref IntPtr phEnum, [In] uint cl, [In, MarshalAs(UnmanagedType.LPWStr)] string szName, out uint rFields, [In] uint cMax, out uint pcTokens);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void EnumParams([In] ref IntPtr phEnum, [In] uint mb, out uint rParams, [In] uint cMax, out uint pcTokens);
+        void EnumParams([In, Out] ref IntPtr phEnum, [In] uint mb, out uint rParams, [In] uint cMax, out uint pcTokens);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void EnumMemberRefs([In] ref IntPtr phEnum, [In] uint tkParent, out uint rMemberRefs, [In] uint cMax, out uint pcTokens);
+        void EnumMemberRefs([In, Out] ref IntPtr phEnum, [In] uint tkParent, out uint rMemberRefs, [In] uint cMax, out uint pcTokens);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
         void EnumMethodImpls([In, Out] ref IntPtr phEnum, [In] uint td, out uint rMethodBody, out uint rMethodDecl, [In] uint cMax, out uint pcTokens);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
@@ -75,7 +75,7 @@ namespace Debugger.Interop.MetaData
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
         void GetMemberRefProps([In] uint mr, out uint ptk, [Out, MarshalAs(UnmanagedType.LPWStr)] string szMember, [In] uint cchMember, out uint pchMember, [Out] IntPtr ppvSigBlob, out uint pbSig);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void EnumProperties([In] ref IntPtr phEnum, [In] uint td, out uint rProperties, [In] uint cMax, out uint pcProperties);
+        void EnumProperties([In, Out] ref IntPtr phEnum, [In] uint td, out uint rProperties, [In] uint cMax, out uint pcProperties);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
         void EnumEvents([In, Out] ref IntPtr phEnum, [In] uint td, out uint rEvents, [In] uint cMax, out uint pcEvents);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]

@@ -87,16 +87,8 @@ namespace Debugger.Wrappers.MetaData
 		
 		public IEnumerable<FieldProps> EnumFields(uint typeToken)
 		{
-			IntPtr enumerator = IntPtr.Zero;
-			while (true) {
-				uint fieldToken;
-				uint fieldsFetched;
-				metaData.EnumFields(ref enumerator, typeToken, out fieldToken, 1, out fieldsFetched);
-				if (fieldsFetched == 0) {
-					metaData.CloseEnum(enumerator);
-					break;
-				}
-				yield return GetFieldProps(fieldToken);
+			foreach(uint token in EnumerateTokens(metaData.EnumFields, typeToken)) {
+				yield return GetFieldProps(token);
 			}
 		}
 		
@@ -125,16 +117,8 @@ namespace Debugger.Wrappers.MetaData
 		
 		public IEnumerable<MethodProps> EnumMethods(uint typeToken)
 		{
-			IntPtr enumerator = IntPtr.Zero;
-			while(true) {
-				uint methodToken;
-				uint methodsFetched;
-				metaData.EnumMethods(ref enumerator, typeToken, out methodToken, 1, out methodsFetched);
-				if (methodsFetched == 0) {
-					metaData.CloseEnum(enumerator);
-					break;
-				}
-				yield return GetMethodProps(methodToken);
+			foreach(uint token in EnumerateTokens(metaData.EnumMethods, typeToken)) {
+				yield return GetMethodProps(token);
 			}
 		}
 		
@@ -176,17 +160,7 @@ namespace Debugger.Wrappers.MetaData
 		
 		public IEnumerable<uint> EnumParams(uint mb)
 		{
-			IntPtr enumerator = IntPtr.Zero;
-			while(true) {
-				uint token;
-				uint fetched;
-				metaData.EnumParams(ref enumerator, mb, out token, 1, out fetched);
-				if (fetched == 0) {
-					metaData.CloseEnum(enumerator);
-					break;
-				}
-				yield return token;
-			}
+			return EnumerateTokens(metaData.EnumParams, mb);
 		}
 		
 		public int GetParamCount(uint methodToken)
@@ -240,11 +214,20 @@ namespace Debugger.Wrappers.MetaData
 		
 		public IEnumerable<uint> EnumGenericParams(uint typeDef_methodDef)
 		{
+			return EnumerateTokens(metaData.EnumGenericParams, typeDef_methodDef);
+		}
+		
+		#region Util
+		
+		delegate void TokenEnumerator(ref IntPtr phEnum, uint parameter, out uint token, uint maxCount, out uint fetched);
+		
+		IEnumerable<uint> EnumerateTokens(TokenEnumerator tokenEnumerator, uint parameter)
+		{
 			IntPtr enumerator = IntPtr.Zero;
 			while(true) {
 				uint token;
 				uint fetched;
-				metaData.EnumGenericParams(ref enumerator, typeDef_methodDef, out token, 1, out fetched);
+				tokenEnumerator(ref enumerator, parameter, out token, 1, out fetched);
 				if (fetched == 0) {
 					metaData.CloseEnum(enumerator);
 					break;
@@ -252,6 +235,8 @@ namespace Debugger.Wrappers.MetaData
 				yield return token;
 			}
 		}
+		
+		#endregion
 	}
 }
 
