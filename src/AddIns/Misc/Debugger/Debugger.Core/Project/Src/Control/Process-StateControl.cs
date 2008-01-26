@@ -177,7 +177,7 @@ namespace Debugger
 		{
 			AssertRunning();
 			
-			corProcess.Stop(5000); // TODO: Hardcoded value
+			corProcess.Stop(uint.MaxValue); // Infinite; ignored anyway
 			
 			CreatePauseSession(PausedReason.ForcedBreak);
 			CreateDebuggeeState();
@@ -216,10 +216,6 @@ namespace Debugger
 		{
 			AssertPaused();
 			
-			if (callbackInterface.IsInCallback) {
-				throw new DebuggerException("Can not continue from within callback.");
-			}
-			
 			ExpirePauseSession();
 			corProcess.Continue(0);
 		}
@@ -229,14 +225,14 @@ namespace Debugger
 			// Resume stoped tread
 			if (this.IsPaused) {
 				// We might get more callbacks so we should maintain consistent sate
-				AsyncContinue(); // TODO: Remove this...
+				//AsyncContinue(); // Continue the process to get remaining callbacks
 			}
 			
 			// Expose race condition - drain callback queue
 			System.Threading.Thread.Sleep(0);
 			
 			// Stop&terminate - both must be called
-			corProcess.Stop(5000); // TODO: ...and this
+			corProcess.Stop(uint.MaxValue);
 			corProcess.Terminate(0);
 		}
 		

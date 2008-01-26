@@ -318,6 +318,7 @@
     <Compile Include="Src\Wrappers\CorDebug\ICorDebugFrameEnum.cs" />
     <Compile Include="Src\Wrappers\CorDebug\ICorDebugGenericValue.cs" />
     <Compile Include="Src\Wrappers\CorDebug\ICorDebugModule.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\ICorDebugProcess.cs" />
     <Compile Include="Src\Wrappers\CorDebug\ICorDebugStepper.cs" />
     <Compile Include="Src\Wrappers\CorDebug\ICorDebugStringValue.cs" />
     <Compile Include="Src\Wrappers\CorDebug\ICorDebugTypeEnum.cs" />

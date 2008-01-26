@@ -24,7 +24,7 @@ namespace Debugger
 	class ManagedCallback
 	{
 		Process process;
-		bool pauseProcessInsteadOfContinue;
+		bool pauseOnNextExit;
 		bool isInCallback = false;
 		
 		[Debugger.Tests.Ignore]
@@ -53,11 +53,12 @@ namespace Debugger
 			// After break is pressed we may receive some messages that were already queued
 			if (process.IsPaused && process.PauseSession.PausedReason == PausedReason.ForcedBreak) {
 				process.TraceMessage("Processing post-break callback");
-				// Continue the break, process is still breaked because of the callback
-				process.ExpirePauseSession();
-				process.CorProcess.Continue(0);
-				pauseProcessInsteadOfContinue = true;
+				// This compensates for the break call and we are in normal callback handling mode
+				process.AsyncContinue_KeepDebuggeeState();
+				// Start of call back - create new pause session (as usual)
 				process.CreatePauseSession(pausedReason);
+				// Make sure we stay pause after the callback is handled
+				pauseOnNextExit = true;
 				return;
 			}
 			
@@ -80,28 +81,27 @@ namespace Debugger
 			process.SelectedThread = process.GetThread(pThread);
 		}
 		
-		void ExitCallback_Continue()
+		void ExitCallback()
 		{
-			if (pauseProcessInsteadOfContinue) {
-				pauseProcessInsteadOfContinue = false;
-				ExitCallback_Paused();
-				return;
+			bool hasQueuedCallbacks = process.CorProcess.HasQueuedCallbacks();
+			if (hasQueuedCallbacks) {
+				process.TraceMessage("Process has queued callbacks");
 			}
 			
-			process.ExpirePauseSession();
-			process.CorProcess.Continue(0);
+			// Ignore events during property evaluation
+			if (!pauseOnNextExit || process.Evaluating || hasQueuedCallbacks) {
+				process.ExpirePauseSession();
+				process.CorProcess.Continue(0);
+			} else {
+				pauseOnNextExit = false;
+				Pause();
+			}
 			
 			isInCallback = false;
 		}
 		
-		void ExitCallback_Paused()
+		void Pause()
 		{
-			if (process.Evaluating) {
-				// Ignore events during property evaluation
-				ExitCallback_Continue();
-				return;
-			}
-			
 			process.SelectMostRecentStackFrameWithLoadedSymbols();
 			process.DisableAllSteppers();
 			
@@ -114,8 +114,6 @@ namespace Debugger
 				// Raise the pause event outside the callback
 				process.Debugger.MTA2STA.AsyncCall(RaiseEvents);
 			}
-			
-			isInCallback = false;
 		}
 		
 		void RaiseEvents()
@@ -149,23 +147,21 @@ namespace Debugger
 			
 			if (stepper.PauseWhenComplete) {
 				if (process.SelectedThread.MostRecentStackFrame.HasSymbols) {
-					ExitCallback_Paused();
+					pauseOnNextExit = true;
 				} else {
 					// This can only happen when JMC is disabled (ie NET1.1 or StepOut)
 					if (stepper.Operation == Stepper.StepperOperation.StepOut) {
 						// Create new stepper and keep going
 						process.TraceMessage(" - stepping out of code without symbols at " + process.SelectedThread.MostRecentStackFrame.ToString());
 						new Stepper(process.SelectedThread.MostRecentStackFrame, "Stepper out of code without symbols").StepOut();
-						ExitCallback_Continue();
 					} else {
 						// NET1.1: There is extra step over stepper, just keep going
 						process.TraceMessage(" - leaving code without symbols");
-						ExitCallback_Continue();
 					}
 				}
-			} else {
-				ExitCallback_Continue();
 			}
+			
+			ExitCallback();
 		}
 		
 		// Do not pass the pBreakpoint parameter as ICorDebugBreakpoint - marshaling of it fails in .NET 1.1
@@ -173,7 +169,8 @@ namespace Debugger
 		{
 			EnterCallback(PausedReason.Breakpoint, "Breakpoint", pThread);
 			
-			ExitCallback_Paused();
+			pauseOnNextExit = true;
+			ExitCallback();
 			
 //			foreach (Breakpoint b in debugger.Breakpoints) {
 //				if (b.Equals(pBreakpoint)) {
@@ -187,21 +184,23 @@ namespace Debugger
 		{
 			EnterCallback(PausedReason.Other, "BreakpointSetError", pThread);
 			
-			ExitCallback_Continue();
+			ExitCallback();
 		}
 		
-		public unsafe void Break(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread)
+		public void Break(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread)
 		{
 			EnterCallback(PausedReason.Break, "Break", pThread);
 
-			ExitCallback_Paused();
+			pauseOnNextExit = true;
+			ExitCallback();
 		}
 
 		public void ControlCTrap(ICorDebugProcess pProcess)
 		{
 			EnterCallback(PausedReason.ControlCTrap, "ControlCTrap", pProcess);
 
-			ExitCallback_Paused();
+			pauseOnNextExit = true;
+			ExitCallback();
 		}
 
 		public unsafe void Exception(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, int unhandled)
@@ -216,7 +215,7 @@ namespace Debugger
 				// This callback should be ignored in v2 applications
 				EnterCallback(PausedReason.Other, "Exception", pThread);
 	
-				ExitCallback_Continue();	
+				ExitCallback();	
 			}
 		}
 
@@ -228,7 +227,7 @@ namespace Debugger
 		{
 			EnterCallback(PausedReason.Other, "LogSwitch", pThread);
 
-			ExitCallback_Continue();
+			ExitCallback();
 		}
 		
 		public void LogMessage(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, int lLevel, string pLogSwitchName, string pMessage)
@@ -237,14 +236,14 @@ namespace Debugger
 
 			process.OnLogMessage(new MessageEventArgs(process, lLevel, pMessage, pLogSwitchName));
 
-			ExitCallback_Continue();
+			ExitCallback();
 		}
 
 		public void EditAndContinueRemap(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, ICorDebugFunction pFunction, int fAccurate)
 		{
 			EnterCallback(PausedReason.Other, "EditAndContinueRemap", pThread);
 
-			ExitCallback_Continue();
+			ExitCallback();
 		}
 		
 		public void EvalException(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, ICorDebugEval corEval)
@@ -268,7 +267,8 @@ namespace Debugger
 			eval.NotifyEvaluationComplete(!exception);
 			process.NotifyEvaluationComplete(eval);
 			
-			ExitCallback_Paused();
+			pauseOnNextExit = true;
+			ExitCallback();
 		}
 		
 		public void DebuggerError(ICorDebugProcess pProcess, int errorHR, uint errorCode)
@@ -283,14 +283,15 @@ namespace Debugger
 			
 			System.Windows.Forms.MessageBox.Show(errorText);
 
-			ExitCallback_Paused();
+			pauseOnNextExit = true;
+			ExitCallback();
 		}
 
 		public void UpdateModuleSymbols(ICorDebugAppDomain pAppDomain, ICorDebugModule pModule, IStream pSymbolStream)
 		{
 			EnterCallback(PausedReason.Other, "UpdateModuleSymbols", pAppDomain);
 
-			ExitCallback_Continue();
+			ExitCallback();
 		}
 
 		#endregion
@@ -303,7 +304,7 @@ namespace Debugger
 
 			// Process is added in NDebugger.Start
 
-			ExitCallback_Continue();
+			ExitCallback();
 		}
 
 		public void CreateAppDomain(ICorDebugProcess pProcess, ICorDebugAppDomain pAppDomain)
@@ -312,14 +313,14 @@ namespace Debugger
 
 			pAppDomain.Attach();
 
-			ExitCallback_Continue();
+			ExitCallback();
 		}
 
 		public void LoadAssembly(ICorDebugAppDomain pAppDomain, ICorDebugAssembly pAssembly)
 		{
 			EnterCallback(PausedReason.Other, "LoadAssembly", pAppDomain);
 
-			ExitCallback_Continue();
+			ExitCallback();
 		}
 
 		public unsafe void LoadModule(ICorDebugAppDomain pAppDomain, ICorDebugModule pModule)
@@ -328,7 +329,7 @@ namespace Debugger
 			
 			process.AddModule(pModule);
 			
-			ExitCallback_Continue();
+			ExitCallback();
 		}
 		
 		public void NameChange(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread)
@@ -337,7 +338,7 @@ namespace Debugger
 				
 				EnterCallback(PausedReason.Other, "NameChange: pAppDomain", pAppDomain);
 				
-				ExitCallback_Continue();
+				ExitCallback();
 				
 			}
 			if (pThread != null) {
@@ -347,7 +348,7 @@ namespace Debugger
 				Thread thread = process.GetThread(pThread);
 				thread.HasBeenLoaded = true;
 				
-				ExitCallback_Continue();
+				ExitCallback();
 				
 			}
 		}
@@ -360,14 +361,14 @@ namespace Debugger
 			
 			process.AddThread(pThread);
 			
-			ExitCallback_Continue();
+			ExitCallback();
 		}
 		
 		public void LoadClass(ICorDebugAppDomain pAppDomain, ICorDebugClass c)
 		{
 			EnterCallback(PausedReason.Other, "LoadClass", pAppDomain);
 			
-			ExitCallback_Continue();
+			ExitCallback();
 		}
 		
 		#endregion
@@ -378,7 +379,7 @@ namespace Debugger
 		{
 			EnterCallback(PausedReason.Other, "UnloadClass", pAppDomain);
 			
-			ExitCallback_Continue();
+			ExitCallback();
 		}
 		
 		public void UnloadModule(ICorDebugAppDomain pAppDomain, ICorDebugModule pModule)
@@ -387,14 +388,14 @@ namespace Debugger
 			
 			process.RemoveModule(pModule);
 			
-			ExitCallback_Continue();
+			ExitCallback();
 		}
 		
 		public void UnloadAssembly(ICorDebugAppDomain pAppDomain, ICorDebugAssembly pAssembly)
 		{
 			EnterCallback(PausedReason.Other, "UnloadAssembly", pAppDomain);
 			
-			ExitCallback_Continue();
+			ExitCallback();
 		}
 		
 		public void ExitThread(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread)
@@ -405,7 +406,7 @@ namespace Debugger
 			process.GetThread(pThread).NotifyNativeThreadExited();
 			
 			try {
-				ExitCallback_Continue();
+				ExitCallback();
 			} catch (COMException e) {
 				// For some reason this sometimes happens in .NET 1.1
 				process.TraceMessage("Continue failed in ExitThread callback: " + e.Message);
@@ -416,7 +417,7 @@ namespace Debugger
 		{
 			EnterCallback(PausedReason.Other, "ExitAppDomain", pAppDomain);
 			
-			ExitCallback_Continue();
+			ExitCallback();
 		}
 		
 		public void ExitProcess(ICorDebugProcess pProcess)
@@ -435,21 +436,21 @@ namespace Debugger
 		{
 			EnterCallback(PausedReason.Other, "ChangeConnection", pProcess);
 			
-			ExitCallback_Continue();
+			ExitCallback();
 		}
 
 		public void CreateConnection(ICorDebugProcess pProcess, uint dwConnectionId, IntPtr pConnName)
 		{
 			EnterCallback(PausedReason.Other, "CreateConnection", pProcess);
 			
-			ExitCallback_Continue();
+			ExitCallback();
 		}
 
 		public void DestroyConnection(ICorDebugProcess pProcess, uint dwConnectionId)
 		{
 			EnterCallback(PausedReason.Other, "DestroyConnection", pProcess);
 			
-			ExitCallback_Continue();
+			ExitCallback();
 		}
 
 		public void Exception2(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, ICorDebugFrame pFrame, uint nOffset, CorDebugExceptionCallbackType exceptionType, uint dwFlags)
@@ -462,15 +463,12 @@ namespace Debugger
 			
 			process.SelectedThread.CurrentException = new Exception(process.SelectedThread, (ExceptionType)exceptionType);
 			
-			if (process.SelectedThread.CurrentException.IsUnhandled) {
-				ExitCallback_Paused();
-			} else {
-				if (process.PauseOnHandledException) {
-					ExitCallback_Paused();
-				} else {
-					ExitCallback_Continue();					
-				}
+			if (process.SelectedThread.CurrentException.IsUnhandled ||
+			    process.PauseOnHandledException) 
+			{
+				pauseOnNextExit = true;
 			}
+			ExitCallback();
 		}
 
 		public void ExceptionUnwind(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, CorDebugExceptionUnwindCallbackType dwEventType, uint dwFlags)
@@ -478,24 +476,23 @@ namespace Debugger
 			EnterCallback(PausedReason.ExceptionIntercepted, "ExceptionUnwind", pThread);
 			
 			if (dwEventType == CorDebugExceptionUnwindCallbackType.DEBUG_EXCEPTION_INTERCEPTED) {
-				ExitCallback_Paused();
-			} else {
-				ExitCallback_Continue();
+				pauseOnNextExit = true;
 			}
+			ExitCallback();
 		}
 
 		public void FunctionRemapComplete(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, ICorDebugFunction pFunction)
 		{
 			EnterCallback(PausedReason.Other, "FunctionRemapComplete", pThread);
 			
-			ExitCallback_Continue();
+			ExitCallback();
 		}
 
 		public void FunctionRemapOpportunity(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, ICorDebugFunction pOldFunction, ICorDebugFunction pNewFunction, uint oldILOffset)
 		{
 			EnterCallback(PausedReason.Other, "FunctionRemapOpportunity", pThread);
 			
-			ExitCallback_Continue();
+			ExitCallback();
 		}
 
 		public void MDANotification(ICorDebugController c, ICorDebugThread t, ICorDebugMDA mda)
@@ -508,7 +505,7 @@ namespace Debugger
 				throw new System.Exception("Unknown callback argument");
 			}
 			
-			ExitCallback_Continue();
+			ExitCallback();
 		}
 
 		#endregion
