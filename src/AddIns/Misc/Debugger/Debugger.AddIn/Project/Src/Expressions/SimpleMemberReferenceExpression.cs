@@ -38,7 +38,12 @@ namespace Debugger.Expressions
 		protected override Value EvaluateInternal(StackFrame context)
 		{
 			Value targetValue = targetObject.Evaluate(context);
-			return targetValue.GetMemberValue(member);
+			Value memberValue = targetValue.GetMemberValue(member);
+			if (memberValue != null) {
+				return memberValue;
+			} else {
+				throw new GetValueException("Member \"" + member + "\" not found");
+			}
 		}
 		
 		#region GetHashCode and Equals

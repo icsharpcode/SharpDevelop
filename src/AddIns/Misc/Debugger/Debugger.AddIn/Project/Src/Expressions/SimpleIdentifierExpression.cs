@@ -46,7 +46,7 @@ namespace Debugger.Expressions
 				if (member != null) return member;
 			}
 			
-			throw new GetValueException("Identifier " + identifier + " not found");
+			throw new GetValueException("Identifier \"" + identifier + "\" not found");
 		}
 		
 		#region GetHashCode and Equals
