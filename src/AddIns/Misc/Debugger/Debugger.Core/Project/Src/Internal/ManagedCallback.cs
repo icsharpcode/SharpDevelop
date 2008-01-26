@@ -121,10 +121,10 @@ namespace Debugger
 			if (process.PauseSession.PausedReason == PausedReason.Exception) {
 				ExceptionEventArgs args = new ExceptionEventArgs(process, process.SelectedThread.CurrentException);
 				process.OnExceptionThrown(args);
-				// The event could have resumed the process
+				// The event could have resumed or killed the process
 			}
 			
-			if (process.IsPaused) {
+			if (process.IsPaused && !process.HasExpired) {
 				process.OnPaused();
 				// The event could have resumed the process
 			}
