@@ -10,9 +10,9 @@ using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.SharpDevelop.Tests.Utils
 {
-	public class MockDecoration : AbstractDecoration
+	public class MockEntity : AbstractEntity
 	{
-		public MockDecoration() : base(null)
+		public MockEntity() : base(null)
 		{
 		}
 		

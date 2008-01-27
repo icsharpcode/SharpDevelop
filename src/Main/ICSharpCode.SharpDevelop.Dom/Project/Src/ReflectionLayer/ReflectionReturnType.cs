@@ -27,7 +27,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ReflectionLayer
 			return Create(member.DeclaringType.ProjectContent, member, type, createLazyReturnType);
 		}
 		
-		public static IReturnType Create(IProjectContent pc, IDecoration member, Type type, bool createLazyReturnType)
+		public static IReturnType Create(IProjectContent pc, IEntity member, Type type, bool createLazyReturnType)
 		{
 			if (type.IsByRef) {
 				// TODO: Use ByRefRefReturnType

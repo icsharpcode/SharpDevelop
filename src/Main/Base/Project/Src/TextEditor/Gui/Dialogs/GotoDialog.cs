@@ -123,6 +123,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		
 		Dictionary<string, object> visibleEntries = new Dictionary<string, object>();
+		int bestMatchType;
 		double bestPriority;
 		ListViewItem bestItem;
 		
@@ -209,18 +210,18 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void AddSourceFile(string text, int lineNumber, ProjectItem item)
 		{
-			string lowerText = text.ToLowerInvariant();
 			string fileName = item.FileName;
 			string display = Path.GetFileName(fileName);
 			if (display.Length >= text.Length) {
-				if (display.ToLowerInvariant().IndexOf(lowerText) >= 0) {
+				int matchType = GetMatchType(text, display);
+				if (matchType >= 0) {
 					if (lineNumber > 0) {
 						display += ", line " + lineNumber;
 					}
 					if (item.Project != null) {
 						display += StringParser.Parse(" ${res:MainWindow.Windows.SearchResultPanel.In} ") + item.Project.Name;
 					}
-					AddItem(display, ClassBrowserIconService.GotoArrowIndex, new FileLineReference(fileName, lineNumber), 0.5);
+					AddItem(display, ClassBrowserIconService.GotoArrowIndex, new FileLineReference(fileName, lineNumber), 0.5, matchType);
 				}
 			}
 		}
@@ -232,7 +233,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				TextEditorControl editor = GetEditor();
 				if (editor != null) {
 					num = Math.Min(editor.Document.TotalNumberOfLines, Math.Max(1, num));
-					AddItem(StringParser.Parse("${res:Dialog.Goto.GotoLine} ") + num, ClassBrowserIconService.GotoArrowIndex, num, 0);
+					AddItem(StringParser.Parse("${res:Dialog.Goto.GotoLine} ") + num, ClassBrowserIconService.GotoArrowIndex, num, 0, int.MaxValue);
 				}
 			}
 		}
@@ -245,13 +246,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 				if (ccd == null)
 					return;
 				string dataText = ccd.Text;
-				if (dataText.Length >= text.Length) {
-					if (dataText.ToLowerInvariant().IndexOf(lowerText) >= 0) {
-						if (ccd.Class != null)
-							AddItem(ccd.Class, data.ImageIndex, data.Priority);
-						else if (ccd.Member != null)
-							AddItem(ccd.Member, data.ImageIndex, data.Priority);
-					}
+				int matchType = GetMatchType(text, dataText);
+				if (matchType >= 0) {
+					if (ccd.Class != null)
+						AddItem(ccd.Class, data.ImageIndex, data.Priority, matchType);
+					else if (ccd.Member != null)
+						AddItem(ccd.Member, data.ImageIndex, data.Priority, matchType);
 				}
 			}
 		}
@@ -260,7 +260,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			ShowCompletionData(GetCompletionData(), text);
 			foreach (IClass c in SearchClasses(text)) {
-				AddItem(c);
+				AddItem(c, GetMatchType(text, c.Name));
 			}
 		}
 		
@@ -292,7 +292,44 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		void AddItem(string text, int imageIndex, object tag, double priority)
+		const int MatchType_NoMatch = -1;
+		const int MatchType_ContainsMatch_CaseInsensitive = 0;
+		const int MatchType_ContainsMatch = 1;
+		const int MatchType_StartingMatch_CaseInsensitive = 2;
+		const int MatchType_StartingMatch = 3;
+		const int MatchType_FullMatch_CaseInsensitive = 4;
+		const int MatchType_FullMatch = 5;
+		
+		static int GetMatchType(string searchText, string itemText)
+		{
+			if (itemText.Length < searchText.Length)
+				return MatchType_NoMatch;
+			int indexInsensitive = itemText.IndexOf(searchText, StringComparison.InvariantCultureIgnoreCase);
+			if (indexInsensitive < 0)
+				return MatchType_NoMatch;
+			// This is a case insensitive match
+			int indexSensitive = itemText.IndexOf(searchText, StringComparison.InvariantCulture);
+			if (itemText.Length == searchText.Length) {
+				// this is a full match
+				if (indexSensitive == 0)
+					return MatchType_FullMatch;
+				else
+					return MatchType_FullMatch_CaseInsensitive;
+			} else if (indexInsensitive == 0) {
+				// This is a starting match
+				if (indexSensitive == 0)
+					return MatchType_StartingMatch;
+				else
+					return MatchType_StartingMatch_CaseInsensitive;
+			} else {
+				if (indexSensitive >= 0)
+					return MatchType_ContainsMatch;
+				else
+					return MatchType_ContainsMatch_CaseInsensitive;
+			}
+		}
+		
+		void AddItem(string text, int imageIndex, object tag, double priority, int matchType)
 		{
 			if (visibleEntries.ContainsKey(text))
 				return;
@@ -300,38 +337,34 @@ namespace ICSharpCode.SharpDevelop.Gui
 			ListViewItem item = new ListViewItem(text, imageIndex);
 			item.Tag = tag;
 			if (bestItem == null
-			    || (priority > bestPriority && !(tag is IClass && bestItem.Tag is IMember))
-			    || (tag is IMember && bestItem.Tag is IClass))
+			    || (tag is IMember && bestItem.Tag is IClass)
+			    || (!(tag is IClass && bestItem.Tag is IMember)
+			        && (matchType > bestMatchType || matchType == bestMatchType && priority > bestPriority)))
 			{
 				bestItem = item;
 				bestPriority = priority;
+				bestMatchType = matchType;
 			}
 			listView.Items.Add(item);
 		}
 		
-		void AddItem(IClass c)
+		void AddItem(IClass c, int matchType)
 		{
-			AddItem(c, ClassBrowserIconService.GetIcon(c), CodeCompletionDataUsageCache.GetPriority(c.DotNetName, true));
+			AddItem(c, ClassBrowserIconService.GetIcon(c), CodeCompletionDataUsageCache.GetPriority(c.DotNetName, true), matchType);
 		}
 		
 		void AddItemIfMatchText(string text, IMember member, int imageIndex)
 		{
 			string name = member.Name;
-			if (name.Length >= text.Length) {
-				if (text.Equals(name.Substring(0, text.Length), StringComparison.OrdinalIgnoreCase)) {
-					AddItem(member, imageIndex, CodeCompletionDataUsageCache.GetPriority(member.DotNetName, true));
-				}
+			int matchType = GetMatchType(text, name);
+			if (matchType >= 0) {
+				AddItem(member, imageIndex, CodeCompletionDataUsageCache.GetPriority(member.DotNetName, true), matchType);
 			}
 		}
 		
-		void AddItem(IClass c, int imageIndex, double priority)
+		void AddItem(IEntity e, int imageIndex, double priority, int matchType)
 		{
-			AddItem(c.Name + " (" + c.FullyQualifiedName + ")", imageIndex, c, priority);
-		}
-		
-		void AddItem(IMember m, int imageIndex, double priority)
-		{
-			AddItem(m.Name + " (" + m.FullyQualifiedName + ")", imageIndex, m, priority);
+			AddItem(e.Name + " (" + e.FullyQualifiedName + ")", imageIndex, e, priority, matchType);
 		}
 		
 		void CancelButtonClick(object sender, EventArgs e)

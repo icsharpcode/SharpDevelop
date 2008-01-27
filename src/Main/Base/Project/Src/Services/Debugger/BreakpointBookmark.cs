@@ -25,7 +25,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			}
 			set {
 				willBeHit = value;
-				if (Document != null) {
+				if (Document != null && !Line.IsDeleted) {
 					Document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.SingleLine, LineNumber));
 					Document.CommitUpdate();
 				}

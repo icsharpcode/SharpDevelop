@@ -116,7 +116,7 @@ namespace Grunwald.BooBinding
 			return string.Empty;
 		}
 		
-		string GetModifier(IDecoration decoration)
+		string GetModifier(IEntity decoration)
 		{
 			string ret = "";
 			

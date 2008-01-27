@@ -29,7 +29,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 			IProjectContent pc = MyTypeFinder.GetProjectContent(file);
 			if (pc != null) {
 				string fullName = property.DeclaringType.FullName + "." + property.Name;
-				IDecoration dec = pc.GetElement(fullName);
+				IEntity dec = pc.GetElement(fullName);
 				if (dec != null)
 					return CodeCompletionData.GetDocumentation(dec.Documentation);
 				foreach (IProjectContent rpc in pc.ReferencedContents) {

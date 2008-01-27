@@ -66,7 +66,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			int cmp;
 			
-			if(0 != (cmp = base.CompareTo((IDecoration)value)))
+			if(0 != (cmp = base.CompareTo((IEntity)value)))
 				return cmp;
 			
 			if (FullyQualifiedName != null) {

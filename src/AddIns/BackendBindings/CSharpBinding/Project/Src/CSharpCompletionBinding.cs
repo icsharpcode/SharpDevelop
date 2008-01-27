@@ -230,7 +230,7 @@ namespace CSharpBinding
 		/// <summary>
 		/// A class that copies the properties important for the code completion display from another class,
 		/// but provides its own Name implementation.
-		/// Unlike the DefaultClass.Name implementation, here 'Name' may include the namespace or type arguments.
+		/// Unlike the AbstractEntity.Name implementation, here 'Name' may include the namespace or type arguments.
 		/// </summary>
 		sealed class RenamedClass : DefaultClass, IClass
 		{
@@ -243,7 +243,7 @@ namespace CSharpBinding
 				this.FullyQualifiedName = c.FullyQualifiedName;
 			}
 			
-			string IClass.Name {
+			string IEntity.Name {
 				get { return newName; }
 			}
 		}

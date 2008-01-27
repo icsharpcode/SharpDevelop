@@ -863,7 +863,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// Gets the position of a member in this project content (not a referenced one).
 		/// </summary>
 		/// <param name="fullMemberName">The full member name in Reflection syntax (always case sensitive, ` for generics)</param>
-		public IDecoration GetElement(string fullMemberName)
+		public IEntity GetElement(string fullMemberName)
 		{
 			IClass curClass = GetClassByDotNetName(fullMemberName, false);
 			if (curClass != null) {
@@ -932,7 +932,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public FilePosition GetPosition(string fullMemberName)
 		{
-			IDecoration d = GetElement(fullMemberName);
+			IEntity d = GetElement(fullMemberName);
 			IMember m = d as IMember;
 			IClass c = d as IClass;
 			if (m != null) {

@@ -309,7 +309,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		/// Gets the files of files that could have a reference to the <paramref name="member"/>
 		/// int the <paramref name="ownerClass"/>.
 		/// </summary>
-		static List<ProjectItem> GetPossibleFiles(IClass ownerClass, IDecoration member)
+		static List<ProjectItem> GetPossibleFiles(IClass ownerClass, IEntity member)
 		{
 			List<ProjectItem> resultList = new List<ProjectItem>();
 			if (ProjectService.OpenSolution == null) {

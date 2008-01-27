@@ -10,11 +10,10 @@ using System.Collections.Generic;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {
-	public abstract class AbstractMember : AbstractNamedEntity, IMember
+	public abstract class AbstractMember : AbstractEntity, IMember
 	{
 		IReturnType returnType;
 		DomRegion region;
-		DomRegion bodyRegion;
 		IList<ExplicitInterfaceImplementation> interfaceImplementations;
 		IReturnType declaringTypeReference;
 		
@@ -31,16 +30,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 			set {
 				CheckBeforeMutation();
 				region = value;
-			}
-		}
-		
-		public virtual DomRegion BodyRegion {
-			get {
-				return bodyRegion;
-			}
-			set {
-				CheckBeforeMutation();
-				bodyRegion = value;
 			}
 		}
 		

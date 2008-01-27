@@ -11,11 +11,10 @@ using System.Collections.Generic;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {
-	public class DefaultClass : AbstractNamedEntity, IClass, IComparable
+	public class DefaultClass : AbstractEntity, IClass, IComparable
 	{
 		ClassType classType;
 		DomRegion region;
-		DomRegion bodyRegion;
 		
 		ICompilationUnit compilationUnit;
 		
@@ -40,6 +39,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			base.FreezeInternal();
 		}
 		
+		/*
 		public virtual IClass Unfreeze()
 		{
 			DefaultClass copy = new DefaultClass(compilationUnit, DeclaringType);
@@ -60,6 +60,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			copy.UserData = this.UserData;
 			return copy;
 		}
+		*/
 		
 		byte flags;
 		const byte hasPublicOrInternalStaticMembersFlag = 0x02;
@@ -234,16 +235,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public DomRegion BodyRegion {
-			get {
-				return bodyRegion;
-			}
-			set {
-				CheckBeforeMutation();
-				bodyRegion = value;
-			}
-		}
-		
 		public override string DotNetName {
 			get {
 				string fullName;
@@ -338,7 +329,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			int cmp;
 			
-			if(0 != (cmp = base.CompareTo((IDecoration)value))) {
+			if(0 != (cmp = base.CompareTo((IEntity)value))) {
 				return cmp;
 			}
 			
@@ -395,12 +386,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		protected bool UseInheritanceCache = false;
 		
-		protected override bool CanBeSubclass {
-			get {
-				return true;
-			}
-		}
-
 		public IReturnType GetBaseType(int index)
 		{
 			return BaseTypes[index];

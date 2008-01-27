@@ -50,7 +50,7 @@
     <Reference Include="Microsoft.Build.Engine" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AbstractDecorationIsOverridableTestFixture.cs" />
+    <Compile Include="AbstractEntityIsOverridableTestFixture.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="CodeConverterTests.cs" />
     <Compile Include="CSharpExpressionFinderTests.cs" />
@@ -71,7 +71,7 @@
     <Compile Include="MemberLookupHelperTests.cs" />
     <Compile Include="Utils\MockAmbience.cs" />
     <Compile Include="Utils\MockClass.cs" />
-    <Compile Include="Utils\MockDecoration.cs" />
+    <Compile Include="Utils\MockEntity.cs" />
     <Compile Include="Utils\MockDefaultReturnType.cs" />
     <Compile Include="Utils\MockMethod.cs" />
     <Compile Include="Utils\MockProject.cs" />

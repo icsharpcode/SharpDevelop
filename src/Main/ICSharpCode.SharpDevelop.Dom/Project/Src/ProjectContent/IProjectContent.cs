@@ -103,7 +103,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// Gets the position of a member in this project content (not a referenced one).
 		/// </summary>
 		/// <param name="fullMemberName">The full member name in Reflection syntax (always case sensitive, ` for generics)</param>
-		IDecoration GetElement(string fullMemberName);
+		IEntity GetElement(string fullMemberName);
 		
 		/// <summary>
 		/// Gets the definition position of the class/member.

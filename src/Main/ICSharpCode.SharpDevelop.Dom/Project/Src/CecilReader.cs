@@ -62,7 +62,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// <summary>
 		/// Create a SharpDevelop return type from a Cecil type reference.
 		/// </summary>
-		internal static IReturnType CreateType(IProjectContent pc, IDecoration member, TypeReference type)
+		internal static IReturnType CreateType(IProjectContent pc, IEntity member, TypeReference type)
 		{
 			while (type is ModType) {
 				type = (type as ModType).ElementType;

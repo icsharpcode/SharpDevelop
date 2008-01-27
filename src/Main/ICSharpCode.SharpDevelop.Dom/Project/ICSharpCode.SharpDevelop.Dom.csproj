@@ -63,9 +63,8 @@
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Src\ExtensionMethods.cs" />
-    <Compile Include="Src\Implementations\AbstractDecoration.cs" />
+    <Compile Include="Src\Implementations\AbstractEntity.cs" />
     <Compile Include="Src\Implementations\AbstractMember.cs" />
-    <Compile Include="Src\Implementations\AbstractNamedEntity.cs" />
     <Compile Include="Src\Implementations\AbstractReturnType.cs" />
     <Compile Include="Src\Implementations\AnonymousMethodReturnType.cs" />
     <Compile Include="Src\Implementations\ArrayReturnType.cs" />
@@ -134,7 +133,7 @@
     <Compile Include="Src\Interfaces\IAttribute.cs" />
     <Compile Include="Src\Interfaces\IClass.cs" />
     <Compile Include="Src\Interfaces\ICompilationUnit.cs" />
-    <Compile Include="Src\Interfaces\IDecoration.cs" />
+    <Compile Include="Src\Interfaces\IEntity.cs" />
     <Compile Include="Src\Interfaces\IEvent.cs" />
     <Compile Include="Src\Interfaces\IField.cs" />
     <Compile Include="Src\Interfaces\IMember.cs" />

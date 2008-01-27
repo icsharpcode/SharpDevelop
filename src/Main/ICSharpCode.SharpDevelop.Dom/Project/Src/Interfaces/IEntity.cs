@@ -10,8 +10,31 @@ using System.Collections.Generic;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {
-	public interface IDecoration : IFreezable, IComparable
+	public interface IEntity : IFreezable, IComparable
 	{
+		string FullyQualifiedName {
+			get;
+		}
+		
+		string Name {
+			get;
+		}
+		
+		string Namespace {
+			get;
+		}
+		
+		/// <summary>
+		/// The fully qualified name in the internal .NET notation (with `1 for generic types)
+		/// </summary>
+		string DotNetName {
+			get;
+		}
+		
+		DomRegion BodyRegion {
+			get;
+		}
+		
 		IClass DeclaringType {
 			get;
 		}

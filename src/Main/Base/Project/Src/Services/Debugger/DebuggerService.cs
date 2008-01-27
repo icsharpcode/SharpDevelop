@@ -467,7 +467,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			}
 		}
 		
-		static string GetMemberText(IAmbience ambience, IDecoration member, string expression, out bool debuggerCanShowValue)
+		static string GetMemberText(IAmbience ambience, IEntity member, string expression, out bool debuggerCanShowValue)
 		{
 			bool tryDisplayValue = false;
 			debuggerCanShowValue = false;

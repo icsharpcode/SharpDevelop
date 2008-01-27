@@ -337,7 +337,7 @@ namespace PythonBinding.Tests.Utils
 			throw new NotImplementedException();
 		}
 		
-		public IDecoration GetElement(string fullMemberName)
+		public IEntity GetElement(string fullMemberName)
 		{
 			throw new NotImplementedException();
 		}		

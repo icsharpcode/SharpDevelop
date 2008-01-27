@@ -24,7 +24,7 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 			get { return instance; }
 		}
 		
-		string GetModifier(IDecoration decoration)
+		string GetModifier(IEntity decoration)
 		{
 			StringBuilder builder = new StringBuilder();
 			

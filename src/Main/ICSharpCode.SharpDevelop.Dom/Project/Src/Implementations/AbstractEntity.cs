@@ -10,13 +10,112 @@ using System.Collections.Generic;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {
-	public abstract class AbstractDecoration : AbstractFreezable, IDecoration
+	public abstract class AbstractEntity : AbstractFreezable, IEntity
 	{
 		ModifierEnum modifiers = ModifierEnum.None;
 		IList<IAttribute> attributes;
+		DomRegion bodyRegion;
 		
 		IClass declaringType;
-		object userData = null;
+		
+		string fullyQualifiedName = null;
+		string name               = null;
+		string nspace             = null;
+		
+		public AbstractEntity(IClass declaringType)
+		{
+			this.declaringType = declaringType;
+		}
+		
+		public AbstractEntity(IClass declaringType, string name)
+		{
+			if (declaringType == null)
+				throw new ArgumentNullException("declaringType");
+			this.declaringType = declaringType;
+			this.name = name;
+			nspace = declaringType.FullyQualifiedName;
+			
+			// lazy-computing the fully qualified name for class members saves ~7 MB RAM (when loading the SharpDevelop solution).
+			//fullyQualifiedName = nspace + '.' + name;
+		}
+		
+		public override string ToString()
+		{
+			return String.Format("[{0}: {1}]", GetType().Name, FullyQualifiedName);
+		}
+		
+		#region Naming
+		static readonly char[] nameDelimiters = { '.', '+' };
+		
+		
+		public string FullyQualifiedName {
+			get {
+				if (fullyQualifiedName == null) {
+					if (name != null && nspace != null) {
+						fullyQualifiedName = nspace + '.' + name;
+					} else {
+						return String.Empty;
+					}
+				}
+				return fullyQualifiedName;
+			}
+			set {
+				CheckBeforeMutation();
+				if (fullyQualifiedName == value)
+					return;
+				fullyQualifiedName = value;
+				name   = null;
+				nspace = null;
+				OnFullyQualifiedNameChanged(EventArgs.Empty);
+			}
+		}
+		
+		protected virtual void OnFullyQualifiedNameChanged(EventArgs e)
+		{
+		}
+		
+		public virtual string DotNetName {
+			get {
+				if (this.DeclaringType != null) {
+					return this.DeclaringType.DotNetName + "." + this.Name;
+				} else {
+					return FullyQualifiedName;
+				}
+			}
+		}
+		
+		public string Name {
+			get {
+				if (name == null && FullyQualifiedName != null) {
+					int lastIndex = FullyQualifiedName.LastIndexOfAny(nameDelimiters);
+					
+					if (lastIndex < 0) {
+						name = FullyQualifiedName;
+					} else {
+						name = FullyQualifiedName.Substring(lastIndex + 1);
+					}
+				}
+				return name;
+			}
+		}
+
+		public string Namespace {
+			get {
+				if (nspace == null && FullyQualifiedName != null) {
+					int lastIndex = FullyQualifiedName.LastIndexOf('.');
+					
+					if (lastIndex < 0) {
+						nspace = String.Empty;
+					} else {
+						nspace = FullyQualifiedName.Substring(0, lastIndex);
+					}
+				}
+				return nspace;
+			}
+		}
+		
+		
+		#endregion
 		
 		protected override void FreezeInternal()
 		{
@@ -30,24 +129,17 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public object UserData {
+		public virtual DomRegion BodyRegion {
 			get {
-				return userData;
-			}
-			set {
-				userData = value;
-			}
-		}
-		
-		public ModifierEnum Modifiers {
-			get {
-				return modifiers;
+				return bodyRegion;
 			}
 			set {
 				CheckBeforeMutation();
-				modifiers = value;
+				bodyRegion = value;
 			}
 		}
+		
+		public object UserData { get; set; }
 		
 		public IList<IAttribute> Attributes {
 			get {
@@ -90,6 +182,17 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public abstract string DocumentationTag {
 			get;
+		}
+		
+		#region Modifiers
+		public ModifierEnum Modifiers {
+			get {
+				return modifiers;
+			}
+			set {
+				CheckBeforeMutation();
+				modifiers = value;
+			}
 		}
 		
 		public bool IsAbstract {
@@ -184,11 +287,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return (modifiers & ModifierEnum.Synthetic) == ModifierEnum.Synthetic;
 			}
 		}
-		
-		public AbstractDecoration(IClass declaringType)
-		{
-			this.declaringType = declaringType;
-		}
+		#endregion
 		
 		bool IsInnerClass(IClass c, IClass possibleInnerClass)
 		{
@@ -230,14 +329,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return IsAccessible(callingClass, isClassInInheritanceTree);
 		}
 		
-		public virtual int CompareTo(IDecoration value)
+		public virtual int CompareTo(IEntity value)
 		{
 			return this.Modifiers - value.Modifiers;
 		}
 		
 		int IComparable.CompareTo(object value)
 		{
-			return CompareTo((IDecoration)value);
+			return CompareTo((IEntity)value);
 		}
 	}
 }

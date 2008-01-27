@@ -439,13 +439,13 @@ namespace ClassDiagram
 			//	addItem.SubItems.Add(GetSummary(member));
 		}
 		
-		private static string GetSummary (IDecoration decoration)
+		private static string GetSummary (IEntity decoration)
 		{
 			if (decoration == null) return String.Empty;
 			return GetSummary(decoration.Documentation, @"/docroot/summary");
 		}
 
-		private static string GetParameterSummary (IDecoration decoration, string parameterName)
+		private static string GetParameterSummary (IEntity decoration, string parameterName)
 		{
 			if (decoration == null) return String.Empty;
 			return GetSummary(decoration.Documentation, @"/docroot/param[@name='"+parameterName+"']");

@@ -128,12 +128,23 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		public void RemoveMarker()
 		{
 			if (oldDocument != null) {
+				int from = SafeGetLineNumberForOffset(oldDocument, oldMarker.Offset);
+				int to = SafeGetLineNumberForOffset(oldDocument, oldMarker.Offset + oldMarker.Length);
 				oldDocument.MarkerStrategy.RemoveMarker(oldMarker);
-				oldDocument.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.SingleLine, LineNumber));
+				oldDocument.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.LinesBetween, from, to));
 				oldDocument.CommitUpdate();
 			}
 			oldDocument = null;
 			oldMarker = null;
+		}
+		
+		static int SafeGetLineNumberForOffset(IDocument document, int offset)
+		{
+			if (offset <= 0)
+				return 0;
+			if (offset >= document.TextLength)
+				return document.TotalNumberOfLines;
+			return document.GetLineNumberForOffset(offset);
 		}
 	}
 	

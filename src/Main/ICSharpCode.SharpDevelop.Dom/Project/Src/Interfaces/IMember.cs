@@ -10,9 +10,12 @@ using System.Collections.Generic;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {
-	public interface IMember : IDecoration, ICloneable
+	public interface IMember : IEntity, ICloneable
 	{
-		string FullyQualifiedName {
+		/// <summary>
+		/// Declaration region of the member (without body!)
+		/// </summary>
+		DomRegion Region {
 			get;
 		}
 		
@@ -42,32 +45,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// </summary>
 		IMember CreateSpecializedMember();
 		
-		/// <summary>
-		/// Declaration region of the member (without body!)
-		/// </summary>
-		DomRegion Region {
-			get;
-		}
-		
-		string Name {
-			get;
-		}
-		
-		string Namespace {
-			get;
-		}
-		
-		string DotNetName {
-			get;
-		}
-		
 		IReturnType ReturnType {
 			get;
 			set;
-		}
-		
-		DomRegion BodyRegion {
-			get;
 		}
 		
 		IList<ExplicitInterfaceImplementation> InterfaceImplementations {

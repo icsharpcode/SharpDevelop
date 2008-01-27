@@ -187,7 +187,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return data;
 		}
 		
-		void ConvertAttributes(AST.AttributedNode from, AbstractDecoration to)
+		void ConvertAttributes(AST.AttributedNode from, AbstractEntity to)
 		{
 			if (from.Attributes.Count == 0) {
 				to.Attributes = DefaultAttribute.EmptyAttributeList;

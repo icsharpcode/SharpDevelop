@@ -37,7 +37,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			int cmp;
 			
-			cmp = base.CompareTo((IDecoration)field);
+			cmp = base.CompareTo((IEntity)field);
 			if (cmp != 0) {
 				return cmp;
 			}

@@ -748,7 +748,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				}
 			}
 			
-			void ReadAttributes(AbstractDecoration decoration)
+			void ReadAttributes(AbstractEntity decoration)
 			{
 				int count = reader.ReadUInt16();
 				if (count > 0) {

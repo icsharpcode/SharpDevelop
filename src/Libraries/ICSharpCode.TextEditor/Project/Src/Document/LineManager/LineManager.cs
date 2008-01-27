@@ -91,6 +91,8 @@ namespace ICSharpCode.TextEditor.Document
 //			Console.WriteLine("New text:");
 //			Console.WriteLine("'" + document.TextContent + "'");
 //			#endif
+			// Only fire events after RemoveInternal+InsertInternal finished completely:
+			// Otherwise we would expose inconsistent state to the event handlers.
 			RunHighlighter(lineStart, 1 + Math.Max(0, this.TotalNumberOfLines - numberOfLinesAfterRemoving));
 			if (removedLines != null) {
 				foreach (LineSegment ls in removedLines)

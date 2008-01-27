@@ -11,12 +11,15 @@ using System.Collections.ObjectModel;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {
-	public interface IClass : IDecoration
+	public interface IClass : IEntity
 	{
-		string FullyQualifiedName {
+		/// <summary>
+		/// Region of the whole class including the body.
+		/// </summary>
+		DomRegion Region {
 			get;
 		}
-		
+
 		/// <summary>
 		/// The default return type to use for this class.
 		/// This property is mutable even when the IClass is frozen, see
@@ -24,21 +27,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// This property is thread-safe.
 		/// </summary>
 		IReturnType DefaultReturnType { get; }
-		
-		/// <summary>
-		/// The fully qualified name in the internal .NET notation (with `1 for generic types)
-		/// </summary>
-		string DotNetName {
-			get;
-		}
-		
-		string Name {
-			get;
-		}
-
-		string Namespace {
-			get;
-		}
 		
 		ClassType ClassType {
 			get;
@@ -52,17 +40,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 		
 		ICompilationUnit CompilationUnit {
-			get;
-		}
-		
-		/// <summary>
-		/// Region of the whole class including the body.
-		/// </summary>
-		DomRegion Region {
-			get;
-		}
-		
-		DomRegion BodyRegion {
 			get;
 		}
 		

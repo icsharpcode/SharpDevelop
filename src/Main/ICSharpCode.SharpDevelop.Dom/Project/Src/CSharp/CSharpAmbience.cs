@@ -49,7 +49,7 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 			return string.Empty;
 		}
 		
-		string GetModifier(IDecoration decoration)
+		string GetModifier(IEntity decoration)
 		{
 			string ret = "";
 			

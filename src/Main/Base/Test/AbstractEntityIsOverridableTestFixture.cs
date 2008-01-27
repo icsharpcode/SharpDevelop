@@ -16,48 +16,48 @@ namespace ICSharpCode.SharpDevelop.Tests
 	/// Tests that the IsOverridable property returns the expected value.
 	/// </summary>
 	[TestFixture]
-	public class AbstractDecorationIsOverridableTestFixture
+	public class AbstractEntityIsOverridableTestFixture
 	{
-		MockDecoration decoration;
+		MockEntity entity;
 		
 		[SetUp]
 		public void SetUp()
 		{
-			decoration = new MockDecoration();
+			entity = new MockEntity();
 		}
 		
 		[Test]
 		public void NotOverridableByDefault()
 		{
-			Assert.IsFalse(decoration.IsOverridable);
+			Assert.IsFalse(entity.IsOverridable);
 		}
 
 		[Test]
 		public void IsOverrideSet()
 		{
-			decoration.Modifiers = ModifierEnum.Override;
-			Assert.IsTrue(decoration.IsOverridable);
+			entity.Modifiers = ModifierEnum.Override;
+			Assert.IsTrue(entity.IsOverridable);
 		}
 		
 		[Test]
 		public void IsVirtualSet()
 		{
-			decoration.Modifiers = ModifierEnum.Virtual;
-			Assert.IsTrue(decoration.IsOverridable);
+			entity.Modifiers = ModifierEnum.Virtual;
+			Assert.IsTrue(entity.IsOverridable);
 		}
 		
 		[Test]
 		public void IsAbstractSet()
 		{
-			decoration.Modifiers = ModifierEnum.Abstract;
-			Assert.IsTrue(decoration.IsOverridable);
+			entity.Modifiers = ModifierEnum.Abstract;
+			Assert.IsTrue(entity.IsOverridable);
 		}
 		
 		[Test]
 		public void IsAbstractAndSealedSet()
 		{
-			decoration.Modifiers = ModifierEnum.Abstract | ModifierEnum.Sealed;
-			Assert.IsFalse(decoration.IsOverridable);
+			entity.Modifiers = ModifierEnum.Abstract | ModifierEnum.Sealed;
+			Assert.IsFalse(entity.IsOverridable);
 		}
 	}
 }
