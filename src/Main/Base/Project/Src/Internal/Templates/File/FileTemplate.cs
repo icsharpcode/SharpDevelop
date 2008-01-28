@@ -71,39 +71,6 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		}
 	}
 	
-	[Obsolete]
-	public class TemplateScript
-	{
-		string languageName;
-		string runAt;
-		string scriptSourceCode;
-		
-		public string LanguageName {
-			get {
-				return languageName;
-			}
-		}
-		
-		public string RunAt {
-			get {
-				return runAt;
-			}
-		}
-		string SourceText {
-			get {
-				return "public class ScriptObject : System.MarshalByRefObject { " + scriptSourceCode + "}";
-			}
-		}
-		
-		
-		public TemplateScript(XmlElement scriptConfig)
-		{
-			languageName     = scriptConfig.GetAttribute("language");
-			runAt            = scriptConfig.GetAttribute("runAt");
-			scriptSourceCode = scriptConfig.InnerText;
-		}
-	}
-	
 	public class TemplateType
 	{
 		string    name;
@@ -241,20 +208,6 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		public bool HasProperties {
 			get {
 				return properties != null && properties.Count > 0;
-			}
-		}
-		
-		[Obsolete]
-		public List<TemplateScript> Scripts {
-			get {
-				return new List<TemplateScript>();
-			}
-		}
-		
-		[Obsolete]
-		public bool HasScripts {
-			get {
-				return false;
 			}
 		}
 		

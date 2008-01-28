@@ -168,7 +168,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				cache.activationKey = charTyped;
 				cache.GenerateCompletionData(editor.FileName, editor.ActiveTextAreaControl.TextArea, charTyped);
 				ICompletionData[] completionData = cache.CompletionData;
-				Array.Sort(completionData);
+				Array.Sort(completionData, DefaultCompletionData.Compare);
 				for (int i = 0; i < completionData.Length; i++) {
 					CodeCompletionData ccd = completionData[i] as CodeCompletionData;
 					if (ccd != null && ccd.Class != null) {

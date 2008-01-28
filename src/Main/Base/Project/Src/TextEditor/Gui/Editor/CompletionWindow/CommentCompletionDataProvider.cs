@@ -113,16 +113,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				this.text        = text;
 				this.description = description;
 			}
-			#region System.IComparable interface implementation
-			public int CompareTo(object obj)
-			{
-				if (obj == null || !(obj is CommentCompletionData)) {
-					return -1;
-				}
-				return text.CompareTo(((CommentCompletionData)obj).text);
-			}
-			#endregion
-			
 		}
 	}
 }

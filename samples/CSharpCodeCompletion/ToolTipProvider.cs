@@ -64,6 +64,9 @@ namespace CSharpEditor
 				ExpressionResult expression = expressionFinder.FindFullExpression(
 					editor.Text,
 					editor.Document.PositionToOffset(e.LogicalPosition));
+				if (expression.Region.IsEmpty) {
+					expression.Region = new DomRegion(e.LogicalPosition.Line + 1, e.LogicalPosition.Column + 1);
+				}
 				
 				TextEditor.TextArea textArea = editor.ActiveTextAreaControl.TextArea;
 				NRefactoryResolver resolver = new NRefactoryResolver(mainForm.myProjectContent.Language);
@@ -119,7 +122,7 @@ namespace CSharpEditor
 			}
 		}
 		
-		static string GetMemberText(IAmbience ambience, IDecoration member)
+		static string GetMemberText(IAmbience ambience, IEntity member)
 		{
 			StringBuilder text = new StringBuilder();
 			if (member is IField) {

@@ -14,6 +14,7 @@ using System.Xml;
 
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.CSharp;
+using ICSharpCode.SharpDevelop.Dom.VBNet;
 using ICSharpCode.TextEditor.Gui.CompletionWindow;
 
 namespace CSharpEditor
@@ -76,8 +77,8 @@ namespace CSharpEditor
 		string ICompletionData.Description {
 			get {
 				if (description == null) {
-					IDecoration entity = (IDecoration)member ?? c;
-					description = GetCSharpText(entity);
+					IEntity entity = (IEntity)member ?? c;
+					description = GetText(entity);
 					if (overloads > 1) {
 						description += " (+" + overloads + " overloads)";
 					}
@@ -89,21 +90,22 @@ namespace CSharpEditor
 		
 		/// <summary>
 		/// Converts a member to text.
-		/// Returns the declaration of the member as C# code, e.g.
+		/// Returns the declaration of the member as C# or VB code, e.g.
 		/// "public void MemberName(string parameter)"
 		/// </summary>
-		static string GetCSharpText(IDecoration entity)
+		static string GetText(IEntity entity)
 		{
+			IAmbience ambience = MainForm.IsVisualBasic ? (IAmbience)VBNetAmbience.Instance : CSharpAmbience.Instance;
 			if (entity is IMethod)
-				return CSharpAmbience.Instance.Convert(entity as IMethod);
+				return ambience.Convert(entity as IMethod);
 			if (entity is IProperty)
-				return CSharpAmbience.Instance.Convert(entity as IProperty);
+				return ambience.Convert(entity as IProperty);
 			if (entity is IEvent)
-				return CSharpAmbience.Instance.Convert(entity as IEvent);
+				return ambience.Convert(entity as IEvent);
 			if (entity is IField)
-				return CSharpAmbience.Instance.Convert(entity as IField);
+				return ambience.Convert(entity as IField);
 			if (entity is IClass)
-				return CSharpAmbience.Instance.Convert(entity as IClass);
+				return ambience.Convert(entity as IClass);
 			// unknown entity:
 			return entity.ToString();
 		}

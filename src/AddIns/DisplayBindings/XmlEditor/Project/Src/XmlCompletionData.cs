@@ -101,13 +101,5 @@ namespace ICSharpCode.XmlEditor
 			}
 			return false;
 		}
-		
-		public int CompareTo(object obj)
-		{
-			if ((obj == null) || !(obj is XmlCompletionData)) {
-				return -1;
-			}
-			return text.CompareTo(((XmlCompletionData)obj).text);
-		}
 	}
 }

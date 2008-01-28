@@ -23,10 +23,10 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 {
 	public class SharpDevelopTextAreaControl : TextEditorControl
 	{
-		readonly static string contextMenuPath       = "/SharpDevelop/ViewContent/DefaultTextEditor/ContextMenu";
-		readonly static string editActionsPath       = "/AddIns/DefaultTextEditor/EditActions";
-		readonly static string formatingStrategyPath = "/AddIns/DefaultTextEditor/Formatter";
-		readonly static string advancedHighlighterPath = "/AddIns/DefaultTextEditor/AdvancedHighlighter";
+		const string contextMenuPath         = "/SharpDevelop/ViewContent/DefaultTextEditor/ContextMenu";
+		const string editActionsPath         = "/AddIns/DefaultTextEditor/EditActions";
+		const string formatingStrategyPath   = "/AddIns/DefaultTextEditor/Formatter";
+		const string advancedHighlighterPath = "/AddIns/DefaultTextEditor/AdvancedHighlighter";
 		
 		QuickClassBrowserPanel quickClassBrowserPanel = null;
 		Control customQuickClassBrowserPanel = null;
@@ -316,30 +316,33 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 							return false;
 					}
 				}
-				if (ch == ' ' && SharpDevelopTextEditorProperties.Instance.AutoInsertTemplates) {
-					string word = GetWordBeforeCaret();
-					if (word != null) {
-						CodeTemplateGroup templateGroup = CodeTemplateLoader.GetTemplateGroupPerFilename(FileName);
-						if (templateGroup != null) {
-							foreach (CodeTemplate template in templateGroup.Templates) {
-								if (template.Shortcut == word) {
-									if (word.Length > 0) {
-										int newCaretOffset = DeleteWordBeforeCaret();
-										//// set new position in text area
-										ActiveTextAreaControl.TextArea.Caret.Position = Document.OffsetToPosition(newCaretOffset);
-									}
-									
-									InsertTemplate(template);
-									return true;
-								}
-							}
-						}
-					}
-				}
 			} catch (Exception ex) {
 				LogException(ex);
 			} finally {
 				inHandleKeyPress = false;
+			}
+			return false;
+		}
+		
+		internal bool ExpandTemplateOnTab()
+		{
+			string word = GetWordBeforeCaret();
+			if (word != null) {
+				CodeTemplateGroup templateGroup = CodeTemplateLoader.GetTemplateGroupPerFilename(FileName);
+				if (templateGroup != null) {
+					foreach (CodeTemplate template in templateGroup.Templates) {
+						if (template.Shortcut == word) {
+							if (word.Length > 0) {
+								int newCaretOffset = DeleteWordBeforeCaret();
+								//// set new position in text area
+								ActiveTextAreaControl.TextArea.Caret.Position = Document.OffsetToPosition(newCaretOffset);
+							}
+							
+							InsertTemplate(template);
+							return true;
+						}
+					}
+				}
 			}
 			return false;
 		}

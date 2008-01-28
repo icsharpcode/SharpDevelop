@@ -143,7 +143,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			public int Compare(KeyValuePair<string, UsageStruct> x, KeyValuePair<string, UsageStruct> y)
 			{
 				double a = ((double)x.Value.Uses / x.Value.ShowCount);
-				return a.CompareTo((double)y.Value.Uses / y.Value.ShowCount);
+				return -a.CompareTo((double)y.Value.Uses / y.Value.ShowCount);
 			}
 		}
 		

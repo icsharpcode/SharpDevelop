@@ -21,27 +21,37 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Actions
 		{
 			SharpDevelopTextAreaControl sdtac = (SharpDevelopTextAreaControl)services.MotherTextEditorControl;
 			services.AutoClearSelection = false;
-			sdtac.ShowCompletionWindow(new TemplateCompletionDataProvider(), '\0');
+			sdtac.ShowCompletionWindow(new TemplateCompletionDataProvider() { AutomaticInsert = true }, '\0');
 		}
 	}
 	
 	public class CodeCompletionPopup : AbstractEditAction
 	{
-		public override void Execute(TextArea services)
+		public override void Execute(TextArea textArea)
 		{
-			SharpDevelopTextAreaControl sdtac = (SharpDevelopTextAreaControl)services.MotherTextEditorControl;
+			SharpDevelopTextAreaControl sdtac = (SharpDevelopTextAreaControl)textArea.MotherTextEditorControl;
 			CtrlSpaceCompletionDataProvider provider = new CtrlSpaceCompletionDataProvider();
 			provider.AllowCompleteExistingExpression = true;
 			sdtac.ShowCompletionWindow(provider, '\0');
 		}
 	}
 	
+	public class ExpandTemplateAction : Tab
+	{
+		public override void Execute(TextArea textArea)
+		{
+			SharpDevelopTextAreaControl sdtac = (SharpDevelopTextAreaControl)textArea.MotherTextEditorControl;
+			if (!sdtac.ExpandTemplateOnTab())
+				base.Execute(textArea);
+		}
+	}
+	
 	#if DEBUG
 	internal class DebugCtrlSpaceCodeCompletionAction : AbstractEditAction
 	{
-		public override void Execute(TextArea services)
+		public override void Execute(TextArea textArea)
 		{
-			SharpDevelopTextAreaControl sdtac = (SharpDevelopTextAreaControl)services.MotherTextEditorControl;
+			SharpDevelopTextAreaControl sdtac = (SharpDevelopTextAreaControl)textArea.MotherTextEditorControl;
 			CtrlSpaceCompletionDataProvider provider = new CtrlSpaceCompletionDataProvider();
 			provider.AllowCompleteExistingExpression = true;
 			provider.DebugMode = true;
@@ -51,9 +61,9 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Actions
 	
 	internal class DebugDotCompletionAction : AbstractEditAction
 	{
-		public override void Execute(TextArea services)
+		public override void Execute(TextArea textArea)
 		{
-			SharpDevelopTextAreaControl sdtac = (SharpDevelopTextAreaControl)services.MotherTextEditorControl;
+			SharpDevelopTextAreaControl sdtac = (SharpDevelopTextAreaControl)textArea.MotherTextEditorControl;
 			CodeCompletionDataProvider ccdp = new CodeCompletionDataProvider();
 			ccdp.DebugMode = true;
 			sdtac.ShowCompletionWindow(ccdp, '.');

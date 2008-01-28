@@ -1999,6 +1999,7 @@
 		<EditAction id = "TemplateCompletion"  class = "ICSharpCode.SharpDevelop.DefaultEditor.Actions.TemplateCompletion"  keys = "Control|J"/>
 		<EditAction id = "CodeCompletionPopup" class = "ICSharpCode.SharpDevelop.DefaultEditor.Actions.CodeCompletionPopup"  keys = "Control|Space"/>
 		<EditAction id = "GoToDefinition"      class = "ICSharpCode.SharpDevelop.DefaultEditor.Actions.GoToDefinition"  keys = "Control|Enter"/>
+		<EditAction id = "ExpandTemplateAction" class = "ICSharpCode.SharpDevelop.DefaultEditor.Actions.ExpandTemplateAction"  keys = "Tab"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Pads/BookmarkPad/Toolbar">

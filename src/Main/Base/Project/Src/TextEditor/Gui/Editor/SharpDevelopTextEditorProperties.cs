@@ -301,7 +301,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		}
 		public bool AutoInsertTemplates {
 			get {
-				return properties.Get("AutoInsertTemplates", true);
+				return properties.Get("AutoInsertTemplates", false);
 			}
 			set {
 				properties.Set("AutoInsertTemplates", value);

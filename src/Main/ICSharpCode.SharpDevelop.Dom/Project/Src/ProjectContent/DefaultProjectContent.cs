@@ -328,7 +328,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 					newParts.Add(addClass);
 					// construct a replacement CompoundClass with the new part list
 					addClass = CompoundClass.Create(newParts);
-					LoggingService.Debug("Added new part / Replaced part! (old part count=" + compound.Parts.Count +", new part count=" + newParts.Count + ")");
+					LoggingService.Debug("Added new part (old part count=" + compound.Parts.Count +", new part count=" + newParts.Count + ")");
 				} else {
 					// Instead of overwriting a class with another, treat both parts as partial.
 					// This fixes SD2-1217.

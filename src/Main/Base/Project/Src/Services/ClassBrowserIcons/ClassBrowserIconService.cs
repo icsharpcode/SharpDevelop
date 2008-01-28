@@ -23,8 +23,10 @@ namespace ICSharpCode.SharpDevelop
 		
 		public const int LocalVariableIndex = 16;
 		public const int ParameterIndex = 17;
+		public const int KeywordIndex = NamespaceIndex; // TODO: give keywords their own icon
+		public const int CodeTemplateIndex = 18;
 		
-		public const int ClassIndex     = 18;
+		public const int ClassIndex     = 19;
 		public const int StructIndex    = ClassIndex + 1 * 4;
 		public const int InterfaceIndex = ClassIndex + 2 * 4;
 		public const int EnumIndex      = ClassIndex + 3 * 4;
@@ -240,8 +242,9 @@ namespace ICSharpCode.SharpDevelop
 			
 			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.Local"));
 			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.Parameter"));
+			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.TextFileIcon"));
 			
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.Class")); //18
+			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.Class")); //19
 			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.InternalClass"));
 			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.ProtectedClass"));
 			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.PrivateClass"));

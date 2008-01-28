@@ -309,15 +309,5 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			}
 			return cref;
 		}
-		
-		#region System.IComparable interface implementation
-		public int CompareTo(object obj)
-		{
-			if (obj == null || !(obj is CodeCompletionData)) {
-				return -1;
-			}
-			return text.CompareTo(((CodeCompletionData)obj).text);
-		}
-		#endregion
 	}
 }

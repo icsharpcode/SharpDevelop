@@ -9,7 +9,7 @@ using System;
 
 namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 {
-	public interface ICompletionData : IComparable
+	public interface ICompletionData
 	{
 		int ImageIndex {
 			get;
@@ -96,12 +96,13 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			this.imageIndex  = imageIndex;
 		}
 		
-		public int CompareTo(object obj)
+		public static int Compare(ICompletionData a, ICompletionData b)
 		{
-			if (obj == null || !(obj is DefaultCompletionData)) {
-				return -1;
-			}
-			return text.CompareTo(((DefaultCompletionData)obj).Text);
+			if (a == null)
+				throw new ArgumentNullException("a");
+			if (b == null)
+				throw new ArgumentNullException("b");
+			return string.Compare(a.Text, b.Text, StringComparison.InvariantCultureIgnoreCase);
 		}
 	}
 }

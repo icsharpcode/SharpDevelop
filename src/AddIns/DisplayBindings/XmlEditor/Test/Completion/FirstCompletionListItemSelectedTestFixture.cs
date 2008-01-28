@@ -85,7 +85,7 @@ namespace XmlEditor.Tests.Completion
 		public void SelectedCompletionDataMatches()
 		{
 			List<ICompletionData> items = new List<ICompletionData>(completionDataItems);
-			items.Sort();
+			items.Sort(DefaultCompletionData.Compare);
 			Assert.AreEqual(items[0].Text, selectedCompletionData.Text);
 		}
 	}

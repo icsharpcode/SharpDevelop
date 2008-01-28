@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Windows.Forms;
 
 using ICSharpCode.SharpDevelop.Dom;
@@ -105,7 +106,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		protected int caretColumn;
 		protected string fileName;
 		
-		protected ArrayList completionData = null;
+		protected List<ICompletionData> completionData = null;
 		protected ExpressionContext overrideContext;
 		
 		/// <summary>
@@ -113,7 +114,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		/// </summary>
 		public override ICompletionData[] GenerateCompletionData(string fileName, TextArea textArea, char charTyped)
 		{
-			completionData = new ArrayList();
+			completionData = new List<ICompletionData>();
 			this.fileName = fileName;
 			IDocument document = textArea.Document;
 			
@@ -123,7 +124,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			
 			GenerateCompletionData(textArea, charTyped);
 			
-			return (ICompletionData[])completionData.ToArray(typeof(ICompletionData));
+			return completionData.ToArray();
 		}
 		
 		protected ExpressionResult GetExpression(TextArea textArea)
@@ -155,7 +156,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				CodeCompletionData ccd = CreateItem(o, context);
 				if (object.Equals(o, context.SuggestedItem))
 					suggestedData = ccd;
-				if (ccd != null && !ccd.Text.StartsWith("___"))
+				if (ccd != null)
 					completionData.Add(ccd);
 			}
 			if (context.SuggestedItem != null) {

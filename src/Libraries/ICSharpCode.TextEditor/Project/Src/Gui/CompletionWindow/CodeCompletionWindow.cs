@@ -246,8 +246,10 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 					codeCompletionListView.SelectPrevItem();
 					return true;
 				case Keys.Tab:
+					InsertSelectedItem('\t');
+					return true;
 				case Keys.Return:
-					InsertSelectedItem('\0');
+					InsertSelectedItem('\n');
 					return true;
 			}
 			return base.ProcessTextAreaKey(keyData);

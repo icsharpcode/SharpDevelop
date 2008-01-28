@@ -7,6 +7,8 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using ICSharpCode.Core;
 using System.Windows.Forms;
 
 using ICSharpCode.SharpDevelop.Internal.Templates;
@@ -17,86 +19,54 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 {
 	public class TemplateCompletionDataProvider : AbstractCompletionDataProvider
 	{
-		ImageList imageList = new ImageList();
-		
 		public override ImageList ImageList {
 			get {
-				return imageList;
+				return ClassBrowserIconService.ImageList;
 			}
 		}
+		
+		public bool AutomaticInsert;
 		
 		public override ICompletionData[] GenerateCompletionData(string fileName, TextArea textArea, char charTyped)
 		{
 			preSelection = "";
 			
-			imageList.Images.Add(IconService.GetBitmap("Icons.16x16.TextFileIcon"));
 			CodeTemplateGroup templateGroup = CodeTemplateLoader.GetTemplateGroupPerFilename(fileName);
 			if (templateGroup == null) {
 				return null;
 			}
-			ArrayList completionData = new ArrayList();
+			bool automaticInsert = this.AutomaticInsert || DefaultEditor.Gui.Editor.SharpDevelopTextEditorProperties.Instance.AutoInsertTemplates;
+			List<ICompletionData> completionData = new List<ICompletionData>();
 			foreach (CodeTemplate template in templateGroup.Templates) {
-				completionData.Add(new TemplateCompletionData(template));
+				completionData.Add(new TemplateCompletionData(template, automaticInsert));
 			}
 			
-			return (ICompletionData[])completionData.ToArray(typeof(ICompletionData));
+			return completionData.ToArray();
 		}
 		
-		class TemplateCompletionData : ICompletionData, IComparable
+		class TemplateCompletionData : DefaultCompletionData
 		{
 			CodeTemplate template;
+			bool automaticInsert;
 			
-			public int ImageIndex {
-				get {
-					return 0;
-				}
-			}
-			
-			public string Text {
-				get {
-					return template.Shortcut + "\t" + template.Description;
-				}
-				set {
-					throw new NotSupportedException();
-				}
-			}
-			
-			public string Description {
-				get {
-					return template.Text;
-				}
-			}
-			
-			public double Priority {
-				get {
-					return 0;
-				}
-			}
-			
-			public bool InsertAction(TextArea textArea, char ch)
+			public override bool InsertAction(TextArea textArea, char ch)
 			{
-				((SharpDevelopTextAreaControl)textArea.MotherTextEditorControl).InsertTemplate(template);
-				return false;
+				if (ch == '\t' || automaticInsert) {
+					((SharpDevelopTextAreaControl)textArea.MotherTextEditorControl).InsertTemplate(template);
+					return false;
+				} else {
+					return base.InsertAction(textArea, ch);
+				}
 			}
 			
-			public TemplateCompletionData(CodeTemplate template)
+			public TemplateCompletionData(CodeTemplate template, bool automaticInsert)
+				: base(template.Shortcut,
+				       template.Description + StringParser.Parse("\n${res:Dialog.Options.CodeTemplate.PressTabToInsertTemplate}\n\n") + template.Text,
+				       ClassBrowserIconService.CodeTemplateIndex)
 			{
 				this.template = template;
+				this.automaticInsert = automaticInsert;
 			}
-			
-			
-			
-			#region System.IComparable interface implementation
-			public int CompareTo(object obj)
-			{
-				if (obj == null || !(obj is TemplateCompletionData)) {
-					return -1;
-				}
-				return template.Shortcut.CompareTo(((TemplateCompletionData)obj).template.Shortcut);
-			}
-			#endregion
-			
-			
 		}
 	}
 }

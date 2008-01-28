@@ -73,7 +73,6 @@
     <Content Include="SharpDevelop.CodeAnalysis.targets">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Folder Include="Mono" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

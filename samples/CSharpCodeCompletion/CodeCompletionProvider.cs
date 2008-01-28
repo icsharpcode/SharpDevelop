@@ -119,12 +119,16 @@ namespace CSharpEditor
 			} else {
 				finder = new Dom.CSharp.CSharpExpressionFinder(mainForm.parseInformation);
 			}
-			return finder.FindExpression(textArea.Document.TextContent, textArea.Caret.Offset);
+			Dom.ExpressionResult expression = finder.FindExpression(textArea.Document.TextContent, textArea.Caret.Offset);
+			if (expression.Region.IsEmpty) {
+				expression.Region = new Dom.DomRegion(textArea.Caret.Line + 1, textArea.Caret.Column + 1);
+			}
+			return expression;
 		}
 		
 		void AddCompletionData(List<ICompletionData> resultList, ArrayList completionData)
 		{
-			// used to store method the names for grouping overloads
+			// used to store the method names for grouping overloads
 			Dictionary<string, CodeCompletionData> nameDictionary = new Dictionary<string, CodeCompletionData>();
 			
 			// Add the completion data as returned by SharpDevelop.Dom to the

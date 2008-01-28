@@ -11,6 +11,7 @@ using System.Diagnostics;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.Core;
 using ICSharpCode.TextEditor;
+using ICSharpCode.TextEditor.Gui.CompletionWindow;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 {
@@ -52,6 +53,24 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				}
 				ExpressionContext context = overrideContext ?? ExpressionContext.Default;
 				AddResolveResults(ParserService.CtrlSpace(caretLineNumber, caretColumn, fileName, textArea.Document.TextContent, context), context);
+				ICompletionData[] templateCompletionData = new TemplateCompletionDataProvider().GenerateCompletionData(fileName, textArea, charTyped);
+				for (int i = 0; i < completionData.Count; i++) {
+					if (completionData[i].ImageIndex == ClassBrowserIconService.KeywordIndex) {
+						string text = completionData[i].Text;
+						for (int j = 0; j < templateCompletionData.Length; j++) {
+							if (templateCompletionData[j] != null && templateCompletionData[j].Text == text) {
+								// replace keyword with template
+								completionData[i] = templateCompletionData[j];
+								templateCompletionData[j] = null;
+							}
+						}
+					}
+				}
+				// add non-keyword code templates
+				for (int j = 0; j < templateCompletionData.Length; j++) {
+					if (templateCompletionData[j] != null)
+						completionData.Add(templateCompletionData[j]);
+				}
 				return;
 			}
 			

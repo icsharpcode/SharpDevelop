@@ -181,7 +181,7 @@ class A
 			// Remove information from lastCompilationUnit and add information from newCompilationUnit.
 			myProjectContent.UpdateCompilationUnit(lastCompilationUnit, newCompilationUnit, DummyFileName);
 			lastCompilationUnit = newCompilationUnit;
-			parseInformation.ValidCompilationUnit = newCompilationUnit;
+			parseInformation.SetCompilationUnit(newCompilationUnit);
 		}
 		
 		Dom.ICompilationUnit ConvertCompilationUnit(NRefactory.Ast.CompilationUnit cu)
