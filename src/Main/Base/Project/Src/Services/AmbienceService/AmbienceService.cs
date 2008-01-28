@@ -33,7 +33,7 @@ namespace ICSharpCode.SharpDevelop
 		static List<CodeGenerator> codeGenerators = new List<CodeGenerator>();
 		
 		static void ApplyCodeGenerationProperties(CodeGenerator generator)
-		{			
+		{
 			CodeGeneratorOptions options = generator.Options;
 			System.CodeDom.Compiler.CodeGeneratorOptions cdo = new CodeDOMGeneratorUtility().CreateCodeGeneratorOptions;
 			
@@ -79,18 +79,28 @@ namespace ICSharpCode.SharpDevelop
 		
 		public static IAmbience CurrentAmbience {
 			get {
+				Gui.WorkbenchSingleton.AssertMainThread();
+				
+				IAmbience ambience;
 				if (UseProjectAmbienceIfPossible) {
 					ICSharpCode.SharpDevelop.Project.IProject p = ICSharpCode.SharpDevelop.Project.ProjectService.CurrentProject;
 					if (p != null) {
-						return p.GetAmbience();
+						ambience = p.GetAmbience();
+						if (ambience != null)
+							return ambience;
 					}
 				}
 				if (defaultAmbience == null) {
 					string language = DefaultAmbienceName;
-					defaultAmbience = (IAmbience)AddInTree.BuildItem("/SharpDevelop/Workbench/Ambiences/" + language, null);
-					if (defaultAmbience == null) {
+					try {
+						ambience = (IAmbience)AddInTree.BuildItem("/SharpDevelop/Workbench/Ambiences/" + language, null);
+					} catch (TreePathNotFoundException) {
+						ambience = null;
+					}
+					if (ambience == null && Gui.WorkbenchSingleton.MainForm != null) {
 						MessageService.ShowError("${res:ICSharpCode.SharpDevelop.Services.AmbienceService.AmbienceNotFoundError}");
 					}
+					defaultAmbience = ambience ?? new NetAmbience();
 				}
 				return defaultAmbience;
 			}
@@ -108,7 +118,6 @@ namespace ICSharpCode.SharpDevelop
 		static void PropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.Key == ambienceProperty) {
-				defaultAmbience = null;
 				OnAmbienceChanged(EventArgs.Empty);
 			}
 			if (e.Key == codeGenerationProperty) {

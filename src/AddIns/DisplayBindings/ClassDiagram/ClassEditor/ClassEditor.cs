@@ -489,19 +489,8 @@ namespace ClassDiagram
 		
 		protected IAmbience GetAmbience()
 		{
-			IAmbience ambience = null;
-			
-			try
-			{
-				ambience = AmbienceService.CurrentAmbience;
-			}
-			catch (NullReferenceException)
-			{
-				ambience = ICSharpCode.SharpDevelop.Dom.CSharp.CSharpAmbience.Instance;
-			}
-			
+			IAmbience ambience = AmbienceService.CurrentAmbience;
 			ambience.ConversionFlags = ConversionFlags.None;
-			
 			return ambience;
 		}
 		
