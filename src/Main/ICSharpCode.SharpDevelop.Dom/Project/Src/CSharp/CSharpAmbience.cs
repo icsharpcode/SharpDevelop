@@ -19,12 +19,6 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 			get { return ICSharpCode.NRefactory.Ast.TypeReference.PrimitiveTypesCSharpReverse; }
 		}
 		
-		static CSharpAmbience instance = new CSharpAmbience();
-		
-		public static CSharpAmbience Instance {
-			get { return instance; }
-		}
-		
 		bool ModifierIsSet(ModifierEnum modifier, ModifierEnum query)
 		{
 			return (modifier & query) == query;
@@ -79,6 +73,8 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 		
 		public override string Convert(IClass c)
 		{
+			CheckThread();
+			
 			StringBuilder builder = new StringBuilder();
 			
 			builder.Append(ConvertAccessibility(c.Modifiers));
@@ -210,6 +206,8 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 		
 		public override string Convert(IField field)
 		{
+			CheckThread();
+			
 			StringBuilder builder = new StringBuilder();
 			
 			builder.Append(ConvertAccessibility(field.Modifiers));
@@ -266,6 +264,8 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 		
 		public override string Convert(IProperty property)
 		{
+			CheckThread();
+			
 			StringBuilder builder = new StringBuilder();
 			
 			builder.Append(ConvertAccessibility(property.Modifiers));
@@ -333,6 +333,8 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 		
 		public override string Convert(IEvent e)
 		{
+			CheckThread();
+			
 			StringBuilder builder = new StringBuilder();
 			
 			builder.Append(ConvertAccessibility(e.Modifiers));
@@ -371,6 +373,8 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 		
 		public override string Convert(IMethod m)
 		{
+			CheckThread();
+			
 			StringBuilder builder = new StringBuilder();
 			builder.Append(ConvertAccessibility(m.Modifiers));
 			
@@ -453,6 +457,8 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 		
 		public override string Convert(IReturnType returnType)
 		{
+			CheckThread();
+			
 			if (returnType == null) {
 				return String.Empty;
 			}
@@ -499,6 +505,8 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 		
 		public override string Convert(IParameter param)
 		{
+			CheckThread();
+			
 			StringBuilder builder = new StringBuilder();
 			
 			if (IncludeHtmlMarkup) {

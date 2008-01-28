@@ -57,6 +57,15 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 		
 		/// <summary>
+		/// Gets the ambience for this language. Because the IAmbience interface is not thread-safe, every call
+		/// creates a new instance.
+		/// </summary>
+		public virtual IAmbience GetAmbience()
+		{
+			return new CSharp.CSharpAmbience();
+		}
+		
+		/// <summary>
 		/// Gets the CodeDomProvider for this language. Can return null!
 		/// </summary>
 		public virtual System.CodeDom.Compiler.CodeDomProvider CodeDomProvider {
@@ -373,6 +382,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 				get {
 					return new Microsoft.VisualBasic.VBCodeProvider();
 				}
+			}
+			
+			public override IAmbience GetAmbience()
+			{
+				return new VBNet.VBNetAmbience();
 			}
 			
 			public override string IndexerExpressionStartToken {

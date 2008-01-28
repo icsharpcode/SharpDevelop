@@ -68,10 +68,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		/// <summary>
 		/// Gets the ambience used for the project. This member is thread-safe.
+		/// Because the IAmbience interface is not thread-safe, every call returns a new instance.
 		/// </summary>
-		ICSharpCode.SharpDevelop.Dom.IAmbience Ambience {
-			get;
-		}
+		ICSharpCode.SharpDevelop.Dom.IAmbience GetAmbience();
 		
 		/// <summary>
 		/// Gets the name of the project file.

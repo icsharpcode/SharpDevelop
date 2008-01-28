@@ -21,10 +21,9 @@ namespace ICSharpCode.SharpDevelop.Tests.Utils
 		{
 		}
 		
-		public override IAmbience Ambience {
-			get { 
-				return new MockAmbience();
-			}
+		public override IAmbience GetAmbience()
+		{
+			return null;
 		}
 	}
 }

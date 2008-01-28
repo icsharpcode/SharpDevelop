@@ -302,6 +302,7 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 			this.Controls.Add(this.bottomPanel);
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
+			this.MinimumSize = new System.Drawing.Size(405, 290);
 			this.Name = "NewProjectDialog";
 			this.ShowIcon = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;

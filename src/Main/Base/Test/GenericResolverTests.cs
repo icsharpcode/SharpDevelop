@@ -361,7 +361,7 @@ class D : Program  {
 		// overrides T<A,B> - type arguments are identified by position
 	}
 }";
-			IAmbience ambience = Dom.CSharp.CSharpAmbience.Instance;
+			IAmbience ambience = new Dom.CSharp.CSharpAmbience();
 			ambience.ConversionFlags = ConversionFlags.UseFullyQualifiedMemberNames | ConversionFlags.ShowTypeParameterList;
 			MemberResolveResult mrr;
 			

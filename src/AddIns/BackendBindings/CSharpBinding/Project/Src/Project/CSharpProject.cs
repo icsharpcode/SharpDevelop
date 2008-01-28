@@ -22,11 +22,9 @@ namespace CSharpBinding
 	/// </summary>
 	public class CSharpProject : CompilableProject
 	{
-		[Browsable(false)]
-		public override IAmbience Ambience {
-			get {
-				return CSharpAmbience.Instance;
-			}
+		public override IAmbience GetAmbience()
+		{
+			return new CSharpAmbience();
 		}
 		
 		public override string Language {

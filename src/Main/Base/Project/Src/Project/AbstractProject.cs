@@ -159,7 +159,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		#endregion
 		
-		#region Language Properties / Ambience
+		#region Language Properties / GetAmbience
 		[Browsable(false)]
 		public virtual ICSharpCode.SharpDevelop.Dom.LanguageProperties LanguageProperties {
 			get {
@@ -167,11 +167,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		[Browsable(false)]
-		public virtual ICSharpCode.SharpDevelop.Dom.IAmbience Ambience {
-			get {
-				return null;
-			}
+		public virtual ICSharpCode.SharpDevelop.Dom.IAmbience GetAmbience()
+		{
+			return null;
 		}
 		#endregion
 		

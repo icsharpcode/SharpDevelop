@@ -15,36 +15,36 @@ namespace ICSharpCode.SharpDevelop
 	public class ParseInformationEventArgs : EventArgs
 	{
 		string fileName;
+		IProjectContent projectContent;
 		ICompilationUnit oldCompilationUnit;
 		ICompilationUnit newCompilationUnit;
 		
 		public string FileName {
-			get {
-				return fileName;
-			}
+			get { return fileName; }
+		}
+		
+		public IProjectContent ProjectContent {
+			get { return projectContent; }
 		}
 		
 		/// <summary>
 		/// Gets the old compilation unit.
 		/// </summary>
 		public ICompilationUnit OldCompilationUnit {
-			get {
-				return oldCompilationUnit;
-			}
+			get { return oldCompilationUnit; }
 		}
 		
 		/// <summary>
 		/// The new compilation unit.
 		/// </summary>
 		public ICompilationUnit NewCompilationUnit {
-			get {
-				return newCompilationUnit;
-			}
+			get { return newCompilationUnit; }
 		}
 		
-		public ParseInformationEventArgs(string fileName, ICompilationUnit oldCompilationUnit, ICompilationUnit newCompilationUnit)
+		public ParseInformationEventArgs(string fileName, IProjectContent projectContent, ICompilationUnit oldCompilationUnit, ICompilationUnit newCompilationUnit)
 		{
 			this.fileName = fileName;
+			this.projectContent = projectContent;
 			this.oldCompilationUnit = oldCompilationUnit;
 			this.newCompilationUnit = newCompilationUnit;
 		}

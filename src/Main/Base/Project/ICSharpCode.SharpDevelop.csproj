@@ -139,7 +139,6 @@
     <Compile Include="Src\Services\DisplayBinding\DisplayBindingService.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\ProjectActiveEvaluator.cs" />
     <Compile Include="Src\Services\AmbienceService\NetAmbience.cs" />
-    <Compile Include="Src\Services\AmbienceService\AmbienceReflectionDecorator.cs" />
     <Compile Include="Src\Services\AmbienceService\AmbienceService.cs" />
     <Compile Include="Src\Services\AmbienceService\CodeDOMGeneratorUtility.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\WindowOpenEvaluator.cs" />

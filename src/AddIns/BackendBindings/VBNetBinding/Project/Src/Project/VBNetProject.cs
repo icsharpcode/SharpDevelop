@@ -41,11 +41,9 @@ namespace VBNetBinding
 			}
 		}
 		
-		[Browsable(false)]
-		public override IAmbience Ambience {
-			get {
-				return VBNetAmbience.Instance;
-			}
+		public override IAmbience GetAmbience()
+		{
+			return new VBNetAmbience();
 		}
 		
 		public VBNetProject(IMSBuildEngineProvider provider, string fileName, string projectName)

@@ -33,7 +33,7 @@ namespace ICSharpCode.SharpDevelop.Gui.ClassBrowser
 		internal static string GetText(IClass c)
 		{
 			if (ICSharpCode.Core.PropertyService.Initialized) {
-				IAmbience ambience = AmbienceService.CurrentAmbience;
+				IAmbience ambience = c.ProjectContent.Language.GetAmbience();
 				ambience.ConversionFlags = ConversionFlags.ShowTypeParameterList;
 				return ambience.Convert(c);
 			} else {

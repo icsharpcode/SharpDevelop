@@ -41,20 +41,20 @@ namespace ICSharpCode.SharpDevelop.Gui.ClassBrowser
 			
 			if (oldUnit != null) {
 				foreach (IClass c in oldUnit.Classes) {
-					classDictionary[c.FullyQualifiedName] = c.GetCompoundClass();
-					wasUpdatedDictionary[c.FullyQualifiedName] = false;
+					classDictionary[c.DotNetName] = c.GetCompoundClass();
+					wasUpdatedDictionary[c.DotNetName] = false;
 				}
 			}
 			if (unit != null) {
 				foreach (IClass c in unit.Classes) {
 					TreeNode  path = GetNodeByPath(c.Namespace, true);
-					ClassNode node = GetNodeByName(path.Nodes, c.Name) as ClassNode;
+					ClassNode node = GetNodeByClass(path.Nodes, c);
 					if (node != null) {
 						node.Class = c.GetCompoundClass();
 					} else {
 						new ClassNode(Project, c.GetCompoundClass()).AddTo(path);
 					}
-					wasUpdatedDictionary[c.FullyQualifiedName] = true;
+					wasUpdatedDictionary[c.DotNetName] = true;
 				}
 			}
 			foreach (KeyValuePair<string, bool> entry in wasUpdatedDictionary) {
@@ -62,7 +62,7 @@ namespace ICSharpCode.SharpDevelop.Gui.ClassBrowser
 					IClass c = classDictionary[entry.Key];
 					
 					TreeNode path = GetNodeByPath(c.Namespace, true);
-					ClassNode node = GetNodeByName(path.Nodes, c.Name) as ClassNode;
+					ClassNode node = GetNodeByClass(path.Nodes, c);
 					
 					if (node != null) {
 						CompoundClass cc = c as CompoundClass;
@@ -99,7 +99,7 @@ namespace ICSharpCode.SharpDevelop.Gui.ClassBrowser
 				foreach (ProjectItem item in Project.GetItemsOfType(ItemType.Compile)) {
 					ParseInformation parseInformation = ParserService.GetParseInformation(item.FileName);
 					if (parseInformation != null) {
-						InsertParseInformation(parseInformation.BestCompilationUnit as ICompilationUnit);
+						InsertParseInformation(parseInformation.BestCompilationUnit);
 					}
 				}
 			}
@@ -109,7 +109,7 @@ namespace ICSharpCode.SharpDevelop.Gui.ClassBrowser
 		{
 			foreach (IClass c in unit.Classes) {
 				TreeNode path = GetNodeByPath(c.Namespace, true);
-				TreeNode node = GetNodeByName(path.Nodes, c.Name);
+				TreeNode node = GetNodeByClass(path.Nodes, c);
 				if (node == null) {
 					new ClassNode(Project, c.GetCompoundClass()).AddTo(path);
 				}
@@ -168,6 +168,19 @@ namespace ICSharpCode.SharpDevelop.Gui.ClassBrowser
 				// we don't want the reference folder node otherwise the namespace 'References' won't be shown correctly :)
 				if (!(node is ReferenceFolderNode) && node.Text == name) {
 					return node;
+				}
+			}
+			return null;
+		}
+		
+		static ClassNode GetNodeByClass(TreeNodeCollection collection, IClass c)
+		{
+			string fullyQualifiedName = c.FullyQualifiedName;
+			foreach (TreeNode node in collection) {
+				ClassNode cn = node as ClassNode;
+				if (cn != null) {
+					if (fullyQualifiedName == cn.Class.FullyQualifiedName && c.TypeParameters.Count == cn.Class.TypeParameters.Count)
+						return cn;
 				}
 			}
 			return null;

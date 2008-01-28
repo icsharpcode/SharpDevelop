@@ -105,6 +105,19 @@ namespace ICSharpCode.SharpDevelop.Dom
 	
 	public abstract class AbstractAmbience : IAmbience
 	{
+		#if DEBUG
+		int ownerThread = System.Threading.Thread.CurrentThread.ManagedThreadId;
+		#endif
+		
+		[System.Diagnostics.Conditional("DEBUG")]
+		protected void CheckThread()
+		{
+			#if DEBUG
+			if (ownerThread != System.Threading.Thread.CurrentThread.ManagedThreadId)
+				throw new Exception("Ambience may only be used by the thread that created it");
+			#endif
+		}
+		
 		ConversionFlags conversionFlags = ConversionFlags.StandardConversionFlags;
 		
 		public ConversionFlags ConversionFlags {

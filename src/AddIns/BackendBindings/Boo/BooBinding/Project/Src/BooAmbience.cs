@@ -19,8 +19,6 @@ namespace Grunwald.BooBinding
 		static Dictionary<string, string> reverseTypeConversionTable = new Dictionary<string, string>();
 		static Dictionary<string, string> typeConversionTable = new Dictionary<string, string>();
 		
-		public readonly static BooAmbience Instance = new BooAmbience();
-		
 		/// <summary>
 		/// Gets a dictionary with boo's short names as keys and
 		/// the fully qualified type names as values.

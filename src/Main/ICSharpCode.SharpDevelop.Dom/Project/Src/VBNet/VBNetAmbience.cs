@@ -18,12 +18,6 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 			get { return ICSharpCode.NRefactory.Ast.TypeReference.PrimitiveTypesVBReverse; }
 		}
 		
-		static VBNetAmbience instance = new VBNetAmbience();
-		
-		public static VBNetAmbience Instance {
-			get { return instance; }
-		}
-		
 		string GetModifier(IEntity decoration)
 		{
 			StringBuilder builder = new StringBuilder();
@@ -78,6 +72,8 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 		
 		public override string Convert(IClass c)
 		{
+			CheckThread();
+			
 			StringBuilder builder = new StringBuilder();
 			
 			builder.Append(ConvertAccessibility(c.Modifiers));
@@ -241,6 +237,8 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 		
 		public override string Convert(IField field)
 		{
+			CheckThread();
+			
 			if (field == null)
 				throw new ArgumentNullException("field");
 			
@@ -285,6 +283,8 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 		
 		public override string Convert(IProperty property)
 		{
+			CheckThread();
+			
 			StringBuilder builder = new StringBuilder();
 			
 			builder.Append(ConvertAccessibility(property.Modifiers));
@@ -348,6 +348,8 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 		
 		public override string Convert(IEvent e)
 		{
+			CheckThread();
+			
 			if (e == null)
 				throw new ArgumentNullException("e");
 			
@@ -387,6 +389,8 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 		
 		public override string Convert(IMethod m)
 		{
+			CheckThread();
+			
 			StringBuilder builder = new StringBuilder();
 			if (ShowModifiers && m.IsExtensionMethod) {
 				builder.Append("<Extension> ");
@@ -467,6 +471,8 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 		
 		public override string Convert(IReturnType returnType)
 		{
+			CheckThread();
+			
 			if (returnType == null) {
 				return String.Empty;
 			}
@@ -513,6 +519,8 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 		
 		public override string Convert(IParameter param)
 		{
+			CheckThread();
+			
 			if (param == null)
 				throw new ArgumentNullException("param");
 			

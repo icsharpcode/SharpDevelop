@@ -146,7 +146,7 @@ namespace Grunwald.BooBinding.Designer
 				param += " as ";
 				
 				string typeStr = pInfo.ParameterType.ToString();
-				typeStr = BooAmbience.Instance.GetIntrinsicTypeName(typeStr);
+				typeStr = new BooAmbience().GetIntrinsicTypeName(typeStr);
 				param += typeStr;
 				if (i + 1 < mInfo.GetParameters().Length) {
 					param += ", ";

@@ -102,11 +102,9 @@ namespace Grunwald.BooBinding
 			return pc;
 		}
 		
-		[Browsable(false)]
-		public override IAmbience Ambience {
-			get {
-				return BooAmbience.Instance;
-			}
+		public override IAmbience GetAmbience()
+		{
+			return new BooAmbience();
 		}
 		
 		[Browsable(false)]

@@ -75,27 +75,22 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
-		static AmbienceReflectionDecorator defaultAmbience;
+		static IAmbience defaultAmbience;
 		
-		public static AmbienceReflectionDecorator CurrentAmbience {
+		public static IAmbience CurrentAmbience {
 			get {
 				if (UseProjectAmbienceIfPossible) {
 					ICSharpCode.SharpDevelop.Project.IProject p = ICSharpCode.SharpDevelop.Project.ProjectService.CurrentProject;
 					if (p != null) {
-						IAmbience ambience = p.Ambience;
-						if (ambience != null) {
-							return new AmbienceReflectionDecorator(ambience);
-						}
+						return p.GetAmbience();
 					}
 				}
 				if (defaultAmbience == null) {
 					string language = DefaultAmbienceName;
-					IAmbience ambience = (IAmbience)AddInTree.BuildItem("/SharpDevelop/Workbench/Ambiences/" + language, null);
-					if (ambience == null) {
+					defaultAmbience = (IAmbience)AddInTree.BuildItem("/SharpDevelop/Workbench/Ambiences/" + language, null);
+					if (defaultAmbience == null) {
 						MessageService.ShowError("${res:ICSharpCode.SharpDevelop.Services.AmbienceService.AmbienceNotFoundError}");
-						return null;
 					}
-					defaultAmbience = new AmbienceReflectionDecorator(ambience);
 				}
 				return defaultAmbience;
 			}

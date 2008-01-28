@@ -593,7 +593,7 @@ namespace ICSharpCode.SharpDevelop
 					TaskService.UpdateCommentTags(fileName, parserOutput.TagComments);
 				}
 				try {
-					OnParseInformationUpdated(new ParseInformationEventArgs(fileName, oldUnit, parserOutput));
+					OnParseInformationUpdated(new ParseInformationEventArgs(fileName, fileProjectContent, oldUnit, parserOutput));
 				} catch (Exception e) {
 					MessageService.ShowError(e);
 				}
@@ -643,7 +643,8 @@ namespace ICSharpCode.SharpDevelop
 		}
 		
 		/// <summary>
-		/// Registers a compilation unit in the parser service. Used by unit tests.
+		/// Registers a compilation unit in the parser service.
+		/// Does not fire the OnParseInformationUpdated event, please use this for unit tests only!
 		/// </summary>
 		public static ParseInformation RegisterParseInformation(string fileName, ICompilationUnit cu)
 		{
@@ -672,9 +673,14 @@ namespace ICSharpCode.SharpDevelop
 			}
 			ICompilationUnit oldUnit = parseInfo.MostRecentCompilationUnit;
 			if (oldUnit != null) {
-				parseInfo.MostRecentCompilationUnit.ProjectContent.RemoveCompilationUnit(oldUnit);
+				IProjectContent pc = parseInfo.MostRecentCompilationUnit.ProjectContent;
+				pc.RemoveCompilationUnit(oldUnit);
+				try {
+					OnParseInformationUpdated(new ParseInformationEventArgs(fileName, pc, oldUnit, null));
+				} catch (Exception e) {
+					MessageService.ShowError(e);
+				}
 			}
-			OnParseInformationUpdated(new ParseInformationEventArgs(fileName, oldUnit, null));
 		}
 		
 		public static IExpressionFinder GetExpressionFinder(string fileName)

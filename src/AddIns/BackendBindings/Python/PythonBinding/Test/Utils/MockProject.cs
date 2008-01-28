@@ -59,10 +59,9 @@ namespace PythonBinding.Tests.Utils
 			}
 		}
 		
-		public ICSharpCode.SharpDevelop.Dom.IAmbience Ambience {
-			get {
-				throw new NotImplementedException();
-			}
+		public ICSharpCode.SharpDevelop.Dom.IAmbience GetAmbience()
+		{
+			throw new NotImplementedException();
 		}
 		
 		public string FileName {
@@ -302,7 +301,7 @@ namespace PythonBinding.Tests.Utils
 		public void StartBuild(ProjectBuildOptions buildOptions, IBuildFeedbackSink feedbackSink)
 		{
 			throw new NotImplementedException();
-		}		
-		#endregion		
+		}
+		#endregion
 	}
 }

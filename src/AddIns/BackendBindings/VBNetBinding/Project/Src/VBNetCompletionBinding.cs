@@ -130,11 +130,12 @@ namespace VBNetBinding
 			                                         editor.Document.TextContent);
 			if (rr != null && rr.ResolvedType != null) {
 				ClassFinder context = new ClassFinder(ParserService.GetParseInformation(editor.FileName), editor.ActiveTextAreaControl.Caret.Line, t1.col);
+				VBNetAmbience ambience = new VBNetAmbience();
 				if (CodeGenerator.CanUseShortTypeName(rr.ResolvedType, context))
-					VBNetAmbience.Instance.ConversionFlags = ConversionFlags.None;
+					ambience.ConversionFlags = ConversionFlags.None;
 				else
-					VBNetAmbience.Instance.ConversionFlags = ConversionFlags.UseFullyQualifiedTypeNames;
-				string typeName = VBNetAmbience.Instance.Convert(rr.ResolvedType);
+					ambience.ConversionFlags = ConversionFlags.UseFullyQualifiedTypeNames;
+				string typeName = ambience.Convert(rr.ResolvedType);
 				editor.Document.Replace(curLine.Offset + t1.col - 1, 1, typeName);
 				editor.ActiveTextAreaControl.Caret.Column += typeName.Length - 1;
 				return true;

@@ -15,29 +15,6 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
-	public interface IReferencePanel
-	{
-		void AddReference();
-	}
-	
-	public interface ISelectReferenceDialog
-	{
-		/// <summary>
-		/// Project to create references for.
-		/// </summary>
-		IProject ConfigureProject { get; }
-		
-		void AddReference(string referenceName, string referenceType, string referenceLocation, ReferenceProjectItem projectItem);
-	}
-	
-	public enum ReferenceType {
-		Assembly,
-		Typelib,
-		Gac,
-		
-		Project
-	}
-	
 	/// <summary>
 	/// Summary description for Form2.
 	/// </summary>
@@ -49,7 +26,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		private System.Windows.Forms.TabPage gacTabPage;
 		private System.Windows.Forms.TabPage projectTabPage;
 		private System.Windows.Forms.TabPage browserTabPage;
-		TabPage comTabPage = new TabPage();
+		private System.Windows.Forms.TabPage comTabPage;
 		private System.Windows.Forms.Label referencesLabel;
 		private System.Windows.Forms.ColumnHeader referenceHeader;
 		private System.Windows.Forms.ColumnHeader typeHeader;
@@ -86,11 +63,23 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			InitializeComponent();
 			
+			Translate(this);
 			gacTabPage.Controls.Add(new GacReferencePanel(this));
 			projectTabPage.Controls.Add(new ProjectReferencePanel(this));
 			browserTabPage.Controls.Add(new AssemblyReferencePanel(this));
-			
 			comTabPage.Controls.Add(new COMReferencePanel(this));
+		}
+		
+		void Translate(Control ctl)
+		{
+			ctl.Text = StringParser.Parse(ctl.Text);
+			foreach (Control c in ctl.Controls)
+				Translate(c);
+			if (ctl is ListView) {
+				foreach (ColumnHeader h in ((ListView)ctl).Columns) {
+					h.Text = StringParser.Parse(h.Text);
+				}
+			}
 		}
 		
 		public void AddReference(string referenceName, string referenceType, string referenceLocation, ReferenceProjectItem projectItem)
@@ -155,16 +144,17 @@ namespace ICSharpCode.SharpDevelop.Gui
 		private void InitializeComponent()
 		{
 			this.referenceTabControl = new System.Windows.Forms.TabControl();
-			this.referencesListView = new System.Windows.Forms.ListView();
-			this.selectButton = new System.Windows.Forms.Button();
-			this.removeButton = new System.Windows.Forms.Button();
 			this.gacTabPage = new System.Windows.Forms.TabPage();
 			this.projectTabPage = new System.Windows.Forms.TabPage();
 			this.browserTabPage = new System.Windows.Forms.TabPage();
-			this.referencesLabel = new System.Windows.Forms.Label();
+			this.comTabPage = new System.Windows.Forms.TabPage();
+			this.referencesListView = new System.Windows.Forms.ListView();
 			this.referenceHeader = new System.Windows.Forms.ColumnHeader();
 			this.typeHeader = new System.Windows.Forms.ColumnHeader();
 			this.locationHeader = new System.Windows.Forms.ColumnHeader();
+			this.selectButton = new System.Windows.Forms.Button();
+			this.removeButton = new System.Windows.Forms.Button();
+			this.referencesLabel = new System.Windows.Forms.Label();
 			this.okButton = new System.Windows.Forms.Button();
 			this.cancelButton = new System.Windows.Forms.Button();
 			this.helpButton = new System.Windows.Forms.Button();
@@ -173,150 +163,187 @@ namespace ICSharpCode.SharpDevelop.Gui
 			// 
 			// referenceTabControl
 			// 
-			this.referenceTabControl.Controls.AddRange(new System.Windows.Forms.Control[] {
-			                                           	this.gacTabPage,
-			                                           	this.projectTabPage,
-			                                           	this.browserTabPage,
-			                                           	this.comTabPage
-			                                           });
+			this.referenceTabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+									| System.Windows.Forms.AnchorStyles.Left) 
+									| System.Windows.Forms.AnchorStyles.Right)));
+			this.referenceTabControl.Controls.Add(this.gacTabPage);
+			this.referenceTabControl.Controls.Add(this.projectTabPage);
+			this.referenceTabControl.Controls.Add(this.browserTabPage);
+			this.referenceTabControl.Controls.Add(this.comTabPage);
 			this.referenceTabControl.Location = new System.Drawing.Point(8, 8);
+			this.referenceTabControl.Name = "referenceTabControl";
 			this.referenceTabControl.SelectedIndex = 0;
 			this.referenceTabControl.Size = new System.Drawing.Size(472, 224);
 			this.referenceTabControl.TabIndex = 0;
 			// 
-			// referencesListView
-			// 
-			this.referencesListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-			                                         	this.referenceHeader,
-			                                         	this.typeHeader,
-			                                         	this.locationHeader});
-			this.referencesListView.Location = new System.Drawing.Point(8, 256);
-			this.referencesListView.Size = new System.Drawing.Size(472, 97);
-			this.referencesListView.TabIndex = 3;
-			this.referencesListView.View = System.Windows.Forms.View.Details;
-			this.referencesListView.FullRowSelect = true;
-			
-			
-			// 
-			// selectButton
-			// 
-			this.selectButton.Location = new System.Drawing.Point(488, 32);
-			this.selectButton.TabIndex = 1;
-			this.selectButton.Text = ResourceService.GetString("Dialog.SelectReferenceDialog.SelectButton");
-			this.selectButton.Click += new EventHandler(SelectReference);
-			this.selectButton.FlatStyle = FlatStyle.System;
-			
-			// 
-			// removeButton
-			// 
-			this.removeButton.Location = new System.Drawing.Point(488, 256);
-			this.removeButton.TabIndex = 4;
-			this.removeButton.Text = ResourceService.GetString("Global.RemoveButtonText");
-			this.removeButton.Click += new EventHandler(RemoveReference);
-			this.removeButton.FlatStyle = FlatStyle.System;
-			
-			// 
 			// gacTabPage
 			// 
 			this.gacTabPage.Location = new System.Drawing.Point(4, 22);
+			this.gacTabPage.Name = "gacTabPage";
 			this.gacTabPage.Size = new System.Drawing.Size(464, 198);
 			this.gacTabPage.TabIndex = 0;
-			this.gacTabPage.Text = ResourceService.GetString("Dialog.SelectReferenceDialog.GacTabPage");
+			this.gacTabPage.Text = "${res:Dialog.SelectReferenceDialog.GacTabPage}";
 			this.gacTabPage.UseVisualStyleBackColor = true;
 			// 
 			// projectTabPage
 			// 
 			this.projectTabPage.Location = new System.Drawing.Point(4, 22);
+			this.projectTabPage.Name = "projectTabPage";
 			this.projectTabPage.Size = new System.Drawing.Size(464, 198);
 			this.projectTabPage.TabIndex = 1;
-			this.projectTabPage.Text = ResourceService.GetString("Dialog.SelectReferenceDialog.ProjectTabPage");
+			this.projectTabPage.Text = "${res:Dialog.SelectReferenceDialog.ProjectTabPage}";
 			this.projectTabPage.UseVisualStyleBackColor = true;
 			// 
 			// browserTabPage
 			// 
 			this.browserTabPage.Location = new System.Drawing.Point(4, 22);
+			this.browserTabPage.Name = "browserTabPage";
 			this.browserTabPage.Size = new System.Drawing.Size(464, 198);
 			this.browserTabPage.TabIndex = 2;
-			this.browserTabPage.Text = ResourceService.GetString("Dialog.SelectReferenceDialog.BrowserTabPage");
+			this.browserTabPage.Text = "${res:Dialog.SelectReferenceDialog.BrowserTabPage}";
 			this.browserTabPage.UseVisualStyleBackColor = true;
-			
+			// 
+			// comTabPage
+			// 
 			this.comTabPage.Location = new System.Drawing.Point(4, 22);
+			this.comTabPage.Name = "comTabPage";
 			this.comTabPage.Size = new System.Drawing.Size(464, 198);
 			this.comTabPage.TabIndex = 2;
 			this.comTabPage.Text = "COM";
 			this.comTabPage.UseVisualStyleBackColor = true;
-			
-			//
-			// referencesLabel
 			// 
-			this.referencesLabel.Location = new System.Drawing.Point(8, 240);
-			this.referencesLabel.Size = new System.Drawing.Size(472, 16);
-			this.referencesLabel.TabIndex = 2;
-			this.referencesLabel.Text = ResourceService.GetString("Dialog.SelectReferenceDialog.ReferencesLabel");
+			// referencesListView
+			// 
+			this.referencesListView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+									| System.Windows.Forms.AnchorStyles.Right)));
+			this.referencesListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+									this.referenceHeader,
+									this.typeHeader,
+									this.locationHeader});
+			this.referencesListView.FullRowSelect = true;
+			this.referencesListView.Location = new System.Drawing.Point(8, 265);
+			this.referencesListView.Name = "referencesListView";
+			this.referencesListView.Size = new System.Drawing.Size(472, 97);
+			this.referencesListView.TabIndex = 3;
+			this.referencesListView.UseCompatibleStateImageBehavior = false;
+			this.referencesListView.View = System.Windows.Forms.View.Details;
 			// 
 			// referenceHeader
 			// 
-			this.referenceHeader.Text = ResourceService.GetString("Dialog.SelectReferenceDialog.ReferenceHeader");
+			this.referenceHeader.Text = "${res:Dialog.SelectReferenceDialog.ReferenceHeader}";
 			this.referenceHeader.Width = 183;
 			// 
 			// typeHeader
 			// 
-			this.typeHeader.Text = ResourceService.GetString("Dialog.SelectReferenceDialog.TypeHeader");
+			this.typeHeader.Text = "${res:Dialog.SelectReferenceDialog.TypeHeader}";
 			this.typeHeader.Width = 57;
 			// 
 			// locationHeader
 			// 
-			this.locationHeader.Text = ResourceService.GetString("Dialog.SelectReferenceDialog.LocationHeader");
+			this.locationHeader.Text = "${res:Dialog.SelectReferenceDialog.LocationHeader}";
 			this.locationHeader.Width = 228;
+			// 
+			// selectButton
+			// 
+			this.selectButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.selectButton.Location = new System.Drawing.Point(488, 32);
+			this.selectButton.Name = "selectButton";
+			this.selectButton.Size = new System.Drawing.Size(75, 23);
+			this.selectButton.TabIndex = 1;
+			this.selectButton.Text = "${res:Dialog.SelectReferenceDialog.SelectButton}";
+			// 
+			// removeButton
+			// 
+			this.removeButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.removeButton.Location = new System.Drawing.Point(488, 256);
+			this.removeButton.Name = "removeButton";
+			this.removeButton.Size = new System.Drawing.Size(75, 23);
+			this.removeButton.TabIndex = 4;
+			this.removeButton.Text = "${res:Global.RemoveButtonText}";
+			// 
+			// referencesLabel
+			// 
+			this.referencesLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+									| System.Windows.Forms.AnchorStyles.Right)));
+			this.referencesLabel.Location = new System.Drawing.Point(8, 240);
+			this.referencesLabel.Name = "referencesLabel";
+			this.referencesLabel.Size = new System.Drawing.Size(472, 16);
+			this.referencesLabel.TabIndex = 2;
+			this.referencesLabel.Text = "${res:Dialog.SelectReferenceDialog.ReferencesLabel}";
 			// 
 			// okButton
 			// 
+			this.okButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.okButton.DialogResult = System.Windows.Forms.DialogResult.OK;
-			this.okButton.Location = new System.Drawing.Point(312, 368);
+			this.okButton.Location = new System.Drawing.Point(395, 368);
+			this.okButton.Name = "okButton";
+			this.okButton.Size = new System.Drawing.Size(75, 23);
 			this.okButton.TabIndex = 5;
-			this.okButton.Text = ResourceService.GetString("Global.OKButtonText");
-			this.okButton.Click += OkButtonClick;
-			
+			this.okButton.Text = "${res:Global.OKButtonText}";
 			// 
 			// cancelButton
 			// 
+			this.cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.cancelButton.Location = new System.Drawing.Point(400, 368);
+			this.cancelButton.Location = new System.Drawing.Point(483, 368);
+			this.cancelButton.Name = "cancelButton";
+			this.cancelButton.Size = new System.Drawing.Size(75, 23);
 			this.cancelButton.TabIndex = 6;
-			this.cancelButton.Text = ResourceService.GetString("Global.CancelButtonText");
-			this.cancelButton.FlatStyle = FlatStyle.System;
-			
-			//
+			this.cancelButton.Text = "${res:Global.CancelButtonText}";
+			// 
 			// helpButton
 			// 
-			this.helpButton.Location = new System.Drawing.Point(488, 368);
+			this.helpButton.Location = new System.Drawing.Point(140, 368);
+			this.helpButton.Name = "helpButton";
+			this.helpButton.Size = new System.Drawing.Size(75, 23);
 			this.helpButton.TabIndex = 7;
-			this.helpButton.Text = ResourceService.GetString("Global.HelpButtonText");
-			this.helpButton.FlatStyle = FlatStyle.System;
-			
-			//
+			this.helpButton.Text = "${res:Global.HelpButtonText}";
+			this.helpButton.Visible = false;
+			// 
 			// SelectReferenceDialog
 			// 
 			this.AcceptButton = this.okButton;
-//			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.cancelButton;
 			this.ClientSize = new System.Drawing.Size(570, 399);
-			this.Controls.AddRange(new System.Windows.Forms.Control[] {
-			                       	this.helpButton,
-			                       	this.cancelButton,
-			                       	this.okButton,
-			                       	this.referencesLabel,
-			                       	this.removeButton,
-			                       	this.selectButton,
-			                       	this.referencesListView,
-			                       	this.referenceTabControl});
-			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+			this.Controls.Add(this.helpButton);
+			this.Controls.Add(this.cancelButton);
+			this.Controls.Add(this.okButton);
+			this.Controls.Add(this.referencesLabel);
+			this.Controls.Add(this.removeButton);
+			this.Controls.Add(this.selectButton);
+			this.Controls.Add(this.referencesListView);
+			this.Controls.Add(this.referenceTabControl);
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
+			this.MinimumSize = new System.Drawing.Size(280, 350);
+			this.Name = "SelectReferenceDialog";
 			this.ShowInTaskbar = false;
-			this.Text = ResourceService.GetString("Dialog.SelectReferenceDialog.DialogName");
+			this.Text = "${res:Dialog.SelectReferenceDialog.DialogName}";
 			this.referenceTabControl.ResumeLayout(false);
 			this.ResumeLayout(false);
 		}
+	}
+	
+	public interface IReferencePanel
+	{
+		void AddReference();
+	}
+	
+	public interface ISelectReferenceDialog
+	{
+		/// <summary>
+		/// Project to create references for.
+		/// </summary>
+		IProject ConfigureProject { get; }
+		
+		void AddReference(string referenceName, string referenceType, string referenceLocation, ReferenceProjectItem projectItem);
+	}
+	
+	public enum ReferenceType {
+		Assembly,
+		Typelib,
+		Gac,
+		
+		Project
 	}
 }
