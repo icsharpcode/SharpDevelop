@@ -38,6 +38,40 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			set { allowCompleteExistingExpression = value; }
 		}
 		
+		/// <summary>
+		/// Gets/Sets whether code templates should be included in code completion.
+		/// </summary>
+		public bool ShowTemplates { get; set; }
+		
+		void AddTemplates(TextArea textArea, char charTyped)
+		{
+			if (!ShowTemplates)
+				return;
+			ICompletionData suggestedData = DefaultIndex >= 0 ? completionData[DefaultIndex] : null;
+			ICompletionData[] templateCompletionData = new TemplateCompletionDataProvider().GenerateCompletionData(fileName, textArea, charTyped);
+			for (int i = 0; i < completionData.Count; i++) {
+				if (completionData[i].ImageIndex == ClassBrowserIconService.KeywordIndex) {
+					string text = completionData[i].Text;
+					for (int j = 0; j < templateCompletionData.Length; j++) {
+						if (templateCompletionData[j] != null && templateCompletionData[j].Text == text) {
+							// replace keyword with template
+							completionData[i] = templateCompletionData[j];
+							templateCompletionData[j] = null;
+						}
+					}
+				}
+			}
+			// add non-keyword code templates
+			for (int j = 0; j < templateCompletionData.Length; j++) {
+				if (templateCompletionData[j] != null)
+					completionData.Add(templateCompletionData[j]);
+			}
+			if (suggestedData != null) {
+				completionData.Sort(DefaultCompletionData.Compare);
+				DefaultIndex = completionData.IndexOf(suggestedData);
+			}
+		}
+		
 		protected override void GenerateCompletionData(TextArea textArea, char charTyped)
 		{
 			#if DEBUG
@@ -53,24 +87,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				}
 				ExpressionContext context = overrideContext ?? ExpressionContext.Default;
 				AddResolveResults(ParserService.CtrlSpace(caretLineNumber, caretColumn, fileName, textArea.Document.TextContent, context), context);
-				ICompletionData[] templateCompletionData = new TemplateCompletionDataProvider().GenerateCompletionData(fileName, textArea, charTyped);
-				for (int i = 0; i < completionData.Count; i++) {
-					if (completionData[i].ImageIndex == ClassBrowserIconService.KeywordIndex) {
-						string text = completionData[i].Text;
-						for (int j = 0; j < templateCompletionData.Length; j++) {
-							if (templateCompletionData[j] != null && templateCompletionData[j].Text == text) {
-								// replace keyword with template
-								completionData[i] = templateCompletionData[j];
-								templateCompletionData[j] = null;
-							}
-						}
-					}
-				}
-				// add non-keyword code templates
-				for (int j = 0; j < templateCompletionData.Length; j++) {
-					if (templateCompletionData[j] != null)
-						completionData.Add(templateCompletionData[j]);
-				}
+				AddTemplates(textArea, charTyped);
 				return;
 			}
 			

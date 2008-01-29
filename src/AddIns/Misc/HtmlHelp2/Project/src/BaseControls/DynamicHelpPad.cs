@@ -38,7 +38,7 @@ namespace HtmlHelp2
 	public class HtmlHelp2DynamicHelpPad : AbstractPadContent
 	{
 		HtmlHelp2DynamicHelpBrowserControl dynamicHelpBrowser;
-		private StringCollection dynamicHelpTerms   = new StringCollection();
+		private List<string> dynamicHelpTerms       = new List<string>();
 		private TextLocation lastPoint              = TextLocation.Empty;
 		private string debugPreElement              = String.Empty;
 		private bool enableDebugInfo                = HtmlHelp2Environment.Config.DynamicHelpDebugInfos;
@@ -155,8 +155,12 @@ namespace HtmlHelp2
 		#region Taken from DefinitionView.cs
 		private void UpdateTick(object sender, ParserUpdateStepEventArgs e)
 		{
+			WorkbenchSingleton.SafeThreadAsyncCall(UpdateTick, e);
+		}
+		
+		void UpdateTick(ParserUpdateStepEventArgs e)
+		{
 			this.dynamicHelpTerms.Clear();
-
 			ResolveResult res = ResolveAtCaret(e);
 			if (res == null) return;
 
@@ -187,7 +191,7 @@ namespace HtmlHelp2
 				this.AddToStringCollection(0, types.ResolvedClass.FullyQualifiedName);
 			}
 
-			WorkbenchSingleton.SafeThreadAsyncCall(BuildDynamicHelpList);
+			BuildDynamicHelpList();
 		}
 
 		private ResolveResult ResolveAtCaret(ParserUpdateStepEventArgs e)

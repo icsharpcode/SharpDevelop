@@ -27,7 +27,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public static void BuildInGui(IBuildable project, BuildOptions options)
 		{
-			WorkbenchSingleton.DebugAssertMainThread();
+			WorkbenchSingleton.AssertMainThread();
 			if (guiBuildProgressMonitor != null) {
 				BuildResults results = new BuildResults();
 				results.Add(new BuildError(null, Core.ResourceService.GetString("MainWindow.CompilerMessages.MSBuildAlreadyRunning")));
@@ -44,14 +44,14 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public static bool IsGuiBuildRunning {
 			get {
-				WorkbenchSingleton.DebugAssertMainThread();
+				WorkbenchSingleton.AssertMainThread();
 				return guiBuildProgressMonitor != null;
 			}
 		}
 		
 		public static void CancelGuiBuild()
 		{
-			WorkbenchSingleton.DebugAssertMainThread();
+			WorkbenchSingleton.AssertMainThread();
 			if (guiBuildProgressMonitor != null) {
 				guiBuildProgressMonitor.Cancel();
 			}

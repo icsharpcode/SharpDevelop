@@ -144,7 +144,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public IWorkbenchWindow ActiveWorkbenchWindow {
 			get {
-				WorkbenchSingleton.DebugAssertMainThread();
+				WorkbenchSingleton.AssertMainThread();
 				return activeWorkbenchWindow;
 			}
 			private set {
@@ -187,7 +187,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		public IViewContent ActiveViewContent {
 			get {
-				WorkbenchSingleton.DebugAssertMainThread();
+				WorkbenchSingleton.AssertMainThread();
 				return activeViewContent;
 			}
 			private set {

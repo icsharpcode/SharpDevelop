@@ -167,7 +167,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 					}
 				}
 				if (suggestedData != null) {
-					completionData.Sort();
+					completionData.Sort(DefaultCompletionData.Compare);
 					this.DefaultIndex = completionData.IndexOf(suggestedData);
 				}
 			}
