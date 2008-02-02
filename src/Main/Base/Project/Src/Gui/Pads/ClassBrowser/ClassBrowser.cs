@@ -114,7 +114,7 @@ namespace ICSharpCode.SharpDevelop.Gui.ClassBrowser
 				foreach (ParseInformationEventArgs e in pending) {
 					foreach (TreeNode node in classBrowserTreeView.Nodes) {
 						AbstractProjectNode prjNode = node as AbstractProjectNode;
-						if (e.ProjectContent.Project == prjNode.Project) {
+						if (prjNode != null && e.ProjectContent.Project == prjNode.Project) {
 							prjNode.UpdateParseInformation(e.OldCompilationUnit, e.NewCompilationUnit);
 						}
 					}
