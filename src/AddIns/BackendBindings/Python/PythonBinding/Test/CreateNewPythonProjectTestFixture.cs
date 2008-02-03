@@ -7,6 +7,7 @@
 
 using System;
 using System.IO;
+using System.Text;
 using ICSharpCode.PythonBinding;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
@@ -52,23 +53,13 @@ namespace PythonBinding.Tests
 		{
 			Assert.AreEqual(info.ProjectName, project.Name);
 		}
-
-		[Test]
-		public void TwoImports()
-		{
-			Assert.AreEqual(2, project.MSBuildProject.Imports.Count);
-		}
-		
+	
 		[Test]
 		public void Imports()
 		{
-			Microsoft.Build.BuildEngine.Import[] imports = {null, null};
-			project.MSBuildProject.Imports.CopyTo(imports, 0);
-			
-			string[] paths = new string[] {imports[0].ProjectPath, imports[1].ProjectPath};
-			
-			Assert.Contains(PythonProject.DefaultTargetsFile, paths);
-			Assert.Contains(@"$(MSBuildBinPath)\Microsoft.Common.targets", paths);
+			string[] paths = GetImportPaths();
+			Assert.Contains(PythonProject.DefaultTargetsFile, paths, "Could not find Python default target. Actual imports: " + GetArrayAsString(paths));
+			Assert.Contains(@"$(MSBuildBinPath)\Microsoft.Common.targets", paths, "Could not find Microsoft.Common.targets. Actual imports: " + GetArrayAsString(paths));
 		}
 
 		[Test]
@@ -94,5 +85,40 @@ namespace PythonBinding.Tests
 		{
 			Assert.AreEqual(ItemType.None, project.GetDefaultItemType(null));
 		}		
+
+		/// <summary>
+		/// Gets the import paths from the project.
+		/// </summary>
+		string[] GetImportPaths()
+		{
+			int count = project.MSBuildProject.Imports.Count;
+			Microsoft.Build.BuildEngine.Import[] imports = new Microsoft.Build.BuildEngine.Import[count];
+			project.MSBuildProject.Imports.CopyTo(imports, 0);
+			
+			string[] paths = new string[count];
+			for (int i = 0; i < count; ++i) {
+				Microsoft.Build.BuildEngine.Import import = imports[i];
+				paths[i] = import.ProjectPath;
+			}
+			return paths;
+		}
+		
+		/// <summary>
+		/// Takes the import paths in the project and creates a string with each import
+		/// on a new line.
+		/// </summary>
+		string GetImportPathsAsText()
+		{
+			return GetArrayAsString(GetImportPaths());
+		}
+		
+		string GetArrayAsString(string[] array)
+		{
+			StringBuilder text = new StringBuilder();
+			foreach (string item in array) {
+				text.AppendLine(item);
+			}
+			return text.ToString();
+		}
 	}
 }

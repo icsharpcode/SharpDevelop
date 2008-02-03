@@ -66,7 +66,9 @@
     <Compile Include="AddInFileTestFixture.cs" />
     <Compile Include="CompilingOptionsPanelTestFixture.cs" />
     <Compile Include="Converter\AddHandlerConversionTestFixture.cs" />
+    <Compile Include="Converter\ArrayCastConversionTestFixture.cs" />
     <Compile Include="Converter\ArrayConversionTestFixture.cs" />
+    <Compile Include="Converter\IntegerMethodParameterTestFixture.cs" />
     <Compile Include="Converter\BaseClassReferenceTestFixture.cs" />
     <Compile Include="Converter\BinaryOperatorConversionTests.cs" />
     <Compile Include="Converter\ClassConstructorConversionTestFixture.cs" />

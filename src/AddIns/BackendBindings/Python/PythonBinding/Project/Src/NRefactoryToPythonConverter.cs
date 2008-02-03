@@ -245,11 +245,13 @@ namespace ICSharpCode.PythonBinding
 			Console.WriteLine("VisitCaseLabel");
 			return null;
 		}
-		
+
+		/// <summary>
+		/// Ignore the cast and just visit the expression inside the cast.
+		/// </summary>
 		public object VisitCastExpression(CastExpression castExpression, object data)
 		{
-			Console.WriteLine("VisitCastExpression");
-			return null;
+			return castExpression.Expression.AcceptVisitor(this, data);
 		}
 		
 		public object VisitCatchClause(CatchClause catchClause, object data)
@@ -694,20 +696,23 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		public object VisitInvocationExpression(InvocationExpression invocationExpression, object data)
 		{					
-			// Create target object.
-			MemberReferenceExpression memberRefExpression = invocationExpression.TargetObject as MemberReferenceExpression;
-			CodeExpression targetObjectExpression = (CodeExpression)memberRefExpression.TargetObject.AcceptVisitor(this, data);
-			
-			// Create method ref.
 			CodeMethodReferenceExpression methodRef = new CodeMethodReferenceExpression();
-			methodRef.MethodName = memberRefExpression.MemberName;
-			methodRef.TargetObject = targetObjectExpression;
-			
+
+			MemberReferenceExpression memberRefExpression = invocationExpression.TargetObject as MemberReferenceExpression;
+			IdentifierExpression identifierExpression = invocationExpression.TargetObject as IdentifierExpression;
+			if (memberRefExpression != null) {
+				methodRef.MethodName = memberRefExpression.MemberName;
+				methodRef.TargetObject = (CodeExpression)memberRefExpression.TargetObject.AcceptVisitor(this, data);
+				
+			} else if (identifierExpression != null) {
+				methodRef.MethodName = identifierExpression.Identifier;
+				methodRef.TargetObject = new CodeThisReferenceExpression();
+			}
+				
 			// Create method invoke.
 			CodeMethodInvokeExpression methodInvoke = new CodeMethodInvokeExpression();
 			methodInvoke.Parameters.AddRange(ConvertExpressions(invocationExpression.Arguments));
 			methodInvoke.Method = methodRef;
-
 			return methodInvoke;
 		}
 		
@@ -1449,7 +1454,9 @@ namespace ICSharpCode.PythonBinding
 			List<CodeExpression> codeExpressions = new List<CodeExpression>();
 			foreach (Expression expression in expressions) {
 				CodeExpression convertedCodeExpression = (CodeExpression)expression.AcceptVisitor(this, null);
-				codeExpressions.Add(convertedCodeExpression);
+				if (convertedCodeExpression != null) {
+					codeExpressions.Add(convertedCodeExpression);
+				}
 			}
 			return codeExpressions.ToArray();
 		}
