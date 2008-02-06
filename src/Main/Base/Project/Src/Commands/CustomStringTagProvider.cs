@@ -138,7 +138,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 					
 				case "PROJECTDIR":
 					if (ProjectService.CurrentProject != null) {
-						return ProjectService.CurrentProject.FileName;
+						return ProjectService.CurrentProject.Directory;
 					}
 					break;
 				case "PROJECTFILENAME":

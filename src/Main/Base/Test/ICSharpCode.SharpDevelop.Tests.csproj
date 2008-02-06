@@ -69,6 +69,9 @@
     <Compile Include="OverloadFinding.cs" />
     <Compile Include="SearchGenericClassTests.cs" />
     <Compile Include="MemberLookupHelperTests.cs" />
+    <Compile Include="StringTagProvider\MockProjectForTagProvider.cs" />
+    <Compile Include="StringTagProvider\NullProjectStringTagProviderTestFixture.cs" />
+    <Compile Include="StringTagProvider\ProjectTagsTestFixture.cs" />
     <Compile Include="Utils\MockAmbience.cs" />
     <Compile Include="Utils\MockClass.cs" />
     <Compile Include="Utils\MockEntity.cs" />
@@ -146,6 +149,7 @@
       <Link>ICSharpCode.TextEditor.dll</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Folder Include="StringTagProvider" />
     <Folder Include="Utils" />
     <Folder Include="WebReferences" />
     <Folder Include="Templates" />
