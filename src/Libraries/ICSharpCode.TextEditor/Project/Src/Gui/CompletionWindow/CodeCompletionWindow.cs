@@ -320,7 +320,7 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 		/// <param name="defaultWidth">The default width of the list view.</param>
 		/// <param name="height">The height of the list view.  This is
 		/// used to determine if the scrollbar is visible.</param>
-		/// <returns>The list view width to accommodate the longest completion 
+		/// <returns>The list view width to accommodate the longest completion
 		/// data text string; otherwise the default width.</returns>
 		int GetListViewWidth(int defaultWidth, int height)
 		{
@@ -337,8 +337,8 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			float totalItemsHeight = codeCompletionListView.ItemHeight * completionData.Length;
 			if (totalItemsHeight > height) {
 				width += ScrollbarWidth; // Compensate for scroll bar.
-			}	
+			}
 			return (int)width;
-		}		
+		}
 	}
 }

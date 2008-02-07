@@ -51,7 +51,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		public override ICompletionData[] GenerateCompletionData(string fileName, TextArea textArea, char charTyped)
 		{
 			if (completionData == null) {
-				completionData = baseProvider.GenerateCompletionData(fileName, textArea, charTyped);
+				completionData = baseProvider.GenerateCompletionData(fileName, textArea, charTyped) ?? new ICompletionData[0];
 				preSelection = baseProvider.PreSelection;
 				this.DefaultIndex = baseProvider.DefaultIndex;
 			}

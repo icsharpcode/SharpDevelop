@@ -92,6 +92,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		
 		/// <summary>
 		/// Generates the completion data. This method is called by the text editor control.
+		/// This method may return null.
 		/// </summary>
 		public abstract ICompletionData[] GenerateCompletionData(string fileName, TextArea textArea, char charTyped);
 	}

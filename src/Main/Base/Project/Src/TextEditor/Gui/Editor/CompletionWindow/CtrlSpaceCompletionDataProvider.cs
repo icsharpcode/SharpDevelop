@@ -49,6 +49,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				return;
 			ICompletionData suggestedData = DefaultIndex >= 0 ? completionData[DefaultIndex] : null;
 			ICompletionData[] templateCompletionData = new TemplateCompletionDataProvider().GenerateCompletionData(fileName, textArea, charTyped);
+			if (templateCompletionData == null || templateCompletionData.Length == 0)
+				return;
 			for (int i = 0; i < completionData.Count; i++) {
 				if (completionData[i].ImageIndex == ClassBrowserIconService.KeywordIndex) {
 					string text = completionData[i].Text;
@@ -101,6 +103,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 					preSelection = null;
 				}
 				AddResolveResults(ParserService.CtrlSpace(caretLineNumber, caretColumn, fileName, textArea.Document.TextContent, expressionResult.Context), expressionResult.Context);
+				AddTemplates(textArea, charTyped);
 				return;
 			}
 			
@@ -119,6 +122,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				}
 				ArrayList results = ParserService.CtrlSpace(caretLineNumber, caretColumn, fileName, textArea.Document.TextContent, expressionResult.Context);
 				AddResolveResults(results, expressionResult.Context);
+				AddTemplates(textArea, charTyped);
 			}
 		}
 	}

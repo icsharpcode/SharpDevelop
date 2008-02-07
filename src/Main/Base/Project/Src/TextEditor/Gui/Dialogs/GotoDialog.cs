@@ -101,9 +101,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (editor != null) {
 				CtrlSpaceCompletionDataProvider cdp = new CtrlSpaceCompletionDataProvider(ExpressionContext.Default);
 				ctrlSpaceCompletionData = cdp.GenerateCompletionData(editor.FileName, editor.ActiveTextAreaControl.TextArea, '\0');
-				return ctrlSpaceCompletionData;
 			}
-			return new ICompletionData[0];
+			if (ctrlSpaceCompletionData == null)
+				ctrlSpaceCompletionData = new ICompletionData[0];
+			return ctrlSpaceCompletionData;
 		}
 		
 		ICompletionData[] Resolve(string expression)
@@ -111,7 +112,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			TextEditorControl editor = GetEditor();
 			if (editor != null) {
 				CodeCompletionDataProvider cdp = new CodeCompletionDataProvider(new ExpressionResult(expression));
-				return cdp.GenerateCompletionData(editor.FileName, editor.ActiveTextAreaControl.TextArea, '.');
+				return cdp.GenerateCompletionData(editor.FileName, editor.ActiveTextAreaControl.TextArea, '.')
+					?? new ICompletionData[0];
 			}
 			return new ICompletionData[0];
 		}

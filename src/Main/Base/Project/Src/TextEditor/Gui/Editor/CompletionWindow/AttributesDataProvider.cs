@@ -40,7 +40,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		public override ICompletionData[] GenerateCompletionData(string fileName, TextArea textArea, char charTyped)
 		{
 			ICompletionData[] data = base.GenerateCompletionData(fileName, textArea, charTyped);
-			if (removeAttributeSuffix) {
+			if (removeAttributeSuffix && data != null) {
 				foreach (ICompletionData d in data) {
 					if (d.Text.EndsWith("Attribute")) {
 						d.Text = d.Text.Substring(0, d.Text.Length - 9);
