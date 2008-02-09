@@ -22,12 +22,10 @@ namespace Grunwald.BooBinding
 			//InitXmlDoc();
 			InitDebugInfo();
 			
-			//ConfigurationGuiBinding b;
-			
-			//b = helper.BindString("conditionalSymbolsTextBox", "DefineConstants");
-			//b.TreatPropertyValueAsLiteral = false;
-			//b.DefaultLocation = PropertyStorageLocations.ConfigurationSpecific;
-			//b.CreateLocationButton("conditionalSymbolsTextBox");
+			ConfigurationGuiBinding b;
+			b = helper.BindString("conditionalSymbolsTextBox", "DefineConstants", TextBoxEditMode.EditRawProperty);
+			b.DefaultLocation = PropertyStorageLocations.ConfigurationSpecific;
+			b.CreateLocationButton("conditionalSymbolsTextBox");
 			
 			helper.BindBoolean("noCorlibCheckBox", "NoStdLib", false).CreateLocationButton("noCorlibCheckBox");
 			helper.BindBoolean("duckyCheckBox", "Ducky", false).CreateLocationButton("duckyCheckBox");

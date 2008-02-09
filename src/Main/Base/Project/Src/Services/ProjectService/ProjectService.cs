@@ -232,7 +232,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		static void BeforeLoadSolution()
+		internal static void BeforeLoadSolution()
 		{
 			if (openSolution != null) {
 				SaveSolutionPreferences();

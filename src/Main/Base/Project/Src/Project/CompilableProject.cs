@@ -431,6 +431,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					CompilableProject cp = p as CompilableProject;
 					if (cp != null && cp.TargetFrameworkVersion == "v3.5") {
 						cp.AddDotnet35References();
+						cp.Save();
 					}
 				}
 			}

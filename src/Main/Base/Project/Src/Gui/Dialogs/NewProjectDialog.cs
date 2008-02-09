@@ -95,9 +95,11 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 			InsertCategories(null, categories);
 			categoryTreeView.TreeViewNodeSorter = new TemplateCategoryComparer();
 			categoryTreeView.Sort();
+			string initialSelectedCategory = StringParser.Parse("C#\\${res:Templates.File.Categories.WindowsApplications}");
 			TreeViewHelper.ApplyViewStateString(PropertyService.Get("Dialogs.NewProjectDialog.CategoryTreeState", ""), categoryTreeView);
-			categoryTreeView.SelectedNode = TreeViewHelper.GetNodeByPath(categoryTreeView, PropertyService.Get("Dialogs.NewProjectDialog.LastSelectedCategory", "C#"));
+			categoryTreeView.SelectedNode = TreeViewHelper.GetNodeByPath(categoryTreeView, PropertyService.Get("Dialogs.NewProjectDialog.LastSelectedCategory", initialSelectedCategory));
 		}
+		
 		
 		void InsertCategories(TreeNode node, IEnumerable<Category> catarray)
 		{
@@ -336,9 +338,12 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 					return;
 				}
 				if (createNewSolution) {
-					ProjectService.LoadSolution(NewSolutionLocation);
+					ProjectService.BeforeLoadSolution();
 				}
 				item.Template.RunOpenActions(cinfo);
+				if (createNewSolution) {
+					ProjectService.LoadSolution(NewSolutionLocation);
+				}
 				
 				NewProjectLocation = cinfo.createdProjects.Count > 0 ? cinfo.createdProjects[0].FileName : "";
 				DialogResult = DialogResult.OK;
