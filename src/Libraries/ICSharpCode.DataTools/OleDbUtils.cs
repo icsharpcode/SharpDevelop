@@ -14,8 +14,15 @@ using log = ICSharpCode.Core.LoggingService;
 
 namespace ICSharpCode.DataTools
 {
-
-    public static class OleDbConnectionUtil
+	/// <summary>
+	/// <para>This class maintains a dictionary of OleDbConnections backed by a file -
+	/// it does not open the connections or maintain a pool of connections. That would be
+	/// a bad idea since most oledb providers implement connection pooling themselves.</para>
+	/// <para>It does validate connection strings as they are submitted - or rather it delegates
+	/// this validation to the <code>OleDbConnectionStringBuilder</code>
+	/// </para>
+	/// </summary>
+    public static class OleDbConnectionService 
     {
         /// <summary>
         /// Returns a single connection, unopened
@@ -26,10 +33,18 @@ namespace ICSharpCode.DataTools
         /// but is not a valid oledb connection string</exception>
         /// 
         public const string CONNECTION_STRINGS_FILE = "DatabaseConnections.xml";
-
+		
+        // a standard .net class representing a collection of connection settings
         private static ConnectionStringSettingsCollection cssc = null;
+        
+        // an internal cache of OleDbConnections that have so far been created.
+        // Note that OleDbConnectionService does not know of care whether the connections are open or closed
+        // it simply keeps a cache of the created objects indexed by the name of the ConnectionStringSettings.
+        
+        private static Dictionary<string, OleDbConnection> connections = 
+			new Dictionary<string, OleDbConnection>();
 
-        public static bool TryGet(string connectionName, out OleDbConnection conn)
+        private static bool TryGet(string connectionName, out OleDbConnection conn)
         {
             try
             {
@@ -46,6 +61,20 @@ namespace ICSharpCode.DataTools
                 return false;
             }
         }
+        
+        public static bool TryGetConnection(string connectionName, out OleDbConnection connection)
+		{
+			if (connections.TryGetValue(connectionName, out connection)) {
+				return true;
+			} else {
+				if (TryGet(connectionName, out connection)) {
+					connections.Add(connectionName, connection);
+					return true;
+				}else {
+        			return false;
+        		} 
+        	}
+		}
 		
         /// <summary>
         /// Validates and adds an oledb connection string to the internal cache.
@@ -69,7 +98,7 @@ namespace ICSharpCode.DataTools
         /// <summary>
         /// Returns all Connections unopened
         /// </summary>
-        public static List<OleDbConnection> Connections
+        public static Dictionary<string, OleDbConnection> Connections
         {
             get
             {
@@ -79,18 +108,22 @@ namespace ICSharpCode.DataTools
                 List<OleDbConnection> results = new List<OleDbConnection>();
                 foreach (ConnectionStringSettings c in settingsCollection)
                 {
+                	if (connections.ContainsKey(c.Name)) {
+                		continue;
+                	}
                     try
                     {
                         OleDbConnectionStringBuilder builder = new OleDbConnectionStringBuilder(c.ConnectionString); // ArgumentException thrown here
                         OleDbConnection conn = new OleDbConnection(builder.ConnectionString);
-                        results.Add(conn);
+                        connections.Add(c.Name, conn);
                     }
                     catch (ArgumentException)
                     {
-                        // do nothing, this is acceptable
+                        log.Info("an invalid connection string was found in the file " +
+                    	         CONNECTION_STRINGS_FILE + ": " + c.ToString());
                     }
                 }
-                return results;
+                return connections;
             }
         }
 
@@ -129,7 +162,7 @@ namespace ICSharpCode.DataTools
             {
                 // again, if the file contains some extraneous data it must have been corrupted or
                 // manually edited - in this case ignore it
-                log.Debug("bad data found trying to read in the ConnectionSettingsCollection from file - " 
+                log.Info("bad data found trying to read in the ConnectionSettingsCollection from file - " 
                     + "please check the content of the file at: " + filePath);
             }
             return cssc;

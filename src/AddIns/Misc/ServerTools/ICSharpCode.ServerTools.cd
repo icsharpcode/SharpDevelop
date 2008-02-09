@@ -1,0 +1,85 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<ClassDiagram Zoom="1" MajorVersion="1" MinorVersion="1" MembersFormat="FullSignature">
+  <Class Name="ICSharpCode.ServerTools.DbControlController" Collapsed="False">
+    <Position X="0.5" Y="0.5" Width="2.714167" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="False" />
+      <Compartment Name="Fields" Collapsed="False" />
+    </Compartments>
+  </Class>
+  <Class Name="ICSharpCode.ServerTools.ServerControl" Collapsed="False">
+    <Position X="0.5" Y="3" Width="2.714167" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="False" />
+      <Compartment Name="Fields" Collapsed="False" />
+    </Compartments>
+  </Class>
+  <Class Name="ICSharpCode.ServerTools.DbConnectionNode" Collapsed="False">
+    <Position X="0.5" Y="6.1" Width="2.557116" />
+    <Compartments>
+      <Compartment Name="Properties" Collapsed="False" />
+      <Compartment Name="Methods" Collapsed="False" />
+      <Compartment Name="Fields" Collapsed="False" />
+    </Compartments>
+  </Class>
+  <Enum Name="ICSharpCode.ServerTools.DbConnectionNodeState" Collapsed="False">
+    <Position X="0.5" Y="8.3" Width="2.385544" />
+    <Compartments />
+  </Enum>
+  <Class Name="ICSharpCode.ServerTools.DbConnectionsNode" Collapsed="False">
+    <Position X="0.5" Y="9.7" Width="2.774967" />
+    <Compartments>
+      <Compartment Name="Properties" Collapsed="False" />
+      <Compartment Name="Methods" Collapsed="False" />
+      <Compartment Name="Fields" Collapsed="False" />
+    </Compartments>
+  </Class>
+  <Class Name="ICSharpCode.ServerTools.Properties.DbConnectionsNode" Collapsed="False">
+    <Position X="0.5" Y="11.8" Width="2.670446" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="False" />
+    </Compartments>
+  </Class>
+  <Class Name="ICSharpCode.ServerTools.ServersNode" Collapsed="False">
+    <Position X="0.5" Y="13.2" Width="2.321916" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="False" />
+      <Compartment Name="Fields" Collapsed="False" />
+    </Compartments>
+  </Class>
+  <Class Name="ICSharpCode.ServerTools.Servers.Properties.Resources" Collapsed="False">
+    <Position X="0.5" Y="14.9" Width="2.472174" />
+    <Compartments>
+      <Compartment Name="Properties" Collapsed="False" />
+      <Compartment Name="Methods" Collapsed="False" />
+      <Compartment Name="Fields" Collapsed="False" />
+    </Compartments>
+  </Class>
+  <Class Name="ICSharpCode.ServerTools.Servers.Properties.Settings" Collapsed="False">
+    <Position X="0.5" Y="17.4" Width="1.828166" />
+    <Compartments>
+      <Compartment Name="Properties" Collapsed="False" />
+      <Compartment Name="Fields" Collapsed="False" />
+    </Compartments>
+  </Class>
+  <Class Name="ICSharpCode.ServerTools.ServerBrowserHost" Collapsed="False">
+    <Position X="0.5" Y="19.2" Width="2.542399" />
+    <Compartments>
+      <Compartment Name="Properties" Collapsed="False" />
+      <Compartment Name="Methods" Collapsed="False" />
+      <Compartment Name="Fields" Collapsed="False" />
+    </Compartments>
+  </Class>
+  <Class Name="ICSharpCode.ServerTools.TablesNode" Collapsed="False">
+    <Position X="0.5" Y="21.6" Width="1.801403" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="False" />
+    </Compartments>
+  </Class>
+  <Class Name="ICSharpCode.ServerTools.TableNode" Collapsed="False">
+    <Position X="0.5" Y="23" Width="1.688073" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="False" />
+    </Compartments>
+  </Class>
+</ClassDiagram>

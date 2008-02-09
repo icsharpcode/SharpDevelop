@@ -1,4 +1,342 @@
 ﻿<ChangeLog project="SharpDevelop">
+  <Change author="Daniel Grunwald" date="02/07/2008">Fixed forum-7331: Deleting .cs code template group causes code completion to throw NullReferenceException</Change>
+  <Change author="Matt Ward" date="02/06/2008">${ProjectDir} string now returns the active project's directory and not its filename.</Change>
+  <Change author="Matt Ward" date="02/03/2008">Added support for casts and class method calls in the python code converter.</Change>
+  <Change author="Matt Ward" date="02/02/2008">ClassBrowserPad checks that the parent nodes in the tree are AbstractProjectNodes before updating their parse information. This fixes a null reference exception that was being thrown if the class browser was showing classes instead of projects.</Change>
+  <Change author="Daniel Grunwald" date="01/29/2008">Fixed forum-7302: InvalidOperationException for code completion after new keyword.
+DynamicHelpPad: invoke UpdateTick on main thread to avoid race condition.</Change>
+  <Change author="Daniel Grunwald" date="01/28/2008">Fixed build.</Change>
+  <Change author="Daniel Grunwald" date="01/28/2008">Don't reuse IAmbience instances (they are not thread-safe).
+Make NewFileDialog + SelectReferenceDialog resizable.
+ClassBrowser: fixed bug that could cause classes not to be removed from the class browser when the file containing the class definition was removed from the project.
+ClassBrowser: fixed bug with generic and non-generic classes that have the same name.</Change>
+  <Change author="Daniel Grunwald" date="01/28/2008">Forum-6859: Show code templates in code completion.
+Templates are now inserted by pressing Tab (instead of Space).
+However, when "Automatic template insertion" in the text editor options is on (new default: off), templates are also inserted when a template is chosen from the code completion list.</Change>
+  <Change author="Daniel Grunwald" date="01/27/2008">Fixed forum-7200, forum-7286: Exception when trying to remove lines with breakpoints
+Improved default selection in "Go to" dialog.
+SharpDevelop.Dom: Renamed IDecoration-&gt;IEntity, moved common properties in IClass and IMember into IEntity.</Change>
+  <Change author="David Srbecký" date="01/26/2008">Fixed IList for types that do not implement IList, but their superclass does.</Change>
+  <Change author="Daniel Grunwald" date="01/26/2008">Make IClass (+ IMember, IParameter, IAttribute, ICompilationUnit .....) immutable.
+Rewrite partial class support in DefaultProjectContent.</Change>
+  <Change author="David Srbecký" date="01/26/2008">If object supports IList, use it to access the items from local variables pad.</Change>
+  <Change author="David Srbecký" date="01/26/2008">When Terminate is called immediately mark the process as Expired.  
+After that ignore all callbacks except ExitProcess.  
+Remove the process when ExitProcess is received.  
+If it was last process reset debugger.</Change>
+  <Change author="David Srbecký" date="01/26/2008">API support for enumerating implemented interfaces</Change>
+  <Change author="David Srbecký" date="01/26/2008">Removed some code duplication the metadata wrapper.</Change>
+  <Change author="David Srbecký" date="01/26/2008">Bugfix for Termination from the exception dialog.</Change>
+  <Change author="David Srbecký" date="01/26/2008">Fixed NullRerferenceExcpetion in SimpleMemberReference evaluator.  If member not found, throw exception.</Change>
+  <Change author="David Srbecký" date="01/26/2008">Updated string resources</Change>
+  <Change author="David Srbecký" date="01/26/2008">Terminate command does 'Break+Terminate' rather then 'Continue+Break+Terminate'.  I think this was left over from .NET 1.1 hack.  
+Changed the way callbacks are handled - it uses pauseOnNextExit flag now rather then two different exit procedures.  
+Queued callback are drained from the process queue.</Change>
+  <Change author="David Srbecký" date="01/25/2008">Starting support for multiple AppDomains.</Change>
+  <Change author="David Srbecký" date="01/25/2008">Fixed base type for arrays and for primitive values.  Updated tests for it.</Change>
+  <Change author="David Srbecký" date="01/25/2008">Base class tests</Change>
+  <Change author="David Srbecký" date="01/23/2008">Compare object types by module paths rather then modules instances - one module can be loaded multiple times (for appdomains)</Change>
+  <Change author="David Srbecký" date="01/23/2008">Correct order of events when process is killed.  
+Only ValueNode.Create can be used to create node.</Change>
+  <Change author="David Srbecký" date="01/23/2008">Change "Private members" to "Non-Public members"</Change>
+  <Change author="David Srbecký" date="01/23/2008">Do not allow exploring of locals while debuggee is running</Change>
+  <Change author="Christoph Wille" date="01/23/2008">Updated setup for SHFB 1.6.0.4</Change>
+  <Change author="Christoph Wille" date="01/23/2008">Copy new BuildComponents folder for SHFB 1.6.0.4</Change>
+  <Change author="Christoph Wille" date="01/23/2008">SHFB 1.6.0.4</Change>
+  <Change author="Christoph Wille" date="01/23/2008">Remove old version of SHFB</Change>
+  <Change author="David Srbecký" date="01/21/2008">The 'System.Object' type does not have any children - do not show 'plus' for it</Change>
+  <Change author="David Srbecký" date="01/21/2008">Limit repainting of Local Variables Pad to 40 ms.</Change>
+  <Change author="David Srbecký" date="01/21/2008">ThreadsPad refresh does Application.DoEvents() as well.</Change>
+  <Change author="David Srbecký" date="01/21/2008">CallStackPad refresh does Application.DoEvents() as well.  
+DoEvents() called very often.  
+New class for logging time measurements to the console.  
+If one OnPause delegate resumes process, remaining delegates are not called.</Change>
+  <Change author="David Srbecký" date="01/20/2008">Measure performance of CallStackPad refresh</Change>
+  <Change author="David Srbecký" date="01/20/2008">Performance tweak - call Application.DoEvents() before refreshing local variables pad.</Change>
+  <Change author="David Srbecký" date="01/20/2008">Abort Evals that take more the 500 ms</Change>
+  <Change author="David Srbecký" date="01/20/2008">Quick property access support for optimized code.</Change>
+  <Change author="David Srbecký" date="01/20/2008">Call "ToString" on objects</Change>
+  <Change author="David Srbecký" date="01/20/2008">Completely rewritten the sate management for Process.</Change>
+  <Change author="Daniel Grunwald" date="01/20/2008">Make ICSharpCode.SharpDevelop.BuildWorker 32-bit only - if SharpDevelop.exe is 32-bit, BuildWorker must also be 32-bit to avoid using a mixture of 32-bit and 64-bit MSBuild when compiling a solution.</Change>
+  <Change author="David Srbecký" date="01/20/2008">Rewritten Exception class</Change>
+  <Change author="David Srbecký" date="01/20/2008">Show the list of childs being progressively populated, do not wait until they are all loaded.</Change>
+  <Change author="David Srbecký" date="01/20/2008">Rewritten evals.  They are more restricted now: 
+- Eval starts executing as soon as it is created
+- Evals can not be 'scheduled' and executed latter</Change>
+  <Change author="David Srbecký" date="01/19/2008">Optimization - if a property just returns a field value, do not evaluate the property but access the field directly.</Change>
+  <Change author="David Srbecký" date="01/19/2008">Move EventArgs from their own files to the files they relate to</Change>
+  <Change author="David Srbecký" date="01/19/2008">Reorganized file structure
+</Change>
+  <Change author="David Srbecký" date="01/19/2008">Refreshed the documentation file.  (Switched to Sandcastle)</Change>
+  <Change author="David Srbecký" date="01/19/2008">Enter version to AssemblyInfo</Change>
+  <Change author="David Srbecký" date="01/19/2008">Renamed MetaData class to MetaDataImport to avoid name collision with the namespace.  
+Removed Util.Lists.</Change>
+  <Change author="David Srbecký" date="01/19/2008">Moved metadata related classes to Debugger.MetaData namespace</Change>
+  <Change author="David Srbecký" date="01/19/2008">Added synchronous Continue and Step*.  
+Use these to simplify the test code.</Change>
+  <Change author="David Srbecký" date="01/19/2008">Removed TreeListView from the setup</Change>
+  <Change author="David Srbecký" date="01/19/2008">Renamed Continue to AsyncContinue.  
+Renamed Step* to AsyncStep*.</Change>
+  <Change author="David Srbecký" date="01/19/2008">Updated tests</Change>
+  <Change author="David Srbecký" date="01/19/2008">Remove the no longer used TreeListView control</Change>
+  <Change author="David Srbecký" date="01/19/2008">Update callstack by overwriting rather then by clear+fill</Change>
+  <Change author="David Srbecký" date="01/18/2008">Reorganized code in CallstackPad</Change>
+  <Change author="David Srbecký" date="01/18/2008">Renamed LastStackFrame to MostRecentStackFrame</Change>
+  <Change author="David Srbecký" date="01/18/2008">Show changed values in blue</Change>
+  <Change author="David Srbecký" date="01/18/2008">Tests - sort serialized data alphabetically</Change>
+  <Change author="Daniel Grunwald" date="01/18/2008">Fixed forum-7234: resolving of constructor calls</Change>
+  <Change author="David Srbecký" date="01/18/2008">Added StackOverflow test.  
+Updated tests.  
+Fixed null reference in Tread.SelectedStackFrame.</Change>
+  <Change author="David Srbecký" date="01/18/2008">Added an Expression cache</Change>
+  <Change author="David Srbecký" date="01/18/2008">Fixed build</Change>
+  <Change author="Daniel Grunwald" date="01/18/2008">Allow using shortcuts from the main menu when a debugger tool tip has focus.</Change>
+  <Change author="David Srbecký" date="01/18/2008">GetHashCode and Equals for expressions</Change>
+  <Change author="David Srbecký" date="01/18/2008">Update tooltip when debugger is stepped</Change>
+  <Change author="David Srbecký" date="01/18/2008">String setting not supported</Change>
+  <Change author="David Srbecký" date="01/18/2008">Enabled editing in the local variables pad.  
+Fixed incremental search for the local variables pad.</Change>
+  <Change author="David Srbecký" date="01/18/2008">Only the following values can be set: argument, local variable, array element, field value</Change>
+  <Change author="David Srbecký" date="01/18/2008">Getting properties for generic types.  
+Updated generic test.</Change>
+  <Change author="David Srbecký" date="01/18/2008">Fixed access to static fields</Change>
+  <Change author="David Srbecký" date="01/18/2008">Fix: Do not show "Private members" if it is empty. Same for others.  
+Show only get properties - no indexers and setters.</Change>
+  <Change author="David Srbecký" date="01/17/2008">Forgotten to commit file</Change>
+  <Change author="David Srbecký" date="01/17/2008">Moving some directories</Change>
+  <Change author="David Srbecký" date="01/17/2008">Removed Value.Name property.  
+Removed ValueCollection.  
+Removed ExpressionCollection.  
+Reorganized methods in StackFrame, added some convenience methods.</Change>
+  <Change author="Matt Ward" date="01/16/2008">Corrected ClassDiagram's Diagram.dll entry in installer so the Diagram.dll is now installed.</Change>
+  <Change author="Dickon Field" date="01/16/2008">Added a little more code for the db control - working on the db object tree</Change>
+  <Change author="Daniel Grunwald" date="01/16/2008">Fixed forum-7231: InvalidOperationException when subversion overlay icon manager tries to set overlay before project browser tree view is created.
+Add try-catch around Process.Start for starting URLs (on some systems, the browser opens but Process.Start produces an exception, e.g. forum-7017).</Change>
+  <Change author="David Srbecký" date="01/16/2008">Remove IExpirable from Value.  
+Tests: catch ToString exceptions.</Change>
+  <Change author="David Srbecký" date="01/16/2008">Change buttons in exception box to "Break", "Continue" and "Terminate".  "Continue" is enabled only for handled exceptions and "Break" unwinds exceptions by default.  
+
+"Show full error..." made localizable.</Change>
+  <Change author="David Srbecký" date="01/16/2008">Tests output - use name of dumped object as the XML node name.</Change>
+  <Change author="David Srbecký" date="01/16/2008">Updated Stepping test</Change>
+  <Change author="David Srbecký" date="01/16/2008">Include ToString value in the test output</Change>
+  <Change author="David Srbecký" date="01/16/2008">A set of properties to expand can be specified in debugger tests.  
+Some tests updated.</Change>
+  <Change author="David Srbecký" date="01/16/2008">Debugger tests - do not expand properties by default.</Change>
+  <Change author="David Srbecký" date="01/15/2008">".cs" part of test name</Change>
+  <Change author="David Srbecký" date="01/15/2008">Added the expected output to the tests as well</Change>
+  <Change author="David Srbecký" date="01/15/2008">Move testing code to the tests</Change>
+  <Change author="David Srbecký" date="01/15/2008">Tweak debug test output - specify the object type as attribute rather then container node.</Change>
+  <Change author="David Srbecký" date="01/15/2008">Update debugger tests.  
+Prevent infinite recursion in debugger tests.</Change>
+  <Change author="David Srbecký" date="01/15/2008">Add context menu to the Local Variables Pad.  
+Add context menu to error item which shows the full exception.</Change>
+  <Change author="David Srbecký" date="01/15/2008">Catch evaluation errors are display them as special error node.</Change>
+  <Change author="David Srbecký" date="01/15/2008">Rename ExpressionNode to ValueNode to emphasise that the node is immutable.  The expression is now evaluated before the node's constructor.</Change>
+  <Change author="David Srbecký" date="01/15/2008">Fixed array access.</Change>
+  <Change author="David Srbecký" date="01/15/2008">Values store expression which can be used to re-obtain the value.  
+Values do not sore names; the name is inferred from the expression.</Change>
+  <Change author="David Srbecký" date="01/15/2008">Parser and Expression nodes for very simple expressions (in form "Identifier.Member.Member").  
+Re-enabled debugger tooltips.</Change>
+  <Change author="David Srbecký" date="01/15/2008">Updating DynamicTreeDebuggerRow adapter.  
+Fixed disappearing plus for TreeViewNode.</Change>
+  <Change author="David Srbecký" date="01/14/2008">Bug fix:  Consider that the process may be resumed in the OnDebuggeeStateChanged event</Change>
+  <Change author="David Srbecký" date="01/14/2008">Abort refresh of local variables if debuggee is running</Change>
+  <Change author="David Srbecký" date="01/14/2008">MethodInfo instances are unique.  Added a test for it.</Change>
+  <Change author="David Srbecký" date="01/14/2008">Cache all queries for some set of type members</Change>
+  <Change author="David Srbecký" date="01/14/2008">Removed walk-arounds left over from the last tree control.</Change>
+  <Change author="David Srbecký" date="01/14/2008">Removed ExpressionEvaluateException.  Use GetValueException instead.</Change>
+  <Change author="David Srbecký" date="01/14/2008">Any null value is assumed to be of type System.Object.  
+Fixed getting type of values type (struct)</Change>
+  <Change author="David Srbecký" date="01/14/2008">Added a test for value type (struct)</Change>
+  <Change author="David Srbecký" date="01/14/2008">Extended a test for function arguments.</Change>
+  <Change author="David Srbecký" date="01/14/2008">Tests and tested programs can be defined in the same file.
+Added a template for debugger tests.  
+Convenience environment variable for updating XML output.</Change>
+  <Change author="David Srbecký" date="01/13/2008">Methods for running all debugger tests from one assembly - not used now</Change>
+  <Change author="Daniel Grunwald" date="01/13/2008">Prevent type inference cycles (e.g. "var a = a;") from causing a StackOverflowException.</Change>
+  <Change author="Daniel Grunwald" date="01/13/2008">Fixed resolving when a generic class derived from a non-generic class with the same name.
+Fixed resolving when a class had the same name as its containing namespace.</Change>
+  <Change author="Daniel Grunwald" date="01/13/2008">Fixed code completion after new-expression "new SomeClass().Member".
+Fixed overload resolution to try overloads in base class if no overload in the derived class is applicable.</Change>
+  <Change author="David Srbecký" date="01/13/2008">Added more error checking for objects.  Better support for getting values of static members.</Change>
+  <Change author="David Srbecký" date="01/13/2008">Test fix - exception throwing order changed in last commit</Change>
+  <Change author="David Srbecký" date="01/13/2008">CannotGetValueException renamed to GetValueException</Change>
+  <Change author="David Srbecký" date="01/13/2008">Polishing the expressions</Change>
+  <Change author="Daniel Grunwald" date="01/12/2008">Fixed DefaultProjectContent.GetClass implementation: inner classes nested in other inner classes were not found.
+NRefactoryResolver: Fixed attribute constructor lookup. Resolve attribute arguments in the context of the decorated class.</Change>
+  <Change author="Daniel Grunwald" date="01/12/2008">Fixed code completion in indexer setters and explicit event implementations.
+Make overload resolution aware of "ref" and "out" parameters.</Change>
+  <Change author="Matt Ward" date="01/12/2008">Temporarily disabled SharpServerTools in the installer since its files are missing after a build.</Change>
+  <Change author="Daniel Grunwald" date="01/12/2008">NRefactoryResolver rewrite: remove code duplication between NRefactoryResolver and TypeVisitor. Changed handling of method groups to follow C# specification more closely.
+This fixes several bugs in overload resolution.</Change>
+  <Change author="Dickon Field" date="01/11/2008">resolved runtime issue in ServerTools - now runs, not complete</Change>
+  <Change author="Dickon Field" date="01/11/2008">Fixed the build of this project to copy addin file to output dir correctly - still breaks at runtime though - sorry!</Change>
+  <Change author="Dickon Field" date="01/11/2008">Removed the reference to Todo.cs from proj file</Change>
+  <Change author="David Srbecký" date="01/11/2008">Custom Abstract Syntax Tree for debugger expression independent of NRefactory.</Change>
+  <Change author="Dickon Field" date="01/11/2008">Started new style Server control, incorporating dbtool</Change>
+  <Change author="David Srbecký" date="01/11/2008">Added missing SVN keyword Revision to files</Change>
+  <Change author="Daniel Grunwald" date="01/11/2008">Some minor bug fixes, changed copyright date from 2007 to 2008.</Change>
+  <Change author="David Srbecký" date="01/11/2008">Do not add 'this' variable for static methods</Change>
+  <Change author="David Srbecký" date="01/11/2008">Abort variable refresh if debuggee is stepped</Change>
+  <Change author="Matt Ward" date="01/10/2008">NUnit.Framework.dll and NUnit.Core.dll no longer registered in GAC by the installer. This makes the installer consistent with the latest NUnit installer and fixes the problem where NUnit-Console cannot find log4net when running unit tests.</Change>
+  <Change author="David Srbecký" date="01/10/2008">Forum-20456 (solodev): Only non-expired StackFrame can be selected.</Change>
+  <Change author="David Srbecký" date="01/09/2008">Fixed LocalVariablesPas updating.  
+Less debug output to the console.</Change>
+  <Change author="David Srbecký" date="01/09/2008">If can not get managed version of executable, just use the default.</Change>
+  <Change author="David Srbecký" date="01/09/2008">Removed lifetime tracking of StackFrame.  It was quite expensive and it is not necessary for the expression-based variable model.</Change>
+  <Change author="David Srbecký" date="01/09/2008">Updated ClassEditor to new TreeView</Change>
+  <Change author="David Srbecký" date="01/09/2008">Updating Local Variables Pad to work with the new TreeView</Change>
+  <Change author="David Srbecký" date="01/09/2008">Custom modifications of the TreeView</Change>
+  <Change author="David Srbecký" date="01/09/2008">Updated to TreeViewAdv control 1.6.1.0</Change>
+  <Change author="David Srbecký" date="01/09/2008">Updated test</Change>
+  <Change author="Daniel Grunwald" date="01/09/2008">Fixed forum-7193: CSharpOutputVisitor bugs</Change>
+  <Change author="David Srbecký" date="01/08/2008">Show 'Private members' and similar nodes only if they are not empty.  
+Changed the semantics of BindingFlags - if no demands are specified, it implicitly means 'all' rather then 'none'.</Change>
+  <Change author="David Srbecký" date="01/08/2008">Small bugfix: Update the Local Variables pad when stepping</Change>
+  <Change author="David Srbecký" date="01/08/2008">Removed the caches in StackFrame - Values can not be cached now since they have much shorter lifespan</Change>
+  <Change author="David Srbecký" date="01/08/2008">Updated DynamicTreeDebuggerRow adapter to the new model.</Change>
+  <Change author="Daniel Grunwald" date="01/08/2008">Fixed forum-7172: NullReferenceException in C# parser when "fixed" keyword was used incorrectly.</Change>
+  <Change author="Daniel Grunwald" date="01/08/2008">Fixed forum-7126: Template RunCommand's only work on new solutions
+Forum-7191: When NSvn.Client initialization fails, disable project browser overlays.
+Exception handler in ParserService.ParserFile: show the name of the file that caused the exception.
+AsynchronousAdvancedHighlighter: do not try to highlight deleted lines. This should fix the bug reported in forum-7175.</Change>
+  <Change author="David Srbecký" date="01/08/2008">Updated TreeViewNode adapter to the new model.  
+The pad is progressively updated using the same method as before - Application.DoEvents() is called periodically so that repaint events are invoked.  I still need to put is checks so that press of Stepping command terminates the update. </Change>
+  <Change author="David Srbecký" date="01/05/2008">Completely rewritten the variable model for Local Variables Pad and for the debugger tooltips.  
+Previously the nodes wrapped debugger values - any requests were redirected to the underling value.
+The nodes are now based on Expressions and act as dum data storage.  When node is created the expression is evaluated and the properties (Image, Name, Text, Type) are stored locally in the node.  The node is immutable so its content can not be changed - the GUI need to create a fresh node.  This implies that the expression is evaluated only once - when the node is created.
+A node can have child nodes.  The child nodes are created on-demand using enumerators.  This is desirable since creation of node involves evaluation of expression.  It also prevents infinite recursion.</Change>
+  <Change author="Matt Ward" date="01/05/2008">Updated to NUnit 2.4.6. The Unit Testing addin now uses the nunit-console's new /run command line parameter introduced in NUnit 2.4.6. This can be used to execute a test method, class or namespace.</Change>
+  <Change author="David Srbecký" date="01/04/2008">Initial implementation of expression evaluator</Change>
+  <Change author="David Srbecký" date="01/04/2008">Creation of expression does not evaluate the expression.</Change>
+  <Change author="David Srbecký" date="01/04/2008">Support for array lower bounds</Change>
+  <Change author="David Srbecký" date="01/03/2008">Added code for creating expressions</Change>
+  <Change author="Matt Ward" date="01/02/2008">Updated the WixBinding and SharpDevelop's installer to use WiX 3.0.3621.0</Change>
+  <Change author="David Srbecký" date="01/02/2008">Rename Function to StackFrame</Change>
+  <Change author="David Srbecký" date="01/02/2008">Moved part of code from Function to MethodInfo</Change>
+  <Change author="David Srbecký" date="01/02/2008">Tests for the last revision generic</Change>
+  <Change author="David Srbecký" date="01/02/2008">Create generic ICorDebugType from ICorDebugClass and type arguments.  
+We can not get DebugType for a Function</Change>
+  <Change author="David Srbecký" date="01/02/2008">Updated tests</Change>
+  <Change author="David Srbecký" date="01/02/2008">Skeleton of the Expression classes</Change>
+  <Change author="David Srbecký" date="01/02/2008">Removed the delegate-based persistence framework (will be replaced by expressions)</Change>
+  <Change author="David Srbecký" date="01/02/2008">Bad idea - reverting last two revisions.  At least for the time being.</Change>
+  <Change author="David Srbecký" date="01/01/2008">Preparing to remove ValueCollection</Change>
+  <Change author="David Srbecký" date="01/01/2008">Values have no names.  Names will be part of higher level abstraction.</Change>
+  <Change author="David Srbecký" date="01/01/2008">Removed some unused references.  
+Removed/disabled all Expression code.  It will return as higher level abstraction layer.</Change>
+  <Change author="David Srbecký" date="01/01/2008">Removed expiry propagation for Values. 
+
+It seems there were only two cases:
+ - Values expiring when stack frame exits
+ - Values expiring immediately when debuggee is resumed
+
+These precisely correspond to these two cases: (respectively)
+ - Values that have closed expression
+ - Values that do not have closed expression
+
+
+The new behaviour is that every value expires when debuggee is resumed.
+
+Work in progress...</Change>
+  <Change author="David Srbecký" date="01/01/2008">Removed the IMutable interface which propagated notifications about value changes.
+
+It do not provide 100% guarantee of notification.  For example:
+ - If the user obtained a reference to same value from two places (eg classA.someInt and classB.someInt where classA == classB) then change in one place did not trigger notification in the other.  
+ - Changing of the backing value for a property would not change the property.
+
+Idea for better system (if it is needed in the future):
+Each value refers to some memory range (eg reference it is 4 byte pointer in memory;  string is value on heap).
+Whenever a debugger is resumed all bets are off and anything could have changed.  
+Other then that value changes if and only if its memory range is modified by the user.
+Expression as a whole changes whenever any of the values involved changes;  if method call or property is involved then the whole expression may change when any memory is modified.</Change>
+  <Change author="David Srbecký" date="01/01/2008">Added 'Expressions' test</Change>
+  <Change author="David Srbecký" date="01/01/2008">Build compound expressions (eg "localVar.field[5]")</Change>
+  <Change author="David Srbecký" date="01/01/2008">Moved code to the Value class:
+ - Value.GetFieldValue
+ - Value.GetPropertyValue
+ - Value.SetPropertyValue
+ - Value.InvokeMethod
+ - Value.AsyncInvokeMethod</Change>
+  <Change author="David Srbecký" date="01/01/2008">Removed file Value.Common.cs</Change>
+  <Change author="David Srbecký" date="01/01/2008">Added specific Ast Expression so that more information can be preserved.  
+Renamed Testing attribute SummaryOnly to ToStringOnly  </Change>
+  <Change author="David Srbecký" date="12/31/2007">Update Debugger.Tests</Change>
+  <Change author="David Srbecký" date="12/31/2007">Removed classes ArrayElement, LocalVariable, MemberValue and MethodArgument.  They added no functionality to the Value class except for specifying how the Value was created. </Change>
+  <Change author="David Srbecký" date="12/31/2007">Rename files (Value-*.cs =&gt; Value.*.cs)</Change>
+  <Change author="David Srbecký" date="12/31/2007">Removed the NamedValue class.  All values now have name.</Change>
+  <Change author="David Srbecký" date="12/31/2007">Added an Expression class which will be used to store AST expression for each value</Change>
+  <Change author="David Srbecký" date="12/31/2007">Re-enabled debugger</Change>
+  <Change author="Matt Ward" date="12/31/2007">XML editor now uses the text editor's CodeCompletionWindow instead of its own custom version.</Change>
+  <Change author="Matt Ward" date="12/26/2007">Added pre-build event to run UpdateAssemblyInfo.exe to Python.Build.Tasks and ClassDiagram projects.</Change>
+  <Change author="Matt Ward" date="12/26/2007">Removed NAnt file template from installer.</Change>
+  <Change author="Matt Ward" date="12/26/2007">Added NAnt addin sample.</Change>
+  <Change author="Matt Ward" date="12/18/2007">The SdiWorkspaceLayout now checks that the DefaultWorkbench ToolBars property is not null before adding controls to the toolbar panel. The ToolBars property is null if nothing is specified in the .addin file under the path /SharpDevelop/Workbench/ToolBar</Change>
+  <Change author="Matt Ward" date="12/18/2007">Updated samples so they work with SharpDevelop 3.0</Change>
+  <Change author="Matt Ward" date="12/16/2007">Moved Mono addin to samples and added support for Mono's new VB.NET compiler Vbnc.</Change>
+  <Change author="Matt Ward" date="12/03/2007">Added IronPython addin with support for IronPython 1.1</Change>
+  <Change author="Matt Ward" date="12/02/2007">Fixed problems with the XML Editor's XmlParser class preventing the XamlExpressionFinder from correctly identifying an attribute or element in a different namespace. The GetActiveElementStartPath, GetParentElementPath and GetQualifiedAttributeName all now correctly determine the namespace of the element or attribute if the xml has mixed namespaces.</Change>
+  <Change author="Daniel Grunwald" date="11/25/2007">Layout configuration: Make "&lt;Reset to defaults&gt;" switch back to the Default layout.
+Do not store active layout, always start with Default. (fixes SD2-1268)
+Switch layout before starting the debugger (removes workaround for SD2-1325)
+Add LINQ support to VBNetOutputVisitor (not tested to generate valid code, but better than "throw new NotImplementedException();")</Change>
+  <Change author="Matt Ward" date="11/25/2007">The CodeCoverageMethod.GetChildNamespaces method now correctly identifies the child namespaces when there are two that start the same and match up to just before the dot character.</Change>
+  <Change author="Matt Ward" date="11/25/2007">Modifed nunit-console: Release version now being built. Changed the default behaviour of nunit-console where if a test fixture is specified on the command line then no other tests in the assembly are loaded. The default behaviour meant that a SetUpFixture class would not be run breaking tests that rely on it.</Change>
+  <Change author="Matt Ward" date="11/25/2007">Removed unused files from setup and code coverage addin.</Change>
+  <Change author="Matt Ward" date="11/25/2007">Updated installer: Removed nunit-console components used to target .NET 1.1. Added log4net component for NUnit 2.4.5.</Change>
+  <Change author="Matt Ward" date="11/25/2007">Updated to NUnit 2.4.5. Removed support for running unit tests against .NET 1.1.</Change>
+  <Change author="Daniel Grunwald" date="11/19/2007">Suppress warning message when SideBarConfig.xml does not exist (on first start after installation).
+Disable Debugger AddIn: it is WAY too unstable to be useful.</Change>
+  <Change author="Matt Ward" date="11/19/2007">Changed CodeCoverage addin to use PartCover 2.2 instead of NCover.</Change>
+  <Change author="Daniel Grunwald" date="11/19/2007">Improved finding xml documentation (now supports redirections). Add support for compiling for Compact Framework 3.5.</Change>
+  <Change author="Matt Ward" date="11/04/2007">XmlView checks that the PrimaryFile is not null before MakeDirty is called in the DocumentChanged event handler. The text editor's filename is set to an empty string instead of null in the XslOutputView so the ParserService does not throw an ArgumentNullException when looking for a parser.</Change>
+  <Change author="Daniel Grunwald" date="11/03/2007">Fixed build.</Change>
+  <Change author="Daniel Grunwald" date="11/03/2007">Fixed forum-6858: Bug in New Project/New File Dialog: LastSelectedCategory is not saved correctly for sub-categories.</Change>
+  <Change author="Daniel Grunwald" date="11/03/2007">Allow choosing the target framework when creating a new project.</Change>
+  <Change author="Daniel Grunwald" date="10/31/2007">Fixed SD2-1379: When opening files, compile errors are not highlighted</Change>
+  <Change author="Daniel Grunwald" date="10/28/2007">Fixed rare deadlock between QuickClassBrowserPanel locking a CompoundClass and then doing SearchType requests on a project content; and the parser thread updating a project content and then locking a compound class.</Change>
+  <Change author="Daniel Grunwald" date="10/28/2007">Fixed tracking of current project: Improved finding of the first visible parent node of a project by not using lazy initialization for solution folder nodes. Do not set ProjectService.CurrentProject in SelectFile requests - when changing the active file, ProjectService.ActiveViewContentChanged already takes care of changing the current project.</Change>
+  <Change author="Daniel Grunwald" date="10/28/2007">Disable code-completion inside string literals.
+Fixed control size in HistoryViewDisplayBinding/InfoPanel.</Change>
+  <Change author="Daniel Grunwald" date="10/27/2007">Improve code completion after the "new" keyword.</Change>
+  <Change author="Daniel Grunwald" date="10/27/2007">Go back to DockingWindow mode. This seems to solve the issue that text editor tooltips were sometimes not visible anymore after a layout change.</Change>
+  <Change author="Daniel Grunwald" date="10/27/2007">Prevent crash in DockPanel.FocusManager.Activate when active pane was removed (e.g. the pad that was active when SharpDevelop was closed does not exist anymore after an AddIn was removed manually or SharpDevelop was updated)</Change>
+  <Change author="Daniel Grunwald" date="10/27/2007">Fixed code completion after string literals ("hello, world".Length), fixed code completion in object initializers that use binary operators in the value (new MyType { P1 = someValue + someOtherValue }).</Change>
+  <Change author="Daniel Grunwald" date="10/26/2007">Fixed build.</Change>
+  <Change author="Daniel Grunwald" date="10/26/2007">FxCop AddIn: allow suppressing assembly-wide messages (e.g. AssembliesShouldHaveValidStrongNames)</Change>
+  <Change author="Daniel Grunwald" date="10/26/2007">Make project conversion from MSBuild 2.0 to 3.5 explicit using a button in the project options.
+Remove .NET 1.x compilation support. Remove .NET CF 1.0 compilation support.
+Newly created projects for start as MSBuild 3.5 projects.</Change>
+  <Change author="Daniel Grunwald" date="10/25/2007">Fixed bug in text editor drag+drop that could cause an undo group to stay open.</Change>
+  <Change author="Daniel Grunwald" date="10/25/2007">Update to Boo 0.8.</Change>
+  <Change author="Christoph Wille" date="10/21/2007">Updated setup for SHFB 1.6</Change>
+  <Change author="Daniel Grunwald" date="10/21/2007">WinFormsUI/License.txt: disable Copy to Output Directory.
+Fixed a bug that could cause a file to be registered multiple times in the project content, showing all class members twice in the "quick class browser".</Change>
+  <Change author="Christoph Wille" date="10/21/2007">Updated tools.build to copy new directories of SHFB 1.6</Change>
+  <Change author="Christoph Wille" date="10/21/2007">SHFB 1.6.0.0
+
+http://www.codeplex.com/SHFB/Release/ProjectReleases.aspx?ReleaseId=5311</Change>
+  <Change author="Christoph Wille" date="10/21/2007">Remove old version of SHFB</Change>
+  <Change author="Daniel Grunwald" date="10/19/2007">Code completion: fixed some context detection bugs.</Change>
+  <Change author="Daniel Grunwald" date="10/19/2007">Disabled COM registration for MyMeta.
+Add logging for text editor's undo stack.
+C# parser: fixed [module: ..] attributes
+C# code completion: suggest "assembly", "module", etc. when typing an attribute.</Change>
+  <Change author="Daniel Grunwald" date="10/16/2007">Fixed two bugs:
+ - When there were a generic and a non-generic method with identical parameters (e.g. "object GetSomething()" and "T GetSomething&lt;T&gt;()" ), running find references on one of them returned results for both methods.
+ - Code completion was showing incorrect list for array initializers in field declarations ("static int[] field = { &lt;Ctrl+Space&gt; };")
+Improved GetHashCode + Equals code generator.</Change>
+  <Change author="Daniel Grunwald" date="10/14/2007">Fixed attribute completion.</Change>
+  <Change author="Daniel Grunwald" date="10/13/2007">Looks like I only committed the src folder in rev. 2714, here are the missing changes.</Change>
+  <Change author="Daniel Grunwald" date="10/13/2007">Fixed forum-19285: code-completion for nested inner classes</Change>
+  <Change author="Daniel Grunwald" date="10/12/2007">Add "Abort build" and "Set platform" commands to the "Build" menu.</Change>
+  <Change author="Daniel Grunwald" date="10/12/2007">Assign DomRegion to ExpressionResult for describing the exact location where the expression was found.
+NRefactoryResolver now assigns the correct positions to nodes parsed by ParseExpression. This fixes code-completion on parenthesized query expressions.</Change>
+  <Change author="Daniel Grunwald" date="10/12/2007">WorkbenchLayout: make the SharpDevelop main form structured similar to the DockPanelSuite sample application, use DockingMdi mode. This seems to solve some issues with the DockPanelSuite v2.1.</Change>
+  <Change author="Daniel Grunwald" date="10/11/2007">Do not show read-only value-type fields and properties in collection initializer completion.</Change>
+  <Change author="Daniel Grunwald" date="10/11/2007">Add code-completion support for object and collection initializers.</Change>
+  <Change author="Dickon Field" date="10/09/2007">Added MyMeta and ICSharpCode.DataTools libraries which are required by new version of DbTools plugin</Change>
   <Change author="Daniel Grunwald" date="10/07/2007">Update to Cecil 0.6.
 Fixed some bugs.
 C# parser: include position information for statements/expressions.</Change>
