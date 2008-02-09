@@ -408,7 +408,7 @@
 				<ComponentRef Id="SharpDevelopBuildPythonTargets"/>	
 			</Feature>
 			<Feature Id="SharpDevelopFileAssociations"
-			         Level="1"
+			         Level="2"
 			         AllowAdvertise="no"
 				     InstallDefault="local"
 			         Title="File Associations"
@@ -420,7 +420,7 @@
 				-->
 				<ComponentRef Id="DummyFileAssocationFeatureComponent"/>
 				<Feature Id="BooProjectFileAssociation"
-				         Level="1"
+				         Level="2"
 				         AllowAdvertise="no"
 				         InstallDefault="local"
 				         Title="Boo Projects (.booproj)"
@@ -428,7 +428,7 @@
 					<ComponentRef Id="BooProjectFileAssociation"/>
 				</Feature>
 				<Feature Id="CombineFileAssociation"
-				         Level="1"
+				         Level="2"
 				         AllowAdvertise="no"
 				         InstallDefault="local"
 				         Title="SharpDevelop 1.x Combines (.cmbx)"
@@ -436,7 +436,7 @@
 					<ComponentRef Id="SharpDevelopCombineFileAssociation"/>
 				</Feature>
 				<Feature Id="CSharpFileAssociation"
-				         Level="1"
+				         Level="2"
 				         AllowAdvertise="no"
 				         InstallDefault="local"
 				         Title="C# Files (.cs)"
@@ -444,7 +444,7 @@
 					<ComponentRef Id="CSharpFileAssociation"/>
 				</Feature>
 				<Feature Id="CSharpProjectFileAssociation"
-				         Level="1"
+				         Level="2"
 				         AllowAdvertise="no"
 				         InstallDefault="local"
 				         Title="C# Projects (.csproj)"
@@ -452,7 +452,7 @@
 					<ComponentRef Id="SharpDevelopCSharpProjectFileAssociation"/>
 				</Feature>
 				<Feature Id="PythonProjectFileAssociation"
-				         Level="1"
+				         Level="2"
 				         AllowAdvertise="no"
 				         InstallDefault="local"
 				         Title="Python Project Files (.pyproj)"
@@ -460,7 +460,7 @@
 					<ComponentRef Id="PythonProjectFileAssociation"/>
 				</Feature>
 				<Feature Id="SD11ProjectFileAssociation"
-				         Level="1"
+				         Level="2"
 				         AllowAdvertise="no"
 				         InstallDefault="local"
 				         Title="SharpDevelop 1.x Projects (.prjx)"
@@ -468,7 +468,7 @@
 					<ComponentRef Id="SharpDevelop11ProjectFileAssociation"/>
 				</Feature>
 				<Feature Id="ResxFileAssociation"
-				         Level="1"
+				         Level="2"
 				         AllowAdvertise="no"
 				         InstallDefault="local"
 				         Title="Resource Files (.resx)"
@@ -476,7 +476,7 @@
 					<ComponentRef Id="ResxFileAssociation"/>
 				</Feature>
 				<Feature Id="ResourcesFileAssociation"
-				         Level="1"
+				         Level="2"
 				         AllowAdvertise="no"
 				         InstallDefault="local"
 				         Title="Binary Resource Files (.resources)"
@@ -484,7 +484,7 @@
 					<ComponentRef Id="ResourcesFileAssociation"/>
 				</Feature>
 				<Feature Id="AddInFileAssociation"
-				         Level="1"
+				         Level="2"
 				         AllowAdvertise="no"
 				         InstallDefault="local"
 				         Title="SharpDevelop AddIn Installation Packages (.sdaddin)"
@@ -492,7 +492,7 @@
 					<ComponentRef Id="SharpDevelopAddInFileAssociation"/>
 				</Feature>
 				<Feature Id="SolutionFileAssociation"
-				         Level="1"
+				         Level="2"
 				         AllowAdvertise="no"
 				         InstallDefault="local"
 				         Title="SharpDevelop Solutions (.sln)"
@@ -500,7 +500,7 @@
 					<ComponentRef Id="SharpDevelopSolutionFileAssociation"/>
 				</Feature>
 				<Feature Id="VBFileAssociation"
-				         Level="1"
+				         Level="2"
 				         AllowAdvertise="no"
 				         InstallDefault="local"
 				         Title="VB.NET Files (.vb)"
@@ -508,7 +508,7 @@
 					<ComponentRef Id="VBFileAssociation"/>
 				</Feature>
 				<Feature Id="VBProjectFileAssociation"
-				         Level="1"
+				         Level="2"
 				         AllowAdvertise="no"
 				         InstallDefault="local"
 				         Title="VB.NET Projects (.vbproj)"
@@ -516,7 +516,7 @@
 					<ComponentRef Id="SharpDevelopVBProjectFileAssociation"/>
 				</Feature>
 				<Feature Id="WixProjectFileAssociation"
-				         Level="1"
+				         Level="2"
 				         AllowAdvertise="no"
 				         InstallDefault="local"
 				         Title="SharpDevelop WiX Projects (.wixproj)"
@@ -524,7 +524,7 @@
 					<ComponentRef Id="SharpDevelopWixProjectFileAssociation"/>
 				</Feature>
 				<Feature Id="XmlFormFileAssociation"
-				         Level="1"
+				         Level="2"
 				         AllowAdvertise="no"
 				         InstallDefault="local"
 				         Title="SharpDevelop XML Forms (.xfrm)"
@@ -532,7 +532,7 @@
 					<ComponentRef Id="SharpDevelopXmlFormFileAssociation"/>
 				</Feature>
 				<Feature Id="XmlFileAssociation"
-				         Level="1"
+				         Level="2"
 				         AllowAdvertise="no"
 				         InstallDefault="local"
 				         Title="XML Files (.xml)"
@@ -547,7 +547,7 @@
 		<UIRef Id="WixUI_FeatureTree"/>
 		
 		<!--
-			If a newer version of SharpDevelop 2.1 is installed show an
+			If a newer version of SharpDevelop 3.0 is installed show an
 			error message.
 	
 			This message is not displayed immediately, the FindRelatedProducts 
