@@ -303,6 +303,14 @@ namespace ICSharpCode.UnitTesting
 		{
 			if (results.ErrorCount == 0 && IsRunningTest) {	
 				UnitTestApplicationStartHelper helper = new UnitTestApplicationStartHelper();
+				
+				UnitTestingOptions options = new UnitTestingOptions();
+				helper.NoThread = options.NoThread;
+				helper.NoLogo = options.NoLogo;
+				helper.NoDots = options.NoDots;
+				helper.Labels = options.Labels;
+				helper.ShadowCopy = !options.NoShadow;
+				
 				helper.Initialize(project, namespaceFilter, fixture, test);
 				helper.Results = Path.GetTempFileName();
 				

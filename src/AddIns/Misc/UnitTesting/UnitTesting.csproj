@@ -56,6 +56,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="PostBuildEvent.proj" />
+    <EmbeddedResource Include="Resources\UnitTestingOptionsPanel.xfrm" />
     <None Include="UnitTesting.addin">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
@@ -82,6 +83,8 @@
     <Compile Include="Src\TestNamespaceTreeNode.cs" />
     <Compile Include="Src\TestClassTreeNode.cs" />
     <Compile Include="Src\TestMethodTreeNode.cs" />
+    <Compile Include="Src\UnitTestingOptions.cs" />
+    <Compile Include="Src\UnitTestingOptionsPanel.cs" />
     <Compile Include="Src\UnitTestsPad.cs" />
     <EmbeddedResource Include="Resources\Red.png" />
     <EmbeddedResource Include="Resources\Green.png" />

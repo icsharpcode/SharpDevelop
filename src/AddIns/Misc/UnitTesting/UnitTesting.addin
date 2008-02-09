@@ -160,4 +160,11 @@
 		          label = "${res:MainWindow.Windows.SearchResultPanel.CollapseAll.ToolTip}"
 		          class = "ICSharpCode.UnitTesting.CollapseAllCommand"/>-->
 	</Path>
+
+	<!-- Options panel -->
+	<Path name="/SharpDevelop/Dialogs/OptionsDialog/ToolsOptions">
+		<DialogPanel id="UnitTestingOptionsPanel"
+		       	     label="${res:ICSharpCode.NUnitPad.NUnitPadContent.PadName}"
+		       	     class="ICSharpCode.UnitTesting.UnitTestingOptionsPanel"/>
+	</Path>
 </AddIn>

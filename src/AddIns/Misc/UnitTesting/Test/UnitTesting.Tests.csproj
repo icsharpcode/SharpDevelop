@@ -65,8 +65,11 @@
     <Compile Include="Tree\TreeNodeContextMenuTestFixture.cs" />
     <Compile Include="Tree\TreeNodeSortingTestFixture.cs" />
     <Compile Include="Tree\OpenUnitTestsPadWithSolutionOpenTestFixture.cs" />
+    <Compile Include="UnitTestingOptionsPanelTestFixture.cs" />
+    <Compile Include="UnitTestingOptionsTestFixture.cs" />
     <Compile Include="Utils\DerivedTestProjectTreeNode.cs" />
     <Compile Include="Utils\DerivedTestTreeView.cs" />
+    <Compile Include="Utils\DerivedUnitTestingOptionsPanel.cs" />
     <Compile Include="Utils\DerivedUnitTestsPad.cs" />
     <Compile Include="Utils\MockTestCase.cs" />
     <Compile Include="Utils\MockTestFixture.cs" />

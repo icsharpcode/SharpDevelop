@@ -49,15 +49,25 @@ namespace ICSharpCode.UnitTesting
 		public bool ShadowCopy = true;
 		
 		/// <summary>
-		/// Run tests on separate thread. Default = false.
+		/// Disables the use of a separate thread to run tests on separate thread. Default = false;
 		/// </summary>
-		public bool Threaded = false;
+		public bool NoThread = false;
 		
 		/// <summary>
 		/// Use /nologo directive.
 		/// </summary>
 		public bool NoLogo = false;
 		
+		/// <summary>
+		/// Use /labels directive.
+		/// </summary>
+		public bool Labels = false;		
+		
+		/// <summary>
+		/// Use /nodots directive.
+		/// </summary>
+		public bool NoDots = false;		
+
 		/// <summary>
 		/// File to write xml output to. Default = null.
 		/// </summary>
@@ -142,10 +152,14 @@ namespace ICSharpCode.UnitTesting
 			}
 			if (!ShadowCopy)
 				b.Append(" /noshadow");
-			if (Threaded)
-				b.Append(" /thread");
+			if (NoThread)
+				b.Append(" /nothread");
 			if (NoLogo)
 				b.Append(" /nologo");
+			if (Labels) 
+				b.Append(" /labels");
+			if (NoDots) 
+				b.Append(" /nodots");
 			if (XmlOutputFile != null) {
 				b.Append(" /xml=\"");
 				b.Append(XmlOutputFile);

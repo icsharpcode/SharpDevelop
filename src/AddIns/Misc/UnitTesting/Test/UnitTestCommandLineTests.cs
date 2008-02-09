@@ -65,14 +65,38 @@ namespace UnitTesting.Tests
 		}
 		
 		[Test]
-		public void Threaded()
+		public void NoThread()
 		{
 			helper.Initialize(project, null, null);
 			helper.NoLogo = false;
 			helper.ShadowCopy = true;
-			helper.Threaded = true;
+			helper.NoThread = true;
 			
-			string expectedCommandLine = "\"C:\\Projects\\MyTests\\MyTests.dll\" /thread";
+			string expectedCommandLine = "\"C:\\Projects\\MyTests\\MyTests.dll\" /nothread";
+			Assert.AreEqual(expectedCommandLine, helper.GetArguments());
+		}
+		
+		[Test]
+		public void NoDots()
+		{
+			helper.Initialize(project, null, null);
+			helper.NoLogo = false;
+			helper.ShadowCopy = true;
+			helper.NoDots = true;
+			
+			string expectedCommandLine = "\"C:\\Projects\\MyTests\\MyTests.dll\" /nodots";
+			Assert.AreEqual(expectedCommandLine, helper.GetArguments());
+		}		
+
+		[Test]
+		public void Labels()
+		{
+			helper.Initialize(project, null, null);
+			helper.NoLogo = false;
+			helper.ShadowCopy = true;
+			helper.Labels = true;
+			
+			string expectedCommandLine = "\"C:\\Projects\\MyTests\\MyTests.dll\" /labels";
 			Assert.AreEqual(expectedCommandLine, helper.GetArguments());
 		}
 		
