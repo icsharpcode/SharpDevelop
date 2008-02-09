@@ -61,7 +61,7 @@ namespace NRefactoryToBooConverter.Tests
 			TestExpr("var as List<T>[,]", "(var as (List[of T], 2))");
 		}
 		
-		[Test, Ignore("Boo uses BinaryOperatorExpression for isa")]
+		[Test]
 		public void TypeTestExpressionComplexType()
 		{
 			TestExpr("var is List<T>[,]", "(var isa (List[of T], 2))");

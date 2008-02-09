@@ -143,7 +143,7 @@ namespace NRefactoryToBooConverter.Tests
 		public void TryCatch()
 		{
 			TestStatement("try { Action(); } catch { DisplayError(); }",
-			              "try:\n\tAction()\nexcept:\n\tDisplayError()");
+			              "try:\n\tAction()\nexcept :\n\tDisplayError()");
 		}
 		
 		[Test]

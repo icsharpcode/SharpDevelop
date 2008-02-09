@@ -141,7 +141,7 @@ namespace NRefactoryToBooConverter.Tests
 		}
 		
 		[Test]
-		[Ignore("Fix requires change to Boo.Lang.Compiler.dll")]
+//		[Ignore("Fix requires change to Boo.Lang.Compiler.dll")]
 		public void AbstractMethodInInterface()
 		{
 			TestInInterface("void Run();", "def Run() as System.Void");
@@ -241,7 +241,7 @@ namespace NRefactoryToBooConverter.Tests
 		}
 		
 		[Test]
-		[Ignore("Fix requires change to Boo.Lang.Compiler.dll")]
+//		[Ignore("Fix requires change to Boo.Lang.Compiler.dll")]
 		public void AbstractPropertyInInterface()
 		{
 			TestInInterface("string Prop { get; }", "Prop as System.String:\n\tget");
@@ -285,7 +285,7 @@ namespace NRefactoryToBooConverter.Tests
 		}
 		
 		[Test]
-		[Ignore("Fix requires change to Boo.Lang.Compiler.dll")]
+//		[Ignore("Fix requires change to Boo.Lang.Compiler.dll")]
 		public void EventInInterface()
 		{
 			TestInInterface("event EventHandler Closed;", "event Closed as EventHandler");
