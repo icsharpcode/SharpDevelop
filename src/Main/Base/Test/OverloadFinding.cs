@@ -47,6 +47,18 @@ namespace ICSharpCode.SharpDevelop.Tests
 			Test("(long.MaxValue)", 0, overloads);
 		}
 		
+		[Test] public void NullForReferenceTypes()
+		{
+			string[] overloads = {"(int a)", "(string a)"};
+			Test("(null)", 1, overloads);
+		}
+		
+		[Test] public void NullForNullableType()
+		{
+			string[] overloads = {"(int a)", "(int? a)"};
+			Test("(null)", 1, overloads);
+		}
+		
 		NRefactoryResolverTests nrrt = new NRefactoryResolverTests();
 		
 		void Test(string callExpr, int num, params string[] signatures)

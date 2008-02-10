@@ -691,8 +691,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public static bool IsApplicable(IReturnType argument, IReturnType expected)
 		{
-			if (argument == null || argument == NullReturnType.Instance)
-				return true; // "null" can be passed for any argument
 			return ConversionExistsInternal(argument, expected, true);
 		}
 		#endregion
@@ -747,6 +745,20 @@ namespace ICSharpCode.SharpDevelop.Dom
 			
 			if (toIsDefault && to.FullyQualifiedName == "System.Object") {
 				return true; // from any type to object
+			}
+			if (from == NullReturnType.Instance) {
+				IClass toClass = to.GetUnderlyingClass();
+				if (toClass != null) {
+					switch (toClass.ClassType) {
+						case ClassType.Class:
+						case ClassType.Delegate:
+						case ClassType.Interface:
+							return true;
+						case ClassType.Struct:
+							return toClass.FullyQualifiedName == "System.Nullable";
+					}
+				}
+				return false;
 			}
 			
 			if ((toIsDefault || to.IsConstructedReturnType || to.IsGenericReturnType)

@@ -154,6 +154,24 @@ namespace ICSharpCode.SharpDevelop.Tests
 		}
 		
 		[Test]
+		public void GetCommonTypeOfStringAndNull()
+		{
+			IReturnType res = MemberLookupHelper.GetCommonType(msc,
+			                                                   msc.GetClass("System.String", 0).DefaultReturnType,
+			                                                   NullReturnType.Instance);
+			Assert.AreEqual("System.String", res.FullyQualifiedName);
+		}
+		
+		[Test]
+		public void GetCommonTypeOfNullAndString()
+		{
+			IReturnType res = MemberLookupHelper.GetCommonType(msc,
+			                                                   NullReturnType.Instance,
+			                                                   msc.GetClass("System.String", 0).DefaultReturnType);
+			Assert.AreEqual("System.String", res.FullyQualifiedName);
+		}
+		
+		[Test]
 		public void GetTypeInheritanceTreeOfClassDerivingFromListOfString()
 		{
 			List<string> results = new List<IReturnType>(
