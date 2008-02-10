@@ -219,6 +219,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (!Controls.Contains(propertyGrid)) {
 				this.SuspendLayout();
 				propertyGrid.Location = new Point(Width - GridMargin, GridMargin);
+				propertyGrid.Anchor = AnchorStyles.Top | AnchorStyles.Right | AnchorStyles.Bottom;
 				localizedTypeDescriptor.Properties.Clear();
 				foreach (TemplateProperty property in SelectedTemplate.Properties) {
 					LocalizedProperty localizedProperty;
@@ -247,6 +248,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 							}
 							StringParser.Properties["Properties." + localizedProperty.Name] = defVal;
 							localizedProperty.DefaultValue = Boolean.Parse(defVal);
+						} else {
+							string defVal = property.DefaultValue == null ? String.Empty : property.DefaultValue.ToString();
+							StringParser.Properties["Properties." + localizedProperty.Name] = defVal;
+							localizedProperty.DefaultValue = defVal;			
 						}
 					}
 					localizedProperty.LocalizedName = property.LocalizedName;
