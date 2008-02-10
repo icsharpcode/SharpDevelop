@@ -254,9 +254,27 @@ namespace ICSharpCode.SharpDevelop.Widgets.TreeGrid
 			}
 		}
 		
+		bool inOnPaint;
+		
 		protected override void OnPaint(PaintEventArgs e)
 		{
-			//Debug.WriteLine("OnPaint");
+			if (inOnPaint) {
+				Debug.WriteLine("Prevent nested OnPaint call");
+				base.OnPaint(e);
+				return;
+			}
+			inOnPaint = true;
+			try {
+				DoPaint(e);
+				base.OnPaint(e);
+			} finally {
+				inOnPaint = false;
+			}
+		}
+		
+		void DoPaint(PaintEventArgs e)
+		{
+			Debug.WriteLine("DynamicList.DoPaint");
 			Graphics g = e.Graphics;
 			allowedControls.Clear();
 			
@@ -337,13 +355,12 @@ namespace ICSharpCode.SharpDevelop.Widgets.TreeGrid
 					removedControls.Add(ctl);
 			}
 			foreach (Control ctl in removedControls) {
-				Debug.WriteLine("Removing control");
+				Debug.WriteLine("DynamicList Removing control");
 				Controls.Remove(ctl);
-				Debug.WriteLine("Control removed");
+				Debug.WriteLine("DynamicList Control removed");
 			}
 			allowedControls.Clear();
 			removedControls.Clear();
-			base.OnPaint(e);
 		}
 		
 		/// <summary>
