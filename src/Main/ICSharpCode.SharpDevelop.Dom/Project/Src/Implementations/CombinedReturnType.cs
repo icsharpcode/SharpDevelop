@@ -11,7 +11,7 @@ using System.Collections.Generic;
 namespace ICSharpCode.SharpDevelop.Dom
 {
 	/// <summary>
-	/// Combines multiple return types for use in contraints.
+	/// Combines multiple return types for use in constraints.
 	/// </summary>
 	public sealed class CombinedReturnType : AbstractReturnType
 	{

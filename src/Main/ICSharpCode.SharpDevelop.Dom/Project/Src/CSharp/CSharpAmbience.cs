@@ -382,7 +382,7 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 				builder.Append(GetModifier(m));
 			}
 			
-			if (m.ReturnType != null && ShowReturnType) {
+			if (!m.IsConstructor && m.ReturnType != null && ShowReturnType) {
 				builder.Append(Convert(m.ReturnType));
 				builder.Append(' ');
 			}

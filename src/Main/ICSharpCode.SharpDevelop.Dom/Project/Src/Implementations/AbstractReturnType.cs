@@ -41,10 +41,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public override int GetHashCode()
 		{
-			if (fullyQualifiedName == null)
-				return 0;
-			else
-				return fullyQualifiedName.GetHashCode();
+			return DefaultReturnType.GetHashCode(this);
 		}
 		
 		string fullyQualifiedName = null;

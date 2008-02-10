@@ -165,7 +165,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public virtual bool IsConstructor {
 			get {
-				return ReturnType == null || Name == "#ctor";
+				return Name == "#ctor";
 			}
 		}
 		

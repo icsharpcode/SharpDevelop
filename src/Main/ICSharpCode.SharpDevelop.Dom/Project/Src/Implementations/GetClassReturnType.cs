@@ -39,20 +39,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public override bool Equals(IReturnType o)
-		{
-			IReturnType rt = o as IReturnType;
-			if (rt != null && rt.IsDefaultReturnType)
-				return DefaultReturnType.Equals(this, rt);
-			else
-				return false;
-		}
-		
-		public override int GetHashCode()
-		{
-			return content.GetHashCode() ^ fullName.GetHashCode() ^ (typeArgumentCount * 5);
-		}
-		
 		public override IReturnType BaseType {
 			get {
 				IClass c = content.GetClass(fullName, typeArgumentCount);

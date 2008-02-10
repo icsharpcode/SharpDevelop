@@ -125,6 +125,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return conversionFlags;
 			}
 			set {
+				CheckThread();
 				conversionFlags = value;
 			}
 		}

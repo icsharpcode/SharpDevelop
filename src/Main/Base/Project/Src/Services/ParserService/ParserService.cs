@@ -172,26 +172,32 @@ namespace ICSharpCode.SharpDevelop
 				}
 			}
 			WorkbenchSingleton.SafeThreadAsyncCall(ProjectService.ParserServiceCreatedProjectContents);
-			int workAmount = 0;
-			foreach (ParseProjectContent newContent in createdContents) {
-				if (abortLoadSolutionProjectsThread) return;
-				try {
-					newContent.Initialize1(progressMonitor);
-					workAmount += newContent.GetInitializationWorkAmount();
-				} catch (Exception e) {
-					MessageService.ShowError(e, "Error while initializing project references:" + newContent);
+			try {
+				progressMonitor.BeginTask("Loading references...", createdContents.Count, false);
+				int workAmount = 0;
+				for (int i = 0; i < createdContents.Count; i++) {
+					if (abortLoadSolutionProjectsThread) return;
+					ParseProjectContent newContent = createdContents[i];
+					progressMonitor.WorkDone = i;
+					try {
+						newContent.Initialize1(progressMonitor);
+						workAmount += newContent.GetInitializationWorkAmount();
+					} catch (Exception e) {
+						MessageService.ShowError(e, "Error while initializing project references:" + newContent);
+					}
 				}
-			}
-			progressMonitor.BeginTask("${res:ICSharpCode.SharpDevelop.Internal.ParserService.Parsing}...", workAmount, false);
-			foreach (ParseProjectContent newContent in createdContents) {
-				if (abortLoadSolutionProjectsThread) break;
-				try {
-					newContent.Initialize2(progressMonitor);
-				} catch (Exception e) {
-					MessageService.ShowError(e, "Error while initializing project contents:" + newContent);
+				progressMonitor.BeginTask("${res:ICSharpCode.SharpDevelop.Internal.ParserService.Parsing}...", workAmount, false);
+				foreach (ParseProjectContent newContent in createdContents) {
+					if (abortLoadSolutionProjectsThread) return;
+					try {
+						newContent.Initialize2(progressMonitor);
+					} catch (Exception e) {
+						MessageService.ShowError(e, "Error while initializing project contents:" + newContent);
+					}
 				}
+			} finally {
+				progressMonitor.Done();
 			}
-			progressMonitor.Done();
 		}
 		
 		static void InitAddedProject(object state)

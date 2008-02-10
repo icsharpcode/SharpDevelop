@@ -572,7 +572,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					ResolveResult rr = ResolveMember(tmp.DefaultReturnType, identifier,
 					                                 identifierExpression.TypeArguments,
 					                                 identifierExpression.Parent is InvocationExpression,
-					                                 false);
+					                                 false, null);
 					if (rr != null && rr.IsValid)
 						return rr;
 					// also try to resolve the member in outer classes
@@ -588,7 +588,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 							ResolveResult rr = ResolveMember(c.DefaultReturnType, identifier,
 							                                 identifierExpression.TypeArguments,
 							                                 identifierExpression.Parent is InvocationExpression,
-							                                 false);
+							                                 false, null);
 							if (rr != null && rr.IsValid)
 								return rr;
 						}
@@ -626,9 +626,9 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		#region ResolveMember
 		internal ResolveResult ResolveMember(IReturnType declaringType, string memberName,
 		                                     List<TypeReference> typeArguments, bool isInvocation,
-		                                     bool allowExtensionMethods)
+		                                     bool allowExtensionMethods, bool? isClassInInheritanceTree)
 		{
-			List<IList<IMember>> members = MemberLookupHelper.LookupMember(declaringType, memberName, callingClass, languageProperties, isInvocation);
+			List<IList<IMember>> members = MemberLookupHelper.LookupMember(declaringType, memberName, callingClass, languageProperties, isInvocation, isClassInInheritanceTree);
 			if (members != null && typeArguments != null && typeArguments.Count != 0) {
 				List<IReturnType> typeArgs = typeArguments.ConvertAll(r => TypeVisitor.CreateReturnType(r, this));
 				

@@ -48,16 +48,21 @@ namespace ICSharpCode.SharpDevelop
 			ProjectService.ProjectItemAdded   += OnProjectItemAdded;
 			ProjectService.ProjectItemRemoved += OnProjectItemRemoved;
 			UpdateDefaultImports(items);
-			progressMonitor.BeginTask("Resolving references for " + project.Name, 0, false);
+			// TODO: Translate me
+			progressMonitor.TaskName = "Resolving references for " + project.Name + "...";
 			project.ResolveAssemblyReferences();
-			progressMonitor.Done();
 			foreach (ProjectItem item in items) {
 				if (!initializing) return; // abort initialization
 				if (item.ItemType == ItemType.Reference
 				    || item.ItemType == ItemType.ProjectReference
 				    || item.ItemType == ItemType.COMReference)
 				{
-					AddReference(item as ReferenceProjectItem, false);
+					ReferenceProjectItem reference = item as ReferenceProjectItem;
+					if (reference != null) {
+						// TODO: Translate me
+						progressMonitor.TaskName = "Loading " + reference.ShortName + "...";
+						AddReference(reference, false);
+					}
 				}
 			}
 			UpdateReferenceInterDependencies();

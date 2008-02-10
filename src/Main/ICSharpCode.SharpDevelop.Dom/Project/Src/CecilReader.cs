@@ -338,7 +338,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 						}
 					}
 					
-					m.ReturnType = CreateType(this.ProjectContent, m, method.ReturnType.ReturnType);
+					if (method.IsConstructor)
+						m.ReturnType = this.DefaultReturnType;
+					else
+						m.ReturnType = CreateType(this.ProjectContent, m, method.ReturnType.ReturnType);
 					AddAttributes(CompilationUnit.ProjectContent, m.Attributes, method.CustomAttributes);
 					if (this.ClassType == ClassType.Interface) {
 						m.Modifiers = ModifierEnum.Public | ModifierEnum.Abstract;

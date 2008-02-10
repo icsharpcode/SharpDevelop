@@ -35,6 +35,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
+		public static int GetHashCode(IReturnType rt)
+		{
+			if (rt == null)
+				return 0;
+			return (rt.FullyQualifiedName ?? "").GetHashCode() ^ rt.TypeArgumentCount;
+		}
+		
 		IClass c;
 		
 		public DefaultReturnType(IClass c)

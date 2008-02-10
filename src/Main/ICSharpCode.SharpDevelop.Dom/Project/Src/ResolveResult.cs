@@ -705,6 +705,42 @@ namespace ICSharpCode.SharpDevelop.Dom
 	}
 	#endregion
 	
+	#region BaseResolveResult
+	/// <summary>
+	/// Is used for "base"/"MyBase" expression.
+	/// The completion list always shows protected members.
+	/// </summary>
+	public sealed class BaseResolveResult : ResolveResult
+	{
+		public BaseResolveResult(IClass callingClass, IMember callingMember, IReturnType baseClassType)
+			: base(callingClass, callingMember, baseClassType)
+		{
+		}
+		
+		public override ArrayList GetCompletionData(IProjectContent projectContent)
+		{
+			if (this.ResolvedType == null) return null;
+			ArrayList res = new ArrayList();
+			
+			foreach (IMember m in MemberLookupHelper.GetAccessibleMembers(this.ResolvedType, this.CallingClass, projectContent.Language, true)) {
+				if (projectContent.Language.ShowMember(m, false))
+					res.Add(m);
+			}
+			
+			if (this.CallingClass != null) {
+				AddExtensions(projectContent.Language, res, this.CallingClass, this.ResolvedType);
+			}
+			
+			return res;
+		}
+		
+		public override ResolveResult Clone()
+		{
+			return new BaseResolveResult(this.CallingClass, this.CallingMember, this.ResolvedType);
+		}
+	}
+	#endregion
+	
 	#region UnknownIdentifierResolveResult
 	public class UnknownIdentifierResolveResult : ResolveResult
 	{

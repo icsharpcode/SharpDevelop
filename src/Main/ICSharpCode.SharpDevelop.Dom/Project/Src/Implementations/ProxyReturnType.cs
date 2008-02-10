@@ -21,14 +21,17 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public sealed override bool Equals(object obj)
 		{
-			if (obj == this)
-				return true;
-			else
-				return Equals(obj as IReturnType);
+			return Equals(obj as IReturnType);
 		}
 		
 		public virtual bool Equals(IReturnType other)
 		{
+			// this check is necessary because the underlying Equals implementation
+			// expects to be able to retrieve the base type of "other" - which fails when
+			// this==other and therefore other.busy.
+			if (other == this)
+				return true;
+			
 			IReturnType baseType = BaseType;
 			bool tmp = (baseType != null && TryEnter()) ? baseType.Equals(other) : false;
 			busy = false;

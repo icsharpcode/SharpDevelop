@@ -278,6 +278,48 @@ interface IInterface2 {
 			ResolveResult result = Resolve(program, "new ThisClassDoesNotExist()", 3);
 			Assert.IsNull(result);
 		}
+
+		[Test]
+		public void OverriddenMethodCallTest()
+		{
+			string program = @"class A {
+	void Method() {
+		
+	}
+	
+	public abstract int GetRandomNumber();
+}
+class B : A {
+	public override int GetRandomNumber() {
+		return 4; // chosen by fair dice roll.
+		          // guaranteed to be random
+	}
+}
+";
+			MemberResolveResult result = Resolve<MemberResolveResult>(program, "new B().GetRandomNumber()", 3);
+			Assert.AreEqual("B.GetRandomNumber", result.ResolvedMember.FullyQualifiedName);
+		}
+		
+		[Test]
+		public void OverriddenMethodCallTest2()
+		{
+			string program = @"class A {
+	void Method() {
+		
+	}
+	
+	public abstract int GetRandomNumber(string a, A b);
+}
+class B : A {
+	public override int GetRandomNumber(string b, A a) {
+		return 4; // chosen by fair dice roll.
+		          // guaranteed to be random
+	}
+}
+";
+			MemberResolveResult result = Resolve<MemberResolveResult>(program, "new B().GetRandomNumber(\"x\", this)", 3);
+			Assert.AreEqual("B.GetRandomNumber", result.ResolvedMember.FullyQualifiedName);
+		}
 		
 		[Test]
 		public void MethodCallTest()
@@ -1039,7 +1081,7 @@ End Class
 			Assert.AreEqual("B", result.ResolvedType.FullyQualifiedName);
 			Assert.IsTrue(ContainsMember(result.GetCompletionData(result.CallingClass.ProjectContent), mrr.ResolvedMember.FullyQualifiedName));
 			
-			result = ResolveVB<ResolveResult>(program, "mybase", 7);
+			result = ResolveVB<BaseResolveResult>(program, "mybase", 7);
 			Assert.AreEqual("B", result.ResolvedType.FullyQualifiedName);
 			Assert.IsFalse(ContainsMember(result.GetCompletionData(result.CallingClass.ProjectContent), mrr.ResolvedMember.FullyQualifiedName));
 		}
@@ -1099,7 +1141,7 @@ class B {
 			ArrayList cd = result.GetCompletionData(lastPC);
 			Assert.IsFalse(MemberExists(cd, "member"), "member should not be in completion lookup");
 			result = Resolve(program, "b.member", 4);
-			Assert.IsNotNull(result, "member should be found even though it is not visible!");
+			Assert.IsTrue(result != null && result.IsValid, "member should be found even though it is not visible!");
 		}
 		
 		[Test]
@@ -1120,7 +1162,7 @@ class B {
 			ArrayList cd = result.GetCompletionData(lastPC);
 			Assert.IsTrue(MemberExists(cd, "member"), "member should be in completion lookup");
 			result = Resolve(program, "a.member", 4);
-			Assert.IsNotNull(result, "member should be found!");
+			Assert.IsTrue(result != null && result.IsValid, "member should be found!");
 		}
 		
 		[Test]
@@ -1141,7 +1183,7 @@ class B {
 			ArrayList cd = result.GetCompletionData(lastPC);
 			Assert.IsFalse(MemberExists(cd, "member"), "member should not be in completion lookup");
 			result = Resolve(program, "b.member", 4);
-			Assert.IsNotNull(result, "member should be found even though it is not visible!");
+			Assert.IsTrue(result != null && result.IsValid, "member should be found even though it is not visible!");
 		}
 		
 		[Test]
@@ -1162,7 +1204,70 @@ class B {
 			ArrayList cd = result.GetCompletionData(lastPC);
 			Assert.IsFalse(MemberExists(cd, "member"), "member should not be in completion lookup");
 			result = Resolve(program, "b.member", 4);
-			Assert.IsNotNull(result, "member should be found even though it is not visible!");
+			Assert.IsTrue(result != null && result.IsValid, "member should be found even though it is not visible!");
+		}
+		
+		[Test]
+		public void ProtectedMemberVisibleWhenUsingBaseReference()
+		{
+			string program = @"using System;
+class A : B {
+	void TestMethod(B b) {
+		
+	}
+}
+class B {
+	protected int member;
+}
+";
+			ResolveResult result = Resolve(program, "base", 4);
+			Assert.IsNotNull(result);
+			ArrayList cd = result.GetCompletionData(lastPC);
+			Assert.IsTrue(MemberExists(cd, "member"), "member should be in completion lookup");
+			result = Resolve(program, "base.member", 4);
+			Assert.IsTrue(result != null && result.IsValid, "member should be found!");
+		}
+		
+		[Test]
+		public void ProtectedMethodInvisibleWhenNotUsingReferenceOfCurrentTypeTest()
+		{
+			string program = @"using System;
+class A : B {
+	void TestMethod(B b) {
+		
+	}
+}
+class B {
+	protected int Method();
+}
+";
+			ResolveResult result = Resolve(program, "b", 4);
+			Assert.IsNotNull(result);
+			ArrayList cd = result.GetCompletionData(lastPC);
+			Assert.IsFalse(MemberExists(cd, "Method"), "member should not be in completion lookup");
+			result = Resolve(program, "b.Method()", 4);
+			Assert.IsTrue(result != null && result.IsValid, "method should be found even though it is invisible!");
+		}
+		
+		[Test]
+		public void ProtectedMethodVisibleWhenUsingBaseReference()
+		{
+			string program = @"using System;
+class A : B {
+	void TestMethod(B b) {
+		
+	}
+}
+class B {
+	protected int Method();
+}
+";
+			ResolveResult result = Resolve(program, "base", 4);
+			Assert.IsNotNull(result);
+			ArrayList cd = result.GetCompletionData(lastPC);
+			Assert.IsTrue(MemberExists(cd, "Method"), "member should be in completion lookup");
+			result = Resolve(program, "base.Method()", 4);
+			Assert.IsTrue(result != null && result.IsValid, "method should be found!");
 		}
 		
 		bool MemberExists(ArrayList members, string name)

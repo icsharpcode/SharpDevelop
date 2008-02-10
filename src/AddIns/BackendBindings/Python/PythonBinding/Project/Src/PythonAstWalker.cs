@@ -73,7 +73,12 @@ namespace ICSharpCode.PythonBinding
 				DomRegion bodyRegion = GetBodyRegion(node.Body);
 				DomRegion region = GetMethodRegion(node);
 				
-				DefaultMethod method = new DefaultMethod(methodName, CreateReturnType(methodName, currentClass), ModifierEnum.Public, region, bodyRegion, currentClass);
+				DefaultMethod method;
+				if (methodName == "__init__") {
+					method = new Constructor(ModifierEnum.Public, region, bodyRegion, currentClass);
+				} else {
+					method = new DefaultMethod(methodName, new DefaultReturnType(currentClass), ModifierEnum.Public, region, bodyRegion, currentClass);
+				}
 				foreach (IParameter parameter in ConvertParameters(node.Parameters)) {
 					method.Parameters.Add(parameter);
 				}
@@ -105,7 +110,7 @@ namespace ICSharpCode.PythonBinding
 		/// Note that SharpDevelop line numbers are zero based but the
 		/// DomRegion values are one based. IronPython columns are zero
 		/// based but the lines are one based.
-		/// Also note that IronPython  seems to get the end column 
+		/// Also note that IronPython  seems to get the end column
 		/// incorrect for classes.
 		/// </remarks>
 		DomRegion GetBodyRegion(Node node)
@@ -141,18 +146,6 @@ namespace ICSharpCode.PythonBinding
 		}
 		
 		/// <summary>
-		/// Creates a return type from the current class and method name.
-		/// If the method name is __init__ then this method returns null.
-		/// </summary>
-		IReturnType CreateReturnType(string methodName, IClass c)
-		{
-			if (methodName == "__init__") {
-				return null;
-			}
-			return new DefaultReturnType(currentClass);
-		}
-		
-		/// <summary>
 		/// Looks for any base types for the class defined in the
 		/// list of expressions and adds them to the class.
 		/// </summary>
@@ -174,7 +167,7 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		void AddBaseType(IClass c, string name)
 		{
-			c.BaseTypes.Add(new SearchClassReturnType(c.ProjectContent, c, 0, 0, name, 0));		
+			c.BaseTypes.Add(new SearchClassReturnType(c.ProjectContent, c, 0, 0, name, 0));
 		}
 		
 		/// <summary>

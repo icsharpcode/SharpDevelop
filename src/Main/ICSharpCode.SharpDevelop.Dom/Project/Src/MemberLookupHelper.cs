@@ -34,15 +34,17 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public static List<IList<IMember>> LookupMember(
 			IReturnType type, string name, IClass callingClass,
-			LanguageProperties language, bool isInvocation)
+			LanguageProperties language, bool isInvocation, bool? isClassInInheritanceTree)
 		{
 			if (language == null)
 				throw new ArgumentNullException("language");
 			
-			bool isClassInInheritanceTree = false;
-			IClass underlyingClass = type.GetUnderlyingClass();
-			if (underlyingClass != null)
-				isClassInInheritanceTree = underlyingClass.IsTypeInInheritanceTree(callingClass);
+			if (isClassInInheritanceTree == null) {
+				isClassInInheritanceTree = false;
+				IClass underlyingClass = type.GetUnderlyingClass();
+				if (underlyingClass != null)
+					isClassInInheritanceTree = underlyingClass.IsTypeInInheritanceTree(callingClass);
+			}
 			
 			IEnumerable<IMember> members;
 			if (language == LanguageProperties.VBNet && language.NameComparer.Equals(name, "New")) {
@@ -51,7 +53,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				members = GetAllMembers(type).Where(m => language.NameComparer.Equals(m.Name, name));
 			}
 			
-			return LookupMember(members, callingClass, isClassInInheritanceTree, isInvocation);
+			return LookupMember(members, callingClass, (bool)isClassInInheritanceTree, isInvocation);
 		}
 		
 		class SignatureComparer : IEqualityComparer<IMethod>
@@ -180,13 +182,20 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// </summary>
 		public static List<IMember> GetAccessibleMembers(IReturnType rt, IClass callingClass, LanguageProperties language)
 		{
-			if (language == null)
-				throw new ArgumentNullException("language");
-			
 			bool isClassInInheritanceTree = false;
 			IClass underlyingClass = rt.GetUnderlyingClass();
 			if (underlyingClass != null)
 				isClassInInheritanceTree = underlyingClass.IsTypeInInheritanceTree(callingClass);
+			return GetAccessibleMembers(rt, callingClass, language, isClassInInheritanceTree);
+		}
+		
+		/// <summary>
+		/// Gets all accessible members, including indexers and constructors.
+		/// </summary>
+		public static List<IMember> GetAccessibleMembers(IReturnType rt, IClass callingClass, LanguageProperties language, bool isClassInInheritanceTree)
+		{
+			if (language == null)
+				throw new ArgumentNullException("language");
 			
 			List<IMember> result = new List<IMember>();
 			foreach (var g in GetAllMembers(rt).GroupBy(m => m.Name, language.NameComparer)) {

@@ -118,7 +118,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				return new VBBaseOrThisReferenceInConstructorResolveResult(
 					resolver.CallingClass, resolver.CallingMember, resolver.CallingClass.BaseType);
 			} else {
-				return CreateResolveResult(resolver.CallingClass.BaseType);
+				return new BaseResolveResult(resolver.CallingClass, resolver.CallingMember, resolver.CallingClass.BaseType);
 			}
 		}
 		
@@ -296,7 +296,11 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					if (firstResult == null)
 						firstResult = result;
 				}
-				return CreateMemberResolveResult(firstResult);
+				if (firstResult != null) {
+					return CreateMemberResolveResult(firstResult);
+				} else {
+					return FallbackResolveMethod(invocationExpression, mgrr, argumentTypes);
+				}
 			} else if (rr != null && rr.ResolvedType != null) {
 				IClass c = rr.ResolvedType.GetUnderlyingClass();
 				if (c != null && c.ClassType == ClassType.Delegate) {
@@ -316,6 +320,26 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (resolver.Language == SupportedLanguage.VBNet) {
 				return CreateMemberResolveResult(GetVisualBasicIndexer(invocationExpression));
 			}
+			return null;
+		}
+		
+		ResolveResult FallbackResolveMethod(InvocationExpression invocation, MethodGroupResolveResult mgrr, IReturnType[] argumentTypes)
+		{
+			// method not found, let's try if we can find a method if we violate the
+			// accessibility rules
+			MemberReferenceExpression mre = invocation.TargetObject as MemberReferenceExpression;
+			if (mre != null) {
+				List<IMethod> methods = mgrr.ContainingType.GetMethods().Where(m => resolver.IsSameName(m.Name, mre.MemberName)).ToList();
+				bool resultIsAcceptable;
+				IMethod result = MemberLookupHelper.FindOverload(
+					methods,
+					argumentTypes, out resultIsAcceptable);
+				if (result != null) {
+					return CreateMemberResolveResult(result);
+				}
+			}
+			
+			// TODO: method still not found, now return invalid ResolveResult describing the expected method
 			return null;
 		}
 		
@@ -357,7 +381,9 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				return resolver.ResolveMember(type, memberReferenceExpression.MemberName,
 				                              memberReferenceExpression.TypeArguments,
 				                              memberReferenceExpression.Parent is InvocationExpression,
-				                              typeRR == null /* allow extension methods only for non-static method calls */);
+				                              typeRR == null, // allow extension methods only for non-static method calls
+				                              targetRR is BaseResolveResult ? (bool?)true : null // allow calling protected members using "base."
+				                             );
 			}
 			return null;
 		}

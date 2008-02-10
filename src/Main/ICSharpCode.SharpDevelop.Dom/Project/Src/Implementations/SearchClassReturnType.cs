@@ -41,23 +41,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 				shortName = name.Substring(pos + 1);
 		}
 		
-		public override bool Equals(IReturnType o)
-		{
-			IReturnType rt2 = o as IReturnType;
-			if (rt2 != null && rt2.IsDefaultReturnType)
-				return DefaultReturnType.Equals(this, rt2);
-			else
-				return false;
-		}
-		
-		public override int GetHashCode()
-		{
-			unchecked {
-				return declaringClass.GetHashCode() ^ name.GetHashCode()
-					^ (typeParameterCount << 16 + caretLine << 8 + caretColumn);
-			}
-		}
-		
 		// we need to use a static Dictionary as cache to provide a easy was to clear all cached
 		// BaseTypes.
 		// When the cached BaseTypes could not be cleared as soon as the parse information is updated
@@ -102,22 +85,26 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public override IReturnType BaseType {
 			get {
-				if (isSearching)
-					return null;
 				IReturnType type;
 				lock (cache) {
+					if (isSearching)
+						return null;
+					
 					if (cache.TryGetValue(this, out type))
 						return type;
+					
+					isSearching = true;
 				}
 				try {
-					isSearching = true;
 					type = pc.SearchType(new SearchTypeRequest(name, typeParameterCount, declaringClass, caretLine, caretColumn)).Result;
 					lock (cache) {
+						isSearching = false;
 						cache[this] = type;
 					}
 					return type;
-				} finally {
+				} catch {
 					isSearching = false;
+					throw;
 				}
 			}
 		}
