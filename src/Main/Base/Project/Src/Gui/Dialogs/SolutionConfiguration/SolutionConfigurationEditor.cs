@@ -61,8 +61,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 			SelectElement(configurationComboBox, solution.Preferences.ActiveConfiguration);
 			SelectElement(platformComboBox, solution.Preferences.ActivePlatform);
 			
-			configurationComboBoxEditIndex = configurationComboBox.Items.Add("<Edit>");
-			platformComboBoxEditIndex      = platformComboBox.Items.Add("<Edit>");
+			string editItemText = EditTag.Instance.ToString();
+			configurationComboBoxEditIndex = configurationComboBox.Items.Add(editItemText);
+			platformComboBoxEditIndex      = platformComboBox.Items.Add(editItemText);
 		}
 		
 		void SetItems(IList items, IEnumerable<string> elements)
@@ -94,7 +95,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			public override string ToString()
 			{
-				return "<Edit>";
+				return StringParser.Parse("${res:Dialog.Options.CombineOptions.Configurations.ConfigurationEditor.EditItem}");
 			}
 		}
 		

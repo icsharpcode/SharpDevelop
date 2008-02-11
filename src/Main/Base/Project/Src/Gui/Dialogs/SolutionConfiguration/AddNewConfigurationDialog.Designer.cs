@@ -58,7 +58,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 									| System.Windows.Forms.AnchorStyles.Right)));
 			this.nameTextBox.Location = new System.Drawing.Point(12, 26);
 			this.nameTextBox.Name = "nameTextBox";
-			this.nameTextBox.Size = new System.Drawing.Size(237, 20);
+			this.nameTextBox.Size = new System.Drawing.Size(284, 20);
 			this.nameTextBox.TabIndex = 1;
 			// 
 			// label2
@@ -67,7 +67,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(237, 23);
 			this.label2.TabIndex = 2;
-			this.label2.Text = "Copy &settings from:";
+			this.label2.Text = "${res:Dialog.EditAvailableConfigurationsDialog.CopySettingsFrom}";
 			// 
 			// copyFromComboBox
 			// 
@@ -84,15 +84,16 @@ namespace ICSharpCode.SharpDevelop.Gui
 									| System.Windows.Forms.AnchorStyles.Right)));
 			this.createInAllCheckBox.Location = new System.Drawing.Point(12, 92);
 			this.createInAllCheckBox.Name = "createInAllCheckBox";
-			this.createInAllCheckBox.Size = new System.Drawing.Size(237, 24);
+			this.createInAllCheckBox.Size = new System.Drawing.Size(284, 24);
 			this.createInAllCheckBox.TabIndex = 4;
-			this.createInAllCheckBox.Text = "&Create this configuration in all projects";
+			this.createInAllCheckBox.Text = "${res:Dialog.EditAvailableConfigurationsDialog.CreateConfigurationInAllProjects}";
 			this.createInAllCheckBox.UseVisualStyleBackColor = true;
 			// 
 			// okButton
 			// 
+			this.okButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.okButton.Enabled = false;
-			this.okButton.Location = new System.Drawing.Point(93, 127);
+			this.okButton.Location = new System.Drawing.Point(142, 127);
 			this.okButton.Name = "okButton";
 			this.okButton.Size = new System.Drawing.Size(75, 23);
 			this.okButton.TabIndex = 5;
@@ -102,8 +103,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 			// 
 			// cancelButton
 			// 
+			this.cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.cancelButton.Location = new System.Drawing.Point(174, 127);
+			this.cancelButton.Location = new System.Drawing.Point(223, 127);
 			this.cancelButton.Name = "cancelButton";
 			this.cancelButton.Size = new System.Drawing.Size(75, 23);
 			this.cancelButton.TabIndex = 6;
@@ -116,7 +118,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.CancelButton = this.cancelButton;
-			this.ClientSize = new System.Drawing.Size(263, 162);
+			this.ClientSize = new System.Drawing.Size(310, 162);
 			this.Controls.Add(this.cancelButton);
 			this.Controls.Add(this.okButton);
 			this.Controls.Add(this.createInAllCheckBox);

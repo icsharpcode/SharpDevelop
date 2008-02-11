@@ -49,7 +49,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(100, 23);
 			this.label1.TabIndex = 0;
-			this.label1.Text = "&Program name:";
+			this.label1.Text = "${res:Gui.ProjectBrowser.OpenWith.AddProgram.Program}";
 			// 
 			// programNameTextBox
 			// 
@@ -78,7 +78,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(100, 23);
 			this.label2.TabIndex = 3;
-			this.label2.Text = "&Display name:";
+			this.label2.Text = "${res:Gui.ProjectBrowser.OpenWith.AddProgram.DisplayName}";
 			// 
 			// displayNameTextBox
 			// 
@@ -130,7 +130,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "AddOpenWithEntryDialog";
-			this.Text = "Add program";
+			this.Text = "${res:Gui.ProjectBrowser.OpenWith.AddProgram.DialogTitle}";
 			this.ResumeLayout(false);
 			this.PerformLayout();
 		}

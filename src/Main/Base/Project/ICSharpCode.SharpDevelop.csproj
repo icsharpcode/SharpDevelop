@@ -700,6 +700,9 @@
     <EmbeddedResource Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ConvertToMSBuild35Dialog.resx">
       <DependentUpon>ConvertToMSBuild35Dialog.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Src\Gui\Dialogs\SolutionConfiguration\AddNewConfigurationDialog.resx">
+      <DependentUpon>AddNewConfigurationDialog.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj">

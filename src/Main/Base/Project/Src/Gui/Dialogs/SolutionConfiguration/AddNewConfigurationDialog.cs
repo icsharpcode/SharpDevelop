@@ -40,20 +40,20 @@ namespace ICSharpCode.SharpDevelop.Gui
 			nameTextBox.TextChanged += delegate {
 				okButton.Enabled = nameTextBox.TextLength > 0;
 			};
-			copyFromComboBox.Items.Add("<Empty>");
+			copyFromComboBox.Items.Add(StringParser.Parse("${res:Dialog.EditAvailableConfigurationsDialog.EmptyItem}"));
 			copyFromComboBox.Items.AddRange(availableSourceItems.ToArray());
 			copyFromComboBox.SelectedIndex = 0;
 			
 			if (solution) {
 				if (editPlatforms)
-					this.Text = "Add Solution Platform";
+					this.Text = StringParser.Parse("${res:Dialog.EditAvailableConfigurationsDialog.AddSolutionPlatform}");
 				else
-					this.Text = "Add Solution Configuration";
+					this.Text = StringParser.Parse("${res:Dialog.EditAvailableConfigurationsDialog.AddSolutionConfiguration}");
 			} else {
 				if (editPlatforms)
-					this.Text = "Add Project Platform";
+					this.Text = StringParser.Parse("${res:Dialog.EditAvailableConfigurationsDialog.AddProjectPlatform}");
 				else
-					this.Text = "Add Project Configuration";
+					this.Text = StringParser.Parse("${res:Dialog.EditAvailableConfigurationsDialog.AddProjectConfiguration}");
 			}
 		}
 		

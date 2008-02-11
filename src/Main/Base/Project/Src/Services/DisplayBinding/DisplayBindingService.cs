@@ -28,7 +28,7 @@ namespace ICSharpCode.SharpDevelop
 		
 		internal static void InitializeService()
 		{
-			bindings = AddInTree.BuildItems<DisplayBindingDescriptor>("/SharpDevelop/Workbench/DisplayBindings", null, true);
+			bindings = AddInTree.BuildItems<DisplayBindingDescriptor>(displayBindingPath, null, true);
 			displayBindingServiceProperties = PropertyService.Get("DisplayBindingService", new Properties());
 			foreach (ExternalProcessDisplayBinding binding in displayBindingServiceProperties.Get("ExternalProcesses", new ExternalProcessDisplayBinding[0])) {
 				if (binding != null) {

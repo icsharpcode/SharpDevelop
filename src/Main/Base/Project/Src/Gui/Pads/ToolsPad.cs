@@ -7,6 +7,7 @@
 
 using System;
 using System.Windows.Forms;
+using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -38,7 +39,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public ToolsPad()
 		{
-			noToolsAvailable.Text = "There are no tools available for the current document.";
+			noToolsAvailable.Text = StringParser.Parse("${res:SharpDevelop.SideBar.NoToolsAvailableForCurrentDocument}");
 			noToolsAvailable.Dock = DockStyle.Fill;
 			panel.Controls.Add(noToolsAvailable);
 			child = noToolsAvailable;

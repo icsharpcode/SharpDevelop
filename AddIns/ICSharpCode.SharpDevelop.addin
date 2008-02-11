@@ -53,7 +53,7 @@
 	
 	<Path name = "/SharpDevelop/Workbench/DisplayBindings">
 		<DisplayBinding id    = "Browser"
-		                title = "Built-in Web Browser"
+		                title = "${res:Gui.ProjectBrowser.OpenWith.Bindings.WebBrowser}"
 		                class = "ICSharpCode.SharpDevelop.BrowserDisplayBinding.BrowserDisplayBinding"/>
 	</Path>
 	
@@ -1619,7 +1619,7 @@
 					<MenuItem id = "DockManager Control" label = "DockPanel Suite" icon = "Icons.16x16.WebSearchIcon" link = "http://sourceforge.net/projects/dockpanelsuite/" />
 					<MenuItem id = "NUnit" label = "NUnit" icon = "PadIcons.NUnitTest" link = "http://www.nunit.org/" />
 					<MenuItem id = "WiX" label = "WiX" icon = "Icons.16x16.WebSearchIcon" link = "http://sourceforge.net/projects/wix/" />
-					<MenuItem id = "NDoc" label = "NDoc" icon = "Icons.16x16.WebSearchIcon" link = "http://ndoc.sourceforge.net/" />
+					<MenuItem id = "SHFB" label = "Sandcastle Help File Builder" icon = "Icons.16x16.WebSearchIcon" link = "http://www.codeplex.com/SHFB" />
 					<MenuItem id = "#ZipLib" label = "#ZipLib" icon = "Icons.16x16.WebSearchIcon" link = "http://www.sharpdevelop.net/OpenSource/SharpZipLib/" />
 				</MenuItem>
 				<MenuItem id = "NETPlatforms" label = ".NET Platforms" type="Menu">
@@ -1659,11 +1659,11 @@
 	<Path name = "/SharpDevelop/Workbench/DisplayBindings">
 		<DisplayBinding id    = "Text"
 		                insertafter = "Browser"
-		                title = "Text editor"
+		                title = "${res:Gui.ProjectBrowser.OpenWith.Bindings.TextEditor}"
 		                class = "ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.TextEditorDisplayBinding" />
 		<DisplayBinding id    = "ShellExecute"
 		                insertafter = "Text"
-		                title = "Use the default Windows application for this file"
+		                title = "${res:Gui.ProjectBrowser.OpenWith.Bindings.DefaultWindowsApplication}"
 		                class = "ICSharpCode.SharpDevelop.ShellExecuteDisplayBinding" />
 	</Path>
 	
@@ -2169,10 +2169,13 @@
 	
 	<Path name="/SharpDevelop/Services/ParserService/SingleFileGacReferences">
 		<String id = "System" text = "System"/>
+		<String id = "System.Core" text = "System.Core"/>
 		<String id = "System.Data" text = "System.Data"/>
+		<String id = "System.Data.DataSetExtensions" text = "System.Data.DataSetExtensions"/>
 		<String id = "System.Drawing" text = "System.Drawing"/>
 		<String id = "System.Windows.Forms" text = "System.Windows.Forms"/>
 		<String id = "System.Xml" text = "System.Xml"/>
+		<String id = "System.Xml.Linq" text = "System.Xml.Linq"/>
 	</Path>
 	
 	<Path name = "/Workspace/ProjectContentRegistry">

@@ -30,6 +30,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			foreach (Control ctl in this.Controls) {
 				ctl.Text = StringParser.Parse(ctl.Text);
 			}
+			this.Text = StringParser.Parse(this.Text);
 		}
 		
 		public string ProgramName {

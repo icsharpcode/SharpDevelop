@@ -32,7 +32,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			public override string ToString()
 			{
 				if (IsDefault)
-					return StringParser.Parse(desc.Title) + " (Default)";
+					return StringParser.Parse(desc.Title + " (${res:Gui.ProjectBrowser.OpenWith.Default})");
 				else
 					return StringParser.Parse(desc.Title);
 			}
@@ -48,6 +48,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			// The InitializeComponent() call is required for Windows Forms designer support.
 			InitializeComponent();
+			
+			foreach (Control ctl in this.Controls) {
+				ctl.Text = StringParser.Parse(ctl.Text);
+			}
+			this.Text = StringParser.Parse(this.Text);
 			
 			this.fileExtension = fileExtension;
 			this.defaultBindingIndex = defaultBindingIndex;

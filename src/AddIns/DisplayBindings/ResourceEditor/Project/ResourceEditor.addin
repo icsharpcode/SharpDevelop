@@ -23,7 +23,7 @@
 		                class = "ResourceEditor.ResourceEditorDisplayBinding"
 		                insertbefore    = "Text"
 		                fileNamePattern = "\.res(x|ources)$"
-		                title = "Resource editor"/>
+		                title = "${res:Gui.ProjectBrowser.OpenWith.Bindings.ResourceEditor}"/>
 	</Path>
 	
 	<Path name="/SharpDevelop/ResourceEditor/ResourceList/ContextMenu">

@@ -79,8 +79,8 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 			this.splitContainer1.Panel2.Controls.Add(this.smallIconsRadioButton);
 			this.splitContainer1.Panel2.Controls.Add(this.targetFrameworkComboBox);
 			this.splitContainer1.Panel2.Controls.Add(this.label2);
-			this.splitContainer1.Size = new System.Drawing.Size(571, 258);
-			this.splitContainer1.SplitterDistance = 189;
+			this.splitContainer1.Size = new System.Drawing.Size(576, 258);
+			this.splitContainer1.SplitterDistance = 190;
 			this.splitContainer1.TabIndex = 0;
 			// 
 			// categoryTreeView
@@ -173,7 +173,7 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 			this.bottomPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
 			this.bottomPanel.Location = new System.Drawing.Point(0, 258);
 			this.bottomPanel.Name = "bottomPanel";
-			this.bottomPanel.Size = new System.Drawing.Size(571, 167);
+			this.bottomPanel.Size = new System.Drawing.Size(576, 167);
 			this.bottomPanel.TabIndex = 1;
 			// 
 			// cancelButton
@@ -209,11 +209,11 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 			// createDirectoryForSolutionCheckBox
 			// 
 			this.createDirectoryForSolutionCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.createDirectoryForSolutionCheckBox.Location = new System.Drawing.Point(362, 88);
+			this.createDirectoryForSolutionCheckBox.Location = new System.Drawing.Point(337, 88);
 			this.createDirectoryForSolutionCheckBox.Name = "createDirectoryForSolutionCheckBox";
-			this.createDirectoryForSolutionCheckBox.Size = new System.Drawing.Size(197, 24);
+			this.createDirectoryForSolutionCheckBox.Size = new System.Drawing.Size(222, 24);
 			this.createDirectoryForSolutionCheckBox.TabIndex = 8;
-			this.createDirectoryForSolutionCheckBox.Text = "Create &directory for solution";
+			this.createDirectoryForSolutionCheckBox.Text = "${res:Dialog.NewProject.CreateDirectoryForSolution}";
 			this.createDirectoryForSolutionCheckBox.UseVisualStyleBackColor = true;
 			// 
 			// browseButton
@@ -231,7 +231,7 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 									| System.Windows.Forms.AnchorStyles.Right)));
 			this.solutionNameTextBox.Location = new System.Drawing.Point(137, 90);
 			this.solutionNameTextBox.Name = "solutionNameTextBox";
-			this.solutionNameTextBox.Size = new System.Drawing.Size(219, 20);
+			this.solutionNameTextBox.Size = new System.Drawing.Size(194, 20);
 			this.solutionNameTextBox.TabIndex = 7;
 			// 
 			// locationTextBox
@@ -249,7 +249,7 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 			this.solutionNameLabel.Name = "solutionNameLabel";
 			this.solutionNameLabel.Size = new System.Drawing.Size(128, 23);
 			this.solutionNameLabel.TabIndex = 6;
-			this.solutionNameLabel.Text = "Solution Na&me:";
+			this.solutionNameLabel.Text = "${res:Dialog.NewProject.SolutionName}";
 			this.solutionNameLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// label4

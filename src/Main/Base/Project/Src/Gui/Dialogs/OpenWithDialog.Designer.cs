@@ -51,7 +51,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(372, 23);
 			this.label1.TabIndex = 0;
-			this.label1.Text = "Choose the program you want to use to open this file:";
+			this.label1.Text = "${res:Gui.ProjectBrowser.OpenWith.ChooseProgram}";
 			// 
 			// programListBox
 			// 
@@ -73,7 +73,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.addButton.Name = "addButton";
 			this.addButton.Size = new System.Drawing.Size(98, 23);
 			this.addButton.TabIndex = 2;
-			this.addButton.Text = "Add...";
+			this.addButton.Text = "${res:Global.AddButtonText}...";
 			this.addButton.UseVisualStyleBackColor = true;
 			this.addButton.Click += new System.EventHandler(this.AddButtonClick);
 			// 
@@ -85,7 +85,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.removeButton.Name = "removeButton";
 			this.removeButton.Size = new System.Drawing.Size(98, 23);
 			this.removeButton.TabIndex = 3;
-			this.removeButton.Text = "Remove";
+			this.removeButton.Text = "${res:Global.RemoveButtonText}";
 			this.removeButton.UseVisualStyleBackColor = true;
 			this.removeButton.Click += new System.EventHandler(this.RemoveButtonClick);
 			// 
@@ -97,7 +97,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.setAsDefaultButton.Name = "setAsDefaultButton";
 			this.setAsDefaultButton.Size = new System.Drawing.Size(98, 23);
 			this.setAsDefaultButton.TabIndex = 4;
-			this.setAsDefaultButton.Text = "Set as Default";
+			this.setAsDefaultButton.Text = "${res:Gui.ProjectBrowser.OpenWith.SetAsDefault}";
 			this.setAsDefaultButton.UseVisualStyleBackColor = true;
 			this.setAsDefaultButton.Click += new System.EventHandler(this.SetAsDefaultButtonClick);
 			// 
@@ -110,7 +110,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.okButton.Name = "okButton";
 			this.okButton.Size = new System.Drawing.Size(75, 23);
 			this.okButton.TabIndex = 5;
-			this.okButton.Text = "OK";
+			this.okButton.Text = "${res:Global.OKButtonText}";
 			this.okButton.UseVisualStyleBackColor = true;
 			// 
 			// cancelButton
@@ -121,7 +121,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.cancelButton.Name = "cancelButton";
 			this.cancelButton.Size = new System.Drawing.Size(75, 23);
 			this.cancelButton.TabIndex = 6;
-			this.cancelButton.Text = "Cancel";
+			this.cancelButton.Text = "${res:Global.CancelButtonText}";
 			this.cancelButton.UseVisualStyleBackColor = true;
 			// 
 			// OpenWithDialog
@@ -143,7 +143,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.MinimizeBox = false;
 			this.MinimumSize = new System.Drawing.Size(292, 186);
 			this.Name = "OpenWithDialog";
-			this.Text = "Open With";
+			this.Text = "${res:Gui.ProjectBrowser.OpenWith.DialogTitle}";
 			this.ResumeLayout(false);
 		}
 		private System.Windows.Forms.Button cancelButton;
