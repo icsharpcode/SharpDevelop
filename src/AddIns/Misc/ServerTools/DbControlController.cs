@@ -52,11 +52,27 @@ namespace ICSharpCode.ServerTools
 			OleDbConnection connection = null;
 			if (OleDbConnectionService.TryGetConnection(s.Name, out connection)) {
 				// now use mymeta to retrieve table metadata
-				MyMeta.dbRoot m = new MyMeta.dbRoot();
-				
-			}
-			
-			
+				dbRoot m = new dbRoot();
+				bool connected = m.Connect(dbDriver.SQL, s.ConnectionString);
+				if (!connected) {
+					MessageBox.Show("Could not connect", "Connect failed");
+					return;
+				}
+				IDatabases dbs = m.Databases;
+				OleDbConnectionStringBuilder builder = new OleDbConnectionStringBuilder(s.ConnectionString);
+				String dbName = null;
+				Object o = null;
+				builder.TryGetValue("Initial Catalog", out o);
+				dbName = (String)o;
+				IDatabase db = dbs[dbName];
+				ITables tables = db.Tables;
+				foreach (ITable t in tables) {
+					// yes, much TODO: this does not update, it just adds
+					TableNode tableNode = new TableNode();
+					tableNode.Header = t.Alias;
+					tablesNode.Items.Add(tableNode);
+				}			
+			}		
 		}
 		
 		public void UpdateTableNode(DbConnectionNode dbNode, string connectionName)
