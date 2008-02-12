@@ -8,7 +8,7 @@
 	-->
 
 	<Product Id="*" 
-		Name="SharpDevelop 3.0 Alpha"
+		Name="SharpDevelop 3.0 Beta 1"
 		Manufacturer="ic#code"
 		Language="1033"
 		Codepage="1252"
@@ -352,13 +352,6 @@
 				<ComponentRef Id="PdfSharpDll"/>
 				<ComponentRef Id="PdfSharpDeResources"/>
 				-->
-				
-<!-- Disabled SharpServerTools
-				<ComponentRef Id="DataToolsModelDll"/>
-				<ComponentRef Id="ServerBrowserToolDll"/>
-				<ComponentRef Id="DataToolsAddinDll"/>
-				<ComponentRef Id="DataToolsUIDll"/>
--->
 				<ComponentRef Id="StartPageAddInFiles"/>
 				<ComponentRef Id="SubversionAddInDll"/>
 				<ComponentRef Id="SubversionUtilsDll"/>
@@ -393,6 +386,7 @@
 				<ComponentRef Id="PartCoverFrameworkDll"/>
 				<ComponentRef Id="AssemblyReportXslt"/>
 				<ComponentRef Id="ClassReportXslt"/>		
+				<ComponentRef Id="PartCoverToNCoverXslt"/>		
 				<ComponentRef Id="PythonConsoleProjectTemplate"/>	
 				<ComponentRef Id="PythonEmptyClassTemplate"/>	
 				<ComponentRef Id="PythonEmptyFormTemplate"/>	
@@ -405,7 +399,9 @@
 				<ComponentRef Id="PythonBuildTasksDll"/>	
 				<ComponentRef Id="PythonBindingAddin"/>	
 				<ComponentRef Id="PythonBindingDll"/>	
-				<ComponentRef Id="SharpDevelopBuildPythonTargets"/>	
+				<ComponentRef Id="SharpDevelopBuildPythonTargets"/>				
+				<ComponentRef Id="ClassWizardDll"/>	
+				<ComponentRef Id="ClassWizardAddin"/>				
 			</Feature>
 			<Feature Id="SharpDevelopFileAssociations"
 			         Level="2"
