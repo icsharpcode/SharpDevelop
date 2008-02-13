@@ -111,31 +111,37 @@ namespace Hornung.ResourceToolkit.Resolver
 				return null;
 			}
 			
-			ExpressionResult result = ef.FindFullExpression(document.TextContent, caretOffset);
-			
-			if (result.Expression == null) {
-				// may happen if in string
-				while (--caretOffset > 0 && (result = ef.FindFullExpression(document.TextContent, caretOffset)).Expression == null) {
-					if (document.GetLineNumberForOffset(caretOffset) != caretLine) {
-						// only look in same line
-						break;
-					}
-				}
-			}
-			
-			if (result.Expression != null) {
+			while (true) {
 				
+				ExpressionResult result = ef.FindFullExpression(document.TextContent, caretOffset);
+				
+				if (result.Expression == null) {
+					// Try to find an expression to the left, but only
+					// in the same line.
+					if (--caretOffset < 0 || document.GetLineNumberForOffset(caretOffset) != caretLine) {
+						return null;
+					}
+					continue;
+				}
+				
+				PrimitiveExpression pe;
 				Expression expr = NRefactoryAstCacheService.ParseExpression(fileName, result.Expression, caretLine + 1, caretColumn + 1);
 				
 				if (expr == null) {
 					return null;
+				} else if ((pe = expr as PrimitiveExpression) != null) {
+					if (pe.Value is string) {
+						// We are inside a string literal and need to find
+						// the next outer expression to decide
+						// whether it is a resource key.
+						if (--caretOffset < 0) return null;
+						continue;
+					}
 				}
 				
 				return TryResolve(result, expr, caretLine, caretColumn, fileName, document.TextContent, ef, charTyped);
 				
 			}
-			
-			return null;
 		}
 		
 		// ********************************************************************************************************************************
@@ -331,7 +337,7 @@ namespace Hornung.ResourceToolkit.Resolver
 			resourceName = resourceName.Substring(p.RootNamespace.Length+1);
 			
 			switch(p.Language) {
-				
+					
 				case "VBNet":
 					
 					// SD2-1239
