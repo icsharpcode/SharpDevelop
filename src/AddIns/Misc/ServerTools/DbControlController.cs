@@ -12,6 +12,7 @@ using System.Windows.Controls;
 using System.Collections.Generic;
 using System.Data.OleDb;
 using System.Configuration;
+using System.Windows.Threading;
 using MyMeta;
 
 
@@ -35,7 +36,7 @@ namespace ICSharpCode.ServerTools
 		/// Creates or refreshes the tree of database objects below the DbConnectionNode 
 		/// </summary>
 		/// <param name="dbNode"></param>
-		public void UpdateDbConnectionNode(DbConnectionNode dbNode, ConnectionStringSettings s)
+		private void UpdateDbConnectionNode(DbConnectionNode dbNode, ConnectionStringSettings s)
 		{
 			// update the TablesNode
 			
@@ -45,7 +46,7 @@ namespace ICSharpCode.ServerTools
 					
 		}
 		
-		public void UpdateTablesNode(TablesNode tablesNode, ConnectionStringSettings s)
+		private void UpdateTablesNode(TablesNode tablesNode, ConnectionStringSettings s)
 		{
 			// get a list of table names for the current connection to work with
 			
@@ -66,18 +67,43 @@ namespace ICSharpCode.ServerTools
 				dbName = (String)o;
 				IDatabase db = dbs[dbName];
 				ITables tables = db.Tables;
+				List<string> tableNames = new List<string>();
 				foreach (ITable t in tables) {
-					// yes, much TODO: this does not update, it just adds
-					TableNode tableNode = new TableNode();
-					tableNode.Header = t.Alias;
-					tablesNode.Items.Add(tableNode);
-				}			
+					tableNames.Add(t.Alias);
+					TableNode tableNode = (TableNode)tablesNode.GetItemWithHeader(t.Alias);
+					if (tableNode == null) {
+						tableNode = new TableNode();
+						tableNode.Header = t.Alias;
+						tablesNode.Items.Add(tableNode);
+					}
+					this.UpdateTableNode(tableNode, t);
+				}
+				tablesNode.RemoveItemsWithHeaderNotIn(tableNames);			
 			}		
 		}
 		
-		public void UpdateTableNode(DbConnectionNode dbNode, string connectionName)
+		private void UpdateTableNode(TableNode tableNode, ITable table)
 		{
-			
+			IColumns columns = table.Columns;
+			List<string> columnNames = new List<string>();
+			foreach (IColumn column in columns) {
+				string columnName = column.Alias;
+				columnNames.Add(columnName);
+				ColumnNode columnNode = (ColumnNode)tableNode.GetItemWithHeader(columnName);
+				if (columnNode == null) {
+					columnNode = new ColumnNode();
+					columnNode.Header = columnName;
+					tableNode.Items.Add(columnNode);
+				}
+				
+			}
+		}
+		
+		private void UpdateColumnNode(ColumnNode columnNode, IColumn column)
+		{
+			columnNode.Type = column.DataTypeName;
+			columnNode.FieldName = column.Alias;
+			// TODO: assign other properties
 		}
 		
 		/// <summary>
@@ -91,6 +117,11 @@ namespace ICSharpCode.ServerTools
 		public void UpdateDbConnectionsNode()
 		{
 			log.Debug("updating connections node");
+			if(!_dbConnectionsNode.Dispatcher.CheckAccess()) {
+				_dbConnectionsNode.Dispatcher.Invoke(DispatcherPriority.Normal, 
+				                                     new UpdateDbConnectionsNodeDelegate(UpdateDbConnectionsNode));
+			}
+
             ConnectionStringSettingsCollection c
             = OleDbConnectionService.GetConnectionSettingsCollection();
             
@@ -99,10 +130,13 @@ namespace ICSharpCode.ServerTools
             foreach (ConnectionStringSettings s in c)
             {
 				string settingsName = s.Name;
+				log.Debug("got ConnectionStringSettings with name: " + settingsName);
 				headers.Add(settingsName);
 				DbConnectionNode dbNode = (DbConnectionNode)_dbConnectionsNode.GetItemWithHeader(settingsName);
+				log.Debug("got DbConnectionNode with name: " + (dbNode == null? null:dbNode.Header));
 				if (dbNode == null) {
 					// initial state for a new connection is always closed I think
+					log.Debug("creating new DbConnectionNode for settings with name: " + settingsName);
 					dbNode = new DbConnectionNode(settingsName);
 					_dbConnectionsNode.Items.Add(dbNode);
 				} 
@@ -110,6 +144,8 @@ namespace ICSharpCode.ServerTools
             }
             _dbConnectionsNode.RemoveItemsWithHeaderNotIn(headers);
 		}
+		
+		public delegate void UpdateDbConnectionsNodeDelegate();
 		
 		        /// <summary>
         /// Uses the DataLink dialog to define a new Oledb connection string,

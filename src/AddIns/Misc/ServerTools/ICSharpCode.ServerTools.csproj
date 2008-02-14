@@ -112,10 +112,10 @@
     <Compile Include="DbConnectionNode.cs" />
     <Compile Include="DbConnectionsNode.cs" />
     <Compile Include="DbControlController.cs" />
-    <Compile Include="FieldNode.cs" />
+    <Compile Include="ColumnNode.cs" />
     <Compile Include="FunctionNode.cs" />
     <Compile Include="FunctionsNode.cs" />
-    <Compile Include="ItemCollectionExtender.cs" />
+    <Compile Include="TreeViewItemExtender.cs" />
     <Compile Include="Properties\DbConnectionsNode.cs" />
     <Compile Include="ServerControl.xaml.cs">
       <DependentUpon>ServerControl.xaml</DependentUpon>
