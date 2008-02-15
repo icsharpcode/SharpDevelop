@@ -15,6 +15,7 @@ using System.Reflection;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using Microsoft.Win32;
 
@@ -213,7 +214,17 @@ namespace ICSharpCode.FormsDesigner.Services
 							File.Delete(tempPath);
 						} catch {}
 					} else {
-						throw; // don't ignore other load errors
+						// Show other load errors in the compiler message view,
+						// but do not prevent the designer from loading.
+						// The error might be caused by an assembly that is
+						// not even needed for the designer to load.
+						LoggingService.Error("Error loading assembly " + fileName, e);
+						WorkbenchSingleton.Workbench.GetPad(typeof(CompilerMessageView)).BringPadToFront();
+						TaskService.BuildMessageViewCategory.AppendText(
+							StringParser.Parse("${res:FileUtilityService.ErrorWhileLoading}")
+							+ "\r\n" + fileName + "\r\n" + e.Message + "\r\n"
+						);
+						return null;
 					}
 				} catch (FileLoadException e) {
 					if (e.Message.Contains("HRESULT: 0x80131402")) {
