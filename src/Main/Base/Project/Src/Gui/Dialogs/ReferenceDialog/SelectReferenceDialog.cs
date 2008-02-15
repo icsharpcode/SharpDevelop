@@ -251,6 +251,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.selectButton.Size = new System.Drawing.Size(75, 23);
 			this.selectButton.TabIndex = 1;
 			this.selectButton.Text = "${res:Dialog.SelectReferenceDialog.SelectButton}";
+			this.selectButton.Click += new System.EventHandler(this.SelectReference);
 			// 
 			// removeButton
 			// 
@@ -260,6 +261,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.removeButton.Size = new System.Drawing.Size(75, 23);
 			this.removeButton.TabIndex = 4;
 			this.removeButton.Text = "${res:Global.RemoveButtonText}";
+			this.removeButton.Click += new System.EventHandler(this.RemoveReference);
 			// 
 			// referencesLabel
 			// 
