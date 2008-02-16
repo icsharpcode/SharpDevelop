@@ -23,6 +23,7 @@
 		<BuildProperties>/p:Configuration=Release</BuildProperties>
 		<BuildProperties>$(BuildProperties) &quot;/p:SharpDevelopBinPath=$(SharpDevelopBin)&quot;</BuildProperties>
 		<BuildProperties>$(BuildProperties) &quot;/p:BooBinPath=$(SharpDevelopSrc)\AddIns\BackendBindings\Boo\RequiredLibraries&quot;</BuildProperties>
+		<BuildProperties>$(BuildProperties) &quot;/p:FSharpBuildTasksPath=$(SharpDevelopSrc)\AddIns\BackendBindings\FSharp\RequiredLibraries&quot;</BuildProperties>
 	</PropertyGroup>
 	
 	<Import Project="$(MSBuildCommunityTasksPath)\MSBuild.Community.Tasks.Targets"/>
