@@ -402,6 +402,13 @@
 				<ComponentRef Id="SharpDevelopBuildPythonTargets"/>				
 				<ComponentRef Id="ClassWizardDll"/>	
 				<ComponentRef Id="ClassWizardAddin"/>				
+
+				<ComponentRef Id="FSharpBindingDll"/>
+				<ComponentRef Id="FSharpBindingAddin"/>	
+				<ComponentRef Id="FSharpBuildTasksDll"/>	
+				<ComponentRef Id="SharpDevelopBuildFscTargets"/>	
+				<ComponentRef Id="FSharpConsoleProjectTemplate"/>	
+				<ComponentRef Id="FSharpEmptyClassTemplate"/>	
 			</Feature>
 			<Feature Id="SharpDevelopFileAssociations"
 			         Level="2"

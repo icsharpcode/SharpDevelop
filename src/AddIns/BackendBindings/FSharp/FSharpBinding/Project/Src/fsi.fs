@@ -1,0 +1,115 @@
+// <file>
+//     <copyright see="prj:///doc/copyright.txt"/>
+//     <license see="prj:///doc/license.txt"/>
+//     <owner name="Robert Pickering" email="robert@strangelights.com"/>
+//     <version>$Revision$</version>
+// </file>
+
+#light
+namespace FSharpBinding
+
+open System
+open System.IO
+open System.Configuration
+open System.Collections.Generic
+open System.Diagnostics
+open System.Windows.Forms
+open System.Xml
+open ICSharpCode.SharpDevelop.Dom
+open ICSharpCode.SharpDevelop.Dom.CSharp
+open ICSharpCode.SharpDevelop.Internal.Templates
+open ICSharpCode.SharpDevelop.Project
+open ICSharpCode.Core
+open ICSharpCode.SharpDevelop.Gui
+open ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
+
+module TheControl =
+    let outputQueue = new Queue<string>()
+    let errorQueue = new Queue<string>()
+    let fsiProcess = new Process()
+    let panel = new Panel()
+    let input = new TextBox(Anchor = (AnchorStyles.Left ||| AnchorStyles.Top ||| AnchorStyles.Right),
+                            Width = panel.Width)
+    input.KeyUp.Add(fun ea -> 
+                        if ea.KeyData = Keys.Return then
+                            fsiProcess.StandardInput.WriteLine(input.Text)
+                            input.Text <- "" )
+    let output = new TextBox(Multiline = true,
+                             Top = input.Height,
+                             Height = panel.Height - input.Height,
+                             Width = panel.Width,
+                             ReadOnly = true,
+                             Anchor = (AnchorStyles.Left ||| AnchorStyles.Top ||| AnchorStyles.Right ||| AnchorStyles.Bottom))
+    panel.Controls.Add(input)
+    panel.Controls.Add(output)
+    if ConfigurationManager.AppSettings.AllKeys |> Array.exists (fun x -> x = "alt_fs_bin_path") then
+        let path = Path.Combine(ConfigurationManager.AppSettings.get_Item("alt_fs_bin_path"), "fsi.exe")
+        if File.Exists(path) then
+            fsiProcess.StartInfo.FileName <- path
+        else
+            failwith "you are trying to use the app setting alt_fs_bin_path, but fsi.exe is not localed in the given directory"
+    else
+        let path = Environment.GetEnvironmentVariable("PATH")
+        let paths = path.Split([|';'|])
+        let path = paths |> Array.tryfind (fun x -> File.Exists(Path.Combine(x, "fsi.exe")))
+        match path with
+        | Some x -> fsiProcess.StartInfo.FileName <- Path.Combine(x, "fsi.exe")
+        | None ->
+            let programFiles = Environment.GetEnvironmentVariable("ProgramFiles")
+            let fsdirs = Directory.GetDirectories(programFiles, "FSharp*")
+            let possibleFiles =
+                fsdirs |> Array.choose 
+                    (fun x -> 
+                        let fileInfo = new FileInfo(Path.Combine(x, "bin\fsi.exe"))
+                        if fileInfo.Exists then
+                            Some fileInfo
+                        else
+                            None)
+            possibleFiles |> Array.sort (fun x y -> DateTime.Compare(x.CreationTime, y.CreationTime))
+            if possibleFiles.Length > 0 then
+                fsiProcess.StartInfo.FileName <- possibleFiles.[0].FullName
+            else
+                failwith "can not find the fsi.exe, ensure a version of the F# compiler is installed"
+    fsiProcess.StartInfo.UseShellExecute <- false
+    fsiProcess.StartInfo.RedirectStandardError <- true
+    fsiProcess.StartInfo.RedirectStandardInput <- true
+    fsiProcess.StartInfo.RedirectStandardOutput <- true
+    fsiProcess.ErrorDataReceived.Add(fun ea -> lock errorQueue (fun () -> errorQueue.Enqueue(ea.Data)) )
+    fsiProcess.OutputDataReceived.Add(fun ea -> lock outputQueue (fun () ->  outputQueue.Enqueue(ea.Data)) )
+    fsiProcess.Exited.Add(fun ea -> 
+                        output.AppendText("fsi.exe died" + Environment.NewLine)
+                        output.AppendText("restarting ..." + Environment.NewLine)
+                        fsiProcess.Start() |> ignore)
+    fsiProcess.Start() |> ignore
+    fsiProcess.BeginErrorReadLine()
+    fsiProcess.BeginOutputReadLine()
+    let timer = new Timer(Interval = 1000)
+    let readAll (q : Queue<string>) =
+        while q.Count > 0 do
+            output.AppendText(q.Dequeue() + Environment.NewLine)
+    timer.Tick.Add(fun _ -> 
+                    lock errorQueue (fun () -> readAll errorQueue)
+                    lock outputQueue (fun () -> readAll outputQueue))
+    timer.Start()
+
+type FSharpInteractive = class
+    inherit AbstractPadContent
+        new() = {}
+        override x.Control
+            with get() = TheControl.panel :> Control
+end
+
+type SentToFSharpInteractive = class
+    inherit AbstractMenuCommand
+    new () = {}
+    override x.Run() =
+        let window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow
+        if window <> null then
+            match window.ActiveViewContent :> obj with
+            | :? ITextEditorControlProvider as textArea ->
+                let textArea = textArea.TextEditorControl.ActiveTextAreaControl.TextArea
+                for selection in textArea.SelectionManager.SelectionCollection do
+                    TheControl.fsiProcess.StandardInput.WriteLine(selection.SelectedText)
+                TheControl.fsiProcess.StandardInput.WriteLine(";;")
+            | _ -> ()
+end

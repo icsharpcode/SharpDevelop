@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<Template author="Robert Pickering" version="1.0">
+	
+	<Config
+		  name        = "${res:Templates.File.EmptyClass.Name}"
+		  icon        = "Boo.File.EmptyFile"
+		  category    = "F#"
+		  defaultname = "file${Number}.fs"
+		  language    = "F#"/>
+	 
+	<Description>${res:Templates.File.EmptyClass.Description}</Description>
+	
+	<!-- 
+	Special new file templates:
+		${StandardNamespace}        -> Standardnamespace of the current project or FileNameWithoutExtension
+		${FullName}                 -> Full generated path name
+		${FileName}                 -> File name with extension
+		${FileNameWithoutExtension} -> File name without extension
+		${Extension}                -> Extension in the form ".cs"
+		${Path}                     -> Full path of the file
+		${ClassName}                -> Class name (generally FileNameWithoutExtension w/o 'bad' characters)
+	 -->
+	<Files>
+		<File name="${FullName}" language="Boo">
+	<![CDATA[#light
+namespace ${StandardNamespace}
+module ${FileNameWithoutExtension}
+
+printfn "Hello world"
+
+]]></File>
+	</Files>
+	
+	<AdditionalOptions/>
+</Template>
+

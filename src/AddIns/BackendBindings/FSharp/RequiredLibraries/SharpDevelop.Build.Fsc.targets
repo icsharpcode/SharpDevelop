@@ -1,0 +1,69 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<UsingTask TaskName="FSharp.Build.Tasks.Fsc" AssemblyFile="FSharp.Build.Tasks.dll" />
+	<UsingTask TaskName="CreateCSharpManifestResourceName" AssemblyName="Microsoft.Build.Tasks, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+
+	<PropertyGroup>
+		<MSBuildAllProjects>$(MSBuildAllProjects);$(FSharpBuildTasksPath)\SharpDevelop.Build.Fsc.targets</MSBuildAllProjects>
+		<DefaultLanguageSourceExtension>.fs</DefaultLanguageSourceExtension>
+		<Language>F#</Language>
+	</PropertyGroup>
+	
+	<PropertyGroup>
+		<CreateManifestResourceNamesDependsOn>
+		</CreateManifestResourceNamesDependsOn>
+	</PropertyGroup>
+	<Target Name="CreateManifestResourceNames" Condition="'@(ResxWithNoCulture)@(ResxWithCulture)@(NonResxWithNoCulture)@(NonResxWithCulture)'!=''" DependsOnTargets="$(CreateManifestResourceNamesDependsOn)">
+		<!-- Create the target resource names for non-culture resx files. -->
+		<CreateCSharpManifestResourceName Condition="'@(ResxWithNoCulture)'!=''" ResourceFiles="@(ResxWithNoCulture)" RootNamespace="$(RootNamespace)">
+			<Output TaskParameter="ManifestResourceNames" ItemName="ManifestResourceWithNoCultureName" />
+		</CreateCSharpManifestResourceName>
+		
+		<!-- Create the target resource names for culture resx files. -->
+		<CreateCSharpManifestResourceName Condition="'@(ResxWithCulture)'!=''" ResourceFiles="@(ResxWithCulture)" RootNamespace="$(RootNamespace)">
+			<Output TaskParameter="ManifestResourceNames" ItemName="ManifestResourceWithCultureName" />
+		</CreateCSharpManifestResourceName>
+		
+		<!-- Create the target resource names for non-culture non-resx files. -->
+		<CreateCSharpManifestResourceName Condition="'@(NonResxWithNoCulture)'!=''" ResourceFiles="@(NonResxWithNoCulture)" RootNamespace="$(RootNamespace)">
+			<Output TaskParameter="ManifestResourceNames" ItemName="ManifestNonResxWithNoCulture" />
+		</CreateCSharpManifestResourceName>
+		
+		<!-- Create the target resource names for culture non-resx files. -->
+		<CreateCSharpManifestResourceName Condition="'@(NonResxWithCulture)'!=''" ResourceFiles="@(NonResxWithCulture)" RootNamespace="$(RootNamespace)">
+			<Output TaskParameter="ManifestResourceNames" ItemName="ManifestNonResxWithCulture" />
+		</CreateCSharpManifestResourceName>
+	</Target>
+	
+	<Target Name="CoreCompile" Inputs="$(MSBuildAllProjects);               
+	        @(Compile);
+	        @(ReferencePath);
+	        @(ManifestResourceWithNoCulture);
+	        $(ApplicationIcon);
+	        $(AssemblyOriginatorKeyFile);
+	        @(ManifestNonResxWithNoCultureOnDisk);
+	        @(ReferencePath);              
+	        @(CompiledLicenseFile);
+	        $(Standalone);
+	        $(NoMLLib)" 
+	        Outputs="@(DocFileItem);
+	        @(IntermediateAssembly);
+	        $(NonExistentFile)" 
+	        DependsOnTargets="$(CoreCompileDependsOn)">
+		<Fsc 
+			DebugType="$(DebugType)"
+		    EmitDebugInformation="$(DebugSymbols)" 
+		    FileAlignment="$(FileAlignment)" 
+		    KeyContainer="$(KeyContainerName)" 
+		    KeyFile="$(KeyOriginatorFile)"
+			Optimize="$(Optimize)" 
+			OutputAssembly="@(IntermediateAssembly)" 
+			Resources="@(ManifestResourceWithNoCulture);@(ManifestNonResxWithNoCultureOnDisk);@(CompiledLicenseFile)" 
+			Sources="@(Compile)" 
+			References="@(ReferencePath)"
+			TargetType="$(OutputType)"
+			Standalone="$(Standalone)"
+			NoMLLib="$(NoMLLib)" />
+	</Target>
+	
+	<Import Project="$(MSBuildBinPath)\Microsoft.Common.targets" />
+</Project>

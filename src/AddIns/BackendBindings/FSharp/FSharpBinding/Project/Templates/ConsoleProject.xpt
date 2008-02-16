@@ -1,0 +1,27 @@
+﻿<?xml version="1.0"?>
+<Template originator   = "Robert Pickering"
+          created      = "06/10/2001"
+          lastModified = "02/01/2003">
+	
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<Name>${res:Templates.Project.ConsoleProject.Name}</Name>
+		<Category>F#</Category>
+		<Icon>C#.Project.DOSProject</Icon>
+		<Description>${res:Templates.Project.ConsoleProject.Description}</Description>
+	</TemplateConfiguration>
+	
+	<!-- Actions -->
+	<Actions>
+		<Open filename = "file.fs"/>
+	</Actions>
+	
+	<!-- Template Content -->
+	<Project language = "F#">
+		<Files>
+			<File name="file.fs"><![CDATA[#light 
+module MyNamespace.MyModule
+printfn "Hello world" ]]></File>
+		</Files>
+	</Project>
+</Template>

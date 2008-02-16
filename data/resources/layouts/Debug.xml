@@ -2,7 +2,7 @@
 <!--DockPanel configuration file. Author: Weifen Luo, all rights reserved.-->
 <!--!!! AUTOMATICALLY GENERATED FILE. DO NOT MODIFY !!!-->
 <DockPanel FormatVersion="1.0" DockLeftPortion="0.196180555555556" DockRightPortion="0.172743055555556" DockTopPortion="0.25" DockBottomPortion="0.25" ActiveDocumentPane="-1" ActivePane="2">
-  <Contents Count="27">
+  <Contents Count="29">
     <Content ID="0" PersistString="ICSharpCode.SharpDevelop.Project.ProjectBrowserPad" AutoHidePortion="0.25" IsHidden="False" IsFloat="False" />
     <Content ID="1" PersistString="ICSharpCode.SharpDevelop.Gui.ClassBrowser.ClassBrowserPad" AutoHidePortion="0.25" IsHidden="False" IsFloat="False" />
     <Content ID="2" PersistString="ICSharpCode.SharpDevelop.Gui.ErrorListPad" AutoHidePortion="0.25" IsHidden="False" IsFloat="False" />
@@ -30,6 +30,8 @@
     <Content ID="24" PersistString="ClassDiagramAddin.ClassEditorPad" AutoHidePortion="0.25" IsHidden="True" IsFloat="False" />
     <Content ID="25" PersistString="ICSharpCode.UnitTesting.UnitTestsPad" AutoHidePortion="0.25" IsHidden="False" IsFloat="False" />
     <Content ID="26" PersistString="SharpServerTools.Forms.ServerBrowserTool" AutoHidePortion="0.25" IsHidden="True" IsFloat="False" />
+    <Content ID="27" PersistString="FSharpBinding.FSharpInteractive" AutoHidePortion="0.25" IsHidden="True" IsFloat="False" />
+    <Content ID="28" PersistString="ICSharpCode.ServerTools.ServerBrowserHost" AutoHidePortion="0.25" IsHidden="True" IsFloat="False" />
   </Contents>
   <Panes Count="7">
     <Pane ID="0" DockState="DockLeft" ActiveContent="0">

@@ -428,6 +428,9 @@ Boo.Project.EmptyProject                          = backendicons\boo\Boo.Project
 Boo.Project.Form                                  = backendicons\boo\Boo.Project.Form.png
 Boo.ProjectIcon                                   = backendicons\boo\Boo.ProjectIcon.png
 
+F#.ProjectIcon                                    = backendicons\FSharp\F#.ProjectIcon.png
+F#.FileIcon                                       = backendicons\FSharp\F#.FileIcon.png
+
 # misc backend icons
 FileIcons.XmlIcon                                 = backendicons\miscFiles\Icons.16x16.XMLFileIcon.png
 Icons.16x16.ResourceFileIcon                      = backendicons\miscFiles\Icons.16x16.ResourceFileIcon.png

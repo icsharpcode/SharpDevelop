@@ -1,0 +1,129 @@
+<AddIn name        = "F# Binding"
+       author      = "Robert Pickering"
+       copyright   = "prj:///doc/copyright.txt"
+       description = "Backend binding for F#">
+	
+	<Manifest>
+		<Identity name = "ICSharpCode.FSharpBinding"/>
+	</Manifest>
+	
+	<Runtime>
+		<Import assembly = "FSharpBinding.dll"/>
+		<Import assembly = ":ICSharpCode.SharpDevelop"/>
+		<Import assembly = ":ICSharpCode.SharpDevelop.Dom"/>
+	</Runtime>
+ 	
+	<Path name = "/SharpDevelop/Workbench/Ambiences">
+		<Class id    = "F#"
+		       class = "FSharpBindings.FSharpAmbience"/>
+	</Path>
+
+	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/SyntaxModes">
+		<SyntaxMode id         = "F# Syntax Mode"
+		            name       = "F#"
+		            extensions = ".fs;.fsi"
+		            resource   = "FSharpBindings.Resources.FS-Mode.xshd" />
+	</Path>
+
+	<Path name = "/SharpDevelop/MSBuildEngine/CompileTaskNames">
+		<!-- Makes SharpDevelop show the text 'Compiling ProjectName...' when the task is started -->
+		<String id="fsc" text = "fsc"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/BackendBindings/Templates">
+		<Directory id = "fsc" path = "./Templates" />
+	</Path>
+
+	<Path name = "/SharpDevelop/Workbench/FileFilter">
+		<FileFilter id = "F#"
+		            insertbefore="AllFiles"
+		            name = "F# (*.fs)"
+		            extensions = "*.fs"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Workbench/Combine/FileFilter">
+		<FileFilter id         = "FSharpProject"
+		            insertbefore="AllFiles"
+		            name       = "F# Project Files (*.fsproj)"
+		            class      = "ICSharpCode.SharpDevelop.Project.LoadProject"
+		            extensions = "*.fsproj"/>
+	</Path>
+	
+	<!-- Project Explorer tree node builders -->
+	<Path name = "/SharpDevelop/Views/ProjectBrowser/NodeBuilders">
+		<Class id = "FSharpProjectBuilder"
+		       insertbefore = "DefaultBuilder"
+		       class = "FSharpBinding.FSharpProjectNodeBuilder"/>
+	</Path>
+	
+	<Path path = "/SharpDevelop/BackendBindings/ProjectOptions/F#">
+		<DialogPanel id    = "Application"
+		             label = "${res:Dialog.ProjectOptions.ApplicationSettings}"
+		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.ApplicationSettings"/>
+		<DialogPanel id    = "BuildEvents"
+		             label = "${res:Dialog.ProjectOptions.BuildEvents}"
+		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.BuildEvents"/>
+		<DialogPanel id    = "BuildOptions"
+		             label = "${res:Dialog.ProjectOptions.BuildOptions}"
+		             class = "CSharpBinding.OptionPanels.BuildOptions"/>
+		<DialogPanel id    = "FsOptions"
+		             label = "F# Options"
+		             class = "FSharpBinding.FsOptions"/>
+		<Include id = "AllManaged" path="/SharpDevelop/BackendBindings/ProjectOptions/AllManaged"/>
+	</Path>
+
+	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/FileNode">
+		<Condition name = "ProjectActive" activeproject="F#">
+			<MenuItem id = "MoveUp"
+			          label = "Move Up"
+			          class = "FSharpBinding.MoveUpFileEvent"/>
+			<MenuItem id = "MoveDown"
+			          label = "Move Down"
+			          class = "FSharpBinding.MoveDownFileEvent"/>
+		</Condition>
+	</Path>
+
+	<Path name = "/Workspace/Icons">
+		<Icon id         = "F#Prj"
+		      language   = "F#"
+		      resource   = "F#.ProjectIcon"/>
+
+		<Icon id         = "F#File"
+		      extensions = ".fs"
+		      resource   = "F#.FileIcon"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Workbench/Pads">
+		<Pad id       = "FSharpInteractive"
+		     category = "Main"
+		     title    = "F# Interactive"
+		     icon     = "F#.ProjectIcon"
+		     shortcut = "Control|Shift|B"
+		     class    = "FSharpBinding.FSharpInteractive"/>
+	</Path>
+
+  <Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/ContextMenu">
+		<Condition name = "ProjectActive" activeproject="F#">
+			<MenuItem id = "SendToFSharpInteractive"
+				  label = "Send To F# Interactive"
+				  shortcut = "Alt|Return"
+				  class= "FSharpBinding.SentToFSharpInteractive"/>
+		</Condition>
+	</Path>
+
+	<Path path = "/SharpDevelop/Workbench/LanguageBindings">
+		<LanguageBinding id                   = "F#"
+		                 guid                 = "{982E8BC1-ACD7-4dbf-96AB-B2CE67D6A008}"
+		                 supportedextensions  = ".fs"
+		                 projectfileextension = ".fsproj"
+		                 class                = "FSharpBinding.FSharpLanguageBinding" />
+	</Path>
+
+	<!-- 
+		Register path to SharpDevelop.Build.FSharp.targets for the MSBuild engine.
+		SharpDevelop.Build.FSharp.targets is in the F# AddIn directory 
+	-->
+	<Path name = "/SharpDevelop/MSBuildEngine/AdditionalProperties">
+		<String id = "FSharpBuildTasksPath" text = "${AddInPath:ICSharpCode.FSharpBinding}"/>
+	</Path>
+</AddIn>

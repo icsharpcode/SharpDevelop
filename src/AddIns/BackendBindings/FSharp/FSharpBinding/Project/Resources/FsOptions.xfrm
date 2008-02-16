@@ -1,0 +1,30 @@
+<Components version="1.0">
+	<System.Windows.Forms.UserControl>
+		<Name value="XmlUserControl1" />
+		<ClientSize value="{Width=384, Height=256}" />
+		<Controls>
+			<System.Windows.Forms.GroupBox>
+				<Name value="groupBox1" />
+				<Location value="{X=8,Y=8}" />
+				<Text value="F# Specific Options" />
+				<Size value="{Width=364, Height=180}" />
+				<TabIndex value="0" />
+				<Anchor value="Top, Left, Right" />
+				<Controls>
+					<System.Windows.Forms.CheckBox>
+						<Name value="standaloneCheckBox" />
+						<Location value="{X=8,Y=16}" />
+						<TabIndex value="1" />
+						<Text value="Standalone" />
+					</System.Windows.Forms.CheckBox>
+					<System.Windows.Forms.CheckBox>
+						<Name value="nomllibCheckBox" />
+						<Location value="{X=8,Y=48}" />
+						<Text value="No ML Lib" />
+						<TabIndex value="2" />
+					</System.Windows.Forms.CheckBox>
+				</Controls >
+			</System.Windows.Forms.GroupBox>
+		</Controls>
+	</System.Windows.Forms.UserControl>
+</Components>
