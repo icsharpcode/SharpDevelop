@@ -42,57 +42,66 @@ module TheControl =
                              Anchor = (AnchorStyles.Left ||| AnchorStyles.Top ||| AnchorStyles.Right ||| AnchorStyles.Bottom))
     panel.Controls.Add(input)
     panel.Controls.Add(output)
-    if ConfigurationManager.AppSettings.AllKeys |> Array.exists (fun x -> x = "alt_fs_bin_path") then
-        let path = Path.Combine(ConfigurationManager.AppSettings.get_Item("alt_fs_bin_path"), "fsi.exe")
-        if File.Exists(path) then
-            fsiProcess.StartInfo.FileName <- path
-        else
-            failwith "you are trying to use the app setting alt_fs_bin_path, but fsi.exe is not localed in the given directory"
-    else
-        let path = Environment.GetEnvironmentVariable("PATH")
-        let paths = path.Split([|';'|])
-        let path = paths |> Array.tryfind (fun x -> File.Exists(Path.Combine(x, "fsi.exe")))
-        match path with
-        | Some x -> fsiProcess.StartInfo.FileName <- Path.Combine(x, "fsi.exe")
-        | None ->
-            let programFiles = Environment.GetEnvironmentVariable("ProgramFiles")
-            let fsdirs = Directory.GetDirectories(programFiles, "FSharp*")
-            let possibleFiles =
-                fsdirs |> Array.choose 
-                    (fun x -> 
-                        let fileInfo = new FileInfo(Path.Combine(x, "bin\fsi.exe"))
-                        if fileInfo.Exists then
-                            Some fileInfo
-                        else
-                            None)
-            possibleFiles |> Array.sort (fun x y -> DateTime.Compare(x.CreationTime, y.CreationTime))
-            if possibleFiles.Length > 0 then
-                fsiProcess.StartInfo.FileName <- possibleFiles.[0].FullName
+    let foundCompiler = 
+        if ConfigurationManager.AppSettings.AllKeys |> Array.exists (fun x -> x = "alt_fs_bin_path") then
+            let path = Path.Combine(ConfigurationManager.AppSettings.get_Item("alt_fs_bin_path"), "fsi.exe")
+            if File.Exists(path) then
+                fsiProcess.StartInfo.FileName <- path
+                true
             else
                 output.Text <- 
-                    "Can not find the fsi.exe, ensure a version of the F# compiler is installed." + Environment.NewLine +
-                    "Please see http://research.microsoft.com/fsharp for details of how to install the compiler"
-    fsiProcess.StartInfo.UseShellExecute <- false
-    fsiProcess.StartInfo.RedirectStandardError <- true
-    fsiProcess.StartInfo.RedirectStandardInput <- true
-    fsiProcess.StartInfo.RedirectStandardOutput <- true
-    fsiProcess.ErrorDataReceived.Add(fun ea -> lock errorQueue (fun () -> errorQueue.Enqueue(ea.Data)) )
-    fsiProcess.OutputDataReceived.Add(fun ea -> lock outputQueue (fun () ->  outputQueue.Enqueue(ea.Data)) )
-    fsiProcess.Exited.Add(fun ea -> 
-                        output.AppendText("fsi.exe died" + Environment.NewLine)
-                        output.AppendText("restarting ..." + Environment.NewLine)
-                        fsiProcess.Start() |> ignore)
-    fsiProcess.Start() |> ignore
-    fsiProcess.BeginErrorReadLine()
-    fsiProcess.BeginOutputReadLine()
-    let timer = new Timer(Interval = 1000)
-    let readAll (q : Queue<string>) =
-        while q.Count > 0 do
-            output.AppendText(q.Dequeue() + Environment.NewLine)
-    timer.Tick.Add(fun _ -> 
-                    lock errorQueue (fun () -> readAll errorQueue)
-                    lock outputQueue (fun () -> readAll outputQueue))
-    timer.Start()
+                    "you are trying to use the app setting alt_fs_bin_path, but fsi.exe is not localed in the given directory"
+                false
+        else
+            let path = Environment.GetEnvironmentVariable("PATH")
+            let paths = path.Split([|';'|])
+            let path = paths |> Array.tryfind (fun x -> File.Exists(Path.Combine(x, "fsi.exe")))
+            match path with
+            | Some x -> 
+                fsiProcess.StartInfo.FileName <- Path.Combine(x, "fsi.exe")
+                true
+            | None ->
+                let programFiles = Environment.GetEnvironmentVariable("ProgramFiles")
+                let fsdirs = Directory.GetDirectories(programFiles, "FSharp*")
+                let possibleFiles =
+                    fsdirs |> Array.choose 
+                        (fun x -> 
+                            let fileInfo = new FileInfo(Path.Combine(x, "bin\fsi.exe"))
+                            if fileInfo.Exists then
+                                Some fileInfo
+                            else
+                                None)
+                possibleFiles |> Array.sort (fun x y -> DateTime.Compare(x.CreationTime, y.CreationTime))
+                if possibleFiles.Length > 0 then
+                    fsiProcess.StartInfo.FileName <- possibleFiles.[0].FullName
+                    true
+                else
+                    output.Text <- 
+                        "Can not find the fsi.exe, ensure a version of the F# compiler is installed." + Environment.NewLine +
+                        "Please see http://research.microsoft.com/fsharp for details of how to install the compiler"
+                    false
+    if foundCompiler then
+        fsiProcess.StartInfo.UseShellExecute <- false
+        fsiProcess.StartInfo.RedirectStandardError <- true
+        fsiProcess.StartInfo.RedirectStandardInput <- true
+        fsiProcess.StartInfo.RedirectStandardOutput <- true
+        fsiProcess.ErrorDataReceived.Add(fun ea -> lock errorQueue (fun () -> errorQueue.Enqueue(ea.Data)) )
+        fsiProcess.OutputDataReceived.Add(fun ea -> lock outputQueue (fun () ->  outputQueue.Enqueue(ea.Data)) )
+        fsiProcess.Exited.Add(fun ea -> 
+                            output.AppendText("fsi.exe died" + Environment.NewLine)
+                            output.AppendText("restarting ..." + Environment.NewLine)
+                            fsiProcess.Start() |> ignore)
+        fsiProcess.Start() |> ignore
+        fsiProcess.BeginErrorReadLine()
+        fsiProcess.BeginOutputReadLine()
+        let timer = new Timer(Interval = 1000)
+        let readAll (q : Queue<string>) =
+            while q.Count > 0 do
+                output.AppendText(q.Dequeue() + Environment.NewLine)
+        timer.Tick.Add(fun _ -> 
+                        lock errorQueue (fun () -> readAll errorQueue)
+                        lock outputQueue (fun () -> readAll outputQueue))
+        timer.Start()
 
 type FSharpInteractive = class
     inherit AbstractPadContent

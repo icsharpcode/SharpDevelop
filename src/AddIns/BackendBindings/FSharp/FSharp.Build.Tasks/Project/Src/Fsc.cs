@@ -117,7 +117,7 @@ namespace FSharp.Build.Tasks
 				if (path != null) {
 					path = Path.Combine(path, ToolName);
 				} else {
-					string[] dirs = Directory.GetDirectories(Environment.GetEnvironmentVariable("ProgramFiles"));
+					string[] dirs = Directory.GetDirectories(Environment.GetEnvironmentVariable("ProgramFiles"), "FSharp*" );
 					List<FileInfo> files = new List<FileInfo>();
 					foreach (string dir in dirs) {
 						FileInfo file = new FileInfo(Path.Combine(Path.Combine(dir, "bin"), ToolName));
@@ -128,9 +128,10 @@ namespace FSharp.Build.Tasks
 					if (files.Count > 0) {
 						files.Sort(delegate(FileInfo x, FileInfo y) { return DateTime.Compare(x.CreationTime, y.CreationTime); });
 						path = files[0].FullName;
-					} else {
-						throw new Exception("can not find the fsi.exe, ensure a version of the F# compiler is installed");
-					}
+					} 
+          //else {
+          //  throw new Exception("can not find the fsi.exe, ensure a version of the F# compiler is installed");
+          //}
 				}
 			}
 			return path;
@@ -236,6 +237,7 @@ namespace FSharp.Build.Tasks
 			} else if (matchNoLine.Success) {
 				CompilerError error = new CompilerError();
 				error.Column = Int32.Parse(matchNoLine.Result("${column}"));
+        error.Line = Int32.Parse(matchNoLine.Result("${line}"));
 				error.FileName = Path.GetFullPath(matchNoLine.Result("${file}"));
 				error.IsWarning = matchNoLine.Result("${error}") == "warning";
 				error.ErrorNumber = matchNoLine.Result("${number}");
