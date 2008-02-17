@@ -69,7 +69,9 @@ module TheControl =
             if possibleFiles.Length > 0 then
                 fsiProcess.StartInfo.FileName <- possibleFiles.[0].FullName
             else
-                failwith "can not find the fsi.exe, ensure a version of the F# compiler is installed"
+                output.Text <- 
+                    "Can not find the fsi.exe, ensure a version of the F# compiler is installed." + Environment.NewLine +
+                    "Please see http://research.microsoft.com/fsharp for details of how to install the compiler"
     fsiProcess.StartInfo.UseShellExecute <- false
     fsiProcess.StartInfo.RedirectStandardError <- true
     fsiProcess.StartInfo.RedirectStandardInput <- true
