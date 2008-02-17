@@ -147,10 +147,14 @@ namespace ICSharpCode.SharpDevelop
 			#endif
 			if (!padContentCreated) {
 				padContentCreated = true;
-				if (addIn != null) {
-					padContent = (IPadContent)addIn.CreateObject(Class);
-				} else {
-					padContent = (IPadContent)Activator.CreateInstance(padType);
+				try {
+					if (addIn != null) {
+						padContent = (IPadContent)addIn.CreateObject(Class);
+					} else {
+						padContent = (IPadContent)Activator.CreateInstance(padType);
+					}
+				} catch (Exception ex) {
+					MessageService.ShowError(ex, "Error creating pad instance");
 				}
 			}
 		}
