@@ -93,9 +93,7 @@
 		      resource   = "F#.FileIcon"/>
 	</Path>
 	
-	<!-- Disabled FSharpInteractive pad. 
-       If F# is not installed SharpDevelop cannot run if this pad is enabled.
-  <Path name = "/SharpDevelop/Workbench/Pads">
+	<Path name = "/SharpDevelop/Workbench/Pads">
 		<Pad id       = "FSharpInteractive"
 		     category = "Main"
 		     title    = "F# Interactive"
@@ -104,7 +102,7 @@
 		     class    = "FSharpBinding.FSharpInteractive"/>
 	</Path>
 
-  <Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/ContextMenu">
+	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/ContextMenu">
 		<Condition name = "ProjectActive" activeproject="F#">
 			<MenuItem id = "SendToFSharpInteractive"
 				  label = "Send To F# Interactive"
@@ -112,9 +110,9 @@
 				  class= "FSharpBinding.SentToFSharpInteractive"/>
 		</Condition>
 	</Path>
-  -->
 
-  <Path path = "/SharpDevelop/Workbench/LanguageBindings">
+
+  	<Path path = "/SharpDevelop/Workbench/LanguageBindings">
 		<LanguageBinding id                   = "F#"
 		                 guid                 = "{982E8BC1-ACD7-4dbf-96AB-B2CE67D6A008}"
 		                 supportedextensions  = ".fs"
