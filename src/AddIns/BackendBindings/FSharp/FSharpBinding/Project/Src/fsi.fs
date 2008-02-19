@@ -30,15 +30,13 @@ module TheControl =
     let panel = new Panel()
     let input = new TextBox(Anchor = (AnchorStyles.Left ||| AnchorStyles.Top ||| AnchorStyles.Right),
                             Width = panel.Width)
-    input.KeyUp.Add(fun ea -> 
-                        if ea.KeyData = Keys.Return then
-                            fsiProcess.StandardInput.WriteLine(input.Text)
-                            input.Text <- "" )
     let output = new TextBox(Multiline = true,
                              Top = input.Height,
                              Height = panel.Height - input.Height,
                              Width = panel.Width,
                              ReadOnly = true,
+                             ScrollBars = ScrollBars.Both,
+                             WordWrap = false,
                              Anchor = (AnchorStyles.Left ||| AnchorStyles.Top ||| AnchorStyles.Right ||| AnchorStyles.Bottom))
     panel.Controls.Add(input)
     panel.Controls.Add(output)
@@ -55,7 +53,7 @@ module TheControl =
         else
             let path = Environment.GetEnvironmentVariable("PATH")
             let paths = path.Split([|';'|])
-            let path = paths |> Array.tryfind (fun x -> File.Exists(Path.Combine(x, "fsi.exe")))
+            let path =  paths |> Array.tryfind (fun x -> try File.Exists(Path.Combine(x, "fsi.exe")) with _ -> false)
             match path with
             | Some x -> 
                 fsiProcess.StartInfo.FileName <- Path.Combine(x, "fsi.exe")
@@ -81,7 +79,13 @@ module TheControl =
                         "Please see http://research.microsoft.com/fsharp for details of how to install the compiler"
                     false
     if foundCompiler then
+        input.KeyUp.Add(fun ea -> 
+                            if ea.KeyData = Keys.Return then
+                                fsiProcess.StandardInput.WriteLine(input.Text)
+                                input.Text <- "" )
+        //fsiProcess.StartInfo.Arguments <- "--fsi-server sharpdevelopfsi"
         fsiProcess.StartInfo.UseShellExecute <- false
+        fsiProcess.StartInfo.CreateNoWindow <- true
         fsiProcess.StartInfo.RedirectStandardError <- true
         fsiProcess.StartInfo.RedirectStandardInput <- true
         fsiProcess.StartInfo.RedirectStandardOutput <- true
@@ -102,6 +106,13 @@ module TheControl =
                         lock errorQueue (fun () -> readAll errorQueue)
                         lock outputQueue (fun () -> readAll outputQueue))
         timer.Start()
+    else
+        input.KeyUp.Add(fun ea -> 
+                            if ea.KeyData = Keys.Return then
+                                output.Text <- 
+                                    (output.Text + Environment.NewLine +
+                                     "F# not installed - could not execute command")
+                                input.Text <- "" )
 
 type FSharpInteractive = class
     inherit AbstractPadContent
@@ -114,13 +125,14 @@ type SentToFSharpInteractive = class
     inherit AbstractMenuCommand
     new () = {}
     override x.Run() =
-        let window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow
-        if window <> null then
-            match window.ActiveViewContent :> obj with
-            | :? ITextEditorControlProvider as textArea ->
-                let textArea = textArea.TextEditorControl.ActiveTextAreaControl.TextArea
-                for selection in textArea.SelectionManager.SelectionCollection do
-                    TheControl.fsiProcess.StandardInput.WriteLine(selection.SelectedText)
-                TheControl.fsiProcess.StandardInput.WriteLine(";;")
-            | _ -> ()
+        if TheControl.foundCompiler then
+            let window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow
+            if window <> null then
+                match window.ActiveViewContent :> obj with
+                | :? ITextEditorControlProvider as textArea ->
+                    let textArea = textArea.TextEditorControl.ActiveTextAreaControl.TextArea
+                    for selection in textArea.SelectionManager.SelectionCollection do
+                        TheControl.fsiProcess.StandardInput.WriteLine(selection.SelectedText)
+                    TheControl.fsiProcess.StandardInput.WriteLine(";;")
+                | _ -> ()
 end

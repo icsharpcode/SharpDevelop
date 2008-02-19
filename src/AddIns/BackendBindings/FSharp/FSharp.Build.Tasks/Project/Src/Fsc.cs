@@ -102,40 +102,50 @@ namespace FSharp.Build.Tasks
 		protected override string ToolName {
 		  get { return "fsc.exe"; }
 		}
-	
-		protected override string GenerateFullPathToTool() 
-		{
-			string path = null;
-			if (Array.Exists<string>(ConfigurationManager.AppSettings.AllKeys, delegate(string k) { return k == "alt_fs_bin_path"; })) {
-				path = Path.Combine(ConfigurationManager.AppSettings["alt_fs_bin_path"], ToolName);
-				if (!File.Exists(path)) {
-					throw new Exception("you are trying to use the app setting alt_fs_bin_path, but fsc.exe is not localed in the given directory");
-				}
-			} else {
-				string[] paths = Environment.GetEnvironmentVariable("path").Split(';');
-				path = Array.Find(paths, delegate(string x) { return File.Exists(Path.Combine(x, "fsc.exe")); });
-				if (path != null) {
-					path = Path.Combine(path, ToolName);
-				} else {
-					string[] dirs = Directory.GetDirectories(Environment.GetEnvironmentVariable("ProgramFiles"), "FSharp*" );
-					List<FileInfo> files = new List<FileInfo>();
-					foreach (string dir in dirs) {
-						FileInfo file = new FileInfo(Path.Combine(Path.Combine(dir, "bin"), ToolName));
-						if (file.Exists) {
-							files.Add(file);
-						}
-					}
-					if (files.Count > 0) {
-						files.Sort(delegate(FileInfo x, FileInfo y) { return DateTime.Compare(x.CreationTime, y.CreationTime); });
-						path = files[0].FullName;
-					} 
+
+    protected override string GenerateFullPathToTool() {
+      string path = null;
+      if (Array.Exists<string>(ConfigurationManager.AppSettings.AllKeys, delegate(string k) { return k == "alt_fs_bin_path"; })) {
+        path = Path.Combine(ConfigurationManager.AppSettings["alt_fs_bin_path"], ToolName);
+        if (!File.Exists(path)) {
+          throw new Exception("you are trying to use the app setting alt_fs_bin_path, but fsc.exe is not localed in the given directory");
+        }
+      }
+      else {
+        string[] paths = Environment.GetEnvironmentVariable("path").Split(';');
+        path = Array.Find(paths, delegate(string x) {
+          bool res = false;
+          try {
+            res = File.Exists(Path.Combine(x, "fsc.exe"));
+          }
+          catch {
+            res = false;
+          }
+          return res;
+        });
+        if (path != null) {
+          path = Path.Combine(path, ToolName);
+        }
+        else {
+          string[] dirs = Directory.GetDirectories(Environment.GetEnvironmentVariable("ProgramFiles"), "FSharp*");
+          List<FileInfo> files = new List<FileInfo>();
+          foreach (string dir in dirs) {
+            FileInfo file = new FileInfo(Path.Combine(Path.Combine(dir, "bin"), ToolName));
+            if (file.Exists) {
+              files.Add(file);
+            }
+          }
+          if (files.Count > 0) {
+            files.Sort(delegate(FileInfo x, FileInfo y) { return DateTime.Compare(x.CreationTime, y.CreationTime); });
+            path = files[0].FullName;
+          }
           //else {
           //  throw new Exception("can not find the fsi.exe, ensure a version of the F# compiler is installed");
           //}
-				}
-			}
-			return path;
-		}
+        }
+      }
+      return path;
+    }
 	
 		protected override string GenerateCommandLineCommands() 
 		{
