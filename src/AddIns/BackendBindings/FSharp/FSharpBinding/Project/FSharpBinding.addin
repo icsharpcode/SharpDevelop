@@ -93,7 +93,6 @@
 		      resource   = "F#.FileIcon"/>
 	</Path>
 	
-<!-- Disabled F# interactive pad temporarily.
 	<Path name = "/SharpDevelop/Workbench/Pads">
 		<Pad id       = "FSharpInteractive"
 		     category = "Main"
@@ -111,7 +110,7 @@
 				  class= "FSharpBinding.SentToFSharpInteractive"/>
 		</Condition>
 	</Path>
--->
+	
 	<Path path = "/SharpDevelop/Workbench/LanguageBindings">
 		<LanguageBinding id                   = "F#"
 		                 guid                 = "{982E8BC1-ACD7-4dbf-96AB-B2CE67D6A008}"

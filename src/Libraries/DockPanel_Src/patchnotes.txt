@@ -20,3 +20,7 @@ Patch #3:
 	This fixes the System.InvalidOperationException: Invalid Content: ActiveContent must be one ofthe visible contents, or null if there is no visible content.
 	that occurs on layout changes iff no document is open and a pad has the focus.
  Committed in revision 2751.
+
+Patch #4:
+	Prevent stack overflow in DockContentHandler.cs when showing a pad in certain layout configurations.
+ Committed in revision 2970.

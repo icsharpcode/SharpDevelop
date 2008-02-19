@@ -763,6 +763,8 @@ System.InvalidOperationException: Invalid Content: ActiveContent must be one oft
 
 			if (DockState == DockState.Unknown)
 				Show(dockPanel, DefaultShowState);
+			else if (Pane == null)
+				Show(dockPanel, DockState == DockState.Hidden ? DefaultShowState : DockState);
 			else			
 				Activate();
 		}
