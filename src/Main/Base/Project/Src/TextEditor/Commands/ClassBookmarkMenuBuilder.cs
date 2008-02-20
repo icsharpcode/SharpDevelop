@@ -119,20 +119,25 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 					{
 						if (c.CompilationUnit.Classes.Count == 1) {
 							// Rename file to ##
-							cmd = new MenuCommand(StringParser.Parse("${res:SharpDevelop.Refactoring.RenameFileTo}", new string[,] {{ "FileName", Path.GetFileName(correctFileName) }}),
-							                      delegate {
-							                      	FileService.RenameFile(c.CompilationUnit.FileName, correctFileName, false);
-							                      	if (c.ProjectContent.Project != null) {
-							                      		((IProject)c.ProjectContent.Project).Save();
-							                      	}
-							                      });
+							cmd = new MenuCommand(
+								StringParser.Parse("${res:SharpDevelop.Refactoring.RenameFileTo}",
+								                   new string[,] {{ "FileName", Path.GetFileName(correctFileName) }}),
+								delegate {
+									IProject p = (IProject)c.ProjectContent.Project;
+									RenameFile(p, c.CompilationUnit.FileName, correctFileName);
+									if (p != null) {
+										p.Save();
+									}
+								});
 							list.Add(cmd);
 						} else if (language.RefactoringProvider.SupportsCreateNewFileLikeExisting && language.RefactoringProvider.SupportsGetFullCodeRangeForType) {
 							// Move class to file ##
-							cmd = new MenuCommand(StringParser.Parse("${res:SharpDevelop.Refactoring.MoveClassToFile}", new string[,] {{ "FileName", Path.GetFileName(correctFileName) }}),
-							                      delegate {
-							                      	MoveClassToFile(c, correctFileName);
-							                      });
+							cmd = new MenuCommand(
+								StringParser.Parse("${res:SharpDevelop.Refactoring.MoveClassToFile}",
+								                   new string[,] {{ "FileName", Path.GetFileName(correctFileName) }}),
+								delegate {
+									MoveClassToFile(c, correctFileName);
+								});
 							list.Add(cmd);
 						}
 					}
@@ -162,6 +167,32 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			list.Add(cmd);
 			
 			return list.ToArray();
+		}
+		
+		static void RenameFile(IProject p, string oldFileName, string newFileName)
+		{
+			FileService.RenameFile(oldFileName, newFileName, false);
+			if (p != null) {
+				string oldPrefix = Path.GetFileNameWithoutExtension(oldFileName) + ".";
+				string newPrefix = Path.GetFileNameWithoutExtension(newFileName) + ".";
+				foreach (ProjectItem item in p.Items) {
+					FileProjectItem fileItem = item as FileProjectItem;
+					if (fileItem == null)
+						continue;
+					string dependentUpon = fileItem.DependentUpon;
+					if (string.IsNullOrEmpty(dependentUpon))
+						continue;
+					string directory = Path.GetDirectoryName(fileItem.FileName);
+					dependentUpon = Path.Combine(directory, dependentUpon);
+					if (FileUtility.IsEqualFileName(dependentUpon, oldFileName)) {
+						fileItem.DependentUpon = FileUtility.GetRelativePath(directory, newFileName);
+						string fileName = Path.GetFileName(fileItem.FileName);
+						if (fileName.StartsWith(oldPrefix)) {
+							RenameFile(p, fileItem.FileName, Path.Combine(directory, newPrefix + fileName.Substring(oldPrefix.Length)));
+						}
+					}
+				}
+			}
 		}
 		
 		static void MoveClassToFile(IClass c, string newFileName)

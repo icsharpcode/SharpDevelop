@@ -167,6 +167,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 			}
 		}
+		
 		public override object AcceptVisitor(ProjectBrowserTreeNodeVisitor visitor, object data)
 		{
 			return visitor.Visit(this, data);

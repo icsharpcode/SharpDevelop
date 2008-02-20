@@ -80,7 +80,12 @@ namespace ICSharpCode.Svn
 			if (allowedStatus.Length == 0 || (allowedStatus.Length == 1 && allowedStatus[0].Length == 0)) {
 				return true;
 			}
-			string status = OverlayIconManager.GetStatus(fileName).ToString();
+			string status;
+			if (RegisterEventsCommand.CanBeVersionControlledFile(fileName)) {
+				status = OverlayIconManager.GetStatus(fileName).ToString();
+			} else {
+				status = "Unversioned";
+			}
 			/*if (status == "Unversioned") {
 				PropertyDictionary pd = SvnClient.Instance.Client.PropGet("svn:ignore", Path.GetDirectoryName(fileName), Revision.Working, Recurse.None);
 				if (pd != null) {
