@@ -572,7 +572,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					ResolveResult rr = ResolveMember(tmp.DefaultReturnType, identifier,
 					                                 identifierExpression.TypeArguments,
 					                                 identifierExpression.Parent is InvocationExpression,
-					                                 false, null);
+					                                 false, true);
 					if (rr != null && rr.IsValid)
 						return rr;
 					// also try to resolve the member in outer classes

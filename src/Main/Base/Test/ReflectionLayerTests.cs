@@ -19,9 +19,64 @@ using NUnit.Framework;
 namespace ICSharpCode.SharpDevelop.Tests
 {
 	[TestFixture]
-	public class ReflectionLayerTests
+	public class ReflectionLayerTests : ReflectionOrCecilLayerTests
 	{
-		IProjectContent pc = ParserService.DefaultProjectContentRegistry.Mscorlib;
+		public ReflectionLayerTests()
+		{
+			pc = ParserService.DefaultProjectContentRegistry.Mscorlib;
+		}
+		
+		protected override IClass GetClass(Type type)
+		{
+			ICompilationUnit cu = new ReflectionProjectContent("TestName", "testlocation", new DomAssemblyName[0], ParserService.DefaultProjectContentRegistry).AssemblyCompilationUnit;
+			IClass c = new ReflectionClass(cu, type, type.FullName, null);
+			cu.ProjectContent.AddClassToNamespaceList(c);
+			return c;
+		}
+	}
+	
+	[TestFixture]
+	public class ReflectionWithRoundTripLayerTests : ReflectionOrCecilLayerTests
+	{
+		public ReflectionWithRoundTripLayerTests()
+		{
+			pc = ParserService.DefaultProjectContentRegistry.Mscorlib;
+		}
+		
+		protected override IClass GetClass(Type type)
+		{
+			ICompilationUnit cu = new ReflectionProjectContent("TestName", "testlocation", new DomAssemblyName[0], ParserService.DefaultProjectContentRegistry).AssemblyCompilationUnit;
+			IClass c = new ReflectionClass(cu, type, type.FullName, null);
+			cu.ProjectContent.AddClassToNamespaceList(c);
+			
+			MemoryStream memory = new MemoryStream();
+			DomPersistence.WriteProjectContent((ReflectionProjectContent)c.ProjectContent, memory);
+			
+			memory.Position = 0;
+			return DomPersistence.LoadProjectContent(memory, ParserService.DefaultProjectContentRegistry).Classes.Single();
+		}
+	}
+	
+	[TestFixture]
+	public class CecilLayerTests : ReflectionOrCecilLayerTests
+	{
+		public CecilLayerTests()
+		{
+			pc = CecilReader.LoadAssembly(typeof(object).Assembly.Location, ParserService.DefaultProjectContentRegistry);;
+		}
+		
+		protected override IClass GetClass(Type type)
+		{
+			IProjectContent pc = CecilReader.LoadAssembly(type.Assembly.Location, ParserService.DefaultProjectContentRegistry);
+			IClass c = (IClass)pc.GetElement(type.FullName);
+			Assert.IsNotNull(c);
+			return c;
+		}
+	}
+	
+	public abstract class ReflectionOrCecilLayerTests
+	{
+		protected IProjectContent pc;
 		
 		[Test]
 		public void InheritanceTest()
@@ -51,6 +106,16 @@ namespace ICSharpCode.SharpDevelop.Tests
 				Assert.AreEqual("System.Runtime.InteropServices._Exception", subClasses[3].FullyQualifiedName);
 				Assert.AreEqual("System.Object", subClasses[4].FullyQualifiedName);
 			}
+		}
+		
+		[Test]
+		public void GenericPropertyTest()
+		{
+			IClass c = pc.GetClass("System.Collections.Generic.Comparer", 1);
+			IProperty def = c.Properties.First(p => p.Name == "Default");
+			ConstructedReturnType crt = def.ReturnType.CastToConstructedReturnType();
+			Assert.AreEqual("System.Collections.Generic.Comparer", crt.FullyQualifiedName);
+			Assert.IsTrue(crt.TypeArguments[0].IsGenericReturnType);
 		}
 		
 		[Test]
@@ -114,27 +179,20 @@ namespace ICSharpCode.SharpDevelop.Tests
 			Assert.AreSame(c.DefaultReturnType, VoidReturnType.Instance, "VoidReturnType.Instance is c.DefaultReturnType");
 		}
 		
-		class TestClass<A, B> where A : B {
+		public class TestClass<A, B> where A : B {
 			public void TestMethod<K, V>(string param) where V: K where K: IComparable {}
 			
 			public void GetIndex<T>(T element) where T: IEquatable<T> {}
 		}
 		
+		protected abstract IClass GetClass(Type type);
+		
 		[Test]
 		public void ReflectionParserTest()
 		{
-			ICompilationUnit cu = new ReflectionProjectContent("TestName", "testlocation", new DomAssemblyName[0], ParserService.DefaultProjectContentRegistry).AssemblyCompilationUnit;
-			IClass c = new ReflectionClass(cu, typeof(TestClass<,>), typeof(TestClass<,>).FullName, null);
-			cu.ProjectContent.AddClassToNamespaceList(c);
+			IClass c = GetClass(typeof(TestClass<,>));
 			
 			CheckClass(c);
-			MemoryStream memory = new MemoryStream();
-			DomPersistence.WriteProjectContent((ReflectionProjectContent)cu.ProjectContent, memory);
-			
-			memory.Position = 0;
-			foreach (IClass c2 in DomPersistence.LoadProjectContent(memory, ParserService.DefaultProjectContentRegistry).Classes) {
-				CheckClass(c2);
-			}
 		}
 		
 		void CheckClass(IClass c)

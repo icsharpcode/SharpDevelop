@@ -193,6 +193,23 @@ class DerivedClass<A,B> : BaseClass<B,A> {
 			rr = Resolve(program, "b", 7) as MemberResolveResult;
 			Assert.AreEqual("A", rr.ResolvedType.Name);
 		}
+		
+		[Test]
+		public void PropertyOnGenericClass()
+		{
+			string program = @"using System;
+class T {
+	void M() {
+	
+	}
+}
+";
+			MemberResolveResult rr = Resolve(program, "System.Collections.Generic.Comparer<string>.Default", 4) as MemberResolveResult;
+			Assert.AreEqual("System.Collections.Generic.Comparer.Default", rr.ResolvedMember.FullyQualifiedName);
+			Assert.AreEqual("System.Collections.Generic.Comparer<string>",
+			                (new Dom.CSharp.CSharpAmbience { ConversionFlags = ConversionFlags.UseFullyQualifiedTypeNames } )
+			                .Convert(rr.ResolvedType));
+		}
 		#endregion
 		
 		#region CodeCompletion inside generic classes

@@ -1166,6 +1166,25 @@ class B {
 		}
 		
 		[Test]
+		public void ProtectedMemberVisibleWithImplicitThisReferenceTest()
+		{
+			string program = @"using System;
+class A : B {
+	void TestMethod(A a) {
+		
+	}
+}
+class B {
+	protected int member;
+}
+";
+			ArrayList results = CtrlSpaceResolveCSharp(program, 4, ExpressionContext.Default);
+			Assert.IsTrue(MemberExists(results, "member"), "member should be in completion lookup");
+			ResolveResult result = Resolve(program, "member", 4);
+			Assert.IsTrue(result != null && result.IsValid, "member should be found!");
+		}
+		
+		[Test]
 		public void ProtectedInvisibleMemberTest()
 		{
 			string program = @"using System;
@@ -1270,11 +1289,50 @@ class B {
 			Assert.IsTrue(result != null && result.IsValid, "method should be found!");
 		}
 		
+		[Test]
+		public void ProtectedMethodVisibleWithImplicitThisReferenceTest()
+		{
+			string program = @"using System;
+class A : B {
+	void TestMethod(A a) {
+		
+	}
+}
+class B {
+	protected int Method();
+}
+";
+			ArrayList results = CtrlSpaceResolveCSharp(program, 4, ExpressionContext.Default);
+			Assert.IsTrue(MemberExists(results, "Method"), "method should be in completion lookup");
+			ResolveResult result = Resolve(program, "Method()", 4);
+			Assert.IsTrue(result != null && result.IsValid, "method should be found!");
+		}
+		
+		[Test]
+		public void ProtectedMethodVisibleWithImplicitThisReferenceConflictsWithClassNameTest()
+		{
+			string program = @"using System;
+class A : B {
+	void TestMethod(A a) {
+		
+	}
+}
+class B {
+	protected int Method();
+}
+class Method { }
+";
+			ArrayList results = CtrlSpaceResolveCSharp(program, 4, ExpressionContext.Default);
+			Assert.IsTrue(MemberExists(results, "Method"), "method should be in completion lookup");
+			ResolveResult result = Resolve(program, "Method()", 4);
+			Assert.IsTrue(result != null && result.IsValid, "method should be found!");
+		}
+		
 		bool MemberExists(ArrayList members, string name)
 		{
 			foreach (object o in members) {
 				IMember m = o as IMember;
-				if (m.Name == name) return true;
+				if (m != null && m.Name == name) return true;
 			}
 			return false;
 		}

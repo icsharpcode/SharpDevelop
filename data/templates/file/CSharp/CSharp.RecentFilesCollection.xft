@@ -4,6 +4,7 @@
 		name		= "${res:Templates.File.RecentFilesCollection.Name}"
 		icon		= "C#.File.NewClass"
 		category	= "C#"
+		subcategory	= "Configuration Classes"
 		defaultname	= "Class${Number}.cs"
 		language	= "C#"/>
 	<Description>${res:Templates.File.RecentFilesCollection.Description}</Description>  

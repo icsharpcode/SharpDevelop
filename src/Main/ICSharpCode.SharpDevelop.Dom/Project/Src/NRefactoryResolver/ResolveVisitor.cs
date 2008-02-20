@@ -272,6 +272,10 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 			
 			ResolveResult rr = Resolve(invocationExpression.TargetObject);
+			MixedResolveResult mixedRR = rr as MixedResolveResult;
+			if (mixedRR != null) {
+				rr = mixedRR.PrimaryResult;
+			}
 			MethodGroupResolveResult mgrr = rr as MethodGroupResolveResult;
 			if (mgrr != null) {
 				if (resolver.Language == SupportedLanguage.VBNet && mgrr.Methods.All(mg => mg.Count == 0))

@@ -29,18 +29,23 @@ namespace ICSharpCode.SharpDevelop.Dom.ReflectionLayer
 		
 		public static IReturnType Create(IProjectContent pc, IEntity member, Type type, bool createLazyReturnType)
 		{
+			return Create(pc, member, type, createLazyReturnType, true);
+		}
+		
+		static IReturnType Create(IProjectContent pc, IEntity member, Type type, bool createLazyReturnType, bool forceGenericType)
+		{
 			if (type.IsByRef) {
 				// TODO: Use ByRefRefReturnType
 				return Create(pc, member, type.GetElementType(), createLazyReturnType);
 			} else if (type.IsArray) {
 				return new ArrayReturnType(pc, Create(pc, member, type.GetElementType(), createLazyReturnType), type.GetArrayRank());
-			} else if (type.IsGenericType && !type.IsGenericTypeDefinition) {
+			} else if (type.IsGenericType && (forceGenericType || !type.IsGenericTypeDefinition)) {
 				Type[] args = type.GetGenericArguments();
 				List<IReturnType> para = new List<IReturnType>(args.Length);
 				for (int i = 0; i < args.Length; ++i) {
 					para.Add(Create(pc, member, args[i], createLazyReturnType));
 				}
-				return new ConstructedReturnType(Create(pc, member, type.GetGenericTypeDefinition(), createLazyReturnType), para);
+				return new ConstructedReturnType(Create(pc, member, type.GetGenericTypeDefinition(), createLazyReturnType, false), para);
 			} else if (type.IsGenericParameter) {
 				IClass c = (member is IClass) ? (IClass)member : (member is IMember) ? ((IMember)member).DeclaringType : null;
 				if (c != null && type.GenericParameterPosition < c.TypeParameters.Count) {

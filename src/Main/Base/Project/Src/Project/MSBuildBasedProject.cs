@@ -147,6 +147,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			Name = information.ProjectName;
 			FileName = information.OutputProjectFileName;
 			
+			project.FullFileName = information.OutputProjectFileName;
 			project.DefaultToolsVersion = "3.5";
 			
 			base.IdGuid = "{" + Guid.NewGuid().ToString().ToUpperInvariant() + "}";

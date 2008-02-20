@@ -79,7 +79,6 @@ namespace ICSharpCode.UnitTesting
 					}
 				} catch {
 					runningTestCommand = null;
-					ProjectService.RaiseEventEndBuild();
 					throw;
 				}
 			}
@@ -151,7 +150,6 @@ namespace ICSharpCode.UnitTesting
 					ShowErrorList();
 				}
 				OnAfterRunTests();
-				ProjectService.RaiseEventEndBuild();
 			}
 		}
 		
@@ -227,7 +225,6 @@ namespace ICSharpCode.UnitTesting
 			ResetAllTestResults();
 			
 			OnBeforeRunTests();
-			ProjectService.RaiseEventEndBuild();
 		}
 				
 		/// <summary>
@@ -332,7 +329,6 @@ namespace ICSharpCode.UnitTesting
 				if (TaskService.SomethingWentWrong && ErrorListPad.ShowAfterBuild) {
 					ShowErrorList();
 				}
-				ProjectService.RaiseEventEndBuild();
 			}
 		}
 		
@@ -415,6 +411,7 @@ namespace ICSharpCode.UnitTesting
 		/// </summary>
 		public override void BeforeBuild()
 		{
+			ProjectService.RaiseEventStartBuild();
 			SaveAllFiles.SaveAll();
 		}
 		
@@ -423,6 +420,7 @@ namespace ICSharpCode.UnitTesting
 		/// </summary>
 		public override void AfterBuild()
 		{
+			ProjectService.RaiseEventEndBuild();
 		}
 	}
 		
