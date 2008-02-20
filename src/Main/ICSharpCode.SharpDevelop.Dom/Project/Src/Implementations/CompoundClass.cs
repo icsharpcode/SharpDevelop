@@ -74,6 +74,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			const ModifierEnum defaultClassVisibility = ModifierEnum.Internal;
 			
 			this.BaseTypes.Clear();
+			this.InnerClasses.Clear();
 			this.Attributes.Clear();
 			this.Methods.Clear();
 			this.Properties.Clear();
@@ -100,6 +101,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 						this.BaseTypes.Add(rt);
 					}
 				}
+				this.InnerClasses.AddRange(part.InnerClasses);
 				this.Attributes.AddRange(part.Attributes);
 				this.Methods.AddRange(part.Methods);
 				this.Properties.AddRange(part.Properties);

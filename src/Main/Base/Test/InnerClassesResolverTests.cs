@@ -62,6 +62,61 @@ class A {
 		}
 		
 		[Test]
+		public void InnerClassWithStaticFieldOfSameType()
+		{
+			string program = @"class A {
+	void Test() {
+		
+	}
+	class B {
+		public static B Instance;
+	}
+}
+";
+			ResolveResult result = Resolve(program, "B.Instance", 3);
+			Assert.IsTrue(result is MemberResolveResult);
+			Assert.AreEqual("A.B", result.ResolvedType.FullyQualifiedName);
+		}
+		
+		[Test]
+		public void InnerClassWithStaticFieldOfSameTypeInPartialClass1()
+		{
+			string program = @"partial class A {
+	void Test() {
+		
+	}
+}
+partial class A {
+	class B {
+		public static B Instance;
+	}
+}
+";
+			ResolveResult result = Resolve(program, "B.Instance", 3);
+			Assert.IsTrue(result is MemberResolveResult);
+			Assert.AreEqual("A.B", result.ResolvedType.FullyQualifiedName);
+		}
+		
+		[Test]
+		public void InnerClassWithStaticFieldOfSameTypeInPartialClass2()
+		{
+			string program = @"partial class A {
+	void Test() {
+		
+	}
+	class B {
+		public static B Instance;
+	}
+}
+partial class A {
+}
+";
+			ResolveResult result = Resolve(program, "B.Instance", 3);
+			Assert.IsTrue(result is MemberResolveResult);
+			Assert.AreEqual("A.B", result.ResolvedType.FullyQualifiedName);
+		}
+		
+		[Test]
 		public void ReflectionInnerClass()
 		{
 			string program = @"using System;

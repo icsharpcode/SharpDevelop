@@ -128,7 +128,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			this.Name = name;
 			this.TypeParameterCount = typeParameterCount;
 			this.CurrentCompilationUnit = currentType.CompilationUnit;
-			this.CurrentType = currentType;
+			this.CurrentType = currentType != null ? currentType.GetCompoundClass() : null;
 			this.CaretLine = caretLine;
 			this.CaretColumn = caretColumn;
 		}
@@ -140,7 +140,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			this.Name = name;
 			this.TypeParameterCount = typeParameterCount;
 			this.CurrentCompilationUnit = currentCompilationUnit;
-			this.CurrentType = currentType;
+			this.CurrentType = currentType != null ? currentType.GetCompoundClass() : null;
 			this.CaretLine = caretLine;
 			this.CaretColumn = caretColumn;
 		}
