@@ -317,14 +317,15 @@ namespace VBNetBinding.FormattingStrategy
 				
 				if (ch == '\n' && lineAboveText != null)
 				{
-					// remove comments
-					string texttoreplace = Regex.Replace(lineAboveText, "'.*$", "", RegexOptions.Singleline);
+					string texttoreplace = lineAboveText;
 					// remove string content
 					MatchCollection strmatches = Regex.Matches(texttoreplace, "\"[^\"]*?\"", RegexOptions.Singleline);
 					foreach (Match match in strmatches)
 					{
 						texttoreplace = texttoreplace.Remove(match.Index, match.Length).Insert(match.Index, new String('-', match.Length));
 					}
+					// remove comments
+					texttoreplace = Regex.Replace(texttoreplace, "'.*$", "", RegexOptions.Singleline);
 					
 					if (doCasing)
 					{

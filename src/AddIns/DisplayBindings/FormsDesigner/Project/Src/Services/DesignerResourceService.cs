@@ -254,7 +254,7 @@ namespace ICSharpCode.FormsDesigner.Services
 				newFileProjectItem.DependentUpon = Path.GetFileName(formFileName);
 				newFileProjectItem.Include = FileUtility.GetRelativePath(project.Directory, resourceFileName);
 				ProjectService.AddProjectItem(project, newFileProjectItem);
-				FileService.FireFileCreated(resourceFileName);
+				FileService.FireFileCreated(resourceFileName, false);
 
 				PadDescriptor pd = WorkbenchSingleton.Workbench.GetPad(typeof(ProjectBrowserPad));
 				FileNode formFileNode = ((ProjectBrowserPad)pd.PadContent).ProjectBrowserControl.FindFileNode(formFileName);
