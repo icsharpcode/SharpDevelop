@@ -187,7 +187,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 				FileProjectItem projectItem = new FileProjectItem(project, ItemType.Compile);
 				projectItem.FileName = newFileName;
 				ProjectService.AddProjectItem(project, projectItem);
-				FileService.FireFileCreated(newFileName);
+				FileService.FireFileCreated(newFileName, false);
 				project.Save();
 				ProjectBrowserPad.Instance.ProjectBrowserControl.RefreshView();
 			}

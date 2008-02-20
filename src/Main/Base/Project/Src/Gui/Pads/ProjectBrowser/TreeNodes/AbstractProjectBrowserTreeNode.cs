@@ -114,15 +114,20 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		/// <summary>
-		/// STATIC event called after the initialization of every tree node!
+		/// STATIC event called after the a new tree node was added to the project browser.
 		/// </summary>
-		public static event TreeViewEventHandler AfterNodeInitialize;
+		public static event TreeViewEventHandler OnNewNode;
 		
-		protected override void Initialize()
+		bool isNewNode = true;
+		
+		public override void Refresh()
 		{
-			base.Initialize();
-			if (AfterNodeInitialize != null)
-				AfterNodeInitialize(null, new TreeViewEventArgs(this));
+			base.Refresh();
+			if (isNewNode) {
+				isNewNode = false;
+				if (OnNewNode != null)
+					OnNewNode(null, new TreeViewEventArgs(this));
+			}
 		}
 		
 		Image overlay;

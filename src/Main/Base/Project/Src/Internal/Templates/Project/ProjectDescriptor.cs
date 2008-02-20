@@ -57,6 +57,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		List<FileDescriptionTemplate> files = new List<FileDescriptionTemplate>();
 		List<ProjectItem> projectItems = new List<ProjectItem>();
 		List<ProjectProperty> projectProperties = new List<ProjectProperty>();
+		List<Action<IProject>> createActions = new List<Action<IProject>>();
 		
 		/// <summary>
 		/// Creates a project descriptor for the project node specified by the xml element.
@@ -107,6 +108,9 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				case "Options":
 					ProjectTemplate.WarnObsoleteNode(node, "Options are no longer supported, use properties instead.");
 					break;
+				case "CreateActions":
+					LoadCreateActions(node);
+					break;
 				case "ProjectItems":
 					LoadProjectItems(node);
 					break;
@@ -137,6 +141,34 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 					break;
 				default:
 					throw new TemplateLoadException("Unknown node in <Project>: " + node.Name);
+			}
+		}
+		
+		void LoadCreateActions(XmlElement createActionsElement)
+		{
+			foreach (XmlElement el in createActionsElement) {
+				Action<IProject> action = ReadAction(el);
+				if (action != null)
+					createActions.Add(action);
+			}
+		}
+		
+		static Action<IProject> ReadAction(XmlElement el)
+		{
+			switch (el.Name) {
+				case "RunCommand":
+					if (el.HasAttribute("path")) {
+						ICommand command = (ICommand)AddInTree.BuildItem(el.GetAttribute("path"), null);
+						return project => {
+							command.Owner = project;
+							command.Run();
+						};
+					} else {
+						ProjectTemplate.WarnAttributeMissing(el, "path");
+						return null;
+					}
+				default:
+					throw new TemplateLoadException("Unknown node in <CreateActions>: " + el.Name);
 			}
 		}
 		
@@ -371,6 +403,8 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 					}
 				}
 				
+				RunCreateActions(project);
+				
 				// Save project
 				if (File.Exists(projectLocation)) {
 					StringParser.Properties["projectLocation"] = projectLocation;
@@ -390,6 +424,13 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				// set back outerProjectBasePath
 				projectCreateInformation.ProjectBasePath = outerProjectBasePath;
 				projectCreateInformation.ProjectName = outerProjectName;
+			}
+		}
+		
+		void RunCreateActions(IProject project)
+		{
+			foreach (Action<IProject> action in createActions) {
+				action(project);
 			}
 		}
 		#endregion

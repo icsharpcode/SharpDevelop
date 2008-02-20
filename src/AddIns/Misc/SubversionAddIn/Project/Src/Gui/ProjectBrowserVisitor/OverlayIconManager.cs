@@ -161,8 +161,10 @@ namespace ICSharpCode.Svn
 		
 		public static void ClearStatusCache()
 		{
-			if (client != null) {
-				client.ClearStatusCache();
+			lock (clientLock) {
+				if (client != null) {
+					client.ClearStatusCache();
+				}
 			}
 		}
 		
@@ -171,6 +173,8 @@ namespace ICSharpCode.Svn
 			lock (clientLock) {
 				if (subversionDisabled)
 					return StatusKind.None;
+				
+				//Console.WriteLine(fileName);
 				
 				if (client == null) {
 					try {

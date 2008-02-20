@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.IO;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -131,7 +132,13 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		void FileServiceFileRenamed(object sender, FileRenameEventArgs e)
 		{
-			CallVisitor(new FileRenameTreeNodeVisitor(e.SourceFile, e.TargetFile));
+			if (FileUtility.IsEqualFileName(Path.GetDirectoryName(e.SourceFile),
+			                                Path.GetDirectoryName(e.TargetFile)))
+			{
+				CallVisitor(new FileRenameTreeNodeVisitor(e.SourceFile, e.TargetFile));
+			} else {
+				CallVisitor(new FileRemoveTreeNodeVisitor(e.SourceFile));
+			}
 		}
 		
 		public void RefreshView()
@@ -169,6 +176,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		public FileNode FindFileNode(string fileName)
 		{
+			WorkbenchSingleton.AssertMainThread();
 			return FindFileNode(treeView.Nodes, fileName);
 		}
 		

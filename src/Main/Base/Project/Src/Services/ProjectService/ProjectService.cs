@@ -232,7 +232,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		internal static void BeforeLoadSolution()
+		static void BeforeLoadSolution()
 		{
 			if (openSolution != null) {
 				SaveSolutionPreferences();
@@ -601,6 +601,12 @@ namespace ICSharpCode.SharpDevelop.Project
 				ProjectCreated(null, e);
 			}
 		}
+		internal static void OnSolutionCreated(SolutionEventArgs e)
+		{
+			if (SolutionCreated != null) {
+				SolutionCreated(null, e);
+			}
+		}
 		
 		/// <summary>
 		/// Is raised when a new project is created.
@@ -617,6 +623,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public static event ProjectConfigurationEventHandler ProjectConfigurationChanged;
 		public static event SolutionConfigurationEventHandler SolutionConfigurationChanged;
+		
+		public static event EventHandler<SolutionEventArgs> SolutionCreated;
 		
 		public static event EventHandler                    SolutionLoading;
 		public static event EventHandler<SolutionEventArgs> SolutionLoaded;

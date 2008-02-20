@@ -476,10 +476,10 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
-		public static void FireFileCreated(string fileName)
+		public static void FireFileCreated(string fileName, bool isDirectory)
 		{
 			if (FileCreated != null) {
-				FileCreated(null, new FileEventArgs(fileName, false));
+				FileCreated(null, new FileEventArgs(fileName, isDirectory));
 			}
 		}
 		

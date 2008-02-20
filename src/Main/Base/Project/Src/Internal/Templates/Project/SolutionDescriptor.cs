@@ -135,6 +135,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			} else {
 				newSolution.Save(solutionLocation);
 			}
+			ProjectService.OnSolutionCreated(new SolutionEventArgs(newSolution));
 			newSolution.Dispose();
 			return solutionLocation;
 		}

@@ -31,21 +31,69 @@ namespace ICSharpCode.Svn.Commands
 			FileService.FileRenaming += FileRenaming;
 			FileService.FileCreated += FileCreated;
 			
-			ProjectService.ProjectAdded += ProjectAdded;
+			ProjectService.SolutionCreated += SolutionCreated;
+			ProjectService.ProjectCreated += ProjectCreated;
 			
 			FileUtility.FileSaved += new FileNameEventHandler(FileSaved);
-			AbstractProjectBrowserTreeNode.AfterNodeInitialize += TreeNodeInitialized;
+			AbstractProjectBrowserTreeNode.OnNewNode += TreeNodeCreated;
 		}
 		
-		SvnProjectBrowserVisitor visitor = new SvnProjectBrowserVisitor();
-		
-		void TreeNodeInitialized(object sender, TreeViewEventArgs e)
+		void TreeNodeCreated(object sender, TreeViewEventArgs e)
 		{
-			AbstractProjectBrowserTreeNode node = e.Node as AbstractProjectBrowserTreeNode;
-			node.AcceptVisitor(visitor, null);
+			SolutionNode sn = e.Node as SolutionNode;
+			if (sn != null) {
+				if (CanBeVersionControlledDirectory(sn.Solution.Directory)) {
+					OverlayIconManager.Enqueue(sn);
+				}
+			} else {
+				DirectoryNode dn = e.Node as DirectoryNode;
+				if (dn != null) {
+					if (CanBeVersionControlledDirectory(dn.Directory)) {
+						OverlayIconManager.Enqueue(dn);
+					}
+				} else {
+					FileNode fn = e.Node as FileNode;
+					if (fn != null) {
+						if (CanBeVersionControlledFile(fn.FileName)) {
+							OverlayIconManager.Enqueue(fn);
+						}
+					}
+				}
+			}
 		}
 		
-		void ProjectAdded(object sender, ProjectEventArgs e)
+		void SolutionCreated(object sender, SolutionEventArgs e)
+		{
+			if (!AddInOptions.AutomaticallyAddFiles) return;
+			string solutionFileName = e.Solution.FileName;
+			string solutionDirectory = e.Solution.Directory;
+			
+			if (!CanBeVersionControlledFile(solutionDirectory)) return;
+			
+			try {
+				using (SvnClientWrapper client = new SvnClientWrapper()) {
+					SvnMessageView.HandleNotifications(client);
+					
+					Status status = client.SingleStatus(solutionDirectory);
+					if (status.TextStatus == StatusKind.Unversioned) {
+						client.Add(solutionDirectory, Recurse.None);
+					}
+					status = client.SingleStatus(solutionFileName);
+					if (status.TextStatus == StatusKind.Unversioned) {
+						client.Add(solutionFileName, Recurse.None);
+						client.AddToIgnoreList(solutionDirectory, Path.GetFileName(solutionFileName) + ".cache");
+					}
+				}
+				foreach (IProject p in e.Solution.Projects) {
+					ProjectCreated(null, new ProjectEventArgs(p));
+				}
+			} catch (Exception ex) {
+				MessageService.ShowError(ex, "Solution add exception");
+			}
+		}
+		
+		
+		void ProjectCreated(object sender, ProjectEventArgs e)
 		{
 			if (!AddInOptions.AutomaticallyAddFiles) return;
 			if (!CanBeVersionControlledFile(e.Project.Directory)) return;
@@ -53,6 +101,8 @@ namespace ICSharpCode.Svn.Commands
 			string projectDir = Path.GetFullPath(e.Project.Directory);
 			try {
 				using (SvnClientWrapper client = new SvnClientWrapper()) {
+					SvnMessageView.HandleNotifications(client);
+					
 					Status status = client.SingleStatus(projectDir);
 					if (status.TextStatus != StatusKind.Unversioned)
 						return;
@@ -77,7 +127,7 @@ namespace ICSharpCode.Svn.Commands
 					AddFileWithParentDirectoriesToSvn(client, e.Project.FileName);
 				}
 			} catch (Exception ex) {
-				MessageService.ShowError("Project add exception: " + ex);
+				MessageService.ShowError(ex, "Project add exception");
 			}
 		}
 		
@@ -104,19 +154,28 @@ namespace ICSharpCode.Svn.Commands
 		
 		void FileSaved(object sender, FileNameEventArgs e)
 		{
-			ProjectBrowserPad pad = ProjectBrowserPad.Instance;
-			if (pad == null) return;
 			string fileName = e.FileName;
 			if (!CanBeVersionControlledFile(fileName)) return;
+			ClearStatusCacheAndEnqueueFile(fileName);
+		}
+		
+		void ClearStatusCacheAndEnqueueFile(string fileName)
+		{
+			OverlayIconManager.ClearStatusCache();
+			
+			ProjectBrowserPad pad = ProjectBrowserPad.Instance;
+			if (pad == null) return;
 			FileNode node = pad.ProjectBrowserControl.FindFileNode(fileName);
 			if (node == null) return;
-			OverlayIconManager.ClearStatusCache();
 			OverlayIconManager.Enqueue(node);
 		}
 		
 		void FileCreated(object sender, FileEventArgs e)
 		{
+			// Do not automatically add directories: we cannot rename them while they are in "added" state
+			// This is an issue with SVN 1.4 and will be fixed in SVN 1.5.
 			if (e.IsDirectory) return;
+			
 			if (!AddInOptions.AutomaticallyAddFiles) return;
 			if (!Path.IsPathRooted(e.FileName)) return;
 			
@@ -124,6 +183,8 @@ namespace ICSharpCode.Svn.Commands
 			if (!CanBeVersionControlledFile(fullName)) return;
 			try {
 				using (SvnClientWrapper client = new SvnClientWrapper()) {
+					SvnMessageView.HandleNotifications(client);
+					
 					Status status = client.SingleStatus(fullName);
 					switch (status.TextStatus) {
 						case StatusKind.Unversioned:
@@ -148,6 +209,8 @@ namespace ICSharpCode.Svn.Commands
 				// show "cannot delete directories" message even if
 				// AutomaticallyDeleteFiles (see below) is off!
 				using (SvnClientWrapper client = new SvnClientWrapper()) {
+					SvnMessageView.HandleNotifications(client);
+					
 					Status status = client.SingleStatus(fullName);
 					switch (status.TextStatus) {
 						case StatusKind.None:
@@ -197,6 +260,8 @@ namespace ICSharpCode.Svn.Commands
 			if (!AddInOptions.AutomaticallyDeleteFiles) return;
 			try {
 				using (SvnClientWrapper client = new SvnClientWrapper()) {
+					SvnMessageView.HandleNotifications(client);
+					
 					Status status = client.SingleStatus(fullName);
 					switch (status.TextStatus) {
 						case StatusKind.None:
@@ -246,6 +311,8 @@ namespace ICSharpCode.Svn.Commands
 			if (!CanBeVersionControlledFile(fullSource)) return;
 			try {
 				using (SvnClientWrapper client = new SvnClientWrapper()) {
+					SvnMessageView.HandleNotifications(client);
+					
 					Status status = client.SingleStatus(fullSource);
 					switch (status.TextStatus) {
 						case StatusKind.Unversioned:
@@ -299,6 +366,7 @@ namespace ICSharpCode.Svn.Commands
 				if (args.SourceFile != e.SourceFile || args.TargetFile != e.TargetFile)
 					return;
 				using (SvnClientWrapper client = new SvnClientWrapper()) {
+					SvnMessageView.HandleNotifications(client);
 					client.Add(e.TargetFile, Recurse.None);
 				}
 			}

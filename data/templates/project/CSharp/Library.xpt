@@ -13,11 +13,14 @@
 	<!-- Actions -->
 	<Actions>
 		<Open filename = "MyClass.cs"/>
-		<RunCommand path = "/SharpDevelop/BackendBindings/TemplateCommands/AddDotNet35ReferencesIfTargetFrameworkIs35"/>
 	</Actions>
 	
 	<!-- Template Content -->
 	<Project language="C#">
+		<CreateActions>
+			<RunCommand path = "/SharpDevelop/BackendBindings/TemplateCommands/AddDotNet35ReferencesIfTargetFrameworkIs35"/>
+		</CreateActions>
+		
 		<PropertyGroup>
 			<OutputType>Library</OutputType>
 		</PropertyGroup>

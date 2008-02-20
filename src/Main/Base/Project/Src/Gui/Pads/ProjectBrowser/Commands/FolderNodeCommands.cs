@@ -327,6 +327,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		{
 			upper.Expanding();
 			Directory.CreateDirectory(directoryName);
+			FileService.FireFileCreated(directoryName, true);
 			
 			DirectoryNode directoryNode = new DirectoryNode(directoryName, FileNodeStatus.InProject);
 			directoryNode.AddTo(upper);

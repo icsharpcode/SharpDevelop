@@ -501,7 +501,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					
 					// raise FileCreated event for the new files
 					foreach (KeyValuePair<string, FileDescriptionTemplate> entry in createdFiles) {
-						FileService.FireFileCreated(entry.Key);
+						FileService.FireFileCreated(entry.Key, false);
 					}
 				}
 			}

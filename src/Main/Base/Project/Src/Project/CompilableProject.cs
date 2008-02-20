@@ -426,13 +426,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			public override void Run()
 			{
-				ProjectCreateInformation pci = (ProjectCreateInformation)Owner;
-				foreach (IProject p in pci.CreatedProjects) {
-					CompilableProject cp = p as CompilableProject;
-					if (cp != null && cp.TargetFrameworkVersion == "v3.5") {
-						cp.AddDotnet35References();
-						cp.Save();
-					}
+				CompilableProject project = (CompilableProject)Owner;
+				if (project.TargetFrameworkVersion == "v3.5") {
+					project.AddDotnet35References();
 				}
 			}
 		}

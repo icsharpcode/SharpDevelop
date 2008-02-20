@@ -125,7 +125,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 				}
 				defaultManifest = defaultManifest.Replace("\t", DefaultEditor.Gui.Editor.SharpDevelopTextEditorProperties.Instance.IndentationString);
 				File.WriteAllText(manifestFile, defaultManifest, System.Text.Encoding.UTF8);
-				FileService.FireFileCreated(manifestFile);
+				FileService.FireFileCreated(manifestFile, false);
 			}
 			
 			if (!project.IsFileInProject(manifestFile)) {

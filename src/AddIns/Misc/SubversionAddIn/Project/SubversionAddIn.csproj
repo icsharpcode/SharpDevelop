@@ -78,9 +78,6 @@
     <Compile Include="Src\Gui\HistoryViewDisplayBinding\InfoPanel.Designer.cs">
       <DependentUpon>InfoPanel.cs</DependentUpon>
     </Compile>
-    <Compile Include="Src\InOperationDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="Src\AddInOptions.cs" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <EmbeddedResource Include="Resources\ClientCertDialog.xfrm" />
@@ -107,7 +104,6 @@
     <Compile Include="Src\Gui\HistoryViewDisplayBinding\HistoryViewPanel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Src\Gui\ProjectBrowserVisitor\SvnProjectBrowserVisitor.cs" />
     <Compile Include="Src\Gui\SubversionOptionsPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -125,6 +121,7 @@
     </Compile>
     <Compile Include="Src\Gui\HistoryViewDisplayBinding\DiffPanel.cs" />
     <Compile Include="Src\SvnClientWrapper.cs" />
+    <Compile Include="Src\SvnMessageView.cs" />
     <EmbeddedResource Include="Src\Gui\HistoryViewDisplayBinding\DiffPanel.resx">
       <DependentUpon>DiffPanel.cs</DependentUpon>
     </EmbeddedResource>

@@ -507,14 +507,15 @@ namespace ICSharpCode.SharpDevelop.Project
 				if (System.IO.Directory.Exists(newPath)) {
 					if (System.IO.Directory.GetFileSystemEntries(newPath).Length == 0) {
 						System.IO.Directory.Delete(newPath);
-						FileService.RenameFile(Directory, newPath, true);
 					} else {
 						MessageService.ShowError("The folder already exists and contains files!");
 						Text = oldText;
 						return;
 					}
-				} else {
-					FileService.RenameFile(Directory, newPath, true);
+				}
+				if (!FileService.RenameFile(Directory, newPath, true)) {
+					Text = oldText;
+					return;
 				}
 				
 				this.directory = newPath;
@@ -612,16 +613,12 @@ namespace ICSharpCode.SharpDevelop.Project
 			string copiedName = Path.Combine(Directory, Path.GetFileName(directoryName));
 			if (FileUtility.IsEqualFileName(directoryName, copiedName))
 				return;
-			AddExistingItemsToProject.CopyDirectory(directoryName, this, true);
 			if (performMove) {
-				foreach (OpenedFile file in FileService.OpenedFiles) {
-					if (file.FileName != null &&
-					    FileUtility.IsBaseDirectory(directoryName, file.FileName))
-					{
-						file.FileName = FileUtility.RenameBaseDirectory(file.FileName, directoryName, Path.Combine(this.directory, Path.GetFileName(directoryName)));
-					}
-				}
-				FileService.RemoveFile(directoryName, true);
+				FileService.RenameFile(directoryName, copiedName, true);
+				RecreateSubNodes();
+				Expand();
+			} else {
+				AddExistingItemsToProject.CopyDirectory(directoryName, this, true);
 			}
 		}
 		

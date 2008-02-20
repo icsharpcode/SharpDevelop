@@ -241,8 +241,9 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 		
 		void PathChanged(object sender, EventArgs e)
 		{
-			string solutionPath = NewProjectDirectory;
+			string solutionPath;
 			try {
+				solutionPath = NewProjectDirectory;
 				if (solutionPath.Length > 3 && Path.IsPathRooted(solutionPath)) {
 					solutionPath = solutionPath.Substring(3);
 					bool didCut = false;
@@ -338,12 +339,9 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 					return;
 				}
 				if (createNewSolution) {
-					ProjectService.BeforeLoadSolution();
-				}
-				item.Template.RunOpenActions(cinfo);
-				if (createNewSolution) {
 					ProjectService.LoadSolution(NewSolutionLocation);
 				}
+				item.Template.RunOpenActions(cinfo);
 				
 				NewProjectLocation = cinfo.createdProjects.Count > 0 ? cinfo.createdProjects[0].FileName : "";
 				DialogResult = DialogResult.OK;

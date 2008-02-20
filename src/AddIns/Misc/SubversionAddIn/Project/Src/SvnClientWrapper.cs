@@ -55,7 +55,7 @@ namespace ICSharpCode.Svn
 			}
 		}
 		
-		public static string GetActionString(SvnWcNotify.Actions action)
+		static string GetActionString(SvnWcNotify.Actions action)
 		{
 			switch (action) {
 				case SvnWcNotify.Actions.Add:
@@ -80,113 +80,24 @@ namespace ICSharpCode.Svn
 					return "skipped";
 				case SvnWcNotify.Actions.UpdateUpdate:
 					return "updated";
-				case SvnWcNotify.Actions.UpdateCompleted:
-					return "";
 				case SvnWcNotify.Actions.UpdateExternal:
 					return "updated external";
 				case SvnWcNotify.Actions.CommitModified:
 					return "modified";
 				case SvnWcNotify.Actions.CommitReplaced:
 					return "replaced";
+				case SvnWcNotify.Actions.FailedLock:
+					return "lock failed";
+				case SvnWcNotify.Actions.FailedUnlock:
+					return "unlock failed";
+				case SvnWcNotify.Actions.Locked:
+					return "locked";
+				case SvnWcNotify.Actions.Unlocked:
+					return "unlocked";
 				default:
 					return "unknown";
 			}
 		}
-		#endregion
-		
-		#region stuff that does not belong here
-		/*
-		void ReceiveNotification(object sender, SvnWcNotify e)
-		{
-			if (e.Action == NotifyAction.UpdateCompleted) {
-				SvnCategory.AppendText(Environment.NewLine + "Updated " + e.Path.ToString() + " to revision " + e.Revision + ".");
-				return;
-			}
-			
-			string kind   = GetKindString(e.NodeKind);
-			string action = GetActionString(e.Action);
-			SvnCategory.AppendText(Environment.NewLine + kind + action + " : " + e.Path);
-		}
-		
-		void WriteMid(string str)
-		{
-			const int max = 40;
-			string filler = new String('-', max - str.Length / 2);
-			SvnCategory.AppendText(Environment.NewLine + filler + " " + str + " " + filler);
-			if (str.Length % 2 == 0) {
-				SvnCategory.AppendText("-");
-			}
-		}
-		 */
-		
-		/*
-		class ThreadStartWrapper
-		{
-			ThreadStart innerDelegate;
-			
-			public ThreadStartWrapper(ThreadStart innerDelegate)
-			{
-				this.innerDelegate = innerDelegate;
-			}
-			
-			public void Start()
-			{
-				try {
-					innerDelegate();
-				} catch (ThreadAbortException) {
-					// don't show error message, silently cancel thread
-				} catch (Exception e) {
-					SvnClient.Instance.OperationDone();
-					
-					MessageService.ShowError(e);
-				} finally {
-					SvnClient.Instance.OperationDone();
-				}
-			}
-		}
-		
-		InOperationDialog inOperationForm;
-		bool done = false;
-		public void OperationStart(string operationName, ThreadStart threadStart)
-		{
-			done = false;
-			WriteMid(operationName);
-			
-			Thread thread = new Thread(new ThreadStart(new ThreadStartWrapper(threadStart).Start));
-			thread.Name = "SvnOperation";
-			thread.IsBackground = true;
-			inOperationForm = new InOperationDialog(operationName, thread);
-			inOperationForm.Owner = WorkbenchSingleton.MainForm;
-			inOperationForm.Show();
-			thread.Start();
-		}
-		
-		void OperationDone()
-		{
-			if (done) {
-				return;
-			}
-			WorkbenchSingleton.SafeThreadCall(WriteMid, "Done");
-			try {
-				if (inOperationForm != null) {
-					inOperationForm.Operation = null;
-					WorkbenchSingleton.SafeThreadCall(inOperationForm.Close);
-					inOperationForm = null;
-				}
-			} catch (Exception e) {
-				MessageService.ShowError(e);
-			} finally {
-				done = true;
-			}
-		}
-		
-		public void WaitForOperationEnd()
-		{
-			while (!done) {
-				Application.DoEvents();
-			}
-		}
-		 */
 		#endregion
 		
 		#region AprPoolHandle
@@ -222,7 +133,7 @@ namespace ICSharpCode.Svn
 		
 		AprPoolHandle memoryPool;
 		SvnClient client;
-		Dictionary<string, Status> statusCache = new Dictionary<string, Status>();
+		Dictionary<string, Status> statusCache = new Dictionary<string, Status>(StringComparer.InvariantCultureIgnoreCase);
 		
 		public SvnClientWrapper()
 		{
@@ -230,8 +141,7 @@ namespace ICSharpCode.Svn
 			
 			memoryPool = new AprPoolHandle();
 			client = new SvnClient(memoryPool.Pool);
-			//client.LogMessage   += new LogMessageDelegate(SetLogMessage);
-			//client.Notification += new NotificationDelegate(ReceiveNotification);
+			client.Context.NotifyFunc2 = new SvnDelegate(new SvnWcNotify.Func2(OnNotify));
 		}
 		
 		public void Dispose()
@@ -355,6 +265,21 @@ namespace ICSharpCode.Svn
 		}
 		#endregion
 		
+		#region Notifications
+		public event EventHandler<NotificationEventArgs> Notify;
+		
+		void OnNotify(IntPtr baton, SvnWcNotify notify, AprPool pool)
+		{
+			if (Notify != null) {
+				Notify(this, new NotificationEventArgs() {
+				       	Action = GetActionString(notify.Action),
+				       	Kind = GetKindString(notify.Kind),
+				       	Path = notify.Path.Value
+				       });
+			}
+		}
+		#endregion
+		
 		[System.Diagnostics.ConditionalAttribute("DEBUG")]
 		void Debug(string text)
 		{
@@ -415,7 +340,13 @@ namespace ICSharpCode.Svn
 					IntPtr.Zero,
 					false, true, false, false, false
 				);
-				return result;
+				if (result != null) {
+					return result;
+				} else {
+					return new Status {
+						TextStatus = StatusKind.None
+					};
+				}
 			} catch (SvnException ex) {
 				throw new SvnClientException(ex);
 			} finally {
@@ -624,6 +555,13 @@ namespace ICSharpCode.Svn
 					return StatusKind.None;
 			}
 		}
+	}
+	
+	public class NotificationEventArgs : EventArgs
+	{
+		public string Action;
+		public string Kind;
+		public string Path;
 	}
 	
 	public class LogMessage

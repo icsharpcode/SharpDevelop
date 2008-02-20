@@ -144,7 +144,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		
 		bool newProjectDialogVisible = true;
 		
-		List<Action<ProjectCreateInformation>> actions = new List<Action<ProjectCreateInformation>>();
+		List<Action<ProjectCreateInformation>> openActions = new List<Action<ProjectCreateInformation>>();
 		
 		SolutionDescriptor solutionDescriptor = null;
 		ProjectDescriptor projectDescriptor = null;
@@ -305,39 +305,39 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			// Read Actions;
 			if (templateElement["Actions"] != null) {
 				foreach (XmlElement el in templateElement["Actions"]) {
-					ReadAction(el);
+					Action<ProjectCreateInformation> action = ReadAction(el);
+					if (action != null)
+						openActions.Add(action);
 				}
 			}
 		}
 		
-		void ReadAction(XmlElement el)
+		static Action<ProjectCreateInformation> ReadAction(XmlElement el)
 		{
 			switch (el.Name) {
 				case "Open":
 					if (el.HasAttribute("filename")) {
 						string fileName = el.GetAttribute("filename");
-						actions.Add(
-							projectCreateInformation => {
-								string parsedFileName = StringParser.Parse(fileName, new string[,] { {"ProjectName", projectCreateInformation.ProjectName} });
-								string path = FileUtility.Combine(projectCreateInformation.ProjectBasePath, parsedFileName);
-								FileService.OpenFile(path);
-							});
+						return projectCreateInformation => {
+							string parsedFileName = StringParser.Parse(fileName, new string[,] { {"ProjectName", projectCreateInformation.ProjectName} });
+							string path = FileUtility.Combine(projectCreateInformation.ProjectBasePath, parsedFileName);
+							FileService.OpenFile(path);
+						};
 					} else {
 						WarnAttributeMissing(el, "filename");
+						return null;
 					}
-					break;
 				case "RunCommand":
 					if (el.HasAttribute("path")) {
 						ICommand command = (ICommand)AddInTree.BuildItem(el.GetAttribute("path"), null);
-						actions.Add(
-							projectCreateInformation => {
-								command.Owner = projectCreateInformation;
-								command.Run();
-							});
+						return projectCreateInformation => {
+							command.Owner = projectCreateInformation;
+							command.Run();
+						};
 					} else {
 						WarnAttributeMissing(el, "path");
+						return null;
 					}
-					break;
 				default:
 					WarnObsoleteNode(el, "Unknown action element is interpreted as <Open>");
 					goto case "Open";
@@ -391,11 +391,14 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				}
 				IProject project = projectDescriptor.CreateProject(projectCreateInformation, this.languagename);
 				if (project != null) {
+					string solutionLocation = projectCreateInformation.Solution.FileName;
 					if (createNewSolution) {
 						projectCreateInformation.Solution.AddFolder(project);
 						projectCreateInformation.Solution.Save();
+						ProjectService.OnSolutionCreated(new SolutionEventArgs(projectCreateInformation.Solution));
+						projectCreateInformation.Solution.Dispose();
 					}
-					return projectCreateInformation.Solution.FileName;
+					return solutionLocation;
 				} else {
 					return null;
 				}
@@ -406,7 +409,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		
 		public void RunOpenActions(ProjectCreateInformation projectCreateInformation)
 		{
-			foreach (Action<ProjectCreateInformation> action in actions) {
+			foreach (Action<ProjectCreateInformation> action in openActions) {
 				action(projectCreateInformation);
 			}
 		}
