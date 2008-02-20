@@ -12,6 +12,7 @@ namespace ICSharpCode.NRefactory
 {
 	public class PreprocessingDirective : AbstractSpecial
 	{
+		#region Conversion C# <-> VB
 		public static void VBToCSharp(IList<ISpecial> list)
 		{
 			for (int i = 0; i < list.Count; ++i) {
@@ -78,10 +79,15 @@ namespace ICSharpCode.NRefactory
 			}
 			return new PreprocessingDirective(cmd, arg, dir.StartPosition, dir.EndPosition);
 		}
+		#endregion
 		
 		string cmd;
 		string arg;
+		Ast.Expression expression = Ast.Expression.Null;
 		
+		/// <summary>
+		/// Gets the directive name, including '#'.
+		/// </summary>
 		public string Cmd {
 			get {
 				return cmd;
@@ -91,6 +97,9 @@ namespace ICSharpCode.NRefactory
 			}
 		}
 		
+		/// <summary>
+		/// Gets the directive argument.
+		/// </summary>
 		public string Arg {
 			get {
 				return arg;
@@ -98,6 +107,14 @@ namespace ICSharpCode.NRefactory
 			set {
 				arg = value ?? string.Empty;
 			}
+		}
+		
+		/// <summary>
+		/// Gets/sets the expression (for directives that take an expression, e.g. #if and #elif).
+		/// </summary>
+		public Ast.Expression Expression {
+			get { return expression; }
+			set { expression = value ?? Ast.Expression.Null; }
 		}
 		
 		public override string ToString()

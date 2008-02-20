@@ -184,7 +184,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public virtual void PrintPreprocessingDirective(PreprocessingDirective directive, bool forceWriteInPreviousBlock)
 		{
-			if (string.IsNullOrEmpty(directive.Arg))
+			if (!directive.Expression.IsNull) {
+				CSharpOutputVisitor visitor = new CSharpOutputVisitor();
+				directive.Expression.AcceptVisitor(visitor, null);
+				WriteLineInPreviousLine(directive.Cmd + " " + visitor.Text, forceWriteInPreviousBlock);
+			} else if (string.IsNullOrEmpty(directive.Arg))
 				WriteLineInPreviousLine(directive.Cmd, forceWriteInPreviousBlock);
 			else
 				WriteLineInPreviousLine(directive.Cmd + " " + directive.Arg, forceWriteInPreviousBlock);

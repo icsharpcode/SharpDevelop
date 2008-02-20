@@ -9,15 +9,29 @@ using System;
 using System.Collections.Generic;
 using ICSharpCode.TextEditor.Document;
 
-namespace ICSharpCode.TextEditor.Actions 
+namespace ICSharpCode.TextEditor.Actions
 {
 	public class ToggleFolding : AbstractEditAction
 	{
 		public override void Execute(TextArea textArea)
 		{
 			List<FoldMarker> foldMarkers = textArea.Document.FoldingManager.GetFoldingsWithStart(textArea.Caret.Line);
-			foreach (FoldMarker fm in foldMarkers) {
-				fm.IsFolded = !fm.IsFolded;
+			if (foldMarkers.Count != 0) {
+				foreach (FoldMarker fm in foldMarkers)
+					fm.IsFolded = !fm.IsFolded;
+			} else {
+				foldMarkers = textArea.Document.FoldingManager.GetFoldingsContainsLineNumber(textArea.Caret.Line);
+				if (foldMarkers.Count != 0) {
+					FoldMarker innerMost = foldMarkers[0];
+					for (int i = 1; i < foldMarkers.Count; i++) {
+						if (new TextLocation(foldMarkers[i].StartColumn, foldMarkers[i].StartLine) >
+						    new TextLocation(innerMost.StartColumn, innerMost.StartLine))
+						{
+							innerMost = foldMarkers[i];
+						}
+					}
+					innerMost.IsFolded = !innerMost.IsFolded;
+				}
 			}
 			textArea.Document.FoldingManager.NotifyFoldingsChanged(EventArgs.Empty);
 		}

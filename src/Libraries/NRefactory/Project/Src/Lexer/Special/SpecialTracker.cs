@@ -45,9 +45,11 @@ namespace ICSharpCode.NRefactory.Parser
 			currentSpecials.Add(new BlankLine(point));
 		}
 		
-		public void AddPreprocessingDirective(string cmd, string arg, Location start, Location end)
+		public void AddPreprocessingDirective(PreprocessingDirective directive)
 		{
-			currentSpecials.Add(new PreprocessingDirective(cmd, arg, start, end));
+			if (directive == null)
+				throw new ArgumentNullException("directive");
+			currentSpecials.Add(directive);
 		}
 		
 		// used for comment tracking
