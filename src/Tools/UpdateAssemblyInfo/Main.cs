@@ -11,6 +11,9 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Collections.Specialized;
+using System.Runtime.CompilerServices;
+using PumaCode.SvnDotNet.AprSharp;
+using PumaCode.SvnDotNet.SubversionSharp;
 
 namespace UpdateAssemblyInfo
 {
@@ -161,33 +164,25 @@ namespace UpdateAssemblyInfo
 		}
 		static void RetrieveRevisionNumber()
 		{
-			// we use NSvn to be independent from the installed subversion client
-			// NSvn is a quite big library (>1 MB).
-			// We don't want to have it twice in the repository, so we must use the version in the
-			// subversion addin directory without copying it to the UpdateAssemblyInfo directory.
-			// That means we have to use reflection on the library.
+			
 			string oldWorkingDir = Environment.CurrentDirectory;
 			try {
-				// Set working directory so msvcp70.dll and msvcr70.dll can be found
+				// Change working dir so that the subversion libraries can be found
 				Environment.CurrentDirectory = Path.Combine(oldWorkingDir, "AddIns\\Misc\\SubversionAddIn\\RequiredLibraries");
-				Assembly asm = Assembly.LoadFrom(Path.Combine(Environment.CurrentDirectory, "NSvn.Core.dll"));
-				Type clientType = asm.GetType("NSvn.Core.Client");
-				object clientInstance = Activator.CreateInstance(clientType);
-				object statusInstance = clientType.InvokeMember("SingleStatus",
-				                                                BindingFlags.Instance | BindingFlags.InvokeMethod | BindingFlags.Public,
-				                                                null, clientInstance,
-				                                                new object[] { oldWorkingDir });
-				Type statusType = statusInstance.GetType();
-				object entryInstance = statusType.InvokeMember("Entry",
-				                                               BindingFlags.Instance | BindingFlags.GetProperty | BindingFlags.Public,
-				                                               null, statusInstance, new object[0]);
-				Type entryType = entryInstance.GetType();
-				int revision = (int)entryType.InvokeMember("Revision",
-				                                           BindingFlags.Instance | BindingFlags.GetProperty | BindingFlags.Public,
-				                                           null, entryInstance, new object[0]);
-				revisionNumber = revision.ToString();
+				
+				SvnClient client = new SvnClient();
+				try {
+					client.Info(oldWorkingDir, new SvnRevision(Svn.Revision.Unspecified), new SvnRevision(Svn.Revision.Unspecified),
+					            delegate(IntPtr baton, SvnPath path, SvnInfo info, AprPool pool) {
+					            	revisionNumber = info.Rev.ToString();
+					            	return SvnError.NoError;
+					            },
+					            IntPtr.Zero, false);
+				} finally {
+					client.Clear();
+				}
 			} catch (Exception e) {
-				Console.WriteLine("Reading revision number with NSvn failed: " + e.ToString());
+				Console.WriteLine("Reading revision number with Svn.Net failed: " + e.ToString());
 			} finally {
 				Environment.CurrentDirectory = oldWorkingDir;
 			}

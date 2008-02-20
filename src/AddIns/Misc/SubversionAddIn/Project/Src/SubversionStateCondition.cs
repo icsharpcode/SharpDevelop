@@ -10,8 +10,8 @@ using System.IO;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.Svn.Commands;
-using NSvn.Common;
-using NSvn.Core;
+using PumaCode.SvnDotNet.SubversionSharp;
+using PumaCode.SvnDotNet.AprSharp;
 
 namespace ICSharpCode.Svn
 {
@@ -74,51 +74,31 @@ namespace ICSharpCode.Svn
 			return false;
 		}
 		
-		static string lastTestFileName;
-		static string lastTestStatus;
-		
-		internal static void ResetCache()
-		{
-			lastTestFileName = null;
-		}
-		
 		bool Test(Condition condition, string fileName)
 		{
 			string[] allowedStatus = condition.Properties["state"].Split(';');
 			if (allowedStatus.Length == 0 || (allowedStatus.Length == 1 && allowedStatus[0].Length == 0)) {
 				return true;
 			}
-			string status;
-			if (fileName == lastTestFileName) {
-				status = lastTestStatus;
-			} else {
-				try {
-					status = SvnClient.Instance.Client.SingleStatus(fileName).TextStatus.ToString();
-					if (status == "Unversioned") {
-						PropertyDictionary pd = SvnClient.Instance.Client.PropGet("svn:ignore", Path.GetDirectoryName(fileName), Revision.Working, Recurse.None);
-						if (pd != null) {
-							string shortFileName = Path.GetFileName(fileName);
-							foreach (Property p in pd.Values) {
-								using (StreamReader r = new StreamReader(new MemoryStream(p.Data))) {
-									string line;
-									while ((line = r.ReadLine()) != null) {
-										if (string.Equals(line, shortFileName, StringComparison.InvariantCultureIgnoreCase)) {
-											status = "Ignored";
-											break;
-										}
-									}
+			string status = OverlayIconManager.GetStatus(fileName).ToString();
+			/*if (status == "Unversioned") {
+				PropertyDictionary pd = SvnClient.Instance.Client.PropGet("svn:ignore", Path.GetDirectoryName(fileName), Revision.Working, Recurse.None);
+				if (pd != null) {
+					string shortFileName = Path.GetFileName(fileName);
+					foreach (Property p in pd.Values) {
+						using (StreamReader r = new StreamReader(new MemoryStream(p.Data))) {
+							string line;
+							while ((line = r.ReadLine()) != null) {
+								if (string.Equals(line, shortFileName, StringComparison.InvariantCultureIgnoreCase)) {
+									status = "Ignored";
+									break;
 								}
 							}
 						}
 					}
-				} catch (SvnClientException ex) {
-					LoggingService.Warn("Error getting status of " + fileName, ex);
-					status = "Unversioned";
 				}
-				LoggingService.Debug("Status of " + fileName + " is " + status);
-				lastTestFileName = fileName;
-				lastTestStatus = status;
-			}
+			}*/
+			//LoggingService.Debug("Status of " + fileName + " is " + status);
 			return Array.IndexOf(allowedStatus, status) >= 0;
 		}
 	}

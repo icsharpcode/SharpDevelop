@@ -1037,7 +1037,7 @@
 										<Component Guid="2E711769-201C-4C5F-A97A-179C852B023F" Id="BooBindingFiles" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Boo.Lang.CodeDom.dll" Id="Boo.Lang.CodeDom.dll" Name="Boo.Lang.CodeDom.dll" />
 											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Boo.Lang.Compiler.dll" Id="Boo.Lang.Compiler.dll" Name="Boo.Lang.Compiler.dll" />
-											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Boo.Lang.dll" Id="Boo.Lang.dll" />
+											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Boo.Lang.dll" Id="Boo.Lang.dll" Name="Boo.Lang.dll" />
 											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Boo.Lang.Parser.dll" Id="Boo.Lang.Parser.dll" Name="Boo.Lang.Parser.dll" />
 											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Boo.Lang.Useful.dll" Id="Boo.Lang.Useful.dll" Name="Boo.Lang.Useful.dll" />
 											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Boo.Microsoft.Build.targets" Id="Boo.Microsoft.Build.targets" Name="Boo.Microsoft.Build.targets" />
@@ -1048,6 +1048,7 @@
 											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\booc.exe.config" Id="booc.exe.config" Name="booc.exe.config" />
 											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\booc.rsp" Name="booc.rsp" Id="booc.rsp" />
 											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\NRefactoryToBooConverter.dll" Id="NRefactoryToBooConverter.dll" Name="NRefactoryToBooConverter.dll" />
+											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Boo.Lang.Extensions.dll" Name="Boo.Lang.Extensions.dll" Id="Boo.Lang.Extensions.dll" />
 										</Component>
 									</Directory>
 									<Directory Id="CSharpBindingFolder" Name="CSharpBinding">
@@ -1383,36 +1384,19 @@
 										</Component>
 									</Directory>
 									<Directory Id="SubversionAddInFolder" Name="SubversionAddIn">
-										<Component Id="SubversionUtilsDll" Guid="0FEF5BBC-A97C-4BB9-BEC2-759388E5572D" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\Misc\SubversionAddin\Utils.dll" Id="Utils.dll" Assembly=".net" AssemblyApplication="NSvn.Common.dll" AssemblyManifest="NSvn.Common.dll" KeyPath="yes" />
-										</Component>
-										<Component Id="SubversionLibAprDll" Guid="E4EE12A6-0766-4C85-8E28-7D7DEFC3AFEE" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\Misc\SubversionAddin\LIBAPR.DLL" Id="LIBAPR.DLL" />
-										</Component>
-										<Component Id="SubversionAprIconvDll" Guid="1494C120-502D-4108-897F-14BD0D601DD1" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\Misc\SubversionAddin\LibAprIconv.Dll" Id="LibAprIconv.Dll" Name="LibAprIconv.Dll" />
-										</Component>
-										<Component Id="SubversionLibAprUtilDll" Guid="7F963E06-7BF6-4D95-B6C7-443A5A8FC739" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\Misc\SubversionAddin\LibAprUtil.Dll" Id="LibAprUtil.Dll" Name="LibAprUtil.Dll" />
-										</Component>
-										<Component Id="SubversionLibDb44Dll" Guid="6A86A5F7-1E80-465D-82F4-B8064663F83A" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\Misc\SubversionAddin\LibDB44.dll" Name="LibDB44.dll" Id="LibDB44.dll" />
-										</Component>
-										<Component Id="SubversionMsvcp70Dll" Guid="E4612BC7-DA35-403D-BCFE-BC04D797D801" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\Misc\SubversionAddin\msvcp70.dll" Name="msvcp70.dll" Id="msvcp70.dll" />
-										</Component>
-										<Component Id="SubversionMsvcr70Dll" Guid="993F3D8A-DB4E-433E-92E4-FB46AF71488D" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\Misc\SubversionAddin\msvcr70.dll" Name="msvcr70.dll" Id="msvcr70.dll" />
-										</Component>
-										<Component Id="NSvnCommonDll" Guid="53B4D3C6-5A80-496E-8926-3A7060766068" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\Misc\SubversionAddin\NSvn.Common.dll" Id="NSvn.Common.dll" Name="NSvn.Common.dll" Assembly=".net" AssemblyApplication="NSvn.Common.dll" AssemblyManifest="NSvn.Common.dll" KeyPath="yes" />
-										</Component>
-										<Component Id="NSvnCoreDll" Guid="5989C307-D92E-4973-89E0-2509E3306C09" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\Misc\SubversionAddin\NSvn.Core.dll" Id="NSvn.Core.dll" Name="NSvn.Core.dll" Assembly=".net" AssemblyApplication="NSvn.Core.dll" AssemblyManifest="NSvn.Core.dll" KeyPath="yes" />
-										</Component>
 										<Component Guid="C9B1D523-5674-4398-9073-20F57B45DD46" Id="SubversionAddInDll" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\Misc\SubversionAddin\SubversionAddIn.dll" Id="SubversionAddIn.dll" Name="SubversionAddIn.dll" Assembly=".net" AssemblyApplication="SubversionAddIn.dll" AssemblyManifest="SubversionAddIn.dll" KeyPath="yes" />
 											<File Source="..\..\AddIns\AddIns\Misc\SubversionAddin\ICSharpCode.Svn.addin" Id="ICSharpCode.Svn.addin" Name="ICSharpCode.Svn.addin" />
+											<File Source="..\..\AddIns\AddIns\Misc\SubversionAddin\AprSharp.dll" Name="AprSharp.dll" Id="AprSharp.dll" />
+											<File Source="..\..\AddIns\AddIns\Misc\SubversionAddin\intl3_svn.dll" Name="intl3_svn.dll" Id="intl3_svn.dll" />
+											<File Source="..\..\AddIns\AddIns\Misc\SubversionAddin\libapr.dll" Name="libapr.dll" Id="libapr.dll" />
+											<File Source="..\..\AddIns\AddIns\Misc\SubversionAddin\libapriconv.dll" Name="libapriconv.dll" Id="libapriconv.dll" />
+											<File Source="..\..\AddIns\AddIns\Misc\SubversionAddin\libaprutil.dll" Name="libaprutil.dll" Id="libaprutil.dll" />
+											<File Source="..\..\AddIns\AddIns\Misc\SubversionAddin\libdb44.dll" Name="libdb44.dll" Id="libdb44.dll" />
+											<File Source="..\..\AddIns\AddIns\Misc\SubversionAddin\libeay32.dll" Name="libeay32.dll" Id="libeay32.dll" />
+											<File Source="..\..\AddIns\AddIns\Misc\SubversionAddin\ssleay32.dll" Name="ssleay32.dll" Id="ssleay32.dll" />
+											<File Source="..\..\AddIns\AddIns\Misc\SubversionAddin\SubversionSharp.dll" Name="SubversionSharp.dll" Id="SubversionSharp.dll" />
+											<File Source="..\..\AddIns\AddIns\Misc\SubversionAddin\svn_client-1.dll" Name="svn_client-1.dll" Id="svn_client_1.dll" />
 										</Component>
 									</Directory>
 									<Directory Id="UnitTestingFolder" Name="UnitTesting">

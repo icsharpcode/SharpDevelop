@@ -10,7 +10,8 @@ using System.Reflection;
 using System.Windows.Forms;
 
 using ICSharpCode.SharpDevelop.Gui.XmlForms;
-using NSvn.Core;
+using PumaCode.SvnDotNet.AprSharp;
+using PumaCode.SvnDotNet.SubversionSharp;
 
 namespace ICSharpCode.Svn.Gui
 {
@@ -46,13 +47,12 @@ namespace ICSharpCode.Svn.Gui
 			}
 		}
 		
-		public SslClientCertificatePasswordCredential Credential {
-			get {
-				SslClientCertificatePasswordCredential cred = new SslClientCertificatePasswordCredential();
-				cred.Password = Passphrase;
-				cred.MaySave  = MaySave;
-				return cred;
-			}
+		public SvnAuthCredSslClientCertPw CreateCredential(AprPool pool)
+		{
+			SvnAuthCredSslClientCertPw cred = SvnAuthCredSslClientCertPw.Alloc(pool);
+			cred.CertFile = new SvnPath(Passphrase, pool); // this should be cred.Password, the property is named incorrectly in Svn.Net
+			cred.MaySave  = MaySave;
+			return cred;
 		}
 		
 		public ClientCertPassphraseDialog(string realm, bool maySave)

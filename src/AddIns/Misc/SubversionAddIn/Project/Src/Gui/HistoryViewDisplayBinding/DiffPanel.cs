@@ -14,8 +14,6 @@ using ICSharpCode.TextEditor.Document;
 using ICSharpCode.TextEditor.Gui;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
-using NSvn.Core;
-using NSvn.Common;
 using System.IO;
 using System.Text;
 
@@ -84,16 +82,16 @@ namespace ICSharpCode.Svn
 			output = null;
 			MemoryStream outStream = new MemoryStream();
 			MemoryStream errStream = new MemoryStream();
-			SvnClient.Instance.Client.Diff(new string [] {} ,
-			                               fileName,
-			                               fromRevision,
-			                               fileName,
-			                               toRevision,
-			                               Recurse.None,
-			                               false,
-			                               true,
-			                               outStream,
-			                               errStream);
+//			SvnClient.Instance.Client.Diff(new string [] {} ,
+//			                               fileName,
+//			                               fromRevision,
+//			                               fileName,
+//			                               toRevision,
+//			                               Recurse.None,
+//			                               false,
+//			                               true,
+//			                               outStream,
+//			                               errStream);
 			output = Encoding.Default.GetString(outStream.ToArray());
 			WorkbenchSingleton.SafeThreadCall(SetOutput);
 		}
@@ -127,7 +125,7 @@ namespace ICSharpCode.Svn
 			if (fromRevision.ToString() == toRevision.ToString()) {
 				output = "";
 			} else {
-				SvnClient.Instance.OperationStart("Diff", DoDiffOperation);
+				//SvnClient.Instance.OperationStart("Diff", DoDiffOperation);
 			}
 		}
 

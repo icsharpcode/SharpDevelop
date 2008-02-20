@@ -354,15 +354,6 @@
 				-->
 				<ComponentRef Id="StartPageAddInFiles"/>
 				<ComponentRef Id="SubversionAddInDll"/>
-				<ComponentRef Id="SubversionUtilsDll"/>
-				<ComponentRef Id="SubversionLibAprDll"/>
-				<ComponentRef Id="SubversionAprIconvDll"/>
-				<ComponentRef Id="SubversionLibAprUtilDll"/>
-				<ComponentRef Id="SubversionLibDb44Dll"/>
-				<ComponentRef Id="SubversionMsvcp70Dll"/>
-				<ComponentRef Id="SubversionMsvcr70Dll"/>
-				<ComponentRef Id="NSvnCommonDll"/>
-				<ComponentRef Id="NSvnCoreDll"/>
 				<ComponentRef Id="UnitTestingAddInFiles"/>
 				<ComponentRef Id="SyntaxModesFiles"/>
 				<ComponentRef Id="SharpDevelopWebsiteShortcut"/>

@@ -10,7 +10,8 @@ using System.Reflection;
 using System.Windows.Forms;
 
 using ICSharpCode.SharpDevelop.Gui.XmlForms;
-using NSvn.Core;
+using PumaCode.SvnDotNet.AprSharp;
+using PumaCode.SvnDotNet.SubversionSharp;
 
 namespace ICSharpCode.Svn.Gui
 {
@@ -46,15 +47,14 @@ namespace ICSharpCode.Svn.Gui
 			}
 		}
 		
-		public SslClientCertificateCredential Credential {
-			get {
-				SslClientCertificateCredential cred = new SslClientCertificateCredential();
-				cred.CertificateFile = FileName;
-				cred.MaySave         = MaySave;
-				return cred;
-			}
+		public SvnAuthCredSslClientCert CreateCredential(AprPool pool)
+		{
+			SvnAuthCredSslClientCert cred = SvnAuthCredSslClientCert.Alloc(pool);
+			cred.CertFile = new SvnPath(FileName, pool);
+			cred.MaySave  = MaySave;
+			return cred;
 		}
-			
+		
 		public ClientCertDialog(string realm, bool maySave)
 		{
 			SetupFromXmlStream(Assembly.GetExecutingAssembly().GetManifestResourceStream("ICSharpCode.Svn.Resources.ClientCertDialog.xfrm"));

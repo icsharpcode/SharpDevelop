@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
+	<trustInfo xmlns="urn:schemas-microsoft-com:asm.v2">
+		<security>
+			<requestedPrivileges xmlns="urn:schemas-microsoft-com:asm.v3">
+				<!--
+					The presence of the "requestedExecutionLevel" node will disable
+					file and registry virtualization on Vista.
+					
+					Use the "level" attribute to specify the User Account Control level:
+						asInvoker            = Never prompt for elevation
+						requireAdministrator = Always prompt for elevation
+						highestAvailable     = Prompt for elevation when started by administrator,
+						                       but do not prompt for administrator password when started by
+						                       standard user.
+				-->
+				<requestedExecutionLevel level="asInvoker"/>
+			</requestedPrivileges>
+		</security>
+	</trustInfo>
+</assembly>

@@ -1,4 +1,4 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <RootNamespace>ICSharpCode.Svn</RootNamespace>
@@ -9,6 +9,7 @@
     <ProductVersion>8.0.50215</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <RunPostBuildEvent>Always</RunPostBuildEvent>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -24,25 +25,52 @@
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AprSharp">
+      <HintPath>..\RequiredLibraries\AprSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="SubversionSharp">
+      <HintPath>..\RequiredLibraries\SubversionSharp.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="NSvn.Core">
-      <HintPath>..\RequiredLibraries\NSvn.Core.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="NSvn.Common">
-      <HintPath>..\RequiredLibraries\NSvn.Common.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\RequiredLibraries\intl3_svn.dll">
+      <Link>intl3_svn.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\RequiredLibraries\libapr.dll">
+      <Link>libapr.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\RequiredLibraries\libapriconv.dll">
+      <Link>libapriconv.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\RequiredLibraries\libaprutil.dll">
+      <Link>libaprutil.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\RequiredLibraries\libdb44.dll">
+      <Link>libdb44.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\RequiredLibraries\libeay32.dll">
+      <Link>libeay32.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\RequiredLibraries\ssleay32.dll">
+      <Link>ssleay32.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\RequiredLibraries\svn_client-1.dll">
+      <Link>svn_client-1.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="ICSharpCode.Svn.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -50,7 +78,6 @@
     <Compile Include="Src\Gui\HistoryViewDisplayBinding\InfoPanel.Designer.cs">
       <DependentUpon>InfoPanel.cs</DependentUpon>
     </Compile>
-    <Compile Include="Src\SvnClient.cs" />
     <Compile Include="Src\InOperationDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -97,6 +124,7 @@
       <DependentUpon>DiffPanel.cs</DependentUpon>
     </Compile>
     <Compile Include="Src\Gui\HistoryViewDisplayBinding\DiffPanel.cs" />
+    <Compile Include="Src\SvnClientWrapper.cs" />
     <EmbeddedResource Include="Src\Gui\HistoryViewDisplayBinding\DiffPanel.resx">
       <DependentUpon>DiffPanel.cs</DependentUpon>
     </EmbeddedResource>
@@ -115,35 +143,11 @@
       <Name>ICSharpCode.Core</Name>
       <Private>False</Private>
     </ProjectReference>
-    <Content Include="..\RequiredLibraries\msvcp70.dll">
-      <Link>msvcp70.dll</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\RequiredLibraries\msvcr70.dll">
-      <Link>msvcr70.dll</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\RequiredLibraries\LIBAPR.DLL">
-      <Link>LIBAPR.DLL</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\RequiredLibraries\LibAprIconv.Dll">
-      <Link>LibAprIconv.Dll</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\RequiredLibraries\LibAprUtil.Dll">
-      <Link>LibAprUtil.Dll</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
       <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
       <Name>ICSharpCode.SharpDevelop.Dom</Name>
       <Private>False</Private>
     </ProjectReference>
-    <Content Include="..\RequiredLibraries\LibDB44.dll">
-      <Link>LibDB44.dll</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <ProjectReference Include="..\..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj">
       <Project>{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D}</Project>
       <Name>ICSharpCode.TextEditor</Name>

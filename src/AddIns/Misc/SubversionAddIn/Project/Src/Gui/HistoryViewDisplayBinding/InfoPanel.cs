@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Threading;
@@ -14,7 +15,6 @@ using System.Windows.Forms;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
-using NSvn.Core;
 
 namespace ICSharpCode.Svn
 {
@@ -45,8 +45,8 @@ namespace ICSharpCode.Svn
 			SvnClientException svn;
 			txt.Text = "";
 			while ((svn = ex as SvnClientException) != null) {
-				txt.Text += svn.SvnError + Environment.NewLine;
-				ex = svn.InnerException;
+				txt.Text += svn.Message + Environment.NewLine;
+				ex = svn.GetInnerException();
 			}
 			if (ex != null) {
 				txt.Text += ex.ToString();
@@ -83,7 +83,7 @@ namespace ICSharpCode.Svn
 			ListViewItem item = revisionListView.SelectedItems[0];
 			LogMessage logMessage = item.Tag as LogMessage;
 			commentRichTextBox.Text = logMessage.Message;
-			ChangedPathDictionary changes = logMessage.ChangedPaths;
+			List<ChangedPath> changes = logMessage.ChangedPaths;
 			if (changes == null) {
 				changesListView.Items.Add("Loading...");
 				if (!isLoadingChangedPaths) {
@@ -95,13 +95,12 @@ namespace ICSharpCode.Svn
 				int pathWidth = 70;
 				int copyFromWidth = 70;
 				using (Graphics g = CreateGraphics()) {
-					foreach (DictionaryEntry entry in changes) {
-						string path = (string)entry.Key;
+					foreach (ChangedPath change in changes) {
+						string path = change.Path;
 						path = path.Replace('\\', '/');
 						SizeF size = g.MeasureString(path, changesListView.Font);
 						if (size.Width + 4 > pathWidth)
 							pathWidth = (int)size.Width + 4;
-						ChangedPath change = (ChangedPath)entry.Value;
 						string copyFrom = change.CopyFromPath;
 						if (copyFrom == null) {
 							copyFrom = string.Empty;
@@ -112,7 +111,7 @@ namespace ICSharpCode.Svn
 								copyFromWidth = (int)size.Width + 4;
 						}
 						ListViewItem newItem = new ListViewItem(new string[] {
-						                                        	SvnClient.GetActionString(change.Action),
+						                                        	SvnClientWrapper.GetActionString(change.Action),
 						                                        	path,
 						                                        	copyFrom
 						                                        });
@@ -132,28 +131,32 @@ namespace ICSharpCode.Svn
 			try {
 				LogMessage logMessage = (LogMessage)loadChangedPathsItem.Tag;
 				string fileName = System.IO.Path.GetFullPath(viewContent.PrimaryFileName);
-				Client client = SvnClient.Instance.Client;
-				try {
-					client.Log(new string[] { fileName },
-					           Revision.FromNumber(logMessage.Revision), // Revision start
-					           Revision.FromNumber(logMessage.Revision), // Revision end
-					           true,                   // bool discoverChangePath
-					           false,                  // bool strictNodeHistory
-					           new LogMessageReceiver(ReceiveChangedPaths));
-				} catch (SvnClientException ex) {
-					if (ex.ErrorCode == 160013) {
-						// This can happen when the file was renamed/moved so it cannot be found
-						// directly in the old revision. In that case, we do a full download of
-						// all revisions (so the file can be found in the new revision and svn can
-						// follow back its history).
+				using (SvnClientWrapper client = new SvnClientWrapper()) {
+					client.AllowInteractiveAuthorization = true;
+					try {
 						client.Log(new string[] { fileName },
-						           Revision.FromNumber(1),            // Revision start
-						           Revision.FromNumber(lastRevision), // Revision end
+						           Revision.FromNumber(logMessage.Revision), // Revision start
+						           Revision.FromNumber(logMessage.Revision), // Revision end
+						           int.MaxValue,           // limit
 						           true,                   // bool discoverChangePath
 						           false,                  // bool strictNodeHistory
-						           new LogMessageReceiver(ReceiveAllChangedPaths));
-					} else {
-						throw;
+						           ReceiveChangedPaths);
+					} catch (SvnClientException ex) {
+						if (ex.ErrorCode == 160013) {
+							// This can happen when the file was renamed/moved so it cannot be found
+							// directly in the old revision. In that case, we do a full download of
+							// all revisions (so the file can be found in the new revision and svn can
+							// follow back its history).
+							client.Log(new string[] { fileName },
+							           Revision.FromNumber(1),            // Revision start
+							           Revision.FromNumber(lastRevision), // Revision end
+							           int.MaxValue,           // limit
+							           true,                   // bool discoverChangePath
+							           false,                  // bool strictNodeHistory
+							           ReceiveAllChangedPaths);
+						} else {
+							throw;
+						}
 					}
 				}
 				loadChangedPathsItem = null;

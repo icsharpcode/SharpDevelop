@@ -208,6 +208,7 @@ namespace ICSharpCode.SharpDevelop.Sda
 			Project.ProjectService.LoadSolutionOrProject(fileName);
 		}
 		
+		[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public bool IsSolutionOrProject(string fileName)
 		{
 			return Project.ProjectService.HasProjectLoader(fileName);
@@ -232,6 +233,7 @@ namespace ICSharpCode.SharpDevelop.Sda
 			return WorkbenchSingleton.MainForm.IsDisposed;
 		}
 		
+		[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public void KillWorkbench()
 		{
 			System.Windows.Forms.Application.Exit();

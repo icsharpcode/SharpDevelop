@@ -13,8 +13,6 @@ using System.Windows.Forms;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
-using NSvn.Common;
-using NSvn.Core;
 
 namespace ICSharpCode.Svn
 {
@@ -67,9 +65,9 @@ namespace ICSharpCode.Svn
 			return statusIcons[index];
 		}
 		
-		public static Image GetImage(Status status)
+		public static Image GetImage(StatusKind status)
 		{
-			switch (status.TextStatus) {
+			switch (status) {
 				case StatusKind.Added:
 					return GetImage(StatusIcon.Added);
 				case StatusKind.Deleted:
@@ -79,6 +77,9 @@ namespace ICSharpCode.Svn
 					return GetImage(StatusIcon.Modified);
 				case StatusKind.Normal:
 					return GetImage(StatusIcon.OK);
+				case StatusKind.Conflicted:
+				case StatusKind.Obstructed:
+					return GetImage(StatusIcon.Exclamation);
 				default:
 					return null;
 			}
@@ -126,7 +127,8 @@ namespace ICSharpCode.Svn
 			}
 		}
 		
-		static Client client;
+		static readonly object clientLock = new object();
+		static SvnClientWrapper client;
 		static bool subversionDisabled;
 		
 		static void Run(object state)
@@ -143,6 +145,7 @@ namespace ICSharpCode.Svn
 				AbstractProjectBrowserTreeNode node;
 				lock (queue) {
 					if (queue.Count == 0) {
+						ClearStatusCache();
 						LoggingService.Debug("SVN: OverlayIconManager Thread finished");
 						return;
 					}
@@ -156,42 +159,63 @@ namespace ICSharpCode.Svn
 			}
 		}
 		
-		static void RunStep(AbstractProjectBrowserTreeNode node)
+		public static void ClearStatusCache()
 		{
-			if (subversionDisabled || node.IsDisposed) return;
-			if (client == null) {
-				try {
-					client = new Client();
-				} catch (Exception ex) {
-					SharpDevelop.Gui.WorkbenchSingleton.SafeThreadAsyncCall(
-						MessageService.ShowWarning,
-						"Error initializing Subversion library:\n" + ex.ToString()
-					);
-					subversionDisabled = true;
-					return;
-				}
+			if (client != null) {
+				client.ClearStatusCache();
 			}
-			FileNode fileNode = node as FileNode;
-			Status status;
-			try {
-				if (fileNode != null) {
-					status = client.SingleStatus(fileNode.FileName);
-				} else {
-					DirectoryNode directoryNode = node as DirectoryNode;
-					if (directoryNode != null) {
-						status = client.SingleStatus(directoryNode.Directory);
-					} else {
-						SolutionNode solNode = node as SolutionNode;
-						if (solNode != null) {
-							status = client.SingleStatus(solNode.Solution.Directory);
-						} else {
-							return;
-						}
+		}
+		
+		public static StatusKind GetStatus(string fileName)
+		{
+			lock (clientLock) {
+				if (subversionDisabled)
+					return StatusKind.None;
+				
+				if (client == null) {
+					try {
+						client = new SvnClientWrapper();
+					} catch (Exception ex) {
+						subversionDisabled = true;
+						SharpDevelop.Gui.WorkbenchSingleton.SafeThreadAsyncCall(
+							MessageService.ShowWarning,
+							"Error initializing Subversion library:\n" + ex.ToString()
+						);
+						return StatusKind.None;
 					}
 				}
-			} catch (SvnException) {
-				return;
+				
+				try {
+					return client.SingleStatus(fileName).TextStatus;
+				} catch (SvnClientException ex) {
+					LoggingService.Warn("Error getting status of " + fileName, ex);
+					return StatusKind.None;
+				}
 			}
+		}
+		
+		static void RunStep(AbstractProjectBrowserTreeNode node)
+		{
+			if (node.IsDisposed) return;
+			
+			FileNode fileNode = node as FileNode;
+			StatusKind status;
+			if (fileNode != null) {
+				status = GetStatus(fileNode.FileName);
+			} else {
+				DirectoryNode directoryNode = node as DirectoryNode;
+				if (directoryNode != null) {
+					status = GetStatus(directoryNode.Directory);
+				} else {
+					SolutionNode solNode = node as SolutionNode;
+					if (solNode != null) {
+						status = GetStatus(solNode.Solution.Directory);
+					} else {
+						return;
+					}
+				}
+			}
+			
 			SharpDevelop.Gui.WorkbenchSingleton.SafeThreadAsyncCall(
 				delegate {
 					node.Overlay = GetImage(status);

@@ -83,14 +83,14 @@ namespace ICSharpCode.SharpDevelop.Sda
 		/// <summary>
 		/// Creates a new ExceptionBox instance.
 		/// </summary>
-		/// <param name="e">The exception to display</param>
+		/// <param name="exception">The exception to display</param>
 		/// <param name="message">An additional message to display</param>
 		/// <param name="mustTerminate">If <paramref name="mustTerminate"/> is true, the
 		/// continue button is not available.</param>
 		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		public ExceptionBox(Exception e, string message, bool mustTerminate)
+		public ExceptionBox(Exception exception, string message, bool mustTerminate)
 		{
-			this.exceptionThrown = e;
+			this.exceptionThrown = exception;
 			this.message = message;
 			InitializeComponent();
 			if (mustTerminate) {

@@ -14,8 +14,6 @@ using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
-using NSvn.Common;
-using NSvn.Core;
 
 namespace ICSharpCode.Svn.Commands
 {
@@ -45,6 +43,7 @@ namespace ICSharpCode.Svn.Commands
 						}
 					}
 					if (unsavedFiles.Count > 0) {
+						// TODO: Translate
 						if (MessageService.ShowCustomDialog(
 							MessageService.DefaultMessageBoxTitle,
 							"The version control operation would affect files with unsaved modifications.\n" +
@@ -75,7 +74,7 @@ namespace ICSharpCode.Svn.Commands
 		
 		static void CallbackInvoked()
 		{
-			SubversionStateCondition.ResetCache();
+			OverlayIconManager.ClearStatusCache();
 			AbstractProjectBrowserTreeNode node = ProjectBrowserPad.Instance.SelectedNode;
 			if (node != null) {
 				OverlayIconManager.EnqueueRecursive(node);
@@ -246,13 +245,13 @@ namespace ICSharpCode.Svn.Commands
 	{
 		protected override void Run(string filename)
 		{
-			PropertyDictionary pd = SvnClient.Instance.Client.PropGet("svn:ignore", Path.GetDirectoryName(filename), Revision.Working, Recurse.None);
-			if (pd != null) {
-				ProjectWatcher watcher = WatchProjects();
-				string shortFileName = Path.GetFileName(filename);
-				foreach (Property p in pd.Values) {
+			using (SvnClientWrapper client = new SvnClientWrapper()) {
+				string propertyValue = client.GetPropertyValue(Path.GetDirectoryName(filename), "svn:ignore");
+				if (propertyValue != null) {
+					ProjectWatcher watcher = WatchProjects();
+					string shortFileName = Path.GetFileName(filename);
 					StringBuilder b = new StringBuilder();
-					using (StreamReader r = new StreamReader(new MemoryStream(p.Data))) {
+					using (StringReader r = new StringReader(propertyValue)) {
 						string line;
 						while ((line = r.ReadLine()) != null) {
 							if (!string.Equals(line, shortFileName, StringComparison.InvariantCultureIgnoreCase)) {
@@ -260,11 +259,10 @@ namespace ICSharpCode.Svn.Commands
 							}
 						}
 					}
-					SvnClient.Instance.Client.PropSet(new Property(p.Name, b.ToString()),
-					                                  Path.GetDirectoryName(filename), Recurse.None);
+					client.SetPropertyValue(Path.GetDirectoryName(filename), "svn:ignore", b.ToString());
+					MessageService.ShowMessage(shortFileName + " was removed from the ignore list.");
+					watcher.Callback();
 				}
-				MessageService.ShowMessage(shortFileName + " was removed from the ignore list.");
-				watcher.Callback();
 			}
 		}
 	}

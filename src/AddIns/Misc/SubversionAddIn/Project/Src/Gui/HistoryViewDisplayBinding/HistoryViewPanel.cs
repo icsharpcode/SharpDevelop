@@ -12,7 +12,6 @@ using System.Windows.Forms;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
-using NSvn.Core;
 
 namespace ICSharpCode.Svn
 {
@@ -24,7 +23,7 @@ namespace ICSharpCode.Svn
 		IViewContent viewContent;
 		
 		InfoPanel infoPanel;
-		DiffPanel diffPanel;
+		DiffPanel diffPanel = null;
 		
 		public HistoryViewPanel(IViewContent viewContent)
 		{
@@ -41,6 +40,7 @@ namespace ICSharpCode.Svn
 		
 		void Initialize()
 		{
+			/*
 			TabControl mainTab = new TabControl();
 			mainTab.Dock       = DockStyle.Fill;
 			mainTab.Alignment  = TabAlignment.Bottom;
@@ -61,6 +61,7 @@ namespace ICSharpCode.Svn
 			mainTab.TabPages.Add(diffTabPage);
 			
 			diffPanel.Dock  = DockStyle.Fill;
+			 */
 			
 			/*
 			TabPage conflictTabPage = new TabPage("Conflicts");
@@ -68,7 +69,11 @@ namespace ICSharpCode.Svn
 			todoLabel.Text = "TODO :)";
 			conflictTabPage.Controls.Add(todoLabel);
 			mainTab.TabPages.Add(conflictTabPage);
-			*/
+			 */
+			
+			infoPanel = new InfoPanel(viewContent);
+			infoPanel.Dock = DockStyle.Fill;
+			Controls.Add(infoPanel);
 			
 			Thread logMessageThread = new Thread(new ThreadStart(GetLogMessages));
 			logMessageThread.Name = "svnLogMessage";
@@ -82,13 +87,16 @@ namespace ICSharpCode.Svn
 				string fileName = Path.GetFullPath(viewContent.PrimaryFileName);
 				LoggingService.Info("SVN: Get log of " + fileName);
 				if (File.Exists(fileName)) {
-					Client client = SvnClient.Instance.Client;
-					client.Log(new string[] { fileName},
-					           Revision.Head,          // Revision start
-					           Revision.FromNumber(1), // Revision end
-					           false,                  // bool discoverChangePath
-					           false,                  // bool strictNodeHistory
-					           new LogMessageReceiver(ReceiveLogMessage));
+					using (SvnClientWrapper client = new SvnClientWrapper()) {
+						client.AllowInteractiveAuthorization = true;
+						client.Log(new string[] { fileName },
+						           Revision.Head,          // Revision start
+						           Revision.FromNumber(1), // Revision end
+						           int.MaxValue,           // Limit
+						           false,                  // bool discoverChangePath
+						           false,                  // bool strictNodeHistory
+						           ReceiveLogMessage);
+					}
 				}
 			} catch (Exception ex) {
 				// if exceptions aren't caught here, they force SD to exit
@@ -103,8 +111,12 @@ namespace ICSharpCode.Svn
 		
 		void ReceiveLogMessage(LogMessage logMessage)
 		{
-			WorkbenchSingleton.SafeThreadAsyncCall(infoPanel.AddLogMessage, logMessage);
-			WorkbenchSingleton.SafeThreadAsyncCall(diffPanel.AddLogMessage, logMessage);
+			if (infoPanel != null) {
+				WorkbenchSingleton.SafeThreadAsyncCall(infoPanel.AddLogMessage, logMessage);
+			}
+			if (diffPanel != null) {
+				WorkbenchSingleton.SafeThreadAsyncCall(diffPanel.AddLogMessage, logMessage);
+			}
 		}
 	}
 }

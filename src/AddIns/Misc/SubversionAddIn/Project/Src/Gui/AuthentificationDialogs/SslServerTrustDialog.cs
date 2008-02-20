@@ -11,7 +11,8 @@ using System.Reflection;
 using System.Windows.Forms;
 
 using ICSharpCode.SharpDevelop.Gui.XmlForms;
-using NSvn.Core;
+using PumaCode.SvnDotNet.AprSharp;
+using PumaCode.SvnDotNet.SubversionSharp;
 
 namespace ICSharpCode.Svn.Gui
 {
@@ -20,10 +21,10 @@ namespace ICSharpCode.Svn.Gui
 	/// </summary>
 	public class SslServerTrustDialog : BaseSharpDevelopForm
 	{
-		SslServerCertificateInfo certificateInfo;
-		SslFailures              failures;
+		SvnAuthSslServerCertInfo certificateInfo;
+		SvnAuthCredSslServerTrust.CertFailures failures;
 		
-		public SslServerCertificateInfo CertificateInfo {
+		public SvnAuthSslServerCertInfo CertificateInfo {
 			get {
 				return certificateInfo;
 			}
@@ -33,7 +34,7 @@ namespace ICSharpCode.Svn.Gui
 			}
 		}
 		
-		public SslFailures Failures {
+		public SvnAuthCredSslServerTrust.CertFailures Failures {
 			get {
 				return failures;
 			}
@@ -52,16 +53,15 @@ namespace ICSharpCode.Svn.Gui
 			}
 		}
 		
-		public SslServerTrustCredential Credential {
-			get {
-				SslServerTrustCredential cred = new SslServerTrustCredential();
-				cred.AcceptedFailures = failures;
-				cred.MaySave = MaySave;
-				return cred;
-			}
+		public SvnAuthCredSslServerTrust CreateCredential(AprPool pool)
+		{
+			SvnAuthCredSslServerTrust cred = SvnAuthCredSslServerTrust.Alloc(pool);
+			cred.AcceptedFailures = failures;
+			cred.MaySave = MaySave;
+			return cred;
 		}
 		
-		public SslServerTrustDialog(SslServerCertificateInfo certificateInfo, SslFailures failures, bool maySave)
+		public SslServerTrustDialog(SvnAuthSslServerCertInfo certificateInfo, SvnAuthCredSslServerTrust.CertFailures failures, bool maySave)
 		{
 			SetupFromXmlStream(Assembly.GetExecutingAssembly().GetManifestResourceStream("ICSharpCode.Svn.Resources.SslServerTrustDialog.xfrm"));
 			this.CertificateInfo = certificateInfo;
@@ -71,12 +71,12 @@ namespace ICSharpCode.Svn.Gui
 		
 		void UpdateCertificateInfo()
 		{
-			if (certificateInfo != null) {
-				ControlDictionary["hostNameLabel"].Text      = certificateInfo.HostName;
-				ControlDictionary["fingerPrintlabel"].Text   = certificateInfo.FingerPrint;
+			if (!certificateInfo.IsNull) {
+				ControlDictionary["hostNameLabel"].Text      = certificateInfo.Hostname.Value;
+				ControlDictionary["fingerPrintlabel"].Text   = certificateInfo.Fingerprint.Value;
 				ControlDictionary["validLabel"].Text         = "From " + certificateInfo.ValidFrom + " to " + certificateInfo.ValidUntil;
-				ControlDictionary["issuerLabel"].Text        = certificateInfo.Issuer;
-				ControlDictionary["certificateTextBox"].Text = certificateInfo.AsciiCertificate;
+				ControlDictionary["issuerLabel"].Text        = certificateInfo.IssuerDName.Value;
+				ControlDictionary["certificateTextBox"].Text = certificateInfo.AsciiCert.Value;
 			} else {
 				ControlDictionary["hostNameLabel"].Text      = String.Empty;
 				ControlDictionary["fingerPrintlabel"].Text   = String.Empty;
@@ -86,14 +86,14 @@ namespace ICSharpCode.Svn.Gui
 			}
 		}
 		
-		bool HasFailures(SslFailures testFailures)
+		bool HasFailures(SvnAuthCredSslServerTrust.CertFailures testFailures)
 		{
 			return (failures & testFailures) == testFailures;
 		}
 		
 		void UpdateFailures()
 		{
-			if (HasFailures(SslFailures.CertificateAuthorityUnknown)) {
+			if (HasFailures(SvnAuthCredSslServerTrust.CertFailures.UnknownCA)) {
 				ControlDictionary["certificateAuthorityStatusLabel"].Text      = "The issuing certificate authority(CA) is not trusted.";
 				ControlDictionary["certificateAuthorityStatusLabel"].ForeColor = Color.Red;
 			} else {
@@ -101,7 +101,7 @@ namespace ICSharpCode.Svn.Gui
 				ControlDictionary["certificateAuthorityStatusLabel"].ForeColor = Color.Green;
 			}
 			
-			if (HasFailures(SslFailures.CertificateNameMismatch)) {
+			if (HasFailures(SvnAuthCredSslServerTrust.CertFailures.CNMismatch)) {
 				ControlDictionary["certificateNameStatusLabel"].Text      = "The certificate's hostname does not match the hostname of the server.";
 				ControlDictionary["certificateNameStatusLabel"].ForeColor = Color.Red;
 			} else {
@@ -109,17 +109,16 @@ namespace ICSharpCode.Svn.Gui
 				ControlDictionary["certificateNameStatusLabel"].ForeColor = Color.Green;
 			}
 			
-			if (HasFailures(SslFailures.Expired)) {
+			if (HasFailures(SvnAuthCredSslServerTrust.CertFailures.Expired)) {
 				ControlDictionary["certificateDateStatusLabel"].Text      = "The server certificate has expired.";
 				ControlDictionary["certificateDateStatusLabel"].ForeColor = Color.Red;
-			} else if (HasFailures(SslFailures.NotYetValid)) {
+			} else if (HasFailures(SvnAuthCredSslServerTrust.CertFailures.NotYetValid)) {
 				ControlDictionary["certificateDateStatusLabel"].Text      = "The server certificate is not yet valid.";
 				ControlDictionary["certificateDateStatusLabel"].ForeColor = Color.Red;
 			} else {
 				ControlDictionary["certificateDateStatusLabel"].Text      = "The server certificate date is valid.";
 				ControlDictionary["certificateDateStatusLabel"].ForeColor = Color.Green;
 			}
-			
 		}
 	}
 }

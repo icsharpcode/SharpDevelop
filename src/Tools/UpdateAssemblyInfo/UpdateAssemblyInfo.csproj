@@ -1,4 +1,4 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <RootNamespace>UpdateAssemblyInfo</RootNamespace>
@@ -19,6 +19,8 @@
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <DebugSymbols>false</DebugSymbols>
     <NoWarn>1607</NoWarn>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>bin\Debug\</OutputPath>
@@ -31,18 +33,22 @@
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AprSharp">
+      <HintPath>..\..\AddIns\Misc\SubversionAddIn\RequiredLibraries\AprSharp.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="SubversionSharp">
+      <HintPath>..\..\AddIns\Misc\SubversionAddIn\RequiredLibraries\SubversionSharp.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Main.cs" />
+    <None Include="app.manifest" />
     <None Include="Readme.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="UpdateAssemblyInfo.exe.manifest">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>

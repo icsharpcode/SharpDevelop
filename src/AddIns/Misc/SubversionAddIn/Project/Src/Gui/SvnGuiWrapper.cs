@@ -66,20 +66,20 @@ namespace ICSharpCode.Svn
 					Process p = new Process();
 					p.StartInfo.FileName = path;
 					p.StartInfo.Arguments = arguments.ToString();
-					p.StartInfo.RedirectStandardError = true;
-					p.StartInfo.RedirectStandardOutput = true;
+					//p.StartInfo.RedirectStandardError = true;
+					//p.StartInfo.RedirectStandardOutput = true;
 					p.StartInfo.UseShellExecute = false;
 					p.EnableRaisingEvents = true;
 					p.Exited += delegate {
 						p.Dispose();
 						if (callback != null) { callback(); }
 					};
-					p.OutputDataReceived += delegate(object sender, DataReceivedEventArgs e) {
-						SvnClient.Instance.SvnCategory.AppendText(e.Data);
-					};
-					p.ErrorDataReceived += delegate(object sender, DataReceivedEventArgs e) {
-						SvnClient.Instance.SvnCategory.AppendText(e.Data);
-					};
+//					p.OutputDataReceived += delegate(object sender, DataReceivedEventArgs e) {
+//						SvnClient.Instance.SvnCategory.AppendText(e.Data);
+//					};
+//					p.ErrorDataReceived += delegate(object sender, DataReceivedEventArgs e) {
+//						SvnClient.Instance.SvnCategory.AppendText(e.Data);
+//					};
 					p.Start();
 				} catch (Exception ex) {
 					MessageService.ShowError(ex.Message);

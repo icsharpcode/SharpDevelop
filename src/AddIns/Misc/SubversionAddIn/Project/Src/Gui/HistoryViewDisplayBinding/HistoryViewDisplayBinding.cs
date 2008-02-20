@@ -9,7 +9,6 @@ using System;
 using System.IO;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
-using NSvn.Core;
 
 namespace ICSharpCode.Svn
 {
@@ -30,40 +29,6 @@ namespace ICSharpCode.Svn
 			return new ICSharpCode.SharpDevelop.Gui.IViewContent[] { new HistoryView(viewContent) };
 		}
 		
-		private static class SvnHelper {
-			// load NSvn.Core only when a directory actually contains the ".svn" folder
-			static Client client;
-			static bool firstSvnClientException = true;
-			
-			// prevent initialization of SvnHelper and therefore Client (and NSvn.Core.dll) unless it is
-			// really required
-			static SvnHelper() {}
-			
-			internal static bool IsVersionControlled(string fileName)
-			{
-				if (client == null) {
-					LoggingService.Info("SVN: HistoryViewDisplayBinding initializes client");
-					try {
-						client = new Client();
-					} catch (Exception ex) {
-						LoggingService.Warn(ex);
-					}
-				}
-				try {
-					Status status = client.SingleStatus(Path.GetFullPath(fileName));
-					return status != null && status.Entry != null;
-				} catch (SvnClientException ex) {
-					if (firstSvnClientException) {
-						firstSvnClientException = false;
-						MessageService.ShowWarning("An error occurred while getting the Subversion status: " + ex.Message);
-					} else {
-						LoggingService.Warn("Svn: IsVersionControlled Exception", ex);
-					}
-					return false;
-				}
-			}
-		}
-		
 		public bool CanAttachTo(ICSharpCode.SharpDevelop.Gui.IViewContent content)
 		{
 			if (!AddInOptions.UseHistoryDisplayBinding) {
@@ -74,7 +39,8 @@ namespace ICSharpCode.Svn
 				return false;
 			}
 			if (Commands.RegisterEventsCommand.CanBeVersionControlledFile(file.FileName)) {
-				return SvnHelper.IsVersionControlled(file.FileName);
+				StatusKind status = OverlayIconManager.GetStatus(file.FileName);
+				return status != StatusKind.None && status != StatusKind.Unversioned && status != StatusKind.Ignored;
 			} else {
 				return false;
 			}

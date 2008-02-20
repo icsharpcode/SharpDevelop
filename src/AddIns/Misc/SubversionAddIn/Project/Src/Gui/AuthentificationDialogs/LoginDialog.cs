@@ -10,7 +10,8 @@ using System.Reflection;
 using System.Windows.Forms;
 
 using ICSharpCode.SharpDevelop.Gui.XmlForms;
-using NSvn.Core;
+using PumaCode.SvnDotNet.AprSharp;
+using PumaCode.SvnDotNet.SubversionSharp;
 
 namespace ICSharpCode.Svn.Gui
 {
@@ -46,12 +47,13 @@ namespace ICSharpCode.Svn.Gui
 			}
 		}
 		
-		public SimpleCredential Credential {
-			get {
-				return new SimpleCredential(UserName, 
-				                            Password, 
-				                            MaySave);
-			}
+		public SvnAuthCredSimple CreateCredential(AprPool pool)
+		{
+			SvnAuthCredSimple cred = SvnAuthCredSimple.Alloc(pool);
+			cred.Username = new AprString(UserName, pool);
+			cred.Password = new AprString(Password, pool);
+			cred.MaySave = MaySave;
+			return cred;
 		}
 		
 		string Password {
