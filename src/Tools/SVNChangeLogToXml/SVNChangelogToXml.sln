@@ -1,5 +1,7 @@
-﻿Microsoft Visual Studio Solution File, Format Version 9.00
-# SharpDevelop 2.1.0.1673
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+# SharpDevelop 3.0.0.2967
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SVNChangelogToXml", "SVNChangelogToXml.csproj", "{c6159c5e-f6ef-4a63-b152-0e49159b6059}"
 EndProject
 Global

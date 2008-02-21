@@ -7,8 +7,8 @@ using System.Xml.Xsl;
 using System.Reflection;
 using System.Windows.Forms;
 using System.IO;
-using NSvn.Common;
-using NSvn.Core;
+using PumaCode.SvnDotNet.AprSharp;
+using PumaCode.SvnDotNet.SubversionSharp;
 
 class MainClass
 {
@@ -51,7 +51,22 @@ class MainClass
 	static void CreateRevisionFile()
 	{
 		Console.Write("Writing revision to file: ");
-		int rev = new Client().SingleStatus(".").Entry.Revision;
+		
+		SvnClient client = new SvnClient();
+		string filename = Path.GetFullPath(".");
+		int rev = 0;
+		client.Status2(
+			filename, Svn.Revision.Working, 
+			delegate (IntPtr baton, SvnPath path, SvnWcStatus2 status) {
+				if (StringComparer.InvariantCultureIgnoreCase.Equals(filename, path.Value)) {
+					rev = status.Entry.Revision;
+				}
+			},
+			IntPtr.Zero,
+			false, true, false, false, false
+		);
+		client.GlobalPool.Destroy();
+		
 		Console.WriteLine(rev);
 		using (StreamWriter writer = new StreamWriter("../REVISION")) {
 			writer.Write(rev.ToString());
@@ -62,28 +77,38 @@ class MainClass
 	{
 		Console.WriteLine("Reading SVN changelog, this might take a while...");
 		
-		Client client = new Client();
-		client.AuthBaton.Add(AuthenticationProvider.GetUsernameProvider());
-		client.AuthBaton.Add(AuthenticationProvider.GetSimpleProvider());
-		client.AuthBaton.Add(AuthenticationProvider.GetSimplePromptProvider(PasswordPrompt, 3));
+		SvnClient client = new SvnClient();
+		client.AddUsernameProvider();
+		client.AddSimpleProvider();
+		client.OpenAuth();
 		
 		StringWriter writer = new StringWriter();
 		XmlTextWriter xmlWriter = new XmlTextWriter(writer);
 		xmlWriter.Formatting = Formatting.Indented;
 		xmlWriter.WriteStartDocument();
 		xmlWriter.WriteStartElement("log");
-		client.Log(new string[] {".."}, Revision.Base, Revision.FromNumber(startRevision), false, false,
-		           delegate(LogMessage message) {
-		           	xmlWriter.WriteStartElement("logentry");
-		           	xmlWriter.WriteAttributeString("revision", message.Revision.ToString(System.Globalization.CultureInfo.InvariantCulture));
-		           	xmlWriter.WriteElementString("author", message.Author);
-		           	xmlWriter.WriteElementString("date", message.Date.ToString("MM/dd/yyyy", System.Globalization.CultureInfo.InvariantCulture));
-		           	xmlWriter.WriteElementString("msg", message.Message);
-		           	xmlWriter.WriteEndElement();
-		           });
+		int progressCount = 0;
+		client.Log2(
+			new SvnPath[] { new SvnPath("..", client.Pool)},
+			Svn.Revision.Base, new SvnRevision(startRevision),
+			int.MaxValue, false, false,
+			delegate(IntPtr baton, AprHash changed_paths, int revision, AprString author, AprString date, AprString message, AprPool pool) {
+				if (++progressCount == 10) {
+					Console.Write(".");
+					progressCount = 0;
+				}
+				xmlWriter.WriteStartElement("logentry");
+				xmlWriter.WriteAttributeString("revision", revision.ToString(System.Globalization.CultureInfo.InvariantCulture));
+				xmlWriter.WriteElementString("author", author.Value);
+				xmlWriter.WriteElementString("date", DateTime.Parse(date.Value).ToUniversalTime().ToString("MM/dd/yyyy", System.Globalization.CultureInfo.InvariantCulture));
+				xmlWriter.WriteElementString("msg", message.Value);
+				xmlWriter.WriteEndElement();
+				return SvnError.NoError;
+			},
+			IntPtr.Zero);
 		xmlWriter.WriteEndDocument();
 		
-		//Console.WriteLine(writer);
+		Console.WriteLine();
 		
 		XmlTextReader input = new XmlTextReader(new StringReader(writer.ToString()));
 		
@@ -96,17 +121,9 @@ class MainClass
 		xsl.Transform(input, xmlWriter);
 		xmlWriter.Close();
 		tw.Close();
+		
+		client.GlobalPool.Destroy();
+		
 		Console.WriteLine("Finished");
-	}
-	
-	static SimpleCredential PasswordPrompt(string realm, string userName, bool maySave)
-	{
-		Console.WriteLine();
-		Console.WriteLine("SUBVERSION: Authentication for realm: " + realm);
-		Console.Write("Username: ");
-		userName = Console.ReadLine();
-		Console.Write("Password: ");
-		string pwd = Console.ReadLine();
-		return new SimpleCredential(userName, pwd, maySave);
 	}
 }
