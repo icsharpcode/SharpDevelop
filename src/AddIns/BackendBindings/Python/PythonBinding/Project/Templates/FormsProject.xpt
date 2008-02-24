@@ -29,11 +29,7 @@
 		</ProjectItems>
 		
 		<Files>
-			<File name="MainForm.py"><![CDATA[import clr
-clr.AddReference('System.Windows.Forms')
-clr.AddReference('System.Drawing')
-
-import System.Drawing
+			<File name="MainForm.py"><![CDATA[import System.Drawing
 import System.Windows.Forms
 
 from System.Drawing import *
@@ -47,7 +43,11 @@ class MainForm(Form):
 		pass
 
 ]]></File>
-			<File name="Program.py"><![CDATA[from System.Windows.Forms import Application
+			<File name="Program.py"><![CDATA[import clr
+clr.AddReference('System.Windows.Forms')
+clr.AddReference('System.Drawing')
+
+from System.Windows.Forms import Application
 import MainForm
 
 Application.EnableVisualStyles()
