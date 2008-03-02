@@ -8,6 +8,7 @@
     <AssemblyName>FSharpBinding</AssemblyName>
     <Standalone>True</Standalone>
     <NoMLLib>True</NoMLLib>
+    <CheckIfFscNotInstalled>True</CheckIfFscNotInstalled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <OutputPath>..\..\..\..\..\..\AddIns\AddIns\BackendBindings\FSharpBinding\</OutputPath>

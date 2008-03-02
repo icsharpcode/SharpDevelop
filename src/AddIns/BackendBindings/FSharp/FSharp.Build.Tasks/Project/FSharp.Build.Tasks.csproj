@@ -58,6 +58,8 @@
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\CompilerCommandLineBuilder.cs" />
     <Compile Include="Src\Fsc.cs" />
+    <Compile Include="Src\FscToolLocationHelper.cs" />
+    <Compile Include="Src\IsFscInstalled.cs" />
     <None Include="SharpDevelop.Build.Fsc.targets">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
