@@ -113,6 +113,8 @@ namespace ICSharpCode.XmlEditor
 		{
 			this.TabPageText = "XML";
 			
+			TextEditorDisplayBinding.InitializeSyntaxModes();
+			
 			xmlEditor = new XmlEditorControl();
 			xmlEditor.Dock = DockStyle.Fill;
 			

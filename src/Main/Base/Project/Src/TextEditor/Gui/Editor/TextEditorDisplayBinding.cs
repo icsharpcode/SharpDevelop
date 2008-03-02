@@ -34,6 +34,14 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			HighlightingManager.Manager.AddSyntaxModeFileProvider(new FileSyntaxModeProvider(Path.Combine(PropertyService.DataDirectory, "modes")));
 		}
 		
+		/// <summary>
+		/// Force static constructor to be called. Otherwise other editor's such as the XML editor do not
+		/// use custom syntax highlighting.
+		/// </summary>
+		public static void InitializeSyntaxModes()
+		{
+		}
+		
 		public virtual bool CanCreateContentForFile(string fileName)
 		{
 			return true;
