@@ -1,0 +1,129 @@
+﻿<Components version="1.0">
+  <System.Windows.Forms.UserControl>
+    <Name value="HexEditOptions" />
+    <ClientSize value="{Width=348, Height=210}" />
+    <Controls>
+      <System.Windows.Forms.Button>
+        <Name value="btnSelectFont" />
+        <Location value="128, 90" />
+        <Text value="Select font ..." />
+        <UseVisualStyleBackColor value="True" />
+        <Size value="93, 26" />
+        <TabIndex value="13" />
+      </System.Windows.Forms.Button>
+      <System.Windows.Forms.GroupBox>
+        <Name value="groupBox2" />
+        <Location value="3, 122" />
+        <Text value="Preview" />
+        <Size value="340, 82" />
+        <TabIndex value="12" />
+        <Controls>
+          <System.Windows.Forms.Label>
+            <Name value="lblOffsetPreview" />
+            <Location value="3, 16" />
+            <Text value="Offset" />
+            <TextAlign value="MiddleCenter" />
+            <Size value="334, 31" />
+            <ForeColor value="Color [ControlText]" />
+            <Dock value="Top" />
+            <TabIndex value="2" />
+          </System.Windows.Forms.Label>
+          <System.Windows.Forms.Label>
+            <Name value="lblDataPreview" />
+            <Location value="3, 47" />
+            <Text value="Data" />
+            <TextAlign value="MiddleCenter" />
+            <Size value="334, 32" />
+            <Dock value="Bottom" />
+            <TabIndex value="3" />
+          </System.Windows.Forms.Label>
+        </Controls>
+      </System.Windows.Forms.GroupBox>
+      <System.Windows.Forms.GroupBox>
+        <Name value="groupBox1" />
+        <Location value="256, 3" />
+        <Text value="Textstyles" />
+        <Size value="87, 81" />
+        <TabIndex value="11" />
+        <Controls>
+          <System.Windows.Forms.CheckBox>
+            <Name value="cbItalic" />
+            <AutoSize value="True" />
+            <Location value="6, 40" />
+            <Text value="Italic" />
+            <TabIndex value="5" />
+            <Size value="48, 17" />
+            <UseVisualStyleBackColor value="True" />
+          </System.Windows.Forms.CheckBox>
+          <System.Windows.Forms.CheckBox>
+            <Name value="cbBold" />
+            <AutoSize value="True" />
+            <Location value="6, 19" />
+            <Text value="Bold" />
+            <TabIndex value="4" />
+            <Size value="47, 17" />
+            <UseVisualStyleBackColor value="True" />
+          </System.Windows.Forms.CheckBox>
+          <System.Windows.Forms.CheckBox>
+            <Name value="cbUnderline" />
+            <AutoSize value="True" />
+            <Location value="6, 60" />
+            <Text value="Underline" />
+            <TabIndex value="6" />
+            <Size value="71, 17" />
+            <UseVisualStyleBackColor value="True" />
+          </System.Windows.Forms.CheckBox>
+        </Controls>
+      </System.Windows.Forms.GroupBox>
+      <System.Windows.Forms.Label>
+        <Name value="label3" />
+        <Location value="111, 47" />
+        <Text value="Background color:" />
+        <Size value="94, 13" />
+        <AutoSize value="True" />
+        <TabIndex value="10" />
+      </System.Windows.Forms.Label>
+      <System.Windows.Forms.Label>
+        <Name value="label2" />
+        <Location value="111, 0" />
+        <Text value="Foreground color:" />
+        <Size value="90, 13" />
+        <AutoSize value="True" />
+        <TabIndex value="9" />
+      </System.Windows.Forms.Label>
+      <System.Windows.Forms.Label>
+        <Name value="label1" />
+        <Location value="0, 0" />
+        <Text value="Elements:" />
+        <Size value="53, 13" />
+        <AutoSize value="True" />
+        <TabIndex value="8" />
+      </System.Windows.Forms.Label>
+      <System.Windows.Forms.ListBox>
+        <Name value="lstElements" />
+        <Size value="102, 69" />
+        <TabIndex value="7" />
+        <FormattingEnabled value="True" />
+        <Location value="3, 16" />
+      </System.Windows.Forms.ListBox>
+      <System.Windows.Forms.ComboBox>
+        <Name value="cmbBackColor" />
+        <Size value="138, 21" />
+        <TabIndex value="1" />
+        <DrawMode value="OwnerDrawFixed" />
+        <FormattingEnabled value="True" />
+        <DropDownStyle value="DropDownList" />
+        <Location value="111, 63" />
+      </System.Windows.Forms.ComboBox>
+      <System.Windows.Forms.ComboBox>
+        <Name value="cmbForeColor" />
+        <Size value="137, 21" />
+        <TabIndex value="0" />
+        <DrawMode value="OwnerDrawFixed" />
+        <FormattingEnabled value="True" />
+        <DropDownStyle value="DropDownList" />
+        <Location value="112, 16" />
+      </System.Windows.Forms.ComboBox>
+    </Controls>
+  </System.Windows.Forms.UserControl>
+</Components>

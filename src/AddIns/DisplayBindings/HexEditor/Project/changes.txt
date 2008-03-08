@@ -1,0 +1,18 @@
+LIST OF CHANGES
+
+version: 0.0.1
+
+24.03.2007: Start of the project
+20.04.2007: release of alpha 1
+21.04.2007: bug fixing, display/scrolling improvements
+28.04.2007: Selection functionality implemented partly
+26.09.2007: Use of double buffering for painting and selection painting bugs fixed
+27.09.2007: Several selection bugs fixed.
+13.10.2007: Many bugs fixed and integration in SD.
+28.10.2007: Many other bugfixes and finishing alpha 2.
+
+version: 0.0.2
+
+18.02.2008: Final version for SD 3.0.0.2951
+20.02.2008: Implementation as DisplayBinding finished
+22.02.2008: Clean up and commenting.

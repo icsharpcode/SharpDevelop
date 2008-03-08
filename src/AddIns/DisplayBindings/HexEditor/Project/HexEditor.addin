@@ -1,0 +1,57 @@
+<AddIn name        = "HexEditor"
+       author      = "Siegfried Pammer"
+       url         = ""
+       description = "Hexadecimal Editor DisplayBinding">
+	
+	<Manifest>
+		<Identity name="SiegfriedPammer.HexEditor" version="0.0.2" />
+		<Dependency addin="SharpDevelop" version="3.0"/>
+	</Manifest>
+	
+	<Runtime>
+		<Import assembly = "HexEditor.dll"/>
+		<Import assembly = ":ICSharpCode.SharpDevelop"/>
+	</Runtime>
+	
+	<Path name = "/SharpDevelop/Workbench/DisplayBindings">
+		<DisplayBinding id = "HexEditor"
+		                insertbefore = "Text"
+		                supportedformats = "Binaries"
+		                title = "Hex editor"
+		                class = "HexEditor.View.HexEditDisplayBinding"/>
+	</Path>
+	
+	<!--	<Path name = "/SharpDevelop/Dialogs/OptionsDialog/ToolsOptions">
+		<DialogPanel id    = "HexEditor"
+		             label = "HexEditor"
+		             class = "HexEditor.View.HexEditOptionsPanel"/>
+	</Path> -->
+	
+	<!-- Right click menu -->
+	<Path name = "/AddIns/HexEditor/Editor/ContextMenu">
+		<Include id = "Cut" item = "/SharpDevelop/Workbench/MainMenu/Edit/Cut"/>
+		<Include id = "Copy" item = "/SharpDevelop/Workbench/MainMenu/Edit/Copy"/>
+		<Include id = "Paste" item = "/SharpDevelop/Workbench/MainMenu/Edit/Paste"/>
+		<Include id = "Delete" item = "/SharpDevelop/Workbench/MainMenu/Edit/Delete"/>
+		<MenuItem id = "Separator1" type = "Separator"/>
+		<Include id = "SelectAll" item="/SharpDevelop/Workbench/MainMenu/Edit/SelectAll"/>
+		<MenuItem id = "Separator1" type = "Separator"/>
+		<MenuItem id = "Save"
+		          label = "${res:XML.MainMenu.FileMenu.Save}"
+		          icon = "Icons.16x16.SaveIcon"
+		          shortcut = "Control|S"
+		          class = "ICSharpCode.SharpDevelop.Commands.SaveFile"/>
+		<MenuItem id = "SaveAs"
+		          label = "${res:XML.MainMenu.FileMenu.SaveAs}"
+		          class = "ICSharpCode.SharpDevelop.Commands.SaveFileAs"/>
+		<MenuItem id = "Separator1" type = "Separator"/>
+		<MenuItem id = "Close"
+		          label = "${res:XML.MainMenu.FileMenu.Close}"
+		          class = "ICSharpCode.SharpDevelop.Commands.CloseFile"/>
+	</Path>
+
+	<!-- File extensions that will be opened in the Hex Editor -->
+	<Path name = "/AddIns/HexEditor/Editor">
+		<String id = "SupportedFileExtensions" text = ".exe;.dll"/>
+	</Path>
+</AddIn>

@@ -1,0 +1,120 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <ProjectGuid>{E618A9CD-A39F-4925-A538-E8A3FEF24E54}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <OutputType>Library</OutputType>
+    <RootNamespace>HexEditor</RootNamespace>
+    <AssemblyName>HexEditor</AssemblyName>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <NoStdLib>False</NoStdLib>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <SignAssembly>True</SignAssembly>
+    <DelaySign>False</DelaySign>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <RunCodeAnalysis>False</RunCodeAnalysis>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>2.0</OldToolsVersion>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <OutputPath>..\..\..\..\..\AddIns\AddIns\DisplayBindings\HexEditor</OutputPath>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <Optimize>False</Optimize>
+    <StartAction>Program</StartAction>
+    <StartProgram>..\..\..\..\bin\SharpDevelop.exe</StartProgram>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <OutputPath>..\..\..\..\..\AddIns\AddIns\DisplayBindings\HexEditor</OutputPath>
+    <DebugSymbols>false</DebugSymbols>
+    <DebugType>None</DebugType>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>False</Optimize>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>4194304</BaseAddress>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <FileAlignment>4096</FileAlignment>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
+      <Link>Configuration\GlobalAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="Src\HexEditControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Src\HexEditControl.Designer.cs">
+      <DependentUpon>HexEditControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Src\Util\BufferManager.cs" />
+    <Compile Include="Src\Util\Caret.cs" />
+    <Compile Include="Src\Util\ClipboardManager.cs" />
+    <Compile Include="Src\Util\NativeMethods.cs" />
+    <Compile Include="Src\Util\UndoAction.cs" />
+    <Compile Include="Src\Util\UndoEventArgs.cs" />
+    <Compile Include="Src\Util\UndoStep.cs" />
+    <Compile Include="Src\Util\SelectionManager.cs" />
+    <Compile Include="Src\Util\UndoManager.cs" />
+    <Compile Include="Src\Util\ViewMode.cs" />
+    <Compile Include="Src\View\HexEditContainer.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Src\View\HexEditContainer.Designer.cs">
+      <DependentUpon>HexEditContainer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Src\View\HexEditDisplayBinding.cs" />
+    <Compile Include="Src\View\HexEditOptionsPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Src\View\HexEditView.cs" />
+    <None Include="changes.txt" />
+    <None Include="HexEditor.addin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <EmbeddedResource Include="Src\HexEditControl.resx">
+      <DependentUpon>HexEditControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Src\View\HexEditContainer.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>HexEditContainer.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\sizefittowindow.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\HexEditOptions.xfrm" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Src\View" />
+    <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
+      <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
+      <Name>ICSharpCode.SharpDevelop</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
+      <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
+      <Name>ICSharpCode.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+</Project>
