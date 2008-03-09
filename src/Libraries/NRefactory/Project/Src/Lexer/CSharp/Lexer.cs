@@ -1061,6 +1061,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			PPWhitespace();
 			if (parseIfExpression && directive == "#if" || parseElifExpression && directive == "#elif") {
 				Ast.Expression expr = PPExpression();
+				Location endLocation = new Location(Col, Line);
 				int c = ReaderRead();
 				if (c >= 0 && !HandleLineEnd((char)c)) {
 					if (c == '/' && ReaderRead() == '/') {
@@ -1070,14 +1071,16 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 					}
 					SkipToEndOfLine(); // skip comment
 				}
-				return new PreprocessingDirective(directive, null, start, new Location(Col, Line)) { Expression = expr };
+				return new PreprocessingDirective(directive, null, start, endLocation) { Expression = expr };
 			} else {
+				Location endLocation = new Location(Col, Line);
 				string arg = ReadToEndOfLine();
+				endLocation.Column += arg.Length;
 				int pos = arg.IndexOf("//");
 				if (pos >= 0)
 					arg = arg.Substring(0, pos);
 				arg = arg.Trim();
-				return new PreprocessingDirective(directive, arg, start, new Location(Col, Line));
+				return new PreprocessingDirective(directive, arg, start, endLocation);
 			}
 		}
 		

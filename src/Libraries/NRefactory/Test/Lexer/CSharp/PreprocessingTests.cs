@@ -133,10 +133,37 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 				/*
 			#else
 				/* */ class
-			#endif 
+			#endif
 			";
 			Assert.AreEqual(new int[] { Tokens.Class, Tokens.EOF }, GetTokenKinds(program));
 			Assert.AreEqual(new int[] { Tokens.Struct, Tokens.Class, Tokens.EOF }, GetTokenKinds("#define X\n" + program));
+		}
+		
+		[Test]
+		public void Region()
+		{
+			string program = @"
+	#region Region Title
+	;
+	#endregion
+	,";
+			Assert.AreEqual(new int[] { Tokens.Semicolon, Tokens.Comma, Tokens.EOF }, GetTokenKinds(program));
+			ILexer lexer = GenerateLexer(program);
+			while (lexer.NextToken().kind != Tokens.EOF);
+			List<ISpecial> specials = lexer.SpecialTracker.RetrieveSpecials();
+			
+			Assert.IsTrue(specials[0] is BlankLine);
+			Assert.AreEqual(new Location(2, 1), specials[0].StartPosition);
+			Assert.AreEqual(new Location(2, 1), specials[0].EndPosition);
+			
+			Assert.AreEqual("#region", (specials[1] as PreprocessingDirective).Cmd);
+			Assert.AreEqual("Region Title", (specials[1] as PreprocessingDirective).Arg);
+			Assert.AreEqual(new Location(2, 2), specials[1].StartPosition);
+			Assert.AreEqual(new Location(22, 2), specials[1].EndPosition);
+			
+			Assert.AreEqual("#endregion", (specials[2] as PreprocessingDirective).Cmd);
+			Assert.AreEqual(new Location(2, 4), specials[2].StartPosition);
+			Assert.AreEqual(new Location(12, 4), specials[2].EndPosition);
 		}
 	}
 }
