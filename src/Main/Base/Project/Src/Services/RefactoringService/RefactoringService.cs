@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Linq;
 using System.Diagnostics;
 using System.Collections.Generic;
 using System.Drawing;
@@ -27,11 +28,19 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		/// <param name="baseClass">The base class.</param>
 		/// <param name="projectContents">The project contents in which derived classes should be searched.</param>
 		/// <param name="directDerivationOnly">If true, gets only the classes that derive directly from <paramref name="baseClass"/>.</param>
-		public static List<IClass> FindDerivedClasses(IClass baseClass, IEnumerable<IProjectContent> projectContents, bool directDerivationOnly)
+		public static IEnumerable<IClass> FindDerivedClasses(IClass baseClass, IEnumerable<IProjectContent> projectContents, bool directDerivationOnly)
+		{
+			HashSet<IClass> resultList = new HashSet<IClass>();
+			FindDerivedClasses(resultList, baseClass, projectContents, directDerivationOnly);
+			return resultList.OrderBy(c => c.FullyQualifiedName);
+		}
+		
+		static void FindDerivedClasses(HashSet<IClass> resultList, IClass baseClass, IEnumerable<IProjectContent> projectContents, bool directDerivationOnly)
 		{
 			baseClass = baseClass.GetCompoundClass();
 			string baseClassName = baseClass.Name;
 			string baseClassFullName = baseClass.FullyQualifiedName;
+			LoggingService.Debug("FindDerivedClasses for " + baseClassFullName);
 			List<IClass> list = new List<IClass>();
 			foreach (IProjectContent pc in projectContents) {
 				if (pc != baseClass.ProjectContent && !pc.ReferencedContents.Contains(baseClass.ProjectContent)) {
@@ -41,17 +50,15 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				}
 				AddDerivedClasses(pc, baseClass, baseClassName, baseClassFullName, pc.Classes, list);
 			}
-			if (!directDerivationOnly) {
-				List<IClass> additional = new List<IClass>();
+			if (directDerivationOnly) {
+				resultList.AddRange(list);
+			} else {
 				foreach (IClass c in list) {
-					additional.AddRange(FindDerivedClasses(c, projectContents, directDerivationOnly));
-				}
-				foreach (IClass c in additional) {
-					if (!list.Contains(c))
-						list.Add(c);
+					if (resultList.Add(c)) {
+						FindDerivedClasses(resultList, c, projectContents, directDerivationOnly);
+					}
 				}
 			}
-			return list;
 		}
 		
 		static void AddDerivedClasses(IProjectContent pc, IClass baseClass, string baseClassName, string baseClassFullName,
@@ -65,7 +72,9 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 					if (pc.Language.NameComparer.Equals(baseTypeName, baseClassName) ||
 					    pc.Language.NameComparer.Equals(baseTypeName, baseClassFullName)) {
 						IReturnType possibleBaseClass = c.GetBaseType(i);
-						if (possibleBaseClass.FullyQualifiedName == baseClass.FullyQualifiedName) {
+						if (possibleBaseClass.FullyQualifiedName == baseClass.FullyQualifiedName
+						    && possibleBaseClass.TypeArgumentCount == baseClass.TypeParameters.Count)
+						{
 							resultList.Add(c);
 						}
 					}
@@ -425,5 +434,3 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		#endregion
 	}
 }
-
-

@@ -344,14 +344,14 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 		{
 			MenuCommand item = (MenuCommand)sender;
 			IClass c = (IClass)item.Tag;
-			List<IClass> derivedClasses = RefactoringService.FindDerivedClasses(c, ParserService.AllProjectContents, false);
+			IEnumerable<IClass> derivedClasses = RefactoringService.FindDerivedClasses(c, ParserService.AllProjectContents, false);
 			
 			List<SearchResultMatch> results = new List<SearchResultMatch>();
 			foreach (IClass derivedClass in derivedClasses) {
 				if (derivedClass.CompilationUnit == null) continue;
 				if (derivedClass.CompilationUnit.FileName == null) continue;
 				
-				SearchResultMatch res = new SimpleSearchResultMatch(derivedClass.FullyQualifiedName, new TextLocation(derivedClass.Region.BeginColumn - 1, derivedClass.Region.BeginLine - 1));
+				SearchResultMatch res = new SimpleSearchResultMatch(ClassNode.GetText(derivedClass), new TextLocation(derivedClass.Region.BeginColumn - 1, derivedClass.Region.BeginLine - 1));
 				res.ProvidedDocumentInformation = FindReferencesAndRenameHelper.GetDocumentInformation(derivedClass.CompilationUnit.FileName);
 				results.Add(res);
 			}

@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -176,14 +177,14 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 		{
 			MenuCommand item = (MenuCommand)sender;
 			IMember member = (IMember)item.Tag;
-			List<IClass> derivedClasses = RefactoringService.FindDerivedClasses(member.DeclaringType, ParserService.AllProjectContents, false);
+			IEnumerable<IClass> derivedClasses = RefactoringService.FindDerivedClasses(member.DeclaringType, ParserService.AllProjectContents, false);
 			List<SearchResultMatch> results = new List<SearchResultMatch>();
 			foreach (IClass derivedClass in derivedClasses) {
 				if (derivedClass.CompilationUnit == null) continue;
 				if (derivedClass.CompilationUnit.FileName == null) continue;
 				IMember m = MemberLookupHelper.FindSimilarMember(derivedClass, member);
 				if (m != null && !m.Region.IsEmpty) {
-					SearchResultMatch res = new SimpleSearchResultMatch(m.FullyQualifiedName, new TextLocation(m.Region.BeginColumn - 1, m.Region.BeginLine - 1));
+					SearchResultMatch res = new SimpleSearchResultMatch(MemberNode.GetText(m), new TextLocation(m.Region.BeginColumn - 1, m.Region.BeginLine - 1));
 					res.ProvidedDocumentInformation = FindReferencesAndRenameHelper.GetDocumentInformation(derivedClass.CompilationUnit.FileName);
 					results.Add(res);
 				}

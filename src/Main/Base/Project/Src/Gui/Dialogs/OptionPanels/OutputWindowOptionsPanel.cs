@@ -40,7 +40,9 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		{
 			Properties properties = (Properties)PropertyService.Get(OutputWindowsProperty, new Properties());
 			properties.Set("WordWrap", ((CheckBox)ControlDictionary["wordWrapCheckBox"]).Checked);
-			properties.Set("DefaultFont", fontSelectionPanel.CurrentFontString);
+			string currentFontString = fontSelectionPanel.CurrentFontString;
+			if (currentFontString != null)
+				properties.Set("DefaultFont", currentFontString);
 			
 			PropertyService.Set(OutputWindowsProperty, properties);
 			return true;
