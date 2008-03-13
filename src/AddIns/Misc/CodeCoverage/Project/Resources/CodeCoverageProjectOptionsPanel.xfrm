@@ -37,7 +37,7 @@
         <Name value="includeListLabel" />
         <Location value="12, 12" />
         <UseCompatibleTextRendering value="True" />
-        <Text value="${res:ICSharpCode.CodeCoverage.ProjectOptionsPanel.IncludeListLabel}" />
+        <Text value="${res:ICSharpCode.CodeCoverage.ProjectOptionsPanel.IncludeListLabel}:" />
         <Size value="317, 21" />
         <Anchor value="Top, Left, Right" />
         <TabIndex value="0" />
