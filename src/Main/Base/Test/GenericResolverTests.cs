@@ -392,6 +392,30 @@ class D : Program  {
 			Assert.IsNotNull(baseMember);
 			Assert.AreEqual("Program.T<A, B>", ambience.Convert((IMethod)baseMember));
 		}
+		
+		[Test]
+		public void PassGenericArgumentOnToOtherGenericMethod()
+		{
+			string program = @"class T {
+		static void Test<ValueT>(ValueT v, int iKey) {
+			
+		}
+	}
+	class TestClass<T> {
+		public static bool Equals(T a, T b) { return false; }
+	}";
+			
+			MemberResolveResult mrr;
+			
+			mrr = Resolve<MemberResolveResult>(program, "TestClass<ValueT>.Equals(v, default(ValueT))", 3);
+			Assert.AreEqual("TestClass.Equals", mrr.ResolvedMember.FullyQualifiedName);
+			
+			mrr = Resolve<MemberResolveResult>(program, "TestClass<int>.Equals(v, default(ValueT))", 3);
+			Assert.AreEqual("System.Object.Equals", mrr.ResolvedMember.FullyQualifiedName);
+			
+			mrr = Resolve<MemberResolveResult>(program, "TestClass<ValueT>.Equals(v, default(object))", 3);
+			Assert.AreEqual("System.Object.Equals", mrr.ResolvedMember.FullyQualifiedName);
+		}
 		#endregion
 	}
 }

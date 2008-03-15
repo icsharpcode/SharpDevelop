@@ -282,6 +282,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.okButton.Size = new System.Drawing.Size(75, 23);
 			this.okButton.TabIndex = 5;
 			this.okButton.Text = "${res:Global.OKButtonText}";
+			this.okButton.Click += new System.EventHandler(this.OkButtonClick);
 			// 
 			// cancelButton
 			// 

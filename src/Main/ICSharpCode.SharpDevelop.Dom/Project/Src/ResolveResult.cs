@@ -117,7 +117,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		static void TryAddExtension(LanguageProperties language, ArrayList res, IMethodOrProperty ext, IReturnType resolvedType)
 		{
 			// now add the extension method if it fits the type
-			if (MemberLookupHelper.IsApplicable(resolvedType, ext.Parameters[0].ReturnType)) {
+			if (MemberLookupHelper.IsApplicable(resolvedType, ext.Parameters[0].ReturnType, ext as IMethod)) {
 				IMethod method = ext as IMethod;
 				if (method != null && method.TypeParameters.Count > 0) {
 					IReturnType[] typeArguments = new IReturnType[method.TypeParameters.Count];

@@ -335,7 +335,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			int score;
 			bool expanded;
 			for (int i = 0; i < list.Count; i++) {
-				if (IsApplicable(list[i].Parameters, arguments, allowAdditionalArguments, out score, out expanded)) {
+				if (IsApplicable(list[i], arguments, allowAdditionalArguments, out score, out expanded)) {
 					acceptableMatch = true;
 					score = int.MaxValue;
 				} else {
@@ -619,7 +619,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		#endregion
 		
 		#region IsApplicable
-		static bool IsApplicable(IList<IParameter> parameters,
+		static bool IsApplicable(IMethodOrProperty targetMethodOrProperty,
 		                         IReturnType[] arguments,
 		                         bool allowAdditionalArguments,
 		                         out int score,
@@ -627,6 +627,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			// see ECMA-334, § 14.4.2.1
 			
+			IList<IParameter> parameters = targetMethodOrProperty.Parameters;
+			IMethod targetMethod = targetMethodOrProperty as IMethod;
 			expanded = false;
 			score = 0;
 			if (parameters.Count == 0)
@@ -638,7 +640,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			// check all arguments except the last
 			bool ok = true;
 			for (int i = 0; i < Math.Min(lastParameter, arguments.Length); i++) {
-				if (IsApplicable(arguments[i], parameters[i])) {
+				if (IsApplicable(arguments[i], parameters[i], targetMethod)) {
 					score++;
 				} else {
 					ok = false;
@@ -649,7 +651,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 			if (parameters.Count == arguments.Length) {
 				// try if method is applicable in normal form by checking last argument
-				if (IsApplicable(arguments[lastParameter], parameters[lastParameter])) {
+				if (IsApplicable(arguments[lastParameter], parameters[lastParameter], targetMethod)) {
 					return true;
 				}
 			}
@@ -667,7 +669,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return false;
 			}
 			for (int i = lastParameter; i < arguments.Length; i++) {
-				if (IsApplicable(arguments[i], rt.CastToArrayReturnType().ArrayElementType)) {
+				if (IsApplicable(arguments[i], rt.CastToArrayReturnType().ArrayElementType, targetMethod)) {
 					score++;
 				} else {
 					ok = false;
@@ -676,7 +678,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return ok;
 		}
 		
-		static bool IsApplicable(IReturnType argument, IParameter expected)
+		static bool IsApplicable(IReturnType argument, IParameter expected, IMethod targetMethod)
 		{
 			bool parameterIsRefOrOut = expected.IsRef || expected.IsOut;
 			bool argumentIsRefOrOut = argument != null && argument.IsDecoratingReturnType<ReferenceReturnType>();
@@ -685,13 +687,19 @@ namespace ICSharpCode.SharpDevelop.Dom
 			if (parameterIsRefOrOut) {
 				return object.Equals(argument, expected.ReturnType);
 			} else {
-				return IsApplicable(argument, expected.ReturnType);
+				return IsApplicable(argument, expected.ReturnType, targetMethod);
 			}
 		}
 		
-		public static bool IsApplicable(IReturnType argument, IReturnType expected)
+		/// <summary>
+		/// Tests whether an argument of type "argument" is valid for a parameter of type "expected" for a call
+		/// to "targetMethod".
+		/// targetMethod may be null, it is only used when it is a generic method and expected is (or contains) one of
+		/// its type parameters.
+		/// </summary>
+		public static bool IsApplicable(IReturnType argument, IReturnType expected, IMethod targetMethod)
 		{
-			return ConversionExistsInternal(argument, expected, true);
+			return ConversionExistsInternal(argument, expected, targetMethod);
 		}
 		#endregion
 		
@@ -701,10 +709,15 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// </summary>
 		public static bool ConversionExists(IReturnType from, IReturnType to)
 		{
-			return ConversionExistsInternal(from, to, false);
+			return ConversionExistsInternal(from, to, null);
 		}
 		
-		static bool ConversionExistsInternal(IReturnType from, IReturnType to, bool allowGenericTarget)
+		/// <summary>
+		/// Tests if an implicit conversion exists from "from" to "to".
+		/// Conversions from concrete types to generic types are only allowed when the generic type belongs to the 
+		/// method "allowGenericTargetsOnThisMethod".
+		/// </summary>
+		static bool ConversionExistsInternal(IReturnType from, IReturnType to, IMethod allowGenericTargetsOnThisMethod)
 		{
 			// ECMA-334, § 13.1 Implicit conversions
 			
@@ -765,7 +778,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			    && (fromIsDefault || from.IsArrayReturnType || from.IsConstructedReturnType))
 			{
 				foreach (IReturnType baseTypeOfFrom in GetTypeInheritanceTree(from)) {
-					if (IsConstructedConversionToGenericReturnType(baseTypeOfFrom, to, allowGenericTarget))
+					if (IsConstructedConversionToGenericReturnType(baseTypeOfFrom, to, allowGenericTargetsOnThisMethod))
 						return true;
 				}
 			}
@@ -775,7 +788,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				ArrayReturnType toArt   = to.CastToArrayReturnType();
 				// from array to other array type
 				if (fromArt.ArrayDimensions == toArt.ArrayDimensions) {
-					return ConversionExistsInternal(fromArt.ArrayElementType, toArt.ArrayElementType, allowGenericTarget);
+					return ConversionExistsInternal(fromArt.ArrayElementType, toArt.ArrayElementType, allowGenericTargetsOnThisMethod);
 				}
 			}
 			
@@ -799,7 +812,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return false;
 		}
 		
-		static bool IsConstructedConversionToGenericReturnType(IReturnType from, IReturnType to, bool allowGenericTarget)
+		static bool IsConstructedConversionToGenericReturnType(IReturnType from, IReturnType to, IMethod allowGenericTargetsOnThisMethod)
 		{
 			// null could be passed when type arguments could not be resolved/inferred
 			if (from == null && to == null)
@@ -810,12 +823,15 @@ namespace ICSharpCode.SharpDevelop.Dom
 			if (from.Equals(to))
 				return true;
 			
-			if (!allowGenericTarget)
+			if (allowGenericTargetsOnThisMethod == null)
 				return false;
 			
 			if (to.IsGenericReturnType) {
-				foreach (IReturnType constraintType in to.CastToGenericReturnType().TypeParameter.Constraints) {
-					if (!ConversionExistsInternal(from, constraintType, allowGenericTarget)) {
+				ITypeParameter typeParameter = to.CastToGenericReturnType().TypeParameter;
+				if (typeParameter.Method != allowGenericTargetsOnThisMethod)
+					return false;
+				foreach (IReturnType constraintType in typeParameter.Constraints) {
+					if (!ConversionExistsInternal(from, constraintType, allowGenericTargetsOnThisMethod)) {
 						return false;
 					}
 				}
@@ -828,7 +844,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			if (cFrom != null && cTo != null) {
 				if (cFrom.FullyQualifiedName == cTo.FullyQualifiedName && cFrom.TypeArguments.Count == cTo.TypeArguments.Count) {
 					for (int i = 0; i < cFrom.TypeArguments.Count; i++) {
-						if (!IsConstructedConversionToGenericReturnType(cFrom.TypeArguments[i], cTo.TypeArguments[i], allowGenericTarget))
+						if (!IsConstructedConversionToGenericReturnType(cFrom.TypeArguments[i], cTo.TypeArguments[i], allowGenericTargetsOnThisMethod))
 							return false;
 					}
 					return true;

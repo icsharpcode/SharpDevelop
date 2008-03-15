@@ -19,6 +19,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 	{
 		IProjectContent msc; // = ProjectContentRegistry.Mscorlib;
 		IProjectContent swf; // = ProjectContentRegistry.GetProjectContentForReference("System.Windows.Forms", "System.Windows.Forms");
+		IMethod methodForGenericCalls;
 		
 		[TestFixtureSetUp]
 		public void FixtureSetup()
@@ -26,6 +27,14 @@ namespace ICSharpCode.SharpDevelop.Tests
 			ProjectContentRegistry r = new ProjectContentRegistry();
 			msc = r.Mscorlib;
 			swf = r.GetProjectContentForReference("System.Windows.Forms", "System.Windows.Forms");
+			
+			DefaultProjectContent dpc = new DefaultProjectContent();
+			dpc.ReferencedContents.Add(msc);
+			DefaultCompilationUnit cu = new DefaultCompilationUnit(dpc);
+			DefaultClass c = new DefaultClass(cu, "DummyClass");
+			cu.Classes.Add(c);
+			methodForGenericCalls = new DefaultMethod(c, "DummyMethod");
+			c.Methods.Add(methodForGenericCalls);
 		}
 		
 		IReturnType DictionaryRT {
@@ -275,17 +284,15 @@ namespace ICSharpCode.SharpDevelop.Tests
 			                                                  ListOf(msc.SystemTypes.String)));
 		}
 		
+		bool IsApplicable(IReturnType argument, IReturnType expected)
+		{
+			return MemberLookupHelper.IsApplicable(argument, expected, methodForGenericCalls);
+		}
+		
 		GenericReturnType CreateT()
 		{
-			DefaultProjectContent dpc = new DefaultProjectContent();
-			dpc.ReferencedContents.Add(msc);
-			DefaultCompilationUnit cu = new DefaultCompilationUnit(dpc);
-			DefaultClass c = new DefaultClass(cu, "DummyClass");
-			cu.Classes.Add(c);
-			DefaultMethod m = new DefaultMethod(c, "DummyMethod");
-			c.Methods.Add(m);
-			m.TypeParameters.Add(new DefaultTypeParameter(m, "T", 0));
-			return new GenericReturnType(m.TypeParameters[0]);
+			ITypeParameter tp = new DefaultTypeParameter(methodForGenericCalls, "T", 0);
+			return new GenericReturnType(tp);
 		}
 		
 		GenericReturnType CreateTWithDisposableConstraint()
@@ -303,14 +310,14 @@ namespace ICSharpCode.SharpDevelop.Tests
 			                                                   CreateT()));
 			
 			// but it is applicable
-			Assert.IsTrue(MemberLookupHelper.IsApplicable(msc.SystemTypes.String,
+			Assert.IsTrue(IsApplicable(msc.SystemTypes.String,
 			                                              CreateT()));
 		}
 		
 		[Test]
 		public void NoConversionExistsFromStringToDisposableT()
 		{
-			Assert.IsFalse(MemberLookupHelper.IsApplicable(msc.SystemTypes.String,
+			Assert.IsFalse(IsApplicable(msc.SystemTypes.String,
 			                                               CreateTWithDisposableConstraint()));
 			
 			Assert.IsFalse(MemberLookupHelper.ConversionExists(msc.SystemTypes.String,
@@ -323,29 +330,29 @@ namespace ICSharpCode.SharpDevelop.Tests
 			Assert.IsFalse(MemberLookupHelper.ConversionExists(msc.GetClass("System.CharEnumerator", 0).DefaultReturnType,
 			                                                   CreateTWithDisposableConstraint()));
 			
-			Assert.IsTrue(MemberLookupHelper.IsApplicable(msc.GetClass("System.CharEnumerator", 0).DefaultReturnType,
-			                                              CreateTWithDisposableConstraint()));
+			Assert.IsTrue(IsApplicable(msc.GetClass("System.CharEnumerator", 0).DefaultReturnType,
+			                           CreateTWithDisposableConstraint()));
 		}
 		
 		[Test]
 		public void ListOfStringIsApplicableOnListOfT()
 		{
-			Assert.IsTrue(MemberLookupHelper.IsApplicable(ListOf(msc.SystemTypes.String),
-			                                              ListOf(CreateT())));
+			Assert.IsTrue(IsApplicable(ListOf(msc.SystemTypes.String),
+			                           ListOf(CreateT())));
 		}
 		
 		[Test]
 		public void ListOfStringIsApplicableOnIEnumerableOfT()
 		{
-			Assert.IsTrue(MemberLookupHelper.IsApplicable(ListOf(msc.SystemTypes.String),
-			                                              EnumerableOf(CreateT())));
+			Assert.IsTrue(IsApplicable(ListOf(msc.SystemTypes.String),
+			                           EnumerableOf(CreateT())));
 		}
 		
 		[Test]
 		public void ArrayOfStringIsApplicableOnIListOfT()
 		{
-			Assert.IsTrue(MemberLookupHelper.IsApplicable(new ArrayReturnType(msc, msc.SystemTypes.String, 1),
-			                                              IListOf(CreateT())));
+			Assert.IsTrue(IsApplicable(new ArrayReturnType(msc, msc.SystemTypes.String, 1),
+			                           IListOf(CreateT())));
 			
 			Assert.IsFalse(MemberLookupHelper.ConversionExists(new ArrayReturnType(msc, msc.SystemTypes.String, 1),
 			                                                   IListOf(CreateT())));
@@ -354,8 +361,8 @@ namespace ICSharpCode.SharpDevelop.Tests
 		[Test]
 		public void ArrayOfStringIsApplicableOnArrayOfT()
 		{
-			Assert.IsTrue(MemberLookupHelper.IsApplicable(new ArrayReturnType(msc, msc.SystemTypes.String, 1),
-			                                              new ArrayReturnType(msc, CreateT(), 1)));
+			Assert.IsTrue(IsApplicable(new ArrayReturnType(msc, msc.SystemTypes.String, 1),
+			                           new ArrayReturnType(msc, CreateT(), 1)));
 			
 			Assert.IsFalse(MemberLookupHelper.ConversionExists(new ArrayReturnType(msc, msc.SystemTypes.String, 1),
 			                                                   new ArrayReturnType(msc, CreateT(), 1)));
@@ -364,7 +371,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 		[Test]
 		public void ConversionExistsFromAnonymousDelegateToSystemPredicate()
 		{
-			Assert.IsTrue(MemberLookupHelper.IsApplicable(
+			Assert.IsTrue(IsApplicable(
 				new AnonymousMethodReturnType(new DefaultCompilationUnit(msc)),
 				new GetClassReturnType(msc, "System.Predicate", 1)
 			));
