@@ -35,6 +35,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public override IMember Clone()
 		{
 			DefaultEvent de = new DefaultEvent(Name, ReturnType, Modifiers, Region, BodyRegion, DeclaringType);
+			de.CopyDocumentationFrom(this);
 			foreach (ExplicitInterfaceImplementation eii in InterfaceImplementations) {
 				de.InterfaceImplementations.Add(eii.Clone());
 			}

@@ -180,6 +180,16 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
+		protected void CopyDocumentationFrom(IEntity entity)
+		{
+			AbstractEntity ae = entity as AbstractEntity;
+			if (ae != null) {
+				this.Documentation = ae.documentation; // do not cause pc.GetXmlDocumentation call for documentation copy
+			} else {
+				this.Documentation = entity.Documentation;
+			}
+		}
+		
 		public abstract string DocumentationTag {
 			get;
 		}

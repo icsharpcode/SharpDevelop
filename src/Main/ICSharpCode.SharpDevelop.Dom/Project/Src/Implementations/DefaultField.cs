@@ -30,7 +30,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public override IMember Clone()
 		{
-			return new DefaultField(ReturnType, Name, Modifiers, Region, DeclaringType);
+			DefaultField field = new DefaultField(ReturnType, Name, Modifiers, Region, DeclaringType);
+			field.CopyDocumentationFrom(this);
+			return field;
 		}
 		
 		public virtual int CompareTo(IField field)

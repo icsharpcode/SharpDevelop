@@ -388,9 +388,12 @@ namespace ICSharpCode.SharpDevelop.Project
 					MSBuildProject.Imports.RemoveImport(winFxImport);
 				}
 				if (changeTargetFrameworkToNet35) {
+					bool isDotNet35 = TargetFrameworkVersion == "v3.5";
 					SetProperty(null, null, "TargetFrameworkVersion", "v3.5", PropertyStorageLocations.Base, true);
 					
-					AddDotnet35References();
+					if (!isDotNet35) {
+						AddDotnet35References();
+					}
 				} else {
 					foreach (string config in ConfigurationNames) {
 						foreach (string platform in PlatformNames) {

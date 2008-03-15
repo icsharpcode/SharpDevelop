@@ -81,6 +81,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			DefaultMethod p = new DefaultMethod(Name, ReturnType, Modifiers, Region, BodyRegion, DeclaringType);
 			p.parameters = DefaultParameter.Clone(this.Parameters);
 			p.typeParameters = this.typeParameters;
+			p.CopyDocumentationFrom(this);
 			p.documentationTag = DocumentationTag;
 			p.isExtensionMethod = this.isExtensionMethod;
 			foreach (ExplicitInterfaceImplementation eii in InterfaceImplementations) {
