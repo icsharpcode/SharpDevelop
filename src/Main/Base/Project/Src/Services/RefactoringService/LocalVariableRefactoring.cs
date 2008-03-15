@@ -19,7 +19,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			LocalResolveResult local = (LocalResolveResult)Owner;
 			FindReferencesAndRenameHelper.ShowAsSearchResults(
 				StringParser.Parse("${res:SharpDevelop.Refactoring.ReferencesTo}",
-				                   new string[,] {{ "Name", local.Field.Name }}),
+				                   new string[,] {{ "Name", local.VariableName }}),
 				RefactoringService.FindReferences(local, null)
 			);
 		}
@@ -34,8 +34,8 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		
 		public static void Run(LocalResolveResult local)
 		{
-			string newName = MessageService.ShowInputBox("${res:SharpDevelop.Refactoring.Rename}", "${res:SharpDevelop.Refactoring.RenameMemberText}", local.Field.Name);
-			if (!FindReferencesAndRenameHelper.CheckName(newName, local.Field.Name)) return;
+			string newName = MessageService.ShowInputBox("${res:SharpDevelop.Refactoring.Rename}", "${res:SharpDevelop.Refactoring.RenameMemberText}", local.VariableName);
+			if (!FindReferencesAndRenameHelper.CheckName(newName, local.VariableName)) return;
 			
 			List<Reference> list = RefactoringService.FindReferences(local, null);
 			if (list == null) return;

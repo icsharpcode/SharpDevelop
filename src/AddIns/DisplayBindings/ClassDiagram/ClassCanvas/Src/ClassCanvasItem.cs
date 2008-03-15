@@ -259,7 +259,7 @@ namespace ClassDiagram
 		
 		protected IAmbience GetAmbience()
 		{
-			IAmbience ambience = AmbienceService.CurrentAmbience;
+			IAmbience ambience = AmbienceService.GetCurrentAmbience();
 			ambience.ConversionFlags = ConversionFlags.None;
 			return ambience;
 		}

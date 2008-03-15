@@ -130,8 +130,8 @@ namespace Grunwald.BooBinding.CodeCompletion
 								                           this.Document.TextContent
 								                          ) as LocalResolveResult;
 								if (rr != null
-								    && rr.Field.Region.BeginLine == lineNumber + 1
-								    && rr.Field.Region.BeginColumn == word.Offset + 1)
+								    && rr.VariableDefinitionRegion.BeginLine == lineNumber + 1
+								    && rr.VariableDefinitionRegion.BeginColumn == word.Offset + 1)
 								{
 									changedLine = true;
 									word.SyntaxColor = this.Document.HighlightingStrategy.GetColorFor("LocalVariableCreation");

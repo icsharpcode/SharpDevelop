@@ -47,7 +47,7 @@ namespace ICSharpCode.TextEditor
 		
 		/// <value>
 		/// The 'prefered' xPos in which the caret moves, when it is moved
-		/// up/down.
+		/// up/down. Measured in pixels, not in characters!
 		/// </value>
 		public int DesiredColumn {
 			get {

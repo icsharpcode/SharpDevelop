@@ -90,8 +90,9 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		
 		static string GetName(IMethod method, ConversionFlags flags)
 		{
-			AmbienceService.CurrentAmbience.ConversionFlags = flags | ConversionFlags.ShowParameterNames;
-			return AmbienceService.CurrentAmbience.Convert(method);
+			IAmbience ambience = AmbienceService.GetCurrentAmbience();
+			ambience.ConversionFlags = flags | ConversionFlags.ShowParameterNames;
+			return ambience.Convert(method);
 		}
 		
 		public OverrideCompletionData(IMethod method)

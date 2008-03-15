@@ -417,7 +417,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			}
 			if (result is MixedResolveResult)
 				return GetText(((MixedResolveResult)result).PrimaryResult, expression, out debuggerCanShowValue);
-			IAmbience ambience = AmbienceService.CurrentAmbience;
+			IAmbience ambience = AmbienceService.GetCurrentAmbience();
 			ambience.ConversionFlags = ConversionFlags.StandardConversionFlags | ConversionFlags.UseFullyQualifiedMemberNames;
 			if (result is MemberResolveResult) {
 				return GetMemberText(ambience, ((MemberResolveResult)result).ResolvedMember, expression, out debuggerCanShowValue);
@@ -432,7 +432,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 					b.Append("local variable ");
 				b.Append(ambience.Convert(rr.Field));
 				if (currentDebugger != null) {
-					string currentValue = currentDebugger.GetValueAsString(rr.Field.Name);
+					string currentValue = currentDebugger.GetValueAsString(rr.VariableName);
 					if (currentValue != null) {
 						debuggerCanShowValue = true;
 						b.Append(" = ");

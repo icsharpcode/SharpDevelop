@@ -63,7 +63,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			
 			public override string ToString()
 			{
-				IAmbience ambience = AmbienceService.CurrentAmbience;
+				IAmbience ambience = AmbienceService.GetCurrentAmbience();
 				ambience.ConversionFlags = ConversionFlags.None;
 				return ambience.Convert(evt);
 			}

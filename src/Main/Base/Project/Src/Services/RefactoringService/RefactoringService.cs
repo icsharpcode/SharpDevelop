@@ -412,8 +412,8 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			if (local == null) {
 				return false;
 			} else {
-				return local.Field.Region.BeginLine == variable.Region.BeginLine
-					&& local.Field.Region.BeginColumn == variable.Region.BeginColumn;
+				return local.VariableDefinitionRegion.BeginLine == variable.Region.BeginLine
+					&& local.VariableDefinitionRegion.BeginColumn == variable.Region.BeginColumn;
 			}
 		}
 		

@@ -50,17 +50,10 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		public string GetInsightData(int number)
 		{
 			IMember method = methods[number];
-			IAmbience conv = AmbienceService.CurrentAmbience;
+			IAmbience conv = AmbienceService.GetCurrentAmbience();
 			conv.ConversionFlags = ConversionFlags.StandardConversionFlags| ConversionFlags.UseFullyQualifiedMemberNames;
 			string documentation = method.Documentation;
-			string text;
-			if (method is IMethod) {
-				text = conv.Convert(method as IMethod);
-			} else if (method is IProperty) {
-				text = conv.Convert(method as IProperty);
-			} else {
-				text = method.ToString();
-			}
+			string text = conv.Convert(method);
 			return text + "\n" + CodeCompletionData.GetDocumentation(documentation);
 		}
 		

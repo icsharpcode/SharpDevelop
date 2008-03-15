@@ -39,6 +39,11 @@ namespace UnitTesting.Tests.Utils
 			return String.Empty;
 		}
 		
+		public string Convert(IEntity entity)
+		{
+			return String.Empty;
+		}
+		
 		public string Convert(IField field)
 		{
 			return String.Empty;

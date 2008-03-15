@@ -161,22 +161,10 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			
 			string ToStringInternal()
 			{
-				IAmbience ambience = AmbienceService.CurrentAmbience;
+				IAmbience ambience = AmbienceService.GetCurrentAmbience();
 				ambience.ConversionFlags = ConversionFlags.ShowTypeParameterList | ConversionFlags.ShowParameterList | ConversionFlags.ShowParameterNames;
-				if (item is IMethod) {
-					return ambience.Convert((IMethod)item);
-				}
-				if (item is IProperty) {
-					return ambience.Convert((IProperty)item);
-				}
-				if (item is IField) {
-					return ambience.Convert((IField)item);
-				}
-				if (item is IProperty) {
-					return ambience.Convert((IProperty)item);
-				}
-				if (item is IEvent) {
-					return ambience.Convert((IEvent)item);
+				if (item is IEntity) {
+					return ambience.Convert((IEntity)item);
 				}
 				return text;
 			}
@@ -388,7 +376,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		void AddClasses(ArrayList items, ICollection<IClass> classes)
 		{
 			foreach (IClass c in classes) {
-				IAmbience ambience = AmbienceService.CurrentAmbience;
+				IAmbience ambience = AmbienceService.GetCurrentAmbience();
 				ambience.ConversionFlags = ConversionFlags.UseFullyQualifiedMemberNames | ConversionFlags.ShowTypeParameterList;
 				items.Add(new ComboBoxItem(c, ambience.Convert(c), ClassBrowserIconService.GetIcon(c), true));
 				AddClasses(items, c.InnerClasses);

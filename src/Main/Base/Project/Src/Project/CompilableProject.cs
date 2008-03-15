@@ -205,14 +205,34 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		static string RemoveQuotes(string text)
+		{
+			if (text.StartsWith("\"") && text.EndsWith("\""))
+				return text.Substring(1, text.Length - 2);
+			else
+				return text;
+		}
+		
 		protected void Start(string program, bool withDebugging)
 		{
+			program = RemoveQuotes(program);
+			if (!FileUtility.IsValidPath(program)) {
+				MessageService.ShowError(program + " is not a valid path; the process cannot be started.");
+				return;
+			}
 			ProcessStartInfo psi = new ProcessStartInfo();
 			psi.FileName = Path.Combine(Directory, program);
 			string workingDir = StringParser.Parse(this.StartWorkingDirectory);
+			
 			if (workingDir.Length == 0) {
 				psi.WorkingDirectory = Path.GetDirectoryName(psi.FileName);
 			} else {
+				workingDir = RemoveQuotes(workingDir);
+				
+				if (!FileUtility.IsValidPath(workingDir)) {
+					MessageService.ShowError("Working directory " + workingDir + " is invalid; the process cannot be started. You can specify the working directory in the project options.");
+					return;
+				}
 				psi.WorkingDirectory = Path.Combine(Directory, workingDir);
 			}
 			psi.Arguments = StringParser.Parse(this.StartArguments);

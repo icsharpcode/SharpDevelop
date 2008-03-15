@@ -115,7 +115,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		
 		public CodeCompletionData(string s, int imageIndex)
 		{
-			ambience = AmbienceService.CurrentAmbience;
+			ambience = AmbienceService.GetCurrentAmbience();
 			description = documentation = String.Empty;
 			text = s;
 			this.imageIndex = imageIndex;
@@ -124,7 +124,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		
 		public CodeCompletionData(IClass c)
 		{
-			ambience = AmbienceService.CurrentAmbience;
+			ambience = AmbienceService.GetCurrentAmbience();
 			// save class (for the delegate description shortcut)
 			this.c = c;
 			imageIndex = ClassBrowserIconService.GetIcon(c);
@@ -140,7 +140,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		{
 			member = method;
 			imageIndex  = ClassBrowserIconService.GetIcon(method);
-			ambience = AmbienceService.CurrentAmbience;
+			ambience = AmbienceService.GetCurrentAmbience();
 			ambience.ConversionFlags = ConversionFlags.None;
 			text = ambience.Convert(method);
 			ambience.ConversionFlags = ConversionFlags.StandardConversionFlags;
@@ -152,7 +152,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		public CodeCompletionData(IField field)
 		{
 			member = field;
-			ambience = AmbienceService.CurrentAmbience;
+			ambience = AmbienceService.GetCurrentAmbience();
 			imageIndex  = ClassBrowserIconService.GetIcon(field);
 			ambience.ConversionFlags = ConversionFlags.None;
 			text = ambience.Convert(field);
@@ -165,7 +165,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		public CodeCompletionData(IProperty property)
 		{
 			member = property;
-			ambience = AmbienceService.CurrentAmbience;
+			ambience = AmbienceService.GetCurrentAmbience();
 			imageIndex  = ClassBrowserIconService.GetIcon(property);
 			ambience.ConversionFlags = ConversionFlags.None;
 			text = ambience.Convert(property);
@@ -178,7 +178,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		public CodeCompletionData(IEvent e)
 		{
 			member = e;
-			ambience = AmbienceService.CurrentAmbience;
+			ambience = AmbienceService.GetCurrentAmbience();
 			imageIndex  = ClassBrowserIconService.GetIcon(e);
 			ambience.ConversionFlags = ConversionFlags.None;
 			text = ambience.Convert(e);

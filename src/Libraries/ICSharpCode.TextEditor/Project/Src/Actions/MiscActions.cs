@@ -521,24 +521,23 @@ namespace ICSharpCode.TextEditor.Actions
 			}
 		}
 		
-		public override bool Equals(object obj)
-		{
-			BlockCommentRegion commentRegion = obj as BlockCommentRegion;
-			if (commentRegion != null) {
-				if (commentRegion.commentStart == commentStart &&
-				    commentRegion.commentEnd == commentEnd &&
-				    commentRegion.startOffset == startOffset &&
-				    commentRegion.endOffset == endOffset) {
-					return true;
-				}
-			}
-			
-			return false;
-		}
-		
 		public override int GetHashCode()
 		{
-			return commentStart.GetHashCode() & commentEnd.GetHashCode() & startOffset.GetHashCode() & endOffset.GetHashCode();
+			int hashCode = 0;
+			unchecked {
+				if (commentStart != null) hashCode += 1000000007 * commentStart.GetHashCode(); 
+				if (commentEnd != null) hashCode += 1000000009 * commentEnd.GetHashCode(); 
+				hashCode += 1000000021 * startOffset.GetHashCode();
+				hashCode += 1000000033 * endOffset.GetHashCode();
+			}
+			return hashCode;
+		}
+		
+		public override bool Equals(object obj)
+		{
+			BlockCommentRegion other = obj as BlockCommentRegion;
+			if (other == null) return false; 
+			return this.commentStart == other.commentStart && this.commentEnd == other.commentEnd && this.startOffset == other.startOffset && this.endOffset == other.endOffset;
 		}
 	}
 	
@@ -665,7 +664,8 @@ namespace ICSharpCode.TextEditor.Actions
 			int requestedLineNumber = Math.Min(textArea.Document.GetNextVisibleLineAbove(curLineNr, textArea.TextView.VisibleLineCount), textArea.Document.TotalNumberOfLines - 1);
 			
 			if (curLineNr != requestedLineNumber) {
-				textArea.Caret.Position = new TextLocation(textArea.Caret.DesiredColumn, requestedLineNumber);
+				textArea.Caret.Position = new TextLocation(0, requestedLineNumber);
+				textArea.SetCaretToDesiredColumn();
 			}
 		}
 	}
@@ -682,7 +682,8 @@ namespace ICSharpCode.TextEditor.Actions
 			int requestedLineNumber = Math.Max(textArea.Document.GetNextVisibleLineBelow(curLineNr, textArea.TextView.VisibleLineCount), 0);
 			
 			if (curLineNr != requestedLineNumber) {
-				textArea.Caret.Position = new TextLocation(textArea.Caret.DesiredColumn, requestedLineNumber);
+				textArea.Caret.Position = new TextLocation(0, requestedLineNumber);
+				textArea.SetCaretToDesiredColumn();
 			}
 		}
 	}
@@ -691,7 +692,7 @@ namespace ICSharpCode.TextEditor.Actions
 		/// <remarks>
 		/// Executes this edit action
 		/// </remarks>
-		/// <param name="textArea">The <see cref="ItextArea"/> which is used for callback purposes</param>
+		/// <param name="textArea">The <see cref="TextArea"/> which is used for callback purposes</param>
 		public override void Execute(TextArea textArea)
 		{
 			if (textArea.Document.ReadOnly) {

@@ -221,7 +221,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 	public class LocalResolveResult : ResolveResult
 	{
 		IField field;
-		bool isParameter;
 		
 		public LocalResolveResult(IMember callingMember, IField field)
 			: base(callingMember.DeclaringType, callingMember, field.ReturnType)
@@ -231,8 +230,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			if (field == null)
 				throw new ArgumentNullException("field");
 			this.field = field;
-			this.isParameter = field.IsParameter;
-			if (!isParameter && !field.IsLocalVariable) {
+			if (!field.IsParameter && !field.IsLocalVariable) {
 				throw new ArgumentException("the field must either be a local variable-field or a parameter-field");
 			}
 		}
@@ -251,18 +249,28 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// Gets the field representing the local variable.
 		/// </summary>
 		public IField Field {
-			get {
-				return field;
-			}
+			get { return field; }
 		}
 		
 		/// <summary>
 		/// Gets if the variable is a parameter (true) or a local variable (false).
 		/// </summary>
 		public bool IsParameter {
-			get {
-				return isParameter;
-			}
+			get { return field.IsParameter; }
+		}
+		
+		/// <summary>
+		/// Gets the name of the parameter/local variable.
+		/// </summary>
+		public string VariableName {
+			get { return field.Name; }
+		}
+		
+		/// <summary>
+		/// Gets th position where the parameter/local variable is declared.
+		/// </summary>
+		public DomRegion VariableDefinitionRegion {
+			get { return field.Region; }
 		}
 		
 		public override FilePosition GetDefinitionPosition()

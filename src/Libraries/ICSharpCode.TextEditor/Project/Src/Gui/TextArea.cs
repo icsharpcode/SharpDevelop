@@ -763,7 +763,7 @@ namespace ICSharpCode.TextEditor
 			LineSegment caretLine = Document.GetLineSegment(Caret.Line);
 			int offset = Caret.Offset;
 			// use desired column for generated whitespaces
-			int dc=Math.Min(Caret.Column,Caret.DesiredColumn);
+			int dc = Caret.Column;
 			if (caretLine.Length < dc && ch != '\n') {
 				Document.Insert(offset, GenerateWhitespaceString(dc - caretLine.Length) + ch);
 			} else {

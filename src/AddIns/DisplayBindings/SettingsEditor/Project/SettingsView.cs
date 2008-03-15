@@ -61,7 +61,7 @@ namespace ICSharpCode.SettingsEditor
 			InitializeComponent();
 			
 			
-			ambience = AmbienceService.CurrentAmbience;
+			ambience = AmbienceService.GetCurrentAmbience();
 			foreach (Type type in defaultAvailableTypes) {
 				types.Add(type);
 				typeNames.Add(ambience.GetIntrinsicTypeName(type.FullName));

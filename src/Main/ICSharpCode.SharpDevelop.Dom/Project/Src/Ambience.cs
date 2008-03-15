@@ -87,6 +87,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 		string Convert(IClass c);
 		string ConvertEnd(IClass c);
 		
+		string Convert(IEntity e);
+		
 		string Convert(IField field);
 		string Convert(IProperty property);
 		string Convert(IEvent e);
@@ -211,6 +213,28 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public abstract string ConvertEnd(IMethod m);
 		public abstract string Convert(IParameter param);
 		public abstract string Convert(IReturnType returnType);
+		
+		public virtual string Convert(IEntity entity)
+		{
+			if (entity == null)
+				throw new ArgumentNullException("entity");
+			IClass c = entity as IClass;
+			if (c != null)
+				return Convert(c);
+			IMethod m = entity as IMethod;
+			if (m != null)
+				return Convert(m);
+			IField f = entity as IField;
+			if (f != null)
+				return Convert(f);
+			IProperty p = entity as IProperty;
+			if (p != null)
+				return Convert(p);
+			IEvent e = entity as IEvent;
+			if (e != null)
+				return Convert(e);
+			return entity.ToString();
+		}
 		
 		public abstract string WrapAttribute(string attribute);
 		public abstract string WrapComment(string comment);

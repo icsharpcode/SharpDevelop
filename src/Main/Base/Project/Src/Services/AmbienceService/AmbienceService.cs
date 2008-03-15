@@ -77,33 +77,36 @@ namespace ICSharpCode.SharpDevelop
 		
 		static IAmbience defaultAmbience;
 		
-		public static IAmbience CurrentAmbience {
-			get {
-				Gui.WorkbenchSingleton.AssertMainThread();
-				
-				IAmbience ambience;
-				if (UseProjectAmbienceIfPossible) {
-					ICSharpCode.SharpDevelop.Project.IProject p = ICSharpCode.SharpDevelop.Project.ProjectService.CurrentProject;
-					if (p != null) {
-						ambience = p.GetAmbience();
-						if (ambience != null)
-							return ambience;
-					}
+		/// <summary>
+		/// Gets the current ambience.
+		/// Might return a new ambience object, or use an existing. Not thread-safe.
+		/// </summary>
+		public static IAmbience GetCurrentAmbience()
+		{
+			Gui.WorkbenchSingleton.AssertMainThread();
+			
+			IAmbience ambience;
+			if (UseProjectAmbienceIfPossible) {
+				ICSharpCode.SharpDevelop.Project.IProject p = ICSharpCode.SharpDevelop.Project.ProjectService.CurrentProject;
+				if (p != null) {
+					ambience = p.GetAmbience();
+					if (ambience != null)
+						return ambience;
 				}
-				if (defaultAmbience == null) {
-					string language = DefaultAmbienceName;
-					try {
-						ambience = (IAmbience)AddInTree.BuildItem("/SharpDevelop/Workbench/Ambiences/" + language, null);
-					} catch (TreePathNotFoundException) {
-						ambience = null;
-					}
-					if (ambience == null && Gui.WorkbenchSingleton.MainForm != null) {
-						MessageService.ShowError("${res:ICSharpCode.SharpDevelop.Services.AmbienceService.AmbienceNotFoundError}");
-					}
-					defaultAmbience = ambience ?? new NetAmbience();
-				}
-				return defaultAmbience;
 			}
+			if (defaultAmbience == null) {
+				string language = DefaultAmbienceName;
+				try {
+					ambience = (IAmbience)AddInTree.BuildItem("/SharpDevelop/Workbench/Ambiences/" + language, null);
+				} catch (TreePathNotFoundException) {
+					ambience = null;
+				}
+				if (ambience == null && Gui.WorkbenchSingleton.MainForm != null) {
+					MessageService.ShowError("${res:ICSharpCode.SharpDevelop.Services.AmbienceService.AmbienceNotFoundError}");
+				}
+				defaultAmbience = ambience ?? new NetAmbience();
+			}
+			return defaultAmbience;
 		}
 		
 		public static string DefaultAmbienceName {

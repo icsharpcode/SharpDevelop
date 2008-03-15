@@ -88,7 +88,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			public override string ToString()
 			{
 				if (cachedStringRepresentation == null) {
-					IAmbience ambience = AmbienceService.CurrentAmbience;
+					IAmbience ambience = AmbienceService.GetCurrentAmbience();
 					ambience.ConversionFlags = ConversionFlags.ShowParameterNames;
 					cachedStringRepresentation = ambience.Convert(method);
 				}

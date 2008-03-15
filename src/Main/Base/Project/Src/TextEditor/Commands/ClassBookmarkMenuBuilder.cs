@@ -274,7 +274,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 		void AddImplementInterfaceCommandItems(List<ToolStripItem> subItems, IClass c, bool explicitImpl)
 		{
 			CodeGenerator codeGen = c.ProjectContent.Language.CodeGenerator;
-			IAmbience ambience = AmbienceService.CurrentAmbience;
+			IAmbience ambience = AmbienceService.GetCurrentAmbience();
 			ambience.ConversionFlags = ConversionFlags.ShowTypeParameterList;
 			foreach (IReturnType rt in c.BaseTypes) {
 				IClass interf = rt.GetUnderlyingClass();

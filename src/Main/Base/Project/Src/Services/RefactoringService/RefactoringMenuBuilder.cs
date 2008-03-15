@@ -92,7 +92,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			} else if (rr is TypeResolveResult) {
 				item = MakeItem(definitions, ((TypeResolveResult)rr).ResolvedClass);
 			} else if (rr is LocalResolveResult) {
-				item = MakeItem((LocalResolveResult)rr, caretLine + 1 == ((LocalResolveResult)rr).Field.Region.BeginLine);
+				item = MakeItem((LocalResolveResult)rr, caretLine + 1 == ((LocalResolveResult)rr).VariableDefinitionRegion.BeginLine);
 				insertIndex = 0;	// Insert local variable menu item at the topmost position.
 			} else if (rr is UnknownIdentifierResolveResult) {
 				item = MakeItemForResolveError((UnknownIdentifierResolveResult)rr, expressionResult.Context, textArea);
@@ -195,10 +195,10 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		
 		ToolStripMenuItem MakeItem(LocalResolveResult local, bool isDefinition)
 		{
-			ToolStripMenuItem item = MakeItemInternal(MemberNode.GetText(local.Field),
+			ToolStripMenuItem item = MakeItemInternal(local.VariableName,
 			                                          local.IsParameter ? ClassBrowserIconService.ParameterIndex : ClassBrowserIconService.LocalVariableIndex,
 			                                          local.CallingClass.CompilationUnit,
-			                                          isDefinition ? DomRegion.Empty : local.Field.Region);
+			                                          isDefinition ? DomRegion.Empty : local.VariableDefinitionRegion);
 			string treePath = "/SharpDevelop/ViewContent/DefaultTextEditor/Refactoring/";
 			treePath += local.IsParameter ? "Parameter" : "LocalVariable";
 			if (isDefinition) treePath += "Definition";

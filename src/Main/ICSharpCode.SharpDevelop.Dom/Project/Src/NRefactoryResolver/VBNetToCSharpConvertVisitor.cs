@@ -618,7 +618,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		{
 			LocalResolveResult lrr = rr as LocalResolveResult;
 			if (lrr != null)
-				return lrr.Field.Name;
+				return lrr.VariableName;
 			MemberResolveResult mrr = rr as MemberResolveResult;
 			if (mrr != null)
 				return mrr.ResolvedMember.Name;

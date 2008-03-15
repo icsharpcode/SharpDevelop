@@ -179,12 +179,15 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			IMember member = (IMember)item.Tag;
 			IEnumerable<IClass> derivedClasses = RefactoringService.FindDerivedClasses(member.DeclaringType, ParserService.AllProjectContents, false);
 			List<SearchResultMatch> results = new List<SearchResultMatch>();
+			IAmbience ambience = AmbienceService.GetCurrentAmbience();
+			ambience.ConversionFlags = ConversionFlags.UseFullyQualifiedMemberNames | ConversionFlags.ShowTypeParameterList;
 			foreach (IClass derivedClass in derivedClasses) {
 				if (derivedClass.CompilationUnit == null) continue;
 				if (derivedClass.CompilationUnit.FileName == null) continue;
 				IMember m = MemberLookupHelper.FindSimilarMember(derivedClass, member);
 				if (m != null && !m.Region.IsEmpty) {
-					SearchResultMatch res = new SimpleSearchResultMatch(MemberNode.GetText(m), new TextLocation(m.Region.BeginColumn - 1, m.Region.BeginLine - 1));
+					string matchText = ambience.Convert(m);
+					SearchResultMatch res = new SimpleSearchResultMatch(matchText, new TextLocation(m.Region.BeginColumn - 1, m.Region.BeginLine - 1));
 					res.ProvidedDocumentInformation = FindReferencesAndRenameHelper.GetDocumentInformation(derivedClass.CompilationUnit.FileName);
 					results.Add(res);
 				}
