@@ -19,7 +19,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 	/// The ResolveResult specified the location where Resolve was called (Class+Member)
 	/// and the type of the resolved expression.
 	/// </summary>
-	public class ResolveResult : ICloneable
+	public class ResolveResult : AbstractFreezable, ICloneable
 	{
 		IClass callingClass;
 		IMember callingMember;
@@ -60,7 +60,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// </summary>
 		public IReturnType ResolvedType {
 			get { return resolvedType; }
-			set { resolvedType = value; }
+			set {
+				CheckBeforeMutation();
+				resolvedType = value;
+			}
 		}
 		
 		public virtual ResolveResult Clone()
@@ -508,10 +511,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 	#endregion
 	
 	#region MethodResolveResult
-	public class MethodGroup : IList<IMethod>
+	public class MethodGroup : AbstractFreezable, IList<IMethod>
 	{
-		public bool IsExtensionMethodGroup { get; set; }
 		IList<IMethod> innerList;
+		bool isExtensionMethodGroup;
 		
 		public MethodGroup() : this(new List<IMethod>())
 		{
@@ -522,6 +525,20 @@ namespace ICSharpCode.SharpDevelop.Dom
 			if (innerList == null)
 				throw new ArgumentNullException("innerList");
 			this.innerList = innerList;
+		}
+		
+		public bool IsExtensionMethodGroup {
+			get { return isExtensionMethodGroup; }
+			set {
+				CheckBeforeMutation();
+				isExtensionMethodGroup = value;
+			}
+		}
+		
+		protected override void FreezeInternal()
+		{
+			base.FreezeInternal();
+			innerList = FreezeList(innerList);
 		}
 		
 		public IMethod this[int index] {
@@ -636,6 +653,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return new MethodGroupResolveResult(this.CallingClass, this.CallingMember, this.ContainingType, this.Name, this.Methods);
 		}
 		
+		protected override void FreezeInternal()
+		{
+			base.FreezeInternal();
+			if (possibleMethods != null) {
+				possibleMethods = FreezeList(possibleMethods);
+			}
+		}
+		
 		/// <summary>
 		/// Gets the name of the method.
 		/// </summary>
@@ -656,11 +681,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public IList<MethodGroup> Methods {
 			get {
 				if (possibleMethods == null) {
-					possibleMethods = new MethodGroup[] {
-						new MethodGroup(
-							containingType.GetMethods().FindAll((IMethod m) => m.Name == this.name)
-						)
-					};
+					possibleMethods = FreezeList(
+						new MethodGroup[] {
+							new MethodGroup(
+								containingType.GetMethods().FindAll((IMethod m) => m.Name == this.name)
+							)
+						});
 				}
 				return possibleMethods;
 			}
@@ -689,7 +715,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 	/// <summary>
 	/// Is used for "MyBase" or "Me" in VB constructors to show "New" in the completion list.
 	/// </summary>
-	public sealed class VBBaseOrThisReferenceInConstructorResolveResult : ResolveResult
+	public class VBBaseOrThisReferenceInConstructorResolveResult : ResolveResult
 	{
 		public VBBaseOrThisReferenceInConstructorResolveResult(IClass callingClass, IMember callingMember, IReturnType referencedType)
 			: base(callingClass, callingMember, referencedType)
@@ -718,7 +744,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 	/// Is used for "base"/"MyBase" expression.
 	/// The completion list always shows protected members.
 	/// </summary>
-	public sealed class BaseResolveResult : ResolveResult
+	public class BaseResolveResult : ResolveResult
 	{
 		public BaseResolveResult(IClass callingClass, IMember callingMember, IReturnType baseClassType)
 			: base(callingClass, callingMember, baseClassType)

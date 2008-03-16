@@ -210,9 +210,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// <summary>
 		/// Finds the correct overload according to the C# specification.
 		/// </summary>
-		/// <param name="methods">List with the methods to check.<br/>
-		/// <b>Generic methods in the input type are replaced by methods with have the types substituted!</b>
-		/// </param>
+		/// <param name="methods">List with the methods to check.</param>
 		/// <param name="arguments">The types of the arguments passed to the method.</param>
 		/// <param name="resultIsAcceptable">Out parameter. Will be true if the resulting method
 		/// is an acceptable match, false if the resulting method is just a guess and will lead
@@ -220,9 +218,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// <returns>The method that will be called.</returns>
 		public static IMethod FindOverload(IList<IMethod> methods, IReturnType[] arguments, out bool resultIsAcceptable)
 		{
+			if (methods == null)
+				throw new ArgumentNullException("methods");
 			resultIsAcceptable = false;
 			if (methods.Count == 0)
 				return null;
+			methods = methods.ToArray();
 			int[] ranking = RankOverloads(methods, arguments, false, out resultIsAcceptable);
 			int bestRanking = -1;
 			int best = 0;
@@ -274,6 +275,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 		                                  bool allowAdditionalArguments,
 		                                  out bool acceptableMatch)
 		{
+			if (list == null)
+				throw new ArgumentNullException("list");
+			if (arguments == null)
+				throw new ArgumentNullException("arguments");
+			
 			acceptableMatch = false;
 			if (list.Count == 0) return new int[] {};
 			

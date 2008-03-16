@@ -69,6 +69,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			ResolveResult rr;
 			if (!cachedResults.TryGetValue(expression, out rr)) {
 				rr = (ResolveResult)expression.AcceptVisitor(this, null);
+				if (rr != null)
+					rr.Freeze();
 				cachedResults[expression] = rr;
 			}
 			return rr;
@@ -430,9 +432,19 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				if (rt == null)
 					return null;
 				
-				return ResolveConstructorOverload(rt.GetUnderlyingClass(), objectCreateExpression.Parameters)
+				return ResolveConstructorOverload(rt, objectCreateExpression.Parameters)
 					?? CreateResolveResult(rt);
 			}
+		}
+		
+		internal ResolveResult ResolveConstructorOverload(IReturnType rt, List<Expression> arguments)
+		{
+			if (rt == null)
+				return null;
+			ResolveResult rr = ResolveConstructorOverload(rt.GetUnderlyingClass(), arguments);
+			if (rr != null)
+				rr.ResolvedType = rt;
+			return rr;
 		}
 		
 		internal ResolveResult ResolveConstructorOverload(IClass c, List<Expression> arguments)

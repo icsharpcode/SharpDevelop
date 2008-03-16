@@ -267,6 +267,21 @@ interface IInterface2 {
 		}
 		
 		[Test]
+		public void GenericObjectCreation()
+		{
+			string program = @"using System.Collections.Generic;
+class A {
+	static void Main() {
+		
+	}
+}
+";
+			MemberResolveResult result = Resolve<MemberResolveResult>(program, "new List<string>()", 4);
+			Assert.AreEqual("System.Collections.Generic.List.#ctor", result.ResolvedMember.FullyQualifiedName);
+			Assert.AreEqual("System.Collections.Generic.List{System.String}", result.ResolvedType.DotNetName);
+		}
+		
+		[Test]
 		public void InvalidConstructorCallTest()
 		{
 			string program = @"class A {

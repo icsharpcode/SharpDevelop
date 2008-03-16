@@ -84,7 +84,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public void PutInClipboardRing(string text)
 		{
 			if (clipboardRing != null) {
-				clipboardRing.Items.Add("Text:" + text.Trim(), text);
+				string shortenedText = text.Trim();
+				if (shortenedText.Length > 50)
+					shortenedText = shortenedText.Substring(0, 47) + "...";
+				clipboardRing.Items.Add("Text:" + shortenedText, text);
 				if (clipboardRing.Items.Count > 20) {
 					clipboardRing.Items.RemoveAt(0);
 				}

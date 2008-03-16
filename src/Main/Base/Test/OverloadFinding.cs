@@ -59,9 +59,23 @@ namespace ICSharpCode.SharpDevelop.Tests
 			Test("(null)", 1, overloads);
 		}
 		
+		[Test] public void Generic()
+		{
+			string program = "class T<A> {}   class T<A, B> {}";
+			string[] overloads = {"(T<int> a)", "(T<int, string> a)", "(T<char, string> a)"};
+			Test("(new T<int>())", program, 0, overloads);
+			Test("(new T<int, string>())", program, 1, overloads);
+			Test("(new T<char, string>())", program, 2, overloads);
+		}
+		
 		NRefactoryResolverTests nrrt = new NRefactoryResolverTests();
 		
 		void Test(string callExpr, int num, params string[] signatures)
+		{
+			Test(callExpr, "", num, signatures);
+		}
+		
+		void Test(string callExpr, string extraCode, int num, params string[] signatures)
 		{
 			StringBuilder b = new StringBuilder();
 			int lineNumber = 0;
@@ -81,6 +95,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 				++lineNumber; b.AppendLine(" }");
 			}
 			b.AppendLine("}");
+			b.Append(extraCode);
 			MemberResolveResult mrr = nrrt.Resolve<MemberResolveResult>(b.ToString(), "Method" + callExpr, callPosition);
 			string msg = "wrong overload: ";
 			for (int i = 0; i < positions.Length; i++) {
