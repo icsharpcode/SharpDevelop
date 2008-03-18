@@ -46,6 +46,7 @@ namespace VBNetBinding.FormattingStrategy
 			statements.Add(new VBStatement(@"(?<!\b(delegate|mustoverride|declare(\s+(unicode|ansi|auto))?)\s+)\bsub\s+\w+", @"^end\s+sub$", "End Sub", 1));
 			statements.Add(new VBStatement(@"(?<!\bmustoverride (readonly |writeonly )?)\bproperty\s+\w+", @"^end\s+property$", "End Property", 1));
 			statements.Add(new VBStatement(@"(?<!\b(delegate|mustoverride|declare(\s+(unicode|ansi|auto))?)\s+)\bfunction\s+\w+", @"^end\s+function$", "End Function", 1));
+			statements.Add(new VBStatement(@"\boperator(\s*[\+\-\*\/\&\^\>\<\=\\]+\s*|\s+\w+\s*)\(", @"^end\s+operator$", "End Operator", 1));
 			statements.Add(new VBStatement(@"\bfor\s+.*?$", "^next( \\w+)?$", "Next", 1));
 			statements.Add(new VBStatement(@"^synclock\s+.*?$", "^end synclock$", "End SyncLock", 1));
 			statements.Add(new VBStatement(@"^get$", "^end get$", "End Get", 1));
