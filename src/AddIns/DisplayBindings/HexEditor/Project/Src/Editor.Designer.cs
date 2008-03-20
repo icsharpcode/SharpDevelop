@@ -7,7 +7,7 @@
 
 namespace HexEditor
 {
-	public partial class HexEditControl
+	public partial class Editor
 	{
 		/// <summary>
 		/// Designer variable used to keep track of non-visual components.
@@ -37,10 +37,10 @@ namespace HexEditor
 		{
 			this.bWorker = new System.ComponentModel.BackgroundWorker();
 			this.VScrollBar = new System.Windows.Forms.VScrollBar();
-			this.TextView = new System.Windows.Forms.Panel();
-			this.HexView = new System.Windows.Forms.Panel();
-			this.Side = new System.Windows.Forms.Panel();
-			this.Header = new System.Windows.Forms.Panel();
+			this.textView = new System.Windows.Forms.Panel();
+			this.hexView = new System.Windows.Forms.Panel();
+			this.side = new System.Windows.Forms.Panel();
+			this.header = new System.Windows.Forms.Panel();
 			this.SuspendLayout();
 			// 
 			// VScrollBar
@@ -55,70 +55,70 @@ namespace HexEditor
 			// 
 			// TextView
 			// 
-			this.TextView.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)));
-			this.TextView.Cursor = System.Windows.Forms.Cursors.IBeam;
-			this.TextView.Location = new System.Drawing.Point(561, 18);
-			this.TextView.Name = "TextView";
-			this.TextView.Size = new System.Drawing.Size(108, 347);
-			this.TextView.TabIndex = 12;
-			this.TextView.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TextViewMouseDown);
-			this.TextView.MouseMove += new System.Windows.Forms.MouseEventHandler(this.TextViewMouseMove);
-			this.TextView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.TextViewMouseClick);
-			this.TextView.MouseUp += new System.Windows.Forms.MouseEventHandler(this.TextViewMouseUp);
+			this.textView.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)));
+			this.textView.Cursor = System.Windows.Forms.Cursors.IBeam;
+			this.textView.Location = new System.Drawing.Point(561, 18);
+			this.textView.Name = "TextView";
+			this.textView.Size = new System.Drawing.Size(108, 347);
+			this.textView.TabIndex = 12;
+			this.textView.MouseMove += new System.Windows.Forms.MouseEventHandler(this.TextViewMouseMove);
+			this.textView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.TextViewMouseClick);
+			this.textView.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TextViewMouseDown);
+			this.textView.MouseUp += new System.Windows.Forms.MouseEventHandler(this.TextViewMouseUp);
 			// 
 			// HexView
 			// 
-			this.HexView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+			this.hexView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
 									| System.Windows.Forms.AnchorStyles.Left)));
-			this.HexView.Cursor = System.Windows.Forms.Cursors.IBeam;
-			this.HexView.Location = new System.Drawing.Point(92, 18);
-			this.HexView.Name = "HexView";
-			this.HexView.Size = new System.Drawing.Size(463, 347);
-			this.HexView.TabIndex = 11;
-			this.HexView.MouseDown += new System.Windows.Forms.MouseEventHandler(this.HexViewMouseDown);
-			this.HexView.MouseMove += new System.Windows.Forms.MouseEventHandler(this.HexViewMouseMove);
-			this.HexView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.HexViewMouseClick);
-			this.HexView.MouseUp += new System.Windows.Forms.MouseEventHandler(this.HexViewMouseUp);
+			this.hexView.Cursor = System.Windows.Forms.Cursors.IBeam;
+			this.hexView.Location = new System.Drawing.Point(92, 18);
+			this.hexView.Name = "HexView";
+			this.hexView.Size = new System.Drawing.Size(463, 347);
+			this.hexView.TabIndex = 11;
+			this.hexView.MouseMove += new System.Windows.Forms.MouseEventHandler(this.HexViewMouseMove);
+			this.hexView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.HexViewMouseClick);
+			this.hexView.MouseDown += new System.Windows.Forms.MouseEventHandler(this.HexViewMouseDown);
+			this.hexView.MouseUp += new System.Windows.Forms.MouseEventHandler(this.HexViewMouseUp);
 			// 
 			// Side
 			// 
-			this.Side.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+			this.side.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
 									| System.Windows.Forms.AnchorStyles.Left)));
-			this.Side.Location = new System.Drawing.Point(0, 0);
-			this.Side.Name = "Side";
-			this.Side.Size = new System.Drawing.Size(76, 365);
-			this.Side.TabIndex = 10;
+			this.side.Location = new System.Drawing.Point(0, 0);
+			this.side.Name = "Side";
+			this.side.Size = new System.Drawing.Size(76, 365);
+			this.side.TabIndex = 10;
 			// 
 			// Header
 			// 
-			this.Header.Location = new System.Drawing.Point(92, 0);
-			this.Header.Name = "Header";
-			this.Header.Size = new System.Drawing.Size(463, 18);
-			this.Header.TabIndex = 13;
+			this.header.Location = new System.Drawing.Point(92, 0);
+			this.header.Name = "Header";
+			this.header.Size = new System.Drawing.Size(463, 18);
+			this.header.TabIndex = 13;
 			// 
 			// HexEditControl
 			// 
 			this.BackColor = System.Drawing.Color.White;
-			this.Controls.Add(this.Header);
-			this.Controls.Add(this.TextView);
-			this.Controls.Add(this.HexView);
-			this.Controls.Add(this.Side);
+			this.Controls.Add(this.header);
+			this.Controls.Add(this.textView);
+			this.Controls.Add(this.hexView);
+			this.Controls.Add(this.side);
 			this.Controls.Add(this.VScrollBar);
 			this.DoubleBuffered = true;
 			this.Name = "HexEditControl";
 			this.Size = new System.Drawing.Size(688, 365);
+			this.Paint += new System.Windows.Forms.PaintEventHandler(this.HexEditPaint);
 			this.ContextMenuStripChanged += new System.EventHandler(this.HexEditControlContextMenuStripChanged);
 			this.GotFocus += new System.EventHandler(this.HexEditGotFocus);
 			this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.HexEditKeyPress);
-			this.Paint += new System.Windows.Forms.PaintEventHandler(this.HexEditPaint);
 			this.SizeChanged += new System.EventHandler(this.HexEditSizeChanged);
 			this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.HexEditKeyDown);
 			this.ResumeLayout(false);
 		}
-		private System.Windows.Forms.Panel Header;
-		private System.Windows.Forms.Panel Side;
-		private System.Windows.Forms.Panel HexView;
-		private System.Windows.Forms.Panel TextView;
+		private System.Windows.Forms.Panel header;
+		private System.Windows.Forms.Panel side;
+		private System.Windows.Forms.Panel hexView;
+		private System.Windows.Forms.Panel textView;
 		private System.ComponentModel.BackgroundWorker bWorker;
 		private System.Windows.Forms.VScrollBar VScrollBar;
 	}

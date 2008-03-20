@@ -18,12 +18,12 @@ namespace HexEditor.View
 {
 	public partial class HexEditContainer : UserControl
 	{
-		public bool HasSelection {
-			get { return hexEditControl.HasSelection; }
+		public bool HasSomethingSelected {
+			get { return hexEditControl.HasSomethingSelected; }
 		}
 		
 		public bool EditorFocused {
-			get { return hexEditControl.HasFocus; }
+			get { return hexEditControl.Focused; }
 		}
 		
 		public bool CanUndo {

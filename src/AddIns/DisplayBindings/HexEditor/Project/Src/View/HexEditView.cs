@@ -51,11 +51,11 @@ namespace HexEditor.View
 		
 		#region IClipboardHandler
 		public bool EnableCut {
-			get { return hexEditContainer.HasSelection & hexEditContainer.EditorFocused; }
+			get { return hexEditContainer.HasSomethingSelected & hexEditContainer.EditorFocused; }
 		}
 		
 		public bool EnableCopy {
-			get { return hexEditContainer.HasSelection & hexEditContainer.EditorFocused; }
+			get { return hexEditContainer.HasSomethingSelected & hexEditContainer.EditorFocused; }
 		}
 		
 		public bool EnablePaste {
@@ -63,7 +63,7 @@ namespace HexEditor.View
 		}
 		
 		public bool EnableDelete {
-			get { return hexEditContainer.HasSelection & hexEditContainer.EditorFocused; }
+			get { return hexEditContainer.HasSomethingSelected & hexEditContainer.EditorFocused; }
 		}
 		
 		public bool EnableSelectAll {
@@ -72,12 +72,12 @@ namespace HexEditor.View
 		
 		public void Cut()
 		{
-			if (hexEditContainer.HasSelection) ClipboardWrapper.SetText(hexEditContainer.Cut());
+			if (hexEditContainer.HasSomethingSelected) ClipboardWrapper.SetText(hexEditContainer.Cut());
 		}
 		
 		public void Copy()
 		{
-			if (hexEditContainer.HasSelection) ClipboardWrapper.SetText(hexEditContainer.Copy());
+			if (hexEditContainer.HasSomethingSelected) ClipboardWrapper.SetText(hexEditContainer.Copy());
 		}
 		
 		public void Paste()
@@ -87,7 +87,7 @@ namespace HexEditor.View
 		
 		public void Delete()
 		{
-			if (hexEditContainer.HasSelection) hexEditContainer.Delete();
+			if (hexEditContainer.HasSomethingSelected) hexEditContainer.Delete();
 		}
 		
 		public void SelectAll()

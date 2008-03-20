@@ -61,7 +61,7 @@ namespace HexEditor.View
 		{
 			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("HexEditor.Resources.HexEditOptions.xfrm"));
 			this.InitializeComponents();
-			string configpath = Path.GetDirectoryName(typeof(HexEditControl).Assembly.Location) + Path.DirectorySeparatorChar + "config.xml";
+			string configpath = Path.GetDirectoryName(typeof(Editor).Assembly.Location) + Path.DirectorySeparatorChar + "config.xml";
 			
 			if (!File.Exists(configpath)) return;
 			
@@ -153,7 +153,7 @@ namespace HexEditor.View
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1305:SpecifyIFormatProvider", MessageId = "System.Single.ToString")]
 		public override bool StorePanelContents()
 		{
-			string configpath = Path.GetDirectoryName(typeof(HexEditControl).Assembly.Location) + Path.DirectorySeparatorChar + "config.xml";
+			string configpath = Path.GetDirectoryName(typeof(Editor).Assembly.Location) + Path.DirectorySeparatorChar + "config.xml";
 			XmlDocument file = new XmlDocument();
 			file.LoadXml("<Config></Config>");
 			

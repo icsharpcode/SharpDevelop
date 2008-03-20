@@ -44,7 +44,7 @@ namespace HexEditor.View
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.tSTBCharsPerLine = new System.Windows.Forms.ToolStripTextBox();
             this.toolStripProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
-            this.hexEditControl = new HexEditor.HexEditControl();
+            this.hexEditControl = new HexEditor.Editor();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -135,7 +135,7 @@ namespace HexEditor.View
 
         }
         private System.Windows.Forms.ToolStripProgressBar toolStripProgressBar1;
-        internal HexEditor.HexEditControl hexEditControl;
+        internal HexEditor.Editor hexEditControl;
         private System.Windows.Forms.ToolStripComboBox tCBViewMode;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripButton tbSizeToFit;

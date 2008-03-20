@@ -63,7 +63,7 @@ namespace HexEditor.Util
 			this.stream = stream;
 			this.buffer.Clear();
 			
-			((HexEditControl)this.parent).Enabled = false;
+			((Editor)this.parent).Enabled = false;
 			
 			if (File.Exists(currentFile.FileName)) {
 				try {
@@ -95,9 +95,9 @@ namespace HexEditor.Util
 			else {this.parent.Cursor = Cursors.Default;}
 			
 			
-			((HexEditControl)this.parent).LoadingFinished();
+			((Editor)this.parent).LoadingFinished();
 			
-			((HexEditControl)this.parent).Enabled = true;
+			((Editor)this.parent).Enabled = true;
 			
 			this.parent.Invalidate();
 		}
@@ -118,7 +118,7 @@ namespace HexEditor.Util
 		/// <remarks>Currently not in use.</remarks>
 		private void Load()
 		{
-			((HexEditControl)this.parent).Enabled = false;
+			((Editor)this.parent).Enabled = false;
 			
 			if (File.Exists(currentFile.FileName)) {
 				try {
@@ -148,7 +148,7 @@ namespace HexEditor.Util
 					delegate() {this.parent.Cursor = Cursors.Default;}
 				));
 			
-			((HexEditControl)this.parent).Enabled = true;
+			((Editor)this.parent).Enabled = true;
 		}
 		
 		/// <summary>
@@ -157,7 +157,7 @@ namespace HexEditor.Util
 		/// <param name="percentage">The current percentage of the process</param>
 		private void UpdateProgress(int percentage)
 		{
-			HexEditControl c = (HexEditControl)this.parent;
+			Editor c = (Editor)this.parent;
 			
 			Application.DoEvents();
 			

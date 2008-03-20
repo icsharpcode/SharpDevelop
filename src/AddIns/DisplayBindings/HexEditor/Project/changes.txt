@@ -16,3 +16,18 @@ version: 0.0.2
 18.02.2008: Final version for SD 3.0.0.2951
 20.02.2008: Implementation as DisplayBinding finished
 22.02.2008: Clean up and commenting.
+
+Known bugs/Problems:
+
+1) When in overwrite mode you have to type into the text display
+(right hand side) twice before the value is changed.
+2) Might be good to be able to change individual hex parts of a byte.
+3) Might be good if the next hex value to be typed in was highlighted
+in the hex display.
+4) Seems to be a slight delay with moving the blinking highlight as
+you use the keyboard to move around the editor.
+5) Maybe the cursor position should just highlight the text and not blink?
+6) Copy and paste does not seem to work. The wrong data is copied.
+This could be because the Copy menu item is not enabled.
+7) When you paste in insert mode the text/hex is inserted. Should it
+not replace the selected text/hex?
