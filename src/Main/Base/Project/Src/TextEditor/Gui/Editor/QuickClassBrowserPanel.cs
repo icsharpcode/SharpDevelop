@@ -30,7 +30,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		
 		class ComboBoxItem : System.IComparable
 		{
-			object item;
+			IEntity item;
 			string text;
 			int    iconIndex;
 			bool   isInCurrentPart;
@@ -95,7 +95,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				}
 			}
 			
-			public ComboBoxItem(object item, string text, int iconIndex, bool isInCurrentPart)
+			public ComboBoxItem(IEntity item, string text, int iconIndex, bool isInCurrentPart)
 			{
 				this.item = item;
 				this.text = text;
@@ -146,26 +146,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				return 0;
 			}
 			
-			string cachedString;
-			
 			public override string ToString()
 			{
-				// ambience lookups can be expensive when the return type is
-				// resolved on the fly.
-				// Therefore, we need to cache the generated string because it is used
-				// very often for the sorting.
-				if (cachedString == null)
-					cachedString = ToStringInternal();
-				return cachedString;
-			}
-			
-			string ToStringInternal()
-			{
-				IAmbience ambience = AmbienceService.GetCurrentAmbience();
-				ambience.ConversionFlags = ConversionFlags.ShowTypeParameterList | ConversionFlags.ShowParameterList | ConversionFlags.ShowParameterNames;
-				if (item is IEntity) {
-					return ambience.Convert((IEntity)item);
-				}
 				return text;
 			}
 			
@@ -334,11 +316,14 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 					}
 				}
 				
+				IAmbience ambience = AmbienceService.GetCurrentAmbience();
+				ambience.ConversionFlags = ConversionFlags.ShowTypeParameterList | ConversionFlags.ShowParameterList | ConversionFlags.ShowParameterNames;
+				
 				int lastIndex = 0;
 				IComparer comparer = new Comparer(System.Globalization.CultureInfo.InvariantCulture);
 				
 				foreach (IMethod m in c.Methods) {
-					items.Add(new ComboBoxItem(m, m.Name, ClassBrowserIconService.GetIcon(m), partialMode ? currentPart.Methods.Contains(m) : true));
+					items.Add(new ComboBoxItem(m, ambience.Convert(m), ClassBrowserIconService.GetIcon(m), partialMode ? currentPart.Methods.Contains(m) : true));
 				}
 				// use "items.Count - lastIndex" instead of "c.Methods.Count"
 				// because it is possible that the number of methods in the class
@@ -348,19 +333,19 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				lastIndex = items.Count;
 				
 				foreach (IProperty p in c.Properties) {
-					items.Add(new ComboBoxItem(p, p.Name, ClassBrowserIconService.GetIcon(p), partialMode ? currentPart.Properties.Contains(p) : true));
+					items.Add(new ComboBoxItem(p, ambience.Convert(p), ClassBrowserIconService.GetIcon(p), partialMode ? currentPart.Properties.Contains(p) : true));
 				}
 				items.Sort(lastIndex, items.Count - lastIndex, comparer);
 				lastIndex = items.Count;
 				
 				foreach (IField f in c.Fields) {
-					items.Add(new ComboBoxItem(f, f.Name, ClassBrowserIconService.GetIcon(f), partialMode ? currentPart.Fields.Contains(f) : true));
+					items.Add(new ComboBoxItem(f, ambience.Convert(f), ClassBrowserIconService.GetIcon(f), partialMode ? currentPart.Fields.Contains(f) : true));
 				}
 				items.Sort(lastIndex, items.Count - lastIndex, comparer);
 				lastIndex = items.Count;
 				
 				foreach (IEvent evt in c.Events) {
-					items.Add(new ComboBoxItem(evt, evt.Name, ClassBrowserIconService.GetIcon(evt), partialMode ? currentPart.Events.Contains(evt) : true));
+					items.Add(new ComboBoxItem(evt, ambience.Convert(evt), ClassBrowserIconService.GetIcon(evt), partialMode ? currentPart.Events.Contains(evt) : true));
 				}
 				items.Sort(lastIndex, items.Count - lastIndex, comparer);
 				lastIndex = items.Count;
