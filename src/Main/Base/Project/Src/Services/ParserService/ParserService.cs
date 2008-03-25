@@ -173,7 +173,8 @@ namespace ICSharpCode.SharpDevelop
 			}
 			WorkbenchSingleton.SafeThreadAsyncCall(ProjectService.ParserServiceCreatedProjectContents);
 			try {
-				progressMonitor.BeginTask("Loading references...", createdContents.Count, false);
+				// multiply Count with 2 so that the progress bar is only at 50% when references are done
+				progressMonitor.BeginTask("Loading references...", createdContents.Count * 2, false);
 				int workAmount = 0;
 				for (int i = 0; i < createdContents.Count; i++) {
 					if (abortLoadSolutionProjectsThread) return;
@@ -186,7 +187,10 @@ namespace ICSharpCode.SharpDevelop
 						MessageService.ShowError(e, "Error while initializing project references:" + newContent);
 					}
 				}
-				progressMonitor.BeginTask("${res:ICSharpCode.SharpDevelop.Internal.ParserService.Parsing}...", workAmount, false);
+				// multiply workamount with two and start at workAmount so that the progress bar continues
+				// from 50% towards 100%.
+				progressMonitor.BeginTask("${res:ICSharpCode.SharpDevelop.Internal.ParserService.Parsing}...", workAmount * 2, false);
+				progressMonitor.WorkDone = workAmount;
 				foreach (ParseProjectContent newContent in createdContents) {
 					if (abortLoadSolutionProjectsThread) return;
 					try {

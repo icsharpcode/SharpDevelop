@@ -299,6 +299,7 @@ namespace ICSharpCode.SharpDevelop
 					using (Stream sourceStream = OpenRead()) {
 						currentView.Load(this, sourceStream);
 					}
+					IsDirty = false;
 				} finally {
 					inLoadOperation = false;
 				}
@@ -309,6 +310,7 @@ namespace ICSharpCode.SharpDevelop
 	sealed class FileServiceOpenedFile : OpenedFile
 	{
 		List<IViewContent> registeredViews = new List<IViewContent>();
+		FileChangeWatcher fileChangeWatcher;
 		
 		protected override void ChangeFileName(string newValue)
 		{
@@ -320,6 +322,7 @@ namespace ICSharpCode.SharpDevelop
 		{
 			this.FileName = fileName;
 			IsUntitled = false;
+			fileChangeWatcher = new FileChangeWatcher(this);
 		}
 		
 		internal FileServiceOpenedFile(byte[] fileData)
@@ -328,6 +331,7 @@ namespace ICSharpCode.SharpDevelop
 			SetData(fileData);
 			IsUntitled = true;
 			MakeDirty();
+			fileChangeWatcher = new FileChangeWatcher(this);
 		}
 		
 		/// <summary>
@@ -388,7 +392,7 @@ namespace ICSharpCode.SharpDevelop
 				}
 			} else {
 				// all views to the file were closed
-				FileService.OpenedFileClosed(this);
+				CloseIfAllViewsClosed();
 			}
 		}
 		
@@ -396,6 +400,11 @@ namespace ICSharpCode.SharpDevelop
 		{
 			if (registeredViews.Count == 0) {
 				FileService.OpenedFileClosed(this);
+				
+				if (fileChangeWatcher != null) {
+					fileChangeWatcher.Dispose();
+					fileChangeWatcher = null;
+				}
 			}
 		}
 		
