@@ -33,7 +33,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("Resources.LoadSaveOptionPanel.xfrm"));
 			
 			((CheckBox)ControlDictionary[loadUserDataCheckBox]).Checked     = PropertyService.Get("SharpDevelop.LoadDocumentProperties", true);
-			((CheckBox)ControlDictionary[createBackupCopyCheckBox]).Checked = PropertyService.Get("SharpDevelop.CreateBackupCopy", false);
+			((CheckBox)ControlDictionary[createBackupCopyCheckBox]).Checked = FileService.SaveUsingTemporaryFile;
 			
 			((ComboBox)ControlDictionary[lineTerminatorStyleComboBox]).Items.Add(StringParser.Parse("${res:Dialog.Options.IDEOptions.LoadSaveOptions.WindowsRadioButton}"));
 			((ComboBox)ControlDictionary[lineTerminatorStyleComboBox]).Items.Add(StringParser.Parse("${res:Dialog.Options.IDEOptions.LoadSaveOptions.MacintoshRadioButton}"));
@@ -58,12 +58,12 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		public override bool StorePanelContents()
 		{
 			PropertyService.Set("SharpDevelop.LoadDocumentProperties", ((CheckBox)ControlDictionary[loadUserDataCheckBox]).Checked);
-			PropertyService.Set("SharpDevelop.CreateBackupCopy",       ((CheckBox)ControlDictionary[createBackupCopyCheckBox]).Checked);
 			PropertyService.Set("SharpDevelop.LineTerminatorStyle",    (LineTerminatorStyle)((ComboBox)ControlDictionary[lineTerminatorStyleComboBox]).SelectedIndex);
 			
 			FileChangeWatcher.DetectExternalChangesOption = detectExternalChangesCheckBox.Checked;
 			FileChangeWatcher.AutoLoadExternalChangesOption = autoLoadExternalChangesCheckBox.Checked;
 			FileService.DeleteToRecycleBin = useRecycleBinCheckBox.Checked;
+			FileService.SaveUsingTemporaryFile = ((CheckBox)ControlDictionary[createBackupCopyCheckBox]).Checked;
 			
 			return true;
 		}

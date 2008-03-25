@@ -52,7 +52,6 @@ namespace ICSharpCode.TextEditor.Document
 		bool        showVerticalRuler   = true;
 		bool        convertTabsToSpaces = false;
 		System.Drawing.Text.TextRenderingHint textRenderingHint = System.Drawing.Text.TextRenderingHint.SystemDefault;
-		bool        createBackupCopy    = false;
 		bool        mouseWheelScrollDown = true;
 		bool        mouseWheelTextZoom   = true;
 		
@@ -196,14 +195,6 @@ namespace ICSharpCode.TextEditor.Document
 			set { textRenderingHint = value; }
 		}
 		
-		public bool CreateBackupCopy {
-			get {
-				return createBackupCopy;
-			}
-			set {
-				createBackupCopy = value;
-			}
-		}
 		public bool MouseWheelScrollDown {
 			get {
 				return mouseWheelScrollDown;

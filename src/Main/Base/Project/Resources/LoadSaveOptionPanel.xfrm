@@ -14,7 +14,7 @@
 					<System.Windows.Forms.CheckBox>
 						<Name value="useRecycleBinCheckBox" />
 						<Location value="8, 19" />
-						<Text value="Use recycle bin when deleting files" />
+						<Text value="${res:Dialog.Options.IDEOptions.LoadSaveOptions.UseRecycleBin}" />
 						<TabIndex value="0" />
 						<Size value="248, 24" />
 						<UseVisualStyleBackColor value="True" />

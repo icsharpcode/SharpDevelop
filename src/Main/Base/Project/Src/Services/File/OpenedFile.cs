@@ -203,25 +203,24 @@ namespace ICSharpCode.SharpDevelop
 			if (IsUntitled)
 				throw new InvalidOperationException("Cannot save an untitled file to disk!");
 			
-			/*
-			 * TODO: Reimplement "safe saving"
-			if (document.TextEditorProperties.CreateBackupCopy) {
-				try {
-					if (File.Exists(fileName)) {
-						string backupName = fileName + ".bak";
-						File.Copy(fileName, backupName, true);
-					}
-				} catch (Exception) {
-	//
-	//				MessageService.ShowError(e, "Can not create backup copy of " + fileName);
-				}
-			}
-			 */
-			using (FileStream fs = new FileStream(FileName, FileMode.Create, FileAccess.Write)) {
+			bool safeSaving = FileService.SaveUsingTemporaryFile;
+			string saveAs = safeSaving ? FileName + ".bak" : FileName;
+			using (FileStream fs = new FileStream(saveAs, FileMode.Create, FileAccess.Write)) {
 				if (currentView != null) {
 					SaveCurrentViewToStream(fs);
 				} else {
 					fs.Write(fileData, 0, fileData.Length);
+				}
+			}
+			if (safeSaving) {
+				DateTime? creationTime = null;
+				if (File.Exists(FileName)) {
+					creationTime = File.GetCreationTimeUtc(FileName);
+					File.Delete(FileName);
+				}
+				File.Move(saveAs, FileName);
+				if (creationTime != null) {
+					File.SetCreationTimeUtc(FileName, creationTime.Value);
 				}
 			}
 			IsDirty = false;
@@ -423,6 +422,18 @@ namespace ICSharpCode.SharpDevelop
 				return;
 			
 			SwitchedToView(newView);
+		}
+		
+		public override void SaveToDisk()
+		{
+			try {
+				if (fileChangeWatcher != null)
+					fileChangeWatcher.Enabled = false;
+				base.SaveToDisk();
+			} finally {
+				if (fileChangeWatcher != null)
+					fileChangeWatcher.Enabled = true;
+			}
 		}
 	}
 }

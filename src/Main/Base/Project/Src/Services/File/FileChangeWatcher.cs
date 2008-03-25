@@ -49,7 +49,6 @@ namespace ICSharpCode.SharpDevelop
 		{
 			if (file == null)
 				throw new ArgumentNullException("file");
-			WorkbenchSingleton.AssertMainThread();
 			this.file = file;
 			WorkbenchSingleton.MainForm.Activated += MainForm_Activated;
 			file.FileNameChanged += file_FileNameChanged;
@@ -77,12 +76,26 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
+		bool enabled = true;
+		
+		public bool Enabled {
+			get { return enabled; }
+			set { 
+				enabled = value; 
+				SetWatcher();
+			}
+		}
+		
 		void SetWatcher()
 		{
+			WorkbenchSingleton.AssertMainThread();
+			
 			if (watcher != null) {
 				watcher.EnableRaisingEvents = false;
 			}
 			
+			if (!enabled)
+				return;
 			if (DetectExternalChangesOption == false)
 				return;
 			
@@ -113,6 +126,9 @@ namespace ICSharpCode.SharpDevelop
 		void OnFileChangedEvent(object sender, FileSystemEventArgs e)
 		{
 			if (e.ChangeType != WatcherChangeTypes.Deleted) {
+				if (file == null)
+					return;
+				LoggingService.Debug("File " + file.FileName + " was changed externally");
 				wasChangedExternally = true;
 				if (WorkbenchSingleton.Workbench.IsActiveWindow) {
 					// delay showing message a bit, prevents showing two messages

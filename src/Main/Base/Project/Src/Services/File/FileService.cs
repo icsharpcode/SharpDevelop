@@ -303,6 +303,15 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
+		public static bool SaveUsingTemporaryFile {
+			get {
+				return PropertyService.Get("SharpDevelop.SaveUsingTemporaryFile", true);
+			}
+			set {
+				PropertyService.Set("SharpDevelop.SaveUsingTemporaryFile", value);
+			}
+		}
+		
 		/// <summary>
 		/// Removes a file, raising the appropriate events. This method may show message boxes.
 		/// </summary>
