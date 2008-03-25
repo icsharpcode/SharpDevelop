@@ -191,6 +191,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					string description = task.Description;
 					if (description != null) {
 						description = description.Replace("\t", "    ");
+						description = FixDescriptionForTooltip(description, 200);
 					}
 					taskToolTip.SetToolTip(this, description);
 					taskToolTip.Active       = true;
@@ -200,6 +201,26 @@ namespace ICSharpCode.SharpDevelop.Gui
 				}
 				currentListViewItem = item;
 			}
+		}
+		
+		// when there is a very long word (e.g. huge generic type), Windows.Forms hangs when showing the tooltip,
+		// so we need to separate the words
+		static string FixDescriptionForTooltip(string description, int spaceEvery)
+		{
+			StringBuilder b = new StringBuilder(description.Length);
+			int i = 0;
+			foreach (char c in description) {
+				b.Append(c);
+				if (char.IsWhiteSpace(c)) {
+					i = 0;
+				} else {
+					if (++i == spaceEvery) {
+						b.Append(' ');
+						i = 0;
+					}
+				}
+			}
+			return b.ToString();
 		}
 		
 		protected override void WndProc(ref Message m)

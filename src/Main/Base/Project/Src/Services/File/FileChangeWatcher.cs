@@ -39,7 +39,7 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
-		static Set<FileChangeWatcher> activeWatchers = new Set<FileChangeWatcher>();
+		static HashSet<FileChangeWatcher> activeWatchers = new HashSet<FileChangeWatcher>();
 		
 		FileSystemWatcher watcher;
 		bool wasChangedExternally = false;

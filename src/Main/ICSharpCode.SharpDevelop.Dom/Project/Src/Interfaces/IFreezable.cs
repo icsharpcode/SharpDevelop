@@ -71,7 +71,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				throw new InvalidOperationException("Cannot mutate frozen " + GetType().Name);
 		}
 		
-		protected IList<T> FreezeList<T>(IList<T> list) where T : IFreezable
+		protected static IList<T> FreezeList<T>(IList<T> list) where T : IFreezable
 		{
 			if (list == null || list.Count == 0)
 				return EmptyList<T>.Instance;
@@ -82,7 +82,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return list;
 		}
 		
-		protected IList<IReturnType> FreezeList(IList<IReturnType> list)
+		protected static IList<IReturnType> FreezeList(IList<IReturnType> list)
 		{
 			if (list == null || list.Count == 0)
 				return EmptyList<IReturnType>.Instance;
@@ -90,7 +90,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return new System.Collections.ObjectModel.ReadOnlyCollection<IReturnType>(list.ToArray());
 		}
 		
-		protected IList<string> FreezeList(IList<string> list)
+		protected static IList<string> FreezeList(IList<string> list)
 		{
 			if (list == null || list.Count == 0)
 				return EmptyList<string>.Instance;

@@ -223,6 +223,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 			resultIsAcceptable = false;
 			if (methods.Count == 0)
 				return null;
+			// RankOverloads may change methods (substitution of generic types), but those changes should not
+			// be visible to the FindOverload caller, so we clone the method array.
 			methods = methods.ToArray();
 			int[] ranking = RankOverloads(methods, arguments, false, out resultIsAcceptable);
 			int bestRanking = -1;
