@@ -100,6 +100,8 @@ namespace ICSharpCode.SharpDevelop
 				return;
 			
 			string fileName = file.FileName;
+			if (string.IsNullOrEmpty(fileName))
+				return;
 			if (FileUtility.IsUrl(fileName))
 				return;
 			if (!Path.IsPathRooted(fileName))
