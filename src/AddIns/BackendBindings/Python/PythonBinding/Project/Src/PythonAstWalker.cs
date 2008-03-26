@@ -180,8 +180,10 @@ namespace ICSharpCode.PythonBinding
 			// Ignore first parameter since this is the "self" parameter.
 			for (int i = 1; i < expressions.Count; ++i) {
 				NameExpression expression = expressions[i] as NameExpression;
-				DefaultParameter parameter = new DefaultParameter(expression.Name.ToString(), null, new DomRegion());
-				parameters.Add(parameter);
+				if (expression != null) {
+					DefaultParameter parameter = new DefaultParameter(expression.Name.ToString(), null, new DomRegion());
+					parameters.Add(parameter);
+				}
 			}
 			return parameters.ToArray();
 		}

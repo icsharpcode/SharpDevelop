@@ -130,6 +130,7 @@
     <Compile Include="Parsing\ClassWithBaseClassTestFixture.cs" />
     <Compile Include="Parsing\IronPythonParserTestFixture.cs" />
     <Compile Include="Parsing\MethodWithParametersTestFixture.cs" />
+    <Compile Include="Parsing\MissingLastParameterFromMethodTestFixture.cs" />
     <Compile Include="Parsing\ParseClassWithCtorTestFixture.cs" />
     <Compile Include="Parsing\ParseClassWithMethodTestFixture.cs" />
     <Compile Include="Parsing\ParseImportTestFixture.cs" />
