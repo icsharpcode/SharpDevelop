@@ -119,7 +119,7 @@ namespace XmlEditor.Tests.Parser
 		/// tabs.
 		/// </summary>
 		[Test]
-		public void EmptyElement()
+		public void ActiveElementIsEmptyElementFollowedBySpaces()
 		{
 			string xml = "<Page>\r\n" +
 						"    <Grid><\r\n" + // Cursor position is after the opening tag < at the end of this line.
@@ -136,5 +136,33 @@ namespace XmlEditor.Tests.Parser
 			XmlElementPath path = XmlParser.GetActiveElementStartPathAtIndex(xml, index);
 			Assert.AreEqual(0, path.Elements.Count, "Should be no elements since there is no element at the index.");
 		}		
+		
+		/// <summary>
+		/// If the user presses the space bar only having typed in the start tag then there is null
+		/// reference exception. 
+		/// </summary>
+		[Test]
+		public void EmptyElementStartTagFollowedBySpace()
+		{
+			string xml = "<Xml1>\r\n" +
+						"\t< ";
+			
+			XmlElementPath path = XmlParser.GetActiveElementStartPath(xml, xml.Length - 1);
+			Assert.AreEqual(0, path.Elements.Count, "Should be no elements since there is no element at the index.");
+		}
+		
+		/// <summary>
+		/// If the user presses the space bar after typing in an element name starting with a space
+		/// character then a null exception occurs.
+		/// </summary>
+		[Test]
+		public void SpacesAroundElementName()
+		{
+			string xml = "<Xml1>\r\n" +
+						"\t< a ";
+			
+			XmlElementPath path = XmlParser.GetActiveElementStartPath(xml, xml.Length - 1);
+			Assert.AreEqual(0, path.Elements.Count, "Should be no elements since there is no element at the index.");			
+		}
 	}
 }

@@ -570,6 +570,10 @@ namespace ICSharpCode.XmlEditor
 		static XmlElementPath GetActiveElementStartPath(string xml, int index, string elementText, QualifiedNameCollection namespaces)
 		{
 			QualifiedName elementName = GetElementName(elementText);
+			if (elementName == null) {
+				return new XmlElementPath();
+			}
+			
 			NamespaceURI elementNamespace = GetElementNamespace(elementText);
 						
 			XmlElementPath path = GetFullParentElementPath(xml.Substring(0, index), namespaces);
@@ -661,10 +665,7 @@ namespace ICSharpCode.XmlEditor
 					elementEndIndex = xml.IndexOf(' ', elementStartIndex);
 				}
 				if (elementEndIndex >= elementStartIndex) {
-					string elementName = xml.Substring(elementStartIndex, elementEndIndex - elementStartIndex).Trim();
-					if (elementName.Length > 1) {
-						return elementName;
-					}
+					return xml.Substring(elementStartIndex, elementEndIndex - elementStartIndex);
 				}
 			}
 			return null;
