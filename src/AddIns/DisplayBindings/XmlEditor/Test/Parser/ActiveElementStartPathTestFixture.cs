@@ -111,5 +111,30 @@ namespace XmlEditor.Tests.Parser
 			elementPath = XmlParser.GetActiveElementStartPath(text, text.Length);
 			Assert.AreEqual(0, elementPath.Elements.Count, "Should have no path.");
 		}
+		
+		/// <summary>
+		/// If the user has entered just the opening tag and then tries to go to the schema definition of the active
+		/// element the XmlParser throws a null exception. The user is also not indenting the xml with tabs but
+		/// spaces. This test fixture tests checks for that bug. Note at the bug does not appear if the xml is indented with
+		/// tabs.
+		/// </summary>
+		[Test]
+		public void EmptyElement()
+		{
+			string xml = "<Page>\r\n" +
+						"    <Grid><\r\n" + // Cursor position is after the opening tag < at the end of this line.
+						"    </Grid>\r\n" +
+						"</Page>";
+			
+			string textToFind = "<Grid><";
+			int index = xml.IndexOf(textToFind) + textToFind.Length;
+
+			// Sanity check that the index position is correct.
+			Assert.AreEqual('\r', xml[index]);
+			Assert.AreEqual('<', xml[index - 1]);
+			
+			XmlElementPath path = XmlParser.GetActiveElementStartPathAtIndex(xml, index);
+			Assert.AreEqual(0, path.Elements.Count, "Should be no elements since there is no element at the index.");
+		}		
 	}
 }

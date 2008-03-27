@@ -446,6 +446,7 @@ namespace ICSharpCode.XmlEditor
 			int elementStartIndex = -1;
 			
 			int currentIndex = index - 1;
+
 			for (int i = 0; i < index; ++i) {
 				
 				char currentChar = xml[currentIndex];
@@ -660,7 +661,10 @@ namespace ICSharpCode.XmlEditor
 					elementEndIndex = xml.IndexOf(' ', elementStartIndex);
 				}
 				if (elementEndIndex >= elementStartIndex) {
-					return xml.Substring(elementStartIndex, elementEndIndex - elementStartIndex);
+					string elementName = xml.Substring(elementStartIndex, elementEndIndex - elementStartIndex).Trim();
+					if (elementName.Length > 1) {
+						return elementName;
+					}
 				}
 			}
 			return null;
