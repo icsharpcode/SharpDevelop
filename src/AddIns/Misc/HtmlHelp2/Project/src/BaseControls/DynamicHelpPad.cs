@@ -123,14 +123,14 @@ namespace HtmlHelp2
 			IHxTopicList topics = HtmlHelp2Environment.GetMatchingTopicsForDynamicHelp(searchTerm);
 			bool result = (topics != null && topics.Count > 0);
 
-			// debug info
-			this.debugPreElement +=
-				string.Format(CultureInfo.InvariantCulture,
-				              "{0} ({1}): {2} {3}<br>", searchTerm, (keywordSearch)?"Kwd":"DH",
-				              topics.Count, (topics.Count==1)?"topic":"topics");
-
 			if (result)
 			{
+				// debug info
+				this.debugPreElement +=
+					string.Format(CultureInfo.InvariantCulture,
+					              "{0} ({1}): {2} {3}<br>", searchTerm, (keywordSearch)?"Kwd":"DH",
+					              topics.Count, (topics.Count==1)?"topic":"topics");
+				
 				List<IHxTopic> newTopics = SortTopics(topics);
 				foreach (IHxTopic topic in newTopics)
 				{
