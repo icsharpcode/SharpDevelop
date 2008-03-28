@@ -208,12 +208,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		public override object VisitIdentifierExpression(IdentifierExpression identifierExpression, object data)
 		{
-			ResolveResult result = resolver.ResolveIdentifier(identifierExpression, ExpressionContext.Default);
-			if (result != null)
-				return result;
-			else
-				return new UnknownIdentifierResolveResult(resolver.CallingClass, resolver.CallingMember, identifierExpression.Identifier);
-		}
+			return resolver.ResolveIdentifier(identifierExpression, ExpressionContext.Default);
+					}
 		
 		public override object VisitIndexerExpression(IndexerExpression indexerExpression, object data)
 		{
@@ -430,7 +426,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			} else {
 				IReturnType rt = TypeVisitor.CreateReturnType(objectCreateExpression.CreateType, resolver);
 				if (rt == null)
-					return null;
+					return new UnknownConstructorCallResolveResult(resolver.CallingClass, resolver.CallingMember, objectCreateExpression.CreateType.ToString());
 				
 				return ResolveConstructorOverload(rt, objectCreateExpression.Parameters)
 					?? CreateResolveResult(rt);

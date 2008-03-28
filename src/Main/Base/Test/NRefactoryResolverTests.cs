@@ -254,6 +254,20 @@ interface IInterface2 {
 		}
 		
 		[Test]
+		public void UnknownIdentifierTest()
+		{
+			string program = @"class A {
+	void Method() {
+		
+	}
+}
+";
+			UnknownIdentifierResolveResult result = Resolve<UnknownIdentifierResolveResult>(program, "StringBuilder", 3);
+			Assert.IsFalse(result.IsValid);
+			Assert.AreEqual("StringBuilder", result.Identifier);
+		}
+		
+		[Test]
 		public void InvalidMethodCallTest()
 		{
 			string program = @"class A {
@@ -290,8 +304,8 @@ class A {
 	}
 }
 ";
-			ResolveResult result = Resolve(program, "new ThisClassDoesNotExist()", 3);
-			Assert.IsNull(result);
+			UnknownConstructorCallResolveResult result = Resolve<UnknownConstructorCallResolveResult>(program, "new ThisClassDoesNotExist()", 3);
+			Assert.AreEqual("ThisClassDoesNotExist", result.TypeName);
 		}
 
 		[Test]

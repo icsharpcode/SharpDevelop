@@ -520,6 +520,9 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				}
 			}
 			
+			if (result == null && result2 == null)
+				return new UnknownIdentifierResolveResult(CallingClass, CallingMember, expr.Identifier);
+
 			if (result == null)  return result2;
 			if (result2 == null) return result;
 			if (context == ExpressionContext.Type)

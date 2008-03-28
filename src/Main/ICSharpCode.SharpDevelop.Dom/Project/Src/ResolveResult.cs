@@ -157,6 +157,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 	{
 		ResolveResult primaryResult, secondaryResult;
 
+		protected override void FreezeInternal()
+		{
+			base.FreezeInternal();
+			primaryResult.Freeze();
+			secondaryResult.Freeze();
+		}
+		
 		public ResolveResult PrimaryResult {
 			get {
 				return primaryResult;
@@ -183,6 +190,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public MixedResolveResult(ResolveResult primaryResult, ResolveResult secondaryResult)
 			: base(primaryResult.CallingClass, primaryResult.CallingMember, primaryResult.ResolvedType)
 		{
+			if (primaryResult == null)
+				throw new ArgumentNullException("primaryResult");
+			if (secondaryResult == null)
+				throw new ArgumentNullException("secondaryResult");
 			this.primaryResult = primaryResult;
 			this.secondaryResult = secondaryResult;
 		}
@@ -776,6 +787,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 	#endregion
 	
 	#region UnknownIdentifierResolveResult
+	/// <summary>
+	/// Used for unknown identifiers.
+	/// </summary>
 	public class UnknownIdentifierResolveResult : ResolveResult
 	{
 		string identifier;
@@ -797,6 +811,35 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public override ResolveResult Clone()
 		{
 			return new UnknownIdentifierResolveResult(this.CallingClass, this.CallingMember, this.Identifier);
+		}
+	}
+	#endregion
+	
+	#region UnknownConstructorCallResolveResult
+	/// <summary>
+	/// Used for constructor calls on unknown types.
+	/// </summary>
+	public class UnknownConstructorCallResolveResult : ResolveResult
+	{
+		string typeName;
+		
+		public UnknownConstructorCallResolveResult(IClass callingClass, IMember callingMember, string typeName)
+			: base(callingClass, callingMember, null)
+		{
+			this.typeName = typeName;
+		}
+		
+		public string TypeName {
+			get { return typeName; }
+		}
+		
+		public override bool IsValid {
+			get { return false; }
+		}
+		
+		public override ResolveResult Clone()
+		{
+			return new UnknownConstructorCallResolveResult(this.CallingClass, this.CallingMember, this.TypeName);
 		}
 	}
 	#endregion

@@ -97,6 +97,9 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			} else if (rr is UnknownIdentifierResolveResult) {
 				item = MakeItemForResolveError((UnknownIdentifierResolveResult)rr, expressionResult.Context, textArea);
 				insertIndex = 0;	// Insert menu item at the topmost position.
+			} else if (rr is UnknownConstructorCallResolveResult) {
+				item = MakeItemForResolveError((UnknownConstructorCallResolveResult)rr, expressionResult.Context, textArea);
+				insertIndex = 0;	// Insert menu item at the topmost position.
 			}
 			if (item != null) {
 				resultItems.Insert(insertIndex, item);
@@ -135,10 +138,12 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		
 		ToolStripMenuItem MakeItemForResolveError(UnknownIdentifierResolveResult rr, ExpressionContext context, TextArea textArea)
 		{
-			if (context != null && context.IsTypeContext) {
-				return MakeItemForUnknownClass(rr.CallingClass, rr.Identifier, textArea);
-			}
-			return null;
+			return MakeItemForUnknownClass(rr.CallingClass, rr.Identifier, textArea);
+		}
+		
+		ToolStripMenuItem MakeItemForResolveError(UnknownConstructorCallResolveResult rr, ExpressionContext context, TextArea textArea)
+		{
+			return MakeItemForUnknownClass(rr.CallingClass, rr.TypeName, textArea);
 		}
 		
 		ToolStripMenuItem MakeItemForUnknownClass(IClass callingClass, string unknownClassName, TextArea textArea)
@@ -154,6 +159,8 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			foreach (IProjectContent rpc in pc.ReferencedContents) {
 				SearchAllClassesWithName(searchResults, rpc, unknownClassName, pc.Language);
 			}
+			if (searchResults.Count == 0)
+				return null;
 			foreach (IClass c in searchResults) {
 				string newNamespace = c.Namespace;
 				ToolStripMenuItem subItem = new ToolStripMenuItem("using " + newNamespace, ClassBrowserIconService.ImageList.Images[ClassBrowserIconService.NamespaceIndex]);
