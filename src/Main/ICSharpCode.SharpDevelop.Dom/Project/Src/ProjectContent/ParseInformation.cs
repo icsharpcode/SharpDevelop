@@ -16,6 +16,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public ICompilationUnit BestCompilationUnit { get; private set; }
 		public ICompilationUnit MostRecentCompilationUnit { get; private set; }
 		
+		public ParseInformation() {}
+		public ParseInformation(ICompilationUnit c)
+		{
+			SetCompilationUnit(c);
+		}
+		
 		/// <summary>
 		/// Uses the specified compilation unit.
 		/// If the compilation unit is valid (ErrorsDuringCompile=false), it is used as ValidCompilationUnit,

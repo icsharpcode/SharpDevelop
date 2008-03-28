@@ -40,7 +40,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			return 0;
 		}
 		
-		public static void ManageUsings(string fileName, IDocument document, bool sort, bool removedUnused)
+		public static void ManageUsings(Gui.IProgressMonitor progressMonitor, string fileName, IDocument document, bool sort, bool removedUnused)
 		{
 			ParseInformation info = ParserService.ParseFile(fileName, document.TextContent);
 			if (info == null) return;
@@ -52,7 +52,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			}
 			
 			if (removedUnused) {
-				IList<IUsing> decl = cu.ProjectContent.Language.RefactoringProvider.FindUnusedUsingDeclarations(fileName, document.TextContent, cu);
+				IList<IUsing> decl = cu.ProjectContent.Language.RefactoringProvider.FindUnusedUsingDeclarations(Gui.DomProgressMonitor.Wrap(progressMonitor), fileName, document.TextContent, cu);
 				if (decl != null && decl.Count > 0) {
 					foreach (IUsing u in decl) {
 						string ns = null;

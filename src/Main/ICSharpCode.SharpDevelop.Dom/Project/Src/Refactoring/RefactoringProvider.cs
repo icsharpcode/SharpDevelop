@@ -35,7 +35,7 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 			}
 		}
 		
-		public virtual IList<IUsing> FindUnusedUsingDeclarations(string fileName, string fileContent, ICompilationUnit compilationUnit)
+		public virtual IList<IUsing> FindUnusedUsingDeclarations(IDomProgressMonitor progressMonitor, string fileName, string fileContent, ICompilationUnit compilationUnit)
 		{
 			throw new NotSupportedException();
 		}

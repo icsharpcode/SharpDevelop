@@ -38,17 +38,21 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 				return false;
 		}
 		
-		static void ShowSourceCodeErrors(string errors)
+		static void ShowSourceCodeErrors(IDomProgressMonitor progressMonitor, string errors)
 		{
+			if (progressMonitor != null)
+				progressMonitor.ShowingDialog = true;
 			HostCallback.ShowMessage("${res:SharpDevelop.Refactoring.CannotPerformOperationBecauseOfSyntaxErrors}\n" + errors);
+			if (progressMonitor != null)
+				progressMonitor.ShowingDialog = false;
 		}
 		
-		NR.IParser ParseFile(string fileContent)
+		NR.IParser ParseFile(IDomProgressMonitor progressMonitor, string fileContent)
 		{
 			NR.IParser parser = NR.ParserFactory.CreateParser(language, new StringReader(fileContent));
 			parser.Parse();
 			if (parser.Errors.Count > 0) {
-				ShowSourceCodeErrors(parser.Errors.ErrorOutput);
+				ShowSourceCodeErrors(progressMonitor, parser.Errors.ErrorOutput);
 				parser.Dispose();
 				return null;
 			} else {
@@ -60,66 +64,129 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 		protected class PossibleTypeReference
 		{
 			public string Name;
-			public bool Global;
 			public int TypeParameterCount;
+			public IMethod ExtensionMethod;
 			
 			public PossibleTypeReference(string name)
 			{
 				this.Name = name;
 			}
 			
+			public PossibleTypeReference(IdentifierExpression identifierExpression)
+			{
+				this.Name = identifierExpression.Identifier;
+				this.TypeParameterCount = identifierExpression.TypeArguments.Count;
+			}
+			
 			public PossibleTypeReference(TypeReference tr)
 			{
 				this.Name = tr.SystemType;
-				this.Global = tr.IsGlobal;
 				this.TypeParameterCount = tr.GenericTypes.Count;
+			}
+			
+			public PossibleTypeReference(IMethod extensionMethod)
+			{
+				this.ExtensionMethod = extensionMethod;
 			}
 			
 			public override int GetHashCode()
 			{
-				return Name.GetHashCode() ^ Global.GetHashCode() ^ TypeParameterCount.GetHashCode();
+				int hashCode = 0;
+				unchecked {
+					if (Name != null) hashCode += 1000000007 * Name.GetHashCode();
+					hashCode += 1000000009 * TypeParameterCount.GetHashCode();
+					if (ExtensionMethod != null) hashCode += 1000000021 * ExtensionMethod.GetHashCode();
+				}
+				return hashCode;
 			}
 			
 			public override bool Equals(object obj)
 			{
-				if (!(obj is PossibleTypeReference)) return false;
-				if (this == obj) return true;
-				PossibleTypeReference myPossibleTypeReference = (PossibleTypeReference)obj;
-				return this.Name == myPossibleTypeReference.Name && this.Global == myPossibleTypeReference.Global && this.TypeParameterCount == myPossibleTypeReference.TypeParameterCount;
+				PossibleTypeReference other = obj as PossibleTypeReference;
+				if (other == null) return false;
+				return this.Name == other.Name && this.TypeParameterCount == other.TypeParameterCount && object.Equals(this.ExtensionMethod, other.ExtensionMethod);
 			}
 		}
 		
 		private class FindPossibleTypeReferencesVisitor : NR.Visitors.AbstractAstVisitor
 		{
-			internal Dictionary<PossibleTypeReference, object> list = new Dictionary<PossibleTypeReference, object>();
+			internal HashSet<PossibleTypeReference> list = new HashSet<PossibleTypeReference>();
+			NRefactoryResolver.NRefactoryResolver resolver;
+			ParseInformation parseInformation;
+			
+			public FindPossibleTypeReferencesVisitor(ParseInformation parseInformation)
+			{
+				if (parseInformation != null) {
+					this.parseInformation = parseInformation;
+					resolver = new NRefactoryResolver.NRefactoryResolver(parseInformation.MostRecentCompilationUnit.ProjectContent.Language);
+				}
+			}
 			
 			public override object VisitIdentifierExpression(IdentifierExpression identifierExpression, object data)
 			{
-				list[new PossibleTypeReference(identifierExpression.Identifier)] = data;
+				list.Add(new PossibleTypeReference(identifierExpression));
 				return base.VisitIdentifierExpression(identifierExpression, data);
 			}
 			
 			public override object VisitTypeReference(TypeReference typeReference, object data)
 			{
-				list[new PossibleTypeReference(typeReference)] = data;
+				if (!typeReference.IsGlobal) {
+					list.Add(new PossibleTypeReference(typeReference));
+				}
 				return base.VisitTypeReference(typeReference, data);
 			}
 			
 			public override object VisitAttribute(ICSharpCode.NRefactory.Ast.Attribute attribute, object data)
 			{
-				list[new PossibleTypeReference(attribute.Name)] = data;
-				list[new PossibleTypeReference(attribute.Name + "Attribute")] = data;
+				list.Add(new PossibleTypeReference(attribute.Name));
+				list.Add(new PossibleTypeReference(attribute.Name + "Attribute"));
 				return base.VisitAttribute(attribute, data);
+			}
+			
+			public override object VisitInvocationExpression(InvocationExpression invocationExpression, object data)
+			{
+				base.VisitInvocationExpression(invocationExpression, data);
+				if (invocationExpression.TargetObject is MemberReferenceExpression) {
+					MemberResolveResult mrr = resolver.ResolveInternal(invocationExpression, ExpressionContext.Default) as MemberResolveResult;
+					if (mrr != null) {
+						IMethod method = mrr.ResolvedMember as IMethod;
+						if (method != null && method.IsExtensionMethod) {
+							list.Add(new PossibleTypeReference(method));
+						}
+					}
+				}
+				return null;
+			}
+			
+			public override object VisitMethodDeclaration(MethodDeclaration methodDeclaration, object data)
+			{
+				// Initialize resolver for method:
+				if (!methodDeclaration.Body.IsNull && resolver != null) {
+					if (resolver.Initialize(parseInformation, methodDeclaration.Body.StartLocation.Y, methodDeclaration.Body.StartLocation.X)) {
+						resolver.RunLookupTableVisitor(methodDeclaration);
+					}
+				}
+				return base.VisitMethodDeclaration(methodDeclaration, data);
+			}
+			
+			public override object VisitPropertyDeclaration(PropertyDeclaration propertyDeclaration, object data)
+			{
+				if (resolver != null) {
+					if (resolver.Initialize(parseInformation, propertyDeclaration.BodyStart.Y, propertyDeclaration.BodyStart.X)) {
+						resolver.RunLookupTableVisitor(propertyDeclaration);
+					}
+				}
+				return base.VisitPropertyDeclaration(propertyDeclaration, data);
 			}
 		}
 		
-		protected virtual Dictionary<PossibleTypeReference, object> FindPossibleTypeReferences(string fileContent)
+		protected virtual HashSet<PossibleTypeReference> FindPossibleTypeReferences(IDomProgressMonitor progressMonitor, string fileContent, ParseInformation parseInfo)
 		{
-			NR.IParser parser = ParseFile(fileContent);
+			NR.IParser parser = ParseFile(progressMonitor, fileContent);
 			if (parser == null) {
 				return null;
 			} else {
-				FindPossibleTypeReferencesVisitor visitor = new FindPossibleTypeReferencesVisitor();
+				FindPossibleTypeReferencesVisitor visitor = new FindPossibleTypeReferencesVisitor(parseInfo);
 				parser.CompilationUnit.AcceptVisitor(visitor, null);
 				parser.Dispose();
 				return visitor.list;
@@ -132,36 +199,49 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 			}
 		}
 		
-		public override IList<IUsing> FindUnusedUsingDeclarations(string fileName, string fileContent, ICompilationUnit cu)
+		public override IList<IUsing> FindUnusedUsingDeclarations(IDomProgressMonitor progressMonitor, string fileName, string fileContent, ICompilationUnit cu)
 		{
 			IClass @class = cu.Classes.Count == 0 ? null : cu.Classes[0];
 			
-			Dictionary<PossibleTypeReference, object> references = FindPossibleTypeReferences(fileContent);
+			HashSet<PossibleTypeReference> references = FindPossibleTypeReferences(progressMonitor, fileContent, new ParseInformation(cu));
 			if (references == null) return new IUsing[0];
 			
-			Dictionary<IUsing, object> dict = new Dictionary<IUsing, object>();
-			foreach (PossibleTypeReference tr in references.Keys) {
-				SearchTypeRequest request = new SearchTypeRequest(tr.Name, tr.TypeParameterCount, @class, cu, 1, 1);
-				SearchTypeResult response = cu.ProjectContent.SearchType(request);
-				if (response.UsedUsing != null) {
-					dict[response.UsedUsing] = null;
+			HashSet<IUsing> usedUsings = new HashSet<IUsing>();
+			foreach (PossibleTypeReference tr in references) {
+				if (tr.ExtensionMethod != null) {
+					// the invocation of an extension method can implicitly use a using
+					StringComparer nameComparer = cu.ProjectContent.Language.NameComparer;
+					foreach (IUsing import in cu.Usings) {
+						foreach (string i in import.Usings) {
+							if (nameComparer.Equals(tr.ExtensionMethod.DeclaringType.Namespace, i)) {
+								usedUsings.Add(import);
+							}
+						}
+					}
+				} else {
+					// normal possible type reference
+					SearchTypeRequest request = new SearchTypeRequest(tr.Name, tr.TypeParameterCount, @class, cu, 1, 1);
+					SearchTypeResult response = cu.ProjectContent.SearchType(request);
+					if (response.UsedUsing != null) {
+						usedUsings.Add(response.UsedUsing);
+					}
 				}
 			}
 			
-			List<IUsing> list = new List<IUsing>();
+			List<IUsing> unusedUsings = new List<IUsing>();
 			foreach (IUsing import in cu.Usings) {
-				if (!dict.ContainsKey(import)) {
+				if (!usedUsings.Contains(import)) {
 					if (import.HasAliases) {
 						foreach (string key in import.Aliases.Keys) {
-							if (references.ContainsKey(new PossibleTypeReference(key)))
+							if (references.Contains(new PossibleTypeReference(key)))
 								goto checkNextImport;
 						}
 					}
-					list.Add(import); // this using is unused
+					unusedUsings.Add(import); // this using is unused
 				}
 				checkNextImport:;
 			}
-			return list;
+			return unusedUsings;
 		}
 		#endregion
 		
@@ -174,7 +254,7 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 		
 		public override string CreateNewFileLikeExisting(string existingFileContent, string codeForNewType)
 		{
-			NR.IParser parser = ParseFile(existingFileContent);
+			NR.IParser parser = ParseFile(null, existingFileContent);
 			if (parser == null) {
 				return null;
 			}
