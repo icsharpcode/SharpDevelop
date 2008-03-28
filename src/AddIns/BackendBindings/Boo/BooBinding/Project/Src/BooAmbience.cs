@@ -42,11 +42,15 @@ namespace Grunwald.BooBinding
 		static BooAmbience()
 		{
 			typeConversionTable.Add("System.Void", "void");
-			typeConversionTable.Add("System.Object", "object");
 			typeConversionTable.Add("System.Boolean", "bool");
+			typeConversionTable.Add("System.Char", "char");
+			typeConversionTable.Add("System.DateTime", "date");
+			typeConversionTable.Add("System.TimeSpan", "timespan");
+			typeConversionTable.Add("System.String", "string");
+			typeConversionTable.Add("System.Object", "object");
+			typeConversionTable.Add("System.Text.RegularExpressions.Regex", "regex");
 			typeConversionTable.Add("System.Byte", "byte");
 			typeConversionTable.Add("System.SByte", "sbyte");
-			typeConversionTable.Add("System.Char", "char");
 			typeConversionTable.Add("System.Int16", "short");
 			typeConversionTable.Add("System.Int32", "int");
 			typeConversionTable.Add("System.Int64", "long");
@@ -56,12 +60,7 @@ namespace Grunwald.BooBinding
 			typeConversionTable.Add("System.Single", "single");
 			typeConversionTable.Add("System.Double", "double");
 			typeConversionTable.Add("System.Decimal", "decimal");
-			typeConversionTable.Add("System.String", "string");
-			typeConversionTable.Add("System.DateTime", "date");
-			typeConversionTable.Add("System.TimeSpan", "timespan");
-			typeConversionTable.Add("System.Type", "type");
-			typeConversionTable.Add("System.Array", "array");
-			typeConversionTable.Add("System.Text.RegularExpressions.Regex", "regex");
+			typeConversionTable.Add("Boo.Lang.ICallable", "callable");
 			foreach (KeyValuePair<string, string> pair in typeConversionTable) {
 				reverseTypeConversionTable.Add(pair.Value, pair.Key);
 			}
