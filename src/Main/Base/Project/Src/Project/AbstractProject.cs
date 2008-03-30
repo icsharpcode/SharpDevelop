@@ -75,9 +75,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			Properties properties = new Properties();
 			properties.Set("bookmarks", ICSharpCode.SharpDevelop.Bookmarks.BookmarkManager.GetProjectBookmarks(this).ToArray());
 			List<string> files = new List<string>();
-			foreach (OpenedFile file in FileService.OpenedFiles) {
-				if (file.FileName != null && IsFileInProject(file.FileName)) {
-					files.Add(file.FileName);
+			foreach (string fileName in FileService.GetOpenFiles()) {
+				if (fileName != null && IsFileInProject(fileName)) {
+					files.Add(fileName);
 				}
 			}
 			properties.Set("files", files.ToArray());
