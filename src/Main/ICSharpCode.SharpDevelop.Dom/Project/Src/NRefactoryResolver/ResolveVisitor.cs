@@ -258,7 +258,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					// call to constructor
 					return ResolveConstructorOverload(resolver.CallingClass, invocationExpression.Arguments);
 				} else if (invocationExpression.TargetObject is BaseReferenceExpression) {
-					return ResolveConstructorOverload(resolver.CallingClass.BaseClass, invocationExpression.Arguments);
+					return ResolveConstructorOverload(resolver.CallingClass.BaseType, invocationExpression.Arguments);
 				}
 			}
 			
@@ -430,7 +430,18 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		{
 			if (rt == null)
 				return null;
-			ResolveResult rr = ResolveConstructorOverload(rt.GetUnderlyingClass(), arguments);
+			
+			List<IMethod> methods = rt.GetMethods().Where(m => m.IsConstructor && !m.IsStatic).ToList();
+			IReturnType[] argumentTypes = arguments.Select<Expression, IReturnType>(ResolveType).ToArray();
+			bool resultIsAcceptable;
+			IMethod result = MemberLookupHelper.FindOverload(methods, argumentTypes, out resultIsAcceptable);
+			
+			if (result == null) {
+				IClass c = rt.GetUnderlyingClass();
+				if (c != null)
+					result = Constructor.CreateDefault(c);
+			}
+			ResolveResult rr = CreateMemberResolveResult(result);
 			if (rr != null)
 				rr.ResolvedType = rt;
 			return rr;
@@ -440,12 +451,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		{
 			if (c == null)
 				return null;
-
-			List<IMethod> methods = c.Methods.Where(m => m.IsConstructor && !m.IsStatic).ToList();
-			IReturnType[] argumentTypes = arguments.Select<Expression, IReturnType>(ResolveType).ToArray();
-			bool resultIsAcceptable;
-			IMethod result = MemberLookupHelper.FindOverload(methods, argumentTypes, out resultIsAcceptable);
-			return CreateMemberResolveResult(result ?? Constructor.CreateDefault(c));
+			else
+				return ResolveConstructorOverload(c.DefaultReturnType, arguments);
 		}
 		
 		DefaultClass CreateAnonymousTypeClass(CollectionInitializerExpression initializer)
@@ -454,9 +461,9 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			List<string> fieldNames = new List<string>();
 			
 			foreach (Expression expr in initializer.CreateExpressions) {
-				if (expr is AssignmentExpression) {
+				if (expr is NamedArgumentExpression) {
 					// use right part only
-					fieldTypes.Add( ResolveType(((AssignmentExpression)expr).Right) );
+					fieldTypes.Add( ResolveType(((NamedArgumentExpression)expr).Expression) );
 				} else {
 					fieldTypes.Add( ResolveType(expr) );
 				}
@@ -491,11 +498,9 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		{
 			if (expr is MemberReferenceExpression) {
 				return ((MemberReferenceExpression)expr).MemberName;
-			}
-			if (expr is AssignmentExpression) {
-				expr = ((AssignmentExpression)expr).Left; // use left side if it is an IdentifierExpression
-			}
-			if (expr is IdentifierExpression) {
+			} else if (expr is NamedArgumentExpression) {
+				return ((NamedArgumentExpression)expr).Name;
+			} else if (expr is IdentifierExpression) {
 				return ((IdentifierExpression)expr).Identifier;
 			} else {
 				return "?";

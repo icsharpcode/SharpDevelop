@@ -2110,6 +2110,22 @@ class TestClass {
 		}
 		
 		[Test]
+		public void LambdaInGenericConstructorTest()
+		{
+			string program = @"using System;
+class TestClass {
+	static void Main() {
+		var t = new SomeClass<string>(i => Console.WriteLine(i));
+	}
+}
+class SomeClass<T> {
+	public SomeClass(Action<T> ac) { }
+}";
+			var lrr = Resolve<LocalResolveResult>(program, "i", 4, 33, ExpressionContext.Default);
+			Assert.AreEqual("System.String", lrr.ResolvedType.DotNetName);
+		}
+		
+		[Test]
 		public void IncompleteLambdaTest()
 		{
 			string program = @"using System;

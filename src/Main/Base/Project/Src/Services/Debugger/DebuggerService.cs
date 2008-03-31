@@ -417,6 +417,9 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			}
 			if (result is MixedResolveResult)
 				return GetText(((MixedResolveResult)result).PrimaryResult, expression, out debuggerCanShowValue);
+			else if (result is DelegateCallResolveResult)
+				return GetText(((DelegateCallResolveResult)result).Target, expression, out debuggerCanShowValue);
+			
 			IAmbience ambience = AmbienceService.GetCurrentAmbience();
 			ambience.ConversionFlags = ConversionFlags.StandardConversionFlags | ConversionFlags.UseFullyQualifiedMemberNames;
 			if (result is MemberResolveResult) {
