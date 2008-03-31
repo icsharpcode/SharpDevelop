@@ -2562,6 +2562,8 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 		}
 		
+		public Location ExtendedEndLocation { get; set; }
+		
 		public LambdaExpression() {
 			parameters = new List<ParameterDeclarationExpression>();
 			statementBody = BlockStatement.Null;

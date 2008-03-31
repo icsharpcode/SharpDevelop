@@ -2020,9 +2020,9 @@ LambdaExpression<out Expression outExpr>
 =
 	"("
 	[
-		LambdaExpressionParameter<out p> (. if (p != null) lambda.Parameters.Add(p); .)
+		LambdaExpressionParameter<out p> (. SafeAdd(lambda, lambda.Parameters, p); .)
 		{ ","
-			LambdaExpressionParameter<out p> (. if (p != null) lambda.Parameters.Add(p); .)
+			LambdaExpressionParameter<out p> (. SafeAdd(lambda, lambda.Parameters, p); .)
 		}
 	]
 	")"
@@ -2070,6 +2070,7 @@ LambdaExpressionBody<LambdaExpression lambda>
 	|	Expr<out expr> (. lambda.ExpressionBody = expr; .)
 	)
 	(. lambda.EndLocation = t.EndLocation; .)
+	(. lambda.ExtendedEndLocation = la.Location; .)
 .
 
 AnonymousMethodExpr<out Expression outExpr>

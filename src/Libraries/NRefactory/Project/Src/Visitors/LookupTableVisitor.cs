@@ -134,7 +134,7 @@ namespace ICSharpCode.NRefactory.Visitors
 		{
 			foreach (ParameterDeclarationExpression p in lambdaExpression.Parameters) {
 				AddVariable(p.TypeReference, p.ParameterName,
-				            lambdaExpression.StartLocation, lambdaExpression.EndLocation,
+				            lambdaExpression.StartLocation, lambdaExpression.ExtendedEndLocation,
 				            false, false, null, lambdaExpression);
 			}
 			return base.VisitLambdaExpression(lambdaExpression, data);

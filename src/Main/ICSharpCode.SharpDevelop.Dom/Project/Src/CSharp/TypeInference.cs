@@ -27,16 +27,10 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 			ti.parameterTypes = method.Parameters.Select(p => p.ReturnType).Take(arguments.Count).ToList();
 			ti.arguments = arguments.Take(ti.parameterTypes.Count).ToArray();
 			ti.PhaseOne();
-			if (ti.PhaseTwo()) {
-				IReturnType[] result = ti.typeParameters.Select(tp => tp.FixedTo).ToArray();
-				Log("Type inference for " + method.DotNetName + " succeeded: ", result);
-				success = true;
-				return result;
-			} else {
-				Log("Type inference for " + method.DotNetName + " failed.");
-				success = false;
-				return null;
-			}
+			success = ti.PhaseTwo();
+			IReturnType[] result = ti.typeParameters.Select(tp => tp.FixedTo).ToArray();
+			Log("Type inference for " + method.DotNetName + " " + (success ? "succeeded" : "failed") + ": ", result);
+			return result;
 		}
 		
 		List<TP> typeParameters;
@@ -130,10 +124,13 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 				}
 			}
 			// now fix 'em
+			bool errorDuringFix = false;
 			foreach (TP tp in typeParametersToFix) {
 				if (!Fix(tp))
-					return false;
+					errorDuringFix = true;
 			}
+			if (errorDuringFix)
+				return false;
 			bool unfixedTypeVariablesExist = typeParameters.Any((TP X) => X.Fixed == false);
 			if (typeParametersToFix.Count == 0 && unfixedTypeVariablesExist) {
 				// If no such type variables exist and there are still unfixed type variables, type inference fails.
