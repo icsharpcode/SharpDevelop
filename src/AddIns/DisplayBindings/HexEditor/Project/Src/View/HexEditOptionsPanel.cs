@@ -22,31 +22,34 @@ namespace HexEditor.View
 	public class HexEditOptionsPanel : AbstractOptionPanel
 	{
 		ComboBox cmbForeColor;
-		ComboBox cmbBackColor;
 		ListBox lstElements;
 		CheckBox cbBold;
 		CheckBox cbItalic;
 		CheckBox cbUnderline;
+		CheckBox cbFitToWidth;
 		Label lblOffsetPreview;
 		Label lblDataPreview;
 		Button btnSelectFont;
 		FontDialog fdSelectFont;
+		TextBox txtExtensions;
+		
+		NumericUpDown nUDBytesPerLine;
+		DomainUpDown dUDViewModes;
 		
 		List<Color> Colors;
 		Color customFore = Color.Transparent;
 		Color customBack = Color.Transparent;
 		
 		bool fcmanualchange = false;
-		bool bcmanualchange = false;
 		
 		// New values
-		Color OffsetForeColor, OffsetBackColor;
-		Color DataForeColor, DataBackColor;
+		Color OffsetForeColor;
+		Color DataForeColor;
 		
 		bool OffsetBold, OffsetItalic, OffsetUnderline;
 		bool DataBold, DataItalic, DataUnderline;
 		
-		float FontSize = 10.0f;
+		float FontSize = 9.75f;
 		
 		string FontName;
 		
@@ -73,14 +76,8 @@ namespace HexEditor.View
 					case "OffsetFore" :
 						OffsetForeColor = Color.FromArgb(int.Parse(el.GetAttribute("R")), int.Parse(el.GetAttribute("G")), int.Parse(el.GetAttribute("B")));
 						break;
-					case "OffsetBack" :
-						OffsetBackColor = Color.FromArgb(int.Parse(el.GetAttribute("R")), int.Parse(el.GetAttribute("G")), int.Parse(el.GetAttribute("B")));
-						break;
 					case "DataFore" :
 						DataForeColor = Color.FromArgb(int.Parse(el.GetAttribute("R")), int.Parse(el.GetAttribute("G")), int.Parse(el.GetAttribute("B")));
-						break;
-					case "DataBack" :
-						DataBackColor = Color.FromArgb(int.Parse(el.GetAttribute("R")), int.Parse(el.GetAttribute("G")), int.Parse(el.GetAttribute("B")));
 						break;
 					case "OffsetStyle" :
 						OffsetBold = bool.Parse(el.GetAttribute("Bold"));
@@ -95,6 +92,14 @@ namespace HexEditor.View
 					case "Font" :
 						FontName = el.GetAttribute("FontName");
 						FontSize = float.Parse(el.GetAttribute("FontSize"));
+						break;
+					case "TextDisplay":
+						this.cbFitToWidth.Checked = bool.Parse(el.GetAttribute("FitToWidth"));
+						this.nUDBytesPerLine.Value = int.Parse(el.GetAttribute("BytesPerLine"));
+						this.dUDViewModes.SelectedItem = ((HexEditor.Util.ViewMode)HexEditor.Util.ViewMode.Parse(typeof(HexEditor.Util.ViewMode),el.GetAttribute("ViewMode"))).ToString();
+						break;
+					case "FileTypes":
+						txtExtensions.Text = el.GetAttribute("FileTypes");
 						break;
 				}
 			}
@@ -118,22 +123,10 @@ namespace HexEditor.View
 				customFore = OffsetForeColor;
 			}
 			
-			if (IsNamedColor(OffsetBackColor)) {
-				OffsetBackColor = Color.FromName(GetColorName(OffsetBackColor));
-			} else {
-				customBack = OffsetBackColor;
-			}
-			
 			if (IsNamedColor(DataForeColor)) {
 				DataForeColor = Color.FromName(GetColorName(DataForeColor));
 			} else {
 				customFore = DataForeColor;
-			}
-			
-			if (IsNamedColor(DataBackColor)) {
-				DataBackColor = Color.FromName(GetColorName(DataBackColor));
-			} else {
-				customBack = DataBackColor;
 			}
 			
 			if (!OffsetForeColor.IsNamedColor) {
@@ -142,15 +135,11 @@ namespace HexEditor.View
 				cmbForeColor.SelectedIndex = cmbForeColor.Items.IndexOf(OffsetForeColor.Name);
 			}
 			
-			if (OffsetBackColor.IsNamedColor) {
-				cmbBackColor.SelectedIndex = 0;
-			} else {
-				cmbBackColor.SelectedIndex = cmbBackColor.Items.IndexOf(OffsetBackColor.Name);
-			}
+			this.cbBold.Checked = OffsetBold;
+			this.cbItalic.Checked = OffsetItalic;
+			this.cbUnderline.Checked = OffsetUnderline;
 		}
 
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1305:SpecifyIFormatProvider", MessageId = "System.Byte.ToString")]
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1305:SpecifyIFormatProvider", MessageId = "System.Single.ToString")]
 		public override bool StorePanelContents()
 		{
 			string configpath = Path.GetDirectoryName(typeof(Editor).Assembly.Location) + Path.DirectorySeparatorChar + "config.xml";
@@ -165,26 +154,12 @@ namespace HexEditor.View
 			file.FirstChild.AppendChild(el);
 			
 			el = file.CreateElement("Setting");
-			el.SetAttribute("Name", "OffsetBack");
-			el.SetAttribute("R", OffsetBackColor.R.ToString());
-			el.SetAttribute("G", OffsetBackColor.G.ToString());
-			el.SetAttribute("B", OffsetBackColor.B.ToString());
-			file.FirstChild.AppendChild(el);
-			
-			el = file.CreateElement("Setting");
 			el.SetAttribute("Name", "DataFore");
 			el.SetAttribute("R", DataForeColor.R.ToString());
 			el.SetAttribute("G", DataForeColor.G.ToString());
 			el.SetAttribute("B", DataForeColor.B.ToString());
 			file.FirstChild.AppendChild(el);
-			
-			el = file.CreateElement("Setting");
-			el.SetAttribute("Name", "DataBack");
-			el.SetAttribute("R", DataBackColor.R.ToString());
-			el.SetAttribute("G", DataBackColor.G.ToString());
-			el.SetAttribute("B", DataBackColor.B.ToString());
-			file.FirstChild.AppendChild(el);
-			
+
 			el = file.CreateElement("Setting");
 			el.SetAttribute("Name", "OffsetStyle");
 			el.SetAttribute("Bold", OffsetBold.ToString());
@@ -205,6 +180,18 @@ namespace HexEditor.View
 			el.SetAttribute("FontSize", FontSize.ToString());
 			file.FirstChild.AppendChild(el);
 			
+			el = file.CreateElement("Setting");
+			el.SetAttribute("Name", "TextDisplay");
+			el.SetAttribute("FitToWidth", this.cbFitToWidth.Checked.ToString());
+			el.SetAttribute("BytesPerLine", this.nUDBytesPerLine.Value.ToString());
+			el.SetAttribute("ViewMode", this.dUDViewModes.SelectedItem.ToString());
+			file.FirstChild.AppendChild(el);
+			
+			el = file.CreateElement("Setting");
+			el.SetAttribute("Name", "FileTypes");
+			el.SetAttribute("FileTypes", txtExtensions.Text);
+			file.FirstChild.AppendChild(el);
+			
 			file.Save(configpath);
 			return true;
 		}
@@ -212,7 +199,6 @@ namespace HexEditor.View
 		void InitializeComponents()
 		{
 			cmbForeColor = (ComboBox)ControlDictionary["cmbForeColor"];
-			cmbBackColor = (ComboBox)ControlDictionary["cmbBackColor"];
 			lstElements = (ListBox)ControlDictionary["lstElements"];
 			cbBold = (CheckBox)ControlDictionary["cbBold"];
 			cbItalic = (CheckBox)ControlDictionary["cbItalic"];
@@ -220,6 +206,13 @@ namespace HexEditor.View
 			lblOffsetPreview = (Label)ControlDictionary["lblOffsetPreview"];
 			lblDataPreview = (Label)ControlDictionary["lblDataPreview"];
 			btnSelectFont = (Button)ControlDictionary["btnSelectFont"];
+			
+			nUDBytesPerLine = (NumericUpDown)ControlDictionary["nUDBytesPerLine"];
+			dUDViewModes = (DomainUpDown)ControlDictionary["dUDViewModes"];
+			cbFitToWidth = (CheckBox)ControlDictionary["cbFitToWidth"];
+			
+			txtExtensions = (TextBox)ControlDictionary["txtExtensions"];
+			
 			fdSelectFont = new FontDialog();
 			
 			// Initialize FontDialog
@@ -229,11 +222,9 @@ namespace HexEditor.View
 			fdSelectFont.ShowColor = false;
 			
 			cmbForeColor.Items.Add("Custom");
-			cmbBackColor.Items.Add("Custom");
 			
 			foreach (Color c in Colors) {
 				cmbForeColor.Items.Add(c.Name);
-				cmbBackColor.Items.Add(c.Name);
 			}
 			
 			lstElements.Items.Add("Offset");
@@ -241,16 +232,16 @@ namespace HexEditor.View
 
 			lstElements.SetSelected(0, true);
 			
+			foreach (string s in HexEditor.Util.ViewMode.GetNames(typeof(HexEditor.Util.ViewMode)))
+			{
+				dUDViewModes.Items.Add(s);
+			}
+			
 			btnSelectFont.Click += new EventHandler(this.btnSelectFontClick);
 			cmbForeColor.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.cmbForeColorDrawItem);
 			cmbForeColor.SelectedValueChanged += new EventHandler(this.cmbForeColorSelectedValueChanged);
 			
 			cmbForeColor.DropDown += cmbForeColorDropDown;
-			cmbBackColor.DropDown += cmbBackColorDropDown;
-			
-			cmbBackColor.DrawItem += new DrawItemEventHandler(this.cmbBackColorDrawItem);
-			cmbBackColor.SelectedValueChanged += new EventHandler(this.cmbBackColorSelectedValueChanged);
-			
 			
 			cbBold.CheckedChanged += new EventHandler(this.cbBoldCheckedChanged);
 			cbItalic.CheckedChanged += new EventHandler(this.cbItalicCheckedChanged);
@@ -316,56 +307,12 @@ namespace HexEditor.View
 				}
 				
 				lblOffsetPreview.ForeColor = OffsetForeColor;
-				lblOffsetPreview.BackColor = OffsetBackColor;
 				
 				lblDataPreview.ForeColor = DataForeColor;
-				lblDataPreview.BackColor = DataBackColor;
 			} else {
 				MessageService.ShowError("Please select an element first!");
 			}
 			fcmanualchange = false;
-		}
-		
-		void cmbBackColorSelectedValueChanged(object sender, EventArgs e)
-		{
-			if (lstElements.SelectedIndex != -1) {
-				if (cmbBackColor.SelectedIndex == 0) {
-					if (bcmanualchange) {
-						ColorDialog cdColor = new ColorDialog();
-						if (cdColor.ShowDialog() == DialogResult.OK) {
-							customBack = cdColor.Color;
-							switch (lstElements.SelectedIndex)
-							{
-								case 0 :
-									OffsetBackColor = customBack;
-									break;
-								case 1 :
-									DataBackColor = customBack;
-									break;
-							}
-						}
-					}
-				} else {
-					if (cmbBackColor.SelectedIndex == -1) cmbBackColor.SelectedIndex = 0;
-					switch (lstElements.SelectedIndex) {
-						case 0 :
-							OffsetBackColor = Color.FromName(cmbBackColor.Items[cmbBackColor.SelectedIndex].ToString());
-							break;
-						case 1 :
-							DataBackColor = Color.FromName(cmbBackColor.Items[cmbBackColor.SelectedIndex].ToString());
-							break;
-					}
-				}
-				
-				lblOffsetPreview.ForeColor = OffsetForeColor;
-				lblOffsetPreview.BackColor = OffsetBackColor;
-				
-				lblDataPreview.ForeColor = DataForeColor;
-				lblDataPreview.BackColor = DataBackColor;
-			} else {
-				MessageService.ShowError("Please select an element first!");
-			}
-			bcmanualchange = false;
 		}
 		
 		void cmbForeColorDrawItem(object sender, System.Windows.Forms.DrawItemEventArgs e)
@@ -398,41 +345,6 @@ namespace HexEditor.View
 			} else {
 				e.Graphics.FillRectangle(new SolidBrush(Color.White) , rc);
 				e.Graphics.DrawString( str , cmbForeColor.Font, new SolidBrush(Color.Black), rc2);
-				e.Graphics.FillRectangle(new SolidBrush(color), rc3);
-				e.Graphics.DrawRectangle(Pens.Black, rc3);
-			}
-		}
-		
-		void cmbBackColorDrawItem(object sender, System.Windows.Forms.DrawItemEventArgs e)
-		{
-			Rectangle rc = new Rectangle(e.Bounds.X, e.Bounds.Y,
-			                             e.Bounds.Width, e.Bounds.Height);
-			Rectangle rc2 = new Rectangle(e.Bounds.X + 20, e.Bounds.Y,
-			                              e.Bounds.Width, e.Bounds.Height);
-			Rectangle rc3 = new Rectangle(e.Bounds.X + 5, e.Bounds.Y + 2, 10, 10);
-			
-			string str;
-			Color color;
-			if (e.Index != -1) {
-				str = (string)cmbBackColor.Items[e.Index];
-			} else {
-				str = (string)cmbBackColor.Items[0];
-			}
-			
-			if (str == "Custom") {
-				color = customBack;
-			} else {
-				color = Color.FromName(str);
-			}
-			
-			if ( e.State == (DrawItemState.Selected | DrawItemState.Focus | DrawItemState.NoAccelerator | DrawItemState.NoFocusRect)) {
-				e.Graphics.FillRectangle(new SolidBrush(SystemColors.Highlight) , rc);
-				e.Graphics.DrawString(str , cmbBackColor.Font, new SolidBrush(Color.White), rc2);
-				e.Graphics.FillRectangle(new SolidBrush(color), rc3);
-				e.Graphics.DrawRectangle(Pens.White, rc3);
-			} else {
-				e.Graphics.FillRectangle(new SolidBrush(Color.White), rc);
-				e.Graphics.DrawString(str , cmbBackColor.Font, new SolidBrush(Color.Black), rc2);
 				e.Graphics.FillRectangle(new SolidBrush(color), rc3);
 				e.Graphics.DrawRectangle(Pens.Black, rc3);
 			}
@@ -511,11 +423,6 @@ namespace HexEditor.View
 					} else {
 						cmbForeColor.SelectedIndex = cmbForeColor.Items.IndexOf(OffsetForeColor.Name);
 					}
-					if (OffsetBackColor == customBack) {
-						cmbBackColor.SelectedIndex = 0;
-					} else {
-						cmbBackColor.SelectedIndex = cmbBackColor.Items.IndexOf(OffsetBackColor.Name);
-					}
 					break;
 				case 1 :
 					cbBold.Checked = DataBold;
@@ -527,11 +434,6 @@ namespace HexEditor.View
 					} else {
 						cmbForeColor.SelectedIndex = cmbForeColor.Items.IndexOf(DataForeColor.Name);
 					}
-					if (DataBackColor == customBack) {
-						cmbBackColor.SelectedIndex = 0;
-					} else {
-						cmbBackColor.SelectedIndex = cmbBackColor.Items.IndexOf(DataBackColor.Name);
-					}
 					break;
 			}
 		}
@@ -539,11 +441,6 @@ namespace HexEditor.View
 		void cmbForeColorDropDown(object sender, EventArgs e)
 		{
 			fcmanualchange = true;
-		}
-		
-		void cmbBackColorDropDown(object sender, EventArgs e)
-		{
-			bcmanualchange = true;
 		}
 		
 		bool IsNamedColor(Color color)

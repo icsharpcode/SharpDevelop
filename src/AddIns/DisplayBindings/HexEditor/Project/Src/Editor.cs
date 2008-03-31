@@ -22,8 +22,7 @@ using HexEditor.Util;
 
 namespace HexEditor
 {
-	// TODO : Make BIG FILES COMPATIBLE (Data structures are bad)
-	// TODO : Add options
+	// TODO : Make BIG FILES COMPATIBLE (data structures are bad)
 
 	/// <summary>
 	/// Hexadecimal editor control.
@@ -43,32 +42,7 @@ namespace HexEditor
 		int underscorewidth, underscorewidth3, fontheight;
 		bool insertmode, hexinputmode, selectionmode, handled, moved;
 		
-		public bool Moved {
-			get { return moved; }
-			set { moved = value; }
-		}
-		
-		public bool Handled {
-			get { return handled; }
-			set { handled = value; }
-		}
-		
-		public bool Selectionmode {
-			get { return selectionmode; }
-			set { selectionmode = value; }
-		}
-		
-		public bool HexInputMode {
-			get { return hexinputmode; }
-			set { hexinputmode = value; }
-		}
-		
-		public bool Insertmode {
-			get { return insertmode; }
-			set { insertmode = value; }
-		}
-		
-		
+		Settings settings;
 		
 		Rectangle[] selregion;
 		Point[] selpoints;
@@ -80,15 +54,8 @@ namespace HexEditor
 		}
 		SelectionManager selection;
 		UndoManager undoStack;
-		Color offsetForeColor, offsetBackColor, dataForeColor, dataBackColor;
-		bool offsetBold, offsetItalic, offsetUnderline, dataBold, dataItalic, dataUnderline;
-		Font offsetFont, dataFont;
+
 		Panel activeView;
-		//HexInput hexInputHandler;
-		
-//		public HexInput HexInputHandler {
-//			get { return hexInputHandler; }
-//		}
 		
 		public Panel ActiveView {
 			get { return activeView; }
@@ -126,28 +93,24 @@ namespace HexEditor
 			//
 			InitializeComponent();
 			
+			LoadSettings();
+			
 			buffer = new BufferManager(this);
 			selection = new SelectionManager(ref buffer);
 			undoStack = new UndoManager();
 			insertmode = true;
-			underscorewidth = MeasureStringWidth(this.CreateGraphics(), "_", this.Font);
+			underscorewidth = MeasureStringWidth(this.CreateGraphics(), "_", this.settings.DataFont);
 			underscorewidth3 = underscorewidth * 3;
-			fontheight = GetFontHeight(this.Font);
+			fontheight = GetFontHeight(this.settings.DataFont);
 			selregion = new Rectangle[] {};
 			selpoints = new Point[] {};
 			headertext = GetHeaderText();
-			
-			this.offsetFont = new Font(this.Font, FontStyle.Regular);
-			this.dataFont = new Font(this.Font, FontStyle.Regular);
 			
 			this.ActiveView = this.hexView;
 			
 			UpdatePainters();
 			
 			caret = new Caret(this.gbHex, 1, fontheight, 0);
-			
-			// TODO : Implement settings
-			//LoadSettings();
 			
 			HexEditSizeChanged(null, EventArgs.Empty);
 			AdjustScrollBar();
@@ -156,59 +119,16 @@ namespace HexEditor
 		/// <summary>
 		/// Loads the settings out of the config file of hexeditor.
 		/// </summary>
-		/// <remarks>Currently not working, because there's no options dialog implemented.</remarks>
 		public void LoadSettings()
 		{
 			string configpath = Path.GetDirectoryName(typeof(Editor).Assembly.Location) + Path.DirectorySeparatorChar + "config.xml";
 			
 			if (!File.Exists(configpath)) return;
 			
-			XmlDocument file = new XmlDocument();
-			file.Load(configpath);
+			XmlDocument doc = new XmlDocument();
+			doc.Load(configpath);
 			
-			foreach (XmlElement el in file.GetElementsByTagName("Setting"))	{
-				switch(el.GetAttribute("Name")) {
-					case "OffsetFore" :
-						this.offsetForeColor = Color.FromArgb(int.Parse(el.GetAttribute("R")), int.Parse(el.GetAttribute("G")), int.Parse(el.GetAttribute("B")));
-						break;
-					case "OffsetBack" :
-						this.offsetBackColor = Color.FromArgb(int.Parse(el.GetAttribute("R")), int.Parse(el.GetAttribute("G")), int.Parse(el.GetAttribute("B")));
-						break;
-					case "DataFore" :
-						this.dataForeColor = Color.FromArgb(int.Parse(el.GetAttribute("R")), int.Parse(el.GetAttribute("G")), int.Parse(el.GetAttribute("B")));
-						break;
-					case "DataBack" :
-						this.dataBackColor = Color.FromArgb(int.Parse(el.GetAttribute("R")), int.Parse(el.GetAttribute("G")), int.Parse(el.GetAttribute("B")));
-						break;
-					case "OffsetStyle" :
-						this.offsetBold = bool.Parse(el.GetAttribute("Bold"));
-						this.offsetItalic = bool.Parse(el.GetAttribute("Italic"));
-						this.offsetUnderline = bool.Parse(el.GetAttribute("Underline"));
-						break;
-					case "DataStyle" :
-						this.dataBold = bool.Parse(el.GetAttribute("Bold"));
-						this.dataItalic = bool.Parse(el.GetAttribute("Italic"));
-						this.dataUnderline = bool.Parse(el.GetAttribute("Underline"));
-						break;
-					case "Font" :
-						this.Font = new Font(el.GetAttribute("FontName"), float.Parse(el.GetAttribute("FontSize")));
-						break;
-				}
-			}
-			
-			FontStyle offsetStyle = FontStyle.Regular;
-			if (this.offsetBold) offsetStyle &= FontStyle.Bold;
-			if (this.offsetItalic) offsetStyle &= FontStyle.Italic;
-			if (this.offsetUnderline) offsetStyle &= FontStyle.Underline;
-			
-			this.offsetFont = new Font(this.Font, offsetStyle);
-			
-			FontStyle dataStyle = FontStyle.Regular;
-			if (this.dataBold) dataStyle &= FontStyle.Bold;
-			if (this.dataItalic) dataStyle &= FontStyle.Italic;
-			if (this.dataUnderline) dataStyle &= FontStyle.Underline;
-			
-			this.dataFont = new Font(this.Font, dataStyle);
+			this.settings = Settings.FromXML(doc);
 		}
 
 		#region Measure functions
@@ -266,7 +186,6 @@ namespace HexEditor
 		ViewMode viewMode = ViewMode.Hexadecimal;
 		int bytesPerLine = 16;
 		bool fitToWindowWidth;
-		Font font = new Font("Courier New", 10f);
 		string fileName;
 		Encoding encoding = Encoding.Default;
 
@@ -336,16 +255,37 @@ namespace HexEditor
 		}
 		
 		/// <summary>
-		/// The font used in the hex editor.
+		/// The font used for all data displays in the hex editor.
 		/// </summary>
-		new public Font Font {
-			get { return font; }
+		public Font DataFont {
+			get { return this.settings.DataFont; }
 			set {
-				font = value;
-				underscorewidth = MeasureStringWidth(this.CreateGraphics(), "_", this.Font);
+				this.settings.DataFont = value;
+				underscorewidth = MeasureStringWidth(this.CreateGraphics(), "_", value);
 				underscorewidth3 = underscorewidth * 3;
-				fontheight = GetFontHeight(this.Font);
+				fontheight = GetFontHeight(value);
 				this.Invalidate();
+			}
+		}
+		
+		/// <summary>
+		/// The font used for all offset displays in the hex editor.
+		/// </summary>
+		public Font OffsetFont {
+			get { return this.settings.OffsetFont; }
+			set {
+				this.settings.OffsetFont = value;
+				underscorewidth = MeasureStringWidth(this.CreateGraphics(), "_", value);
+				underscorewidth3 = underscorewidth * 3;
+				fontheight = GetFontHeight(value);
+				this.Invalidate();
+			}
+		}
+		
+		new public Font Font {
+			get { return null; }
+			set {
+
 			}
 		}
 		
@@ -357,7 +297,7 @@ namespace HexEditor
 			get { return viewMode; }
 			set {
 				viewMode = value;
-				SetViews();
+				UpdateViews();
 				
 				this.headertext = GetHeaderText();
 
@@ -387,11 +327,9 @@ namespace HexEditor
 				if (value < 1) value = 1;
 				if (value > CalculateMaxBytesPerLine()) value = CalculateMaxBytesPerLine();
 				bytesPerLine = value;
-				SetViews();
+				UpdateViews();
 				
 				this.headertext = GetHeaderText();
-				
-				UpdatePainters();
 				
 				this.Invalidate();
 			}
@@ -457,7 +395,7 @@ namespace HexEditor
 		/// </summary>
 		void VScrollBarScroll(object sender, ScrollEventArgs e)
 		{
-			SetViews();
+			UpdateViews();
 			this.topline = VScrollBar.Value;
 			Point pos = GetPositionForOffset(caret.Offset, charwidth);
 			caret.SetToPosition(pos);
@@ -471,6 +409,8 @@ namespace HexEditor
 		protected override void OnMouseWheel(MouseEventArgs e)
 		{
 			base.OnMouseWheel(e);
+			
+			
 
 			if (!this.VScrollBar.Enabled) return;
 
@@ -568,6 +508,10 @@ namespace HexEditor
 			// Refresh selection.
 			CalculateSelectionRegions();
 			
+			// Calculate views and reset scrollbar.
+			UpdateViews();
+			AdjustScrollBar();
+			
 			// Paint using double buffering for better painting!
 			
 			// Do painting.
@@ -578,11 +522,12 @@ namespace HexEditor
 			PaintPointer(gbHex, gbText);
 			PaintSelection(gbHex, gbText, true);
 			
-			this.caret.DrawCaret();
+			if (activeView == hexView)
+				this.caret.Graphics = gbHex;
+			else
+				this.caret.Graphics = gbText;
 			
-			// Calculate views and reset scrollbar.
-			SetViews();
-			AdjustScrollBar();
+			this.caret.DrawCaret();
 			
 			// Paint on device ...
 			this.gHeader.DrawImageUnscaled(bHeader, 0, 0);
@@ -598,9 +543,8 @@ namespace HexEditor
 		void PaintHeader(System.Drawing.Graphics g)
 		{
 			g.Clear(Color.White);
-			TextRenderer.DrawText(g, headertext,
-			                      this.Font, new Rectangle(1, 1, this.hexView.Width + 5, fontheight),
-			                      Color.Blue, this.BackColor, TextFormatFlags.Left & TextFormatFlags.Top);
+			TextRenderer.DrawText(g, headertext, this.settings.OffsetFont, new Rectangle(1, 1, this.hexView.Width + 5, fontheight),
+			                      this.settings.OffsetForeColor, this.BackColor, TextFormatFlags.Left & TextFormatFlags.Top);
 		}
 
 		/// <summary>
@@ -613,7 +557,6 @@ namespace HexEditor
 			g.Clear(Color.White);
 			string text = String.Empty;
 			int count = top + this.GetMaxVisibleLines();
-			string tmpcls = String.Empty;
 
 			StringBuilder builder = new StringBuilder("Offset\n0\n");
 
@@ -624,23 +567,24 @@ namespace HexEditor
 					switch (this.ViewMode) {
 						case ViewMode.Decimal:
 							builder.AppendLine((i * this.BytesPerLine).ToString());
-							if (string.IsNullOrEmpty(tmpcls)) tmpcls = (i * this.BytesPerLine).ToString();
 							break;
 						case ViewMode.Hexadecimal:
 							builder.AppendFormat("{0:X}", i * this.BytesPerLine);
 							builder.AppendLine();
-							if (string.IsNullOrEmpty(tmpcls)) tmpcls = string.Format("{0:X}", i * this.BytesPerLine);
 							break;
 						case ViewMode.Octal:
-							StringBuilder num = new StringBuilder();
 							int tmp = i * this.BytesPerLine;
-							if (tmp == 0) num.Append("0");
-							while (tmp != 0) {
-								num.Insert(0, (tmp % 8).ToString());
-								tmp = (int)(tmp / 8);
+							if (tmp == 0) {
+								builder.AppendLine("0");
+							} else {
+								StringBuilder num = new StringBuilder();
+								while (tmp != 0) {
+									num.Insert(0, (tmp % 8).ToString());
+									tmp = (int)(tmp / 8);
+								}
+								builder.AppendLine(num.ToString());
 							}
-							builder.AppendLine(num.ToString());
-							if (string.IsNullOrEmpty(tmpcls)) tmpcls = num.ToString();
+
 							break;
 					}
 				}
@@ -649,7 +593,8 @@ namespace HexEditor
 			text = builder.ToString();
 			builder = null;
 			
-			TextRenderer.DrawText(g, text, this.Font, new Rectangle(0, 0, this.side.Width, this.side.Height), Color.Blue, this.BackColor, TextFormatFlags.Right);
+			TextRenderer.DrawText(g, text, this.settings.OffsetFont,this.side.ClientRectangle,
+			                      this.settings.OffsetForeColor, Color.White, TextFormatFlags.Right);
 		}
 		
 		/// <summary>
@@ -669,7 +614,7 @@ namespace HexEditor
 				offset = GetOffsetForLine(top + i + 1);
 			}
 
-			TextRenderer.DrawText(g, builder.ToString(), this.Font, new Rectangle(0, 0, this.hexView.Width, this.hexView.Height), this.ForeColor, this.BackColor, TextFormatFlags.Left & TextFormatFlags.Top);
+			TextRenderer.DrawText(g, builder.ToString(), this.settings.DataFont, new Rectangle(0, 0, this.hexView.Width, this.hexView.Height), this.settings.DataForeColor, Color.White, TextFormatFlags.Left & TextFormatFlags.Top);
 		}
 		
 		/// <summary>
@@ -689,7 +634,7 @@ namespace HexEditor
 				builder.AppendLine(GetText(buffer.GetBytes(offset, this.BytesPerLine)));
 				offset = GetOffsetForLine(top + i + 1);
 			}
-			TextRenderer.DrawText(g, builder.ToString(), this.Font, new Point(0, 0), this.ForeColor, this.BackColor);
+			TextRenderer.DrawText(g, builder.ToString(), this.settings.DataFont, new Point(0, 0), this.settings.DataForeColor, Color.White);
 		}
 		
 		/// <summary>
@@ -745,9 +690,13 @@ namespace HexEditor
 			
 			if (end > GetOffsetForLine(topline + GetMaxVisibleLines())) end = GetOffsetForLine(topline + GetMaxVisibleLines() + 1);
 			
+			int tmp_start = start;
+			if (((selection.End % this.bytesPerLine) == 0) && (selection.End < selection.Start))
+				tmp_start++;
+			
 			if (this.activeView == this.hexView)
 			{
-				if (GetLineForOffset(end) == GetLineForOffset(start)) {
+				if (GetLineForOffset(end) == GetLineForOffset(tmp_start)) {
 					Point pt = GetPositionForOffset(start, 3);
 					al.Add(new Rectangle(new Point(pt.X - 4, pt.Y), new Size((end - start) * underscorewidth3 + 2, fontheight)));
 				} else {
@@ -770,7 +719,7 @@ namespace HexEditor
 				
 				start = start_dummy;
 				
-				if (GetLineForOffset(end) == GetLineForOffset(start)) {
+				if (GetLineForOffset(end) == GetLineForOffset(tmp_start)) {
 					Point pt = GetPositionForOffset(start, 1);
 					al.Add(new Point(pt.X - 1, pt.Y));
 					al.Add(new Point(pt.X - 1, pt.Y + fontheight));
@@ -824,7 +773,7 @@ namespace HexEditor
 				
 				selpoints = (Point[])al.ToArray(typeof(Point));
 			} else {
-				if (GetLineForOffset(end) == GetLineForOffset(start)) {
+				if (GetLineForOffset(end) == GetLineForOffset(tmp_start)) {
 					Point pt = GetPositionForOffset(start, 1);
 					al.Add(new Rectangle(new Point(pt.X - 4, pt.Y), new Size((end - start) * underscorewidth + 3, fontheight)));
 				} else {
@@ -846,8 +795,8 @@ namespace HexEditor
 				al.Clear();
 				
 				start = start_dummy;
-								
-				if (GetLineForOffset(end) == GetLineForOffset(start)) {
+				
+				if (GetLineForOffset(end) == GetLineForOffset(tmp_start)) {
 					Point pt = GetPositionForOffset(start, 3);
 					al.Add(new Point(pt.X - 1, pt.Y));
 					al.Add(new Point(pt.X - 1, pt.Y + fontheight));
@@ -937,14 +886,14 @@ namespace HexEditor
 				}
 				
 				if (selregion.Length == 3) {
-					TextRenderer.DrawText(hexView, GetHex(buffer.GetBytes(start, this.BytesPerLine)), this.Font, (Rectangle)selregion[0], Color.White, SystemColors.Highlight, TextFormatFlags.Left & TextFormatFlags.SingleLine);
-					TextRenderer.DrawText(hexView, builder.ToString(), this.Font, (Rectangle)selregion[1], Color.White, SystemColors.Highlight, TextFormatFlags.Left);
-					TextRenderer.DrawText(hexView, GetLineHex(GetLineForOffset(end)), this.Font, (Rectangle)selregion[2], Color.White, SystemColors.Highlight, TextFormatFlags.Left & TextFormatFlags.SingleLine);
+					TextRenderer.DrawText(hexView, GetHex(buffer.GetBytes(start, this.BytesPerLine)), this.settings.DataFont, (Rectangle)selregion[0], Color.White, SystemColors.Highlight, TextFormatFlags.Left & TextFormatFlags.SingleLine);
+					TextRenderer.DrawText(hexView, builder.ToString(), this.settings.DataFont, (Rectangle)selregion[1], Color.White, SystemColors.Highlight, TextFormatFlags.Left);
+					TextRenderer.DrawText(hexView, GetLineHex(GetLineForOffset(end)), this.settings.DataFont, (Rectangle)selregion[2], Color.White, SystemColors.Highlight, TextFormatFlags.Left & TextFormatFlags.SingleLine);
 				} else if (selregion.Length == 2) {
-					TextRenderer.DrawText(hexView, GetHex(buffer.GetBytes(start, this.BytesPerLine)), this.Font, (Rectangle)selregion[0], Color.White, SystemColors.Highlight, TextFormatFlags.Left & TextFormatFlags.SingleLine);
-					TextRenderer.DrawText(hexView, GetLineHex(GetLineForOffset(end)), this.Font, (Rectangle)selregion[1], Color.White, SystemColors.Highlight, TextFormatFlags.Left & TextFormatFlags.SingleLine);
+					TextRenderer.DrawText(hexView, GetHex(buffer.GetBytes(start, this.BytesPerLine)), this.settings.DataFont, (Rectangle)selregion[0], Color.White, SystemColors.Highlight, TextFormatFlags.Left & TextFormatFlags.SingleLine);
+					TextRenderer.DrawText(hexView, GetLineHex(GetLineForOffset(end)), this.settings.DataFont, (Rectangle)selregion[1], Color.White, SystemColors.Highlight, TextFormatFlags.Left & TextFormatFlags.SingleLine);
 				} else {
-					TextRenderer.DrawText(hexView, GetHex(buffer.GetBytes(start, this.BytesPerLine)), this.Font, (Rectangle)selregion[0], Color.White, SystemColors.Highlight, TextFormatFlags.Left & TextFormatFlags.SingleLine);
+					TextRenderer.DrawText(hexView, GetHex(buffer.GetBytes(start, this.BytesPerLine)), this.settings.DataFont, (Rectangle)selregion[0], Color.White, SystemColors.Highlight, TextFormatFlags.Left & TextFormatFlags.SingleLine);
 				}
 				
 				if (!paintMarker) return;
@@ -964,14 +913,14 @@ namespace HexEditor
 				}
 				
 				if (selregion.Length == 3) {
-					TextRenderer.DrawText(textView, GetText(buffer.GetBytes(start, this.BytesPerLine)), this.Font, (Rectangle)selregion[0], Color.White, SystemColors.Highlight, TextFormatFlags.Left & TextFormatFlags.SingleLine);
-					TextRenderer.DrawText(textView, builder.ToString(), this.Font, (Rectangle)selregion[1], Color.White, SystemColors.Highlight, TextFormatFlags.Left);
-					TextRenderer.DrawText(textView, GetLineText(GetLineForOffset(end)), this.Font, (Rectangle)selregion[2], Color.White, SystemColors.Highlight, TextFormatFlags.Left & TextFormatFlags.SingleLine);
+					TextRenderer.DrawText(textView, GetText(buffer.GetBytes(start, this.BytesPerLine)), this.settings.DataFont, (Rectangle)selregion[0], Color.White, SystemColors.Highlight, TextFormatFlags.Left & TextFormatFlags.SingleLine);
+					TextRenderer.DrawText(textView, builder.ToString(), this.settings.DataFont, (Rectangle)selregion[1], Color.White, SystemColors.Highlight, TextFormatFlags.Left);
+					TextRenderer.DrawText(textView, GetLineText(GetLineForOffset(end)), this.settings.DataFont, (Rectangle)selregion[2], Color.White, SystemColors.Highlight, TextFormatFlags.Left & TextFormatFlags.SingleLine);
 				} else if (selregion.Length == 2) {
-					TextRenderer.DrawText(textView, GetText(buffer.GetBytes(start, this.BytesPerLine)), this.Font, (Rectangle)selregion[0], Color.White, SystemColors.Highlight, TextFormatFlags.Left & TextFormatFlags.SingleLine);
-					TextRenderer.DrawText(textView, GetLineText(GetLineForOffset(end)), this.Font, (Rectangle)selregion[1], Color.White, SystemColors.Highlight, TextFormatFlags.Left & TextFormatFlags.SingleLine);
+					TextRenderer.DrawText(textView, GetText(buffer.GetBytes(start, this.BytesPerLine)), this.settings.DataFont, (Rectangle)selregion[0], Color.White, SystemColors.Highlight, TextFormatFlags.Left & TextFormatFlags.SingleLine);
+					TextRenderer.DrawText(textView, GetLineText(GetLineForOffset(end)), this.settings.DataFont, (Rectangle)selregion[1], Color.White, SystemColors.Highlight, TextFormatFlags.Left & TextFormatFlags.SingleLine);
 				} else {
-					TextRenderer.DrawText(textView, GetText(buffer.GetBytes(start, this.BytesPerLine)), this.Font, (Rectangle)selregion[0], Color.White, SystemColors.Highlight, TextFormatFlags.Left & TextFormatFlags.SingleLine);
+					TextRenderer.DrawText(textView, GetText(buffer.GetBytes(start, this.BytesPerLine)), this.settings.DataFont, (Rectangle)selregion[0], Color.White, SystemColors.Highlight, TextFormatFlags.Left & TextFormatFlags.SingleLine);
 				}
 				
 				if (!paintMarker) return;
@@ -1064,7 +1013,12 @@ namespace HexEditor
 		 * */
 		public string Copy()
 		{
-			return selection.SelectionText;
+			string text = selection.SelectionText;
+			
+			if (text.Contains("\0"))
+				text = text.Replace("\0", "");
+			
+			return text;
 		}
 		
 		public void Paste(string text)
@@ -1193,9 +1147,8 @@ namespace HexEditor
 			if (this.FitToWindowWidth) this.BytesPerLine = CalculateMaxBytesPerLine();
 			
 			this.Invalidate();
-			SetViews();
+			UpdateViews();
 			
-			UpdatePainters();
 		}
 		
 		void UpdatePainters()
@@ -1220,10 +1173,12 @@ namespace HexEditor
 		/// <summary>
 		/// Resets the current viewpanels to fit the new sizes and settings.
 		/// </summary>
-		void SetViews()
+		void UpdateViews()
 		{
+			this.UpdatePainters();
+			
 			int sidetext = this.GetMaxLines() * this.BytesPerLine;
-			int textwidth = MeasureStringWidth(this.textView.CreateGraphics(), new string('_', this.BytesPerLine + 1), this.Font);
+			int textwidth = MeasureStringWidth(this.textView.CreateGraphics(), new string('_', this.BytesPerLine + 1), this.settings.DataFont);
 			int hexwidth = underscorewidth3 * this.BytesPerLine;
 			int top = hexView.Top;
 			this.hexView.Top = fontheight - 1;
@@ -1265,7 +1220,7 @@ namespace HexEditor
 					break;
 			}
 
-			this.side.Width = MeasureStringWidth(this.side.CreateGraphics(), st, this.Font);
+			this.side.Width = MeasureStringWidth(this.side.CreateGraphics(), st, this.settings.OffsetFont);
 			this.side.Left = 0;
 			this.hexView.Left = this.side.Width + 10;
 
@@ -1303,45 +1258,48 @@ namespace HexEditor
 				hexinputmodepos = 0;
 			}
 			
-//			if (e.Control)
-//			{
-//				switch (e.KeyCode)
-//				{
-//					case Keys.Up:
-//						if (this.topline > 0)
-//							this.topline--;
-//						break;
-//					case Keys.Down:
-//						if (this.topline < this.GetMaxLines())
-//							this.topline++;
-//						break;
-//				}
-//
-//				this.VScrollBar.Value = this.topline;
-//
-//				this.handled = true;
-//			}
+			if (e.Control)
+			{
+				switch (e.KeyCode)
+				{
+					case Keys.Up:
+						if (this.topline > 0)
+							this.topline--;
+						break;
+					case Keys.Down:
+						if (this.topline < this.GetMaxLines())
+							this.topline++;
+						break;
+				}
+
+				this.VScrollBar.Value = this.topline;
+
+				this.handled = true;
+			}
 			
 			switch (e.KeyCode) {
 				case Keys.Up:
 				case Keys.Down:
 				case Keys.Left:
 				case Keys.Right:
-					int oldoffset = caret.Offset;
-//					if (!e.Control)
-					MoveCaret(e);
-					if (GetLineForOffset(caret.Offset) < this.topline) this.topline = GetLineForOffset(caret.Offset);
-					if (GetLineForOffset(caret.Offset) > this.topline + this.GetMaxVisibleLines() - 2) this.topline = GetLineForOffset(caret.Offset) - this.GetMaxVisibleLines() + 2;
-					VScrollBar.Value = this.topline;
-					
-					if (e.Shift) {
-						if (selection.HasSomethingSelected) {
-							this.SetSelection(selection.Start, caret.Offset);
+					if (!e.Control) {
+						int oldoffset = caret.Offset;
+						MoveCaret(e);
+						if (GetLineForOffset(caret.Offset) < this.topline) this.topline = GetLineForOffset(caret.Offset);
+						if (GetLineForOffset(caret.Offset) > this.topline + this.GetMaxVisibleLines() - 2) this.topline = GetLineForOffset(caret.Offset) - this.GetMaxVisibleLines() + 2;
+						VScrollBar.Value = this.topline;
+						
+						if (e.Shift) {
+							if (selection.HasSomethingSelected) {
+								this.SetSelection(selection.Start, caret.Offset);
+							} else {
+								this.SetSelection(oldoffset, caret.Offset);
+							}
 						} else {
-							this.SetSelection(oldoffset, caret.Offset);
+							this.selection.Clear();
 						}
+						handled = true;
 					}
-					handled = true;
 					break;
 				case Keys.Insert:
 					insertmode = !insertmode;
@@ -1353,7 +1311,7 @@ namespace HexEditor
 					} else {
 						this.caret.Width = 1;
 					}
-										
+					
 					caret.SetToPosition(GetPositionForOffset(caret.Offset, this.charwidth));
 					handled = true;
 					break;
@@ -1434,31 +1392,12 @@ namespace HexEditor
 								break;
 								// Ctrl-C is pressed -> copy text to ClipboardManager
 							case 67 :
-								ClipboardManager.Copy(selection.SelectionText);
+								ClipboardManager.Copy(this.Copy());
 								break;
 								// Ctrl-V is pressed -> paste from ClipboardManager
 							case 86 :
 								if (ClipboardManager.ContainsText) {
-									if (caret.Offset > buffer.BufferSize) caret.Offset = buffer.BufferSize;
-									if (selection.HasSomethingSelected) {
-										byte[] old = selection.GetSelectionBytes();
-										buffer.RemoveBytes(selection.Start, Math.Abs(selection.End - selection.Start));
-										
-										buffer.SetBytes(selection.Start, this.Encoding.GetBytes(ClipboardManager.Paste().ToCharArray()), false);
-										UndoAction action = UndoAction.Overwrite;
-										
-										undoStack.AddUndoStep(new UndoStep(this.Encoding.GetBytes(ClipboardManager.Paste().ToCharArray()), old, caret.Offset, action));
-
-										caret.Offset = selection.Start + ClipboardManager.Paste().Length;
-										selection.Clear();
-									} else {
-										buffer.SetBytes(caret.Offset, this.Encoding.GetBytes(ClipboardManager.Paste().ToCharArray()), false);
-										UndoAction action = UndoAction.Remove;
-										
-										undoStack.AddUndoStep(new UndoStep(this.Encoding.GetBytes(ClipboardManager.Paste().ToCharArray()), null, caret.Offset, action));
-
-										caret.Offset += ClipboardManager.Paste().Length;
-									}
+									this.Paste(ClipboardManager.Paste());
 									if (GetLineForOffset(caret.Offset) < this.topline) this.topline = GetLineForOffset(caret.Offset);
 									if (GetLineForOffset(caret.Offset) > this.topline + this.GetMaxVisibleLines() - 2) this.topline = GetLineForOffset(caret.Offset) - this.GetMaxVisibleLines() + 2;
 									if (this.topline < 0) this.topline = 0;
@@ -1467,31 +1406,13 @@ namespace HexEditor
 										if (this.topline > VScrollBar.Maximum) this.topline = VScrollBar.Maximum;
 									}
 									VScrollBar.Value = this.topline;
-									
-									e2 = new EventArgs();
-									OnDocumentChanged(e2);
-
 								}
 								break;
 								// Ctrl-X is pressed -> cut from document
 							case 88 :
 								if (selection.HasSomethingSelected) {
-									ClipboardManager.Copy(selection.SelectionText);
-									if (selection.End < selection.Start)
-									{
-										int help = selection.End;
-										selection.End = selection.Start;
-										selection.Start = help;
-									}
-									UndoAction action = UndoAction.Add;
-									
-									undoStack.AddUndoStep(new UndoStep(selection.GetSelectionBytes(), null, caret.Offset, action));
-
-									buffer.RemoveBytes(selection.Start, selection.SelectionText.Length);
-									selection.Clear();
-									
-									e2 = new EventArgs();
-									OnDocumentChanged(e2);
+									ClipboardManager.Copy(this.Copy());
+									this.Delete();
 								}
 								break;
 						}

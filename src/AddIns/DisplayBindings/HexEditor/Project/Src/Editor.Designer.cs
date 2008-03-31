@@ -35,7 +35,6 @@ namespace HexEditor
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.bWorker = new System.ComponentModel.BackgroundWorker();
 			this.VScrollBar = new System.Windows.Forms.VScrollBar();
 			this.textView = new System.Windows.Forms.Panel();
 			this.hexView = new System.Windows.Forms.Panel();
@@ -53,12 +52,13 @@ namespace HexEditor
 			this.VScrollBar.TabIndex = 9;
 			this.VScrollBar.Scroll += new System.Windows.Forms.ScrollEventHandler(this.VScrollBarScroll);
 			// 
-			// TextView
+			// textView
 			// 
 			this.textView.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)));
 			this.textView.Cursor = System.Windows.Forms.Cursors.IBeam;
 			this.textView.Location = new System.Drawing.Point(561, 18);
-			this.textView.Name = "TextView";
+			this.textView.MinimumSize = new System.Drawing.Size(1, 1);
+			this.textView.Name = "textView";
 			this.textView.Size = new System.Drawing.Size(108, 347);
 			this.textView.TabIndex = 12;
 			this.textView.MouseMove += new System.Windows.Forms.MouseEventHandler(this.TextViewMouseMove);
@@ -66,13 +66,14 @@ namespace HexEditor
 			this.textView.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TextViewMouseDown);
 			this.textView.MouseUp += new System.Windows.Forms.MouseEventHandler(this.TextViewMouseUp);
 			// 
-			// HexView
+			// hexView
 			// 
 			this.hexView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
 									| System.Windows.Forms.AnchorStyles.Left)));
 			this.hexView.Cursor = System.Windows.Forms.Cursors.IBeam;
 			this.hexView.Location = new System.Drawing.Point(92, 18);
-			this.hexView.Name = "HexView";
+			this.hexView.MinimumSize = new System.Drawing.Size(1, 1);
+			this.hexView.Name = "hexView";
 			this.hexView.Size = new System.Drawing.Size(463, 347);
 			this.hexView.TabIndex = 11;
 			this.hexView.MouseMove += new System.Windows.Forms.MouseEventHandler(this.HexViewMouseMove);
@@ -80,23 +81,25 @@ namespace HexEditor
 			this.hexView.MouseDown += new System.Windows.Forms.MouseEventHandler(this.HexViewMouseDown);
 			this.hexView.MouseUp += new System.Windows.Forms.MouseEventHandler(this.HexViewMouseUp);
 			// 
-			// Side
+			// side
 			// 
 			this.side.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
 									| System.Windows.Forms.AnchorStyles.Left)));
 			this.side.Location = new System.Drawing.Point(0, 0);
-			this.side.Name = "Side";
+			this.side.MinimumSize = new System.Drawing.Size(1, 1);
+			this.side.Name = "side";
 			this.side.Size = new System.Drawing.Size(76, 365);
 			this.side.TabIndex = 10;
 			// 
-			// Header
+			// header
 			// 
 			this.header.Location = new System.Drawing.Point(92, 0);
-			this.header.Name = "Header";
+			this.header.MinimumSize = new System.Drawing.Size(1, 1);
+			this.header.Name = "header";
 			this.header.Size = new System.Drawing.Size(463, 18);
 			this.header.TabIndex = 13;
 			// 
-			// HexEditControl
+			// Editor
 			// 
 			this.BackColor = System.Drawing.Color.White;
 			this.Controls.Add(this.header);
@@ -105,7 +108,8 @@ namespace HexEditor
 			this.Controls.Add(this.side);
 			this.Controls.Add(this.VScrollBar);
 			this.DoubleBuffered = true;
-			this.Name = "HexEditControl";
+			this.MinimumSize = new System.Drawing.Size(1, 1);
+			this.Name = "Editor";
 			this.Size = new System.Drawing.Size(688, 365);
 			this.Paint += new System.Windows.Forms.PaintEventHandler(this.HexEditPaint);
 			this.ContextMenuStripChanged += new System.EventHandler(this.HexEditControlContextMenuStripChanged);
@@ -119,7 +123,6 @@ namespace HexEditor
 		private System.Windows.Forms.Panel side;
 		private System.Windows.Forms.Panel hexView;
 		private System.Windows.Forms.Panel textView;
-		private System.ComponentModel.BackgroundWorker bWorker;
 		private System.Windows.Forms.VScrollBar VScrollBar;
 	}
 }

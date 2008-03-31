@@ -14,11 +14,13 @@ using ICSharpCode.SharpDevelop.Gui;
 
 using System.Diagnostics;
 
+using HexEditor.Util;
+
 namespace HexEditor.View
 {
 	public class HexEditDisplayBinding : IDisplayBinding
 	{
-		string[] supportedBinaryFileNameExtensions;
+		static string[] supportedExtensions;
 		
 		public HexEditDisplayBinding()
 		{
@@ -39,13 +41,19 @@ namespace HexEditor.View
 		
 		string[] GetSupportedBinaryFileExtensions()
 		{
-			if (supportedBinaryFileNameExtensions == null) {
-				string extensionList = (string)AddInTree.BuildItem("/AddIns/HexEditor/Editor/SupportedFileExtensions", null);
-				if (extensionList != null) {
-					supportedBinaryFileNameExtensions = extensionList.Split(';');
-				}
+			if (supportedExtensions == null) {
+				System.Xml.XmlDocument doc = new System.Xml.XmlDocument();
+				string configpath = Path.GetDirectoryName(typeof(Editor).Assembly.Location) + Path.DirectorySeparatorChar + "config.xml";
+				
+				if (!File.Exists(configpath))
+					return new string[] {".exe;.dll"};
+				
+				doc.Load(configpath);
+				
+				supportedExtensions = Settings.FromXML(doc).FileTypes;
 			}
-			return supportedBinaryFileNameExtensions;
+			
+			return supportedExtensions;
 		}
 		
 		bool IsBinary(string fileName)

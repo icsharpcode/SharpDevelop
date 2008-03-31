@@ -40,9 +40,9 @@ namespace HexEditor.View
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(HexEditContainer));
             this.tbSizeToFit = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.tCBViewMode = new System.Windows.Forms.ToolStripComboBox();
+            this.tCBViewMode = new System.Windows.Forms.DomainUpDown();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-            this.tSTBCharsPerLine = new System.Windows.Forms.ToolStripTextBox();
+            this.tSTBCharsPerLine = new System.Windows.Forms.NumericUpDown();
             this.toolStripProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
             this.hexEditControl = new HexEditor.Editor();
             this.toolStrip1.SuspendLayout();
@@ -57,7 +57,7 @@ namespace HexEditor.View
             this.tbSizeToFit.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tbSizeToFit.Name = "tbSizeToFit";
             this.tbSizeToFit.Size = new System.Drawing.Size(23, 22);
-            this.tbSizeToFit.Text = "Size to fit";
+            this.tbSizeToFit.Text = "Resize to fit current width";
             this.tbSizeToFit.Click += new System.EventHandler(this.TbSizeToFitClick);
             // 
             // toolStripSeparator1
@@ -67,22 +67,19 @@ namespace HexEditor.View
             // 
             // tCBViewMode
             // 
-            this.tCBViewMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.tCBViewMode.Items.AddRange(new object[] {
             "Hexadecimal",
             "Octal",
             "Decimal"});
             this.tCBViewMode.Name = "tCBViewMode";
             this.tCBViewMode.Size = new System.Drawing.Size(121, 25);
-            this.tCBViewMode.SelectedIndexChanged += new System.EventHandler(this.TCBViewModeSelectedIndexChanged);
+            this.tCBViewMode.SelectedItemChanged += new System.EventHandler(this.TCBViewModeSelectedIndexChanged);
             // 
             // toolStrip1
             // 
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tbSizeToFit,
-            this.tSTBCharsPerLine,
             this.toolStripSeparator1,
-            this.tCBViewMode,
             this.toolStripProgressBar1});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
@@ -136,10 +133,10 @@ namespace HexEditor.View
         }
         private System.Windows.Forms.ToolStripProgressBar toolStripProgressBar1;
         internal HexEditor.Editor hexEditControl;
-        private System.Windows.Forms.ToolStripComboBox tCBViewMode;
+        private System.Windows.Forms.DomainUpDown tCBViewMode;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripButton tbSizeToFit;
         private System.Windows.Forms.ToolStrip toolStrip1;
-        private System.Windows.Forms.ToolStripTextBox tSTBCharsPerLine;
+        private System.Windows.Forms.NumericUpDown tSTBCharsPerLine;
     }
 }

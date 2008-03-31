@@ -21,11 +21,11 @@
 		                class = "HexEditor.View.HexEditDisplayBinding"/>
 	</Path>
 	
-	<!--	<Path name = "/SharpDevelop/Dialogs/OptionsDialog/ToolsOptions">
+   	<Path name = "/SharpDevelop/Dialogs/OptionsDialog/ToolsOptions">
 		<DialogPanel id    = "HexEditor"
 		             label = "HexEditor"
 		             class = "HexEditor.View.HexEditOptionsPanel"/>
-	</Path> -->
+	</Path>
 	
 	<!-- Right click menu -->
 	<Path name = "/AddIns/HexEditor/Editor/ContextMenu">
@@ -48,10 +48,5 @@
 		<MenuItem id = "Close"
 		          label = "${res:XML.MainMenu.FileMenu.Close}"
 		          class = "ICSharpCode.SharpDevelop.Commands.CloseFile"/>
-	</Path>
-
-	<!-- File extensions that will be opened in the Hex Editor -->
-	<Path name = "/AddIns/HexEditor/Editor">
-		<String id = "SupportedFileExtensions" text = ".exe;.dll"/>
 	</Path>
 </AddIn>
