@@ -200,10 +200,17 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 			if (rt == null)
 				return null;
 			IClass c = rt.GetUnderlyingClass();
+			if (allowExpressionTree && c != null && c.FullyQualifiedName == "System.Linq.Expressions.Expression") {
+				ConstructedReturnType crt = rt.CastToConstructedReturnType();
+				if (crt != null && crt.TypeArguments.Count == 1) {
+					// get delegate type from expression type
+					rt = crt.TypeArguments[0];
+					c = rt != null ? rt.GetUnderlyingClass() : null;
+				}
+			}
 			if (c != null && c.ClassType == ClassType.Delegate) {
 				return rt.GetMethods().FirstOrDefault((IMethod m) => m.Name == "Invoke");
 			}
-			// TODO: handle expression trees
 			return null;
 		}
 		
