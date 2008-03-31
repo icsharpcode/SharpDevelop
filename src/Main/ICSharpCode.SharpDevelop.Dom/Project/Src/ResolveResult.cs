@@ -493,9 +493,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public bool IsExtensionMethodCall {
 			get { return isExtensionMethodCall; }
-			set { 
+			set {
 				CheckBeforeMutation();
-				isExtensionMethodCall = value; 
+				isExtensionMethodCall = value;
 			}
 		}
 		
@@ -796,6 +796,57 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public override ResolveResult Clone()
 		{
 			return new BaseResolveResult(this.CallingClass, this.CallingMember, this.ResolvedType);
+		}
+	}
+	#endregion
+	
+	#region DelegateCallResolveResult
+	/// <summary>
+	/// Is used for calls to delegates/events.
+	/// </summary>
+	public class DelegateCallResolveResult : ResolveResult
+	{
+		IMethod delegateInvokeMethod;
+		ResolveResult targetRR;
+		
+		protected override void FreezeInternal()
+		{
+			base.FreezeInternal();
+			delegateInvokeMethod.Freeze();
+			targetRR.Freeze();
+		}
+		
+		public DelegateCallResolveResult(ResolveResult targetRR, IMethod delegateInvokeMethod)
+			: base(targetRR.CallingClass, targetRR.CallingMember, delegateInvokeMethod.ReturnType)
+		{
+			this.targetRR = targetRR;
+			this.delegateInvokeMethod = delegateInvokeMethod;
+		}
+		
+		/// <summary>
+		/// Gets the Invoke() method of the delegate.
+		/// </summary>
+		public IMethod DelegateInvokeMethod {
+			get { return delegateInvokeMethod; }
+		}
+		
+		/// <summary>
+		/// Gets the type of the delegate.
+		/// </summary>
+		public IReturnType DelegateType {
+			get { return targetRR.ResolvedType; }
+		}
+		
+		/// <summary>
+		/// Gets the resolve result referring to the delegate.
+		/// </summary>
+		public ResolveResult Target {
+			get { return targetRR; }
+		}
+		
+		public override ResolveResult Clone()
+		{
+			return new DelegateCallResolveResult(targetRR, delegateInvokeMethod);
 		}
 	}
 	#endregion

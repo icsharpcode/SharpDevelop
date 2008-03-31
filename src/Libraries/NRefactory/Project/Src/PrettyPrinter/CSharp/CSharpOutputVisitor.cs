@@ -2594,14 +2594,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		{
 			outputFormatter.IndentationLevel++;
 			queryExpression.FromClause.AcceptVisitor(this, data);
-			queryExpression.FromLetWhereClauses.ForEach(PrintClause);
-			if (queryExpression.Orderings.Count > 0) {
-				outputFormatter.NewLine();
-				outputFormatter.Indent();
-				outputFormatter.PrintToken(Tokens.Orderby);
-				outputFormatter.Space();
-				AppendCommaSeparatedList(queryExpression.Orderings);
-			}
+			queryExpression.MiddleClauses.ForEach(PrintClause);
 			PrintClause(queryExpression.SelectOrGroupClause);
 			PrintClause(queryExpression.IntoClause);
 			outputFormatter.IndentationLevel--;
@@ -2685,6 +2678,14 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.PrintIdentifier(intoClause.IntoIdentifier);
 			outputFormatter.Space();
 			return intoClause.ContinuedQuery.AcceptVisitor(this, data);
+		}
+		
+		public override object TrackedVisitQueryExpressionOrderClause(QueryExpressionOrderClause queryExpressionOrderClause, object data)
+		{
+			outputFormatter.PrintToken(Tokens.Orderby);
+			outputFormatter.Space();
+			AppendCommaSeparatedList(queryExpressionOrderClause.Orderings);
+			return null;
 		}
 		
 		public override object TrackedVisitQueryExpressionOrdering(QueryExpressionOrdering ordering, object data)

@@ -834,16 +834,11 @@ namespace ICSharpCode.NRefactory.Visitors {
 		public virtual object VisitQueryExpression(QueryExpression queryExpression, object data) {
 			Debug.Assert((queryExpression != null));
 			Debug.Assert((queryExpression.FromClause != null));
-			Debug.Assert((queryExpression.FromLetWhereClauses != null));
-			Debug.Assert((queryExpression.Orderings != null));
+			Debug.Assert((queryExpression.MiddleClauses != null));
 			Debug.Assert((queryExpression.SelectOrGroupClause != null));
 			Debug.Assert((queryExpression.IntoClause != null));
 			queryExpression.FromClause.AcceptVisitor(this, data);
-			foreach (QueryExpressionClause o in queryExpression.FromLetWhereClauses) {
-				Debug.Assert(o != null);
-				o.AcceptVisitor(this, data);
-			}
-			foreach (QueryExpressionOrdering o in queryExpression.Orderings) {
+			foreach (QueryExpressionClause o in queryExpression.MiddleClauses) {
 				Debug.Assert(o != null);
 				o.AcceptVisitor(this, data);
 			}
@@ -889,6 +884,16 @@ namespace ICSharpCode.NRefactory.Visitors {
 			Debug.Assert((queryExpressionLetClause != null));
 			Debug.Assert((queryExpressionLetClause.Expression != null));
 			return queryExpressionLetClause.Expression.AcceptVisitor(this, data);
+		}
+		
+		public virtual object VisitQueryExpressionOrderClause(QueryExpressionOrderClause queryExpressionOrderClause, object data) {
+			Debug.Assert((queryExpressionOrderClause != null));
+			Debug.Assert((queryExpressionOrderClause.Orderings != null));
+			foreach (QueryExpressionOrdering o in queryExpressionOrderClause.Orderings) {
+				Debug.Assert(o != null);
+				o.AcceptVisitor(this, data);
+			}
+			return null;
 		}
 		
 		public virtual object VisitQueryExpressionOrdering(QueryExpressionOrdering queryExpressionOrdering, object data) {

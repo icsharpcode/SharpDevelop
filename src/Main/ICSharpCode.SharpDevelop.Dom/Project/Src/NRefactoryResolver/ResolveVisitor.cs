@@ -202,7 +202,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		public override object VisitIdentifierExpression(IdentifierExpression identifierExpression, object data)
 		{
 			return resolver.ResolveIdentifier(identifierExpression, ExpressionContext.Default);
-					}
+		}
 		
 		public override object VisitIndexerExpression(IndexerExpression indexerExpression, object data)
 		{
@@ -304,14 +304,12 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				if (c != null && c.ClassType == ClassType.Delegate) {
 					// We don't want to show "System.EventHandler.Invoke" in the tooltip
 					// of "EventCall(this, EventArgs.Empty)", we just show the event/delegate for now
-					
 					// but for DelegateCall(params).* completion, we use the delegate's
 					// return type instead of the delegate type itself
-					IMethod method = c.Methods.FirstOrDefault(innerMethod => innerMethod.Name == "Invoke");
+					
+					IMethod method = rr.ResolvedType.GetMethods().FirstOrDefault(innerMethod => innerMethod.Name == "Invoke");
 					if (method != null) {
-						rr = rr.Clone();
-						rr.ResolvedType = method.ReturnType;
-						return rr;
+						return new DelegateCallResolveResult(rr, method);
 					}
 				}
 			}

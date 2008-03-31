@@ -1215,15 +1215,62 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				if (index < 0)
 					return null;
 				
-				MemberResolveResult mrr = ResolveInternal(ie, ExpressionContext.Default) as MemberResolveResult;
-				if (mrr != null) {
-					if (mrr.IsExtensionMethodCall)
+				ResolveResult rr = ResolveInternal(ie, ExpressionContext.Default);
+				IMethod m;
+				if (rr is MemberResolveResult) {
+					m = (rr as MemberResolveResult).ResolvedMember as IMethod;
+					if ((rr as MemberResolveResult).IsExtensionMethodCall)
 						index++;
-					
+				} else if (rr is DelegateCallResolveResult) {
+					m = (rr as DelegateCallResolveResult).DelegateInvokeMethod;
+				} else {
+					m = null;
+				}
+				if (m != null && index < m.Parameters.Count)
+					return m.Parameters[index].ReturnType;
+			}
+			
+			ObjectCreateExpression oce = expr.Parent as ObjectCreateExpression;
+			if (oce != null) {
+				int index = oce.Parameters.IndexOf(expr);
+				if (index < 0)
+					return null;
+				
+				MemberResolveResult mrr = ResolveInternal(oce, ExpressionContext.Default) as MemberResolveResult;
+				if (mrr != null) {
 					IMethod m = mrr.ResolvedMember as IMethod;
 					if (m != null && index < m.Parameters.Count)
 						return m.Parameters[index].ReturnType;
 				}
+			}
+			
+			if (expr.Parent is CastExpression) {
+				ResolveResult rr = ResolveInternal((Expression)expr.Parent, ExpressionContext.Default);
+				if (rr != null)
+					return rr.ResolvedType;
+			}
+			if (expr.Parent is LambdaExpression) {
+				IReturnType delegateType = GetExpectedTypeFromContext(expr.Parent as Expression);
+				IMethod sig = CSharp.TypeInference.GetDelegateOrExpressionTreeSignature(delegateType, true);
+				if (sig != null)
+					return sig.ReturnType;
+			}
+			if (expr.Parent is ParenthesizedExpression) {
+				return GetExpectedTypeFromContext(expr.Parent as Expression);
+			}
+			if (expr.Parent is VariableDeclaration) {
+				TypeReference typeRef = (expr.Parent as VariableDeclaration).TypeReference;
+				if (typeRef == null || typeRef.IsNull) {
+					LocalVariableDeclaration lvd = expr.Parent.Parent as LocalVariableDeclaration;
+					if (lvd != null)
+						typeRef = lvd.TypeReference;
+				}
+				return TypeVisitor.CreateReturnType(typeRef, this);
+			}
+			if (expr.Parent is AssignmentExpression) {
+				ResolveResult rr = ResolveInternal((expr.Parent as AssignmentExpression).Left, ExpressionContext.Default);
+				if (rr != null)
+					return rr.ResolvedType;
 			}
 			return null;
 		}

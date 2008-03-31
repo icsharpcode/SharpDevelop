@@ -1187,6 +1187,11 @@ namespace ICSharpCode.PythonBinding
 			return null;
 		}
 		
+		public object VisitQueryExpressionOrderClause(QueryExpressionOrderClause queryExpressionOrderClause, object data)
+		{
+			return null;
+		}
+		
 		public object VisitQueryExpressionOrdering(QueryExpressionOrdering queryExpressionOrdering, object data)
 		{
 			return null;

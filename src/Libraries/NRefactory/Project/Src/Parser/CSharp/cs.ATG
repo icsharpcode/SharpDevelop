@@ -742,11 +742,11 @@ StructMemberDecl<ModifierList m, List<AttributeSection> attributes>
 	Type<out type> Identifier              (. FieldDeclaration fd = new FieldDeclaration(attributes, type, m.Modifier | Modifiers.Const);
 	                                          fd.StartLocation = m.GetDeclarationLocation(startPos);
 	                                          VariableDeclaration f = new VariableDeclaration(t.val);
-	                                          fd.Fields.Add(f);
+	                                          SafeAdd(fd, fd.Fields, f);
 	                                       .)
 	"=" Expr<out expr>                     (. f.Initializer = expr; .)
 	{ "," Identifier                       (. f = new VariableDeclaration(t.val);
-	                                          fd.Fields.Add(f);
+	                                          SafeAdd(fd, fd.Fields, f);
 	                                       .)
 		"=" Expr<out expr>                 (. f.Initializer = expr; .)
 	} ";"                                  (. fd.EndLocation = t.EndLocation; compilationUnit.AddChild(fd); .)
@@ -1422,8 +1422,8 @@ LocalVariableDecl<out Statement stmt>
 .)
 =
 	Type<out type> (. localVariableDeclaration = new LocalVariableDeclaration(type); localVariableDeclaration.StartLocation = t.Location; .)
-	LocalVariableDeclarator<out var> (. localVariableDeclaration.Variables.Add(var); .)
-	{ "," LocalVariableDeclarator<out var> (. localVariableDeclaration.Variables.Add(var); .) }
+	LocalVariableDeclarator<out var> (. SafeAdd(localVariableDeclaration, localVariableDeclaration.Variables, var); .)
+	{ "," LocalVariableDeclarator<out var> (. SafeAdd(localVariableDeclaration, localVariableDeclaration.Variables, var); .) }
 	(. stmt = localVariableDeclaration; .)
 .
 
@@ -1450,8 +1450,8 @@ Statement
 		/*--- local constant declaration: */
 		| "const" Type<out type> (. LocalVariableDeclaration var = new LocalVariableDeclaration(type, Modifiers.Const); string ident = null; var.StartLocation = t.Location; .) 
 		  Identifier (. ident = t.val; .)
-		  "=" Expr<out expr> (. var.Variables.Add(new VariableDeclaration(ident, expr)); .)
-		  { "," Identifier (. ident = t.val; .) "=" Expr<out expr> (. var.Variables.Add(new VariableDeclaration(ident, expr)); .) }
+		  "=" Expr<out expr> (. SafeAdd(var, var.Variables, new VariableDeclaration(ident, expr)); .)
+		  { "," Identifier (. ident = t.val; .) "=" Expr<out expr> (. SafeAdd(var, var.Variables, new VariableDeclaration(ident, expr)); .) }
 		  ";" (. compilationUnit.AddChild(var); .)
 
 		/*--- local variable declaration: */
@@ -1973,8 +1973,8 @@ NewExpression<out Expression pexpr>
 	(
 		(	(. ObjectCreateExpression oce = new ObjectCreateExpression(type, parameters); .)
 			"(" (. if (type == null) Error("Cannot use an anonymous type with arguments for the constructor"); .)
-			    [ Argument<out expr>          (. if (expr != null) { parameters.Add(expr); } .)
-			      { "," Argument<out expr>    (. if (expr != null) { parameters.Add(expr); } .) }
+			    [ Argument<out expr>          (. SafeAdd(oce, parameters, expr); .)
+			      { "," Argument<out expr>    (. SafeAdd(oce, parameters, expr); .) }
 			    ]
 			")" (. pexpr = oce; .)
 			[ CollectionOrObjectInitializer<out expr> (. oce.ObjectInitializer = (CollectionInitializerExpression)expr; .) ]
@@ -2390,16 +2390,17 @@ QueryExpressionFromOrJoinClause<QueryExpressionFromOrJoinClause fjc>
 QueryExpressionBody<QueryExpression q>
 (.	QueryExpressionFromClause fromClause;     QueryExpressionWhereClause whereClause;
 	QueryExpressionLetClause letClause;       QueryExpressionJoinClause joinClause;
+	QueryExpressionOrderClause orderClause;
 	QueryExpressionSelectClause selectClause; QueryExpressionGroupClause groupClause;
 	QueryExpressionIntoClause intoClause;
 .)
 =
-	{ (	QueryExpressionFromClause<out fromClause>   (. SafeAdd<QueryExpressionClause>(q, q.FromLetWhereClauses, fromClause); .)
-	  |	QueryExpressionWhereClause<out whereClause> (. SafeAdd<QueryExpressionClause>(q, q.FromLetWhereClauses, whereClause); .)
-	  |	QueryExpressionLetClause<out letClause>     (. SafeAdd<QueryExpressionClause>(q, q.FromLetWhereClauses, letClause); .)
-	  |	QueryExpressionJoinClause<out joinClause>   (. SafeAdd<QueryExpressionClause>(q, q.FromLetWhereClauses, joinClause); .)
+	{ (	QueryExpressionFromClause<out fromClause>     (. SafeAdd<QueryExpressionClause>(q, q.MiddleClauses, fromClause); .)
+	  |	QueryExpressionWhereClause<out whereClause>   (. SafeAdd<QueryExpressionClause>(q, q.MiddleClauses, whereClause); .)
+	  |	QueryExpressionLetClause<out letClause>       (. SafeAdd<QueryExpressionClause>(q, q.MiddleClauses, letClause); .)
+	  |	QueryExpressionJoinClause<out joinClause>     (. SafeAdd<QueryExpressionClause>(q, q.MiddleClauses, joinClause); .)
+	  | QueryExpressionOrderByClause<out orderClause> (. SafeAdd<QueryExpressionClause>(q, q.MiddleClauses, orderClause); .)
 	  ) }
-	[ QueryExpressionOrderByClause<q> ]
 	(	QueryExpressionSelectClause<out selectClause> (. q.SelectOrGroupClause = selectClause; .)
 	|	QueryExpressionGroupClause<out groupClause>  (. q.SelectOrGroupClause = groupClause; .)
 	)
@@ -2424,17 +2425,18 @@ QueryExpressionLetClause<out QueryExpressionLetClause wc>
 	(. wc.EndLocation = t.EndLocation; .)
 .
 
-QueryExpressionOrderByClause<QueryExpression q>
-(. QueryExpressionOrdering ordering; .)
+QueryExpressionOrderByClause<out QueryExpressionOrderClause oc>
+(. QueryExpressionOrdering ordering; oc = new QueryExpressionOrderClause(); oc.StartLocation = la.Location; .)
 =
 	"orderby"
-	QueryExpressionOrderingClause<out ordering> (. SafeAdd(q, q.Orderings, ordering); .)
+	QueryExpressionOrdering<out ordering> (. SafeAdd(oc, oc.Orderings, ordering); .)
 	{ ","
-		QueryExpressionOrderingClause<out ordering> (. SafeAdd(q, q.Orderings, ordering); .)
+		QueryExpressionOrdering<out ordering> (. SafeAdd(oc, oc.Orderings, ordering); .)
 	}
+	(. oc.EndLocation = t.EndLocation; .)
 .
 
-QueryExpressionOrderingClause<out QueryExpressionOrdering ordering>
+QueryExpressionOrdering<out QueryExpressionOrdering ordering>
 (. Expression expr; ordering = new QueryExpressionOrdering(); ordering.StartLocation = la.Location; .)
 =
 	Expr<out expr> (. ordering.Criteria = expr; .)

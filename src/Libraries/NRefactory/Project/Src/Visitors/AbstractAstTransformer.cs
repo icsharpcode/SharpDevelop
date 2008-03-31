@@ -1539,34 +1539,22 @@ namespace ICSharpCode.NRefactory.Visitors {
 		public virtual object VisitQueryExpression(QueryExpression queryExpression, object data) {
 			Debug.Assert((queryExpression != null));
 			Debug.Assert((queryExpression.FromClause != null));
-			Debug.Assert((queryExpression.FromLetWhereClauses != null));
-			Debug.Assert((queryExpression.Orderings != null));
+			Debug.Assert((queryExpression.MiddleClauses != null));
 			Debug.Assert((queryExpression.SelectOrGroupClause != null));
 			Debug.Assert((queryExpression.IntoClause != null));
 			nodeStack.Push(queryExpression.FromClause);
 			queryExpression.FromClause.AcceptVisitor(this, data);
 			queryExpression.FromClause = ((QueryExpressionFromClause)(nodeStack.Pop()));
-			for (int i = 0; i < queryExpression.FromLetWhereClauses.Count; i++) {
-				QueryExpressionClause o = queryExpression.FromLetWhereClauses[i];
+			for (int i = 0; i < queryExpression.MiddleClauses.Count; i++) {
+				QueryExpressionClause o = queryExpression.MiddleClauses[i];
 				Debug.Assert(o != null);
 				nodeStack.Push(o);
 				o.AcceptVisitor(this, data);
 				o = (QueryExpressionClause)nodeStack.Pop();
 				if (o == null)
-					queryExpression.FromLetWhereClauses.RemoveAt(i--);
+					queryExpression.MiddleClauses.RemoveAt(i--);
 				else
-					queryExpression.FromLetWhereClauses[i] = o;
-			}
-			for (int i = 0; i < queryExpression.Orderings.Count; i++) {
-				QueryExpressionOrdering o = queryExpression.Orderings[i];
-				Debug.Assert(o != null);
-				nodeStack.Push(o);
-				o.AcceptVisitor(this, data);
-				o = (QueryExpressionOrdering)nodeStack.Pop();
-				if (o == null)
-					queryExpression.Orderings.RemoveAt(i--);
-				else
-					queryExpression.Orderings[i] = o;
+					queryExpression.MiddleClauses[i] = o;
 			}
 			nodeStack.Push(queryExpression.SelectOrGroupClause);
 			queryExpression.SelectOrGroupClause.AcceptVisitor(this, data);
@@ -1639,6 +1627,23 @@ namespace ICSharpCode.NRefactory.Visitors {
 			nodeStack.Push(queryExpressionLetClause.Expression);
 			queryExpressionLetClause.Expression.AcceptVisitor(this, data);
 			queryExpressionLetClause.Expression = ((Expression)(nodeStack.Pop()));
+			return null;
+		}
+		
+		public virtual object VisitQueryExpressionOrderClause(QueryExpressionOrderClause queryExpressionOrderClause, object data) {
+			Debug.Assert((queryExpressionOrderClause != null));
+			Debug.Assert((queryExpressionOrderClause.Orderings != null));
+			for (int i = 0; i < queryExpressionOrderClause.Orderings.Count; i++) {
+				QueryExpressionOrdering o = queryExpressionOrderClause.Orderings[i];
+				Debug.Assert(o != null);
+				nodeStack.Push(o);
+				o.AcceptVisitor(this, data);
+				o = (QueryExpressionOrdering)nodeStack.Pop();
+				if (o == null)
+					queryExpressionOrderClause.Orderings.RemoveAt(i--);
+				else
+					queryExpressionOrderClause.Orderings[i] = o;
+			}
 			return null;
 		}
 		

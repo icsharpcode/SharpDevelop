@@ -14,7 +14,7 @@ namespace ICSharpCode.NRefactory.Ast
 	{
 		TypeReference             typeReference;
 		Modifiers                  modifier = Modifiers.None;
-		List<VariableDeclaration> variables = new List<VariableDeclaration>(1);
+		List<VariableDeclaration> variables = new List<VariableDeclaration>();
 		
 		public TypeReference TypeReference {
 			get {

@@ -418,8 +418,8 @@ class A {
 	public event EventHandler TestEvent;
 }
 ";
-			MemberResolveResult result = Resolve<MemberResolveResult>(program, "TestEvent(this, EventArgs.Empty)", 4);
-			Assert.AreEqual("A.TestEvent", result.ResolvedMember.FullyQualifiedName);
+			var result = Resolve<DelegateCallResolveResult>(program, "TestEvent(this, EventArgs.Empty)", 4);
+			Assert.AreEqual("A.TestEvent", (result.Target as MemberResolveResult).ResolvedMember.FullyQualifiedName);
 		}
 		
 		[Test]
@@ -450,8 +450,8 @@ class A {
 	public event EventHandler TestEvent;
 }
 ";
-			MemberResolveResult result = Resolve<MemberResolveResult>(program, "this.TestEvent(this, EventArgs.Empty)", 4);
-			Assert.AreEqual("A.TestEvent", result.ResolvedMember.FullyQualifiedName);
+			var result = Resolve<DelegateCallResolveResult>(program, "this.TestEvent(this, EventArgs.Empty)", 4);
+			Assert.AreEqual("A.TestEvent", (result.Target as MemberResolveResult).ResolvedMember.FullyQualifiedName);
 		}
 		
 		[Test]
@@ -465,8 +465,8 @@ class A {
 	}
 }
 ";
-			LocalResolveResult result = Resolve<LocalResolveResult>(program, "eh(this, new ResolveEventArgs())", 5);
-			Assert.AreEqual("eh", result.Field.Name);
+			var result = Resolve<DelegateCallResolveResult>(program, "eh(this, new ResolveEventArgs())", 5);
+			Assert.AreEqual("eh", (result.Target as LocalResolveResult).Field.Name);
 			
 			MemberResolveResult mrr = Resolve<MemberResolveResult>(program, "eh(this, new ResolveEventArgs()).GetType(\"bla\")", 5);
 			Assert.AreEqual("System.Reflection.Module.GetType", mrr.ResolvedMember.FullyQualifiedName);
@@ -483,7 +483,7 @@ class A {
 	abstract Predicate<string> GetHandler();
 }
 ";
-			ResolveResult result = Resolve<MemberResolveResult>(program, "GetHandler()(abc)", 4);
+			var result = Resolve<DelegateCallResolveResult>(program, "GetHandler()(abc)", 4);
 			Assert.AreEqual("System.Boolean", result.ResolvedType.FullyQualifiedName);
 			
 			MemberResolveResult mrr = Resolve<MemberResolveResult>(program, "GetHandler()(abc).ToString()", 4);
@@ -1920,7 +1920,9 @@ public class MyCollectionType : System.Collections.IEnumerable
 	class BaseClass {
 		public static SomeDelegate Test;
 	}";
-			MemberResolveResult mrr = Resolve<MemberResolveResult>(program, "BaseClass.Test()", 4);
+			var dcrr = Resolve<DelegateCallResolveResult>(program, "BaseClass.Test()", 4);
+			Assert.AreEqual("SomeDelegate.Invoke", dcrr.DelegateInvokeMethod.FullyQualifiedName);
+			var mrr = dcrr.Target as MemberResolveResult;
 			Assert.AreEqual("BaseClass.Test", mrr.ResolvedMember.FullyQualifiedName);
 			
 			mrr = Resolve<MemberResolveResult>(program, "Test", 4);
@@ -1930,7 +1932,8 @@ public class MyCollectionType : System.Collections.IEnumerable
 			Assert.AreEqual("DerivedClass.Test", mrr.ResolvedMember.FullyQualifiedName);
 			
 			// returns BaseClass.Test because DerivedClass.Test is not invocable
-			mrr = Resolve<MemberResolveResult>(program, "DerivedClass.Test()", 4);
+			dcrr = Resolve<DelegateCallResolveResult>(program, "DerivedClass.Test()", 4);
+			mrr = (MemberResolveResult)dcrr.Target;
 			Assert.AreEqual("BaseClass.Test", mrr.ResolvedMember.FullyQualifiedName);
 		}
 		
@@ -2093,6 +2096,20 @@ class TestClass {
 		}
 		
 		[Test]
+		public void LambdaInConstructorTest()
+		{
+			string program = @"using System;
+class TestClass {
+	static void Main() {
+		TestClass t = new TestClass(i => Console.WriteLine(i));
+	}
+	public TestClass(Action<int> ac) { ac(42); }
+}";
+			var lrr = Resolve<LocalResolveResult>(program, "i", 4, 54, ExpressionContext.Default);
+			Assert.AreEqual("System.Int32", lrr.ResolvedType.DotNetName);
+		}
+		
+		[Test]
 		public void IncompleteLambdaTest()
 		{
 			string program = @"using System;
@@ -2120,6 +2137,81 @@ static class TestClass {
 }";
 			var lrr = Resolve<LocalResolveResult>(program, "i", 5, 20, ExpressionContext.Default);
 			Assert.AreEqual("System.String", lrr.ResolvedType.DotNetName);
+		}
+		
+		[Test]
+		public void LambdaExpressionInCastExpression()
+		{
+			string program = @"using System;
+static class TestClass {
+	static void Main(string[] args) {
+		var f = (Func<int, string>) ( i => i );
+	}
+	public delegate R Func<T, R>(T arg);
+}";
+			var lrr = Resolve<LocalResolveResult>(program, "i", 4, 38, ExpressionContext.Default);
+			Assert.AreEqual("System.Int32", lrr.ResolvedType.DotNetName);
+		}
+		
+		[Test]
+		public void CurriedLambdaExpressionInCastExpression()
+		{
+			string program = @"using System;
+static class TestClass {
+	static void Main(string[] args) {
+		var f = (Func<char, Func<string, int>>) ( a => b => 0 );
+	}
+	public delegate R Func<T, R>(T arg);
+}";
+			var lrr = Resolve<LocalResolveResult>(program, "a", 4, 45, ExpressionContext.Default);
+			Assert.AreEqual("System.Char", lrr.ResolvedType.DotNetName);
+			
+			lrr = Resolve<LocalResolveResult>(program, "b", 4, 50, ExpressionContext.Default);
+			Assert.AreEqual("System.String", lrr.ResolvedType.DotNetName);
+		}
+		
+		[Test]
+		public void LambdaExpressionInVariableInitializer()
+		{
+			string program = @"using System;
+static class TestClass {
+	static void Main() {
+		Func<int, string> f = i => i.ToString();
+	}
+	public delegate R Func<T, R>(T arg);
+}";
+			var lrr = Resolve<LocalResolveResult>(program, "i", 4, 25, ExpressionContext.Default);
+			Assert.AreEqual("System.Int32", lrr.ResolvedType.DotNetName);
+		}
+		
+		[Test]
+		public void LambdaExpressionInVariableAssignment()
+		{
+			string program = @"using System;
+static class TestClass {
+	static void Main() {
+		Func<int, string> f;
+ 		f = i => i.ToString();
+	}
+	public delegate R Func<T, R>(T arg);
+}";
+			var lrr = Resolve<LocalResolveResult>(program, "i", 5, 8, ExpressionContext.Default);
+			Assert.AreEqual("System.Int32", lrr.ResolvedType.DotNetName);
+		}
+		
+		[Test]
+		public void LambdaInDelegateCallTest()
+		{
+			string program = @"using System;
+class TestClass {
+	static void Main() {
+		Func<Func<int, string>, char> f;
+		f(i => i.ToString());
+	}
+	public delegate R Func<T, R>(T arg);
+}";
+			var lrr = Resolve<LocalResolveResult>(program, "i", 5, 5, ExpressionContext.Default);
+			Assert.AreEqual("System.Int32", lrr.ResolvedType.DotNetName);
 		}
 	}
 }

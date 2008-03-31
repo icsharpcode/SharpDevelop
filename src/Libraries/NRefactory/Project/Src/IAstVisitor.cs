@@ -173,6 +173,8 @@ namespace ICSharpCode.NRefactory {
 		
 		object VisitQueryExpressionLetClause(QueryExpressionLetClause queryExpressionLetClause, object data);
 		
+		object VisitQueryExpressionOrderClause(QueryExpressionOrderClause queryExpressionOrderClause, object data);
+		
 		object VisitQueryExpressionOrdering(QueryExpressionOrdering queryExpressionOrdering, object data);
 		
 		object VisitQueryExpressionSelectClause(QueryExpressionSelectClause queryExpressionSelectClause, object data);

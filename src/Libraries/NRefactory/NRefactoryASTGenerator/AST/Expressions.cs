@@ -250,8 +250,7 @@ namespace NRefactoryASTGenerator.Ast
 	[ImplementNullable(NullableImplementation.Shadow)]
 	class QueryExpression : Expression {
 		QueryExpressionFromClause fromClause;
-		List<QueryExpressionClause> fromLetWhereClauses;
-		List<QueryExpressionOrdering> orderings;
+		List<QueryExpressionClause> middleClauses;
 		QueryExpressionClause selectOrGroupClause;
 		QueryExpressionIntoClause intoClause;
 	}
@@ -284,6 +283,10 @@ namespace NRefactoryASTGenerator.Ast
 		Expression equalsExpression;
 		
 		string intoIdentifier;
+	}
+	
+	class QueryExpressionOrderClause : QueryExpressionClause {
+		List<QueryExpressionOrdering> orderings;
 	}
 	
 	class QueryExpressionOrdering : AbstractNode {

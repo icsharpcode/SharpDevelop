@@ -40,6 +40,12 @@ namespace NRefactoryToBooConverter
 			return null;
 		}
 		
+		public object VisitQueryExpressionOrderClause(QueryExpressionOrderClause queryExpressionOrderClause, object data)
+		{
+			AddError(queryExpressionOrderClause, "QueryExpressionOrderClause is not supported.");
+			return null;
+		}
+		
 		public object VisitQueryExpressionOrdering(QueryExpressionOrdering queryExpressionOrdering, object data)
 		{
 			AddError(queryExpressionOrdering, "QueryExpressionOrdering is not supported.");

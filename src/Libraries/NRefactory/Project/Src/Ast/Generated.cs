@@ -3433,9 +3433,7 @@ namespace ICSharpCode.NRefactory.Ast {
 		
 		QueryExpressionFromClause fromClause;
 		
-		List<QueryExpressionClause> fromLetWhereClauses;
-		
-		List<QueryExpressionOrdering> orderings;
+		List<QueryExpressionClause> middleClauses;
 		
 		QueryExpressionClause selectOrGroupClause;
 		
@@ -3451,21 +3449,12 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 		}
 		
-		public List<QueryExpressionClause> FromLetWhereClauses {
+		public List<QueryExpressionClause> MiddleClauses {
 			get {
-				return fromLetWhereClauses;
+				return middleClauses;
 			}
 			set {
-				fromLetWhereClauses = value ?? new List<QueryExpressionClause>();
-			}
-		}
-		
-		public List<QueryExpressionOrdering> Orderings {
-			get {
-				return orderings;
-			}
-			set {
-				orderings = value ?? new List<QueryExpressionOrdering>();
+				middleClauses = value ?? new List<QueryExpressionClause>();
 			}
 		}
 		
@@ -3491,8 +3480,7 @@ namespace ICSharpCode.NRefactory.Ast {
 		
 		public QueryExpression() {
 			fromClause = QueryExpressionFromClause.Null;
-			fromLetWhereClauses = new List<QueryExpressionClause>();
-			orderings = new List<QueryExpressionOrdering>();
+			middleClauses = new List<QueryExpressionClause>();
 			selectOrGroupClause = QueryExpressionClause.Null;
 			intoClause = QueryExpressionIntoClause.Null;
 		}
@@ -3508,8 +3496,8 @@ namespace ICSharpCode.NRefactory.Ast {
 		}
 		
 		public override string ToString() {
-			return string.Format("[QueryExpression FromClause={0} FromLetWhereClauses={1} Orderings={2} SelectOrGro" +
-					"upClause={3} IntoClause={4}]", FromClause, GetCollectionString(FromLetWhereClauses), GetCollectionString(Orderings), SelectOrGroupClause, IntoClause);
+			return string.Format("[QueryExpression FromClause={0} MiddleClauses={1} SelectOrGroupClause={2} IntoCla" +
+					"use={3}]", FromClause, GetCollectionString(MiddleClauses), SelectOrGroupClause, IntoClause);
 		}
 	}
 	
@@ -3835,6 +3823,32 @@ namespace ICSharpCode.NRefactory.Ast {
 		
 		public override string ToString() {
 			return string.Format("[QueryExpressionLetClause Identifier={0} Expression={1}]", Identifier, Expression);
+		}
+	}
+	
+	public class QueryExpressionOrderClause : QueryExpressionClause {
+		
+		List<QueryExpressionOrdering> orderings;
+		
+		public List<QueryExpressionOrdering> Orderings {
+			get {
+				return orderings;
+			}
+			set {
+				orderings = value ?? new List<QueryExpressionOrdering>();
+			}
+		}
+		
+		public QueryExpressionOrderClause() {
+			orderings = new List<QueryExpressionOrdering>();
+		}
+		
+		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+			return visitor.VisitQueryExpressionOrderClause(this, data);
+		}
+		
+		public override string ToString() {
+			return string.Format("[QueryExpressionOrderClause Orderings={0}]", GetCollectionString(Orderings));
 		}
 	}
 	

@@ -24,9 +24,9 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			);
 			Assert.AreEqual("c", qe.FromClause.Identifier);
 			Assert.AreEqual("customers", ((IdentifierExpression)qe.FromClause.InExpression).Identifier);
-			Assert.AreEqual(1, qe.FromLetWhereClauses.Count);
-			Assert.IsInstanceOfType(typeof(QueryExpressionWhereClause), qe.FromLetWhereClauses[0]);
-			QueryExpressionWhereClause wc = (QueryExpressionWhereClause)qe.FromLetWhereClauses[0];
+			Assert.AreEqual(1, qe.MiddleClauses.Count);
+			Assert.IsInstanceOfType(typeof(QueryExpressionWhereClause), qe.MiddleClauses[0]);
+			QueryExpressionWhereClause wc = (QueryExpressionWhereClause)qe.MiddleClauses[0];
 			Assert.IsInstanceOfType(typeof(BinaryOperatorExpression), wc.Condition);
 			Assert.IsInstanceOfType(typeof(QueryExpressionSelectClause), qe.SelectOrGroupClause);
 		}
@@ -77,11 +77,36 @@ where c.City == ""London""
 from o in c.Orders
 where o.OrderDate.Year == 2005
 select new { c.Name, o.OrderID, o.Total }");
-			Assert.AreEqual(3, qe.FromLetWhereClauses.Count);
-			Assert.IsInstanceOfType(typeof(QueryExpressionWhereClause), qe.FromLetWhereClauses[0]);
-			Assert.IsInstanceOfType(typeof(QueryExpressionFromClause), qe.FromLetWhereClauses[1]);
-			Assert.IsInstanceOfType(typeof(QueryExpressionWhereClause), qe.FromLetWhereClauses[2]);
+			Assert.AreEqual(3, qe.MiddleClauses.Count);
+			Assert.IsInstanceOfType(typeof(QueryExpressionWhereClause), qe.MiddleClauses[0]);
+			Assert.IsInstanceOfType(typeof(QueryExpressionFromClause), qe.MiddleClauses[1]);
+			Assert.IsInstanceOfType(typeof(QueryExpressionWhereClause), qe.MiddleClauses[2]);
 			
+			Assert.IsInstanceOfType(typeof(QueryExpressionSelectClause), qe.SelectOrGroupClause);
+		}
+		
+		[Test]
+		public void ExpressionWithOrderBy()
+		{
+			QueryExpression qe = ParseUtilCSharp.ParseExpression<QueryExpression>(
+				"from c in customers orderby c.Name select c"
+			);
+			Assert.AreEqual("c", qe.FromClause.Identifier);
+			Assert.AreEqual("customers", ((IdentifierExpression)qe.FromClause.InExpression).Identifier);
+			Assert.IsInstanceOfType(typeof(QueryExpressionOrderClause), qe.MiddleClauses[0]);
+			Assert.IsInstanceOfType(typeof(QueryExpressionSelectClause), qe.SelectOrGroupClause);
+		}
+		
+		[Test]
+		public void ExpressionWithOrderByAndLet()
+		{
+			QueryExpression qe = ParseUtilCSharp.ParseExpression<QueryExpression>(
+				"from c in customers orderby c.Name let x = c select x"
+			);
+			Assert.AreEqual("c", qe.FromClause.Identifier);
+			Assert.AreEqual("customers", ((IdentifierExpression)qe.FromClause.InExpression).Identifier);
+			Assert.IsInstanceOfType(typeof(QueryExpressionOrderClause), qe.MiddleClauses[0]);
+			Assert.IsInstanceOfType(typeof(QueryExpressionLetClause), qe.MiddleClauses[1]);
 			Assert.IsInstanceOfType(typeof(QueryExpressionSelectClause), qe.SelectOrGroupClause);
 		}
 	}

@@ -584,6 +584,13 @@ namespace ICSharpCode.NRefactory.Visitors {
 			return result;
 		}
 		
+		public sealed override object VisitQueryExpressionOrderClause(QueryExpressionOrderClause queryExpressionOrderClause, object data) {
+			this.BeginVisit(queryExpressionOrderClause);
+			object result = this.TrackedVisitQueryExpressionOrderClause(queryExpressionOrderClause, data);
+			this.EndVisit(queryExpressionOrderClause);
+			return result;
+		}
+		
 		public sealed override object VisitQueryExpressionOrdering(QueryExpressionOrdering queryExpressionOrdering, object data) {
 			this.BeginVisit(queryExpressionOrdering);
 			object result = this.TrackedVisitQueryExpressionOrdering(queryExpressionOrdering, data);
@@ -1122,6 +1129,10 @@ namespace ICSharpCode.NRefactory.Visitors {
 		
 		public virtual object TrackedVisitQueryExpressionLetClause(QueryExpressionLetClause queryExpressionLetClause, object data) {
 			return base.VisitQueryExpressionLetClause(queryExpressionLetClause, data);
+		}
+		
+		public virtual object TrackedVisitQueryExpressionOrderClause(QueryExpressionOrderClause queryExpressionOrderClause, object data) {
+			return base.VisitQueryExpressionOrderClause(queryExpressionOrderClause, data);
 		}
 		
 		public virtual object TrackedVisitQueryExpressionOrdering(QueryExpressionOrdering queryExpressionOrdering, object data) {
