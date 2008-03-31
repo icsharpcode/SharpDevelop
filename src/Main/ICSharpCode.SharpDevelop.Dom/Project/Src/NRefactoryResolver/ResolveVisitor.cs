@@ -173,6 +173,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				IReturnType rt = ResolveType(collectionInitializerExpression.CreateExpressions[i]);
 				combinedRT = MemberLookupHelper.GetCommonType(resolver.ProjectContent, combinedRT, rt);
 			}
+			if (combinedRT == null)
+				return null;
 			return CreateResolveResult(new ArrayReturnType(resolver.ProjectContent, combinedRT, 1));
 		}
 		

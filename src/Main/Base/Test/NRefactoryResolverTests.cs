@@ -2229,5 +2229,19 @@ class TestClass {
 			var lrr = Resolve<LocalResolveResult>(program, "i", 5, 5, ExpressionContext.Default);
 			Assert.AreEqual("System.Int32", lrr.ResolvedType.DotNetName);
 		}
+		
+		[Test]
+		public void InvalidAnonymousTypeDeclaration()
+		{
+			// see SD2-1393
+			string program = @"using System;
+class TestClass {
+	static void Main() {
+			var contact = {id = 54321};
+		
+		} }";
+			var lrr = Resolve<LocalResolveResult>(program, "contact", 5);
+			Assert.AreEqual("?", lrr.ResolvedType.DotNetName);
+		}
 	}
 }
