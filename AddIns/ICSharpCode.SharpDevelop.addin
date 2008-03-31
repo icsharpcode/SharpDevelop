@@ -2173,6 +2173,7 @@
 		<String id = "System.Data" text = "System.Data"/>
 		<String id = "System.Data.DataSetExtensions" text = "System.Data.DataSetExtensions"/>
 		<String id = "System.Drawing" text = "System.Drawing"/>
+		<String id = "System.Web" text = "System.Web"/>
 		<String id = "System.Windows.Forms" text = "System.Windows.Forms"/>
 		<String id = "System.Xml" text = "System.Xml"/>
 		<String id = "System.Xml.Linq" text = "System.Xml.Linq"/>
