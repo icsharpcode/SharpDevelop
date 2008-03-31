@@ -417,5 +417,124 @@ class D : Program  {
 			Assert.AreEqual("System.Object.Equals", mrr.ResolvedMember.FullyQualifiedName);
 		}
 		#endregion
+		
+		#region C# 3.0 Type Inference
+		MemberResolveResult ResolveInSelectProgram(string expression)
+		{
+			string program = @"using System;
+using System.Collections.Generic;
+delegate R Func<A, R>(A arg);
+static class TestClass {
+	static void Main() {
+		{XXX};
 	}
+	static IEnumerable<TResult> Select<TSource,TResult>(
+		this IEnumerable<TSource> source, Func<TSource,TResult> selector)
+	{
+		foreach (TSource element in source) yield return selector(element);
+	}
+	static double StringToDouble(string s) { return double.Parse(s); }
+}
+";
+			return Resolve<MemberResolveResult>(program.Replace("{XXX}", expression), expression, 6, 3);
+		}
+		
+		[Test]
+		public void SelectWithExplicitDelegate()
+		{
+			MemberResolveResult mrr = ResolveInSelectProgram("Select(new string[0], new Func<string, double>(StringToDouble))");
+			Assert.AreEqual("System.Collections.Generic.IEnumerable{System.Double}", mrr.ResolvedType.DotNetName);
+		}
+		
+		[Test]
+		public void SelectWithArgumentIgnoringAnonymousMethod()
+		{
+			MemberResolveResult mrr = ResolveInSelectProgram("Select(new string[0], delegate { return DateTime.MinValue; })");
+			Assert.AreEqual("System.Collections.Generic.IEnumerable{System.DateTime}", mrr.ResolvedType.DotNetName);
+		}
+		
+		[Test]
+		public void SelectWithExplicitlyTypedLambda()
+		{
+			MemberResolveResult mrr = ResolveInSelectProgram("Select(new string[0], (string s) => s.Length)");
+			Assert.AreEqual("System.Collections.Generic.IEnumerable{System.Int32}", mrr.ResolvedType.DotNetName);
+		}
+		
+		[Test]
+		public void SelectWithImplicitlyTypedLambda()
+		{
+			MemberResolveResult mrr = ResolveInSelectProgram("Select(new string[0], s => s.Length)");
+			Assert.AreEqual("System.Collections.Generic.IEnumerable{System.Int32}", mrr.ResolvedType.DotNetName);
+		}
+		
+		[Test]
+		public void SelectWithImplicitlyTypedLambdaCalledAsExtensionMethod()
+		{
+			MemberResolveResult mrr = ResolveInSelectProgram("(new string[0]).Select(s => s.Length)");
+			Assert.AreEqual("System.Collections.Generic.IEnumerable{System.Int32}", mrr.ResolvedType.DotNetName);
+		}
+		
+		[Test]
+		public void MultipleOverloadsWithDifferentParameterCounts()
+		{
+			string program = @"class MainClass {
+	void Main() {
+		M(x=>x.ToUpper());
+	}
+	delegate R Func<T, R>(T arg);
+	T M<T>(Func<string, T> f){ /* whatever ... */ }
+	T M<T>(Func<string, T> f, T g){ /* whatever ... */ }
+}";
+			var mrr = nrrt.Resolve<MemberResolveResult>(program, "M(x=>x.ToUpper())", 3, 3, ExpressionContext.Default);
+			Assert.AreEqual("System.String", mrr.ResolvedType.DotNetName);
+			Assert.AreEqual(1, ((IMethod)mrr.ResolvedMember).Parameters.Count);
+		}
+		
+		[Test]
+		public void MultipleOverloadsWithDifferentParameterCountsAsExtensionMethod()
+		{
+			string program = @"class MainClass {
+	static void Main() {
+		(string.Empty).M(x=>x.ToUpper());
+	}
+	delegate R Func<T, R>(T arg);
+	static T M<X, T>(this X x, Func<X, T> f){ /* whatever ... */ }
+	static T M<X, T>(this X x, Func<X, T> f, T g){ /* whatever ... */ }
+}";
+			var mrr = nrrt.Resolve<MemberResolveResult>(program, "(string.Empty).M(x=>x.ToUpper())", 3, 3, ExpressionContext.Default);
+			Assert.AreEqual("System.String", mrr.ResolvedType.DotNetName);
+			Assert.AreEqual(2, ((IMethod)mrr.ResolvedMember).Parameters.Count);
+		}
+		
+		[Test]
+		public void EnsureApplicabilityIsTestedAfterTypeInference()
+		{
+			string program = @"class TestClass {
+	static void Main() {
+		
+	}
+	static void G(object obj1, object obj2) {}
+	static void G<T>(T a, T b) {}
+}
+		";
+			var mrr = Resolve<MemberResolveResult>(program, "G(1, 2)", 3);
+			Assert.AreEqual("TestClass.G<T>(int a, int b)", ToCSharp(mrr.ResolvedMember));
+			
+			mrr = Resolve<MemberResolveResult>(program, "G(1, 2.2)", 3);
+			Assert.AreEqual("TestClass.G<T>(double a, double b)", ToCSharp(mrr.ResolvedMember));
+			
+			mrr = Resolve<MemberResolveResult>(program, "G(1, \"a\")", 3);
+			Assert.AreEqual("TestClass.G(object obj1, object obj2)", ToCSharp(mrr.ResolvedMember));
+		}
+		
+		string ToCSharp(IEntity entity)
+		{
+			return (new Dom.CSharp.CSharpAmbience {
+			        	ConversionFlags = ConversionFlags.UseFullyQualifiedMemberNames
+			        		| ConversionFlags.ShowParameterList | ConversionFlags.ShowParameterNames
+			        		| ConversionFlags.ShowTypeParameterList
+			        }).Convert(entity);
+		}
+	}
+	#endregion
 }

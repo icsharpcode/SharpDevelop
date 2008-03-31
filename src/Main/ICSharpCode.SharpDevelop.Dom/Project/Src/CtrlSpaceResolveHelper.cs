@@ -8,6 +8,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {
@@ -184,7 +185,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			if (callingClass == null)
 				throw new ArgumentNullException("callingClass");
 			
-			List<IMethodOrProperty> res = new List<IMethodOrProperty>();
+			HashSet<IMethodOrProperty> res = new HashSet<IMethodOrProperty>();
 			
 			bool supportsExtensionMethods = language.SupportsExtensionMethods;
 			bool supportsExtensionProperties = language.SupportsExtensionProperties;
@@ -220,7 +221,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 					}
 				}
 			}
-			return res;
+			return res.ToList();
 		}
 	}
 }

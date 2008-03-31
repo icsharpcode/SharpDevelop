@@ -484,7 +484,19 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public override ResolveResult Clone()
 		{
-			return new MemberResolveResult(this.CallingClass, this.CallingMember, this.ResolvedMember);
+			return new MemberResolveResult(this.CallingClass, this.CallingMember, this.ResolvedMember) {
+				IsExtensionMethodCall = IsExtensionMethodCall
+			};
+		}
+		
+		bool isExtensionMethodCall;
+		
+		public bool IsExtensionMethodCall {
+			get { return isExtensionMethodCall; }
+			set { 
+				CheckBeforeMutation();
+				isExtensionMethodCall = value; 
+			}
 		}
 		
 		/// <summary>
@@ -642,6 +654,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				throw new ArgumentNullException("name");
 			this.containingType = containingType;
 			this.name = name;
+			this.ResolvedType = new MethodGroupReturnType();
 		}
 		
 		public MethodGroupResolveResult(IClass callingClass, IMember callingMember, IReturnType containingType, string name,
@@ -657,6 +670,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			this.containingType = containingType;
 			this.name = name;
 			this.possibleMethods = possibleMethods;
+			this.ResolvedType = new MethodGroupReturnType();
 		}
 		
 		public override ResolveResult Clone()

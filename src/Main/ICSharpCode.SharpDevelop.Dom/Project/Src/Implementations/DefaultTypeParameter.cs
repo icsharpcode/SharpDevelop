@@ -143,9 +143,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 			if (tp.hasValueTypeConstraint != hasValueTypeConstraint) return false;
 			if (tp.method != method) {
 				if (tp.method == null || method == null) return false;
-				if (tp.method.FullyQualifiedName == method.FullyQualifiedName) return false;
+				if (tp.method.FullyQualifiedName != method.FullyQualifiedName) return false;
 			} else {
-				if (tp.targetClass.FullyQualifiedName == targetClass.FullyQualifiedName) return false;
+				if (tp.targetClass.FullyQualifiedName != targetClass.FullyQualifiedName) return false;
 			}
 			return true;
 		}

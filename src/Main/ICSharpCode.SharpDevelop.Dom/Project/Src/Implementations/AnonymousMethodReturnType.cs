@@ -8,13 +8,14 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {
 	/// <summary>
 	/// The return type of anonymous method expressions or lambda expressions.
 	/// </summary>
-	public sealed class AnonymousMethodReturnType : DecoratingReturnType
+	public class AnonymousMethodReturnType : DecoratingReturnType
 	{
 		IReturnType returnType;
 		IList<IParameter> parameters;
@@ -51,12 +52,18 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// Return type of the anonymous method. Can be null if inferred from context.
 		/// </summary>
 		public IReturnType MethodReturnType {
-			get {
-				return returnType;
-			}
-			set {
-				returnType = value;
-			}
+			get { return returnType; }
+			set { returnType = value; }
+		}
+		
+		public virtual IReturnType ResolveReturnType()
+		{
+			return returnType;
+		}
+		
+		public virtual IReturnType ResolveReturnType(IReturnType[] parameterTypes)
+		{
+			return returnType;
 		}
 		
 		/// <summary>
@@ -67,8 +74,21 @@ namespace ICSharpCode.SharpDevelop.Dom
 			set { parameters = value; }
 		}
 		
+		public virtual bool CanBeConvertedToExpressionTree {
+			get { return false; }
+		}
+		
 		public bool HasParameterList {
 			get { return parameters != null; }
+		}
+		
+		public bool HasImplicitlyTypedParameters {
+			get {
+				if (parameters == null)
+					return false;
+				else
+					return parameters.Any(p => p.ReturnType == null);
+			}
 		}
 		
 		DefaultClass cachedClass;

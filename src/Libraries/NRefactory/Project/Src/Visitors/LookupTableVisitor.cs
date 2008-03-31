@@ -21,8 +21,9 @@ namespace ICSharpCode.NRefactory.Visitors
 		public readonly bool IsConst;
 		public readonly bool IsLoopVariable;
 		public readonly Expression Initializer;
+		public readonly LambdaExpression ParentLambdaExpression;
 		
-		public LocalLookupVariable(string name, TypeReference typeRef, Location startPos, Location endPos, bool isConst, bool isLoopVariable, Expression initializer)
+		public LocalLookupVariable(string name, TypeReference typeRef, Location startPos, Location endPos, bool isConst, bool isLoopVariable, Expression initializer, LambdaExpression parentLambdaExpression)
 		{
 			this.Name = name;
 			this.TypeRef = typeRef;
@@ -31,6 +32,7 @@ namespace ICSharpCode.NRefactory.Visitors
 			this.IsConst = isConst;
 			this.IsLoopVariable = isLoopVariable;
 			this.Initializer = initializer;
+			this.ParentLambdaExpression = parentLambdaExpression;
 		}
 	}
 	
@@ -66,7 +68,8 @@ namespace ICSharpCode.NRefactory.Visitors
 		
 		public void AddVariable(TypeReference typeRef, string name,
 		                        Location startPos, Location endPos, bool isConst,
-		                        bool isLoopVariable, Expression initializer)
+		                        bool isLoopVariable, Expression initializer,
+		                        LambdaExpression parentLambdaExpression)
 		{
 			if (name == null || name.Length == 0) {
 				return;
@@ -77,7 +80,7 @@ namespace ICSharpCode.NRefactory.Visitors
 			} else {
 				list = (List<LocalLookupVariable>)variables[name];
 			}
-			list.Add(new LocalLookupVariable(name, typeRef, startPos, endPos, isConst, isLoopVariable, initializer));
+			list.Add(new LocalLookupVariable(name, typeRef, startPos, endPos, isConst, isLoopVariable, initializer, parentLambdaExpression));
 		}
 		
 		public override object VisitWithStatement(WithStatement withStatement, object data)
@@ -112,7 +115,7 @@ namespace ICSharpCode.NRefactory.Visitors
 				            localVariableDeclaration.StartLocation,
 				            CurrentEndLocation,
 				            (localVariableDeclaration.Modifier & Modifiers.Const) == Modifiers.Const,
-				            false, varDecl.Initializer);
+				            false, varDecl.Initializer, null);
 			}
 			return base.VisitLocalVariableDeclaration(localVariableDeclaration, data);
 		}
@@ -122,7 +125,7 @@ namespace ICSharpCode.NRefactory.Visitors
 			foreach (ParameterDeclarationExpression p in anonymousMethodExpression.Parameters) {
 				AddVariable(p.TypeReference, p.ParameterName,
 				            anonymousMethodExpression.StartLocation, anonymousMethodExpression.EndLocation,
-				            false, false, null);
+				            false, false, null, null);
 			}
 			return base.VisitAnonymousMethodExpression(anonymousMethodExpression, data);
 		}
@@ -132,7 +135,7 @@ namespace ICSharpCode.NRefactory.Visitors
 			foreach (ParameterDeclarationExpression p in lambdaExpression.Parameters) {
 				AddVariable(p.TypeReference, p.ParameterName,
 				            lambdaExpression.StartLocation, lambdaExpression.EndLocation,
-				            false, false, null);
+				            false, false, null, lambdaExpression);
 			}
 			return base.VisitLambdaExpression(lambdaExpression, data);
 		}
@@ -143,7 +146,7 @@ namespace ICSharpCode.NRefactory.Visitors
 			if (parentExpression != null) {
 				AddVariable(fromClause.Type, fromClause.Identifier,
 				            parentExpression.StartLocation, parentExpression.EndLocation,
-				            false, true, fromClause.InExpression);
+				            false, true, fromClause.InExpression, null);
 			}
 			return base.VisitQueryExpressionFromClause(fromClause, data);
 		}
@@ -155,18 +158,18 @@ namespace ICSharpCode.NRefactory.Visitors
 				if (parentExpression != null) {
 					AddVariable(joinClause.Type, joinClause.Identifier,
 					            parentExpression.StartLocation, parentExpression.EndLocation,
-					            false, true, joinClause.InExpression);
+					            false, true, joinClause.InExpression, null);
 				}
 			} else {
 				AddVariable(joinClause.Type, joinClause.Identifier,
 				            joinClause.StartLocation, joinClause.EndLocation,
-				            false, true, joinClause.InExpression);
+				            false, true, joinClause.InExpression, null);
 				
 				QueryExpression parentExpression = joinClause.Parent as QueryExpression;
 				if (parentExpression != null) {
 					AddVariable(joinClause.Type, joinClause.IntoIdentifier,
 					            parentExpression.StartLocation, parentExpression.EndLocation,
-					            false, false, joinClause.InExpression);
+					            false, false, joinClause.InExpression, null);
 				}
 			}
 			return base.VisitQueryExpressionJoinClause(joinClause, data);
@@ -178,7 +181,7 @@ namespace ICSharpCode.NRefactory.Visitors
 			if (parentExpression != null) {
 				AddVariable(null, letClause.Identifier,
 				            parentExpression.StartLocation, parentExpression.EndLocation,
-				            false, false, letClause.Expression);
+				            false, false, letClause.Expression, null);
 			}
 			return base.VisitQueryExpressionLetClause(letClause, data);
 		}
@@ -238,7 +241,8 @@ namespace ICSharpCode.NRefactory.Visitors
 			            foreachStatement.StartLocation,
 			            foreachStatement.EndLocation,
 			            false, true,
-			            foreachStatement.Expression);
+			            foreachStatement.Expression,
+			            null);
 			
 			if (foreachStatement.Expression != null) {
 				foreachStatement.Expression.AcceptVisitor(this, data);
@@ -265,7 +269,7 @@ namespace ICSharpCode.NRefactory.Visitors
 							            catchClause.VariableName,
 							            catchClause.StatementBlock.StartLocation,
 							            catchClause.StatementBlock.EndLocation,
-							            false, false, null);
+							            false, false, null, null);
 						}
 						catchClause.StatementBlock.AcceptVisitor(this, data);
 					}

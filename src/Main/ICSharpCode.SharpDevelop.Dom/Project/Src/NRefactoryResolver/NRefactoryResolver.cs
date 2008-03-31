@@ -574,7 +574,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				do {
 					ResolveResult rr = ResolveMember(tmp.DefaultReturnType, identifier,
 					                                 identifierExpression.TypeArguments,
-					                                 identifierExpression.Parent is InvocationExpression,
+					                                 IsInvoked(identifierExpression),
 					                                 false, true);
 					if (rr != null && rr.IsValid)
 						return rr;
@@ -590,7 +590,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 						if (c != null) {
 							ResolveResult rr = ResolveMember(c.DefaultReturnType, identifier,
 							                                 identifierExpression.TypeArguments,
-							                                 identifierExpression.Parent is InvocationExpression,
+							                                 IsInvoked(identifierExpression),
 							                                 false, null);
 							if (rr != null && rr.IsValid)
 								return rr;
@@ -937,6 +937,16 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				return null;
 			}
 			
+			if (v.ParentLambdaExpression != null && (v.TypeRef == null || v.TypeRef.IsNull)) {
+				IReturnType[] lambdaParameterTypes = GetImplicitLambdaParameterTypes(v.ParentLambdaExpression);
+				if (lambdaParameterTypes != null) {
+					int parameterIndex = v.ParentLambdaExpression.Parameters.FindIndex(p => p.ParameterName == v.Name);
+					if (parameterIndex >= 0 && parameterIndex < lambdaParameterTypes.Length) {
+						return lambdaParameterTypes[parameterIndex];
+					}
+				}
+			}
+			
 			// Don't create multiple IReturnType's for the same local variable.
 			// This is required to ensure that the protection against infinite recursion
 			// for type inference cycles in InferredReturnType works correctly.
@@ -946,9 +956,13 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				return rt;
 			
 			if (v.TypeRef == null || v.TypeRef.IsNull || v.TypeRef.Type == "var") {
-				rt = new InferredReturnType(v.Initializer, this);
-				if (v.IsLoopVariable) {
-					rt = new ElementReturnType(this.projectContent, rt);
+				if (v.ParentLambdaExpression != null) {
+					rt = new LambdaParameterReturnType(v.ParentLambdaExpression, v.Name, this);
+				} else {
+					rt = new InferredReturnType(v.Initializer, this);
+					if (v.IsLoopVariable) {
+						rt = new ElementReturnType(this.projectContent, rt);
+					}
 				}
 			} else {
 				rt = TypeVisitor.CreateReturnType(v.TypeRef, this);
@@ -1145,6 +1159,73 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 			
 			CtrlSpaceResolveHelper.AddImportedNamespaceContents(result, cu, callingClass);
+		}
+		
+		sealed class CompareLambdaByLocation : IEqualityComparer<LambdaExpression>
+		{
+			public bool Equals(LambdaExpression x, LambdaExpression y)
+			{
+				return x.StartLocation == y.StartLocation && x.EndLocation == y.EndLocation;
+			}
+			
+			public int GetHashCode(LambdaExpression obj)
+			{
+				return unchecked (8123351 * obj.StartLocation.GetHashCode() + obj.EndLocation.GetHashCode());
+			}
+		}
+		
+		Dictionary<LambdaExpression, IReturnType[]> lambdaParameterTypes = new Dictionary<LambdaExpression, IReturnType[]>(new CompareLambdaByLocation());
+		
+		internal void SetImplicitLambdaParameterTypes(LambdaExpression lambda, IReturnType[] types)
+		{
+			lambdaParameterTypes[lambda] = types;
+		}
+		
+		internal void UnsetImplicitLambdaParameterTypes(LambdaExpression lambda)
+		{
+			lambdaParameterTypes.Remove(lambda);
+		}
+		
+		IReturnType[] GetImplicitLambdaParameterTypes(LambdaExpression lambda)
+		{
+			IReturnType[] types;
+			if (lambdaParameterTypes.TryGetValue(lambda, out types))
+				return types;
+			else
+				return null;
+		}
+		
+		internal static bool IsInvoked(Expression expr)
+		{
+			InvocationExpression ie = expr.Parent as InvocationExpression;
+			if (ie != null) {
+				return ie.TargetObject == expr;
+			}
+			return false;
+		}
+		
+		public IReturnType GetExpectedTypeFromContext(Expression expr)
+		{
+			if (expr == null)
+				return null;
+			
+			InvocationExpression ie = expr.Parent as InvocationExpression;
+			if (ie != null) {
+				int index = ie.Arguments.IndexOf(expr);
+				if (index < 0)
+					return null;
+				
+				MemberResolveResult mrr = ResolveInternal(ie, ExpressionContext.Default) as MemberResolveResult;
+				if (mrr != null) {
+					if (mrr.IsExtensionMethodCall)
+						index++;
+					
+					IMethod m = mrr.ResolvedMember as IMethod;
+					if (m != null && index < m.Parameters.Count)
+						return m.Parameters[index].ReturnType;
+				}
+			}
+			return null;
 		}
 	}
 }

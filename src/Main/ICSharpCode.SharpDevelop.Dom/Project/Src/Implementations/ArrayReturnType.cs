@@ -143,7 +143,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public override string ToString()
 		{
-			return String.Format("[ArrayReturnType: {0}, dimensions={1}]", elementType, AppendArrayString(""));
+			return String.Format("[ArrayReturnType: {0}{1}]", elementType, AppendArrayString(""));
 		}
 	}
 }

@@ -87,14 +87,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		public override object VisitAnonymousMethodExpression(AnonymousMethodExpression anonymousMethodExpression, object data)
 		{
-			AnonymousMethodReturnType amrt = new AnonymousMethodReturnType(resolver.CompilationUnit);
-			if (anonymousMethodExpression.HasParameterList) {
-				amrt.MethodParameters = new List<IParameter>();
-				foreach (ParameterDeclarationExpression param in anonymousMethodExpression.Parameters) {
-					amrt.MethodParameters.Add(NRefactoryASTConvertVisitor.CreateParameter(param, resolver.CallingMember as IMethod, resolver.CallingClass, resolver.CompilationUnit));
-				}
-			}
-			return CreateResolveResult(amrt);
+			return CreateResolveResult(new LambdaReturnType(anonymousMethodExpression, resolver));
 		}
 		
 		public override object VisitArrayCreateExpression(ArrayCreateExpression arrayCreateExpression, object data)
@@ -281,25 +274,28 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				
 				IReturnType[] argumentTypes = invocationExpression.Arguments.Select<Expression, IReturnType>(ResolveType).ToArray();
 				
-				IMethod firstResult = null;
+				MemberResolveResult firstResult = null;
 				foreach (MethodGroup methodGroup in mgrr.Methods) {
 					bool resultIsAcceptable;
-					IMethod result;
+					IMethod method;
 					if (methodGroup.IsExtensionMethodGroup) {
 						IReturnType[] extendedTypes = new IReturnType[argumentTypes.Length + 1];
 						extendedTypes[0] = mgrr.ContainingType;
 						argumentTypes.CopyTo(extendedTypes, 1);
-						result = MemberLookupHelper.FindOverload(methodGroup, extendedTypes, out resultIsAcceptable);
+						method = MemberLookupHelper.FindOverload(methodGroup, extendedTypes, out resultIsAcceptable);
 					} else {
-						result = MemberLookupHelper.FindOverload(methodGroup, argumentTypes, out resultIsAcceptable);
+						method = MemberLookupHelper.FindOverload(methodGroup, argumentTypes, out resultIsAcceptable);
 					}
+					MemberResolveResult result = CreateMemberResolveResult(method);
+					if (result != null && methodGroup.IsExtensionMethodGroup)
+						result.IsExtensionMethodCall = true;
 					if (resultIsAcceptable)
-						return CreateMemberResolveResult(result);
+						return result;
 					if (firstResult == null)
 						firstResult = result;
 				}
 				if (firstResult != null) {
-					return CreateMemberResolveResult(firstResult);
+					return firstResult;
 				} else {
 					return FallbackResolveMethod(invocationExpression, mgrr, argumentTypes);
 				}
@@ -334,8 +330,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				List<IMethod> methods = mgrr.ContainingType.GetMethods().Where(m => resolver.IsSameName(m.Name, mre.MemberName)).ToList();
 				bool resultIsAcceptable;
 				IMethod result = MemberLookupHelper.FindOverload(
-					methods,
-					argumentTypes, out resultIsAcceptable);
+					methods, argumentTypes, out resultIsAcceptable);
 				if (result != null) {
 					return CreateMemberResolveResult(result);
 				}
@@ -347,7 +342,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		public override object VisitLambdaExpression(LambdaExpression lambdaExpression, object data)
 		{
-			return null;
+			return CreateResolveResult(new LambdaReturnType(lambdaExpression, resolver));
 		}
 		
 		public override object VisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression, object data)
@@ -382,7 +377,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				}
 				return resolver.ResolveMember(type, memberReferenceExpression.MemberName,
 				                              memberReferenceExpression.TypeArguments,
-				                              memberReferenceExpression.Parent is InvocationExpression,
+				                              NRefactoryResolver.IsInvoked(memberReferenceExpression),
 				                              typeRR == null, // allow extension methods only for non-static method calls
 				                              targetRR is BaseResolveResult ? (bool?)true : null // allow calling protected members using "base."
 				                             );

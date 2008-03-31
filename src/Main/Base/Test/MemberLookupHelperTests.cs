@@ -311,14 +311,14 @@ namespace ICSharpCode.SharpDevelop.Tests
 			
 			// but it is applicable
 			Assert.IsTrue(IsApplicable(msc.SystemTypes.String,
-			                                              CreateT()));
+			                           CreateT()));
 		}
 		
 		[Test]
 		public void NoConversionExistsFromStringToDisposableT()
 		{
 			Assert.IsFalse(IsApplicable(msc.SystemTypes.String,
-			                                               CreateTWithDisposableConstraint()));
+			                            CreateTWithDisposableConstraint()));
 			
 			Assert.IsFalse(MemberLookupHelper.ConversionExists(msc.SystemTypes.String,
 			                                                   CreateTWithDisposableConstraint()));
@@ -372,7 +372,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 		public void ConversionExistsFromAnonymousDelegateToSystemPredicate()
 		{
 			Assert.IsTrue(IsApplicable(
-				new AnonymousMethodReturnType(new DefaultCompilationUnit(msc)),
+				new AnonymousMethodReturnType(new DefaultCompilationUnit(msc)) { MethodReturnType = msc.SystemTypes.Boolean },
 				new GetClassReturnType(msc, "System.Predicate", 1)
 			));
 		}
@@ -392,11 +392,27 @@ namespace ICSharpCode.SharpDevelop.Tests
 		public void ConversionExistsFromAnonymousDelegateWithParameterToSystemPredicate()
 		{
 			AnonymousMethodReturnType amrt = new AnonymousMethodReturnType(new DefaultCompilationUnit(msc));
+			amrt.MethodReturnType = msc.SystemTypes.Boolean;
 			amrt.MethodParameters = new List<IParameter>();
-			amrt.MethodParameters.Add(new DefaultParameter("test", msc.SystemTypes.Object, DomRegion.Empty));
+			amrt.MethodParameters.Add(new DefaultParameter("test", msc.SystemTypes.String, DomRegion.Empty));
 			Assert.IsTrue(MemberLookupHelper.ConversionExists(
 				amrt,
-				new GetClassReturnType(msc, "System.Predicate", 1)
+				new ConstructedReturnType(new GetClassReturnType(msc, "System.Predicate", 1),
+				                          new IReturnType[] { msc.SystemTypes.String })
+			));
+		}
+		
+		[Test]
+		public void ConversionDoesNotExistFromAnonymousDelegateWithParameterToSystemPredicateWhenParameterTypeIsIncompatible()
+		{
+			AnonymousMethodReturnType amrt = new AnonymousMethodReturnType(new DefaultCompilationUnit(msc));
+			amrt.MethodReturnType = msc.SystemTypes.Boolean;
+			amrt.MethodParameters = new List<IParameter>();
+			amrt.MethodParameters.Add(new DefaultParameter("test", msc.SystemTypes.String, DomRegion.Empty));
+			Assert.IsFalse(MemberLookupHelper.ConversionExists(
+				amrt,
+				new ConstructedReturnType(new GetClassReturnType(msc, "System.Predicate", 1),
+				                          new IReturnType[] { msc.SystemTypes.Int32 })
 			));
 		}
 	}

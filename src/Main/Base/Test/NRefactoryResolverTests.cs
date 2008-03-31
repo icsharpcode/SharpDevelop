@@ -2074,5 +2074,52 @@ class DerivedClass : MiddleClass {
 			MemberResolveResult mrr = Resolve<MemberResolveResult>(program, "new DerivedClass().Test(3);", 4);
 			Assert.AreEqual("MiddleClass.Test", (mrr.ResolvedMember).FullyQualifiedName);
 		}
+		
+		[Test]
+		public void SimpleLambdaTest()
+		{
+			string program = @"using System;
+class TestClass {
+	static void Main() {
+		Test(i => Console.WriteLine(i));
+	}
+	public void Test(Action<int> ac) { ac(42); }
+}";
+			var lrr = Resolve<LocalResolveResult>(program, "i", 4, 31, ExpressionContext.Default);
+			Assert.AreEqual("System.Int32", lrr.ResolvedType.DotNetName);
+			
+			lrr = Resolve<LocalResolveResult>(program, "i", 4, 8, ExpressionContext.Default);
+			Assert.AreEqual("System.Int32", lrr.ResolvedType.DotNetName);
+		}
+		
+		[Test]
+		public void IncompleteLambdaTest()
+		{
+			string program = @"using System;
+class TestClass {
+	static void Main() {
+		Test(i => i
+	}
+	public void Test(Action<int> ac) { ac(42); }
+}";
+			var lrr = Resolve<LocalResolveResult>(program, "i", 4, 13, ExpressionContext.Default);
+			Assert.AreEqual("System.Int32", lrr.ResolvedType.DotNetName);
+		}
+		
+		[Test]
+		public void IncompleteExtensionLambdaTest()
+		{
+			string program = @"using System;
+using System.Collections.Generic;
+static class TestClass {
+	static void Main(string[] args) {
+		args.Select(i => i
+	}
+	public static IEnumerable<R> Select<T, R>(this IEnumerable<T> input, Func<T, R> selector) { }
+	public delegate R Func<T, R>(T arg);
+}";
+			var lrr = Resolve<LocalResolveResult>(program, "i", 5, 20, ExpressionContext.Default);
+			Assert.AreEqual("System.String", lrr.ResolvedType.DotNetName);
+		}
 	}
 }

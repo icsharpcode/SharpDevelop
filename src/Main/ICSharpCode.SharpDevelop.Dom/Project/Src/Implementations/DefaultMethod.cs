@@ -184,11 +184,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public override string ToString()
 		{
-			return String.Format("[AbstractMethod: FullyQualifiedName={0}, ReturnType = {1}, IsConstructor={2}, Modifier={3}]",
-			                     FullyQualifiedName,
-			                     ReturnType,
-			                     IsConstructor,
-			                     base.Modifiers);
+			return String.Format("[DefaultMethod: {0}]",
+			                     (new Dom.CSharp.CSharpAmbience {
+			                      	ConversionFlags = ConversionFlags.StandardConversionFlags
+			                      		| ConversionFlags.UseFullyQualifiedMemberNames
+			                      }).Convert(this));
 		}
 		
 		public virtual int CompareTo(IMethod value)

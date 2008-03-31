@@ -215,30 +215,17 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				overloadIsSure = true;
 				dp.DefaultIndex = 0;
 			} else {
-				IReturnType[] parameterTypes = new IReturnType[paramCount + 1];
+				IReturnType[] argumentTypes = new IReturnType[paramCount + 1];
 				int i = 0;
 				foreach (ResolveResult rr in parameters) {
 					if (rr != null) {
-						parameterTypes[i] = rr.ResolvedType;
+						argumentTypes[i] = rr.ResolvedType;
 					}
 					i++;
 				}
-				IReturnType[][] tmp;
-				int[] ranking = MemberLookupHelper.RankOverloads(methods, parameterTypes, true, out overloadIsSure, out tmp);
-				bool multipleBest = false;
-				int bestRanking = -1;
-				int best = 0;
-				for (i = 0; i < ranking.Length; i++) {
-					if (ranking[i] > bestRanking) {
-						bestRanking = ranking[i];
-						best = i;
-						multipleBest = false;
-					} else if (ranking[i] == bestRanking) {
-						multipleBest = true;
-					}
-				}
-				if (multipleBest) overloadIsSure = false;
-				dp.DefaultIndex = best;
+				IMethodOrProperty result = Dom.CSharp.OverloadResolution.FindOverload(
+					methods, argumentTypes, true, false, out overloadIsSure);
+				dp.DefaultIndex = methods.IndexOf(result);
 			}
 			editor.ShowInsightWindow(dp);
 			if (overloadIsSure) {

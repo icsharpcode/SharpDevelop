@@ -34,7 +34,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			
 			IReturnType baseType = BaseType;
 			bool tmp = (baseType != null && TryEnter()) ? baseType.Equals(other) : false;
-			busy = false;
+			Leave();
 			return tmp;
 		}
 		
@@ -42,7 +42,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			IReturnType baseType = BaseType;
 			int tmp = (baseType != null && TryEnter()) ? baseType.GetHashCode() : 0;
-			busy = false;
+			Leave();
 			return tmp;
 		}
 		
@@ -52,7 +52,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 		
 		// Required to prevent stack overflow on inferrence cycles
-		bool busy = false;
+		bool busy;
 		
 		// keep this method as small as possible, it should be inlined!
 		bool TryEnter()
@@ -66,6 +66,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
+		void Leave()
+		{
+			busy = false;
+		}
+		
 		void PrintTryEnterWarning()
 		{
 			LoggingService.Info("TryEnter failed on " + ToString());
@@ -75,7 +80,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get {
 				IReturnType baseType = BaseType;
 				string tmp = (baseType != null && TryEnter()) ? baseType.FullyQualifiedName : "?";
-				busy = false;
+				Leave();
 				return tmp;
 			}
 		}
@@ -84,7 +89,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get {
 				IReturnType baseType = BaseType;
 				string tmp = (baseType != null && TryEnter()) ? baseType.Name : "?";
-				busy = false;
+				Leave();
 				return tmp;
 			}
 		}
@@ -93,7 +98,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get {
 				IReturnType baseType = BaseType;
 				string tmp = (baseType != null && TryEnter()) ? baseType.Namespace : "?";
-				busy = false;
+				Leave();
 				return tmp;
 			}
 		}
@@ -102,7 +107,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get {
 				IReturnType baseType = BaseType;
 				string tmp = (baseType != null && TryEnter()) ? baseType.DotNetName : "?";
-				busy = false;
+				Leave();
 				return tmp;
 			}
 		}
@@ -111,7 +116,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get {
 				IReturnType baseType = BaseType;
 				int tmp = (baseType != null && TryEnter()) ? baseType.TypeArgumentCount : 0;
-				busy = false;
+				Leave();
 				return tmp;
 			}
 		}
@@ -120,7 +125,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			IReturnType baseType = BaseType;
 			IClass tmp = (baseType != null && TryEnter()) ? baseType.GetUnderlyingClass() : null;
-			busy = false;
+			Leave();
 			return tmp;
 		}
 		
@@ -128,7 +133,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			IReturnType baseType = BaseType;
 			List<IMethod> tmp = (baseType != null && TryEnter()) ? baseType.GetMethods() : new List<IMethod>();
-			busy = false;
+			Leave();
 			return tmp;
 		}
 		
@@ -136,7 +141,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			IReturnType baseType = BaseType;
 			List<IProperty> tmp = (baseType != null && TryEnter()) ? baseType.GetProperties() : new List<IProperty>();
-			busy = false;
+			Leave();
 			return tmp;
 		}
 		
@@ -144,7 +149,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			IReturnType baseType = BaseType;
 			List<IField> tmp = (baseType != null && TryEnter()) ? baseType.GetFields() : new List<IField>();
-			busy = false;
+			Leave();
 			return tmp;
 		}
 		
@@ -152,7 +157,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			IReturnType baseType = BaseType;
 			List<IEvent> tmp = (baseType != null && TryEnter()) ? baseType.GetEvents() : new List<IEvent>();
-			busy = false;
+			Leave();
 			return tmp;
 		}
 		
@@ -160,7 +165,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get {
 				IReturnType baseType = BaseType;
 				bool tmp = (baseType != null && TryEnter()) ? baseType.IsDefaultReturnType : false;
-				busy = false;
+				Leave();
 				return tmp;
 			}
 		}
@@ -178,7 +183,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				temp = baseType.CastToDecoratingReturnType<T>();
 			else
 				temp = null;
-			busy = false;
+			Leave();
 			return temp;
 		}
 		

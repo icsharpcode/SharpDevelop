@@ -104,5 +104,20 @@ namespace ICSharpCode.SharpDevelop.Tests
 			}
 			Assert.AreEqual(positions[num], mrr.ResolvedMember.Region.BeginLine, msg);
 		}
+		
+		[Test]
+		public void MultipleOverloadsWithImplicitLambda()
+		{
+			string program = @"class MainClass {
+	void Main() {
+		M(x=>x.ToUpper());
+	}
+	delegate R Func<T, R>(T arg);
+	int M(Func<int, int> f){ /* whatever ... */ }
+	string M(Func<string, string> f){ /* whatever ... */ }
+}";
+			var mrr = nrrt.Resolve<MemberResolveResult>(program, "M(x=>x.ToUpper())", 3, 3, ExpressionContext.Default);
+			Assert.AreEqual("System.String", mrr.ResolvedType.DotNetName);
+		}
 	}
 }

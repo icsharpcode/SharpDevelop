@@ -1900,19 +1900,22 @@ PrimaryExpr<out Expression pexpr>
 		| MemberAccess<out pexpr, pexpr>
 			
 		/*--- invocation expression: */
-		| "("                        (. List<Expression> parameters = new List<Expression>(); .)
-			[ Argument<out expr>     (. if (expr != null) {parameters.Add(expr);} .)
-			  { "," Argument<out expr> (. if (expr != null) {parameters.Add(expr);} .)
+		| "("
+			(. List<Expression> parameters = new List<Expression>(); .)
+			(. pexpr = new InvocationExpression(pexpr, parameters); .)
+			[ Argument<out expr>     (. SafeAdd(pexpr, parameters, expr); .)
+			  { "," Argument<out expr> (. SafeAdd(pexpr, parameters, expr); .)
 			  }
 			]
-			")" (. pexpr = new InvocationExpression(pexpr, parameters); .)
+			")"
 		/*--- element access */
 		|  (. /*if (isArrayCreation) Error("element access not allow on array creation");*/
 		      List<Expression> indices = new List<Expression>();
+		      pexpr = new IndexerExpression(pexpr, indices);
 		   .)
-		"[" Expr<out expr> (. if (expr != null) { indices.Add(expr); } .)
-		{ "," Expr<out expr> (. if (expr != null) { indices.Add(expr); } .)
-		} "]" (. pexpr = new IndexerExpression(pexpr, indices); .)
+		"[" Expr<out expr> (. SafeAdd(pexpr, indices, expr); .)
+		{ "," Expr<out expr> (. SafeAdd(pexpr, indices, expr); .)
+		} "]"
 		
 		(.	if (pexpr != null) {
 				pexpr.StartLocation = startLocation;

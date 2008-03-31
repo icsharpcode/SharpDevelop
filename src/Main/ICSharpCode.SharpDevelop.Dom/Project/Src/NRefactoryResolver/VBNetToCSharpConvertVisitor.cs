@@ -385,7 +385,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		{
 			if (rr is MethodGroupResolveResult
 			    && !(expression.Parent is AddressOfExpression)
-			    && !(expression.Parent is InvocationExpression))
+			    && !(NRefactoryResolver.IsInvoked(expression)))
 			{
 				InvocationExpression ie = new InvocationExpression(expression);
 				ReplaceCurrentNode(ie);

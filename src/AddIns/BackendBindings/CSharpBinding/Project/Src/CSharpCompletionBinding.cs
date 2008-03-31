@@ -94,10 +94,9 @@ namespace CSharpBinding
 				}
 			}
 			
-			if ((char.IsLetter(ch) || ch == '_') && CodeCompletionOptions.CompleteWhenTyping) {
-				if (cursor > 1 && !char.IsLetterOrDigit(editor.Document.GetCharAt(cursor - 1))
-				    && !IsInComment(editor))
-				{
+			if (char.IsLetter(ch) && CodeCompletionOptions.CompleteWhenTyping) {
+				char prevChar = cursor > 1 ? editor.Document.GetCharAt(cursor - 1) : ' ';
+				if (!char.IsLetterOrDigit(prevChar) && prevChar != '.' && !IsInComment(editor)) {
 					ExpressionResult result = ef.FindExpression(editor.Text, cursor);
 					LoggingService.Debug("CC: Beginning to type a word, result=" + result);
 					if (result.Context != ExpressionContext.IdentifierExpected) {
