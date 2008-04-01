@@ -443,8 +443,19 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				// ForEachStatement when the method in truncated in the middle.
 				// VB does not have the "inserted line looks like variable declaration"-problem
 				// anyways.
-				if (caretLine > startLine && caretLine < endLine)
-					endLine = caretLine;
+
+				// Fix removed because it causes problems with type inference for "variable" in these examples:
+				//  - var variable = multilineInitializer;
+				//  - foreach (var variable in multilineCollectionExpression)
+				//  - var query = from variable in multilineExpression
+				// Also a bug (caused because we use caretLine=expression.StartLocation.Line, would be fixed
+				//             with the cutoff at expression.EndLocation.Line):
+				//  - any multiline expression that contains lambdas in lines after the first
+				//    does not resolve if the expression's return type depends on the types
+				//    of implicitly typed lambda parameters.
+
+//				if (caretLine > startLine && caretLine < endLine)
+//					endLine = caretLine;
 			}
 			
 			int offset = 0;

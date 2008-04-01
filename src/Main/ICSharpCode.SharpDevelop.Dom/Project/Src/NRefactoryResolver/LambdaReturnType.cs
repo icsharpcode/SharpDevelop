@@ -81,6 +81,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				return ResolveReturnType();
 			
 			try {
+				MemberLookupHelper.Log("LambdaReturnType: SetImplicitLambdaParameterTypes ", parameterTypes);
 				resolver.SetImplicitLambdaParameterTypes(lambdaExpression, parameterTypes);
 				return ResolveReturnType();
 			} finally {
@@ -90,11 +91,16 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		public override IReturnType ResolveReturnType()
 		{
+			MemberLookupHelper.Log("LambdaReturnType: ResolveReturnType");
+			IReturnType result;
 			if (returnExpressions.Count == 0)
-				return resolver.ProjectContent.SystemTypes.Void;
-			return returnExpressions.Select(rt => resolver.ResolveInternal(rt, ExpressionContext.Default))
-				.Select(rr => rr != null ? rr.ResolvedType : null)
-				.Aggregate((rt1, rt2) => MemberLookupHelper.GetCommonType(resolver.ProjectContent, rt1, rt2));
+				result = resolver.ProjectContent.SystemTypes.Void;
+			else
+				result = returnExpressions.Select(rt => resolver.ResolveInternal(rt, ExpressionContext.Default))
+					.Select(rr => rr != null ? rr.ResolvedType : null)
+					.Aggregate((rt1, rt2) => MemberLookupHelper.GetCommonType(resolver.ProjectContent, rt1, rt2));
+			MemberLookupHelper.Log("LambdaReturnType: inferred " + result);
+			return result;
 		}
 	}
 }

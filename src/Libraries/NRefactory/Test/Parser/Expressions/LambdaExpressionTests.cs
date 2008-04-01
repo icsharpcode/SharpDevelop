@@ -65,5 +65,13 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			Assert.AreEqual("int", e.Parameters[0].TypeReference.Type);
 			Assert.IsTrue(e.StatementBody.Children[0] is ReturnStatement);
 		}
+		
+		[Test]
+		public void LambdaExpressionContainingConditionalExpression()
+		{
+			LambdaExpression e = Parse("rr => rr != null ? rr.ResolvedType : null");
+			Assert.AreEqual("rr", e.Parameters[0].ParameterName);
+			Assert.IsTrue(e.ExpressionBody is ConditionalExpression);
+		}
 	}
 }

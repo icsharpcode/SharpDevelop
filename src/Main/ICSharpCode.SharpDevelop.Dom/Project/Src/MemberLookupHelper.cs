@@ -442,10 +442,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 						}
 					}
 					IReturnType rt = amrt.ResolveReturnType(method.Parameters.Select(p => p.ReturnType).ToArray());
-					if (rt == null)
-						return false;
-					
-					return true;
+					return ConversionExistsInternal(rt, method.ReturnType, allowGenericTargetsOnThisMethod);
 				}
 			}
 			

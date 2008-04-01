@@ -262,13 +262,10 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 					IReturnType inferredReturnType;
 					if (amrt.HasParameterList && amrt.MethodParameters.Count == m.Parameters.Count) {
 						var inferredParameterTypes = m.Parameters.Select(p => SubstituteFixedTypes(p.ReturnType)).ToArray();
-						Log(" infer rt from lambda with parameters ", inferredParameterTypes);
 						inferredReturnType = amrt.ResolveReturnType(inferredParameterTypes);
 					} else {
-						Log(" infer rt from anonymous method");
 						inferredReturnType = amrt.ResolveReturnType();
 					}
-					Log(" inferred " + inferredReturnType);
 					
 					MakeLowerBoundInference(inferredReturnType, m.ReturnType);
 					return;
@@ -360,7 +357,7 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 		}
 		
 		/// <summary>
-		/// Make exact inference from U for V.
+		/// Make lower bound inference from U for V.
 		/// </summary>
 		void MakeLowerBoundInference(IReturnType U, IReturnType V)
 		{
@@ -400,18 +397,17 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 			// types U1…Uk such that a standard implicit conversion exists from U to C<U1…Uk>
 			// then an exact inference is made from each Ui for the corresponding Vi.
 			if (CV != null) {
-				// TODO: implement this rule
-				
-				// For now, I'm just copying the exact inference code here
-				ConstructedReturnType CU = U.CastToConstructedReturnType();
-				if (CU != null && CV != null
-				    && object.Equals(CU.UnboundType, CV.UnboundType)
-				    && CU.TypeArgumentCount == CV.TypeArgumentCount)
-				{
-					for (int i = 0; i < CU.TypeArgumentCount; i++) {
-						MakeExactInference(CU.TypeArguments[i], CV.TypeArguments[i]);
+				foreach (IReturnType U2 in MemberLookupHelper.GetTypeInheritanceTree(U)) {
+					ConstructedReturnType CU2 = U2.CastToConstructedReturnType();
+					if (CU2 != null &&
+					    object.Equals(CU2.UnboundType, CV.UnboundType) &&
+					    CU2.TypeArgumentCount == CV.TypeArgumentCount)
+					{
+						for (int i = 0; i < CU2.TypeArgumentCount; i++) {
+							MakeExactInference(CU2.TypeArguments[i], CV.TypeArguments[i]);
+						}
+						return;
 					}
-					return;
 				}
 			}
 		}

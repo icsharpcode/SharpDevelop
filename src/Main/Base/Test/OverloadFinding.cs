@@ -119,5 +119,35 @@ namespace ICSharpCode.SharpDevelop.Tests
 			var mrr = nrrt.Resolve<MemberResolveResult>(program, "M(x=>x.ToUpper())", 3, 3, ExpressionContext.Default);
 			Assert.AreEqual("System.String", mrr.ResolvedType.DotNetName);
 		}
+		
+		[Test]
+		public void MultipleOverloadsWithImplicitLambda2()
+		{
+			string program = @"class MainClass {
+	void Main() {
+		M(x=>x.Length);
+	}
+	delegate R Func<T, R>(T arg);
+	int M(Func<int, int> f){ /* whatever ... */ }
+	string M(Func<string, int> f){ /* whatever ... */ }
+}";
+			var mrr = nrrt.Resolve<MemberResolveResult>(program, "M(x=>x.Length)", 3, 3, ExpressionContext.Default);
+			Assert.AreEqual("System.String", mrr.ResolvedType.DotNetName);
+		}
+		
+		[Test]
+		public void MultipleOverloadsWithImplicitLambda3()
+		{
+			string program = @"class MainClass {
+	void Main() {
+		M(x=>x+x);
+	}
+	delegate R Func<T, R>(T arg);
+	string M(Func<string, int> f){ /* whatever ... */ }
+	int M(Func<int, int> f){ /* whatever ... */ }
+}";
+			var mrr = nrrt.Resolve<MemberResolveResult>(program, "M(x=>x+x)", 3, 3, ExpressionContext.Default);
+			Assert.AreEqual("System.Int32", mrr.ResolvedType.DotNetName);
+		}
 	}
 }

@@ -475,6 +475,20 @@ static class TestClass {
 		}
 		
 		[Test]
+		public void SelectWithImplicitlyTypedLambdaPassingGenericList()
+		{
+			MemberResolveResult mrr = ResolveInSelectProgram("Select(new List<string>(), s => s.Length)");
+			Assert.AreEqual("System.Collections.Generic.IEnumerable{System.Int32}", mrr.ResolvedType.DotNetName);
+		}
+		
+		[Test]
+		public void SelectWithImplicitlyTypedLambdaPassingGenericDictionary()
+		{
+			MemberResolveResult mrr = ResolveInSelectProgram("Select(new Dictionary<double, string>(), s => s.Key)");
+			Assert.AreEqual("System.Collections.Generic.IEnumerable{System.Double}", mrr.ResolvedType.DotNetName);
+		}
+		
+		[Test]
 		public void MultipleOverloadsWithDifferentParameterCounts()
 		{
 			string program = @"class MainClass {
