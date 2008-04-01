@@ -92,6 +92,8 @@ namespace ICSharpCode.SharpDevelop.Gui.ClassBrowser
 			contentPanel.Controls.Add(toolStrip);
 			
 			ProjectService.SolutionLoaded += ProjectServiceSolutionChanged;
+			ProjectService.ProjectItemAdded += ProjectServiceSolutionChanged;
+			ProjectService.ProjectItemRemoved += ProjectServiceSolutionChanged;
 			ProjectService.ProjectAdded += ProjectServiceSolutionChanged; // rebuild view when project is added to solution
 			ProjectService.SolutionFolderRemoved += ProjectServiceSolutionChanged; // rebuild view when project is removed from solution
 			ProjectService.SolutionClosed += ProjectServiceSolutionClosed;
@@ -104,7 +106,7 @@ namespace ICSharpCode.SharpDevelop.Gui.ClassBrowser
 			}
 			UpdateToolbars();
 		}
-		
+
 		List<ParseInformationEventArgs> pending = new List<ParseInformationEventArgs>();
 		
 		// running on main thread, invoked by the parser thread when a compilation unit changed

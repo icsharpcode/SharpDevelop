@@ -104,6 +104,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			
 			List<ToolStripItem> list = new List<ToolStripItem>();
 			
+			// refactoring actions
 			if (!FindReferencesAndRenameHelper.IsReadOnly(c)) {
 				if (c.DeclaringType == null &&
 				    !c.BodyRegion.IsEmpty &&
@@ -136,7 +137,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 								StringParser.Parse("${res:SharpDevelop.Refactoring.MoveClassToFile}",
 								                   new string[,] {{ "FileName", Path.GetFileName(correctFileName) }}),
 								delegate {
-									MoveClassToFile(c, correctFileName);
+									FindReferencesAndRenameHelper.MoveClassToFile(c, correctFileName);
 								});
 							list.Add(cmd);
 						}
@@ -146,9 +147,17 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 				cmd = new MenuCommand("${res:SharpDevelop.Refactoring.RenameCommand}", Rename);
 				cmd.Tag = c;
 				list.Add(cmd);
+			
+				if (language.RefactoringProvider.SupportsExtractInterface) {
+					cmd = new MenuCommand("${res:SharpDevelop.Refactoring.ExtractInterfaceCommand}", ExtractInterface);
+					cmd.Tag = c;
+					list.Add(cmd);
+				}
 			}
 			
+			// navigation actions
 			if (c.BaseTypes.Count > 0) {
+				list.Add(new MenuSeparator());
 				cmd = new MenuCommand("${res:SharpDevelop.Refactoring.GoToBaseCommand}", GoToBase);
 				cmd.Tag = c;
 				list.Add(cmd);
@@ -156,6 +165,10 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 					AddImplementInterfaceCommands(c, list);
 				}
 			}
+			
+			// Search actions
+			list.Add(new MenuSeparator());
+			
 			if (!c.IsSealed && !c.IsStatic) {
 				cmd = new MenuCommand("${res:SharpDevelop.Refactoring.FindDerivedClassesCommand}", FindDerivedClasses);
 				cmd.Tag = c;
@@ -194,83 +207,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 				}
 			}
 		}
-		
-		static void MoveClassToFile(IClass c, string newFileName)
-		{
-			LanguageProperties language = c.ProjectContent.Language;
-			string existingCode = ParserService.GetParseableFileContent(c.CompilationUnit.FileName);
-			DomRegion fullRegion = language.RefactoringProvider.GetFullCodeRangeForType(existingCode, c);
-			if (fullRegion.IsEmpty) return;
-			
-			Action removeExtractedCodeAction;
-			string newCode = ExtractCode(c, fullRegion, c.BodyRegion.BeginLine, out removeExtractedCodeAction);
-			
-			newCode = language.RefactoringProvider.CreateNewFileLikeExisting(existingCode, newCode);
-			if (newCode == null)
-				return;
-			IViewContent viewContent = FileService.NewFile(newFileName, newCode);
-			viewContent.PrimaryFile.SaveToDisk(newFileName);
-			// now that the code is saved in the other file, remove it from the original document
-			removeExtractedCodeAction();
-			
-			IProject project = (IProject)c.ProjectContent.Project;
-			if (project != null) {
-				FileProjectItem projectItem = new FileProjectItem(project, ItemType.Compile);
-				projectItem.FileName = newFileName;
-				ProjectService.AddProjectItem(project, projectItem);
-				FileService.FireFileCreated(newFileName, false);
-				project.Save();
-				ProjectBrowserPad.Instance.ProjectBrowserControl.RefreshView();
-			}
-		}
-		
-		static string ExtractCode(IClass c, DomRegion codeRegion, int indentationLine, out Action removeExtractedCodeAction)
-		{
-			ICSharpCode.TextEditor.Document.IDocument doc = GetDocument(c);
-			if (indentationLine < 1) indentationLine = 1;
-			if (indentationLine >= doc.TotalNumberOfLines) indentationLine = doc.TotalNumberOfLines;
-			
-			LineSegment segment = doc.GetLineSegment(indentationLine - 1);
-			string mainLine = doc.GetText(segment);
-			string indentation = mainLine.Substring(0, mainLine.Length - mainLine.TrimStart().Length);
-			
-			segment = doc.GetLineSegment(codeRegion.BeginLine - 1);
-			int startOffset = segment.Offset;
-			segment = doc.GetLineSegment(codeRegion.EndLine - 1);
-			int endOffset = segment.Offset + segment.Length;
-			
-			StringReader reader = new StringReader(doc.GetText(startOffset, endOffset - startOffset));
-			removeExtractedCodeAction = delegate {
-				doc.Remove(startOffset, endOffset - startOffset);
-				doc.RequestUpdate(new ICSharpCode.TextEditor.TextAreaUpdate(ICSharpCode.TextEditor.TextAreaUpdateType.WholeTextArea));
-				doc.CommitUpdate();
-			};
-			
-			// now remove indentation from extracted source code
-			string line;
-			StringBuilder b = new StringBuilder();
-			int endOfLastFilledLine = 0;
-			while ((line = reader.ReadLine()) != null) {
-				int startpos;
-				for (startpos = 0; startpos < line.Length && startpos < indentation.Length; startpos++) {
-					if (line[startpos] != indentation[startpos])
-						break;
-				}
-				if (startpos == line.Length) {
-					// empty line
-					if (b.Length > 0) {
-						b.AppendLine();
-					}
-				} else {
-					b.Append(line, startpos, line.Length - startpos);
-					b.AppendLine();
-					endOfLastFilledLine = b.Length;
-				}
-			}
-			b.Length = endOfLastFilledLine;
-			return b.ToString();
-		}
-		
+	
 		void AddImplementInterfaceCommandItems(List<ToolStripItem> subItems, IClass c, bool explicitImpl)
 		{
 			CodeGenerator codeGen = c.ProjectContent.Language.CodeGenerator;
@@ -281,7 +218,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 				if (interf != null && interf.ClassType == ClassType.Interface) {
 					IReturnType rtCopy = rt; // copy for access by anonymous method
 					EventHandler eh = delegate {
-						TextEditorDocument d = new TextEditorDocument(GetDocument(c));
+						TextEditorDocument d = new TextEditorDocument(FindReferencesAndRenameHelper.GetDocument(c));
 						if (d != null)
 							codeGen.ImplementInterface(rtCopy, d, explicitImpl, c);
 						ParserService.ParseCurrentViewContent();
@@ -314,11 +251,10 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			}
 		}
 		
-		static ICSharpCode.TextEditor.Document.IDocument GetDocument(IClass c)
+		void ExtractInterface(object sender, EventArgs e)
 		{
-			ITextEditorControlProvider tecp = FileService.OpenFile(c.CompilationUnit.FileName) as ITextEditorControlProvider;
-			if (tecp == null) return null;
-			return tecp.TextEditorControl.Document;
+			MenuCommand item = (MenuCommand)sender;
+			FindReferencesAndRenameHelper.ExtractInterface((IClass)item.Tag);
 		}
 		
 		void GoToBase(object sender, EventArgs e)

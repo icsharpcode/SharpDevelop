@@ -67,6 +67,17 @@
     <Compile Include="Src\Gui\Dialogs\AsynchronousWaitDialog.Designer.cs">
       <DependentUpon>AsynchronousWaitDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="Src\Gui\Dialogs\ExtractInterfaceDialog.cs" />
+    <None Include="Src\Gui\Dialogs\ExtractInterfaceDialog.cs">
+      <Link>Src\Services\RefactoringService\ExtractInterfaceDialog.cs</Link>
+    </None>
+    <Compile Include="Src\Gui\Dialogs\ExtractInterfaceDialog.Designer.cs">
+      <DependentUpon>ExtractInterfaceDialog.cs</DependentUpon>
+    </Compile>
+    <None Include="Src\Gui\Dialogs\ExtractInterfaceDialog.Designer.cs">
+      <Link>Src\Services\RefactoringService\ExtractInterfaceDialog.Designer.cs</Link>
+      <DependentUpon>ExtractInterfaceDialog.cs</DependentUpon>
+    </None>
     <Compile Include="Src\Gui\Dialogs\NewProjectDialog.cs" />
     <Compile Include="Src\Gui\Dialogs\NewProjectDialog.Designer.cs">
       <DependentUpon>NewProjectDialog.cs</DependentUpon>
@@ -123,6 +134,7 @@
     <Compile Include="Src\Internal\Doozers\IDialogPanelDescriptor.cs" />
     <Compile Include="Src\Services\File\FileService.cs" />
     <Compile Include="Src\Services\File\FileEventArgs.cs" />
+    <Compile Include="Src\Services\RefactoringService\ExtractInterfaceOptions.cs" />
     <Compile Include="Src\Services\Tasks\Task.cs" />
     <Compile Include="Src\Services\Tasks\TaskService.cs" />
     <Compile Include="Src\Services\DisplayBinding\IDisplayBinding.cs" />
@@ -694,6 +706,13 @@
     <Compile Include="Src\Internal\Templates\TemplateLoadException.cs" />
     <Compile Include="Src\Util\UnclosableStream.cs" />
     <EmbeddedResource Include="Resources\DefaultManifest.manifest" />
+    <EmbeddedResource Include="Src\Gui\Dialogs\ExtractInterfaceDialog.resx">
+      <DependentUpon>ExtractInterfaceDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <None Include="Src\Gui\Dialogs\ExtractInterfaceDialog.resx">
+      <Link>Src\Services\RefactoringService\ExtractInterfaceDialog.resx</Link>
+      <DependentUpon>ExtractInterfaceDialog.cs</DependentUpon>
+    </None>
     <EmbeddedResource Include="Src\Gui\Dialogs\NewProjectDialog.resx">
       <DependentUpon>NewProjectDialog.cs</DependentUpon>
     </EmbeddedResource>

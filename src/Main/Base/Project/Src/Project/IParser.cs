@@ -12,7 +12,7 @@ using ICSharpCode.SharpDevelop.Project;
 namespace ICSharpCode.SharpDevelop.Dom
 {
 	/// <summary>
-	/// to do: find a better matching namespace - this class is in ICSharpCode.SharpDevelop.dll,
+	/// TODO: find a better matching namespace - this class is in ICSharpCode.SharpDevelop.dll,
 	/// not in Dom!
 	/// </summary>
 	public interface IParser

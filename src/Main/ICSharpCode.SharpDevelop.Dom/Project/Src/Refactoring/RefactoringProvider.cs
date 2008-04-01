@@ -29,6 +29,29 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 			}
 		}
 		
+		#region ExtractInterface
+		public virtual bool SupportsExtractInterface {
+			get {
+				return false;
+			}
+		}
+		public virtual string GenerateInterfaceForClass(string newInterfaceName,
+		                                                IList<IMember> membersToExtract,
+		                                                bool preserveComments,
+		                                                string sourceNamespace,
+		                                                string sourceClassName,
+		                                                string existingCode
+		                                               )
+		{
+			throw new NotSupportedException();
+		}
+		
+		public virtual string AddBaseTypeToClass(string existingCode, string newInterfaceName) {
+			throw new NotSupportedException();
+		}
+		#endregion
+
+		#region FindUnusedUsingDeclarations
 		public virtual bool SupportsFindUnusedUsingDeclarations {
 			get {
 				return false;
@@ -39,7 +62,9 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 		{
 			throw new NotSupportedException();
 		}
+		#endregion
 		
+		#region CreateNewFileLikeExisting
 		public virtual bool SupportsCreateNewFileLikeExisting {
 			get {
 				return false;
@@ -57,8 +82,9 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 		{
 			throw new NotSupportedException();
 		}
+		#endregion
 		
-		
+		#region ExtractCodeForType
 		public virtual bool SupportsGetFullCodeRangeForType {
 			get {
 				return false;
@@ -69,7 +95,9 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 		{
 			throw new NotSupportedException();
 		}
+		#endregion
 	}
 }
+
 
 
