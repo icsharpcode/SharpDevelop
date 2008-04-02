@@ -1212,13 +1212,13 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.Space();
 			outputFormatter.PrintToken(Tokens.Lib);
 			outputFormatter.Space();
-			outputFormatter.PrintText('"' + ConvertString(declareDeclaration.Library) + '"');
+			outputFormatter.PrintText(ConvertString(declareDeclaration.Library));
 			outputFormatter.Space();
 			
 			if (declareDeclaration.Alias.Length > 0) {
 				outputFormatter.PrintToken(Tokens.Alias);
 				outputFormatter.Space();
-				outputFormatter.PrintText('"' + ConvertString(declareDeclaration.Alias) + '"');
+				outputFormatter.PrintText(ConvertString(declareDeclaration.Alias));
 				outputFormatter.Space();
 			}
 			
@@ -1988,27 +1988,75 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		static string ConvertCharLiteral(char ch)
 		{
 			if (Char.IsControl(ch)) {
-				return "Chr(" + ((int)ch) + ")";
+				string charName = GetCharName(ch);
+				if (charName != null)
+					return "ControlChars." + charName;
+				else
+					return "ChrW(" + ((int)ch).ToString() + ")";
+			} else if (ch == '"') {
+				return "\"\"\"\"C";
 			} else {
-				if (ch == '"') {
-					return "\"\"\"\"C";
-				}
-				return String.Concat("\"", ch.ToString(), "\"C");
+				return "\"" + ch.ToString() + "\"C";
+			}
+		}
+		
+		static string GetCharName(char ch)
+		{
+			switch (ch) {
+				case '\b':
+					return "Back";
+				case '\r':
+					return "Cr";
+				case '\f':
+					return "FormFeed";
+				case '\n':
+					return "Lf";
+				case '\0':
+					return "NullChar";
+				case '\t':
+					return "Tab";
+				case '\v':
+					return "VerticalTab";
+				default:
+					return null;
 			}
 		}
 		
 		static string ConvertString(string str)
 		{
 			StringBuilder sb = new StringBuilder();
+			bool inString = false;
 			foreach (char ch in str) {
 				if (char.IsControl(ch)) {
-					sb.Append("\" & Chr(" + ((int)ch) + ") & \"");
-				} else if (ch == '"') {
-					sb.Append("\"\"");
+					if (inString) {
+						sb.Append('"');
+						inString = false;
+					}
+					if (sb.Length > 0)
+						sb.Append(" & ");
+					string charName = GetCharName(ch);
+					if (charName != null)
+						sb.Append("vb" + charName);
+					else
+						sb.Append("ChrW(" + ((int)ch) + ")");
 				} else {
-					sb.Append(ch);
+					if (!inString) {
+						if (sb.Length > 0)
+							sb.Append(" & ");
+						sb.Append('"');
+						inString = true;
+					}
+					if (ch == '"') {
+						sb.Append("\"\"");
+					} else {
+						sb.Append(ch);
+					}
 				}
 			}
+			if (inString)
+				sb.Append('"');
+			if (sb.Length == 0)
+				return "\"\"";
 			return sb.ToString();
 		}
 		
@@ -2029,7 +2077,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 			
 			if (val is string) {
-				outputFormatter.PrintText('"' + ConvertString((string)val) + '"');
+				outputFormatter.PrintText(ConvertString((string)val));
 				return null;
 			}
 			

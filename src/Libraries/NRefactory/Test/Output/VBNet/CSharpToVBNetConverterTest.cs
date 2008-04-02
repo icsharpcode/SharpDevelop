@@ -503,7 +503,7 @@ End Class
 			            @"Public Class Convert
   Private Sub Run(ByVal s As String)
     Dim c As Char
-    If (InlineAssignHelper(c, s(0))) = Chr(10) Then
+    If (InlineAssignHelper(c, s(0))) = ControlChars.Lf Then
       c = "" ""C
     End If
   End Sub
@@ -525,6 +525,20 @@ End Class
 			              "If True Then\n" +
 			              "  Dim a As String\n" +
 			              "End If");
+		}
+		
+		[Test]
+		public void CSharpLinefeedToVBString()
+		{
+			TestStatement(@"String Test = ""My Test\n"";",
+			              @"Dim Test As String = ""My Test"" & vbLf");
+		}
+		
+		[Test]
+		public void CSharpTabToVBString()
+		{
+			TestStatement(@"String Test = ""\t\a"";",
+			              @"Dim Test As String = vbTab & ChrW(7)");
 		}
 	}
 }
