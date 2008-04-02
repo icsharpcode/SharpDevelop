@@ -390,11 +390,16 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return resolveVisitor.Resolve(expr);
 		}
 		
+		/// <summary>
+		/// Used for the fix for SD2-511.
+		/// </summary>
+		public int LimitMethodExtractionUntilLine;
+		
 		public TextReader ExtractCurrentMethod(string fileContent)
 		{
 			if (callingMember == null)
 				return null;
-			return ExtractMethod(fileContent, callingMember, language, caretLine);
+			return ExtractMethod(fileContent, callingMember, language, LimitMethodExtractionUntilLine);
 		}
 		
 		/// <summary>
@@ -403,7 +408,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		/// as all fields etc. are already prepared in the AST.
 		/// </summary>
 		public static TextReader ExtractMethod(string fileContent, IMember member,
-		                                       NR.SupportedLanguage language, int caretLine)
+		                                       NR.SupportedLanguage language, int extractUntilLine)
 		{
 			// As the parse information is always some seconds old, the end line could be wrong
 			// if the user just inserted a line in the method.
@@ -438,25 +443,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			int endLine = bodyRegion.EndLine;
 			
 			// Fix for SD2-511 (Code completion in inserted line)
-			if (language == NR.SupportedLanguage.CSharp) {
-				// Do not do this for VB: the parser does not correctly create the
-				// ForEachStatement when the method in truncated in the middle.
-				// VB does not have the "inserted line looks like variable declaration"-problem
-				// anyways.
-
-				// Fix removed because it causes problems with type inference for "variable" in these examples:
-				//  - var variable = multilineInitializer;
-				//  - foreach (var variable in multilineCollectionExpression)
-				//  - var query = from variable in multilineExpression
-				// Also a bug (caused because we use caretLine=expression.StartLocation.Line, would be fixed
-				//             with the cutoff at expression.EndLocation.Line):
-				//  - any multiline expression that contains lambdas in lines after the first
-				//    does not resolve if the expression's return type depends on the types
-				//    of implicitly typed lambda parameters.
-
-//				if (caretLine > startLine && caretLine < endLine)
-//					endLine = caretLine;
-			}
+			if (extractUntilLine > startLine && extractUntilLine < endLine)
+				endLine = extractUntilLine;
 			
 			int offset = 0;
 			for (int i = 0; i < startLine - 1; ++i) { // -1 because the startLine must be included

@@ -92,6 +92,9 @@ namespace CSharpBinding
 						}
 					}
 				}
+			} else if (ch == '.') {
+				editor.ShowCompletionWindow(new CSharpCodeCompletionDataProvider(), ch);
+				return true;
 			}
 			
 			if (char.IsLetter(ch) && CodeCompletionOptions.CompleteWhenTyping) {
@@ -106,6 +109,18 @@ namespace CSharpBinding
 			}
 			
 			return base.HandleKeyPress(editor, ch);
+		}
+		
+		class CSharpCodeCompletionDataProvider : CodeCompletionDataProvider
+		{
+			protected override ResolveResult Resolve(ExpressionResult expressionResult, int caretLineNumber, int caretColumn, string fileName, string fileContent)
+			{
+				// bypass ParserService.Resolve and set resolver.LimitMethodExtractionUntilCaretLine
+				ParseInformation parseInfo = ParserService.GetParseInformation(fileName);
+				NRefactoryResolver resolver = new NRefactoryResolver(LanguageProperties.CSharp);
+				resolver.LimitMethodExtractionUntilLine = caretLineNumber;
+				return resolver.Resolve(expressionResult, parseInfo, fileContent);
+			}
 		}
 		
 		bool IsInComment(SharpDevelopTextAreaControl editor)
