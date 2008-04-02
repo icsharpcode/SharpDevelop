@@ -191,8 +191,8 @@ namespace ICSharpCode.TextEditor.Document
 		public static int FindWordStart(IDocument document, int offset)
 		{
 			LineSegment line = document.GetLineSegmentForOffset(offset);
-			
-			while (offset > line.Offset && !IsLetterDigitOrUnderscore(document.GetCharAt(offset - 1))) {
+			int lineOffset = line.Offset;
+			while (offset > lineOffset && IsLetterDigitOrUnderscore(document.GetCharAt(offset - 1))) {
 				--offset;
 			}
 			
