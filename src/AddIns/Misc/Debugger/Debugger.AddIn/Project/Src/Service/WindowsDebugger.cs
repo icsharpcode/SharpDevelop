@@ -4,25 +4,25 @@
 //     <version>$Revision$</version>
 // </file>
 #region License
-//  
+//
 //  Copyright (c) 2007, ic#code
-//  
+//
 //  All rights reserved.
-//  
+//
 //  Redistribution  and  use  in  source  and  binary  forms,  with  or without
 //  modification, are permitted provided that the following conditions are met:
-//  
+//
 //  1. Redistributions  of  source code must retain the above copyright notice,
 //     this list of conditions and the following disclaimer.
-//  
+//
 //  2. Redistributions  in  binary  form  must  reproduce  the  above copyright
 //     notice,  this  list  of  conditions  and the following disclaimer in the
 //     documentation and/or other materials provided with the distribution.
-//  
+//
 //  3. Neither the name of the ic#code nor the names of its contributors may be
 //     used  to  endorse or promote products derived from this software without
 //     specific prior written permission.
-//  
+//
 //  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 //  AND  ANY  EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 //  IMPLIED  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -34,7 +34,7 @@
 //  CONTRACT,  STRICT  LIABILITY,  OR  TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 //  ARISING  IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 //  POSSIBILITY OF SUCH DAMAGE.
-//  
+//
 #endregion
 
 using System;
@@ -51,7 +51,7 @@ using ICSharpCode.SharpDevelop.Debugging;
 using BM = ICSharpCode.SharpDevelop.Bookmarks;
 
 namespace ICSharpCode.SharpDevelop.Services
-{	
+{
 	public class WindowsDebugger : IDebugger
 	{
 		bool useRemotingForThreadInterop = false;
@@ -111,16 +111,16 @@ namespace ICSharpCode.SharpDevelop.Services
 		string errorProcessPaused  = "${res:XML.MainMenu.DebugMenu.Error.ProcessPaused}";
 		string errorCannotStepNoActiveFunction = "${res:MainWindow.Windows.Debug.Threads.CannotStepNoActiveFunction}";
 		
-		public bool IsDebugging { 
-			get { 
+		public bool IsDebugging {
+			get {
 				return ServiceInitialized && debuggedProcess != null;
-			} 
+			}
 		}
 		
-		public bool IsProcessRunning { 
-			get { 
+		public bool IsProcessRunning {
+			get {
 				return IsDebugging && debuggedProcess.IsRunning;
-			} 
+			}
 		}
 		
 		public bool CanDebug(IProject project)
@@ -140,8 +140,8 @@ namespace ICSharpCode.SharpDevelop.Services
 			string version = debugger.GetProgramVersion(processStartInfo.FileName);
 			if (version.StartsWith("v1.0")) {
 				MessageService.ShowMessage("${res:XML.MainMenu.DebugMenu.Error.Net10NotSupported}");
-			//} else if (string.IsNullOrEmpty(version)) {
-			//	MessageService.ShowMessage("${res:XML.MainMenu.DebugMenu.Error.BadAssembly}");
+				//} else if (string.IsNullOrEmpty(version)) {
+				//	MessageService.ShowMessage("${res:XML.MainMenu.DebugMenu.Error.BadAssembly}");
 			} else {
 				if (DebugStarting != null)
 					DebugStarting(this, EventArgs.Empty);
@@ -254,7 +254,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		/// </summary>
 		public Value GetValueFromName(string variableName)
 		{
-			if (debuggedProcess == null || debuggedProcess.IsRunning || debuggedProcess.SelectedStackFrame == null) { 
+			if (debuggedProcess == null || debuggedProcess.IsRunning || debuggedProcess.SelectedStackFrame == null) {
 				return null;
 			} else {
 				Expression expression = Debugger.Expressions.SimpleParser.Parse(variableName);
@@ -323,7 +323,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			}
 		}
 		
-		public void Dispose() 
+		public void Dispose()
 		{
 			Stop();
 		}
@@ -355,34 +355,49 @@ namespace ICSharpCode.SharpDevelop.Services
 			}
 			
 			if (Initialize != null) {
-				Initialize(this, null);  
+				Initialize(this, null);
 			}
 		}
 		
 		void AddBreakpoint(BreakpointBookmark bookmark)
 		{
-			SourcecodeSegment seg = new SourcecodeSegment(bookmark.FileName, bookmark.LineNumber + 1); 
+			SourcecodeSegment seg = new SourcecodeSegment(bookmark.FileName, bookmark.LineNumber + 1);
 			Breakpoint breakpoint = debugger.AddBreakpoint(seg, bookmark.IsEnabled);
 			MethodInvoker setBookmarkColor = delegate {
-				bookmark.WillBeHit  = breakpoint.HadBeenSet || debugger.Processes.Count == 0;
+				bookmark.WillBeHit = breakpoint.HadBeenSet || debugger.Processes.Count == 0;
+			};
+			
+			// event handlers on bookmark and breakpoint don't need deregistration
+			bookmark.IsEnabledChanged += delegate {
+				breakpoint.Enabled = bookmark.IsEnabled;
 			};
 			breakpoint.Changed += delegate { setBookmarkColor(); };
-			debugger.ProcessStarted += delegate {
+			
+			setBookmarkColor();
+			
+			EventHandler<ProcessEventArgs> bp_debugger_ProcessStarted = (sender, e) => {
 				setBookmarkColor();
 				// User can change line number by inserting or deleting lines
 				breakpoint.SourcecodeSegment.StartLine = bookmark.LineNumber + 1;
 			};
-			debugger.ProcessExited  += delegate { setBookmarkColor(); };
-			setBookmarkColor();
-			
-			BM.BookmarkManager.Removed += delegate (object sender, BM.BookmarkEventArgs e) {
+			EventHandler<ProcessEventArgs> bp_debugger_ProcessExited = (sender, e) => {
+				setBookmarkColor();
+			};
+			BM.BookmarkEventHandler bp_bookmarkManager_Removed = null;
+			bp_bookmarkManager_Removed = (sender, e) => {
 				if (bookmark == e.Bookmark) {
 					debugger.RemoveBreakpoint(breakpoint);
+					
+					// unregister the events
+					debugger.ProcessStarted -= bp_debugger_ProcessStarted;
+					debugger.ProcessExited -= bp_debugger_ProcessExited;
+					BM.BookmarkManager.Removed -= bp_bookmarkManager_Removed;
 				}
 			};
-			bookmark.IsEnabledChanged += delegate {
-				breakpoint.Enabled = bookmark.IsEnabled;
-			};
+			// register the events
+			debugger.ProcessStarted += bp_debugger_ProcessStarted;
+			debugger.ProcessExited += bp_debugger_ProcessExited;
+			BM.BookmarkManager.Removed += bp_bookmarkManager_Removed;
 		}
 		
 		void LogMessage(object sender, MessageEventArgs e)
