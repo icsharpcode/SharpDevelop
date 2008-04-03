@@ -7,23 +7,55 @@
 
 using System;
 using System.Windows.Forms;
+using System.Collections.Generic;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.NRefactory;
+using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
 	public class TaskListPad : AbstractPadContent, IClipboardHandler
 	{
+		static TaskListPad instance;
+		Dictionary<string, bool> displayedTokens;
+		int selectedScopeIndex = 0;
+		
+		ToolStrip toolStrip;
+		Panel contentPanel = new Panel();
+		
 		TaskView taskView = new TaskView();
+		
+		public Dictionary<string, bool> DisplayedTokens {
+			get { return displayedTokens; }
+		}
+		
+		public int SelectedScopeIndex {
+			get { return selectedScopeIndex; }
+			set { selectedScopeIndex = value;
+				UpdateItems();
+			}
+		}
 		
 		public override Control Control {
 			get {
-				return taskView;
+				return contentPanel;
 			}
+		}
+		
+		public static TaskListPad Instance {
+			get { return instance; }
 		}
 		
 		public TaskListPad()
 		{
+			instance = this;
+			this.displayedTokens = new Dictionary<string, bool>();
+			
 			RedrawContent();
+			
+			InitializeToolStrip();
 
 			TaskService.Cleared += new EventHandler(TaskServiceCleared);
 			TaskService.Added   += new TaskEventHandler(TaskServiceAdded);
@@ -35,9 +67,111 @@ namespace ICSharpCode.SharpDevelop.Gui
 			InternalShowResults(null, null);
 		}
 		
+		private void InitializeToolStrip()
+		{
+			taskView.CreateControl();
+			
+			contentPanel.Controls.Add(taskView);
+			
+			string[] tokens = PropertyService.Get<string[]>("SharpDevelop.TaskListTokens", ParserService.DefaultTaskListTokens);
+			
+			foreach (string token in tokens)
+			{
+				if (!this.displayedTokens.ContainsKey(token)) {
+					this.displayedTokens.Add(token, true);
+				}
+			}
+			
+			toolStrip = ToolbarService.CreateToolStrip(this, "/SharpDevelop/Pads/TaskList/Toolbar");
+			ShowTaskListTokenButton[] buttons = TaskListTokensBuilder.BuildItems(tokens);
+			
+			foreach (ShowTaskListTokenButton button in buttons) {
+				toolStrip.Items.Add(new ToolBarSeparator());
+				toolStrip.Items.Add((ToolStripItem)button.Owner);
+			}
+			
+			toolStrip.Stretch   = true;
+			toolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+			
+			contentPanel.Controls.Add(toolStrip);
+		}
+		
 		public override void RedrawContent()
 		{
 			taskView.RefreshColumnNames();
+		}
+		
+		public void UpdateItems()
+		{
+			this.taskView.ClearTasks();
+			
+			foreach (Task t in TaskService.CommentTasks)
+			{
+				UpdateItem(t);
+			}
+			
+			RedrawContent();
+		}
+		
+		private void UpdateItem(Task item)
+		{
+			foreach (KeyValuePair<string, bool> pair in displayedTokens)
+			{
+				if (item.Description.StartsWith(pair.Key) && pair.Value && IsInScope(item))
+					taskView.AddTask(item);
+			}
+		}
+		
+		bool IsInScope(Task item)
+		{
+			IClass current = GetCurrentClass();
+			IClass itemClass = GetCurrentClass(item);
+			
+			switch (this.selectedScopeIndex)
+			{
+				case 0:
+					foreach (AbstractProject proj in ProjectService.OpenSolution.Projects)
+						if (proj.FindFile(item.FileName) != null)
+						return true;
+					
+					break;
+				case 1:
+					return (ProjectService.CurrentProject.FindFile(item.FileName) != null);
+				case 2:
+					return (WorkbenchSingleton.Workbench.ActiveViewContent.PrimaryFileName == item.FileName);
+				case 3:
+					return ((current != null) && (itemClass != null) && (current.Namespace == itemClass.Namespace));
+				case 4:
+					return ((current != null) && (itemClass != null) && (current == itemClass));
+			}
+			
+			return true;
+		}
+		
+		private IClass GetCurrentClass()
+		{
+			ParseInformation parseInfo = ParserService.GetParseInformation(WorkbenchSingleton.Workbench.ActiveViewContent.PrimaryFileName);
+			if (parseInfo != null) {
+				if (WorkbenchSingleton.Workbench.ActiveViewContent.Control is ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.SharpDevelopTextAreaControl)
+				{SharpDevelopTextAreaControl ctrl = WorkbenchSingleton.Workbench.ActiveViewContent.Control
+						as SharpDevelopTextAreaControl;
+					IClass c = parseInfo.MostRecentCompilationUnit.GetInnermostClass(ctrl.ActiveTextAreaControl.Caret.Line, ctrl.ActiveTextAreaControl.Caret.Line);
+					if (c != null) return c;
+				}
+			}
+			
+			return null;
+		}
+		
+		private IClass GetCurrentClass(Task item)
+		{
+			ParseInformation parseInfo = ParserService.GetParseInformation(item.FileName);
+			if (parseInfo != null) {
+				IClass c = parseInfo.MostRecentCompilationUnit.GetInnermostClass(item.Line, item.Column);
+				if (c != null) return c;
+			}
+			
+			return null;
 		}
 		
 		void OnSolutionOpen(object sender, SolutionEventArgs e)
@@ -58,20 +192,23 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void TaskServiceAdded(object sender, TaskEventArgs e)
 		{
 			if (e.Task.TaskType == TaskType.Comment) {
-				taskView.AddTask(e.Task);
+				UpdateItem(e.Task);
 			}
+			
+			RedrawContent();
 		}
 		
 		void TaskServiceRemoved(object sender, TaskEventArgs e)
 		{
 			if (e.Task.TaskType == TaskType.Comment) {
-				taskView.RemoveTask(e.Task);
+				UpdateItems();
 			}
 		}
 		
 		void InternalShowResults(object sender, EventArgs e)
 		{
-			taskView.UpdateResults(TaskService.CommentTasks);
+			UpdateItems();
+			//taskView.UpdateResults(TaskService.CommentTasks);
 		}
 		
 		public void ShowResults(object sender, EventArgs e)

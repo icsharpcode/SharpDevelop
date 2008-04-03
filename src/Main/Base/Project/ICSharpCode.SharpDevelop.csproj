@@ -102,6 +102,7 @@
     <Compile Include="Src\Gui\Pads\SearchResultPad\SearchResultMatch.cs" />
     <Compile Include="Src\Gui\Pads\SearchResultPad\SearchResultPanel.cs" />
     <Compile Include="Src\Gui\Pads\SearchResultPad\SearchResultPanelToolbarCommands.cs" />
+    <Compile Include="Src\Gui\Pads\TaskList\TaskListPadCommands.cs" />
     <Compile Include="Src\Gui\Pads\ToolsPad.cs" />
     <Compile Include="Src\Gui\Workbench\SingleInstanceHelper.cs" />
     <Compile Include="Src\Internal\ExternalTool\ExternalTool.cs" />
