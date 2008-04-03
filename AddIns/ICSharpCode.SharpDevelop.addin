@@ -2167,6 +2167,12 @@
 		          class = "ICSharpCode.SharpDevelop.Commands.Copy"/>
 	</Path>
 	
+	<Path name="/SharpDevelop/Pads/TaskList/Toolbar">
+		<ToolbarItem id = "SelectScope"
+		             class = "ICSharpCode.SharpDevelop.Gui.SelectScopeCommand"
+					 type = "ComboBox"/>
+	</Path>
+	
 	<Path name="/SharpDevelop/Services/ParserService/SingleFileGacReferences">
 		<String id = "System" text = "System"/>
 		<String id = "System.Core" text = "System.Core"/>
