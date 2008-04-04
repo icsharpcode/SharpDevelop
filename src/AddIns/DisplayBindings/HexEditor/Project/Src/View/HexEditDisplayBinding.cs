@@ -46,7 +46,7 @@ namespace HexEditor.View
 				string configpath = Path.GetDirectoryName(typeof(Editor).Assembly.Location) + Path.DirectorySeparatorChar + "config.xml";
 				
 				if (!File.Exists(configpath))
-					return new string[] {".exe;.dll"};
+					return new string[] {".exe",".dll"};
 				
 				doc.Load(configpath);
 				

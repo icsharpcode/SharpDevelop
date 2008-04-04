@@ -22,13 +22,13 @@ using HexEditor.Util;
 
 namespace HexEditor
 {
-	// TODO : Make BIG FILES COMPATIBLE (data structures are bad)
-
 	/// <summary>
 	/// Hexadecimal editor control.
 	/// </summary>
 	public partial class Editor : UserControl
 	{
+		// TODO : Make big files compatible (data structures are bad)
+
 		/// <summary>
 		/// number of the first visible line (first line = 0)
 		/// </summary>
@@ -123,7 +123,10 @@ namespace HexEditor
 		{
 			string configpath = Path.GetDirectoryName(typeof(Editor).Assembly.Location) + Path.DirectorySeparatorChar + "config.xml";
 			
-			if (!File.Exists(configpath)) return;
+			if (!File.Exists(configpath)) {
+				this.settings = Settings.CreateDefault();
+				return;
+			}
 			
 			XmlDocument doc = new XmlDocument();
 			doc.Load(configpath);
@@ -1874,6 +1877,9 @@ namespace HexEditor
 				textwidth = underscorewidth * count;
 				hexwidth = underscorewidth3 * count;
 			}
+			
+			if (count < 1)
+				count = 1;
 
 			return count;
 		}

@@ -92,6 +92,31 @@ namespace HexEditor.Util
 			                      int.Parse(node.Attributes["B"].Value));
 		}
 		
+		public static Settings CreateDefault()
+		{
+			Settings settings = new Settings();
+			
+			settings.bytesPerLine = 16;
+			settings.fitToWidth = false;
+			settings.fileTypes = new string[] {".exe", ".dll"};
+			settings.viewMode = ViewMode.Hexadecimal;
+			
+			settings.dataBold = false;
+			settings.dataItalic = false;
+			settings.dataUnderline = false;
+			
+			settings.offsetBold = false;
+			settings.offsetItalic = false;
+			settings.offsetUnderline = false;
+			
+			settings.dataForeColor = Color.Black;
+			settings.offsetForeColor = Color.Blue;
+			
+			settings.offsetFont = settings.dataFont = new Font("Courier New", 9.5f, FontStyle.Regular);
+			
+			return settings;
+		}
+		
 		public Color OffsetForeColor {
 			get { return offsetForeColor; }
 			set { offsetForeColor = value; }
