@@ -20,6 +20,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 	{
 		static TaskListPad instance;
 		Dictionary<string, bool> displayedTokens;
+		IClass oldClass;
 		int selectedScopeIndex = 0;
 		
 		ToolStrip toolStrip;
@@ -60,11 +61,49 @@ namespace ICSharpCode.SharpDevelop.Gui
 			TaskService.Cleared += new EventHandler(TaskServiceCleared);
 			TaskService.Added   += new TaskEventHandler(TaskServiceAdded);
 			TaskService.Removed += new TaskEventHandler(TaskServiceRemoved);
+			TaskService.InUpdateChanged += new EventHandler(TaskService_InUpdateChanged);
+			
+			WorkbenchSingleton.Workbench.ActiveViewContentChanged += new EventHandler(Workbench_ActiveViewContentChanged);
 			
 			ProjectService.SolutionLoaded += OnSolutionOpen;
 			ProjectService.SolutionClosed += OnSolutionClosed;
 			
 			InternalShowResults(null, null);
+		}
+
+		void Workbench_ActiveViewContentChanged(object sender, EventArgs e)
+		{
+			if (WorkbenchSingleton.Workbench.ActiveViewContent == null)
+				return;
+			
+			UpdateItems();
+			
+			if (WorkbenchSingleton.Workbench.ActiveViewContent.Control is SharpDevelopTextAreaControl) {
+				SharpDevelopTextAreaControl ctrl = WorkbenchSingleton.Workbench.ActiveViewContent.Control as SharpDevelopTextAreaControl;
+				
+				ctrl.ActiveTextAreaControl.Caret.PositionChanged += new EventHandler(Caret_PositionChanged);
+				ctrl.ActiveTextAreaControl.Caret.CaretModeChanged += new EventHandler(Caret_PositionChanged);
+			}
+		}
+
+		void Caret_PositionChanged(object sender, EventArgs e)
+		{
+			MessageService.ShowMessage("Changed");
+			if (this.selectedScopeIndex > 2)
+			{
+				IClass current = GetCurrentClass();
+				
+				if (oldClass == null) oldClass = current;
+				
+				if ((current != null) && (current.FullyQualifiedName != oldClass.FullyQualifiedName))
+					UpdateItems();
+			}
+		}
+
+		void TaskService_InUpdateChanged(object sender, EventArgs e)
+		{
+			if (!TaskService.InUpdate)
+				UpdateItems();
 		}
 		
 		private void InitializeToolStrip()
@@ -192,7 +231,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void TaskServiceAdded(object sender, TaskEventArgs e)
 		{
 			if (e.Task.TaskType == TaskType.Comment) {
-				UpdateItem(e.Task);
+				UpdateItems();
 			}
 			
 			RedrawContent();
@@ -203,6 +242,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (e.Task.TaskType == TaskType.Comment) {
 				UpdateItems();
 			}
+			
+			RedrawContent();
 		}
 		
 		void InternalShowResults(object sender, EventArgs e)
