@@ -65,6 +65,16 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			WorkbenchSingleton.Workbench.ActiveViewContentChanged += new EventHandler(Workbench_ActiveViewContentChanged);
 			
+			if (WorkbenchSingleton.Workbench.ActiveViewContent != null) {
+				UpdateItems();
+				
+				if (WorkbenchSingleton.Workbench.ActiveViewContent.Control is SharpDevelopTextAreaControl) {
+					SharpDevelopTextAreaControl ctrl = WorkbenchSingleton.Workbench.ActiveViewContent.Control as SharpDevelopTextAreaControl;
+					
+					ctrl.ActiveTextAreaControl.Caret.PositionChanged += new EventHandler(Caret_PositionChanged);
+				}
+			}
+			
 			ProjectService.SolutionLoaded += OnSolutionOpen;
 			ProjectService.SolutionClosed += OnSolutionClosed;
 			
@@ -82,13 +92,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 				SharpDevelopTextAreaControl ctrl = WorkbenchSingleton.Workbench.ActiveViewContent.Control as SharpDevelopTextAreaControl;
 				
 				ctrl.ActiveTextAreaControl.Caret.PositionChanged += new EventHandler(Caret_PositionChanged);
-				ctrl.ActiveTextAreaControl.Caret.CaretModeChanged += new EventHandler(Caret_PositionChanged);
 			}
 		}
 
 		void Caret_PositionChanged(object sender, EventArgs e)
 		{
-			MessageService.ShowMessage("Changed");
 			if (this.selectedScopeIndex > 2)
 			{
 				IClass current = GetCurrentClass();
