@@ -383,7 +383,7 @@ namespace ICSharpCode.UnitTesting
 		TestMethod GetPrefixedTestMethod(string testResultName)
 		{
 			IClass baseClass = c.BaseClass;
-			if (baseClass != null && TestClass.IsTestClass(baseClass)) {
+			if (baseClass != null) {
 				string methodName = TestMethod.GetMethodName(testResultName);
 				string actualMethodName = String.Concat(baseClass.Name, ".", methodName);
 				return GetTestMethod(actualMethodName);
