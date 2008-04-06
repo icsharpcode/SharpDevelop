@@ -43,34 +43,32 @@ namespace PythonBinding.Tests.Expressions
 		public void SystemConsoleOnly()
 		{
 			string text = "System.Console";
-			AssertSystemConsoleExpressionFound(text, text.Length - 1);
+			AssertSystemConsoleExpressionFound(text, text.Length);
 		}
 		
 		[Test]
 		public void MultipleLinesContainingCarriageReturnAndNewLine()
 		{
 			string text = "\r\nSystem.Console";
-			AssertSystemConsoleExpressionFound(text, text.Length - 1);
+			AssertSystemConsoleExpressionFound(text, text.Length);
 		}
 
 		[Test]
 		public void MultipleLinesContainingCarriageReturn()
 		{
 			string text = "\rSystem.Console";
-			AssertSystemConsoleExpressionFound(text, text.Length - 1);
+			AssertSystemConsoleExpressionFound(text, text.Length);
 		}
 		
 		
 		/// <summary>
-		/// Should find an empty string since the offset points
-		/// to the carriage return character.
+		/// Should find an empty string since the offset is after the carriage return character.
 		/// </summary>
 		[Test]
 		public void CarriageReturnAfterLastCharacter()
 		{
 			string text = "System.Console\r";
-			int offset = text.IndexOf('\r');
-			ExpressionResult result = expressionFinder.FindExpression(text, offset);
+			ExpressionResult result = expressionFinder.FindExpression(text, text.Length);
 			Assert.AreEqual(String.Empty, result.Expression);
 		}
 
@@ -78,14 +76,14 @@ namespace PythonBinding.Tests.Expressions
 		public void SpaceBeforeSystemConsoleText()
 		{
 			string text = " System.Console";
-			AssertSystemConsoleExpressionFound(text, text.Length - 1);
+			AssertSystemConsoleExpressionFound(text, text.Length);
 		}
 		
 		[Test]
 		public void TabBeforeSystemConsoleText()
 		{
 			string text = "\tSystem.Console";
-			AssertSystemConsoleExpressionFound(text, text.Length - 1);
+			AssertSystemConsoleExpressionFound(text, text.Length);
 		}
 		
 		[Test]
@@ -95,12 +93,20 @@ namespace PythonBinding.Tests.Expressions
 			ExpressionResult result = expressionFinder.FindExpression(text, 0);
 			Assert.IsNull(result.Expression);
 		}
+
+		[Test]
+		public void OffsetTooSmall()
+		{
+			string text = "a";
+			ExpressionResult result = expressionFinder.FindExpression(text, 0);
+			Assert.IsNull(result.Expression);
+		}
 		
 		[Test]
 		public void OffsetTooLarge()
 		{
 			string text = "a";
-			ExpressionResult result = expressionFinder.FindExpression(text, text.Length);
+			ExpressionResult result = expressionFinder.FindExpression(text, text.Length + 1);
 			Assert.IsNull(result.Expression);			
 		}
 		

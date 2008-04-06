@@ -37,7 +37,7 @@ namespace ICSharpCode.PythonBinding
 			if (text != null && IsValidOffset(text, offset)) {
 				bool found = false;
 				ExpressionContext expressionContext = ExpressionContext.Default;
-				int currentOffset = offset;
+				int currentOffset = offset - 1;
 				while (!found && currentOffset >= 0) {
 					char currentChar = text[currentOffset];
 					switch (currentChar) {
@@ -62,7 +62,7 @@ namespace ICSharpCode.PythonBinding
 				}
 				
 				// Create expression result.
-				string expression = Substring(text, currentOffset + 1, offset);
+				string expression = Substring(text, currentOffset + 1, offset - 1);
 				return new ExpressionResult(expression, expressionContext);
 			}
 			return new ExpressionResult(null);
@@ -111,14 +111,18 @@ namespace ICSharpCode.PythonBinding
 		}
 		
 		/// <summary>
+		/// This checks that the offset passed to the FindExpression method is valid. Usually the offset is
+		/// just after the last character in the text.
+		/// 
 		/// The offset must be:
 		/// 
-		/// 1) Greater or equal to zero.
+		/// 1) Greater than zero.
 		/// 2) Be inside the string.
+		/// 3) Be just after the end of the text.
 		/// </summary>
 		static bool IsValidOffset(string text, int offset)
 		{
-			return (offset >= 0) && (offset < text.Length);
+			return (offset > 0) && (offset <= text.Length);
 		}
 		
 		/// <summary>

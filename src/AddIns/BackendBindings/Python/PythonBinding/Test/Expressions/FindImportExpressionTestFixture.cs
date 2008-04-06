@@ -30,9 +30,8 @@ namespace PythonBinding.Tests.Expressions
 		public void ImportOnly()
 		{
 			string text = "import";
-			ExpressionResult result = expressionFinder.FindExpression(text, text.Length - 1);
-			Assert.AreEqual("import", result.Expression);
-			
+			ExpressionResult result = expressionFinder.FindExpression(text, text.Length);
+			Assert.AreEqual("import", result.Expression);			
 		}
 		
 		/// <summary>
@@ -43,7 +42,7 @@ namespace PythonBinding.Tests.Expressions
 		public void ImportWithNamespace()
 		{
 			string text = "import System";
-			ExpressionResult result = expressionFinder.FindExpression(text, text.Length - 1);
+			ExpressionResult result = expressionFinder.FindExpression(text, text.Length);
 			Assert.AreEqual("import System", result.Expression);
 			Assert.AreEqual(ExpressionContext.Importable, result.Context);
 		}
@@ -52,7 +51,7 @@ namespace PythonBinding.Tests.Expressions
 		public void MultipleLinesWithImportAndNamespace()
 		{
 			string text = "# Line to ignore\r\nimport System";
-			ExpressionResult result = expressionFinder.FindExpression(text, text.Length - 1);
+			ExpressionResult result = expressionFinder.FindExpression(text, text.Length);
 			Assert.AreEqual("import System", result.Expression);
 			Assert.AreEqual(ExpressionContext.Importable, result.Context);
 		}		
@@ -61,7 +60,7 @@ namespace PythonBinding.Tests.Expressions
 		public void ImportWithExtraWhitespaceBeforeNamespace()
 		{
 			string text = "import    System";
-			ExpressionResult result = expressionFinder.FindExpression(text, text.Length - 1);
+			ExpressionResult result = expressionFinder.FindExpression(text, text.Length);
 			Assert.AreEqual(text, result.Expression);
 			Assert.AreEqual(ExpressionContext.Importable, result.Context);
 		}
@@ -70,7 +69,7 @@ namespace PythonBinding.Tests.Expressions
 		public void FromStatementBeforeImport()
 		{
 			string text = "from System import Test";
-			ExpressionResult result = expressionFinder.FindExpression(text, text.Length - 1);
+			ExpressionResult result = expressionFinder.FindExpression(text, text.Length);
 			Assert.AreEqual(text, result.Expression);
 			Assert.AreEqual(ExpressionContext.Importable, result.Context);
 		}
@@ -82,7 +81,7 @@ namespace PythonBinding.Tests.Expressions
 		public void UppercaseImportWithNamespace()
 		{
 			string text = "IMPORT Test";
-			ExpressionResult result = expressionFinder.FindExpression(text, text.Length - 1);
+			ExpressionResult result = expressionFinder.FindExpression(text, text.Length);
 			Assert.AreEqual("Test", result.Expression);
 		}
 	}
