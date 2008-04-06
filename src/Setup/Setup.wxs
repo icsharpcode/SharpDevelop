@@ -65,11 +65,10 @@
 		
 		<!--
 			Check the user has elevated permissions. We need admin rights to NGen 
-			SharpDevelop.exe, to install NUnit into the GAC and to register the Help 
-			collection. 
+			SharpDevelop.exe and to register the Help collection. 
 
 			At the moment we do not need admin rights since the installer only tries
-			to NGen and add NUnit to the GAC if we have admin rights. So as long
+			to NGen if we have admin rights. So as long
 			as the user does not try to install it into Program Files then the
 			install will finish successfully. 
 
@@ -259,7 +258,6 @@
 				<ComponentRef Id="NUnitFrameworkDll"/>
 				<ComponentRef Id="NunitConsoleRunnerDll"/>
 				<ComponentRef Id="NUnitCoreInterfacesDll"/>
-				<ComponentRef Id="NUnitLog4NetDll"/>
 				<ComponentRef Id="ConversionStyleSheetFiles"/>
 				<ComponentRef Id="TextLibOptionsFiles"/>
 				<ComponentRef Id="OptionsFiles"/>
