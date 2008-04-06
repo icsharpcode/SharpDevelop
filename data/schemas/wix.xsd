@@ -48,6 +48,11 @@
                     <xs:documentation>Required version of the WiX toolset to compile this input file.</xs:documentation>
                 </xs:annotation>
             </xs:attribute>
+            <xs:anyAttribute namespace="##other" processContents="lax">
+                <xs:annotation><xs:documentation>
+                    Extensibility point in the WiX XML Schema. Schema extensions can register additional attributes at this point in the schema.
+                </xs:documentation></xs:annotation>
+            </xs:anyAttribute>
         </xs:complexType>
     </xs:element>
 
@@ -68,6 +73,11 @@
                 The Product element is analogous to the main function in a C program.  When linking, only one Product section
                 can be given to the linker to produce a successful result.  Using this element creates an msi file.
             </xs:documentation>
+            <xs:appinfo>
+                <xse:remarks>
+                    <html:p>You can specify any valid Windows code by integer like 1252, or by web name like Windows-1252. See <a href="/html/codepage.htm">Code Pages</a> for more information.</html:p>
+                </xse:remarks>
+            </xs:appinfo>
         </xs:annotation>
         <xs:complexType>
             <xs:sequence>
@@ -77,6 +87,7 @@
                     <xs:element ref="Binary"/>
                     <xs:element ref="ComplianceCheck"/>
                     <xs:element ref="Component"/>
+                    <xs:element ref="ComponentGroup"/>
                     <xs:element ref="Condition"/>
                     <xs:element ref="CustomAction"/>
                     <xs:element ref="CustomActionRef"/>
@@ -90,10 +101,13 @@
                     <xs:element ref="FeatureRef"/>
                     <xs:element ref="FeatureGroupRef"/>
                     <xs:element ref="Icon"/>
+                    <xs:element ref="InstanceTransforms"/>
                     <xs:element ref="Media"/>
                     <xs:element ref="PatchCertificates"/>
                     <xs:element ref="Property"/>
                     <xs:element ref="PropertyRef"/>
+                    <xs:element ref="SetDirectory"/>
+                    <xs:element ref="SetProperty"/>
                     <xs:element ref="SFPCatalog"/>
                     <xs:element ref="SymbolPath"/>
                     <xs:element ref="UI"/>
@@ -121,9 +135,9 @@
                     <xs:documentation>The product code GUID for the product.</xs:documentation>
                 </xs:annotation>
             </xs:attribute>
-            <xs:attribute name="Codepage" type="xs:integer">
+            <xs:attribute name="Codepage" type="xs:string">
                 <xs:annotation>
-                    <xs:documentation>The codepage for the resulting MSI.</xs:documentation>
+                    <xs:documentation>The code page integer value or web name for the resulting MSI. See remarks for more information.</xs:documentation>
                 </xs:annotation>
             </xs:attribute>
             <xs:attribute name="Language" type="LocalizableInteger" use="required">
@@ -161,11 +175,18 @@
     </xs:element>
 
     <xs:element name="Module">
-        <xs:annotation><xs:documentation>
+        <xs:annotation>
+            <xs:documentation>
             The Module element is analogous to the main function in a C program.  When linking, only
             one Module section can be given to the linker to produce a successful result.  Using this
             element creates an msm file.
-        </xs:documentation></xs:annotation>
+            </xs:documentation>
+            <xs:appinfo>
+                <xse:remarks>
+                    <html:p>You can specify any valid Windows code by by integer like 1252, or by web name like Windows-1252. See <a href="/html/codepage.htm">Code Pages</a> for more information.</html:p>
+                </xse:remarks>
+            </xs:appinfo>
+        </xs:annotation>
         <xs:complexType>
             <xs:sequence>
                 <xs:element ref="Package" />
@@ -191,6 +212,8 @@
                     <xs:element ref="IgnoreTable"/>
                     <xs:element ref="Property"/>
                     <xs:element ref="PropertyRef"/>
+                    <xs:element ref="SetDirectory"/>
+                    <xs:element ref="SetProperty"/>
                     <xs:element ref="SFPCatalog"/>
                     <xs:element ref="Substitution"/>
                     <xs:element ref="UI"/>
@@ -217,9 +240,9 @@
                     <xs:documentation>The name of the merge module (not the file name).</xs:documentation>
                 </xs:annotation>
             </xs:attribute>
-            <xs:attribute name="Codepage" type="xs:integer">
+            <xs:attribute name="Codepage" type="xs:string">
                 <xs:annotation>
-                    <xs:documentation>The codepage of the merge module.</xs:documentation>
+                    <xs:documentation>The code page integer value or web name for the resulting MSM. See remarks for more information.</xs:documentation>
                 </xs:annotation>
             </xs:attribute>
             <xs:attribute name="Guid" type="Guid">
@@ -409,6 +432,8 @@
                 <xs:element ref="PatchFamily"/>
                 <xs:element ref="Property"/>
                 <xs:element ref="PropertyRef"/>
+                <xs:element ref="SetDirectory"/>
+                <xs:element ref="SetProperty"/>
                 <xs:element ref="SFPCatalog"/>
                 <xs:element ref="UI"/>
                 <xs:element ref="UIRef"/>
@@ -445,6 +470,7 @@
             </xs:documentation>
             <xs:appinfo>
                 <xse:remarks>
+                    <html:p>You can specify any valid Windows code by by integer like 1252, or by web name like Windows-1252. See <a href="/html/codepage.htm">Code Pages</a> for more information.</html:p>
                     <html:p>The ClientPatchId attribute allows you to specify an easily referenced identity that you can use in product authoring. This identity prefixes properties added by WiX to a patch transform, such as <html:i>ClientPatchId</html:i>.PatchCode and <html:i>ClientPatchId</html:i>.AllowRemoval. If the patch code GUID is auto-generated you could not reference any properties using this auto-generated prefix.</html:p>
                     <html:p>For example, if you were planning to ship a patch referred to as "QFE1" and needed to write your own registry values for Add/Remove Programs in product authoring such as the UninstallString for this patch, you could author a RegistryValue with the name UninstallString and the value <html:code><html:nobr>[SystemFolder]msiexec.exe</html:nobr> /package [ProductCode] /uninstall [QFE1.PatchCode]</html:code>. In your patch authoring you would then set ClientPatchId to "QFE1" and WiX will add the QFE1.PatchCode property to the patch transform when the patch is created. If the Id attribute specified the patch code to be generated automatically, you could not reference the <html:i>prefix</html:i>.PatchCode property as shown above.</html:p>
                 </xse:remarks>
@@ -472,9 +498,9 @@
             <xs:attribute name="Id" type="AutogenGuid">
                 <xs:annotation><xs:documentation>Patch code for this patch.</xs:documentation></xs:annotation>
             </xs:attribute>
-            <xs:attribute name="Codepage" type="xs:integer">
+            <xs:attribute name="Codepage" type="xs:string">
                 <xs:annotation>
-                    <xs:documentation>The codepage for the resulting MSP.</xs:documentation>
+                    <xs:documentation>The code page integer value or web name for the resulting MSP. See remarks for more information.</xs:documentation>
                 </xs:annotation>
             </xs:attribute>
             <xs:attribute name="AllowRemoval" type="YesNoType">
@@ -755,10 +781,17 @@
     </xs:element>
 
     <xs:element name="PatchCreation">
-        <xs:annotation><xs:documentation>
+        <xs:annotation>
+            <xs:documentation>
             The PatchCreation element is analogous to the main function in a C program.  When linking, only one PatchCreation section
             can be given to the linker to produce a successful result.  Using this element creates a pcp file.
-        </xs:documentation></xs:annotation>
+            </xs:documentation>
+            <xs:appinfo>
+                <xse:remarks>
+                    <html:p>You can specify any valid Windows code by by integer like 1252, or by web name like Windows-1252. See <a href="/html/codepage.htm">Code Pages</a> for more information.</html:p>
+                </xse:remarks>
+            </xs:appinfo>
+        </xs:annotation>
         <xs:complexType>
             <xs:sequence>
                 <xs:element ref="PatchInformation" />
@@ -784,8 +817,8 @@
             <xs:attribute name="CleanWorkingFolder" type="YesNoType">
                 <xs:annotation><xs:documentation>Use this to set whether Patchwiz should clean the temp folder when finished. See <a href="http://msdn2.microsoft.com/en-us/library/aa370890.aspx">DontRemoveTempFolderWhenFinished</a> for more information.	</xs:documentation></xs:annotation>
             </xs:attribute>
-            <xs:attribute name="Codepage" type="xs:integer">
-                <xs:annotation><xs:documentation>The codepage for the resulting PCP.</xs:documentation></xs:annotation>
+            <xs:attribute name="Codepage" type="xs:string">
+                <xs:annotation><xs:documentation>The code page integer value or web name for the resulting PCP. See remarks for more information.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="OutputPath" type="xs:string">
                 <xs:annotation><xs:documentation>The full path, including file name, of the patch package file that is to be generated. See <a href="http://msdn2.microsoft.com/en-us/library/aa370890.aspx">PatchOutputPath</a> for more information.</xs:documentation></xs:annotation>
@@ -804,6 +837,11 @@
     <xs:element name="PatchInformation">
         <xs:annotation>
             <xs:documentation>Properties about the patch to be placed in the Summary Information Stream.  These are visible from COM through the IStream interface, and these properties can be seen on the package in Explorer.</xs:documentation>
+            <xs:appinfo>
+                <xse:remarks>
+                    <html:p>You can specify any valid Windows code by by integer like 1252, or by web name like Windows-1252. See <a href="/html/codepage.htm">Code Pages</a> for more information.</html:p>
+                </xse:remarks>
+            </xs:appinfo>
         </xs:annotation>
         <xs:complexType>
             <xs:attribute name="Description" type="xs:string">
@@ -845,9 +883,9 @@
                     </xs:documentation>
                 </xs:annotation>
             </xs:attribute>
-            <xs:attribute name="SummaryCodepage" type="LocalizableInteger">
+            <xs:attribute name="SummaryCodepage" type="xs:string">
                 <xs:annotation>
-                    <xs:documentation>The codepage for summary info strings only.  The language neutral codepage, zero, is not a valid value.</xs:documentation>
+                    <xs:documentation>The code page integer value or web name for summary info strings only.  See remarks for more information.</xs:documentation>
                 </xs:annotation>
             </xs:attribute>
             <xs:attribute name="ShortNames" type="YesNoType">
@@ -1293,10 +1331,17 @@
     </xs:element>
   
     <xs:element name="Package">
-        <xs:annotation><xs:documentation>
+        <xs:annotation>
+            <xs:documentation>
             Properties about the package to be placed in the Summary Information Stream.  These are
             visible from COM through the IStream interface, and these properties can be seen on the package in Explorer.
-        </xs:documentation></xs:annotation>
+            </xs:documentation>
+            <xs:appinfo>
+                <xse:remarks>
+                    <html:p>You can specify any valid Windows code by by integer like 1252, or by web name like Windows-1252. See <a href="/html/codepage.htm">Code Pages</a> for more information.</html:p>
+                </xse:remarks>
+            </xs:appinfo>
+        </xs:annotation>
         <xs:complexType>
             <xs:attribute name="Id" type="AutogenGuid">
                 <xs:annotation>
@@ -1357,7 +1402,7 @@
             </xs:attribute>
             <xs:attribute name="InstallerVersion" type="xs:integer">
                 <xs:annotation>
-                    <xs:documentation>The minimum installer version (major*100 + minor).</xs:documentation>
+                    <xs:documentation>The minimum installer version (major*100 + minor*10).</xs:documentation>
                 </xs:annotation>
             </xs:attribute>
             <xs:attribute name="Keywords" type="xs:string">
@@ -1426,9 +1471,9 @@
                     <xs:documentation>Set to 'yes' to have short filenames in the source.</xs:documentation>
                 </xs:annotation>
             </xs:attribute>
-            <xs:attribute name="SummaryCodepage" type="LocalizableInteger">
+            <xs:attribute name="SummaryCodepage" type="xs:string">
                 <xs:annotation>
-                    <xs:documentation>The codepage for summary info strings only.  The language neutral codepage, zero, is not a valid value.</xs:documentation>
+                    <xs:documentation>The code page integer value or web name for summary info strings only.  See remarks for more information.</xs:documentation>
                 </xs:annotation>
             </xs:attribute>
         </xs:complexType>
@@ -3776,6 +3821,12 @@
             <xs:attribute name="Advertise" type="YesNoType">
                 <xs:annotation><xs:documentation>Whether this extension is to be advertised. The default is "no".</xs:documentation></xs:annotation>
             </xs:attribute>
+            <xs:anyAttribute namespace="##other" processContents="lax">
+                <xs:annotation><xs:documentation>
+                    Extensibility point in the WiX XML Schema.  Schema extensions can register additional
+                    attributes at this point in the schema.
+                </xs:documentation></xs:annotation>
+            </xs:anyAttribute>
         </xs:complexType>
     </xs:element>
 
@@ -6593,6 +6644,173 @@
         </xs:complexType>
     </xs:element>
 
+    <xs:element name="SetDirectory">
+        <xs:annotation>
+            <xs:appinfo>
+                <xse:seeAlso ref="Custom"/>
+                <xse:seeAlso ref="CustomActionRef"/>
+                <xse:seeAlso ref="InstallUISequence"/>
+                <xse:seeAlso ref="InstallExecuteSequence"/>
+                <xse:msiRef table="CustomAction" />
+            </xs:appinfo>
+            <xs:documentation>
+                Sets a Directory to a particular value. This is accomplished by creating a Type 51 custom action that is appropriately scheduled in
+                the InstallUISequence and InstallExecuteSequence.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:simpleContent>
+                <xs:extension base="xs:string">
+                    <xs:annotation><xs:documentation>
+                        The condition that determines whether the Directory is set. If the condition evaluates to false, the SetDirectory is skipped.
+                    </xs:documentation></xs:annotation>
+
+                    <xs:attribute name="Id" type="xs:string">
+                        <xs:annotation>
+                            <xs:documentation>
+                                This attribute specifies a reference to a Directory element with matching Id attribute. The path of the Directory will be set to
+                                the Value attribute.
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:attribute>
+                    <xs:attribute name="Sequence">
+                        <xs:annotation>
+                            <xs:documentation>
+                                Controls which sequences the Directory assignment is sequenced in. The default is both.
+                            </xs:documentation>
+                        </xs:annotation>
+                        <xs:simpleType>
+                            <xs:restriction base="xs:NMTOKEN">
+                                <xs:enumeration value="both">
+                                    <xs:annotation>
+                                        <xs:documentation>
+                                            Schedules the assignment in the InstallUISequence and the InstallExecuteSequence.
+                                        </xs:documentation>
+                                    </xs:annotation>
+                                </xs:enumeration>
+                                <xs:enumeration value="execute">
+                                    <xs:annotation>
+                                        <xs:documentation>
+                                            Schedules the assignment only in the the InstallExecuteSequence.
+                                        </xs:documentation>
+                                    </xs:annotation>
+                                </xs:enumeration>
+                                <xs:enumeration value="ui">
+                                    <xs:annotation>
+                                        <xs:documentation>
+                                            Schedules the assignment only in the the InstallUISequence.
+                                        </xs:documentation>
+                                    </xs:annotation>
+                                </xs:enumeration>
+                            </xs:restriction>
+                        </xs:simpleType>
+                    </xs:attribute>
+                    <xs:attribute name="Value" type="xs:string">
+                        <xs:annotation>
+                            <xs:documentation>
+                                This attribute specifies a string value to assign to the Directory. The value can be a literal value or derived from a
+                                Property element using the <html:a href='http://msdn.microsoft.com/library/en-us/msi/setup/formatted.asp'>Formatted</html:a>
+                                syntax.
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:attribute>
+                    <xs:anyAttribute namespace="##other" processContents="lax">
+                        <xs:annotation><xs:documentation>
+                            Extensibility point in the WiX XML Schema.  Schema extensions can register additional
+                            attributes at this point in the schema.
+                        </xs:documentation></xs:annotation>
+                    </xs:anyAttribute>
+                </xs:extension>
+            </xs:simpleContent>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="SetProperty">
+        <xs:annotation>
+            <xs:appinfo>
+                <xse:seeAlso ref="Custom"/>
+                <xse:seeAlso ref="CustomActionRef"/>
+                <xse:seeAlso ref="InstallUISequence"/>
+                <xse:seeAlso ref="InstallExecuteSequence"/>
+                <xse:msiRef table="CustomAction" />
+            </xs:appinfo>
+            <xs:documentation>
+                Sets a Property to a particular value. This is accomplished by creating a Type 51 custom action that is appropriately scheduled in
+                the InstallUISequence and InstallExecuteSequence.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:simpleContent>
+                <xs:extension base="xs:string">
+                    <xs:annotation><xs:documentation>
+                        The condition that determines whether the Property is set. If the condition evaluates to false, the Set is skipped.
+                    </xs:documentation></xs:annotation>
+
+                    <xs:attribute name="After" type="xs:string">
+                        <xs:annotation><xs:documentation>The name of the standard or custom action after which this action should be performed. Mutually exclusive with the Before attribute. A Before or After attribute is required when setting a Property.</xs:documentation></xs:annotation>
+                    </xs:attribute>
+                    <xs:attribute name="Before" type="xs:string">
+                        <xs:annotation><xs:documentation>The name of the standard or custom action before which this action should be performed. Mutually exclusive with the After attribute. A Before or After attribute is required when setting a Property.</xs:documentation></xs:annotation>
+                    </xs:attribute>
+                    <xs:attribute name="Id" type="xs:string">
+                        <xs:annotation>
+                            <xs:documentation>
+                                This attribute specifies the Property to set to the Value.
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:attribute>
+                    <xs:attribute name="Sequence">
+                        <xs:annotation>
+                            <xs:documentation>
+                                Controls which sequences the Property assignment is sequenced in. The default is both.
+                            </xs:documentation>
+                        </xs:annotation>
+                        <xs:simpleType>
+                            <xs:restriction base="xs:NMTOKEN">
+                                <xs:enumeration value="both">
+                                    <xs:annotation>
+                                        <xs:documentation>
+                                            Schedules the assignment in the InstallUISequence and the InstallExecuteSequence.
+                                        </xs:documentation>
+                                    </xs:annotation>
+                                </xs:enumeration>
+                                <xs:enumeration value="execute">
+                                    <xs:annotation>
+                                        <xs:documentation>
+                                            Schedules the assignment only in the the InstallExecuteSequence.
+                                        </xs:documentation>
+                                    </xs:annotation>
+                                </xs:enumeration>
+                                <xs:enumeration value="ui">
+                                    <xs:annotation>
+                                        <xs:documentation>
+                                            Schedules the assignment only in the the InstallUISequence.
+                                        </xs:documentation>
+                                    </xs:annotation>
+                                </xs:enumeration>
+                            </xs:restriction>
+                        </xs:simpleType>
+                    </xs:attribute>
+                    <xs:attribute name="Value" type="xs:string">
+                        <xs:annotation>
+                            <xs:documentation>
+                                This attribute specifies a string value to assign to the Property. The value can be a literal value or derived from a
+                                Property element using the <html:a href='http://msdn.microsoft.com/library/en-us/msi/setup/formatted.asp'>Formatted</html:a>
+                                syntax.
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:attribute>
+                    <xs:anyAttribute namespace="##other" processContents="lax">
+                        <xs:annotation><xs:documentation>
+                            Extensibility point in the WiX XML Schema.  Schema extensions can register additional
+                            attributes at this point in the schema.
+                        </xs:documentation></xs:annotation>
+                    </xs:anyAttribute>
+                </xs:extension>
+            </xs:simpleContent>
+        </xs:complexType>
+    </xs:element>
+
     <xs:element name="PatchFamilyRef">
         <xs:annotation>
             <xs:appinfo>
@@ -7322,7 +7540,9 @@
                 <xs:element ref="Custom" minOccurs="0" maxOccurs="unbounded">
                     <xs:annotation><xs:documentation>Use to sequence a custom action.</xs:documentation></xs:annotation>
                 </xs:element>
-                <xs:element ref="Show" minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element ref="Show" minOccurs="0" maxOccurs="unbounded">
+                    <xs:annotation><xs:documentation>Displays a Dialog.</xs:documentation></xs:annotation>
+                </xs:element>
                 <xs:element ref="ScheduleReboot" minOccurs="0">
                     <xs:annotation><xs:documentation>Prompts the user to restart the system at the end of installation. Not fixed sequence.</xs:documentation></xs:annotation>
                 </xs:element>
@@ -9147,6 +9367,54 @@
         </xs:complexType>
     </xs:element>
 
+    <xs:element name="InstanceTransforms">
+        <xs:annotation>
+            <xs:documentation>
+                Use this element to contain definitions for instance transforms.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+                <xs:element ref="Instance"/>
+            </xs:choice>
+            <xs:attribute name="Property" type="xs:string" use="required">
+                <xs:annotation>
+                    <xs:documentation>The Id of the Property who's value should change for each instance.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="Instance">
+        <xs:annotation>
+            <xs:documentation>
+                Defines an instance transform for your product.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:attribute name="Id" type="xs:string" use="required">
+                <xs:annotation>
+                    <xs:documentation>
+                        The identity of the instance transform. This value will define the name by which the instance
+                        should be referred to on the command line. In addition, the value of the this attribute will
+                        determine what the value of the property specified in Property attribute on InstanceTransforms
+                        will change to for each instance.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="ProductCode" type="xs:string" use="required">
+                <xs:annotation>
+                    <xs:documentation>The ProductCode for this instance.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="ProductName" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>The ProductName for this instance.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+
     <!-- - - - - - - - - - - Complex Type Definitions  - - - - - - - - - - - -->
 
     <xs:complexType name="ActionModuleSequenceType">
@@ -9215,7 +9483,7 @@
     <xs:simpleType name="LocalizableInteger">
         <xs:annotation><xs:documentation>Values of this type must be an integer or the value can be a localization variable with the format !(loc.Variable) where "Variable" is the name of the variable.</xs:documentation></xs:annotation>
         <xs:restriction base="xs:string">
-            <xs:pattern value="[0-9][0-9]*|([!$])\(loc\.[_A-Za-z][0-9A-Za-z_]+\)"/>
+            <xs:pattern value="[0-9][0-9]*|([!$])\((?:loc|bind)\.[_A-Za-z][0-9A-Za-z_.]+\)"/>
         </xs:restriction>
     </xs:simpleType>
 

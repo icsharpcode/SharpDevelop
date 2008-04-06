@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+          xmlns:xse="http://schemas.microsoft.com/wix/2005/XmlSchemaExtension"
+         xmlns:html="http://www.w3.org/1999/xhtml"
     targetNamespace="http://schemas.microsoft.com/wix/2006/localization"
               xmlns="http://schemas.microsoft.com/wix/2006/localization">
     <xs:annotation>
@@ -19,13 +21,20 @@
     </xs:annotation>
 
     <xs:element name="WixLocalization">
+        <xs:annotation>
+            <xs:appinfo>
+                <xse:remarks>
+                    <html:p>You can specify any valid Windows code by integer like 1252, or by web name like Windows-1252 or iso-8859-1. See <a href="/html/codepage.htm">Code Pages</a> for more information.</html:p>
+                </xse:remarks>
+            </xs:appinfo>
+        </xs:annotation>
         <xs:complexType>
             <xs:sequence minOccurs="0" maxOccurs="unbounded">
                 <xs:element ref="String" />
             </xs:sequence>
-            <xs:attribute name="Codepage" type="xs:int">
+            <xs:attribute name="Codepage" type="xs:string">
                 <xs:annotation>
-                    <xs:documentation>Codepage for the resulting database.</xs:documentation>
+                    <xs:documentation>The code page integer value or web name for the resulting database. See remarks for more information.</xs:documentation>
                 </xs:annotation>
             </xs:attribute>
             <xs:attribute name="Culture" type="xs:string" use="required">

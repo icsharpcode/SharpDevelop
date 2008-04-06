@@ -799,6 +799,19 @@
                     <xs:documentation>Specifies the order in which the modification is to be attempted on the XML file.  It is important to ensure that new elements are created before you attempt to add an attribute to them.</xs:documentation>
                 </xs:annotation>
             </xs:attribute>
+            <xs:attribute name="SelectionLanguage">
+                <xs:annotation>
+                    <xs:documentation>
+                        Specify whether the DOM object should use XPath language or the old XSLPattern language (default) as the query language.                        
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:NMTOKEN">
+                        <xs:enumeration value="XPath"/>
+                        <xs:enumeration value="XSLPattern"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:attribute>
         </xs:complexType>
     </xs:element>
 
@@ -811,7 +824,7 @@
                 <xse:parent namespace="http://schemas.microsoft.com/wix/2006/wi" ref="Component" />
             </xs:appinfo>
         </xs:annotation>
-        <xs:complexType>
+        <xs:complexType mixed="true">
             <xs:sequence>
                 <xs:element ref="XmlConfig" minOccurs="0" maxOccurs="unbounded"/>
             </xs:sequence>
@@ -848,6 +861,7 @@
                     <xs:restriction base="xs:NMTOKEN">
                         <xs:enumeration value="element" />
                         <xs:enumeration value="value" />
+                        <xs:enumeration value="document" />
                     </xs:restriction>
                 </xs:simpleType>
             </xs:attribute>

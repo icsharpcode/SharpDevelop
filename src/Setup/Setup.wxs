@@ -212,8 +212,12 @@
 				<ComponentRef Id="WixSqlExtensionDll"/>
 				<ComponentRef Id="WixUIExtensionDll"/>
 				<ComponentRef Id="WixUtilExtensionDll"/>
+				<ComponentRef Id="WixComPlusExtensionDll"/>
+				<ComponentRef Id="WixMsmqExtensionDll"/>
+				<ComponentRef Id="WixComPlusSchema"/>
 				<ComponentRef Id="WixDIfxAppSchema"/>
 				<ComponentRef Id="WixIisSchema"/>
+				<ComponentRef Id="WixMSMQSchema"/>
 				<ComponentRef Id="WixNetFxSchema"/>
 				<ComponentRef Id="WixPSSchema"/>
 				<ComponentRef Id="WixSqlSchema"/>
@@ -224,6 +228,8 @@
 				<ComponentRef Id="WixBitmapFiles"/>
 				<ComponentRef Id="WixDocFiles"/>
 				<ComponentRef Id="WixVSExtension"/>
+				<ComponentRef Id="ComPlusXsd"/>
+				<ComponentRef Id="MSMQXsd"/>
 				<ComponentRef Id="EmptyWixFileTemplate"/>				
 				<ComponentRef Id="WixDefaultLicenseRtf"/>				
 				<ComponentRef Id="EmptyWixProjectTemplate"/>				

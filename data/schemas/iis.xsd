@@ -843,6 +843,7 @@
                 <xs:element ref="WebAddress" maxOccurs="unbounded"/>
                 <xs:element ref="WebApplication" minOccurs="0"/>
                 <xs:element ref="WebDirProperties" minOccurs="0"/>
+                <xs:element ref="MimeMap" minOccurs="0" maxOccurs="unbounded"/>
                 <xs:choice minOccurs="0" maxOccurs="unbounded">
                     <xs:element ref="CertificateRef"/>
                     <xs:element ref="HttpHeader"/>

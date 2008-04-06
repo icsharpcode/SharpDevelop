@@ -284,14 +284,14 @@
 									<Directory Id="WixDocFolder" Name="doc">
 										<Component Guid="2F5AC556-CE36-47EA-AB6C-F8623AA4A6BE" Id="WixDocFiles" DiskId="1">
 											<File Source="..\..\bin\Tools\Wix\doc\WiX.chm" Name="Wix.chm" Id="Wix.chm" />
-											<File Source="..\..\bin\Tools\Wix\doc\wix.xsd" Name="wix.xsd" Id="wix.xsd" />
+											<File Source="..\..\bin\Tools\Wix\doc\wix.xsd" Name="wix.xsd" Id="wix.xsd" KeyPath="yes" />
 											<File Source="..\..\bin\Tools\Wix\doc\wixloc.xsd" Name="wixloc.xsd" Id="wixloc.xsd" />
 										</Component>
 										<Component Guid="709867E5-F226-4ADF-8204-E77ED2F67EEC" Id="NetFxSchema" DiskId="1">
 											<File Source="..\..\bin\Tools\Wix\doc\netfx.xsd" Name="netfx.xsd" Id="netfx.xsd" />
 										</Component>
 										<Component Guid="6CF70F72-AB78-4122-BC7F-0CA6B3CC6E97" Id="VSExtensionSchema" DiskId="1">
-											<File Source="..\..\bin\Tools\Wix\doc\vs.xsd" Name="vs.xsd" Id="vs.xsd" />
+											<File Source="..\..\bin\Tools\Wix\doc\vs.xsd" Name="vs.xsd" Id="vs.xsd" KeyPath="yes" />
 										</Component>
 										<Component Guid="878D4E54-755C-4D0B-967A-C78CDC7F04C9" Id="DIfxAppXsd" DiskId="1">
 											<File Source="..\..\bin\Tools\Wix\doc\difxapp.xsd" Name="difxapp.xsd" Id="difxapp.xsd" KeyPath="yes" />
@@ -307,6 +307,12 @@
 										</Component>
 										<Component Guid="96DD82B8-5183-4C6C-BF15-455895F78A89" Id="UtilXsd" DiskId="1">
 											<File Source="..\..\bin\Tools\Wix\doc\util.xsd" Name="util.xsd" Id="util.xsd" KeyPath="yes" />
+										</Component>
+										<Component Guid="F76E3D02-BE6C-4D89-8FA7-E648D77FB186" Id="ComPlusXsd" DiskId="1">
+											<File Source="..\..\bin\Tools\Wix\doc\complus.xsd" Name="complus.xsd" Id="complus.xsd" KeyPath="yes" />
+										</Component>
+										<Component Guid="3E8291C1-F920-40C9-BFF2-3E0DD361EBB6" Id="MSMQXsd" DiskId="1">
+											<File Source="..\..\bin\Tools\Wix\doc\msmq.xsd" Name="msmq.xsd" Id="msmq.xsd" KeyPath="yes" />
 										</Component>
 									</Directory>
 									<Component Guid="6D18FAA0-440D-47FA-B9C1-790A00ADF96D" Id="DariceCub" DiskId="1">
@@ -367,6 +373,12 @@
 									</Component>
 									<Component Guid="9F85F147-14CD-4940-A166-292A550454E2" Id="WixUtilExtensionDll" DiskId="1">
 										<File Source="..\..\bin\Tools\Wix\WixUtilExtension.dll" Name="WixUtilExtension.dll" Id="WixUtilExtension.dll" KeyPath="yes" />
+									</Component>
+									<Component Guid="8F2C8A8F-876B-4493-862E-23BE544F3E70" Id="WixComPlusExtensionDll" DiskId="1">
+										<File Source="..\..\bin\Tools\Wix\WixComPlusExtension.dll" Name="WixComPlusExtension.dll" Id="WixComPlusExtension.dll" KeyPath="yes" />
+									</Component>
+									<Component Guid="14C6D703-D1E8-4D3C-8BAB-A78130818589" Id="WixMsmqExtensionDll" DiskId="1">
+										<File Source="..\..\bin\Tools\Wix\WixMsmqExtension.dll" Name="WixMsmqExtension.dll" Id="WixMsmqExtension.dll" KeyPath="yes" />
 									</Component>
 								</Directory>
 								<Directory Id="NUnitFolder" Name="NUnit">
@@ -852,6 +864,12 @@
 								</Component>
 								<Component Guid="796AF8D7-5647-4E92-9DFD-4C55C578F994" Id="WixVSSchema" DiskId="1">
 									<File Source="..\..\data\schemas\vs.xsd" Name="vs.xsd" Id="schemas.vs.xsd" KeyPath="yes" />
+								</Component>
+								<Component Guid="57266D3B-90C5-4DDF-8744-DB8EFD6707BF" Id="WixComPlusSchema" DiskId="1">
+									<File Source="..\..\data\schemas\complus.xsd" Name="complus.xsd" Id="schemas.complus.xsd" KeyPath="yes" />
+								</Component>
+								<Component Guid="D79044D2-CAF6-4006-AF88-367FC97E86B6" Id="WixMSMQSchema" DiskId="1">
+									<File Source="..\..\data\schemas\msmq.xsd" Name="msmq.xsd" Id="schemas.msmq.xsd" KeyPath="yes" />
 								</Component>
 							</Directory>
 							<Directory Id="TemplatesFolder" Name="templates">
