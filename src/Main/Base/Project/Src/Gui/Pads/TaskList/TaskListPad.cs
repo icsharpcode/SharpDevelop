@@ -181,11 +181,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 						if (proj.FindFile(item.FileName) != null)
 						return true;
 					
+					return false;
 					break;
 				case 1:
-					return (ProjectService.CurrentProject.FindFile(item.FileName) != null);
+					return ((WorkbenchSingleton.Workbench.ActiveViewContent != null) && (ProjectService.CurrentProject.FindFile(item.FileName) != null));
 				case 2:
-					return (WorkbenchSingleton.Workbench.ActiveViewContent.PrimaryFileName == item.FileName);
+					return ((WorkbenchSingleton.Workbench.ActiveViewContent != null) && (WorkbenchSingleton.Workbench.ActiveViewContent.PrimaryFileName == item.FileName));
 				case 3:
 					return ((current != null) && (itemClass != null) && (current.Namespace == itemClass.Namespace));
 				case 4:
@@ -197,12 +198,15 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		private IClass GetCurrentClass()
 		{
+			if (WorkbenchSingleton.Workbench.ActiveViewContent == null)
+				return null;
+			
 			ParseInformation parseInfo = ParserService.GetParseInformation(WorkbenchSingleton.Workbench.ActiveViewContent.PrimaryFileName);
 			if (parseInfo != null) {
 				if (WorkbenchSingleton.Workbench.ActiveViewContent.Control is ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.SharpDevelopTextAreaControl)
 				{SharpDevelopTextAreaControl ctrl = WorkbenchSingleton.Workbench.ActiveViewContent.Control
 						as SharpDevelopTextAreaControl;
-					IClass c = parseInfo.MostRecentCompilationUnit.GetInnermostClass(ctrl.ActiveTextAreaControl.Caret.Line, ctrl.ActiveTextAreaControl.Caret.Line);
+					IClass c = parseInfo.MostRecentCompilationUnit.GetInnermostClass(ctrl.ActiveTextAreaControl.Caret.Line, ctrl.ActiveTextAreaControl.Caret.Column);
 					if (c != null) return c;
 				}
 			}
