@@ -27,7 +27,6 @@ namespace ICSharpCode.TextEditor.Document
 		/// used
 		/// </value>
 		string[] Extensions {
-			set;
 			get;
 		}
 		
