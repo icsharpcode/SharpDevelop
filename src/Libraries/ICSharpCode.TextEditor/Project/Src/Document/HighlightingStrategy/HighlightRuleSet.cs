@@ -19,7 +19,6 @@ namespace ICSharpCode.TextEditor.Document
 		ArrayList   spans = new ArrayList();
 		LookupTable prevMarkers;
 		LookupTable nextMarkers;
-		IHighlightingStrategy highlighter = null;
 		char escapeCharacter;
 		
 		bool ignoreCase = false;
@@ -35,14 +34,7 @@ namespace ICSharpCode.TextEditor.Document
 			}
 		}
 		
-		internal IHighlightingStrategy Highlighter {
-			get {
-				return highlighter;
-			}
-			set {
-				highlighter = value;
-			}
-		}
+		internal IHighlightingStrategyUsingRuleSets Highlighter;
 		
 		public LookupTable KeyWords {
 			get {
