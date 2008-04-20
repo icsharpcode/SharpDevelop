@@ -86,6 +86,7 @@
     <Compile Include="Src\RunPythonCommand.cs" />
     <Compile Include="Src\StandardPythonModules.cs" />
     <Compile Include="Src\StopPythonCommand.cs" />
+    <Compile Include="Src\PythonVariableResolver.cs" />
     <Compile Include="Src\VBNetToPythonConverter.cs" />
     <None Include="PythonBinding.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

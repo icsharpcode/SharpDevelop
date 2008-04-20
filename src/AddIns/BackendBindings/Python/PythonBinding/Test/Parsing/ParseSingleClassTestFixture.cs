@@ -31,7 +31,7 @@ namespace PythonBinding.Tests.Parsing
 			
 			DefaultProjectContent projectContent = new DefaultProjectContent();
 			PythonParser parser = new PythonParser();
-			compilationUnit = parser.Parse(projectContent, @"C:\test.py", python);			
+			compilationUnit = parser.Parse(projectContent, @"C:\Projects\Test\test.py", python);			
 			if (compilationUnit.Classes.Count > 0) {
 				c = compilationUnit.Classes[0];
 			}
@@ -49,10 +49,20 @@ namespace PythonBinding.Tests.Parsing
 			Assert.AreEqual("Test", c.Name);
 		}
 		
+		/// <summary>
+		/// The namespace of a class is the name of file containing the class excluding
+		/// the file extension.
+		/// </summary>
+		[Test]
+		public void FullyQualifiedClassName()
+		{
+			Assert.AreEqual("test.Test", c.FullyQualifiedName);
+		}
+		
 		[Test]
 		public void CompilationUnitFileName()
 		{
-			Assert.AreEqual(@"C:\test.py", compilationUnit.FileName);
+			Assert.AreEqual(@"C:\Projects\Test\test.py", compilationUnit.FileName);
 		}
 		
 		[Test]

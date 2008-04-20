@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using ICSharpCode.SharpDevelop.Dom;
 using IronPython.Compiler;
 using IronPython.Compiler.Ast;
@@ -20,10 +21,16 @@ namespace ICSharpCode.PythonBinding
 	{
 		DefaultCompilationUnit compilationUnit;
 		DefaultClass currentClass;
+		string ns;
 		
-		public PythonAstWalker(IProjectContent projectContent)
+		/// <summary>
+		/// All classes in a file take the namespace of the filename. 
+		/// </summary>
+		public PythonAstWalker(IProjectContent projectContent, string fileName)
 		{
 			compilationUnit = new DefaultCompilationUnit(projectContent);
+			compilationUnit.FileName = fileName;
+			ns = Path.GetFileNameWithoutExtension(fileName);
 		}
 		
 		/// <summary>
@@ -47,7 +54,7 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		public override bool Walk(ClassDefinition node)
 		{
-			DefaultClass c = new DefaultClass(compilationUnit, node.Name.ToString());
+			DefaultClass c = new DefaultClass(compilationUnit, GetFullyQualifiedClassName(node));
 			c.Region = GetClassRegion(node);
 			c.BodyRegion = GetBodyRegion(node.Body);
 			AddBaseTypes(c, node.Bases);
@@ -186,6 +193,15 @@ namespace ICSharpCode.PythonBinding
 				}
 			}
 			return parameters.ToArray();
+		}
+		
+		
+		/// <summary>
+		/// Adds the namespace to the class name taken from the class definition.
+		/// </summary>
+		string GetFullyQualifiedClassName(ClassDefinition classDef)
+		{
+			return String.Concat(ns, ".", classDef.Name.ToString());
 		}
 	}
 }

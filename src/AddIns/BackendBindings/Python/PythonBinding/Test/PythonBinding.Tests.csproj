@@ -145,10 +145,12 @@
     <Compile Include="Resolver\GetPythonModulesTestFixture.cs" />
     <Compile Include="Resolver\InvalidResolveInputsTestFixture.cs" />
     <Compile Include="Resolver\NamespaceContentsAddedToCtrlSpaceTestFixture.cs" />
+    <Compile Include="Resolver\ResolveClassInstanceWithNamespaceTestFixture.cs" />
     <Compile Include="Resolver\ResolveConsoleTestFixture.cs" />
     <Compile Include="Resolver\ResolveConsoleWriteLineTestFixture.cs" />
     <Compile Include="Resolver\ResolveFromImportTestFixture.cs" />
     <Compile Include="Resolver\ResolveImportsTestFixture.cs" />
+    <Compile Include="Resolver\ResolveLocalClassInstanceTestFixture.cs" />
     <Compile Include="Resolver\ResolveSystemConsoleOutsideClassTestFixture.cs" />
     <Compile Include="Resolver\ResolveSystemConsoleTestFixture.cs" />
     <Compile Include="Resolver\ResolveSystemImportTestFixture.cs" />

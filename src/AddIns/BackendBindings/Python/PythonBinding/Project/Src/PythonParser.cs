@@ -77,19 +77,18 @@ namespace ICSharpCode.PythonBinding
 		public ICompilationUnit Parse(IProjectContent projectContent, string fileName, string fileContent)
 		{
 			if (fileContent != null) {
-				try {
+			//	try {
 					PythonCompilerSink sink = new PythonCompilerSink();
 					CompilerContext context = new CompilerContext(fileName, sink);
 					Parser parser = Parser.FromString(null, context, fileContent);
 					Statement statement = parser.ParseFileInput();
 	
-					PythonAstWalker walker = new PythonAstWalker(projectContent);
+					PythonAstWalker walker = new PythonAstWalker(projectContent, fileName);
 					walker.Walk(statement);
-					walker.CompilationUnit.FileName = fileName;
 					return walker.CompilationUnit;
-				} catch (PythonSyntaxErrorException) { 
+			//	} catch (PythonSyntaxErrorException) { 
 					// Ignore parsing errors
-				}
+			//	}
 			}
 			DefaultCompilationUnit compilationUnit = new DefaultCompilationUnit(projectContent);
 			compilationUnit.FileName = fileName;

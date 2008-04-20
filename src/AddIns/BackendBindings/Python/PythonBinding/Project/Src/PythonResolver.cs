@@ -52,6 +52,12 @@ namespace ICSharpCode.PythonBinding
 				return resolveResult;
 			}
 			
+			// Search for a local variable.
+			LocalResolveResult localResolveResult = GetLocalVariable(expressionResult.Expression, fileContent);
+			if (localResolveResult != null) {
+				return localResolveResult;
+			}
+			
 			// Search for a namespace.
 			string namespaceExpression = GetNamespaceExpression(expressionResult.Expression);
 			string ns = projectContent.SearchNamespace(namespaceExpression, null, null, 0, 0);
@@ -192,7 +198,7 @@ namespace ICSharpCode.PythonBinding
 			// Try the imported classes now. This will
 			// match on a partial name (i.e. without the namespace
 			// prefix).
-			return  GetImportedClass(name);
+			return GetImportedClass(name);
 		}
 		
 		/// <summary>
@@ -269,6 +275,25 @@ namespace ICSharpCode.PythonBinding
 		{	
 			int index = expression.LastIndexOf('.');
 			return expression.Substring(index + 1);
+		}
+		
+		/// <summary>
+		/// Tries to find the type that matches the local variable name.
+		/// </summary>
+		LocalResolveResult GetLocalVariable(string expression, string fileContent)
+		{
+			PythonVariableResolver resolver = new PythonVariableResolver();
+			string typeName = resolver.Resolve(expression, fileContent);
+			if (typeName != null) {
+				IClass resolvedClass = GetClass(typeName);
+				if (resolvedClass != null) {
+					DefaultClass dummyClass = new DefaultClass(null, "Global");
+					DefaultMethod dummyMethod = new DefaultMethod(dummyClass, String.Empty);
+					DefaultField.LocalVariableField field = new DefaultField.LocalVariableField(resolvedClass.DefaultReturnType, expression, DomRegion.Empty, dummyClass);
+					return new LocalResolveResult(dummyMethod, field);
+				}
+			}
+			return null;
 		}
 	}
 }
