@@ -108,7 +108,7 @@ namespace SearchAndReplace
 			List<TextEditorControl> textAreas = new List<TextEditorControl>();
 			int count;
 			for (count = 0;; count++) {
-				SearchResultMatch result = SearchReplaceManager.find.FindNext();
+				SearchResultMatch result = SearchReplaceManager.find.FindNext(monitor);
 				
 				if (result == null) {
 					break;
@@ -197,7 +197,7 @@ namespace SearchAndReplace
 			List<TextEditorControl> textAreas = new List<TextEditorControl>();
 			TextEditorControl textArea = null;
 			for (int count = 0;; count++) {
-				SearchResultMatch result = SearchReplaceManager.find.FindNext();
+				SearchResultMatch result = SearchReplaceManager.find.FindNext(monitor);
 				
 				if (result == null) {
 					if (count != 0) {
@@ -282,7 +282,7 @@ namespace SearchAndReplace
 			
 			TextEditorControl textArea = null;
 			while (textArea == null) {
-				SearchResultMatch result = find.FindNext();
+				SearchResultMatch result = find.FindNext(monitor);
 				if (result == null) {
 					ShowNotFoundMessage(monitor);
 					find.Reset();
@@ -361,6 +361,8 @@ namespace SearchAndReplace
 		
 		static void ShowNotFoundMessage(IProgressMonitor monitor)
 		{
+			if (monitor != null && monitor.IsCancelled)
+				return;
 			if (monitor != null) monitor.ShowingDialog = true;
 			MessageBox.Show(WorkbenchSingleton.MainForm,
 			                ResourceService.GetString("Dialog.NewProject.SearchReplace.SearchStringNotFound"),

@@ -97,7 +97,7 @@ namespace SearchAndReplace
 					FindNextInSelection();
 				}
 			} else {
-				using (AsynchronousWaitDialog monitor = AsynchronousWaitDialog.ShowWaitDialog("Search"))
+				using (AsynchronousWaitDialog monitor = AsynchronousWaitDialog.ShowWaitDialog("Search", true))
 				{
 					SearchReplaceManager.FindNext(monitor);
 				}
@@ -113,7 +113,7 @@ namespace SearchAndReplace
 					RunAllInSelection(0);
 				}
 			} else {
-				using (AsynchronousWaitDialog monitor = AsynchronousWaitDialog.ShowWaitDialog("Search"))
+				using (AsynchronousWaitDialog monitor = AsynchronousWaitDialog.ShowWaitDialog("Search", true))
 				{
 					SearchInFilesManager.FindAll(monitor);
 				}
@@ -128,7 +128,7 @@ namespace SearchAndReplace
 					RunAllInSelection(1);
 				}
 			} else {
-				using (AsynchronousWaitDialog monitor = AsynchronousWaitDialog.ShowWaitDialog("Search"))
+				using (AsynchronousWaitDialog monitor = AsynchronousWaitDialog.ShowWaitDialog("Search", true))
 				{
 					SearchReplaceManager.MarkAll(monitor);
 				}
@@ -143,7 +143,7 @@ namespace SearchAndReplace
 					RunAllInSelection(2);
 				}
 			} else {
-				using (AsynchronousWaitDialog monitor = AsynchronousWaitDialog.ShowWaitDialog("Search"))
+				using (AsynchronousWaitDialog monitor = AsynchronousWaitDialog.ShowWaitDialog("Search", true))
 				{
 					SearchReplaceManager.ReplaceAll(monitor);
 				}
@@ -158,7 +158,7 @@ namespace SearchAndReplace
 					ReplaceInSelection();
 				}
 			} else {
-				using (AsynchronousWaitDialog monitor = AsynchronousWaitDialog.ShowWaitDialog("Search"))
+				using (AsynchronousWaitDialog monitor = AsynchronousWaitDialog.ShowWaitDialog("Search", true))
 				{
 					SearchReplaceManager.Replace(monitor);
 				}

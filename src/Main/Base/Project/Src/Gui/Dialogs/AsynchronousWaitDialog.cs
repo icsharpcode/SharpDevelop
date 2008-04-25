@@ -55,22 +55,38 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// Shows a wait dialog.
 		/// </summary>
 		/// <param name="titleName">Title of the wait dialog</param>
-		/// <param name="taskName">Name of the current task</param>
-		/// <returns>WaitHandle object - you can use it to access the wait dialog's properties.
-		/// To close the wait dialog, call Dispose() on the WaitHandle</returns>
+		/// <returns>AsynchronousWaitDialog object - you can use it to access the wait dialog's properties.
+		/// To close the wait dialog, call Dispose() on the AsynchronousWaitDialog object</returns>
 		public static AsynchronousWaitDialog ShowWaitDialog(string titleName)
 		{
 			if (titleName == null)
 				throw new ArgumentNullException("titleName");
-			AsynchronousWaitDialog h = new AsynchronousWaitDialog(titleName);
+			AsynchronousWaitDialog h = new AsynchronousWaitDialog(titleName, false);
 			h.Start();
 			return h;
 		}
 		
-		private AsynchronousWaitDialog(string titleName)
+		/// <summary>
+		/// Shows a wait dialog.
+		/// </summary>
+		/// <param name="titleName">Title of the wait dialog</param>
+		/// <param name="allowCancel">Specifies whether a cancel button should be shown.</param>
+		/// <returns>AsynchronousWaitDialog object - you can use it to access the wait dialog's properties.
+		/// To close the wait dialog, call Dispose() on the AsynchronousWaitDialog object</returns>
+		public static AsynchronousWaitDialog ShowWaitDialog(string titleName, bool allowCancel)
+		{
+			if (titleName == null)
+				throw new ArgumentNullException("titleName");
+			AsynchronousWaitDialog h = new AsynchronousWaitDialog(titleName, allowCancel);
+			h.Start();
+			return h;
+		}
+		
+		private AsynchronousWaitDialog(string titleName, bool allowCancel)
 		{
 			this.titleName = titleName;
 			Done(); // set default values for titleName
+			this.allowCancel = allowCancel;
 		}
 		
 		#region Start waiting thread

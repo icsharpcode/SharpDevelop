@@ -81,12 +81,15 @@ namespace SearchAndReplace
 			}
 		}
 		
-		public SearchResultMatch FindNext()
+		public SearchResultMatch FindNext(IProgressMonitor monitor)
 		{
 			// insanity check
 			Debug.Assert(searchStrategy      != null);
 			Debug.Assert(documentIterator    != null);
 			Debug.Assert(textIteratorBuilder != null);
+			
+			if (monitor != null && monitor.IsCancelled)
+				return null;
 			
 			if (info != null && textIterator != null && documentIterator.CurrentFileName != null) {
 				ProvidedDocumentInformation currentInfo = documentIterator.Current;
@@ -114,7 +117,7 @@ namespace SearchAndReplace
 					textIterator = null;
 				}
 				
-				return FindNext();
+				return FindNext(monitor);
 			}
 			return null;
 		}

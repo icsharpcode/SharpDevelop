@@ -60,7 +60,7 @@ namespace SearchAndReplace
 			
 			List<SearchResultMatch> results = new List<SearchResultMatch>();
 			while (true) {
-				SearchResultMatch result = find.FindNext();
+				SearchResultMatch result = find.FindNext(monitor);
 				if (result == null) {
 					break;
 				}
