@@ -182,7 +182,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 						return true;
 					
 					return false;
-					break;
 				case 1:
 					return ((WorkbenchSingleton.Workbench.ActiveViewContent != null) && (ProjectService.CurrentProject.FindFile(item.FileName) != null));
 				case 2:

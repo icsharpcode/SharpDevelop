@@ -40,7 +40,9 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		static int GetLineNumberFromMember(IDocument document, IMember member)
 		{
 			int line = member.Region.BeginLine - 1;
-			if (document != null && line >= document.TotalNumberOfLines)
+			if (line < 0)
+				return 0;
+			else if (document != null && line >= document.TotalNumberOfLines)
 				return document.TotalNumberOfLines - 1;
 			else
 				return line;
@@ -82,9 +84,20 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		}
 		
 		public ClassBookmark(IDocument document, IClass @class)
-			: base(document, Math.Max(@class.Region.BeginLine - 1, 0))
+			: base(document, GetLineNumberFromClass(document, @class))
 		{
 			this.@class = @class;
+		}
+		
+		static int GetLineNumberFromClass(IDocument document, IClass @class)
+		{
+			int line = @class.Region.BeginLine - 1;
+			if (line < 0)
+				return 0;
+			else if (document != null && line >= document.TotalNumberOfLines)
+				return document.TotalNumberOfLines - 1;
+			else
+				return line;
 		}
 		
 		public const string ContextMenuPath = "/SharpDevelop/ViewContent/DefaultTextEditor/ClassBookmarkContextMenu";

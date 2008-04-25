@@ -383,9 +383,6 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		public ResolveResult ResolveInternal(Expression expr, ExpressionContext context)
 		{
-			if (expr is IdentifierExpression)
-				return ResolveIdentifier(expr as IdentifierExpression, context);
-			
 			ResolveVisitor resolveVisitor = new ResolveVisitor(this);
 			return resolveVisitor.Resolve(expr);
 		}
