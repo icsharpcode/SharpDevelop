@@ -74,6 +74,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		internal ProjectReferenceProjectItem(IProject project, Microsoft.Build.BuildEngine.BuildItem buildItem)
 			: base(project, buildItem)
 		{
+			this.DefaultCopyLocalValue = true;
 		}
 		
 		public ProjectReferenceProjectItem(IProject project, IProject referenceTo)
@@ -83,6 +84,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			ProjectGuid = referenceTo.IdGuid;
 			ProjectName = referenceTo.Name;
 			this.referencedProject = referenceTo;
+			this.DefaultCopyLocalValue = true;
 		}
 	}
 }

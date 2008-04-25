@@ -337,6 +337,18 @@ namespace ICSharpCode.SharpDevelop.Project
 				
 				if (referenceReplacements == null) {
 					references = baseProject.GetItemsOfType(ItemType.Reference).OfType<ReferenceProjectItem>();
+					
+					// remove the "Private" meta data
+					foreach (MSBuild.BuildItemGroup itemGroup in tempProject.ItemGroups) {
+						// skip item groups from imported projects
+						if (itemGroup.IsImported)
+							continue;
+						foreach (MSBuild.BuildItem item in itemGroup) {
+							if (item.Name == ItemType.Reference.ItemName) {
+								item.RemoveMetadata("Private");
+							}
+						}
+					}
 				} else {
 					references = referenceReplacements;
 					
@@ -385,6 +397,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					reference.FileName = fullPath;
 					reference.Redist = item.GetEvaluatedMetadata("Redist");
 					//LoggingService.Debug("Got information about " + originalInclude + "; fullpath=" + fullPath);
+					reference.DefaultCopyLocalValue = bool.Parse(item.GetEvaluatedMetadata("CopyLocal"));
 				} else {
 					LoggingService.Warn("Unknown item " + originalInclude);
 				}

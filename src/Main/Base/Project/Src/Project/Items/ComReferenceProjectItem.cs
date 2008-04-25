@@ -25,11 +25,13 @@ namespace ICSharpCode.SharpDevelop.Project
 			this.Lcid         = library.Lcid;
 			this.WrapperTool  = library.WrapperTool;
 			this.Isolated     = library.Isolated;
+			this.DefaultCopyLocalValue = true;
 		}
 		
 		internal ComReferenceProjectItem(IProject project, Microsoft.Build.BuildEngine.BuildItem buildItem)
 			: base(project, buildItem)
 		{
+			this.DefaultCopyLocalValue = true;
 		}
 		
 		[ReadOnly(true)]

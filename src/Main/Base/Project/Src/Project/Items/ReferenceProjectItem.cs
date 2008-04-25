@@ -76,10 +76,21 @@ namespace ICSharpCode.SharpDevelop.Project
 		                   Description = "${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.LocalCopy.Description}")]
 		public bool CopyLocal {
 			get {
-				return GetEvaluatedMetadata(CopyLocalMetadataName, !IsGacReference);
+				return GetEvaluatedMetadata(CopyLocalMetadataName, defaultCopyLocalValue ?? true);
 			}
 			set {
 				SetEvaluatedMetadata(CopyLocalMetadataName, value);
+			}
+		}
+		
+		bool? defaultCopyLocalValue;
+		
+		[Browsable(false)]
+		public bool? DefaultCopyLocalValue {
+			get { return defaultCopyLocalValue; }
+			set {
+				defaultCopyLocalValue = value;
+				ReFilterProperties();
 			}
 		}
 		
@@ -189,19 +200,16 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		[Browsable(false)]
-		public bool IsGacReference {
-			get {
-				return !Path.IsPathRooted(this.FileName);
-			}
-		}
-		
 		protected override void FilterProperties(PropertyDescriptorCollection globalizedProps)
 		{
 			base.FilterProperties(globalizedProps);
 			PropertyDescriptor copyLocalPD = globalizedProps["CopyLocal"];
 			globalizedProps.Remove(copyLocalPD);
-			globalizedProps.Add(new ReplaceDefaultValueDescriptor(copyLocalPD, !IsGacReference));
+			if (defaultCopyLocalValue != null) {
+				globalizedProps.Add(new ReplaceDefaultValueDescriptor(copyLocalPD, defaultCopyLocalValue.Value));
+			} else {
+				globalizedProps.Add(new DummyValueDescriptor(copyLocalPD));
+			}
 			
 			if (string.IsNullOrEmpty(HintPath))
 				globalizedProps.Remove(globalizedProps["HintPath"]);
@@ -258,6 +266,60 @@ namespace ICSharpCode.SharpDevelop.Project
 			public override void SetValue(object component, object value)
 			{
 				baseDescriptor.SetValue(component, value);
+			}
+			
+			public override Type PropertyType {
+				get { return baseDescriptor.PropertyType; }
+			}
+		}
+		
+		sealed class DummyValueDescriptor : PropertyDescriptor
+		{
+			PropertyDescriptor baseDescriptor;
+			
+			public override bool ShouldSerializeValue(object component)
+			{
+				return false;
+			}
+			
+			public override void ResetValue(object component)
+			{
+			}
+			
+			public DummyValueDescriptor(PropertyDescriptor baseDescriptor)
+				: base(baseDescriptor)
+			{
+				this.baseDescriptor = baseDescriptor;
+			}
+			
+			public override string DisplayName {
+				get { return baseDescriptor.DisplayName; }
+			}
+			
+			public override string Description {
+				get { return baseDescriptor.Description; }
+			}
+			
+			public override Type ComponentType {
+				get { return baseDescriptor.ComponentType; }
+			}
+			
+			public override bool IsReadOnly {
+				get { return true; }
+			}
+			
+			public override bool CanResetValue(object component)
+			{
+				return false;
+			}
+			
+			public override object GetValue(object component)
+			{
+				return null;
+			}
+			
+			public override void SetValue(object component, object value)
+			{
 			}
 			
 			public override Type PropertyType {
