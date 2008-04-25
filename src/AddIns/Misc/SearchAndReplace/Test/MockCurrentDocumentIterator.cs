@@ -8,7 +8,7 @@
 using System;
 using SearchAndReplace;
 
-namespace ICSharpCode.SharpDevelop.Tests.Utils
+namespace SearchAndReplace.Tests.Utils
 {
 	public class MockCurrentDocumentIterator : IDocumentIterator
 	{

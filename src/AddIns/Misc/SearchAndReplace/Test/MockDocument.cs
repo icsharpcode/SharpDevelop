@@ -9,7 +9,7 @@ using System;
 using ICSharpCode.TextEditor.Document;
 using ICSharpCode.TextEditor.Undo;
 
-namespace ICSharpCode.SharpDevelop.Tests.Utils
+namespace SearchAndReplace.Tests.Utils
 {
 	public class MockDocument : IDocument
 	{

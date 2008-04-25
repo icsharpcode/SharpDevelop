@@ -6,12 +6,12 @@
 // </file>
 
 using System;
-using ICSharpCode.SharpDevelop.Tests.Utils;
+using SearchAndReplace.Tests.Utils;
 using ICSharpCode.TextEditor.Document;
 using SearchAndReplace;
 using NUnit.Framework;
 
-namespace ICSharpCode.SharpDevelop.Tests
+namespace SearchAndReplace.Tests
 {
 	/// <summary>
 	/// The fix for SD2-857 highlighted another bug (SD2-1312) in the 

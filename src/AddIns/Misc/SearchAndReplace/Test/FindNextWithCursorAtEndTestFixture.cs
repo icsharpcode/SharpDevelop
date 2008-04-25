@@ -8,11 +8,11 @@
 using System;
 using ICSharpCode.Core;
 using ICSharpCode.TextEditor.Document;
-using ICSharpCode.SharpDevelop.Tests.Utils;
+using SearchAndReplace.Tests.Utils;
 using NUnit.Framework;
 using SearchAndReplace;
 
-namespace ICSharpCode.SharpDevelop.Tests
+namespace SearchAndReplace.Tests
 {
 	/// <summary>
 	/// SD2-857 - The search fails to find a string if the cursor is 
@@ -67,7 +67,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 			
 			// Search the document.
 			search.SearchStrategy.CompilePattern(null);
-			result = search.FindNext();
+			result = search.FindNext(null);
 		}
 		
 		[Test]
