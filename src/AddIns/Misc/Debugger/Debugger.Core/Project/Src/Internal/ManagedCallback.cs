@@ -459,7 +459,7 @@ namespace Debugger
 			EnterCallback(PausedReason.Exception, "Exception2 (type=" + exceptionType.ToString() + ")", pThread);
 			
 			// This callback is also called from Exception(...)!!!! (the .NET 1.1 version)
-			// Whatch out for the zeros and null!
+			// Watch out for the zeros and null!
 			// Exception -> Exception2(pAppDomain, pThread, null, 0, exceptionType, 0);
 			
 			process.SelectedThread.CurrentException = new Exception(process.SelectedThread, (ExceptionType)exceptionType);

@@ -13,6 +13,13 @@ using Debugger.Wrappers.CorDebug;
 
 namespace Debugger
 {	
+	/// <summary>
+	/// This class contains data from an Exception throw by an application
+	/// being debugged. Since the <c>System.Exception</c> object  being thrown
+	/// lives in the debugged application and not in debugger, this class is
+	/// neccessary.
+	/// </summary>
+	/// <seealso cref="System.Exception" />
 	public class Exception: DebuggerObject
 	{
 		Thread thread;
@@ -43,12 +50,32 @@ namespace Debugger
 			}
 		}
 		
+		
+		/// <summary>
+		/// The <c>GetType().FullName</c> of the exception.
+		/// </summary>
+		/// <seealso cref="System.Exception" />
 		public string Type {
 			get {
 				return this.RuntimeValue.Type.FullName;
 			}
 		}
 		
+		/// <summary>
+		/// The <c>InnerException</c> property of the exception.
+		/// </summary>
+		/// <seealso cref="System.Exception" />
+		public DebuggerInnerException InnerException {
+			get {
+				Debugger.Value exVal = this.RuntimeValue.GetMemberValue("_innerException");
+				return  (exVal.IsNull) ?  null : new DebuggerInnerException(exVal);
+			}
+		}
+		
+		/// <summary>
+		/// The <c>Message</c> property of the exception.
+		/// </summary>
+		/// <seealso cref="System.Exception" />
 		public string Message {
 			get {
 				return this.RuntimeValue.GetMemberValue("_message").AsString;
