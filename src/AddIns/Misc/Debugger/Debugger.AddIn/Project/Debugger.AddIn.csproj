@@ -55,6 +55,9 @@
     <Compile Include="Src\Service\ExceptionForm.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Src\Service\ExceptionForm.Designer.cs">
+      <DependentUpon>ExceptionForm.cs</DependentUpon>
+    </Compile>  
     <Compile Include="Src\Service\RemotingConfigurationHelpper.cs" />
     <Compile Include="Src\Service\WindowsDebugger.cs" />
     <EmbeddedResource Include="Src\Service\ExceptionForm.resx">
