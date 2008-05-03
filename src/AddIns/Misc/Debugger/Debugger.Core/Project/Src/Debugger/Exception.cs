@@ -62,17 +62,6 @@ namespace Debugger
 		}
 		
 		/// <summary>
-		/// The <c>InnerException</c> property of the exception.
-		/// </summary>
-		/// <seealso cref="System.Exception" />
-		public DebuggerInnerException InnerException {
-			get {
-				Debugger.Value exVal = this.RuntimeValue.GetMemberValue("_innerException");
-				return  (exVal.IsNull) ?  null : new DebuggerInnerException(exVal);
-			}
-		}
-		
-		/// <summary>
 		/// The <c>Message</c> property of the exception.
 		/// </summary>
 		/// <seealso cref="System.Exception" />
@@ -104,6 +93,11 @@ namespace Debugger
 			}
 		}
 		
+		/// <summary>
+		/// This is the call stack as represented by the <c>Debugger.ThreadObject</c>.
+		/// </summary>
+		/// <seealso cref="System.Execption.StackTrace" />
+		/// <see cref="Debugger.Exception.StackTrace" />
 		public string Callstack {
 			get {
 				StringBuilder callstack = new StringBuilder();

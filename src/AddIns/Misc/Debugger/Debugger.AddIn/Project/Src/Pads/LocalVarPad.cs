@@ -232,7 +232,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				try {
 					localVarList.BeginUpdate();
 					Utils.DoEvents(debuggedProcess.DebuggeeState);
-					TreeViewNode.SetContentRecursive(this, localVarList.Root.Children, new StackFrameNode(debuggedProcess.SelectedStackFrame).ChildNodes);
+					TreeViewNode.SetContentRecursive(debuggedProcess, LocalVarList, new StackFrameNode(debuggedProcess.SelectedStackFrame).ChildNodes);
 				} catch(AbortedBecauseDebuggeeResumedException) {
 				} finally {
 					localVarList.EndUpdate();

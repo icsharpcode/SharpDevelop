@@ -23,7 +23,8 @@ namespace Debugger.AddIn.TreeModel
 	{
 		static Dictionary<string, bool> expandedNodes = new Dictionary<string, bool>();
 		
-		LocalVarPad localVarPad;
+		TreeViewAdv localVarList;
+		Debugger.Process process;
 		AbstractNode content;
 		
 		bool childsLoaded;
@@ -47,16 +48,32 @@ namespace Debugger.AddIn.TreeModel
 			}
 		}
 		
+		public TreeViewNode(Debugger.Process process, TreeViewAdv localVarList, AbstractNode content): base(localVarList, new object())
+		{
+			this.process = process;
+			this.localVarList = localVarList;
+			SetContentRecursive(content);
+		}
+		
+		//TODO: Eliminate the need to associate with a LocalVarPad
 		public TreeViewNode(LocalVarPad localVarPad, AbstractNode content): base(localVarPad.LocalVarList, new object())
 		{
-			this.localVarPad = localVarPad;
+			this.process = localVarPad.Process;
+			this.localVarList = localVarPad.LocalVarList;
 			SetContentRecursive(content);
 		}
 		
 		static TimeSpan workTime = TimeSpan.FromMilliseconds(40);
 		static DateTime nextRepaintTime = DateTime.MinValue;
 		
-		public void SetContentRecursive(AbstractNode content)
+		
+		/// <summary>
+		/// A simple form of SetContentRecursive that changes the current ChildViewNode to
+		/// display the data proviced by <c>content</c>. If the node had any children and is expanded,
+		/// it will recureively set those as well.
+		/// </summary>
+		/// <param name="content">Contains the name value and type of the variable stored in this particular TreeViewNode.</param>
+		private void SetContentRecursive(AbstractNode content)
 		{
 			this.textChanged =
 				this.content != null &&
@@ -65,22 +82,22 @@ namespace Debugger.AddIn.TreeModel
 			this.content = content;
 			this.IsLeaf = (content.ChildNodes == null);
 			childsLoaded = false;
-			this.IsExpandedOnce = false;
+			this.IsExpandedOnce = false;	
 			if (!IsLeaf && expandedNodes.ContainsKey(this.FullName) && expandedNodes[this.FullName]) {
-				LoadChilds();
+				LoadChildren();
 				this.Expand();
 			} else {
 				this.Children.Clear();
 				this.Collapse();
 			}
 			// Process user commands
-			Utils.DoEvents(localVarPad.Process.DebuggeeState);
+			Utils.DoEvents(process.DebuggeeState);
 			// Repaint
 			if (HighPrecisionTimer.Now > nextRepaintTime) {
 				using(new PrintTime("Repainting Local Variables Pad")) {
 					try {
 						this.Tree.EndUpdate();   // Enable painting
-						Utils.DoEvents(localVarPad.Process.DebuggeeState); // Paint
+						Utils.DoEvents(process.DebuggeeState); // Paint
 					} finally {
 						this.Tree.BeginUpdate(); // Disable painting
 						nextRepaintTime = HighPrecisionTimer.Now + workTime;
@@ -89,7 +106,27 @@ namespace Debugger.AddIn.TreeModel
 			}
 		}
 		
-		public static void SetContentRecursive(LocalVarPad localVarPad, IList<TreeNodeAdv> childNodes, IEnumerable<AbstractNode> contentEnum)
+		/// <summary>
+		/// Function for setting the root treenode of a TreeViewAdv ment to display debugger variables.
+		/// </summary>
+		/// <param name="process">The process that contains the stackframe with the given variables.</param>
+		/// <param name="localVarList">A list of local variables.</param>
+		/// <param name="contentEnum">A list of local variables.</param>
+		public static void SetContentRecursive(Debugger.Process process, TreeViewAdv localVarList, IEnumerable<AbstractNode> contentEnum) {
+			IList<TreeNodeAdv> childNodes = localVarList.Root.Children;
+			SetContentRecursive(process, localVarList, childNodes, contentEnum);
+		}
+		
+		
+		/// <summary>
+		/// Private form of SetContentRecursive. This form contains an extra parameter used by LoadChildren.
+		/// This adds the childNodes parameter, which can be set to the children of a particular child element.
+		/// </summary>
+		/// <param name="process"></param>
+		/// <param name="localVarList"></param>
+		/// <param name="childNodes"></param>
+		/// <param name="contentEnum"></param>
+		private static void SetContentRecursive(Debugger.Process process, TreeViewAdv localVarList, IList<TreeNodeAdv> childNodes, IEnumerable<AbstractNode> contentEnum)
 		{
 			contentEnum = contentEnum ?? new AbstractNode[0];
 			
@@ -101,7 +138,7 @@ namespace Debugger.AddIn.TreeModel
 					((TreeViewNode)childNodes[index]).SetContentRecursive(content);
 				} else {
 					// Add
-					childNodes.Add(new TreeViewNode(localVarPad, content));
+					childNodes.Add(new TreeViewNode(process, localVarList, content));
 				}
 				index++;
 			}
@@ -117,20 +154,28 @@ namespace Debugger.AddIn.TreeModel
 			base.OnExpanding();
 		}
 		
-		void LoadChilds()
+		
+		/// <summary>
+		/// This displays all the immediate children of a TreeViewNode in its containing TreeViewAdv.
+		/// </summary>
+		void LoadChildren()
 		{
 			if (!childsLoaded) {
 				childsLoaded = true;
 				this.IsExpandedOnce = true;
-				SetContentRecursive(localVarPad, this.Children, this.Content.ChildNodes);
+				SetContentRecursive(process, this.localVarList, this.Children, this.Content.ChildNodes);
 			}
 		}
 		
+		
+		/// <summary>
+		/// Expands the current treenode and displays all its immediate children.
+		/// </summary>
 		protected override void OnExpanded()
 		{
 			base.OnExpanded();
 			expandedNodes[FullName] = true;
-			if (localVarPad.Process.IsRunning) {
+			if (process.IsRunning) {
 				MessageService.ShowMessage(
 					"${res:MainWindow.Windows.Debug.LocalVariables.CannotExploreVariablesWhileRunning}",
 					"${res:MainWindow.Windows.Debug.LocalVariables}"
@@ -139,7 +184,7 @@ namespace Debugger.AddIn.TreeModel
 			}
 			try {
 				this.Tree.BeginUpdate();
-				LoadChilds();
+				LoadChildren();
 			} catch (AbortedBecauseDebuggeeResumedException) {
 			} finally {
 				this.Tree.EndUpdate();
