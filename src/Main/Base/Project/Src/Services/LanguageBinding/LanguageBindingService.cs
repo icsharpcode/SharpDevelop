@@ -119,14 +119,20 @@ namespace ICSharpCode.SharpDevelop
 					try {
 						newProject = binding.LoadProject(provider, location, title);
 					} catch (XmlException ex) {
+						if (progressMonitor != null) progressMonitor.ShowingDialog = true;
 						newProject = new UnknownProject(location, title, ex.Message, true);
 						newProject.TypeGuid = projectTypeGuid;
+						if (progressMonitor != null) progressMonitor.ShowingDialog = false;
 					} catch (Microsoft.Build.BuildEngine.InvalidProjectFileException ex) {
+						if (progressMonitor != null) progressMonitor.ShowingDialog = true;
 						newProject = new UnknownProject(location, title, ex.Message, true);
 						newProject.TypeGuid = projectTypeGuid;
+						if (progressMonitor != null) progressMonitor.ShowingDialog = false;
 					} catch (UnauthorizedAccessException ex) {
+						if (progressMonitor != null) progressMonitor.ShowingDialog = true;
 						newProject = new UnknownProject(location, title, ex.Message, true);
 						newProject.TypeGuid = projectTypeGuid;
+						if (progressMonitor != null) progressMonitor.ShowingDialog = false;
 					}
 				} else {
 					string ext = Path.GetExtension(location);
