@@ -1,4 +1,5 @@
-﻿// <file>
+﻿
+// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
@@ -7,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
@@ -84,13 +86,16 @@ namespace ICSharpCode.SharpDevelop.Commands
 			NavigationService.SuspendLogging();
 			
 			foreach (string file in fileList) {
+				LoggingService.Info("Open file " + file);
 				didLoadSolutionOrFile = true;
 				try {
-					IProjectLoader loader = ProjectService.GetProjectLoader(file);
+					string fullFileName = Path.GetFullPath(file);
+					
+					IProjectLoader loader = ProjectService.GetProjectLoader(fullFileName);
 					if (loader != null) {
-						FileUtility.ObservedLoad(new NamedFileOperationDelegate(loader.Load), file);
+						loader.Load(fullFileName);
 					} else {
-						FileService.OpenFile(file);
+						FileService.OpenFile(fullFileName);
 					}
 				} catch (Exception e) {
 					MessageService.ShowError(e, "unable to open file " + file);
