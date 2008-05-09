@@ -178,6 +178,46 @@ class DerivedClass : BaseClass<string> {
 		}
 		
 		[Test]
+		public void InheritFromGenericClass2()
+		{
+			string program = @"using System;
+class Test {
+  void M(DerivedClass d) {
+    
+  }
+}
+class BaseClass<T> {
+	public T value;
+}
+class DerivedClass : BaseClass<string> {
+	
+}
+";
+			MemberResolveResult rr = Resolve(program, "d.value", 4) as MemberResolveResult;
+			Assert.AreEqual("System.String", rr.ResolvedType.FullyQualifiedName);
+		}
+		
+		[Test]
+		public void InheritFromGenericClass3()
+		{
+			string program = @"using System;
+class Test {
+  void M(DerivedClass<string> d) {
+    
+  }
+}
+class BaseClass<T> {
+	public T value;
+}
+class DerivedClass<T> : BaseClass<T> {
+	
+}
+";
+			MemberResolveResult rr = Resolve(program, "d.value", 4) as MemberResolveResult;
+			Assert.AreEqual("System.String", rr.ResolvedType.FullyQualifiedName);
+		}
+		
+		[Test]
 		public void CrossTypeParametersInheritance()
 		{
 			string program = @"using System;
@@ -549,6 +589,6 @@ static class TestClass {
 			        		| ConversionFlags.ShowTypeParameterList
 			        }).Convert(entity);
 		}
+		#endregion
 	}
-	#endregion
 }

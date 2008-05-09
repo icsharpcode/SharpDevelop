@@ -325,6 +325,9 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 			currentClass.Push(c);
 			
+			ConvertTemplates(typeDeclaration.Templates, c); // resolve constrains in context of the class
+			// templates must be converted before base types because base types may refer to generic types
+			
 			if (c.ClassType != ClassType.Enum && typeDeclaration.BaseTypes != null) {
 				foreach (AST.TypeReference type in typeDeclaration.BaseTypes) {
 					IReturnType rt = CreateReturnType(type);
@@ -333,8 +336,6 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					}
 				}
 			}
-			
-			ConvertTemplates(typeDeclaration.Templates, c); // resolve constrains in context of the class
 			
 			object ret = typeDeclaration.AcceptChildren(this, data);
 			currentClass.Pop();

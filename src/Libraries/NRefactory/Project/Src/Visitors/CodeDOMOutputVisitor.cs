@@ -1054,10 +1054,8 @@ namespace ICSharpCode.NRefactory.Visitors
 					op = CodeBinaryOperatorType.GreaterThanOrEqual;
 					break;
 				case BinaryOperatorType.Equality:
-					op = CodeBinaryOperatorType.IdentityEquality;
-					break;
 				case BinaryOperatorType.InEquality:
-					op = CodeBinaryOperatorType.IdentityInequality;
+					op = CodeBinaryOperatorType.ValueEquality;
 					break;
 				case BinaryOperatorType.LessThan:
 					op = CodeBinaryOperatorType.LessThan;
@@ -1074,9 +1072,6 @@ namespace ICSharpCode.NRefactory.Visitors
 				case BinaryOperatorType.Subtract:
 					op = CodeBinaryOperatorType.Subtract;
 					break;
-					//case BinaryOperatorType.ValueEquality:
-					//	op = CodeBinaryOperatorType.ValueEquality;
-					//	break;
 				case BinaryOperatorType.ShiftLeft:
 				case BinaryOperatorType.ShiftRight:
 					// CodeDOM suxx
@@ -1098,9 +1093,14 @@ namespace ICSharpCode.NRefactory.Visitors
 			System.Diagnostics.Debug.Assert(!binaryOperatorExpression.Left.IsNull);
 			System.Diagnostics.Debug.Assert(!binaryOperatorExpression.Right.IsNull);
 
-			return new CodeBinaryOperatorExpression((CodeExpression)binaryOperatorExpression.Left.AcceptVisitor(this, data),
-			                                        op,
-			                                        (CodeExpression)binaryOperatorExpression.Right.AcceptVisitor(this, data));
+			var cboe = new CodeBinaryOperatorExpression(
+				(CodeExpression)binaryOperatorExpression.Left.AcceptVisitor(this, data),
+				op,
+				(CodeExpression)binaryOperatorExpression.Right.AcceptVisitor(this, data));
+			if (binaryOperatorExpression.Op == BinaryOperatorType.InEquality) {
+				cboe = new CodeBinaryOperatorExpression(cboe, CodeBinaryOperatorType.ValueEquality, new CodePrimitiveExpression(false));
+			}
+			return cboe;
 		}
 		
 		public override object VisitParenthesizedExpression(ParenthesizedExpression parenthesizedExpression, object data)
