@@ -59,7 +59,9 @@
     <None Include="app.manifest">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
-    <EmbeddedResource Include="Resources\SplashScreen.jpg" />
+    <EmbeddedResource Include="Resources\SplashScreen.jpg">
+      <LogicalName>Resources.SplashScreen.jpg</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="Resources\StringResources.resources">
       <LogicalName>Resources.StringResources.resources</LogicalName>
     </EmbeddedResource>
@@ -94,5 +96,5 @@
       <Name>ICSharpCode.SharpDevelop.Dom</Name>
     </ProjectReference>
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

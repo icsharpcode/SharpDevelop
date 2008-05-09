@@ -423,11 +423,11 @@ namespace ICSharpCode.SharpDevelop
 							MessageService.ShowError(ex.ToString());
 						}
 					});
-			} catch (InvalidOperationException) { // includes ObjectDisposedException
+			} catch (InvalidOperationException ex) { // includes ObjectDisposedException
 				// maybe workbench has been disposed while waiting for the SafeThreadCall
 				// can occur after workbench unload or after aborting SharpDevelop with
 				// Application.Exit()
-				LoggingService.Warn("InvalidOperationException while trying to invoke GetActiveViewContent()");
+				LoggingService.Warn("InvalidOperationException while trying to invoke GetActiveViewContent() " + ex);
 				return; // abort this thread
 			}
 			IEditable editable = activeViewContent as IEditable;

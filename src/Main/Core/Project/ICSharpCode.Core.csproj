@@ -53,7 +53,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.XML" />
+    <Reference Include="System.Xml" />
     <Reference Include="log4net">
       <HintPath>..\..\..\Libraries\log4net\bin\net\2.0\release\log4net.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
@@ -174,7 +174,7 @@
       <Link>Src\AddInTree\AddIn\AddIn.xsd</Link>
     </Content>
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>..\src\Tools\UpdateAssemblyInfo\bin\Debug\UpdateAssemblyInfo.exe</PreBuildEvent>
   </PropertyGroup>

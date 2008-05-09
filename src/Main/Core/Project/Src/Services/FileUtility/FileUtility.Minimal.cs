@@ -37,7 +37,7 @@ namespace ICSharpCode.Core
 				}
 			}
 			
-			char outputSeparator = isWeb ? '/' : '\\';
+			char outputSeparator = isWeb ? '/' : System.IO.Path.DirectorySeparatorChar;
 			
 			StringBuilder result = new StringBuilder();
 			if (isWeb == false && fileName.StartsWith(@"\\") || fileName.StartsWith("//")) {
@@ -53,7 +53,8 @@ namespace ICSharpCode.Core
 					switch (segmentLength) {
 						case 0:
 							// ignore empty segment (if not in web mode)
-							if (isWeb) {
+							// On unix, don't ignore empty segment if i==0
+							if (isWeb || (i == 0 && Environment.OSVersion.Platform == PlatformID.Unix)) {
 								result.Append(outputSeparator);
 							}
 							break;

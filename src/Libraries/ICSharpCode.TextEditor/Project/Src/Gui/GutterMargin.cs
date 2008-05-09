@@ -27,6 +27,7 @@ namespace ICSharpCode.TextEditor
 		static GutterMargin()
 		{
 			Stream cursorStream = Assembly.GetCallingAssembly().GetManifestResourceStream("ICSharpCode.TextEditor.Resources.RightArrow.cur");
+			if (cursorStream == null) throw new Exception("could not find cursor resource");
 			RightLeftCursor = new Cursor(cursorStream);
 			cursorStream.Close();
 		}
