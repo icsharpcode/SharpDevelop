@@ -203,7 +203,7 @@ namespace ICSharpCode.SharpDevelop
 			if (IsUntitled)
 				throw new InvalidOperationException("Cannot save an untitled file to disk!");
 			
-			bool safeSaving = FileService.SaveUsingTemporaryFile;
+			bool safeSaving = FileService.SaveUsingTemporaryFile && File.Exists(FileName);
 			string saveAs = safeSaving ? FileName + ".bak" : FileName;
 			using (FileStream fs = new FileStream(saveAs, FileMode.Create, FileAccess.Write)) {
 				if (currentView != null) {
@@ -213,15 +213,10 @@ namespace ICSharpCode.SharpDevelop
 				}
 			}
 			if (safeSaving) {
-				DateTime? creationTime = null;
-				if (File.Exists(FileName)) {
-					creationTime = File.GetCreationTimeUtc(FileName);
-					File.Delete(FileName);
-				}
+				DateTime creationTime = File.GetCreationTimeUtc(FileName);
+				File.Delete(FileName);
 				File.Move(saveAs, FileName);
-				if (creationTime != null) {
-					File.SetCreationTimeUtc(FileName, creationTime.Value);
-				}
+				File.SetCreationTimeUtc(FileName, creationTime);
 			}
 			IsDirty = false;
 		}
