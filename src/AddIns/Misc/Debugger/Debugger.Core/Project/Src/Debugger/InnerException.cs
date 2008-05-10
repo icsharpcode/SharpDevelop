@@ -15,11 +15,11 @@ namespace Debugger
 	/// </summary>
 	/// <see cref="Debugger.Exception" />
 	/// <seealso cref="System.Exception" />
-	public class DebuggerInnerException
+	public class DebugeeInnerException : IDebugeeException
 	{
 		Debugger.Value exceptionValue;
 		
-		internal DebuggerInnerException (Debugger.Value exception) {
+		internal DebugeeInnerException (Debugger.Value exception) {
 			this.exceptionValue = exception;
 		}
 		
@@ -27,10 +27,10 @@ namespace Debugger
 		/// The <c>InnerException</c> property of the exception.
 		/// </summary>
 		/// <seealso cref="System.Exception" />
-		public DebuggerInnerException InnerException {
+		public DebugeeInnerException InnerException {
 			get {
 				Debugger.Value exVal = this.exceptionValue.GetMemberValue("_innerException");
-				return  (exVal.IsNull) ?  null : new DebuggerInnerException(exVal);
+				return  (exVal.IsNull) ?  null : new DebugeeInnerException(exVal);
 			}
 		}
 		

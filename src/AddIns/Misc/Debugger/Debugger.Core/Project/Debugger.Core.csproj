@@ -59,6 +59,7 @@
     <Compile Include="Src\Debugger\DebuggerObject.cs" />
     <Compile Include="Src\Debugger\Exception.cs" />
     <Compile Include="Src\Debugger\ExceptionType.cs" />
+    <Compile Include="Src\Debugger\IDebugeeException.cs" />
     <Compile Include="Src\Debugger\IExpirable.cs" />
     <Compile Include="Src\Debugger\InnerException.cs" />
     <Compile Include="Src\Debugger\PausedReason.cs" />

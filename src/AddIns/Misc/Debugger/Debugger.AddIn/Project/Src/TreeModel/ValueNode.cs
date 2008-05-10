@@ -19,6 +19,9 @@ using Debugger.Expressions;
 
 namespace Debugger.AddIn.TreeModel
 {
+	/// <summary>
+	/// Represents the data in a row in a TreeViewNode.
+	/// </summary>
 	public class ValueNode: AbstractNode, ISetText, IContextMenu
 	{
 		Expression expression;
@@ -28,6 +31,15 @@ namespace Debugger.AddIn.TreeModel
 			get { return expression; }
 		}
 		
+		/// <summary>
+		/// Factory method to create an instance.
+		/// </summary>
+		/// <param name="expression">The expression containing the value you wish to display.</param>
+		/// <returns>
+		/// Returns a ValueNode if it can successfully evaluate expression or
+		/// ErrorNode if it fails to do so.
+		/// </returns>
+		/// <see cref=ErrorNode""/>
 		public static AbstractNode Create(Expression expression)
 		{
 			try {
@@ -38,8 +50,14 @@ namespace Debugger.AddIn.TreeModel
 			}
 		}
 		
-		// NB: This can also throw GetValueException on InvokeToString()
-		ValueNode(Value val)
+		/// <summary>
+		/// Private constructor used by the factory method Create()
+		/// </summary>
+		/// <param name="val"></param>
+		/// <exception cref="System.Management.Automation.GetValueException">
+		/// Can be thrown by InvokeToString()
+		/// </exception>
+		private ValueNode(Value val)
 		{
 			this.expression = val.Expression;
 			

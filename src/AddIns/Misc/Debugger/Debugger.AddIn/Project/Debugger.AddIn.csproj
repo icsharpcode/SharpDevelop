@@ -73,9 +73,11 @@
     <Compile Include="Src\Pads\RunningThreadsPad.Menu.cs" />
     <Compile Include="Src\TreeModel\AbstractNode.cs" />
     <Compile Include="Src\TreeModel\Adapters\DynamicTreeDebuggerRow.cs" />
+    <Compile Include="Src\TreeModel\Adapters\TreeViewExceptionNode.cs" />
     <Compile Include="Src\TreeModel\Adapters\TreeViewNode.cs" />
     <Compile Include="Src\TreeModel\ArrayRangeNode.cs" />
     <Compile Include="Src\TreeModel\ErrorNode.cs" />
+    <Compile Include="Src\TreeModel\ExceptionNode.cs" />
     <Compile Include="Src\TreeModel\Extensions\IList.cs" />
     <Compile Include="Src\TreeModel\ValueNode.cs" />
     <Compile Include="Src\TreeModel\IContextMenu.cs" />

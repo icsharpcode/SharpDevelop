@@ -20,7 +20,7 @@ namespace Debugger
 	/// neccessary.
 	/// </summary>
 	/// <seealso cref="System.Exception" />
-	public class Exception: DebuggerObject
+	public class Exception: DebuggerObject, IDebugeeException
 	{
 		Thread thread;
 		ExceptionType exceptionType;
@@ -58,6 +58,18 @@ namespace Debugger
 		public string Type {
 			get {
 				return this.RuntimeValue.Type.FullName;
+			}
+		}
+		
+		
+		/// <summary>
+		/// The <c>InnerException</c> property of the exception.
+		/// </summary>
+		/// <seealso cref="System.Exception" />
+		public DebugeeInnerException InnerException {
+			get {
+				Debugger.Value exVal = this.RuntimeValue.GetMemberValue("_innerException");
+				return  (exVal.IsNull) ?  null : new DebugeeInnerException(exVal);
 			}
 		}
 		

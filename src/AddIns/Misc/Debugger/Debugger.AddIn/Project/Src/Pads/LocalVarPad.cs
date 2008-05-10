@@ -57,7 +57,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		class ItemIcon: NodeIcon {
 			protected override System.Drawing.Image GetIcon(TreeNodeAdv node)
 			{
-				return ((TreeViewNode)node).Content.Image;
+				return ((TreeViewVarNode)node).Content.Image;
 			}
 		}
 		
@@ -68,8 +68,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			}
 			public override object GetValue(TreeNodeAdv node)
 			{
-				if (node is TreeViewNode) {
-					return ((TreeViewNode)node).Content.Name;
+				if (node is TreeViewVarNode) {
+					return ((TreeViewVarNode)node).Content.Name;
 				} else {
 					// Happens during incremental search
 					return base.GetValue(node);
@@ -85,13 +85,13 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			}
 			protected override bool CanEdit(TreeNodeAdv node)
 			{
-				AbstractNode content = ((TreeViewNode)node).Content;
+				AbstractNode content = ((TreeViewVarNode)node).Content;
 				return (content is ISetText) && ((ISetText)content).CanSetText;
 			}
 			public override object GetValue(TreeNodeAdv node)
 			{
-				if (node is TreeViewNode) {
-					return ((TreeViewNode)node).Content.Text;
+				if (node is TreeViewVarNode) {
+					return ((TreeViewVarNode)node).Content.Text;
 				} else {
 					// Happens during incremental search
 					return base.GetValue(node);
@@ -99,24 +99,24 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			}
 			public override void SetValue(TreeNodeAdv node, object value)
 			{
-				ISetText content = (ISetText)((TreeViewNode)node).Content;
+				ISetText content = (ISetText)((TreeViewVarNode)node).Content;
 				if (content.CanSetText) {
 					content.SetText(value.ToString());
 				}
 			}
 			protected override void OnDrawText(DrawEventArgs args)
 			{
-				AbstractNode content = ((TreeViewNode)args.Node).Content;
+				AbstractNode content = ((TreeViewVarNode)args.Node).Content;
 				if (content is ErrorNode) {
 					args.TextColor = Color.Red;
-				} else if (((TreeViewNode)args.Node).TextChanged) {
+				} else if (((TreeViewVarNode)args.Node).TextChanged) {
 					args.TextColor = Color.Blue;
 				}
 				base.OnDrawText(args);
 			}
 			public override void MouseDown(TreeNodeAdvMouseEventArgs args)
 			{
-				AbstractNode content = ((TreeViewNode)args.Node).Content;
+				AbstractNode content = ((TreeViewVarNode)args.Node).Content;
 				if (content is IContextMenu && args.Button == MouseButtons.Right) {
 					ContextMenuStrip menu = ((IContextMenu)content).GetContextMenu();
 					if (menu != null) {
@@ -135,8 +135,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			}
 			public override object GetValue(TreeNodeAdv node)
 			{
-				if (node is TreeViewNode) {
-					return ((TreeViewNode)node).Content.Type;
+				if (node is TreeViewVarNode) {
+					return ((TreeViewVarNode)node).Content.Type;
 				} else {
 					// Happens during incremental search
 					return base.GetValue(node);
@@ -232,7 +232,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				try {
 					localVarList.BeginUpdate();
 					Utils.DoEvents(debuggedProcess.DebuggeeState);
-					TreeViewNode.SetContentRecursive(debuggedProcess, LocalVarList, new StackFrameNode(debuggedProcess.SelectedStackFrame).ChildNodes);
+					TreeViewVarNode.SetContentRecursive(debuggedProcess, LocalVarList, new StackFrameNode(debuggedProcess.SelectedStackFrame).ChildNodes);
 				} catch(AbortedBecauseDebuggeeResumedException) {
 				} finally {
 					localVarList.EndUpdate();
