@@ -299,7 +299,7 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 			
 			public override object VisitTypeDeclaration(TypeDeclaration typeDeclaration, object data)
 			{
-				// test the Type string property explicitly (rather than .BaseTypes.Contains()) 
+				// test the Type string property explicitly (rather than .BaseTypes.Contains())
 				// to ensure that a matching type name is enough to prevent adding a second
 				// reference.
 				bool exists = false;
@@ -434,6 +434,9 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 			public override object VisitInvocationExpression(InvocationExpression invocationExpression, object data)
 			{
 				base.VisitInvocationExpression(invocationExpression, data);
+				// don't use uninitialized resolver
+				if (resolver.ProjectContent == null)
+					return null;
 				if (invocationExpression.TargetObject is MemberReferenceExpression) {
 					MemberResolveResult mrr = resolver.ResolveInternal(invocationExpression, ExpressionContext.Default) as MemberResolveResult;
 					if (mrr != null) {
@@ -465,6 +468,14 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 					}
 				}
 				return base.VisitPropertyDeclaration(propertyDeclaration, data);
+			}
+			
+			public override object VisitFieldDeclaration(FieldDeclaration fieldDeclaration, object data)
+			{
+				if (resolver != null) {
+					resolver.Initialize(parseInformation, fieldDeclaration.StartLocation.X, fieldDeclaration.StartLocation.Y);
+				}
+				return base.VisitFieldDeclaration(fieldDeclaration, data);
 			}
 		}
 		

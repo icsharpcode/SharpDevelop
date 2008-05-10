@@ -131,6 +131,10 @@ namespace ICSharpCode.Svn
 		static SvnClientWrapper client;
 		static bool subversionDisabled;
 		
+		public static bool SubversionDisabled {
+			get { return subversionDisabled; }
+		}
+		
 		static void Run(object state)
 		{
 			LoggingService.Debug("SVN: OverlayIconManager Thread started");

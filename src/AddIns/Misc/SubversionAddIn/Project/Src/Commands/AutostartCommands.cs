@@ -149,6 +149,8 @@ namespace ICSharpCode.Svn.Commands
 		
 		internal static bool CanBeVersionControlledDirectory(string directory)
 		{
+			if (OverlayIconManager.SubversionDisabled)
+				return false;
 			return Directory.Exists(Path.Combine(directory, ".svn")) || Directory.Exists(Path.Combine(directory, "_svn"));
 		}
 		
