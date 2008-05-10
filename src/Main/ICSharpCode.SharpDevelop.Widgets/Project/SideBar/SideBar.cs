@@ -614,9 +614,9 @@ namespace ICSharpCode.SharpDevelop.Widgets.SideBar
 				if (System.Windows.Forms.SystemInformation.MouseWheelScrollLines > 0) {
 					newvalue = scrollBar.Value - Math.Sign(e.Delta) * System.Windows.Forms.SystemInformation.MouseWheelScrollLines;
 				} else {
-					newvalue = scrollBar.Value - Math.Sign(e.Delta) * scrollBar.LargeChange;
+					newvalue = scrollBar.Value - Math.Sign(e.Delta) * scrollBar.SmallChange;
 				}
-				scrollBar.Value = Math.Max(scrollBar.Minimum, Math.Min(scrollBar.Maximum, newvalue));
+				scrollBar.Value = Math.Max(scrollBar.Minimum, Math.Min(scrollBar.Maximum - scrollBar.LargeChange + 1, newvalue));
 				ScrollBarScrolled(null, null);
 			}
 		}
