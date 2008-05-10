@@ -1256,7 +1256,8 @@ Block<out Statement stmt> /* not BlockStatement because of EmbeddedStatement */
 	       if (!ParseMethodBodies) lexer.SkipCurrentBlock(0);
 	    .)
 	{ Statement }
-	"}" (. 
+	SYNC "}"
+	    (.
 	       stmt = blockStmt;
 	       blockStmt.EndLocation = t.EndLocation;
 	       compilationUnit.BlockEnd();

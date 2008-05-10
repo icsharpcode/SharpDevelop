@@ -499,6 +499,30 @@ class MyClass {
 		}
 		
 		[Test]
+		public void MultipleLocalVariables()
+		{
+			const string program = @"using System;
+class MyClass {
+  void M() {
+    int a, ";
+			ExpressionResult result = ef.FindExpression(program, program.Length);
+			Assert.AreEqual(null, result.Expression);
+			Assert.AreEqual(ExpressionContext.IdentifierExpected, result.Context);
+		}
+		
+		[Test]
+		public void MultipleLocalVariablesWithInitializers()
+		{
+			const string program = @"using System;
+class MyClass {
+  void M() {
+    int a = 1, ";
+			ExpressionResult result = ef.FindExpression(program, program.Length);
+			Assert.AreEqual(null, result.Expression);
+			Assert.AreEqual(ExpressionContext.IdentifierExpected, result.Context);
+		}
+		
+		[Test]
 		public void GenericClassDeclaration()
 		{
 			const string program = @"using System;

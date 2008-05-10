@@ -269,6 +269,21 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			Assert.AreEqual("s", md.Parameters[0].ParameterName);
 			Assert.AreEqual("string", md.Parameters[0].TypeReference.Type);
 		}
+		
+		[Test]
+		public void CSharpMethodWithEmptyAssignmentErrorInBody()
+		{
+			MethodDeclaration md = ParseUtilCSharp.ParseTypeMember<MethodDeclaration>(
+				"void A\n" +
+				"{\n" +
+				"int a = 3;\n" +
+				" = 4;\n" +
+				"}", true /* expect errors */
+			);
+			Assert.AreEqual("A", md.Name);
+			Assert.AreEqual(new Location(1, 2), md.Body.StartLocation);
+			Assert.AreEqual(new Location(2, 5), md.Body.EndLocation);
+		}
 		#endregion
 		
 		#region VB.NET

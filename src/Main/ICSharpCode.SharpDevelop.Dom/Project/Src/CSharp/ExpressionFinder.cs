@@ -642,6 +642,8 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 					} else if (frame.state == FrameState.ObjectInitializerValue) {
 						frame.state = FrameState.Normal;
 						frame.SetDefaultContext();
+					} else if (frame.type == FrameType.Statements) {
+						frame.SetContext(ExpressionContext.IdentifierExpected);
 					}
 					break;
 				case Tokens.Where:
