@@ -29,11 +29,10 @@ namespace PythonBinding.Tests.Converter
 						"\t\ttry {\r\n" +
 						"\t\t\tXmlDocument doc = new XmlDocument();\r\n" +
 						"\t\t\tdoc.LoadXml(xml);\r\n" +
-						"\t\t\tcatch (XmlException ex) {\r\n" +
-						"\t\t\t\tConsole.WriteLine(ex.ToString());\r\n" +
-						"\t\t\t} finally {\r\n" +
-						"\t\t\t\tConsole.WriteLine(xml);\r\n" +
-						"\t\t\t}\r\n" +
+						"\t\t} catch (XmlException ex) {\r\n" +
+						"\t\t\tConsole.WriteLine(ex.ToString());\r\n" +
+						"\t\t} finally {\r\n" +
+						"\t\t\tConsole.WriteLine(xml);\r\n" +
 						"\t\t}\r\n" +
 						"\t}\r\n" +
 						"}";
