@@ -407,6 +407,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 					}
 				}
 			}
+			
+			public override string ToString()
+			{
+				return "[PadContentWrapper " + padDescriptor.Class + "]";
+			}
 		}
 		
 		PadContentWrapper CreateContent(PadDescriptor content)
@@ -414,7 +419,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (contentHash.ContainsKey(content.Class)) {
 				return contentHash[content.Class];
 			}
-			Properties properties = (Properties)PropertyService.Get("Workspace.ViewMementos", new Properties());
 			
 			PadContentWrapper newContent = new PadContentWrapper(content);
 			if (!string.IsNullOrEmpty(content.Icon)) {

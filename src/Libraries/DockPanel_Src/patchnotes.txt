@@ -24,3 +24,8 @@ Patch #3:
 Patch #4:
 	Prevent stack overflow in DockContentHandler.cs when showing a pad in certain layout configurations.
  Committed in revision 2970.
+
+Patch #5:
+	In DockContentHandler.SetVisible:
+	Ensure pad visibility is set correctly, even when Windows.Forms is "lying" about Form.Visible.
+ Committed in revision 3061.

@@ -690,7 +690,9 @@ namespace WeifenLuo.WinFormsUI.Docking
 			else
 				visible = Form.Visible;
 
-            if (Form.Visible != visible)
+			// when Form.Parent.Visible==false, Form.Visible cannot be read correctly (but returns always false),
+			// so we have to always assign the new visibility in those cases
+			if (Form.Visible != visible || (Form.Parent != null && !Form.Parent.Visible))
                 Form.Visible = visible;
 		}
 
