@@ -638,6 +638,9 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (members != null && typeArguments != null && typeArguments.Count != 0) {
 				List<IReturnType> typeArgs = typeArguments.ConvertAll(r => TypeVisitor.CreateReturnType(r, this));
 				
+				// For all member-groups:
+				// Remove all non-methods and methods with incorrect type argument count, then
+				// apply the type arguments to the remaining methods.
 				members = members.Select
 					(
 						(IList<IMember> memberGroup) => (IList<IMember>)
@@ -653,7 +656,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 						        })
 						.ToList()
 					)
-					.Where((IList<IMember> memberGroup) => memberGroup.Count > 0)
+					.Where(memberGroup => memberGroup.Count > 0) // keep only non-empty groups
 					.ToList();
 			}
 			if (language == NR.SupportedLanguage.VBNet && members != null && members.Count > 0) {

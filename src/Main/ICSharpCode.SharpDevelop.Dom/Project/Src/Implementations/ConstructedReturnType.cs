@@ -128,7 +128,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public static IReturnType TranslateType(IReturnType input, IList<IReturnType> typeParameters, bool convertForMethod)
 		{
-			if (typeParameters == null || typeParameters.Count == 0) {
+			if (input == null || typeParameters == null || typeParameters.Count == 0) {
 				return input; // nothing to do when there are no type parameters specified
 			}
 			if (input.IsGenericReturnType) {
