@@ -1281,8 +1281,13 @@ namespace ICSharpCode.NRefactory.Visitors
 				case UnaryOperatorType.Not:
 					// emulate !a with a == false
 					var = (CodeExpression)unaryOperatorExpression.Expression.AcceptVisitor(this, data);
-
-					return new CodeBinaryOperatorExpression(var,CodeBinaryOperatorType.ValueEquality, new CodePrimitiveExpression(false));
+					
+					CodeBinaryOperatorExpression cboe = var as CodeBinaryOperatorExpression;
+					if (cboe != null && cboe.Operator == CodeBinaryOperatorType.IdentityEquality) {
+						return new CodeBinaryOperatorExpression(cboe.Left, CodeBinaryOperatorType.IdentityInequality, cboe.Right);
+					} else {
+						return new CodeBinaryOperatorExpression(var,CodeBinaryOperatorType.ValueEquality, new CodePrimitiveExpression(false));
+					}
 
 				default:
 					throw new NotSupportedException("CodeDom does not support Unary Operators");
