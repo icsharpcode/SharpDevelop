@@ -142,6 +142,7 @@ namespace ICSharpCode.TextEditor
 					motherTextAreaControl.VScrollBar.Value = virtualTop.Y;
 					Invalidate();
 				}
+				caret.UpdateCaretPosition();
 			}
 		}
 		
@@ -530,6 +531,8 @@ namespace ICSharpCode.TextEditor
 			if (textViewArea != textView.DrawingPosition) {
 				adjustScrollBars = true;
 				textView.DrawingPosition = textViewArea;
+				// update caret position (but outside of WM_PAINT!)
+				BeginInvoke((MethodInvoker)caret.UpdateCaretPosition);
 			}
 			if (clipRectangle.IntersectsWith(textViewArea)) {
 				textViewArea.Intersect(clipRectangle);

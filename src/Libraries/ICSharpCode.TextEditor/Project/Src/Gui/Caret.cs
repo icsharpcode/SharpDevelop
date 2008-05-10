@@ -247,34 +247,33 @@ namespace ICSharpCode.TextEditor
 			} else {
 				outstandingUpdate = false;
 			}
-			if (!caretCreated) {
+			ValidateCaretPos();
+			int lineNr = this.line;
+			int xpos = textArea.TextView.GetDrawingXPos(lineNr, this.column);
+			//LineSegment lineSegment = textArea.Document.GetLineSegment(lineNr);
+			Point pos = ScreenPosition;
+			if (xpos >= 0) {
 				CreateCaret();
-			}
-			if (caretCreated) {
-				ValidateCaretPos();
-				int lineNr = this.line;
-				int xpos = textArea.TextView.GetDrawingXPos(lineNr, this.column);
-				//LineSegment lineSegment = textArea.Document.GetLineSegment(lineNr);
-				Point pos = ScreenPosition;
-				if (xpos >= 0) {
-					bool success = SetCaretPos(pos.X, pos.Y);
-					if (!success) {
-						DestroyCaret();
-						caretCreated = false;
-						UpdateCaretPosition();
-					}
+				bool success = SetCaretPos(pos.X, pos.Y);
+				if (!success) {
+					DestroyCaret();
+					caretCreated = false;
+					UpdateCaretPosition();
 				}
-				// set the input method editor location
-				if (ime == null) {
-					ime = new Ime(textArea.Handle, textArea.Document.TextEditorProperties.Font);
-				} else {
-					ime.HWnd = textArea.Handle;
-					ime.Font = textArea.Document.TextEditorProperties.Font;
-				}
-				ime.SetIMEWindowLocation(pos.X, pos.Y);
-				
-				currentPos = pos;
+			} else {
+				DestroyCaret();
 			}
+			
+			// set the input method editor location
+			if (ime == null) {
+				ime = new Ime(textArea.Handle, textArea.Document.TextEditorProperties.Font);
+			} else {
+				ime.HWnd = textArea.Handle;
+				ime.Font = textArea.Document.TextEditorProperties.Font;
+			}
+			ime.SetIMEWindowLocation(pos.X, pos.Y);
+			
+			currentPos = pos;
 		}
 		
 		#region Native caret functions
@@ -311,7 +310,7 @@ namespace ICSharpCode.TextEditor
 		[System.Diagnostics.Conditional("DEBUG")]
 		static void Log(string text)
 		{
-			//Console.WriteLine("Caret: " + text);
+			Console.WriteLine("Caret: " + text);
 		}
 		
 		static class NativeMethods {
