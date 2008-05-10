@@ -74,7 +74,7 @@
     <Compile Include="Src\TreeModel\AbstractNode.cs" />
     <Compile Include="Src\TreeModel\Adapters\DynamicTreeDebuggerRow.cs" />
     <Compile Include="Src\TreeModel\Adapters\TreeViewExceptionNode.cs" />
-    <Compile Include="Src\TreeModel\Adapters\TreeViewNode.cs" />
+    <Compile Include="Src\TreeModel\Adapters\TreeViewVarNode.cs" />
     <Compile Include="Src\TreeModel\ArrayRangeNode.cs" />
     <Compile Include="Src\TreeModel\ErrorNode.cs" />
     <Compile Include="Src\TreeModel\ExceptionNode.cs" />
