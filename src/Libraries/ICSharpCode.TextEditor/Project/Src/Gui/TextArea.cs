@@ -542,7 +542,8 @@ namespace ICSharpCode.TextEditor
 				this.motherTextAreaControl.AdjustScrollBars();
 			}
 			
-			Caret.UpdateCaretPosition();
+			// we cannot update the caret position here, it's not allowed to call the caret API inside WM_PAINT
+			//Caret.UpdateCaretPosition();
 			
 			base.OnPaint(e);
 		}
@@ -602,7 +603,7 @@ namespace ICSharpCode.TextEditor
 			}
 			CloseToolTip();
 			
-			motherTextEditorControl.BeginUpdate();
+			BeginUpdate();
 			Document.UndoStack.StartUndoGroup();
 			try {
 				// INSERT char
@@ -623,7 +624,7 @@ namespace ICSharpCode.TextEditor
 				int currentLineNr = Caret.Line;
 				Document.FormattingStrategy.FormatLine(this, currentLineNr, Document.PositionToOffset(Caret.Position), ch);
 				
-				motherTextEditorControl.EndUpdate();
+				EndUpdate();
 			} finally {
 				Document.UndoStack.EndUndoGroup();
 			}
@@ -673,7 +674,7 @@ namespace ICSharpCode.TextEditor
 			IEditAction action =  motherTextEditorControl.GetEditAction(keyData);
 			AutoClearSelection = true;
 			if (action != null) {
-				motherTextEditorControl.BeginUpdate();
+				BeginUpdate();
 				try {
 					lock (Document) {
 						action.Execute(this);
@@ -684,7 +685,7 @@ namespace ICSharpCode.TextEditor
 						}
 					}
 				} finally {
-					motherTextEditorControl.EndUpdate();
+					EndUpdate();
 					Caret.UpdateCaretPosition();
 				}
 				return true;
@@ -716,6 +717,7 @@ namespace ICSharpCode.TextEditor
 		public void EndUpdate()
 		{
 			motherTextEditorControl.EndUpdate();
+			caret.OnEndUpdate();
 		}
 		
 		public bool EnableCutOrPaste {

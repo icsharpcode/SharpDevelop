@@ -119,16 +119,19 @@ namespace ICSharpCode.SharpDevelop
 					try {
 						newProject = binding.LoadProject(provider, location, title);
 					} catch (XmlException ex) {
+						LoggingService.Warn("Project load error", ex);
 						if (progressMonitor != null) progressMonitor.ShowingDialog = true;
 						newProject = new UnknownProject(location, title, ex.Message, true);
 						newProject.TypeGuid = projectTypeGuid;
 						if (progressMonitor != null) progressMonitor.ShowingDialog = false;
 					} catch (Microsoft.Build.BuildEngine.InvalidProjectFileException ex) {
+						LoggingService.Warn("Project load error", ex);
 						if (progressMonitor != null) progressMonitor.ShowingDialog = true;
 						newProject = new UnknownProject(location, title, ex.Message, true);
 						newProject.TypeGuid = projectTypeGuid;
 						if (progressMonitor != null) progressMonitor.ShowingDialog = false;
 					} catch (UnauthorizedAccessException ex) {
+						LoggingService.Warn("Project load error", ex);
 						if (progressMonitor != null) progressMonitor.ShowingDialog = true;
 						newProject = new UnknownProject(location, title, ex.Message, true);
 						newProject.TypeGuid = projectTypeGuid;

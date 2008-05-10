@@ -179,6 +179,7 @@ namespace ICSharpCode.TextEditor
 		
 		public void RecreateCaret()
 		{
+			Log("RecreateCaret");
 			DisposeCaret();
 			if (!hidden) {
 				CreateCaret();
@@ -187,13 +188,16 @@ namespace ICSharpCode.TextEditor
 		
 		void DisposeCaret()
 		{
-			caretCreated = false;
-			HideCaret(textArea.Handle);
-			DestroyCaret();
+			if (caretCreated) {
+				caretCreated = false;
+				HideCaret(textArea.Handle);
+				DestroyCaret();
+			}
 		}
 		
 		void GotFocus(object sender, EventArgs e)
 		{
+			Log("GotFocus, IsInUpdate=" + textArea.MotherTextEditorControl.IsInUpdate);
 			hidden = false;
 			if (!textArea.MotherTextEditorControl.IsInUpdate) {
 				CreateCaret();
@@ -203,7 +207,8 @@ namespace ICSharpCode.TextEditor
 		
 		void LostFocus(object sender, EventArgs e)
 		{
-			hidden       = true;
+			Log("LostFocus");
+			hidden = true;
 			DisposeCaret();
 		}
 		
@@ -217,8 +222,18 @@ namespace ICSharpCode.TextEditor
 			}
 		}
 		int oldLine = -1;
+		bool outstandingUpdate;
+		
+		internal void OnEndUpdate()
+		{
+			if (outstandingUpdate)
+				UpdateCaretPosition();
+		}
+		
 		public void UpdateCaretPosition()
 		{
+			Log("UpdateCaretPosition");
+			
 			if (textArea.MotherTextAreaControl.TextEditorProperties.LineViewerStyle == LineViewerStyle.FullRow && oldLine != line) {
 				textArea.UpdateLine(oldLine);
 				textArea.UpdateLine(line);
@@ -227,7 +242,10 @@ namespace ICSharpCode.TextEditor
 			
 			
 			if (hidden || textArea.MotherTextEditorControl.IsInUpdate) {
+				outstandingUpdate = true;
 				return;
+			} else {
+				outstandingUpdate = false;
 			}
 			if (!caretCreated) {
 				CreateCaret();
@@ -260,20 +278,58 @@ namespace ICSharpCode.TextEditor
 		}
 		
 		#region Native caret functions
-		[DllImport("User32.dll")]
-		static extern bool CreateCaret(IntPtr hWnd, int hBitmap, int nWidth, int nHeight);
+		static bool CreateCaret(IntPtr hWnd, int hBitmap, int nWidth, int nHeight)
+		{
+			Log("CreateCaret(...)");
+			return NativeMethods.CreateCaret(hWnd, hBitmap, nWidth, nHeight);
+		}
 		
-		[DllImport("User32.dll")]
-		static extern bool SetCaretPos(int x, int y);
+		static bool SetCaretPos(int x, int y)
+		{
+			Log("SetCaretPos(x=" + x + ", y=" + y + ")");
+			return NativeMethods.SetCaretPos(x, y);
+		}
 		
-		[DllImport("User32.dll")]
-		static extern bool DestroyCaret();
+		static bool DestroyCaret()
+		{
+			Log("DestroyCaret()");
+			return NativeMethods.DestroyCaret();
+		}
 		
-		[DllImport("User32.dll")]
-		static extern bool ShowCaret(IntPtr hWnd);
+		static bool ShowCaret(IntPtr hWnd)
+		{
+			Log("ShowCaret()");
+			return NativeMethods.ShowCaret(hWnd);
+		}
 		
-		[DllImport("User32.dll")]
-		static extern bool HideCaret(IntPtr hWnd);
+		static bool HideCaret(IntPtr hWnd)
+		{
+			Log("HideCaret()");
+			return NativeMethods.HideCaret(hWnd);
+		}
+		
+		[System.Diagnostics.Conditional("DEBUG")]
+		static void Log(string text)
+		{
+			//Console.WriteLine("Caret: " + text);
+		}
+		
+		static class NativeMethods {
+			[DllImport("User32.dll")]
+			internal static extern bool CreateCaret(IntPtr hWnd, int hBitmap, int nWidth, int nHeight);
+			
+			[DllImport("User32.dll")]
+			internal static extern bool SetCaretPos(int x, int y);
+			
+			[DllImport("User32.dll")]
+			internal static extern bool DestroyCaret();
+			
+			[DllImport("User32.dll")]
+			internal static extern bool ShowCaret(IntPtr hWnd);
+			
+			[DllImport("User32.dll")]
+			internal static extern bool HideCaret(IntPtr hWnd);
+		}
 		#endregion
 		
 		bool firePositionChangedAfterUpdateEnd;
