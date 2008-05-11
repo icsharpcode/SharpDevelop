@@ -196,7 +196,7 @@ type MoveUpFileEvent() =
             let nodeIndex = parent.Nodes.IndexOf(node)
             if  nodeIndex > 1 then
                 parent.Nodes.Remove(node)
-                parent.Nodes.Insert(nodeIndex -1, node)
+                parent.Nodes.Insert(nodeIndex - 1, node)
             ProjectHelpers.reorderItems parent.Nodes fileNode.Project
         | _ -> ()
 
@@ -211,7 +211,7 @@ type MoveDownFileEvent() =
             let nodeIndex = parent.Nodes.IndexOf(node)
             if  nodeIndex < parent.Nodes.Count then
                 parent.Nodes.Remove(node)
-                parent.Nodes.Insert(nodeIndex +1, node)
+                parent.Nodes.Insert(nodeIndex + 1, node)
             ProjectHelpers.reorderItems parent.Nodes fileNode.Project
         | _ -> ()
     
@@ -219,7 +219,7 @@ type MoveDownFileEvent() =
 type FsOptions() =
     inherit AbstractProjectOptionPanel()
     override x.LoadPanelContents() =
-        let this = (type FsOptions)
+        let this = (typeof<FsOptions>)
         let caller = this.Assembly
         x.SetupFromXmlStream(caller.GetManifestResourceStream("FSharpBindings.Resources.FsOptions.xfrm"))
         x.InitializeHelper()
