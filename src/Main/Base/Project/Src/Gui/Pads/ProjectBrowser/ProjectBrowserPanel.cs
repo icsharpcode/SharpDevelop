@@ -71,7 +71,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			ToolbarService.UpdateToolbar(toolStrip);
 			if (node != null && node.ToolbarAddinTreePath != null) {
 				toolStrip.Items.Add(new ToolStripSeparator());
-				toolStrip.Items.AddRange((ToolStripItem[])AddInTree.BuildItems(node.ToolbarAddinTreePath, node, false).ToArray(typeof(ToolStripItem)));
+				toolStrip.Items.AddRange(AddInTree.BuildItems<ToolStripItem>(node.ToolbarAddinTreePath, node, false).ToArray());
 			}
 		}
 		

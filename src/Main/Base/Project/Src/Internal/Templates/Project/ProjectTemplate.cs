@@ -421,7 +421,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			projectTemplates = new List<ProjectTemplate>();
 			string dataTemplateDir = FileUtility.Combine(PropertyService.DataDirectory, "templates", "project");
 			List<string> files = FileUtility.SearchDirectory(dataTemplateDir, "*.xpt");
-			foreach (string templateDirectory in AddInTree.BuildItems(TemplatePath, null, false)) {
+			foreach (string templateDirectory in AddInTree.BuildItems<string>(TemplatePath, null, false)) {
 				files.AddRange(FileUtility.SearchDirectory(templateDirectory, "*.xpt"));
 			}
 			foreach (string fileName in files) {

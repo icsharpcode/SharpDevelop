@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 
 using ICSharpCode.Core;
@@ -85,7 +86,7 @@ namespace SearchAndReplace
 			}
 		}
 		
-		static ArrayList excludedFileExtensions;
+		static List<string> excludedFileExtensions;
 		
 		public static bool IsSearchable(string fileName)
 		{
@@ -93,7 +94,7 @@ namespace SearchAndReplace
 				return false;
 			
 			if (excludedFileExtensions == null) {
-				excludedFileExtensions = AddInTree.BuildItems("/AddIns/DefaultTextEditor/Search/ExcludedFileExtensions", null, false);
+				excludedFileExtensions = AddInTree.BuildItems<string>("/AddIns/DefaultTextEditor/Search/ExcludedFileExtensions", null, false);
 			}
 			string extension = Path.GetExtension(fileName);
 			if (extension != null) {

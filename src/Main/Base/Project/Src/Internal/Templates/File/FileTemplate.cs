@@ -275,7 +275,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		{
 			string dataTemplateDir = FileUtility.Combine(PropertyService.DataDirectory, "templates", "file");
 			List<string> files = FileUtility.SearchDirectory(dataTemplateDir, "*.xft");
-			foreach (string templateDirectory in AddInTree.BuildItems(ProjectTemplate.TemplatePath, null, false)) {
+			foreach (string templateDirectory in AddInTree.BuildItems<string>(ProjectTemplate.TemplatePath, null, false)) {
 				files.AddRange(FileUtility.SearchDirectory(templateDirectory, "*.xft"));
 			}
 			foreach (string file in files) {

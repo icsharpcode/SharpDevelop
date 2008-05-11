@@ -48,9 +48,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			IClass currentClass = GetCurrentClass(textEditorControl, cu, textEditorControl.FileName);
 			
 			if (currentClass != null) {
-				ArrayList categories = new ArrayList();
-				ArrayList generators = AddInTree.BuildItems("/AddIns/DefaultTextEditor/CodeGenerator", this, true);
-				using (CodeGenerationForm form = new CodeGenerationForm(textEditorControl, (CodeGeneratorBase[])generators.ToArray(typeof(CodeGeneratorBase)), currentClass)) {
+				var generators = AddInTree.BuildItems<CodeGeneratorBase>("/AddIns/DefaultTextEditor/CodeGenerator", this, true);
+				using (CodeGenerationForm form = new CodeGenerationForm(textEditorControl, generators.ToArray(), currentClass)) {
 					form.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm);
 				}
 			}

@@ -140,25 +140,7 @@ namespace ICSharpCode.Core
 			string parent = path.Substring(0, pos);
 			string child = path.Substring(pos + 1);
 			AddInTreeNode node = GetTreeNode(parent);
-			return node.BuildChildItem(child, caller, BuildItems(path, caller, false));
-		}
-		
-		/// <summary>
-		/// Builds the items in the path.
-		/// </summary>
-		/// <param name="path">A path in the addin tree.</param>
-		/// <param name="caller">The owner used to create the objects.</param>
-		/// <param name="throwOnNotFound">
-		/// If <c>true</c>, throws a <see cref="TreePathNotFoundException"/> if the path is not found.
-		/// If <c>false</c>, an empty ArrayList is returned when the path is not found.
-		/// </param>
-		public static ArrayList BuildItems(string path, object caller, bool throwOnNotFound)
-		{
-			AddInTreeNode node = GetTreeNode(path, throwOnNotFound);
-			if (node == null)
-				return new ArrayList();
-			else
-				return node.BuildChildItems(caller);
+			return node.BuildChildItem(child, caller, new ArrayList(BuildItems<object>(path, caller, false)));
 		}
 		
 		/// <summary>

@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -154,12 +155,12 @@ namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 			}
 		}
 		
-		static ArrayList descriptors;
+		static List<SchemeExtensionDescriptor> descriptors;
 		
 		public static ISchemeExtension GetScheme(string name)
 		{
 			if (descriptors == null) {
-				descriptors = AddInTree.BuildItems("/SharpDevelop/Views/Browser/SchemeExtensions", null, false);
+				descriptors = AddInTree.BuildItems<SchemeExtensionDescriptor>("/SharpDevelop/Views/Browser/SchemeExtensions", null, false);
 			}
 			foreach (SchemeExtensionDescriptor descriptor in descriptors) {
 				if (string.Equals(name, descriptor.SchemeName, StringComparison.OrdinalIgnoreCase)) {

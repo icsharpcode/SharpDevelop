@@ -44,7 +44,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		static void GetDescriptors()
 		{
 			if (debuggers == null) {
-				debuggers = (DebuggerDescriptor[])AddInTree.BuildItems("/SharpDevelop/Services/DebuggerService/Debugger", null, false).ToArray(typeof(DebuggerDescriptor));
+				debuggers = AddInTree.BuildItems<DebuggerDescriptor>("/SharpDevelop/Services/DebuggerService/Debugger", null, false).ToArray();
 			}
 		}
 		

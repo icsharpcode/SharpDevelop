@@ -9,6 +9,7 @@ It is based on SharpDevelop 3.0.0.3062.</p>
 <ul>
   <li><a href="#Class">Class</a>
   <li><a href="#CodeCompletionBinding">CodeCompletionBinding</a>
+  <li><a href="#CustomProperty">CustomProperty</a>
   <li><a href="#CustomTool">CustomTool</a>
   <li><a href="#Debugger">Debugger</a>
   <li><a href="#DialogPanel">DialogPanel</a>
@@ -98,6 +99,59 @@ It is based on SharpDevelop 3.0.0.3062.</p>
             The ICodeCompletionBinding class specified with the 'class' attribute, or a
             wrapper that lazy-loads the actual class when it is used in a file with the specified
             extension.
+            </td>
+    </tr>
+  </table>
+</div>
+<div>
+  <h2><a name="CustomProperty">CustomProperty</a></h2>
+  <p>
+            Creates a custom property for project items.
+            </p>
+  <table>
+    <tr>
+       <th colspan=2>Doozer name:</td>
+       <td>ICSharpCode.SharpDevelop.Project.CustomPropertyDoozer</td>
+    </tr>
+    <tr><td colspan=3><hr><h3>Attributes:</h3></td></tr>
+    <tr>
+       <th>name:</td>
+       <td class="userequired">required</td>
+       <td>
+            The name of the MSBuild meta data.
+            </td>
+    </tr>
+    <tr>
+       <th>displayName:</td>
+       <td class="userequired">optional</td>
+       <td>
+            The display name of the property.
+            </td>
+    </tr>
+    <tr>
+       <th>description:</td>
+       <td class="userequired">optional</td>
+       <td>
+            The description text for the property.
+            </td>
+    </tr>
+    <tr>
+       <th>runCustomTool:</td>
+       <td class="userequired">optional</td>
+       <td>
+            Boolean property specifying whether the custom tool should be run when the property value is changed
+            by the user. Default: false.
+            </td>
+    </tr>
+    <tr><td colspan=3><hr></td></tr>
+    <tr>
+       <th colspan=2>Usage:</td>
+       <td>In /SharpDevelop/Views/ProjectBrowser/ContextSpecificProperties</td>
+    </tr>
+    <tr>
+       <th colspan=2>Returns:</td>
+       <td>
+            A PropertyDescriptor object.
             </td>
     </tr>
   </table>

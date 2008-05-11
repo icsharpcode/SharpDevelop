@@ -117,6 +117,7 @@
     <Compile Include="Src\Internal\Undo\UndoQueue.cs" />
     <Compile Include="Src\Internal\Undo\UndoStack.cs" />
     <Compile Include="Src\Project\BuildEngine.cs" />
+    <Compile Include="Src\Project\ContextSpecificProperties.cs" />
     <Compile Include="Src\Project\IBuildFeedbackSink.cs" />
     <Compile Include="Src\Project\MSBuildFileProject.cs" />
     <Compile Include="Src\Project\ProjectPropertyChangedEventArgs.cs" />

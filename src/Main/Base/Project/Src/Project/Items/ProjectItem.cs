@@ -425,9 +425,17 @@ namespace ICSharpCode.SharpDevelop.Project
 			                     GetType().Name, this.ItemType.ItemName, this.Include);
 		}
 		
-		public override void InformSetValue(LocalizedPropertyDescriptor localizedPropertyDescriptor, object component, object value)
+		protected override void FilterProperties(PropertyDescriptorCollection globalizedProps)
 		{
-			base.InformSetValue(localizedPropertyDescriptor, component, value);
+			base.FilterProperties(globalizedProps);
+			foreach (PropertyDescriptor p in AddInTree.BuildItems<PropertyDescriptor>("/SharpDevelop/Views/ProjectBrowser/ContextSpecificProperties", this, false)) {
+				globalizedProps.Add(p);
+			}
+		}
+		
+		public override void InformSetValue(PropertyDescriptor propertyDescriptor, object component, object value)
+		{
+			base.InformSetValue(propertyDescriptor, component, value);
 			if (project != null) {
 				project.Save();
 			}

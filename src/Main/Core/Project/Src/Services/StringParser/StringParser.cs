@@ -62,6 +62,9 @@ namespace ICSharpCode.Core
 			}
 		}
 		
+		/// <summary>
+		/// Expands ${xyz} style property values.
+		/// </summary>
 		public static string Parse(string input)
 		{
 			return Parse(input, null);

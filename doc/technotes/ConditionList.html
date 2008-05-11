@@ -20,6 +20,7 @@ It is based on SharpDevelop 3.0.0.3062.</p>
   <li><a href="#OpenWindowState">OpenWindowState</a>
   <li><a href="#OwnerState">OwnerState</a>
   <li><a href="#ProjectActive">ProjectActive</a>
+  <li><a href="#ProjectItem">ProjectItem</a>
   <li><a href="#RefactoringProviderSupports">RefactoringProviderSupports</a>
   <li><a href="#SolutionOpen">SolutionOpen</a>
   <li><a href="#TextContent">TextContent</a>
@@ -337,6 +338,40 @@ It is based on SharpDevelop 3.0.0.3062.</p>
   <p><span class="exampleTitle">Example: Test if a C# project is active</span>
   <br><pre>
             &lt;Condition name = "ProjectActive" activeproject="C#"&gt;</pre></p>
+</div>
+<div>
+  <h2><a name="ProjectItem">ProjectItem</a></h2>
+  <p>
+            Tests the item type of a project item and/or an MSBuild meta data value.
+            </p>
+  <table>
+    <tr>
+       <th colspan=2>Condition name:</td>
+       <td>ICSharpCode.SharpDevelop.Project.ProjectItemConditionEvaluator</td>
+    </tr>
+    <tr><td colspan=3><hr><h3>Attributes:</h3></td></tr>
+    <tr>
+       <th colspan=2>itemType:</td>
+       <td>
+            The type the project item must have. If this attribute is not specified, the type is not tested.
+            </td>
+    </tr>
+    <tr>
+       <th colspan=2>property:</td>
+       <td>
+            The name of the MSBuild meta data to test. If this attribute is not specified, no property is tested.
+            </td>
+    </tr>
+    <tr>
+       <th colspan=2>value:</td>
+       <td>
+            The value that the MSBuild meta data must have.
+            </td>
+    </tr>
+  </table>
+  <p><span class="exampleTitle">Example: Test if a ProjectItem is an embedded resource</span>
+  <br><pre>
+            &lt;Condition name = "ProjectItem" itemType = "EmbeddedResource"&gt;</pre></p>
 </div>
 <div>
   <h2><a name="RefactoringProviderSupports">RefactoringProviderSupports</a></h2>

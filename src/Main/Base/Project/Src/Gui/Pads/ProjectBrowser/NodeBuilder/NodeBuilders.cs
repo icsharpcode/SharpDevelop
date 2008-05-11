@@ -19,7 +19,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public static TreeNode AddProjectNode(TreeNode motherNode, IProject project)
 		{
 			IProjectNodeBuilder   projectNodeBuilder = null;
-			foreach (IProjectNodeBuilder nodeBuilder in AddInTree.BuildItems("/SharpDevelop/Views/ProjectBrowser/NodeBuilders", null, true)) {
+			foreach (IProjectNodeBuilder nodeBuilder in AddInTree.BuildItems<IProjectNodeBuilder>("/SharpDevelop/Views/ProjectBrowser/NodeBuilders", null, true)) {
 				if (nodeBuilder.CanBuildProjectTree(project)) {
 					projectNodeBuilder = nodeBuilder;
 					break;

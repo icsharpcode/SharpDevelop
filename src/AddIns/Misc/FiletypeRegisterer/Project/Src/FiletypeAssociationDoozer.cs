@@ -64,11 +64,7 @@ namespace ICSharpCode.FiletypeRegisterer
 	{
 		public static List<FiletypeAssociation> GetList()
 		{
-			List<FiletypeAssociation> list = new List<FiletypeAssociation>();
-			foreach (FiletypeAssociation ass in AddInTree.BuildItems("/AddIns/FileTypeRegisterer/FileTypes", null, true)) {
-				list.Add(ass);
-			}
-			return list;
+			return AddInTree.BuildItems<FiletypeAssociation>("/AddIns/FileTypeRegisterer/FileTypes", null, true);
 		}
 		
 		/// <summary>

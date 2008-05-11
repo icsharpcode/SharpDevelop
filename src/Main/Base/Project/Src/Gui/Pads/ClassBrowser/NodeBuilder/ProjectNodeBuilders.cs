@@ -20,7 +20,7 @@ namespace ICSharpCode.SharpDevelop.Gui.ClassBrowser
 		public static TreeNode AddProjectNode(ExtTreeView classBrowser, IProject project)
 		{
 			IProjectNodeBuilder projectNodeBuilder = null;
-			foreach (IProjectNodeBuilder nodeBuilder in AddInTree.BuildItems("/SharpDevelop/Views/ClassBrowser/ProjectNodeBuilders", null, true))
+			foreach (IProjectNodeBuilder nodeBuilder in AddInTree.BuildItems<IProjectNodeBuilder>("/SharpDevelop/Views/ClassBrowser/ProjectNodeBuilders", null, true))
 			{
 				if (nodeBuilder.CanBuildProjectTree(project))
 				{

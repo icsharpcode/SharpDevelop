@@ -24,8 +24,9 @@ namespace ICSharpCode.SettingsEditor
 			XmlDocument doc = new XmlDocument();
 			doc.Load(item.FileName);
 			SettingsDocument setDoc = new SettingsDocument(doc.DocumentElement, DummySettingsEntryHost.Instance);
-			if (!string.IsNullOrEmpty(item.CustomToolNamespace)) {
-				setDoc.GeneratedClassNamespace = item.CustomToolNamespace;
+			string customToolNamespace = item.GetEvaluatedMetadata("CustomToolNamespace");
+			if (!string.IsNullOrEmpty(customToolNamespace)) {
+				setDoc.GeneratedClassNamespace = customToolNamespace;
 			}
 			
 			EasyCompileUnit ccu = new EasyCompileUnit();

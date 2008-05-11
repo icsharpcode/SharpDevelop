@@ -153,7 +153,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			List<string> list = new List<string>();
 			StringParser.Properties["Extension"] = Path.GetExtension(fileName);
 			string prefix = Path.Combine(Path.GetDirectoryName(fileName), Path.GetFileNameWithoutExtension(fileName));
-			foreach (string ext in AddInTree.BuildItems("/SharpDevelop/Workbench/DependentFileExtensions", null, false)) {
+			foreach (string ext in AddInTree.BuildItems<string>("/SharpDevelop/Workbench/DependentFileExtensions", null, false)) {
 				if (File.Exists(prefix + ext))
 					list.Add(prefix + ext);
 			}

@@ -27,8 +27,10 @@
 			<ConditionEvaluator name="CanNavigateBack" class="ICSharpCode.SharpDevelop.CanNavigateBackConditionEvaluator"/>
 			<ConditionEvaluator name="CanNavigateForward" class="ICSharpCode.SharpDevelop.CanNavigateForwardConditionEvaluator"/>
 			<ConditionEvaluator name="CompareProjectProperty" class="ICSharpCode.SharpDevelop.CompareProjectPropertyConditionEvaluator"/>
+			<ConditionEvaluator name="ProjectItem" class="ICSharpCode.SharpDevelop.Project.ProjectItemConditionEvaluator"/>
 			
 			<Doozer name="CustomTool" class="ICSharpCode.SharpDevelop.Project.CustomToolDoozer"/>
+			<Doozer name="CustomProperty" class="ICSharpCode.SharpDevelop.Project.CustomPropertyDoozer"/>
 			<Doozer name="DialogPanel" class="ICSharpCode.SharpDevelop.DialogPanelDoozer"/>
 			<Doozer name="DisplayBinding" class="ICSharpCode.SharpDevelop.DisplayBindingDoozer"/>
 			<Doozer name="Pad" class="ICSharpCode.SharpDevelop.PadDoozer"/>
@@ -2170,7 +2172,7 @@
 	<Path name="/SharpDevelop/Pads/TaskList/Toolbar">
 		<ToolbarItem id = "SelectScope"
 		             class = "ICSharpCode.SharpDevelop.Gui.SelectScopeCommand"
-					 type = "ComboBox"/>
+		             type = "ComboBox"/>
 	</Path>
 	
 	<Path name="/SharpDevelop/Services/ParserService/SingleFileGacReferences">
@@ -2203,5 +2205,24 @@
 	<Path name = "/SharpDevelop/BackendBindings/TemplateCommands">
 		<Class id="AddDotNet35ReferencesIfTargetFrameworkIs35"
 		       class="ICSharpCode.SharpDevelop.Project.Commands.AddDotNet35ReferencesIfTargetFrameworkIs35Command"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Views/ProjectBrowser/ContextSpecificProperties">
+		<ComplexCondition>
+			<Not>
+				<Condition name = "ProjectItem" property = "Generator" value = ""/>
+			</Not>
+			<CustomProperty id = "CustomToolNamespace"
+			                name = "CustomToolNamespace"
+			                displayName = "${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectFile.CustomToolNamespace}"
+			                description = "${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectFile.CustomToolNamespace.Description}"
+			                runCustomTool="True" />
+		</ComplexCondition>
+		<Condition name = "ProjectItem" itemType = "EmbeddedResource">
+			<CustomProperty id = "EmbeddedResourceLogicalName"
+			                name = "LogicalName"
+			                displayName = "Logical Name"
+			                description = "The name of the embedded resource. If left empty, the name is automatically generated." />
+		</Condition>
 	</Path>
 </AddIn>

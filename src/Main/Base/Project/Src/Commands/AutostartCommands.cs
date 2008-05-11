@@ -111,7 +111,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 			}
 			
 			if (!didLoadSolutionOrFile) {
-				foreach (ICommand command in AddInTree.BuildItems("/Workspace/AutostartNothingLoaded", null, false)) {
+				foreach (ICommand command in AddInTree.BuildItems<ICommand>("/Workspace/AutostartNothingLoaded", null, false)) {
 					command.Run();
 				}
 			}

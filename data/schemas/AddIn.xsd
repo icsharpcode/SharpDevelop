@@ -87,6 +87,7 @@
 			<!-- !!! INSERT DOOZER LIST !!! -->
 			<xs:element ref="Class" />
 			<xs:element ref="CodeCompletionBinding" />
+			<xs:element ref="CustomProperty" />
 			<xs:element ref="CustomTool" />
 			<xs:element ref="Debugger" />
 			<xs:element ref="DialogPanel" />
@@ -129,6 +130,7 @@
 				<xs:attribute name="comparisonType" type="xs:string" use="optional" />
 				<xs:attribute name="debuggersupports" type="xs:string" use="optional" />
 				<xs:attribute name="equals" type="xs:string" use="optional" />
+				<xs:attribute name="itemType" type="xs:string" use="optional" />
 				<xs:attribute name="openwindow" type="xs:string" use="optional" />
 				<xs:attribute name="options" type="xs:string" use="optional" />
 				<xs:attribute name="property" type="xs:string" use="optional" />
@@ -136,6 +138,7 @@
 				<xs:attribute name="supports" type="xs:string" use="optional" />
 				<xs:attribute name="textcontent" type="xs:string" use="optional" />
 				<xs:attribute name="urlRegex" type="xs:string" use="optional" />
+				<xs:attribute name="value" type="xs:string" use="optional" />
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -154,6 +157,7 @@
 			<!-- !!! INSERT DOOZER LIST !!! -->
 			<xs:element ref="Class" />
 			<xs:element ref="CodeCompletionBinding" />
+			<xs:element ref="CustomProperty" />
 			<xs:element ref="CustomTool" />
 			<xs:element ref="Debugger" />
 			<xs:element ref="DialogPanel" />
@@ -273,6 +277,48 @@
 		<xs:annotation>
 			<xs:documentation>
 			Creates code completion bindings that manage code completion for one language.
+			</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:complexType name="CustomProperty">
+		<xs:complexContent>
+			<xs:extension base="AbstractCodon">
+				<xs:attribute name="name" use="required" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>
+			The name of the MSBuild meta data.
+			</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="displayName" use="optional" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>
+			The display name of the property.
+			</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="description" use="optional" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>
+			The description text for the property.
+			</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="runCustomTool" use="optional" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>
+			Boolean property specifying whether the custom tool should be run when the property value is changed
+			by the user. Default: false.
+			</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="CustomProperty" type="CustomProperty">
+		<xs:annotation>
+			<xs:documentation>
+			Creates a custom property for project items.
 			</xs:documentation>
 		</xs:annotation>
 	</xs:element>

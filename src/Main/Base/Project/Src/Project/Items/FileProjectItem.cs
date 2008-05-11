@@ -58,6 +58,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			set {
 				this.ItemType = new ItemType(value);
+				ReFilterProperties();
 			}
 		}
 		
@@ -99,6 +100,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			set {
 				SetEvaluatedMetadata("Generator", value);
+				ReFilterProperties();
 			}
 		}
 		
@@ -114,19 +116,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 			}
 		}
-		
-		[LocalizedProperty("${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectFile.CustomToolNamespace}",
-		                   Description ="${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectFile.CustomToolNamespace.Description}")]
-		public string CustomToolNamespace {
-			get {
-				return GetEvaluatedMetadata("CustomToolNamespace");
-			}
-			set {
-				SetEvaluatedMetadata("CustomToolNamespace", value);
-				CustomToolsService.RunCustomTool(this, false);
-			}
-		}
-		
+
 		[Browsable(false)]
 		public string DependentUpon {
 			get {

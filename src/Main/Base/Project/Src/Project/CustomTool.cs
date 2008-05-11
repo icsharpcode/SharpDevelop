@@ -410,10 +410,9 @@ namespace ICSharpCode.SharpDevelop.Project
 				return;
 			}
 			CustomToolContext context = new CustomToolContext(baseItem.Project);
-			if (string.IsNullOrEmpty(baseItem.CustomToolNamespace)) {
+			context.OutputNamespace = baseItem.GetEvaluatedMetadata("CustomToolNamespace");
+			if (string.IsNullOrEmpty(context.OutputNamespace)) {
 				context.OutputNamespace = GetDefaultNamespace(baseItem.Project, baseItem.FileName);
-			} else {
-				context.OutputNamespace = baseItem.CustomToolNamespace;
 			}
 			RunCustomTool(new CustomToolRun(context, fileName, baseItem, customTool, showMessageBoxOnErrors));
 		}

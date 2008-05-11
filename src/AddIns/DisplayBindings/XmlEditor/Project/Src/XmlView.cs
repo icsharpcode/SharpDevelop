@@ -192,7 +192,7 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		public static string[] GetXmlFileExtensions()
 		{
-			foreach (ParserDescriptor parser in (ParserDescriptor[])AddInTree.BuildItems("/Workspace/Parser", null, false).ToArray(typeof(ParserDescriptor))) {
+			foreach (ParserDescriptor parser in AddInTree.BuildItems<ParserDescriptor>("/Workspace/Parser", null, false)) {
 				if (parser.Codon.Id == "XmlFoldingParser") {
 					return parser.Supportedextensions;
 				}
@@ -1271,7 +1271,7 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		IEditAction[] GetEditActions()
 		{
-			return (IEditAction[])(AddInTree.BuildItems(editActionsPath, this, false).ToArray(typeof(IEditAction)));
+			return AddInTree.BuildItems<IEditAction>(editActionsPath, this, false).ToArray();
 		}
 	}
 }

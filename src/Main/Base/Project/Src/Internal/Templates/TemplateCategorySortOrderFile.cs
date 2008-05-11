@@ -120,7 +120,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			projectCategorySortOrderFiles = new List<TemplateCategorySortOrderFile>();
 			string dataTemplateDir = FileUtility.Combine(PropertyService.DataDirectory, "templates", "project");
 			List<string> files = FileUtility.SearchDirectory(dataTemplateDir, ProjectCategorySortOrderFileName);
-			foreach (string templateDirectory in AddInTree.BuildItems(ProjectTemplate.TemplatePath, null, false)) {
+			foreach (string templateDirectory in AddInTree.BuildItems<string>(ProjectTemplate.TemplatePath, null, false)) {
 				files.AddRange(FileUtility.SearchDirectory(templateDirectory, ProjectCategorySortOrderFileName));
 			}
 			foreach (string fileName in files) {
@@ -137,7 +137,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			fileCategorySortOrderFiles = new List<TemplateCategorySortOrderFile>();
 			string dataTemplateDir = FileUtility.Combine(PropertyService.DataDirectory, "templates", "file");
 			List<string> files = FileUtility.SearchDirectory(dataTemplateDir, FileCategorySortOrderFileName);
-			foreach (string templateDirectory in AddInTree.BuildItems(ProjectTemplate.TemplatePath, null, false)) {
+			foreach (string templateDirectory in AddInTree.BuildItems<string>(ProjectTemplate.TemplatePath, null, false)) {
 				files.AddRange(FileUtility.SearchDirectory(templateDirectory, FileCategorySortOrderFileName));
 			}
 			foreach (string fileName in files) {
