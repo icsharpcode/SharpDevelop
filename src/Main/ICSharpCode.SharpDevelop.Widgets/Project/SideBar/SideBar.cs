@@ -605,18 +605,13 @@ namespace ICSharpCode.SharpDevelop.Widgets.SideBar
 		//		Refresh();
 		//	}
 		
+		MouseWheelHandler mouseWheelHandler = new MouseWheelHandler();
+		
 		protected override void OnMouseWheel(MouseEventArgs e)
 		{
 			base.OnMouseWheel(e);
 			if (scrollBar.Visible) {
-				int newvalue;
-				
-				if (System.Windows.Forms.SystemInformation.MouseWheelScrollLines > 0) {
-					newvalue = scrollBar.Value - Math.Sign(e.Delta) * System.Windows.Forms.SystemInformation.MouseWheelScrollLines;
-				} else {
-					newvalue = scrollBar.Value - Math.Sign(e.Delta) * scrollBar.SmallChange;
-				}
-				scrollBar.Value = Math.Max(scrollBar.Minimum, Math.Min(scrollBar.Maximum - scrollBar.LargeChange + 1, newvalue));
+				mouseWheelHandler.Scroll(scrollBar, e);
 				ScrollBarScrolled(null, null);
 			}
 		}

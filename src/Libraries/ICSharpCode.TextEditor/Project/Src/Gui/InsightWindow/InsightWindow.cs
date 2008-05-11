@@ -61,12 +61,12 @@ namespace ICSharpCode.TextEditor.Gui.InsightWindow
 		{
 			// move the window under the caret (don't change the x position)
 			TextLocation caretPos  = control.ActiveTextAreaControl.Caret.Position;
-			int y = (int)((1 + caretPos.Y) * control.ActiveTextAreaControl.TextArea.TextView.FontHeight) 
-				- control.ActiveTextAreaControl.TextArea.VirtualTop.Y - 1 
+			int y = (int)((1 + caretPos.Y) * control.ActiveTextAreaControl.TextArea.TextView.FontHeight)
+				- control.ActiveTextAreaControl.TextArea.VirtualTop.Y - 1
 				+ control.ActiveTextAreaControl.TextArea.TextView.DrawingPosition.Y;
 			
 			int xpos = control.ActiveTextAreaControl.TextArea.TextView.GetDrawingXPos(caretPos.Y, caretPos.X);
-			int ypos = (control.ActiveTextAreaControl.Document.GetVisibleLine(caretPos.Y) + 1) * control.ActiveTextAreaControl.TextArea.TextView.FontHeight 
+			int ypos = (control.ActiveTextAreaControl.Document.GetVisibleLine(caretPos.Y) + 1) * control.ActiveTextAreaControl.TextArea.TextView.FontHeight
 				- control.ActiveTextAreaControl.TextArea.VirtualTop.Y;
 			int rulerHeight = control.TextEditorProperties.ShowHorizontalRuler ? control.ActiveTextAreaControl.TextArea.TextView.FontHeight : 0;
 			
@@ -96,22 +96,18 @@ namespace ICSharpCode.TextEditor.Gui.InsightWindow
 		
 		#endregion
 		
+		MouseWheelHandler mouseWheelHandler = new MouseWheelHandler();
 		
 		public void HandleMouseWheel(MouseEventArgs e)
 		{
 			if (DataProvider != null && DataProvider.InsightDataCount > 0) {
-				if (e.Delta > 0) {
-					if (control.TextEditorProperties.MouseWheelScrollDown) {
-						CurrentData = (CurrentData + 1) % DataProvider.InsightDataCount;
-					} else {
-						CurrentData = (CurrentData + DataProvider.InsightDataCount - 1) % DataProvider.InsightDataCount;
-					}
-				} if (e.Delta < 0) {
-					if (control.TextEditorProperties.MouseWheelScrollDown) {
-						CurrentData = (CurrentData + DataProvider.InsightDataCount - 1) % DataProvider.InsightDataCount;
-					} else {
-						CurrentData = (CurrentData + 1) % DataProvider.InsightDataCount;
-					}
+				int distance = mouseWheelHandler.GetScrollAmount(e);
+				if (control.TextEditorProperties.MouseWheelScrollDown)
+					distance = -distance;
+				if (distance > 0) {
+					CurrentData = (CurrentData + 1) % DataProvider.InsightDataCount;
+				} else if (distance < 0) {
+					CurrentData = (CurrentData + DataProvider.InsightDataCount - 1) % DataProvider.InsightDataCount;
 				}
 				Refresh();
 			}

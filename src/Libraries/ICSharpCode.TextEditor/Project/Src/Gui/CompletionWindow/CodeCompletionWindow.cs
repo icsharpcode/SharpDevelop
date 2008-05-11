@@ -149,18 +149,16 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			}
 		}
 		
+		Util.MouseWheelHandler mouseWheelHandler = new Util.MouseWheelHandler();
+		
 		public void HandleMouseWheel(MouseEventArgs e)
 		{
-			int MAX_DELTA  = 120; // basically it's constant now, but could be changed later by MS
-			int multiplier = e.Delta / MAX_DELTA;
-			multiplier *= System.Windows.Forms.SystemInformation.MouseWheelScrollLines * vScrollBar.SmallChange;
-			
-			int newValue;
-			if (System.Windows.Forms.SystemInformation.MouseWheelScrollLines > 0) {
-				newValue = this.vScrollBar.Value - (control.TextEditorProperties.MouseWheelScrollDown ? 1 : -1) * multiplier;
-			} else {
-				newValue = this.vScrollBar.Value - (control.TextEditorProperties.MouseWheelScrollDown ? 1 : -1) * multiplier;
-			}
+			int scrollDistance = mouseWheelHandler.GetScrollAmount(e);
+			if (scrollDistance == 0)
+				return;
+			if (control.TextEditorProperties.MouseWheelScrollDown)
+				scrollDistance = -scrollDistance;
+			int newValue = vScrollBar.Value + vScrollBar.SmallChange * scrollDistance;
 			vScrollBar.Value = Math.Max(vScrollBar.Minimum, Math.Min(vScrollBar.Maximum - vScrollBar.LargeChange + 1, newValue));
 		}
 

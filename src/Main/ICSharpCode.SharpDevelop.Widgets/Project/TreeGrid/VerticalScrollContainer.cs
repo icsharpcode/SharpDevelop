@@ -110,8 +110,10 @@ namespace ICSharpCode.SharpDevelop.Widgets.TreeGrid
 		
 		void ScrollBy(int amount)
 		{
-			scrollable.ScrollOffsetY = Math.Max(0, Math.Min(scrollable.ScrollOffsetY + amount, scrollable.ScrollHeightY - scrollable.Height));
-			UpdateEnabled();
+			if (amount != 0) {
+				scrollable.ScrollOffsetY = Math.Max(0, Math.Min(scrollable.ScrollOffsetY + amount, scrollable.ScrollHeightY - scrollable.Height));
+				UpdateEnabled();
+			}
 		}
 		
 		public bool ShowButtonsOnlyIfRequired {
@@ -126,9 +128,11 @@ namespace ICSharpCode.SharpDevelop.Widgets.TreeGrid
 			}
 		}
 		
+		MouseWheelHandler mouseWheelHandler = new MouseWheelHandler();
+		
 		void ScrollableWheel(object sender, MouseEventArgs e)
 		{
-			ScrollBy(-e.Delta / 3);
+			ScrollBy(mouseWheelHandler.GetScrollAmount(e) * -16);
 		}
 		
 		protected override void OnSizeChanged(EventArgs e)

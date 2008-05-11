@@ -93,6 +93,7 @@
     <Compile Include="Src\Util\AugmentableRedBlackTree.cs" />
     <Compile Include="Src\Util\LoggingService.cs" />
     <Compile Include="Src\Util\LookupTable.cs" />
+    <Compile Include="Src\Util\MouseWheelHandler.cs" />
     <Compile Include="Src\Util\RedBlackTreeIterator.cs" />
     <Compile Include="Src\Util\TextUtility.cs" />
     <Compile Include="Src\Undo\UndoableDelete.cs" />

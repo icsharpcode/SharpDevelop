@@ -55,6 +55,7 @@
     <Compile Include="ListViewSorting\ListViewTextColumnComparer.cs" />
     <Compile Include="ListViewSorting\IListViewItemComparer.cs" />
     <Compile Include="ListViewSorting\ListViewItemSorter.cs" />
+    <Compile Include="MouseWheelHandler.cs" />
     <Compile Include="Resources\BitmapResources.cs" />
     <Compile Include="TreeGrid\CollectionWithEvents.cs" />
     <Compile Include="TreeGrid\DynamicList.cs" />
