@@ -63,7 +63,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		/// Creates a project descriptor for the project node specified by the xml element.
 		/// </summary>
 		/// <param name="element">The &lt;Project&gt; node of the xml template file.</param>
-		/// <param name="xmlFileName">The name of the xml file. Used to display warning/error messages</param>
+		/// <param name="hintPath">The directory on which relative paths (e.g. for referenced files) are based.</param>
 		public ProjectDescriptor(XmlElement element, string hintPath)
 		{
 			if (element == null)

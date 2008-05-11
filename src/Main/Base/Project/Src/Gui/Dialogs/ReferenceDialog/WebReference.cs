@@ -93,6 +93,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// Gets all the file items that belong to the named web reference in
 		/// the specified project.
 		/// </summary>
+		/// <param name="project">The specified project.</param>
 		/// <param name="name">The name of the web reference to look for.  This is
 		/// not the full path of the web reference, just the last folder's name.</param>
 		/// <remarks>

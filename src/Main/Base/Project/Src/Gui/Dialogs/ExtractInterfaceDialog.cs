@@ -20,7 +20,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 	/// <summary>
 	/// Asks the user about Extract Interface refactoring options.
 	/// </summary>
-	/// <returns><see cref="ExtractInterfaceDialogResults"/></returns>
+	/// <returns><see cref="ExtractInterfaceOptions"/></returns>
 	public partial class ExtractInterfaceDialog : Form
 	{
 		ExtractInterfaceOptions options;
@@ -38,7 +38,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.possibleInterfaceMembers = new List<IMember>();
 			this.hasSetFilenameExplicitly = false;
 			
-			/// recursively passes the Text attribute of each Control on this form through our StringParser
+			// recursively passes the Text attribute of each Control on this form through our StringParser
 			ParseTextFor(this);
 		}
 		

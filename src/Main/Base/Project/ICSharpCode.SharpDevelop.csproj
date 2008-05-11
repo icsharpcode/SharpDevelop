@@ -21,7 +21,7 @@
     <FileAlignment>4096</FileAlignment>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <DelaySign>False</DelaySign>
-    <NoWarn>0809</NoWarn>
+    <NoWarn>0809 1591</NoWarn>
     <WarningLevel>4</WarningLevel>
     <OutputPath>..\..\..\..\bin\</OutputPath>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>

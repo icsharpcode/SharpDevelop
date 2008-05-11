@@ -27,12 +27,12 @@ namespace ICSharpCode.SharpDevelop
 	/// implementation.  This scheme supports the basic function of logging a
 	/// filename and returning to that file's default view.</para>
 	/// <para>The default text editor provides a slightly more sophisticated
-	/// scheme, <see cref="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.TextEditorNavigationPoint">
+	/// scheme, <see cref="ICSharpCode.SharpDevelop.TextNavigationPoint">
 	/// TextEditorNavigationPoint</see>, that logs filename and line number.</para>
 	/// <para>To implement your own navigation scheme, implement
 	/// <see cref="IViewContent"/> or derive from
 	/// <see cref="AbstractViewContent"/> and override the
-	/// <see cref="IViewContent.BuildNavigationPoint">BuildNavigationPoint</see>
+	/// <see cref="IViewContent.BuildNavPoint">BuildNavigationPoint</see>
 	/// method.</para>
 	/// <para>
 	/// <i>History logic based in part on Orlando Curioso's <i>Code Project</i> article:
@@ -194,7 +194,7 @@ namespace ICSharpCode.SharpDevelop
 		/// Refactoring this out of Log() allows the NavigationService
 		/// to call this and ensure it will work regardless of the
 		/// requested state of loggingSuspended, as in 
-		/// <see cref="ClearHistory"/> where we want to log
+		/// <see cref="ClearHistory()"/> where we want to log
 		/// the current position after clearing the
 		/// history.
 		/// </remarks>
@@ -232,7 +232,7 @@ namespace ICSharpCode.SharpDevelop
 		}
 
 		/// <summary>
-		/// Gets a <see cref="List<T>"/> of the <see cref="INavigationPoints"/> that 
+		/// Gets a <see cref="List{T}"/> of the <see cref="INavigationPoint">INavigationPoints</see> that 
 		/// are currently in the collection.
 		/// </summary>
 		public static ICollection<INavigationPoint> Points
@@ -327,7 +327,7 @@ namespace ICSharpCode.SharpDevelop
 		
 		/// <summary>
 		/// Navigates the view (i.e. the workbench) to whatever
-		/// <see cref="INavigationPosition"/> is the current 
+		/// <see cref="INavigationPoint"/> is the current 
 		/// position in the internal model.
 		/// </summary>
 		/// <remarks>Factoring this out of code that manipulates
@@ -372,7 +372,6 @@ namespace ICSharpCode.SharpDevelop
 		/// <summary>
 		/// Prepares the NavigationService to load a new solution.
 		/// </summary>
-		/// <param name="sender">The fileName of the solution as a <see cref="String"/>.</param>
 		static void ProjectService_SolutionLoading(object sender, EventArgs e)
 		{
 			SuspendLogging();
@@ -381,7 +380,6 @@ namespace ICSharpCode.SharpDevelop
 		/// <summary>
 		/// Prepares the NavigationService for working with a newly loaded solution
 		/// </summary>
-		/// <param name="sender"></param>
 		static void LoadSolutionProjectsThreadEnded(object sender, EventArgs e)
 		{
 			ResumeLogging();
@@ -405,6 +403,7 @@ namespace ICSharpCode.SharpDevelop
 		/// Respond to changes in filenames by updating points in the history
 		/// to reflect the change.
 		/// </summary>
+		/// <param name="sender"/>
 		/// <param name="e"><see cref="FileRenameEventArgs"/> describing 
 		/// the file rename.</param>
 		static void FileService_FileRenamed(object sender, FileRenameEventArgs e)
@@ -417,7 +416,7 @@ namespace ICSharpCode.SharpDevelop
 		}
 
 		/// <summary>
-		/// Responds to the <see cref="ProjectService"/>.<see cref="SolutionClosed"/> event.
+		/// Responds to the <see cref="ProjectService"/>.<see cref="ProjectService.SolutionClosed"/> event.
 		/// </summary>
 		static void ProjectService_SolutionClosed(object sender, EventArgs e)
 		{

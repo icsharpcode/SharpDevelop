@@ -316,7 +316,7 @@ namespace BuildAddinDocumentation
 		
 		static bool ReadXmlDocu(string projectFolder, List<XmlElement> doozers, List<XmlElement> conditions)
 		{
-			XmlDocument doc = GetXmlDocu(projectFolder);
+			XmlDocument doc = GetXmlDocu(Path.GetFullPath(projectFolder));
 			if (doc == null) return false;
 			foreach (XmlNode node in doc.DocumentElement["members"]) {
 				XmlElement member = node as XmlElement;
@@ -338,8 +338,9 @@ namespace BuildAddinDocumentation
 			if (File.Exists(docFile))
 				File.Delete(docFile);
 			string args = "\"/p:DocumentationFile=" + docFile +  "\" \"/p:NoWarn=1591 1573 1574 1572 419\"";
-			string msbuild = Path.Combine(Path.GetDirectoryName(typeof(object).Assembly.Location), "msbuild.exe");
+			string msbuild = Path.Combine(Path.GetDirectoryName(typeof(object).Assembly.Location), "..\\v3.5\\msbuild.exe");
 			ProcessStartInfo info = new ProcessStartInfo(msbuild, args);
+			Debug.WriteLine(projectFolder + ">" + msbuild + " " + args);
 			info.WorkingDirectory = projectFolder;
 			Process p = Process.Start(info);
 			if (!p.WaitForExit(60000)) {

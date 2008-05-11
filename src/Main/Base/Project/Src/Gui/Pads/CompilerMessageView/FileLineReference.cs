@@ -68,7 +68,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// <summary>
 		/// Creates a new instance of the <see cref="FileLineReference"/> class.
 		/// </summary>
-		/// <param name="filename">The filename that the reference refers to.</param>
+		/// <param name="fileName">The filename that the reference refers to.</param>
 		/// <param name="line">The line number.</param>
 		/// <param name="column">The line column.</param>
 		public FileLineReference(string fileName, int line, int column)
@@ -81,7 +81,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// <summary>
 		/// Creates a new instance of the <see cref="FileLineReference"/> class.
 		/// </summary>
-		/// <param name="filename">The filename that the reference refers to.</param>
+		/// <param name="fileName">The filename that the reference refers to.</param>
 		/// <param name="line">The line number.</param>
 		public FileLineReference(string fileName, int line) : this(fileName, line, 0)
 		{

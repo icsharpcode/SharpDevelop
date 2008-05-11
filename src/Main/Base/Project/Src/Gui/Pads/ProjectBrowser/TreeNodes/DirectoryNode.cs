@@ -268,6 +268,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// Determines if the specified <paramref name="folder"/> is a
 		/// web reference folder in the specified <paramref name="project"/>.
 		/// </summary>
+		/// <param name="project">The project.</param>
 		/// <param name="folder">The full folder path.</param>
 		public static bool IsWebReferencesFolder(IProject project, string folder)
 		{

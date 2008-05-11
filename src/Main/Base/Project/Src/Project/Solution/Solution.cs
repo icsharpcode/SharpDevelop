@@ -31,7 +31,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public const int SolutionVersionVS05 = 9;
 		public const int SolutionVersionVS08 = 10;
 		
-		/// <summary>contains <guid>, (IProject/ISolutionFolder) pairs.</summary>
+		/// <summary>contains &lt;GUID, (IProject/ISolutionFolder)&gt; pairs.</summary>
 		Dictionary<string, ISolutionFolder> guidDictionary = new Dictionary<string, ISolutionFolder>();
 		
 		string fileName = String.Empty;

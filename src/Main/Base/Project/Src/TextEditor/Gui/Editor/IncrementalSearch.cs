@@ -57,6 +57,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		/// <summary>
 		/// Creates an incremental search for the specified text editor.
 		/// </summary>
+		/// <param name="textEditor">The text editor to search in.</param>
 		/// <param name="forwards">Indicates whether the search goes
 		/// forward from the cursor or backwards.</param>
 		public IncrementalSearch(TextEditorControl textEditor, bool forwards)

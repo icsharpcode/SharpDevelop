@@ -183,6 +183,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		/// <param name="name">Name of the task. Use null to display "please wait..." message</param>
 		/// <param name="totalWork">Total amount of work in work units. Use 0 for unknown amount of work.</param>
+		/// <param name="allowCancel">Specifies whether the task can be cancelled.</param>
 		public void BeginTask(string name, int totalWork, bool allowCancel)
 		{
 			if (name == null)

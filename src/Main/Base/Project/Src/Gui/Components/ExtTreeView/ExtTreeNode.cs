@@ -393,6 +393,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// <summary>
 		/// Gets the drag &amp; drop effect, when a DataObject is dragged over this node.
 		/// </summary>
+		/// <param name="dataObject"></param>
 		/// <param name="proposedEffect">
 		/// The default effect DragDropEffects.Copy and DragDropEffects.Move, depending on the
 		/// key the user presses while performing d&amp;d.

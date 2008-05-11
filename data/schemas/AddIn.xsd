@@ -429,6 +429,13 @@
 			</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
+				<xs:attribute name="title" use="required" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>
+			Title of the display binding to use in the "Open With" dialog.
+			</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
 				<xs:attribute name="type" use="optional">
 					<xs:annotation>
 						<xs:documentation>
@@ -447,14 +454,6 @@
 						<xs:documentation>
 			Regular expression that specifies the file names for which the display binding
 			will be used. Example: "\.res(x|ources)$"
-			</xs:documentation>
-					</xs:annotation>
-				</xs:attribute>
-				<xs:attribute name="languagePattern" use="optional" type="xs:string">
-					<xs:annotation>
-						<xs:documentation>
-			Regular expression that specifies the language for which the display binding
-			will be used. Only used for primary display bindings. Example: "\Resource Files$"
 			</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>

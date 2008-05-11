@@ -25,8 +25,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// <summary>
 		/// Extracts source code file reference from the c# compiler output.
 		/// </summary>
-		/// <param name="line">The text line to parse.</param>
-		/// <returns>A <see cref="LineReference"/> if the line of text contains a
+		/// <param name="lineText">The text line to parse.</param>
+		/// <returns>A <see cref="FileLineReference"/> if the line of text contains a
 		/// file reference otherwise <see langword="null"/></returns>
 		public static FileLineReference GetCSharpCompilerFileLineReference(string lineText)
 		{
@@ -52,8 +52,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// <summary>
 		/// Extracts source code file reference.
 		/// </summary>
-		/// <param name="line">The text line to parse.</param>
-		/// <returns>A <see cref="lineReference"/> if the line of text contains a
+		/// <param name="lineText">The text line to parse.</param>
+		/// <returns>A <see cref="FileLineReference"/> if the line of text contains a
 		/// file reference otherwise <see langword="null"/></returns>
 		public static FileLineReference GetFileLineReference(string lineText)
 		{
@@ -74,9 +74,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// <summary>
 		/// Extracts source code file reference from NUnit output. (stacktrace format)
 		/// </summary>
-		/// <param name="line">The text line to parse.</param>
+		/// <param name="lineText">The text line to parse.</param>
 		/// <param name="multiline">The <paramref name="line"/> text is multilined.</param>
-		/// <returns>A <see cref="lineReference"/> if the line of text contains a
+		/// <returns>A <see cref="FileLineReference"/> if the line of text contains a
 		/// file reference otherwise <see langword="null"/></returns>
 		public static FileLineReference GetNUnitOutputFileLineReference(string lineText, bool multiline)
 		{
@@ -104,8 +104,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// <summary>
 		/// Extracts source code file reference from the c++ or VB.Net compiler output.
 		/// </summary>
-		/// <param name="line">The text line to parse.</param>
-		/// <returns>A <see cref="LineReference"/> if the line of text contains a
+		/// <param name="lineText">The text line to parse.</param>
+		/// <returns>A <see cref="FileLineReference"/> if the line of text contains a
 		/// file reference otherwise <see langword="null"/></returns>
 		public static FileLineReference GetCppCompilerFileLineReference(string lineText)
 		{
