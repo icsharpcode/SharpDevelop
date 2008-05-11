@@ -99,11 +99,19 @@ namespace CSharpBinding
 			
 			if (char.IsLetter(ch) && CodeCompletionOptions.CompleteWhenTyping) {
 				char prevChar = cursor > 1 ? editor.Document.GetCharAt(cursor - 1) : ' ';
+				bool afterUnderscore = prevChar == '_';
+				if (afterUnderscore) {
+					cursor--;
+					prevChar = cursor > 1 ? editor.Document.GetCharAt(cursor - 1) : ' ';
+				}
 				if (!char.IsLetterOrDigit(prevChar) && prevChar != '.' && !IsInComment(editor)) {
 					ExpressionResult result = ef.FindExpression(editor.Text, cursor);
 					LoggingService.Debug("CC: Beginning to type a word, result=" + result);
 					if (result.Context != ExpressionContext.IdentifierExpected) {
-						editor.ShowCompletionWindow(new CtrlSpaceCompletionDataProvider(result.Context) { ShowTemplates = true }, '\0');
+						editor.ShowCompletionWindow(new CtrlSpaceCompletionDataProvider(result.Context) { 
+						                            	ShowTemplates = true,
+						                            	AllowCompleteExistingExpression = afterUnderscore
+						                            }, '\0');
 					}
 				}
 			}
