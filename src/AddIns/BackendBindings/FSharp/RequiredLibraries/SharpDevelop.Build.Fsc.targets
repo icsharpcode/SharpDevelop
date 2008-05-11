@@ -46,9 +46,7 @@
 	        $(AssemblyOriginatorKeyFile);
 	        @(ManifestNonResxWithNoCultureOnDisk);
 	        @(ReferencePath);              
-	        @(CompiledLicenseFile);
-	        $(Standalone);
-	        $(NoMLLib)" 
+	        @(CompiledLicenseFile)" 
 	        Outputs="@(DocFileItem);
 	        @(IntermediateAssembly);
 	        $(NonExistentFile)" 
