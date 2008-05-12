@@ -216,6 +216,7 @@ namespace ICSharpCode.TextEditor
 		{
 			base.EndUpdate();
 			Document.CommitUpdate();
+			ActiveTextAreaControl.Caret.OnEndUpdate();
 		}
 		
 		void CommitUpdateRequested(object sender, EventArgs e)

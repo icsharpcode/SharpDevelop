@@ -310,7 +310,7 @@ namespace ICSharpCode.TextEditor
 		[System.Diagnostics.Conditional("DEBUG")]
 		static void Log(string text)
 		{
-			Console.WriteLine("Caret: " + text);
+			//Console.WriteLine("Caret: " + text);
 		}
 		
 		static class NativeMethods {

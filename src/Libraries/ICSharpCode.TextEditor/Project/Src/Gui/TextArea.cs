@@ -720,7 +720,6 @@ namespace ICSharpCode.TextEditor
 		public void EndUpdate()
 		{
 			motherTextEditorControl.EndUpdate();
-			caret.OnEndUpdate();
 		}
 		
 		public bool EnableCutOrPaste {
