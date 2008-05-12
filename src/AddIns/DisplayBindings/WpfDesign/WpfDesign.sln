@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-# SharpDevelop 3.0.0.3067
+# SharpDevelop 3.0.0.3075
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfDesign.XamlDom", "WpfDesign.XamlDom\Project\WpfDesign.XamlDom.csproj", "{88DA149F-21B2-48AB-82C4-28FB6BDFD783}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfDesign.Designer", "WpfDesign.Designer\Project\WpfDesign.Designer.csproj", "{78CC29AC-CC79-4355-B1F2-97936DF198AC}"

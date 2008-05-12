@@ -182,9 +182,10 @@ namespace ICSharpCode.WpfDesign.Designer
 			_designPanel.Child = designPanelBorder;
 			designPanelBorder.Child = context.RootItem.View;
 			context.Services.RunWhenAvailable<UndoService>(
-				delegate (UndoService undoService) {
+				undoService => undoService.UndoStackChanged += delegate {
 					CommandManager.InvalidateRequerySuggested();
-				});
+				}
+			);
 			context.Services.Selection.SelectionChanged += delegate {
 				CommandManager.InvalidateRequerySuggested();
 			};

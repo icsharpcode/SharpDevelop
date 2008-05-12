@@ -1,4 +1,4 @@
-﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
     <ProjectGuid>{78CC29AC-CC79-4355-B1F2-97936DF198AC}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -13,6 +13,7 @@
     <OutputPath>..\..\..\..\..\..\AddIns\AddIns\DisplayBindings\WpfDesign\</OutputPath>
     <DocumentationFile>..\..\..\..\..\..\AddIns\AddIns\DisplayBindings\WpfDesign\ICSharpCode.WpfDesign.Designer.xml</DocumentationFile>
     <NoWarn>1591</NoWarn>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -45,13 +46,15 @@
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="WindowsBase">
       <Private>False</Private>
     </Reference>
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.WinFX.targets" />
   <ItemGroup>
     <Compile Include="..\..\..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
@@ -59,6 +62,7 @@
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Controls\AdornerLayer.cs" />
     <Compile Include="Controls\ContainerDragHandle.cs" />
+    <Compile Include="Controls\DropDownButton.cs" />
     <Compile Include="Controls\GridAdorner.cs" />
     <Compile Include="Controls\PropertyEditor\EventHandlerEditor.cs" />
     <Compile Include="Controls\SelectionFrame.cs" />
@@ -72,6 +76,10 @@
     <Compile Include="Controls\ResizeThumb.cs" />
     <Compile Include="Controls\SingleVisualChildElement.cs" />
     <Compile Include="Controls\TypeEditors\BrushEditor.cs" />
+    <Compile Include="Controls\TypeEditors\BrushEditorDialog.xaml.cs">
+      <DependentUpon>BrushEditorDialog.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Controls\TypeEditors\ContentEditor.cs" />
     <Compile Include="Controls\TypeEditors\CursorEditor.cs" />
     <Compile Include="Controls\TypeEditors\NullableBoolEditor.cs" />
@@ -139,6 +147,7 @@
     </Page>
     <Page Include="Controls\PropertyEditor\PropertyEditorStyles.xaml" />
     <Page Include="Controls\ControlStyles.xaml" />
+    <Page Include="Controls\TypeEditors\BrushEditorDialog.xaml" />
     <Page Include="themes\generic.xaml" />
   </ItemGroup>
 </Project>

@@ -26,7 +26,7 @@ namespace ICSharpCode.WpfDesign.Designer.Controls.TypeEditors
 	public class ContentEditor : DockPanel
 	{
 		readonly IPropertyEditorDataProperty property;
-		Button createObjectButton = new Button();
+		Button createObjectButton = new DropDownButton();
 		readonly TextBoxEditor textBoxEditor;
 		readonly FallbackEditor fallbackEditor;
 		readonly DataPropertyWithCustomOnValueChangedEvent textBoxEditorDataProperty, fallbackEditorDataProperty;
@@ -38,7 +38,6 @@ namespace ICSharpCode.WpfDesign.Designer.Controls.TypeEditors
 			this.property = property;
 			PropertyEditorBindingHelper.AddValueChangedEventHandler(this, property, OnValueChanged);
 			
-			createObjectButton.Content = "C";
 			createObjectButton.ContextMenuOpening += delegate {
 				createObjectButton.ContextMenu = CreateContextMenu();
 			};

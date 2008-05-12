@@ -20,9 +20,17 @@ namespace ICSharpCode.WpfDesign.Designer.Controls.TypeEditors
 	/// Type editor used to edit Brush properties.
 	/// </summary>
 	[TypeEditor(typeof(Brush))]
-	public sealed class BrushEditor : Border
+	public sealed class BrushEditor : DockPanel
 	{
 		readonly IPropertyEditorDataProperty property;
+		
+		Border brushShowingBorder = new Border {
+			SnapsToDevicePixels = true,
+			BorderThickness = new Thickness(1)
+		};
+		DropDownButton ddb = new DropDownButton {
+			HorizontalAlignment = HorizontalAlignment.Right
+		};
 		
 		/// <summary>
 		/// Creates a new BooleanEditor instance.
@@ -30,22 +38,39 @@ namespace ICSharpCode.WpfDesign.Designer.Controls.TypeEditors
 		public BrushEditor(IPropertyEditorDataProperty property)
 		{
 			this.property = property;
-			this.SnapsToDevicePixels = true;
-			this.BorderThickness = new Thickness(1);
+			
 			PropertyEditorBindingHelper.AddValueChangedEventHandler(this, property, OnValueChanged);
 			OnValueChanged(null, null);
+			
+			ddb.Click += new RoutedEventHandler(DropDownButtonClick);
+			SetDock(ddb, Dock.Right);
+			this.Children.Add(ddb);
+			this.Children.Add(brushShowingBorder);
+		}
+		
+		void DropDownButtonClick(object sender, RoutedEventArgs e)
+		{
+			BrushEditorDialog dlg = new BrushEditorDialog();
+			Point pos = ddb.PointToScreen(new Point(ddb.ActualWidth, ddb.ActualHeight));
+			dlg.Left = pos.X - dlg.Width;
+			dlg.Top = pos.Y;
+			dlg.SelectedBrush = brushShowingBorder.BorderBrush;
+			dlg.SelectedBrushChanged += delegate {
+				property.Value = dlg.SelectedBrush;
+			};
+			dlg.Show();
 		}
 		
 		void OnValueChanged(object sender, EventArgs e)
 		{
 			Brush val = property.Value as Brush;
-			this.Background = val;
+			brushShowingBorder.Background = val;
 			if (val == null) {
-				this.BorderBrush = null;
+				brushShowingBorder.BorderBrush = null;
 			} else if (property.IsSet) {
-				this.BorderBrush = Brushes.Black;
+				brushShowingBorder.BorderBrush = Brushes.Black;
 			} else {
-				this.BorderBrush = Brushes.Gray;
+				brushShowingBorder.BorderBrush = Brushes.Gray;
 			}
 		}
 	}
