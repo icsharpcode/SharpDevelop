@@ -102,7 +102,7 @@ namespace ICSharpCode.TextEditor
 			
 			Document.TextContentChanged += DocumentTextContentChanged;
 			Document.DocumentChanged += AdjustScrollBarsOnDocumentChange;
-			Document.UpdateCommited  += AdjustScrollBarsOnCommittedUpdate;
+			Document.UpdateCommited  += DocumentUpdateCommitted;
 		}
 		
 		protected override void Dispose(bool disposing)
@@ -112,7 +112,7 @@ namespace ICSharpCode.TextEditor
 					disposed = true;
 					Document.TextContentChanged -= DocumentTextContentChanged;
 					Document.DocumentChanged -= AdjustScrollBarsOnDocumentChange;
-					Document.UpdateCommited  -= AdjustScrollBarsOnCommittedUpdate;
+					Document.UpdateCommited  -= DocumentUpdateCommitted;
 					motherTextEditorControl = null;
 					if (vScrollBar != null) {
 						vScrollBar.Dispose();
@@ -187,8 +187,11 @@ namespace ICSharpCode.TextEditor
 			}
 		}
 		
-		void AdjustScrollBarsOnCommittedUpdate(object sender, EventArgs e)
+		void DocumentUpdateCommitted(object sender, EventArgs e)
 		{
+			Caret.ValidateCaretPos();
+			
+			// AdjustScrollBarsOnCommittedUpdate
 			if (motherTextEditorControl.IsInUpdate == false) {
 				if (!scrollToPosOnNextUpdate.IsEmpty) {
 					ScrollTo(scrollToPosOnNextUpdate.Y, scrollToPosOnNextUpdate.X);
