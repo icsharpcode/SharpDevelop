@@ -258,5 +258,35 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
 </t:ExampleClass>
 			");
 		}
+		
+		[Test]
+		public void ExampleClassObjectPropWithExplicitMarkupExtension()
+		{
+			TestLoading(@"
+<t:ExampleClass
+  xmlns=""http://schemas.microsoft.com/netfx/2007/xaml/presentation""
+  xmlns:t=""" + XamlTypeFinderTests.XamlDomTestsNamespace + @"""
+  xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+  <t:ExampleClass.ObjectProp>
+    <x:Type TypeName=""t:ExampleClass""/>
+  </t:ExampleClass.ObjectProp>
+</t:ExampleClass>
+			");
+		}
+		
+		[Test]
+		public void ExampleClassObjectPropWithExplicitMarkupExtension2()
+		{
+			TestLoading(@"
+<t:ExampleClass
+  xmlns=""http://schemas.microsoft.com/netfx/2007/xaml/presentation""
+  xmlns:t=""" + XamlTypeFinderTests.XamlDomTestsNamespace + @"""
+  xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+  <t:ExampleClass.ObjectProp>
+    <x:TypeExtension TypeName=""t:ExampleClass""/>
+  </t:ExampleClass.ObjectProp>
+</t:ExampleClass>
+			");
+		}
 	}
 }

@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Windows.Markup;
 using System.Xml;
 
 namespace ICSharpCode.WpfDesign.XamlDom
@@ -50,7 +51,11 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		#region XamlPropertyValue implementation
 		internal override object GetValueFor(XamlPropertyInfo targetProperty)
 		{
-			return instance;
+			if (instance is MarkupExtension) {
+				return ((MarkupExtension)instance).ProvideValue(new XamlTypeResolverProvider(this));
+			} else {
+				return instance;
+			}
 		}
 		
 		internal override XmlNode GetNodeForCollection()

@@ -133,7 +133,13 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		
 		XamlObject ParseObject(XmlElement element)
 		{
-			Type elementType = FindType(element.NamespaceURI, element.LocalName);
+			Type elementType = settings.TypeFinder.GetType(element.NamespaceURI, element.LocalName);
+			if (elementType == null) {
+				elementType = settings.TypeFinder.GetType(element.NamespaceURI, element.LocalName + "Extension");
+				if (elementType == null) {
+					throw new XamlLoadException("Cannot find type " + element.Name);
+				}
+			}
 			
 			XmlSpace oldXmlSpace = currentXmlSpace;
 			XamlObject parentXamlObject = currentXamlObject;
