@@ -51,7 +51,7 @@ namespace ICSharpCode.SharpDevelop.Tests.Utils
 		
 		public IProjectContent ProjectContent {
 			get {
-				throw new NotImplementedException();
+				return DefaultProjectContent.DummyProjectContent;
 			}
 		}
 		
@@ -123,15 +123,11 @@ namespace ICSharpCode.SharpDevelop.Tests.Utils
 		
 		public IClass BaseClass {
 			get {
-				throw new NotImplementedException();
+				return BaseType.GetUnderlyingClass();
 			}
 		}
 		
-		public IReturnType BaseType {
-			get {
-				throw new NotImplementedException();
-			}
-		}
+		public IReturnType BaseType { get; set; }
 		
 		public bool HasPublicOrInternalStaticMembers {
 			get {
@@ -296,7 +292,7 @@ namespace ICSharpCode.SharpDevelop.Tests.Utils
 		
 		public IClass GetCompoundClass()
 		{
-			throw new NotImplementedException();
+			return this;
 		}
 		
 		public IClass GetInnermostClass(int caretLine, int caretColumn)

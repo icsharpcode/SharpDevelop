@@ -33,7 +33,7 @@ namespace ICSharpCode.SharpDevelop.Tests.Utils
 		
 		public IList<ITypeParameter> TypeParameters {
 			get {
-				throw new NotImplementedException();
+				return new ITypeParameter[0];
 			}
 		}
 		
@@ -51,7 +51,7 @@ namespace ICSharpCode.SharpDevelop.Tests.Utils
 		
 		public IList<IParameter> Parameters {
 			get {
-				throw new NotImplementedException();
+				return new IParameter[0];
 			}
 		}
 		
@@ -195,7 +195,7 @@ namespace ICSharpCode.SharpDevelop.Tests.Utils
 		
 		public bool IsOverride {
 			get {
-				throw new NotImplementedException();
+				return false;
 			}
 		}
 		
@@ -244,7 +244,7 @@ namespace ICSharpCode.SharpDevelop.Tests.Utils
 		
 		public bool IsAccessible(IClass callingClass, bool isClassInInheritanceTree)
 		{
-			throw new NotImplementedException();
+			return !IsPrivate;
 		}
 		
 		public int CompareTo(object obj)

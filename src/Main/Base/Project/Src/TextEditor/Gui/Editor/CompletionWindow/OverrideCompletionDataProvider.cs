@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using ICSharpCode.TextEditor;
@@ -17,6 +18,16 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 {
 	public class OverrideCompletionDataProvider : AbstractCompletionDataProvider
 	{
+		static IEnumerable<IMember> GetOverridableMembers(IClass c)
+		{
+			if (c == null) {
+				throw new ArgumentException("c");
+			}
+			
+			return MemberLookupHelper.GetAccessibleMembers(c.BaseType, c, c.ProjectContent.Language, true)
+				.Where(m => m.IsOverridable && !m.IsConst);
+		}
+		
 		/// <summary>
 		/// Gets a list of overridable methods from the specified class.
 		/// A better location for this method is in the DefaultClass
@@ -24,19 +35,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		/// </summary>
 		public static IMethod[] GetOverridableMethods(IClass c)
 		{
-			if (c == null) {
-				throw new ArgumentException("c");
-			}
-			
-			List<IMethod> methods = new List<IMethod>();
-			foreach (IMethod m in c.DefaultReturnType.GetMethods()) {
-				if (m.IsOverridable && !m.IsConst && !m.IsPrivate) {
-					if (m.DeclaringType.FullyQualifiedName != c.FullyQualifiedName) {
-						methods.Add(m);
-					}
-				}
-			}
-			return methods.ToArray();
+			return GetOverridableMembers(c).OfType<IMethod>().ToArray();
 		}
 		
 		/// <summary>
@@ -44,19 +43,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		/// </summary>
 		public static IProperty[] GetOverridableProperties(IClass c)
 		{
-			if (c == null) {
-				throw new ArgumentException("c");
-			}
-			
-			List<IProperty> properties = new List<IProperty>();
-			foreach (IProperty p in c.DefaultReturnType.GetProperties()) {
-				if (p.IsOverridable && !p.IsConst && !p.IsPrivate) {
-					if (p.DeclaringType.FullyQualifiedName != c.FullyQualifiedName) {
-						properties.Add(p);
-					}
-				}
-			}
-			return properties.ToArray();
+			return GetOverridableMembers(c).OfType<IProperty>().ToArray();
 		}
 		
 		public override CompletionDataProviderKeyResult ProcessKey(char key)

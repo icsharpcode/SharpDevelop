@@ -133,6 +133,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 			// base most member => most derived member
 			//Dictionary<IMember, IMember> overrideDict = new Dictionary<IMember, IMember>();
 			
+			bool handledNonMethod = false;
+			HashSet<IMethod> handledMethods = new HashSet<IMethod>(new SignatureComparer());
 			Dictionary<IMethod, IMethod> overrideMethodDict = new Dictionary<IMethod, IMethod>(new SignatureComparer());
 			IMember nonMethodOverride = null;
 			
@@ -148,16 +150,30 @@ namespace ICSharpCode.SharpDevelop.Dom
 					//Console.WriteLine("  " + m.DotNetName);
 					if (m.IsOverride) {
 						IMethod method = m as IMethod;
-						if (method != null)
-							overrideMethodDict[method] = method;
-						else
-							nonMethodOverride = m;
+						if (method != null) {
+							if (!overrideMethodDict.ContainsKey(method))
+								overrideMethodDict[method] = method;
+						} else {
+							if (nonMethodOverride == null)
+								nonMethodOverride = m;
+						}
 					} else {
 						IMethod method = m as IMethod;
-						if (method != null && overrideMethodDict.TryGetValue(method, out method))
-							results.Add(method);
-						else
-							results.Add(m);
+						if (method != null) {
+							if (handledMethods.Add(method)) {
+								IMethod mostOverriddenMethod;
+								if (overrideMethodDict.TryGetValue(method, out mostOverriddenMethod))
+									results.Add(mostOverriddenMethod);
+								else {
+									results.Add(method);
+								}
+							}
+						} else {
+							if (!handledNonMethod) {
+								handledNonMethod = true;
+								results.Add(nonMethodOverride ?? m);
+							}
+						}
 					}
 				}
 				if (results.Count > 0) {
@@ -200,7 +216,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				throw new ArgumentNullException("language");
 			
 			List<IMember> result = new List<IMember>();
-			foreach (var g in GetAllMembers(rt).GroupBy(m => m.Name, language.NameComparer)) {
+			foreach (var g in GetAllMembers(rt).GroupBy(m => m.Name, language.NameComparer).OrderBy(g2=>g2.Key)) {
 				foreach (var group in LookupMember(g, callingClass, isClassInInheritanceTree, false)) {
 					result.AddRange(group);
 				}

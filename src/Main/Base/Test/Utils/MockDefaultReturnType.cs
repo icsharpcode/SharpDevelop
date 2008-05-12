@@ -98,12 +98,12 @@ namespace ICSharpCode.SharpDevelop.Tests.Utils
 		
 		public List<IField> GetFields()
 		{
-			throw new NotImplementedException();
+			return new List<IField>();
 		}
 		
 		public List<IEvent> GetEvents()
 		{
-			throw new NotImplementedException();
+			return new List<IEvent>();
 		}
 		
 		public ArrayReturnType CastToArrayReturnType()

@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Linq;
 using ICSharpCode.Core;
 using System.Collections.Generic;
 using ICSharpCode.SharpDevelop.Project;
@@ -27,6 +28,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 			ProjectContentRegistry r = new ProjectContentRegistry();
 			msc = r.Mscorlib;
 			swf = r.GetProjectContentForReference("System.Windows.Forms", "System.Windows.Forms");
+			((ReflectionProjectContent)swf).InitializeReferences();
 			
 			DefaultProjectContent dpc = new DefaultProjectContent();
 			dpc.ReferencedContents.Add(msc);
@@ -414,6 +416,18 @@ namespace ICSharpCode.SharpDevelop.Tests
 				new ConstructedReturnType(new GetClassReturnType(msc, "System.Predicate", 1),
 				                          new IReturnType[] { msc.SystemTypes.Int32 })
 			));
+		}
+		
+		[Test]
+		public void GetOverridableMethodsProperties()
+		{
+			// get a class deriving from Form
+			IClass form = swf.GetClass("System.Windows.Forms.PrintPreviewDialog", 0);
+			IMethod[] methods = DefaultEditor.Gui.Editor.OverrideCompletionDataProvider.GetOverridableMethods(form);
+			IProperty[] properties = DefaultEditor.Gui.Editor.OverrideCompletionDataProvider.GetOverridableProperties(form);
+			Assert.AreEqual(1, properties.Where(m=>m.Name=="AutoScroll").Count());
+			Assert.AreEqual(1, properties.Where(m=>m.Name=="CanRaiseEvents").Count());
+			Assert.AreEqual(1, methods.Where(m=>m.Name=="AdjustFormScrollbars").Count());
 		}
 	}
 }

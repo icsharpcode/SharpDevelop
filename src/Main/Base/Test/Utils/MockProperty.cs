@@ -225,7 +225,7 @@ namespace ICSharpCode.SharpDevelop.Tests.Utils
 		
 		public bool IsOverride {
 			get {
-				throw new NotImplementedException();
+				return false;
 			}
 		}
 		
@@ -263,7 +263,7 @@ namespace ICSharpCode.SharpDevelop.Tests.Utils
 		
 		public bool IsAccessible(IClass callingClass, bool isClassInInheritanceTree)
 		{
-			throw new NotImplementedException();
+			return !IsPrivate;
 		}
 		
 		public void Freeze()

@@ -36,6 +36,11 @@ namespace ICSharpCode.SharpDevelop.Tests
 			c.DefaultReturnType = returnType;
 		}
 	
+		IProperty[] GetOverridableProperties(IClass baseClass)
+		{
+			return OverrideCompletionDataProvider.GetOverridableProperties(new MockClass("DerivedClass") { BaseType = baseClass.DefaultReturnType });
+		}
+		
 		/// <summary>
 		/// Add one overridable property to the return type and this
 		/// should be returned in the list of overridable properties.
@@ -50,7 +55,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 			
 			expectedProperties.Add(property);
 
-			IProperty[] properties = OverrideCompletionDataProvider.GetOverridableProperties(c);
+			IProperty[] properties = GetOverridableProperties(c);
 			
 			AssertArePropertiesEqual(expectedProperties, properties);
 		}
@@ -84,7 +89,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 			property.IsConst = true;
 			returnType.Properties.Add(property);
 			
-			IProperty[] properties = OverrideCompletionDataProvider.GetOverridableProperties(c);
+			IProperty[] properties = GetOverridableProperties(c);
 			
 			AssertArePropertiesEqual(expectedProperties, properties);
 		}
@@ -101,7 +106,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 			property.IsPrivate = true;
 			returnType.Properties.Add(property);
 			
-			IProperty[] properties = OverrideCompletionDataProvider.GetOverridableProperties(c);
+			IProperty[] properties = GetOverridableProperties(c);
 			
 			AssertArePropertiesEqual(expectedProperties, properties);
 		}
