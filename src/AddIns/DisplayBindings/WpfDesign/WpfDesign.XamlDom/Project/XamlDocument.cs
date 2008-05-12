@@ -27,6 +27,13 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		}
 		
 		/// <summary>
+		/// Gets the type finder used for this XAML document.
+		/// </summary>
+		public XamlTypeFinder TypeFinder {
+			get { return _typeFinder; }
+		}
+		
+		/// <summary>
 		/// Gets the service provider used for markup extensions in this document.
 		/// </summary>
 		public IServiceProvider ServiceProvider {

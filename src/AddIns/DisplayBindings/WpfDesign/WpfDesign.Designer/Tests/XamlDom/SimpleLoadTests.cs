@@ -74,6 +74,19 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
 		}
 		
 		[Test]
+		public void ExampleClassWithEscapedBraceStringPropAttribute()
+		{
+			TestLoading(@"
+<t:ExampleClass
+  xmlns=""http://schemas.microsoft.com/netfx/2007/xaml/presentation""
+  xmlns:t=""" + XamlTypeFinderTests.XamlDomTestsNamespace + @"""
+  xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+  StringProp=""{}{a test string}"">
+</t:ExampleClass>
+			");
+		}
+		
+		[Test]
 		public void ExampleClassUseDefaultProperty()
 		{
 			TestLoading(@"
@@ -191,6 +204,58 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
   xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
   t:ExampleService.Example=""attached value"">
 </t:ExampleDependencyObject>
+			");
+		}
+		
+		[Test]
+		public void ExampleClassObjectPropWithStringValue()
+		{
+			TestLoading(@"
+<t:ExampleClass
+  xmlns=""http://schemas.microsoft.com/netfx/2007/xaml/presentation""
+  xmlns:t=""" + XamlTypeFinderTests.XamlDomTestsNamespace + @"""
+  xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+  ObjectProp=""a test string"">
+</t:ExampleClass>
+			");
+		}
+		
+		[Test]
+		public void ExampleClassObjectPropWithTypeValue()
+		{
+			TestLoading(@"
+<t:ExampleClass
+  xmlns=""http://schemas.microsoft.com/netfx/2007/xaml/presentation""
+  xmlns:t=""" + XamlTypeFinderTests.XamlDomTestsNamespace + @"""
+  xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+  ObjectProp=""{x:Type t:ExampleClass}"">
+</t:ExampleClass>
+			");
+		}
+		
+		[Test]
+		public void ExampleClassObjectPropWithTypeValue2()
+		{
+			TestLoading(@"
+<t:ExampleClass
+  xmlns=""http://schemas.microsoft.com/netfx/2007/xaml/presentation""
+  xmlns:t=""" + XamlTypeFinderTests.XamlDomTestsNamespace + @"""
+  xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+  ObjectProp=""{x:Type TypeName=t:ExampleClass}"">
+</t:ExampleClass>
+			");
+		}
+		
+		[Test]
+		public void ExampleClassObjectPropWithNullValue()
+		{
+			TestLoading(@"
+<t:ExampleClass
+  xmlns=""http://schemas.microsoft.com/netfx/2007/xaml/presentation""
+  xmlns:t=""" + XamlTypeFinderTests.XamlDomTestsNamespace + @"""
+  xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+  ObjectProp=""{x:Null}"">
+</t:ExampleClass>
 			");
 		}
 	}

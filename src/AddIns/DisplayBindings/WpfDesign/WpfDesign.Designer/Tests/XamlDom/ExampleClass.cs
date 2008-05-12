@@ -72,5 +72,18 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
 				otherProp2 = value;
 			}
 		}
+		
+		object objectProp;
+		
+		public object ObjectProp {
+			get {
+				TestHelperLog.Log("ObjectProp.get " + Identity);
+				return objectProp;
+			}
+			set {
+				TestHelperLog.Log("ObjectProp.set to " + value + " - " + Identity);
+				objectProp = value;
+			}
+		}
 	}
 }

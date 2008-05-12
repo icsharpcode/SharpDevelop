@@ -1,4 +1,4 @@
-﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
     <ProjectGuid>{88DA149F-21B2-48AB-82C4-28FB6BDFD783}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -18,6 +18,7 @@
     <CodeAnalysisRules>-Microsoft.Globalization#CA1303</CodeAnalysisRules>
     <OutputPath>..\..\..\..\..\..\AddIns\AddIns\DisplayBindings\WpfDesign\</OutputPath>
     <DocumentationFile>..\..\..\..\..\..\AddIns\AddIns\DisplayBindings\WpfDesign\ICSharpCode.WpfDesign.XamlDom.xml</DocumentationFile>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -48,6 +49,9 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="WindowsBase">
       <Private>False</Private>
@@ -60,6 +64,7 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="CollectionElementsCollection.cs" />
     <Compile Include="CollectionSupport.cs" />
+    <Compile Include="MarkupExtensionParser.cs" />
     <Compile Include="XamlConstants.cs" />
     <Compile Include="XamlDocument.cs" />
     <Compile Include="XamlLoadException.cs" />

@@ -11,6 +11,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.Text;
+using System.Windows.Markup;
 using System.Xml;
 
 namespace ICSharpCode.WpfDesign.XamlDom
@@ -58,9 +59,12 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		/// </summary>
 		public string Text {
 			get {
-				if (attribute != null)
-					return attribute.Value;
-				else if (textValue != null)
+				if (attribute != null) {
+					if (attribute.Value.StartsWith("{}"))
+						return attribute.Value.Substring(2);
+					else
+						return attribute.Value;
+				} else if (textValue != null)
 					return textValue;
 				else if (cDataSection != null)
 					return cDataSection.Value;
@@ -105,8 +109,14 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			return b.ToString();
 		}
 		
+		static readonly TypeConverter stringTypeConverter = TypeDescriptor.GetConverter(typeof(string));
+		
 		internal override object GetValueFor(XamlPropertyInfo targetProperty)
 		{
+			if (attribute != null) {
+				return AttributeTextToObject(attribute.Value, attribute.OwnerElement, document,
+				                             targetProperty != null ? targetProperty.TypeConverter : stringTypeConverter);
+			}
 			if (targetProperty == null)
 				return this.Text;
 			TypeConverter converter = targetProperty.TypeConverter;
@@ -114,6 +124,65 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				return converter.ConvertFromString(document.GetTypeDescriptorContext(), CultureInfo.InvariantCulture, this.Text);
 			} else {
 				return this.Text;
+			}
+		}
+		
+		internal static object AttributeTextToObject(string attributeText, XmlElement containingElement,
+		                                             XamlDocument document, TypeConverter typeConverter)
+		{
+			if (typeConverter == null)
+				typeConverter = stringTypeConverter;
+			if (attributeText.StartsWith("{}")) {
+				return typeConverter.ConvertFromString(
+					document.GetTypeDescriptorContext(), CultureInfo.InvariantCulture,
+					attributeText.Substring(2));
+			} else if (attributeText.StartsWith("{")) {
+				XamlTypeResolverProvider xtrp = new XamlTypeResolverProvider(document, containingElement, document.ServiceProvider);
+				MarkupExtension extension = MarkupExtensionParser.ConstructMarkupExtension(
+					attributeText, containingElement, document);
+				return extension.ProvideValue(xtrp);
+			} else {
+				return typeConverter.ConvertFromString(
+					document.GetTypeDescriptorContext(), CultureInfo.InvariantCulture,
+					attributeText);
+			}
+		}
+		
+		sealed class XamlTypeResolverProvider : IXamlTypeResolver, IServiceProvider
+		{
+			XamlDocument document;
+			XmlElement containingElement;
+			IServiceProvider baseProvider;
+			
+			public XamlTypeResolverProvider(XamlDocument document, XmlElement containingElement, IServiceProvider baseProvider)
+			{
+				this.document = document;
+				this.containingElement = containingElement;
+				this.baseProvider = baseProvider;
+			}
+			
+			public Type Resolve(string typeName)
+			{
+				string typeNamespaceUri;
+				string typeLocalName;
+				if (typeName.Contains(":")) {
+					typeNamespaceUri = containingElement.GetNamespaceOfPrefix(typeName.Substring(0, typeName.IndexOf(':')));
+					typeLocalName = typeName.Substring(typeName.IndexOf(':') + 1);
+				} else {
+					typeNamespaceUri = containingElement.NamespaceURI;
+					typeLocalName = typeName;
+				}
+				if (string.IsNullOrEmpty(typeNamespaceUri))
+					throw new XamlMarkupExtensionParseException("Unrecognized namespace prefix in type " + typeName);
+				return document.TypeFinder.GetType(typeNamespaceUri, typeLocalName);
+			}
+			
+			public object GetService(Type serviceType)
+			{
+				if (serviceType == typeof(IXamlTypeResolver))
+					return this;
+				else
+					return baseProvider.GetService(serviceType);
 			}
 		}
 		

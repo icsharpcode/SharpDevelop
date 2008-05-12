@@ -27,6 +27,13 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
 		
 		public static void TestLoading(string xaml)
 		{
+			Debug.WriteLine("Load using builtin XamlReader:");
+			ExampleClass.nextUniqueIndex = 0;
+			TestHelperLog.logBuilder = new StringBuilder();
+			object officialResult = XamlReader.Load(new XmlTextReader(new StringReader(xaml)));
+			string officialLog = TestHelperLog.logBuilder.ToString();
+			Assert.IsNotNull(officialResult, "officialResult is null");
+			
 			Debug.WriteLine("Load using own XamlParser:");
 			ExampleClass.nextUniqueIndex = 0;
 			TestHelperLog.logBuilder = new StringBuilder();
@@ -35,13 +42,6 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
 			object ownResult = doc.RootInstance;
 			string ownLog = TestHelperLog.logBuilder.ToString();
 			Assert.IsNotNull(ownResult, "ownResult is null");
-			
-			Debug.WriteLine("Load using builtin XamlReader:");
-			ExampleClass.nextUniqueIndex = 0;
-			TestHelperLog.logBuilder = new StringBuilder();
-			object officialResult = XamlReader.Load(new XmlTextReader(new StringReader(xaml)));
-			string officialLog = TestHelperLog.logBuilder.ToString();
-			Assert.IsNotNull(officialResult, "officialResult is null");
 			
 			TestHelperLog.logBuilder = null;
 			// compare:
