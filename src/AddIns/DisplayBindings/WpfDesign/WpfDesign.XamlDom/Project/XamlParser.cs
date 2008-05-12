@@ -108,7 +108,12 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		
 		Type FindType(string namespaceUri, string localName)
 		{
-			Type elementType = settings.TypeFinder.GetType(namespaceUri, localName);
+			return FindType(settings.TypeFinder, namespaceUri, localName);
+		}
+		
+		static Type FindType(XamlTypeFinder typeFinder, string namespaceUri, string localName)
+		{
+			Type elementType = typeFinder.GetType(namespaceUri, localName);
 			if (elementType == null)
 				throw new XamlLoadException("Cannot find type " + localName + " in " + namespaceUri);
 			return elementType;
@@ -124,12 +129,14 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		
 		readonly static object[] emptyObjectArray = new object[0];
 		XmlSpace currentXmlSpace = XmlSpace.None;
+		XamlObject currentXamlObject;
 		
 		XamlObject ParseObject(XmlElement element)
 		{
 			Type elementType = FindType(element.NamespaceURI, element.LocalName);
 			
 			XmlSpace oldXmlSpace = currentXmlSpace;
+			XamlObject parentXamlObject = currentXamlObject;
 			if (element.HasAttribute("xml:space")) {
 				currentXmlSpace = (XmlSpace)Enum.Parse(typeof(XmlSpace), element.GetAttribute("xml:space"), true);
 			}
@@ -160,7 +167,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			object instance;
 			if (initializeFromTextValueInsteadOfConstructor != null) {
 				instance = TypeDescriptor.GetConverter(elementType).ConvertFromString(
-					document.GetTypeDescriptorContext(),
+					document.GetTypeDescriptorContext(null),
 					CultureInfo.InvariantCulture,
 					initializeFromTextValueInsteadOfConstructor.Text);
 			} else {
@@ -168,6 +175,8 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			}
 			
 			XamlObject obj = new XamlObject(document, element, elementType, instance);
+			currentXamlObject = obj;
+			obj.ParentObject = parentXamlObject;
 			
 			ISupportInitialize iSupportInitializeInstance = instance as ISupportInitialize;
 			if (iSupportInitializeInstance != null) {
@@ -185,12 +194,28 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				ParseObjectAttribute(obj, attribute);
 			}
 			
+			if (!(obj.Instance is Style)) {
+				ParseObjectContent(obj, element, defaultProperty, initializeFromTextValueInsteadOfConstructor);
+			}
+			
+			if (iSupportInitializeInstance != null) {
+				iSupportInitializeInstance.EndInit();
+			}
+			
+			currentXmlSpace = oldXmlSpace;
+			currentXamlObject = parentXamlObject;
+			
+			return obj;
+		}
+		
+		void ParseObjectContent(XamlObject obj, XmlElement element, XamlPropertyInfo defaultProperty, XamlTextValue initializeFromTextValueInsteadOfConstructor)
+		{
 			XamlPropertyValue setDefaultValueTo = null;
 			object defaultPropertyValue = null;
 			XamlProperty defaultCollectionProperty = null;
 			
 			if (defaultProperty != null && defaultProperty.IsCollection && !element.IsEmpty) {
-				defaultPropertyValue = defaultProperty.GetValue(instance);
+				defaultPropertyValue = defaultProperty.GetValue(obj.Instance);
 				obj.AddProperty(defaultCollectionProperty = new XamlProperty(obj, defaultProperty));
 			}
 			
@@ -200,7 +225,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				// here, but let's try to imitate it as good as possible
 				if (defaultProperty != null && !defaultProperty.IsCollection) {
 					for (; combinedNormalizedChildNodes > 0; combinedNormalizedChildNodes--) {
-						defaultProperty.GetValue(instance);
+						defaultProperty.GetValue(obj.Instance);
 					}
 				}
 				
@@ -213,7 +238,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 						// I don't know why the official XamlReader runs the property getter
 						// here, but let's try to imitate it as good as possible
 						if (defaultProperty != null && !defaultProperty.IsCollection) {
-							defaultProperty.GetValue(instance);
+							defaultProperty.GetValue(obj.Instance);
 						}
 						ParseObjectChildElementAsPropertyElement(obj, childElement, defaultProperty, defaultPropertyValue);
 						continue;
@@ -224,8 +249,8 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				XamlPropertyValue childValue = ParseValue(childNode);
 				if (childValue != null) {
 					if (defaultProperty != null && defaultProperty.IsCollection) {
-						CollectionSupport.AddToCollection(defaultProperty.ReturnType, defaultPropertyValue, childValue);
 						defaultCollectionProperty.ParserAddCollectionElement(null, childValue);
+						CollectionSupport.AddToCollection(defaultProperty.ReturnType, defaultPropertyValue, childValue);
 					} else {
 						if (setDefaultValueTo != null)
 							throw new XamlLoadException("default property may have only one value assigned");
@@ -238,23 +263,15 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			{
 				// Runs even when defaultValueSet==false!
 				// Again, no idea why the official XamlReader does this.
-				defaultProperty.GetValue(instance);
+				defaultProperty.GetValue(obj.Instance);
 			}
 			if (setDefaultValueTo != null) {
 				if (defaultProperty == null) {
 					throw new XamlLoadException("This element does not have a default value, cannot assign to it");
 				}
-				defaultProperty.SetValue(instance, setDefaultValueTo.GetValueFor(defaultProperty));
 				obj.AddProperty(new XamlProperty(obj, defaultProperty, setDefaultValueTo));
+				defaultProperty.SetValue(obj.Instance, setDefaultValueTo.GetValueFor(defaultProperty));
 			}
-			
-			if (iSupportInitializeInstance != null) {
-				iSupportInitializeInstance.EndInit();
-			}
-			
-			currentXmlSpace = oldXmlSpace;
-			
-			return obj;
 		}
 		
 		int combinedNormalizedChildNodes;
@@ -319,7 +336,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			return null;
 		}
 		
-		static XamlPropertyInfo FindProperty(object elementInstance, Type propertyType, string propertyName)
+		internal static XamlPropertyInfo FindProperty(object elementInstance, Type propertyType, string propertyName)
 		{
 			PropertyDescriptorCollection properties;
 			if (elementInstance != null) {
@@ -375,17 +392,17 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		XamlPropertyInfo GetPropertyInfo(object elementInstance, Type elementType, XmlAttribute attribute)
 		{
 			if (attribute.LocalName.Contains(".")) {
-				return GetPropertyInfo(elementInstance, elementType, GetAttributeNamespace(attribute), attribute.LocalName);
+				return GetPropertyInfo(settings.TypeFinder, elementInstance, elementType, GetAttributeNamespace(attribute), attribute.LocalName);
 			} else {
 				return FindProperty(elementInstance, elementType, attribute.LocalName);
 			}
 		}
 		
-		XamlPropertyInfo GetPropertyInfo(object elementInstance, Type elementType, string xmlNamespace, string localName)
+		internal static XamlPropertyInfo GetPropertyInfo(XamlTypeFinder typeFinder, object elementInstance, Type elementType, string xmlNamespace, string localName)
 		{
 			string typeName, propertyName;
 			SplitQualifiedIdentifier(localName, out typeName, out propertyName);
-			Type propertyType = FindType(xmlNamespace, typeName);
+			Type propertyType = FindType(typeFinder, xmlNamespace, typeName);
 			if (elementType == propertyType || propertyType.IsAssignableFrom(elementType)) {
 				return FindProperty(elementInstance, propertyType, propertyName);
 			} else {
@@ -406,8 +423,8 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		{
 			XamlPropertyInfo propertyInfo = GetPropertyInfo(obj.Instance, obj.ElementType, attribute);
 			XamlTextValue textValue = new XamlTextValue(document, attribute);
-			propertyInfo.SetValue(obj.Instance, textValue.GetValueFor(propertyInfo));
 			obj.AddProperty(new XamlProperty(obj, propertyInfo, textValue));
+			propertyInfo.SetValue(obj.Instance, textValue.GetValueFor(propertyInfo));
 		}
 		
 		static bool ObjectChildElementIsPropertyElement(XmlElement element)
@@ -420,7 +437,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			Debug.Assert(element.LocalName.Contains("."));
 			// this is a element property syntax
 			
-			XamlPropertyInfo propertyInfo = GetPropertyInfo(obj.Instance, obj.ElementType, element.NamespaceURI, element.LocalName);
+			XamlPropertyInfo propertyInfo = GetPropertyInfo(settings.TypeFinder, obj.Instance, obj.ElementType, element.NamespaceURI, element.LocalName);
 			bool valueWasSet = false;
 			
 			object collectionInstance = null;
@@ -458,10 +475,10 @@ namespace ICSharpCode.WpfDesign.XamlDom
 						if (valueWasSet)
 							throw new XamlLoadException("non-collection property may have only one child element");
 						valueWasSet = true;
-						propertyInfo.SetValue(obj.Instance, childValue.GetValueFor(propertyInfo));
 						XamlProperty xp = new XamlProperty(obj, propertyInfo, childValue);
 						xp.ParserSetPropertyElement(element);
 						obj.AddProperty(xp);
+						propertyInfo.SetValue(obj.Instance, childValue.GetValueFor(propertyInfo));
 					}
 				}
 			}

@@ -77,5 +77,6 @@
     <Compile Include="XamlPropertyValue.cs" />
     <Compile Include="XamlTextValue.cs" />
     <Compile Include="XamlTypeFinder.cs" />
+    <Compile Include="XamlTypeResolverProvider.cs" />
   </ItemGroup>
 </Project>

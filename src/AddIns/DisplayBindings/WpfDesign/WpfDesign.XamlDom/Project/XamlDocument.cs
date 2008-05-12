@@ -7,6 +7,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Windows.Markup;
 using System.Xml;
 
 namespace ICSharpCode.WpfDesign.XamlDom
@@ -40,18 +41,29 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			get { return _serviceProvider; }
 		}
 		
-		internal ITypeDescriptorContext GetTypeDescriptorContext()
+		/// <summary>
+		/// Gets the type descriptor context used for type conversions.
+		/// </summary>
+		/// <param name="containingObject">The containing object, used when the
+		/// type descriptor context needs to resolve an XML namespace.</param>
+		internal ITypeDescriptorContext GetTypeDescriptorContext(XamlObject containingObject)
 		{
-			return new DummyTypeDescriptorContext(this);
+			return new DummyTypeDescriptorContext(this, containingObject);
 		}
 		
 		sealed class DummyTypeDescriptorContext : ITypeDescriptorContext
 		{
-			XamlDocument document;
+			IServiceProvider baseServiceProvider;
 			
-			public DummyTypeDescriptorContext(XamlDocument document)
+			public DummyTypeDescriptorContext(XamlDocument document, XamlObject containingObject)
 			{
-				this.document = document;
+				if (containingObject != null) {
+					if (containingObject.OwnerDocument != document)
+						throw new ArgumentException("Containing object must belong to the document!");
+					baseServiceProvider = new XamlTypeResolverProvider(containingObject);
+				} else {
+					baseServiceProvider = document.ServiceProvider;
+				}
 			}
 			
 			public IContainer Container {
@@ -77,7 +89,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			
 			public object GetService(Type serviceType)
 			{
-				return document.ServiceProvider.GetService(serviceType);
+				return baseServiceProvider.GetService(serviceType);
 			}
 		}
 		

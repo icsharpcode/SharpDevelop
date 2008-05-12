@@ -59,6 +59,24 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		}
 		#endregion
 		
+		XamlObject parentObject;
+		
+		/// <summary>
+		/// Gets the parent object.
+		/// </summary>
+		public XamlObject ParentObject {
+			get {
+				return parentObject;
+			}
+			internal set { parentObject = value; }
+		}
+		
+		internal override void OnParentPropertyChanged()
+		{
+			parentObject = (ParentProperty != null) ? ParentProperty.ParentObject : null;
+			base.OnParentPropertyChanged();
+		}
+		
 		internal XmlElement XmlElement {
 			get { return element; }
 		}

@@ -42,6 +42,10 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		readonly DependencyProperty property;
 		readonly bool isAttached;
 		
+		public DependencyProperty Property {
+			get { return property; }
+		}
+		
 		public XamlDependencyPropertyInfo(DependencyProperty property, bool isAttached)
 		{
 			Debug.Assert(property != null);
@@ -101,7 +105,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		}
 	}
 	#endregion
-
+	
 	#region XamlNormalPropertyInfo
 	internal sealed class XamlNormalPropertyInfo : XamlPropertyInfo
 	{
@@ -141,10 +145,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		
 		public override TypeConverter TypeConverter {
 			get {
-				if (_propertyDescriptor.PropertyType == typeof(object))
-					return null;
-				else
-					return _propertyDescriptor.Converter;
+				return GetCustomTypeConverter(_propertyDescriptor.PropertyType) ?? _propertyDescriptor.Converter;
 			}
 		}
 		
@@ -165,6 +166,84 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		public override bool IsCollection {
 			get {
 				return CollectionSupport.IsCollectionType(_propertyDescriptor.PropertyType);
+			}
+		}
+		
+		public static readonly TypeConverter StringTypeConverter = TypeDescriptor.GetConverter(typeof(string));
+		
+		public static TypeConverter GetCustomTypeConverter(Type propertyType)
+		{
+			if (propertyType == typeof(object))
+				return StringTypeConverter;
+			else if (propertyType == typeof(Type))
+				return TypeTypeConverter.Instance;
+			else if (propertyType == typeof(DependencyProperty))
+				return DependencyPropertyConverter.Instance;
+			else
+				return null;
+		}
+		
+		sealed class TypeTypeConverter : TypeConverter
+		{
+			public readonly static TypeTypeConverter Instance = new TypeTypeConverter();
+			
+			public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
+			{
+				if (sourceType == typeof(string))
+					return true;
+				else
+					return base.CanConvertFrom(context, sourceType);
+			}
+			
+			public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
+			{
+				if (value == null)
+					return null;
+				if (value is string) {
+					IXamlTypeResolver xamlTypeResolver = (IXamlTypeResolver)context.GetService(typeof(IXamlTypeResolver));
+					if (xamlTypeResolver == null)
+						throw new XamlLoadException("IXamlTypeResolver not found in type descriptor context.");
+					return xamlTypeResolver.Resolve((string)value);
+				} else {
+					return base.ConvertFrom(context, culture, value);
+				}
+			}
+		}
+		
+		sealed class DependencyPropertyConverter : TypeConverter
+		{
+			public readonly static DependencyPropertyConverter Instance = new DependencyPropertyConverter();
+			
+			public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
+			{
+				if (sourceType == typeof(string))
+					return true;
+				else
+					return base.CanConvertFrom(context, sourceType);
+			}
+			
+			public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
+			{
+				if (value == null)
+					return null;
+				if (value is string) {
+					XamlTypeResolverProvider xamlTypeResolver = (XamlTypeResolverProvider)context.GetService(typeof(XamlTypeResolverProvider));
+					if (xamlTypeResolver == null)
+						throw new XamlLoadException("XamlTypeResolverProvider not found in type descriptor context.");
+					XamlPropertyInfo prop = xamlTypeResolver.ResolveProperty((string)value);
+					if (prop == null)
+						throw new XamlLoadException("Could not find property " + value + ".");
+					XamlDependencyPropertyInfo depProp = prop as XamlDependencyPropertyInfo;
+					if (depProp != null)
+						return depProp.Property;
+					FieldInfo field = prop.TargetType.GetField(prop.Name + "Property", BindingFlags.Public | BindingFlags.Static);
+					if (field != null && field.FieldType == typeof(DependencyProperty)) {
+						return (DependencyProperty)field.GetValue(null);
+					}
+					throw new XamlLoadException("Property " + value + " is not a dependency property.");
+				} else {
+					return base.ConvertFrom(context, culture, value);
+				}
 			}
 		}
 	}
@@ -208,7 +287,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		}
 		
 		public override TypeConverter TypeConverter {
-			get { return null; }
+			get { return XamlNormalPropertyInfo.StringTypeConverter; }
 		}
 		
 		public override string FullyQualifiedName {

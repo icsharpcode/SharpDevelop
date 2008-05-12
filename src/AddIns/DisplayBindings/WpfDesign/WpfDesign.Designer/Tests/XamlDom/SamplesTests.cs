@@ -114,5 +114,20 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
   </StackPanel>
 </Page>");
 		}
+		
+		[Test]
+		public void Resources()
+		{
+			TestLoading(@"<Page Name=""root""
+  xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+  xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+>
+  <Page.Resources>
+    <SolidColorBrush x:Key=""MyBrush"" Color=""Gold""/>
+  </Page.Resources>
+  <StackPanel Background=""{StaticResource MyBrush}"">
+  </StackPanel>
+</Page>");
+		}
 	}
 }

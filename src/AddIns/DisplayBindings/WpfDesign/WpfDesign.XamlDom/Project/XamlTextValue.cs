@@ -109,80 +109,37 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			return b.ToString();
 		}
 		
-		static readonly TypeConverter stringTypeConverter = TypeDescriptor.GetConverter(typeof(string));
-		
 		internal override object GetValueFor(XamlPropertyInfo targetProperty)
 		{
+			if (ParentProperty == null)
+				throw new InvalidOperationException("Cannot call GetValueFor while ParentProperty is null");
 			if (attribute != null) {
-				return AttributeTextToObject(attribute.Value, attribute.OwnerElement, document,
-				                             targetProperty != null ? targetProperty.TypeConverter : stringTypeConverter);
+				return AttributeTextToObject(attribute.Value, ParentProperty.ParentObject,
+				                             targetProperty != null ? targetProperty.TypeConverter : XamlNormalPropertyInfo.StringTypeConverter);
 			}
 			if (targetProperty == null)
 				return this.Text;
-			TypeConverter converter = targetProperty.TypeConverter;
-			if (converter != null) {
-				return converter.ConvertFromString(document.GetTypeDescriptorContext(), CultureInfo.InvariantCulture, this.Text);
-			} else {
-				return this.Text;
-			}
+			return targetProperty.TypeConverter.ConvertFromString(
+				document.GetTypeDescriptorContext(ParentProperty.ParentObject),
+				CultureInfo.InvariantCulture, this.Text);
 		}
 		
-		internal static object AttributeTextToObject(string attributeText, XmlElement containingElement,
-		                                             XamlDocument document, TypeConverter typeConverter)
+		internal static object AttributeTextToObject(string attributeText, XamlObject containingObject,
+		                                             TypeConverter typeConverter)
 		{
-			if (typeConverter == null)
-				typeConverter = stringTypeConverter;
 			if (attributeText.StartsWith("{}")) {
 				return typeConverter.ConvertFromString(
-					document.GetTypeDescriptorContext(), CultureInfo.InvariantCulture,
+					containingObject.OwnerDocument.GetTypeDescriptorContext(containingObject), CultureInfo.InvariantCulture,
 					attributeText.Substring(2));
 			} else if (attributeText.StartsWith("{")) {
-				XamlTypeResolverProvider xtrp = new XamlTypeResolverProvider(document, containingElement, document.ServiceProvider);
+				XamlTypeResolverProvider xtrp = new XamlTypeResolverProvider(containingObject);
 				MarkupExtension extension = MarkupExtensionParser.ConstructMarkupExtension(
-					attributeText, containingElement, document);
+					attributeText, containingObject, xtrp);
 				return extension.ProvideValue(xtrp);
 			} else {
 				return typeConverter.ConvertFromString(
-					document.GetTypeDescriptorContext(), CultureInfo.InvariantCulture,
+					containingObject.OwnerDocument.GetTypeDescriptorContext(containingObject), CultureInfo.InvariantCulture,
 					attributeText);
-			}
-		}
-		
-		sealed class XamlTypeResolverProvider : IXamlTypeResolver, IServiceProvider
-		{
-			XamlDocument document;
-			XmlElement containingElement;
-			IServiceProvider baseProvider;
-			
-			public XamlTypeResolverProvider(XamlDocument document, XmlElement containingElement, IServiceProvider baseProvider)
-			{
-				this.document = document;
-				this.containingElement = containingElement;
-				this.baseProvider = baseProvider;
-			}
-			
-			public Type Resolve(string typeName)
-			{
-				string typeNamespaceUri;
-				string typeLocalName;
-				if (typeName.Contains(":")) {
-					typeNamespaceUri = containingElement.GetNamespaceOfPrefix(typeName.Substring(0, typeName.IndexOf(':')));
-					typeLocalName = typeName.Substring(typeName.IndexOf(':') + 1);
-				} else {
-					typeNamespaceUri = containingElement.NamespaceURI;
-					typeLocalName = typeName;
-				}
-				if (string.IsNullOrEmpty(typeNamespaceUri))
-					throw new XamlMarkupExtensionParseException("Unrecognized namespace prefix in type " + typeName);
-				return document.TypeFinder.GetType(typeNamespaceUri, typeLocalName);
-			}
-			
-			public object GetService(Type serviceType)
-			{
-				if (serviceType == typeof(IXamlTypeResolver))
-					return this;
-				else
-					return baseProvider.GetService(serviceType);
 			}
 		}
 		

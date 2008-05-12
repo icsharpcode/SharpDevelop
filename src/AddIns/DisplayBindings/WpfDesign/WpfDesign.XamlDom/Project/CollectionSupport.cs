@@ -21,9 +21,9 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		public static bool IsCollectionType(Type type)
 		{
 			return typeof(IList).IsAssignableFrom(type)
-				|| typeof(IDictionary).IsAssignableFrom(type)
 				|| type.IsArray
-				|| typeof(IAddChild).IsAssignableFrom(type);
+				|| typeof(IAddChild).IsAssignableFrom(type)
+				|| typeof(ResourceDictionary).IsAssignableFrom(type);
 		}
 		
 		public static void AddToCollection(Type collectionType, object collectionInstance, XamlPropertyValue newElement)
@@ -35,6 +35,14 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				} else {
 					addChild.AddChild(newElement.GetValueFor(null));
 				}
+			} else if (collectionInstance is ResourceDictionary) {
+				object val = newElement.GetValueFor(null);
+				object key = newElement is XamlObject ? ((XamlObject)newElement).GetXamlAttribute("Key") : null;
+				if (key == null) {
+					if (val is Style)
+						key = ((Style)val).TargetType;
+				}
+				((ResourceDictionary)collectionInstance).Add(key, val);
 			} else {
 				collectionType.InvokeMember(
 					"Add", BindingFlags.Public | BindingFlags.InvokeMethod | BindingFlags.Instance,

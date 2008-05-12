@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -218,10 +219,12 @@ namespace ICSharpCode.WpfDesign.XamlDom
 	
 	static class MarkupExtensionParser
 	{
-		public static MarkupExtension ConstructMarkupExtension(string attributeText, XmlElement containingElement, XamlDocument document)
+		public static MarkupExtension ConstructMarkupExtension(string attributeText, XamlObject containingObject, XamlTypeResolverProvider typeResolver)
 		{
-			if (containingElement == null)
-				throw new ArgumentNullException("containingElement");
+			if (containingObject == null)
+				throw new ArgumentNullException("containingObject");
+			
+			Debug.WriteLine("ConstructMarkupExtension " + attributeText);
 			
 			List<MarkupExtensionToken> markupExtensionTokens = MarkupExtensionTokenizer.Tokenize(attributeText);
 			if (markupExtensionTokens.Count < 3
@@ -233,26 +236,14 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			}
 			
 			string typeName = markupExtensionTokens[1].Value;
-			string typeNamespaceUri;
-			string typeLocalName;
-			if (typeName.Contains(":")) {
-				typeNamespaceUri = containingElement.GetNamespaceOfPrefix(typeName.Substring(0, typeName.IndexOf(':')));
-				typeLocalName = typeName.Substring(typeName.IndexOf(':') + 1);
-			} else {
-				typeNamespaceUri = containingElement.NamespaceURI;
-				typeLocalName = typeName;
-			}
-			if (string.IsNullOrEmpty(typeNamespaceUri))
-				throw new XamlMarkupExtensionParseException("Unrecognized namespace prefix in type " + typeName);
-			Type extensionType = null;
-			if (typeNamespaceUri == "http://schemas.microsoft.com/winfx/2006/xaml" && typeLocalName == "Type") {
-				extensionType = typeof(TypeExtension);
-			} else {
-				extensionType = document.TypeFinder.GetType(typeNamespaceUri, typeLocalName + "Extension");
-			}
+			Type extensionType = typeResolver.Resolve(typeName + "Extension");
 			if (extensionType == null || !typeof(MarkupExtension).IsAssignableFrom(extensionType)) {
-				throw new XamlMarkupExtensionParseException("Unknown markup extension " + typeLocalName + "Extension in " + typeNamespaceUri);
+				throw new XamlMarkupExtensionParseException("Unknown markup extension " + typeName + "Extension");
 			}
+			if (extensionType == typeof(TypeExtension))
+				extensionType = typeof(MyTypeExtension);
+			if (extensionType == typeof(System.Windows.StaticResourceExtension))
+				extensionType = typeof(MyStaticResourceExtension);
 			
 			List<string> positionalArgs = new List<string>();
 			List<KeyValuePair<string, string>> namedArgs = new List<KeyValuePair<string, string>>();
@@ -280,10 +271,11 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			var ctorParameters = ctors[0].GetParameters();
 			object[] ctorArguments = new object[positionalArgs.Count];
 			for (int i = 0; i < ctorArguments.Length; i++) {
-				TypeConverter c = TypeDescriptor.GetConverter(ctorParameters[i].ParameterType);
+				Type parameterType = ctorParameters[i].ParameterType;
+				TypeConverter c = XamlNormalPropertyInfo.GetCustomTypeConverter(parameterType)
+					?? TypeDescriptor.GetConverter(parameterType);
 				ctorArguments[i] = XamlTextValue.AttributeTextToObject(positionalArgs[i],
-				                                                       containingElement,
-				                                                       document,
+				                                                       containingObject,
 				                                                       c);
 			}
 			MarkupExtension result = (MarkupExtension)ctors[0].Invoke(ctorArguments);
@@ -299,8 +291,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 						throw new XamlMarkupExtensionParseException("Property not found: " + extensionType.FullName + "." + memberName);
 					TypeConverter c = TypeDescriptor.GetConverter(property.PropertyType);
 					object propValue =  XamlTextValue.AttributeTextToObject(pair.Value,
-					                                                        containingElement,
-					                                                        document,
+					                                                        containingObject,
 					                                                        c);
 					property.SetValue(result, propValue, null);
 				}
@@ -308,12 +299,25 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			return result;
 		}
 		
-		sealed class TypeExtension : System.Windows.Markup.TypeExtension
+		sealed class MyTypeExtension : TypeExtension
 		{
-			public TypeExtension() {}
+			public MyTypeExtension() {}
 			
-			public TypeExtension(string typeName) : base(typeName)
+			public MyTypeExtension(string typeName) : base(typeName) {}
+		}
+		
+		sealed class MyStaticResourceExtension : System.Windows.StaticResourceExtension
+		{
+			public MyStaticResourceExtension() {}
+			
+			public MyStaticResourceExtension(object resourceKey) : base(resourceKey) {}
+			
+			public override object ProvideValue(IServiceProvider serviceProvider)
 			{
+				XamlTypeResolverProvider xamlTypeResolver = (XamlTypeResolverProvider)serviceProvider.GetService(typeof(XamlTypeResolverProvider));
+				if (xamlTypeResolver == null)
+					throw new XamlLoadException("XamlTypeResolverProvider not found.");
+				return xamlTypeResolver.FindResource(this.ResourceKey);
 			}
 		}
 	}
