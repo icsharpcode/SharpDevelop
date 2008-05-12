@@ -9,6 +9,7 @@ using System;
 using System.ComponentModel;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -92,7 +93,7 @@ namespace ICSharpCode.WpfDesign.Designer
 			
 			if (useCategories) {
 				List<PropertyEditorCategoryView> categories = new List<PropertyEditorCategoryView>();
-				foreach (IPropertyEditorDataProperty p in Func.Sort(dataSource.Properties, CompareMemberNames)) {
+				foreach (IPropertyEditorDataProperty p in dataSource.Properties.OrderBy(p2 => p2.Name)) {
 					if (p.Name == "Name") {
 						continue;
 					}
@@ -111,7 +112,7 @@ namespace ICSharpCode.WpfDesign.Designer
 			} else {
 				PropertyGridView grid = new PropertyGridView();
 				contentStackPanel.Children.Add(grid);
-				foreach (IPropertyEditorDataProperty p in Func.Sort(dataSource.Properties, CompareMemberNames)) {
+				foreach (IPropertyEditorDataProperty p in dataSource.Properties.OrderBy(p2 => p2.Name)) {
 					if (p.Name == "Name") {
 						continue;
 					}
@@ -128,14 +129,9 @@ namespace ICSharpCode.WpfDesign.Designer
 			
 			PropertyGridView grid = new PropertyGridView();
 			contentStackPanel.Children.Add(grid);
-			foreach (IPropertyEditorDataEvent e in Func.Sort(dataSource.Events, CompareMemberNames)) {
+			foreach (IPropertyEditorDataEvent e in dataSource.Events.OrderBy(p => p.Name)) {
 				grid.AddEvent(e);
 			}
-		}
-		
-		static int CompareMemberNames(IPropertyEditorDataMember p1, IPropertyEditorDataMember p2)
-		{
-			return p1.Name.CompareTo(p2.Name);
 		}
 		
 		HashSet<string> expandedCategories = new HashSet<string>();

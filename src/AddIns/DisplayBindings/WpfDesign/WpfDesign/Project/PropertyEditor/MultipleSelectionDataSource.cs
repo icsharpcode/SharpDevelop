@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Media;
 
 namespace ICSharpCode.WpfDesign.PropertyEditor
@@ -53,7 +54,7 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 			this.services = services;
 			if (sources == null)
 				throw new ArgumentNullException("sources");
-			data = Func.ToArray(sources);
+			data = sources.ToArray();
 			if (data.Length < 2)
 				throw new ArgumentException("The collection must have at least 2 items!");
 			

@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Windows;
+using System.Linq;
 
 namespace ICSharpCode.WpfDesign.Designer
 {
@@ -74,10 +75,10 @@ namespace ICSharpCode.WpfDesign.Designer
 		/// </summary>
 		public static void DeleteComponents(ICollection<DesignItem> items)
 		{
-			DesignItem parent = Func.First(items).Parent;
+			DesignItem parent = items.First().Parent;
 			PlacementOperation operation = PlacementOperation.Start(items, PlacementType.Delete);
 			try {
-				ISelectionService selectionService = Func.First(items).Services.Selection;
+				ISelectionService selectionService = items.First().Services.Selection;
 				selectionService.SetSelectedComponents(items, SelectionTypes.Remove);
 				// if the selection is empty after deleting some components, select the parent of the deleted component
 				if (selectionService.SelectionCount == 0 && !items.Contains(parent)) {

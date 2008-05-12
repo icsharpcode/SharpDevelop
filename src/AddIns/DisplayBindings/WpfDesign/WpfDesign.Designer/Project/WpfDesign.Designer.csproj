@@ -98,7 +98,6 @@
     <Compile Include="Extensions\TopLeftContainerDragHandle.cs" />
     <Compile Include="Extensions\ResizeThumbExtension.cs" />
     <Compile Include="Extensions\WindowResizeBehavior.cs" />
-    <Compile Include="Func.cs" />
     <Compile Include="ServiceRequiredException.cs" />
     <Compile Include="Services\ClickOrDragMouseGesture.cs" />
     <Compile Include="Services\CreateComponentTool.cs" />

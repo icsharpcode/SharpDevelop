@@ -8,6 +8,7 @@
 using System;
 using System.Diagnostics;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace ICSharpCode.WpfDesign.Extensions
@@ -127,7 +128,7 @@ namespace ICSharpCode.WpfDesign.Extensions
 			foreach (ExtensionEntry entry in GetExtensionEntries(item)) {
 				servers.Add(entry.Server);
 			}
-			return Func.ToArray(servers);
+			return servers.ToArray();
 		}
 		
 		internal IEnumerable<Extension> CreateExtensions(ExtensionServer server, DesignItem item)

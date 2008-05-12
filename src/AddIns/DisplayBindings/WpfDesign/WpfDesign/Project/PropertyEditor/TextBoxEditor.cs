@@ -29,6 +29,13 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 		bool hasError;
 		
 		/// <summary>
+		/// The property edited by the TextBoxEditor.
+		/// </summary>
+		public IPropertyEditorDataProperty Property {
+			get { return property; }
+		}
+		
+		/// <summary>
 		/// Creates a new TextBoxEditor instance.
 		/// </summary>
 		public TextBoxEditor(IPropertyEditorDataProperty property)
@@ -70,7 +77,14 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 				hasError = true;
 				throw;
 			}
+			if (ValueSaved != null)
+				ValueSaved(this, EventArgs.Empty);
 		}
+		
+		/// <summary>
+		/// Raised when the user changes the property value using this text box.
+		/// </summary>
+		public event EventHandler ValueSaved;
 		
 		static UIElement DescribeError(Exception ex)
 		{

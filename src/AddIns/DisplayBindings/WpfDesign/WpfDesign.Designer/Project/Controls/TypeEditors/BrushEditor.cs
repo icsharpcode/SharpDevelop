@@ -46,15 +46,22 @@ namespace ICSharpCode.WpfDesign.Designer.Controls.TypeEditors
 			SetDock(ddb, Dock.Right);
 			this.Children.Add(ddb);
 			this.Children.Add(brushShowingBorder);
+			
+			this.Unloaded += delegate {
+				if (dlg != null)
+					dlg.Close();
+			};
 		}
+		
+		BrushEditorDialog dlg;
 		
 		void DropDownButtonClick(object sender, RoutedEventArgs e)
 		{
-			BrushEditorDialog dlg = new BrushEditorDialog();
+			dlg = new BrushEditorDialog(property);
 			Point pos = ddb.PointToScreen(new Point(ddb.ActualWidth, ddb.ActualHeight));
 			dlg.Left = pos.X - dlg.Width;
 			dlg.Top = pos.Y;
-			dlg.SelectedBrush = brushShowingBorder.BorderBrush;
+			dlg.SelectedBrush = property.Value as Brush;
 			dlg.SelectedBrushChanged += delegate {
 				property.Value = dlg.SelectedBrush;
 			};

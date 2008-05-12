@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
@@ -145,7 +146,7 @@ namespace ICSharpCode.WpfDesign
 				throw new ArgumentNullException("placedItems");
 			if (type == null)
 				throw new ArgumentNullException("type");
-			DesignItem[] items = Func.ToArray(placedItems);
+			DesignItem[] items = placedItems.ToArray();
 			if (items.Length == 0)
 				throw new ArgumentException("placedItems.Length must be > 0");
 			
@@ -190,15 +191,15 @@ namespace ICSharpCode.WpfDesign
 				throw new ArgumentNullException("items");
 			if (items.Count == 0)
 				return null;
-			DesignItem parent = Func.First(items).Parent;
-			foreach (DesignItem item in Func.Skip(items, 1)) {
+			DesignItem parent = items.First().Parent;
+			foreach (DesignItem item in items.Skip(1)) {
 				if (item.Parent != parent)
 					return null;
 			}
 			if (parent != null)
 				return parent.GetBehavior<IPlacementBehavior>();
 			else if (items.Count == 1)
-				return Func.First(items).GetBehavior<IRootPlacementBehavior>();
+				return items.First().GetBehavior<IRootPlacementBehavior>();
 			else
 				return null;
 		}
@@ -228,7 +229,7 @@ namespace ICSharpCode.WpfDesign
 			if (placedItems.Count != positions.Count)
 				throw new ArgumentException("positions.Count must be = placedItems.Count");
 			
-			DesignItem[] items = Func.ToArray(placedItems);
+			DesignItem[] items = placedItems.ToArray();
 			
 			PlacementOperation op = new PlacementOperation(items, type);
 			try {

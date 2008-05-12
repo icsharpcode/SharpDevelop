@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -88,7 +89,7 @@ namespace ICSharpCode.WpfDesign.Designer
 		void OnUndoExecuted(object sender, ExecutedRoutedEventArgs e)
 		{
 			UndoService undoService = GetService<UndoService>();
-			IUndoAction action = Func.First(undoService.UndoActions);
+			IUndoAction action = undoService.UndoActions.First();
 			Debug.WriteLine("Undo " + action.Title);
 			undoService.Undo();
 			_designContext.Services.Selection.SetSelectedComponents(GetLiveElements(action.AffectedElements));
@@ -103,7 +104,7 @@ namespace ICSharpCode.WpfDesign.Designer
 		void OnRedoExecuted(object sender, ExecutedRoutedEventArgs e)
 		{
 			UndoService undoService = GetService<UndoService>();
-			IUndoAction action = Func.First(undoService.RedoActions);
+			IUndoAction action = undoService.RedoActions.First();
 			Debug.WriteLine("Redo " + action.Title);
 			undoService.Redo();
 			_designContext.Services.Selection.SetSelectedComponents(GetLiveElements(action.AffectedElements));

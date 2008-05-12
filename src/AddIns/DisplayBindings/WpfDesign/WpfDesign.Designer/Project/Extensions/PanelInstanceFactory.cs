@@ -7,6 +7,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Linq;
 using System.Windows.Media;
 using System.Windows.Controls;
 using ICSharpCode.WpfDesign.Extensions;
@@ -92,7 +93,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				PropertyDescriptor property = properties[_parent._propertyName];
 				if (property != null) {
 					if ((properties as System.Collections.IDictionary).IsReadOnly) {
-						properties = new PropertyDescriptorCollection(Func.ToArray(properties));
+						properties = new PropertyDescriptorCollection(properties.Cast<PropertyDescriptor>().ToArray());
 					}
 					properties.Remove(property);
 					properties.Add(new ShadowPropertyDescriptor(_parent, property));

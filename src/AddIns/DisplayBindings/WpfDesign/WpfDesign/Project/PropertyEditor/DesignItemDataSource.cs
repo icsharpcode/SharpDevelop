@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -95,7 +96,7 @@ namespace ICSharpCode.WpfDesign.PropertyEditor
 			}
 			designItemProperties.AddRange(item.Properties);
 			
-			foreach (DesignItemProperty p in Func.Distinct(designItemProperties)) {
+			foreach (DesignItemProperty p in designItemProperties.Distinct()) {
 				if (p.IsEvent) {
 					events.Add(new DesignItemDataEvent(this, p));
 				} else {
