@@ -149,7 +149,7 @@ namespace XamlBinding
 				return new MethodGroupResolveResult(callingClass, null, callingClass.DefaultReturnType, expression);
 			}
 			
-			if (propertyOrEvent.Name == "Name") {
+			if (propertyOrEvent.Name == "Name" && callingClass != null) {
 				foreach (IField f in callingClass.Fields) {
 					if (f.Name == expression)
 						return new MemberResolveResult(callingClass, null, f);
