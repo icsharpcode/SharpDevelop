@@ -189,10 +189,10 @@ namespace ICSharpCode.TextEditor
 		
 		void DocumentUpdateCommitted(object sender, EventArgs e)
 		{
-			Caret.ValidateCaretPos();
-			
-			// AdjustScrollBarsOnCommittedUpdate
 			if (motherTextEditorControl.IsInUpdate == false) {
+				Caret.ValidateCaretPos();
+				
+				// AdjustScrollBarsOnCommittedUpdate
 				if (!scrollToPosOnNextUpdate.IsEmpty) {
 					ScrollTo(scrollToPosOnNextUpdate.Y, scrollToPosOnNextUpdate.X);
 				}
