@@ -184,7 +184,10 @@ namespace HexEditor.View
 			el.SetAttribute("Name", "TextDisplay");
 			el.SetAttribute("FitToWidth", this.cbFitToWidth.Checked.ToString());
 			el.SetAttribute("BytesPerLine", this.nUDBytesPerLine.Value.ToString());
-			el.SetAttribute("ViewMode", this.dUDViewModes.SelectedItem.ToString());
+			if (this.dUDViewModes.SelectedIndex == -1)
+				el.SetAttribute("ViewMode", HexEditor.Util.ViewMode.Hexadecimal.ToString());
+			else
+				el.SetAttribute("ViewMode", this.dUDViewModes.SelectedItem.ToString());
 			file.FirstChild.AppendChild(el);
 			
 			el = file.CreateElement("Setting");
