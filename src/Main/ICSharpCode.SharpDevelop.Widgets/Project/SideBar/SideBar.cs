@@ -1098,7 +1098,8 @@ namespace ICSharpCode.SharpDevelop.Widgets.SideBar
 				if (o == null) {
 					continue;
 				}
-				string typeStr = o.GetType().ToString();
+				Type type = o.GetType();
+				string typeStr = type.ToString();
 				if (typeStr == str) {
 					return o;
 				}
@@ -1107,6 +1108,12 @@ namespace ICSharpCode.SharpDevelop.Widgets.SideBar
 					return o;
 				}
 				
+				if (type.BaseType != null) {
+					typeStr = type.BaseType.ToString();
+					if (typeStr == str) {
+						return o;
+					}
+				}
 			}
 			return null;
 		}
