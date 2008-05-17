@@ -275,11 +275,13 @@ namespace ICSharpCode.SharpDevelop.Gui.ClassBrowser
 		void ProjectServiceSolutionChanged(object sender, EventArgs e)
 		{
 			classBrowserTreeView.Nodes.Clear();
-			foreach (IProject project in ProjectService.OpenSolution.Projects) {
-				if (project is MissingProject || project is UnknownProject) {
-					continue;
+			if (ProjectService.OpenSolution != null) {
+				foreach (IProject project in ProjectService.OpenSolution.Projects) {
+					if (project is MissingProject || project is UnknownProject) {
+						continue;
+					}
+					ProjectNodeBuilders.AddProjectNode(classBrowserTreeView, project);
 				}
-				ProjectNodeBuilders.AddProjectNode(classBrowserTreeView, project);
 			}
 		}
 		
