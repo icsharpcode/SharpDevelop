@@ -44,6 +44,8 @@ namespace HexEditor.View
 			ToolStripControlHost viewMode = new ToolStripControlHost(tCBViewMode);
 			this.toolStrip1.Items.Insert(3, viewMode);
 			
+			
+			
 			tSTBCharsPerLine.Text = hexEditControl.BytesPerLine.ToString();
 			this.hexEditControl.ContextMenuStrip = MenuService.CreateContextMenu(this.hexEditControl, "/AddIns/HexEditor/Editor/ContextMenu");
 			tCBViewMode.SelectedIndex = 0;

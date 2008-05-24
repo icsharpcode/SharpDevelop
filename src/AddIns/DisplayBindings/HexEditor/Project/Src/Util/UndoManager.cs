@@ -45,7 +45,6 @@ namespace HexEditor.Util
 		/// Adds a step to the stack.
 		/// </summary>
 		/// <param name="step">The step to add.</param>
-		/// <remarks>Used internally, don't use!</remarks>
 		internal void AddUndoStep(UndoStep step)
 		{
 			UndoStack.Push(step);
@@ -54,6 +53,21 @@ namespace HexEditor.Util
 			EventHandler<UndoEventArgs> temp = ActionUndone;
 			if (temp != null)
 				temp(this, new UndoEventArgs(step, false));
+		}
+		
+		internal void AddOverwriteStep(int start, byte[] bytes, byte[] oldBytes)
+		{
+			this.AddUndoStep(new UndoStep(bytes, oldBytes, start, UndoAction.Overwrite));
+		}
+		
+		internal void AddInsertStep(int start, byte[] bytes)
+		{
+			this.AddUndoStep(new UndoStep(bytes, null, start, UndoAction.Insert));
+		}
+		
+		internal void AddRemoveStep(int start, byte[] bytes)
+		{
+			this.AddUndoStep(new UndoStep(bytes, null, start, UndoAction.Remove));
 		}
 		
 		/// <summary>
@@ -68,7 +82,7 @@ namespace HexEditor.Util
 				RedoStack.Push(step);
 				UndoStack.Pop();
 				switch (step.Action) {
-					case UndoAction.Add :
+					case UndoAction.Insert :
 						buffer.SetBytes(step.Start, step.GetBytes(), false);
 						break;
 					case UndoAction.Remove :
@@ -99,7 +113,7 @@ namespace HexEditor.Util
 				UndoStack.Push(step);
 				RedoStack.Pop();
 				switch (step.Action) {
-					case UndoAction.Add :
+					case UndoAction.Insert :
 						buffer.RemoveBytes(step.Start, step.GetBytes().Length);
 						break;
 					case UndoAction.Remove :

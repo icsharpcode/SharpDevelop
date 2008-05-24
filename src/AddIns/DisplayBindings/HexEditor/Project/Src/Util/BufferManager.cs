@@ -8,6 +8,7 @@
 using System;
 using System.IO;
 using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 using System.Windows.Forms;
 using System.Diagnostics;
@@ -24,34 +25,19 @@ namespace HexEditor.Util
 	/// </summary>
 	public class BufferManager
 	{
-		internal Control parent;
+		Editor parent;
 		OpenedFile currentFile;
-		Stream stream;
 		
-		/// <summary>
-		/// Currently used, but not good for really big files (like 590 MB)
-		/// </summary>
-		private ArrayList buffer;
+		StreamedList data;
 		
 		/// <summary>
 		/// Creates a new BufferManager and attaches it to a control.
 		/// </summary>
 		/// <param name="parent">The parent control to attach to.</param>
-		public BufferManager(Control parent)
+		public BufferManager(Editor parent)
 		{
 			this.parent = parent;
-			
-			this.buffer = new ArrayList();
-		}
-		
-		/// <summary>
-		/// Cleares the whole buffer.
-		/// </summary>
-		public void Clear()
-		{
-			this.buffer.Clear();
-			parent.Invalidate();
-			GC.Collect();
+			this.data = new StreamedList();
 		}
 		
 		/// <summary>
@@ -60,44 +46,30 @@ namespace HexEditor.Util
 		public void Load(OpenedFile file, Stream stream)
 		{
 			this.currentFile = file;
-			this.stream = stream;
-			this.buffer.Clear();
 			
-			((Editor)this.parent).Enabled = false;
+			this.data.Clear();
+			this.data = new StreamedList();
+			
+			stream.Position = 0;
+			byte[] bytes = new byte[512000];
 			
 			if (File.Exists(currentFile.FileName)) {
-				try {
-					BinaryReader reader = new BinaryReader(this.stream, System.Text.Encoding.Default);
-					
-					while (reader.PeekChar() != -1) {
-						this.buffer.AddRange(reader.ReadBytes(524288));
-						UpdateProgress((int)((this.buffer.Count * 100) / reader.BaseStream.Length));
+				int count = 0;
+				do {
+					count = stream.Read(bytes, 0, bytes.Length);
+					if (count > 0) {
+						this.data.AddRange(bytes, count);
+						// Maybe not a good solution, but easier than implementing a complete thread
+						// A thread would need to reopen the file in the thread
+						// because it is closed after the CreateContentForFile() has
+						// finished.
+						Application.DoEvents();
+						GC.Collect();
 					}
-					
-					reader.Close();
-				} catch (IOException ex) {
-					MessageService.ShowError(ex, ex.Message);
-				} catch (ArgumentException ex) {
-					MessageService.ShowError(ex, ex.Message + "\n\n" + ex.StackTrace);
-				}
+				} while (count > 0);
 			} else {
 				MessageService.ShowError(new FileNotFoundException("The file " + currentFile.FileName + " doesn't exist!", currentFile.FileName), "The file " + currentFile.FileName + " doesn't exist!");
 			}
-			
-			this.parent.Invalidate();
-			
-			UpdateProgress(100);
-			
-			if (this.parent.InvokeRequired)
-				this.parent.Invoke(new MethodInvoker(
-					delegate() {this.parent.Cursor = Cursors.Default;}
-				));
-			else {this.parent.Cursor = Cursors.Default;}
-			
-			
-			((Editor)this.parent).LoadingFinished();
-			
-			((Editor)this.parent).Enabled = true;
 			
 			this.parent.Invalidate();
 		}
@@ -107,129 +79,43 @@ namespace HexEditor.Util
 		/// </summary>
 		public void Save(OpenedFile file, Stream stream)
 		{
-			BinaryWriter writer = new BinaryWriter(stream);
-			writer.Write((byte[])this.buffer.ToArray( typeof (byte) ));
-			writer.Flush();
-		}
-		
-		/// <summary>
-		/// Intern method used to load data in a separate thread.
-		/// </summary>
-		/// <remarks>Currently not in use.</remarks>
-		private void Load()
-		{
-			((Editor)this.parent).Enabled = false;
-			
-			if (File.Exists(currentFile.FileName)) {
-				try {
-					BinaryReader reader = new BinaryReader(this.stream, System.Text.Encoding.Default);
-					
-					while (reader.PeekChar() != -1) {
-						this.buffer.AddRange(reader.ReadBytes(524288));
-						UpdateProgress((int)((this.buffer.Count * 100) / reader.BaseStream.Length));
-					}
-					
-					reader.Close();
-				} catch (IOException ex) {
-					MessageService.ShowError(ex, ex.Message);
-				} catch (ArgumentException ex) {
-					MessageService.ShowError(ex, ex.Message + "\n\n" + ex.StackTrace);
-				}
-			} else {
-				MessageService.ShowError(new FileNotFoundException("The file " + currentFile.FileName + " doesn't exist!", currentFile.FileName), "The file " + currentFile.FileName + " doesn't exist!");
-			}
-			
-			this.parent.Invalidate();
-			
-			UpdateProgress(100);
-			
-			if (this.parent.InvokeRequired)
-				this.parent.Invoke(new MethodInvoker(
-					delegate() {this.parent.Cursor = Cursors.Default;}
-				));
-			
-			((Editor)this.parent).Enabled = true;
-		}
-		
-		/// <summary>
-		/// Used for threading to update the processbars and stuff.
-		/// </summary>
-		/// <param name="percentage">The current percentage of the process</param>
-		private void UpdateProgress(int percentage)
-		{
-			Editor c = (Editor)this.parent;
-			
-			Application.DoEvents();
-			
-			if (c.ProgressBar != null) {
-				if (percentage >= 100) {
-					if (c.InvokeRequired)
-						c.Invoke(new MethodInvoker(
-							delegate() {c.ProgressBar.Value = 100; c.ProgressBar.Visible = false;}
-						));
-					else {
-						c.ProgressBar.Value = 100;
-						c.ProgressBar.Visible = false; }
-				} else {
-					if (c.InvokeRequired)
-						c.Invoke(new MethodInvoker(
-							delegate() {c.ProgressBar.Value = percentage; c.ProgressBar.Visible = true;}
-						));
-					else { c.ProgressBar.Value = percentage; c.ProgressBar.Visible = true; }
-				}
-			}
-		}
-		
-		/// <summary>
-		/// Returns the current buffer as a byte[].
-		/// </summary>
-		public byte[] Buffer {
-			get {
-				if (buffer == null) return new byte[0];
-				return (byte[]) buffer.ToArray( typeof ( byte ) );
-			}
+			this.data.ConcatenateTo(stream);
 		}
 		
 		/// <summary>
 		/// The size of the current buffer.
 		/// </summary>
 		public int BufferSize {
-			get { return buffer.Count; }
+			get {
+				return this.data.Count;
+			}
 		}
 
 		#region Methods
-		
 		public byte[] GetBytes(int start, int count)
 		{
-			if (buffer.Count == 0) return new byte[] {};
+			if (this.BufferSize == 0) return new byte[] {};
 			if (start < 0) start = 0;
-			if (start >= buffer.Count) start = buffer.Count;
+			if (start >= this.BufferSize) start = this.BufferSize;
 			if (count < 1) count = 1;
-			if (count >= (buffer.Count - start)) count = (buffer.Count - start);
-			return (byte[])(buffer.GetRange(start, count).ToArray( typeof ( byte ) ));
+			if (count >= (this.BufferSize - start)) count = (this.BufferSize - start);
+			
+			return this.data.GetRange(start, count);
 		}
 
 		public byte GetByte(int offset)
 		{
-			if (buffer.Count == 0) return 0;
+			if (this.BufferSize == 0) return 0;
 			if (offset < 0) offset = 0;
-			if (offset >= buffer.Count) offset = buffer.Count;
-			return (byte)buffer[offset];
-		}
-		
-		public bool DeleteByte(int offset)
-		{
-			if ((offset < buffer.Count) & (offset > -1)) {
-				buffer.RemoveAt(offset);
-				return true;
-			}
-			return false;
+			if (offset >= this.BufferSize) offset = this.BufferSize;
+			
+			return this.data[offset];
 		}
 		
 		public bool RemoveByte(int offset)
 		{
-			if ((offset < buffer.Count) & (offset > -1)) {
-				buffer.RemoveAt(offset);
+			if ((offset < this.BufferSize) & (offset > -1)) {
+				data.RemoveAt(offset);
 				return true;
 			}
 			return false;
@@ -237,34 +123,45 @@ namespace HexEditor.Util
 		
 		public bool RemoveBytes(int offset, int length)
 		{
-			if (((offset < buffer.Count) && (offset > -1)) && ((offset + length) <= buffer.Count)) {
-				buffer.RemoveRange(offset, length);
+			if (((offset < this.BufferSize) && (offset > -1)) && ((offset + length) <= this.BufferSize)) {
+				if ((offset == 0) && (length == data.Count)) {
+					this.data.Clear();
+					this.data = new StreamedList();
+				} else {
+					this.data.RemoveRange(offset, length);
+				}
 				return true;
 			}
 			return false;
 		}
 		
-		/// <remarks>Not Tested!</remarks>
 		public void SetBytes(int start, byte[] bytes, bool overwrite)
 		{
 			if (overwrite) {
-				if (bytes.Length > buffer.Count) buffer.AddRange(new byte[bytes.Length - buffer.Count]);
-				buffer.SetRange(start, bytes);
+				foreach (byte b in bytes)
+				{
+					data[start] = b;
+					start++;
+				}
 			} else {
-				buffer.InsertRange(start, bytes);
+				foreach (byte b in bytes)
+				{
+					data.Insert(start, b);
+					start++;
+				}
 			}
 		}
 		
 		public void SetByte(int position, byte @byte, bool overwrite)
 		{
 			if (overwrite) {
-				if (position > buffer.Count - 1) {
-					buffer.Add(@byte);
-				} else {
-					buffer[position] = @byte;
-				}
+				data[position] = @byte;
 			} else {
-				buffer.Insert(position, @byte);
+				if (position == data.Count) {
+					data.Add(@byte);
+				} else {
+					data.Insert(position, @byte);
+				}
 			}
 		}
 		#endregion

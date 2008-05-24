@@ -42,6 +42,8 @@ namespace HexEditor
 		int underscorewidth, underscorewidth3, fontheight;
 		bool insertmode, hexinputmode, selectionmode, handled, moved;
 		
+		Point oldMousePos = new Point(0,0);
+		
 		Settings settings;
 		
 		Rectangle[] selregion;
@@ -52,6 +54,7 @@ namespace HexEditor
 		public Caret Caret {
 			get { return caret; }
 		}
+		
 		SelectionManager selection;
 		UndoManager undoStack;
 
@@ -135,10 +138,6 @@ namespace HexEditor
 		}
 
 		#region Measure functions
-		/*
-		 * Code from SharpDevelop TextEditor
-		 * */
-		
 		static int GetFontHeight(Font font)
 		{
 			int height1 = TextRenderer.MeasureText("_", font).Height;
@@ -148,18 +147,10 @@ namespace HexEditor
 
 		static int MeasureStringWidth(Graphics g, string word, Font font)
 		{
-			// This code here provides better results than MeasureString!
-			// Example line that is measured wrong:
-			// txt.GetPositionFromCharIndex(txt.SelectionStart)
-			// (Verdana 10, highlighting makes GetP... bold) -> note the space between 'x' and '('
-			// this also fixes "jumping" characters when selecting in non-monospace fonts
-			// [...]
-			// Replaced GDI+ measurement with GDI measurement: faster and even more exact
 			return TextRenderer.MeasureText(g, word, font, new Size(short.MaxValue, short.MaxValue),
 			                                TextFormatFlags.NoPadding | TextFormatFlags.NoPrefix |
 			                                TextFormatFlags.PreserveGraphicsClipping).Width;
 		}
-
 		#endregion
 
 		/// <summary>
@@ -412,8 +403,6 @@ namespace HexEditor
 		protected override void OnMouseWheel(MouseEventArgs e)
 		{
 			base.OnMouseWheel(e);
-			
-			
 
 			if (!this.VScrollBar.Enabled) return;
 
@@ -458,13 +447,7 @@ namespace HexEditor
 					moved = false;
 					return;
 				}
-			} else {
-				this.Invalidate();
 			}
-			caret.Offset = this.GetOffsetForPosition(e.Location, 3);
-			caret.SetToPosition(GetPositionForOffset(caret.Offset, 3));
-			
-			this.Invalidate();
 		}
 		
 		/// <summary>
@@ -496,9 +479,6 @@ namespace HexEditor
 			this.charwidth = 1;
 			this.caret.Width = 1;
 			if (!insertmode) this.caret.Width = underscorewidth;
-			caret.Offset = this.GetOffsetForPosition(e.Location, 1);
-			caret.SetToPosition(GetPositionForOffset(caret.Offset, 1));
-			this.Invalidate();
 		}
 		#endregion
 
@@ -1034,19 +1014,15 @@ namespace HexEditor
 				if (selection.Start > selection.End) start = selection.End;
 				
 				buffer.RemoveBytes(start, Math.Abs(selection.End - selection.Start));
-				
 				buffer.SetBytes(start, this.Encoding.GetBytes(text.ToCharArray()), false);
-				UndoAction action = UndoAction.Overwrite;
-				
-				undoStack.AddUndoStep(new UndoStep(this.Encoding.GetBytes(text.ToCharArray()), old, caret.Offset, action));
+				undoStack.AddOverwriteStep(caret.Offset, this.Encoding.GetBytes(text.ToCharArray()), old);
 
 				caret.Offset = start + ClipboardManager.Paste().Length;
 				selection.Clear();
 			} else {
 				buffer.SetBytes(caret.Offset, this.Encoding.GetBytes(text.ToCharArray()), false);
-				UndoAction action = UndoAction.Remove;
 				
-				undoStack.AddUndoStep(new UndoStep(this.Encoding.GetBytes(text.ToCharArray()), null, caret.Offset, action));
+				undoStack.AddInsertStep(caret.Offset, this.Encoding.GetBytes(text.ToCharArray()));
 
 				caret.Offset += ClipboardManager.Paste().Length;
 			}
@@ -1072,9 +1048,7 @@ namespace HexEditor
 				buffer.RemoveBytes(selection.Start, Math.Abs(selection.End - selection.Start));
 				caret.Offset = selection.Start;
 				
-				UndoAction action = UndoAction.Add;
-				
-				undoStack.AddUndoStep(new UndoStep(old, null, selection.Start, action));
+				undoStack.AddInsertStep(selection.Start, old);
 				
 				selection.Clear();
 			}
@@ -1084,7 +1058,6 @@ namespace HexEditor
 			OnDocumentChanged(e2);
 		}
 		#endregion
-
 		
 		#region TextProcessing
 		/// <summary>
@@ -1327,9 +1300,7 @@ namespace HexEditor
 						buffer.RemoveBytes(start, Math.Abs(end - start));
 						caret.Offset = start;
 						
-						UndoAction action = UndoAction.Add;
-						
-						undoStack.AddUndoStep(new UndoStep(bytes, null, start, action));
+						undoStack.AddInsertStep(start, bytes);
 						
 						selection.Clear();
 					} else {
@@ -1341,9 +1312,7 @@ namespace HexEditor
 							if (GetLineForOffset(caret.Offset) < this.topline) this.topline = GetLineForOffset(caret.Offset);
 							if (GetLineForOffset(caret.Offset) > this.topline + this.GetMaxVisibleLines() - 2) this.topline = GetLineForOffset(caret.Offset) - this.GetMaxVisibleLines() + 2;
 							
-							UndoAction action = UndoAction.Add;
-							
-							undoStack.AddUndoStep(new UndoStep(new byte[] {b}, null, caret.Offset, action));
+							undoStack.AddInsertStep(caret.Offset, new byte[] {b});
 						}
 					}
 					
@@ -1357,10 +1326,8 @@ namespace HexEditor
 						byte[] old = selection.GetSelectionBytes();
 						buffer.RemoveBytes(start, Math.Abs(selection.End - selection.Start));
 						caret.Offset = selection.Start;
-						
-						UndoAction action = UndoAction.Add;
-						
-						undoStack.AddUndoStep(new UndoStep(old, null, selection.Start, action));
+
+						undoStack.AddInsertStep(selection.Start, old);
 						
 						selection.Clear();
 					} else {
@@ -1368,9 +1335,7 @@ namespace HexEditor
 						
 						buffer.RemoveByte(caret.Offset);
 						
-						UndoAction action = UndoAction.Remove;
-						
-						undoStack.AddUndoStep(new UndoStep(new byte[] {b}, null, caret.Offset, action));
+						undoStack.AddRemoveStep(caret.Offset, new byte[] {b});
 						
 						if (GetLineForOffset(caret.Offset) < this.topline) this.topline = GetLineForOffset(caret.Offset);
 						if (GetLineForOffset(caret.Offset) > this.topline + this.GetMaxVisibleLines() - 2) this.topline = GetLineForOffset(caret.Offset) - this.GetMaxVisibleLines() + 2;
@@ -1457,16 +1422,11 @@ namespace HexEditor
 				if (GetLineForOffset(caret.Offset) > this.topline + this.GetMaxVisibleLines() - 2) this.topline = GetLineForOffset(caret.Offset) - this.GetMaxVisibleLines() + 2;
 				VScrollBar.Value = this.topline;
 				
-				UndoAction action;
-				
 				if (insertmode) {
-					action = UndoAction.Remove;
-					old = null;
+					undoStack.AddRemoveStep(caret.Offset, new byte[] {(byte)e.KeyChar});
 				} else {
-					action = UndoAction.Overwrite;
+					undoStack.AddOverwriteStep(caret.Offset, new byte[] {(byte)e.KeyChar}, old);
 				}
-				
-				undoStack.AddUndoStep(new UndoStep(new byte[] {(byte)e.KeyChar}, old, caret.Offset - 1, action));
 			}
 			caret.SetToPosition(GetPositionForOffset(caret.Offset, charwidth));
 			
@@ -1581,9 +1541,7 @@ namespace HexEditor
 						// if @in is like 4 or A then make 04 or 0A out of it.
 						if (@in.Length == 1) @in = "0" + @in;
 						
-						UndoAction action = UndoAction.Overwrite;
-						
-						undoStack.AddUndoStep(new UndoStep(new byte[] {(byte)(Convert.ToInt32(@in.Remove(1) + ((char)(input.KeyValue)).ToString(), 16))}, buffer.GetBytes(caret.Offset, 1), caret.Offset, action));
+						undoStack.AddOverwriteStep(caret.Offset, new byte[] {(byte)(Convert.ToInt32(@in.Remove(1) + ((char)(input.KeyValue)).ToString(), 16))}, buffer.GetBytes(caret.Offset, 1));
 						
 						@in = @in.Remove(1) + ((char)(input.KeyValue)).ToString();
 						hexinputmodepos = 0;
@@ -1621,6 +1579,7 @@ namespace HexEditor
 					if (hexinputmodepos == 1) {
 						byte[] _old = buffer.GetBytes(caret.Offset, 1);
 						@in = string.Format("{0:X}", buffer.GetByte(caret.Offset));
+						if (@in.Length == 1) @in = "0" + @in;
 						@in = @in.Remove(1) + ((char)(input.KeyValue)).ToString();
 						hexinputmodepos = 0;
 						hexinputmode = false;
@@ -1628,7 +1587,7 @@ namespace HexEditor
 						caret.Offset++;
 						
 						if (insertmode) {
-							action = UndoAction.Add;
+							action = UndoAction.Insert;
 							_old = null;
 						} else {
 							action = UndoAction.Overwrite;
@@ -1645,7 +1604,7 @@ namespace HexEditor
 						hexinputmodepos = 1;
 						
 						if (insertmode) {
-							action = UndoAction.Add;
+							action = UndoAction.Insert;
 							_old = null;
 						} else {
 							action = UndoAction.Overwrite;
@@ -1719,7 +1678,6 @@ namespace HexEditor
 		/// </summary>
 		private void HexEditGotFocus(object sender, EventArgs e)
 		{
-			//LoadSettings();
 			this.Invalidate();
 		}
 		
@@ -1732,35 +1690,31 @@ namespace HexEditor
 		void TextViewMouseDown(object sender, MouseEventArgs e)
 		{
 			this.activeView = this.textView;
-			this.hexinputmode = false;
-			this.hexinputmodepos = 0;
 			if (e.Button == MouseButtons.Left) {
 				if (selection.HasSomethingSelected) {
 					selection.Start = 0;
 					selection.End = 0;
-					PaintText(this.textView.CreateGraphics(), this.topline);
 				}
 				selectionmode = true;
 				selection.Start = GetOffsetForPosition(e.Location, 1);
 			}
-			
-			caret.Offset = GetOffsetForPosition(e.Location, 1);
-			caret.SetToPosition(GetPositionForOffset(caret.Offset, this.charwidth));
 		}
 		
 		void TextViewMouseMove(object sender, MouseEventArgs e)
 		{
-			if ((e.Button == MouseButtons.Left) & selectionmode) {
+			if ((e.Button == MouseButtons.Left) && selectionmode && (e.Location != oldMousePos)) {
 				int end = selection.End;
 				selection.End = GetOffsetForPosition(e.Location, 1);
 				this.activeView = this.textView;
 				moved = true;
 				selection.HasSomethingSelected = true;
-				if (end != selection.End) this.Invalidate();
-				
 				caret.Offset = GetOffsetForPosition(e.Location, 1);
 				caret.SetToPosition(GetPositionForOffset(caret.Offset, this.charwidth));
+				
+				this.Invalidate();
 			}
+			
+			oldMousePos = e.Location;
 		}
 		
 		void TextViewMouseUp(object sender, MouseEventArgs e)
@@ -1772,7 +1726,6 @@ namespace HexEditor
 					selection.HasSomethingSelected = false;
 					selectionmode = false;
 				}
-				this.Invalidate();
 			} else {
 				if (!moved) {
 					selection.HasSomethingSelected = false;
@@ -1785,38 +1738,36 @@ namespace HexEditor
 			caret.SetToPosition(GetPositionForOffset(caret.Offset, this.charwidth));
 			
 			selectionmode = false;
+			
+			this.Invalidate();
 		}
 		
 		void HexViewMouseDown(object sender, MouseEventArgs e)
 		{
 			this.activeView = this.hexView;
-			this.hexinputmode = false;
-			this.hexinputmodepos = 0;
 			if (e.Button == MouseButtons.Left) {
 				selectionmode = true;
 				selection.Start = GetOffsetForPosition(e.Location, 3);
 				selection.End = GetOffsetForPosition(e.Location, 3);
-				this.Invalidate();
-				
-				caret.Offset = GetOffsetForPosition(e.Location, 3);
-				caret.SetToPosition(GetPositionForOffset(caret.Offset, this.charwidth));
 			}
 		}
 		
 		void HexViewMouseMove(object sender, MouseEventArgs e)
 		{
-			if ((e.Button == MouseButtons.Left) & selectionmode) {
+			if ((e.Button == MouseButtons.Left) && selectionmode && (e.Location != oldMousePos)) {
 				int end = selection.End;
 				selection.End = GetOffsetForPosition(e.Location, 3);
 				selection.HasSomethingSelected = true;
 				this.activeView = this.hexView;
 				moved = true;
-				caret.SetToPosition(GetPositionForOffset(GetOffsetForPosition(e.Location, 3), 3));
-				if (end != selection.End) this.Invalidate();
 				
 				caret.Offset = GetOffsetForPosition(e.Location, 3);
 				caret.SetToPosition(GetPositionForOffset(caret.Offset, this.charwidth));
+				
+				this.Invalidate();
 			}
+			
+			oldMousePos = e.Location;
 		}
 		
 		void HexViewMouseUp(object sender, MouseEventArgs e)
@@ -1829,7 +1780,6 @@ namespace HexEditor
 					selection.HasSomethingSelected = false;
 					selectionmode = false;
 				}
-				this.Invalidate();
 			} else {
 				if (!moved) {
 					selection.HasSomethingSelected = false;
@@ -1841,6 +1791,8 @@ namespace HexEditor
 			caret.Offset = GetOffsetForPosition(e.Location, 3);
 			caret.SetToPosition(GetPositionForOffset(caret.Offset, this.charwidth));
 			selectionmode = false;
+			
+			this.Invalidate();
 		}
 		#endregion
 		
@@ -1902,11 +1854,24 @@ namespace HexEditor
 				line++;
 			
 			// calculate the char: horizontal position (X) divided by the width of one char
-			int ch = (int)Math.Round((float)position.X / (float)(charwidth * underscorewidth));
+			float col = ((float)position.X / (float)(charwidth * underscorewidth));
+			float diff = (float)col - (float)((int)col);
+			
+			int ch = diff >= 0.75f ? (int)col + 1 : (int)col;
+			
 			if (ch > this.BytesPerLine) ch = this.BytesPerLine;
 			if (ch < 0) ch = 0;
+			
 			// calculate offset
 			int offset = line * this.BytesPerLine + ch;
+			
+			if ((diff > 0.35f) && (diff < 0.75f)) {
+				this.hexinputmodepos = 1;
+				this.hexinputmode = true;
+			} else {
+				this.hexinputmodepos = 0;
+				this.hexinputmode = false;
+			}
 			
 			// check
 			if (offset < 0) return 0;

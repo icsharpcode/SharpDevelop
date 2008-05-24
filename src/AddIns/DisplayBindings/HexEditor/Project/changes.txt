@@ -19,7 +19,6 @@ version: 0.0.2
 
 Known bugs/Problems:
 
-1) Might be good to be able to change individual hex parts of a byte.
-2) Might be good if the next hex value to be typed in was highlighted
+1) Might be good if the next hex value to be typed in was highlighted
 in the hex display.
-3) Change data structures (crashes when opening big files)
+2) Change data structures (crashes when opening big files)
