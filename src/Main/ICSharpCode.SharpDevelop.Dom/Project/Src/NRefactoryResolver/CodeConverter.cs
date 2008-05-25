@@ -101,7 +101,9 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return new BlockStatement {
 				Children = {
 					new ExpressionStatement(expr)
-				}
+				},
+				StartLocation = expr.StartLocation,
+				EndLocation = expr.EndLocation
 			};
 		}
 		
@@ -110,15 +112,19 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return new INode[] {
 				new MethodDeclaration {
 					Name = "DummyMethodForConversion",
-					Body = block
+					Body = block,
+					StartLocation = block.StartLocation,
+					EndLocation = block.EndLocation
 				}
 			};
 		}
 		
-		CompilationUnit MakeCompilationUnitFromTypeMembers(IEnumerable<INode> members)
+		CompilationUnit MakeCompilationUnitFromTypeMembers(IList<INode> members)
 		{
 			TypeDeclaration type = new TypeDeclaration(Modifiers.None, null) {
-				Name = "DummyTypeForConversion"
+				Name = "DummyTypeForConversion",
+				StartLocation = members[0].StartLocation,
+				EndLocation = members[members.Count - 1].EndLocation
 			};
 			type.Children.AddRange(members);
 			return new CompilationUnit {
