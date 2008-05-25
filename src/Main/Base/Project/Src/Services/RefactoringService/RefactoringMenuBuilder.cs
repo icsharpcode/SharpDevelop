@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
@@ -41,7 +42,11 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			List<string> definitions = new List<string>();
 			
 			// Include definitions (use the bookmarks which should already be present)
-			foreach (Bookmark mark in doc.BookmarkManager.Marks) {
+			
+			// we need to use .ToArray() because the bookmarks might change during enumeration:
+			// building member/class submenus can cause reparsing the current file, which might change
+			// the available bookmarks
+			foreach (Bookmark mark in doc.BookmarkManager.Marks.ToArray()) {
 				if (mark != null && mark.LineNumber == caretLine) {
 					ClassMemberBookmark cmb = mark as ClassMemberBookmark;
 					ClassBookmark cb = mark as ClassBookmark;

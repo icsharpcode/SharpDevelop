@@ -77,7 +77,7 @@ namespace ICSharpCode.TextEditor
 				}
 			}
 			
-			List<Bookmark> marks = textArea.Document.BookmarkManager.Marks;
+			IList<Bookmark> marks = textArea.Document.BookmarkManager.Marks;
 			List<Bookmark> marksInLine = new List<Bookmark>();
 			int oldCount = marks.Count;
 			foreach (Bookmark mark in marks) {

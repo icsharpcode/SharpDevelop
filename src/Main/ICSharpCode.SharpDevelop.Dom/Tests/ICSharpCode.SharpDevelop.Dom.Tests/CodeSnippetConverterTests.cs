@@ -5,11 +5,10 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;
 using System;
 using System.Collections.Generic;
+using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;
 using NUnit.Framework;
-using NUnit.Framework.SyntaxHelpers;
 
 namespace ICSharpCode.SharpDevelop.Dom.Tests
 {
@@ -41,6 +40,15 @@ namespace ICSharpCode.SharpDevelop.Dom.Tests
 		public void FixExpressionCase()
 		{
 			Assert.AreEqual("AppDomain.CurrentDomain", converter.VBToCSharp("appdomain.currentdomain", out errors));
+		}
+		
+		[Test]
+		public void Statements()
+		{
+			Assert.AreEqual("a = Console.Title;\n" +
+			                "b = Console.ReadLine();",
+			                Normalize(converter.VBToCSharp("a = Console.Title\n" +
+			                                               "b = Console.Readline", out errors)));
 		}
 		
 		[Test]

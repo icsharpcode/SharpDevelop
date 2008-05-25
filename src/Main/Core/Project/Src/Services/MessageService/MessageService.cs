@@ -85,6 +85,7 @@ namespace ICSharpCode.Core
 			
 			if (ex != null) {
 				LoggingService.Error(message, ex);
+				LoggingService.Warn("Stack trace of last error log:\n" + Environment.StackTrace);
 				if (customErrorReporter != null) {
 					customErrorReporter(ex, message);
 					return;

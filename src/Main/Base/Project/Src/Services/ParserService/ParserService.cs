@@ -28,7 +28,7 @@ namespace ICSharpCode.SharpDevelop
 		static IList<ProjectContentRegistryDescriptor> registries;
 		
 		static Dictionary<IProject, IProjectContent> projectContents = new Dictionary<IProject, IProjectContent>();
-		static Dictionary<string, ParseInformation> parsings = new Dictionary<string, ParseInformation>();
+		static Dictionary<string, ParseInformation> parsings = new Dictionary<string, ParseInformation>(StringComparer.InvariantCultureIgnoreCase);
 		static ProjectContentRegistry defaultProjectContentRegistry = new ProjectContentRegistry();
 		
 		static string domPersistencePath;

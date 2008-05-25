@@ -5,11 +5,11 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.NRefactory.PrettyPrinter;
 using System;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.NRefactory.PrettyPrinter;
 
 namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 {

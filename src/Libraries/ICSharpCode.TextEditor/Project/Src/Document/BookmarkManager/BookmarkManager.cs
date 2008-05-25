@@ -7,6 +7,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using ICSharpCode.TextEditor.Util;
 
 namespace ICSharpCode.TextEditor.Document
 {
@@ -21,14 +23,18 @@ namespace ICSharpCode.TextEditor.Document
 	public class BookmarkManager
 	{
 		IDocument      document;
+		#if DEBUG
+		IList<Bookmark> bookmark = new CheckedList<Bookmark>();
+		#else
 		List<Bookmark> bookmark = new List<Bookmark>();
+		#endif
 		
 		/// <value>
 		/// Contains all bookmarks
 		/// </value>
-		public List<Bookmark> Marks {
+		public ReadOnlyCollection<Bookmark> Marks {
 			get {
-				return bookmark;
+				return new ReadOnlyCollection<Bookmark>(bookmark);
 			}
 		}
 		

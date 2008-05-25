@@ -561,7 +561,7 @@ namespace ICSharpCode.XmlEditor
 			xmlEditor.LoadFile(file.FileName, stream, false, true);
 			foreach (Bookmarks.SDBookmark mark in Bookmarks.BookmarkManager.GetBookmarks(file.FileName)) {
 				mark.Document = xmlEditor.Document;
-				xmlEditor.Document.BookmarkManager.Marks.Add(mark);
+				xmlEditor.Document.BookmarkManager.AddMark(mark);
 			}
 			UpdateFolding();
 		}

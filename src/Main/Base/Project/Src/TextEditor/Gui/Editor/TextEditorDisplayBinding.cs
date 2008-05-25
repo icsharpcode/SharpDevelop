@@ -239,7 +239,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			textEditorControl.FileLoaded();
 			foreach (Bookmarks.SDBookmark mark in Bookmarks.BookmarkManager.GetBookmarks(file.FileName)) {
 				mark.Document = textEditorControl.Document;
-				textEditorControl.Document.BookmarkManager.Marks.Add(mark);
+				textEditorControl.Document.BookmarkManager.AddMark(mark);
 			}
 			ForceFoldingUpdate();
 		}

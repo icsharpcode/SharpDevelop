@@ -9,7 +9,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
-using Alias = System.String;
+using System.Linq;
 
 namespace ICSharpCode.SharpDevelop.Dom.CSharp
 {
@@ -101,8 +101,11 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 				#if DEBUG
 				if (c.HasCompoundClass)
 					builder.Append("multiple_parts ");
-				if (c is CompoundClass)
-					builder.Append("compound ");
+				if (c is CompoundClass) {
+					builder.Append("compound{");
+					builder.Append(string.Join(",", (c as CompoundClass).Parts.Select(p => p.CompilationUnit.FileName).ToArray()));
+					builder.Append("} ");
+				}
 				#endif
 			}
 			
