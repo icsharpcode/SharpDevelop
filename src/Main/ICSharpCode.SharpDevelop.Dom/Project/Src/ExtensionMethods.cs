@@ -22,7 +22,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				arrayList.Add(o);
 		}
 		
-		public static void AddRange<T>(this IList<T> list, IEnumerable<T> elements)
+		public static void AddRange<T>(this ICollection<T> list, IEnumerable<T> elements)
 		{
 			foreach (T o in elements)
 				list.Add(o);

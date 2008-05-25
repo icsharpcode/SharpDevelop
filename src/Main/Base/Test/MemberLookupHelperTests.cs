@@ -28,7 +28,6 @@ namespace ICSharpCode.SharpDevelop.Tests
 			ProjectContentRegistry r = new ProjectContentRegistry();
 			msc = r.Mscorlib;
 			swf = r.GetProjectContentForReference("System.Windows.Forms", "System.Windows.Forms");
-			((ReflectionProjectContent)swf).InitializeReferences();
 			
 			DefaultProjectContent dpc = new DefaultProjectContent();
 			dpc.ReferencedContents.Add(msc);

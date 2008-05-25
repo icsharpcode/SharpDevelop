@@ -52,7 +52,7 @@ namespace VBNetBinding
 			CSharpToVBNetConvertVisitor visitor = new CSharpToVBNetConvertVisitor(pc, ParserService.GetParseInformation(sourceItem.FileName));
 			visitor.RootNamespaceToRemove = sourceItem.Project.RootNamespace;
 			visitor.DefaultImportsToRemove = defaultImports;
-				visitor.StartupObjectToMakePublic = startupObject;
+			visitor.StartupObjectToMakePublic = startupObject;
 			compilationUnit.AcceptVisitor(visitor, null);
 		}
 		
@@ -60,8 +60,7 @@ namespace VBNetBinding
 		{
 			VBNetProject vbProject = (VBNetProject)targetProject;
 			base.CopyProperties(sourceProject, targetProject);
-			FixProperty(vbProject, "DefineConstants",
-			            delegate(string v) { return v.Replace(';', ','); });
+			FixProperty(vbProject, "DefineConstants", v => v.Replace(';', ','));
 			
 			// determine the StartupObject
 			startupObject = vbProject.GetEvaluatedProperty("StartupObject");

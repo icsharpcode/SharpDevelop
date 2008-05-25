@@ -92,7 +92,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		
 		readonly List<GridSplitterAdorner> splitterList = new List<GridSplitterAdorner>();
 		/// <summary>
-		/// flag used to unsure that the asynchronus splitter creation is only enqueued once
+		/// flag used to ensure that the asynchronus splitter creation is only enqueued once
 		/// </summary>
 		bool requireSplitterRecreation;
 		
@@ -101,7 +101,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			if (requireSplitterRecreation) return;
 			requireSplitterRecreation = true;
 			
-			// splitter creation is asynchronous to prevent unnecessary splitter re-creation when multiple
+			// splitter creation is delayed to prevent unnecessary splitter re-creation when multiple
 			// changes to the collection are done.
 			// It also ensures that the Offset property of new rows/columns is initialized when the splitter
 			// is added.

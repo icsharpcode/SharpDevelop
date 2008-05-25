@@ -101,6 +101,7 @@
     <Compile Include="Src\Interfaces\IDomProgressMonitor.cs" />
     <Compile Include="Src\Interfaces\IFreezable.cs" />
     <Compile Include="Src\LazyList.cs" />
+    <Compile Include="Src\NRefactoryResolver\CodeConverter.cs" />
     <Compile Include="Src\NRefactoryResolver\CSharpToVBNetConvertVisitor.cs" />
     <Compile Include="Src\NRefactoryResolver\InferredReturnType.cs" />
     <Compile Include="Src\NRefactoryResolver\LambdaParameterReturnType.cs" />

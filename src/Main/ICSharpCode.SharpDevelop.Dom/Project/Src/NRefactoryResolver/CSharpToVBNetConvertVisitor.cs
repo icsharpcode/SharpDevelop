@@ -174,7 +174,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				if (memberNode != null && memberNode.InterfaceImplementations.Count > 0) {
 					foreach (InterfaceImplementation impl in memberNode.InterfaceImplementations) {
 						if (impl.MemberName == interfaceMember.Name
-						    && object.Equals(ResolveType(impl.InterfaceType), interfaceReference)) {
+						    && object.Equals(ResolveType(impl.InterfaceType), interfaceReference))
+						{
 							return true;
 						}
 					}
