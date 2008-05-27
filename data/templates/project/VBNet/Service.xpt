@@ -20,6 +20,7 @@
 	<Project language="VBNet">
 		<PropertyGroup>
 			<OutputType>Exe</OutputType>
+			<AppDesignerFolder>Properties</AppDesignerFolder>
 		</PropertyGroup>
 		
 		<ProjectItems>
@@ -92,7 +93,7 @@ Public Class ProjectInstaller
 End Class
 
 ]]></File>
-		<File name="AssemblyInfo.vb" src="DefaultAssemblyInfo.vb"/>
+		<File name="Properties\AssemblyInfo.vb" src="DefaultAssemblyInfo.vb"/>
 		</Files>
 	</Project>
 </Template>

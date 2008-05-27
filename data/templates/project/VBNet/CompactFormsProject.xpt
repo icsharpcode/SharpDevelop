@@ -19,6 +19,7 @@
 	<Project language="VBNet">
 		<PropertyGroup>
 			<OutputType>WinExe</OutputType>
+			<AppDesignerFolder>Properties</AppDesignerFolder>
 			
 			<PlatformFamilyName>PocketPC</PlatformFamilyName>
 			<PlatformID>WinCE</PlatformID>
@@ -101,7 +102,7 @@ Partial Class MainForm
 	End Sub
 End Class
 ]]></File>
-			<File name="AssemblyInfo.vb" src="DefaultAssemblyInfo.vb"/>
+			<File name="Properties\AssemblyInfo.vb" src="DefaultAssemblyInfo.vb"/>
 		</Files>
 	</Project>
 </Template>

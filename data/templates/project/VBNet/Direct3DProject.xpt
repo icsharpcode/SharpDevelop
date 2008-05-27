@@ -41,6 +41,7 @@
 		
 		<PropertyGroup>
 			<OutputType>WinExe</OutputType>
+			<AppDesignerFolder>Properties</AppDesignerFolder>
 			<StartupObject>${StandardNamespace}.MainClass</StartupObject>
 		</PropertyGroup>
 		
@@ -153,7 +154,7 @@ Public Class MainClass
 	End Sub
 End Class
 ]]></File>
-			<File name="AssemblyInfo.vb" src="DefaultAssemblyInfo.vb"/>
+			<File name="Properties\AssemblyInfo.vb" src="DefaultAssemblyInfo.vb"/>
 		</Files>
 	</Project>
 </Template>

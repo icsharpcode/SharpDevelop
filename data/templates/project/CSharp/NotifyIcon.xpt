@@ -33,6 +33,7 @@
 		
 		<PropertyGroup>
 			<OutputType>WinExe</OutputType>
+			<AppDesignerFolder>Properties</AppDesignerFolder>
 		</PropertyGroup>
 		
 		<Files>
@@ -118,7 +119,7 @@ namespace ${StandardNamespace}
 ]]>
 			</File>
 			<File name="NotificationIcon.resx" src="NotifyIconResources.resx" buildAction="EmbeddedResource" DependentUpon="NotificationIcon.cs" />
-			<File name="AssemblyInfo.cs" src="DefaultAssemblyInfo.cs" />
+			<File name="Properties\AssemblyInfo.cs" src="DefaultAssemblyInfo.cs" />
 		</Files>
 	</Project>
 </Template>

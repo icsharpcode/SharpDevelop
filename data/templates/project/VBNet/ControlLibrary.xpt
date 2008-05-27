@@ -37,6 +37,7 @@
 		
 		<PropertyGroup>
 			<OutputType>Library</OutputType>
+			<AppDesignerFolder>Properties</AppDesignerFolder>
 		</PropertyGroup>
 		
 		<Files>
@@ -88,7 +89,7 @@ Partial Class UserControl1
 	End Sub
 End Class
 ]]></File>
-		<File name="AssemblyInfo.vb" src="DefaultAssemblyInfo.vb"/>
+		<File name="Properties\AssemblyInfo.vb" src="DefaultAssemblyInfo.vb"/>
 		</Files>
 	</Project>
 </Template>

@@ -38,6 +38,7 @@
 		
 		<PropertyGroup>
 			<OutputType>WinExe</OutputType>
+			<AppDesignerFolder>Properties</AppDesignerFolder>
 		</PropertyGroup>
 		
 		<Files>
@@ -104,7 +105,7 @@ namespace ${StandardNamespace}
 		}
 	}
 }]]></File>
-			<File name="AssemblyInfo.cs" src="WPFAssemblyInfo.cs" />
+			<File name="Properties\AssemblyInfo.cs" src="WPFAssemblyInfo.cs" />
 		</Files>
 	</Project>
 </Template>

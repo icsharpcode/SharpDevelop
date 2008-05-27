@@ -26,6 +26,11 @@
 			<Reference Include="System.Data" />
 			<Reference Include="System.Xml" />
 		</ProjectItems>
+		
+		<PropertyGroup>
+			<OutputType>Exe</OutputType>
+			<AppDesignerFolder>Properties</AppDesignerFolder>
+		</PropertyGroup>
 		<Files>
 			<File name="Program.cs"><![CDATA[${StandardHeader.C#}
 using System;
@@ -45,7 +50,7 @@ namespace ${StandardNamespace}
 		}
 	}
 }]]></File>
-			<File name="AssemblyInfo.cs" src="DefaultAssemblyInfo.cs"/>
+			<File name="Properties\AssemblyInfo.cs" src="DefaultAssemblyInfo.cs"/>
 		</Files>
 	</Project>
 </Template>

@@ -28,6 +28,7 @@
 		
 		<PropertyGroup>
 			<OutputType>WinExe</OutputType>
+			<AppDesignerFolder>Properties</AppDesignerFolder>
 		</PropertyGroup>
 		
 		<Files>
@@ -106,7 +107,7 @@ namespace ${StandardNamespace}
 	}
 }
 ]]></File>
-		<File name="AssemblyInfo.cs" src="DefaultAssemblyInfo.cs" language="C#" />
+		<File name="Properties\AssemblyInfo.cs" src="DefaultAssemblyInfo.cs" language="C#" />
 		</Files>
 	</Project>
 </Template>

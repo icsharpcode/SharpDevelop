@@ -32,6 +32,7 @@
 		
 		<PropertyGroup>
 			<OutputType>Library</OutputType>
+			<AppDesignerFolder>Properties</AppDesignerFolder>
 			<RegisterForComInterop>true</RegisterForComInterop>
 		</PropertyGroup>
 		
@@ -117,7 +118,7 @@ namespace ${StandardNamespace}
 		private object addinInstance;
 	}
 }]]></File>
-		<File name="AssemblyInfo.cs" src="DefaultAssemblyInfo.cs"/>
+		<File name="Properties\AssemblyInfo.cs" src="DefaultAssemblyInfo.cs"/>
 		</Files>
 	</Project>
 </Template>

@@ -31,6 +31,7 @@
 		
 		<PropertyGroup>
 			<OutputType>Library</OutputType>
+			<AppDesignerFolder>Properties</AppDesignerFolder>
 			<RegisterForComInterop>true</RegisterForComInterop>
 		</PropertyGroup>
 		
@@ -105,7 +106,7 @@ Public Class Connect
 	Private ApplicationObject As Object
 	Private AddInInstance As Object
 End Class]]></File>
-			<File name="AssemblyInfo.vb" src="DefaultAssemblyInfo.vb"/>
+			<File name="Properties\AssemblyInfo.vb" src="DefaultAssemblyInfo.vb"/>
 		</Files>
 	</Project>
 </Template>

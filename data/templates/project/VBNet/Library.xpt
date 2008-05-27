@@ -19,6 +19,7 @@
 	<Project language="VBNet">
 		<PropertyGroup>
 			<OutputType>Library</OutputType>
+			<AppDesignerFolder>Properties</AppDesignerFolder>
 		</PropertyGroup>
 		
 		<ProjectItems>
@@ -41,7 +42,7 @@ Public Class NewClass
 	
 End Class
 ]]></File>
-			<File name="AssemblyInfo.vb" src="DefaultAssemblyInfo.vb"/>
+			<File name="Properties\AssemblyInfo.vb" src="DefaultAssemblyInfo.vb"/>
 		</Files>
 	</Project>
 </Template>
