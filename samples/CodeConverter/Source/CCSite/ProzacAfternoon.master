@@ -1,0 +1,32 @@
+<%@ Master Language="C#" AutoEventWireup="true" Inherits="ProzacAfternoon" Codebehind="ProzacAfternoon.master.cs" %>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" >
+<head runat="server">
+    <title>Untitled Page</title>
+    <link rel="stylesheet" type="text/css" href="default.css" media="screen" />
+</head>
+<body>
+    <form id="form1" runat="server">
+    <div class="wrap clearfix">
+  <div class="header"><strong>code converter</strong> by SharpDevelop</div>
+  <div class="topnav" id="nav">
+    <ul>
+      <li><a href="Default.aspx">home</a></li>
+      <li><a href="SnippetConverter.aspx">convert</a></li>
+      <li><a href="http://community.sharpdevelop.net/forums/">forums</a></li>
+      <li><a href="http://www.icsharpcode.net/opensource/sd/download/">download</a></li>
+      <li><a href="http://wiki.sharpdevelop.net/">wiki</a></li>
+      <li><a href="About.aspx">about</a></li>
+    </ul>
+  </div>
+  <div class="container clearfix">
+        <asp:contentplaceholder id="MainContent" runat="server">
+        </asp:contentplaceholder>
+  </div>
+  <div class="footer" id="footer"> <a href="Default.aspx">home</a>&nbsp;&nbsp;:&nbsp;&nbsp; <a href="SnippetConverter.aspx">convert</a>&nbsp;&nbsp;:&nbsp;&nbsp; <a href="http://community.sharpdevelop.net/forums/">forums</a>&nbsp;&nbsp;:&nbsp;&nbsp; <a href="http://www.icsharpcode.net/opensource/sd/download/">download</a>&nbsp;&nbsp;:&nbsp;&nbsp; <a href="http://wiki.sharpdevelop.net/">wiki</a>&nbsp;&nbsp;:&nbsp;&nbsp; <a href="About.aspx">about</a> </div>
+</div>
+    </form>
+</body>
+</html>

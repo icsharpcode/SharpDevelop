@@ -1,0 +1,214 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{6597D0F8-916A-45EB-98D1-831064914B77}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>CCSite</RootNamespace>
+    <AssemblyName>CCSite</AssemblyName>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>2.0</OldToolsVersion>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="ICSharpCode.TextEditor, Version=2.1.0.2520, Culture=neutral, PublicKeyToken=4d61825e8dd49f1a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Dependencies\ICSharpCode.TextEditor.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core, Version=3.5.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Web.Extensions.Design, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="System.Web.Mobile" />
+    <Reference Include="System.Xml.Linq, Version=3.5.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="About.aspx.cs">
+      <SubType>ASPXCodeBehind</SubType>
+      <DependentUpon>About.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="About.aspx.designer.cs">
+      <DependentUpon>About.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="CodeFormatClient.aspx.cs">
+      <SubType>ASPXCodeBehind</SubType>
+      <DependentUpon>CodeFormatClient.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="CodeFormatClient.aspx.designer.cs">
+      <DependentUpon>CodeFormatClient.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="CodeFormatService.asmx.cs">
+      <DependentUpon>CodeFormatService.asmx</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Code\HtmlWriter.cs" />
+    <Compile Include="Convert.aspx.cs">
+      <DependentUpon>Convert.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Convert.aspx.designer.cs">
+      <DependentUpon>Convert.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ConvertCSharp20ToVbNet80.aspx.cs">
+      <DependentUpon>ConvertCSharp20ToVbNet80.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ConvertCSharp20ToVbNet80.aspx.designer.cs">
+      <DependentUpon>ConvertCSharp20ToVbNet80.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ConvertService.cs">
+      <DependentUpon>ConvertService.asmx</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DotNetClientApplication.aspx.cs">
+      <SubType>ASPXCodeBehind</SubType>
+      <DependentUpon>DotNetClientApplication.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="DotNetClientApplication.aspx.designer.cs">
+      <DependentUpon>DotNetClientApplication.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="FormatCode.aspx.cs">
+      <SubType>ASPXCodeBehind</SubType>
+      <DependentUpon>FormatCode.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="FormatCode.aspx.designer.cs">
+      <DependentUpon>FormatCode.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="SnippetConverter.aspx.cs">
+      <DependentUpon>SnippetConverter.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="SnippetConverter.aspx.designer.cs">
+      <DependentUpon>SnippetConverter.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Default.aspx.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Default.aspx.designer.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ProzacAfternoon.master.cs">
+      <DependentUpon>ProzacAfternoon.master</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ProzacAfternoon.master.designer.cs">
+      <DependentUpon>ProzacAfternoon.master</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="ProzacAfternoon.master" />
+    <Content Include="Web.Config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="About.aspx" />
+    <Content Include="screenshots\CodeConverterClient.png">
+    </Content>
+    <Content Include="Convert.aspx" />
+    <Content Include="ConvertCSharp20ToVbNet80.aspx" />
+    <Content Include="ConvertService.asmx" />
+    <Content Include="DotNetClientApplication.aspx" />
+    <Content Include="SnippetConverter.aspx" />
+    <Content Include="Default.aspx" />
+    <Content Include="default.css" />
+    <Content Include="images\bg.gif" />
+    <Content Include="images\cnr_bl.gif" />
+    <Content Include="images\cnr_br.gif" />
+    <Content Include="images\cnr_tl.gif" />
+    <Content Include="images\cnr_tr.gif" />
+    <Content Include="images\header.jpg" />
+    <Content Include="images\sample.jpg" />
+    <Content Include="images\topnav_bg.gif" />
+    <Content Include="images\topnav_bg_grey.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="downloads\CodeConvertServiceClient.zip">
+    </Content>
+    <Content Include="downloads\CodeConvertServiceClient_Source.zip">
+    </Content>
+    <Content Include="CodeFormatService.asmx" />
+    <Content Include="FormatCode.aspx" />
+    <Content Include="screenshots\FormatCode_Preview.png" />
+    <Content Include="screenshots\FormatCode_Source.png" />
+    <Content Include="screenshots\FormatCode_Html.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="CodeFormatClient.aspx" />
+    <Content Include="downloads\CodeFormatServiceClient.zip" />
+    <Content Include="downloads\CodeFormatServiceClient_Source.zip" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ICSharpCode.CodeConversion\ICSharpCode.CodeConversion.csproj">
+      <Project>{BF122CB4-E896-40CA-BF0A-AB44906AB87D}</Project>
+      <Name>ICSharpCode.CodeConversion</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v9.0\WebApplications\Microsoft.WebApplication.targets" Condition="" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>False</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>54633</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>
+          </IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>
