@@ -19,7 +19,8 @@ namespace Debugger
 	{
 		Debugger.Value exceptionValue;
 		
-		internal DebugeeInnerException (Debugger.Value exception) {
+		internal DebugeeInnerException (Debugger.Value exception)
+		{
 			this.exceptionValue = exception;
 		}
 		

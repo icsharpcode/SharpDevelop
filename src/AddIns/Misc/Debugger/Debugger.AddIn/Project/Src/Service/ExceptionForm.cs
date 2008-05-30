@@ -64,11 +64,29 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		public static Result Show(Debugger.Exception exception)
 		{
+			IDebugeeException ex = exception;
+			StringBuilder msg = new StringBuilder();
+			msg.AppendFormat(ResourceService.GetString("MainWindow.Windows.Debug.ExceptionForm.Message"), ex.Type);
+			msg.AppendLine();
+			msg.AppendLine("Message:");
+			msg.Append("\t");
+			msg.AppendLine(ex.Message);
+			msg.AppendLine();
+			while(ex.InnerException != null) {
+				ex = ex.InnerException;
+				msg.AppendLine("Inner Exception:");
+				msg.AppendFormat("Type: [{0}]", ex.Type);
+				msg.AppendLine();
+				msg.AppendLine("Message:");
+				msg.Append("\t");
+				if (ex.Message != "null") { msg.AppendLine(ex.Message); }
+				msg.AppendLine();
+			}
+			msg.AppendLine("StackTrace:");
+			msg.AppendLine(exception.Callstack.Replace("\n","\r\n"));
+			
 			using (ExceptionForm form = new ExceptionForm()) {
-				form.textBox.Text =
-					ResourceService.GetString("MainWindow.Windows.Debug.ExceptionForm.Message").Replace("{0}", exception.Type) + "\r\n" +
-					exception.Message + "\r\n\r\n" +
-					exception.Callstack.Replace("\n","\r\n");
+				form.textBox.Text = msg.ToString();
 				form.pictureBox.Image = ResourceService.GetBitmap((exception.ExceptionType != ExceptionType.DEBUG_EXCEPTION_UNHANDLED)?"Icons.32x32.Warning":"Icons.32x32.Error");
 				form.buttonContinue.Enabled = exception.ExceptionType != ExceptionType.DEBUG_EXCEPTION_UNHANDLED;
 				form.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm);

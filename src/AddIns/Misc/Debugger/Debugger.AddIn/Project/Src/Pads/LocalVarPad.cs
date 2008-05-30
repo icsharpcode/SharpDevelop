@@ -151,6 +151,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		TreeColumn valColumn  = new TreeColumn();
 		TreeColumn typeColumn = new TreeColumn();
 		
+		/// <remarks>
+		/// This is not used anywhere, but it is neccessary to be overridden in children of AbstractPadContent.
+		/// </remarks>
 		public override Control Control {
 			get {
 				return localVarList;

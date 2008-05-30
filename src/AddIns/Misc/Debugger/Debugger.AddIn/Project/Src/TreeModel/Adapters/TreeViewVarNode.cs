@@ -19,7 +19,10 @@ using ICSharpCode.SharpDevelop.Gui.Pads;
 
 namespace Debugger.AddIn.TreeModel
 {
-	public partial class TreeViewVarNode: TreeNodeAdv
+	/// <summary>
+	/// A child class of TreeNodeAdv that displays exceptions.
+	/// </summary>
+	public class TreeViewVarNode: TreeNodeAdv
 	{
 		static Dictionary<string, bool> expandedNodes = new Dictionary<string, bool>();
 		

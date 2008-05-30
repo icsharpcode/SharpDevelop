@@ -19,7 +19,9 @@ using ICSharpCode.SharpDevelop.Gui.Pads;
 
 namespace Debugger.AddIn.TreeModel
 {
-	// This TreeNodeAdv displays exception data.
+	/// <summary>
+	/// This TreeNodeAdv displays exception data.
+	/// </summary>
 	public class TreeViewExceptionNode: TreeNodeAdv
 	{
 		private static Dictionary<string, bool> expandedNodes = new Dictionary<string, bool>();
