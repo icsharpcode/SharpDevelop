@@ -32,6 +32,8 @@ WiX schemas
 
 complus.xsd
 difxapp.xsd
+firewall.xsd
+gaming.xsd
 iis.xsd
 msmq.xsd
 netfx.xsd

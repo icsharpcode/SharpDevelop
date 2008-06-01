@@ -314,6 +314,18 @@
 										<Component Guid="3E8291C1-F920-40C9-BFF2-3E0DD361EBB6" Id="MSMQXsd" DiskId="1">
 											<File Source="..\..\bin\Tools\Wix\doc\msmq.xsd" Name="msmq.xsd" Id="msmq.xsd" KeyPath="yes" />
 										</Component>
+										<Component Guid="5169B461-92D6-4C1C-B343-136C69092814" Id="WixDtfHelpFile" DiskId="1">
+											<File Source="..\..\bin\Tools\Wix\doc\DTF.chm" Name="DTF.chm" Id="WixDTF.chm" KeyPath="yes" />
+										</Component>
+										<Component Guid="8902BE9A-A694-4ACD-9271-9B4E4C07C6ED" Id="WixDtfApiHelpFile" DiskId="1">
+											<File Source="..\..\bin\Tools\Wix\doc\DTFAPI.chm" Name="DTFAPI.chm" Id="WixDtfApi.chm" KeyPath="yes" />
+										</Component>
+										<Component Guid="A85759C4-AEEB-46B6-BE15-0957348A3D50" Id="WixFirewallXsd" DiskId="1">
+											<File Source="..\..\bin\Tools\Wix\doc\firewall.xsd" Name="firewall.xsd" Id="WixFirewall.xsd" KeyPath="yes" />
+										</Component>
+										<Component Guid="4C41DDBD-CE42-4669-87B0-250F0BF83DA9" Id="WixGamingXsd" DiskId="1">
+											<File Source="..\..\bin\Tools\Wix\doc\gaming.xsd" Name="gaming.xsd" Id="WixGaming.xsd" KeyPath="yes" />
+										</Component>
 									</Directory>
 									<Component Guid="6D18FAA0-440D-47FA-B9C1-790A00ADF96D" Id="DariceCub" DiskId="1">
 										<File Source="..\..\bin\Tools\Wix\darice.cub" Name="darice.cub" Id="darice.cub" KeyPath="yes" />
@@ -379,6 +391,15 @@
 									</Component>
 									<Component Guid="14C6D703-D1E8-4D3C-8BAB-A78130818589" Id="WixMsmqExtensionDll" DiskId="1">
 										<File Source="..\..\bin\Tools\Wix\WixMsmqExtension.dll" Name="WixMsmqExtension.dll" Id="WixMsmqExtension.dll" KeyPath="yes" />
+									</Component>
+									<Component Guid="43F0C244-A993-4ECE-985C-C89A727123DA" Id="WixDirectXExtensionDll" DiskId="1">
+										<File Source="..\..\bin\Tools\Wix\WixDirectXExtension.dll" Name="WixDirectXExtension.dll" Id="WixDirectXExtension.dll" KeyPath="yes" />
+									</Component>
+									<Component Guid="169DE6D0-F8F4-47EF-803C-205E7991674E" Id="WixFirewallExtensionDll" DiskId="1">
+										<File Source="..\..\bin\Tools\Wix\WixFirewallExtension.dll" Name="WixFirewallExtension.dll" Id="WixFirewallExtension.dll" KeyPath="yes" />
+									</Component>
+									<Component Guid="A49F5086-079E-4F5D-AD48-81DD1A7CF0BA" Id="WixGamingExtensionDll" DiskId="1">
+										<File Source="..\..\bin\Tools\Wix\WixGamingExtension.dll" Name="WixGamingExtension.dll" Id="WixGamingExtension.dll" KeyPath="yes" />
 									</Component>
 								</Directory>
 								<Directory Id="NUnitFolder" Name="NUnit">
@@ -870,6 +891,12 @@
 								</Component>
 								<Component Guid="D79044D2-CAF6-4006-AF88-367FC97E86B6" Id="WixMSMQSchema" DiskId="1">
 									<File Source="..\..\data\schemas\msmq.xsd" Name="msmq.xsd" Id="schemas.msmq.xsd" KeyPath="yes" />
+								</Component>
+								<Component Guid="C0901A8C-00A4-4F2C-9A46-96D50A687D52" Id="WixFirewallSchema" DiskId="1">
+									<File Source="..\..\data\schemas\firewall.xsd" Name="firewall.xsd" Id="schemas.wix.firewall.xsd" KeyPath="yes" />
+								</Component>
+								<Component Guid="CA5C2E97-D332-4FA3-8782-50A3FC09FAC7" Id="WixGamingSchema" DiskId="1">
+									<File Source="..\..\data\schemas\gaming.xsd" Name="gaming.xsd" Id="schemas.wix.gaming.xsd" KeyPath="yes" />
 								</Component>
 							</Directory>
 							<Directory Id="TemplatesFolder" Name="templates">
