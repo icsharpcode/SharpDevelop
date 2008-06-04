@@ -26,7 +26,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		public static Form MainForm {
 			get {
-				return workbench.MainForm;
+				if (workbench != null) {
+					return workbench.MainForm;
+				}
+				return null;
 			}
 		}
 		
