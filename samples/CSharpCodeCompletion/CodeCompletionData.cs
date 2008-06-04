@@ -26,6 +26,8 @@ namespace CSharpEditor
 	{
 		IMember member;
 		IClass c;
+		static VBNetAmbience vbAmbience = new VBNetAmbience();
+		static CSharpAmbience csharpAmbience = new CSharpAmbience();
 		
 		public CodeCompletionData(IMember member)
 			: base(member.Name, null, GetMemberImageIndex(member))
@@ -95,7 +97,7 @@ namespace CSharpEditor
 		/// </summary>
 		static string GetText(IEntity entity)
 		{
-			IAmbience ambience = MainForm.IsVisualBasic ? (IAmbience)VBNetAmbience.Instance : CSharpAmbience.Instance;
+			IAmbience ambience = MainForm.IsVisualBasic ? (IAmbience)vbAmbience : csharpAmbience;
 			if (entity is IMethod)
 				return ambience.Convert(entity as IMethod);
 			if (entity is IProperty)
