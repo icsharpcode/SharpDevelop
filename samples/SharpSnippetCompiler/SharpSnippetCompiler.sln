@@ -1,0 +1,24 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+# SharpDevelop 3.0.0.3093
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpSnippetCompiler", "SharpSnippetCompiler\SharpSnippetCompiler.csproj", "{A63633B4-2C31-4CFF-B2A3-92EAB1AB448E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpSnippetCompiler.Core", "SharpSnippetCompiler.Core\SharpSnippetCompiler.Core.csproj", "{5A2EC8F7-2274-4EA3-AC7A-6D1C8598F938}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A63633B4-2C31-4CFF-B2A3-92EAB1AB448E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A63633B4-2C31-4CFF-B2A3-92EAB1AB448E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A63633B4-2C31-4CFF-B2A3-92EAB1AB448E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A63633B4-2C31-4CFF-B2A3-92EAB1AB448E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5A2EC8F7-2274-4EA3-AC7A-6D1C8598F938}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5A2EC8F7-2274-4EA3-AC7A-6D1C8598F938}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A2EC8F7-2274-4EA3-AC7A-6D1C8598F938}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5A2EC8F7-2274-4EA3-AC7A-6D1C8598F938}.Release|Any CPU.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+EndGlobal

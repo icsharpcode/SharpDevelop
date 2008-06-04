@@ -19,14 +19,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 		const string workbenchMemento        = "WorkbenchMemento";
 		
 		static STAThreadCaller caller;
-		static DefaultWorkbench workbench;
+		static IWorkbench workbench;
 		
 		/// <summary>
 		/// Gets the main form. Returns null in unit-testing mode.
 		/// </summary>
 		public static Form MainForm {
 			get {
-				return workbench as Form;
+				return workbench.MainForm;
 			}
 		}
 		
@@ -78,6 +78,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		public static void InitializeWorkbench()
 		{
+			InitializeWorkbench(new DefaultWorkbench(), new SdiWorkbenchLayout());
+		}
+		
+		public static void InitializeWorkbench(IWorkbench workbench, IWorkbenchLayout layout)
+		{
+			WorkbenchSingleton.workbench = workbench;
+
 			DisplayBindingService.InitializeService();
 			LayoutConfiguration.LoadLayoutConfiguration();
 			FileService.InitializeService();
@@ -87,19 +94,16 @@ namespace ICSharpCode.SharpDevelop.Gui
 			Bookmarks.BookmarkManager.Initialize();
 			Project.CustomToolsService.Initialize();
 			
-			workbench = new DefaultWorkbench();
-			MessageService.MainForm = workbench;
+			MessageService.MainForm = workbench.MainForm;
 			
 			PropertyService.PropertyChanged += new PropertyChangedEventHandler(TrackPropertyChanges);
 			ResourceService.LanguageChanged += delegate { workbench.RedrawAllComponents(); };
 			
-			caller = new STAThreadCaller(workbench);
-			
-			workbench.InitializeWorkspace();
-			
-			workbench.SetMemento(PropertyService.Get(workbenchMemento, new Properties()));
-			
-			workbench.WorkbenchLayout = new SdiWorkbenchLayout();
+			caller = new STAThreadCaller(workbench.MainForm);
+						
+			workbench.Initialize();
+			workbench.SetMemento(PropertyService.Get(workbenchMemento, new Properties()));			
+			workbench.WorkbenchLayout = layout;				
 			
 			OnWorkbenchCreated();
 			
@@ -175,7 +179,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				if (workbench == null)
 					return false; // unit test mode, don't crash
 				else
-					return ((Form)workbench).InvokeRequired;
+					return workbench.MainForm.InvokeRequired;
 			}
 		}
 		

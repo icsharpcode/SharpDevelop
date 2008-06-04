@@ -1,37 +1,40 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
-//     <version>$Revision$</version>
-// </file>
-
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 
-namespace PythonBinding.Tests.Utils
+namespace ICSharpCode.SharpSnippetCompiler.Core
 {
-	/// <summary>
-	/// Dummy IWorkbench class.
-	/// </summary>
-	public class MockWorkbench : IWorkbench
+	public class Workbench : IWorkbench
 	{
-		IWorkbenchWindow activeWorkbenchWindow;
+		readonly static string viewContentPath = "/SharpDevelop/Workbench/Pads";
+
+		Form mainForm;
+		List<PadDescriptor> padDescriptors = new List<PadDescriptor>();
+		List<IViewContent> views = new List<IViewContent>();
+		IWorkbenchLayout workbenchLayout;
+		IViewContent activeViewContent;
+		object activeContent;
 		
-		public MockWorkbench()
-		{
-		}
-		
-		public event ViewContentEventHandler ViewOpened;
-		public event ViewContentEventHandler ViewClosed;
 		public event EventHandler ActiveWorkbenchWindowChanged;
 		public event EventHandler ActiveViewContentChanged;		
 		public event EventHandler ActiveContentChanged;		
+		public event ViewContentEventHandler ViewOpened;		
+		public event ViewContentEventHandler ViewClosed;
 		public event KeyEventHandler ProcessCommandKey;
-				
+
+		public Workbench(Form mainForm)
+		{
+			this.mainForm = mainForm;
+		}
+		
+		public Form MainForm {
+			get { return mainForm; }
+		}
+		
 		public string Title {
 			get {
 				throw new NotImplementedException();
@@ -41,40 +44,39 @@ namespace PythonBinding.Tests.Utils
 			}
 		}
 		
-		public List<IViewContent> ViewContentCollection {
+		public ICollection<IViewContent> ViewContentCollection {
+			get { return views; }
+		}
+		
+		public IList<IWorkbenchWindow> WorkbenchWindowCollection {
 			get {
 				throw new NotImplementedException();
 			}
 		}
 		
-		public List<PadDescriptor> PadContentCollection {
-			get {
-				throw new NotImplementedException();
-			}
+		public IList<PadDescriptor> PadContentCollection {
+			get { return padDescriptors; }
 		}
 		
 		public IWorkbenchWindow ActiveWorkbenchWindow {
 			get {
-				return activeWorkbenchWindow;
+				throw new NotImplementedException();
 			}
-			set {
-				activeWorkbenchWindow = value;
-			}
+		}
+		
+		public IViewContent ActiveViewContent {
+			get { return activeViewContent; }
+			set { activeViewContent = value; }
 		}
 		
 		public object ActiveContent {
-			get {
-				throw new NotImplementedException();
-			}
+			get { return activeContent; }
+			set { activeContent = value; }
 		}
 		
 		public IWorkbenchLayout WorkbenchLayout {
-			get {
-				throw new NotImplementedException();
-			}
-			set {
-				throw new NotImplementedException();
-			}
+			get { return workbenchLayout; }
+			set { workbenchLayout = value; }
 		}
 		
 		public bool IsActiveWindow {
@@ -100,7 +102,12 @@ namespace PythonBinding.Tests.Utils
 		
 		public PadDescriptor GetPad(Type type)
 		{
-			throw new NotImplementedException();
+			foreach (PadDescriptor pad in padDescriptors) {
+				if (pad.Class == type.FullName) {
+					return pad;
+				}
+			}
+			return null;			
 		}
 		
 		public void CloseContent(IViewContent content)
@@ -125,57 +132,24 @@ namespace PythonBinding.Tests.Utils
 		
 		public void SetMemento(Properties memento)
 		{
-			throw new NotImplementedException();
+			Console.WriteLine("Workbench.SetMemento not implemented");
 		}
 		
 		public void UpdateRenderer()
 		{
-		}
-		
-		public Form MainForm {
-			get { return null; }
+			Console.WriteLine("Workbench.UpdateRenderer not implemented");
 		}
 		
 		public void Initialize()
 		{
-		}
-		
-		ICollection<IViewContent> IWorkbench.ViewContentCollection {
-			get {
-				throw new NotImplementedException();
-			}
-		}
-		
-		public IList<IWorkbenchWindow> WorkbenchWindowCollection {
-			get {
-				throw new NotImplementedException();
-			}
-		}
-		
-		IList<PadDescriptor> IWorkbench.PadContentCollection {
-			get {
-				throw new NotImplementedException();
-			}
-		}
-		
-		public IViewContent ActiveViewContent {
-			get {
-				throw new NotImplementedException();
-			}
-		}
-				
-		protected virtual void OnViewOpened(ViewContentEventArgs e)
-		{
-			if (ViewOpened != null) {
-				ViewOpened(this, e);
-			}
-		}	
-		
-		protected virtual void OnViewClosed(ViewContentEventArgs e)
-		{
-			if (ViewClosed != null) {
-				ViewClosed(this, e);
-			}
+			try {
+				ArrayList contents = AddInTree.GetTreeNode(viewContentPath).BuildChildItems(this);
+				foreach (PadDescriptor content in contents) {
+					if (content != null) {
+						padDescriptors.Add(content);
+					}
+				}
+			} catch (TreePathNotFoundException) {}			
 		}
 		
 		protected virtual void OnActiveWorkbenchWindowChanged(EventArgs e)
@@ -184,21 +158,35 @@ namespace PythonBinding.Tests.Utils
 				ActiveWorkbenchWindowChanged(this, e);
 			}
 		}
-		
+
 		protected virtual void OnActiveViewContentChanged(EventArgs e)
 		{
 			if (ActiveViewContentChanged != null) {
 				ActiveViewContentChanged(this, e);
 			}
 		}
-		
+
 		protected virtual void OnActiveContentChanged(EventArgs e)
 		{
 			if (ActiveContentChanged != null) {
 				ActiveContentChanged(this, e);
 			}
 		}
-		
+
+		protected virtual void OnViewOpened(ViewContentEventArgs e)
+		{
+			if (ViewOpened != null) {
+				ViewOpened(this, e);
+			}
+		}
+
+		protected virtual void OnViewClosed(ViewContentEventArgs e)
+		{
+			if (ViewClosed != null) {
+				ViewClosed(this, e);
+			}
+		}
+
 		protected virtual void OnProcessCommandKey(KeyEventArgs e)
 		{
 			if (ProcessCommandKey != null) {

@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Windows.Forms;
 using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Gui
@@ -16,6 +17,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 	/// </summary>
 	public interface IWorkbench : IMementoCapable
 	{
+		/// <summary>
+		/// Gets the main form for the work bench.
+		/// </summary>
+		Form MainForm { 
+			get;
+		}
+		
 		/// <summary>
 		/// The title shown in the title bar.
 		/// </summary>
@@ -97,6 +105,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		
 		/// <summary>
+		/// Initializes the workbench.
+		/// </summary>
+		void Initialize();
+		
+		/// <summary>
 		/// Inserts a new <see cref="IViewContent"/> object in the workspace.
 		/// </summary>
 		void ShowView(IViewContent content);
@@ -132,6 +145,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// (like language change)
 		/// </summary>
 		void RedrawAllComponents();
+		
+		/// <summary>
+		/// Updates the toolstrip renderer.
+		/// </summary>
+		void UpdateRenderer();
 		
 		/// <summary>
 		/// Is called, when a workbench view was opened

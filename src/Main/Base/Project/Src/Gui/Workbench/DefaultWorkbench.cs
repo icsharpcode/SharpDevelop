@@ -236,6 +236,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 			AllowDrop     = true;
 		}
 		
+		public Form MainForm {
+			get { return this; }
+		}
+		
 		protected override void WndProc(ref Message m)
 		{
 			if (!SingleInstanceHelper.PreFilterMessage(ref m)) {
@@ -245,7 +249,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		System.Windows.Forms.Timer toolbarUpdateTimer;
 
-		public void InitializeWorkspace()
+		public void Initialize()
 		{
 			UpdateRenderer();
 			

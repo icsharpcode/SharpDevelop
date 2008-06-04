@@ -1,0 +1,105 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <ProjectGuid>{5A2EC8F7-2274-4EA3-AC7A-6D1C8598F938}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <OutputType>Library</OutputType>
+    <RootNamespace>ICSharpCode.SharpSnippetCompiler.Core</RootNamespace>
+    <AssemblyName>SharpSnippetCompiler.Core</AssemblyName>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <NoStdLib>False</NoStdLib>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <OutputPath>..\SharpSnippetCompiler\bin\</OutputPath>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <Optimize>False</Optimize>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <OutputPath>..\SharpSnippetCompiler\bin\</OutputPath>
+    <DebugSymbols>false</DebugSymbols>
+    <DebugType>None</DebugType>
+    <Optimize>True</Optimize>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>4194304</BaseAddress>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <FileAlignment>4096</FileAlignment>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+  <ItemGroup>
+    <Reference Include="Aga.Controls">
+      <HintPath>..\..\..\bin\Aga.Controls.dll</HintPath>
+    </Reference>
+    <Reference Include="ICSharpCode.Build.Tasks">
+      <HintPath>..\..\..\bin\ICSharpCode.Build.Tasks.dll</HintPath>
+    </Reference>
+    <Reference Include="ICSharpCode.Core">
+      <HintPath>..\..\..\bin\ICSharpCode.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="ICSharpCode.NRefactory">
+      <HintPath>..\..\..\bin\ICSharpCode.NRefactory.dll</HintPath>
+    </Reference>
+    <Reference Include="ICSharpCode.SharpDevelop">
+      <HintPath>..\..\..\bin\ICSharpCode.SharpDevelop.dll</HintPath>
+    </Reference>
+    <Reference Include="ICSharpCode.SharpDevelop.Dom">
+      <HintPath>..\..\..\bin\ICSharpCode.SharpDevelop.Dom.dll</HintPath>
+    </Reference>
+    <Reference Include="ICSharpCode.SharpDevelop.Sda">
+      <HintPath>..\..\..\bin\ICSharpCode.SharpDevelop.Sda.dll</HintPath>
+    </Reference>
+    <Reference Include="ICSharpCode.TextEditor">
+      <HintPath>..\..\..\bin\ICSharpCode.TextEditor.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net">
+      <HintPath>..\..\..\bin\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="BuildSnippetCommand.cs" />
+    <Compile Include="MainViewContent.cs" />
+    <Compile Include="SharpSnippetCompilerControl.cs" />
+    <Compile Include="SharpSnippetCompilerControl.Designer.cs">
+      <DependentUpon>SharpSnippetCompilerControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SharpSnippetCompilerManager.cs" />
+    <Compile Include="SnippetCompilerProject.cs" />
+    <Compile Include="SnippetFile.cs" />
+    <Compile Include="Workbench.cs" />
+    <EmbeddedResource Include="..\..\..\src\Main\StartUp\Project\Resources\BitmapResources.resources">
+      <Link>Resources\BitmapResources.resources</Link>
+      <LogicalName>Resources.BitmapResources.resources</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\src\Main\StartUp\Project\Resources\StringResources.resources">
+      <Link>Resources\StringResources.resources</Link>
+      <LogicalName>Resources.StringResources.resources</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SharpSnippetCompilerControl.resx">
+      <DependentUpon>SharpSnippetCompilerControl.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Resources" />
+  </ItemGroup>
+</Project>

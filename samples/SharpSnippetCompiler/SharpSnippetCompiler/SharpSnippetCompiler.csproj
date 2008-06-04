@@ -1,0 +1,90 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <ProjectGuid>{A63633B4-2C31-4CFF-B2A3-92EAB1AB448E}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>ICSharpCode.SharpSnippetCompiler</RootNamespace>
+    <AssemblyName>SharpSnippetCompiler</AssemblyName>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <NoStdLib>False</NoStdLib>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <OutputPath>bin\</OutputPath>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <Optimize>False</Optimize>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <OutputPath>bin\</OutputPath>
+    <DebugSymbols>false</DebugSymbols>
+    <DebugType>None</DebugType>
+    <Optimize>True</Optimize>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>4194304</BaseAddress>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <FileAlignment>4096</FileAlignment>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+  <Import Project="PreBuildEvent.proj" />
+  <ItemGroup>
+    <Reference Include="ICSharpCode.Core">
+      <HintPath>..\..\..\bin\ICSharpCode.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="ICSharpCode.SharpDevelop">
+      <HintPath>..\..\..\bin\ICSharpCode.SharpDevelop.dll</HintPath>
+    </Reference>
+    <Reference Include="ICSharpCode.TextEditor">
+      <HintPath>..\..\..\bin\ICSharpCode.TextEditor.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="MainForm.cs" />
+    <Compile Include="MainForm.Designer.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="NewFileDialog.cs" />
+    <Compile Include="NewFileDialog.Designer.cs">
+      <DependentUpon>NewFileDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="SnippetTabPage.cs" />
+    <Compile Include="WorkbenchLayout.cs" />
+    <Compile Include="WorkbenchWindow.cs" />
+    <EmbeddedResource Include="MainForm.resx">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="NewFileDialog.resx">
+      <DependentUpon>NewFileDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <None Include="app.config" />
+    <None Include="bin\AddIns\SharpSnippetCompiler.addin">
+      <Link>SharpSnippetCompiler.addin</Link>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SharpSnippetCompiler.Core\SharpSnippetCompiler.Core.csproj">
+      <Project>{5A2EC8F7-2274-4EA3-AC7A-6D1C8598F938}</Project>
+      <Name>SharpSnippetCompiler.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
+</Project>
