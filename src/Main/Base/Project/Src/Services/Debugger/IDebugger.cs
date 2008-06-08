@@ -56,6 +56,10 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		
 		void StepOut();
 		
+		void Attach(Process process);
+		
+		void Detach();
+		
 		/// <summary>
 		/// Gets the current value of the variable as string that can be displayed in tooltips.
 		/// </summary>

@@ -108,6 +108,13 @@ namespace Debugger
 				b.MarkUnset();
 			}
 		}
+		
+		public void DeactivateBreakpoints()
+		{
+			foreach (Breakpoint b in breakpointCollection) {
+				b.Deactivate();
+			}
+		}
 
 		public void ClearBreakpoints()
 		{

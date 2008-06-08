@@ -67,6 +67,10 @@
     <Compile Include="Src\Gui\Dialogs\AsynchronousWaitDialog.Designer.cs">
       <DependentUpon>AsynchronousWaitDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="Src\Gui\Dialogs\AttachToProcessForm.cs" />
+    <Compile Include="Src\Gui\Dialogs\AttachToProcessForm.Designer.cs">
+      <DependentUpon>AttachToProcessForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Src\Gui\Dialogs\ExtractInterfaceDialog.cs" />
     <None Include="Src\Gui\Dialogs\ExtractInterfaceDialog.cs">
       <Link>Src\Services\RefactoringService\ExtractInterfaceDialog.cs</Link>
@@ -709,6 +713,9 @@
     <Compile Include="Src\Internal\Templates\TemplateLoadException.cs" />
     <Compile Include="Src\Util\UnclosableStream.cs" />
     <EmbeddedResource Include="Resources\DefaultManifest.manifest" />
+    <EmbeddedResource Include="Src\Gui\Dialogs\AttachToProcessForm.resx">
+      <DependentUpon>AttachToProcessForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Src\Gui\Dialogs\ExtractInterfaceDialog.resx">
       <DependentUpon>ExtractInterfaceDialog.cs</DependentUpon>
     </EmbeddedResource>

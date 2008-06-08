@@ -40,6 +40,10 @@ namespace ICSharpCode.SharpDevelop.Debugging
 					return (debugger != null) ? debugger.SupportsExecutionControl : false;
 				case "Stepping":
 					return (debugger != null) ? debugger.SupportsStepping : false;
+				case "Attaching":
+					return (debugger != null) ? debugger.SupportsAttaching : false;
+				case "Detaching":
+					return (debugger != null) ? debugger.SupportsDetaching : false;					
 				default:
 					throw new ArgumentException("Unknown debugger support for : >" + condition.Properties["debuggersupports"] + "< please fix addin file.", "debuggersupports");
 			}

@@ -102,5 +102,17 @@ namespace ICSharpCode.SharpDevelop.Debugging
 				return codon.Properties["supportsExecutionControl"] == "true";
 			}
 		}
+		
+		public bool SupportsAttaching {
+			get {
+				return codon.Properties["supportsAttaching"] == "true";
+			}
+		}
+
+		public bool SupportsDetaching {
+			get {
+				return codon.Properties["supportsDetaching"] == "true";
+			}
+		}		
 	}
 }

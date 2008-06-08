@@ -1473,6 +1473,22 @@
 						          class = "ICSharpCode.SharpDevelop.Project.Commands.StopDebuggingCommand"/>
 					</Condition>
 				</Condition>
+
+				<Condition name="DebuggerSupports" debuggersupports="Attaching">
+					<Condition name="IsProcessRunning" isprocessrunning="False" action="Disable">
+						<MenuItem id    = "Attach"
+						          label = "${res:XML.MainMenu.DebugMenu.Attach}"
+						          class = "ICSharpCode.SharpDevelop.Project.Commands.AttachToProcessCommand"/>
+					</Condition>
+				</Condition>
+		
+				<Condition name="DebuggerSupports" debuggersupports="Detaching">
+					<Condition name="IsProcessRunning" isprocessrunning="True" isdebugging="True" action="Disable">
+						<MenuItem id    = "Detach"
+						          label = "${res:XML.MainMenu.DebugMenu.Detach}"
+						          class = "ICSharpCode.SharpDevelop.Project.Commands.DetachFromProcessCommand"/>
+					</Condition>
+				</Condition>
 				
 				<Condition name="DebuggerSupports" debuggersupports = "ExecutionControl">
 					<MenuItem id = "ExecutionControlSeparator" type = "Separator" />

@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Windows.Forms;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Gui;
@@ -112,4 +113,24 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			}
 		}
 	}
+	
+	public class AttachToProcessCommand : AbstractMenuCommand
+	{
+		public override void Run()
+		{
+			using (AttachToProcessForm attachForm = new AttachToProcessForm()) {
+				if (attachForm.ShowDialog() == DialogResult.OK) {
+					DebuggerService.CurrentDebugger.Attach(attachForm.Process);
+				}
+			}
+		}
+	}	
+	
+	public class DetachFromProcessCommand : AbstractMenuCommand
+	{
+		public override void Run()
+		{
+			DebuggerService.CurrentDebugger.Detach();
+		}
+	}	
 }

@@ -154,6 +154,37 @@ namespace Debugger
 			AddProcess(process);
 			return process;
 		}
+		
+		public Process Attach(System.Diagnostics.Process existingProcess)		
+		{
+			InitDebugger(GetProgramVersion(existingProcess.MainModule.FileName));
+			ICorDebugProcess corDebugProcess = corDebug.DebugActiveProcess((uint)existingProcess.Id, 0);
+			Process process = new Process(this, corDebugProcess);
+			AddProcess(process);
+			return process;
+		}
+		
+		public void Detach()
+		{
+			DeactivateBreakpoints();
+			
+			// Detach all processes.
+			foreach (Process process in processCollection) {
+				if (!process.IsPaused) {
+					process.Break();
+				}
+				process.CorProcess.Detach();
+			}
+			
+			RemoveAllProcesses();
+		}
+		
+		void RemoveAllProcesses()
+		{
+			while (processCollection.Count > 0) {
+				RemoveProcess(processCollection[0]);
+			}
+		}
 	}
 	
 	[Serializable]

@@ -53,6 +53,14 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			}
 		}
 		
+		public void Attach(Process process)
+		{
+		}
+		
+		public void Detach()
+		{
+		}
+		
 		void AttachedProcessExited(object sender, EventArgs e)
 		{
 			attachedProcess.Exited -= new EventHandler(AttachedProcessExited);

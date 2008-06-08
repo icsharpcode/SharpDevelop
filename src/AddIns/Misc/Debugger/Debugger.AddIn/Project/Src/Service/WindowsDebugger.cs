@@ -154,6 +154,33 @@ namespace ICSharpCode.SharpDevelop.Services
 				SelectProcess(process);
 			}
 		}
+
+		public void Attach(System.Diagnostics.Process existingProcess)
+		{
+			if (IsDebugging) {
+				MessageService.ShowMessage(errorDebugging);
+				return;
+			}
+			if (!ServiceInitialized) {
+				InitializeService();
+			}
+			
+			string version = debugger.GetProgramVersion(existingProcess.MainModule.FileName);
+			if (version.StartsWith("v1.0")) {
+				MessageService.ShowMessage("${res:XML.MainMenu.DebugMenu.Error.Net10NotSupported}");
+			} else {
+				if (DebugStarting != null)
+					DebugStarting(this, EventArgs.Empty);
+			
+				Debugger.Process process = debugger.Attach(existingProcess);
+				SelectProcess(process);
+			}
+		}
+
+		public void Detach()
+		{
+			debugger.Detach();
+		}
 		
 		public void StartWithoutDebugging(ProcessStartInfo processStartInfo)
 		{

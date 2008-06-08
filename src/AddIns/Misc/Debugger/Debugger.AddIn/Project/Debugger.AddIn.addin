@@ -12,6 +12,8 @@
 		<Debugger id="DefaultDebugger"
 		          supportsStepping = "true"
 		          supportsExecutionControl = "true"
+		          supportsAttaching = "true"
+		          supportsDetaching = "true"
 		          class="ICSharpCode.SharpDevelop.Services.WindowsDebugger"/>
 	</Path>
 	

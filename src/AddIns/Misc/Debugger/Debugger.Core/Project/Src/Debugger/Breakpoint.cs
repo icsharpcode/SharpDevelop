@@ -102,6 +102,11 @@ namespace Debugger
 			HadBeenSet = false;
 		}
 		
+		internal void Deactivate()
+		{
+			corBreakpoint.Activate(0);
+		}
+		
 		public bool SetBreakpoint(Module module)
 		{
 			ICorDebugFunction corFunction;
