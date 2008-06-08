@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading;
 
 using Debugger.Wrappers.CorDebug;
@@ -17,10 +18,13 @@ namespace Debugger
 	public partial class Thread: DebuggerObject
 	{
 		Process process;
-
+		
 		ICorDebugThread corThread;
-
-		Exception currentException;
+		
+		Exception     currentException;
+		DebuggeeState currentException_DebuggeeState;
+		ExceptionType currentExceptionType;
+		bool          currentExceptionIsUnhandled;
 
 		List<Stepper> steppers = new List<Stepper>();
 
@@ -171,8 +175,56 @@ namespace Debugger
 		}
 		
 		public Exception CurrentException {
-			get { return currentException; }
+			get {
+				if (currentException_DebuggeeState == this.Process.DebuggeeState) {
+					return currentException;
+				} else {
+					return null;
+				}
+			}
 			internal set { currentException = value; }
+		}
+		
+		internal DebuggeeState CurrentException_DebuggeeState {
+			get { return currentException_DebuggeeState; }
+			set { currentException_DebuggeeState = value; }
+		}
+		
+		public ExceptionType CurrentExceptionType {
+			get { return currentExceptionType; }
+			internal set { currentExceptionType = value; }
+		}
+		
+		public bool CurrentExceptionIsUnhandled {
+			get { return currentExceptionIsUnhandled; }
+			internal set { currentExceptionIsUnhandled = value; }
+		}
+		
+		/// <summary> Tryies to intercept the current exception.
+		/// The intercepted expression stays available through the CurrentException property. </summary>
+		/// <returns> False, if the exception was already intercepted or 
+		/// if it can not be intercepted. </returns>
+		public bool InterceptCurrentException()
+		{
+			if (!this.CorThread.Is<ICorDebugThread2>()) return false; // Is the debuggee .NET 2.0?
+			if (this.CorThread.CurrentException == null) return false; // Is there any exception
+			if (this.MostRecentStackFrame == null) return false; // Is frame available?  It is not at StackOverflow
+			
+			try {
+				// Interception will expire the CorValue so keep permanent reference
+				currentException.MakeValuePermanent();
+				this.CorThread.CastTo<ICorDebugThread2>().InterceptCurrentException(this.MostRecentStackFrame.CorILFrame.CastTo<ICorDebugFrame>());
+			} catch (COMException e) {
+				// 0x80131C02: Cannot intercept this exception
+				if ((uint)e.ErrorCode == 0x80131C02) {
+					return false;
+				}
+				throw;
+			}
+			
+			Process.AsyncContinue_KeepDebuggeeState();
+			Process.WaitForPause();
+			return true;
 		}
 		
 		internal Stepper GetStepper(ICorDebugStepper corStepper)
@@ -246,6 +298,28 @@ namespace Debugger
 					}
 				}
 			}
+		}
+		
+		public string GetStackTrace()
+		{
+			return GetStackTrace("at {0} in {1}:line {2}", "at {0} in {1}");
+		}
+		
+		public string GetStackTrace(string formatSymbols, string formatNoSymbols)
+		{
+			StringBuilder stackTrace = new StringBuilder();
+			foreach(StackFrame stackFrame in this.GetCallstack(100)) {
+				SourcecodeSegment loc = stackFrame.NextStatement;
+				if (loc != null) {
+					stackTrace.Append("   ");
+					stackTrace.AppendFormat(formatSymbols, stackFrame.MethodInfo.FullName, loc.SourceFullFilename, loc.StartLine);
+					stackTrace.AppendLine();
+				} else {
+					stackTrace.AppendFormat(formatNoSymbols, stackFrame.MethodInfo.FullName);
+					stackTrace.AppendLine();
+				}
+			}
+			return stackTrace.ToString();
 		}
 		
 		public StackFrame SelectedStackFrame {

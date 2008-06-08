@@ -34,6 +34,9 @@ namespace Debugger.AddIn.TreeModel
 			foreach(Expression expr in Expression.MethodVariables(stackFrame.MethodInfo)) {
 				yield return ValueNode.Create(expr);
 			}
+			if (stackFrame.Thread.CurrentException != null) {
+				yield return ValueNode.Create(new CurrentExceptionExpression());
+			}
 		}
 	}
 }

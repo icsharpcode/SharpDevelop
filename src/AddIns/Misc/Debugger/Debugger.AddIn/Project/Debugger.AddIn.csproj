@@ -48,20 +48,19 @@
     <Compile Include="Src\Expressions\SimpleParser.cs" />
     <Compile Include="Src\Pads\BreakPointsPad.cs" />
     <Compile Include="Src\Pads\CallStackPad.cs" />
-    <Compile Include="Src\Pads\ExceptionHistoryPad.cs" />
     <Compile Include="Src\Pads\LoadedModulesPad.cs" />
     <Compile Include="Src\Pads\LocalVarPad.cs" />
     <Compile Include="Src\Pads\RunningThreadsPad.cs" />
-    <Compile Include="Src\Service\ExceptionForm.cs">
+    <Compile Include="Src\Service\DebuggerEventForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Src\Service\ExceptionForm.Designer.cs">
-      <DependentUpon>ExceptionForm.cs</DependentUpon>
+    <Compile Include="Src\Service\DebuggerEventForm.Designer.cs">
+      <DependentUpon>DebuggerEventForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Src\Service\RemotingConfigurationHelpper.cs" />
     <Compile Include="Src\Service\WindowsDebugger.cs" />
-    <EmbeddedResource Include="Src\Service\ExceptionForm.resx">
-      <DependentUpon>ExceptionForm.cs</DependentUpon>
+    <EmbeddedResource Include="Src\Service\DebuggerEventForm.resx">
+      <DependentUpon>DebuggerEventForm.cs</DependentUpon>
     </EmbeddedResource>
     <Compile Include="Src\Service\SetCurrentStatementCommand.cs" />
     <Compile Include="Src\Service\DebuggerIcons.cs" />
@@ -73,11 +72,9 @@
     <Compile Include="Src\Pads\RunningThreadsPad.Menu.cs" />
     <Compile Include="Src\TreeModel\AbstractNode.cs" />
     <Compile Include="Src\TreeModel\Adapters\DynamicTreeDebuggerRow.cs" />
-    <Compile Include="Src\TreeModel\Adapters\TreeViewExceptionNode.cs" />
     <Compile Include="Src\TreeModel\Adapters\TreeViewVarNode.cs" />
     <Compile Include="Src\TreeModel\ArrayRangeNode.cs" />
     <Compile Include="Src\TreeModel\ErrorNode.cs" />
-    <Compile Include="Src\TreeModel\ExceptionNode.cs" />
     <Compile Include="Src\TreeModel\Extensions\IList.cs" />
     <Compile Include="Src\TreeModel\ValueNode.cs" />
     <Compile Include="Src\TreeModel\IContextMenu.cs" />

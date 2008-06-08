@@ -119,7 +119,12 @@ namespace Debugger
 		void RaiseEvents()
 		{
 			if (process.PauseSession.PausedReason == PausedReason.Exception) {
-				ExceptionEventArgs args = new ExceptionEventArgs(process, process.SelectedThread.CurrentException);
+				// Needs to be done after the debugge state is created
+				process.SelectedThread.CurrentException_DebuggeeState = process.DebuggeeState;
+			}
+			
+			if (process.PauseSession.PausedReason == PausedReason.Exception) {
+				ExceptionEventArgs args = new ExceptionEventArgs(process, process.SelectedThread.CurrentException, process.SelectedThread.CurrentExceptionType, process.SelectedThread.CurrentExceptionIsUnhandled);
 				process.OnExceptionThrown(args);
 				// The event could have resumed or killed the process
 			}
@@ -209,7 +214,7 @@ namespace Debugger
 			
 			if (process.DebuggeeVersion.StartsWith("v1.")) {
 				// Forward the call to Exception2, which handles EnterCallback and ExitCallback
-				ExceptionType exceptionType = (unhandled != 0)?ExceptionType.DEBUG_EXCEPTION_UNHANDLED:ExceptionType.DEBUG_EXCEPTION_FIRST_CHANCE;
+				ExceptionType exceptionType = (unhandled != 0) ? ExceptionType.Unhandled : ExceptionType.FirstChance;
 				Exception2(pAppDomain, pThread, null, 0, (CorDebugExceptionCallbackType)exceptionType, 0);
 			} else {
 				// This callback should be ignored in v2 applications
@@ -462,9 +467,11 @@ namespace Debugger
 			// Watch out for the zeros and null!
 			// Exception -> Exception2(pAppDomain, pThread, null, 0, exceptionType, 0);
 			
-			process.SelectedThread.CurrentException = new Exception(process.SelectedThread, (ExceptionType)exceptionType);
+			process.SelectedThread.CurrentException = new Exception(new Value(process, new Expressions.CurrentExceptionExpression(), process.SelectedThread.CorThread.CurrentException));
+			process.SelectedThread.CurrentExceptionType = (ExceptionType)exceptionType;
+			process.SelectedThread.CurrentExceptionIsUnhandled = (ExceptionType)exceptionType == ExceptionType.Unhandled;
 			
-			if (process.SelectedThread.CurrentException.IsUnhandled ||
+			if (process.SelectedThread.CurrentExceptionIsUnhandled ||
 			    process.PauseOnHandledException) 
 			{
 				pauseOnNextExit = true;

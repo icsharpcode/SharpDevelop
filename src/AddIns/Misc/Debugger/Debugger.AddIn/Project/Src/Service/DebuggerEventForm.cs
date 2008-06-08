@@ -47,13 +47,13 @@ using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Services
 {
-	internal sealed partial class ExceptionForm
+	internal sealed partial class DebuggerEventForm
 	{
 		public enum Result {Break, Continue, Terminate};
 		
 		private Result result = Result.Break; // Default
 		
-		private ExceptionForm()
+		private DebuggerEventForm()
 		{
 			InitializeComponent();
 			this.Text = StringParser.Parse(this.Text);
@@ -62,39 +62,18 @@ namespace ICSharpCode.SharpDevelop.Services
 			buttonTerminate.Text = StringParser.Parse(buttonTerminate.Text);
 		}
 		
-		public static Result Show(Debugger.Exception exception)
+		public static Result Show(string title, string message, System.Drawing.Bitmap icon, bool canContinue)
 		{
-			IDebugeeException ex = exception;
-			StringBuilder msg = new StringBuilder();
-			msg.AppendFormat(ResourceService.GetString("MainWindow.Windows.Debug.ExceptionForm.Message"), ex.Type);
-			msg.AppendLine();
-			msg.AppendLine("Message:");
-			msg.Append("\t");
-			msg.AppendLine(ex.Message);
-			msg.AppendLine();
-			while(ex.InnerException != null) {
-				ex = ex.InnerException;
-				msg.AppendLine("Inner Exception:");
-				msg.AppendFormat("Type: [{0}]", ex.Type);
-				msg.AppendLine();
-				msg.AppendLine("Message:");
-				msg.Append("\t");
-				if (ex.Message != "null") { msg.AppendLine(ex.Message); }
-				msg.AppendLine();
-			}
-			msg.AppendLine("StackTrace:");
-			msg.AppendLine(exception.Callstack.Replace("\n","\r\n"));
-			
-			using (ExceptionForm form = new ExceptionForm()) {
-				form.textBox.Text = msg.ToString();
-				form.pictureBox.Image = ResourceService.GetBitmap((exception.ExceptionType != ExceptionType.DEBUG_EXCEPTION_UNHANDLED)?"Icons.32x32.Warning":"Icons.32x32.Error");
-				form.buttonContinue.Enabled = exception.ExceptionType != ExceptionType.DEBUG_EXCEPTION_UNHANDLED;
+			using (DebuggerEventForm form = new DebuggerEventForm()) {
+				form.Text = title;
+				form.textBox.Text = message;
+				form.pictureBox.Image = icon;
+				form.buttonContinue.Enabled = canContinue;
 				form.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm);
 				return form.result;
 			}
 		}
 		
-		#region Form Event Handlers
 		private void buttonBreak_Click(object sender, System.EventArgs e)
 		{
 			result = Result.Break;
@@ -112,6 +91,5 @@ namespace ICSharpCode.SharpDevelop.Services
 			result = Result.Terminate;
 			Close();
 		}
-		#endregion Form Event Handlers
 	}
 }

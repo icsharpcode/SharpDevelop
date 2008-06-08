@@ -39,7 +39,9 @@
 
 using System;
 using System.Diagnostics;
+using System.Text;
 using System.Windows.Forms;
+using Bitmap = System.Drawing.Bitmap;
 
 using Debugger;
 using Debugger.Expressions;
@@ -476,7 +478,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		void debuggedProcess_ExceptionThrown(object sender, ExceptionEventArgs e)
 		{
-			if (!e.Exception.IsUnhandled) {
+			if (!e.IsUnhandled) {
 				// Ignore the exception
 				e.Process.AsyncContinue();
 				return;
@@ -484,23 +486,35 @@ namespace ICSharpCode.SharpDevelop.Services
 			
 			JumpToCurrentLine();
 			
-			ExceptionForm.Result result = ExceptionForm.Show(e.Exception);
+			StringBuilder msg = new StringBuilder();
+			
+			// Need to intercept now so that we can evaluate properties
+			if (e.Process.SelectedThread.InterceptCurrentException()) {
+				msg.Append(e.Exception.ToString(StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.LineFormat.EndOfInnerException}")));
+			} else {
+				// For example, happens on stack overflow
+				msg.Append(e.Exception.ToString());
+				msg.AppendLine(StringParser.Parse("(${res:MainWindow.Windows.Debug.ExceptionForm.Error.CannotInterceptException})"));
+				msg.AppendLine(e.Process.SelectedThread.GetStackTrace(StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.LineFormat.Symbols}"), StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.LineFormat.NoSymbols}")));
+			}
+			
+			string title = e.IsUnhandled ? StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.Title.Unhandled}") : StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.Title.Handled}");
+			string message = msg.ToString();
+			Bitmap icon = ResourceService.GetBitmap(e.IsUnhandled ? "Icons.32x32.Error" : "Icons.32x32.Warning");
+			bool canContinue = !e.IsUnhandled;
+			
+			DebuggerEventForm.Result result = DebuggerEventForm.Show(title, message, icon, canContinue);
 			
 			// If the process was killed while the exception form was shown
 			if (e.Process.HasExpired) return;
 			
 			switch (result) {
-				case ExceptionForm.Result.Break:
-					// Need to intercept now so that we can evaluate properties in local variables pad
-					if (!e.Process.SelectedThread.CurrentException.Intercept()) {
-						// For example, happens on stack overflow
-						MessageService.ShowMessage("${res:MainWindow.Windows.Debug.ExceptionForm.Error.CannotInterceptException}", "${res:MainWindow.Windows.Debug.ExceptionForm.Title}");
-					}
+				case DebuggerEventForm.Result.Break:
 					break;
-				case ExceptionForm.Result.Continue:
+				case DebuggerEventForm.Result.Continue:
 					e.Process.AsyncContinue();
 					break;
-				case ExceptionForm.Result.Terminate:
+				case DebuggerEventForm.Result.Terminate:
 					e.Process.Terminate();
 					break;
 			}

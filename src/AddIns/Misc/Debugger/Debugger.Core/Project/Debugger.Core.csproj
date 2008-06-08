@@ -59,13 +59,12 @@
     <Compile Include="Src\Debugger\DebuggerObject.cs" />
     <Compile Include="Src\Debugger\Exception.cs" />
     <Compile Include="Src\Debugger\ExceptionType.cs" />
-    <Compile Include="Src\Debugger\IDebugeeException.cs" />
     <Compile Include="Src\Debugger\IExpirable.cs" />
-    <Compile Include="Src\Debugger\DebugeeInnerException.cs" />
     <Compile Include="Src\Debugger\PausedReason.cs" />
     <Compile Include="Src\Debugger\PauseSession.cs" />
     <Compile Include="Src\Debugger\SourcecodeSegment.cs" />
     <Compile Include="Src\Expressions\Ast\ArrayIndexerExpression.cs" />
+    <Compile Include="Src\Expressions\Ast\CurrentExceptionExpression.cs" />
     <Compile Include="Src\Expressions\Ast\EmptyExpression.cs" />
     <Compile Include="Src\Expressions\Ast\LocalVariableIdentifierExpression.cs" />
     <Compile Include="Src\Expressions\Ast\MemberReferenceExpression.cs" />

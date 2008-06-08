@@ -25,15 +25,6 @@
 		</Condition>
 	</Path>
 	
-	<!--<Path name = "/SharpDevelop/Workbench/MainMenu/Debug">
-		<MenuItem id = "CatchHandledExceptionsSeparator"
-		          type = "Separator"
-		          insertafter = "Step out" />
-		<MenuItem id = "CatchHandledExceptions"
-		          label = ""
-		          class = "ICSharpCode.SharpDevelop.Services.DebbugerExceptionMenuBuilder"/>
-	</Path>-->
-	
 	<Path name = "/SharpDevelop/Workbench/Pads">
 		<Pad id    = "BreakPointsPad"
 		     category = "Debugger"
@@ -69,12 +60,5 @@
 		     icon     = "PadIcons.LocalVariables"
 		     shortcut = "Control|Alt|V"
 		     class = "ICSharpCode.SharpDevelop.Gui.Pads.LocalVarPad"/>
-		
-		<!--<Pad id    = "ExceptionHistoryPad"
-		     category = "Debugger"
-		     title    = "${res:MainWindow.Windows.Debug.ExceptionHistory}"
-		     icon     = "PadIcons.Exceptions"
-		      shortcut = "Control|Alt|E"
-		     class = "ICSharpCode.SharpDevelop.Gui.Pads.ExceptionHistoryPad"/>-->
 	</Path>
 </AddIn>

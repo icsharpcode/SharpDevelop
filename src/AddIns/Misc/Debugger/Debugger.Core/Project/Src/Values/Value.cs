@@ -115,6 +115,15 @@ namespace Debugger
 			}
 		}
 		
+		public Value GetPermanentReference()
+		{
+			ICorDebugValue corValue;
+			corValue = this.RawCorValue;
+			corValue = DereferenceUnbox(corValue);
+			corValue = corValue.CastTo<ICorDebugHeapValue2>().CreateHandle(CorDebugHandleType.HANDLE_STRONG).CastTo<ICorDebugValue>();
+			return new Value(process, expression, corValue);
+		}
+		
 		internal Value(Process process,
 		               ICorDebugValue rawCorValue)
 			:this (process, new EmptyExpression(), rawCorValue)

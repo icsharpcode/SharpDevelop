@@ -13,159 +13,113 @@ using Debugger.Wrappers.CorDebug;
 
 namespace Debugger
 {	
-	/// <summary>
-	/// This class contains data from an Exception throw by an application
-	/// being debugged. Since the <c>System.Exception</c> object  being thrown
-	/// lives in the debugged application and not in debugger, this class is
-	/// neccessary.
-	/// </summary>
+	/// <summary> This convenience class provides access to an exception within the debugee. </summary>
 	/// <seealso cref="System.Exception" />
-	public class Exception: DebuggerObject, IDebugeeException
+	public class Exception: DebuggerObject
 	{
-		Thread thread;
-		ExceptionType exceptionType;
+		Value exception;
 		
-		[Debugger.Tests.Ignore]
-		public Process Process {
-			get {
-				return thread.Process;
-			}
+		public Value Value {
+			get { return exception; }
 		}
 		
-		ICorDebugValue CorValue {
-			get {
-				return thread.CorThread.CurrentException;
-			}
-		}
-		
-		internal Exception(Thread thread, ExceptionType exceptionType)
+		public Exception(Value exception)
 		{
-			this.thread = thread;
-			this.exceptionType = exceptionType;
+			this.exception = exception;
 		}
 		
-		public Value RuntimeValue {
-			get {
-				return new Value(Process, CorValue);
-			}
-		}
-		
-		
-		/// <summary>
-		/// The <c>GetType().FullName</c> of the exception.
-		/// </summary>
+		/// <summary> The <c>GetType().FullName</c> of the exception. </summary>
 		/// <seealso cref="System.Exception" />
 		public string Type {
 			get {
-				return this.RuntimeValue.Type.FullName;
+				return exception.Type.FullName;
 			}
 		}
 		
-		
-		/// <summary>
-		/// The <c>InnerException</c> property of the exception.
-		/// </summary>
-		/// <seealso cref="System.Exception" />
-		public DebugeeInnerException InnerException {
-			get {
-				Debugger.Value exVal = this.RuntimeValue.GetMemberValue("_innerException");
-				return  (exVal.IsNull) ?  null : new DebugeeInnerException(exVal);
-			}
-		}
-		
-		/// <summary>
-		/// The <c>Message</c> property of the exception.
-		/// </summary>
+		/// <summary> The <c>Message</c> property of the exception. </summary>
 		/// <seealso cref="System.Exception" />
 		public string Message {
 			get {
-				return this.RuntimeValue.GetMemberValue("_message").AsString;
+				Value message = exception.GetMemberValue("_message");
+				return message.IsNull ? string.Empty : message.AsString;
 			}
 		}
 		
-		public ExceptionType ExceptionType {
+		public string StackTrace {
 			get {
-				return exceptionType;
-			}
-		}
-		
-		public bool IsUnhandled {
-			get {
-				return ExceptionType == ExceptionType.DEBUG_EXCEPTION_UNHANDLED;
-			}
-		}
-		
-		public SourcecodeSegment Location {
-			get {
-				if (thread.MostRecentStackFrameWithLoadedSymbols != null) {
-					return thread.MostRecentStackFrameWithLoadedSymbols.NextStatement;
-				} else {
-					return null;
+				try {
+					Value stackTrace = exception.GetMemberValue("StackTrace");
+					return stackTrace.IsNull ? string.Empty : stackTrace.AsString;
+				} catch (GetValueException) {
+					// Evaluation is not possible after a stackoverflow exception
+					return string.Empty;
 				}
 			}
 		}
 		
-		/// <summary>
-		/// This is the call stack as represented by the <c>Debugger.ThreadObject</c>.
-		/// </summary>
-		/// <seealso cref="System.Execption.StackTrace" />
-		/// <see cref="Debugger.Exception.StackTrace" />
-		public string Callstack {
+		/// <summary> The <c>InnerException</c> property of the exception. </summary>
+		/// <seealso cref="System.Exception" />
+		public Exception InnerException {
 			get {
-				StringBuilder callstack = new StringBuilder();
-				foreach(StackFrame stackFrame in thread.GetCallstack(100)) {
-					callstack.Append(stackFrame.MethodInfo.Name);
-					callstack.Append("()");
-					SourcecodeSegment loc = stackFrame.NextStatement;
-					if (loc != null) {
-						callstack.Append(" - ");
-						callstack.Append(loc.SourceFullFilename);
-						callstack.Append(":");
-						callstack.Append(loc.StartLine);
-						callstack.Append(",");
-						callstack.Append(loc.StartColumn);
-					}
-					callstack.Append("\n");
-				}
-				return callstack.ToString();
+				Value innerException = exception.GetMemberValue("_innerException");
+				return innerException.IsNull ? null : new Exception(innerException);
 			}
 		}
 		
-		public bool Intercept()
+		public void MakeValuePermanent()
 		{
-			if (!thread.CorThread.Is<ICorDebugThread2>()) return false; // Is the debuggee .NET 2.0?
-			if (thread.MostRecentStackFrame == null) return false; // Is frame available?  It is not at StackOverflow
-			
-			try {
-				thread.CorThread.CastTo<ICorDebugThread2>().InterceptCurrentException(thread.MostRecentStackFrame.CorILFrame.CastTo<ICorDebugFrame>());
-			} catch (COMException e) {
-				// 0x80131C02: Cannot intercept this exception
-				if ((uint)e.ErrorCode == 0x80131C02) {
-					return false;
-				}
-				throw;
+			exception = exception.GetPermanentReference();
+		}
+		
+		public override string ToString()
+		{
+			return ToString("--- End of inner exception stack trace ---");
+		}
+		
+		public string ToString(string endOfInnerExceptionFormat)
+		{
+			StringBuilder sb = new StringBuilder();
+			sb.Append(this.Type);
+			if (!string.IsNullOrEmpty(this.Message)) {
+				sb.Append(": ");
+				sb.Append(this.Message);
 			}
-			
-			thread.CurrentException = null;
-			Process.AsyncContinue_KeepDebuggeeState();
-			Process.WaitForPause();
-			return true;
+			if (this.InnerException != null) {
+				sb.Append(" ---> ");
+				sb.Append(this.InnerException.ToString(endOfInnerExceptionFormat));
+				sb.AppendLine();
+				sb.Append("   ");
+				sb.Append(endOfInnerExceptionFormat);
+			}
+			sb.AppendLine();
+			sb.Append(this.StackTrace);
+			return sb.ToString();
 		}
 	}
 	
 	public class ExceptionEventArgs: ProcessEventArgs
 	{
 		Exception exception;
+		ExceptionType exceptionType;
+		bool isUnhandled;
 		
 		public Exception Exception {
-			get {
-				return exception;
-			}
+			get { return exception; }
 		}
 		
-		public ExceptionEventArgs(Process process, Exception exception):base(process)
+		public ExceptionType ExceptionType {
+			get { return exceptionType; }
+		}
+		
+		public bool IsUnhandled {
+			get { return isUnhandled; }
+		}
+		
+		public ExceptionEventArgs(Process process, Exception exception, ExceptionType exceptionType, bool isUnhandled):base(process)
 		{
 			this.exception = exception;
+			this.exceptionType = exceptionType;
+			this.isUnhandled = isUnhandled;
 		}
 	}
 }
