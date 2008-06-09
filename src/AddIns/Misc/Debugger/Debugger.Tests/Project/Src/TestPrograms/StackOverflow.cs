@@ -50,7 +50,8 @@ namespace Debugger.Tests {
     <ModuleLoaded symbols="False">mscorlib.dll</ModuleLoaded>
     <ModuleLoaded symbols="True">StackOverflow.exe</ModuleLoaded>
     <DebuggingPaused>Break</DebuggingPaused>
-    <ExceptionThrown>null</ExceptionThrown>
+    <ExceptionThrown>
+    </ExceptionThrown>
     <DebuggingPaused>Exception</DebuggingPaused>
     <LastStackFrame Type="StackFrame" ToString="Debugger.Tests.TestPrograms.StackOverflow.Fun">
       <ArgumentCount>1</ArgumentCount>

@@ -152,10 +152,12 @@ namespace Debugger.Tests {
           <BaseType>null</BaseType>
           <FullName>System.Object</FullName>
           <HasElementType>False</HasElementType>
+          <Interfaces>System.Collections.Generic.List`1[Debugger.MetaData.DebugType]</Interfaces>
           <IsArray>False</IsArray>
           <IsClass>True</IsClass>
           <IsGenericType>False</IsGenericType>
           <IsInteger>False</IsInteger>
+          <IsInterface>False</IsInterface>
           <IsPrimitive>False</IsPrimitive>
           <IsValueType>False</IsValueType>
           <ManagedType>null</ManagedType>
@@ -163,10 +165,12 @@ namespace Debugger.Tests {
         </BaseType>
         <FullName>System.Array</FullName>
         <HasElementType>False</HasElementType>
+        <Interfaces>System.Collections.Generic.List`1[Debugger.MetaData.DebugType]</Interfaces>
         <IsArray>False</IsArray>
         <IsClass>True</IsClass>
         <IsGenericType>False</IsGenericType>
         <IsInteger>False</IsInteger>
+        <IsInterface>False</IsInterface>
         <IsPrimitive>False</IsPrimitive>
         <IsValueType>False</IsValueType>
         <ManagedType>null</ManagedType>
@@ -174,10 +178,12 @@ namespace Debugger.Tests {
       </BaseType>
       <FullName>System.Int32[]</FullName>
       <HasElementType>True</HasElementType>
+      <Interfaces>System.Collections.Generic.List`1[Debugger.MetaData.DebugType]</Interfaces>
       <IsArray>True</IsArray>
       <IsClass>False</IsClass>
       <IsGenericType>False</IsGenericType>
       <IsInteger>False</IsInteger>
+      <IsInterface>False</IsInterface>
       <IsPrimitive>False</IsPrimitive>
       <IsValueType>False</IsValueType>
       <ManagedType>System.Array</ManagedType>
