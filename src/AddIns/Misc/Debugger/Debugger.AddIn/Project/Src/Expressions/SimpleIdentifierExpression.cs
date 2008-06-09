@@ -44,6 +44,11 @@ namespace Debugger.Expressions
 			if (!context.MethodInfo.IsStatic) {
 				Value member = context.GetThisValue().GetMemberValue(identifier);
 				if (member != null) return member;
+			} else {
+				MetaData.MemberInfo memberInfo = context.MethodInfo.DeclaringType.GetMember(identifier);
+				if (memberInfo != null && memberInfo.IsStatic) {
+					return Value.GetMemberValue(null, memberInfo, null);
+				}
 			}
 			
 			throw new GetValueException("Identifier \"" + identifier + "\" not found");
