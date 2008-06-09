@@ -53,5 +53,22 @@ namespace Debugger
 				return this.LowerBound + ".." + this.UpperBound;
 			}
 		}
+		
+		public override int GetHashCode()
+		{
+			int hashCode = 0;
+			unchecked {
+				hashCode += 1000000007 * lowerBound.GetHashCode();
+				hashCode += 1000000009 * upperBound.GetHashCode();
+			}
+			return hashCode;
+		}
+		
+		public override bool Equals(object obj)
+		{
+			ArrayDimension other = obj as ArrayDimension;
+			if (other == null) return false; 
+			return this.lowerBound == other.lowerBound && this.upperBound == other.upperBound;
+		}
 	}
 }

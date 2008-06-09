@@ -42,6 +42,18 @@ namespace Debugger
 			}
 		}
 		
+		/// <summary> Get the total number of elements within the bounds
+		/// of an array specified by these dimensions. </summary>
+		public int TotalElementCount {
+			get {
+				int totalCount = 1;
+				foreach(ArrayDimension dim in this) {
+					totalCount *= dim.Count;
+				}
+				return totalCount;
+			}
+		}
+		
 		/// <summary> Enumerate all vaild indicies in the array </summary>
 		public IEnumerable<int[]> Indices {
 			get {
