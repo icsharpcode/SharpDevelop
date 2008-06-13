@@ -6,13 +6,16 @@
 // </file>
 
 using System;
-using System.Windows.Forms;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Threading;
+using System.Windows.Forms;
+
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.NRefactory;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
+using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -22,6 +25,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		Dictionary<string, bool> displayedTokens;
 		IClass oldClass;
 		int selectedScopeIndex = 0;
+		bool isInitialized = false;
+		
+		public bool IsInitialized {
+			get { return isInitialized; }
+		}
 		
 		ToolStrip toolStrip;
 		Panel contentPanel = new Panel();
@@ -35,7 +43,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public int SelectedScopeIndex {
 			get { return selectedScopeIndex; }
 			set { selectedScopeIndex = value;
-				UpdateItems();
+				if (this.IsInitialized)
+					UpdateItems();
 			}
 		}
 		
@@ -78,15 +87,15 @@ namespace ICSharpCode.SharpDevelop.Gui
 			ProjectService.SolutionLoaded += OnSolutionOpen;
 			ProjectService.SolutionClosed += OnSolutionClosed;
 			
-			InternalShowResults(null, null);
+			this.isInitialized = true;
 		}
 
 		void Workbench_ActiveViewContentChanged(object sender, EventArgs e)
 		{
 			if (WorkbenchSingleton.Workbench.ActiveViewContent == null)
 				return;
-			
-			UpdateItems();
+			if (isInitialized)
+				UpdateItems();
 			
 			if (WorkbenchSingleton.Workbench.ActiveViewContent.Control is SharpDevelopTextAreaControl) {
 				SharpDevelopTextAreaControl ctrl = WorkbenchSingleton.Workbench.ActiveViewContent.Control as SharpDevelopTextAreaControl;
@@ -149,21 +158,22 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		
 		public void UpdateItems()
-		{
+		{		
+			this.taskView.BeginUpdate();
+			
 			this.taskView.ClearTasks();
 			
-			foreach (Task t in TaskService.CommentTasks)
-			{
-				UpdateItem(t);
+			foreach (Task t in TaskService.CommentTasks) {
+				this.taskView.AddTask(t);
 			}
 			
 			RedrawContent();
+			this.taskView.EndUpdate();
 		}
 		
-		private void UpdateItem(Task item)
+		void AddItem(Task item)
 		{
-			foreach (KeyValuePair<string, bool> pair in displayedTokens)
-			{
+			foreach (KeyValuePair<string, bool> pair in displayedTokens) {
 				if (item.Description.StartsWith(pair.Key) && pair.Value && IsInScope(item))
 					taskView.AddTask(item);
 			}
@@ -195,7 +205,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			return true;
 		}
 		
-		private IClass GetCurrentClass()
+		IClass GetCurrentClass()
 		{
 			if (WorkbenchSingleton.Workbench.ActiveViewContent == null)
 				return null;
@@ -213,7 +223,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			return null;
 		}
 		
-		private IClass GetCurrentClass(Task item)
+		IClass GetCurrentClass(Task item)
 		{
 			ParseInformation parseInfo = ParserService.GetParseInformation(item.FileName);
 			if (parseInfo != null) {
@@ -241,32 +251,32 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void TaskServiceAdded(object sender, TaskEventArgs e)
 		{
+			this.taskView.BeginUpdate();
+
 			if (e.Task.TaskType == TaskType.Comment) {
-				UpdateItems();
+				AddItem(e.Task);
 			}
 			
 			RedrawContent();
+			
+			this.taskView.EndUpdate();
 		}
 		
 		void TaskServiceRemoved(object sender, TaskEventArgs e)
 		{
+			this.taskView.BeginUpdate();
+			
 			if (e.Task.TaskType == TaskType.Comment) {
-				UpdateItems();
+				foreach (ListViewItem item in this.taskView.Items) {
+					if (item.Tag == e.Task) {
+						this.taskView.Items.Remove(item);
+						break;
+					}
+				}
 			}
 			
 			RedrawContent();
-		}
-		
-		void InternalShowResults(object sender, EventArgs e)
-		{
-			UpdateItems();
-			//taskView.UpdateResults(TaskService.CommentTasks);
-		}
-		
-		public void ShowResults(object sender, EventArgs e)
-		{
-			taskView.Invoke(new EventHandler(InternalShowResults));
-//			SelectTaskView(null, null);
+			this.taskView.EndUpdate();
 		}
 		
 		#region IClipboardHandler interface implementation

@@ -72,7 +72,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public override bool IsChecked {
 			get { return TaskListPad.Instance.DisplayedTokens[token]; }
 			set { TaskListPad.Instance.DisplayedTokens[token] = value;
-				TaskListPad.Instance.UpdateItems();
+				if (TaskListPad.Instance.IsInitialized)
+					TaskListPad.Instance.UpdateItems();
 			}
 		}
 	}
@@ -80,9 +81,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 	public class TaskListTokensBuilder
 	{
 		public static ShowTaskListTokenButton[] BuildItems(string[] tokens)
-		{			
+		{
 			ShowTaskListTokenButton[] buttons = new ShowTaskListTokenButton[tokens.Length];
-						
+			
 			for (int i = 0; i < buttons.Length; i++)
 			{
 				buttons[i] = new ShowTaskListTokenButton(tokens[i]);
