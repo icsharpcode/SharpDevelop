@@ -122,7 +122,10 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			} else if (expressionResult.Context.IsObjectCreation) {
 				constructorInsight = true;
 				expressionResult.Context = ExpressionContext.Type;
+			} else if (expressionResult.Context == ExpressionContext.BaseConstructorCall) {
+				constructorInsight = true;
 			}
+			
 			ResolveResult results = ParserService.Resolve(expressionResult, caretLineNumber, caretColumn, fileName, document.TextContent);
 			LanguageProperties language = ParserService.CurrentProjectContent.Language;
 			TypeResolveResult trr = results as TypeResolveResult;
@@ -135,17 +138,23 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 					constructorInsight = true;
 			}
 			if (constructorInsight) {
-				if (trr == null)
-					return;
-				foreach (IMethod method in trr.ResolvedType.GetMethods()) {
-					if (method.IsConstructor && !method.IsStatic) {
-						methods.Add(method);
+				if (trr == null) {
+					if ((expressionResult.Expression == "this") && (expressionResult.Context == ExpressionContext.BaseConstructorCall)) {
+						methods.AddRange(GetConstructorMethods(results.ResolvedType.GetMethods()));
 					}
-				}
-				
-				if (methods.Count == 0 && trr.ResolvedClass != null && !trr.ResolvedClass.IsAbstract && !trr.ResolvedClass.IsStatic) {
-					// add default constructor
-					methods.Add(Constructor.CreateDefault(trr.ResolvedClass));
+					
+					if ((expressionResult.Expression == "base") && (expressionResult.Context == ExpressionContext.BaseConstructorCall)) {
+						if (results.CallingClass.BaseType.DotNetName == "System.Object")
+							return;
+						methods.AddRange(GetConstructorMethods(results.CallingClass.BaseType.GetMethods()));
+					}
+				} else {
+					methods.AddRange(GetConstructorMethods(trr.ResolvedType.GetMethods()));
+					
+					if (methods.Count == 0 && trr.ResolvedClass != null && !trr.ResolvedClass.IsAbstract && !trr.ResolvedClass.IsStatic) {
+						// add default constructor
+						methods.Add(Constructor.CreateDefault(trr.ResolvedClass));
+					}
 				}
 			} else {
 				MethodGroupResolveResult result = results as MethodGroupResolveResult;
@@ -154,6 +163,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				bool classIsInInheritanceTree = false;
 				if (result.CallingClass != null)
 					classIsInInheritanceTree = result.CallingClass.IsTypeInInheritanceTree(result.ContainingType.GetUnderlyingClass());
+				
 				foreach (IMethod method in result.ContainingType.GetMethods()) {
 					if (language.NameComparer.Equals(method.Name, result.Name)) {
 						if (method.IsAccessible(result.CallingClass, classIsInInheritanceTree)) {
@@ -177,6 +187,17 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 					}
 				}
 			}
+		}
+		
+		List<IMethodOrProperty> GetConstructorMethods(List<IMethod> methods)
+		{
+			List<IMethodOrProperty> constructorMethods = new List<IMethodOrProperty>();
+			foreach (IMethod method in methods) {
+				if (method.IsConstructor && !method.IsStatic) {
+					constructorMethods.Add(method);
+				}
+			}
+			return constructorMethods;
 		}
 		
 		public bool CaretOffsetChanged()
