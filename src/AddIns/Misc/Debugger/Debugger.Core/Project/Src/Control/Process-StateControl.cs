@@ -267,7 +267,7 @@ namespace Debugger
 				debugger.MTA2STA.WaitForCall();
 				debugger.MTA2STA.PerformAllCalls();
 			}
-			if (this.HasExpired) throw new DebuggerException("Process exited before pausing");
+			if (this.HasExpired) throw new ProcessExitedException();
 		}
 		
 		public void WaitForPause(TimeSpan timeout)
@@ -280,7 +280,7 @@ namespace Debugger
 				debugger.MTA2STA.WaitForCall(timeLeft);
 				debugger.MTA2STA.PerformCall();
 			}
-			if (this.HasExpired) throw new DebuggerException("Process exited before pausing");
+			if (this.HasExpired) throw new ProcessExitedException();
 		}
 		
 		/// <summary>

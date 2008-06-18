@@ -15,4 +15,9 @@ namespace Debugger
 		public DebuggerException(string message): base(message) {}
 		public DebuggerException(string message, System.Exception inner): base(message, inner) {}
 	}
+	
+	public class ProcessExitedException: DebuggerException
+	{
+		public ProcessExitedException(): base("Process exited") {}
+	}
 }

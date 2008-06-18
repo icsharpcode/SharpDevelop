@@ -135,6 +135,12 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 						RefreshThread(t);
 					}
 				} catch(AbortedBecauseDebuggeeResumedException) {
+				} catch(System.Exception) {
+					if (debuggedProcess == null || debuggedProcess.HasExpired) {
+						// Process unexpectedly exited
+					} else {
+						throw;
+					}
 				}
 			}
 		}

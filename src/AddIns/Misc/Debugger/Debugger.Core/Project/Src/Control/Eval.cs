@@ -135,23 +135,27 @@ namespace Debugger
 		
 		Value WaitForResult()
 		{
-			process.WaitForPause(TimeSpan.FromMilliseconds(500));
-			if (!Evaluated) {
-				state = EvalState.EvaluatedTimeOut;
-				process.TraceMessage("Aboring eval: " + Description);
-				corEval.Abort();
+			try {
 				process.WaitForPause(TimeSpan.FromMilliseconds(500));
 				if (!Evaluated) {
-					process.TraceMessage("Rude aboring eval: " + Description);
-					corEval.CastTo<ICorDebugEval2>().RudeAbort();
+					state = EvalState.EvaluatedTimeOut;
+					process.TraceMessage("Aboring eval: " + Description);
+					corEval.Abort();
 					process.WaitForPause(TimeSpan.FromMilliseconds(500));
 					if (!Evaluated) {
-						throw new DebuggerException("Evaluation can not be stopped");
+						process.TraceMessage("Rude aboring eval: " + Description);
+						corEval.CastTo<ICorDebugEval2>().RudeAbort();
+						process.WaitForPause(TimeSpan.FromMilliseconds(500));
+						if (!Evaluated) {
+							throw new DebuggerException("Evaluation can not be stopped");
+						}
 					}
 				}
+				process.WaitForPause();
+				return this.Result;
+			} catch (ProcessExitedException) {
+				throw new GetValueException("Process exited");
 			}
-			process.WaitForPause();
-			return this.Result;
 		}
 		
 		internal void NotifyEvaluationComplete(bool successful) 

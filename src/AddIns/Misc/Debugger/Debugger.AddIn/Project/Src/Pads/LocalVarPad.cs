@@ -237,6 +237,12 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 					Utils.DoEvents(debuggedProcess.DebuggeeState);
 					TreeViewVarNode.SetContentRecursive(debuggedProcess, LocalVarList, new StackFrameNode(debuggedProcess.SelectedStackFrame).ChildNodes);
 				} catch(AbortedBecauseDebuggeeResumedException) {
+				} catch(System.Exception) {
+					if (debuggedProcess == null || debuggedProcess.HasExpired) {
+						// Process unexpectedly exited
+					} else {
+						throw;
+					}
 				} finally {
 					localVarList.EndUpdate();
 				}

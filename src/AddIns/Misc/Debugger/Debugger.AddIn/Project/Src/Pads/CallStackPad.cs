@@ -136,6 +136,12 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 					List<ListViewItem> items = CreateItems();
 					UpdateItems(items);
 				} catch(AbortedBecauseDebuggeeResumedException) {
+				} catch(System.Exception) {
+					if (debuggedProcess == null || debuggedProcess.HasExpired) {
+						// Process unexpectedly exited
+					} else {
+						throw;
+					}
 				}
 			}
 		}
