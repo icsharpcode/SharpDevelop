@@ -97,6 +97,9 @@ namespace Debugger
 			if (!targetThread.IsAtSafePoint) {
 				throw new GetValueException("Can not evaluate because thread is not at a safe point");
 			}
+			if (targetThread.Suspended) {
+				throw new GetValueException("Can not evaluate on suspended thread");
+			}
 			
 			return targetThread.CorThread.CreateEval();
 		}
@@ -135,6 +138,7 @@ namespace Debugger
 		
 		Value WaitForResult()
 		{
+			// Note that aborting is not supported for suspended threads
 			try {
 				process.WaitForPause(TimeSpan.FromMilliseconds(500));
 				if (!Evaluated) {
