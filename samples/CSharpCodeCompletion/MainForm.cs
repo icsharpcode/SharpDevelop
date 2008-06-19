@@ -175,6 +175,11 @@ class A
 			else
 				supportedLanguage = NRefactory.SupportedLanguage.CSharp;
 			using (NRefactory.IParser p = NRefactory.ParserFactory.CreateParser(supportedLanguage, textReader)) {
+				// we only need to parse types and method definitions, no method bodies
+				// so speed up the parser and make it more resistent to syntax
+				// errors in methods
+				p.ParseMethodBodies = false;
+				
 				p.Parse();
 				newCompilationUnit = ConvertCompilationUnit(p.CompilationUnit);
 			}
