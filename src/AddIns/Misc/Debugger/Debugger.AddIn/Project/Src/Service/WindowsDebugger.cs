@@ -144,6 +144,8 @@ namespace ICSharpCode.SharpDevelop.Services
 				MessageService.ShowMessage("${res:XML.MainMenu.DebugMenu.Error.Net10NotSupported}");
 				//} else if (string.IsNullOrEmpty(version)) {
 				//	MessageService.ShowMessage("${res:XML.MainMenu.DebugMenu.Error.BadAssembly}");
+			} else if (debugger.IsKernelDebuggerEnabled) {
+				MessageService.ShowMessage("${res:XML.MainMenu.DebugMenu.Error.KernelDebuggerEnabled}");
 			} else {
 				if (DebugStarting != null)
 					DebugStarting(this, EventArgs.Empty);

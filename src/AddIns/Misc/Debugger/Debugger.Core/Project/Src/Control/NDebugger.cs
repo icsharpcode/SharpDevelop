@@ -9,6 +9,8 @@ using System;
 using System.Text;
 using System.Threading;
 
+using Microsoft.Win32;
+
 using Debugger.Interop;
 using Debugger.Wrappers.CorDebug;
 
@@ -88,6 +90,9 @@ namespace Debugger
 		/// If null, the version of the executing process will be used</param>
 		internal void InitDebugger(string debuggeeVersion)
 		{
+			if (IsKernelDebuggerEnabled) {
+				throw new DebuggerException("Can not debug because kernel debugger is enabled");
+			}
 			if (string.IsNullOrEmpty(debuggeeVersion)) {
 				debuggeeVersion = GetDebuggerVersion();
 			}
@@ -183,6 +188,21 @@ namespace Debugger
 		{
 			while (processCollection.Count > 0) {
 				RemoveProcess(processCollection[0]);
+			}
+		}
+		
+		public bool IsKernelDebuggerEnabled {
+			get {
+				string systemStartOptions = Registry.LocalMachine.OpenSubKey(@"SYSTEM\CurrentControlSet\Control\").GetValue("SystemStartOptions", string.Empty).ToString();
+				systemStartOptions = systemStartOptions.ToLower();
+				if (systemStartOptions.Contains("debug") || 
+				    systemStartOptions.Contains("crashdebug") || 
+				    systemStartOptions.Contains("debugport") || 
+				    systemStartOptions.Contains("baudrate")) {
+					return true;
+				} else {
+					return false;
+				}
 			}
 		}
 	}
