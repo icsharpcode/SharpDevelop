@@ -173,7 +173,13 @@ namespace Debugger.Wrappers.MetaData
 		public int GetParamCount(uint methodToken)
 		{
 			int count = 0;
-			foreach(uint param in EnumParams(methodToken)) count++;
+			foreach(uint param in EnumParams(methodToken)) {
+				ParamProps paramProps = GetParamProps(param);
+				// Zero is special parameter representing the return parameter
+				if (paramProps.ParameterSequence != 0) {
+					count++;
+				}
+			}
 			return count;
 		}
 		
