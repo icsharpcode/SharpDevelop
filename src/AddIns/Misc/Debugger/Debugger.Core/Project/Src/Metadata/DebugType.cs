@@ -398,6 +398,19 @@ namespace Debugger.MetaData
 			return type;
 		}
 		
+		/// <summary> Returns all non-generic types defined in the given module </summary>
+		public static List<DebugType> GetDefinedTypesInModule(Module module)
+		{
+			// TODO: Generic types
+			List<DebugType> types = new List<DebugType>();
+			foreach(TypeDefProps typeDef in module.MetaData.EnumTypeDefs()) {
+				if (module.MetaData.GetGenericParamCount(typeDef.Token) == 0) {
+					types.Add(DebugType.Create(module, typeDef.Token));
+				}
+			}
+			return types;
+		}
+		
 		string GetFullName()
 		{
 			if (IsArray) {

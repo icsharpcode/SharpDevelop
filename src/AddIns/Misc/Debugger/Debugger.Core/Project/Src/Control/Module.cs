@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 
 using Debugger.MetaData;
 using Debugger.Wrappers.CorDebug;
@@ -125,6 +126,11 @@ namespace Debugger
 					(corModule.CastTo<ICorDebugModule2>()).SetJMCStatus(value?1:0, 0, ref unused);
 				}
 			}
+		}
+		
+		public List<DebugType> GetDefinedTypes()
+		{
+			return DebugType.GetDefinedTypesInModule(this);
 		}
 		
 		internal Module(Process process, ICorDebugModule pModule)

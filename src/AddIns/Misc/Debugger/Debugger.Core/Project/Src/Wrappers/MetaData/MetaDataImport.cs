@@ -52,6 +52,13 @@ namespace Debugger.Wrappers.MetaData
 			}
 		}
 		
+		public IEnumerable<TypeDefProps> EnumTypeDefs()
+		{
+			foreach(uint token in EnumerateTokens(metaData.EnumTypeDefs)) {
+				yield return GetTypeDefProps(token);
+			}
+		}
+		
 		public TypeDefProps GetTypeDefProps(uint typeToken)
 		{
 			TypeDefProps typeDefProps = new TypeDefProps();
@@ -234,9 +241,26 @@ namespace Debugger.Wrappers.MetaData
 		
 		#region Util
 		
-		delegate void TokenEnumerator(ref IntPtr phEnum, uint parameter, out uint token, uint maxCount, out uint fetched);
+		delegate void TokenEnumerator(ref IntPtr phEnum, out uint token, uint maxCount, out uint fetched);
 		
-		IEnumerable<uint> EnumerateTokens(TokenEnumerator tokenEnumerator, uint parameter)
+		IEnumerable<uint> EnumerateTokens(TokenEnumerator tokenEnumerator)
+		{
+			IntPtr enumerator = IntPtr.Zero;
+			while(true) {
+				uint token;
+				uint fetched;
+				tokenEnumerator(ref enumerator, out token, 1, out fetched);
+				if (fetched == 0) {
+					metaData.CloseEnum(enumerator);
+					break;
+				}
+				yield return token;
+			}
+		}
+		
+		delegate void TokenEnumeratorWithParameter(ref IntPtr phEnum, uint parameter, out uint token, uint maxCount, out uint fetched);
+		
+		IEnumerable<uint> EnumerateTokens(TokenEnumeratorWithParameter tokenEnumerator, uint parameter)
 		{
 			IntPtr enumerator = IntPtr.Zero;
 			while(true) {
