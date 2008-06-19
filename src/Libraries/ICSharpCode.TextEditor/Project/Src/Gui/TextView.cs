@@ -174,6 +174,7 @@ namespace ICSharpCode.TextEditor
 			if (horizontalDelta > 0) {
 				g.ResetClip();
 			}
+			textArea.Caret.PaintCaret(g);
 		}
 		
 		void PaintDocumentLine(Graphics g, int lineNumber, Rectangle lineRectangle)

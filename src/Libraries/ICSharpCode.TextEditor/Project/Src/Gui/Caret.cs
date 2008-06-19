@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 
 using ICSharpCode.TextEditor.Document;
@@ -44,6 +45,7 @@ namespace ICSharpCode.TextEditor
 		TextArea textArea;
 		Point    currentPos   = new Point(-1, -1);
 		Ime      ime          = null;
+		CaretImplementation caretImplementation;
 		
 		/// <value>
 		/// The 'prefered' xPos in which the caret moves, when it is moved
@@ -119,6 +121,10 @@ namespace ICSharpCode.TextEditor
 			this.textArea = textArea;
 			textArea.GotFocus  += new EventHandler(GotFocus);
 			textArea.LostFocus += new EventHandler(LostFocus);
+			if (Environment.OSVersion.Platform == PlatformID.Unix)
+				caretImplementation = new ManagedCaret(this);
+			else
+				caretImplementation = new Win32Caret(this);
 		}
 		
 		public void Dispose()
@@ -126,8 +132,7 @@ namespace ICSharpCode.TextEditor
 			textArea.GotFocus  -= new EventHandler(GotFocus);
 			textArea.LostFocus -= new EventHandler(LostFocus);
 			textArea = null;
-//			DestroyCaret();
-//			caretCreated = false;
+			caretImplementation.Dispose();
 		}
 		
 		public TextLocation ValidatePosition(TextLocation pos)
@@ -162,10 +167,10 @@ namespace ICSharpCode.TextEditor
 			while (!caretCreated) {
 				switch (caretMode) {
 					case CaretMode.InsertMode:
-						caretCreated = CreateCaret(textArea.Handle, 0, 2, textArea.TextView.FontHeight);
+						caretCreated = caretImplementation.Create(2, textArea.TextView.FontHeight);
 						break;
 					case CaretMode.OverwriteMode:
-						caretCreated = CreateCaret(textArea.Handle, 0, (int)textArea.TextView.SpaceWidth, textArea.TextView.FontHeight);
+						caretCreated = caretImplementation.Create((int)textArea.TextView.SpaceWidth, textArea.TextView.FontHeight);
 						break;
 				}
 			}
@@ -173,8 +178,8 @@ namespace ICSharpCode.TextEditor
 				ValidateCaretPos();
 				currentPos = ScreenPosition;
 			}
-			SetCaretPos(currentPos.X, currentPos.Y);
-			ShowCaret(textArea.Handle);
+			caretImplementation.SetPosition(currentPos.X, currentPos.Y);
+			caretImplementation.Show();
 		}
 		
 		public void RecreateCaret()
@@ -190,8 +195,8 @@ namespace ICSharpCode.TextEditor
 		{
 			if (caretCreated) {
 				caretCreated = false;
-				HideCaret(textArea.Handle);
-				DestroyCaret();
+				caretImplementation.Hide();
+				caretImplementation.Destroy();
 			}
 		}
 		
@@ -234,9 +239,15 @@ namespace ICSharpCode.TextEditor
 		{
 			Log("UpdateCaretPosition");
 			
-			if (textArea.MotherTextAreaControl.TextEditorProperties.LineViewerStyle == LineViewerStyle.FullRow && oldLine != line) {
+			if (caretImplementation.RequireRedrawOnPositionChange) {
 				textArea.UpdateLine(oldLine);
-				textArea.UpdateLine(line);
+				if (line != oldLine)
+					textArea.UpdateLine(line);
+			} else {
+				if (textArea.MotherTextAreaControl.TextEditorProperties.LineViewerStyle == LineViewerStyle.FullRow && oldLine != line) {
+					textArea.UpdateLine(oldLine);
+					textArea.UpdateLine(line);
+				}
 			}
 			oldLine = line;
 			
@@ -254,14 +265,14 @@ namespace ICSharpCode.TextEditor
 			Point pos = ScreenPosition;
 			if (xpos >= 0) {
 				CreateCaret();
-				bool success = SetCaretPos(pos.X, pos.Y);
+				bool success = caretImplementation.SetPosition(pos.X, pos.Y);
 				if (!success) {
-					DestroyCaret();
+					caretImplementation.Destroy();
 					caretCreated = false;
 					UpdateCaretPosition();
 				}
 			} else {
-				DestroyCaret();
+				caretImplementation.Destroy();
 			}
 			
 			// set the input method editor location
@@ -276,58 +287,145 @@ namespace ICSharpCode.TextEditor
 			currentPos = pos;
 		}
 		
-		#region Native caret functions
-		static bool CreateCaret(IntPtr hWnd, int hBitmap, int nWidth, int nHeight)
-		{
-			Log("CreateCaret(...)");
-			return NativeMethods.CreateCaret(hWnd, hBitmap, nWidth, nHeight);
-		}
-		
-		static bool SetCaretPos(int x, int y)
-		{
-			Log("SetCaretPos(x=" + x + ", y=" + y + ")");
-			return NativeMethods.SetCaretPos(x, y);
-		}
-		
-		static bool DestroyCaret()
-		{
-			Log("DestroyCaret()");
-			return NativeMethods.DestroyCaret();
-		}
-		
-		static bool ShowCaret(IntPtr hWnd)
-		{
-			Log("ShowCaret()");
-			return NativeMethods.ShowCaret(hWnd);
-		}
-		
-		static bool HideCaret(IntPtr hWnd)
-		{
-			Log("HideCaret()");
-			return NativeMethods.HideCaret(hWnd);
-		}
-		
-		[System.Diagnostics.Conditional("DEBUG")]
+		[Conditional("DEBUG")]
 		static void Log(string text)
 		{
-			//Console.WriteLine("Caret: " + text);
+			//Console.WriteLine(text);
 		}
 		
-		static class NativeMethods {
+		#region Caret implementation
+		public void PaintCaret(Graphics g)
+		{
+			caretImplementation.PaintCaret(g);
+		}
+		
+		abstract class CaretImplementation : IDisposable
+		{
+			public bool RequireRedrawOnPositionChange;
+			
+			public abstract bool Create(int width, int height);
+			public abstract void Hide();
+			public abstract void Show();
+			public abstract bool SetPosition(int x, int y);
+			public abstract void PaintCaret(Graphics g);
+			public abstract void Destroy();
+			
+			public virtual void Dispose()
+			{
+				Destroy();
+			}
+		}
+		
+		class ManagedCaret : CaretImplementation
+		{
+			System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer { Interval = 300 };
+			bool visible;
+			bool blink = true;
+			int x, y, width, height;
+			TextArea textArea;
+			Caret parentCaret;
+			
+			public ManagedCaret(Caret caret)
+			{
+				base.RequireRedrawOnPositionChange = true;
+				this.textArea = caret.textArea;
+				this.parentCaret = caret;
+				timer.Tick += CaretTimerTick;
+			}
+			
+			void CaretTimerTick(object sender, EventArgs e)
+			{
+				blink = !blink;
+				if (visible)
+					textArea.UpdateLine(parentCaret.Line);
+			}
+			
+			public override bool Create(int width, int height)
+			{
+				this.visible = true;
+				this.width = width - 2;
+				this.height = height;
+				timer.Enabled = true;
+				return true;
+			}
+			public override void Hide()
+			{
+				visible = false;
+			}
+			public override void Show()
+			{
+				visible = true;
+			}
+			public override bool SetPosition(int x, int y)
+			{
+				this.x = x - 1;
+				this.y = y;
+				return true;
+			}
+			public override void PaintCaret(Graphics g)
+			{
+				if (visible && blink)
+					g.DrawRectangle(Pens.Gray, x, y, width, height);
+			}
+			public override void Destroy()
+			{
+				visible = false;
+				timer.Enabled = false;
+			}
+			public override void Dispose()
+			{
+				base.Dispose();
+				timer.Dispose();
+			}
+		}
+		
+		class Win32Caret : CaretImplementation
+		{
 			[DllImport("User32.dll")]
-			internal static extern bool CreateCaret(IntPtr hWnd, int hBitmap, int nWidth, int nHeight);
+			static extern bool CreateCaret(IntPtr hWnd, int hBitmap, int nWidth, int nHeight);
 			
 			[DllImport("User32.dll")]
-			internal static extern bool SetCaretPos(int x, int y);
+			static extern bool SetCaretPos(int x, int y);
 			
 			[DllImport("User32.dll")]
-			internal static extern bool DestroyCaret();
+			static extern bool DestroyCaret();
 			
 			[DllImport("User32.dll")]
-			internal static extern bool ShowCaret(IntPtr hWnd);
+			static extern bool ShowCaret(IntPtr hWnd);
 			
 			[DllImport("User32.dll")]
-			internal static extern bool HideCaret(IntPtr hWnd);
+			static extern bool HideCaret(IntPtr hWnd);
+			
+			TextArea textArea;
+			
+			public Win32Caret(Caret caret)
+			{
+				this.textArea = caret.textArea;
+			}
+			
+			public override bool Create(int width, int height)
+			{
+				return CreateCaret(textArea.Handle, 0, width, height);
+			}
+			public override void Hide()
+			{
+				HideCaret(textArea.Handle);
+			}
+			public override void Show()
+			{
+				ShowCaret(textArea.Handle);
+			}
+			public override bool SetPosition(int x, int y)
+			{
+				return SetCaretPos(x, y);
+			}
+			public override void PaintCaret(Graphics g)
+			{
+			}
+			public override void Destroy()
+			{
+				DestroyCaret();
+			}
 		}
 		#endregion
 		
@@ -373,11 +471,11 @@ namespace ICSharpCode.TextEditor
 			if (CaretModeChanged != null) {
 				CaretModeChanged(this, e);
 			}
-			HideCaret(textArea.Handle);
-			DestroyCaret();
+			caretImplementation.Hide();
+			caretImplementation.Destroy();
 			caretCreated = false;
 			CreateCaret();
-			ShowCaret(textArea.Handle);
+			caretImplementation.Show();
 		}
 		
 		/// <remarks>

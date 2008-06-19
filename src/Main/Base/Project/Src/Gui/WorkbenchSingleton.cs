@@ -81,7 +81,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		public static void InitializeWorkbench()
 		{
-			InitializeWorkbench(new DefaultWorkbench(), new SdiWorkbenchLayout());
+			if (Environment.OSVersion.Platform == PlatformID.Unix)
+				InitializeWorkbench(new DefaultWorkbench(), new SimpleWorkbenchLayout());
+			else
+				InitializeWorkbench(new DefaultWorkbench(), new SdiWorkbenchLayout());
 		}
 		
 		public static void InitializeWorkbench(IWorkbench workbench, IWorkbenchLayout layout)
@@ -103,10 +106,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 			ResourceService.LanguageChanged += delegate { workbench.RedrawAllComponents(); };
 			
 			caller = new STAThreadCaller(workbench.MainForm);
-						
+			
 			workbench.Initialize();
-			workbench.SetMemento(PropertyService.Get(workbenchMemento, new Properties()));			
-			workbench.WorkbenchLayout = layout;				
+			workbench.SetMemento(PropertyService.Get(workbenchMemento, new Properties()));
+			workbench.WorkbenchLayout = layout;
 			
 			OnWorkbenchCreated();
 			
