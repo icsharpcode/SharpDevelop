@@ -238,11 +238,24 @@ namespace Debugger
 			this.NotifyHasExpired();
 		}
 		
+		void SelectSomeThread()
+		{
+			if (this.SelectedThread != null && !this.SelectedThread.IsInValidState) {
+				this.SelectedThread = null;
+			}
+			if (this.SelectedThread == null) {
+				foreach(Thread thread in this.Threads) {
+					if (thread.IsInValidState) {
+						this.SelectedThread = thread;
+						break;
+					}
+				}
+			}
+		}
+		
 		internal void SelectMostRecentStackFrameWithLoadedSymbols()
 		{
-			if (this.SelectedThread == null && this.Threads.Count > 0) {
-				this.SelectedThread = this.Threads[0];
-			}
+			SelectSomeThread();
 			if (this.SelectedThread != null) {
 				this.SelectedThread.SelectedStackFrame = this.SelectedThread.MostRecentStackFrameWithLoadedSymbols;
 			}

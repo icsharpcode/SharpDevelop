@@ -72,9 +72,34 @@ namespace Debugger
 			} 
 		}
 		
+		/// <summary> If the thread is not at safe point, it is not posible to evaluate
+		/// on it </summary>
+		/// <remarks> Returns false is the thread is in invalid state </remarks>
 		public bool IsAtSafePoint {
 			get {
-				return CorThread.UserState != CorDebugUserState.USER_UNSAFE_POINT;
+				if (IsInValidState) {
+					return CorThread.UserState != CorDebugUserState.USER_UNSAFE_POINT;
+				} else {
+					return false;
+				}
+			}
+		}
+		
+		/// <summary>
+		/// From time to time the thread may be in invalid state.
+		/// </summary>
+		public bool IsInValidState {
+			get {
+				try {
+					CorThread.UserState.ToString();
+					return true;
+				} catch (COMException e) {
+					// The state of the thread is invalid.
+					if ((uint)e.ErrorCode == 0x8013132D) {
+						return false;
+					}
+					throw;
+				}
 			}
 		}
 		
@@ -154,6 +179,7 @@ namespace Debugger
 
 		public Value RuntimeValue {
 			get {
+				// TODO: It may have started - rework
 				if (!HasBeenLoaded) throw new DebuggerException("Thread has not started jet");
 				process.AssertPaused();
 				
@@ -255,12 +281,11 @@ namespace Debugger
 		
 		public override string ToString()
 		{
-			return String.Format("ID = {0,-10} Name = {1,-20} Suspended = {2,-8}", ID, Name, Suspended);
+			return String.Format("Thread Name = {1} Suspended = {2}", ID, Name, Suspended);
 		}
 		
-		/// <summary>
-		/// Gets the whole callstack of the Thread.
-		/// </summary>
+		/// <summary> Gets the whole callstack of the Thread. </summary>
+		/// <remarks> If the thread is in invalid state returns empty array </remarks>
 		public StackFrame[] GetCallstack()
 		{
 			return new List<StackFrame>(CallstackEnum).ToArray();
@@ -280,6 +305,10 @@ namespace Debugger
 		IEnumerable<StackFrame> CallstackEnum {
 			get {
 				process.AssertPaused();
+				
+				if (!IsInValidState) {
+					yield break;
+				}
 				
 				int depth = 0;
 				foreach(ICorDebugChain corChain in CorThread.EnumerateChains().Enumerator) {
@@ -380,7 +409,11 @@ namespace Debugger
 		public bool IsMostRecentStackFrameNative {
 			get {
 				process.AssertPaused();
-				return corThread.ActiveChain.IsManaged == 0;
+				if (this.IsInValidState) {
+					return corThread.ActiveChain.IsManaged == 0;
+				} else {
+					return false;
+				}
 			}
 		}
 	}
