@@ -128,9 +128,20 @@ namespace Debugger
 			}
 		}
 		
+		/// <summary> Get all non-generic types defined in this module </summary>
 		public List<DebugType> GetDefinedTypes()
 		{
 			return DebugType.GetDefinedTypesInModule(this);
+		}
+		
+		/// <summary> Get names of all generic and non-generic types defined in this module </summary>
+		public List<string> GetNamesOfDefinedTypes()
+		{
+			List<string> names = new List<string>();
+			foreach(TypeDefProps typeProps in this.MetaData.EnumTypeDefs()) {
+				names.Add(typeProps.Name);
+			}
+			return names;
 		}
 		
 		internal Module(Process process, ICorDebugModule pModule)

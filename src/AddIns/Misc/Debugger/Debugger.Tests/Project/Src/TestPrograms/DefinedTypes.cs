@@ -37,6 +37,7 @@ namespace Debugger.Tests {
 		{
 			StartTest("DefinedTypes.cs");
 			
+			ObjectDump("TypesAsString", process.GetModule("DefinedTypes.exe").GetNamesOfDefinedTypes());
 			ObjectDump("Types", process.GetModule("DefinedTypes.exe").GetDefinedTypes());
 			
 			EndTest();
@@ -53,6 +54,13 @@ namespace Debugger.Tests {
     <ModuleLoaded symbols="False">mscorlib.dll</ModuleLoaded>
     <ModuleLoaded symbols="True">DefinedTypes.exe</ModuleLoaded>
     <DebuggingPaused>Break</DebuggingPaused>
+    <TypesAsString Type="List`1" ToString="System.Collections.Generic.List`1[System.String]">
+      <Capacity>4</Capacity>
+      <Count>3</Count>
+      <Item>Debugger.Tests.TestPrograms.DefinedTypes_Class</Item>
+      <Item>Debugger.Tests.TestPrograms.DefinedTypes_Struct</Item>
+      <Item>Debugger.Tests.TestPrograms.DefinedTypes_GenericClass`2</Item>
+    </TypesAsString>
     <Types Type="List`1" ToString="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]">
       <Capacity>4</Capacity>
       <Count>2</Count>
