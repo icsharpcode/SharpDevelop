@@ -227,52 +227,69 @@ namespace ICSharpCode.SharpDevelop.Commands
 			TaskService.BuildMessageViewCategory.AppendText(output + Environment.NewLine + "${res:XML.MainMenu.ToolMenu.ExternalTools.ExitedWithCode} " + p.ExitCode + Environment.NewLine);
 		}
 		
+		
+		/// <summary>
+		/// This handler gets called when a tool in the Tool menu is clicked on.
+		/// </summary>
+		/// <param name="sender">The MenuCommand that sent the event.</param>
+		/// <param name="e">Event arguments.</param>
 		void ToolEvt(object sender, EventArgs e)
 		{
 			MenuCommand item = (MenuCommand)sender;
 			
+			// TODO: ToolLoader.Tool should get a string indexor. Overloading List or making it a Dictionary<string,ExternalTool> would work.
 			for (int i = 0; i < ToolLoader.Tool.Count; ++i) {
-				if (item.Text == ToolLoader.Tool[i].ToString()) {
-					ExternalTool tool = (ExternalTool)ToolLoader.Tool[i];
-					
-					string command = StringParser.Parse(tool.Command);
-					string args    = StringParser.Parse(tool.Arguments);
-					
-					if (tool.PromptForArguments) {
-						InputBox box = new InputBox();
-						box.Text = tool.MenuCommand;
-						box.Label.Text = ResourceService.GetString("XML.MainMenu.ToolMenu.ExternalTools.EnterArguments");
-						box.TextBox.Text = args;
-						if (box.ShowDialog() != DialogResult.OK)
-							return;
-						args = box.TextBox.Text;
-					}
-					
-					try {
-						ProcessStartInfo startinfo;
-						if (args == null || args.Length == 0 || args.Trim('"', ' ').Length == 0) {
-							startinfo = new ProcessStartInfo(command);
-						} else {
-							startinfo = new ProcessStartInfo(command, args);
-						}
-						
-						startinfo.WorkingDirectory = StringParser.Parse(tool.InitialDirectory);
-						if (tool.UseOutputPad) {
-							startinfo.UseShellExecute = false;
-							startinfo.RedirectStandardOutput = true;
-						}
-						Process process = new Process();
-						process.EnableRaisingEvents = true;
-						process.StartInfo = startinfo;
-						if (tool.UseOutputPad) {
-							process.Exited += new EventHandler(ProcessExitEvent);
-						}
-						process.Start();
-					} catch (Exception ex) {
-						MessageService.ShowError("${res:XML.MainMenu.ToolMenu.ExternalTools.ExecutionFailed} '" + command + " " + args + "'\n" + ex.Message);
-					}
-					break;
+				if (item.Text != ToolLoader.Tool[i].ToString()) { continue; }
+				ExternalTool tool = (ExternalTool)ToolLoader.Tool[i];
+				
+				// Set these to somewhat useful values in case StingParser.Parse() passes when being called on one of them.
+				string command = tool.Command;
+				string args = tool.Arguments;
+
+				// This needs it's own try/catch because if parsing these messages fail, the catch block after
+				// the second try would also throw because MessageService.ShowError() calls StringParser.Parse()
+				try {
+					command = StringParser.Parse(tool.Command);
+					args    = StringParser.Parse(tool.Arguments);
+				} catch (Exception ex) {
+					MessageService.ShowError("${res:XML.MainMenu.ToolMenu.ExternalTools.ExecutionFailed} '" + ex.Message);
+					return;
 				}
+					
+				if (tool.PromptForArguments) {
+					InputBox box = new InputBox();
+					box.Text = tool.MenuCommand;
+					box.Label.Text = ResourceService.GetString("XML.MainMenu.ToolMenu.ExternalTools.EnterArguments");
+					box.TextBox.Text = args;
+					if (box.ShowDialog() != DialogResult.OK)
+						return;
+					args = box.TextBox.Text;
+				}
+					
+				try {
+					ProcessStartInfo startinfo;
+					if (args == null || args.Length == 0 || args.Trim('"', ' ').Length == 0) {
+						startinfo = new ProcessStartInfo(command);
+					} else {
+						startinfo = new ProcessStartInfo(command, args);
+					}
+					
+					startinfo.WorkingDirectory = StringParser.Parse(tool.InitialDirectory);
+					if (tool.UseOutputPad) {
+						startinfo.UseShellExecute = false;
+						startinfo.RedirectStandardOutput = true;
+					}
+					Process process = new Process();
+					process.EnableRaisingEvents = true;
+					process.StartInfo = startinfo;
+					if (tool.UseOutputPad) {
+						process.Exited += new EventHandler(ProcessExitEvent);
+					}
+					process.Start();
+				} catch (Exception ex) {
+					MessageService.ShowError("${res:XML.MainMenu.ToolMenu.ExternalTools.ExecutionFailed} '" + command + " " + args + "'\n" + ex.Message);
+				}
+				return;
 			}
 		}
 	}

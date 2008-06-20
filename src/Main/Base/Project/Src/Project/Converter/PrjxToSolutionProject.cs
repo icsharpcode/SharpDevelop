@@ -82,7 +82,7 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			{
 				if (hintPath == null || hintPath.Length == 0)
 					return false;
-				return !FileUtility.IsBaseDirectory(FileUtility.NETFrameworkInstallRoot, hintPath);
+				return !FileUtility.IsBaseDirectory(FileUtility.NetFrameworkInstallRoot, hintPath);
 			}
 			
 			string rootNamespace;

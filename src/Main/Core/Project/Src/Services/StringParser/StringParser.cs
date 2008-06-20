@@ -14,7 +14,7 @@ using System.Text;
 namespace ICSharpCode.Core
 {
 	/// <summary>
-	/// this class parses internal ${xyz} tags of sd.
+	/// This class parses internal ${xyz} tags of #Develop.
 	/// All environment variables are avaible under the name env.[NAME]
 	/// where [NAME] represents the string under which it is avaiable in
 	/// the environment.
@@ -94,31 +94,6 @@ namespace ICSharpCode.Core
 		/// </summary>
 		public static string Parse(string input, string[,] customTags)
 		{
-			// Parse is a important method and should have good performance,
-			// so we don't use an expensive Regex here.
-			
-			/* old code using regex:
-			string output = input;
-			if (input != null) {
-				foreach (Match m in pattern.Matches(input)) {
-					if (m.Length > 0) {
-						string token         = m.ToString();
-						string propertyName  = m.Groups[1].Captures[0].Value;
-						
-						string propertyValue = GetValue(propertyName, customTags);
-						
-						if (propertyValue != null) {
-							if (m.Length == input.Length) {
-								// safe a replace operation when input is a property on its own.
-								return propertyValue;
-							}
-							output = output.Replace(token, propertyValue);
-						}
-					}
-				}
-			}
-			return output;
-			 */
 			if (input == null)
 				return null;
 			int pos = 0;
@@ -170,9 +145,11 @@ namespace ICSharpCode.Core
 		
 		static string GetValue(string propertyName, string[,] customTags)
 		{
+			
+			// most properties start with res: in lowercase,
+			// so we can save 2 string allocations here, in addition to all the jumps
+			// All other prefixed properties {prefix:Key} shoulg get handled in the switch below.
 			if (propertyName.StartsWith("res:")) {
-				// most properties start with res: in lowercase,
-				// so we can safe 2 string allocations here
 				try {
 					return Parse(ResourceService.GetString(propertyName.Substring(4)), customTags);
 				} catch (ResourceNotFoundException) {
@@ -210,6 +187,8 @@ namespace ICSharpCode.Core
 			string prefix = propertyName.Substring(0, k);
 			propertyName = propertyName.Substring(k + 1);
 			switch (prefix.ToUpperInvariant()) {
+				case "SDKTOOLPATH":
+					return FileUtility.GetSdkPath(propertyName);
 				case "ADDINPATH":
 					foreach (AddIn addIn in AddInTree.AddIns) {
 						if (addIn.Manifest.Identities.ContainsKey(propertyName)) {

@@ -64,27 +64,67 @@ namespace ICSharpCode.Core
 			return null;
 		}
 		
+		#region InstallRoot Properties
+		
+		
+		
+		static string netFramework20InstallRoot = null;
 		/// <summary>
-		/// Gets the installation root of the .NET Framework (@"C:\Windows\Microsoft.NET\Framework\")
+		/// Location of the .NET Framework install root.
 		/// </summary>
-		public static string NETFrameworkInstallRoot {
+		public static string NetFrameworkInstallRoot {
 			get {
-				return GetPathFromRegistry(@"SOFTWARE\Microsoft\.NETFramework", "InstallRoot") ?? string.Empty;
+				// Lazy load this.
+				if (netSdk20InstallRoot != null) { return netSdk20InstallRoot; }
+				netSdk20InstallRoot = GetPathFromRegistry(@"SOFTWARE\Microsoft\.NETFramework", "InstallRoot")
+					?? string.Empty;
+				return netSdk20InstallRoot;
 			}
 		}
 		
+		static string netSdk20InstallRoot = null;
 		/// <summary>
-		/// Gets the Windows Vista SDK installation root. If the Vista SDK is not installed, the
-		/// .NET 2.0 SDK installation root is returned. If both are not installed, an empty string is returned.
+		/// Location of the .NET 2.0 SDK install root.
 		/// </summary>
-		public static string NetSdkInstallRoot {
+		public static string NetSdk20InstallRoot {
 			get {
-				return GetPathFromRegistry(@"SOFTWARE\Microsoft\Microsoft SDKs\Windows\v6.0a", "InstallationFolder")
-					?? GetPathFromRegistry(@"SOFTWARE\Microsoft\Microsoft SDKs\Windows\v6.0", "InstallationFolder")
-					?? GetPathFromRegistry(@"SOFTWARE\Microsoft\.NETFramework", "sdkInstallRootv2.0")
+				// Lazy load this.
+				if (netSdk20InstallRoot != null) { return netSdk20InstallRoot; }
+				netSdk20InstallRoot = GetPathFromRegistry(@"SOFTWARE\Microsoft\.NETFramework", "sdkInstallRootv2.0")
 					?? string.Empty;
+				return netSdk20InstallRoot;
 			}
 		}
+		
+		static string netSdk30InstallRoot = null;
+		/// <summary>
+		/// Location of the .NET 3.0 SDK (Windows SDK 6.0) install root.
+		/// </summary>
+		public static string NetSdk30InstallRoot {
+			get {
+				// Lazy load this.
+				if (netSdk30InstallRoot != null) { return netSdk30InstallRoot; }
+				netSdk30InstallRoot = GetPathFromRegistry(@"SOFTWARE\Microsoft\Microsoft SDKs\Windows\v6.0", "InstallationFolder")
+					?? string.Empty;
+				return netSdk30InstallRoot;
+			}
+		}
+		
+		static string netSdk35InstallRoot = null;
+		/// <summary>
+		/// Location of the .NET 3.5 SDK (Windows SDK 6.0a) install root.
+		/// </summary>
+		public static string NetSdk35InstallRoot {
+			get {
+				// Lazy load this.
+				if (netSdk35InstallRoot != null) { return netSdk35InstallRoot; }
+				netSdk35InstallRoot = GetPathFromRegistry(@"SOFTWARE\Microsoft\Microsoft SDKs\Windows\v6.0a", "InstallationFolder")
+					?? string.Empty;
+				return netSdk35InstallRoot;
+			}
+		}
+		
+		#endregion
 		
 		public static string Combine(params string[] paths)
 		{
@@ -128,6 +168,32 @@ namespace ICSharpCode.Core
 				return null;
 			else
 				return result.ToString();
+		}
+		
+		/// <summary>
+		/// Searches all the .net sdk bin folders and return the path of the 
+		/// exe from the latest sdk.
+		/// </summary>
+		/// <param name="exeName">The EXE to search for.</param>
+		/// <returns>The path of the executable.</returns>
+		/// <exception cref="System.IO.FileNotFoundException">
+		/// Thrown if the exe is not found.
+		/// </exception>
+		public static string GetSdkPath(string exeName) {
+			string execPath;
+			if (Directory.Exists(NetSdk35InstallRoot)) {
+				execPath = Path.Combine(NetSdk35InstallRoot + "\\bin", exeName);
+				if (File.Exists(execPath)) { return execPath; }
+			}
+			if (Directory.Exists(NetSdk30InstallRoot)) {
+				execPath = Path.Combine(NetSdk30InstallRoot + "\\bin", exeName);
+				if (File.Exists(execPath)) { return execPath; }
+			}
+			if (Directory.Exists(NetSdk20InstallRoot)) {
+				execPath = Path.Combine(NetSdk20InstallRoot + "\\bin", exeName);
+				if (File.Exists(execPath)) { return execPath; }
+			}
+			throw new FileNotFoundException(StringParser.Parse("${res:Fileutility.CantFindExecutableError}", new string[,] { {"EXECUTABLE",  exeName} }));
 		}
 		
 		/// <summary>

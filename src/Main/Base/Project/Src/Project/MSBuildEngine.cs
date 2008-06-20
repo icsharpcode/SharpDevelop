@@ -354,6 +354,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				AppendError(e.File, e.LineNumber, e.ColumnNumber, e.Code, e.Message, true);
 			}
 			
+			// TODO: Add XmlDocBloc to MSBuildError.AppendError()
 			void AppendError(string file, int lineNumber, int columnNumber, string code, string message, bool isWarning)
 			{
 				if (string.Equals(file, activeTaskName, StringComparison.InvariantCultureIgnoreCase)) {
@@ -365,7 +366,9 @@ namespace ICSharpCode.SharpDevelop.Project
 					}
 					if (isShortFileName && !File.Exists(file)) {
 						file = "";
-					} else if (FileUtility.IsBaseDirectory(FileUtility.NETFrameworkInstallRoot, file)
+					} 
+					//TODO: Do we have to check for other SDKs here.
+					else if (FileUtility.IsBaseDirectory(FileUtility.NetFrameworkInstallRoot, file)
 					           || FileUtility.IsBaseDirectory(FileUtility.ApplicationRootPath, file))
 					{
 						file = "";

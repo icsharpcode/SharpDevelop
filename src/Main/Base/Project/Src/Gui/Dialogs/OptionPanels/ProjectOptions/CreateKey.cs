@@ -15,10 +15,18 @@ using ICSharpCode.SharpDevelop.Gui.XmlForms;
 
 namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 {
+    /// <summary>
+    /// A form that creates keys for assembly signing.
+    /// </summary>
 	public class CreateKeyForm : BaseSharpDevelopForm
 	{
 		string baseDirectory;
 		
+		/// <summary>
+		/// Initializes the CreateKeyFrom() dialog setting the b ase directory for adding keys to the
+		/// location specified.
+		/// </summary>
+		/// <param name="baseDirectory">The folder for placing the key.</param>
 		public CreateKeyForm(string baseDirectory)
 		{
 			this.baseDirectory = baseDirectory;
@@ -54,6 +62,11 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			}
 		}
 		
+        /// <summary>
+        /// Creates a key with the sn.exe utility.
+        /// </summary>
+        /// <param name="keyPath">The path of the key to create.</param>
+        /// <returns>True if the key was created correctly.</returns>
 		public static bool CreateKey(string keyPath)
 		{
 			if (File.Exists(keyPath)) {
@@ -97,9 +110,13 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			return true;
 		}
 		
+        /// <summary>
+        /// Gets the path of the "strong named" executable. This is used to create keys for strongly signing
+        /// .NET assemblies.
+        /// </summary>
 		public static string StrongNameTool {
 			get {
-				return Path.Combine(FileUtility.NetSdkInstallRoot, "bin\\sn.exe");
+        		return FileUtility.GetSdkPath("sn.exe");
 			}
 		}
 	}

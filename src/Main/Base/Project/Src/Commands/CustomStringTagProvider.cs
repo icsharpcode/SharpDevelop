@@ -15,6 +15,10 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Commands
 {
+	/// <summary>
+	/// Provides tag to string mapping for SharpDevelop. Tags are mapped to strings by several methods
+	/// such as registry and resource files.
+	/// </summary>
 	public class SharpDevelopStringTagProvider :  IStringTagProvider
 	{
 		readonly static string[] tags = new string[] {
@@ -26,8 +30,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 			"CombineDir", "CombineFilename",
 			"SolutionDir", "SolutionFilename",
 			"Startuppath",
-			"TaskService.Warnings", "TaskService.Errors", "TaskService.Messages",
-			"NetSdkDir"
+			"TaskService.Warnings", "TaskService.Errors", "TaskService.Messages"
 		};
 		
 		public string[] Tags {
@@ -70,8 +73,6 @@ namespace ICSharpCode.SharpDevelop.Commands
 					
 			}
 			switch (tag.ToUpperInvariant()) {
-				case "NETSDKDIR":
-					return FileUtility.NetSdkInstallRoot;
 				case "ITEMPATH":
 					try {
 						return GetCurrentItemPath();
