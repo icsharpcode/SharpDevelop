@@ -225,6 +225,8 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		
 		private SchemeNode LoadFile(XmlTextReader reader, bool userList, string name)
 		{
+			if (reader == null)
+				return null;
 			errors.Clear();
 			try {
 				XmlValidatingReader validatingReader = new XmlValidatingReader(reader);

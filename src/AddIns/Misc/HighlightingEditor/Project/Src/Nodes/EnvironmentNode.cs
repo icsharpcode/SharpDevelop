@@ -20,8 +20,8 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 {
 	class EnvironmentNode : AbstractNode
 	{
-		public static string[]        ColorNames;
-		public string[]               ColorDescs;
+		public string[] ColorNames;
+		public string[] ColorDescs;
 		public EditorHighlightColor[] Colors;
 		
 		const string CustomColorPrefix = "Custom$";
@@ -55,7 +55,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 				}
 			}
 			
-			EnvironmentNode.ColorNames = envColorNames.ToArray();
+			this.ColorNames = envColorNames.ToArray();
 			this.ColorDescs = envColorDescriptions.ToArray();
 			this.Colors = envColors.ToArray();
 			StringParser.Parse(ColorDescs);
@@ -116,7 +116,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 			EnvironmentNode node = (EnvironmentNode)parent;
 			listView.Items.Clear();
 			
-			for (int i = 0; i <= EnvironmentNode.ColorNames.GetUpperBound(0); ++i) {
+			for (int i = 0; i <= node.ColorNames.GetUpperBound(0); ++i) {
 				listView.Items.Add(new EnvironmentItem(i, node.ColorDescs[i], node.Colors[i], listView.Font));
 			}
 		}
