@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.Visitors;
+using System.Runtime.InteropServices;
 
 namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 {
@@ -409,7 +410,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					}
 				} else if (rr != null && rr.ResolvedType != null) {
 					IClass c = rr.ResolvedType.GetUnderlyingClass();
-					if (c.ClassType == ClassType.Delegate) {
+					if (c != null && c.ClassType == ClassType.Delegate) {
 						InvocationExpression invocation = new InvocationExpression(
 							new MemberReferenceExpression(
 								new IdentifierExpression("Delegate"),
@@ -443,6 +444,58 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					}
 				}
 			}
+			return null;
+		}
+		
+		public override object VisitUnaryOperatorExpression(UnaryOperatorExpression unaryOperatorExpression, object data)
+		{
+			base.VisitUnaryOperatorExpression(unaryOperatorExpression, data);
+			switch (unaryOperatorExpression.Op) {
+				case UnaryOperatorType.Dereference:
+					ReplaceCurrentNode(new MemberReferenceExpression(unaryOperatorExpression.Expression, "Target") {
+					                   	StartLocation = unaryOperatorExpression.StartLocation,
+					                   	EndLocation = unaryOperatorExpression.EndLocation
+					                   });
+					break;
+				case UnaryOperatorType.AddressOf:
+					ResolveResult rr = resolver.ResolveInternal(unaryOperatorExpression.Expression, ExpressionContext.Default);
+					if (rr != null && rr.ResolvedType != null) {
+						TypeReference targetType = Refactoring.CodeGenerator.ConvertType(rr.ResolvedType, CreateContext());
+						TypeReference pointerType = new TypeReference("Pointer", new List<TypeReference> { targetType });
+						ReplaceCurrentNode(new ObjectCreateExpression(pointerType, new List<Expression> { unaryOperatorExpression.Expression }) {
+						                   	StartLocation = unaryOperatorExpression.StartLocation,
+						                   	EndLocation = unaryOperatorExpression.EndLocation
+						                   });
+					}
+					break;
+			}
+			return null;
+		}
+		
+		public override object VisitTypeReference(TypeReference typeReference, object data)
+		{
+			while (typeReference.PointerNestingLevel > 0) {
+				TypeReference tr = new TypeReference(typeReference.Type, typeReference.SystemType) {
+					IsGlobal = typeReference.IsGlobal,
+				};
+				tr.GenericTypes.AddRange(typeReference.GenericTypes);
+				
+				typeReference = new TypeReference("Pointer") {
+					StartLocation = typeReference.StartLocation,
+					EndLocation = typeReference.EndLocation,
+					PointerNestingLevel = typeReference.PointerNestingLevel - 1,
+					GenericTypes = { tr },
+					RankSpecifier = typeReference.RankSpecifier
+				};
+			}
+			ReplaceCurrentNode(typeReference);
+			return base.VisitTypeReference(typeReference, data);
+		}
+		
+		public override object VisitUnsafeStatement(UnsafeStatement unsafeStatement, object data)
+		{
+			base.VisitUnsafeStatement(unsafeStatement, data);
+			ReplaceCurrentNode(unsafeStatement.Block);
 			return null;
 		}
 	}

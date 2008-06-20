@@ -238,9 +238,9 @@ namespace ICSharpCode.NRefactory.Ast
 		PostDecrement,
 		
 		/// <summary>Dereferencing pointer</summary>
-		Star,
+		Dereference,
 		/// <summary>Get address of</summary>
-		BitWiseAnd
+		AddressOf
 	}
 	
 	public enum ContinueType

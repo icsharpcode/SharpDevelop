@@ -230,6 +230,22 @@ End Class");
 		}
 		
 		[Test]
+		public void ConditionalCompilationCS2VB()
+		{
+			TestProgramCS2VB("class A\n" +
+			                 "{\n" +
+			                 "  #if TEST\n" +
+			                 "  public int Field;\n" +
+			                 "  #endif\n" +
+			                 "}",
+			                 "Class A\n" +
+			                 "  #If TEST Then\n" +
+			                 "  Public Field As Integer\n" +
+			                 "  #End If\n" +
+			                 "End Class");
+		}
+		
+		[Test]
 		public void RegionInsideMethodCS2VB()
 		{
 			TestProgramCS2VB("class A { void M() {\n" +

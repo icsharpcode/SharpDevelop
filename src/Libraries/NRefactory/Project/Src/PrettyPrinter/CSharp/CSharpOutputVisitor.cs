@@ -2105,10 +2105,10 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					TrackVisit(unaryOperatorExpression.Expression, data);
 					outputFormatter.PrintToken(Tokens.Increment);
 					return null;
-				case UnaryOperatorType.Star:
+				case UnaryOperatorType.Dereference:
 					outputFormatter.PrintToken(Tokens.Times);
 					break;
-				case UnaryOperatorType.BitWiseAnd:
+				case UnaryOperatorType.AddressOf:
 					outputFormatter.PrintToken(Tokens.BitwiseAnd);
 					break;
 				default:

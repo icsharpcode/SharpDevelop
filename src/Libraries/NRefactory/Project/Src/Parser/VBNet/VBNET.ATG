@@ -1839,7 +1839,7 @@ UnaryExpr<out Expression uExpr>
 .) =
 	{ 	"+" 		(. uop = UnaryOperatorType.Plus; isUOp = true; .)
 		| "-" 		(. uop = UnaryOperatorType.Minus; isUOp = true; .)
-		| "*" 		(. uop = UnaryOperatorType.Star;  isUOp = true;.)
+		| "*" 		(. uop = UnaryOperatorType.Dereference;  isUOp = true;.)
 	}
 	ExponentiationExpr<out expr>
 	(.

@@ -1763,10 +1763,10 @@ UnaryExpr<out Expression uExpr>
 			| "-"  (. expressions.Add(new UnaryOperatorExpression(UnaryOperatorType.Minus)); .)
 			| "!"  (. expressions.Add(new UnaryOperatorExpression(UnaryOperatorType.Not)); .)
 			| "~"  (. expressions.Add(new UnaryOperatorExpression(UnaryOperatorType.BitNot)); .)
-			| "*"  (. expressions.Add(new UnaryOperatorExpression(UnaryOperatorType.Star)); .)
+			| "*"  (. expressions.Add(new UnaryOperatorExpression(UnaryOperatorType.Dereference)); .)
 			| "++" (. expressions.Add(new UnaryOperatorExpression(UnaryOperatorType.Increment)); .)
 			| "--" (. expressions.Add(new UnaryOperatorExpression(UnaryOperatorType.Decrement)); .)
-			| "&"  (. expressions.Add(new UnaryOperatorExpression(UnaryOperatorType.BitWiseAnd)); .)
+			| "&"  (. expressions.Add(new UnaryOperatorExpression(UnaryOperatorType.AddressOf)); .)
 			
 			/*--- cast expression: */
 			/* Problem:  "(" Type ")" from here and                     *

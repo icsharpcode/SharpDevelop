@@ -4245,7 +4245,7 @@ IsTypeCast()) {
 				lexer.NextToken();
 
 #line  1766 "cs.ATG" 
-				expressions.Add(new UnaryOperatorExpression(UnaryOperatorType.Star)); 
+				expressions.Add(new UnaryOperatorExpression(UnaryOperatorType.Dereference)); 
 			} else if (la.kind == 31) {
 				lexer.NextToken();
 
@@ -4260,7 +4260,7 @@ IsTypeCast()) {
 				lexer.NextToken();
 
 #line  1769 "cs.ATG" 
-				expressions.Add(new UnaryOperatorExpression(UnaryOperatorType.BitWiseAnd)); 
+				expressions.Add(new UnaryOperatorExpression(UnaryOperatorType.AddressOf)); 
 			} else {
 				Expect(20);
 				Type(

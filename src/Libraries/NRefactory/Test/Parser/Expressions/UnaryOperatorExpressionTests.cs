@@ -76,13 +76,13 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		[Test]
 		public void CSharpStarTest()
 		{
-			CSharpTestUnaryOperatorExpressionTest("*a", UnaryOperatorType.Star);
+			CSharpTestUnaryOperatorExpressionTest("*a", UnaryOperatorType.Dereference);
 		}
 		
 		[Test]
 		public void CSharpBitWiseAndTest()
 		{
-			CSharpTestUnaryOperatorExpressionTest("&a", UnaryOperatorType.BitWiseAnd);
+			CSharpTestUnaryOperatorExpressionTest("&a", UnaryOperatorType.AddressOf);
 		}
 		#endregion
 		

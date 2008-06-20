@@ -4483,7 +4483,7 @@ out Expression uExpr) {
 				lexer.NextToken();
 
 #line  1842 "VBNET.ATG" 
-				uop = UnaryOperatorType.Star;  isUOp = true;
+				uop = UnaryOperatorType.Dereference;  isUOp = true;
 			}
 		}
 		ExponentiationExpr(

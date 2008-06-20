@@ -40,7 +40,9 @@ namespace ICSharpCode.NRefactory
 				if (arg.ToLowerInvariant().EndsWith(" then"))
 					arg = arg.Substring(0, arg.Length - 5);
 			}
-			return new PreprocessingDirective(cmd, arg, dir.StartPosition, dir.EndPosition);
+			return new PreprocessingDirective(cmd, arg, dir.StartPosition, dir.EndPosition) {
+				Expression = dir.Expression
+			};
 		}
 		
 		public static void CSharpToVB(List<ISpecial> list)
@@ -77,7 +79,9 @@ namespace ICSharpCode.NRefactory
 			if (cmd.Length > 1) {
 				cmd = cmd.Substring(0, 2).ToUpperInvariant() + cmd.Substring(2);
 			}
-			return new PreprocessingDirective(cmd, arg, dir.StartPosition, dir.EndPosition);
+			return new PreprocessingDirective(cmd, arg, dir.StartPosition, dir.EndPosition) {
+				Expression = dir.Expression
+			};
 		}
 		#endregion
 		

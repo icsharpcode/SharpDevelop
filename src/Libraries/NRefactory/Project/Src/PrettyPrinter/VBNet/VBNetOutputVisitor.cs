@@ -2318,10 +2318,10 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					outputFormatter.PrintText(" - 1)");
 					return null;
 					
-				case UnaryOperatorType.Star:
+				case UnaryOperatorType.Dereference:
 					outputFormatter.PrintToken(Tokens.Times);
 					return null;
-				case UnaryOperatorType.BitWiseAnd:
+				case UnaryOperatorType.AddressOf:
 					outputFormatter.PrintToken(Tokens.AddressOf);
 					return null;
 				default:

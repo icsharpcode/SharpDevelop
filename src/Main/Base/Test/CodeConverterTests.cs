@@ -469,6 +469,20 @@ namespace ICSharpCode.SharpDevelop.Tests
 		}
 		
 		[Test]
+		public void PointerUsage()
+		{
+			TestStatementsCS2VB("int a = 2;" +
+			                    "int* b = &a;" +
+			                    "*b += 40;" +
+			                    "Console.WriteLine(*b);",
+			                    
+			                    "Dim a As Integer = 2\n" +
+			                    "Dim b As New Pointer(Of Integer)(a)\n" +
+			                    "b.Target += 40\n" +
+			                    "Console.WriteLine(b.Target)");
+		}
+		
+		[Test]
 		public void RemoveImportDuplicatedByProjectLevelImport()
 		{
 			TestProgramVB2CS("Imports System\nClass Test\nEnd Class",
