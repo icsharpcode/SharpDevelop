@@ -210,7 +210,7 @@ End Class");
 			TestProgramCS2VB("class A { [PreserveSig] public void B(// comment\nint c) {} }",
 			                 "Class A\n" +
 			                 "    ' comment\n" +
-			                 "  <PreserveSig()> _\n" +
+			                 "  <PreserveSig> _\n" +
 			                 "  Public Sub B(c As Integer)\n" +
 			                 "  End Sub\n" +
 			                 "End Class");

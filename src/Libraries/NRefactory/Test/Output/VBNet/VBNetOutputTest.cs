@@ -356,6 +356,12 @@ End Using");
 		}
 		
 		[Test]
+		public void AttributeOnParameter()
+		{
+			TestTypeMember("Sub Main(ByRef one As Integer, ByRef two As Integer, <Out> ByRef three As Integer)\nEnd Sub");
+		}
+		
+		[Test]
 		public void UsingStatementForExistingVariable()
 		{
 			TestStatement("Using obj\nEnd Using");

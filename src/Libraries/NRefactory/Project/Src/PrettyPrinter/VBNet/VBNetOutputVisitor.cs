@@ -179,6 +179,8 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		}
 		
 		#region Global scope
+		bool printAttributeSectionInline; // is set to true when printing parameter's attributes
+		
 		public override object TrackedVisitAttributeSection(AttributeSection attributeSection, object data)
 		{
 			outputFormatter.Indent();
@@ -197,7 +199,10 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			    || "module".Equals(attributeSection.AttributeTarget, StringComparison.InvariantCultureIgnoreCase)) {
 				outputFormatter.NewLine();
 			} else {
-				outputFormatter.PrintLineContinuation();
+				if (printAttributeSectionInline)
+					outputFormatter.Space();
+				else
+					outputFormatter.PrintLineContinuation();
 			}
 			
 			return null;
@@ -206,17 +211,19 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		public override object TrackedVisitAttribute(ICSharpCode.NRefactory.Ast.Attribute attribute, object data)
 		{
 			outputFormatter.PrintIdentifier(attribute.Name);
-			outputFormatter.PrintToken(Tokens.OpenParenthesis);
-			AppendCommaSeparatedList(attribute.PositionalArguments);
-			
-			if (attribute.NamedArguments != null && attribute.NamedArguments.Count > 0) {
-				if (attribute.PositionalArguments.Count > 0) {
-					outputFormatter.PrintToken(Tokens.Comma);
-					outputFormatter.Space();
+			if (attribute.PositionalArguments.Count > 0 || attribute.NamedArguments.Count > 0) {
+				outputFormatter.PrintToken(Tokens.OpenParenthesis);
+				AppendCommaSeparatedList(attribute.PositionalArguments);
+				
+				if (attribute.NamedArguments.Count > 0) {
+					if (attribute.PositionalArguments.Count > 0) {
+						outputFormatter.PrintToken(Tokens.Comma);
+						outputFormatter.Space();
+					}
+					AppendCommaSeparatedList(attribute.NamedArguments);
 				}
-				AppendCommaSeparatedList(attribute.NamedArguments);
+				outputFormatter.PrintToken(Tokens.CloseParenthesis);
 			}
-			outputFormatter.PrintToken(Tokens.CloseParenthesis);
 			return null;
 		}
 		
@@ -800,7 +807,9 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public override object TrackedVisitParameterDeclarationExpression(ParameterDeclarationExpression parameterDeclarationExpression, object data)
 		{
+			printAttributeSectionInline = true;
 			VisitAttributes(parameterDeclarationExpression.Attributes, data);
+			printAttributeSectionInline = false;
 			OutputModifier(parameterDeclarationExpression.ParamModifier, parameterDeclarationExpression.StartLocation);
 			outputFormatter.PrintIdentifier(parameterDeclarationExpression.ParameterName);
 			outputFormatter.Space();

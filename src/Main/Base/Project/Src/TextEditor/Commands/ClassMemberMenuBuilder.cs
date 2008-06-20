@@ -202,14 +202,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 		{
 			MenuCommand item = (MenuCommand)sender;
 			IMember member = (IMember)item.Tag;
-			string memberName;
-			if (member is IProperty && ((IProperty)member).IsIndexer) {
-				// The name of the default indexer is always "Indexer" in C#.
-				// Add the type name to clarify which indexer is referred to.
-				memberName = member.Name + " of " + member.DeclaringType.Name;
-			} else {
-				memberName = member.Name;
-			}
+			string memberName = member.DeclaringType.Name + "." + member.Name;
 			using (AsynchronousWaitDialog monitor = AsynchronousWaitDialog.ShowWaitDialog("${res:SharpDevelop.Refactoring.FindReferences}"))
 			{
 				FindReferencesAndRenameHelper.ShowAsSearchResults(StringParser.Parse("${res:SharpDevelop.Refactoring.ReferencesTo}",

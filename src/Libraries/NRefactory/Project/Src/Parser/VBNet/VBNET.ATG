@@ -2163,36 +2163,26 @@ AttributeSection<out AttributeSection section>
 
 /* 9.2.5 */
 FormalParameterList<List<ParameterDeclarationExpression> parameter>
-	(.
-		ParameterDeclarationExpression p;
-		AttributeSection section;
-		List<AttributeSection> attributes = new List<AttributeSection>();
-	.) =
-	{ AttributeSection<out section> (.attributes.Add(section); .) }
-	(
-		FormalParameter<out p>
-		(.
-			bool paramsFound = false;
-			p.Attributes = attributes;
-			parameter.Add(p);
-		.)
-		{
-			","	(. if (paramsFound) Error("params array must be at end of parameter list"); .)
-			{ AttributeSection<out section> (.attributes.Add(section); .) }
-			(
-				FormalParameter <out p>	(. p.Attributes = attributes; parameter.Add(p); .)
-			)
-		}
-	)
-	.
+(. ParameterDeclarationExpression p; .)
+=
+	FormalParameter <out p>	(. if (p != null) parameter.Add(p); .)
+	{	","
+		FormalParameter <out p>	(. if (p != null) parameter.Add(p); .)
+	}
+.
 /* 9.2.5 */
 FormalParameter<out ParameterDeclarationExpression p>
-	(.
-		TypeReference type = null;
-		ParamModifierList mod = new ParamModifierList(this);
-		Expression expr = null;
-		p = null;ArrayList arrayModifiers = null;
-	.) =
+(.
+	AttributeSection section;
+	List<AttributeSection> attributes = new List<AttributeSection>();
+	TypeReference type = null;
+	ParamModifierList mod = new ParamModifierList(this);
+	Expression expr = null;
+	p = null;
+	ArrayList arrayModifiers = null;
+.)
+=
+	{ AttributeSection<out section> (. attributes.Add(section); .) }
 	{ ParameterModifier<mod> }
 	Identifier (. string parameterName = t.val; .)
 	[ IF(IsDims()) ArrayTypeModifiers<out arrayModifiers> ]
@@ -2214,8 +2204,9 @@ FormalParameter<out ParameterDeclarationExpression p>
 	(.
 		mod.Check();
 		p = new ParameterDeclarationExpression(type, parameterName, mod.Modifier, expr);
+		p.Attributes = attributes;
 	.)
-	.
+.
 
 /* 10.1 */
 Block<out Statement stmt>
