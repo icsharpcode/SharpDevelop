@@ -174,10 +174,6 @@ namespace ICSharpCode.Svn.Commands
 		
 		void FileCreated(object sender, FileEventArgs e)
 		{
-			// Do not automatically add directories: we cannot rename them while they are in "added" state
-			// This is an issue with SVN 1.4 and will be fixed in SVN 1.5.
-			if (e.IsDirectory) return;
-			
 			if (!AddInOptions.AutomaticallyAddFiles) return;
 			if (!Path.IsPathRooted(e.FileName)) return;
 			
@@ -323,19 +319,9 @@ namespace ICSharpCode.Svn.Commands
 						case StatusKind.Normal:
 						case StatusKind.Modified:
 						case StatusKind.Replaced:
+						case StatusKind.Added:
 							// rename without problem
 							break;
-						case StatusKind.Added:
-							if (status.Copied) {
-								MessageService.ShowError("The file was moved/copied and cannot be renamed without losing it's history.");
-								e.Cancel = true;
-							} else if (e.IsDirectory) {
-								goto default;
-							} else {
-								client.Revert(new string[] { fullSource }, Recurse.None);
-								FileService.FileRenamed += new AutoAddAfterRenameHelper(e).Renamed;
-							}
-							return;
 						default:
 							MessageService.ShowError("The file/directory cannot be renamed because it is in subversion status '" + status.TextStatus + "'.");
 							e.Cancel = true;
@@ -349,28 +335,6 @@ namespace ICSharpCode.Svn.Commands
 				e.OperationAlreadyDone = true;
 			} catch (Exception ex) {
 				MessageService.ShowError("File renamed exception: " + ex);
-			}
-		}
-		
-		sealed class AutoAddAfterRenameHelper
-		{
-			FileRenamingEventArgs args;
-			
-			public AutoAddAfterRenameHelper(FileRenamingEventArgs args) {
-				this.args = args;
-			}
-			
-			public void Renamed(object sender, FileRenameEventArgs e)
-			{
-				FileService.FileRenamed -= Renamed;
-				if (args.Cancel || args.OperationAlreadyDone)
-					return;
-				if (args.SourceFile != e.SourceFile || args.TargetFile != e.TargetFile)
-					return;
-				using (SvnClientWrapper client = new SvnClientWrapper()) {
-					SvnMessageView.HandleNotifications(client);
-					client.Add(e.TargetFile, Recurse.None);
-				}
 			}
 		}
 	}
