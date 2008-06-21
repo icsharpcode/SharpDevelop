@@ -66,19 +66,16 @@ namespace ICSharpCode.Core
 		
 		#region InstallRoot Properties
 		
-		
-		
-		static string netFramework20InstallRoot = null;
+		static string netFrameworkInstallRoot = null;
 		/// <summary>
-		/// Location of the .NET Framework install root.
+		/// Gets the installation root of the .NET Framework (@"C:\Windows\Microsoft.NET\Framework\")
 		/// </summary>
 		public static string NetFrameworkInstallRoot {
 			get {
-				// Lazy load this.
-				if (netSdk20InstallRoot != null) { return netSdk20InstallRoot; }
-				netSdk20InstallRoot = GetPathFromRegistry(@"SOFTWARE\Microsoft\.NETFramework", "InstallRoot")
-					?? string.Empty;
-				return netSdk20InstallRoot;
+				if (netFrameworkInstallRoot == null) {
+					netFrameworkInstallRoot = GetPathFromRegistry(@"SOFTWARE\Microsoft\.NETFramework", "InstallRoot") ?? string.Empty;
+				}
+				return netFrameworkInstallRoot;
 			}
 		}
 		
@@ -88,10 +85,9 @@ namespace ICSharpCode.Core
 		/// </summary>
 		public static string NetSdk20InstallRoot {
 			get {
-				// Lazy load this.
-				if (netSdk20InstallRoot != null) { return netSdk20InstallRoot; }
-				netSdk20InstallRoot = GetPathFromRegistry(@"SOFTWARE\Microsoft\.NETFramework", "sdkInstallRootv2.0")
-					?? string.Empty;
+				if (netSdk20InstallRoot == null) { 
+					netSdk20InstallRoot = GetPathFromRegistry(@"SOFTWARE\Microsoft\.NETFramework", "sdkInstallRootv2.0") ?? string.Empty;
+				}
 				return netSdk20InstallRoot;
 			}
 		}
@@ -102,10 +98,9 @@ namespace ICSharpCode.Core
 		/// </summary>
 		public static string NetSdk30InstallRoot {
 			get {
-				// Lazy load this.
-				if (netSdk30InstallRoot != null) { return netSdk30InstallRoot; }
-				netSdk30InstallRoot = GetPathFromRegistry(@"SOFTWARE\Microsoft\Microsoft SDKs\Windows\v6.0", "InstallationFolder")
-					?? string.Empty;
+				if (netSdk30InstallRoot == null) { 
+					netSdk30InstallRoot = GetPathFromRegistry(@"SOFTWARE\Microsoft\Microsoft SDKs\Windows\v6.0", "InstallationFolder") ?? string.Empty;
+				}
 				return netSdk30InstallRoot;
 			}
 		}
@@ -116,10 +111,9 @@ namespace ICSharpCode.Core
 		/// </summary>
 		public static string NetSdk35InstallRoot {
 			get {
-				// Lazy load this.
-				if (netSdk35InstallRoot != null) { return netSdk35InstallRoot; }
-				netSdk35InstallRoot = GetPathFromRegistry(@"SOFTWARE\Microsoft\Microsoft SDKs\Windows\v6.0a", "InstallationFolder")
-					?? string.Empty;
+				if (netSdk35InstallRoot == null) { 
+					netSdk35InstallRoot = GetPathFromRegistry(@"SOFTWARE\Microsoft\Microsoft SDKs\Windows\v6.0a", "InstallationFolder") ?? string.Empty;
+				}
 				return netSdk35InstallRoot;
 			}
 		}
@@ -182,15 +176,15 @@ namespace ICSharpCode.Core
 		public static string GetSdkPath(string exeName) {
 			string execPath;
 			if (Directory.Exists(NetSdk35InstallRoot)) {
-				execPath = Path.Combine(NetSdk35InstallRoot + "\\bin", exeName);
+				execPath = Path.Combine(NetSdk35InstallRoot + @"\bin", exeName);
 				if (File.Exists(execPath)) { return execPath; }
 			}
 			if (Directory.Exists(NetSdk30InstallRoot)) {
-				execPath = Path.Combine(NetSdk30InstallRoot + "\\bin", exeName);
+				execPath = Path.Combine(NetSdk30InstallRoot + @"\bin", exeName);
 				if (File.Exists(execPath)) { return execPath; }
 			}
 			if (Directory.Exists(NetSdk20InstallRoot)) {
-				execPath = Path.Combine(NetSdk20InstallRoot + "\\bin", exeName);
+				execPath = Path.Combine(NetSdk20InstallRoot + @"\bin", exeName);
 				if (File.Exists(execPath)) { return execPath; }
 			}
 			throw new FileNotFoundException(StringParser.Parse("${res:Fileutility.CantFindExecutableError}", new string[,] { {"EXECUTABLE",  exeName} }));
