@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.NRefactory.AstBuilder;
 using ICSharpCode.NRefactory.Visitors;
 
 namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
@@ -169,8 +170,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				// the VB compiler automatically adds the InitializeComponents() call to the
 				// default constructor, so the converter has to add the call when creating an explicit
 				// constructor
-				cd.Body.Children.Add(new ExpressionStatement(
-					new InvocationExpression(new IdentifierExpression("InitializeComponent"))));
+				cd.Body.AddStatement(new IdentifierExpression("InitializeComponent").Call());
 			}
 			return cd;
 		}

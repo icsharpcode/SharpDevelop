@@ -517,6 +517,13 @@ namespace ICSharpCode.SharpDevelop.Tests
 			TestStatementsCS2VB("IDisposable ex = (IDisposable)obj;\n",
 			                    "Dim ex As IDisposable = DirectCast(obj, IDisposable)\n");
 		}
+		
+		[Test]
+		public void CastIntegerToChar()
+		{
+			TestStatementsCS2VB("char c = (char)42;",
+			                    "Dim c As Char = ChrW(42)");
+		}
 		#endregion
 		
 		#region MoveUsingOutOfNamespace

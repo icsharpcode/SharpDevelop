@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.NRefactory.AstBuilder;
 using ICSharpCode.NRefactory.Visitors;
 using System.Runtime.InteropServices;
 
@@ -351,10 +352,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		Expression CreateExplicitConversionToString(Expression expr)
 		{
-			InvocationExpression ie = new InvocationExpression(
-				new MemberReferenceExpression(new IdentifierExpression("Convert"), "ToString"));
-			ie.Arguments.Add(expr);
-			return ie;
+			return new IdentifierExpression("Convert").Call("ToString", expr);
 		}
 		
 		public override object VisitIdentifierExpression(IdentifierExpression identifierExpression, object data)
@@ -411,11 +409,10 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				} else if (rr != null && rr.ResolvedType != null) {
 					IClass c = rr.ResolvedType.GetUnderlyingClass();
 					if (c != null && c.ClassType == ClassType.Delegate) {
-						InvocationExpression invocation = new InvocationExpression(
-							new MemberReferenceExpression(
-								new IdentifierExpression("Delegate"),
-								assignmentExpression.Op == AssignmentOperatorType.Add ? "Combine" : "Remove"));
-						invocation.Arguments.Add(assignmentExpression.Left);
+						InvocationExpression invocation =
+							new IdentifierExpression("Delegate").Call(
+								assignmentExpression.Op == AssignmentOperatorType.Add ? "Combine" : "Remove",
+								assignmentExpression.Left);
 						invocation.Arguments.Add(assignmentExpression.Right);
 						
 						assignmentExpression.Op = AssignmentOperatorType.Assign;
@@ -434,13 +431,21 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (resolver.CompilationUnit == null)
 				return null;
 			
-			// cast to value type is a conversion
-			if (castExpression.CastType == CastType.Cast) {
-				IReturnType rt = ResolveType(castExpression.CastTo);
-				if (rt != null) {
-					IClass c = rt.GetUnderlyingClass();
-					if (c != null && (c.ClassType == ClassType.Struct || c.ClassType == ClassType.Enum)) {
+			if (castExpression.CastType != CastType.TryCast) {
+				IReturnType targetType = ResolveType(castExpression.CastTo);
+				if (targetType != null) {
+					IClass targetClass = targetType.GetUnderlyingClass();
+					if (targetClass != null && (targetClass.ClassType == ClassType.Struct || targetClass.ClassType == ClassType.Enum)) {
+						// cast to value type is a conversion
 						castExpression.CastType = CastType.Conversion;
+					}
+					if (targetClass != null && targetClass.FullyQualifiedName == "System.Char") {
+						// C# cast to char is done using ChrW function
+						ResolveResult sourceRR = resolver.ResolveInternal(castExpression.Expression, ExpressionContext.Default);
+						IReturnType sourceType = sourceRR != null ? sourceRR.ResolvedType : null;
+						if (IsInteger(sourceType)) {
+							ReplaceCurrentNode(new IdentifierExpression("ChrW").Call(castExpression.Expression));
+						}
 					}
 				}
 			}
@@ -452,20 +457,14 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			base.VisitUnaryOperatorExpression(unaryOperatorExpression, data);
 			switch (unaryOperatorExpression.Op) {
 				case UnaryOperatorType.Dereference:
-					ReplaceCurrentNode(new MemberReferenceExpression(unaryOperatorExpression.Expression, "Target") {
-					                   	StartLocation = unaryOperatorExpression.StartLocation,
-					                   	EndLocation = unaryOperatorExpression.EndLocation
-					                   });
+					ReplaceCurrentNode(unaryOperatorExpression.Expression.Member("Target"));
 					break;
 				case UnaryOperatorType.AddressOf:
 					ResolveResult rr = resolver.ResolveInternal(unaryOperatorExpression.Expression, ExpressionContext.Default);
 					if (rr != null && rr.ResolvedType != null) {
 						TypeReference targetType = Refactoring.CodeGenerator.ConvertType(rr.ResolvedType, CreateContext());
 						TypeReference pointerType = new TypeReference("Pointer", new List<TypeReference> { targetType });
-						ReplaceCurrentNode(new ObjectCreateExpression(pointerType, new List<Expression> { unaryOperatorExpression.Expression }) {
-						                   	StartLocation = unaryOperatorExpression.StartLocation,
-						                   	EndLocation = unaryOperatorExpression.EndLocation
-						                   });
+						ReplaceCurrentNode(pointerType.New(unaryOperatorExpression.Expression));
 					}
 					break;
 			}

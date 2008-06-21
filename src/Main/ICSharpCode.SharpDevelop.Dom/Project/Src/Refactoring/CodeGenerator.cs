@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Text;
 
 using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.NRefactory.AstBuilder;
 using NR = ICSharpCode.NRefactory.Ast;
 
 namespace ICSharpCode.SharpDevelop.Dom.Refactoring
@@ -164,7 +165,7 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 		public static BlockStatement CreateNotImplementedBlock()
 		{
 			BlockStatement b = new BlockStatement();
-			b.AddChild(new ThrowStatement(new ObjectCreateExpression(new TypeReference("NotImplementedException"), null)));
+			b.Throw(new TypeReference("NotImplementedException").New());
 			return b;
 		}
 		
@@ -358,14 +359,12 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 			property.TypeReference = ConvertType(field.ReturnType, new ClassFinder(field));
 			if (createGetter) {
 				BlockStatement block = new BlockStatement();
-				block.AddChild(new ReturnStatement(new IdentifierExpression(field.Name)));
+				block.Return(new IdentifierExpression(field.Name));
 				property.GetRegion = new PropertyGetRegion(block, null);
 			}
 			if (createSetter) {
 				BlockStatement block = new BlockStatement();
-				Expression left = new IdentifierExpression(field.Name);
-				Expression right = new IdentifierExpression("value");
-				block.AddChild(new ExpressionStatement(new AssignmentExpression(left, AssignmentOperatorType.Assign, right)));
+				block.Assign(new IdentifierExpression(field.Name), new IdentifierExpression("value"));
 				property.SetRegion = new PropertySetRegion(block, null);
 			}
 			
@@ -391,7 +390,7 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 				arguments.Add(new PrimitiveExpression(null, "null"));
 			else
 				arguments.Add(new ThisReferenceExpression());
-			arguments.Add(new MemberReferenceExpression(new IdentifierExpression("EventArgs"), "Empty"));
+			arguments.Add(new IdentifierExpression("EventArgs").Member("Empty"));
 			InsertCodeAtEnd(property.SetterRegion, document,
 			                new RaiseEventStatement(name, arguments));
 		}
@@ -620,18 +619,14 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 				}
 				PropertyDeclaration property = node as PropertyDeclaration;
 				if (property != null) {
-					Expression field = new MemberReferenceExpression(new BaseReferenceExpression(),
-					                                                 property.Name);
+					Expression field = new BaseReferenceExpression().Member(property.Name);
 					if (!property.GetRegion.Block.IsNull) {
 						property.GetRegion.Block.Children.Clear();
-						property.GetRegion.Block.AddChild(new ReturnStatement(field));
+						property.GetRegion.Block.Return(field);
 					}
 					if (!property.SetRegion.Block.IsNull) {
 						property.SetRegion.Block.Children.Clear();
-						Expression expr = new AssignmentExpression(field,
-						                                           AssignmentOperatorType.Assign,
-						                                           new IdentifierExpression("value"));
-						property.SetRegion.Block.AddChild(new ExpressionStatement(expr));
+						property.SetRegion.Block.Assign(field, new IdentifierExpression("value"));
 					}
 				}
 			}
