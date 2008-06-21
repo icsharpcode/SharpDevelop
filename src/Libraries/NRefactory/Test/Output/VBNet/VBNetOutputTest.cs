@@ -204,6 +204,12 @@ End Using");
 		}
 		
 		[Test]
+		public void DictionaryAccess()
+		{
+			TestExpression("c!key");
+		}
+		
+		[Test]
 		public void GenericMethodInvocation()
 		{
 			TestExpression("GenericMethod(Of T)(arg)");

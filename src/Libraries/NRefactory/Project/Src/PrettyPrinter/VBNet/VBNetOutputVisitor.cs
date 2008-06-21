@@ -2198,6 +2198,19 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					TrackedVisit(binaryOperatorExpression.Right, data);
 					outputFormatter.PrintToken(Tokens.CloseParenthesis);
 					return null;
+				case BinaryOperatorType.DictionaryAccess:
+					{
+						PrimitiveExpression pright = binaryOperatorExpression.Right as PrimitiveExpression;
+						TrackedVisit(binaryOperatorExpression.Left, data);
+						if (pright != null && pright.Value is string) {
+							outputFormatter.PrintText("!" + (string)pright.Value);
+						} else {
+							outputFormatter.PrintToken(Tokens.OpenParenthesis);
+							TrackedVisit(binaryOperatorExpression.Right, data);
+							outputFormatter.PrintToken(Tokens.CloseParenthesis);
+						}
+						return null;
+					}
 				case BinaryOperatorType.LessThan:
 					op = Tokens.LessThan;
 					break;

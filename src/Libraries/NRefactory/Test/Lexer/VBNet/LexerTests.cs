@@ -107,6 +107,13 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 		}
 
 		[Test]
+		public void TestExclamationMark()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("!"));
+			Assert.AreEqual(Tokens.ExclamationMark, lexer.NextToken().kind);
+		}
+
+		[Test]
 		public void TestOpenCurlyBrace()
 		{
 			ILexer lexer = GenerateLexer(new StringReader("{"));
@@ -237,6 +244,13 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 		{
 			ILexer lexer = GenerateLexer(new StringReader(">>="));
 			Assert.AreEqual(Tokens.ShiftRightAssign, lexer.NextToken().kind);
+		}
+
+		[Test]
+		public void TestConcatStringAssign()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("&="));
+			Assert.AreEqual(Tokens.ConcatStringAssign, lexer.NextToken().kind);
 		}
 
 		[Test()]

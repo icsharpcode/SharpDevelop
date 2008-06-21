@@ -48,8 +48,14 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			return curToken;
 		}
 		
+		bool misreadExclamationMarkAsTypeCharacter;
+		
 		protected override Token Next()
 		{
+			if (misreadExclamationMarkAsTypeCharacter) {
+				misreadExclamationMarkAsTypeCharacter = false;
+				return new Token(Tokens.ExclamationMark, Col - 1, Line);
+			}
 			unchecked {
 				int nextChar;
 				while ((nextChar = ReaderRead()) != -1) {
@@ -149,21 +155,24 @@ namespace ICSharpCode.NRefactory.Parser.VB
 					if (Char.IsLetter(ch)) {
 						int x = Col - 1;
 						int y = Line;
-						string s = ReadIdent(ch);
-						int keyWordToken = Keywords.GetToken(s);
-						if (keyWordToken >= 0) {
-							lineEnd = false;
-							return new Token(keyWordToken, x, y, s);
-						}
-						
-						// handle 'REM' comments
-						if (s.Equals("REM", StringComparison.InvariantCultureIgnoreCase)) {
-							ReadComment();
-							if (!lineEnd) {
-								lineEnd = true;
-								return new Token(Tokens.EOL, Col, Line, "\n");
+						char typeCharacter;
+						string s = ReadIdent(ch, out typeCharacter);
+						if (typeCharacter == '\0') {
+							int keyWordToken = Keywords.GetToken(s);
+							if (keyWordToken >= 0) {
+								// handle 'REM' comments
+								if (keyWordToken == Tokens.Rem) {
+									ReadComment();
+									if (!lineEnd) {
+										lineEnd = true;
+										return new Token(Tokens.EOL, Col, Line, "\n");
+									}
+									continue;
+								}
+								
+								lineEnd = false;
+								return new Token(keyWordToken, x, y, s);
 							}
-							continue;
 						}
 						
 						lineEnd = false;
@@ -226,6 +235,14 @@ namespace ICSharpCode.NRefactory.Parser.VB
 		
 		string ReadIdent(char ch)
 		{
+			char typeCharacter;
+			return ReadIdent(ch, out typeCharacter);
+		}
+		
+		string ReadIdent(char ch, out char typeCharacter)
+		{
+			typeCharacter = '\0';
+			
 			sb.Length = 0;
 			sb.Append(ch);
 			int peek;
@@ -238,7 +255,14 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			}
 			
 			if ("%&@!#$".IndexOf((char)peek) != -1) {
+				typeCharacter = (char)peek;
 				ReaderRead();
+				if (typeCharacter == '!') {
+					peek = ReaderPeek();
+					if (peek != -1 && (peek == '_' || peek == '[' || char.IsLetter((char)peek))) {
+						misreadExclamationMarkAsTypeCharacter = true;
+					}
+				}
 			}
 			return sb.ToString();
 		}
@@ -711,6 +735,8 @@ namespace ICSharpCode.NRefactory.Parser.VB
 					return new Token(Tokens.CloseCurlyBrace, x, y);
 				case '?':
 					return new Token(Tokens.QuestionMark, x, y);
+				case '!':
+					return new Token(Tokens.ExclamationMark, x, y);
 			}
 			return null;
 		}

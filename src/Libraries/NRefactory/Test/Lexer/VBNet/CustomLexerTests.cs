@@ -42,5 +42,82 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 			Assert.That(lexer.NextToken().kind, Is.EqualTo(Tokens.EOL));
 			Assert.That(lexer.NextToken().kind, Is.EqualTo(Tokens.EOF));
 		}
+		
+		[Test]
+		public void EscapedIdentifier()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("[Stop]"));
+			Assert.That(lexer.NextToken().kind, Is.EqualTo(Tokens.Identifier));
+			Assert.That(lexer.NextToken().kind, Is.EqualTo(Tokens.EOL));
+			Assert.That(lexer.NextToken().kind, Is.EqualTo(Tokens.EOF));
+		}
+		
+		[Test]
+		public void IdentifierWithTypeCharacter()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("Stop$"));
+			Assert.That(lexer.NextToken().kind, Is.EqualTo(Tokens.Identifier));
+			Assert.That(lexer.NextToken().kind, Is.EqualTo(Tokens.EOL));
+			Assert.That(lexer.NextToken().kind, Is.EqualTo(Tokens.EOF));
+		}
+		
+		[Test]
+		public void ExclamationMarkIsTypeCharacter()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("a!=b"));
+			Assert.That(lexer.NextToken().kind, Is.EqualTo(Tokens.Identifier));
+			Assert.That(lexer.NextToken().kind, Is.EqualTo(Tokens.Assign));
+			Assert.That(lexer.NextToken().kind, Is.EqualTo(Tokens.Identifier));
+			Assert.That(lexer.NextToken().kind, Is.EqualTo(Tokens.EOL));
+			Assert.That(lexer.NextToken().kind, Is.EqualTo(Tokens.EOF));
+		}
+		
+		[Test]
+		public void ExclamationMarkIsTypeCharacter2()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("a! b"));
+			Assert.That(lexer.NextToken().kind, Is.EqualTo(Tokens.Identifier));
+			Assert.That(lexer.NextToken().kind, Is.EqualTo(Tokens.Identifier));
+			Assert.That(lexer.NextToken().kind, Is.EqualTo(Tokens.EOL));
+			Assert.That(lexer.NextToken().kind, Is.EqualTo(Tokens.EOF));
+		}
+		
+		[Test]
+		public void ExclamationMarkIsIdentifier()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("a!b"));
+			Assert.That(lexer.NextToken().kind, Is.EqualTo(Tokens.Identifier));
+			Assert.That(lexer.NextToken().kind, Is.EqualTo(Tokens.ExclamationMark));
+			Assert.That(lexer.NextToken().kind, Is.EqualTo(Tokens.Identifier));
+			Assert.That(lexer.NextToken().kind, Is.EqualTo(Tokens.EOL));
+			Assert.That(lexer.NextToken().kind, Is.EqualTo(Tokens.EOF));
+		}
+		
+		[Test]
+		public void ExclamationMarkIsIdentifier2()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("a![b]"));
+			Assert.That(lexer.NextToken().kind, Is.EqualTo(Tokens.Identifier));
+			Assert.That(lexer.NextToken().kind, Is.EqualTo(Tokens.ExclamationMark));
+			Assert.That(lexer.NextToken().kind, Is.EqualTo(Tokens.Identifier));
+			Assert.That(lexer.NextToken().kind, Is.EqualTo(Tokens.EOL));
+			Assert.That(lexer.NextToken().kind, Is.EqualTo(Tokens.EOF));
+		}
+		
+		[Test]
+		public void RemCommentTest()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("a rem b"));
+			Assert.That(lexer.NextToken().kind, Is.EqualTo(Tokens.Identifier));
+			Assert.That(lexer.NextToken().kind, Is.EqualTo(Tokens.EOL));
+			Assert.That(lexer.NextToken().kind, Is.EqualTo(Tokens.EOF));
+		}
+		
+		[Test]
+		public void RemCommentTest2()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("REM c"));
+			Assert.That(lexer.NextToken().kind, Is.EqualTo(Tokens.EOF));
+		}
 	}
 }

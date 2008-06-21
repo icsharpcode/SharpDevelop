@@ -1835,6 +1835,12 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					TrackVisit(binaryOperatorExpression.Right, data);
 					outputFormatter.PrintToken(Tokens.CloseParenthesis);
 					return null;
+				case BinaryOperatorType.DictionaryAccess:
+					TrackVisit(binaryOperatorExpression.Left, data);
+					outputFormatter.PrintToken(Tokens.OpenSquareBracket);
+					TrackVisit(binaryOperatorExpression.Right, data);
+					outputFormatter.PrintToken(Tokens.CloseSquareBracket);
+					return null;
 			}
 			TrackVisit(binaryOperatorExpression.Left, data);
 			switch (binaryOperatorExpression.Op) {

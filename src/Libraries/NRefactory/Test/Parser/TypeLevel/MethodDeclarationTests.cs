@@ -402,6 +402,17 @@ End Interface
 			Assert.AreEqual(new string[] { "MyBase.Event", "Button1.Click" }, md.HandlesClause.ToArray());
 		}
 		
+		[Test]
+		public void VBNetMethodWithTypeCharactersTest()
+		{
+			const string program = @"Public Function Func!(ByVal Param&)
+				Func! = CSingle(Param&)
+			End Function";
+			
+			MethodDeclaration md = ParseUtilVBNet.ParseTypeMember<MethodDeclaration>(program);
+			Assert.AreEqual(Modifiers.Public, md.Modifier);
+		}
+		
 		#endregion
 	}
 }

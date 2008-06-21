@@ -200,6 +200,9 @@ namespace ICSharpCode.NRefactory.Ast
 		Like,
 		/// <summary>C#: ??</summary>
 		NullCoalescing,
+		
+		/// <summary>VB-only: !</summary>
+		DictionaryAccess
 	}
 	
 	public enum CastType

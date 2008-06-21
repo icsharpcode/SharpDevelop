@@ -35,6 +35,7 @@ TOKENS
 	"&"
 	"^"
 	"?"
+	"!"
 	"{"
 	"}"
 	"("
@@ -1582,10 +1583,12 @@ AssignmentOperator<out AssignmentOperatorType op>
 
 /* 11.4 */
 SimpleExpr<out Expression pexpr>
+(. string name; .)
 =
 	SimpleNonInvocationExpression<out pexpr>
-	{		(. string name; .)
+	{
 		"." IdentifierOrKeyword<out name> (. pexpr = new MemberReferenceExpression(pexpr, name); .)
+	|	"!" IdentifierOrKeyword<out name> (. pexpr = new BinaryOperatorExpression(pexpr, BinaryOperatorType.DictionaryAccess, new PrimitiveExpression(name, name)); .)
 	|	InvocationExpression<ref pexpr>
 	}
 .
