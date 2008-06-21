@@ -183,7 +183,8 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public override object TrackedVisitAttributeSection(AttributeSection attributeSection, object data)
 		{
-			outputFormatter.Indent();
+			if (!printAttributeSectionInline)
+				outputFormatter.Indent();
 			outputFormatter.PrintText("<");
 			if (attributeSection.AttributeTarget != null && attributeSection.AttributeTarget.Length > 0) {
 				outputFormatter.PrintIdentifier(attributeSection.AttributeTarget);
