@@ -317,6 +317,18 @@ End Using");
 		}
 		
 		[Test]
+		public void AssemblyAttribute()
+		{
+			TestProgram("<Assembly: CLSCompliant>");
+		}
+		
+		[Test]
+		public void ModuleAttribute()
+		{
+			TestProgram("<Module: SuppressMessageAttribute>");
+		}
+		
+		[Test]
 		public void Interface()
 		{
 			TestProgram("Interface ITest\n" +

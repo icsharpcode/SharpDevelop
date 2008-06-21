@@ -108,5 +108,12 @@ public class Form1 {
 			Assert.AreEqual(new Location(1, 1), decl.StartLocation);
 			Assert.AreEqual("assembly", decl.AttributeTarget);
 		}
+		
+		[Test]
+		public void ModuleAttributeTargetEscapedVB()
+		{
+			// check that this doesn't crash the parser:
+			ParseUtilVBNet.ParseGlobal<AttributeSection>("<[Module]: SuppressMessageAttribute>", true);
+		}
 	}
 }

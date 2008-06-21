@@ -187,7 +187,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.Indent();
 			outputFormatter.PrintText("<");
 			if (attributeSection.AttributeTarget != null && attributeSection.AttributeTarget.Length > 0) {
-				outputFormatter.PrintIdentifier(attributeSection.AttributeTarget);
+				outputFormatter.PrintText(char.ToUpperInvariant(attributeSection.AttributeTarget[0]) + attributeSection.AttributeTarget.Substring(1));
 				outputFormatter.PrintToken(Tokens.Colon);
 				outputFormatter.Space();
 			}

@@ -159,7 +159,7 @@ out u);
 		} else SynErr(209);
 
 #line  2057 "VBNET.ATG" 
-		string attributeTarget = t.val.ToLower(System.Globalization.CultureInfo.InvariantCulture);
+		string attributeTarget = t.val != null ? t.val.ToLower(System.Globalization.CultureInfo.InvariantCulture) : null;
 		List<ASTAttribute> attributes = new List<ASTAttribute>();
 		ASTAttribute attribute;
 		
