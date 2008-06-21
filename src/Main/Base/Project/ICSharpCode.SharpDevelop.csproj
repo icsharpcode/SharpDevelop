@@ -124,6 +124,7 @@
     <Compile Include="Src\Project\ContextSpecificProperties.cs" />
     <Compile Include="Src\Project\IBuildFeedbackSink.cs" />
     <Compile Include="Src\Project\MSBuildFileProject.cs" />
+    <Compile Include="Src\Project\ProjectLoadException.cs" />
     <Compile Include="Src\Project\ProjectPropertyChangedEventArgs.cs" />
     <Compile Include="Src\Services\Debugger\BreakpointBookmark.cs" />
     <Compile Include="Src\Services\Debugger\BreakpointBookmarkEventArgs.cs" />

@@ -306,6 +306,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// <returns>A formatted task list description.</returns>
 		string FormatDescription(string description)
 		{
+			if (string.IsNullOrEmpty(description))
+				return string.Empty;
 			string FormattedDescription = description.Replace("\r", " ");
 			FormattedDescription = FormattedDescription.Replace("\t", " ");
 			return FormattedDescription.Replace("\n", " ");

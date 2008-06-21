@@ -1,0 +1,44 @@
+﻿<AddIn name        = "CppBackendBinding"
+       author      = "Daniel Grunwald"
+       description = "An example AddIn demonstrating how to write a SharpDevelop backend binding for non-MSBuild projects">
+	
+	<Runtime>
+		<Import assembly = "CppBackendBinding.dll"/>
+	</Runtime>
+	
+	<Path name = "/SharpDevelop/Workbench/FileFilter">
+		<FileFilter id = "C++"
+		            insertbefore="AllFiles"
+		            name = "C++/C files"
+		            extensions = "*.cpp;*.h;*.c;*.h;*.hpp"/>
+	</Path>
+
+	<Path name = "/SharpDevelop/Workbench/Combine/FileFilter">
+		<FileFilter id         = "CppProject"
+		            insertbefore="AllFiles"
+		            name       = "Visual C++ project files (*.vcproj)"
+		            class      = "ICSharpCode.SharpDevelop.Project.LoadProject"
+		            extensions = "*.vcproj"/>
+	</Path>
+	
+	<!--
+	SharpDevelop doesn't support creating non-MSBuild projects from templates
+	(though an addin could work around that by replacing the created MSBuild project with the correct
+	 project format immediately after it was created)
+	<Path name = "/SharpDevelop/BackendBindings/Templates">
+		<Directory id = "ILAsm" path = "./Templates" />
+	</Path>
+	-->
+
+	<Path path = "/SharpDevelop/BackendBindings/ProjectOptions/C++">
+		<!-- TODO: project option panels -->
+	</Path>
+	
+	<Path name = "/SharpDevelop/Workbench/LanguageBindings">
+		<LanguageBinding id                   = "C++"
+		                 guid                 = "{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}"
+		                 supportedextensions  = ".cpp;.c"
+		                 projectfileextension = ".vcproj"
+		                 class                = "CppBackendBinding.CppLanguageBinding" />
+	</Path>
+</AddIn>

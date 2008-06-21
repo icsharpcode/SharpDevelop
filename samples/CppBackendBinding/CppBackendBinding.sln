@@ -1,0 +1,18 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+# SharpDevelop 3.0.0.3075
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CppBackendBinding", "CppBackendBinding.csproj", "{F279DD27-21A9-4D69-AAE3-00DB403257CB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F279DD27-21A9-4D69-AAE3-00DB403257CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F279DD27-21A9-4D69-AAE3-00DB403257CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F279DD27-21A9-4D69-AAE3-00DB403257CB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F279DD27-21A9-4D69-AAE3-00DB403257CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+EndGlobal

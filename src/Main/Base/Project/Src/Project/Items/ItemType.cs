@@ -36,6 +36,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public static readonly ItemType ApplicationDefinition = new ItemType("ApplicationDefinition");
 		public static readonly ItemType Page = new ItemType("Page");
 		public static readonly ItemType BootstrapperFile = new ItemType("BootstrapperFile");
+		public static readonly ItemType Header = new ItemType("Header");
 		
 		/// <summary>
 		/// Gets a collection of item types that are used for files.

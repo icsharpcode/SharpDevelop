@@ -916,10 +916,16 @@ namespace ICSharpCode.SharpDevelop.Project
 						// MSB4075 is:
 						// "The project file must be opened in VS IDE and converted to latest version
 						// before it can be build by MSBuild."
-						Converter.PrjxToSolutionProject.ConvertVSNetProject(fileName);
-						project.Load(fileName);
+						try {
+							Converter.PrjxToSolutionProject.ConvertVSNetProject(fileName);
+							project.Load(fileName);
+						} catch (System.Xml.XmlException ex2) {
+							throw new ProjectLoadException(ex2.Message, ex2);
+						} catch (MSBuild.InvalidProjectFileException ex2) {
+							throw new ProjectLoadException(ex2.Message, ex2);
+						}
 					} else {
-						throw;
+						throw new ProjectLoadException(ex.Message, ex);
 					}
 				}
 				this.ActiveConfiguration = GetEvaluatedProperty("Configuration") ?? this.ActiveConfiguration;

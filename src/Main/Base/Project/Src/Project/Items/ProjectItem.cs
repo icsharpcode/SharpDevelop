@@ -100,7 +100,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// Gets if the item is added to it's owner project.
 		/// </summary>
 		[Browsable(false)]
-		public bool IsAddedToProject {
+		internal bool IsAddedToProject {
 			get {
 				return buildItem != null;
 			}
