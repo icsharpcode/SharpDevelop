@@ -408,7 +408,7 @@ namespace Debugger
 			// It seems that ICorDebugThread is still not dead and can be used
 			EnterCallback(PausedReason.Other, "ExitThread " + pThread.ID, pThread);
 			
-			process.GetThread(pThread).NotifyNativeThreadExited();
+			process.GetThread(pThread).NotifyExited();
 			
 			try {
 				ExitCallback();

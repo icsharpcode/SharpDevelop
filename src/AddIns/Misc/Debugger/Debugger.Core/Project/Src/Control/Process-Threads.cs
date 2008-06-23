@@ -39,7 +39,7 @@ namespace Debugger
 			get {
 				List<Thread> threads = new List<Thread>();
 				foreach(Thread thread in threadCollection) {
-					if (!thread.HasExpired) {
+					if (!thread.HasExited) {
 						threads.Add(thread);
 					}
 				}
@@ -64,7 +64,7 @@ namespace Debugger
 			threadCollection.Add(thread);
 			OnThreadStarted(thread);
 			
-			thread.NativeThreadExited += delegate {
+			thread.Exited += delegate {
 				threadCollection.Remove(thread);
 			};
 		}

@@ -63,7 +63,7 @@ namespace Debugger.Tests {
         <CurrentException>null</CurrentException>
         <CurrentExceptionIsUnhandled>False</CurrentExceptionIsUnhandled>
         <CurrentExceptionType>0</CurrentExceptionType>
-        <HasExpired>False</HasExpired>
+        <HasExited>False</HasExited>
         <IsAtSafePoint>True</IsAtSafePoint>
         <IsInValidState>True</IsInValidState>
         <IsMostRecentStackFrameNative>False</IsMostRecentStackFrameNative>
@@ -73,25 +73,24 @@ namespace Debugger.Tests {
         </Name>
         <OldestStackFrame>Debugger.Tests.TestPrograms.MainThreadExit.Main</OldestStackFrame>
         <Priority>Normal</Priority>
-        <RuntimeValue exception="Thread has not started jet" />
+        <RuntimeValue>? = {System.Threading.Thread}</RuntimeValue>
         <SelectedStackFrame>Debugger.Tests.TestPrograms.MainThreadExit.Main</SelectedStackFrame>
         <Suspended>False</Suspended>
       </Item>
-      <Item Type="Thread" ToString="Thread Name =  Suspended = False">
+      <Item Type="Thread" ToString="Thread Name = Worker thread Suspended = False">
         <CurrentException>null</CurrentException>
         <CurrentExceptionIsUnhandled>False</CurrentExceptionIsUnhandled>
         <CurrentExceptionType>0</CurrentExceptionType>
-        <HasExpired>False</HasExpired>
+        <HasExited>False</HasExited>
         <IsAtSafePoint>False</IsAtSafePoint>
         <IsInValidState>True</IsInValidState>
         <IsMostRecentStackFrameNative>False</IsMostRecentStackFrameNative>
         <MostRecentStackFrame>System.Threading.ThreadHelper.ThreadStart</MostRecentStackFrame>
         <MostRecentStackFrameWithLoadedSymbols>null</MostRecentStackFrameWithLoadedSymbols>
-        <Name>
-        </Name>
+        <Name>Worker thread</Name>
         <OldestStackFrame>System.Threading.ThreadHelper.ThreadStart</OldestStackFrame>
         <Priority>Normal</Priority>
-        <RuntimeValue exception="Thread has not started jet" />
+        <RuntimeValue>? = {System.Threading.Thread}</RuntimeValue>
         <SelectedStackFrame>null</SelectedStackFrame>
         <Suspended>False</Suspended>
       </Item>
@@ -103,7 +102,7 @@ namespace Debugger.Tests {
         <CurrentException>null</CurrentException>
         <CurrentExceptionIsUnhandled>False</CurrentExceptionIsUnhandled>
         <CurrentExceptionType>0</CurrentExceptionType>
-        <HasExpired>False</HasExpired>
+        <HasExited>False</HasExited>
         <IsAtSafePoint>False</IsAtSafePoint>
         <IsInValidState>False</IsInValidState>
         <IsMostRecentStackFrameNative>False</IsMostRecentStackFrameNative>
@@ -113,25 +112,24 @@ namespace Debugger.Tests {
         </Name>
         <OldestStackFrame>null</OldestStackFrame>
         <Priority>Normal</Priority>
-        <RuntimeValue exception="Thread has not started jet" />
+        <RuntimeValue exception="The state of the thread is invalid. (Exception from HRESULT: 0x8013132D)" />
         <SelectedStackFrame>null</SelectedStackFrame>
         <Suspended>False</Suspended>
       </Item>
-      <Item Type="Thread" ToString="Thread Name =  Suspended = False">
+      <Item Type="Thread" ToString="Thread Name = Worker thread Suspended = False">
         <CurrentException>null</CurrentException>
         <CurrentExceptionIsUnhandled>False</CurrentExceptionIsUnhandled>
         <CurrentExceptionType>0</CurrentExceptionType>
-        <HasExpired>False</HasExpired>
+        <HasExited>False</HasExited>
         <IsAtSafePoint>True</IsAtSafePoint>
         <IsInValidState>True</IsInValidState>
         <IsMostRecentStackFrameNative>False</IsMostRecentStackFrameNative>
         <MostRecentStackFrame>System.Threading.WaitHandle.WaitOne</MostRecentStackFrame>
         <MostRecentStackFrameWithLoadedSymbols>Debugger.Tests.TestPrograms.MainThreadExit.WaitForALongTime</MostRecentStackFrameWithLoadedSymbols>
-        <Name>
-        </Name>
+        <Name>Worker thread</Name>
         <OldestStackFrame>System.Threading.ThreadHelper.ThreadStart</OldestStackFrame>
         <Priority>Normal</Priority>
-        <RuntimeValue exception="Thread has not started jet" />
+        <RuntimeValue>? = {System.Threading.Thread}</RuntimeValue>
         <SelectedStackFrame>Debugger.Tests.TestPrograms.MainThreadExit.WaitForALongTime</SelectedStackFrame>
         <Suspended>False</Suspended>
       </Item>

@@ -164,7 +164,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			thread.NameChanged += delegate {
 				RefreshThread(thread);
 			};
-			thread.Expired += delegate {
+			thread.Exited += delegate {
 				RemoveThread(thread);
 			};
 		}

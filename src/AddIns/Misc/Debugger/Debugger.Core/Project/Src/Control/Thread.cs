@@ -21,41 +21,33 @@ namespace Debugger
 		
 		uint id;
 		ICorDebugThread corThread;
+		bool hasExited = false;
 		
 		List<Stepper> steppers = new List<Stepper>();
+		
+		StackFrame selectedStackFrame;
 		
 		Exception     currentException;
 		DebuggeeState currentException_DebuggeeState;
 		ExceptionType currentExceptionType;
 		bool          currentExceptionIsUnhandled;
 
-		bool hasExpired = false;
-		bool nativeThreadExited = false;
-
-		StackFrame selectedStackFrame;
-		
-		public event EventHandler Expired;
-		public event EventHandler<ThreadEventArgs> NativeThreadExited;
 		public event EventHandler<ThreadEventArgs> NameChanged;
-		
-		public bool HasExpired {
-			get {
-				return hasExpired;
-			}
-		}
+		public event EventHandler<ThreadEventArgs> Exited;
 		
 		[Debugger.Tests.Ignore]
 		public Process Process {
-			get {
-				return process;
-			}
+			get { return process; }
 		}
 
 		[Debugger.Tests.Ignore]
 		public uint ID { 
-			get{ 
-				return id; 
-			} 
+			get{ return id; } 
+		}
+		
+		public bool HasExited {
+			get { return hasExited; }
+			private set { hasExited = value; }
 		}
 		
 		/// <summary> From time to time the thread may be in invalid state. </summary>
@@ -76,8 +68,8 @@ namespace Debugger
 		
 		internal ICorDebugThread CorThread {
 			get {
-				if (nativeThreadExited) {
-					throw new DebuggerException("Native thread has exited");
+				if (hasExited) {
+					throw new DebuggerException("Thread has exited");
 				}
 				return corThread;
 			}
@@ -90,37 +82,23 @@ namespace Debugger
 			this.id = CorThread.ID;
 		}
 		
-		void Expire()
+		internal void NotifyExited()
 		{
-			System.Diagnostics.Debug.Assert(!this.hasExpired);
+			if (this.hasExited) throw new DebuggerException("Already exited");
 			
-			process.TraceMessage("Thread " + this.ID + " expired");
-			this.hasExpired = true;
-			OnExpired(new ThreadEventArgs(this));
+			process.TraceMessage("Thread " + this.ID + " exited");
 			if (process.SelectedThread == this) {
 				process.SelectedThread = null;
 			}
-		}
-		
-		protected virtual void OnExpired(EventArgs e)
-		{
-			if (Expired != null) {
-				Expired(this, e);
-			}
-		}
-		
-		internal void NotifyNativeThreadExited()
-		{
-			if (!this.hasExpired) Expire();
 			
-			nativeThreadExited = true;
-			OnNativeThreadExited(new ThreadEventArgs(this));
+			this.HasExited = true;
+			OnExited(new ThreadEventArgs(this));
 		}
 		
-		protected virtual void OnNativeThreadExited(ThreadEventArgs e)
+		protected virtual void OnExited(ThreadEventArgs e)
 		{
-			if (NativeThreadExited != null) {
-				NativeThreadExited(this, e);
+			if (Exited != null) {
+				Exited(this, e);
 			}
 		}
 		
