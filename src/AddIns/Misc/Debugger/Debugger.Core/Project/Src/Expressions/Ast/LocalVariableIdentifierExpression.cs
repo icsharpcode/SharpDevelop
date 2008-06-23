@@ -20,6 +20,7 @@ namespace Debugger.Expressions
 	{
 		MethodInfo method;
 		ISymUnmanagedVariable symVar;
+		string name;
 		
 		public MethodInfo Method {
 			get { return method; }
@@ -36,11 +37,12 @@ namespace Debugger.Expressions
 			
 			this.method = method;
 			this.symVar = symVar;
+			this.name = symVar.Name;
 		}
 		
 		public override string Code {
 			get {
-				return symVar.Name;
+				return name;
 			}
 		}
 		

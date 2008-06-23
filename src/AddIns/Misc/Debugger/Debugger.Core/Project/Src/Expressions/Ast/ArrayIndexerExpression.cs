@@ -18,6 +18,7 @@ namespace Debugger.Expressions
 	{
 		Expression targetObject;
 		Expression[] arguments;
+		string name;
 		
 		public Expression TargetObject {
 			get { return targetObject; }
@@ -39,6 +40,7 @@ namespace Debugger.Expressions
 				indicesAst.Add(new PrimitiveExpression(indice));
 			}
 			this.arguments = indicesAst.ToArray();
+			this.name = GetName();
 		}
 		
 		public ArrayIndexerExpression(Expression targetObject, Expression[] arguments)
@@ -48,6 +50,24 @@ namespace Debugger.Expressions
 			
 			this.targetObject = targetObject;
 			this.arguments = arguments;
+			this.name = GetName();
+		}
+		
+		string GetName()
+		{
+			StringBuilder sb = new StringBuilder();
+			sb.Append("[");
+			bool isFirst = true;
+			foreach(Expression argument in arguments) {
+				if (isFirst) {
+					isFirst = false;
+				} else {
+					sb.Append(", ");
+				}
+				sb.Append(argument.Code);
+			}
+			sb.Append("]");
+			return sb.ToString();
 		}
 		
 		public override string Code {
@@ -58,19 +78,7 @@ namespace Debugger.Expressions
 		
 		public override string CodeTail {
 			get {
-				StringBuilder sb = new StringBuilder();
-				sb.Append("[");
-				bool isFirst = true;
-				foreach(Expression argument in arguments) {
-					if (isFirst) {
-						isFirst = false;
-					} else {
-						sb.Append(", ");
-					}
-					sb.Append(argument.Code);
-				}
-				sb.Append("]");
-				return sb.ToString();
+				return name;
 			}
 		}
 		

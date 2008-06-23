@@ -14,7 +14,7 @@ namespace Debugger.Expressions
 	/// Represents a piece of code that can be evaluated.
 	/// For example "a[15] + 15".
 	/// </summary>
-	public abstract partial class Expression: DebuggerObject
+	public abstract partial class Expression: DebuggerObject, IComparable<Expression>
 	{
 		static Dictionary<Expression, Value> expressionCache;
 		static DebuggeeState expressionCache_debuggerState;
@@ -29,6 +29,11 @@ namespace Debugger.Expressions
 			get {
 				return this.Code;
 			}
+		}
+		
+		public int CompareTo(Expression other)
+		{
+			return this.CodeTail.CompareTo(other.CodeTail);
 		}
 		
 		public override string ToString()

@@ -22,6 +22,7 @@ namespace Debugger.Expressions
 		Expression targetObject;
 		MemberInfo memberInfo;
 		Expression[] arguments;
+		string name;
 		
 		public Expression TargetObject {
 			get { return targetObject; }
@@ -42,6 +43,7 @@ namespace Debugger.Expressions
 			this.targetObject = targetObject;
 			this.memberInfo = memberInfo;
 			this.arguments = arguments ?? new Expression[0];
+			this.name = GetName();
 		}
 		
 		public override string Code {
@@ -53,38 +55,43 @@ namespace Debugger.Expressions
 					sb.Append(targetObject.Code);
 				}
 				sb.Append(".");
-				sb.Append(this.CodeTail);
+				sb.Append(name);
 				return sb.ToString();
 			}
 		}
 		
 		public override string CodeTail {
 			get {
-				StringBuilder sb = new StringBuilder();
-				sb.Append(memberInfo.Name);
-				if (arguments.Length > 0) {
-					if (memberInfo is PropertyInfo) {
-						sb.Append("[");
-					} else {
-						sb.Append("(");
-					}
-					bool isFirst = true;
-					foreach(Expression argument in arguments) {
-						if (isFirst) {
-							isFirst = false;
-						} else {
-							sb.Append(", ");
-						}
-						sb.Append(argument.Code);
-					}
-					if (memberInfo is PropertyInfo) {
-						sb.Append("]");
-					} else {
-						sb.Append(")");
-					}
-				}
-				return sb.ToString();
+				return name;
 			}
+		}
+		
+		string GetName()
+		{
+			StringBuilder sb = new StringBuilder();
+			sb.Append(memberInfo.Name);
+			if (arguments.Length > 0) {
+				if (memberInfo is PropertyInfo) {
+					sb.Append("[");
+				} else {
+					sb.Append("(");
+				}
+				bool isFirst = true;
+				foreach(Expression argument in arguments) {
+					if (isFirst) {
+						isFirst = false;
+					} else {
+						sb.Append(", ");
+					}
+					sb.Append(argument.Code);
+				}
+				if (memberInfo is PropertyInfo) {
+					sb.Append("]");
+				} else {
+					sb.Append(")");
+				}
+			}
+			return sb.ToString();
 		}
 		
 		protected override Value EvaluateInternal(StackFrame context)

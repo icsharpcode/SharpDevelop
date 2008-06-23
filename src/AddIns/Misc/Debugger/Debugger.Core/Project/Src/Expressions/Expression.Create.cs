@@ -55,6 +55,7 @@ namespace Debugger.Expressions
 				members.Add(this.AppendPropertyReference(property));
 			}
 			
+			members.Sort();
 			return members.ToArray();
 		}
 		
@@ -87,6 +88,7 @@ namespace Debugger.Expressions
 				pars.Add(new ParameterIdentifierExpression(methodInfo, i));
 			}
 			
+			pars.Sort();
 			return pars.ToArray();
 		}
 		
@@ -99,6 +101,7 @@ namespace Debugger.Expressions
 				vars.Add(new LocalVariableIdentifierExpression(methodInfo, var));
 			}
 			
+			vars.Sort();
 			return vars.ToArray();
 		}
 	}
