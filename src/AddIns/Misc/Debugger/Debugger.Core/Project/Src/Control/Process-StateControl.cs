@@ -220,6 +220,9 @@ namespace Debugger
 			corProcess.Continue(0);
 		}
 		
+		/// <summary> Terminates the execution of the process </summary>
+		/// <remarks> The process does not terminate immediately 
+		/// after the call </remarks>
 		public void Terminate()
 		{
 			// Resume stoped tread
@@ -235,7 +238,8 @@ namespace Debugger
 			corProcess.Stop(uint.MaxValue);
 			corProcess.Terminate(0);
 			
-			this.NotifyHasExpired();
+			// Just give the command and continue without marking the process as
+			// exited.  We will get ExitProcess callback soon
 		}
 		
 		void SelectSomeThread()

@@ -119,9 +119,7 @@ namespace Debugger
 			
 			TraceMessage("ICorDebug terminated");
 			
-			Wrappers.ResourceManager.TraceMessagesEnabled = true;
 			Wrappers.ResourceManager.ReleaseAllTrackedCOMObjects();
-			Wrappers.ResourceManager.TraceMessagesEnabled = false;
 			
 			TraceMessage("Tracked COM objects released");
 		}

@@ -30,7 +30,7 @@ namespace Debugger.Wrappers
 	public static class ResourceManager
 	{
 		static MTA2STA mta2sta = new MTA2STA();
-		static bool trace = true;
+		static bool trace = false;
 		static Dictionary<object, TrackedObjectMetaData> trackedCOMObjects = new Dictionary<object, TrackedObjectMetaData>();
 		
 		public static bool TraceMessagesEnabled {

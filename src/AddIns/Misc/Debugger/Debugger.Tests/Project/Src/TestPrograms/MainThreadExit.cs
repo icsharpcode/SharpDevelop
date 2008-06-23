@@ -19,6 +19,7 @@ namespace Debugger.Tests.TestPrograms
 			System.Threading.Thread t = new System.Threading.Thread(WaitForALongTime);
 			t.Name = "Worker thread";
 			t.Start();
+			System.Threading.Thread.Sleep(0);
 			System.Diagnostics.Debugger.Break();
 		}
 		
@@ -82,11 +83,11 @@ namespace Debugger.Tests {
         <CurrentExceptionIsUnhandled>False</CurrentExceptionIsUnhandled>
         <CurrentExceptionType>0</CurrentExceptionType>
         <HasExited>False</HasExited>
-        <IsAtSafePoint>False</IsAtSafePoint>
+        <IsAtSafePoint>True</IsAtSafePoint>
         <IsInValidState>True</IsInValidState>
         <IsMostRecentStackFrameNative>False</IsMostRecentStackFrameNative>
-        <MostRecentStackFrame>System.Threading.ThreadHelper.ThreadStart</MostRecentStackFrame>
-        <MostRecentStackFrameWithLoadedSymbols>null</MostRecentStackFrameWithLoadedSymbols>
+        <MostRecentStackFrame>System.Threading.WaitHandle.WaitOne</MostRecentStackFrame>
+        <MostRecentStackFrameWithLoadedSymbols>Debugger.Tests.TestPrograms.MainThreadExit.WaitForALongTime</MostRecentStackFrameWithLoadedSymbols>
         <Name>Worker thread</Name>
         <OldestStackFrame>System.Threading.ThreadHelper.ThreadStart</OldestStackFrame>
         <Priority>Normal</Priority>

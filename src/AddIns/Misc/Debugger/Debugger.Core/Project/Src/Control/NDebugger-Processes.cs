@@ -33,7 +33,7 @@ namespace Debugger
 					return process;
 				}
 			}
-			throw new DebuggerException("Process is not in collection");
+			return null;
 		}
 
 		internal void AddProcess(Process process)

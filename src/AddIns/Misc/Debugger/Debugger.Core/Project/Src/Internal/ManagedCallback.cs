@@ -431,7 +431,6 @@ namespace Debugger
 			process.TraceMessage("Callback: ExitProcess");
 			
 			process.NotifyHasExpired();
-			process.Debugger.RemoveProcess(process);
 		}
 		
 		#endregion

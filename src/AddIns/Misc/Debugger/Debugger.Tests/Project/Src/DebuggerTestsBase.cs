@@ -78,7 +78,7 @@ namespace Debugger.Tests
 			CheckXmlOutput();
 		}
 		
-		void CheckXmlOutput()
+		protected void CheckXmlOutput()
 		{
 			string startMark = "#if EXPECTED_OUTPUT\r\n";
 			string endMark = "#endif // EXPECTED_OUTPUT";
@@ -307,11 +307,15 @@ namespace Debugger.Tests
 			string path = Path.GetTempPath();
 			path = Path.Combine(path, "SharpDevelop");
 			path = Path.Combine(path, "DebuggerTests");
-			path = Path.Combine(path, md5);
+			path = Path.Combine(path, testName + "." + md5);
 			Directory.CreateDirectory(path);
 			
 			string codeFilename = Path.Combine(path, testName);
 			string exeFilename = Path.Combine(path, testName.Replace(".cs", ".exe"));
+			
+			if (File.Exists(exeFilename)) {
+				return exeFilename;
+			}
 			
 			StreamWriter file = new StreamWriter(codeFilename);
 			file.Write(code);

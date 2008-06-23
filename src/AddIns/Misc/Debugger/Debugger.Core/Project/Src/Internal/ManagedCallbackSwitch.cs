@@ -55,15 +55,17 @@ namespace Debugger
 		public ManagedCallback GetProcessCallbackInterface(ICorDebugProcess pProcess)
 		{
 			Process process = debugger.GetProcess(pProcess);
-			if (process.HasExpired) {
+			if (process == null || process.HasExpired) {
+				debugger.TraceMessage("Ignoring callback of exited process (process not found)");
 				return null;
 			}
+			// Check that the process is not exited
 			try {
 				int isRunning = process.CorProcess.IsRunning;
 			} catch (COMException e) {
 				// 0x80131301: Process was terminated
 				if ((uint)e.ErrorCode == 0x80131301) {
-					process.TraceMessage("Ingoring callback of exited process");
+					process.TraceMessage("Ignoring callback of exited process (check failed)");
 					return null;
 				}
 			}
@@ -72,8 +74,10 @@ namespace Debugger
 		
 		public void ExitProcess(ICorDebugProcess pProcess)
 		{
-			ManagedCallback managedCallback = debugger.GetProcess(pProcess).CallbackInterface;
-			managedCallback.ExitProcess(pProcess);
+			ManagedCallback managedCallback = GetProcessCallbackInterface(pProcess);
+			if (managedCallback != null) {
+				managedCallback.ExitProcess(pProcess);
+			}
 		}
 		
 		#region Program folow control
