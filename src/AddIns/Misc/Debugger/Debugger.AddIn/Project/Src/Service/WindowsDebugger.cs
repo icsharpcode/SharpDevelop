@@ -142,8 +142,11 @@ namespace ICSharpCode.SharpDevelop.Services
 			string version = debugger.GetProgramVersion(processStartInfo.FileName);
 			if (version.StartsWith("v1.0")) {
 				MessageService.ShowMessage("${res:XML.MainMenu.DebugMenu.Error.Net10NotSupported}");
-				//} else if (string.IsNullOrEmpty(version)) {
-				//	MessageService.ShowMessage("${res:XML.MainMenu.DebugMenu.Error.BadAssembly}");
+			} else if (version.StartsWith("v1.1")) {
+				MessageService.ShowMessage(StringParser.Parse("${res:XML.MainMenu.DebugMenu.Error.Net10NotSupported}").Replace("1.0", "1.1"));
+//			} else if (string.IsNullOrEmpty(version)) {
+//				// Not a managed assembly
+//				MessageService.ShowMessage("${res:XML.MainMenu.DebugMenu.Error.BadAssembly}");
 			} else if (debugger.IsKernelDebuggerEnabled) {
 				MessageService.ShowMessage("${res:XML.MainMenu.DebugMenu.Error.KernelDebuggerEnabled}");
 			} else {
