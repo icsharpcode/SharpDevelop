@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
@@ -16,10 +16,8 @@ namespace Debugger.Wrappers.CorDebug
 	
 	public enum CorDebugThreadState : int
 	{
-		
-		THREAD_RUN = 0,
-		
-		THREAD_SUSPEND = 1,
+		Run = 0,
+		Suspend = 1,
 	}
 }
 

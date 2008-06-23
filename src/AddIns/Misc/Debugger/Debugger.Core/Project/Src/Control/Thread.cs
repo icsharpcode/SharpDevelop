@@ -19,21 +19,16 @@ namespace Debugger
 	{
 		Process process;
 		
+		uint id;
 		ICorDebugThread corThread;
+		
+		List<Stepper> steppers = new List<Stepper>();
 		
 		Exception     currentException;
 		DebuggeeState currentException_DebuggeeState;
 		ExceptionType currentExceptionType;
 		bool          currentExceptionIsUnhandled;
 
-		List<Stepper> steppers = new List<Stepper>();
-
-		uint id;
-		bool lastSuspendedState = false;
-		ThreadPriority lastPriority = ThreadPriority.Normal;
-		string lastName = string.Empty;
-		bool hasBeenLoaded = false;
-		
 		bool hasExpired = false;
 		bool nativeThreadExited = false;
 
@@ -41,6 +36,7 @@ namespace Debugger
 		
 		public event EventHandler Expired;
 		public event EventHandler<ThreadEventArgs> NativeThreadExited;
+		public event EventHandler<ThreadEventArgs> NameChanged;
 		
 		public bool HasExpired {
 			get {
@@ -55,16 +51,6 @@ namespace Debugger
 			}
 		}
 
-		internal bool HasBeenLoaded {
-			get {
-				return hasBeenLoaded;
-			}
-			set {
-				hasBeenLoaded = value;
-				OnStateChanged();
-			}
-		}
-		
 		[Debugger.Tests.Ignore]
 		public uint ID { 
 			get{ 
@@ -72,22 +58,7 @@ namespace Debugger
 			} 
 		}
 		
-		/// <summary> If the thread is not at safe point, it is not posible to evaluate
-		/// on it </summary>
-		/// <remarks> Returns false is the thread is in invalid state </remarks>
-		public bool IsAtSafePoint {
-			get {
-				if (IsInValidState) {
-					return CorThread.UserState != CorDebugUserState.USER_UNSAFE_POINT;
-				} else {
-					return false;
-				}
-			}
-		}
-		
-		/// <summary>
-		/// From time to time the thread may be in invalid state.
-		/// </summary>
+		/// <summary> From time to time the thread may be in invalid state. </summary>
 		public bool IsInValidState {
 			get {
 				try {
@@ -153,51 +124,79 @@ namespace Debugger
 			}
 		}
 		
-		public bool Suspended {
+		/// <summary> If the thread is not at safe point, it is not posible to evaluate
+		/// on it </summary>
+		/// <remarks> Returns false if the thread is in invalid state </remarks>
+		public bool IsAtSafePoint {
 			get {
-				if (process.IsRunning) return lastSuspendedState;
+				process.AssertPaused();
 				
-				lastSuspendedState = (CorThread.DebugState == CorDebugThreadState.THREAD_SUSPEND);
-				return lastSuspendedState;
-			}
-			set {
-				CorThread.SetDebugState((value==true)?CorDebugThreadState.THREAD_SUSPEND:CorDebugThreadState.THREAD_RUN);
+				if (!IsInValidState) return false;
+				
+				return CorThread.UserState != CorDebugUserState.USER_UNSAFE_POINT;
 			}
 		}
 		
+		/// <remarks> Returns false if the thread is in invalid state </remarks>
+		public bool Suspended {
+			get {
+				process.AssertPaused();
+				
+				if (!IsInValidState) return false;
+				
+				return (CorThread.DebugState == CorDebugThreadState.Suspend);
+			}
+			set {
+				CorThread.SetDebugState((value==true) ? CorDebugThreadState.Suspend : CorDebugThreadState.Run);
+			}
+		}
+		
+		/// <remarks> Returns Normal if the thread is in invalid state </remarks>
 		public ThreadPriority Priority {
 			get {
-				if (!HasBeenLoaded) return lastPriority;
-				if (process.IsRunning) return lastPriority;
+				process.AssertPaused();
+				
+				if (!IsInValidState) return ThreadPriority.Normal;
 
 				Value runTimeValue = RuntimeValue;
 				if (runTimeValue.IsNull) return ThreadPriority.Normal;
-				lastPriority = (ThreadPriority)(int)runTimeValue.GetMemberValue("m_Priority").PrimitiveValue;
-				return lastPriority;
+				return (ThreadPriority)(int)runTimeValue.GetMemberValue("m_Priority").PrimitiveValue;
 			}
 		}
-
+		
+		// NB: The value is null during the CreateThread callback
 		public Value RuntimeValue {
 			get {
-				// TODO: It may have started - rework
-				if (!HasBeenLoaded) throw new DebuggerException("Thread has not started jet");
 				process.AssertPaused();
 				
 				return new Value(process, CorThread.Object);
 			}
 		}
 		
+		/// <remarks> Returns empty string if the thread is in invalid state </remarks>
 		public string Name {
 			get {
-				if (!HasBeenLoaded) return lastName;
-				if (process.IsRunning) return lastName;
-				Value runtimeValue  = RuntimeValue;
-				if (runtimeValue.IsNull) return lastName;
+				process.AssertPaused();
+				
+				if (!IsInValidState) return string.Empty;
+				Value runtimeValue = RuntimeValue;
+				if (runtimeValue.IsNull) return string.Empty;
 				Value runtimeName = runtimeValue.GetMemberValue("m_Name");
 				if (runtimeName.IsNull) return string.Empty;
-				lastName = runtimeName.AsString.ToString();
-				return lastName;
+				return runtimeName.AsString.ToString();
 			}
+		}
+		
+		protected virtual void OnNameChanged(ThreadEventArgs e)
+		{
+			if (NameChanged != null) {
+				NameChanged(this, e);
+			}
+		}
+		
+		internal void NotifyNameChanged()
+		{
+			OnNameChanged(new ThreadEventArgs(this));
 		}
 		
 		public Exception CurrentException {
@@ -268,16 +267,6 @@ namespace Debugger
 				return steppers;
 			}
 		}
-		
-		public event EventHandler<ThreadEventArgs> StateChanged;
-		
-		protected void OnStateChanged()
-		{
-			if (StateChanged != null) {
-				StateChanged(this, new ThreadEventArgs(this));
-			}
-		}
-		
 		
 		public override string ToString()
 		{

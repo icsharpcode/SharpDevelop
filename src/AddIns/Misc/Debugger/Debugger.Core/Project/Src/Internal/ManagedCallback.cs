@@ -351,7 +351,7 @@ namespace Debugger
 				EnterCallback(PausedReason.Other, "NameChange: pThread", pThread);
 				
 				Thread thread = process.GetThread(pThread);
-				thread.HasBeenLoaded = true;
+				thread.NotifyNameChanged();
 				
 				ExitCallback();
 				

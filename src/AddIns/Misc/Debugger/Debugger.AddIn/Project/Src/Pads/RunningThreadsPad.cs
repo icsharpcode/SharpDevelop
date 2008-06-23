@@ -121,7 +121,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		public override void RefreshPad()
 		{
-			if (debuggedProcess == null) {
+			if (debuggedProcess == null || debuggedProcess.IsRunning) {
 				runningThreadsList.Items.Clear();
 				return;
 			}
@@ -161,7 +161,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		{
 			runningThreadsList.Items.Add(new ListViewItem(thread.ID.ToString()));
 			RefreshThread(thread);
-			thread.StateChanged += delegate {
+			thread.NameChanged += delegate {
 				RefreshThread(thread);
 			};
 			thread.Expired += delegate {
