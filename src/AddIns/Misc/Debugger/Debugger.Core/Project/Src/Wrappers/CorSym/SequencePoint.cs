@@ -10,9 +10,10 @@
 namespace Debugger.Wrappers.CorSym
 {
 	using System;
+	using System.Collections;
 	
 	
-	public class SequencePoint
+	public class SequencePoint: IComparable<SequencePoint>
 	{
 		ISymUnmanagedDocument document;
 		uint offset;
@@ -65,6 +66,15 @@ namespace Debugger.Wrappers.CorSym
 			this.column = column;
 			this.endLine = endLine;
 			this.endColumn = endColumn;
+		}
+		
+		public int CompareTo(SequencePoint other)
+		{
+			if (this.Line == other.Line) {
+				return this.Column.CompareTo(other.Column);
+			} else {
+				return this.Line.CompareTo(other.Line);
+			}
 		}
 	}
 }

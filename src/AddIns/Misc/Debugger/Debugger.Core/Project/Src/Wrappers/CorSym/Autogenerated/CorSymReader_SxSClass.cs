@@ -100,9 +100,27 @@ namespace Debugger.Wrappers.CorSym
 			return ISymUnmanagedDocument.Wrap(this.WrappedObject.GetDocument(url, language, languageVendor, documentType));
 		}
 		
-		public void GetDocuments(uint cDocs, out uint pcDocs, System.IntPtr pDocs)
+		public void GetDocuments(uint cDocs, out uint pcDocs, ISymUnmanagedDocument[] pDocs)
 		{
-			this.WrappedObject.GetDocuments(cDocs, out pcDocs, pDocs);
+			Debugger.Interop.CorSym.ISymUnmanagedDocument[] array_pDocs = new Debugger.Interop.CorSym.ISymUnmanagedDocument[pDocs.Length];
+			for (int i = 0; (i < pDocs.Length); i = (i + 1))
+			{
+				if ((pDocs[i] != null))
+				{
+					array_pDocs[i] = pDocs[i].WrappedObject;
+				}
+			}
+			this.WrappedObject.GetDocuments(cDocs, out pcDocs, array_pDocs);
+			for (int i = 0; (i < pDocs.Length); i = (i + 1))
+			{
+				if ((array_pDocs[i] != null))
+				{
+					pDocs[i] = ISymUnmanagedDocument.Wrap(array_pDocs[i]);
+				} else
+				{
+					pDocs[i] = null;
+				}
+			}
 		}
 		
 		public int GetDocumentVersion(ISymUnmanagedDocument pDoc, out int version)

@@ -20,7 +20,7 @@ namespace Debugger.Interop.CorSym
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
         ISymUnmanagedDocument GetDocument([In] IntPtr url, [In] Guid language, [In] Guid languageVendor, [In] Guid documentType);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetDocuments([In] uint cDocs, out uint pcDocs, [Out] IntPtr pDocs);
+        void GetDocuments([In] uint cDocs, out uint pcDocs, [Out, MarshalAs(UnmanagedType.LPArray)] ISymUnmanagedDocument[] pDocs);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
         uint GetUserEntryPoint();
         [return: MarshalAs(UnmanagedType.Interface)]

@@ -122,10 +122,10 @@ namespace Debugger
 				
 				if (!IsInValidState) return false;
 				
-				return (CorThread.DebugState == CorDebugThreadState.Suspend);
+				return (CorThread.DebugState == CorDebugThreadState.THREAD_SUSPEND);
 			}
 			set {
-				CorThread.SetDebugState((value==true) ? CorDebugThreadState.Suspend : CorDebugThreadState.Run);
+				CorThread.SetDebugState((value==true) ? CorDebugThreadState.THREAD_SUSPEND : CorDebugThreadState.THREAD_RUN);
 			}
 		}
 		

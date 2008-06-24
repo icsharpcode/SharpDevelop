@@ -22,7 +22,7 @@ namespace Debugger.Interop.CorSym
         public virtual extern ISymUnmanagedDocument GetDocument([In] IntPtr url, [In] Guid language, [In] Guid languageVendor, [In] Guid documentType);
 
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        public virtual extern void GetDocuments([In] uint cDocs, out uint pcDocs, [Out] IntPtr pDocs);
+        public virtual extern void GetDocuments([In] uint cDocs, out uint pcDocs, [Out, MarshalAs(UnmanagedType.LPArray)] ISymUnmanagedDocument[] pDocs);
 
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
         public virtual extern void GetDocumentVersion([In, MarshalAs(UnmanagedType.Interface)] ISymUnmanagedDocument pDoc, out int version, out int pbCurrent);

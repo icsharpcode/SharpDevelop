@@ -52,6 +52,21 @@ namespace Debugger
 			}
 		}
 		
+		public ISymUnmanagedDocument[] SymDocuments {
+			get {
+				ISymUnmanagedDocument[] docs;
+				uint maxCount = 2;
+				uint fetched;
+				do {
+					maxCount *= 8;
+					docs = new ISymUnmanagedDocument[maxCount];
+					symReader.GetDocuments(maxCount, out fetched, docs);
+				} while (fetched == maxCount);
+				Array.Resize(ref docs, (int)fetched);
+				return docs;
+			}
+		}
+		
 		public ICorDebugModule CorModule {
 			get {
 				return corModule;

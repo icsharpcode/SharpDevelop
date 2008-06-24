@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 
 using Debugger.Wrappers.CorDebug;
 using Debugger.Wrappers.CorSym;
@@ -163,8 +164,15 @@ namespace Debugger
 				return false; // No symbols
 			}
 			
+			// Do not use ISymUnmanagedReader.GetDocument!  It is broken if two files have the same name
+			
+			ISymUnmanagedDocument[] symDocs = module.SymDocuments;
 			ISymUnmanagedDocument symDoc = null;
-			symDoc = symReader.GetDocument(SourceFullFilename, Guid.Empty, Guid.Empty, Guid.Empty);
+			foreach(ISymUnmanagedDocument d in symDocs) {
+				if (d.URL.ToLower() == this.SourceFullFilename.ToLower()) {
+					symDoc = d;
+				}
+			}
 			if (symDoc == null) {
 				return false; // Does not use source file
 			}
@@ -189,19 +197,26 @@ namespace Debugger
 				return false; //Not found
 			}
 			
-			// Check that StartLine is within the method
-			uint start = uint.MaxValue;
-			uint end = uint.MinValue;
-			foreach(SequencePoint sqPoint in symMethod.SequencePoints) {
-				if (sqPoint.Line == 0xFEEFEE) continue;
-				start = Math.Min(start, sqPoint.Line);
-				end = Math.Max(end, sqPoint.EndLine);
-			}
-			if (StartLine < start || StartLine > end) return false;
+			// Do not use ISymUnmanagedMethod.GetOffset!  It sometimes returns negative offset
 			
-			function = module.CorModule.GetFunctionFromToken(symMethod.Token);
-			ilOffset = (int)symMethod.GetOffset(symDoc, validLine, 0);
-			return true;
+			SequencePoint[] seqPoints = symMethod.SequencePoints;
+			Array.Sort(seqPoints);
+			if (seqPoints.Length == 0) return false;
+			if (this.StartLine < seqPoints[0].Line) return false;
+			foreach(SequencePoint sqPoint in seqPoints) {
+				if (sqPoint.Line == 0xFEEFEE) continue;
+				// If the desired breakpoint position is before the end of the sequence point
+				if (this.StartLine < sqPoint.EndLine || (this.StartLine == sqPoint.EndLine && this.StartColumn < sqPoint.EndColumn)) {
+					function = module.CorModule.GetFunctionFromToken(symMethod.Token);
+					ilOffset = (int)sqPoint.Offset;
+					startLine = (int)sqPoint.Line;
+					startColumn = (int)sqPoint.Column;
+					endLine = (int)sqPoint.EndLine;
+					endColumn = (int)sqPoint.EndColumn;
+					return true;
+				}
+			}
+			return false;
 		}
 		
 		public override string ToString()
