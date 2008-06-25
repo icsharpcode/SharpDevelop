@@ -225,7 +225,7 @@ namespace Debugger
 				throw;
 			}
 			
-			Process.AsyncContinue_KeepDebuggeeState();
+			Process.AsyncContinue(DebuggeeStateAction.Keep);
 			Process.WaitForPause();
 			return true;
 		}

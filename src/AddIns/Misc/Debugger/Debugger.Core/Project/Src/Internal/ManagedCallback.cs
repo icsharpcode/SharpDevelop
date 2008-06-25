@@ -54,16 +54,16 @@ namespace Debugger
 			if (process.IsPaused && process.PauseSession.PausedReason == PausedReason.ForcedBreak) {
 				process.TraceMessage("Processing post-break callback");
 				// This compensates for the break call and we are in normal callback handling mode
-				process.AsyncContinue_KeepDebuggeeState();
+				process.AsyncContinue(DebuggeeStateAction.Keep);
 				// Start of call back - create new pause session (as usual)
-				process.CreatePauseSession(pausedReason);
+				process.NotifyPaused(pausedReason);
 				// Make sure we stay pause after the callback is handled
 				pauseOnNextExit = true;
 				return;
 			}
 			
 			if (process.IsRunning) {
-				process.CreatePauseSession(pausedReason);
+				process.NotifyPaused(pausedReason);
 				return;
 			}
 			
@@ -90,8 +90,7 @@ namespace Debugger
 			
 			// Ignore events during property evaluation
 			if (!pauseOnNextExit || process.Evaluating || hasQueuedCallbacks) {
-				process.ExpirePauseSession();
-				process.CorProcess.Continue(0);
+				process.AsyncContinue(DebuggeeStateAction.Keep);
 			} else {
 				pauseOnNextExit = false;
 				Pause();
@@ -102,36 +101,14 @@ namespace Debugger
 		
 		void Pause()
 		{
-			process.SelectMostRecentStackFrameWithLoadedSymbols();
-			process.DisableAllSteppers();
-			
 			if (process.PauseSession.PausedReason == PausedReason.EvalComplete ||
 			    process.PauseSession.PausedReason == PausedReason.ExceptionIntercepted) {
-				// Keep debugge state
+				process.SelectMostRecentStackFrameWithLoadedSymbols();
+				process.DisableAllSteppers();
 				// Do not raise events
 			} else {
-				process.CreateDebuggeeState();
 				// Raise the pause event outside the callback
-				process.Debugger.MTA2STA.AsyncCall(RaiseEvents);
-			}
-		}
-		
-		void RaiseEvents()
-		{
-			if (process.PauseSession.PausedReason == PausedReason.Exception) {
-				// Needs to be done after the debugge state is created
-				process.SelectedThread.CurrentException_DebuggeeState = process.DebuggeeState;
-			}
-			
-			if (process.PauseSession.PausedReason == PausedReason.Exception) {
-				ExceptionEventArgs args = new ExceptionEventArgs(process, process.SelectedThread.CurrentException, process.SelectedThread.CurrentExceptionType, process.SelectedThread.CurrentExceptionIsUnhandled);
-				process.OnExceptionThrown(args);
-				// The event could have resumed or killed the process
-			}
-			
-			if (process.IsPaused && !process.HasExpired) {
-				process.OnPaused();
-				// The event could have resumed the process
+				process.Debugger.MTA2STA.AsyncCall(process.RaisePausedEvents);
 			}
 		}
 		
@@ -467,6 +444,7 @@ namespace Debugger
 			// Exception -> Exception2(pAppDomain, pThread, null, 0, exceptionType, 0);
 			
 			process.SelectedThread.CurrentException = new Exception(new Value(process, new Expressions.CurrentExceptionExpression(), process.SelectedThread.CorThread.CurrentException));
+			process.SelectedThread.CurrentException_DebuggeeState = process.DebuggeeState;
 			process.SelectedThread.CurrentExceptionType = (ExceptionType)exceptionType;
 			process.SelectedThread.CurrentExceptionIsUnhandled = (ExceptionType)exceptionType == ExceptionType.Unhandled;
 			

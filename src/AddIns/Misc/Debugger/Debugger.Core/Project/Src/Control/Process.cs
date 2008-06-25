@@ -39,11 +39,8 @@ namespace Debugger
 					Expired(this, new ProcessEventArgs(this));
 				}
 				// Expire pause seesion first
-				if (PauseSession != null) {
-					ExpirePauseSession();
-				}
-				if (DebuggeeState != null) {
-					ExpireDebuggeeState();
+				if (IsPaused) {
+					NotifyResumed(DebuggeeStateAction.Clear);
 				}
 				debugger.RemoveProcess(this);
 			}

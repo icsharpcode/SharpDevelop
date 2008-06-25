@@ -152,7 +152,7 @@ namespace Debugger
 		public void AsyncStepOut()
 		{
 			new Stepper(this, "StackFrame step out").StepOut();
-			process.AsyncContinue();
+			process.AsyncContinue(DebuggeeStateAction.Clear);
 		}
 		
 		void AsyncStep(bool stepIn)
@@ -177,7 +177,7 @@ namespace Debugger
 				new Stepper(this, "StackFrame step over").StepOver(nextSt.StepRanges);
 			}
 			
-			process.AsyncContinue();
+			process.AsyncContinue(DebuggeeStateAction.Clear);
 		}
 		
 		/// <summary>
@@ -314,10 +314,9 @@ namespace Debugger
 						} else {
 							// invalidates all frames and chains for the current thread
 							CorILFrame.SetIP((uint)ilOffset);
-							process.ExpirePauseSession();
-							process.CreatePauseSession(PausedReason.SetIP);
-							process.SelectMostRecentStackFrameWithLoadedSymbols();
-							process.OnPaused();
+							process.NotifyResumed(DebuggeeStateAction.Keep);
+							process.NotifyPaused(PausedReason.SetIP);
+							process.RaisePausedEvents();
 						}
 					} catch {
 						return null;

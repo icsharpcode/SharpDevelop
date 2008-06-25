@@ -23,6 +23,8 @@ namespace Debugger.Tests.TestPrograms
 
 #if TEST_CODE
 namespace Debugger.Tests {
+	using NUnit.Framework;
+	
 	public partial class DebuggerTests
 	{
 		[NUnit.Framework.Test]
@@ -32,6 +34,7 @@ namespace Debugger.Tests {
 			
 			StartTest("Breakpoint.cs");
 			
+			Assert.IsTrue(breakpoint.HadBeenSet);
 			ObjectDump(breakpoint);
 			process.Continue();
 			process.Continue();
