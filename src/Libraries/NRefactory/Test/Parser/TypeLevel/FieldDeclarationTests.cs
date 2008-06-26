@@ -53,6 +53,17 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		}
 		
 		[Test]
+		public void VBNetMultiFieldsOnSingleLineTest()
+		{
+			string program = "Class TestClass : Dim a : Dim b : End Class";
+			TypeDeclaration td = ParseUtilVBNet.ParseGlobal<TypeDeclaration>(program);
+			
+			Assert.AreEqual(2, td.Children.Count);
+			Assert.IsTrue(td.Children[0] is FieldDeclaration);
+			Assert.IsTrue(td.Children[1] is FieldDeclaration);
+		}
+		
+		[Test]
 		public void VBNetMultiFieldDeclarationTest2()
 		{
 			FieldDeclaration fd = ParseUtilVBNet.ParseTypeMember<FieldDeclaration>("Dim a, b() As String");

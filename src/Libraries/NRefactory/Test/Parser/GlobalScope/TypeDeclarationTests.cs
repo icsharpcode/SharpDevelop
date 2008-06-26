@@ -210,6 +210,17 @@ public abstract class MyClass : MyBase, Interface1, My.Test.Interface2
 		}
 		
 		[Test]
+		public void VBNetEnumOnSingleLine()
+		{
+			string program = "Enum TestEnum : A : B = 1 : C : End Enum";
+			TypeDeclaration td = ParseUtilVBNet.ParseGlobal<TypeDeclaration>(program);
+			
+			Assert.AreEqual("TestEnum", td.Name);
+			Assert.AreEqual(ClassType.Enum, td.Type);
+			Assert.AreEqual(3, td.Children.Count);
+		}
+		
+		[Test]
 		public void VBNetEnumWithSystemBaseClassDeclarationTest()
 		{
 			string program = "Enum TestEnum As System.UInt16\n" +

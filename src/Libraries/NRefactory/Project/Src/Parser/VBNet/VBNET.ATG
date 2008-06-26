@@ -272,10 +272,10 @@ OptionValue<ref bool val> =
 	.
 
 EndOfStmt =
-		EOL
-	|
-		":" [ EOL ]
-	.
+	EOL
+|
+	":"
+.
 
 ImportsStmt
 	(.List<Using> usings = new List<Using>();
@@ -336,7 +336,7 @@ NamespaceMemberDecl
 		compilationUnit.AddChild(node);
 		compilationUnit.BlockStart(node);
 	.)
-	EOL
+	EndOfStmt
 	NamespaceBody
 	(.
 		node.EndLocation = t.Location;
@@ -426,7 +426,7 @@ NonModuleDeclaration<ModifierList m, List<AttributeSection> attributes>
 	{ TypeImplementsClause<out baseInterfaces> (. newType.BaseTypes.AddRange(baseInterfaces); .) }
 	ClassBody<newType>
 	"End" "Class" (. newType.EndLocation = t.EndLocation; .)
-	EOL
+	EndOfStmt
 	(.
 		compilationUnit.BlockEnd();
 	.)
@@ -440,7 +440,7 @@ NonModuleDeclaration<ModifierList m, List<AttributeSection> attributes>
 			newType.Type = ClassType.Module;
 		.)
 	Identifier			 (. newType.Name = t.val; .)
-	EOL
+	EndOfStmt
 	(. newType.BodyStartLocation = t.Location; .)
 	ModuleBody<newType>
 	(.
@@ -457,7 +457,7 @@ NonModuleDeclaration<ModifierList m, List<AttributeSection> attributes>
 		.)
 	Identifier			 (. newType.Name = t.val; .) 
 	TypeParameterList<newType.Templates>
-	EOL
+	EndOfStmt
 	(. newType.BodyStartLocation = t.Location; .)
 	{ TypeImplementsClause<out baseInterfaces> (. newType.BaseTypes.AddRange(baseInterfaces);.) }
 	StructureBody<newType>
@@ -477,7 +477,7 @@ NonModuleDeclaration<ModifierList m, List<AttributeSection> attributes>
 		.)
 	Identifier			 (. newType.Name = t.val; .) 
 	[ "As" NonArrayTypeName<out typeRef, false> (. newType.BaseTypes.Add(typeRef); .) ]
-	EOL
+	EndOfStmt
 	(. newType.BodyStartLocation = t.Location; .)
 	EnumBody<newType>
 	(.
@@ -522,7 +522,7 @@ NonModuleDeclaration<ModifierList m, List<AttributeSection> attributes>
 		[ "As" (. TypeReference type; .) TypeName<out type> (. delegateDeclr.ReturnType = type; .)]
 	)
 	(. 		delegateDeclr.EndLocation = t.EndLocation; .)
-	EOL
+	EndOfStmt
 	(.
 		compilationUnit.AddChild(delegateDeclr);
 	.)
@@ -531,7 +531,7 @@ NonModuleDeclaration<ModifierList m, List<AttributeSection> attributes>
 NamespaceBody =
 	{ NamespaceMemberDecl }
 	"End" "Namespace"
-	EOL
+	EndOfStmt
 	.
 
 ClassBody<TypeDeclaration newType>
@@ -557,7 +557,7 @@ StructureBody<TypeDeclaration newType>
 		StructureMemberDecl<m, attributes>
 	}
 	"End" "Structure" (. newType.EndLocation = t.EndLocation; .)
-	EOL
+	EndOfStmt
 	.
 
 /* 7.7.1 */
@@ -572,7 +572,7 @@ ModuleBody<TypeDeclaration newType>
 		ClassMemberDecl<m, attributes>
 	}
 	"End" "Module" (. newType.EndLocation = t.EndLocation; .)
-	EOL
+	EndOfStmt
 	.
 
 EnumBody<TypeDeclaration newType>
@@ -581,13 +581,13 @@ EnumBody<TypeDeclaration newType>
 		EnumMemberDecl<out f> (. compilationUnit.AddChild(f); .)
 	}
 	"End" "Enum" (. newType.EndLocation = t.EndLocation; .)
-	EOL
+	EndOfStmt
 	.
 
 InterfaceBody<TypeDeclaration newType> =
 	{ InterfaceMemberDecl }
 	"End" "Interface" (. newType.EndLocation = t.EndLocation; .)
-	EOL
+	EndOfStmt
 	.
 
 /* The information provided in the spec about */
@@ -615,7 +615,7 @@ InterfaceMemberDecl
 		Identifier (. name = t.val; .)
 		[ "(" [ FormalParameterList<p> ] ")" ]
 		[ "As" TypeName<out type> ]
-		EOL
+		EndOfStmt
 		(.
 			EventDeclaration ed = new EventDeclaration {
 				Name = name, TypeReference = type, Modifier = mod.Modifier,
@@ -633,7 +633,7 @@ InterfaceMemberDecl
 		Identifier (. name = t.val; .)
 		TypeParameterList<templates>
 		[ "(" [ FormalParameterList<p> ] ")" ]
-		EOL
+		EndOfStmt
 		(.
 			MethodDeclaration md = new MethodDeclaration {
 				Name = name, 
@@ -674,7 +674,7 @@ InterfaceMemberDecl
 			md.Templates = templates;
 			compilationUnit.AddChild(md);
 		.)
-		EOL
+		EndOfStmt
 		|
 		"Property"
 		(.
@@ -689,7 +689,7 @@ InterfaceMemberDecl
 				type = new TypeReference("System.Object");
 			}
 		.)
-		EOL
+		EndOfStmt
 		(.
 			PropertyDeclaration pd = new PropertyDeclaration(name, type, mod.Modifier, attributes);
 			pd.Parameters = p;
@@ -718,7 +718,7 @@ EnumMemberDecl<out FieldDeclaration f>
 		f.StartLocation = varDecl.StartLocation = t.Location;
 	.)
 	[ "=" Expr<out expr> (. varDecl.Initializer = expr; .) ]
-	EOL
+	EndOfStmt
 	.
 
 ClassMemberDecl<ModifierList m, List<AttributeSection> attributes> =
@@ -771,10 +771,10 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 			)
 		]
 		(. Location endLocation = t.EndLocation; .)
-		EOL
 		(
 			/* abstract methods without a body */
 			IF(IsMustOverride(m))
+			EndOfStmt
 			(.
 				methodDeclaration = new MethodDeclaration {
 					Name = name, Modifier = m.Modifier, Parameters = p, Attributes = attributes,
@@ -787,6 +787,7 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 				compilationUnit.AddChild(methodDeclaration);
 			.)
 		|
+			EOL
 			(.
 				methodDeclaration = new MethodDeclaration {
 					Name = name, Modifier = m.Modifier, Parameters = p, Attributes = attributes,
@@ -809,7 +810,8 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 			.)
 			
 			(. methodDeclaration.Body  = (BlockStatement)stmt; .)
-			(. methodDeclaration.Body.EndLocation = t.EndLocation; .) EOL 
+			(. methodDeclaration.Body.EndLocation = t.EndLocation; .)
+			EndOfStmt
 		)
 		/* 9.3 */
 		| "New" [ "(" [ FormalParameterList<p> ] ")" ]
@@ -826,7 +828,8 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 		   }
 		.)
 		
-		(. Location endLocation = t.EndLocation; .) EOL
+		(. Location endLocation = t.EndLocation; .)
+		EndOfStmt
 		(.
 			ConstructorDeclaration cd = new ConstructorDeclaration("New", m.Modifier, p, attributes); 
 			cd.StartLocation = m.GetDeclarationLocation(startPos);
@@ -863,10 +866,10 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 			HandlesClause<out handlesClause>
 		)
 	]
-	EOL
 	(
 		/* abstract methods without a body */
 		IF(IsMustOverride(m))
+		EndOfStmt
 			(.
 				methodDeclaration = new MethodDeclaration {
 					Name = name, Modifier = m.Modifier, TypeReference = type,
@@ -884,6 +887,7 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 				compilationUnit.AddChild(methodDeclaration);
 			.)
 		|
+			EOL
 			(.
 				methodDeclaration = new MethodDeclaration {
 					Name = name, Modifier = m.Modifier, TypeReference = type,
@@ -912,7 +916,7 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 				methodDeclaration.Body.StartLocation = methodDeclaration.EndLocation;
 				methodDeclaration.Body.EndLocation   = t.EndLocation;
 			.)
-			EOL
+			EndOfStmt
 	)
 |
 	/* 9.2.2. */
@@ -932,7 +936,7 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 			"Lib" LiteralString		(. library = t.literalValue as string; .)
 			["Alias" LiteralString	(. alias = t.literalValue as string; .)]
 			[ "("	[ FormalParameterList<p> ] ")" ]
-			EOL
+			EndOfStmt
 			(.
 				DeclareDeclaration declareDeclaration = new DeclareDeclaration(name, m.Modifier, null, p, attributes, library, alias, charsetModifer);
 				declareDeclaration.StartLocation = m.GetDeclarationLocation(startPos);
@@ -946,7 +950,7 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 			["Alias" LiteralString	(. alias = t.literalValue as string; .)]
 			[ "("	[ FormalParameterList<p> ] ")" ]
 			["As" TypeName<out type> ]
-			EOL
+			EndOfStmt
 			(.
 				DeclareDeclaration declareDeclaration = new DeclareDeclaration(name, m.Modifier, type, p, attributes, library, alias, charsetModifer);
 				declareDeclaration.StartLocation = m.GetDeclarationLocation(startPos);
@@ -980,7 +984,7 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 		};
 		compilationUnit.AddChild(eventDeclaration);
 	.)
-	EOL
+	EndOfStmt
 | /* 9.6 */
 	(. Location startPos = t.Location; .)
 	(.
@@ -991,7 +995,7 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 	IdentifierForFieldDeclaration (. string name = t.val; .)
 	VariableDeclaratorPartAfterIdentifier<variableDeclarators, name>
 	{ "," VariableDeclarator<variableDeclarators> }
-	EOL
+	EndOfStmt
 	(.
 		fd.EndLocation = t.EndLocation;
 		fd.Fields = variableDeclarators;
@@ -1011,7 +1015,7 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 		fd.Fields = constantDeclarators;
 		fd.EndLocation = t.Location;
 	.)
-	EOL
+	EndOfStmt
 	(.
 		fd.EndLocation = t.EndLocation;
 		compilationUnit.AddChild(fd);
@@ -1032,7 +1036,7 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 		}
 	.)
 	[ ImplementsClause<out implementsClause> ]
-	EOL
+	EndOfStmt
 	(
 	/* abstract properties without a body */
 	IF(IsMustOverride(m))
@@ -1059,7 +1063,7 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 		.)
 		AccessorDecls<out getRegion, out setRegion> 
 		"End" "Property"
-		EOL
+		EndOfStmt
 		(.
 			pDecl.GetRegion = getRegion;
 			pDecl.SetRegion = setRegion;
@@ -1080,7 +1084,7 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 	Identifier (. string customEventName = t.val; .)
 	"As" TypeName<out type>
 	[ ImplementsClause<out implementsClause> ]
-	EOL
+	EndOfStmt
 	{
 		EventAccessorDeclaration<out eventAccessorDeclaration>
 		(.
@@ -1098,7 +1102,7 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 			}
 		.)
 	}
-	"End" "Event" EOL
+	"End" "Event" EndOfStmt
 	(.
 		if(addHandlerAccessorDeclaration == null)
 		{
@@ -1154,8 +1158,9 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 		}
 	")"
 	(. Location endPos = t.EndLocation; .)
-	[ "As" { AttributeSection<out section> (. returnTypeAttributes.Add(section); .) } TypeName<out returnType> (. endPos = t.EndLocation; .) EOL ]
-	Block<out stmt> "End" "Operator" EOL
+	[ "As" { AttributeSection<out section> (. returnTypeAttributes.Add(section); .) } TypeName<out returnType> (. endPos = t.EndLocation; .) ]
+	EOL
+	Block<out stmt> "End" "Operator" EndOfStmt
 	(.
 		OperatorDeclaration operatorDeclaration = new OperatorDeclaration {
 			Modifier = m.Modifier,
@@ -1244,7 +1249,7 @@ EventAccessorDeclaration<out EventAddRemoveRegion eventAccessorDeclaration>
 	{ AttributeSection<out section> (. attributes.Add(section); .) }
 	(
 			"AddHandler" [ "(" [ FormalParameterList<p> ] ")" ] EOL
-			Block<out stmt> "End" "AddHandler" EOL
+			Block<out stmt> "End" "AddHandler" EndOfStmt
 			(.
 				eventAccessorDeclaration = new EventAddRegion(attributes);
 				eventAccessorDeclaration.Block = (BlockStatement)stmt;
@@ -1252,7 +1257,7 @@ EventAccessorDeclaration<out EventAddRemoveRegion eventAccessorDeclaration>
 			.)
 		|
 			"RemoveHandler" [ "(" [ FormalParameterList<p> ] ")" ] EOL
-			Block<out stmt> "End" "RemoveHandler" EOL
+			Block<out stmt> "End" "RemoveHandler" EndOfStmt
 			(.
 				eventAccessorDeclaration = new EventRemoveRegion(attributes);
 				eventAccessorDeclaration.Block = (BlockStatement)stmt;
@@ -1260,7 +1265,7 @@ EventAccessorDeclaration<out EventAddRemoveRegion eventAccessorDeclaration>
 			.)
 		|
 			"RaiseEvent" [ "(" [ FormalParameterList<p> ] ")" ] EOL
-			Block<out stmt> "End" "RaiseEvent" EOL
+			Block<out stmt> "End" "RaiseEvent" EndOfStmt
 			(.
 				eventAccessorDeclaration = new EventRaiseRegion(attributes);
 				eventAccessorDeclaration.Block = (BlockStatement)stmt;
@@ -1308,7 +1313,7 @@ GetAccessorDecl<out PropertyGetRegion getBlock, List<AttributeSection> attribute
 	"End" "Get"
 	(. getBlock.Modifier = m; .)
 	(. getBlock.StartLocation = startLocation; getBlock.EndLocation = t.EndLocation; .)
-	EOL
+	EndOfStmt
 	.
 
 /* 9.7.2 */
@@ -1332,7 +1337,7 @@ SetAccessorDecl<out PropertySetRegion setBlock, List<AttributeSection> attribute
 	.)
 	"End" "Set"
 	(. setBlock.StartLocation = startLocation; setBlock.EndLocation = t.EndLocation; .)
-	EOL
+	EndOfStmt
 	.
 
 /* 9.5 */
@@ -1514,7 +1519,7 @@ InterfaceBase <out List<TypeReference> bases>
 		","
 		TypeName<out type> (. bases.Add(type); .)
 	}
-	EOL
+	EndOfStmt
 	.
 
 /* 7.2 */
