@@ -35,7 +35,9 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		[Test]
 		public void VBNetLabelStatementTest()
 		{
-			LabelStatement labelStmt = ParseUtilVBNet.ParseStatement<LabelStatement>("myLabel: Console.WriteLine()");
+			MethodDeclaration method = ParseUtilVBNet.ParseTypeMember<MethodDeclaration>("Sub Test \n myLabel: Console.WriteLine() \n End Sub");
+			Assert.AreEqual(2, method.Body.Children.Count);
+			LabelStatement labelStmt = (LabelStatement)method.Body.Children[0];
 			Assert.AreEqual("myLabel", labelStmt.Label);
 		}
 		#endregion 

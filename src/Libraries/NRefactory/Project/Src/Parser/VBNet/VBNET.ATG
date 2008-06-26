@@ -231,14 +231,15 @@ VBNET
 	(.
 		lexer.NextToken(); // get the first token
 		compilationUnit = new CompilationUnit();
-	.) =
-	{ EOL }
-	{ OptionStmt }
-	{ ImportsStmt}
-	{ IF (IsGlobalAttrTarget()) GlobalAttributeSection }
-	{ NamespaceMemberDecl }
+	.)
+=
+	{ EndOfStmt }
+	{ OptionStmt { EndOfStmt } }
+	{ ImportsStmt { EndOfStmt } }
+	{ IF (IsGlobalAttrTarget()) GlobalAttributeSection { EndOfStmt } }
+	{ NamespaceMemberDecl { EndOfStmt } }
 	EOF
-	.
+.
 
 OptionStmt (. INode node = null; bool val = true; .) =
 	"Option" (. Location startPos = t.Location; .)
@@ -529,13 +530,18 @@ NonModuleDeclaration<ModifierList m, List<AttributeSection> attributes>
 	.
 
 NamespaceBody =
-	{ NamespaceMemberDecl }
+	{ EndOfStmt } /* allow empty lines at begin of body */
+	{
+		NamespaceMemberDecl
+		{ EndOfStmt } /* allow empty lines in body */
+	}
 	"End" "Namespace"
 	EndOfStmt
 	.
 
 ClassBody<TypeDeclaration newType>
 	(. AttributeSection section; .) =
+	{ EndOfStmt } /* allow empty lines at begin of body */
 	{
 		(.List<AttributeSection> attributes = new List<AttributeSection>();
 			ModifierList m = new ModifierList();
@@ -543,11 +549,13 @@ ClassBody<TypeDeclaration newType>
 		{ AttributeSection<out section> (. attributes.Add(section); .) }
 		{ MemberModifier<m> }
 		ClassMemberDecl<m, attributes>
+		{ EndOfStmt } /* allow empty lines in body */
 	}
 	.
 
 StructureBody<TypeDeclaration newType>
 	(. AttributeSection section; .) =
+	{ EndOfStmt } /* allow empty lines at begin of body */
 	{
 		(.List<AttributeSection> attributes = new List<AttributeSection>();
 			ModifierList m = new ModifierList();
@@ -555,6 +563,7 @@ StructureBody<TypeDeclaration newType>
 		{ AttributeSection<out section> (. attributes.Add(section); .) }
 		{ MemberModifier<m> }
 		StructureMemberDecl<m, attributes>
+		{ EndOfStmt } /* allow empty lines in body */
 	}
 	"End" "Structure" (. newType.EndLocation = t.EndLocation; .)
 	EndOfStmt
@@ -563,6 +572,7 @@ StructureBody<TypeDeclaration newType>
 /* 7.7.1 */
 ModuleBody<TypeDeclaration newType>
 	(. AttributeSection section; .) =
+	{ EndOfStmt } /* allow empty lines at begin of body */
 	{
 		(.List<AttributeSection> attributes = new List<AttributeSection>();
 			ModifierList m = new ModifierList();
@@ -570,6 +580,7 @@ ModuleBody<TypeDeclaration newType>
 		{ AttributeSection<out section> (. attributes.Add(section); .) }
 		{ MemberModifier<m> }
 		ClassMemberDecl<m, attributes>
+		{ EndOfStmt } /* allow empty lines in body */
 	}
 	"End" "Module" (. newType.EndLocation = t.EndLocation; .)
 	EndOfStmt
@@ -577,15 +588,21 @@ ModuleBody<TypeDeclaration newType>
 
 EnumBody<TypeDeclaration newType>
 	(. FieldDeclaration f; .) =
+	{ EndOfStmt } /* allow empty lines at begin of body */
 	{
 		EnumMemberDecl<out f> (. compilationUnit.AddChild(f); .)
+		{ EndOfStmt } /* allow empty lines in body */
 	}
 	"End" "Enum" (. newType.EndLocation = t.EndLocation; .)
 	EndOfStmt
 	.
 
 InterfaceBody<TypeDeclaration newType> =
-	{ InterfaceMemberDecl }
+	{ EndOfStmt } /* allow empty lines at begin of body */
+	{
+		InterfaceMemberDecl
+		{ EndOfStmt } /* allow empty lines in body */
+	}
 	"End" "Interface" (. newType.EndLocation = t.EndLocation; .)
 	EndOfStmt
 	.
