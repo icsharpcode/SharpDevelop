@@ -65,7 +65,7 @@ namespace Debugger
 			throw new DebuggerException("Breakpoint is not in collection");
 		}
 		
-		internal Breakpoint AddBreakpoint(Breakpoint breakpoint)  
+		public Breakpoint AddBreakpoint(Breakpoint breakpoint)  
 		{
 			breakpointCollection.Add(breakpoint);
 			
@@ -74,7 +74,6 @@ namespace Debugger
 					breakpoint.SetBreakpoint(module);
 				}
 			}
-			breakpoint.Changed += new EventHandler<BreakpointEventArgs>(OnBreakpointStateChanged);
 			breakpoint.Hit += new EventHandler<BreakpointEventArgs>(OnBreakpointHit);
 			
 			OnBreakpointAdded(breakpoint);
@@ -84,17 +83,16 @@ namespace Debugger
 		
 		public Breakpoint AddBreakpoint(string filename, int line)
 		{
-			return AddBreakpoint(new SourcecodeSegment(filename, line), true);
+			return AddBreakpoint(new Breakpoint(this, filename, null, line, 0, true));
 		}
 		
-		public Breakpoint AddBreakpoint(SourcecodeSegment segment, bool breakpointEnabled)
+		public Breakpoint AddBreakpoint(string fileName, byte[] checkSum, int line, int column, bool enabled)
 		{
-			return AddBreakpoint(new Breakpoint(this, segment, breakpointEnabled));
+			return AddBreakpoint(new Breakpoint(this, fileName, checkSum, line, column, enabled));
 		}
 		
 		public void RemoveBreakpoint(Breakpoint breakpoint)  
 		{
-			breakpoint.Changed -= new EventHandler<BreakpointEventArgs>(OnBreakpointStateChanged);
 			breakpoint.Hit -= new EventHandler<BreakpointEventArgs>(OnBreakpointHit);
 			
 			breakpoint.Enabled = false;
@@ -112,7 +110,7 @@ namespace Debugger
 		public void DeactivateBreakpoints()
 		{
 			foreach (Breakpoint b in breakpointCollection) {
-				b.Deactivate();
+				b.Enabled = false;
 			}
 		}
 

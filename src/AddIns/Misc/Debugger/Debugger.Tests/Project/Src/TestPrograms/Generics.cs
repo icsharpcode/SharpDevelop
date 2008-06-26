@@ -160,7 +160,7 @@ namespace Debugger.Tests {
         <Module>Generics.exe</Module>
         <Name>Metod</Name>
       </MethodInfo>
-      <NextStatement>Start=48,4 End=48,40</NextStatement>
+      <NextStatement>Generics.cs:48,4-48,40</NextStatement>
     </SelectedStackFrame>
     <SelectedStackFrame-GetArguments Type="Value[]" ToString="Debugger.Value[]">
       <Item Type="Value" ToString="v = 1">
@@ -224,7 +224,7 @@ namespace Debugger.Tests {
         <Module>Generics.exe</Module>
         <Name>GenericMethod</Name>
       </MethodInfo>
-      <NextStatement>Start=54,4 End=54,40</NextStatement>
+      <NextStatement>Generics.cs:54,4-54,40</NextStatement>
     </SelectedStackFrame>
     <SelectedStackFrame-GetArguments Type="Value[]" ToString="Debugger.Value[]">
       <Item Type="Value" ToString="v = 2">
@@ -288,7 +288,7 @@ namespace Debugger.Tests {
         <Module>Generics.exe</Module>
         <Name>StaticMetod</Name>
       </MethodInfo>
-      <NextStatement>Start=60,4 End=60,40</NextStatement>
+      <NextStatement>Generics.cs:60,4-60,40</NextStatement>
     </SelectedStackFrame>
     <SelectedStackFrame-GetArguments Type="Value[]" ToString="Debugger.Value[]">
       <Item Type="Value" ToString="v = 3">
@@ -352,7 +352,7 @@ namespace Debugger.Tests {
         <Module>Generics.exe</Module>
         <Name>StaticGenericMethod</Name>
       </MethodInfo>
-      <NextStatement>Start=66,4 End=66,40</NextStatement>
+      <NextStatement>Generics.cs:66,4-66,40</NextStatement>
     </SelectedStackFrame>
     <SelectedStackFrame-GetArguments Type="Value[]" ToString="Debugger.Value[]">
       <Item Type="Value" ToString="v = 4">
@@ -416,7 +416,7 @@ namespace Debugger.Tests {
         <Module>Generics.exe</Module>
         <Name>Metod</Name>
       </MethodInfo>
-      <NextStatement>Start=75,4 End=75,40</NextStatement>
+      <NextStatement>Generics.cs:75,4-75,40</NextStatement>
     </SelectedStackFrame>
     <SelectedStackFrame-GetArguments Type="Value[]" ToString="Debugger.Value[]">
       <Item Type="Value" ToString="v = 5">
@@ -480,7 +480,7 @@ namespace Debugger.Tests {
         <Module>Generics.exe</Module>
         <Name>GenericMethod</Name>
       </MethodInfo>
-      <NextStatement>Start=81,4 End=81,40</NextStatement>
+      <NextStatement>Generics.cs:81,4-81,40</NextStatement>
     </SelectedStackFrame>
     <SelectedStackFrame-GetArguments Type="Value[]" ToString="Debugger.Value[]">
       <Item Type="Value" ToString="v = 6">
@@ -544,7 +544,7 @@ namespace Debugger.Tests {
         <Module>Generics.exe</Module>
         <Name>StaticMetod</Name>
       </MethodInfo>
-      <NextStatement>Start=87,4 End=87,40</NextStatement>
+      <NextStatement>Generics.cs:87,4-87,40</NextStatement>
     </SelectedStackFrame>
     <SelectedStackFrame-GetArguments Type="Value[]" ToString="Debugger.Value[]">
       <Item Type="Value" ToString="v = 7">
@@ -608,7 +608,7 @@ namespace Debugger.Tests {
         <Module>Generics.exe</Module>
         <Name>StaticGenericMethod</Name>
       </MethodInfo>
-      <NextStatement>Start=93,4 End=93,40</NextStatement>
+      <NextStatement>Generics.cs:93,4-93,40</NextStatement>
     </SelectedStackFrame>
     <SelectedStackFrame-GetArguments Type="Value[]" ToString="Debugger.Value[]">
       <Item Type="Value" ToString="v = 8">

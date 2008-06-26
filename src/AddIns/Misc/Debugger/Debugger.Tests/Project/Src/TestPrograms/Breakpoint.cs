@@ -14,8 +14,8 @@ namespace Debugger.Tests.TestPrograms
 		public static void Main()
 		{
 			System.Diagnostics.Debugger.Break();
-			System.Diagnostics.Debug.WriteLine("Mark 1");
-			System.Diagnostics.Debug.WriteLine("Mark 2"); // Breakpoint
+			System.Diagnostics.Debug.WriteLine("Main 1");
+			System.Diagnostics.Debug.WriteLine("Main 2"); // Breakpoint
 			System.Diagnostics.Debugger.Break();
 		}
 	}
@@ -30,11 +30,11 @@ namespace Debugger.Tests {
 		[NUnit.Framework.Test]
 		public void Breakpoint()
 		{
-			Breakpoint breakpoint = debugger.AddBreakpoint(@"F:\SharpDevelopTrunk\src\AddIns\Misc\Debugger\Debugger.Tests\Project\Src\TestPrograms\Breakpoint.cs", 18);
+			Breakpoint breakpoint = debugger.AddBreakpoint(@"Breakpoint.cs", 18);
 			
 			StartTest("Breakpoint.cs");
 			
-			Assert.IsTrue(breakpoint.HadBeenSet);
+			Assert.IsTrue(breakpoint.IsSet);
 			ObjectDump(breakpoint);
 			process.Continue();
 			process.Continue();
@@ -58,21 +58,29 @@ namespace Debugger.Tests {
     <ModuleLoaded symbols="False">System.dll</ModuleLoaded>
     <DebuggingPaused>Break</DebuggingPaused>
     <Object Type="Breakpoint" ToString="Debugger.Breakpoint">
+      <CheckSum>null</CheckSum>
+      <Column>0</Column>
       <Enabled>True</Enabled>
-      <HadBeenSet>True</HadBeenSet>
-      <SourcecodeSegment>Start=18,0 End=18,0</SourcecodeSegment>
+      <FileName>Breakpoint.cs</FileName>
+      <IsSet>True</IsSet>
+      <Line>18</Line>
+      <OriginalLocation>Breakpoint.cs:18,4-18,49</OriginalLocation>
     </Object>
     <ModuleLoaded symbols="False">System.Configuration.dll</ModuleLoaded>
     <ModuleLoaded symbols="False">System.Xml.dll</ModuleLoaded>
-    <LogMessage>Mark 1\r\n</LogMessage>
+    <LogMessage>Main 1\r\n</LogMessage>
     <DebuggingPaused>Breakpoint</DebuggingPaused>
-    <LogMessage>Mark 2\r\n</LogMessage>
+    <LogMessage>Main 2\r\n</LogMessage>
     <DebuggingPaused>Break</DebuggingPaused>
     <ProcessExited />
     <Object Type="Breakpoint" ToString="Debugger.Breakpoint">
+      <CheckSum>null</CheckSum>
+      <Column>0</Column>
       <Enabled>True</Enabled>
-      <HadBeenSet>False</HadBeenSet>
-      <SourcecodeSegment>Start=18,0 End=18,0</SourcecodeSegment>
+      <FileName>Breakpoint.cs</FileName>
+      <IsSet>False</IsSet>
+      <Line>18</Line>
+      <OriginalLocation>Breakpoint.cs:18,4-18,49</OriginalLocation>
     </Object>
   </Test>
 </DebuggerTests>

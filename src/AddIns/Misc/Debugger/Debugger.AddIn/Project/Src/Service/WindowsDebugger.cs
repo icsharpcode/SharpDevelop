@@ -395,24 +395,23 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		void AddBreakpoint(BreakpointBookmark bookmark)
 		{
-			SourcecodeSegment seg = new SourcecodeSegment(bookmark.FileName, bookmark.LineNumber + 1);
-			Breakpoint breakpoint = debugger.AddBreakpoint(seg, bookmark.IsEnabled);
+			Breakpoint breakpoint = debugger.AddBreakpoint(bookmark.FileName, null, bookmark.LineNumber + 1, 0, bookmark.IsEnabled);
 			MethodInvoker setBookmarkColor = delegate {
-				bookmark.WillBeHit = breakpoint.HadBeenSet || debugger.Processes.Count == 0;
+				bookmark.WillBeHit = breakpoint.IsSet || debugger.Processes.Count == 0;
 			};
 			
 			// event handlers on bookmark and breakpoint don't need deregistration
 			bookmark.IsEnabledChanged += delegate {
 				breakpoint.Enabled = bookmark.IsEnabled;
 			};
-			breakpoint.Changed += delegate { setBookmarkColor(); };
+			breakpoint.Set += delegate { setBookmarkColor(); };
 			
 			setBookmarkColor();
 			
 			EventHandler<ProcessEventArgs> bp_debugger_ProcessStarted = (sender, e) => {
 				setBookmarkColor();
 				// User can change line number by inserting or deleting lines
-				breakpoint.SourcecodeSegment.StartLine = bookmark.LineNumber + 1;
+				breakpoint.Line = bookmark.LineNumber + 1;
 			};
 			EventHandler<ProcessEventArgs> bp_debugger_ProcessExited = (sender, e) => {
 				setBookmarkColor();
@@ -559,7 +558,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			if (debuggedProcess != null) {
 				SourcecodeSegment nextStatement = debuggedProcess.NextStatement;
 				if (nextStatement != null) {
-					DebuggerService.JumpToCurrentLine(nextStatement.SourceFullFilename, nextStatement.StartLine, nextStatement.StartColumn, nextStatement.EndLine, nextStatement.EndColumn);
+					DebuggerService.JumpToCurrentLine(nextStatement.Filename, nextStatement.StartLine, nextStatement.StartColumn, nextStatement.EndLine, nextStatement.EndColumn);
 				}
 			}
 		}

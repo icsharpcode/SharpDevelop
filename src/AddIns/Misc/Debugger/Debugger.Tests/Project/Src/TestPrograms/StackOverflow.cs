@@ -59,7 +59,7 @@ namespace Debugger.Tests {
       <HasExpired>False</HasExpired>
       <HasSymbols>True</HasSymbols>
       <MethodInfo>Fun</MethodInfo>
-      <NextStatement>Start=21,3 End=21,4</NextStatement>
+      <NextStatement>StackOverflow.cs:21,3-21,4</NextStatement>
     </LastStackFrame>
     <ProcessExited />
   </Test>

@@ -308,7 +308,7 @@ namespace Debugger
 				SourcecodeSegment loc = stackFrame.NextStatement;
 				if (loc != null) {
 					stackTrace.Append("   ");
-					stackTrace.AppendFormat(formatSymbols, stackFrame.MethodInfo.FullName, loc.SourceFullFilename, loc.StartLine);
+					stackTrace.AppendFormat(formatSymbols, stackFrame.MethodInfo.FullName, loc.Filename, loc.StartLine);
 					stackTrace.AppendLine();
 				} else {
 					stackTrace.AppendFormat(formatNoSymbols, stackFrame.MethodInfo.FullName);

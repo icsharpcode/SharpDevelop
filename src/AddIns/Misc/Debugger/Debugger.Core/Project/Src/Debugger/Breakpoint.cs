@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using Debugger.Wrappers.CorDebug;
 
 namespace Debugger
@@ -13,114 +14,113 @@ namespace Debugger
 	public class Breakpoint: DebuggerObject
 	{
 		NDebugger debugger;
-
-		SourcecodeSegment sourcecodeSegment;
 		
-		bool hadBeenSet = false;
-		bool enabled = true;
-		ICorDebugFunctionBreakpoint corBreakpoint;
+		string fileName;
+		byte[] checkSum;
+		int    line;
+		int    column;
+		bool   enabled;
+
+		SourcecodeSegment originalLocation;
+		
+		List<ICorDebugFunctionBreakpoint> corBreakpoints = new List<ICorDebugFunctionBreakpoint>();
+		
+		public event EventHandler<BreakpointEventArgs> Hit;
+		public event EventHandler<BreakpointEventArgs> Set;
 		
 		[Debugger.Tests.Ignore]
 		public NDebugger Debugger {
-			get {
-				return debugger;
-			}
+			get { return debugger; }
 		}
 		
-		public SourcecodeSegment SourcecodeSegment {
-			get {
-				return sourcecodeSegment;
-			}
+		public string FileName {
+			get { return fileName; }
 		}
 		
-		public bool HadBeenSet { 
-			get { 
-				return hadBeenSet;
-			}
-			internal set {
-				hadBeenSet = value;
-				OnChanged();
-			}
+		public byte[] CheckSum {
+			get { return checkSum; }
+		}
+		
+		public int Line {
+			get { return line; }
+			set { line = value; }
+		}
+		
+		public int Column {
+			get { return column; }
+			set { column = value; }
 		}
 		
 		public bool Enabled {
-			get {
-				return enabled;
-			}
-			set	{
+			get { return enabled; }
+			set {
 				enabled = value;
-				if (HadBeenSet) {
-					corBreakpoint.Activate(enabled?1:0);
+				foreach(ICorDebugFunctionBreakpoint corBreakpoint in corBreakpoints) {
+					corBreakpoint.Activate(enabled ? 1 : 0);
 				}
-				OnChanged();
 			}
 		}
 		
-
-		public event EventHandler<BreakpointEventArgs> Changed;
-
-		protected void OnChanged()
-		{
-			if (Changed != null) {
-				Changed(this, new BreakpointEventArgs(this));
+		public SourcecodeSegment OriginalLocation {
+			get { return originalLocation; }
+		}
+		
+		public bool IsSet { 
+			get { 
+				return corBreakpoints.Count > 0;
 			}
 		}
-
-		public event EventHandler<BreakpointEventArgs> Hit;
-
-		internal void OnHit()
+		
+		protected virtual void OnHit(BreakpointEventArgs e)
 		{
 			if (Hit != null) {
-				Hit(this, new BreakpointEventArgs(this));
+				Hit(this, e);
 			}
 		}
-
-		internal Breakpoint(NDebugger debugger, SourcecodeSegment sourcecodeSegment, bool enabled)
+		
+		protected virtual void OnSet(BreakpointEventArgs e)
+		{
+			if (Set != null) {
+				Set(this, e);
+			}
+		}
+		
+		public Breakpoint(NDebugger debugger, string fileName, byte[] checkSum, int line, int column, bool enabled)
 		{
 			this.debugger = debugger;
-			this.sourcecodeSegment = sourcecodeSegment;
+			this.fileName = fileName;
+			this.checkSum = checkSum;
+			this.line = line;
+			this.column = column;
 			this.enabled = enabled;
 		}
 		
-		internal bool Equals(ICorDebugFunctionBreakpoint obj) 
+		internal bool IsOwnerOf(ICorDebugFunctionBreakpoint breakpoint) 
 		{
-			return corBreakpoint == obj;
-		}
-		
-		public override bool Equals(object obj) 
-		{
-			return base.Equals(obj) || (corBreakpoint != null && corBreakpoint.Equals(obj));
-		}
-		
-		public override int GetHashCode() 
-		{
-			return base.GetHashCode();
+			foreach(ICorDebugFunctionBreakpoint corBreakpoint in corBreakpoints) {
+				if (corBreakpoint == breakpoint) return true;
+			}
+			return false;
 		}
 		
 		internal void MarkUnset()
 		{
-			HadBeenSet = false;
+			corBreakpoints.Clear();
 		}
 		
-		internal void Deactivate()
+		internal bool SetBreakpoint(Module module)
 		{
-			corBreakpoint.Activate(0);
-		}
-		
-		public bool SetBreakpoint(Module module)
-		{
-			ICorDebugFunction corFunction;
-			int ilOffset;
-			if (!sourcecodeSegment.GetFunctionAndOffset(module, false, out corFunction, out ilOffset)) {
-				return false;
-			}
+			SourcecodeSegment segment = SourcecodeSegment.Resolve(module, FileName, CheckSum, Line, Column);
+			if (segment == null) return false;
 			
-			corBreakpoint = corFunction.ILCode.CreateBreakpoint((uint)ilOffset);
+			originalLocation = segment;
 			
-			hadBeenSet = true;
-			corBreakpoint.Activate(enabled?1:0);
+			ICorDebugFunctionBreakpoint corBreakpoint = segment.CorFunction.ILCode.CreateBreakpoint((uint)segment.ILStart);
+			corBreakpoint.Activate(enabled ? 1 : 0);
 			
-			OnChanged();
+			corBreakpoints.Add(corBreakpoint);
+			
+			OnSet(new BreakpointEventArgs(this));
 			
 			return true;
 		}

@@ -64,7 +64,7 @@ namespace Debugger.Tests {
         <HasExpired>False</HasExpired>
         <HasSymbols>True</HasSymbols>
         <MethodInfo>Sub2</MethodInfo>
-        <NextStatement>Start=26,4 End=26,40</NextStatement>
+        <NextStatement>Callstack.cs:26,4-26,40</NextStatement>
       </Item>
       <Item Type="StackFrame" ToString="Debugger.Tests.TestPrograms.Callstack.Sub1">
         <ArgumentCount>0</ArgumentCount>
@@ -72,7 +72,7 @@ namespace Debugger.Tests {
         <HasExpired>False</HasExpired>
         <HasSymbols>True</HasSymbols>
         <MethodInfo>Sub1</MethodInfo>
-        <NextStatement>Start=21,4 End=21,11</NextStatement>
+        <NextStatement>Callstack.cs:21,4-21,11</NextStatement>
       </Item>
       <Item Type="StackFrame" ToString="Debugger.Tests.TestPrograms.Callstack.Main">
         <ArgumentCount>0</ArgumentCount>
@@ -80,7 +80,7 @@ namespace Debugger.Tests {
         <HasExpired>False</HasExpired>
         <HasSymbols>True</HasSymbols>
         <MethodInfo>Main</MethodInfo>
-        <NextStatement>Start=16,4 End=16,11</NextStatement>
+        <NextStatement>Callstack.cs:16,4-16,11</NextStatement>
       </Item>
     </Callstack>
     <DebuggingPaused>StepComplete</DebuggingPaused>
@@ -91,7 +91,7 @@ namespace Debugger.Tests {
         <HasExpired>False</HasExpired>
         <HasSymbols>True</HasSymbols>
         <MethodInfo>Sub1</MethodInfo>
-        <NextStatement>Start=21,4 End=21,11</NextStatement>
+        <NextStatement>Callstack.cs:21,4-21,11</NextStatement>
       </Item>
       <Item Type="StackFrame" ToString="Debugger.Tests.TestPrograms.Callstack.Main">
         <ArgumentCount>0</ArgumentCount>
@@ -99,7 +99,7 @@ namespace Debugger.Tests {
         <HasExpired>False</HasExpired>
         <HasSymbols>True</HasSymbols>
         <MethodInfo>Main</MethodInfo>
-        <NextStatement>Start=16,4 End=16,11</NextStatement>
+        <NextStatement>Callstack.cs:16,4-16,11</NextStatement>
       </Item>
     </Callstack>
     <DebuggingPaused>StepComplete</DebuggingPaused>
@@ -110,7 +110,7 @@ namespace Debugger.Tests {
         <HasExpired>False</HasExpired>
         <HasSymbols>True</HasSymbols>
         <MethodInfo>Main</MethodInfo>
-        <NextStatement>Start=16,4 End=16,11</NextStatement>
+        <NextStatement>Callstack.cs:16,4-16,11</NextStatement>
       </Item>
     </Callstack>
     <ProcessExited />

@@ -76,7 +76,7 @@ namespace Debugger.Tests {
       <HasExpired>False</HasExpired>
       <HasSymbols>True</HasSymbols>
       <MethodInfo>Function</MethodInfo>
-      <NextStatement>Start=22,4 End=22,40</NextStatement>
+      <NextStatement>FunctionLifetime.cs:22,4-22,40</NextStatement>
     </SelectedStackFrame>
     <DebuggingPaused>Break</DebuggingPaused>
     <Old_StackFrame Type="StackFrame" ToString="Debugger.Tests.TestPrograms.FunctionLifetime.Function">
@@ -93,7 +93,7 @@ namespace Debugger.Tests {
       <HasExpired>False</HasExpired>
       <HasSymbols>True</HasSymbols>
       <MethodInfo>SubFunction</MethodInfo>
-      <NextStatement>Start=29,4 End=29,40</NextStatement>
+      <NextStatement>FunctionLifetime.cs:29,4-29,40</NextStatement>
     </SelectedStackFrame>
     <DebuggingPaused>Break</DebuggingPaused>
     <Old_StackFrame Type="StackFrame" ToString="Debugger.Tests.TestPrograms.FunctionLifetime.Function">
@@ -110,7 +110,7 @@ namespace Debugger.Tests {
       <HasExpired>False</HasExpired>
       <HasSymbols>True</HasSymbols>
       <MethodInfo>Function</MethodInfo>
-      <NextStatement>Start=24,4 End=24,40</NextStatement>
+      <NextStatement>FunctionLifetime.cs:24,4-24,40</NextStatement>
     </SelectedStackFrame>
     <DebuggingPaused>Break</DebuggingPaused>
     <Main Type="StackFrame" ToString="Debugger.Tests.TestPrograms.FunctionLifetime.Main">
@@ -119,7 +119,7 @@ namespace Debugger.Tests {
       <HasExpired>False</HasExpired>
       <HasSymbols>True</HasSymbols>
       <MethodInfo>Main</MethodInfo>
-      <NextStatement>Start=17,4 End=17,40</NextStatement>
+      <NextStatement>FunctionLifetime.cs:17,4-17,40</NextStatement>
     </Main>
     <Old_StackFrame Type="StackFrame" ToString="Debugger.Tests.TestPrograms.FunctionLifetime.Function">
       <ArgumentCount exception="StackFrame has expired" />
@@ -135,7 +135,7 @@ namespace Debugger.Tests {
       <HasExpired>False</HasExpired>
       <HasSymbols>True</HasSymbols>
       <MethodInfo>Main</MethodInfo>
-      <NextStatement>Start=17,4 End=17,40</NextStatement>
+      <NextStatement>FunctionLifetime.cs:17,4-17,40</NextStatement>
     </SelectedStackFrame>
     <ProcessExited />
   </Test>
