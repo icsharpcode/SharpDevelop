@@ -55,12 +55,14 @@ namespace ICSharpCode.WpfDesign.AddIn
 			}
 			using (XmlTextReader r = new XmlTextReader(stream)) {
 				XamlLoadSettings settings = new XamlLoadSettings();
+				settings.DesignerAssemblies.Add(typeof(WpfViewContent).Assembly);
 				settings.CustomServiceRegisterFunctions.Add(
 					delegate(XamlDesignContext context) {
 						context.Services.AddService(typeof(IUriContext), new FileUriContext(this.PrimaryFile));
 						context.Services.AddService(typeof(IPropertyDescriptionService), new PropertyDescriptionService(this.PrimaryFile));
 						context.Services.AddService(typeof(IEventHandlerService), new CSharpEventHandlerService(this));
 						context.Services.AddService(typeof(ITopLevelWindowService), new WpfAndWinFormsTopLevelWindowService());
+						context.Services.AddService(typeof(ChooseClassService), new ChooseClassService());
 					});
 				settings.TypeFinder = MyTypeFinder.Create(this.PrimaryFile);
 				

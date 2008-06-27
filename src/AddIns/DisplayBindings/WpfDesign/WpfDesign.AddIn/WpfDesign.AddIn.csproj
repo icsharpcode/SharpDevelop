@@ -38,6 +38,9 @@
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
@@ -54,9 +57,14 @@
     </Compile>
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\AbstractEventHandlerService.cs" />
+    <Compile Include="Src\ChooseClass.cs" />
+    <Compile Include="Src\ChooseClassDialog.xaml.cs" />
+    <Compile Include="Src\ChooseClassService.cs" />
     <Compile Include="Src\CSharpEventHandlerService.cs" />
     <Compile Include="Src\FileUriContext.cs" />
+    <Compile Include="Src\GetBitmapExtension.cs" />
     <Compile Include="Src\MyTypeFinder.cs" />
+    <Compile Include="Src\ObjectEditor.xaml.cs" />
     <Compile Include="Src\PropertyDescriptionService.cs" />
     <Compile Include="Src\SharpDevelopElementHost.cs" />
     <Compile Include="Src\WpfAndWinFormsTopLevelWindowService.cs" />
@@ -111,5 +119,7 @@
       <Name>WpfDesign</Name>
       <Private>False</Private>
     </ProjectReference>
+    <Page Include="Src\ChooseClassDialog.xaml" />
+    <Page Include="Src\ObjectEditor.xaml" />
   </ItemGroup>
 </Project>
