@@ -5,20 +5,20 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.TextEditor.Document;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Gui.XmlForms;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
-using Microsoft.Build.BuildEngine;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -251,7 +251,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 						} else {
 							string defVal = property.DefaultValue == null ? String.Empty : property.DefaultValue.ToString();
 							StringParser.Properties["Properties." + localizedProperty.Name] = defVal;
-							localizedProperty.DefaultValue = defVal;			
+							localizedProperty.DefaultValue = defVal;
 						}
 					}
 					localizedProperty.LocalizedName = property.LocalizedName;
@@ -472,6 +472,22 @@ namespace ICSharpCode.SharpDevelop.Gui
 				
 				StringParser.Properties["ClassName"] = GenerateValidClassOrNamespaceName(Path.GetFileNameWithoutExtension(fileName), false);
 				
+				// when adding a file to a project (but not when creating a standalone file while a project is open):
+				if (ProjectService.CurrentProject != null && !this.allowUntitledFiles) {
+					// add required assembly references to the project
+					bool changes = false;
+					foreach (ReferenceProjectItem reference in item.Template.RequiredAssemblyReferences) {
+						IEnumerable<ProjectItem> refs = ProjectService.CurrentProject.GetItemsOfType(ItemType.Reference);
+						if (!refs.Any(projItem => string.Equals(projItem.Include, reference.Include, StringComparison.InvariantCultureIgnoreCase))) {
+							ReferenceProjectItem projItem = (ReferenceProjectItem)reference.CloneFor(ProjectService.CurrentProject);
+							ProjectService.AddProjectItem(ProjectService.CurrentProject, projItem);
+							changes = true;
+						}
+					}
+					if (changes) {
+						ProjectService.CurrentProject.Save();
+					}
+				}
 				
 				if (item.Template.WizardPath != null) {
 					Properties customizer = new Properties();

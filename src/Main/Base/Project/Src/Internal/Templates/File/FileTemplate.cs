@@ -12,6 +12,7 @@ using System.IO;
 using System.Xml;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Internal.Templates
 {
@@ -119,6 +120,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		List<FileDescriptionTemplate> files = new List<FileDescriptionTemplate>();
 		List<TemplateProperty> properties  = new List<TemplateProperty>();
 		List<TemplateType> customTypes = new List<TemplateType>();
+		List<ReferenceProjectItem> requiredAssemblyReferences = new List<ReferenceProjectItem>();
 		
 		XmlElement fileoptions = null;
 		
@@ -205,6 +207,10 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			}
 		}
 		
+		public List<ReferenceProjectItem> RequiredAssemblyReferences {
+			get { return requiredAssemblyReferences; }
+		}
+		
 		public bool HasProperties {
 			get {
 				return properties != null && properties.Count > 0;
@@ -254,6 +260,16 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				XmlNodeList typeList = doc.DocumentElement["Types"].SelectNodes("Type");
 				foreach (XmlElement typeElement in typeList) {
 					customTypes.Add(new TemplateType(typeElement));
+				}
+			}
+			
+			if (doc.DocumentElement["References"] != null) {
+				XmlNodeList references = doc.DocumentElement["References"].SelectNodes("Reference");
+				foreach (XmlElement reference in references) {
+					if (!reference.HasAttribute("include"))
+						throw new InvalidDataException("Reference without 'include' attribute!");
+					ReferenceProjectItem item = new ReferenceProjectItem(null, reference.GetAttribute("include"));
+					requiredAssemblyReferences.Add(item);
 				}
 			}
 			

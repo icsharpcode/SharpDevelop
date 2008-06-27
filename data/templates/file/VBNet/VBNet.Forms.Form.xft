@@ -12,6 +12,11 @@
 	
 	<Description>${res:Templates.File.WindowsForm.Description}</Description>
 	
+		<References>
+		<Reference include="System.Drawing" />
+		<Reference include="System.Windows.Forms" />
+	</References>
+	
 	<!-- 
 	Special new file templates:
 		${StandardNamespace}        -> Standardnamespace of the current project or FileNameWithoutExtension
