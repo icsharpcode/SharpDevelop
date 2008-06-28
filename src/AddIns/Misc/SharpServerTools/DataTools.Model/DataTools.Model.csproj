@@ -36,7 +36,7 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <ItemGroup>
     <Reference Include="log4net">
-      <HintPath>..\..\..\..\Libraries\log4net\bin\net\2.0\release\log4net.dll</HintPath>
+      <HintPath>..\..\..\..\Libraries\log4net\log4net.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="System" />
