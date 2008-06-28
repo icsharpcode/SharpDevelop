@@ -257,21 +257,12 @@ namespace ICSharpCode.Core
 		
 		public static bool IsBaseDirectory(string baseDirectory, string testDirectory)
 		{
-			try {
-				baseDirectory = NormalizePath(baseDirectory).ToUpperInvariant();
-				testDirectory = NormalizePath(testDirectory).ToUpperInvariant();
-				baseDirectory = baseDirectory.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
-				testDirectory = testDirectory.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
-				
-				if (baseDirectory[baseDirectory.Length - 1] != Path.DirectorySeparatorChar)
-					baseDirectory += Path.DirectorySeparatorChar;
-				if (testDirectory[testDirectory.Length - 1] != Path.DirectorySeparatorChar)
-					testDirectory += Path.DirectorySeparatorChar;
-				
-				return testDirectory.StartsWith(baseDirectory);
-			} catch (Exception) {
+			if (baseDirectory == null || testDirectory == null)
 				return false;
-			}
+			baseDirectory = NormalizePath(baseDirectory) + Path.DirectorySeparatorChar;
+			testDirectory = NormalizePath(testDirectory) + Path.DirectorySeparatorChar;
+			
+			return testDirectory.StartsWith(baseDirectory, StringComparison.InvariantCultureIgnoreCase);
 		}
 		
 		public static string RenameBaseDirectory(string fileName, string oldDirectory, string newDirectory)

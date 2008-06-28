@@ -23,14 +23,15 @@ namespace ICSharpCode.WpfDesign.AddIn
 		
 		public override object ProvideValue(IServiceProvider sp)
 		{
-			BitmapSource result;
-			if (cache.TryGetValue(key, out result)) {
+			lock (cache) {
+				BitmapSource result;
+				if (!cache.TryGetValue(key, out result)) {
+					result = GetBitmapSource();
+					result.Freeze();
+					cache[key] = result;
+				}
 				return result;
 			}
-			result = GetBitmapSource();
-			result.Freeze();
-			cache[key] = result;
-			return result;
 		}
 		
 		BitmapSource GetBitmapSource()

@@ -79,6 +79,9 @@
 								<xsl:when test="$orig_author = 'robertpickering'">
 									<xsl:text>Robert Pickering</xsl:text>
 	  							</xsl:when>
+								<xsl:when test="$orig_author = 'siegfriedpammer'">
+									<xsl:text>Siegfried Pammer</xsl:text>
+	  							</xsl:when>
 	  							<xsl:otherwise>
 	  								<xsl:value-of select="./author" />
 	  							</xsl:otherwise>

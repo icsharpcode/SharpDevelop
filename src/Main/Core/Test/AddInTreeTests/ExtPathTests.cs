@@ -65,6 +65,9 @@ namespace ICSharpCode.Core.Tests.AddInTreeTests.Tests
 		{
 			Assert.IsTrue(FileUtility.IsBaseDirectory(@"C:\a", @"C:\A\b\hello"));
 			Assert.IsTrue(FileUtility.IsBaseDirectory(@"C:\a", @"C:\a"));
+			Assert.IsTrue(FileUtility.IsBaseDirectory(@"C:\a\", @"C:\a\"));
+			Assert.IsTrue(FileUtility.IsBaseDirectory(@"C:\a\", @"C:\a"));
+			Assert.IsTrue(FileUtility.IsBaseDirectory(@"C:\a", @"C:\a\"));
 			Assert.IsTrue(FileUtility.IsBaseDirectory(@"C:\A", @"C:\a"));
 			Assert.IsTrue(FileUtility.IsBaseDirectory(@"C:\a", @"C:\A"));
 			Assert.IsTrue(FileUtility.IsBaseDirectory(@"C:\a\x\fWufhweoe", @"C:\a\x\fwuFHweoe\a\b\hello"));
