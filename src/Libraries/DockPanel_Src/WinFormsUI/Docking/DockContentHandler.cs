@@ -357,7 +357,11 @@ namespace WeifenLuo.WinFormsUI.Docking
                     dockState = DockState.Float;
             }
             else
+            {
                 dockState = (PanelPane != null) ? PanelPane.DockState : DefaultDockState;
+                if (dockState != DockState.Unknown && !IsDockStateValid(dockState))
+                    dockState = DockState.Unknown;
+            }
 
             return dockState;
         }

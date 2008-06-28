@@ -220,12 +220,5 @@ namespace WeifenLuo.WinFormsUI.Docking {
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
-        
-        internal static System.Drawing.Bitmap DockPanel {
-            get {
-                object obj = ResourceManager.GetObject("DockPanel", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
     }
 }

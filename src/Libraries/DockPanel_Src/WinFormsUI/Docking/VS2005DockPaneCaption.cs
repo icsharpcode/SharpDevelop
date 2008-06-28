@@ -351,7 +351,7 @@ namespace WeifenLuo.WinFormsUI.Docking
 
 		private void DrawCaption(Graphics g)
 		{
-            if (ClientRectangle.IsEmpty)
+            if (ClientRectangle.Width == 0 || ClientRectangle.Height == 0)
                 return;
 
             if (DockPane.IsActivated)

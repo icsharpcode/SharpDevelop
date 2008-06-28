@@ -362,7 +362,7 @@ namespace WeifenLuo.WinFormsUI.Docking
 
             public static void LoadFromXml(DockPanel dockPanel, string fileName, DeserializeDockContent deserializeContent)
             {
-                FileStream fs = new FileStream(fileName, FileMode.Open);
+                FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read);
                 try
                 {
                     LoadFromXml(dockPanel, fs, deserializeContent);

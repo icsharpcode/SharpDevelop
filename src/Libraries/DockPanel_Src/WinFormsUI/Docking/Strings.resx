@@ -279,6 +279,9 @@
   <data name="DockPanel_DefaultFloatWindowSize_Description" xml:space="preserve">
     <value>The default size of float window.</value>
   </data>
+  <data name="DockPanel_Description" xml:space="preserve">
+    <value>Provides Visual Studio .Net style docking.</value>
+  </data>
   <data name="DockPanel_DockBottomPortion_Description" xml:space="preserve">
     <value>Size of the bottom docking window. Value &lt; 1 to specify the size in portion; value &gt; 1 to specify the size in pixels.</value>
   </data>

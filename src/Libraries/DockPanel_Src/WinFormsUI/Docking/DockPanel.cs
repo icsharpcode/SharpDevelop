@@ -9,13 +9,25 @@ using System.Text;
 using System.Diagnostics.CodeAnalysis;
 using System.Collections.Generic;
 
+// To simplify the process of finding the toolbox bitmap resource:
+// #1 Create an internal class called "resfinder" outside of the root namespace.
+// #2 Use "resfinder" in the toolbox bitmap attribute instead of the control name.
+// #3 use the "<default namespace>.<resourcename>" string to locate the resource.
+// See: http://www.bobpowell.net/toolboxbitmap.htm
+internal class resfinder
+{
+}
+
 namespace WeifenLuo.WinFormsUI.Docking
 {
     [SuppressMessage("Microsoft.Naming", "CA1720:AvoidTypeNamesInParameters", MessageId = "0#")]
 	public delegate IDockContent DeserializeDockContent(string persistString);
 
-	[Designer(typeof(System.Windows.Forms.Design.ControlDesigner))]
-	[ToolboxBitmap(typeof(DockPanel), "Resources.DockPanel.bmp")]
+    [LocalizedDescription("DockPanel_Description")]
+    [Designer(typeof(System.Windows.Forms.Design.ControlDesigner))]
+    [ToolboxBitmap(typeof(resfinder), "WeifenLuo.WinFormsUI.Docking.DockPanel.bmp")]
+    [DefaultProperty("DocumentStyle")]
+    [DefaultEvent("ActiveContentChanged")]
 	public partial class DockPanel : Panel
 	{
         private FocusManagerImpl m_focusManager;
@@ -35,10 +47,10 @@ namespace WeifenLuo.WinFormsUI.Docking
 			m_floatWindows = new FloatWindowCollection();
 
             SuspendLayout();
-            Font = SystemInformation.MenuFont;
 
 			m_autoHideWindow = new AutoHideWindowControl(this);
 			m_autoHideWindow.Visible = false;
+            SetAutoHideWindowParent();
 
 			m_dummyControl = new DummyControl();
 			m_dummyControl.Bounds = new Rectangle(0, 0, 1, 1);
@@ -70,6 +82,13 @@ namespace WeifenLuo.WinFormsUI.Docking
 				return m_autoHideStripControl;
 			}
 		}
+        internal void ResetAutoHideStripControl()
+        {
+            if (m_autoHideStripControl != null)
+                m_autoHideStripControl.Dispose();
+
+            m_autoHideStripControl = null;
+        }
 
 		private void MdiClientHandleAssigned(object sender, EventArgs e)
 		{
@@ -497,6 +516,7 @@ namespace WeifenLuo.WinFormsUI.Docking
 
 				SuspendLayout(true);
 
+                SetAutoHideWindowParent();
 				SetMdiClient();
 				InvalidateWindowRegion();
 
@@ -738,11 +758,25 @@ namespace WeifenLuo.WinFormsUI.Docking
 
 		protected override void OnParentChanged(EventArgs e)
 		{
-			AutoHideWindow.Parent = this.Parent;
-			GetMdiClientController().ParentForm = (this.Parent as Form);
-			AutoHideWindow.BringToFront();
+            SetAutoHideWindowParent();
+            GetMdiClientController().ParentForm = (this.Parent as Form);
 			base.OnParentChanged (e);
 		}
+
+        private void SetAutoHideWindowParent()
+        {
+            Control parent;
+            if (DocumentStyle == DocumentStyle.DockingMdi ||
+                DocumentStyle == DocumentStyle.SystemMdi)
+                parent = this.Parent;
+            else
+                parent = this;
+            if (AutoHideWindow.Parent != parent)
+            {
+                AutoHideWindow.Parent = parent;
+                AutoHideWindow.BringToFront();
+            }
+        }
 
 		protected override void OnVisibleChanged(EventArgs e)
 		{
@@ -835,7 +869,7 @@ namespace WeifenLuo.WinFormsUI.Docking
 			int count = 0;
 			foreach (DockPane pane in this.Panes)
 			{
-				if (pane.DockState != DockState.Document)
+				if (!pane.Visible || pane.DockState != DockState.Document)
 					continue;
 
 				count ++;
@@ -851,7 +885,7 @@ namespace WeifenLuo.WinFormsUI.Docking
 			int i = 0;
 			foreach (DockPane pane in this.Panes)
 			{
-				if (pane.DockState != DockState.Document)
+				if (!pane.Visible || pane.DockState != DockState.Document)
 					continue;
 
                 rects[i] = RectangleToClient(pane.RectangleToScreen(pane.ContentRectangle));

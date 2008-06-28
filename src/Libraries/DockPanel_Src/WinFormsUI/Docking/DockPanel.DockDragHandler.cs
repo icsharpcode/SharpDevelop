@@ -117,7 +117,7 @@ namespace WeifenLuo.WinFormsUI.Docking
 
                     public DockStyle HitTest(Point pt)
                     {
-                        return ClientRectangle.Contains(PointToClient(pt)) ? DockStyle : DockStyle.None;
+                        return this.Visible && ClientRectangle.Contains(PointToClient(pt)) ? DockStyle : DockStyle.None;
                     }
                 }
                 #endregion PanelIndicator
@@ -480,8 +480,8 @@ namespace WeifenLuo.WinFormsUI.Docking
 
                 public override void Show(bool bActivate)
                 {
-                    Bounds = GetAllScreenBounds();
                     base.Show(bActivate);
+                    Bounds = SystemInformation.VirtualScreen;
                     RefreshChanges();
                 }
 
@@ -517,31 +517,6 @@ namespace WeifenLuo.WinFormsUI.Docking
                 private static DockStyle TestDrop(IHitTest hitTest, Point pt)
                 {
                     return hitTest.Status = hitTest.HitTest(pt);
-                }
-
-                private static Rectangle GetAllScreenBounds()
-                {
-                    Rectangle rect = new Rectangle(0, 0, 0, 0);
-                    foreach (Screen screen in Screen.AllScreens)
-                    {
-                        Rectangle rectScreen = screen.Bounds;
-                        if (rectScreen.Left < rect.Left)
-                        {
-                            rect.Width += (rect.Left - rectScreen.Left);
-                            rect.X = rectScreen.X;
-                        }
-                        if (rectScreen.Right > rect.Right)
-                            rect.Width += (rectScreen.Right - rect.Right);
-                        if (rectScreen.Top < rect.Top)
-                        {
-                            rect.Height += (rect.Top - rectScreen.Top);
-                            rect.Y = rectScreen.Y;
-                        }
-                        if (rectScreen.Bottom > rect.Bottom)
-                            rect.Height += (rectScreen.Bottom - rect.Bottom);
-                    }
-
-                    return rect;
                 }
             }
 

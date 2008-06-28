@@ -144,7 +144,7 @@ namespace WeifenLuo.WinFormsUI.Docking
 
 		protected override void SetBoundsCore(int x, int y, int width, int height, BoundsSpecified specified)
 		{
-			Rectangle rectWorkArea = SystemInformation.WorkingArea;
+			Rectangle rectWorkArea = SystemInformation.VirtualScreen;
 
 			if (y + height > rectWorkArea.Bottom)
 				y -= (y + height) - rectWorkArea.Bottom;

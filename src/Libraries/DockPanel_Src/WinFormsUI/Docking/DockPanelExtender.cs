@@ -218,6 +218,7 @@ namespace WeifenLuo.WinFormsUI.Docking
 					return;
 
 				m_autoHideStripFactory = value;
+                DockPanel.ResetAutoHideStripControl();
 			}
 		}
 	}

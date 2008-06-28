@@ -547,6 +547,15 @@ namespace WeifenLuo.WinFormsUI.Docking {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Provides Visual Studio .Net style docking..
+        /// </summary>
+        internal static string DockPanel_Description {
+            get {
+                return ResourceManager.GetString("DockPanel_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Size of the bottom docking window. Value &lt; 1 to specify the size in portion; value &gt; 1 to specify the size in pixels..
         /// </summary>
         internal static string DockPanel_DockBottomPortion_Description {

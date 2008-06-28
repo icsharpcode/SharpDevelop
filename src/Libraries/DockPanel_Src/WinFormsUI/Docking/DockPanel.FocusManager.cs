@@ -169,7 +169,11 @@ namespace WeifenLuo.WinFormsUI.Docking
                 if (content.IsDisposed)
                 	return;
 
+                if (content == null)
+                    return;
                 DockContentHandler handler = content.DockHandler;
+                if (handler.Form.IsDisposed)
+                    return; // Should not reach here, but better than throwing an exception
                 if (ContentContains(content, handler.ActiveWindowHandle))
                     NativeMethods.SetFocus(handler.ActiveWindowHandle);
                 if (!handler.Form.ContainsFocus)
@@ -441,7 +445,7 @@ namespace WeifenLuo.WinFormsUI.Docking
                 if (ActivePane != null && ActivePane.DockState == DockState.Document)
                     value = ActivePane;
 
-                if (value == null)
+                if (value == null && DockPanel.DockWindows != null)
                 {
                     if (ActiveDocumentPane == null)
                         value = DockPanel.DockWindows[DockState.Document].DefaultPane;

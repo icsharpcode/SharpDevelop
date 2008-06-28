@@ -10,7 +10,7 @@ using DockSample.Customization;
 
 namespace DockSample
 {
-    public partial class MainForm : Form
+    public partial class MainForm2 : Form
     {
         private bool m_bSaveLayout = true;
 		private DeserializeDockContent m_deserializeDockContent;
@@ -20,7 +20,7 @@ namespace DockSample
 		private DummyOutputWindow m_outputWindow = new DummyOutputWindow();
 		private DummyTaskList m_taskList = new DummyTaskList();
 
-        public MainForm()
+        public MainForm2()
         {
             InitializeComponent();
             showRightToLeft.Checked = (RightToLeft == RightToLeft.Yes);
