@@ -172,20 +172,9 @@ namespace Debugger
 			DeactivateBreakpoints();
 			
 			// Detach all processes.
-			foreach (Process process in processCollection) {
-				if (!process.IsPaused) {
-					process.Break();
-				}
-				process.CorProcess.Detach();
-			}
-			
-			RemoveAllProcesses();
-		}
-		
-		void RemoveAllProcesses()
-		{
 			while (processCollection.Count > 0) {
-				RemoveProcess(processCollection[0]);
+				Process process = processCollection[0];
+				process.Detach();
 			}
 		}
 		

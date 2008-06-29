@@ -185,6 +185,16 @@ namespace Debugger
 			RaisePausedEvents();
 		}
 		
+		public void Detach()
+		{
+			if (IsRunning) {
+				corProcess.Stop(uint.MaxValue);
+				NotifyPaused(PausedReason.ForcedBreak);
+			}
+			corProcess.Detach();
+			NotifyHasExpired();			
+		}
+		
 		#region Convenience methods
 		
 		public void Continue()
