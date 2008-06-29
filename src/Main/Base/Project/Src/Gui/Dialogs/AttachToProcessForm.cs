@@ -30,22 +30,25 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		
 		public System.Diagnostics.Process Process {
-			get { 
-				return GetSelectedProcess();
-			}
+			get { return GetSelectedProcess(); }
 		}	
 		
 		void RefreshProcessList()
 		{
 			listView.Items.Clear();
+
+			Process currentProcess = Process.GetCurrentProcess();
 			foreach (System.Diagnostics.Process process in System.Diagnostics.Process.GetProcesses()) {
 				try {
-					string fileName = Path.GetFileName(process.MainModule.FileName);
-					ListViewItem item = new ListViewItem(fileName);
-					item.SubItems.Add(process.Id.ToString());
-					item.SubItems.Add(process.MainWindowTitle);
-					item.Tag = process;
-					listView.Items.Add(item);
+					// Prevent attaching to our own process.
+					if (currentProcess.Id != process.Id) {
+						string fileName = Path.GetFileName(process.MainModule.FileName);
+						ListViewItem item = new ListViewItem(fileName);
+						item.SubItems.Add(process.Id.ToString());
+						item.SubItems.Add(process.MainWindowTitle);
+						item.Tag = process;
+						listView.Items.Add(item);
+					}
 				} catch (Win32Exception) {
 					// Do nothing.
 				}
@@ -84,7 +87,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			cancelButton.Text = StringParser.Parse("${res:Global.CancelButtonText}");
 			refreshButton.Text = StringParser.Parse("${res:ICSharpCode.SharpDevelop.Gui.Dialogs.AddWebReferenceDialog.RefreshButtonTooltip}");
 		}
-		
 		
 		void ListViewItemActivate(object sender, EventArgs e)
 		{
