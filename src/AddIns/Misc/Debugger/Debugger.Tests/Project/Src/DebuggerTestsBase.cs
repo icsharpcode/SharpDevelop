@@ -111,7 +111,8 @@ namespace Debugger.Tests
 					File.WriteAllText(filename, newSourceCode, Encoding.UTF8);
 				}
 				
-				Assert.Fail("Test " + testName + " failed.  XML output differs from expected.");
+				//Assert.Fail("Test " + testName + " failed.  XML output differs from expected.");
+				Assert.AreEqual(expectedXml, actualXml, "Test " + testName + " failed.  XML output differs from expected.");
 			}
 		}
 		
