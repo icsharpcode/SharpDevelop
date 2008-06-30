@@ -5,21 +5,21 @@
 //     <version>$Revision$</version>
 // </file>
 
-using Microsoft.CSharp;
 using System;
 using System.CodeDom.Compiler;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
-using System.Reflection;
 using System.Xml;
-
-using NUnit.Framework;
 
 using Debugger;
 using Debugger.Interop;
+using Microsoft.CSharp;
+using NUnit.Framework;
 using SRPropertyInfo = System.Reflection.PropertyInfo;
 
 namespace Debugger.Tests
@@ -52,6 +52,8 @@ namespace Debugger.Tests
 		[SetUp]
 		public virtual void SetUp()
 		{
+			System.Threading.Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+			
 			testName = null;
 			
 			expandProperties = new List<string>();
