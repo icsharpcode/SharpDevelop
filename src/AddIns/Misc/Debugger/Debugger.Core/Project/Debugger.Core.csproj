@@ -361,13 +361,7 @@
     <Compile Include="Src\Wrappers\CorSym\ISymUnmanagedVariable.cs" />
     <Compile Include="Src\Wrappers\CorSym\SequencePoint.cs" />
     <Compile Include="Src\Wrappers\ICorDebugManagedCallbacks.cs" />
-    <Compile Include="Src\Wrappers\MetaData\FieldProps.cs" />
-    <Compile Include="Src\Wrappers\MetaData\InterfaceImplProps.cs" />
     <Compile Include="Src\Wrappers\MetaData\MetaDataImport.cs" />
-    <Compile Include="Src\Wrappers\MetaData\MethodProps.cs" />
-    <Compile Include="Src\Wrappers\MetaData\ParamProps.cs" />
-    <Compile Include="Src\Wrappers\MetaData\TypeDefProps.cs" />
-    <Compile Include="Src\Wrappers\MetaData\TypeRefProps.cs" />
     <Compile Include="Src\Wrappers\NativeMethods.cs" />
     <Compile Include="Src\Wrappers\ResourceManager.cs" />
     <Compile Include="Src\Wrappers\Util.cs" />

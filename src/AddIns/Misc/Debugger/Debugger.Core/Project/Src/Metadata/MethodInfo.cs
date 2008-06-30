@@ -207,7 +207,7 @@ namespace Debugger.MetaData
 		{
 			// index = 0 is return parameter
 			try {
-				return this.Module.MetaData.GetParamForMethodIndex(this.MetadataToken, (uint)index + 1).Name;
+				return this.Module.MetaData.GetParamPropsForMethodIndex(this.MetadataToken, (uint)index + 1).Name;
 			} catch {
 				return String.Empty;
 			}

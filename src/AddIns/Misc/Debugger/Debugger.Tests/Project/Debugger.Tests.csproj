@@ -46,6 +46,7 @@
     <Compile Include="Src\TestPrograms\Breakpoint.cs" />
     <Compile Include="Src\TestPrograms\Callstack.cs" />
     <Compile Include="Src\TestPrograms\DebuggeeKilled.cs" />
+    <Compile Include="Src\TestPrograms\DebuggerAttributes.cs" />
     <Compile Include="Src\TestPrograms\DefinedTypes.cs" />
     <Compile Include="Src\TestPrograms\Exception.cs" />
     <Compile Include="Src\TestPrograms\ExceptionCustom.cs" />

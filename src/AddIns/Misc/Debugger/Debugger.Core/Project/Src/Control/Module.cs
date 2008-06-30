@@ -34,7 +34,7 @@ namespace Debugger
 			}
 		}
 		
-		internal MetaDataImport MetaData {
+		public MetaDataImport MetaData {
 			get {
 				return metaData;
 			}
@@ -153,7 +153,7 @@ namespace Debugger
 		public List<string> GetNamesOfDefinedTypes()
 		{
 			List<string> names = new List<string>();
-			foreach(TypeDefProps typeProps in this.MetaData.EnumTypeDefs()) {
+			foreach(TypeDefProps typeProps in this.MetaData.EnumTypeDefProps()) {
 				names.Add(typeProps.Name);
 			}
 			return names;

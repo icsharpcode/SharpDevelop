@@ -9,7 +9,7 @@ using System;
 
 namespace Debugger.Tests.TestPrograms
 {
-	public class Template
+	public class _Template
 	{
 		public static void Main()
 		{
@@ -23,7 +23,7 @@ namespace Debugger.Tests {
 	public partial class DebuggerTests
 	{
 		[NUnit.Framework.Test]
-		public void Template()
+		public void _Template()
 		{
 			StartTest("_Template.cs");
 			

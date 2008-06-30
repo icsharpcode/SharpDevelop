@@ -319,7 +319,7 @@ namespace Debugger.MetaData
 			foreach(Module module in process.Modules) {
 				if (!domainID.HasValue || domainID == module.CorModule.Assembly.AppDomain.ID) {
 					try {
-						uint token = module.MetaData.FindTypeDefByName(fullTypeName, 0 /* enclosing class for nested */).Token;
+						uint token = module.MetaData.FindTypeDefPropsByName(fullTypeName, 0 /* enclosing class for nested */).Token;
 						return Create(process, module.CorModule.GetClassFromToken(token));
 					} catch {
 						continue;
@@ -403,7 +403,7 @@ namespace Debugger.MetaData
 		{
 			// TODO: Generic types
 			List<DebugType> types = new List<DebugType>();
-			foreach(TypeDefProps typeDef in module.MetaData.EnumTypeDefs()) {
+			foreach(TypeDefProps typeDef in module.MetaData.EnumTypeDefProps()) {
 				if (module.MetaData.GetGenericParamCount(typeDef.Token) == 0) {
 					types.Add(DebugType.Create(module, typeDef.Token));
 				}
@@ -442,22 +442,22 @@ namespace Debugger.MetaData
 		void LoadMemberInfo()
 		{
 			// Load interfaces
-			foreach(InterfaceImplProps implProps in module.MetaData.EnumInterfaceImpls(this.MetadataToken)) {
-				if ((implProps.ptkIface & 0xFF000000) == (uint)CorTokenType.TypeDef ||
-					(implProps.ptkIface & 0xFF000000) == (uint)CorTokenType.TypeRef)
+			foreach(InterfaceImplProps implProps in module.MetaData.EnumInterfaceImplProps(this.MetadataToken)) {
+				if ((implProps.Interface & 0xFF000000) == (uint)CorTokenType.TypeDef ||
+					(implProps.Interface & 0xFF000000) == (uint)CorTokenType.TypeRef)
 				{
-					this.interfaces.Add(DebugType.Create(module, implProps.ptkIface));
+					this.interfaces.Add(DebugType.Create(module, implProps.Interface));
 				}
 			}
 			
 			// Load fields
-			foreach(FieldProps field in module.MetaData.EnumFields(this.MetadataToken)) {
+			foreach(FieldProps field in module.MetaData.EnumFieldProps(this.MetadataToken)) {
 				if (field.IsStatic && field.IsLiteral) continue; // Skip static literals TODO: Why?
 				members.Add(new FieldInfo(this, field));
 			};
 			
 			// Load methods
-			foreach(MethodProps m in module.MetaData.EnumMethods(this.MetadataToken)) {
+			foreach(MethodProps m in module.MetaData.EnumMethodProps(this.MetadataToken)) {
 				members.Add(new MethodInfo(this, m));
 			}
 			
