@@ -17,6 +17,7 @@ namespace Debugger.Tests.TestPrograms
 			System.Diagnostics.Debug.WriteLine("Start");
 			System.Diagnostics.Debugger.Break();
 			Internal();
+			IgnoredClass.Internal();
 			System.Diagnostics.Debug.WriteLine("End");
 		}
 		
@@ -25,11 +26,22 @@ namespace Debugger.Tests.TestPrograms
 		{
 			System.Diagnostics.Debug.WriteLine("Internal");
 		}
+		
+		[DebuggerNonUserCode]
+		public class IgnoredClass
+		{
+			public static void Internal()
+			{
+				System.Diagnostics.Debug.WriteLine("Internal");
+			}
+		}
 	}
 }
 
 #if TEST_CODE
 namespace Debugger.Tests {
+	using NUnit.Framework;
+	using Debugger.Wrappers.CorDebug;
 	using Debugger.Wrappers.MetaData;
 	
 	public partial class DebuggerTests
@@ -38,17 +50,13 @@ namespace Debugger.Tests {
 		public void DebuggerAttributes()
 		{
 			StartTest("DebuggerAttributes.cs");
-			process.SelectedStackFrame.StepOver();
+			
 			process.SelectedStackFrame.StepInto();
-			Module module = process.SelectedStackFrame.MethodInfo.Module;
-			foreach(ModuleRefProps mRef in module.MetaData.EnumModuleRefProps()) {
-				
-			}
-			uint typeRef = module.MetaData.FindTypeRef(0, "System.Diagnostics.DebuggerStepThroughAttribute");
-			foreach(CustomAttributeProps ca in module.MetaData.EnumCustomAttributeProps(0, 0)) {
-				MemberRefProps memProps = module.MetaData.GetMemberRefProps(ca.Type);
-				TypeRefProps typeDefProps = module.MetaData.GetTypeRefProps(memProps.DeclaringType);
-			}
+			process.SelectedStackFrame.StepInto();
+			Assert.AreEqual(process.SelectedStackFrame.MethodInfo.Name, "Main");
+			process.SelectedStackFrame.StepInto();
+			Assert.AreEqual(process.SelectedStackFrame.MethodInfo.Name, "Main");
+			
 			EndTest();
 		}
 	}
@@ -68,8 +76,10 @@ namespace Debugger.Tests {
     <LogMessage>Start\r\n</LogMessage>
     <DebuggingPaused>Break</DebuggingPaused>
     <DebuggingPaused>StepComplete</DebuggingPaused>
+    <LogMessage>Internal\r\n</LogMessage>
     <DebuggingPaused>StepComplete</DebuggingPaused>
     <LogMessage>Internal\r\n</LogMessage>
+    <DebuggingPaused>StepComplete</DebuggingPaused>
     <LogMessage>End\r\n</LogMessage>
     <ProcessExited />
   </Test>

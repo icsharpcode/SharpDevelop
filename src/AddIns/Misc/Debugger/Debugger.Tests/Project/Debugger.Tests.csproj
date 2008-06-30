@@ -26,7 +26,7 @@
     <DefineConstants>DEBUG;TRACE;TEST_CODE</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;TEST_CODE</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />

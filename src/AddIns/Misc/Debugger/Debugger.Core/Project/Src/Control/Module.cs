@@ -172,6 +172,37 @@ namespace Debugger
 			symReader = metaData.GetSymReader(fullPath, null);
 			
 			JMCStatus = SymbolsLoaded;
+			
+			FindNonUserCode();
+		}
+		
+		/// <summary>
+		/// Finds all classes and methods marked with DebuggerNonUserCode attribute
+		/// and it marks them for JMC so that they are not stepped into
+		/// </summary>
+		void FindNonUserCode()
+		{
+			if (this.SymbolsLoaded) {
+				foreach(CustomAttributeProps ca in metaData.EnumCustomAttributeProps(0, 0)) {
+					MemberRefProps constructorMethod = metaData.GetMemberRefProps(ca.Type);
+					TypeRefProps attributeType = metaData.GetTypeRefProps(constructorMethod.DeclaringType);
+					if (attributeType.Name == "System.Diagnostics.DebuggerStepThroughAttribute" ||
+					    attributeType.Name == "System.Diagnostics.DebuggerNonUserCodeAttribute")
+					{
+						if (ca.Owner >> 24 == 0x02) { // TypeDef
+							ICorDebugClass2 corClass = corModule.GetClassFromToken(ca.Owner).CastTo<ICorDebugClass2>();
+							corClass.SetJMCStatus(0 /* false */);
+							this.Process.TraceMessage("Class {0} marked as non-user code", metaData.GetTypeDefProps(ca.Owner).Name);
+						}
+						if (ca.Owner >> 24 == 0x06) { // MethodDef
+							ICorDebugFunction2 corFunction = corModule.GetFunctionFromToken(ca.Owner).CastTo<ICorDebugFunction2>();
+							corFunction.SetJMCStatus(0 /* false */);
+							MethodProps methodProps = metaData.GetMethodProps(ca.Owner);
+							this.Process.TraceMessage("Function {0}.{1} marked as non-user code", metaData.GetTypeDefProps(methodProps.ClassToken).Name, methodProps.Name);
+						}
+					}
+				}
+			}
 		}
 		
 		public void ApplyChanges(byte[] metadata, byte[] il)
