@@ -27,11 +27,10 @@ namespace Debugger.Tests {
 		{
 			StartTest("TerminatePausedProcess.cs");
 			process.Terminate();
-			process.WaitForExit();
 			
 			StartTest("TerminatePausedProcess.cs");
 			process.Terminate();
-			process.WaitForExit();
+			
 			CheckXmlOutput();
 		}
 	}

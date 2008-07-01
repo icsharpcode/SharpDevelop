@@ -16,6 +16,8 @@ namespace Debugger.Tests.TestPrograms
 		
 		public static void Main()
 		{
+			int i = 42;
+			System.Diagnostics.Debugger.Break();
 			doSomething.WaitOne();
 		}
 	}
@@ -23,18 +25,24 @@ namespace Debugger.Tests.TestPrograms
 
 #if TEST_CODE
 namespace Debugger.Tests {
+	using NUnit.Framework;
+	
 	public partial class DebuggerTests
 	{
 		[NUnit.Framework.Test]
 		public void TerminateRunningProcess()
 		{
-			StartTest("TerminateRunningProcess.cs", false);
-			process.Terminate();
-			process.WaitForExit();
+			for(int i = 0; i < 2; i++) {
+				StartTest("TerminateRunningProcess.cs");
+				process.SelectedStackFrame.StepOver();
+				process.Paused += delegate {
+					Assert.Fail("Should not have received any callbacks after Terminate");
+				};
+				process.SelectedStackFrame.AsyncStepOver();
+				ObjectDump("Log", "Calling terminate");
+				process.Terminate();
+			}
 			
-			StartTest("TerminateRunningProcess.cs", false);
-			process.Terminate();
-			process.WaitForExit();
 			CheckXmlOutput();
 		}
 	}
@@ -46,8 +54,18 @@ namespace Debugger.Tests {
 <DebuggerTests>
   <Test name="TerminateRunningProcess.cs">
     <ProcessStarted />
+    <ModuleLoaded symbols="False">mscorlib.dll</ModuleLoaded>
+    <ModuleLoaded symbols="True">TerminateRunningProcess.exe</ModuleLoaded>
+    <DebuggingPaused>Break</DebuggingPaused>
+    <DebuggingPaused>StepComplete</DebuggingPaused>
+    <Log>Calling terminate</Log>
     <ProcessExited />
     <ProcessStarted />
+    <ModuleLoaded symbols="False">mscorlib.dll</ModuleLoaded>
+    <ModuleLoaded symbols="True">TerminateRunningProcess.exe</ModuleLoaded>
+    <DebuggingPaused>Break</DebuggingPaused>
+    <DebuggingPaused>StepComplete</DebuggingPaused>
+    <Log>Calling terminate</Log>
     <ProcessExited />
   </Test>
 </DebuggerTests>

@@ -13,6 +13,8 @@ namespace Debugger.Tests.TestPrograms
 	{
 		public static void Main()
 		{
+			System.Diagnostics.Debugger.Break();
+			
 			throw new System.Exception("test");
 		}
 	}
@@ -20,6 +22,8 @@ namespace Debugger.Tests.TestPrograms
 
 #if TEST_CODE
 namespace Debugger.Tests {
+	using NUnit.Framework;
+	
 	public partial class DebuggerTests
 	{
 		[NUnit.Framework.Test]
@@ -27,6 +31,16 @@ namespace Debugger.Tests {
 		{
 			StartTest("Exception.cs");
 			
+			process.ExceptionThrown += delegate {
+				process.Terminate();
+			};
+			process.Paused += delegate {
+				// Should not be raised for dead process
+				Assert.Fail();
+			};
+			
+			process.AsyncContinue();
+			process.WaitForExit();
 			EndTest();
 		}
 	}
@@ -40,8 +54,8 @@ namespace Debugger.Tests {
     <ProcessStarted />
     <ModuleLoaded symbols="False">mscorlib.dll</ModuleLoaded>
     <ModuleLoaded symbols="True">Exception.exe</ModuleLoaded>
+    <DebuggingPaused>Break</DebuggingPaused>
     <ExceptionThrown>test</ExceptionThrown>
-    <DebuggingPaused>Exception</DebuggingPaused>
     <ProcessExited />
   </Test>
 </DebuggerTests>

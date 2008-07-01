@@ -223,9 +223,15 @@ namespace Debugger
 		}
 		
 		/// <summary> Terminates the execution of the process </summary>
-		/// <remarks> The process does not terminate immediately 
-		/// after the call </remarks>
 		public void Terminate()
+		{
+			AsyncTerminate();
+			// Wait until ExitProcess callback is received
+			WaitForExit();
+		}
+		
+		/// <summary> Terminates the execution of the process </summary>
+		public void AsyncTerminate()
 		{
 			// Resume stoped tread
 			if (this.IsPaused) {
@@ -240,8 +246,8 @@ namespace Debugger
 			corProcess.Stop(uint.MaxValue);
 			corProcess.Terminate(0);
 			
-			// Just give the command and continue without marking the process as
-			// exited.  We will get ExitProcess callback soon
+			// Do not mark the process as exited
+			// This is done once ExitProcess callback is received
 		}
 		
 		void SelectSomeThread()
