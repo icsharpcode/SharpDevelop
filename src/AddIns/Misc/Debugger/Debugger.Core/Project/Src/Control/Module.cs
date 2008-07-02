@@ -187,7 +187,8 @@ namespace Debugger
 					MemberRefProps constructorMethod = metaData.GetMemberRefProps(ca.Type);
 					TypeRefProps attributeType = metaData.GetTypeRefProps(constructorMethod.DeclaringType);
 					if (attributeType.Name == "System.Diagnostics.DebuggerStepThroughAttribute" ||
-					    attributeType.Name == "System.Diagnostics.DebuggerNonUserCodeAttribute")
+					    attributeType.Name == "System.Diagnostics.DebuggerNonUserCodeAttribute" ||
+					    attributeType.Name == "System.Diagnostics.DebuggerHiddenAttribute")
 					{
 						if (ca.Owner >> 24 == 0x02) { // TypeDef
 							ICorDebugClass2 corClass = corModule.GetClassFromToken(ca.Owner).CastTo<ICorDebugClass2>();
