@@ -46,6 +46,15 @@
     <Compile Include="Src\Expressions\SimpleIdentifierExpression.cs" />
     <Compile Include="Src\Expressions\SimpleMemberReferenceExpression.cs" />
     <Compile Include="Src\Expressions\SimpleParser.cs" />
+    <Compile Include="Src\Options\DebuggingOptions.cs" />
+    <Compile Include="Src\Options\DebuggingOptionsPanel.cs" />
+    <Compile Include="Src\Options\DebuggingOptionsPanel.Designer.cs">
+      <DependentUpon>DebuggingOptionsPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Src\Options\DebuggingSymbolsPanel.cs" />
+    <Compile Include="Src\Options\DebuggingSymbolsPanel.Designer.cs">
+      <DependentUpon>DebuggingSymbolsPanel.cs</DependentUpon>
+    </Compile>
     <Compile Include="Src\Pads\BreakPointsPad.cs" />
     <Compile Include="Src\Pads\CallStackPad.cs" />
     <Compile Include="Src\Pads\LoadedModulesPad.cs" />
@@ -59,6 +68,12 @@
     </Compile>
     <Compile Include="Src\Service\RemotingConfigurationHelpper.cs" />
     <Compile Include="Src\Service\WindowsDebugger.cs" />
+    <EmbeddedResource Include="Src\Options\DebuggingOptionsPanel.resx">
+      <DependentUpon>DebuggingOptionsPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Src\Options\DebuggingSymbolsPanel.resx">
+      <DependentUpon>DebuggingSymbolsPanel.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Src\Service\DebuggerEventForm.resx">
       <DependentUpon>DebuggerEventForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -129,6 +144,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Src\Expressions" />
+    <Folder Include="Src\Options" />
     <Folder Include="Src\TreeModel" />
     <Folder Include="Src\TreeModel\Adapters" />
     <Folder Include="Src\TreeModel\Extensions" />

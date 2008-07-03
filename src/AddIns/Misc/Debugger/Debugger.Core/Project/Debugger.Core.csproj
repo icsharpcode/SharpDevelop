@@ -45,6 +45,7 @@
     <Compile Include="Src\Control\NDebugger-Breakpoints.cs" />
     <Compile Include="Src\Control\NDebugger-Processes.cs" />
     <Compile Include="Src\Control\NDebugger.cs" />
+    <Compile Include="Src\Control\NDebugger.Options.cs" />
     <Compile Include="Src\Control\Process-Evals.cs" />
     <Compile Include="Src\Control\Process-Modules.cs" />
     <Compile Include="Src\Control\Process-StateControl.cs" />

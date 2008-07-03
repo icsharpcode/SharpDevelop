@@ -298,7 +298,7 @@ namespace Debugger
 		
 		public string GetStackTrace()
 		{
-			return GetStackTrace("at {0} in {1}:line {2}", "at {0} in {1}");
+			return GetStackTrace("at {0} in {1}:line {2}", "at {0}");
 		}
 		
 		public string GetStackTrace(string formatSymbols, string formatNoSymbols)

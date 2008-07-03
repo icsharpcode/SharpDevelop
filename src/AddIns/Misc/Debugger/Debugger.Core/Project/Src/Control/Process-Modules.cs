@@ -20,6 +20,7 @@ namespace Debugger
 
 		public event EventHandler<ModuleEventArgs> ModuleLoaded;
 		public event EventHandler<ModuleEventArgs> ModuleUnloaded;
+		public event EventHandler<ModuleEventArgs> ModuleSymbolsLoaded;
 
 		protected void OnModuleLoaded(Module module)
 		{
@@ -32,6 +33,13 @@ namespace Debugger
 		{
 			if (ModuleUnloaded != null) {
 				ModuleUnloaded(this, new ModuleEventArgs(module));
+			}
+		}
+		
+		internal virtual void OnModuleSymbolsLoaded(ModuleEventArgs e)
+		{
+			if (ModuleSymbolsLoaded != null) {
+				ModuleSymbolsLoaded(this, e);
 			}
 		}
 

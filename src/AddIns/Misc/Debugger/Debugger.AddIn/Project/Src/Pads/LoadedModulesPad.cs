@@ -137,17 +137,30 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		void AddModule(Module module)
 		{
-			ListViewItem newItem = new ListViewItem(new string[] {module.Filename,
-			                                                      String.Format("{0:X8}", module.BaseAdress),
-			                                                      module.DirectoryName,
-			                                                      module.OrderOfLoading.ToString(),
-			                                                      "",
-			                                                      "",
-			                                                      "",
-			                                                      StringParser.Parse(module.SymbolsLoaded ? "${res:MainWindow.Windows.Debug.Modules.HasSymbols}" : "${res:MainWindow.Windows.Debug.Modules.HasNoSymbols}")
-			                                                     });
+			ListViewItem newItem = new ListViewItem();
 			newItem.Tag = module;
+			RefreshItem(newItem);
+			module.SymbolsLoaded += delegate { RefreshItem(newItem); };
 			loadedModulesList.Items.Add(newItem);
+		}
+		
+		void RefreshItem(ListViewItem item)
+		{
+			Module module = (Module)item.Tag;
+			item.SubItems.Clear();
+			item.SubItems.AddRange(
+				new string[] {
+					module.Filename,
+					String.Format("{0:X8}", module.BaseAdress),
+					module.DirectoryName,
+					module.OrderOfLoading.ToString(),
+					"",
+					"",
+					"",
+					StringParser.Parse(module.HasSymbols ? "${res:MainWindow.Windows.Debug.Modules.HasSymbols}" : "${res:MainWindow.Windows.Debug.Modules.HasNoSymbols}")
+				}
+			);
+			item.SubItems.RemoveAt(0);
 		}
 
 		void RemoveModule(Module module)

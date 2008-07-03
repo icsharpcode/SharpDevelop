@@ -78,7 +78,7 @@ namespace Debugger.AddIn.TreeModel
 			
 			this.Name = val.Expression.CodeTail;
 			
-			if (ShowValuesInHexadecimal && val.IsInteger) {
+			if (DebuggingOptions.ShowValuesInHexadecimal && val.IsInteger) {
 				this.Text = String.Format("0x{0:X}", val.PrimitiveValue);
 			} else {
 				this.Text = val.AsString;
@@ -147,9 +147,9 @@ namespace Debugger.AddIn.TreeModel
 			ToolStripMenuItem hexView;
 			hexView = new ToolStripMenuItem();
 			hexView.Text = ResourceService.GetString("MainWindow.Windows.Debug.LocalVariables.ShowInHexadecimal");
-			hexView.Checked = ShowValuesInHexadecimal;
+			hexView.Checked = DebuggingOptions.ShowValuesInHexadecimal;
 			hexView.Click += delegate {
-				ShowValuesInHexadecimal = !ShowValuesInHexadecimal;
+				DebuggingOptions.ShowValuesInHexadecimal = !DebuggingOptions.ShowValuesInHexadecimal;
 			};
 			
 			menu.Items.AddRange(new ToolStripItem[] {
@@ -163,15 +163,6 @@ namespace Debugger.AddIn.TreeModel
 		public static WindowsDebugger WindowsDebugger {
 			get {
 				return (WindowsDebugger)DebuggerService.CurrentDebugger;
-			}
-		}
-		
-		public static bool ShowValuesInHexadecimal {
-			get {
-				return WindowsDebugger.Properties.Get("ShowValuesInHexadecimal", false);
-			}
-			set {
-				WindowsDebugger.Properties.Set("ShowValuesInHexadecimal", value);
 			}
 		}
 	}

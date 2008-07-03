@@ -60,8 +60,6 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		NDebugger debugger;
 		
-		Properties properties;
-		
 		Debugger.Process debuggedProcess;
 		
 		DynamicTreeDebuggerRow currentTooltipRow;
@@ -88,12 +86,6 @@ namespace ICSharpCode.SharpDevelop.Services
 			}
 		}
 		
-		public Properties Properties {
-			get {
-				return properties;
-			}
-		}
-		
 		public bool ServiceInitialized {
 			get {
 				return debugger != null;
@@ -102,7 +94,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		public WindowsDebugger()
 		{
-			properties = PropertyService.Get("DebuggerProperties", new Properties());
+			
 		}
 		
 		#region IDebugger Members
@@ -375,6 +367,8 @@ namespace ICSharpCode.SharpDevelop.Services
 			}
 			
 			debugger = new NDebugger();
+			
+			DebuggingOptions.ApplyToCurrentDebugger();
 			
 			debugger.DebuggerTraceMessage    += debugger_TraceMessage;
 			debugger.ProcessStarted          += debugger_ProcessStarted;

@@ -42,38 +42,12 @@ using System.ComponentModel;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Services;
 
 namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
 	public partial class CallStackPad
 	{
-		public bool ShowArgumentNames {
-			get {
-				return debugger.Properties.Get("ShowArgumentNames", true);
-			}
-			set {
-				debugger.Properties.Set("ShowArgumentNames", value);
-			}
-		}
-		
-		public bool ShowArgumentValues {
-			get {
-				return debugger.Properties.Get("ShowArgumentValues", true);
-			}
-			set {
-				debugger.Properties.Set("ShowArgumentValues", value);
-			}
-		}
-		
-		public bool ShowExternalMethods {
-			get {
-				return debugger.Properties.Get("ShowExternalMethods", false);
-			}
-			set {
-				debugger.Properties.Set("ShowExternalMethods", value);
-			}
-		}
-		
 		ContextMenuStrip CreateContextMenuStrip()
 		{
 			ContextMenuStrip menu = new ContextMenuStrip();
@@ -89,27 +63,27 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			ToolStripMenuItem argNamesItem;
 			argNamesItem = new ToolStripMenuItem();
 			argNamesItem.Text = ResourceService.GetString("MainWindow.Windows.Debug.CallStack.ShowArgumentNames");
-			argNamesItem.Checked = ShowArgumentNames;
+			argNamesItem.Checked = DebuggingOptions.ShowArgumentNames;
 			argNamesItem.Click += delegate {
-				ShowArgumentNames = !ShowArgumentNames;
+				DebuggingOptions.ShowArgumentNames = !DebuggingOptions.ShowArgumentNames;
 				RefreshPad();
 			};
 			
 			ToolStripMenuItem argValuesItem;
 			argValuesItem = new ToolStripMenuItem();
 			argValuesItem.Text = ResourceService.GetString("MainWindow.Windows.Debug.CallStack.ShowArgumentValues");
-			argValuesItem.Checked = ShowArgumentValues;
+			argValuesItem.Checked = DebuggingOptions.ShowArgumentValues;
 			argValuesItem.Click += delegate {
-				ShowArgumentValues = !ShowArgumentValues;
+				DebuggingOptions.ShowArgumentValues = !DebuggingOptions.ShowArgumentValues;
 				RefreshPad();
 			};
 			
 			ToolStripMenuItem extMethodsItem;
 			extMethodsItem = new ToolStripMenuItem();
 			extMethodsItem.Text = ResourceService.GetString("MainWindow.Windows.Debug.CallStack.ShowExternalMethods");
-			extMethodsItem.Checked = ShowExternalMethods;
+			extMethodsItem.Checked = DebuggingOptions.ShowExternalMethods;
 			extMethodsItem.Click += delegate {
-				ShowExternalMethods = !ShowExternalMethods;
+				DebuggingOptions.ShowExternalMethods = !DebuggingOptions.ShowExternalMethods;
 				RefreshPad();
 			};
 			

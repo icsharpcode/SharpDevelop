@@ -162,7 +162,7 @@ namespace Debugger
 		
 		void AsyncStep(bool stepIn)
 		{
-			if (this.MethodInfo.Module.SymbolsLoaded == false) {
+			if (this.MethodInfo.Module.HasSymbols == false) {
 				throw new DebuggerException("Unable to step. No symbols loaded.");
 			}
 			

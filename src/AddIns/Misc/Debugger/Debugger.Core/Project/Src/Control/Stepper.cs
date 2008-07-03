@@ -59,9 +59,12 @@ namespace Debugger
 		
 		public bool JustMyCode {
 			set {
-				if (corStepper.Is<ICorDebugStepper2>()) { // Is the debuggee .NET 2.0?
+				if (value) {
 					corStepper.SetUnmappedStopMask(CorDebugUnmappedStop.STOP_NONE);
-					corStepper.CastTo<ICorDebugStepper2>().SetJMC(value ? 1 : 0);
+					corStepper.CastTo<ICorDebugStepper2>().SetJMC(1);
+				} else {
+					corStepper.SetUnmappedStopMask(CorDebugUnmappedStop.STOP_NONE);
+					corStepper.CastTo<ICorDebugStepper2>().SetJMC(0);
 				}
 			}
 		}
@@ -77,7 +80,7 @@ namespace Debugger
 			
 			corStepper = stackFrame.CorILFrame.CreateStepper();
 			
-			JustMyCode = true;
+			this.JustMyCode = Process.Debugger.JustMyCodeEnabled;
 			
 			stackFrame.Thread.Steppers.Add(this);
 		}

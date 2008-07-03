@@ -42,10 +42,11 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
-
 using Debugger;
 using Debugger.AddIn.TreeModel;
+
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Services;
 
 namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
@@ -148,7 +149,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		public List<ListViewItem> CreateItems()
 		{
-			bool showExternalMethods = ShowExternalMethods;
+			bool showExternalMethods = DebuggingOptions.ShowExternalMethods;
 			bool lastItemIsExternalMethod = false;
 			
 			List<ListViewItem> items = new List<ListViewItem>();
@@ -199,8 +200,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		public string GetFullName(StackFrame frame)
 		{
-			bool showArgumentNames = ShowArgumentNames;
-			bool showArgumentValues = ShowArgumentValues;
+			bool showArgumentNames = DebuggingOptions.ShowArgumentNames;
+			bool showArgumentValues = DebuggingOptions.ShowArgumentValues;
 			
 			StringBuilder name = new StringBuilder();
 			name.Append(frame.MethodInfo.Name);
