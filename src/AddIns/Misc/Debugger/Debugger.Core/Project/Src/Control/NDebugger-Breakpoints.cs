@@ -95,22 +95,22 @@ namespace Debugger
 		{
 			breakpoint.Hit -= new EventHandler<BreakpointEventArgs>(OnBreakpointHit);
 			
-			breakpoint.Enabled = false;
-			breakpointCollection.Remove( breakpoint );
-			OnBreakpointRemoved( breakpoint);
+			breakpoint.Deactivate();
+			breakpointCollection.Remove(breakpoint);
+			OnBreakpointRemoved(breakpoint);
 		}
 
-		public void ResetBreakpoints()
+		void MarkBreakpointsAsDeactivated()
 		{
 			foreach (Breakpoint b in breakpointCollection) {
-				b.MarkUnset();
+				b.MarkAsDeactivated();
 			}
 		}
 		
-		public void DeactivateBreakpoints()
+		void DeactivateBreakpoints()
 		{
 			foreach (Breakpoint b in breakpointCollection) {
-				b.Enabled = false;
+				b.Deactivate();
 			}
 		}
 

@@ -111,7 +111,7 @@ namespace Debugger
 		
 		internal void TerminateDebugger()
 		{
-			ResetBreakpoints();
+			MarkBreakpointsAsDeactivated();
 			
 			TraceMessage("Reset done");
 			

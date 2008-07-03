@@ -103,7 +103,15 @@ namespace Debugger
 			return false;
 		}
 		
-		internal void MarkUnset()
+		internal void Deactivate()
+		{
+			foreach(ICorDebugFunctionBreakpoint corBreakpoint in corBreakpoints) {
+				corBreakpoint.Activate(0);
+			}
+			corBreakpoints.Clear();
+		}
+		
+		internal void MarkAsDeactivated()
 		{
 			corBreakpoints.Clear();
 		}
