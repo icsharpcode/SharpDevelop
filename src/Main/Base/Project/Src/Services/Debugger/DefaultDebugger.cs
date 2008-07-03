@@ -53,6 +53,10 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			}
 		}
 		
+		public void ShowAttachDialog()
+		{
+		}
+		
 		public void Attach(Process process)
 		{
 		}

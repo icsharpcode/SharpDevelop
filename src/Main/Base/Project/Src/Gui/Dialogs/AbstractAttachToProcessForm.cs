@@ -7,18 +7,17 @@
 
 using System;
 using System.Diagnostics;
-using System.ComponentModel;
 using System.Drawing;
-using System.IO;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Debugging;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
-	public partial class AttachToProcessForm : Form
-	{
-		public AttachToProcessForm()
+	public partial class AbstractAttachToProcessForm : Form
+	{		
+		public AbstractAttachToProcessForm()
 		{
 			//
 			// The InitializeComponent() call is required for Windows Forms designer support.
@@ -32,29 +31,15 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public System.Diagnostics.Process Process {
 			get { return GetSelectedProcess(); }
 		}	
+
+		protected virtual void RefreshProcessList(ListView listView, bool showNonManaged)
+		{
+		}
 		
 		void RefreshProcessList()
 		{
-			listView.Items.Clear();
-
-			Process currentProcess = Process.GetCurrentProcess();
-			foreach (System.Diagnostics.Process process in System.Diagnostics.Process.GetProcesses()) {
-				try {
-					// Prevent attaching to our own process.
-					if (currentProcess.Id != process.Id) {
-						string fileName = Path.GetFileName(process.MainModule.FileName);
-						ListViewItem item = new ListViewItem(fileName);
-						item.SubItems.Add(process.Id.ToString());
-						item.SubItems.Add(process.MainWindowTitle);
-						item.Tag = process;
-						listView.Items.Add(item);
-					}
-				} catch (Win32Exception) {
-					// Do nothing.
-				}
-			}
+			RefreshProcessList(listView, showNonManagedCheckBox.Checked);
 			
-			listView.Sort();
 			if (listView.Items.Count > 0) {
 				listView.Items[0].Selected = true;
 			} else {
@@ -94,6 +79,16 @@ namespace ICSharpCode.SharpDevelop.Gui
 				DialogResult = DialogResult.OK;
 				Close();
 			}
+		}
+				
+		void ShowNonManagedCheckBoxCheckedChanged(object sender, EventArgs e)
+		{
+			RefreshProcessList();
+		}
+		
+		void ListViewSelectedIndexChanged(object sender, EventArgs e)
+		{
+			attachButton.Enabled = listView.SelectedItems.Count > 0;
 		}
 	}
 }

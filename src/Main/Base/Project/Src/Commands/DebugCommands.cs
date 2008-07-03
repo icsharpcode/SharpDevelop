@@ -118,11 +118,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void Run()
 		{
-			using (AttachToProcessForm attachForm = new AttachToProcessForm()) {
-				if (attachForm.ShowDialog() == DialogResult.OK) {
-					DebuggerService.CurrentDebugger.Attach(attachForm.Process);
-				}
-			}
+			DebuggerService.CurrentDebugger.ShowAttachDialog();
 		}
 	}	
 	

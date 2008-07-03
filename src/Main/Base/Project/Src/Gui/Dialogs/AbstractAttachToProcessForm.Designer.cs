@@ -1,13 +1,12 @@
 ﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
+//     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
 //     <version>$Revision$</version>
 // </file>
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
-	partial class AttachToProcessForm
+	partial class AbstractAttachToProcessForm
 	{
 		/// <summary>
 		/// Designer variable used to keep track of non-visual components.
@@ -42,6 +41,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.processColumnHeader = new System.Windows.Forms.ColumnHeader();
 			this.processIdColumnHeader = new System.Windows.Forms.ColumnHeader();
 			this.titleColumnHeader = new System.Windows.Forms.ColumnHeader();
+			this.typeColumnHeader = new System.Windows.Forms.ColumnHeader();
+			this.showNonManagedCheckBox = new System.Windows.Forms.CheckBox();
 			this.SuspendLayout();
 			// 
 			// attachButton
@@ -85,10 +86,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.listView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
 									this.processColumnHeader,
 									this.processIdColumnHeader,
-									this.titleColumnHeader});
+									this.titleColumnHeader,
+									this.typeColumnHeader});
 			this.listView.FullRowSelect = true;
 			this.listView.HideSelection = false;
 			this.listView.Location = new System.Drawing.Point(0, 0);
+			this.listView.MultiSelect = false;
 			this.listView.Name = "listView";
 			this.listView.Size = new System.Drawing.Size(636, 334);
 			this.listView.Sorting = System.Windows.Forms.SortOrder.Ascending;
@@ -96,6 +99,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.listView.UseCompatibleStateImageBehavior = false;
 			this.listView.View = System.Windows.Forms.View.Details;
 			this.listView.ItemActivate += new System.EventHandler(this.ListViewItemActivate);
+			this.listView.SelectedIndexChanged += new System.EventHandler(this.ListViewSelectedIndexChanged);
 			// 
 			// processColumnHeader
 			// 
@@ -109,7 +113,24 @@ namespace ICSharpCode.SharpDevelop.Gui
 			// titleColumnHeader
 			// 
 			this.titleColumnHeader.Text = "Title";
-			this.titleColumnHeader.Width = 337;
+			this.titleColumnHeader.Width = 294;
+			// 
+			// typeColumnHeader
+			// 
+			this.typeColumnHeader.Text = "Type";
+			this.typeColumnHeader.Width = 74;
+			// 
+			// showNonManagedCheckBox
+			// 
+			this.showNonManagedCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+									| System.Windows.Forms.AnchorStyles.Right)));
+			this.showNonManagedCheckBox.Location = new System.Drawing.Point(13, 339);
+			this.showNonManagedCheckBox.Name = "showNonManagedCheckBox";
+			this.showNonManagedCheckBox.Size = new System.Drawing.Size(370, 24);
+			this.showNonManagedCheckBox.TabIndex = 5;
+			this.showNonManagedCheckBox.Text = "Show Non-Managed";
+			this.showNonManagedCheckBox.UseVisualStyleBackColor = true;
+			this.showNonManagedCheckBox.CheckedChanged += new System.EventHandler(this.ShowNonManagedCheckBoxCheckedChanged);
 			// 
 			// AttachToProcessForm
 			// 
@@ -118,17 +139,20 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.CancelButton = this.cancelButton;
 			this.ClientSize = new System.Drawing.Size(637, 374);
+			this.Controls.Add(this.showNonManagedCheckBox);
 			this.Controls.Add(this.listView);
 			this.Controls.Add(this.refreshButton);
 			this.Controls.Add(this.cancelButton);
 			this.Controls.Add(this.attachButton);
-			this.MinimumSize = new System.Drawing.Size(273, 140);
-			this.Name = "AttachToProcessForm";
+			this.MinimumSize = new System.Drawing.Size(273, 240);
+			this.Name = "bstractAAttachToProcessForm";
 			this.ShowIcon = false;
 			this.ShowInTaskbar = false;
 			this.Text = "Attach to Process";
 			this.ResumeLayout(false);
 		}
+		private System.Windows.Forms.CheckBox showNonManagedCheckBox;
+		private System.Windows.Forms.ColumnHeader typeColumnHeader;
 		private System.Windows.Forms.ColumnHeader titleColumnHeader;
 		private System.Windows.Forms.ColumnHeader processIdColumnHeader;
 		private System.Windows.Forms.ColumnHeader processColumnHeader;

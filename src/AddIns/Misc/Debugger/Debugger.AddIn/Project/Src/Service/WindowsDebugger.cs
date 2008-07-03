@@ -46,6 +46,7 @@ using Bitmap = System.Drawing.Bitmap;
 using Debugger;
 using Debugger.Expressions;
 using Debugger.AddIn.TreeModel;
+using Debugger.Core.Wrappers.CorPub;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
@@ -59,6 +60,8 @@ namespace ICSharpCode.SharpDevelop.Services
 		bool useRemotingForThreadInterop = false;
 		
 		NDebugger debugger;
+		
+		ICorPublish corPublish;
 		
 		Debugger.Process debuggedProcess;
 		
@@ -152,6 +155,15 @@ namespace ICSharpCode.SharpDevelop.Services
 			}
 		}
 
+		public void ShowAttachDialog()
+		{
+			using (AttachToProcessForm attachForm = new AttachToProcessForm()) {
+				if (attachForm.ShowDialog() == DialogResult.OK) {
+					Attach(attachForm.Process);
+				}
+			}			
+		}
+		
 		public void Attach(System.Diagnostics.Process existingProcess)
 		{
 			if (IsDebugging) {
@@ -292,6 +304,18 @@ namespace ICSharpCode.SharpDevelop.Services
 			}
 		}
 		
+		public bool IsManaged(int processId)
+		{
+			if (corPublish == null) {
+				corPublish = new ICorPublish();
+			}
+			
+			ICorPublishProcess process = corPublish.GetProcess(processId);
+			if (process != null) {
+				return process.IsManaged;
+			}
+			return false;
+		}
 		
 		/// <summary>
 		/// Gets the current value of the variable as string that can be displayed in tooltips.

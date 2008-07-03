@@ -60,6 +60,7 @@
     <Compile Include="Src\Pads\LoadedModulesPad.cs" />
     <Compile Include="Src\Pads\LocalVarPad.cs" />
     <Compile Include="Src\Pads\RunningThreadsPad.cs" />
+    <Compile Include="Src\Service\AttachToProcessForm.cs" />
     <Compile Include="Src\Service\DebuggerEventForm.cs">
       <SubType>Form</SubType>
     </Compile>

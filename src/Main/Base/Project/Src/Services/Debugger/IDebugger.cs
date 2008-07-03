@@ -55,11 +55,19 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		void StepOver();
 		
 		void StepOut();
+	
+		/// <summary>
+		/// Shows a dialog so the user can attach to a process.
+		/// </summary>
+		void ShowAttachDialog();
 		
+		/// <summary>
+		/// Used to attach to an existing process.
+		/// </summary>
 		void Attach(Process process);
 		
 		void Detach();
-		
+			
 		/// <summary>
 		/// Gets the current value of the variable as string that can be displayed in tooltips.
 		/// </summary>
