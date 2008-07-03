@@ -36,10 +36,11 @@ namespace Debugger.Tests {
 #if EXPECTED_OUTPUT
 <?xml version="1.0" encoding="utf-8"?>
 <DebuggerTests>
-  <Test name="_Template.cs">
+  <Test
+    name="_Template.cs">
     <ProcessStarted />
-    <ModuleLoaded symbols="False">mscorlib.dll</ModuleLoaded>
-    <ModuleLoaded symbols="True">_Template.exe</ModuleLoaded>
+    <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
+    <ModuleLoaded>_Template.exe (Has symbols)</ModuleLoaded>
     <DebuggingPaused>Break</DebuggingPaused>
     <ProcessExited />
   </Test>

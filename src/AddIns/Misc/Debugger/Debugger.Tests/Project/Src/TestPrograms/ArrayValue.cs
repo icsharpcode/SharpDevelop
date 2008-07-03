@@ -49,160 +49,177 @@ namespace Debugger.Tests {
 #if EXPECTED_OUTPUT
 <?xml version="1.0" encoding="utf-8"?>
 <DebuggerTests>
-  <Test name="ArrayValue.cs">
+  <Test
+    name="ArrayValue.cs">
     <ProcessStarted />
-    <ModuleLoaded symbols="False">mscorlib.dll</ModuleLoaded>
-    <ModuleLoaded symbols="True">ArrayValue.exe</ModuleLoaded>
+    <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
+    <ModuleLoaded>ArrayValue.exe (Has symbols)</ModuleLoaded>
     <DebuggingPaused>Break</DebuggingPaused>
-    <array Type="Value" ToString="array = {System.Int32[]}">
-      <ArrayDimensions>[5]</ArrayDimensions>
-      <ArrayLenght>5</ArrayLenght>
-      <ArrayRank>1</ArrayRank>
-      <AsString>{System.Int32[]}</AsString>
-      <Expression>array</Expression>
-      <HasExpired>False</HasExpired>
-      <IsArray>True</IsArray>
-      <IsInteger>False</IsInteger>
-      <IsNull>False</IsNull>
-      <IsObject>False</IsObject>
-      <IsPrimitive>False</IsPrimitive>
-      <PrimitiveValue exception="Value is not a primitive type" />
-      <Type>System.Int32[]</Type>
+    <array>
+      <Value
+        ArrayDimensions="[5]"
+        ArrayLenght="5"
+        ArrayRank="1"
+        AsString="{System.Int32[]}"
+        Expression="array"
+        HasExpired="False"
+        IsArray="True"
+        IsInteger="False"
+        IsNull="False"
+        IsObject="False"
+        IsPrimitive="False"
+        PrimitiveValue="{Exception: Value is not a primitive type}"
+        Type="System.Int32[]" />
     </array>
-    <array_elements Type="Value[]" ToString="Debugger.Value[]">
-      <Item Type="Value" ToString="array[0] = 0">
-        <ArrayDimensions exception="Value is not an array" />
-        <ArrayLenght exception="Value is not an array" />
-        <ArrayRank exception="Value is not an array" />
-        <AsString>0</AsString>
-        <Expression>array[0]</Expression>
-        <HasExpired>False</HasExpired>
-        <IsArray>False</IsArray>
-        <IsInteger>True</IsInteger>
-        <IsNull>False</IsNull>
-        <IsObject>False</IsObject>
-        <IsPrimitive>True</IsPrimitive>
-        <PrimitiveValue>0</PrimitiveValue>
-        <Type>System.Int32</Type>
+    <array_elements>
+      <Item>
+        <Value
+          ArrayDimensions="{Exception: Value is not an array}"
+          ArrayLenght="{Exception: Value is not an array}"
+          ArrayRank="{Exception: Value is not an array}"
+          AsString="0"
+          Expression="array[0]"
+          HasExpired="False"
+          IsArray="False"
+          IsInteger="True"
+          IsNull="False"
+          IsObject="False"
+          IsPrimitive="True"
+          PrimitiveValue="0"
+          Type="System.Int32" />
       </Item>
-      <Item Type="Value" ToString="array[1] = 1">
-        <ArrayDimensions exception="Value is not an array" />
-        <ArrayLenght exception="Value is not an array" />
-        <ArrayRank exception="Value is not an array" />
-        <AsString>1</AsString>
-        <Expression>array[1]</Expression>
-        <HasExpired>False</HasExpired>
-        <IsArray>False</IsArray>
-        <IsInteger>True</IsInteger>
-        <IsNull>False</IsNull>
-        <IsObject>False</IsObject>
-        <IsPrimitive>True</IsPrimitive>
-        <PrimitiveValue>1</PrimitiveValue>
-        <Type>System.Int32</Type>
+      <Item>
+        <Value
+          ArrayDimensions="{Exception: Value is not an array}"
+          ArrayLenght="{Exception: Value is not an array}"
+          ArrayRank="{Exception: Value is not an array}"
+          AsString="1"
+          Expression="array[1]"
+          HasExpired="False"
+          IsArray="False"
+          IsInteger="True"
+          IsNull="False"
+          IsObject="False"
+          IsPrimitive="True"
+          PrimitiveValue="1"
+          Type="System.Int32" />
       </Item>
-      <Item Type="Value" ToString="array[2] = 2">
-        <ArrayDimensions exception="Value is not an array" />
-        <ArrayLenght exception="Value is not an array" />
-        <ArrayRank exception="Value is not an array" />
-        <AsString>2</AsString>
-        <Expression>array[2]</Expression>
-        <HasExpired>False</HasExpired>
-        <IsArray>False</IsArray>
-        <IsInteger>True</IsInteger>
-        <IsNull>False</IsNull>
-        <IsObject>False</IsObject>
-        <IsPrimitive>True</IsPrimitive>
-        <PrimitiveValue>2</PrimitiveValue>
-        <Type>System.Int32</Type>
+      <Item>
+        <Value
+          ArrayDimensions="{Exception: Value is not an array}"
+          ArrayLenght="{Exception: Value is not an array}"
+          ArrayRank="{Exception: Value is not an array}"
+          AsString="2"
+          Expression="array[2]"
+          HasExpired="False"
+          IsArray="False"
+          IsInteger="True"
+          IsNull="False"
+          IsObject="False"
+          IsPrimitive="True"
+          PrimitiveValue="2"
+          Type="System.Int32" />
       </Item>
-      <Item Type="Value" ToString="array[3] = 3">
-        <ArrayDimensions exception="Value is not an array" />
-        <ArrayLenght exception="Value is not an array" />
-        <ArrayRank exception="Value is not an array" />
-        <AsString>3</AsString>
-        <Expression>array[3]</Expression>
-        <HasExpired>False</HasExpired>
-        <IsArray>False</IsArray>
-        <IsInteger>True</IsInteger>
-        <IsNull>False</IsNull>
-        <IsObject>False</IsObject>
-        <IsPrimitive>True</IsPrimitive>
-        <PrimitiveValue>3</PrimitiveValue>
-        <Type>System.Int32</Type>
+      <Item>
+        <Value
+          ArrayDimensions="{Exception: Value is not an array}"
+          ArrayLenght="{Exception: Value is not an array}"
+          ArrayRank="{Exception: Value is not an array}"
+          AsString="3"
+          Expression="array[3]"
+          HasExpired="False"
+          IsArray="False"
+          IsInteger="True"
+          IsNull="False"
+          IsObject="False"
+          IsPrimitive="True"
+          PrimitiveValue="3"
+          Type="System.Int32" />
       </Item>
-      <Item Type="Value" ToString="array[4] = 4">
-        <ArrayDimensions exception="Value is not an array" />
-        <ArrayLenght exception="Value is not an array" />
-        <ArrayRank exception="Value is not an array" />
-        <AsString>4</AsString>
-        <Expression>array[4]</Expression>
-        <HasExpired>False</HasExpired>
-        <IsArray>False</IsArray>
-        <IsInteger>True</IsInteger>
-        <IsNull>False</IsNull>
-        <IsObject>False</IsObject>
-        <IsPrimitive>True</IsPrimitive>
-        <PrimitiveValue>4</PrimitiveValue>
-        <Type>System.Int32</Type>
+      <Item>
+        <Value
+          ArrayDimensions="{Exception: Value is not an array}"
+          ArrayLenght="{Exception: Value is not an array}"
+          ArrayRank="{Exception: Value is not an array}"
+          AsString="4"
+          Expression="array[4]"
+          HasExpired="False"
+          IsArray="False"
+          IsInteger="True"
+          IsNull="False"
+          IsObject="False"
+          IsPrimitive="True"
+          PrimitiveValue="4"
+          Type="System.Int32" />
       </Item>
     </array_elements>
-    <type Type="DebugType" ToString="System.Int32[]">
-      <BaseType Type="DebugType" ToString="System.Array">
-        <BaseType Type="DebugType" ToString="System.Object">
-          <BaseType>null</BaseType>
-          <FullName>System.Object</FullName>
-          <HasElementType>False</HasElementType>
-          <Interfaces>System.Collections.Generic.List`1[Debugger.MetaData.DebugType]</Interfaces>
-          <IsArray>False</IsArray>
-          <IsClass>True</IsClass>
-          <IsGenericType>False</IsGenericType>
-          <IsInteger>False</IsInteger>
-          <IsInterface>False</IsInterface>
-          <IsPrimitive>False</IsPrimitive>
-          <IsValueType>False</IsValueType>
-          <ManagedType>null</ManagedType>
-          <Module>mscorlib.dll</Module>
+    <type>
+      <DebugType
+        BaseType="System.Array"
+        FullName="System.Int32[]"
+        HasElementType="True"
+        Interfaces="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
+        IsArray="True"
+        IsClass="False"
+        IsGenericType="False"
+        IsInteger="False"
+        IsInterface="False"
+        IsPrimitive="False"
+        IsValueType="False"
+        ManagedType="System.Array"
+        Module="{Exception: The type is not a class or value type.}">
+        <BaseType>
+          <DebugType
+            BaseType="System.Object"
+            FullName="System.Array"
+            HasElementType="False"
+            Interfaces="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
+            IsArray="False"
+            IsClass="True"
+            IsGenericType="False"
+            IsInteger="False"
+            IsInterface="False"
+            IsPrimitive="False"
+            IsValueType="False"
+            ManagedType="null"
+            Module="mscorlib.dll">
+            <BaseType>
+              <DebugType
+                BaseType="null"
+                FullName="System.Object"
+                HasElementType="False"
+                Interfaces="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
+                IsArray="False"
+                IsClass="True"
+                IsGenericType="False"
+                IsInteger="False"
+                IsInterface="False"
+                IsPrimitive="False"
+                IsValueType="False"
+                ManagedType="null"
+                Module="mscorlib.dll">
+                <BaseType>null</BaseType>
+              </DebugType>
+            </BaseType>
+          </DebugType>
         </BaseType>
-        <FullName>System.Array</FullName>
-        <HasElementType>False</HasElementType>
-        <Interfaces>System.Collections.Generic.List`1[Debugger.MetaData.DebugType]</Interfaces>
-        <IsArray>False</IsArray>
-        <IsClass>True</IsClass>
-        <IsGenericType>False</IsGenericType>
-        <IsInteger>False</IsInteger>
-        <IsInterface>False</IsInterface>
-        <IsPrimitive>False</IsPrimitive>
-        <IsValueType>False</IsValueType>
-        <ManagedType>null</ManagedType>
-        <Module>mscorlib.dll</Module>
-      </BaseType>
-      <FullName>System.Int32[]</FullName>
-      <HasElementType>True</HasElementType>
-      <Interfaces>System.Collections.Generic.List`1[Debugger.MetaData.DebugType]</Interfaces>
-      <IsArray>True</IsArray>
-      <IsClass>False</IsClass>
-      <IsGenericType>False</IsGenericType>
-      <IsInteger>False</IsInteger>
-      <IsInterface>False</IsInterface>
-      <IsPrimitive>False</IsPrimitive>
-      <IsValueType>False</IsValueType>
-      <ManagedType>System.Array</ManagedType>
-      <Module exception="The type is not a class or value type." />
+      </DebugType>
     </type>
-    <array.Length Type="Value" ToString="array.Length = 5">
-      <ArrayDimensions exception="Value is not an array" />
-      <ArrayLenght exception="Value is not an array" />
-      <ArrayRank exception="Value is not an array" />
-      <AsString>5</AsString>
-      <Expression>array.Length</Expression>
-      <HasExpired>False</HasExpired>
-      <IsArray>False</IsArray>
-      <IsInteger>True</IsInteger>
-      <IsNull>False</IsNull>
-      <IsObject>False</IsObject>
-      <IsPrimitive>True</IsPrimitive>
-      <PrimitiveValue>5</PrimitiveValue>
-      <Type>System.Int32</Type>
+    <array.Length>
+      <Value
+        ArrayDimensions="{Exception: Value is not an array}"
+        ArrayLenght="{Exception: Value is not an array}"
+        ArrayRank="{Exception: Value is not an array}"
+        AsString="5"
+        Expression="array.Length"
+        HasExpired="False"
+        IsArray="False"
+        IsInteger="True"
+        IsNull="False"
+        IsObject="False"
+        IsPrimitive="True"
+        PrimitiveValue="5"
+        Type="System.Int32" />
     </array.Length>
     <ProcessExited />
   </Test>

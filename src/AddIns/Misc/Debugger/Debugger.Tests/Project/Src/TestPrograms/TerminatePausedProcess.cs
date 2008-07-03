@@ -40,15 +40,16 @@ namespace Debugger.Tests {
 #if EXPECTED_OUTPUT
 <?xml version="1.0" encoding="utf-8"?>
 <DebuggerTests>
-  <Test name="TerminatePausedProcess.cs">
+  <Test
+    name="TerminatePausedProcess.cs">
     <ProcessStarted />
-    <ModuleLoaded symbols="False">mscorlib.dll</ModuleLoaded>
-    <ModuleLoaded symbols="True">TerminatePausedProcess.exe</ModuleLoaded>
+    <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
+    <ModuleLoaded>TerminatePausedProcess.exe (Has symbols)</ModuleLoaded>
     <DebuggingPaused>Break</DebuggingPaused>
     <ProcessExited />
     <ProcessStarted />
-    <ModuleLoaded symbols="False">mscorlib.dll</ModuleLoaded>
-    <ModuleLoaded symbols="True">TerminatePausedProcess.exe</ModuleLoaded>
+    <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
+    <ModuleLoaded>TerminatePausedProcess.exe (Has symbols)</ModuleLoaded>
     <DebuggingPaused>Break</DebuggingPaused>
     <ProcessExited />
   </Test>

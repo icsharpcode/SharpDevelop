@@ -93,314 +93,335 @@ namespace Debugger.Tests {
 #if EXPECTED_OUTPUT
 <?xml version="1.0" encoding="utf-8"?>
 <DebuggerTests>
-  <Test name="FunctionVariablesLifetime.cs">
+  <Test
+    name="FunctionVariablesLifetime.cs">
     <ProcessStarted />
-    <ModuleLoaded symbols="False">mscorlib.dll</ModuleLoaded>
-    <ModuleLoaded symbols="True">FunctionVariablesLifetime.exe</ModuleLoaded>
+    <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
+    <ModuleLoaded>FunctionVariablesLifetime.exe (Has symbols)</ModuleLoaded>
     <DebuggingPaused>Break</DebuggingPaused>
-    <argument Type="Value" ToString="argument = 1">
-      <ArrayDimensions exception="Value is not an array" />
-      <ArrayLenght exception="Value is not an array" />
-      <ArrayRank exception="Value is not an array" />
-      <AsString>1</AsString>
-      <Expression>argument</Expression>
-      <HasExpired>False</HasExpired>
-      <IsArray>False</IsArray>
-      <IsInteger>True</IsInteger>
-      <IsNull>False</IsNull>
-      <IsObject>False</IsObject>
-      <IsPrimitive>True</IsPrimitive>
-      <PrimitiveValue>1</PrimitiveValue>
-      <Type>System.Int32</Type>
+    <argument>
+      <Value
+        ArrayDimensions="{Exception: Value is not an array}"
+        ArrayLenght="{Exception: Value is not an array}"
+        ArrayRank="{Exception: Value is not an array}"
+        AsString="1"
+        Expression="argument"
+        HasExpired="False"
+        IsArray="False"
+        IsInteger="True"
+        IsNull="False"
+        IsObject="False"
+        IsPrimitive="True"
+        PrimitiveValue="1"
+        Type="System.Int32" />
     </argument>
-    <local Type="Value" ToString="local = 2">
-      <ArrayDimensions exception="Value is not an array" />
-      <ArrayLenght exception="Value is not an array" />
-      <ArrayRank exception="Value is not an array" />
-      <AsString>2</AsString>
-      <Expression>local</Expression>
-      <HasExpired>False</HasExpired>
-      <IsArray>False</IsArray>
-      <IsInteger>True</IsInteger>
-      <IsNull>False</IsNull>
-      <IsObject>False</IsObject>
-      <IsPrimitive>True</IsPrimitive>
-      <PrimitiveValue>2</PrimitiveValue>
-      <Type>System.Int32</Type>
+    <local>
+      <Value
+        ArrayDimensions="{Exception: Value is not an array}"
+        ArrayLenght="{Exception: Value is not an array}"
+        ArrayRank="{Exception: Value is not an array}"
+        AsString="2"
+        Expression="local"
+        HasExpired="False"
+        IsArray="False"
+        IsInteger="True"
+        IsNull="False"
+        IsObject="False"
+        IsPrimitive="True"
+        PrimitiveValue="2"
+        Type="System.Int32" />
     </local>
-    <_x0040_class Type="Value" ToString="this.class = 3">
-      <ArrayDimensions exception="Value is not an array" />
-      <ArrayLenght exception="Value is not an array" />
-      <ArrayRank exception="Value is not an array" />
-      <AsString>3</AsString>
-      <Expression>this.class</Expression>
-      <HasExpired>False</HasExpired>
-      <IsArray>False</IsArray>
-      <IsInteger>True</IsInteger>
-      <IsNull>False</IsNull>
-      <IsObject>False</IsObject>
-      <IsPrimitive>True</IsPrimitive>
-      <PrimitiveValue>3</PrimitiveValue>
-      <Type>System.Int32</Type>
+    <_x0040_class>
+      <Value
+        ArrayDimensions="{Exception: Value is not an array}"
+        ArrayLenght="{Exception: Value is not an array}"
+        ArrayRank="{Exception: Value is not an array}"
+        AsString="3"
+        Expression="this.class"
+        HasExpired="False"
+        IsArray="False"
+        IsInteger="True"
+        IsNull="False"
+        IsObject="False"
+        IsPrimitive="True"
+        PrimitiveValue="3"
+        Type="System.Int32" />
     </_x0040_class>
     <DebuggingPaused>Break</DebuggingPaused>
-    <argument Type="Value" ToString_exception="Value has expired">
-      <ArrayDimensions exception="Value has expired" />
-      <ArrayLenght exception="Value has expired" />
-      <ArrayRank exception="Value has expired" />
-      <AsString exception="Value has expired" />
-      <Expression>argument</Expression>
-      <HasExpired>True</HasExpired>
-      <IsArray exception="Value has expired" />
-      <IsInteger exception="Value has expired" />
-      <IsNull exception="Value has expired" />
-      <IsObject exception="Value has expired" />
-      <IsPrimitive exception="Value has expired" />
-      <PrimitiveValue exception="Value has expired" />
-      <Type>System.Int32</Type>
+    <argument>
+      <Value
+        ArrayDimensions="{Exception: Value has expired}"
+        ArrayLenght="{Exception: Value has expired}"
+        ArrayRank="{Exception: Value has expired}"
+        AsString="{Exception: Value has expired}"
+        Expression="argument"
+        HasExpired="True"
+        IsArray="{Exception: Value has expired}"
+        IsInteger="{Exception: Value has expired}"
+        IsNull="{Exception: Value has expired}"
+        IsObject="{Exception: Value has expired}"
+        IsPrimitive="{Exception: Value has expired}"
+        PrimitiveValue="{Exception: Value has expired}"
+        Type="System.Int32" />
     </argument>
-    <local Type="Value" ToString_exception="Value has expired">
-      <ArrayDimensions exception="Value has expired" />
-      <ArrayLenght exception="Value has expired" />
-      <ArrayRank exception="Value has expired" />
-      <AsString exception="Value has expired" />
-      <Expression>local</Expression>
-      <HasExpired>True</HasExpired>
-      <IsArray exception="Value has expired" />
-      <IsInteger exception="Value has expired" />
-      <IsNull exception="Value has expired" />
-      <IsObject exception="Value has expired" />
-      <IsPrimitive exception="Value has expired" />
-      <PrimitiveValue exception="Value has expired" />
-      <Type>System.Int32</Type>
+    <local>
+      <Value
+        ArrayDimensions="{Exception: Value has expired}"
+        ArrayLenght="{Exception: Value has expired}"
+        ArrayRank="{Exception: Value has expired}"
+        AsString="{Exception: Value has expired}"
+        Expression="local"
+        HasExpired="True"
+        IsArray="{Exception: Value has expired}"
+        IsInteger="{Exception: Value has expired}"
+        IsNull="{Exception: Value has expired}"
+        IsObject="{Exception: Value has expired}"
+        IsPrimitive="{Exception: Value has expired}"
+        PrimitiveValue="{Exception: Value has expired}"
+        Type="System.Int32" />
     </local>
-    <_x0040_class Type="Value" ToString_exception="Value has expired">
-      <ArrayDimensions exception="Value has expired" />
-      <ArrayLenght exception="Value has expired" />
-      <ArrayRank exception="Value has expired" />
-      <AsString exception="Value has expired" />
-      <Expression>this.class</Expression>
-      <HasExpired>True</HasExpired>
-      <IsArray exception="Value has expired" />
-      <IsInteger exception="Value has expired" />
-      <IsNull exception="Value has expired" />
-      <IsObject exception="Value has expired" />
-      <IsPrimitive exception="Value has expired" />
-      <PrimitiveValue exception="Value has expired" />
-      <Type>System.Int32</Type>
+    <_x0040_class>
+      <Value
+        ArrayDimensions="{Exception: Value has expired}"
+        ArrayLenght="{Exception: Value has expired}"
+        ArrayRank="{Exception: Value has expired}"
+        AsString="{Exception: Value has expired}"
+        Expression="this.class"
+        HasExpired="True"
+        IsArray="{Exception: Value has expired}"
+        IsInteger="{Exception: Value has expired}"
+        IsNull="{Exception: Value has expired}"
+        IsObject="{Exception: Value has expired}"
+        IsPrimitive="{Exception: Value has expired}"
+        PrimitiveValue="{Exception: Value has expired}"
+        Type="System.Int32" />
     </_x0040_class>
-    <localInSubFunction Type="Value" ToString="localInSubFunction = 4">
-      <ArrayDimensions exception="Value is not an array" />
-      <ArrayLenght exception="Value is not an array" />
-      <ArrayRank exception="Value is not an array" />
-      <AsString>4</AsString>
-      <Expression>localInSubFunction</Expression>
-      <HasExpired>False</HasExpired>
-      <IsArray>False</IsArray>
-      <IsInteger>True</IsInteger>
-      <IsNull>False</IsNull>
-      <IsObject>False</IsObject>
-      <IsPrimitive>True</IsPrimitive>
-      <PrimitiveValue>4</PrimitiveValue>
-      <Type>System.Int32</Type>
+    <localInSubFunction>
+      <Value
+        ArrayDimensions="{Exception: Value is not an array}"
+        ArrayLenght="{Exception: Value is not an array}"
+        ArrayRank="{Exception: Value is not an array}"
+        AsString="4"
+        Expression="localInSubFunction"
+        HasExpired="False"
+        IsArray="False"
+        IsInteger="True"
+        IsNull="False"
+        IsObject="False"
+        IsPrimitive="True"
+        PrimitiveValue="4"
+        Type="System.Int32" />
     </localInSubFunction>
     <DebuggingPaused>Break</DebuggingPaused>
-    <argument Type="Value" ToString_exception="Value has expired">
-      <ArrayDimensions exception="Value has expired" />
-      <ArrayLenght exception="Value has expired" />
-      <ArrayRank exception="Value has expired" />
-      <AsString exception="Value has expired" />
-      <Expression>argument</Expression>
-      <HasExpired>True</HasExpired>
-      <IsArray exception="Value has expired" />
-      <IsInteger exception="Value has expired" />
-      <IsNull exception="Value has expired" />
-      <IsObject exception="Value has expired" />
-      <IsPrimitive exception="Value has expired" />
-      <PrimitiveValue exception="Value has expired" />
-      <Type>System.Int32</Type>
+    <argument>
+      <Value
+        ArrayDimensions="{Exception: Value has expired}"
+        ArrayLenght="{Exception: Value has expired}"
+        ArrayRank="{Exception: Value has expired}"
+        AsString="{Exception: Value has expired}"
+        Expression="argument"
+        HasExpired="True"
+        IsArray="{Exception: Value has expired}"
+        IsInteger="{Exception: Value has expired}"
+        IsNull="{Exception: Value has expired}"
+        IsObject="{Exception: Value has expired}"
+        IsPrimitive="{Exception: Value has expired}"
+        PrimitiveValue="{Exception: Value has expired}"
+        Type="System.Int32" />
     </argument>
-    <local Type="Value" ToString_exception="Value has expired">
-      <ArrayDimensions exception="Value has expired" />
-      <ArrayLenght exception="Value has expired" />
-      <ArrayRank exception="Value has expired" />
-      <AsString exception="Value has expired" />
-      <Expression>local</Expression>
-      <HasExpired>True</HasExpired>
-      <IsArray exception="Value has expired" />
-      <IsInteger exception="Value has expired" />
-      <IsNull exception="Value has expired" />
-      <IsObject exception="Value has expired" />
-      <IsPrimitive exception="Value has expired" />
-      <PrimitiveValue exception="Value has expired" />
-      <Type>System.Int32</Type>
+    <local>
+      <Value
+        ArrayDimensions="{Exception: Value has expired}"
+        ArrayLenght="{Exception: Value has expired}"
+        ArrayRank="{Exception: Value has expired}"
+        AsString="{Exception: Value has expired}"
+        Expression="local"
+        HasExpired="True"
+        IsArray="{Exception: Value has expired}"
+        IsInteger="{Exception: Value has expired}"
+        IsNull="{Exception: Value has expired}"
+        IsObject="{Exception: Value has expired}"
+        IsPrimitive="{Exception: Value has expired}"
+        PrimitiveValue="{Exception: Value has expired}"
+        Type="System.Int32" />
     </local>
-    <_x0040_class Type="Value" ToString_exception="Value has expired">
-      <ArrayDimensions exception="Value has expired" />
-      <ArrayLenght exception="Value has expired" />
-      <ArrayRank exception="Value has expired" />
-      <AsString exception="Value has expired" />
-      <Expression>this.class</Expression>
-      <HasExpired>True</HasExpired>
-      <IsArray exception="Value has expired" />
-      <IsInteger exception="Value has expired" />
-      <IsNull exception="Value has expired" />
-      <IsObject exception="Value has expired" />
-      <IsPrimitive exception="Value has expired" />
-      <PrimitiveValue exception="Value has expired" />
-      <Type>System.Int32</Type>
+    <_x0040_class>
+      <Value
+        ArrayDimensions="{Exception: Value has expired}"
+        ArrayLenght="{Exception: Value has expired}"
+        ArrayRank="{Exception: Value has expired}"
+        AsString="{Exception: Value has expired}"
+        Expression="this.class"
+        HasExpired="True"
+        IsArray="{Exception: Value has expired}"
+        IsInteger="{Exception: Value has expired}"
+        IsNull="{Exception: Value has expired}"
+        IsObject="{Exception: Value has expired}"
+        IsPrimitive="{Exception: Value has expired}"
+        PrimitiveValue="{Exception: Value has expired}"
+        Type="System.Int32" />
     </_x0040_class>
-    <localInSubFunction Type="Value" ToString_exception="Value has expired">
-      <ArrayDimensions exception="Value has expired" />
-      <ArrayLenght exception="Value has expired" />
-      <ArrayRank exception="Value has expired" />
-      <AsString exception="Value has expired" />
-      <Expression>localInSubFunction</Expression>
-      <HasExpired>True</HasExpired>
-      <IsArray exception="Value has expired" />
-      <IsInteger exception="Value has expired" />
-      <IsNull exception="Value has expired" />
-      <IsObject exception="Value has expired" />
-      <IsPrimitive exception="Value has expired" />
-      <PrimitiveValue exception="Value has expired" />
-      <Type>System.Int32</Type>
+    <localInSubFunction>
+      <Value
+        ArrayDimensions="{Exception: Value has expired}"
+        ArrayLenght="{Exception: Value has expired}"
+        ArrayRank="{Exception: Value has expired}"
+        AsString="{Exception: Value has expired}"
+        Expression="localInSubFunction"
+        HasExpired="True"
+        IsArray="{Exception: Value has expired}"
+        IsInteger="{Exception: Value has expired}"
+        IsNull="{Exception: Value has expired}"
+        IsObject="{Exception: Value has expired}"
+        IsPrimitive="{Exception: Value has expired}"
+        PrimitiveValue="{Exception: Value has expired}"
+        Type="System.Int32" />
     </localInSubFunction>
     <DebuggingPaused>Break</DebuggingPaused>
-    <argument Type="Value" ToString_exception="Value has expired">
-      <ArrayDimensions exception="Value has expired" />
-      <ArrayLenght exception="Value has expired" />
-      <ArrayRank exception="Value has expired" />
-      <AsString exception="Value has expired" />
-      <Expression>argument</Expression>
-      <HasExpired>True</HasExpired>
-      <IsArray exception="Value has expired" />
-      <IsInteger exception="Value has expired" />
-      <IsNull exception="Value has expired" />
-      <IsObject exception="Value has expired" />
-      <IsPrimitive exception="Value has expired" />
-      <PrimitiveValue exception="Value has expired" />
-      <Type>System.Int32</Type>
+    <argument>
+      <Value
+        ArrayDimensions="{Exception: Value has expired}"
+        ArrayLenght="{Exception: Value has expired}"
+        ArrayRank="{Exception: Value has expired}"
+        AsString="{Exception: Value has expired}"
+        Expression="argument"
+        HasExpired="True"
+        IsArray="{Exception: Value has expired}"
+        IsInteger="{Exception: Value has expired}"
+        IsNull="{Exception: Value has expired}"
+        IsObject="{Exception: Value has expired}"
+        IsPrimitive="{Exception: Value has expired}"
+        PrimitiveValue="{Exception: Value has expired}"
+        Type="System.Int32" />
     </argument>
-    <local Type="Value" ToString_exception="Value has expired">
-      <ArrayDimensions exception="Value has expired" />
-      <ArrayLenght exception="Value has expired" />
-      <ArrayRank exception="Value has expired" />
-      <AsString exception="Value has expired" />
-      <Expression>local</Expression>
-      <HasExpired>True</HasExpired>
-      <IsArray exception="Value has expired" />
-      <IsInteger exception="Value has expired" />
-      <IsNull exception="Value has expired" />
-      <IsObject exception="Value has expired" />
-      <IsPrimitive exception="Value has expired" />
-      <PrimitiveValue exception="Value has expired" />
-      <Type>System.Int32</Type>
+    <local>
+      <Value
+        ArrayDimensions="{Exception: Value has expired}"
+        ArrayLenght="{Exception: Value has expired}"
+        ArrayRank="{Exception: Value has expired}"
+        AsString="{Exception: Value has expired}"
+        Expression="local"
+        HasExpired="True"
+        IsArray="{Exception: Value has expired}"
+        IsInteger="{Exception: Value has expired}"
+        IsNull="{Exception: Value has expired}"
+        IsObject="{Exception: Value has expired}"
+        IsPrimitive="{Exception: Value has expired}"
+        PrimitiveValue="{Exception: Value has expired}"
+        Type="System.Int32" />
     </local>
-    <_x0040_class Type="Value" ToString_exception="Value has expired">
-      <ArrayDimensions exception="Value has expired" />
-      <ArrayLenght exception="Value has expired" />
-      <ArrayRank exception="Value has expired" />
-      <AsString exception="Value has expired" />
-      <Expression>this.class</Expression>
-      <HasExpired>True</HasExpired>
-      <IsArray exception="Value has expired" />
-      <IsInteger exception="Value has expired" />
-      <IsNull exception="Value has expired" />
-      <IsObject exception="Value has expired" />
-      <IsPrimitive exception="Value has expired" />
-      <PrimitiveValue exception="Value has expired" />
-      <Type>System.Int32</Type>
+    <_x0040_class>
+      <Value
+        ArrayDimensions="{Exception: Value has expired}"
+        ArrayLenght="{Exception: Value has expired}"
+        ArrayRank="{Exception: Value has expired}"
+        AsString="{Exception: Value has expired}"
+        Expression="this.class"
+        HasExpired="True"
+        IsArray="{Exception: Value has expired}"
+        IsInteger="{Exception: Value has expired}"
+        IsNull="{Exception: Value has expired}"
+        IsObject="{Exception: Value has expired}"
+        IsPrimitive="{Exception: Value has expired}"
+        PrimitiveValue="{Exception: Value has expired}"
+        Type="System.Int32" />
     </_x0040_class>
-    <localInSubFunction Type="Value" ToString_exception="Value has expired">
-      <ArrayDimensions exception="Value has expired" />
-      <ArrayLenght exception="Value has expired" />
-      <ArrayRank exception="Value has expired" />
-      <AsString exception="Value has expired" />
-      <Expression>localInSubFunction</Expression>
-      <HasExpired>True</HasExpired>
-      <IsArray exception="Value has expired" />
-      <IsInteger exception="Value has expired" />
-      <IsNull exception="Value has expired" />
-      <IsObject exception="Value has expired" />
-      <IsPrimitive exception="Value has expired" />
-      <PrimitiveValue exception="Value has expired" />
-      <Type>System.Int32</Type>
+    <localInSubFunction>
+      <Value
+        ArrayDimensions="{Exception: Value has expired}"
+        ArrayLenght="{Exception: Value has expired}"
+        ArrayRank="{Exception: Value has expired}"
+        AsString="{Exception: Value has expired}"
+        Expression="localInSubFunction"
+        HasExpired="True"
+        IsArray="{Exception: Value has expired}"
+        IsInteger="{Exception: Value has expired}"
+        IsNull="{Exception: Value has expired}"
+        IsObject="{Exception: Value has expired}"
+        IsPrimitive="{Exception: Value has expired}"
+        PrimitiveValue="{Exception: Value has expired}"
+        Type="System.Int32" />
     </localInSubFunction>
-    <localInSubFunction_x0028_new_x0029_ Type="Value" ToString="localInSubFunction = 4">
-      <ArrayDimensions exception="Value is not an array" />
-      <ArrayLenght exception="Value is not an array" />
-      <ArrayRank exception="Value is not an array" />
-      <AsString>4</AsString>
-      <Expression>localInSubFunction</Expression>
-      <HasExpired>False</HasExpired>
-      <IsArray>False</IsArray>
-      <IsInteger>True</IsInteger>
-      <IsNull>False</IsNull>
-      <IsObject>False</IsObject>
-      <IsPrimitive>True</IsPrimitive>
-      <PrimitiveValue>4</PrimitiveValue>
-      <Type>System.Int32</Type>
+    <localInSubFunction_x0028_new_x0029_>
+      <Value
+        ArrayDimensions="{Exception: Value is not an array}"
+        ArrayLenght="{Exception: Value is not an array}"
+        ArrayRank="{Exception: Value is not an array}"
+        AsString="4"
+        Expression="localInSubFunction"
+        HasExpired="False"
+        IsArray="False"
+        IsInteger="True"
+        IsNull="False"
+        IsObject="False"
+        IsPrimitive="True"
+        PrimitiveValue="4"
+        Type="System.Int32" />
     </localInSubFunction_x0028_new_x0029_>
     <DebuggingPaused>Break</DebuggingPaused>
-    <argument Type="Value" ToString_exception="Value has expired">
-      <ArrayDimensions exception="Value has expired" />
-      <ArrayLenght exception="Value has expired" />
-      <ArrayRank exception="Value has expired" />
-      <AsString exception="Value has expired" />
-      <Expression>argument</Expression>
-      <HasExpired>True</HasExpired>
-      <IsArray exception="Value has expired" />
-      <IsInteger exception="Value has expired" />
-      <IsNull exception="Value has expired" />
-      <IsObject exception="Value has expired" />
-      <IsPrimitive exception="Value has expired" />
-      <PrimitiveValue exception="Value has expired" />
-      <Type>System.Int32</Type>
+    <argument>
+      <Value
+        ArrayDimensions="{Exception: Value has expired}"
+        ArrayLenght="{Exception: Value has expired}"
+        ArrayRank="{Exception: Value has expired}"
+        AsString="{Exception: Value has expired}"
+        Expression="argument"
+        HasExpired="True"
+        IsArray="{Exception: Value has expired}"
+        IsInteger="{Exception: Value has expired}"
+        IsNull="{Exception: Value has expired}"
+        IsObject="{Exception: Value has expired}"
+        IsPrimitive="{Exception: Value has expired}"
+        PrimitiveValue="{Exception: Value has expired}"
+        Type="System.Int32" />
     </argument>
-    <local Type="Value" ToString_exception="Value has expired">
-      <ArrayDimensions exception="Value has expired" />
-      <ArrayLenght exception="Value has expired" />
-      <ArrayRank exception="Value has expired" />
-      <AsString exception="Value has expired" />
-      <Expression>local</Expression>
-      <HasExpired>True</HasExpired>
-      <IsArray exception="Value has expired" />
-      <IsInteger exception="Value has expired" />
-      <IsNull exception="Value has expired" />
-      <IsObject exception="Value has expired" />
-      <IsPrimitive exception="Value has expired" />
-      <PrimitiveValue exception="Value has expired" />
-      <Type>System.Int32</Type>
+    <local>
+      <Value
+        ArrayDimensions="{Exception: Value has expired}"
+        ArrayLenght="{Exception: Value has expired}"
+        ArrayRank="{Exception: Value has expired}"
+        AsString="{Exception: Value has expired}"
+        Expression="local"
+        HasExpired="True"
+        IsArray="{Exception: Value has expired}"
+        IsInteger="{Exception: Value has expired}"
+        IsNull="{Exception: Value has expired}"
+        IsObject="{Exception: Value has expired}"
+        IsPrimitive="{Exception: Value has expired}"
+        PrimitiveValue="{Exception: Value has expired}"
+        Type="System.Int32" />
     </local>
-    <_x0040_class Type="Value" ToString_exception="Value has expired">
-      <ArrayDimensions exception="Value has expired" />
-      <ArrayLenght exception="Value has expired" />
-      <ArrayRank exception="Value has expired" />
-      <AsString exception="Value has expired" />
-      <Expression>this.class</Expression>
-      <HasExpired>True</HasExpired>
-      <IsArray exception="Value has expired" />
-      <IsInteger exception="Value has expired" />
-      <IsNull exception="Value has expired" />
-      <IsObject exception="Value has expired" />
-      <IsPrimitive exception="Value has expired" />
-      <PrimitiveValue exception="Value has expired" />
-      <Type>System.Int32</Type>
+    <_x0040_class>
+      <Value
+        ArrayDimensions="{Exception: Value has expired}"
+        ArrayLenght="{Exception: Value has expired}"
+        ArrayRank="{Exception: Value has expired}"
+        AsString="{Exception: Value has expired}"
+        Expression="this.class"
+        HasExpired="True"
+        IsArray="{Exception: Value has expired}"
+        IsInteger="{Exception: Value has expired}"
+        IsNull="{Exception: Value has expired}"
+        IsObject="{Exception: Value has expired}"
+        IsPrimitive="{Exception: Value has expired}"
+        PrimitiveValue="{Exception: Value has expired}"
+        Type="System.Int32" />
     </_x0040_class>
-    <localInSubFunction Type="Value" ToString_exception="Value has expired">
-      <ArrayDimensions exception="Value has expired" />
-      <ArrayLenght exception="Value has expired" />
-      <ArrayRank exception="Value has expired" />
-      <AsString exception="Value has expired" />
-      <Expression>localInSubFunction</Expression>
-      <HasExpired>True</HasExpired>
-      <IsArray exception="Value has expired" />
-      <IsInteger exception="Value has expired" />
-      <IsNull exception="Value has expired" />
-      <IsObject exception="Value has expired" />
-      <IsPrimitive exception="Value has expired" />
-      <PrimitiveValue exception="Value has expired" />
-      <Type>System.Int32</Type>
+    <localInSubFunction>
+      <Value
+        ArrayDimensions="{Exception: Value has expired}"
+        ArrayLenght="{Exception: Value has expired}"
+        ArrayRank="{Exception: Value has expired}"
+        AsString="{Exception: Value has expired}"
+        Expression="localInSubFunction"
+        HasExpired="True"
+        IsArray="{Exception: Value has expired}"
+        IsInteger="{Exception: Value has expired}"
+        IsNull="{Exception: Value has expired}"
+        IsObject="{Exception: Value has expired}"
+        IsPrimitive="{Exception: Value has expired}"
+        PrimitiveValue="{Exception: Value has expired}"
+        Type="System.Int32" />
     </localInSubFunction>
     <ProcessExited />
   </Test>

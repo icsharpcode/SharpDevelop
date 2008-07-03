@@ -66,13 +66,14 @@ namespace Debugger.Tests {
 #if EXPECTED_OUTPUT
 <?xml version="1.0" encoding="utf-8"?>
 <DebuggerTests>
-  <Test name="DebuggerAttributes.cs">
+  <Test
+    name="DebuggerAttributes.cs">
     <ProcessStarted />
-    <ModuleLoaded symbols="False">mscorlib.dll</ModuleLoaded>
-    <ModuleLoaded symbols="True">DebuggerAttributes.exe</ModuleLoaded>
-    <ModuleLoaded symbols="False">System.dll</ModuleLoaded>
-    <ModuleLoaded symbols="False">System.Configuration.dll</ModuleLoaded>
-    <ModuleLoaded symbols="False">System.Xml.dll</ModuleLoaded>
+    <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
+    <ModuleLoaded>DebuggerAttributes.exe (Has symbols)</ModuleLoaded>
+    <ModuleLoaded>System.dll (No symbols)</ModuleLoaded>
+    <ModuleLoaded>System.Configuration.dll (No symbols)</ModuleLoaded>
+    <ModuleLoaded>System.Xml.dll (No symbols)</ModuleLoaded>
     <LogMessage>Start\r\n</LogMessage>
     <DebuggingPaused>Break</DebuggingPaused>
     <DebuggingPaused>StepComplete</DebuggingPaused>

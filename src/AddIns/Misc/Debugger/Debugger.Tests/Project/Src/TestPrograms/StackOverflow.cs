@@ -45,21 +45,22 @@ namespace Debugger.Tests {
 #if EXPECTED_OUTPUT
 <?xml version="1.0" encoding="utf-8"?>
 <DebuggerTests>
-  <Test name="StackOverflow.cs">
+  <Test
+    name="StackOverflow.cs">
     <ProcessStarted />
-    <ModuleLoaded symbols="False">mscorlib.dll</ModuleLoaded>
-    <ModuleLoaded symbols="True">StackOverflow.exe</ModuleLoaded>
+    <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
+    <ModuleLoaded>StackOverflow.exe (Has symbols)</ModuleLoaded>
     <DebuggingPaused>Break</DebuggingPaused>
-    <ExceptionThrown>
-    </ExceptionThrown>
+    <ExceptionThrown></ExceptionThrown>
     <DebuggingPaused>Exception</DebuggingPaused>
-    <LastStackFrame Type="StackFrame" ToString="Debugger.Tests.TestPrograms.StackOverflow.Fun">
-      <ArgumentCount>1</ArgumentCount>
-      <Depth>0</Depth>
-      <HasExpired>False</HasExpired>
-      <HasSymbols>True</HasSymbols>
-      <MethodInfo>Fun</MethodInfo>
-      <NextStatement>StackOverflow.cs:21,3-21,4</NextStatement>
+    <LastStackFrame>
+      <StackFrame
+        ArgumentCount="1"
+        Depth="0"
+        HasExpired="False"
+        HasSymbols="True"
+        MethodInfo="Fun"
+        NextStatement="StackOverflow.cs:21,3-21,4" />
     </LastStackFrame>
     <ProcessExited />
   </Test>

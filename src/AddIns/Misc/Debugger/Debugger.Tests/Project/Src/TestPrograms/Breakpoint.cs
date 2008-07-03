@@ -51,37 +51,36 @@ namespace Debugger.Tests {
 #if EXPECTED_OUTPUT
 <?xml version="1.0" encoding="utf-8"?>
 <DebuggerTests>
-  <Test name="Breakpoint.cs">
+  <Test
+    name="Breakpoint.cs">
     <ProcessStarted />
-    <ModuleLoaded symbols="False">mscorlib.dll</ModuleLoaded>
-    <ModuleLoaded symbols="True">Breakpoint.exe</ModuleLoaded>
-    <ModuleLoaded symbols="False">System.dll</ModuleLoaded>
+    <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
+    <ModuleLoaded>Breakpoint.exe (Has symbols)</ModuleLoaded>
+    <ModuleLoaded>System.dll (No symbols)</ModuleLoaded>
     <DebuggingPaused>Break</DebuggingPaused>
-    <Object Type="Breakpoint" ToString="Debugger.Breakpoint">
-      <CheckSum>null</CheckSum>
-      <Column>0</Column>
-      <Enabled>True</Enabled>
-      <FileName>Breakpoint.cs</FileName>
-      <IsSet>True</IsSet>
-      <Line>18</Line>
-      <OriginalLocation>Breakpoint.cs:18,4-18,49</OriginalLocation>
-    </Object>
-    <ModuleLoaded symbols="False">System.Configuration.dll</ModuleLoaded>
-    <ModuleLoaded symbols="False">System.Xml.dll</ModuleLoaded>
+    <Breakpoint
+      CheckSum="null"
+      Column="0"
+      Enabled="True"
+      FileName="Breakpoint.cs"
+      IsSet="True"
+      Line="18"
+      OriginalLocation="Breakpoint.cs:18,4-18,49" />
+    <ModuleLoaded>System.Configuration.dll (No symbols)</ModuleLoaded>
+    <ModuleLoaded>System.Xml.dll (No symbols)</ModuleLoaded>
     <LogMessage>Main 1\r\n</LogMessage>
     <DebuggingPaused>Breakpoint</DebuggingPaused>
     <LogMessage>Main 2\r\n</LogMessage>
     <DebuggingPaused>Break</DebuggingPaused>
     <ProcessExited />
-    <Object Type="Breakpoint" ToString="Debugger.Breakpoint">
-      <CheckSum>null</CheckSum>
-      <Column>0</Column>
-      <Enabled>True</Enabled>
-      <FileName>Breakpoint.cs</FileName>
-      <IsSet>False</IsSet>
-      <Line>18</Line>
-      <OriginalLocation>Breakpoint.cs:18,4-18,49</OriginalLocation>
-    </Object>
+    <Breakpoint
+      CheckSum="null"
+      Column="0"
+      Enabled="True"
+      FileName="Breakpoint.cs"
+      IsSet="False"
+      Line="18"
+      OriginalLocation="Breakpoint.cs:18,4-18,49" />
   </Test>
 </DebuggerTests>
 #endif // EXPECTED_OUTPUT

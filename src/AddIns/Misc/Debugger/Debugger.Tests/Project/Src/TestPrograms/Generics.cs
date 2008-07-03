@@ -126,552 +126,627 @@ namespace Debugger.Tests {
 #if EXPECTED_OUTPUT
 <?xml version="1.0" encoding="utf-8"?>
 <DebuggerTests>
-  <Test name="Generics.cs">
+  <Test
+    name="Generics.cs">
     <ProcessStarted />
-    <ModuleLoaded symbols="False">mscorlib.dll</ModuleLoaded>
-    <ModuleLoaded symbols="True">Generics.exe</ModuleLoaded>
+    <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
+    <ModuleLoaded>Generics.exe (Has symbols)</ModuleLoaded>
     <DebuggingPaused>Break</DebuggingPaused>
-    <SelectedStackFrame Type="StackFrame" ToString="Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;.Metod">
-      <ArgumentCount>2</ArgumentCount>
-      <Depth>0</Depth>
-      <HasExpired>False</HasExpired>
-      <HasSymbols>True</HasSymbols>
-      <MethodInfo Type="MethodInfo" ToString="Metod">
-        <DeclaringType Type="DebugType" ToString="Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;">
-          <BaseType>System.Object</BaseType>
-          <FullName>Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;</FullName>
-          <HasElementType>False</HasElementType>
-          <Interfaces>System.Collections.Generic.List`1[Debugger.MetaData.DebugType]</Interfaces>
-          <IsArray>False</IsArray>
-          <IsClass>True</IsClass>
-          <IsGenericType>True</IsGenericType>
-          <IsInteger>False</IsInteger>
-          <IsInterface>False</IsInterface>
-          <IsPrimitive>False</IsPrimitive>
-          <IsValueType>False</IsValueType>
-          <ManagedType>null</ManagedType>
-          <Module>Generics.exe</Module>
-        </DeclaringType>
-        <FullName>Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;.Metod</FullName>
-        <IsPrivate>False</IsPrivate>
-        <IsPublic>True</IsPublic>
-        <IsSpecialName>False</IsSpecialName>
-        <IsStatic>False</IsStatic>
-        <Module>Generics.exe</Module>
-        <Name>Metod</Name>
-      </MethodInfo>
-      <NextStatement>Generics.cs:48,4-48,40</NextStatement>
+    <SelectedStackFrame>
+      <StackFrame
+        ArgumentCount="2"
+        Depth="0"
+        HasExpired="False"
+        HasSymbols="True"
+        MethodInfo="Metod"
+        NextStatement="Generics.cs:48,4-48,40">
+        <MethodInfo>
+          <MethodInfo
+            DeclaringType="Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;"
+            FullName="Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;.Metod"
+            IsPrivate="False"
+            IsPublic="True"
+            IsSpecialName="False"
+            IsStatic="False"
+            Module="Generics.exe"
+            Name="Metod">
+            <DeclaringType>
+              <DebugType
+                BaseType="System.Object"
+                FullName="Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;"
+                HasElementType="False"
+                Interfaces="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
+                IsArray="False"
+                IsClass="True"
+                IsGenericType="True"
+                IsInteger="False"
+                IsInterface="False"
+                IsPrimitive="False"
+                IsValueType="False"
+                ManagedType="null"
+                Module="Generics.exe" />
+            </DeclaringType>
+          </MethodInfo>
+        </MethodInfo>
+      </StackFrame>
     </SelectedStackFrame>
-    <SelectedStackFrame-GetArguments Type="Value[]" ToString="Debugger.Value[]">
-      <Item Type="Value" ToString="v = 1">
-        <ArrayDimensions exception="Value is not an array" />
-        <ArrayLenght exception="Value is not an array" />
-        <ArrayRank exception="Value is not an array" />
-        <AsString>1</AsString>
-        <Expression>v</Expression>
-        <HasExpired>False</HasExpired>
-        <IsArray>False</IsArray>
-        <IsInteger>True</IsInteger>
-        <IsNull>False</IsNull>
-        <IsObject>False</IsObject>
-        <IsPrimitive>True</IsPrimitive>
-        <PrimitiveValue>1</PrimitiveValue>
-        <Type>System.Int32</Type>
+    <SelectedStackFrame-GetArguments>
+      <Item>
+        <Value
+          ArrayDimensions="{Exception: Value is not an array}"
+          ArrayLenght="{Exception: Value is not an array}"
+          ArrayRank="{Exception: Value is not an array}"
+          AsString="1"
+          Expression="v"
+          HasExpired="False"
+          IsArray="False"
+          IsInteger="True"
+          IsNull="False"
+          IsObject="False"
+          IsPrimitive="True"
+          PrimitiveValue="1"
+          Type="System.Int32" />
       </Item>
-      <Item Type="Value" ToString="k = 1!">
-        <ArrayDimensions exception="Value is not an array" />
-        <ArrayLenght exception="Value is not an array" />
-        <ArrayRank exception="Value is not an array" />
-        <AsString>1!</AsString>
-        <Expression>k</Expression>
-        <HasExpired>False</HasExpired>
-        <IsArray>False</IsArray>
-        <IsInteger>False</IsInteger>
-        <IsNull>False</IsNull>
-        <IsObject>False</IsObject>
-        <IsPrimitive>True</IsPrimitive>
-        <PrimitiveValue>1!</PrimitiveValue>
-        <Type>System.String</Type>
+      <Item>
+        <Value
+          ArrayDimensions="{Exception: Value is not an array}"
+          ArrayLenght="{Exception: Value is not an array}"
+          ArrayRank="{Exception: Value is not an array}"
+          AsString="1!"
+          Expression="k"
+          HasExpired="False"
+          IsArray="False"
+          IsInteger="False"
+          IsNull="False"
+          IsObject="False"
+          IsPrimitive="True"
+          PrimitiveValue="1!"
+          Type="System.String" />
       </Item>
     </SelectedStackFrame-GetArguments>
     <DebuggingPaused>Break</DebuggingPaused>
-    <SelectedStackFrame Type="StackFrame" ToString="Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;.GenericMethod">
-      <ArgumentCount>2</ArgumentCount>
-      <Depth>0</Depth>
-      <HasExpired>False</HasExpired>
-      <HasSymbols>True</HasSymbols>
-      <MethodInfo Type="MethodInfo" ToString="GenericMethod">
-        <DeclaringType Type="DebugType" ToString="Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;">
-          <BaseType>System.Object</BaseType>
-          <FullName>Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;</FullName>
-          <HasElementType>False</HasElementType>
-          <Interfaces>System.Collections.Generic.List`1[Debugger.MetaData.DebugType]</Interfaces>
-          <IsArray>False</IsArray>
-          <IsClass>True</IsClass>
-          <IsGenericType>True</IsGenericType>
-          <IsInteger>False</IsInteger>
-          <IsInterface>False</IsInterface>
-          <IsPrimitive>False</IsPrimitive>
-          <IsValueType>False</IsValueType>
-          <ManagedType>null</ManagedType>
-          <Module>Generics.exe</Module>
-        </DeclaringType>
-        <FullName>Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;.GenericMethod</FullName>
-        <IsPrivate>False</IsPrivate>
-        <IsPublic>True</IsPublic>
-        <IsSpecialName>False</IsSpecialName>
-        <IsStatic>False</IsStatic>
-        <Module>Generics.exe</Module>
-        <Name>GenericMethod</Name>
-      </MethodInfo>
-      <NextStatement>Generics.cs:54,4-54,40</NextStatement>
+    <SelectedStackFrame>
+      <StackFrame
+        ArgumentCount="2"
+        Depth="0"
+        HasExpired="False"
+        HasSymbols="True"
+        MethodInfo="GenericMethod"
+        NextStatement="Generics.cs:54,4-54,40">
+        <MethodInfo>
+          <MethodInfo
+            DeclaringType="Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;"
+            FullName="Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;.GenericMethod"
+            IsPrivate="False"
+            IsPublic="True"
+            IsSpecialName="False"
+            IsStatic="False"
+            Module="Generics.exe"
+            Name="GenericMethod">
+            <DeclaringType>
+              <DebugType
+                BaseType="System.Object"
+                FullName="Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;"
+                HasElementType="False"
+                Interfaces="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
+                IsArray="False"
+                IsClass="True"
+                IsGenericType="True"
+                IsInteger="False"
+                IsInterface="False"
+                IsPrimitive="False"
+                IsValueType="False"
+                ManagedType="null"
+                Module="Generics.exe" />
+            </DeclaringType>
+          </MethodInfo>
+        </MethodInfo>
+      </StackFrame>
     </SelectedStackFrame>
-    <SelectedStackFrame-GetArguments Type="Value[]" ToString="Debugger.Value[]">
-      <Item Type="Value" ToString="v = 2">
-        <ArrayDimensions exception="Value is not an array" />
-        <ArrayLenght exception="Value is not an array" />
-        <ArrayRank exception="Value is not an array" />
-        <AsString>2</AsString>
-        <Expression>v</Expression>
-        <HasExpired>False</HasExpired>
-        <IsArray>False</IsArray>
-        <IsInteger>True</IsInteger>
-        <IsNull>False</IsNull>
-        <IsObject>False</IsObject>
-        <IsPrimitive>True</IsPrimitive>
-        <PrimitiveValue>2</PrimitiveValue>
-        <Type>System.Int32</Type>
+    <SelectedStackFrame-GetArguments>
+      <Item>
+        <Value
+          ArrayDimensions="{Exception: Value is not an array}"
+          ArrayLenght="{Exception: Value is not an array}"
+          ArrayRank="{Exception: Value is not an array}"
+          AsString="2"
+          Expression="v"
+          HasExpired="False"
+          IsArray="False"
+          IsInteger="True"
+          IsNull="False"
+          IsObject="False"
+          IsPrimitive="True"
+          PrimitiveValue="2"
+          Type="System.Int32" />
       </Item>
-      <Item Type="Value" ToString="k = 2!">
-        <ArrayDimensions exception="Value is not an array" />
-        <ArrayLenght exception="Value is not an array" />
-        <ArrayRank exception="Value is not an array" />
-        <AsString>2!</AsString>
-        <Expression>k</Expression>
-        <HasExpired>False</HasExpired>
-        <IsArray>False</IsArray>
-        <IsInteger>False</IsInteger>
-        <IsNull>False</IsNull>
-        <IsObject>False</IsObject>
-        <IsPrimitive>True</IsPrimitive>
-        <PrimitiveValue>2!</PrimitiveValue>
-        <Type>System.String</Type>
+      <Item>
+        <Value
+          ArrayDimensions="{Exception: Value is not an array}"
+          ArrayLenght="{Exception: Value is not an array}"
+          ArrayRank="{Exception: Value is not an array}"
+          AsString="2!"
+          Expression="k"
+          HasExpired="False"
+          IsArray="False"
+          IsInteger="False"
+          IsNull="False"
+          IsObject="False"
+          IsPrimitive="True"
+          PrimitiveValue="2!"
+          Type="System.String" />
       </Item>
     </SelectedStackFrame-GetArguments>
     <DebuggingPaused>Break</DebuggingPaused>
-    <SelectedStackFrame Type="StackFrame" ToString="Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;.StaticMetod">
-      <ArgumentCount>2</ArgumentCount>
-      <Depth>0</Depth>
-      <HasExpired>False</HasExpired>
-      <HasSymbols>True</HasSymbols>
-      <MethodInfo Type="MethodInfo" ToString="StaticMetod">
-        <DeclaringType Type="DebugType" ToString="Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;">
-          <BaseType>System.Object</BaseType>
-          <FullName>Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;</FullName>
-          <HasElementType>False</HasElementType>
-          <Interfaces>System.Collections.Generic.List`1[Debugger.MetaData.DebugType]</Interfaces>
-          <IsArray>False</IsArray>
-          <IsClass>True</IsClass>
-          <IsGenericType>True</IsGenericType>
-          <IsInteger>False</IsInteger>
-          <IsInterface>False</IsInterface>
-          <IsPrimitive>False</IsPrimitive>
-          <IsValueType>False</IsValueType>
-          <ManagedType>null</ManagedType>
-          <Module>Generics.exe</Module>
-        </DeclaringType>
-        <FullName>Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;.StaticMetod</FullName>
-        <IsPrivate>False</IsPrivate>
-        <IsPublic>True</IsPublic>
-        <IsSpecialName>False</IsSpecialName>
-        <IsStatic>True</IsStatic>
-        <Module>Generics.exe</Module>
-        <Name>StaticMetod</Name>
-      </MethodInfo>
-      <NextStatement>Generics.cs:60,4-60,40</NextStatement>
+    <SelectedStackFrame>
+      <StackFrame
+        ArgumentCount="2"
+        Depth="0"
+        HasExpired="False"
+        HasSymbols="True"
+        MethodInfo="StaticMetod"
+        NextStatement="Generics.cs:60,4-60,40">
+        <MethodInfo>
+          <MethodInfo
+            DeclaringType="Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;"
+            FullName="Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;.StaticMetod"
+            IsPrivate="False"
+            IsPublic="True"
+            IsSpecialName="False"
+            IsStatic="True"
+            Module="Generics.exe"
+            Name="StaticMetod">
+            <DeclaringType>
+              <DebugType
+                BaseType="System.Object"
+                FullName="Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;"
+                HasElementType="False"
+                Interfaces="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
+                IsArray="False"
+                IsClass="True"
+                IsGenericType="True"
+                IsInteger="False"
+                IsInterface="False"
+                IsPrimitive="False"
+                IsValueType="False"
+                ManagedType="null"
+                Module="Generics.exe" />
+            </DeclaringType>
+          </MethodInfo>
+        </MethodInfo>
+      </StackFrame>
     </SelectedStackFrame>
-    <SelectedStackFrame-GetArguments Type="Value[]" ToString="Debugger.Value[]">
-      <Item Type="Value" ToString="v = 3">
-        <ArrayDimensions exception="Value is not an array" />
-        <ArrayLenght exception="Value is not an array" />
-        <ArrayRank exception="Value is not an array" />
-        <AsString>3</AsString>
-        <Expression>v</Expression>
-        <HasExpired>False</HasExpired>
-        <IsArray>False</IsArray>
-        <IsInteger>True</IsInteger>
-        <IsNull>False</IsNull>
-        <IsObject>False</IsObject>
-        <IsPrimitive>True</IsPrimitive>
-        <PrimitiveValue>3</PrimitiveValue>
-        <Type>System.Int32</Type>
+    <SelectedStackFrame-GetArguments>
+      <Item>
+        <Value
+          ArrayDimensions="{Exception: Value is not an array}"
+          ArrayLenght="{Exception: Value is not an array}"
+          ArrayRank="{Exception: Value is not an array}"
+          AsString="3"
+          Expression="v"
+          HasExpired="False"
+          IsArray="False"
+          IsInteger="True"
+          IsNull="False"
+          IsObject="False"
+          IsPrimitive="True"
+          PrimitiveValue="3"
+          Type="System.Int32" />
       </Item>
-      <Item Type="Value" ToString="k = 3!">
-        <ArrayDimensions exception="Value is not an array" />
-        <ArrayLenght exception="Value is not an array" />
-        <ArrayRank exception="Value is not an array" />
-        <AsString>3!</AsString>
-        <Expression>k</Expression>
-        <HasExpired>False</HasExpired>
-        <IsArray>False</IsArray>
-        <IsInteger>False</IsInteger>
-        <IsNull>False</IsNull>
-        <IsObject>False</IsObject>
-        <IsPrimitive>True</IsPrimitive>
-        <PrimitiveValue>3!</PrimitiveValue>
-        <Type>System.String</Type>
+      <Item>
+        <Value
+          ArrayDimensions="{Exception: Value is not an array}"
+          ArrayLenght="{Exception: Value is not an array}"
+          ArrayRank="{Exception: Value is not an array}"
+          AsString="3!"
+          Expression="k"
+          HasExpired="False"
+          IsArray="False"
+          IsInteger="False"
+          IsNull="False"
+          IsObject="False"
+          IsPrimitive="True"
+          PrimitiveValue="3!"
+          Type="System.String" />
       </Item>
     </SelectedStackFrame-GetArguments>
     <DebuggingPaused>Break</DebuggingPaused>
-    <SelectedStackFrame Type="StackFrame" ToString="Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;.StaticGenericMethod">
-      <ArgumentCount>2</ArgumentCount>
-      <Depth>0</Depth>
-      <HasExpired>False</HasExpired>
-      <HasSymbols>True</HasSymbols>
-      <MethodInfo Type="MethodInfo" ToString="StaticGenericMethod">
-        <DeclaringType Type="DebugType" ToString="Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;">
-          <BaseType>System.Object</BaseType>
-          <FullName>Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;</FullName>
-          <HasElementType>False</HasElementType>
-          <Interfaces>System.Collections.Generic.List`1[Debugger.MetaData.DebugType]</Interfaces>
-          <IsArray>False</IsArray>
-          <IsClass>True</IsClass>
-          <IsGenericType>True</IsGenericType>
-          <IsInteger>False</IsInteger>
-          <IsInterface>False</IsInterface>
-          <IsPrimitive>False</IsPrimitive>
-          <IsValueType>False</IsValueType>
-          <ManagedType>null</ManagedType>
-          <Module>Generics.exe</Module>
-        </DeclaringType>
-        <FullName>Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;.StaticGenericMethod</FullName>
-        <IsPrivate>False</IsPrivate>
-        <IsPublic>True</IsPublic>
-        <IsSpecialName>False</IsSpecialName>
-        <IsStatic>True</IsStatic>
-        <Module>Generics.exe</Module>
-        <Name>StaticGenericMethod</Name>
-      </MethodInfo>
-      <NextStatement>Generics.cs:66,4-66,40</NextStatement>
+    <SelectedStackFrame>
+      <StackFrame
+        ArgumentCount="2"
+        Depth="0"
+        HasExpired="False"
+        HasSymbols="True"
+        MethodInfo="StaticGenericMethod"
+        NextStatement="Generics.cs:66,4-66,40">
+        <MethodInfo>
+          <MethodInfo
+            DeclaringType="Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;"
+            FullName="Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;.StaticGenericMethod"
+            IsPrivate="False"
+            IsPublic="True"
+            IsSpecialName="False"
+            IsStatic="True"
+            Module="Generics.exe"
+            Name="StaticGenericMethod">
+            <DeclaringType>
+              <DebugType
+                BaseType="System.Object"
+                FullName="Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;"
+                HasElementType="False"
+                Interfaces="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
+                IsArray="False"
+                IsClass="True"
+                IsGenericType="True"
+                IsInteger="False"
+                IsInterface="False"
+                IsPrimitive="False"
+                IsValueType="False"
+                ManagedType="null"
+                Module="Generics.exe" />
+            </DeclaringType>
+          </MethodInfo>
+        </MethodInfo>
+      </StackFrame>
     </SelectedStackFrame>
-    <SelectedStackFrame-GetArguments Type="Value[]" ToString="Debugger.Value[]">
-      <Item Type="Value" ToString="v = 4">
-        <ArrayDimensions exception="Value is not an array" />
-        <ArrayLenght exception="Value is not an array" />
-        <ArrayRank exception="Value is not an array" />
-        <AsString>4</AsString>
-        <Expression>v</Expression>
-        <HasExpired>False</HasExpired>
-        <IsArray>False</IsArray>
-        <IsInteger>True</IsInteger>
-        <IsNull>False</IsNull>
-        <IsObject>False</IsObject>
-        <IsPrimitive>True</IsPrimitive>
-        <PrimitiveValue>4</PrimitiveValue>
-        <Type>System.Int32</Type>
+    <SelectedStackFrame-GetArguments>
+      <Item>
+        <Value
+          ArrayDimensions="{Exception: Value is not an array}"
+          ArrayLenght="{Exception: Value is not an array}"
+          ArrayRank="{Exception: Value is not an array}"
+          AsString="4"
+          Expression="v"
+          HasExpired="False"
+          IsArray="False"
+          IsInteger="True"
+          IsNull="False"
+          IsObject="False"
+          IsPrimitive="True"
+          PrimitiveValue="4"
+          Type="System.Int32" />
       </Item>
-      <Item Type="Value" ToString="k = 4!">
-        <ArrayDimensions exception="Value is not an array" />
-        <ArrayLenght exception="Value is not an array" />
-        <ArrayRank exception="Value is not an array" />
-        <AsString>4!</AsString>
-        <Expression>k</Expression>
-        <HasExpired>False</HasExpired>
-        <IsArray>False</IsArray>
-        <IsInteger>False</IsInteger>
-        <IsNull>False</IsNull>
-        <IsObject>False</IsObject>
-        <IsPrimitive>True</IsPrimitive>
-        <PrimitiveValue>4!</PrimitiveValue>
-        <Type>System.String</Type>
+      <Item>
+        <Value
+          ArrayDimensions="{Exception: Value is not an array}"
+          ArrayLenght="{Exception: Value is not an array}"
+          ArrayRank="{Exception: Value is not an array}"
+          AsString="4!"
+          Expression="k"
+          HasExpired="False"
+          IsArray="False"
+          IsInteger="False"
+          IsNull="False"
+          IsObject="False"
+          IsPrimitive="True"
+          PrimitiveValue="4!"
+          Type="System.String" />
       </Item>
     </SelectedStackFrame-GetArguments>
     <DebuggingPaused>Break</DebuggingPaused>
-    <SelectedStackFrame Type="StackFrame" ToString="Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;.Metod">
-      <ArgumentCount>2</ArgumentCount>
-      <Depth>0</Depth>
-      <HasExpired>False</HasExpired>
-      <HasSymbols>True</HasSymbols>
-      <MethodInfo Type="MethodInfo" ToString="Metod">
-        <DeclaringType Type="DebugType" ToString="Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;">
-          <BaseType>System.ValueType</BaseType>
-          <FullName>Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;</FullName>
-          <HasElementType>False</HasElementType>
-          <Interfaces>System.Collections.Generic.List`1[Debugger.MetaData.DebugType]</Interfaces>
-          <IsArray>False</IsArray>
-          <IsClass>False</IsClass>
-          <IsGenericType>True</IsGenericType>
-          <IsInteger>False</IsInteger>
-          <IsInterface>False</IsInterface>
-          <IsPrimitive>False</IsPrimitive>
-          <IsValueType>True</IsValueType>
-          <ManagedType>null</ManagedType>
-          <Module>Generics.exe</Module>
-        </DeclaringType>
-        <FullName>Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;.Metod</FullName>
-        <IsPrivate>False</IsPrivate>
-        <IsPublic>True</IsPublic>
-        <IsSpecialName>False</IsSpecialName>
-        <IsStatic>False</IsStatic>
-        <Module>Generics.exe</Module>
-        <Name>Metod</Name>
-      </MethodInfo>
-      <NextStatement>Generics.cs:75,4-75,40</NextStatement>
+    <SelectedStackFrame>
+      <StackFrame
+        ArgumentCount="2"
+        Depth="0"
+        HasExpired="False"
+        HasSymbols="True"
+        MethodInfo="Metod"
+        NextStatement="Generics.cs:75,4-75,40">
+        <MethodInfo>
+          <MethodInfo
+            DeclaringType="Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;"
+            FullName="Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;.Metod"
+            IsPrivate="False"
+            IsPublic="True"
+            IsSpecialName="False"
+            IsStatic="False"
+            Module="Generics.exe"
+            Name="Metod">
+            <DeclaringType>
+              <DebugType
+                BaseType="System.ValueType"
+                FullName="Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;"
+                HasElementType="False"
+                Interfaces="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
+                IsArray="False"
+                IsClass="False"
+                IsGenericType="True"
+                IsInteger="False"
+                IsInterface="False"
+                IsPrimitive="False"
+                IsValueType="True"
+                ManagedType="null"
+                Module="Generics.exe" />
+            </DeclaringType>
+          </MethodInfo>
+        </MethodInfo>
+      </StackFrame>
     </SelectedStackFrame>
-    <SelectedStackFrame-GetArguments Type="Value[]" ToString="Debugger.Value[]">
-      <Item Type="Value" ToString="v = 5">
-        <ArrayDimensions exception="Value is not an array" />
-        <ArrayLenght exception="Value is not an array" />
-        <ArrayRank exception="Value is not an array" />
-        <AsString>5</AsString>
-        <Expression>v</Expression>
-        <HasExpired>False</HasExpired>
-        <IsArray>False</IsArray>
-        <IsInteger>True</IsInteger>
-        <IsNull>False</IsNull>
-        <IsObject>False</IsObject>
-        <IsPrimitive>True</IsPrimitive>
-        <PrimitiveValue>5</PrimitiveValue>
-        <Type>System.Int32</Type>
+    <SelectedStackFrame-GetArguments>
+      <Item>
+        <Value
+          ArrayDimensions="{Exception: Value is not an array}"
+          ArrayLenght="{Exception: Value is not an array}"
+          ArrayRank="{Exception: Value is not an array}"
+          AsString="5"
+          Expression="v"
+          HasExpired="False"
+          IsArray="False"
+          IsInteger="True"
+          IsNull="False"
+          IsObject="False"
+          IsPrimitive="True"
+          PrimitiveValue="5"
+          Type="System.Int32" />
       </Item>
-      <Item Type="Value" ToString="k = 5!">
-        <ArrayDimensions exception="Value is not an array" />
-        <ArrayLenght exception="Value is not an array" />
-        <ArrayRank exception="Value is not an array" />
-        <AsString>5!</AsString>
-        <Expression>k</Expression>
-        <HasExpired>False</HasExpired>
-        <IsArray>False</IsArray>
-        <IsInteger>False</IsInteger>
-        <IsNull>False</IsNull>
-        <IsObject>False</IsObject>
-        <IsPrimitive>True</IsPrimitive>
-        <PrimitiveValue>5!</PrimitiveValue>
-        <Type>System.String</Type>
+      <Item>
+        <Value
+          ArrayDimensions="{Exception: Value is not an array}"
+          ArrayLenght="{Exception: Value is not an array}"
+          ArrayRank="{Exception: Value is not an array}"
+          AsString="5!"
+          Expression="k"
+          HasExpired="False"
+          IsArray="False"
+          IsInteger="False"
+          IsNull="False"
+          IsObject="False"
+          IsPrimitive="True"
+          PrimitiveValue="5!"
+          Type="System.String" />
       </Item>
     </SelectedStackFrame-GetArguments>
     <DebuggingPaused>Break</DebuggingPaused>
-    <SelectedStackFrame Type="StackFrame" ToString="Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;.GenericMethod">
-      <ArgumentCount>2</ArgumentCount>
-      <Depth>0</Depth>
-      <HasExpired>False</HasExpired>
-      <HasSymbols>True</HasSymbols>
-      <MethodInfo Type="MethodInfo" ToString="GenericMethod">
-        <DeclaringType Type="DebugType" ToString="Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;">
-          <BaseType>System.ValueType</BaseType>
-          <FullName>Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;</FullName>
-          <HasElementType>False</HasElementType>
-          <Interfaces>System.Collections.Generic.List`1[Debugger.MetaData.DebugType]</Interfaces>
-          <IsArray>False</IsArray>
-          <IsClass>False</IsClass>
-          <IsGenericType>True</IsGenericType>
-          <IsInteger>False</IsInteger>
-          <IsInterface>False</IsInterface>
-          <IsPrimitive>False</IsPrimitive>
-          <IsValueType>True</IsValueType>
-          <ManagedType>null</ManagedType>
-          <Module>Generics.exe</Module>
-        </DeclaringType>
-        <FullName>Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;.GenericMethod</FullName>
-        <IsPrivate>False</IsPrivate>
-        <IsPublic>True</IsPublic>
-        <IsSpecialName>False</IsSpecialName>
-        <IsStatic>False</IsStatic>
-        <Module>Generics.exe</Module>
-        <Name>GenericMethod</Name>
-      </MethodInfo>
-      <NextStatement>Generics.cs:81,4-81,40</NextStatement>
+    <SelectedStackFrame>
+      <StackFrame
+        ArgumentCount="2"
+        Depth="0"
+        HasExpired="False"
+        HasSymbols="True"
+        MethodInfo="GenericMethod"
+        NextStatement="Generics.cs:81,4-81,40">
+        <MethodInfo>
+          <MethodInfo
+            DeclaringType="Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;"
+            FullName="Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;.GenericMethod"
+            IsPrivate="False"
+            IsPublic="True"
+            IsSpecialName="False"
+            IsStatic="False"
+            Module="Generics.exe"
+            Name="GenericMethod">
+            <DeclaringType>
+              <DebugType
+                BaseType="System.ValueType"
+                FullName="Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;"
+                HasElementType="False"
+                Interfaces="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
+                IsArray="False"
+                IsClass="False"
+                IsGenericType="True"
+                IsInteger="False"
+                IsInterface="False"
+                IsPrimitive="False"
+                IsValueType="True"
+                ManagedType="null"
+                Module="Generics.exe" />
+            </DeclaringType>
+          </MethodInfo>
+        </MethodInfo>
+      </StackFrame>
     </SelectedStackFrame>
-    <SelectedStackFrame-GetArguments Type="Value[]" ToString="Debugger.Value[]">
-      <Item Type="Value" ToString="v = 6">
-        <ArrayDimensions exception="Value is not an array" />
-        <ArrayLenght exception="Value is not an array" />
-        <ArrayRank exception="Value is not an array" />
-        <AsString>6</AsString>
-        <Expression>v</Expression>
-        <HasExpired>False</HasExpired>
-        <IsArray>False</IsArray>
-        <IsInteger>True</IsInteger>
-        <IsNull>False</IsNull>
-        <IsObject>False</IsObject>
-        <IsPrimitive>True</IsPrimitive>
-        <PrimitiveValue>6</PrimitiveValue>
-        <Type>System.Int32</Type>
+    <SelectedStackFrame-GetArguments>
+      <Item>
+        <Value
+          ArrayDimensions="{Exception: Value is not an array}"
+          ArrayLenght="{Exception: Value is not an array}"
+          ArrayRank="{Exception: Value is not an array}"
+          AsString="6"
+          Expression="v"
+          HasExpired="False"
+          IsArray="False"
+          IsInteger="True"
+          IsNull="False"
+          IsObject="False"
+          IsPrimitive="True"
+          PrimitiveValue="6"
+          Type="System.Int32" />
       </Item>
-      <Item Type="Value" ToString="k = 6!">
-        <ArrayDimensions exception="Value is not an array" />
-        <ArrayLenght exception="Value is not an array" />
-        <ArrayRank exception="Value is not an array" />
-        <AsString>6!</AsString>
-        <Expression>k</Expression>
-        <HasExpired>False</HasExpired>
-        <IsArray>False</IsArray>
-        <IsInteger>False</IsInteger>
-        <IsNull>False</IsNull>
-        <IsObject>False</IsObject>
-        <IsPrimitive>True</IsPrimitive>
-        <PrimitiveValue>6!</PrimitiveValue>
-        <Type>System.String</Type>
+      <Item>
+        <Value
+          ArrayDimensions="{Exception: Value is not an array}"
+          ArrayLenght="{Exception: Value is not an array}"
+          ArrayRank="{Exception: Value is not an array}"
+          AsString="6!"
+          Expression="k"
+          HasExpired="False"
+          IsArray="False"
+          IsInteger="False"
+          IsNull="False"
+          IsObject="False"
+          IsPrimitive="True"
+          PrimitiveValue="6!"
+          Type="System.String" />
       </Item>
     </SelectedStackFrame-GetArguments>
     <DebuggingPaused>Break</DebuggingPaused>
-    <SelectedStackFrame Type="StackFrame" ToString="Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;.StaticMetod">
-      <ArgumentCount>2</ArgumentCount>
-      <Depth>0</Depth>
-      <HasExpired>False</HasExpired>
-      <HasSymbols>True</HasSymbols>
-      <MethodInfo Type="MethodInfo" ToString="StaticMetod">
-        <DeclaringType Type="DebugType" ToString="Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;">
-          <BaseType>System.ValueType</BaseType>
-          <FullName>Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;</FullName>
-          <HasElementType>False</HasElementType>
-          <Interfaces>System.Collections.Generic.List`1[Debugger.MetaData.DebugType]</Interfaces>
-          <IsArray>False</IsArray>
-          <IsClass>False</IsClass>
-          <IsGenericType>True</IsGenericType>
-          <IsInteger>False</IsInteger>
-          <IsInterface>False</IsInterface>
-          <IsPrimitive>False</IsPrimitive>
-          <IsValueType>True</IsValueType>
-          <ManagedType>null</ManagedType>
-          <Module>Generics.exe</Module>
-        </DeclaringType>
-        <FullName>Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;.StaticMetod</FullName>
-        <IsPrivate>False</IsPrivate>
-        <IsPublic>True</IsPublic>
-        <IsSpecialName>False</IsSpecialName>
-        <IsStatic>True</IsStatic>
-        <Module>Generics.exe</Module>
-        <Name>StaticMetod</Name>
-      </MethodInfo>
-      <NextStatement>Generics.cs:87,4-87,40</NextStatement>
+    <SelectedStackFrame>
+      <StackFrame
+        ArgumentCount="2"
+        Depth="0"
+        HasExpired="False"
+        HasSymbols="True"
+        MethodInfo="StaticMetod"
+        NextStatement="Generics.cs:87,4-87,40">
+        <MethodInfo>
+          <MethodInfo
+            DeclaringType="Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;"
+            FullName="Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;.StaticMetod"
+            IsPrivate="False"
+            IsPublic="True"
+            IsSpecialName="False"
+            IsStatic="True"
+            Module="Generics.exe"
+            Name="StaticMetod">
+            <DeclaringType>
+              <DebugType
+                BaseType="System.ValueType"
+                FullName="Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;"
+                HasElementType="False"
+                Interfaces="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
+                IsArray="False"
+                IsClass="False"
+                IsGenericType="True"
+                IsInteger="False"
+                IsInterface="False"
+                IsPrimitive="False"
+                IsValueType="True"
+                ManagedType="null"
+                Module="Generics.exe" />
+            </DeclaringType>
+          </MethodInfo>
+        </MethodInfo>
+      </StackFrame>
     </SelectedStackFrame>
-    <SelectedStackFrame-GetArguments Type="Value[]" ToString="Debugger.Value[]">
-      <Item Type="Value" ToString="v = 7">
-        <ArrayDimensions exception="Value is not an array" />
-        <ArrayLenght exception="Value is not an array" />
-        <ArrayRank exception="Value is not an array" />
-        <AsString>7</AsString>
-        <Expression>v</Expression>
-        <HasExpired>False</HasExpired>
-        <IsArray>False</IsArray>
-        <IsInteger>True</IsInteger>
-        <IsNull>False</IsNull>
-        <IsObject>False</IsObject>
-        <IsPrimitive>True</IsPrimitive>
-        <PrimitiveValue>7</PrimitiveValue>
-        <Type>System.Int32</Type>
+    <SelectedStackFrame-GetArguments>
+      <Item>
+        <Value
+          ArrayDimensions="{Exception: Value is not an array}"
+          ArrayLenght="{Exception: Value is not an array}"
+          ArrayRank="{Exception: Value is not an array}"
+          AsString="7"
+          Expression="v"
+          HasExpired="False"
+          IsArray="False"
+          IsInteger="True"
+          IsNull="False"
+          IsObject="False"
+          IsPrimitive="True"
+          PrimitiveValue="7"
+          Type="System.Int32" />
       </Item>
-      <Item Type="Value" ToString="k = 7!">
-        <ArrayDimensions exception="Value is not an array" />
-        <ArrayLenght exception="Value is not an array" />
-        <ArrayRank exception="Value is not an array" />
-        <AsString>7!</AsString>
-        <Expression>k</Expression>
-        <HasExpired>False</HasExpired>
-        <IsArray>False</IsArray>
-        <IsInteger>False</IsInteger>
-        <IsNull>False</IsNull>
-        <IsObject>False</IsObject>
-        <IsPrimitive>True</IsPrimitive>
-        <PrimitiveValue>7!</PrimitiveValue>
-        <Type>System.String</Type>
+      <Item>
+        <Value
+          ArrayDimensions="{Exception: Value is not an array}"
+          ArrayLenght="{Exception: Value is not an array}"
+          ArrayRank="{Exception: Value is not an array}"
+          AsString="7!"
+          Expression="k"
+          HasExpired="False"
+          IsArray="False"
+          IsInteger="False"
+          IsNull="False"
+          IsObject="False"
+          IsPrimitive="True"
+          PrimitiveValue="7!"
+          Type="System.String" />
       </Item>
     </SelectedStackFrame-GetArguments>
     <DebuggingPaused>Break</DebuggingPaused>
-    <SelectedStackFrame Type="StackFrame" ToString="Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;.StaticGenericMethod">
-      <ArgumentCount>2</ArgumentCount>
-      <Depth>0</Depth>
-      <HasExpired>False</HasExpired>
-      <HasSymbols>True</HasSymbols>
-      <MethodInfo Type="MethodInfo" ToString="StaticGenericMethod">
-        <DeclaringType Type="DebugType" ToString="Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;">
-          <BaseType>System.ValueType</BaseType>
-          <FullName>Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;</FullName>
-          <HasElementType>False</HasElementType>
-          <Interfaces>System.Collections.Generic.List`1[Debugger.MetaData.DebugType]</Interfaces>
-          <IsArray>False</IsArray>
-          <IsClass>False</IsClass>
-          <IsGenericType>True</IsGenericType>
-          <IsInteger>False</IsInteger>
-          <IsInterface>False</IsInterface>
-          <IsPrimitive>False</IsPrimitive>
-          <IsValueType>True</IsValueType>
-          <ManagedType>null</ManagedType>
-          <Module>Generics.exe</Module>
-        </DeclaringType>
-        <FullName>Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;.StaticGenericMethod</FullName>
-        <IsPrivate>False</IsPrivate>
-        <IsPublic>True</IsPublic>
-        <IsSpecialName>False</IsSpecialName>
-        <IsStatic>True</IsStatic>
-        <Module>Generics.exe</Module>
-        <Name>StaticGenericMethod</Name>
-      </MethodInfo>
-      <NextStatement>Generics.cs:93,4-93,40</NextStatement>
+    <SelectedStackFrame>
+      <StackFrame
+        ArgumentCount="2"
+        Depth="0"
+        HasExpired="False"
+        HasSymbols="True"
+        MethodInfo="StaticGenericMethod"
+        NextStatement="Generics.cs:93,4-93,40">
+        <MethodInfo>
+          <MethodInfo
+            DeclaringType="Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;"
+            FullName="Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;.StaticGenericMethod"
+            IsPrivate="False"
+            IsPublic="True"
+            IsSpecialName="False"
+            IsStatic="True"
+            Module="Generics.exe"
+            Name="StaticGenericMethod">
+            <DeclaringType>
+              <DebugType
+                BaseType="System.ValueType"
+                FullName="Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;"
+                HasElementType="False"
+                Interfaces="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
+                IsArray="False"
+                IsClass="False"
+                IsGenericType="True"
+                IsInteger="False"
+                IsInterface="False"
+                IsPrimitive="False"
+                IsValueType="True"
+                ManagedType="null"
+                Module="Generics.exe" />
+            </DeclaringType>
+          </MethodInfo>
+        </MethodInfo>
+      </StackFrame>
     </SelectedStackFrame>
-    <SelectedStackFrame-GetArguments Type="Value[]" ToString="Debugger.Value[]">
-      <Item Type="Value" ToString="v = 8">
-        <ArrayDimensions exception="Value is not an array" />
-        <ArrayLenght exception="Value is not an array" />
-        <ArrayRank exception="Value is not an array" />
-        <AsString>8</AsString>
-        <Expression>v</Expression>
-        <HasExpired>False</HasExpired>
-        <IsArray>False</IsArray>
-        <IsInteger>True</IsInteger>
-        <IsNull>False</IsNull>
-        <IsObject>False</IsObject>
-        <IsPrimitive>True</IsPrimitive>
-        <PrimitiveValue>8</PrimitiveValue>
-        <Type>System.Int32</Type>
+    <SelectedStackFrame-GetArguments>
+      <Item>
+        <Value
+          ArrayDimensions="{Exception: Value is not an array}"
+          ArrayLenght="{Exception: Value is not an array}"
+          ArrayRank="{Exception: Value is not an array}"
+          AsString="8"
+          Expression="v"
+          HasExpired="False"
+          IsArray="False"
+          IsInteger="True"
+          IsNull="False"
+          IsObject="False"
+          IsPrimitive="True"
+          PrimitiveValue="8"
+          Type="System.Int32" />
       </Item>
-      <Item Type="Value" ToString="k = 8!">
-        <ArrayDimensions exception="Value is not an array" />
-        <ArrayLenght exception="Value is not an array" />
-        <ArrayRank exception="Value is not an array" />
-        <AsString>8!</AsString>
-        <Expression>k</Expression>
-        <HasExpired>False</HasExpired>
-        <IsArray>False</IsArray>
-        <IsInteger>False</IsInteger>
-        <IsNull>False</IsNull>
-        <IsObject>False</IsObject>
-        <IsPrimitive>True</IsPrimitive>
-        <PrimitiveValue>8!</PrimitiveValue>
-        <Type>System.String</Type>
+      <Item>
+        <Value
+          ArrayDimensions="{Exception: Value is not an array}"
+          ArrayLenght="{Exception: Value is not an array}"
+          ArrayRank="{Exception: Value is not an array}"
+          AsString="8!"
+          Expression="k"
+          HasExpired="False"
+          IsArray="False"
+          IsInteger="False"
+          IsNull="False"
+          IsObject="False"
+          IsPrimitive="True"
+          PrimitiveValue="8!"
+          Type="System.String" />
       </Item>
     </SelectedStackFrame-GetArguments>
     <DebuggingPaused>Break</DebuggingPaused>
-    <Prop Type="Value" ToString="gClass.Prop = 0">
-      <ArrayDimensions exception="Value is not an array" />
-      <ArrayLenght exception="Value is not an array" />
-      <ArrayRank exception="Value is not an array" />
-      <AsString>0</AsString>
-      <Expression>gClass.Prop</Expression>
-      <HasExpired>False</HasExpired>
-      <IsArray>False</IsArray>
-      <IsInteger>True</IsInteger>
-      <IsNull>False</IsNull>
-      <IsObject>False</IsObject>
-      <IsPrimitive>True</IsPrimitive>
-      <PrimitiveValue>0</PrimitiveValue>
-      <Type>System.Int32</Type>
+    <Prop>
+      <Value
+        ArrayDimensions="{Exception: Value is not an array}"
+        ArrayLenght="{Exception: Value is not an array}"
+        ArrayRank="{Exception: Value is not an array}"
+        AsString="0"
+        Expression="gClass.Prop"
+        HasExpired="False"
+        IsArray="False"
+        IsInteger="True"
+        IsNull="False"
+        IsObject="False"
+        IsPrimitive="True"
+        PrimitiveValue="0"
+        Type="System.Int32" />
     </Prop>
-    <StaticProp Type="Value" ToString="Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;.StaticProp = 0">
-      <ArrayDimensions exception="Value is not an array" />
-      <ArrayLenght exception="Value is not an array" />
-      <ArrayRank exception="Value is not an array" />
-      <AsString>0</AsString>
-      <Expression>Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;.StaticProp</Expression>
-      <HasExpired>False</HasExpired>
-      <IsArray>False</IsArray>
-      <IsInteger>True</IsInteger>
-      <IsNull>False</IsNull>
-      <IsObject>False</IsObject>
-      <IsPrimitive>True</IsPrimitive>
-      <PrimitiveValue>0</PrimitiveValue>
-      <Type>System.Int32</Type>
+    <StaticProp>
+      <Value
+        ArrayDimensions="{Exception: Value is not an array}"
+        ArrayLenght="{Exception: Value is not an array}"
+        ArrayRank="{Exception: Value is not an array}"
+        AsString="0"
+        Expression="Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;.StaticProp"
+        HasExpired="False"
+        IsArray="False"
+        IsInteger="True"
+        IsNull="False"
+        IsObject="False"
+        IsPrimitive="True"
+        PrimitiveValue="0"
+        Type="System.Int32" />
     </StaticProp>
     <ProcessExited />
   </Test>

@@ -49,50 +49,53 @@ namespace Debugger.Tests {
 #if EXPECTED_OUTPUT
 <?xml version="1.0" encoding="utf-8"?>
 <DebuggerTests>
-  <Test name="DefinedTypes.cs">
+  <Test
+    name="DefinedTypes.cs">
     <ProcessStarted />
-    <ModuleLoaded symbols="False">mscorlib.dll</ModuleLoaded>
-    <ModuleLoaded symbols="True">DefinedTypes.exe</ModuleLoaded>
+    <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
+    <ModuleLoaded>DefinedTypes.exe (Has symbols)</ModuleLoaded>
     <DebuggingPaused>Break</DebuggingPaused>
-    <TypesAsString Type="List`1" ToString="System.Collections.Generic.List`1[System.String]">
-      <Capacity>4</Capacity>
-      <Count>3</Count>
+    <TypesAsString
+      Capacity="4"
+      Count="3">
       <Item>Debugger.Tests.TestPrograms.DefinedTypes_Class</Item>
       <Item>Debugger.Tests.TestPrograms.DefinedTypes_Struct</Item>
       <Item>Debugger.Tests.TestPrograms.DefinedTypes_GenericClass`2</Item>
     </TypesAsString>
-    <Types Type="List`1" ToString="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]">
-      <Capacity>4</Capacity>
-      <Count>2</Count>
-      <Item Type="DebugType" ToString="Debugger.Tests.TestPrograms.DefinedTypes_Class">
-        <BaseType>System.Object</BaseType>
-        <FullName>Debugger.Tests.TestPrograms.DefinedTypes_Class</FullName>
-        <HasElementType>False</HasElementType>
-        <Interfaces>System.Collections.Generic.List`1[Debugger.MetaData.DebugType]</Interfaces>
-        <IsArray>False</IsArray>
-        <IsClass>True</IsClass>
-        <IsGenericType>False</IsGenericType>
-        <IsInteger>False</IsInteger>
-        <IsInterface>False</IsInterface>
-        <IsPrimitive>False</IsPrimitive>
-        <IsValueType>False</IsValueType>
-        <ManagedType>null</ManagedType>
-        <Module>DefinedTypes.exe</Module>
+    <Types
+      Capacity="4"
+      Count="2">
+      <Item>
+        <DebugType
+          BaseType="System.Object"
+          FullName="Debugger.Tests.TestPrograms.DefinedTypes_Class"
+          HasElementType="False"
+          Interfaces="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
+          IsArray="False"
+          IsClass="True"
+          IsGenericType="False"
+          IsInteger="False"
+          IsInterface="False"
+          IsPrimitive="False"
+          IsValueType="False"
+          ManagedType="null"
+          Module="DefinedTypes.exe" />
       </Item>
-      <Item Type="DebugType" ToString="Debugger.Tests.TestPrograms.DefinedTypes_Struct">
-        <BaseType>System.ValueType</BaseType>
-        <FullName>Debugger.Tests.TestPrograms.DefinedTypes_Struct</FullName>
-        <HasElementType>False</HasElementType>
-        <Interfaces>System.Collections.Generic.List`1[Debugger.MetaData.DebugType]</Interfaces>
-        <IsArray>False</IsArray>
-        <IsClass>False</IsClass>
-        <IsGenericType>False</IsGenericType>
-        <IsInteger>False</IsInteger>
-        <IsInterface>False</IsInterface>
-        <IsPrimitive>False</IsPrimitive>
-        <IsValueType>True</IsValueType>
-        <ManagedType>null</ManagedType>
-        <Module>DefinedTypes.exe</Module>
+      <Item>
+        <DebugType
+          BaseType="System.ValueType"
+          FullName="Debugger.Tests.TestPrograms.DefinedTypes_Struct"
+          HasElementType="False"
+          Interfaces="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
+          IsArray="False"
+          IsClass="False"
+          IsGenericType="False"
+          IsInteger="False"
+          IsInterface="False"
+          IsPrimitive="False"
+          IsValueType="True"
+          ManagedType="null"
+          Module="DefinedTypes.exe" />
       </Item>
     </Types>
     <ProcessExited />

@@ -86,7 +86,12 @@ namespace Debugger.Tests
 			string endMark = "#endif // EXPECTED_OUTPUT";
 			
 			MemoryStream newXmlStream = new MemoryStream();
-			testDoc.Save(newXmlStream);
+			XmlWriterSettings settings = new XmlWriterSettings();
+			settings.Encoding = Encoding.UTF8;
+			settings.Indent = true;
+			settings.NewLineOnAttributes = true;
+			XmlWriter writer = XmlTextWriter.Create(newXmlStream, settings);
+			testDoc.Save(writer);
 			newXmlStream.Seek(0, SeekOrigin.Begin);
 			string actualXml = new StreamReader(newXmlStream).ReadToEnd() + "\r\n";
 			
@@ -140,7 +145,7 @@ namespace Debugger.Tests
 				LogEvent("LogMessage", e.Message.Replace("\r",@"\r").Replace("\n",@"\n"));
 			};
 			process.ModuleLoaded += delegate(object sender, ModuleEventArgs e) {
-				LogEvent("ModuleLoaded", e.Module.Filename).SetAttribute("symbols", e.Module.SymbolsLoaded.ToString());
+				LogEvent("ModuleLoaded", e.Module.Filename + (e.Module.SymbolsLoaded ? " (Has symbols)" : " (No symbols)"));
 			};
 			process.Paused += delegate(object sender, ProcessEventArgs e) {
 				LogEvent("DebuggingPaused", e.Process.PauseSession.PausedReason.ToString());
@@ -174,7 +179,7 @@ namespace Debugger.Tests
 		
 		public void ObjectDump(object obj)
 		{
-			ObjectDump("Object", obj);
+			Serialize(testNode, obj, 16, new List<object>());
 		}
 		
 		public void ObjectDump(string name, object obj)
@@ -220,16 +225,16 @@ namespace Debugger.Tests
 				container.AppendChild(doc.CreateTextNode("null"));
 				return;
 			}
-			
 			if (maxDepth == -1) {
-				container.AppendChild(doc.CreateTextNode(obj.ToString()));
-				container.SetAttribute("warning", "max depth reached");
+				container.AppendChild(doc.CreateTextNode("{Max depth reached}"));
 				return;
 			}
-			
 			if (parents.Contains(obj)) {
+				container.AppendChild(doc.CreateTextNode("{Recusion detected}"));
+				return;
+			}
+			if (obj.GetType().Namespace == "System") {
 				container.AppendChild(doc.CreateTextNode(obj.ToString()));
-				container.SetAttribute("warning", "recusion detected");
 				return;
 			}
 			
@@ -238,18 +243,10 @@ namespace Debugger.Tests
 			
 			Type type = obj.GetType();
 			
-			if (type.Namespace == "System") {
-				container.AppendChild(doc.CreateTextNode(obj.ToString()));
-				return;
-			}
-			
-			
-			container.SetAttribute("Type", type.Name);
-			try {
-				container.SetAttribute("ToString", obj.ToString());
-			} catch (System.Exception e) {
-				while(e.InnerException != null) e = e.InnerException;
-				container.SetAttribute("ToString_exception", e.Message);
+			if (!(obj is IEnumerable)) {
+				XmlElement newContainer = doc.CreateElement(XmlConvert.EncodeName(type.Name));
+				container.AppendChild(newContainer);
+				container = newContainer;
 			}
 			
 			List<SRPropertyInfo> properties = new List<SRPropertyInfo>();
@@ -262,32 +259,32 @@ namespace Debugger.Tests
 				if (property.GetGetMethod().GetParameters().Length > 0) continue;
 				if (property.GetCustomAttributes(typeof(Debugger.Tests.IgnoreAttribute), true).Length > 0) continue;
 				
-				XmlElement propertyNode = doc.CreateElement(property.Name);
-				container.AppendChild(propertyNode);
-				
 				object val;
 				try {
 					val = property.GetValue(obj, new object[] {});
 				} catch (System.Exception e) {
 					while(e.InnerException != null) e = e.InnerException;
-					propertyNode.SetAttribute("exception", e.Message);
-					continue;
+					val = "{Exception: " + e.Message + "}";
 				}
-				if (val == null) {
-					propertyNode.AppendChild(doc.CreateTextNode("null"));
-				} else if (ShouldExpandProperty(property)) {
+				if (val == null) val = "null";
+				
+				container.SetAttribute(property.Name, val.ToString());
+				
+				if (ShouldExpandProperty(property)) {
+					XmlElement propertyNode = doc.CreateElement(property.Name);
+					container.AppendChild(propertyNode);
 					Serialize(propertyNode, val, maxDepth - 1, parents);
-				} else {
-					propertyNode.AppendChild(doc.CreateTextNode(val.ToString()));
 				}
 			}
 			
 			// Save all objects of an enumerable object
 			if (obj is IEnumerable) {
+				int id = 1;
 				foreach(object enumObject in (IEnumerable)obj) {
 					XmlElement enumRoot = doc.CreateElement("Item");
 					container.AppendChild(enumRoot);
 					Serialize(enumRoot, enumObject, maxDepth - 1, parents);
+					id++;
 				}
 			}
 		}

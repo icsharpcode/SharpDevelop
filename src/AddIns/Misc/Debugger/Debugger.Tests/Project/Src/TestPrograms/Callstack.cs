@@ -52,65 +52,72 @@ namespace Debugger.Tests {
 #if EXPECTED_OUTPUT
 <?xml version="1.0" encoding="utf-8"?>
 <DebuggerTests>
-  <Test name="Callstack.cs">
+  <Test
+    name="Callstack.cs">
     <ProcessStarted />
-    <ModuleLoaded symbols="False">mscorlib.dll</ModuleLoaded>
-    <ModuleLoaded symbols="True">Callstack.exe</ModuleLoaded>
+    <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
+    <ModuleLoaded>Callstack.exe (Has symbols)</ModuleLoaded>
     <DebuggingPaused>Break</DebuggingPaused>
-    <Callstack Type="StackFrame[]" ToString="Debugger.StackFrame[]">
-      <Item Type="StackFrame" ToString="Debugger.Tests.TestPrograms.Callstack.Sub2">
-        <ArgumentCount>0</ArgumentCount>
-        <Depth>0</Depth>
-        <HasExpired>False</HasExpired>
-        <HasSymbols>True</HasSymbols>
-        <MethodInfo>Sub2</MethodInfo>
-        <NextStatement>Callstack.cs:26,4-26,40</NextStatement>
+    <Callstack>
+      <Item>
+        <StackFrame
+          ArgumentCount="0"
+          Depth="0"
+          HasExpired="False"
+          HasSymbols="True"
+          MethodInfo="Sub2"
+          NextStatement="Callstack.cs:26,4-26,40" />
       </Item>
-      <Item Type="StackFrame" ToString="Debugger.Tests.TestPrograms.Callstack.Sub1">
-        <ArgumentCount>0</ArgumentCount>
-        <Depth>1</Depth>
-        <HasExpired>False</HasExpired>
-        <HasSymbols>True</HasSymbols>
-        <MethodInfo>Sub1</MethodInfo>
-        <NextStatement>Callstack.cs:21,4-21,11</NextStatement>
+      <Item>
+        <StackFrame
+          ArgumentCount="0"
+          Depth="1"
+          HasExpired="False"
+          HasSymbols="True"
+          MethodInfo="Sub1"
+          NextStatement="Callstack.cs:21,4-21,11" />
       </Item>
-      <Item Type="StackFrame" ToString="Debugger.Tests.TestPrograms.Callstack.Main">
-        <ArgumentCount>0</ArgumentCount>
-        <Depth>2</Depth>
-        <HasExpired>False</HasExpired>
-        <HasSymbols>True</HasSymbols>
-        <MethodInfo>Main</MethodInfo>
-        <NextStatement>Callstack.cs:16,4-16,11</NextStatement>
-      </Item>
-    </Callstack>
-    <DebuggingPaused>StepComplete</DebuggingPaused>
-    <Callstack Type="StackFrame[]" ToString="Debugger.StackFrame[]">
-      <Item Type="StackFrame" ToString="Debugger.Tests.TestPrograms.Callstack.Sub1">
-        <ArgumentCount>0</ArgumentCount>
-        <Depth>0</Depth>
-        <HasExpired>False</HasExpired>
-        <HasSymbols>True</HasSymbols>
-        <MethodInfo>Sub1</MethodInfo>
-        <NextStatement>Callstack.cs:21,4-21,11</NextStatement>
-      </Item>
-      <Item Type="StackFrame" ToString="Debugger.Tests.TestPrograms.Callstack.Main">
-        <ArgumentCount>0</ArgumentCount>
-        <Depth>1</Depth>
-        <HasExpired>False</HasExpired>
-        <HasSymbols>True</HasSymbols>
-        <MethodInfo>Main</MethodInfo>
-        <NextStatement>Callstack.cs:16,4-16,11</NextStatement>
+      <Item>
+        <StackFrame
+          ArgumentCount="0"
+          Depth="2"
+          HasExpired="False"
+          HasSymbols="True"
+          MethodInfo="Main"
+          NextStatement="Callstack.cs:16,4-16,11" />
       </Item>
     </Callstack>
     <DebuggingPaused>StepComplete</DebuggingPaused>
-    <Callstack Type="StackFrame[]" ToString="Debugger.StackFrame[]">
-      <Item Type="StackFrame" ToString="Debugger.Tests.TestPrograms.Callstack.Main">
-        <ArgumentCount>0</ArgumentCount>
-        <Depth>0</Depth>
-        <HasExpired>False</HasExpired>
-        <HasSymbols>True</HasSymbols>
-        <MethodInfo>Main</MethodInfo>
-        <NextStatement>Callstack.cs:16,4-16,11</NextStatement>
+    <Callstack>
+      <Item>
+        <StackFrame
+          ArgumentCount="0"
+          Depth="0"
+          HasExpired="False"
+          HasSymbols="True"
+          MethodInfo="Sub1"
+          NextStatement="Callstack.cs:21,4-21,11" />
+      </Item>
+      <Item>
+        <StackFrame
+          ArgumentCount="0"
+          Depth="1"
+          HasExpired="False"
+          HasSymbols="True"
+          MethodInfo="Main"
+          NextStatement="Callstack.cs:16,4-16,11" />
+      </Item>
+    </Callstack>
+    <DebuggingPaused>StepComplete</DebuggingPaused>
+    <Callstack>
+      <Item>
+        <StackFrame
+          ArgumentCount="0"
+          Depth="0"
+          HasExpired="False"
+          HasSymbols="True"
+          MethodInfo="Main"
+          NextStatement="Callstack.cs:16,4-16,11" />
       </Item>
     </Callstack>
     <ProcessExited />

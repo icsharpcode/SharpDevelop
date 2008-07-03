@@ -44,10 +44,11 @@ namespace Debugger.Tests {
 #if EXPECTED_OUTPUT
 <?xml version="1.0" encoding="utf-8"?>
 <DebuggerTests>
-  <Test name="ExceptionCustom.cs">
+  <Test
+    name="ExceptionCustom.cs">
     <ProcessStarted />
-    <ModuleLoaded symbols="False">mscorlib.dll</ModuleLoaded>
-    <ModuleLoaded symbols="True">ExceptionCustom.exe</ModuleLoaded>
+    <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
+    <ModuleLoaded>ExceptionCustom.exe (Has symbols)</ModuleLoaded>
     <ExceptionThrown>test</ExceptionThrown>
     <DebuggingPaused>Exception</DebuggingPaused>
     <ProcessExited />

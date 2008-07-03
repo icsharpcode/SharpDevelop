@@ -47,67 +47,80 @@ namespace Debugger.Tests {
 #if EXPECTED_OUTPUT
 <?xml version="1.0" encoding="utf-8"?>
 <DebuggerTests>
-  <Test name="ValueType.cs">
+  <Test
+    name="ValueType.cs">
     <ProcessStarted />
-    <ModuleLoaded symbols="False">mscorlib.dll</ModuleLoaded>
-    <ModuleLoaded symbols="True">ValueType.exe</ModuleLoaded>
+    <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
+    <ModuleLoaded>ValueType.exe (Has symbols)</ModuleLoaded>
     <DebuggingPaused>Break</DebuggingPaused>
-    <this Type="Value" ToString="this = {Debugger.Tests.ValueType}">
-      <ArrayDimensions exception="Value is not an array" />
-      <ArrayLenght exception="Value is not an array" />
-      <ArrayRank exception="Value is not an array" />
-      <AsString>{Debugger.Tests.ValueType}</AsString>
-      <Expression>this</Expression>
-      <HasExpired>False</HasExpired>
-      <IsArray>False</IsArray>
-      <IsInteger>False</IsInteger>
-      <IsNull>False</IsNull>
-      <IsObject>True</IsObject>
-      <IsPrimitive>False</IsPrimitive>
-      <PrimitiveValue exception="Value is not a primitive type" />
-      <Type Type="DebugType" ToString="Debugger.Tests.ValueType">
-        <BaseType Type="DebugType" ToString="System.ValueType">
-          <BaseType Type="DebugType" ToString="System.Object">
-            <BaseType>null</BaseType>
-            <FullName>System.Object</FullName>
-            <HasElementType>False</HasElementType>
-            <Interfaces>System.Collections.Generic.List`1[Debugger.MetaData.DebugType]</Interfaces>
-            <IsArray>False</IsArray>
-            <IsClass>True</IsClass>
-            <IsGenericType>False</IsGenericType>
-            <IsInteger>False</IsInteger>
-            <IsInterface>False</IsInterface>
-            <IsPrimitive>False</IsPrimitive>
-            <IsValueType>False</IsValueType>
-            <ManagedType>null</ManagedType>
-            <Module>mscorlib.dll</Module>
-          </BaseType>
-          <FullName>System.ValueType</FullName>
-          <HasElementType>False</HasElementType>
-          <Interfaces>System.Collections.Generic.List`1[Debugger.MetaData.DebugType]</Interfaces>
-          <IsArray>False</IsArray>
-          <IsClass>True</IsClass>
-          <IsGenericType>False</IsGenericType>
-          <IsInteger>False</IsInteger>
-          <IsInterface>False</IsInterface>
-          <IsPrimitive>False</IsPrimitive>
-          <IsValueType>False</IsValueType>
-          <ManagedType>null</ManagedType>
-          <Module>mscorlib.dll</Module>
-        </BaseType>
-        <FullName>Debugger.Tests.ValueType</FullName>
-        <HasElementType>False</HasElementType>
-        <Interfaces>System.Collections.Generic.List`1[Debugger.MetaData.DebugType]</Interfaces>
-        <IsArray>False</IsArray>
-        <IsClass>False</IsClass>
-        <IsGenericType>False</IsGenericType>
-        <IsInteger>False</IsInteger>
-        <IsInterface>False</IsInterface>
-        <IsPrimitive>False</IsPrimitive>
-        <IsValueType>True</IsValueType>
-        <ManagedType>null</ManagedType>
-        <Module>ValueType.exe</Module>
-      </Type>
+    <this>
+      <Value
+        ArrayDimensions="{Exception: Value is not an array}"
+        ArrayLenght="{Exception: Value is not an array}"
+        ArrayRank="{Exception: Value is not an array}"
+        AsString="{Debugger.Tests.ValueType}"
+        Expression="this"
+        HasExpired="False"
+        IsArray="False"
+        IsInteger="False"
+        IsNull="False"
+        IsObject="True"
+        IsPrimitive="False"
+        PrimitiveValue="{Exception: Value is not a primitive type}"
+        Type="Debugger.Tests.ValueType">
+        <Type>
+          <DebugType
+            BaseType="System.ValueType"
+            FullName="Debugger.Tests.ValueType"
+            HasElementType="False"
+            Interfaces="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
+            IsArray="False"
+            IsClass="False"
+            IsGenericType="False"
+            IsInteger="False"
+            IsInterface="False"
+            IsPrimitive="False"
+            IsValueType="True"
+            ManagedType="null"
+            Module="ValueType.exe">
+            <BaseType>
+              <DebugType
+                BaseType="System.Object"
+                FullName="System.ValueType"
+                HasElementType="False"
+                Interfaces="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
+                IsArray="False"
+                IsClass="True"
+                IsGenericType="False"
+                IsInteger="False"
+                IsInterface="False"
+                IsPrimitive="False"
+                IsValueType="False"
+                ManagedType="null"
+                Module="mscorlib.dll">
+                <BaseType>
+                  <DebugType
+                    BaseType="null"
+                    FullName="System.Object"
+                    HasElementType="False"
+                    Interfaces="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
+                    IsArray="False"
+                    IsClass="True"
+                    IsGenericType="False"
+                    IsInteger="False"
+                    IsInterface="False"
+                    IsPrimitive="False"
+                    IsValueType="False"
+                    ManagedType="null"
+                    Module="mscorlib.dll">
+                    <BaseType>null</BaseType>
+                  </DebugType>
+                </BaseType>
+              </DebugType>
+            </BaseType>
+          </DebugType>
+        </Type>
+      </Value>
     </this>
     <ProcessExited />
   </Test>

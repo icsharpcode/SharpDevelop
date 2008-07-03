@@ -53,86 +53,89 @@ namespace Debugger.Tests {
 #if EXPECTED_OUTPUT
 <?xml version="1.0" encoding="utf-8"?>
 <DebuggerTests>
-  <Test name="MainThreadExit.cs">
+  <Test
+    name="MainThreadExit.cs">
     <ProcessStarted />
-    <ModuleLoaded symbols="False">mscorlib.dll</ModuleLoaded>
-    <ModuleLoaded symbols="True">MainThreadExit.exe</ModuleLoaded>
+    <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
+    <ModuleLoaded>MainThreadExit.exe (Has symbols)</ModuleLoaded>
     <DebuggingPaused>Break</DebuggingPaused>
-    <ThreadsBeforeExit Type="ReadOnlyCollection`1" ToString="System.Collections.ObjectModel.ReadOnlyCollection`1[Debugger.Thread]">
-      <Count>2</Count>
-      <Item Type="Thread" ToString="Thread Name =  Suspended = False">
-        <CurrentException>null</CurrentException>
-        <CurrentExceptionIsUnhandled>False</CurrentExceptionIsUnhandled>
-        <CurrentExceptionType>0</CurrentExceptionType>
-        <HasExited>False</HasExited>
-        <IsAtSafePoint>True</IsAtSafePoint>
-        <IsInValidState>True</IsInValidState>
-        <IsMostRecentStackFrameNative>False</IsMostRecentStackFrameNative>
-        <MostRecentStackFrame>Debugger.Tests.TestPrograms.MainThreadExit.Main</MostRecentStackFrame>
-        <MostRecentStackFrameWithLoadedSymbols>Debugger.Tests.TestPrograms.MainThreadExit.Main</MostRecentStackFrameWithLoadedSymbols>
-        <Name>
-        </Name>
-        <OldestStackFrame>Debugger.Tests.TestPrograms.MainThreadExit.Main</OldestStackFrame>
-        <Priority>Normal</Priority>
-        <RuntimeValue>? = {System.Threading.Thread}</RuntimeValue>
-        <SelectedStackFrame>Debugger.Tests.TestPrograms.MainThreadExit.Main</SelectedStackFrame>
-        <Suspended>False</Suspended>
+    <ThreadsBeforeExit
+      Count="2">
+      <Item>
+        <Thread
+          CurrentException="null"
+          CurrentExceptionIsUnhandled="False"
+          CurrentExceptionType="0"
+          HasExited="False"
+          IsAtSafePoint="True"
+          IsInValidState="True"
+          IsMostRecentStackFrameNative="False"
+          MostRecentStackFrame="Debugger.Tests.TestPrograms.MainThreadExit.Main"
+          MostRecentStackFrameWithLoadedSymbols="Debugger.Tests.TestPrograms.MainThreadExit.Main"
+          Name=""
+          OldestStackFrame="Debugger.Tests.TestPrograms.MainThreadExit.Main"
+          Priority="Normal"
+          RuntimeValue="? = {System.Threading.Thread}"
+          SelectedStackFrame="Debugger.Tests.TestPrograms.MainThreadExit.Main"
+          Suspended="False" />
       </Item>
-      <Item Type="Thread" ToString="Thread Name = Worker thread Suspended = False">
-        <CurrentException>null</CurrentException>
-        <CurrentExceptionIsUnhandled>False</CurrentExceptionIsUnhandled>
-        <CurrentExceptionType>0</CurrentExceptionType>
-        <HasExited>False</HasExited>
-        <IsAtSafePoint>True</IsAtSafePoint>
-        <IsInValidState>True</IsInValidState>
-        <IsMostRecentStackFrameNative>False</IsMostRecentStackFrameNative>
-        <MostRecentStackFrame>System.Threading.WaitHandle.WaitOne</MostRecentStackFrame>
-        <MostRecentStackFrameWithLoadedSymbols>Debugger.Tests.TestPrograms.MainThreadExit.WaitForALongTime</MostRecentStackFrameWithLoadedSymbols>
-        <Name>Worker thread</Name>
-        <OldestStackFrame>System.Threading.ThreadHelper.ThreadStart</OldestStackFrame>
-        <Priority>Normal</Priority>
-        <RuntimeValue>? = {System.Threading.Thread}</RuntimeValue>
-        <SelectedStackFrame>null</SelectedStackFrame>
-        <Suspended>False</Suspended>
+      <Item>
+        <Thread
+          CurrentException="null"
+          CurrentExceptionIsUnhandled="False"
+          CurrentExceptionType="0"
+          HasExited="False"
+          IsAtSafePoint="True"
+          IsInValidState="True"
+          IsMostRecentStackFrameNative="False"
+          MostRecentStackFrame="System.Threading.WaitHandle.WaitOne"
+          MostRecentStackFrameWithLoadedSymbols="Debugger.Tests.TestPrograms.MainThreadExit.WaitForALongTime"
+          Name="Worker thread"
+          OldestStackFrame="System.Threading.ThreadHelper.ThreadStart"
+          Priority="Normal"
+          RuntimeValue="? = {System.Threading.Thread}"
+          SelectedStackFrame="null"
+          Suspended="False" />
       </Item>
     </ThreadsBeforeExit>
     <DebuggingPaused>ForcedBreak</DebuggingPaused>
-    <ThreadsAfterExit Type="ReadOnlyCollection`1" ToString="System.Collections.ObjectModel.ReadOnlyCollection`1[Debugger.Thread]">
-      <Count>2</Count>
-      <Item Type="Thread" ToString="Thread Name =  Suspended = False">
-        <CurrentException>null</CurrentException>
-        <CurrentExceptionIsUnhandled>False</CurrentExceptionIsUnhandled>
-        <CurrentExceptionType>0</CurrentExceptionType>
-        <HasExited>False</HasExited>
-        <IsAtSafePoint>False</IsAtSafePoint>
-        <IsInValidState>False</IsInValidState>
-        <IsMostRecentStackFrameNative>False</IsMostRecentStackFrameNative>
-        <MostRecentStackFrame>null</MostRecentStackFrame>
-        <MostRecentStackFrameWithLoadedSymbols>null</MostRecentStackFrameWithLoadedSymbols>
-        <Name>
-        </Name>
-        <OldestStackFrame>null</OldestStackFrame>
-        <Priority>Normal</Priority>
-        <RuntimeValue exception="The state of the thread is invalid. (Exception from HRESULT: 0x8013132D)" />
-        <SelectedStackFrame>null</SelectedStackFrame>
-        <Suspended>False</Suspended>
+    <ThreadsAfterExit
+      Count="2">
+      <Item>
+        <Thread
+          CurrentException="null"
+          CurrentExceptionIsUnhandled="False"
+          CurrentExceptionType="0"
+          HasExited="False"
+          IsAtSafePoint="False"
+          IsInValidState="False"
+          IsMostRecentStackFrameNative="False"
+          MostRecentStackFrame="null"
+          MostRecentStackFrameWithLoadedSymbols="null"
+          Name=""
+          OldestStackFrame="null"
+          Priority="Normal"
+          RuntimeValue="{Exception: The state of the thread is invalid. (Exception from HRESULT: 0x8013132D)}"
+          SelectedStackFrame="null"
+          Suspended="False" />
       </Item>
-      <Item Type="Thread" ToString="Thread Name = Worker thread Suspended = False">
-        <CurrentException>null</CurrentException>
-        <CurrentExceptionIsUnhandled>False</CurrentExceptionIsUnhandled>
-        <CurrentExceptionType>0</CurrentExceptionType>
-        <HasExited>False</HasExited>
-        <IsAtSafePoint>True</IsAtSafePoint>
-        <IsInValidState>True</IsInValidState>
-        <IsMostRecentStackFrameNative>False</IsMostRecentStackFrameNative>
-        <MostRecentStackFrame>System.Threading.WaitHandle.WaitOne</MostRecentStackFrame>
-        <MostRecentStackFrameWithLoadedSymbols>Debugger.Tests.TestPrograms.MainThreadExit.WaitForALongTime</MostRecentStackFrameWithLoadedSymbols>
-        <Name>Worker thread</Name>
-        <OldestStackFrame>System.Threading.ThreadHelper.ThreadStart</OldestStackFrame>
-        <Priority>Normal</Priority>
-        <RuntimeValue>? = {System.Threading.Thread}</RuntimeValue>
-        <SelectedStackFrame>Debugger.Tests.TestPrograms.MainThreadExit.WaitForALongTime</SelectedStackFrame>
-        <Suspended>False</Suspended>
+      <Item>
+        <Thread
+          CurrentException="null"
+          CurrentExceptionIsUnhandled="False"
+          CurrentExceptionType="0"
+          HasExited="False"
+          IsAtSafePoint="True"
+          IsInValidState="True"
+          IsMostRecentStackFrameNative="False"
+          MostRecentStackFrame="System.Threading.WaitHandle.WaitOne"
+          MostRecentStackFrameWithLoadedSymbols="Debugger.Tests.TestPrograms.MainThreadExit.WaitForALongTime"
+          Name="Worker thread"
+          OldestStackFrame="System.Threading.ThreadHelper.ThreadStart"
+          Priority="Normal"
+          RuntimeValue="? = {System.Threading.Thread}"
+          SelectedStackFrame="Debugger.Tests.TestPrograms.MainThreadExit.WaitForALongTime"
+          Suspended="False" />
       </Item>
     </ThreadsAfterExit>
     <ProcessExited />

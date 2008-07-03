@@ -77,17 +77,18 @@ namespace Debugger.Tests {
 #if EXPECTED_OUTPUT
 <?xml version="1.0" encoding="utf-8"?>
 <DebuggerTests>
-  <Test name="Stepping.cs">
+  <Test
+    name="Stepping.cs">
     <ProcessStarted />
-    <ModuleLoaded symbols="False">mscorlib.dll</ModuleLoaded>
-    <ModuleLoaded symbols="True">Stepping.exe</ModuleLoaded>
-    <ModuleLoaded symbols="False">System.dll</ModuleLoaded>
+    <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
+    <ModuleLoaded>Stepping.exe (Has symbols)</ModuleLoaded>
+    <ModuleLoaded>System.dll (No symbols)</ModuleLoaded>
     <DebuggingPaused>Break</DebuggingPaused>
     <NextStatement>Stepping.cs:16,4-16,40</NextStatement>
     <DebuggingPaused>StepComplete</DebuggingPaused>
     <NextStatement>Stepping.cs:17,4-17,44</NextStatement>
-    <ModuleLoaded symbols="False">System.Configuration.dll</ModuleLoaded>
-    <ModuleLoaded symbols="False">System.Xml.dll</ModuleLoaded>
+    <ModuleLoaded>System.Configuration.dll (No symbols)</ModuleLoaded>
+    <ModuleLoaded>System.Xml.dll (No symbols)</ModuleLoaded>
     <LogMessage>1\r\n</LogMessage>
     <DebuggingPaused>StepComplete</DebuggingPaused>
     <NextStatement>Stepping.cs:18,4-18,10</NextStatement>

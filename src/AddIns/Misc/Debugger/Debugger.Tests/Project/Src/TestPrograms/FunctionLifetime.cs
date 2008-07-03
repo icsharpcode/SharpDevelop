@@ -65,77 +65,86 @@ namespace Debugger.Tests {
 #if EXPECTED_OUTPUT
 <?xml version="1.0" encoding="utf-8"?>
 <DebuggerTests>
-  <Test name="FunctionLifetime.cs">
+  <Test
+    name="FunctionLifetime.cs">
     <ProcessStarted />
-    <ModuleLoaded symbols="False">mscorlib.dll</ModuleLoaded>
-    <ModuleLoaded symbols="True">FunctionLifetime.exe</ModuleLoaded>
+    <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
+    <ModuleLoaded>FunctionLifetime.exe (Has symbols)</ModuleLoaded>
     <DebuggingPaused>Break</DebuggingPaused>
-    <SelectedStackFrame Type="StackFrame" ToString="Debugger.Tests.TestPrograms.FunctionLifetime.Function">
-      <ArgumentCount>1</ArgumentCount>
-      <Depth>0</Depth>
-      <HasExpired>False</HasExpired>
-      <HasSymbols>True</HasSymbols>
-      <MethodInfo>Function</MethodInfo>
-      <NextStatement>FunctionLifetime.cs:22,4-22,40</NextStatement>
+    <SelectedStackFrame>
+      <StackFrame
+        ArgumentCount="1"
+        Depth="0"
+        HasExpired="False"
+        HasSymbols="True"
+        MethodInfo="Function"
+        NextStatement="FunctionLifetime.cs:22,4-22,40" />
     </SelectedStackFrame>
     <DebuggingPaused>Break</DebuggingPaused>
-    <Old_StackFrame Type="StackFrame" ToString="Debugger.Tests.TestPrograms.FunctionLifetime.Function">
-      <ArgumentCount exception="StackFrame has expired" />
-      <Depth>0</Depth>
-      <HasExpired>True</HasExpired>
-      <HasSymbols>True</HasSymbols>
-      <MethodInfo>Function</MethodInfo>
-      <NextStatement exception="StackFrame has expired" />
+    <Old_StackFrame>
+      <StackFrame
+        ArgumentCount="{Exception: StackFrame has expired}"
+        Depth="0"
+        HasExpired="True"
+        HasSymbols="True"
+        MethodInfo="Function"
+        NextStatement="{Exception: StackFrame has expired}" />
     </Old_StackFrame>
-    <SelectedStackFrame Type="StackFrame" ToString="Debugger.Tests.TestPrograms.FunctionLifetime.SubFunction">
-      <ArgumentCount>0</ArgumentCount>
-      <Depth>0</Depth>
-      <HasExpired>False</HasExpired>
-      <HasSymbols>True</HasSymbols>
-      <MethodInfo>SubFunction</MethodInfo>
-      <NextStatement>FunctionLifetime.cs:29,4-29,40</NextStatement>
+    <SelectedStackFrame>
+      <StackFrame
+        ArgumentCount="0"
+        Depth="0"
+        HasExpired="False"
+        HasSymbols="True"
+        MethodInfo="SubFunction"
+        NextStatement="FunctionLifetime.cs:29,4-29,40" />
     </SelectedStackFrame>
     <DebuggingPaused>Break</DebuggingPaused>
-    <Old_StackFrame Type="StackFrame" ToString="Debugger.Tests.TestPrograms.FunctionLifetime.Function">
-      <ArgumentCount exception="StackFrame has expired" />
-      <Depth>0</Depth>
-      <HasExpired>True</HasExpired>
-      <HasSymbols>True</HasSymbols>
-      <MethodInfo>Function</MethodInfo>
-      <NextStatement exception="StackFrame has expired" />
+    <Old_StackFrame>
+      <StackFrame
+        ArgumentCount="{Exception: StackFrame has expired}"
+        Depth="0"
+        HasExpired="True"
+        HasSymbols="True"
+        MethodInfo="Function"
+        NextStatement="{Exception: StackFrame has expired}" />
     </Old_StackFrame>
-    <SelectedStackFrame Type="StackFrame" ToString="Debugger.Tests.TestPrograms.FunctionLifetime.Function">
-      <ArgumentCount>1</ArgumentCount>
-      <Depth>0</Depth>
-      <HasExpired>False</HasExpired>
-      <HasSymbols>True</HasSymbols>
-      <MethodInfo>Function</MethodInfo>
-      <NextStatement>FunctionLifetime.cs:24,4-24,40</NextStatement>
+    <SelectedStackFrame>
+      <StackFrame
+        ArgumentCount="1"
+        Depth="0"
+        HasExpired="False"
+        HasSymbols="True"
+        MethodInfo="Function"
+        NextStatement="FunctionLifetime.cs:24,4-24,40" />
     </SelectedStackFrame>
     <DebuggingPaused>Break</DebuggingPaused>
-    <Main Type="StackFrame" ToString="Debugger.Tests.TestPrograms.FunctionLifetime.Main">
-      <ArgumentCount>0</ArgumentCount>
-      <Depth>0</Depth>
-      <HasExpired>False</HasExpired>
-      <HasSymbols>True</HasSymbols>
-      <MethodInfo>Main</MethodInfo>
-      <NextStatement>FunctionLifetime.cs:17,4-17,40</NextStatement>
+    <Main>
+      <StackFrame
+        ArgumentCount="0"
+        Depth="0"
+        HasExpired="False"
+        HasSymbols="True"
+        MethodInfo="Main"
+        NextStatement="FunctionLifetime.cs:17,4-17,40" />
     </Main>
-    <Old_StackFrame Type="StackFrame" ToString="Debugger.Tests.TestPrograms.FunctionLifetime.Function">
-      <ArgumentCount exception="StackFrame has expired" />
-      <Depth>0</Depth>
-      <HasExpired>True</HasExpired>
-      <HasSymbols>True</HasSymbols>
-      <MethodInfo>Function</MethodInfo>
-      <NextStatement exception="StackFrame has expired" />
+    <Old_StackFrame>
+      <StackFrame
+        ArgumentCount="{Exception: StackFrame has expired}"
+        Depth="0"
+        HasExpired="True"
+        HasSymbols="True"
+        MethodInfo="Function"
+        NextStatement="{Exception: StackFrame has expired}" />
     </Old_StackFrame>
-    <SelectedStackFrame Type="StackFrame" ToString="Debugger.Tests.TestPrograms.FunctionLifetime.Main">
-      <ArgumentCount>0</ArgumentCount>
-      <Depth>0</Depth>
-      <HasExpired>False</HasExpired>
-      <HasSymbols>True</HasSymbols>
-      <MethodInfo>Main</MethodInfo>
-      <NextStatement>FunctionLifetime.cs:17,4-17,40</NextStatement>
+    <SelectedStackFrame>
+      <StackFrame
+        ArgumentCount="0"
+        Depth="0"
+        HasExpired="False"
+        HasSymbols="True"
+        MethodInfo="Main"
+        NextStatement="FunctionLifetime.cs:17,4-17,40" />
     </SelectedStackFrame>
     <ProcessExited />
   </Test>
