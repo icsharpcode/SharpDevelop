@@ -75,11 +75,22 @@
     <Compile Include="Controls\PropertyEditor\PropertyNameTextBlock.cs" />
     <Compile Include="Controls\ResizeThumb.cs" />
     <Compile Include="Controls\SingleVisualChildElement.cs" />
-    <Compile Include="Controls\TypeEditors\BrushEditor.cs" />
-    <Compile Include="Controls\TypeEditors\BrushEditorDialog.xaml.cs">
-      <DependentUpon>BrushEditorDialog.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="Controls\TypeEditors\BrushEditor\BrushEditor.cs" />
+    <Compile Include="Controls\TypeEditors\BrushEditor\BrushEditorPopup.xaml.cs" />
+    <Compile Include="Controls\TypeEditors\BrushEditor\BrushEditorView.xaml.cs" />
+    <Compile Include="Controls\TypeEditors\BrushEditor\BrushTypeEditor.xaml.cs" />
+    <Compile Include="Controls\TypeEditors\BrushEditor\CallExtension.cs" />
+    <Compile Include="Controls\TypeEditors\BrushEditor\ColorHelper.cs" />
+    <Compile Include="Controls\TypeEditors\BrushEditor\ColorPicker.xaml.cs" />
+    <Compile Include="Controls\TypeEditors\BrushEditor\Converters.cs" />
+    <Compile Include="Controls\TypeEditors\BrushEditor\DragListener.cs" />
+    <Compile Include="Controls\TypeEditors\BrushEditor\ExtensionMethods.cs" />
+    <Compile Include="Controls\TypeEditors\BrushEditor\GradientBrushEditor.xaml.cs" />
+    <Compile Include="Controls\TypeEditors\BrushEditor\GradientSlider.xaml.cs" />
+    <Compile Include="Controls\TypeEditors\BrushEditor\NormalizedPanel.cs" />
+    <Compile Include="Controls\TypeEditors\BrushEditor\NumericUpDown.cs" />
+    <Compile Include="Controls\TypeEditors\BrushEditor\Picker.cs" />
+    <Compile Include="Controls\TypeEditors\BrushEditor\SolidBrushEditor.xaml.cs" />
     <Compile Include="Controls\TypeEditors\ContentEditor.cs" />
     <Compile Include="Controls\TypeEditors\CursorEditor.cs" />
     <Compile Include="Controls\TypeEditors\NullableBoolEditor.cs" />
@@ -126,6 +137,7 @@
     <Folder Include="Controls" />
     <Folder Include="Controls\TypeEditors" />
     <Folder Include="Controls\PropertyEditor" />
+    <Folder Include="Controls\TypeEditors\BrushEditor" />
     <Folder Include="Extensions" />
     <Folder Include="themes" />
     <Folder Include="Xaml" />
@@ -146,7 +158,14 @@
     </Page>
     <Page Include="Controls\PropertyEditor\PropertyEditorStyles.xaml" />
     <Page Include="Controls\ControlStyles.xaml" />
-    <Page Include="Controls\TypeEditors\BrushEditorDialog.xaml" />
+    <Page Include="Controls\TypeEditors\BrushEditor\BrushEditorPopup.xaml" />
+    <Page Include="Controls\TypeEditors\BrushEditor\BrushEditorView.xaml" />
+    <Page Include="Controls\TypeEditors\BrushEditor\BrushTypeEditor.xaml" />
+    <Page Include="Controls\TypeEditors\BrushEditor\ColorPicker.xaml" />
+    <Page Include="Controls\TypeEditors\BrushEditor\GradientBrushEditor.xaml" />
+    <Page Include="Controls\TypeEditors\BrushEditor\GradientSlider.xaml" />
+    <Page Include="Controls\TypeEditors\BrushEditor\NumericUpDown.xaml" />
+    <Page Include="Controls\TypeEditors\BrushEditor\SolidBrushEditor.xaml" />
     <Page Include="themes\generic.xaml" />
   </ItemGroup>
 </Project>
