@@ -172,6 +172,11 @@ namespace ICSharpCode.Svn.Commands
 			OverlayIconManager.Enqueue(node);
 		}
 		
+		/// <summary>
+		/// Adds the newly created file to the repository.
+		/// </summary>
+		/// <param name="sender">Not used.</param>
+		/// <param name="e">The name of the file and whether it is a directory or not.</param>
 		void FileCreated(object sender, FileEventArgs e)
 		{
 			if (!AddInOptions.AutomaticallyAddFiles) return;

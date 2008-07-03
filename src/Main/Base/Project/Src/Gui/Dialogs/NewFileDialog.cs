@@ -515,7 +515,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					}
 					DialogResult = DialogResult.OK;
 					
-					// raise FileCreated event for the new files
+					// raise FileCreated event for the new files.
 					foreach (KeyValuePair<string, FileDescriptionTemplate> entry in createdFiles) {
 						FileService.FireFileCreated(entry.Key, false);
 					}

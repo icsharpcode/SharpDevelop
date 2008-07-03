@@ -442,6 +442,8 @@ namespace ICSharpCode.SharpDevelop
 			return CreateFolderBrowserDialog(description, null);
 		}
 		
+		#region Event Handlers
+				
 		static void OnFileRemoved(FileEventArgs e)
 		{
 			if (FileRemoved != null) {
@@ -469,6 +471,15 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
+		#endregion Event Handlers
+		
+		#region Static event firing methods
+				
+		/// <summary>
+		/// Fires the event handlers for a file being created.
+		/// </summary>
+		/// <param name="fileName">The name of the file being created. This should be a fully qualified path.</param>
+		/// <param name="isDirectory">Set to true if this is a directory</param>
 		public static bool FireFileReplacing(string fileName, bool isDirectory)
 		{
 			FileCancelEventArgs e = new FileCancelEventArgs(fileName, isDirectory);
@@ -478,6 +489,11 @@ namespace ICSharpCode.SharpDevelop
 			return !e.Cancel;
 		}
 		
+		/// <summary>
+		/// Fires the event handlers for a file being replaced.
+		/// </summary>
+		/// <param name="fileName">The name of the file being created. This should be a fully qualified path.</param>
+		/// <param name="isDirectory">Set to true if this is a directory</param>
 		public static void FireFileReplaced(string fileName, bool isDirectory)
 		{
 			if (FileReplaced != null) {
@@ -485,6 +501,11 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
+		/// <summary>
+		/// Fires the event handlers for a file being created.
+		/// </summary>
+		/// <param name="fileName">The name of the file being created. This should be a fully qualified path.</param>
+		/// <param name="isDirectory">Set to true if this is a directory</param>
 		public static void FireFileCreated(string fileName, bool isDirectory)
 		{
 			if (FileCreated != null) {
@@ -492,6 +513,10 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
+		#endregion Static event firing methods
+		
+		#region Events
+				
 		public static event EventHandler<FileEventArgs> FileCreated;
 		
 		public static event EventHandler<FileRenamingEventArgs> FileRenaming;
@@ -502,6 +527,8 @@ namespace ICSharpCode.SharpDevelop
 		
 		public static event EventHandler<FileCancelEventArgs> FileReplacing;
 		public static event EventHandler<FileEventArgs> FileReplaced;
+		
+		#endregion Events
 	}
 }
 

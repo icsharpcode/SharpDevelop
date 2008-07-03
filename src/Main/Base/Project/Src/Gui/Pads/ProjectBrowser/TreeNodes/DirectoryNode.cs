@@ -11,7 +11,6 @@ using System.IO;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project.Commands;
 
 namespace ICSharpCode.SharpDevelop.Project
@@ -55,42 +54,12 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 	}
 	
+	//TODO: Maybe I need to add an enum member for the properties folder.
 	public enum SpecialFolder {
 		None,
 		AppDesigner,
 		WebReference,
 		WebReferencesFolder
-	}
-	
-	public static class DirectoryNodeFactory
-	{
-		public static DirectoryNode CreateDirectoryNode(TreeNode parent, IProject project, string directory)
-		{
-			DirectoryNode node = new DirectoryNode(directory);
-			if (!string.IsNullOrEmpty(project.AppDesignerFolder)
-			    && directory == Path.Combine(project.Directory, project.AppDesignerFolder))
-			{
-				node.SpecialFolder = SpecialFolder.AppDesigner;
-			} else if (DirectoryNode.IsWebReferencesFolder(project, directory)) {
-				node = new WebReferencesFolderNode(directory);
-			} else if (parent != null && parent is WebReferencesFolderNode) {
-				node = new WebReferenceNode(directory);
-			}
-			return node;
-		}
-		
-		public static DirectoryNode CreateDirectoryNode(ProjectItem item, FileNodeStatus status)
-		{
-			DirectoryNode node;
-			if (item is WebReferencesProjectItem) {
-				node = new WebReferencesFolderNode((WebReferencesProjectItem)item);
-				node.FileNodeStatus = status;
-			} else {
-				node = new DirectoryNode(item.FileName.Trim('\\', '/'), status);
-				node.ProjectItem = item;
-			}
-			return node;
-		}
 	}
 	
 	public class DirectoryNode : AbstractProjectBrowserTreeNode, IOwnerState
@@ -436,6 +405,21 @@ namespace ICSharpCode.SharpDevelop.Project
 		protected void BaseInitialize()
 		{
 			base.Initialize();
+		}
+				
+		/// <summary>
+		/// Create's a new FileProjectItem in this DirectoryNode.
+		/// </summary>
+		/// <param name="fileName">The name of the file that will be added to the project.</param>
+		public FileProjectItem AddNewFile(string fileName)
+		{
+			//TODO: this can probably be moved to AbstractProjectBrowserTreeNode or even lower in the chain.
+			this.Expanding();
+			
+			FileNode fileNode = new FileNode(fileName, FileNodeStatus.InProject);
+			fileNode.AddTo(this);
+			fileNode.EnsureVisible();
+			return IncludeFileInProject.IncludeFileNode(fileNode);
 		}
 		
 		void AddParentFolder(string virtualName, string relativeDirectoryPath, Dictionary<string, DirectoryNode> directoryNodeList)

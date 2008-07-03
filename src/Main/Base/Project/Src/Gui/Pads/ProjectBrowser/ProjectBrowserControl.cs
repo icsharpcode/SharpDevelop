@@ -39,6 +39,24 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		/// <summary>
+		/// The selected node or its most imediate parent that is a DirectoryNode.
+		/// </summary>
+		/// <seealso cref="DirectoryNode"/>
+		public DirectoryNode SelectedDirectoryNode {
+			get {
+				TreeNode selectedNode =
+					treeView.SelectedNode as AbstractProjectBrowserTreeNode;
+				DirectoryNode node = null;
+				while (selectedNode != null && node == null) {
+					node = selectedNode as DirectoryNode;
+					selectedNode = selectedNode.Parent;
+				}
+				// If no solution is load theres a valid reason for this to return null.
+				return node;
+			}
+		}
+		
 		public AbstractProjectBrowserTreeNode SelectedNode {
 			get {
 				return treeView.SelectedNode as AbstractProjectBrowserTreeNode;

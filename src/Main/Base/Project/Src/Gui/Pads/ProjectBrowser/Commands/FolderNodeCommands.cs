@@ -12,7 +12,6 @@ using System.Windows.Forms;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
-using Microsoft.Build.BuildEngine;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 
 namespace ICSharpCode.SharpDevelop.Project.Commands
@@ -261,30 +260,22 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		}
 	}
 	
+	
+	/// <summary>
+	/// Menu item that display the NewFileDialog dialog and adds it to the solution.
+	/// </summary>
+	/// <seealso cref="NewFileDialog"/>
+	/// <exception cref="NullReferenceException">
+	/// Thrown if the selected node does not have an ancestor that is a DirectoryNode.
+	/// </exception>
 	public class AddNewItemsToProject : AbstractMenuCommand
 	{
-		
-		FileProjectItem CreateNewFile(DirectoryNode upper, string fileName)
-		{
-			upper.Expanding();
-			
-			FileNode fileNode = new FileNode(fileName, FileNodeStatus.InProject);
-			fileNode.AddTo(upper);
-			fileNode.EnsureVisible();
-			return IncludeFileInProject.IncludeFileNode(fileNode);
-		}
-		
 		public override void Run()
 		{
-			TreeNode selectedNode = ProjectBrowserPad.Instance.ProjectBrowserControl.SelectedNode;
-			DirectoryNode node = null;
-			while (selectedNode != null && node == null) {
-				node = selectedNode as DirectoryNode;
-				selectedNode = selectedNode.Parent;
-			}
+			DirectoryNode node = ProjectBrowserPad.Instance.ProjectBrowserControl.SelectedDirectoryNode;
 			if (node == null) {
 				return;
-			}
+			}	
 			node.Expand();
 			node.Expanding();
 			
@@ -292,7 +283,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 				if (nfd.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) == DialogResult.OK) {
 					bool additionalProperties = false;
 					foreach (KeyValuePair<string, FileDescriptionTemplate> createdFile in nfd.CreatedFiles) {
-						FileProjectItem item = CreateNewFile(node, createdFile.Key);
+						FileProjectItem item = node.AddNewFile(createdFile.Key);
 						
 						if (createdFile.Value.SetProjectItemProperties(item)) {
 							additionalProperties = true;
