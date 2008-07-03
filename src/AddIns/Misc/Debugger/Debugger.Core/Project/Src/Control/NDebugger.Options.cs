@@ -11,8 +11,8 @@ namespace Debugger
 {
 	public partial class NDebugger
 	{
-		bool justMyCodeEnabled;
-		bool obeyDebuggerAttributes;
+		bool justMyCodeEnabled = true;
+		bool obeyDebuggerAttributes = true;
 		string[] symbolsSearchPaths;
 		
 		public bool JustMyCodeEnabled {
