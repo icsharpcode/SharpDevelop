@@ -77,7 +77,7 @@ namespace Debugger
 		{
 		}
 		
-		static ISymUnmanagedDocument GetSymDocument(Module module, string filename, byte[] checksum)
+		static ISymUnmanagedDocument GetSymDocumentFromFilename(Module module, string filename, byte[] checksum)
 		{
 			if (filename == null) throw new ArgumentNullException("filename");
 			filename = filename.ToLower();
@@ -140,7 +140,7 @@ namespace Debugger
 			ISymUnmanagedReader symReader = module.SymReader;
 			if (symReader == null) return null; // No symbols
 			
-			ISymUnmanagedDocument symDoc = GetSymDocument(module, fileName, checkSum);
+			ISymUnmanagedDocument symDoc = GetSymDocumentFromFilename(module, fileName, checkSum);
 			if (symDoc == null) return null; // Document not found
 			
 			ISymUnmanagedMethod symMethod;
@@ -175,6 +175,55 @@ namespace Debugger
 				}
 			}
 			return null;
+		}
+		
+		static string GetFilenameFromSymDocument(Module module, ISymUnmanagedDocument symDoc)
+		{
+			if (File.Exists(symDoc.URL)) return symDoc.URL;
+			
+			List<string> searchPaths = new List<string>();
+			
+			searchPaths.AddRange(module.Process.Debugger.SymbolsSearchPaths);
+			
+			string modulePath = module.FullPath;
+			while (true) {
+				// Get parent directory
+				int index = modulePath.LastIndexOf('\\');
+				if (index == -1) break;
+				modulePath = modulePath.Substring(0, index);
+				// Add the directory to search path list
+				if (modulePath.Length == 2 && modulePath[1] == ':') {
+					searchPaths.Add(modulePath + '\\');
+				} else {
+					searchPaths.Add(modulePath);
+				}
+			}
+			
+			List<string> filenames = new List<string>();
+			string filename = symDoc.URL;
+			while (true) {
+				// Remove start of the path
+				int index = filename.IndexOf('\\');
+				if (index == -1) break;
+				filename = filename.Substring(index + 1);
+				// Add the filename as candidate
+				filenames.Add(filename);
+			}
+			
+			List<string> candidates = new List<string>();
+			foreach(string path in searchPaths) {
+				foreach(string name in filenames) {
+					candidates.Add(Path.Combine(path, name));
+				}
+			}
+			
+			foreach(string candiate in candidates) {
+				if (File.Exists(candiate)) {
+					return candiate;
+				}
+			}
+			
+			return symDoc.URL;
 		}
 		
 		/// <summary>
@@ -243,7 +292,7 @@ namespace Debugger
 					
 					SourcecodeSegment segment = new SourcecodeSegment();
 					segment.module        = module;
-					segment.filename      = sequencePoints[i].Document.URL;
+					segment.filename      = GetFilenameFromSymDocument(module, sequencePoints[i].Document);
 					segment.checkSum      = sequencePoints[i].Document.CheckSum;
 					segment.startLine     = (int)sequencePoints[i].Line;
 					segment.startColumn   = (int)sequencePoints[i].Column;
