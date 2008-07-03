@@ -4,13 +4,14 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Debugging;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
-
 using Debugger.Expressions;
 using Debugger.MetaData;
+using ICSharpCode.SharpDevelop.Services;
 
 namespace Debugger.AddIn.TreeModel
 {
@@ -28,16 +29,27 @@ namespace Debugger.AddIn.TreeModel
 			this.ChildNodes = GetChildNodes();
 		}
 		
+		public static WindowsDebugger WindowsDebugger {
+			get {
+				return (WindowsDebugger)DebuggerService.CurrentDebugger;
+			}
+		}
+		
 		IEnumerable<AbstractNode> GetChildNodes()
 		{
 			PropertyInfo countProperty = iListType.GetInterface(typeof(ICollection).FullName).GetProperty("Count");
 			Expression countExpr = targetObject.AppendPropertyReference(countProperty);
-			AbstractNode countNode = ValueNode.Create(countExpr);
 			int count = 0;
-			if (countNode is ValueNode) {
-				count = int.Parse(countNode.Text);
-			} else {
-				yield return countNode;
+			try {
+				// Do not get string representation since it can be printed in hex
+				Value countValue = countExpr.Evaluate(WindowsDebugger.DebuggedProcess.SelectedStackFrame);
+				count = (int)countValue.PrimitiveValue;
+			} catch (GetValueException) {
+				count = -1;
+			}
+			if (count == -1) {
+				yield return ValueNode.Create(countExpr);
+				yield break;
 			}
 			
 			for(int i = 0; i < count; i++) {
