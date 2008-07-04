@@ -823,8 +823,8 @@ class C : B {
 			
 			// ensure that the reference pointing to the B ctor is not seen as a reference
 			// to the A ctor.
-			Assert.IsTrue(Refactoring.RefactoringService.IsReferenceToMember(bCtor, mrr));
-			Assert.IsFalse(Refactoring.RefactoringService.IsReferenceToMember(aCtor, mrr));
+			Assert.IsTrue(mrr.IsReferenceTo(bCtor));
+			Assert.IsFalse(mrr.IsReferenceTo(aCtor));
 		}
 		
 		[Test]
@@ -1923,7 +1923,8 @@ public class MyCollectionType : System.Collections.IEnumerable
 			var dcrr = Resolve<DelegateCallResolveResult>(program, "BaseClass.Test()", 4);
 			Assert.AreEqual("SomeDelegate.Invoke", dcrr.DelegateInvokeMethod.FullyQualifiedName);
 			var mrr = dcrr.Target as MemberResolveResult;
-			Assert.AreEqual("BaseClass.Test", mrr.ResolvedMember.FullyQualifiedName);
+			IMember baseClassTest = mrr.ResolvedMember;
+			Assert.AreEqual("BaseClass.Test", baseClassTest.FullyQualifiedName);
 			
 			mrr = Resolve<MemberResolveResult>(program, "Test", 4);
 			Assert.AreEqual("DerivedClass.Test", mrr.ResolvedMember.FullyQualifiedName);
@@ -1935,6 +1936,7 @@ public class MyCollectionType : System.Collections.IEnumerable
 			dcrr = Resolve<DelegateCallResolveResult>(program, "DerivedClass.Test()", 4);
 			mrr = (MemberResolveResult)dcrr.Target;
 			Assert.AreEqual("BaseClass.Test", mrr.ResolvedMember.FullyQualifiedName);
+			Assert.IsTrue(dcrr.IsReferenceTo(baseClassTest));
 		}
 		
 		[Test]

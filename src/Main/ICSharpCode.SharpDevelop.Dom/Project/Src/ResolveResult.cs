@@ -145,6 +145,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 			// this is only possible on some subclasses of ResolveResult
 			return FilePosition.Empty;
 		}
+		
+		/// <summary>
+		/// Gets if this ResolveResult represents a reference to the specified entity.
+		/// </summary>
+		public virtual bool IsReferenceTo(IEntity entity)
+		{
+			return false;
+		}
 	}
 	#endregion
 	
@@ -219,6 +227,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public override ResolveResult Clone()
 		{
 			return new MixedResolveResult(primaryResult.Clone(), secondaryResult.Clone());
+		}
+		
+		public override bool IsReferenceTo(IEntity entity)
+		{
+			return primaryResult.IsReferenceTo(entity) || secondaryResult.IsReferenceTo(entity);
 		}
 	}
 	#endregion
@@ -303,6 +316,16 @@ namespace ICSharpCode.SharpDevelop.Dom
 				LoggingService.Warn("GetDefinitionPosition: field.Region is empty");
 				return new FilePosition(cu.FileName);
 			}
+		}
+		
+		public override bool IsReferenceTo(IEntity entity)
+		{
+			IField f = entity as IField;
+			if (f != null && (f.IsLocalVariable || f.IsParameter)) {
+				return field.Region.BeginLine == f.Region.BeginLine
+					&& field.Region.BeginColumn == f.Region.BeginColumn;
+			}
+			return base.IsReferenceTo(entity);
 		}
 	}
 	#endregion
@@ -450,6 +473,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 			else
 				return new FilePosition(cu.FileName);
 		}
+		
+		public override bool IsReferenceTo(IEntity entity)
+		{
+			IClass c = entity as IClass;
+			return c != null
+				&& resolvedClass.FullyQualifiedName == c.FullyQualifiedName
+				&& resolvedClass.TypeParameters.Count == c.TypeParameters.Count;
+		}
 	}
 	#endregion
 	
@@ -529,6 +560,19 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return new FilePosition(cu.FileName, reg.BeginLine, reg.BeginColumn);
 			else
 				return new FilePosition(cu.FileName);
+		}
+		
+		public override bool IsReferenceTo(IEntity entity)
+		{
+			IClass c = entity as IClass;
+			if (c != null) {
+				IMethod m = resolvedMember as IMethod;
+				return m != null && m.IsConstructor
+					&& m.DeclaringType.FullyQualifiedName == c.FullyQualifiedName
+					&& m.DeclaringType.TypeParameters.Count == c.TypeParameters.Count;
+			} else {
+				return MemberLookupHelper.IsSimilarMember(resolvedMember, entity as IMember);
+			}
 		}
 	}
 	#endregion
@@ -733,6 +777,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 			else
 				return base.GetDefinitionPosition();
 		}
+		
+		public override bool IsReferenceTo(IEntity entity)
+		{
+			return MemberLookupHelper.IsSimilarMember(GetMethodIfSingleOverload(), entity as IMember);
+		}
 	}
 	#endregion
 	
@@ -847,6 +896,16 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public override ResolveResult Clone()
 		{
 			return new DelegateCallResolveResult(targetRR, delegateInvokeMethod);
+		}
+		
+		public override FilePosition GetDefinitionPosition()
+		{
+			return targetRR.GetDefinitionPosition();
+		}
+		
+		public override bool IsReferenceTo(ICSharpCode.SharpDevelop.Dom.IEntity entity)
+		{
+			return targetRR.IsReferenceTo(entity);
 		}
 	}
 	#endregion

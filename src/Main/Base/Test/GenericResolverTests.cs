@@ -356,7 +356,7 @@ class TestClass {
 			
 			// ensure that the reference pointing to the specialized method is seen as a reference
 			// to the generic method.
-			Assert.IsTrue(Refactoring.RefactoringService.IsReferenceToMember(genericMethod, mrr));
+			Assert.IsTrue(mrr.IsReferenceTo(genericMethod));
 		}
 		
 		[Test]
@@ -386,15 +386,15 @@ class TestClass {
 			
 			Assert.AreSame(nonGenericMethod, mrr.ResolvedMember);
 			
-			Assert.IsTrue(Refactoring.RefactoringService.IsReferenceToMember(nonGenericMethod, mrr));
-			Assert.IsFalse(Refactoring.RefactoringService.IsReferenceToMember(genericMethod, mrr));
+			Assert.IsTrue(mrr.IsReferenceTo(nonGenericMethod));
+			Assert.IsFalse(mrr.IsReferenceTo(genericMethod));
 			
 			mrr = Resolve<MemberResolveResult>(program, "GetSomething<int>()", 4);
 			Assert.AreEqual("System.Int32", mrr.ResolvedType.FullyQualifiedName);
 			Assert.AreEqual("System.Int32", mrr.ResolvedMember.ReturnType.FullyQualifiedName);
 			
-			Assert.IsTrue(Refactoring.RefactoringService.IsReferenceToMember(genericMethod, mrr));
-			Assert.IsFalse(Refactoring.RefactoringService.IsReferenceToMember(nonGenericMethod, mrr));
+			Assert.IsTrue(mrr.IsReferenceTo(genericMethod));
+			Assert.IsFalse(mrr.IsReferenceTo(nonGenericMethod));
 		}
 		
 		[Test]

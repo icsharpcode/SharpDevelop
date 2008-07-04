@@ -21,7 +21,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public readonly static LanguageProperties None = new LanguageProperties(StringComparer.InvariantCulture);
 		
 		/// <summary>
-		/// C# 2.0 language properties.
+		/// C# 3.0 language properties.
 		/// </summary>
 		public readonly static LanguageProperties CSharp = new CSharpProperties();
 		

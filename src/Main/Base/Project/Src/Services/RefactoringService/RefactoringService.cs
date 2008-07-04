@@ -229,32 +229,17 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 					// found in this file (the resolver should parse all methods at once)
 					ResolveResult rr = ParserService.Resolve(expr, position.Y, position.X, fileName, fileContent);
 					MemberResolveResult mrr = rr as MemberResolveResult;
-					if (isLocal) {
-						// find reference to local variable
-						if (IsReferenceToLocalVariable(rr, member)) {
-							list.Add(new Reference(fileName, match.Position, match.Length, expr.Expression, rr));
-						} else if (FixIndexerExpression(expressionFinder, ref expr, mrr)) {
-							goto repeatResolve;
-						}
-					} else if (member != null) {
+					if (member != null) {
 						// find reference to member
-						if (IsReferenceToMember(member, rr)) {
+						if (rr != null && rr.IsReferenceTo(member)) {
 							list.Add(new Reference(fileName, match.Position, match.Length, expr.Expression, rr));
 						} else if (FixIndexerExpression(expressionFinder, ref expr, mrr)) {
 							goto repeatResolve;
 						}
 					} else {
 						// find reference to class
-						if (mrr != null) {
-							if (mrr.ResolvedMember is IMethod && ((IMethod)mrr.ResolvedMember).IsConstructor) {
-								if (mrr.ResolvedMember.DeclaringType.FullyQualifiedName == parentClass.FullyQualifiedName) {
-									list.Add(new Reference(fileName, match.Position, match.Length, expr.Expression, rr));
-								}
-							}
-						} else {
-							if (rr is TypeResolveResult && rr.ResolvedType.FullyQualifiedName == parentClass.FullyQualifiedName) {
-								list.Add(new Reference(fileName, match.Position, match.Length, expr.Expression, rr));
-							}
+						if (rr != null && rr.IsReferenceTo(parentClass)) {
+							list.Add(new Reference(fileName, match.Position, match.Length, expr.Expression, rr));
 						}
 					}
 				}
@@ -401,34 +386,6 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 						resultList.Add(item);
 					}
 				}
-			}
-		}
-		#endregion
-		
-		#region IsReferenceTo...
-		public static bool IsReferenceToLocalVariable(ResolveResult rr, IMember variable)
-		{
-			LocalResolveResult local = rr as LocalResolveResult;
-			if (local == null) {
-				return false;
-			} else {
-				return local.VariableDefinitionRegion.BeginLine == variable.Region.BeginLine
-					&& local.VariableDefinitionRegion.BeginColumn == variable.Region.BeginColumn;
-			}
-		}
-		
-		/// <summary>
-		/// Gets if <paramref name="rr"/> is a reference to <paramref name="member"/>.
-		/// </summary>
-		public static bool IsReferenceToMember(IMember member, ResolveResult rr)
-		{
-			MemberResolveResult mrr = rr as MemberResolveResult;
-			if (mrr != null) {
-				return MemberLookupHelper.IsSimilarMember(mrr.ResolvedMember, member);
-			} else if (rr is MethodGroupResolveResult) {
-				return MemberLookupHelper.IsSimilarMember((rr as MethodGroupResolveResult).GetMethodIfSingleOverload(), member);
-			} else {
-				return false;
 			}
 		}
 		#endregion
