@@ -255,7 +255,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 				if (pos > 0)
 					shortName = shortName.Substring(0, pos);
 				
-				HostCallback.BeginAssemblyLoad(shortName);
 				#if DEBUG
 				int time = Environment.TickCount;
 				#endif
@@ -268,7 +267,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 					#if DEBUG
 					LoggingService.Debug(string.Format("Loaded {0} in {1}ms", itemInclude, Environment.TickCount - time));
 					#endif
-					HostCallback.FinishAssemblyLoad();
 				}
 				
 				if (pc != null) {

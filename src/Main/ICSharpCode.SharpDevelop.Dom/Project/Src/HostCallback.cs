@@ -42,10 +42,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return false;
 		};
 		
-		public static Action<string> BeginAssemblyLoad = delegate {};
-		
-		public static Action FinishAssemblyLoad = delegate {};
-		
 		/// <summary>
 		/// Show error loading code-completion information.
 		/// The arguments are: string fileName, string include, string message

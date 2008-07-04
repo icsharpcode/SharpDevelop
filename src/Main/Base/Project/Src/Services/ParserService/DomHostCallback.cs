@@ -19,8 +19,6 @@ namespace ICSharpCode.SharpDevelop
 	/// </summary>
 	internal static class DomHostCallback
 	{
-		static IProgressMonitor assemblyLoadProgressMonitor;
-		
 		internal static void Register()
 		{
 			HostCallback.RenameMember = Refactoring.FindReferencesAndRenameHelper.RenameMember;
@@ -33,17 +31,6 @@ namespace ICSharpCode.SharpDevelop
 			HostCallback.ShowError = delegate(string message, Exception ex) {
 				MessageService.ShowError(ex, message);
 			};
-			
-			if (WorkbenchSingleton.MainForm != null) {
-				assemblyLoadProgressMonitor = StatusBarService.CreateProgressMonitor();
-				HostCallback.BeginAssemblyLoad = delegate(string shortName) {
-					assemblyLoadProgressMonitor.BeginTask(
-						StringParser.Parse("${res:ICSharpCode.SharpDevelop.LoadingFile}", new string[,] {{"Filename", shortName}}),
-						100, false
-					);
-				};
-				HostCallback.FinishAssemblyLoad = assemblyLoadProgressMonitor.Done;
-			}
 			
 			HostCallback.ShowAssemblyLoadError = delegate(string fileName, string include, string message) {
 				WorkbenchSingleton.SafeThreadAsyncCall(ShowAssemblyLoadError,
