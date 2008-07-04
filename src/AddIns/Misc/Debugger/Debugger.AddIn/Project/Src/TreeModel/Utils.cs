@@ -17,19 +17,16 @@ namespace Debugger.AddIn.TreeModel
 {
 	public static partial class Utils
 	{
-		public static void DoEvents(DebuggeeState debuggeeState)
+		/// <param name="process">Process on which to track debuggee state</param>
+		public static void DoEvents(Process process)
 		{
-			if (debuggeeState == null) {
-				throw new ArgumentNullException();
-			}
-			if (debuggeeState.HasExpired) {
-				throw new System.Exception("State is expired before DoEvents");
-			}
+			DebuggeeState oldState = process.DebuggeeState;
 			//using(new PrintTimes("Application.DoEvents()"))
 			{
 				Application.DoEvents();
 			}
-			if (debuggeeState.HasExpired) {
+			DebuggeeState newState = process.DebuggeeState;
+			if (oldState != newState) {
 				LoggingService.Info("Aborted because debuggee resumed");
 				throw new AbortedBecauseDebuggeeResumedException();
 			}

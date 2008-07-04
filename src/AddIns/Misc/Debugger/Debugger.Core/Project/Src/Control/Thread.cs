@@ -320,7 +320,7 @@ namespace Debugger
 		
 		public StackFrame SelectedStackFrame {
 			get {
-				if (selectedStackFrame != null && selectedStackFrame.HasExpired) return null;
+				if (selectedStackFrame != null && selectedStackFrame.IsInvalid) return null;
 				if (process.IsRunning) return null;
 				return selectedStackFrame;
 			}

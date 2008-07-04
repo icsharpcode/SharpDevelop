@@ -130,13 +130,13 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				try {
 					foreach (Thread t in debuggedProcess.Threads) {
 						if (debuggedProcess.IsPaused) {
-							Utils.DoEvents(debuggedProcess.DebuggeeState);
+							Utils.DoEvents(debuggedProcess);
 						}
 						RefreshThread(t);
 					}
 				} catch(AbortedBecauseDebuggeeResumedException) {
 				} catch(System.Exception) {
-					if (debuggedProcess == null || debuggedProcess.HasExpired) {
+					if (debuggedProcess == null || debuggedProcess.HasExited) {
 						// Process unexpectedly exited
 					} else {
 						throw;

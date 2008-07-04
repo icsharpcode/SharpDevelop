@@ -75,46 +75,46 @@ namespace Debugger.Tests {
       <StackFrame
         ArgumentCount="1"
         Depth="0"
-        HasExpired="False"
         HasSymbols="True"
+        IsInvalid="False"
         MethodInfo="Function"
         NextStatement="FunctionLifetime.cs:22,4-22,40" />
     </SelectedStackFrame>
     <DebuggingPaused>Break</DebuggingPaused>
     <Old_StackFrame>
       <StackFrame
-        ArgumentCount="{Exception: StackFrame has expired}"
+        ArgumentCount="{Exception: StackFrame is not valid anymore}"
         Depth="0"
-        HasExpired="True"
         HasSymbols="True"
+        IsInvalid="True"
         MethodInfo="Function"
-        NextStatement="{Exception: StackFrame has expired}" />
+        NextStatement="{Exception: StackFrame is not valid anymore}" />
     </Old_StackFrame>
     <SelectedStackFrame>
       <StackFrame
         ArgumentCount="0"
         Depth="0"
-        HasExpired="False"
         HasSymbols="True"
+        IsInvalid="False"
         MethodInfo="SubFunction"
         NextStatement="FunctionLifetime.cs:29,4-29,40" />
     </SelectedStackFrame>
     <DebuggingPaused>Break</DebuggingPaused>
     <Old_StackFrame>
       <StackFrame
-        ArgumentCount="{Exception: StackFrame has expired}"
+        ArgumentCount="{Exception: StackFrame is not valid anymore}"
         Depth="0"
-        HasExpired="True"
         HasSymbols="True"
+        IsInvalid="True"
         MethodInfo="Function"
-        NextStatement="{Exception: StackFrame has expired}" />
+        NextStatement="{Exception: StackFrame is not valid anymore}" />
     </Old_StackFrame>
     <SelectedStackFrame>
       <StackFrame
         ArgumentCount="1"
         Depth="0"
-        HasExpired="False"
         HasSymbols="True"
+        IsInvalid="False"
         MethodInfo="Function"
         NextStatement="FunctionLifetime.cs:24,4-24,40" />
     </SelectedStackFrame>
@@ -123,26 +123,26 @@ namespace Debugger.Tests {
       <StackFrame
         ArgumentCount="0"
         Depth="0"
-        HasExpired="False"
         HasSymbols="True"
+        IsInvalid="False"
         MethodInfo="Main"
         NextStatement="FunctionLifetime.cs:17,4-17,40" />
     </Main>
     <Old_StackFrame>
       <StackFrame
-        ArgumentCount="{Exception: StackFrame has expired}"
+        ArgumentCount="{Exception: StackFrame is not valid anymore}"
         Depth="0"
-        HasExpired="True"
         HasSymbols="True"
+        IsInvalid="True"
         MethodInfo="Function"
-        NextStatement="{Exception: StackFrame has expired}" />
+        NextStatement="{Exception: StackFrame is not valid anymore}" />
     </Old_StackFrame>
     <SelectedStackFrame>
       <StackFrame
         ArgumentCount="0"
         Depth="0"
-        HasExpired="False"
         HasSymbols="True"
+        IsInvalid="False"
         MethodInfo="Main"
         NextStatement="FunctionLifetime.cs:17,4-17,40" />
     </SelectedStackFrame>

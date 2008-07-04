@@ -55,7 +55,7 @@ namespace Debugger
 		public ManagedCallback GetProcessCallbackInterface(ICorDebugProcess pProcess)
 		{
 			Process process = debugger.GetProcess(pProcess);
-			if (process == null || process.HasExpired) {
+			if (process == null || process.HasExited) {
 				debugger.TraceMessage("Ignoring callback of exited process (process not found)");
 				return null;
 			}

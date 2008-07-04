@@ -83,7 +83,7 @@ namespace Debugger
 		internal void NotifyPaused(PausedReason pauseReason)
 		{
 			AssertRunning();
-			pauseSession = new PauseSession(pauseReason);
+			pauseSession = new PauseSession(this, pauseReason);
 			if (debuggeeState == null) {
 				debuggeeState = new DebuggeeState(this);
 			}
@@ -93,14 +93,10 @@ namespace Debugger
 		internal void NotifyResumed(DebuggeeStateAction action)
 		{
 			AssertPaused();
-			PauseSession oldPauseSession = pauseSession;
 			pauseSession = null;
-			oldPauseSession.NotifyHasExpired();
 			if (action == DebuggeeStateAction.Clear) {
 				if (debuggeeState == null) throw new DebuggerException("Debugee state already cleared");
-				DebuggeeState oldDebugeeState = debuggeeState;
 				debuggeeState = null;
-				oldDebugeeState.NotifyHasExpired();
 			}
 		}
 		
@@ -116,7 +112,7 @@ namespace Debugger
 				// The event could have resumed or killed the process
 			}
 			
-			if (this.IsPaused && !this.HasExpired) {
+			if (this.IsPaused && !this.HasExited) {
 				OnPaused();
 				// The event could have resumed the process
 			}
@@ -192,7 +188,7 @@ namespace Debugger
 				NotifyPaused(PausedReason.ForcedBreak);
 			}
 			corProcess.Detach();
-			NotifyHasExpired();			
+			NotifyHasExited();			
 		}
 		
 		#region Convenience methods
@@ -288,24 +284,24 @@ namespace Debugger
 		/// </summary>
 		public void WaitForPause()
 		{
-			while(this.IsRunning && !this.HasExpired) {
+			while(this.IsRunning && !this.HasExited) {
 				debugger.MTA2STA.WaitForCall();
 				debugger.MTA2STA.PerformAllCalls();
 			}
-			if (this.HasExpired) throw new ProcessExitedException();
+			if (this.HasExited) throw new ProcessExitedException();
 		}
 		
 		public void WaitForPause(TimeSpan timeout)
 		{
 			DateTime endTime = Util.HighPrecisionTimer.Now + timeout;
-			while(this.IsRunning && !this.HasExpired) {
+			while(this.IsRunning && !this.HasExited) {
 				TimeSpan timeLeft = endTime - Util.HighPrecisionTimer.Now;
 				if (timeLeft <= TimeSpan.FromMilliseconds(10)) break;
 				//this.TraceMessage("Time left: " + timeLeft.TotalMilliseconds);
 				debugger.MTA2STA.WaitForCall(timeLeft);
 				debugger.MTA2STA.PerformCall();
 			}
-			if (this.HasExpired) throw new ProcessExitedException();
+			if (this.HasExited) throw new ProcessExitedException();
 		}
 		
 		/// <summary>
@@ -313,7 +309,7 @@ namespace Debugger
 		/// </summary>
 		public void WaitForExit()
 		{
-			while(!this.HasExpired) {
+			while(!this.HasExited) {
 				debugger.MTA2STA.WaitForCall();
 				debugger.MTA2STA.PerformAllCalls();
 			}

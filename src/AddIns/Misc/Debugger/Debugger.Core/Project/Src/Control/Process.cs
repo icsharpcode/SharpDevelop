@@ -12,7 +12,7 @@ using Debugger.Wrappers.CorDebug;
 
 namespace Debugger
 {
-	public partial class Process: DebuggerObject, IExpirable
+	public partial class Process: DebuggerObject
 	{
 		NDebugger debugger;
 		
@@ -21,22 +21,22 @@ namespace Debugger
 		
 		#region IExpirable
 		
-		bool hasExpired = false;
+		bool hasExited = false;
 		
-		public event EventHandler Expired;
+		public event EventHandler Exited;
 		
-		public bool HasExpired {
+		public bool HasExited {
 			get {
-				return hasExpired;
+				return hasExited;
 			}
 		}
 		
-		internal void NotifyHasExpired()
+		internal void NotifyHasExited()
 		{
-			if(!hasExpired) {
-				hasExpired = true;
-				if (Expired != null) {
-					Expired(this, new ProcessEventArgs(this));
+			if(!hasExited) {
+				hasExited = true;
+				if (Exited != null) {
+					Exited(this, new ProcessEventArgs(this));
 				}
 				// Expire pause seesion first
 				if (IsPaused) {

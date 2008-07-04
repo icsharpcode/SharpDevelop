@@ -83,7 +83,7 @@ namespace Debugger.AddIn.TreeModel
 			}
 			
 			// Repaint and process user commands
-			Utils.DoEvents(process.DebuggeeState);
+			Utils.DoEvents(process);
 		}
 		
 		public void SetChildContentRecursive(IEnumerable<AbstractNode> contentEnum)

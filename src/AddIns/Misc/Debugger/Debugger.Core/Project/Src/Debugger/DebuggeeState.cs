@@ -10,36 +10,22 @@ using System;
 namespace Debugger
 {
 	/// <summary>
-	/// Unique identifier of the state of the debugee.
-	/// Changes when debuggee is stepped, but not when properity is evaluated.
+	/// Represents span of time in which the debugger state is assumed to
+	/// be unchanged.
 	/// </summary>
-	public class DebuggeeState: IExpirable
+	/// <remarks>
+	/// For example, althogh property evaluation can in theory change
+	/// any memory, it is assumed that they behave 'corectly' and thus
+	/// property evaluation does not change debugger state.
+	/// </remarks>
+	public class DebuggeeState: DebuggerObject
 	{
 		Process process;
-		bool hasExpired = false;
-		
-		public event EventHandler Expired;
 		
 		[Debugger.Tests.Ignore]
 		public Process Process {
 			get {
 				return process;
-			}
-		}
-		
-		public bool HasExpired {
-			get {
-				return hasExpired;
-			}
-		}
-		
-		internal void NotifyHasExpired()
-		{
-			if(!hasExpired) {
-				hasExpired = true;
-				if (Expired != null) {
-					Expired(this, EventArgs.Empty);
-				}
 			}
 		}
 		

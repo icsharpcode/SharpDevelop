@@ -407,7 +407,7 @@ namespace Debugger
 			// ExitProcess may be called at any time when debuggee is killed
 			process.TraceMessage("Callback: ExitProcess");
 			
-			process.NotifyHasExpired();
+			process.NotifyHasExited();
 		}
 		
 		#endregion

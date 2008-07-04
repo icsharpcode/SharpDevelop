@@ -61,9 +61,9 @@ namespace Debugger
 			}
 		}
 		
-		/// <summary> Returns true if the Value has expired
-		/// and can not be used anymore </summary>
-		public bool HasExpired {
+		/// <summary> Returns true if the Value can not be used anymore.
+		/// Value is valid only until the debuggee is resummed. </summary>
+		public bool IsInvalid {
 			get {
 				return rawCorValue_pauseSession != process.PauseSession &&
 				       !rawCorValue.Is<ICorDebugHandleValue>();
@@ -72,7 +72,7 @@ namespace Debugger
 		
 		internal ICorDebugValue RawCorValue {
 			get {
-				if (this.HasExpired) throw new GetValueException("Value has expired");
+				if (this.IsInvalid) throw new GetValueException("Value is no longer valid");
 				
 				return rawCorValue;
 			}
@@ -80,7 +80,7 @@ namespace Debugger
 		
 		internal ICorDebugValue CorValue {
 			get {
-				if (this.HasExpired) throw new GetValueException("Value has expired");
+				if (this.IsInvalid) throw new GetValueException("Value is no longer valid");
 				
 				if (corValue_pauseSession != process.PauseSession) {
 					corValue = DereferenceUnbox(rawCorValue);

@@ -56,7 +56,7 @@ namespace Debugger.Expressions
 			}
 			if (expressionCache.ContainsKey(this)) {
 				Value cachedResult = expressionCache[this];
-				if (!cachedResult.HasExpired) {
+				if (!cachedResult.IsInvalid) {
 					return cachedResult;
 				}
 			}
@@ -66,7 +66,7 @@ namespace Debugger.Expressions
 		public Value Evaluate(StackFrame context)
 		{
 			if (context == null) throw new ArgumentNullException("context");
-			if (context.HasExpired) throw new DebuggerException("Context is expired StackFrame");
+			if (context.IsInvalid) throw new DebuggerException("The context is no longer valid");
 			
 			Value result;
 			

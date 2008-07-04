@@ -70,8 +70,9 @@ namespace Debugger
 			}
 		}
 		
-		/// <summary> True if stack frame stepped out and is not longer valid. </summary>
-		public bool HasExpired {
+		/// <summary> Returns true is this incance can not be used any more.
+		/// Stack frame is valid only until the debugee is resumed. </summary>
+		public bool IsInvalid {
 			get {
 				return this.corILFramePauseSession != process.PauseSession;
 			}
@@ -102,7 +103,7 @@ namespace Debugger
 		
 		internal ICorDebugILFrame CorILFrame {
 			get {
-				if (HasExpired) throw new DebuggerException("StackFrame has expired");
+				if (this.IsInvalid) throw new DebuggerException("StackFrame is not valid anymore");
 				return corILFrame;
 			}
 		}
@@ -251,7 +252,6 @@ namespace Debugger
 		ICorDebugValue GetThisCorValue()
 		{
 			if (this.MethodInfo.IsStatic) throw new GetValueException("Static method does not have 'this'.");
-			if (this.HasExpired) throw new GetValueException("StackFrame has expired");
 			try {
 				return CorILFrame.GetArgument(0);
 			} catch (COMException e) {
@@ -282,8 +282,6 @@ namespace Debugger
 		
 		ICorDebugValue GetArgumentCorValue(int index)
 		{
-			if (this.HasExpired) throw new GetValueException("StackFrame has expired");
-			
 			try {
 				// Non-static methods include 'this' as first argument
 				return CorILFrame.GetArgument((uint)(this.MethodInfo.IsStatic? index : (index + 1)));
@@ -326,8 +324,6 @@ namespace Debugger
 		
 		ICorDebugValue GetLocalVariableCorValue(ISymUnmanagedVariable symVar)
 		{
-			if (this.HasExpired) throw new GetValueException("StackFrame has expired");
-			
 			try {
 				return CorILFrame.GetLocalVariable((uint)symVar.AddressField1);
 			} catch (COMException e) {

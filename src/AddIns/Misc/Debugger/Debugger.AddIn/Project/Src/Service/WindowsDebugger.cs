@@ -510,7 +510,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			if (currentTooltipRow != null && currentTooltipRow.IsShown) {
 				using(new PrintTimes("Update tooltip")) {
 					try {
-						Utils.DoEvents(debuggedProcess.DebuggeeState);
+						Utils.DoEvents(debuggedProcess);
 						AbstractNode updatedNode = ValueNode.Create(currentTooltipExpression);
 						currentTooltipRow.SetContentRecursive(updatedNode);
 					} catch (AbortedBecauseDebuggeeResumedException) {
@@ -555,7 +555,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			DebuggerEventForm.Result result = DebuggerEventForm.Show(title, message, icon, canContinue);
 			
 			// If the process was killed while the exception form was shown
-			if (e.Process.HasExpired) return;
+			if (e.Process.HasExited) return;
 			
 			switch (result) {
 				case DebuggerEventForm.Result.Break:

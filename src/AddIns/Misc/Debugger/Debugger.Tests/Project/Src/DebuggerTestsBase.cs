@@ -73,7 +73,7 @@ namespace Debugger.Tests
 		
 		protected void EndTest()
 		{
-			if (!process.HasExpired) {
+			if (!process.HasExited) {
 				process.AsyncContinue();
 				process.WaitForExit();
 			}
@@ -156,7 +156,7 @@ namespace Debugger.Tests
 			process.ExceptionThrown += delegate(object sender, ExceptionEventArgs e) {
 				LogEvent("ExceptionThrown", e.Exception.Message);
 			};
-			process.Expired += delegate(object sender, EventArgs e) {
+			process.Exited += delegate(object sender, EventArgs e) {
 				LogEvent("ProcessExited", null);
 			};
 			

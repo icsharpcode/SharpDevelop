@@ -57,8 +57,8 @@ namespace Debugger.Tests {
       <StackFrame
         ArgumentCount="1"
         Depth="0"
-        HasExpired="False"
         HasSymbols="True"
+        IsInvalid="False"
         MethodInfo="Fun"
         NextStatement="StackOverflow.cs:21,3-21,4" />
     </LastStackFrame>

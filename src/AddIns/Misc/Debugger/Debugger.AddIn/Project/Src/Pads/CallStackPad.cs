@@ -133,12 +133,12 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			
 			using(new PrintTimes("Callstack refresh")) {
 				try {
-					Utils.DoEvents(debuggedProcess.DebuggeeState);
+					Utils.DoEvents(debuggedProcess);
 					List<ListViewItem> items = CreateItems();
 					UpdateItems(items);
 				} catch(AbortedBecauseDebuggeeResumedException) {
 				} catch(System.Exception) {
-					if (debuggedProcess == null || debuggedProcess.HasExpired) {
+					if (debuggedProcess == null || debuggedProcess.HasExited) {
 						// Process unexpectedly exited
 					} else {
 						throw;
@@ -170,7 +170,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				item.ForeColor = frame.HasSymbols ? Color.Black : Color.Gray;
 				items.Add(item);
 				
-				Utils.DoEvents(debuggedProcess.DebuggeeState);
+				Utils.DoEvents(debuggedProcess);
 			}
 			
 			return items;
@@ -193,7 +193,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				callStackList.Items[i].Tag         = items[i].Tag;
 				callStackList.Items[i].ForeColor   = items[i].ForeColor;
 				
-				Utils.DoEvents(debuggedProcess.DebuggeeState);
+				Utils.DoEvents(debuggedProcess);
 			}
 			callStackList.EndUpdate();
 		}

@@ -386,7 +386,7 @@ namespace Debugger.MetaData
 				type.LoadMemberInfo();
 			}
 			typesWithMatchingName.Add(type);
-			type.Process.Expired += delegate { typesWithMatchingName.Remove(type); };
+			type.Process.Exited += delegate { typesWithMatchingName.Remove(type); };
 			
 			TimeSpan totalTime2 = Util.HighPrecisionTimer.Now - startTime;
 			string prefix = type.IsInterface ? "interface" : "type";

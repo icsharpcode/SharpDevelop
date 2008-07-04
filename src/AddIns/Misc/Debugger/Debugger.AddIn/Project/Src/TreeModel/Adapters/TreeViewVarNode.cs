@@ -87,13 +87,13 @@ namespace Debugger.AddIn.TreeModel
 				this.Collapse();
 			}
 			// Process user commands
-			Utils.DoEvents(process.DebuggeeState);
+			Utils.DoEvents(process);
 			// Repaint
 			if (HighPrecisionTimer.Now > nextRepaintTime) {
 				using(new PrintTime("Repainting Local Variables Pad")) {
 					try {
 						this.Tree.EndUpdate();   // Enable painting
-						Utils.DoEvents(process.DebuggeeState); // Paint
+						Utils.DoEvents(process); // Paint
 					} finally {
 						this.Tree.BeginUpdate(); // Disable painting
 						nextRepaintTime = HighPrecisionTimer.Now + workTime;

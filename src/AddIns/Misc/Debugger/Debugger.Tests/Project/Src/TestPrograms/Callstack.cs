@@ -63,8 +63,8 @@ namespace Debugger.Tests {
         <StackFrame
           ArgumentCount="0"
           Depth="0"
-          HasExpired="False"
           HasSymbols="True"
+          IsInvalid="False"
           MethodInfo="Sub2"
           NextStatement="Callstack.cs:26,4-26,40" />
       </Item>
@@ -72,8 +72,8 @@ namespace Debugger.Tests {
         <StackFrame
           ArgumentCount="0"
           Depth="1"
-          HasExpired="False"
           HasSymbols="True"
+          IsInvalid="False"
           MethodInfo="Sub1"
           NextStatement="Callstack.cs:21,4-21,11" />
       </Item>
@@ -81,8 +81,8 @@ namespace Debugger.Tests {
         <StackFrame
           ArgumentCount="0"
           Depth="2"
-          HasExpired="False"
           HasSymbols="True"
+          IsInvalid="False"
           MethodInfo="Main"
           NextStatement="Callstack.cs:16,4-16,11" />
       </Item>
@@ -93,8 +93,8 @@ namespace Debugger.Tests {
         <StackFrame
           ArgumentCount="0"
           Depth="0"
-          HasExpired="False"
           HasSymbols="True"
+          IsInvalid="False"
           MethodInfo="Sub1"
           NextStatement="Callstack.cs:21,4-21,11" />
       </Item>
@@ -102,8 +102,8 @@ namespace Debugger.Tests {
         <StackFrame
           ArgumentCount="0"
           Depth="1"
-          HasExpired="False"
           HasSymbols="True"
+          IsInvalid="False"
           MethodInfo="Main"
           NextStatement="Callstack.cs:16,4-16,11" />
       </Item>
@@ -114,8 +114,8 @@ namespace Debugger.Tests {
         <StackFrame
           ArgumentCount="0"
           Depth="0"
-          HasExpired="False"
           HasSymbols="True"
+          IsInvalid="False"
           MethodInfo="Main"
           NextStatement="Callstack.cs:16,4-16,11" />
       </Item>
