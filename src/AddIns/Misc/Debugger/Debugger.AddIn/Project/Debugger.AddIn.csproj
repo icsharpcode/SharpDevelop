@@ -68,6 +68,7 @@
       <DependentUpon>DebuggerEventForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Src\Service\RemotingConfigurationHelpper.cs" />
+    <Compile Include="Src\Service\RunToCursorCommand.cs" />
     <Compile Include="Src\Service\WindowsDebugger.cs" />
     <EmbeddedResource Include="Src\Options\DebuggingOptionsPanel.resx">
       <DependentUpon>DebuggingOptionsPanel.cs</DependentUpon>

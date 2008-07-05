@@ -18,12 +18,22 @@
 	</Path>
 	
 	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/ContextMenu">
-		<Condition name = "IsProcessRunning" isdebugging="True" isprocessrunning="False">
-			<MenuItem id = "DebuggerSetCurrentStatement"
+		<Condition name = "IsProcessRunning" isdebugging="True">
+			<Condition name = "IsProcessRunning" isdebugging="True" isprocessrunning="False">
+				<MenuItem id = "DebuggerSetCurrentStatement"
+				          insertbefore = "Refactoring"
+				          label = "${res:MainWindow.Windows.Debug.SetCurrentStatement}"
+				          icon = "Icons.16x16.Debug.StepInto"
+				          class = "ICSharpCode.SharpDevelop.Services.SetCurrentStatementCommand"/>
+			</Condition>
+			<MenuItem id = "DebuggerRunToCursor"
 			          insertbefore = "Refactoring"
-			          label = "${res:MainWindow.Windows.Debug.SetCurrentStatement}"
-			          icon = "Icons.16x16.Debug.StepInto"
-			          class = "ICSharpCode.SharpDevelop.Services.SetCurrentStatementCommand"/>
+			          label = "${res:MainWindow.Windows.Debug.RunToCursor}"
+			          icon = "Icons.16x16.Debug.Continue"
+			          class = "ICSharpCode.SharpDevelop.Services.RunToCursorCommand"/>
+			<MenuItem id = "DebuggerSeparator"
+			          insertbefore = "Refactoring"
+			          type = "Separator"/>
 		</Condition>
 	</Path>
 	
