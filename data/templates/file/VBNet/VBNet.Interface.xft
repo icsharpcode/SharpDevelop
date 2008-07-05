@@ -22,7 +22,6 @@
 	 -->
 	<Files>
 		<File name="${FullName}" language="VBNET"><![CDATA[${StandardHeader.VBNET}
-
 Public Interface ${ClassName}
 	
 End Interface

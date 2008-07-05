@@ -54,7 +54,6 @@
 ]]></File>
 		<File name="Src/Command.vb">
 			<![CDATA[${StandardHeader.VBNET}
-
 Imports ICSharpCode.Core
 Imports ICSharpCode.SharpDevelop
 Imports ICSharpCode.SharpDevelop.Gui

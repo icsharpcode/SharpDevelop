@@ -82,7 +82,6 @@
 ]]></File>
 		<File name="Src/MyUserControl.vb">
 			<![CDATA[${StandardHeader.VBNET}
-
 Imports System
 Imports System.Windows.Forms
 Imports ICSharpCode.SharpDevelop.Gui.XmlForms
@@ -102,7 +101,6 @@ End Class
 		</File>
 		<File name="Src/TestPad.vb">
 			<![CDATA[${StandardHeader.VBNET}
-
 Imports ICSharpCode.Core
 Imports ICSharpCode.SharpDevelop.Gui
 

@@ -41,7 +41,6 @@
 
 		<Files>
 			<File name="${ProjectName}.vb"><![CDATA[${StandardHeader.VBNET}
-
 Imports System.ServiceProcess
 
 Public Class ${ProjectName}
@@ -71,7 +70,6 @@ End Class
 
 ]]></File>
 				<File name="ProjectInstaller.vb"><![CDATA[${StandardHeader.VBNET}
-
 Imports System.ComponentModel
 Imports System.Configuration.Install
 Imports System.ServiceProcess

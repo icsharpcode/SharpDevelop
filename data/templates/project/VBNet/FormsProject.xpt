@@ -94,7 +94,6 @@ End Class
 ]]></File>
 <File name="Program.vb">
 			<![CDATA[${StandardHeader.VBNET}
-
 Imports Microsoft.VisualBasic.ApplicationServices
 
 Namespace My

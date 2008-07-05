@@ -33,7 +33,6 @@
 
 	<Files>
 		<File name="${FullName}" language="C#"><![CDATA[${StandardHeader.C#}
-
 using System;
 
 namespace ${StandardNamespace}

@@ -69,7 +69,6 @@ namespace ${StandardNamespace}
 }
 ]]></File>
 		<File name="${FullName}" language="C#"><![CDATA[${StandardHeader.C#}
-
 using System;
 using System.ComponentModel;
 using System.Drawing;

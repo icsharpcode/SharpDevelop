@@ -22,7 +22,6 @@
 	 -->
 	<Files>
 		<File name="${Path}/${FileNameWithoutExtension}.cs" DependentUpon="${FileName}" language="C#"><![CDATA[${StandardHeader.C#}
-
 using System;
 using System.Web.Services;
 

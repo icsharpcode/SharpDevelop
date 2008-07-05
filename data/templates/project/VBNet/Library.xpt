@@ -37,7 +37,6 @@
 		
 		<Files>
 			<File name="NewClass.vb"><![CDATA[${StandardHeader.VBNET}
-
 Public Class NewClass
 	
 End Class

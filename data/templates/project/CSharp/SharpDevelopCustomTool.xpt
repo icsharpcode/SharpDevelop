@@ -67,7 +67,6 @@
 ]]></File>
 		<File name="${ProjectName}Tool.cs">
 			<![CDATA[${StandardHeader.C#}
-
 using System;
 using System.IO;
 using System.CodeDom;

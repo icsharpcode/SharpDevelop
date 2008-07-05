@@ -21,7 +21,6 @@
 	 -->
 	<Files>
 		<File name="${FullName}" language="C#"><![CDATA[${StandardHeader.C#}
-
 using System;
 using System.Windows.Forms;
 using ICSharpCode.Core;

@@ -47,7 +47,6 @@
 		
 		<Files>
 			<File name="MainClass.vb"><![CDATA[${StandardHeader.VBNET}
-
 Imports System.ComponentModel
 
 ' This is the main class of my Direct3D application

@@ -36,7 +36,6 @@
 	<Files>
 <!--*************************************************************************-->
 		<File name=".\Default.aspx.cs" DependentUpon="Default.aspx"><![CDATA[${StandardHeader.C#}
-
 using System;
 using System.Collections;
 using System.ComponentModel;

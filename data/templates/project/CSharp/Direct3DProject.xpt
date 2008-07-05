@@ -36,7 +36,8 @@
 		</PropertyGroup>
 		
 		<Files>
-			<File name="MainClass.cs"><![CDATA[using System;
+			<File name="MainClass.cs"><![CDATA[${StandardHeader.C#}
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;

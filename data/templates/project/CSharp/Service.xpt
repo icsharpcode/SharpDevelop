@@ -39,7 +39,6 @@
 
 		<Files>
 			<File name="${ProjectName}.cs"><![CDATA[${StandardHeader.C#}
-
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -92,7 +91,6 @@ namespace ${StandardNamespace}
 }
 ]]></File>
 				<File name="ProjectInstaller.cs"><![CDATA[${StandardHeader.C#}
-
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -121,7 +119,6 @@ namespace ${StandardNamespace}
 }
 ]]></File>
 				<File name="Program.cs"><![CDATA[${StandardHeader.C#}
-
 using System;
 using System.Collections.Generic;
 using System.ServiceProcess;

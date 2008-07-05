@@ -55,7 +55,6 @@
 ]]></File>
 		<File name="Src/Command.cs">
 			<![CDATA[${StandardHeader.C#}
-
 using System;
 using System.Text;
 using ICSharpCode.Core;

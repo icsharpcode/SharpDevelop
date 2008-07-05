@@ -21,7 +21,6 @@
 	 -->
 	<Files>
 		<File name="${FullName}" language="VBNET"><![CDATA[${StandardHeader.VBNET}
-
 Public Module ${ClassName}
 	
 End Module

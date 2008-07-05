@@ -33,7 +33,6 @@
 		
 		<Files>
 		<File name="MainForm.cs" language="C#"><![CDATA[${StandardHeader.C#}
-
 using System;
 using System.Collections.Generic;
 using System.Drawing;
