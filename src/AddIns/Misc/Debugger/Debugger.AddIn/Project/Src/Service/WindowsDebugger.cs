@@ -57,7 +57,14 @@ namespace ICSharpCode.SharpDevelop.Services
 {
 	public class WindowsDebugger : IDebugger
 	{
+		enum StopAttachedProcessDialogResult {
+			Detach = 0,
+			Terminate = 1,
+			Cancel = 2
+		}
+		
 		bool useRemotingForThreadInterop = false;
+		bool attached;
 		
 		NDebugger debugger;
 		
@@ -114,6 +121,12 @@ namespace ICSharpCode.SharpDevelop.Services
 			}
 		}
 		
+		public bool IsAttached {
+			get {
+				return ServiceInitialized && attached;
+			}
+		}
+		
 		public bool IsProcessRunning {
 			get {
 				return IsDebugging && debuggedProcess.IsRunning;
@@ -145,6 +158,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			} else if (debugger.IsKernelDebuggerEnabled) {
 				MessageService.ShowMessage("${res:XML.MainMenu.DebugMenu.Error.KernelDebuggerEnabled}");
 			} else {
+				attached = false;
 				if (DebugStarting != null)
 					DebugStarting(this, EventArgs.Empty);
 				
@@ -182,6 +196,7 @@ namespace ICSharpCode.SharpDevelop.Services
 					DebugStarting(this, EventArgs.Empty);
 			
 				Debugger.Process process = debugger.Attach(existingProcess);
+				attached = true;
 				SelectProcess(process);
 			}
 		}
@@ -202,7 +217,21 @@ namespace ICSharpCode.SharpDevelop.Services
 				MessageService.ShowMessage(errorNotDebugging, "${res:XML.MainMenu.DebugMenu.Stop}");
 				return;
 			}
-			debuggedProcess.Terminate();
+			if (IsAttached) {
+				StopAttachedProcessDialogResult result = ShowStopAttachedProcessDialog();
+				switch (result) {
+					case StopAttachedProcessDialogResult.Terminate:
+						debuggedProcess.Terminate();
+						attached = false;
+					break;
+					case StopAttachedProcessDialogResult.Detach:
+						Detach();
+						attached = false;
+					break;
+				}
+			} else {
+				debuggedProcess.Terminate();
+			}
 		}
 		
 		// ExecutionControl:
@@ -579,6 +608,14 @@ namespace ICSharpCode.SharpDevelop.Services
 					DebuggerService.JumpToCurrentLine(nextStatement.Filename, nextStatement.StartLine, nextStatement.StartColumn, nextStatement.EndLine, nextStatement.EndColumn);
 				}
 			}
+		}
+		
+		StopAttachedProcessDialogResult ShowStopAttachedProcessDialog()
+		{
+			string caption = StringParser.Parse("${res:XML.MainMenu.DebugMenu.Stop}");
+			string message = StringParser.Parse("${res:MainWindow.Windows.Debug.StopProcessDialog.Message}");
+			string[] buttonLabels = new string[] { StringParser.Parse("${res:XML.MainMenu.DebugMenu.Detach}"), StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.Terminate}"), StringParser.Parse("${res:Global.CancelButtonText}") };
+			return (StopAttachedProcessDialogResult)MessageService.ShowCustomDialog(caption, message, (int)StopAttachedProcessDialogResult.Detach, (int)StopAttachedProcessDialogResult.Cancel, buttonLabels);
 		}
 	}
 }
