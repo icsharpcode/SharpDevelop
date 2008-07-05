@@ -83,9 +83,11 @@ namespace Debugger
 		
 		public void RemoveBreakpoint(Breakpoint breakpoint)  
 		{
-			breakpoint.Deactivate();
-			breakpointCollection.Remove(breakpoint);
-			OnBreakpointRemoved(breakpoint);
+			if (breakpointCollection.Contains(breakpoint)) {
+				breakpoint.Deactivate();
+				breakpointCollection.Remove(breakpoint);
+				OnBreakpointRemoved(breakpoint);
+			}
 		}
 
 		void MarkBreakpointsAsDeactivated()

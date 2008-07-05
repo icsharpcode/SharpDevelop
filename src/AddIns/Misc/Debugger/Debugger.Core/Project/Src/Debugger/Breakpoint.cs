@@ -137,6 +137,12 @@ namespace Debugger
 			
 			return true;
 		}
+		
+		/// <summary> Remove this breakpoint </summary>
+		public void Remove()
+		{
+			debugger.RemoveBreakpoint(this);
+		}
 	}
 	
 	[Serializable]
