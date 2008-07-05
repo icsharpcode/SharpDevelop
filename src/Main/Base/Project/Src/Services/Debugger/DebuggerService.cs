@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
@@ -219,11 +220,12 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		
 		public static void ToggleBreakpointAt(IDocument document, string fileName, int lineNumber)
 		{
-			foreach (Bookmark m in document.BookmarkManager.Marks) {
-				BreakpointBookmark breakpoint = m as BreakpointBookmark;
+			ReadOnlyCollection<Bookmark> bookmarks = document.BookmarkManager.Marks;
+			for (int i = bookmarks.Count - 1; i >= 0; --i) {
+				BreakpointBookmark breakpoint = bookmarks[i] as BreakpointBookmark;
 				if (breakpoint != null) {
 					if (breakpoint.LineNumber == lineNumber) {
-						document.BookmarkManager.RemoveMark(m);
+						document.BookmarkManager.RemoveMark(breakpoint);
 						return;
 					}
 				}
