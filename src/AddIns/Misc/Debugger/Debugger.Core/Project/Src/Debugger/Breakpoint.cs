@@ -48,7 +48,6 @@ namespace Debugger
 		
 		public int Column {
 			get { return column; }
-			set { column = value; }
 		}
 		
 		public bool Enabled {
@@ -78,6 +77,12 @@ namespace Debugger
 			}
 		}
 		
+		internal void NotifyHit()
+		{
+			OnHit(new BreakpointEventArgs(this));
+			debugger.OnBreakpointHit(this);
+		}
+		
 		protected virtual void OnSet(BreakpointEventArgs e)
 		{
 			if (Set != null) {
@@ -95,10 +100,10 @@ namespace Debugger
 			this.enabled = enabled;
 		}
 		
-		internal bool IsOwnerOf(ICorDebugFunctionBreakpoint breakpoint) 
+		internal bool IsOwnerOf(ICorDebugBreakpoint breakpoint) 
 		{
-			foreach(ICorDebugFunctionBreakpoint corBreakpoint in corBreakpoints) {
-				if (corBreakpoint == breakpoint) return true;
+			foreach(ICorDebugFunctionBreakpoint corFunBreakpoint in corBreakpoints) {
+				if (corFunBreakpoint.CastTo<ICorDebugBreakpoint>().Equals(breakpoint)) return true;
 			}
 			return false;
 		}

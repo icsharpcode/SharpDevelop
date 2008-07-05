@@ -91,7 +91,7 @@ namespace Debugger
 		}
 		
 		// Do not pass the pBreakpoint parameter as ICorDebugBreakpoint - marshaling of it fails in .NET 1.1
-		public void Breakpoint(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, IntPtr pBreakpoint)
+		public void Breakpoint(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, ICorDebugBreakpoint pBreakpoint)
 		{
 			ManagedCallback managedCallback = GetProcessCallbackInterface(pAppDomain);
 			if (managedCallback != null) {

@@ -15,21 +15,27 @@ namespace ICSharpCode.SharpDevelop.Debugging
 {
 	public class BreakpointBookmark : SDMarkerBookmark
 	{
-		bool willBeHit = true;
+		bool isHealthy = true;
+		string tooltip;
 		
 		static readonly Color defaultColor = Color.FromArgb(180, 38, 38);
 		
-		public virtual bool WillBeHit {
+		public virtual bool IsHealthy {
 			get {
-				return willBeHit;
+				return isHealthy;
 			}
 			set {
-				willBeHit = value;
+				isHealthy = value;
 				if (Document != null && !Line.IsDeleted) {
 					Document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.SingleLine, LineNumber));
 					Document.CommitUpdate();
 				}
 			}
+		}
+		
+		public string Tooltip {
+			get { return tooltip; }
+			set { tooltip = value; }
 		}
 		
 		public BreakpointBookmark(string fileName, IDocument document, int lineNumber) : base(fileName, document, lineNumber)
@@ -38,7 +44,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		
 		public override void Draw(IconBarMargin margin, Graphics g, Point p)
 		{
-			margin.DrawBreakpoint(g, p.Y, IsEnabled, WillBeHit);
+			margin.DrawBreakpoint(g, p.Y, IsEnabled, IsHealthy);
 		}
 		
 		protected override TextMarker CreateMarker()

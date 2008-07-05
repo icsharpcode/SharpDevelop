@@ -146,20 +146,16 @@ namespace Debugger
 			ExitCallback();
 		}
 		
-		// Do not pass the pBreakpoint parameter as ICorDebugBreakpoint - marshaling of it fails in .NET 1.1
-		public void Breakpoint(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, IntPtr pBreakpoint)
+		// Warning! Marshaing of ICorBreakpoint fails in .NET 1.1
+		public void Breakpoint(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, ICorDebugBreakpoint corBreakpoint)
 		{
 			EnterCallback(PausedReason.Breakpoint, "Breakpoint", pThread);
 			
 			pauseOnNextExit = true;
-			ExitCallback();
 			
-//			foreach (Breakpoint b in debugger.Breakpoints) {
-//				if (b.Equals(pBreakpoint)) {
-//					// TODO: Check that this works
-//					b.OnHit();
-//				}
-//			}
+			process.Debugger.GetBreakpoint(corBreakpoint).NotifyHit();
+			
+			ExitCallback();
 		}
 		
 		public void BreakpointSetError(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, ICorDebugBreakpoint pBreakpoint, uint dwError)

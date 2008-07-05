@@ -14,40 +14,32 @@ namespace Debugger
 	public partial class NDebugger
 	{
 		List<Breakpoint> breakpointCollection = new List<Breakpoint>();
-
+		
 		public event EventHandler<BreakpointEventArgs> BreakpointAdded;
 		public event EventHandler<BreakpointEventArgs> BreakpointRemoved;
-		public event EventHandler<BreakpointEventArgs> BreakpointStateChanged;
 		public event EventHandler<BreakpointEventArgs> BreakpointHit;
-
+		
 		protected virtual void OnBreakpointAdded(Breakpoint breakpoint)
 		{
 			if (BreakpointAdded != null) {
 				BreakpointAdded(this, new BreakpointEventArgs(breakpoint));
 			}
 		}
-
+		
 		protected virtual void OnBreakpointRemoved(Breakpoint breakpoint)
 		{
 			if (BreakpointRemoved != null) {
 				BreakpointRemoved(this, new BreakpointEventArgs(breakpoint));
 			}
 		}
-
-		protected virtual void OnBreakpointStateChanged(object sender, BreakpointEventArgs e)
-		{
-			if (BreakpointStateChanged != null) {
-				BreakpointStateChanged(this, new BreakpointEventArgs(e.Breakpoint));
-			}
-		}
-
-		protected virtual void OnBreakpointHit(object sender, BreakpointEventArgs e)
+		
+		protected internal virtual void OnBreakpointHit(Breakpoint breakpoint)
 		{
 			if (BreakpointHit != null) {
-				BreakpointHit(this, new BreakpointEventArgs(e.Breakpoint));
+				BreakpointHit(this, new BreakpointEventArgs(breakpoint));
 			}
 		}
-
+		
 		public IList<Breakpoint> Breakpoints {
 			get {
 				return breakpointCollection.AsReadOnly();
@@ -56,13 +48,12 @@ namespace Debugger
 
 		internal Breakpoint GetBreakpoint(ICorDebugBreakpoint corBreakpoint)
 		{
-			foreach(Breakpoint breakpoint in breakpointCollection) {
-				if (breakpoint.Equals(corBreakpoint)) {
+			foreach (Breakpoint breakpoint in this.Breakpoints) {
+				if (breakpoint.IsOwnerOf(corBreakpoint)) {
 					return breakpoint;
 				}
 			}
-			
-			throw new DebuggerException("Breakpoint is not in collection");
+			return null;
 		}
 		
 		public Breakpoint AddBreakpoint(Breakpoint breakpoint)  
@@ -74,7 +65,6 @@ namespace Debugger
 					breakpoint.SetBreakpoint(module);
 				}
 			}
-			breakpoint.Hit += new EventHandler<BreakpointEventArgs>(OnBreakpointHit);
 			
 			OnBreakpointAdded(breakpoint);
 			
@@ -93,8 +83,6 @@ namespace Debugger
 		
 		public void RemoveBreakpoint(Breakpoint breakpoint)  
 		{
-			breakpoint.Hit -= new EventHandler<BreakpointEventArgs>(OnBreakpointHit);
-			
 			breakpoint.Deactivate();
 			breakpointCollection.Remove(breakpoint);
 			OnBreakpointRemoved(breakpoint);

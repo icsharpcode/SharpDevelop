@@ -37,20 +37,22 @@
 //
 #endregion
 
+using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using System;
 using System.Diagnostics;
+using System.IO;
+using System.Security.Cryptography;
 using System.Text;
 using System.Windows.Forms;
-using Bitmap = System.Drawing.Bitmap;
-
 using Debugger;
-using Debugger.Expressions;
 using Debugger.AddIn.TreeModel;
 using Debugger.Core.Wrappers.CorPub;
+using Debugger.Expressions;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
-using ICSharpCode.SharpDevelop.Debugging;
+using Bitmap = System.Drawing.Bitmap;
 using BM = ICSharpCode.SharpDevelop.Bookmarks;
 
 namespace ICSharpCode.SharpDevelop.Services
@@ -440,11 +442,51 @@ namespace ICSharpCode.SharpDevelop.Services
 			}
 		}
 		
+		bool Compare(byte[] a, byte[] b)
+		{
+			if (a.Length != b.Length) return false;
+			for(int i = 0; i < a.Length; i++) {
+				if (a[i] != b[i]) return false;
+			}
+			return true;
+		}
+		
 		void AddBreakpoint(BreakpointBookmark bookmark)
 		{
 			Breakpoint breakpoint = debugger.AddBreakpoint(bookmark.FileName, null, bookmark.LineNumber + 1, 0, bookmark.IsEnabled);
 			MethodInvoker setBookmarkColor = delegate {
-				bookmark.WillBeHit = breakpoint.IsSet || debugger.Processes.Count == 0;
+				if (debugger.Processes.Count == 0) {
+					bookmark.IsHealthy = true;
+					bookmark.Tooltip = null;
+				} else if (!breakpoint.IsSet) {
+					bookmark.IsHealthy = false;
+					bookmark.Tooltip = "Breakpoint was not found in any loaded modules";
+				} else if (breakpoint.OriginalLocation.CheckSum == null) {
+					bookmark.IsHealthy = true;
+					bookmark.Tooltip = null;
+				} else {
+					byte[] fileMD5;
+					TextEditorDisplayBindingWrapper file = FileService.GetOpenFile(bookmark.FileName) as TextEditorDisplayBindingWrapper;
+					if (file != null) {
+						byte[] fileContent = Encoding.UTF8.GetBytes(file.Text);
+						// Insert UTF-8 BOM
+						byte[] fileContent2 = new byte[fileContent.Length + 3];
+						Array.Copy(fileContent, 0, fileContent2, 3, fileContent.Length);
+						fileContent2[0] = 0xEF;
+						fileContent2[1] = 0xBB;
+						fileContent2[2] = 0xBF;
+						fileMD5 = new MD5CryptoServiceProvider().ComputeHash(fileContent2);
+					} else {
+						fileMD5 = new MD5CryptoServiceProvider().ComputeHash(File.ReadAllBytes(bookmark.FileName));
+					}
+					if (Compare(fileMD5, breakpoint.OriginalLocation.CheckSum)) {
+						bookmark.IsHealthy = true;
+						bookmark.Tooltip = null;
+					} else {
+						bookmark.IsHealthy = false;
+						bookmark.Tooltip = "Check sum or file does not match to the original";
+					}
+				}
 			};
 			
 			// event handlers on bookmark and breakpoint don't need deregistration

@@ -178,7 +178,6 @@ namespace Debugger
 			if (symReader == null) {
 				symReader = metaData.GetSymReader(fullPath, string.Join("; ", searchPath ?? new string[0]));
 				if (symReader != null) {
-					process.OnModuleSymbolsLoaded(new ModuleEventArgs(this));
 					OnSymbolsLoaded(new ModuleEventArgs(this));
 				}
 			}

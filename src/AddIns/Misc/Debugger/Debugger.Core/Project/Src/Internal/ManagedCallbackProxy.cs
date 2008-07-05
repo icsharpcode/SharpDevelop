@@ -94,7 +94,8 @@ namespace Debugger
 			     	callbackSwitch.Breakpoint(
 			     		MTA2STA.MarshalIntPtrTo<ICorDebugAppDomain>(pAppDomain),
 			     		MTA2STA.MarshalIntPtrTo<ICorDebugThread>(pThread),
-			     		pBreakpoint // Do not marshal this one - it fails in .NET 1.1
+			     		// This fails in .NET 1.1:
+			     		MTA2STA.MarshalIntPtrTo<ICorDebugBreakpoint>(pBreakpoint)
 			     	);
 			     });
 		}

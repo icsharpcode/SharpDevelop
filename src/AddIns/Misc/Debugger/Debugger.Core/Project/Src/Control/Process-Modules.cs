@@ -20,7 +20,6 @@ namespace Debugger
 
 		public event EventHandler<ModuleEventArgs> ModuleLoaded;
 		public event EventHandler<ModuleEventArgs> ModuleUnloaded;
-		public event EventHandler<ModuleEventArgs> ModuleSymbolsLoaded;
 
 		protected void OnModuleLoaded(Module module)
 		{
@@ -36,13 +35,6 @@ namespace Debugger
 			}
 		}
 		
-		internal virtual void OnModuleSymbolsLoaded(ModuleEventArgs e)
-		{
-			if (ModuleSymbolsLoaded != null) {
-				ModuleSymbolsLoaded(this, e);
-			}
-		}
-
 		public IList<Module> Modules { 
 			get{ 
 				return moduleCollection.AsReadOnly();
