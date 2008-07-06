@@ -306,17 +306,18 @@ namespace Debugger
 		}
 		
 		/// <summary> Gets all arguments of the stack frame. </summary>
-		public Value[] GetArgumentValues()
+		public List<Value> GetArgumentValues()
 		{
 			List<Value> values = new List<Value>();
 			for (int i = 0; i < ArgumentCount; i++) {
 				values.Add(GetArgumentValue(i));
 			}
-			return values.ToArray();
+			return values;
 		}
 		
 		#endregion
 		
+		/// <summary> Returns value of give local variable </summary>
 		public Value GetLocalVariableValue(ISymUnmanagedVariable symVar)
 		{
 			return new Value(this.Process, new LocalVariableIdentifierExpression(MethodInfo, symVar), GetLocalVariableCorValue(symVar));
@@ -346,14 +347,14 @@ namespace Debugger
 			return null;
 		}
 		
-		/// <summary> Gets all local variables of the stack frame. </summary>
-		public Value[] GetLocalVariableValues()
+		/// <summary> Returns all local variables of the stack frame. </summary>
+		public List<Value> GetLocalVariableValues()
 		{
 			List<Value> values = new List<Value>();
 			foreach(ISymUnmanagedVariable symVar in this.MethodInfo.LocalVariables) {
 				values.Add(GetLocalVariableValue(symVar));
 			}
-			return values.ToArray();
+			return values;
 		}
 		
 		#endregion

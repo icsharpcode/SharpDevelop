@@ -5,9 +5,9 @@
 //     <version>$Revision$</version>
 // </file>
 
+using Debugger.Expressions;
 using System;
 using System.Collections.Generic;
-
 using Debugger.Wrappers.CorDebug;
 using Debugger.Wrappers.CorSym;
 using Debugger.Wrappers.MetaData;
@@ -253,5 +253,86 @@ namespace Debugger.MetaData
 			}
 			return vars;
 		}
+		
+		#region Convenience methods
+		
+		/// <summary> Returns expression for 'this' value of the stack frame </summary>
+		public Expression GetExpressionForThis()
+		{
+			return new ThisReferenceExpression();
+		}
+		
+		/// <summary> Returns expression for argument with the given index </summary>
+		public Expression GetExpressionForParameter(int index)
+		{
+			return new ParameterIdentifierExpression(this, index);
+		}
+		
+		/// <summary> Returns expression for argument with the given name </summary>
+		public Expression GetExpressionForParameter(string name)
+		{
+			for(int i = 0; i < this.ParameterCount; i++) {
+				if (this.GetParameterName(i) == name) {
+					return GetExpressionForParameter(i);
+				}
+			}
+			return null;
+		}
+		
+		/// <summary> Returns expressions for all arguments of this stack frame </summary>
+		public List<Expression> GetExpressionsForParameters()
+		{
+			List<Expression> ret = new List<Expression>();
+			for (int i = 0; i < this.ParameterCount; i++) {
+				ret.Add(GetExpressionForParameter(i));
+			}
+			ret.Sort();
+			return ret;
+		}
+		
+		/// <summary> Returns expression for the given local variable </summary>
+		public Expression GetExpressionForLocalVariable(ISymUnmanagedVariable symVar)
+		{
+			return new LocalVariableIdentifierExpression(this, symVar);
+		}
+		
+		/// <summary> Returns expression for local variable with the given name </summary>
+		/// <returns> Null if not found </returns>
+		public Expression GetExpressionForLocalVariable(string name)
+		{
+			foreach(ISymUnmanagedVariable symVar in this.LocalVariables) {
+				if (symVar.Name == name) {
+					return GetExpressionForLocalVariable(symVar);
+				}
+			}
+			return null;
+		}
+		
+		/// <summary> Returns expressions for all local variables </summary>
+		public List<Expression> GetExpressionsForLocalVariables()
+		{
+			List<Expression> ret = new List<Expression>();
+			foreach(ISymUnmanagedVariable symVar in this.LocalVariables) {
+				ret.Add(GetExpressionForLocalVariable(symVar));
+			}
+			ret.Sort();
+			return ret;
+		}
+		
+		/// <summary> Returns a combined collection of all variables in this stack frame </summary>
+		public List<Expression> GetExpressionsForAllVariables()
+		{
+			List<Expression> vars = new List<Expression>();
+			
+			if (!this.IsStatic) {
+				vars.Add(GetExpressionForThis());
+			}
+			vars.AddRange(GetExpressionsForParameters());
+			vars.AddRange(GetExpressionsForLocalVariables());
+			
+			return vars;
+		}
+		
+		#endregion
 	}
 }

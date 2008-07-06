@@ -19,7 +19,7 @@ using Debugger.Wrappers.CorSym;
 namespace Debugger.Wrappers.MetaData
 {
 	/// <summary>Wrapper for the unmanaged metadata API.</summary>
-	/// <remarks>http://msdn.microsoft.com/en-us/library/ms233124.aspx</remarks>
+	/// <remarks>http://msdn.microsoft.com/en-us/library/ms230172.aspx</remarks>
 	public class MetaDataImport: IDisposable
 	{
 		IMetaDataImport metaData;

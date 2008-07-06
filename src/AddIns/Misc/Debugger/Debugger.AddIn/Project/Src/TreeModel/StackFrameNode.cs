@@ -31,7 +31,7 @@ namespace Debugger.AddIn.TreeModel
 		
 		IEnumerable<AbstractNode> GetChildNodes()
 		{
-			foreach(Expression expr in Expression.MethodVariables(stackFrame.MethodInfo)) {
+			foreach(Expression expr in stackFrame.MethodInfo.GetExpressionsForAllVariables()) {
 				yield return ValueNode.Create(expr);
 			}
 			if (stackFrame.Thread.CurrentException != null) {

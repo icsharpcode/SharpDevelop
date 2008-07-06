@@ -58,51 +58,5 @@ namespace Debugger.Expressions
 			members.Sort();
 			return members.ToArray();
 		}
-		
-		/// <summary> Get all variables for a method - this; parameters; local variables </summary>
-		public static Expression[] MethodVariables(MethodInfo methodInfo)
-		{
-			List<Expression> vars = new List<Expression>();
-			
-			if (!methodInfo.IsStatic) {
-				vars.Add(MethodThis());
-			}
-			vars.AddRange(MethodParameters(methodInfo));
-			vars.AddRange(MethodLocalVariables(methodInfo));
-			
-			return vars.ToArray();
-		}
-		
-		/// <summary> Get 'this' variable for a method </summary>
-		public static Expression MethodThis()
-		{
-			return new ThisReferenceExpression();
-		}
-		
-		/// <summary> Get parameters of a method </summary>
-		public static Expression[] MethodParameters(MethodInfo methodInfo)
-		{
-			List<Expression> pars = new List<Expression>();
-			
-			for(int i = 0; i < methodInfo.ParameterCount; i++) {
-				pars.Add(new ParameterIdentifierExpression(methodInfo, i));
-			}
-			
-			pars.Sort();
-			return pars.ToArray();
-		}
-		
-		/// <summary> Get local variables of a method </summary>
-		public static Expression[] MethodLocalVariables(MethodInfo methodInfo)
-		{
-			List<Expression> vars = new List<Expression>();
-			
-			foreach(ISymUnmanagedVariable var in methodInfo.LocalVariables) {
-				vars.Add(new LocalVariableIdentifierExpression(methodInfo, var));
-			}
-			
-			vars.Sort();
-			return vars.ToArray();
-		}
 	}
 }
