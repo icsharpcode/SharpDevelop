@@ -181,11 +181,16 @@ namespace Debugger
 		public bool IsKernelDebuggerEnabled {
 			get {
 				string systemStartOptions = Registry.LocalMachine.OpenSubKey(@"SYSTEM\CurrentControlSet\Control\").GetValue("SystemStartOptions", string.Empty).ToString();
-				systemStartOptions = systemStartOptions.ToLower();
-				if (systemStartOptions.Contains("debug") || 
-				    systemStartOptions.Contains("crashdebug") || 
-				    systemStartOptions.Contains("debugport") || 
-				    systemStartOptions.Contains("baudrate")) {
+				// XP does not have the slash, Vista does have it
+				systemStartOptions = ("/" + systemStartOptions).ToLower().Replace(" ", " /");
+				if (systemStartOptions.Contains("/nodebug")) {
+					// this option overrides the others
+					return false;
+				}
+				if (systemStartOptions.Contains("/debug") || 
+				    systemStartOptions.Contains("/crashdebug") || 
+				    systemStartOptions.Contains("/debugport") || 
+				    systemStartOptions.Contains("/baudrate")) {
 					return true;
 				} else {
 					return false;
