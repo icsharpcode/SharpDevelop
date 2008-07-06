@@ -74,6 +74,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 			if (type is ReferenceType) {
 				// TODO: Use ByRefRefReturnType
 				return CreateType(pc, member, (type as ReferenceType).ElementType);
+			} else if (type is PointerType) {
+				return new PointerReturnType(CreateType(pc, member, (type as PointerType).ElementType));
 			} else if (type is ArrayType) {
 				return new ArrayReturnType(pc, CreateType(pc, member, (type as ArrayType).ElementType), (type as ArrayType).Rank);
 			} else if (type is GenericInstanceType) {

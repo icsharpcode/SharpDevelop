@@ -2245,5 +2245,22 @@ class TestClass {
 			var lrr = Resolve<LocalResolveResult>(program, "contact", 5);
 			Assert.AreEqual("?", lrr.ResolvedType.DotNetName);
 		}
+		
+		[Test]
+		public void FixedStatement()
+		{
+			string program = @"using System;
+class TestClass {
+	static void Main(byte[] a) {
+		fixed (byte* p) {
+			
+		} } }";
+			
+			var lrr = Resolve<LocalResolveResult>(program, "p", 5);
+			Assert.AreEqual("System.Byte*", lrr.ResolvedType.DotNetName);
+			
+			var rr = Resolve<ResolveResult>(program, "*p", 5);
+			Assert.AreEqual("System.Byte", rr.ResolvedType.DotNetName);
+		}
 	}
 }

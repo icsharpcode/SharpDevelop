@@ -20,7 +20,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 	{
 		public const long FileMagic = 0x11635233ED2F428C;
 		public const long IndexFileMagic = 0x11635233ED2F427D;
-		public const short FileVersion = 15;
+		public const short FileVersion = 16;
 		
 		ProjectContentRegistry registry;
 		string cacheDirectory;
@@ -574,6 +574,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 					foreach (IReturnType typeArgument in rt.CastToConstructedReturnType().TypeArguments) {
 						AddExternalType(typeArgument, externalTypes, classCount);
 					}
+				} else if (rt.IsDecoratingReturnType<PointerReturnType>()) {
+					AddExternalType(rt.CastToDecoratingReturnType<PointerReturnType>().BaseType, externalTypes, classCount);
 				} else {
 					LoggingService.Warn("Unknown return type: " + rt.ToString());
 				}
@@ -585,6 +587,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			const int MethodGenericRTCode = -4;
 			const int NullRTReferenceCode = -5;
 			const int VoidRTCode          = -6;
+			const int PointerRTCode       = -7;
 			
 			void WriteType(IReturnType rt)
 			{
@@ -619,6 +622,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 					foreach (IReturnType typeArgument in crt.TypeArguments) {
 						WriteType(typeArgument);
 					}
+				} else if (rt.IsDecoratingReturnType<PointerReturnType>()) {
+					writer.Write(PointerRTCode);
+					WriteType(rt.CastToDecoratingReturnType<PointerReturnType>().BaseType);
 				} else {
 					writer.Write(NullRTReferenceCode);
 					LoggingService.Warn("Unknown return type: " + rt.ToString());
@@ -648,6 +654,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 						return null;
 					case VoidRTCode:
 						return VoidReturnType.Instance;
+					case PointerRTCode:
+						return new PointerReturnType(ReadType());
 					default:
 						return types[index];
 				}

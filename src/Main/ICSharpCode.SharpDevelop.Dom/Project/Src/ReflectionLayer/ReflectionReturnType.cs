@@ -37,6 +37,8 @@ namespace ICSharpCode.SharpDevelop.Dom.ReflectionLayer
 			if (type.IsByRef) {
 				// TODO: Use ByRefRefReturnType
 				return Create(pc, member, type.GetElementType(), createLazyReturnType);
+			} else if (type.IsPointer) {
+				return new PointerReturnType(Create(pc, member, type.GetElementType(), createLazyReturnType));
 			} else if (type.IsArray) {
 				return new ArrayReturnType(pc, Create(pc, member, type.GetElementType(), createLazyReturnType), type.GetArrayRank());
 			} else if (type.IsGenericType && (forceGenericType || !type.IsGenericTypeDefinition)) {

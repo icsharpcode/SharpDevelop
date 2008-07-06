@@ -611,7 +611,22 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		public override object VisitUnaryOperatorExpression(UnaryOperatorExpression unaryOperatorExpression, object data)
 		{
-			return CreateResolveResult(unaryOperatorExpression.Expression);
+			IReturnType type = ResolveType(unaryOperatorExpression.Expression);
+			if (type == null)
+				return null;
+			switch (unaryOperatorExpression.Op) {
+				case UnaryOperatorType.AddressOf:
+					return CreateResolveResult(new PointerReturnType(type));
+				case UnaryOperatorType.Dereference:
+					PointerReturnType prt = type.CastToDecoratingReturnType<PointerReturnType>();
+					if (prt != null) {
+						return CreateResolveResult(prt.BaseType);
+					} else {
+						return null;
+					}
+				default:
+					return CreateResolveResult(type);
+			}
 		}
 		
 		public override object VisitUncheckedExpression(UncheckedExpression uncheckedExpression, object data)

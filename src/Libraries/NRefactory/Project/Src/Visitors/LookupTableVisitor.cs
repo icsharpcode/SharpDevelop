@@ -199,6 +199,19 @@ namespace ICSharpCode.NRefactory.Visitors
 			}
 		}
 		
+		public override object VisitFixedStatement(FixedStatement fixedStatement, object data)
+		{
+			// uses LocalVariableDeclaration, we just have to put the end location on the stack
+			if (fixedStatement.EmbeddedStatement.EndLocation.IsEmpty) {
+				return base.VisitFixedStatement(fixedStatement, data);
+			} else {
+				endLocationStack.Push(fixedStatement.EmbeddedStatement.EndLocation);
+				base.VisitFixedStatement(fixedStatement, data);
+				endLocationStack.Pop();
+				return null;
+			}
+		}
+		
 		public override object VisitForStatement(ForStatement forStatement, object data)
 		{
 			// uses LocalVariableDeclaration, we just have to put the end location on the stack

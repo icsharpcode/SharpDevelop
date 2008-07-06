@@ -92,6 +92,7 @@
     <Compile Include="Src\Implementations\GetClassReturnType.cs" />
     <Compile Include="Src\Implementations\MethodGroupReturnType.cs" />
     <Compile Include="Src\Implementations\NullReturnType.cs" />
+    <Compile Include="Src\Implementations\PointerReturnType.cs" />
     <Compile Include="Src\Implementations\ProxyReturnType.cs" />
     <Compile Include="Src\Implementations\ReferenceReturnType.cs" />
     <Compile Include="Src\Implementations\SearchClassReturnType.cs" />

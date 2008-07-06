@@ -1551,17 +1551,10 @@ EmbeddedStatement<out Statement statement>
 		/*--- unsafe statement: */
 	|	"unsafe" Block<out embeddedStatement>  (. statement = new UnsafeStatement(embeddedStatement); .)
 		/*--- fixed statement: */
-	|	"fixed"
-		"(" Type<out type>     (. if (type == null || type.PointerNestingLevel == 0) Error("can only fix pointer types");
-		                          List<VariableDeclaration> pointerDeclarators = new List<VariableDeclaration>(1);
-		                       .)
-		Identifier             (. string identifier = t.val; .)
-		"=" Expr<out expr>     (. pointerDeclarators.Add(new VariableDeclaration(identifier, expr)); .)
-		{
-			"," Identifier     (. identifier = t.val; .)
-			"=" Expr<out expr> (. pointerDeclarators.Add(new VariableDeclaration(identifier, expr)); .)
-		}
-		")" EmbeddedStatement<out embeddedStatement>  (. statement = new FixedStatement(type, pointerDeclarators, embeddedStatement); .)
+	|	(. Statement pointerDeclarationStmt = null; .)
+		"fixed" "("  
+		ResourceAcquisition<out pointerDeclarationStmt> ")"
+		EmbeddedStatement<out embeddedStatement>  (. statement = new FixedStatement(pointerDeclarationStmt, embeddedStatement); .)
 	)
 	(.	if (statement != null) {
 			statement.StartLocation = startLocation;

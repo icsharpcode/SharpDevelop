@@ -92,6 +92,9 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				}
 				t = new ConstructedReturnType(t, para);
 			}
+			for (int i = 0; i < reference.PointerNestingLevel; i++) {
+				t = new PointerReturnType(t);
+			}
 			return WrapArray(projectContent, t, reference);
 		}
 		

@@ -171,6 +171,7 @@ namespace NRefactoryASTGenerator.Ast
 		bool hasParameterList;
 	}
 	
+	[IncludeMember("public Location ExtendedEndLocation { get; set; }")]
 	class LambdaExpression : Expression {
 		List<ParameterDeclarationExpression> parameters;
 		BlockStatement statementBody;

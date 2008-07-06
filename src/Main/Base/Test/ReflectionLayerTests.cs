@@ -41,6 +41,11 @@ namespace ICSharpCode.SharpDevelop.Tests
 		public ReflectionWithRoundTripLayerTests()
 		{
 			pc = ParserService.DefaultProjectContentRegistry.Mscorlib;
+			
+			MemoryStream memory = new MemoryStream();
+			DomPersistence.WriteProjectContent((ReflectionProjectContent)pc, memory);
+			memory.Position = 0;
+			pc = DomPersistence.LoadProjectContent(memory, ParserService.DefaultProjectContentRegistry);
 		}
 		
 		protected override IClass GetClass(Type type)
@@ -116,6 +121,16 @@ namespace ICSharpCode.SharpDevelop.Tests
 			ConstructedReturnType crt = def.ReturnType.CastToConstructedReturnType();
 			Assert.AreEqual("System.Collections.Generic.Comparer", crt.FullyQualifiedName);
 			Assert.IsTrue(crt.TypeArguments[0].IsGenericReturnType);
+		}
+		
+		[Test]
+		public void PointerTypeTest()
+		{
+			IClass c = pc.GetClass("System.IntPtr", 1);
+			IMethod toPointer = c.Methods.First(p => p.Name == "ToPointer");
+			Assert.AreEqual("System.Void*", toPointer.ReturnType.DotNetName);
+			PointerReturnType prt = toPointer.ReturnType.CastToDecoratingReturnType<PointerReturnType>();
+			Assert.AreEqual("System.Void", prt.BaseType.FullyQualifiedName);
 		}
 		
 		[Test]

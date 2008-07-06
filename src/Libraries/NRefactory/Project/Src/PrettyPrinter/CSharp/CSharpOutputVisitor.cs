@@ -1510,20 +1510,23 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.Space();
 			}
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);
-			outputFormatter.DoIndent = false;
-			outputFormatter.DoNewLine = false;
-			outputFormatter.EmitSemicolon = false;
-			
-			TrackVisit(usingStatement.ResourceAcquisition, data);
-			outputFormatter.DoIndent = true;
-			outputFormatter.DoNewLine = true;
-			outputFormatter.EmitSemicolon = true;
-			
+			PrintStatementInline(usingStatement.ResourceAcquisition, data);
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
 			
 			WriteEmbeddedStatement(usingStatement.EmbeddedStatement);
 			
 			return null;
+		}
+		
+		void PrintStatementInline(Statement statement, object data)
+		{
+			outputFormatter.DoIndent = false;
+			outputFormatter.DoNewLine = false;
+			outputFormatter.EmitSemicolon = false;
+			TrackVisit(statement, data);
+			outputFormatter.DoIndent = true;
+			outputFormatter.DoNewLine = true;
+			outputFormatter.EmitSemicolon = true;
 		}
 		
 		public override object TrackedVisitWithStatement(WithStatement withStatement, object data)
@@ -1588,9 +1591,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.Space();
 			}
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);
-			TrackVisit(fixedStatement.TypeReference, data);
-			outputFormatter.Space();
-			AppendCommaSeparatedList(fixedStatement.PointerDeclarators);
+			PrintStatementInline(fixedStatement.PointerDeclaration, data);
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
 			
 			WriteEmbeddedStatement(fixedStatement.EmbeddedStatement);

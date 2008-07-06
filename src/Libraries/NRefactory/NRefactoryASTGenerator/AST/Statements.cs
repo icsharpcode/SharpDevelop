@@ -188,10 +188,9 @@ namespace NRefactoryASTGenerator.Ast
 	class EmptyStatement : Statement {}
 	
 	class FixedStatement : StatementWithEmbeddedStatement {
-		TypeReference             typeReference;
-		List<VariableDeclaration> pointerDeclarators;
+		Statement pointerDeclaration;
 		
-		public FixedStatement(TypeReference typeReference, List<VariableDeclaration> pointerDeclarators, Statement embeddedStatement) {}
+		public FixedStatement(Statement pointerDeclaration, Statement embeddedStatement) {}
 	}
 	
 	[IncludeBoolProperty("IsDefaultCase", "return expression.IsNull;")]
