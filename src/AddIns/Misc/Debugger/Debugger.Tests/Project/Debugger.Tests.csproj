@@ -60,6 +60,7 @@
     <Compile Include="Src\TestPrograms\Generics.cs" />
     <Compile Include="Src\TestPrograms\HelloWorld.cs" />
     <Compile Include="Src\TestPrograms\MainThreadExit.cs" />
+    <Compile Include="Src\TestPrograms\Metadata.cs" />
     <Compile Include="Src\TestPrograms\MetadataIdentity.cs" />
     <Compile Include="Src\TestPrograms\ObjectValue.cs" />
     <Compile Include="Src\TestPrograms\PrimitiveValue.cs" />

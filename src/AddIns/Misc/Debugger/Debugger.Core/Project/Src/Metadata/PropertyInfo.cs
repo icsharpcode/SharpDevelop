@@ -20,18 +20,24 @@ namespace Debugger.MetaData
 		MethodInfo getMethod;
 		MethodInfo setMethod;
 		
-		/// <summary> Gets a value indicating whether this property is private </summary>
-		public override bool IsPrivate {
-			get {
-				return !(getMethod ?? setMethod).IsPublic;
-			}
+		/// <summary> Gets a value indicating whether this member has the private access modifier</summary>
+		public override bool IsPrivate  {
+			get { return (getMethod ?? setMethod).IsPrivate; }
 		}
 		
-		/// <summary> Gets a value indicating whether this property is public </summary>
+		/// <summary> Gets a value indicating whether this member has the internal access modifier</summary>
+		public override bool IsInternal  {
+			get { return (getMethod ?? setMethod).IsInternal; }
+		}
+		
+		/// <summary> Gets a value indicating whether this member has the protected access modifier</summary>
+		public override bool IsProtected  {
+			get { return (getMethod ?? setMethod).IsProtected; }
+		}
+		
+		/// <summary> Gets a value indicating whether this member has the public access modifier</summary>
 		public override bool IsPublic {
-			get {
-				return (getMethod ?? setMethod).IsPublic;
-			}
+			get { return (getMethod ?? setMethod).IsPublic; }
 		}
 		
 		/// <summary> Gets a value indicating whether this property is static </summary>

@@ -4,15 +4,14 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-
-using ICSharpCode.Core;
-
 using Debugger;
-using Debugger.MetaData;
 using Debugger.Expressions;
+using Debugger.MetaData;
+using ICSharpCode.Core;
 
 namespace Debugger.AddIn.TreeModel
 {
@@ -52,7 +51,7 @@ namespace Debugger.AddIn.TreeModel
 			this.targetObject = targetObject;
 			this.shownType = shownType;
 			
-			this.Image = DebuggerIcons.ImageList.Images[0]; // Class
+			this.Image = IconService.GetBitmap("Icons.16x16.Class");
 			this.Name = StringParser.Parse("${res:MainWindow.Windows.Debug.LocalVariables.BaseClass}");
 			this.Type = shownType.FullName;
 			if (shownType.FullName == "System.Object") {

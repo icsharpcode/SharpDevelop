@@ -26,18 +26,24 @@ namespace Debugger.MetaData
 			}
 		}
 		
-		/// <summary> Gets a value indicating whether this field is private </summary>
-		public override bool IsPrivate {
-			get {
-				return !fieldProps.IsPublic;
-			}
+		/// <summary> Gets a value indicating whether this member has the private access modifier</summary>
+		public override bool IsPrivate  {
+			get { return fieldProps.IsPrivate; }
 		}
 		
-		/// <summary> Gets a value indicating whether this field is public </summary>
+		/// <summary> Gets a value indicating whether this member has the internal access modifier</summary>
+		public override bool IsInternal  {
+			get { return fieldProps.IsInternal; }
+		}
+		
+		/// <summary> Gets a value indicating whether this member has the protected access modifier</summary>
+		public override bool IsProtected  {
+			get { return fieldProps.IsProtected; }
+		}
+		
+		/// <summary> Gets a value indicating whether this member has the public access modifier</summary>
 		public override bool IsPublic {
-			get {
-				return fieldProps.IsPublic;
-			}
+			get { return fieldProps.IsPublic; }
 		}
 		
 		/// <summary> Gets a value indicating whether this field is static </summary>

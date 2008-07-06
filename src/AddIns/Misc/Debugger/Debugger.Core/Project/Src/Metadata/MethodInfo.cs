@@ -33,18 +33,24 @@ namespace Debugger.MetaData
 			get { return backingField; }
 		}
 		
-		/// <summary> Gets a value indicating whether this method is private </summary>
-		public override bool IsPrivate {
-			get {
-				return !methodProps.IsPublic;
-			}
+		/// <summary> Gets a value indicating whether this member has the private access modifier</summary>
+		public override bool IsPrivate  {
+			get { return methodProps.IsPrivate; }
 		}
 		
-		/// <summary> Gets a value indicating whether this method is public </summary>
+		/// <summary> Gets a value indicating whether this member has the internal access modifier</summary>
+		public override bool IsInternal  {
+			get { return methodProps.IsInternal; }
+		}
+		
+		/// <summary> Gets a value indicating whether this member has the protected access modifier</summary>
+		public override bool IsProtected  {
+			get { return methodProps.IsProtected; }
+		}
+		
+		/// <summary> Gets a value indicating whether this member has the public access modifier</summary>
 		public override bool IsPublic {
-			get {
-				return methodProps.IsPublic;
-			}
+			get { return methodProps.IsPublic; }
 		}
 		
 		/// <summary> Gets a value indicating whether the name of this method

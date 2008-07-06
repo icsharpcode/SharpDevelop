@@ -4,18 +4,17 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Windows.Forms;
-
+using Debugger;
+using Debugger.Expressions;
+using Debugger.MetaData;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Services;
-
-using Debugger;
-using Debugger.MetaData;
-using Debugger.Expressions;
 
 namespace Debugger.AddIn.TreeModel
 {
@@ -70,11 +69,7 @@ namespace Debugger.AddIn.TreeModel
 					(val.Expression is MemberReferenceExpression && ((MemberReferenceExpression)val.Expression).MemberInfo is FieldInfo);
 			}
 			
-			if (val.IsObject) {
-				this.Image = DebuggerIcons.ImageList.Images[0]; // Class
-			} else {
-				this.Image = DebuggerIcons.ImageList.Images[1]; // Field
-			}
+			this.Image = IconService.GetBitmap("Icons.16x16." + GetImageName(val));
 			
 			this.Name = val.Expression.CodeTail;
 			
@@ -130,6 +125,53 @@ namespace Debugger.AddIn.TreeModel
 				                           "${res:MainWindow.Windows.Debug.LocalVariables.CannotSetValue.Title}");
 			}
 			return false;
+		}
+		
+		string GetImageName(Value val)
+		{
+			Expression expr = val.Expression;
+			if (expr is ThisReferenceExpression) {
+				if (val.Type.IsClass) {
+					return "Class";
+				}
+				if (val.Type.IsValueType) {
+					return "Struct";
+				}
+			}
+			if (expr is ParameterIdentifierExpression) {
+				return "Parameter";
+			}
+			if (expr is MemberReferenceExpression) {
+				MemberInfo memberInfo = ((MemberReferenceExpression)expr).MemberInfo;
+				string prefix;
+				if (memberInfo.IsPublic) {
+					prefix = "";
+				} else if (memberInfo.IsInternal) {
+					prefix = "Internal";
+				} else if (memberInfo.IsProtected) {
+					prefix = "Protected";
+				} else if (memberInfo.IsPrivate) {
+					prefix = "Private";
+				} else {
+					prefix = "";
+				}
+				if (memberInfo is FieldInfo) {
+					return prefix + "Field";
+				}
+				if (memberInfo is PropertyInfo) {
+					return prefix + "Property";
+				}
+				if (memberInfo is MethodInfo) {
+					return prefix + "Method";
+				}
+			}
+			if (expr is LocalVariableIdentifierExpression) {
+				return "Local";
+			}
+			if (expr is ArrayIndexerExpression) {
+				return "Field";
+			}
+			return "Field";
 		}
 		
 		public ContextMenuStrip GetContextMenu()

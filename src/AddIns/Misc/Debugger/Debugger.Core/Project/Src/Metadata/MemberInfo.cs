@@ -52,10 +52,16 @@ namespace Debugger.MetaData
 			}
 		}
 		
-		/// <summary> Gets a value indicating whether this member is private </summary>
+		/// <summary> Gets a value indicating whether this member has the private access modifier</summary>
 		public abstract bool IsPrivate { get; }
 		
-		/// <summary> Gets a value indicating whether this member is public </summary>
+		/// <summary> Gets a value indicating whether this member has the internal access modifier</summary>
+		public abstract bool IsInternal { get; }
+		
+		/// <summary> Gets a value indicating whether this member has the protected access modifier</summary>
+		public abstract bool IsProtected { get; }
+		
+		/// <summary> Gets a value indicating whether this member has the public access modifier</summary>
 		public abstract bool IsPublic { get; }
 		
 		/// <summary> Gets a value indicating whether this member is static </summary>

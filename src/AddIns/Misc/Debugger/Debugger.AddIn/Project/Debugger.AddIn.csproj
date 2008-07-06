@@ -80,7 +80,6 @@
       <DependentUpon>DebuggerEventForm.cs</DependentUpon>
     </EmbeddedResource>
     <Compile Include="Src\Service\SetCurrentStatementCommand.cs" />
-    <Compile Include="Src\Service\DebuggerIcons.cs" />
     <Compile Include="..\..\..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>

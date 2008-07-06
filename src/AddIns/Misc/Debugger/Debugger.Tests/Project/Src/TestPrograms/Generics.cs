@@ -144,7 +144,9 @@ namespace Debugger.Tests {
           <MethodInfo
             DeclaringType="Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;"
             FullName="Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;.Metod"
+            IsInternal="False"
             IsPrivate="False"
+            IsProtected="False"
             IsPublic="True"
             IsSpecialName="False"
             IsStatic="False"
@@ -217,7 +219,9 @@ namespace Debugger.Tests {
           <MethodInfo
             DeclaringType="Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;"
             FullName="Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;.GenericMethod"
+            IsInternal="False"
             IsPrivate="False"
+            IsProtected="False"
             IsPublic="True"
             IsSpecialName="False"
             IsStatic="False"
@@ -290,7 +294,9 @@ namespace Debugger.Tests {
           <MethodInfo
             DeclaringType="Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;"
             FullName="Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;.StaticMetod"
+            IsInternal="False"
             IsPrivate="False"
+            IsProtected="False"
             IsPublic="True"
             IsSpecialName="False"
             IsStatic="True"
@@ -363,7 +369,9 @@ namespace Debugger.Tests {
           <MethodInfo
             DeclaringType="Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;"
             FullName="Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;.StaticGenericMethod"
+            IsInternal="False"
             IsPrivate="False"
+            IsProtected="False"
             IsPublic="True"
             IsSpecialName="False"
             IsStatic="True"
@@ -436,7 +444,9 @@ namespace Debugger.Tests {
           <MethodInfo
             DeclaringType="Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;"
             FullName="Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;.Metod"
+            IsInternal="False"
             IsPrivate="False"
+            IsProtected="False"
             IsPublic="True"
             IsSpecialName="False"
             IsStatic="False"
@@ -509,7 +519,9 @@ namespace Debugger.Tests {
           <MethodInfo
             DeclaringType="Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;"
             FullName="Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;.GenericMethod"
+            IsInternal="False"
             IsPrivate="False"
+            IsProtected="False"
             IsPublic="True"
             IsSpecialName="False"
             IsStatic="False"
@@ -582,7 +594,9 @@ namespace Debugger.Tests {
           <MethodInfo
             DeclaringType="Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;"
             FullName="Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;.StaticMetod"
+            IsInternal="False"
             IsPrivate="False"
+            IsProtected="False"
             IsPublic="True"
             IsSpecialName="False"
             IsStatic="True"
@@ -655,7 +669,9 @@ namespace Debugger.Tests {
           <MethodInfo
             DeclaringType="Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;"
             FullName="Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;.StaticGenericMethod"
+            IsInternal="False"
             IsPrivate="False"
+            IsProtected="False"
             IsPublic="True"
             IsSpecialName="False"
             IsStatic="True"

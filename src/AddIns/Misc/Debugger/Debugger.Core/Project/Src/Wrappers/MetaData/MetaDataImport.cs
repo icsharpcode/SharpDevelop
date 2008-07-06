@@ -976,12 +976,28 @@ namespace Debugger.Wrappers.MetaData
 		public uint CPlusTypeFlag;
 		public Blob ConstantValue;
 		
-		public bool IsStatic {
-			get { return (Flags & (uint)ClassFieldAttribute.fdStatic) != 0; }
+		private ClassFieldAttribute access {
+			get { return (ClassFieldAttribute)(Flags & (uint)ClassFieldAttribute.fdFieldAccessMask); }
+		}
+		
+		public bool IsPrivate {
+			get { return access == ClassFieldAttribute.fdPrivate; }
+		}
+		
+		public bool IsInternal {
+			get { return access == ClassFieldAttribute.fdAssembly; }
+		}
+		
+		public bool IsProtected {
+			get { return access == ClassFieldAttribute.fdFamily; }
 		}
 		
 		public bool IsPublic {
-			get { return (Flags & (uint)ClassFieldAttribute.fdPublic) != 0; }
+			get { return access == ClassFieldAttribute.fdPublic; }
+		}
+		
+		public bool IsStatic {
+			get { return (Flags & (uint)ClassFieldAttribute.fdStatic) != 0; }
 		}
 		
 		public bool IsLiteral {
@@ -1033,12 +1049,28 @@ namespace Debugger.Wrappers.MetaData
 		public uint CodeRVA;
 		public uint ImplFlags;
 		
-		public bool IsStatic {
-			get { return (Flags & (uint)CorMethodAttr.mdStatic) != 0; }
+		private CorMethodAttr access {
+			get { return (CorMethodAttr)(Flags & (uint)CorMethodAttr.mdMemberAccessMask); }
+		}
+		
+		public bool IsPrivate {
+			get { return access == CorMethodAttr.mdPrivate; }
+		}
+		
+		public bool IsInternal {
+			get { return access == CorMethodAttr.mdAssem; }
+		}
+		
+		public bool IsProtected {
+			get { return access == CorMethodAttr.mdFamily; }
 		}
 		
 		public bool IsPublic {
-			get { return (Flags & (uint)CorMethodAttr.mdPublic) != 0; }
+			get { return access == CorMethodAttr.mdPublic; }
+		}
+		
+		public bool IsStatic {
+			get { return (Flags & (uint)CorMethodAttr.mdStatic) != 0; }
 		}
 		
 		public bool HasSpecialName {
