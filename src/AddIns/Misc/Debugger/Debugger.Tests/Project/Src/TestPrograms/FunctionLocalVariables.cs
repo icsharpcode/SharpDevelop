@@ -49,7 +49,9 @@ namespace Debugger.Tests {
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>FunctionLocalVariables.exe (Has symbols)</ModuleLoaded>
     <DebuggingPaused>Break</DebuggingPaused>
-    <LocalVariables>
+    <LocalVariables
+      Capacity="8"
+      Count="5">
       <Item>
         <Value
           ArrayDimensions="{Exception: Value is not an array}"

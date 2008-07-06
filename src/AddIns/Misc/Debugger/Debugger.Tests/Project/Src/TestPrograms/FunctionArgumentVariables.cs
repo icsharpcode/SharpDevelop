@@ -94,7 +94,9 @@ namespace Debugger.Tests {
     <ModuleLoaded>FunctionArgumentVariables.exe (Has symbols)</ModuleLoaded>
     <DebuggingPaused>Break</DebuggingPaused>
     <DebuggingPaused>Break</DebuggingPaused>
-    <Arguments>
+    <Arguments
+      Capacity="16"
+      Count="9">
       <Item>
         <Value
           ArrayDimensions="{Exception: Value is not an array}"
@@ -241,7 +243,9 @@ namespace Debugger.Tests {
       </Item>
     </Arguments>
     <DebuggingPaused>Break</DebuggingPaused>
-    <Arguments>
+    <Arguments
+      Capacity="4"
+      Count="1">
       <Item>
         <Value
           ArrayDimensions="[0]"
@@ -260,7 +264,9 @@ namespace Debugger.Tests {
       </Item>
     </Arguments>
     <DebuggingPaused>Break</DebuggingPaused>
-    <Arguments>
+    <Arguments
+      Capacity="4"
+      Count="1">
       <Item>
         <Value
           ArrayDimensions="[1]"
@@ -279,7 +285,9 @@ namespace Debugger.Tests {
       </Item>
     </Arguments>
     <DebuggingPaused>Break</DebuggingPaused>
-    <Arguments>
+    <Arguments
+      Capacity="4"
+      Count="1">
       <Item>
         <Value
           ArrayDimensions="[2]"
@@ -298,7 +306,9 @@ namespace Debugger.Tests {
       </Item>
     </Arguments>
     <DebuggingPaused>Break</DebuggingPaused>
-    <Arguments>
+    <Arguments
+      Capacity="4"
+      Count="2">
       <Item>
         <Value
           ArrayDimensions="{Exception: Value is not an array}"

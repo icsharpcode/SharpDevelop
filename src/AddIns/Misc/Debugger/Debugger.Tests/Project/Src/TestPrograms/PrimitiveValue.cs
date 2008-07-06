@@ -56,7 +56,9 @@ namespace Debugger.Tests {
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>PrimitiveValue.exe (Has symbols)</ModuleLoaded>
     <DebuggingPaused>Break</DebuggingPaused>
-    <locals>
+    <locals
+      Capacity="4"
+      Count="4">
       <Item>
         <Value
           ArrayDimensions="{Exception: Value is not an array}"

@@ -172,7 +172,9 @@ namespace Debugger.Tests {
         </MethodInfo>
       </StackFrame>
     </SelectedStackFrame>
-    <SelectedStackFrame-GetArguments>
+    <SelectedStackFrame-GetArguments
+      Capacity="4"
+      Count="2">
       <Item>
         <Value
           ArrayDimensions="{Exception: Value is not an array}"
@@ -247,7 +249,9 @@ namespace Debugger.Tests {
         </MethodInfo>
       </StackFrame>
     </SelectedStackFrame>
-    <SelectedStackFrame-GetArguments>
+    <SelectedStackFrame-GetArguments
+      Capacity="4"
+      Count="2">
       <Item>
         <Value
           ArrayDimensions="{Exception: Value is not an array}"
@@ -322,7 +326,9 @@ namespace Debugger.Tests {
         </MethodInfo>
       </StackFrame>
     </SelectedStackFrame>
-    <SelectedStackFrame-GetArguments>
+    <SelectedStackFrame-GetArguments
+      Capacity="4"
+      Count="2">
       <Item>
         <Value
           ArrayDimensions="{Exception: Value is not an array}"
@@ -397,7 +403,9 @@ namespace Debugger.Tests {
         </MethodInfo>
       </StackFrame>
     </SelectedStackFrame>
-    <SelectedStackFrame-GetArguments>
+    <SelectedStackFrame-GetArguments
+      Capacity="4"
+      Count="2">
       <Item>
         <Value
           ArrayDimensions="{Exception: Value is not an array}"
@@ -472,7 +480,9 @@ namespace Debugger.Tests {
         </MethodInfo>
       </StackFrame>
     </SelectedStackFrame>
-    <SelectedStackFrame-GetArguments>
+    <SelectedStackFrame-GetArguments
+      Capacity="4"
+      Count="2">
       <Item>
         <Value
           ArrayDimensions="{Exception: Value is not an array}"
@@ -547,7 +557,9 @@ namespace Debugger.Tests {
         </MethodInfo>
       </StackFrame>
     </SelectedStackFrame>
-    <SelectedStackFrame-GetArguments>
+    <SelectedStackFrame-GetArguments
+      Capacity="4"
+      Count="2">
       <Item>
         <Value
           ArrayDimensions="{Exception: Value is not an array}"
@@ -622,7 +634,9 @@ namespace Debugger.Tests {
         </MethodInfo>
       </StackFrame>
     </SelectedStackFrame>
-    <SelectedStackFrame-GetArguments>
+    <SelectedStackFrame-GetArguments
+      Capacity="4"
+      Count="2">
       <Item>
         <Value
           ArrayDimensions="{Exception: Value is not an array}"
@@ -697,7 +711,9 @@ namespace Debugger.Tests {
         </MethodInfo>
       </StackFrame>
     </SelectedStackFrame>
-    <SelectedStackFrame-GetArguments>
+    <SelectedStackFrame-GetArguments
+      Capacity="4"
+      Count="2">
       <Item>
         <Value
           ArrayDimensions="{Exception: Value is not an array}"
