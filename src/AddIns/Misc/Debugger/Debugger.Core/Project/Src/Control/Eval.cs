@@ -242,6 +242,9 @@ namespace Debugger
 		
 		public static Value CreateValue(Process process, object value)
 		{
+			if (value is string) {
+				return NewString(process, (string)value);
+			}
 			CorElementType corElemType; 
 			if (value is int) {
 				corElemType = CorElementType.I4;

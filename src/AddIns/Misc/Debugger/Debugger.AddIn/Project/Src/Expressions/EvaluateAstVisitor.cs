@@ -23,18 +23,28 @@ namespace Debugger.AddIn
 			this.context = context;
 		}
 		
-		public override object VisitPrimitiveExpression(PrimitiveExpression primitiveExpression, object data)
+		public override object VisitBlockStatement(BlockStatement blockStatement, object data)
 		{
-			return Eval.CreateValue(context.Process, primitiveExpression.Value);
+			foreach(INode statement in blockStatement.Children) {
+				statement.AcceptVisitor(this, null);
+			}
+			return null;
+		}
+		
+		public override object VisitEmptyStatement(EmptyStatement emptyStatement, object data)
+		{
+			return null;
+		}
+		
+		public override object VisitExpressionStatement(ExpressionStatement expressionStatement, object data)
+		{
+			expressionStatement.Expression.AcceptVisitor(this, null);
+			return null;
 		}
 		
 		public override object VisitIdentifierExpression(IdentifierExpression identifierExpression, object data)
 		{
 			string identifier = identifierExpression.Identifier;
-			
-			if (identifier == "this") {
-				return context.GetThisValue();
-			}
 			
 			Value arg = context.GetArgumentValue(identifier);
 			if (arg != null) return arg;
@@ -55,17 +65,6 @@ namespace Debugger.AddIn
 			throw new GetValueException("Identifier \"" + identifier + "\" not found in this context");
 		}
 		
-		public override object VisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression, object data)
-		{
-			Value target = (Value)memberReferenceExpression.TargetObject.AcceptVisitor(this, null);
-			Value member = target.GetMemberValue(memberReferenceExpression.MemberName);
-			if (member != null) {
-				return member;
-			} else {
-				throw new GetValueException("Member \"" + memberReferenceExpression.MemberName + "\" not found");
-			}
-		}
-		
 		public override object VisitIndexerExpression(IndexerExpression indexerExpression, object data)
 		{
 			List<int> indexes = new List<int>();
@@ -77,6 +76,32 @@ namespace Debugger.AddIn
 			Value target = (Value)indexerExpression.TargetObject.AcceptVisitor(this, null);
 			if (!target.IsArray) throw new GetValueException("Target is not array");
 			return target.GetArrayElement(indexes.ToArray());
+		}
+		
+		public override object VisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression, object data)
+		{
+			Value target = (Value)memberReferenceExpression.TargetObject.AcceptVisitor(this, null);
+			Value member = target.GetMemberValue(memberReferenceExpression.MemberName);
+			if (member != null) {
+				return member;
+			} else {
+				throw new GetValueException("Member \"" + memberReferenceExpression.MemberName + "\" not found");
+			}
+		}
+		
+		public override object VisitParenthesizedExpression(ParenthesizedExpression parenthesizedExpression, object data)
+		{
+			return parenthesizedExpression.Expression.AcceptVisitor(this, null);
+		}
+		
+		public override object VisitPrimitiveExpression(PrimitiveExpression primitiveExpression, object data)
+		{
+			return Eval.CreateValue(context.Process, primitiveExpression.Value);
+		}
+		
+		public override object VisitThisReferenceExpression(ThisReferenceExpression thisReferenceExpression, object data)
+		{
+			return context.GetThisValue();
 		}
 	}
 }
