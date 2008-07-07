@@ -43,9 +43,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration\AssemblyInfo.cs" />
-    <Compile Include="Src\Expressions\SimpleIdentifierExpression.cs" />
-    <Compile Include="Src\Expressions\SimpleMemberReferenceExpression.cs" />
-    <Compile Include="Src\Expressions\SimpleParser.cs" />
+    <Compile Include="Src\Expressions\AstEvaluator.cs" />
+    <Compile Include="Src\Expressions\EvaluateAstVisitor.cs" />
+    <Compile Include="Src\Expressions\NotImplementedAstVisitor.cs" />
     <Compile Include="Src\Options\DebuggingOptions.cs" />
     <Compile Include="Src\Options\DebuggingOptionsPanel.cs" />
     <Compile Include="Src\Options\DebuggingOptionsPanel.Designer.cs">

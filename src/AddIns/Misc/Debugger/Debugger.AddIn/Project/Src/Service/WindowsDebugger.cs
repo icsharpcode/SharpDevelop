@@ -37,7 +37,7 @@
 //
 #endregion
 
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
+using ICSharpCode.NRefactory;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -45,11 +45,13 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Windows.Forms;
 using Debugger;
+using Debugger.AddIn;
 using Debugger.AddIn.TreeModel;
 using Debugger.Core.Wrappers.CorPub;
 using Debugger.Expressions;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Debugging;
+using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using Bitmap = System.Drawing.Bitmap;
@@ -321,17 +323,12 @@ namespace ICSharpCode.SharpDevelop.Services
 		/// Gets variable of given name.
 		/// Returns null if unsuccessful.
 		/// </summary>
-		public Value GetValueFromName(string variableName)
+		public AbstractNode GetValueFromName(string variableName)
 		{
 			if (debuggedProcess == null || debuggedProcess.IsRunning || debuggedProcess.SelectedStackFrame == null) {
 				return null;
 			} else {
-				Expression expression = Debugger.Expressions.SimpleParser.Parse(variableName);
-				try {
-					return expression.Evaluate(debuggedProcess.SelectedStackFrame);
-				} catch (GetValueException) {
-					return null;
-				}
+				return AstEvaluator.Evaluate(variableName, SupportedLanguage.CSharp, debuggedProcess.SelectedStackFrame);
 			}
 		}
 		
@@ -354,12 +351,12 @@ namespace ICSharpCode.SharpDevelop.Services
 		/// </summary>
 		public string GetValueAsString(string variableName)
 		{
-			Value val = GetValueFromName(variableName);
+			ValueNode node = GetValueFromName(variableName) as ValueNode;
 			
-			if (val == null) {
+			if (node == null) {
 				return null;
 			} else {
-				return val.AsString;
+				return node.Text;
 			}
 		}
 		
@@ -369,18 +366,14 @@ namespace ICSharpCode.SharpDevelop.Services
 		/// </summary>
 		public DebuggerGridControl GetTooltipControl(string variableName)
 		{
-			Value val = GetValueFromName(variableName);
+			AbstractNode node = GetValueFromName(variableName);
 			
-			if (val == null) {
+			if (node == null) {
 				return null;
 			} else {
-				try {
-					currentTooltipExpression = val.Expression;
-					currentTooltipRow = new DynamicTreeDebuggerRow(DebuggedProcess, ValueNode.Create(val.Expression));
-					return new DebuggerGridControl(currentTooltipRow);
-				} catch (AbortedBecauseDebuggeeResumedException) {
-					return null;
-				}
+				currentTooltipRow = new DynamicTreeDebuggerRow(DebuggedProcess, node);
+				currentTooltipExpression = node is ValueNode ? ((ValueNode)node).Expression : null;
+				return new DebuggerGridControl(currentTooltipRow);
 			}
 		}
 		

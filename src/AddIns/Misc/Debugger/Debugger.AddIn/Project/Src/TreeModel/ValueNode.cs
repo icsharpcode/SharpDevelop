@@ -50,13 +50,13 @@ namespace Debugger.AddIn.TreeModel
 		}
 		
 		/// <summary>
-		/// Private constructor used by the factory method Create()
+		/// Constructor used by the factory method Create()
 		/// </summary>
 		/// <param name="val"></param>
 		/// <exception cref="System.Management.Automation.GetValueException">
 		/// Can be thrown by InvokeToString()
 		/// </exception>
-		private ValueNode(Value val)
+		public ValueNode(Value val)
 		{
 			this.expression = val.Expression;
 			
