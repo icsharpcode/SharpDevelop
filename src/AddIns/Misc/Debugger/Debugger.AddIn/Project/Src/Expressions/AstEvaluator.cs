@@ -15,25 +15,24 @@ namespace Debugger.AddIn
 {
 	public static class AstEvaluator
 	{
-		public static Debugger.AddIn.TreeModel.AbstractNode Evaluate(string code, SupportedLanguage language, StackFrame context)
+		/// <returns> Returned value or null for statements </returns>
+		public static Value Evaluate(string code, SupportedLanguage language, StackFrame context)
 		{
 			SnippetParser parser = new SnippetParser(language);
 			INode astRoot = parser.Parse(code);
 			if (parser.SnippetType == SnippetType.Expression ||
 			    parser.SnippetType == SnippetType.Statements) {
-				if (parser.Errors.Count == 0) {
-					try {
-						EvaluateAstVisitor visitor = new EvaluateAstVisitor(context);
-						Value result = (Value)astRoot.AcceptVisitor(visitor, null);
-						return new ValueNode(result);
-					} catch (NotImplementedException) {
-						return null;
-					} catch (GetValueException e) {
-						return new ErrorNode(new EmptyExpression(), e);
-					}
+				if (parser.Errors.Count > 0) {
+					throw new GetValueException(parser.Errors.ErrorOutput);
+				}
+				try {
+					EvaluateAstVisitor visitor = new EvaluateAstVisitor(context);
+					return astRoot.AcceptVisitor(visitor, null) as Value;
+				} catch (NotImplementedException) {
+					throw new GetValueException("Syntax feature not implemented");
 				}
 			}
-			return null;
+			throw new GetValueException("Code must be expression or statement");
 		}
 	}
 }

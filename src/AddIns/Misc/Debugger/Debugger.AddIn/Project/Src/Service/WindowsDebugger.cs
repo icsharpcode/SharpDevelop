@@ -323,7 +323,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		/// Gets variable of given name.
 		/// Returns null if unsuccessful.
 		/// </summary>
-		public AbstractNode GetValueFromName(string variableName)
+		public Value GetValueFromName(string variableName)
 		{
 			if (debuggedProcess == null || debuggedProcess.IsRunning || debuggedProcess.SelectedStackFrame == null) {
 				return null;
@@ -351,12 +351,12 @@ namespace ICSharpCode.SharpDevelop.Services
 		/// </summary>
 		public string GetValueAsString(string variableName)
 		{
-			ValueNode node = GetValueFromName(variableName) as ValueNode;
-			
-			if (node == null) {
+			try {
+				Value val = GetValueFromName(variableName);
+				if (val == null) return null;
+				return val.AsString;
+			} catch (GetValueException) {
 				return null;
-			} else {
-				return node.Text;
 			}
 		}
 		
@@ -366,15 +366,18 @@ namespace ICSharpCode.SharpDevelop.Services
 		/// </summary>
 		public DebuggerGridControl GetTooltipControl(string variableName)
 		{
-			AbstractNode node = GetValueFromName(variableName);
-			
-			if (node == null) {
+			ValueNode valueNode;
+			try {
+				Value val = GetValueFromName(variableName);
+				if (val == null) return null;
+				valueNode = new ValueNode(val);
+			} catch (GetValueException) {
 				return null;
-			} else {
-				currentTooltipRow = new DynamicTreeDebuggerRow(DebuggedProcess, node);
-				currentTooltipExpression = node is ValueNode ? ((ValueNode)node).Expression : null;
-				return new DebuggerGridControl(currentTooltipRow);
 			}
+			
+			currentTooltipRow = new DynamicTreeDebuggerRow(DebuggedProcess, valueNode);
+			currentTooltipExpression = valueNode.Expression;
+			return new DebuggerGridControl(currentTooltipRow);
 		}
 		
 		public bool CanSetInstructionPointer(string filename, int line, int column)

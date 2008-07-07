@@ -72,6 +72,13 @@
 		     icon     = "PadIcons.LocalVariables"
 		     shortcut = "Control|Alt|V"
 		     class = "ICSharpCode.SharpDevelop.Gui.Pads.LocalVarPad"/>
+	
+		<Pad id    = "ConsolePad"
+		     category = "Debugger"
+		     title    = "${res:MainWindow.Windows.Debug.Console}"
+		     icon     = "PadIcons.Output"
+		     shortcut = "Control|Alt|N"
+		     class = "ICSharpCode.SharpDevelop.Gui.Pads.ConsolePad"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Dialogs/OptionsDialog">
