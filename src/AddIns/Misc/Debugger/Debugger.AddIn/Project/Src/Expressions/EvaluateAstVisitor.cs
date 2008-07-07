@@ -4,8 +4,9 @@
 //     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
 //     <version>$Revision$</version>
 // </file>
-using ICSharpCode.NRefactory.Ast;
 using System;
+using ICSharpCode.NRefactory.Ast;
+using System.Collections.Generic;
 
 namespace Debugger.AddIn
 {
@@ -20,6 +21,11 @@ namespace Debugger.AddIn
 		public EvaluateAstVisitor(StackFrame context)
 		{
 			this.context = context;
+		}
+		
+		public override object VisitPrimitiveExpression(PrimitiveExpression primitiveExpression, object data)
+		{
+			return Eval.CreateValue(context.Process, primitiveExpression.Value);
 		}
 		
 		public override object VisitIdentifierExpression(IdentifierExpression identifierExpression, object data)
@@ -58,6 +64,19 @@ namespace Debugger.AddIn
 			} else {
 				throw new GetValueException("Member \"" + memberReferenceExpression.MemberName + "\" not found");
 			}
+		}
+		
+		public override object VisitIndexerExpression(IndexerExpression indexerExpression, object data)
+		{
+			List<int> indexes = new List<int>();
+			foreach(Expression indexExpr in indexerExpression.Indexes) {
+				Value indexValue = (Value)indexExpr.AcceptVisitor(this, null);
+				if (!indexValue.IsInteger) throw new GetValueException("Integer expected");
+				indexes.Add((int)indexValue.PrimitiveValue);
+			}
+			Value target = (Value)indexerExpression.TargetObject.AcceptVisitor(this, null);
+			if (!target.IsArray) throw new GetValueException("Target is not array");
+			return target.GetArrayElement(indexes.ToArray());
 		}
 	}
 }
