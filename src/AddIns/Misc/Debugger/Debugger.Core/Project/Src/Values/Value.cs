@@ -70,7 +70,7 @@ namespace Debugger
 			}
 		}
 		
-		internal ICorDebugValue RawCorValue {
+		public ICorDebugValue RawCorValue {
 			get {
 				if (this.IsInvalid) throw new GetValueException("Value is no longer valid");
 				
@@ -78,7 +78,7 @@ namespace Debugger
 			}
 		}
 		
-		internal ICorDebugValue CorValue {
+		public ICorDebugValue CorValue {
 			get {
 				if (this.IsInvalid) throw new GetValueException("Value is no longer valid");
 				

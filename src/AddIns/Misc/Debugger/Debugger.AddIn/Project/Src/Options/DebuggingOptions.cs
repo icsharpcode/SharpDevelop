@@ -20,6 +20,11 @@ namespace ICSharpCode.SharpDevelop.Services
 			}
 		}
 		
+		public static bool ICorDebugVisualizerEnabled {
+			get { return DebuggingProperties.Get("ICorDebugVisualizerEnabled", false); }
+			set { DebuggingProperties.Set("ICorDebugVisualizerEnabled", value); }
+		}
+		
 		public static bool ShowValuesInHexadecimal {
 			get { return DebuggingProperties.Get("ShowValuesInHexadecimal", false); }
 			set { DebuggingProperties.Set("ShowValuesInHexadecimal", value); }

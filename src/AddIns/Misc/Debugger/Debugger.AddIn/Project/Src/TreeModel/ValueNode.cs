@@ -94,9 +94,24 @@ namespace Debugger.AddIn.TreeModel
 				this.ChildNodes = null;
 			}
 			
+			if (DebuggingOptions.ICorDebugVisualizerEnabled) {
+				AbstractNode info = ICorDebug.GetDebugInfoRoot(val.Process, val.RawCorValue);
+				this.ChildNodes = PrependNode(info, this.ChildNodes);
+			}
+			
 			// Do last since it may expire the object
 			if (val.IsObject) {
 				this.Text = val.InvokeToString();
+			}
+		}
+		
+		IEnumerable<AbstractNode> PrependNode(AbstractNode node, IEnumerable<AbstractNode> rest)
+		{
+			yield return node;
+			if (rest != null) {
+				foreach(AbstractNode absNode in rest) {
+					yield return absNode;
+				}
 			}
 		}
 		

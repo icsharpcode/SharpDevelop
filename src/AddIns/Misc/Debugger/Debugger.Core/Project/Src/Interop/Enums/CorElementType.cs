@@ -7,7 +7,7 @@
 
 namespace Debugger.Wrappers.CorDebug
 {
-	enum CorElementType: uint
+	public enum CorElementType: uint
 	{
 		END            = 0x0,  
 		VOID           = 0x1,  

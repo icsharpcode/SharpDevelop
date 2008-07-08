@@ -92,13 +92,14 @@
     <Compile Include="Src\TreeModel\Adapters\TreeViewVarNode.cs" />
     <Compile Include="Src\TreeModel\ArrayRangeNode.cs" />
     <Compile Include="Src\TreeModel\ErrorNode.cs" />
-    <Compile Include="Src\TreeModel\Extensions\IList.cs" />
     <Compile Include="Src\TreeModel\ValueNode.cs" />
     <Compile Include="Src\TreeModel\IContextMenu.cs" />
     <Compile Include="Src\TreeModel\ISetText.cs" />
     <Compile Include="Src\TreeModel\ChildNodesOfObject.cs" />
     <Compile Include="Src\TreeModel\StackFrameNode.cs" />
     <Compile Include="Src\TreeModel\Utils.cs" />
+    <Compile Include="Src\Visualizers\ICorDebug.cs" />
+    <Compile Include="Src\Visualizers\IList.cs" />
     <None Include="COPYING" />
   </ItemGroup>
   <ItemGroup>
@@ -146,10 +147,10 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Src\Expressions" />
+    <Folder Include="Src\Visualizers" />
     <Folder Include="Src\Options" />
     <Folder Include="Src\TreeModel" />
     <Folder Include="Src\TreeModel\Adapters" />
-    <Folder Include="Src\TreeModel\Extensions" />
     <ProjectReference Include="..\..\..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
       <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
       <Name>NRefactory</Name>

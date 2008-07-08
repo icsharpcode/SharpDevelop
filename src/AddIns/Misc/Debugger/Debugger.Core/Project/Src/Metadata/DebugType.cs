@@ -329,7 +329,7 @@ namespace Debugger.MetaData
 			throw new DebuggerException("Can not find type " + fullTypeName);
 		}
 		
-		static internal DebugType Create(Process process, ICorDebugClass corClass, params ICorDebugType[] typeArguments)
+		static public DebugType Create(Process process, ICorDebugClass corClass, params ICorDebugType[] typeArguments)
 		{
 			MetaDataImport metaData = process.GetModule(corClass.Module).MetaData;
 			
@@ -358,7 +358,7 @@ namespace Debugger.MetaData
 		}
 		
 		/// <summary> Obtains instance of DebugType. Same types will return identical instance. </summary>
-		static internal DebugType Create(Process process, ICorDebugType corType)
+		static public DebugType Create(Process process, ICorDebugType corType)
 		{
 			DateTime startTime = Util.HighPrecisionTimer.Now;
 			
