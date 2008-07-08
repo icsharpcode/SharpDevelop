@@ -11,6 +11,7 @@ using System.Drawing;
 using System.Windows.Forms;
 
 using Aga.Controls.Tree;
+using Aga.Controls.Tree.NodeControls;
 
 using Debugger.Util;
 
@@ -19,6 +20,96 @@ using ICSharpCode.SharpDevelop.Gui.Pads;
 
 namespace Debugger.AddIn.TreeModel
 {
+	public sealed class ItemIcon: NodeIcon {
+		protected override System.Drawing.Image GetIcon(TreeNodeAdv node)
+		{
+			return ((TreeViewVarNode)node).Content.Image;
+		}
+	}
+	
+	public sealed class ItemName: NodeTextBox {
+		protected override bool CanEdit(TreeNodeAdv node)
+		{
+			return false;
+		}
+		public override object GetValue(TreeNodeAdv node)
+		{
+			if (node is TreeViewVarNode) {
+				return ((TreeViewVarNode)node).Content.Name;
+			} else {
+				// Happens during incremental search
+				return base.GetValue(node);
+			}
+		}
+	}
+	
+	public sealed class ItemText: NodeTextBox {
+		public ItemText()
+		{
+			this.EditEnabled = true;
+			this.EditOnClick = true;
+		}
+		protected override bool CanEdit(TreeNodeAdv node)
+		{
+			AbstractNode content = ((TreeViewVarNode)node).Content;
+			return (content is ISetText) && ((ISetText)content).CanSetText;
+		}
+		public override object GetValue(TreeNodeAdv node)
+		{
+			if (node is TreeViewVarNode) {
+				return ((TreeViewVarNode)node).Content.Text;
+			} else {
+				// Happens during incremental search
+				return base.GetValue(node);
+			}
+		}
+		public override void SetValue(TreeNodeAdv node, object value)
+		{
+			ISetText content = (ISetText)((TreeViewVarNode)node).Content;
+			if (content.CanSetText) {
+				content.SetText(value.ToString());
+			}
+		}
+		protected override void OnDrawText(DrawEventArgs args)
+		{
+			AbstractNode content = ((TreeViewVarNode)args.Node).Content;
+			if (content is ErrorNode) {
+				args.TextColor = Color.Red;
+			} else if (((TreeViewVarNode)args.Node).TextChanged) {
+				args.TextColor = Color.Blue;
+			}
+			base.OnDrawText(args);
+		}
+		public override void MouseDown(TreeNodeAdvMouseEventArgs args)
+		{
+			AbstractNode content = ((TreeViewVarNode)args.Node).Content;
+			if (content is IContextMenu && args.Button == MouseButtons.Right) {
+				ContextMenuStrip menu = ((IContextMenu)content).GetContextMenu();
+				if (menu != null) {
+					menu.Show(args.Node.Tree, args.Location);
+				}
+			} else {
+				base.MouseDown(args);
+			}
+		}
+	}
+	
+	public sealed class ItemType: NodeTextBox {
+		protected override bool CanEdit(TreeNodeAdv node)
+		{
+			return false;
+		}
+		public override object GetValue(TreeNodeAdv node)
+		{
+			if (node is TreeViewVarNode) {
+				return ((TreeViewVarNode)node).Content.Type;
+			} else {
+				// Happens during incremental search
+				return base.GetValue(node);
+			}
+		}
+	}
+	
 	/// <summary>
 	/// A child class of TreeNodeAdv that displays exceptions.
 	/// </summary>

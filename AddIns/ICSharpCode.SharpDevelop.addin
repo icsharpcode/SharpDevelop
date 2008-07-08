@@ -2099,9 +2099,12 @@
 		      extensions = ".txt,.doc"
 		      resource   = "Icons.16x16.TextFileIcon"/>
 		
-		<Icon id         = "CssFileIcon"
+		<Icon id= "CssFileIcon"
 		      extensions = ".css"
 		      resource   = "Icons.16x16.CSSIcon"/>
+		<Icon id         = "StrongNameKeyFileIcon"
+		      extensions = ".snk"
+		      resource   = "Icons.16x16.StrongNameKeyFileIcon"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/MainMenu/View">
