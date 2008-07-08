@@ -21,11 +21,9 @@ namespace Debugger
 	{
 		ICorDebugArrayValue CorArrayValue {
 			get {
-				if (IsArray) {
-					return CorValue.CastTo<ICorDebugArrayValue>();
-				} else {
-					throw new DebuggerException("Value is not an array");
-				}
+				if (!IsArray) throw new DebuggerException("Value is not an array");
+				
+				return this.CorReferenceValue.Dereference().CastTo<ICorDebugArrayValue>();
 			}
 		}
 		

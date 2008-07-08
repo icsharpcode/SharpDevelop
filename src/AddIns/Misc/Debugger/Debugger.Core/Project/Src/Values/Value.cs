@@ -24,8 +24,6 @@ namespace Debugger
 	{
 		Process        process;
 		Expression     expression;
-		ICorDebugValue rawCorValue;
-		PauseSession   rawCorValue_pauseSession;
 		ICorDebugValue corValue;
 		PauseSession   corValue_pauseSession;
 		DebugType      type;
@@ -38,7 +36,10 @@ namespace Debugger
 		/// <summary> Returns true if the value is null </summary>
 		public bool IsNull {
 			get {
-				return CorValue == null;
+				return 
+					(this.Type.IsClass || this.Type.IsValueType || this.Type.IsArray || this.CorType == CorElementType.STRING) &&
+					this.CorValue.Is<ICorDebugReferenceValue>() &&
+					this.CorReferenceValue.IsNull != 0;
 			}
 		}
 		
@@ -65,17 +66,8 @@ namespace Debugger
 		/// Value is valid only until the debuggee is resummed. </summary>
 		public bool IsInvalid {
 			get {
-				return rawCorValue_pauseSession != process.PauseSession &&
-				       !rawCorValue.Is<ICorDebugHandleValue>();
-			}
-		}
-		
-		[Tests.Ignore]
-		public ICorDebugValue RawCorValue {
-			get {
-				if (this.IsInvalid) throw new GetValueException("Value is no longer valid");
-				
-				return rawCorValue;
+				return corValue_pauseSession != process.PauseSession &&
+				       !corValue.Is<ICorDebugHandleValue>();
 			}
 		}
 		
@@ -84,11 +76,17 @@ namespace Debugger
 			get {
 				if (this.IsInvalid) throw new GetValueException("Value is no longer valid");
 				
-				if (corValue_pauseSession != process.PauseSession) {
-					corValue = DereferenceUnbox(rawCorValue);
-					corValue_pauseSession = process.PauseSession;
-				}
 				return corValue;
+			}
+		}
+		
+		ICorDebugReferenceValue CorReferenceValue {
+			get {
+				if (this.CorValue.Is<ICorDebugReferenceValue>()) {
+					return this.CorValue.CastTo<ICorDebugReferenceValue>();
+				} else {
+					throw new GetValueException("Reference value was expected");
+				}
 			}
 		}
 		
@@ -102,54 +100,33 @@ namespace Debugger
 			}
 		}
 		
-		internal ICorDebugValue SoftReference {
-			get {
-				ICorDebugValue corValue = this.RawCorValue;
-				if (corValue != null && corValue.Is<ICorDebugHandleValue>()) {
-					return corValue;
-				}
-				corValue = DereferenceUnbox(corValue);
-				if (corValue != null && corValue.Is<ICorDebugHeapValue2>()) {
-					return corValue.As<ICorDebugHeapValue2>().CreateHandle(CorDebugHandleType.HANDLE_WEAK_TRACK_RESURRECTION).CastTo<ICorDebugValue>();
-				} else {
-					return corValue; // Value type - return value type
-				}
-			}
-		}
-		
 		public Value GetPermanentReference()
 		{
-			ICorDebugValue corValue;
-			corValue = this.RawCorValue;
-			corValue = DereferenceUnbox(corValue);
-			if (corValue.Is<ICorDebugHeapValue2>()) {
-				corValue = corValue.CastTo<ICorDebugHeapValue2>().CreateHandle(CorDebugHandleType.HANDLE_STRONG).CastTo<ICorDebugValue>();
+			ICorDebugValue corValue = this.CorValue;
+			if (this.Type.IsClass) {
+				corValue = this.CorObjectValue.CastTo<ICorDebugHeapValue2>().CreateHandle(CorDebugHandleType.HANDLE_STRONG).CastTo<ICorDebugValue>();
 			}
 			return new Value(process, expression, corValue);
 		}
 		
-		internal Value(Process process,
-		               ICorDebugValue rawCorValue)
-			:this (process, new EmptyExpression(), rawCorValue)
+		internal Value(Process process, ICorDebugValue corValue)
+			:this (process, new EmptyExpression(), corValue)
 		{
 			
 		}
 		
-		internal Value(Process process,
-		               Expression expression,
-		               ICorDebugValue rawCorValue)
+		internal Value(Process process, Expression expression, ICorDebugValue corValue)
 		{
+			if (corValue == null) {
+				throw new ArgumentNullException("corValue");
+			}
 			this.process = process;
 			this.expression = expression;
-			this.rawCorValue = rawCorValue;
-			this.rawCorValue_pauseSession = process.PauseSession;
+			this.corValue = corValue;
+			this.corValue_pauseSession = process.PauseSession;
 			
-			if (this.CorValue == null) {
-				type = DebugType.Create(this.Process, null, "System.Object");
-			} else {
-				ICorDebugType exactType = this.CorValue.CastTo<ICorDebugValue2>().ExactType;
-				type = DebugType.Create(this.Process, exactType);
-			}
+			ICorDebugType exactType = this.CorValue.CastTo<ICorDebugValue2>().ExactType;
+			type = DebugType.Create(this.Process, exactType);
 		}
 		
 		/// <summary> Returns the <see cref="Debugger.DebugType"/> of the value </summary>
@@ -162,15 +139,12 @@ namespace Debugger
 		/// <summary> Copy the acutal value from some other Value object </summary>
 		public void SetValue(Value newValue)
 		{
-			ICorDebugValue corValue = this.RawCorValue;
-			ICorDebugValue newCorValue = newValue.RawCorValue;
-			if (newCorValue.Type == (uint)CorElementType.BYREF) {
-				newCorValue = newCorValue.As<ICorDebugReferenceValue>().Dereference();
-			}
+			ICorDebugValue corValue = this.CorValue;
+			ICorDebugValue newCorValue = newValue.CorValue;
 			
 			if (corValue.Is<ICorDebugReferenceValue>()) {
 				if (newCorValue.Is<ICorDebugObjectValue>()) {
-					ICorDebugValue box = Eval.NewObjectNoConstructor(newValue.Type).RawCorValue;
+					ICorDebugValue box = Eval.NewObjectNoConstructor(newValue.Type).CorValue;
 					newCorValue = box;
 				}
 				corValue.CastTo<ICorDebugReferenceValue>().SetValue(newCorValue.CastTo<ICorDebugReferenceValue>().Value);

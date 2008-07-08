@@ -19,11 +19,20 @@ namespace Debugger
 	{
 		internal ICorDebugObjectValue CorObjectValue {
 			get {
-				if (IsObject) {
-					return CorValue.CastTo<ICorDebugObjectValue>();
-				} else {
-					throw new DebuggerException("Value is not an object");
+				if (!IsObject) throw new DebuggerException("Value is not an object");
+				
+				if (this.Type.IsClass) {
+					return this.CorReferenceValue.Dereference().CastTo<ICorDebugObjectValue>();
 				}
+				if (this.Type.IsValueType) {
+					// Dereference and unbox
+					if (corValue.Is<ICorDebugReferenceValue>()) {
+						return this.CorReferenceValue.Dereference().CastTo<ICorDebugBoxValue>().Object;
+					} else {
+						return corValue.CastTo<ICorDebugObjectValue>();
+					}
+				}
+				throw new DebuggerException("Unknown type");
 			}
 		}
 		
@@ -169,7 +178,7 @@ namespace Debugger
 			return new Value(
 				propertyInfo.Process,
 				new MemberReferenceExpression(objectInstanceExpression, propertyInfo, argumentExpressions.ToArray()),
-				Value.InvokeMethod(objectInstance, propertyInfo.GetMethod, arguments).RawCorValue
+				Value.InvokeMethod(objectInstance, propertyInfo.GetMethod, arguments).CorValue
 			);
 		}
 		

@@ -95,7 +95,7 @@ namespace Debugger.AddIn.TreeModel
 			}
 			
 			if (DebuggingOptions.ICorDebugVisualizerEnabled) {
-				AbstractNode info = ICorDebug.GetDebugInfoRoot(val.Process, val.RawCorValue);
+				AbstractNode info = ICorDebug.GetDebugInfoRoot(val.Process, val.CorValue);
 				this.ChildNodes = PrependNode(info, this.ChildNodes);
 			}
 			

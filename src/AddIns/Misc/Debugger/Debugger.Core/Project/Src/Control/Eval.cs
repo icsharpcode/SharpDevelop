@@ -226,10 +226,10 @@ namespace Debugger
 						"Expected: " + method.DeclaringType.FullName + "  Seen: " + thisValue.Type.FullName
 					);
 				}
-				corArgs.Add(thisValue.SoftReference);
+				corArgs.Add(thisValue.CorValue);
 			}
 			foreach(Value arg in args) {
-				corArgs.Add(arg.SoftReference);
+				corArgs.Add(arg.CorValue);
 			}
 			
 			ICorDebugType[] genericArgs = method.DeclaringType.GetGenericArgumentsAsCorDebugType();

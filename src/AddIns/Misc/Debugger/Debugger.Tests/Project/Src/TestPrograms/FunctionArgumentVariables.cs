@@ -143,7 +143,7 @@ namespace Debugger.Tests {
           IsObject="False"
           IsPrimitive="False"
           PrimitiveValue="{Exception: Value is not a primitive type}"
-          Type="System.Object" />
+          Type="System.String" />
       </Item>
       <Item>
         <Value

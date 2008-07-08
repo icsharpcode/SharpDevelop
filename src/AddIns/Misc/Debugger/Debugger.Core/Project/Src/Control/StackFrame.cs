@@ -252,13 +252,19 @@ namespace Debugger
 		ICorDebugValue GetThisCorValue()
 		{
 			if (this.MethodInfo.IsStatic) throw new GetValueException("Static method does not have 'this'.");
+			ICorDebugValue corValue;
 			try {
-				return CorILFrame.GetArgument(0);
+				corValue = CorILFrame.GetArgument(0);
 			} catch (COMException e) {
 				// System.Runtime.InteropServices.COMException (0x80131304): An IL variable is not available at the current native IP. (See Forum-8640)
 				if ((uint)e.ErrorCode == 0x80131304) throw new GetValueException("Not available in the current state");
 				throw;
 			}
+			// This can be 'by ref' for value types
+			if (corValue.Type == (uint)CorElementType.BYREF) {
+				corValue = corValue.CastTo<ICorDebugReferenceValue>().Dereference();
+			}
+			return corValue;
 		}
 		
 		/// <summary> Total number of arguments (excluding implicit 'this' argument) </summary>
@@ -282,13 +288,19 @@ namespace Debugger
 		
 		ICorDebugValue GetArgumentCorValue(int index)
 		{
+			ICorDebugValue corValue;
 			try {
 				// Non-static methods include 'this' as first argument
-				return CorILFrame.GetArgument((uint)(this.MethodInfo.IsStatic? index : (index + 1)));
+				corValue = CorILFrame.GetArgument((uint)(this.MethodInfo.IsStatic? index : (index + 1)));
 			} catch (COMException e) {
 				if ((uint)e.ErrorCode == 0x80131304) throw new GetValueException("Unavailable in optimized code");
 				throw;
 			}
+			// Method arguments can be passed 'by ref'
+			if (corValue.Type == (uint)CorElementType.BYREF) {
+				corValue = corValue.CastTo<ICorDebugReferenceValue>().Dereference();
+			}
+			return corValue;
 		}
 		
 		#region Convenience methods

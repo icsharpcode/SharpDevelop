@@ -86,13 +86,6 @@ namespace Debugger.MetaData
 			}
 		}
 		
-		/// <summary> Returns true if this type represents interface </summary>
-		public bool IsInterface {
-			get {
-				return IsClass && classProps.IsInterface;
-			}
-		}
-		
 		/// <summary> Returns a string describing the type including the namespace
 		/// and generic arguments but excluding the assembly name. </summary>
 		public string FullName { 
@@ -116,7 +109,7 @@ namespace Debugger.MetaData
 		/// (ie array, reference or pointer) </summary>
 		public bool HasElementType {
 			get {
-				return IsArray;
+				return IsArray || IsPointer;
 			}
 		}
 		
@@ -128,23 +121,6 @@ namespace Debugger.MetaData
 				return typeArguments[0];
 			} else {
 				return null;
-			}
-		}
-		
-		/// <summary> Gets a value indicating whether the type is an array </summary>
-		public bool IsArray {
-			get {
-				return this.corElementType == CorElementType.ARRAY ||
-				       this.corElementType == CorElementType.SZARRAY;
-			}
-		}
-		
-		/// <summary> Gets a value indicating whether the immediate type is generic.  
-		/// Arrays, references and pointers are never generic types. </summary>
-		public bool IsGenericType {
-			get {
-				return (IsClass || IsValueType) &&
-				       typeArguments.Count > 0;
 			}
 		}
 		
@@ -191,11 +167,35 @@ namespace Debugger.MetaData
 			return types.ToArray();
 		}
 		
+		/// <summary> Gets a value indicating whether the type is an array </summary>
+		public bool IsArray {
+			get {
+				return this.corElementType == CorElementType.ARRAY ||
+				       this.corElementType == CorElementType.SZARRAY;
+			}
+		}
+		
+		/// <summary> Gets a value indicating whether the immediate type is generic.  
+		/// Arrays, references and pointers are never generic types. </summary>
+		public bool IsGenericType {
+			get {
+				return (IsClass || IsValueType) &&
+				       typeArguments.Count > 0;
+			}
+		}
+		
 		/// <summary> Gets a value indicating whether the type is a class </summary>
 		public bool IsClass {
 			get { 
 				return this.corElementType == CorElementType.CLASS ||
 				       this.corElementType == CorElementType.OBJECT;
+			}
+		}
+		
+		/// <summary> Returns true if this type represents interface </summary>
+		public bool IsInterface {
+			get {
+				return IsClass && classProps.IsInterface;
 			}
 		}
 		
@@ -240,6 +240,21 @@ namespace Debugger.MetaData
 				       this.corElementType == CorElementType.U8 ||
 				       this.corElementType == CorElementType.I ||
 				       this.corElementType == CorElementType.U;
+			}
+		}
+		
+		[Tests.Ignore] // TODO: Remove
+		public bool IsPointer {
+			get {
+				return this.corElementType == CorElementType.PTR ||
+				       this.corElementType == CorElementType.BYREF;
+			}
+		}
+		
+		[Tests.Ignore] // TODO: Remove
+		public bool IsVoid {
+			get {
+				return this.corElementType == CorElementType.VOID;
 			}
 		}
 		
@@ -292,7 +307,7 @@ namespace Debugger.MetaData
 				this.classProps = module.MetaData.GetTypeDefProps(corClass.Token);
 			}
 			
-			if (this.IsClass || this.IsValueType || this.IsArray) {
+			if (this.IsClass || this.IsValueType || this.IsArray || this.IsPointer) {
 				foreach(ICorDebugType t in corType.EnumerateTypeParameters().Enumerator) {
 					typeArguments.Add(DebugType.Create(process, t));
 				}
@@ -434,6 +449,10 @@ namespace Debugger.MetaData
 				}
 			} else if (IsPrimitive) {
 				return this.ManagedType.ToString();
+			} else if (IsPointer) {
+				return this.GetElementType().FullName + (this.corElementType == CorElementType.BYREF ? "&" : "*");
+			} else if (IsVoid) {
+				return "System.Void";
 			} else {
 				throw new DebuggerException("Unknown type: " + this.corElementType.ToString());
 			}
@@ -535,6 +554,13 @@ namespace Debugger.MetaData
 					return (other.IsClass || other.IsValueType) &&
 					       other.Module == this.Module &&
 					       other.MetadataToken == this.MetadataToken;
+				}
+				if (this.IsPointer) {
+					return other.IsPointer &&
+					       other.GetElementType().Equals(this.GetElementType());
+				}
+				if (this.IsVoid) {
+					return other.IsVoid;
 				}
 				throw new DebuggerException("Unknown type");
 			} else {

@@ -18,6 +18,8 @@ namespace Debugger.Tests.TestPrograms
 		
 		public static unsafe void Main()
 		{
+			object nullObject = null;
+			string nullString = null;
 			int loc = 42;
 			int locByRef = 43;
 			int* locPtr = &loc;
@@ -30,6 +32,7 @@ namespace Debugger.Tests.TestPrograms
 		    char[,] locArray = new char[2,2];
 		    Point locStruct;
 		    Point* locStructPtr = &locStruct;
+		    object box = 40;
 		    
 		    System.Diagnostics.Debugger.Break();
 		    
@@ -37,14 +40,16 @@ namespace Debugger.Tests.TestPrograms
 		        locPtrPtr, locVoidPtr,
 		        locObj, ref locObjByRef,
 		        locSZArray, locArray,
-		        locStruct, ref locStruct, locStructPtr);
+		        locStruct, ref locStruct, locStructPtr,
+		        box, ref box);
 		}
 		
 		static unsafe void Fun(int arg, ref int argByRef, int* argPtr, ref int* argPtrByRef,
 		                       int** argPtrPtr, void* argVoidPtr,
 		                       object argObj, ref object argObjByRef,
 		                       char[] argSZArray, char[,] argArray,
-		                       Point argStruct, ref Point argStructByRef, Point* argStructPtr)
+		                       Point argStruct, ref Point argStructByRef, Point* argStructPtr,
+		                       object argBox, ref object argBoxByRef)
 		{
 			System.Diagnostics.Debugger.Break();
 		}
@@ -83,7 +88,73 @@ namespace Debugger.Tests {
     <DebuggingPaused>Break</DebuggingPaused>
     <LocalVariables
       Capacity="16"
-      Count="12">
+      Count="15">
+      <Item>
+        <Value
+          ArrayDimensions="{Exception: Value is not an array}"
+          ArrayLenght="{Exception: Value is not an array}"
+          ArrayRank="{Exception: Value is not an array}"
+          AsString="null"
+          Expression="nullObject"
+          IsArray="False"
+          IsInteger="False"
+          IsInvalid="False"
+          IsNull="True"
+          IsObject="False"
+          IsPrimitive="False"
+          PrimitiveValue="{Exception: Value is not a primitive type}"
+          Type="System.Object">
+          <Type>
+            <DebugType
+              BaseType="{Exception: Value does not fall within the expected range.}"
+              FullName="System.Object"
+              HasElementType="False"
+              Interfaces="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
+              IsArray="False"
+              IsClass="True"
+              IsGenericType="False"
+              IsInteger="False"
+              IsInterface="False"
+              IsPrimitive="False"
+              IsValueType="False"
+              ManagedType="System.Object"
+              Module="mscorlib.dll" />
+          </Type>
+        </Value>
+      </Item>
+      <Item>
+        <Value
+          ArrayDimensions="{Exception: Value is not an array}"
+          ArrayLenght="{Exception: Value is not an array}"
+          ArrayRank="{Exception: Value is not an array}"
+          AsString="null"
+          Expression="nullString"
+          IsArray="False"
+          IsInteger="False"
+          IsInvalid="False"
+          IsNull="True"
+          IsObject="False"
+          IsPrimitive="False"
+          PrimitiveValue="{Exception: Value is not a primitive type}"
+          Type="System.String">
+          <Type>
+            <DebugType
+              BaseType="System.Object"
+              FullName="System.String"
+              HasElementType="False"
+              Interfaces="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
+              IsArray="False"
+              IsClass="False"
+              IsGenericType="False"
+              IsInteger="False"
+              IsInterface="False"
+              IsPrimitive="True"
+              IsValueType="False"
+              ManagedType="System.String"
+              Module="{Exception: The type is not a class or value type.}" />
+          </Type>
+        </Value>
+      </Item>
       <Item>
         <Value
           ArrayDimensions="{Exception: Value is not an array}"
@@ -155,130 +226,130 @@ namespace Debugger.Tests {
           ArrayDimensions="{Exception: Value is not an array}"
           ArrayLenght="{Exception: Value is not an array}"
           ArrayRank="{Exception: Value is not an array}"
-          AsString="42"
+          AsString="{Exception: Unknown value type}"
           Expression="locPtr"
-          IsArray="False"
-          IsInteger="True"
-          IsInvalid="False"
-          IsNull="False"
-          IsObject="False"
-          IsPrimitive="True"
-          PrimitiveValue="42"
-          Type="System.Int32">
-          <Type>
-            <DebugType
-              BaseType="System.Object"
-              FullName="System.Int32"
-              HasElementType="False"
-              Interfaces="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
-              IsArray="False"
-              IsClass="False"
-              IsGenericType="False"
-              IsInteger="True"
-              IsInterface="False"
-              IsPrimitive="True"
-              IsValueType="False"
-              ManagedType="System.Int32"
-              Module="{Exception: The type is not a class or value type.}" />
-          </Type>
-        </Value>
-      </Item>
-      <Item>
-        <Value
-          ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLenght="{Exception: Value is not an array}"
-          ArrayRank="{Exception: Value is not an array}"
-          AsString="42"
-          Expression="locPtrByRef"
-          IsArray="False"
-          IsInteger="True"
-          IsInvalid="False"
-          IsNull="False"
-          IsObject="False"
-          IsPrimitive="True"
-          PrimitiveValue="42"
-          Type="System.Int32">
-          <Type>
-            <DebugType
-              BaseType="System.Object"
-              FullName="System.Int32"
-              HasElementType="False"
-              Interfaces="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
-              IsArray="False"
-              IsClass="False"
-              IsGenericType="False"
-              IsInteger="True"
-              IsInterface="False"
-              IsPrimitive="True"
-              IsValueType="False"
-              ManagedType="System.Int32"
-              Module="{Exception: The type is not a class or value type.}" />
-          </Type>
-        </Value>
-      </Item>
-      <Item>
-        <Value
-          ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLenght="{Exception: Value is not an array}"
-          ArrayRank="{Exception: Value is not an array}"
-          AsString="42"
-          Expression="locPtrPtr"
-          IsArray="False"
-          IsInteger="True"
-          IsInvalid="False"
-          IsNull="False"
-          IsObject="False"
-          IsPrimitive="True"
-          PrimitiveValue="42"
-          Type="System.Int32">
-          <Type>
-            <DebugType
-              BaseType="System.Object"
-              FullName="System.Int32"
-              HasElementType="False"
-              Interfaces="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
-              IsArray="False"
-              IsClass="False"
-              IsGenericType="False"
-              IsInteger="True"
-              IsInterface="False"
-              IsPrimitive="True"
-              IsValueType="False"
-              ManagedType="System.Int32"
-              Module="{Exception: The type is not a class or value type.}" />
-          </Type>
-        </Value>
-      </Item>
-      <Item>
-        <Value
-          ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLenght="{Exception: Value is not an array}"
-          ArrayRank="{Exception: Value is not an array}"
-          AsString="null"
-          Expression="locVoidPtr"
           IsArray="False"
           IsInteger="False"
           IsInvalid="False"
-          IsNull="True"
+          IsNull="False"
           IsObject="False"
           IsPrimitive="False"
           PrimitiveValue="{Exception: Value is not a primitive type}"
-          Type="System.Object">
+          Type="System.Int32*">
           <Type>
             <DebugType
-              BaseType="null"
-              FullName="System.Object"
-              HasElementType="False"
+              BaseType="{Exception: Value does not fall within the expected range.}"
+              FullName="System.Int32*"
+              HasElementType="True"
               Interfaces="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
               IsArray="False"
-              IsClass="True"
+              IsClass="False"
               IsGenericType="False"
               IsInteger="False"
               IsInterface="False"
               IsPrimitive="False"
               IsValueType="False"
               ManagedType="null"
-              Module="mscorlib.dll" />
+              Module="{Exception: The type is not a class or value type.}" />
+          </Type>
+        </Value>
+      </Item>
+      <Item>
+        <Value
+          ArrayDimensions="{Exception: Value is not an array}"
+          ArrayLenght="{Exception: Value is not an array}"
+          ArrayRank="{Exception: Value is not an array}"
+          AsString="{Exception: Unknown value type}"
+          Expression="locPtrByRef"
+          IsArray="False"
+          IsInteger="False"
+          IsInvalid="False"
+          IsNull="False"
+          IsObject="False"
+          IsPrimitive="False"
+          PrimitiveValue="{Exception: Value is not a primitive type}"
+          Type="System.Int32*">
+          <Type>
+            <DebugType
+              BaseType="{Exception: Value does not fall within the expected range.}"
+              FullName="System.Int32*"
+              HasElementType="True"
+              Interfaces="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
+              IsArray="False"
+              IsClass="False"
+              IsGenericType="False"
+              IsInteger="False"
+              IsInterface="False"
+              IsPrimitive="False"
+              IsValueType="False"
+              ManagedType="null"
+              Module="{Exception: The type is not a class or value type.}" />
+          </Type>
+        </Value>
+      </Item>
+      <Item>
+        <Value
+          ArrayDimensions="{Exception: Value is not an array}"
+          ArrayLenght="{Exception: Value is not an array}"
+          ArrayRank="{Exception: Value is not an array}"
+          AsString="{Exception: Unknown value type}"
+          Expression="locPtrPtr"
+          IsArray="False"
+          IsInteger="False"
+          IsInvalid="False"
+          IsNull="False"
+          IsObject="False"
+          IsPrimitive="False"
+          PrimitiveValue="{Exception: Value is not a primitive type}"
+          Type="System.Int32**">
+          <Type>
+            <DebugType
+              BaseType="{Exception: Value does not fall within the expected range.}"
+              FullName="System.Int32**"
+              HasElementType="True"
+              Interfaces="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
+              IsArray="False"
+              IsClass="False"
+              IsGenericType="False"
+              IsInteger="False"
+              IsInterface="False"
+              IsPrimitive="False"
+              IsValueType="False"
+              ManagedType="null"
+              Module="{Exception: The type is not a class or value type.}" />
+          </Type>
+        </Value>
+      </Item>
+      <Item>
+        <Value
+          ArrayDimensions="{Exception: Value is not an array}"
+          ArrayLenght="{Exception: Value is not an array}"
+          ArrayRank="{Exception: Value is not an array}"
+          AsString="{Exception: Unknown value type}"
+          Expression="locVoidPtr"
+          IsArray="False"
+          IsInteger="False"
+          IsInvalid="False"
+          IsNull="False"
+          IsObject="False"
+          IsPrimitive="False"
+          PrimitiveValue="{Exception: Value is not a primitive type}"
+          Type="System.Void*">
+          <Type>
+            <DebugType
+              BaseType="{Exception: Value does not fall within the expected range.}"
+              FullName="System.Void*"
+              HasElementType="True"
+              Interfaces="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
+              IsArray="False"
+              IsClass="False"
+              IsGenericType="False"
+              IsInteger="False"
+              IsInterface="False"
+              IsPrimitive="False"
+              IsValueType="False"
+              ManagedType="null"
+              Module="{Exception: The type is not a class or value type.}" />
           </Type>
         </Value>
       </Item>
@@ -299,7 +370,7 @@ namespace Debugger.Tests {
           Type="System.Object">
           <Type>
             <DebugType
-              BaseType="null"
+              BaseType="{Exception: Value does not fall within the expected range.}"
               FullName="System.Object"
               HasElementType="False"
               Interfaces="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
@@ -310,7 +381,7 @@ namespace Debugger.Tests {
               IsInterface="False"
               IsPrimitive="False"
               IsValueType="False"
-              ManagedType="null"
+              ManagedType="System.Object"
               Module="mscorlib.dll" />
           </Type>
         </Value>
@@ -332,7 +403,7 @@ namespace Debugger.Tests {
           Type="System.Object">
           <Type>
             <DebugType
-              BaseType="null"
+              BaseType="{Exception: Value does not fall within the expected range.}"
               FullName="System.Object"
               HasElementType="False"
               Interfaces="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
@@ -343,7 +414,7 @@ namespace Debugger.Tests {
               IsInterface="False"
               IsPrimitive="False"
               IsValueType="False"
-              ManagedType="null"
+              ManagedType="System.Object"
               Module="mscorlib.dll" />
           </Type>
         </Value>
@@ -452,8 +523,41 @@ namespace Debugger.Tests {
           ArrayDimensions="{Exception: Value is not an array}"
           ArrayLenght="{Exception: Value is not an array}"
           ArrayRank="{Exception: Value is not an array}"
-          AsString="{Point}"
+          AsString="{Exception: Unknown value type}"
           Expression="locStructPtr"
+          IsArray="False"
+          IsInteger="False"
+          IsInvalid="False"
+          IsNull="False"
+          IsObject="False"
+          IsPrimitive="False"
+          PrimitiveValue="{Exception: Value is not a primitive type}"
+          Type="Point*">
+          <Type>
+            <DebugType
+              BaseType="{Exception: Value does not fall within the expected range.}"
+              FullName="Point*"
+              HasElementType="True"
+              Interfaces="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
+              IsArray="False"
+              IsClass="False"
+              IsGenericType="False"
+              IsInteger="False"
+              IsInterface="False"
+              IsPrimitive="False"
+              IsValueType="False"
+              ManagedType="null"
+              Module="{Exception: The type is not a class or value type.}" />
+          </Type>
+        </Value>
+      </Item>
+      <Item>
+        <Value
+          ArrayDimensions="{Exception: Value is not an array}"
+          ArrayLenght="{Exception: Value is not an array}"
+          ArrayRank="{Exception: Value is not an array}"
+          AsString="{System.Int32}"
+          Expression="box"
           IsArray="False"
           IsInteger="False"
           IsInvalid="False"
@@ -461,11 +565,11 @@ namespace Debugger.Tests {
           IsObject="True"
           IsPrimitive="False"
           PrimitiveValue="{Exception: Value is not a primitive type}"
-          Type="Point">
+          Type="System.Int32">
           <Type>
             <DebugType
               BaseType="System.ValueType"
-              FullName="Point"
+              FullName="System.Int32"
               HasElementType="False"
               Interfaces="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
               IsArray="False"
@@ -476,7 +580,7 @@ namespace Debugger.Tests {
               IsPrimitive="False"
               IsValueType="True"
               ManagedType="null"
-              Module="DebugTypes.exe" />
+              Module="mscorlib.dll" />
           </Type>
         </Value>
       </Item>
@@ -484,7 +588,7 @@ namespace Debugger.Tests {
     <DebuggingPaused>Break</DebuggingPaused>
     <Arguments
       Capacity="16"
-      Count="13">
+      Count="15">
       <Item>
         <Value
           ArrayDimensions="{Exception: Value is not an array}"
@@ -556,130 +660,130 @@ namespace Debugger.Tests {
           ArrayDimensions="{Exception: Value is not an array}"
           ArrayLenght="{Exception: Value is not an array}"
           ArrayRank="{Exception: Value is not an array}"
-          AsString="42"
+          AsString="{Exception: Unknown value type}"
           Expression="argPtr"
-          IsArray="False"
-          IsInteger="True"
-          IsInvalid="False"
-          IsNull="False"
-          IsObject="False"
-          IsPrimitive="True"
-          PrimitiveValue="42"
-          Type="System.Int32">
-          <Type>
-            <DebugType
-              BaseType="System.Object"
-              FullName="System.Int32"
-              HasElementType="False"
-              Interfaces="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
-              IsArray="False"
-              IsClass="False"
-              IsGenericType="False"
-              IsInteger="True"
-              IsInterface="False"
-              IsPrimitive="True"
-              IsValueType="False"
-              ManagedType="System.Int32"
-              Module="{Exception: The type is not a class or value type.}" />
-          </Type>
-        </Value>
-      </Item>
-      <Item>
-        <Value
-          ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLenght="{Exception: Value is not an array}"
-          ArrayRank="{Exception: Value is not an array}"
-          AsString="42"
-          Expression="argPtrByRef"
-          IsArray="False"
-          IsInteger="True"
-          IsInvalid="False"
-          IsNull="False"
-          IsObject="False"
-          IsPrimitive="True"
-          PrimitiveValue="42"
-          Type="System.Int32">
-          <Type>
-            <DebugType
-              BaseType="System.Object"
-              FullName="System.Int32"
-              HasElementType="False"
-              Interfaces="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
-              IsArray="False"
-              IsClass="False"
-              IsGenericType="False"
-              IsInteger="True"
-              IsInterface="False"
-              IsPrimitive="True"
-              IsValueType="False"
-              ManagedType="System.Int32"
-              Module="{Exception: The type is not a class or value type.}" />
-          </Type>
-        </Value>
-      </Item>
-      <Item>
-        <Value
-          ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLenght="{Exception: Value is not an array}"
-          ArrayRank="{Exception: Value is not an array}"
-          AsString="42"
-          Expression="argPtrPtr"
-          IsArray="False"
-          IsInteger="True"
-          IsInvalid="False"
-          IsNull="False"
-          IsObject="False"
-          IsPrimitive="True"
-          PrimitiveValue="42"
-          Type="System.Int32">
-          <Type>
-            <DebugType
-              BaseType="System.Object"
-              FullName="System.Int32"
-              HasElementType="False"
-              Interfaces="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
-              IsArray="False"
-              IsClass="False"
-              IsGenericType="False"
-              IsInteger="True"
-              IsInterface="False"
-              IsPrimitive="True"
-              IsValueType="False"
-              ManagedType="System.Int32"
-              Module="{Exception: The type is not a class or value type.}" />
-          </Type>
-        </Value>
-      </Item>
-      <Item>
-        <Value
-          ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLenght="{Exception: Value is not an array}"
-          ArrayRank="{Exception: Value is not an array}"
-          AsString="null"
-          Expression="argVoidPtr"
           IsArray="False"
           IsInteger="False"
           IsInvalid="False"
-          IsNull="True"
+          IsNull="False"
           IsObject="False"
           IsPrimitive="False"
           PrimitiveValue="{Exception: Value is not a primitive type}"
-          Type="System.Object">
+          Type="System.Int32*">
           <Type>
             <DebugType
-              BaseType="null"
-              FullName="System.Object"
-              HasElementType="False"
+              BaseType="{Exception: Value does not fall within the expected range.}"
+              FullName="System.Int32*"
+              HasElementType="True"
               Interfaces="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
               IsArray="False"
-              IsClass="True"
+              IsClass="False"
               IsGenericType="False"
               IsInteger="False"
               IsInterface="False"
               IsPrimitive="False"
               IsValueType="False"
               ManagedType="null"
-              Module="mscorlib.dll" />
+              Module="{Exception: The type is not a class or value type.}" />
+          </Type>
+        </Value>
+      </Item>
+      <Item>
+        <Value
+          ArrayDimensions="{Exception: Value is not an array}"
+          ArrayLenght="{Exception: Value is not an array}"
+          ArrayRank="{Exception: Value is not an array}"
+          AsString="{Exception: Unknown value type}"
+          Expression="argPtrByRef"
+          IsArray="False"
+          IsInteger="False"
+          IsInvalid="False"
+          IsNull="False"
+          IsObject="False"
+          IsPrimitive="False"
+          PrimitiveValue="{Exception: Value is not a primitive type}"
+          Type="System.Int32*">
+          <Type>
+            <DebugType
+              BaseType="{Exception: Value does not fall within the expected range.}"
+              FullName="System.Int32*"
+              HasElementType="True"
+              Interfaces="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
+              IsArray="False"
+              IsClass="False"
+              IsGenericType="False"
+              IsInteger="False"
+              IsInterface="False"
+              IsPrimitive="False"
+              IsValueType="False"
+              ManagedType="null"
+              Module="{Exception: The type is not a class or value type.}" />
+          </Type>
+        </Value>
+      </Item>
+      <Item>
+        <Value
+          ArrayDimensions="{Exception: Value is not an array}"
+          ArrayLenght="{Exception: Value is not an array}"
+          ArrayRank="{Exception: Value is not an array}"
+          AsString="{Exception: Unknown value type}"
+          Expression="argPtrPtr"
+          IsArray="False"
+          IsInteger="False"
+          IsInvalid="False"
+          IsNull="False"
+          IsObject="False"
+          IsPrimitive="False"
+          PrimitiveValue="{Exception: Value is not a primitive type}"
+          Type="System.Int32**">
+          <Type>
+            <DebugType
+              BaseType="{Exception: Value does not fall within the expected range.}"
+              FullName="System.Int32**"
+              HasElementType="True"
+              Interfaces="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
+              IsArray="False"
+              IsClass="False"
+              IsGenericType="False"
+              IsInteger="False"
+              IsInterface="False"
+              IsPrimitive="False"
+              IsValueType="False"
+              ManagedType="null"
+              Module="{Exception: The type is not a class or value type.}" />
+          </Type>
+        </Value>
+      </Item>
+      <Item>
+        <Value
+          ArrayDimensions="{Exception: Value is not an array}"
+          ArrayLenght="{Exception: Value is not an array}"
+          ArrayRank="{Exception: Value is not an array}"
+          AsString="{Exception: Unknown value type}"
+          Expression="argVoidPtr"
+          IsArray="False"
+          IsInteger="False"
+          IsInvalid="False"
+          IsNull="False"
+          IsObject="False"
+          IsPrimitive="False"
+          PrimitiveValue="{Exception: Value is not a primitive type}"
+          Type="System.Void*">
+          <Type>
+            <DebugType
+              BaseType="{Exception: Value does not fall within the expected range.}"
+              FullName="System.Void*"
+              HasElementType="True"
+              Interfaces="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
+              IsArray="False"
+              IsClass="False"
+              IsGenericType="False"
+              IsInteger="False"
+              IsInterface="False"
+              IsPrimitive="False"
+              IsValueType="False"
+              ManagedType="null"
+              Module="{Exception: The type is not a class or value type.}" />
           </Type>
         </Value>
       </Item>
@@ -700,7 +804,7 @@ namespace Debugger.Tests {
           Type="System.Object">
           <Type>
             <DebugType
-              BaseType="null"
+              BaseType="{Exception: Value does not fall within the expected range.}"
               FullName="System.Object"
               HasElementType="False"
               Interfaces="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
@@ -711,7 +815,7 @@ namespace Debugger.Tests {
               IsInterface="False"
               IsPrimitive="False"
               IsValueType="False"
-              ManagedType="null"
+              ManagedType="System.Object"
               Module="mscorlib.dll" />
           </Type>
         </Value>
@@ -733,7 +837,7 @@ namespace Debugger.Tests {
           Type="System.Object">
           <Type>
             <DebugType
-              BaseType="null"
+              BaseType="{Exception: Value does not fall within the expected range.}"
               FullName="System.Object"
               HasElementType="False"
               Interfaces="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
@@ -744,7 +848,7 @@ namespace Debugger.Tests {
               IsInterface="False"
               IsPrimitive="False"
               IsValueType="False"
-              ManagedType="null"
+              ManagedType="System.Object"
               Module="mscorlib.dll" />
           </Type>
         </Value>
@@ -886,8 +990,41 @@ namespace Debugger.Tests {
           ArrayDimensions="{Exception: Value is not an array}"
           ArrayLenght="{Exception: Value is not an array}"
           ArrayRank="{Exception: Value is not an array}"
-          AsString="{Point}"
+          AsString="{Exception: Unknown value type}"
           Expression="argStructPtr"
+          IsArray="False"
+          IsInteger="False"
+          IsInvalid="False"
+          IsNull="False"
+          IsObject="False"
+          IsPrimitive="False"
+          PrimitiveValue="{Exception: Value is not a primitive type}"
+          Type="Point*">
+          <Type>
+            <DebugType
+              BaseType="{Exception: Value does not fall within the expected range.}"
+              FullName="Point*"
+              HasElementType="True"
+              Interfaces="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
+              IsArray="False"
+              IsClass="False"
+              IsGenericType="False"
+              IsInteger="False"
+              IsInterface="False"
+              IsPrimitive="False"
+              IsValueType="False"
+              ManagedType="null"
+              Module="{Exception: The type is not a class or value type.}" />
+          </Type>
+        </Value>
+      </Item>
+      <Item>
+        <Value
+          ArrayDimensions="{Exception: Value is not an array}"
+          ArrayLenght="{Exception: Value is not an array}"
+          ArrayRank="{Exception: Value is not an array}"
+          AsString="{System.Int32}"
+          Expression="argBox"
           IsArray="False"
           IsInteger="False"
           IsInvalid="False"
@@ -895,11 +1032,11 @@ namespace Debugger.Tests {
           IsObject="True"
           IsPrimitive="False"
           PrimitiveValue="{Exception: Value is not a primitive type}"
-          Type="Point">
+          Type="System.Int32">
           <Type>
             <DebugType
               BaseType="System.ValueType"
-              FullName="Point"
+              FullName="System.Int32"
               HasElementType="False"
               Interfaces="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
               IsArray="False"
@@ -910,7 +1047,40 @@ namespace Debugger.Tests {
               IsPrimitive="False"
               IsValueType="True"
               ManagedType="null"
-              Module="DebugTypes.exe" />
+              Module="mscorlib.dll" />
+          </Type>
+        </Value>
+      </Item>
+      <Item>
+        <Value
+          ArrayDimensions="{Exception: Value is not an array}"
+          ArrayLenght="{Exception: Value is not an array}"
+          ArrayRank="{Exception: Value is not an array}"
+          AsString="{System.Int32}"
+          Expression="argBoxByRef"
+          IsArray="False"
+          IsInteger="False"
+          IsInvalid="False"
+          IsNull="False"
+          IsObject="True"
+          IsPrimitive="False"
+          PrimitiveValue="{Exception: Value is not a primitive type}"
+          Type="System.Int32">
+          <Type>
+            <DebugType
+              BaseType="System.ValueType"
+              FullName="System.Int32"
+              HasElementType="False"
+              Interfaces="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
+              IsArray="False"
+              IsClass="False"
+              IsGenericType="False"
+              IsInteger="False"
+              IsInterface="False"
+              IsPrimitive="False"
+              IsValueType="True"
+              ManagedType="null"
+              Module="mscorlib.dll" />
           </Type>
         </Value>
       </Item>

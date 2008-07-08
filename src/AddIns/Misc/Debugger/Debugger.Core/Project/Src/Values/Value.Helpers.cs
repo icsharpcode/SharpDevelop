@@ -16,20 +16,6 @@ namespace Debugger
 	{
 		internal static ICorDebugValue DereferenceUnbox(ICorDebugValue corValue)
 		{
-			// Method arguments can be passed 'by ref'
-			if (corValue.Type == (uint)CorElementType.BYREF) {
-				try {
-					corValue = corValue.CastTo<ICorDebugReferenceValue>().Dereference();
-				} catch (COMException e) {
-					// This might be an issue in optimized code.  (try stepping through a Console.Write(string))
-					// A reference value was found to be bad during dereferencing. (Exception from HRESULT: 0x80131305)
-					if ((uint)e.ErrorCode == 0x80131305) {
-						throw new GetValueException("A reference value was found to be bad during dereferencing");
-					}
-					throw;
-				}
-			}
-			
 			// Pointers may be used in 'unsafe' code - CorElementType.PTR
 			// Classes need to be dereferenced
 			while (corValue.Is<ICorDebugReferenceValue>()) {

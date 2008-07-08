@@ -17,11 +17,22 @@ namespace Debugger
 	{
 		ICorDebugGenericValue CorGenericValue {
 			get {
-				if (IsPrimitive) {
-					return CorValue.CastTo<ICorDebugGenericValue>();
+				if (!IsPrimitive) throw new DebuggerException("Value is not a primitive type");
+				
+				// Dereference and unbox
+				if (corValue.Is<ICorDebugReferenceValue>()) {
+					return this.CorReferenceValue.Dereference().CastTo<ICorDebugBoxValue>().Object.CastTo<ICorDebugGenericValue>();
 				} else {
-					throw new DebuggerException("Value is not a primitive type");
+					return corValue.CastTo<ICorDebugGenericValue>();
 				}
+			}
+		}
+		
+		ICorDebugStringValue CorStringValue {
+			get {
+				if (CorType != CorElementType.STRING) throw new DebuggerException("Value is not a string");
+				
+				return CorReferenceValue.Dereference().CastTo<ICorDebugStringValue>();
 			}
 		}
 		
@@ -49,8 +60,13 @@ namespace Debugger
 		/// </summary>
 		public object PrimitiveValue { 
 			get {
+				if (!IsPrimitive) throw new DebuggerException("Value is not a primitive type");
 				if (CorType == CorElementType.STRING) {
-					return (CorValue.CastTo<ICorDebugStringValue>()).String;
+					if (IsNull) {
+						return null;
+					} else {
+						return this.CorStringValue.String;
+					}
 				} else {
 					return CorGenericValue.Value;
 				}
