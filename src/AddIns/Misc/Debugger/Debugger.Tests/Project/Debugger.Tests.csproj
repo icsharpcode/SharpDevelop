@@ -8,7 +8,7 @@
     <ProjectGuid>{A4C858C8-51B6-4265-A695-A20FCEBA1D19}</ProjectGuid>
     <OutputPath>..\..\..\..\..\..\bin\UnitTests\</OutputPath>
     <Optimize>False</Optimize>
-    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
     <NoStdLib>False</NoStdLib>
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -47,6 +47,7 @@
     <Compile Include="Src\TestPrograms\Callstack.cs" />
     <Compile Include="Src\TestPrograms\DebuggeeKilled.cs" />
     <Compile Include="Src\TestPrograms\DebuggerAttributes.cs" />
+    <Compile Include="Src\TestPrograms\DebugTypes.cs" />
     <Compile Include="Src\TestPrograms\DefinedTypes.cs" />
     <Compile Include="Src\TestPrograms\Exception.cs" />
     <Compile Include="Src\TestPrograms\ExceptionCustom.cs" />

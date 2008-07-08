@@ -328,6 +328,7 @@ namespace Debugger.Tests
 			compParams.IncludeDebugInformation = true;
 			compParams.ReferencedAssemblies.Add("System.dll");
 			compParams.OutputAssembly = exeFilename;
+			compParams.CompilerOptions = "/unsafe";
 			compParams.ReferencedAssemblies.Add(typeof(TestFixtureAttribute).Assembly.Location);
 			
 			CSharpCodeProvider compiler = new CSharpCodeProvider();
