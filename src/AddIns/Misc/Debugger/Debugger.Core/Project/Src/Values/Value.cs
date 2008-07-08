@@ -70,6 +70,7 @@ namespace Debugger
 			}
 		}
 		
+		[Tests.Ignore]
 		public ICorDebugValue RawCorValue {
 			get {
 				if (this.IsInvalid) throw new GetValueException("Value is no longer valid");
@@ -78,6 +79,7 @@ namespace Debugger
 			}
 		}
 		
+		[Tests.Ignore]
 		public ICorDebugValue CorValue {
 			get {
 				if (this.IsInvalid) throw new GetValueException("Value is no longer valid");
