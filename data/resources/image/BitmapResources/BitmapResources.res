@@ -440,6 +440,7 @@ Icons.16x16.TextFileIcon                          = backendicons\miscFiles\Icons
 Icons.16x16.CombineIcon                           = backendicons\miscFiles\Icons.16x16.CombineIcon.png
 Icons.16x16.MiscFiles                             = backendicons\miscFiles\Icons.16x16.MiscFiles.png
 Icons.16x16.SolutionIcon                          = backendicons\miscFiles\Icons.16x16.SolutionIcon.png
+Icons.16x16.StrongNameKeyFileIcon                = backendicons\miscFiles\Icons.16x16.StrongNameKeyFileIcon.png
 
 Icons.32x32.EmptyFileIcon                         = backendicons\miscFiles\Icons.32x32.EmptyFileIcon.png
 Icons.32x32.HTMLFileIcon                          = backendicons\miscFiles\Icons.32x32.HTMLFileIcon.png
