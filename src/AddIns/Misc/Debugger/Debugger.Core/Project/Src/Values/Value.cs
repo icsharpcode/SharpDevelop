@@ -122,7 +122,9 @@ namespace Debugger
 			ICorDebugValue corValue;
 			corValue = this.RawCorValue;
 			corValue = DereferenceUnbox(corValue);
-			corValue = corValue.CastTo<ICorDebugHeapValue2>().CreateHandle(CorDebugHandleType.HANDLE_STRONG).CastTo<ICorDebugValue>();
+			if (corValue.Is<ICorDebugHeapValue2>()) {
+				corValue = corValue.CastTo<ICorDebugHeapValue2>().CreateHandle(CorDebugHandleType.HANDLE_STRONG).CastTo<ICorDebugValue>();
+			}
 			return new Value(process, expression, corValue);
 		}
 		
@@ -158,7 +160,7 @@ namespace Debugger
 		}
 		
 		/// <summary> Copy the acutal value from some other Value object </summary>
-		public bool SetValue(Value newValue)
+		public void SetValue(Value newValue)
 		{
 			ICorDebugValue corValue = this.RawCorValue;
 			ICorDebugValue newCorValue = newValue.RawCorValue;
@@ -168,14 +170,13 @@ namespace Debugger
 			
 			if (corValue.Is<ICorDebugReferenceValue>()) {
 				if (newCorValue.Is<ICorDebugObjectValue>()) {
-					ICorDebugClass corClass = newCorValue.As<ICorDebugObjectValue>().Class;
-					ICorDebugValue box = Eval.NewObject(process, corClass).RawCorValue;
+					ICorDebugValue box = Eval.NewObjectNoConstructor(newValue.Type).RawCorValue;
 					newCorValue = box;
 				}
 				corValue.CastTo<ICorDebugReferenceValue>().SetValue(newCorValue.CastTo<ICorDebugReferenceValue>().Value);
-				return true;
 			} else {
-				return false;
+				corValue.CastTo<ICorDebugGenericValue>().RawValue =
+					newCorValue.CastTo<ICorDebugGenericValue>().RawValue;
 			}
 		}
 		

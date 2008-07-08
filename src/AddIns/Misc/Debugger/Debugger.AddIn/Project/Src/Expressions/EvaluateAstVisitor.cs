@@ -23,6 +23,15 @@ namespace Debugger.AddIn
 			this.context = context;
 		}
 		
+		public override object VisitAssignmentExpression(AssignmentExpression assignmentExpression, object data)
+		{
+			// Calculate right first so that left does not get invalidated by its calculation
+			Value right = ((Value)assignmentExpression.Right.AcceptVisitor(this, null)).GetPermanentReference();
+			Value left = (Value)assignmentExpression.Left.AcceptVisitor(this, null);
+			left.SetValue(right);
+			return right;
+		}
+		
 		public override object VisitBlockStatement(BlockStatement blockStatement, object data)
 		{
 			foreach(INode statement in blockStatement.Children) {

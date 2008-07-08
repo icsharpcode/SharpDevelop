@@ -248,6 +248,10 @@ namespace Debugger
 			CorElementType corElemType; 
 			if (value is int) {
 				corElemType = CorElementType.I4;
+			} else if (value is byte) {
+				corElemType = CorElementType.U1;
+			} else if (value is char) {
+				corElemType = CorElementType.CHAR;
 			} else {
 				throw new NotImplementedException();
 			}
@@ -258,11 +262,11 @@ namespace Debugger
 			return v;
 		}
 		
-		public static Value CreateValueForType(Process process, DebugType debugType)
+		public static Value CreateValueForType(DebugType debugType)
 		{
-			ICorDebugEval corEval = CreateCorEval(process);
+			ICorDebugEval corEval = CreateCorEval(debugType.Process);
 			ICorDebugValue corValue = corEval.CastTo<ICorDebugEval2>().CreateValueForType(debugType.CorType);
-			return new Value(process, corValue);
+			return new Value(debugType.Process, corValue);
 		}
 		
 		#region Convenience methods
@@ -280,27 +284,27 @@ namespace Debugger
 				process,
 				"New string: " + textToCreate,
 				delegate(Eval eval) {
-					eval.CorEval.NewString(textToCreate);
+					eval.CorEval.CastTo<ICorDebugEval2>().NewStringWithLength(textToCreate, (uint)textToCreate.Length);
 				}
 			);
 		}
 		
 		#region Convenience methods
 		
-		public static Value NewObject(Process process, ICorDebugClass classToCreate)
+		public static Value NewObjectNoConstructor(DebugType debugType)
 		{
-			return AsyncNewObject(process, classToCreate).WaitForResult();
+			return AsyncNewObjectNoConstructor(debugType).WaitForResult();
 		}
 		
 		#endregion
 		
-		public static Eval AsyncNewObject(Process process, ICorDebugClass classToCreate)
+		public static Eval AsyncNewObjectNoConstructor(DebugType debugType)
 		{
 			return CreateEval(
-				process,
-				"New object: " + classToCreate.Token,
+				debugType.Process,
+				"New object: " + debugType.FullName,
 				delegate(Eval eval) {
-					eval.CorEval.NewObjectNoConstructor(classToCreate);
+					eval.CorEval.CastTo<ICorDebugEval2>().NewParameterizedObjectNoConstructor(debugType.CorType.Class, (uint)debugType.GetGenericArguments().Length, debugType.GetGenericArgumentsAsCorDebugType());
 				}
 			);
 		}
