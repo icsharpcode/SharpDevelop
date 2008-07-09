@@ -45,18 +45,6 @@ namespace Debugger
 			}
 		}
 		
-		public string StackTrace {
-			get {
-				try {
-					Value stackTrace = exception.GetMemberValue("StackTrace");
-					return stackTrace.IsNull ? string.Empty : stackTrace.AsString;
-				} catch (GetValueException) {
-					// Evaluation is not possible after a stackoverflow exception
-					return string.Empty;
-				}
-			}
-		}
-		
 		/// <summary> The <c>InnerException</c> property of the exception. </summary>
 		/// <seealso cref="System.Exception" />
 		public Exception InnerException {
@@ -73,11 +61,6 @@ namespace Debugger
 		
 		public override string ToString()
 		{
-			return ToString("--- End of inner exception stack trace ---");
-		}
-		
-		public string ToString(string endOfInnerExceptionFormat)
-		{
 			StringBuilder sb = new StringBuilder();
 			sb.Append(this.Type);
 			if (!string.IsNullOrEmpty(this.Message)) {
@@ -86,13 +69,31 @@ namespace Debugger
 			}
 			if (this.InnerException != null) {
 				sb.Append(" ---> ");
-				sb.Append(this.InnerException.ToString(endOfInnerExceptionFormat));
-				sb.AppendLine();
+				sb.Append(this.InnerException.ToString());
+			}
+			return sb.ToString();
+		}
+		
+		public string GetStackTrace()
+		{
+			return GetStackTrace("--- End of inner exception stack trace ---");
+		}
+		
+		public string GetStackTrace(string endOfInnerExceptionFormat)
+		{
+			StringBuilder sb = new StringBuilder();
+			if (this.InnerException != null) {
+				sb.Append(this.InnerException.GetStackTrace(endOfInnerExceptionFormat));
 				sb.Append("   ");
 				sb.Append(endOfInnerExceptionFormat);
+				sb.AppendLine();
 			}
-			sb.AppendLine();
-			sb.Append(this.StackTrace);
+			// Note that evaluation is not possible after a stackoverflow exception
+			Value stackTrace = exception.GetMemberValue("StackTrace");
+			if (!stackTrace.IsNull) {
+				sb.Append(stackTrace.AsString);
+				sb.AppendLine();
+			}
 			return sb.ToString();
 		}
 	}

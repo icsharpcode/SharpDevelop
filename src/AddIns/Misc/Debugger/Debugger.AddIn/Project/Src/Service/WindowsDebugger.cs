@@ -606,12 +606,13 @@ namespace ICSharpCode.SharpDevelop.Services
 			
 			// Need to intercept now so that we can evaluate properties
 			if (e.Process.SelectedThread.InterceptCurrentException()) {
-				msg.Append(e.Exception.ToString(StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.LineFormat.EndOfInnerException}")));
+				msg.AppendLine(e.Exception.ToString());
+				msg.Append(e.Exception.GetStackTrace(StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.LineFormat.EndOfInnerException}")));
 			} else {
 				// For example, happens on stack overflow
-				msg.Append(e.Exception.ToString());
-				msg.AppendLine(StringParser.Parse("(${res:MainWindow.Windows.Debug.ExceptionForm.Error.CannotInterceptException})"));
-				msg.AppendLine(e.Process.SelectedThread.GetStackTrace(StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.LineFormat.Symbols}"), StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.LineFormat.NoSymbols}")));
+				msg.AppendLine(StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.Error.CannotInterceptException}"));
+				msg.AppendLine(e.Exception.ToString());
+				msg.Append(e.Process.SelectedThread.GetStackTrace(StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.LineFormat.Symbols}"), StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.LineFormat.NoSymbols}")));
 			}
 			
 			string title = e.IsUnhandled ? StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.Title.Unhandled}") : StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.Title.Handled}");

@@ -306,14 +306,13 @@ namespace Debugger
 			StringBuilder stackTrace = new StringBuilder();
 			foreach(StackFrame stackFrame in this.GetCallstack(100)) {
 				SourcecodeSegment loc = stackFrame.NextStatement;
+				stackTrace.Append("   ");
 				if (loc != null) {
-					stackTrace.Append("   ");
 					stackTrace.AppendFormat(formatSymbols, stackFrame.MethodInfo.FullName, loc.Filename, loc.StartLine);
-					stackTrace.AppendLine();
 				} else {
 					stackTrace.AppendFormat(formatNoSymbols, stackFrame.MethodInfo.FullName);
-					stackTrace.AppendLine();
 				}
+				stackTrace.AppendLine();
 			}
 			return stackTrace.ToString();
 		}

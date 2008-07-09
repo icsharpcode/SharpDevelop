@@ -154,7 +154,15 @@ namespace Debugger.Tests
 //				LogEvent("DebuggingResumed", e.Process.PausedReason.ToString());
 //			};
 			process.ExceptionThrown += delegate(object sender, ExceptionEventArgs e) {
-				LogEvent("ExceptionThrown", e.Exception.Message);
+				StringBuilder msg = new StringBuilder();
+				if (process.SelectedThread.InterceptCurrentException()) {
+					msg.Append(e.Exception.ToString());
+				} else {
+					// For example, happens on stack overflow
+					msg.Append("Could not intercept: ");
+					msg.Append(e.Exception.ToString());
+				}
+				LogEvent("ExceptionThrown", msg.ToString());
 			};
 			process.Exited += delegate(object sender, EventArgs e) {
 				LogEvent("ProcessExited", null);

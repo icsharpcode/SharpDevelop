@@ -11,7 +11,7 @@ namespace Debugger.Tests.TestPrograms
 {
 	class MyException: System.Exception
 	{
-		public MyException(string msg) : base (msg)
+		public MyException(string msg, System.Exception inner) : base (msg, inner)
 		{
 			
 		}
@@ -21,7 +21,11 @@ namespace Debugger.Tests.TestPrograms
 	{
 		public static void Main()
 		{
-			throw new MyException("test");
+			try {
+				throw new MyException("test1", null);
+			} catch(System.Exception e) {
+				throw new MyException("test2", e);
+			}
 		}
 	}
 }
@@ -34,7 +38,7 @@ namespace Debugger.Tests {
 		public void ExceptionCustom()
 		{
 			StartTest("ExceptionCustom.cs");
-			
+			process.Terminate();
 			EndTest();
 		}
 	}
@@ -49,8 +53,8 @@ namespace Debugger.Tests {
     <ProcessStarted />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>ExceptionCustom.exe (Has symbols)</ModuleLoaded>
-    <ExceptionThrown>test</ExceptionThrown>
-    <DebuggingPaused>Exception</DebuggingPaused>
+    <ExceptionThrown>Debugger.Tests.TestPrograms.MyException: test2 ---&gt; Debugger.Tests.TestPrograms.MyException: test1</ExceptionThrown>
+    <DebuggingPaused>ExceptionIntercepted</DebuggingPaused>
     <ProcessExited />
   </Test>
 </DebuggerTests>
