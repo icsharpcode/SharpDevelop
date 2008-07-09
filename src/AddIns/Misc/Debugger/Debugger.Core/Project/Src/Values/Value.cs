@@ -86,9 +86,29 @@ namespace Debugger
 		public Value GetPermanentReference()
 		{
 			ICorDebugValue corValue = this.CorValue;
-			// TODO
 			if (this.Type.IsClass) {
 				corValue = this.CorObjectValue.CastTo<ICorDebugHeapValue2>().CreateHandle(CorDebugHandleType.HANDLE_STRONG).CastTo<ICorDebugValue>();
+			}
+			if (this.Type.IsValueType || this.Type.IsPrimitive) {
+				if (!corValue.Is<ICorDebugReferenceValue>()) {
+					// Box the value type
+					if (this.Type.IsPrimitive) {
+						// Get value type for the primive type
+						corValue = Eval.NewObjectNoConstructor(DebugType.Create(process, null, this.Type.FullName)).CorValue;
+					} else {
+						corValue = Eval.NewObjectNoConstructor(this.Type).CorValue;
+					}
+					// Make the reference to box permanent
+					corValue = corValue.CastTo<ICorDebugReferenceValue>().Dereference().CastTo<ICorDebugHeapValue2>().CreateHandle(CorDebugHandleType.HANDLE_STRONG).CastTo<ICorDebugValue>();
+					// Create new value
+					Value newValue = new Value(process, expression, corValue);
+					// Copy the data inside the box
+					newValue.CorGenericValue.RawValue = this.CorGenericValue.RawValue;
+					return newValue;
+				} else {
+					// Make the reference to box permanent
+					corValue = corValue.CastTo<ICorDebugReferenceValue>().Dereference().CastTo<ICorDebugHeapValue2>().CreateHandle(CorDebugHandleType.HANDLE_STRONG).CastTo<ICorDebugValue>();
+				}
 			}
 			return new Value(process, expression, corValue);
 		}

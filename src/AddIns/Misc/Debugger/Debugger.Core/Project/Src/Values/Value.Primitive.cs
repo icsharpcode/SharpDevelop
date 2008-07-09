@@ -17,7 +17,7 @@ namespace Debugger
 	{
 		ICorDebugGenericValue CorGenericValue {
 			get {
-				if (!this.Type.IsPrimitive) throw new DebuggerException("Value is not a primitive type");
+				if (!this.Type.IsPrimitive && !this.Type.IsValueType) throw new DebuggerException("Value is not a 'generic'");
 				
 				// Dereference and unbox
 				if (this.CorValue.Is<ICorDebugReferenceValue>()) {
@@ -35,6 +35,7 @@ namespace Debugger
 		/// </summary>
 		public object PrimitiveValue { 
 			get {
+				if (!this.Type.IsPrimitive) throw new DebuggerException("Value is not a primitive type");
 				if (this.Type.IsString) {
 					if (this.IsNull) return null;
 					return this.CorValue.CastTo<ICorDebugReferenceValue>().Dereference().CastTo<ICorDebugStringValue>().String;
