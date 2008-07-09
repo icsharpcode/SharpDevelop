@@ -279,6 +279,7 @@ namespace Debugger.MetaData
 		/// Returns simple managed type coresponding to the debug type.
 		/// Any class yields System.Object
 		/// </summary>
+		[Tests.Ignore]
 		public System.Type ManagedType {
 			get {
 				switch(this.corElementType) {

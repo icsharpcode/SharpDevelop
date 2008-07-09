@@ -36,21 +36,22 @@ namespace Debugger
 		/// <summary> Returns true if the value is null </summary>
 		public bool IsNull {
 			get {
-				return 
-					(this.Type.IsClass || this.Type.IsValueType || this.Type.IsArray || this.CorType == CorElementType.STRING) &&
-					this.CorValue.Is<ICorDebugReferenceValue>() &&
-					this.CorReferenceValue.IsNull != 0;
+				return this.CorValue.Is<ICorDebugReferenceValue>() &&
+				       this.CorValue.CastTo<ICorDebugReferenceValue>().IsNull != 0;
 			}
 		}
 		
 		/// <summary> Gets a string representation of the value </summary>
 		public string AsString {
 			get {
-				if (IsNull)      return "null";
-				if (IsArray)     return "{" + this.Type.FullName + "}";
-				if (IsObject)    return "{" + this.Type.FullName + "}";
-				if (IsPrimitive) return PrimitiveValue != null ? PrimitiveValue.ToString() : String.Empty;
-				throw new DebuggerException("Unknown value type");
+				if (this.IsNull)           return "null";
+				if (this.Type.IsArray)     return "{" + this.Type.FullName + "}";
+				if (this.Type.IsClass)     return "{" + this.Type.FullName + "}";
+				if (this.Type.IsValueType) return "{" + this.Type.FullName + "}";
+				if (this.Type.IsPrimitive) return PrimitiveValue.ToString();
+				if (this.Type.IsPointer)   return "0x" + this.CorValue.CastTo<ICorDebugReferenceValue>().Address.ToString("X8");
+				if (this.Type.IsVoid)      return "void";
+				throw new DebuggerException("Unknown type");
 			}
 		}
 		
@@ -80,39 +81,14 @@ namespace Debugger
 			}
 		}
 		
-		ICorDebugReferenceValue CorReferenceValue {
-			get {
-				if (this.CorValue.Is<ICorDebugReferenceValue>()) {
-					return this.CorValue.CastTo<ICorDebugReferenceValue>();
-				} else {
-					throw new GetValueException("Reference value was expected");
-				}
-			}
-		}
-		
-		internal CorElementType CorType {
-			get {
-				ICorDebugValue corValue = this.CorValue;
-				if (corValue == null) {
-					return (CorElementType)0;
-				}
-				return (CorElementType)corValue.Type;
-			}
-		}
-		
 		public Value GetPermanentReference()
 		{
 			ICorDebugValue corValue = this.CorValue;
+			// TODO
 			if (this.Type.IsClass) {
 				corValue = this.CorObjectValue.CastTo<ICorDebugHeapValue2>().CreateHandle(CorDebugHandleType.HANDLE_STRONG).CastTo<ICorDebugValue>();
 			}
 			return new Value(process, expression, corValue);
-		}
-		
-		internal Value(Process process, ICorDebugValue corValue)
-			:this (process, new EmptyExpression(), corValue)
-		{
-			
 		}
 		
 		internal Value(Process process, Expression expression, ICorDebugValue corValue)

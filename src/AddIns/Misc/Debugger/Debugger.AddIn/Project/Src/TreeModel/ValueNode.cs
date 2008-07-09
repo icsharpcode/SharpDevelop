@@ -61,7 +61,7 @@ namespace Debugger.AddIn.TreeModel
 			this.expression = val.Expression;
 			
 			canSetText = false;
-			if (val.IsInteger) {
+			if (val.Type.IsInteger) {
 				canSetText = 
 					(val.Expression is LocalVariableIdentifierExpression) ||
 					(val.Expression is ParameterIdentifierExpression) ||
@@ -73,7 +73,7 @@ namespace Debugger.AddIn.TreeModel
 			
 			this.Name = val.Expression.CodeTail;
 			
-			if (DebuggingOptions.ShowValuesInHexadecimal && val.IsInteger) {
+			if (DebuggingOptions.ShowValuesInHexadecimal && val.Type.IsInteger) {
 				this.Text = String.Format("0x{0:X}", val.PrimitiveValue);
 			} else {
 				this.Text = val.AsString;
@@ -86,9 +86,9 @@ namespace Debugger.AddIn.TreeModel
 			}
 			
 			// Note that these return enumerators so they are lazy-evaluated
-			if (val.IsObject) {
+			if (val.Type.IsClass || val.Type.IsValueType) {
 				this.ChildNodes = Utils.GetChildNodesOfObject(this.Expression, val.Type);
-			} else if (val.IsArray) {
+			} else if (val.Type.IsArray) {
 				this.ChildNodes = Utils.GetChildNodesOfArray(this.Expression, val.ArrayDimensions);
 			} else {
 				this.ChildNodes = null;
@@ -100,7 +100,7 @@ namespace Debugger.AddIn.TreeModel
 			}
 			
 			// Do last since it may expire the object
-			if (val.IsObject) {
+			if (val.Type.IsClass || val.Type.IsValueType) {
 				this.Text = val.InvokeToString();
 			}
 		}

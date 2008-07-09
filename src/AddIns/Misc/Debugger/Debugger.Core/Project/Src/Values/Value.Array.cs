@@ -21,16 +21,10 @@ namespace Debugger
 	{
 		ICorDebugArrayValue CorArrayValue {
 			get {
-				if (!IsArray) throw new DebuggerException("Value is not an array");
+				if (IsNull) throw new GetValueException("Value is null");
+				if (!this.Type.IsArray) throw new DebuggerException("Value is not an array");
 				
-				return this.CorReferenceValue.Dereference().CastTo<ICorDebugArrayValue>();
-			}
-		}
-		
-		/// <summary> Returns true if the value is an array </summary>
-		public bool IsArray {
-			get {
-				return !IsNull && this.Type.IsArray;
+				return this.CorValue.CastTo<ICorDebugReferenceValue>().Dereference().CastTo<ICorDebugArrayValue>();
 			}
 		}
 		
@@ -92,12 +86,6 @@ namespace Debugger
 		// May be called later
 		ICorDebugValue GetCorValueOfArrayElement(int[] indices)
 		{
-			if (IsNull) {
-				throw new GetValueException("Null reference");
-			}
-			if (!IsArray) {
-				throw new GetValueException("The value is not an array");
-			}
 			if (indices.Length != ArrayRank) {
 				throw new GetValueException("Given indicies do not have the same dimension as array.");
 			}

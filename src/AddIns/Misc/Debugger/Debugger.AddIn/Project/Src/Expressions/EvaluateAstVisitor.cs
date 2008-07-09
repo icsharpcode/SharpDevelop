@@ -79,11 +79,11 @@ namespace Debugger.AddIn
 			List<int> indexes = new List<int>();
 			foreach(Expression indexExpr in indexerExpression.Indexes) {
 				Value indexValue = (Value)indexExpr.AcceptVisitor(this, null);
-				if (!indexValue.IsInteger) throw new GetValueException("Integer expected");
+				if (!indexValue.Type.IsInteger) throw new GetValueException("Integer expected");
 				indexes.Add((int)indexValue.PrimitiveValue);
 			}
 			Value target = (Value)indexerExpression.TargetObject.AcceptVisitor(this, null);
-			if (!target.IsArray) throw new GetValueException("Target is not array");
+			if (!target.Type.IsArray) throw new GetValueException("Target is not array");
 			return target.GetArrayElement(indexes.ToArray());
 		}
 		

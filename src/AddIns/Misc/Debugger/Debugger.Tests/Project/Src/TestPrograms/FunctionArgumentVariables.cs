@@ -104,12 +104,8 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="1"
           Expression="i"
-          IsArray="False"
-          IsInteger="True"
           IsInvalid="False"
           IsNull="False"
-          IsObject="False"
-          IsPrimitive="True"
           PrimitiveValue="1"
           Type="System.Int32" />
       </Item>
@@ -120,29 +116,21 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="A"
           Expression="s"
-          IsArray="False"
-          IsInteger="False"
           IsInvalid="False"
           IsNull="False"
-          IsObject="False"
-          IsPrimitive="True"
           PrimitiveValue="A"
           Type="System.String" />
       </Item>
       <Item>
         <Value
-          ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLenght="{Exception: Value is not an array}"
-          ArrayRank="{Exception: Value is not an array}"
+          ArrayDimensions="{Exception: Value is null}"
+          ArrayLenght="{Exception: Value is null}"
+          ArrayRank="{Exception: Value is null}"
           AsString="null"
           Expression="s_null"
-          IsArray="False"
-          IsInteger="False"
           IsInvalid="False"
           IsNull="True"
-          IsObject="False"
-          IsPrimitive="False"
-          PrimitiveValue="{Exception: Value is not a primitive type}"
+          PrimitiveValue="null"
           Type="System.String" />
       </Item>
       <Item>
@@ -152,12 +140,8 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="2"
           Expression="ref_i"
-          IsArray="False"
-          IsInteger="True"
           IsInvalid="False"
           IsNull="False"
-          IsObject="False"
-          IsPrimitive="True"
           PrimitiveValue="2"
           Type="System.Int32" />
       </Item>
@@ -168,12 +152,8 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="3"
           Expression="out_i"
-          IsArray="False"
-          IsInteger="True"
           IsInvalid="False"
           IsNull="False"
-          IsObject="False"
-          IsPrimitive="True"
           PrimitiveValue="3"
           Type="System.Int32" />
       </Item>
@@ -184,12 +164,8 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="0"
           Expression="out_i2"
-          IsArray="False"
-          IsInteger="True"
           IsInvalid="False"
           IsNull="False"
-          IsObject="False"
-          IsPrimitive="True"
           PrimitiveValue="0"
           Type="System.Int32" />
       </Item>
@@ -200,12 +176,8 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="B"
           Expression="ref_s"
-          IsArray="False"
-          IsInteger="False"
           IsInvalid="False"
           IsNull="False"
-          IsObject="False"
-          IsPrimitive="True"
           PrimitiveValue="B"
           Type="System.String" />
       </Item>
@@ -216,12 +188,8 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="{System.Nullable&lt;System.Int32&gt;}"
           Expression="iNull"
-          IsArray="False"
-          IsInteger="False"
           IsInvalid="False"
           IsNull="False"
-          IsObject="True"
-          IsPrimitive="False"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="System.Nullable&lt;System.Int32&gt;" />
       </Item>
@@ -232,12 +200,8 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="{System.Nullable&lt;System.Int32&gt;}"
           Expression="iNull_null"
-          IsArray="False"
-          IsInteger="False"
           IsInvalid="False"
           IsNull="False"
-          IsObject="True"
-          IsPrimitive="False"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="System.Nullable&lt;System.Int32&gt;" />
       </Item>
@@ -253,12 +217,8 @@ namespace Debugger.Tests {
           ArrayRank="1"
           AsString="{System.String[]}"
           Expression="args"
-          IsArray="True"
-          IsInteger="False"
           IsInvalid="False"
           IsNull="False"
-          IsObject="False"
-          IsPrimitive="False"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="System.String[]" />
       </Item>
@@ -274,12 +234,8 @@ namespace Debugger.Tests {
           ArrayRank="1"
           AsString="{System.String[]}"
           Expression="args"
-          IsArray="True"
-          IsInteger="False"
           IsInvalid="False"
           IsNull="False"
-          IsObject="False"
-          IsPrimitive="False"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="System.String[]" />
       </Item>
@@ -295,12 +251,8 @@ namespace Debugger.Tests {
           ArrayRank="1"
           AsString="{System.String[]}"
           Expression="args"
-          IsArray="True"
-          IsInteger="False"
           IsInvalid="False"
           IsNull="False"
-          IsObject="False"
-          IsPrimitive="False"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="System.String[]" />
       </Item>
@@ -316,12 +268,8 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="1"
           Expression="i"
-          IsArray="False"
-          IsInteger="True"
           IsInvalid="False"
           IsNull="False"
-          IsObject="False"
-          IsPrimitive="True"
           PrimitiveValue="1"
           Type="System.Int32" />
       </Item>
@@ -332,12 +280,8 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="A"
           Expression="s"
-          IsArray="False"
-          IsInteger="False"
           IsInvalid="False"
           IsNull="False"
-          IsObject="False"
-          IsPrimitive="True"
           PrimitiveValue="A"
           Type="System.String" />
       </Item>

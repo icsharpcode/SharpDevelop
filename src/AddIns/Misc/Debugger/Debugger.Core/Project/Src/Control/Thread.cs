@@ -5,12 +5,12 @@
 //     <version>$Revision$</version>
 // </file>
 
+using Debugger.Expressions;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
-
 using Debugger.Wrappers.CorDebug;
 
 namespace Debugger
@@ -147,7 +147,7 @@ namespace Debugger
 			get {
 				process.AssertPaused();
 				
-				return new Value(process, CorThread.Object);
+				return new Value(process, new EmptyExpression(), CorThread.Object);
 			}
 		}
 		

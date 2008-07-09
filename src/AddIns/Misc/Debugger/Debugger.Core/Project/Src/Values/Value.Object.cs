@@ -19,27 +19,21 @@ namespace Debugger
 	{
 		internal ICorDebugObjectValue CorObjectValue {
 			get {
-				if (!IsObject) throw new DebuggerException("Value is not an object");
+				if (IsNull) throw new GetValueException("Value is null");
 				
 				if (this.Type.IsClass) {
-					return this.CorReferenceValue.Dereference().CastTo<ICorDebugObjectValue>();
+					return this.CorValue.CastTo<ICorDebugReferenceValue>().Dereference().CastTo<ICorDebugObjectValue>();
 				}
 				if (this.Type.IsValueType) {
-					// Dereference and unbox
-					if (corValue.Is<ICorDebugReferenceValue>()) {
-						return this.CorReferenceValue.Dereference().CastTo<ICorDebugBoxValue>().Object;
+					if (this.CorValue.Is<ICorDebugReferenceValue>()) {
+						// Dereference and unbox
+						return this.CorValue.CastTo<ICorDebugReferenceValue>().Dereference().CastTo<ICorDebugBoxValue>().Object;
 					} else {
-						return corValue.CastTo<ICorDebugObjectValue>();
+						return this.CorValue.CastTo<ICorDebugObjectValue>();
 					}
 				}
-				throw new DebuggerException("Unknown type");
-			}
-		}
-		
-		/// <summary> Returns true if the value is a class or value type </summary>
-		public bool IsObject {
-			get {
-				return !IsNull && (this.Type.IsClass || this.Type.IsValueType);
+				
+				throw new DebuggerException("Value is not an object");
 			}
 		}
 		
@@ -245,7 +239,7 @@ namespace Debugger
 		/// <summary> Invoke the ToString() method </summary>
 		public string InvokeToString()
 		{
-			if (IsPrimitive) return AsString;
+			if (this.Type.IsPrimitive) return AsString;
 			// if (!IsObject) // Can invoke on primitives
 			return Eval.InvokeMethod(Process, this.Type.AppDomainID, typeof(object), "ToString", this, new Value[] {}).AsString;
 		}
@@ -305,7 +299,7 @@ namespace Debugger
 		/// <param name="bindingFlags"> Get only members with certain flags </param>
 		public Value[] GetMemberValues(DebugType type, BindingFlags bindingFlags)
 		{
-			if (IsObject) {
+			if (this.Type.IsClass || this.Type.IsValueType) {
 				return new List<Value>(GetObjectMembersEnum(type, bindingFlags)).ToArray();
 			} else {
 				return new Value[0];

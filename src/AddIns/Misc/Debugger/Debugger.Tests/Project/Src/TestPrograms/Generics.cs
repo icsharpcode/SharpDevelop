@@ -155,17 +155,19 @@ namespace Debugger.Tests {
             <DeclaringType>
               <DebugType
                 BaseType="System.Object"
+                ElementType="null"
                 FullName="Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;"
-                HasElementType="False"
+                GenericArguments="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
                 Interfaces="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
                 IsArray="False"
                 IsClass="True"
-                IsGenericType="True"
                 IsInteger="False"
                 IsInterface="False"
+                IsPointer="False"
                 IsPrimitive="False"
+                IsString="False"
                 IsValueType="False"
-                ManagedType="null"
+                IsVoid="False"
                 Module="Generics.exe" />
             </DeclaringType>
           </MethodInfo>
@@ -182,12 +184,8 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="1"
           Expression="v"
-          IsArray="False"
-          IsInteger="True"
           IsInvalid="False"
           IsNull="False"
-          IsObject="False"
-          IsPrimitive="True"
           PrimitiveValue="1"
           Type="System.Int32" />
       </Item>
@@ -198,12 +196,8 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="1!"
           Expression="k"
-          IsArray="False"
-          IsInteger="False"
           IsInvalid="False"
           IsNull="False"
-          IsObject="False"
-          IsPrimitive="True"
           PrimitiveValue="1!"
           Type="System.String" />
       </Item>
@@ -232,17 +226,19 @@ namespace Debugger.Tests {
             <DeclaringType>
               <DebugType
                 BaseType="System.Object"
+                ElementType="null"
                 FullName="Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;"
-                HasElementType="False"
+                GenericArguments="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
                 Interfaces="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
                 IsArray="False"
                 IsClass="True"
-                IsGenericType="True"
                 IsInteger="False"
                 IsInterface="False"
+                IsPointer="False"
                 IsPrimitive="False"
+                IsString="False"
                 IsValueType="False"
-                ManagedType="null"
+                IsVoid="False"
                 Module="Generics.exe" />
             </DeclaringType>
           </MethodInfo>
@@ -259,12 +255,8 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="2"
           Expression="v"
-          IsArray="False"
-          IsInteger="True"
           IsInvalid="False"
           IsNull="False"
-          IsObject="False"
-          IsPrimitive="True"
           PrimitiveValue="2"
           Type="System.Int32" />
       </Item>
@@ -275,12 +267,8 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="2!"
           Expression="k"
-          IsArray="False"
-          IsInteger="False"
           IsInvalid="False"
           IsNull="False"
-          IsObject="False"
-          IsPrimitive="True"
           PrimitiveValue="2!"
           Type="System.String" />
       </Item>
@@ -309,17 +297,19 @@ namespace Debugger.Tests {
             <DeclaringType>
               <DebugType
                 BaseType="System.Object"
+                ElementType="null"
                 FullName="Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;"
-                HasElementType="False"
+                GenericArguments="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
                 Interfaces="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
                 IsArray="False"
                 IsClass="True"
-                IsGenericType="True"
                 IsInteger="False"
                 IsInterface="False"
+                IsPointer="False"
                 IsPrimitive="False"
+                IsString="False"
                 IsValueType="False"
-                ManagedType="null"
+                IsVoid="False"
                 Module="Generics.exe" />
             </DeclaringType>
           </MethodInfo>
@@ -336,12 +326,8 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="3"
           Expression="v"
-          IsArray="False"
-          IsInteger="True"
           IsInvalid="False"
           IsNull="False"
-          IsObject="False"
-          IsPrimitive="True"
           PrimitiveValue="3"
           Type="System.Int32" />
       </Item>
@@ -352,12 +338,8 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="3!"
           Expression="k"
-          IsArray="False"
-          IsInteger="False"
           IsInvalid="False"
           IsNull="False"
-          IsObject="False"
-          IsPrimitive="True"
           PrimitiveValue="3!"
           Type="System.String" />
       </Item>
@@ -386,17 +368,19 @@ namespace Debugger.Tests {
             <DeclaringType>
               <DebugType
                 BaseType="System.Object"
+                ElementType="null"
                 FullName="Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;"
-                HasElementType="False"
+                GenericArguments="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
                 Interfaces="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
                 IsArray="False"
                 IsClass="True"
-                IsGenericType="True"
                 IsInteger="False"
                 IsInterface="False"
+                IsPointer="False"
                 IsPrimitive="False"
+                IsString="False"
                 IsValueType="False"
-                ManagedType="null"
+                IsVoid="False"
                 Module="Generics.exe" />
             </DeclaringType>
           </MethodInfo>
@@ -413,12 +397,8 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="4"
           Expression="v"
-          IsArray="False"
-          IsInteger="True"
           IsInvalid="False"
           IsNull="False"
-          IsObject="False"
-          IsPrimitive="True"
           PrimitiveValue="4"
           Type="System.Int32" />
       </Item>
@@ -429,12 +409,8 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="4!"
           Expression="k"
-          IsArray="False"
-          IsInteger="False"
           IsInvalid="False"
           IsNull="False"
-          IsObject="False"
-          IsPrimitive="True"
           PrimitiveValue="4!"
           Type="System.String" />
       </Item>
@@ -463,17 +439,19 @@ namespace Debugger.Tests {
             <DeclaringType>
               <DebugType
                 BaseType="System.ValueType"
+                ElementType="null"
                 FullName="Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;"
-                HasElementType="False"
+                GenericArguments="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
                 Interfaces="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
                 IsArray="False"
                 IsClass="False"
-                IsGenericType="True"
                 IsInteger="False"
                 IsInterface="False"
+                IsPointer="False"
                 IsPrimitive="False"
+                IsString="False"
                 IsValueType="True"
-                ManagedType="null"
+                IsVoid="False"
                 Module="Generics.exe" />
             </DeclaringType>
           </MethodInfo>
@@ -490,12 +468,8 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="5"
           Expression="v"
-          IsArray="False"
-          IsInteger="True"
           IsInvalid="False"
           IsNull="False"
-          IsObject="False"
-          IsPrimitive="True"
           PrimitiveValue="5"
           Type="System.Int32" />
       </Item>
@@ -506,12 +480,8 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="5!"
           Expression="k"
-          IsArray="False"
-          IsInteger="False"
           IsInvalid="False"
           IsNull="False"
-          IsObject="False"
-          IsPrimitive="True"
           PrimitiveValue="5!"
           Type="System.String" />
       </Item>
@@ -540,17 +510,19 @@ namespace Debugger.Tests {
             <DeclaringType>
               <DebugType
                 BaseType="System.ValueType"
+                ElementType="null"
                 FullName="Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;"
-                HasElementType="False"
+                GenericArguments="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
                 Interfaces="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
                 IsArray="False"
                 IsClass="False"
-                IsGenericType="True"
                 IsInteger="False"
                 IsInterface="False"
+                IsPointer="False"
                 IsPrimitive="False"
+                IsString="False"
                 IsValueType="True"
-                ManagedType="null"
+                IsVoid="False"
                 Module="Generics.exe" />
             </DeclaringType>
           </MethodInfo>
@@ -567,12 +539,8 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="6"
           Expression="v"
-          IsArray="False"
-          IsInteger="True"
           IsInvalid="False"
           IsNull="False"
-          IsObject="False"
-          IsPrimitive="True"
           PrimitiveValue="6"
           Type="System.Int32" />
       </Item>
@@ -583,12 +551,8 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="6!"
           Expression="k"
-          IsArray="False"
-          IsInteger="False"
           IsInvalid="False"
           IsNull="False"
-          IsObject="False"
-          IsPrimitive="True"
           PrimitiveValue="6!"
           Type="System.String" />
       </Item>
@@ -617,17 +581,19 @@ namespace Debugger.Tests {
             <DeclaringType>
               <DebugType
                 BaseType="System.ValueType"
+                ElementType="null"
                 FullName="Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;"
-                HasElementType="False"
+                GenericArguments="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
                 Interfaces="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
                 IsArray="False"
                 IsClass="False"
-                IsGenericType="True"
                 IsInteger="False"
                 IsInterface="False"
+                IsPointer="False"
                 IsPrimitive="False"
+                IsString="False"
                 IsValueType="True"
-                ManagedType="null"
+                IsVoid="False"
                 Module="Generics.exe" />
             </DeclaringType>
           </MethodInfo>
@@ -644,12 +610,8 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="7"
           Expression="v"
-          IsArray="False"
-          IsInteger="True"
           IsInvalid="False"
           IsNull="False"
-          IsObject="False"
-          IsPrimitive="True"
           PrimitiveValue="7"
           Type="System.Int32" />
       </Item>
@@ -660,12 +622,8 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="7!"
           Expression="k"
-          IsArray="False"
-          IsInteger="False"
           IsInvalid="False"
           IsNull="False"
-          IsObject="False"
-          IsPrimitive="True"
           PrimitiveValue="7!"
           Type="System.String" />
       </Item>
@@ -694,17 +652,19 @@ namespace Debugger.Tests {
             <DeclaringType>
               <DebugType
                 BaseType="System.ValueType"
+                ElementType="null"
                 FullName="Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;"
-                HasElementType="False"
+                GenericArguments="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
                 Interfaces="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
                 IsArray="False"
                 IsClass="False"
-                IsGenericType="True"
                 IsInteger="False"
                 IsInterface="False"
+                IsPointer="False"
                 IsPrimitive="False"
+                IsString="False"
                 IsValueType="True"
-                ManagedType="null"
+                IsVoid="False"
                 Module="Generics.exe" />
             </DeclaringType>
           </MethodInfo>
@@ -721,12 +681,8 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="8"
           Expression="v"
-          IsArray="False"
-          IsInteger="True"
           IsInvalid="False"
           IsNull="False"
-          IsObject="False"
-          IsPrimitive="True"
           PrimitiveValue="8"
           Type="System.Int32" />
       </Item>
@@ -737,12 +693,8 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="8!"
           Expression="k"
-          IsArray="False"
-          IsInteger="False"
           IsInvalid="False"
           IsNull="False"
-          IsObject="False"
-          IsPrimitive="True"
           PrimitiveValue="8!"
           Type="System.String" />
       </Item>
@@ -755,12 +707,8 @@ namespace Debugger.Tests {
         ArrayRank="{Exception: Value is not an array}"
         AsString="0"
         Expression="gClass.Prop"
-        IsArray="False"
-        IsInteger="True"
         IsInvalid="False"
         IsNull="False"
-        IsObject="False"
-        IsPrimitive="True"
         PrimitiveValue="0"
         Type="System.Int32" />
     </Prop>
@@ -771,12 +719,8 @@ namespace Debugger.Tests {
         ArrayRank="{Exception: Value is not an array}"
         AsString="0"
         Expression="Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;.StaticProp"
-        IsArray="False"
-        IsInteger="True"
         IsInvalid="False"
         IsNull="False"
-        IsObject="False"
-        IsPrimitive="True"
         PrimitiveValue="0"
         Type="System.Int32" />
     </StaticProp>

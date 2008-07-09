@@ -68,33 +68,37 @@ namespace Debugger.Tests {
       <Item>
         <DebugType
           BaseType="System.Object"
+          ElementType="null"
           FullName="Debugger.Tests.TestPrograms.DefinedTypes_Class"
-          HasElementType="False"
+          GenericArguments="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
           Interfaces="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
           IsArray="False"
           IsClass="True"
-          IsGenericType="False"
           IsInteger="False"
           IsInterface="False"
+          IsPointer="False"
           IsPrimitive="False"
+          IsString="False"
           IsValueType="False"
-          ManagedType="null"
+          IsVoid="False"
           Module="DefinedTypes.exe" />
       </Item>
       <Item>
         <DebugType
           BaseType="System.ValueType"
+          ElementType="null"
           FullName="Debugger.Tests.TestPrograms.DefinedTypes_Struct"
-          HasElementType="False"
+          GenericArguments="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
           Interfaces="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
           IsArray="False"
           IsClass="False"
-          IsGenericType="False"
           IsInteger="False"
           IsInterface="False"
+          IsPointer="False"
           IsPrimitive="False"
+          IsString="False"
           IsValueType="True"
-          ManagedType="null"
+          IsVoid="False"
           Module="DefinedTypes.exe" />
       </Item>
     </Types>

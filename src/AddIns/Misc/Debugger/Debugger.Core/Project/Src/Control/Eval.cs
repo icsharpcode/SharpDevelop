@@ -5,10 +5,10 @@
 //     <version>$Revision$</version>
 // </file>
 
+using Debugger.Expressions;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-
 using Debugger.MetaData;
 using Debugger.Wrappers.CorDebug;
 
@@ -176,7 +176,7 @@ namespace Debugger
 				} else {
 					state = EvalState.EvaluatedException;
 				}
-				result = new Value(process, corEval.Result);
+				result = new Value(process, new EmptyExpression(), corEval.Result);
 			}
 		}
 		
@@ -232,7 +232,7 @@ namespace Debugger
 				corArgs.Add(arg.CorValue);
 			}
 			
-			ICorDebugType[] genericArgs = method.DeclaringType.GetGenericArgumentsAsCorDebugType();
+			ICorDebugType[] genericArgs = method.DeclaringType.GenericArgumentsAsCorDebugType;
 			eval.CorEval.CastTo<ICorDebugEval2>().CallParameterizedFunction(
 				method.CorFunction,
 				(uint)genericArgs.Length, genericArgs,
@@ -266,7 +266,7 @@ namespace Debugger
 		{
 			ICorDebugEval corEval = CreateCorEval(debugType.Process);
 			ICorDebugValue corValue = corEval.CastTo<ICorDebugEval2>().CreateValueForType(debugType.CorType);
-			return new Value(debugType.Process, corValue);
+			return new Value(debugType.Process, new EmptyExpression(), corValue);
 		}
 		
 		#region Convenience methods
@@ -304,7 +304,7 @@ namespace Debugger
 				debugType.Process,
 				"New object: " + debugType.FullName,
 				delegate(Eval eval) {
-					eval.CorEval.CastTo<ICorDebugEval2>().NewParameterizedObjectNoConstructor(debugType.CorType.Class, (uint)debugType.GetGenericArguments().Length, debugType.GetGenericArgumentsAsCorDebugType());
+					eval.CorEval.CastTo<ICorDebugEval2>().NewParameterizedObjectNoConstructor(debugType.CorType.Class, (uint)debugType.GenericArguments.Count, debugType.GenericArgumentsAsCorDebugType);
 				}
 			);
 		}

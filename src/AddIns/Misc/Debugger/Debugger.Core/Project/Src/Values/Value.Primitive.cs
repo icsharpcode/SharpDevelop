@@ -17,39 +17,14 @@ namespace Debugger
 	{
 		ICorDebugGenericValue CorGenericValue {
 			get {
-				if (!IsPrimitive) throw new DebuggerException("Value is not a primitive type");
+				if (!this.Type.IsPrimitive) throw new DebuggerException("Value is not a primitive type");
 				
 				// Dereference and unbox
-				if (corValue.Is<ICorDebugReferenceValue>()) {
-					return this.CorReferenceValue.Dereference().CastTo<ICorDebugBoxValue>().Object.CastTo<ICorDebugGenericValue>();
+				if (this.CorValue.Is<ICorDebugReferenceValue>()) {
+					return this.CorValue.CastTo<ICorDebugReferenceValue>().Dereference().CastTo<ICorDebugBoxValue>().Object.CastTo<ICorDebugGenericValue>();
 				} else {
-					return corValue.CastTo<ICorDebugGenericValue>();
+					return this.CorValue.CastTo<ICorDebugGenericValue>();
 				}
-			}
-		}
-		
-		ICorDebugStringValue CorStringValue {
-			get {
-				if (CorType != CorElementType.STRING) throw new DebuggerException("Value is not a string");
-				
-				return CorReferenceValue.Dereference().CastTo<ICorDebugStringValue>();
-			}
-		}
-		
-		/// <summary>
-		/// Returns true if the value is an primitive type.
-		/// eg int, bool, string
-		/// </summary>
-		public bool IsPrimitive {
-			get {
-				return !IsNull && this.Type.IsPrimitive;
-			}
-		}
-		
-		/// <summary> Gets a value indicating whether the type is an integer type </summary>
-		public bool IsInteger {
-			get {
-				return !IsNull && this.Type.IsInteger;
 			}
 		}
 		
@@ -60,19 +35,15 @@ namespace Debugger
 		/// </summary>
 		public object PrimitiveValue { 
 			get {
-				if (!IsPrimitive) throw new DebuggerException("Value is not a primitive type");
-				if (CorType == CorElementType.STRING) {
-					if (IsNull) {
-						return null;
-					} else {
-						return this.CorStringValue.String;
-					}
+				if (this.Type.IsString) {
+					if (this.IsNull) return null;
+					return this.CorValue.CastTo<ICorDebugReferenceValue>().Dereference().CastTo<ICorDebugStringValue>().String;
 				} else {
 					return CorGenericValue.Value;
 				}
 			}
 			set {
-				if (CorType == CorElementType.STRING) {
+				if (this.Type.IsString) {
 					throw new NotImplementedException();
 				} else {
 					if (value == null) {

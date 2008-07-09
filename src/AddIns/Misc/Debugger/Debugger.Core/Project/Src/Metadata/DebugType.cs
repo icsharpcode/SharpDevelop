@@ -19,6 +19,15 @@ namespace Debugger.MetaData
 	/// <remarks>
 	/// If two types are identical, the references to DebugType will also be identical 
 	/// Type will be loaded once per each appdomain.
+	/// <para>
+	/// Preciesly one of these properties shall be true
+	///  - IsArray
+	///  - IsClass
+	///  - IsValueType
+	///  - IsPrimitive
+	///  - IsPointer
+	///  - IsVoid
+	/// </para>
 	/// </remarks>
 	public partial class DebugType: DebuggerObject
 	{
@@ -98,30 +107,9 @@ namespace Debugger.MetaData
 		/// <remarks> Throws <see cref="System.ArgumentException"/> if type is not array </remarks>
 		public int GetArrayRank()
 		{
-			if (IsArray) {
-				return (int)corType.Rank;
-			} else {
-				throw new ArgumentException("Type is not array");
-			}
-		}
-		
-		/// <summary> Returns true if the type has an element type. 
-		/// (ie array, reference or pointer) </summary>
-		public bool HasElementType {
-			get {
-				return IsArray || IsPointer;
-			}
-		}
-		
-		/// <summary> Returns an element type for array, reference or pointer. 
-		/// Retuns null otherwise. (Secificaly, returns null for generic types) </summary>
-		public DebugType GetElementType()
-		{
-			if (HasElementType) {
-				return typeArguments[0];
-			} else {
-				return null;
-			}
+			if (!IsArray) throw new ArgumentException("Type is not array");
+			
+			return (int)corType.Rank;
 		}
 		
 		/// <summary> Gets a list of all interfaces that this type implements </summary>
@@ -147,24 +135,36 @@ namespace Debugger.MetaData
 			}
 		}
 		
-		/// <summary> Returns generics arguments for a type or an emtpy 
-		/// array for non-generic types. </summary>
-		public DebugType[] GetGenericArguments()
-		{
-			if (IsGenericType) {
-				return typeArguments.ToArray();
-			} else {
-				return new DebugType[] {};
+		/// <summary> Get an element type for array or pointer. </summary>
+		public DebugType ElementType {
+			get {
+				if (this.IsArray || this.IsPointer) {
+					return typeArguments[0];
+				} else {
+					return null;
+				}
 			}
 		}
 		
-		internal ICorDebugType[] GetGenericArgumentsAsCorDebugType()
-		{
-			List<ICorDebugType> types = new List<ICorDebugType>();
-			foreach(DebugType arg in this.GetGenericArguments()) {
-				types.Add(arg.CorType);
+		/// <summary> Gets generics arguments for a type or an emtpy array for non-generic types. </summary>
+		public List<DebugType> GenericArguments {
+			get {
+				if (this.IsArray || this.IsPointer) {
+					return new List<DebugType>();
+				} else {
+					return typeArguments;
+				}
 			}
-			return types.ToArray();
+		}
+		
+		internal ICorDebugType[] GenericArgumentsAsCorDebugType {
+			get {
+				List<ICorDebugType> types = new List<ICorDebugType>();
+				foreach(DebugType arg in this.GenericArguments) {
+					types.Add(arg.CorType);
+				}
+				return types.ToArray();
+			}
 		}
 		
 		/// <summary> Gets a value indicating whether the type is an array </summary>
@@ -172,15 +172,6 @@ namespace Debugger.MetaData
 			get {
 				return this.corElementType == CorElementType.ARRAY ||
 				       this.corElementType == CorElementType.SZARRAY;
-			}
-		}
-		
-		/// <summary> Gets a value indicating whether the immediate type is generic.  
-		/// Arrays, references and pointers are never generic types. </summary>
-		public bool IsGenericType {
-			get {
-				return (IsClass || IsValueType) &&
-				       typeArguments.Count > 0;
 			}
 		}
 		
@@ -199,7 +190,8 @@ namespace Debugger.MetaData
 			}
 		}
 		
-		/// <summary> Gets a value indicating whether the type is a value type (that is, a structre in C#) </summary>
+		/// <summary> Gets a value indicating whether the type is a value type (that is, a structre in C#).
+		/// Return false, if the type is a primitive type. </summary>
 		public bool IsValueType {
 			get {
 				return this.corElementType == CorElementType.VALUETYPE;
@@ -207,6 +199,7 @@ namespace Debugger.MetaData
 		}
 		
 		/// <summary> Gets a value indicating whether the type is a primitive type </summary>
+		/// <remarks> Primitive types are: boolean, char, string and all numeric types </remarks>
 		public bool IsPrimitive {
 			get {
 				return this.corElementType == CorElementType.BOOLEAN ||
@@ -243,7 +236,14 @@ namespace Debugger.MetaData
 			}
 		}
 		
-		[Tests.Ignore] // TODO: Remove
+		/// <summary> Gets a value indicating whether the type is an string </summary>
+		public bool IsString {
+			get {
+				return this.corElementType == CorElementType.STRING;
+			}
+		}
+		
+		/// <summary> Gets a value indicating whether the type is an managed or unmanaged pointer </summary>
 		public bool IsPointer {
 			get {
 				return this.corElementType == CorElementType.PTR ||
@@ -251,7 +251,7 @@ namespace Debugger.MetaData
 			}
 		}
 		
-		[Tests.Ignore] // TODO: Remove
+		/// <summary> Gets a value indicating whether the type is the void type </summary>
 		public bool IsVoid {
 			get {
 				return this.corElementType == CorElementType.VOID;
@@ -429,28 +429,28 @@ namespace Debugger.MetaData
 		string GetFullName()
 		{
 			if (IsArray) {
-				return GetElementType().FullName + "[" + new String(',', GetArrayRank() - 1) + "]";
+				return this.ElementType.FullName + "[" + new String(',', GetArrayRank() - 1) + "]";
 			} else if (IsClass || IsValueType) {
-				if (IsGenericType) {
-					List<string> argNames = new List<string>();
-					foreach(DebugType arg in GetGenericArguments()) {
-						argNames.Add(arg.FullName);
-					}
-					string className = classProps.Name;
-					// Remove generic parameter count at the end
-					// '`' might be missing in nested generic classes
-					int index = className.LastIndexOf('`');
-					if (index != -1) {
-						className = className.Substring(0, index);
-					}
+				List<string> argNames = new List<string>();
+				foreach(DebugType arg in this.GenericArguments) {
+					argNames.Add(arg.FullName);
+				}
+				string className = classProps.Name;
+				// Remove generic parameter count at the end
+				// '`' might be missing in nested generic classes
+				int index = className.LastIndexOf('`');
+				if (index != -1) {
+					className = className.Substring(0, index);
+				}
+				if (argNames.Count > 0) {
 					return className + "<" + String.Join(",", argNames.ToArray()) + ">";
 				} else {
-					return classProps.Name;
+					return className;
 				}
 			} else if (IsPrimitive) {
 				return this.ManagedType.ToString();
 			} else if (IsPointer) {
-				return this.GetElementType().FullName + (this.corElementType == CorElementType.BYREF ? "&" : "*");
+				return this.ElementType.FullName + (this.corElementType == CorElementType.BYREF ? "&" : "*");
 			} else if (IsVoid) {
 				return "System.Void";
 			} else {
@@ -544,7 +544,7 @@ namespace Debugger.MetaData
 				if (this.IsArray) {
 					return other.IsArray &&
 					       other.GetArrayRank() == this.GetArrayRank() &&
-					       other.GetElementType().Equals(this.GetElementType());
+					       other.ElementType.Equals(this.ElementType);
 				}
 				if (this.IsPrimitive) {
 					return other.IsPrimitive &&
@@ -557,7 +557,7 @@ namespace Debugger.MetaData
 				}
 				if (this.IsPointer) {
 					return other.IsPointer &&
-					       other.GetElementType().Equals(this.GetElementType());
+					       other.ElementType.Equals(this.ElementType);
 				}
 				if (this.IsVoid) {
 					return other.IsVoid;
