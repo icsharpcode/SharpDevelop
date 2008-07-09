@@ -78,7 +78,7 @@ namespace Debugger.Tests {
       </Item>
       <Item>
         <Value
-          ArrayDimensions="[1]"
+          ArrayDimensions="{1}"
           ArrayLenght="1"
           ArrayRank="1"
           AsString="{System.String[]}"

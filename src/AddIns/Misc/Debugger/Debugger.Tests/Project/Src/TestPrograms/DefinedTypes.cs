@@ -70,17 +70,9 @@ namespace Debugger.Tests {
           BaseType="System.Object"
           ElementType="null"
           FullName="Debugger.Tests.TestPrograms.DefinedTypes_Class"
-          GenericArguments="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
-          Interfaces="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
-          IsArray="False"
-          IsClass="True"
-          IsInteger="False"
-          IsInterface="False"
-          IsPointer="False"
-          IsPrimitive="False"
-          IsString="False"
-          IsValueType="False"
-          IsVoid="False"
+          GenericArguments="{}"
+          Interfaces="{}"
+          Kind="Class"
           Module="DefinedTypes.exe" />
       </Item>
       <Item>
@@ -88,17 +80,9 @@ namespace Debugger.Tests {
           BaseType="System.ValueType"
           ElementType="null"
           FullName="Debugger.Tests.TestPrograms.DefinedTypes_Struct"
-          GenericArguments="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
-          Interfaces="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
-          IsArray="False"
-          IsClass="False"
-          IsInteger="False"
-          IsInterface="False"
-          IsPointer="False"
-          IsPrimitive="False"
-          IsString="False"
-          IsValueType="True"
-          IsVoid="False"
+          GenericArguments="{}"
+          Interfaces="{}"
+          Kind="ValueType"
           Module="DefinedTypes.exe" />
       </Item>
     </Types>

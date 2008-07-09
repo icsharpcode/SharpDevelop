@@ -12,6 +12,8 @@ using Debugger.Wrappers.MetaData;
 
 namespace Debugger.MetaData
 {
+	public enum DebugTypeKind { Array, Class, ValueType, Primitive, Pointer, Void };
+	
 	/// <summary>
 	/// Represents a type in a debugee. That is, a class, array, value type or a primitive type.
 	/// This class mimics the <see cref="System.Type"/> class.
@@ -19,15 +21,6 @@ namespace Debugger.MetaData
 	/// <remarks>
 	/// If two types are identical, the references to DebugType will also be identical 
 	/// Type will be loaded once per each appdomain.
-	/// <para>
-	/// Preciesly one of these properties shall be true
-	///  - IsArray
-	///  - IsClass
-	///  - IsValueType
-	///  - IsPrimitive
-	///  - IsPointer
-	///  - IsVoid
-	/// </para>
 	/// </remarks>
 	public partial class DebugType: DebuggerObject
 	{
@@ -167,60 +160,82 @@ namespace Debugger.MetaData
 			}
 		}
 		
+		/// <summary> Returns what kind of type this is. (eg. value type) </summary>
+		public DebugTypeKind Kind {
+			get {
+				switch (this.corElementType) {
+					case CorElementType.BOOLEAN:
+					case CorElementType.CHAR:
+					case CorElementType.I1:
+					case CorElementType.U1:
+					case CorElementType.I2:
+					case CorElementType.U2:
+					case CorElementType.I4:
+					case CorElementType.U4:
+					case CorElementType.I8:
+					case CorElementType.U8:
+					case CorElementType.R4:
+					case CorElementType.R8:
+					case CorElementType.I:
+					case CorElementType.U:
+					case CorElementType.STRING:    return DebugTypeKind.Primitive;
+					case CorElementType.ARRAY:
+					case CorElementType.SZARRAY:   return DebugTypeKind.Array;
+					case CorElementType.CLASS:
+					case CorElementType.OBJECT:    return DebugTypeKind.Class;
+					case CorElementType.VALUETYPE: return DebugTypeKind.ValueType;
+					case CorElementType.PTR:
+					case CorElementType.BYREF:     return DebugTypeKind.Pointer;
+					case CorElementType.VOID:      return DebugTypeKind.Void;
+					default: throw new DebuggerException("Unknown kind of type");
+				}
+			}
+		}
+		
 		/// <summary> Gets a value indicating whether the type is an array </summary>
+		[Tests.Ignore]
 		public bool IsArray {
 			get {
-				return this.corElementType == CorElementType.ARRAY ||
-				       this.corElementType == CorElementType.SZARRAY;
+				return this.Kind == DebugTypeKind.Array;
 			}
 		}
 		
 		/// <summary> Gets a value indicating whether the type is a class </summary>
+		[Tests.Ignore]
 		public bool IsClass {
-			get { 
-				return this.corElementType == CorElementType.CLASS ||
-				       this.corElementType == CorElementType.OBJECT;
+			get {
+				return this.Kind == DebugTypeKind.Class;
 			}
 		}
 		
 		/// <summary> Returns true if this type represents interface </summary>
+		[Tests.Ignore]
 		public bool IsInterface {
 			get {
-				return IsClass && classProps.IsInterface;
+				return this.Kind == DebugTypeKind.Class && classProps.IsInterface;
 			}
 		}
 		
 		/// <summary> Gets a value indicating whether the type is a value type (that is, a structre in C#).
 		/// Return false, if the type is a primitive type. </summary>
+		[Tests.Ignore]
 		public bool IsValueType {
 			get {
-				return this.corElementType == CorElementType.VALUETYPE;
+				return this.Kind == DebugTypeKind.ValueType;
 			}
 		}
 		
 		/// <summary> Gets a value indicating whether the type is a primitive type </summary>
 		/// <remarks> Primitive types are: boolean, char, string and all numeric types </remarks>
+		[Tests.Ignore]
 		public bool IsPrimitive {
 			get {
-				return this.corElementType == CorElementType.BOOLEAN ||
-				       this.corElementType == CorElementType.CHAR ||
-				       this.corElementType == CorElementType.I1 ||
-				       this.corElementType == CorElementType.U1 ||
-				       this.corElementType == CorElementType.I2 ||
-				       this.corElementType == CorElementType.U2 ||
-				       this.corElementType == CorElementType.I4 ||
-				       this.corElementType == CorElementType.U4 ||
-				       this.corElementType == CorElementType.I8 ||
-				       this.corElementType == CorElementType.U8 ||
-				       this.corElementType == CorElementType.R4 ||
-				       this.corElementType == CorElementType.R8 ||
-				       this.corElementType == CorElementType.I ||
-				       this.corElementType == CorElementType.U ||
-				       this.corElementType == CorElementType.STRING;
+				return this.Kind == DebugTypeKind.Primitive;
 			}
 		}
 		
 		/// <summary> Gets a value indicating whether the type is an integer type </summary>
+		[Tests.Ignore]
 		public bool IsInteger {
 			get {
 				return this.corElementType == CorElementType.I1 ||
@@ -237,6 +252,7 @@ namespace Debugger.MetaData
 		}
 		
 		/// <summary> Gets a value indicating whether the type is an string </summary>
+		[Tests.Ignore]
 		public bool IsString {
 			get {
 				return this.corElementType == CorElementType.STRING;
@@ -244,17 +260,18 @@ namespace Debugger.MetaData
 		}
 		
 		/// <summary> Gets a value indicating whether the type is an managed or unmanaged pointer </summary>
+		[Tests.Ignore]
 		public bool IsPointer {
 			get {
-				return this.corElementType == CorElementType.PTR ||
-				       this.corElementType == CorElementType.BYREF;
+				return this.Kind == DebugTypeKind.Pointer;
 			}
 		}
 		
 		/// <summary> Gets a value indicating whether the type is the void type </summary>
+		[Tests.Ignore]
 		public bool IsVoid {
 			get {
-				return this.corElementType == CorElementType.VOID;
+				return this.Kind == DebugTypeKind.Void;
 			}
 		}
 		

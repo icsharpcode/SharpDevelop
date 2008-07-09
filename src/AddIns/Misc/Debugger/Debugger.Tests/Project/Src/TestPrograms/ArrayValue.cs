@@ -57,7 +57,7 @@ namespace Debugger.Tests {
     <DebuggingPaused>Break</DebuggingPaused>
     <array>
       <Value
-        ArrayDimensions="[5]"
+        ArrayDimensions="{5}"
         ArrayLenght="5"
         ArrayRank="1"
         AsString="{System.Int32[]}"
@@ -134,51 +134,27 @@ namespace Debugger.Tests {
         BaseType="System.Array"
         ElementType="System.Int32"
         FullName="System.Int32[]"
-        GenericArguments="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
-        Interfaces="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
-        IsArray="True"
-        IsClass="False"
-        IsInteger="False"
-        IsInterface="False"
-        IsPointer="False"
-        IsPrimitive="False"
-        IsString="False"
-        IsValueType="False"
-        IsVoid="False"
+        GenericArguments="{}"
+        Interfaces="{}"
+        Kind="Array"
         Module="{Exception: The type is not a class or value type.}">
         <BaseType>
           <DebugType
             BaseType="System.Object"
             ElementType="null"
             FullName="System.Array"
-            GenericArguments="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
-            Interfaces="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
-            IsArray="False"
-            IsClass="True"
-            IsInteger="False"
-            IsInterface="False"
-            IsPointer="False"
-            IsPrimitive="False"
-            IsString="False"
-            IsValueType="False"
-            IsVoid="False"
+            GenericArguments="{}"
+            Interfaces="{System.ICloneable, System.Collections.IList, System.Collections.ICollection, System.Collections.IEnumerable}"
+            Kind="Class"
             Module="mscorlib.dll">
             <BaseType>
               <DebugType
                 BaseType="null"
                 ElementType="null"
                 FullName="System.Object"
-                GenericArguments="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
-                Interfaces="System.Collections.Generic.List`1[Debugger.MetaData.DebugType]"
-                IsArray="False"
-                IsClass="True"
-                IsInteger="False"
-                IsInterface="False"
-                IsPointer="False"
-                IsPrimitive="False"
-                IsString="False"
-                IsValueType="False"
-                IsVoid="False"
+                GenericArguments="{}"
+                Interfaces="{}"
+                Kind="Class"
                 Module="mscorlib.dll">
                 <BaseType>null</BaseType>
               </DebugType>

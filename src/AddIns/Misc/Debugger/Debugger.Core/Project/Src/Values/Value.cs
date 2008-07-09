@@ -49,7 +49,9 @@ namespace Debugger
 				if (this.Type.IsClass)     return "{" + this.Type.FullName + "}";
 				if (this.Type.IsValueType) return "{" + this.Type.FullName + "}";
 				if (this.Type.IsPrimitive) return PrimitiveValue.ToString();
-				if (this.Type.IsPointer)   return "0x" + this.CorValue.CastTo<ICorDebugReferenceValue>().Address.ToString("X8");
+				// Does not work well with unit tests: (variable value)
+				// if (this.Type.IsPointer)   return "0x" + this.CorValue.CastTo<ICorDebugReferenceValue>().Address.ToString("X8");
+				if (this.Type.IsPointer)   return "{" + this.Type.FullName + "}";
 				if (this.Type.IsVoid)      return "void";
 				throw new DebuggerException("Unknown type");
 			}

@@ -267,8 +267,16 @@ namespace Debugger.Tests
 					val = "{Exception: " + e.Message + "}";
 				}
 				if (val == null) val = "null";
+				if (val is IEnumerable && !(val is string)) {
+					List<string> vals = new List<string>();
+					foreach(object o in (IEnumerable)val) {
+						vals.Add(o.ToString());
+					}
+					container.SetAttribute(property.Name, "{" + string.Join(", ", vals.ToArray()) + "}");
+				} else {
+					container.SetAttribute(property.Name, val.ToString());
+				}
 				
-				container.SetAttribute(property.Name, val.ToString());
 				
 				if (ShouldExpandProperty(property)) {
 					XmlElement propertyNode = doc.CreateElement(property.Name);

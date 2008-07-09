@@ -212,7 +212,7 @@ namespace Debugger.Tests {
       Count="1">
       <Item>
         <Value
-          ArrayDimensions="[0]"
+          ArrayDimensions="{0}"
           ArrayLenght="0"
           ArrayRank="1"
           AsString="{System.String[]}"
@@ -229,7 +229,7 @@ namespace Debugger.Tests {
       Count="1">
       <Item>
         <Value
-          ArrayDimensions="[1]"
+          ArrayDimensions="{1}"
           ArrayLenght="1"
           ArrayRank="1"
           AsString="{System.String[]}"
@@ -246,7 +246,7 @@ namespace Debugger.Tests {
       Count="1">
       <Item>
         <Value
-          ArrayDimensions="[2]"
+          ArrayDimensions="{2}"
           ArrayLenght="2"
           ArrayRank="1"
           AsString="{System.String[]}"
