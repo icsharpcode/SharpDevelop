@@ -43,6 +43,12 @@ namespace Debugger
 			}
 		}
 		
+		NDebugger Debugger {
+			get {
+				return this.Process.Debugger;
+			}
+		}
+		
 		public MetaDataImport MetaData {
 			get {
 				return metaData;
@@ -170,7 +176,7 @@ namespace Debugger
 			fullPath = pModule.Name;
 			
 			LoadSymbols(process.Debugger.SymbolsSearchPaths);
-			SetJustMyCodeStatus(this.HasSymbols, process.Debugger.ObeyDebuggerAttributes);
+			SetJustMyCodeStatus();
 		}
 		
 		public void LoadSymbols(string[] searchPath)
@@ -187,64 +193,113 @@ namespace Debugger
 		/// Finds all classes and methods marked with DebuggerNonUserCode attribute
 		/// and marks them for JMC so that they are not stepped into
 		/// </summary>
-		public void SetJustMyCodeStatus(bool isMyCode, bool obeyAttributes)
+		public void SetJustMyCodeStatus()
 		{
 			DateTime start = Util.HighPrecisionTimer.Now;
 			uint unused = 0;
-			if (isMyCode) {
-				corModule.CastTo<ICorDebugModule2>().SetJMCStatus(1, 0, ref unused);
-				if (obeyAttributes) {
-					foreach(CustomAttributeProps ca in metaData.EnumCustomAttributeProps(0, 0)) {
-						MemberRefProps constructorMethod = metaData.GetMemberRefProps(ca.Type);
-						TypeRefProps attributeType = metaData.GetTypeRefProps(constructorMethod.DeclaringType);
-						if (attributeType.Name == "System.Diagnostics.DebuggerStepThroughAttribute" ||
-						    attributeType.Name == "System.Diagnostics.DebuggerNonUserCodeAttribute" ||
-						    attributeType.Name == "System.Diagnostics.DebuggerHiddenAttribute")
-						{
-							if (ca.Owner >> 24 == 0x02) { // TypeDef
-								ICorDebugClass2 corClass = corModule.GetClassFromToken(ca.Owner).CastTo<ICorDebugClass2>();
-								corClass.SetJMCStatus(0 /* false */);
-								this.Process.TraceMessage("Class {0} marked as non-user code", metaData.GetTypeDefProps(ca.Owner).Name);
-							}
-							if (ca.Owner >> 24 == 0x06) { // MethodDef
-								ICorDebugFunction2 corFunction = corModule.GetFunctionFromToken(ca.Owner).CastTo<ICorDebugFunction2>();
-								corFunction.SetJMCStatus(0 /* false */);
-								MethodProps methodProps = metaData.GetMethodProps(ca.Owner);
-								this.Process.TraceMessage("Function {0}.{1} marked as non-user code", metaData.GetTypeDefProps(methodProps.ClassToken).Name, methodProps.Name);
-							}
-						}
-					}
-				}
-				// Mark generated constructors as non-user code
-				if (this.HasSymbols) {
-					foreach(TypeDefProps typeDef in metaData.EnumTypeDefProps()) {
-						foreach(MethodProps methodDef in metaData.EnumMethodPropsWithName(typeDef.Token, ".ctor")) {
-							try {
-								this.SymReader.GetMethod(methodDef.Token);
-							} catch (COMException) {
-								// Symbols not found
-								ICorDebugFunction2 corFunction = corModule.GetFunctionFromToken(methodDef.Token).CastTo<ICorDebugFunction2>();
-								corFunction.SetJMCStatus(0 /* false */);
-								this.Process.TraceMessage("Constructor of {0} marked as non-user code", metaData.GetTypeDefProps(methodDef.ClassToken).Name);
-							}
-						}
-						foreach(MethodProps methodDef in metaData.EnumMethodPropsWithName(typeDef.Token, ".cctor")) {
-							try {
-								this.SymReader.GetMethod(methodDef.Token);
-							} catch (COMException) {
-								// Symbols not found
-								ICorDebugFunction2 corFunction = corModule.GetFunctionFromToken(methodDef.Token).CastTo<ICorDebugFunction2>();
-								corFunction.SetJMCStatus(0 /* false */);
-								this.Process.TraceMessage("Static constructor of {0} marked as non-user code", metaData.GetTypeDefProps(methodDef.ClassToken).Name);
-							}
-						}
-					}
-				}
-			} else {
+			
+			if (!this.HasSymbols) {
 				corModule.CastTo<ICorDebugModule2>().SetJMCStatus(0, 0, ref unused);
+				return;
 			}
+			
+			// By default the code is my code
+			corModule.CastTo<ICorDebugModule2>().SetJMCStatus(1, 0, ref unused);
+			
+			// Apply non-user code attributes
+			if (this.Debugger.ObeyDebuggerAttributes) {
+				foreach(CustomAttributeProps ca in metaData.EnumCustomAttributeProps(0, 0)) {
+					MemberRefProps constructorMethod = metaData.GetMemberRefProps(ca.Type);
+					TypeRefProps attributeType = metaData.GetTypeRefProps(constructorMethod.DeclaringType);
+					if (attributeType.Name == "System.Diagnostics.DebuggerStepThroughAttribute" ||
+					    attributeType.Name == "System.Diagnostics.DebuggerNonUserCodeAttribute" ||
+					    attributeType.Name == "System.Diagnostics.DebuggerHiddenAttribute")
+					{
+						if (ca.Owner >> 24 == 0x02) { // TypeDef
+							ICorDebugClass2 corClass = corModule.GetClassFromToken(ca.Owner).CastTo<ICorDebugClass2>();
+							corClass.SetJMCStatus(0 /* false */);
+							this.Process.TraceMessage("Class {0} marked as non-user code", metaData.GetTypeDefProps(ca.Owner).Name);
+						}
+						if (ca.Owner >> 24 == 0x06) { // MethodDef
+							DisableJustMyCode(ca.Owner);
+						}
+					}
+				}
+			}
+			
+			// Mark generated constructors as non-user code
+			foreach(uint typeDef in metaData.EnumTypeDefs()) {
+				foreach(uint methodDef in metaData.EnumMethodsWithName(typeDef, ".ctor")) {
+					try {
+						this.SymReader.GetMethod(methodDef);
+					} catch (COMException) { // Symbols not found
+						DisableJustMyCode(methodDef);
+					}
+				}
+				foreach(uint methodDef in metaData.EnumMethodsWithName(typeDef, ".cctor")) {
+					try {
+						this.SymReader.GetMethod(methodDef);
+					} catch (COMException) { // Symbols not found
+						DisableJustMyCode(methodDef);
+					}
+				}
+			}
+			
+			// Skip properties
+			if (this.Debugger.SkipProperties) {
+				foreach(uint typeDef in metaData.EnumTypeDefs()) {
+					foreach(PropertyProps prop in metaData.EnumPropertyProps(typeDef)) {
+						if ((prop.GetterMethod & 0xFFFFFF) != 0) {
+							if (!Debugger.SkipOnlySingleLineProperties || IsSingleLine(prop.GetterMethod)) {
+								DisableJustMyCode(prop.GetterMethod);
+							}
+						}
+						if ((prop.SetterMethod & 0xFFFFFF) != 0) {
+							if (!Debugger.SkipOnlySingleLineProperties || IsSingleLine(prop.SetterMethod)) {
+								DisableJustMyCode(prop.SetterMethod);
+							}
+						}
+					}
+				}
+			}
+			
 			DateTime end = Util.HighPrecisionTimer.Now;
 			this.Process.TraceMessage("Set Just-My-Code for module \"{0}\" ({1} ms)", this.Filename, (end - start).TotalMilliseconds);
+		}
+		
+		void DisableJustMyCode(uint methodDef)
+		{
+			MethodProps methodProps = metaData.GetMethodProps(methodDef);
+			TypeDefProps typeProps = metaData.GetTypeDefProps(methodProps.ClassToken);
+			
+			ICorDebugFunction2 corFunction = corModule.GetFunctionFromToken(methodProps.Token).CastTo<ICorDebugFunction2>();
+			corFunction.SetJMCStatus(0 /* false */);
+			this.Process.TraceMessage("Funciton {0}.{1} marked as non-user code", typeProps.Name, methodProps.Name);
+		}
+		
+		bool IsSingleLine(uint methodDef)
+		{
+			ISymUnmanagedMethod symMethod = this.SymReader.GetMethod(methodDef);
+			List<SequencePoint> seqPoints = new List<SequencePoint>(symMethod.SequencePoints);
+			seqPoints.Sort();
+			
+			// Remove initial "{"
+			if (seqPoints.Count > 0 &&
+			    seqPoints[0].Line == seqPoints[0].EndLine &&
+			    seqPoints[0].EndColumn - seqPoints[0].Column <= 1) {
+				seqPoints.RemoveAt(0);
+			}
+			
+			// Remove last "}"
+			int listIndex = seqPoints.Count - 1;
+			if (seqPoints.Count > 0 &&
+			    seqPoints[listIndex].Line == seqPoints[listIndex].EndLine &&
+			    seqPoints[listIndex].EndColumn - seqPoints[listIndex].Column <= 1) {
+				seqPoints.RemoveAt(listIndex);
+			}
+			
+			// Is single line
+			return seqPoints.Count == 0 || seqPoints[0].Line == seqPoints[seqPoints.Count - 1].EndLine;
 		}
 		
 		public void ApplyChanges(byte[] metadata, byte[] il)

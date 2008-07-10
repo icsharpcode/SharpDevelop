@@ -20,6 +20,8 @@ namespace Debugger.Tests.TestPrograms
 			StepOut1();
 			IgnoredClass.Internal_Pass();
 			new DefaultCtorClass().Target();
+			int s = ShortProperty;
+			int l = LongProperty;
 		}
 		
 		[DebuggerStepThrough]
@@ -64,6 +66,19 @@ namespace Debugger.Tests.TestPrograms
 				
 			}
 		}
+		
+		public static int ShortProperty {
+			get {
+				return 1;
+			}
+		}
+		
+		public static int LongProperty {
+			get {
+				return
+					1;
+			}
+		}
 	}
 }
 
@@ -88,19 +103,23 @@ namespace Debugger.Tests {
 			process.SelectedStackFrame.StepInto(); // StepOut1
 			Assert.AreEqual("StepOut2", process.SelectedStackFrame.MethodInfo.Name);
 			process.SelectedStackFrame.StepOut();
-			Assert.AreEqual("Main", process.SelectedStackFrame.MethodInfo.Name);
 			process.SelectedStackFrame.StepOver(); // Finish the step out
 			Assert.AreEqual("Main", process.SelectedStackFrame.MethodInfo.Name);
 			process.SelectedStackFrame.StepInto(); // IgnoredClass.Internal_Pass
 			Assert.AreEqual("Target", process.SelectedStackFrame.MethodInfo.Name);
 			process.SelectedStackFrame.StepOut();
-			Assert.AreEqual("Main", process.SelectedStackFrame.MethodInfo.Name);
 			process.SelectedStackFrame.StepOver(); // Finish the step out
 			Assert.AreEqual("Main", process.SelectedStackFrame.MethodInfo.Name);
 			process.SelectedStackFrame.StepInto(); // Generated default constructor
 			Assert.AreEqual("Target", process.SelectedStackFrame.MethodInfo.Name);
 			process.SelectedStackFrame.StepOut();
+			process.SelectedStackFrame.StepOver(); // Finish the step out
 			Assert.AreEqual("Main", process.SelectedStackFrame.MethodInfo.Name);
+			process.SelectedStackFrame.StepInto(); // ShortProperty
+			Assert.AreEqual("Main", process.SelectedStackFrame.MethodInfo.Name);
+			process.SelectedStackFrame.StepInto(); // LongProperty
+			Assert.AreEqual("get_LongProperty", process.SelectedStackFrame.MethodInfo.Name);
+			process.SelectedStackFrame.StepOut();
 			process.SelectedStackFrame.StepOver(); // Finish the step out
 			Assert.AreEqual("Main", process.SelectedStackFrame.MethodInfo.Name);
 			
@@ -119,6 +138,10 @@ namespace Debugger.Tests {
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>DebuggerAttributes.exe (Has symbols)</ModuleLoaded>
     <DebuggingPaused>Break</DebuggingPaused>
+    <DebuggingPaused>StepComplete</DebuggingPaused>
+    <DebuggingPaused>StepComplete</DebuggingPaused>
+    <DebuggingPaused>StepComplete</DebuggingPaused>
+    <DebuggingPaused>StepComplete</DebuggingPaused>
     <DebuggingPaused>StepComplete</DebuggingPaused>
     <DebuggingPaused>StepComplete</DebuggingPaused>
     <DebuggingPaused>StepComplete</DebuggingPaused>

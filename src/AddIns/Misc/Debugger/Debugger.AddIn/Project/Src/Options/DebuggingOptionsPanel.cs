@@ -32,12 +32,16 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		{
 			jmc.Checked = DebuggingOptions.JustMyCodeEnabled;
 			obeyDebuggerAttributes.Checked = DebuggingOptions.ObeyDebuggerAttributes;
+			skipProperties.Checked = DebuggingOptions.SkipProperties;
+			skipOnlySingleLineProperties.Checked = DebuggingOptions.SkipOnlySingleLineProperties;
 		}
 		
 		public override bool StorePanelContents()
 		{
 			DebuggingOptions.JustMyCodeEnabled = jmc.Checked;
 			DebuggingOptions.ObeyDebuggerAttributes = obeyDebuggerAttributes.Checked;
+			DebuggingOptions.SkipProperties = skipProperties.Checked;
+			DebuggingOptions.SkipOnlySingleLineProperties = skipOnlySingleLineProperties.Checked;
 			
 			DebuggingOptions.ApplyToCurrentDebugger();
 			

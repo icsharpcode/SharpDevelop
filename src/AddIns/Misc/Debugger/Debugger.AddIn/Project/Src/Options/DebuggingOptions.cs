@@ -60,6 +60,16 @@ namespace ICSharpCode.SharpDevelop.Services
 			set { DebuggingProperties.Set("SymbolsSearchPaths", value); }
 		}
 		
+		public static bool SkipProperties {
+			get { return DebuggingProperties.Get("SkipProperties", true); }
+			set { DebuggingProperties.Set("SkipProperties", value); }
+		}
+		
+		public static bool SkipOnlySingleLineProperties {
+			get { return DebuggingProperties.Get("SkipOnlySingleLineProperties", true); }
+			set { DebuggingProperties.Set("SkipOnlySingleLineProperties", value); }
+		}
+		
 		public static void ApplyToCurrentDebugger()
 		{
 			WindowsDebugger winDbg = DebuggerService.CurrentDebugger as WindowsDebugger;
@@ -69,6 +79,8 @@ namespace ICSharpCode.SharpDevelop.Services
 				debugger.JustMyCodeEnabled = JustMyCodeEnabled;
 				debugger.ObeyDebuggerAttributes = ObeyDebuggerAttributes;
 				debugger.SymbolsSearchPaths = SymbolsSearchPaths;
+				debugger.SkipProperties = SkipProperties;
+				debugger.SkipOnlySingleLineProperties = SkipOnlySingleLineProperties;
 			}
 		}
 	}

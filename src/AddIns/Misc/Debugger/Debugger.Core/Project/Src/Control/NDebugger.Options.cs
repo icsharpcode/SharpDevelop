@@ -13,7 +13,18 @@ namespace Debugger
 	{
 		bool justMyCodeEnabled = true;
 		bool obeyDebuggerAttributes = true;
+		bool skipProperties = true;
+		bool skipOnlySingleLineProperties = true;
 		string[] symbolsSearchPaths;
+		
+		void ResetJustMyCodeInModules()
+		{
+			foreach(Process process in this.Processes) {
+				foreach(Module module in process.Modules) {
+					module.SetJustMyCodeStatus();
+				}
+			}
+		}
 		
 		public bool JustMyCodeEnabled {
 			get { return justMyCodeEnabled; }
@@ -26,15 +37,31 @@ namespace Debugger
 			set {
 				if (obeyDebuggerAttributes != value) {
 					obeyDebuggerAttributes = value;
-					foreach(Process process in this.Processes) {
-						foreach(Module module in process.Modules) {
-							// Rechceck the module for attributes
-							module.SetJustMyCodeStatus(module.HasSymbols, obeyDebuggerAttributes);
-						}
-					}
+					ResetJustMyCodeInModules();
 				}
 			}
 		}
+		
+		public bool SkipProperties {
+			get { return skipProperties; }
+			set {
+				if (skipProperties != value) {
+					skipProperties = value;
+					ResetJustMyCodeInModules();
+				}
+			}
+		}
+		
+		public bool SkipOnlySingleLineProperties {
+			get { return skipOnlySingleLineProperties; }
+			set {
+				if (skipOnlySingleLineProperties != value) {
+					skipOnlySingleLineProperties = value;
+					ResetJustMyCodeInModules();
+				}
+			}
+		}
+		
 		
 		public string[] SymbolsSearchPaths {
 			get { return symbolsSearchPaths; }
