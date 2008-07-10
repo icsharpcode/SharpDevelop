@@ -9,8 +9,22 @@ using System;
 
 namespace ICSharpCode.TextEditor.Document
 {
+	public enum AnchorMovementType
+	{
+		/// <summary>
+		/// Behaves like a start marker - when text is inserted at the anchor position, the anchor will stay
+		/// before the inserted text.
+		/// </summary>
+		BeforeInsertion,
+		/// <summary>
+		/// Behave like an end marker - when text is insered at the anchor position, the anchor will move
+		/// after the inserted text.
+		/// </summary>
+		AfterInsertion
+	}
+	
 	/// <summary>
-	/// Description of TextAnchor.
+	/// An anchor that can be put into a document and moves around when the document is changed.
 	/// </summary>
 	public sealed class TextAnchor
 	{
@@ -65,6 +79,11 @@ namespace ICSharpCode.TextEditor.Document
 				return this.Line.Offset + columnNumber;
 			}
 		}
+		
+		/// <summary>
+		/// Controls how the anchor moves.
+		/// </summary>
+		public AnchorMovementType MovementType { get; set; }
 		
 		internal void Deleted()
 		{

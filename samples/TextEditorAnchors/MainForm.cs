@@ -38,14 +38,20 @@ namespace TextEditorAnchors
 		
 		void AnchorListBoxKeyDown(object sender, KeyEventArgs e)
 		{
-			if (e.KeyCode == Keys.Delete) {
-				int index = anchorListBox.SelectedIndex;
-				if (index >= 0) {
+			int index = anchorListBox.SelectedIndex;
+			if (index >= 0) {
+				if (e.KeyCode == Keys.Delete) {
 					anchorListBox.Items.RemoveAt(index);
 					if (index < anchorListBox.Items.Count)
 						anchorListBox.SelectedIndex = index;
 					else
 						anchorListBox.SelectedIndex = anchorListBox.Items.Count - 1;
+				} else if (e.KeyCode == Keys.Left) {
+					((AnchorWrapper)anchorListBox.SelectedItem).Anchor.MovementType = AnchorMovementType.BeforeInsertion;
+					anchorListBox.Items[index] = anchorListBox.Items[index];
+				} else if (e.KeyCode == Keys.Right) {
+					((AnchorWrapper)anchorListBox.SelectedItem).Anchor.MovementType = AnchorMovementType.AfterInsertion;
+					anchorListBox.Items[index] = anchorListBox.Items[index];
 				}
 			}
 		}
@@ -87,7 +93,8 @@ namespace TextEditorAnchors
 					return "Anchor deleted";
 				else
 					return "Line " + (Anchor.LineNumber+1) + ", Column " + (Anchor.ColumnNumber+1)
-						+ " (Offset " + Anchor.Offset + ")";
+						+ " (Offset " + Anchor.Offset + ")"
+						+ " (" + Anchor.MovementType + ")";
 			}
 		}
 	}

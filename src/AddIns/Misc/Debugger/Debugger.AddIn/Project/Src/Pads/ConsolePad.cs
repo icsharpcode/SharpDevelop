@@ -52,7 +52,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			SetHighlighting("C#");
 			this.TextEditorProperties.SupportReadOnlySegments = true;
 			PrintPrompt();
-			readOnlyMarker = new TextMarker(0, this.Document.TextLength, TextMarkerType.Underlined) { IsReadOnly = true };
+			readOnlyMarker = new TextMarker(0, this.Document.TextLength, TextMarkerType.Invisible) { IsReadOnly = true };
 			this.Document.MarkerStrategy.AddMarker(readOnlyMarker);
 		}
 		

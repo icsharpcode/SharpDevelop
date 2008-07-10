@@ -191,7 +191,10 @@ namespace ICSharpCode.TextEditor.Document
 			//Console.WriteLine("InsertedLinePart " + startColumn + ", " + length);
 			if (anchors != null) {
 				foreach (TextAnchor a in anchors) {
-					if (a.ColumnNumber >= startColumn) {
+					if (a.MovementType == AnchorMovementType.BeforeInsertion
+					    ? a.ColumnNumber > startColumn
+					    : a.ColumnNumber >= startColumn)
+					{
 						a.ColumnNumber += length;
 					}
 				}
@@ -229,7 +232,10 @@ namespace ICSharpCode.TextEditor.Document
 			if (anchors != null) {
 				List<TextAnchor> movedAnchors = null;
 				foreach (TextAnchor a in anchors) {
-					if (a.ColumnNumber > this.Length) {
+					if (a.MovementType == AnchorMovementType.BeforeInsertion
+					    ? a.ColumnNumber > this.Length
+					    : a.ColumnNumber >= this.Length)
+					{
 						a.Line = followingLine;
 						followingLine.AddAnchor(a);
 						a.ColumnNumber -= this.Length;

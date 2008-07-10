@@ -66,6 +66,7 @@ namespace TextEditorAnchors
 			// textEditorControl
 			// 
 			this.textEditorControl.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.textEditorControl.IsReadOnly = false;
 			this.textEditorControl.Location = new System.Drawing.Point(0, 0);
 			this.textEditorControl.Name = "textEditorControl";
 			this.textEditorControl.Size = new System.Drawing.Size(340, 322);
