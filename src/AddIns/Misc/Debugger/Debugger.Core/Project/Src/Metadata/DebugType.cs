@@ -293,6 +293,10 @@ namespace Debugger.MetaData
 		/// </summary>
 		public DebugType BaseType {
 			get {
+				// corType.Base *sometimes* does not work for object and can cause "Value does not fall within the expected range." exception
+				if (this.FullName == "System.Object") {
+					return null;
+				}
 				// corType.Base does not work for arrays
 				if (this.IsArray) {
 					return DebugType.Create(this.Process, AppDomainID, "System.Array");
@@ -300,6 +304,9 @@ namespace Debugger.MetaData
 				// corType.Base does not work for primitive types
 				if (this.IsPrimitive) {
 					return DebugType.Create(this.Process, AppDomainID, "System.Object");
+				}
+				if (this.IsPointer || this.IsVoid) {
+					return null;
 				}
 				ICorDebugType baseType = corType.Base;
 				if (baseType != null) {
