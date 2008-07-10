@@ -40,7 +40,7 @@ namespace ICSharpCode.WpfDesign.Designer.Controls.TypeEditors.BrushEditor
 
 		public static void HsvFromColor(Color c, out double h, out double s, out double v)
 		{
-			HsvFromRgb(c.R / 255, c.G / 255, c.B / 255, out h, out s, out v);
+			HsvFromRgb(c.R / 255.0, c.G / 255.0, c.B / 255.0, out h, out s, out v);
 		}
 
 		// http://en.wikipedia.org/wiki/HSV_color_space

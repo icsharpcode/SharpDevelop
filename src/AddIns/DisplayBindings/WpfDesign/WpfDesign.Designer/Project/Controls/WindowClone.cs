@@ -88,6 +88,14 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 			get { return (ResizeMode)GetValue(Window.ResizeModeProperty); }
 			set { SetValue(Window.ResizeModeProperty, value); }
 		}
+
+		public static readonly DependencyProperty ShowActivatedProperty =
+			DependencyProperty.Register("ShowActivated", typeof(bool), typeof(WindowClone));
+
+		public bool ShowActivated {
+			get { return (bool)GetValue(ShowActivatedProperty); }
+			set { SetValue(ShowActivatedProperty, value); }
+		}
 		
 		/// <summary>
 		/// This property has no effect. (for compatibility with <see cref="Window"/> only).
