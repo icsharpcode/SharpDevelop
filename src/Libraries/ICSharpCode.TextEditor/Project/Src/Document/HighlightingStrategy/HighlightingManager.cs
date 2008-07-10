@@ -96,7 +96,10 @@ namespace ICSharpCode.TextEditor.Document
 
 			DefaultHighlightingStrategy highlightingStrategy = null;
 			try {
-				highlightingStrategy = HighlightingDefinitionParser.Parse(syntaxMode, syntaxModeFileProvider.GetSyntaxModeFile(syntaxMode));
+				var reader = syntaxModeFileProvider.GetSyntaxModeFile(syntaxMode);
+				if (reader == null)
+					throw new HighlightingDefinitionInvalidException("Could not get syntax mode file for " + syntaxMode.Name);
+				highlightingStrategy = HighlightingDefinitionParser.Parse(syntaxMode, reader);
 				if (highlightingStrategy.Name != syntaxMode.Name) {
 					throw new HighlightingDefinitionInvalidException("The name specified in the .xshd '" + highlightingStrategy.Name + "' must be equal the syntax mode name '" + syntaxMode.Name + "'");
 				}

@@ -507,6 +507,7 @@
     <Compile Include="Src\TextEditor\Gui\Dialogs\SortOptionsDialog.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Src\TextEditor\Gui\Editor\CommandPromptControl.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\CompletionWindow\CodeCompletionData.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\CompletionWindow\CodeCompletionDataProvider.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\CompletionWindow\CommentCompletionDataProvider.cs" />
@@ -524,6 +525,7 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Src\TextEditor\Gui\Editor\SharpDevelopTextEditorProperties.cs" />
+    <Compile Include="Src\TextEditor\Gui\Editor\TextEditorBasedPad.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\TextEditorDisplayBinding.cs" />
     <Compile Include="Src\TextEditor\Gui\OptionPanels\BehaviorTextEditorPanel.cs">
       <SubType>UserControl</SubType>

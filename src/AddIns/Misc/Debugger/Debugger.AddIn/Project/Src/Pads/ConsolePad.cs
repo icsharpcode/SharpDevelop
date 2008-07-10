@@ -4,39 +4,40 @@
 //     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
 //     <version>$Revision$</version>
 // </file>
-using Debugger.AddIn.TreeModel;
+
 using System;
-using System.Windows.Forms;
 using Debugger;
 using Debugger.AddIn;
 using ICSharpCode.NRefactory;
+using ICSharpCode.SharpDevelop.Debugging;
+using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
+using ICSharpCode.SharpDevelop.Services;
 using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Document;
 
 namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
-	public class ConsolePad: DebuggerPad
+	public class ConsolePad : TextEditorBasedPad
 	{
-		ConsoleControl editor;
+		ConsoleControl editor = new ConsoleControl();
 		
-		public override Control Control {
+		public override TextEditorControl TextEditorControl {
 			get {
 				return editor;
 			}
 		}
 		
-		protected override void InitializeComponents()
+		public ConsolePad()
 		{
-			editor = new ConsoleControl();
-		}
-		
-		protected override void SelectProcess(Debugger.Process process)
-		{
-			editor.Process = process;
+			WindowsDebugger debugger = (WindowsDebugger)DebuggerService.CurrentDebugger;
+			
+			debugger.ProcessSelected += delegate(object sender, ProcessEventArgs e) {
+				editor.Process = e.Process;
+			};
+			editor.Process = debugger.DebuggedProcess;
 		}
 	}
 	
-	class ConsoleControl: TextEditorControl
+	class ConsoleControl : CommandPromptControl
 	{
 		Process process;
 		
@@ -45,60 +46,27 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			set { process = value; }
 		}
 		
-		TextMarker readOnlyMarker;
-		
 		public ConsoleControl()
 		{
 			SetHighlighting("C#");
-			this.TextEditorProperties.SupportReadOnlySegments = true;
 			PrintPrompt();
-			readOnlyMarker = new TextMarker(0, this.Document.TextLength, TextMarkerType.Invisible) { IsReadOnly = true };
-			this.Document.MarkerStrategy.AddMarker(readOnlyMarker);
 		}
 		
-		protected override void InitializeTextAreaControl(TextAreaControl newControl)
+		protected override void PrintPromptInternal()
 		{
-			newControl.TextArea.DoProcessDialogKey += HandleDialogKey;
-			newControl.TextArea.KeyEventHandler += HandleKey;
+			Append("> ");
 		}
 		
-		void PrintPrompt()
+		protected override void AcceptCommand(string command)
 		{
-			this.Document.Insert(this.Document.TextLength, "> ");
-			this.ActiveTextAreaControl.Caret.Position = this.Document.OffsetToPosition(this.Document.TextLength);
-			if (readOnlyMarker != null) {
-				readOnlyMarker.Offset = 0;
-				readOnlyMarker.Length = this.Document.TextLength;
-			}
-			this.Document.UndoStack.ClearAll(); // prevent user from undoing the prompt insertion
-		}
-		
-		string GetLastLineText()
-		{
-			LineSegment seg = this.Document.LineSegmentCollection[this.Document.LineSegmentCollection.Count - 1];
-			return this.Document.GetText(seg.Offset, seg.Length).Substring(2);
-		}
-		
-		bool HandleDialogKey(Keys keys)
-		{
-			if (keys == Keys.Enter) {
-				string code = GetLastLineText();
-				if (string.IsNullOrEmpty(code)) return true;
-				string result = Evaluate(code);
-				if (string.IsNullOrEmpty(result)) {
-					this.Document.Insert(this.Document.TextLength, Environment.NewLine);
-				} else {
-					this.Document.Insert(this.Document.TextLength, Environment.NewLine + result + Environment.NewLine);
+			if (!string.IsNullOrEmpty(command)) {
+				string result = Evaluate(command);
+				Append(Environment.NewLine);
+				if (!string.IsNullOrEmpty(result)) {
+					Append(result + Environment.NewLine);
 				}
 				PrintPrompt();
-				return true;
 			}
-			return false;
-		}
-		
-		bool HandleKey(char ch)
-		{
-			return false;
 		}
 		
 		string Evaluate(string code)

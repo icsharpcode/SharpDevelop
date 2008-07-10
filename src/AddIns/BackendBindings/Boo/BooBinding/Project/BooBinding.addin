@@ -158,4 +158,13 @@
 			          class = "Grunwald.BooBinding.ConvertBuffer"/>
 		</ComplexCondition>
 	</Path>
+	
+	<Path name = "/SharpDevelop/Workbench/Pads">
+		<Pad id       = "BooIshPad"
+		     category = "Main"
+		     title    = "${res:ICSharpCode.BooInterpreter}"
+		     icon     = "Boo.ProjectIcon"
+		     shortcut = "Control|Shift|B"
+		     class    = "Grunwald.BooBinding.InteractiveInterpreterPad"/>
+	</Path>
 </AddIn>

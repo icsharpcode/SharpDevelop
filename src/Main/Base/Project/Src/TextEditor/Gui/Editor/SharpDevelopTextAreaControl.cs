@@ -23,7 +23,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 {
 	public class SharpDevelopTextAreaControl : TextEditorControl
 	{
-		const string contextMenuPath         = "/SharpDevelop/ViewContent/DefaultTextEditor/ContextMenu";
+		protected string contextMenuPath = "/SharpDevelop/ViewContent/DefaultTextEditor/ContextMenu";
 		const string editActionsPath         = "/AddIns/DefaultTextEditor/EditActions";
 		const string formatingStrategyPath   = "/AddIns/DefaultTextEditor/Formatter";
 		const string advancedHighlighterPath = "/AddIns/DefaultTextEditor/AdvancedHighlighter";
@@ -53,15 +53,20 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		}
 		
 		public SharpDevelopTextAreaControl()
+			: this(true, true)
+		{
+			GenerateEditActions();
+			
+			TextEditorProperties = SharpDevelopTextEditorProperties.Instance;
+		}
+		
+		protected SharpDevelopTextAreaControl(bool enableFolding, bool sdBookmarks)
 		{
 			Document.FoldingManager.FoldingStrategy = new ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ParserFoldingStrategy();
 			Document.BookmarkManager.Factory = new Bookmarks.SDBookmarkFactory(Document.BookmarkManager);
 			Document.BookmarkManager.Added   += new BookmarkEventHandler(BookmarkAdded);
 			Document.BookmarkManager.Removed += new BookmarkEventHandler(BookmarkRemoved);
 			Document.LineCountChanged += BookmarkLineCountChanged;
-			GenerateEditActions();
-			
-			TextEditorProperties = SharpDevelopTextEditorProperties.Instance;
 		}
 		
 		void BookmarkAdded(object sender, BookmarkEventArgs e)
@@ -97,7 +102,9 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			base.InitializeTextAreaControl(newControl);
 			
 			newControl.ShowContextMenu += delegate(object sender, MouseEventArgs e) {
-				MenuService.ShowContextMenu(this, contextMenuPath, (Control)sender, e.X, e.Y);
+				if (contextMenuPath != null) {
+					MenuService.ShowContextMenu(this, contextMenuPath, (Control)sender, e.X, e.Y);
+				}
 			};
 			newControl.TextArea.KeyEventHandler += new ICSharpCode.TextEditor.KeyEventHandler(HandleKeyPress);
 			newControl.TextArea.ClipboardHandler.CopyText += new CopyTextEventHandler(ClipboardHandlerCopyText);

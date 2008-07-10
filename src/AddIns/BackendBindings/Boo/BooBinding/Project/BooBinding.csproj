@@ -33,6 +33,9 @@
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Boo.Lang.Interpreter">
+      <HintPath>..\..\RequiredLibraries\Boo.Lang.Interpreter.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml" />
@@ -92,6 +95,7 @@
     </None>
     <Compile Include="Src\CodeCompletion\BooRefactoringProvider.cs" />
     <Compile Include="Src\CodeCompletion\BooAdvancedHighlighter.cs" />
+    <Compile Include="Src\InteractiveInterpreter.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="BooBinding.addin">

@@ -34,6 +34,8 @@ namespace ICSharpCode.TextEditor
 		
 		public bool EnablePaste {
 			get {
+				if (!textArea.EnableCutOrPaste)
+					return false;
 				try {
 					return Clipboard.ContainsText();
 				} catch (ExternalException) {
@@ -44,7 +46,7 @@ namespace ICSharpCode.TextEditor
 		
 		public bool EnableDelete {
 			get {
-				return textArea.SelectionManager.HasSomethingSelected && textArea.EnableCutOrPaste;
+				return textArea.SelectionManager.HasSomethingSelected && !textArea.SelectionManager.SelectionIsReadonly;
 			}
 		}
 		
@@ -179,15 +181,17 @@ namespace ICSharpCode.TextEditor
 							textArea.Document.UndoStack.StartUndoGroup();
 							try {
 								if (textArea.SelectionManager.HasSomethingSelected) {
-									Delete(sender, e);
+									textArea.SelectionManager.RemoveSelectedText();
 								}
 								if (fullLine) {
 									int col = textArea.Caret.Column;
 									textArea.Caret.Column = 0;
-									textArea.InsertString(text);
+									if (!textArea.IsReadOnly(textArea.Caret.Offset))
+										textArea.InsertString(text);
 									textArea.Caret.Column = col;
 								}
 								else {
+									// textArea.EnableCutOrPaste already checked readonly for this case
 									textArea.InsertString(text);
 								}
 							} finally {
