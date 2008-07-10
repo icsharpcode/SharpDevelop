@@ -13,6 +13,7 @@ namespace Debugger.Tests.TestPrograms
 	{
 		public static void Main()
 		{
+			System.Threading.Thread.CurrentThread.Priority = System.Threading.ThreadPriority.AboveNormal;
 			System.Diagnostics.Debugger.Break();
 			System.Threading.Thread.CurrentThread.Name = "ThreadName";
 			System.Diagnostics.Debugger.Break();
@@ -86,7 +87,7 @@ namespace Debugger.Tests {
         MostRecentStackFrameWithLoadedSymbols="Debugger.Tests.TestPrograms.ThreadName.Main"
         Name=""
         OldestStackFrame="Debugger.Tests.TestPrograms.ThreadName.Main"
-        Priority="Normal"
+        Priority="AboveNormal"
         RuntimeValue="? = {System.Threading.Thread}"
         SelectedStackFrame="Debugger.Tests.TestPrograms.ThreadName.Main"
         Suspended="False" />
@@ -105,7 +106,7 @@ namespace Debugger.Tests {
         MostRecentStackFrameWithLoadedSymbols="Debugger.Tests.TestPrograms.ThreadName.Main"
         Name="ThreadName"
         OldestStackFrame="Debugger.Tests.TestPrograms.ThreadName.Main"
-        Priority="Normal"
+        Priority="AboveNormal"
         RuntimeValue="? = {System.Threading.Thread}"
         SelectedStackFrame="Debugger.Tests.TestPrograms.ThreadName.Main"
         Suspended="False" />
