@@ -168,7 +168,9 @@ namespace Debugger.MetaData
 				if (member == null) return null;
 				if (!(member is FieldInfo)) return null;
 				
-				this.Process.TraceMessage(string.Format("Found backing field for {0}: {1}", this.FullName, member.Name));
+				if (this.Process.Debugger.Verbose) {
+					this.Process.TraceMessage(string.Format("Found backing field for {0}: {1}", this.FullName, member.Name));
+				}
 				return (FieldInfo)member;
 			}
 			

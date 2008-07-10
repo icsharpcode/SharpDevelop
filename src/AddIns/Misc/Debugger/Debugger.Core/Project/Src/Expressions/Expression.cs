@@ -72,7 +72,9 @@ namespace Debugger.Expressions
 			
 			result = GetFromCache(context);
 			if (result != null) {
-				context.Process.TraceMessage(string.Format("Cached:    {0,-12} ({1})", this.Code, this.GetType().Name));
+				if (context.Process.Debugger.Verbose) {
+					context.Process.TraceMessage(string.Format("Cached:    {0,-12} ({1})", this.Code, this.GetType().Name));
+				}
 				return result;
 			}
 			
@@ -88,7 +90,9 @@ namespace Debugger.Expressions
 			DateTime end = Debugger.Util.HighPrecisionTimer.Now;
 			expressionCache[this] = result;
 			
-			context.Process.TraceMessage(string.Format("Evaluated: {0,-12} ({1}) ({2} ms)", this.Code, this.GetType().Name, (end - start).TotalMilliseconds));
+			if (context.Process.Debugger.Verbose) {
+				context.Process.TraceMessage(string.Format("Evaluated: {0,-12} ({1}) ({2} ms)", this.Code, this.GetType().Name, (end - start).TotalMilliseconds));
+			}
 			return result;
 		}
 		

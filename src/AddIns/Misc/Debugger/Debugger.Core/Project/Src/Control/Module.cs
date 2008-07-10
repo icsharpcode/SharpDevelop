@@ -223,7 +223,9 @@ namespace Debugger
 						if (ca.Owner >> 24 == 0x02) { // TypeDef
 							ICorDebugClass2 corClass = corModule.GetClassFromToken(ca.Owner).CastTo<ICorDebugClass2>();
 							corClass.SetJMCStatus(0 /* false */);
-							this.Process.TraceMessage("Class {0} marked as non-user code", metaData.GetTypeDefProps(ca.Owner).Name);
+							if (this.Debugger.Verbose) {
+								this.Process.TraceMessage("Class {0} marked as non-user code", metaData.GetTypeDefProps(ca.Owner).Name);
+							}
 						}
 						if (ca.Owner >> 24 == 0x06) { // MethodDef
 							DisableJustMyCode(ca.Owner);
@@ -280,7 +282,9 @@ namespace Debugger
 			
 			ICorDebugFunction2 corFunction = corModule.GetFunctionFromToken(methodProps.Token).CastTo<ICorDebugFunction2>();
 			corFunction.SetJMCStatus(0 /* false */);
-			this.Process.TraceMessage("Funciton {0}.{1} marked as non-user code", typeProps.Name, methodProps.Name);
+			if (this.Debugger.Verbose) {
+				this.Process.TraceMessage("Funciton {0}.{1} marked as non-user code", typeProps.Name, methodProps.Name);
+			}
 		}
 		
 		bool IsSingleLine(uint methodDef)

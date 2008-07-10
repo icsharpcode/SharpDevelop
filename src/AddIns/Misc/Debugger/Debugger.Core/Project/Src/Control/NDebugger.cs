@@ -52,9 +52,11 @@ namespace Debugger
 				mta2sta.CallMethod = CallMethod.DirectCall;
 			}
 			
-			Wrappers.ResourceManager.TraceMessagesEnabled = false;
+			Wrappers.ResourceManager.TraceMessagesEnabled = true;
 			Wrappers.ResourceManager.TraceMessage += delegate (object s, MessageEventArgs e) { 
-				TraceMessage(e.Message);
+				if (this.Verbose) {
+					TraceMessage(e.Message);
+				}
 			};
 		}
 		

@@ -415,7 +415,9 @@ namespace Debugger.MetaData
 			foreach(DebugType loadedType in typesWithMatchingName) {
 				if (loadedType.Equals(type)) {
 					TimeSpan totalTime = Util.HighPrecisionTimer.Now - startTime;
-					//process.TraceMessage("Type " + type.FullName + " was loaded already (" + totalTime.TotalMilliseconds + " ms)");
+					if (process.Debugger.Verbose) {
+						process.TraceMessage("Type " + type.FullName + " was loaded already (" + totalTime.TotalMilliseconds + " ms)");
+					}
 					return loadedType; // Type was loaded before
 				}
 			}
@@ -430,8 +432,10 @@ namespace Debugger.MetaData
 			TimeSpan totalTime2 = Util.HighPrecisionTimer.Now - startTime;
 			string prefix = type.IsInterface ? "interface" : "type";
 			process.TraceMessage("Loaded {0} {1} ({2} ms)", prefix, type.FullName, totalTime2.TotalMilliseconds);
-			foreach(DebugType inter in type.Interfaces) {
-				process.TraceMessage(" - Implements {0}", inter.FullName);
+			if (process.Debugger.Verbose) {
+				foreach(DebugType inter in type.Interfaces) {
+					process.TraceMessage(" - Implements {0}", inter.FullName);
+				}
 			}
 			
 			return type;

@@ -15,6 +15,7 @@ namespace Debugger
 		bool obeyDebuggerAttributes = true;
 		bool skipProperties = true;
 		bool skipOnlySingleLineProperties = true;
+		bool verbose = false;
 		string[] symbolsSearchPaths;
 		
 		void ResetJustMyCodeInModules()
@@ -66,7 +67,6 @@ namespace Debugger
 			}
 		}
 		
-		
 		public string[] SymbolsSearchPaths {
 			get { return symbolsSearchPaths; }
 			set {
@@ -80,6 +80,11 @@ namespace Debugger
 					}
 				}
 			}
+		}
+		
+		public bool Verbose {
+			get { return verbose; }
+			set { verbose = value; }
 		}
 	}
 }
