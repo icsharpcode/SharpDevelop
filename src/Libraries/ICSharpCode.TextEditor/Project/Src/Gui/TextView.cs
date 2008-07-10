@@ -276,10 +276,6 @@ namespace ICSharpCode.TextEditor
 			}
 			HighlightColor background = textArea.Document.HighlightingStrategy.GetColorFor("Default");
 			Color bgColor = background.BackgroundColor;
-			if (textArea.MotherTextAreaControl.TextEditorProperties.UseCustomLine == true)
-			{
-				bgColor = textArea.Document.CustomLineManager.GetCustomColor(lineNumber, bgColor);
-			}
 			return BrushRegistry.GetBrush(bgColor);
 		}
 		

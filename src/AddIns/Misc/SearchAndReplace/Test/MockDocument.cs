@@ -92,12 +92,6 @@ namespace SearchAndReplace.Tests.Utils
 			}
 		}
 		
-		public ICustomLineManager CustomLineManager {
-			get {
-				throw new NotImplementedException();
-			}
-		}
-		
 		public MarkerStrategy MarkerStrategy {
 			get {
 				throw new NotImplementedException();

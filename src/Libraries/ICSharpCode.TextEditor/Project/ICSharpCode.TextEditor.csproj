@@ -64,8 +64,6 @@
     <Compile Include="Src\Document\TextLocation.cs" />
     <Compile Include="Src\Document\TextUtilities.cs" />
     <Compile Include="Src\Document\BookmarkManager\BookmarkManager.cs" />
-    <Compile Include="Src\Document\CustomLineManager\CustomLineManager.cs" />
-    <Compile Include="Src\Document\CustomLineManager\ICustomLineManager.cs" />
     <Compile Include="Src\Document\BookmarkManager\BookmarkManagerMemento.cs" />
     <Compile Include="Src\Document\FormattingStrategy\DefaultFormattingStrategy.cs" />
     <Compile Include="Src\Document\FormattingStrategy\IFormattingStrategy.cs" />

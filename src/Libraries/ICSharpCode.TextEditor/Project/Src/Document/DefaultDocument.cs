@@ -95,7 +95,6 @@ namespace ICSharpCode.TextEditor.Document
 		bool readOnly = false;
 		
 		LineManager           lineTrackingStrategy;
-		ICustomLineManager    customLineManager;
 		BookmarkManager       bookmarkManager;
 		ITextBufferStrategy   textBufferStrategy;
 		IFormattingStrategy   formattingStrategy;
@@ -208,15 +207,6 @@ namespace ICSharpCode.TextEditor.Document
 			}
 		}
 		
-		
-		public ICustomLineManager CustomLineManager {
-			get {
-				return customLineManager;
-			}
-			set {
-				customLineManager = value;
-			}
-		}
 		
 		public string TextContent {
 			get {
@@ -364,34 +354,41 @@ namespace ICSharpCode.TextEditor.Document
 		
 		public void UpdateSegmentListOnDocumentChange<T>(List<T> list, DocumentEventArgs e) where T : ISegment
 		{
+			int removedCharacters = e.Length > 0 ? e.Length : 0;
+			int insertedCharacters = e.Text != null ? e.Text.Length : 0;
 			for (int i = 0; i < list.Count; ++i) {
-				ISegment fm = list[i];
+				ISegment s = list[i];
+				int segmentStart = s.Offset;
+				int segmentEnd = s.Offset + s.Length;
 				
-				if (e.Offset <= fm.Offset && fm.Offset <= e.Offset + e.Length ||
-				    e.Offset <= fm.Offset + fm.Length && fm.Offset + fm.Length <= e.Offset + e.Length) {
+				if (e.Offset <= segmentStart) {
+					segmentStart -= removedCharacters;
+					if (segmentStart < e.Offset)
+						segmentStart = e.Offset;
+				}
+				if (e.Offset < segmentEnd) {
+					segmentEnd -= removedCharacters;
+					if (segmentEnd < e.Offset)
+						segmentEnd = e.Offset;
+				}
+				
+				Debug.Assert(segmentStart <= segmentEnd);
+				
+				if (segmentStart == segmentEnd) {
 					list.RemoveAt(i);
 					--i;
 					continue;
 				}
 				
-				if (fm.Offset  <= e.Offset && e.Offset <= fm.Offset + fm.Length) {
-					if (e.Text != null) {
-						fm.Length += e.Text.Length;
-					}
-					if (e.Length > 0) {
-						fm.Length -= e.Length;
-					}
-					continue;
-				}
+				if (e.Offset <= segmentStart)
+					segmentStart += insertedCharacters;
+				if (e.Offset < segmentEnd)
+					segmentEnd += insertedCharacters;
 				
-				if (fm.Offset >= e.Offset) {
-					if (e.Text != null) {
-						fm.Offset += e.Text.Length;
-					}
-					if (e.Length > 0) {
-						fm.Offset -= e.Length;
-					}
-				}
+				Debug.Assert(segmentStart < segmentEnd);
+				
+				s.Offset = segmentStart;
+				s.Length = segmentEnd - segmentStart;
 			}
 		}
 		

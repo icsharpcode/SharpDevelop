@@ -163,9 +163,9 @@ namespace ICSharpCode.TextEditor.Document
 			set;
 		}
 		
-		bool UseCustomLine {
+		bool SupportReadOnlySegments {
 			get;
 			set;
-		}	
+		}
 	}
 }

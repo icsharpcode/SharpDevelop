@@ -331,15 +331,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			}
 		}
 		
-		bool useCustomLine = false;
-		public bool UseCustomLine {
-			get {
-				return useCustomLine;
-			}
-			set {
-				useCustomLine = value;
-			}
-		}
+		public bool SupportReadOnlySegments { get; set; }
 		
 		public TextRenderingHint TextRenderingHint {
 			get {

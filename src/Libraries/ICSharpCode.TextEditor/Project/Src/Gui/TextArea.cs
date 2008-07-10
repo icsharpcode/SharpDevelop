@@ -579,18 +579,37 @@ namespace ICSharpCode.TextEditor
 			return true;
 		}
 		
-		public void SimulateKeyPress(char ch)
+		internal bool IsReadOnly(int offset)
 		{
 			if (Document.ReadOnly) {
-				return;
+				return true;
 			}
-			
-			if (TextEditorProperties.UseCustomLine == true) {
-				if (SelectionManager.HasSomethingSelected) {
-					if (SelectionManager.SelectionIsReadonly)
-						return;
-				} else if (Document.CustomLineManager.IsReadOnly(Caret.Line, false) == true)
+			if (TextEditorProperties.SupportReadOnlySegments) {
+				return Document.MarkerStrategy.GetMarkers(offset).Exists(m=>m.IsReadOnly);
+			} else {
+				return false;
+			}
+		}
+		
+		internal bool IsReadOnly(int offset, int length)
+		{
+			if (Document.ReadOnly) {
+				return true;
+			}
+			if (TextEditorProperties.SupportReadOnlySegments) {
+				return Document.MarkerStrategy.GetMarkers(offset, length).Exists(m=>m.IsReadOnly);
+			} else {
+				return false;
+			}
+		}
+		
+		public void SimulateKeyPress(char ch)
+		{
+			if (SelectionManager.HasSomethingSelected) {
+				if (SelectionManager.SelectionIsReadonly)
 					return;
+			} else if (IsReadOnly(Caret.Offset)) {
+				return;
 			}
 			
 			if (ch < ' ') {
@@ -650,29 +669,6 @@ namespace ICSharpCode.TextEditor
 				return true;
 			}
 			
-			if (keyData == Keys.Back || keyData == Keys.Delete || keyData == Keys.Enter) {
-				if (TextEditorProperties.UseCustomLine == true) {
-					if (SelectionManager.HasSomethingSelected) {
-						if (SelectionManager.SelectionIsReadonly)
-							return true;
-					} else {
-						int curLineNr   = Document.GetLineNumberForOffset(Caret.Offset);
-						if (Document.CustomLineManager.IsReadOnly(curLineNr, false) == true)
-							return true;
-						if ((Caret.Column == 0) && (curLineNr - 1 >= 0) && keyData == Keys.Back &&
-						    Document.CustomLineManager.IsReadOnly(curLineNr - 1, false) == true)
-							return true;
-						if (keyData == Keys.Delete) {
-							LineSegment curLine = Document.GetLineSegment(curLineNr);
-							if (curLine.Offset + curLine.Length == Caret.Offset &&
-							    Document.CustomLineManager.IsReadOnly(curLineNr + 1, false) == true) {
-								return true;
-							}
-						}
-					}
-				}
-			}
-			
 			// if not (or the process was 'silent', use the standard edit actions
 			IEditAction action =  motherTextEditorControl.GetEditAction(keyData);
 			AutoClearSelection = true;
@@ -726,16 +722,10 @@ namespace ICSharpCode.TextEditor
 			get {
 				if (motherTextAreaControl == null)
 					return false;
-				if (TextEditorProperties.UseCustomLine == true) {
-					if (SelectionManager.HasSomethingSelected == true) {
-						if (SelectionManager.SelectionIsReadonly)
-							return false;
-					}
-					if (Document.CustomLineManager.IsReadOnly(Caret.Line, false) == true)
-						return false;
-				}
-				return true;
-				
+				if (SelectionManager.HasSomethingSelected)
+					return !SelectionManager.SelectionIsReadonly;
+				else
+					return !IsReadOnly(Caret.Offset);
 			}
 		}
 		

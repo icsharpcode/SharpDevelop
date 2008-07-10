@@ -62,7 +62,7 @@ namespace ICSharpCode.TextEditor.Document
 		LineViewerStyle  lineViewerStyle = LineViewerStyle.None;
 		string      lineTerminator = "\r\n";
 		bool        autoInsertCurlyBracket = true;
-		bool        useCustomLine = false;
+		bool        supportReadOnlySegments = false;
 		
 		public int TabIndent {
 			get {
@@ -295,12 +295,12 @@ namespace ICSharpCode.TextEditor.Document
 			}
 		}
 		
-		public bool UseCustomLine {
+		public bool SupportReadOnlySegments {
 			get {
-				return useCustomLine;
+				return supportReadOnlySegments;
 			}
 			set {
-				useCustomLine = value;
+				supportReadOnlySegments = value;
 			}
 		}
 	}

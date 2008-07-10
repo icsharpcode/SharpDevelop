@@ -15,6 +15,8 @@ namespace ICSharpCode.TextEditor
 {
 	public class TextAreaDragDropHandler
 	{
+		public static Action<Exception> OnDragDropException = ex => MessageBox.Show(ex.ToString());
+		
 		TextArea textArea;
 		
 		public void Attach(TextArea textArea)
@@ -22,9 +24,24 @@ namespace ICSharpCode.TextEditor
 			this.textArea = textArea;
 			textArea.AllowDrop = true;
 			
-			textArea.DragEnter += new DragEventHandler(OnDragEnter);
-			textArea.DragDrop  += new DragEventHandler(OnDragDrop);
-			textArea.DragOver  += new DragEventHandler(OnDragOver);
+			textArea.DragEnter += MakeDragEventHandler(OnDragEnter);
+			textArea.DragDrop  += MakeDragEventHandler(OnDragDrop);
+			textArea.DragOver  += MakeDragEventHandler(OnDragOver);
+		}
+		
+		/// <summary>
+		/// Create a drag'n'drop event handler.
+		/// Windows Forms swallows unhandled exceptions during drag'n'drop, so we report them here.
+		/// </summary>
+		static DragEventHandler MakeDragEventHandler(DragEventHandler h)
+		{
+			return (sender, e) => {
+				try {
+					h(sender, e);
+				} catch (Exception ex) {
+					OnDragDropException(ex);
+				}
+			};
 		}
 		
 		static DragDropEffects GetDragDropEffect(DragEventArgs e)
@@ -65,24 +82,20 @@ namespace ICSharpCode.TextEditor
 			
 			if (e.Data.GetDataPresent(typeof(string))) {
 				textArea.BeginUpdate();
+				textArea.Document.UndoStack.StartUndoGroup();
 				try {
 					int offset = textArea.Caret.Offset;
-					if (textArea.TextEditorProperties.UseCustomLine
-					    && textArea.Document.CustomLineManager.IsReadOnly(textArea.Caret.Line, false))
-					{
+					if (textArea.IsReadOnly(offset)) {
 						// prevent dragging text into readonly section
 						return;
 					}
-					textArea.Document.UndoStack.StartUndoGroup();
 					if (e.Data.GetDataPresent(typeof(DefaultSelection))) {
 						ISelection sel = (ISelection)e.Data.GetData(typeof(DefaultSelection));
 						if (sel.ContainsPosition(textArea.Caret.Position)) {
 							return;
 						}
 						if (GetDragDropEffect(e) == DragDropEffects.Move) {
-							if (textArea.TextEditorProperties.UseCustomLine
-							    && textArea.Document.CustomLineManager.IsReadOnly(sel, false))
-							{
+							if (SelectionManager.SelectionIsReadOnly(textArea.Document, sel)) {
 								// prevent dragging text out of readonly section
 								return;
 							}
@@ -118,9 +131,13 @@ namespace ICSharpCode.TextEditor
 				
 				textArea.Caret.Position = new TextLocation(realmousepos.X, lineNr);
 				textArea.SetDesiredColumn();
-				if (e.Data.GetDataPresent(typeof(string))) {
+				if (e.Data.GetDataPresent(typeof(string)) && !textArea.IsReadOnly(textArea.Caret.Offset)) {
 					e.Effect = GetDragDropEffect(e);
+				} else {
+					e.Effect = DragDropEffects.None;
 				}
+			} else {
+				e.Effect = DragDropEffects.None;
 			}
 		}
 	}

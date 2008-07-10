@@ -52,6 +52,11 @@ namespace ICSharpCode.TextEditor.Document
 			}
 		}
 		
+		/// <summary>
+		/// Marks the text segment as read-only.
+		/// </summary>
+		public bool IsReadOnly { get; set; }
+		
 		public string ToolTip {
 			get {
 				return toolTip;

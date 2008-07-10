@@ -54,14 +54,20 @@ namespace ICSharpCode.TextEditor.Document
 			get {
 				if (document.ReadOnly)
 					return true;
-				if (document.TextEditorProperties.UseCustomLine) {
-					foreach (ISelection sel in selectionCollection) {
-						if (document.CustomLineManager.IsReadOnly(sel, false))
-							return true;
-					}
+				foreach (ISelection sel in selectionCollection) {
+					if (SelectionIsReadOnly(document, sel))
+						return true;
 				}
 				return false;
 			}
+		}
+		
+		internal static bool SelectionIsReadOnly(IDocument document, ISelection sel)
+		{
+			if (document.TextEditorProperties.SupportReadOnlySegments)
+				return document.MarkerStrategy.GetMarkers(sel.Offset, sel.Length).Exists(m=>m.IsReadOnly);
+			else
+				return false;
 		}
 		
 		/// <value>
@@ -286,6 +292,10 @@ namespace ICSharpCode.TextEditor.Document
 		/// </remarks>
 		public void RemoveSelectedText()
 		{
+			if (SelectionIsReadonly) {
+				ClearSelection();
+				return;
+			}
 			List<int> lines = new List<int>();
 			int offset = -1;
 			bool oneLine = true;
