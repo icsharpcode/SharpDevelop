@@ -61,6 +61,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		{
 			this.Document.Insert(this.Document.TextLength, "> ");
 			this.ActiveTextAreaControl.Caret.Position = this.Document.OffsetToPosition(this.Document.TextLength);
+			this.Document.UndoStack.ClearAll(); // prevent user from undoing the prompt insertion
 		}
 		
 		string GetLastLineText()
@@ -73,7 +74,12 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		{
 			// All lines except the last one are read-only
 			int codeStart = this.Document.PositionToOffset(new TextLocation(2, this.Document.LineSegmentCollection.Count - 1));
+			// make document read-only if caret is before codeStart or there is a selection before codeStart
 			this.Document.ReadOnly = (this.ActiveTextAreaControl.Caret.Offset < codeStart);
+			foreach (ISelection selection in this.ActiveTextAreaControl.SelectionManager.SelectionCollection) {
+				if (selection.Offset < codeStart)
+					this.Document.ReadOnly = true;
+			}
 			
 			if (keys == Keys.Back) {
 				if (this.ActiveTextAreaControl.Caret.Offset <= codeStart) {
