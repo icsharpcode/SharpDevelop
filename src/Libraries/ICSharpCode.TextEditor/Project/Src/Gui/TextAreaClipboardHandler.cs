@@ -181,6 +181,7 @@ namespace ICSharpCode.TextEditor
 							textArea.Document.UndoStack.StartUndoGroup();
 							try {
 								if (textArea.SelectionManager.HasSomethingSelected) {
+									textArea.Caret.Position = textArea.SelectionManager.SelectionCollection[0].StartPosition;
 									textArea.SelectionManager.RemoveSelectedText();
 								}
 								if (fullLine) {
@@ -189,8 +190,7 @@ namespace ICSharpCode.TextEditor
 									if (!textArea.IsReadOnly(textArea.Caret.Offset))
 										textArea.InsertString(text);
 									textArea.Caret.Column = col;
-								}
-								else {
+								} else {
 									// textArea.EnableCutOrPaste already checked readonly for this case
 									textArea.InsertString(text);
 								}
