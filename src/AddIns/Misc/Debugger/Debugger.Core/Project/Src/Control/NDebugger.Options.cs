@@ -28,8 +28,12 @@ namespace Debugger
 		
 		public bool JustMyCodeEnabled {
 			get { return justMyCodeEnabled; }
-			// Affects steppers during their creation so there is nothing to update
-			set { justMyCodeEnabled = value; }
+			set {
+				if (justMyCodeEnabled != value) {
+					justMyCodeEnabled = value;
+					ResetJustMyCodeInModules();
+				}
+			}
 		}
 		
 		public bool ObeyDebuggerAttributes {

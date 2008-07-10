@@ -198,6 +198,11 @@ namespace Debugger
 			DateTime start = Util.HighPrecisionTimer.Now;
 			uint unused = 0;
 			
+			if (!this.Debugger.JustMyCodeEnabled) {
+				corModule.CastTo<ICorDebugModule2>().SetJMCStatus(1, 0, ref unused);
+				return;
+			}
+			
 			if (!this.HasSymbols) {
 				corModule.CastTo<ICorDebugModule2>().SetJMCStatus(0, 0, ref unused);
 				return;
@@ -227,19 +232,10 @@ namespace Debugger
 				}
 			}
 			
-			// Mark generated constructors as non-user code
+			// Mark all methods without symbols as non-user code
 			foreach(uint typeDef in metaData.EnumTypeDefs()) {
-				foreach(uint methodDef in metaData.EnumMethodsWithName(typeDef, ".ctor")) {
-					try {
-						this.SymReader.GetMethod(methodDef);
-					} catch (COMException) { // Symbols not found
-						DisableJustMyCode(methodDef);
-					}
-				}
-				foreach(uint methodDef in metaData.EnumMethodsWithName(typeDef, ".cctor")) {
-					try {
-						this.SymReader.GetMethod(methodDef);
-					} catch (COMException) { // Symbols not found
+				foreach(uint methodDef in metaData.EnumMethods(typeDef)) {
+					if (!HasMethodSymbols(methodDef)) {
 						DisableJustMyCode(methodDef);
 					}
 				}
@@ -267,6 +263,16 @@ namespace Debugger
 			this.Process.TraceMessage("Set Just-My-Code for module \"{0}\" ({1} ms)", this.Filename, (end - start).TotalMilliseconds);
 		}
 		
+		bool HasMethodSymbols(uint methodDef)
+		{
+			try {
+				return this.SymReader.GetMethod(methodDef) != null;
+			} catch (COMException) {
+				// Symbols not found
+				return false;
+			}
+		}
+		
 		void DisableJustMyCode(uint methodDef)
 		{
 			MethodProps methodProps = metaData.GetMethodProps(methodDef);
@@ -279,7 +285,12 @@ namespace Debugger
 		
 		bool IsSingleLine(uint methodDef)
 		{
-			ISymUnmanagedMethod symMethod = this.SymReader.GetMethod(methodDef);
+			ISymUnmanagedMethod symMethod;
+			try {
+				symMethod = this.SymReader.GetMethod(methodDef);
+			} catch (COMException) {
+				return false; // No symbols - can not determine
+			}
 			List<SequencePoint> seqPoints = new List<SequencePoint>(symMethod.SequencePoints);
 			seqPoints.Sort();
 			
