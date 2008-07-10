@@ -607,7 +607,13 @@ namespace ICSharpCode.SharpDevelop.Services
 			// Need to intercept now so that we can evaluate properties
 			if (e.Process.SelectedThread.InterceptCurrentException()) {
 				msg.AppendLine(e.Exception.ToString());
-				msg.Append(e.Exception.GetStackTrace(StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.LineFormat.EndOfInnerException}")));
+				string stackTrace;
+				try {
+					stackTrace = e.Exception.GetStackTrace(StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.LineFormat.EndOfInnerException}"));
+				} catch (GetValueException) {
+					stackTrace = e.Process.SelectedThread.GetStackTrace(StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.LineFormat.Symbols}"), StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.LineFormat.NoSymbols}"));
+				}
+				msg.Append(stackTrace);
 			} else {
 				// For example, happens on stack overflow
 				msg.AppendLine(StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.Error.CannotInterceptException}"));

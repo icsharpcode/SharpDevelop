@@ -79,6 +79,9 @@ namespace Debugger
 			return GetStackTrace("--- End of inner exception stack trace ---");
 		}
 		
+		/// <summary> Returs formated stacktrace for the exception </summary>
+		/// <exception cref="GetValueException"> Getting the stacktrace involves property
+		/// evaluation so GetValueException can be thrown in some cicumstances. </exception>
 		public string GetStackTrace(string endOfInnerExceptionFormat)
 		{
 			StringBuilder sb = new StringBuilder();
