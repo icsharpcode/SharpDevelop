@@ -142,12 +142,14 @@ namespace Debugger
 			}
 		}
 		
-		// NB: The value is null during the CreateThread callback
+		/// <summary> Returns value representing the System.Threading.Thread object </summary>
+		/// <remarks> The value is null while the thread is being created (the CreateThread callback). </remarks>
 		public Value RuntimeValue {
 			get {
 				process.AssertPaused();
 				
-				return new Value(process, new EmptyExpression(), CorThread.Object);
+				ICorDebugValue corValue = this.CorThread.Object;
+				return new Value(process, new EmptyExpression(), corValue);
 			}
 		}
 		

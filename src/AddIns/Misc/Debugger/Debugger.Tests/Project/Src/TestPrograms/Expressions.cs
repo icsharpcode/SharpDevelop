@@ -1,7 +1,7 @@
-// <file>
+ï»¿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
+//     <owner name="David Srbeckï¿½" email="dsrbecky@gmail.com"/>
 //     <version>$Revision$</version>
 // </file>
 
@@ -53,7 +53,7 @@ namespace Debugger.Tests.TestPrograms
 namespace Debugger.Tests {
 	public partial class DebuggerTests
 	{
-		[NUnit.Framework.Test, NUnit.Framework.Ignore]
+		[NUnit.Framework.Test]
 		public void Expressions()
 		{
 			StartTest("Expressions.cs");
@@ -69,4 +69,169 @@ namespace Debugger.Tests {
 #endif
 
 #if EXPECTED_OUTPUT
+<?xml version="1.0" encoding="utf-8"?>
+<DebuggerTests>
+  <Test
+    name="Expressions.cs">
+    <ProcessStarted />
+    <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
+    <ModuleLoaded>Expressions.exe (Has symbols)</ModuleLoaded>
+    <DebuggingPaused>Break</DebuggingPaused>
+    <Arguments
+      Capacity="4"
+      Count="1">
+      <Item>
+        <Value
+          ArrayDimensions="{Exception: Value is not an array}"
+          ArrayLenght="{Exception: Value is not an array}"
+          ArrayRank="{Exception: Value is not an array}"
+          AsString="argValue"
+          Expression="arg"
+          IsInvalid="False"
+          IsNull="False"
+          PrimitiveValue="argValue"
+          Type="System.String" />
+      </Item>
+    </Arguments>
+    <LocalVariables
+      Capacity="4"
+      Count="3">
+      <Item>
+        <Value
+          ArrayDimensions="{Exception: Value is not an array}"
+          ArrayLenght="{Exception: Value is not an array}"
+          ArrayRank="{Exception: Value is not an array}"
+          AsString="0"
+          Expression="i"
+          IsInvalid="False"
+          IsNull="False"
+          PrimitiveValue="0"
+          Type="System.Int32" />
+      </Item>
+      <Item>
+        <Value
+          ArrayDimensions="{3}"
+          ArrayLenght="3"
+          ArrayRank="1"
+          AsString="{System.String[]}"
+          Expression="array"
+          IsInvalid="False"
+          IsNull="False"
+          PrimitiveValue="{Exception: Value is not a primitive type}"
+          Type="System.String[]" />
+      </Item>
+      <Item>
+        <Value
+          ArrayDimensions="{2, 2}"
+          ArrayLenght="4"
+          ArrayRank="2"
+          AsString="{System.String[,]}"
+          Expression="array2"
+          IsInvalid="False"
+          IsNull="False"
+          PrimitiveValue="{Exception: Value is not a primitive type}"
+          Type="System.String[,]" />
+      </Item>
+    </LocalVariables>
+    <this>
+      <Item>
+        <Value
+          ArrayDimensions="{Exception: Value is not an array}"
+          ArrayLenght="{Exception: Value is not an array}"
+          ArrayRank="{Exception: Value is not an array}"
+          AsString="derived name"
+          Expression="this.name"
+          IsInvalid="False"
+          IsNull="False"
+          PrimitiveValue="derived name"
+          Type="System.String" />
+      </Item>
+      <Item>
+        <Value
+          ArrayDimensions="{Exception: Value is not an array}"
+          ArrayLenght="{Exception: Value is not an array}"
+          ArrayRank="{Exception: Value is not an array}"
+          AsString="derived value"
+          Expression="this.Value"
+          IsInvalid="False"
+          IsNull="False"
+          PrimitiveValue="derived value"
+          Type="System.String" />
+      </Item>
+      <Item>
+        <Value
+          ArrayDimensions="{Exception: Value is not an array}"
+          ArrayLenght="{Exception: Value is not an array}"
+          ArrayRank="{Exception: Value is not an array}"
+          AsString="field value"
+          Expression="this.field"
+          IsInvalid="False"
+          IsNull="False"
+          PrimitiveValue="field value"
+          Type="System.String" />
+      </Item>
+      <Item>
+        <Value
+          ArrayDimensions="{3}"
+          ArrayLenght="3"
+          ArrayRank="1"
+          AsString="{System.String[]}"
+          Expression="this.array"
+          IsInvalid="False"
+          IsNull="False"
+          PrimitiveValue="{Exception: Value is not a primitive type}"
+          Type="System.String[]" />
+      </Item>
+      <Item>
+        <Value
+          ArrayDimensions="{Exception: Value is not an array}"
+          ArrayLenght="{Exception: Value is not an array}"
+          ArrayRank="{Exception: Value is not an array}"
+          AsString="derived name"
+          Expression="this.Name"
+          IsInvalid="False"
+          IsNull="False"
+          PrimitiveValue="derived name"
+          Type="System.String" />
+      </Item>
+      <Item>
+        <Value
+          ArrayDimensions="{Exception: Value is not an array}"
+          ArrayLenght="{Exception: Value is not an array}"
+          ArrayRank="{Exception: Value is not an array}"
+          AsString="base name"
+          Expression="this.name"
+          IsInvalid="False"
+          IsNull="False"
+          PrimitiveValue="base name"
+          Type="System.String" />
+      </Item>
+      <Item>
+        <Value
+          ArrayDimensions="{Exception: Value is not an array}"
+          ArrayLenght="{Exception: Value is not an array}"
+          ArrayRank="{Exception: Value is not an array}"
+          AsString="base value"
+          Expression="this.Value"
+          IsInvalid="False"
+          IsNull="False"
+          PrimitiveValue="base value"
+          Type="System.String" />
+      </Item>
+      <Item>
+        <Value
+          ArrayDimensions="{Exception: Value is not an array}"
+          ArrayLenght="{Exception: Value is not an array}"
+          ArrayRank="{Exception: Value is not an array}"
+          AsString="base name"
+          Expression="this.Name"
+          IsInvalid="False"
+          IsNull="False"
+          PrimitiveValue="base name"
+          Type="System.String" />
+      </Item>
+    </this>
+    <ProcessExited />
+  </Test>
+</DebuggerTests>
 #endif // EXPECTED_OUTPUT

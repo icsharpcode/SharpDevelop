@@ -123,8 +123,17 @@ namespace Debugger
 			this.corValue = corValue;
 			this.corValue_pauseSession = process.PauseSession;
 			
-			ICorDebugType exactType = this.CorValue.CastTo<ICorDebugValue2>().ExactType;
-			type = DebugType.Create(this.Process, exactType);
+			if (corValue.Is<ICorDebugReferenceValue>() &&
+			    corValue.CastTo<ICorDebugReferenceValue>().Value == 0 &&
+			    corValue.CastTo<ICorDebugValue2>().ExactType == null)
+			{
+				// We were passed null reference and no metadata description
+				// (happens during CreateThread callback for the thread object)
+				this.type = DebugType.Create(this.Process, null, "System.Object");
+			} else {
+				ICorDebugType exactType = this.CorValue.CastTo<ICorDebugValue2>().ExactType;
+				this.type = DebugType.Create(this.Process, exactType);
+			}
 		}
 		
 		/// <summary> Returns the <see cref="Debugger.DebugType"/> of the value </summary>

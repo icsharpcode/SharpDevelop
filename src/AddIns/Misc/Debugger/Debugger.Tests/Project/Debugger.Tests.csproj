@@ -74,6 +74,7 @@
     <Compile Include="Src\TestPrograms\Symbols.cs" />
     <Compile Include="Src\TestPrograms\TerminatePausedProcess.cs" />
     <Compile Include="Src\TestPrograms\TerminateRunningProcess.cs" />
+    <Compile Include="Src\TestPrograms\ThreadName.cs" />
     <Compile Include="Src\TestPrograms\ValueType.cs" />
     <Compile Include="Src\TestPrograms\_Template.cs" />
     <EmbeddedResource Include="Src\TestPrograms\*.xml" />
