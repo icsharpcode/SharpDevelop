@@ -27,16 +27,20 @@ namespace Debugger.Tests {
 		[NUnit.Framework.Test]
 		public void ThreadName()
 		{
-			debugger.ProcessStarted += delegate(object sender, ProcessEventArgs e) {
-				e.Process.ThreadStarted += delegate(object sender2, ThreadEventArgs f) {
-					ObjectDump("ThreadStartedEvent", f.Thread);
-				};
-			};
+			debugger.ProcessStarted += debugger_ProcessStarted;
 			StartTest("ThreadName.cs");
+			debugger.ProcessStarted -= debugger_ProcessStarted;
 			ObjectDump("Thread", process.SelectedThread);
 			process.Continue();
 			ObjectDump("Thread", process.SelectedThread);
 			EndTest();
+		}
+
+		void debugger_ProcessStarted(object sender, ProcessEventArgs e)
+		{
+			e.Process.ThreadStarted += delegate(object sender2, ThreadEventArgs f) {
+				ObjectDump("ThreadStartedEvent", f.Thread);
+			};
 		}
 	}
 }
