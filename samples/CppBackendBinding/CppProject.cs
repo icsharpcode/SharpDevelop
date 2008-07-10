@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -14,7 +15,6 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
-
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -166,22 +166,41 @@ namespace CppBackendBinding
 		}
 		#endregion
 		
+		static string GetFile(string filename)
+		{
+			filename = Environment.ExpandEnvironmentVariables(filename);
+			if (File.Exists(filename))
+				return filename;
+			else
+				return null;
+		}
+		
+		static string GetPathFromRegistry(string key, string valueName)
+		{
+			using (RegistryKey installRootKey = Registry.LocalMachine.OpenSubKey(key)) {
+				if (installRootKey != null) {
+					object o = installRootKey.GetValue(valueName);
+					if (o != null) {
+						string r = o.ToString();
+						if (!string.IsNullOrEmpty(r))
+							return r;
+					}
+				}
+			}
+			return null;
+		}
+		
 		public override void StartBuild(ProjectBuildOptions options, IBuildFeedbackSink feedbackSink)
 		{
-			string commonTools = Environment.GetEnvironmentVariable("VS90COMNTOOLS");
-			if (string.IsNullOrEmpty(commonTools)) {
-				commonTools = Environment.GetEnvironmentVariable("VS80COMNTOOLS");
-			}
-			if (!string.IsNullOrEmpty(commonTools)) {
-				commonTools = Path.Combine(commonTools, "vsvars32.bat");
-				if (!File.Exists(commonTools))
-					commonTools = null;
-			}
+			string commonTools =
+				GetFile(Path.Combine(GetPathFromRegistry(@"SOFTWARE\Microsoft\VisualStudio\9.0\Setup\VC", "ProductDir"), "bin\\vcvars32.bat"))
+				?? GetFile("%VS90COMNTOOLS%\\vsvars32.bat")
+				??  GetFile("%VS80COMNTOOLS%\\vsvars32.bat");
 			
 			Process p = new Process();
 			p.StartInfo.FileName = "cmd.exe";
 			p.StartInfo.Arguments = "/C";
-			if (commonTools != null) {
+			if (!string.IsNullOrEmpty(commonTools)) {
 				p.StartInfo.Arguments += " call \"" + commonTools + "\" &&";
 			}
 			p.StartInfo.Arguments += " vcbuild";
@@ -210,8 +229,8 @@ namespace CppBackendBinding
 					BuildError error = ParseError(e.Data);
 					if (error != null)
 						feedbackSink.ReportError(error);
-					else
-						feedbackSink.ReportMessage(e.Data);
+//					else
+					feedbackSink.ReportMessage(e.Data);
 				}
 			};
 			p.ErrorDataReceived += delegate(object sender, DataReceivedEventArgs e) {
@@ -219,8 +238,8 @@ namespace CppBackendBinding
 					BuildError error = ParseError(e.Data);
 					if (error != null)
 						feedbackSink.ReportError(error);
-					else
-						feedbackSink.ReportError(new BuildError(null, e.Data));
+//					else
+					feedbackSink.ReportError(new BuildError(null, e.Data));
 				}
 			};
 			p.Exited += delegate(object sender, EventArgs e) {
@@ -238,7 +257,7 @@ namespace CppBackendBinding
 		}
 		
 		static readonly Regex errorRegex = new Regex(@"^Error: " +
-		                                             @"([^(:]+?)" + // group 1: file name
+		                                             @"((?:[^(:]|:\\)+)" + // group 1: file name
 		                                             @"(?:\((\d+)\))?" + // group 2: line number
 		                                             @"\s*:\s*" + // first separator
 		                                             @"(?:error ([^:]+):)?" + // group 3: error code
@@ -247,7 +266,7 @@ namespace CppBackendBinding
 		
 		
 		static readonly Regex warningRegex = new Regex(@"^(?:\d+\>)?Warning: " +
-		                                               @"([^(:]+?)" + // group 1: file name
+		                                               @"((?:[^(:]|:\\)+)" + // group 1: file name
 		                                               @"(?:\((\d+)\))?" + // group 2: line number
 		                                               @"\s*:\s*" + // first separator
 		                                               @"(?:warning ([^:]+):)?" + // group 3: error code
