@@ -7,9 +7,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
+
 using Debugger.Wrappers.CorDebug;
 using Debugger.Wrappers.CorSym;
-using System.IO;
+using System.Runtime.InteropServices;
 
 namespace Debugger
 {
@@ -235,7 +237,14 @@ namespace Debugger
 			ISymUnmanagedReader symReader = module.SymReader;
 			if (symReader == null) return null; // No symbols
 			
-			ISymUnmanagedMethod symMethod = symReader.GetMethod(corFunction.Token);
+			ISymUnmanagedMethod symMethod;
+			try {
+				symMethod = symReader.GetMethod(corFunction.Token);
+			} catch (COMException) {
+				// Can not find the method
+				// eg. Compiler generated constructors are not in symbol store
+				return null;
+			}
 			if (symMethod == null) return null;
 			
 			uint sequencePointCount = symMethod.SequencePointCount;

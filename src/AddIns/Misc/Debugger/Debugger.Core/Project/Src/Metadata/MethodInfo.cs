@@ -83,6 +83,15 @@ namespace Debugger.MetaData
 			}
 		}
 		
+		public bool IsMyCode {
+			get {
+				return this.CorFunction.CastTo<ICorDebugFunction2>().JMCStatus != 0;
+			}
+			set {
+				this.CorFunction.CastTo<ICorDebugFunction2>().SetJMCStatus(value ? 1 : 0);
+			}
+		}
+		
 		internal MethodInfo(DebugType declaringType, MethodProps methodProps):base (declaringType)
 		{
 			this.methodProps = methodProps;

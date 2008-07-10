@@ -7,11 +7,11 @@
 
 using System;
 using System.Collections.Generic;
-
 using Debugger.MetaData;
 using Debugger.Wrappers.CorDebug;
 using Debugger.Wrappers.CorSym;
 using Debugger.Wrappers.MetaData;
+using System.Runtime.InteropServices;
 
 namespace Debugger
 {
@@ -189,6 +189,7 @@ namespace Debugger
 		/// </summary>
 		public void SetJustMyCodeStatus(bool isMyCode, bool obeyAttributes)
 		{
+			DateTime start = Util.HighPrecisionTimer.Now;
 			uint unused = 0;
 			if (isMyCode) {
 				corModule.CastTo<ICorDebugModule2>().SetJMCStatus(1, 0, ref unused);
@@ -214,9 +215,36 @@ namespace Debugger
 						}
 					}
 				}
+				// Mark generated constructors as non-user code
+				if (this.HasSymbols) {
+					foreach(TypeDefProps typeDef in metaData.EnumTypeDefProps()) {
+						foreach(MethodProps methodDef in metaData.EnumMethodPropsWithName(typeDef.Token, ".ctor")) {
+							try {
+								this.SymReader.GetMethod(methodDef.Token);
+							} catch (COMException) {
+								// Symbols not found
+								ICorDebugFunction2 corFunction = corModule.GetFunctionFromToken(methodDef.Token).CastTo<ICorDebugFunction2>();
+								corFunction.SetJMCStatus(0 /* false */);
+								this.Process.TraceMessage("Constructor of {0} marked as non-user code", metaData.GetTypeDefProps(methodDef.ClassToken).Name);
+							}
+						}
+						foreach(MethodProps methodDef in metaData.EnumMethodPropsWithName(typeDef.Token, ".cctor")) {
+							try {
+								this.SymReader.GetMethod(methodDef.Token);
+							} catch (COMException) {
+								// Symbols not found
+								ICorDebugFunction2 corFunction = corModule.GetFunctionFromToken(methodDef.Token).CastTo<ICorDebugFunction2>();
+								corFunction.SetJMCStatus(0 /* false */);
+								this.Process.TraceMessage("Static constructor of {0} marked as non-user code", metaData.GetTypeDefProps(methodDef.ClassToken).Name);
+							}
+						}
+					}
+				}
 			} else {
 				corModule.CastTo<ICorDebugModule2>().SetJMCStatus(0, 0, ref unused);
 			}
+			DateTime end = Util.HighPrecisionTimer.Now;
+			this.Process.TraceMessage("Set Just-My-Code for module \"{0}\" ({1} ms)", this.Filename, (end - start).TotalMilliseconds);
 		}
 		
 		public void ApplyChanges(byte[] metadata, byte[] il)

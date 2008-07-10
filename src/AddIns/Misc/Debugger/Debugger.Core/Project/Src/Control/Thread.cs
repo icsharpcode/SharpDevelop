@@ -143,7 +143,9 @@ namespace Debugger
 		}
 		
 		/// <summary> Returns value representing the System.Threading.Thread object </summary>
-		/// <remarks> The value is null while the thread is being created (the CreateThread callback). </remarks>
+		/// <remarks> The value is null while the thread is being created (the CreateThread callback) and
+		/// it may stay null during the run of the program. (probaly until the debuggee accesses
+		/// the System.Threading.Thread object which forces the creation)</remarks>
 		public Value RuntimeValue {
 			get {
 				process.AssertPaused();

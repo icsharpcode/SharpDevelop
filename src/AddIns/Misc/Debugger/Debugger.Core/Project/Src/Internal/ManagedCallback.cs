@@ -129,7 +129,15 @@ namespace Debugger
 			
 			if (stepper.PauseWhenComplete) {
 				if (process.SelectedThread.MostRecentStackFrame.HasSymbols) {
-					pauseOnNextExit = true;
+					// JMC is ignored by the API during StepOut - Compensate
+					if (process.Debugger.JustMyCodeEnabled &&
+					    stepper.Operation == Stepper.StepperOperation.StepOut &&
+					    !process.SelectedThread.MostRecentStackFrame.MethodInfo.IsMyCode) {
+						process.TraceMessage(" - stepping out non-user code at " + process.SelectedThread.MostRecentStackFrame.ToString());
+						new Stepper(process.SelectedThread.MostRecentStackFrame, "Stepper out of non-user code").StepOut();
+					} else {
+						pauseOnNextExit = true;
+					}
 				} else {
 					// This can only happen when JMC is disabled (ie NET1.1 or StepOut)
 					if (stepper.Operation == Stepper.StepperOperation.StepOut) {
@@ -137,8 +145,9 @@ namespace Debugger
 						process.TraceMessage(" - stepping out of code without symbols at " + process.SelectedThread.MostRecentStackFrame.ToString());
 						new Stepper(process.SelectedThread.MostRecentStackFrame, "Stepper out of code without symbols").StepOut();
 					} else {
-						// NET1.1: There is extra step over stepper, just keep going
+						// JMC is disabled: There is extra step over stepper, we could just keep going
 						process.TraceMessage(" - leaving code without symbols");
+						new Stepper(process.SelectedThread.MostRecentStackFrame, "Stepper out of code without symbols").StepOut();
 					}
 				}
 			}

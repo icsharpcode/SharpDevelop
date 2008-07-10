@@ -14,17 +14,27 @@ namespace Debugger.Tests.TestPrograms
 	{
 		public static void Main()
 		{
-			System.Diagnostics.Debug.WriteLine("Start");
 			System.Diagnostics.Debugger.Break();
 			Internal();
 			IgnoredClass.Internal();
-			System.Diagnostics.Debug.WriteLine("End");
+			StepOut1();
+			IgnoredClass.Internal_Pass();
+			new DefaultCtorClass().Target();
+		}
+		
+		[DebuggerStepThrough]
+		static void StepOut1()
+		{
+			StepOut2();
+		}
+		
+		static void StepOut2()
+		{
 		}
 		
 		[DebuggerStepThrough]
 		static void Internal()
 		{
-			System.Diagnostics.Debug.WriteLine("Internal");
 		}
 		
 		[DebuggerNonUserCode]
@@ -32,7 +42,26 @@ namespace Debugger.Tests.TestPrograms
 		{
 			public static void Internal()
 			{
-				System.Diagnostics.Debug.WriteLine("Internal");
+			}
+			
+			public static void Internal_Pass()
+			{
+				NotIgnoredClass.Target();
+			}
+		}
+		
+		public class NotIgnoredClass
+		{
+			public static void Target()
+			{
+			}
+		}
+		
+		public class DefaultCtorClass
+		{
+			public void Target()
+			{
+				
 			}
 		}
 	}
@@ -51,11 +80,29 @@ namespace Debugger.Tests {
 		{
 			StartTest("DebuggerAttributes.cs");
 			
-			process.SelectedStackFrame.StepInto();
-			process.SelectedStackFrame.StepInto();
-			Assert.AreEqual(process.SelectedStackFrame.MethodInfo.Name, "Main");
-			process.SelectedStackFrame.StepInto();
-			Assert.AreEqual(process.SelectedStackFrame.MethodInfo.Name, "Main");
+			process.SelectedStackFrame.StepInto(); // Break command
+			process.SelectedStackFrame.StepInto(); // Internal
+			Assert.AreEqual("Main", process.SelectedStackFrame.MethodInfo.Name);
+			process.SelectedStackFrame.StepInto(); // IgnoredClass.Internal
+			Assert.AreEqual("Main", process.SelectedStackFrame.MethodInfo.Name);
+			process.SelectedStackFrame.StepInto(); // StepOut1
+			Assert.AreEqual("StepOut2", process.SelectedStackFrame.MethodInfo.Name);
+			process.SelectedStackFrame.StepOut();
+			Assert.AreEqual("Main", process.SelectedStackFrame.MethodInfo.Name);
+			process.SelectedStackFrame.StepOver(); // Finish the step out
+			Assert.AreEqual("Main", process.SelectedStackFrame.MethodInfo.Name);
+			process.SelectedStackFrame.StepInto(); // IgnoredClass.Internal_Pass
+			Assert.AreEqual("Target", process.SelectedStackFrame.MethodInfo.Name);
+			process.SelectedStackFrame.StepOut();
+			Assert.AreEqual("Main", process.SelectedStackFrame.MethodInfo.Name);
+			process.SelectedStackFrame.StepOver(); // Finish the step out
+			Assert.AreEqual("Main", process.SelectedStackFrame.MethodInfo.Name);
+			process.SelectedStackFrame.StepInto(); // Generated default constructor
+			Assert.AreEqual("Target", process.SelectedStackFrame.MethodInfo.Name);
+			process.SelectedStackFrame.StepOut();
+			Assert.AreEqual("Main", process.SelectedStackFrame.MethodInfo.Name);
+			process.SelectedStackFrame.StepOver(); // Finish the step out
+			Assert.AreEqual("Main", process.SelectedStackFrame.MethodInfo.Name);
 			
 			EndTest();
 		}
@@ -71,17 +118,19 @@ namespace Debugger.Tests {
     <ProcessStarted />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>DebuggerAttributes.exe (Has symbols)</ModuleLoaded>
-    <ModuleLoaded>System.dll (No symbols)</ModuleLoaded>
-    <ModuleLoaded>System.Configuration.dll (No symbols)</ModuleLoaded>
-    <ModuleLoaded>System.Xml.dll (No symbols)</ModuleLoaded>
-    <LogMessage>Start\r\n</LogMessage>
     <DebuggingPaused>Break</DebuggingPaused>
     <DebuggingPaused>StepComplete</DebuggingPaused>
-    <LogMessage>Internal\r\n</LogMessage>
     <DebuggingPaused>StepComplete</DebuggingPaused>
-    <LogMessage>Internal\r\n</LogMessage>
     <DebuggingPaused>StepComplete</DebuggingPaused>
-    <LogMessage>End\r\n</LogMessage>
+    <DebuggingPaused>StepComplete</DebuggingPaused>
+    <DebuggingPaused>StepComplete</DebuggingPaused>
+    <DebuggingPaused>StepComplete</DebuggingPaused>
+    <DebuggingPaused>StepComplete</DebuggingPaused>
+    <DebuggingPaused>StepComplete</DebuggingPaused>
+    <DebuggingPaused>StepComplete</DebuggingPaused>
+    <DebuggingPaused>StepComplete</DebuggingPaused>
+    <DebuggingPaused>StepComplete</DebuggingPaused>
+    <DebuggingPaused>StepComplete</DebuggingPaused>
     <ProcessExited />
   </Test>
 </DebuggerTests>
