@@ -39,6 +39,13 @@ namespace Debugger.Tests.TestPrograms
 			System.Diagnostics.Debugger.Break();
 		}
 	}
+	
+	public class Metadata2 {}
+	public class Metadata3 {}
+	public class Metadata4 {}
+	public class Metadata5 {}
+	public class Metadata6 {}
+	public class Metadata7 {}
 }
 
 #if TEST_CODE
@@ -53,6 +60,7 @@ namespace Debugger.Tests {
 			StartTest("Metadata.cs");
 			
 			ObjectDump("Members", process.SelectedStackFrame.MethodInfo.DeclaringType.GetMembers(BindingFlags.All));
+			ObjectDump("Types", process.SelectedStackFrame.MethodInfo.Module.GetNamesOfDefinedTypes());
 			
 			EndTest();
 		}
@@ -376,6 +384,17 @@ namespace Debugger.Tests {
           SetMethod="null" />
       </Item>
     </Members>
+    <Types
+      Capacity="8"
+      Count="7">
+      <Item>Debugger.Tests.TestPrograms.Metadata</Item>
+      <Item>Debugger.Tests.TestPrograms.Metadata2</Item>
+      <Item>Debugger.Tests.TestPrograms.Metadata3</Item>
+      <Item>Debugger.Tests.TestPrograms.Metadata4</Item>
+      <Item>Debugger.Tests.TestPrograms.Metadata5</Item>
+      <Item>Debugger.Tests.TestPrograms.Metadata6</Item>
+      <Item>Debugger.Tests.TestPrograms.Metadata7</Item>
+    </Types>
     <ProcessExited />
   </Test>
 </DebuggerTests>

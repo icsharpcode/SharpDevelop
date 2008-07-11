@@ -92,6 +92,9 @@ namespace Debugger
 			if (!pauseOnNextExit || process.Evaluating || hasQueuedCallbacks) {
 				process.AsyncContinue(DebuggeeStateAction.Keep);
 			} else {
+				if (process.Debugger.Verbose) {
+					process.TraceMessage("Callback exit: Paused");
+				}
 				pauseOnNextExit = false;
 				Pause();
 			}
@@ -190,7 +193,7 @@ namespace Debugger
 			ExitCallback();
 		}
 
-		public unsafe void Exception(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, int unhandled)
+		public void Exception(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, int unhandled)
 		{
 			// Exception2 is used in .NET Framework 2.0
 			
@@ -310,9 +313,9 @@ namespace Debugger
 			ExitCallback();
 		}
 
-		public unsafe void LoadModule(ICorDebugAppDomain pAppDomain, ICorDebugModule pModule)
+		public void LoadModule(ICorDebugAppDomain pAppDomain, ICorDebugModule pModule)
 		{
-			EnterCallback(PausedReason.Other, "LoadModule", pAppDomain);
+			EnterCallback(PausedReason.Other, "LoadModule " + pModule.Name, pAppDomain);
 			
 			process.AddModule(pModule);
 			

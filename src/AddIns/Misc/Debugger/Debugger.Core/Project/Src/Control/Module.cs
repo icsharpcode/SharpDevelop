@@ -195,7 +195,7 @@ namespace Debugger
 		/// </summary>
 		public void SetJustMyCodeStatus()
 		{
-			DateTime start = Util.HighPrecisionTimer.Now;
+			DateTime start, end;
 			uint unused = 0;
 			
 			if (!this.Debugger.JustMyCodeEnabled) {
@@ -208,9 +208,14 @@ namespace Debugger
 				return;
 			}
 			
+			this.Process.TraceMessage("JMC for " + this.Filename);
+			start = Util.HighPrecisionTimer.Now;
 			// By default the code is my code
 			corModule.CastTo<ICorDebugModule2>().SetJMCStatus(1, 0, ref unused);
+			end = Util.HighPrecisionTimer.Now;
+			this.Process.TraceMessage(" * Defualt ({0} ms)", (end - start).TotalMilliseconds);
 			
+			start = Util.HighPrecisionTimer.Now;
 			// Apply non-user code attributes
 			if (this.Debugger.ObeyDebuggerAttributes) {
 				foreach(CustomAttributeProps ca in metaData.EnumCustomAttributeProps(0, 0)) {
@@ -233,16 +238,24 @@ namespace Debugger
 					}
 				}
 			}
+			end = Util.HighPrecisionTimer.Now;
+			this.Process.TraceMessage(" * Attributes ({0} ms)", (end - start).TotalMilliseconds);
 			
+			start = Util.HighPrecisionTimer.Now;
 			// Mark all methods without symbols as non-user code
-			foreach(uint typeDef in metaData.EnumTypeDefs()) {
-				foreach(uint methodDef in metaData.EnumMethods(typeDef)) {
-					if (!HasMethodSymbols(methodDef)) {
-						DisableJustMyCode(methodDef);
+			if (this.Debugger.ObeyDebuggerAttributes) { // TODO: Remove
+				foreach(uint typeDef in metaData.EnumTypeDefs()) {
+					foreach(uint methodDef in metaData.EnumMethods(typeDef)) {
+						if (!HasMethodSymbols(methodDef)) {
+							DisableJustMyCode(methodDef);
+						}
 					}
 				}
 			}
+			end = Util.HighPrecisionTimer.Now;
+			this.Process.TraceMessage(" * All functions ({0} ms)", (end - start).TotalMilliseconds);
 			
+			start = Util.HighPrecisionTimer.Now;
 			// Skip properties
 			if (this.Debugger.SkipProperties) {
 				foreach(uint typeDef in metaData.EnumTypeDefs()) {
@@ -260,9 +273,10 @@ namespace Debugger
 					}
 				}
 			}
+			end = Util.HighPrecisionTimer.Now;
+			this.Process.TraceMessage(" * Properties ({0} ms)", (end - start).TotalMilliseconds);
 			
-			DateTime end = Util.HighPrecisionTimer.Now;
-			this.Process.TraceMessage("Set Just-My-Code for module \"{0}\" ({1} ms)", this.Filename, (end - start).TotalMilliseconds);
+//			this.Process.TraceMessage("Set Just-My-Code for module \"{0}\" ({1} ms)", this.Filename, (end - start).TotalMilliseconds);
 		}
 		
 		bool HasMethodSymbols(uint methodDef)

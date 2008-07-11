@@ -70,6 +70,11 @@ namespace ICSharpCode.SharpDevelop.Services
 			set { DebuggingProperties.Set("SkipOnlySingleLineProperties", value); }
 		}
 		
+		public static bool Verbose {
+			get { return DebuggingProperties.Get("Verbose", false); }
+			set { DebuggingProperties.Set("Verbose", value); }
+		}
+		
 		public static void ApplyToCurrentDebugger()
 		{
 			WindowsDebugger winDbg = DebuggerService.CurrentDebugger as WindowsDebugger;
@@ -81,6 +86,7 @@ namespace ICSharpCode.SharpDevelop.Services
 				debugger.SymbolsSearchPaths = SymbolsSearchPaths;
 				debugger.SkipProperties = SkipProperties;
 				debugger.SkipOnlySingleLineProperties = SkipOnlySingleLineProperties;
+				debugger.Verbose = Verbose;
 			}
 		}
 	}

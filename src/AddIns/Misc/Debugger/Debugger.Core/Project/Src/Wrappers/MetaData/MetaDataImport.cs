@@ -58,7 +58,7 @@ namespace Debugger.Wrappers.MetaData
 		// CloseEnum, CountEnum and ResetEnum are not wrapped
 		
 		
-		public IEnumerable<uint> EnumCustomAttributes(uint token_Scope, uint token_TypeOfAttributes)
+		public uint[] EnumCustomAttributes(uint token_Scope, uint token_TypeOfAttributes)
 		{
 			return EnumerateTokens(metaData.EnumCustomAttributes, token_Scope, token_TypeOfAttributes);
 		}
@@ -70,7 +70,7 @@ namespace Debugger.Wrappers.MetaData
 			}
 		}
 		
-		public IEnumerable<uint> EnumEvents(uint typeDef)
+		public uint[] EnumEvents(uint typeDef)
 		{
 			return EnumerateTokens(metaData.EnumEvents, typeDef);
 		}
@@ -82,7 +82,7 @@ namespace Debugger.Wrappers.MetaData
 			}
 		}
 		
-		public IEnumerable<uint> EnumFields(uint typeDef)
+		public uint[] EnumFields(uint typeDef)
 		{
 			return EnumerateTokens(metaData.EnumFields, typeDef);
 		}
@@ -94,7 +94,7 @@ namespace Debugger.Wrappers.MetaData
 			}
 		}
 		
-		public IEnumerable<uint> EnumFieldsWithName(uint typeDef, string name)
+		public uint[] EnumFieldsWithName(uint typeDef, string name)
 		{
 			return EnumerateTokens(metaData.EnumFieldsWithName, typeDef, name);
 		}
@@ -106,13 +106,13 @@ namespace Debugger.Wrappers.MetaData
 			}
 		}
 		
-		public IEnumerable<uint> EnumGenericParams(uint typeDef_methodDef)
+		public uint[] EnumGenericParams(uint typeDef_methodDef)
 		{
 			return EnumerateTokens(metaData.EnumGenericParams, typeDef_methodDef);
 		}
 		
 		/// <returns>MethodDef tokens</returns>
-		public IEnumerable<uint> EnumInterfaceImpls(uint typeDef)
+		public uint[] EnumInterfaceImpls(uint typeDef)
 		{
 			return EnumerateTokens(metaData.EnumInterfaceImpls, typeDef);
 		}
@@ -124,7 +124,7 @@ namespace Debugger.Wrappers.MetaData
 			}
 		}
 		
-		public IEnumerable<uint> EnumMemberRefs(uint typeDef_typeRef_methodDef_moduleRef)
+		public uint[] EnumMemberRefs(uint typeDef_typeRef_methodDef_moduleRef)
 		{
 			return EnumerateTokens(metaData.EnumMemberRefs, typeDef_typeRef_methodDef_moduleRef);
 		}
@@ -136,7 +136,7 @@ namespace Debugger.Wrappers.MetaData
 			}
 		}
 		
-		public IEnumerable<uint> EnumMembers(uint typeDef)
+		public uint[] EnumMembers(uint typeDef)
 		{
 			return EnumerateTokens(metaData.EnumMembers, typeDef);
 		}
@@ -148,7 +148,7 @@ namespace Debugger.Wrappers.MetaData
 			}
 		}
 		
-		public IEnumerable<uint> EnumMembersWithName(uint typeDef, string name)
+		public uint[] EnumMembersWithName(uint typeDef, string name)
 		{
 			return EnumerateTokens(metaData.EnumMembersWithName, typeDef, name);
 		}
@@ -166,17 +166,21 @@ namespace Debugger.Wrappers.MetaData
 			IntPtr enumerator = IntPtr.Zero;
 			while(true) {
 				MethodImpl ret = new MethodImpl();
+				uint[] body = new uint[1];
+				uint[] decl = new uint[1];
 				uint fetched;
-				metaData.EnumMethodImpls(ref enumerator, typeDef, out ret.MethodBody, out ret.MethodDecl, 1, out fetched);
+				metaData.EnumMethodImpls(ref enumerator, typeDef, body, decl, 1, out fetched);
 				if (fetched == 0) {
 					metaData.CloseEnum(enumerator);
 					break;
 				}
+				ret.MethodBody = body[0];
+				ret.MethodDecl = decl[0];
 				yield return ret;
 			}
 		}
 		
-		public IEnumerable<uint> EnumMethods(uint typeDef)
+		public uint[] EnumMethods(uint typeDef)
 		{
 			return EnumerateTokens(metaData.EnumMethods, typeDef);
 		}
@@ -189,12 +193,12 @@ namespace Debugger.Wrappers.MetaData
 		}
 		
 		/// <returns>Events or properties</returns>
-		public IEnumerable<uint> EnumMethodSemantics(uint methodDef)
+		public uint[] EnumMethodSemantics(uint methodDef)
 		{
 			return EnumerateTokens(metaData.EnumMethodSemantics, methodDef);
 		}
 		
-		public IEnumerable<uint> EnumMethodsWithName(uint typeDef, string name)
+		public uint[] EnumMethodsWithName(uint typeDef, string name)
 		{
 			return EnumerateTokens(metaData.EnumMethodsWithName, typeDef, name);
 		}
@@ -206,7 +210,7 @@ namespace Debugger.Wrappers.MetaData
 			}
 		}
 		
-		public IEnumerable<uint> EnumModuleRefs()
+		public uint[] EnumModuleRefs()
 		{
 			return EnumerateTokens(metaData.EnumModuleRefs);
 		}
@@ -218,7 +222,7 @@ namespace Debugger.Wrappers.MetaData
 			}
 		}
 		
-		public IEnumerable<uint> EnumParams(uint methodDef)
+		public uint[] EnumParams(uint methodDef)
 		{
 			return EnumerateTokens(metaData.EnumParams, methodDef);
 		}
@@ -230,7 +234,7 @@ namespace Debugger.Wrappers.MetaData
 			}
 		}
 		
-		public IEnumerable<uint> EnumPermissionSets(uint token_scope_nullable, uint actions)
+		public uint[] EnumPermissionSets(uint token_scope_nullable, uint actions)
 		{
 			return EnumerateTokens(metaData.EnumPermissionSets, token_scope_nullable, actions);
 		}
@@ -242,7 +246,7 @@ namespace Debugger.Wrappers.MetaData
 			}
 		}
 		
-		public IEnumerable<uint> EnumProperties(uint typeDef)
+		public uint[] EnumProperties(uint typeDef)
 		{
 			return EnumerateTokens(metaData.EnumProperties, typeDef);
 		}
@@ -254,12 +258,12 @@ namespace Debugger.Wrappers.MetaData
 			}
 		}
 		
-		public IEnumerable<uint> EnumSignatures()
+		public uint[] EnumSignatures()
 		{
 			return EnumerateTokens(metaData.EnumSignatures);
 		}
 		
-		public IEnumerable<uint> EnumTypeDefs()
+		public uint[] EnumTypeDefs()
 		{
 			return EnumerateTokens(metaData.EnumTypeDefs);
 		}
@@ -271,7 +275,7 @@ namespace Debugger.Wrappers.MetaData
 			}
 		}
 		
-		public IEnumerable<uint> EnumTypeRefs()
+		public uint[] EnumTypeRefs()
 		{
 			return EnumerateTokens(metaData.EnumTypeRefs);
 		}
@@ -283,7 +287,7 @@ namespace Debugger.Wrappers.MetaData
 			}
 		}
 		
-		public IEnumerable<uint> EnumTypeSpecs()
+		public uint[] EnumTypeSpecs()
 		{
 			return EnumerateTokens(metaData.EnumTypeSpecs);
 		}
@@ -295,12 +299,12 @@ namespace Debugger.Wrappers.MetaData
 			}
 		}
 		
-		public IEnumerable<uint> EnumUnresolvedMethods()
+		public uint[] EnumUnresolvedMethods()
 		{
 			return EnumerateTokens(metaData.EnumUnresolvedMethods);
 		}
 		
-		public IEnumerable<uint> EnumUserStrings()
+		public uint[] EnumUserStrings()
 		{
 			return EnumerateTokens(metaData.EnumUserStrings);
 		}
@@ -854,55 +858,81 @@ namespace Debugger.Wrappers.MetaData
 		
 		#region Util
 		
-		delegate void TokenEnumerator0(ref IntPtr phEnum, out uint token, uint maxCount, out uint fetched);
+		const int initialBufferSize = 8;
 		
-		IEnumerable<uint> EnumerateTokens(TokenEnumerator0 tokenEnumerator)
+		delegate void TokenEnumerator0(ref IntPtr phEnum, uint[] token, uint maxCount, out uint fetched);
+		
+		uint[] EnumerateTokens(TokenEnumerator0 tokenEnumerator)
 		{
 			IntPtr enumerator = IntPtr.Zero;
-			while(true) {
-				uint token;
-				uint fetched;
-				tokenEnumerator(ref enumerator, out token, 1, out fetched);
-				if (fetched == 0) {
-					metaData.CloseEnum(enumerator);
-					break;
+			uint[] buffer = new uint[initialBufferSize];
+			uint fetched;
+			tokenEnumerator(ref enumerator, buffer, (uint)buffer.Length, out fetched);
+			if (fetched < buffer.Length) {
+				// The tokens did fit the buffer
+				Array.Resize(ref buffer, (int)fetched);
+			} else {
+				// The tokens did not fit the buffer -> Refetch
+				uint actualCount;
+				metaData.CountEnum(enumerator, out actualCount);
+				if (actualCount > buffer.Length) {
+					buffer = new uint[actualCount];
+					metaData.ResetEnum(enumerator, 0);
+					tokenEnumerator(ref enumerator, buffer, (uint)buffer.Length, out fetched);
 				}
-				yield return token;
 			}
+			metaData.CloseEnum(enumerator);
+			return buffer;
 		}
 		
-		delegate void TokenEnumerator1<T>(ref IntPtr phEnum, T parameter, out uint token, uint maxCount, out uint fetched);
+		delegate void TokenEnumerator1<T>(ref IntPtr phEnum, T parameter, uint[] token, uint maxCount, out uint fetched);
 		
-		IEnumerable<uint> EnumerateTokens<T>(TokenEnumerator1<T> tokenEnumerator, T parameter)
+		uint[] EnumerateTokens<T>(TokenEnumerator1<T> tokenEnumerator, T parameter)
 		{
 			IntPtr enumerator = IntPtr.Zero;
-			while(true) {
-				uint token;
-				uint fetched;
-				tokenEnumerator(ref enumerator, parameter, out token, 1, out fetched);
-				if (fetched == 0) {
-					metaData.CloseEnum(enumerator);
-					break;
+			uint[] buffer = new uint[initialBufferSize];
+			uint fetched;
+			tokenEnumerator(ref enumerator, parameter, buffer, (uint)buffer.Length, out fetched);
+			if (fetched < buffer.Length) {
+				// The tokens did fit the buffer
+				Array.Resize(ref buffer, (int)fetched);
+			} else {
+				// The tokens did not fit the buffer -> Refetch
+				uint actualCount;
+				metaData.CountEnum(enumerator, out actualCount);
+				if (actualCount > buffer.Length) {
+					buffer = new uint[actualCount];
+					metaData.ResetEnum(enumerator, 0);
+					tokenEnumerator(ref enumerator, parameter, buffer, (uint)buffer.Length, out fetched);
 				}
-				yield return token;
 			}
+			metaData.CloseEnum(enumerator);
+			return buffer;
 		}
 		
-		delegate void TokenEnumerator2<T,R>(ref IntPtr phEnum, T parameter1, R parameter2, out uint token, uint maxCount, out uint fetched);
+		delegate void TokenEnumerator2<T,R>(ref IntPtr phEnum, T parameter1, R parameter2, uint[] token, uint maxCount, out uint fetched);
 		
-		IEnumerable<uint> EnumerateTokens<T,R>(TokenEnumerator2<T,R> tokenEnumerator, T parameter1, R parameter2)
+		uint[] EnumerateTokens<T,R>(TokenEnumerator2<T,R> tokenEnumerator, T parameter1, R parameter2)
 		{
 			IntPtr enumerator = IntPtr.Zero;
-			while(true) {
-				uint token;
-				uint fetched;
-				tokenEnumerator(ref enumerator, parameter1, parameter2, out token, 1, out fetched);
-				if (fetched == 0) {
-					metaData.CloseEnum(enumerator);
-					break;
+			uint[] buffer = new uint[initialBufferSize];
+			uint fetched;
+			tokenEnumerator(ref enumerator, parameter1, parameter2, buffer, (uint)buffer.Length, out fetched);
+			if (fetched < buffer.Length) {
+				// The tokens did fit the buffer
+				Array.Resize(ref buffer, (int)fetched);
+			} else {
+				// The tokens did not fit the buffer -> Refetch
+				uint actualCount;
+				metaData.CountEnum(enumerator, out actualCount);
+				if (actualCount > buffer.Length) {
+					buffer = new uint[actualCount];
+					metaData.ResetEnum(enumerator, 0);
+					tokenEnumerator(ref enumerator, parameter1, parameter2, buffer, (uint)buffer.Length, out fetched);
 				}
-				yield return token;
 			}
+			metaData.CloseEnum(enumerator);
+			return buffer;
 		}
 		
 		#endregion
