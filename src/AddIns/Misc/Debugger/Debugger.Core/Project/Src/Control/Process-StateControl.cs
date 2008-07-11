@@ -14,10 +14,7 @@ namespace Debugger
 	
 	public partial class Process
 	{
-		// Order:
-		//  Update PauseSession
-		//  Update DebugSession
-		//  Raise event
+		internal bool TerminateCommandIssued = false;
 		
 		#region Events
 		
@@ -241,6 +238,7 @@ namespace Debugger
 			// Stop&terminate - both must be called
 			corProcess.Stop(uint.MaxValue);
 			corProcess.Terminate(0);
+			this.TerminateCommandIssued = true;
 			
 			// Do not mark the process as exited
 			// This is done once ExitProcess callback is received

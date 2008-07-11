@@ -120,6 +120,10 @@ namespace Debugger
 				} else if ((uint)e.ErrorCode == 0x8013130A) {
 					// Happens on getting of Sytem.Threading.Thread.ManagedThreadId; See SD2-1116
 					throw new GetValueException("Function does not have IL code");
+				} else if ((uint)e.ErrorCode == 0x80131C23) {
+					// The operation failed because it is a GC unsafe point. (Exception from HRESULT: 0x80131C23)
+					// This can probably happen when we break and the thread is in native code
+					throw new GetValueException("Thread is in GC unsafe point");
 				} else {
 					throw;
 				}
