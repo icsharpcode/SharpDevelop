@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Diff\MissingDirectoryTestFixture.cs" />
     <Compile Include="Document\NewWixFileElementTests.cs" />
     <Compile Include="Gui\AddDialogsToSetupDialogListTestFixture.cs" />
     <Compile Include="Gui\DeleteWixExtensionNodeTestFixture.cs" />

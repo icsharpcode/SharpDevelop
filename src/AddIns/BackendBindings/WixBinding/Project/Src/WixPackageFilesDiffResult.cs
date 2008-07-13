@@ -19,7 +19,12 @@ namespace ICSharpCode.WixBinding
 		/// <summary>
 		/// The file is new and does not exist in the WixDocument.
 		/// </summary>
-		NewFile
+		NewFile,
+		
+		/// <summary>
+		/// The file is new and does not exist in the WixDocument.
+		/// </summary>
+		NewDirectory
 	}
 	
 	/// <summary>
@@ -38,15 +43,11 @@ namespace ICSharpCode.WixBinding
 		}
 		
 		public WixPackageFilesDiffResultType DiffType {
-			get {
-				return diffType;
-			}
+			get { return diffType; }
 		}
 		
 		public string FileName {
-			get {
-				return fileName;
-			}
+			get { return fileName; }
 		}
 	}
 }

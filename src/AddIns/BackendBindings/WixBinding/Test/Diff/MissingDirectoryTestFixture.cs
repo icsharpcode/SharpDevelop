@@ -1,4 +1,4 @@
-﻿// <file>
+// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
@@ -9,67 +9,68 @@ using ICSharpCode.WixBinding;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace WixBinding.Tests.Diff
 {
+	/// <summary>
+	/// If there is a new directory which is not included in the setup then this should be returned
+	/// in the diff result.
+	/// </summary>
 	[TestFixture]
-	public class NoDifferentFilesTestFixture : IDirectoryReader
+	public class MissingDirectoryTestFixture : IDirectoryReader
 	{
 		WixPackageFilesDiffResult[] diffResults;
-		List<string> directories;
-		List<string> directoryExistsChecks;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			directories = new List<string>();
-			directoryExistsChecks = new List<string>();
 			WixDocument doc = new WixDocument();
 			doc.FileName = @"C:\Projects\Setup\Setup.wxs";
 			doc.LoadXml(GetWixXml());
 			WixPackageFilesDiff diff = new WixPackageFilesDiff(this);
+			diff.ExcludedFileNames.Add(".svn");
 			diffResults = diff.Compare(doc.RootDirectory);
 		}
 		
 		[Test]
-		public void NoDiffResultsFound()
+		public void OneDiffResultFound()
 		{
-			Assert.AreEqual(0, diffResults.Length);
-		}
-		
-		[Test]
-		public void FilesRequestedFromDirectory()
-		{
-			Assert.AreEqual(1, directories.Count);
-			Assert.AreEqual(@"C:\Projects\Setup\bin", directories[0]);
-		}
-		
-		[Test]
-		public void DirectoryExistsChecks()
-		{
-			StringBuilder directoriesChecked = new StringBuilder();
-			foreach (string dir in directoryExistsChecks) {
-				directoriesChecked.AppendLine(dir);
+			StringBuilder fileNames = new StringBuilder();
+			foreach (WixPackageFilesDiffResult result in diffResults) {
+				fileNames.AppendLine(result.FileName);
 			}
-			Assert.AreEqual(1, directoryExistsChecks.Count, directoriesChecked.ToString());
-			Assert.AreEqual(@"C:\Projects\Setup\bin", directoryExistsChecks[0]);
+			Assert.AreEqual(1, diffResults.Length, fileNames.ToString());
+		}
+		
+		[Test]
+		public void DiffResultFileName()
+		{
+			Assert.AreEqual(@"c:\projects\setup\bin\addins", diffResults[0].FileName.ToLowerInvariant());
+		}
+		
+		[Test]
+		public void DiffResultType()
+		{
+			Assert.AreEqual(WixPackageFilesDiffResultType.NewDirectory, diffResults[0].DiffType);
 		}
 
 		public string[] GetFiles(string path)
 		{
-			directories.Add(path);
-			return new string[] {@"license.rtf"};
+			if (path.StartsWith(@"C:\Projects\Setup\bin")) {
+				return new string[] {@"license.rtf"};
+			}
+			return new string[0];
 		}
 		
 		public string[] GetDirectories(string path)
 		{
-			return new string[0];
+			return new string[] { Path.Combine(path, "AddIns"), Path.Combine(path, ".svn")};
 		}
 		
 		public bool DirectoryExists(string path)
 		{
-			directoryExistsChecks.Add(path);
 			return true;
 		}
 		
@@ -96,3 +97,4 @@ namespace WixBinding.Tests.Diff
 		}
 	}
 }
+

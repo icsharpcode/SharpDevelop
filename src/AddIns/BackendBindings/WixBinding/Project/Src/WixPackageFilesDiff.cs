@@ -85,7 +85,7 @@ namespace ICSharpCode.WixBinding
 					}
 				}
 			}
-			
+						
 			// Add new files.
 			List<WixPackageFilesDiffResult> results = new List<WixPackageFilesDiffResult>();
 			foreach (string fileName in files) {
@@ -96,6 +96,9 @@ namespace ICSharpCode.WixBinding
 			foreach (string fileName in missingFiles) {
 				results.Add(new WixPackageFilesDiffResult(fileName, WixPackageFilesDiffResultType.MissingFile));
 			}
+
+			// Add new directories.
+			results.AddRange(GetNewDirectories());
 			
 			return results.ToArray();
 		}
@@ -154,6 +157,30 @@ namespace ICSharpCode.WixBinding
 			// Directory not found.
 			searchedDirectories.Add(directory);
 			return false;
+		}
+		
+		/// <summary>
+		/// Looks for new subdirectories that are not included in those searched. 
+		/// </summary>
+		/// <remarks>
+		/// TODO: Should not be using ExcludedFileNames to check whether the directory should be added.
+		/// </remarks>
+		List<WixPackageFilesDiffResult> GetNewDirectories()
+		{
+			List<WixPackageFilesDiffResult> results = new List<WixPackageFilesDiffResult>();
+			string[] directories = new string[searchedDirectories.Count];
+			searchedDirectories.CopyTo(directories);
+			foreach (string directory in directories) {
+				foreach (string subDirectory in directoryReader.GetDirectories(directory)) {
+					DirectoryInfo dirInfo = new DirectoryInfo(subDirectory);
+					if (!excludedFileNames.IsExcluded(dirInfo.Name)) {
+						if (!HasDirectoryBeenSearched(subDirectory)) {
+							results.Add(new WixPackageFilesDiffResult(subDirectory, WixPackageFilesDiffResultType.NewDirectory));
+						}
+					}
+				}
+			}
+			return results;
 		}
 	}
 }
