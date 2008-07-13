@@ -187,7 +187,6 @@
 				<ComponentRef Id="SharpDevelopProgramMenuItems"/>
 				<ComponentRef Id="DesktopFolderItems"/>
 				
-
 				<ComponentRef Id="DIfxAppXsd"/>
 				<ComponentRef Id="IisXsd"/>
 				<ComponentRef Id="PsXsd"/>
@@ -310,8 +309,28 @@
 				<ComponentRef Id="VBNetProjectTemplates"/>
 				<ComponentRef Id="ExampleProjectTemplate"/>
 				<ComponentRef Id="ICSharpCode.SharpDevelop.addin"/>
-				<ComponentRef Id="BooTemplateFiles"/>
-				<ComponentRef Id="BooBindingFiles"/>
+				<ComponentRef Id="BooBindingAddin"/>
+				<ComponentRef Id="BooBindingDll"/>
+				<ComponentRef Id="BoocExe"/>
+				<ComponentRef Id="BoocExeConfig"/>
+				<ComponentRef Id="BoocRsp"/>
+				<ComponentRef Id="BooEmptyClassTemplate"/>
+				<ComponentRef Id="BooEmptyFileTemplate"/>
+				<ComponentRef Id="BooFormsProjectTemplate"/>
+				<ComponentRef Id="BooFormTemplate"/>
+				<ComponentRef Id="BooLangCodeDomDll"/>
+				<ComponentRef Id="BooLangCompilerDll"/>
+				<ComponentRef Id="BooLangDll"/>
+				<ComponentRef Id="BooLangExtensionsDll"/>
+				<ComponentRef Id="BooLangInterpreterDll"/>
+				<ComponentRef Id="BooLangParserDll"/>
+				<ComponentRef Id="BooLangUsefulDll"/>
+				<ComponentRef Id="BooLibraryProjectTemplate"/>
+				<ComponentRef Id="BooMicrosoftBuildTargets"/>
+				<ComponentRef Id="BooMicrosoftBuildTasksDll"/>
+				<ComponentRef Id="NRefactoryToBooConverterDll"/>
+				<ComponentRef Id="BooConsoleProjectTemplate"/>
+				<ComponentRef Id="DefaultAssemblyInfoBooTemplate"/>
 				<ComponentRef Id="CSharpBindingFiles"/>
 				<ComponentRef Id="ILAsmTemplates"/>
 				<ComponentRef Id="ILAsmBindingFiles"/>

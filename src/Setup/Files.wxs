@@ -1066,31 +1066,72 @@
 								<Directory Id="BackendBindingsFolder" Name="BackendBindings">
 									<Directory Id="BooBindingFolder" Name="BooBinding">
 										<Directory Id="BooTemplatesFolder" Name="Templates">
-											<Component Guid="3895056C-83A1-4EFA-9F57-1F9665D48246" Id="BooTemplateFiles" DiskId="1">
+											<Component Guid="9631E95B-711B-4328-869F-1E53FD264FFA" Id="BooConsoleProjectTemplate" DiskId="1">
+												<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Templates\ConsoleProject.xpt" Name="ConsoleProject.xpt" Id="Templates.ConsoleProject2.xpt" KeyPath="yes" />
+											</Component>
+											<Component Guid="548B93F9-1FB8-43BA-91A1-537BEECD0B14" Id="DefaultAssemblyInfoBooTemplate" DiskId="1">
+												<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Templates\DefaultAssemblyInfo.boo" Name="DefaultAssemblyInfo.boo" Id="DefaultAssemblyInfo.boo" KeyPath="yes" />
+											</Component>
+											<Component Guid="4FE739A1-11A8-4735-A9C5-726F4018D6C4" Id="BooEmptyFileTemplate" DiskId="1">
+												<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Templates\Empty.xft" Name="Empty.xft" Id="Empty.xft" KeyPath="yes" />
+											</Component>
+											<Component Guid="C9363F47-BA44-4632-8918-DADA2159817A" Id="BooEmptyClassTemplate" DiskId="1">
+												<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Templates\EmptyClass.xft" Name="EmptyClass.xft" Id="EmptyClass.xft" KeyPath="yes" />
+											</Component>
+											<Component Guid="84390147-1609-4464-8F12-9DCDCCE3FF60" Id="BooFormTemplate" DiskId="1">
+												<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Templates\Form.xft" Name="Form.xft" Id="Form.xft" KeyPath="yes" />
+											</Component>
+											<Component Guid="117E4068-A745-446E-A07D-335ADCCABB56" Id="BooFormsProjectTemplate" DiskId="1">
+												<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Templates\FormsProject.xpt" Name="FormsProject.xpt" Id="FormsProject.xpt" KeyPath="yes" />
+											</Component>
+											<Component Guid="1E367FC3-33C7-45D4-9748-3A45DEC09EC8" Id="BooLibraryProjectTemplate" DiskId="1">
 												<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Templates\Library.xpt" Name="Library.xpt" Id="Library.xpt" />
-												<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Templates\ConsoleProject.xpt" Id="BooConsoleProject.xpt" Name="ConsoleProject.xpt" />
-												<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Templates\DefaultAssemblyInfo.boo" Id="DefaultAssemblyInfo.boo" Name="DefaultAssemblyInfo.boo" />
-												<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Templates\Empty.xft" Name="Empty.xft" Id="Empty.xft" />
-												<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Templates\EmptyClass.xft" Id="EmptyClass.xft" Name="EmptyClass.xft" />
-												<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Templates\Form.xft" Name="Form.xft" Id="Form.xft" />
-												<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Templates\FormsProject.xpt" Id="FormsProject.xpt" Name="FormsProject.xpt" />
 											</Component>
 										</Directory>
-										<Component Guid="2E711769-201C-4C5F-A97A-179C852B023F" Id="BooBindingFiles" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Boo.Lang.CodeDom.dll" Id="Boo.Lang.CodeDom.dll" Name="Boo.Lang.CodeDom.dll" />
-											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Boo.Lang.Compiler.dll" Id="Boo.Lang.Compiler.dll" Name="Boo.Lang.Compiler.dll" />
-											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Boo.Lang.dll" Id="Boo.Lang.dll" Name="Boo.Lang.dll" />
-											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Boo.Lang.Parser.dll" Id="Boo.Lang.Parser.dll" Name="Boo.Lang.Parser.dll" />
-											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Boo.Lang.Useful.dll" Id="Boo.Lang.Useful.dll" Name="Boo.Lang.Useful.dll" />
-											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Boo.Microsoft.Build.targets" Id="Boo.Microsoft.Build.targets" Name="Boo.Microsoft.Build.targets" />
-											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Boo.Microsoft.Build.Tasks.dll" Id="Boo.Microsoft.Build.Tasks.dll" Name="Boo.Microsoft.Build.Tasks.dll" />
-											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\BooBinding.addin" Id="BooBinding.addin" Name="BooBinding.addin" />
-											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\BooBinding.dll" Id="BooBinding.dll" Name="BooBinding.dll" />
-											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\booc.exe" Name="booc.exe" Id="booc.exe" />
-											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\booc.exe.config" Id="booc.exe.config" Name="booc.exe.config" />
-											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\booc.rsp" Name="booc.rsp" Id="booc.rsp" />
-											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\NRefactoryToBooConverter.dll" Id="NRefactoryToBooConverter.dll" Name="NRefactoryToBooConverter.dll" />
-											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Boo.Lang.Extensions.dll" Name="Boo.Lang.Extensions.dll" Id="Boo.Lang.Extensions.dll" />
+										<Component Guid="0E8D9201-2A18-441B-8634-1E87273872DC" Id="BooLangInterpreterDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Boo.Lang.Interpreter.dll" Name="Boo.Lang.Interpreter.dll" Id="Boo.Lang.Interpreter.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Boo.Lang.Interpreter.dll" AssemblyManifest="Boo.Lang.Interpreter.dll" />
+										</Component>
+										<Component Guid="7BA980AC-14A6-4330-B8F3-D00634171097" Id="BooLangCodeDomDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Boo.Lang.CodeDom.dll" Name="Boo.Lang.CodeDom.dll" Id="Boo.Lang.CodeDom.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Boo.Lang.CodeDom.dll" AssemblyManifest="Boo.Lang.CodeDom.dll" />
+										</Component>
+										<Component Guid="B0B5598D-31AA-4A28-8456-7CE4C904A2DA" Id="BooLangCompilerDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Boo.Lang.Compiler.dll" Name="Boo.Lang.Compiler.dll" Id="Boo.Lang.Compiler.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Boo.Lang.Compiler.dll" AssemblyManifest="Boo.Lang.Compiler.dll" />
+										</Component>
+										<Component Guid="4F60B420-1ABF-4B39-92C9-796B8CAF699E" Id="BooLangDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Boo.Lang.dll" Name="Boo.Lang.dll" Id="Boo.Lang.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Boo.Lang.dll" AssemblyManifest="Boo.Lang.dll" />
+										</Component>
+										<Component Guid="9D3C8105-B90E-4312-AF93-1B0217CE4A1B" Id="BooLangExtensionsDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Boo.Lang.Extensions.dll" Name="Boo.Lang.Extensions.dll" Id="Boo.Lang.Extensions.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Boo.Lang.Extensions.dll" AssemblyManifest="Boo.Lang.Extensions.dll" />
+										</Component>
+										<Component Guid="120CD691-2ADD-4C6C-AF03-5F3EB88BAF78" Id="BooLangParserDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Boo.Lang.Parser.dll" Name="Boo.Lang.Parser.dll" Id="Boo.Lang.Parser.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Boo.Lang.Parser.dll" AssemblyManifest="Boo.Lang.Parser.dll" />
+										</Component>
+										<Component Guid="C3CAD837-20D3-446C-B72F-CB907CB60252" Id="BooLangUsefulDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Boo.Lang.Useful.dll" Name="Boo.Lang.Useful.dll" Id="Boo.Lang.Useful.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Boo.Lang.Useful.dll" AssemblyManifest="Boo.Lang.Useful.dll" />
+										</Component>
+										<Component Guid="7D38D006-2248-4FC1-983A-25EB0141FC3C" Id="BooMicrosoftBuildTargets" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Boo.Microsoft.Build.targets" Name="Boo.Microsoft.Build.targets" Id="Boo.Microsoft.Build.targets" KeyPath="yes" />
+										</Component>
+										<Component Guid="6094FA81-9C8C-407C-8FB7-F03CBE91E81F" Id="BooMicrosoftBuildTasksDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Boo.Microsoft.Build.Tasks.dll" Name="Boo.Microsoft.Build.Tasks.dll" Id="Boo.Microsoft.Build.Tasks.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Boo.Microsoft.Build.Tasks.dll" AssemblyManifest="Boo.Microsoft.Build.Tasks.dll" />
+										</Component>
+										<Component Guid="92AF15AB-E899-4E80-872E-EBEC92F0FCC9" Id="BooBindingAddin" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\BooBinding.addin" Name="BooBinding.addin" Id="BooBinding.addin" KeyPath="yes" />
+										</Component>
+										<Component Guid="EA750ED6-ED19-4892-9A41-78883116F061" Id="BooBindingDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\BooBinding.dll" Name="BooBinding.dll" Id="BooBinding.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="BooBinding.dll" AssemblyManifest="BooBinding.dll" />
+										</Component>
+										<Component Guid="8F2E8A40-28D8-4B11-9278-CE7D6C1E4291" Id="BoocExe" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\booc.exe" Name="booc.exe" Id="booc.exe" KeyPath="yes" Assembly=".net" AssemblyApplication="booc.exe" AssemblyManifest="booc.exe" />
+										</Component>
+										<Component Guid="AA1A31D7-906E-48AA-B29C-FA0333C8EE5A" Id="BoocExeConfig" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\booc.exe.config" Name="booc.exe.config" Id="booc.exe.config" KeyPath="yes" />
+										</Component>
+										<Component Guid="9BB883E9-C7E0-451B-8A48-E6A22EF6DC5A" Id="BoocRsp" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\booc.rsp" Name="booc.rsp" Id="booc.rsp" KeyPath="yes" />
+										</Component>
+										<Component Guid="6AAC2867-DBA1-4AFA-830B-1FE0A918BA11" Id="NRefactoryToBooConverterDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\NRefactoryToBooConverter.dll" Name="NRefactoryToBooConverter.dll" Id="NRefactoryToBooConverter.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="NRefactoryToBooConverter.dll" AssemblyManifest="NRefactoryToBooConverter.dll" />
 										</Component>
 									</Directory>
 									<Directory Id="CSharpBindingFolder" Name="CSharpBinding">
