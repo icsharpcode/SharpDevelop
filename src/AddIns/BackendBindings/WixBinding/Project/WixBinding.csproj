@@ -45,6 +45,7 @@
     <Reference Include="Microsoft.Build.Engine" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Src\Commands\AddFilesToDirectoryCommand.cs" />
     <Compile Include="Src\Commands\AddWixExtensionToProject.cs" />
     <Compile Include="Src\Commands\AddWixItemToProjectBaseCommand.cs" />
     <Compile Include="Src\Project\WixExtensionFolderNode.cs" />

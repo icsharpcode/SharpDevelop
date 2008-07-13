@@ -136,7 +136,7 @@ namespace ICSharpCode.WixBinding
 		}
 		
 		/// <summary>
-		/// Adds files to the selected Component element tree node.
+		/// Adds files to the selected Component element or Directory element tree node.
 		/// </summary>
 		public void AddFiles()
 		{

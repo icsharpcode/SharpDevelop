@@ -213,6 +213,9 @@
 		<MenuItem id = "AddDirectory"
 			label = "${res:ICSharpCode.WixBinding.PackagesFilesView.ContextMenu.AddDirectory}"
 			class = "ICSharpCode.WixBinding.AddDirectoryCommand"/>
+		<MenuItem id = "AddFilesToDirectory"
+			label = "${res:ICSharpCode.WixBinding.PackagesFilesView.ContextMenu.AddFiles}"
+			class = "ICSharpCode.WixBinding.AddFilesToDirectoryCommand"/>
 		<MenuItem id = "Diff"
 				label = "Diff"
 				class = "ICSharpCode.WixBinding.ShowDiffCommand"/>

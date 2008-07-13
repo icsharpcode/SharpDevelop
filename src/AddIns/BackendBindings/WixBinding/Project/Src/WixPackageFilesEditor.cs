@@ -251,9 +251,14 @@ namespace ICSharpCode.WixBinding
 		void AddFile(string fileName)
 		{
 			WixComponentElement componentElement = view.SelectedElement as WixComponentElement;
+			WixDirectoryElement directoryElement = view.SelectedElement as WixDirectoryElement;
 			if (componentElement != null) {
 				WixFileElement fileElement = AddFile(componentElement, fileName);
 				view.AddElement(fileElement);
+				view.IsDirty = true;
+			} else if (directoryElement != null) {
+				componentElement = AddFileWithParentComponent(directoryElement, fileName);
+				view.AddElement(componentElement);
 				view.IsDirty = true;
 			}
 		}
@@ -415,17 +420,25 @@ namespace ICSharpCode.WixBinding
 			foreach (string fileName in DirectoryReader.GetFiles(directory)) {
 				if (!excludedNames.IsExcluded(fileName)) {
 					string path = Path.Combine(directory, fileName);
-					string id = WixComponentElement.GenerateIdFromFileName(document, path);
-					WixComponentElement component = AddComponent(directoryElement, id);
-					AddFile(component, path);
+					AddFileWithParentComponent(directoryElement, path);
 				}
 			}
 		}
+
+		/// <summary>
+		/// Adds a new Wix Component to the directory element. The file will then be added to this
+		/// component.
+		/// </summary>
+		WixComponentElement AddFileWithParentComponent(WixDirectoryElement directoryElement, string fileName)
+		{
+			string id = WixComponentElement.GenerateIdFromFileName(document, fileName);
+			WixComponentElement component = AddComponent(directoryElement, id);			
+			AddFile(component, fileName);
+			return component;
+		}
 		
 		IDirectoryReader DirectoryReader {
-			get {
-				return directoryReader;
-			}
+			get { return directoryReader; }
 		}
 		
 		/// <summary>
