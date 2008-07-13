@@ -31,7 +31,8 @@ namespace Debugger
 		ICorDebugFunction corFunction;
 		
 		MethodInfo methodInfo;
-		int depth;
+		uint chainIndex;
+		uint frameIndex;
 		
 		/// <summary> The process in which this stack frame is executed </summary>
 		[Debugger.Tests.Ignore]
@@ -54,13 +55,16 @@ namespace Debugger
 			}
 		}
 		
-		/// <summary>
-		/// The depth of this frame.  Most recent stack frame has depth 0.
-		/// The frame that called it has depth 1 and so on.
-		/// </summary>
-		public int Depth {
-			get { return depth; }
+		/// <summary> Internal index of the stack chain.  The value is increasing with age. </summary>
+		public uint ChainIndex {
+			get { return chainIndex; }
 		}
+		
+		/// <summary> Internal index of the stack frame.  The value is increasing with age. </summary>
+		public uint FrameIndex {
+			get { return frameIndex; }
+		}
+		
 		
 		/// <summary> True if the stack frame has symbols defined. 
 		/// (That is has accesss to the .pdb file) </summary>
@@ -78,14 +82,15 @@ namespace Debugger
 			}
 		}
 		
-		internal StackFrame(Thread thread, ICorDebugILFrame corILFrame, int depth)
+		internal StackFrame(Thread thread, ICorDebugILFrame corILFrame, uint chainIndex, uint frameIndex)
 		{
 			this.process = thread.Process;
 			this.thread = thread;
 			this.corILFrame = corILFrame;
 			this.corILFramePauseSession = process.PauseSession;
 			this.corFunction = corILFrame.Function;
-			this.depth = depth;
+			this.chainIndex = chainIndex;
+			this.frameIndex = frameIndex;
 			
 			DebugType debugType = DebugType.Create(
 				this.Process, 
@@ -114,6 +119,13 @@ namespace Debugger
 				CorILFrame.GetIP(out corInstructionPtr);
 				return corInstructionPtr;
 			}
+		}
+		
+		internal StackFrame Reobtain()
+		{
+			StackFrame stackFrame = this.Thread.GetStackFrameAt(chainIndex, frameIndex);
+			if (stackFrame.MethodInfo != this.MethodInfo) throw new DebuggerException("The stack frame on the thread does not represent the same method anymore");
+			return stackFrame;
 		}
 		
 		SourcecodeSegment GetSegmentForOffet(uint offset)
@@ -158,6 +170,7 @@ namespace Debugger
 		public void AsyncStepOut()
 		{
 			new Stepper(this, "StackFrame step out").StepOut();
+			
 			process.AsyncContinue(DebuggeeStateAction.Clear);
 		}
 		
@@ -167,18 +180,13 @@ namespace Debugger
 				throw new DebuggerException("Unable to step. No symbols loaded.");
 			}
 			
-			SourcecodeSegment nextSt;
-				
-			nextSt = NextStatement;
+			SourcecodeSegment nextSt = NextStatement;
 			if (nextSt == null) {
 				throw new DebuggerException("Unable to step. Next statement not aviable");
 			}
 			
 			if (stepIn) {
 				new Stepper(this, "StackFrame step in").StepIn(nextSt.StepRanges);
-				// Without JMC step in which ends in code without symblols is cotinued.
-				// The next step over ensures that we at least do step over.
-				new Stepper(this, "Safety step over").StepOver(nextSt.StepRanges);
 			} else {
 				new Stepper(this, "StackFrame step over").StepOver(nextSt.StepRanges);
 			}

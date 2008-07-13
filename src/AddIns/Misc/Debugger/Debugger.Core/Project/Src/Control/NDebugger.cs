@@ -26,6 +26,8 @@ namespace Debugger
 		
 		string debuggeeVersion;
 		
+		Options options = new Options();
+		
 		public MTA2STA MTA2STA {
 			get {
 				return mta2sta;
@@ -42,6 +44,11 @@ namespace Debugger
 			get {
 				return debuggeeVersion;
 			}
+		}
+		
+		public Options Options {
+			get { return options; }
+			set { options = value; }
 		}
 		
 		public NDebugger()

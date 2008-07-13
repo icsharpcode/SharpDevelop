@@ -45,7 +45,6 @@
     <Compile Include="Src\Control\NDebugger-Breakpoints.cs" />
     <Compile Include="Src\Control\NDebugger-Processes.cs" />
     <Compile Include="Src\Control\NDebugger.cs" />
-    <Compile Include="Src\Control\NDebugger.Options.cs" />
     <Compile Include="Src\Control\Process-Evals.cs" />
     <Compile Include="Src\Control\Process-Modules.cs" />
     <Compile Include="Src\Control\Process-StateControl.cs" />
@@ -60,6 +59,7 @@
     <Compile Include="Src\Debugger\DebuggerObject.cs" />
     <Compile Include="Src\Debugger\Exception.cs" />
     <Compile Include="Src\Debugger\ExceptionType.cs" />
+    <Compile Include="Src\Debugger\Options.cs" />
     <Compile Include="Src\Debugger\PausedReason.cs" />
     <Compile Include="Src\Debugger\PauseSession.cs" />
     <Compile Include="Src\Debugger\SourcecodeSegment.cs" />

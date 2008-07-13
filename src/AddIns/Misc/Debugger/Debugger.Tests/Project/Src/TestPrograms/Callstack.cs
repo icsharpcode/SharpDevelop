@@ -62,7 +62,8 @@ namespace Debugger.Tests {
       <Item>
         <StackFrame
           ArgumentCount="0"
-          Depth="0"
+          ChainIndex="1"
+          FrameIndex="2"
           HasSymbols="True"
           IsInvalid="False"
           MethodInfo="Sub2"
@@ -71,7 +72,8 @@ namespace Debugger.Tests {
       <Item>
         <StackFrame
           ArgumentCount="0"
-          Depth="1"
+          ChainIndex="1"
+          FrameIndex="1"
           HasSymbols="True"
           IsInvalid="False"
           MethodInfo="Sub1"
@@ -80,7 +82,8 @@ namespace Debugger.Tests {
       <Item>
         <StackFrame
           ArgumentCount="0"
-          Depth="2"
+          ChainIndex="1"
+          FrameIndex="0"
           HasSymbols="True"
           IsInvalid="False"
           MethodInfo="Main"
@@ -92,7 +95,8 @@ namespace Debugger.Tests {
       <Item>
         <StackFrame
           ArgumentCount="0"
-          Depth="0"
+          ChainIndex="1"
+          FrameIndex="1"
           HasSymbols="True"
           IsInvalid="False"
           MethodInfo="Sub1"
@@ -101,7 +105,8 @@ namespace Debugger.Tests {
       <Item>
         <StackFrame
           ArgumentCount="0"
-          Depth="1"
+          ChainIndex="1"
+          FrameIndex="0"
           HasSymbols="True"
           IsInvalid="False"
           MethodInfo="Main"
@@ -113,7 +118,8 @@ namespace Debugger.Tests {
       <Item>
         <StackFrame
           ArgumentCount="0"
-          Depth="0"
+          ChainIndex="1"
+          FrameIndex="0"
           HasSymbols="True"
           IsInvalid="False"
           MethodInfo="Main"

@@ -149,7 +149,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		public List<ListViewItem> CreateItems()
 		{
-			bool showExternalMethods = DebuggingOptions.ShowExternalMethods;
+			bool showExternalMethods = DebuggingOptions.Instance.ShowExternalMethods;
 			bool lastItemIsExternalMethod = false;
 			
 			List<ListViewItem> items = new List<ListViewItem>();
@@ -200,8 +200,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		public string GetFullName(StackFrame frame)
 		{
-			bool showArgumentNames = DebuggingOptions.ShowArgumentNames;
-			bool showArgumentValues = DebuggingOptions.ShowArgumentValues;
+			bool showArgumentNames = DebuggingOptions.Instance.ShowArgumentNames;
+			bool showArgumentValues = DebuggingOptions.Instance.ShowArgumentValues;
 			
 			StringBuilder name = new StringBuilder();
 			name.Append(frame.MethodInfo.Name);

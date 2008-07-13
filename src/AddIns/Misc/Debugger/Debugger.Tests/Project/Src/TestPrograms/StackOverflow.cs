@@ -34,7 +34,7 @@ namespace Debugger.Tests {
 			StartTest("StackOverflow.cs");
 			
 			process.Continue();
-			ObjectDump("LastStackFrame", process.SelectedThread.MostRecentStackFrame);
+			//ObjectDump("LastStackFrame", process.SelectedThread.MostRecentStackFrame);
 			
 			EndTest();
 		}
@@ -53,15 +53,6 @@ namespace Debugger.Tests {
     <DebuggingPaused>Break</DebuggingPaused>
     <ExceptionThrown>Could not intercept: System.StackOverflowException</ExceptionThrown>
     <DebuggingPaused>Exception</DebuggingPaused>
-    <LastStackFrame>
-      <StackFrame
-        ArgumentCount="1"
-        Depth="0"
-        HasSymbols="True"
-        IsInvalid="False"
-        MethodInfo="Fun"
-        NextStatement="StackOverflow.cs:21,3-21,4" />
-    </LastStackFrame>
     <ProcessExited />
   </Test>
 </DebuggerTests>

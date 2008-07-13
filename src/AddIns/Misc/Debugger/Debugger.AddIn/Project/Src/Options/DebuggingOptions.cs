@@ -12,82 +12,43 @@ using ICSharpCode.SharpDevelop.Debugging;
 
 namespace ICSharpCode.SharpDevelop.Services
 {
-	public static class DebuggingOptions
+	public class DebuggingOptions: Debugger.Options
 	{
-		public static Properties DebuggingProperties {
+		public static DebuggingOptions Instance {
 			get {
-				return PropertyService.Get("Debugging", new Properties());
+				return PropertyService.Get("DebuggingOptions", new DebuggingOptions());
 			}
 		}
 		
-		public static bool ICorDebugVisualizerEnabled {
-			get { return DebuggingProperties.Get("ICorDebugVisualizerEnabled", false); }
-			set { DebuggingProperties.Set("ICorDebugVisualizerEnabled", value); }
+		bool iCorDebugVisualizerEnabled;
+		bool showValuesInHexadecimal;
+		bool showArgumentNames;
+		bool showArgumentValues;
+		bool showExternalMethods;
+		
+		public bool ICorDebugVisualizerEnabled {
+			get { return iCorDebugVisualizerEnabled; }
+			set { iCorDebugVisualizerEnabled = value; }
 		}
 		
-		public static bool ShowValuesInHexadecimal {
-			get { return DebuggingProperties.Get("ShowValuesInHexadecimal", false); }
-			set { DebuggingProperties.Set("ShowValuesInHexadecimal", value); }
+		public bool ShowValuesInHexadecimal {
+			get { return showValuesInHexadecimal; }
+			set { showValuesInHexadecimal = value; }
 		}
 		
-		public static bool ShowArgumentNames {
-			get { return DebuggingProperties.Get("ShowArgumentNames", true); }
-			set { DebuggingProperties.Set("ShowArgumentNames", value); }
+		public bool ShowArgumentNames {
+			get { return showArgumentNames; }
+			set { showArgumentNames = value; }
 		}
 		
-		public static bool ShowArgumentValues {
-			get { return DebuggingProperties.Get("ShowArgumentValues", true); }
-			set { DebuggingProperties.Set("ShowArgumentValues", value); }
+		public bool ShowArgumentValues {
+			get { return showArgumentValues; }
+			set { showArgumentValues = value; }
 		}
 		
-		public static bool ShowExternalMethods {
-			get { return DebuggingProperties.Get("ShowExternalMethods", false); }
-			set { DebuggingProperties.Set("ShowExternalMethods", value); }
-		}
-		
-		public static bool JustMyCodeEnabled {
-			get { return DebuggingProperties.Get("JustMyCodeEnabled", true); }
-			set { DebuggingProperties.Set("JustMyCodeEnabled", value); }
-		}
-		
-		public static bool ObeyDebuggerAttributes {
-			get { return DebuggingProperties.Get("ObeyDebuggerAttributes", true); }
-			set { DebuggingProperties.Set("ObeyDebuggerAttributes", value); }
-		}
-		
-		public static string[] SymbolsSearchPaths {
-			get { return DebuggingProperties.Get("SymbolsSearchPaths", new string[0]); }
-			set { DebuggingProperties.Set("SymbolsSearchPaths", value); }
-		}
-		
-		public static bool SkipProperties {
-			get { return DebuggingProperties.Get("SkipProperties", true); }
-			set { DebuggingProperties.Set("SkipProperties", value); }
-		}
-		
-		public static bool SkipOnlySingleLineProperties {
-			get { return DebuggingProperties.Get("SkipOnlySingleLineProperties", true); }
-			set { DebuggingProperties.Set("SkipOnlySingleLineProperties", value); }
-		}
-		
-		public static bool Verbose {
-			get { return DebuggingProperties.Get("Verbose", false); }
-			set { DebuggingProperties.Set("Verbose", value); }
-		}
-		
-		public static void ApplyToCurrentDebugger()
-		{
-			WindowsDebugger winDbg = DebuggerService.CurrentDebugger as WindowsDebugger;
-			if (winDbg != null && winDbg.DebuggerCore != null) {
-				NDebugger debugger = winDbg.DebuggerCore;
-				
-				debugger.JustMyCodeEnabled = JustMyCodeEnabled;
-				debugger.ObeyDebuggerAttributes = ObeyDebuggerAttributes;
-				debugger.SymbolsSearchPaths = SymbolsSearchPaths;
-				debugger.SkipProperties = SkipProperties;
-				debugger.SkipOnlySingleLineProperties = SkipOnlySingleLineProperties;
-				debugger.Verbose = Verbose;
-			}
+		public bool ShowExternalMethods {
+			get { return showExternalMethods; }
+			set { showExternalMethods = value; }
 		}
 	}
 }

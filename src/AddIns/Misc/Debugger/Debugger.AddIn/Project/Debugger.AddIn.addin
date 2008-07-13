@@ -86,10 +86,10 @@
 		             label = "${res:Dialog.Options.IDEOptions.Debugging}"
 		             insertbefore = "TextEditorOptions">
 			<DialogPanel id    = "General"
-			             label = "${res:Dialog.Options.IDEOptions.Debugging.PanelName}"
+			             label = "${res:Dialog.Options.IDEOptions.Debugging.General}"
 			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.DebuggingOptionsPanel"/>
 			<DialogPanel id    = "Symbols"
-			             label = "${res:Dialog.Options.IDEOptions.DebuggingSymbols.PanelName}"
+			             label = "${res:Dialog.Options.IDEOptions.Debugging.Symbols}"
 			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.DebuggingSymbolsPanel"/>
 		</DialogPanel>
 	</Path>

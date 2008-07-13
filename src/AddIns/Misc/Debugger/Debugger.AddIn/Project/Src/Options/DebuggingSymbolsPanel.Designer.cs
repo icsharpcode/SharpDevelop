@@ -46,7 +46,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 									| System.Windows.Forms.AnchorStyles.Right)));
 			this.pathList.AutoAddAfterBrowse = true;
 			this.pathList.BrowseForDirectory = true;
-			this.pathList.ListCaption = "${res:Dialog.Options.IDEOptions.DebuggingSymbols.ListCaption}";
+			this.pathList.ListCaption = "${res:Dialog.Options.IDEOptions.Debugging.Symbols.ListCaption}";
 			this.pathList.Location = new System.Drawing.Point(0, 0);
 			this.pathList.ManualOrder = true;
 			this.pathList.Name = "pathList";

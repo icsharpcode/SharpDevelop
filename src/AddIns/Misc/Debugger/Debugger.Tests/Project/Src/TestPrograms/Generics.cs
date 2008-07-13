@@ -135,7 +135,8 @@ namespace Debugger.Tests {
     <SelectedStackFrame>
       <StackFrame
         ArgumentCount="2"
-        Depth="0"
+        ChainIndex="1"
+        FrameIndex="1"
         HasSymbols="True"
         IsInvalid="False"
         MethodInfo="Metod"
@@ -199,7 +200,8 @@ namespace Debugger.Tests {
     <SelectedStackFrame>
       <StackFrame
         ArgumentCount="2"
-        Depth="0"
+        ChainIndex="1"
+        FrameIndex="1"
         HasSymbols="True"
         IsInvalid="False"
         MethodInfo="GenericMethod"
@@ -263,7 +265,8 @@ namespace Debugger.Tests {
     <SelectedStackFrame>
       <StackFrame
         ArgumentCount="2"
-        Depth="0"
+        ChainIndex="1"
+        FrameIndex="1"
         HasSymbols="True"
         IsInvalid="False"
         MethodInfo="StaticMetod"
@@ -327,7 +330,8 @@ namespace Debugger.Tests {
     <SelectedStackFrame>
       <StackFrame
         ArgumentCount="2"
-        Depth="0"
+        ChainIndex="1"
+        FrameIndex="1"
         HasSymbols="True"
         IsInvalid="False"
         MethodInfo="StaticGenericMethod"
@@ -391,7 +395,8 @@ namespace Debugger.Tests {
     <SelectedStackFrame>
       <StackFrame
         ArgumentCount="2"
-        Depth="0"
+        ChainIndex="1"
+        FrameIndex="1"
         HasSymbols="True"
         IsInvalid="False"
         MethodInfo="Metod"
@@ -455,7 +460,8 @@ namespace Debugger.Tests {
     <SelectedStackFrame>
       <StackFrame
         ArgumentCount="2"
-        Depth="0"
+        ChainIndex="1"
+        FrameIndex="1"
         HasSymbols="True"
         IsInvalid="False"
         MethodInfo="GenericMethod"
@@ -519,7 +525,8 @@ namespace Debugger.Tests {
     <SelectedStackFrame>
       <StackFrame
         ArgumentCount="2"
-        Depth="0"
+        ChainIndex="1"
+        FrameIndex="1"
         HasSymbols="True"
         IsInvalid="False"
         MethodInfo="StaticMetod"
@@ -583,7 +590,8 @@ namespace Debugger.Tests {
     <SelectedStackFrame>
       <StackFrame
         ArgumentCount="2"
-        Depth="0"
+        ChainIndex="1"
+        FrameIndex="1"
         HasSymbols="True"
         IsInvalid="False"
         MethodInfo="StaticGenericMethod"

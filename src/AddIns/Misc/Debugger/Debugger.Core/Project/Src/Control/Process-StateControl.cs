@@ -209,7 +209,7 @@ namespace Debugger
 			
 			NotifyResumed(action);
 			corProcess.Continue(0);
-			if (this.Debugger.Verbose) {
+			if (this.Options.Verbose) {
 				this.TraceMessage("Continue");
 			}
 			

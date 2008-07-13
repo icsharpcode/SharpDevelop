@@ -54,6 +54,12 @@ namespace Debugger
 			}
 		}
 		
+		public Options Options {
+			get {
+				return debugger.Options;
+			}
+		}
+		
 		internal ManagedCallback CallbackInterface {
 			get {
 				return callbackInterface;

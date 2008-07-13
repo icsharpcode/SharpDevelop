@@ -73,7 +73,7 @@ namespace Debugger.AddIn.TreeModel
 			
 			this.Name = val.Expression.CodeTail;
 			
-			if (DebuggingOptions.ShowValuesInHexadecimal && val.Type.IsInteger) {
+			if (DebuggingOptions.Instance.ShowValuesInHexadecimal && val.Type.IsInteger) {
 				this.Text = String.Format("0x{0:X}", val.PrimitiveValue);
 			} else {
 				this.Text = val.AsString;
@@ -94,7 +94,7 @@ namespace Debugger.AddIn.TreeModel
 				this.ChildNodes = null;
 			}
 			
-			if (DebuggingOptions.ICorDebugVisualizerEnabled) {
+			if (DebuggingOptions.Instance.ICorDebugVisualizerEnabled) {
 				AbstractNode info = ICorDebug.GetDebugInfoRoot(val.Process, val.CorValue);
 				this.ChildNodes = PrependNode(info, this.ChildNodes);
 			}
@@ -204,9 +204,9 @@ namespace Debugger.AddIn.TreeModel
 			ToolStripMenuItem hexView;
 			hexView = new ToolStripMenuItem();
 			hexView.Text = ResourceService.GetString("MainWindow.Windows.Debug.LocalVariables.ShowInHexadecimal");
-			hexView.Checked = DebuggingOptions.ShowValuesInHexadecimal;
+			hexView.Checked = DebuggingOptions.Instance.ShowValuesInHexadecimal;
 			hexView.Click += delegate {
-				DebuggingOptions.ShowValuesInHexadecimal = !DebuggingOptions.ShowValuesInHexadecimal;
+				DebuggingOptions.Instance.ShowValuesInHexadecimal = !DebuggingOptions.Instance.ShowValuesInHexadecimal;
 			};
 			
 			menu.Items.AddRange(new ToolStripItem[] {

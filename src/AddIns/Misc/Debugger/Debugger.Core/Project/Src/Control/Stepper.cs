@@ -80,7 +80,7 @@ namespace Debugger
 			
 			corStepper = stackFrame.CorILFrame.CreateStepper();
 			
-			this.JustMyCode = Process.Debugger.JustMyCodeEnabled;
+			this.JustMyCode = Process.Options.EnableJustMyCode;
 			
 			stackFrame.Thread.Steppers.Add(this);
 		}

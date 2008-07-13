@@ -92,7 +92,7 @@ namespace Debugger
 			if (!pauseOnNextExit || process.Evaluating || hasQueuedCallbacks) {
 				process.AsyncContinue(DebuggeeStateAction.Keep);
 			} else {
-				if (process.Debugger.Verbose) {
+				if (process.Options.Verbose) {
 					process.TraceMessage("Callback exit: Paused");
 				}
 				pauseOnNextExit = false;
@@ -131,27 +131,13 @@ namespace Debugger
 			stepper.OnStepComplete();
 			
 			if (stepper.PauseWhenComplete) {
-				if (process.SelectedThread.MostRecentStackFrame.HasSymbols) {
-					// JMC is ignored by the API during StepOut - Compensate
-					if (process.Debugger.JustMyCodeEnabled &&
-					    stepper.Operation == Stepper.StepperOperation.StepOut &&
-					    !process.SelectedThread.MostRecentStackFrame.MethodInfo.IsMyCode) {
-						process.TraceMessage(" - stepping out non-user code at " + process.SelectedThread.MostRecentStackFrame.ToString());
-						new Stepper(process.SelectedThread.MostRecentStackFrame, "Stepper out of non-user code").StepOut();
-					} else {
-						pauseOnNextExit = true;
-					}
+				if (process.SelectedThread.MostRecentStackFrame.HasSymbols &&
+				    process.SelectedThread.MostRecentStackFrame.MethodInfo.IsMyCode) {
+					// This is a good place, let's stay here
+					pauseOnNextExit = true;
 				} else {
-					// This can only happen when JMC is disabled (ie NET1.1 or StepOut)
-					if (stepper.Operation == Stepper.StepperOperation.StepOut) {
-						// Create new stepper and keep going
-						process.TraceMessage(" - stepping out of code without symbols at " + process.SelectedThread.MostRecentStackFrame.ToString());
-						new Stepper(process.SelectedThread.MostRecentStackFrame, "Stepper out of code without symbols").StepOut();
-					} else {
-						// JMC is disabled: There is extra step over stepper, we could just keep going
-						process.TraceMessage(" - leaving code without symbols");
-						new Stepper(process.SelectedThread.MostRecentStackFrame, "Stepper out of code without symbols").StepOut();
-					}
+					// Continue stepping to leave this place
+					
 				}
 			}
 			

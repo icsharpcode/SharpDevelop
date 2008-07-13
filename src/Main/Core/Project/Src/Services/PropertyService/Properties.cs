@@ -10,9 +10,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using System.Text;
 using System.Linq;
+using System.Text;
 using System.Xml;
+using System.Xml.Serialization;
 
 namespace ICSharpCode.Core
 {
@@ -40,6 +41,26 @@ namespace ICSharpCode.Core
 	/// </summary>
 	public class Properties
 	{
+		/// <summary> Needed for support of late deserialization </summary>
+		class SerializedValue {
+			string content;
+			
+			public string Content {
+				get { return content; }
+			}
+			
+			public T Deserialize<T>()
+			{
+				XmlSerializer serializer = new XmlSerializer(typeof(T));
+				return (T)serializer.Deserialize(new StringReader(content));
+			}
+			
+			public SerializedValue(string content)
+			{
+				this.content = content;
+			}
+		}
+		
 		Dictionary<string, object> properties = new Dictionary<string, object>();
 		
 		public string this[string property] {
@@ -159,6 +180,9 @@ namespace ICSharpCode.Core
 						} else if (propertyName == "Array") {
 							propertyName = reader.GetAttribute(0);
 							properties[propertyName] = ReadArray(reader);
+						} else if (propertyName == "SerializedValue") {
+							propertyName = reader.GetAttribute(0);
+							properties[propertyName] = new SerializedValue(reader.ReadInnerXml());
 						} else {
 							properties[propertyName] = reader.HasAttributes ? reader.GetAttribute(0) : null;
 						}
@@ -206,9 +230,20 @@ namespace ICSharpCode.Core
 							writer.WriteEndElement();
 						}
 						writer.WriteEndElement();
-					} else {
+					} else if (TypeDescriptor.GetConverter(val).CanConvertFrom(typeof(string))) {
 						writer.WriteStartElement(entry.Key);
 						WriteValue(writer, val);
+						writer.WriteEndElement();
+					} else if (val is SerializedValue) {
+						writer.WriteStartElement("SerializedValue");
+						writer.WriteAttributeString("name", entry.Key);
+						writer.WriteRaw(((SerializedValue)val).Content);
+						writer.WriteEndElement();
+					} else {
+						writer.WriteStartElement("SerializedValue");
+						writer.WriteAttributeString("name", entry.Key);
+						XmlSerializer serializer = new XmlSerializer(val.GetType());
+						serializer.Serialize(writer, val, null);
 						writer.WriteEndElement();
 					}
 				}
@@ -308,6 +343,14 @@ namespace ICSharpCode.Core
 					} else {
 						o = o.ToString();
 					}
+				} else if (o is SerializedValue) {
+					try {
+						o = ((SerializedValue)o).Deserialize<T>();
+					} catch (Exception ex) {
+						MessageService.ShowWarning("Error loading property '" + property + "': " + ex.Message);
+						o = defaultValue;
+					}
+					properties[property] = o; // store for future look up
 				}
 				try {
 					return (T)o;

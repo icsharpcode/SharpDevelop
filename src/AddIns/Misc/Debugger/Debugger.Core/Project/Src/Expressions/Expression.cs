@@ -19,7 +19,6 @@ namespace Debugger.Expressions
 		static Dictionary<Expression, Value> expressionCache;
 		static DebuggeeState expressionCache_debuggerState;
 		static Thread expressionCache_thread;
-		static int expressionCache_stackDepth;
 		
 		public abstract string Code {
 			get;
@@ -45,13 +44,11 @@ namespace Debugger.Expressions
 		{
 			if (expressionCache == null ||
 				expressionCache_debuggerState != context.Process.DebuggeeState ||
-				expressionCache_thread != context.Thread ||
-				expressionCache_stackDepth != context.Depth)
+				expressionCache_thread != context.Thread)
 			{
 				expressionCache = new Dictionary<Expression, Value>();
 				expressionCache_debuggerState = context.Process.DebuggeeState;
 				expressionCache_thread = context.Thread;
-				expressionCache_stackDepth = context.Depth;
 				context.Process.TraceMessage("Expression cache cleared");
 			}
 			if (expressionCache.ContainsKey(this)) {
@@ -72,7 +69,7 @@ namespace Debugger.Expressions
 			
 			result = GetFromCache(context);
 			if (result != null) {
-				if (context.Process.Debugger.Verbose) {
+				if (context.Process.Options.Verbose) {
 					context.Process.TraceMessage(string.Format("Cached:    {0,-12} ({1})", this.Code, this.GetType().Name));
 				}
 				return result;
@@ -90,7 +87,7 @@ namespace Debugger.Expressions
 			DateTime end = Debugger.Util.HighPrecisionTimer.Now;
 			expressionCache[this] = result;
 			
-			if (context.Process.Debugger.Verbose) {
+			if (context.Process.Options.Verbose) {
 				context.Process.TraceMessage(string.Format("Evaluated: {0,-12} ({1}) ({2} ms)", this.Code, this.GetType().Name, (end - start).TotalMilliseconds));
 			}
 			return result;

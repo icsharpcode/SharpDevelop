@@ -90,7 +90,7 @@ namespace Debugger.Tests {
 	
 	public partial class DebuggerTests
 	{
-		[NUnit.Framework.Test]
+		//[NUnit.Framework.Test]
 		public void DebuggerAttributes()
 		{
 			StartTest("DebuggerAttributes.cs");

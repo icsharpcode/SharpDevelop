@@ -63,27 +63,27 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			ToolStripMenuItem argNamesItem;
 			argNamesItem = new ToolStripMenuItem();
 			argNamesItem.Text = ResourceService.GetString("MainWindow.Windows.Debug.CallStack.ShowArgumentNames");
-			argNamesItem.Checked = DebuggingOptions.ShowArgumentNames;
+			argNamesItem.Checked = DebuggingOptions.Instance.ShowArgumentNames;
 			argNamesItem.Click += delegate {
-				DebuggingOptions.ShowArgumentNames = !DebuggingOptions.ShowArgumentNames;
+				DebuggingOptions.Instance.ShowArgumentNames = !DebuggingOptions.Instance.ShowArgumentNames;
 				RefreshPad();
 			};
 			
 			ToolStripMenuItem argValuesItem;
 			argValuesItem = new ToolStripMenuItem();
 			argValuesItem.Text = ResourceService.GetString("MainWindow.Windows.Debug.CallStack.ShowArgumentValues");
-			argValuesItem.Checked = DebuggingOptions.ShowArgumentValues;
+			argValuesItem.Checked = DebuggingOptions.Instance.ShowArgumentValues;
 			argValuesItem.Click += delegate {
-				DebuggingOptions.ShowArgumentValues = !DebuggingOptions.ShowArgumentValues;
+				DebuggingOptions.Instance.ShowArgumentValues = !DebuggingOptions.Instance.ShowArgumentValues;
 				RefreshPad();
 			};
 			
 			ToolStripMenuItem extMethodsItem;
 			extMethodsItem = new ToolStripMenuItem();
 			extMethodsItem.Text = ResourceService.GetString("MainWindow.Windows.Debug.CallStack.ShowExternalMethods");
-			extMethodsItem.Checked = DebuggingOptions.ShowExternalMethods;
+			extMethodsItem.Checked = DebuggingOptions.Instance.ShowExternalMethods;
 			extMethodsItem.Click += delegate {
-				DebuggingOptions.ShowExternalMethods = !DebuggingOptions.ShowExternalMethods;
+				DebuggingOptions.Instance.ShowExternalMethods = !DebuggingOptions.Instance.ShowExternalMethods;
 				RefreshPad();
 			};
 			

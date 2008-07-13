@@ -74,7 +74,8 @@ namespace Debugger.Tests {
     <SelectedStackFrame>
       <StackFrame
         ArgumentCount="1"
-        Depth="0"
+        ChainIndex="1"
+        FrameIndex="1"
         HasSymbols="True"
         IsInvalid="False"
         MethodInfo="Function"
@@ -84,7 +85,8 @@ namespace Debugger.Tests {
     <Old_StackFrame>
       <StackFrame
         ArgumentCount="{Exception: StackFrame is not valid anymore}"
-        Depth="0"
+        ChainIndex="1"
+        FrameIndex="1"
         HasSymbols="True"
         IsInvalid="True"
         MethodInfo="Function"
@@ -93,7 +95,8 @@ namespace Debugger.Tests {
     <SelectedStackFrame>
       <StackFrame
         ArgumentCount="0"
-        Depth="0"
+        ChainIndex="1"
+        FrameIndex="2"
         HasSymbols="True"
         IsInvalid="False"
         MethodInfo="SubFunction"
@@ -103,7 +106,8 @@ namespace Debugger.Tests {
     <Old_StackFrame>
       <StackFrame
         ArgumentCount="{Exception: StackFrame is not valid anymore}"
-        Depth="0"
+        ChainIndex="1"
+        FrameIndex="1"
         HasSymbols="True"
         IsInvalid="True"
         MethodInfo="Function"
@@ -112,7 +116,8 @@ namespace Debugger.Tests {
     <SelectedStackFrame>
       <StackFrame
         ArgumentCount="1"
-        Depth="0"
+        ChainIndex="1"
+        FrameIndex="1"
         HasSymbols="True"
         IsInvalid="False"
         MethodInfo="Function"
@@ -122,7 +127,8 @@ namespace Debugger.Tests {
     <Main>
       <StackFrame
         ArgumentCount="0"
-        Depth="0"
+        ChainIndex="1"
+        FrameIndex="0"
         HasSymbols="True"
         IsInvalid="False"
         MethodInfo="Main"
@@ -131,7 +137,8 @@ namespace Debugger.Tests {
     <Old_StackFrame>
       <StackFrame
         ArgumentCount="{Exception: StackFrame is not valid anymore}"
-        Depth="0"
+        ChainIndex="1"
+        FrameIndex="1"
         HasSymbols="True"
         IsInvalid="True"
         MethodInfo="Function"
@@ -140,7 +147,8 @@ namespace Debugger.Tests {
     <SelectedStackFrame>
       <StackFrame
         ArgumentCount="0"
-        Depth="0"
+        ChainIndex="1"
+        FrameIndex="0"
         HasSymbols="True"
         IsInvalid="False"
         MethodInfo="Main"

@@ -281,23 +281,43 @@ namespace Debugger
 					yield break;
 				}
 				
-				int depth = 0;
 				foreach(ICorDebugChain corChain in CorThread.EnumerateChains().Enumerator) {
 					if (corChain.IsManaged == 0) continue; // Only managed ones
 					foreach(ICorDebugFrame corFrame in corChain.EnumerateFrames().Enumerator) {
-						if (corFrame.Is<ICorDebugILFrame>()) {
-							StackFrame stackFrame;
-							try {
-								stackFrame = new StackFrame(this, corFrame.CastTo<ICorDebugILFrame>(), depth);
-								depth++;
-							} catch (COMException) { // TODO
-								continue;
-							};
-							yield return stackFrame;
-						}
+						if (!corFrame.Is<ICorDebugILFrame>()) continue; // Only IL frames
+						StackFrame stackFrame;
+						try {
+							stackFrame = new StackFrame(this, corFrame.CastTo<ICorDebugILFrame>(), corChain.Index, corFrame.Index);
+						} catch (COMException) { // TODO
+							continue;
+						};
+						yield return stackFrame;
 					}
 				}
 			}
+		}
+		
+		internal StackFrame GetStackFrameAt(uint chainIndex, uint frameIndex)
+		{
+			process.AssertPaused();
+			
+			ICorDebugChainEnum corChainEnum = CorThread.EnumerateChains();
+			if (chainIndex >= corChainEnum.Count) throw new DebuggerException("The requested chain index is too big");
+			corChainEnum.Skip(corChainEnum.Count - chainIndex - 1);
+			ICorDebugChain corChain = corChainEnum.Next();
+			
+			if (corChain.IsManaged == 0) throw new DebuggerException("The requested chain is not managed");
+			
+			ICorDebugFrameEnum corFrameEnum = corChain.EnumerateFrames();
+			if (frameIndex >= corFrameEnum.Count) throw new DebuggerException("The requested frame index is too big");
+			corFrameEnum.Skip(corFrameEnum.Count - frameIndex - 1);
+			ICorDebugFrame corFrame = corFrameEnum.Next();
+			
+			if (!corFrame.Is<ICorDebugILFrame>()) throw new DebuggerException("The rquested frame is not IL frame");
+			
+			StackFrame stackFrame = new StackFrame(this, corFrame.CastTo<ICorDebugILFrame>(), chainIndex, frameIndex);
+			
+			return stackFrame;
 		}
 		
 		public string GetStackTrace()

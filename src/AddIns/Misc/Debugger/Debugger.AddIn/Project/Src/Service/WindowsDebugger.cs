@@ -419,7 +419,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			
 			debugger = new NDebugger();
 			
-			DebuggingOptions.ApplyToCurrentDebugger();
+			debugger.Options = DebuggingOptions.Instance;
 			
 			debugger.DebuggerTraceMessage    += debugger_TraceMessage;
 			debugger.ProcessStarted          += debugger_ProcessStarted;

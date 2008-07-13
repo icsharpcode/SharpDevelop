@@ -185,7 +185,7 @@ namespace Debugger
 			
 			List<string> searchPaths = new List<string>();
 			
-			searchPaths.AddRange(module.Process.Debugger.SymbolsSearchPaths);
+			searchPaths.AddRange(module.Process.Options.SymbolsSearchPaths);
 			
 			string modulePath = module.FullPath;
 			while (true) {

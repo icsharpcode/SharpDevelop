@@ -31,14 +31,12 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		
 		public override void LoadPanelContents()
 		{
-			pathList.LoadList(DebuggingOptions.SymbolsSearchPaths);
+			pathList.LoadList(DebuggingOptions.Instance.SymbolsSearchPaths);
 		}
 		
 		public override bool StorePanelContents()
 		{
-			DebuggingOptions.SymbolsSearchPaths = pathList.GetList();
-			
-			DebuggingOptions.ApplyToCurrentDebugger();
+			DebuggingOptions.Instance.SymbolsSearchPaths = pathList.GetList();
 			
 			return true;
 		}
