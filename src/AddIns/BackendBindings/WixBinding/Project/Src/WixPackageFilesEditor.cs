@@ -253,7 +253,7 @@ namespace ICSharpCode.WixBinding
 			WixComponentElement componentElement = view.SelectedElement as WixComponentElement;
 			WixDirectoryElement directoryElement = view.SelectedElement as WixDirectoryElement;
 			if (componentElement != null) {
-				WixFileElement fileElement = AddFile(componentElement, fileName);
+				WixFileElement fileElement = AddFile(componentElement, fileName, false);
 				view.AddElement(fileElement);
 				view.IsDirty = true;
 			} else if (directoryElement != null) {
@@ -266,11 +266,14 @@ namespace ICSharpCode.WixBinding
 		/// <summary>
 		/// Adds a file to the specified component element.
 		/// </summary>
-		WixFileElement AddFile(WixComponentElement componentElement, string fileName)
+		WixFileElement AddFile(WixComponentElement componentElement, string fileName, bool keyPath)
 		{
 			WixFileElement fileElement = componentElement.AddFile(fileName);
 			if (!componentElement.HasDiskId) {
 				componentElement.DiskId = "1";
+			}
+			if (keyPath) {
+				fileElement.KeyPath = "yes";
 			}
 			return fileElement;
 		}
@@ -433,7 +436,7 @@ namespace ICSharpCode.WixBinding
 		{
 			string id = WixComponentElement.GenerateIdFromFileName(document, fileName);
 			WixComponentElement component = AddComponent(directoryElement, id);			
-			AddFile(component, fileName);
+			AddFile(component, fileName, true);
 			return component;
 		}
 		

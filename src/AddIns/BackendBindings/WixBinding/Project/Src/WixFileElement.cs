@@ -75,6 +75,14 @@ namespace ICSharpCode.WixBinding
 		}
 		
 		/// <summary>
+		/// Gets whether the file is the KeyPath for its parent component.
+		/// </summary>
+		public string KeyPath {
+			get { return GetAttribute("KeyPath"); }
+			set { SetAttribute("KeyPath", value); }
+		}		
+		
+		/// <summary>
 		/// Gets the name of the file without any path information.
 		/// This is the name that will be used when installing the file.
 		/// </summary>

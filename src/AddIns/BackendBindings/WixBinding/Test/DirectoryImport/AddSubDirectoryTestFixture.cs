@@ -85,6 +85,12 @@ namespace WixBinding.Tests.DirectoryImport
 			Assert.IsNotNull(readmeFileElement);
 		}
 		
+		[Test]
+		public void ReadmeFileElementIsKeyPath()
+		{
+			Assert.AreEqual("yes", readmeFileElement.GetAttribute("KeyPath"));
+		}
+		
 		/// <summary>
 		/// Gets the MyApp directory files.
 		/// </summary>

@@ -74,6 +74,12 @@ namespace WixBinding.Tests.PackageFiles
 		}
 		
 		[Test]
+		public void ReadmeFileElementKeyPathNotSet()
+		{
+			Assert.IsFalse(readmeFileElement.HasAttribute("KeyPath"));
+		}
+		
+		[Test]
 		public void ExeFileLongNameAttributeDoesNotExist()
 		{
 			Assert.IsFalse(exeFileElement.HasAttribute("LongName"));
