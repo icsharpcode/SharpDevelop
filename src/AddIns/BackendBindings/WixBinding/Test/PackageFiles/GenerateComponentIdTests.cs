@@ -54,5 +54,12 @@ namespace WixBinding.Tests.PackageFiles
 			string fileName = "a-b.txt";
 			Assert.AreEqual("A_bTxt", WixComponentElement.GenerateIdFromFileName(fileName));
 		}
+		
+		[Test]
+		public void DotsInFileName()
+		{
+			string fileName = "a.b.txt";
+			Assert.AreEqual("AbTxt", WixComponentElement.GenerateIdFromFileName(fileName));
+		}		
 	}
 }

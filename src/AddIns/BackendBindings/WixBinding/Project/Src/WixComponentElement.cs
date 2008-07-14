@@ -22,39 +22,25 @@ namespace ICSharpCode.WixBinding
 		}
 		
 		public string Guid {
-			get {
-				return GetAttribute("Guid");
-			}
-			set {
-				SetAttribute("Guid", value);
-			}
+			get { return GetAttribute("Guid"); }
+			set { SetAttribute("Guid", value); }
 		}
 		
 		public string Id {
-			get {
-				return GetAttribute("Id");
-			}
-			set {
-				SetAttribute("Id", value);
-			}
+			get { return GetAttribute("Id"); }
+			set { SetAttribute("Id", value); }
 		}
 		
 		public string DiskId {
-			get {
-				return GetAttribute("DiskId");
-			}
-			set {
-				SetAttribute("DiskId", value);
-			}
+			get { return GetAttribute("DiskId"); }
+			set { SetAttribute("DiskId", value); }
 		}
 		
 		/// <summary>
 		/// Checks whether the disk id has already been set for this component.
 		/// </summary>
 		public bool HasDiskId {
-			get {
-				return HasAttribute("DiskId");
-			}
+			get { return HasAttribute("DiskId"); }
 		}
 		
 		/// <summary>
@@ -95,7 +81,7 @@ namespace ICSharpCode.WixBinding
 			// Add the parent folder to the id.
 			string parentDirectory = WixDirectoryElement.GetLastDirectoryName(Path.GetDirectoryName(fileName));
 			parentDirectory = FirstCharacterToUpperInvariant(parentDirectory);
-			parentDirectory = WixFileElement.GenerateId(parentDirectory);
+			parentDirectory = WixFileElement.GenerateId(parentDirectory).Replace(".", String.Empty);
 			id = String.Concat(parentDirectory, id);
 			if (!document.ComponentIdExists(id)) {
 				return id;
@@ -124,7 +110,7 @@ namespace ICSharpCode.WixBinding
 			string fileNameNoExtension = Path.GetFileNameWithoutExtension(fileName);
 			string idStart = String.Empty;
 			if (fileNameNoExtension.Length > 0) {
-				idStart = FirstCharacterToUpperInvariant(fileNameNoExtension);
+				idStart = FirstCharacterToUpperInvariant(fileNameNoExtension).Replace(".", String.Empty);
 			}
 			
 			// Remove period from extension and uppercase first extension char.
