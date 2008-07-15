@@ -85,4 +85,26 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			Process.Start(psi);
 		}
 	}
+	
+	/// <summary>
+	/// Opens the projects output folder in an explorer window.
+	/// </summary>
+	public class OpenProjectOutputFolder : AbstractMenuCommand
+	{
+		public override void Run()
+		{
+			CompilableProject project = ProjectService.CurrentProject as CompilableProject;
+			if (project == null) {
+				return;
+			}
+			
+			// Explorer does not handle relative paths as a command line argument properly
+			string outputFolder =  project.OutputFullPath;
+			if (!Directory.Exists(outputFolder)) {
+				Directory.CreateDirectory(outputFolder);
+			}
+			
+			Process.Start(outputFolder);
+		}
+	}
 }

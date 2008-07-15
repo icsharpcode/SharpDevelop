@@ -340,6 +340,9 @@
 		<MenuItem id = "GenerateDocumentation"
 		          label = "${res:ProjectComponent.ContextMenu.GenerateDocumentation}"
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.GenerateProjectDocumentation"/>
+		<MenuItem id = "OpenProjectOutputFolder"
+		          label = "${res:ProjectComponent.ContextMenu.OpenProjectOutputFolder}"
+		          class = "ICSharpCode.SharpDevelop.Project.Commands.OpenProjectOutputFolder"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ReferenceFolderNode">
