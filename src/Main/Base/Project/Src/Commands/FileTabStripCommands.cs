@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
@@ -70,6 +71,22 @@ namespace ICSharpCode.SharpDevelop.Commands.TabStrip
 		{
 			IWorkbenchWindow window = Owner as IWorkbenchWindow;
 			ClipboardWrapper.SetText(window.ActiveViewContent.PrimaryFileName ?? "");
+		}
+	}
+	
+	
+	
+	public class FileContainingFolderInExplorer : AbstractMenuCommand
+	{
+		public override void Run()
+		{
+			IWorkbenchWindow window = Owner as IWorkbenchWindow;
+			if (File.Exists(window.ActiveViewContent.PrimaryFileName)) {
+				string folder = Path.GetDirectoryName(window.ActiveViewContent.PrimaryFileName);
+				ProcessStartInfo procStart = new ProcessStartInfo("explorer");
+				procStart.Arguments = string.Format("\"{0}\"", folder);
+				Process.Start(procStart);
+			}
 		}
 	}
 }

@@ -993,6 +993,9 @@
 			<MenuItem id = "CopyPathName"
 			          label = "${res:OpenFileTabEventHandler.CopyPathName}"
 			          class = "ICSharpCode.SharpDevelop.Commands.TabStrip.CopyPathName"/>
+			<MenuItem id = "FileContainingFolderInExplorer"
+			          label = "${res:OpenFileTabEventHandler.FileContainingFolderInExplorer}"
+			          class = "ICSharpCode.SharpDevelop.Commands.TabStrip.FileContainingFolderInExplorer"/>
 		</ComplexCondition>
 	</Path>
 	
