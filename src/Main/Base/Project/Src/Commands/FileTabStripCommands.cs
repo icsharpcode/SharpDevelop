@@ -65,6 +65,9 @@ namespace ICSharpCode.SharpDevelop.Commands.TabStrip
 		}
 	}
 	
+	/// <summary>
+	/// Copies the path to the clipboard.
+	/// </summary>
 	public class CopyPathName : AbstractMenuCommand
 	{
 		public override void Run()
@@ -74,8 +77,9 @@ namespace ICSharpCode.SharpDevelop.Commands.TabStrip
 		}
 	}
 	
-	
-	
+	/// <summary>
+	/// Opens the containing folder in the clipboard.
+	/// </summary>
 	public class FileContainingFolderInExplorer : AbstractMenuCommand
 	{
 		public override void Run()
@@ -83,9 +87,7 @@ namespace ICSharpCode.SharpDevelop.Commands.TabStrip
 			IWorkbenchWindow window = Owner as IWorkbenchWindow;
 			if (File.Exists(window.ActiveViewContent.PrimaryFileName)) {
 				string folder = Path.GetDirectoryName(window.ActiveViewContent.PrimaryFileName);
-				ProcessStartInfo procStart = new ProcessStartInfo("explorer");
-				procStart.Arguments = string.Format("\"{0}\"", folder);
-				Process.Start(procStart);
+				Process.Start(folder);
 			}
 		}
 	}
