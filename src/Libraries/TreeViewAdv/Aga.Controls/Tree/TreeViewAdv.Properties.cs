@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Drawing;
-using System.Windows.Forms;
-using System.Collections.ObjectModel;
 using System.Drawing.Design;
+using System.Windows.Forms;
 
 using Aga.Controls.Tree.NodeControls;
 
@@ -365,7 +364,10 @@ namespace Aga.Controls.Tree
 		}
 
 		private bool _autoRowHeight = false;
-		[DefaultValue(false), Category("Appearance")]
+		/// <summary>
+		/// Set to true to expand each row's height to fit the text of it's largest column.
+		/// </summary>
+		[DefaultValue(false), Category("Appearance"), Description("Expand each row's height to fit the text of it's largest column.")]
 		public bool AutoRowHeight
 		{
 			get
@@ -562,8 +564,7 @@ namespace Aga.Controls.Tree
 		/// <summary>
 		/// When set to true, node contents will be read in background thread
 		/// </summary>
-		[Category("Behavior")]
-		[DefaultValue(false)]
+		[Category("Behavior"), DefaultValue(false), Description("Read children in a background thread when expanding.")]
 		public bool AsyncExpanding
 		{
 			get { return _asyncExpanding; }

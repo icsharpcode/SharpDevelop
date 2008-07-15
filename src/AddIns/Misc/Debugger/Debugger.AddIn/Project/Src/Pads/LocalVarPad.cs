@@ -37,9 +37,6 @@
 //  
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Drawing;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
@@ -54,102 +51,12 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
 	public class LocalVarPad : DebuggerPad
 	{
-		class ItemIcon: NodeIcon {
-			protected override System.Drawing.Image GetIcon(TreeNodeAdv node)
-			{
-				return ((TreeViewVarNode)node).Content.Image;
-			}
-		}
-		
-		class ItemName: NodeTextBox {
-			protected override bool CanEdit(TreeNodeAdv node)
-			{
-				return false;
-			}
-			public override object GetValue(TreeNodeAdv node)
-			{
-				if (node is TreeViewVarNode) {
-					return ((TreeViewVarNode)node).Content.Name;
-				} else {
-					// Happens during incremental search
-					return base.GetValue(node);
-				}
-			}
-		}
-		
-		class ItemText: NodeTextBox {
-			public ItemText()
-			{
-				this.EditEnabled = true;
-				this.EditOnClick = true;
-			}
-			protected override bool CanEdit(TreeNodeAdv node)
-			{
-				AbstractNode content = ((TreeViewVarNode)node).Content;
-				return (content is ISetText) && ((ISetText)content).CanSetText;
-			}
-			public override object GetValue(TreeNodeAdv node)
-			{
-				if (node is TreeViewVarNode) {
-					return ((TreeViewVarNode)node).Content.Text;
-				} else {
-					// Happens during incremental search
-					return base.GetValue(node);
-				}
-			}
-			public override void SetValue(TreeNodeAdv node, object value)
-			{
-				ISetText content = (ISetText)((TreeViewVarNode)node).Content;
-				if (content.CanSetText) {
-					content.SetText(value.ToString());
-				}
-			}
-			protected override void OnDrawText(DrawEventArgs args)
-			{
-				AbstractNode content = ((TreeViewVarNode)args.Node).Content;
-				if (content is ErrorNode) {
-					args.TextColor = Color.Red;
-				} else if (((TreeViewVarNode)args.Node).TextChanged) {
-					args.TextColor = Color.Blue;
-				}
-				base.OnDrawText(args);
-			}
-			public override void MouseDown(TreeNodeAdvMouseEventArgs args)
-			{
-				AbstractNode content = ((TreeViewVarNode)args.Node).Content;
-				if (content is IContextMenu && args.Button == MouseButtons.Right) {
-					ContextMenuStrip menu = ((IContextMenu)content).GetContextMenu();
-					if (menu != null) {
-						menu.Show(args.Node.Tree, args.Location);
-					}
-				} else {
-					base.MouseDown(args);
-				}
-			}
-		}
-		
-		class ItemType: NodeTextBox {
-			protected override bool CanEdit(TreeNodeAdv node)
-			{
-				return false;
-			}
-			public override object GetValue(TreeNodeAdv node)
-			{
-				if (node is TreeViewVarNode) {
-					return ((TreeViewVarNode)node).Content.Type;
-				} else {
-					// Happens during incremental search
-					return base.GetValue(node);
-				}
-			}
-		}
-		
 		TreeViewAdv localVarList;
 		Debugger.Process debuggedProcess;
 		
-		TreeColumn nameColumn = new TreeColumn();
-		TreeColumn valColumn  = new TreeColumn();
-		TreeColumn typeColumn = new TreeColumn();
+		readonly TreeColumn nameColumn = new TreeColumn();
+		readonly TreeColumn valColumn  = new TreeColumn();
+		readonly TreeColumn typeColumn = new TreeColumn();
 		
 		/// <remarks>
 		/// This is not used anywhere, but it is neccessary to be overridden in children of AbstractPadContent.
@@ -158,10 +65,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			get {
 				return localVarList;
 			}
-		}
-		
-		public TreeViewAdv LocalVarList {
-			get { return localVarList; }
 		}
 		
 		public Process Process {
@@ -193,6 +96,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			NodeTextBox typeControl = new ItemType();
 			typeControl.ParentColumn = typeColumn;
 			localVarList.NodeControls.Add(typeControl);
+			
+			localVarList.AutoRowHeight = true;
 			
 			RedrawContent();
 		}
@@ -235,7 +140,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				try {
 					localVarList.BeginUpdate();
 					Utils.DoEvents(debuggedProcess);
-					TreeViewVarNode.SetContentRecursive(debuggedProcess, LocalVarList, new StackFrameNode(debuggedProcess.SelectedStackFrame).ChildNodes);
+					TreeViewVarNode.SetContentRecursive(debuggedProcess, localVarList, new StackFrameNode(debuggedProcess.SelectedStackFrame).ChildNodes);
 				} catch(AbortedBecauseDebuggeeResumedException) {
 				} catch(System.Exception) {
 					if (debuggedProcess == null || debuggedProcess.HasExited) {

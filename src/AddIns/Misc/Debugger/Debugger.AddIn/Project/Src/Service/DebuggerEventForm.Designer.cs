@@ -1,6 +1,6 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
-//     <owner name="David Srbeck�" email="dsrbecky@gmail.com"/>
+//     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
 //     <version>$Revision: 2858 $</version>
 // </file>
 #region License
@@ -115,7 +115,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			this.textBox.TabIndex = 4;
 			this.textBox.WordWrap = false;
 			// 
-			// ExceptionForm
+			// DebuggerEventForm
 			// 
 			this.CancelButton = this.buttonBreak;
 			this.ClientSize = new System.Drawing.Size(638, 203);
@@ -124,11 +124,9 @@ namespace ICSharpCode.SharpDevelop.Services
 			this.Controls.Add(this.buttonTerminate);
 			this.Controls.Add(this.buttonContinue);
 			this.Controls.Add(this.buttonBreak);
-			this.MaximizeBox = false;
 			this.MinimizeBox = false;
-			this.Name = "ExceptionForm";
+			this.Name = "DebuggerEventForm";
 			this.ShowInTaskbar = false;
-			this.Text = "";
 			this.TopMost = true;
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox)).EndInit();
 			this.ResumeLayout(false);
