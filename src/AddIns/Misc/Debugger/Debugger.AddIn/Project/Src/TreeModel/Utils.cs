@@ -31,12 +31,6 @@ namespace Debugger.AddIn.TreeModel
 				throw new AbortedBecauseDebuggeeResumedException();
 			}
 		}
-		
-		public static WindowsDebugger WindowsDebugger {
-			get {
-				return (WindowsDebugger)DebuggerService.CurrentDebugger;
-			}
-		}
 	}
 	
 	public class AbortedBecauseDebuggeeResumedException: System.Exception

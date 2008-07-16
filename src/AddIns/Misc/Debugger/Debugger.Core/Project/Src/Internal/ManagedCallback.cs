@@ -107,8 +107,9 @@ namespace Debugger
 		{
 			if (process.PauseSession.PausedReason == PausedReason.EvalComplete ||
 			    process.PauseSession.PausedReason == PausedReason.ExceptionIntercepted) {
-				process.SelectMostRecentStackFrameWithLoadedSymbols();
 				process.DisableAllSteppers();
+				process.CheckSelectedStackFrames();
+				// Do not set selected stack frame
 				// Do not raise events
 			} else {
 				// Raise the pause event outside the callback

@@ -101,6 +101,7 @@ namespace Debugger
 		internal void RaisePausedEvents()
 		{
 			DisableAllSteppers();
+			CheckSelectedStackFrames();
 			SelectMostRecentStackFrameWithLoadedSymbols();
 			
 			if (this.PauseSession.PausedReason == PausedReason.Exception) {
@@ -258,6 +259,19 @@ namespace Debugger
 						this.SelectedThread = thread;
 						break;
 					}
+				}
+			}
+		}
+		
+		internal void CheckSelectedStackFrames()
+		{
+			foreach(Thread thread in this.Threads) {
+				if (thread.IsInValidState) {
+					if (thread.SelectedStackFrame != null && thread.SelectedStackFrame.IsInvalid) {
+						thread.SelectedStackFrame = null;
+					}
+				} else {
+					thread.SelectedStackFrame = null;
 				}
 			}
 		}

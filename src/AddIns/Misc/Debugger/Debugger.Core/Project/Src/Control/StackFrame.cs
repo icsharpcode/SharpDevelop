@@ -74,11 +74,15 @@ namespace Debugger
 			}
 		}
 		
-		/// <summary> Returns true is this incance can not be used any more.
-		/// Stack frame is valid only until the debugee is resumed. </summary>
+		/// <summary> Returns true is this incance can not be used any more. </summary>
 		public bool IsInvalid {
 			get {
-				return this.corILFramePauseSession != process.PauseSession;
+				try {
+					object frame = this.CorILFrame;
+					return false;
+				} catch (DebuggerException) {
+					return true;
+				}
 			}
 		}
 		
@@ -108,7 +112,13 @@ namespace Debugger
 		
 		internal ICorDebugILFrame CorILFrame {
 			get {
-				if (this.IsInvalid) throw new DebuggerException("StackFrame is not valid anymore");
+				if (corILFramePauseSession != this.Process.PauseSession) {
+					// Reobtain the stackframe
+					StackFrame stackFrame = this.Thread.GetStackFrameAt(chainIndex, frameIndex);
+					if (stackFrame.MethodInfo != this.MethodInfo) throw new DebuggerException("The stack frame on the thread does not represent the same method anymore");
+					corILFrame = stackFrame.corILFrame;
+					corILFramePauseSession = stackFrame.corILFramePauseSession;
+				}
 				return corILFrame;
 			}
 		}
@@ -119,13 +129,6 @@ namespace Debugger
 				CorILFrame.GetIP(out corInstructionPtr);
 				return corInstructionPtr;
 			}
-		}
-		
-		internal StackFrame Reobtain()
-		{
-			StackFrame stackFrame = this.Thread.GetStackFrameAt(chainIndex, frameIndex);
-			if (stackFrame.MethodInfo != this.MethodInfo) throw new DebuggerException("The stack frame on the thread does not represent the same method anymore");
-			return stackFrame;
 		}
 		
 		SourcecodeSegment GetSegmentForOffet(uint offset)

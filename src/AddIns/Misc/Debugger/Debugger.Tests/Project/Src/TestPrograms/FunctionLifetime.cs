@@ -84,13 +84,13 @@ namespace Debugger.Tests {
     <DebuggingPaused>Break FunctionLifetime.cs:29,4-29,40</DebuggingPaused>
     <Old_StackFrame>
       <StackFrame
-        ArgumentCount="{Exception: StackFrame is not valid anymore}"
+        ArgumentCount="1"
         ChainIndex="1"
         FrameIndex="1"
         HasSymbols="True"
-        IsInvalid="True"
+        IsInvalid="False"
         MethodInfo="Function"
-        NextStatement="{Exception: StackFrame is not valid anymore}" />
+        NextStatement="FunctionLifetime.cs:23,4-23,18" />
     </Old_StackFrame>
     <SelectedStackFrame>
       <StackFrame
@@ -105,13 +105,13 @@ namespace Debugger.Tests {
     <DebuggingPaused>Break FunctionLifetime.cs:24,4-24,40</DebuggingPaused>
     <Old_StackFrame>
       <StackFrame
-        ArgumentCount="{Exception: StackFrame is not valid anymore}"
+        ArgumentCount="1"
         ChainIndex="1"
         FrameIndex="1"
         HasSymbols="True"
-        IsInvalid="True"
+        IsInvalid="False"
         MethodInfo="Function"
-        NextStatement="{Exception: StackFrame is not valid anymore}" />
+        NextStatement="FunctionLifetime.cs:24,4-24,40" />
     </Old_StackFrame>
     <SelectedStackFrame>
       <StackFrame
@@ -136,13 +136,13 @@ namespace Debugger.Tests {
     </Main>
     <Old_StackFrame>
       <StackFrame
-        ArgumentCount="{Exception: StackFrame is not valid anymore}"
+        ArgumentCount="{Exception: The requested frame index is too big}"
         ChainIndex="1"
         FrameIndex="1"
         HasSymbols="True"
         IsInvalid="True"
         MethodInfo="Function"
-        NextStatement="{Exception: StackFrame is not valid anymore}" />
+        NextStatement="{Exception: The requested frame index is too big}" />
     </Old_StackFrame>
     <SelectedStackFrame>
       <StackFrame
