@@ -20,35 +20,10 @@ namespace ICSharpCode.SharpDevelop.Services
 			}
 		}
 		
-		bool iCorDebugVisualizerEnabled;
-		bool showValuesInHexadecimal;
-		bool showArgumentNames;
-		bool showArgumentValues;
-		bool showExternalMethods;
-		
-		public bool ICorDebugVisualizerEnabled {
-			get { return iCorDebugVisualizerEnabled; }
-			set { iCorDebugVisualizerEnabled = value; }
-		}
-		
-		public bool ShowValuesInHexadecimal {
-			get { return showValuesInHexadecimal; }
-			set { showValuesInHexadecimal = value; }
-		}
-		
-		public bool ShowArgumentNames {
-			get { return showArgumentNames; }
-			set { showArgumentNames = value; }
-		}
-		
-		public bool ShowArgumentValues {
-			get { return showArgumentValues; }
-			set { showArgumentValues = value; }
-		}
-		
-		public bool ShowExternalMethods {
-			get { return showExternalMethods; }
-			set { showExternalMethods = value; }
-		}
+		public bool ICorDebugVisualizerEnabled;
+		public bool ShowValuesInHexadecimal;
+		public bool ShowArgumentNames;
+		public bool ShowArgumentValues;
+		public bool ShowExternalMethods;
 	}
 }

@@ -12,6 +12,7 @@
 // Replace with:
 // \1\2\n\1{\n\1\tEnterCallback(PausedReason.Other, "\3");\n\1\t\n\1\tExitCallback_Continue();\n\1}
 
+using Debugger.MetaData;
 using System;
 using System.Runtime.InteropServices;
 using Debugger.Wrappers.CorDebug;
@@ -125,20 +126,34 @@ namespace Debugger
 			Thread thread = process.GetThread(pThread);
 			Stepper stepper = thread.GetStepper(pStepper);
 			
-			process.TraceMessage(" - stepper info: " + stepper.ToString());
+			StackFrame currentStackFrame = process.SelectedThread.MostRecentStackFrame;
+			process.TraceMessage(" - stopped at {0} because of {1}", currentStackFrame.MethodInfo.FullName, stepper.ToString());
 			
 			thread.Steppers.Remove(stepper);
-			stepper.OnStepComplete();
+			stepper.OnStepComplete(reason);
 			
-			if (stepper.PauseWhenComplete) {
-				if (process.SelectedThread.MostRecentStackFrame.HasSymbols &&
-				    process.SelectedThread.MostRecentStackFrame.MethodInfo.IsMyCode) {
-					// This is a good place, let's stay here
-					pauseOnNextExit = true;
+			if (stepper.Ignore) {
+				// The stepper is ignored
+				process.TraceMessage(" - ignored");
+			} else if (thread.CurrentStepIn != null &&
+				       thread.CurrentStepIn.StackFrame.Equals(currentStackFrame) &&
+			           thread.CurrentStepIn.IsInStepRanges((int)currentStackFrame.CorInstructionPtr)) {
+				Stepper.StepIn(currentStackFrame, thread.CurrentStepIn.StepRanges, "finishing step in");
+				process.TraceMessage(" - finishing step in");
+			} else if (currentStackFrame.MethodInfo.StepOver) {
+				if (process.Options.EnableJustMyCode) {
+					currentStackFrame.MethodInfo.MarkAsNonUserCode();
+					process.TraceMessage(" - method {0} marked as non user code", currentStackFrame.MethodInfo.FullName);
+					Stepper.StepIn(currentStackFrame, new int[] {0, int.MaxValue}, "seeking user code");
+					process.TraceMessage(" - seeking user code");
 				} else {
-					// Continue stepping to leave this place
-					
+					Stepper.StepOut(currentStackFrame, "stepping out of non-user code");
+					process.TraceMessage(" - stepping out of non-user code");
 				}
+			} else {
+				// User-code method
+				pauseOnNextExit = true;
+				process.TraceMessage(" - pausing in user code");
 			}
 			
 			ExitCallback();

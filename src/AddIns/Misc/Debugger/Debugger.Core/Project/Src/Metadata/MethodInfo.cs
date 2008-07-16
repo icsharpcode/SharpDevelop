@@ -20,17 +20,12 @@ namespace Debugger.MetaData
 	public class MethodInfo: MemberInfo
 	{
 		MethodProps methodProps;
-		FieldInfo backingField;
 		
 		/// <summary> Gets the name of this method </summary>
 		public override string Name {
 			get {
 				return methodProps.Name;
 			}
-		}
-		
-		internal FieldInfo BackingField {
-			get { return backingField; }
 		}
 		
 		/// <summary> Gets a value indicating whether this member has the private access modifier</summary>
@@ -83,26 +78,59 @@ namespace Debugger.MetaData
 			}
 		}
 		
-		public bool IsMyCode {
+		/// <summary> Gets value indicating whether this method should be stepped over
+		/// accoring to current options </summary>
+		public bool StepOver {
 			get {
-				return this.CorFunction.CastTo<ICorDebugFunction2>().JMCStatus != 0;
-			}
-			set {
-				this.CorFunction.CastTo<ICorDebugFunction2>().SetJMCStatus(value ? 1 : 0);
+				Options opt = this.Process.Options;
+				if (opt.StepOverNoSymbols) {
+					if (this.SymMethod == null) return true;
+				}
+				if (opt.StepOverDebuggerAttributes) {
+					if (this.HasDebuggerAttribute) return true;
+				}
+				if (opt.StepOverAllProperties) {
+					if (this.IsProperty)return true;
+				}
+				if (opt.StepOverSingleLineProperties) {
+					if (this.IsProperty && this.IsSingleLine) return true;
+				}
+				if (opt.StepOverFieldAccessProperties) {
+					if (this.IsProperty && this.BackingField != null) return true;
+				}
+				return false;
 			}
 		}
 		
 		internal MethodInfo(DebugType declaringType, MethodProps methodProps):base (declaringType)
 		{
 			this.methodProps = methodProps;
-			
-			this.backingField = GetBackingField();
+		}
+		
+		// TODO: More accurate
+		bool IsProperty {
+			get {
+				return this.Name.StartsWith("get_") || this.Name.StartsWith("set_");
+			}
+		}
+		
+		FieldInfo backingFieldCache;
+		bool getBackingFieldCalled;
+		
+		internal FieldInfo BackingField {
+			get {
+				if (!getBackingFieldCalled) {
+					backingFieldCache = GetBackingField();
+					getBackingFieldCalled = true;
+				}
+				return backingFieldCache;
+			}
 		}
 		
 		// Is this method in form 'return this.field;'?
 		FieldInfo GetBackingField()
 		{
-			if (this.IsStatic) return null;
+			if (this.IsStatic) return null; // TODO: Make work for static
 			if (this.ParameterCount != 0) return null;
 			
 			ICorDebugCode corCode;
@@ -175,6 +203,83 @@ namespace Debugger.MetaData
 			}
 			
 			return null;
+		}
+		
+		bool? isSingleLineCache;
+		
+		bool IsSingleLine {
+			get {
+				// Note symbols might get loaded manually later by the user
+				ISymUnmanagedMethod symMethod = this.SymMethod;
+				if (symMethod == null) return false; // No symbols - can not determine
+				
+				if (isSingleLineCache.HasValue) return isSingleLineCache.Value;
+				
+				List<SequencePoint> seqPoints = new List<SequencePoint>(symMethod.SequencePoints);
+				seqPoints.Sort();
+				
+				// Remove initial "{"
+				if (seqPoints.Count > 0 &&
+				    seqPoints[0].Line == seqPoints[0].EndLine &&
+				    seqPoints[0].EndColumn - seqPoints[0].Column <= 1) {
+					seqPoints.RemoveAt(0);
+				}
+				
+				// Remove last "}"
+				int listIndex = seqPoints.Count - 1;
+				if (seqPoints.Count > 0 &&
+				    seqPoints[listIndex].Line == seqPoints[listIndex].EndLine &&
+				    seqPoints[listIndex].EndColumn - seqPoints[listIndex].Column <= 1) {
+					seqPoints.RemoveAt(listIndex);
+				}
+				
+				// Is single line
+				isSingleLineCache = seqPoints.Count == 0 || seqPoints[0].Line == seqPoints[seqPoints.Count - 1].EndLine;
+				return isSingleLineCache.Value;
+			}
+		}
+		
+		bool? hasDebuggerAttributeCache;
+		
+		bool HasDebuggerAttribute {
+			get {
+				if (hasDebuggerAttributeCache.HasValue) return hasDebuggerAttributeCache.Value;
+				
+				MetaDataImport metaData = this.Module.MetaData;
+				hasDebuggerAttributeCache = false;
+				// Look on the method
+				foreach(CustomAttributeProps ca in metaData.EnumCustomAttributeProps(methodProps.Token, 0)) {
+					MemberRefProps constructorMethod = metaData.GetMemberRefProps(ca.Type);
+					TypeRefProps attributeType = metaData.GetTypeRefProps(constructorMethod.DeclaringType);
+					if (attributeType.Name == "System.Diagnostics.DebuggerStepThroughAttribute" ||
+					    attributeType.Name == "System.Diagnostics.DebuggerNonUserCodeAttribute" ||
+					    attributeType.Name == "System.Diagnostics.DebuggerHiddenAttribute")
+					{
+						hasDebuggerAttributeCache = true;
+					}
+				}
+				// Look on the type
+				foreach(CustomAttributeProps ca in metaData.EnumCustomAttributeProps(this.DeclaringType.Token, 0)) {
+					MemberRefProps constructorMethod = metaData.GetMemberRefProps(ca.Type);
+					TypeRefProps attributeType = metaData.GetTypeRefProps(constructorMethod.DeclaringType);
+					if (attributeType.Name == "System.Diagnostics.DebuggerStepThroughAttribute" ||
+					    attributeType.Name == "System.Diagnostics.DebuggerNonUserCodeAttribute" ||
+					    attributeType.Name == "System.Diagnostics.DebuggerHiddenAttribute")
+					{
+						hasDebuggerAttributeCache = true;
+					}
+				}
+				return hasDebuggerAttributeCache.Value;
+			}
+		}
+		
+		internal void MarkAsNonUserCode()
+		{
+			this.CorFunction.CastTo<ICorDebugFunction2>().SetJMCStatus(0 /* false */);
+			
+			if (this.Process.Options.Verbose) {
+				this.Process.TraceMessage("Funciton {0} marked as non-user code", this.FullName);
+			}
 		}
 		
 		/// <summary>

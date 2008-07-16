@@ -146,14 +146,14 @@ namespace Debugger.Tests {
             DeclaringType="Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;"
             FullName="Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;.Metod"
             IsInternal="False"
-            IsMyCode="True"
             IsPrivate="False"
             IsProtected="False"
             IsPublic="True"
             IsSpecialName="False"
             IsStatic="False"
             Module="Generics.exe"
-            Name="Metod">
+            Name="Metod"
+            StepOver="False">
             <DeclaringType>
               <DebugType
                 BaseType="System.Object"
@@ -211,14 +211,14 @@ namespace Debugger.Tests {
             DeclaringType="Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;"
             FullName="Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;.GenericMethod"
             IsInternal="False"
-            IsMyCode="True"
             IsPrivate="False"
             IsProtected="False"
             IsPublic="True"
             IsSpecialName="False"
             IsStatic="False"
             Module="Generics.exe"
-            Name="GenericMethod">
+            Name="GenericMethod"
+            StepOver="False">
             <DeclaringType>
               <DebugType
                 BaseType="System.Object"
@@ -276,14 +276,14 @@ namespace Debugger.Tests {
             DeclaringType="Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;"
             FullName="Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;.StaticMetod"
             IsInternal="False"
-            IsMyCode="True"
             IsPrivate="False"
             IsProtected="False"
             IsPublic="True"
             IsSpecialName="False"
             IsStatic="True"
             Module="Generics.exe"
-            Name="StaticMetod">
+            Name="StaticMetod"
+            StepOver="False">
             <DeclaringType>
               <DebugType
                 BaseType="System.Object"
@@ -341,14 +341,14 @@ namespace Debugger.Tests {
             DeclaringType="Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;"
             FullName="Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;.StaticGenericMethod"
             IsInternal="False"
-            IsMyCode="True"
             IsPrivate="False"
             IsProtected="False"
             IsPublic="True"
             IsSpecialName="False"
             IsStatic="True"
             Module="Generics.exe"
-            Name="StaticGenericMethod">
+            Name="StaticGenericMethod"
+            StepOver="False">
             <DeclaringType>
               <DebugType
                 BaseType="System.Object"
@@ -406,14 +406,14 @@ namespace Debugger.Tests {
             DeclaringType="Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;"
             FullName="Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;.Metod"
             IsInternal="False"
-            IsMyCode="True"
             IsPrivate="False"
             IsProtected="False"
             IsPublic="True"
             IsSpecialName="False"
             IsStatic="False"
             Module="Generics.exe"
-            Name="Metod">
+            Name="Metod"
+            StepOver="False">
             <DeclaringType>
               <DebugType
                 BaseType="System.ValueType"
@@ -471,14 +471,14 @@ namespace Debugger.Tests {
             DeclaringType="Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;"
             FullName="Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;.GenericMethod"
             IsInternal="False"
-            IsMyCode="True"
             IsPrivate="False"
             IsProtected="False"
             IsPublic="True"
             IsSpecialName="False"
             IsStatic="False"
             Module="Generics.exe"
-            Name="GenericMethod">
+            Name="GenericMethod"
+            StepOver="False">
             <DeclaringType>
               <DebugType
                 BaseType="System.ValueType"
@@ -536,14 +536,14 @@ namespace Debugger.Tests {
             DeclaringType="Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;"
             FullName="Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;.StaticMetod"
             IsInternal="False"
-            IsMyCode="True"
             IsPrivate="False"
             IsProtected="False"
             IsPublic="True"
             IsSpecialName="False"
             IsStatic="True"
             Module="Generics.exe"
-            Name="StaticMetod">
+            Name="StaticMetod"
+            StepOver="False">
             <DeclaringType>
               <DebugType
                 BaseType="System.ValueType"
@@ -601,14 +601,14 @@ namespace Debugger.Tests {
             DeclaringType="Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;"
             FullName="Debugger.Tests.TestPrograms.GenericStruct&lt;System.Int32,System.String&gt;.StaticGenericMethod"
             IsInternal="False"
-            IsMyCode="True"
             IsPrivate="False"
             IsProtected="False"
             IsPublic="True"
             IsSpecialName="False"
             IsStatic="True"
             Module="Generics.exe"
-            Name="StaticGenericMethod">
+            Name="StaticGenericMethod"
+            StepOver="False">
             <DeclaringType>
               <DebugType
                 BaseType="System.ValueType"

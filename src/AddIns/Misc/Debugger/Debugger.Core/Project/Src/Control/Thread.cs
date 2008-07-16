@@ -23,6 +23,7 @@ namespace Debugger
 		ICorDebugThread corThread;
 		bool hasExited = false;
 		
+		Stepper currentStepIn;
 		List<Stepper> steppers = new List<Stepper>();
 		
 		StackFrame selectedStackFrame;
@@ -48,6 +49,11 @@ namespace Debugger
 		public bool HasExited {
 			get { return hasExited; }
 			private set { hasExited = value; }
+		}
+		
+		internal Stepper CurrentStepIn {
+			get { return currentStepIn; }
+			set { currentStepIn = value; }
 		}
 		
 		/// <summary> From time to time the thread may be in invalid state. </summary>

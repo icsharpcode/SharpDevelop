@@ -11,83 +11,67 @@ using Debugger.Wrappers.CorDebug;
 
 namespace Debugger
 {
-	public class Stepper
+	enum StepperOperation {StepIn, StepOver, StepOut};
+	
+	class Stepper
 	{
-		public enum StepperOperation {Idle, StepIn, StepOver, StepOut};
-			
 		StackFrame stackFrame;
+		StepperOperation operation;
+		int[] stepRanges;
 		string name;
+		
 		ICorDebugStepper corStepper;
-		StepperOperation operation = StepperOperation.Idle;
-		bool pauseWhenComplete = true;
+		bool ignore;
 		
 		public event EventHandler<StepperEventArgs> StepComplete;
 		
 		[Debugger.Tests.Ignore]
 		public Process Process {
-			get {
-				return stackFrame.Process;
-			}
+			get { return stackFrame.Process; }
 		}
 		
 		public StackFrame StackFrame {
-			get {
-				return stackFrame;
-			}
-		}
-		
-		public string Name {
-			get {
-				return name;
-			}
+			get { return stackFrame; }
 		}
 		
 		public StepperOperation Operation {
-			get {
-				return operation;
-			}
+			get { return operation; }
 		}
 		
-		public bool PauseWhenComplete {
-			get {
-				return pauseWhenComplete;
-			}
-			set {
-				pauseWhenComplete = value;
-			}
+		public int[] StepRanges {
+			get { return stepRanges; }
 		}
 		
-		public bool JustMyCode {
-			set {
-				if (value) {
-					corStepper.SetUnmappedStopMask(CorDebugUnmappedStop.STOP_NONE);
-					corStepper.CastTo<ICorDebugStepper2>().SetJMC(1);
-				} else {
-					corStepper.SetUnmappedStopMask(CorDebugUnmappedStop.STOP_NONE);
-					corStepper.CastTo<ICorDebugStepper2>().SetJMC(0);
-				}
-			}
+		public string Name {
+			get { return name; }
 		}
 		
-		public Stepper(StackFrame stackFrame, string name): this(stackFrame)
-		{
-			this.name = name;
+		public bool Ignore {
+			get { return ignore; }
+			set { ignore = value; }
 		}
 		
-		public Stepper(StackFrame stackFrame)
+		private Stepper(StackFrame stackFrame, StepperOperation operation, int[] stepRanges, string name, bool justMyCode)
 		{
 			this.stackFrame = stackFrame;
+			this.operation = operation;
+			this.stepRanges = stepRanges;
+			this.name = name;
 			
-			corStepper = stackFrame.CorILFrame.CreateStepper();
+			this.corStepper = stackFrame.CorILFrame.CreateStepper();
+			this.ignore = false;
+			this.StackFrame.Thread.Steppers.Add(this);
 			
-			this.JustMyCode = Process.Options.EnableJustMyCode;
-			
-			stackFrame.Thread.Steppers.Add(this);
+			if (justMyCode) {
+				corStepper.SetUnmappedStopMask(CorDebugUnmappedStop.STOP_NONE);
+				corStepper.CastTo<ICorDebugStepper2>().SetJMC(1);
+			}
 		}
 		
-		protected internal virtual void OnStepComplete() {
+		protected internal virtual void OnStepComplete(CorDebugStepReason reason) {
+			this.corStepper = null;
 			if (StepComplete != null) {
-				StepComplete(this, new StepperEventArgs(this));
+				StepComplete(this, new StepperEventArgs(this, reason));
 			}
 		}
 		
@@ -96,45 +80,62 @@ namespace Debugger
 			return this.corStepper == corStepper;
 		}
 		
-		public void StepOut()
+		internal bool IsInStepRanges(int offset)
 		{
-			operation = StepperOperation.StepOut;
-			JustMyCode = false; // Needed for multiple events. See docs\Stepping.txt
-			corStepper.StepOut();
+			for(int i = 0; i < stepRanges.Length / 2; i++) {
+				if (stepRanges[2*i] <= offset && offset < stepRanges[2*i + 1]) {
+					return true;
+				}
+			}
+			return false;
 		}
 		
-		public void StepIn(int[] ranges)
+		public static Stepper StepOut(StackFrame stackFrame, string name)
 		{
-			operation = StepperOperation.StepIn;
-			corStepper.StepRange(true /* step in */, ranges);
+			// JMC off - Needed for multiple events. See docs\Stepping.txt
+			Stepper stepper = new Stepper(stackFrame, StepperOperation.StepOut, null, name, false);
+			stepper.corStepper.StepOut();
+			return stepper;
 		}
 		
-		public void StepOver(int[] ranges)
+		public static Stepper StepIn(StackFrame stackFrame, int[] stepRanges, string name)
 		{
-			operation = StepperOperation.StepOver;
-			corStepper.StepRange(false /* step over */, ranges);
+			Stepper stepper = new Stepper(stackFrame, StepperOperation.StepIn, stepRanges, name, stackFrame.Process.Options.EnableJustMyCode);
+			stepper.corStepper.StepRange(true /* step in */, stepRanges);
+			return stepper;
+		}
+		
+		public static Stepper StepOver(StackFrame stackFrame, int[] stepRanges, string name)
+		{
+			Stepper stepper = new Stepper(stackFrame, StepperOperation.StepOver, stepRanges, name, stackFrame.Process.Options.EnableJustMyCode);
+			stepper.corStepper.StepRange(false /* step over */, stepRanges);
+			return stepper;
 		}
 		
 		public override string ToString()
 		{
-			return string.Format("{0} in {1} pause={2} \"{3}\"", Operation, StackFrame.ToString(), PauseWhenComplete, name);
+			return string.Format("{0} from {1} name=\"{2}\"", this.Operation, this.StackFrame.ToString(), this.Name);
 		}
 	}
 	
 	[Serializable]
-	public class StepperEventArgs: ProcessEventArgs
+	class StepperEventArgs: ProcessEventArgs
 	{
 		Stepper stepper;
+		CorDebugStepReason reason;
 		
 		public Stepper Stepper {
-			get {
-				return stepper;
-			}
+			get { return stepper; }
 		}
 		
-		public StepperEventArgs(Stepper stepper): base(stepper.Process)
+		public CorDebugStepReason Reason {
+			get { return reason; }
+		}
+		
+		public StepperEventArgs(Stepper stepper, CorDebugStepReason reason): base(stepper.Process)
 		{
 			this.stepper = stepper;
+			this.reason = reason;
 		}
 	}
 }

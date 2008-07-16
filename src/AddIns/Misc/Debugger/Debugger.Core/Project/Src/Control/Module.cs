@@ -176,9 +176,11 @@ namespace Debugger
 			fullPath = pModule.Name;
 			
 			LoadSymbols(process.Options.SymbolsSearchPaths);
-			SetJustMyCodeStatus();
+			
+			ResetJustMyCodeStatus();
 		}
 		
+		/// <summary> Try to load the debugging symbols (.pdb) from the given path </summary>
 		public void LoadSymbols(string[] searchPath)
 		{
 			if (symReader == null) {
@@ -189,146 +191,17 @@ namespace Debugger
 			}
 		}
 		
-		/// <summary>
-		/// Finds all classes and methods marked with DebuggerNonUserCode attribute
-		/// and marks them for JMC so that they are not stepped into
-		/// </summary>
-		public void SetJustMyCodeStatus()
+		/// <summary> Sets all code as being 'my code'.  The code will be gradually
+		/// set to not-user-code as encountered acording to stepping options </summary>
+		public void ResetJustMyCodeStatus()
 		{
-			DateTime start, end;
 			uint unused = 0;
-			
-			if (!this.Process.Options.EnableJustMyCode) {
-				corModule.CastTo<ICorDebugModule2>().SetJMCStatus(1, 0, ref unused);
-				return;
-			}
-			
-			if (!this.HasSymbols) {
+			if (this.Process.Options.StepOverNoSymbols && !this.HasSymbols) {
+				// Optimization - set the code as non-user right away
 				corModule.CastTo<ICorDebugModule2>().SetJMCStatus(0, 0, ref unused);
 				return;
 			}
-			
-			this.Process.TraceMessage("JMC for " + this.Filename);
-			start = Util.HighPrecisionTimer.Now;
-			// By default the code is my code
 			corModule.CastTo<ICorDebugModule2>().SetJMCStatus(1, 0, ref unused);
-			end = Util.HighPrecisionTimer.Now;
-			this.Process.TraceMessage(" * Defualt ({0} ms)", (end - start).TotalMilliseconds);
-			
-			start = Util.HighPrecisionTimer.Now;
-			// Apply non-user code attributes
-			if (this.Process.Options.StepOverDebuggerAttributes) {
-				foreach(CustomAttributeProps ca in metaData.EnumCustomAttributeProps(0, 0)) {
-					MemberRefProps constructorMethod = metaData.GetMemberRefProps(ca.Type);
-					TypeRefProps attributeType = metaData.GetTypeRefProps(constructorMethod.DeclaringType);
-					if (attributeType.Name == "System.Diagnostics.DebuggerStepThroughAttribute" ||
-					    attributeType.Name == "System.Diagnostics.DebuggerNonUserCodeAttribute" ||
-					    attributeType.Name == "System.Diagnostics.DebuggerHiddenAttribute")
-					{
-						if (ca.Owner >> 24 == 0x02) { // TypeDef
-							ICorDebugClass2 corClass = corModule.GetClassFromToken(ca.Owner).CastTo<ICorDebugClass2>();
-							corClass.SetJMCStatus(0 /* false */);
-							if (this.Process.Options.Verbose) {
-								this.Process.TraceMessage("Class {0} marked as non-user code", metaData.GetTypeDefProps(ca.Owner).Name);
-							}
-						}
-						if (ca.Owner >> 24 == 0x06) { // MethodDef
-							DisableJustMyCode(ca.Owner);
-						}
-					}
-				}
-			}
-			end = Util.HighPrecisionTimer.Now;
-			this.Process.TraceMessage(" * Attributes ({0} ms)", (end - start).TotalMilliseconds);
-			
-			start = Util.HighPrecisionTimer.Now;
-			// Mark all methods without symbols as non-user code
-			if (this.Process.Options.StepOverDebuggerAttributes) { // TODO: Remove
-				foreach(uint typeDef in metaData.EnumTypeDefs()) {
-					foreach(uint methodDef in metaData.EnumMethods(typeDef)) {
-						if (!HasMethodSymbols(methodDef)) {
-							DisableJustMyCode(methodDef);
-						}
-					}
-				}
-			}
-			end = Util.HighPrecisionTimer.Now;
-			this.Process.TraceMessage(" * All functions ({0} ms)", (end - start).TotalMilliseconds);
-			
-			start = Util.HighPrecisionTimer.Now;
-			// Skip properties
-			if (this.Process.Options.StepOverAllProperties) {
-				foreach(uint typeDef in metaData.EnumTypeDefs()) {
-					foreach(PropertyProps prop in metaData.EnumPropertyProps(typeDef)) {
-						if ((prop.GetterMethod & 0xFFFFFF) != 0) {
-							if (!Process.Options.StepOverSingleLineProperties || IsSingleLine(prop.GetterMethod)) {
-								DisableJustMyCode(prop.GetterMethod);
-							}
-						}
-						if ((prop.SetterMethod & 0xFFFFFF) != 0) {
-							if (!Process.Options.StepOverSingleLineProperties || IsSingleLine(prop.SetterMethod)) {
-								DisableJustMyCode(prop.SetterMethod);
-							}
-						}
-					}
-				}
-			}
-			end = Util.HighPrecisionTimer.Now;
-			this.Process.TraceMessage(" * Properties ({0} ms)", (end - start).TotalMilliseconds);
-			
-//			this.Process.TraceMessage("Set Just-My-Code for module \"{0}\" ({1} ms)", this.Filename, (end - start).TotalMilliseconds);
-		}
-		
-		bool HasMethodSymbols(uint methodDef)
-		{
-			try {
-				return this.SymReader.GetMethod(methodDef) != null;
-			} catch (COMException) {
-				// Symbols not found
-				return false;
-			}
-		}
-		
-		void DisableJustMyCode(uint methodDef)
-		{
-			MethodProps methodProps = metaData.GetMethodProps(methodDef);
-			TypeDefProps typeProps = metaData.GetTypeDefProps(methodProps.ClassToken);
-			
-			ICorDebugFunction2 corFunction = corModule.GetFunctionFromToken(methodProps.Token).CastTo<ICorDebugFunction2>();
-			corFunction.SetJMCStatus(0 /* false */);
-			if (this.Process.Options.Verbose) {
-				this.Process.TraceMessage("Funciton {0}.{1} marked as non-user code", typeProps.Name, methodProps.Name);
-			}
-		}
-		
-		bool IsSingleLine(uint methodDef)
-		{
-			ISymUnmanagedMethod symMethod;
-			try {
-				symMethod = this.SymReader.GetMethod(methodDef);
-			} catch (COMException) {
-				return false; // No symbols - can not determine
-			}
-			List<SequencePoint> seqPoints = new List<SequencePoint>(symMethod.SequencePoints);
-			seqPoints.Sort();
-			
-			// Remove initial "{"
-			if (seqPoints.Count > 0 &&
-			    seqPoints[0].Line == seqPoints[0].EndLine &&
-			    seqPoints[0].EndColumn - seqPoints[0].Column <= 1) {
-				seqPoints.RemoveAt(0);
-			}
-			
-			// Remove last "}"
-			int listIndex = seqPoints.Count - 1;
-			if (seqPoints.Count > 0 &&
-			    seqPoints[listIndex].Line == seqPoints[listIndex].EndLine &&
-			    seqPoints[listIndex].EndColumn - seqPoints[listIndex].Column <= 1) {
-				seqPoints.RemoveAt(listIndex);
-			}
-			
-			// Is single line
-			return seqPoints.Count == 0 || seqPoints[0].Line == seqPoints[seqPoints.Count - 1].EndLine;
 		}
 		
 		public void ApplyChanges(byte[] metadata, byte[] il)

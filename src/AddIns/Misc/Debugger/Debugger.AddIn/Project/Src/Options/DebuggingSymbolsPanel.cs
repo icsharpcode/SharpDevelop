@@ -5,11 +5,11 @@
 //     <version>$Revision$</version>
 // </file>
 
+using Debugger;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Services;
 
@@ -37,7 +37,11 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		public override bool StorePanelContents()
 		{
 			DebuggingOptions.Instance.SymbolsSearchPaths = pathList.GetList();
-			
+			Process proc = WindowsDebugger.CurrentProcess;
+			if (proc != null) {
+				proc.Debugger.ReloadModuleSymbols();
+				proc.Debugger.ResetJustMyCodeStatus();
+			}
 			return true;
 		}
 	}

@@ -30,7 +30,6 @@ namespace Debugger.MetaData
 		string fullName;
 		
 		// Class/ValueType specific
-		ICorDebugClass corClass;
 		Module module;
 		TypeDefProps classProps;
 		
@@ -81,7 +80,7 @@ namespace Debugger.MetaData
 		/// <para> Only applicable to class or value type! </para>
 		/// </summary>
 		[Debugger.Tests.Ignore]
-		public uint MetadataToken {
+		public uint Token {
 			get {
 				AssertClassOrValueType();
 				return classProps.Token;
@@ -326,9 +325,8 @@ namespace Debugger.MetaData
 			this.corElementType = (CorElementType)corType.Type;
 			
 			if (this.IsClass || this.IsValueType) {
-				this.corClass = corType.Class;
-				this.module = process.GetModule(corClass.Module);
-				this.classProps = module.MetaData.GetTypeDefProps(corClass.Token);
+				this.module = process.GetModule(corType.Class.Module);
+				this.classProps = module.MetaData.GetTypeDefProps(corType.Class.Token);
 			}
 			
 			if (this.IsClass || this.IsValueType || this.IsArray || this.IsPointer) {
@@ -489,7 +487,7 @@ namespace Debugger.MetaData
 		void LoadMemberInfo()
 		{
 			// Load interfaces
-			foreach(InterfaceImplProps implProps in module.MetaData.EnumInterfaceImplProps(this.MetadataToken)) {
+			foreach(InterfaceImplProps implProps in module.MetaData.EnumInterfaceImplProps(this.Token)) {
 				if ((implProps.Interface & 0xFF000000) == (uint)CorTokenType.TypeDef ||
 					(implProps.Interface & 0xFF000000) == (uint)CorTokenType.TypeRef)
 				{
@@ -498,13 +496,13 @@ namespace Debugger.MetaData
 			}
 			
 			// Load fields
-			foreach(FieldProps field in module.MetaData.EnumFieldProps(this.MetadataToken)) {
+			foreach(FieldProps field in module.MetaData.EnumFieldProps(this.Token)) {
 				if (field.IsStatic && field.IsLiteral) continue; // Skip static literals TODO: Why?
 				members.Add(new FieldInfo(this, field));
 			};
 			
 			// Load methods
-			foreach(MethodProps m in module.MetaData.EnumMethodProps(this.MetadataToken)) {
+			foreach(MethodProps m in module.MetaData.EnumMethodProps(this.Token)) {
 				members.Add(new MethodInfo(this, m));
 			}
 			
@@ -581,7 +579,7 @@ namespace Debugger.MetaData
 				if (this.IsClass || this.IsValueType) {
 					return (other.IsClass || other.IsValueType) &&
 					       other.Module == this.Module &&
-					       other.MetadataToken == this.MetadataToken;
+					       other.Token == this.Token;
 				}
 				if (this.IsPointer) {
 					return other.IsPointer &&

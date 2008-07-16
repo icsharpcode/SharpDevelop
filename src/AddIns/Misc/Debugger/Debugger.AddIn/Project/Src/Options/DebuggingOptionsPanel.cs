@@ -5,11 +5,11 @@
 //     <version>$Revision$</version>
 // </file>
 
+using Debugger;
 using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
-
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Services;
 
@@ -55,6 +55,10 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			opt.StepOverSingleLineProperties = stepOverSingleLineProperties.Checked;
 			opt.StepOverFieldAccessProperties = stepOverFieldAccessProperties.Checked;
 			
+			Process proc = WindowsDebugger.CurrentProcess;
+			if (proc != null) {
+				proc.Debugger.ResetJustMyCodeStatus();
+			}
 			return true;
 		}
 	}

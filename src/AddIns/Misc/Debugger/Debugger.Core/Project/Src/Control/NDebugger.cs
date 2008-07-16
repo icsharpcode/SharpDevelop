@@ -204,6 +204,28 @@ namespace Debugger
 				}
 			}
 		}
+		
+		/// <summary> Try to load module symbols using the search path defined in the options </summary>
+		public void ReloadModuleSymbols()
+		{
+			foreach(Process process in this.Processes) {
+				foreach(Module module in process.Modules) {
+					module.LoadSymbols(process.Options.SymbolsSearchPaths);
+				}
+			}
+			TraceMessage("Reloaded symbols");
+		}
+		
+		/// <summary> Reset the just my code status of modules.  Use this after changing any stepping options. </summary>
+		public void ResetJustMyCodeStatus()
+		{
+			foreach(Process process in this.Processes) {
+				foreach(Module module in process.Modules) {
+					module.ResetJustMyCodeStatus();
+				}
+			}
+			TraceMessage("Just my code reseted");
+		}
 	}
 	
 	[Serializable]

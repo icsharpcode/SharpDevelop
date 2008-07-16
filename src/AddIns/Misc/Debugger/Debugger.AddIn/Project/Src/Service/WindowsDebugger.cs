@@ -93,6 +93,17 @@ namespace ICSharpCode.SharpDevelop.Services
 			}
 		}
 		
+		public static Debugger.Process CurrentProcess {
+			get {
+				WindowsDebugger dbgr = DebuggerService.CurrentDebugger as WindowsDebugger;
+				if (dbgr != null && dbgr.DebuggedProcess != null) {
+					return dbgr.DebuggedProcess;
+				} else {
+					return null;
+				}
+			}
+		}
+		
 		protected virtual void OnProcessSelected(ProcessEventArgs e)
 		{
 			if (ProcessSelected != null) {

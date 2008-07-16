@@ -169,7 +169,7 @@ namespace Debugger
 		/// <summary> Step out of the stack frame </summary>
 		public void AsyncStepOut()
 		{
-			new Stepper(this, "StackFrame step out").StepOut();
+			Stepper.StepOut(this, "normal");
 			
 			process.AsyncContinue(DebuggeeStateAction.Clear);
 		}
@@ -186,9 +186,17 @@ namespace Debugger
 			}
 			
 			if (stepIn) {
-				new Stepper(this, "StackFrame step in").StepIn(nextSt.StepRanges);
+				Stepper stepInStepper = Stepper.StepIn(this, nextSt.StepRanges, "normal");
+				this.Thread.CurrentStepIn = stepInStepper;
+				Stepper clearCurrentStepIn = Stepper.StepOut(this, "clear current step in");
+				clearCurrentStepIn.StepComplete += delegate {
+					if (this.Thread.CurrentStepIn == stepInStepper) {
+						this.Thread.CurrentStepIn = null;
+					}
+				};
+				clearCurrentStepIn.Ignore = true;
 			} else {
-				new Stepper(this, "StackFrame step over").StepOver(nextSt.StepRanges);
+				Stepper.StepOver(this, nextSt.StepRanges, "normal");
 			}
 			
 			process.AsyncContinue(DebuggeeStateAction.Clear);
@@ -378,5 +386,28 @@ namespace Debugger
 		}
 		
 		#endregion
+		
+		public override bool Equals(object obj)
+		{
+			StackFrame other = obj as StackFrame;
+			return
+				other != null &&
+				other.Thread == this.Thread &&
+				other.ChainIndex == this.ChainIndex &&
+				other.FrameIndex == this.FrameIndex &&
+				other.MethodInfo == this.methodInfo;
+		}
+		
+		public override int GetHashCode()
+		{
+			int hashCode = 0;
+			unchecked {
+				if (thread != null) hashCode += 1000000009 * thread.GetHashCode(); 
+				if (methodInfo != null) hashCode += 1000000093 * methodInfo.GetHashCode(); 
+				hashCode += 1000000097 * chainIndex.GetHashCode();
+				hashCode += 1000000103 * frameIndex.GetHashCode();
+			}
+			return hashCode;
+		}
 	}
 }

@@ -10,53 +10,13 @@ namespace Debugger
 {
 	public class Options
 	{
-		bool enableJustMyCode = true;
-		bool stepOverNoSymbols = true;
-		bool stepOverDebuggerAttributes = true;
-		bool stepOverAllProperties = false;
-		bool stepOverSingleLineProperties = false;
-		bool stepOverFieldAccessProperties = true;
-		bool verbose = false;
-		string[] symbolsSearchPaths = new string[0];
-		
-		public bool EnableJustMyCode {
-			get { return enableJustMyCode; }
-			set { enableJustMyCode = value; }
-		}
-		
-		public bool StepOverNoSymbols {
-			get { return stepOverNoSymbols; }
-			set { stepOverNoSymbols = value; }
-		}
-		
-		public bool StepOverDebuggerAttributes {
-			get { return stepOverDebuggerAttributes; }
-			set { stepOverDebuggerAttributes = value; }
-		}
-		
-		public bool StepOverAllProperties {
-			get { return stepOverAllProperties; }
-			set { stepOverAllProperties = value; }
-		}
-		
-		public bool StepOverSingleLineProperties {
-			get { return stepOverSingleLineProperties; }
-			set { stepOverSingleLineProperties = value; }
-		}
-		
-		public bool StepOverFieldAccessProperties {
-			get { return stepOverFieldAccessProperties; }
-			set { stepOverFieldAccessProperties = value; }
-		}
-		
-		public bool Verbose {
-			get { return verbose; }
-			set { verbose = value; }
-		}
-		
-		public string[] SymbolsSearchPaths {
-			get { return symbolsSearchPaths; }
-			set { symbolsSearchPaths = value; }
-		}
+		public bool EnableJustMyCode = true;
+		public bool StepOverNoSymbols = true;
+		public bool StepOverDebuggerAttributes = true;
+		public bool StepOverAllProperties = false;
+		public bool StepOverSingleLineProperties = false;
+		public bool StepOverFieldAccessProperties = true;
+		public bool Verbose = false;
+		public string[] SymbolsSearchPaths = new string[0];
 	}
 }

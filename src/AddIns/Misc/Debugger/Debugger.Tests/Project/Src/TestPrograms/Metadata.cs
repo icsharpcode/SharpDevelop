@@ -150,168 +150,168 @@ namespace Debugger.Tests {
           DeclaringType="Debugger.Tests.TestPrograms.Metadata"
           FullName="Debugger.Tests.TestPrograms.Metadata.get_privateProperty"
           IsInternal="False"
-          IsMyCode="True"
           IsPrivate="True"
           IsProtected="False"
           IsPublic="False"
           IsSpecialName="True"
           IsStatic="False"
           Module="Metadata.exe"
-          Name="get_privateProperty" />
+          Name="get_privateProperty"
+          StepOver="False" />
       </Item>
       <Item>
         <MethodInfo
           DeclaringType="Debugger.Tests.TestPrograms.Metadata"
           FullName="Debugger.Tests.TestPrograms.Metadata.get_publicProperty"
           IsInternal="False"
-          IsMyCode="True"
           IsPrivate="False"
           IsProtected="False"
           IsPublic="True"
           IsSpecialName="True"
           IsStatic="False"
           Module="Metadata.exe"
-          Name="get_publicProperty" />
+          Name="get_publicProperty"
+          StepOver="False" />
       </Item>
       <Item>
         <MethodInfo
           DeclaringType="Debugger.Tests.TestPrograms.Metadata"
           FullName="Debugger.Tests.TestPrograms.Metadata.get_protectedProperty"
           IsInternal="False"
-          IsMyCode="True"
           IsPrivate="False"
           IsProtected="True"
           IsPublic="False"
           IsSpecialName="True"
           IsStatic="False"
           Module="Metadata.exe"
-          Name="get_protectedProperty" />
+          Name="get_protectedProperty"
+          StepOver="False" />
       </Item>
       <Item>
         <MethodInfo
           DeclaringType="Debugger.Tests.TestPrograms.Metadata"
           FullName="Debugger.Tests.TestPrograms.Metadata.get_internalProperty"
           IsInternal="True"
-          IsMyCode="True"
           IsPrivate="False"
           IsProtected="False"
           IsPublic="False"
           IsSpecialName="True"
           IsStatic="False"
           Module="Metadata.exe"
-          Name="get_internalProperty" />
+          Name="get_internalProperty"
+          StepOver="False" />
       </Item>
       <Item>
         <MethodInfo
           DeclaringType="Debugger.Tests.TestPrograms.Metadata"
           FullName="Debugger.Tests.TestPrograms.Metadata.get_staticProperty"
           IsInternal="False"
-          IsMyCode="True"
           IsPrivate="True"
           IsProtected="False"
           IsPublic="False"
           IsSpecialName="True"
           IsStatic="True"
           Module="Metadata.exe"
-          Name="get_staticProperty" />
+          Name="get_staticProperty"
+          StepOver="False" />
       </Item>
       <Item>
         <MethodInfo
           DeclaringType="Debugger.Tests.TestPrograms.Metadata"
           FullName="Debugger.Tests.TestPrograms.Metadata.privateMethod"
           IsInternal="False"
-          IsMyCode="True"
           IsPrivate="True"
           IsProtected="False"
           IsPublic="False"
           IsSpecialName="False"
           IsStatic="False"
           Module="Metadata.exe"
-          Name="privateMethod" />
+          Name="privateMethod"
+          StepOver="False" />
       </Item>
       <Item>
         <MethodInfo
           DeclaringType="Debugger.Tests.TestPrograms.Metadata"
           FullName="Debugger.Tests.TestPrograms.Metadata.publicMethod"
           IsInternal="False"
-          IsMyCode="True"
           IsPrivate="False"
           IsProtected="False"
           IsPublic="True"
           IsSpecialName="False"
           IsStatic="False"
           Module="Metadata.exe"
-          Name="publicMethod" />
+          Name="publicMethod"
+          StepOver="False" />
       </Item>
       <Item>
         <MethodInfo
           DeclaringType="Debugger.Tests.TestPrograms.Metadata"
           FullName="Debugger.Tests.TestPrograms.Metadata.protectedMethod"
           IsInternal="False"
-          IsMyCode="True"
           IsPrivate="False"
           IsProtected="True"
           IsPublic="False"
           IsSpecialName="False"
           IsStatic="False"
           Module="Metadata.exe"
-          Name="protectedMethod" />
+          Name="protectedMethod"
+          StepOver="False" />
       </Item>
       <Item>
         <MethodInfo
           DeclaringType="Debugger.Tests.TestPrograms.Metadata"
           FullName="Debugger.Tests.TestPrograms.Metadata.internalMethod"
           IsInternal="True"
-          IsMyCode="True"
           IsPrivate="False"
           IsProtected="False"
           IsPublic="False"
           IsSpecialName="False"
           IsStatic="False"
           Module="Metadata.exe"
-          Name="internalMethod" />
+          Name="internalMethod"
+          StepOver="False" />
       </Item>
       <Item>
         <MethodInfo
           DeclaringType="Debugger.Tests.TestPrograms.Metadata"
           FullName="Debugger.Tests.TestPrograms.Metadata.staticMethod"
           IsInternal="False"
-          IsMyCode="True"
           IsPrivate="True"
           IsProtected="False"
           IsPublic="False"
           IsSpecialName="False"
           IsStatic="True"
           Module="Metadata.exe"
-          Name="staticMethod" />
+          Name="staticMethod"
+          StepOver="False" />
       </Item>
       <Item>
         <MethodInfo
           DeclaringType="Debugger.Tests.TestPrograms.Metadata"
           FullName="Debugger.Tests.TestPrograms.Metadata.Main"
           IsInternal="False"
-          IsMyCode="True"
           IsPrivate="False"
           IsProtected="False"
           IsPublic="True"
           IsSpecialName="False"
           IsStatic="True"
           Module="Metadata.exe"
-          Name="Main" />
+          Name="Main"
+          StepOver="False" />
       </Item>
       <Item>
         <MethodInfo
           DeclaringType="Debugger.Tests.TestPrograms.Metadata"
           FullName="Debugger.Tests.TestPrograms.Metadata..ctor"
           IsInternal="False"
-          IsMyCode="False"
           IsPrivate="False"
           IsProtected="False"
           IsPublic="True"
           IsSpecialName="True"
           IsStatic="False"
           Module="Metadata.exe"
-          Name=".ctor" />
+          Name=".ctor"
+          StepOver="True" />
       </Item>
       <Item>
         <PropertyInfo

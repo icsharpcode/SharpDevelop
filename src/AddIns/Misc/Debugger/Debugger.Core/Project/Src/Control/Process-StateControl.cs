@@ -273,8 +273,9 @@ namespace Debugger
 		internal void DisableAllSteppers()
 		{
 			foreach(Thread thread in this.Threads) {
+				thread.CurrentStepIn = null;
 				foreach(Stepper stepper in thread.Steppers) {
-					stepper.PauseWhenComplete = false;
+					stepper.Ignore = true;
 				}
 			}
 		}
