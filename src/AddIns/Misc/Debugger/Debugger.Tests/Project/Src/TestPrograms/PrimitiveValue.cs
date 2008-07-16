@@ -55,7 +55,7 @@ namespace Debugger.Tests {
     <ProcessStarted />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>PrimitiveValue.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break</DebuggingPaused>
+    <DebuggingPaused>Break PrimitiveValue.cs:20,4-20,40</DebuggingPaused>
     <locals
       Capacity="4"
       Count="4">

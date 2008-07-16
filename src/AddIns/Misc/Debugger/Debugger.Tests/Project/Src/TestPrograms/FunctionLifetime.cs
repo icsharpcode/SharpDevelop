@@ -70,7 +70,7 @@ namespace Debugger.Tests {
     <ProcessStarted />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>FunctionLifetime.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break</DebuggingPaused>
+    <DebuggingPaused>Break FunctionLifetime.cs:22,4-22,40</DebuggingPaused>
     <SelectedStackFrame>
       <StackFrame
         ArgumentCount="1"
@@ -81,7 +81,7 @@ namespace Debugger.Tests {
         MethodInfo="Function"
         NextStatement="FunctionLifetime.cs:22,4-22,40" />
     </SelectedStackFrame>
-    <DebuggingPaused>Break</DebuggingPaused>
+    <DebuggingPaused>Break FunctionLifetime.cs:29,4-29,40</DebuggingPaused>
     <Old_StackFrame>
       <StackFrame
         ArgumentCount="{Exception: StackFrame is not valid anymore}"
@@ -102,7 +102,7 @@ namespace Debugger.Tests {
         MethodInfo="SubFunction"
         NextStatement="FunctionLifetime.cs:29,4-29,40" />
     </SelectedStackFrame>
-    <DebuggingPaused>Break</DebuggingPaused>
+    <DebuggingPaused>Break FunctionLifetime.cs:24,4-24,40</DebuggingPaused>
     <Old_StackFrame>
       <StackFrame
         ArgumentCount="{Exception: StackFrame is not valid anymore}"
@@ -123,7 +123,7 @@ namespace Debugger.Tests {
         MethodInfo="Function"
         NextStatement="FunctionLifetime.cs:24,4-24,40" />
     </SelectedStackFrame>
-    <DebuggingPaused>Break</DebuggingPaused>
+    <DebuggingPaused>Break FunctionLifetime.cs:17,4-17,40</DebuggingPaused>
     <Main>
       <StackFrame
         ArgumentCount="0"

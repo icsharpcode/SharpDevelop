@@ -58,7 +58,7 @@ namespace Debugger.Tests {
     <ProcessStarted />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>MainThreadExit.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break</DebuggingPaused>
+    <DebuggingPaused>Break MainThreadExit.cs:23,4-23,40</DebuggingPaused>
     <ThreadsBeforeExit
       Count="2">
       <Item>
@@ -98,7 +98,7 @@ namespace Debugger.Tests {
           Suspended="False" />
       </Item>
     </ThreadsBeforeExit>
-    <DebuggingPaused>ForcedBreak</DebuggingPaused>
+    <DebuggingPaused>ForcedBreak MainThreadExit.cs:28,4-28,26</DebuggingPaused>
     <ThreadsAfterExit
       Count="2">
       <Item>

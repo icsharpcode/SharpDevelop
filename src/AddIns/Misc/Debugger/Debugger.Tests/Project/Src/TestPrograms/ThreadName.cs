@@ -73,7 +73,7 @@ namespace Debugger.Tests {
         Suspended="False" />
     </ThreadStartedEvent>
     <ModuleLoaded>ThreadName.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break</DebuggingPaused>
+    <DebuggingPaused>Break ThreadName.cs:17,4-17,40</DebuggingPaused>
     <Thread>
       <Thread
         CurrentException="null"
@@ -92,7 +92,7 @@ namespace Debugger.Tests {
         SelectedStackFrame="Debugger.Tests.TestPrograms.ThreadName.Main"
         Suspended="False" />
     </Thread>
-    <DebuggingPaused>Break</DebuggingPaused>
+    <DebuggingPaused>Break ThreadName.cs:19,4-19,40</DebuggingPaused>
     <Thread>
       <Thread
         CurrentException="null"

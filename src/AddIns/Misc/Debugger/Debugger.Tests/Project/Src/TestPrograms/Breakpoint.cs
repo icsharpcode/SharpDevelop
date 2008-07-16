@@ -57,7 +57,7 @@ namespace Debugger.Tests {
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>Breakpoint.exe (Has symbols)</ModuleLoaded>
     <ModuleLoaded>System.dll (No symbols)</ModuleLoaded>
-    <DebuggingPaused>Break</DebuggingPaused>
+    <DebuggingPaused>Break Breakpoint.cs:16,4-16,40</DebuggingPaused>
     <Breakpoint
       CheckSum="null"
       Column="0"
@@ -69,9 +69,9 @@ namespace Debugger.Tests {
     <ModuleLoaded>System.Configuration.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>System.Xml.dll (No symbols)</ModuleLoaded>
     <LogMessage>Main 1\r\n</LogMessage>
-    <DebuggingPaused>Breakpoint</DebuggingPaused>
+    <DebuggingPaused>Breakpoint Breakpoint.cs:18,4-18,49</DebuggingPaused>
     <LogMessage>Main 2\r\n</LogMessage>
-    <DebuggingPaused>Break</DebuggingPaused>
+    <DebuggingPaused>Break Breakpoint.cs:19,4-19,40</DebuggingPaused>
     <ProcessExited />
     <Breakpoint
       CheckSum="null"

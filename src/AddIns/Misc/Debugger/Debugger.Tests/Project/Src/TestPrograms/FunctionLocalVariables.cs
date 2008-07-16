@@ -48,7 +48,7 @@ namespace Debugger.Tests {
     <ProcessStarted />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>FunctionLocalVariables.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break</DebuggingPaused>
+    <DebuggingPaused>Break FunctionLocalVariables.cs:21,4-21,40</DebuggingPaused>
     <LocalVariables
       Capacity="8"
       Count="5">

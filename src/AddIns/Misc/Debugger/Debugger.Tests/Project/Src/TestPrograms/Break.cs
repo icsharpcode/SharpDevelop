@@ -41,7 +41,7 @@ namespace Debugger.Tests {
     <ProcessStarted />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>Break.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break</DebuggingPaused>
+    <DebuggingPaused>Break Break.cs:16,4-16,40</DebuggingPaused>
     <ProcessExited />
   </Test>
 </DebuggerTests>

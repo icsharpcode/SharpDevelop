@@ -57,7 +57,7 @@ namespace Debugger.Tests {
     <ProcessStarted />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>Callstack.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break</DebuggingPaused>
+    <DebuggingPaused>Break Callstack.cs:26,4-26,40</DebuggingPaused>
     <Callstack>
       <Item>
         <StackFrame
@@ -90,7 +90,7 @@ namespace Debugger.Tests {
           NextStatement="Callstack.cs:16,4-16,11" />
       </Item>
     </Callstack>
-    <DebuggingPaused>StepComplete</DebuggingPaused>
+    <DebuggingPaused>StepComplete Callstack.cs:21,4-21,11</DebuggingPaused>
     <Callstack>
       <Item>
         <StackFrame
@@ -113,7 +113,7 @@ namespace Debugger.Tests {
           NextStatement="Callstack.cs:16,4-16,11" />
       </Item>
     </Callstack>
-    <DebuggingPaused>StepComplete</DebuggingPaused>
+    <DebuggingPaused>StepComplete Callstack.cs:16,4-16,11</DebuggingPaused>
     <Callstack>
       <Item>
         <StackFrame

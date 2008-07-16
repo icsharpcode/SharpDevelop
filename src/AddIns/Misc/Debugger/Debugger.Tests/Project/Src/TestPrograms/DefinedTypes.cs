@@ -54,7 +54,7 @@ namespace Debugger.Tests {
     <ProcessStarted />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>DefinedTypes.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break</DebuggingPaused>
+    <DebuggingPaused>Break DefinedTypes.cs:16,4-16,40</DebuggingPaused>
     <TypesAsString
       Capacity="4"
       Count="3">

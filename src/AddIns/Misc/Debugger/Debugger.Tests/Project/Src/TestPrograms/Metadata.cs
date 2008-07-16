@@ -76,7 +76,7 @@ namespace Debugger.Tests {
     <ProcessStarted />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>Metadata.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break</DebuggingPaused>
+    <DebuggingPaused>Break Metadata.cs:39,4-39,40</DebuggingPaused>
     <Members
       Capacity="32"
       Count="22">

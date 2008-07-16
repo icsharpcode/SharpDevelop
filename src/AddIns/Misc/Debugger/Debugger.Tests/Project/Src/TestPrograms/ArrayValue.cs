@@ -54,7 +54,7 @@ namespace Debugger.Tests {
     <ProcessStarted />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>ArrayValue.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break</DebuggingPaused>
+    <DebuggingPaused>Break ArrayValue.cs:20,4-20,40</DebuggingPaused>
     <array>
       <Value
         ArrayDimensions="{5}"

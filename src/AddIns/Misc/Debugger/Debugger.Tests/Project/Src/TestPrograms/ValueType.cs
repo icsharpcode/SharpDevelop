@@ -52,7 +52,7 @@ namespace Debugger.Tests {
     <ProcessStarted />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>ValueType.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break</DebuggingPaused>
+    <DebuggingPaused>Break ValueType.cs:21,4-21,40</DebuggingPaused>
     <this>
       <Value
         ArrayDimensions="{Exception: Value is not an array}"

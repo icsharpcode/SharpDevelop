@@ -50,9 +50,9 @@ namespace Debugger.Tests {
     <ProcessStarted />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>StackOverflow.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break</DebuggingPaused>
+    <DebuggingPaused>Break StackOverflow.cs:16,4-16,40</DebuggingPaused>
     <ExceptionThrown>Could not intercept: System.StackOverflowException</ExceptionThrown>
-    <DebuggingPaused>Exception</DebuggingPaused>
+    <DebuggingPaused>Exception StackOverflow.cs:21,3-21,4</DebuggingPaused>
     <ProcessExited />
   </Test>
 </DebuggerTests>

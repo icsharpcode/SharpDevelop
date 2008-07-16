@@ -57,8 +57,8 @@ namespace Debugger.Tests {
     <ProcessStarted />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>MetadataIdentity.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break</DebuggingPaused>
-    <DebuggingPaused>Break</DebuggingPaused>
+    <DebuggingPaused>Break MetadataIdentity.cs:21,4-21,40</DebuggingPaused>
+    <DebuggingPaused>Break MetadataIdentity.cs:22,4-22,40</DebuggingPaused>
     <ProcessExited />
   </Test>
 </DebuggerTests>

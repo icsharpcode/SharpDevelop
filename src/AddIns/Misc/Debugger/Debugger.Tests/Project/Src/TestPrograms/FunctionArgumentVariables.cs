@@ -92,8 +92,8 @@ namespace Debugger.Tests {
     <ProcessStarted />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>FunctionArgumentVariables.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break</DebuggingPaused>
-    <DebuggingPaused>Break</DebuggingPaused>
+    <DebuggingPaused>Break FunctionArgumentVariables.cs:16,4-16,40</DebuggingPaused>
+    <DebuggingPaused>Break FunctionArgumentVariables.cs:51,4-51,40</DebuggingPaused>
     <Arguments
       Capacity="16"
       Count="9">
@@ -206,7 +206,7 @@ namespace Debugger.Tests {
           Type="System.Nullable&lt;System.Int32&gt;" />
       </Item>
     </Arguments>
-    <DebuggingPaused>Break</DebuggingPaused>
+    <DebuggingPaused>Break FunctionArgumentVariables.cs:57,4-57,40</DebuggingPaused>
     <Arguments
       Capacity="4"
       Count="1">
@@ -223,7 +223,7 @@ namespace Debugger.Tests {
           Type="System.String[]" />
       </Item>
     </Arguments>
-    <DebuggingPaused>Break</DebuggingPaused>
+    <DebuggingPaused>Break FunctionArgumentVariables.cs:57,4-57,40</DebuggingPaused>
     <Arguments
       Capacity="4"
       Count="1">
@@ -240,7 +240,7 @@ namespace Debugger.Tests {
           Type="System.String[]" />
       </Item>
     </Arguments>
-    <DebuggingPaused>Break</DebuggingPaused>
+    <DebuggingPaused>Break FunctionArgumentVariables.cs:57,4-57,40</DebuggingPaused>
     <Arguments
       Capacity="4"
       Count="1">
@@ -257,7 +257,7 @@ namespace Debugger.Tests {
           Type="System.String[]" />
       </Item>
     </Arguments>
-    <DebuggingPaused>Break</DebuggingPaused>
+    <DebuggingPaused>Break FunctionArgumentVariables.cs:62,4-62,40</DebuggingPaused>
     <Arguments
       Capacity="4"
       Count="2">

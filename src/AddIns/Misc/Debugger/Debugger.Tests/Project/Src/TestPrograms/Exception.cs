@@ -55,7 +55,7 @@ namespace Debugger.Tests {
     <ProcessStarted />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>Exception.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break</DebuggingPaused>
+    <DebuggingPaused>Break Exception.cs:16,4-16,40</DebuggingPaused>
     <ExceptionThrown>System.Exception: test</ExceptionThrown>
     <ProcessExited />
   </Test>

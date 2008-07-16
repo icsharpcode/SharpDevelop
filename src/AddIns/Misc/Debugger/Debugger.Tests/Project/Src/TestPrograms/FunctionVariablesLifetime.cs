@@ -98,7 +98,7 @@ namespace Debugger.Tests {
     <ProcessStarted />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>FunctionVariablesLifetime.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break</DebuggingPaused>
+    <DebuggingPaused>Break FunctionVariablesLifetime.cs:25,4-25,40</DebuggingPaused>
     <argument>
       <Value
         ArrayDimensions="{Exception: Value is not an array}"
@@ -135,7 +135,7 @@ namespace Debugger.Tests {
         PrimitiveValue="3"
         Type="System.Int32" />
     </_x0040_class>
-    <DebuggingPaused>Break</DebuggingPaused>
+    <DebuggingPaused>Break FunctionVariablesLifetime.cs:34,4-34,40</DebuggingPaused>
     <argument>
       <Value
         ArrayDimensions="{Exception: Value is no longer valid}"
@@ -184,7 +184,7 @@ namespace Debugger.Tests {
         PrimitiveValue="4"
         Type="System.Int32" />
     </localInSubFunction>
-    <DebuggingPaused>Break</DebuggingPaused>
+    <DebuggingPaused>Break FunctionVariablesLifetime.cs:27,4-27,40</DebuggingPaused>
     <argument>
       <Value
         ArrayDimensions="{Exception: Value is no longer valid}"
@@ -233,7 +233,7 @@ namespace Debugger.Tests {
         PrimitiveValue="{Exception: Value is no longer valid}"
         Type="System.Int32" />
     </localInSubFunction>
-    <DebuggingPaused>Break</DebuggingPaused>
+    <DebuggingPaused>Break FunctionVariablesLifetime.cs:34,4-34,40</DebuggingPaused>
     <argument>
       <Value
         ArrayDimensions="{Exception: Value is no longer valid}"
@@ -294,7 +294,7 @@ namespace Debugger.Tests {
         PrimitiveValue="4"
         Type="System.Int32" />
     </localInSubFunction_x0028_new_x0029_>
-    <DebuggingPaused>Break</DebuggingPaused>
+    <DebuggingPaused>Break FunctionVariablesLifetime.cs:19,4-19,40</DebuggingPaused>
     <argument>
       <Value
         ArrayDimensions="{Exception: Value is no longer valid}"

@@ -76,7 +76,7 @@ namespace Debugger.Tests {
     <ProcessStarted />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>Expressions.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break</DebuggingPaused>
+    <DebuggingPaused>Break Expressions.cs:47,4-47,40</DebuggingPaused>
     <Arguments
       Capacity="4"
       Count="1">

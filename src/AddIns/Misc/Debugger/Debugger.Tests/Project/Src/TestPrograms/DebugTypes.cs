@@ -85,7 +85,6 @@ namespace Debugger.Tests {
 		{
 			ExpandProperties(
 				"Value.Type",
-				"DebugType.BaseType",
 				"DebugType.ElementType"
 			);
 			StartTest("DebugTypes.cs");
@@ -106,7 +105,7 @@ namespace Debugger.Tests {
     <ProcessStarted />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>DebugTypes.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break</DebuggingPaused>
+    <DebuggingPaused>Break DebugTypes.cs:57,4-57,40</DebuggingPaused>
     <LocalVariables
       Capacity="32"
       Count="19">
@@ -130,19 +129,6 @@ namespace Debugger.Tests {
               Interfaces="{}"
               Kind="Class"
               Module="DebugTypes.exe">
-              <BaseType>
-                <DebugType
-                  BaseType="null"
-                  ElementType="null"
-                  FullName="System.Object"
-                  GenericArguments="{}"
-                  Interfaces="{}"
-                  Kind="Class"
-                  Module="mscorlib.dll">
-                  <BaseType>null</BaseType>
-                  <ElementType>null</ElementType>
-                </DebugType>
-              </BaseType>
               <ElementType>null</ElementType>
             </DebugType>
           </Type>
@@ -168,7 +154,6 @@ namespace Debugger.Tests {
               Interfaces="{}"
               Kind="Class"
               Module="mscorlib.dll">
-              <BaseType>null</BaseType>
               <ElementType>null</ElementType>
             </DebugType>
           </Type>
@@ -194,19 +179,6 @@ namespace Debugger.Tests {
               Interfaces="{}"
               Kind="Primitive"
               Module="{Exception: The type is not a class or value type.}">
-              <BaseType>
-                <DebugType
-                  BaseType="null"
-                  ElementType="null"
-                  FullName="System.Object"
-                  GenericArguments="{}"
-                  Interfaces="{}"
-                  Kind="Class"
-                  Module="mscorlib.dll">
-                  <BaseType>null</BaseType>
-                  <ElementType>null</ElementType>
-                </DebugType>
-              </BaseType>
               <ElementType>null</ElementType>
             </DebugType>
           </Type>
@@ -232,7 +204,6 @@ namespace Debugger.Tests {
               Interfaces="{}"
               Kind="Class"
               Module="mscorlib.dll">
-              <BaseType>null</BaseType>
               <ElementType>null</ElementType>
             </DebugType>
           </Type>
@@ -258,19 +229,6 @@ namespace Debugger.Tests {
               Interfaces="{}"
               Kind="Primitive"
               Module="{Exception: The type is not a class or value type.}">
-              <BaseType>
-                <DebugType
-                  BaseType="null"
-                  ElementType="null"
-                  FullName="System.Object"
-                  GenericArguments="{}"
-                  Interfaces="{}"
-                  Kind="Class"
-                  Module="mscorlib.dll">
-                  <BaseType>null</BaseType>
-                  <ElementType>null</ElementType>
-                </DebugType>
-              </BaseType>
               <ElementType>null</ElementType>
             </DebugType>
           </Type>
@@ -296,19 +254,6 @@ namespace Debugger.Tests {
               Interfaces="{}"
               Kind="Primitive"
               Module="{Exception: The type is not a class or value type.}">
-              <BaseType>
-                <DebugType
-                  BaseType="null"
-                  ElementType="null"
-                  FullName="System.Object"
-                  GenericArguments="{}"
-                  Interfaces="{}"
-                  Kind="Class"
-                  Module="mscorlib.dll">
-                  <BaseType>null</BaseType>
-                  <ElementType>null</ElementType>
-                </DebugType>
-              </BaseType>
               <ElementType>null</ElementType>
             </DebugType>
           </Type>
@@ -334,7 +279,6 @@ namespace Debugger.Tests {
               Interfaces="{}"
               Kind="Pointer"
               Module="{Exception: The type is not a class or value type.}">
-              <BaseType>null</BaseType>
               <ElementType>
                 <DebugType
                   BaseType="System.Object"
@@ -344,19 +288,6 @@ namespace Debugger.Tests {
                   Interfaces="{}"
                   Kind="Primitive"
                   Module="{Exception: The type is not a class or value type.}">
-                  <BaseType>
-                    <DebugType
-                      BaseType="null"
-                      ElementType="null"
-                      FullName="System.Object"
-                      GenericArguments="{}"
-                      Interfaces="{}"
-                      Kind="Class"
-                      Module="mscorlib.dll">
-                      <BaseType>null</BaseType>
-                      <ElementType>null</ElementType>
-                    </DebugType>
-                  </BaseType>
                   <ElementType>null</ElementType>
                 </DebugType>
               </ElementType>
@@ -384,7 +315,6 @@ namespace Debugger.Tests {
               Interfaces="{}"
               Kind="Pointer"
               Module="{Exception: The type is not a class or value type.}">
-              <BaseType>null</BaseType>
               <ElementType>
                 <DebugType
                   BaseType="System.Object"
@@ -394,19 +324,6 @@ namespace Debugger.Tests {
                   Interfaces="{}"
                   Kind="Primitive"
                   Module="{Exception: The type is not a class or value type.}">
-                  <BaseType>
-                    <DebugType
-                      BaseType="null"
-                      ElementType="null"
-                      FullName="System.Object"
-                      GenericArguments="{}"
-                      Interfaces="{}"
-                      Kind="Class"
-                      Module="mscorlib.dll">
-                      <BaseType>null</BaseType>
-                      <ElementType>null</ElementType>
-                    </DebugType>
-                  </BaseType>
                   <ElementType>null</ElementType>
                 </DebugType>
               </ElementType>
@@ -434,7 +351,6 @@ namespace Debugger.Tests {
               Interfaces="{}"
               Kind="Pointer"
               Module="{Exception: The type is not a class or value type.}">
-              <BaseType>null</BaseType>
               <ElementType>
                 <DebugType
                   BaseType="null"
@@ -444,7 +360,6 @@ namespace Debugger.Tests {
                   Interfaces="{}"
                   Kind="Pointer"
                   Module="{Exception: The type is not a class or value type.}">
-                  <BaseType>null</BaseType>
                   <ElementType>
                     <DebugType
                       BaseType="System.Object"
@@ -454,19 +369,6 @@ namespace Debugger.Tests {
                       Interfaces="{}"
                       Kind="Primitive"
                       Module="{Exception: The type is not a class or value type.}">
-                      <BaseType>
-                        <DebugType
-                          BaseType="null"
-                          ElementType="null"
-                          FullName="System.Object"
-                          GenericArguments="{}"
-                          Interfaces="{}"
-                          Kind="Class"
-                          Module="mscorlib.dll">
-                          <BaseType>null</BaseType>
-                          <ElementType>null</ElementType>
-                        </DebugType>
-                      </BaseType>
                       <ElementType>null</ElementType>
                     </DebugType>
                   </ElementType>
@@ -496,7 +398,6 @@ namespace Debugger.Tests {
               Interfaces="{}"
               Kind="Pointer"
               Module="{Exception: The type is not a class or value type.}">
-              <BaseType>null</BaseType>
               <ElementType>
                 <DebugType
                   BaseType="null"
@@ -506,7 +407,6 @@ namespace Debugger.Tests {
                   Interfaces="{}"
                   Kind="Void"
                   Module="{Exception: The type is not a class or value type.}">
-                  <BaseType>null</BaseType>
                   <ElementType>null</ElementType>
                 </DebugType>
               </ElementType>
@@ -534,7 +434,6 @@ namespace Debugger.Tests {
               Interfaces="{}"
               Kind="Class"
               Module="mscorlib.dll">
-              <BaseType>null</BaseType>
               <ElementType>null</ElementType>
             </DebugType>
           </Type>
@@ -560,7 +459,6 @@ namespace Debugger.Tests {
               Interfaces="{}"
               Kind="Class"
               Module="mscorlib.dll">
-              <BaseType>null</BaseType>
               <ElementType>null</ElementType>
             </DebugType>
           </Type>
@@ -586,31 +484,6 @@ namespace Debugger.Tests {
               Interfaces="{}"
               Kind="Array"
               Module="{Exception: The type is not a class or value type.}">
-              <BaseType>
-                <DebugType
-                  BaseType="System.Object"
-                  ElementType="null"
-                  FullName="System.Array"
-                  GenericArguments="{}"
-                  Interfaces="{System.ICloneable, System.Collections.IList, System.Collections.ICollection, System.Collections.IEnumerable}"
-                  Kind="Class"
-                  Module="mscorlib.dll">
-                  <BaseType>
-                    <DebugType
-                      BaseType="null"
-                      ElementType="null"
-                      FullName="System.Object"
-                      GenericArguments="{}"
-                      Interfaces="{}"
-                      Kind="Class"
-                      Module="mscorlib.dll">
-                      <BaseType>null</BaseType>
-                      <ElementType>null</ElementType>
-                    </DebugType>
-                  </BaseType>
-                  <ElementType>null</ElementType>
-                </DebugType>
-              </BaseType>
               <ElementType>
                 <DebugType
                   BaseType="System.Object"
@@ -620,19 +493,6 @@ namespace Debugger.Tests {
                   Interfaces="{}"
                   Kind="Primitive"
                   Module="{Exception: The type is not a class or value type.}">
-                  <BaseType>
-                    <DebugType
-                      BaseType="null"
-                      ElementType="null"
-                      FullName="System.Object"
-                      GenericArguments="{}"
-                      Interfaces="{}"
-                      Kind="Class"
-                      Module="mscorlib.dll">
-                      <BaseType>null</BaseType>
-                      <ElementType>null</ElementType>
-                    </DebugType>
-                  </BaseType>
                   <ElementType>null</ElementType>
                 </DebugType>
               </ElementType>
@@ -660,31 +520,6 @@ namespace Debugger.Tests {
               Interfaces="{}"
               Kind="Array"
               Module="{Exception: The type is not a class or value type.}">
-              <BaseType>
-                <DebugType
-                  BaseType="System.Object"
-                  ElementType="null"
-                  FullName="System.Array"
-                  GenericArguments="{}"
-                  Interfaces="{System.ICloneable, System.Collections.IList, System.Collections.ICollection, System.Collections.IEnumerable}"
-                  Kind="Class"
-                  Module="mscorlib.dll">
-                  <BaseType>
-                    <DebugType
-                      BaseType="null"
-                      ElementType="null"
-                      FullName="System.Object"
-                      GenericArguments="{}"
-                      Interfaces="{}"
-                      Kind="Class"
-                      Module="mscorlib.dll">
-                      <BaseType>null</BaseType>
-                      <ElementType>null</ElementType>
-                    </DebugType>
-                  </BaseType>
-                  <ElementType>null</ElementType>
-                </DebugType>
-              </BaseType>
               <ElementType>
                 <DebugType
                   BaseType="System.Object"
@@ -694,19 +529,6 @@ namespace Debugger.Tests {
                   Interfaces="{}"
                   Kind="Primitive"
                   Module="{Exception: The type is not a class or value type.}">
-                  <BaseType>
-                    <DebugType
-                      BaseType="null"
-                      ElementType="null"
-                      FullName="System.Object"
-                      GenericArguments="{}"
-                      Interfaces="{}"
-                      Kind="Class"
-                      Module="mscorlib.dll">
-                      <BaseType>null</BaseType>
-                      <ElementType>null</ElementType>
-                    </DebugType>
-                  </BaseType>
                   <ElementType>null</ElementType>
                 </DebugType>
               </ElementType>
@@ -734,31 +556,6 @@ namespace Debugger.Tests {
               Interfaces="{}"
               Kind="ValueType"
               Module="DebugTypes.exe">
-              <BaseType>
-                <DebugType
-                  BaseType="System.Object"
-                  ElementType="null"
-                  FullName="System.ValueType"
-                  GenericArguments="{}"
-                  Interfaces="{}"
-                  Kind="Class"
-                  Module="mscorlib.dll">
-                  <BaseType>
-                    <DebugType
-                      BaseType="null"
-                      ElementType="null"
-                      FullName="System.Object"
-                      GenericArguments="{}"
-                      Interfaces="{}"
-                      Kind="Class"
-                      Module="mscorlib.dll">
-                      <BaseType>null</BaseType>
-                      <ElementType>null</ElementType>
-                    </DebugType>
-                  </BaseType>
-                  <ElementType>null</ElementType>
-                </DebugType>
-              </BaseType>
               <ElementType>null</ElementType>
             </DebugType>
           </Type>
@@ -784,7 +581,6 @@ namespace Debugger.Tests {
               Interfaces="{}"
               Kind="Pointer"
               Module="{Exception: The type is not a class or value type.}">
-              <BaseType>null</BaseType>
               <ElementType>
                 <DebugType
                   BaseType="System.ValueType"
@@ -794,31 +590,6 @@ namespace Debugger.Tests {
                   Interfaces="{}"
                   Kind="ValueType"
                   Module="DebugTypes.exe">
-                  <BaseType>
-                    <DebugType
-                      BaseType="System.Object"
-                      ElementType="null"
-                      FullName="System.ValueType"
-                      GenericArguments="{}"
-                      Interfaces="{}"
-                      Kind="Class"
-                      Module="mscorlib.dll">
-                      <BaseType>
-                        <DebugType
-                          BaseType="null"
-                          ElementType="null"
-                          FullName="System.Object"
-                          GenericArguments="{}"
-                          Interfaces="{}"
-                          Kind="Class"
-                          Module="mscorlib.dll">
-                          <BaseType>null</BaseType>
-                          <ElementType>null</ElementType>
-                        </DebugType>
-                      </BaseType>
-                      <ElementType>null</ElementType>
-                    </DebugType>
-                  </BaseType>
                   <ElementType>null</ElementType>
                 </DebugType>
               </ElementType>
@@ -846,31 +617,6 @@ namespace Debugger.Tests {
               Interfaces="{System.IComparable, System.IFormattable, System.IConvertible}"
               Kind="ValueType"
               Module="mscorlib.dll">
-              <BaseType>
-                <DebugType
-                  BaseType="System.Object"
-                  ElementType="null"
-                  FullName="System.ValueType"
-                  GenericArguments="{}"
-                  Interfaces="{}"
-                  Kind="Class"
-                  Module="mscorlib.dll">
-                  <BaseType>
-                    <DebugType
-                      BaseType="null"
-                      ElementType="null"
-                      FullName="System.Object"
-                      GenericArguments="{}"
-                      Interfaces="{}"
-                      Kind="Class"
-                      Module="mscorlib.dll">
-                      <BaseType>null</BaseType>
-                      <ElementType>null</ElementType>
-                    </DebugType>
-                  </BaseType>
-                  <ElementType>null</ElementType>
-                </DebugType>
-              </BaseType>
               <ElementType>null</ElementType>
             </DebugType>
           </Type>
@@ -896,19 +642,6 @@ namespace Debugger.Tests {
               Interfaces="{MyInterface}"
               Kind="Class"
               Module="DebugTypes.exe">
-              <BaseType>
-                <DebugType
-                  BaseType="null"
-                  ElementType="null"
-                  FullName="System.Object"
-                  GenericArguments="{}"
-                  Interfaces="{}"
-                  Kind="Class"
-                  Module="mscorlib.dll">
-                  <BaseType>null</BaseType>
-                  <ElementType>null</ElementType>
-                </DebugType>
-              </BaseType>
               <ElementType>null</ElementType>
             </DebugType>
           </Type>
@@ -934,26 +667,13 @@ namespace Debugger.Tests {
               Interfaces="{MyInterface}"
               Kind="Class"
               Module="DebugTypes.exe">
-              <BaseType>
-                <DebugType
-                  BaseType="null"
-                  ElementType="null"
-                  FullName="System.Object"
-                  GenericArguments="{}"
-                  Interfaces="{}"
-                  Kind="Class"
-                  Module="mscorlib.dll">
-                  <BaseType>null</BaseType>
-                  <ElementType>null</ElementType>
-                </DebugType>
-              </BaseType>
               <ElementType>null</ElementType>
             </DebugType>
           </Type>
         </Value>
       </Item>
     </LocalVariables>
-    <DebuggingPaused>Break</DebuggingPaused>
+    <DebuggingPaused>Break DebugTypes.cs:74,4-74,40</DebuggingPaused>
     <Arguments
       Capacity="16"
       Count="15">
@@ -977,19 +697,6 @@ namespace Debugger.Tests {
               Interfaces="{}"
               Kind="Primitive"
               Module="{Exception: The type is not a class or value type.}">
-              <BaseType>
-                <DebugType
-                  BaseType="null"
-                  ElementType="null"
-                  FullName="System.Object"
-                  GenericArguments="{}"
-                  Interfaces="{}"
-                  Kind="Class"
-                  Module="mscorlib.dll">
-                  <BaseType>null</BaseType>
-                  <ElementType>null</ElementType>
-                </DebugType>
-              </BaseType>
               <ElementType>null</ElementType>
             </DebugType>
           </Type>
@@ -1015,19 +722,6 @@ namespace Debugger.Tests {
               Interfaces="{}"
               Kind="Primitive"
               Module="{Exception: The type is not a class or value type.}">
-              <BaseType>
-                <DebugType
-                  BaseType="null"
-                  ElementType="null"
-                  FullName="System.Object"
-                  GenericArguments="{}"
-                  Interfaces="{}"
-                  Kind="Class"
-                  Module="mscorlib.dll">
-                  <BaseType>null</BaseType>
-                  <ElementType>null</ElementType>
-                </DebugType>
-              </BaseType>
               <ElementType>null</ElementType>
             </DebugType>
           </Type>
@@ -1053,7 +747,6 @@ namespace Debugger.Tests {
               Interfaces="{}"
               Kind="Pointer"
               Module="{Exception: The type is not a class or value type.}">
-              <BaseType>null</BaseType>
               <ElementType>
                 <DebugType
                   BaseType="System.Object"
@@ -1063,19 +756,6 @@ namespace Debugger.Tests {
                   Interfaces="{}"
                   Kind="Primitive"
                   Module="{Exception: The type is not a class or value type.}">
-                  <BaseType>
-                    <DebugType
-                      BaseType="null"
-                      ElementType="null"
-                      FullName="System.Object"
-                      GenericArguments="{}"
-                      Interfaces="{}"
-                      Kind="Class"
-                      Module="mscorlib.dll">
-                      <BaseType>null</BaseType>
-                      <ElementType>null</ElementType>
-                    </DebugType>
-                  </BaseType>
                   <ElementType>null</ElementType>
                 </DebugType>
               </ElementType>
@@ -1103,7 +783,6 @@ namespace Debugger.Tests {
               Interfaces="{}"
               Kind="Pointer"
               Module="{Exception: The type is not a class or value type.}">
-              <BaseType>null</BaseType>
               <ElementType>
                 <DebugType
                   BaseType="System.Object"
@@ -1113,19 +792,6 @@ namespace Debugger.Tests {
                   Interfaces="{}"
                   Kind="Primitive"
                   Module="{Exception: The type is not a class or value type.}">
-                  <BaseType>
-                    <DebugType
-                      BaseType="null"
-                      ElementType="null"
-                      FullName="System.Object"
-                      GenericArguments="{}"
-                      Interfaces="{}"
-                      Kind="Class"
-                      Module="mscorlib.dll">
-                      <BaseType>null</BaseType>
-                      <ElementType>null</ElementType>
-                    </DebugType>
-                  </BaseType>
                   <ElementType>null</ElementType>
                 </DebugType>
               </ElementType>
@@ -1153,7 +819,6 @@ namespace Debugger.Tests {
               Interfaces="{}"
               Kind="Pointer"
               Module="{Exception: The type is not a class or value type.}">
-              <BaseType>null</BaseType>
               <ElementType>
                 <DebugType
                   BaseType="null"
@@ -1163,7 +828,6 @@ namespace Debugger.Tests {
                   Interfaces="{}"
                   Kind="Pointer"
                   Module="{Exception: The type is not a class or value type.}">
-                  <BaseType>null</BaseType>
                   <ElementType>
                     <DebugType
                       BaseType="System.Object"
@@ -1173,19 +837,6 @@ namespace Debugger.Tests {
                       Interfaces="{}"
                       Kind="Primitive"
                       Module="{Exception: The type is not a class or value type.}">
-                      <BaseType>
-                        <DebugType
-                          BaseType="null"
-                          ElementType="null"
-                          FullName="System.Object"
-                          GenericArguments="{}"
-                          Interfaces="{}"
-                          Kind="Class"
-                          Module="mscorlib.dll">
-                          <BaseType>null</BaseType>
-                          <ElementType>null</ElementType>
-                        </DebugType>
-                      </BaseType>
                       <ElementType>null</ElementType>
                     </DebugType>
                   </ElementType>
@@ -1215,7 +866,6 @@ namespace Debugger.Tests {
               Interfaces="{}"
               Kind="Pointer"
               Module="{Exception: The type is not a class or value type.}">
-              <BaseType>null</BaseType>
               <ElementType>
                 <DebugType
                   BaseType="null"
@@ -1225,7 +875,6 @@ namespace Debugger.Tests {
                   Interfaces="{}"
                   Kind="Void"
                   Module="{Exception: The type is not a class or value type.}">
-                  <BaseType>null</BaseType>
                   <ElementType>null</ElementType>
                 </DebugType>
               </ElementType>
@@ -1253,7 +902,6 @@ namespace Debugger.Tests {
               Interfaces="{}"
               Kind="Class"
               Module="mscorlib.dll">
-              <BaseType>null</BaseType>
               <ElementType>null</ElementType>
             </DebugType>
           </Type>
@@ -1279,7 +927,6 @@ namespace Debugger.Tests {
               Interfaces="{}"
               Kind="Class"
               Module="mscorlib.dll">
-              <BaseType>null</BaseType>
               <ElementType>null</ElementType>
             </DebugType>
           </Type>
@@ -1305,31 +952,6 @@ namespace Debugger.Tests {
               Interfaces="{}"
               Kind="Array"
               Module="{Exception: The type is not a class or value type.}">
-              <BaseType>
-                <DebugType
-                  BaseType="System.Object"
-                  ElementType="null"
-                  FullName="System.Array"
-                  GenericArguments="{}"
-                  Interfaces="{System.ICloneable, System.Collections.IList, System.Collections.ICollection, System.Collections.IEnumerable}"
-                  Kind="Class"
-                  Module="mscorlib.dll">
-                  <BaseType>
-                    <DebugType
-                      BaseType="null"
-                      ElementType="null"
-                      FullName="System.Object"
-                      GenericArguments="{}"
-                      Interfaces="{}"
-                      Kind="Class"
-                      Module="mscorlib.dll">
-                      <BaseType>null</BaseType>
-                      <ElementType>null</ElementType>
-                    </DebugType>
-                  </BaseType>
-                  <ElementType>null</ElementType>
-                </DebugType>
-              </BaseType>
               <ElementType>
                 <DebugType
                   BaseType="System.Object"
@@ -1339,19 +961,6 @@ namespace Debugger.Tests {
                   Interfaces="{}"
                   Kind="Primitive"
                   Module="{Exception: The type is not a class or value type.}">
-                  <BaseType>
-                    <DebugType
-                      BaseType="null"
-                      ElementType="null"
-                      FullName="System.Object"
-                      GenericArguments="{}"
-                      Interfaces="{}"
-                      Kind="Class"
-                      Module="mscorlib.dll">
-                      <BaseType>null</BaseType>
-                      <ElementType>null</ElementType>
-                    </DebugType>
-                  </BaseType>
                   <ElementType>null</ElementType>
                 </DebugType>
               </ElementType>
@@ -1379,31 +988,6 @@ namespace Debugger.Tests {
               Interfaces="{}"
               Kind="Array"
               Module="{Exception: The type is not a class or value type.}">
-              <BaseType>
-                <DebugType
-                  BaseType="System.Object"
-                  ElementType="null"
-                  FullName="System.Array"
-                  GenericArguments="{}"
-                  Interfaces="{System.ICloneable, System.Collections.IList, System.Collections.ICollection, System.Collections.IEnumerable}"
-                  Kind="Class"
-                  Module="mscorlib.dll">
-                  <BaseType>
-                    <DebugType
-                      BaseType="null"
-                      ElementType="null"
-                      FullName="System.Object"
-                      GenericArguments="{}"
-                      Interfaces="{}"
-                      Kind="Class"
-                      Module="mscorlib.dll">
-                      <BaseType>null</BaseType>
-                      <ElementType>null</ElementType>
-                    </DebugType>
-                  </BaseType>
-                  <ElementType>null</ElementType>
-                </DebugType>
-              </BaseType>
               <ElementType>
                 <DebugType
                   BaseType="System.Object"
@@ -1413,19 +997,6 @@ namespace Debugger.Tests {
                   Interfaces="{}"
                   Kind="Primitive"
                   Module="{Exception: The type is not a class or value type.}">
-                  <BaseType>
-                    <DebugType
-                      BaseType="null"
-                      ElementType="null"
-                      FullName="System.Object"
-                      GenericArguments="{}"
-                      Interfaces="{}"
-                      Kind="Class"
-                      Module="mscorlib.dll">
-                      <BaseType>null</BaseType>
-                      <ElementType>null</ElementType>
-                    </DebugType>
-                  </BaseType>
                   <ElementType>null</ElementType>
                 </DebugType>
               </ElementType>
@@ -1453,31 +1024,6 @@ namespace Debugger.Tests {
               Interfaces="{}"
               Kind="ValueType"
               Module="DebugTypes.exe">
-              <BaseType>
-                <DebugType
-                  BaseType="System.Object"
-                  ElementType="null"
-                  FullName="System.ValueType"
-                  GenericArguments="{}"
-                  Interfaces="{}"
-                  Kind="Class"
-                  Module="mscorlib.dll">
-                  <BaseType>
-                    <DebugType
-                      BaseType="null"
-                      ElementType="null"
-                      FullName="System.Object"
-                      GenericArguments="{}"
-                      Interfaces="{}"
-                      Kind="Class"
-                      Module="mscorlib.dll">
-                      <BaseType>null</BaseType>
-                      <ElementType>null</ElementType>
-                    </DebugType>
-                  </BaseType>
-                  <ElementType>null</ElementType>
-                </DebugType>
-              </BaseType>
               <ElementType>null</ElementType>
             </DebugType>
           </Type>
@@ -1503,31 +1049,6 @@ namespace Debugger.Tests {
               Interfaces="{}"
               Kind="ValueType"
               Module="DebugTypes.exe">
-              <BaseType>
-                <DebugType
-                  BaseType="System.Object"
-                  ElementType="null"
-                  FullName="System.ValueType"
-                  GenericArguments="{}"
-                  Interfaces="{}"
-                  Kind="Class"
-                  Module="mscorlib.dll">
-                  <BaseType>
-                    <DebugType
-                      BaseType="null"
-                      ElementType="null"
-                      FullName="System.Object"
-                      GenericArguments="{}"
-                      Interfaces="{}"
-                      Kind="Class"
-                      Module="mscorlib.dll">
-                      <BaseType>null</BaseType>
-                      <ElementType>null</ElementType>
-                    </DebugType>
-                  </BaseType>
-                  <ElementType>null</ElementType>
-                </DebugType>
-              </BaseType>
               <ElementType>null</ElementType>
             </DebugType>
           </Type>
@@ -1553,7 +1074,6 @@ namespace Debugger.Tests {
               Interfaces="{}"
               Kind="Pointer"
               Module="{Exception: The type is not a class or value type.}">
-              <BaseType>null</BaseType>
               <ElementType>
                 <DebugType
                   BaseType="System.ValueType"
@@ -1563,31 +1083,6 @@ namespace Debugger.Tests {
                   Interfaces="{}"
                   Kind="ValueType"
                   Module="DebugTypes.exe">
-                  <BaseType>
-                    <DebugType
-                      BaseType="System.Object"
-                      ElementType="null"
-                      FullName="System.ValueType"
-                      GenericArguments="{}"
-                      Interfaces="{}"
-                      Kind="Class"
-                      Module="mscorlib.dll">
-                      <BaseType>
-                        <DebugType
-                          BaseType="null"
-                          ElementType="null"
-                          FullName="System.Object"
-                          GenericArguments="{}"
-                          Interfaces="{}"
-                          Kind="Class"
-                          Module="mscorlib.dll">
-                          <BaseType>null</BaseType>
-                          <ElementType>null</ElementType>
-                        </DebugType>
-                      </BaseType>
-                      <ElementType>null</ElementType>
-                    </DebugType>
-                  </BaseType>
                   <ElementType>null</ElementType>
                 </DebugType>
               </ElementType>
@@ -1615,31 +1110,6 @@ namespace Debugger.Tests {
               Interfaces="{System.IComparable, System.IFormattable, System.IConvertible}"
               Kind="ValueType"
               Module="mscorlib.dll">
-              <BaseType>
-                <DebugType
-                  BaseType="System.Object"
-                  ElementType="null"
-                  FullName="System.ValueType"
-                  GenericArguments="{}"
-                  Interfaces="{}"
-                  Kind="Class"
-                  Module="mscorlib.dll">
-                  <BaseType>
-                    <DebugType
-                      BaseType="null"
-                      ElementType="null"
-                      FullName="System.Object"
-                      GenericArguments="{}"
-                      Interfaces="{}"
-                      Kind="Class"
-                      Module="mscorlib.dll">
-                      <BaseType>null</BaseType>
-                      <ElementType>null</ElementType>
-                    </DebugType>
-                  </BaseType>
-                  <ElementType>null</ElementType>
-                </DebugType>
-              </BaseType>
               <ElementType>null</ElementType>
             </DebugType>
           </Type>
@@ -1665,31 +1135,6 @@ namespace Debugger.Tests {
               Interfaces="{System.IComparable, System.IFormattable, System.IConvertible}"
               Kind="ValueType"
               Module="mscorlib.dll">
-              <BaseType>
-                <DebugType
-                  BaseType="System.Object"
-                  ElementType="null"
-                  FullName="System.ValueType"
-                  GenericArguments="{}"
-                  Interfaces="{}"
-                  Kind="Class"
-                  Module="mscorlib.dll">
-                  <BaseType>
-                    <DebugType
-                      BaseType="null"
-                      ElementType="null"
-                      FullName="System.Object"
-                      GenericArguments="{}"
-                      Interfaces="{}"
-                      Kind="Class"
-                      Module="mscorlib.dll">
-                      <BaseType>null</BaseType>
-                      <ElementType>null</ElementType>
-                    </DebugType>
-                  </BaseType>
-                  <ElementType>null</ElementType>
-                </DebugType>
-              </BaseType>
               <ElementType>null</ElementType>
             </DebugType>
           </Type>

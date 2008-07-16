@@ -131,7 +131,7 @@ namespace Debugger.Tests {
     <ProcessStarted />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>Generics.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break</DebuggingPaused>
+    <DebuggingPaused>Break Generics.cs:48,4-48,40</DebuggingPaused>
     <SelectedStackFrame>
       <StackFrame
         ArgumentCount="2"
@@ -196,7 +196,7 @@ namespace Debugger.Tests {
           Type="System.String" />
       </Item>
     </SelectedStackFrame-GetArguments>
-    <DebuggingPaused>Break</DebuggingPaused>
+    <DebuggingPaused>Break Generics.cs:54,4-54,40</DebuggingPaused>
     <SelectedStackFrame>
       <StackFrame
         ArgumentCount="2"
@@ -261,7 +261,7 @@ namespace Debugger.Tests {
           Type="System.String" />
       </Item>
     </SelectedStackFrame-GetArguments>
-    <DebuggingPaused>Break</DebuggingPaused>
+    <DebuggingPaused>Break Generics.cs:60,4-60,40</DebuggingPaused>
     <SelectedStackFrame>
       <StackFrame
         ArgumentCount="2"
@@ -326,7 +326,7 @@ namespace Debugger.Tests {
           Type="System.String" />
       </Item>
     </SelectedStackFrame-GetArguments>
-    <DebuggingPaused>Break</DebuggingPaused>
+    <DebuggingPaused>Break Generics.cs:66,4-66,40</DebuggingPaused>
     <SelectedStackFrame>
       <StackFrame
         ArgumentCount="2"
@@ -391,7 +391,7 @@ namespace Debugger.Tests {
           Type="System.String" />
       </Item>
     </SelectedStackFrame-GetArguments>
-    <DebuggingPaused>Break</DebuggingPaused>
+    <DebuggingPaused>Break Generics.cs:75,4-75,40</DebuggingPaused>
     <SelectedStackFrame>
       <StackFrame
         ArgumentCount="2"
@@ -456,7 +456,7 @@ namespace Debugger.Tests {
           Type="System.String" />
       </Item>
     </SelectedStackFrame-GetArguments>
-    <DebuggingPaused>Break</DebuggingPaused>
+    <DebuggingPaused>Break Generics.cs:81,4-81,40</DebuggingPaused>
     <SelectedStackFrame>
       <StackFrame
         ArgumentCount="2"
@@ -521,7 +521,7 @@ namespace Debugger.Tests {
           Type="System.String" />
       </Item>
     </SelectedStackFrame-GetArguments>
-    <DebuggingPaused>Break</DebuggingPaused>
+    <DebuggingPaused>Break Generics.cs:87,4-87,40</DebuggingPaused>
     <SelectedStackFrame>
       <StackFrame
         ArgumentCount="2"
@@ -586,7 +586,7 @@ namespace Debugger.Tests {
           Type="System.String" />
       </Item>
     </SelectedStackFrame-GetArguments>
-    <DebuggingPaused>Break</DebuggingPaused>
+    <DebuggingPaused>Break Generics.cs:93,4-93,40</DebuggingPaused>
     <SelectedStackFrame>
       <StackFrame
         ArgumentCount="2"
@@ -651,7 +651,7 @@ namespace Debugger.Tests {
           Type="System.String" />
       </Item>
     </SelectedStackFrame-GetArguments>
-    <DebuggingPaused>Break</DebuggingPaused>
+    <DebuggingPaused>Break Generics.cs:28,4-28,40</DebuggingPaused>
     <Prop>
       <Value
         ArrayDimensions="{Exception: Value is not an array}"

@@ -54,10 +54,10 @@ namespace Debugger.Tests {
     <ModuleLoaded>System.Configuration.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>System.Xml.dll (No symbols)</ModuleLoaded>
     <LogMessage>1\r\n</LogMessage>
-    <DebuggingPaused>Break</DebuggingPaused>
-    <DebuggingPaused>SetIP</DebuggingPaused>
+    <DebuggingPaused>Break SetIP.cs:17,4-17,40</DebuggingPaused>
+    <DebuggingPaused>SetIP SetIP.cs:16,4-16,44</DebuggingPaused>
     <LogMessage>1\r\n</LogMessage>
-    <DebuggingPaused>Break</DebuggingPaused>
+    <DebuggingPaused>Break SetIP.cs:17,4-17,40</DebuggingPaused>
     <ProcessExited />
   </Test>
 </DebuggerTests>
