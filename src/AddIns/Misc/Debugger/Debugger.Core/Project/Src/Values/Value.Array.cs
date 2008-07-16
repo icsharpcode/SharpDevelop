@@ -32,7 +32,7 @@ namespace Debugger
 		/// Gets the number of elements in the array.
 		/// eg new object[4,5] returns 20
 		/// </summary>
-		public int ArrayLenght {
+		public int ArrayLength {
 			get {
 				return (int)CorArrayValue.Count;
 			}

@@ -102,7 +102,7 @@ namespace Debugger.Tests {
     <argument>
       <Value
         ArrayDimensions="{Exception: Value is not an array}"
-        ArrayLenght="{Exception: Value is not an array}"
+        ArrayLength="{Exception: Value is not an array}"
         ArrayRank="{Exception: Value is not an array}"
         AsString="1"
         Expression="argument"
@@ -114,7 +114,7 @@ namespace Debugger.Tests {
     <local>
       <Value
         ArrayDimensions="{Exception: Value is not an array}"
-        ArrayLenght="{Exception: Value is not an array}"
+        ArrayLength="{Exception: Value is not an array}"
         ArrayRank="{Exception: Value is not an array}"
         AsString="2"
         Expression="local"
@@ -126,7 +126,7 @@ namespace Debugger.Tests {
     <_x0040_class>
       <Value
         ArrayDimensions="{Exception: Value is not an array}"
-        ArrayLenght="{Exception: Value is not an array}"
+        ArrayLength="{Exception: Value is not an array}"
         ArrayRank="{Exception: Value is not an array}"
         AsString="3"
         Expression="this.class"
@@ -139,7 +139,7 @@ namespace Debugger.Tests {
     <argument>
       <Value
         ArrayDimensions="{Exception: Value is no longer valid}"
-        ArrayLenght="{Exception: Value is no longer valid}"
+        ArrayLength="{Exception: Value is no longer valid}"
         ArrayRank="{Exception: Value is no longer valid}"
         AsString="{Exception: Value is no longer valid}"
         Expression="argument"
@@ -151,7 +151,7 @@ namespace Debugger.Tests {
     <local>
       <Value
         ArrayDimensions="{Exception: Value is no longer valid}"
-        ArrayLenght="{Exception: Value is no longer valid}"
+        ArrayLength="{Exception: Value is no longer valid}"
         ArrayRank="{Exception: Value is no longer valid}"
         AsString="{Exception: Value is no longer valid}"
         Expression="local"
@@ -163,7 +163,7 @@ namespace Debugger.Tests {
     <_x0040_class>
       <Value
         ArrayDimensions="{Exception: Value is no longer valid}"
-        ArrayLenght="{Exception: Value is no longer valid}"
+        ArrayLength="{Exception: Value is no longer valid}"
         ArrayRank="{Exception: Value is no longer valid}"
         AsString="{Exception: Value is no longer valid}"
         Expression="this.class"
@@ -175,7 +175,7 @@ namespace Debugger.Tests {
     <localInSubFunction>
       <Value
         ArrayDimensions="{Exception: Value is not an array}"
-        ArrayLenght="{Exception: Value is not an array}"
+        ArrayLength="{Exception: Value is not an array}"
         ArrayRank="{Exception: Value is not an array}"
         AsString="4"
         Expression="localInSubFunction"
@@ -188,7 +188,7 @@ namespace Debugger.Tests {
     <argument>
       <Value
         ArrayDimensions="{Exception: Value is no longer valid}"
-        ArrayLenght="{Exception: Value is no longer valid}"
+        ArrayLength="{Exception: Value is no longer valid}"
         ArrayRank="{Exception: Value is no longer valid}"
         AsString="{Exception: Value is no longer valid}"
         Expression="argument"
@@ -200,7 +200,7 @@ namespace Debugger.Tests {
     <local>
       <Value
         ArrayDimensions="{Exception: Value is no longer valid}"
-        ArrayLenght="{Exception: Value is no longer valid}"
+        ArrayLength="{Exception: Value is no longer valid}"
         ArrayRank="{Exception: Value is no longer valid}"
         AsString="{Exception: Value is no longer valid}"
         Expression="local"
@@ -212,7 +212,7 @@ namespace Debugger.Tests {
     <_x0040_class>
       <Value
         ArrayDimensions="{Exception: Value is no longer valid}"
-        ArrayLenght="{Exception: Value is no longer valid}"
+        ArrayLength="{Exception: Value is no longer valid}"
         ArrayRank="{Exception: Value is no longer valid}"
         AsString="{Exception: Value is no longer valid}"
         Expression="this.class"
@@ -224,7 +224,7 @@ namespace Debugger.Tests {
     <localInSubFunction>
       <Value
         ArrayDimensions="{Exception: Value is no longer valid}"
-        ArrayLenght="{Exception: Value is no longer valid}"
+        ArrayLength="{Exception: Value is no longer valid}"
         ArrayRank="{Exception: Value is no longer valid}"
         AsString="{Exception: Value is no longer valid}"
         Expression="localInSubFunction"
@@ -237,7 +237,7 @@ namespace Debugger.Tests {
     <argument>
       <Value
         ArrayDimensions="{Exception: Value is no longer valid}"
-        ArrayLenght="{Exception: Value is no longer valid}"
+        ArrayLength="{Exception: Value is no longer valid}"
         ArrayRank="{Exception: Value is no longer valid}"
         AsString="{Exception: Value is no longer valid}"
         Expression="argument"
@@ -249,7 +249,7 @@ namespace Debugger.Tests {
     <local>
       <Value
         ArrayDimensions="{Exception: Value is no longer valid}"
-        ArrayLenght="{Exception: Value is no longer valid}"
+        ArrayLength="{Exception: Value is no longer valid}"
         ArrayRank="{Exception: Value is no longer valid}"
         AsString="{Exception: Value is no longer valid}"
         Expression="local"
@@ -261,7 +261,7 @@ namespace Debugger.Tests {
     <_x0040_class>
       <Value
         ArrayDimensions="{Exception: Value is no longer valid}"
-        ArrayLenght="{Exception: Value is no longer valid}"
+        ArrayLength="{Exception: Value is no longer valid}"
         ArrayRank="{Exception: Value is no longer valid}"
         AsString="{Exception: Value is no longer valid}"
         Expression="this.class"
@@ -273,7 +273,7 @@ namespace Debugger.Tests {
     <localInSubFunction>
       <Value
         ArrayDimensions="{Exception: Value is no longer valid}"
-        ArrayLenght="{Exception: Value is no longer valid}"
+        ArrayLength="{Exception: Value is no longer valid}"
         ArrayRank="{Exception: Value is no longer valid}"
         AsString="{Exception: Value is no longer valid}"
         Expression="localInSubFunction"
@@ -285,7 +285,7 @@ namespace Debugger.Tests {
     <localInSubFunction_x0028_new_x0029_>
       <Value
         ArrayDimensions="{Exception: Value is not an array}"
-        ArrayLenght="{Exception: Value is not an array}"
+        ArrayLength="{Exception: Value is not an array}"
         ArrayRank="{Exception: Value is not an array}"
         AsString="4"
         Expression="localInSubFunction"
@@ -298,7 +298,7 @@ namespace Debugger.Tests {
     <argument>
       <Value
         ArrayDimensions="{Exception: Value is no longer valid}"
-        ArrayLenght="{Exception: Value is no longer valid}"
+        ArrayLength="{Exception: Value is no longer valid}"
         ArrayRank="{Exception: Value is no longer valid}"
         AsString="{Exception: Value is no longer valid}"
         Expression="argument"
@@ -310,7 +310,7 @@ namespace Debugger.Tests {
     <local>
       <Value
         ArrayDimensions="{Exception: Value is no longer valid}"
-        ArrayLenght="{Exception: Value is no longer valid}"
+        ArrayLength="{Exception: Value is no longer valid}"
         ArrayRank="{Exception: Value is no longer valid}"
         AsString="{Exception: Value is no longer valid}"
         Expression="local"
@@ -322,7 +322,7 @@ namespace Debugger.Tests {
     <_x0040_class>
       <Value
         ArrayDimensions="{Exception: Value is no longer valid}"
-        ArrayLenght="{Exception: Value is no longer valid}"
+        ArrayLength="{Exception: Value is no longer valid}"
         ArrayRank="{Exception: Value is no longer valid}"
         AsString="{Exception: Value is no longer valid}"
         Expression="this.class"
@@ -334,7 +334,7 @@ namespace Debugger.Tests {
     <localInSubFunction>
       <Value
         ArrayDimensions="{Exception: Value is no longer valid}"
-        ArrayLenght="{Exception: Value is no longer valid}"
+        ArrayLength="{Exception: Value is no longer valid}"
         ArrayRank="{Exception: Value is no longer valid}"
         AsString="{Exception: Value is no longer valid}"
         Expression="localInSubFunction"

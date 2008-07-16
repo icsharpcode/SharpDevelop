@@ -100,7 +100,7 @@ namespace Debugger.Tests {
       <Item>
         <Value
           ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLenght="{Exception: Value is not an array}"
+          ArrayLength="{Exception: Value is not an array}"
           ArrayRank="{Exception: Value is not an array}"
           AsString="1"
           Expression="i"
@@ -112,7 +112,7 @@ namespace Debugger.Tests {
       <Item>
         <Value
           ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLenght="{Exception: Value is not an array}"
+          ArrayLength="{Exception: Value is not an array}"
           ArrayRank="{Exception: Value is not an array}"
           AsString="A"
           Expression="s"
@@ -124,7 +124,7 @@ namespace Debugger.Tests {
       <Item>
         <Value
           ArrayDimensions="{Exception: Value is null}"
-          ArrayLenght="{Exception: Value is null}"
+          ArrayLength="{Exception: Value is null}"
           ArrayRank="{Exception: Value is null}"
           AsString="null"
           Expression="s_null"
@@ -136,7 +136,7 @@ namespace Debugger.Tests {
       <Item>
         <Value
           ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLenght="{Exception: Value is not an array}"
+          ArrayLength="{Exception: Value is not an array}"
           ArrayRank="{Exception: Value is not an array}"
           AsString="2"
           Expression="ref_i"
@@ -148,7 +148,7 @@ namespace Debugger.Tests {
       <Item>
         <Value
           ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLenght="{Exception: Value is not an array}"
+          ArrayLength="{Exception: Value is not an array}"
           ArrayRank="{Exception: Value is not an array}"
           AsString="3"
           Expression="out_i"
@@ -160,7 +160,7 @@ namespace Debugger.Tests {
       <Item>
         <Value
           ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLenght="{Exception: Value is not an array}"
+          ArrayLength="{Exception: Value is not an array}"
           ArrayRank="{Exception: Value is not an array}"
           AsString="0"
           Expression="out_i2"
@@ -172,7 +172,7 @@ namespace Debugger.Tests {
       <Item>
         <Value
           ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLenght="{Exception: Value is not an array}"
+          ArrayLength="{Exception: Value is not an array}"
           ArrayRank="{Exception: Value is not an array}"
           AsString="B"
           Expression="ref_s"
@@ -184,7 +184,7 @@ namespace Debugger.Tests {
       <Item>
         <Value
           ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLenght="{Exception: Value is not an array}"
+          ArrayLength="{Exception: Value is not an array}"
           ArrayRank="{Exception: Value is not an array}"
           AsString="{System.Nullable&lt;System.Int32&gt;}"
           Expression="iNull"
@@ -196,7 +196,7 @@ namespace Debugger.Tests {
       <Item>
         <Value
           ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLenght="{Exception: Value is not an array}"
+          ArrayLength="{Exception: Value is not an array}"
           ArrayRank="{Exception: Value is not an array}"
           AsString="{System.Nullable&lt;System.Int32&gt;}"
           Expression="iNull_null"
@@ -213,7 +213,7 @@ namespace Debugger.Tests {
       <Item>
         <Value
           ArrayDimensions="{0}"
-          ArrayLenght="0"
+          ArrayLength="0"
           ArrayRank="1"
           AsString="{System.String[]}"
           Expression="args"
@@ -230,7 +230,7 @@ namespace Debugger.Tests {
       <Item>
         <Value
           ArrayDimensions="{1}"
-          ArrayLenght="1"
+          ArrayLength="1"
           ArrayRank="1"
           AsString="{System.String[]}"
           Expression="args"
@@ -247,7 +247,7 @@ namespace Debugger.Tests {
       <Item>
         <Value
           ArrayDimensions="{2}"
-          ArrayLenght="2"
+          ArrayLength="2"
           ArrayRank="1"
           AsString="{System.String[]}"
           Expression="args"
@@ -264,7 +264,7 @@ namespace Debugger.Tests {
       <Item>
         <Value
           ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLenght="{Exception: Value is not an array}"
+          ArrayLength="{Exception: Value is not an array}"
           ArrayRank="{Exception: Value is not an array}"
           AsString="1"
           Expression="i"
@@ -276,7 +276,7 @@ namespace Debugger.Tests {
       <Item>
         <Value
           ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLenght="{Exception: Value is not an array}"
+          ArrayLength="{Exception: Value is not an array}"
           ArrayRank="{Exception: Value is not an array}"
           AsString="A"
           Expression="s"

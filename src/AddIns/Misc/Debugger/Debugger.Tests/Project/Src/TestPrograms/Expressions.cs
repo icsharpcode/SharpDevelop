@@ -83,7 +83,7 @@ namespace Debugger.Tests {
       <Item>
         <Value
           ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLenght="{Exception: Value is not an array}"
+          ArrayLength="{Exception: Value is not an array}"
           ArrayRank="{Exception: Value is not an array}"
           AsString="argValue"
           Expression="arg"
@@ -99,7 +99,7 @@ namespace Debugger.Tests {
       <Item>
         <Value
           ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLenght="{Exception: Value is not an array}"
+          ArrayLength="{Exception: Value is not an array}"
           ArrayRank="{Exception: Value is not an array}"
           AsString="0"
           Expression="i"
@@ -111,7 +111,7 @@ namespace Debugger.Tests {
       <Item>
         <Value
           ArrayDimensions="{3}"
-          ArrayLenght="3"
+          ArrayLength="3"
           ArrayRank="1"
           AsString="{System.String[]}"
           Expression="array"
@@ -123,7 +123,7 @@ namespace Debugger.Tests {
       <Item>
         <Value
           ArrayDimensions="{2, 2}"
-          ArrayLenght="4"
+          ArrayLength="4"
           ArrayRank="2"
           AsString="{System.String[,]}"
           Expression="array2"
@@ -137,7 +137,7 @@ namespace Debugger.Tests {
       <Item>
         <Value
           ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLenght="{Exception: Value is not an array}"
+          ArrayLength="{Exception: Value is not an array}"
           ArrayRank="{Exception: Value is not an array}"
           AsString="derived name"
           Expression="this.name"
@@ -149,7 +149,7 @@ namespace Debugger.Tests {
       <Item>
         <Value
           ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLenght="{Exception: Value is not an array}"
+          ArrayLength="{Exception: Value is not an array}"
           ArrayRank="{Exception: Value is not an array}"
           AsString="derived value"
           Expression="this.Value"
@@ -161,7 +161,7 @@ namespace Debugger.Tests {
       <Item>
         <Value
           ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLenght="{Exception: Value is not an array}"
+          ArrayLength="{Exception: Value is not an array}"
           ArrayRank="{Exception: Value is not an array}"
           AsString="field value"
           Expression="this.field"
@@ -173,7 +173,7 @@ namespace Debugger.Tests {
       <Item>
         <Value
           ArrayDimensions="{3}"
-          ArrayLenght="3"
+          ArrayLength="3"
           ArrayRank="1"
           AsString="{System.String[]}"
           Expression="this.array"
@@ -185,7 +185,7 @@ namespace Debugger.Tests {
       <Item>
         <Value
           ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLenght="{Exception: Value is not an array}"
+          ArrayLength="{Exception: Value is not an array}"
           ArrayRank="{Exception: Value is not an array}"
           AsString="derived name"
           Expression="this.Name"
@@ -197,7 +197,7 @@ namespace Debugger.Tests {
       <Item>
         <Value
           ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLenght="{Exception: Value is not an array}"
+          ArrayLength="{Exception: Value is not an array}"
           ArrayRank="{Exception: Value is not an array}"
           AsString="base name"
           Expression="this.name"
@@ -209,7 +209,7 @@ namespace Debugger.Tests {
       <Item>
         <Value
           ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLenght="{Exception: Value is not an array}"
+          ArrayLength="{Exception: Value is not an array}"
           ArrayRank="{Exception: Value is not an array}"
           AsString="base value"
           Expression="this.Value"
@@ -221,7 +221,7 @@ namespace Debugger.Tests {
       <Item>
         <Value
           ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLenght="{Exception: Value is not an array}"
+          ArrayLength="{Exception: Value is not an array}"
           ArrayRank="{Exception: Value is not an array}"
           AsString="base name"
           Expression="this.Name"

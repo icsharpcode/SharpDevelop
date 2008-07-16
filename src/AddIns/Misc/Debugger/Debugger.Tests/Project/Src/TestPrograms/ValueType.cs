@@ -56,7 +56,7 @@ namespace Debugger.Tests {
     <this>
       <Value
         ArrayDimensions="{Exception: Value is not an array}"
-        ArrayLenght="{Exception: Value is not an array}"
+        ArrayLength="{Exception: Value is not an array}"
         ArrayRank="{Exception: Value is not an array}"
         AsString="{Debugger.Tests.ValueType}"
         Expression="this"
