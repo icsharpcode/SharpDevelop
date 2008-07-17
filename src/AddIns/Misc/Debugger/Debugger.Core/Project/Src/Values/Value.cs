@@ -143,6 +143,19 @@ namespace Debugger
 			}
 		}
 		
+		/// <summary> Dereferences a pointer type </summary>
+		/// <returns> Returns null for a null pointer </returns>
+		public Value Dereference()
+		{
+			if (!this.Type.IsPointer) throw new DebuggerException("Not a pointer");
+			ICorDebugReferenceValue corRef = this.CorValue.CastTo<ICorDebugReferenceValue>();
+			if (corRef.Value == 0 || corRef.Dereference() == null) {
+				return null;
+			} else {
+				return new Value(this.Process, new DereferenceExpression(this.Expression), corRef.Dereference());
+			}
+		}
+		
 		/// <summary> Copy the acutal value from some other Value object </summary>
 		public void SetValue(Value newValue)
 		{

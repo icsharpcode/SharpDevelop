@@ -65,6 +65,7 @@
     <Compile Include="Src\Debugger\SourcecodeSegment.cs" />
     <Compile Include="Src\Expressions\Ast\ArrayIndexerExpression.cs" />
     <Compile Include="Src\Expressions\Ast\CurrentExceptionExpression.cs" />
+    <Compile Include="Src\Expressions\Ast\DereferenceExpression.cs" />
     <Compile Include="Src\Expressions\Ast\EmptyExpression.cs" />
     <Compile Include="Src\Expressions\Ast\LocalVariableIdentifierExpression.cs" />
     <Compile Include="Src\Expressions\Ast\MemberReferenceExpression.cs" />

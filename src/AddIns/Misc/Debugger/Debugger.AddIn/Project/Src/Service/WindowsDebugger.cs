@@ -386,7 +386,11 @@ namespace ICSharpCode.SharpDevelop.Services
 				return null;
 			}
 			
-			currentTooltipRow = new DynamicTreeDebuggerRow(DebuggedProcess, valueNode);
+			try {
+				currentTooltipRow = new DynamicTreeDebuggerRow(DebuggedProcess, valueNode);
+			} catch (AbortedBecauseDebuggeeResumedException) {
+				return null;
+			}
 			currentTooltipExpression = valueNode.Expression;
 			return new DebuggerGridControl(currentTooltipRow);
 		}

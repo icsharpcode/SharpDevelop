@@ -75,6 +75,8 @@ namespace Debugger.AddIn.TreeModel
 			
 			if (DebuggingOptions.Instance.ShowValuesInHexadecimal && val.Type.IsInteger) {
 				this.Text = String.Format("0x{0:X}", val.PrimitiveValue);
+			} else if (val.Type.IsPointer) {
+				this.Text = String.Format("0x{0:X}", val.PrimitiveValue);
 			} else {
 				this.Text = val.AsString;
 			}
@@ -86,12 +88,17 @@ namespace Debugger.AddIn.TreeModel
 			}
 			
 			// Note that these return enumerators so they are lazy-evaluated
-			if (val.Type.IsClass || val.Type.IsValueType) {
+			this.ChildNodes = null;
+			if (val.IsNull) {
+			} else if (val.Type.IsClass || val.Type.IsValueType) {
 				this.ChildNodes = Utils.GetChildNodesOfObject(this.Expression, val.Type);
 			} else if (val.Type.IsArray) {
 				this.ChildNodes = Utils.GetChildNodesOfArray(this.Expression, val.ArrayDimensions);
-			} else {
-				this.ChildNodes = null;
+			} else if (val.Type.IsPointer) {
+				Value deRef = val.Dereference();
+				if (deRef != null) {
+					this.ChildNodes = new AbstractNode [] { new ValueNode(deRef) };
+				}
 			}
 			
 			if (DebuggingOptions.Instance.ICorDebugVisualizerEnabled) {
@@ -100,7 +107,7 @@ namespace Debugger.AddIn.TreeModel
 			}
 			
 			// Do last since it may expire the object
-			if (val.Type.IsClass || val.Type.IsValueType) {
+			if ((val.Type.IsClass || val.Type.IsValueType) && !val.IsNull) {
 				this.Text = val.InvokeToString();
 			}
 		}

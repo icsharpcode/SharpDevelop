@@ -35,6 +35,9 @@ namespace Debugger
 		/// </summary>
 		public object PrimitiveValue { 
 			get {
+				if (this.Type.IsPointer) {
+					return this.CorValue.CastTo<ICorDebugReferenceValue>().Address;
+				}
 				if (!this.Type.IsPrimitive) throw new DebuggerException("Value is not a primitive type");
 				if (this.Type.IsString) {
 					if (this.IsNull) return null;
