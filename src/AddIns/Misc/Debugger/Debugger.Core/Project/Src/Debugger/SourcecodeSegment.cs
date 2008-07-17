@@ -147,8 +147,8 @@ namespace Debugger
 			
 			ISymUnmanagedMethod symMethod;
 			try {
-				//uint validLine = symDoc.FindClosestLine((uint)StartLine);
-				symMethod = symReader.GetMethodFromDocumentPosition(symDoc, (uint)line, (uint)column);
+				uint validLine = symDoc.FindClosestLine((uint)line);
+				symMethod = symReader.GetMethodFromDocumentPosition(symDoc, (uint)validLine, (uint)column);
 			} catch {
 				return null; //Not found
 			}

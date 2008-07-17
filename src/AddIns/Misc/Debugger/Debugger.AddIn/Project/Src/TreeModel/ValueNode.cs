@@ -76,7 +76,7 @@ namespace Debugger.AddIn.TreeModel
 			if (DebuggingOptions.Instance.ShowValuesInHexadecimal && val.Type.IsInteger) {
 				this.Text = String.Format("0x{0:X}", val.PrimitiveValue);
 			} else if (val.Type.IsPointer) {
-				this.Text = String.Format("0x{0:X}", val.PrimitiveValue);
+				this.Text = String.Format("0x{0:X}", val.PointerAddress);
 			} else {
 				this.Text = val.AsString;
 			}

@@ -143,6 +143,14 @@ namespace Debugger
 			}
 		}
 		
+		[Tests.Ignore]
+		public ulong PointerAddress {
+			get {
+				if (!this.Type.IsPointer) throw new DebuggerException("Not a pointer");
+				return this.CorValue.CastTo<ICorDebugReferenceValue>().Value;
+			}
+		}
+		
 		/// <summary> Dereferences a pointer type </summary>
 		/// <returns> Returns null for a null pointer </returns>
 		public Value Dereference()
