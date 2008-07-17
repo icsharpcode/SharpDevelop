@@ -108,6 +108,7 @@ namespace Debugger.Tests {
         Expression="argument"
         IsInvalid="False"
         IsNull="False"
+        IsReference="False"
         PrimitiveValue="1"
         Type="System.Int32" />
     </argument>
@@ -120,6 +121,7 @@ namespace Debugger.Tests {
         Expression="local"
         IsInvalid="False"
         IsNull="False"
+        IsReference="False"
         PrimitiveValue="2"
         Type="System.Int32" />
     </local>
@@ -132,6 +134,7 @@ namespace Debugger.Tests {
         Expression="this.class"
         IsInvalid="False"
         IsNull="False"
+        IsReference="False"
         PrimitiveValue="3"
         Type="System.Int32" />
     </_x0040_class>
@@ -145,6 +148,7 @@ namespace Debugger.Tests {
         Expression="argument"
         IsInvalid="True"
         IsNull="{Exception: Value is no longer valid}"
+        IsReference="{Exception: Value is no longer valid}"
         PrimitiveValue="{Exception: Value is no longer valid}"
         Type="System.Int32" />
     </argument>
@@ -157,6 +161,7 @@ namespace Debugger.Tests {
         Expression="local"
         IsInvalid="True"
         IsNull="{Exception: Value is no longer valid}"
+        IsReference="{Exception: Value is no longer valid}"
         PrimitiveValue="{Exception: Value is no longer valid}"
         Type="System.Int32" />
     </local>
@@ -169,6 +174,7 @@ namespace Debugger.Tests {
         Expression="this.class"
         IsInvalid="True"
         IsNull="{Exception: Value is no longer valid}"
+        IsReference="{Exception: Value is no longer valid}"
         PrimitiveValue="{Exception: Value is no longer valid}"
         Type="System.Int32" />
     </_x0040_class>
@@ -181,6 +187,7 @@ namespace Debugger.Tests {
         Expression="localInSubFunction"
         IsInvalid="False"
         IsNull="False"
+        IsReference="False"
         PrimitiveValue="4"
         Type="System.Int32" />
     </localInSubFunction>
@@ -194,6 +201,7 @@ namespace Debugger.Tests {
         Expression="argument"
         IsInvalid="True"
         IsNull="{Exception: Value is no longer valid}"
+        IsReference="{Exception: Value is no longer valid}"
         PrimitiveValue="{Exception: Value is no longer valid}"
         Type="System.Int32" />
     </argument>
@@ -206,6 +214,7 @@ namespace Debugger.Tests {
         Expression="local"
         IsInvalid="True"
         IsNull="{Exception: Value is no longer valid}"
+        IsReference="{Exception: Value is no longer valid}"
         PrimitiveValue="{Exception: Value is no longer valid}"
         Type="System.Int32" />
     </local>
@@ -218,6 +227,7 @@ namespace Debugger.Tests {
         Expression="this.class"
         IsInvalid="True"
         IsNull="{Exception: Value is no longer valid}"
+        IsReference="{Exception: Value is no longer valid}"
         PrimitiveValue="{Exception: Value is no longer valid}"
         Type="System.Int32" />
     </_x0040_class>
@@ -230,6 +240,7 @@ namespace Debugger.Tests {
         Expression="localInSubFunction"
         IsInvalid="True"
         IsNull="{Exception: Value is no longer valid}"
+        IsReference="{Exception: Value is no longer valid}"
         PrimitiveValue="{Exception: Value is no longer valid}"
         Type="System.Int32" />
     </localInSubFunction>
@@ -243,6 +254,7 @@ namespace Debugger.Tests {
         Expression="argument"
         IsInvalid="True"
         IsNull="{Exception: Value is no longer valid}"
+        IsReference="{Exception: Value is no longer valid}"
         PrimitiveValue="{Exception: Value is no longer valid}"
         Type="System.Int32" />
     </argument>
@@ -255,6 +267,7 @@ namespace Debugger.Tests {
         Expression="local"
         IsInvalid="True"
         IsNull="{Exception: Value is no longer valid}"
+        IsReference="{Exception: Value is no longer valid}"
         PrimitiveValue="{Exception: Value is no longer valid}"
         Type="System.Int32" />
     </local>
@@ -267,6 +280,7 @@ namespace Debugger.Tests {
         Expression="this.class"
         IsInvalid="True"
         IsNull="{Exception: Value is no longer valid}"
+        IsReference="{Exception: Value is no longer valid}"
         PrimitiveValue="{Exception: Value is no longer valid}"
         Type="System.Int32" />
     </_x0040_class>
@@ -279,6 +293,7 @@ namespace Debugger.Tests {
         Expression="localInSubFunction"
         IsInvalid="True"
         IsNull="{Exception: Value is no longer valid}"
+        IsReference="{Exception: Value is no longer valid}"
         PrimitiveValue="{Exception: Value is no longer valid}"
         Type="System.Int32" />
     </localInSubFunction>
@@ -291,6 +306,7 @@ namespace Debugger.Tests {
         Expression="localInSubFunction"
         IsInvalid="False"
         IsNull="False"
+        IsReference="False"
         PrimitiveValue="4"
         Type="System.Int32" />
     </localInSubFunction_x0028_new_x0029_>
@@ -304,6 +320,7 @@ namespace Debugger.Tests {
         Expression="argument"
         IsInvalid="True"
         IsNull="{Exception: Value is no longer valid}"
+        IsReference="{Exception: Value is no longer valid}"
         PrimitiveValue="{Exception: Value is no longer valid}"
         Type="System.Int32" />
     </argument>
@@ -316,6 +333,7 @@ namespace Debugger.Tests {
         Expression="local"
         IsInvalid="True"
         IsNull="{Exception: Value is no longer valid}"
+        IsReference="{Exception: Value is no longer valid}"
         PrimitiveValue="{Exception: Value is no longer valid}"
         Type="System.Int32" />
     </local>
@@ -328,6 +346,7 @@ namespace Debugger.Tests {
         Expression="this.class"
         IsInvalid="True"
         IsNull="{Exception: Value is no longer valid}"
+        IsReference="{Exception: Value is no longer valid}"
         PrimitiveValue="{Exception: Value is no longer valid}"
         Type="System.Int32" />
     </_x0040_class>
@@ -340,6 +359,7 @@ namespace Debugger.Tests {
         Expression="localInSubFunction"
         IsInvalid="True"
         IsNull="{Exception: Value is no longer valid}"
+        IsReference="{Exception: Value is no longer valid}"
         PrimitiveValue="{Exception: Value is no longer valid}"
         Type="System.Int32" />
     </localInSubFunction>

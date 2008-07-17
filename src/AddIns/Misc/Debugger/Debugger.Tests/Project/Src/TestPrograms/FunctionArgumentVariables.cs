@@ -106,6 +106,7 @@ namespace Debugger.Tests {
           Expression="i"
           IsInvalid="False"
           IsNull="False"
+          IsReference="False"
           PrimitiveValue="1"
           Type="System.Int32" />
       </Item>
@@ -118,6 +119,7 @@ namespace Debugger.Tests {
           Expression="s"
           IsInvalid="False"
           IsNull="False"
+          IsReference="True"
           PrimitiveValue="A"
           Type="System.String" />
       </Item>
@@ -130,6 +132,7 @@ namespace Debugger.Tests {
           Expression="s_null"
           IsInvalid="False"
           IsNull="True"
+          IsReference="True"
           PrimitiveValue="null"
           Type="System.String" />
       </Item>
@@ -142,6 +145,7 @@ namespace Debugger.Tests {
           Expression="ref_i"
           IsInvalid="False"
           IsNull="False"
+          IsReference="False"
           PrimitiveValue="2"
           Type="System.Int32" />
       </Item>
@@ -154,6 +158,7 @@ namespace Debugger.Tests {
           Expression="out_i"
           IsInvalid="False"
           IsNull="False"
+          IsReference="False"
           PrimitiveValue="3"
           Type="System.Int32" />
       </Item>
@@ -166,6 +171,7 @@ namespace Debugger.Tests {
           Expression="out_i2"
           IsInvalid="False"
           IsNull="False"
+          IsReference="False"
           PrimitiveValue="0"
           Type="System.Int32" />
       </Item>
@@ -178,6 +184,7 @@ namespace Debugger.Tests {
           Expression="ref_s"
           IsInvalid="False"
           IsNull="False"
+          IsReference="True"
           PrimitiveValue="B"
           Type="System.String" />
       </Item>
@@ -190,6 +197,7 @@ namespace Debugger.Tests {
           Expression="iNull"
           IsInvalid="False"
           IsNull="False"
+          IsReference="False"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="System.Nullable&lt;System.Int32&gt;" />
       </Item>
@@ -202,6 +210,7 @@ namespace Debugger.Tests {
           Expression="iNull_null"
           IsInvalid="False"
           IsNull="False"
+          IsReference="False"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="System.Nullable&lt;System.Int32&gt;" />
       </Item>
@@ -219,6 +228,7 @@ namespace Debugger.Tests {
           Expression="args"
           IsInvalid="False"
           IsNull="False"
+          IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="System.String[]" />
       </Item>
@@ -236,6 +246,7 @@ namespace Debugger.Tests {
           Expression="args"
           IsInvalid="False"
           IsNull="False"
+          IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="System.String[]" />
       </Item>
@@ -253,6 +264,7 @@ namespace Debugger.Tests {
           Expression="args"
           IsInvalid="False"
           IsNull="False"
+          IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="System.String[]" />
       </Item>
@@ -270,6 +282,7 @@ namespace Debugger.Tests {
           Expression="i"
           IsInvalid="False"
           IsNull="False"
+          IsReference="False"
           PrimitiveValue="1"
           Type="System.Int32" />
       </Item>
@@ -282,6 +295,7 @@ namespace Debugger.Tests {
           Expression="s"
           IsInvalid="False"
           IsNull="False"
+          IsReference="True"
           PrimitiveValue="A"
           Type="System.String" />
       </Item>

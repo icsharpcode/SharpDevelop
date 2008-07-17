@@ -89,6 +89,7 @@ namespace Debugger.Tests {
           Expression="arg"
           IsInvalid="False"
           IsNull="False"
+          IsReference="True"
           PrimitiveValue="argValue"
           Type="System.String" />
       </Item>
@@ -105,6 +106,7 @@ namespace Debugger.Tests {
           Expression="i"
           IsInvalid="False"
           IsNull="False"
+          IsReference="False"
           PrimitiveValue="0"
           Type="System.Int32" />
       </Item>
@@ -117,6 +119,7 @@ namespace Debugger.Tests {
           Expression="array"
           IsInvalid="False"
           IsNull="False"
+          IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="System.String[]" />
       </Item>
@@ -129,6 +132,7 @@ namespace Debugger.Tests {
           Expression="array2"
           IsInvalid="False"
           IsNull="False"
+          IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="System.String[,]" />
       </Item>
@@ -143,6 +147,7 @@ namespace Debugger.Tests {
           Expression="this.name"
           IsInvalid="False"
           IsNull="False"
+          IsReference="True"
           PrimitiveValue="derived name"
           Type="System.String" />
       </Item>
@@ -155,6 +160,7 @@ namespace Debugger.Tests {
           Expression="this.Value"
           IsInvalid="False"
           IsNull="False"
+          IsReference="True"
           PrimitiveValue="derived value"
           Type="System.String" />
       </Item>
@@ -167,6 +173,7 @@ namespace Debugger.Tests {
           Expression="this.field"
           IsInvalid="False"
           IsNull="False"
+          IsReference="True"
           PrimitiveValue="field value"
           Type="System.String" />
       </Item>
@@ -179,6 +186,7 @@ namespace Debugger.Tests {
           Expression="this.array"
           IsInvalid="False"
           IsNull="False"
+          IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="System.String[]" />
       </Item>
@@ -191,6 +199,7 @@ namespace Debugger.Tests {
           Expression="this.Name"
           IsInvalid="False"
           IsNull="False"
+          IsReference="True"
           PrimitiveValue="derived name"
           Type="System.String" />
       </Item>
@@ -203,6 +212,7 @@ namespace Debugger.Tests {
           Expression="this.name"
           IsInvalid="False"
           IsNull="False"
+          IsReference="True"
           PrimitiveValue="base name"
           Type="System.String" />
       </Item>
@@ -215,6 +225,7 @@ namespace Debugger.Tests {
           Expression="this.Value"
           IsInvalid="False"
           IsNull="False"
+          IsReference="True"
           PrimitiveValue="base value"
           Type="System.String" />
       </Item>
@@ -227,6 +238,7 @@ namespace Debugger.Tests {
           Expression="this.Name"
           IsInvalid="False"
           IsNull="False"
+          IsReference="True"
           PrimitiveValue="base name"
           Type="System.String" />
       </Item>

@@ -22,12 +22,12 @@ namespace Debugger
 				if (IsNull) throw new GetValueException("Value is null");
 				
 				if (this.Type.IsClass) {
-					return this.CorValue.CastTo<ICorDebugReferenceValue>().Dereference().CastTo<ICorDebugObjectValue>();
+					return this.CorReferenceValue.Dereference().CastTo<ICorDebugObjectValue>();
 				}
 				if (this.Type.IsValueType) {
 					if (this.CorValue.Is<ICorDebugReferenceValue>()) {
 						// Dereference and unbox
-						return this.CorValue.CastTo<ICorDebugReferenceValue>().Dereference().CastTo<ICorDebugBoxValue>().Object;
+						return this.CorReferenceValue.Dereference().CastTo<ICorDebugBoxValue>().Object;
 					} else {
 						return this.CorValue.CastTo<ICorDebugObjectValue>();
 					}
@@ -240,6 +240,7 @@ namespace Debugger
 		public string InvokeToString()
 		{
 			if (this.Type.IsPrimitive) return AsString;
+			if (this.Type.IsPointer) return "0x" + this.PointerAddress.ToString("X");
 			// if (!IsObject) // Can invoke on primitives
 			return Eval.InvokeMethod(Process, this.Type.AppDomainID, typeof(object), "ToString", this, new Value[] {}).AsString;
 		}

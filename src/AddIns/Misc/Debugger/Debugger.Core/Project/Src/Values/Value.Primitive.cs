@@ -21,7 +21,7 @@ namespace Debugger
 				
 				// Dereference and unbox
 				if (this.CorValue.Is<ICorDebugReferenceValue>()) {
-					return this.CorValue.CastTo<ICorDebugReferenceValue>().Dereference().CastTo<ICorDebugBoxValue>().Object.CastTo<ICorDebugGenericValue>();
+					return this.CorReferenceValue.Dereference().CastTo<ICorDebugBoxValue>().Object.CastTo<ICorDebugGenericValue>();
 				} else {
 					return this.CorValue.CastTo<ICorDebugGenericValue>();
 				}
@@ -38,7 +38,7 @@ namespace Debugger
 				if (!this.Type.IsPrimitive) throw new DebuggerException("Value is not a primitive type");
 				if (this.Type.IsString) {
 					if (this.IsNull) return null;
-					return this.CorValue.CastTo<ICorDebugReferenceValue>().Dereference().CastTo<ICorDebugStringValue>().String;
+					return this.CorReferenceValue.Dereference().CastTo<ICorDebugStringValue>().String;
 				} else {
 					return CorGenericValue.Value;
 				}

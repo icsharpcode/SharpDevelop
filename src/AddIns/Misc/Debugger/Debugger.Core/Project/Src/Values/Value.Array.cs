@@ -24,7 +24,7 @@ namespace Debugger
 				if (IsNull) throw new GetValueException("Value is null");
 				if (!this.Type.IsArray) throw new DebuggerException("Value is not an array");
 				
-				return this.CorValue.CastTo<ICorDebugReferenceValue>().Dereference().CastTo<ICorDebugArrayValue>();
+				return this.CorReferenceValue.Dereference().CastTo<ICorDebugArrayValue>();
 			}
 		}
 		

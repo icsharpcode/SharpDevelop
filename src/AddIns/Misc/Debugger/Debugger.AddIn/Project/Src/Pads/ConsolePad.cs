@@ -80,7 +80,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			try {
 				Value val = AstEvaluator.Evaluate(code, SupportedLanguage.CSharp, process.SelectedStackFrame);
 				if (val != null) {
-					return string.Format("{0} ({1})", val.AsString, val.Type.FullName);
+					return val.InvokeToString();
 				} else {
 					return string.Empty;
 				}

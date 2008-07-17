@@ -61,6 +61,7 @@ namespace Debugger.Tests {
           Expression="i"
           IsInvalid="False"
           IsNull="False"
+          IsReference="False"
           PrimitiveValue="0"
           Type="System.Int32" />
       </Item>
@@ -73,6 +74,7 @@ namespace Debugger.Tests {
           Expression="s"
           IsInvalid="False"
           IsNull="False"
+          IsReference="True"
           PrimitiveValue="S"
           Type="System.String" />
       </Item>
@@ -85,6 +87,7 @@ namespace Debugger.Tests {
           Expression="args"
           IsInvalid="False"
           IsNull="False"
+          IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="System.String[]" />
       </Item>
@@ -97,6 +100,7 @@ namespace Debugger.Tests {
           Expression="n"
           IsInvalid="False"
           IsNull="True"
+          IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="System.Object" />
       </Item>
@@ -109,6 +113,7 @@ namespace Debugger.Tests {
           Expression="o"
           IsInvalid="False"
           IsNull="False"
+          IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="System.Object" />
       </Item>

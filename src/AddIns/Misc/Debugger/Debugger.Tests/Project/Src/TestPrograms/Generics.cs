@@ -180,6 +180,7 @@ namespace Debugger.Tests {
           Expression="v"
           IsInvalid="False"
           IsNull="False"
+          IsReference="False"
           PrimitiveValue="1"
           Type="System.Int32" />
       </Item>
@@ -192,6 +193,7 @@ namespace Debugger.Tests {
           Expression="k"
           IsInvalid="False"
           IsNull="False"
+          IsReference="True"
           PrimitiveValue="1!"
           Type="System.String" />
       </Item>
@@ -245,6 +247,7 @@ namespace Debugger.Tests {
           Expression="v"
           IsInvalid="False"
           IsNull="False"
+          IsReference="False"
           PrimitiveValue="2"
           Type="System.Int32" />
       </Item>
@@ -257,6 +260,7 @@ namespace Debugger.Tests {
           Expression="k"
           IsInvalid="False"
           IsNull="False"
+          IsReference="True"
           PrimitiveValue="2!"
           Type="System.String" />
       </Item>
@@ -310,6 +314,7 @@ namespace Debugger.Tests {
           Expression="v"
           IsInvalid="False"
           IsNull="False"
+          IsReference="False"
           PrimitiveValue="3"
           Type="System.Int32" />
       </Item>
@@ -322,6 +327,7 @@ namespace Debugger.Tests {
           Expression="k"
           IsInvalid="False"
           IsNull="False"
+          IsReference="True"
           PrimitiveValue="3!"
           Type="System.String" />
       </Item>
@@ -375,6 +381,7 @@ namespace Debugger.Tests {
           Expression="v"
           IsInvalid="False"
           IsNull="False"
+          IsReference="False"
           PrimitiveValue="4"
           Type="System.Int32" />
       </Item>
@@ -387,6 +394,7 @@ namespace Debugger.Tests {
           Expression="k"
           IsInvalid="False"
           IsNull="False"
+          IsReference="True"
           PrimitiveValue="4!"
           Type="System.String" />
       </Item>
@@ -440,6 +448,7 @@ namespace Debugger.Tests {
           Expression="v"
           IsInvalid="False"
           IsNull="False"
+          IsReference="False"
           PrimitiveValue="5"
           Type="System.Int32" />
       </Item>
@@ -452,6 +461,7 @@ namespace Debugger.Tests {
           Expression="k"
           IsInvalid="False"
           IsNull="False"
+          IsReference="True"
           PrimitiveValue="5!"
           Type="System.String" />
       </Item>
@@ -505,6 +515,7 @@ namespace Debugger.Tests {
           Expression="v"
           IsInvalid="False"
           IsNull="False"
+          IsReference="False"
           PrimitiveValue="6"
           Type="System.Int32" />
       </Item>
@@ -517,6 +528,7 @@ namespace Debugger.Tests {
           Expression="k"
           IsInvalid="False"
           IsNull="False"
+          IsReference="True"
           PrimitiveValue="6!"
           Type="System.String" />
       </Item>
@@ -570,6 +582,7 @@ namespace Debugger.Tests {
           Expression="v"
           IsInvalid="False"
           IsNull="False"
+          IsReference="False"
           PrimitiveValue="7"
           Type="System.Int32" />
       </Item>
@@ -582,6 +595,7 @@ namespace Debugger.Tests {
           Expression="k"
           IsInvalid="False"
           IsNull="False"
+          IsReference="True"
           PrimitiveValue="7!"
           Type="System.String" />
       </Item>
@@ -635,6 +649,7 @@ namespace Debugger.Tests {
           Expression="v"
           IsInvalid="False"
           IsNull="False"
+          IsReference="False"
           PrimitiveValue="8"
           Type="System.Int32" />
       </Item>
@@ -647,6 +662,7 @@ namespace Debugger.Tests {
           Expression="k"
           IsInvalid="False"
           IsNull="False"
+          IsReference="True"
           PrimitiveValue="8!"
           Type="System.String" />
       </Item>
@@ -661,6 +677,7 @@ namespace Debugger.Tests {
         Expression="gClass.Prop"
         IsInvalid="False"
         IsNull="False"
+        IsReference="False"
         PrimitiveValue="0"
         Type="System.Int32" />
     </Prop>
@@ -673,6 +690,7 @@ namespace Debugger.Tests {
         Expression="Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;.StaticProp"
         IsInvalid="False"
         IsNull="False"
+        IsReference="False"
         PrimitiveValue="0"
         Type="System.Int32" />
     </StaticProp>

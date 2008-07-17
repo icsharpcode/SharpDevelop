@@ -28,6 +28,9 @@ namespace Debugger.AddIn
 			// Calculate right first so that left does not get invalidated by its calculation
 			Value right = ((Value)assignmentExpression.Right.AcceptVisitor(this, null)).GetPermanentReference();
 			Value left = (Value)assignmentExpression.Left.AcceptVisitor(this, null);
+			if (!left.IsReference && left.Type.FullName != right.Type.FullName) {
+				throw new GetValueException(string.Format("Type {0} expected, {1} seen", left.Type.FullName, right.Type.FullName));
+			}
 			left.SetValue(right);
 			return right;
 		}

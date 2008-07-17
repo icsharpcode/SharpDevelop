@@ -64,6 +64,7 @@ namespace Debugger.Tests {
         Expression="array"
         IsInvalid="False"
         IsNull="False"
+        IsReference="True"
         PrimitiveValue="{Exception: Value is not a primitive type}"
         Type="System.Int32[]" />
     </array>
@@ -77,6 +78,7 @@ namespace Debugger.Tests {
           Expression="array[0]"
           IsInvalid="False"
           IsNull="False"
+          IsReference="False"
           PrimitiveValue="0"
           Type="System.Int32" />
       </Item>
@@ -89,6 +91,7 @@ namespace Debugger.Tests {
           Expression="array[1]"
           IsInvalid="False"
           IsNull="False"
+          IsReference="False"
           PrimitiveValue="1"
           Type="System.Int32" />
       </Item>
@@ -101,6 +104,7 @@ namespace Debugger.Tests {
           Expression="array[2]"
           IsInvalid="False"
           IsNull="False"
+          IsReference="False"
           PrimitiveValue="2"
           Type="System.Int32" />
       </Item>
@@ -113,6 +117,7 @@ namespace Debugger.Tests {
           Expression="array[3]"
           IsInvalid="False"
           IsNull="False"
+          IsReference="False"
           PrimitiveValue="3"
           Type="System.Int32" />
       </Item>
@@ -125,6 +130,7 @@ namespace Debugger.Tests {
           Expression="array[4]"
           IsInvalid="False"
           IsNull="False"
+          IsReference="False"
           PrimitiveValue="4"
           Type="System.Int32" />
       </Item>
@@ -172,6 +178,7 @@ namespace Debugger.Tests {
         Expression="array.Length"
         IsInvalid="False"
         IsNull="False"
+        IsReference="False"
         PrimitiveValue="5"
         Type="System.Int32" />
     </array.Length>

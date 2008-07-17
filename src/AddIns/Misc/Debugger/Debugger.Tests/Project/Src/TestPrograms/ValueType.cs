@@ -62,6 +62,7 @@ namespace Debugger.Tests {
         Expression="this"
         IsInvalid="False"
         IsNull="False"
+        IsReference="False"
         PrimitiveValue="{Exception: Value is not a primitive type}"
         Type="Debugger.Tests.ValueType">
         <Type>

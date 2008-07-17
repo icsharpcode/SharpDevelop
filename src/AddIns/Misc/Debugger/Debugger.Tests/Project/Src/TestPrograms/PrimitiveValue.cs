@@ -68,6 +68,7 @@ namespace Debugger.Tests {
           Expression="b"
           IsInvalid="False"
           IsNull="False"
+          IsReference="False"
           PrimitiveValue="True"
           Type="System.Boolean">
           <Type>
@@ -104,6 +105,7 @@ namespace Debugger.Tests {
           Expression="i"
           IsInvalid="False"
           IsNull="False"
+          IsReference="False"
           PrimitiveValue="5"
           Type="System.Int32">
           <Type>
@@ -140,6 +142,7 @@ namespace Debugger.Tests {
           Expression="s"
           IsInvalid="False"
           IsNull="False"
+          IsReference="True"
           PrimitiveValue="five"
           Type="System.String">
           <Type>
@@ -176,6 +179,7 @@ namespace Debugger.Tests {
           Expression="d"
           IsInvalid="False"
           IsNull="False"
+          IsReference="False"
           PrimitiveValue="5.5"
           Type="System.Double">
           <Type>

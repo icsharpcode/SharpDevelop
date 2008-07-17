@@ -83,6 +83,42 @@ namespace Debugger
 			}
 		}
 		
+		ICorDebugReferenceValue CorReferenceValue {
+			get {
+				if (!this.IsReference) throw new DebuggerException("Reference value expected");
+				
+				return this.CorValue.CastTo<ICorDebugReferenceValue>();
+			}
+		}
+		
+		/// <summary> Gets value indication whether the value is a reference </summary>
+		/// <remarks> Value types also return true if they are boxed </remarks>
+		public bool IsReference {
+			get {
+				return this.CorValue.Is<ICorDebugReferenceValue>();
+			}
+		}
+		
+		Value Box()
+		{
+			byte[] rawValue = this.CorGenericValue.RawValue;
+			// Box the value type
+			ICorDebugValue corValue;
+			if (this.Type.IsPrimitive) {
+				// Get value type for the primive type
+				corValue = Eval.NewObjectNoConstructor(DebugType.Create(process, null, this.Type.FullName)).CorValue;
+			} else {
+				corValue = Eval.NewObjectNoConstructor(this.Type).CorValue;
+			}
+			// Make the reference to box permanent
+			corValue = corValue.CastTo<ICorDebugReferenceValue>().Dereference().CastTo<ICorDebugHeapValue2>().CreateHandle(CorDebugHandleType.HANDLE_STRONG).CastTo<ICorDebugValue>();
+			// Create new value
+			Value newValue = new Value(process, expression, corValue);
+			// Copy the data inside the box
+			newValue.CorGenericValue.RawValue = rawValue;
+			return newValue;
+		}
+		
 		public Value GetPermanentReference()
 		{
 			ICorDebugValue corValue = this.CorValue;
@@ -91,20 +127,7 @@ namespace Debugger
 			}
 			if (this.Type.IsValueType || this.Type.IsPrimitive) {
 				if (!corValue.Is<ICorDebugReferenceValue>()) {
-					// Box the value type
-					if (this.Type.IsPrimitive) {
-						// Get value type for the primive type
-						corValue = Eval.NewObjectNoConstructor(DebugType.Create(process, null, this.Type.FullName)).CorValue;
-					} else {
-						corValue = Eval.NewObjectNoConstructor(this.Type).CorValue;
-					}
-					// Make the reference to box permanent
-					corValue = corValue.CastTo<ICorDebugReferenceValue>().Dereference().CastTo<ICorDebugHeapValue2>().CreateHandle(CorDebugHandleType.HANDLE_STRONG).CastTo<ICorDebugValue>();
-					// Create new value
-					Value newValue = new Value(process, expression, corValue);
-					// Copy the data inside the box
-					newValue.CorGenericValue.RawValue = this.CorGenericValue.RawValue;
-					return newValue;
+					return this.Box();
 				} else {
 					// Make the reference to box permanent
 					corValue = corValue.CastTo<ICorDebugReferenceValue>().Dereference().CastTo<ICorDebugHeapValue2>().CreateHandle(CorDebugHandleType.HANDLE_STRONG).CastTo<ICorDebugValue>();
@@ -167,18 +190,15 @@ namespace Debugger
 		/// <summary> Copy the acutal value from some other Value object </summary>
 		public void SetValue(Value newValue)
 		{
-			ICorDebugValue corValue = this.CorValue;
 			ICorDebugValue newCorValue = newValue.CorValue;
 			
-			if (corValue.Is<ICorDebugReferenceValue>()) {
-				if (newCorValue.Is<ICorDebugObjectValue>()) {
-					ICorDebugValue box = Eval.NewObjectNoConstructor(newValue.Type).CorValue;
-					newCorValue = box;
+			if (this.IsReference) {
+				if (!newCorValue.Is<ICorDebugReferenceValue>()) {
+					newCorValue = newValue.Box().CorValue;
 				}
 				corValue.CastTo<ICorDebugReferenceValue>().SetValue(newCorValue.CastTo<ICorDebugReferenceValue>().Value);
 			} else {
-				corValue.CastTo<ICorDebugGenericValue>().RawValue =
-					newCorValue.CastTo<ICorDebugGenericValue>().RawValue;
+				corValue.CastTo<ICorDebugGenericValue>().RawValue = newValue.CorGenericValue.RawValue;
 			}
 		}
 		

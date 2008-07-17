@@ -118,6 +118,7 @@ namespace Debugger.Tests {
           Expression="nullMyClass"
           IsInvalid="False"
           IsNull="True"
+          IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="MyClass">
           <Type>
@@ -143,6 +144,7 @@ namespace Debugger.Tests {
           Expression="nullObject"
           IsInvalid="False"
           IsNull="True"
+          IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="System.Object">
           <Type>
@@ -168,6 +170,7 @@ namespace Debugger.Tests {
           Expression="nullString"
           IsInvalid="False"
           IsNull="True"
+          IsReference="True"
           PrimitiveValue="null"
           Type="System.String">
           <Type>
@@ -193,6 +196,7 @@ namespace Debugger.Tests {
           Expression="obj"
           IsInvalid="False"
           IsNull="False"
+          IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="System.Object">
           <Type>
@@ -218,6 +222,7 @@ namespace Debugger.Tests {
           Expression="loc"
           IsInvalid="False"
           IsNull="False"
+          IsReference="False"
           PrimitiveValue="42"
           Type="System.Int32">
           <Type>
@@ -243,6 +248,7 @@ namespace Debugger.Tests {
           Expression="locByRef"
           IsInvalid="False"
           IsNull="False"
+          IsReference="False"
           PrimitiveValue="43"
           Type="System.Int32">
           <Type>
@@ -268,6 +274,7 @@ namespace Debugger.Tests {
           Expression="locPtr"
           IsInvalid="False"
           IsNull="False"
+          IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="System.Int32*">
           <Type>
@@ -304,6 +311,7 @@ namespace Debugger.Tests {
           Expression="locPtrByRef"
           IsInvalid="False"
           IsNull="False"
+          IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="System.Int32*">
           <Type>
@@ -340,6 +348,7 @@ namespace Debugger.Tests {
           Expression="locPtrPtr"
           IsInvalid="False"
           IsNull="False"
+          IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="System.Int32**">
           <Type>
@@ -387,6 +396,7 @@ namespace Debugger.Tests {
           Expression="locVoidPtr"
           IsInvalid="False"
           IsNull="False"
+          IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="System.Void*">
           <Type>
@@ -423,6 +433,7 @@ namespace Debugger.Tests {
           Expression="locObj"
           IsInvalid="False"
           IsNull="False"
+          IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="System.Object">
           <Type>
@@ -448,6 +459,7 @@ namespace Debugger.Tests {
           Expression="locObjByRef"
           IsInvalid="False"
           IsNull="False"
+          IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="System.Object">
           <Type>
@@ -473,6 +485,7 @@ namespace Debugger.Tests {
           Expression="locSZArray"
           IsInvalid="False"
           IsNull="False"
+          IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="System.Char[]">
           <Type>
@@ -509,6 +522,7 @@ namespace Debugger.Tests {
           Expression="locArray"
           IsInvalid="False"
           IsNull="False"
+          IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="System.Char[,]">
           <Type>
@@ -545,6 +559,7 @@ namespace Debugger.Tests {
           Expression="locStruct"
           IsInvalid="False"
           IsNull="False"
+          IsReference="False"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="Point">
           <Type>
@@ -570,6 +585,7 @@ namespace Debugger.Tests {
           Expression="locStructPtr"
           IsInvalid="False"
           IsNull="False"
+          IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="Point*">
           <Type>
@@ -606,6 +622,7 @@ namespace Debugger.Tests {
           Expression="box"
           IsInvalid="False"
           IsNull="False"
+          IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="System.Int32">
           <Type>
@@ -631,6 +648,7 @@ namespace Debugger.Tests {
           Expression="myInterfaceImpl"
           IsInvalid="False"
           IsNull="False"
+          IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="MyInterfaceImpl">
           <Type>
@@ -656,6 +674,7 @@ namespace Debugger.Tests {
           Expression="myInterface"
           IsInvalid="False"
           IsNull="False"
+          IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="MyInterfaceImpl">
           <Type>
@@ -686,6 +705,7 @@ namespace Debugger.Tests {
           Expression="arg"
           IsInvalid="False"
           IsNull="False"
+          IsReference="False"
           PrimitiveValue="42"
           Type="System.Int32">
           <Type>
@@ -711,6 +731,7 @@ namespace Debugger.Tests {
           Expression="argByRef"
           IsInvalid="False"
           IsNull="False"
+          IsReference="False"
           PrimitiveValue="43"
           Type="System.Int32">
           <Type>
@@ -736,6 +757,7 @@ namespace Debugger.Tests {
           Expression="argPtr"
           IsInvalid="False"
           IsNull="False"
+          IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="System.Int32*">
           <Type>
@@ -772,6 +794,7 @@ namespace Debugger.Tests {
           Expression="argPtrByRef"
           IsInvalid="False"
           IsNull="False"
+          IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="System.Int32*">
           <Type>
@@ -808,6 +831,7 @@ namespace Debugger.Tests {
           Expression="argPtrPtr"
           IsInvalid="False"
           IsNull="False"
+          IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="System.Int32**">
           <Type>
@@ -855,6 +879,7 @@ namespace Debugger.Tests {
           Expression="argVoidPtr"
           IsInvalid="False"
           IsNull="False"
+          IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="System.Void*">
           <Type>
@@ -891,6 +916,7 @@ namespace Debugger.Tests {
           Expression="argObj"
           IsInvalid="False"
           IsNull="False"
+          IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="System.Object">
           <Type>
@@ -916,6 +942,7 @@ namespace Debugger.Tests {
           Expression="argObjByRef"
           IsInvalid="False"
           IsNull="False"
+          IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="System.Object">
           <Type>
@@ -941,6 +968,7 @@ namespace Debugger.Tests {
           Expression="argSZArray"
           IsInvalid="False"
           IsNull="False"
+          IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="System.Char[]">
           <Type>
@@ -977,6 +1005,7 @@ namespace Debugger.Tests {
           Expression="argArray"
           IsInvalid="False"
           IsNull="False"
+          IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="System.Char[,]">
           <Type>
@@ -1013,6 +1042,7 @@ namespace Debugger.Tests {
           Expression="argStruct"
           IsInvalid="False"
           IsNull="False"
+          IsReference="False"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="Point">
           <Type>
@@ -1038,6 +1068,7 @@ namespace Debugger.Tests {
           Expression="argStructByRef"
           IsInvalid="False"
           IsNull="False"
+          IsReference="False"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="Point">
           <Type>
@@ -1063,6 +1094,7 @@ namespace Debugger.Tests {
           Expression="argStructPtr"
           IsInvalid="False"
           IsNull="False"
+          IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="Point*">
           <Type>
@@ -1099,6 +1131,7 @@ namespace Debugger.Tests {
           Expression="argBox"
           IsInvalid="False"
           IsNull="False"
+          IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="System.Int32">
           <Type>
@@ -1124,6 +1157,7 @@ namespace Debugger.Tests {
           Expression="argBoxByRef"
           IsInvalid="False"
           IsNull="False"
+          IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="System.Int32">
           <Type>
