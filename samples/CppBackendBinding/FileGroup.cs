@@ -23,6 +23,10 @@ namespace CppBackendBinding
 		
 		public FileGroup(CppProject project, XmlElement filterElement)
 		{
+			if (project == null)
+				throw new ArgumentNullException("project");
+			if (filterElement == null)
+				throw new ArgumentNullException("filterElement");
 			this.Project = project;
 			this.XmlElement = filterElement;
 			switch (filterElement.GetAttribute("UniqueIdentifier")) {

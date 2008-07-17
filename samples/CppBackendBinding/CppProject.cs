@@ -79,13 +79,21 @@ namespace CppBackendBinding
 				}
 				foreach (FileItem item in items) {
 					FileGroup group = groups.Find(fg => fg.ItemType == item.ProjectItem.ItemType);
-					if (groups != null) {
+					if (group != null) {
 						group.XmlElement.AppendChild(item.XmlElement);
 					} else {
 						LoggingService.Warn("Couldn't find filter for item type " + item.ProjectItem.ItemType + ", the item was not saved!");
 					}
 				}
-				document.Save(fileName);
+				using (XmlWriter writer = XmlWriter.Create(fileName, new XmlWriterSettings {
+				                                           	NewLineOnAttributes = true,
+				                                           	Indent = true,
+				                                           	IndentChars = "\t",
+				                                           	Encoding = Encoding.Default
+				                                           }))
+				{
+					document.Save(writer);
+				}
 			}
 		}
 		
@@ -111,6 +119,17 @@ namespace CppBackendBinding
 					return new ReadOnlyCollection<ProjectItem>(items.ConvertAll(fi => fi.ProjectItem));
 				}
 			}
+		}
+		
+		public override ItemType GetDefaultItemType(string fileName)
+		{
+			string extension = Path.GetExtension(fileName);
+			if (string.Equals(extension, ".c", StringComparison.OrdinalIgnoreCase) || string.Equals(extension, ".cpp", StringComparison.OrdinalIgnoreCase))
+				return ItemType.Compile;
+			else if (string.Equals(extension, ".h", StringComparison.OrdinalIgnoreCase))
+				return ItemType.Header;
+			else
+				return base.GetDefaultItemType(fileName);
 		}
 		
 		#region IProjectAllowChangeConfigurations
@@ -222,6 +241,7 @@ namespace CppBackendBinding
 			p.StartInfo.CreateNoWindow = true;
 			p.StartInfo.UseShellExecute = false;
 			p.StartInfo.EnvironmentVariables["VCBUILD_DEFAULT_CFG"] = options.Configuration + "|" + options.Platform;
+			p.StartInfo.EnvironmentVariables["SolutionPath"] = ParentSolution.Directory;
 			
 			p.EnableRaisingEvents = true;
 			p.OutputDataReceived += delegate(object sender, DataReceivedEventArgs e) {
@@ -229,8 +249,8 @@ namespace CppBackendBinding
 					BuildError error = ParseError(e.Data);
 					if (error != null)
 						feedbackSink.ReportError(error);
-//					else
-					feedbackSink.ReportMessage(e.Data);
+					else
+						feedbackSink.ReportMessage(e.Data);
 				}
 			};
 			p.ErrorDataReceived += delegate(object sender, DataReceivedEventArgs e) {
@@ -238,8 +258,8 @@ namespace CppBackendBinding
 					BuildError error = ParseError(e.Data);
 					if (error != null)
 						feedbackSink.ReportError(error);
-//					else
-					feedbackSink.ReportError(new BuildError(null, e.Data));
+					else
+						feedbackSink.ReportError(new BuildError(null, e.Data));
 				}
 			};
 			p.Exited += delegate(object sender, EventArgs e) {
