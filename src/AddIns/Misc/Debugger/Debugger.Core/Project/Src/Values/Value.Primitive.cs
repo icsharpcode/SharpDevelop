@@ -35,28 +35,27 @@ namespace Debugger
 		/// </summary>
 		public object PrimitiveValue { 
 			get {
-				if (!this.Type.IsPrimitive) throw new DebuggerException("Value is not a primitive type");
+				if (this.Type.PrimitiveType == null) throw new DebuggerException("Value is not a primitive type");
 				if (this.Type.IsString) {
 					if (this.IsNull) return null;
 					return this.CorReferenceValue.Dereference().CastTo<ICorDebugStringValue>().String;
 				} else {
-					return CorGenericValue.Value;
+					return CorGenericValue.GetValue(this.Type.PrimitiveType);
 				}
 			}
 			set {
+				if (this.Type.PrimitiveType == null) throw new DebuggerException("Value is not a primitive type");
 				if (this.Type.IsString) {
-					throw new NotImplementedException();
+					this.SetValue(Eval.NewString(this.Process, value.ToString()));
 				} else {
-					if (value == null) {
-						throw new DebuggerException("Can not set primitive value to null");
-					}
+					if (value == null) throw new DebuggerException("Can not set primitive value to null");
 					object newValue;
 					try {
-						newValue = Convert.ChangeType(value, this.Type.ManagedType);
+						newValue = Convert.ChangeType(value, this.Type.PrimitiveType);
 					} catch {
-						throw new NotSupportedException("Can not convert " + value.GetType().ToString() + " to " + this.Type.ManagedType.ToString());
+						throw new NotSupportedException("Can not convert " + value.GetType().ToString() + " to " + this.Type.PrimitiveType.ToString());
 					}
-					CorGenericValue.Value = newValue;
+					CorGenericValue.SetValue(this.Type.PrimitiveType, newValue);
 				}
 			}
 		}

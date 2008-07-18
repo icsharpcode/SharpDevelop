@@ -108,7 +108,9 @@ namespace Debugger.AddIn
 		
 		public override object VisitPrimitiveExpression(PrimitiveExpression primitiveExpression, object data)
 		{
-			return Eval.CreateValue(context.Process, primitiveExpression.Value);
+			Value val = Eval.NewObjectNoConstructor(DebugType.Create(context.Process, null, value.GetType().FullName))
+			val.PrimitiveValue = primitiveExpression.Value;
+			return val;
 		}
 		
 		public override object VisitThisReferenceExpression(ThisReferenceExpression thisReferenceExpression, object data)

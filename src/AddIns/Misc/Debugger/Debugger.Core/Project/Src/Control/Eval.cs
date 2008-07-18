@@ -244,33 +244,19 @@ namespace Debugger
 			);
 		}
 		
+		// The following function create values only for the purpuse of evalutaion
+		// They actually do not allocate memory on the managed heap
+		// The advantage is that it does not continue the process
 		public static Value CreateValue(Process process, object value)
 		{
-			if (value is string) {
-				return NewString(process, (string)value);
-			}
-			CorElementType corElemType; 
-			if (value is int) {
-				corElemType = CorElementType.I4;
-			} else if (value is byte) {
-				corElemType = CorElementType.U1;
-			} else if (value is char) {
-				corElemType = CorElementType.CHAR;
-			} else {
-				throw new NotImplementedException();
-			}
+			if (value == null) throw new ArgumentNullException("value");
+			if (value is string) throw new DebuggerException("Can not create string this way");
+			CorElementType corElemType = DebugType.TypeNameToCorElementType(value.GetType().FullName);
 			ICorDebugEval corEval = CreateCorEval(process);
 			ICorDebugValue corValue = corEval.CreateValue((uint)corElemType, null);
 			Value v = new Value(process, new Expressions.PrimitiveExpression(value), corValue);
 			v.PrimitiveValue = value;
 			return v;
-		}
-		
-		public static Value CreateValueForType(DebugType debugType)
-		{
-			ICorDebugEval corEval = CreateCorEval(debugType.Process);
-			ICorDebugValue corValue = corEval.CastTo<ICorDebugEval2>().CreateValueForType(debugType.CorType);
-			return new Value(debugType.Process, new EmptyExpression(), corValue);
 		}
 		
 		#region Convenience methods

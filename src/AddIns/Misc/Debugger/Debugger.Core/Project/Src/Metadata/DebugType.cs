@@ -474,7 +474,7 @@ namespace Debugger.MetaData
 					return className;
 				}
 			} else if (IsPrimitive) {
-				return this.ManagedType.ToString();
+				return this.PrimitiveType.ToString();
 			} else if (IsPointer) {
 				return this.ElementType.FullName + (this.corElementType == CorElementType.BYREF ? "&" : "*");
 			} else if (IsVoid) {

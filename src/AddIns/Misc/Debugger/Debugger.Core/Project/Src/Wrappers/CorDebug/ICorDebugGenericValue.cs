@@ -32,55 +32,54 @@ namespace Debugger.Wrappers.CorDebug
 			}
 		}
 		
-		public unsafe object Value {
-			get {
-				object retValue;
-				IntPtr pValue = Marshal.AllocHGlobal((int)Size);
-				GetValue(pValue);
-				switch((CorElementType)Type)
-				{
-					case CorElementType.BOOLEAN: retValue = *((System.Boolean*)pValue); break;
-					case CorElementType.CHAR:    retValue = *((System.Char*)   pValue); break;
-					case CorElementType.I1:      retValue = *((System.SByte*)  pValue); break;
-					case CorElementType.U1:      retValue = *((System.Byte*)   pValue); break;
-					case CorElementType.I2:      retValue = *((System.Int16*)  pValue); break;
-					case CorElementType.U2:      retValue = *((System.UInt16*) pValue); break;
-					case CorElementType.I4:      retValue = *((System.Int32*)  pValue); break;
-					case CorElementType.U4:      retValue = *((System.UInt32*) pValue); break;
-					case CorElementType.I8:      retValue = *((System.Int64*)  pValue); break;
-					case CorElementType.U8:      retValue = *((System.UInt64*) pValue); break;
-					case CorElementType.R4:      retValue = *((System.Single*) pValue); break;
-					case CorElementType.R8:      retValue = *((System.Double*) pValue); break;
-					case CorElementType.I:       retValue = *((int*)           pValue); break;
-					case CorElementType.U:       retValue = *((uint*)          pValue); break;
-					default: throw new NotSupportedException();
-				}
-				Marshal.FreeHGlobal(pValue);
-				return retValue;
+		public unsafe object GetValue(Type type)
+		{
+			object retValue;
+			IntPtr pValue = Marshal.AllocHGlobal((int)Size);
+			GetValue(pValue);
+			switch(type.FullName) {
+				case "System.Boolean": retValue = *((System.Boolean*)pValue); break;
+				case "System.Char":    retValue = *((System.Char*)   pValue); break;
+				case "System.SByte":   retValue = *((System.SByte*)  pValue); break;
+				case "System.Byte":    retValue = *((System.Byte*)   pValue); break;
+				case "System.Int16":   retValue = *((System.Int16*)  pValue); break;
+				case "System.UInt16":  retValue = *((System.UInt16*) pValue); break;
+				case "System.Int32":   retValue = *((System.Int32*)  pValue); break;
+				case "System.UInt32":  retValue = *((System.UInt32*) pValue); break;
+				case "System.Int64":   retValue = *((System.Int64*)  pValue); break;
+				case "System.UInt64":  retValue = *((System.UInt64*) pValue); break;
+				case "System.Single":  retValue = *((System.Single*) pValue); break;
+				case "System.Double":  retValue = *((System.Double*) pValue); break;
+				case "System.IntPtr":  retValue = *((System.IntPtr*) pValue); break;
+				case "System.UIntPtr": retValue = *((System.UIntPtr*)pValue); break;
+				default: throw new NotSupportedException();
 			}
-			set {
-				IntPtr pValue = Marshal.AllocHGlobal((int)Size);
-				switch((CorElementType)Type)
-				{
-					case CorElementType.BOOLEAN: *((System.Boolean*)pValue) = (System.Boolean)value; break;
-					case CorElementType.CHAR:    *((System.Char*)   pValue) = (System.Char)   value; break;
-					case CorElementType.I1:      *((System.SByte*)  pValue) = (System.SByte)  value; break;
-					case CorElementType.U1:      *((System.Byte*)   pValue) = (System.Byte)   value; break;
-					case CorElementType.I2:      *((System.Int16*)  pValue) = (System.Int16)  value; break;
-					case CorElementType.U2:      *((System.UInt16*) pValue) = (System.UInt16) value; break;
-					case CorElementType.I4:      *((System.Int32*)  pValue) = (System.Int32)  value; break;
-					case CorElementType.U4:      *((System.UInt32*) pValue) = (System.UInt32) value; break;
-					case CorElementType.I8:      *((System.Int64*)  pValue) = (System.Int64)  value; break;
-					case CorElementType.U8:      *((System.UInt64*) pValue) = (System.UInt64) value; break;
-					case CorElementType.R4:      *((System.Single*) pValue) = (System.Single) value; break;
-					case CorElementType.R8:      *((System.Double*) pValue) = (System.Double) value; break;
-					case CorElementType.I:       *((int*)           pValue) = (int)           value; break;
-					case CorElementType.U:       *((uint*)          pValue) = (uint)          value; break;
-					default: throw new NotSupportedException();
-				}
-				SetValue(pValue);
-				Marshal.FreeHGlobal(pValue);
+			Marshal.FreeHGlobal(pValue);
+			return retValue;
+		}
+		
+		public unsafe void SetValue(Type type, object value)
+		{
+			IntPtr pValue = Marshal.AllocHGlobal((int)Size);
+			switch(type.FullName) {
+				case "System.Boolean": *((System.Boolean*)pValue) = (System.Boolean)value; break;
+				case "System.Char":    *((System.Char*)   pValue) = (System.Char)   value; break;
+				case "System.SByte":   *((System.SByte*)  pValue) = (System.SByte)  value; break;
+				case "System.Byte":    *((System.Byte*)   pValue) = (System.Byte)   value; break;
+				case "System.Int16":   *((System.Int16*)  pValue) = (System.Int16)  value; break;
+				case "System.UInt16":  *((System.UInt16*) pValue) = (System.UInt16) value; break;
+				case "System.Int32":   *((System.Int32*)  pValue) = (System.Int32)  value; break;
+				case "System.UInt32":  *((System.UInt32*) pValue) = (System.UInt32) value; break;
+				case "System.Int64":   *((System.Int64*)  pValue) = (System.Int64)  value; break;
+				case "System.UInt64":  *((System.UInt64*) pValue) = (System.UInt64) value; break;
+				case "System.Single":  *((System.Single*) pValue) = (System.Single) value; break;
+				case "System.Double":  *((System.Double*) pValue) = (System.Double) value; break;
+				case "System.IntPtr":  *((System.IntPtr*) pValue) = (System.IntPtr) value; break;
+				case "System.UIntPtr": *((System.UIntPtr*)pValue) = (System.UIntPtr)value; break;
+				default: throw new NotSupportedException();
 			}
+			SetValue(pValue);
+			Marshal.FreeHGlobal(pValue);
 		}
 	}
 }

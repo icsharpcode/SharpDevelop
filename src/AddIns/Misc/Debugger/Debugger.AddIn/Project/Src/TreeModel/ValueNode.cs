@@ -138,7 +138,7 @@ namespace Debugger.AddIn.TreeModel
 				return true;
 			} catch (NotSupportedException) {
 				string format = ResourceService.GetString("MainWindow.Windows.Debug.LocalVariables.CannotSetValue.BadFormat");
-				string msg = String.Format(format, newText, val.Type.ManagedType.ToString());
+				string msg = String.Format(format, newText, val.Type.PrimitiveType.ToString());
 				MessageService.ShowMessage(msg ,"${res:MainWindow.Windows.Debug.LocalVariables.CannotSetValue.Title}");
 			} catch (System.Runtime.InteropServices.COMException) {
 				// COMException (0x80131330): Cannot perfrom SetValue on non-leaf frames.

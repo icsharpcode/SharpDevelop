@@ -623,7 +623,7 @@ namespace Debugger.Tests {
           IsInvalid="False"
           IsNull="False"
           IsReference="True"
-          PrimitiveValue="{Exception: Value is not a primitive type}"
+          PrimitiveValue="40"
           Type="System.Int32">
           <Type>
             <DebugType
@@ -1132,7 +1132,7 @@ namespace Debugger.Tests {
           IsInvalid="False"
           IsNull="False"
           IsReference="True"
-          PrimitiveValue="{Exception: Value is not a primitive type}"
+          PrimitiveValue="40"
           Type="System.Int32">
           <Type>
             <DebugType
@@ -1158,7 +1158,7 @@ namespace Debugger.Tests {
           IsInvalid="False"
           IsNull="False"
           IsReference="True"
-          PrimitiveValue="{Exception: Value is not a primitive type}"
+          PrimitiveValue="40"
           Type="System.Int32">
           <Type>
             <DebugType

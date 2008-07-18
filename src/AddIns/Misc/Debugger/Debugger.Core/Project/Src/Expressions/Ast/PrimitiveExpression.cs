@@ -39,7 +39,7 @@ namespace Debugger.Expressions
 		
 		protected override Value EvaluateInternal(StackFrame context)
 		{
-			return Eval.CreateValue(context.Process, value);
+			return Eval.CreateValue(context.Process, this.Value);
 		}
 		
 		#region GetHashCode and Equals
