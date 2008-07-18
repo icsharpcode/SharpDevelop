@@ -4,9 +4,10 @@
 //     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
 //     <version>$Revision$</version>
 // </file>
+using Debugger.MetaData;
 using System;
-using ICSharpCode.NRefactory.Ast;
 using System.Collections.Generic;
+using ICSharpCode.NRefactory.Ast;
 
 namespace Debugger.AddIn
 {
@@ -108,7 +109,7 @@ namespace Debugger.AddIn
 		
 		public override object VisitPrimitiveExpression(PrimitiveExpression primitiveExpression, object data)
 		{
-			Value val = Eval.NewObjectNoConstructor(DebugType.Create(context.Process, null, value.GetType().FullName))
+			Value val = Eval.NewObjectNoConstructor(DebugType.Create(context.Process, null, primitiveExpression.Value.GetType().FullName));
 			val.PrimitiveValue = primitiveExpression.Value;
 			return val;
 		}
