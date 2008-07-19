@@ -210,7 +210,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.groupOptions.Size = new System.Drawing.Size(421, 66);
 			this.groupOptions.TabIndex = 11;
 			this.groupOptions.TabStop = false;
-			this.groupOptions.Text = "${res:Global.OptionsButtonText}";
+			this.groupOptions.Text = "${res:Global.OptionsLabelText}";
 			// 
 			// cbAddToClass
 			// 
