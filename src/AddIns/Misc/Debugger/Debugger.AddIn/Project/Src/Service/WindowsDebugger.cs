@@ -37,19 +37,20 @@
 //
 #endregion
 
-using ICSharpCode.NRefactory;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using System.Windows.Forms;
+
 using Debugger;
 using Debugger.AddIn;
 using Debugger.AddIn.TreeModel;
 using Debugger.Core.Wrappers.CorPub;
 using Debugger.Expressions;
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Gui;
@@ -641,9 +642,11 @@ namespace ICSharpCode.SharpDevelop.Services
 			Bitmap icon = ResourceService.GetBitmap(e.IsUnhandled ? "Icons.32x32.Error" : "Icons.32x32.Warning");
 			bool canContinue = !e.IsUnhandled;
 			
-			DebuggerEventForm.Result result = DebuggerEventForm.Show(title, message, icon, canContinue);
+			//DebuggerEventForm.Result result = DebuggerEventForm.Show(title, message, icon, canContinue);
+			DebuggerEventForm.Result result = DebugeeExceptionForm.Show(debuggedProcess, title, message, icon, canContinue);
 			
-			// If the process was killed while the exception form was shown
+			
+			// If the process was killed while the exception form is still being displayed
 			if (e.Process.HasExited) return;
 			
 			switch (result) {

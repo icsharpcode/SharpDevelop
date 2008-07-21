@@ -47,13 +47,13 @@ using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Services
 {
-	internal sealed partial class DebuggerEventForm
+	internal partial class DebuggerEventForm
 	{
 		public enum Result {Break, Continue, Terminate};
 		
 		private Result result = Result.Break; // Default
 		
-		private DebuggerEventForm()
+		protected DebuggerEventForm()
 		{
 			InitializeComponent();
 			this.Text = StringParser.Parse(this.Text);
@@ -62,6 +62,14 @@ namespace ICSharpCode.SharpDevelop.Services
 			buttonTerminate.Text = StringParser.Parse(buttonTerminate.Text);
 		}
 		
+		/// <summary>
+		/// Displays a DebuggerEvent form with the given message.
+		/// </summary>
+		/// <param name="title">Title of the dialog box.</param>
+		/// <param name="message">The message to display in the TextArea of the dialog box.</param>
+		/// <param name="icon">Icon to display i nthe dialog box.</param>
+		/// <param name="canContinue">Set to true to enable the continue button on the form.</param>
+		/// <returns></returns>
 		public static Result Show(string title, string message, System.Drawing.Bitmap icon, bool canContinue)
 		{
 			using (DebuggerEventForm form = new DebuggerEventForm()) {

@@ -134,10 +134,10 @@ namespace ICSharpCode.SharpDevelop.Services
 		}
 		#endregion
 		
-		private System.Windows.Forms.PictureBox pictureBox;
-		private System.Windows.Forms.TextBox textBox;
-		private System.Windows.Forms.Button buttonBreak;
-		private System.Windows.Forms.Button buttonContinue;
-		private System.Windows.Forms.Button buttonTerminate;
+		protected System.Windows.Forms.PictureBox pictureBox;
+		protected System.Windows.Forms.TextBox textBox;
+		protected System.Windows.Forms.Button buttonBreak;
+		protected System.Windows.Forms.Button buttonContinue;
+		protected System.Windows.Forms.Button buttonTerminate;
 	}
 }

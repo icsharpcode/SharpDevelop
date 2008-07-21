@@ -62,12 +62,21 @@
     <Compile Include="Src\Pads\LocalVarPad.cs" />
     <Compile Include="Src\Pads\RunningThreadsPad.cs" />
     <Compile Include="Src\Service\AttachToProcessForm.cs" />
+    <Compile Include="Src\Service\DebugeeExceptionForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Src\Service\DebugeeExceptionForm.Designer.cs">
+      <DependentUpon>DebugeeExceptionForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Src\Service\DebuggerEventForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Src\Service\DebuggerEventForm.Designer.cs">
       <DependentUpon>DebuggerEventForm.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="Src\Service\DebugeeExceptionForm.resx">
+      <DependentUpon>DebugeeExceptionForm.cs</DependentUpon>
+    </EmbeddedResource>
     <Compile Include="Src\Service\RemotingConfigurationHelpper.cs" />
     <Compile Include="Src\Service\RunToCursorCommand.cs" />
     <Compile Include="Src\Service\WindowsDebugger.cs" />
