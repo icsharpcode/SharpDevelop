@@ -366,6 +366,9 @@
 			<MenuItem id      = "OpenFileWith"
 			          label = "${res:Gui.ProjectBrowser.OpenWith}"
 			          class   = "ICSharpCode.SharpDevelop.Project.Commands.OpenFileFromProjectBrowserWith"/>
+			<MenuItem id = "OpenFolderContainingFile"
+			          label = "${res:OpenFileTabEventHandler.FileContainingFolderInExplorer}"
+			          class = "ICSharpCode.SharpDevelop.Project.Commands.OpenFolderContainingFile"/>
 		</ComplexCondition>
 		<Condition name = "Ownerstate" ownerstate = "Missing">
 			<MenuItem id = "Remove"
@@ -996,9 +999,9 @@
 			<MenuItem id = "CopyPathName"
 			          label = "${res:OpenFileTabEventHandler.CopyPathName}"
 			          class = "ICSharpCode.SharpDevelop.Commands.TabStrip.CopyPathName"/>
-			<MenuItem id = "FileContainingFolderInExplorer"
+			<MenuItem id = "OpenFolderContainingFileFromTab"
 			          label = "${res:OpenFileTabEventHandler.FileContainingFolderInExplorer}"
-			          class = "ICSharpCode.SharpDevelop.Commands.TabStrip.FileContainingFolderInExplorer"/>
+			          class = "ICSharpCode.SharpDevelop.Commands.TabStrip.OpenFolderContainingFile"/>
 		</ComplexCondition>
 	</Path>
 	

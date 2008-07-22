@@ -80,7 +80,7 @@ namespace ICSharpCode.SharpDevelop.Commands.TabStrip
 	/// <summary>
 	/// Opens the containing folder in the clipboard.
 	/// </summary>
-	public class FileContainingFolderInExplorer : AbstractMenuCommand
+	public class OpenFolderContainingFile : AbstractMenuCommand
 	{
 		public override void Run()
 		{
