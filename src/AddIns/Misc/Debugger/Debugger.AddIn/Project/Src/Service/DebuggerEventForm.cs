@@ -60,6 +60,10 @@ namespace ICSharpCode.SharpDevelop.Services
 			buttonBreak.Text = StringParser.Parse(buttonBreak.Text);
 			buttonContinue.Text = StringParser.Parse(buttonContinue.Text);
 			buttonTerminate.Text = StringParser.Parse(buttonTerminate.Text);
+			
+			
+            WindowState = DebuggingOptions.Instance.DebuggerEventWindowState;
+			Size = DebuggingOptions.Instance.DebuggerEventWindowSize;
 		}
 		
 		/// <summary>
@@ -98,6 +102,12 @@ namespace ICSharpCode.SharpDevelop.Services
 		{
 			result = Result.Terminate;
 			Close();
+		}
+		
+		void debuggerEventFormResize(object sender, EventArgs e)
+		{
+			DebuggingOptions.Instance.DebuggerEventWindowSize = Size;
+			DebuggingOptions.Instance.DebuggerEventWindowState = WindowState;
 		}
 	}
 }

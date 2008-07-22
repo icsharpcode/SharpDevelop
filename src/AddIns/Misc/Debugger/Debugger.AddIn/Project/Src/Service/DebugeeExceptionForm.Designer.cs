@@ -132,6 +132,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			this.ClientSize = new System.Drawing.Size(638, 399);
 			this.Controls.Add(this.splitContainer);
 			this.Name = "DebugeeExceptionForm";
+			this.Resize += new System.EventHandler(this.debugeeExceptionFormResize);
 			this.Controls.SetChildIndex(this.splitContainer, 0);
 			this.Controls.SetChildIndex(this.textBox, 0);
 			this.Controls.SetChildIndex(this.buttonBreak, 0);

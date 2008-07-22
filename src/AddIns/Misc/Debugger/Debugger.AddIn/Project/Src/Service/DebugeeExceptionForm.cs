@@ -37,6 +37,7 @@
 //  
 #endregion
 
+using System;
 using System.Collections.Generic;
 
 using Aga.Controls.Tree;
@@ -64,10 +65,14 @@ namespace ICSharpCode.SharpDevelop.Services
             textBox.Location = new System.Drawing.Point(0, 4);
             splitContainer.Panel1.Controls.Add(textBox);
             
-            // To make the localVarList size properly, it must be rendered full size first.
-            splitContainer.Panel2Collapsed = true;
-			
-            linkExceptionDetail.Text = StringParser.Parse(linkExceptionDetail.Text);
+            // To make the localVarList size properly, it must be rendered full size in the designer.
+            // To get the text right we set the panel to the opposite of what we want and then fire linkExceptionDetail.Click().
+            splitContainer.Panel2Collapsed = DebuggingOptions.Instance.ShowExceptionDetails;
+            DebuggingOptions.Instance.ShowExceptionDetails = ! DebuggingOptions.Instance.ShowExceptionDetails;
+            linkExceptionDetailLinkClicked(linkExceptionDetail, new EventArgs());
+            
+            WindowState = DebuggingOptions.Instance.DebuggeeExceptionWindowState;
+			Size = DebuggingOptions.Instance.DebuggeeExceptionWindowSize;
             
 			InitializeLocalVarList();
 		}
@@ -133,10 +138,16 @@ namespace ICSharpCode.SharpDevelop.Services
 			}
 		}
 		
-				
+		void debugeeExceptionFormResize(object sender, System.EventArgs e)
+		{
+			DebuggingOptions.Instance.DebuggeeExceptionWindowSize = Size;
+			DebuggingOptions.Instance.DebuggeeExceptionWindowState = WindowState;
+		}
+						
 		void linkExceptionDetailLinkClicked(object sender, System.EventArgs e)
 		{
             splitContainer.Panel2Collapsed = ! splitContainer.Panel2Collapsed;
+            DebuggingOptions.Instance.ShowExceptionDetails = ! splitContainer.Panel2Collapsed;
 			linkExceptionDetail.Text = splitContainer.Panel2Collapsed 
 				? StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.ShowExceptionDetails}")
 				: StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.HideExceptionDetails}");

@@ -128,6 +128,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			this.Name = "DebuggerEventForm";
 			this.ShowInTaskbar = false;
 			this.TopMost = true;
+			this.Resize += new System.EventHandler(this.debuggerEventFormResize);
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
