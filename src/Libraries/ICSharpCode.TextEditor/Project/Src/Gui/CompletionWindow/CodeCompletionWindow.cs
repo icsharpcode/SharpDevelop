@@ -42,6 +42,7 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 				return null;
 			}
 			CodeCompletionWindow codeCompletionWindow = new CodeCompletionWindow(completionDataProvider, completionData, parent, control, showDeclarationWindow, fixedListViewWidth);
+			codeCompletionWindow.CloseWhenCaretAtBeginning = firstChar == '\0';
 			codeCompletionWindow.ShowCompletionWindow();
 			return codeCompletionWindow;
 		}
@@ -205,10 +206,19 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			}
 		}
 		
+		/// <summary>
+		/// When this flag is set, code completion closes if the caret moves to the
+		/// beginning of the allowed range. This is useful in Ctrl+Space and "complete when typing",
+		/// but not in dot-completion.
+		/// </summary>
+		public bool CloseWhenCaretAtBeginning { get; set; }
+		
 		protected override void CaretOffsetChanged(object sender, EventArgs e)
 		{
 			int offset = control.ActiveTextAreaControl.Caret.Offset;
 			if (offset == startOffset) {
+				if (CloseWhenCaretAtBeginning)
+					Close();
 				return;
 			}
 			if (offset < startOffset || offset > endOffset) {
