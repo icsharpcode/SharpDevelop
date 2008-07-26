@@ -104,7 +104,8 @@ namespace ${StandardNamespace}
 		}
 	}
 }]]></File>
-			<File name="Properties\AssemblyInfo.cs" src="WPFAssemblyInfo.cs" />
+			<File name="Properties\WPFAssemblyInfo.cs" src="WPFAssemblyInfo.cs" />
+			<File name="Properties\AssemblyInfo.cs" src="DefaultAssemblyInfo.cs" />
 		</Files>
 	</Project>
 </Template>

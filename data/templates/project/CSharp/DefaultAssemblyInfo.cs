@@ -14,7 +14,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("${ProjectName}")]
-[assembly: AssemblyCopyright("")]
+[assembly: AssemblyCopyright("Copyright ${DATE:yyyy}")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

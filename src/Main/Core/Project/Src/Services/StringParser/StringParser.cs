@@ -156,6 +156,14 @@ namespace ICSharpCode.Core
 					return null;
 				}
 			}
+			if (propertyName.StartsWith("DATE:", StringComparison.OrdinalIgnoreCase))
+			{
+				try {
+					return DateTime.Now.ToString(propertyName.Split(':')[1]);
+				} catch (Exception ex) {
+					return ex.Message;
+				}
+			}
 			if (propertyName.Equals("DATE", StringComparison.OrdinalIgnoreCase))
 				return DateTime.Today.ToShortDateString();
 			if (propertyName.Equals("TIME", StringComparison.OrdinalIgnoreCase))
