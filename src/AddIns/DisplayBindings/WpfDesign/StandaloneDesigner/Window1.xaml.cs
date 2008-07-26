@@ -9,7 +9,7 @@ using System.Xml;
 using ICSharpCode.WpfDesign;
 using ICSharpCode.WpfDesign.Designer;
 using ICSharpCode.WpfDesign.Designer.Xaml;
-using ICSharpCode.WpfDesign.PropertyEditor;
+using ICSharpCode.WpfDesign.PropertyGrid;
 using System.Threading;
 using System.Windows.Threading;
 
@@ -27,6 +27,7 @@ namespace StandaloneDesigner
 			};
 			try {
 				InitializeComponent();
+				CodeTextBox.Text = File.ReadAllText("Files/1.xaml");
 				foreach (object o in toolBar.Items) {
 					if (o is Button) {
 						(o as Button).CommandTarget = designSurface;
@@ -53,7 +54,7 @@ namespace StandaloneDesigner
 				toolbox.ToolService = designSurface.DesignContext.Services.Tool;
 			} else {
 				if (designSurface.DesignContext != null) {
-					propertyEditor.EditedObject = null;
+					propertyGridView.PropertyGrid.SelectedItems = null;
 					
 					using (StringWriter writer = new StringWriter()) {
 						using (XmlTextWriter xmlWriter = new XmlTextWriter(writer)) {
@@ -75,8 +76,7 @@ namespace StandaloneDesigner
 			ISelectionService selectionService = designSurface.DesignContext.Services.Selection;
 			ICollection<DesignItem> items = selectionService.SelectedItems;
 			if (!IsCollectionWithSameElements(items, oldItems)) {
-				IPropertyEditorDataSource dataSource = DesignItemDataSource.GetDataSourceForDesignItems(items);
-				propertyEditor.EditedObject = dataSource;
+				propertyGridView.PropertyGrid.SelectedItems = items;
 				oldItems = items;
 			}
 		}
@@ -110,6 +110,3 @@ namespace StandaloneDesigner
 		}
 	}
 }
-
-
-

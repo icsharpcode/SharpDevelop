@@ -8,6 +8,7 @@ using System.Globalization;
 using System.Windows;
 using System.Runtime.InteropServices;
 using ICSharpCode.WpfDesign.Extensions;
+using System.Windows.Markup;
 
 #endregion
 
@@ -39,4 +40,11 @@ using ICSharpCode.WpfDesign.Extensions;
     //(used if a resource is not found in the page, 
     // app, or any theme specific resource dictionaries)
 )]
+
+[assembly: XmlnsPrefix("http://sharpdevelop.net", "sd")]
+
+[assembly: XmlnsDefinition("http://sharpdevelop.net", "ICSharpCode.WpfDesign.Designer")]
+[assembly: XmlnsDefinition("http://sharpdevelop.net", "ICSharpCode.WpfDesign.Designer.Controls")]
+[assembly: XmlnsDefinition("http://sharpdevelop.net", "ICSharpCode.WpfDesign.Designer.PropertyGrid")]
+[assembly: XmlnsDefinition("http://sharpdevelop.net", "ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors")]
 

@@ -19,7 +19,8 @@ using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.WpfDesign.Designer;
 using ICSharpCode.WpfDesign.Designer.Services;
 using ICSharpCode.WpfDesign.Designer.Xaml;
-using ICSharpCode.WpfDesign.PropertyEditor;
+using ICSharpCode.WpfDesign.PropertyGrid;
+using ICSharpCode.WpfDesign.Designer.PropertyGrid;
 
 namespace ICSharpCode.WpfDesign.AddIn
 {
@@ -62,12 +63,13 @@ namespace ICSharpCode.WpfDesign.AddIn
 						context.Services.AddService(typeof(IPropertyDescriptionService), new PropertyDescriptionService(this.PrimaryFile));
 						context.Services.AddService(typeof(IEventHandlerService), new CSharpEventHandlerService(this));
 						context.Services.AddService(typeof(ITopLevelWindowService), new WpfAndWinFormsTopLevelWindowService());
-						context.Services.AddService(typeof(ChooseClassService), new ChooseClassService());
+						context.Services.AddService(typeof(ChooseClassServiceBase), new IdeChooseClassService());
 					});
 				settings.TypeFinder = MyTypeFinder.Create(this.PrimaryFile);
 				
 				designer.LoadDesigner(r, settings);
 				
+				propertyGridView.PropertyGrid.SelectedItems = null;
 				designer.DesignContext.Services.Selection.SelectionChanged += OnSelectionChanged;
 				designer.DesignContext.Services.GetService<UndoService>().UndoStackChanged += OnUndoStackChanged;
 			}
@@ -91,14 +93,15 @@ namespace ICSharpCode.WpfDesign.AddIn
 		}
 		
 		#region Property editor / SelectionChanged
-		Designer.PropertyEditor propertyEditor;
+		
 		ElementHost propertyEditorHost;
+		PropertyGridView propertyGridView;
 		
 		void InitPropertyEditor()
 		{
 			propertyEditorHost = new SharpDevelopElementHost();
-			propertyEditor = new Designer.PropertyEditor();
-			propertyEditorHost.Child = propertyEditor;
+			propertyGridView = new PropertyGridView();
+			propertyEditorHost.Child = propertyGridView;
 			propertyContainer.PropertyGridReplacementControl = propertyEditorHost;
 		}
 		
@@ -109,8 +112,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 			ISelectionService selectionService = designer.DesignContext.Services.Selection;
 			ICollection<DesignItem> items = selectionService.SelectedItems;
 			if (!IsCollectionWithSameElements(items, oldItems)) {
-				IPropertyEditorDataSource dataSource = DesignItemDataSource.GetDataSourceForDesignItems(items);
-				propertyEditor.EditedObject = dataSource;
+				propertyGridView.PropertyGrid.SelectedItems = items;
 				oldItems = items;
 			}
 		}
@@ -127,10 +129,6 @@ namespace ICSharpCode.WpfDesign.AddIn
 					return false;
 			}
 			return true;
-		}
-		
-		public Designer.PropertyEditor PropertyEditor {
-			get { return propertyEditor; }
 		}
 		
 		PropertyContainer propertyContainer = new PropertyContainer();

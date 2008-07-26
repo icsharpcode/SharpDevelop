@@ -13,7 +13,7 @@ using ICSharpCode.WpfDesign.XamlDom;
 using ICSharpCode.WpfDesign.Designer.Services;
 using ICSharpCode.WpfDesign.Designer.Extensions;
 using ICSharpCode.WpfDesign.Extensions;
-using ICSharpCode.WpfDesign.PropertyEditor;
+using ICSharpCode.WpfDesign.PropertyGrid;
 
 namespace ICSharpCode.WpfDesign.Designer.Xaml
 {
@@ -58,9 +58,6 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			_componentService = new XamlComponentService(this);
 			this.Services.AddService(typeof(IComponentService), _componentService);
 			
-			EditorManager propertyGridEditorManager = new EditorManager();
-			this.Services.AddService(typeof(EditorManager), propertyGridEditorManager);
-			
 			foreach (Action<XamlDesignContext> action in loadSettings.CustomServiceRegisterFunctions) {
 				action(this);
 			}
@@ -73,7 +70,7 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			// register extensions from the designer assemblies:
 			foreach (Assembly designerAssembly in loadSettings.DesignerAssemblies) {
 				this.Services.ExtensionManager.RegisterAssembly(designerAssembly);
-				propertyGridEditorManager.RegisterAssembly(designerAssembly);
+				EditorManager.RegisterAssembly(designerAssembly);
 			}
 			
 			XamlParserSettings parserSettings = new XamlParserSettings();

@@ -142,6 +142,13 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		void AddMappingToNamespace(XamlNamespace ns, AssemblyNamespaceMapping mapping)
 		{
 			ns.ClrNamespaces.Add(mapping);
+
+			string xmlNamespace;
+			if (reverseDict.TryGetValue(mapping, out xmlNamespace)) {
+				if (xmlNamespace == XamlConstants.PresentationNamespace) {
+					return;
+				}
+			}
 			reverseDict[mapping] = ns.XmlNamespace;
 		}
 		

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 

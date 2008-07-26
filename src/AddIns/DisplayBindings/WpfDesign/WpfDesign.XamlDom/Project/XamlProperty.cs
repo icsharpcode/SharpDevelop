@@ -11,12 +11,14 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Text;
 using System.Xml;
+using System.Windows;
 
 namespace ICSharpCode.WpfDesign.XamlDom
 {
 	/// <summary>
 	/// Describes a property on a <see cref="XamlObject"/>.
 	/// </summary>
+	[DebuggerDisplay("XamlProperty: {PropertyName}")]
 	public sealed class XamlProperty
 	{
 		XamlObject parentObject;
@@ -315,5 +317,15 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				return attribute == null && element == null;
 			}
 		}*/
+
+		public bool IsAdvanced {
+			get { return propertyInfo.IsAdvanced; }
+		}
+
+		public DependencyProperty DependencyProperty {
+			get {
+				return propertyInfo.DependencyProperty;
+			}
+		}
 	}
 }

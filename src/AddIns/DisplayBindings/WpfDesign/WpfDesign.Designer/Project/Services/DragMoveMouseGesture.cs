@@ -145,7 +145,7 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 				if (ehs != null) {
 					DesignItemProperty defaultEvent = ehs.GetDefaultEvent(clickedOn);
 					if (defaultEvent != null) {
-						ehs.CreateEventHandler(clickedOn, defaultEvent);
+						ehs.CreateEventHandler(defaultEvent);
 					}
 				}
 			}

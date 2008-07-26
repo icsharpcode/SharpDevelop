@@ -101,6 +101,27 @@ namespace ICSharpCode.WpfDesign
 		/// Resets the property value to the default, possibly removing it from the list of properties.
 		/// </summary>
 		public abstract void Reset();
+
+		public abstract DesignItem DesignItem { get; }
+
+		public abstract DependencyProperty DependencyProperty { get; }
+
+		public abstract bool IsAdvanced { get; }		
+
+		public string FullName  {
+			get {
+				return DeclaringType.FullName + "." + Name;
+			}
+		}
+
+		public string DependencyFullName {
+			get {
+				if (DependencyProperty != null) {
+					return DependencyProperty.GetFullName();
+				}
+				return FullName;
+			}
+		}
 	}
 	
 	/// <summary>

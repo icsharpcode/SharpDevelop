@@ -12,6 +12,7 @@ using System;
 using System.Diagnostics;
 using ICSharpCode.WpfDesign.XamlDom;
 using ICSharpCode.WpfDesign.Designer.Services;
+using System.Windows;
 
 namespace ICSharpCode.WpfDesign.Designer.Xaml
 {
@@ -20,8 +21,8 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 		readonly XamlDesignItem _designItem;
 		readonly XamlProperty _property;
 		readonly XamlModelCollectionElementsCollection _collectionElements;
-		
-		internal XamlDesignItem DesignItem {
+
+		internal XamlDesignItem XamlDesignItem {
 			get { return _designItem; }
 		}
 		
@@ -93,14 +94,10 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			get {
 				if (IsCollection)
 					throw new DesignerException("Cannot access Value for collection properties.");
-				
-				XamlComponentService componentService = _designItem.ComponentService;
-				object valueOnInstance = this.ValueOnInstance;
-				DesignItem designItem = componentService.GetDesignItem(valueOnInstance);
-				if (designItem != null)
-					return designItem;
-				
-				return componentService.RegisterComponentForDesigner(valueOnInstance);
+
+				//TODO
+				if (ValueOnInstance == null) return null;
+				return _designItem.ComponentService.GetDesignItem(ValueOnInstance);
 			}
 		}
 		
@@ -271,6 +268,18 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 					return new DesignItem[] { property._designItem };
 				}
 			}
+		}
+
+		public override DesignItem DesignItem {
+			get { return _designItem; }
+		}
+
+		public override DependencyProperty DependencyProperty {
+			get { return _property.DependencyProperty; }
+		}
+
+		public override bool IsAdvanced {
+			get { return _property.IsAdvanced; }
 		}
 	}
 }

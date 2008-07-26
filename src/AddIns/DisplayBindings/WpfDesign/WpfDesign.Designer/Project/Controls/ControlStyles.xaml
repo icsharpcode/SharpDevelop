@@ -5,8 +5,12 @@
 	<!--
 		This file contains the default styles used by the Controls in ICSharpCode.WpfDesign.Designer.Controls
 	-->
-	
-	<Style TargetType="{x:Type src:ResizeThumb}">
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="NumericUpDown.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+
+    <Style TargetType="{x:Type src:ResizeThumb}">
 		<Setter Property="Template">
 			<Setter.Value>
 				<ControlTemplate TargetType="{x:Type src:ResizeThumb}">

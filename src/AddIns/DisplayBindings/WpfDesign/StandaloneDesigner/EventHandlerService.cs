@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
@@ -22,24 +22,19 @@ namespace StandaloneDesigner
 			this.mainWindow = mainWindow;
 		}
 		
-		public void CreateEventHandler(DesignItem item, DesignItemProperty eventProperty)
+		public void CreateEventHandler(DesignItemProperty eventProperty)
 		{
+			var item = eventProperty.DesignItem;
 			string handlerName = (string)eventProperty.ValueOnInstance;
+
 			if (string.IsNullOrEmpty(handlerName)) {
-				if (string.IsNullOrEmpty(item.Name)) {
-					// cannot create event for unnamed controls
-					if (mainWindow.propertyEditor.NameTextBox.Focus()) {
-						IErrorService errorService = item.Context.Services.GetService<IErrorService>();
-						if (errorService != null) {
-							Label errorLabel = new Label();
-							errorLabel.Content = "You need to give the " + item.ComponentType.Name + " a name.";
-							errorService.ShowErrorTooltip(mainWindow.propertyEditor.NameTextBox, errorLabel);
-						}
-					}
-					return;
+				string prefix = item.Name;
+				if (string.IsNullOrEmpty(prefix)) {
+					//TODO
+					prefix = item.ComponentType.Name;
 				}
-				
-				handlerName = item.Name + eventProperty.Name;
+
+				handlerName = prefix + eventProperty.Name;
 				eventProperty.SetValue(handlerName);
 			}
 			

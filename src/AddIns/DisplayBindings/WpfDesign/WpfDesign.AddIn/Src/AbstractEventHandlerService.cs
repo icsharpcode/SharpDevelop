@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
@@ -68,29 +68,18 @@ namespace ICSharpCode.WpfDesign.AddIn
 		
 		protected abstract void CreateEventHandlerInternal(Type eventHandlerType, string handlerName);
 		
-		public void CreateEventHandler(DesignItem item, DesignItemProperty eventProperty)
+		public void CreateEventHandler(DesignItemProperty eventProperty)
 		{
-			string handlerName = (string)eventProperty.ValueOnInstance;
-			if (string.IsNullOrEmpty(handlerName)) {
-				if (string.IsNullOrEmpty(item.Name)) {
-					PadDescriptor padContent = WorkbenchSingleton.Workbench.GetPad(typeof(PropertyPad));
-					if (padContent != null) {
-						padContent.BringPadToFront();
-					}
-					
-					// cannot create event for unnamed controls
-					if (viewContent.PropertyEditor.NameTextBox.Focus()) {
-						IErrorService errorService = item.Context.Services.GetService<IErrorService>();
-						if (errorService != null) {
-							Label errorLabel = new Label();
-							errorLabel.Content = "You need to give the " + item.ComponentType.Name + " a name.";
-							errorService.ShowErrorTooltip(viewContent.PropertyEditor.NameTextBox, errorLabel);
-						}
-					}
-					return;
+			var item = eventProperty.DesignItem;
+			string handlerName = (string)eventProperty.ValueOnInstance;			
+
+			if (string.IsNullOrEmpty(handlerName))  {
+				string prefix = item.Name;
+				if (string.IsNullOrEmpty(prefix)) {
+					prefix = item.ComponentType.Name;
 				}
-				
-				handlerName = item.Name + eventProperty.Name;
+
+				handlerName = prefix + eventProperty.Name;
 				eventProperty.SetValue(handlerName);
 			}
 			CreateEventHandlerInternal(eventProperty.ReturnType, handlerName);

@@ -1,0 +1,109 @@
+﻿<UserControl x:Class="ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors.BrushEditor.GradientSlider"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:BrushEditor="clr-namespace:ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors.BrushEditor"
+             x:Name="this"
+>
+	<UserControl.Resources>
+		
+		<DataTemplate x:Key="GradientStopTemplate">
+			<Grid>
+				<Path x:Name="thumb"
+				      Data="m 6 0 l 6 5 v 12 h -12 v -12 z"
+				      Stroke="Black"
+				      Fill="Orange" />
+				<Border Margin="2 7 2 2"
+				        BorderBrush="Black"
+				        BorderThickness="1">
+					<Border BorderBrush="White"
+					        BorderThickness="1">
+						<Border.Background>
+							<SolidColorBrush Color="red" />
+						</Border.Background>
+					</Border>
+				</Border>
+			</Grid>
+			<DataTemplate.Triggers>
+				<Trigger Property="Selector.IsSelected"
+				         Value="True">
+					<Setter TargetName="thumb"
+					        Property="Fill"
+					        Value="Gold" />
+				</Trigger>
+			</DataTemplate.Triggers>
+		</DataTemplate>
+		
+		<Style TargetType="{x:Type BrushEditor:GradientThumb}">
+			<Setter Property="BrushEditor:NormalizedPanel.X"
+			        Value="{Binding Offset}" />
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="{x:Type BrushEditor:GradientThumb}">
+						<StackPanel>
+							<Path x:Name="thumb"
+							      Data="m 0 0 l 6 -5 l 6 5"
+							      Stroke="Black"
+							      Fill="White" />
+							<Border BorderBrush="Black"
+							        BorderThickness="1"
+							        Width="12"
+							        Height="12">
+								<Border BorderBrush="White"
+								        BorderThickness="1">
+									<Border.Background>
+										<SolidColorBrush Color="{Binding Color}" />
+									</Border.Background>
+								</Border>
+							</Border>
+						</StackPanel>
+						<ControlTemplate.Triggers>
+							<Trigger Property="Selector.IsSelected"
+							         Value="True">
+								<Setter TargetName="thumb"
+								        Property="Fill"
+								        Value="Orange" />
+							</Trigger>
+						</ControlTemplate.Triggers>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+		
+		<Style TargetType="{x:Type BrushEditor:Dragger}">
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="{x:Type BrushEditor:Dragger}">
+						<Border BorderBrush="{TemplateBinding BorderBrush}"
+						        BorderThickness="{TemplateBinding BorderThickness}"
+						        Background="{TemplateBinding Background}" />
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+	
+	</UserControl.Resources>
+	
+	<Grid>
+		<BrushEditor:Dragger x:Name="strip"
+		           BorderBrush="Black"
+		           BorderThickness="1"
+		           VerticalAlignment="Top"
+		           Height="20"
+		           Margin="6 0 6 0">
+			<Control.Background>
+				<LinearGradientBrush EndPoint="1 0"
+					GradientStops="{Binding Brush.GradientStops, ElementName=this}" />
+			</Control.Background>
+		</BrushEditor:Dragger>
+		<BrushEditor:GradientItemsControl x:Name="itemsControl"
+			ItemsSource="{Binding GradientStops, ElementName=this}"
+			Margin="6 28 6 10">
+			<ItemsControl.ItemsPanel>
+				<ItemsPanelTemplate>
+					<BrushEditor:NormalizedPanel />
+				</ItemsPanelTemplate>
+			</ItemsControl.ItemsPanel>
+		</BrushEditor:GradientItemsControl>
+	</Grid>
+
+</UserControl>

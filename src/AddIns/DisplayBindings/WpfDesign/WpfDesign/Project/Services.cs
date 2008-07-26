@@ -177,7 +177,7 @@ namespace ICSharpCode.WpfDesign
 		/// <summary>
 		/// Creates an event handler for the specified event.
 		/// </summary>
-		void CreateEventHandler(DesignItem item, DesignItemProperty eventProperty);
+		void CreateEventHandler(DesignItemProperty eventProperty);
 		
 		/// <summary>
 		/// Gets the default event of the specified design item.

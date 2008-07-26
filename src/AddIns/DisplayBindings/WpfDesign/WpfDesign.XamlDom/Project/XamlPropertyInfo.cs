@@ -33,6 +33,8 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		public abstract bool IsAttached { get; }
 		public abstract bool IsCollection { get; }
 		public virtual bool IsEvent { get { return false; } }
+		public virtual bool IsAdvanced { get { return false; } }
+		public virtual DependencyProperty DependencyProperty { get { return null; } }
 		public abstract string Category { get; }
 	}
 	
@@ -41,8 +43,8 @@ namespace ICSharpCode.WpfDesign.XamlDom
 	{
 		readonly DependencyProperty property;
 		readonly bool isAttached;
-		
-		public DependencyProperty Property {
+
+		public override DependencyProperty DependencyProperty {
 			get { return property; }
 		}
 		
@@ -110,10 +112,21 @@ namespace ICSharpCode.WpfDesign.XamlDom
 	internal sealed class XamlNormalPropertyInfo : XamlPropertyInfo
 	{
 		PropertyDescriptor _propertyDescriptor;
+		DependencyProperty dependencyProperty;
 		
 		public XamlNormalPropertyInfo(PropertyDescriptor propertyDescriptor)
 		{
 			this._propertyDescriptor = propertyDescriptor;
+			var dpd = DependencyPropertyDescriptor.FromProperty(propertyDescriptor);
+			if (dpd != null) {
+				dependencyProperty = dpd.DependencyProperty;
+			}
+		}
+
+		public override DependencyProperty DependencyProperty {
+			get {
+				return dependencyProperty;
+			}
 		}
 		
 		public override object GetValue(object instance)
@@ -166,6 +179,16 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		public override bool IsCollection {
 			get {
 				return CollectionSupport.IsCollectionType(_propertyDescriptor.PropertyType);
+			}
+		}
+
+		public override bool IsAdvanced	{
+			get	{
+				var a = _propertyDescriptor.Attributes[typeof(EditorBrowsableAttribute)] as EditorBrowsableAttribute;
+				if (a != null) {
+					return a.State == EditorBrowsableState.Advanced;
+				}
+				return false;
 			}
 		}
 		
@@ -235,7 +258,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 						throw new XamlLoadException("Could not find property " + value + ".");
 					XamlDependencyPropertyInfo depProp = prop as XamlDependencyPropertyInfo;
 					if (depProp != null)
-						return depProp.Property;
+						return depProp.DependencyProperty;
 					FieldInfo field = prop.TargetType.GetField(prop.Name + "Property", BindingFlags.Public | BindingFlags.Static);
 					if (field != null && field.FieldType == typeof(DependencyProperty)) {
 						return (DependencyProperty)field.GetValue(null);
