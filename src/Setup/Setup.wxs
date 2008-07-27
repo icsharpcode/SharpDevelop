@@ -432,6 +432,10 @@
 				<ComponentRef Id="SharpDevelopBuildFscTargets"/>	
 				<ComponentRef Id="FSharpConsoleProjectTemplate"/>	
 				<ComponentRef Id="FSharpEmptyClassTemplate"/>	
+				
+				<ComponentRef Id="ReflectorAddInDll"/>
+				<ComponentRef Id="ReflectorAddInIpcServerDll"/>
+				<ComponentRef Id="ReflectorAddInIpcServerAddInDll"/>
 			</Feature>
 			<Feature Id="SharpDevelopFileAssociations"
 			         Level="2"

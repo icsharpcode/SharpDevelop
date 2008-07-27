@@ -1508,6 +1508,18 @@
 											<File Source="..\..\AddIns\AddIns\Misc\ClassWizard\ClassWizard.dll" Name="ClassWizard.dll" Id="ClassWizard.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="ClassWizard.dll" AssemblyManifest="ClassWizard.dll" />
 										</Component>
 									</Directory>
+									<Directory Id="ReflectorAddInFolder" Name="ReflectorAddIn">
+										<Component Guid="335BC9AF-9425-4D47-A7C5-3EBF231B3160" Id="ReflectorAddInIpcServerAddInDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\Misc\ReflectorAddIn\Reflector.IpcServer.AddIn.dll" Name="Reflector.IpcServer.AddIn.dll" Id="Reflector.IpcServer.AddIn.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Reflector.IpcServer.AddIn.dll" AssemblyManifest="Reflector.IpcServer.AddIn.dll" />
+										</Component>
+										<Component Guid="7A1AA056-4F31-477B-8215-F778EB4D4C6F" Id="ReflectorAddInIpcServerDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\Misc\ReflectorAddIn\Reflector.IpcServer.dll" Name="Reflector.IpcServer.dll" Id="Reflector.IpcServer.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Reflector.IpcServer.dll" AssemblyManifest="Reflector.IpcServer.dll" />
+										</Component>
+										<Component Guid="7909D3B7-FC01-4897-AF29-4B0C45D4680F" Id="ReflectorAddInDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\Misc\ReflectorAddIn\ReflectorAddIn.dll" Name="ReflectorAddIn.dll" Id="ReflectorAddIn.dll" Assembly=".net" AssemblyApplication="ReflectorAddIn.dll" AssemblyManifest="ReflectorAddIn.dll" KeyPath="yes" />
+											<File Source="..\..\AddIns\AddIns\Misc\ReflectorAddIn\ReflectorAddIn.addin" Name="ReflectorAddIn.addin" Id="ReflectorAddIn.addin" />
+										</Component>
+									</Directory>
 								</Directory>
 							</Directory>
 						</Directory>

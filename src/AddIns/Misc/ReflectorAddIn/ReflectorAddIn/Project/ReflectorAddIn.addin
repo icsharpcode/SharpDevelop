@@ -1,0 +1,33 @@
+﻿<AddIn name        = "ReflectorAddIn"
+       author      = "Christian Hornung"
+       copyright   = "prj:///doc/copyright.txt"
+       description = "Can open Lutz Roeder's .NET Reflector on a selected class or member.">
+	
+	<Manifest>
+		<Identity name="ReflectorAddIn" version="@ReflectorAddIn.dll" />
+	</Manifest>
+	
+	<Runtime>
+		<Import assembly = "ReflectorAddIn.dll"/>
+		<Import assembly = ":ICSharpCode.SharpDevelop"/>
+	</Runtime>
+	
+	<!-- Text editor context menu -->
+	
+	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/ClassMemberContextMenu">
+		<MenuItem id="Reflector" type="Item" label="${res:ReflectorAddIn.OpenReflectorCommand}" class="ReflectorAddIn.TextEditorContextMenuCommand"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/ClassBookmarkContextMenu">
+		<MenuItem id="Reflector" type="Item" label="${res:ReflectorAddIn.OpenReflectorCommand}" class="ReflectorAddIn.TextEditorContextMenuCommand"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Pads/ClassBrowser/MemberContextMenu">
+		<MenuItem id="Reflector" type="Item" label="${res:ReflectorAddIn.OpenReflectorCommand}" class="ReflectorAddIn.TextEditorContextMenuCommand"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Pads/ClassBrowser/ClassContextMenu">
+		<MenuItem id="Reflector" type="Item" label="${res:ReflectorAddIn.OpenReflectorCommand}" class="ReflectorAddIn.TextEditorContextMenuCommand"/>
+	</Path>
+	
+</AddIn>
