@@ -52,7 +52,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		/// not be able to load this method if it was changed manually.
 		/// </summary>
 		private void InitializeComponent() {
-			this.localVarList = new Aga.Controls.Tree.TreeViewAdv();
+			this.exceptionDetails = new Aga.Controls.Tree.TreeViewAdv();
 			this.linkExceptionDetail = new System.Windows.Forms.LinkLabel();
 			this.splitContainer = new System.Windows.Forms.SplitContainer();
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
@@ -65,36 +65,24 @@ namespace ICSharpCode.SharpDevelop.Services
 			// 
 			this.textBox.Size = new System.Drawing.Size(542, 139);
 			// 
-			// buttonBreak
+			// exceptionDetails
 			// 
-			this.buttonBreak.Location = new System.Drawing.Point(176, 356);
-			// 
-			// buttonContinue
-			// 
-			this.buttonContinue.Location = new System.Drawing.Point(274, 356);
-			// 
-			// buttonTerminate
-			// 
-			this.buttonTerminate.Location = new System.Drawing.Point(372, 356);
-			// 
-			// localVarList
-			// 
-			this.localVarList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+			this.exceptionDetails.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
 									| System.Windows.Forms.AnchorStyles.Left) 
 									| System.Windows.Forms.AnchorStyles.Right)));
-			this.localVarList.AutoRowHeight = true;
-			this.localVarList.BackColor = System.Drawing.SystemColors.Window;
-			this.localVarList.DefaultToolTipProvider = null;
-			this.localVarList.DragDropMarkColor = System.Drawing.Color.Black;
-			this.localVarList.LineColor = System.Drawing.SystemColors.ControlDark;
-			this.localVarList.LoadOnDemand = true;
-			this.localVarList.Location = new System.Drawing.Point(3, 4);
-			this.localVarList.Model = null;
-			this.localVarList.Name = "localVarList";
-			this.localVarList.SelectedNode = null;
-			this.localVarList.Size = new System.Drawing.Size(539, 153);
-			this.localVarList.TabIndex = 4;
-			this.localVarList.UseColumns = true;
+			this.exceptionDetails.AutoRowHeight = true;
+			this.exceptionDetails.BackColor = System.Drawing.SystemColors.Window;
+			this.exceptionDetails.DefaultToolTipProvider = null;
+			this.exceptionDetails.DragDropMarkColor = System.Drawing.Color.Black;
+			this.exceptionDetails.LineColor = System.Drawing.SystemColors.ControlDark;
+			this.exceptionDetails.LoadOnDemand = true;
+			this.exceptionDetails.Location = new System.Drawing.Point(3, 4);
+			this.exceptionDetails.Model = null;
+			this.exceptionDetails.Name = "exceptionDetails";
+			this.exceptionDetails.SelectedNode = null;
+			this.exceptionDetails.Size = new System.Drawing.Size(539, 153);
+			this.exceptionDetails.TabIndex = 4;
+			this.exceptionDetails.UseColumns = true;
 			// 
 			// linkExceptionDetail
 			// 
@@ -122,7 +110,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			// 
 			// splitContainer.Panel2
 			// 
-			this.splitContainer.Panel2.Controls.Add(this.localVarList);
+			this.splitContainer.Panel2.Controls.Add(this.exceptionDetails);
 			this.splitContainer.Size = new System.Drawing.Size(550, 327);
 			this.splitContainer.SplitterDistance = 163;
 			this.splitContainer.TabIndex = 6;
@@ -146,8 +134,8 @@ namespace ICSharpCode.SharpDevelop.Services
 			this.ResumeLayout(false);
 			this.PerformLayout();
 		}
+		private Aga.Controls.Tree.TreeViewAdv exceptionDetails;
 		private System.Windows.Forms.SplitContainer splitContainer;
-		private Aga.Controls.Tree.TreeViewAdv localVarList;
 		private System.Windows.Forms.LinkLabel linkExceptionDetail;
 		#endregion
 			

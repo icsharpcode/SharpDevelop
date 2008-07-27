@@ -65,7 +65,7 @@ namespace ICSharpCode.SharpDevelop.Services
             textBox.Location = new System.Drawing.Point(0, 4);
             splitContainer.Panel1.Controls.Add(textBox);
             
-            // To make the localVarList size properly, it must be rendered full size in the designer.
+            // To make the exceptionDetails size properly, it must be rendered full size in the designer.
             // To get the text right we set the panel to the opposite of what we want and then fire linkExceptionDetail.Click().
             splitContainer.Panel2Collapsed = DebuggingOptions.Instance.ShowExceptionDetails;
             DebuggingOptions.Instance.ShowExceptionDetails = ! DebuggingOptions.Instance.ShowExceptionDetails;
@@ -74,13 +74,13 @@ namespace ICSharpCode.SharpDevelop.Services
             WindowState = DebuggingOptions.Instance.DebuggeeExceptionWindowState;
 			Size = DebuggingOptions.Instance.DebuggeeExceptionWindowSize;
             
-			InitializeLocalVarList();
+			InitializeexceptionDetails();
 		}
 		
 		/// <summary>
-		/// Setup the columns for the LocalVarList.
+		/// Setup the columns for the exceptionDetails.
 		/// </summary>
-		private void InitializeLocalVarList() {
+		private void InitializeexceptionDetails() {
 			NodeIcon iconControl = new ItemIcon();
 			NodeTextBox nameControl = new ItemName();
 			NodeTextBox textControl = new ItemText();
@@ -90,24 +90,24 @@ namespace ICSharpCode.SharpDevelop.Services
 			TreeColumn valColumn  = new TreeColumn();
 			TreeColumn typeColumn = new TreeColumn();
 			
-			localVarList.Columns.Add(nameColumn);
-			localVarList.Columns.Add(valColumn);
-			localVarList.Columns.Add(typeColumn);
-			localVarList.UseColumns = true;
-			localVarList.SelectionMode = TreeSelectionMode.Single;
-			localVarList.LoadOnDemand = true;
+			exceptionDetails.Columns.Add(nameColumn);
+			exceptionDetails.Columns.Add(valColumn);
+			exceptionDetails.Columns.Add(typeColumn);
+			exceptionDetails.UseColumns = true;
+			exceptionDetails.SelectionMode = TreeSelectionMode.Single;
+			exceptionDetails.LoadOnDemand = true;
 			
 			iconControl.ParentColumn = nameColumn;
-			localVarList.NodeControls.Add(iconControl);
+			exceptionDetails.NodeControls.Add(iconControl);
 			
 			nameControl.ParentColumn = nameColumn;
-			localVarList.NodeControls.Add(nameControl);
+			exceptionDetails.NodeControls.Add(nameControl);
 			
 			textControl.ParentColumn = valColumn;
-			localVarList.NodeControls.Add(textControl);
+			exceptionDetails.NodeControls.Add(textControl);
 			
 			typeControl.ParentColumn = typeColumn;
-			localVarList.NodeControls.Add(typeControl);
+			exceptionDetails.NodeControls.Add(typeControl);
 		
 			nameColumn.Header = ResourceService.GetString("Global.Name");
 			nameColumn.Width = 165;
@@ -127,10 +127,10 @@ namespace ICSharpCode.SharpDevelop.Services
 				IList<AbstractNode> exceptionNodes = new List<AbstractNode>();
 				exceptionNodes.Add(ValueNode.Create(new CurrentExceptionExpression()));
 				
-				form.localVarList.BeginUpdate();
-				TreeViewVarNode.SetContentRecursive(process, form.localVarList, exceptionNodes);
-				form.localVarList.EndUpdate();
-				form.localVarList.Refresh();
+				form.exceptionDetails.BeginUpdate();
+				TreeViewVarNode.SetContentRecursive(process, form.exceptionDetails, exceptionNodes);
+				form.exceptionDetails.EndUpdate();
+				form.exceptionDetails.Refresh();
 
 				form.buttonContinue.Enabled = canContinue;
 				form.ShowDialog(Gui.WorkbenchSingleton.MainForm);
