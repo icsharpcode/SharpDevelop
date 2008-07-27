@@ -544,7 +544,9 @@ Global
 		{E618A9CD-A39F-4925-A538-E8A3FEF24E54}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E618A9CD-A39F-4925-A538-E8A3FEF24E54}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E618A9CD-A39F-4925-A538-E8A3FEF24E54}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8AA421C8-D7AF-4957-9F43-5135328ACB24}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8AA421C8-D7AF-4957-9F43-5135328ACB24}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8AA421C8-D7AF-4957-9F43-5135328ACB24}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8AA421C8-D7AF-4957-9F43-5135328ACB24}.Release|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
