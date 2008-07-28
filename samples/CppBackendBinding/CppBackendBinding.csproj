@@ -37,15 +37,15 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <ItemGroup>
     <Reference Include="ICSharpCode.Core">
-      <HintPath>D:\SD\3.0\SharpDevelop\bin\ICSharpCode.Core.dll</HintPath>
+      <HintPath>..\..\bin\ICSharpCode.Core.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="ICSharpCode.SharpDevelop">
-      <HintPath>D:\SD\3.0\SharpDevelop\bin\ICSharpCode.SharpDevelop.dll</HintPath>
+      <HintPath>..\..\bin\ICSharpCode.SharpDevelop.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="ICSharpCode.SharpDevelop.Dom">
-      <HintPath>D:\SD\3.0\SharpDevelop\bin\ICSharpCode.SharpDevelop.Dom.dll</HintPath>
+      <HintPath>..\..\bin\ICSharpCode.SharpDevelop.Dom.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />

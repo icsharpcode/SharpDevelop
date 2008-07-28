@@ -187,6 +187,8 @@ namespace CppBackendBinding
 		
 		static string GetFile(string filename)
 		{
+			if (string.IsNullOrEmpty(filename))
+				return null;
 			filename = Environment.ExpandEnvironmentVariables(filename);
 			if (File.Exists(filename))
 				return filename;
@@ -211,8 +213,10 @@ namespace CppBackendBinding
 		
 		public override void StartBuild(ProjectBuildOptions options, IBuildFeedbackSink feedbackSink)
 		{
+			string productDir = GetPathFromRegistry(@"SOFTWARE\Microsoft\VisualStudio\9.0\Setup\VC", "ProductDir");
+			
 			string commonTools =
-				GetFile(Path.Combine(GetPathFromRegistry(@"SOFTWARE\Microsoft\VisualStudio\9.0\Setup\VC", "ProductDir"), "bin\\vcvars32.bat"))
+				GetFile(productDir != null ? Path.Combine(productDir, "bin\\vcvars32.bat") : null)
 				?? GetFile("%VS90COMNTOOLS%\\vsvars32.bat")
 				??  GetFile("%VS80COMNTOOLS%\\vsvars32.bat");
 			
@@ -241,7 +245,7 @@ namespace CppBackendBinding
 			p.StartInfo.CreateNoWindow = true;
 			p.StartInfo.UseShellExecute = false;
 			p.StartInfo.EnvironmentVariables["VCBUILD_DEFAULT_CFG"] = options.Configuration + "|" + options.Platform;
-			p.StartInfo.EnvironmentVariables["SolutionPath"] = ParentSolution.Directory;
+			p.StartInfo.EnvironmentVariables["SolutionPath"] = ParentSolution.FileName;
 			
 			p.EnableRaisingEvents = true;
 			p.OutputDataReceived += delegate(object sender, DataReceivedEventArgs e) {

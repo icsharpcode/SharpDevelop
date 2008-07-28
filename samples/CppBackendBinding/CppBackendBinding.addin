@@ -6,6 +6,10 @@
 		<Import assembly = "CppBackendBinding.dll"/>
 	</Runtime>
 	
+	<Manifest>
+		<Identity name="ICSharpCode.Sample.CppBackendBinding" version="@CppBackendBinding.dll"/>
+	</Manifest>
+	
 	<Path name = "/SharpDevelop/Workbench/FileFilter">
 		<FileFilter id = "C++"
 		            insertbefore="AllFiles"
