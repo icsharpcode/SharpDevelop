@@ -96,6 +96,17 @@ namespace Hornung.ResourceToolkit.Resolver
 		/// <param name="fileName">The file name of the source file that contains the expression to be resolved.</param>
 		public ResolveResult Resolve(Expression expression, string fileName)
 		{
+			return this.Resolve(expression, fileName, ExpressionContext.Default);
+		}
+		
+		/// <summary>
+		/// Resolves an expression in the current node's context.
+		/// </summary>
+		/// <param name="expression">The expression to be resolved.</param>
+		/// <param name="fileName">The file name of the source file that contains the expression to be resolved.</param>
+		/// <param name="context">The ExpressionContext.</param>
+		public ResolveResult Resolve(Expression expression, string fileName, ExpressionContext context)
+		{
 			if (!this.PositionAvailable) {
 				LoggingService.Info("ResourceToolkit: PositionTrackingAstVisitor: Resolve failed due to position information being unavailable. Expression: "+expression.ToString());
 				return null;
@@ -105,7 +116,7 @@ namespace Hornung.ResourceToolkit.Resolver
 			LoggingService.Debug("ResourceToolkit: PositionTrackingAstVisitor: Using this parent node for resolve: "+this.parentNodes.Peek().ToString());
 			#endif
 			
-			return NRefactoryAstCacheService.ResolveLowLevel(fileName, this.CurrentNodeStartLocation.Y, this.CurrentNodeStartLocation.X+1, this.compilationUnit, null, expression, ExpressionContext.Default);
+			return NRefactoryAstCacheService.ResolveLowLevel(fileName, this.CurrentNodeStartLocation.Y, this.CurrentNodeStartLocation.X+1, this.compilationUnit, null, expression, context);
 		}
 		
 		// ********************************************************************************************************************************

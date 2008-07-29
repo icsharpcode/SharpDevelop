@@ -193,8 +193,8 @@ namespace Hornung.ResourceToolkit.Resolver
 		/// <param name="resolveResult">The ResolveResult that describes the referenced member.</param>
 		/// <param name="expr">The AST representation of the full expression.</param>
 		/// <returns>
-		/// The ResourceResolveResult describing the referenced resource, if successful, 
-		/// or a null reference, if the referenced member is not a resource manager 
+		/// The ResourceResolveResult describing the referenced resource, if successful,
+		/// or a null reference, if the referenced member is not a resource manager
 		/// or if the resource file cannot be determined.
 		/// </returns>
 		static ResourceResolveResult ResolveResource(ResolveResult resolveResult, Expression expr)
@@ -569,6 +569,10 @@ namespace Hornung.ResourceToolkit.Resolver
 					     mrr.ResolvedMember.DeclaringType.IsTypeInInheritanceTree(this.resourceManagerMember.ReturnType.GetUnderlyingClass()))
 					   ) {
 						
+						#if DEBUG
+						LoggingService.Debug("ResourceToolkit: BclNRefactoryResourceResolver: This is the correct constructor.");
+						#endif
+						
 						// This most probably is the resource manager initialization we are looking for.
 						// Find a parameter that indicates the resources being referenced.
 						
@@ -600,7 +604,23 @@ namespace Hornung.ResourceToolkit.Resolver
 							// Support typeof(...)
 							TypeOfExpression t = param as TypeOfExpression;
 							if (t != null && this.PositionAvailable) {
-								TypeResolveResult trr = this.Resolve(new TypeReferenceExpression(t.TypeReference), this.resourceManagerMember.DeclaringType.CompilationUnit.FileName) as TypeResolveResult;
+								
+								#if DEBUG
+								LoggingService.Debug("ResourceToolkit: BclNRefactoryResourceResolver: Found TypeOfExpression in constructor call: "  + t.ToString());
+								#endif
+								
+								ResolveResult rr = this.Resolve(new TypeReferenceExpression(t.TypeReference), this.resourceManagerMember.DeclaringType.CompilationUnit.FileName, ExpressionContext.Type);
+								
+								#if DEBUG
+								if (rr == null) {
+									LoggingService.Debug("ResourceToolkit: BclNRefactoryResourceResolver: The TypeReference of the TypeOfExpression could not be resolved.");
+								} else {
+									LoggingService.Debug("ResourceToolkit: BclNRefactoryResourceResolver: The TypeReference resolved to: " + rr.ToString());
+								}
+								#endif
+								
+								TypeResolveResult trr = rr as TypeResolveResult;
+								
 								if (trr != null) {
 									
 									#if DEBUG
@@ -617,6 +637,7 @@ namespace Hornung.ResourceToolkit.Resolver
 									break;
 									
 								}
+								
 							}
 							
 						}

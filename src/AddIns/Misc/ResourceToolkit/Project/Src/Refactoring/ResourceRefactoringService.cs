@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 
 using Hornung.ResourceToolkit.Resolver;
 using Hornung.ResourceToolkit.ResourceFileContent;
@@ -39,7 +40,7 @@ namespace Hornung.ResourceToolkit.Refactoring
 		/// <returns>A list of references to this resource.</returns>
 		public static List<Reference> FindReferences(string resourceFileName, string key, IProgressMonitor monitor)
 		{
-			return FindReferences(new SpecificResourceReferenceFinder(resourceFileName, key), monitor);
+			return FindReferences(new SpecificResourceReferenceFinder(resourceFileName, key), monitor, SearchScope.WholeSolution);
 		}
 		
 		/// <summary>
@@ -48,8 +49,9 @@ namespace Hornung.ResourceToolkit.Refactoring
 		/// </summary>
 		/// <param name="finder">The <see cref="IResourceReferenceFinder"/> to use to find resource references.</param>
 		/// <param name="monitor">An object implementing <see cref="IProgressMonitor"/> to report the progress of the operation. Can be <c>null</c>.</param>
+		/// <param name="scope">The scope which should be searched.</param>
 		/// <returns>A list of references to resources.</returns>
-		public static List<Reference> FindReferences(IResourceReferenceFinder finder, IProgressMonitor monitor)
+		public static List<Reference> FindReferences(IResourceReferenceFinder finder, IProgressMonitor monitor, SearchScope scope)
 		{
 			if (finder == null) {
 				throw new ArgumentNullException("finder");
@@ -70,7 +72,7 @@ namespace Hornung.ResourceToolkit.Refactoring
 				
 				NRefactoryAstCacheService.EnableCache();
 				
-				ICollection<string> files = GetPossibleFiles();
+				ICollection<string> files = GetPossibleFiles(scope);
 				
 				if (monitor != null) {
 					monitor.BeginTask("${res:SharpDevelop.Refactoring.FindingReferences}", files.Count, true);
@@ -151,20 +153,22 @@ namespace Hornung.ResourceToolkit.Refactoring
 		/// Finds all references to resources (except the definitions).
 		/// </summary>
 		/// <param name="monitor">An object implementing <see cref="IProgressMonitor"/> to report the progress of the operation. Can be <c>null</c>.</param>
+		/// <param name="scope">The scope which should be searched.</param>
 		/// <returns>A list of references to resources.</returns>
-		public static List<Reference> FindAllReferences(IProgressMonitor monitor)
+		public static List<Reference> FindAllReferences(IProgressMonitor monitor, SearchScope scope)
 		{
-			return FindReferences(new AnyResourceReferenceFinder(), monitor);
+			return FindReferences(new AnyResourceReferenceFinder(), monitor, scope);
 		}
 		
 		/// <summary>
 		/// Finds all references to missing resource keys.
 		/// </summary>
 		/// <param name="monitor">An object implementing <see cref="IProgressMonitor"/> to report the progress of the operation. Can be <c>null</c>.</param>
+		/// <param name="scope">The scope which should be searched.</param>
 		/// <returns>A list of all references to missing resource keys.</returns>
-		public static List<Reference> FindReferencesToMissingKeys(IProgressMonitor monitor)
+		public static List<Reference> FindReferencesToMissingKeys(IProgressMonitor monitor, SearchScope scope)
 		{
-			List<Reference> references = FindAllReferences(monitor);
+			List<Reference> references = FindAllReferences(monitor, scope);
 			if (references == null) {
 				return null;
 			}
@@ -197,7 +201,7 @@ namespace Hornung.ResourceToolkit.Refactoring
 		/// <returns>A collection of <see cref="ResourceItem"/> classes that represent the unused resource keys.</returns>
 		public static ICollection<ResourceItem> FindUnusedKeys(IProgressMonitor monitor)
 		{
-			List<Reference> references = FindAllReferences(monitor);
+			List<Reference> references = FindAllReferences(monitor, SearchScope.WholeSolution);
 			if (references == null) {
 				return null;
 			}
@@ -319,39 +323,77 @@ namespace Hornung.ResourceToolkit.Refactoring
 		/// Gets a list of names of files which can possibly contain resource references.
 		/// </summary>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
-		public static ICollection<string> GetPossibleFiles()
+		public static ICollection<string> GetPossibleFiles(SearchScope scope)
 		{
 			List<string> files = new List<string>();
 			
-			if (ProjectService.OpenSolution == null) {
-				
-				foreach (IViewContent vc in WorkbenchSingleton.Workbench.ViewContentCollection) {
-					string name = vc.PrimaryFileName;
-					if (IsPossibleFile(name)) {
-						files.Add(name);
+			switch(scope) {
+				case SearchScope.WholeSolution:
+					Solution s = ProjectService.OpenSolution;
+					if (s == null) {
+						throw new InvalidOperationException("Cannot search in whole solution when no solution is open.");
 					}
-				}
-				
-			} else {
-				
-				foreach (IProject p in ProjectService.OpenSolution.Projects) {
-					foreach (ProjectItem pi in p.Items) {
-						if (pi is FileProjectItem) {
-							string name = pi.FileName;
-							if (IsPossibleFile(name)) {
-								files.Add(name);
-								// Add the file to the project dictionary here.
-								// This saves the lookup time when the corresponding project
-								// is needed later.
-								ProjectFileDictionaryService.AddFile(name, p);
-							}
-						}
+					AddFilesFromSolution(files, s);
+					break;
+					
+				case SearchScope.CurrentProject:
+					IProject p = ProjectService.CurrentProject;
+					if (p == null) {
+						throw new InvalidOperationException("Cannot search in current project when no project is active.");
 					}
-				}
-				
+					AddFilesFromProject(files, p);
+					break;
+					
+				case SearchScope.CurrentFile:
+					IViewContent vc = WorkbenchSingleton.Workbench.ActiveViewContent;
+					if (vc == null) {
+						throw new InvalidOperationException("Cannot search in current file when no file is open.");
+					}
+					AddFilesFromViewContent(files, vc);
+					break;
+					
+				case SearchScope.OpenFiles:
+					foreach (IViewContent v in WorkbenchSingleton.Workbench.ViewContentCollection) {
+						AddFilesFromViewContent(files, v);
+					}
+					break;
+					
+				default:
+					throw new ArgumentOutOfRangeException("scope", "The scope parameter is not set to one of the SearchScope values.");
 			}
 			
 			return files.AsReadOnly();
+		}
+		
+		static void AddFilesFromSolution(IList<string> files, Solution s)
+		{
+			foreach (IProject p in s.Projects) {
+				AddFilesFromProject(files, p);
+			}
+		}
+		
+		static void AddFilesFromProject(IList<string> files, IProject p)
+		{
+			foreach (ProjectItem pi in p.Items) {
+				if (pi is FileProjectItem) {
+					string name = pi.FileName;
+					if (IsPossibleFile(name)) {
+						files.Add(name);
+						// Add the file to the project dictionary here.
+						// This saves the lookup time when the corresponding project
+						// is needed later.
+						ProjectFileDictionaryService.AddFile(name, p);
+					}
+				}
+			}
+		}
+		
+		static void AddFilesFromViewContent(IList<string> files, IViewContent vc)
+		{
+			files.AddRange(vc.Files
+			               .Select(f => f.FileName)
+			               .Where(name => name != null && IsPossibleFile(name))
+			              );
 		}
 		
 		/// <summary>
@@ -360,12 +402,7 @@ namespace Hornung.ResourceToolkit.Refactoring
 		/// </summary>
 		public static bool IsPossibleFile(string name)
 		{
-			foreach (IResourceResolver resolver in ResourceResolverService.Resolvers) {
-				if (resolver.SupportsFile(name)) {
-					return true;
-				}
-			}
-			return false;
+			return ResourceResolverService.Resolvers.Any(resolver => resolver.SupportsFile(name));
 		}
 		
 		// ********************************************************************************************************************************
@@ -404,5 +441,19 @@ namespace Hornung.ResourceToolkit.Refactoring
 			code = null;
 			return -1;
 		}
+	}
+	
+	/// <summary>
+	/// Determines a search scope for finding references to resources.
+	/// </summary>
+	public enum SearchScope {
+		/// <summary>Search the whole solution.</summary>
+		WholeSolution,
+		/// <summary>Search the current project.</summary>
+		CurrentProject,
+		/// <summary>Search the current file (in the active view content).</summary>
+		CurrentFile,
+		/// <summary>Search all currently open files (all open view contents).</summary>
+		OpenFiles
 	}
 }

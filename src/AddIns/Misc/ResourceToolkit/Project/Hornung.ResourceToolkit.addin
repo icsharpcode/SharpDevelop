@@ -1,7 +1,6 @@
 ﻿<AddIn name        = "Hornung.ResourceToolkit"
        author      = "Christian Hornung"
-       copyright   = "2006 Christian Hornung"
-       url         = "http://dev.hornung.dynalias.com/index.php?p=restk_home"
+       copyright   = "2006-2008 Christian Hornung"
        description = "Provides tooltips and code completion for resource entries to simplify working with localizable resources using the standard .NET framework classes or ICSharpCode.Core.">
 	
 	<Manifest>
@@ -52,21 +51,39 @@
 	<Path name="/Workspace/Tools">
 		<MenuItem id="ResourceToolkit" label="${res:Hornung.ResourceToolkit.ToolsMenuLabel}" type="Menu">
 			
-			<ComplexCondition action="Disable">
-				<Or>
-					<Condition name="SolutionOpen"/>
-					<Condition name="WindowOpen" openwindow="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider"/>
-				</Or>
+			<MenuItem id="FindMissingResourceKeys" label="${res:Hornung.ResourceToolkit.FindMissingResourceKeys}" type="Menu">
 				
-				<MenuItem id    = "FindMissingResourceKeys"
-				          label = "${res:Hornung.ResourceToolkit.FindMissingResourceKeys}"
-				          class = "Hornung.ResourceToolkit.Commands.FindMissingResourceKeysCommand" />
+				<Condition name="SolutionOpen" action="Disable">
+					<MenuItem id    = "FindMissingResourceKeysWholeSolution"
+					          label = "${res:Dialog.NewProject.SearchReplace.LookIn.WholeSolution}"
+					          class = "Hornung.ResourceToolkit.Commands.FindMissingResourceKeysWholeSolutionCommand" />
+				</Condition>
+ 				
+				<Condition name="ProjectActive" activeproject="*" action="Disable">
+					<MenuItem id    = "FindMissingResourceKeysCurrentProject"
+					          label = "${res:Dialog.NewProject.SearchReplace.LookIn.WholeProject}"
+					          class = "Hornung.ResourceToolkit.Commands.FindMissingResourceKeysCurrentProjectCommand" />
+				</Condition>
 				
+				<Condition name="WindowOpen" openwindow="*" action="Disable">
+					<MenuItem id    = "FindMissingResourceKeysOpenFiles"
+					          label = "${res:Dialog.NewProject.SearchReplace.LookIn.AllOpenDocuments}"
+					          class = "Hornung.ResourceToolkit.Commands.FindMissingResourceKeysOpenFilesCommand" />
+				</Condition>
+				
+				<Condition name="WindowActive" activewindow="*" action="Disable">
+					<MenuItem id    = "FindMissingResourceKeysCurrentFile"
+					          label = "${res:Dialog.NewProject.SearchReplace.LookIn.CurrentDocument}"
+					          class = "Hornung.ResourceToolkit.Commands.FindMissingResourceKeysCurrentFileCommand" />
+				</Condition>
+				
+			</MenuItem>
+			
+			<Condition name="SolutionOpen" action="Disable">
 				<MenuItem id    = "FindUnusedResourceKeys"
 				          label = "${res:Hornung.ResourceToolkit.FindUnusedResourceKeys}"
 				          class = "Hornung.ResourceToolkit.Commands.FindUnusedResourceKeysCommand" />
-				
-			</ComplexCondition>
+			</Condition>
 			
 		</MenuItem>
 	</Path>
