@@ -247,13 +247,32 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				}
 				
 				foreach (AST.Attribute attribute in section.Attributes) {
-					result.Add(new DefaultAttribute(new AttributeReturnType(context, attribute.Name), target) {
+					List<object> positionalArguments = new List<object>();
+					foreach (AST.Expression positionalArgument in attribute.PositionalArguments) {
+						positionalArguments.Add(ConvertAttributeArgument(positionalArgument));
+					}
+					Dictionary<string, object> namedArguments = new Dictionary<string, object>();
+					foreach (AST.NamedArgumentExpression namedArgumentExpression in attribute.NamedArguments) {
+						namedArguments.Add(namedArgumentExpression.Name, ConvertAttributeArgument(namedArgumentExpression.Expression));
+					}
+					result.Add(new DefaultAttribute(new AttributeReturnType(context, attribute.Name),
+					                                target, positionalArguments, namedArguments)
+					           {
 					           	CompilationUnit = cu,
 					           	Region = GetRegion(attribute.StartLocation, attribute.EndLocation)
 					           });
 				}
 			}
 			return result;
+		}
+		
+		static object ConvertAttributeArgument(AST.Expression expression)
+		{
+			AST.PrimitiveExpression pe = expression as AST.PrimitiveExpression;
+			if (pe != null)
+				return pe.Value;
+			else
+				return null;
 		}
 		
 		public override object VisitAttributeSection(ICSharpCode.NRefactory.Ast.AttributeSection attributeSection, object data)

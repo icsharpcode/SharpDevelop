@@ -335,6 +335,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public void ShowPad(PadDescriptor content)
 		{
+			if (content == null)
+				throw new ArgumentNullException("content");
 			PadContentCollection.Add(content);
 			
 			if (layout != null) {
