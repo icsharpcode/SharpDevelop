@@ -654,7 +654,15 @@ namespace ICSharpCode.SharpDevelop.Project
 			foreach (IProject project in projects) {
 				string guid = project.IdGuid.ToUpperInvariant();
 				foreach (SolutionItem configuration in solSec.Items) {
-					string searchKey = guid + "." + configuration.Name + ".ActiveCfg";
+					string searchKey = guid + "." + configuration.Name + ".Build.0";
+					if (!prjSec.Items.Exists(delegate (SolutionItem item) {
+					                         	return item.Name == searchKey;
+					                         }))
+					{
+						prjSec.Items.Add(new SolutionItem(searchKey, configuration.Location));
+						changed = true;
+					}
+					searchKey = guid + "." + configuration.Name + ".ActiveCfg";
 					if (!prjSec.Items.Exists(delegate (SolutionItem item) {
 					                         	return item.Name == searchKey;
 					                         }))
@@ -749,11 +757,11 @@ namespace ICSharpCode.SharpDevelop.Project
 				if (this.SolutionItem == null)
 					return;
 				string oldName = this.SolutionItem.Name;
-				this.SolutionItem.Name = this.Project.IdGuid + "." + newConfiguration + "|" + newPlatform + ".ActiveCfg";
+				this.SolutionItem.Name = this.Project.IdGuid + "." + newConfiguration + "|" + newPlatform + ".Build.0";
 				string newName = this.SolutionItem.Name;
-				if (StripActiveCfg(ref oldName) && StripActiveCfg(ref newName)) {
-					oldName += ".Build.0";
-					newName += ".Build.0";
+				if (StripBuild0(ref oldName) && StripBuild0(ref newName)) {
+					oldName += ".ActiveCfg";
+					newName += ".ActiveCfg";
 					foreach (SolutionItem item in section.Items) {
 						if (item.Name == oldName)
 							item.Name = newName;
@@ -769,8 +777,8 @@ namespace ICSharpCode.SharpDevelop.Project
 					return;
 				this.SolutionItem.Location = newConfiguration + "|" + newPlatform;
 				string thisName = this.SolutionItem.Name;
-				if (StripActiveCfg(ref thisName)) {
-					thisName += ".Build.0";
+				if (StripBuild0(ref thisName)) {
+					thisName += ".ActiveCfg";
 					foreach (SolutionItem item in section.Items) {
 						if (item.Name == thisName)
 							item.Location = this.SolutionItem.Location;
@@ -778,10 +786,10 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 			}
 			
-			internal static bool StripActiveCfg(ref string s)
+			internal static bool StripBuild0(ref string s)
 			{
-				if (s.EndsWith(".ActiveCfg")) {
-					s = s.Substring(0, s.Length - ".ActiveCfg".Length);
+				if (s.EndsWith(".Build.0")) {
+					s = s.Substring(0, s.Length - ".Build.0".Length);
 					return true;
 				} else {
 					return false;
@@ -798,7 +806,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			foreach (SolutionItem item in prjSec.Items) {
 				dict[item.Name] = item;
 			}
-			string searchKeyPostFix = "." + solutionConfiguration + "|" + solutionPlatform + ".ActiveCfg";
+			string searchKeyPostFix = "." + solutionConfiguration + "|" + solutionPlatform + ".Build.0";
 			foreach (IProject p in Projects) {
 				string searchKey = p.IdGuid + searchKeyPostFix;
 				SolutionItem solutionItem;
@@ -820,11 +828,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		internal SolutionItem CreateMatchingItem(string solutionConfiguration, string solutionPlatform, IProject project, string initialLocation)
 		{
-			GetProjectConfigurationsSection().Items.Add(new SolutionItem(project.IdGuid + "." + solutionConfiguration + "|"
-			                                                             + solutionPlatform + ".Build.0", initialLocation));
 			SolutionItem item = new SolutionItem(project.IdGuid + "." + solutionConfiguration + "|"
-			                        + solutionPlatform + ".ActiveCfg", initialLocation);
+			                                     + solutionPlatform + ".Build.0", initialLocation);
 			GetProjectConfigurationsSection().Items.Add(item);
+			GetProjectConfigurationsSection().Items.Add(new SolutionItem(project.IdGuid + "." + solutionConfiguration + "|"
+			                                                             + solutionPlatform + ".ActiveCfg", initialLocation));
 			return item;
 		}
 		#endregion
@@ -989,14 +997,14 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <summary>
 		/// Gets the configuration|platform name from a conf item, e.g.
 		/// "Release|Any CPU" from
-		/// "{7115F3A9-781C-4A95-90AE-B5AB53C4C588}.Release|Any CPU.ActiveCfg"
+		/// "{7115F3A9-781C-4A95-90AE-B5AB53C4C588}.Release|Any CPU.Build.0"
 		/// </summary>
 		static string GetKeyFromProjectConfItem(string name)
 		{
 			int pos = name.IndexOf('.');
 			if (pos < 0) return null;
 			name = name.Substring(pos + 1);
-			if (!ProjectConfigurationPlatformMatching.StripActiveCfg(ref name)) {
+			if (!ProjectConfigurationPlatformMatching.StripBuild0(ref name)) {
 				pos = name.LastIndexOf('.');
 				if (pos < 0) return null;
 				name = name.Substring(0, pos);
