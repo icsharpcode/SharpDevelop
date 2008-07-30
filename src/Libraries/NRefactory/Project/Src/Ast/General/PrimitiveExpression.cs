@@ -11,17 +11,10 @@ namespace ICSharpCode.NRefactory.Ast
 {
 	public class PrimitiveExpression : Expression
 	{
-		object val;
 		string stringValue;
 		
-		public object Value {
-			get {
-				return val;
-			}
-			set {
-				val = value;
-			}
-		}
+		public Parser.LiteralFormat LiteralFormat { get; set; }
+		public object Value { get; set; }
 		
 		public string StringValue {
 			get {

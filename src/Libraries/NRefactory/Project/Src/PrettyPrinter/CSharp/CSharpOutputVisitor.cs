@@ -1780,7 +1780,12 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 			
 			if (val is IFormattable) {
-				outputFormatter.PrintText(((IFormattable)val).ToString(null, NumberFormatInfo.InvariantInfo));
+				if (primitiveExpression.LiteralFormat == LiteralFormat.HexadecimalNumber) {
+					outputFormatter.PrintText("0x");
+					outputFormatter.PrintText(((IFormattable)val).ToString("x", NumberFormatInfo.InvariantInfo));
+				} else {
+					outputFormatter.PrintText(((IFormattable)val).ToString(null, NumberFormatInfo.InvariantInfo));
+				}
 				if (val is uint || val is ulong) {
 					outputFormatter.PrintText("u");
 				}

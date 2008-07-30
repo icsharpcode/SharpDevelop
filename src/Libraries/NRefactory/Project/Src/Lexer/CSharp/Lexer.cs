@@ -287,28 +287,28 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 				if (isfloat) {
 					float num;
 					if (float.TryParse(digit, NumberStyles.Any, CultureInfo.InvariantCulture, out num)) {
-						return new Token(Tokens.Literal, x, y, stringValue, num);
+						return new Token(Tokens.Literal, x, y, stringValue, num, LiteralFormat.DecimalNumber);
 					} else {
 						errors.Error(y, x, String.Format("Can't parse float {0}", digit));
-						return new Token(Tokens.Literal, x, y, stringValue, 0f);
+						return new Token(Tokens.Literal, x, y, stringValue, 0f, LiteralFormat.DecimalNumber);
 					}
 				}
 				if (isdecimal) {
 					decimal num;
 					if (decimal.TryParse(digit, NumberStyles.Any, CultureInfo.InvariantCulture, out num)) {
-						return new Token(Tokens.Literal, x, y, stringValue, num);
+						return new Token(Tokens.Literal, x, y, stringValue, num, LiteralFormat.DecimalNumber);
 					} else {
 						errors.Error(y, x, String.Format("Can't parse decimal {0}", digit));
-						return new Token(Tokens.Literal, x, y, stringValue, 0m);
+						return new Token(Tokens.Literal, x, y, stringValue, 0m, LiteralFormat.DecimalNumber);
 					}
 				}
 				if (isdouble) {
 					double num;
 					if (double.TryParse(digit, NumberStyles.Any, CultureInfo.InvariantCulture, out num)) {
-						return new Token(Tokens.Literal, x, y, stringValue, num);
+						return new Token(Tokens.Literal, x, y, stringValue, num, LiteralFormat.DecimalNumber);
 					} else {
 						errors.Error(y, x, String.Format("Can't parse double {0}", digit));
-						return new Token(Tokens.Literal, x, y, stringValue, 0d);
+						return new Token(Tokens.Literal, x, y, stringValue, 0d, LiteralFormat.DecimalNumber);
 					}
 				}
 				
@@ -317,12 +317,12 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 				if (ishex) {
 					if (!ulong.TryParse(digit, NumberStyles.HexNumber, null, out result)) {
 						errors.Error(y, x, String.Format("Can't parse hexadecimal constant {0}", digit));
-						return new Token(Tokens.Literal, x, y, stringValue.ToString(), 0);
+						return new Token(Tokens.Literal, x, y, stringValue.ToString(), 0, LiteralFormat.HexadecimalNumber);
 					}
 				} else {
 					if (!ulong.TryParse(digit, NumberStyles.Integer, null, out result)) {
 						errors.Error(y, x, String.Format("Can't parse integral constant {0}", digit));
-						return new Token(Tokens.Literal, x, y, stringValue.ToString(), 0);
+						return new Token(Tokens.Literal, x, y, stringValue.ToString(), 0, LiteralFormat.DecimalNumber);
 					}
 				}
 				
@@ -337,40 +337,41 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 				
 				Token token;
 				
+				LiteralFormat literalFormat = ishex ? LiteralFormat.HexadecimalNumber : LiteralFormat.DecimalNumber;
 				if (islong) {
 					if (isunsigned) {
 						ulong num;
 						if (ulong.TryParse(digit, ishex ? NumberStyles.HexNumber : NumberStyles.Number, CultureInfo.InvariantCulture, out num)) {
-							token = new Token(Tokens.Literal, x, y, stringValue, num);
+							token = new Token(Tokens.Literal, x, y, stringValue, num, literalFormat);
 						} else {
 							errors.Error(y, x, String.Format("Can't parse unsigned long {0}", digit));
-							token = new Token(Tokens.Literal, x, y, stringValue, 0UL);
+							token = new Token(Tokens.Literal, x, y, stringValue, 0UL, literalFormat);
 						}
 					} else {
 						long num;
 						if (long.TryParse(digit, ishex ? NumberStyles.HexNumber : NumberStyles.Number, CultureInfo.InvariantCulture, out num)) {
-							token = new Token(Tokens.Literal, x, y, stringValue, num);
+							token = new Token(Tokens.Literal, x, y, stringValue, num, literalFormat);
 						} else {
 							errors.Error(y, x, String.Format("Can't parse long {0}", digit));
-							token = new Token(Tokens.Literal, x, y, stringValue, 0L);
+							token = new Token(Tokens.Literal, x, y, stringValue, 0L, literalFormat);
 						}
 					}
 				} else {
 					if (isunsigned) {
 						uint num;
 						if (uint.TryParse(digit, ishex ? NumberStyles.HexNumber : NumberStyles.Number, CultureInfo.InvariantCulture, out num)) {
-							token = new Token(Tokens.Literal, x, y, stringValue, num);
+							token = new Token(Tokens.Literal, x, y, stringValue, num, literalFormat);
 						} else {
 							errors.Error(y, x, String.Format("Can't parse unsigned int {0}", digit));
-							token = new Token(Tokens.Literal, x, y, stringValue, (uint)0);
+							token = new Token(Tokens.Literal, x, y, stringValue, (uint)0, literalFormat);
 						}
 					} else {
 						int num;
 						if (int.TryParse(digit, ishex ? NumberStyles.HexNumber : NumberStyles.Number, CultureInfo.InvariantCulture, out num)) {
-							token = new Token(Tokens.Literal, x, y, stringValue, num);
+							token = new Token(Tokens.Literal, x, y, stringValue, num, literalFormat);
 						} else {
 							errors.Error(y, x, String.Format("Can't parse int {0}", digit));
-							token = new Token(Tokens.Literal, x, y, stringValue, 0);
+							token = new Token(Tokens.Literal, x, y, stringValue, 0, literalFormat);
 						}
 					}
 				}
@@ -421,7 +422,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 				errors.Error(y, x, String.Format("End of file reached inside string literal"));
 			}
 			
-			return new Token(Tokens.Literal, x, y, originalValue.ToString(), sb.ToString());
+			return new Token(Tokens.Literal, x, y, originalValue.ToString(), sb.ToString(), LiteralFormat.StringLiteral);
 		}
 		
 		Token ReadVerbatimString()
@@ -456,7 +457,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 				errors.Error(y, x, String.Format("End of file reached inside verbatim string literal"));
 			}
 			
-			return new Token(Tokens.Literal, x, y, originalValue.ToString(), sb.ToString());
+			return new Token(Tokens.Literal, x, y, originalValue.ToString(), sb.ToString(), LiteralFormat.VerbatimStringLiteral);
 		}
 		
 		char[] escapeSequenceBuffer = new char[12];
@@ -595,7 +596,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 					errors.Error(y, x, String.Format("Char not terminated"));
 				}
 			}
-			return new Token(Tokens.Literal, x, y, "'" + ch + escapeSequence + "'", chValue);
+			return new Token(Tokens.Literal, x, y, "'" + ch + escapeSequence + "'", chValue, LiteralFormat.CharLiteral);
 		}
 		
 		Token ReadOperator(char ch)

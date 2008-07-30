@@ -4337,7 +4337,7 @@ out Expression pexpr) {
 			lexer.NextToken();
 
 #line  1816 "cs.ATG" 
-			pexpr = new PrimitiveExpression(t.literalValue, t.val);  
+			pexpr = new PrimitiveExpression(t.literalValue, t.val) { LiteralFormat = t.literalFormat };  
 		} else if (
 #line  1817 "cs.ATG" 
 StartOfQueryExpression()) {

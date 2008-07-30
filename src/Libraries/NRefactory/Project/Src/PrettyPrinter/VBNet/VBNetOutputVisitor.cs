@@ -2107,7 +2107,12 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 			
 			if (val is IFormattable) {
-				outputFormatter.PrintText(((IFormattable)val).ToString(null, NumberFormatInfo.InvariantInfo));
+				if (primitiveExpression.LiteralFormat == LiteralFormat.HexadecimalNumber) {
+					outputFormatter.PrintText("&H");
+					outputFormatter.PrintText(((IFormattable)val).ToString("x", NumberFormatInfo.InvariantInfo));
+				} else {
+					outputFormatter.PrintText(((IFormattable)val).ToString(null, NumberFormatInfo.InvariantInfo));
+				}
 			} else {
 				outputFormatter.PrintText(val.ToString());
 			}

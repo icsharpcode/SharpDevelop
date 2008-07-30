@@ -198,12 +198,6 @@ End Using");
 		}
 		
 		[Test]
-		public void Integer()
-		{
-			TestExpression("12");
-		}
-		
-		[Test]
 		public void DictionaryAccess()
 		{
 			TestExpression("c!key");
@@ -415,6 +409,24 @@ End Using");
 		public void ClassConstraint()
 		{
 			TestProgram("Public Class Rational(Of T, O As {IRationalMath(Of T), Class})\nEnd Class");
+		}
+		
+		[Test]
+		public void Integer()
+		{
+			TestExpression("16");
+		}
+		
+		[Test]
+		public void HexadecimalInteger()
+		{
+			TestExpression("&H10");
+		}
+		
+		[Test]
+		public void HexadecimalMinusOne()
+		{
+			TestExpression("&Hffffffff");
 		}
 	}
 }

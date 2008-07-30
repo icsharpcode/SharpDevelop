@@ -3597,49 +3597,49 @@ out Expression pexpr) {
 				lexer.NextToken();
 
 #line  1628 "VBNET.ATG" 
-				pexpr = new PrimitiveExpression(t.literalValue, t.val);  
+				pexpr = new PrimitiveExpression(t.literalValue, t.val) { LiteralFormat = t.literalFormat };  
 				break;
 			}
 			case 4: {
 				lexer.NextToken();
 
 #line  1629 "VBNET.ATG" 
-				pexpr = new PrimitiveExpression(t.literalValue, t.val);  
+				pexpr = new PrimitiveExpression(t.literalValue, t.val) { LiteralFormat = t.literalFormat };  
 				break;
 			}
 			case 7: {
 				lexer.NextToken();
 
 #line  1630 "VBNET.ATG" 
-				pexpr = new PrimitiveExpression(t.literalValue, t.val);  
+				pexpr = new PrimitiveExpression(t.literalValue, t.val) { LiteralFormat = t.literalFormat };  
 				break;
 			}
 			case 6: {
 				lexer.NextToken();
 
 #line  1631 "VBNET.ATG" 
-				pexpr = new PrimitiveExpression(t.literalValue, t.val);  
+				pexpr = new PrimitiveExpression(t.literalValue, t.val) { LiteralFormat = t.literalFormat };  
 				break;
 			}
 			case 5: {
 				lexer.NextToken();
 
 #line  1632 "VBNET.ATG" 
-				pexpr = new PrimitiveExpression(t.literalValue, t.val);  
+				pexpr = new PrimitiveExpression(t.literalValue, t.val) { LiteralFormat = t.literalFormat };  
 				break;
 			}
 			case 9: {
 				lexer.NextToken();
 
 #line  1633 "VBNET.ATG" 
-				pexpr = new PrimitiveExpression(t.literalValue, t.val);  
+				pexpr = new PrimitiveExpression(t.literalValue, t.val) { LiteralFormat = t.literalFormat };  
 				break;
 			}
 			case 8: {
 				lexer.NextToken();
 
 #line  1634 "VBNET.ATG" 
-				pexpr = new PrimitiveExpression(t.literalValue, t.val);  
+				pexpr = new PrimitiveExpression(t.literalValue, t.val) { LiteralFormat = t.literalFormat };  
 				break;
 			}
 			case 174: {

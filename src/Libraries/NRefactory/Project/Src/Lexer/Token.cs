@@ -9,6 +9,18 @@ using System;
 
 namespace ICSharpCode.NRefactory.Parser
 {
+	public enum LiteralFormat : byte
+	{
+		None,
+		DecimalNumber,
+		HexadecimalNumber,
+		OctalNumber,
+		StringLiteral,
+		VerbatimStringLiteral,
+		CharLiteral,
+		DateTimeLiteral
+	}
+	
 	public class Token
 	{
 		public int kind;
@@ -16,6 +28,7 @@ namespace ICSharpCode.NRefactory.Parser
 		public int col;
 		public int line;
 		
+		public LiteralFormat literalFormat;
 		public object literalValue;
 		public string val;
 		public Token  next;
@@ -39,17 +52,22 @@ namespace ICSharpCode.NRefactory.Parser
 		{
 		}
 		
-		public Token(int kind, int col, int line, string val) : this(kind, col, line, val, null)
+		public Token(int kind, int col, int line, string val)
 		{
+			this.kind         = kind;
+			this.col          = col;
+			this.line         = line;
+			this.val          = val;
 		}
 		
-		public Token(int kind, int col, int line, string val, object literalValue)
+		public Token(int kind, int col, int line, string val, object literalValue, LiteralFormat literalFormat)
 		{
 			this.kind         = kind;
 			this.col          = col;
 			this.line         = line;
 			this.val          = val;
 			this.literalValue = literalValue;
+			this.literalFormat = literalFormat;
 		}
 		
 		public override string ToString()

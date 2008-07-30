@@ -239,7 +239,13 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		[Test]
 		public void Integer()
 		{
-			TestExpression("12");
+			TestExpression("16");
+		}
+		
+		[Test]
+		public void HexadecimalInteger()
+		{
+			TestExpression("0x10");
 		}
 		
 		[Test]

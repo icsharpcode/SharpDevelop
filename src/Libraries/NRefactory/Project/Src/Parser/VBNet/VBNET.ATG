@@ -1625,13 +1625,13 @@ SimpleNonInvocationExpression<out Expression pexpr>
 	(
 		(
 			/* 11.4.1 */ 
-			LiteralString							(.pexpr = new PrimitiveExpression(t.literalValue, t.val);  .)
-		|	LiteralCharacter						(.pexpr = new PrimitiveExpression(t.literalValue, t.val);  .)
-		|	LiteralSingle							(.pexpr = new PrimitiveExpression(t.literalValue, t.val);  .)
-		|	LiteralDouble							(.pexpr = new PrimitiveExpression(t.literalValue, t.val);  .)
-		|	LiteralInteger						(.pexpr = new PrimitiveExpression(t.literalValue, t.val);  .)
-		|	LiteralDate							(.pexpr = new PrimitiveExpression(t.literalValue, t.val);  .)
-		|	LiteralDecimal						(.pexpr = new PrimitiveExpression(t.literalValue, t.val);  .)
+			LiteralString							(.pexpr = new PrimitiveExpression(t.literalValue, t.val) { LiteralFormat = t.literalFormat };  .)
+		|	LiteralCharacter						(.pexpr = new PrimitiveExpression(t.literalValue, t.val) { LiteralFormat = t.literalFormat };  .)
+		|	LiteralSingle							(.pexpr = new PrimitiveExpression(t.literalValue, t.val) { LiteralFormat = t.literalFormat };  .)
+		|	LiteralDouble							(.pexpr = new PrimitiveExpression(t.literalValue, t.val) { LiteralFormat = t.literalFormat };  .)
+		|	LiteralInteger						(.pexpr = new PrimitiveExpression(t.literalValue, t.val) { LiteralFormat = t.literalFormat };  .)
+		|	LiteralDate							(.pexpr = new PrimitiveExpression(t.literalValue, t.val) { LiteralFormat = t.literalFormat };  .)
+		|	LiteralDecimal						(.pexpr = new PrimitiveExpression(t.literalValue, t.val) { LiteralFormat = t.literalFormat };  .)
 			/* True, False and Nothing are handled as literals in the spec */
 		|	"True"											(.pexpr = new PrimitiveExpression(true, "true");  .)
 		|	"False"											(.pexpr = new PrimitiveExpression(false, "false"); .)

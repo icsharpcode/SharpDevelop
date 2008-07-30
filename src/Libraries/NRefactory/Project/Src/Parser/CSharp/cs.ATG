@@ -1813,7 +1813,7 @@ PrimaryExpr<out Expression pexpr>
 		"true"                              (.pexpr = new PrimitiveExpression(true, "true");  .)
 	|	"false"                           (.pexpr = new PrimitiveExpression(false, "false"); .)
 	|	"null"                            (.pexpr = new PrimitiveExpression(null, "null");  .)          /* from literal token */
-	|	Literal                           (.pexpr = new PrimitiveExpression(t.literalValue, t.val);  .)
+	|	Literal                           (.pexpr = new PrimitiveExpression(t.literalValue, t.val) { LiteralFormat = t.literalFormat };  .)
 	| IF (StartOfQueryExpression())
 		QueryExpression<out pexpr>
 	| IF (IdentAndDoubleColon())
