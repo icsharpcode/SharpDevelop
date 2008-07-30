@@ -49,10 +49,26 @@
         <Name value="CreatedObject27" />
         <Location value="8, 128" />
         <Text value="${res:Dialog.Options.IDEOptions.ProjectAndSolutionOptions.BuildAndRunGroupBox}" />
-        <Size value="336, 105" />
+        <Size value="336, 145" />
         <Anchor value="Top, Bottom, Left, Right" />
         <TabIndex value="1" />
         <Controls>
+          <System.Windows.Forms.ComboBox>
+            <Name value="onExecuteComboBox" />
+            <TabIndex value="15" />
+            <Location value="115, 92" />
+            <Anchor value="Top, Left, Right" />
+            <Size value="211, 21" />
+            <FormattingEnabled value="True" />
+            <DropDownStyle value="DropDownList" />
+          </System.Windows.Forms.ComboBox>
+          <System.Windows.Forms.Label>
+            <Name value="label2" />
+            <Location value="9, 95" />
+            <Text value="When running:" />
+            <Size value="100, 23" />
+            <TabIndex value="14" />
+          </System.Windows.Forms.Label>
           <System.Windows.Forms.NumericUpDown>
             <Name value="parallelBuildNumericUpDown" />
             <Value value="1" />

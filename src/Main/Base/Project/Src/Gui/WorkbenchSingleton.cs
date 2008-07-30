@@ -99,6 +99,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			ParserService.InitializeParserService();
 			Bookmarks.BookmarkManager.Initialize();
 			Project.CustomToolsService.Initialize();
+			Project.BuildModifiedProjectsOnlyService.Initialize();
 			
 			MessageService.MainForm = workbench.MainForm;
 			

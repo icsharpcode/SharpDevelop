@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.ComponentModel;
 using System.IO;
 using System.Windows.Forms;
 
@@ -29,6 +30,20 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			((NumericUpDown)ControlDictionary["parallelBuildNumericUpDown"]).Value = Project.BuildOptions.DefaultParallelProjectCount;
 			
 			((Button)ControlDictionary["selectProjectLocationButton"]).Click += new EventHandler(SelectProjectLocationButtonClicked);
+			
+			ComboBox onExecuteComboBox = Get<ComboBox>("onExecute");
+			Type type = typeof(Project.BuildOnExecuteSetting);
+			foreach (Project.BuildOnExecuteSetting element in Enum.GetValues(type)) {
+				object[] attr = type.GetField(Enum.GetName(type, element)).GetCustomAttributes(typeof(DescriptionAttribute), false);
+				string description;
+				if (attr.Length > 0) {
+					description = StringParser.Parse((attr[0] as DescriptionAttribute).Description);
+				} else {
+					description = Enum.GetName(type, element);
+				}
+				onExecuteComboBox.Items.Add(description);
+			}
+			onExecuteComboBox.SelectedIndex = (int)Project.BuildModifiedProjectsOnlyService.Setting;
 		}
 		
 		public override bool StorePanelContents()
@@ -47,6 +62,8 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			PropertyService.Set("SharpDevelop.LoadPrevProjectOnStartup", ((CheckBox)ControlDictionary["loadPrevProjectCheckBox"]).Checked);
 			Project.BuildOptions.ShowErrorListAfterBuild = ((CheckBox)ControlDictionary["showErrorListCheckBox"]).Checked;
 			Project.BuildOptions.DefaultParallelProjectCount = (int)((NumericUpDown)ControlDictionary["parallelBuildNumericUpDown"]).Value;
+			
+			Project.BuildModifiedProjectsOnlyService.Setting = (Project.BuildOnExecuteSetting)Get<ComboBox>("onExecute").SelectedIndex;
 			
 			return true;
 		}

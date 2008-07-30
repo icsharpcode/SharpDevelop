@@ -21,7 +21,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		
 		public override void Run()
 		{
-			Build build = new Build();
+			Build build = new BuildBeforeExecute();
 			build.BuildComplete += delegate {
 				if (build.LastBuildResults.ErrorCount == 0) {
 					IProject startupProject = ProjectService.OpenSolution.StartupProject;

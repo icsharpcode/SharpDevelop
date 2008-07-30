@@ -546,17 +546,19 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public static void RaiseEventStartBuild()
 		{
+			WorkbenchSingleton.AssertMainThread();
 			building = true;
 			if (StartBuild != null) {
 				StartBuild(null, EventArgs.Empty);
 			}
 		}
 		
-		public static void RaiseEventEndBuild()
+		public static void RaiseEventEndBuild(BuildEventArgs e)
 		{
+			WorkbenchSingleton.AssertMainThread();
 			building = false;
 			if (EndBuild != null) {
-				EndBuild(null, EventArgs.Empty);
+				EndBuild(null, e);
 			}
 		}
 		
@@ -623,7 +625,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public static event SolutionFolderEventHandler SolutionFolderRemoved;
 		
 		public static event EventHandler StartBuild;
-		public static event EventHandler EndBuild;
+		public static event EventHandler<BuildEventArgs> EndBuild;
 		
 		public static event ProjectConfigurationEventHandler ProjectConfigurationChanged;
 		public static event SolutionConfigurationEventHandler SolutionConfigurationChanged;
@@ -647,6 +649,16 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public static event EventHandler<ProjectItemEventArgs> ProjectItemAdded;
 		public static event EventHandler<ProjectItemEventArgs> ProjectItemRemoved;
+	}
+	
+	public class BuildEventArgs : EventArgs
+	{
+		public readonly BuildResults Results;
+		
+		public BuildEventArgs(BuildResults results)
+		{
+			this.Results = results;
+		}
 	}
 }
 

@@ -420,7 +420,7 @@ namespace ICSharpCode.UnitTesting
 		/// </summary>
 		public override void AfterBuild()
 		{
-			ProjectService.RaiseEventEndBuild();
+			ProjectService.RaiseEventEndBuild(new BuildEventArgs(LastBuildResults));
 		}
 	}
 		

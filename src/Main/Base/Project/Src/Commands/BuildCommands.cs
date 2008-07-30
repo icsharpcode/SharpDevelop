@@ -56,6 +56,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		
 		public BuildResults LastBuildResults {
 			get { return lastBuildResults; }
+			protected set { lastBuildResults = value; }
 		}
 		
 		protected void CallbackMethod(BuildResults results)
@@ -63,15 +64,19 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			lastBuildResults = results;
 			ShowResults(results);
 			AfterBuild();
-			if (BuildComplete != null)
-				BuildComplete(this, EventArgs.Empty);
+			OnBuildComplete(EventArgs.Empty);
 		}
 		
 		public abstract void StartBuild();
 		
 		public event EventHandler BuildComplete;
 		
-		
+		protected virtual void OnBuildComplete(EventArgs e)
+		{
+			if (BuildComplete != null) {
+				BuildComplete(this, e);
+			}
+		}
 		
 		public static void ShowResults(BuildResults results)
 		{
@@ -116,8 +121,27 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		
 		public override void AfterBuild()
 		{
-			ProjectService.RaiseEventEndBuild();
+			ProjectService.RaiseEventEndBuild(new BuildEventArgs(LastBuildResults));
 			base.AfterBuild();
+		}
+	}
+	
+	public class BuildBeforeExecute : Build
+	{
+		public override void Run()
+		{
+			if (BuildModifiedProjectsOnlyService.Setting == BuildOnExecuteSetting.DoNotBuild) {
+				LastBuildResults = new BuildResults { Result = BuildResultCode.Success };
+				OnBuildComplete(EventArgs.Empty);
+			} else {
+				base.Run();
+			}
+		}
+		
+		public override void StartBuild()
+		{
+			BuildEngine.BuildInGui(BuildModifiedProjectsOnlyService.WrapBuildable(ProjectService.OpenSolution),
+			                       new BuildOptions(BuildTarget.Build, CallbackMethod));
 		}
 	}
 	
@@ -175,7 +199,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		
 		public override void AfterBuild()
 		{
-			ProjectService.RaiseEventEndBuild();
+			ProjectService.RaiseEventEndBuild(new BuildEventArgs(LastBuildResults));
 			base.AfterBuild();
 		}
 	}

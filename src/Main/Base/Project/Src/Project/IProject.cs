@@ -82,6 +82,19 @@ namespace ICSharpCode.SharpDevelop.Project
 			get;
 			set;
 		}
+		
+		/// <summary>
+		/// Gets/Sets the name of the project.
+		/// </summary>
+		/// <remarks>
+		/// Name already exists in ISolutionFolder, it's repeated here to prevent
+		/// the ambiguity with IBuildable.Name.
+		/// </remarks>
+		new string Name {
+			get;
+			set;
+		}
+		
 		/// <summary>
 		/// Gets the directory of the project file.
 		/// This is equivalent to Path.GetDirectoryName(project.FileName);
@@ -220,8 +233,9 @@ namespace ICSharpCode.SharpDevelop.Project
 	
 	/// <summary>
 	/// A project or solution.
+	/// The IBuildable interface members are thread-safe.
 	/// </summary>
-	public interface IBuildable : ISolutionFolder
+	public interface IBuildable
 	{
 		/// <summary>
 		/// Gets the list of projects on which this project depends.
@@ -233,6 +247,16 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// This member must be implemented thread-safe.
 		/// </summary>
 		void StartBuild(ProjectBuildOptions buildOptions, IBuildFeedbackSink feedbackSink);
+		
+		/// <summary>
+		/// Gets the name of the buildable item.
+		/// </summary>
+		string Name { get; }
+		
+		/// <summary>
+		/// Gets the parent solution.
+		/// </summary>
+		Solution ParentSolution { get; }
 	}
 	
 	/// <summary>

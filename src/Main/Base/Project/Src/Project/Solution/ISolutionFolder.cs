@@ -33,13 +33,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			set;
 		}
 		
-		/// <summary>
-		/// Gets the solution the solution folder/project belongs to. This member is thread-safe.
-		/// </summary>
-		Solution ParentSolution {
-			get;
-		}
-		
 		string TypeGuid {
 			get;
 			set;
