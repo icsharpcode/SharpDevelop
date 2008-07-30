@@ -50,7 +50,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 				InitializeTemplates();
 				InitializeView();
 				
-				((TreeView)ControlDictionary["categoryTreeView"]).Select();
+				if (allowUntitledFiles)
+					categoryTreeView.Select();
+				else
+					ControlDictionary["fileNameTextBox"].Select();
 			} catch (Exception e) {
 				MessageService.ShowError(e);
 			}
@@ -92,11 +95,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 				}
 			}
 			
-			((ListView)ControlDictionary["templateListView"]).LargeImageList = imglist;
-			((ListView)ControlDictionary["templateListView"]).SmallImageList = smalllist;
+			templateListView.LargeImageList = imglist;
+			templateListView.SmallImageList = smalllist;
 			
 			InsertCategories(null, categories);
-			TreeView categoryTreeView = ((TreeView)ControlDictionary["categoryTreeView"]);
+			
 			categoryTreeView.TreeViewNodeSorter = new TemplateCategoryComparer();
 			categoryTreeView.Sort();
 			
@@ -104,11 +107,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 			categoryTreeView.SelectedNode = TreeViewHelper.GetNodeByPath(categoryTreeView, PropertyService.Get("Dialogs.NewFileDialog.LastSelectedCategory", "C#"));
 		}
 		
+		ListView templateListView;
+		TreeView categoryTreeView;
+		
 		void InsertCategories(TreeNode node, ArrayList catarray)
 		{
 			foreach (Category cat in catarray) {
 				if (node == null) {
-					((TreeView)ControlDictionary["categoryTreeView"]).Nodes.Add(cat);
+					categoryTreeView.Nodes.Add(cat);
 				} else {
 					node.Nodes.Add(cat);
 				}
@@ -174,12 +180,18 @@ namespace ICSharpCode.SharpDevelop.Gui
 		// tree view event handlers
 		void CategoryChange(object sender, TreeViewEventArgs e)
 		{
-			((ListView)ControlDictionary["templateListView"]).Items.Clear();
+			templateListView.Items.Clear();
 			HidePropertyGrid();
-			if (((TreeView)ControlDictionary["categoryTreeView"]).SelectedNode != null) {
-				foreach (TemplateItem item in ((Category)((TreeView)ControlDictionary["categoryTreeView"]).SelectedNode).Templates) {
-					((ListView)ControlDictionary["templateListView"]).Items.Add(item);
+			if (categoryTreeView.SelectedNode != null) {
+				foreach (TemplateItem item in ((Category)categoryTreeView.SelectedNode).Templates) {
+					templateListView.Items.Add(item);
 				}
+			}
+			
+			string activeTemplate = PropertyService.Get("Dialogs.NewFileDialog.LastSelectedTemplate", "");
+			foreach (TemplateItem item in templateListView.Items) {
+				if (item.Template.Name == activeTemplate)
+					item.Selected = true;
 			}
 		}
 		
@@ -279,8 +291,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		FileTemplate SelectedTemplate {
 			get {
-				if (((ListView)ControlDictionary["templateListView"]).SelectedItems.Count == 1) {
-					return ((TemplateItem)((ListView)ControlDictionary["templateListView"]).SelectedItems[0]).Template;
+				if (templateListView.SelectedItems.Count == 1) {
+					return ((TemplateItem)templateListView.SelectedItems[0]).Template;
 				}
 				return null;
 			}
@@ -321,7 +333,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		// list view event handlers
 		void SelectedIndexChange(object sender, EventArgs e)
 		{
-			if (((ListView)ControlDictionary["templateListView"]).SelectedItems.Count == 1) {
+			if (templateListView.SelectedItems.Count == 1) {
 				ControlDictionary["descriptionLabel"].Text = StringParser.Parse(SelectedTemplate.Description);
 				ControlDictionary["openButton"].Enabled = true;
 				if (SelectedTemplate.HasProperties) {
@@ -347,7 +359,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void CheckedChange(object sender, EventArgs e)
 		{
-			((ListView)ControlDictionary["templateListView"]).View = ((RadioButton)ControlDictionary["smallIconsRadioButton"]).Checked ? View.List : View.LargeIcon;
+			templateListView.View = ((RadioButton)ControlDictionary["smallIconsRadioButton"]).Checked ? View.List : View.LargeIcon;
 		}
 		
 		public bool IsFilenameAvailable(string fileName)
@@ -428,19 +440,21 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void OpenEvent(object sender, EventArgs e)
 		{
-			TreeView categoryTreeView = ((TreeView)ControlDictionary["categoryTreeView"]);
 			if (categoryTreeView.SelectedNode != null) {
 				PropertyService.Set("Dialogs.NewProjectDialog.LargeImages", ((RadioButton)ControlDictionary["largeIconsRadioButton"]).Checked);
 				PropertyService.Set("Dialogs.NewFileDialog.CategoryViewState", TreeViewHelper.GetViewStateString(categoryTreeView));
 				PropertyService.Set("Dialogs.NewFileDialog.LastSelectedCategory", TreeViewHelper.GetPath(categoryTreeView.SelectedNode));
 			}
 			createdFiles.Clear();
-			if (((ListView)ControlDictionary["templateListView"]).SelectedItems.Count == 1) {
+			if (templateListView.SelectedItems.Count == 1) {
 				if (!AllPropertiesHaveAValue) {
 					MessageService.ShowMessage("${res:Dialog.NewFile.FillOutFirstMessage}", "${res:Dialog.NewFile.FillOutFirstCaption}");
 					return;
 				}
-				TemplateItem item = (TemplateItem)((ListView)ControlDictionary["templateListView"]).SelectedItems[0];
+				TemplateItem item = (TemplateItem)templateListView.SelectedItems[0];
+				
+				PropertyService.Set("Dialogs.NewFileDialog.LastSelectedTemplate", item.Template.Name);
+				
 				string fileName;
 				StringParser.Properties["StandardNamespace"] = "DefaultNamespace";
 				if (allowUntitledFiles) {
@@ -599,15 +613,19 @@ namespace ICSharpCode.SharpDevelop.Gui
 			imglist.ColorDepth = ColorDepth.Depth32Bit;
 			imglist.Images.Add(IconService.GetBitmap("Icons.16x16.OpenFolderBitmap"));
 			imglist.Images.Add(IconService.GetBitmap("Icons.16x16.ClosedFolderBitmap"));
-			((TreeView)ControlDictionary["categoryTreeView"]).ImageList = imglist;
 			
-			((TreeView)ControlDictionary["categoryTreeView"]).AfterSelect    += new TreeViewEventHandler(CategoryChange);
-			((TreeView)ControlDictionary["categoryTreeView"]).BeforeSelect   += new TreeViewCancelEventHandler(OnBeforeExpand);
-			((TreeView)ControlDictionary["categoryTreeView"]).BeforeExpand   += new TreeViewCancelEventHandler(OnBeforeExpand);
-			((TreeView)ControlDictionary["categoryTreeView"]).BeforeCollapse += new TreeViewCancelEventHandler(OnBeforeCollapse);
+			templateListView = ((ListView)ControlDictionary["templateListView"]);
+			categoryTreeView = ((TreeView)ControlDictionary["categoryTreeView"]);
 			
-			((ListView)ControlDictionary["templateListView"]).SelectedIndexChanged += new EventHandler(SelectedIndexChange);
-			((ListView)ControlDictionary["templateListView"]).DoubleClick          += new EventHandler(OpenEvent);
+			categoryTreeView.ImageList = imglist;
+			
+			categoryTreeView.AfterSelect    += new TreeViewEventHandler(CategoryChange);
+			categoryTreeView.BeforeSelect   += new TreeViewCancelEventHandler(OnBeforeExpand);
+			categoryTreeView.BeforeExpand   += new TreeViewCancelEventHandler(OnBeforeExpand);
+			categoryTreeView.BeforeCollapse += new TreeViewCancelEventHandler(OnBeforeCollapse);
+			
+			templateListView.SelectedIndexChanged += new EventHandler(SelectedIndexChange);
+			templateListView.DoubleClick          += new EventHandler(OpenEvent);
 			
 			ControlDictionary["openButton"].Click += new EventHandler(OpenEvent);
 			
