@@ -136,6 +136,11 @@ namespace ICSharpCode.UnitTesting
 			if (project != null) {
 				treeView.RemoveProject(project);
 			}
+			
+			if (solutionFolder is ISolutionFolderContainer) {
+				// recurse into child folders that were also removed
+				((ISolutionFolderContainer)solutionFolder).Folders.ForEach(SolutionFolderRemoved);
+			}
 		}
 		
 		/// <summary>

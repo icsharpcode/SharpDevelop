@@ -571,8 +571,21 @@ namespace ICSharpCode.SharpDevelop.Project
 				if (folder.IdGuid == guid) {
 					folder.Parent.RemoveFolder(folder);
 					OnSolutionFolderRemoved(new SolutionFolderEventArgs(folder));
+					HandleRemovedSolutionFolder(folder);
 					break;
 				}
+			}
+		}
+		
+		static void HandleRemovedSolutionFolder(ISolutionFolder folder)
+		{
+			if (folder is IProject) {
+				OpenSolution.RemoveProjectConfigurations(folder.IdGuid);
+				ParserService.RemoveProjectContentForRemovedProject((IProject)folder);
+			}
+			if (folder is ISolutionFolderContainer) {
+				// recurse into child folders that were also removed
+				((ISolutionFolderContainer)folder).Folders.ForEach(HandleRemovedSolutionFolder);
 			}
 		}
 		

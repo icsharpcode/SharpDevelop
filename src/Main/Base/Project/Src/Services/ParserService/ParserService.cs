@@ -320,6 +320,13 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
+		internal static void RemoveProjectContentForRemovedProject(IProject project)
+		{
+			lock (projectContents) {
+				projectContents.Remove(project);
+			}
+		}
+		
 		public static IProjectContent GetProjectContent(IProject project)
 		{
 			lock (projectContents) {

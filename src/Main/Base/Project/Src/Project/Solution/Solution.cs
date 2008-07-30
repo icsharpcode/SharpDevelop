@@ -672,9 +672,40 @@ namespace ICSharpCode.SharpDevelop.Project
 					}
 				}
 			}
+			
+			// remove all configuration entries belonging to removed projects
+			prjSec.Items.RemoveAll(
+				item => {
+					if (item.Name.Contains(".")) {
+						string guid = item.Name.Substring(0, item.Name.IndexOf('.'));
+						if (!this.Projects.Any(p => string.Equals(p.IdGuid, guid, StringComparison.OrdinalIgnoreCase))) {
+							changed = true;
+							return true;
+						}
+					}
+					return false;
+				});
 			return changed;
 		}
 		#endregion
+		
+		/// <summary>
+		/// Removes all configurations belonging to the specified project.
+		/// Is used to remove a project from the solution.
+		/// </summary>
+		internal void RemoveProjectConfigurations(string projectGuid)
+		{
+			ProjectSection prjSec = GetProjectConfigurationsSection();
+			prjSec.Items.RemoveAll(
+				item => {
+					if (item.Name.Contains(".")) {
+						string guid = item.Name.Substring(0, item.Name.IndexOf('.'));
+						if (string.Equals(projectGuid, guid, StringComparison.OrdinalIgnoreCase))
+							return true; // remove configuration
+					}
+					return false;
+				});
+		}
 		
 		#region GetProjectConfigurationsSection/GetPlatformNames
 		public IList<string> GetConfigurationNames()
