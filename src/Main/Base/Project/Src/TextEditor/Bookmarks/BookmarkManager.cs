@@ -41,8 +41,22 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		public static void AddMark(SDBookmark bookmark)
 		{
 			if (bookmarks.Contains(bookmark)) return;
+			if (bookmarks.Exists(b => IsEqualBookmark(b, bookmark))) return;
 			bookmarks.Add(bookmark);
 			OnAdded(new BookmarkEventArgs(bookmark));
+		}
+		
+		static bool IsEqualBookmark(SDBookmark a, SDBookmark b)
+		{
+			if (a == b)
+				return true;
+			if (a == null || b == null)
+				return false;
+			if (a.GetType() != b.GetType())
+				return false;
+			if (!FileUtility.IsEqualFileName(a.FileName, b.FileName))
+				return false;
+			return a.LineNumber == b.LineNumber;
 		}
 		
 		public static void RemoveMark(SDBookmark bookmark)
