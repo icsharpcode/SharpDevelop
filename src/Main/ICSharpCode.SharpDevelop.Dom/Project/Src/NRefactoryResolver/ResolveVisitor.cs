@@ -409,7 +409,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					}
 				}
 				return resolver.CreateMemberOrMethodGroupResolveResult(
-					null, mre.MemberName, new IList<IMember>[] { possibleMembers }, false);
+					null, mre.MemberName, new IList<IMember>[] { possibleMembers }, false, null);
 			}
 			return null;
 		}

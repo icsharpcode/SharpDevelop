@@ -616,7 +616,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 						resultMembers.Add(member);
 					}
 				}
-				return CreateMemberOrMethodGroupResolveResult(null, identifier, new IList<IMember>[] { resultMembers }, false);
+				return CreateMemberOrMethodGroupResolveResult(null, identifier, new IList<IMember>[] { resultMembers }, false, null);
 			}
 			
 			return null;
@@ -635,27 +635,14 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		                                     bool allowExtensionMethods, bool? isClassInInheritanceTree)
 		{
 			List<IList<IMember>> members = MemberLookupHelper.LookupMember(declaringType, memberName, callingClass, languageProperties, isInvocation, isClassInInheritanceTree);
+			List<IReturnType> typeArgs = null;
 			if (members != null && typeArguments != null && typeArguments.Count != 0) {
-				List<IReturnType> typeArgs = typeArguments.ConvertAll(r => TypeVisitor.CreateReturnType(r, this));
+				typeArgs = typeArguments.ConvertAll(r => TypeVisitor.CreateReturnType(r, this));
 				
 				// For all member-groups:
 				// Remove all non-methods and methods with incorrect type argument count, then
 				// apply the type arguments to the remaining methods.
-				members = members.Select
-					(
-						(IList<IMember> memberGroup) => (IList<IMember>)
-						memberGroup.OfType<IMethod>()
-						.Where((IMethod m) => m.TypeParameters.Count == typeArgs.Count)
-						.Select((IMethod originalMethod) => {
-						        	IMethod m = (IMethod)originalMethod.CreateSpecializedMember();
-						        	m.ReturnType = ConstructedReturnType.TranslateType(m.ReturnType, typeArgs, true);
-						        	for (int j = 0; j < m.Parameters.Count; ++j) {
-						        		m.Parameters[j].ReturnType = ConstructedReturnType.TranslateType(m.Parameters[j].ReturnType, typeArgs, true);
-						        	}
-						        	return (IMember)m;
-						        })
-						.ToList()
-					)
+				members = members.Select(memberGroup => ApplyTypeArgumentsToMethods(memberGroup, typeArgs))
 					.Where(memberGroup => memberGroup.Count > 0) // keep only non-empty groups
 					.ToList();
 			}
@@ -663,10 +650,48 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				// use the correct casing of the member name
 				memberName = members[0][0].Name;
 			}
-			return CreateMemberOrMethodGroupResolveResult(declaringType, memberName, members, allowExtensionMethods);
+			return CreateMemberOrMethodGroupResolveResult(declaringType, memberName, members, allowExtensionMethods, typeArgs);
 		}
 		
-		internal ResolveResult CreateMemberOrMethodGroupResolveResult(IReturnType declaringType, string memberName, IList<IList<IMember>> members, bool allowExtensionMethods)
+		static IList<IMember> ApplyTypeArgumentsToMethods(IList<IMember> memberGroup, IList<IReturnType> typeArgs)
+		{
+			if (typeArgs == null || typeArgs.Count == 0)
+				return memberGroup;
+			else
+				return ApplyTypeArgumentsToMethods(memberGroup.OfType<IMethod>(), typeArgs).Select(m=>(IMember)m).ToList();
+		}
+		
+		static IEnumerable<IMethod> ApplyTypeArgumentsToMethods(IEnumerable<IMethod> methodGroup, IList<IReturnType> typeArgs)
+		{
+			if (typeArgs == null || typeArgs.Count == 0)
+				return methodGroup;
+			// we have type arguments, so:
+			// - remove all non-methods
+			// - remove all methods with incorrect type parameter count
+			// - apply type arguments to remaining methods
+			return methodGroup
+				.Where((IMethod m) => m.TypeParameters.Count == typeArgs.Count)
+				.Select((IMethod originalMethod) => {
+				        	IMethod m = (IMethod)originalMethod.CreateSpecializedMember();
+				        	m.ReturnType = ConstructedReturnType.TranslateType(m.ReturnType, typeArgs, true);
+				        	for (int j = 0; j < m.Parameters.Count; ++j) {
+				        		m.Parameters[j].ReturnType = ConstructedReturnType.TranslateType(m.Parameters[j].ReturnType, typeArgs, true);
+				        	}
+				        	return m;
+				        });
+		}
+		
+		/// <summary>
+		/// Creates a MemberResolveResult or MethodGroupResolveResult.
+		/// </summary>
+		/// <param name="declaringType">The type on which to search the member.</param>
+		/// <param name="memberName">The name of the member.</param>
+		/// <param name="members">The list of members to put into the MethodGroupResolveResult</param>
+		/// <param name="allowExtensionMethods">Whether to add extension methods to the resolve result</param>
+		/// <param name="typeArgs">Type arguments to apply to the extension methods</param>
+		internal ResolveResult CreateMemberOrMethodGroupResolveResult(
+			IReturnType declaringType, string memberName, IList<IList<IMember>> members,
+			bool allowExtensionMethods, IList<IReturnType> typeArgs)
 		{
 			List<MethodGroup> methods = new List<MethodGroup>();
 			if (members != null) {
@@ -691,8 +716,11 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					                                    declaringType ?? methods[0][0].DeclaringTypeReference,
 					                                    memberName, methods);
 			} else {
-				methods.Add(new MethodGroup(new LazyList<IMethod>(() => SearchExtensionMethods(memberName)))
-				            { IsExtensionMethodGroup = true });
+				methods.Add(
+					new MethodGroup(
+						new LazyList<IMethod>(() => ApplyTypeArgumentsToMethods(SearchExtensionMethods(memberName), typeArgs).ToList())
+					)
+					{ IsExtensionMethodGroup = true });
 				return new MethodGroupResolveResult(callingClass, callingMember,
 				                                    declaringType,
 				                                    memberName, methods);

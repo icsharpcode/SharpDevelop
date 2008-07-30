@@ -456,6 +456,25 @@ class D : Program  {
 			mrr = Resolve<MemberResolveResult>(program, "TestClass<ValueT>.Equals(v, default(object))", 3);
 			Assert.AreEqual("System.Object.Equals", mrr.ResolvedMember.FullyQualifiedName);
 		}
+		
+		[Test]
+		public void OfTypeExtensionMethod()
+		{
+			string program = @"using System.Collections; using System.Collections.Generic;
+	class T {
+		static void Test(IEnumerable a) {
+			
+		}
+	}
+	static class ExtensionMethods {
+		public static IEnumerable<T> OfType<T>(this IEnumerable input) { }
+	}";
+			
+			MemberResolveResult mrr;
+			mrr = Resolve<MemberResolveResult>(program, "a.OfType<string>()", 4);
+			Assert.AreEqual("ExtensionMethods.OfType", mrr.ResolvedMember.FullyQualifiedName);
+			Assert.AreEqual("System.Collections.Generic.IEnumerable{System.String}", mrr.ResolvedType.DotNetName);
+		}
 		#endregion
 		
 		#region C# 3.0 Type Inference
