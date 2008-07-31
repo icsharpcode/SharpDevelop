@@ -1,0 +1,32 @@
+﻿<Button x:Class="ICSharpCode.XamlDesigner.BitmapButton"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Focusable="False">
+    <Button.Template>
+        <ControlTemplate TargetType="Button">
+            <Image x:Name="image1"
+                   Stretch="None"
+                   Source="{Binding ImageNormal}" />
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsMouseOver"
+                         Value="True">
+                    <Setter Property="Source"
+                            Value="{Binding ImageHover}"
+                            TargetName="image1" />
+                </Trigger>
+                <Trigger Property="IsPressed"
+                         Value="True">
+                    <Setter Property="Source"
+                            Value="{Binding ImagePressed}"
+                            TargetName="image1" />
+                </Trigger>
+                <Trigger Property="IsEnabled"
+                         Value="False">
+                    <Setter Property="Source"
+                            Value="{Binding ImageDisabled}"
+                            TargetName="image1" />
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+    </Button.Template>
+</Button>

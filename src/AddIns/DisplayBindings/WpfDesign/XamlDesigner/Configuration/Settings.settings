@@ -1,0 +1,46 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="ICSharpCode.XamlDesigner.Configuration" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="MainWindowRect" Type="System.Windows.Rect" Scope="User">
+      <Value Profile="(Default)">0,0,0,0</Value>
+    </Setting>
+    <Setting Name="AvalonDockLayout" Type="System.String" Scope="User">
+      <Value Profile="(Default)">&lt;DockingManager&gt;
+    &lt;ResizingPanel Orientation="Horizontal"&gt;
+        &lt;ResizingPanel ResizeWidth="200" Orientation="Vertical"&gt;
+            &lt;DockablePane ResizeHeight="441.36166666666668" Anchor="Left"&gt;
+                &lt;DockableContent Name="content1" AutoHide="false" /&gt;
+            &lt;/DockablePane&gt;
+            &lt;DockablePane ResizeWidth="200" Anchor="Left"&gt;
+                &lt;DockableContent Name="content2" AutoHide="false" /&gt;
+            &lt;/DockablePane&gt;
+        &lt;/ResizingPanel&gt;
+        &lt;ResizingPanel Orientation="Vertical"&gt;
+            &lt;DocumentPanePlaceHolder /&gt;
+            &lt;DockablePane ResizeHeight="138" Anchor="Bottom"&gt;
+                &lt;DockableContent Name="content3" AutoHide="false" /&gt;
+            &lt;/DockablePane&gt;
+        &lt;/ResizingPanel&gt;
+        &lt;DockablePane ResizeWidth="271" Anchor="Right"&gt;
+            &lt;DockableContent Name="content4" AutoHide="false" /&gt;
+        &lt;/DockablePane&gt;
+    &lt;/ResizingPanel&gt;
+    &lt;Hidden /&gt;
+    &lt;Windows /&gt;
+&lt;/DockingManager&gt;</Value>
+    </Setting>
+    <Setting Name="RecentFiles" Type="System.Collections.Specialized.StringCollection" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="AssemblyList" Type="System.Collections.Specialized.StringCollection" Scope="User">
+      <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
+&lt;ArrayOfString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
+  &lt;string&gt;%ProgramFiles%\Reference Assemblies\Microsoft\Framework\v3.0\PresentationFramework.dll&lt;/string&gt;
+&lt;/ArrayOfString&gt;</Value>
+    </Setting>
+    <Setting Name="MainWindowState" Type="System.Windows.WindowState" Scope="User">
+      <Value Profile="(Default)">Maximized</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

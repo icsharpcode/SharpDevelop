@@ -10,21 +10,6 @@ using System.Windows;
 
 namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors.BrushEditor
 {
-	public enum BrushEditorKind
-	{
-		None,
-		Solid,
-		Linear,
-		Radial,
-		List
-	}
-
-	public class BrushItem
-	{
-		public string Name { get; set; }
-		public Brush Brush { get; set; }
-	}
-
 	public class BrushEditor : INotifyPropertyChanged
 	{
 		public BrushEditor()
@@ -85,9 +70,6 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors.BrushEditor
 			}
 			set {
 				if (property != null && property.Value != value) {
-					if (value != null && value.IsFrozen) {
-						value = value.Clone();
-					}
 					property.Value = value;
 					DetermineCurrentKind();
 					RaisePropertyChanged("Brush");
@@ -189,7 +171,7 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors.BrushEditor
 
 		public void Commit()
 		{
-		    Property.Value = Property.Value;
+		    Property.Value = Brush.Clone();
 		}
 
 		#region INotifyPropertyChanged Members
@@ -204,5 +186,20 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors.BrushEditor
 		}
 
 		#endregion
+	}
+
+	public enum BrushEditorKind
+	{
+		None,
+		Solid,
+		Linear,
+		Radial,
+		List
+	}
+
+	public class BrushItem
+	{
+		public string Name { get; set; }
+		public Brush Brush { get; set; }
 	}
 }

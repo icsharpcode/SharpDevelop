@@ -40,6 +40,23 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 			set { SetValue(FirstColumnWidthProperty, value); }
 		}
 
+		public static readonly DependencyProperty SelectedItemsProperty =
+			DependencyProperty.Register("SelectedItems", typeof(IEnumerable<DesignItem>), typeof(PropertyGridView));
+
+		public IEnumerable<DesignItem> SelectedItems
+		{
+			get { return (IEnumerable<DesignItem>)GetValue(SelectedItemsProperty); }
+			set { SetValue(SelectedItemsProperty, value); }
+		}
+
+		protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
+		{
+			base.OnPropertyChanged(e);
+			if (e.Property == SelectedItemsProperty) {
+				PropertyGrid.SelectedItems = SelectedItems;
+			}
+		}
+
 		void clearButton_Click(object sender, RoutedEventArgs e)
 		{
 			PropertyGrid.ClearFilter();

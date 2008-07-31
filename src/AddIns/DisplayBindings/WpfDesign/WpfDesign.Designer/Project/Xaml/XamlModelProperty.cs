@@ -16,6 +16,7 @@ using System.Windows;
 
 namespace ICSharpCode.WpfDesign.Designer.Xaml
 {
+	[DebuggerDisplay("XamlModelProperty: {Name}")]
 	sealed class XamlModelProperty : DesignItemProperty, IEquatable<XamlModelProperty>
 	{
 		readonly XamlDesignItem _designItem;
@@ -213,7 +214,7 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			}
 		}
 		
-		sealed class PropertyChangeAction : ITransactionItem
+		public sealed class PropertyChangeAction : ITransactionItem
 		{
 			XamlModelProperty property;
 			
@@ -267,6 +268,18 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 				get {
 					return new DesignItem[] { property._designItem };
 				}
+			}
+
+			public bool MergeWith(PropertyChangeAction other)
+			{
+				if (property._property == other.property._property)
+				{
+					newIsSet = other.newIsSet;
+					newValue = other.newValue;
+					newObject = other.newObject;
+					return true;
+				}
+				return false;
 			}
 		}
 

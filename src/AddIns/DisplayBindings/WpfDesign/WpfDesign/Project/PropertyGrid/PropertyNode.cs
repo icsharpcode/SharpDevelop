@@ -19,7 +19,7 @@ namespace ICSharpCode.WpfDesign.PropertyGrid
 
 		PropertyNode(DesignItemProperty[] properties, PropertyNode parent)
 		{
-			this.properties = properties;
+			this.Properties = properties;
 			this.Parent = parent;
 
 			foreach (var property in properties) {
@@ -40,14 +40,14 @@ namespace ICSharpCode.WpfDesign.PropertyGrid
 
 		static object Unset = new object();
 
-		DesignItemProperty[] properties;
+		public DesignItemProperty[] Properties { get; private set; }
 		bool raiseEvents = true;
 
 		public string Name { get { return FirstProperty.Name; } }
 		public bool IsEvent { get { return FirstProperty.IsEvent; } }
 		public ServiceContainer Services { get { return FirstProperty.DesignItem.Services; } }
 		public FrameworkElement Editor { get; private set; }
-		public DesignItemProperty FirstProperty { get { return properties[0]; } }
+		public DesignItemProperty FirstProperty { get { return Properties[0]; } }
 
 		public PropertyNode Parent { get; private set; }
 		public ObservableCollection<PropertyNode> Children { get; private set; }
@@ -96,7 +96,7 @@ namespace ICSharpCode.WpfDesign.PropertyGrid
 
 		public bool IsSet {
 			get {
-				foreach (var p in properties) {
+				foreach (var p in Properties) {
 					if (p.IsSet) return true;
 				}
 				return false;
@@ -111,7 +111,7 @@ namespace ICSharpCode.WpfDesign.PropertyGrid
 
 		public bool IsAmbiguous {
 			get {
-				foreach (var p in properties) {
+				foreach (var p in Properties) {
 					if (!object.Equals(p.ValueOnInstance, FirstProperty.ValueOnInstance)) {
 						return true;
 					}
@@ -138,12 +138,12 @@ namespace ICSharpCode.WpfDesign.PropertyGrid
 		{
 			raiseEvents = false;
 			if (value == Unset) {
-				foreach (var p in properties) {
+				foreach (var p in Properties) {
 					p.Reset();
 				}
 			}
 			else {
-				foreach (var p in properties) {
+				foreach (var p in Properties) {
 					p.SetValue(value);
 				}
 			}

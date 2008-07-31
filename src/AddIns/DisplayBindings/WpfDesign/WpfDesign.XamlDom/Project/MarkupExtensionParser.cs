@@ -237,6 +237,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			
 			string typeName = markupExtensionTokens[1].Value;
 			Type extensionType = typeResolver.Resolve(typeName + "Extension");
+			if (extensionType == null) extensionType = typeResolver.Resolve(typeName);
 			if (extensionType == null || !typeof(MarkupExtension).IsAssignableFrom(extensionType)) {
 				throw new XamlMarkupExtensionParseException("Unknown markup extension " + typeName + "Extension");
 			}

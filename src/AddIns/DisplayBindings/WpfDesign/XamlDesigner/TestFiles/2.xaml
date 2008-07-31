@@ -1,0 +1,41 @@
+<Window xmlns="http://schemas.microsoft.com/netfx/2007/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Canvas>
+    <Button Content="bla-bla"
+            Width="110"
+            Height="76"
+            Canvas.Left="59"
+            Canvas.Top="158" />
+    <Ellipse Width="146"
+             Height="63"
+             Fill="#FF5DAF05"
+             Canvas.Left="50"
+             Canvas.Top="285" />
+    <Grid Width="279"
+          Height="233"
+          Background="#FFFFFFE1"
+          Canvas.Left="255"
+          Canvas.Top="167">
+      <Panel.Children>
+        <TextBlock Width="59"
+                   Height="39"
+                   Margin="0,10,12,0"
+                   HorizontalAlignment="Right"
+                   VerticalAlignment="Top"
+                   FontSize="33"
+                   Text="Grid"
+                   Grid.Column="0"
+                   Grid.Row="0" />
+      </Panel.Children>
+    </Grid>
+    <StackPanel Width="345"
+                Height="73"
+                Background="#FFEDEDED"
+                Canvas.Left="198"
+                Canvas.Top="51" />
+    <TextBlock FontSize="14"
+               Text="StackPanel"
+               Canvas.Left="323"
+               Canvas.Top="28" />
+  </Canvas>
+</Window>

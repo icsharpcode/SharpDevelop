@@ -104,12 +104,20 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 			var upDrag = new DragListener(upButton);
 			var downDrag = new DragListener(downButton);
 
+			upDrag.Started += drag_Started;
 			upDrag.Changed += drag_Changed;
-			downDrag.Changed += drag_Changed;
 			upDrag.Completed += drag_Completed;
+
+			downDrag.Started += drag_Started;
+			downDrag.Changed += drag_Changed;			
 			downDrag.Completed += drag_Completed;
 
 			Print();
+		}
+
+		void drag_Started(DragListener drag)
+		{
+			OnDragStarted();
 		}
 
 		void drag_Changed(DragListener drag)
@@ -121,6 +129,7 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 		void drag_Completed(DragListener drag)
 		{
 			IsDragging = false;
+			OnDragCompleted();
 		}
 
 		void downButton_Click(object sender, RoutedEventArgs e)
@@ -131,6 +140,14 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 		void upButton_Click(object sender, RoutedEventArgs e)
 		{
 			if (!IsDragging) SmallUp();
+		}
+
+		protected virtual void OnDragStarted()
+		{
+		}
+
+		protected virtual void OnDragCompleted()
+		{
 		}
 
 		public void SmallUp()
@@ -153,37 +170,17 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 			MoveValue(-LargeChange);
 		}
 
-		public void Minimize()
-		{
-			Parse();
-			Value = Minimum;
-		}
-
-		public void Maximize()
-		{
-			Parse();
-			Value = Maximum;
-		}
-
 		void MoveValue(double delta)
 		{
-			Parse();
+			double result;
 			if (double.IsNaN(Value) || double.IsInfinity(Value)) {
 				SetValue(delta);
 			}
+			else if (double.TryParse(textBox.Text, out result)) {
+				SetValue(result + delta);
+			}
 			else {
 				SetValue(Value + delta);
-			}
-		}
-
-		void Parse()
-		{
-			double result;
-			if (double.TryParse(textBox.Text, out result)) {
-				SetValue(result);
-			}
-			else {
-				Print();
 			}
 		}
 
@@ -199,15 +196,28 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 		//update: not derived from RangeBase - no problem
 		void SetValue(double newValue)
 		{
-			Value = (double)Math.Max(Minimum, Math.Min(newValue, Maximum));
-			Print();
+			newValue = CoerceValue(newValue);
+			if (Value != newValue) {
+				Value = newValue;
+			}
+		}
+
+		double CoerceValue(double newValue)
+		{
+			return Math.Max(Minimum, Math.Min(newValue, Maximum));
 		}
 
 		protected override void OnPreviewKeyDown(KeyEventArgs e)
 		{
 			base.OnPreviewKeyDown(e);
 			if (e.Key == Key.Enter) {
-				Parse();
+				double result;
+				if (double.TryParse(textBox.Text, out result)) {
+					SetValue(result);
+				}
+				else {
+					Print();
+				}
 				textBox.SelectAll();
 				e.Handled = true;
 			}
@@ -269,7 +279,8 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 			base.OnPropertyChanged(e);
 
 			if (e.Property == ValueProperty) {
-				SetValue((double)e.NewValue);
+				Value = CoerceValue((double)e.NewValue);
+				Print();
 			}
 			else if (e.Property == SmallChangeProperty &&
 				ReadLocalValue(LargeChangeProperty) == DependencyProperty.UnsetValue) {

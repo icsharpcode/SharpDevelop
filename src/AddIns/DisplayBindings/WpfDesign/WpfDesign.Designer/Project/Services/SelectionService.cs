@@ -8,6 +8,8 @@
 using System;
 using System.Collections.Generic;
 using System.Windows.Input;
+using System.ComponentModel;
+using System.Linq;
 
 namespace ICSharpCode.WpfDesign.Designer.Services
 {
@@ -15,7 +17,7 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 	/// Manages the collection of selected components and the primary selection.
 	/// Notifies components with attached DesignSite when their selection state changes.
 	/// </summary>
-	sealed class DefaultSelectionService : ISelectionService
+	sealed class DefaultSelectionService : ISelectionService, INotifyPropertyChanged
 	{
 		HashSet<DesignItem> _selectedComponents = new HashSet<DesignItem>();
 		DesignItem _primarySelection;
@@ -53,6 +55,8 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 		{
 			if (components == null)
 				components = SharedInstances.EmptyDesignItemArray;
+
+			if (_selectedComponents.SequenceEqual(components)) return;
 			
 			if (SelectionChanging != null)
 				SelectionChanging(this, EventArgs.Empty);
@@ -160,6 +164,22 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 			if (SelectionChanged != null) {
 				SelectionChanged(this, new DesignItemCollectionEventArgs(componentsToNotifyOfSelectionChange));
 			}
+
+			RaisePropertyChanged("SelectedItems");
 		}
+		
+		#region INotifyPropertyChanged Members
+
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		void RaisePropertyChanged(string name)
+		{
+			if (PropertyChanged != null)
+			{
+				PropertyChanged(this, new PropertyChangedEventArgs(name));
+			}
+		}
+
+		#endregion
 	}
 }

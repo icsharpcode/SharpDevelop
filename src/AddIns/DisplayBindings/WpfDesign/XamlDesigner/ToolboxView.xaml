@@ -1,0 +1,43 @@
+﻿<UserControl x:Class="ICSharpCode.XamlDesigner.ToolboxView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:XamlDesigner="clr-namespace:ICSharpCode.XamlDesigner;assembly=">
+    <UserControl.Resources>
+        
+        <HierarchicalDataTemplate DataType="{x:Type XamlDesigner:AssemblyNode}"
+                                  ItemsSource="{Binding Controls}">
+            <StackPanel Orientation="Horizontal"
+                        ToolTip="{Binding Path}">
+                <Border Background="White"
+                        Margin="-1 0 0 0"
+                        >
+                    <Image Source="Images/Reference.png"
+                           Height="16"/>
+                </Border>
+                <TextBlock Text="{Binding Name}"
+                           Margin="5 0"
+                           VerticalAlignment="Center"/>
+            </StackPanel>
+        </HierarchicalDataTemplate>
+
+        <DataTemplate DataType="{x:Type XamlDesigner:ControlNode}">
+            <StackPanel Orientation="Horizontal"
+                        ToolTip="{Binding Type.FullName}">
+                <Border Background="White"
+                        Margin="-1 0 0 0">
+                    <Image Source="Images/Tag.png" />
+                </Border>
+                <TextBlock Text="{Binding Type.Name}"
+                           Margin="5 0"
+                           VerticalAlignment="Center"/>
+            </StackPanel>
+        </DataTemplate>
+
+    </UserControl.Resources>
+    
+    <TreeView x:Name="uxTreeView" 
+              ItemsSource="{Binding AssemblyNodes}" 
+              BorderThickness="0"
+              SelectedItemChanged="uxTreeView_SelectedItemChanged"/>
+    
+</UserControl>

@@ -8,6 +8,8 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
+using ICSharpCode.WpfDesign.Designer.Xaml;
 
 namespace ICSharpCode.WpfDesign.Designer.Services
 {
@@ -75,6 +77,16 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 		{
 			AssertState(TransactionState.Open);
 			item.Do();
+
+			var a = item as XamlModelProperty.PropertyChangeAction;
+			if (a != null)
+			{
+				foreach (var b in items.OfType<XamlModelProperty.PropertyChangeAction>())
+				{
+					if (b.MergeWith(a)) return;
+				}
+			}
+
 			items.Add(item);
 		}
 		

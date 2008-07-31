@@ -1,0 +1,107 @@
+﻿<UserControl x:Class="ICSharpCode.XamlDesigner.Outline"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:XamlDesigner="clr-namespace:ICSharpCode.XamlDesigner;assembly="
+             DataContext="{Binding CurrentDocument}">
+    <UserControl.Resources>
+
+        <Style TargetType="{x:Type XamlDesigner:OutlineTree}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type XamlDesigner:OutlineTree}">
+                        <Grid>
+                            <ScrollViewer>
+                                <ItemsPresenter />
+                            </ScrollViewer>
+                            <Border x:Name="PART_InsertLine"
+                                    Background="#FFC73C"
+                                    Height="2"
+                                    VerticalAlignment="Top"
+                                    Visibility="Collapsed"
+                                    IsHitTestVisible="False" />
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="{x:Type XamlDesigner:OutlineTreeItem}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type XamlDesigner:OutlineTreeItem}">
+                        <DockPanel Background="Transparent">
+                            <Grid DockPanel.Dock="Top">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition />
+                                </Grid.ColumnDefinitions>
+                                <Border x:Name="Bg"
+                                        Background="{TemplateBinding Background}"
+                                        Grid.ColumnSpan="2"
+                                        Margin="0 1 0 0" />
+                                <ToggleButton x:Name="Expander"
+                                              Width="19"
+                                              Margin="{TemplateBinding Indent}"
+                                              Style="{StaticResource ExpandCollapseToggleStyle}"
+                                              ClickMode="Press"
+                                              IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}}" />
+                                <ContentPresenter x:Name="PART_Header"
+                                                  ContentSource="Header"
+                                                  Grid.Column="1" />
+                            </Grid>
+                            <ItemsPresenter x:Name="ItemsHost" />
+                        </DockPanel>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsExpanded"
+                                     Value="false">
+                                <Setter TargetName="ItemsHost"
+                                        Property="Visibility"
+                                        Value="Collapsed" />
+                            </Trigger>
+                            <Trigger Property="HasItems"
+                                     Value="false">
+                                <Setter TargetName="Expander"
+                                        Property="Visibility"
+                                        Value="Hidden" />
+                            </Trigger>
+                            <Trigger Property="IsSelected"
+                                     Value="true">
+                                <Setter TargetName="Bg"
+                                        Property="Background"
+                                        Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" />
+                                <Setter Property="Foreground"
+                                        Value="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="{x:Type XamlDesigner:TreeNode}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type XamlDesigner:TreeNode}">
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="{TemplateBinding Image}"
+                                   Stretch="None" />
+                            <ContentPresenter VerticalAlignment="Center"
+                                              Margin="5 0 0 0" />
+                        </StackPanel>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <HierarchicalDataTemplate DataType="{x:Type XamlDesigner:DocumentElement}"
+                                  ItemsSource="{Binding Children}">
+            <XamlDesigner:TreeNode Image="Images/Tag.png"
+                                   Content="{Binding XamlType.Name}" />
+        </HierarchicalDataTemplate>
+
+    </UserControl.Resources>
+
+    <XamlDesigner:OutlineTree ItemsSource="{Binding EnumerateRoot}"
+                              Selection="{Binding Selection, Mode=OneWay}" />
+
+</UserControl>

@@ -171,9 +171,9 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 		protected override void OnDragStarted(MouseEventArgs e)
 		{
 			operation = PlacementOperation.TryStartInsertNewComponents(container,
-			                                                           new DesignItem[] { createdItem },
-			                                                           new Rect[] { GetStartToEndRect(e) },
-			                                                           PlacementType.Resize);
+				new DesignItem[] { createdItem },
+				new Rect[] { GetStartToEndRect(e) },
+				PlacementType.Resize);
 			if (operation != null) {
 				services.Selection.SetSelectedComponents(new DesignItem[] { createdItem });
 			}

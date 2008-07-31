@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -30,11 +30,9 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 
 		static void PostProcessInput(object sender, ProcessInputEventArgs e)
 		{
-			if (CurrentListener != null)
-			{
+			if (CurrentListener != null) {
 				var a = e.StagingItem.Input as KeyEventArgs;
-				if (a != null && a.Key == Key.Escape)
-				{
+				if (a != null && a.Key == Key.Escape) {
 					Mouse.Capture(null);
 					CurrentListener.IsDown = false;
 					CurrentListener.Complete();
@@ -48,32 +46,27 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 			CurrentPoint = StartPoint;
 			DeltaDelta = new Vector();
 			IsDown = true;
-
-			if (Started != null)
-			{
-				Started(this);
-			}
 		}
 
 		void Target_MouseMove(object sender, MouseEventArgs e)
 		{
-			if (IsDown)
-			{
+			if (IsDown) {
 				DeltaDelta = e.GetPosition(null) - CurrentPoint;
 				CurrentPoint += DeltaDelta;
 
-				if (!IsActive)
-				{
+				if (!IsActive) {
 					if (Math.Abs(Delta.X) >= SystemParameters.MinimumHorizontalDragDistance ||
-					    Math.Abs(Delta.Y) >= SystemParameters.MinimumVerticalDragDistance)
-					{
+					    Math.Abs(Delta.Y) >= SystemParameters.MinimumVerticalDragDistance) {
 						IsActive = true;
 						CurrentListener = this;
+
+						if (Started != null) {
+							Started(this);
+						}
 					}
 				}
 
-				if (IsActive && Changed != null)
-				{
+				if (IsActive && Changed != null) {
 					Changed(this);
 				}
 			}
@@ -82,8 +75,7 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 		void Target_MouseUp(object sender, MouseButtonEventArgs e)
 		{
 			IsDown = false;
-			if (IsActive)
-			{
+			if (IsActive) {
 				Complete();
 			}
 		}
@@ -93,8 +85,7 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 			IsActive = false;
 			CurrentListener = null;
 
-			if (Completed != null)
-			{
+			if (Completed != null) {
 				Completed(this);
 			}
 		}
@@ -110,8 +101,7 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 		public bool IsActive { get; private set; }
 		public bool IsDown { get; private set; }
 		
-		public Vector Delta
-		{
+		public Vector Delta {
 			get { return CurrentPoint - StartPoint; }
 		}
 	}

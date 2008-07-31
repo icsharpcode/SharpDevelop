@@ -104,5 +104,18 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors
 				ClearValue(LargeChangeProperty);
 			}
 		}
+
+		ChangeGroup group;
+
+		protected override void OnDragStarted()
+		{
+			group = PropertyNode.FirstProperty.DesignItem.Context.OpenGroup("drag number", 
+				PropertyNode.Properties.Select(p => p.DesignItem).ToArray());
+		}
+
+		protected override void OnDragCompleted()
+		{
+			group.Commit();
+		}
 	}
 }

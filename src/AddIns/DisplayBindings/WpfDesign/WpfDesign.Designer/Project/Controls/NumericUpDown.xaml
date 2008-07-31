@@ -98,6 +98,8 @@
     </Style>
 
     <Style TargetType="{x:Type Controls:NumericUpDown}">
+        <Setter Property="Background"
+                Value="White" />
         <Setter Property="BorderThickness"
                 Value="1" />
         <Setter Property="BorderBrush"
