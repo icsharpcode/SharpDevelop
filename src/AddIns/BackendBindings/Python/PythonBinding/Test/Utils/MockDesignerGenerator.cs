@@ -36,7 +36,7 @@ namespace PythonBinding.Tests.Utils
 		
 		public CodeDomProvider CodeDomProvider {
 			get {
-				throw new NotImplementedException();
+				return new IronPython.CodeDom.PythonProvider();
 			}
 		}
 		

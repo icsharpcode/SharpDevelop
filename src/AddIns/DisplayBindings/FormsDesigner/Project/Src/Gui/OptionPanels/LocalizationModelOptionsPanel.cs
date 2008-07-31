@@ -148,11 +148,14 @@ namespace ICSharpCode.FormsDesigner.Gui.OptionPanels
 		public const string DefaultLocalizationModelPropertyName = "FormsDesigner.DesignerOptions.DefaultLocalizationModel";
 		public const string KeepLocalizationModelPropertyName = "FormsDesigner.DesignerOptions.KeepLocalizationModel";
 		
+		const CodeDomLocalizationModel DefaultLocalizationModelDefaultValue = CodeDomLocalizationModel.PropertyReflection;
+		const bool KeepLocalizationModelDefaultValue = false;
+		
 		/// <summary>
 		/// Gets or sets the default localization model to be used by the Windows Forms designer.
 		/// </summary>
 		public static CodeDomLocalizationModel DefaultLocalizationModel {
-			get { return PropertyService.Get<CodeDomLocalizationModel>(DefaultLocalizationModelPropertyName, CodeDomLocalizationModel.PropertyReflection); }
+			get { return GetPropertySafe(DefaultLocalizationModelPropertyName, DefaultLocalizationModelDefaultValue); }
 			set { PropertyService.Set(DefaultLocalizationModelPropertyName, value); }
 		}
 		
@@ -160,8 +163,17 @@ namespace ICSharpCode.FormsDesigner.Gui.OptionPanels
 		/// Gets or sets whether the Windows Forms designer should keep the localization model of existing files.
 		/// </summary>
 		public static bool KeepLocalizationModel {
-			get { return PropertyService.Get<bool>(KeepLocalizationModelPropertyName, false); }
+			get { return GetPropertySafe(KeepLocalizationModelPropertyName, KeepLocalizationModelDefaultValue); }
 			set { PropertyService.Set(KeepLocalizationModelPropertyName, value); }
+		}
+		
+		static T GetPropertySafe<T>(string name, T defaultValue)
+		{
+			if (PropertyService.Initialized) {
+				return PropertyService.Get<T>(name, defaultValue);
+			} else {
+				return defaultValue;
+			}
 		}
 	}
 }

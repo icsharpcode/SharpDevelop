@@ -20,7 +20,7 @@ namespace ICSharpCode.FormsDesigner
 	/// </summary>
 	public abstract class AbstractCodeDomDesignerLoader : CodeDomDesignerLoader
 	{
-		bool loading = true;
+		bool loading;
 		IDesignerLoaderHost designerLoaderHost = null;
 		ITypeResolutionService typeResolutionService = null;
 		readonly IDesignerGenerator generator;
