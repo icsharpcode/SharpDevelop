@@ -55,7 +55,12 @@ namespace ICSharpCode.SharpDevelop.Commands
 	{
 		public override void Run()
 		{
-			Save(WorkbenchSingleton.Workbench.ActiveViewContent);
+			Save(WorkbenchSingleton.Workbench.ActiveWorkbenchWindow);
+		}
+		
+		internal static void Save(IWorkbenchWindow window)
+		{
+			window.ViewContents.Foreach(Save);
 		}
 		
 		internal static void Save(IViewContent content)
@@ -121,7 +126,12 @@ namespace ICSharpCode.SharpDevelop.Commands
 	{
 		public override void Run()
 		{
-			Save(WorkbenchSingleton.Workbench.ActiveViewContent);
+			Save(WorkbenchSingleton.Workbench.ActiveWorkbenchWindow);
+		}
+		
+		internal static void Save(IWorkbenchWindow window)
+		{
+			window.ViewContents.Foreach(Save);
 		}
 		
 		internal static void Save(IViewContent content)

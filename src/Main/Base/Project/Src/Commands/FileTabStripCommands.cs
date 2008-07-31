@@ -48,7 +48,7 @@ namespace ICSharpCode.SharpDevelop.Commands.TabStrip
 		{
 			IWorkbenchWindow window = Owner as IWorkbenchWindow;
 			if (window != null) {
-				SaveFile.Save(window.ActiveViewContent);
+				SaveFile.Save(window);
 			}
 		}
 	}
@@ -60,7 +60,7 @@ namespace ICSharpCode.SharpDevelop.Commands.TabStrip
 			IWorkbenchWindow window = Owner as IWorkbenchWindow;
 			
 			if (window != null) {
-				SaveFileAs.Save(window.ActiveViewContent);
+				SaveFileAs.Save(window);
 			}
 		}
 	}
