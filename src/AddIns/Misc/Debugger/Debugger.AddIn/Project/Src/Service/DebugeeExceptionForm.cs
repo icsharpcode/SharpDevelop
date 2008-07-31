@@ -73,14 +73,18 @@ namespace ICSharpCode.SharpDevelop.Services
             
             WindowState = DebuggingOptions.Instance.DebuggeeExceptionWindowState;
 			Size = DebuggingOptions.Instance.DebuggeeExceptionWindowSize;
-            
-			InitializeexceptionDetails();
+		           
+			splitContainer.SplitterDistance = DebuggingOptions.Instance.DebugeeExceptionSplitterDistance;
+			// Set this here so it doesnt fire on startup replacing the saved value with a default.
+			this.splitContainer.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.splitContainerMoved);
+			
+			InitializeExceptionDetails();
 		}
 		
 		/// <summary>
 		/// Setup the columns for the exceptionDetails.
 		/// </summary>
-		private void InitializeexceptionDetails() {
+		private void InitializeExceptionDetails() {
 			NodeIcon iconControl = new ItemIcon();
 			NodeTextBox nameControl = new ItemName();
 			NodeTextBox textControl = new ItemText();
@@ -151,6 +155,11 @@ namespace ICSharpCode.SharpDevelop.Services
 			linkExceptionDetail.Text = splitContainer.Panel2Collapsed 
 				? StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.ShowExceptionDetails}")
 				: StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.HideExceptionDetails}");
+		}
+		
+		void splitContainerMoved(object sender, System.EventArgs e)
+		{
+			DebuggingOptions.Instance.DebugeeExceptionSplitterDistance = splitContainer.SplitterDistance;
 		}
 	}
 }

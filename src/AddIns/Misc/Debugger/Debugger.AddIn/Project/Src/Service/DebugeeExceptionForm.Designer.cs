@@ -61,6 +61,18 @@ namespace ICSharpCode.SharpDevelop.Services
 			this.splitContainer.SuspendLayout();
 			this.SuspendLayout();
 			// 
+			// buttonBreak
+			// 
+			this.buttonBreak.Location = new System.Drawing.Point(176, 349);
+			// 
+			// buttonContinue
+			// 
+			this.buttonContinue.Location = new System.Drawing.Point(274, 349);
+			// 
+			// buttonTerminate
+			// 
+			this.buttonTerminate.Location = new System.Drawing.Point(372, 349);
+			// 
 			// textBox
 			// 
 			this.textBox.Size = new System.Drawing.Size(542, 139);

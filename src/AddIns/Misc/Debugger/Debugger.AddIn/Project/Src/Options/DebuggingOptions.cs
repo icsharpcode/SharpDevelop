@@ -37,6 +37,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		// Properties for the DebuggeeExceptionForm
 		public FormWindowState DebuggeeExceptionWindowState = FormWindowState.Normal;
 		public Size DebuggeeExceptionWindowSize = new Size(646,431);
+		public int DebugeeExceptionSplitterDistance = 163;
 		public bool ShowExceptionDetails;
 	}
 }

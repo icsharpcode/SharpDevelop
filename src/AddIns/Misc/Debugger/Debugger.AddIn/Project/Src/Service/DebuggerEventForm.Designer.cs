@@ -65,6 +65,8 @@ namespace ICSharpCode.SharpDevelop.Services
 			this.buttonBreak.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
 			this.buttonBreak.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.buttonBreak.Location = new System.Drawing.Point(176, 160);
+			this.buttonBreak.MaximumSize = new System.Drawing.Size(91, 32);
+			this.buttonBreak.MinimumSize = new System.Drawing.Size(91, 32);
 			this.buttonBreak.Name = "buttonBreak";
 			this.buttonBreak.Size = new System.Drawing.Size(91, 32);
 			this.buttonBreak.TabIndex = 0;
@@ -85,6 +87,8 @@ namespace ICSharpCode.SharpDevelop.Services
 			this.buttonTerminate.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
 			this.buttonTerminate.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.buttonTerminate.Location = new System.Drawing.Point(372, 160);
+			this.buttonTerminate.MaximumSize = new System.Drawing.Size(91, 32);
+			this.buttonTerminate.MinimumSize = new System.Drawing.Size(91, 32);
 			this.buttonTerminate.Name = "buttonTerminate";
 			this.buttonTerminate.Size = new System.Drawing.Size(91, 32);
 			this.buttonTerminate.TabIndex = 2;
@@ -95,6 +99,8 @@ namespace ICSharpCode.SharpDevelop.Services
 			// 
 			this.buttonContinue.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
 			this.buttonContinue.Location = new System.Drawing.Point(274, 160);
+			this.buttonContinue.MaximumSize = new System.Drawing.Size(91, 32);
+			this.buttonContinue.MinimumSize = new System.Drawing.Size(91, 32);
 			this.buttonContinue.Name = "buttonContinue";
 			this.buttonContinue.Size = new System.Drawing.Size(91, 32);
 			this.buttonContinue.TabIndex = 1;
@@ -119,11 +125,11 @@ namespace ICSharpCode.SharpDevelop.Services
 			// 
 			this.CancelButton = this.buttonBreak;
 			this.ClientSize = new System.Drawing.Size(638, 203);
-			this.Controls.Add(this.textBox);
-			this.Controls.Add(this.pictureBox);
 			this.Controls.Add(this.buttonTerminate);
 			this.Controls.Add(this.buttonContinue);
 			this.Controls.Add(this.buttonBreak);
+			this.Controls.Add(this.textBox);
+			this.Controls.Add(this.pictureBox);
 			this.MinimizeBox = false;
 			this.Name = "DebuggerEventForm";
 			this.ShowInTaskbar = false;
