@@ -313,6 +313,9 @@
 			<DialogPanel id    = "GridOptions"
 			             label = "${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GridOptionsPanel.PanelName}"
 			             class = "ICSharpCode.FormsDesigner.Gui.OptionPanels.GridOptionsPanel"/>
+			<DialogPanel id    = "LocalizationModelOptions"
+			             label = "${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.LocalizationModelOptionsPanel.PanelName}"
+			             class = "ICSharpCode.FormsDesigner.Gui.OptionPanels.LocalizationModelOptionsPanel"/>
 		
 		</DialogPanel>
 	</Path>

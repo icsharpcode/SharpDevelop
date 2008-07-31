@@ -56,8 +56,10 @@
     <Compile Include="Src\DesignerGenerator\CSharpDesignerGenerator.cs" />
     <Compile Include="Src\DesignerGenerator\IDesignerGenerator.cs" />
     <Compile Include="Src\DesignerGenerator\XmlDesignerGenerator.cs" />
+    <Compile Include="Src\DesignerLoader\AbstractCodeDomDesignerLoader.cs" />
     <Compile Include="Src\DesignerLoader\NRefactoryDesignerLoader.cs" />
     <Compile Include="Src\DesignerLoader\XmlDesignerLoader.cs" />
+    <Compile Include="Src\Gui\OptionPanels\LocalizationModelOptionsPanel.cs" />
     <Compile Include="Src\SecondaryDisplayBinding.cs" />
     <Compile Include="Src\DesignerViewContent.cs" />
     <Compile Include="Src\FormKeyHandler.cs" />
@@ -104,6 +106,9 @@
     </Compile>
     <Compile Include="Src\Gui\OptionPanels\GeneralOptions.cs" />
     <EmbeddedResource Include="Resources\WindowsFormsGeneralOptions.xfrm" />
+    <EmbeddedResource Include="Src\Gui\OptionPanels\LocalizationModelOptionsPanel.resx">
+      <DependentUpon>LocalizationModelOptionsPanel.cs</DependentUpon>
+    </EmbeddedResource>
     <Compile Include="Src\Services\DesignerSerializationService.cs" />
   </ItemGroup>
   <ItemGroup>

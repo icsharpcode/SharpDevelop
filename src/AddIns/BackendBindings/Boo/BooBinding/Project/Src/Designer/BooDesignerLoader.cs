@@ -8,9 +8,8 @@
 using System;
 using System.CodeDom;
 using System.CodeDom.Compiler;
-using System.Collections.Generic;
-using System.ComponentModel.Design;
 using System.ComponentModel.Design.Serialization;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
@@ -24,42 +23,13 @@ using ICSharpCode.TextEditor;
 
 namespace Grunwald.BooBinding.Designer
 {
-	public class BooDesignerLoader : CodeDomDesignerLoader
+	public class BooDesignerLoader : AbstractCodeDomDesignerLoader
 	{
-		bool                  loading               = true;
-		IDesignerLoaderHost   designerLoaderHost    = null;
-		IDesignerGenerator    generator;
-		ITypeResolutionService typeResolutionService = null;
-		
 		TextEditorControl textEditorControl;
 		
 		public string TextContent {
 			get {
 				return textEditorControl.Document.TextContent;
-			}
-		}
-		
-		public override bool Loading {
-			get {
-				return loading;
-			}
-		}
-		
-		public IDesignerLoaderHost DesignerLoaderHost {
-			get {
-				return designerLoaderHost;
-			}
-		}
-		
-		protected override CodeDomProvider CodeDomProvider {
-			get {
-				return generator.CodeDomProvider;
-			}
-		}
-		
-		protected override ITypeResolutionService TypeResolutionService {
-			get {
-				return typeResolutionService;
 			}
 		}
 		
@@ -69,34 +39,13 @@ namespace Grunwald.BooBinding.Designer
 		}
 		
 		public BooDesignerLoader(TextEditorControl textEditorControl, IDesignerGenerator generator)
+			: base(generator)
 		{
 			this.textEditorControl = textEditorControl;
-			this.generator = generator;
-		}
-		
-		public override void BeginLoad(IDesignerLoaderHost host)
-		{
-			this.loading = true;
-			typeResolutionService = (ITypeResolutionService)host.GetService(typeof(ITypeResolutionService));
-			this.designerLoaderHost = host;
-			base.BeginLoad(host);
-		}
-		
-		protected override void Initialize()
-		{
-			CodeDomLocalizationProvider localizationProvider = new CodeDomLocalizationProvider(designerLoaderHost, CodeDomLocalizationModel.PropertyAssignment);
-			IDesignerSerializationManager manager = (IDesignerSerializationManager)designerLoaderHost.GetService(typeof(IDesignerSerializationManager));
-			manager.AddSerializationProvider(localizationProvider);
-			base.Initialize();
-		}
-		
-		protected override void OnEndLoad(bool successful, System.Collections.ICollection errors)
-		{
-			this.loading = false;
-			base.OnEndLoad(successful, errors);
 		}
 		
 		string lastTextContent;
+		Module parsedModule;
 		
 		protected override CodeCompileUnit Parse()
 		{
@@ -104,6 +53,8 @@ namespace Grunwald.BooBinding.Designer
 			try {
 				CodeCompileUnit ccu = ParseForm();
 				LoggingService.Debug("BooDesignerLoader.Parse() finished");
+				// Clear the cached module after loading has finished
+				this.parsedModule = null;
 				return ccu;
 			} catch (Boo.Lang.Compiler.CompilerError ex) {
 				throw new FormsDesignerLoadException(ex.ToString(true));
@@ -112,6 +63,36 @@ namespace Grunwald.BooBinding.Designer
 		
 		CodeCompileUnit ParseForm()
 		{
+			ParseInformation parseInfo = ParserService.ParseFile(textEditorControl.FileName, textEditorControl.Text, false);
+			Module module = ParseFormAsModule();
+			
+			#if DEBUG
+			Console.WriteLine(module.ToCodeString());
+			#endif
+			
+			CodeDomVisitor visitor = new CodeDomVisitor(parseInfo.MostRecentCompilationUnit.ProjectContent);
+			module.Accept(visitor);
+			
+			#if DEBUG
+			// output generated CodeDOM to the console :
+			ICSharpCode.NRefactory.Visitors.CodeDomVerboseOutputGenerator outputGenerator = new ICSharpCode.NRefactory.Visitors.CodeDomVerboseOutputGenerator();
+			outputGenerator.GenerateCodeFromMember(visitor.OutputCompileUnit.Namespaces[0].Types[0], Console.Out, null);
+			CodeDomProvider cSharpProvider = new Microsoft.CSharp.CSharpCodeProvider();
+			cSharpProvider.GenerateCodeFromCompileUnit(visitor.OutputCompileUnit, Console.Out, null);
+			#endif
+			
+			return visitor.OutputCompileUnit;
+		}
+		
+		Module ParseFormAsModule()
+		{
+			// The module is cached while loading so that
+			// determining the localization model and generating the CodeDOM
+			// does not require the code to be parsed twice.
+			if (this.parsedModule != null && lastTextContent == TextContent) {
+				return this.parsedModule;
+			}
+			
 			lastTextContent = TextContent;
 			
 			ParseInformation parseInfo = ParserService.ParseFile(textEditorControl.FileName, textEditorControl.Text, false);
@@ -169,23 +150,8 @@ namespace Grunwald.BooBinding.Designer
 					    && method.Parameters.Count == 0)
 					{
 						cld.Members.Add(method);
-						
-						#if DEBUG
-						Console.WriteLine(module.ToCodeString());
-						#endif
-						
-						CodeDomVisitor visitor = new CodeDomVisitor(parseInfo.MostRecentCompilationUnit.ProjectContent);
-						module.Accept(visitor);
-						
-						#if DEBUG
-						// output generated CodeDOM to the console :
-						ICSharpCode.NRefactory.Visitors.CodeDomVerboseOutputGenerator outputGenerator = new ICSharpCode.NRefactory.Visitors.CodeDomVerboseOutputGenerator();
-						outputGenerator.GenerateCodeFromMember(visitor.OutputCompileUnit.Namespaces[0].Types[0], Console.Out, null);
-						CodeDomProvider cSharpProvider = new Microsoft.CSharp.CSharpCodeProvider();
-						cSharpProvider.GenerateCodeFromCompileUnit(visitor.OutputCompileUnit, Console.Out, null);
-						#endif
-						
-						return visitor.OutputCompileUnit;
+						this.parsedModule = module;
+						return module;
 					}
 				}
 			}
@@ -213,9 +179,54 @@ namespace Grunwald.BooBinding.Designer
 		{
 			LoggingService.Info("BooDesignerLoader.Write called");
 			try {
-				generator.MergeFormChanges(unit);
+				this.Generator.MergeFormChanges(unit);
 			} catch (Exception ex) {
 				MessageService.ShowError(ex);
+			}
+		}
+		
+		protected override CodeDomLocalizationModel GetCurrentLocalizationModelFromDesignedFile()
+		{
+			Module m = ParseFormAsModule();
+			FindLocalizationModelVisitor visitor = new FindLocalizationModelVisitor();
+			m.Accept(visitor);
+			return visitor.Model;
+		}
+		
+		sealed class FindLocalizationModelVisitor : DepthFirstVisitor
+		{
+			CodeDomLocalizationModel model = CodeDomLocalizationModel.None;
+			
+			public CodeDomLocalizationModel Model {
+				get { return this.model; }
+			}
+			
+			public override bool EnterMethod(Method node)
+			{
+				return node.Name == "InitializeComponent" || node.Name == "InitializeComponents";
+			}
+			
+			public override bool EnterBinaryExpression(BinaryExpression node)
+			{
+				return this.model == CodeDomLocalizationModel.None && node.Operator == BinaryOperatorType.Assign;
+			}
+			
+			public override bool EnterMethodInvocationExpression(MethodInvocationExpression node)
+			{
+				if (this.model != CodeDomLocalizationModel.None) return false;
+				
+				MemberReferenceExpression member = node.Target as MemberReferenceExpression;
+				if (member != null) {
+					ReferenceExpression refex = member.Target as ReferenceExpression;
+					if (refex != null && refex.Name.Equals("resources", StringComparison.InvariantCulture)) {
+						if (member.Name.Equals("ApplyResources", StringComparison.InvariantCulture)) {
+							this.model = CodeDomLocalizationModel.PropertyReflection;
+						} else if (member.Name.Equals("GetString", StringComparison.InvariantCulture)) {
+							this.model = CodeDomLocalizationModel.PropertyAssignment;
+						}
+					}
+				}
+				return false;
 			}
 		}
 	}

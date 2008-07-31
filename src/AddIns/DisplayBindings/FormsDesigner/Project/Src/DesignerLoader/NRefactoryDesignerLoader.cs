@@ -7,12 +7,10 @@
 
 using System;
 using System.CodeDom;
-using System.CodeDom.Compiler;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel.Design;
 using System.ComponentModel.Design.Serialization;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
@@ -37,12 +35,8 @@ namespace ICSharpCode.FormsDesigner
 		}
 	}
 	
-	public class NRefactoryDesignerLoader : CodeDomDesignerLoader
+	public class NRefactoryDesignerLoader : AbstractCodeDomDesignerLoader
 	{
-		bool                  loading               = true;
-		IDesignerLoaderHost   designerLoaderHost    = null;
-		ITypeResolutionService typeResolutionService = null;
-		IDesignerGenerator    generator;
 		SupportedLanguage    language;
 		
 		TextEditorControl textEditorControl;
@@ -53,76 +47,16 @@ namespace ICSharpCode.FormsDesigner
 			}
 		}
 		
-		public override bool Loading {
-			get {
-				return loading;
-			}
-		}
-		
-		public IDesignerLoaderHost DesignerLoaderHost {
-			get {
-				return designerLoaderHost;
-			}
-		}
-		
-		protected override CodeDomProvider CodeDomProvider {
-			get {
-				return generator.CodeDomProvider;
-			}
-		}
-		
-		protected override ITypeResolutionService TypeResolutionService {
-			get {
-				return typeResolutionService;
-			}
-		}
-		
 		protected override bool IsReloadNeeded()
 		{
 			return base.IsReloadNeeded() || TextContent != lastTextContent;
 		}
 		
 		public NRefactoryDesignerLoader(SupportedLanguage language, TextEditorControl textEditorControl, IDesignerGenerator generator)
+			: base(generator)
 		{
 			this.language = language;
 			this.textEditorControl = textEditorControl;
-			this.generator = generator;
-		}
-		
-		public override void BeginLoad(IDesignerLoaderHost host)
-		{
-			this.loading = true;
-			typeResolutionService = (ITypeResolutionService)host.GetService(typeof(ITypeResolutionService));
-			this.designerLoaderHost = host;
-			base.BeginLoad(host);
-		}
-		
-		protected override void Initialize()
-		{
-			CodeDomLocalizationProvider localizationProvider = new CodeDomLocalizationProvider(designerLoaderHost, CodeDomLocalizationModel.PropertyAssignment);
-			IDesignerSerializationManager manager = (IDesignerSerializationManager)designerLoaderHost.GetService(typeof(IDesignerSerializationManager));
-			manager.AddSerializationProvider(localizationProvider);
-			base.Initialize();
-		}
-		
-		protected override void OnEndLoad(bool successful, ICollection errors)
-		{
-			this.loading = false;
-			//when control's Dispose() has a exception and on loading also raised exception
-			//then this is only place where this error can be logged, because after errors is
-			//catched internally in .net
-			try {
-				base.OnEndLoad(successful, errors);
-			} catch(ExceptionCollection e) {
-				LoggingService.Error("DesignerLoader.OnEndLoad error" + e.Message);
-				foreach(Exception ine in e.Exceptions) {
-					LoggingService.Error("DesignerLoader.OnEndLoad error" + ine.Message);
-				}
-				throw;
-			} catch(Exception e) {
-				LoggingService.Error("DesignerLoader.OnEndLoad error" + e.Message);
-				throw;
-			}
 		}
 		
 		string lastTextContent;
@@ -358,30 +292,78 @@ namespace ICSharpCode.FormsDesigner
 			}
 			#endif
 			try {
-				generator.MergeFormChanges(unit);
+				this.Generator.MergeFormChanges(unit);
 			} catch (Exception ex) {
 				MessageService.ShowError(ex);
 			}
 		}
 		
-//		public void Reload()
-//		{
-//			base.Reload(BasicDesignerLoader.ReloadFlags.Default);
-//		}
-//		public override void Flush()
-//		{
-//			base.Flush();
-//		}
-		
-//		void InitializeExtendersForProject(IDesignerHost host)
-//		{
-//			IExtenderProviderService elsi = (IExtenderProviderService)host.GetService(typeof(IExtenderProviderService));
-//			elsi.AddExtenderProvider(new ICSharpCode.FormDesigner.Util.NameExtender());
-//		}
-		
-		public override void Dispose()
+		protected override CodeDomLocalizationModel GetCurrentLocalizationModelFromDesignedFile()
 		{
-			base.Dispose();
+			ParseInformation parseInfo = ParserService.GetParseInformation(this.textEditorControl.FileName);
+			
+			IClass formClass;
+			bool isFirstClassInFile;
+			IList<IClass> parts = FindFormClassParts(parseInfo, out formClass, out isFirstClassInFile);
+			
+			foreach (string fileName in
+			         parts.Select(p => p.CompilationUnit.FileName)
+			         .Where(n => n != null)
+			         .Distinct(StringComparer.InvariantCultureIgnoreCase)) {
+				
+				ICSharpCode.NRefactory.IParser p = ICSharpCode.NRefactory.ParserFactory.CreateParser(language, new StringReader(ParserService.GetParseableFileContent(fileName)));
+				p.Parse();
+				if (p.Errors.Count > 0) {
+					throw new FormsDesignerLoadException("Syntax errors in " + fileName +  ":\r\n" + p.Errors.ErrorOutput);
+				}
+				
+				FindLocalizationModelVisitor visitor = new FindLocalizationModelVisitor();
+				p.CompilationUnit.AcceptVisitor(visitor, null);
+				if (visitor.Model != CodeDomLocalizationModel.None) {
+					return visitor.Model;
+				}
+				
+			}
+			
+			return CodeDomLocalizationModel.None;
+		}
+		
+		sealed class FindLocalizationModelVisitor : AbstractAstVisitor
+		{
+			bool inInitMethod;
+			CodeDomLocalizationModel model = CodeDomLocalizationModel.None;
+			
+			public CodeDomLocalizationModel Model {
+				get { return this.model; }
+			}
+			
+			public override object VisitMethodDeclaration(MethodDeclaration methodDeclaration, object data)
+			{
+				if (methodDeclaration.Name == "InitializeComponents" || methodDeclaration.Name == "InitializeComponent") {
+					this.inInitMethod = true;
+					try {
+						return base.VisitMethodDeclaration(methodDeclaration, data);
+					} finally {
+						this.inInitMethod = false;
+					}
+				}
+				return null;
+			}
+			
+			public override object VisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression, object data)
+			{
+				if (this.model == CodeDomLocalizationModel.None && this.inInitMethod) {
+					IdentifierExpression iex = memberReferenceExpression.TargetObject as IdentifierExpression;
+					if (iex != null && iex.Identifier == "resources") {
+						if (memberReferenceExpression.MemberName == "ApplyResources") {
+							this.model = CodeDomLocalizationModel.PropertyReflection;
+						} else if (memberReferenceExpression.MemberName == "GetString") {
+							this.model = CodeDomLocalizationModel.PropertyAssignment;
+						}
+					}
+				}
+				return null;
+			}
 		}
 	}
 }

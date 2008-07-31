@@ -232,8 +232,8 @@ namespace ICSharpCode.FormsDesigner
 		bool FieldChanged(IField oldField, CodeMemberField newField)
 		{
 			// compare types
-			if (oldField.ReturnType != null) { // ignore type changes to untyped VB fields
-				if (oldField.ReturnType.FullyQualifiedName != newField.Type.BaseType) {
+			if (oldField.ReturnType != null && oldField.ReturnType.GetUnderlyingClass() != null) { // ignore type changes to untyped VB fields
+				if (oldField.ReturnType.GetUnderlyingClass().DotNetName != newField.Type.BaseType) {
 					LoggingService.Debug("FieldChanged: "+oldField.Name+", "+oldField.ReturnType.FullyQualifiedName+" -> "+newField.Type.BaseType);
 					return true;
 				}
