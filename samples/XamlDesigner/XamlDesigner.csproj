@@ -37,9 +37,17 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Libraries\AvalonDock.dll</HintPath>
     </Reference>
-    <Reference Include="ICSharpCode.TextEditor, Version=3.0.0.3244, Culture=neutral, PublicKeyToken=4d61825e8dd49f1a, processorArchitecture=MSIL">
+    <Reference Include="ICSharpCode.TextEditor, Version=3.0.0.3267, Culture=neutral, PublicKeyToken=4d61825e8dd49f1a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Libraries\ICSharpCode.TextEditor.dll</HintPath>
+      <HintPath>..\..\bin\ICSharpCode.TextEditor.dll</HintPath>
+    </Reference>
+    <Reference Include="ICSharpCode.WpfDesign, Version=3.0.0.3267, Culture=neutral, PublicKeyToken=f829da5c02be14ee, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\AddIns\AddIns\DisplayBindings\WpfDesign\ICSharpCode.WpfDesign.dll</HintPath>
+    </Reference>
+    <Reference Include="ICSharpCode.WpfDesign.Designer, Version=3.0.0.3267, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\AddIns\AddIns\DisplayBindings\WpfDesign\ICSharpCode.WpfDesign.Designer.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -81,7 +89,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
+    <Compile Include="..\..\src\Main\GlobalAssemblyInfo.cs">
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Configuration\AssemblyInfo.cs">
@@ -146,16 +154,6 @@
   <ItemGroup>
     <Resource Include="Images\Reference.png" />
     <Resource Include="Images\Tag.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\WpfDesign.Designer\Project\WpfDesign.Designer.csproj">
-      <Project>{78CC29AC-CC79-4355-B1F2-97936DF198AC}</Project>
-      <Name>WpfDesign.Designer</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\WpfDesign\Project\WpfDesign.csproj">
-      <Project>{66A378A1-E9F4-4AD5-8946-D0EC06C2902F}</Project>
-      <Name>WpfDesign</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
