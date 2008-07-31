@@ -95,14 +95,15 @@ namespace ICSharpCode.TextEditor.Document
 			// Only fire events after RemoveInternal+InsertInternal finished completely:
 			// Otherwise we would expose inconsistent state to the event handlers.
 			RunHighlighter(lineStart, 1 + Math.Max(0, this.TotalNumberOfLines - numberOfLinesAfterRemoving));
+			
 			if (deferredEventList.removedLines != null) {
 				foreach (LineSegment ls in deferredEventList.removedLines)
 					OnLineDeleted(new LineEventArgs(document, ls));
 			}
+			deferredEventList.RaiseEvents();
 			if (this.TotalNumberOfLines != oldNumberOfLines) {
 				OnLineCountChanged(new LineCountChangeEventArgs(document, lineStart, this.TotalNumberOfLines - oldNumberOfLines));
 			}
-			deferredEventList.RaiseEvents();
 		}
 		
 		void RemoveInternal(ref DeferredEventList deferredEventList, int offset, int length)
