@@ -163,7 +163,7 @@ namespace ICSharpCode.XamlDesigner
 		{
 			if (doc.IsDirty) {
 				var result = MessageBox.Show("Save \"" + doc.Name + "\" ?", Shell.ApplicationTitle, 
-					MessageBoxButton.YesNoCancel, MessageBoxImage.Warning);
+					MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
 
 				if (result == MessageBoxResult.Yes) {
 					if (!Save(doc)) return false;
@@ -178,7 +178,7 @@ namespace ICSharpCode.XamlDesigner
 
 		public bool CloseAll()
 		{
-			foreach (var doc in Documents) {
+			foreach (var doc in Documents.ToArray()) {
 				if (!Close(doc)) return false;
 			}
 			return true;
@@ -188,7 +188,7 @@ namespace ICSharpCode.XamlDesigner
 		{
 			if (IsSomethingDirty) {
 				var result = MessageBox.Show("Save All?", Shell.ApplicationTitle,
-					MessageBoxButton.YesNoCancel, MessageBoxImage.Warning);
+					MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
 				
 				if (result == MessageBoxResult.Yes) {
 					if (!SaveAll()) return false;
