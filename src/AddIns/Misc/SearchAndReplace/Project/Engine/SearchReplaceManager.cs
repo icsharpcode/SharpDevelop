@@ -156,10 +156,11 @@ namespace SearchAndReplace
 					textAreas.Add(textArea);
 				}
 				textArea.ActiveTextAreaControl.Caret.Position = textArea.Document.OffsetToPosition(result.Offset);
-				int lineNr = textArea.Document.GetLineNumberForOffset(result.Offset);
+				LineSegment segment = textArea.Document.GetLineSegmentForOffset(result.Offset);
 				
+				int lineNr = segment.LineNumber;
 				if (!textArea.Document.BookmarkManager.IsMarked(lineNr)) {
-					textArea.Document.BookmarkManager.ToggleMarkAt(lineNr);
+					textArea.Document.BookmarkManager.ToggleMarkAt(new TextLocation(result.Offset - segment.Offset, lineNr));
 				}
 			}
 		}

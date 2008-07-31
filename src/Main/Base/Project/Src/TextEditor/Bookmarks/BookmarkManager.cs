@@ -40,6 +40,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		
 		public static void AddMark(SDBookmark bookmark)
 		{
+			if (bookmark == null) return;
 			if (bookmarks.Contains(bookmark)) return;
 			if (bookmarks.Exists(b => IsEqualBookmark(b, bookmark))) return;
 			bookmarks.Add(bookmark);

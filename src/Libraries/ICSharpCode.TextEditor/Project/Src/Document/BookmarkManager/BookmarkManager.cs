@@ -14,7 +14,7 @@ namespace ICSharpCode.TextEditor.Document
 {
 	public interface IBookmarkFactory
 	{
-		Bookmark CreateBookmark(IDocument document, int lineNumber);
+		Bookmark CreateBookmark(IDocument document, TextLocation location);
 	}
 	
 	/// <summary>
@@ -50,46 +50,32 @@ namespace ICSharpCode.TextEditor.Document
 		internal BookmarkManager(IDocument document, LineManager lineTracker)
 		{
 			this.document = document;
-			lineTracker.LineDeleted += delegate(object sender, LineEventArgs e) {
-				for (int i = 0; i < bookmark.Count; i++) {
-					Bookmark b = bookmark[i];
-					if (b.Line == e.LineSegment) {
-						bookmark.RemoveAt(i--);
-						OnRemoved(new BookmarkEventArgs(b));
-					}
-				}
-			};
-		}
-		
-		IBookmarkFactory factory;
-		
-		public IBookmarkFactory Factory {
-			get {
-				return factory;
-			}
-			set {
-				factory = value;
-			}
 		}
 		
 		/// <summary>
-		/// Sets the mark at the line <code>lineNr</code> if it is not set, if the
+		/// Gets/Sets the bookmark factory used to create bookmarks for "ToggleMarkAt".
+		/// </summary>
+		public IBookmarkFactory Factory { get; set;}
+		
+		/// <summary>
+		/// Sets the mark at the line <code>location.Line</code> if it is not set, if the
 		/// line is already marked the mark is cleared.
 		/// </summary>
-		public void ToggleMarkAt(int lineNr)
+		public void ToggleMarkAt(TextLocation location)
 		{
 			Bookmark newMark;
-			if (factory != null)
-				newMark = factory.CreateBookmark(document, lineNr);
-			else
-				newMark = new Bookmark(document, lineNr);
+			if (Factory != null) {
+				newMark = Factory.CreateBookmark(document, location);
+			} else {
+				newMark = new Bookmark(document, location);
+			}
 			
 			Type newMarkType = newMark.GetType();
 			
 			for (int i = 0; i < bookmark.Count; ++i) {
 				Bookmark mark = bookmark[i];
 				
-				if (mark.LineNumber == lineNr && mark.CanToggle && mark.GetType() == newMarkType) {
+				if (mark.LineNumber == location.Line && mark.CanToggle && mark.GetType() == newMarkType) {
 					bookmark.RemoveAt(i);
 					OnRemoved(new BookmarkEventArgs(mark));
 					return;

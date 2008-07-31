@@ -117,6 +117,8 @@ namespace ICSharpCode.TextEditor.Document
 		
 		public TextAnchor CreateAnchor(int column)
 		{
+			if (column < 0 || column > Length)
+				throw new ArgumentOutOfRangeException("column");
 			TextAnchor anchor = new TextAnchor(this, column);
 			AddAnchor(anchor);
 			return anchor;
@@ -135,13 +137,13 @@ namespace ICSharpCode.TextEditor.Document
 		/// <summary>
 		/// Is called when the LineSegment is deleted.
 		/// </summary>
-		internal void Deleted()
+		internal void Deleted(ref DeferredEventList deferredEventList)
 		{
 			//Console.WriteLine("Deleted");
 			treeEntry = LineSegmentTree.Enumerator.Invalid;
 			if (anchors != null) {
 				foreach (TextAnchor a in anchors) {
-					a.Deleted();
+					a.Delete(ref deferredEventList);
 				}
 				anchors = null;
 			}
@@ -150,7 +152,7 @@ namespace ICSharpCode.TextEditor.Document
 		/// <summary>
 		/// Is called when a part of the line is removed.
 		/// </summary>
-		internal void RemovedLinePart(int startColumn, int length)
+		internal void RemovedLinePart(ref DeferredEventList deferredEventList, int startColumn, int length)
 		{
 			if (length == 0)
 				return;
@@ -166,7 +168,7 @@ namespace ICSharpCode.TextEditor.Document
 						} else {
 							if (deletedAnchors == null)
 								deletedAnchors = new List<TextAnchor>();
-							a.Deleted();
+							a.Delete(ref deferredEventList);
 							deletedAnchors.Add(a);
 						}
 					}

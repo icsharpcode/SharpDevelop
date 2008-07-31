@@ -99,7 +99,7 @@ namespace CSharpBinding.FormattingStrategy
 		public bool Next()
 		{
 			if (lineDirty) {
-				doc.Replace(line.Offset, line.Length, text);
+				DefaultFormattingStrategy.SmartReplaceLine(doc, line, text);
 				lineDirty = false;
 				++changedLines;
 			}

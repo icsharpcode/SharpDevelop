@@ -55,9 +55,55 @@ namespace ICSharpCode.TextEditor.Document
 			if(indentation.Length > 0) {
 				string newLineText = indentation + TextUtilities.GetLineAsString(textArea.Document, lineNumber).Trim();
 				LineSegment oldLine  = textArea.Document.GetLineSegment(lineNumber);
-				textArea.Document.Replace(oldLine.Offset, oldLine.Length, newLineText);
+				SmartReplaceLine(textArea.Document, oldLine, newLineText);
 			}
 			return indentation.Length;
+		}
+		
+		static readonly char[] whitespaceChars = {' ', '\t'};
+		
+		/// <summary>
+		/// Replaces the text in a line.
+		/// If only whitespace at the beginning and end of the line was changed, this method
+		/// only adjusts the whitespace and doesn't replace the other text.
+		/// </summary>
+		public static void SmartReplaceLine(IDocument document, LineSegment line, string newLineText)
+		{
+			if (document == null)
+				throw new ArgumentNullException("document");
+			if (line == null)
+				throw new ArgumentNullException("line");
+			if (newLineText == null)
+				throw new ArgumentNullException("newLineText");
+			string newLineTextTrim = newLineText.Trim(whitespaceChars);
+			string oldLineText = document.GetText(line);
+			if (oldLineText == newLineText)
+				return;
+			int pos = oldLineText.IndexOf(newLineTextTrim);
+			if (newLineTextTrim.Length > 0 && pos >= 0) {
+				document.UndoStack.StartUndoGroup();
+				try {
+					// find whitespace at beginning
+					int startWhitespaceLength = 0;
+					while (startWhitespaceLength < newLineText.Length) {
+						char c = newLineText[startWhitespaceLength];
+						if (c != ' ' && c != '\t')
+							break;
+						startWhitespaceLength++;
+					}
+					// find whitespace at end
+					int endWhitespaceLength = newLineText.Length - newLineTextTrim.Length - startWhitespaceLength;
+					
+					// replace whitespace sections
+					int lineOffset = line.Offset;
+					document.Replace(lineOffset + pos + newLineTextTrim.Length, line.Length - pos - newLineTextTrim.Length, newLineText.Substring(newLineText.Length - endWhitespaceLength));
+					document.Replace(lineOffset, pos, newLineText.Substring(0, startWhitespaceLength));
+				} finally {
+					document.UndoStack.EndUndoGroup();
+				}
+			} else {
+				document.Replace(line.Offset, line.Length, newLineText);
+			}
 		}
 		
 		/// <summary>

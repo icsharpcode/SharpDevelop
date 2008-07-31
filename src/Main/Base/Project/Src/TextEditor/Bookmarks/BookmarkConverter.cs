@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.TextEditor;
 using System;
 using System.ComponentModel;
 using System.Globalization;
@@ -27,20 +28,25 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		{
 			if (value is string) {
 				string[] v = ((string)value).Split('|');
+				if (v.Length != 5)
+					return null;
 				string fileName = v[1];
 				int lineNumber = int.Parse(v[2], culture);
+				int columnNumber = int.Parse(v[3], culture);
 				if (lineNumber < 0)
+					return null;
+				if (columnNumber < 0)
 					return null;
 				SDBookmark bookmark;
 				switch (v[0]) {
 					case "Breakpoint":
-						bookmark = new Debugging.BreakpointBookmark(fileName, null, lineNumber);
+						bookmark = new Debugging.BreakpointBookmark(fileName, null, new TextLocation(columnNumber, lineNumber));
 						break;
 					default:
-						bookmark = new SDBookmark(fileName, null, lineNumber);
+						bookmark = new SDBookmark(fileName, null, new TextLocation(columnNumber, lineNumber));
 						break;
 				}
-				bookmark.IsEnabled = bool.Parse(v[3]);
+				bookmark.IsEnabled = bool.Parse(v[4]);
 				return bookmark;
 			} else {
 				return base.ConvertFrom(context, culture, value);
@@ -61,6 +67,8 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 				b.Append(bookmark.FileName);
 				b.Append('|');
 				b.Append(bookmark.LineNumber);
+				b.Append('|');
+				b.Append(bookmark.ColumnNumber);
 				b.Append('|');
 				b.Append(bookmark.IsEnabled.ToString());
 				return b.ToString();

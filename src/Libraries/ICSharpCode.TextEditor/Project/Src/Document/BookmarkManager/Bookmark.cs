@@ -17,8 +17,8 @@ namespace ICSharpCode.TextEditor.Document
 	public class Bookmark
 	{
 		IDocument document;
-		LineSegment line;
-		int lineNumber;
+		TextAnchor anchor;
+		TextLocation location;
 		bool isEnabled = true;
 		
 		public IDocument Document {
@@ -27,16 +27,51 @@ namespace ICSharpCode.TextEditor.Document
 			}
 			set {
 				if (document != value) {
-					if (line != null) {
-						lineNumber = line.LineNumber;
-						line = null;
+					if (anchor != null) {
+						location = anchor.Location;
+						anchor = null;
 					}
 					document = value;
-					if (document != null) {
-						line = document.GetLineSegment(Math.Min(lineNumber, document.TotalNumberOfLines-1));
-					}
+					CreateAnchor();
 					OnDocumentChanged(EventArgs.Empty);
 				}
+			}
+		}
+		
+		void CreateAnchor()
+		{
+			if (document != null) {
+				LineSegment line = document.GetLineSegment(Math.Max(0, Math.Min(location.Line, document.TotalNumberOfLines-1)));
+				anchor = line.CreateAnchor(Math.Max(0, Math.Min(location.Column, line.Length)));
+				// after insertion: keep bookmarks after the initial whitespace (see DefaultFormattingStrategy.SmartReplaceLine)
+				anchor.MovementType = AnchorMovementType.AfterInsertion;
+				anchor.Deleted += AnchorDeleted;
+			}
+		}
+		
+		void AnchorDeleted(object sender, EventArgs e)
+		{
+			document.BookmarkManager.RemoveMark(this);
+		}
+		
+		/// <summary>
+		/// Gets the TextAnchor used for this bookmark.
+		/// Is null if the bookmark is not connected to a document.
+		/// </summary>
+		public TextAnchor Anchor {
+			get { return anchor; }
+		}
+		
+		public TextLocation Location {
+			get {
+				if (anchor != null)
+					return anchor.Location;
+				else
+					return location;
+			}
+			set {
+				location = value;
+				CreateAnchor();
 			}
 		}
 		
@@ -57,7 +92,7 @@ namespace ICSharpCode.TextEditor.Document
 				if (isEnabled != value) {
 					isEnabled = value;
 					if (document != null) {
-						document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.SingleLine, lineNumber));
+						document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.SingleLine, LineNumber));
 						document.CommitUpdate();
 					}
 					OnIsEnabledChanged(EventArgs.Empty);
@@ -74,29 +109,21 @@ namespace ICSharpCode.TextEditor.Document
 			}
 		}
 		
-		/// <summary>
-		/// Gets the line the bookmark belongs to.
-		/// Is null if the bookmark is not connected to a document.
-		/// </summary>
-		public LineSegment Line {
-			get { return line; }
-		}
-		
 		public int LineNumber {
 			get {
-				if (line != null)
-					return line.LineNumber;
+				if (anchor != null)
+					return anchor.LineNumber;
 				else
-					return lineNumber;
+					return location.Line;
 			}
-			set {
-				if (value < 0)
-					throw new ArgumentOutOfRangeException("value", value, "line number must be >= 0");
-				if (document == null) {
-					lineNumber = value;
-				} else {
-					line = document.GetLineSegment(value);
-				}
+		}
+		
+		public int ColumnNumber {
+			get {
+				if (anchor != null)
+					return anchor.ColumnNumber;
+				else
+					return location.Column;
 			}
 		}
 		
@@ -109,15 +136,15 @@ namespace ICSharpCode.TextEditor.Document
 			}
 		}
 		
-		public Bookmark(IDocument document, int lineNumber) : this(document, lineNumber, true)
+		public Bookmark(IDocument document, TextLocation location) : this(document, location, true)
 		{
 		}
 		
-		public Bookmark(IDocument document, int lineNumber, bool isEnabled)
+		public Bookmark(IDocument document, TextLocation location, bool isEnabled)
 		{
-			this.document   = document;
-			this.isEnabled  = isEnabled;
-			this.LineNumber = lineNumber;
+			this.document = document;
+			this.isEnabled = isEnabled;
+			this.Location = location;
 		}
 		
 		public virtual bool Click(SWF.Control parent, SWF.MouseEventArgs e)

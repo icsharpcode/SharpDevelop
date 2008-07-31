@@ -77,10 +77,11 @@ namespace ICSharpCode.TextEditor.Document
 		
 		public void Replace(int offset, int length, string text)
 		{
-//			Console.WriteLine("Replace offset="+offset+" length="+length+" text.Length="+text.Length);
+			Debug.WriteLine("Replace offset="+offset+" length="+length+" text.Length="+text.Length);
 			int lineStart = GetLineNumberForOffset(offset);
 			int oldNumberOfLines = this.TotalNumberOfLines;
-			List<LineSegment> removedLines = RemoveInternal(offset, length);
+			DeferredEventList deferredEventList = new DeferredEventList();
+			RemoveInternal(ref deferredEventList, offset, length);
 			int numberOfLinesAfterRemoving = this.TotalNumberOfLines;
 			if (!string.IsNullOrEmpty(text)) {
 				InsertInternal(offset, text);
@@ -94,33 +95,34 @@ namespace ICSharpCode.TextEditor.Document
 			// Only fire events after RemoveInternal+InsertInternal finished completely:
 			// Otherwise we would expose inconsistent state to the event handlers.
 			RunHighlighter(lineStart, 1 + Math.Max(0, this.TotalNumberOfLines - numberOfLinesAfterRemoving));
-			if (removedLines != null) {
-				foreach (LineSegment ls in removedLines)
+			if (deferredEventList.removedLines != null) {
+				foreach (LineSegment ls in deferredEventList.removedLines)
 					OnLineDeleted(new LineEventArgs(document, ls));
 			}
 			if (this.TotalNumberOfLines != oldNumberOfLines) {
 				OnLineCountChanged(new LineCountChangeEventArgs(document, lineStart, this.TotalNumberOfLines - oldNumberOfLines));
 			}
+			deferredEventList.RaiseEvents();
 		}
 		
-		List<LineSegment> RemoveInternal(int offset, int length)
+		void RemoveInternal(ref DeferredEventList deferredEventList, int offset, int length)
 		{
 			Debug.Assert(length >= 0);
-			if (length == 0) return null;
+			if (length == 0) return;
 			LineSegmentTree.Enumerator it = lineCollection.GetEnumeratorForOffset(offset);
 			LineSegment startSegment = it.Current;
 			int startSegmentOffset = startSegment.Offset;
 			if (offset + length < startSegmentOffset + startSegment.TotalLength) {
 				// just removing a part of this line segment
-				startSegment.RemovedLinePart(offset - startSegmentOffset, length);
+				startSegment.RemovedLinePart(ref deferredEventList, offset - startSegmentOffset, length);
 				SetSegmentLength(startSegment, startSegment.TotalLength - length);
-				return null;
+				return;
 			}
 			// merge startSegment with another line segment because startSegment's delimiter was deleted
 			// possibly remove lines in between if multiple delimiters were deleted
 			int charactersRemovedInStartLine = startSegmentOffset + startSegment.TotalLength - offset;
 			Debug.Assert(charactersRemovedInStartLine > 0);
-			startSegment.RemovedLinePart(offset - startSegmentOffset, charactersRemovedInStartLine);
+			startSegment.RemovedLinePart(ref deferredEventList, offset - startSegmentOffset, charactersRemovedInStartLine);
 			
 			
 			LineSegment endSegment = lineCollection.GetByOffset(offset + length);
@@ -128,26 +130,23 @@ namespace ICSharpCode.TextEditor.Document
 				// special case: we are removing a part of the last line up to the
 				// end of the document
 				SetSegmentLength(startSegment, startSegment.TotalLength - length);
-				return null;
+				return;
 			}
 			int endSegmentOffset = endSegment.Offset;
 			int charactersLeftInEndLine = endSegmentOffset + endSegment.TotalLength - (offset + length);
-			endSegment.RemovedLinePart(0, endSegment.TotalLength - charactersLeftInEndLine);
+			endSegment.RemovedLinePart(ref deferredEventList, 0, endSegment.TotalLength - charactersLeftInEndLine);
 			startSegment.MergedWith(endSegment, offset - startSegmentOffset);
 			SetSegmentLength(startSegment, startSegment.TotalLength - charactersRemovedInStartLine + charactersLeftInEndLine);
 			startSegment.DelimiterLength = endSegment.DelimiterLength;
 			// remove all segments between startSegment (excl.) and endSegment (incl.)
 			it.MoveNext();
-			List<LineSegment> removedLines = new List<LineSegment>();
 			LineSegment segmentToRemove;
 			do {
 				segmentToRemove = it.Current;
 				it.MoveNext();
 				lineCollection.RemoveSegment(segmentToRemove);
-				removedLines.Add(segmentToRemove);
-				segmentToRemove.Deleted();
+				segmentToRemove.Deleted(ref deferredEventList);
 			} while (segmentToRemove != endSegment);
-			return removedLines;
 		}
 		
 		void InsertInternal(int offset, string text)

@@ -43,7 +43,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			endColumn   = makerEndColumn;
 			
 			LineSegment line = document.GetLineSegment(startLine - 1);
-			instance = new CurrentLineBookmark(fileName, document, startLine - 1);
+			instance = new CurrentLineBookmark(fileName, document, new TextLocation(startColumn - 1, startLine - 1));
 			document.BookmarkManager.AddMark(instance);
 			document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.LinesBetween, startLine - 1, endLine - 1));
 			document.CommitUpdate();
@@ -64,7 +64,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			}
 		}
 		
-		public CurrentLineBookmark(string fileName, IDocument document,  int startLine) : base(fileName, document, startLine)
+		public CurrentLineBookmark(string fileName, IDocument document, TextLocation location) : base(fileName, document, location)
 		{
 			this.IsSaved = false;
 			this.IsVisibleInBookmarkPad = false;

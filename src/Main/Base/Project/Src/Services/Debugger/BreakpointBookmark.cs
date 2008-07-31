@@ -26,7 +26,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			}
 			set {
 				isHealthy = value;
-				if (Document != null && !Line.IsDeleted) {
+				if (Document != null && !Anchor.IsDeleted) {
 					Document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.SingleLine, LineNumber));
 					Document.CommitUpdate();
 				}
@@ -38,7 +38,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			set { tooltip = value; }
 		}
 		
-		public BreakpointBookmark(string fileName, IDocument document, int lineNumber) : base(fileName, document, lineNumber)
+		public BreakpointBookmark(string fileName, IDocument document, TextLocation location) : base(fileName, document, location)
 		{
 		}
 		
@@ -49,9 +49,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		
 		protected override TextMarker CreateMarker()
 		{
-			if (LineNumber >= Document.TotalNumberOfLines)
-				LineNumber = Document.TotalNumberOfLines - 1;
-			LineSegment lineSeg = Document.GetLineSegment(LineNumber);
+			LineSegment lineSeg = Anchor.Line;
 			TextMarker marker = new TextMarker(lineSeg.Offset, lineSeg.Length, TextMarkerType.SolidBlock, defaultColor, Color.White);
 			Document.MarkerStrategy.AddMarker(marker);
 			return marker;

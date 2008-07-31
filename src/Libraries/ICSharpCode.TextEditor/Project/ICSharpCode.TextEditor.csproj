@@ -59,6 +59,7 @@
     <Compile Include="Src\Document\HighlightingStrategy\HighlightingDefinitionInvalidException.cs" />
     <Compile Include="Src\Document\IDocument.cs" />
     <Compile Include="Src\Document\ISegment.cs" />
+    <Compile Include="Src\Document\LineManager\DeferredEventList.cs" />
     <Compile Include="Src\Document\LineManager\LineSegmentTree.cs" />
     <Compile Include="Src\Document\TextAnchor.cs" />
     <Compile Include="Src\Document\TextLocation.cs" />

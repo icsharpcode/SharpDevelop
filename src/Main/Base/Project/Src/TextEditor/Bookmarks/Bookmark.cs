@@ -18,7 +18,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 	[TypeConverter(typeof(BookmarkConverter))]
 	public class SDBookmark : Bookmark
 	{
-		public SDBookmark(string fileName, IDocument document, int lineNumber) : base(document, lineNumber)
+		public SDBookmark(string fileName, IDocument document, TextLocation location) : base(document, location)
 		{
 			this.fileName = fileName;
 		}
@@ -96,7 +96,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 	/// </summary>
 	public abstract class SDMarkerBookmark : SDBookmark
 	{
-		public SDMarkerBookmark(string fileName, IDocument document, int lineNumber) : base(fileName, document, lineNumber)
+		public SDMarkerBookmark(string fileName, IDocument document, TextLocation location) : base(fileName, document, location)
 		{
 			SetMarker();
 		}
@@ -169,9 +169,9 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			}
 		}
 		
-		public Bookmark CreateBookmark(IDocument document, int lineNumber)
+		public Bookmark CreateBookmark(IDocument document, TextLocation location)
 		{
-			return new SDBookmark(fileName, document, lineNumber);
+			return new SDBookmark(fileName, document, location);
 		}
 	}
 }

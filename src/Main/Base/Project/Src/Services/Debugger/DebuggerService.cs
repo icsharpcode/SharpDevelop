@@ -230,13 +230,15 @@ namespace ICSharpCode.SharpDevelop.Debugging
 					}
 				}
 			}
+			int column = 0;
 			foreach (char ch in document.GetText(document.GetLineSegment(lineNumber))) {
 				if (!char.IsWhiteSpace(ch)) {
-					document.BookmarkManager.AddMark(new BreakpointBookmark(fileName, document, lineNumber));
+					document.BookmarkManager.AddMark(new BreakpointBookmark(fileName, document, new TextLocation(column, lineNumber)));
 					document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.SingleLine, lineNumber));
 					document.CommitUpdate();
 					break;
 				}
+				column++;
 			}
 		}
 		
