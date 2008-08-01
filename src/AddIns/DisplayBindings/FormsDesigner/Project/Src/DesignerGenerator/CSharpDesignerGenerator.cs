@@ -64,7 +64,6 @@ namespace ICSharpCode.FormsDesigner
 			
 			DomRegion r = method.BodyRegion;
 			int offset = document.PositionToOffset(new TextLocation(r.BeginColumn - 1, r.BeginLine - 1));
-			string tmp = document.GetText(offset, 10);
 			while (offset < document.TextLength) {
 				char c = document.GetCharAt(offset++);
 				if (c == '{') {

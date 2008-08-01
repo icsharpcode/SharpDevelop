@@ -56,6 +56,7 @@
     <Compile Include="Src\OptionPanels\BuildOptions.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Src\ParameterCheckRefactoringMenuBuilder.cs" />
     <Compile Include="Src\Parser\Parser.cs" />
     <Compile Include="Src\Project\RemoveMembersInRangeVisitor.cs" />
     <Compile Include="Src\Project\VBNetToCSharpConvertVisitorWithMyFormsSupport.cs" />

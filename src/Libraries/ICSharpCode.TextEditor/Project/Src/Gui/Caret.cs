@@ -294,7 +294,7 @@ namespace ICSharpCode.TextEditor
 		}
 		
 		#region Caret implementation
-		public void PaintCaret(Graphics g)
+		internal void PaintCaret(Graphics g)
 		{
 			caretImplementation.PaintCaret(g);
 		}
