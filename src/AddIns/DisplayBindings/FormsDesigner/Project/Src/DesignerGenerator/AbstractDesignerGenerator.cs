@@ -14,14 +14,15 @@ using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Reflection;
-
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Refactoring;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
+using SearchAndReplace;
 using ReflectionLayer = ICSharpCode.SharpDevelop.Dom.ReflectionLayer;
 
 namespace ICSharpCode.FormsDesigner
@@ -387,8 +388,17 @@ namespace ICSharpCode.FormsDesigner
 			
 			foreach (IMethod method in completeClass.Methods) {
 				if (method.Name == eventMethodName) {
-					position = GetCursorLine(document, method);
 					file = method.DeclaringType.CompilationUnit.FileName;
+					if (FileUtility.IsEqualFileName(file, this.designerFile)) {
+						position = GetCursorLine(document, method);
+					} else {
+						try {
+							position = GetCursorLine(FindReferencesAndRenameHelper.GetDocumentInformation(file).CreateDocument(), method);
+						} catch (FileNotFoundException) {
+							position = 0;
+							return false;
+						}
+					}
 					return true;
 				}
 			}
