@@ -246,7 +246,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				
 				viewTabControl = new TabControl();
 				viewTabControl.GotFocus += delegate {
-					TabPage page = viewTabControl.TabPages[viewTabControl.TabIndex];
+					TabPage page = viewTabControl.SelectedTab;
 					if (page.Controls.Count == 1 && !page.ContainsFocus) page.Controls[0].Focus();
 				};
 				viewTabControl.Alignment = TabAlignment.Bottom;
