@@ -619,15 +619,13 @@ namespace Hornung.ResourceToolkit.Resolver
 								}
 								#endif
 								
-								TypeResolveResult trr = rr as TypeResolveResult;
-								
-								if (trr != null) {
+								if (rr != null) {
 									
 									#if DEBUG
-									LoggingService.Debug("ResourceToolkit: BclNRefactoryResourceResolver found typeof(...) parameter, type: '"+trr.ResolvedType.ToString()+"'");
+									LoggingService.Debug("ResourceToolkit: BclNRefactoryResourceResolver found typeof(...) parameter, type: '"+rr.ResolvedType.ToString()+"'");
 									#endif
 									
-									this.foundResourceSet = NRefactoryResourceResolver.GetResourceSetReference(this.resourceManagerMember.DeclaringType.CompilationUnit.FileName, trr.ResolvedType.FullyQualifiedName);
+									this.foundResourceSet = NRefactoryResourceResolver.GetResourceSetReference(this.resourceManagerMember.DeclaringType.CompilationUnit.FileName, rr.ResolvedType.FullyQualifiedName);
 									#if DEBUG
 									if (this.foundResourceSet.FileName != null) {
 										LoggingService.Debug("ResourceToolkit: BclNRefactoryResourceResolver found resource file: "+this.foundResourceSet.FileName);
