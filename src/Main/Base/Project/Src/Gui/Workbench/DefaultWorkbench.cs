@@ -639,35 +639,43 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		protected override void OnDragEnter(DragEventArgs e)
 		{
-			base.OnDragEnter(e);
-			if (e.Data != null && e.Data.GetDataPresent(DataFormats.FileDrop)) {
-				string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-				foreach (string file in files) {
-					if (File.Exists(file)) {
-						e.Effect = DragDropEffects.Copy;
-						return;
+			try {
+				base.OnDragEnter(e);
+				if (e.Data != null && e.Data.GetDataPresent(DataFormats.FileDrop)) {
+					string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+					foreach (string file in files) {
+						if (File.Exists(file)) {
+							e.Effect = DragDropEffects.Copy;
+							return;
+						}
 					}
 				}
+				e.Effect = DragDropEffects.None;
+			} catch (Exception ex) {
+				MessageService.ShowError(ex);
 			}
-			e.Effect = DragDropEffects.None;
 		}
 		
 		protected override void OnDragDrop(DragEventArgs e)
 		{
-			base.OnDragDrop(e);
-			if (e.Data != null && e.Data.GetDataPresent(DataFormats.FileDrop)) {
-				string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-				
-				foreach (string file in files) {
-					if (File.Exists(file)) {
-						IProjectLoader loader = ProjectService.GetProjectLoader(file);
-						if (loader != null) {
-							FileUtility.ObservedLoad(new NamedFileOperationDelegate(loader.Load), file);
-						} else {
-							FileService.OpenFile(file);
+			try {
+				base.OnDragDrop(e);
+				if (e.Data != null && e.Data.GetDataPresent(DataFormats.FileDrop)) {
+					string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+					
+					foreach (string file in files) {
+						if (File.Exists(file)) {
+							IProjectLoader loader = ProjectService.GetProjectLoader(file);
+							if (loader != null) {
+								FileUtility.ObservedLoad(new NamedFileOperationDelegate(loader.Load), file);
+							} else {
+								FileService.OpenFile(file);
+							}
 						}
 					}
 				}
+			} catch (Exception ex) {
+				MessageService.ShowError(ex);
 			}
 		}
 		
