@@ -48,10 +48,16 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		TypeResolveResult CreateTypeResolveResult(IReturnType resolvedType)
 		{
-			if (resolvedType == null)
+			if (resolvedType == null) {
 				return null;
-			else
-				return new TypeResolveResult(resolver.CallingClass, resolver.CallingMember, resolvedType);
+			} else {
+				IReturnType rt = resolvedType;
+				while (rt != null && rt.IsArrayReturnType) {
+					rt = rt.CastToArrayReturnType().ArrayElementType;
+				}
+				IClass resolvedClass = rt != null ? rt.GetUnderlyingClass() : null;
+				return new TypeResolveResult(resolver.CallingClass, resolver.CallingMember, resolvedType, resolvedClass);
+			}
 		}
 		
 		MemberResolveResult CreateMemberResolveResult(IMember member)
@@ -95,7 +101,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (arrayCreateExpression.IsImplicitlyTyped) {
 				return CreateResolveResult(arrayCreateExpression.ArrayInitializer);
 			} else {
-				return CreateResolveResult(arrayCreateExpression.CreateType);
+				return CreateTypeResolveResult(TypeVisitor.CreateReturnType(arrayCreateExpression.CreateType, resolver));
 			}
 		}
 		
@@ -594,7 +600,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		public override object VisitTypeReferenceExpression(TypeReferenceExpression typeReferenceExpression, object data)
 		{
 			TypeReference reference = typeReferenceExpression.TypeReference;
-			ResolveResult rr = CreateResolveResult(reference);
+			ResolveResult rr = CreateTypeResolveResult(TypeVisitor.CreateReturnType(reference, resolver));
 			if (rr == null && reference.GenericTypes.Count == 0 && !reference.IsArrayType) {
 				// reference to namespace is possible
 				if (reference.IsGlobal) {

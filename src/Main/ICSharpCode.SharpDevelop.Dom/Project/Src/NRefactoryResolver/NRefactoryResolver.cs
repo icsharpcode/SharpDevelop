@@ -112,7 +112,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 		}
 		
-		Expression ParseExpression(string expression)
+		Expression ParseExpression(string expression, int caretColumnOffset)
 		{
 			Expression expr = SpecialConstructs(expression);
 			if (expr == null) {
@@ -122,7 +122,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				using (NR.IParser p = NR.ParserFactory.CreateParser(language, new System.IO.StringReader(expression))) {
 					expr = p.ParseExpression();
 					if (expr != null) {
-						expr.AcceptVisitor(new FixAllNodeLocations(new NR.Location(caretColumn, caretLine)), null);
+						expr.AcceptVisitor(new FixAllNodeLocations(new NR.Location(caretColumn + caretColumnOffset, caretLine)), null);
 					}
 				}
 			}
@@ -205,9 +205,11 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				} else if ("global".Equals(expression, StringComparison.InvariantCultureIgnoreCase)) {
 					return new NamespaceResolveResult(null, null, "");
 				}
+			} else if (language == NR.SupportedLanguage.CSharp && expressionResult.Context.IsTypeContext && !expressionResult.Context.IsObjectCreation) {
+				expr = ParseTypeReference(expression);
 			}
 			if (expr == null) {
-				expr = ParseExpression(expression);
+				expr = ParseExpression(expression, 0);
 				if (expr == null) {
 					return null;
 				}
@@ -221,7 +223,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 						else
 							break;
 					}
-					expr = ParseExpression("new " + expression);
+					expr = ParseExpression("new " + expression, -4);
 					if (expr == null) {
 						return null;
 					}
@@ -247,6 +249,15 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return ResolveInternal(expr, expressionResult.Context);
 		}
 		
+		TypeReferenceExpression ParseTypeReference(string typeReference)
+		{
+			TypeOfExpression toe = ParseExpression("typeof(" + typeReference + ")", -7) as TypeOfExpression;
+			if (toe != null)
+				return new TypeReferenceExpression(toe.TypeReference);
+			else
+				return null;
+		}
+		
 		ResolveResult WithResolve(string expression, string fileContent)
 		{
 			RunLookupTableVisitor(fileContent);
@@ -261,7 +272,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 			if (innermost != null) {
 				if (expression.Length > 1) {
-					Expression expr = ParseExpression(DummyFindVisitor.dummyName + expression);
+					Expression expr = ParseExpression(DummyFindVisitor.dummyName + expression, -DummyFindVisitor.dummyName.Length);
 					if (expr == null) return null;
 					DummyFindVisitor v = new DummyFindVisitor();
 					expr.AcceptVisitor(v, null);
@@ -340,6 +351,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				if (rr is NamespaceResolveResult) {
 					return ((NamespaceResolveResult)rr).Name + "." + fieldReferenceExpression.MemberName;
 				}
+			} else if (expr is TypeReferenceExpression) {
+				return (expr as TypeReferenceExpression).TypeReference.SystemType;
 			}
 			return null;
 		}

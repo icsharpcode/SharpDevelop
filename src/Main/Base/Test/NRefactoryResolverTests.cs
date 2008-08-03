@@ -2262,5 +2262,19 @@ class TestClass {
 			var rr = Resolve<ResolveResult>(program, "*p", 5);
 			Assert.AreEqual("System.Byte", rr.ResolvedType.DotNetName);
 		}
+		
+		[Test]
+		public void ArrayTypeResolveResult()
+		{
+			string program = @"class A {
+		
+}";
+			TypeResolveResult result = Resolve<TypeResolveResult>(program, "A[]", 2, 1, ExpressionContext.Type);
+			Assert.AreEqual("A", result.ResolvedClass.FullyQualifiedName);
+			Assert.IsTrue(result.ResolvedType.IsArrayReturnType);
+			
+			ResolveResult result2 = Resolve(program, "A[0]", 2, 1, ExpressionContext.ObjectCreation);
+			Assert.IsTrue(result2.IsReferenceTo(result.ResolvedClass));
+		}
 	}
 }
