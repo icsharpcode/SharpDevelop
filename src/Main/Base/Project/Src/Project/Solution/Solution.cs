@@ -12,7 +12,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using SearchAndReplace;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using MSBuild = Microsoft.Build.BuildEngine;
@@ -35,8 +35,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		Dictionary<string, ISolutionFolder> guidDictionary = new Dictionary<string, ISolutionFolder>();
 		
 		string fileName = String.Empty;
-		
-		bool readOnly = false;
 		
 		MSBuild.Engine buildEngine = MSBuildInternals.CreateEngine();
 		
@@ -211,10 +209,14 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		/// <summary>Property to determine if the solution is readonly.</summary>
+		/// <summary>Returns true if the solution is readonly.</summary>
 		[Browsable(false)]
 		public bool ReadOnly {
-			get { return readOnly; }
+			get
+			{
+				FileAttributes attributes = File.GetAttributes(fileName);
+				return ((FileAttributes.ReadOnly & attributes) == FileAttributes.ReadOnly);
+			}
 		}
 		#endregion
 		
@@ -252,24 +254,17 @@ namespace ICSharpCode.SharpDevelop.Project
 				Save(fileName);
 				return;
 			} catch (IOException ex) {
-				MessageService.ShowError("Could not save " + fileName + ":\n" + ex.Message);
+				MessageService.ShowErrorFormatted("${res:SharpDevelop.Solution.CannotSave.IOException}", fileName, ex.Message);
 			} catch (UnauthorizedAccessException ex) {
 				FileAttributes attributes = File.GetAttributes(fileName);
 				if ((FileAttributes.ReadOnly & attributes) == FileAttributes.ReadOnly) {
-					bool attemptOverwrite = MessageService.AskQuestionFormatted(
-						"Solution file {0} is marked readonly. Attempt to save anyway?",
-						new string [] {fileName});
-					if (attemptOverwrite) {
-						try {
-							attributes &= ~FileAttributes.ReadOnly;
-							File.SetAttributes(fileName, attributes);
-							Save(fileName);
-							return;
-						} catch { /* If something screws up shows the error */ }
-					}
+					MessageService.ShowErrorFormatted("${res:SharpDevelop.Solution.CannotSave.ReadOnly}", fileName);
 				}
-				this.readOnly = true;
-				MessageService.ShowError("Could not save " + fileName + ":\n" + ex.Message + "\n\nEnsure the file is writable.");
+				else
+				{
+					MessageService.ShowErrorFormatted
+						("${res:SharpDevelop.Solution.CannotSave.UnauthorizedAccessException}", fileName, ex.Message);
+				}
 			}
 		}
 		
@@ -502,8 +497,8 @@ namespace ICSharpCode.SharpDevelop.Project
 					}
 				}
 			}
-			
-			if (newSolution.FixSolutionConfiguration(newSolution.Projects) || needsConversion) {
+						
+			if (!newSolution.ReadOnly && (newSolution.FixSolutionConfiguration(newSolution.Projects) || needsConversion)) {
 				// save in new format
 				newSolution.Save();
 			}

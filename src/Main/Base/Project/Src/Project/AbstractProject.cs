@@ -124,6 +124,18 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		/// <summary>
+		/// True if the file that contains the project is readonly.
+		/// </summary>
+		[ReadOnly(true)]
+		public bool ReadOnly {
+			get
+			{
+				FileAttributes attributes = File.GetAttributes(FileName);
+				return ((FileAttributes.ReadOnly & attributes) == FileAttributes.ReadOnly);
+			}
+		}
+		
+		/// <summary>
 		/// Gets the directory of the project file.
 		/// This is equivalent to Path.GetDirectoryName(project.FileName);
 		/// (Example: @"D:\Serralongue\SharpDevelop\samples\CustomPad")

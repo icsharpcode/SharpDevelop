@@ -106,6 +106,19 @@ namespace ICSharpCode.SharpDevelop.Project
 			get;
 		}
 		
+		/// <summary>
+		/// <para>
+		/// True if the project is readonly. For project based files this means
+		/// the project file has the readonly attribute set. For solution folder
+		/// based projects this means that the sln file containing the project
+		/// has the readonly attribute set.
+		/// </para>
+		/// <para>This member is thread-safe.</para>
+		/// </summary>
+		bool ReadOnly {
+			get;
+		}
+		
 		#region MSBuild properties used inside SharpDevelop base
 		/// <summary>
 		/// Gets/Sets the assembly name of the assembly created when building this project.

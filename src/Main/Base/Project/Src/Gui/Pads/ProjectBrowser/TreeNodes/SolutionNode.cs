@@ -73,6 +73,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		void UpdateText()
 		{
 			Text = ResourceService.GetString("ICSharpCode.SharpDevelop.Commands.ProjectBrowser.SolutionNodeText") + " " + solution.Name;
+			if (Solution.ReadOnly) {
+				Text += StringParser.Parse(" (${res:Global.ReadOnly})");
+			}
 		}
 		
 		public void AddItem(string fileName)

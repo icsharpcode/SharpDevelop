@@ -41,5 +41,4 @@ namespace ICSharpCode.SharpDevelop
 			return project != null && project.Language == activeproject;
 		}
 	}
-
 }

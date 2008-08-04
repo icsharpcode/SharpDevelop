@@ -111,6 +111,8 @@
     <Compile Include="Src\Gui\Pads\ToolsPad.cs" />
     <Compile Include="Src\Gui\Workbench\Layouts\SimpleWorkbenchLayout.cs" />
     <Compile Include="Src\Gui\Workbench\SingleInstanceHelper.cs" />
+    <Compile Include="Src\Internal\ConditionEvaluators\WriteableProjectEvaluator.cs" />
+    <Compile Include="Src\Internal\ConditionEvaluators\WriteableSolutionEvaluator.cs" />
     <Compile Include="Src\Internal\ExternalTool\ExternalTool.cs" />
     <Compile Include="Src\Internal\Templates\CodeTemplate.cs" />
     <Compile Include="Src\Internal\Templates\Project\ProjectTemplate.cs" />

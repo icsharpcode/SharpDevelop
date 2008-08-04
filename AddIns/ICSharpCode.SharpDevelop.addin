@@ -20,6 +20,8 @@
 			<ConditionEvaluator name="OpenWindowState" class="ICSharpCode.SharpDevelop.OpenWindowStateConditionEvaluator"/>
 			<ConditionEvaluator name="WindowActive" class="ICSharpCode.SharpDevelop.WindowActiveConditionEvaluator"/>
 			<ConditionEvaluator name="WindowOpen" class="ICSharpCode.SharpDevelop.WindowOpenConditionEvaluator"/>
+			<ConditionEvaluator name="WriteableProject" class="ICSharpCode.SharpDevelop.WriteableProjectConditionEvaluator"/>
+			<ConditionEvaluator name="WriteableSolution" class="ICSharpCode.SharpDevelop.WriteableSolutionConditionEvaluator"/>
 			<ConditionEvaluator name="ProjectActive" class="ICSharpCode.SharpDevelop.ProjectActiveConditionEvaluator"/>
 			<ConditionEvaluator name="TextContent" class="ICSharpCode.SharpDevelop.DefaultEditor.Conditions.TextContentConditionEvaluator"/>
 			<ConditionEvaluator name="BrowserLocation" class="ICSharpCode.SharpDevelop.BrowserDisplayBinding.BrowserLocationConditionEvaluator"/>
@@ -28,6 +30,7 @@
 			<ConditionEvaluator name="CanNavigateForward" class="ICSharpCode.SharpDevelop.CanNavigateForwardConditionEvaluator"/>
 			<ConditionEvaluator name="CompareProjectProperty" class="ICSharpCode.SharpDevelop.CompareProjectPropertyConditionEvaluator"/>
 			<ConditionEvaluator name="ProjectItem" class="ICSharpCode.SharpDevelop.Project.ProjectItemConditionEvaluator"/>
+			
 			
 			<Doozer name="CustomTool" class="ICSharpCode.SharpDevelop.Project.CustomToolDoozer"/>
 			<Doozer name="CustomProperty" class="ICSharpCode.SharpDevelop.Project.CustomPropertyDoozer"/>
@@ -203,23 +206,25 @@
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.Clean"/>
 		<MenuItem id = "CombineBuildGroupSeparator" type = "Separator"/>
 		
-		<MenuItem id = "CombineAddMenu" label = "${res:ProjectComponent.ContextMenu.AddMenu}" type = "Menu">
-			<MenuItem id    = "AddNewProjectToSolution"
-			          label = "${res:ProjectComponent.ContextMenu.NewProject}"
-			          icon  = "Icons.16x16.NewProjectIcon"
-			          class = "ICSharpCode.SharpDevelop.Project.Commands.AddNewProjectToSolution"/>
-			<MenuItem id    = "AddExitingProjectToSolution"
-			          label = "${res:ProjectComponent.ContextMenu.ExistingProject}"
-			          class = "ICSharpCode.SharpDevelop.Project.Commands.AddExitingProjectToSolution"/>
-			<MenuItem id    = "Separator1" type = "Separator" />
-			<MenuItem id    = "AddItem"
-			          label = "${res:ProjectComponent.ContextMenu.AddItem}"
-			          class = "ICSharpCode.SharpDevelop.Project.Commands.AddExistingItemToSolution"/>
-			<MenuItem id    = "AddNewSolutionFolderToSolution"
-			          icon  = "ProjectBrowser.SolutionFolder.CreateNew"
-			          label = "${res:ProjectComponent.ContextMenu.NewSolutionFolder}"
-			          class = "ICSharpCode.SharpDevelop.Project.Commands.AddNewSolutionFolderToSolution"/>
-		</MenuItem>
+		<Condition name="WriteableSolution" action="Disable">
+			<MenuItem id = "CombineAddMenu" label = "${res:ProjectComponent.ContextMenu.AddMenu}" type = "Menu">
+				<MenuItem id    = "AddNewProjectToSolution"
+				          label = "${res:ProjectComponent.ContextMenu.NewProject}"
+				          icon  = "Icons.16x16.NewProjectIcon"
+				          class = "ICSharpCode.SharpDevelop.Project.Commands.AddNewProjectToSolution"/>
+				<MenuItem id    = "AddExitingProjectToSolution"
+				          label = "${res:ProjectComponent.ContextMenu.ExistingProject}"
+				          class = "ICSharpCode.SharpDevelop.Project.Commands.AddExitingProjectToSolution"/>
+				<MenuItem id    = "Separator1" type = "Separator" />
+				<MenuItem id    = "AddItem"
+				          label = "${res:ProjectComponent.ContextMenu.AddItem}"
+				          class = "ICSharpCode.SharpDevelop.Project.Commands.AddExistingItemToSolution"/>
+				<MenuItem id    = "AddNewSolutionFolderToSolution"
+				          icon  = "ProjectBrowser.SolutionFolder.CreateNew"
+				          label = "${res:ProjectComponent.ContextMenu.NewSolutionFolder}"
+				          class = "ICSharpCode.SharpDevelop.Project.Commands.AddNewSolutionFolderToSolution"/>
+			</MenuItem>
+		</Condition>
 		
 		<MenuItem id = "AddSeparator" type = "Separator"/>
 		<MenuItem id    = "Paste"
@@ -274,26 +279,29 @@
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.PublishProject"/>-->
 		<MenuItem id = "CombineBuildGroupSeparator" type = "Separator"/>
 		
-		<MenuItem id = "ProjectAddMenu" label = "${res:ProjectComponent.ContextMenu.AddMenu}" type = "Menu" >
-			<MenuItem id    = "New Item"
-			          label = "${res:ProjectComponent.ContextMenu.NewItem}"
-			          icon  = "Icons.16x16.NewDocumentIcon"
-			          class = "ICSharpCode.SharpDevelop.Project.Commands.AddNewItemsToProject"/>
-			<MenuItem id    = "Existing Item"
-			          label = "${res:ProjectComponent.ContextMenu.ExistingItem}"
-			          class = "ICSharpCode.SharpDevelop.Project.Commands.AddExistingItemsToProject"/>
-			<MenuItem id    = "NewFolder"
-			          label = "${res:ProjectComponent.ContextMenu.NewFolder}"
-			          icon  = "Icons.16x16.NewFolderIcon"
-			          class = "ICSharpCode.SharpDevelop.Project.Commands.AddNewFolderToProject"/>
-		</MenuItem>
-		<MenuItem id    = "AddReference"
-		          label = "${res:ProjectComponent.ContextMenu.AddReference}"
-		          class = "ICSharpCode.SharpDevelop.Project.Commands.AddReferenceToProject"/>
-		<MenuItem id    = "AddWebReference"
-		          label = "${res:ProjectComponent.ContextMenu.AddWebReference}"
-		          class = "ICSharpCode.SharpDevelop.Project.Commands.AddWebReferenceToProject"/>
-		<MenuItem id = "AddSeparator" type = "Separator"/>
+		<Condition name="WriteableProject" action="Disable">
+			<MenuItem id = "ProjectAddMenu" label = "${res:ProjectComponent.ContextMenu.AddMenu}" type = "Menu" >
+				<MenuItem id    = "New Item"
+				          label = "${res:ProjectComponent.ContextMenu.NewItem}"
+				          icon  = "Icons.16x16.NewDocumentIcon"
+				          class = "ICSharpCode.SharpDevelop.Project.Commands.AddNewItemsToProject"/>
+				<MenuItem id    = "Existing Item"
+				          label = "${res:ProjectComponent.ContextMenu.ExistingItem}"
+				          class = "ICSharpCode.SharpDevelop.Project.Commands.AddExistingItemsToProject"/>
+				<MenuItem id    = "NewFolder"
+				          label = "${res:ProjectComponent.ContextMenu.NewFolder}"
+				          icon  = "Icons.16x16.NewFolderIcon"
+				          class = "ICSharpCode.SharpDevelop.Project.Commands.AddNewFolderToProject"/>
+			</MenuItem>
+			
+			<MenuItem id    = "AddReference"
+			          label = "${res:ProjectComponent.ContextMenu.AddReference}"
+			          class = "ICSharpCode.SharpDevelop.Project.Commands.AddReferenceToProject"/>
+			<MenuItem id    = "AddWebReference"
+			          label = "${res:ProjectComponent.ContextMenu.AddWebReference}"
+			          class = "ICSharpCode.SharpDevelop.Project.Commands.AddWebReferenceToProject"/>
+			<MenuItem id = "AddSeparator" type = "Separator"/>
+		</Condition>
 		
 		<MenuItem id    = "OpenProjectWith"
 		          label = "${res:Gui.ProjectBrowser.OpenWith}"

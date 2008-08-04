@@ -22,17 +22,26 @@ namespace ICSharpCode.SharpDevelop.Commands
 	{
 		public override void Run()
 		{
-			if (ProjectBrowserPad.Instance.CurrentProject != null) {
-				int result = MessageService.ShowCustomDialog("${res:Dialog.NewFile.AddToProjectQuestionTitle}",
-				                                             "${res:Dialog.NewFile.AddToProjectQuestion}",
-				                                             "${res:Dialog.NewFile.AddToProjectQuestionProject}",
-				                                             "${res:Dialog.NewFile.AddToProjectQuestionStandalone}");
-				if (result == 0) {
-					ProjectBrowserPad.Instance.CurrentProject.AddNewItemsToProject();
-					return;
-				} else if (result == -1) {
-					return;
+			ProjectNode node = ProjectBrowserPad.Instance.CurrentProject;
+			if (node != null) {
+				if (node.Project.ReadOnly)
+				{
+					MessageService.ShowWarningFormatted("${res:Dialog.NewFile.ReadOnlyProjectWarning}", node.Project.FileName);
 				}
+				else
+				{
+					int result = MessageService.ShowCustomDialog("${res:Dialog.NewFile.AddToProjectQuestionTitle}",
+					                                             "${res:Dialog.NewFile.AddToProjectQuestion}",
+					                                             "${res:Dialog.NewFile.AddToProjectQuestionProject}",
+					                                             "${res:Dialog.NewFile.AddToProjectQuestionStandalone}");
+					if (result == 0) {
+						node.AddNewItemsToProject();
+						return;
+					} else if (result == -1) {
+						return;
+					}
+				}
+				
 			}
 			using (NewFileDialog nfd = new NewFileDialog(null)) {
 				nfd.Owner = WorkbenchSingleton.MainForm;
