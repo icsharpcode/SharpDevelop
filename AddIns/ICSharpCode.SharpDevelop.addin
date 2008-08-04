@@ -410,7 +410,7 @@
 					          label = "${res:ProjectComponent.ContextMenu.ExcludeFileFromProject}"
 					          class = "ICSharpCode.SharpDevelop.Project.Commands.ExcludeFileFromProject"/>
 					<MenuItem id     = "ExecuteCustomTool"
-					          label  = "Execute custom tool"
+					          label  = "${res:ProjectComponent.ContextMenu.ExecuteCustomTool}"
 					          class  = "ICSharpCode.SharpDevelop.Project.ExecuteCustomToolCommand"/>
 				</Condition>
 				

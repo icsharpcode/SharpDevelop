@@ -65,7 +65,7 @@
           <System.Windows.Forms.Label>
             <Name value="label2" />
             <Location value="9, 95" />
-            <Text value="When running:" />
+            <Text value="${res:Dialog.Options.IDEOptions.ProjectAndSolutionOptions.WhenRunning}" />
             <Size value="100, 23" />
             <TabIndex value="14" />
           </System.Windows.Forms.Label>
@@ -81,7 +81,7 @@
           <System.Windows.Forms.Label>
             <Name value="label1" />
             <Location value="9, 68" />
-            <Text value="Number of projects to build in parallel:" />
+            <Text value="${res:Dialog.Options.IDEOptions.ProjectAndSolutionOptions.ParallelBuild}" />
             <Size value="212, 23" />
             <TextAlign value="TopRight" />
             <TabIndex value="12" />

@@ -16,14 +16,13 @@ namespace ICSharpCode.SharpDevelop.Project
 {
 	public enum BuildOnExecuteSetting
 	{
-		// TODO: translate
-		[Description("Do not build")]
+		[Description("${res:Dialog.Options.IDEOptions.ProjectAndSolutionOptions.WhenRunning.DoNotBuild}")]
 		DoNotBuild,
-		[Description("Build modified projects only")]
+		[Description("${res:Dialog.Options.IDEOptions.ProjectAndSolutionOptions.WhenRunning.BuildOnlyModified}")]
 		BuildOnlyModified,
-		[Description("Build modified projects and projects depending on them")]
+		[Description("${res:Dialog.Options.IDEOptions.ProjectAndSolutionOptions.WhenRunning.BuildModifiedAndDependent}")]
 		BuildModifiedAndDependent,
-		[Description("Build all projects")]
+		[Description("${res:Dialog.Options.IDEOptions.ProjectAndSolutionOptions.WhenRunning.RegularBuild}")]
 		RegularBuild
 	}
 	
@@ -200,7 +199,10 @@ namespace ICSharpCode.SharpDevelop.Project
 						}
 					}
 					if (isUnmodified) {
-						feedbackSink.ReportMessage("Skipped " + p.Name + " (no changes inside SharpDevelop)");
+						feedbackSink.ReportMessage(
+							StringParser.Parse("${res:MainWindow.CompilerMessages.SkipProjectNoChanges}",
+							                   new string[,] {{ "Name", p.Name }})
+						);
 						feedbackSink.Done(true);
 					} else {
 						wasRecompiled = true;

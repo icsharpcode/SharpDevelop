@@ -61,8 +61,10 @@ namespace ICSharpCode.Core.WinForms
 		internal static ArrayList ConvertSubItems(IList items)
 		{
 			ArrayList r = new ArrayList();
-			foreach (MenuItemDescriptor descriptor in items) {
-				r.Add(CreateMenuItemFromDescriptor(descriptor));
+			if (items != null) {
+				foreach (MenuItemDescriptor descriptor in items) {
+					r.Add(CreateMenuItemFromDescriptor(descriptor));
+				}
 			}
 			return r;
 		}

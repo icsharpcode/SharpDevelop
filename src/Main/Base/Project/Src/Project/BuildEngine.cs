@@ -505,7 +505,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (buildIsCancelled) {
 				results.Result = BuildResultCode.Cancelled;
 				
-				ReportMessageInternal("Build was cancelled.");
+				ReportMessageInternal("${res:MainWindow.CompilerMessages.BuildCancelled}");
 			} else if (rootNode.hasErrors) {
 				results.Result = BuildResultCode.Error;
 				
@@ -622,7 +622,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			lock (this) {
 				if (progressMonitor != null) {
-					progressMonitor.TaskName = "Building "
+					progressMonitor.TaskName = "${res:MainWindow.CompilerMessages.BuildVerb} "
 						+ projectsCurrentlyBuilding.Select(n => n.project.Name).Join(", ")
 						+ "...";
 				}
