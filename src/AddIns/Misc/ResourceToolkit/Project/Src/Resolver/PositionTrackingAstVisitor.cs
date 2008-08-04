@@ -20,8 +20,10 @@ namespace Hornung.ResourceToolkit.Resolver
 	/// </summary>
 	public abstract class PositionTrackingAstVisitor : ICSharpCode.NRefactory.Visitors.NodeTrackingAstVisitor
 	{
+		readonly Stack<INode> parentNodes = new Stack<INode>();
 		
-		private Stack<INode> parentNodes;
+		readonly string fileName;
+		readonly string fileContent;
 		
 		protected override void BeginVisit(INode node)
 		{
@@ -77,6 +79,14 @@ namespace Hornung.ResourceToolkit.Resolver
 			}
 		}
 		
+		protected string FileName {
+			get { return fileName; }
+		}
+		
+		protected string FileContent {
+			get { return fileContent; }
+		}
+		
 		// ********************************************************************************************************************************
 		
 		private CompilationUnit compilationUnit;
@@ -93,19 +103,17 @@ namespace Hornung.ResourceToolkit.Resolver
 		/// Resolves an expression in the current node's context.
 		/// </summary>
 		/// <param name="expression">The expression to be resolved.</param>
-		/// <param name="fileName">The file name of the source file that contains the expression to be resolved.</param>
-		public ResolveResult Resolve(Expression expression, string fileName)
+		public ResolveResult Resolve(Expression expression)
 		{
-			return this.Resolve(expression, fileName, ExpressionContext.Default);
+			return this.Resolve(expression, ExpressionContext.Default);
 		}
 		
 		/// <summary>
 		/// Resolves an expression in the current node's context.
 		/// </summary>
 		/// <param name="expression">The expression to be resolved.</param>
-		/// <param name="fileName">The file name of the source file that contains the expression to be resolved.</param>
 		/// <param name="context">The ExpressionContext.</param>
-		public ResolveResult Resolve(Expression expression, string fileName, ExpressionContext context)
+		public ResolveResult Resolve(Expression expression, ExpressionContext context)
 		{
 			if (!this.PositionAvailable) {
 				LoggingService.Info("ResourceToolkit: PositionTrackingAstVisitor: Resolve failed due to position information being unavailable. Expression: "+expression.ToString());
@@ -116,7 +124,7 @@ namespace Hornung.ResourceToolkit.Resolver
 			LoggingService.Debug("ResourceToolkit: PositionTrackingAstVisitor: Using this parent node for resolve: "+this.parentNodes.Peek().ToString());
 			#endif
 			
-			return NRefactoryAstCacheService.ResolveLowLevel(fileName, this.CurrentNodeStartLocation.Y, this.CurrentNodeStartLocation.X+1, this.compilationUnit, null, expression, context);
+			return NRefactoryAstCacheService.ResolveLowLevel(this.fileName, this.fileContent, this.CurrentNodeStartLocation.Y, this.CurrentNodeStartLocation.X+1, this.compilationUnit, null, expression, context);
 		}
 		
 		// ********************************************************************************************************************************
@@ -124,9 +132,18 @@ namespace Hornung.ResourceToolkit.Resolver
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PositionTrackingAstVisitor"/> class.
 		/// </summary>
-		protected PositionTrackingAstVisitor() : base()
+		protected PositionTrackingAstVisitor(string fileName, string fileContent)
+			: base()
 		{
-			this.parentNodes = new Stack<INode>();
+			if (fileName == null) {
+				throw new ArgumentNullException("fileName");
+			}
+			if (fileContent == null) {
+				throw new ArgumentNullException("fileContent");
+			}
+			
+			this.fileName = fileName;
+			this.fileContent = fileContent;
 		}
 	}
 }

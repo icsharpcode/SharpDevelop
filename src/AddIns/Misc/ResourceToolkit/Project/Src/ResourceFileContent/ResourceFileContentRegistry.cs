@@ -42,15 +42,14 @@ namespace Hornung.ResourceToolkit.ResourceFileContent
 		/// Gets the resource content for the specified file.
 		/// </summary>
 		/// <param name="fileName">The name of the file to get a resource content for.</param>
-		/// <returns>The resource content for the specified file.</returns>
-		/// <exception cref="NotSupportedException">The format of the specified resource file cannot be handled.</exception>
+		/// <returns>The resource content for the specified file, or <c>null</c> if the format of the specified resource file cannot be handled.</returns>
 		public static IResourceFileContent GetResourceFileContent(string fileName)
 		{
 			IResourceFileContent c;
 			if (!resourceFileContents.TryGetValue(fileName, out c)) {
 				c = CreateResourceFileContent(fileName);
 				if (c == null) {
-					throw new NotSupportedException("The format of the resource file '"+fileName+"' cannot be handled by any registered resource file content factory.");
+					return null;
 				}
 				resourceFileContents[fileName] = c;
 			}

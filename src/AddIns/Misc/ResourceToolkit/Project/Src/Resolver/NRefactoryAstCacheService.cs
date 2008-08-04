@@ -75,11 +75,13 @@ namespace Hornung.ResourceToolkit.Resolver
 		/// </summary>
 		public static void DisableCache()
 		{
-			cacheEnabled = false;
-			cachedAstInfo.Clear();
-			cachedMemberMappings.Clear();
-			LoggingService.Info("ResourceToolkit: NRefactoryAstCacheService cache disabled and cleared");
-			OnCacheEnabledChanged(EventArgs.Empty);
+			if (CacheEnabled) {
+				cacheEnabled = false;
+				cachedAstInfo.Clear();
+				cachedMemberMappings.Clear();
+				LoggingService.Info("ResourceToolkit: NRefactoryAstCacheService cache disabled and cleared");
+				OnCacheEnabledChanged(EventArgs.Empty);
+			}
 		}
 		
 		/// <summary>
@@ -87,13 +89,14 @@ namespace Hornung.ResourceToolkit.Resolver
 		/// </summary>
 		/// <param name="language">The language of the file.</param>
 		/// <param name="fileName">The file to get the AST for.</param>
+		/// <param name="fileContent">The content of the file to get the AST for.</param>
 		/// <returns>A <see cref="CompilationUnit"/> that contains the AST for the specified file, or <c>null</c> if the file cannot be parsed.</returns>
 		/// <remarks>Between calls to <see cref="EnableCache"/> and <see cref="DisableCache"/> the file is parsed only once. On subsequent accesses the AST is retrieved from the cache.</remarks>
-		public static CompilationUnit GetFullAst(SupportedLanguage language, string fileName)
+		public static CompilationUnit GetFullAst(SupportedLanguage language, string fileName, string fileContent)
 		{
 			CompilationUnit cu;
 			if (!CacheEnabled || !cachedAstInfo.TryGetValue(fileName, out cu)) {
-				cu = Parse(language, fileName);
+				cu = Parse(language, fileName, fileContent);
 				if (cu != null && CacheEnabled) {
 					cachedAstInfo.Add(fileName, cu);
 				}
@@ -101,9 +104,9 @@ namespace Hornung.ResourceToolkit.Resolver
 			return cu;
 		}
 		
-		static CompilationUnit Parse(SupportedLanguage language, string fileName)
+		static CompilationUnit Parse(SupportedLanguage language, string fileName, string fileContent)
 		{
-			using(ICSharpCode.NRefactory.IParser parser = ParserFactory.CreateParser(language, new StringReader(ParserService.GetParseableFileContent(fileName)))) {
+			using(ICSharpCode.NRefactory.IParser parser = ParserFactory.CreateParser(language, new StringReader(fileContent))) {
 				if (parser != null) {
 					#if DEBUG
 					LoggingService.Debug("ResourceToolkit: NRefactoryAstCacheService: Parsing file '"+fileName+"'");
@@ -168,17 +171,18 @@ namespace Hornung.ResourceToolkit.Resolver
 		/// use of the cache if possible.
 		/// </summary>
 		/// <param name="fileName">The file name of the source code file that contains the expression to be resolved.</param>
+		/// <param name="fileContent">The content of the source code file that contains the expression to be resolved.</param>
 		/// <param name="caretLine">The 1-based line number of the expression.</param>
 		/// <param name="caretColumn">The 1-based column number of the expression.</param>
 		/// <param name="compilationUnit">The CompilationUnit that contains the NRefactory AST for this file. May be <c>null</c> (then the CompilationUnit is retrieved from the cache or the file is parsed).</param>
 		/// <param name="expression">The expression to be resolved.</param>
 		/// <param name="context">The ExpressionContext of the expression.</param>
 		/// <returns>A ResolveResult or <c>null</c> if the expression cannot be resolved.</returns>
-		public static ResolveResult ResolveLowLevel(string fileName, int caretLine, int caretColumn, CompilationUnit compilationUnit, string expression, ExpressionContext context)
+		public static ResolveResult ResolveLowLevel(string fileName, string fileContent, int caretLine, int caretColumn, CompilationUnit compilationUnit, string expression, ExpressionContext context)
 		{
 			Expression expr = ParseExpression(fileName, expression, caretLine, caretColumn);
 			if (expr == null) return null;
-			return ResolveLowLevel(fileName, caretLine, caretColumn, compilationUnit, expression, expr, context);
+			return ResolveLowLevel(fileName, fileContent, caretLine, caretColumn, compilationUnit, expression, expr, context);
 		}
 		
 		/// <summary>
@@ -186,6 +190,7 @@ namespace Hornung.ResourceToolkit.Resolver
 		/// use of the cache if possible.
 		/// </summary>
 		/// <param name="fileName">The file name of the source code file that contains the expression to be resolved.</param>
+		/// <param name="fileContent">The content of the source code file that contains the expression to be resolved.</param>
 		/// <param name="caretLine">The 1-based line number of the expression.</param>
 		/// <param name="caretColumn">The 1-based column number of the expression.</param>
 		/// <param name="compilationUnit">The CompilationUnit that contains the NRefactory AST for this file. May be <c>null</c> (then the CompilationUnit is retrieved from the cache or the file is parsed).</param>
@@ -194,9 +199,12 @@ namespace Hornung.ResourceToolkit.Resolver
 		/// <param name="context">The ExpressionContext of the expression.</param>
 		/// <returns>A ResolveResult or <c>null</c> if the expression cannot be resolved.</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1720:AvoidTypeNamesInParameters", MessageId = "4#")]
-		public static ResolveResult ResolveLowLevel(string fileName, int caretLine, int caretColumn, CompilationUnit compilationUnit, string expressionString, Expression expression, ExpressionContext context)
+		public static ResolveResult ResolveLowLevel(string fileName, string fileContent, int caretLine, int caretColumn, CompilationUnit compilationUnit, string expressionString, Expression expression, ExpressionContext context)
 		{
 			if (fileName == null) {
+				throw new ArgumentNullException("fileName");
+			}
+			if (fileContent == null) {
 				throw new ArgumentNullException("fileName");
 			}
 			if (expression == null) {
@@ -209,19 +217,19 @@ namespace Hornung.ResourceToolkit.Resolver
 				return null;
 			}
 			
-			IProjectContent pc = ParserService.GetProjectContent(p);
+			IProjectContent pc = ResourceResolverService.GetProjectContent(p);
 			if (pc == null) {
 				LoggingService.Info("ResourceToolkit: NRefactoryAstCacheService: ResolveLowLevel failed. ProjectContent is null for project '"+p.ToString()+"'");
 				return null;
 			}
 			
-			NRefactoryResolver resolver = ParserService.CreateResolver(fileName) as NRefactoryResolver;
+			NRefactoryResolver resolver = ResourceResolverService.CreateResolver(fileName) as NRefactoryResolver;
 			if (resolver == null) {
 				resolver = new NRefactoryResolver(LanguageProperties.CSharp);
 			}
 			
 			if (compilationUnit == null) {
-				compilationUnit = GetFullAst(resolver.Language, fileName);
+				compilationUnit = GetFullAst(resolver.Language, fileName, fileContent);
 			}
 			if (compilationUnit == null) {
 				LoggingService.Info("ResourceToolkit: NRefactoryAstCacheService: ResolveLowLevel failed due to the compilation unit being unavailable.");
@@ -280,14 +288,15 @@ namespace Hornung.ResourceToolkit.Resolver
 		/// <param name="caretLine">The 0-based line number of the expression.</param>
 		/// <param name="caretColumn">The 0-based column number of the expression.</param>
 		/// <param name="fileName">The file name of the source code file that contains the expression to be resolved.</param>
+		/// <param name="fileContent">The content of the source code file that contains the expression to be resolved.</param>
 		/// <param name="expressionFinder">The ExpressionFinder for this source code file.</param>
 		/// <returns>A ResolveResult or <c>null</c> if the outer expression cannot be resolved or if the specified expression is the outermost expression.</returns>
-		public static ResolveResult ResolveNextOuterExpression(ref ExpressionResult expressionResult, int caretLine, int caretColumn, string fileName, IExpressionFinder expressionFinder)
+		public static ResolveResult ResolveNextOuterExpression(ref ExpressionResult expressionResult, int caretLine, int caretColumn, string fileName, string fileContent, IExpressionFinder expressionFinder)
 		{
 			if (!String.IsNullOrEmpty(expressionResult.Expression = expressionFinder.RemoveLastPart(expressionResult.Expression))) {
 				Expression nextExpression;
 				if ((nextExpression = ParseExpression(fileName, expressionResult.Expression, caretLine + 1, caretColumn + 1)) != null) {
-					return ResolveLowLevel(fileName, caretLine + 1, caretColumn + 1, null, expressionResult.Expression, nextExpression, expressionResult.Context);
+					return ResolveLowLevel(fileName, fileContent, caretLine + 1, caretColumn + 1, null, expressionResult.Expression, nextExpression, expressionResult.Context);
 				}
 			}
 			return null;

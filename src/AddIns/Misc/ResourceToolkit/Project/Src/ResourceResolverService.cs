@@ -12,6 +12,9 @@ using System.Text;
 using Hornung.ResourceToolkit.Resolver;
 using Hornung.ResourceToolkit.ResourceFileContent;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
 
@@ -42,6 +45,11 @@ namespace Hornung.ResourceToolkit
 				}
 				return resolvers;
 			}
+		}
+		
+		public static void SetResourceResolversListUnitTestOnly(IEnumerable<IResourceResolver> resolversToSet)
+		{
+			resolvers = new List<IResourceResolver>(resolversToSet);
 		}
 		
 		// ********************************************************************************************************************************
@@ -133,5 +141,79 @@ namespace Hornung.ResourceToolkit
 			return sb.ToString();
 		}
 		
+		// ********************************************************************************************************************************
+		
+		// The following helper methods are needed to support running
+		// in the unit testing mode where the addin tree is not available.
+		
+		static Dictionary<string, IParser> presetParsersUnitTestOnly;
+		
+		public static void SetParsersUnitTestOnly(Dictionary<string, IParser> parsers)
+		{
+			presetParsersUnitTestOnly = parsers;
+		}
+		
+		public static IParser GetParser(string fileName)
+		{
+			IParser p;
+			if (presetParsersUnitTestOnly == null) {
+				p = ParserService.GetParser(fileName);
+			} else {
+				presetParsersUnitTestOnly.TryGetValue(System.IO.Path.GetExtension(fileName), out p);
+			}
+			return p;
+		}
+		
+		public static IExpressionFinder GetExpressionFinder(string fileName)
+		{
+			IParser p = GetParser(fileName);
+			if (p == null) return null;
+			return p.CreateExpressionFinder(fileName);
+		}
+		
+		public static IResolver CreateResolver(string fileName)
+		{
+			IParser p = GetParser(fileName);
+			if (p == null) return null;
+			return p.CreateResolver();
+		}
+		
+		static Dictionary<string, string> fileContents;
+		
+		public static void SetFileContentUnitTestOnly(string fileName, string fileContent)
+		{
+			if (fileContents == null) {
+				fileContents = new Dictionary<string, string>();
+			}
+			fileContents[fileName] = fileContent;
+		}
+		
+		public static string GetParsableFileContent(string fileName)
+		{
+			if (fileContents == null) {
+				return ParserService.GetParseableFileContent(fileName);
+			} else {
+				return fileContents[fileName];
+			}
+		}
+		
+		static Dictionary<IProject, IProjectContent> projectContents;
+		
+		public static void SetProjectContentUnitTestOnly(IProject project, IProjectContent projectContent)
+		{
+			if (projectContents == null) {
+				projectContents = new Dictionary<IProject, IProjectContent>();
+			}
+			projectContents[project] = projectContent;
+		}
+		
+		public static IProjectContent GetProjectContent(IProject project)
+		{
+			if (projectContents == null) {
+				return ParserService.GetProjectContent(project);
+			} else {
+				return projectContents[project];
+			}
+		}
 	}
 }

@@ -41,7 +41,7 @@ namespace Hornung.ResourceToolkit.Resolver
 		public override bool SupportsFile(string fileName)
 		{
 			// Any parseable source code file may contain references
-			if (ICSharpCode.SharpDevelop.ParserService.GetParser(fileName) != null) {
+			if (ResourceResolverService.GetParser(fileName) != null) {
 				return true;
 			}
 			

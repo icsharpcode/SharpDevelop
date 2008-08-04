@@ -48,6 +48,11 @@ namespace Hornung.ResourceToolkit.Resolver
 			}
 		}
 		
+		public static void SetResourceResolversListUnitTestOnly(IEnumerable<INRefactoryResourceResolver> resolversToSet)
+		{
+			resolvers = new List<INRefactoryResourceResolver>(resolversToSet);
+		}
+		
 		// ********************************************************************************************************************************
 		
 		/// <summary>
@@ -106,7 +111,7 @@ namespace Hornung.ResourceToolkit.Resolver
 		/// <returns>A <see cref="ResourceResolveResult"/> that describes which resource is referenced by the expression at the specified position in the specified file, or <c>null</c> if that expression does not reference a (known) resource.</returns>
 		protected override ResourceResolveResult Resolve(string fileName, IDocument document, int caretLine, int caretColumn, int caretOffset, char? charTyped)
 		{
-			IExpressionFinder ef = ParserService.GetExpressionFinder(fileName);
+			IExpressionFinder ef = ResourceResolverService.GetExpressionFinder(fileName);
 			if (ef == null) {
 				return null;
 			}
@@ -152,7 +157,7 @@ namespace Hornung.ResourceToolkit.Resolver
 		/// </summary>
 		static ResourceResolveResult TryResolve(ExpressionResult result, Expression expr, int caretLine, int caretColumn, string fileName, string fileContent, IExpressionFinder expressionFinder, char? charTyped)
 		{
-			ResolveResult rr = NRefactoryAstCacheService.ResolveLowLevel(fileName, caretLine+1, caretColumn+1, null, result.Expression, expr, result.Context);
+			ResolveResult rr = NRefactoryAstCacheService.ResolveLowLevel(fileName, fileContent, caretLine+1, caretColumn+1, null, result.Expression, expr, result.Context);
 			if (rr != null) {
 				
 				ResourceResolveResult rrr;
@@ -205,7 +210,7 @@ namespace Hornung.ResourceToolkit.Resolver
 				// Find all source files that contain a type with the same
 				// name as the resource we are looking for.
 				List<string> possibleSourceFiles = new List<string>();
-				IProjectContent pc = ParserService.GetProjectContent(p);
+				IProjectContent pc = ResourceResolverService.GetProjectContent(p);
 				if (pc != null) {
 					
 					IClass resourceClass = pc.GetClass(resourceName, 0);
@@ -449,7 +454,7 @@ namespace Hornung.ResourceToolkit.Resolver
 		/// <returns>The language properties of the specified file, or <c>null</c> if the language cannot be determined.</returns>
 		public static LanguageProperties GetLanguagePropertiesForFile(string fileName)
 		{
-			ICSharpCode.SharpDevelop.Dom.IParser p = ParserService.GetParser(fileName);
+			ICSharpCode.SharpDevelop.Dom.IParser p = ResourceResolverService.GetParser(fileName);
 			if (p == null) {
 				return null;
 			}

@@ -66,7 +66,7 @@ namespace Hornung.ResourceToolkit.Resolver
 				MethodGroupResolveResult methrr = resolveResult as MethodGroupResolveResult;
 				if (methrr != null) {
 					if ((methrr.Name == "GetString" || methrr.Name == "GetObject" || methrr.Name == "GetStream") &&
-					    (resolveResult = NRefactoryAstCacheService.ResolveNextOuterExpression(ref expressionResult, caretLine, caretColumn, fileName, expressionFinder)) != null) {
+					    (resolveResult = NRefactoryAstCacheService.ResolveNextOuterExpression(ref expressionResult, caretLine, caretColumn, fileName, fileContent, expressionFinder)) != null) {
 						
 						return ResolveResource(resolveResult, expr);
 						
@@ -106,7 +106,7 @@ namespace Hornung.ResourceToolkit.Resolver
 						// we have to call Resolve again in this case to resolve
 						// the method reference.
 						
-						if ((resolveResult = NRefactoryAstCacheService.ResolveNextOuterExpression(ref expressionResult, caretLine, caretColumn, fileName, expressionFinder)) != null) {
+						if ((resolveResult = NRefactoryAstCacheService.ResolveNextOuterExpression(ref expressionResult, caretLine, caretColumn, fileName, fileContent, expressionFinder)) != null) {
 							
 							if (resolveResult is MethodGroupResolveResult) {
 								return this.Resolve(expressionResult, expr, resolveResult, caretLine, caretColumn, fileName, fileContent, expressionFinder, '(');
@@ -127,7 +127,7 @@ namespace Hornung.ResourceToolkit.Resolver
 						// We need the reference to Something and this is
 						// the next outer expression.
 						
-						if ((resolveResult = NRefactoryAstCacheService.ResolveNextOuterExpression(ref expressionResult, caretLine, caretColumn, fileName, expressionFinder)) != null) {
+						if ((resolveResult = NRefactoryAstCacheService.ResolveNextOuterExpression(ref expressionResult, caretLine, caretColumn, fileName, fileContent, expressionFinder)) != null) {
 							return ResolveResource(resolveResult, expr);
 						} else {
 							return null;
@@ -252,7 +252,7 @@ namespace Hornung.ResourceToolkit.Resolver
 								return null;
 							}
 							
-							CompilationUnit cu = NRefactoryAstCacheService.GetFullAst(language.Value, declaringFileName);
+							CompilationUnit cu = NRefactoryAstCacheService.GetFullAst(language.Value, declaringFileName, ResourceResolverService.GetParsableFileContent(declaringFileName));
 							if (cu != null) {
 								
 								ResourceManagerInitializationFindVisitor visitor = new ResourceManagerInitializationFindVisitor(member);
@@ -297,7 +297,7 @@ namespace Hornung.ResourceToolkit.Resolver
 			if (p == null) {
 				pc = ParserService.CurrentProjectContent;
 			} else {
-				pc = ParserService.GetProjectContent(p);
+				pc = ResourceResolverService.GetProjectContent(p);
 			}
 			
 			if (pc == null) {
@@ -352,7 +352,8 @@ namespace Hornung.ResourceToolkit.Resolver
 			/// Initializes a new instance of the <see cref="ResourceManagerInitializationFindVisitor" /> class.
 			/// </summary>
 			/// <param name="resourceManagerMember">The member which the resource manager to be found is assigned to.</param>
-			public ResourceManagerInitializationFindVisitor(IMember resourceManagerMember) : base()
+			public ResourceManagerInitializationFindVisitor(IMember resourceManagerMember)
+				: base(resourceManagerMember.DeclaringType.CompilationUnit.FileName, ResourceResolverService.GetParsableFileContent(resourceManagerMember.DeclaringType.CompilationUnit.FileName))
 			{
 				this.resourceManagerMember = resourceManagerMember;
 				IField resourceManagerField = resourceManagerMember as IField;
@@ -446,7 +447,7 @@ namespace Hornung.ResourceToolkit.Resolver
 				   ) {
 					
 					IMember resolvedMember = null;
-					ResolveResult rr = this.Resolve(assignmentExpression.Left, this.resourceManagerMember.DeclaringType.CompilationUnit.FileName);
+					ResolveResult rr = this.Resolve(assignmentExpression.Left);
 					if (rr != null) {
 						// Support both local variables and member variables
 						MemberResolveResult mrr = rr as MemberResolveResult;
@@ -497,7 +498,7 @@ namespace Hornung.ResourceToolkit.Resolver
 							} else if (this.resourceManagerMember is IField && resolvedMember is IProperty) {
 								// Find out if the resolved member is a property whose set block assigns the value to the resourceManagerMember.
 								
-								PropertyFieldAssociationVisitor visitor = new PropertyFieldAssociationVisitor((IField)this.resourceManagerMember);
+								PropertyFieldAssociationVisitor visitor = new PropertyFieldAssociationVisitor((IField)this.resourceManagerMember, this.FileName, this.FileContent);
 								this.compilationUnit.AcceptVisitor(visitor, null);
 								if (visitor.AssociatedProperty != null && visitor.AssociatedProperty.CompareTo(resolvedMember) == 0) {
 									#if DEBUG
@@ -534,7 +535,7 @@ namespace Hornung.ResourceToolkit.Resolver
 					if (prop != null) {
 						
 						// Resolve the property association.
-						PropertyFieldAssociationVisitor visitor = new PropertyFieldAssociationVisitor(prop);
+						PropertyFieldAssociationVisitor visitor = new PropertyFieldAssociationVisitor(prop, this.FileName, this.FileContent);
 						this.compilationUnit.AcceptVisitor(visitor, null);
 						
 						// Store the association in the instance field.
@@ -555,7 +556,7 @@ namespace Hornung.ResourceToolkit.Resolver
 					
 					// Resolve the constructor.
 					// A type derived from the declaration type is also allowed.
-					MemberResolveResult mrr = this.Resolve(objectCreateExpression, this.resourceManagerMember.DeclaringType.CompilationUnit.FileName) as MemberResolveResult;
+					MemberResolveResult mrr = this.Resolve(objectCreateExpression) as MemberResolveResult;
 					
 					#if DEBUG
 					if (mrr != null) {
@@ -609,7 +610,7 @@ namespace Hornung.ResourceToolkit.Resolver
 								LoggingService.Debug("ResourceToolkit: BclNRefactoryResourceResolver: Found TypeOfExpression in constructor call: "  + t.ToString());
 								#endif
 								
-								ResolveResult rr = this.Resolve(new TypeReferenceExpression(t.TypeReference), this.resourceManagerMember.DeclaringType.CompilationUnit.FileName, ExpressionContext.Type);
+								ResolveResult rr = this.Resolve(new TypeReferenceExpression(t.TypeReference), ExpressionContext.Type);
 								
 								#if DEBUG
 								if (rr == null) {

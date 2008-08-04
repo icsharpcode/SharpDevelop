@@ -115,7 +115,10 @@ namespace Hornung.ResourceToolkit.Resolver
 				}
 				
 				// Resolve the expression.
-				MemberResolveResult mrr = this.Resolve(expr, this.memberToFind.DeclaringType.CompilationUnit.FileName) as MemberResolveResult;
+				if (!FileUtility.IsEqualFileName(this.FileName, this.memberToFind.DeclaringType.CompilationUnit.FileName)) {
+					throw new InvalidOperationException("The PropertyFieldAssociationVisitor does currently not support the case that the field is declared in a different file than the property.");
+				}
+				MemberResolveResult mrr = this.Resolve(expr) as MemberResolveResult;
 				if (mrr != null && mrr.ResolvedMember is IField) {
 					
 					PropertyDeclaration pd;
@@ -138,7 +141,7 @@ namespace Hornung.ResourceToolkit.Resolver
 						if (this.memberToFind.CompareTo(mrr.ResolvedMember) == 0) {
 							
 							// Resolve the property.
-							MemberResolveResult prr = NRefactoryAstCacheService.ResolveLowLevel(this.memberToFind.DeclaringType.CompilationUnit.FileName, pd.StartLocation.Y, pd.StartLocation.X+1, null, pd.Name, ExpressionContext.Default) as MemberResolveResult;
+							MemberResolveResult prr = NRefactoryAstCacheService.ResolveLowLevel(this.FileName, this.FileContent, pd.StartLocation.Y, pd.StartLocation.X+1, null, pd.Name, ExpressionContext.Default) as MemberResolveResult;
 							if (prr != null) {
 								
 								#if DEBUG
@@ -174,7 +177,10 @@ namespace Hornung.ResourceToolkit.Resolver
 			    assignmentExpression.Op == AssignmentOperatorType.Assign && data != null) {
 				
 				// Resolve the expression.
-				MemberResolveResult mrr = this.Resolve(assignmentExpression.Left, this.memberToFind.DeclaringType.CompilationUnit.FileName) as MemberResolveResult;
+				if (!FileUtility.IsEqualFileName(this.FileName, this.memberToFind.DeclaringType.CompilationUnit.FileName)) {
+					throw new InvalidOperationException("The PropertyFieldAssociationVisitor does currently not support the case that the field is declared in a different file than the property.");
+				}
+				MemberResolveResult mrr = this.Resolve(assignmentExpression.Left) as MemberResolveResult;
 				if (mrr != null && mrr.ResolvedMember is IField && !((IField)mrr.ResolvedMember).IsLocalVariable) {
 					
 					PropertyDeclaration pd;
@@ -197,7 +203,7 @@ namespace Hornung.ResourceToolkit.Resolver
 						if (this.memberToFind.CompareTo(mrr.ResolvedMember) == 0) {
 							
 							// Resolve the property.
-							MemberResolveResult prr = NRefactoryAstCacheService.ResolveLowLevel(this.memberToFind.DeclaringType.CompilationUnit.FileName, pd.StartLocation.Y, pd.StartLocation.X+1, null, pd.Name, ExpressionContext.Default) as MemberResolveResult;
+							MemberResolveResult prr = NRefactoryAstCacheService.ResolveLowLevel(this.FileName, this.FileContent, pd.StartLocation.Y, pd.StartLocation.X+1, null, pd.Name, ExpressionContext.Default) as MemberResolveResult;
 							if (prr != null) {
 								
 								#if DEBUG
@@ -230,7 +236,8 @@ namespace Hornung.ResourceToolkit.Resolver
 		/// Initializes a new instance of the <see cref="PropertyFieldAssociationVisitor"/> class.
 		/// </summary>
 		/// <param name="property">The property to find the associated field for.</param>
-		public PropertyFieldAssociationVisitor(IProperty property) : base()
+		public PropertyFieldAssociationVisitor(IProperty property, string fileName, string fileContent)
+			: base(fileName, fileContent)
 		{
 			if (property == null) {
 				throw new ArgumentNullException("property");
@@ -243,7 +250,8 @@ namespace Hornung.ResourceToolkit.Resolver
 		/// </summary>
 		/// <param name="field">The field to find the associated property for.</param>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:DoNotPassLiteralsAsLocalizedParameters", MessageId = "System.ArgumentException.#ctor(System.String,System.String)")]
-		public PropertyFieldAssociationVisitor(IField field) : base()
+		public PropertyFieldAssociationVisitor(IField field, string fileName, string fileContent)
+			: base(fileName, fileContent)
 		{
 			if (field == null) {
 				throw new ArgumentNullException("field");
