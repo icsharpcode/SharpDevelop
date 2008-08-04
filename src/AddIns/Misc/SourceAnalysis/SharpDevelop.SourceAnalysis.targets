@@ -1,0 +1,50 @@
+﻿<?xml version="1.0"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<UsingTask TaskName="SourceAnalysisTask"
+	           AssemblyFile="$(StyleCopDir)\Microsoft.SourceAnalysis.dll"/>
+	
+	<PropertyGroup>
+		<BuildDependsOn>$(BuildDependsOn);SourceAnalysis</BuildDependsOn>
+	    <RebuildDependsOn>SourceAnalysisForceFullAnalysis;$(RebuildDependsOn)</RebuildDependsOn>
+	</PropertyGroup>
+	<!-- Define default values for SourceAnalysis-specific properties. These can be overridden in the .csproj file. -->
+	<PropertyGroup>
+	    <SourceAnalysisForceFullAnalysis Condition="'$(SourceAnalysisForceFullAnalysis)' == ''">false</SourceAnalysisForceFullAnalysis>
+	    <SourceAnalysisCacheResults Condition="'$(SourceAnalysisCacheResults)' == ''">true</SourceAnalysisCacheResults>
+	    <SourceAnalysisTreatErrorsAsWarnings Condition="'$(SourceAnalysisTreatErrorsAsWarnings)' == ''">true</SourceAnalysisTreatErrorsAsWarnings>
+	    <SourceAnalysisOverrideSettingsFile Condition="'$(SourceAnalysisOverrideSettingsFile)' == ''"> </SourceAnalysisOverrideSettingsFile>
+	</PropertyGroup>
+	
+	<!-- Define target: SourceAnalysisForceFullAnalysis -->
+	<Target Name="SourceAnalysisForceFullAnalysis">
+	    <CreateProperty Value="true">
+	    	<Output TaskParameter="Value" PropertyName="SourceAnalysisForceFullAnalysis" />
+	    </CreateProperty>
+	</Target>
+	
+	<!-- Define target: SourceAnalysis -->
+	<Target Name="SourceAnalysis" Condition="'$(RunSourceAnalysis)' == 'true'">
+    <!-- Determine what files should be checked. Take all Compile items, but exclude those that have
+        set ExcludeFromSourceAnalysis=true. -->
+    <CreateItem Include="@(Compile)" Condition="'%(Compile.ExcludeFromSourceAnalysis)'!='true'">
+      <Output TaskParameter="Include" ItemName="SourceAnalysisFiles"/>
+    </CreateItem>
+
+    <!-- Run the SourceAnalysis MSBuild task. -->
+	<SourceAnalysisTask
+        ProjectFullPath="$(MSBuildProjectFile)"
+        SourceFiles="@(SourceAnalysisFiles)"
+        AdditionalAddinPaths="@(SourceAnalysisAdditionalAddinPaths)"
+        ForceFullAnalysis="$(SourceAnalysisForceFullAnalysis)"
+        DefineConstants="$(DefineConstants)"
+        TreatErrorsAsWarnings="$(SourceAnalysisTreatErrorsAsWarnings)" 
+        CacheResults="$(SourceAnalysisCacheResults)"
+        OverrideSettingsFile="$(SourceAnalysisOverrideSettingsFile)"
+            />
+
+    <!-- Add the SourceAnalysis.cache file to the list of files we've written - so they can be cleaned up on a Build Clean. -->
+    <CreateItem Include="SourceAnalysis.Cache" Condition="'$(SourceAnalysisCacheResults)' == 'true'">
+      <Output TaskParameter="Include" ItemName="FileWrites"/>
+    </CreateItem>
+  </Target>
+</Project>

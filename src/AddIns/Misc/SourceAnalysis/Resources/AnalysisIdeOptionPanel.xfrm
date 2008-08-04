@@ -1,0 +1,43 @@
+<Components version="1.0">
+  <System.Windows.Forms.UserControl>
+    <Name value="AnalysisIdeOptionPanel" />
+    <ClientSize value="{Width=348, Height=301}" />
+    <Controls>
+      <System.Windows.Forms.Button>
+        <Name value="ModifyStyleCopSettingsButton" />
+        <Location value="77, 169" />
+        <Text value="Modify Master StyleCop Settings" />
+        <UseVisualStyleBackColor value="True" />
+        <Size value="187, 23" />
+        <TabIndex value="1" />
+      </System.Windows.Forms.Button>
+      <System.Windows.Forms.GroupBox>
+        <Name value="groupBox1" />
+        <Location value="3, 3" />
+        <Text value="StyleCop Path" />
+        <Size value="342, 117" />
+        <Anchor value="Top, Left, Right" />
+        <TabIndex value="0" />
+        <Controls>
+          <System.Windows.Forms.Button>
+            <Name value="FindStyleCopPathButton" />
+            <Location value="92, 81" />
+            <Text value="Find StyleCop path" />
+            <UseVisualStyleBackColor value="True" />
+            <Size value="150, 23" />
+            <Anchor value="Top" />
+            <TabIndex value="1" />
+          </System.Windows.Forms.Button>
+          <System.Windows.Forms.Label>
+            <Name value="statusLabel" />
+            <Location value="6, 17" />
+            <Text value="(showing current FxCop path)" />
+            <Size value="330, 61" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="0" />
+          </System.Windows.Forms.Label>
+        </Controls>
+      </System.Windows.Forms.GroupBox>
+    </Controls>
+  </System.Windows.Forms.UserControl>
+</Components>
