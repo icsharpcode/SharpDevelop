@@ -205,6 +205,13 @@ class A
 			TestHelper.CheckReference(rrr, "Test.TestResources", "TestKey", "A", "A.B");
 		}
 		
+		[Test]
+		public void LocalIndexerRMBug1SecondRef()
+		{
+			ResourceResolveResult rrr = Resolve(CodeLocalIndexerRMBug1, 15, 31, null);
+			TestHelper.CheckNoReference(rrr);
+		}
+		
 		// ********************************************************************************************************************************
 		
 		const string CodeLocalSRMDirectInitAlias = @"using SRM = System.Resources.ResourceManager;

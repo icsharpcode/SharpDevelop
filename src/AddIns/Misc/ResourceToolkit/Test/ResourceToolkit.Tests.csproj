@@ -58,6 +58,8 @@
     <Compile Include="CSharp\SpecificResourceReferenceFinderTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestHelper.cs" />
+    <Compile Include="VBNet\AbstractVBNetResourceResolverTestFixture.cs" />
+    <Compile Include="VBNet\BclNRefactoryResourceResolverTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj">
@@ -89,5 +91,6 @@
       <Name>ResourceToolkit</Name>
     </ProjectReference>
     <Folder Include="CSharp" />
+    <Folder Include="VBNet" />
   </ItemGroup>
 </Project>

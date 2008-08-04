@@ -17,6 +17,7 @@ using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
 
 namespace Hornung.ResourceToolkit.Resolver
@@ -116,6 +117,8 @@ namespace Hornung.ResourceToolkit.Resolver
 				return null;
 			}
 			
+			bool foundStringLiteral = false;
+			
 			while (true) {
 				
 				ExpressionResult result = ef.FindFullExpression(document.TextContent, caretOffset);
@@ -123,7 +126,7 @@ namespace Hornung.ResourceToolkit.Resolver
 				if (result.Expression == null) {
 					// Try to find an expression to the left, but only
 					// in the same line.
-					if (--caretOffset < 0 || document.GetLineNumberForOffset(caretOffset) != caretLine) {
+					if (foundStringLiteral || --caretOffset < 0 || document.GetLineNumberForOffset(caretOffset) != caretLine) {
 						return null;
 					}
 					continue;
@@ -136,11 +139,24 @@ namespace Hornung.ResourceToolkit.Resolver
 					return null;
 				} else if ((pe = expr as PrimitiveExpression) != null) {
 					if (pe.Value is string) {
+						
+						if (foundStringLiteral) {
+							return null;
+						}
+						
 						// We are inside a string literal and need to find
 						// the next outer expression to decide
 						// whether it is a resource key.
-						if (--caretOffset < 0) return null;
+						
+						// Go back to the start of the string literal - 2.
+						caretOffset = document.PositionToOffset(new TextLocation(result.Region.BeginColumn - 1, result.Region.BeginLine - 1)) - 2;
+						if (caretOffset < 0) return null;
+						
+						foundStringLiteral = true;
 						continue;
+						
+					} else {
+						return null;
 					}
 				}
 				
