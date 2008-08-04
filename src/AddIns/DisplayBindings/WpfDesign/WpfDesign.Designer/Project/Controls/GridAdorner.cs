@@ -1,4 +1,4 @@
-﻿// <file>
+// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
@@ -227,8 +227,7 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 				double mousePos = GetCoordinate(e.GetPosition(grid));
 				if (activeChangeGroup == null) {
 					if (Math.Abs(mousePos - mouseStartPos)
-					    >= GetCoordinate(new Point(SystemParameters.MinimumHorizontalDragDistance, SystemParameters.MinimumVerticalDragDistance)))
-					{
+					    >= GetCoordinate(new Point(SystemParameters.MinimumHorizontalDragDistance, SystemParameters.MinimumVerticalDragDistance))) {
 						activeChangeGroup = gridItem.OpenGroup("Change grid row/column size");
 						RememberOriginalSize();
 					}

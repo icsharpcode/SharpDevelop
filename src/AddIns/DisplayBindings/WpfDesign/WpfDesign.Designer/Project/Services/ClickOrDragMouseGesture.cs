@@ -1,4 +1,4 @@
-﻿// <file>
+// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
@@ -35,8 +35,7 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 			if (!hasDragStarted) {
 				Vector v = e.GetPosition(positionRelativeTo) - startPoint;
 				if (Math.Abs(v.X) >= SystemParameters.MinimumHorizontalDragDistance
-				    || Math.Abs(v.Y) >= SystemParameters.MinimumVerticalDragDistance)
-				{
+				    || Math.Abs(v.Y) >= SystemParameters.MinimumVerticalDragDistance) {
 					hasDragStarted = true;
 					OnDragStarted(e);
 				}

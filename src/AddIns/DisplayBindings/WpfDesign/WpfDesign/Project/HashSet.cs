@@ -1,4 +1,4 @@
-﻿// <file>
+// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
@@ -110,8 +110,7 @@ namespace ICSharpCode.WpfDesign
 		/// <summary>
 		/// Gets the number of items in the collection.
 		/// </summary>
-		public int Count
-		{
+		public int Count {
 			get { return _dict.Count; }
 		}
 
@@ -147,8 +146,7 @@ namespace ICSharpCode.WpfDesign
 			this.Add(item);
 		}
 
-		bool ICollection<T>.IsReadOnly
-		{
+		bool ICollection<T>.IsReadOnly {
 			get { return false; }
 		}
 
@@ -174,13 +172,11 @@ namespace ICSharpCode.WpfDesign
 			((ICollection)_dict).CopyTo(array, index);
 		}
 
-		bool ICollection.IsSynchronized
-		{
+		bool ICollection.IsSynchronized {
 			get { return false; }
 		}
 
-		object ICollection.SyncRoot
-		{
+		object ICollection.SyncRoot {
 			get { return null; }
 		}
 

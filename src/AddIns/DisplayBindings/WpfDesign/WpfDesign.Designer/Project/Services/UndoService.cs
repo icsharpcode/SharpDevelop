@@ -1,4 +1,4 @@
-﻿// <file>
+// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
@@ -66,8 +66,7 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 		
 		TransactionState _state;
 		
-		public TransactionState State
-		{
+		public TransactionState State {
 			get { return _state; }
 		}
 		
@@ -79,10 +78,8 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 			item.Do();
 
 			var a = item as XamlModelProperty.PropertyChangeAction;
-			if (a != null)
-			{
-				foreach (var b in items.OfType<XamlModelProperty.PropertyChangeAction>())
-				{
+			if (a != null) {
+				foreach (var b in items.OfType<XamlModelProperty.PropertyChangeAction>()) {
 					if (b.MergeWith(a)) return;
 				}
 			}

@@ -1,4 +1,4 @@
-﻿// <file>
+// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
@@ -265,8 +265,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				}
 			}
 			
-			if (defaultProperty != null && !defaultProperty.IsCollection && !element.IsEmpty)
-			{
+			if (defaultProperty != null && !defaultProperty.IsCollection && !element.IsEmpty) {
 				// Runs even when defaultValueSet==false!
 				// Again, no idea why the official XamlReader does this.
 				defaultProperty.GetValue(obj.Instance);
@@ -298,8 +297,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 					while (node != null
 					       && (node.NodeType == XmlNodeType.Text
 					           || node.NodeType == XmlNodeType.CDATA
-					           || node.NodeType == XmlNodeType.SignificantWhitespace))
-					{
+					           || node.NodeType == XmlNodeType.SignificantWhitespace)) {
 						combinedNormalizedChildNodes++;
 						
 						if (text != null) text.Value += node.Value;
