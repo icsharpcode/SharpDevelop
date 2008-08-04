@@ -1,4 +1,4 @@
-﻿// <file>
+// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
@@ -169,8 +169,9 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 				newValue = _property.ParentObject.OwnerDocument.CreateNullValue();
 			} else {
 				XamlComponentService componentService = _designItem.ComponentService;
-				
-				XamlDesignItem designItem = (XamlDesignItem)componentService.GetDesignItem(value);
+
+				XamlDesignItem designItem = value as XamlDesignItem;
+				if (designItem == null) designItem = (XamlDesignItem)componentService.GetDesignItem(value);
 				if (designItem != null) {
 					if (designItem.Parent != null)
 						throw new DesignerException("Cannot set value to design item that already has a parent");
@@ -272,8 +273,7 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 
 			public bool MergeWith(PropertyChangeAction other)
 			{
-				if (property._property == other.property._property)
-				{
+				if (property._property == other.property._property) {
 					newIsSet = other.newIsSet;
 					newValue = other.newValue;
 					newObject = other.newObject;

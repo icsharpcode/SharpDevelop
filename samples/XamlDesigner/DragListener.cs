@@ -7,51 +7,51 @@ using System.Windows.Input;
 
 namespace ICSharpCode.XamlDesigner
 {
-    class DragListener
-    {
-        public DragListener(IInputElement target)
-        {
-            this.target = target;
-            target.PreviewMouseLeftButtonDown += new MouseButtonEventHandler(target_PreviewMouseLeftButtonDown);
-            target.PreviewMouseMove += new MouseEventHandler(target_PreviewMouseMove);
-        }
+	public class DragListener
+	{
+		public DragListener(FrameworkElement target)
+		{
+			this.target = target;
+			target.AddHandler(Mouse.MouseDownEvent, new MouseButtonEventHandler(MouseButtonDown), true);
+			target.PreviewMouseMove += MouseMove;
+			target.PreviewMouseLeftButtonUp += MouseLeftButtonUp;
+		}
 
-        public event MouseEventHandler DragStarted;
-        
-        IInputElement target;
-        Window window;        
-        Point startPoint;
-        bool readyToRaise;
+		public event MouseButtonEventHandler DragStarted;
 
-        Point GetMousePosition()
-        {
-            if (window == null) {
-                window = Window.GetWindow(target as DependencyObject);
-            }
-            return Mouse.GetPosition(window);
-        }
+		FrameworkElement target;
+		Point startPoint;
+		bool ready;
+		MouseButtonEventArgs args;
 
-        bool IsMovementBigEnough()
-        {
-            Point currentPoint = GetMousePosition();
-            return (Math.Abs(currentPoint.X - startPoint.X) >= SystemParameters.MinimumHorizontalDragDistance ||
-                    Math.Abs(currentPoint.Y - startPoint.Y) >= SystemParameters.MinimumVerticalDragDistance);
-        }
+		void MouseButtonDown(object sender, MouseButtonEventArgs e)
+		{
+			if (e.ChangedButton == MouseButton.Left && Mouse.Captured == null) {
+				ready = true;
+				startPoint = e.GetPosition(target);
+				args = e;
+				target.CaptureMouse();
+			}
+		}
 
-        void target_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            readyToRaise = true;
-            startPoint = GetMousePosition();
-        }
+		void MouseMove(object sender, MouseEventArgs e)
+		{
+			if (ready) {
+				var currentPoint = e.GetPosition(target);
+				if (Math.Abs(currentPoint.X - startPoint.X) >= SystemParameters.MinimumHorizontalDragDistance ||
+					Math.Abs(currentPoint.Y - startPoint.Y) >= SystemParameters.MinimumVerticalDragDistance) {
+					ready = false;
+					if (DragStarted != null) {
+						DragStarted(this, args);
+					}
+				}
+			}
+		}
 
-        void target_PreviewMouseMove(object sender, MouseEventArgs e)
-        {
-            if (readyToRaise && IsMovementBigEnough()) {
-                readyToRaise = false;
-                if (DragStarted != null) {
-                    DragStarted(target, e);
-                }
-            }
-        }
-    }
+		void MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+		{
+			ready = false;
+			target.ReleaseMouseCapture();
+		}
+	}
 }

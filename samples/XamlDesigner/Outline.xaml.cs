@@ -20,5 +20,13 @@ namespace ICSharpCode.XamlDesigner
         {
             InitializeComponent();
         }
+
+		public static readonly DependencyProperty RootProperty =
+			DependencyProperty.Register("Root", typeof(OutlineNode), typeof(Outline));
+
+		public OutlineNode Root {
+			get { return (OutlineNode)GetValue(RootProperty); }
+			set { SetValue(RootProperty, value); }
+		}
     }
 }

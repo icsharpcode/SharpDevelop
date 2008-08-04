@@ -48,28 +48,31 @@ namespace ICSharpCode.XamlDesigner
 
 		DocumentMode mode;
 
-		void SetMode(DocumentMode newMode)
-		{
-			mode = newMode;
-			if (IsDesign) {
-				UpdateDesign();
+		public DocumentMode Mode {
+			get {
+				return mode;
 			}
-			else {
-				UpdateXaml();
+			set {
+				mode = value;
+				if (InDesignMode) {
+					UpdateDesign();
+				}
+				else {
+					UpdateXaml();
+				}
+				RaisePropertyChanged("Mode");
+				RaisePropertyChanged("InXamlMode");
+				RaisePropertyChanged("InDesignMode");
+				RaisePropertyChanged("SelectionService");
 			}
-			RaisePropertyChanged("IsXaml");
-			RaisePropertyChanged("IsDesign");
-			RaisePropertyChanged("SelectionService");
 		}
 
-		public bool IsXaml {
-			get { return mode == DocumentMode.Xaml; }
-			set { if (value) SetMode(DocumentMode.Xaml); }
+		public bool InXamlMode {
+			get { return Mode == DocumentMode.Xaml; }
 		}
 
-		public bool IsDesign {
-			get { return mode == DocumentMode.Design; }
-			set { if (value) SetMode(DocumentMode.Design); }
+		public bool InDesignMode {
+			get { return Mode == DocumentMode.Design; }
 		}
 
 		string filePath;
@@ -134,10 +137,22 @@ namespace ICSharpCode.XamlDesigner
 
 		public ISelectionService SelectionService {
 			get {
-				if (IsDesign && DesignContext != null) {
+				if (InDesignMode && DesignContext != null) {
 					return DesignContext.Services.Selection;
 				}
 				return null;
+			}
+		}
+
+		OutlineNode outlineRoot;
+
+		public OutlineNode OutlineRoot {
+			get {
+				return outlineRoot;
+			}
+			private set {
+				outlineRoot = value;
+				RaisePropertyChanged("OutlineRoot");
 			}
 		}
 
@@ -150,7 +165,7 @@ namespace ICSharpCode.XamlDesigner
 
 		public void Save()
 		{
-			if (IsDesign) {
+			if (InDesignMode) {
 				UpdateXaml();
 			}
 			File.WriteAllText(FilePath, Text);
@@ -184,10 +199,24 @@ namespace ICSharpCode.XamlDesigner
 				using (var xmlReader = XmlReader.Create(new StringReader(Text))) {
 					DesignSurface.LoadDesigner(xmlReader, settings);
 				}
-				UndoService.UndoStackChanged += delegate { IsDirty = true; };
+				if (DesignContext.RootItem == null) {
+					OutlineRoot = null;
+				}
+				else {
+					OutlineRoot = new OutlineNode(DesignContext.RootItem);
+				}
+				UndoService.UndoStackChanged += new EventHandler(UndoService_UndoStackChanged);
 			}
 			catch (Exception x) {
 				Shell.ReportException(x);
+			}
+		}
+
+		void UndoService_UndoStackChanged(object sender, EventArgs e)
+		{
+			IsDirty = true;
+			if (InXamlMode) {
+				UpdateXaml();
 			}
 		}
 
@@ -203,10 +232,10 @@ namespace ICSharpCode.XamlDesigner
 		}
 
 		#endregion
+	}
 
-		enum DocumentMode
-		{
-			Xaml, Design
-		}
+	public enum DocumentMode
+	{
+		Xaml, Design
 	}
 }

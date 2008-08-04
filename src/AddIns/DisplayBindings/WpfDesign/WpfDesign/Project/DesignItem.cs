@@ -1,4 +1,4 @@
-﻿// <file>
+// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
@@ -220,6 +220,32 @@ namespace ICSharpCode.WpfDesign
 			if (PropertyChanged != null) {
 				PropertyChanged(this, e);
 			}
+		}
+
+		public abstract string ContentPropertyName { get; }
+
+		public DesignItemProperty ContentProperty {
+			get {
+				if (ContentPropertyName == null) return null;
+				return Properties[ContentPropertyName];
+			}
+		}
+
+		public void Remove()
+		{
+			if (ParentProperty != null) {
+				if (ParentProperty.IsCollection) {
+					ParentProperty.CollectionElements.Remove(this);
+				}
+				else {
+					ParentProperty.Reset();
+				}
+			}
+		}
+
+		public DesignItem Clone()
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

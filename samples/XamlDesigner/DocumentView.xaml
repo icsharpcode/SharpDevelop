@@ -4,36 +4,18 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:Integration="clr-namespace:System.Windows.Forms.Integration;assembly=WindowsFormsIntegration"
     xmlns:TextEditor="clr-namespace:ICSharpCode.TextEditor;assembly=ICSharpCode.TextEditor"
+    xmlns:Default="clr-namespace:ICSharpCode.XamlDesigner"
     >
     
-    <!--<TabControl TabStripPlacement="Bottom">
-        <TabItem Header="Xaml"
-                 IsSelected="{Binding IsXaml}">
-            <Integration:WindowsFormsHost>
-                <TextEditor:TextEditorControl x:Name="uxTextEditor" />
-            </Integration:WindowsFormsHost>
-        </TabItem>
-        <TabItem Header="Design"
-                 IsSelected="{Binding IsDesign}"
-                 Content="{Binding DesignSurface}" />
-    </TabControl>-->
-    
     <DockPanel>
-        <StackPanel Orientation="Horizontal"
-                    DockPanel.Dock="Bottom">
-            <ToggleButton IsChecked="{Binding IsXaml}"
-                          Content="Xaml"
-                          Style="{StaticResource TabButtonStyle}"/>
-            <ToggleButton IsChecked="{Binding IsDesign}"
-                          Content="Design"
-                          Style="{StaticResource TabButtonStyle}" />
-        </StackPanel>
+        <Default:EnumBar Value="{Binding Mode}"
+                                  DockPanel.Dock="Bottom"/>
         <Grid>
-            <Integration:WindowsFormsHost Visibility="{Binding IsXaml, Converter={StaticResource CollapsedWhenFalse}}">
+            <Integration:WindowsFormsHost Visibility="{Binding InXamlMode, Converter={StaticResource CollapsedWhenFalse}}">
                 <TextEditor:TextEditorControl x:Name="uxTextEditor" />
             </Integration:WindowsFormsHost>
             <ContentPresenter Content="{Binding DesignSurface}"
-                              Visibility="{Binding IsDesign, Converter={StaticResource CollapsedWhenFalse}}"/>
+                              Visibility="{Binding InDesignMode, Converter={StaticResource CollapsedWhenFalse}}"/>
         </Grid>
     </DockPanel>
     

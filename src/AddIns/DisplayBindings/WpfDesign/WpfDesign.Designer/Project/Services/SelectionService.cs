@@ -1,4 +1,4 @@
-﻿// <file>
+// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
@@ -31,13 +31,11 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 			get { return _selectedComponents.Clone(); }
 		}
 		
-		public DesignItem PrimarySelection
-		{
+		public DesignItem PrimarySelection {
 			get { return _primarySelection; }
 		}
 		
-		public int SelectionCount
-		{
+		public int SelectionCount {
 			get { return _selectedComponents.Count; }
 		}
 		
@@ -56,7 +54,7 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 			if (components == null)
 				components = SharedInstances.EmptyDesignItemArray;
 
-			if (_selectedComponents.SequenceEqual(components)) return;
+			var prevSelectedItems = _selectedComponents.ToArray();
 			
 			if (SelectionChanging != null)
 				SelectionChanging(this, EventArgs.Empty);
@@ -160,12 +158,13 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 					PrimarySelectionChanged(this, EventArgs.Empty);
 				}
 			}
-			
-			if (SelectionChanged != null) {
-				SelectionChanged(this, new DesignItemCollectionEventArgs(componentsToNotifyOfSelectionChange));
-			}
 
-			RaisePropertyChanged("SelectedItems");
+			if (!SelectedItems.SequenceEqual(prevSelectedItems)) {
+				if (SelectionChanged != null) {
+					SelectionChanged(this, new DesignItemCollectionEventArgs(componentsToNotifyOfSelectionChange));
+				}
+				RaisePropertyChanged("SelectedItems");
+			}
 		}
 		
 		#region INotifyPropertyChanged Members
@@ -174,8 +173,7 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 
 		void RaisePropertyChanged(string name)
 		{
-			if (PropertyChanged != null)
-			{
+			if (PropertyChanged != null) {
 				PropertyChanged(this, new PropertyChangedEventArgs(name));
 			}
 		}

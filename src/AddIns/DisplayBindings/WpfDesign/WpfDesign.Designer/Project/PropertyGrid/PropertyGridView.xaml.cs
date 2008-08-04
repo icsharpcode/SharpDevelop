@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -43,8 +43,7 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 		public static readonly DependencyProperty SelectedItemsProperty =
 			DependencyProperty.Register("SelectedItems", typeof(IEnumerable<DesignItem>), typeof(PropertyGridView));
 
-		public IEnumerable<DesignItem> SelectedItems
-		{
+		public IEnumerable<DesignItem> SelectedItems {
 			get { return (IEnumerable<DesignItem>)GetValue(SelectedItemsProperty); }
 			set { SetValue(SelectedItemsProperty, value); }
 		}

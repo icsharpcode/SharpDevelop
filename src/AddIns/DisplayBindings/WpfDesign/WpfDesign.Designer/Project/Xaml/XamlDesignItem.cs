@@ -1,4 +1,4 @@
-﻿// <file>
+// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
@@ -13,9 +13,11 @@ using System.Diagnostics;
 using System.Windows;
 using ICSharpCode.WpfDesign.XamlDom;
 using ICSharpCode.WpfDesign.Designer.Services;
+using System.Windows.Markup;
 
 namespace ICSharpCode.WpfDesign.Designer.Xaml
 {
+	[DebuggerDisplay("XamlDesignItem: {ComponentType.Name}")]
 	sealed class XamlDesignItem : DesignItem
 	{
 		readonly XamlObject _xamlObject;
@@ -134,6 +136,12 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 		{
 			Debug.Assert(property != null);
 			OnPropertyChanged(new System.ComponentModel.PropertyChangedEventArgs(property.Name));
+		}
+
+		public override string ContentPropertyName {
+			get {
+				return XamlObject.ContentPropertyName; 
+			}
 		}
 	}
 }

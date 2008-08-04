@@ -25,13 +25,13 @@ namespace ICSharpCode.XamlDesigner
 			DataContext = Toolbox.Instance;
             InitializeComponent();
 
-            new DragListener(this).DragStarted += new MouseEventHandler(Toolbox_DragStarted);
+            new DragListener(this).DragStarted += Toolbox_DragStarted;
         }
 
-        void Toolbox_DragStarted(object sender, MouseEventArgs e)
-        {
-            PrepareTool(e.GetDataContext() as ControlNode, true);
-        }
+		void Toolbox_DragStarted(object sender, MouseButtonEventArgs e)
+		{
+			PrepareTool(e.GetDataContext() as ControlNode, true);
+		}
 
 		void uxTreeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
 		{

@@ -1,4 +1,4 @@
-﻿// <file>
+// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
@@ -32,6 +32,11 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			this.element = element;
 			this.elementType = elementType;
 			this.instance = instance;
+
+			var contentAttrs = elementType.GetCustomAttributes(typeof(ContentPropertyAttribute), true) as ContentPropertyAttribute[];
+			if (contentAttrs != null && contentAttrs.Length > 0) {
+				this.contentPropertyName = contentAttrs[0].Name;
+			}
 		}
 		
 		/// <summary>For use by XamlParser only.</summary>
@@ -119,6 +124,14 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		public IList<XamlProperty> Properties {
 			get {
 				return properties.AsReadOnly();
+			}
+		}
+
+		string contentPropertyName;
+
+		public string ContentPropertyName {
+			get {
+				return contentPropertyName; 
 			}
 		}
 		

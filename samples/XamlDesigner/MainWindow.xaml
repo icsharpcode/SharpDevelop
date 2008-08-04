@@ -4,7 +4,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:sd="http://sharpdevelop.net"
         xmlns:AvalonDock="clr-namespace:AvalonDock;assembly=AvalonDock"
-        xmlns:XamlDesigner="clr-namespace:ICSharpCode.XamlDesigner"
+        xmlns:Default="clr-namespace:ICSharpCode.XamlDesigner"
         SnapsToDevicePixels="True"
         AllowDrop="True"
         Title="{Binding Title}">
@@ -22,7 +22,7 @@
                         CanExecute="CurrentDocument_CanExecute"
                         PreviewExecuted="CloseCommand_PreviewExecuted"/>
         
-        <CommandBinding Command="XamlDesigner:MainWindow.CloseAllCommand"
+        <CommandBinding Command="Default:MainWindow.CloseAllCommand"
                         Executed="CloseAllCommand_Executed"
                         CanExecute="CurrentDocument_CanExecute" />
         
@@ -34,11 +34,11 @@
                         Executed="SaveAsCommand_Executed"
                         CanExecute="CurrentDocument_CanExecute" />
         
-        <CommandBinding Command="XamlDesigner:MainWindow.SaveAllCommand"
+        <CommandBinding Command="Default:MainWindow.SaveAllCommand"
                         Executed="SaveAllCommand_Executed"
                         CanExecute="CurrentDocument_CanExecute" />
         
-        <CommandBinding Command="XamlDesigner:MainWindow.ExitCommand"
+        <CommandBinding Command="Default:MainWindow.ExitCommand"
                         Executed="ExitCommand_Executed" />
         
     </Window.CommandBindings>
@@ -51,18 +51,18 @@
                 <MenuItem Command="Open" />
                 <Separator />
                 <MenuItem Command="Close" />
-                <MenuItem Command="XamlDesigner:MainWindow.CloseAllCommand" />
+                <MenuItem Command="Default:MainWindow.CloseAllCommand" />
                 <Separator />
                 <MenuItem Command="Save" />
                 <MenuItem Command="SaveAs" />
-                <MenuItem Command="XamlDesigner:MainWindow.SaveAllCommand" />
+                <MenuItem Command="Default:MainWindow.SaveAllCommand" />
                 <Separator />
                 <MenuItem Header="Recent Files"
                           ItemsSource="{Binding RecentFiles}"
                           IsEnabled="{Binding RecentFiles.Count, Converter={StaticResource FalseWhenZero}}"
                           Click="RecentFiles_Click"/>
                 <Separator />
-                <MenuItem Command="XamlDesigner:MainWindow.ExitCommand" />
+                <MenuItem Command="Default:MainWindow.ExitCommand" />
             </MenuItem>
             <MenuItem Header="Edit">
                 <MenuItem Command="Undo" />
@@ -87,19 +87,19 @@
 
                 <AvalonDock:DockablePane>
                     <AvalonDock:DockableContent x:Name="content1" Title="Toolbox">
-                        <XamlDesigner:ToolboxView />
+                        <Default:ToolboxView />
                     </AvalonDock:DockableContent>
                 </AvalonDock:DockablePane>
             
                 <AvalonDock:DockablePane>
                     <AvalonDock:DockableContent x:Name="content2" Title="Outline">
-                        <!--<XamlDesigner:SceneTreeView />-->
+                        <Default:Outline Root="{Binding CurrentDocument.OutlineRoot}"/>
                     </AvalonDock:DockableContent>
                 </AvalonDock:DockablePane>
 
                 <AvalonDock:DockablePane>
                     <AvalonDock:DockableContent x:Name="content3" Title="Errors">
-                        <!--<XamlDesigner:ErrorListView />-->
+                        <!--<Default:ErrorListView />-->
                     </AvalonDock:DockableContent>
                 </AvalonDock:DockablePane>
                 
