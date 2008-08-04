@@ -8,14 +8,13 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
 using System.Threading;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
+using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 using ICSharpCode.SharpDevelop.Project;
-
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -123,7 +122,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			properties = (Properties)PropertyService.Get(OutputWindowOptionsPanel.OutputWindowsProperty, new Properties());
 			
-			textEditorControl.Font = FontSelectionPanel.ParseFont(properties.Get("DefaultFont", ResourceService.DefaultMonospacedFont.ToString()).ToString());
+			textEditorControl.Font = FontSelectionPanel.ParseFont(properties.Get("DefaultFont", WinFormsResourceService.DefaultMonospacedFont.ToString()).ToString());
 			properties.PropertyChanged += new PropertyChangedEventHandler(PropertyChanged);
 			
 			//textEditorControl.ActiveTextAreaControl.TextArea.DoubleClick += TextEditorControlDoubleClick;
@@ -367,7 +366,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				ToolbarService.UpdateToolbar(toolStrip);
 			}
 			if (e.Key == "DefaultFont") {
-				textEditorControl.Font = FontSelectionPanel.ParseFont(properties.Get("DefaultFont", ResourceService.DefaultMonospacedFont.ToString()).ToString());
+				textEditorControl.Font = FontSelectionPanel.ParseFont(properties.Get("DefaultFont", WinFormsResourceService.DefaultMonospacedFont.ToString()).ToString());
 			}
 		}
 		

@@ -17,7 +17,7 @@
     <RunPostBuildEvent>Always</RunPostBuildEvent>
     <DelaySign>False</DelaySign>
     <AssemblyOriginatorKeyMode>File</AssemblyOriginatorKeyMode>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
   </PropertyGroup>
@@ -47,20 +47,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.Core">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Data" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="log4net">
-      <HintPath>..\..\..\Libraries\log4net\log4net.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\ICSharpCode.Core.doc" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\AddInTree\AddIn\AddIn.cs" />
     <Compile Include="Src\AddInTree\AddIn\AddInLoadException.cs" />
@@ -82,39 +71,10 @@
     <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\LazyDoozer.cs" />
     <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\MenuItem\AbstractCheckableMenuCommand.cs" />
     <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\MenuItem\AbstractMenuCommand.cs" />
-    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\MenuItem\Gui\IStatusUpdate.cs" />
-    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\MenuItem\Gui\Menu.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\MenuItem\Gui\MenuCheckBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\MenuItem\Gui\MenuCommand.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\MenuItem\Gui\MenuSeparator.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\MenuItem\ICheckableMenuCommand.cs" />
     <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\MenuItem\IMenuCommand.cs" />
-    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\MenuItem\ISubmenuBuilder.cs" />
     <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\MenuItem\MenuItemDoozer.cs" />
     <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\ToolBarItem\AbstractComboBoxCommand.cs" />
-    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\ToolBarItem\Gui\ToolBarCheckBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\ToolBarItem\Gui\ToolBarComboBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\ToolBarItem\Gui\ToolBarCommand.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\ToolBarItem\Gui\ToolBarDropDownButton.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\ToolBarItem\Gui\ToolBarSeparator.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\ToolBarItem\IComboBoxCommand.cs" />
     <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\ToolBarItem\ToolBarItemDoozer.cs" />
     <Compile Include="Src\AddInTree\AddInTree.cs" />
@@ -124,35 +84,26 @@
     <Compile Include="Src\Services\FileUtility\FileNameEventHandler.cs" />
     <Compile Include="Src\Services\FileUtility\FileUtility.cs" />
     <Compile Include="Src\Services\FileUtility\FileUtility.Minimal.cs" />
-    <Compile Include="Src\Services\FileUtility\SaveErrorChooseDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Src\Services\FileUtility\SaveErrorInformDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Src\Services\MenuService\MenuService.cs" />
-    <Compile Include="Src\Services\MessageService\CustomDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Src\Services\IService.cs" />
+    <Compile Include="Src\Services\LoggingService\TextWriterLoggingService.cs" />
+    <Compile Include="Src\Services\LoggingService\ILoggingService.cs" />
+    <Compile Include="Src\Services\MessageService\TextWriterMessageService.cs" />
+    <Compile Include="Src\Services\MessageService\IMessageService.cs" />
     <Compile Include="Src\Services\MessageService\MessageService.cs" />
     <Compile Include="Src\Services\PropertyService\Properties.cs" />
     <Compile Include="Src\Services\PropertyService\PropertyChangedEvent.cs" />
     <Compile Include="Src\Services\PropertyService\PropertyService.cs" />
     <Compile Include="Src\Services\ResourceService\ResourceNotFoundException.cs" />
     <Compile Include="Src\Services\ResourceService\ResourceService.cs" />
+    <Compile Include="Src\Services\ServiceManager.cs" />
     <Compile Include="Src\Services\StringParser\IStringTagProvider.cs" />
     <Compile Include="Src\Services\StringParser\StringParser.cs" />
-    <Compile Include="Src\Services\ToolBarService\ToolBarService.cs" />
     <Compile Include="Src\Util\AbstractCommand.cs" />
+    <Compile Include="Src\Util\DebugTextWriter.cs" />
     <Compile Include="Src\Util\ICommand.cs" />
-    <Compile Include="Src\Util\RightToLeftConverter.cs" />
-    <Compile Include="Src\Services\MessageService\InputBox.cs">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="Src\AddInTree\AddIn\IBuildItemsModifier.cs" />
     <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\IncludeDoozer.cs" />
     <Compile Include="Src\Services\LoggingService\LoggingService.cs" />
-    <Compile Include="Src\Util\ClipboardWrapper.cs" />
     <Compile Include="Src\AddInTree\AddIn\Manifest.cs" />
     <Compile Include="Src\AddInTree\AddIn\AddInReference.cs" />
     <Compile Include="Src\AddInTree\CoreStartup.cs" />
@@ -162,14 +113,12 @@
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Src\Util\AppDomainLaunchHelper.cs" />
-    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\ToolBarItem\Gui\ToolBarLabel.cs" />
-    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\ToolBarItem\Gui\ToolBarSplitButton.cs" />
-    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\ToolBarItem\Gui\ToolBarTextBox.cs" />
     <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\ToolBarItem\AbstractTextBoxCommand.cs" />
     <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\ToolBarItem\ITextBoxCommand.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Src\Services\LoggingService" />
+    <Folder Include="Src\Services\ResourceService" />
     <Content Include="..\..\..\..\data\schemas\AddIn.xsd">
       <Link>Src\AddInTree\AddIn\AddIn.xsd</Link>
     </Content>

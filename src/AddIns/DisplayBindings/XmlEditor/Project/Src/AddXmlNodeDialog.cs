@@ -10,7 +10,9 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Xml;
+
 using ICSharpCode.Core;
+using ICSharpCode.Core.WinForms;
 
 namespace ICSharpCode.XmlEditor
 {

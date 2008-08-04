@@ -1,5 +1,4 @@
-﻿
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
@@ -12,6 +11,7 @@ using System.IO;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
+using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 

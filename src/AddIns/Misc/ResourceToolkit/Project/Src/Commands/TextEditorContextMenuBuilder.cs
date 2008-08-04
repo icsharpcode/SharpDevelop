@@ -14,10 +14,10 @@ using Hornung.ResourceToolkit.Gui;
 using Hornung.ResourceToolkit.Refactoring;
 using Hornung.ResourceToolkit.Resolver;
 using ICSharpCode.Core;
+using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Refactoring;
 using ICSharpCode.TextEditor;
-using SearchAndReplace;
 
 namespace Hornung.ResourceToolkit.Commands
 {

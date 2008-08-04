@@ -6,12 +6,11 @@
 // </file>
 
 using System;
-using System.Windows.Forms;
 using System.IO;
+using System.Windows.Forms;
 
 using HexEditor.Util;
-
-using ICSharpCode.Core;
+using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop;
 
 namespace HexEditor.View

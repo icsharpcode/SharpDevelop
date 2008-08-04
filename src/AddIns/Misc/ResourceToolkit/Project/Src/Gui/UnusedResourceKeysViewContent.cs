@@ -13,6 +13,7 @@ using System.Windows.Forms;
 
 using Hornung.ResourceToolkit.ResourceFileContent;
 using ICSharpCode.Core;
+using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace Hornung.ResourceToolkit.Gui

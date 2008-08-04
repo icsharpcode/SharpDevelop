@@ -6,13 +6,11 @@
 // </file>
 
 using System;
-using System.Collections;
 using System.Drawing;
 using System.Windows.Forms;
-using System.Xml;
 
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Internal.Templates;
+using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Widgets.SideBar;
 
 namespace ICSharpCode.SharpDevelop.Gui

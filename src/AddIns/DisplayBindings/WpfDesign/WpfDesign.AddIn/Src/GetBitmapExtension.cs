@@ -6,7 +6,7 @@ using System.Windows.Interop;
 using System.Windows.Markup;
 using System.Windows.Media.Imaging;
 
-using ICSharpCode.Core;
+using ICSharpCode.Core.WinForms;
 
 namespace ICSharpCode.WpfDesign.AddIn
 {
@@ -36,10 +36,9 @@ namespace ICSharpCode.WpfDesign.AddIn
 		
 		BitmapSource GetBitmapSource()
 		{
-			using (Bitmap bitmap = ResourceService.GetBitmap(key)) {
-				return Imaging.CreateBitmapSourceFromHBitmap(bitmap.GetHbitmap(), IntPtr.Zero,
-				                                             Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-			}
+			Bitmap bitmap = WinFormsResourceService.GetBitmap(key);
+			return Imaging.CreateBitmapSourceFromHBitmap(bitmap.GetHbitmap(), IntPtr.Zero,
+			                                             Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
 		}
 	}
 }

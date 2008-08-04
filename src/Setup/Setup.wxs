@@ -169,6 +169,7 @@
 				<ComponentRef Id="BuildTasksTargetFiles"/>
 				<ComponentRef Id="BuildWorkerFiles"/>
 				<ComponentRef Id="ICSharpCodeCoreDll"/>
+				<ComponentRef Id="ICSharpCodeCoreWinFormsDll"/>
 				<ComponentRef Id="ICSharpCodeNRefactoryDll"/>
 				<ComponentRef Id="ICSharpCodeSharpDevelopDll"/>
 				<ComponentRef Id="ICSharpCodeSharpDevelopDomdll"/>

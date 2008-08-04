@@ -10,6 +10,7 @@ using System.Drawing;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
+using ICSharpCode.Core.WinForms;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -23,12 +24,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public StatusPanel(WizardDialog wizard)
 		{
-			smallFont  = ResourceService.LoadFont("Tahoma",  14, GraphicsUnit.World);
-			normalFont = ResourceService.LoadFont("Tahoma", 14, GraphicsUnit.World);
-			boldFont   = ResourceService.LoadFont("Tahoma", 14, FontStyle.Bold, GraphicsUnit.World);
+			smallFont  = WinFormsResourceService.LoadFont("Tahoma",  14, GraphicsUnit.World);
+			normalFont = WinFormsResourceService.LoadFont("Tahoma", 14, GraphicsUnit.World);
+			boldFont   = WinFormsResourceService.LoadFont("Tahoma", 14, FontStyle.Bold, GraphicsUnit.World);
 			
 			this.wizard = wizard;
-			this.BackgroundImage = ResourceService.GetBitmap("GeneralWizardBackground");
+			this.BackgroundImage = WinFormsResourceService.GetBitmap("GeneralWizardBackground");
 			Size = new Size(198, 400);
 			ResizeRedraw  = false;
 			

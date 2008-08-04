@@ -8,6 +8,7 @@
 using System;
 using System.Windows.Forms;
 using ICSharpCode.Core;
+using ICSharpCode.Core.WinForms;
 
 namespace ICSharpCode.WixBinding
 {
@@ -156,8 +157,8 @@ namespace ICSharpCode.WixBinding
 		{
 			try {
 				diffResultListView.SmallImageList = diffResultsImageList;
-				diffResultsImageList.Images.Add(ResourceService.GetBitmap("Icons.16x16.Error"));
-				diffResultsImageList.Images.Add(ResourceService.GetBitmap("Icons.16x16.Question"));
+				diffResultsImageList.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.Error"));
+				diffResultsImageList.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.Question"));
 			} catch (ResourceNotFoundException) { }
 		}
 	}

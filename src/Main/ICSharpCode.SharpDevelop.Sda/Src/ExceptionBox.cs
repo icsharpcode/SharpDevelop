@@ -9,11 +9,11 @@
 using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
 using System.Threading;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
+using ICSharpCode.Core.WinForms;
 
 namespace ICSharpCode.SharpDevelop.Sda
 {
@@ -107,7 +107,7 @@ namespace ICSharpCode.SharpDevelop.Sda
 			exceptionTextBox.Text = getClipboardString();
 			
 			try {
-				this.pictureBox.Image = ResourceService.GetBitmap("ErrorReport");
+				this.pictureBox.Image = WinFormsResourceService.GetBitmap("ErrorReport");
 			} catch {}
 		}
 		

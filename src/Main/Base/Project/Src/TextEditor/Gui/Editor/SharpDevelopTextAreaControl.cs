@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
+using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.DefaultEditor.Actions;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Internal.Templates;

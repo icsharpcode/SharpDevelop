@@ -8,19 +8,16 @@
  */
 using System;
 using System.Collections.Generic;
-using System.Reflection;
+using System.IO;
 using System.Windows.Forms;
-
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Project;
+using System.Xml;
 
 using ClassDiagram;
-
-using System.IO;
-using System.Xml;
+using ICSharpCode.Core.WinForms;
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace ClassDiagramAddin
 {

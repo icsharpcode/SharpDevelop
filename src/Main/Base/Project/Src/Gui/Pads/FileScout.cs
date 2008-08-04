@@ -10,11 +10,10 @@ using System.Collections;
 using System.Drawing;
 using System.IO;
 using System.Resources;
-using System.Runtime.InteropServices;
-using System.Text;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
+using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Gui
@@ -351,15 +350,15 @@ namespace ICSharpCode.SharpDevelop.Gui
 			filetree.AfterSelect += new TreeViewEventHandler(DirectorySelected);
 			ImageList imglist = new ImageList();
 			imglist.ColorDepth = ColorDepth.Depth32Bit;
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.ClosedFolderBitmap"));
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.OpenFolderBitmap"));
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.FLOPPY"));
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.DRIVE"));
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.CDROM"));
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.NETWORK"));
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.Desktop"));
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.PersonalFiles"));
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.MyComputer"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.ClosedFolderBitmap"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.OpenFolderBitmap"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.FLOPPY"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.DRIVE"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.CDROM"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.NETWORK"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.Desktop"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.PersonalFiles"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.MyComputer"));
 			
 			filetree.ImageList = imglist;
 			

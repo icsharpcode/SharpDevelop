@@ -10,7 +10,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
@@ -214,7 +213,9 @@ namespace ICSharpCode.Core
 		public void WriteProperties(XmlWriter writer)
 		{
 			lock (properties) {
-				foreach (KeyValuePair<string, object> entry in properties.OrderBy(e=>e.Key)) {
+				List<KeyValuePair<string, object>> sortedProperties = new List<KeyValuePair<string, object>>(properties);
+				sortedProperties.Sort((a, b) => StringComparer.OrdinalIgnoreCase.Compare(a.Key, b.Key));
+				foreach (KeyValuePair<string, object> entry in sortedProperties) {
 					object val = entry.Value;
 					if (val is Properties) {
 						writer.WriteStartElement("Properties");

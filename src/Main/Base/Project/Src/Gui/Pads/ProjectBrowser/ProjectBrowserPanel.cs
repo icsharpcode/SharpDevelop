@@ -8,6 +8,7 @@
 using System;
 using System.Windows.Forms;
 using ICSharpCode.Core;
+using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.Project
@@ -71,7 +72,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			ToolbarService.UpdateToolbar(toolStrip);
 			if (node != null && node.ToolbarAddinTreePath != null) {
 				toolStrip.Items.Add(new ToolStripSeparator());
-				toolStrip.Items.AddRange(AddInTree.BuildItems<ToolStripItem>(node.ToolbarAddinTreePath, node, false).ToArray());
+				toolStrip.Items.AddRange(ToolbarService.CreateToolStripItems(node.ToolbarAddinTreePath, node, false));
 			}
 		}
 		

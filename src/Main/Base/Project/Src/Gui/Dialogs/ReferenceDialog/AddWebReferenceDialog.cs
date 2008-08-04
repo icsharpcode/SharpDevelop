@@ -16,6 +16,7 @@ using System.Web.Services.Discovery;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
+using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Project;
 using Microsoft.Win32;
 
@@ -687,12 +688,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void AddImages()
 		{
-			goButton.Image = ResourceService.GetBitmap("Icons.16x16.RunProgramIcon");
-			refreshButton.Image = ResourceService.GetBitmap("Icons.16x16.BrowserRefresh");
-			backButton.Image = ResourceService.GetBitmap("Icons.16x16.BrowserBefore");
-			forwardButton.Image = ResourceService.GetBitmap("Icons.16x16.BrowserAfter");
-			stopButton.Image = ResourceService.GetBitmap("Icons.16x16.BrowserCancel");
-			Icon = ResourceService.GetIcon("Icons.16x16.WebSearchIcon");
+			goButton.Image = WinFormsResourceService.GetBitmap("Icons.16x16.RunProgramIcon");
+			refreshButton.Image = WinFormsResourceService.GetBitmap("Icons.16x16.BrowserRefresh");
+			backButton.Image = WinFormsResourceService.GetBitmap("Icons.16x16.BrowserBefore");
+			forwardButton.Image = WinFormsResourceService.GetBitmap("Icons.16x16.BrowserAfter");
+			stopButton.Image = WinFormsResourceService.GetBitmap("Icons.16x16.BrowserCancel");
+			Icon = WinFormsResourceService.GetIcon("Icons.16x16.WebSearchIcon");
 		}
 		
 		void AddStringResources()

@@ -10,6 +10,7 @@ using System.Web.Services.Description;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
+using ICSharpCode.Core.WinForms;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -250,10 +251,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			try {
 				ImageList imageList = new ImageList();
-				imageList.Images.Add(ResourceService.GetBitmap("Icons.16x16.Library"));
-				imageList.Images.Add(ResourceService.GetBitmap("Icons.16x16.Interface"));
-				imageList.Images.Add(ResourceService.GetBitmap("Icons.16x16.Class"));
-				imageList.Images.Add(ResourceService.GetBitmap("Icons.16x16.Method"));
+				imageList.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.Library"));
+				imageList.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.Interface"));
+				imageList.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.Class"));
+				imageList.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.Method"));
 				
 				webServicesTreeView.ImageList = imageList;
 			} catch (ResourceNotFoundException) {

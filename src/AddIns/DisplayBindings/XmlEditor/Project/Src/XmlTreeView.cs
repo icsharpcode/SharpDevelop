@@ -7,9 +7,8 @@
 
 using System;
 using System.Windows.Forms;
-using System.Xml;
-
 using ICSharpCode.Core;
+using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.XmlEditor

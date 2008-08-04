@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop;
+using ICSharpCode.Core.WinForms;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -33,9 +33,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 			EditTextBoxTextChanged(null, null);
 			updateButton.Text = StringParser.Parse(updateButton.Text);
 			removeButton.Text = StringParser.Parse(removeButton.Text);
-			moveUpButton.Image   = ResourceService.GetBitmap("Icons.16x16.ArrowUp");
-			moveDownButton.Image = ResourceService.GetBitmap("Icons.16x16.ArrowDown");
-			deleteButton.Image   = ResourceService.GetBitmap("Icons.16x16.DeleteIcon");
+			moveUpButton.Image   = WinFormsResourceService.GetBitmap("Icons.16x16.ArrowUp");
+			moveDownButton.Image = WinFormsResourceService.GetBitmap("Icons.16x16.ArrowDown");
+			deleteButton.Image   = WinFormsResourceService.GetBitmap("Icons.16x16.DeleteIcon");
 		}
 		
 		#region Windows Forms Designer generated code

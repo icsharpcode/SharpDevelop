@@ -8,13 +8,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing.Printing;
 using System.IO;
 using System.Resources;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
+using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Internal.Undo;
 using ICSharpCode.SharpDevelop.Widgets.ListViewSorting;
 
@@ -105,12 +105,12 @@ namespace ResourceEditor
 			
 			BorderStyle   = System.Windows.Forms.BorderStyle.None;
 			
-			images.Images.Add(ResourceService.GetIcon("Icons.16x16.ResourceEditor.string"));
-			images.Images.Add(ResourceService.GetIcon("Icons.16x16.ResourceEditor.bmp"));
-			images.Images.Add(ResourceService.GetIcon("Icons.16x16.ResourceEditor.icon"));
-			images.Images.Add(ResourceService.GetIcon("Icons.16x16.ResourceEditor.cursor"));
-			images.Images.Add(ResourceService.GetIcon("Icons.16x16.ResourceEditor.bin"));
-			images.Images.Add(ResourceService.GetIcon("Icons.16x16.ResourceEditor.obj"));
+			images.Images.Add(WinFormsResourceService.GetIcon("Icons.16x16.ResourceEditor.string"));
+			images.Images.Add(WinFormsResourceService.GetIcon("Icons.16x16.ResourceEditor.bmp"));
+			images.Images.Add(WinFormsResourceService.GetIcon("Icons.16x16.ResourceEditor.icon"));
+			images.Images.Add(WinFormsResourceService.GetIcon("Icons.16x16.ResourceEditor.cursor"));
+			images.Images.Add(WinFormsResourceService.GetIcon("Icons.16x16.ResourceEditor.bin"));
+			images.Images.Add(WinFormsResourceService.GetIcon("Icons.16x16.ResourceEditor.obj"));
 			SmallImageList = images;
 			
 			// Set up sorting:

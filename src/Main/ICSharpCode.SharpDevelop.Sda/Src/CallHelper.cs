@@ -10,12 +10,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Resources;
 using System.Threading;
-using System.Linq;
 
 using ICSharpCode.Core;
+using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Commands;
 using ICSharpCode.SharpDevelop.Gui;
 
@@ -35,6 +36,9 @@ namespace ICSharpCode.SharpDevelop.Sda
 		#region Initialize Core
 		public void InitSharpDevelopCore(SharpDevelopHost.CallbackHelper callback, StartupSettings properties)
 		{
+			ICSharpCode.Core.Services.ServiceManager.LoggingService = new log4netLoggingService();
+			ICSharpCode.Core.Services.ServiceManager.MessageService = WinFormsMessageService.Instance;
+			
 			LoggingService.Info("InitSharpDevelop...");
 			this.callback = callback;
 			CoreStartup startup = new CoreStartup(properties.ApplicationName);

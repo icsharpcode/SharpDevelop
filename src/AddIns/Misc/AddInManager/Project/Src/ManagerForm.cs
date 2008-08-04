@@ -13,6 +13,7 @@ using System.Text;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
+using ICSharpCode.Core.WinForms;
 
 namespace ICSharpCode.AddInManager
 {
@@ -54,7 +55,7 @@ namespace ICSharpCode.AddInManager
 			#if STANDALONE
 			actionFlowLayoutPanel.BackgroundImage = new Bitmap(typeof(ManagerForm).Assembly.GetManifestResourceStream("ICSharpCode.AddInManager.WizardBackground.png"));
 			#else
-			actionFlowLayoutPanel.BackgroundImage = ResourceService.GetBitmap("GeneralWizardBackground");
+			actionFlowLayoutPanel.BackgroundImage = WinFormsResourceService.GetBitmap("GeneralWizardBackground");
 			#endif
 			
 			installButton.Text = ResourceService.GetString("AddInManager.InstallButton");
@@ -401,7 +402,7 @@ namespace ICSharpCode.AddInManager
 			box.Size = new Size(16, 16);
 			bool isOK = dep.Check(addInDict, out versionFound);
 			box.SizeMode = PictureBoxSizeMode.CenterImage;
-			box.Image = isOK ? ResourceService.GetBitmap("Icons.16x16.OK") : ResourceService.GetBitmap("Icons.16x16.DeleteIcon");
+			box.Image = isOK ? WinFormsResourceService.GetBitmap("Icons.16x16.OK") : WinFormsResourceService.GetBitmap("Icons.16x16.DeleteIcon");
 			dependencyTable.Controls.Add(label, 1, rowIndex);
 			dependencyTable.Controls.Add(box,   0, rowIndex);
 			return isOK;

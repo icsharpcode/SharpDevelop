@@ -4,15 +4,15 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using Debugger;
+
 using Debugger.Expressions;
 using Debugger.MetaData;
 using ICSharpCode.Core;
+using ICSharpCode.Core.WinForms;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Services;
 

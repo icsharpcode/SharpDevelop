@@ -9,15 +9,15 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
-using System.Reflection;
+using System.Linq;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
+using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Gui
@@ -230,7 +230,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public DefaultWorkbench()
 		{
 			Text = ResourceService.GetString("MainWindow.DialogName");
-			Icon = ResourceService.GetIcon("Icons.SharpDevelopIcon");
+			Icon = WinFormsResourceService.GetIcon("Icons.SharpDevelopIcon");
 			
 			StartPosition = FormStartPosition.Manual;
 			AllowDrop     = true;
@@ -577,8 +577,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			TopMenu = new MenuStrip();
 			TopMenu.Items.Clear();
 			try {
-				ToolStripItem[] items = (ToolStripItem[])(AddInTree.GetTreeNode(mainMenuPath).BuildChildItems(this)).ToArray(typeof(ToolStripItem));
-				TopMenu.Items.AddRange(items);
+				MenuService.AddItemsToMenu(TopMenu.Items, this, mainMenuPath);
 				UpdateMenus();
 			} catch (TreePathNotFoundException) {}
 		}

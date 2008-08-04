@@ -12,6 +12,7 @@ using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
+using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Gui.XmlForms;
 
 namespace ICSharpCode.SharpDevelop.Gui
@@ -20,7 +21,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 	{
 		public GradientHeaderPanel(int fontSize) : this()
 		{
-			Font = ResourceService.LoadFont("Tahoma", fontSize);
+			Font = WinFormsResourceService.LoadFont("Tahoma", fontSize);
 		}
 		
 		public GradientHeaderPanel() : base()

@@ -10,7 +10,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
 
-using ICSharpCode.Core;
+using ICSharpCode.Core.WinForms;
 using ICSharpCode.FormsDesigner.Commands;
 using CommandID = System.ComponentModel.Design.CommandID;
 using MenuCommand = System.ComponentModel.Design.MenuCommand;

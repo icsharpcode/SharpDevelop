@@ -7,23 +7,20 @@
 
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
-using System.Text;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
+using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Bookmarks;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Gui.ClassBrowser;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Refactoring;
-using ICSharpCode.TextEditor.Document;
-using SearchAndReplace;
 using ICSharpCode.TextEditor;
+using SearchAndReplace;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 {
@@ -236,7 +233,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			if (c.ProjectContent.Language.SupportsImplicitInterfaceImplementation) {
 				AddImplementInterfaceCommandItems(subItems, c, false);
 				if (subItems.Count > 0) {
-					list.Add(new ICSharpCode.Core.Menu("${res:SharpDevelop.Refactoring.ImplementInterfaceImplicit}", subItems.ToArray()));
+					list.Add(new ICSharpCode.Core.WinForms.Menu("${res:SharpDevelop.Refactoring.ImplementInterfaceImplicit}", subItems.ToArray()));
 					subItems = new List<ToolStripItem>();
 				}
 			}
@@ -244,9 +241,9 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			
 			if (subItems.Count > 0) {
 				if (c.ProjectContent.Language.SupportsImplicitInterfaceImplementation) {
-					list.Add(new ICSharpCode.Core.Menu("${res:SharpDevelop.Refactoring.ImplementInterfaceExplicit}", subItems.ToArray()));
+					list.Add(new ICSharpCode.Core.WinForms.Menu("${res:SharpDevelop.Refactoring.ImplementInterfaceExplicit}", subItems.ToArray()));
 				} else {
-					list.Add(new ICSharpCode.Core.Menu("${res:SharpDevelop.Refactoring.ImplementInterface}", subItems.ToArray()));
+					list.Add(new ICSharpCode.Core.WinForms.Menu("${res:SharpDevelop.Refactoring.ImplementInterface}", subItems.ToArray()));
 				}
 			}
 		}

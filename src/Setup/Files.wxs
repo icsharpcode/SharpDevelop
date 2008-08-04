@@ -651,6 +651,9 @@
 								<File Source="..\..\bin\ICSharpCode.SharpDevelop.BuildWorker.exe" Id="ICSharpCode.SharpDevelop.BuildWorker.exe" Name="ICSharpCode.SharpDevelop.BuildWorker.exe" />
 								<File Source="..\..\bin\ICSharpCode.SharpDevelop.BuildWorker.exe.config" Id="ICSharpCode.SharpDevelop.BuildWorker.exe.config" Name="ICSharpCode.SharpDevelop.BuildWorker.exe.config" />
 							</Component>
+							<Component Guid="2EC34D8A-CF14-4E1F-A512-9A596A1C256D" Id="ICSharpCodeCoreWinFormsDll" DiskId="1">
+								<File Source="..\..\bin\ICSharpCode.Core.WinForms.dll" Name="ICSharpCode.Core.WinForms.dll" Id="ICSharpCode.Core.WinForms.dll" KeyPath="yes" />
+							</Component>
 						</Directory>
 						<Directory Id="DocFolder" Name="doc">
 							<Component Guid="9DCED5AC-B771-4A4F-B4FE-69867BF2EBDE" Id="SharpDevelopDocFiles" DiskId="1">

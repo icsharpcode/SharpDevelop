@@ -14,6 +14,7 @@ using System.Text;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
+using ICSharpCode.Core.WinForms;
 using NoGoop.Util;
 
 namespace NoGoop.Controls

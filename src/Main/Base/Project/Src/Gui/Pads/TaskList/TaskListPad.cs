@@ -7,12 +7,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Threading;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
-using ICSharpCode.NRefactory;
+using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;

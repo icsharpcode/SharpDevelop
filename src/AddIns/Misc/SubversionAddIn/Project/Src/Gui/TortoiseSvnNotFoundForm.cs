@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
+using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Gui.XmlForms;
 
 namespace ICSharpCode.Svn
@@ -21,7 +22,7 @@ namespace ICSharpCode.Svn
 			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("ICSharpCode.Svn.Resources.TortoiseSvnNotFoundForm.xfrm"));
 			
 			((Label)ControlDictionary["messageLabel"]).Text = StringParser.Parse("${res:AddIns.Subversion.TortoiseSVNRequired}");
-			((PictureBox)ControlDictionary["iconPictureBox"]).Image = ResourceService.GetBitmap("Icons.32x32.Information");
+			((PictureBox)ControlDictionary["iconPictureBox"]).Image = WinFormsResourceService.GetBitmap("Icons.32x32.Information");
 			((LinkLabel)ControlDictionary["linkLabel"]).Click += LinkLabelClicked;
 		}
 		

@@ -6,16 +6,14 @@
 // </file>
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
+using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Gui.XmlForms;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 
 namespace ICSharpCode.SharpDevelop.Project.Dialogs
@@ -60,9 +58,9 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 			imglist.ImageSize    = new Size(32, 32);
 			smalllist.ImageSize  = new Size(16, 16);
 			
-			smalllist.Images.Add(ResourceService.GetBitmap("Icons.32x32.EmptyProjectIcon"));
+			smalllist.Images.Add(WinFormsResourceService.GetBitmap("Icons.32x32.EmptyProjectIcon"));
 			
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.32x32.EmptyProjectIcon"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.32x32.EmptyProjectIcon"));
 			
 			// load the icons and set their index from the image list in the hashtable
 			int i = 0;

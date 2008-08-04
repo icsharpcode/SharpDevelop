@@ -8,6 +8,7 @@
 using System;
 using Hornung.ResourceToolkit.Resolver;
 using ICSharpCode.Core;
+using ICSharpCode.Core.WinForms;
 
 namespace Hornung.ResourceToolkit.Gui
 {

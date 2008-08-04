@@ -12,6 +12,7 @@ using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
+using ICSharpCode.Core.WinForms;
 
 namespace ResourceEditor
 {
@@ -42,7 +43,7 @@ namespace ResourceEditor
 			byteDataTextBox.Width = Width;
 			byteDataTextBox.Height = Height - 24;
 			byteDataTextBox.Anchor = AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom | AnchorStyles.Top;
-			byteDataTextBox.Font = ResourceService.LoadFont("Courier New", 10);
+			byteDataTextBox.Font = WinFormsResourceService.LoadFont("Courier New", 10);
 			byteDataTextBox.ScrollBars = ScrollBars.Both;
 			byteDataTextBox.BackColor = SystemColors.Window;
 			

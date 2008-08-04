@@ -4,20 +4,17 @@
 //     <owner name="Daniel Grunwald"/>
 //     <version>$Revision$</version>
 // </file>
+
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
-using ICSharpCode.NRefactory;
+using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;
-using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using ICSharpCode.SharpDevelop.Refactoring;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Actions;
-using ICSharpCode.TextEditor.Document;
 
 namespace CSharpBinding
 {

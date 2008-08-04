@@ -6,14 +6,13 @@
 // </file>
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
 using System.Threading;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
+using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.Svn
@@ -32,7 +31,7 @@ namespace ICSharpCode.Svn
 			InitializeComponent();
 			
 			revisionListView.SelectedIndexChanged += RevisionListViewSelectionChanged;
-			commentRichTextBox.Font = ResourceService.DefaultMonospacedFont;
+			commentRichTextBox.Font = WinFormsResourceService.DefaultMonospacedFont;
 			commentRichTextBox.Enabled = false;
 		}
 		

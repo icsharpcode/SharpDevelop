@@ -10,9 +10,9 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Threading;
 
 using ICSharpCode.Core;
+using ICSharpCode.Core.WinForms;
 
 namespace ICSharpCode.SharpDevelop
 {
@@ -66,7 +66,7 @@ namespace ICSharpCode.SharpDevelop
 		{
 			Bitmap bmp;
 			try {
-				bmp = ResourceService.GetBitmap(name);
+				bmp = WinFormsResourceService.GetBitmap(name);
 			} catch (ResourceNotFoundException ex) {
 				LoggingService.Warn(ex);
 				bmp = null;
@@ -75,16 +75,16 @@ namespace ICSharpCode.SharpDevelop
 				return bmp;
 			}
 			
-			return ResourceService.GetBitmap("Icons.16x16.MiscFiles");
+			return WinFormsResourceService.GetBitmap("Icons.16x16.MiscFiles");
 		}
 		
 		public static Icon GetIcon(string name)
 		{
-			Icon icon = ResourceService.GetIcon(name);
+			Icon icon = WinFormsResourceService.GetIcon(name);
 			if (icon != null) {
 				return icon;
 			}
-			return ResourceService.GetIcon("Icons.16x16.MiscFiles");
+			return WinFormsResourceService.GetIcon("Icons.16x16.MiscFiles");
 		}
 		
 		

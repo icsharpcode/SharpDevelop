@@ -50,6 +50,7 @@ using Debugger.AddIn.TreeModel;
 using Debugger.Core.Wrappers.CorPub;
 using Debugger.Expressions;
 using ICSharpCode.Core;
+using ICSharpCode.Core.WinForms;
 using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
@@ -639,7 +640,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			
 			string title = e.IsUnhandled ? StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.Title.Unhandled}") : StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.Title.Handled}");
 			string message = msg.ToString();
-			Bitmap icon = ResourceService.GetBitmap(e.IsUnhandled ? "Icons.32x32.Error" : "Icons.32x32.Warning");
+			Bitmap icon = WinFormsResourceService.GetBitmap(e.IsUnhandled ? "Icons.32x32.Error" : "Icons.32x32.Warning");
 			bool canContinue = !e.IsUnhandled;
 			
 			//DebuggerEventForm.Result result = DebuggerEventForm.Show(title, message, icon, canContinue);

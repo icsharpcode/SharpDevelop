@@ -12,9 +12,6 @@ using System.Runtime.CompilerServices;
 [assembly: CLSCompliant(true)]
 [assembly: StringFreezing()]
 
-// Use hard-binding for ICSharpCode.Core:
-[assembly: Dependency("log4net", LoadHint.Always)]
-
 [assembly: AssemblyTitle("ICSharpCode.Core")]
 [assembly: AssemblyDescription("The ICSharpCode Core containing the AddInTree and service Subsystem")]
 [assembly: AssemblyConfiguration("")]

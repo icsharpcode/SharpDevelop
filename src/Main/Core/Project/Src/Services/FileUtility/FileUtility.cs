@@ -10,8 +10,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Windows.Forms;
 
+using ICSharpCode.Core.Services;
 using Microsoft.Win32;
 
 namespace ICSharpCode.Core
@@ -348,7 +348,7 @@ namespace ICSharpCode.Core
 		
 		// This is an arbitrary limitation built into the .NET Framework.
 		// Windows supports paths up to 32k length.
-		public static int MaxPathLength = 260;
+		public static readonly int MaxPathLength = 260;
 		
 		/// <summary>
 		/// This method checks if a path (full or relative) is valid.
@@ -510,21 +510,14 @@ namespace ICSharpCode.Core
 			} catch (Exception e) {
 				switch (policy) {
 					case FileErrorPolicy.Inform:
-						
-						using (SaveErrorInformDialog informDialog = new SaveErrorInformDialog(fileName, message, "${res:FileUtilityService.ErrorWhileSaving}", e)) {
-							informDialog.ShowDialog();
-						}
+						ServiceManager.MessageService.InformSaveError(fileName, message, "${res:FileUtilityService.ErrorWhileSaving}", e);
 						break;
 					case FileErrorPolicy.ProvideAlternative:
-						using (SaveErrorChooseDialog chooseDialog = new SaveErrorChooseDialog(fileName, message, "${res:FileUtilityService.ErrorWhileSaving}", e, false)) {
-							switch (chooseDialog.ShowDialog()) {
-								case DialogResult.OK: // choose location (never happens here)
-									break;
-								case DialogResult.Retry:
-									return ObservedSave(saveFile, fileName, message, policy);
-								case DialogResult.Ignore:
-									return FileOperationResult.Failed;
-							}
+						ChooseSaveErrorResult r = ServiceManager.MessageService.ChooseSaveError(fileName, message, "${res:FileUtilityService.ErrorWhileSaving}", e, false);
+						if (r.IsRetry) {
+							return ObservedSave(saveFile, fileName, message, policy);
+						} else if (r.IsIgnore) {
+							return FileOperationResult.Failed;
 						}
 						break;
 				}
@@ -559,33 +552,16 @@ namespace ICSharpCode.Core
 			} catch (Exception e) {
 				switch (policy) {
 					case FileErrorPolicy.Inform:
-						using (SaveErrorInformDialog informDialog = new SaveErrorInformDialog(fileName, message, "${res:FileUtilityService.ErrorWhileSaving}", e)) {
-							informDialog.ShowDialog();
-						}
+						ServiceManager.MessageService.InformSaveError(fileName, message, "${res:FileUtilityService.ErrorWhileSaving}", e);
 						break;
 					case FileErrorPolicy.ProvideAlternative:
-					restartlabel:
-						using (SaveErrorChooseDialog chooseDialog = new SaveErrorChooseDialog(fileName, message, "${res:FileUtilityService.ErrorWhileSaving}", e, true)) {
-							switch (chooseDialog.ShowDialog()) {
-								case DialogResult.OK:
-									using (SaveFileDialog fdiag = new SaveFileDialog()) {
-										fdiag.OverwritePrompt = true;
-										fdiag.AddExtension    = true;
-										fdiag.CheckFileExists = false;
-										fdiag.CheckPathExists = true;
-										fdiag.Title           = "Choose alternate file name";
-										fdiag.FileName        = fileName;
-										if (fdiag.ShowDialog() == DialogResult.OK) {
-											return ObservedSave(saveFileAs, fdiag.FileName, message, policy);
-										} else {
-											goto restartlabel;
-										}
-									}
-								case DialogResult.Retry:
-									return ObservedSave(saveFileAs, fileName, message, policy);
-								case DialogResult.Ignore:
-									return FileOperationResult.Failed;
-							}
+						ChooseSaveErrorResult r = ServiceManager.MessageService.ChooseSaveError(fileName, message, "${res:FileUtilityService.ErrorWhileSaving}", e, false);
+						if (r.IsRetry) {
+							return ObservedSave(saveFileAs, fileName, message, policy);
+						} else if (r.IsIgnore) {
+							return FileOperationResult.Failed;
+						} else if (r.IsSaveAlternative) {
+							return ObservedSave(saveFileAs, r.AlternativeFileName, message, policy);
 						}
 						break;
 				}
@@ -616,21 +592,14 @@ namespace ICSharpCode.Core
 			} catch (Exception e) {
 				switch (policy) {
 					case FileErrorPolicy.Inform:
-						using (SaveErrorInformDialog informDialog = new SaveErrorInformDialog(fileName, message, "${res:FileUtilityService.ErrorWhileLoading}", e)) {
-							informDialog.ShowDialog();
-						}
+						ServiceManager.MessageService.InformSaveError(fileName, message, "${res:FileUtilityService.ErrorWhileLoading}", e);
 						break;
 					case FileErrorPolicy.ProvideAlternative:
-						using (SaveErrorChooseDialog chooseDialog = new SaveErrorChooseDialog(fileName, message, "${res:FileUtilityService.ErrorWhileLoading}", e, false)) {
-							switch (chooseDialog.ShowDialog()) {
-								case DialogResult.OK: // choose location (never happens here)
-									break;
-								case DialogResult.Retry:
-									return ObservedLoad(loadFile, fileName, message, policy);
-								case DialogResult.Ignore:
-									return FileOperationResult.Failed;
-							}
-						}
+						ChooseSaveErrorResult r = ServiceManager.MessageService.ChooseSaveError(fileName, message, "${res:FileUtilityService.ErrorWhileLoading}", e, false);
+						if (r.IsRetry)
+							return ObservedLoad(loadFile, fileName, message, policy);
+						else if (r.IsIgnore)
+							return FileOperationResult.Failed;
 						break;
 				}
 			}
@@ -650,26 +619,9 @@ namespace ICSharpCode.Core
 			return ObservedLoad(loadFile, fileName, FileErrorPolicy.Inform);
 		}
 		
-		class LoadWrapper
-		{
-			NamedFileOperationDelegate loadFile;
-			string fileName;
-			
-			public LoadWrapper(NamedFileOperationDelegate loadFile, string fileName)
-			{
-				this.loadFile = loadFile;
-				this.fileName   = fileName;
-			}
-			
-			public void Invoke()
-			{
-				loadFile(fileName);
-			}
-		}
-		
 		public static FileOperationResult ObservedLoad(NamedFileOperationDelegate saveFileAs, string fileName, string message, FileErrorPolicy policy)
 		{
-			return ObservedLoad(new FileOperationDelegate(new LoadWrapper(saveFileAs, fileName).Invoke), fileName, message, policy);
+			return ObservedLoad(new FileOperationDelegate(delegate { saveFileAs(fileName); }), fileName, message, policy);
 		}
 		
 		public static FileOperationResult ObservedLoad(NamedFileOperationDelegate saveFileAs, string fileName, FileErrorPolicy policy)

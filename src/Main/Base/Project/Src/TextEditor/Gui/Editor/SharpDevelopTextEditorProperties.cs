@@ -7,9 +7,11 @@
 
 using System;
 using System.Drawing;
-using System.Text;
 using System.Drawing.Text;
+using System.Text;
+
 using ICSharpCode.Core;
+using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 using ICSharpCode.TextEditor.Document;
 
@@ -33,7 +35,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		private SharpDevelopTextEditorProperties()
 		{
 			properties = PropertyService.Get("ICSharpCode.TextEditor.Document.Document.DefaultDocumentAggregatorProperties", new Properties());
-			fontContainer = new FontContainer(FontContainer.ParseFont(properties.Get("DefaultFont", ResourceService.DefaultMonospacedFont.ToString())));
+			fontContainer = new FontContainer(FontContainer.ParseFont(properties.Get("DefaultFont", WinFormsResourceService.DefaultMonospacedFont.ToString())));
 			properties.PropertyChanged += new PropertyChangedEventHandler(CheckFontChange);
 		}
 		

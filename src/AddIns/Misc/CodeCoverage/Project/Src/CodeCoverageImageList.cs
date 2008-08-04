@@ -9,7 +9,7 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 
-using ICSharpCode.Core;
+using ICSharpCode.Core.WinForms;
 
 namespace ICSharpCode.CodeCoverage
 {
@@ -44,10 +44,10 @@ namespace ICSharpCode.CodeCoverage
 			imageList = new ImageList();
 			imageList.ColorDepth = ColorDepth.Depth32Bit;
 			
-			AddBitmap(ResourceService.GetBitmap("Icons.16x16.Library"), 0.2f);
-			AddBitmap(ResourceService.GetBitmap("Icons.16x16.NameSpace"), 0.4f);
-			AddBitmap(ResourceService.GetBitmap("Icons.16x16.Class"), 0.15f);
-			AddBitmap(ResourceService.GetBitmap("Icons.16x16.Method"), 0.2f);
+			AddBitmap(WinFormsResourceService.GetBitmap("Icons.16x16.Library"), 0.2f);
+			AddBitmap(WinFormsResourceService.GetBitmap("Icons.16x16.NameSpace"), 0.4f);
+			AddBitmap(WinFormsResourceService.GetBitmap("Icons.16x16.Class"), 0.15f);
+			AddBitmap(WinFormsResourceService.GetBitmap("Icons.16x16.Method"), 0.2f);
 		}
 		
 		static void AddBitmap(Bitmap bitmap, float brightness)

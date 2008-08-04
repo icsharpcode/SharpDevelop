@@ -12,6 +12,7 @@ using System.Threading;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
+using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.Svn
@@ -26,7 +27,7 @@ namespace ICSharpCode.Svn
 		public static Bitmap StatusImages {
 			get {
 				if (statusImages == null) {
-					statusImages = ResourceService.GetBitmap("Icons.Svn.StatusImages");
+					statusImages = WinFormsResourceService.GetBitmap("Icons.Svn.StatusImages");
 				}
 				return statusImages;
 			}

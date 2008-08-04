@@ -8,10 +8,10 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
+using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Internal.ExternalTool;
 using ICSharpCode.SharpDevelop.Project;
@@ -472,7 +472,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 				}
 				
 				if (padDescriptor.Shortcut != null) {
-					ShortcutKeys = ICSharpCode.Core.MenuCommand.ParseShortcut(padDescriptor.Shortcut);
+					ShortcutKeys = MenuCommand.ParseShortcut(padDescriptor.Shortcut);
 				}
 			}
 			

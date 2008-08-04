@@ -87,6 +87,11 @@
       <Link>Configuration\GlobalAssemblyInfo.template</Link>
     </Content>
     <Content Include="app.template.config" />
+    <ProjectReference Include="..\..\ICSharpCode.Core.WinForms\ICSharpCode.Core.WinForms.csproj">
+      <Project>{857CA1A3-FC88-4BE0-AB6A-D1EE772AB288}</Project>
+      <Name>ICSharpCode.Core.WinForms</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\..\ICSharpCode.SharpDevelop.Sda\ICSharpCode.SharpDevelop.Sda.csproj">
       <Project>{80318B5F-A25D-45AB-8A95-EF31D2370A4C}</Project>
       <Name>ICSharpCode.SharpDevelop.Sda</Name>

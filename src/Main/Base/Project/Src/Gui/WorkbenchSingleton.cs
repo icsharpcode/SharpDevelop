@@ -8,7 +8,9 @@
 using System;
 using System.Diagnostics;
 using System.Windows.Forms;
+
 using ICSharpCode.Core;
+using ICSharpCode.Core.WinForms;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -101,7 +103,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			Project.CustomToolsService.Initialize();
 			Project.BuildModifiedProjectsOnlyService.Initialize();
 			
-			MessageService.MainForm = workbench.MainForm;
+			WinFormsMessageService.DialogOwner = workbench.MainForm;
+			WinFormsMessageService.DialogSynchronizeInvoke = workbench.MainForm;
 			
 			PropertyService.PropertyChanged += new PropertyChangedEventHandler(TrackPropertyChanges);
 			ResourceService.LanguageChanged += delegate { workbench.RedrawAllComponents(); };

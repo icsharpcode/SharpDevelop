@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Globalization;
 using System.Reflection;
 
 namespace ICSharpCode.Core
@@ -36,10 +37,11 @@ namespace ICSharpCode.Core
 	/// </code></example>
 	public class AppDomainLaunchHelper : MarshalByRefObject
 	{
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public object LaunchMethod(string assemblyFile, string typeName, string methodName, object[] arguments)
 		{
 			Type t = Assembly.LoadFrom(assemblyFile).GetType(typeName);
-			return t.InvokeMember(methodName, (BindingFlags.Public | BindingFlags.Static | BindingFlags.InvokeMethod), null, null, arguments);
+			return t.InvokeMember(methodName, (BindingFlags.Public | BindingFlags.Static | BindingFlags.InvokeMethod), null, null, arguments, CultureInfo.InvariantCulture);
 		}
 		
 		public static object LaunchInAppDomain(AppDomain domain, Type type, string methodName, params object[] arguments)

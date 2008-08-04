@@ -63,7 +63,7 @@
     <Compile Include="Src\IdeChooseClassService.cs" />
     <Compile Include="Src\MyTypeFinder.cs" />
     <Compile Include="Src\ObjectEditor.xaml.cs">
-      <DependentUpon>ObjectEditor.xaml</DependentUpon>      
+      <DependentUpon>ObjectEditor.xaml</DependentUpon>
     </Compile>
     <Compile Include="Src\PropertyDescriptionService.cs" />
     <Compile Include="Src\SharpDevelopElementHost.cs" />
@@ -87,6 +87,11 @@
     <ProjectReference Include="..\..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
       <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
       <Name>ICSharpCode.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.Core.WinForms\ICSharpCode.Core.WinForms.csproj">
+      <Project>{857CA1A3-FC88-4BE0-AB6A-D1EE772AB288}</Project>
+      <Name>ICSharpCode.Core.WinForms</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">

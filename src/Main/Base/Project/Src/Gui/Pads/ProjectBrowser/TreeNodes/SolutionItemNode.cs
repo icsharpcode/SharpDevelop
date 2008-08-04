@@ -9,7 +9,7 @@ using System;
 using System.IO;
 using System.Windows.Forms;
 
-using ICSharpCode.Core;
+using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.Project

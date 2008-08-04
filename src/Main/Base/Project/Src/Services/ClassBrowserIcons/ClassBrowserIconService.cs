@@ -9,7 +9,7 @@ using System;
 using System.Reflection;
 using System.Windows.Forms;
 
-using ICSharpCode.Core;
+using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.SharpDevelop
@@ -218,81 +218,81 @@ namespace ICSharpCode.SharpDevelop
 		{
 			imglist = new ImageList();
 			imglist.ColorDepth = ColorDepth.Depth32Bit;
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.Assembly"));
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.OpenAssembly"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.Assembly"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.OpenAssembly"));
 			
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.Library"));
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.NameSpace"));
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.SubTypes"));
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.SuperTypes"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.Library"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.NameSpace"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.SubTypes"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.SuperTypes"));
 			
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.ClosedFolderBitmap"));
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.OpenFolderBitmap"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.ClosedFolderBitmap"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.OpenFolderBitmap"));
 			
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.Reference"));
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.ClosedReferenceFolder"));
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.OpenReferenceFolder"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.Reference"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.ClosedReferenceFolder"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.OpenReferenceFolder"));
 			
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.ResourceFileIcon"));
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.Event"));
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.SelectionArrow"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.ResourceFileIcon"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.Event"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.SelectionArrow"));
 			
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.CombineIcon"));
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.Literal")); // const
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.CombineIcon"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.Literal")); // const
 			
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.Local"));
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.Parameter"));
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.TextFileIcon"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.Local"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.Parameter"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.TextFileIcon"));
 			
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.Class")); //19
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.InternalClass"));
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.ProtectedClass"));
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.PrivateClass"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.Class")); //19
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.InternalClass"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.ProtectedClass"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.PrivateClass"));
 			
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.Struct"));
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.InternalStruct"));
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.ProtectedStruct"));
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.PrivateStruct"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.Struct"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.InternalStruct"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.ProtectedStruct"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.PrivateStruct"));
 			
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.Interface"));
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.InternalInterface"));
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.ProtectedInterface"));
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.PrivateInterface"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.Interface"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.InternalInterface"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.ProtectedInterface"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.PrivateInterface"));
 			
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.Enum"));
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.InternalEnum"));
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.ProtectedEnum"));
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.PrivateEnum"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.Enum"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.InternalEnum"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.ProtectedEnum"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.PrivateEnum"));
 			
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.Method"));
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.InternalMethod"));
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.ProtectedMethod"));
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.PrivateMethod"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.Method"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.InternalMethod"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.ProtectedMethod"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.PrivateMethod"));
 			
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.Property"));
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.InternalProperty"));
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.ProtectedProperty"));
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.PrivateProperty"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.Property"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.InternalProperty"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.ProtectedProperty"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.PrivateProperty"));
 			
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.Field"));
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.InternalField"));
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.ProtectedField"));
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.PrivateField"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.Field"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.InternalField"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.ProtectedField"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.PrivateField"));
 			
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.Delegate"));
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.InternalDelegate"));
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.ProtectedDelegate"));
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.PrivateDelegate"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.Delegate"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.InternalDelegate"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.ProtectedDelegate"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.PrivateDelegate"));
 			
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.Event"));
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.InternalEvent"));
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.ProtectedEvent"));
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.PrivateEvent"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.Event"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.InternalEvent"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.ProtectedEvent"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.PrivateEvent"));
 			
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.Indexer"));
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.InternalIndexer"));
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.ProtectedIndexer"));
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.PrivateIndexer"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.Indexer"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.InternalIndexer"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.ProtectedIndexer"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.PrivateIndexer"));
 		}
 	}
 }

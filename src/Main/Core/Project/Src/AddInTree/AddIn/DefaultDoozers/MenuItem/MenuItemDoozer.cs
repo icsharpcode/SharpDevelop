@@ -45,7 +45,7 @@ namespace ICSharpCode.Core
 	/// </children>
 	/// <usage>Any menu strip paths or context menu paths, e.g. /SharpDevelop/Workbench/MainMenu</usage>
 	/// <returns>
-	/// Any ToolStrip* object, depending on the type attribute.
+	/// A MenuItemDescriptor object.
 	/// </returns>
 	/// <conditions>Conditions are handled by the item, "Exclude" maps to "Visible = false", "Disable" to "Enabled = false"</conditions>
 	public class MenuItemDoozer : IDoozer
@@ -62,25 +62,25 @@ namespace ICSharpCode.Core
 		
 		public object BuildItem(object caller, Codon codon, ArrayList subItems)
 		{
-			string type = codon.Properties.Contains("type") ? codon.Properties["type"] : "Command";
-			
-			bool createCommand = codon.Properties["loadclasslazy"] == "false";
-			
-			switch (type) {
-				case "Separator":
-					return new MenuSeparator(codon, caller);
-				case "CheckBox":
-					return new MenuCheckBox(codon, caller);
-				case "Item":
-				case "Command":
-					return new MenuCommand(codon, caller, createCommand);
-				case "Menu":
-					return new Menu(codon, caller, subItems);
-				case "Builder":
-					return codon.AddIn.CreateObject(codon.Properties["class"]);
-				default:
-					throw new System.NotSupportedException("unsupported menu item type : " + type);
-			}
+			return new MenuItemDescriptor(caller, codon, subItems);
+		}
+	}
+	
+	/// <summary>
+	/// Represents a menu item. These objects are created by the MenuItemDoozer and
+	/// then converted into GUI-toolkit-specific objects by the MenuService.
+	/// </summary>
+	public sealed class MenuItemDescriptor
+	{
+		public readonly object Caller;
+		public readonly Codon Codon;
+		public readonly IList SubItems;
+		
+		public MenuItemDescriptor(object caller, Codon codon, IList subItems)
+		{
+			this.Caller = caller;
+			this.Codon = codon;
+			this.SubItems = subItems;
 		}
 	}
 }

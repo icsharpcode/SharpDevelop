@@ -166,16 +166,6 @@ namespace ICSharpCode.Core
 		}
 		
 		/// <summary>
-		/// Same as <see cref="BuildChildItems"/> (no type arguments).
-		/// Workaround for Boo compiler (it cannot distinguish between the generic and non-generic method).
-		/// </summary>
-		/// <param name="caller">The owner used to create the objects.</param>
-		public ArrayList BuildChildItemsArrayList(object caller)
-		{
-			return BuildChildItems(caller);
-		}
-		
-		/// <summary>
 		/// Builds the child items in this path.
 		/// </summary>
 		/// <param name="caller">The owner used to create the objects.</param>

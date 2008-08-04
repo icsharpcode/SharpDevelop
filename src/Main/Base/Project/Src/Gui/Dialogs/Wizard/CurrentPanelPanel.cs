@@ -10,7 +10,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 
-using ICSharpCode.Core;
+using ICSharpCode.Core.WinForms;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -23,7 +23,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public CurrentPanelPanel(WizardDialog wizard)
 		{
-			normalFont = ResourceService.LoadFont("SansSerif", 18, GraphicsUnit.World);
+			normalFont = WinFormsResourceService.LoadFont("SansSerif", 18, GraphicsUnit.World);
 
 			this.wizard = wizard;
 			Size = new Size(wizard.Width - 220, 30);

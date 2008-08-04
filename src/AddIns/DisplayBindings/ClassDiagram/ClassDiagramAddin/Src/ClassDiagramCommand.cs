@@ -8,15 +8,9 @@
  */
 using System;
 using System.Windows.Forms;
-using System.Globalization;
-
 using ClassDiagram;
-
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Project;
-using ICSharpCode.SharpDevelop.Commands;
-using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.Core.WinForms;
 
 namespace ClassDiagramAddin
 {

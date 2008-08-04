@@ -8,13 +8,13 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Drawing;
 using System.Threading;
 using System.Windows.Forms;
 using System.Xml;
 using System.Xml.XPath;
 
 using ICSharpCode.Core;
+using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Gui;
@@ -497,7 +497,7 @@ namespace ICSharpCode.XmlEditor
 		void InitImageList()
 		{
 			try {
-				imageList.Images.Add(ResourceService.GetBitmap("Icons.16x16.Error"));
+				imageList.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.Error"));
 			} catch (ResourceNotFoundException) { }
 		}
 		

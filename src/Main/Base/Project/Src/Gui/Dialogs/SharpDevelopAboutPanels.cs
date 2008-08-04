@@ -6,14 +6,14 @@
 // </file>
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Reflection;
-using System.Runtime.Serialization;
 using System.Text;
 using System.Windows.Forms;
-using System.Diagnostics.CodeAnalysis;
 
 using ICSharpCode.Core;
+using ICSharpCode.Core.WinForms;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -71,7 +71,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			versionInfoTextBox.Text = GetVersionInformationString();
 			versionInfoTextBox.ScrollBars = ScrollBars.Both;
 			versionInfoTextBox.TabIndex = 9;
-			versionInfoTextBox.Font = ResourceService.LoadFont("Courier New", 8);
+			versionInfoTextBox.Font = WinFormsResourceService.LoadFont("Courier New", 8);
 			Controls.Add(versionInfoTextBox);
 			
 			Dock = DockStyle.Fill;

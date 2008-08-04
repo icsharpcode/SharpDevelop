@@ -12,6 +12,7 @@ using System.Windows.Forms;
 using System.Windows.Forms.Design;
 
 using ICSharpCode.Core;
+using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 
@@ -129,7 +130,7 @@ namespace ICSharpCode.FormsDesigner.Commands
 			return items.ToArray();
 		}
 		
-		class ContextMenuCommand : ICSharpCode.Core.MenuCommand
+		class ContextMenuCommand : ICSharpCode.Core.WinForms.MenuCommand
 		{
 			DesignerVerb verb;
 			

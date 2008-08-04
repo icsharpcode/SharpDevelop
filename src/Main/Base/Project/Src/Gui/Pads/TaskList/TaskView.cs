@@ -17,6 +17,7 @@ using System.Text;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
+using ICSharpCode.Core.WinForms;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -122,10 +123,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 			imglist.ColorDepth = ColorDepth.Depth32Bit;
 			// HACK: these images must be in the same order as the TaskType enumeration.
 			//       because of how the ListViewItem's ImageIndex is set in TaskView.AddTask();
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.Error"));
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.Warning"));
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.Information"));
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.Question"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.Error"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.Warning"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.Information"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.Question"));
 			// TODO: use reflection and a custom attribute on the TaskType enumeration to tie this ImageList to TaskType
 //			imglist.Images.Add(ResourceService.GetBitmap(Task.GetBitmapName(TaskType.Error)));
 //			imglist.Images.Add(ResourceService.GetBitmap(Task.GetBitmapName(TaskType.Warning)));

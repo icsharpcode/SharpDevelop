@@ -17,6 +17,7 @@ using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
+using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Gui.XmlForms;
 
@@ -92,7 +93,7 @@ namespace Plugins.RegExpTk {
 			((Button)ControlDictionary["ChooseAssemblyFileCompileButton"]).Click += new EventHandler(ChooseAssemblyFileCompileButton_Click);
 			((Button)ControlDictionary["CreateAssemblyFileCompileButton"]).Click += new EventHandler(CreateAssemblyFile);
 			((Button)ControlDictionary["quickInsertButton"]).MouseDown += new MouseEventHandler(showQuickInsertMenu);
-			((Button)ControlDictionary["quickInsertButton"]).Image = ResourceService.GetBitmap("Icons.16x16.PasteIcon");
+			((Button)ControlDictionary["quickInsertButton"]).Image = WinFormsResourceService.GetBitmap("Icons.16x16.PasteIcon");
 			ControlDictionary["RegularExpressionTextBox"].KeyPress += delegate(object sender, KeyPressEventArgs e) {
 				if (e.KeyChar == '\r') { OkButton_Click(null, null); e.Handled = true; }
 			};

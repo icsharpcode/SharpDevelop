@@ -54,32 +54,25 @@ namespace ICSharpCode.Core
 		
 		public object BuildItem(object caller, Codon codon, ArrayList subItems)
 		{
-			string type = codon.Properties.Contains("type") ? codon.Properties["type"] : "Item";
-			
-			bool createCommand = codon.Properties["loadclasslazy"] == "false";
-			
-			switch (type) {
-				case "Separator":
-					return new ToolBarSeparator(codon, caller);
-				case "CheckBox":
-					return new ToolBarCheckBox(codon, caller);
-				case "Item":
-					return new ToolBarCommand(codon, caller, createCommand);
-				case "ComboBox":
-					return new ToolBarComboBox(codon, caller);
-				case "TextBox":
-					return new ToolBarTextBox(codon, caller);
-				case "Label":
-					return new ToolBarLabel(codon, caller);
-				case "DropDownButton":
-					return new ToolBarDropDownButton(codon, caller, subItems);
-				case "SplitButton":
-					return new ToolBarSplitButton(codon, caller, subItems);
-				case "Builder":
-					return codon.AddIn.CreateObject(codon.Properties["class"]);
-				default:
-					throw new System.NotSupportedException("unsupported menu item type : " + type);
-			}
+			return new ToolbarItemDescriptor(caller, codon, subItems);
+		}
+	}
+	
+	/// <summary>
+	/// Represents a toolbar item. These objects are created by the ToolbarItemDoozer and
+	/// then converted into GUI-toolkit-specific objects by the ToolbarService.
+	/// </summary>
+	public sealed class ToolbarItemDescriptor
+	{
+		public readonly object Caller;
+		public readonly Codon Codon;
+		public readonly IList SubItems;
+		
+		public ToolbarItemDescriptor(object caller, Codon codon, IList subItems)
+		{
+			this.Caller = caller;
+			this.Codon = codon;
+			this.SubItems = subItems;
 		}
 	}
 }
