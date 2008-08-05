@@ -6,11 +6,13 @@
 // </file>
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
+using ICSharpCode.Core.Presentation;
 using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Internal.ExternalTool;
@@ -255,7 +257,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 					MessageService.ShowError("${res:XML.MainMenu.ToolMenu.ExternalTools.ExecutionFailed} '" + ex.Message);
 					return;
 				}
-					
+				
 				if (tool.PromptForArguments) {
 					InputBox box = new InputBox();
 					box.Text = tool.MenuCommand;
@@ -265,7 +267,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 						return;
 					args = box.TextBox.Text;
 				}
-					
+				
 				try {
 					ProcessStartInfo startinfo;
 					if (args == null || args.Length == 0 || args.Trim('"', ' ').Length == 0) {
@@ -456,7 +458,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 		}
 	}
 	
-	public abstract class ViewMenuBuilder : ISubmenuBuilder
+	public abstract class ViewMenuBuilder : ISubmenuBuilder, IMenuItemBuilder
 	{
 		class MyMenuItem : MenuCommand
 		{
@@ -481,8 +483,30 @@ namespace ICSharpCode.SharpDevelop.Commands
 				base.OnClick(e);
 				padDescriptor.BringPadToFront();
 			}
-			
 		}
+		class MyWpfMenuItem : System.Windows.Controls.MenuItem
+		{
+			PadDescriptor padDescriptor;
+			
+			public MyWpfMenuItem(PadDescriptor padDescriptor)
+			{
+				this.padDescriptor = padDescriptor;
+				this.Header = ICSharpCode.Core.Presentation.MenuService.ConvertLabel(StringParser.Parse(padDescriptor.Title));
+				if (!string.IsNullOrEmpty(padDescriptor.Icon)) {
+					this.Icon = PresentationResourceService.GetBitmapSource(padDescriptor.Icon);
+				}
+				if (padDescriptor.Shortcut != null) {
+					this.InputGestureText = padDescriptor.Shortcut;
+				}
+			}
+			
+			protected override void OnClick()
+			{
+				base.OnClick();
+				padDescriptor.BringPadToFront();
+			}
+		}
+		
 		protected abstract string Category {
 			get;
 		}
@@ -496,6 +520,17 @@ namespace ICSharpCode.SharpDevelop.Commands
 				}
 			}
 			return items.ToArray();
+		}
+		
+		public ICollection BuildItems(Codon codon, object owner)
+		{
+			ArrayList list = new ArrayList();
+			foreach (PadDescriptor padContent in WorkbenchSingleton.Workbench.PadContentCollection) {
+				if (padContent.Category == Category) {
+					list.Add(new MyWpfMenuItem(padContent));
+				}
+			}
+			return list;
 		}
 	}
 }

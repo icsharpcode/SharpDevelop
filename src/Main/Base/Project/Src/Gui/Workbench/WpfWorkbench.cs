@@ -5,11 +5,13 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.Core.Presentation;
 using System;
 using System.Collections.Generic;
-using System.Windows;
-using ICSharpCode.Core;
 using System.ComponentModel;
+using System.Windows;
+using System.Windows.Controls;
+using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -18,6 +20,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 	/// </summary>
 	sealed class WpfWorkbench : Window, IWorkbench
 	{
+		const string mainMenuPath    = "/SharpDevelop/Workbench/MainMenu";
+		const string viewContentPath = "/SharpDevelop/Workbench/Pads";
+		
 		public event EventHandler ActiveWorkbenchWindowChanged;
 		public event EventHandler ActiveViewContentChanged;
 		public event EventHandler ActiveContentChanged;
@@ -29,11 +34,29 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public ISynchronizeInvoke SynchronizingObject { get; set; }
 		public Window MainWindow { get { return this; } }
 		
+		DockPanel dockPanel;
+		Menu mainMenu;
+		ContentControl mainContent;
+		
 		public WpfWorkbench()
 		{
+			this.Title = "SharpDevelop (experimental WPF build)";
 			this.SynchronizingObject = new WpfSynchronizeInvoke(this.Dispatcher);
 			this.MainWin32Window = this.GetWin32Window();
 			this.WindowStartupLocation = WindowStartupLocation.Manual;
+		}
+		
+		public void Initialize()
+		{
+			this.Content = dockPanel = new DockPanel();
+			mainMenu = new Menu() {
+				ItemsSource = MenuService.CreateMenuItems(this, mainMenuPath)
+			};
+			DockPanel.SetDock(mainMenu, Dock.Top);
+			dockPanel.Children.Add(mainMenu);
+			
+			mainContent = new ContentControl();
+			dockPanel.Children.Add(mainContent);
 		}
 		
 		public ICollection<IViewContent> ViewContentCollection {
@@ -78,10 +101,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			get {
 				return IsActive;
 			}
-		}
-		
-		public void Initialize()
-		{
 		}
 		
 		public void ShowView(IViewContent content)

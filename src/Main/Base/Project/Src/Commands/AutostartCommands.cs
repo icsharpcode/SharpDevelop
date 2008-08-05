@@ -126,6 +126,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 			//Application.AddMessageFilter(new FormKeyHandler());
 			//Application.Run(WorkbenchSingleton.MainForm);
 			var application = new System.Windows.Application();
+			System.Windows.Forms.Integration.WindowsFormsHost.EnableWindowsFormsInterop();
 			application.Run(WorkbenchSingleton.MainWindow);
 			
 			// save the workbench memento in the ide properties

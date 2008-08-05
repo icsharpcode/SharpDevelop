@@ -12,8 +12,8 @@ using System.Runtime.CompilerServices;
 [assembly: CLSCompliant(true)]
 [assembly: StringFreezing()]
 
-[assembly: AssemblyTitle("ICSharpCode.Core.WinForms")]
-[assembly: AssemblyDescription("ICSharpCode.Core, Windows.Forms implementation")]
+[assembly: AssemblyTitle("ICSharpCode.Core.Presentation")]
+[assembly: AssemblyDescription("ICSharpCode.Core, Windows Presentation Foundation implementation")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

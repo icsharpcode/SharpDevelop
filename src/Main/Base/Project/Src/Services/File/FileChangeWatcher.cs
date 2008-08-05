@@ -50,8 +50,7 @@ namespace ICSharpCode.SharpDevelop
 			if (file == null)
 				throw new ArgumentNullException("file");
 			this.file = file;
-			throw new NotImplementedException();
-			//WorkbenchSingleton.MainWin32Window.Activated += MainForm_Activated;
+			WorkbenchSingleton.MainWindow.Activated += MainForm_Activated;
 			file.FileNameChanged += file_FileNameChanged;
 			activeWatchers.Add(this);
 			SetWatcher();
@@ -67,8 +66,7 @@ namespace ICSharpCode.SharpDevelop
 			WorkbenchSingleton.AssertMainThread();
 			activeWatchers.Remove(this);
 			if (file != null) {
-				throw new NotImplementedException();
-				//WorkbenchSingleton.MainWin32Window.Activated -= MainForm_Activated;
+				WorkbenchSingleton.MainWindow.Activated -= MainForm_Activated;
 				file.FileNameChanged -= file_FileNameChanged;
 				file = null;
 			}

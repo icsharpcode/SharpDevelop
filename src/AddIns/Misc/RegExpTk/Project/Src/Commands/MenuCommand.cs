@@ -15,9 +15,8 @@ namespace Plugins.RegExpTk {
 	{
 		public override void Run()
 		{
-			using (RegExpTkDialog dialog = new RegExpTkDialog()) {
-				dialog.Show(WorkbenchSingleton.MainWin32Window);
-			}
+			RegExpTkDialog dialog = new RegExpTkDialog();
+			dialog.Show(WorkbenchSingleton.MainWin32Window);
 		}
 	}
 }

@@ -257,8 +257,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 	{
 		public override void Run()
 		{
-			throw new NotImplementedException();
-			//WorkbenchSingleton.MainForm.Close();
+			WorkbenchSingleton.MainWindow.Close();
 		}
 	}
 	
