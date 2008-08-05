@@ -62,6 +62,10 @@ namespace ICSharpCode.SharpDevelop.Tests.StringTagProvider
 			set { directory = value; }
 		}
 		
+		public bool ReadOnly {
+			get { return false; }
+		}
+		
 		public string AssemblyName {
 			get {
 				throw new NotImplementedException();
