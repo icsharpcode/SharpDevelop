@@ -139,9 +139,9 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		                                         IProgressMonitor progressMonitor)
 		{
 			if (ParserService.LoadSolutionProjectsThreadRunning) {
-				progressMonitor.ShowingDialog = true;
+				if (progressMonitor != null) progressMonitor.ShowingDialog = true;
 				MessageService.ShowMessage("${res:SharpDevelop.Refactoring.LoadSolutionProjectsThreadRunning}");
-				progressMonitor.ShowingDialog = false;
+				if (progressMonitor != null) progressMonitor.ShowingDialog = false;
 				return null;
 			}
 			List<ProjectItem> files;
