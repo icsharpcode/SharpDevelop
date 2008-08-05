@@ -45,6 +45,7 @@ namespace Hornung.ResourceToolkit.Resolver
 			 * 
 			 * Something.GetString(
 			 * Something.GetString("...")
+			 * Something.ApplyResources(obj, "...")
 			 * Something[
 			 * Something["..."]
 			 * 
@@ -65,7 +66,7 @@ namespace Hornung.ResourceToolkit.Resolver
 				
 				MethodGroupResolveResult methrr = resolveResult as MethodGroupResolveResult;
 				if (methrr != null) {
-					if ((methrr.Name == "GetString" || methrr.Name == "GetObject" || methrr.Name == "GetStream") &&
+					if ((methrr.Name == "GetString" || methrr.Name == "GetObject" || methrr.Name == "GetStream" || methrr.Name == "ApplyResources") &&
 					    (resolveResult = NRefactoryAstCacheService.ResolveNextOuterExpression(ref expressionResult, caretLine, caretColumn, fileName, fileContent, expressionFinder)) != null) {
 						
 						return ResolveResource(resolveResult, expr);
@@ -98,7 +99,7 @@ namespace Hornung.ResourceToolkit.Resolver
 				if (mrr != null) {
 					
 					if (mrr.ResolvedMember is IMethod &&
-					    (mrr.ResolvedMember.Name == "GetString" || mrr.ResolvedMember.Name == "GetObject" || mrr.ResolvedMember.Name == "GetStream")) {
+					    (mrr.ResolvedMember.Name == "GetString" || mrr.ResolvedMember.Name == "GetObject" || mrr.ResolvedMember.Name == "GetStream" || mrr.ResolvedMember.Name == "ApplyResources")) {
 						
 						// Something.GetString("...")
 						// This is a MemberResolveResult and we need the reference to "Something".
@@ -216,10 +217,14 @@ namespace Hornung.ResourceToolkit.Resolver
 			}
 			
 			if (rsr != null) {
-				string key = GetKeyFromExpression(expr);
+				bool isPrefixOnly;
+				string key = GetKeyFromExpression(expr, out isPrefixOnly);
 				
-				// TODO: Add information about return type (of the resource, if present).
-				return new ResourceResolveResult(resolveResult.CallingClass, resolveResult.CallingMember, null, rsr, key);
+				if (isPrefixOnly) {
+					return new ResourcePrefixResolveResult(resolveResult.CallingClass, resolveResult.CallingMember, null, rsr, key);
+				} else {
+					return new ResourceResolveResult(resolveResult.CallingClass, resolveResult.CallingMember, null, rsr, key);
+				}
 			}
 			
 			return null;
@@ -683,8 +688,9 @@ namespace Hornung.ResourceToolkit.Resolver
 		/// <summary>
 		/// Tries to infer the resource key being referenced from the given expression.
 		/// </summary>
-		static string GetKeyFromExpression(Expression expr)
+		static string GetKeyFromExpression(Expression expr, out bool isPrefixOnly)
 		{
+			isPrefixOnly = false;
 			#if DEBUG
 			LoggingService.Debug("ResourceToolkit: BclNRefactoryResourceResolver trying to get key from expression: "+expr.ToString());
 			#endif
@@ -722,6 +728,20 @@ namespace Hornung.ResourceToolkit.Resolver
 								}
 							}
 						}
+					} else if (fre.MemberName == "ApplyResources") {
+						if (invocation.Arguments.Count >= 2) {
+							PrimitiveExpression p = invocation.Arguments[1] as PrimitiveExpression;
+							if (p != null) {
+								string key = p.Value as string;
+								if (key != null) {
+									#if DEBUG
+									LoggingService.Debug("ResourceToolkit: BclNRefactoryResourceResolver found key prefix: "+key);
+									#endif
+									isPrefixOnly = true;
+									return key;
+								}
+							}
+						}
 					}
 				}
 			}
@@ -743,6 +763,7 @@ namespace Hornung.ResourceToolkit.Resolver
 				"GetString",
 				"GetObject",
 				"GetStream",
+				"ApplyResources",
 				(NRefactoryResourceResolver.GetLanguagePropertiesForFile(fileName) ?? LanguageProperties.None).IndexerExpressionStartToken
 			};
 		}

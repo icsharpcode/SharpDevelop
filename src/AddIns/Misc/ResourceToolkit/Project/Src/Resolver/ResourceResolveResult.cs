@@ -17,8 +17,8 @@ namespace Hornung.ResourceToolkit.Resolver
 	public class ResourceResolveResult : ResolveResult
 	{
 		
-		ResourceSetReference resourceSetReference;
-		string key;
+		readonly ResourceSetReference resourceSetReference;
+		readonly string key;
 		
 		/// <summary>
 		/// Gets the <see cref="ResourceSetReference"/> that describes the resource set being referenced.
@@ -44,7 +44,7 @@ namespace Hornung.ResourceToolkit.Resolver
 		/// <summary>
 		/// Gets the resource key being referenced. May be null if the key is unknown/not yet typed.
 		/// </summary>
-		public string Key {
+		public virtual string Key {
 			get { return this.key; }
 		}
 		
@@ -88,6 +88,39 @@ namespace Hornung.ResourceToolkit.Resolver
 		{
 			return new ResourceResolveResult(this.CallingClass, this.CallingMember, this.ResolvedType,
 			                                 this.ResourceSetReference, this.Key);
+		}
+	}
+	
+	/// <summary>
+	/// Describes a reference to a group of resource keys with a common prefix.
+	/// </summary>
+	public sealed class ResourcePrefixResolveResult : ResourceResolveResult
+	{
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ResourceResolveResult"/> class.
+		/// </summary>
+		/// <param name="callingClass">The class that contains the reference to the resource.</param>
+		/// <param name="callingMember">The member that contains the reference to the resource.</param>
+		/// <param name="returnType">The type of the resource being referenced.</param>
+		/// <param name="resourceSetReference">The <see cref="ResourceSetReference"/> that describes the resource set being referenced.</param>
+		/// <param name="prefix">The prefix of the resource keys being referenced.</param>
+		public ResourcePrefixResolveResult(IClass callingClass, IMember callingMember, IReturnType returnType, ResourceSetReference resourceSetReference, string prefix)
+			: base(callingClass, callingMember, returnType, resourceSetReference, prefix)
+		{
+		}
+		
+		public override string Key {
+			get { return null; }
+		}
+		
+		public string Prefix {
+			get { return base.Key; }
+		}
+		
+		public override ResolveResult Clone()
+		{
+			return new ResourcePrefixResolveResult(this.CallingClass, this.CallingMember, this.ResolvedType,
+			                                       this.ResourceSetReference, this.Prefix);
 		}
 	}
 }

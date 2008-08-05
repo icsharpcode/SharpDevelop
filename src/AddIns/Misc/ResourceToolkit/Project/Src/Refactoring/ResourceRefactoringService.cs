@@ -109,26 +109,32 @@ namespace Hornung.ResourceToolkit.Refactoring
 						TextLocation docPos = doc.OffsetToPosition(pos);
 						ResourceResolveResult rrr = ResourceResolverService.Resolve(fileName, doc, docPos.Y, docPos.X, null);
 						
-						if (rrr != null && rrr.ResourceFileContent != null && rrr.Key != null) {
+						if (rrr != null && rrr.ResourceFileContent != null) {
 							if (finder.IsReferenceToResource(rrr)) {
 								
-								// The actual location of the key string may be after 'pos' because
-								// the resolvers may find an expression just before it.
-								string keyString = rrr.Key;
-								int keyPos = fileContent.IndexOf(keyString, pos, StringComparison.InvariantCultureIgnoreCase);
-								
-								if (keyPos < pos) {
-									// The key may be escaped in some way in the document.
-									// Try using the code generator to find this out.
-									keyPos = FindStringLiteral(fileName, fileContent, rrr.Key, pos, out keyString);
-								}
-								
-								if (keyPos < pos) {
-									if (monitor != null) monitor.ShowingDialog = true;
-									MessageService.ShowWarning("ResourceToolkit: The key '"+rrr.Key+"' could not be located at the resolved position in the file '"+fileName+"'.");
-									if (monitor != null) monitor.ShowingDialog = false;
+								if (rrr.Key != null) {
+									
+									// The actual location of the key string may be after 'pos' because
+									// the resolvers may find an expression just before it.
+									string keyString = rrr.Key;
+									int keyPos = fileContent.IndexOf(keyString, pos, StringComparison.InvariantCultureIgnoreCase);
+									
+									if (keyPos < pos) {
+										// The key may be escaped in some way in the document.
+										// Try using the code generator to find this out.
+										keyPos = FindStringLiteral(fileName, fileContent, rrr.Key, pos, out keyString);
+									}
+									
+									if (keyPos < pos) {
+										if (monitor != null) monitor.ShowingDialog = true;
+										MessageService.ShowWarning("ResourceToolkit: The key '"+rrr.Key+"' could not be located at the resolved position in the file '"+fileName+"'.");
+										if (monitor != null) monitor.ShowingDialog = false;
+									} else {
+										references.Add(new Reference(fileName, keyPos, keyString.Length, keyString, rrr));
+									}
+									
 								} else {
-									references.Add(new Reference(fileName, keyPos, keyString.Length, keyString, rrr));
+									references.Add(new Reference(fileName, pos, 0, null, rrr));
 								}
 								
 							}
@@ -216,15 +222,22 @@ namespace Hornung.ResourceToolkit.Refactoring
 			// Generate a dictonary of resource file names and the
 			// corresponding referenced keys.
 			Dictionary<string, List<string>> referencedKeys = new Dictionary<string, List<string>>();
+			Dictionary<string, List<string>> referencedPrefixes = new Dictionary<string, List<string>>();
 			foreach (Reference reference in references) {
 				ResourceResolveResult rrr = (ResourceResolveResult)reference.ResolveResult;
 				if (rrr.ResourceFileContent != null) {
 					string fileName = rrr.FileName;
 					if (!referencedKeys.ContainsKey(fileName)) {
 						referencedKeys.Add(fileName, new List<string>());
+						referencedPrefixes.Add(fileName, new List<string>());
 					}
 					if (rrr.Key != null && !referencedKeys[fileName].Contains(rrr.Key)) {
 						referencedKeys[fileName].Add(rrr.Key);
+					} else {
+						ResourcePrefixResolveResult rprr = rrr as ResourcePrefixResolveResult;
+						if (rprr != null && rprr.Prefix != null && !referencedPrefixes[fileName].Contains(rprr.Prefix)) {
+							referencedPrefixes[fileName].Add(rprr.Prefix);
+						}
 					}
 				} else {
 					if (monitor != null) monitor.ShowingDialog = true;
@@ -239,7 +252,8 @@ namespace Hornung.ResourceToolkit.Refactoring
 				LoggingService.Debug("ResourceToolkit: FindUnusedKeys: Referenced resource file '"+fileName+"'");
 				#endif
 				foreach (KeyValuePair<string, object> entry in ResourceFileContentRegistry.GetResourceFileContent(fileName).Data) {
-					if (!referencedKeys[fileName].Contains(entry.Key)) {
+					if (!referencedKeys[fileName].Contains(entry.Key) &&
+					    !referencedPrefixes[fileName].Any(prefix => entry.Key.StartsWith(prefix, StringComparison.InvariantCultureIgnoreCase))) {
 						unused.Add(new ResourceItem(fileName, entry.Key));
 					}
 				}
