@@ -43,7 +43,7 @@ namespace ICSharpCode.FormsDesigner
 		DesignerResourceService designerResourceService;
 		FormsDesignerUndoEngine undoEngine;
 		
-		public override Control Control {
+		public override object Content {
 			get {
 				return p;
 			}

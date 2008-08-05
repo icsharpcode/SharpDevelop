@@ -44,8 +44,7 @@ namespace ClassDiagramAddin
 			canvas.CanvasItemSelected += HandleItemSelected;
 		}
 		
-		public override Control Control
-		{
+		public override object Content {
 			get { return canvas; }
 		}
 

@@ -45,7 +45,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.Files.Add(file);
 		}
 		
-		public abstract Control Control {
+		public abstract object Content {
 			get;
 		}
 		

@@ -44,7 +44,7 @@ namespace ICSharpCode.XmlEditor
 			treeViewContainer.TreeView.ContextMenuStrip = treeViewContextMenuStrip;
 		}
 		
-		public override Control Control {
+		public override object Content {
 			get {
 				return treeViewContainer;
 			}

@@ -41,7 +41,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// <summary>
 		/// Gets/Sets the icon of the view content.
 		/// </summary>
-		System.Drawing.Icon Icon {
+		System.Windows.Media.Imaging.BitmapSource Icon {
 			get;
 			set;
 		}

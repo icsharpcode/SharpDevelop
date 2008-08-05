@@ -27,12 +27,22 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public event EventHandler ActiveViewContentChanged;
 		public event EventHandler ActiveContentChanged;
 		public event ViewContentEventHandler ViewOpened;
+		
+		protected void OnViewOpened(ViewContentEventArgs e)
+		{
+			if (ViewOpened != null) {
+				ViewOpened(this, e);
+			}
+		}
 		public event ViewContentEventHandler ViewClosed;
 		public event System.Windows.Forms.KeyEventHandler ProcessCommandKey;
 		
 		public System.Windows.Forms.IWin32Window MainWin32Window { get; private set; }
 		public ISynchronizeInvoke SynchronizingObject { get; set; }
 		public Window MainWindow { get { return this; } }
+		
+		List<PadDescriptor> padViewContentCollection = new List<PadDescriptor>();
+		List<IViewContent> viewContentCollection = new List<IViewContent>();
 		
 		ToolBar[] toolBars;
 		
@@ -52,11 +62,15 @@ namespace ICSharpCode.SharpDevelop.Gui
 				DockPanel.SetDock(tb, Dock.Top);
 				dockPanel.Children.Insert(1, tb);
 			}
+			DockPanel.SetDock(StatusBarService.Control, Dock.Bottom);
+			dockPanel.Children.Insert(dockPanel.Children.Count - 2, StatusBarService.Control);
 			
 			MenuService.UpdateStatus(mainMenu.ItemsSource);
 			foreach (ToolBar tb in toolBars) {
 				ToolBarService.UpdateStatus(tb.ItemsSource);
 			}
+			StatusBarService.RedrawStatusbar();
+			StatusBarService.SetMessage("${res:MainWindow.StatusBar.ReadyMessage}");
 		}
 		
 		public ICollection<IViewContent> ViewContentCollection {
@@ -95,7 +109,23 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		public IWorkbenchLayout WorkbenchLayout { get; set; }
+		IWorkbenchLayout workbenchLayout;
+		
+		public IWorkbenchLayout WorkbenchLayout {
+			get {
+				return workbenchLayout;
+			}
+			set {
+				if (workbenchLayout != null) {
+					//workbenchLayout.ActiveWorkbenchWindowChanged -= OnActiveWindowChanged;
+					workbenchLayout.Detach();
+				}
+				value.Attach(this);
+				workbenchLayout = value;
+				//workbenchLayout.ActiveWorkbenchWindowChanged += OnActiveWindowChanged;
+				//OnActiveWindowChanged(null, null);
+			}
+		}
 		
 		public bool IsActiveWindow {
 			get {
@@ -105,6 +135,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public void ShowView(IViewContent content)
 		{
+			System.Diagnostics.Debug.Assert(WorkbenchLayout != null);
+			viewContentCollection.Add(content);
+			
+			WorkbenchLayout.ShowView(content);
+			content.WorkbenchWindow.SelectWindow();
+			OnViewOpened(new ViewContentEventArgs(content));
 		}
 		
 		public void ShowPad(PadDescriptor content)

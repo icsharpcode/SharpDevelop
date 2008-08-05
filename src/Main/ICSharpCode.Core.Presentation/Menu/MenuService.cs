@@ -28,6 +28,11 @@ namespace ICSharpCode.Core.Presentation
 			}
 		}
 		
+		public static ContextMenu CreateContextMenu(object owner, string addInTreePath)
+		{
+			return null;
+		}
+		
 		public static IList CreateMenuItems(object owner, string addInTreePath)
 		{
 			return CreateMenuItems(AddInTree.BuildItems<MenuItemDescriptor>(addInTreePath, owner, false));

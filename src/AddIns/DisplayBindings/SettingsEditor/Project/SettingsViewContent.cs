@@ -36,7 +36,7 @@ namespace ICSharpCode.SettingsEditor
 			};
 		}
 		
-		public override Control Control {
+		public override object Content {
 			get {
 				return view;
 			}

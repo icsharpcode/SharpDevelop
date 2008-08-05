@@ -1,7 +1,7 @@
-﻿// <file>
+// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
+//     <author name="Daniel Grunwald"/>
 //     <version>$Revision$</version>
 // </file>
 
@@ -9,18 +9,23 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
-using System.Windows.Forms;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media.Imaging;
 
+using AvalonDock;
 using ICSharpCode.Core;
-using ICSharpCode.Core.WinForms;
-using WeifenLuo.WinFormsUI.Docking;
+using ICSharpCode.Core.Presentation;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
-	internal sealed class SdiWorkspaceWindow : DockContent, IWorkbenchWindow, IOwnerState
+	sealed class AvalonWorkbenchWindow : DocumentContent, IWorkbenchWindow, IOwnerState
 	{
 		readonly static string contextMenuPath = "/SharpDevelop/Workbench/OpenFileTab/ContextMenu";
+		
+		public bool IsDisposed { get { return false; } }
 		
 		#region IOwnerState
 		[Flags]
@@ -50,22 +55,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		TabControl viewTabControl;
 		
-		public string Title {
-			get {
-				return Text;
-			}
-			set {
-				Text = value;
-				OnTitleChanged(EventArgs.Empty);
-			}
-		}
-		
 		/// <summary>
 		/// The current view content which is shown inside this window.
 		/// </summary>
 		public IViewContent ActiveViewContent {
 			get {
-				Debug.Assert(WorkbenchSingleton.InvokeRequired == false);
+				WorkbenchSingleton.DebugAssertMainThread();
 				if (viewTabControl != null && viewTabControl.SelectedIndex >= 0 && viewTabControl.SelectedIndex < ViewContents.Count) {
 					return ViewContents[viewTabControl.SelectedIndex];
 				} else if (ViewContents.Count == 1) {
@@ -77,7 +72,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			set {
 				int pos = ViewContents.IndexOf(value);
 				if (pos < 0)
-					throw new ArgumentException("");
+					throw new ArgumentException();
 				SwitchView(pos);
 			}
 		}
@@ -98,9 +93,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		sealed class ViewContentCollection : Collection<IViewContent>
 		{
-			readonly SdiWorkspaceWindow window;
+			readonly AvalonWorkbenchWindow window;
 			
-			internal ViewContentCollection(SdiWorkspaceWindow window)
+			internal ViewContentCollection(AvalonWorkbenchWindow window)
 			{
 				this.window = window;
 			}
@@ -122,29 +117,25 @@ namespace ICSharpCode.SharpDevelop.Gui
 				
 				window.RegisterNewContent(item);
 				
-				item.Content.Dock = DockStyle.Fill;
 				if (Count == 1) {
-					window.Controls.Add(item.Content);
+					window.Content = WrapContent(item.Content);
 				} else {
 					if (Count == 2) {
 						window.CreateViewTabControl();
 						IViewContent oldItem = this[0];
 						if (oldItem == item) oldItem = this[1];
 						
-						TabPage oldPage = new TabPage(StringParser.Parse(oldItem.TabPageText));
-						oldPage.Controls.Add(oldItem.Content);
-						window.viewTabControl.TabPages.Add(oldPage);
+						TabItem oldPage = new TabItem();
+						oldPage.Header = StringParser.Parse(oldItem.TabPageText);
+						oldPage.Content = WrapContent(oldItem.Content);
+						window.viewTabControl.Items.Add(oldPage);
 					}
 					
-					TabPage newPage = new TabPage(StringParser.Parse(item.TabPageText));
-					newPage.Controls.Add(item.Content);
+					TabItem newPage = new TabItem();
+					newPage.Header = StringParser.Parse(item.TabPageText);
+					newPage.Content = WrapContent(item.Content);
 					
-					// Work around bug in TabControl: TabPages.Insert has no effect if inserting at end
-					if (index == window.viewTabControl.TabPages.Count) {
-						window.viewTabControl.TabPages.Add(newPage);
-					} else {
-						window.viewTabControl.TabPages.Insert(index, newPage);
-					}
+					window.viewTabControl.Items.Insert(index, newPage);
 				}
 				window.UpdateActiveViewContent();
 			}
@@ -158,10 +149,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 				if (Count < 2) {
 					window.ClearContent();
 					if (Count == 1) {
-						window.Controls.Add(this[0].Content);
+						window.Content = this[0].Content;
 					}
 				} else {
-					window.viewTabControl.TabPages.RemoveAt(index);
+					window.viewTabControl.Items.RemoveAt(index);
 				}
 				window.UpdateActiveViewContent();
 			}
@@ -174,17 +165,26 @@ namespace ICSharpCode.SharpDevelop.Gui
 				
 				window.RegisterNewContent(item);
 				
-				item.Content.Dock = DockStyle.Fill;
 				if (Count == 1) {
 					window.ClearContent();
-					window.Controls.Add(item.Content);
+					window.Content = WrapContent(item.Content);
 				} else {
-					TabPage page = window.viewTabControl.TabPages[index];
-					page.Controls.Clear();
-					page.Controls.Add(item.Content);
-					page.Text = StringParser.Parse(item.TabPageText);
+					TabItem page = (TabItem)window.viewTabControl.Items[index];
+					page.Content = WrapContent(item.Content);
+					page.Header = StringParser.Parse(item.TabPageText);
 				}
 				window.UpdateActiveViewContent();
+			}
+		}
+		
+		static object WrapContent(object content)
+		{
+			if (content is System.Windows.Forms.Control) {
+				return new System.Windows.Forms.Integration.WindowsFormsHost {
+					Child = (System.Windows.Forms.Control)content
+				};
+			} else {
+				return content;
 			}
 		}
 		
@@ -211,48 +211,40 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public void SelectWindow()
 		{
-			Show();
+			dockLayout.DockingManager.Show(this);
 		}
 		
-		public SdiWorkspaceWindow()
+		AvalonDockLayout dockLayout;
+		
+		public AvalonWorkbenchWindow(AvalonDockLayout dockLayout)
 		{
+			if (dockLayout == null)
+				throw new ArgumentNullException("dockLayout");
+			this.dockLayout = dockLayout;
 			viewContents = new ViewContentCollection(this);
 			
-			this.DockAreas = DockAreas.Document;
-			this.DockPadding.All = 2;
-
 			OnTitleNameChanged(this, EventArgs.Empty);
-			this.TabPageContextMenuStrip = MenuService.CreateContextMenu(this, contextMenuPath);
+			this.ContextMenu = MenuService.CreateContextMenu(this, contextMenuPath);
 		}
 		
-		protected override void Dispose(bool disposing)
+		void Dispose()
 		{
-			if (disposing) {
-				// DetachContent must be called before the controls are disposed
-				this.ViewContents.Clear();
-				if (this.TabPageContextMenu != null) {
-					this.TabPageContextMenu.Dispose();
-					this.TabPageContextMenu = null;
-				}
-			}
-			base.Dispose(disposing);
+			// DetachContent must be called before the controls are disposed
+			this.ViewContents.Clear();
 		}
 		
 		private void CreateViewTabControl()
 		{
 			if (viewTabControl == null) {
-				this.Controls.Clear();
-				
 				viewTabControl = new TabControl();
 				viewTabControl.GotFocus += delegate {
-					TabPage page = viewTabControl.SelectedTab;
-					if (page.Controls.Count == 1 && !page.ContainsFocus) page.Controls[0].Focus();
+					TabItem page = (TabItem)viewTabControl.SelectedItem;
+					if (!page.IsFocused) page.Focus();
 				};
-				viewTabControl.Alignment = TabAlignment.Bottom;
-				viewTabControl.Dock = DockStyle.Fill;
-				this.Controls.Add(viewTabControl);
+				viewTabControl.TabStripPlacement = Dock.Bottom;
+				this.Content = viewTabControl;
 				
-				viewTabControl.SelectedIndexChanged += delegate {
+				viewTabControl.SelectionChanged += delegate {
 					UpdateActiveViewContent();
 				};
 			}
@@ -260,12 +252,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void ClearContent()
 		{
-			this.Controls.Clear();
+			this.Content = null;
 			if (viewTabControl != null) {
-				foreach (TabPage page in viewTabControl.TabPages) {
-					page.Controls.Clear();
+				foreach (TabItem page in viewTabControl.Items) {
+					page.Content = null;
 				}
-				viewTabControl.Dispose();
 				viewTabControl = null;
 			}
 		}
@@ -286,7 +277,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			IViewContent content = ActiveViewContent;
 			if (content != null) {
-				base.ToolTipText = content.PrimaryFileName;
+				base.ToolTip = content.PrimaryFileName;
 				
 				string newTitle = content.TitleName;
 				
@@ -329,13 +320,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public bool CloseWindow(bool force)
 		{
 			if (!force && this.IsDirty) {
-				DialogResult dr = MessageBox.Show(ResourceService.GetString("MainWindow.SaveChangesMessage"),
-				                                  ResourceService.GetString("MainWindow.SaveChangesMessageHeader") + " " + Title + " ?",
-				                                  MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question,
-				                                  MessageBoxDefaultButton.Button1,
-				                                  RightToLeftConverter.IsRightToLeft ? MessageBoxOptions.RtlReading | MessageBoxOptions.RightAlign : 0);
+				MessageBoxResult dr = MessageBox.Show(
+					ResourceService.GetString("MainWindow.SaveChangesMessage"),
+					ResourceService.GetString("MainWindow.SaveChangesMessageHeader") + " " + Title + " ?",
+					MessageBoxButton.YesNoCancel, MessageBoxImage.Question,
+					MessageBoxResult.Yes);
 				switch (dr) {
-					case DialogResult.Yes:
+					case MessageBoxResult.Yes:
 						foreach (IViewContent vc in this.ViewContents) {
 							if (!vc.IsDirty) continue;
 							if (vc.PrimaryFile != null) {
@@ -352,9 +343,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 							}
 						}
 						break;
-					case DialogResult.No:
+					case MessageBoxResult.No:
 						break;
-					case DialogResult.Cancel:
+					case MessageBoxResult.Cancel:
 						return false;
 				}
 			}
@@ -372,9 +363,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void RefreshTabPageTexts()
 		{
 			if (viewTabControl != null) {
-				for (int i = 0; i < viewTabControl.TabPages.Count; ++i) {
-					TabPage tabPage = viewTabControl.TabPages[i];
-					tabPage.Text = StringParser.Parse(ViewContents[i].TabPageText);
+				for (int i = 0; i < viewTabControl.Items.Count; ++i) {
+					TabItem tabPage = (TabItem)viewTabControl.Items[i];
+					tabPage.Header = StringParser.Parse(ViewContents[i].TabPageText);
 				}
 			}
 		}
@@ -386,10 +377,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
-		{
-			e.Cancel = !CloseWindow(false);
-		}
+//		protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
+//		{
+//			e.Cancel = !CloseWindow(false);
+//		}
 		
 		void OnCloseEvent(EventArgs e)
 		{
@@ -418,5 +409,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public event EventHandler TitleChanged;
 		public event EventHandler CloseEvent;
+		
+		public BitmapSource Icon { get; set; }
 	}
 }

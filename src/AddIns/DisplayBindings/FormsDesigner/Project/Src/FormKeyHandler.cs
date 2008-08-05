@@ -70,8 +70,7 @@ namespace ICSharpCode.FormsDesigner
 				return false;
 			}
 			
-			if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow == null ||
-			    !WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ActiveViewContent.Control.ContainsFocus) {
+			if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow == null) {
 				return false;
 			}
 			
@@ -80,6 +79,8 @@ namespace ICSharpCode.FormsDesigner
 			if (formDesigner == null || formDesigner.Host == null) {
 				return false;
 			}
+			if (!((Control)formDesigner.Content).ContainsFocus)
+				return false;
 			
 			Keys keyPressed = (Keys)m.WParam.ToInt32() | Control.ModifierKeys;
 			

@@ -37,7 +37,7 @@ namespace WorkflowDesigner
 			
 		}
 		
-		public override System.Windows.Forms.Control Control {
+		public override object Content {
 			get {
 				return control;
 			}

@@ -547,7 +547,7 @@ namespace ICSharpCode.XmlEditor
 		
 		#region AbstractViewContent implementation
 		
-		public override Control Control {
+		public override object Content {
 			get {
 				return xmlEditor;
 			}

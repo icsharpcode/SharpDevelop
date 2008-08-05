@@ -39,7 +39,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 		}
 		
-		public sealed override Control Control {
+		public sealed override object Content {
 			get { return panel; }
 		}
 		

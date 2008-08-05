@@ -4,6 +4,7 @@
         xmlns:corePresentation = "clr-namespace:ICSharpCode.Core.Presentation;assembly=ICSharpCode.Core.Presentation"
         Title = "SharpDevelop (experimental WPF build)"
         WindowStartupLocation = "Manual"
+        Background="{DynamicResource {x:Static SystemColors.MenuBarBrushKey}}"
 >
 	<Window.Resources>
 		<Style TargetType="{x:Type Image}" x:Key="{x:Static corePresentation:ToolBarService.ImageStyleKey}">
@@ -16,7 +17,8 @@
 	</Window.Resources>
 	<DockPanel Name="dockPanel">
 		<Menu Name="mainMenu" DockPanel.Dock="Top"/>
-		<!-- Toolbars -->
+		<!-- Toolbars will be inserted here (index: 1) -->
+		<!-- Statusbar will be inserted here (index: Count-2) -->
 		<ContentControl Name="mainContent"/>
 	</DockPanel>
 </Window>

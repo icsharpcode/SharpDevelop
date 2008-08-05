@@ -6,36 +6,59 @@
 // </file>
 
 using System;
+using System.IO;
+using System.Windows;
+using AvalonDock;
+using System.Windows.Media.Imaging;
+using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
 	/// <summary>
-	/// Description of AvalonDockLayout.
+	/// Workbench layout using the AvalonDock library.
 	/// </summary>
-	public class AvalonDockLayout : IWorkbenchLayout
+	sealed class AvalonDockLayout : IWorkbenchLayout
 	{
+		WpfWorkbench workbench;
+		DockingManager dockingManager = new DockingManager();
+		DocumentPane documentPane = new DocumentPane();
+		
+		public DockingManager DockingManager {
+			get { return dockingManager; }
+		}
+		
+		public DocumentPane DocumentPane {
+			get { return documentPane; }
+		}
+		
+		public AvalonDockLayout()
+		{
+			dockingManager.Content = documentPane;
+		}
+		
 		public event EventHandler ActiveWorkbenchWindowChanged;
 		
 		public IWorkbenchWindow ActiveWorkbenchWindow {
 			get {
-				throw new NotImplementedException();
+				return null;
 			}
 		}
 		
 		public object ActiveContent {
 			get {
-				throw new NotImplementedException();
+				return null;
 			}
 		}
 		
 		public void Attach(IWorkbench workbench)
 		{
-			throw new NotImplementedException();
+			this.workbench = (WpfWorkbench)workbench;
+			this.workbench.mainContent.Content = dockingManager;
 		}
 		
 		public void Detach()
 		{
-			throw new NotImplementedException();
+			this.workbench.mainContent.Content = null;
 		}
 		
 		public void ShowPad(PadDescriptor content)
@@ -70,22 +93,50 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public void RedrawAllComponents()
 		{
-			throw new NotImplementedException();
 		}
 		
 		public IWorkbenchWindow ShowView(IViewContent content)
 		{
-			throw new NotImplementedException();
+			AvalonWorkbenchWindow window = new AvalonWorkbenchWindow(this);
+			window.ViewContents.Add(content);
+			documentPane.Items.Add(window);
+			dockingManager.Show(window);
+			return window;
 		}
 		
 		public void LoadConfiguration()
 		{
-			throw new NotImplementedException();
+			try {
+				if (File.Exists(LayoutConfiguration.CurrentLayoutFileName)) {
+					dockingManager.RestoreLayout(LayoutConfiguration.CurrentLayoutFileName);
+				} else {
+					LoadDefaultLayoutConfiguration();
+				}
+			} catch (Exception ex) {
+				MessageService.ShowError(ex);
+				// ignore errors loading configuration
+			}
+		}
+		
+		void LoadDefaultLayoutConfiguration()
+		{
+			if (File.Exists(LayoutConfiguration.CurrentLayoutTemplateFileName)) {
+				dockingManager.RestoreLayout(LayoutConfiguration.CurrentLayoutTemplateFileName);
+			}
 		}
 		
 		public void StoreConfiguration()
 		{
-			throw new NotImplementedException();
+			try {
+				LayoutConfiguration current = LayoutConfiguration.CurrentLayout;
+				if (current != null && !current.ReadOnly) {
+					string configPath = Path.Combine(PropertyService.ConfigDirectory, "layouts");
+					Directory.CreateDirectory(configPath);
+					dockingManager.SaveLayout(Path.Combine(configPath, current.FileName));
+				}
+			} catch (Exception e) {
+				MessageService.ShowError(e);
+			}
 		}
 	}
 }

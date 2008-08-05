@@ -75,8 +75,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (WorkbenchSingleton.Workbench.ActiveViewContent != null) {
 				UpdateItems();
 				
-				if (WorkbenchSingleton.Workbench.ActiveViewContent.Control is SharpDevelopTextAreaControl) {
-					SharpDevelopTextAreaControl ctrl = WorkbenchSingleton.Workbench.ActiveViewContent.Control as SharpDevelopTextAreaControl;
+				if (WorkbenchSingleton.Workbench.ActiveViewContent.Content is SharpDevelopTextAreaControl) {
+					SharpDevelopTextAreaControl ctrl = WorkbenchSingleton.Workbench.ActiveViewContent.Content as SharpDevelopTextAreaControl;
 					
 					ctrl.ActiveTextAreaControl.Caret.PositionChanged += new EventHandler(Caret_PositionChanged);
 				}
@@ -95,8 +95,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (isInitialized)
 				UpdateItems();
 			
-			if (WorkbenchSingleton.Workbench.ActiveViewContent.Control is SharpDevelopTextAreaControl) {
-				SharpDevelopTextAreaControl ctrl = WorkbenchSingleton.Workbench.ActiveViewContent.Control as SharpDevelopTextAreaControl;
+			if (WorkbenchSingleton.Workbench.ActiveViewContent.Content is SharpDevelopTextAreaControl) {
+				SharpDevelopTextAreaControl ctrl = WorkbenchSingleton.Workbench.ActiveViewContent.Content as SharpDevelopTextAreaControl;
 				
 				ctrl.ActiveTextAreaControl.Caret.PositionChanged += new EventHandler(Caret_PositionChanged);
 			}
@@ -210,8 +210,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			ParseInformation parseInfo = ParserService.GetParseInformation(WorkbenchSingleton.Workbench.ActiveViewContent.PrimaryFileName);
 			if (parseInfo != null) {
-				if (WorkbenchSingleton.Workbench.ActiveViewContent.Control is ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.SharpDevelopTextAreaControl)
-				{SharpDevelopTextAreaControl ctrl = WorkbenchSingleton.Workbench.ActiveViewContent.Control
+				if (WorkbenchSingleton.Workbench.ActiveViewContent.Content is ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.SharpDevelopTextAreaControl)
+				{SharpDevelopTextAreaControl ctrl = WorkbenchSingleton.Workbench.ActiveViewContent.Content
 						as SharpDevelopTextAreaControl;
 					IClass c = parseInfo.MostRecentCompilationUnit.GetInnermostClass(ctrl.ActiveTextAreaControl.Caret.Line, ctrl.ActiveTextAreaControl.Caret.Column);
 					if (c != null) return c;

@@ -38,9 +38,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 	public interface IViewContent : IDisposable, ICanBeDirty
 	{
 		/// <summary>
-		/// This is the Windows.Forms control for the view.
+		/// This is the UI element for the view.
+		/// You can use both Windows.Forms and WPF controls.
 		/// </summary>
-		Control Control {
+		object Content {
 			get;
 		}
 		

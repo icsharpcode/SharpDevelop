@@ -28,7 +28,7 @@ namespace Hornung.ResourceToolkit.Gui
 		ListView listView;
 		ToolStrip toolStrip;
 		
-		public override System.Windows.Forms.Control Control {
+		public override object Content {
 			get {
 				return this.panel;
 			}

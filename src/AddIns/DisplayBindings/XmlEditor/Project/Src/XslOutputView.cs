@@ -27,7 +27,6 @@ namespace ICSharpCode.XmlEditor
 				foreach (IViewContent content in WorkbenchSingleton.Workbench.ViewContentCollection) {
 					if (content is XslOutputView) {
 						LoggingService.Debug("XslOutputView instance exists.");
-						LoggingService.Debug("XslOutputView.IsDisposed=" + content.Control.IsDisposed.ToString());
 						return (XslOutputView)content;
 					}
 				}

@@ -557,7 +557,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					return oldSdiWindow;
 				}
 			}
-			content.Control.Dock = DockStyle.Fill;
+			content.Content.Dock = DockStyle.Fill;
 			SdiWorkspaceWindow sdiWorkspaceWindow = new SdiWorkspaceWindow();
 			sdiWorkspaceWindow.ViewContents.Add(content);
 			sdiWorkspaceWindow.ViewContents.AddRange(content.SecondaryViewContents);
