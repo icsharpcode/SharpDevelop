@@ -795,6 +795,7 @@
       <Name>ICSharpCode.SharpDevelop.Widgets</Name>
       <Private>True</Private>
     </ProjectReference>
+    <Page Include="Src\Gui\Workbench\WpfWorkbench.xaml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

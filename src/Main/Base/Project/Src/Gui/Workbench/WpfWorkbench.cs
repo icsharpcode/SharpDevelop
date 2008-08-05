@@ -18,7 +18,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 	/// <summary>
 	/// Workbench implementation using WPF and AvalonDock.
 	/// </summary>
-	sealed class WpfWorkbench : Window, IWorkbench
+	sealed partial class WpfWorkbench : Window, IWorkbench
 	{
 		const string mainMenuPath    = "/SharpDevelop/Workbench/MainMenu";
 		const string viewContentPath = "/SharpDevelop/Workbench/Pads";
@@ -34,29 +34,29 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public ISynchronizeInvoke SynchronizingObject { get; set; }
 		public Window MainWindow { get { return this; } }
 		
-		DockPanel dockPanel;
-		Menu mainMenu;
-		ContentControl mainContent;
+		ToolBar[] toolBars;
 		
 		public WpfWorkbench()
 		{
-			this.Title = "SharpDevelop (experimental WPF build)";
 			this.SynchronizingObject = new WpfSynchronizeInvoke(this.Dispatcher);
 			this.MainWin32Window = this.GetWin32Window();
-			this.WindowStartupLocation = WindowStartupLocation.Manual;
+			InitializeComponent();
 		}
 		
 		public void Initialize()
 		{
-			this.Content = dockPanel = new DockPanel();
-			mainMenu = new Menu() {
-				ItemsSource = MenuService.CreateMenuItems(this, mainMenuPath)
-			};
-			DockPanel.SetDock(mainMenu, Dock.Top);
-			dockPanel.Children.Add(mainMenu);
+			mainMenu.ItemsSource = MenuService.CreateMenuItems(this, mainMenuPath);
 			
-			mainContent = new ContentControl();
-			dockPanel.Children.Add(mainContent);
+			toolBars = ToolBarService.CreateToolBars(this, "/SharpDevelop/Workbench/ToolBar");
+			foreach (ToolBar tb in toolBars) {
+				DockPanel.SetDock(tb, Dock.Top);
+				dockPanel.Children.Insert(1, tb);
+			}
+			
+			MenuService.UpdateStatus(mainMenu.ItemsSource);
+			foreach (ToolBar tb in toolBars) {
+				ToolBarService.UpdateStatus(tb.ItemsSource);
+			}
 		}
 		
 		public ICollection<IViewContent> ViewContentCollection {

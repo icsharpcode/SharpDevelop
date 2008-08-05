@@ -67,6 +67,7 @@ namespace ICSharpCode.SharpDevelop.Sda
 			ResourceService.RegisterNeutralImages(new ResourceManager("Resources.BitmapResources", exe));
 			
 			MenuCommand.LinkCommandCreator = delegate(string link) { return new LinkCommand(link); };
+			Core.Presentation.MenuService.LinkCommandCreator = MenuCommand.LinkCommandCreator;
 			StringParser.RegisterStringTagProvider(new SharpDevelopStringTagProvider());
 			
 			LoggingService.Info("Looking for AddIns...");

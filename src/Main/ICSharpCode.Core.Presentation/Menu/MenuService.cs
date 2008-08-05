@@ -17,12 +17,23 @@ namespace ICSharpCode.Core.Presentation
 	/// </summary>
 	public static class MenuService
 	{
+		public static void UpdateStatus(IEnumerable menuItems)
+		{
+			if (menuItems == null)
+				return;
+			foreach (object o in menuItems) {
+				IStatusUpdate cmi = o as IStatusUpdate;
+				if (cmi != null)
+					cmi.UpdateStatus();
+			}
+		}
+		
 		public static IList CreateMenuItems(object owner, string addInTreePath)
 		{
 			return CreateMenuItems(AddInTree.BuildItems<MenuItemDescriptor>(addInTreePath, owner, false));
 		}
 		
-		static IList CreateMenuItems(IEnumerable descriptors)
+		internal static IList CreateMenuItems(IEnumerable descriptors)
 		{
 			ArrayList result = new ArrayList();
 			foreach (MenuItemDescriptor descriptor in descriptors) {
@@ -45,8 +56,7 @@ namespace ICSharpCode.Core.Presentation
 			
 			switch (type) {
 				case "Separator":
-					return new Separator();
-					//return new MenuSeparator(codon, descriptor.Caller);
+					return new ConditionalSeparator(codon, descriptor.Caller, false);
 				case "CheckBox":
 					return "CheckBox";
 					//return new MenuCheckBox(codon, descriptor.Caller);

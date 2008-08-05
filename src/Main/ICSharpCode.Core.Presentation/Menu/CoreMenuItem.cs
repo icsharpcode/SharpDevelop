@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace ICSharpCode.Core.Presentation
@@ -14,7 +15,7 @@ namespace ICSharpCode.Core.Presentation
 	/// <summary>
 	/// A menu item representing an AddIn-Tree element.
 	/// </summary>
-	class CoreMenuItem : MenuItem
+	class CoreMenuItem : MenuItem, IStatusUpdate
 	{
 		protected readonly Codon codon;
 		protected readonly object caller;
@@ -27,8 +28,13 @@ namespace ICSharpCode.Core.Presentation
 			if (codon.Properties.Contains("shortcut")) {
 				InputGestureText = codon.Properties["shortcut"];
 			}
-			
+			this.SubmenuOpened += CoreMenuItem_SubmenuOpened;
 			UpdateText();
+		}
+
+		void CoreMenuItem_SubmenuOpened(object sender, RoutedEventArgs e)
+		{
+			MenuService.UpdateStatus(this.ItemsSource);
 		}
 		
 		public void UpdateText()
@@ -37,46 +43,25 @@ namespace ICSharpCode.Core.Presentation
 				Header = MenuService.ConvertLabel(StringParser.Parse(codon.Properties["label"]));
 			}
 		}
-	}
-	
-	class MenuCommand : CoreMenuItem
-	{
-		ICommand menuCommand;
 		
-		public MenuCommand(Codon codon, object caller, bool createCommand) : base(codon, caller)
+		public virtual void UpdateStatus()
 		{
-			if (createCommand) {
-				CreateCommand();
+			this.IsEnabled = this.IsEnabledCore;
+			if (this.IsEnabled) {
+				this.Visibility = Visibility.Visible;
+			} else {
+				if (codon.GetFailedAction(caller) == ConditionFailedAction.Exclude)
+					this.Visibility = Visibility.Collapsed;
+				else
+					this.Visibility = Visibility.Visible;
 			}
 		}
 		
-		void CreateCommand()
-		{
-			try {
-				string link = codon.Properties["link"];
-				if (link != null && link.Length > 0) {
-					if (MenuService.LinkCommandCreator == null)
-						throw new NotSupportedException("MenuCommand.LinkCommandCreator is not set, cannot create LinkCommands.");
-					menuCommand = MenuService.LinkCommandCreator(codon.Properties["link"]);
-				} else {
-					menuCommand = (ICommand)codon.AddIn.CreateObject(codon.Properties["class"]);
-				}
-				if (menuCommand != null) {
-					menuCommand.Owner = caller;
-				}
-			} catch (Exception e) {
-				MessageService.ShowError(e, "Can't create menu command : " + codon.Id);
-			}
-		}
-		
-		protected override void OnClick()
-		{
-			base.OnClick();
-			if (menuCommand == null) {
-				CreateCommand();
-			}
-			if (menuCommand != null) {
-				menuCommand.Run();
+		protected override bool IsEnabledCore {
+			get {
+				ConditionFailedAction failedAction = codon.GetFailedAction(caller);
+				bool isEnabled = failedAction == ConditionFailedAction.Nothing;
+				return isEnabled;
 			}
 		}
 	}
