@@ -42,11 +42,7 @@ namespace PythonBinding.Tests.Utils
 		}
 		
 		public bool ReadOnly {
-			get
-			{
-				FileAttributes attributes = File.GetAttributes(FileName);
-				return ((FileAttributes.ReadOnly & attributes) == FileAttributes.ReadOnly);
-			}
+			get { return false; }
 		}
 		
 		public ICollection<ItemType> AvailableFileItemTypes {

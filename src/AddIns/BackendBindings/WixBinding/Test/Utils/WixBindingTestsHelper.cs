@@ -19,6 +19,17 @@ namespace WixBinding.Tests.Utils
 	/// </summary>
 	public class WixBindingTestsHelper
 	{
+		class DummyWixProject : WixProject
+		{
+			public DummyWixProject(ProjectCreateInformation info) : base (info)
+			{
+			}
+			
+			public override bool ReadOnly {
+				get { return false; }
+			}
+		}
+		
 		WixBindingTestsHelper()
 		{
 		}
@@ -37,7 +48,7 @@ namespace WixBinding.Tests.Utils
 			info.ProjectName = "Test";
 			info.OutputProjectFileName = @"C:\Projects\Test\Test.wixproj";
 
-			return new WixProject(info);
+			return new DummyWixProject(info);
 		}
 		
 		/// <summary>

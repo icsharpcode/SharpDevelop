@@ -25,6 +25,7 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 		class TestProject : CompilableProject
 		{
 			string languageName;
+			bool readOnly = false;
 			
 			public TestProject(string languageName)
 				: base(new Solution())
@@ -34,6 +35,10 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 			
 			public override string Language {
 				get { return languageName; }
+			}
+			
+			public override bool ReadOnly {
+				get { return readOnly; }
 			}
 			
 			public override ICSharpCode.SharpDevelop.Dom.LanguageProperties LanguageProperties {

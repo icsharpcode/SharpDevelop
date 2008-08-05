@@ -14,7 +14,7 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 {
 	[TestFixture]
 	public class DirectoryNodeFactoryTests
-	{
+	{		
 		DirectoryNode appDesignerFolderNode;
 		DirectoryNode ordinaryFolderNode;
 		DirectoryNode webReferencesFolderNode;

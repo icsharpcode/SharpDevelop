@@ -49,10 +49,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			sortOrder = 1;
 			
-			
-			
 			this.ContextmenuAddinTreePath = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ProjectNode";
-			this.project   = project;
+			this.project = project;
 			
 			Text = project.Name;
 			if (project.ReadOnly) {
