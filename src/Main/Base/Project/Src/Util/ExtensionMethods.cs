@@ -59,5 +59,57 @@ namespace ICSharpCode.SharpDevelop
 				}
 			}
 		}
+		
+		/// <summary>
+		/// Creates an array containing a part of the array (similar to string.Substring).
+		/// </summary>
+		public static T[] Splice<T>(this T[] array, int startIndex)
+		{
+			if (array == null)
+				throw new ArgumentNullException("array");
+			return Splice(array, startIndex, array.Length - startIndex);
+		}
+		
+		/// <summary>
+		/// Creates an array containing a part of the array (similar to string.Substring).
+		/// </summary>
+		public static T[] Splice<T>(this T[] array, int startIndex, int length)
+		{
+			if (array == null)
+				throw new ArgumentNullException("array");
+			if (startIndex < 0 || startIndex > array.Length)
+				throw new ArgumentOutOfRangeException("startIndex", startIndex, "Value must be between 0 and " + array.Length);
+			if (length < 0 || length > array.Length - startIndex)
+				throw new ArgumentOutOfRangeException("length", length, "Value must be between 0 and " + (array.Length - startIndex));
+			T[] result = new T[length];
+			Array.Copy(array, startIndex, result, 0, length);
+			return result;
+		}
+		
+		/// <summary>
+		/// Gets the IWin32Window associated with a WPF window.
+		/// </summary>
+		public static System.Windows.Forms.IWin32Window GetWin32Window(this System.Windows.Window window)
+		{
+			var wnd = System.Windows.PresentationSource.FromVisual(window) as System.Windows.Interop.IWin32Window;
+			if (wnd != null)
+				return new Win32WindowAdapter(wnd);
+			else
+				return null;
+		}
+		
+		sealed class Win32WindowAdapter : System.Windows.Forms.IWin32Window
+		{
+			System.Windows.Interop.IWin32Window window;
+			
+			public Win32WindowAdapter(System.Windows.Interop.IWin32Window window)
+			{
+				this.window = window;
+			}
+			
+			public IntPtr Handle {
+				get { return window.Handle; }
+			}
+		}
 	}
 }

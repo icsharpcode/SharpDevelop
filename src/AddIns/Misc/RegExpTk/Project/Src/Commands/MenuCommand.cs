@@ -7,17 +7,17 @@
 
 using System;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace Plugins.RegExpTk {
 	
 	public class RegExpTkCommand : AbstractMenuCommand
 	{
-		
 		public override void Run()
 		{
-			RegExpTkDialog dialog = new RegExpTkDialog();
-			dialog.Owner = ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm;
-			dialog.Show();
+			using (RegExpTkDialog dialog = new RegExpTkDialog()) {
+				dialog.Show(WorkbenchSingleton.MainWin32Window);
+			}
 		}
 	}
 }

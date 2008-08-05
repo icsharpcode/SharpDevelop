@@ -265,7 +265,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		void OnConvertProjectToMSBuild35ButtonClick(object sender, EventArgs e)
 		{
 			using (ConvertToMSBuild35Dialog dlg = new ConvertToMSBuild35Dialog(project.Language + " newversion")) {
-				if (dlg.ShowDialog() == DialogResult.OK) {
+				if (dlg.ShowDialog(WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
 					if (dlg.ConvertAllProjects) {
 						foreach (IProject p in ProjectService.OpenSolution.Projects) {
 							MSBuildBasedProject msbp = p as MSBuildBasedProject;

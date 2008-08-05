@@ -63,8 +63,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 		public override void Run()
 		{
 			using (CommonAboutDialog ad = new CommonAboutDialog()) {
-				ad.Owner = WorkbenchSingleton.MainForm;
-				ad.ShowDialog(WorkbenchSingleton.MainForm);
+				ad.ShowDialog(WorkbenchSingleton.MainWin32Window);
 			}
 		}
 	}

@@ -137,7 +137,7 @@ namespace ICSharpCode.SharpDevelop.Services
 				form.exceptionDetails.Refresh();
 
 				form.buttonContinue.Enabled = canContinue;
-				form.ShowDialog(Gui.WorkbenchSingleton.MainForm);
+				form.ShowDialog(Gui.WorkbenchSingleton.MainWin32Window);
 				return form.result;
 			}
 		}

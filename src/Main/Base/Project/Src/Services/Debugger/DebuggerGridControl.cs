@@ -78,9 +78,10 @@ namespace ICSharpCode.SharpDevelop.Debugging
 					return true;
 				} else {
 					Console.WriteLine("Handling " + keyData);
-					var i = FindItemByShortcut(Gui.WorkbenchSingleton.MainForm.MainMenuStrip.Items, keyData);
-					if (i != null)
-						i.PerformClick();
+					throw new NotImplementedException();
+					//var i = FindItemByShortcut(Gui.WorkbenchSingleton.MainWin32Window.MainMenuStrip.Items, keyData);
+					//if (i != null)
+					//	i.PerformClick();
 					return false;
 				}
 			}

@@ -133,7 +133,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			using (ColorDialog colDialog = new ColorDialog()) {
 				colDialog.FullOpen = true;
-				if (colDialog.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) == DialogResult.OK) {
+				if (colDialog.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
 					selectedColor = colDialog.Color;
 					DialogResult = DialogResult.OK;
 				}

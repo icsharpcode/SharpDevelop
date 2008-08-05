@@ -508,7 +508,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					customizer.Set("Template", item.Template);
 					customizer.Set("Creator",  this);
 					WizardDialog wizard = new WizardDialog("File Wizard", customizer, item.Template.WizardPath);
-					if (wizard.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) == DialogResult.OK) {
+					if (wizard.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
 						DialogResult = DialogResult.OK;
 					}
 				} else {
@@ -643,7 +643,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			tooltip.SetToolTip(ControlDictionary["largeIconsRadioButton"], StringParser.Parse("${res:Global.LargeIconToolTip}"));
 			tooltip.SetToolTip(ControlDictionary["smallIconsRadioButton"], StringParser.Parse("${res:Global.SmallIconToolTip}"));
 			tooltip.Active = true;
-			Owner         = WorkbenchSingleton.MainForm;
 			StartPosition = FormStartPosition.CenterParent;
 			Icon          = null;
 			

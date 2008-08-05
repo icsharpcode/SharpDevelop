@@ -27,7 +27,7 @@ namespace ClassWizard
 			using (AddClassForm form = new AddClassForm())
 			{
 				form.Owner = (Form) WorkbenchSingleton.Workbench;
-				form.ShowDialog(WorkbenchSingleton.MainForm);
+				form.ShowDialog(WorkbenchSingleton.MainWin32Window);
 			}
 		}
 	}

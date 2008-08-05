@@ -147,7 +147,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		{
 			CodeTemplate newTemplate = new CodeTemplate();
 			using (EditTemplateDialog etd = new EditTemplateDialog(newTemplate)) {
-				if (etd.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) == DialogResult.OK) {
+				if (etd.ShowDialog(WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
 					CurrentTemplateGroup.Templates.Add(newTemplate);
 					((ListView)ControlDictionary["templateListView"]).SelectedItems.Clear();
 					BuildListView();
@@ -165,7 +165,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 				template = new CodeTemplate(template.Shortcut, template.Description, template.Text);
 				
 				using (EditTemplateDialog etd = new EditTemplateDialog(template)) {
-					if (etd.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) == DialogResult.OK) {
+					if (etd.ShowDialog(WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
 						item.Tag = template;
 						StoreTemplateGroup();
 					}

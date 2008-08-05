@@ -117,7 +117,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 				frm.ClientSize = new System.Drawing.Size(400, 300);
 				frm.StartPosition = FormStartPosition.CenterParent;
 				
-				if (frm.ShowDialog(WorkbenchSingleton.MainForm) == DialogResult.OK) {
+				if (frm.ShowDialog(WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
 					IList<string> oldNames = new List<string>(CustomLayoutNames);
 					IList<string> newNames = ed.GetList();
 					// add newly added layouts

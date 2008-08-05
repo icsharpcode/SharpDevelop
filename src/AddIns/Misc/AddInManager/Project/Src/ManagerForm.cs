@@ -32,10 +32,11 @@ namespace ICSharpCode.AddInManager
 		{
 			if (instance == null) {
 				instance = new ManagerForm();
-				#if !STANDALONE
-				instance.Owner = ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm;
-				#endif
+				#if STANDALONE
 				instance.Show();
+				#else
+				instance.Show(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainWin32Window);
+				#endif
 			} else {
 				instance.Activate();
 			}

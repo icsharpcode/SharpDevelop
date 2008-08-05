@@ -215,8 +215,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		protected void InitializeComponent()
 		{
-			Owner = WorkbenchSingleton.MainForm;
-
 			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("Resources.TreeViewOptionsDialog.xfrm"));
 			
 			this.optionsPanelLabel             = new GradientHeaderPanel();

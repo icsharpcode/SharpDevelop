@@ -7,7 +7,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Windows;
 using System.Windows.Forms;
+
 using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Gui
@@ -18,11 +21,19 @@ namespace ICSharpCode.SharpDevelop.Gui
 	public interface IWorkbench : IMementoCapable
 	{
 		/// <summary>
-		/// Gets the main form for the work bench.
+		/// The main window as IWin32Window.
 		/// </summary>
-		Form MainForm { 
-			get;
-		}
+		IWin32Window MainWin32Window { get; }
+		
+		/// <summary>
+		/// Object for executing methods on the main thread.
+		/// </summary>
+		ISynchronizeInvoke SynchronizingObject { get; }
+		
+		/// <summary>
+		/// The main window.
+		/// </summary>
+		Window MainWindow { get; }
 		
 		/// <summary>
 		/// The title shown in the title bar.

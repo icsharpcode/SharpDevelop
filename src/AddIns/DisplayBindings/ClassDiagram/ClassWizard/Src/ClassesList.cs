@@ -7,14 +7,14 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 
+using ICSharpCode.SharpDevelop.Gui;
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Project;
-using ICSharpCode.SharpDevelop.Gui.XmlForms;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Gui.XmlForms;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace ClassWizard
 {
@@ -147,7 +147,7 @@ namespace ClassWizard
 				initialized = true;
 			}
 			
-			classesList.ShowDialog();
+			classesList.ShowDialog(WorkbenchSingleton.MainWin32Window);
 			return classesList.DialogResult == DialogResult.OK;
 		}
 

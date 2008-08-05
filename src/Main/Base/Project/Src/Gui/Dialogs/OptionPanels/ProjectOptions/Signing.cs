@@ -104,7 +104,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			if (File.Exists(CreateKeyForm.StrongNameTool)) {
 				using (CreateKeyForm createKey = new CreateKeyForm(baseDirectory)) {
 					createKey.KeyFile = project.Name;
-					if (createKey.ShowDialog(WorkbenchSingleton.MainForm) == DialogResult.OK) {
+					if (createKey.ShowDialog(WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
 						keyFile.Text = createKey.KeyFile;
 						return;
 					}

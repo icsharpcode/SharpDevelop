@@ -75,7 +75,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			var codons = DisplayBindingService.GetCodonsPerFileName(fileName);
 			int defaultCodonIndex = codons.IndexOf(DisplayBindingService.GetDefaultCodonPerFileName(fileName));
 			using (OpenWithDialog dlg = new OpenWithDialog(codons, defaultCodonIndex, Path.GetExtension(fileName))) {
-				if (dlg.ShowDialog(WorkbenchSingleton.MainForm) == DialogResult.OK) {
+				if (dlg.ShowDialog(WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
 					FileUtility.ObservedLoad(new FileService.LoadFileWrapper(dlg.SelectedBinding.Binding).Invoke, fileName);
 				}
 			}

@@ -44,8 +44,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 				
 			}
 			using (NewFileDialog nfd = new NewFileDialog(null)) {
-				nfd.Owner = WorkbenchSingleton.MainForm;
-				nfd.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm);
+				nfd.ShowDialog(WorkbenchSingleton.MainWin32Window);
 			}
 		}
 	}
@@ -175,7 +174,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 					}
 				}
 				
-				if (fdiag.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) == DialogResult.OK) {
+				if (fdiag.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
 					string fileName = fdiag.FileName;
 					if (!FileService.CheckFileName(fileName)) {
 						return;
@@ -246,7 +245,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 				fdiag.Multiselect     = true;
 				fdiag.CheckFileExists = true;
 				
-				if (fdiag.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) == DialogResult.OK) {
+				if (fdiag.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
 					foreach (string name in fdiag.FileNames) {
 						FileService.OpenFile(name);
 					}
@@ -258,7 +257,8 @@ namespace ICSharpCode.SharpDevelop.Commands
 	{
 		public override void Run()
 		{
-			WorkbenchSingleton.MainForm.Close();
+			throw new NotImplementedException();
+			//WorkbenchSingleton.MainForm.Close();
 		}
 	}
 	
@@ -273,7 +273,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 						using (PrintDialog ppd = new PrintDialog()) {
 							ppd.Document  = pdoc;
 							ppd.AllowSomePages = true;
-							if (ppd.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) == DialogResult.OK) { // fixed by Roger Rubin
+							if (ppd.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainWin32Window) == DialogResult.OK) { // fixed by Roger Rubin
 								pdoc.Print();
 							}
 						}
@@ -297,10 +297,9 @@ namespace ICSharpCode.SharpDevelop.Commands
 					using (PrintDocument pdoc = printable.PrintDocument) {
 						if (pdoc != null) {
 							PrintPreviewDialog ppd = new PrintPreviewDialog();
-							ppd.Owner     = WorkbenchSingleton.MainForm;
 							ppd.TopMost   = true;
 							ppd.Document  = pdoc;
-							ppd.Show();
+							ppd.Show(WorkbenchSingleton.MainWin32Window);
 						} else {
 							MessageService.ShowError("${res:ICSharpCode.SharpDevelop.Commands.Print.CreatePrintDocumentError}");
 						}

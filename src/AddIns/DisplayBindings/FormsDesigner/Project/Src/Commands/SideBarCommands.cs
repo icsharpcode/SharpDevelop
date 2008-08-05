@@ -17,7 +17,7 @@ namespace ICSharpCode.FormsDesigner
 		public override void Run()		
 		{
 			using (ConfigureSideBarDialog configureSideBarDialog = new ConfigureSideBarDialog()) {
-				if (configureSideBarDialog.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) == DialogResult.OK) {
+				if (configureSideBarDialog.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
 					ToolboxProvider.ReloadSideTabs(true);
 				}
 			}

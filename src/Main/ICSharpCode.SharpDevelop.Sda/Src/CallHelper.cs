@@ -19,6 +19,7 @@ using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Commands;
 using ICSharpCode.SharpDevelop.Gui;
+using System.Windows;
 
 namespace ICSharpCode.SharpDevelop.Sda
 {
@@ -233,8 +234,8 @@ namespace ICSharpCode.SharpDevelop.Sda
 					vc.WorkbenchWindow.CloseWindow(true);
 				}
 			}
-			WorkbenchSingleton.MainForm.Close();
-			return WorkbenchSingleton.MainForm.IsDisposed;
+			WorkbenchSingleton.MainWindow.Close();
+			return WorkbenchSingleton.MainWindow == null;
 		}
 		
 		[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
@@ -261,11 +262,11 @@ namespace ICSharpCode.SharpDevelop.Sda
 		}
 		bool GetWorkbenchVisibleInternal()
 		{
-			return WorkbenchSingleton.MainForm.Visible;
+			return WorkbenchSingleton.MainWindow.Visibility == Visibility.Visible;
 		}
 		void SetWorkbenchVisibleInternal(bool value)
 		{
-			WorkbenchSingleton.MainForm.Visible = value;
+			WorkbenchSingleton.MainWindow.Visibility = value ? Visibility.Visible : Visibility.Hidden;
 		}
 	}
 }

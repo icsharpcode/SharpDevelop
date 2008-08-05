@@ -14,6 +14,7 @@ using System.Windows.Forms;
 
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.Sda
 {
@@ -68,7 +69,7 @@ namespace ICSharpCode.SharpDevelop.Sda
 			try {
 				using (ExceptionBox box = new ExceptionBox(exception, message, mustTerminate)) {
 					try {
-						box.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm);
+						box.ShowDialog(WorkbenchSingleton.MainWin32Window);
 					} catch (InvalidOperationException) {
 						box.ShowDialog();
 					}

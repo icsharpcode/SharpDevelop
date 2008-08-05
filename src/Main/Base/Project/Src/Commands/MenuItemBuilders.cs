@@ -261,7 +261,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 					box.Text = tool.MenuCommand;
 					box.Label.Text = ResourceService.GetString("XML.MainMenu.ToolMenu.ExternalTools.EnterArguments");
 					box.TextBox.Text = args;
-					if (box.ShowDialog() != DialogResult.OK)
+					if (box.ShowDialog(WorkbenchSingleton.MainWin32Window) != DialogResult.OK)
 						return;
 					args = box.TextBox.Text;
 				}

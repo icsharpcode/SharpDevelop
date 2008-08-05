@@ -30,7 +30,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			if (Instance == null) {
 				Instance = new GotoDialog();
-				Instance.Show(WorkbenchSingleton.MainForm);
+				Instance.Show(WorkbenchSingleton.MainWin32Window);
 			} else {
 				Instance.Focus();
 			}
@@ -54,7 +54,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			listView.SizeChanged += ListViewSizeChanged;
 			listView.HideSelection = false;
 			ListViewSizeChanged(null, null);
-			Owner = WorkbenchSingleton.MainForm;
 			Icon = null;
 			FormLocationHelper.Apply(this, "ICSharpCode.SharpDevelop.Gui.GotoDialog.Bounds", true);
 		}

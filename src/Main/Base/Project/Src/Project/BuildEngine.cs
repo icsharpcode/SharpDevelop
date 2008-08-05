@@ -524,7 +524,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				combinedBuildFeedbackSink.Done(results.Result == BuildResultCode.Success);
 			}
 			if (options.Callback != null) {
-				Gui.WorkbenchSingleton.MainForm.BeginInvoke(options.Callback, results);
+				Gui.WorkbenchSingleton.SafeThreadAsyncCall(delegate { options.Callback(results); });
 			}
 		}
 		#endregion

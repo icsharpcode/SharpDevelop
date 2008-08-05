@@ -45,7 +45,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			ControlDictionary["okButton"].Click += new EventHandler(AcceptEvent);
 			
-			Owner = WorkbenchSingleton.MainForm;
 			Icon  = null;
 		}
 	}

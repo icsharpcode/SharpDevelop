@@ -189,7 +189,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		public void ShowAttachDialog()
 		{
 			using (AttachToProcessForm attachForm = new AttachToProcessForm()) {
-				if (attachForm.ShowDialog() == DialogResult.OK) {
+				if (attachForm.ShowDialog(WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
 					Attach(attachForm.Process);
 				}
 			}			
@@ -664,7 +664,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		public void JumpToCurrentLine()
 		{
-			WorkbenchSingleton.MainForm.Activate();
+			WorkbenchSingleton.MainWindow.Activate();
 			DebuggerService.RemoveCurrentLineMarker();
 			if (debuggedProcess != null) {
 				SourcecodeSegment nextStatement = debuggedProcess.NextStatement;

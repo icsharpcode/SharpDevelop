@@ -17,11 +17,8 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void Run()
 		{
-			
-			
 			using (NewProjectDialog npdlg = new NewProjectDialog(true)) {
-				npdlg.Owner = WorkbenchSingleton.MainForm;
-				npdlg.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm);
+				npdlg.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainWin32Window);
 			}
 		}
 	}
@@ -35,7 +32,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 				fdiag.Filter          = ProjectService.GetAllProjectsFilter(this);
 				fdiag.Multiselect     = false;
 				fdiag.CheckFileExists = true;
-				if (fdiag.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) == DialogResult.OK) {
+				if (fdiag.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
 					ProjectService.LoadSolutionOrProject(fdiag.FileName);
 				}
 			}

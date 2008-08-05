@@ -42,7 +42,6 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 				} else {
 					ICSharpCode.SharpDevelop.Bookmarks.BookmarkManager.RemoveMark(node.Bookmark);
 				}
-				WorkbenchSingleton.MainForm.Refresh();
 			}
 		}
 	}

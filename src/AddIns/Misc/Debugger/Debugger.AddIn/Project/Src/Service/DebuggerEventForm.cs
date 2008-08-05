@@ -81,7 +81,7 @@ namespace ICSharpCode.SharpDevelop.Services
 				form.textBox.Text = message;
 				form.pictureBox.Image = icon;
 				form.buttonContinue.Enabled = canContinue;
-				form.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm);
+				form.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainWin32Window);
 				return form.result;
 			}
 		}

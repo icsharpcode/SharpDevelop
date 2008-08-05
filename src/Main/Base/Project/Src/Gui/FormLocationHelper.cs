@@ -37,7 +37,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 				}
 			};
 		}
-		
 		static Rectangle Validate(Rectangle bounds)
 		{
 			// Check if form is outside the screen and get it back if necessary.
@@ -66,7 +65,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		static Point GetDefaultLocation(Form form)
 		{
-			Rectangle parent = WorkbenchSingleton.MainForm.Bounds;
+			var mainWindow = WorkbenchSingleton.MainWindow;
+			Rectangle parent = new Rectangle(
+				(int)mainWindow.Left, (int)mainWindow.Top, (int)mainWindow.Width, (int)mainWindow.Height
+			);
 			Size size = form.Size;
 			return new Point(parent.Left + (parent.Width - size.Width) / 2,
 			                 parent.Top + (parent.Height - size.Height) / 2);

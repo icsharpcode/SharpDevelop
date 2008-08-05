@@ -181,7 +181,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 		{
 			using (InputBox box = new InputBox()) {
 				box.Label.Text = ResourceService.GetString("Dialog.HighlightingEditor.KeywordList.EnterName");
-				if (box.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) == DialogResult.Cancel) return;
+				if (box.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainWin32Window) == DialogResult.Cancel) return;
 				
 				if (box.TextBox.Text == "") return;
 				foreach (string item in listBox.Items) {

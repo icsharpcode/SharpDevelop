@@ -40,6 +40,12 @@
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="PresentationCore">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="PresentationFramework">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
@@ -52,6 +58,10 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.Build.Engine" />
+    <Reference Include="WindowsBase">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Src\Gui\AbstractSecondaryViewContent.cs" />
@@ -109,8 +119,10 @@
     <Compile Include="Src\Gui\Pads\SearchResultPad\SearchResultPanelToolbarCommands.cs" />
     <Compile Include="Src\Gui\Pads\TaskList\TaskListPadCommands.cs" />
     <Compile Include="Src\Gui\Pads\ToolsPad.cs" />
-    <Compile Include="Src\Gui\Workbench\Layouts\SimpleWorkbenchLayout.cs" />
+    <None Include="Src\Gui\Workbench\Layouts\SimpleWorkbenchLayout.cs" />
+    <Compile Include="Src\Gui\Workbench\Layouts\AvalonDockLayout.cs" />
     <Compile Include="Src\Gui\Workbench\SingleInstanceHelper.cs" />
+    <Compile Include="Src\Gui\Workbench\WpfWorkbench.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\WriteableProjectEvaluator.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\WriteableSolutionEvaluator.cs" />
     <Compile Include="Src\Internal\ExternalTool\ExternalTool.cs" />
@@ -282,13 +294,13 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Src\Gui\Pads\PropertyPad\PropertyPad.cs" />
-    <Compile Include="Src\Gui\Workbench\DefaultWorkbench.cs">
+    <None Include="Src\Gui\Workbench\DefaultWorkbench.cs">
       <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Src\Gui\Workbench\Layouts\SdiWorkspaceLayout.cs" />
-    <Compile Include="Src\Gui\Workbench\Layouts\SdiWorkspaceWindow.cs">
+    </None>
+    <None Include="Src\Gui\Workbench\Layouts\SdiWorkspaceLayout.cs" />
+    <None Include="Src\Gui\Workbench\Layouts\SdiWorkspaceWindow.cs">
       <SubType>Form</SubType>
-    </Compile>
+    </None>
     <Compile Include="Src\Gui\XmlForms\SharpDevelopPropertyValueCreator.cs" />
     <Compile Include="Src\Gui\XmlForms\SharpDevelopStringValueFilter.cs" />
     <Compile Include="Src\Services\IconService.cs" />
@@ -719,6 +731,7 @@
     <Compile Include="Src\Util\GenericConverter.cs" />
     <Compile Include="Src\Internal\Templates\TemplateLoadException.cs" />
     <Compile Include="Src\Util\UnclosableStream.cs" />
+    <Compile Include="Src\Util\WpfSynchronizeInvoke.cs" />
     <EmbeddedResource Include="Resources\DefaultManifest.manifest" />
     <EmbeddedResource Include="Src\Gui\Dialogs\ExtractInterfaceDialog.resx">
       <DependentUpon>ExtractInterfaceDialog.cs</DependentUpon>
@@ -738,10 +751,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj">
-      <Project>{D3C782BA-178E-4235-A3BA-8C11DEBB6BEE}</Project>
-      <Name>WinFormsUI</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj">
       <Project>{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D}</Project>
       <Name>ICSharpCode.TextEditor</Name>

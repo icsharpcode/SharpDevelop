@@ -336,7 +336,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		public override void Run()
 		{
 			using (SolutionConfigurationEditor sce = new SolutionConfigurationEditor()) {
-				sce.ShowDialog();
+				sce.ShowDialog(WorkbenchSingleton.MainWin32Window);
 				ProjectService.SaveSolution();
 				ProjectService.OpenSolution.ApplySolutionConfigurationAndPlatformToProjects();
 				ProjectBrowserPad.Instance.ProjectBrowserControl.RefreshView();

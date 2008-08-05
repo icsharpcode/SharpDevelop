@@ -21,6 +21,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 	{
 		const string workbenchMemento = "WorkbenchMemento";
 		
+		/*
 		class FormKeyHandler : IMessageFilter
 		{
 			const int keyPressedMessage          = 0x100;
@@ -76,11 +77,10 @@ namespace ICSharpCode.SharpDevelop.Commands
 				return false;
 			}
 		}
+		*/
 		
 		public void Run(IList<string> fileList)
 		{
-			//WorkbenchSingleton.MainForm.Show();
-			
 			bool didLoadSolutionOrFile = false;
 		
 			NavigationService.SuspendLogging();
@@ -123,8 +123,10 @@ namespace ICSharpCode.SharpDevelop.Commands
 			ParserService.StartParserThread();
 			
 			// finally run the workbench window ...
-			Application.AddMessageFilter(new FormKeyHandler());
-			Application.Run(WorkbenchSingleton.MainForm);
+			//Application.AddMessageFilter(new FormKeyHandler());
+			//Application.Run(WorkbenchSingleton.MainForm);
+			var application = new System.Windows.Application();
+			application.Run(WorkbenchSingleton.MainWindow);
 			
 			// save the workbench memento in the ide properties
 			try {
