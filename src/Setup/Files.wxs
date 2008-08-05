@@ -1523,6 +1523,20 @@
 											<File Source="..\..\AddIns\AddIns\Misc\ReflectorAddIn\ReflectorAddIn.addin" Name="ReflectorAddIn.addin" Id="ReflectorAddIn.addin" />
 										</Component>
 									</Directory>
+									<Directory Id="SourceAnalysis" Name="SourceAnalysis">
+										<Component Guid="63031C9E-F23C-4539-A7DF-97AFAC0A21C0" Id="SettingsSourceAnalysis" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\Misc\SourceAnalysis\Settings.SourceAnalysis" Name="Settings.SourceAnalysis" Id="Settings.SourceAnalysis" KeyPath="yes" />
+										</Component>
+										<Component Guid="C9D099BC-CF4D-404A-BB2F-B13D4541DA0F" Id="SharpDevelopSourceAnalysisTargets" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\Misc\SourceAnalysis\SharpDevelop.SourceAnalysis.targets" Name="SharpDevelop.SourceAnalysis.targets" Id="SharpDevelop.SourceAnalysis.targets" KeyPath="yes" />
+										</Component>
+										<Component Guid="4E61BF16-0C2E-424A-8D1B-80F89B3F456B" Id="SourceAnalysisAddin" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\Misc\SourceAnalysis\SourceAnalysis.addin" Name="SourceAnalysis.addin" Id="SourceAnalysis.addin" KeyPath="yes" />
+										</Component>
+										<Component Guid="C4A33C3E-91B6-4984-86B1-07C5C49C180D" Id="SourceAnalysisDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\Misc\SourceAnalysis\SourceAnalysis.dll" Name="SourceAnalysis.dll" Id="SourceAnalysis.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="SourceAnalysis.dll" AssemblyManifest="SourceAnalysis.dll" />
+										</Component>
+									</Directory>
 								</Directory>
 							</Directory>
 						</Directory>
