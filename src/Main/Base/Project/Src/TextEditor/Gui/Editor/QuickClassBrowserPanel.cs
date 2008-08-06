@@ -454,7 +454,9 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			if (autoselect) {
 				ComboBoxItem item = (ComboBoxItem)comboBox.Items[comboBox.SelectedIndex];
 				if (item.IsInCurrentPart) {
-					textAreaControl.ActiveTextAreaControl.Caret.Position = new TextLocation(item.Column, item.Line);
+					textAreaControl.ActiveTextAreaControl.CenterViewOn(
+						item.Line, (int)(0.3 * textAreaControl.ActiveTextAreaControl.TextArea.TextView.VisibleLineCount));
+					textAreaControl.ActiveTextAreaControl.JumpTo(item.Line, item.Column);
 					textAreaControl.ActiveTextAreaControl.TextArea.Focus();
 				} else {
 					IMember m = item.Item as IMember;
