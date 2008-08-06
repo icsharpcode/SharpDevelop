@@ -96,9 +96,12 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 				if (IsCollection)
 					throw new DesignerException("Cannot access Value for collection properties.");
 
-				//TODO
-				if (ValueOnInstance == null) return null;
-				return _designItem.ComponentService.GetDesignItem(ValueOnInstance);
+				var xamlObject = _property.PropertyValue as XamlObject;
+				if (xamlObject != null) {
+					return _designItem.ComponentService.GetDesignItem(xamlObject.Instance);
+				}
+
+				return null;
 			}
 		}
 		

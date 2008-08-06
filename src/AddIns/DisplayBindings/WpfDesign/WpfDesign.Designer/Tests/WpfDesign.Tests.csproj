@@ -60,6 +60,7 @@
     <Compile Include="XamlDom\ExampleClass.cs" />
     <Compile Include="XamlDom\ExampleClassContainer.cs" />
     <Compile Include="XamlDom\ExampleService.cs" />
+    <Compile Include="XamlDom\MarkupExtensionTests.cs" />
     <Compile Include="XamlDom\SamplesTests.cs" />
     <Compile Include="XamlDom\SimpleLoadTests.cs" />
     <Compile Include="XamlDom\SystemTypesLoadTest.cs" />
@@ -81,7 +82,5 @@
       <Project>{78CC29AC-CC79-4355-B1F2-97936DF198AC}</Project>
       <Name>WpfDesign.Designer</Name>
     </ProjectReference>
-    <Folder Include="Designer" />
-    <Folder Include="XamlDom" />
   </ItemGroup>
 </Project>
