@@ -612,7 +612,11 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 						return new NamespaceResolveResult(resolver.CallingClass, resolver.CallingMember, name);
 				}
 			}
-			return rr;
+			if (rr != null) {
+				return rr;
+			} else {
+				return new UnknownIdentifierResolveResult(resolver.CallingClass, resolver.CallingMember, reference.Type);
+			}
 		}
 		
 		public override object VisitUnaryOperatorExpression(UnaryOperatorExpression unaryOperatorExpression, object data)

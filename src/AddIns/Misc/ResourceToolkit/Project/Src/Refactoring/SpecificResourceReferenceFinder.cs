@@ -65,7 +65,7 @@ namespace Hornung.ResourceToolkit.Refactoring
 		public bool IsReferenceToResource(ResourceResolveResult result)
 		{
 			return FileUtility.IsEqualFileName(this.ResourceFileName, result.FileName) &&
-				result.Key.Equals(this.Key, StringComparison.InvariantCultureIgnoreCase);
+				this.Key.Equals(result.Key, StringComparison.InvariantCultureIgnoreCase);
 		}
 		
 		// ********************************************************************************************************************************

@@ -24,18 +24,7 @@ namespace ICSharpCode.CodeCoverage
 		{
 			base.OnOwnerChanged(e);
 			dropDownButton = (ToolBarDropDownButton)Owner;
-			GenerateDropDownItems();
-		}
-		
-		void GenerateDropDownItems()
-		{
-			ToolStripItem[] items = (ToolStripItem[])(AddInTree.GetTreeNode("/SharpDevelop/Pads/CodeCoveragePad/Toolbar/CodeCoveragePadDisplayOptions").BuildChildItems(this)).ToArray(typeof(ToolStripItem));
-			foreach (ToolStripItem item in items) {
-				if (item is IStatusUpdate) {
-					((IStatusUpdate)item).UpdateStatus();
-				}
-			}
-			dropDownButton.DropDownItems.AddRange(items);
-		}
+			MenuService.AddItemsToMenu(dropDownButton.DropDownItems, this, "/SharpDevelop/Pads/CodeCoveragePad/Toolbar/CodeCoveragePadDisplayOptions");
+		}		
 	}
 }

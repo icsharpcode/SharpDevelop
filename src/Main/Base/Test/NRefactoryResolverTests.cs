@@ -268,6 +268,20 @@ interface IInterface2 {
 		}
 		
 		[Test]
+		public void UnknownTypeTest()
+		{
+			string program = @"class A {
+	void Method() {
+		
+	}
+}
+";
+			UnknownIdentifierResolveResult result = Resolve<UnknownIdentifierResolveResult>(program, "StringBuilder", 3, 1, ExpressionContext.Type);
+			Assert.IsFalse(result.IsValid);
+			Assert.AreEqual("StringBuilder", result.Identifier);
+		}
+		
+		[Test]
 		public void InvalidMethodCallTest()
 		{
 			string program = @"class A {

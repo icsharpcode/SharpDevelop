@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using Hornung.ResourceToolkit;
 using Hornung.ResourceToolkit.Resolver;
 using NUnit.Framework;
+using NUnit.Framework.SyntaxHelpers;
 
 namespace ResourceToolkit.Tests.CSharp
 {
@@ -262,6 +263,30 @@ class A
 			TestHelper.CheckReference(rrr, "Test.TestResources", "TestKey", "A", "A.B");
 		}
 		
+		// ********************************************************************************************************************************
+		
+		const string CodeLocalCRMDeferredInitUsingApplyResources = @"using System.ComponentModel;
+class A
+{
+	void B()
+	{
+		ComponentResourceManager mgr;
+		
+		mgr = new ComponentResourceManager(typeof(A));
+		mgr.ApplyResources(this, ""$this"");
+	}
+}
+";
+		
+		[Test]
+		public void LocalCRMDeferredInitUsingApplyResources()
+		{
+			ResourceResolveResult rrr = Resolve(CodeLocalCRMDeferredInitUsingApplyResources, 8, 20, null);
+			TestHelper.CheckReference(rrr, "A", null, "A", "A.B");
+			Assert.That(rrr, Is.InstanceOfType(typeof(ResourcePrefixResolveResult)));
+			ResourcePrefixResolveResult rprr = (ResourcePrefixResolveResult)rrr;
+			Assert.That(rprr.Prefix, Is.EqualTo("$this"), "Resource key prefix not detected correctly.");
+		}
 		#endregion
 		
 		// ********************************************************************************************************************************
@@ -755,8 +780,9 @@ namespace Test {
 			Assert.Contains("GetString", patterns);
 			Assert.Contains("GetStream", patterns);
 			Assert.Contains("GetObject", patterns);
+			Assert.Contains("ApplyResources", patterns);
 			Assert.Contains("[", patterns);
-			Assert.AreEqual(4, patterns.Count, "Incorrect number of resource access patterns for C# files.");
+			Assert.AreEqual(5, patterns.Count, "Incorrect number of resource access patterns for C# files.");
 		}
 		
 		[Test]

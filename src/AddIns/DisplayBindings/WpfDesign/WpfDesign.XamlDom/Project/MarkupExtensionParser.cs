@@ -58,7 +58,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			while (pos < text.Length) {
 				switch (text[pos]) {
 					case '}':
-						AddToken(MarkupExtensionTokenKind.CloseBrace, "{");
+						AddToken(MarkupExtensionTokenKind.CloseBrace, "}");
 						pos++;
 						break;
 					case '=':
@@ -70,7 +70,9 @@ namespace ICSharpCode.WpfDesign.XamlDom
 						pos++;
 						break;
 					case '{':
-						throw new XamlMarkupExtensionParseException("'{' is invalid at this location");
+						AddToken(MarkupExtensionTokenKind.OpenBrace, "{");
+						pos++;
+						break;
 					default:
 						MembernameOrString();
 						break;

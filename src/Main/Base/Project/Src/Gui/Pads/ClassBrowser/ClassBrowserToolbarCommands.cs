@@ -51,14 +51,7 @@ namespace ICSharpCode.SharpDevelop.Gui.ClassBrowser
 		{
 			base.OnOwnerChanged(e);
 			dropDownButton = (ToolBarDropDownButton)Owner;
-			ToolStripItem[] items = (ToolStripItem[])(AddInTree.GetTreeNode("/SharpDevelop/Pads/ClassBrowser/Toolbar/SelectFilter").BuildChildItems(this)).ToArray(typeof(ToolStripItem));
-			foreach (ToolStripItem item in items) {
-				if (item is IStatusUpdate) {
-					((IStatusUpdate)item).UpdateStatus();
-				}
-			}
-			
-			dropDownButton.DropDownItems.AddRange(items);
+			MenuService.AddItemsToMenu(dropDownButton.DropDownItems, this, "/SharpDevelop/Pads/ClassBrowser/Toolbar/SelectFilter");
 		}
 	}
 	
