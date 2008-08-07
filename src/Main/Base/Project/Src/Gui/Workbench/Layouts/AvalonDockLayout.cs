@@ -25,6 +25,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		WpfWorkbench workbench;
 		DockingManager dockingManager = new DockingManager();
 		DocumentPane documentPane = new DocumentPane();
+		internal bool Busy;
 		
 		public DockingManager DockingManager {
 			get { return dockingManager; }
@@ -43,12 +44,19 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public IWorkbenchWindow ActiveWorkbenchWindow {
 			get {
-				return null;
+				return (AvalonWorkbenchWindow)dockingManager.ActiveDocument;
 			}
 		}
 		
 		public object ActiveContent {
 			get {
+				object activeContent = dockingManager.ActiveContent;
+				AvalonPadContent padContent = activeContent as AvalonPadContent;
+				if (padContent != null)
+					return padContent.PadContent;
+				AvalonWorkbenchWindow window = activeContent as AvalonWorkbenchWindow;
+				if (window != null)
+					return window.ActiveViewContent;
 				return null;
 			}
 		}
@@ -59,10 +67,18 @@ namespace ICSharpCode.SharpDevelop.Gui
 				throw new InvalidOperationException("Can attach only once!");
 			this.workbench = (WpfWorkbench)workbench;
 			this.workbench.mainContent.Content = dockingManager;
-			foreach (PadDescriptor pd in workbench.PadContentCollection) {
-				ShowPad(pd);
+			Busy = true;
+			try {
+				foreach (PadDescriptor pd in workbench.PadContentCollection) {
+					ShowPad(pd);
+				}
+				LoadConfiguration();
+			} finally {
+				Busy = false;
 			}
-			LoadConfiguration();
+			foreach (AvalonPadContent p in pads.Values) {
+				p.LoadPadContentIfRequired();
+			}
 		}
 		
 		public void Detach()
@@ -71,14 +87,27 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.workbench.mainContent.Content = null;
 		}
 		
+		Dictionary<PadDescriptor, AvalonPadContent> pads = new Dictionary<PadDescriptor, AvalonPadContent>();
+		Dictionary<string, AvalonPadContent> padsByClass = new Dictionary<string, AvalonPadContent>();
+		
 		public void ShowPad(PadDescriptor content)
 		{
-			AvalonPadContent pad = new AvalonPadContent(content);
-			GetPane(Dock.Right).Items.Add(pad);
-			dockingManager.Show(pad, DockableContentState.Docked);
+			AvalonPadContent pad;
+			if (pads.TryGetValue(content, out pad)) {
+				dockingManager.Show(pad);
+			} else {
+				pad = new AvalonPadContent(this, content);
+				pads.Add(content, pad);
+				padsByClass.Add(content.Class, pad);
+				GetPane(AnchorStyle.Right).Items.Add(pad);
+				dockingManager.Show(pad, DockableContentState.Docked);
+			}
 		}
 		
-		DockablePane GetPane(Dock dockPosition)
+		/// <summary>
+		/// Gets or creates a pane at the specified position.
+		/// </summary>
+		DockablePane GetPane(AnchorStyle dockPosition)
 		{
 			List<DockablePane> allPanes = new List<DockablePane>();
 			ListAllPanes(allPanes, dockingManager.Content);
@@ -90,12 +119,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 				UIElement content = (UIElement)dockingManager.Content;
 				ResizingPanel rp = new ResizingPanel();
 				dockingManager.Content = rp;
-				if (dockPosition == Dock.Left || dockPosition == Dock.Right) {
+				if (dockPosition == AnchorStyle.Left || dockPosition == AnchorStyle.Right) {
 					rp.Orientation = Orientation.Horizontal;
 				} else {
 					rp.Orientation = Orientation.Vertical;
 				}
-				if (dockPosition == Dock.Left || dockPosition == Dock.Top) {
+				if (dockPosition == AnchorStyle.Left || dockPosition == AnchorStyle.Top) {
 					rp.Children.Add(pane);
 					rp.Children.Add(content);
 				} else {
@@ -106,19 +135,25 @@ namespace ICSharpCode.SharpDevelop.Gui
 			return pane;
 		}
 		
-		static Dock? DetectDock(DockablePane pane)
+		/// <summary>
+		/// Detects the orientation of a DockablePane.
+		/// </summary>
+		static AnchorStyle? DetectDock(DockablePane pane)
 		{
 			ResizingPanel rp = pane.Parent as ResizingPanel;
 			if (rp != null) {
 				if (rp.Children[0] == pane) {
-					return rp.Orientation == Orientation.Vertical ? Dock.Top : Dock.Left;
+					return rp.Orientation == Orientation.Vertical ? AnchorStyle.Top : AnchorStyle.Left;
 				} else if (rp.Children[rp.Children.Count - 1] == pane) {
-					return rp.Orientation == Orientation.Vertical ? Dock.Bottom : Dock.Right;
+					return rp.Orientation == Orientation.Vertical ? AnchorStyle.Bottom : AnchorStyle.Right;
 				}
 			}
 			return null;
 		}
 		
+		/// <summary>
+		/// Puts all DockablePanes into the list.
+		/// </summary>
 		static void ListAllPanes(List<DockablePane> list, object content)
 		{
 			if (content is DockablePane) {
@@ -132,25 +167,32 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public void ActivatePad(PadDescriptor content)
 		{
+			pads[content].BringIntoView();
 		}
 		
 		public void ActivatePad(string fullyQualifiedTypeName)
 		{
+			padsByClass[fullyQualifiedTypeName].BringIntoView();
 		}
 		
 		public void HidePad(PadDescriptor content)
 		{
-			throw new NotImplementedException();
+			dockingManager.Hide(pads[content]);
 		}
 		
 		public void UnloadPad(PadDescriptor content)
 		{
-			throw new NotImplementedException();
+			AvalonPadContent p = pads[content];
+			dockingManager.Hide(p);
+			DockablePane pane = p.Parent as DockablePane;
+			if (pane != null)
+				pane.Items.Remove(p);
+			p.Dispose();
 		}
 		
 		public bool IsVisible(PadDescriptor padContent)
 		{
-			return false;
+			return pads[padContent].IsVisible;
 		}
 		
 		public void RedrawAllComponents()

@@ -6,38 +6,60 @@
 // </file>
 
 using System;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Threading;
+
 using AvalonDock;
 using ICSharpCode.Core;
-using System.Windows;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
-	/// <summary>
-	/// .
-	/// </summary>
-	sealed class AvalonPadContent : DockableContent
+	sealed class AvalonPadContent : DockableContent, IDisposable
 	{
 		PadDescriptor descriptor;
 		IPadContent content;
+		AvalonDockLayout layout;
+		TextBlock placeholder;
 		
-		public AvalonPadContent(PadDescriptor descriptor)
+		public IPadContent PadContent {
+			get { return content; }
+		}
+		
+		public AvalonPadContent(AvalonDockLayout layout, PadDescriptor descriptor)
 		{
 			this.descriptor = descriptor;
+			this.layout = layout;
 			
 			this.Name = descriptor.Class.Replace('.', '_');
 			this.Title = StringParser.Parse(descriptor.Title);
-			this.Content = "Placeholder for " + descriptor.Class;
+			placeholder = new TextBlock { Text = this.Title };
+			this.Content = placeholder;
 			
-			this.Loaded += AvalonPadContent_Loaded;
+			placeholder.IsVisibleChanged += AvalonPadContent_IsVisibleChanged;
+		}
+		
+		void AvalonPadContent_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+		{
+			Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(LoadPadContentIfRequired));
+		}
+		
+		internal void LoadPadContentIfRequired()
+		{
+			if (placeholder != null && placeholder.IsVisible && !layout.Busy) {
+				placeholder.IsVisibleChanged -= AvalonPadContent_IsVisibleChanged;
+				content = descriptor.PadContent;
+				if (content != null) {
+					this.Content = AvalonWorkbenchWindow.WrapContent(content.Content);
+					placeholder = null;
+				}
+			}
 		}
 
-		void AvalonPadContent_Loaded(object sender, RoutedEventArgs e)
+		public void Dispose()
 		{
-			this.Loaded -= AvalonPadContent_Loaded;
-			// the first time the pad is "loaded"
-			content = descriptor.PadContent;
 			if (content != null) {
-				this.Content = AvalonWorkbenchWindow.WrapContent(content.Content);
+				content.Dispose();
 			}
 		}
 	}

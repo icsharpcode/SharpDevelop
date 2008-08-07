@@ -171,6 +171,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public PadDescriptor GetPad(Type type)
 		{
+			foreach (PadDescriptor pad in PadContentCollection) {
+				if (pad.Class == type.FullName) {
+					return pad;
+				}
+			}
 			return null;
 		}
 		

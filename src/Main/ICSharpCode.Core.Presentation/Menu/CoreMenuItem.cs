@@ -28,6 +28,11 @@ namespace ICSharpCode.Core.Presentation
 			if (codon.Properties.Contains("shortcut")) {
 				InputGestureText = codon.Properties["shortcut"];
 			}
+			if (codon.Properties.Contains("icon")) {
+				try {
+					this.Icon = PresentationResourceService.GetImage(codon.Properties["icon"]);
+				} catch (ResourceNotFoundException) {}
+			}
 			this.SubmenuOpened += CoreMenuItem_SubmenuOpened;
 			UpdateText();
 		}

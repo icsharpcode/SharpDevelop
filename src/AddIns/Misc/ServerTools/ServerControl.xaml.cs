@@ -42,6 +42,8 @@ namespace ICSharpCode.ServerTools
             this.addConnectionButton.Click += dbControlController.AddConnectionButton_Clicked;
             this.refreshButton.Click += dbControlController.RefreshButton_Clicked;
             dbControlController.UpdateDbConnectionsNode();
+            
+            this.Height = this.Width = double.NaN;
         }
     }
 }
