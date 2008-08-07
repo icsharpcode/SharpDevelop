@@ -113,7 +113,8 @@ namespace ICSharpCode.SharpDevelop
 		
 		public bool HasFocus {
 			get {
-				return (padContent != null) ? padContent.Control.ContainsFocus : false;
+				return false;
+				//return (padContent != null) ? padContent.Content.ContainsFocus : false;
 			}
 		}
 		

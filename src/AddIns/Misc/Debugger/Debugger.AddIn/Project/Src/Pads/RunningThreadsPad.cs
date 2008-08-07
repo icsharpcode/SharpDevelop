@@ -56,7 +56,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		ColumnHeader priority    = new ColumnHeader();
 		ColumnHeader breaked     = new ColumnHeader();
 		
-		public override Control Control {
+		public override object Content {
 			get {
 				return runningThreadsList;
 			}

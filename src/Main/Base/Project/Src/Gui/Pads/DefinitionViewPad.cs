@@ -25,7 +25,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// <summary>
 		/// The <see cref="System.Windows.Forms.Control"/> representing the pad
 		/// </summary>
-		public override Control Control {
+		public override object Content {
 			get {
 				return ctl;
 			}
@@ -73,7 +73,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void UpdateTick(ParserUpdateStepEventArgs e)
 		{
-			if (!this.IsVisible) return;
 			LoggingService.Debug("DefinitionViewPad.Update");
 			
 			ResolveResult res = ResolveAtCaret(e);
@@ -112,7 +111,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				return ParserService.Resolve(expr, caret.Line + 1, caret.Column + 1, fileName, content);
 			} catch (Exception ex) {
 				disableDefinitionView = true;
-				this.Control.Visible = false;
+				ctl.Visible = false;
 				MessageService.ShowError(ex, "Error resolving at " + (caret.Line + 1) + "/" + (caret.Column + 1)
 				                         + ". DefinitionViewPad is disabled until you restart SharpDevelop.");
 				return null;

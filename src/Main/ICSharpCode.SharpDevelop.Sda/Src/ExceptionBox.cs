@@ -40,6 +40,13 @@ namespace ICSharpCode.SharpDevelop.Sda
 			Application.ThreadException += ShowErrorBox;
 			AppDomain.CurrentDomain.UnhandledException += ShowErrorBox;
 			MessageService.CustomErrorReporter = ShowErrorBox;
+			System.Windows.Threading.Dispatcher.CurrentDispatcher.UnhandledException += Dispatcher_UnhandledException;
+		}
+		
+		static void Dispatcher_UnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+		{
+			ShowErrorBox(e.Exception, "Unhandled WPF exception", false);
+			e.Handled = true;
 		}
 		
 		static void ShowErrorBox(object sender, ThreadExceptionEventArgs e)

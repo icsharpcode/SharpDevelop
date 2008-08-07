@@ -17,9 +17,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 	public interface IPadContent : IDisposable
 	{
 		/// <summary>
-		/// Returns the Windows.Control for this pad.
+		/// This is the UI element for the view.
+		/// You can use both Windows.Forms and WPF controls.
 		/// </summary>
-		Control Control {
+		object Content {
 			get;
 		}
 		

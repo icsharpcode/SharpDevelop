@@ -386,7 +386,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					IPadContent content = padDescriptor.PadContent;
 					if (content == null)
 						return;
-					Control control = content.Control;
+					Control control = content.Content;
 					control.Dock = DockStyle.Fill;
 					Controls.Add(control);
 				}

@@ -325,7 +325,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 	
 	public class FileScout : UserControl, IPadContent
 	{
-		public Control Control {
+		public object Content {
 			get {
 				return this;
 			}

@@ -164,7 +164,7 @@ namespace ClassDiagramAddin
 				PadDescriptor padDesc = WorkbenchSingleton.Workbench.GetPad(typeof(ClassEditorPad));
 				if (padDesc != null)
 				{
-					((ClassEditor)padDesc.PadContent.Control).SetClass(cci.RepresentedClassType);
+					((ClassEditor)padDesc.PadContent.Content).SetClass(cci.RepresentedClassType);
 				}
 			}
 		}

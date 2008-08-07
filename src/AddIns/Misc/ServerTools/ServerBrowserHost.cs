@@ -21,8 +21,8 @@ namespace ICSharpCode.ServerTools
 	/// </summary>
 	public class ServerBrowserHost : AbstractPadContent
 	{
-		ElementHost ctl;
-		
+		ServerControl serverControl;
+
 		/// <summary>
 		/// ServerBrowserTool hosts one or more TreeViews providing views of types
 		/// of server. Currently it shows only relational database servers.
@@ -30,17 +30,15 @@ namespace ICSharpCode.ServerTools
 		public ServerBrowserHost()
 		{
 			LoggingService.Debug("Loading ServerBrowserHost");
-			ctl = new ElementHost();
-            ServerControl serverControl = new ServerControl();
-            ctl.Child = serverControl;
+			serverControl = new ServerControl();
 		}
 		
 		/// <summary>
 		/// The <see cref="System.Windows.Forms.Control"/> representing the pad
 		/// </summary>
-		public override Control Control {
+		public override object Content {
 			get {
-				return ctl;
+				return serverControl;
 			}
 		}
 		
@@ -57,7 +55,6 @@ namespace ICSharpCode.ServerTools
 		/// </summary>
 		public override void Dispose()
 		{
-			ctl.Dispose();
 		}
 	}
 }

@@ -31,7 +31,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		Label noToolsAvailable = new Label();
 		Control child;
 		
-		public override Control Control {
+		public override object Content {
 			get {
 				return panel;
 			}

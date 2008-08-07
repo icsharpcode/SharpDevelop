@@ -90,7 +90,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			{
 				this.Text = StringParser.Parse(desc.Title);
 				
-				Control ctl = desc.PadContent.Control;
+				Control ctl = desc.PadContent.Content;
 				ctl.Dock = DockStyle.Fill;
 				Controls.Add(ctl);
 			}

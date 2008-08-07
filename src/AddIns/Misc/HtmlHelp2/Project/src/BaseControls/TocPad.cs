@@ -34,7 +34,7 @@ namespace HtmlHelp2
 	{
 		MSHelp2TocControl help2TocControl;
 
-		public override Control Control
+		public override object Content
 		{
 			get { return help2TocControl; }
 		}

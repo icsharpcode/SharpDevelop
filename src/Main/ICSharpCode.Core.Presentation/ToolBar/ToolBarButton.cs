@@ -32,10 +32,8 @@ namespace ICSharpCode.Core.Presentation
 			}
 			
 			if (codon.Properties.Contains("icon")) {
-				Image image = new Image {
-					Source = PresentationResourceService.GetBitmapSource(StringParser.Parse(codon.Properties["icon"])),
-					Height = 16
-				};
+				Image image = PresentationResourceService.GetImage(StringParser.Parse(codon.Properties["icon"]));
+				image.Height = 16;
 				image.SetResourceReference(StyleProperty, ToolBarService.ImageStyleKey);
 				this.Content = image;
 			}

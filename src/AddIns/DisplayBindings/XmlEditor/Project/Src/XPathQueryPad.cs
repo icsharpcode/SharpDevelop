@@ -38,7 +38,7 @@ namespace ICSharpCode.XmlEditor
 		/// <summary>
 		/// The <see cref="System.Windows.Forms.Control"/> representing the pad.
 		/// </summary>
-		public override Control Control {
+		public override object Content {
 			get {
 				return xPathQueryControl;
 			}

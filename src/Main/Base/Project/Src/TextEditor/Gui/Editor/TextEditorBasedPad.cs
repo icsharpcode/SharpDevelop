@@ -23,7 +23,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			get;
 		}
 		
-		public override System.Windows.Forms.Control Control {
+		public override object Content {
 			get { return this.TextEditorControl; }
 		}
 		

@@ -55,6 +55,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public void Initialize()
 		{
+			foreach (PadDescriptor content in AddInTree.BuildItems<PadDescriptor>(viewContentPath, this, false)) {
+				if (content != null) {
+					ShowPad(content);
+				}
+			}
+			
 			mainMenu.ItemsSource = MenuService.CreateMenuItems(this, mainMenuPath);
 			
 			toolBars = ToolBarService.CreateToolBars(this, "/SharpDevelop/Workbench/ToolBar");
@@ -69,13 +75,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 			foreach (ToolBar tb in toolBars) {
 				ToolBarService.UpdateStatus(tb.ItemsSource);
 			}
-			StatusBarService.RedrawStatusbar();
+			
 			StatusBarService.SetMessage("${res:MainWindow.StatusBar.ReadyMessage}");
 		}
 		
 		public ICollection<IViewContent> ViewContentCollection {
 			get {
-				return new IViewContent[0];
+				return viewContentCollection.AsReadOnly();
 			}
 		}
 		
@@ -87,7 +93,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public IList<PadDescriptor> PadContentCollection {
 			get {
-				return new PadDescriptor[0];
+				return padViewContentCollection.AsReadOnly();
 			}
 		}
 		
@@ -135,6 +141,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public void ShowView(IViewContent content)
 		{
+			if (content == null)
+				throw new ArgumentNullException("content");
 			System.Diagnostics.Debug.Assert(WorkbenchLayout != null);
 			viewContentCollection.Add(content);
 			
@@ -145,6 +153,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public void ShowPad(PadDescriptor content)
 		{
+			if (content == null)
+				throw new ArgumentNullException("content");
+			
+			padViewContentCollection.Add(content);
+			
+			if (WorkbenchLayout != null) {
+				WorkbenchLayout.ShowPad(content);
+			}
 		}
 		
 		public void UnloadPad(PadDescriptor content)

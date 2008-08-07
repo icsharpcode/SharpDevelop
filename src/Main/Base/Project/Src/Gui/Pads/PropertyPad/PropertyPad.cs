@@ -123,7 +123,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public static event EventHandler SelectedObjectChanged;
 		public static event SelectedGridItemChangedEventHandler SelectedGridItemChanged;
 		
-		public override Control Control {
+		public override object Content {
 			get {
 				return panel;
 			}

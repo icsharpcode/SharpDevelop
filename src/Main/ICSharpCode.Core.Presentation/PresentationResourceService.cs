@@ -22,6 +22,23 @@ namespace ICSharpCode.Core.Presentation
 		static readonly Dictionary<string, BitmapSource> bitmapCache = new Dictionary<string, BitmapSource>();
 		
 		/// <summary>
+		/// Creates a new System.Windows.Controls.Image object containing the image with the
+		/// specified resource name.
+		/// </summary>
+		/// <param name="name">
+		/// The name of the requested bitmap.
+		/// </param>
+		/// <exception cref="ResourceNotFoundException">
+		/// Is thrown when the GlobalResource manager can't find a requested resource.
+		/// </exception>
+		public static System.Windows.Controls.Image GetImage(string name)
+		{
+			return new System.Windows.Controls.Image {
+				Source = GetBitmapSource(name)
+			};
+		}
+		
+		/// <summary>
 		/// Returns a BitmapSource from the resource database, it handles localization
 		/// transparent for the user.
 		/// </summary>

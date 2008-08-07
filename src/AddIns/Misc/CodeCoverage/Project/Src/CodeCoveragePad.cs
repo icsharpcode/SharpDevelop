@@ -38,7 +38,7 @@ namespace ICSharpCode.CodeCoverage
 			}
 		}
 
-		public override Control Control {
+		public override object Content {
 			get {
 				return codeCoverageControl;
 			}

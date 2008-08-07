@@ -124,6 +124,7 @@
     <Compile Include="Src\Gui\Pads\ToolsPad.cs" />
     <None Include="Src\Gui\Workbench\Layouts\SimpleWorkbenchLayout.cs" />
     <Compile Include="Src\Gui\Workbench\Layouts\AvalonDockLayout.cs" />
+    <Compile Include="Src\Gui\Workbench\Layouts\AvalonPadContent.cs" />
     <Compile Include="Src\Gui\Workbench\Layouts\AvalonWorkbenchWindow.cs" />
     <Compile Include="Src\Gui\Workbench\SingleInstanceHelper.cs" />
     <Compile Include="Src\Gui\Workbench\WpfWorkbench.cs" />

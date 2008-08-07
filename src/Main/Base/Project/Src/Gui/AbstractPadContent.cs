@@ -12,7 +12,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 {
 	public abstract class AbstractPadContent : IPadContent
 	{
-		public abstract Control Control {
+		public abstract object Content {
 			get;
 		}
 		
@@ -22,13 +22,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public virtual void Dispose()
 		{
-		}
-		
-		public bool IsVisible {
-			get {
-				Control ctl = this.Control;
-				return ctl.Visible && ctl.Width > 0 && ctl.Height > 0;
-			}
 		}
 	}
 }

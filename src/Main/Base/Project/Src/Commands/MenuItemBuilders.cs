@@ -493,7 +493,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 				this.padDescriptor = padDescriptor;
 				this.Header = ICSharpCode.Core.Presentation.MenuService.ConvertLabel(StringParser.Parse(padDescriptor.Title));
 				if (!string.IsNullOrEmpty(padDescriptor.Icon)) {
-					this.Icon = PresentationResourceService.GetBitmapSource(padDescriptor.Icon);
+					this.Icon = PresentationResourceService.GetImage(padDescriptor.Icon);
 				}
 				if (padDescriptor.Shortcut != null) {
 					this.InputGestureText = padDescriptor.Shortcut;

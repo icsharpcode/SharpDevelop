@@ -92,7 +92,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		public override Control Control {
+		public override object Content {
 			get {
 				return myPanel;
 			}
@@ -289,9 +289,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 					break;
 				}
 			}
-			if (!this.IsVisible) {
-				ActivateThisPad();
-			}
+			//if (!this.IsVisible) {
+			//	ActivateThisPad();
+			//}
 		}
 		
 		void SelectCategory(string categoryName, string text)

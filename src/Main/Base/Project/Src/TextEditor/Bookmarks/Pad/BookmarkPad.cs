@@ -40,7 +40,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		
 		Dictionary<string, BookmarkFolderNode> fileNodes = new Dictionary<string, BookmarkFolderNode>();
 		
-		public override Control Control {
+		public override object Content {
 			get {
 				return myPanel;
 			}
