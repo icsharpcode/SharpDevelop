@@ -55,12 +55,19 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public void Attach(IWorkbench workbench)
 		{
+			if (this.workbench != null)
+				throw new InvalidOperationException("Can attach only once!");
 			this.workbench = (WpfWorkbench)workbench;
 			this.workbench.mainContent.Content = dockingManager;
+			foreach (PadDescriptor pd in workbench.PadContentCollection) {
+				ShowPad(pd);
+			}
+			LoadConfiguration();
 		}
 		
 		public void Detach()
 		{
+			StoreConfiguration();
 			this.workbench.mainContent.Content = null;
 		}
 		
@@ -161,7 +168,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public void LoadConfiguration()
 		{
-			return;
 			try {
 				if (File.Exists(LayoutConfiguration.CurrentLayoutFileName)) {
 					dockingManager.RestoreLayout(LayoutConfiguration.CurrentLayoutFileName);

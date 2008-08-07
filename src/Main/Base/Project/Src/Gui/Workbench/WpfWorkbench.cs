@@ -126,7 +126,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 					//workbenchLayout.ActiveWorkbenchWindowChanged -= OnActiveWindowChanged;
 					workbenchLayout.Detach();
 				}
-				value.Attach(this);
+				if (value != null) {
+					value.Attach(this);
+				}
 				workbenchLayout = value;
 				//workbenchLayout.ActiveWorkbenchWindowChanged += OnActiveWindowChanged;
 				//OnActiveWindowChanged(null, null);
@@ -208,6 +210,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.Width = memento.Get("Width", 600.0);
 			this.Height = memento.Get("Height", 400.0);
 			this.WindowState = memento.Get("WindowState", System.Windows.WindowState.Maximized);
+		}
+		
+		protected override void OnClosing(CancelEventArgs e)
+		{
+			base.OnClosing(e);
+			if (!e.Cancel) {
+				this.WorkbenchLayout = null;
+			}
 		}
 	}
 }

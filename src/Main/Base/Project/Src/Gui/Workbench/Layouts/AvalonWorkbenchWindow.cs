@@ -177,7 +177,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		static object WrapContent(object content)
+		internal static object WrapContent(object content)
 		{
 			if (content is System.Windows.Forms.Control) {
 				return new System.Windows.Forms.Integration.WindowsFormsHost {
