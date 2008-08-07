@@ -7,8 +7,9 @@
 
 using System;
 using System.Windows;
-using System.Windows.Input;
 using System.Windows.Forms.Integration;
+using System.Windows.Input;
+using System.Windows.Threading;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.WpfDesign.AddIn
@@ -18,6 +19,23 @@ namespace ICSharpCode.WpfDesign.AddIn
 	/// </summary>
 	public class SharpDevelopElementHost : ElementHost, IUndoHandler, IClipboardHandler
 	{
+		[ThreadStatic]
+		static bool registeredErrorHandler;
+		
+		public SharpDevelopElementHost()
+		{
+			if (!registeredErrorHandler) {
+				registeredErrorHandler = true;
+				Dispatcher.CurrentDispatcher.UnhandledException += CurrentDispatcher_UnhandledException;
+			}
+		}
+
+		static void CurrentDispatcher_UnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
+		{
+			ICSharpCode.Core.MessageService.ShowError(e.Exception, "Unhandled WPF exception");
+			e.Handled = true;
+		}
+		
 		static bool IsEnabled(ICommand command)
 		{
 			return command.CanExecute(null);
