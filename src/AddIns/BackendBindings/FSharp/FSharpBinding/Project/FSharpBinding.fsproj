@@ -28,7 +28,7 @@
       <HintPath>..\..\RequiredLibraries\FSharp.Build.Tasks.dll</HintPath>
     </Reference>
     <Reference Include="log4net">
-      <HintPath>..\..\..\..\..\..\..\3.0\SharpDevelop\src\Libraries\log4net\log4net.dll</HintPath>
+      <HintPath>..\..\..\..\..\Libraries\log4net\log4net.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.Build.Engine, Version=3.5.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">

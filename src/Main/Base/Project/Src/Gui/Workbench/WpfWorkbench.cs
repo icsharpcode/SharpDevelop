@@ -9,6 +9,7 @@ using ICSharpCode.Core.Presentation;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using ICSharpCode.Core;
@@ -28,7 +29,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public event EventHandler ActiveContentChanged;
 		public event ViewContentEventHandler ViewOpened;
 		
-		protected void OnViewOpened(ViewContentEventArgs e)
+		void OnViewOpened(ViewContentEventArgs e)
 		{
 			if (ViewOpened != null) {
 				ViewOpened(this, e);
@@ -87,7 +88,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public IList<IWorkbenchWindow> WorkbenchWindowCollection {
 			get {
-				return new IWorkbenchWindow[0];
+				return viewContentCollection.Select(vc => vc.WorkbenchWindow)
+					.Distinct().ToList().AsReadOnly();
 			}
 		}
 		
@@ -97,21 +99,85 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
+		IWorkbenchWindow activeWorkbenchWindow;
+		
 		public IWorkbenchWindow ActiveWorkbenchWindow {
 			get {
-				return null;
+				return activeWorkbenchWindow;
+			}
+			private set {
+				if (activeWorkbenchWindow != value) {
+					if (activeWorkbenchWindow != null) {
+						activeWorkbenchWindow.ActiveViewContentChanged -= WorkbenchWindowActiveViewContentChanged;
+					}
+					
+					activeWorkbenchWindow = value;
+					
+					if (value != null) {
+						value.ActiveViewContentChanged += WorkbenchWindowActiveViewContentChanged;
+					}
+					
+					if (ActiveWorkbenchWindowChanged != null) {
+						ActiveWorkbenchWindowChanged(this, EventArgs.Empty);
+					}
+					WorkbenchWindowActiveViewContentChanged(null, null);
+				}
 			}
 		}
+
+		void WorkbenchWindowActiveViewContentChanged(object sender, EventArgs e)
+		{
+			if (workbenchLayout != null) {
+				// update ActiveViewContent
+				IWorkbenchWindow window = this.ActiveWorkbenchWindow;
+				if (window != null)
+					this.ActiveViewContent = window.ActiveViewContent;
+				else
+					this.ActiveViewContent = null;
+				
+				// update ActiveContent
+				this.ActiveContent = workbenchLayout.ActiveContent;
+			}
+		}
+		
+		void OnActiveWindowChanged(object sender, EventArgs e)
+		{
+			if (workbenchLayout != null) {
+				this.ActiveContent = workbenchLayout.ActiveContent;
+				this.ActiveWorkbenchWindow = workbenchLayout.ActiveWorkbenchWindow;
+			} else {
+				this.ActiveContent = null;
+				this.ActiveWorkbenchWindow = null;
+			}
+		}
+		
+		IViewContent activeViewContent;
 		
 		public IViewContent ActiveViewContent {
-			get {
-				return null;
+			get { return activeViewContent; }
+			private set {
+				if (activeViewContent != value) {
+					activeViewContent = value;
+					
+					if (ActiveViewContentChanged != null) {
+						ActiveViewContentChanged(this, EventArgs.Empty);
+					}
+				}
 			}
 		}
 		
+		object activeContent;
+		
 		public object ActiveContent {
-			get {
-				return null;
+			get { return activeContent; }
+			private set {
+				if (activeContent != value) {
+					activeContent = value;
+					
+					if (ActiveContentChanged != null) {
+						ActiveContentChanged(this, EventArgs.Empty);
+					}
+				}
 			}
 		}
 		
@@ -123,15 +189,15 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 			set {
 				if (workbenchLayout != null) {
-					//workbenchLayout.ActiveWorkbenchWindowChanged -= OnActiveWindowChanged;
+					workbenchLayout.ActiveContentChanged -= OnActiveWindowChanged;
 					workbenchLayout.Detach();
 				}
 				if (value != null) {
 					value.Attach(this);
+					value.ActiveContentChanged += OnActiveWindowChanged;
 				}
 				workbenchLayout = value;
-				//workbenchLayout.ActiveWorkbenchWindowChanged += OnActiveWindowChanged;
-				//OnActiveWindowChanged(null, null);
+				OnActiveWindowChanged(null, null);
 			}
 		}
 		

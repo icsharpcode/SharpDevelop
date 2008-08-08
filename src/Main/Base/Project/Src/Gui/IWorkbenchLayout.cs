@@ -32,6 +32,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			get;
 		}
 		
+		event EventHandler ActiveContentChanged;
+		
 		/// <summary>
 		/// Attaches this layout manager to a workbench object.
 		/// </summary>
@@ -82,11 +84,5 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void LoadConfiguration();
 		void StoreConfiguration();
-		
-		/// <summary>
-		/// Is called, when the workbench window which the user has into
-		/// the foreground (e.g. editable) changed to a new one.
-		/// </summary>
-		event EventHandler ActiveWorkbenchWindowChanged;
 	}
 }

@@ -38,9 +38,18 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public AvalonDockLayout()
 		{
 			dockingManager.Content = documentPane;
+			dockingManager.PropertyChanged += dockingManager_PropertyChanged;
 		}
 		
-		public event EventHandler ActiveWorkbenchWindowChanged;
+		void dockingManager_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+		{
+			if (e.PropertyName == "ActiveContent") {
+				if (ActiveContentChanged != null)
+					ActiveContentChanged(this, e);
+			}
+		}
+		
+		public event EventHandler ActiveContentChanged;
 		
 		public IWorkbenchWindow ActiveWorkbenchWindow {
 			get {

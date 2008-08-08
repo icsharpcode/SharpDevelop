@@ -16,7 +16,7 @@ namespace ICSharpCode.PInvokeAddIn
 	/// insert one or more of them into the code.
 	/// </summary>
 	public class InsertPInvokeSignaturesCommand : AbstractMenuCommand
-	{		
+	{
 		/// <summary>
 		/// Starts the command.
 		/// </summary>
@@ -24,7 +24,7 @@ namespace ICSharpCode.PInvokeAddIn
 		{
 			// Show PInvoke dialog.
 			using(InsertPInvokeSignaturesForm form = new InsertPInvokeSignaturesForm()) {
-				form.ShowDialog(WorkbenchSingleton.MainWin32Window);				
+				form.ShowDialog(WorkbenchSingleton.MainWin32Window);
 			}
 		}
 	}
