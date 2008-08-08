@@ -76,6 +76,8 @@ namespace ReflectorAddIn
 				string cfgFileName = Path.Combine(targetPath, ReflectorConfigName);
 				string cfgContent;
 				if (File.Exists(cfgFileName)) {
+					// Theres probably not much point in backing this up if we overwrite it every time.
+					File.Copy(cfgFileName, Path.ChangeExtension(cfgFileName, ".cfg.bak"), true);
 					cfgContent = File.ReadAllText(cfgFileName);
 				} else {
 					cfgContent = Environment.NewLine;
@@ -105,7 +107,6 @@ namespace ReflectorAddIn
 						MessageService.ShowError("Cannot configure Reflector because the configuration file could not be parsed.");
 					} else {
 						cfgContent = cfgContent.Insert(insertionIndex, Environment.NewLine + "\"" + ipcServerAddInDllTargetPath + "\"");
-						File.Copy(cfgFileName, Path.ChangeExtension(cfgFileName, ".cfg.bak"), true);
 						File.WriteAllText(cfgFileName, cfgContent, System.Text.Encoding.Default);
 					}
 				}
