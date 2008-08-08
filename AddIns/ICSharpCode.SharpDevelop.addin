@@ -2040,11 +2040,15 @@
 		             tooltip = "${res:MainWindow.Windows.BookmarkPad.EnableDisableAll.ToolTip}"
 		             class   = "ICSharpCode.SharpDevelop.Bookmarks.EnableDisableAll"/>
 		<ToolbarItem id = "EnableDisableSeparator" type = "Separator" />
-		
 		<ToolbarItem id      = "DeleteMark"
 		             icon    = "Bookmarks.DeleteMark"
 		             tooltip = "${res:MainWindow.Windows.BookmarkPad.DeleteMark.ToolTip}"
 		             class   = "ICSharpCode.SharpDevelop.Bookmarks.DeleteMark"/>
+		<ToolbarItem id = "EnableDisableSeparator" type = "Separator" />
+		<ToolbarItem id      = "DeleteAllMarks"
+		             icon    = "Bookmarks.DeleteAllMarks"
+		             tooltip = "${res:MainWindow.Windows.BookmarkPad.DeleteAllMarks.ToolTip}"
+		             class   = "ICSharpCode.SharpDevelop.Bookmarks.DeleteAllMarks"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Pads/SearchResultPanel/Toolbar">
