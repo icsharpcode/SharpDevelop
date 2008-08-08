@@ -10,6 +10,10 @@
 		<Import assembly = "SharpRefactoring.dll"/>
 	</Runtime>
 	
+	<Path name="/SharpDevelop/ViewContent/DefaultTextEditor/Refactoring/ParameterDefinition">
+		<MenuItem id="parameterCheckRefactorings" type="Builder" class="SharpRefactoring.ParameterCheckRefactoringMenuBuilder"/>
+	</Path>
+	
 	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/ContextMenu">
 		<MenuItem id = "SharpRefactoring" label = "Refactoring" type="Menu">
 			<MenuItem id = "ExtractMethod"

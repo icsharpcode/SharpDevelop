@@ -16,10 +16,11 @@ using ICSharpCode.SharpDevelop.Refactoring;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Actions;
 
-namespace CSharpBinding
+namespace SharpRefactoring
 {
 	/// <summary>
-	/// Description of ParameterCheckRefactorings.
+	/// Provides "Add check for null" and "Add range check" commands in
+	/// context menu of parameter declarations.
 	/// </summary>
 	public class ParameterCheckRefactoringMenuBuilder : ISubmenuBuilder
 	{

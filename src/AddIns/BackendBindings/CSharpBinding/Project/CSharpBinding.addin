@@ -110,10 +110,6 @@
 		                 projectfileextension = ".csproj"
 		                 class                = "CSharpBinding.CSharpLanguageBinding" />
 	</Path>
-
-	<Path name="/SharpDevelop/ViewContent/DefaultTextEditor/Refactoring/ParameterDefinition">
-		<MenuItem id="parameterCheckRefactorings" type="Builder" class="CSharpBinding.ParameterCheckRefactoringMenuBuilder"/>
-	</Path>
 </AddIn>
 
 
