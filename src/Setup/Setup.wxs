@@ -442,6 +442,8 @@
 				<ComponentRef Id="SharpDevelopSourceAnalysisTargets"/>
 				<ComponentRef Id="SourceAnalysisAddin"/>
 				<ComponentRef Id="SourceAnalysisDll"/>
+				<ComponentRef Id="SharpRefactoringAddin"/>
+				<ComponentRef Id="SharpRefactoringDll"/>
 			</Feature>
 			<Feature Id="SharpDevelopFileAssociations"
 			         Level="2"

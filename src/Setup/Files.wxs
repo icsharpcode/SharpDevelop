@@ -1537,6 +1537,14 @@
 											<File Source="..\..\AddIns\AddIns\Misc\SourceAnalysis\SourceAnalysis.dll" Name="SourceAnalysis.dll" Id="SourceAnalysis.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="SourceAnalysis.dll" AssemblyManifest="SourceAnalysis.dll" />
 										</Component>
 									</Directory>
+									<Directory Id="SharpRefactoring" Name="SharpRefactoring">
+										<Component Guid="BCC6D49B-5CC9-4B5D-80DE-A70E90E67ABD" Id="SharpRefactoringAddin" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\Misc\SharpRefactoring\SharpRefactoring.addin" Name="SharpRefactoring.addin" Id="SharpRefactoring.addin" KeyPath="yes" />
+										</Component>
+										<Component Guid="F944B0F5-14EC-4DED-A7BE-BDE9299B19A6" Id="SharpRefactoringDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\Misc\SharpRefactoring\SharpRefactoring.dll" Name="SharpRefactoring.dll" Id="SharpRefactoring.dll" KeyPath="yes" />
+										</Component>
+									</Directory>
 								</Directory>
 							</Directory>
 						</Directory>
