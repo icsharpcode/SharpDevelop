@@ -11,6 +11,8 @@ using ICSharpCode.SharpDevelop.DefaultEditor.Commands;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.TextEditor.Actions;
 
+using System.Windows.Forms;
+
 namespace ICSharpCode.SharpDevelop.Bookmarks
 {
 	public class GotoNext : AbstractEditActionMenuCommand
@@ -31,18 +33,37 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		}
 	}
 	
+	
+	/// <summary>
+	/// Deletes the currently selected <see cref="BookmarkNode" /> or <see cref="BookmarkFolderNode" />
+	/// </summary>
 	public class DeleteMark : AbstractMenuCommand
 	{
 		public override void Run()
 		{
-			BookmarkNode node = ((BookmarkPadBase)Owner).CurrentNode;
-			if (node != null) {
-				if (node.Bookmark.Document != null) {
-					node.Bookmark.Document.BookmarkManager.RemoveMark(node.Bookmark);
-				} else {
-					ICSharpCode.SharpDevelop.Bookmarks.BookmarkManager.RemoveMark(node.Bookmark);
+			TreeNode node = ((BookmarkPadBase)Owner).CurrentNode;
+			if (node == null) return;
+			if (node is BookmarkNode) {
+				deleteBookMark(node as BookmarkNode);
+			}
+			if (node is BookmarkFolderNode) {
+				BookmarkFolderNode folderNode = node as BookmarkFolderNode;
+				// We have to start from the top of the array to prevent reordering.
+				for (int i = folderNode.Nodes.Count - 1; i >= 0 ; i--)
+				{
+					if (folderNode.Nodes[i] is BookmarkNode) {
+						deleteBookMark(folderNode.Nodes[i] as BookmarkNode);
+					}
 				}
 				WorkbenchSingleton.MainForm.Refresh();
+			}
+		}
+		
+		void deleteBookMark (BookmarkNode node) {
+			if (node.Bookmark.Document != null) {
+				node.Bookmark.Document.BookmarkManager.RemoveMark(node.Bookmark);
+			} else {
+				ICSharpCode.SharpDevelop.Bookmarks.BookmarkManager.RemoveMark(node.Bookmark);
 			}
 		}
 	}
