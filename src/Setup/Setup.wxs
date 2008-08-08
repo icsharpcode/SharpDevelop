@@ -260,6 +260,7 @@
 				<ComponentRef Id="SHFBMain"/>
 				<ComponentRef Id="SHFBBuildComponents"/>
 				<ComponentRef Id="SHFBColorizer"/>
+				<ComponentRef Id="SHFBConceptualTemplates"/>
 				<ComponentRef Id="SHFBPlugins"/>
 				<ComponentRef Id="SHFBSharedContent"/>
 				<ComponentRef Id="SHFBTemplates"/>

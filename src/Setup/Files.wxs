@@ -502,12 +502,15 @@
 									</Directory>
 								</Directory>
 								<Directory Id="SHFB" Name="SHFB">
-									<Component Guid="111F8CA7-80F2-4F13-8FBF-041B0D5A9134" Id="SHFBMain" DiskId="1">
+									<Component Guid="D92A7437-2C2B-4487-A90A-DFA45EE8427E" Id="SHFBMain" DiskId="1">
 										<File Source="..\..\bin\Tools\SHFB\BuildReflectionData.bat" Name="BuildReflectionData.bat" Id="BuildReflectionData.bat" />
 										<File Source="..\..\bin\Tools\SHFB\ColorizerLibrary.dll" Name="ColorizerLibrary.dll" Id="ColorizerLibrary.dll" />
 										<File Source="..\..\bin\Tools\SHFB\ColorizerLibrary.xml" Name="ColorizerLibrary.xml" Id="ColorizerLibrary.xml" />
+										<File Source="..\..\bin\Tools\SHFB\GenerateInheritedDocs.exe" Name="GenerateInheritedDocs.exe" Id="GenerateInheritedDocs.exe" />
 										<File Source="..\..\bin\Tools\SHFB\Help.ico" Name="Help.ico" Id="Help.ico" />
+										<File Source="..\..\bin\Tools\SHFB\ICSharpCode.TextEditor.dll" Name="ICSharpCode.TextEditor.dll" Id="SHFB.ICSharpCode.TextEditor.dll" />
 										<File Source="..\..\bin\Tools\SHFB\License.txt" Name="License.txt" Id="License.txt" />
+										<File Source="..\..\bin\Tools\SHFB\Sandcastle.url" Name="Sandcastle.url" Id="Sandcastle.url" />
 										<File Source="..\..\bin\Tools\SHFB\SandcastleBuilder.chm" Name="SandcastleBuilder.chm" Id="SandcastleBuilder.chm" />
 										<File Source="..\..\bin\Tools\SHFB\SandcastleBuilder.Components.dll" Name="SandcastleBuilder.Components.dll" Id="SandcastleBuilder.Components.dll" />
 										<File Source="..\..\bin\Tools\SHFB\SandcastleBuilder.Components.xml" Name="SandcastleBuilder.Components.xml" Id="SandcastleBuilder.Components.xml" />
@@ -519,15 +522,19 @@
 										<File Source="..\..\bin\Tools\SHFB\SandcastleBuilderGUI.exe" Name="SandcastleBuilderGUI.exe" Id="SandcastleBuilderGUI.exe" />
 										<File Source="..\..\bin\Tools\SHFB\SandcastleBuilderGUI.exe.config" Name="SandcastleBuilderGUI.exe.config" Id="SandcastleBuilderGUI.exe.config" />
 										<File Source="..\..\bin\Tools\SHFB\SandcastleBuilderGUI.xml" Name="SandcastleBuilderGUI.xml" Id="SandcastleBuilderGUI.xml" />
+										<File Source="..\..\bin\Tools\SHFB\SandcastleHtmlExtract.config" Name="SandcastleHtmlExtract.config" Id="SandcastleHtmlExtract.config" />
+										<File Source="..\..\bin\Tools\SHFB\SandcastleHtmlExtract.exe" Name="SandcastleHtmlExtract.exe" Id="SandcastleHtmlExtract.exe" />
+										<File Source="..\..\bin\Tools\SHFB\SandcastleStyles.url" Name="SandcastleStyles.url" Id="SandcastleStyles.url" />
 										<File Source="..\..\bin\Tools\SHFB\SHFB.url" Name="SHFB.url" Id="SHFB.url" />
+										<File Source="..\..\bin\Tools\SHFB\WeifenLuo.WinFormsUI.Docking.dll" Name="WeifenLuo.WinFormsUI.Docking.dll" Id="SHFB.WeifenLuo.WinFormsUI.Docking.dll" />
 									</Component>
 									<Directory Id="BuildComponents" Name="BuildComponents">
-										<Component Guid="A5AE6005-2642-45F3-AAA1-C2475AE9042F" Id="SHFBBuildComponents" DiskId="1">
+										<Component Guid="91F3595E-01C8-4378-9254-F894A1A9FA82" Id="SHFBBuildComponents" DiskId="1">
 											<File Source="..\..\bin\Tools\SHFB\BuildComponents\SandcastleBuilder.Components.config" Name="SandcastleBuilder.Components.config" Id="SandcastleBuilder.Components.config" />
 										</Component>
 									</Directory>
 									<Directory Id="Colorizer" Name="Colorizer">
-										<Component Guid="C31A0586-663B-4D99-8D93-1960975A72BB" Id="SHFBColorizer" DiskId="1">
+										<Component Guid="65C6D254-EAFA-4A26-9726-42D75864F92B" Id="SHFBColorizer" DiskId="1">
 											<File Source="..\..\bin\Tools\SHFB\Colorizer\CopyCode.gif" Name="CopyCode.gif" Id="CopyCode.gif" />
 											<File Source="..\..\bin\Tools\SHFB\Colorizer\CopyCode_h.gif" Name="CopyCode_h.gif" Id="CopyCode_h.gif" />
 											<File Source="..\..\bin\Tools\SHFB\Colorizer\highlight.css" Name="highlight.css" Id="highlight.css" />
@@ -536,13 +543,36 @@
 											<File Source="..\..\bin\Tools\SHFB\Colorizer\highlight.xsl" Name="highlight.xsl" Id="highlight.xsl" />
 										</Component>
 									</Directory>
+									<Directory Id="ConceptualTemplates" Name="ConceptualTemplates">
+										<Component Guid="61EA2A91-8A1E-4EF3-9898-105075A9052E" Id="SHFBConceptualTemplates" DiskId="1">
+											<File Source="..\..\bin\Tools\SHFB\ConceptualTemplates\Conceptual.xml" Name="Conceptual.xml" Id="Conceptual.xml" />
+											<File Source="..\..\bin\Tools\SHFB\ConceptualTemplates\Error Message.xml" Name="Error Message.xml" Id="Error_Message.xml" />
+											<File Source="..\..\bin\Tools\SHFB\ConceptualTemplates\Glossary.xml" Name="Glossary.xml" Id="Glossary.xml" />
+											<File Source="..\..\bin\Tools\SHFB\ConceptualTemplates\How To.xml" Name="How To.xml" Id="How_To.xml" />
+											<File Source="..\..\bin\Tools\SHFB\ConceptualTemplates\Orientation.xml" Name="Orientation.xml" Id="Orientation.xml" />
+											<File Source="..\..\bin\Tools\SHFB\ConceptualTemplates\Reference With Syntax.xml" Name="Reference With Syntax.xml" Id="Reference_With_Syntax.xml" />
+											<File Source="..\..\bin\Tools\SHFB\ConceptualTemplates\Reference Without Syntax.xml" Name="Reference Without Syntax.xml" Id="Reference_Without_Syntax.xml" />
+											<File Source="..\..\bin\Tools\SHFB\ConceptualTemplates\Reference.xml" Name="Reference.xml" Id="Reference.xml" />
+											<File Source="..\..\bin\Tools\SHFB\ConceptualTemplates\Sample.xml" Name="Sample.xml" Id="Sample.xml" />
+											<File Source="..\..\bin\Tools\SHFB\ConceptualTemplates\SDK Technology Architecture.xml" Name="SDK Technology Architecture.xml" Id="SDK_Technology_Architecture.xml" />
+											<File Source="..\..\bin\Tools\SHFB\ConceptualTemplates\SDK Technology Code Directory.xml" Name="SDK Technology Code Directory.xml" Id="SDK_Technology_Code_Directory.xml" />
+											<File Source="..\..\bin\Tools\SHFB\ConceptualTemplates\SDK Technology Orientation.xml" Name="SDK Technology Orientation.xml" Id="SDK_Technology_Orientation.xml" />
+											<File Source="..\..\bin\Tools\SHFB\ConceptualTemplates\SDK Technology Scenarios.xml" Name="SDK Technology Scenarios.xml" Id="SDK_Technology_Scenarios.xml" />
+											<File Source="..\..\bin\Tools\SHFB\ConceptualTemplates\SDK Technology Summary.xml" Name="SDK Technology Summary.xml" Id="SDK_Technology_Summary.xml" />
+											<File Source="..\..\bin\Tools\SHFB\ConceptualTemplates\Troubleshooting.xml" Name="Troubleshooting.xml" Id="Troubleshooting.xml" />
+											<File Source="..\..\bin\Tools\SHFB\ConceptualTemplates\User Interface Reference.xml" Name="User Interface Reference.xml" Id="User_Interface_Reference.xml" />
+											<File Source="..\..\bin\Tools\SHFB\ConceptualTemplates\Walkthrough.xml" Name="Walkthrough.xml" Id="Walkthrough.xml" />
+											<File Source="..\..\bin\Tools\SHFB\ConceptualTemplates\Whitepaper.xml" Name="Whitepaper.xml" Id="Whitepaper.xml" />
+											<File Source="..\..\bin\Tools\SHFB\ConceptualTemplates\XML Reference.xml" Name="XML Reference.xml" Id="XML_Reference.xml" />
+										</Component>
+									</Directory>
 									<Directory Id="PlugIns" Name="PlugIns">
-										<Component Guid="CB479EB2-CD07-4FA2-A3E1-52BACC46896F" Id="SHFBPlugins" DiskId="1">
+										<Component Guid="D7660FB7-04C6-4CCD-B6E9-CAAA4746761F" Id="SHFBPlugins" DiskId="1">
 											<File Source="..\..\bin\Tools\SHFB\PlugIns\SandcastleBuilder.PlugIns.dll" Name="SandcastleBuilder.PlugIns.dll" Id="SandcastleBuilder.PlugIns.dll" />
 										</Component>
 									</Directory>
 									<Directory Id="SharedContent" Name="SharedContent">
-										<Component Guid="EF1F9FB6-B411-47AB-A5D3-342AEB8AA03A" Id="SHFBSharedContent" DiskId="1">
+										<Component Guid="133E654E-3923-4FA8-8F76-F26E4517D6BD" Id="SHFBSharedContent" DiskId="1">
 											<File Source="..\..\bin\Tools\SHFB\SharedContent\HanaBuilderContent_de-DE.xml" Name="HanaBuilderContent_de-DE.xml" Id="HanaBuilderContent_de_DE.xml" />
 											<File Source="..\..\bin\Tools\SHFB\SharedContent\HanaBuilderContent_en-US.xml" Name="HanaBuilderContent_en-US.xml" Id="HanaBuilderContent_en_US.xml" />
 											<File Source="..\..\bin\Tools\SHFB\SharedContent\HanaBuilderContent_es-ES.xml" Name="HanaBuilderContent_es-ES.xml" Id="HanaBuilderContent_es_ES.xml" />
@@ -576,6 +606,17 @@
 											<File Source="..\..\bin\Tools\SHFB\SharedContent\SharedBuilderContent_ru-RU.xml" Name="SharedBuilderContent_ru-RU.xml" Id="SharedBuilderContent_ru_RU.xml" />
 											<File Source="..\..\bin\Tools\SHFB\SharedContent\SharedBuilderContent_zh-CHS.xml" Name="SharedBuilderContent_zh-CHS.xml" Id="SharedBuilderContent_zh_CHS.xml" />
 											<File Source="..\..\bin\Tools\SHFB\SharedContent\SharedBuilderContent_zh-CN.xml" Name="SharedBuilderContent_zh-CN.xml" Id="SharedBuilderContent_zh_CN.xml" />
+											<File Source="..\..\bin\Tools\SHFB\SharedContent\StopWordList_de-DE.txt" Name="StopWordList_de-DE.txt" Id="StopWordList_de_DE.txt" />
+											<File Source="..\..\bin\Tools\SHFB\SharedContent\StopWordList_en-US.txt" Name="StopWordList_en-US.txt" Id="StopWordList_en_US.txt" />
+											<File Source="..\..\bin\Tools\SHFB\SharedContent\StopWordList_es-ES.txt" Name="StopWordList_es-ES.txt" Id="StopWordList_es_ES.txt" />
+											<File Source="..\..\bin\Tools\SHFB\SharedContent\StopWordList_fr-FR.txt" Name="StopWordList_fr-FR.txt" Id="StopWordList_fr_FR.txt" />
+											<File Source="..\..\bin\Tools\SHFB\SharedContent\StopWordList_it-IT.txt" Name="StopWordList_it-IT.txt" Id="StopWordList_it_IT.txt" />
+											<File Source="..\..\bin\Tools\SHFB\SharedContent\StopWordList_ja-JP.txt" Name="StopWordList_ja-JP.txt" Id="StopWordList_ja_JP.txt" />
+											<File Source="..\..\bin\Tools\SHFB\SharedContent\StopWordList_ko-KR.txt" Name="StopWordList_ko-KR.txt" Id="StopWordList_ko_KR.txt" />
+											<File Source="..\..\bin\Tools\SHFB\SharedContent\StopWordList_pt-BR.txt" Name="StopWordList_pt-BR.txt" Id="StopWordList_pt_BR.txt" />
+											<File Source="..\..\bin\Tools\SHFB\SharedContent\StopWordList_ru-RU.txt" Name="StopWordList_ru-RU.txt" Id="StopWordList_ru_RU.txt" />
+											<File Source="..\..\bin\Tools\SHFB\SharedContent\StopWordList_zh-CHS.txt" Name="StopWordList_zh-CHS.txt" Id="StopWordList_zh_CHS.txt" />
+											<File Source="..\..\bin\Tools\SHFB\SharedContent\StopWordList_zh-CN.txt" Name="StopWordList_zh-CN.txt" Id="StopWordList_zh_CN.txt" />
 											<File Source="..\..\bin\Tools\SHFB\SharedContent\VS2005BuilderContent_de-DE.xml" Name="VS2005BuilderContent_de-DE.xml" Id="VS2005BuilderContent_de_DE.xml" />
 											<File Source="..\..\bin\Tools\SHFB\SharedContent\VS2005BuilderContent_en-US.xml" Name="VS2005BuilderContent_en-US.xml" Id="VS2005BuilderContent_en_US.xml" />
 											<File Source="..\..\bin\Tools\SHFB\SharedContent\VS2005BuilderContent_es-ES.xml" Name="VS2005BuilderContent_es-ES.xml" Id="VS2005BuilderContent_es_ES.xml" />
@@ -590,40 +631,42 @@
 										</Component>
 									</Directory>
 									<Directory Id="Templates" Name="Templates">
-										<Component Guid="26880C19-9670-4B24-99F7-D15FBD37F78D" Id="SHFBTemplates" DiskId="1">
+										<Component Guid="5A21AA47-795A-4A94-AB67-6D36DEA22117" Id="SHFBTemplates" DiskId="1">
 											<File Source="..\..\bin\Tools\SHFB\Templates\Build1xHelpFile.bat" Name="Build1xHelpFile.bat" Id="Build1xHelpFile.bat" />
 											<File Source="..\..\bin\Tools\SHFB\Templates\Build2xHelpFile.bat" Name="Build2xHelpFile.bat" Id="Build2xHelpFile.bat" />
-											<File Source="..\..\bin\Tools\SHFB\Templates\BuildHelpTopics.bat" Name="BuildHelpTopics.bat" Id="BuildHelpTopics.bat" />
-											<File Source="..\..\bin\Tools\SHFB\Templates\FullTextExclusions.txt" Name="FullTextExclusions.txt" Id="FullTextExclusions.txt" />
-											<File Source="..\..\bin\Tools\SHFB\Templates\Generate1xIndex.bat" Name="Generate1xIndex.bat" Id="Generate1xIndex.bat" />
-											<File Source="..\..\bin\Tools\SHFB\Templates\Generate1xTOC.bat" Name="Generate1xTOC.bat" Id="Generate1xTOC.bat" />
+											<File Source="..\..\bin\Tools\SHFB\Templates\BuildConceptualTopics.bat" Name="BuildConceptualTopics.bat" Id="BuildConceptualTopics.bat" />
+											<File Source="..\..\bin\Tools\SHFB\Templates\BuildReferenceTopics.bat" Name="BuildReferenceTopics.bat" Id="BuildReferenceTopics.bat" />
+											<File Source="..\..\bin\Tools\SHFB\Templates\conceptual.config" Name="conceptual.config" Id="conceptual.config" />
+											<File Source="..\..\bin\Tools\SHFB\Templates\ExtractHtmlInfo.bat" Name="ExtractHtmlInfo.bat" Id="ExtractHtmlInfo.bat" />
+											<File Source="..\..\bin\Tools\SHFB\Templates\FixScriptSharp.xsl" Name="FixScriptSharp.xsl" Id="FixScriptSharp.xsl" />
 											<File Source="..\..\bin\Tools\SHFB\Templates\Generate2xTOC.bat" Name="Generate2xTOC.bat" Id="Generate2xTOC.bat" />
+											<File Source="..\..\bin\Tools\SHFB\Templates\GenerateInheritedDocs.bat" Name="GenerateInheritedDocs.bat" Id="GenerateInheritedDocs.bat" />
+											<File Source="..\..\bin\Tools\SHFB\Templates\GenerateInheritedDocs.config" Name="GenerateInheritedDocs.config" Id="GenerateInheritedDocs.config" />
 											<File Source="..\..\bin\Tools\SHFB\Templates\GenerateIntermediateTOC.bat" Name="GenerateIntermediateTOC.bat" Id="GenerateIntermediateTOC.bat" />
 											<File Source="..\..\bin\Tools\SHFB\Templates\GenerateRefInfo.bat" Name="GenerateRefInfo.bat" Id="GenerateRefInfo.bat" />
-											<File Source="..\..\bin\Tools\SHFB\Templates\GenerateWebsiteTOC.bat" Name="GenerateWebsiteTOC.bat" Id="GenerateWebsiteTOC.bat" />
 											<File Source="..\..\bin\Tools\SHFB\Templates\Hana.config" Name="Hana.config" Id="Hana.config" />
 											<File Source="..\..\bin\Tools\SHFB\Templates\Hana.xsl" Name="Hana.xsl" Id="Hana.xsl" />
 											<File Source="..\..\bin\Tools\SHFB\Templates\Help1x.hhp" Name="Help1x.hhp" Id="Help1x.hhp" />
-											<File Source="..\..\bin\Tools\SHFB\Templates\Help2x.hxc" Name="Help2x.hxc" Id="Help2x.hxc" />
-											<File Source="..\..\bin\Tools\SHFB\Templates\Help2x.hxf" Name="Help2x.hxf" Id="Help2x.hxf" />
-											<File Source="..\..\bin\Tools\SHFB\Templates\Help2x_a.hxk" Name="Help2x_a.hxk" Id="Help2x_a.hxk" />
-											<File Source="..\..\bin\Tools\SHFB\Templates\Help2x_b.hxk" Name="Help2x_b.hxk" Id="Help2x_b.hxk" />
-											<File Source="..\..\bin\Tools\SHFB\Templates\Help2x_f.hxk" Name="Help2x_f.hxk" Id="Help2x_f.hxk" />
-											<File Source="..\..\bin\Tools\SHFB\Templates\Help2x_k.hxk" Name="Help2x_k.hxk" Id="Help2x_k.hxk" />
-											<File Source="..\..\bin\Tools\SHFB\Templates\Help2x_n.hxk" Name="Help2x_n.hxk" Id="Help2x_n.hxk" />
-											<File Source="..\..\bin\Tools\SHFB\Templates\Help2x_NamedURLIndex.hxk" Name="Help2x_NamedURLIndex.hxk" Id="Help2x_NamedURLIndex.hxk" />
-											<File Source="..\..\bin\Tools\SHFB\Templates\Help2x_s.hxk" Name="Help2x_s.hxk" Id="Help2x_s.hxk" />
+											<File Source="..\..\bin\Tools\SHFB\Templates\Help2x.HxC" Name="Help2x.HxC" Id="Help2x.HxC" />
+											<File Source="..\..\bin\Tools\SHFB\Templates\Help2x.HxF" Name="Help2x.HxF" Id="Help2x.HxF" />
+											<File Source="..\..\bin\Tools\SHFB\Templates\Help2x_A.HxK" Name="Help2x_A.HxK" Id="Help2x_A.HxK" />
+											<File Source="..\..\bin\Tools\SHFB\Templates\Help2x_B.HxK" Name="Help2x_B.HxK" Id="Help2x_B.HxK" />
+											<File Source="..\..\bin\Tools\SHFB\Templates\Help2x_F.HxK" Name="Help2x_F.HxK" Id="Help2x_F.HxK" />
+											<File Source="..\..\bin\Tools\SHFB\Templates\Help2x_H2Reg.ini" Name="Help2x_H2Reg.ini" Id="Help2x_H2Reg.ini" />
+											<File Source="..\..\bin\Tools\SHFB\Templates\Help2x_K.HxK" Name="Help2x_K.HxK" Id="Help2x_K.HxK" />
+											<File Source="..\..\bin\Tools\SHFB\Templates\Help2x_NamedURLIndex.HxK" Name="Help2x_NamedURLIndex.HxK" Id="Help2x_NamedURLIndex.HxK" />
+											<File Source="..\..\bin\Tools\SHFB\Templates\Help2x_S.HxK" Name="Help2x_S.HxK" Id="Help2x_S.HxK" />
 											<File Source="..\..\bin\Tools\SHFB\Templates\MRefBuilder.config" Name="MRefBuilder.config" Id="MRefBuilder.config" />
 											<File Source="..\..\bin\Tools\SHFB\Templates\Prototype.config" Name="Prototype.config" Id="Prototype.config" />
 											<File Source="..\..\bin\Tools\SHFB\Templates\Prototype.xsl" Name="Prototype.xsl" Id="Prototype.xsl" />
-											<File Source="..\..\bin\Tools\SHFB\Templates\TocToWebContents.xsl" Name="TocToWebContents.xsl" Id="TocToWebContents.xsl" />
+											<File Source="..\..\bin\Tools\SHFB\Templates\TransformBuildLog.xsl" Name="TransformBuildLog.xsl" Id="TransformBuildLog.xsl" />
 											<File Source="..\..\bin\Tools\SHFB\Templates\TransformManifest.bat" Name="TransformManifest.bat" Id="TransformManifest.bat" />
 											<File Source="..\..\bin\Tools\SHFB\Templates\VS2005.config" Name="VS2005.config" Id="VS2005.config" />
 											<File Source="..\..\bin\Tools\SHFB\Templates\VS2005.xsl" Name="VS2005.xsl" Id="VS2005.xsl" />
 										</Component>
 									</Directory>
 									<Directory Id="Web" Name="Web">
-										<Component Guid="54FE6E49-5F1E-4792-95CB-959999412D42" Id="SHFBWeb" DiskId="1">
+										<Component Guid="7910CF17-4297-4F06-971A-451ED3A02115" Id="SHFBWeb" DiskId="1">
 											<File Source="..\..\bin\Tools\SHFB\Web\CloseSearch.png" Name="CloseSearch.png" Id="CloseSearch.png" />
 											<File Source="..\..\bin\Tools\SHFB\Web\CollapseAll.bmp" Name="CollapseAll.bmp" Id="CollapseAll.bmp" />
 											<File Source="..\..\bin\Tools\SHFB\Web\Collapsed.gif" Name="Collapsed.gif" Id="Collapsed.gif" />
@@ -631,8 +674,10 @@
 											<File Source="..\..\bin\Tools\SHFB\Web\Expanded.gif" Name="Expanded.gif" Id="Expanded.gif" />
 											<File Source="..\..\bin\Tools\SHFB\Web\FillNode.aspx" Name="FillNode.aspx" Id="FillNode.aspx" />
 											<File Source="..\..\bin\Tools\SHFB\Web\Index.aspx" Name="Index.aspx" Id="Index.aspx" />
+											<File Source="..\..\bin\Tools\SHFB\Web\Index.gif" Name="Index.gif" Id="Index.gif" />
 											<File Source="..\..\bin\Tools\SHFB\Web\Index.html" Name="Index.html" Id="Index.html" />
 											<File Source="..\..\bin\Tools\SHFB\Web\Item.gif" Name="Item.gif" Id="Item.gif" />
+											<File Source="..\..\bin\Tools\SHFB\Web\LoadIndexKeywords.aspx" Name="LoadIndexKeywords.aspx" Id="LoadIndexKeywords.aspx" />
 											<File Source="..\..\bin\Tools\SHFB\Web\Search.gif" Name="Search.gif" Id="Search.gif" />
 											<File Source="..\..\bin\Tools\SHFB\Web\SearchHelp.aspx" Name="SearchHelp.aspx" Id="SearchHelp.aspx" />
 											<File Source="..\..\bin\Tools\SHFB\Web\Splitter.gif" Name="Splitter.gif" Id="Splitter.gif" />
