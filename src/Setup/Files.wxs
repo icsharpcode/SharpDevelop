@@ -1590,6 +1590,14 @@
 											<File Source="..\..\AddIns\AddIns\Misc\SharpRefactoring\SharpRefactoring.dll" Name="SharpRefactoring.dll" Id="SharpRefactoring.dll" KeyPath="yes" />
 										</Component>
 									</Directory>
+									<Directory Id="HexEditor" Name="HexEditor">
+										<Component Guid="3D3049CE-B0A4-48F1-8572-EF21574BDFC7" Id="HexEditorAddin" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\DisplayBindings\HexEditor\HexEditor.addin" Name="HexEditor.addin" Id="HexEditor.addin" KeyPath="yes" />
+										</Component>
+										<Component Guid="24FC7133-5D3F-43DB-964B-62C99BBE3F93" Id="HexEditorDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\DisplayBindings\HexEditor\HexEditor.dll" Name="HexEditor.dll" Id="HexEditor.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="HexEditor.dll" AssemblyManifest="HexEditor.dll" />
+										</Component>
+									</Directory>
 								</Directory>
 							</Directory>
 						</Directory>

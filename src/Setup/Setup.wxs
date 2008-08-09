@@ -445,6 +445,9 @@
 				<ComponentRef Id="SourceAnalysisDll"/>
 				<ComponentRef Id="SharpRefactoringAddin"/>
 				<ComponentRef Id="SharpRefactoringDll"/>
+			
+				<ComponentRef Id="HexEditorAddin"/>
+				<ComponentRef Id="HexEditorDll"/>
 			</Feature>
 			<Feature Id="SharpDevelopFileAssociations"
 			         Level="2"
