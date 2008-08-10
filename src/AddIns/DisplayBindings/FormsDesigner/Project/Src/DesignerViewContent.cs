@@ -96,6 +96,11 @@ namespace ICSharpCode.FormsDesigner
 			
 			this.viewContent             = viewContent;
 			this.textAreaControlProvider = viewContent as ITextEditorControlProvider;
+			
+			// null check is required to support running in unit test mode
+			if (WorkbenchSingleton.Workbench != null) {
+				this.IsActiveViewContentChanged += this.IsActiveViewContentChangedHandler;
+			}
 		}
 		
 		void LoadDesigner()
@@ -121,12 +126,15 @@ namespace ICSharpCode.FormsDesigner
 			AmbientProperties ambientProperties = new AmbientProperties();
 			serviceContainer.AddService(typeof(AmbientProperties), ambientProperties);
 			serviceContainer.AddService(typeof(ITypeResolutionService), new TypeResolutionService(viewContent.PrimaryFileName));
-			serviceContainer.AddService(typeof(System.ComponentModel.Design.IDesignerEventService), new DesignerEventService());
 			serviceContainer.AddService(typeof(DesignerOptionService), new SharpDevelopDesignerOptionService());
 			serviceContainer.AddService(typeof(ITypeDiscoveryService), new TypeDiscoveryService());
 			serviceContainer.AddService(typeof(MemberRelationshipService), new DefaultMemberRelationshipService());
 			
-			designSurface = new DesignSurface(serviceContainer);
+			if (generator.CodeDomProvider != null) {
+				serviceContainer.AddService(typeof(System.CodeDom.Compiler.CodeDomProvider), generator.CodeDomProvider);
+			}
+			
+			designSurface = CreateDesignSurface(serviceContainer);
 			
 			serviceContainer.AddService(typeof(System.ComponentModel.Design.IMenuCommandService), new ICSharpCode.FormsDesigner.Services.MenuCommandService(p, designSurface));
 			ICSharpCode.FormsDesigner.Services.EventBindingService eventBindingService = new ICSharpCode.FormsDesigner.Services.EventBindingService(designSurface);
@@ -138,6 +146,7 @@ namespace ICSharpCode.FormsDesigner
 			generator.Attach(this);
 			
 			undoEngine = new FormsDesignerUndoEngine(Host);
+			serviceContainer.AddService(typeof(UndoEngine), undoEngine);
 			
 			IComponentChangeService componentChangeService = (IComponentChangeService)designSurface.GetService(typeof(IComponentChangeService));
 			componentChangeService.ComponentChanged += MakeDirty;
@@ -209,8 +218,11 @@ namespace ICSharpCode.FormsDesigner
 		
 		void UnloadDesigner()
 		{
+			designSurfaceManager.ActiveDesignSurface = null;
 			PropertyPad.PropertyValueChanged -= PropertyValueChanged;
-			generator.Detach();
+			if (generator != null) {
+				generator.Detach();
+			}
 			bool savedIsDirty = this.PrimaryFile.IsDirty;
 			p.Controls.Clear();
 			this.PrimaryFile.IsDirty = savedIsDirty;
@@ -230,7 +242,7 @@ namespace ICSharpCode.FormsDesigner
 			}
 		}
 		
-		PropertyContainer propertyContainer = new PropertyContainer();
+		readonly PropertyContainer propertyContainer = new PropertyContainer();
 		
 		public PropertyContainer PropertyContainer {
 			get {
@@ -264,6 +276,7 @@ namespace ICSharpCode.FormsDesigner
 					Control designer = designSurface.View as Control;
 					designer.Dock = DockStyle.Fill;
 					p.Controls.Add(designer);
+					designSurfaceManager.ActiveDesignSurface = this.designSurface;
 				}
 				this.PrimaryFile.IsDirty = savedIsDirty;
 			} catch (Exception e) {
@@ -337,58 +350,35 @@ namespace ICSharpCode.FormsDesigner
 			return generator.GetCompatibleMethods(edesc);
 		}
 		
-		/*
-		protected override void OnViewActivated(EventArgs e)
+		void IsActiveViewContentChangedHandler(object sender, EventArgs e)
 		{
-			LoggingService.Info("Designer.OnViewActived 1");
-			base.OnViewActivated(e); // calls Load() if required
-			LoggingService.Info("Designer.OnViewActived 2");
-			
-			IsFormsDesignerVisible = true;
-			AddSideBars();
-			PropertyPad.PropertyValueChanged += PropertyValueChanged;
-			SetActiveSideTab();
-			UpdatePropertyPad();
-			LoggingService.Info("Designer.OnViewActived 3");
+			if (this.IsActiveViewContent) {
+				LoggingService.Debug("FormsDesigner view content activated, setting ActiveDesignSurface to " + ((this.DesignSurface == null) ? "null" : this.DesignSurface.ToString()));
+				designSurfaceManager.ActiveDesignSurface = this.DesignSurface;
+			} else {
+				LoggingService.Debug("FormsDesigner view content deactivated, setting ActiveDesignSurface to null");
+				designSurfaceManager.ActiveDesignSurface = null;
+			}
 		}
-		 */
-		
-		/*
-		protected override void OnViewDeactivated(EventArgs e)
-		{
-			LoggingService.Info("Designer.OnViewDeactivated");
-			
-			// can happen if form designer is disposed and then deselected
-			if (!IsFormsDesignerVisible)
-				return;
-			LoggingService.Info("Deselecting form designer, unloading..." + viewContent.TitleName);
-			PropertyPad.PropertyValueChanged -= PropertyValueChanged;
-			propertyContainer.Clear();
-			IsFormsDesignerVisible = false;
-			activeTabName = String.Empty;
-			if (SharpDevelopSideBar.SideBar.ActiveTab != null && ToolboxProvider.SideTabs.Contains(SharpDevelopSideBar.SideBar.ActiveTab)) {
-				activeTabName = SharpDevelopSideBar.SideBar.ActiveTab.Name;
-			}
-			foreach(SideTab tab in ToolboxProvider.SideTabs) {
-				if (!SharpDevelopSideBar.SideBar.Tabs.Contains(tab)) {
-					return;
-				}
-				SharpDevelopSideBar.SideBar.Tabs.Remove(tab);
-			}
-			SharpDevelopSideBar.SideBar.Refresh();
-			if (!failedDesignerInitialize) {
-				MergeFormChanges();
-				textAreaControlProvider.TextEditorControl.Refresh();
-			}
-			UnloadDesigner();
-			LoggingService.Info("Unloading form designer finished");
-		}
-		 */
 		
 		public override void Dispose()
 		{
 			disposing = true;
-			base.Dispose();
+			try {
+				
+				this.UnloadDesigner();
+				
+				// null check is required to support running in unit test mode
+				if (WorkbenchSingleton.Workbench != null) {
+					this.IsActiveViewContentChanged -= this.IsActiveViewContentChangedHandler;
+				}
+				
+				p.Dispose();
+				p = null;
+				
+			} finally {
+				base.Dispose();
+			}
 		}
 		
 		protected override void LoadFromPrimary()
@@ -597,5 +587,16 @@ namespace ICSharpCode.FormsDesigner
 		public virtual Control ToolsControl {
 			get { return ToolboxProvider.FormsDesignerSideBar; }
 		}
+		
+		#region Design surface manager (static)
+		
+		static readonly DesignSurfaceManager designSurfaceManager = new DesignSurfaceManager();
+		
+		public static DesignSurface CreateDesignSurface(IServiceProvider serviceProvider)
+		{
+			return designSurfaceManager.CreateDesignSurface(serviceProvider);
+		}
+		
+		#endregion
 	}
 }

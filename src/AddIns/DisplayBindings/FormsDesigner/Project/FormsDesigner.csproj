@@ -80,7 +80,6 @@
     <Compile Include="Src\Gui\SideTabDesigner.cs" />
     <Compile Include="Src\Gui\SideTabItemDesigner.cs" />
     <Compile Include="Src\Services\DefaultServiceContainer.cs" />
-    <Compile Include="Src\Services\DesignerEventService.cs" />
     <Compile Include="Src\Services\DesignerOptionService.cs" />
     <Compile Include="Src\Services\DesignerResourceService.cs" />
     <Compile Include="Src\Services\EventBindingService.cs" />
