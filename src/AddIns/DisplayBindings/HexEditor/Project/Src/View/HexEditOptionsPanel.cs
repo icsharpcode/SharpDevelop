@@ -6,12 +6,10 @@
 // </file>
 
 using System;
-using System.Windows.Forms;
-using System.Xml.Serialization;
-using System.Drawing;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.Drawing;
 using System.IO;
+using System.Windows.Forms;
 using System.Xml;
 
 using ICSharpCode.Core;

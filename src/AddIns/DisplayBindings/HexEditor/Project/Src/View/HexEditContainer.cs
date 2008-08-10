@@ -10,6 +10,7 @@ using System.IO;
 using System.Windows.Forms;
 
 using HexEditor.Util;
+using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop;
 
@@ -36,6 +37,8 @@ namespace HexEditor.View
 		public HexEditContainer()
 		{
 			InitializeComponent();
+			
+			tbSizeToFit.Text = StringParser.Parse(tbSizeToFit.Text);
 			
 			ToolStripControlHost bytesPerLine = new ToolStripControlHost(tSTBCharsPerLine);
 			this.toolStrip1.Items.Insert(1, bytesPerLine);

@@ -13,11 +13,10 @@ using System.IO;
 using System.Text;
 using System.Windows.Forms;
 using System.Xml;
-//using System.Diagnostics;
-
-using ICSharpCode.SharpDevelop;
 
 using HexEditor.Util;
+using ICSharpCode.SharpDevelop;
+
 //using HexEditor.Commands;
 
 namespace HexEditor

@@ -57,7 +57,7 @@ namespace HexEditor.View
             this.tbSizeToFit.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tbSizeToFit.Name = "tbSizeToFit";
             this.tbSizeToFit.Size = new System.Drawing.Size(23, 22);
-            this.tbSizeToFit.Text = "Resize to fit current width";
+            this.tbSizeToFit.Text = "${res:AddIns.HexEditor.SizeToFit}";
             this.tbSizeToFit.Click += new System.EventHandler(this.TbSizeToFitClick);
             // 
             // toolStripSeparator1

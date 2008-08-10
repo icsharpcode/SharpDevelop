@@ -14,6 +14,8 @@ namespace HexEditor.Util
 	/// </summary>
 	public enum UndoAction
 	{
-		Insert, Remove, Overwrite
+		Insert,
+		Remove,
+		Overwrite
 	}
 }
