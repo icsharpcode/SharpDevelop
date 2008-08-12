@@ -284,7 +284,7 @@ namespace SharpRefactoring
 		
 		protected static bool HasAssignment(MethodDeclaration method, LocalLookupVariable variable)
 		{
-			HasAssignmentsVisitor hav = new HasAssignmentsVisitor(variable.Name, variable.TypeRef);
+			HasAssignmentsVisitor hav = new HasAssignmentsVisitor(variable.Name, variable.TypeRef, variable.StartPos, variable.EndPos);
 			
 			method.AcceptVisitor(hav, null);
 			

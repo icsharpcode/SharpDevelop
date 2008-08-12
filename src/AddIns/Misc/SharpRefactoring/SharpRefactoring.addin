@@ -16,7 +16,7 @@
 	
 	<Path name = "/SharpDevelop/Workbench/MainMenu/Refactor">
 		<MenuItem id = "ExtractMethod"
-		          label = "Extract method"
+		          label = "${res:AddIns.SharpRefactoring.ExtractMethod}"
 		          class = "SharpRefactoring.ExtractMethodCommand"/>
 	</Path>
 </AddIn>

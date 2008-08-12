@@ -34,18 +34,19 @@ namespace SharpRefactoring
 			if (textEditor.ActiveTextAreaControl.SelectionManager.HasSomethingSelected)
 			{
 				MethodExtractorBase extractor = GetCurrentExtractor(textEditor);
-				
-				if (extractor.Extract()) {
-					ExtractMethodForm form = new ExtractMethodForm("NewMethod", extractor.CreatePreview());
-					
-					if (form.ShowDialog() == DialogResult.OK) {
-						extractor.ExtractedMethod.Name = form.Text;
-						textEditor.Document.UndoStack.StartUndoGroup();
-						extractor.InsertAfterCurrentMethod();
-						extractor.InsertCall();
-						textEditor.Document.FormattingStrategy.IndentLines(textEditor.ActiveTextAreaControl.TextArea, 0, textEditor.Document.TotalNumberOfLines - 1);
-						textEditor.Document.UndoStack.EndUndoGroup();
-						textEditor.ActiveTextAreaControl.SelectionManager.ClearSelection();
+				if (extractor != null) {
+					if (extractor.Extract()) {
+						ExtractMethodForm form = new ExtractMethodForm("NewMethod", extractor.CreatePreview());
+						
+						if (form.ShowDialog() == DialogResult.OK) {
+							extractor.ExtractedMethod.Name = form.Text;
+							textEditor.Document.UndoStack.StartUndoGroup();
+							extractor.InsertAfterCurrentMethod();
+							extractor.InsertCall();
+							textEditor.Document.FormattingStrategy.IndentLines(textEditor.ActiveTextAreaControl.TextArea, 0, textEditor.Document.TotalNumberOfLines - 1);
+							textEditor.Document.UndoStack.EndUndoGroup();
+							textEditor.ActiveTextAreaControl.SelectionManager.ClearSelection();
+						}
 					}
 				}
 			}
@@ -57,7 +58,8 @@ namespace SharpRefactoring
 				case "C#":
 					return new CSharpMethodExtractor(editor, editor.ActiveTextAreaControl.SelectionManager.SelectionCollection[0]);
 				default:
-					throw new NotSupportedException("Extracting methods in the current language is not supported!");
+					MessageService.ShowError(string.Format(StringParser.Parse("${res:AddIns.SharpRefactoring.ExtractMethodNotSupported}"), ProjectService.CurrentProject.Language));
+					return null;
 			}
 		}
 	}
