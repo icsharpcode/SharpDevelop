@@ -13,6 +13,7 @@ using System.Diagnostics;
 using ICSharpCode.WpfDesign.XamlDom;
 using ICSharpCode.WpfDesign.Designer.Services;
 using System.Windows;
+using System.Windows.Markup;
 
 namespace ICSharpCode.WpfDesign.Designer.Xaml
 {
@@ -188,16 +189,14 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			
 			UndoService undoService = _designItem.Services.GetService<UndoService>();
 			if (undoService != null)
-				undoService.Execute(new PropertyChangeAction(this, true, newValue, value));
+				undoService.Execute(new PropertyChangeAction(this, newValue, true));
 			else
-				SetValueInternal(value, newValue);
+				SetValueInternal(newValue);
 		}
 		
-		void SetValueInternal(object value, XamlPropertyValue newValue)
-		{
-			_property.ValueOnInstance = value;
-			_property.PropertyValue = newValue;
-			
+		void SetValueInternal(XamlPropertyValue newValue)
+		{			
+			_property.PropertyValue = newValue;			
 			_designItem.NotifyPropertyChanged(this);
 		}
 		
@@ -205,7 +204,7 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 		{
 			UndoService undoService = _designItem.Services.GetService<UndoService>();
 			if (undoService != null)
-				undoService.Execute(new PropertyChangeAction(this, false, null, null));
+				undoService.Execute(new PropertyChangeAction(this, null, false));
 			else
 				ResetInternal();
 		}
@@ -220,27 +219,20 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 		
 		public sealed class PropertyChangeAction : ITransactionItem
 		{
-			XamlModelProperty property;
-			
-			bool newIsSet;
-			XamlPropertyValue newValue;
-			object newObject;
-			
+			XamlModelProperty property;			
 			XamlPropertyValue oldValue;
-			object oldObject;
+			XamlPropertyValue newValue;
 			bool oldIsSet;
+			bool newIsSet;
 			
-			public PropertyChangeAction(XamlModelProperty property, bool newIsSet, XamlPropertyValue newValue, object newObject)
+			public PropertyChangeAction(XamlModelProperty property, XamlPropertyValue newValue, bool newIsSet)
 			{
 				this.property = property;
-				
-				this.newIsSet = newIsSet;
 				this.newValue = newValue;
-				this.newObject = newObject;
+				this.newIsSet = newIsSet;				
 				
 				oldIsSet = property._property.IsSet;
 				oldValue = property._property.PropertyValue;
-				oldObject = property._property.ValueOnInstance;
 			}
 			
 			public string Title {
@@ -255,7 +247,7 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			public void Do()
 			{
 				if (newIsSet)
-					property.SetValueInternal(newObject, newValue);
+					property.SetValueInternal(newValue);
 				else
 					property.ResetInternal();
 			}
@@ -263,7 +255,7 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			public void Undo()
 			{
 				if (oldIsSet)
-					property.SetValueInternal(oldObject, oldValue);
+					property.SetValueInternal(oldValue);
 				else
 					property.ResetInternal();
 			}
@@ -279,7 +271,6 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 				if (property._property == other.property._property) {
 					newIsSet = other.newIsSet;
 					newValue = other.newValue;
-					newObject = other.newObject;
 					return true;
 				}
 				return false;

@@ -37,10 +37,9 @@ namespace ICSharpCode.XamlDesigner
 			foreach (var c in node.Nodes()) {
 				if (c is XElement)  {
 					WalkElement(c as XElement);
-				}
-				else {
+				} else {
 					NewLine();
-					Append(c.ToString());
+					Append(c.ToString().Trim());
 				}
 			}
 		}
@@ -91,7 +90,7 @@ namespace ICSharpCode.XamlDesigner
 
 				nextColumn -= Indenation;
 				NewLine();
-				Append("</" + e.Name.LocalName + ">");
+				Append("</" + name1 + ">");
 			}
 			else {
 				Append(" />");

@@ -68,6 +68,11 @@ namespace ICSharpCode.WpfDesign.Designer
 			return b != null
 				&& b.CanPlace(items, PlacementType.Delete, PlacementAlignment.Center);
 		}
+
+		public static bool CanSelectComponent(DesignItem item)
+		{
+			return item.View != null;
+		}
 		
 		/// <summary>
 		/// Deletes the specified components from their parent containers.

@@ -60,7 +60,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				if (containingObject != null) {
 					if (containingObject.OwnerDocument != document)
 						throw new ArgumentException("Containing object must belong to the document!");
-					baseServiceProvider = new XamlTypeResolverProvider(containingObject);
+					baseServiceProvider = containingObject.ServiceProvider;
 				} else {
 					baseServiceProvider = document.ServiceProvider;
 				}
@@ -148,7 +148,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		/// </summary>
 		public XamlPropertyValue CreateNullValue()
 		{
-			return new XamlMarkupValue((XamlObject)CreatePropertyValue(new System.Windows.Markup.NullExtension(), null));
+			return CreateObject(new NullExtension());
 		}
 		
 		/// <summary>

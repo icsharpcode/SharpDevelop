@@ -40,10 +40,12 @@
     <Reference Include="PresentationCore">
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
     <Reference Include="PresentationFramework">
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -51,8 +53,12 @@
     </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="UIAutomationProvider">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="WindowsBase">
       <Private>False</Private>
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -64,6 +70,10 @@
     <Compile Include="Controls\ContainerDragHandle.cs" />
     <Compile Include="Controls\DropDownButton.cs" />
     <Compile Include="Controls\EnterTextBox.cs" />
+    <Compile Include="Controls\EnumBar.xaml.cs">
+      <DependentUpon>EnumBar.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\EnumButton.cs" />
     <Compile Include="Controls\GridAdorner.cs" />
     <Compile Include="Controls\NumericUpDown.cs" />
     <Compile Include="Controls\SelectionFrame.cs" />
@@ -133,7 +143,6 @@
     <Compile Include="PropertyGrid\PropertyGridView.xaml.cs">
       <DependentUpon>PropertyGridView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="PropertyGrid\PropertyTreeView.cs" />
     <Compile Include="ServiceRequiredException.cs" />
     <Compile Include="Services\ChooseClass.cs" />
     <Compile Include="Services\ChooseClassDialog.xaml.cs">
@@ -174,6 +183,10 @@
       <SpecificVersion>False</SpecificVersion>
       <Private>True</Private>
     </ProjectReference>
+    <Page Include="Controls\EnumBar.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Controls\NumericUpDown.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

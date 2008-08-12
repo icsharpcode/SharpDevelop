@@ -9,12 +9,6 @@ using System.ComponentModel;
 
 namespace ICSharpCode.WpfDesign
 {
-	public class NumberRange
-	{
-		public double Min;
-		public double Max;
-	}
-
 	public static class Metadata
 	{
 		public static string GetFullName(this DependencyProperty p)
@@ -95,6 +89,13 @@ namespace ICSharpCode.WpfDesign
 			}
 		}
 
+		public static void AddAdvancedProperty(Type type, string member)
+		{
+			lock (advancedProperties) {
+				advancedProperties.Add(type.FullName + "." + member);
+			}
+		}
+
 		public static bool IsAdvanced(DesignItemProperty p)
 		{
 			lock (advancedProperties) {
@@ -126,5 +127,11 @@ namespace ICSharpCode.WpfDesign
 			}
 			return null;
 		}
+	}
+
+	public class NumberRange
+	{
+		public double Min;
+		public double Max;
 	}
 }

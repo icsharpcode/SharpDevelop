@@ -111,10 +111,6 @@
     <Compile Include="DragListener.cs" />
     <Compile Include="DragTreeView.cs" />
     <Compile Include="DragTreeViewItem.cs" />
-    <Compile Include="EnumButton.cs" />
-    <Compile Include="EnumBar.xaml.cs">
-      <DependentUpon>EnumBar.xaml</DependentUpon>
-    </Compile>
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="IconItem.cs" />
     <Compile Include="MainWindow_Commands.cs" />
@@ -148,10 +144,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="EnumBar.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="MainWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -166,10 +158,9 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="TestFiles\3.xaml">
-      <Generator>MSBuild:Compile</Generator>
+    <None Include="TestFiles\3.xaml">
       <SubType>Designer</SubType>
-    </Page>
+    </None>
     <Page Include="Themes\Generic.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

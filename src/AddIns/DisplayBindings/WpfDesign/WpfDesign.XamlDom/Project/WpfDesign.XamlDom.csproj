@@ -52,6 +52,7 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="WindowsBase">
       <Private>False</Private>
@@ -65,11 +66,12 @@
     <Compile Include="CollectionElementsCollection.cs" />
     <Compile Include="CollectionSupport.cs" />
     <Compile Include="MarkupExtensionParser.cs" />
+    <Compile Include="MarkupExtensionPrinter.cs" />
     <Compile Include="XamlConstants.cs" />
     <Compile Include="XamlDocument.cs" />
     <Compile Include="XamlLoadException.cs" />
-    <Compile Include="XamlMarkupValue.cs" />
     <Compile Include="XamlObject.cs" />
+    <Compile Include="XamlObjectServiceProvider.cs" />
     <Compile Include="XamlParser.cs" />
     <Compile Include="XamlParserSettings.cs" />
     <Compile Include="XamlProperty.cs" />

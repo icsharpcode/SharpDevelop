@@ -113,34 +113,11 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		{
 			if (ParentProperty == null)
 				throw new InvalidOperationException("Cannot call GetValueFor while ParentProperty is null");
-			if (attribute != null) {
-				return AttributeTextToObject(attribute.Value, ParentProperty.ParentObject,
-				                             targetProperty != null ? targetProperty.TypeConverter : XamlNormalPropertyInfo.StringTypeConverter);
-			}
+			
 			if (targetProperty == null)
 				return this.Text;
-			return targetProperty.TypeConverter.ConvertFromString(
-				document.GetTypeDescriptorContext(ParentProperty.ParentObject),
-				CultureInfo.InvariantCulture, this.Text);
-		}
-		
-		internal static object AttributeTextToObject(string attributeText, XamlObject containingObject,
-		                                             TypeConverter typeConverter)
-		{
-			if (attributeText.StartsWith("{}")) {
-				return typeConverter.ConvertFromString(
-					containingObject.OwnerDocument.GetTypeDescriptorContext(containingObject), CultureInfo.InvariantCulture,
-					attributeText.Substring(2));
-			} else if (attributeText.StartsWith("{")) {
-				XamlTypeResolverProvider xtrp = new XamlTypeResolverProvider(containingObject);
-				MarkupExtension extension = MarkupExtensionParser.ConstructMarkupExtension(
-					attributeText, containingObject, xtrp);
-				return extension.ProvideValue(xtrp);
-			} else {
-				return typeConverter.ConvertFromString(
-					containingObject.OwnerDocument.GetTypeDescriptorContext(containingObject), CultureInfo.InvariantCulture,
-					attributeText);
-			}
+
+			return XamlParser.CreateObjectFromAttributeText(Text, targetProperty, ParentProperty.ParentObject);
 		}
 		
 		internal override void RemoveNodeFromParent()
@@ -158,19 +135,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			if (attribute != null) {
 				property.ParentObject.XmlElement.Attributes.Append(attribute);
 			} else if (textValue != null) {
-				string ns = property.ParentObject.OwnerDocument.GetNamespaceFor(property.PropertyTargetType);
-				string name;
-				if (property.IsAttached)
-					name = property.PropertyTargetType.Name + "." + property.PropertyName;
-				else
-					name = property.PropertyName;
-				if (property.ParentObject.XmlElement.GetPrefixOfNamespace(ns) == "") {
-					property.ParentObject.XmlElement.SetAttribute(name, textValue);
-					attribute = property.ParentObject.XmlElement.GetAttributeNode(name);
-				} else {
-					property.ParentObject.XmlElement.SetAttribute(name, ns, textValue);
-					attribute = property.ParentObject.XmlElement.GetAttributeNode(name, ns);
-				}
+				attribute = property.SetAttribute(textValue);
 				textValue = null;
 			} else if (cDataSection != null) {
 				property.AddChildNodeToProperty(cDataSection);

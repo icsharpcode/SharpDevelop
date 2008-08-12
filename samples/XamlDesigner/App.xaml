@@ -9,15 +9,5 @@
         <Converters:CollapsedWhenFalse x:Key="CollapsedWhenFalse" />
         <Converters:FalseWhenZero x:Key="FalseWhenZero" />
         
-        <Style x:Key="TabButtonStyle"
-               TargetType="ToggleButton">
-            <Setter Property="Width"
-                    Value="50" />
-            <Setter Property="ClickMode"
-                    Value="Press" />
-            <Setter Property="Margin"
-                    Value="3 3 0 3" />
-        </Style>
-        
     </Application.Resources>
 </Application>

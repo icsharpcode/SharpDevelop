@@ -183,6 +183,10 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			XamlObject obj = new XamlObject(document, element, elementType, instance);
 			currentXamlObject = obj;
 			obj.ParentObject = parentXamlObject;
+
+			if (parentXamlObject == null && obj.DependencyObject != null) {
+				NameScope.SetNameScope(obj.DependencyObject, new NameScope());
+			}
 			
 			ISupportInitialize iSupportInitializeInstance = instance as ISupportInitialize;
 			if (iSupportInitializeInstance != null) {
@@ -275,7 +279,6 @@ namespace ICSharpCode.WpfDesign.XamlDom
 					throw new XamlLoadException("This element does not have a default value, cannot assign to it");
 				}
 				obj.AddProperty(new XamlProperty(obj, defaultProperty, setDefaultValueTo));
-				defaultProperty.SetValue(obj.Instance, setDefaultValueTo.GetValueFor(defaultProperty));
 			}
 		}
 		
@@ -393,10 +396,10 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			}
 		}
 		
-		XamlPropertyInfo GetPropertyInfo(object elementInstance, Type elementType, XmlAttribute attribute)
+		static XamlPropertyInfo GetPropertyInfo(object elementInstance, Type elementType, XmlAttribute attribute, XamlTypeFinder typeFinder)
 		{
 			if (attribute.LocalName.Contains(".")) {
-				return GetPropertyInfo(settings.TypeFinder, elementInstance, elementType, GetAttributeNamespace(attribute), attribute.LocalName);
+				return GetPropertyInfo(typeFinder, elementInstance, elementType, GetAttributeNamespace(attribute), attribute.LocalName);
 			} else {
 				return FindProperty(elementInstance, elementType, attribute.LocalName);
 			}
@@ -423,12 +426,29 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			propertyName = qualifiedName.Substring(pos + 1);
 		}
 		
-		void ParseObjectAttribute(XamlObject obj, XmlAttribute attribute)
+		static void ParseObjectAttribute(XamlObject obj, XmlAttribute attribute)
 		{
-			XamlPropertyInfo propertyInfo = GetPropertyInfo(obj.Instance, obj.ElementType, attribute);
-			XamlTextValue textValue = new XamlTextValue(document, attribute);
-			obj.AddProperty(new XamlProperty(obj, propertyInfo, textValue));
-			propertyInfo.SetValue(obj.Instance, textValue.GetValueFor(propertyInfo));
+			ParseObjectAttribute(obj, attribute, true);
+		}
+
+		internal static void ParseObjectAttribute(XamlObject obj, XmlAttribute attribute, bool real)
+		{
+			XamlPropertyInfo propertyInfo = GetPropertyInfo(obj.Instance, obj.ElementType, attribute, obj.OwnerDocument.TypeFinder);
+			XamlPropertyValue value = null;
+
+			var valueText = attribute.Value;
+			if (valueText.StartsWith("{") && !valueText.StartsWith("{}")) {
+				var xamlObject = MarkupExtensionParser.Parse(valueText, obj, real ? attribute : null);
+				value = xamlObject;
+			} else {
+				if (real) 
+					value = new XamlTextValue(obj.OwnerDocument, attribute);
+				else
+					value = new XamlTextValue(obj.OwnerDocument, valueText);
+			}
+
+			var property = new XamlProperty(obj, propertyInfo, value);
+			obj.AddProperty(property);			
 		}
 		
 		static bool ObjectChildElementIsPropertyElement(XmlElement element)
@@ -482,12 +502,28 @@ namespace ICSharpCode.WpfDesign.XamlDom
 						XamlProperty xp = new XamlProperty(obj, propertyInfo, childValue);
 						xp.ParserSetPropertyElement(element);
 						obj.AddProperty(xp);
-						propertyInfo.SetValue(obj.Instance, childValue.GetValueFor(propertyInfo));
 					}
 				}
 			}
 			
 			currentXmlSpace = oldXmlSpace;
+		}
+
+		internal static object CreateObjectFromAttributeText(string valueText, XamlPropertyInfo targetProperty, XamlObject scope)
+		{
+			return targetProperty.TypeConverter.ConvertFromString(
+				scope.OwnerDocument.GetTypeDescriptorContext(scope),
+				CultureInfo.InvariantCulture, valueText);
+		}
+
+		internal static object CreateObjectFromAttributeText(string valueText, Type targetType, XamlObject scope)
+		{
+			var converter = 
+				XamlNormalPropertyInfo.GetCustomTypeConverter(targetType) ?? 
+				TypeDescriptor.GetConverter(targetType);
+
+			return converter.ConvertFromInvariantString(
+				scope.OwnerDocument.GetTypeDescriptorContext(scope), valueText);
 		}
 	}
 }

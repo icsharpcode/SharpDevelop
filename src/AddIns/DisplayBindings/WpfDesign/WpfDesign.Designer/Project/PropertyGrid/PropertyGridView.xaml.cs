@@ -12,6 +12,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Controls.Primitives;
+using ICSharpCode.WpfDesign.PropertyGrid;
 
 namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 {
@@ -24,7 +25,7 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 
 			InitializeComponent();
 
-			AddHandler(Thumb.DragDeltaEvent, new DragDeltaEventHandler(dragDeltaHandler));
+			thumb.DragDelta += new DragDeltaEventHandler(thumb_DragDelta);
 		}
 
 		static PropertyContextMenu propertyContextMenu = new PropertyContextMenu();
@@ -56,17 +57,30 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 			}
 		}
 
+		protected override void OnMouseRightButtonDown(MouseButtonEventArgs e)
+		{
+			var row = (e.OriginalSource as DependencyObject).FindAncestor<Border>("uxPropertyNodeRow");
+			if (row == null) return;
+
+			var node = row.DataContext as PropertyNode;
+			if (node.IsEvent) return;
+
+			var contextMenu = new PropertyContextMenu();
+			contextMenu.DataContext = node;
+			contextMenu.Placement = PlacementMode.Bottom;
+			contextMenu.HorizontalOffset = -30;
+			contextMenu.PlacementTarget = row;
+			contextMenu.IsOpen = true;
+		}
+
 		void clearButton_Click(object sender, RoutedEventArgs e)
 		{
 			PropertyGrid.ClearFilter();
 		}
 
-		void dragDeltaHandler(object sender, DragDeltaEventArgs e)
+		void thumb_DragDelta(object sender, DragDeltaEventArgs e)
 		{
-			Thumb thumb = e.OriginalSource as Thumb;
-			if (thumb != null && thumb.Name == "PART_Thumb") {
-				FirstColumnWidth = Math.Max(0, FirstColumnWidth + e.HorizontalChange);
-			}
+			FirstColumnWidth = Math.Max(0, FirstColumnWidth + e.HorizontalChange);
 		}
 	}
 }

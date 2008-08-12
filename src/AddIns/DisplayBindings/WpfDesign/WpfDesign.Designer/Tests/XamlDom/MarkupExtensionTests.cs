@@ -8,21 +8,18 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
 	public class MarkupExtensionTests : TestHelper
 	{
 		[Test]
-		[Ignore]
 		public void Test1()
 		{
 			TestMarkupExtension("Title=\"{Binding}\"");
 		}
 
 		[Test]
-		[Ignore]
 		public void Test2()
 		{
 			TestMarkupExtension("Title=\"{Binding Some}\"");
 		}
 
 		[Test]
-		[Ignore]
 		public void Test3()
 		{
 			TestMarkupExtension("Title=\"{ Binding  Some , ElementName = Some , Mode = TwoWay }\"");
@@ -54,15 +51,15 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
 		}
 
 		[Test]
-		[Ignore]
 		public void Test8()
 		{
 			TestMarkupExtension("Content=\"{Binding Some, RelativeSource={RelativeSource Self}}\"");
 		}
 
 		[Test]
-		[Ignore]
-		[ExpectedException] // Must differ from official XamlReader result
+		//[ExpectedException] 
+		// Must differ from official XamlReader result, because Static dereference
+		// To catch this we should use XamlDocument.Save() instead of XamlWriter.Save(instance)
 		public void Test9()
 		{
 			TestMarkupExtension("Content=\"{x:Static t:MyStaticClass.StaticString}\"");

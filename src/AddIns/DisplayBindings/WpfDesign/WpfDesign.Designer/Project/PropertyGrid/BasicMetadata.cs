@@ -12,6 +12,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
 using System.Windows.Shapes;
 using System.Windows.Media.Animation;
+using System.Windows.Data;
 
 namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 {
@@ -543,6 +544,24 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 			Metadata.AddValueRange(Track.ViewportSizeProperty, 0, double.PositiveInfinity);
 
 			Metadata.AddValueRange(UIElement.OpacityProperty, 0, 1);
+
+			Metadata.AddAdvancedProperty(typeof(Binding), "ValidationRules");
+			Metadata.AddAdvancedProperty(typeof(Binding), "ValidatesOnExceptions");
+			Metadata.AddAdvancedProperty(typeof(Binding), "ValidatesOnDataErrors");
+			Metadata.AddAdvancedProperty(typeof(Binding), "NotifyOnSourceUpdated");
+			Metadata.AddAdvancedProperty(typeof(Binding), "NotifyOnTargetUpdated");
+			Metadata.AddAdvancedProperty(typeof(Binding), "NotifyOnValidationError");
+			Metadata.AddAdvancedProperty(typeof(Binding), "ConverterParameter");
+			Metadata.AddAdvancedProperty(typeof(Binding), "ConverterCulture");
+			Metadata.AddAdvancedProperty(typeof(Binding), "Source");
+			Metadata.AddAdvancedProperty(typeof(Binding), "RelativeSource");
+			Metadata.AddAdvancedProperty(typeof(Binding), "IsAsync");
+			Metadata.AddAdvancedProperty(typeof(Binding), "AsyncState");
+			Metadata.AddAdvancedProperty(typeof(Binding), "BindsDirectlyToSource");
+			Metadata.AddAdvancedProperty(typeof(Binding), "UpdateSourceExceptionFilter");
+			Metadata.AddAdvancedProperty(typeof(BindingBase), "FallbackValue");
+			Metadata.AddAdvancedProperty(typeof(BindingBase), "StringFormat");
+			Metadata.AddAdvancedProperty(typeof(BindingBase), "TargetNullValue");
 		}
 	}
 }
