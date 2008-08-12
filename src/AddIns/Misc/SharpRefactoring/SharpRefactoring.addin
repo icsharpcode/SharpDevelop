@@ -1,6 +1,6 @@
 <AddIn name        = "SharpRefactoring"
        author      = "Siegfried Pammer"
-       description = "Provides refactorings for C# in SharpDevelop">
+       description = "Provides refactorings in SharpDevelop">
 	
 	<Manifest>
 		<Identity name="ICSharpCode.SharpRefactoring"/>
@@ -14,43 +14,9 @@
 		<MenuItem id="parameterCheckRefactorings" type="Builder" class="SharpRefactoring.ParameterCheckRefactoringMenuBuilder"/>
 	</Path>
 	
-	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/ContextMenu">
-		<MenuItem id = "SharpRefactoring" label = "Refactoring" type="Menu">
-			<MenuItem id = "ExtractMethod"
-			          label = "Extract method"
-			          class = "SharpRefactoring.ExtractMethod"/>
-		<!--	<MenuItem id = "RemoveUnusedParams"
-					  label = "Remove unused parameters"
-					  class = "SharpRefactoring.RemoveUnusedParameters"/> -->
-		</MenuItem>
-	</Path>
-	
 	<Path name = "/SharpDevelop/Workbench/MainMenu/Refactor">
 		<MenuItem id = "ExtractMethod"
 		          label = "Extract method"
-		          shortcut = "Alt|R"
-		          class = "SharpRefactoring.ExtractMethod"/>
-<!--		<MenuItem id = "Separator1" type = "Separator"/>
-		<MenuItem id = "ConvertPropertyToMethods"
-		          label = "Convert property to method(s)"
-		          class = "SharpRefactoring.ConvertPropertyToMethods"/>
-		<MenuItem id = "SafeDelete"
-		          label = "Safe Delete"
-		          class = "SharpRefactoring.SafeDelete"/>-->
+		          class = "SharpRefactoring.ExtractMethodCommand"/>
 	</Path>
-	
-<!--	<Path name = "/SharpDevelop/Pads/ErrorList/TaskContextMenu">
-		<MenuItem id = "QuickFixes"
-		          label = "QuickFixes"
-		          class = "SharpRefactoring.QuickFixes.QuickFix"/>
-	</Path>-->
-	
-<!--	<Path name = "/SharpDevelop/Workbench/Pads">
-		<Pad id       = "PreviewPanel"
-		     category = "Main"
-		     title    = "Refactoring Preview"
-		     icon     = ""
-		     shortcut = ""
-		     class    = "SharpRefactoring.PreviewPanel"/>
-	</Path>-->
 </AddIn>

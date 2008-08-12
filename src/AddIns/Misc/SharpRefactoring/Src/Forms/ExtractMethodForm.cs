@@ -28,7 +28,9 @@ namespace SharpRefactoring.Forms
 
             this.txtName.Text = name;
             this.txtPreview.Text = preview;
-
+			
+            txtName_TextChanged(null, EventArgs.Empty);
+            
             this.txtName.SelectAll();
 		}
 

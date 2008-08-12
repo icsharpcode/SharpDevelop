@@ -56,14 +56,17 @@
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Configuration\AssemblyInfo.cs" />
-    <Compile Include="Src\ExtractMethod.cs" />
+    <Compile Include="Src\CSharpMethodExtractor.cs" />
+    <Compile Include="Src\ExtractMethodCommand.cs" />
     <Compile Include="Src\Forms\ExtractMethodForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Src\Forms\ExtractMethodForm.Designer.cs">
       <DependentUpon>ExtractMethodForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Src\MethodExtractorBase.cs" />
     <Compile Include="Src\ParameterCheckRefactoringMenuBuilder.cs" />
+    <Compile Include="Src\Transformers\ReplaceUnnecessaryVariableDeclarationsTransformer.cs" />
     <Compile Include="Src\Visitors\FindJumpInstructionsVisitor.cs" />
     <Compile Include="Src\Visitors\FindLocalVariablesVisitor.cs" />
     <Compile Include="Src\Visitors\FindMemberVisitor.cs" />
@@ -105,5 +108,6 @@
       <Name>ICSharpCode.SharpDevelop.Dom</Name>
       <Private>False</Private>
     </ProjectReference>
+    <Folder Include="Src\Transformers" />
   </ItemGroup>
 </Project>

@@ -20,25 +20,48 @@ namespace SharpRefactoring.Visitors
 	{
 		List<IdentifierExpression> identifiers;
 		string name;
-		TypeReference type;
+		Location rangeStart, rangeEnd;
+		StringComparer comparer;
 		
 		public List<IdentifierExpression> Identifiers {
 			get { return identifiers; }
 		}
 		
-		public FindReferenceVisitor(string name, TypeReference type)
+		public FindReferenceVisitor(bool caseSensitive, string name, Location rangeStart, Location rangeEnd)
 		{
 			this.identifiers = new List<IdentifierExpression>();
 			this.name = name;
-			this.type = type;
+			this.rangeEnd = rangeEnd;
+			this.rangeStart = rangeStart;
+			this.comparer = (caseSensitive) ? StringComparer.InvariantCulture : StringComparer.InvariantCultureIgnoreCase;
 		}
 		
 		public override object VisitIdentifierExpression(ICSharpCode.NRefactory.Ast.IdentifierExpression identifierExpression, object data)
 		{
-			if (identifierExpression.Identifier == name) {
+			if (Compare(identifierExpression)) {
 				identifiers.Add(identifierExpression);
 			}
 			return base.VisitIdentifierExpression(identifierExpression, data);
+		}
+		
+		bool Compare(IdentifierExpression ie) {
+			return ((this.comparer.Compare(ie.Identifier, this.name) == 0) &&
+			        Inside(ie.StartLocation, ie.EndLocation));
+		}
+		
+		bool IsIn(TypeReference type, List<TypeReference> list)
+		{
+			foreach (TypeReference tr in list) {
+				if (tr.Type == type.Type)
+					return true;
+			}
+			
+			return false;
+		}
+		
+		bool Inside(Location start, Location end)
+		{
+			return start >= this.rangeStart && end <= this.rangeEnd;
 		}
 	}
 }
