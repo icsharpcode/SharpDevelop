@@ -26,16 +26,23 @@ namespace ICSharpCode.XamlDesigner
             InitializeComponent();
 
             new DragListener(this).DragStarted += Toolbox_DragStarted;
+			uxTreeView.SelectedItemChanged += uxTreeView_SelectedItemChanged;
+			uxTreeView.GotKeyboardFocus += uxTreeView_GotKeyboardFocus;
         }
 
-		void Toolbox_DragStarted(object sender, MouseButtonEventArgs e)
+		void uxTreeView_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
 		{
-			PrepareTool(e.GetDataContext() as ControlNode, true);
+			PrepareTool(uxTreeView.SelectedItem as ControlNode, false);
 		}
 
 		void uxTreeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
 		{
 			PrepareTool(uxTreeView.SelectedItem as ControlNode, false);
+		}
+
+		void Toolbox_DragStarted(object sender, MouseButtonEventArgs e)
+		{
+			PrepareTool(e.GetDataContext() as ControlNode, true);
 		}
 
 		void PrepareTool(ControlNode node, bool drag)

@@ -127,6 +127,22 @@ namespace ICSharpCode.WpfDesign
 			}
 			return null;
 		}
+
+		static HashSet<Type> placementDisabled = new HashSet<Type>();
+
+		public static void DisablePlacement(Type type)
+		{
+			lock (placementDisabled) {
+				placementDisabled.Add(type);
+			}
+		}
+
+		public static bool IsPlacementDisabled(Type type)
+		{
+			lock (placementDisabled) {
+				return placementDisabled.Contains(type);
+			}
+		}
 	}
 
 	public class NumberRange

@@ -20,7 +20,6 @@
     
     <TreeView x:Name="uxTreeView" 
               ItemsSource="{Binding AssemblyNodes}" 
-              BorderThickness="0"
-              SelectedItemChanged="uxTreeView_SelectedItemChanged"/>
+              BorderThickness="0"/>
     
 </UserControl>

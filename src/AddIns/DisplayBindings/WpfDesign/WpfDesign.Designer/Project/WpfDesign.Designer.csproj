@@ -74,11 +74,13 @@
       <DependentUpon>EnumBar.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\EnumButton.cs" />
+    <Compile Include="Controls\GrayOutDesignerExceptActiveArea.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Controls\GridAdorner.cs" />
     <Compile Include="Controls\NumericUpDown.cs" />
     <Compile Include="Controls\SelectionFrame.cs" />
     <Compile Include="Controls\ErrorBalloon.cs" />
-    <Compile Include="Controls\GrayOutDesignerExceptActiveArea.cs" />
     <Compile Include="Controls\ResizeThumb.cs" />
     <Compile Include="Controls\SingleVisualChildElement.cs" />
     <Compile Include="CallExtension.cs" />
@@ -88,11 +90,20 @@
     <Compile Include="DesignPanel.cs" />
     <Compile Include="DragDropExceptionHandler.cs" />
     <Compile Include="ExtensionMethods.cs" />
+    <Compile Include="Extensions\CanvasPlacementSupport.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Extensions\ContentControlDefaultInitializer.cs" />
+    <Compile Include="Extensions\DefaultPlacementBehavior.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Extensions\GridAdornerProvider.cs" />
     <Compile Include="Extensions\GridPlacementSupport.cs" />
+    <Compile Include="Extensions\GuideLineManager.cs" />
+    <Compile Include="Extensions\GuideLinePlacementBehavior.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="ModelTools.cs" />
-    <Compile Include="Extensions\CanvasPlacementSupport.cs" />
     <Compile Include="Extensions\PanelInstanceFactory.cs" />
     <Compile Include="Extensions\PanelSelectionHandler.cs" />
     <Compile Include="Extensions\SelectedElementRectangleExtension.cs" />
@@ -100,7 +111,7 @@
     <Compile Include="Extensions\TopLeftContainerDragHandle.cs" />
     <Compile Include="Extensions\ResizeThumbExtension.cs" />
     <Compile Include="Extensions\WindowResizeBehavior.cs" />
-    <Compile Include="PropertyGrid\BasicMetadata.cs" />
+    <Compile Include="BasicMetadata.cs" />
     <Compile Include="PropertyGrid\Category.cs" />
     <Compile Include="PropertyGrid\Editors\BoolEditor.xaml.cs">
       <DependentUpon>BoolEditor.xaml</DependentUpon>
@@ -154,7 +165,9 @@
     <Compile Include="Services\DragMoveMouseGesture.cs" />
     <Compile Include="Services\ErrorService.cs" />
     <Compile Include="Services\MouseGestureBase.cs" />
-    <Compile Include="Services\OptionService.cs" />
+    <Compile Include="Services\OptionService.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Services\PointerTool.cs" />
     <Compile Include="Services\SelectionService.cs" />
     <Compile Include="Services\ToolService.cs" />
@@ -244,7 +257,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="themes\generic.xaml" />
+    <Page Include="Themes\Generic.xaml">
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\Class.png" />

@@ -14,6 +14,8 @@ using ICSharpCode.WpfDesign.Designer.Services;
 using ICSharpCode.WpfDesign.Designer.Extensions;
 using ICSharpCode.WpfDesign.Extensions;
 using ICSharpCode.WpfDesign.PropertyGrid;
+using System.Threading;
+using System.Globalization;
 
 namespace ICSharpCode.WpfDesign.Designer.Xaml
 {
@@ -22,6 +24,12 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 	/// </summary>
 	public sealed class XamlDesignContext : DesignContext
 	{
+		static XamlDesignContext()
+		{
+			Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+			new BasicMetadata();
+		}
+
 		readonly XamlDocument _doc;
 		readonly XamlDesignItem _rootItem;
 		internal readonly XamlComponentService _componentService;

@@ -7,6 +7,7 @@ using ICSharpCode.WpfDesign;
 using System.Collections.ObjectModel;
 using System.Collections;
 using ICSharpCode.WpfDesign.Designer;
+using ICSharpCode.WpfDesign.XamlDom;
 
 namespace ICSharpCode.XamlDesigner
 {
@@ -104,6 +105,8 @@ namespace ICSharpCode.XamlDesigner
 
 		void UpdateChildren()
 		{
+			Children.Clear();
+
 			if (DesignItem.ContentPropertyName != null) {
 				var content = DesignItem.ContentProperty;
 				if (content.IsCollection) {
@@ -119,8 +122,6 @@ namespace ICSharpCode.XamlDesigner
 
 		void UpdateChildrenCore(IEnumerable<DesignItem> items)
 		{
-			Children.Clear();
-
 			foreach (var item in items) {
 				if (ModelTools.CanSelectComponent(item)) {
 					var node = OutlineNode.Create(item);
@@ -129,13 +130,14 @@ namespace ICSharpCode.XamlDesigner
 			}
 		}
 
+		// TODO: Outline and IPlacementBehavior must use the same logic (put it inside DesignItem)
 		public bool CanInsert(IEnumerable<OutlineNode> nodes, OutlineNode after, bool copy)
 		{
 			if (DesignItem.ContentPropertyName == null) return false;
 
 			if (DesignItem.ContentProperty.IsCollection) {
 				foreach (var node in nodes) {
-					if (!CanCollectionAdd(DesignItem.ContentProperty.ReturnType, 
+					if (!CollectionSupport.CanCollectionAdd(DesignItem.ContentProperty.ReturnType, 
 						node.DesignItem.ComponentType)) {
 						return false;
 					}
@@ -147,16 +149,6 @@ namespace ICSharpCode.XamlDesigner
 					DesignItem.ContentProperty.DeclaringType.IsAssignableFrom(
 					nodes.First().DesignItem.ComponentType);
 			}
-		}
-
-		static bool CanCollectionAdd(Type col, Type item)
-		{
-			var e = col.GetInterface("IEnumerable`1");
-			if (e != null && e.IsGenericType) {
-				var a = e.GetGenericArguments()[0];
-				return a.IsAssignableFrom(item);
-			}
-			return true;
 		}
 
 		public void Insert(IEnumerable<OutlineNode> nodes, OutlineNode after, bool copy)

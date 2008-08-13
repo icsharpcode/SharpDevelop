@@ -61,9 +61,7 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 				
 				// try to switch the container
 				if (operation.CurrentContainerBehavior.CanLeaveContainer(operation)) {
-					if (ChangeContainerIfPossible(e)) {
-						return;
-					}
+					ChangeContainerIfPossible(e);
 				}
 				
 				Vector v = e.GetPosition(positionRelativeTo) - startPoint;

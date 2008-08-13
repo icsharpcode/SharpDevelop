@@ -14,7 +14,7 @@ using System.Windows.Shapes;
 using System.Windows.Media.Animation;
 using System.Windows.Data;
 
-namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
+namespace ICSharpCode.WpfDesign.Designer
 {
 	public class BasicMetadata
 	{
@@ -562,6 +562,8 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 			Metadata.AddAdvancedProperty(typeof(BindingBase), "FallbackValue");
 			Metadata.AddAdvancedProperty(typeof(BindingBase), "StringFormat");
 			Metadata.AddAdvancedProperty(typeof(BindingBase), "TargetNullValue");
+
+			//Metadata.DisablePlacement(typeof(Button));
 		}
 	}
 }

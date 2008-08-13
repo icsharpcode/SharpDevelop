@@ -21,8 +21,8 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 	/// <summary>
 	/// Provides <see cref="IPlacementBehavior"/> behavior for <see cref="Grid"/>.
 	/// </summary>
-	[ExtensionFor(typeof(Grid))]
-	public sealed class GridPlacementSupport : BehaviorExtension, IPlacementBehavior
+	[ExtensionFor(typeof(Grid), OverrideExtension=typeof(DefaultPlacementBehavior))]
+	public sealed class GridPlacementSupport : GuideLinePlacementBehavior
 	{
 		Grid grid;
 		
@@ -30,28 +30,9 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		{
 			base.OnInitialized();
 			grid = (Grid)this.ExtendedItem.Component;
-			this.ExtendedItem.AddBehavior(typeof(IPlacementBehavior), this);
 		}
 		
-		public bool CanPlace(ICollection<DesignItem> childItems, PlacementType type, PlacementAlignment position)
-		{
-			return type == PlacementType.Resize || type == PlacementType.Move
-				|| type == PlacementType.Delete
-				|| type == PlacementType.AddItem;
-		}
-		
-		GrayOutDesignerExceptActiveArea grayOut;
-		
-		public void BeginPlacement(PlacementOperation operation)
-		{
-		}
-		
-		public void EndPlacement(PlacementOperation operation)
-		{
-			GrayOutDesignerExceptActiveArea.Stop(ref grayOut);
-		}
-		
-		public Rect GetPosition(PlacementOperation operation, DesignItem child)
+		public override Rect GetPosition(PlacementOperation operation, DesignItem child)
 		{
 			FrameworkElement obj = child.Component as FrameworkElement;
 			if (obj == null) return new Rect();
@@ -217,8 +198,9 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			}
 		}
 		
-		public void SetPosition(PlacementInformation info)
+		public override void SetPosition(PlacementInformation info)
 		{
+			base.SetPosition(info);
 			if (info.Operation.Type == PlacementType.AddItem) {
 				SetColumn(info.Item, GetColumnIndex(info.Bounds.Left), 1);
 				SetRow(info.Item, GetRowIndex(info.Bounds.Top), 1);
@@ -236,11 +218,6 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 					new Point(GetColumnOffset(leftColumnIndex), GetRowOffset(topRowIndex)),
 					new Point(GetColumnOffset(rightColumnIndex + 1), GetRowOffset(bottomRowIndex + 1))
 				);
-				if (grayOut != null) {
-					grayOut.AnimateActiveAreaRectTo(availableSpaceRect);
-				} else {
-					GrayOutDesignerExceptActiveArea.Start(ref grayOut, this.Services, this.ExtendedItem.View, availableSpaceRect);
-				}
 				
 				HorizontalAlignment ha = (HorizontalAlignment)info.Item.Properties[FrameworkElement.HorizontalAlignmentProperty].ValueOnInstance;
 				VerticalAlignment va = (VerticalAlignment)info.Item.Properties[FrameworkElement.VerticalAlignmentProperty].ValueOnInstance;
@@ -272,14 +249,9 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			}
 		}
 		
-		public bool CanLeaveContainer(PlacementOperation operation)
+		public override void LeaveContainer(PlacementOperation operation)
 		{
-			return true;
-		}
-		
-		public void LeaveContainer(PlacementOperation operation)
-		{
-			EndPlacement(operation);
+			base.LeaveContainer(operation);
 			foreach (PlacementInformation info in operation.PlacedItems) {
 				if (info.Item.ComponentType == typeof(ColumnDefinition)) {
 					// TODO: combine the width of the deleted column with the previous column
@@ -287,27 +259,20 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				} else if (info.Item.ComponentType == typeof(RowDefinition)) {
 					this.ExtendedItem.Properties["RowDefinitions"].CollectionElements.Remove(info.Item);
 				} else {
-					this.ExtendedItem.Properties["Children"].CollectionElements.Remove(info.Item);
 					info.Item.Properties.GetAttachedProperty(Grid.RowProperty).Reset();
 					info.Item.Properties.GetAttachedProperty(Grid.ColumnProperty).Reset();
 					info.Item.Properties.GetAttachedProperty(Grid.RowSpanProperty).Reset();
 					info.Item.Properties.GetAttachedProperty(Grid.ColumnSpanProperty).Reset();
+
+					HorizontalAlignment ha = (HorizontalAlignment)info.Item.Properties[FrameworkElement.HorizontalAlignmentProperty].ValueOnInstance;
+					VerticalAlignment va = (VerticalAlignment)info.Item.Properties[FrameworkElement.VerticalAlignmentProperty].ValueOnInstance;
+
+					if (ha == HorizontalAlignment.Stretch)
+						info.Item.Properties[FrameworkElement.WidthProperty].SetValue(info.Bounds.Width);
+					if (va == VerticalAlignment.Stretch)
+						info.Item.Properties[FrameworkElement.HeightProperty].SetValue(info.Bounds.Height);
 				}
 			}
-		}
-		
-		public bool CanEnterContainer(PlacementOperation operation)
-		{
-			return true;
-		}
-		
-		public void EnterContainer(PlacementOperation operation)
-		{
-			foreach (PlacementInformation info in operation.PlacedItems) {
-				this.ExtendedItem.Properties["Children"].CollectionElements.Add(info.Item);
-				SetPosition(info);
-			}
-			BeginPlacement(operation);
 		}
 	}
 }

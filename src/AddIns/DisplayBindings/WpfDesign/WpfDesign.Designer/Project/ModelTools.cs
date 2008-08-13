@@ -118,5 +118,15 @@ namespace ICSharpCode.WpfDesign.Designer
 			else
 				return v;
 		}
+
+		public static void Resize(DesignItem item, double newWidth, double newHeight)
+		{
+			if (newWidth != GetWidth(item.View)) {
+				item.Properties.GetProperty(FrameworkElement.WidthProperty).SetValue(newWidth);
+			}
+			if (newHeight != GetHeight(item.View)) {
+				item.Properties.GetProperty(FrameworkElement.HeightProperty).SetValue(newHeight);
+			}
+		}
 	}
 }

@@ -18,12 +18,6 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 
 	public class PropertyGrid : INotifyPropertyChanged
 	{
-		static PropertyGrid()
-		{
-			Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
-			new BasicMetadata();
-		}
-
 		public PropertyGrid()
 		{
 			Categories = new ObservableCollection<Category>();
