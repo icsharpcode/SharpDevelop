@@ -79,6 +79,7 @@
     </Compile>
     <Compile Include="Controls\GridAdorner.cs" />
     <Compile Include="Controls\NumericUpDown.cs" />
+    <Compile Include="Controls\PanelMoveAdorner.cs" />
     <Compile Include="Controls\SelectionFrame.cs" />
     <Compile Include="Controls\ErrorBalloon.cs" />
     <Compile Include="Controls\ResizeThumb.cs" />
@@ -103,6 +104,7 @@
     <Compile Include="Extensions\GuideLinePlacementBehavior.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Extensions\PanelMove.cs" />
     <Compile Include="ModelTools.cs" />
     <Compile Include="Extensions\PanelInstanceFactory.cs" />
     <Compile Include="Extensions\PanelSelectionHandler.cs" />

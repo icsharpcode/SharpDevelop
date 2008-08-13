@@ -57,6 +57,8 @@ namespace ICSharpCode.WpfDesign
 		/// Is raised when the current tool changes.
 		/// </summary>
 		event EventHandler CurrentToolChanged;
+
+		IDesignPanel DesignPanel { get; }
 	}
 	
 	/// <summary>

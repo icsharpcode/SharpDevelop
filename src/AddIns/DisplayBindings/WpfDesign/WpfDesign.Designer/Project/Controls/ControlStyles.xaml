@@ -10,6 +10,19 @@
         <ResourceDictionary Source="NumericUpDown.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
+    <Style TargetType="{x:Type Controls:PanelMoveAdorner}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Controls:PanelMoveAdorner}">
+                    <Border BorderThickness="4"
+                            Margin="-2"
+                            BorderBrush="Transparent"
+                            Cursor="SizeAll" />
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <Style TargetType="{x:Type Controls:EnumButton}"
            BasedOn="{StaticResource {x:Type ToggleButton}}">
         <Setter Property="Margin"
