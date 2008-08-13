@@ -86,6 +86,7 @@
     <Compile Include="Src\Services\HelpService.cs" />
     <Compile Include="Src\Services\MenuCommandService.cs" />
     <Compile Include="Src\Services\PropertyValueUIService.cs" />
+    <Compile Include="Src\Services\ResourceStore.cs" />
     <Compile Include="Src\Services\ToolboxService.cs" />
     <Compile Include="Src\Services\TypeDescriptorFilterService.cs" />
     <Compile Include="Src\Services\TypeResolutionService.cs" />

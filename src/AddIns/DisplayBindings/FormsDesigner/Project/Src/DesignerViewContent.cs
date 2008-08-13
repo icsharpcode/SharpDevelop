@@ -40,7 +40,7 @@ namespace ICSharpCode.FormsDesigner
 		
 		IDesignerLoaderProvider loaderProvider;
 		IDesignerGenerator generator;
-		DesignerResourceService designerResourceService;
+		readonly ResourceStore resourceStore;
 		FormsDesignerUndoEngine undoEngine;
 		
 		public override Control Control {
@@ -97,6 +97,8 @@ namespace ICSharpCode.FormsDesigner
 			this.viewContent             = viewContent;
 			this.textAreaControlProvider = viewContent as ITextEditorControlProvider;
 			
+			this.resourceStore = new ResourceStore(this);
+			
 			// null check is required to support running in unit test mode
 			if (WorkbenchSingleton.Workbench != null) {
 				this.IsActiveViewContentChanged += this.IsActiveViewContentChangedHandler;
@@ -114,15 +116,7 @@ namespace ICSharpCode.FormsDesigner
 			serviceContainer.AddService(typeof(IHelpService), new HelpService());
 			serviceContainer.AddService(typeof(System.Drawing.Design.IPropertyValueUIService), new PropertyValueUIService());
 			
-			// Do not re-initialize the resource service on every load
-			// because of SD2-1107.
-			// The service holds cached resource file contents which
-			// may not have been written to disk yet if the user switched
-			// between source and design view without saving.
-			if (designerResourceService == null) {
-				designerResourceService = new DesignerResourceService(this);
-			}
-			serviceContainer.AddService(typeof(System.ComponentModel.Design.IResourceService), designerResourceService);
+			serviceContainer.AddService(typeof(System.ComponentModel.Design.IResourceService), new DesignerResourceService(this.resourceStore));
 			AmbientProperties ambientProperties = new AmbientProperties();
 			serviceContainer.AddService(typeof(AmbientProperties), ambientProperties);
 			serviceContainer.AddService(typeof(ITypeResolutionService), new TypeResolutionService(viewContent.PrimaryFileName));
@@ -177,7 +171,7 @@ namespace ICSharpCode.FormsDesigner
 		{
 			hasUnmergedChanges = true;
 			this.PrimaryFile.MakeDirty();
-			designerResourceService.MarkResourceFilesAsDirty();
+			this.resourceStore.MarkResourceFilesAsDirty();
 		}
 		
 		public override void Load(OpenedFile file, System.IO.Stream stream)
@@ -185,7 +179,7 @@ namespace ICSharpCode.FormsDesigner
 			if (file == PrimaryFile) {
 				base.Load(file, stream);
 			} else {
-				designerResourceService.Load(file, stream);
+				this.resourceStore.Load(file, stream);
 			}
 		}
 		
@@ -195,7 +189,7 @@ namespace ICSharpCode.FormsDesigner
 				base.Save(file, stream);
 			} else {
 				if (hasUnmergedChanges) SaveToPrimary();
-				designerResourceService.Save(file, stream);
+				this.resourceStore.Save(file, stream);
 			}
 		}
 		
@@ -315,6 +309,7 @@ namespace ICSharpCode.FormsDesigner
 			bool isDirty = this.PrimaryFile.IsDirty;
 			LoggingService.Info("Merging form changes...");
 			designSurface.Flush();
+			this.resourceStore.CommitAllResourceChanges();
 			LoggingService.Info("Finished merging form changes");
 			hasUnmergedChanges = false;
 			this.PrimaryFile.IsDirty = isDirty;
@@ -372,6 +367,8 @@ namespace ICSharpCode.FormsDesigner
 				if (WorkbenchSingleton.Workbench != null) {
 					this.IsActiveViewContentChanged -= this.IsActiveViewContentChangedHandler;
 				}
+				
+				this.resourceStore.Dispose();
 				
 				p.Dispose();
 				p = null;
