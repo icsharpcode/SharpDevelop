@@ -790,7 +790,7 @@ namespace ICSharpCode.NRefactory.Visitors
 		
 		public override object VisitLabelStatement(LabelStatement labelStatement, object data)
 		{
-			System.CodeDom.CodeLabeledStatement labelStmt = new CodeLabeledStatement(labelStatement.Label,(CodeStatement)labelStatement.AcceptVisitor(this, data));
+			System.CodeDom.CodeLabeledStatement labelStmt = new CodeLabeledStatement(labelStatement.Label);
 			
 			// Add Statement to Current Statement Collection
 			AddStmt(labelStmt);

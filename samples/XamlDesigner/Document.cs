@@ -203,7 +203,7 @@ namespace ICSharpCode.XamlDesigner
 					OutlineRoot = null;
 				}
 				else {
-					OutlineRoot = new OutlineNode(DesignContext.RootItem);
+					OutlineRoot = OutlineNode.Create(DesignContext.RootItem);
 				}
 				UndoService.UndoStackChanged += new EventHandler(UndoService_UndoStackChanged);
 			}

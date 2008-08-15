@@ -345,11 +345,29 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		}
 		
 		[Test]
+		public void VBNetExtensionMethodDeclaration()
+		{
+			MethodDeclaration md = ParseUtilVBNet.ParseTypeMember<MethodDeclaration>(
+				@"<Extension> _
+				Sub Print(s As String)
+					Console.WriteLine(s)
+				End Sub");
+			
+			Assert.AreEqual("Print", md.Name);
+			
+			// IsExtensionMethod is only valid for c#.
+			// Assert.IsTrue(md.IsExtensionMethod);
+			
+			Assert.AreEqual("s", md.Parameters[0].ParameterName);
+			Assert.AreEqual("String", md.Parameters[0].TypeReference.Type);
+		}
+		
+		[Test]
 		public void VBNetGenericMethodInInterface()
 		{
 			const string program = @"Interface MyInterface
-	Function MyMethod(Of T As {ISomeInterface})(a As T) As T
-	End Interface";
+				Function MyMethod(Of T As {ISomeInterface})(a As T) As T
+				End Interface";
 			TypeDeclaration td = ParseUtilVBNet.ParseGlobal<TypeDeclaration>(program);
 			MethodDeclaration md = (MethodDeclaration)td.Children[0];
 			Assert.AreEqual("T", md.TypeReference.Type);

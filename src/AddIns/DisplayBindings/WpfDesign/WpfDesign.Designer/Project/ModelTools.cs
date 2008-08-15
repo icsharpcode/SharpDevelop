@@ -68,6 +68,11 @@ namespace ICSharpCode.WpfDesign.Designer
 			return b != null
 				&& b.CanPlace(items, PlacementType.Delete, PlacementAlignment.Center);
 		}
+
+		public static bool CanSelectComponent(DesignItem item)
+		{
+			return item.View != null;
+		}
 		
 		/// <summary>
 		/// Deletes the specified components from their parent containers.
@@ -112,6 +117,16 @@ namespace ICSharpCode.WpfDesign.Designer
 				return element.RenderSize.Height;
 			else
 				return v;
+		}
+
+		public static void Resize(DesignItem item, double newWidth, double newHeight)
+		{
+			if (newWidth != GetWidth(item.View)) {
+				item.Properties.GetProperty(FrameworkElement.WidthProperty).SetValue(newWidth);
+			}
+			if (newHeight != GetHeight(item.View)) {
+				item.Properties.GetProperty(FrameworkElement.HeightProperty).SetValue(newHeight);
+			}
 		}
 	}
 }

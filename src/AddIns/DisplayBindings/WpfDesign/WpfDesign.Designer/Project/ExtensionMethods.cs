@@ -5,6 +5,7 @@ using System.Text;
 using System.Reflection;
 using System.Collections;
 using System.Windows;
+using System.Windows.Media;
 
 namespace ICSharpCode.WpfDesign.Designer
 {
@@ -26,7 +27,28 @@ namespace ICSharpCode.WpfDesign.Designer
 		{
 			var f = e.OriginalSource as FrameworkElement;
 			if (f != null) {
-				return f.DataContext;;
+				return f.DataContext;
+			}
+			return null;
+		}
+
+		public static T FindAncestor<T>(this DependencyObject d, string name) where T : class
+        {
+            while (true) {
+                if (d == null) return null;
+                if (d is T && d is FrameworkElement && (d as FrameworkElement).Name == name) return d as T;
+                d = VisualTreeHelper.GetParent(d);
+            }
+        }
+
+		public static T FindChild<T>(this DependencyObject d) where T : class
+		{
+			if (d is T) return d as T;
+			int n = VisualTreeHelper.GetChildrenCount(d);
+			for (int i = 0; i < n; i++) {
+				var child = VisualTreeHelper.GetChild(d, i);
+				var result = FindChild<T>(child);
+				if (result != null) return result;
 			}
 			return null;
 		}

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -21,6 +21,7 @@ namespace ICSharpCode.WpfDesign.PropertyGrid
 		{
 			this.Properties = properties;
 			this.Parent = parent;
+			this.Level = parent == null ? 0 : parent.Level + 1;
 
 			foreach (var property in properties) {
 				property.ValueChanged += new EventHandler(property_ValueChanged);
@@ -28,6 +29,7 @@ namespace ICSharpCode.WpfDesign.PropertyGrid
 
 			Editor = EditorManager.CreateEditor(FirstProperty);
 			Children = new ObservableCollection<PropertyNode>();
+			MoreChildren = new ObservableCollection<PropertyNode>();
 			UpdateChildren();
 		}
 
@@ -50,7 +52,9 @@ namespace ICSharpCode.WpfDesign.PropertyGrid
 		public DesignItemProperty FirstProperty { get { return Properties[0]; } }
 
 		public PropertyNode Parent { get; private set; }
+		public int Level { get; private set; }
 		public ObservableCollection<PropertyNode> Children { get; private set; }
+		public ObservableCollection<PropertyNode> MoreChildren { get; private set; }
 
 		bool isExpanded;
 
@@ -60,8 +64,13 @@ namespace ICSharpCode.WpfDesign.PropertyGrid
 			}
 			set {
 				isExpanded = value;
+				UpdateChildren();
 				RaisePropertyChanged("IsExpanded");
 			}
+		}
+
+		public bool HasChildren {
+			get { return Children.Count > 0 || MoreChildren.Count > 0; }
 		}
 
 		public object Description {
@@ -132,6 +141,7 @@ namespace ICSharpCode.WpfDesign.PropertyGrid
 		public void CreateBinding()
 		{
 			Value = new Binding();
+			IsExpanded = true;
 		}
 
 		void SetValueCore(object value)
@@ -165,21 +175,27 @@ namespace ICSharpCode.WpfDesign.PropertyGrid
 		void UpdateChildren()
 		{
 			Children.Clear();
+			MoreChildren.Clear();
 
 			if (Parent == null || Parent.IsExpanded) {
-				if (IsAmbiguous || FirstProperty.IsCollection || FirstProperty.Value == null) {
-					return;
-				}
+				if (IsAmbiguous || FirstProperty.IsCollection || FirstProperty.Value == null) {}
+				else {
+					var item = FirstProperty.Value;
+					var list = TypeHelper.GetAvailableProperties(item.ComponentType)
+						.OrderBy(d => d.Name)
+						.Select(d => new PropertyNode(new[] { item.Properties[d.Name] }, this));
 
-				var item = FirstProperty.Value;
-				var list = TypeHelper.GetAvailableProperties(item.ComponentType)
-					.OrderBy(d => d.Name)
-					.Select(d => new PropertyNode(new[] { item.Properties[d.Name] }, this));
-
-				foreach (var node in list) {
-					Children.Add(node);
+					foreach (var node in list) {
+						if (Metadata.IsAdvanced(node.FirstProperty)) {
+							MoreChildren.Add(node);
+						} else {
+							Children.Add(node);
+						}
+					}
 				}
 			}
+
+			RaisePropertyChanged("HasChildren");
 		}
 
 		#region INotifyPropertyChanged Members

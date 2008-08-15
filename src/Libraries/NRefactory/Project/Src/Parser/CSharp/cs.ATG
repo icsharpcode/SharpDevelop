@@ -731,7 +731,6 @@ StructMemberDecl<ModifierList m, List<AttributeSection> attributes>
 	Expression expr;
 	List<ParameterDeclarationExpression> p = new List<ParameterDeclarationExpression>();
 	Statement stmt = null;
-	List<VariableDeclaration> variableDeclarators = new List<VariableDeclaration>();
 	List<TemplateDefinition> templates = new List<TemplateDefinition>();
 	TypeReference explicitInterface = null;
 	bool isExtensionMethod = false;
@@ -865,6 +864,7 @@ StructMemberDecl<ModifierList m, List<AttributeSection> attributes>
 			StartLocation = m.GetDeclarationLocation(startPos),
 			EndLocation = endPos
 		};
+		SetParent(parameters, operatorDeclaration);
 		compilationUnit.AddChild(operatorDeclaration);
 	.)
 	
@@ -906,6 +906,7 @@ StructMemberDecl<ModifierList m, List<AttributeSection> attributes>
 				StartLocation = m.GetDeclarationLocation(startPos),
 				EndLocation = endPos
 			};
+			SetParent(parameters, operatorDeclaration);
 			compilationUnit.AddChild(operatorDeclaration);
 		.)
 		
@@ -916,23 +917,23 @@ StructMemberDecl<ModifierList m, List<AttributeSection> attributes>
 			fd.StartLocation = m.GetDeclarationLocation(startPos); 
 		.)
 		( IF (m.Contains(Modifiers.Fixed))
-			VariableDeclarator<variableDeclarators>
+			VariableDeclarator<fd>
 			"["
-			Expr<out expr> (. if (variableDeclarators.Count > 0)
-								variableDeclarators[variableDeclarators.Count-1].FixedArrayInitialization = expr; .)
+			Expr<out expr> (. if (fd.Fields.Count > 0)
+								fd.Fields[fd.Fields.Count-1].FixedArrayInitialization = expr; .)
 			"]"
 			{	","
-				VariableDeclarator<variableDeclarators>
+				VariableDeclarator<fd>
 				"["
-				Expr<out expr> (. if (variableDeclarators.Count > 0)
-									variableDeclarators[variableDeclarators.Count-1].FixedArrayInitialization = expr; .)
+				Expr<out expr> (. if (fd.Fields.Count > 0)
+									fd.Fields[fd.Fields.Count-1].FixedArrayInitialization = expr; .)
 				"]"
 			}
 		|	/* non-fixed field */
-			VariableDeclarator<variableDeclarators>
-			{ "," VariableDeclarator<variableDeclarators> }
+			VariableDeclarator<fd>
+			{ "," VariableDeclarator<fd> }
 		)
-		";"                                (. fd.EndLocation = t.EndLocation; fd.Fields = variableDeclarators; compilationUnit.AddChild(fd); .)
+		";" (. fd.EndLocation = t.EndLocation; compilationUnit.AddChild(fd); .)
 		
 		/*--- unqualified indexer declaration (without interface name): */
 		|                                  (. m.Check(Modifiers.Indexers); .)
@@ -1241,11 +1242,12 @@ InterfaceAccessors<out PropertyGetRegion getBlock, out PropertySetRegion setBloc
 	]
 .
 
-VariableDeclarator<List<VariableDeclaration> fieldDeclaration>
+VariableDeclarator<FieldDeclaration parentFieldDeclaration>
 (. Expression expr = null; .)
 =
 	Identifier                            (. VariableDeclaration f = new VariableDeclaration(t.val); .)
-	[ "=" VariableInitializer<out expr>   (. f.Initializer = expr; .) ] (. fieldDeclaration.Add(f); .)
+	[ "=" VariableInitializer<out expr>   (. f.Initializer = expr; .) ]
+	(. SafeAdd(parentFieldDeclaration, parentFieldDeclaration.Fields, f); .)
 .
 
 Block<out Statement stmt> /* not BlockStatement because of EmbeddedStatement */
@@ -1287,7 +1289,9 @@ ConstructorInitializer<out ConstructorInitializer ci>
 		| "this"  (. ci.ConstructorInitializerType = ConstructorInitializerType.This; .)
 	) 
 	"("
-	[ Argument<out expr> (. if (expr != null) { ci.Arguments.Add(expr); } .) { "," Argument<out expr> (. if (expr != null) { ci.Arguments.Add(expr); } .) } ]
+	[ Argument<out expr> (. SafeAdd(ci, ci.Arguments, expr); .) 
+	  { "," Argument<out expr> (. SafeAdd(ci, ci.Arguments, expr); .) }
+	]
 	")"
 .
 
@@ -1370,10 +1374,10 @@ CollectionInitializer<out Expression outExpr>
 =
 	"{" (. initializer.StartLocation = t.Location; .)
 	[	VariableInitializer<out expr>
-		(. if (expr != null) { initializer.CreateExpressions.Add(expr); } .)
+		(. SafeAdd(initializer, initializer.CreateExpressions, expr); .)
 		{ IF (NotFinalComma())
 			"," VariableInitializer<out expr>
-			(. if (expr != null) { initializer.CreateExpressions.Add(expr); } .)
+			(. SafeAdd(initializer, initializer.CreateExpressions, expr); .)
 		}
 		[ "," ]
 	]
@@ -1388,10 +1392,10 @@ CollectionOrObjectInitializer<out Expression outExpr>
 =
 	"{" (. initializer.StartLocation = t.Location; .)
 	[	ObjectPropertyInitializerOrVariableInitializer<out expr>
-		(. if (expr != null) { initializer.CreateExpressions.Add(expr); } .)
+		(. SafeAdd(initializer, initializer.CreateExpressions, expr); .)
 		{ IF (NotFinalComma())
 			"," ObjectPropertyInitializerOrVariableInitializer<out expr>
-			(. if (expr != null) { initializer.CreateExpressions.Add(expr); } .)
+			(. SafeAdd(initializer, initializer.CreateExpressions, expr); .)
 		}
 		[ "," ]
 	]
@@ -1497,8 +1501,10 @@ EmbeddedStatement<out Statement statement>
 	|	"switch" (. List<SwitchSection> switchSections = new List<SwitchSection>(); .)
 		  "(" Expr<out expr> ")"
 		  "{" SwitchSections<switchSections>
-		  "}"  (. statement = new SwitchStatement(expr, switchSections); .)
-	
+		  "}"
+		(. statement = new SwitchStatement(expr, switchSections); .)
+		(. SetParent(switchSections, statement); .)
+		
 		/*--- iteration statements (while, do, for, foreach): */
 	|	"while" "(" Expr<out expr> ")"
 		EmbeddedStatement<out embeddedStatement>
@@ -1512,7 +1518,11 @@ EmbeddedStatement<out Statement statement>
 		  "(" [ ForInitializer<out initializer> ] ";"
 		  [ Expr<out expr> ] ";"
 		  [ ForIterator<out iterator> ] ")"
-		  EmbeddedStatement<out embeddedStatement> (. statement = new ForStatement(initializer, expr, iterator, embeddedStatement); .)
+		  EmbeddedStatement<out embeddedStatement> 
+		  (. statement = new ForStatement(initializer, expr, iterator, embeddedStatement); 
+		     SetParent(initializer, statement);
+		     SetParent(iterator, statement);
+		  .)
 	
 	|	"foreach" "(" Type<out type> Identifier   (. string varName = t.val; .)
 		"in" Expr<out expr> ")"
@@ -1583,6 +1593,8 @@ IfStatement<out Statement statement>
 		                               (elseStatement as IfElseStatement).TrueStatement[0]));
 		(statement as IfElseStatement).ElseIfSections.AddRange((elseStatement as IfElseStatement).ElseIfSections);
 		(statement as IfElseStatement).FalseStatement = (elseStatement as IfElseStatement).FalseStatement;
+		SetParent((statement as IfElseStatement).FalseStatement, statement);
+		SetParent((statement as IfElseStatement).ElseIfSections, statement);
 		}
 	.)
 .
@@ -1612,7 +1624,7 @@ SwitchSections<List<SwitchSection> switchSections>
 	CaseLabel label;
 .)
 =
-	SwitchLabel<out label> (. if (label != null) { switchSection.SwitchLabels.Add(label); } .) 
+	SwitchLabel<out label> (. SafeAdd(switchSection, switchSection.SwitchLabels, label); .) 
 	(. compilationUnit.BlockStart(switchSection); .)
 	{
 		( SwitchLabel<out label>
@@ -1623,7 +1635,7 @@ SwitchSections<List<SwitchSection> switchSections>
 		  			switchSection = new SwitchSection();
 		  			compilationUnit.BlockStart(switchSection);
 		  		}
-		  		switchSection.SwitchLabels.Add(label);
+		  		SafeAdd(switchSection, switchSection.SwitchLabels, label);
 		  	 }
 		  .)
 		| Statement)
@@ -1651,7 +1663,9 @@ TryStatement<out Statement tryStatement>
 	)
 	(.
 		tryStatement = new TryCatchStatement(blockStmt, catchClauses, finallyStmt);
-	
+		if (catchClauses != null) {
+			foreach (CatchClause cc in catchClauses) cc.Parent = tryStatement;
+		}
 	.)
 .
 

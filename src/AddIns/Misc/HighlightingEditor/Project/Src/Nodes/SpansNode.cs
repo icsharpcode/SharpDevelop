@@ -78,18 +78,14 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 		
 		void addClick(object sender, EventArgs e)
 		{
-			using (InputBox box = new InputBox()) {
-				box.Label.Text = ResourceService.GetString("Dialog.HighlightingEditor.Spans.EnterName");
-				if (box.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainWin32Window) == DialogResult.Cancel) return;
-				
-				if (box.TextBox.Text == "") return;
-				
-				SpanNode rsn = new SpanNode(box.TextBox.Text);
-				ListViewItem lv = new ListViewItem(rsn.Text);
-				lv.Tag = rsn;
-				parent.Nodes.Add(rsn);
-				listView.Items.Add(lv);
-			}
+			string result = MessageService.ShowInputBox("", "${res:Dialog.HighlightingEditor.Spans.EnterName}", "");
+			if (string.IsNullOrEmpty(result))
+				return;
+			SpanNode rsn = new SpanNode(result);
+			ListViewItem lv = new ListViewItem(rsn.Text);
+			lv.Tag = rsn;
+			parent.Nodes.Add(rsn);
+			listView.Items.Add(lv);
 		}
 		
 		void removeClick(object sender, EventArgs e)

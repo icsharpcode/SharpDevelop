@@ -12,6 +12,7 @@ using System.Diagnostics;
 using System.Text;
 using System.Xml;
 using System.Windows;
+using System.Windows.Markup;
 
 namespace ICSharpCode.WpfDesign.XamlDom
 {
@@ -34,10 +35,14 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		internal XamlProperty(XamlObject parentObject, XamlPropertyInfo propertyInfo, XamlPropertyValue propertyValue)
 			: this(parentObject, propertyInfo)
 		{
+			PossiblyNameChanged(null, propertyValue);
+
 			this.propertyValue = propertyValue;
 			if (propertyValue != null) {
 				propertyValue.ParentProperty = this;
 			}
+
+			UpdateValueOnInstance();
 		}
 		
 		internal XamlProperty(XamlObject parentObject, XamlPropertyInfo propertyInfo)
@@ -112,28 +117,113 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		/// </summary>
 		public XamlPropertyValue PropertyValue {
 			get { return propertyValue; }
-			set {
-				if (IsCollection) {
-					throw new InvalidOperationException("Cannot set the value of collection properties.");
+			set { SetPropertyValue(value); }
+		}
+		
+		/// <summary>
+		/// Gets if the property is a collection property.
+		/// </summary>
+		public bool IsCollection {
+			get { return isCollection; }
+		}
+		
+		/// <summary>
+		/// Gets the collection elements of the property. Is empty if the property is not a collection.
+		/// </summary>
+		public IList<XamlPropertyValue> CollectionElements {
+			get { return collectionElements ?? emptyCollectionElementsArray; }
+		}
+		
+		/// <summary>
+		/// Gets if the property is set.
+		/// </summary>
+		public bool IsSet {
+			get { return propertyValue != null || collectionElements != null; }
+		}
+		
+		/// <summary>
+		/// Occurs when the value of the IsSet property has changed.
+		/// </summary>
+		public event EventHandler IsSetChanged;
+		
+		/// <summary>
+		/// Occurs when the value of the property has changed.
+		/// </summary>
+		public event EventHandler ValueChanged;
+
+		void SetPropertyValue(XamlPropertyValue value)
+		{
+			if (IsCollection) {
+				throw new InvalidOperationException("Cannot set the value of collection properties.");
+			}
+			
+			bool wasSet = this.IsSet;
+		
+			PossiblyNameChanged(propertyValue, value);
+			
+			ResetInternal();
+			propertyValue = value;			
+			propertyValue.ParentProperty = this;
+			propertyValue.AddNodeTo(this);
+			UpdateValueOnInstance();
+			
+			ParentObject.OnPropertyChanged(this);
+			
+			if (!wasSet) {
+				if (IsSetChanged != null) {
+					IsSetChanged(this, EventArgs.Empty);
 				}
+			}
+			if (ValueChanged != null) {
+				ValueChanged(this, EventArgs.Empty);
+			}
+		}
+
+		internal void UpdateValueOnInstance()
+		{
+			if (PropertyValue != null) {
+				try {
+					ValueOnInstance = PropertyValue.GetValueFor(propertyInfo);
+				}
+				catch {
+					Debug.WriteLine("UpdateValueOnInstance() failed");
+				}
+			}
+		}
+		
+		/// <summary>
+		/// Resets the properties value.
+		/// </summary>
+		public void Reset()
+		{
+			if (IsSet) {
 				
-				bool wasSet = this.IsSet;
-				
+				propertyInfo.ResetValue(parentObject.Instance);
 				ResetInternal();
-				propertyValue = value;
-				propertyValue.AddNodeTo(this);
-				propertyValue.ParentProperty = this;
+
+				ParentObject.OnPropertyChanged(this);
 				
-				if (!wasSet) {
-					if (IsSetChanged != null) {
-						IsSetChanged(this, EventArgs.Empty);
-					}
+				if (IsSetChanged != null) {
+					IsSetChanged(this, EventArgs.Empty);
 				}
 				if (ValueChanged != null) {
 					ValueChanged(this, EventArgs.Empty);
 				}
 			}
 		}
+		
+		void ResetInternal()
+		{
+			if (propertyValue != null) {
+				propertyValue.RemoveNodeFromParent();
+				propertyValue.ParentProperty = null;
+				propertyValue = null;
+			}
+			if (_propertyElement != null) {
+				_propertyElement.ParentNode.RemoveChild(_propertyElement);
+				_propertyElement = null;
+			}			
+		}		
 		
 		XmlElement _propertyElement;
 		
@@ -200,68 +290,39 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				collection.InsertBefore(newChildNode, collectionElements[index].GetNodeForCollection());
 			}
 		}
-		
-		/// <summary>
-		/// Gets if the property is a collection property.
-		/// </summary>
-		public bool IsCollection {
-			get { return isCollection; }
-		}
-		
-		/// <summary>
-		/// Gets the collection elements of the property. Is empty if the property is not a collection.
-		/// </summary>
-		public IList<XamlPropertyValue> CollectionElements {
-			get { return collectionElements ?? emptyCollectionElementsArray; }
-		}
-		
-		/// <summary>
-		/// Gets if the property is set.
-		/// </summary>
-		public bool IsSet {
-			get { return propertyValue != null || collectionElements != null; }
-		}
-		
-		/// <summary>
-		/// Occurs when the value of the IsSet property has changed.
-		/// </summary>
-		public event EventHandler IsSetChanged;
-		
-		/// <summary>
-		/// Occurs when the value of the property has changed.
-		/// </summary>
-		public event EventHandler ValueChanged;
-		
-		/// <summary>
-		/// Resets the properties value.
-		/// </summary>
-		public void Reset()
+
+		internal XmlAttribute SetAttribute(string value)
 		{
-			if (IsSet) {
-				propertyInfo.ResetValue(parentObject.Instance);
-				
-				ResetInternal();
-				
-				if (IsSetChanged != null) {
-					IsSetChanged(this, EventArgs.Empty);
-				}
-				if (ValueChanged != null) {
-					ValueChanged(this, EventArgs.Empty);
-				}
+			string ns = ParentObject.OwnerDocument.GetNamespaceFor(PropertyTargetType);
+			string name;
+			if (IsAttached)
+				name = PropertyTargetType.Name + "." + PropertyName;
+			else
+				name = PropertyName;
+
+			var element = ParentObject.XmlElement;
+			if (element.GetPrefixOfNamespace(ns) == "") {
+				element.SetAttribute(name, value);
+				return element.GetAttributeNode(name);
+			} else {
+				element.SetAttribute(name, ns, value);
+				return element.GetAttributeNode(name, ns);
 			}
 		}
-		
-		void ResetInternal()
+
+		internal string GetNameForMarkupExtension()
 		{
-			if (propertyValue != null) {
-				propertyValue.RemoveNodeFromParent();
-				propertyValue.ParentProperty = null;
-				propertyValue = null;
-			}
-			if (_propertyElement != null) {
-				_propertyElement.ParentNode.RemoveChild(_propertyElement);
-				_propertyElement = null;
-			}
+			string name;
+			if (IsAttached)
+				name = PropertyTargetType.Name + "." + PropertyName;
+			else
+				name = PropertyName;
+
+			var element = ParentObject.XmlElement;
+			string ns = ParentObject.OwnerDocument.GetNamespaceFor(PropertyTargetType);
+			var prefix = element.GetPrefixOfNamespace(ns);
+			if (prefix == "") return name;
+			return prefix + ":" + name;
 		}
 		
 		/// <summary>
@@ -299,6 +360,54 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				propertyInfo.SetValue(parentObject.Instance, value);
 			}
 		}
+
+		public bool IsAdvanced {
+			get { return propertyInfo.IsAdvanced; }
+		}
+
+		public DependencyProperty DependencyProperty {
+			get {
+				return propertyInfo.DependencyProperty;
+			}
+		}
+
+		void PossiblyNameChanged(XamlPropertyValue oldValue, XamlPropertyValue newValue)
+		{	
+			if (PropertyName == "Name" && ReturnType == typeof(string)) {
+
+				string oldName = null;
+				string newName = null;
+
+				var oldTextValue = oldValue as XamlTextValue;
+				if (oldTextValue != null) oldName = oldTextValue.Text;
+				
+				var newTextValue = newValue as XamlTextValue;
+				if (newTextValue != null) newName = newTextValue.Text;
+
+				var obj = ParentObject;
+				while (obj != null) {
+					var nameScope = obj.Instance as INameScope;
+					if (nameScope == null) {
+						if (obj.DependencyObject != null) 
+							nameScope = NameScope.GetNameScope(obj.DependencyObject);
+					}
+					if (nameScope != null) {
+						if (oldName != null) {
+							nameScope.UnregisterName(oldName);
+						}
+						if (newName != null) {
+							nameScope.RegisterName(newName, ParentObject.Instance);
+						}
+						break;
+					}
+					obj = obj.ParentObject;
+				}
+			}
+		}
+
+		void PossiblyMarkupExtensionChanged(XamlPropertyValue part)
+		{
+		}		
 		
 		/*public bool IsAttributeSyntax {
 			get {
@@ -317,15 +426,5 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				return attribute == null && element == null;
 			}
 		}*/
-
-		public bool IsAdvanced {
-			get { return propertyInfo.IsAdvanced; }
-		}
-
-		public DependencyProperty DependencyProperty {
-			get {
-				return propertyInfo.DependencyProperty;
-			}
-		}
 	}
 }

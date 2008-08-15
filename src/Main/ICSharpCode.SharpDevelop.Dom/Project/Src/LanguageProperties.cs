@@ -188,6 +188,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public virtual TextFinder GetFindClassReferencesTextFinder(IClass c)
 		{
+			// when finding attribute references, also look for the short form of the name
+			if (c.Name.Length > 9 && nameComparer.Equals(c.Name.Substring(c.Name.Length - 9), "Attribute")) {
+				return new CombinedTextFinder(
+					new WholeWordTextFinder(c.Name.Substring(0, c.Name.Length - 9), nameComparer),
+					new WholeWordTextFinder(c.Name, nameComparer)
+				);
+			}
 			return new WholeWordTextFinder(c.Name, nameComparer);
 		}
 		

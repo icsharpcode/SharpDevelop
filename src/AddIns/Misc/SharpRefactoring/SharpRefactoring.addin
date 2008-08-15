@@ -1,0 +1,22 @@
+<AddIn name        = "SharpRefactoring"
+       author      = "Siegfried Pammer"
+       description = "Provides refactorings in SharpDevelop">
+	
+	<Manifest>
+		<Identity name="ICSharpCode.SharpRefactoring"/>
+	</Manifest>
+	
+	<Runtime>
+		<Import assembly = "SharpRefactoring.dll"/>
+	</Runtime>
+	
+	<Path name="/SharpDevelop/ViewContent/DefaultTextEditor/Refactoring/ParameterDefinition">
+		<MenuItem id="parameterCheckRefactorings" type="Builder" class="SharpRefactoring.ParameterCheckRefactoringMenuBuilder"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Workbench/MainMenu/Refactor">
+		<MenuItem id = "ExtractMethod"
+		          label = "${res:AddIns.SharpRefactoring.ExtractMethod}"
+		          class = "SharpRefactoring.ExtractMethodCommand"/>
+	</Path>
+</AddIn>

@@ -46,9 +46,9 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			}
 		}
 		
-		public BookmarkNode CurrentNode {
+		public TreeNode CurrentNode {
 			get {
-				return bookmarkTreeView.SelectedNode as BookmarkNode;
+				return bookmarkTreeView.SelectedNode as TreeNode;
 			}
 		}
 		

@@ -11,12 +11,15 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows.Markup;
 using System.Xml;
+using System.Windows.Data;
+using System.Windows;
 
 namespace ICSharpCode.WpfDesign.XamlDom
 {
 	/// <summary>
 	/// Represents a xaml object element.
 	/// </summary>
+	[DebuggerDisplay("XamlObject: {Instance}")]
 	public sealed class XamlObject : XamlPropertyValue
 	{
 		XamlDocument document;
@@ -37,6 +40,9 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			if (contentAttrs != null && contentAttrs.Length > 0) {
 				this.contentPropertyName = contentAttrs[0].Name;
 			}
+
+			ServiceProvider = new XamlObjectServiceProvider(this);
+			CreateWrapper();
 		}
 		
 		/// <summary>For use by XamlParser only.</summary>
@@ -56,8 +62,12 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		#region XamlPropertyValue implementation
 		internal override object GetValueFor(XamlPropertyInfo targetProperty)
 		{
-			if (instance is MarkupExtension) {
-				return ((MarkupExtension)instance).ProvideValue(new XamlTypeResolverProvider(this));
+			if (IsMarkupExtension) {
+				var value = ProvideValue();
+				if (value is string && targetProperty != null && targetProperty.ReturnType != typeof(string)) {
+					return XamlParser.CreateObjectFromAttributeText((string)value, targetProperty, this);
+				}
+				return value;
 			} else {
 				return instance;
 			}
@@ -90,10 +100,87 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		internal XmlElement XmlElement {
 			get { return element; }
 		}
+
+		// exists only for ME root
+		XmlAttribute xmlAttribute;
+
+		internal XmlAttribute XmlAttribute { 
+			get { return xmlAttribute; }
+			set {
+				xmlAttribute = value;
+				element = VirualAttachTo(XmlElement, value.OwnerElement);
+			}
+		}
+
+		public bool IsMarkupExtensionRoot {
+			get { return XmlAttribute != null; }
+		}
+
+		static XmlElement VirualAttachTo(XmlElement e, XmlElement target) 
+		{
+			var prefix = target.GetPrefixOfNamespace(e.NamespaceURI);
+			XmlElement newElement = e.OwnerDocument.CreateElement(prefix, e.Name, e.NamespaceURI);
+
+			foreach (XmlAttribute a in target.Attributes) {
+				if (a.Name.StartsWith("xmlns")) {
+					newElement.Attributes.Append(a.Clone() as XmlAttribute);
+				}
+			}
+
+			while (e.HasChildNodes) {
+				newElement.AppendChild(e.FirstChild);
+			}
+
+			XmlAttributeCollection ac = e.Attributes;
+			while (ac.Count > 0) {
+				newElement.Attributes.Append(ac[0]);
+			}
+
+			
+			return newElement;
+		}
 		
 		internal override void AddNodeTo(XamlProperty property)
 		{
-			property.AddChildNodeToProperty(element);
+			if (!UpdateMarkupExtension(true)) {
+				property.AddChildNodeToProperty(element);
+			}
+		}
+		
+		internal override void RemoveNodeFromParent()
+		{
+			if (XmlAttribute != null) {
+				XmlAttribute.OwnerElement.RemoveAttribute(XmlAttribute.Name);
+				xmlAttribute = null;
+			} else {
+				element.ParentNode.RemoveChild(element);
+			}
+		}
+
+		internal void OnPropertyChanged(XamlProperty property)
+		{
+			UpdateMarkupExtension(false);
+		}
+
+		bool UpdateMarkupExtension(bool canCreate)
+		{
+			if (IsMarkupExtension) {
+				var obj = this;
+				while (obj != null && obj.IsMarkupExtension) {
+					obj.ParentProperty.UpdateValueOnInstance();
+					if (obj.IsMarkupExtensionRoot) break;
+					obj = obj.ParentObject;
+				}
+				if (!obj.IsMarkupExtension) obj = null;
+				if (obj == null && !canCreate) return false;
+				var root = obj ?? this;
+				if (MarkupExtensionPrinter.CanPrint(root)) {
+					var s = MarkupExtensionPrinter.Print(root);
+					root.XmlAttribute = root.ParentProperty.SetAttribute(s);
+					return root == this;
+				}
+			}
+			return false;
 		}
 		
 		/// <summary>
@@ -108,6 +195,14 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		/// </summary>
 		public object Instance {
 			get { return instance; }
+		}
+
+		public bool IsMarkupExtension {
+			get { return instance is MarkupExtension; }
+		}
+
+		public DependencyObject DependencyObject {
+			get { return instance as DependencyObject; }
 		}
 		
 		/// <summary>
@@ -133,11 +228,6 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			get {
 				return contentPropertyName; 
 			}
-		}
-		
-		internal override void RemoveNodeFromParent()
-		{
-			element.ParentNode.RemoveChild(element);
 		}
 		
 		/// <summary>
@@ -210,6 +300,70 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				element.RemoveAttribute(name, XamlConstants.XamlNamespace);
 			else
 				element.SetAttribute(name, XamlConstants.XamlNamespace, value);
+		}
+
+		public XamlObjectServiceProvider ServiceProvider { get; set; }
+
+		MarkupExtensionWrapper wrapper;
+
+		void CreateWrapper()
+		{
+			if (Instance is Binding) {
+				wrapper = new BindingWrapper();
+			} else if (Instance is StaticResourceExtension) {
+				wrapper = new StaticResourceWrapper();
+			}
+			if (wrapper != null) {
+				wrapper.XamlObject = this;
+			}
+		}
+
+		object ProvideValue()
+		{			
+			if (wrapper != null) {
+				return wrapper.ProvideValue();
+			}
+			return (Instance as MarkupExtension).ProvideValue(ServiceProvider);
+		}
+
+		internal string GetNameForMarkupExtension()
+		{
+			return XmlElement.Name;
+		}
+	}
+
+	abstract class MarkupExtensionWrapper
+	{
+		public XamlObject XamlObject { get; set; }
+		public abstract object ProvideValue();
+	}
+
+	class BindingWrapper : MarkupExtensionWrapper
+	{
+		public override object ProvideValue()
+		{
+			var target = XamlObject.Instance as Binding;
+			//TODO: XamlObject.Clone()
+			var b = new Binding();
+			foreach (PropertyDescriptor pd in TypeDescriptor.GetProperties(target)) {
+				if (pd.IsReadOnly) continue;
+				try {
+					var val1 = pd.GetValue(b);
+					var val2 = pd.GetValue(target);
+					if (object.Equals(val1, val2)) continue;
+					pd.SetValue(b, val2);
+				} catch {}
+			}
+			return b.ProvideValue(XamlObject.ServiceProvider);
+		}
+	}
+
+	class StaticResourceWrapper : MarkupExtensionWrapper
+	{
+		public override object ProvideValue()
+		{
+			var target = XamlObject.Instance as StaticResourceExtension;
+			return XamlObject.ServiceProvider.Resolver.FindResource(target.ResourceKey);
 		}
 	}
 }

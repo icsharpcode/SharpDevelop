@@ -70,7 +70,9 @@ namespace ICSharpCode.WpfDesign.Designer
 			_scrollViewer.Content = _designPanel;
 			_scrollViewer.VerticalScrollBarVisibility = ScrollBarVisibility.Visible;
 			_scrollViewer.HorizontalScrollBarVisibility = ScrollBarVisibility.Visible;
+
 			this.VisualChild = _scrollViewer;
+			this.DataContext = null;
 			
 			this.CommandBindings.Add(new CommandBinding(ApplicationCommands.Undo, OnUndoExecuted, OnUndoCanExecute));
 			this.CommandBindings.Add(new CommandBinding(ApplicationCommands.Redo, OnRedoExecuted, OnRedoCanExecute));
@@ -122,7 +124,7 @@ namespace ICSharpCode.WpfDesign.Designer
 		{
 			List<DesignItem> result = new List<DesignItem>(items.Count);
 			foreach (DesignItem item in items) {
-				if (ModelTools.IsInDocument(item)) {
+				if (ModelTools.IsInDocument(item) && ModelTools.CanSelectComponent(item)) {
 					result.Add(item);
 				}
 			}

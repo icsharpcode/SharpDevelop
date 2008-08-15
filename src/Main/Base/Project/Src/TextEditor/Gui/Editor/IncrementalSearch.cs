@@ -19,7 +19,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 	{		
 		bool disposed;
 		TextEditorControl textEditor;
-		Cursor previousCursor;
 		IFormattingStrategy previousFormattingStrategy;
 		string incrementalSearchStartMessage;
 		
@@ -369,7 +368,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		/// </summary>
 		void EnableIncrementalSearchCursor()
 		{
-			previousCursor = TextArea.Cursor;
 			Cursor cursor = GetCursor();
 			TextArea.Cursor = cursor;
 			TextArea.TextView.Cursor = cursor;
@@ -377,8 +375,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		
 		void DisableIncrementalSearchCursor()
 		{
-			TextArea.Cursor = previousCursor;
-			TextArea.TextView.Cursor = previousCursor;
+			TextArea.Cursor = Cursors.IBeam;
+			TextArea.TextView.Cursor = Cursors.IBeam;
 		}
 		
 		/// <summary>

@@ -300,5 +300,18 @@ namespace ICSharpCode.NRefactory.Parser.VB
 				item.Parent = parent;
 			}
 		}
+		
+		static void SetParent<T>(List<T> list, INode parent) where T : class, INode
+		{
+			if (list != null) {
+				foreach (T x in list) {
+					
+					INullable xNull = x as INullable;
+					
+					if (xNull == null || !xNull.IsNull)
+						x.Parent = parent;
+				}
+			}
+		}
 	}
 }

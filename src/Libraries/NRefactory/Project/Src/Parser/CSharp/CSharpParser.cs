@@ -594,5 +594,15 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 				item.Parent = parent;
 			}
 		}
+		
+		static void SetParent<T>(List<T> list, INode parent) where T : class, INode, INullable
+		{
+			if (list != null) {
+				foreach (T x in list) {
+					if (!x.IsNull)
+						x.Parent = parent;
+				}
+			}
+		}
 	}
 }

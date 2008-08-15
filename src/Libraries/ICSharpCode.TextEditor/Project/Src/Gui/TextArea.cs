@@ -552,6 +552,7 @@ namespace ICSharpCode.TextEditor
 		}
 		void DocumentFoldingsChanged(object sender, EventArgs e)
 		{
+			Caret.UpdateCaretPosition();
 			Invalidate();
 			this.motherTextAreaControl.AdjustScrollBars();
 		}

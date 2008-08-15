@@ -39,7 +39,7 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 		}
 		
 		public Cursor Cursor {
-			get { return null; }
+			get { return Cursors.Cross; }
 		}
 		
 		public void Activate(IDesignPanel designPanel)

@@ -366,10 +366,11 @@ namespace ICSharpCode.SharpDevelop.Project
 					}
 					if (isShortFileName && !File.Exists(file)) {
 						file = "";
-					} 
+					}
 					//TODO: Do we have to check for other SDKs here.
-					else if (FileUtility.IsBaseDirectory(FileUtility.NetFrameworkInstallRoot, file)
-					           || FileUtility.IsBaseDirectory(FileUtility.ApplicationRootPath, file))
+					else if (file.EndsWith(".targets", StringComparison.OrdinalIgnoreCase)
+					         && (FileUtility.IsBaseDirectory(FileUtility.NetFrameworkInstallRoot, file)
+					             || FileUtility.IsBaseDirectory(FileUtility.ApplicationRootPath, file)))
 					{
 						file = "";
 					}

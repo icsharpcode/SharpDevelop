@@ -260,13 +260,9 @@ namespace ICSharpCode.SharpDevelop.Commands
 			}
 			
 			if (tool.PromptForArguments) {
-				InputBox box = new InputBox();
-				box.Text = tool.MenuCommand;
-				box.Label.Text = ResourceService.GetString("XML.MainMenu.ToolMenu.ExternalTools.EnterArguments");
-				box.TextBox.Text = args;
-				if (box.ShowDialog(WorkbenchSingleton.MainWin32Window) != DialogResult.OK)
+					args = MessageService.ShowInputBox(tool.MenuCommand, "${res:XML.MainMenu.ToolMenu.ExternalTools.EnterArguments}", args);
+					if (args == null)
 					return;
-				args = box.TextBox.Text;
 			}
 			
 			try {

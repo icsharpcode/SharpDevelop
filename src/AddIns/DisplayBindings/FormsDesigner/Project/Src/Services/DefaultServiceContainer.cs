@@ -5,117 +5,82 @@
 //     <version>$Revision$</version>
 // </file>
 
+/*
+ * Currently known logged missing services for the Windows.Forms designer:
+ * 
+ * System.ComponentModel.ContainerFilterService
+ * 		can modify (filter) a component collection
+ * 		not needed
+ * 
+ * System.ComponentModel.TypeDescriptionProvider
+ * 		can modify the type information of components at runtime
+ * 		probably not needed
+ * 
+ * System.ComponentModel.Design.DesignerCommandSet
+ * System.ComponentModel.Design.DesignerActionService
+ * System.ComponentModel.Design.DesignerActionUIService
+ * 		these seem to be added automatically when required
+ * 		for managing designer verbs and smart tags
+ * 
+ * System.ComponentModel.Design.Serialization.ComponentCache
+ * 		added automatically at some stage during code generation
+ * 		by an internal code serializer class
+ * 
+ * System.Windows.Forms.Design.IMenuEditorService
+ * 		required for editing .NET 1.x Menus (?), not supported by SharpDevelop
+ * 
+ * System.Windows.Forms.Design.ISelectionUIService
+ * 		added automatically by ComponentDocumentDesigner or ComponentTray
+ * 
+ * System.Windows.Forms.Design.IWindowsFormsEditorService
+ * 		provided by the PropertyGrid, the designer seems to find this somehow
+ * 
+ * 
+ * System.ComponentModel.Design.IDesignerEventService
+ * 		provided by the DesignSurfaceManager
+ * 		(this is only logged as missing because the DesignSurfaceManager tries the external service provider first)
+ * 
+ * 
+ * During unloading of the designer some standard services like IDesignerHost are
+ * logged as missing as they have already been removed. This is probably expected.
+ * 
+*/
+
+
+// Uncomment the following line to log all service requests
+//#define WFDESIGN_LOG_SERVICE_REQUESTS
+
+
 using System;
-using System.Collections;
 using System.ComponentModel.Design;
+
+using ICSharpCode.Core;
 
 namespace ICSharpCode.FormsDesigner.Services
 {
-	public class DefaultServiceContainer : IServiceContainer, IDisposable
+	public sealed class DefaultServiceContainer : ServiceContainer
 	{
-		IServiceContainer serviceContainer;
-		Hashtable         services = new Hashtable();
-		bool              inDispose = false;
-		
 		public DefaultServiceContainer()
+			: base()
 		{
-			serviceContainer = new ServiceContainer();
 		}
 		
 		public DefaultServiceContainer(IServiceContainer parent)
+			: base(parent)
 		{
-			serviceContainer = new ServiceContainer(parent);
 		}
 		
-		#region System.IDisposable interface implementation
-		public virtual void Dispose()
+		#if WFDESIGN_LOG_SERVICE_REQUESTS
+		public override object GetService(Type serviceType)
 		{
-			inDispose = true;
-			foreach (DictionaryEntry o in services) {
-				if (o.Value == this) {
-					continue;
-				}
-				//  || o.GetType().Assembly != Assembly.GetCallingAssembly()
-				IDisposable disposeMe = o.Value as IDisposable;
-				if (disposeMe != null) {
-					try {
-						disposeMe.Dispose();
-					} catch (Exception e) {
-						ICSharpCode.Core.MessageService.ShowError(e, "Exception while disposing " + disposeMe);
-					}
-				}
-			}
-			services.Clear();
-			services = null;
-			inDispose = false;
-		}
-		#endregion
-		
-		#region System.ComponentModel.Design.IServiceContainer interface implementation
-		public void RemoveService(System.Type serviceType, bool promote)
-		{
-			if (inDispose)
-				return;
-			serviceContainer.RemoveService(serviceType, promote);
-			if (services.Contains(serviceType))
-				services.Remove(serviceType);
-		}
-		
-		public void RemoveService(System.Type serviceType)
-		{
-			if (inDispose == true)
-				return;
-			serviceContainer.RemoveService(serviceType);
-			if (services.Contains(serviceType))
-				services.Remove(serviceType);
-		}
-		
-		public void AddService(System.Type serviceType, System.ComponentModel.Design.ServiceCreatorCallback callback, bool promote)
-		{
-			if (IsServiceMissing(serviceType)) {
-				serviceContainer.AddService(serviceType, callback, promote);
-			}
-		}
-		
-		public void AddService(System.Type serviceType, System.ComponentModel.Design.ServiceCreatorCallback callback)
-		{
-			if (IsServiceMissing(serviceType)) {
-				serviceContainer.AddService(serviceType, callback);
-			}
-		}
-		
-		public void AddService(System.Type serviceType, object serviceInstance, bool promote)
-		{
-			if (IsServiceMissing(serviceType)) {
-				serviceContainer.AddService(serviceType, serviceInstance, promote);
-				services.Add(serviceType, serviceInstance);
-			}
-		}
-		
-		public void AddService(System.Type serviceType, object serviceInstance)
-		{
-			if (IsServiceMissing(serviceType)) {
-				serviceContainer.AddService(serviceType, serviceInstance);
-				services.Add(serviceType, serviceInstance);
-			}
-		}
-		#endregion
-		
-		#region System.IServiceProvider interface implementation
-		public object GetService(System.Type serviceType)
-		{
-			/* if (LoggingService.IsInfoEnabled && IsServiceMissing(serviceType)) {
-				LoggingService.InfoFormatted("request missing service : {0} from Assembly {1} is not aviable.", serviceType, serviceType.Assembly.FullName);
+			object service = base.GetService(serviceType);
+			if (service == null) {
+				LoggingService.InfoFormatted("request missing service : {0} from Assembly {1} is not available.", serviceType, serviceType.Assembly.FullName);
 			} else {
 				LoggingService.DebugFormatted("get service : {0} from Assembly {1}.", serviceType, serviceType.Assembly.FullName);
-			} */
-			return serviceContainer.GetService(serviceType);
+			}
+			return service;
 		}
-		#endregion
-		
-		bool IsServiceMissing(Type serviceType)
-		{
-			return serviceContainer.GetService(serviceType) == null;
-		}
+		#endif
 	}
 }

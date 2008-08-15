@@ -590,7 +590,11 @@ EnumBody<TypeDeclaration newType>
 	(. FieldDeclaration f; .) =
 	{ EndOfStmt } /* allow empty lines at begin of body */
 	{
-		EnumMemberDecl<out f> (. compilationUnit.AddChild(f); .)
+		EnumMemberDecl<out f>
+		(.
+			SetParent(f.Fields, f);
+			compilationUnit.AddChild(f);
+		.)
 		{ EndOfStmt } /* allow empty lines in body */
 	}
 	"End" "Enum" (. newType.EndLocation = t.EndLocation; .)
@@ -1016,6 +1020,7 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 	(.
 		fd.EndLocation = t.EndLocation;
 		fd.Fields = variableDeclarators;
+		SetParent(variableDeclarators, fd);
 		compilationUnit.AddChild(fd);
 	.)
 	| /* 9.4 */
@@ -1431,6 +1436,7 @@ VariableDeclaratorPartAfterIdentifier<List<VariableDeclaration> fieldDeclaration
 						type.RankSpecifier = (int[])rank.ToArray(typeof(int));
 					}
 					expr = new ArrayCreateExpression(type, dimension);
+					SetParent(dimension, expr);
 				}
 			} else if (rank != null) {
 				if(type.RankSpecifier != null) {
@@ -1693,11 +1699,17 @@ InvocationExpression<ref Expression pexpr>
 		|	"("
 			ArgumentList<out parameters>
 			")"
-			(. pexpr = CreateInvocationExpression(pexpr, parameters, typeParameters); .)
+			(.
+				pexpr = CreateInvocationExpression(pexpr, parameters, typeParameters);
+				SetParent(parameters, pexpr);
+			.)
 		)
 	|	ArgumentList<out parameters>
 		")"
-		(. pexpr = CreateInvocationExpression(pexpr, parameters, typeParameters); .)
+		(.
+			pexpr = CreateInvocationExpression(pexpr, parameters, typeParameters);
+			SetParent(parameters, pexpr);
+		.)
 	)
 	(. pexpr.StartLocation = start; pexpr.EndLocation = t.Location; .)
 .
@@ -1904,12 +1916,14 @@ ObjectCreateExpression<out Expression oce>
 		if (type == null) type = new TypeReference("Object"); // fallback type on parser errors
 		if (initializer == null) {
 			oce = new ObjectCreateExpression(type, arguments);
+			SetParent(arguments, oce);
 		} else {
 			if (dimensions == null) dimensions = new ArrayList();
 			dimensions.Insert(0, (arguments == null) ? 0 : Math.Max(arguments.Count - 1, 0));
 			type.RankSpecifier = (int[])dimensions.ToArray(typeof(int));
 			ArrayCreateExpression ace = new ArrayCreateExpression(type, initializer as CollectionInitializerExpression);
 			ace.Arguments = arguments;
+			SetParent(arguments, ace);
 			oce = ace;
 		}
 	.)
@@ -2108,7 +2122,11 @@ Attribute<out ASTAttribute attribute>
 	[ "Global" "." ]
 	Qualident<out name>
 	[ AttributeArguments<positional, named> ]
-	(. attribute  = new ASTAttribute(name, positional, named); .)
+	(.
+		attribute  = new ASTAttribute(name, positional, named);
+		SetParent(positional, attribute);			
+		SetParent(named, attribute);			
+	.)
 .
 
 /* Spec, 5.2.2 */
@@ -2306,6 +2324,7 @@ LocalDeclarationStatement<out Statement statement>
 	VariableDeclarator<localVariableDeclaration.Variables>
 	{ "," VariableDeclarator<localVariableDeclaration.Variables> }
 	(.
+		SetParent(localVariableDeclaration.Variables, localVariableDeclaration);
 		statement = localVariableDeclaration;
 	.)
 .
@@ -2349,7 +2368,10 @@ EmbeddedStatement<out Statement statement>
 	| /* 10.5.1 */
 	"RaiseEvent" Identifier (. name = t.val; .)
 	[ "(" [ ArgumentList<out p> ] ")" ]
-	(. statement = new RaiseEventStatement(name, p); .)
+	(.
+		statement = new RaiseEventStatement(name, p);
+		SetParent(p, statement);
+	.)
 	| /* 10.3 */
 	WithStatement<out statement>
 	| /* 10.5.2 */
@@ -2428,11 +2450,16 @@ EmbeddedStatement<out Statement statement>
 		EndOfStmt Block<out embeddedStatement>
 		"Next"
 		[
-			Expr<out nextExpr> (. nextExpressions = new List<Expression>(); nextExpressions.Add(nextExpr); .) 
+			Expr<out nextExpr>
+			(.
+				nextExpressions = new List<Expression>();
+				nextExpressions.Add(nextExpr);
+			.)
 			{ "," Expr<out nextExpr> (. nextExpressions.Add(nextExpr); .) }
 		]
 		(.
 			statement = new ForNextStatement(typeReference, typeName, start, end, step, embeddedStatement, nextExpressions);
+			SetParent(nextExpressions, statement);
 		.)
 	)
 	| /* 10.10.2.1 */
@@ -2449,14 +2476,13 @@ EmbeddedStatement<out Statement statement>
 		(. SafeAdd(reDimStatement, reDimStatement.ReDimClauses, expr as InvocationExpression); .)
 	}
 	| /* 10.12.2 */
-	"Erase"	
+	"Erase"
 	Expr<out expr>
-	(.List<Expression> arrays = new List<Expression>();
-		if (expr != null) { arrays.Add(expr);}
-		EraseStatement eraseStatement = new EraseStatement(arrays);
-		
+	(.
+		EraseStatement eraseStatement = new EraseStatement();
+		if (expr != null) { SafeAdd(eraseStatement, eraseStatement.Expressions, expr);}
 	.)
-	{ "," Expr<out expr> (. if (expr != null) { arrays.Add(expr); }.) }
+	{ "," Expr<out expr> (. if (expr != null) { SafeAdd(eraseStatement, eraseStatement.Expressions, expr); }.) }
 	(. statement = eraseStatement; .)
 	| /* 10.11 */
 	"Stop" (. statement = new StopStatement(); .)
@@ -2503,6 +2529,9 @@ EmbeddedStatement<out Statement statement>
 			ifStatement.StartLocation = ifStartLocation;
 		.)
 		SingleLineStatementList<ifStatement.TrueStatement>
+		(.
+			SetParent(ifStatement.TrueStatement, ifStatement);
+		.)
 		[
 			"Else"
 			[ SingleLineStatementList<ifStatement.FalseStatement> ]
@@ -2519,6 +2548,7 @@ EmbeddedStatement<out Statement statement>
 		"Case" CaseClauses<out caseClauses> [ IF(IsNotStatementSeparator()) ":" ] EndOfStmt
 		(.
 			SwitchSection selectSection = new SwitchSection(caseClauses);
+			SetParent(caseClauses, selectSection);
 			selectSection.StartLocation = caseLocation;
 		.)
 		Block<out block>
@@ -2528,7 +2558,10 @@ EmbeddedStatement<out Statement statement>
 			selectSections.Add(selectSection);
 		.)
 	}
-	(. statement = new SwitchStatement(expr, selectSections); .)
+	(.
+		statement = new SwitchStatement(expr, selectSections);
+		SetParent(selectSections, statement);
+	.)
 	"End" "Select"
 	| (. OnErrorStatement onErrorStatement = null; .)
 	OnErrorStatement<out onErrorStatement> (. statement = onErrorStatement; .)
@@ -2567,7 +2600,10 @@ EmbeddedStatement<out Statement statement>
 			  VariableDeclarator<resourceAquisition.Variables>
 			}
 			Block<out block>
-			(. statement = new UsingStatement(resourceAquisition, block); .)
+			(.
+				statement = new UsingStatement(resourceAquisition, block);
+				SetParent(resourceAquisition.Variables, resourceAquisition);
+			.)
 		|	Expr<out expr>
 			Block<out block>
 			(. statement = new UsingStatement(new ExpressionStatement(expr), block); .)
@@ -2685,6 +2721,7 @@ ReDimClauseInternal<ref Expression expr>
 	NormalOrReDimArgumentList<out arguments, out canBeNormal, out canBeRedim>
 	")"
 	(.	expr = new InvocationExpression(expr, arguments);
+		SetParent(arguments, expr);
 		if (canBeRedim == false || canBeNormal && (la.kind == Tokens.Dot || la.kind == Tokens.OpenParenthesis)) {
 			if (this.Errors.Count == 0) {
 				// don't recurse on parse errors - could result in endless recursion

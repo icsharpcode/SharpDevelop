@@ -58,5 +58,9 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 		}
 		
 		public event EventHandler CurrentToolChanged;
+
+		public IDesignPanel DesignPanel {
+			get { return _designPanel; }
+		}
 	}
 }

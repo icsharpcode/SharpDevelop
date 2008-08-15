@@ -15,11 +15,13 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Windows.Markup;
 using System.Xml;
+using System.Reflection;
 
 namespace ICSharpCode.WpfDesign.XamlDom
 {
 	/// <summary>
 	/// Tokenizer for markup extension attributes.
+	/// [MS-XAML 6.6.7.1]
 	/// </summary>
 	sealed class MarkupExtensionTokenizer
 	{
@@ -69,10 +71,6 @@ namespace ICSharpCode.WpfDesign.XamlDom
 						AddToken(MarkupExtensionTokenKind.Comma, ",");
 						pos++;
 						break;
-					case '{':
-						AddToken(MarkupExtensionTokenKind.OpenBrace, "{");
-						pos++;
-						break;
 					default:
 						MembernameOrString();
 						break;
@@ -97,7 +95,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				ConsumeWhitespace();
 			} else {
 				int braceTotal = 0;
-				while (braceTotal >= 0) {
+				while (true) {
 					CheckNotEOF();
 					switch (text[pos]) {
 						case '\\':
@@ -110,20 +108,21 @@ namespace ICSharpCode.WpfDesign.XamlDom
 							braceTotal++;
 							break;
 						case '}':
-							if (braceTotal != 0) {
-								b.Append(text[pos++]);
-							}
+							if (braceTotal == 0) goto stop;
+							b.Append(text[pos++]);
 							braceTotal--;
 							break;
 						case ',':
 						case '=':
-							braceTotal = -1;
+							if (braceTotal == 0) goto stop;
+							b.Append(text[pos++]);
 							break;
 						default:
 							b.Append(text[pos++]);
 							break;
 					}
 				}
+				stop:;
 			}
 			CheckNotEOF();
 			string valueText = b.ToString();
@@ -219,109 +218,106 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		}
 	}
 	
+	/// <summary>
+	/// [MS-XAML 6.6.7.2]
+	/// </summary>
 	static class MarkupExtensionParser
 	{
-		public static MarkupExtension ConstructMarkupExtension(string attributeText, XamlObject containingObject, XamlTypeResolverProvider typeResolver)
+		public static XamlObject Parse(string text, XamlObject parent, XmlAttribute attribute)
 		{
-			if (containingObject == null)
-				throw new ArgumentNullException("containingObject");
-			
-			Debug.WriteLine("ConstructMarkupExtension " + attributeText);
-			
-			List<MarkupExtensionToken> markupExtensionTokens = MarkupExtensionTokenizer.Tokenize(attributeText);
-			if (markupExtensionTokens.Count < 3
-			    || markupExtensionTokens[0].Kind != MarkupExtensionTokenKind.OpenBrace
-			    || markupExtensionTokens[1].Kind != MarkupExtensionTokenKind.TypeName
-			    || markupExtensionTokens[markupExtensionTokens.Count-1].Kind != MarkupExtensionTokenKind.CloseBrace)
+			var tokens = MarkupExtensionTokenizer.Tokenize(text);
+			if (tokens.Count < 3
+			    || tokens[0].Kind != MarkupExtensionTokenKind.OpenBrace
+			    || tokens[1].Kind != MarkupExtensionTokenKind.TypeName
+			    || tokens[tokens.Count-1].Kind != MarkupExtensionTokenKind.CloseBrace)
 			{
 				throw new XamlMarkupExtensionParseException("Invalid markup extension");
 			}
 			
-			string typeName = markupExtensionTokens[1].Value;
+			var typeResolver = parent.ServiceProvider.Resolver;
+
+			string typeName = tokens[1].Value;
 			Type extensionType = typeResolver.Resolve(typeName + "Extension");
 			if (extensionType == null) extensionType = typeResolver.Resolve(typeName);
 			if (extensionType == null || !typeof(MarkupExtension).IsAssignableFrom(extensionType)) {
 				throw new XamlMarkupExtensionParseException("Unknown markup extension " + typeName + "Extension");
 			}
-			if (extensionType == typeof(TypeExtension))
-				extensionType = typeof(MyTypeExtension);
-			if (extensionType == typeof(System.Windows.StaticResourceExtension))
-				extensionType = typeof(MyStaticResourceExtension);
 			
 			List<string> positionalArgs = new List<string>();
 			List<KeyValuePair<string, string>> namedArgs = new List<KeyValuePair<string, string>>();
-			for (int i = 2; i < markupExtensionTokens.Count - 1; i++) {
-				if (markupExtensionTokens[i].Kind == MarkupExtensionTokenKind.String) {
-					positionalArgs.Add(markupExtensionTokens[i].Value);
-				} else if (markupExtensionTokens[i].Kind == MarkupExtensionTokenKind.Membername) {
-					if (markupExtensionTokens[i+1].Kind != MarkupExtensionTokenKind.Equals
-					    || markupExtensionTokens[i+2].Kind != MarkupExtensionTokenKind.String)
+			for (int i = 2; i < tokens.Count - 1; i++) {
+				if (tokens[i].Kind == MarkupExtensionTokenKind.String) {
+					positionalArgs.Add(tokens[i].Value);
+				} else if (tokens[i].Kind == MarkupExtensionTokenKind.Membername) {
+					if (tokens[i+1].Kind != MarkupExtensionTokenKind.Equals
+					    || tokens[i+2].Kind != MarkupExtensionTokenKind.String)
 					{
 						throw new XamlMarkupExtensionParseException("Invalid markup extension");
 					}
-					namedArgs.Add(new KeyValuePair<string, string>(markupExtensionTokens[i].Value,
-					                                               markupExtensionTokens[i+2].Value));
+					namedArgs.Add(new KeyValuePair<string, string>(tokens[i].Value, tokens[i+2].Value));
 					i += 2;
 				}
 			}
+
 			// Find the constructor with positionalArgs.Count arguments
 			var ctors = extensionType.GetConstructors().Where(c => c.GetParameters().Length == positionalArgs.Count).ToList();
 			if (ctors.Count < 1)
-				throw new XamlMarkupExtensionParseException("No constructor for " + extensionType.FullName + " found that takes " + positionalArgs.Count + " arguments");
-			if (ctors.Count > 1)
-				throw new XamlMarkupExtensionParseException("Multiple constructors for " + extensionType.FullName + " found that take " + positionalArgs.Count + " arguments");
-			
-			var ctorParameters = ctors[0].GetParameters();
-			object[] ctorArguments = new object[positionalArgs.Count];
-			for (int i = 0; i < ctorArguments.Length; i++) {
-				Type parameterType = ctorParameters[i].ParameterType;
-				TypeConverter c = XamlNormalPropertyInfo.GetCustomTypeConverter(parameterType)
-					?? TypeDescriptor.GetConverter(parameterType);
-				ctorArguments[i] = XamlTextValue.AttributeTextToObject(positionalArgs[i],
-				                                                       containingObject,
-				                                                       c);
+				throw new XamlMarkupExtensionParseException("No constructor for " + 
+					extensionType.FullName + " found that takes " + positionalArgs.Count + " arguments");
+			if (ctors.Count > 1) {
+				Debug.WriteLine("Multiple constructors for " + 
+					extensionType.FullName + " found that take " + positionalArgs.Count + " arguments");
 			}
-			MarkupExtension result = (MarkupExtension)ctors[0].Invoke(ctorArguments);
-			foreach (var pair in namedArgs) {
-				string memberName = pair.Key;
-				if (memberName.Contains(".")) {
-					throw new NotImplementedException();
-				} else {
-					if (memberName.Contains(":"))
-						memberName = memberName.Substring(memberName.IndexOf(':') + 1);
-					var property = extensionType.GetProperty(memberName);
-					if (property == null)
-						throw new XamlMarkupExtensionParseException("Property not found: " + extensionType.FullName + "." + memberName);
-					TypeConverter c = TypeDescriptor.GetConverter(property.PropertyType);
-					object propValue =  XamlTextValue.AttributeTextToObject(pair.Value,
-					                                                        containingObject,
-					                                                        c);
-					property.SetValue(result, propValue, null);
+
+			var ctor = ctors[0];
+			var defaultCtor = extensionType.GetConstructor(Type.EmptyTypes);
+			bool mappingToProperties = defaultCtor != null;
+			List<PropertyInfo> map = new List<PropertyInfo>();
+
+			if (mappingToProperties) {
+				foreach (var param in ctor.GetParameters()) {
+					var prop = extensionType.GetProperty(param.Name, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+					if (prop == null) {
+						mappingToProperties = false;
+						break;
+					}
+					map.Add(prop);
 				}
 			}
-			return result;
-		}
-		
-		sealed class MyTypeExtension : TypeExtension
-		{
-			public MyTypeExtension() {}
-			
-			public MyTypeExtension(string typeName) : base(typeName) {}
-		}
-		
-		sealed class MyStaticResourceExtension : System.Windows.StaticResourceExtension
-		{
-			public MyStaticResourceExtension() {}
-			
-			public MyStaticResourceExtension(object resourceKey) : base(resourceKey) {}
-			
-			public override object ProvideValue(IServiceProvider serviceProvider)
-			{
-				XamlTypeResolverProvider xamlTypeResolver = (XamlTypeResolverProvider)serviceProvider.GetService(typeof(XamlTypeResolverProvider));
-				if (xamlTypeResolver == null)
-					throw new XamlLoadException("XamlTypeResolverProvider not found.");
-				return xamlTypeResolver.FindResource(this.ResourceKey);
+
+			object instance;
+			if (mappingToProperties) {
+				instance = defaultCtor.Invoke(null);
+			} else {
+				var ctorParamsInfo = ctor.GetParameters();
+				var ctorParams = new object[ctorParamsInfo.Length];
+				for (int i = 0; i < ctorParams.Length; i++) {
+					var paramType = ctorParamsInfo[i].ParameterType;
+					ctorParams[i] = XamlParser.CreateObjectFromAttributeText(positionalArgs[i], paramType, parent);
+				}
+				instance = ctor.Invoke(ctorParams);
+				//TODO
+				//XamlObject.ConstructorArgsProperty - args collection
+				//Reinvoke ctor when needed
 			}
+				
+			XamlObject result = parent.OwnerDocument.CreateObject(instance);
+			if (attribute != null) result.XmlAttribute = attribute;
+			result.ParentObject = parent;
+
+			if (mappingToProperties) {
+				for (int i = 0; i < positionalArgs.Count; i++) {
+					var a = parent.OwnerDocument.XmlDocument.CreateAttribute(map[i].Name);
+					a.Value = positionalArgs[i];
+					XamlParser.ParseObjectAttribute(result, a, false);
+				}
+			}
+			foreach (var pair in namedArgs) {
+				var a = parent.OwnerDocument.XmlDocument.CreateAttribute(pair.Key);
+				a.Value = pair.Value;
+				XamlParser.ParseObjectAttribute(result, a, false);
+			}
+			return result;
 		}
 	}
 }

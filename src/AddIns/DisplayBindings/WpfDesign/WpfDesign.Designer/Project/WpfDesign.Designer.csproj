@@ -40,10 +40,12 @@
     <Reference Include="PresentationCore">
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
     <Reference Include="PresentationFramework">
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -51,8 +53,12 @@
     </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="UIAutomationProvider">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="WindowsBase">
       <Private>False</Private>
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -64,11 +70,18 @@
     <Compile Include="Controls\ContainerDragHandle.cs" />
     <Compile Include="Controls\DropDownButton.cs" />
     <Compile Include="Controls\EnterTextBox.cs" />
+    <Compile Include="Controls\EnumBar.xaml.cs">
+      <DependentUpon>EnumBar.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\EnumButton.cs" />
+    <Compile Include="Controls\GrayOutDesignerExceptActiveArea.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Controls\GridAdorner.cs" />
     <Compile Include="Controls\NumericUpDown.cs" />
+    <Compile Include="Controls\PanelMoveAdorner.cs" />
     <Compile Include="Controls\SelectionFrame.cs" />
     <Compile Include="Controls\ErrorBalloon.cs" />
-    <Compile Include="Controls\GrayOutDesignerExceptActiveArea.cs" />
     <Compile Include="Controls\ResizeThumb.cs" />
     <Compile Include="Controls\SingleVisualChildElement.cs" />
     <Compile Include="CallExtension.cs" />
@@ -78,11 +91,20 @@
     <Compile Include="DesignPanel.cs" />
     <Compile Include="DragDropExceptionHandler.cs" />
     <Compile Include="ExtensionMethods.cs" />
+    <Compile Include="Extensions\CanvasPlacementSupport.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Extensions\ContentControlDefaultInitializer.cs" />
+    <Compile Include="Extensions\DefaultPlacementBehavior.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Extensions\GridAdornerProvider.cs" />
     <Compile Include="Extensions\GridPlacementSupport.cs" />
+    <Compile Include="Extensions\SnaplinePlacementBehavior.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Extensions\PanelMove.cs" />
     <Compile Include="ModelTools.cs" />
-    <Compile Include="Extensions\CanvasPlacementSupport.cs" />
     <Compile Include="Extensions\PanelInstanceFactory.cs" />
     <Compile Include="Extensions\PanelSelectionHandler.cs" />
     <Compile Include="Extensions\SelectedElementRectangleExtension.cs" />
@@ -90,7 +112,7 @@
     <Compile Include="Extensions\TopLeftContainerDragHandle.cs" />
     <Compile Include="Extensions\ResizeThumbExtension.cs" />
     <Compile Include="Extensions\WindowResizeBehavior.cs" />
-    <Compile Include="PropertyGrid\BasicMetadata.cs" />
+    <Compile Include="BasicMetadata.cs" />
     <Compile Include="PropertyGrid\Category.cs" />
     <Compile Include="PropertyGrid\Editors\BoolEditor.xaml.cs">
       <DependentUpon>BoolEditor.xaml</DependentUpon>
@@ -133,7 +155,6 @@
     <Compile Include="PropertyGrid\PropertyGridView.xaml.cs">
       <DependentUpon>PropertyGridView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="PropertyGrid\PropertyTreeView.cs" />
     <Compile Include="ServiceRequiredException.cs" />
     <Compile Include="Services\ChooseClass.cs" />
     <Compile Include="Services\ChooseClassDialog.xaml.cs">
@@ -145,7 +166,9 @@
     <Compile Include="Services\DragMoveMouseGesture.cs" />
     <Compile Include="Services\ErrorService.cs" />
     <Compile Include="Services\MouseGestureBase.cs" />
-    <Compile Include="Services\OptionService.cs" />
+    <Compile Include="Services\OptionService.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Services\PointerTool.cs" />
     <Compile Include="Services\SelectionService.cs" />
     <Compile Include="Services\ToolService.cs" />
@@ -174,6 +197,10 @@
       <SpecificVersion>False</SpecificVersion>
       <Private>True</Private>
     </ProjectReference>
+    <Page Include="Controls\EnumBar.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Controls\NumericUpDown.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -231,7 +258,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="themes\generic.xaml" />
+    <Page Include="Themes\Generic.xaml">
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\Class.png" />

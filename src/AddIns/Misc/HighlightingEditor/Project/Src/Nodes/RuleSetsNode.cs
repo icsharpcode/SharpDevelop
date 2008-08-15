@@ -82,22 +82,19 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 		
 		void addClick(object sender, EventArgs e)
 		{
-			using (InputBox box = new InputBox()) {
-				box.Label.Text = ResourceService.GetString("Dialog.HighlightingEditor.RuleSets.EnterName");
-				if (box.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainWin32Window) == DialogResult.Cancel) return;
-				
-				if (box.TextBox.Text == "") return;
-				foreach (ListViewItem item in listView.Items) {
-					if (item.Text == box.TextBox.Text)
-						return;
-				}
-				
-				RuleSetNode rsn = new RuleSetNode(box.TextBox.Text, "&<>~!@%^*()-+=|\\#/{}[]:;\"' ,	.?", "", '\0', false);
-				ListViewItem lv = new ListViewItem(box.TextBox.Text);
-				lv.Tag = rsn;
-				parent.Nodes.Add(rsn);
-				listView.Items.Add(lv);
+			string result = MessageService.ShowInputBox("", "${res:Dialog.HighlightingEditor.RuleSets.EnterName}", "");
+			if (string.IsNullOrEmpty(result)) 
+				return;
+			foreach (ListViewItem item in listView.Items) {
+				if (item.Text == result)
+					return;
 			}
+			
+			RuleSetNode rsn = new RuleSetNode(result, "&<>~!@%^*()-+=|\\#/{}[]:;\"' ,	.?", "", '\0', false);
+			ListViewItem lv = new ListViewItem(result);
+			lv.Tag = rsn;
+			parent.Nodes.Add(rsn);
+			listView.Items.Add(lv);
 		}
 		
 		void removeClick(object sender, EventArgs e)

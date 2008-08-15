@@ -36,6 +36,8 @@ namespace ICSharpCode.WpfDesign
 		/// Gets the original position of the child item.
 		/// </summary>
 		Rect GetPosition(PlacementOperation operation, DesignItem child);
+
+		void BeforeSetPosition(PlacementOperation operation);
 		
 		/// <summary>
 		/// Updates the placement of the element specified in the placement operation.

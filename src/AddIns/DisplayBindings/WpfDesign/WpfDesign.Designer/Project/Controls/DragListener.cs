@@ -35,6 +35,7 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 				if (a != null && a.Key == Key.Escape) {
 					Mouse.Capture(null);
 					CurrentListener.IsDown = false;
+					CurrentListener.IsCanceled = true;
 					CurrentListener.Complete();
 				}
 			}
@@ -46,6 +47,7 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 			CurrentPoint = StartPoint;
 			DeltaDelta = new Vector();
 			IsDown = true;
+			IsCanceled = false;
 		}
 
 		void Target_MouseMove(object sender, MouseEventArgs e)
@@ -100,6 +102,7 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 		public Vector DeltaDelta { get; private set; }
 		public bool IsActive { get; private set; }
 		public bool IsDown { get; private set; }
+		public bool IsCanceled { get; private set; }
 		
 		public Vector Delta {
 			get { return CurrentPoint - StartPoint; }

@@ -46,6 +46,10 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			UIElement child = childItem.View;
 			return new Rect(0, 0, ModelTools.GetWidth(child), ModelTools.GetHeight(child));
 		}
+
+		public void BeforeSetPosition(PlacementOperation operation) 
+		{
+		}
 		
 		public void SetPosition(PlacementInformation info)
 		{

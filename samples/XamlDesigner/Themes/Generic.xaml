@@ -21,14 +21,6 @@
         </Setter>
     </Style>
 
-    <Style TargetType="{x:Type Default:EnumButton}"
-           BasedOn="{StaticResource {x:Type ToggleButton}}">
-        <Setter Property="Margin"
-                Value="3 3 0 3" />
-        <Setter Property="MinWidth"
-                Value="50" />
-    </Style>
-
     <Brush x:Key="InsertBrush">#FFC73C</Brush>
 
     <Style x:Key="ExpandButtonStyle"

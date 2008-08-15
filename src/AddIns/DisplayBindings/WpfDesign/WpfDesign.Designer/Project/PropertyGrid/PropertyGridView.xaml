@@ -1,4 +1,5 @@
 ﻿<UserControl x:Class="ICSharpCode.WpfDesign.Designer.PropertyGrid.PropertyGridView"
+             x:Name="root"
              xmlns="http://schemas.microsoft.com/netfx/2007/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:Converters="clr-namespace:ICSharpCode.WpfDesign.Designer.Converters"
@@ -6,8 +7,7 @@
              xmlns:PropertyGridBase="clr-namespace:ICSharpCode.WpfDesign.PropertyGrid;assembly=ICSharpCode.WpfDesign"
              xmlns:Controls="clr-namespace:ICSharpCode.WpfDesign.Designer.Controls"
              Background="{x:Static SystemColors.ControlLightBrush}"
-             SnapsToDevicePixels="True"
-             >
+             SnapsToDevicePixels="True">
 
     <UserControl.Resources>
 
@@ -61,7 +61,7 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type ToggleButton}">
                         <Border Background="#F9F9F4"
-                                BorderThickness="1 0 1 0"
+                                BorderThickness="0 0 0 1"
                                 BorderBrush="{x:Static SystemColors.ControlBrush}">
                             <!--<TextBlock Text="More..."
                                        VerticalAlignment="Center"
@@ -108,101 +108,6 @@
                                            Foreground="{x:Static SystemColors.ControlDarkBrush}" />
                             </StackPanel>
                         </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <Style TargetType="{x:Type PropertyGrid:PropertyTreeView}">
-            <Setter Property="Background"
-                    Value="White" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type PropertyGrid:PropertyTreeView}">
-                        <Border BorderThickness="0 1 1 0"
-                                BorderBrush="{x:Static SystemColors.ControlBrush}"
-                                Background="{TemplateBinding Background}">
-                            <!--<ScrollViewer HorizontalScrollBarVisibility="Disabled">-->
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto" />
-                                </Grid.RowDefinitions>
-                                <ItemsPresenter />
-
-                                <Thumb x:Name="PART_Thumb"
-                                       HorizontalAlignment="Left"
-                                       Width="4"
-                                       Margin="-2 0 0 0"
-                                       Cursor="SizeWE">
-                                    <Thumb.RenderTransform>
-                                        <TranslateTransform X="{Binding FirstColumnWidth, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type PropertyGrid:PropertyGridView}}}" />
-                                    </Thumb.RenderTransform>
-                                    <Thumb.Template>
-                                        <ControlTemplate>
-                                            <Border Background="Transparent" />
-                                        </ControlTemplate>
-                                    </Thumb.Template>
-                                </Thumb>
-                            </Grid>
-                            <!--</ScrollViewer>-->
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <Style TargetType="{x:Type PropertyGrid:PropertyTreeViewItem}">
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type PropertyGrid:PropertyTreeViewItem}">
-
-                        <DockPanel>
-                            <Border MinHeight="20"
-                                    BorderThickness="1 0 0 1"
-                                    BorderBrush="{x:Static SystemColors.ControlBrush}"
-                                    Background="{TemplateBinding Background}"
-                                    DockPanel.Dock="Top">
-                                <DockPanel>
-                                    <DockPanel Width="{Binding FirstColumnWidth, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type PropertyGrid:PropertyGridView}}}"
-                                               DockPanel.Dock="Left">
-                                        <ToggleButton x:Name="expandButton"
-                                                      DockPanel.Dock="Left"
-                                                      Margin="{TemplateBinding Level, Converter={x:Static Converters:LevelConverter.Instance}}"
-                                                      Style="{StaticResource ExpandButtonStyle}"
-                                                      IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}}" />
-                                        <TextBlock Text="{Binding Name}"
-                                                   TextTrimming="CharacterEllipsis"
-                                                   VerticalAlignment="Center"
-                                                   Margin="7 0 0 0"
-                                                   ToolTip="{Binding Description}"
-                                                   FontWeight="{Binding FontWeight}"
-                                                   />
-                                    </DockPanel>
-                                    <Border BorderThickness="1 0 0 0"
-                                            BorderBrush="{x:Static SystemColors.ControlBrush}">
-                                        <ContentPresenter Content="{Binding Editor}"
-                                                          VerticalAlignment="Center"
-                                                          Margin="3 0" />
-                                    </Border>
-                                </DockPanel>
-                            </Border>
-                            <ItemsPresenter x:Name="itemsHost" />
-                        </DockPanel>
-
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsExpanded"
-                                     Value="False">
-                                <Setter TargetName="itemsHost"
-                                        Property="Visibility"
-                                        Value="Collapsed" />
-                            </Trigger>
-                            <Trigger Property="HasItems"
-                                     Value="False">
-                                <Setter TargetName="expandButton"
-                                        Property="Visibility"
-                                        Value="Hidden" />
-                            </Trigger>
-                        </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
@@ -265,20 +170,60 @@
                       Style="{StaticResource CategoryExpanderStyle}"
                       IsExpanded="{Binding IsExpanded}">
                 <StackPanel>
-                    <PropertyGrid:PropertyTreeView ItemsSource="{Binding Properties}" />
-                    <Expander Visibility="{Binding MoreProperties, Converter={x:Static Converters:CollapsedWhenEmptyCollection.Instance}}"
+                    <ItemsControl ItemsSource="{Binding Properties}" />
+                    <Expander Visibility="{Binding MoreProperties.Count, Converter={x:Static Converters:CollapsedWhenZero.Instance}}"
                               Style="{StaticResource MoreExpanderStyle}"
                               IsExpanded="{Binding ShowMore}">
-                        <PropertyGrid:PropertyTreeView ItemsSource="{Binding MoreProperties}"
-                                                       Background="#F9F9F4" />
+                        <ItemsControl ItemsSource="{Binding MoreProperties}"
+                                      Background="#F9F9F4" />
                     </Expander>
                 </StackPanel>
             </Expander>
         </DataTemplate>
 
-        <HierarchicalDataTemplate DataType="{x:Type PropertyGridBase:PropertyNode}"
-                                  ItemsSource="{Binding Children}" />
-        
+        <DataTemplate DataType="{x:Type PropertyGridBase:PropertyNode}">
+            <StackPanel>
+                <Border x:Name="uxPropertyNodeRow"
+                        MinHeight="20"
+                        BorderThickness="0 0 0 1"
+                        BorderBrush="{x:Static SystemColors.ControlBrush}"
+                        DockPanel.Dock="Top">
+                    <DockPanel>
+                        <DockPanel Width="{Binding FirstColumnWidth, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type PropertyGrid:PropertyGridView}}}"
+                                   DockPanel.Dock="Left">
+                            <ToggleButton x:Name="expandButton"
+                                          DockPanel.Dock="Left"
+                                          Margin="{Binding Level, Converter={x:Static Converters:LevelConverter.Instance}}"
+                                          Style="{StaticResource ExpandButtonStyle}"
+                                          IsChecked="{Binding IsExpanded}"
+                                          Visibility="{Binding HasChildren, Converter={x:Static Converters:HiddenWhenFalse.Instance}}" />
+                            <TextBlock Text="{Binding Name}"
+                                       TextTrimming="CharacterEllipsis"
+                                       VerticalAlignment="Center"
+                                       Margin="7 0 0 0"
+                                       ToolTip="{Binding Description}"
+                                       FontWeight="{Binding FontWeight}" />
+                        </DockPanel>
+                        <Border BorderThickness="1 0 0 0"
+                                BorderBrush="{x:Static SystemColors.ControlBrush}">
+                            <ContentPresenter Content="{Binding Editor}"
+                                              VerticalAlignment="Center"
+                                              Margin="3 0" />
+                        </Border>
+                    </DockPanel>
+                </Border>
+                <StackPanel Visibility="{Binding IsExpanded, Converter={x:Static Converters:CollapsedWhenFalse.Instance}}">
+                    <ItemsControl ItemsSource="{Binding Children}"
+                                  Visibility="{Binding Children.Count, Converter={x:Static Converters:CollapsedWhenZero.Instance}}" />
+                    <Expander Visibility="{Binding MoreChildren.Count, Converter={x:Static Converters:CollapsedWhenZero.Instance}}"
+                              Style="{StaticResource MoreExpanderStyle}">
+                        <ItemsControl ItemsSource="{Binding MoreChildren}"
+                                      Background="#F9F9F4" />
+                    </Expander>
+                </StackPanel>
+            </StackPanel>
+        </DataTemplate>
+
         <!--<DataTemplate DataType="{x:Type FontFamily}">
             <TextBlock Text="{Binding}"                       
                        FontFamily="{Binding}"
@@ -329,16 +274,43 @@
                     Height="21.277"
                     Width="40" />
         </Grid>
-        <TabControl SelectedIndex="{Binding CurrentTab, Converter={x:Static Converters:IntFromEnumConverter.Instance}}">
-            <TabItem Header="Properties">
-                <ScrollViewer HorizontalScrollBarVisibility="Disabled">
-                    <ItemsControl ItemsSource="{Binding Categories}" />
-                </ScrollViewer>
-            </TabItem>
-            <TabItem Header="Events">
-                <PropertyGrid:PropertyTreeView ItemsSource="{Binding Events}" />
-            </TabItem>
-        </TabControl>
+
+        <Controls:EnumBar Value="{Binding CurrentTab}"
+                          Container="{Binding ElementName=c1}"
+                          Margin="5 0 0 5"
+                          DockPanel.Dock="Top">
+            <Controls:EnumBar.ButtonStyle>
+                <Style TargetType="ToggleButton">
+                    <Setter Property="Width"
+                            Value="70" />
+                </Style>
+            </Controls:EnumBar.ButtonStyle>
+        </Controls:EnumBar>
+
+        <Grid x:Name="c1"
+              Background="White">
+            <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+                <ItemsControl ItemsSource="{Binding Categories}" />
+            </ScrollViewer>
+            <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+                <ItemsControl ItemsSource="{Binding Events}" />
+            </ScrollViewer>
+            <Thumb x:Name="thumb"
+                   HorizontalAlignment="Left"
+                   Width="4"
+                   Margin="-2 0 0 0"
+                   Cursor="SizeWE">
+                <Thumb.RenderTransform>
+                    <TranslateTransform X="{Binding FirstColumnWidth, ElementName=root}" />
+                </Thumb.RenderTransform>
+                <Thumb.Template>
+                    <ControlTemplate>
+                        <Border Background="Transparent" />
+                    </ControlTemplate>
+                </Thumb.Template>
+            </Thumb>
+        </Grid>
+
     </DockPanel>
 
 </UserControl>

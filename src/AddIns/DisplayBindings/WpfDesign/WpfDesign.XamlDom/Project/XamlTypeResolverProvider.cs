@@ -21,7 +21,6 @@ namespace ICSharpCode.WpfDesign.XamlDom
 	{
 		XamlDocument document;
 		XamlObject containingObject;
-		XmlElement containingElement;
 		
 		public XamlTypeResolverProvider(XamlObject containingObject)
 		{
@@ -29,7 +28,10 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				throw new ArgumentNullException("containingObject");
 			this.document = containingObject.OwnerDocument;
 			this.containingObject = containingObject;
-			this.containingElement = containingObject.XmlElement;
+		}
+
+		XmlElement ContainingElement{
+			get { return containingObject.XmlElement; }
 		}
 		
 		public Type Resolve(string typeName)
@@ -37,10 +39,10 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			string typeNamespaceUri;
 			string typeLocalName;
 			if (typeName.Contains(":")) {
-				typeNamespaceUri = containingElement.GetNamespaceOfPrefix(typeName.Substring(0, typeName.IndexOf(':')));
+				typeNamespaceUri = ContainingElement.GetNamespaceOfPrefix(typeName.Substring(0, typeName.IndexOf(':')));
 				typeLocalName = typeName.Substring(typeName.IndexOf(':') + 1);
 			} else {
-				typeNamespaceUri = containingElement.NamespaceURI;
+				typeNamespaceUri = ContainingElement.GetNamespaceOfPrefix("");
 				typeLocalName = typeName;
 			}
 			if (string.IsNullOrEmpty(typeNamespaceUri))
@@ -60,10 +62,10 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		{
 			string propertyNamespace;
 			if (propertyName.Contains(":")) {
-				propertyNamespace = containingElement.GetNamespaceOfPrefix(propertyName.Substring(0, propertyName.IndexOf(':')));
+				propertyNamespace = ContainingElement.GetNamespaceOfPrefix(propertyName.Substring(0, propertyName.IndexOf(':')));
 				propertyName = propertyName.Substring(propertyName.IndexOf(':') + 1);
 			} else {
-				propertyNamespace = containingElement.NamespaceURI;
+				propertyNamespace = ContainingElement.GetNamespaceOfPrefix("");
 			}
 			Type elementType = null;
 			XamlObject obj = containingObject;

@@ -308,6 +308,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 				TextArea textArea = (TextArea)sender;
 				if (e.ToolTipShown) return;
 				if (oldToolTipControl != null && !oldToolTipControl.AllowClose) return;
+				if (!CodeCompletionOptions.EnableCodeCompletion) return;
 				if (!CodeCompletionOptions.TooltipsEnabled) return;
 				
 				if (CodeCompletionOptions.TooltipsOnlyWhenDebugging) {

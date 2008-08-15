@@ -448,15 +448,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (member.Region.IsEmpty) return null;
 			int startLine = member.Region.BeginLine;
 			if (startLine < 1) return null;
-			DomRegion bodyRegion;
-			if (member is IMethodOrProperty) {
-				bodyRegion = ((IMethodOrProperty)member).BodyRegion;
-			} else if (member is IEvent) {
-				bodyRegion = ((IEvent)member).BodyRegion;
-			} else {
-				return null;
-			}
-			if (bodyRegion.IsEmpty) return null;
+			DomRegion bodyRegion = member.BodyRegion;
+			if (bodyRegion.IsEmpty) bodyRegion = member.Region;
 			int endLine = bodyRegion.EndLine;
 			
 			// Fix for SD2-511 (Code completion in inserted line)
@@ -766,25 +759,37 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		List<IMember> ObjectInitializerCtrlSpace(CompilationUnit parsedCu, NR.Location location, out bool isCollectionInitializer)
 		{
-			List<IMember> results = new List<IMember>();
-			isCollectionInitializer = true;
 			FindObjectInitializerExpressionContainingCaretVisitor v = new FindObjectInitializerExpressionContainingCaretVisitor(location);
 			parsedCu.AcceptVisitor(v, null);
-			if (v.result != null) {
-				ObjectCreateExpression oce = v.result.Parent as ObjectCreateExpression;
-				NamedArgumentExpression nae = v.result.Parent as NamedArgumentExpression;
+			return ObjectInitializerCtrlSpace(v.result, out isCollectionInitializer);
+		}
+		
+		List<IMember> ObjectInitializerCtrlSpace(CollectionInitializerExpression collectionInitializer, out bool isCollectionInitializer)
+		{
+			isCollectionInitializer = true;
+			List<IMember> results = new List<IMember>();
+			if (collectionInitializer != null) {
+				ObjectCreateExpression oce = collectionInitializer.Parent as ObjectCreateExpression;
+				NamedArgumentExpression nae = collectionInitializer.Parent as NamedArgumentExpression;
 				if (oce != null && !oce.IsAnonymousType) {
 					IReturnType resolvedType = TypeVisitor.CreateReturnType(oce.CreateType, this);
 					ObjectInitializerCtrlSpaceInternal(results, resolvedType, out isCollectionInitializer);
-				} else if (nae != null) {
-					bool tmp;
-					IMember member = ObjectInitializerCtrlSpace(parsedCu, nae.StartLocation, out tmp).Find(m => IsSameName(m.Name, nae.Name));
+				}
+				else if (nae != null) {
+					IMember member = ResolveNamedArgumentExpressionInObjectInitializer(nae);
 					if (member != null) {
 						ObjectInitializerCtrlSpaceInternal(results, member.ReturnType, out isCollectionInitializer);
 					}
 				}
 			}
 			return results;
+		}
+		
+		IMember ResolveNamedArgumentExpressionInObjectInitializer(NamedArgumentExpression nae)
+		{
+			CollectionInitializerExpression parentCI = nae.Parent as CollectionInitializerExpression;
+			bool tmp;
+			return ObjectInitializerCtrlSpace(parentCI, out tmp).Find(m => IsSameName(m.Name, nae.Name));
 		}
 		
 		void ObjectInitializerCtrlSpaceInternal(List<IMember> results, IReturnType resolvedType, out bool isCollectionInitializer)
@@ -901,6 +906,11 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			foreach (IEvent ev in callingClass.Events) {
 				if (ev.Region.IsInside(caretLine, caretColumn) || ev.BodyRegion.IsInside(caretLine, caretColumn)) {
 					return ev;
+				}
+			}
+			foreach (IField f in callingClass.Fields) {
+				if (f.Region.IsInside(caretLine, caretColumn) || f.BodyRegion.IsInside(caretLine, caretColumn)) {
+					return f;
 				}
 			}
 			return null;
@@ -1295,31 +1305,70 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				ResolveResult rr = ResolveInternal((Expression)expr.Parent, ExpressionContext.Default);
 				if (rr != null)
 					return rr.ResolvedType;
-			}
-			if (expr.Parent is LambdaExpression) {
+			} else if (expr.Parent is LambdaExpression) {
 				IReturnType delegateType = GetExpectedTypeFromContext(expr.Parent as Expression);
 				IMethod sig = CSharp.TypeInference.GetDelegateOrExpressionTreeSignature(delegateType, true);
 				if (sig != null)
 					return sig.ReturnType;
-			}
-			if (expr.Parent is ParenthesizedExpression) {
-				return GetExpectedTypeFromContext(expr.Parent as Expression);
-			}
-			if (expr.Parent is VariableDeclaration) {
-				TypeReference typeRef = (expr.Parent as VariableDeclaration).TypeReference;
-				if (typeRef == null || typeRef.IsNull) {
-					LocalVariableDeclaration lvd = expr.Parent.Parent as LocalVariableDeclaration;
-					if (lvd != null)
-						typeRef = lvd.TypeReference;
+			} else if (expr.Parent is ReturnStatement) {
+				Expression lambda = GetParentAnonymousMethodOrLambda(expr.Parent);
+				if (lambda != null) {
+					IReturnType delegateType = GetExpectedTypeFromContext(lambda);
+					IMethod sig = CSharp.TypeInference.GetDelegateOrExpressionTreeSignature(delegateType, true);
+					if (sig != null)
+						return sig.ReturnType;
+				} else {
+					if (callingMember != null)
+						return callingMember.ReturnType;
 				}
-				return TypeVisitor.CreateReturnType(typeRef, this);
-			}
-			if (expr.Parent is AssignmentExpression) {
+			} else if (expr.Parent is ParenthesizedExpression) {
+				return GetExpectedTypeFromContext(expr.Parent as Expression);
+			} else if (expr.Parent is VariableDeclaration) {
+				return GetTypeFromVariableDeclaration((VariableDeclaration)expr.Parent);
+			} else if (expr.Parent is AssignmentExpression) {
 				ResolveResult rr = ResolveInternal((expr.Parent as AssignmentExpression).Left, ExpressionContext.Default);
 				if (rr != null)
 					return rr.ResolvedType;
+			} else if (expr.Parent is NamedArgumentExpression) {
+				IMember m = ResolveNamedArgumentExpressionInObjectInitializer((NamedArgumentExpression)expr.Parent);
+				if (m != null)
+					return m.ReturnType;
+			} else if (expr.Parent is CollectionInitializerExpression) {
+				IReturnType collectionType;
+				if (expr.Parent.Parent is ObjectCreateExpression)
+					collectionType = TypeVisitor.CreateReturnType(((ObjectCreateExpression)expr.Parent.Parent).CreateType, this);
+				else if (expr.Parent.Parent is ArrayCreateExpression)
+					collectionType = TypeVisitor.CreateReturnType(((ArrayCreateExpression)expr.Parent.Parent).CreateType, this);
+				else if (expr.Parent.Parent is VariableDeclaration)
+					collectionType = GetTypeFromVariableDeclaration((VariableDeclaration)expr.Parent.Parent);
+				else
+					collectionType = null;
+				if (collectionType != null)
+					return new ElementReturnType(projectContent, collectionType);
 			}
 			return null;
+		}
+		
+		Expression GetParentAnonymousMethodOrLambda(INode node)
+		{
+			while (node != null) {
+				if (node is AnonymousMethodExpression || node is LambdaExpression)
+					return (Expression)node;
+				node = node.Parent;
+			}
+			return null;
+		}
+
+		IReturnType GetTypeFromVariableDeclaration(VariableDeclaration varDecl)
+		{
+			TypeReference typeRef = varDecl.TypeReference;
+			if (typeRef == null || typeRef.IsNull) {
+				LocalVariableDeclaration lvd = varDecl.Parent as LocalVariableDeclaration;
+				if (lvd != null) typeRef = lvd.TypeReference;
+				FieldDeclaration fd = varDecl.Parent as FieldDeclaration;
+				if (fd != null) typeRef = fd.TypeReference;
+			}
+			return TypeVisitor.CreateReturnType(typeRef, this);
 		}
 	}
 }

@@ -326,6 +326,7 @@ Bookmarks.GotoPrevInFile                          = Bookmarks\GotoPrevInFile.png
 Bookmarks.GotoPrevInFolder                        = Bookmarks\GotoPrevInFolder.png
 Bookmarks.ToggleMark                              = Bookmarks\ToggleMark.png
 Bookmarks.DeleteMark                              = Bookmarks\DeleteMark.png
+Bookmarks.DeleteAllMarks                          = Bookmarks\DeleteAllMarks.png
 Bookmarks.EnableDisableAll                        = Bookmarks\EnableDisableAll.png
 Bookmarks.EnableDisableMark                       = Bookmarks\EnableDisableMark.png
 
@@ -440,7 +441,7 @@ Icons.16x16.TextFileIcon                          = backendicons\miscFiles\Icons
 Icons.16x16.CombineIcon                           = backendicons\miscFiles\Icons.16x16.CombineIcon.png
 Icons.16x16.MiscFiles                             = backendicons\miscFiles\Icons.16x16.MiscFiles.png
 Icons.16x16.SolutionIcon                          = backendicons\miscFiles\Icons.16x16.SolutionIcon.png
-Icons.16x16.StrongNameKeyFileIcon                = backendicons\miscFiles\Icons.16x16.StrongNameKeyFileIcon.png
+Icons.16x16.StrongNameKeyFileIcon                 = backendicons\miscFiles\Icons.16x16.StrongNameKeyFileIcon.png
 
 Icons.32x32.EmptyFileIcon                         = backendicons\miscFiles\Icons.32x32.EmptyFileIcon.png
 Icons.32x32.HTMLFileIcon                          = backendicons\miscFiles\Icons.32x32.HTMLFileIcon.png
@@ -492,6 +493,3 @@ Icons.16x16.NavigateForward              = NavigationIcons\Icons.16x16.NavigateF
 #Setup icons (Wix)
 Setup.Icons.16x16.SetupDialogsPad = SetupIcons\Setup.Icons.16x16.SetupDialogsPad.png
 Setup.Icons.16x16.Component = SetupIcons\Setup.Icons.16x16.Component.png
-
-#Server Tools
-ServerTool.Server = ServerTool\server.png

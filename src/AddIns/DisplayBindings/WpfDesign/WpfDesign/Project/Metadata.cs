@@ -9,12 +9,6 @@ using System.ComponentModel;
 
 namespace ICSharpCode.WpfDesign
 {
-	public class NumberRange
-	{
-		public double Min;
-		public double Max;
-	}
-
 	public static class Metadata
 	{
 		public static string GetFullName(this DependencyProperty p)
@@ -95,6 +89,13 @@ namespace ICSharpCode.WpfDesign
 			}
 		}
 
+		public static void AddAdvancedProperty(Type type, string member)
+		{
+			lock (advancedProperties) {
+				advancedProperties.Add(type.FullName + "." + member);
+			}
+		}
+
 		public static bool IsAdvanced(DesignItemProperty p)
 		{
 			lock (advancedProperties) {
@@ -126,5 +127,27 @@ namespace ICSharpCode.WpfDesign
 			}
 			return null;
 		}
+
+		static HashSet<Type> placementDisabled = new HashSet<Type>();
+
+		public static void DisablePlacement(Type type)
+		{
+			lock (placementDisabled) {
+				placementDisabled.Add(type);
+			}
+		}
+
+		public static bool IsPlacementDisabled(Type type)
+		{
+			lock (placementDisabled) {
+				return placementDisabled.Contains(type);
+			}
+		}
+	}
+
+	public class NumberRange
+	{
+		public double Min;
+		public double Max;
 	}
 }

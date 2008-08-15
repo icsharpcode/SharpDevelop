@@ -8,7 +8,7 @@
 	-->
 
 	<Product Id="*" 
-		Name="SharpDevelop 3.0 Beta 1"
+		Name="SharpDevelop 3.0 Beta 2"
 		Manufacturer="ic#code"
 		Language="1033"
 		Codepage="1252"
@@ -260,6 +260,7 @@
 				<ComponentRef Id="SHFBMain"/>
 				<ComponentRef Id="SHFBBuildComponents"/>
 				<ComponentRef Id="SHFBColorizer"/>
+				<ComponentRef Id="SHFBConceptualTemplates"/>
 				<ComponentRef Id="SHFBPlugins"/>
 				<ComponentRef Id="SHFBSharedContent"/>
 				<ComponentRef Id="SHFBTemplates"/>
@@ -442,6 +443,11 @@
 				<ComponentRef Id="SharpDevelopSourceAnalysisTargets"/>
 				<ComponentRef Id="SourceAnalysisAddin"/>
 				<ComponentRef Id="SourceAnalysisDll"/>
+				<ComponentRef Id="SharpRefactoringAddin"/>
+				<ComponentRef Id="SharpRefactoringDll"/>
+			
+				<ComponentRef Id="HexEditorAddin"/>
+				<ComponentRef Id="HexEditorDll"/>
 			</Feature>
 			<Feature Id="SharpDevelopFileAssociations"
 			         Level="2"

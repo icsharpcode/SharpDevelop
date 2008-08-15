@@ -171,7 +171,9 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors.BrushEditor
 
 		public void Commit()
 		{
-		    Property.Value = Brush.Clone();
+			if (Brush != null) {
+				Property.Value = Brush.Clone();
+			}
 		}
 
 		#region INotifyPropertyChanged Members

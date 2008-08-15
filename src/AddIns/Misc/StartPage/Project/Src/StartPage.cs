@@ -53,9 +53,13 @@ namespace ICSharpCode.StartPage
 
 		void pane_WebBrowser_Navigated(object sender, WebBrowserNavigatedEventArgs e)
 		{
-			WebBrowser webBrowser = (WebBrowser)sender;
-			webBrowser.Navigating -= pane_WebBrowser_Navigating;
-			webBrowser.Navigated -= pane_WebBrowser_Navigated;
+			try {
+				WebBrowser webBrowser = (WebBrowser)sender;
+				webBrowser.Navigating -= pane_WebBrowser_Navigating;
+				webBrowser.Navigated -= pane_WebBrowser_Navigated;
+			} catch (Exception ex) {
+				MessageService.ShowError(ex);
+			}
 		}
 
 		void pane_WebBrowser_Navigating(object sender, WebBrowserNavigatingEventArgs e)

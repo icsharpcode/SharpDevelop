@@ -68,9 +68,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 			TaskService.Cleared += new EventHandler(TaskServiceCleared);
 			TaskService.Added   += new TaskEventHandler(TaskServiceAdded);
 			TaskService.Removed += new TaskEventHandler(TaskServiceRemoved);
-			TaskService.InUpdateChanged += new EventHandler(TaskService_InUpdateChanged);
+			TaskService.InUpdateChanged += new EventHandler(TaskServiceInUpdateChanged);
 			
-			WorkbenchSingleton.Workbench.ActiveViewContentChanged += new EventHandler(Workbench_ActiveViewContentChanged);
+			WorkbenchSingleton.Workbench.ActiveViewContentChanged += new EventHandler(WorkbenchActiveViewContentChanged);
 			
 			if (WorkbenchSingleton.Workbench.ActiveViewContent != null) {
 				UpdateItems();
@@ -78,7 +78,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				if (WorkbenchSingleton.Workbench.ActiveViewContent.Content is SharpDevelopTextAreaControl) {
 					SharpDevelopTextAreaControl ctrl = WorkbenchSingleton.Workbench.ActiveViewContent.Content as SharpDevelopTextAreaControl;
 					
-					ctrl.ActiveTextAreaControl.Caret.PositionChanged += new EventHandler(Caret_PositionChanged);
+					ctrl.ActiveTextAreaControl.Caret.PositionChanged += new EventHandler(CaretPositionChanged);
 				}
 			}
 			
@@ -88,7 +88,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.isInitialized = true;
 		}
 
-		void Workbench_ActiveViewContentChanged(object sender, EventArgs e)
+		void WorkbenchActiveViewContentChanged(object sender, EventArgs e)
 		{
 			if (WorkbenchSingleton.Workbench.ActiveViewContent == null)
 				return;
@@ -98,11 +98,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (WorkbenchSingleton.Workbench.ActiveViewContent.Content is SharpDevelopTextAreaControl) {
 				SharpDevelopTextAreaControl ctrl = WorkbenchSingleton.Workbench.ActiveViewContent.Content as SharpDevelopTextAreaControl;
 				
-				ctrl.ActiveTextAreaControl.Caret.PositionChanged += new EventHandler(Caret_PositionChanged);
+				ctrl.ActiveTextAreaControl.Caret.PositionChanged += new EventHandler(CaretPositionChanged);
 			}
 		}
 
-		void Caret_PositionChanged(object sender, EventArgs e)
+		void CaretPositionChanged(object sender, EventArgs e)
 		{
 			if (this.selectedScopeIndex > 2)
 			{
@@ -115,7 +115,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 
-		void TaskService_InUpdateChanged(object sender, EventArgs e)
+		void TaskServiceInUpdateChanged(object sender, EventArgs e)
 		{
 			if (!TaskService.InUpdate)
 				UpdateItems();
@@ -162,7 +162,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.taskView.ClearTasks();
 			
 			foreach (Task t in TaskService.CommentTasks) {
-				this.taskView.AddTask(t);
+				this.AddItem(t);
 			}
 			
 			RedrawContent();
@@ -173,7 +173,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			foreach (KeyValuePair<string, bool> pair in displayedTokens) {
 				if (item.Description.StartsWith(pair.Key) && pair.Value && IsInScope(item))
-					taskView.AddTask(item);
+					this.taskView.AddTask(item);
 			}
 		}
 		

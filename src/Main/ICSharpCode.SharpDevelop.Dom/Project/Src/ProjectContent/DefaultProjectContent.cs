@@ -813,8 +813,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 					foreach (IClass baseClass in request.CurrentType.ClassInheritanceTree) {
 						if (baseClass.ClassType == ClassType.Class) {
 							foreach (IClass innerClass in baseClass.InnerClasses) {
-								if (language.NameComparer.Equals(innerClass.Name, name))
-									return new SearchTypeResult(innerClass);
+								if (language.NameComparer.Equals(innerClass.Name, name)) {
+									if (innerClass.TypeParameters.Count == request.TypeParameterCount) {
+										return new SearchTypeResult(innerClass);
+									} else {
+										fallbackResult = new SearchTypeResult(innerClass);
+									}
+								}
 							}
 						}
 					}

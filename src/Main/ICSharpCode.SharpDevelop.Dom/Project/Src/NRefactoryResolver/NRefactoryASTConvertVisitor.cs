@@ -7,7 +7,6 @@
 
 // created on 04.08.2003 at 17:49
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
@@ -23,6 +22,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		ICompilationUnit cu;
 		Stack<string> currentNamespace = new Stack<string>();
 		Stack<DefaultClass> currentClass = new Stack<DefaultClass>();
+		public string VBRootNamespace { get; set; }
 		
 		public ICompilationUnit Cu {
 			get {
@@ -93,11 +93,25 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			List<string> lines = new List<string>();
 			int length = 0;
 			while (line > 0) {
-				string doku = GetDocumentationFromLine(--line);
-				if (doku == null)
+				line--;
+				string doku = null;
+				bool foundPreprocessing = false;
+				var specialsOnLine = GetSpecialsFromLine(line);
+				foreach (RefParser.ISpecial special in specialsOnLine) {
+					RefParser.Comment comment = special as RefParser.Comment;
+					if (comment != null && comment.CommentType == RefParser.CommentType.Documentation) {
+						doku = comment.CommentText;
+						break;
+					} else if (special is RefParser.PreprocessingDirective) {
+						foundPreprocessing = true;
+					}
+				}
+				if (doku == null && !foundPreprocessing)
 					break;
-				length += 2 + doku.Length;
-				lines.Add(doku);
+				if (doku != null) {
+					length += 2 + doku.Length;
+					lines.Add(doku);
+				}
 			}
 			StringBuilder b = new StringBuilder(length);
 			for (int i = lines.Count - 1; i >= 0; --i) {
@@ -108,8 +122,20 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		string GetDocumentationFromLine(int line)
 		{
-			if (specials == null) return null;
-			if (line < 0) return null;
+			foreach (RefParser.ISpecial special in GetSpecialsFromLine(line)) {
+				RefParser.Comment comment = special as RefParser.Comment;
+				if (comment != null && comment.CommentType == RefParser.CommentType.Documentation) {
+					return comment.CommentText;
+				}
+			}
+			return null;
+		}
+		
+		IEnumerable<RefParser.ISpecial> GetSpecialsFromLine(int line)
+		{
+			List<RefParser.ISpecial> result = new List<RefParser.ISpecial>();
+			if (specials == null) return result;
+			if (line < 0) return result;
 			// specials is a sorted list: use interpolation search
 			int left = 0;
 			int right = specials.Count - 1;
@@ -142,15 +168,12 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					while (--m >= 0 && specials[m].StartPosition.Y == line);
 					// look at all specials in that line: find doku-comment
 					while (++m < specials.Count && specials[m].StartPosition.Y == line) {
-						RefParser.Comment comment = specials[m] as RefParser.Comment;
-						if (comment != null && comment.CommentType == RefParser.CommentType.Documentation) {
-							return comment.CommentText;
-						}
+						result.Add(specials[m]);
 					}
 					break;
 				}
 			}
-			return null;
+			return result;
 		}
 		
 		public override object VisitCompilationUnit(AST.CompilationUnit compilationUnit, object data)
@@ -158,7 +181,13 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (compilationUnit == null) {
 				return null;
 			}
-			compilationUnit.AcceptChildren(this, data);
+			if (!string.IsNullOrEmpty(VBRootNamespace)) {
+				currentNamespace.Push(VBRootNamespace);
+				compilationUnit.AcceptChildren(this, data);
+				currentNamespace.Pop();
+			} else {
+				compilationUnit.AcceptChildren(this, data);
+			}
 			return cu;
 		}
 		

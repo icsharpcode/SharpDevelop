@@ -182,10 +182,7 @@ namespace ICSharpCode.Core
 		/// exe from the latest sdk.
 		/// </summary>
 		/// <param name="exeName">The EXE to search for.</param>
-		/// <returns>The path of the executable.</returns>
-		/// <exception cref="System.IO.FileNotFoundException">
-		/// Thrown if the exe is not found.
-		/// </exception>
+		/// <returns>The path of the executable, or null if the exe is not found.</returns>
 		public static string GetSdkPath(string exeName) {
 			string execPath;
 			if (!string.IsNullOrEmpty(WindowsSdk61InstallRoot)) {
@@ -204,7 +201,7 @@ namespace ICSharpCode.Core
 				execPath = Path.Combine(NetSdk20InstallRoot, "bin\\" + exeName);
 				if (File.Exists(execPath)) { return execPath; }
 			}
-			throw new FileNotFoundException(StringParser.Parse("${res:Fileutility.CantFindExecutableError}", new string[,] { {"EXECUTABLE",  exeName} }));
+			return null;
 		}
 		
 		/// <summary>

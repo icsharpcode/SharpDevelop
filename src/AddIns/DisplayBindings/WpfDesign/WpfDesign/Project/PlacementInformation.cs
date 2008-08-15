@@ -54,5 +54,7 @@ namespace ICSharpCode.WpfDesign
 			get { return bounds; }
 			set { bounds = value; }
 		}
+
+		public PlacementAlignment ResizeThumbAlignment { get; set; }
 	}
 }

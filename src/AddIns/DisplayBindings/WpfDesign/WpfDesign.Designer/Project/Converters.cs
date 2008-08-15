@@ -39,6 +39,21 @@ namespace ICSharpCode.WpfDesign.Designer.Converters
 		}
 	}
 
+	public class CollapsedWhenFalse : IValueConverter
+	{
+		public static CollapsedWhenFalse Instance = new CollapsedWhenFalse();
+
+		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+		{
+			return (bool)value ? Visibility.Visible : Visibility.Collapsed;
+		}
+
+		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+		{
+			throw new NotImplementedException();
+		}
+	}
+
 	public class LevelConverter : IValueConverter
 	{
 		public static LevelConverter Instance = new LevelConverter();
@@ -54,16 +69,15 @@ namespace ICSharpCode.WpfDesign.Designer.Converters
 		}
 	}
 
-	public class CollapsedWhenEmptyCollection : IValueConverter
+	public class CollapsedWhenZero : IValueConverter
 	{
-		public static CollapsedWhenEmptyCollection Instance = new CollapsedWhenEmptyCollection();
+		public static CollapsedWhenZero Instance = new CollapsedWhenZero();
 
 		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 		{
-			ICollection col = value as ICollection;
-			if (col != null && col.Count == 0) {
+			if (value == null || (int)value == 0) {
 				return Visibility.Collapsed;
-			}
+			}			
 			return Visibility.Visible;
 		}
 

@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30428</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{27DA2B5C-2AAA-4478-AB00-3E184273C241}</ProjectGuid>
     <OutputType>WinExe</OutputType>
@@ -111,10 +111,6 @@
     <Compile Include="DragListener.cs" />
     <Compile Include="DragTreeView.cs" />
     <Compile Include="DragTreeViewItem.cs" />
-    <Compile Include="EnumButton.cs" />
-    <Compile Include="EnumBar.xaml.cs">
-      <DependentUpon>EnumBar.xaml</DependentUpon>
-    </Compile>
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="IconItem.cs" />
     <Compile Include="MainWindow_Commands.cs" />
@@ -148,10 +144,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="EnumBar.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="MainWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -166,10 +158,9 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="TestFiles\3.xaml">
-      <Generator>MSBuild:Compile</Generator>
+    <None Include="TestFiles\3.xaml">
       <SubType>Designer</SubType>
-    </Page>
+    </None>
     <Page Include="Themes\Generic.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -190,6 +181,12 @@
   <ItemGroup>
     <Resource Include="Images\Reference.png" />
     <Resource Include="Images\Tag.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\AddIns\DisplayBindings\WpfDesign\WpfDesign.XamlDom\Project\WpfDesign.XamlDom.csproj">
+      <Project>{88DA149F-21B2-48AB-82C4-28FB6BDFD783}</Project>
+      <Name>WpfDesign.XamlDom</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -4,11 +4,11 @@
              >
     
     <MenuItem Header="Reset"
-              Click="Click_Reset" />
-    <MenuItem Header="TODO:"
-              IsEnabled="False"/>
+              Click="Click_Reset" />    
     <MenuItem Header="Binding" 
               Click="Click_Binding" />
+    <MenuItem Header="TODO:"
+              IsEnabled="False" />
     <MenuItem x:Name="uxStaticResource" 
               Header="Static Resource">
         <MenuItem Header="Resource1" />

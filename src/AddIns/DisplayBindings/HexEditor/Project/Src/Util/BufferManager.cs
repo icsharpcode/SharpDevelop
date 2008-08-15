@@ -7,16 +7,10 @@
 
 using System;
 using System.IO;
-using System.Collections;
-using System.Collections.Generic;
-using System.Text;
 using System.Windows.Forms;
-using System.Diagnostics;
-using System.ComponentModel;
-using System.Threading;
 
-using ICSharpCode.SharpDevelop;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 
 namespace HexEditor.Util
 {
@@ -68,7 +62,7 @@ namespace HexEditor.Util
 					}
 				} while (count > 0);
 			} else {
-				MessageService.ShowError(new FileNotFoundException("The file " + currentFile.FileName + " doesn't exist!", currentFile.FileName), "The file " + currentFile.FileName + " doesn't exist!");
+				MessageService.ShowErrorFormatted("${res:Fileutility.CantFindFileError}", currentFile.FileName);
 			}
 			
 			this.parent.Invalidate();

@@ -5,10 +5,11 @@
     xmlns:Integration="clr-namespace:System.Windows.Forms.Integration;assembly=WindowsFormsIntegration"
     xmlns:TextEditor="clr-namespace:ICSharpCode.TextEditor;assembly=ICSharpCode.TextEditor"
     xmlns:Default="clr-namespace:ICSharpCode.XamlDesigner"
+    xmlns:DesignerControls="clr-namespace:ICSharpCode.WpfDesign.Designer.Controls;assembly=ICSharpCode.WpfDesign.Designer"
     >
     
     <DockPanel>
-        <Default:EnumBar Value="{Binding Mode}"
+        <DesignerControls:EnumBar Value="{Binding Mode}"
                                   DockPanel.Dock="Bottom"/>
         <Grid>
             <Integration:WindowsFormsHost Visibility="{Binding InXamlMode, Converter={StaticResource CollapsedWhenFalse}}">

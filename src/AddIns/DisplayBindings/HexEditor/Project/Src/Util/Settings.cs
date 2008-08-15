@@ -6,8 +6,8 @@
 // </file>
 
 using System;
-using System.Xml;
 using System.Drawing;
+using System.Xml;
 
 namespace HexEditor.Util
 {
@@ -23,10 +23,6 @@ namespace HexEditor.Util
 		int bytesPerLine;
 		ViewMode viewMode;
 		string[] fileTypes;
-
-		public Settings()
-		{
-		}
 		
 		public static Settings FromXML(XmlDocument document)
 		{

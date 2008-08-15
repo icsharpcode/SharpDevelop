@@ -1091,6 +1091,32 @@ void Test<T>(ref T name) where ";
 			Assert.AreEqual("where ", result.Expression);
 			Assert.AreEqual(ExpressionContext.Constraints, result.Context);
 		}
+		
+		[Test]
+		public void FindFullExpressionAfterCastAfterForLoop()
+		{
+			const string program = @"using System; using System.Text;
+class Main {
+	void M() {
+		for (;;) ((TargetType)variable).MethodCall()
+}}";
+			
+			ExpressionResult result = ef.FindFullExpression(program, program.IndexOf("Call"));
+			Assert.AreEqual(" ((TargetType)variable).MethodCall()", result.Expression);
+		}
+		
+		[Test]
+		public void FindFullExpressionAfterCastAfterCondition()
+		{
+			const string program = @"using System; using System.Text;
+class Main {
+	void M() {
+		if (true) ((TargetType)variable).MethodCall()
+}}";
+			
+			ExpressionResult result = ef.FindFullExpression(program, program.IndexOf("Call"));
+			Assert.AreEqual(" ((TargetType)variable).MethodCall()", result.Expression);
+		}
 	}
 }
 

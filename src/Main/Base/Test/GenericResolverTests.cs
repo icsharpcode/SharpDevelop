@@ -32,9 +32,9 @@ namespace ICSharpCode.SharpDevelop.Tests
 			return nrrt.Resolve<RR>(program, expression, line, column, ExpressionContext.Default);
 		}
 		
-		ResolveResult ResolveVB(string program, string expression, int line)
+		RR ResolveVB<RR>(string program, string expression, int line) where RR : ResolveResult
 		{
-			return nrrt.ResolveVB(program, expression, line);
+			return nrrt.ResolveVB<RR>(program, expression, line);
 		}
 		#endregion
 		

@@ -174,6 +174,8 @@ namespace ICSharpCode.TextEditor
 			for (int i = 0;; i++) {
 				try {
 					IDataObject data = Clipboard.GetDataObject();
+					if (data == null)
+						return;
 					bool fullLine = data.GetDataPresent(LineSelectedType);
 					if (data.GetDataPresent(DataFormats.UnicodeText)) {
 						string text = (string)data.GetData(DataFormats.UnicodeText);

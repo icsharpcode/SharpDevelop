@@ -14,6 +14,7 @@ using System.Windows.Input;
 using ICSharpCode.WpfDesign.Adorners;
 using ICSharpCode.WpfDesign.Designer.Controls;
 using ICSharpCode.WpfDesign.Extensions;
+using System.Collections.Generic;
 
 namespace ICSharpCode.WpfDesign.Designer.Extensions
 {
@@ -29,9 +30,8 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		readonly DesignItem[] extendedItemArray = new DesignItem[1];
 		IPlacementBehavior resizeBehavior;
 		PlacementOperation operation;
-		ResizeThumb activeResizeThumb;
+		ChangeGroup changeGroup;
 		
-		/// <summary></summary>
 		public ResizeThumbExtension()
 		{
 			adornerPanel = new AdornerPanel();
@@ -58,99 +58,83 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			AdornerPanel.SetPlacement(resizeThumb, new RelativePlacement(alignment.Horizontal, alignment.Vertical));
 			adornerPanel.Children.Add(resizeThumb);
 			
-			resizeThumb.DragStarted   += OnDragStarted;
-			resizeThumb.DragDelta     += OnDragDelta(alignment);
-			resizeThumb.DragCompleted += OnDragCompleted;
+			DragListener drag = new DragListener(resizeThumb);
+			drag.Started += new DragHandler(drag_Started);
+			drag.Changed += new DragHandler(drag_Changed);
+			drag.Completed += new DragHandler(drag_Completed);
 			return resizeThumb;
 		}
-		
-		void OnDragStarted(object sender, DragStartedEventArgs e)
+
+		Size oldSize;		
+
+		void drag_Started(DragListener drag)
 		{
-			activeResizeThumb = (ResizeThumb)sender;
-			operation = PlacementOperation.Start(extendedItemArray, PlacementType.Resize);
-			this.ExtendedItem.Services.GetService<IDesignPanel>().KeyDown += OnDesignPanelKeyDown;
+			oldSize = new Size(ModelTools.GetWidth(ExtendedItem.View), ModelTools.GetHeight(ExtendedItem.View));
+			if (resizeBehavior != null) 
+				operation = PlacementOperation.Start(extendedItemArray, PlacementType.Resize);
+			else {				
+				changeGroup = this.ExtendedItem.Context.OpenGroup("Resize", extendedItemArray);
+			}
 		}
-		
-		DragDeltaEventHandler OnDragDelta(PlacementAlignment alignment)
+
+		void drag_Changed(DragListener drag)
 		{
-			return delegate(object sender, DragDeltaEventArgs e) {
-				foreach (PlacementInformation info in operation.PlacedItems) {
-					double left = info.Bounds.Left;
-					double right = info.Bounds.Right;
-					double bottom = info.Bounds.Bottom;
-					double top = info.Bounds.Top;
-					switch (alignment.Horizontal) {
-						case HorizontalAlignment.Left:
-							left += e.HorizontalChange;
-							if (left > right)
-								left = right;
-							break;
-						case HorizontalAlignment.Right:
-							right += e.HorizontalChange;
-							if (right < left)
-								right = left;
-							break;
-					}
-					switch (alignment.Vertical) {
-						case VerticalAlignment.Top:
-							top += e.VerticalChange;
-							if (top > bottom)
-								top = bottom;
-							break;
-						case VerticalAlignment.Bottom:
-							bottom += e.VerticalChange;
-							if (bottom < top)
-								bottom = top;
-							break;
-					}
-					info.Bounds = new Rect(left, top, right - left, bottom - top);
-					operation.CurrentContainerBehavior.SetPosition(info);
-				}
-			};
+			double dx = 0;
+			double dy = 0;
+			var alignment = (drag.Target as ResizeThumb).Alignment;
+			
+			if (alignment.Horizontal == HorizontalAlignment.Left) dx = -drag.Delta.X;
+			if (alignment.Horizontal == HorizontalAlignment.Right) dx = drag.Delta.X;
+			if (alignment.Vertical == VerticalAlignment.Top) dy = -drag.Delta.Y;
+			if (alignment.Vertical == VerticalAlignment.Bottom) dy = drag.Delta.Y;
+			
+			var newWidth = Math.Max(0, oldSize.Width + dx);
+			var newHeight = Math.Max(0, oldSize.Height + dy);
+
+			ModelTools.Resize(ExtendedItem, newWidth, newHeight);
+
+			if (operation != null) {
+				var info = operation.PlacedItems[0];
+				var result = info.OriginalBounds;				
+				
+				if (alignment.Horizontal == HorizontalAlignment.Left)
+					result.X = Math.Min(result.Right, result.X - dx);
+				if (alignment.Vertical == VerticalAlignment.Top)
+					result.Y = Math.Min(result.Bottom, result.Y - dy);
+				result.Width = newWidth;
+				result.Height = newHeight;
+				
+				info.Bounds = result;
+				info.ResizeThumbAlignment = alignment;
+				operation.CurrentContainerBehavior.BeforeSetPosition(operation);
+				operation.CurrentContainerBehavior.SetPosition(info);
+	        }
 		}
-		
-		void OnDragCompleted(object sender, DragCompletedEventArgs e)
+
+		void drag_Completed(DragListener drag)
 		{
 			if (operation != null) {
-				this.ExtendedItem.Services.GetService<IDesignPanel>().KeyDown -= OnDesignPanelKeyDown;
-				if (e.Canceled)
-					operation.Abort();
-				else
-					operation.Commit();
+				if (drag.IsCanceled) operation.Abort();
+				else operation.Commit();
 				operation = null;
+			} else {
+				if (drag.IsCanceled) changeGroup.Abort();
+				else changeGroup.Commit();
+				changeGroup = null;
 			}
 		}
 		
-		void OnDesignPanelKeyDown(object sender, KeyEventArgs e)
-		{
-			if (e.Key == Key.Escape) {
-				activeResizeThumb.CancelDrag();
-			}
-		}
-		
-		/// <summary/>
 		protected override void OnInitialized()
 		{
 			base.OnInitialized();
 			extendedItemArray[0] = this.ExtendedItem;
-			this.ExtendedItem.PropertyChanged += OnPropertyChanged;
-			this.Services.Selection.PrimarySelectionChanged += OnPrimarySelectionChanged;
-			
-			resizeBehavior = PlacementOperation.GetPlacementBehavior(extendedItemArray);
-			
-			UpdateAdornerVisibility();
+			this.Services.Selection.PrimarySelectionChanged += OnPrimarySelectionChanged;			
+			resizeBehavior = PlacementOperation.GetPlacementBehavior(extendedItemArray);			
 			OnPrimarySelectionChanged(null, null);
 		}
 		
-		void OnPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-		{
-			UpdateAdornerVisibility();
-		}
-		
-		/// <summary/>
 		protected override void OnRemove()
 		{
-			this.ExtendedItem.PropertyChanged -= OnPropertyChanged;
 			this.Services.Selection.PrimarySelectionChanged -= OnPrimarySelectionChanged;
 			base.OnRemove();
 		}
@@ -160,15 +144,6 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			bool isPrimarySelection = this.Services.Selection.PrimarySelection == this.ExtendedItem;
 			foreach (ResizeThumb g in adornerPanel.Children) {
 				g.IsPrimarySelection = isPrimarySelection;
-			}
-		}
-		
-		void UpdateAdornerVisibility()
-		{
-			FrameworkElement fe = this.ExtendedItem.View as FrameworkElement;
-			foreach (ResizeThumb r in resizeThumbs) {
-				bool isVisible = resizeBehavior != null && resizeBehavior.CanPlace(extendedItemArray, PlacementType.Resize, r.Alignment);
-				r.Visibility = isVisible ? Visibility.Visible : Visibility.Hidden;
 			}
 		}
 	}

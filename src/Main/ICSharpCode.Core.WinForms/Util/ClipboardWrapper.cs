@@ -43,6 +43,10 @@ namespace ICSharpCode.Core.WinForms
 			SetDataObject(data);
 		}
 		
+		/// <summary>
+		/// Gets the current clipboard content.
+		/// Can return null!
+		/// </summary>
 		public static IDataObject GetDataObject()
 		{
 			// retry 2 times should be enough for read access
@@ -52,7 +56,7 @@ namespace ICSharpCode.Core.WinForms
 				try {
 					return Clipboard.GetDataObject();
 				} catch (ExternalException) {
-					return new DataObject();
+					return null;
 				}
 			}
 		}

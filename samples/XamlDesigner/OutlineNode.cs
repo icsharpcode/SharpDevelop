@@ -6,26 +6,38 @@ using System.ComponentModel;
 using ICSharpCode.WpfDesign;
 using System.Collections.ObjectModel;
 using System.Collections;
+using ICSharpCode.WpfDesign.Designer;
+using ICSharpCode.WpfDesign.XamlDom;
 
 namespace ICSharpCode.XamlDesigner
 {
 	public class OutlineNode : INotifyPropertyChanged
 	{
-		public OutlineNode(DesignItem designItem)
+		public static OutlineNode Create(DesignItem designItem)
+		{
+			OutlineNode node;
+			if (!outlineNodes.TryGetValue(designItem, out node)) {
+				node = new OutlineNode(designItem);
+				outlineNodes[designItem] = node;
+			}
+			return node;
+		}
+
+		//TODO: Reset with DesignContext
+		static Dictionary<DesignItem, OutlineNode> outlineNodes = new Dictionary<DesignItem, OutlineNode>();
+
+		OutlineNode(DesignItem designItem)
 		{
 			DesignItem = designItem;
 			UpdateChildren();
 
-			//TODO (possible bug)
+			//TODO
 			DesignItem.NameChanged += new EventHandler(DesignItem_NameChanged);
 			DesignItem.PropertyChanged += new PropertyChangedEventHandler(DesignItem_PropertyChanged);
 			SelectionService.SelectionChanged += new EventHandler<DesignItemCollectionEventArgs>(Selection_SelectionChanged);
 		}
 
-		bool freezeChildren;
-
 		public DesignItem DesignItem { get; private set; }
-		public OutlineNode Parent { get; private set; }
 
 		public ISelectionService SelectionService {
 			get { return DesignItem.Services.Selection; }
@@ -93,7 +105,8 @@ namespace ICSharpCode.XamlDesigner
 
 		void UpdateChildren()
 		{
-			if (freezeChildren) return;
+			Children.Clear();
+
 			if (DesignItem.ContentPropertyName != null) {
 				var content = DesignItem.ContentProperty;
 				if (content.IsCollection) {
@@ -109,27 +122,22 @@ namespace ICSharpCode.XamlDesigner
 
 		void UpdateChildrenCore(IEnumerable<DesignItem> items)
 		{
-			var cache = Children.ToDictionary(n => n.DesignItem);
-			
-			Children.Clear();
-
 			foreach (var item in items) {
-				OutlineNode node;
-				if (!cache.TryGetValue(item, out node)) {
-					node = new OutlineNode(item);
+				if (ModelTools.CanSelectComponent(item)) {
+					var node = OutlineNode.Create(item);
+					Children.Add(node);
 				}
-				Children.Add(node);
-				node.Parent = this;
 			}
 		}
 
+		// TODO: Outline and IPlacementBehavior must use the same logic (put it inside DesignItem)
 		public bool CanInsert(IEnumerable<OutlineNode> nodes, OutlineNode after, bool copy)
 		{
 			if (DesignItem.ContentPropertyName == null) return false;
 
 			if (DesignItem.ContentProperty.IsCollection) {
 				foreach (var node in nodes) {
-					if (!CanAdd(DesignItem.ContentProperty.ReturnType, 
+					if (!CollectionSupport.CanCollectionAdd(DesignItem.ContentProperty.ReturnType, 
 						node.DesignItem.ComponentType)) {
 						return false;
 					}
@@ -143,58 +151,27 @@ namespace ICSharpCode.XamlDesigner
 			}
 		}
 
-		public static bool CanAdd(Type col, Type item)
-		{
-			var e = col.GetInterface("IEnumerable`1");
-			if (e != null && e.IsGenericType) {
-				var a = e.GetGenericArguments()[0];
-				return a.IsAssignableFrom(item);
-			}
-			return true;
-		}
-
 		public void Insert(IEnumerable<OutlineNode> nodes, OutlineNode after, bool copy)
 		{
-			freezeChildren = true;
-
 			if (copy) {
-				nodes = nodes.Select(n => new OutlineNode(n.DesignItem.Clone()));
+				nodes = nodes.Select(n => OutlineNode.Create(n.DesignItem.Clone()));
 			}
 			else {
 				foreach (var node in nodes) {
-					Remove(node);
+					node.DesignItem.Remove();
 				}
 			}
 
 			var index = after == null ? 0 : Children.IndexOf(after) + 1;
-			var tempIndex = index;
-
-			foreach (var node in nodes) {
-				Children.Insert(tempIndex++, node);
-				node.Parent = this;
-			}
 
 			var content = DesignItem.ContentProperty;
 			if (content.IsCollection) {
-				tempIndex = index;
 				foreach (var node in nodes) {
-					content.CollectionElements.Insert(tempIndex++, node.DesignItem);
+					content.CollectionElements.Insert(index++, node.DesignItem);
 				}
 			}
 			else {
 				content.SetValue(nodes.First().DesignItem);
-			}
-
-			freezeChildren = false;
-		}
-
-		void Remove(OutlineNode node)
-		{
-			node.DesignItem.Remove();
-
-			if (node.Parent != null) {
-				node.Parent.Children.Remove(node);
-				node.Parent = null;
 			}
 		}
 

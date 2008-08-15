@@ -16,7 +16,7 @@ using System.Windows.Markup;
 
 namespace ICSharpCode.WpfDesign.XamlDom
 {
-	static class CollectionSupport
+	public static class CollectionSupport
 	{
 		public static bool IsCollectionType(Type type)
 		{
@@ -24,6 +24,24 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				|| type.IsArray
 				|| typeof(IAddChild).IsAssignableFrom(type)
 				|| typeof(ResourceDictionary).IsAssignableFrom(type);
+		}		
+
+		public static bool CanCollectionAdd(Type col, Type item)
+		{
+			var e = col.GetInterface("IEnumerable`1");
+			if (e != null && e.IsGenericType) {
+				var a = e.GetGenericArguments()[0];
+				return a.IsAssignableFrom(item);
+			}
+			return true;
+		}
+
+		public static bool CanCollectionAdd(Type col, IEnumerable items)
+		{
+			foreach (var item in items) {
+				if (!CanCollectionAdd(col, item.GetType())) return false;
+			}
+			return true;
 		}
 		
 		public static void AddToCollection(Type collectionType, object collectionInstance, XamlPropertyValue newElement)
