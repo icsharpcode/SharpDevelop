@@ -102,22 +102,15 @@ namespace VBNetBinding.Parser
 			p.Parse();
 			
 			NRefactoryASTConvertVisitor visitor = new NRefactoryASTConvertVisitor(projectContent);
+			if (projectContent.Project != null) {
+				visitor.VBRootNamespace = ((IProject)projectContent.Project).RootNamespace;
+			}
 			visitor.Specials = p.Lexer.SpecialTracker.CurrentSpecials;
 			visitor.VisitCompilationUnit(p.CompilationUnit, null);
 			visitor.Cu.FileName = fileName;
 			visitor.Cu.ErrorsDuringCompile = p.Errors.Count > 0;
 			RetrieveRegions(visitor.Cu, p.Lexer.SpecialTracker);
 			AddCommentTags(visitor.Cu, p.Lexer.TagComments);
-			
-			string rootNamespace = null;
-			if (projectContent.Project != null) {
-				rootNamespace = ((IProject)projectContent.Project).RootNamespace;
-			}
-			if (rootNamespace != null && rootNamespace.Length > 0) {
-				foreach (DefaultClass c in visitor.Cu.Classes) {
-					c.FullyQualifiedName = rootNamespace + "." + c.FullyQualifiedName;
-				}
-			}
 			
 			return visitor.Cu;
 		}

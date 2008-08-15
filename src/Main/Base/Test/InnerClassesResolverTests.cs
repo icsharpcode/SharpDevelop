@@ -28,9 +28,9 @@ namespace ICSharpCode.SharpDevelop.Tests
 			return nrrt.Resolve<T>(program, expression, line);
 		}
 		
-		ResolveResult ResolveVB(string program, string expression, int line)
+		T ResolveVB<T>(string program, string expression, int line) where T : ResolveResult
 		{
-			return nrrt.ResolveVB(program, expression, line);
+			return nrrt.ResolveVB<T>(program, expression, line);
 		}
 		#endregion
 		

@@ -65,11 +65,12 @@ namespace ICSharpCode.SharpDevelop.Tests
 			pc.Language = LanguageProperties.VBNet;
 			lastPC = pc;
 			NRefactoryASTConvertVisitor visitor = new NRefactoryASTConvertVisitor(pc);
+			visitor.VBRootNamespace = "RootNamespace";
 			visitor.VisitCompilationUnit(p.CompilationUnit, null);
 			visitor.Cu.FileName = fileName;
 			Assert.AreEqual(0, p.Errors.Count, "Parse error preparing compilation unit");
 			visitor.Cu.ErrorsDuringCompile = p.Errors.Count > 0;
-			foreach (IClass c in visitor.Cu.Classes) {
+			foreach (DefaultClass c in visitor.Cu.Classes) {
 				pc.AddClassToNamespaceList(c);
 			}
 			
@@ -95,12 +96,12 @@ namespace ICSharpCode.SharpDevelop.Tests
 			return resolver.Resolve(expressionResult, parseInfo, program);
 		}
 		
-		public ResolveResult ResolveVB(string program, string expression, int line)
+		public ResolveResult ResolveVB(string program, string expression, int line, int column, ExpressionContext context)
 		{
 			ParseInformation parseInfo = AddCompilationUnit(ParseVB("a.vb", program), "a.vb");
 			
 			NRefactoryResolver resolver = new NRefactoryResolver(LanguageProperties.VBNet);
-			ExpressionResult expressionResult = new ExpressionResult(expression, new DomRegion(line, 0), ExpressionContext.Default, null);
+			ExpressionResult expressionResult = new ExpressionResult(expression, new DomRegion(line, column), context, null);
 			return resolver.Resolve(expressionResult, parseInfo, program);
 		}
 		
@@ -122,7 +123,15 @@ namespace ICSharpCode.SharpDevelop.Tests
 		
 		public T ResolveVB<T>(string program, string expression, int line) where T : ResolveResult
 		{
-			ResolveResult rr = ResolveVB(program, expression, line);
+			ResolveResult rr = ResolveVB(program, expression, line, 0, ExpressionContext.Default);
+			Assert.IsNotNull(rr, "Resolve returned null (expression=" + expression + ")");
+			Assert.AreEqual(typeof(T), rr.GetType());
+			return (T)rr;
+		}
+		
+		public T ResolveVB<T>(string program, string expression, int line, int column, ExpressionContext context) where T : ResolveResult
+		{
+			ResolveResult rr = ResolveVB(program, expression, line, column, context);
 			Assert.IsNotNull(rr, "Resolve returned null (expression=" + expression + ")");
 			Assert.AreEqual(typeof(T), rr.GetType());
 			return (T)rr;
@@ -175,7 +184,7 @@ End Class
 	End Sub
 End Class
 ";
-			ResolveResult result = ResolveVB(program, "a", 4);
+			LocalResolveResult result = ResolveVB<LocalResolveResult>(program, "a", 4);
 			Assert.IsNotNull(result, "result");
 			ArrayList arr = result.GetCompletionData(lastPC);
 			Assert.IsNotNull(arr, "arr");
@@ -890,7 +899,7 @@ Class A
 End Class
 ";
 			MemberResolveResult result = ResolveVB<MemberResolveResult>(program, "GetRectangleArea(r1)", 5);
-			Assert.AreEqual("A.GetRectangleArea", result.ResolvedMember.FullyQualifiedName);
+			Assert.AreEqual("RootNamespace.A.GetRectangleArea", result.ResolvedMember.FullyQualifiedName);
 			
 			IMethod m = (IMethod)result.ResolvedMember;
 			Assert.IsTrue(m.IsStatic);
@@ -1117,15 +1126,15 @@ Class B
 End Class
 ";
 			MemberResolveResult mrr = ResolveVB<MemberResolveResult>(program, "mybase.new(\"bb\")", 4);
-			Assert.AreEqual("B", mrr.ResolvedMember.DeclaringType.FullyQualifiedName);
+			Assert.AreEqual("RootNamespace.B", mrr.ResolvedMember.DeclaringType.FullyQualifiedName);
 			Assert.IsTrue(((IMethod)mrr.ResolvedMember).IsConstructor);
 			
 			ResolveResult result = ResolveVB<VBBaseOrThisReferenceInConstructorResolveResult>(program, "mybase", 4);
-			Assert.AreEqual("B", result.ResolvedType.FullyQualifiedName);
+			Assert.AreEqual("RootNamespace.B", result.ResolvedType.FullyQualifiedName);
 			Assert.IsTrue(ContainsMember(result.GetCompletionData(result.CallingClass.ProjectContent), mrr.ResolvedMember.FullyQualifiedName));
 			
 			result = ResolveVB<BaseResolveResult>(program, "mybase", 7);
-			Assert.AreEqual("B", result.ResolvedType.FullyQualifiedName);
+			Assert.AreEqual("RootNamespace.B", result.ResolvedType.FullyQualifiedName);
 			Assert.IsFalse(ContainsMember(result.GetCompletionData(result.CallingClass.ProjectContent), mrr.ResolvedMember.FullyQualifiedName));
 		}
 		
@@ -1424,7 +1433,7 @@ Class F
 End Class
 ";
 			MemberResolveResult result = ResolveVB<MemberResolveResult>(program, "CancelButton", 5);
-			Assert.AreEqual("F.cancelButton", result.ResolvedMember.FullyQualifiedName);
+			Assert.AreEqual("RootNamespace.F.cancelButton", result.ResolvedMember.FullyQualifiedName);
 			
 			result = ResolveVB<MemberResolveResult>(program, "MyBase.CancelButton", 5);
 			Assert.AreEqual("System.Windows.Forms.Form.CancelButton", result.ResolvedMember.FullyQualifiedName);
@@ -2289,6 +2298,22 @@ class TestClass {
 			
 			ResolveResult result2 = Resolve(program, "A[0]", 2, 1, ExpressionContext.ObjectCreation);
 			Assert.IsTrue(result2.IsReferenceTo(result.ResolvedClass));
+		}
+		
+		[Test]
+		public void SD2_1436()
+		{
+			string program = @"Interface ITest
+End Interface
+
+Module Program
+    Public Delegate Sub NestedBug(a as ITest)
+End Module";
+			TypeResolveResult result = ResolveVB<TypeResolveResult>(program, "ITest", 5, 40, ExpressionContext.Default);
+			Assert.AreEqual("RootNamespace.ITest", result.ResolvedClass.FullyQualifiedName);
+			
+			result = ResolveVB<TypeResolveResult>(program, "ITest", 5, 40, ExpressionContext.Type);
+			Assert.AreEqual("RootNamespace.ITest", result.ResolvedClass.FullyQualifiedName);
 		}
 	}
 }

@@ -23,6 +23,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		ICompilationUnit cu;
 		Stack<string> currentNamespace = new Stack<string>();
 		Stack<DefaultClass> currentClass = new Stack<DefaultClass>();
+		public string VBRootNamespace { get; set; }
 		
 		public ICompilationUnit Cu {
 			get {
@@ -158,7 +159,13 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (compilationUnit == null) {
 				return null;
 			}
-			compilationUnit.AcceptChildren(this, data);
+			if (!string.IsNullOrEmpty(VBRootNamespace)) {
+				currentNamespace.Push(VBRootNamespace);
+				compilationUnit.AcceptChildren(this, data);
+				currentNamespace.Pop();
+			} else {
+				compilationUnit.AcceptChildren(this, data);
+			}
 			return cu;
 		}
 		
