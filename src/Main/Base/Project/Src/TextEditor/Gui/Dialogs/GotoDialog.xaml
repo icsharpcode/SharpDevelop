@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Window
+	x:Class="ICSharpCode.SharpDevelop.Gui.GotoDialog"
+	xmlns="http://schemas.microsoft.com/netfx/2007/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:core = "http://icsharpcode.net/sharpdevelop/core"
+	Title="{core:Localize Dialog.Goto.DialogName}"
+	Height="298"
+	Width="578"
+	Style = "{StaticResource DialogWindow}">
+	<Grid>
+		<Label
+			Grid.Column="0"
+			Grid.Row="0"
+			HorizontalAlignment="Stretch"
+			VerticalAlignment="Stretch"
+			Margin="8,8,8,0"
+			Content="{core:Localize Dialog.Goto.IntroText}" />
+		<TextBox
+			Grid.Column="0"
+			Grid.Row="1"
+			HorizontalAlignment="Stretch"
+			VerticalAlignment="Stretch"
+			Margin="8,4,8,4"
+			Name="textBox"
+			TextChanged="textBoxTextChanged"
+			PreviewKeyDown="textBoxPreviewKeyDown" />
+		<ListBox
+			Grid.Column="0"
+			Grid.Row="2"
+			HorizontalAlignment="Stretch"
+			VerticalAlignment="Stretch"
+			Margin="8,4,8,4"
+			Name="listBox"/>
+		<Button
+			Content="{core:Localize Global.OKButtonText}"
+			Grid.Column="0"
+			Grid.Row="3"
+			HorizontalAlignment="Right"
+			VerticalAlignment="Stretch"
+			Margin="0,6,117,8"
+			Width="100"
+			IsDefault="True"
+			Name="okButton"
+			Click="okButtonClick" />
+		<Button
+			Content="{core:Localize Global.CancelButtonText}"
+			Grid.Column="0"
+			Grid.Row="3"
+			HorizontalAlignment="Right"
+			VerticalAlignment="Stretch"
+			Margin="0,6,8,8"
+			Width="100"
+			IsCancel="True"
+			Name="cancelButton"
+			Click="cancelButtonClick" />
+		<Grid.RowDefinitions>
+			<RowDefinition
+				Height="60" />
+			<RowDefinition
+				Height="30" />
+			<RowDefinition
+				Height="1*" />
+			<RowDefinition
+				Height="37" />
+		</Grid.RowDefinitions>
+	</Grid>
+</Window>

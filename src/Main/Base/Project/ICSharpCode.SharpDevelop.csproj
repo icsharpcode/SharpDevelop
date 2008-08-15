@@ -70,6 +70,10 @@
     <Compile Include="Src\Gui\AbstractSecondaryViewContent.cs" />
     <Compile Include="Src\Gui\AbstractViewContentHandlingLoadErrors.cs" />
     <Compile Include="Src\Gui\AbstractViewContentWithoutFile.cs" />
+    <Compile Include="Src\Gui\App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Src\Gui\BrowserDisplayBinding\BrowserDisplayBinding.cs" />
     <Compile Include="Src\Gui\Components\SideBar\TextEditorSideBar.cs" />
     <Compile Include="Src\Gui\Dialogs\AddOpenWithEntryDialog.cs" />
@@ -477,7 +481,6 @@
     <EmbeddedResource Include="Resources\TreeViewOptionsDialog.xfrm" />
     <EmbeddedResource Include="Resources\WordCountDialog.xfrm" />
     <EmbeddedResource Include="Resources\BehaviorTextEditorPanel.xfrm" />
-    <EmbeddedResource Include="Resources\GotoDialog.xfrm" />
     <EmbeddedResource Include="Resources\GeneralTextEditorPanel.xfrm" />
     <EmbeddedResource Include="Resources\CodeTemplatePanel.xfrm" />
     <EmbeddedResource Include="Resources\MarkersTextEditorPanel.xfrm" />
@@ -796,7 +799,9 @@
       <Name>ICSharpCode.SharpDevelop.Widgets</Name>
       <Private>True</Private>
     </ProjectReference>
+    <Page Include="Src\Gui\App.xaml" />
     <Page Include="Src\Gui\Workbench\WpfWorkbench.xaml" />
+    <Page Include="Src\TextEditor\Gui\Dialogs\GotoDialog.xaml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

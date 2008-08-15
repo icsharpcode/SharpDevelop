@@ -8,6 +8,7 @@
 using System;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Windows.Markup;
 
 [assembly: CLSCompliant(true)]
 [assembly: StringFreezing()]
@@ -17,3 +18,6 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
+
+[assembly: XmlnsPrefix("http://icsharpcode.net/sharpdevelop/core", "core")]
+[assembly: XmlnsDefinition("http://icsharpcode.net/sharpdevelop/core", "ICSharpCode.Core.Presentation")]

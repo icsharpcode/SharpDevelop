@@ -125,7 +125,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 			// finally run the workbench window ...
 			//Application.AddMessageFilter(new FormKeyHandler());
 			//Application.Run(WorkbenchSingleton.MainForm);
-			var application = new System.Windows.Application();
+			App application = new App();
 			System.Windows.Forms.Integration.WindowsFormsHost.EnableWindowsFormsInterop();
 			application.Run(WorkbenchSingleton.MainWindow);
 			

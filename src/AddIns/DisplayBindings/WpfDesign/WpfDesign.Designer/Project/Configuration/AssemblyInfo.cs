@@ -41,10 +41,10 @@ using System.Windows.Markup;
     // app, or any theme specific resource dictionaries)
 )]
 
-[assembly: XmlnsPrefix("http://sharpdevelop.net", "sd")]
+[assembly: XmlnsPrefix("http://icsharpcode.net/sharpdevelop/wpfdesigner", "wpfdesigner")]
 
-[assembly: XmlnsDefinition("http://sharpdevelop.net", "ICSharpCode.WpfDesign.Designer")]
-[assembly: XmlnsDefinition("http://sharpdevelop.net", "ICSharpCode.WpfDesign.Designer.Controls")]
-[assembly: XmlnsDefinition("http://sharpdevelop.net", "ICSharpCode.WpfDesign.Designer.PropertyGrid")]
-[assembly: XmlnsDefinition("http://sharpdevelop.net", "ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors")]
+[assembly: XmlnsDefinition("http://icsharpcode.net/sharpdevelop/wpfdesigner", "ICSharpCode.WpfDesign.Designer")]
+[assembly: XmlnsDefinition("http://icsharpcode.net/sharpdevelop/wpfdesigner", "ICSharpCode.WpfDesign.Designer.Controls")]
+[assembly: XmlnsDefinition("http://icsharpcode.net/sharpdevelop/wpfdesigner", "ICSharpCode.WpfDesign.Designer.PropertyGrid")]
+[assembly: XmlnsDefinition("http://icsharpcode.net/sharpdevelop/wpfdesigner", "ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors")]
 

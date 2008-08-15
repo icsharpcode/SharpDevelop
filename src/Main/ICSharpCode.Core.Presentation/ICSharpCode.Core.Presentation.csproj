@@ -61,6 +61,7 @@
     </Compile>
     <Compile Include="ConditionalSeparator.cs" />
     <Compile Include="IStatusUpdate.cs" />
+    <Compile Include="LocalizeExtension.cs" />
     <Compile Include="Menu\IMenuItemBuilder.cs" />
     <Compile Include="Menu\MenuCommand.cs" />
     <Compile Include="Menu\MenuService.cs" />
