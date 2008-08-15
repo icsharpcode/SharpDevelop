@@ -2449,14 +2449,13 @@ EmbeddedStatement<out Statement statement>
 		(. SafeAdd(reDimStatement, reDimStatement.ReDimClauses, expr as InvocationExpression); .)
 	}
 	| /* 10.12.2 */
-	"Erase"	
+	"Erase"
 	Expr<out expr>
-	(.List<Expression> arrays = new List<Expression>();
-		if (expr != null) { arrays.Add(expr);}
-		EraseStatement eraseStatement = new EraseStatement(arrays);
-		
+	(.
+		EraseStatement eraseStatement = new EraseStatement();
+		if (expr != null) { SafeAdd(eraseStatement, eraseStatement.Expressions, expr);}
 	.)
-	{ "," Expr<out expr> (. if (expr != null) { arrays.Add(expr); }.) }
+	{ "," Expr<out expr> (. if (expr != null) { SafeAdd(eraseStatement, eraseStatement.Expressions, expr); }.) }
 	(. statement = eraseStatement; .)
 	| /* 10.11 */
 	"Stop" (. statement = new StopStatement(); .)
