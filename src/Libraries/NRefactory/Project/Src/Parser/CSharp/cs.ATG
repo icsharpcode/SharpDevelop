@@ -731,7 +731,6 @@ StructMemberDecl<ModifierList m, List<AttributeSection> attributes>
 	Expression expr;
 	List<ParameterDeclarationExpression> p = new List<ParameterDeclarationExpression>();
 	Statement stmt = null;
-	List<VariableDeclaration> variableDeclarators = new List<VariableDeclaration>();
 	List<TemplateDefinition> templates = new List<TemplateDefinition>();
 	TypeReference explicitInterface = null;
 	bool isExtensionMethod = false;
@@ -918,14 +917,14 @@ StructMemberDecl<ModifierList m, List<AttributeSection> attributes>
 		( IF (m.Contains(Modifiers.Fixed))
 			VariableDeclarator<fd>
 			"["
-			Expr<out expr> (. if (variableDeclarators.Count > 0)
-								variableDeclarators[variableDeclarators.Count-1].FixedArrayInitialization = expr; .)
+			Expr<out expr> (. if (fd.Fields.Count > 0)
+								fd.Fields[fd.Fields.Count-1].FixedArrayInitialization = expr; .)
 			"]"
 			{	","
 				VariableDeclarator<fd>
 				"["
-				Expr<out expr> (. if (variableDeclarators.Count > 0)
-									variableDeclarators[variableDeclarators.Count-1].FixedArrayInitialization = expr; .)
+				Expr<out expr> (. if (fd.Fields.Count > 0)
+									fd.Fields[fd.Fields.Count-1].FixedArrayInitialization = expr; .)
 				"]"
 			}
 		|	/* non-fixed field */
