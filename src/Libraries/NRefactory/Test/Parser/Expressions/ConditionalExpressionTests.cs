@@ -91,7 +91,17 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		#endregion
 		
 		#region VB.NET
-		// No VB.NET representation
+		
+		[Test]
+		public void VBNetConditionalExpressionTest()
+		{
+			ConditionalExpression ce = ParseUtilVBNet.ParseExpression<ConditionalExpression>("If(x IsNot Nothing, x.Test, \"nothing\")");
+			
+			Assert.IsTrue(ce.Condition is BinaryOperatorExpression);
+			Assert.IsTrue(ce.TrueExpression is MemberReferenceExpression);
+			Assert.IsTrue(ce.FalseExpression is PrimitiveExpression);
+		}
+		
 		#endregion
 	}
 }

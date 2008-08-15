@@ -86,6 +86,7 @@ namespace NRefactoryASTGenerator.Ast
 		BinaryOperatorType op;
 		Expression         right;
 		
+		public BinaryOperatorExpression() { }
 		public BinaryOperatorExpression(Expression left, BinaryOperatorType op, Expression right) {}
 	}
 	
@@ -189,6 +190,7 @@ namespace NRefactoryASTGenerator.Ast
 		Expression trueExpression;
 		Expression falseExpression;
 		
+		public ConditionalExpression() { }
 		public ConditionalExpression(Expression condition, Expression trueExpression, Expression falseExpression) {}
 	}
 	

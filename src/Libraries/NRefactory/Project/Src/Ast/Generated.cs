@@ -434,6 +434,11 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 		}
 		
+		public BinaryOperatorExpression() {
+			left = Expression.Null;
+			right = Expression.Null;
+		}
+		
 		public BinaryOperatorExpression(Expression left, BinaryOperatorType op, Expression right) {
 			Left = left;
 			Op = op;
@@ -830,6 +835,12 @@ namespace ICSharpCode.NRefactory.Ast {
 				falseExpression = value ?? Expression.Null;
 				if (!falseExpression.IsNull) falseExpression.Parent = this;
 			}
+		}
+		
+		public ConditionalExpression() {
+			condition = Expression.Null;
+			trueExpression = Expression.Null;
+			falseExpression = Expression.Null;
 		}
 		
 		public ConditionalExpression(Expression condition, Expression trueExpression, Expression falseExpression) {

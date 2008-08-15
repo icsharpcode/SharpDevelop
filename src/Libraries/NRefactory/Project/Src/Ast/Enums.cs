@@ -198,7 +198,10 @@ namespace ICSharpCode.NRefactory.Ast
 		
 		/// <summary>VB-only: Like</summary>
 		Like,
-		/// <summary>C#: ??</summary>
+		/// <summary>
+		/// 	C#: ??
+		/// 	VB: IF(x, y)
+		/// </summary>
 		NullCoalescing,
 		
 		/// <summary>VB-only: !</summary>

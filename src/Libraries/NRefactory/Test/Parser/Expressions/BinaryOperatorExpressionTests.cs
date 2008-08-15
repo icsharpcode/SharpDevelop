@@ -432,8 +432,14 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		{
 			VBNetTestBinaryOperatorExpressionTest("a Like b", BinaryOperatorType.Like);
 		}
-		#endregion
 		
+		[Test]
+		public void VBNetNullCoalescingTest()
+		{
+			VBNetTestBinaryOperatorExpressionTest("If(a, b)", BinaryOperatorType.NullCoalescing);
+		}
+		
+		#endregion		
 		
 		#region AddIntegerTests
 		string AddIntegerToBoe(string input, int number)
