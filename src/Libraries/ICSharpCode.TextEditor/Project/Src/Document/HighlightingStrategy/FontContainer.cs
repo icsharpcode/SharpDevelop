@@ -79,7 +79,7 @@ namespace ICSharpCode.TextEditor.Document
 			}
 			set {
 				// 1440 twips is one inch
-				int pixelSize = (int)(value.SizeInPoints * 20 / TwipsPerPixelY);
+				int pixelSize = (int)Math.Round(value.SizeInPoints * 20 / TwipsPerPixelY);
 				
 				defaultFont    = value;
 				regularfont    = new Font(value.FontFamily, pixelSize * TwipsPerPixelY / 20f, FontStyle.Regular);
