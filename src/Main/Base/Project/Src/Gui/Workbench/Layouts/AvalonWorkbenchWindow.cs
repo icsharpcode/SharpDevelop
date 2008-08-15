@@ -278,6 +278,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				
 				if (newTitle != Title) {
 					Title = newTitle;
+					OnTitleChanged(EventArgs.Empty);
 				}
 			}
 		}
@@ -339,7 +340,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 				}
 			}
 
-			OnCloseEvent(null);
 			Dispose();
 			return true;
 		}
@@ -366,38 +366,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-//		protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
-//		{
-//			e.Cancel = !CloseWindow(false);
-//		}
-		
-		void OnCloseEvent(EventArgs e)
-		{
-			OnWindowDeselected(e);
-			if (CloseEvent != null) {
-				CloseEvent(this, e);
-			}
-		}
-		
-		public void OnWindowSelected(EventArgs e)
-		{
-			if (WindowSelected != null) {
-				WindowSelected(this, e);
-			}
-		}
-		
-		public void OnWindowDeselected(EventArgs e)
-		{
-			if (WindowDeselected != null) {
-				WindowDeselected(this, e);
-			}
-		}
-		
-		public event EventHandler WindowSelected;
-		public event EventHandler WindowDeselected;
-		
 		public event EventHandler TitleChanged;
-		public event EventHandler CloseEvent;
 		
 		public BitmapSource Icon { get; set; }
 	}
