@@ -71,12 +71,15 @@ namespace NRefactoryASTGenerator.Ast
 			public IfElseStatement(Expression condition, Statement trueStatement)
 				: this(condition) {
 				this.trueStatement.Add(Statement.CheckNull(trueStatement));
+				if (trueStatement != null) trueStatement.Parent = this;
 			}")]
 	[IncludeMember(@"
 			public IfElseStatement(Expression condition, Statement trueStatement, Statement falseStatement)
 				: this(condition) {
 				this.trueStatement.Add(Statement.CheckNull(trueStatement));
 				this.falseStatement.Add(Statement.CheckNull(falseStatement));
+				if (trueStatement != null) trueStatement.Parent = this;
+				if (falseStatement != null) falseStatement.Parent = this;
 			}")]
 	[IncludeBoolProperty("HasElseStatements", "return falseStatement.Count > 0;")]
 	[IncludeBoolProperty("HasElseIfSections", "return elseIfSections.Count > 0;")]

@@ -864,6 +864,7 @@ StructMemberDecl<ModifierList m, List<AttributeSection> attributes>
 			StartLocation = m.GetDeclarationLocation(startPos),
 			EndLocation = endPos
 		};
+		SetParent(parameters, operatorDeclaration);
 		compilationUnit.AddChild(operatorDeclaration);
 	.)
 	
@@ -905,6 +906,7 @@ StructMemberDecl<ModifierList m, List<AttributeSection> attributes>
 				StartLocation = m.GetDeclarationLocation(startPos),
 				EndLocation = endPos
 			};
+			SetParent(parameters, operatorDeclaration);
 			compilationUnit.AddChild(operatorDeclaration);
 		.)
 		
@@ -1287,7 +1289,9 @@ ConstructorInitializer<out ConstructorInitializer ci>
 		| "this"  (. ci.ConstructorInitializerType = ConstructorInitializerType.This; .)
 	) 
 	"("
-	[ Argument<out expr> (. if (expr != null) { ci.Arguments.Add(expr); } .) { "," Argument<out expr> (. if (expr != null) { ci.Arguments.Add(expr); } .) } ]
+	[ Argument<out expr> (. SafeAdd(ci, ci.Arguments, expr); .) 
+	  { "," Argument<out expr> (. SafeAdd(ci, ci.Arguments, expr); .) }
+	]
 	")"
 .
 
@@ -1497,8 +1501,10 @@ EmbeddedStatement<out Statement statement>
 	|	"switch" (. List<SwitchSection> switchSections = new List<SwitchSection>(); .)
 		  "(" Expr<out expr> ")"
 		  "{" SwitchSections<switchSections>
-		  "}"  (. statement = new SwitchStatement(expr, switchSections); .)
-	
+		  "}"
+		(. statement = new SwitchStatement(expr, switchSections); .)
+		(. SetParent(switchSections, statement); .)
+		
 		/*--- iteration statements (while, do, for, foreach): */
 	|	"while" "(" Expr<out expr> ")"
 		EmbeddedStatement<out embeddedStatement>
@@ -1512,7 +1518,11 @@ EmbeddedStatement<out Statement statement>
 		  "(" [ ForInitializer<out initializer> ] ";"
 		  [ Expr<out expr> ] ";"
 		  [ ForIterator<out iterator> ] ")"
-		  EmbeddedStatement<out embeddedStatement> (. statement = new ForStatement(initializer, expr, iterator, embeddedStatement); .)
+		  EmbeddedStatement<out embeddedStatement> 
+		  (. statement = new ForStatement(initializer, expr, iterator, embeddedStatement); 
+		     SetParent(initializer, statement);
+		     SetParent(iterator, statement);
+		  .)
 	
 	|	"foreach" "(" Type<out type> Identifier   (. string varName = t.val; .)
 		"in" Expr<out expr> ")"
@@ -1583,6 +1593,8 @@ IfStatement<out Statement statement>
 		                               (elseStatement as IfElseStatement).TrueStatement[0]));
 		(statement as IfElseStatement).ElseIfSections.AddRange((elseStatement as IfElseStatement).ElseIfSections);
 		(statement as IfElseStatement).FalseStatement = (elseStatement as IfElseStatement).FalseStatement;
+		SetParent((statement as IfElseStatement).FalseStatement, statement);
+		SetParent((statement as IfElseStatement).ElseIfSections, statement);
 		}
 	.)
 .
@@ -1612,7 +1624,7 @@ SwitchSections<List<SwitchSection> switchSections>
 	CaseLabel label;
 .)
 =
-	SwitchLabel<out label> (. if (label != null) { switchSection.SwitchLabels.Add(label); } .) 
+	SwitchLabel<out label> (. SafeAdd(switchSection, switchSection.SwitchLabels, label); .) 
 	(. compilationUnit.BlockStart(switchSection); .)
 	{
 		( SwitchLabel<out label>
@@ -1623,7 +1635,7 @@ SwitchSections<List<SwitchSection> switchSections>
 		  			switchSection = new SwitchSection();
 		  			compilationUnit.BlockStart(switchSection);
 		  		}
-		  		switchSection.SwitchLabels.Add(label);
+		  		SafeAdd(switchSection, switchSection.SwitchLabels, label);
 		  	 }
 		  .)
 		| Statement)
@@ -1651,7 +1663,7 @@ TryStatement<out Statement tryStatement>
 	)
 	(.
 		tryStatement = new TryCatchStatement(blockStmt, catchClauses, finallyStmt);
-	
+		foreach (CatchClause cc in catchClauses) cc.Parent = tryStatement;
 	.)
 .
 
