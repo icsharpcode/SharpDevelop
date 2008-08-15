@@ -54,7 +54,7 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors
 
 		protected override void OnPreviewLostKeyboardFocus(KeyboardFocusChangedEventArgs e)
 		{
-			if (PropertyNode != null && PropertyNode.Value != Text) {
+			if (PropertyNode != null && (string)PropertyNode.Value != Text) {
 				if (string.IsNullOrEmpty(Text)) {
 					PropertyNode.Reset();
 				}
