@@ -2955,6 +2955,7 @@ MemberModifier<ModifierList m> =
 	| "WriteOnly"		(.m.Add(Modifiers.WriteOnly, t.Location);.)
 	| "WithEvents"		(.m.Add(Modifiers.WithEvents, t.Location);.)
 	| "Dim"				(.m.Add(Modifiers.Dim, t.Location);.)
+	| "Partial"			(.m.Add(Modifiers.Partial, t.Location);.)
 .
 
 PropertyAccessorAccessModifier<out Modifiers m> =

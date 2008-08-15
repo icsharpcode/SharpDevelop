@@ -46,7 +46,6 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			Assert.AreEqual(Modifiers.Partial, md.Modifier);
 		}
 		
-		
 		[Test]
 		public void CSharpImplementingPartialMethodDeclarationTest()
 		{
@@ -287,6 +286,17 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		#endregion
 		
 		#region VB.NET
+		
+		[Test]
+		public void VBNetDefiningPartialMethodDeclarationTest()
+		{
+			MethodDeclaration md = ParseUtilVBNet.ParseTypeMember<MethodDeclaration>(@"Partial Sub MyMethod()
+			                                                                         End Sub");
+			Assert.AreEqual(0, md.Parameters.Count);
+			Assert.AreEqual("MyMethod", md.Name);
+			Assert.IsFalse(md.IsExtensionMethod);
+			Assert.AreEqual(Modifiers.Partial, md.Modifier);
+		}
 		
 		[Test]
 		public void VBNetMethodWithModifiersRegionTest()
