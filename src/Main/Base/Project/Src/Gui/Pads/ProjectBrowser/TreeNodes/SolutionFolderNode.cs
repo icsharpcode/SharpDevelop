@@ -150,7 +150,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public static bool DoEnablePaste(ISolutionFolderNode container)
 		{
-			IDataObject dataObject = ClipboardWrapper.GetDataObject();
+			return DoEnablePaste(container, ClipboardWrapper.GetDataObject());
+		}
+		
+		static bool DoEnablePaste(ISolutionFolderNode container, IDataObject dataObject)
+		{
 			if (dataObject == null) {
 				return false;
 			}
@@ -171,13 +175,13 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public static void DoPaste(ISolutionFolderNode folderNode)
 		{
-			if (!DoEnablePaste(folderNode)) {
+			IDataObject dataObject = ClipboardWrapper.GetDataObject();
+			if (!DoEnablePaste(folderNode, dataObject)) {
 				LoggingService.Warn("SolutionFolderNode.DoPaste: Pasting was not enabled.");
 				return;
 			}
 			
 			ExtTreeNode folderTreeNode = (ExtTreeNode)folderNode;
-			IDataObject dataObject = ClipboardWrapper.GetDataObject();
 			
 			if (dataObject.GetDataPresent(typeof(ISolutionFolder).ToString())) {
 				string guid = dataObject.GetData(typeof(ISolutionFolder).ToString()).ToString();

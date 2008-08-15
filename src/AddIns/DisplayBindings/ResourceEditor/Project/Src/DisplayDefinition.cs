@@ -169,6 +169,8 @@ namespace ResourceEditor
 			}
 			
 			IDataObject dob = ClipboardWrapper.GetDataObject();
+			if (dob == null)
+				return;
 			
 			if (dob.GetDataPresent(typeof(Hashtable).FullName)) {
 				Hashtable tmphash = (Hashtable)dob.GetData(typeof(Hashtable));

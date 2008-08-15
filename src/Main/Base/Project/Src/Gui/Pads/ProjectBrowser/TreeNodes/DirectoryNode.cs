@@ -560,6 +560,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		public override void Paste()
 		{
 			IDataObject dataObject = ClipboardWrapper.GetDataObject();
+			if (dataObject == null)
+				return;
 			
 			if (dataObject.GetDataPresent(DataFormats.FileDrop)) {
 				string[] files = (string[])dataObject.GetData(DataFormats.FileDrop);
