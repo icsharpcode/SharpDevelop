@@ -40,5 +40,17 @@ namespace ICSharpCode.WpfDesign.Designer
                 d = VisualTreeHelper.GetParent(d);
             }
         }
+
+		public static T FindChild<T>(this DependencyObject d) where T : class
+		{
+			if (d is T) return d as T;
+			int n = VisualTreeHelper.GetChildrenCount(d);
+			for (int i = 0; i < n; i++) {
+				var child = VisualTreeHelper.GetChild(d, i);
+				var result = FindChild<T>(child);
+				if (result != null) return result;
+			}
+			return null;
+		}
 	}
 }

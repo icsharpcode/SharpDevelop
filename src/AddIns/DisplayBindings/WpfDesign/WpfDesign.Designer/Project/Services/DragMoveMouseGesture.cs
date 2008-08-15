@@ -69,7 +69,10 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 					info.Bounds = new Rect(info.OriginalBounds.Left + v.X,
 					                       info.OriginalBounds.Top + v.Y,
 					                       info.OriginalBounds.Width,
-					                       info.OriginalBounds.Height);
+					                       info.OriginalBounds.Height);					
+				}
+				operation.CurrentContainerBehavior.BeforeSetPosition(operation);
+				foreach (PlacementInformation info in operation.PlacedItems) {
 					operation.CurrentContainerBehavior.SetPosition(info);
 				}
 			}

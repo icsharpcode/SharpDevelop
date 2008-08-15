@@ -8,6 +8,7 @@ using System.Windows;
 using ICSharpCode.WpfDesign.Designer.Controls;
 using System.Diagnostics;
 using ICSharpCode.WpfDesign.XamlDom;
+using System.Windows.Media;
 
 namespace ICSharpCode.WpfDesign.Designer.Extensions
 {
@@ -40,6 +41,10 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		{
 			var p = item.View.TranslatePoint(new Point(), operation.CurrentContainer.View);
 			return new Rect(p, item.View.RenderSize);
+		}
+
+		public virtual void BeforeSetPosition(PlacementOperation operation) 
+		{
 		}
 
 		public virtual void SetPosition(PlacementInformation info)

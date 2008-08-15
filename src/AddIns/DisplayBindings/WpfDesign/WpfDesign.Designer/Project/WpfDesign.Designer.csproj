@@ -100,8 +100,7 @@
     </Compile>
     <Compile Include="Extensions\GridAdornerProvider.cs" />
     <Compile Include="Extensions\GridPlacementSupport.cs" />
-    <Compile Include="Extensions\GuideLineManager.cs" />
-    <Compile Include="Extensions\GuideLinePlacementBehavior.cs">
+    <Compile Include="Extensions\SnaplinePlacementBehavior.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Extensions\PanelMove.cs" />

@@ -16,13 +16,13 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 	{
 		protected override void OnInitialized()
 		{
+			base.OnInitialized();
+
 			var adornerPanel = new AdornerPanel();
 			var adorner = new PanelMoveAdorner(ExtendedItem);
 			AdornerPanel.SetPlacement(adorner, AdornerPlacement.FillContent);
 			adornerPanel.Children.Add(adorner);
-			Adorners.Add(adornerPanel);
-
-			base.OnInitialized();
+			Adorners.Add(adornerPanel);			
 		}
 	}
 }

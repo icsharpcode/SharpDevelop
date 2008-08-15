@@ -22,7 +22,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 	/// Provides <see cref="IPlacementBehavior"/> behavior for <see cref="Grid"/>.
 	/// </summary>
 	[ExtensionFor(typeof(Grid), OverrideExtension=typeof(DefaultPlacementBehavior))]
-	public sealed class GridPlacementSupport : GuideLinePlacementBehavior
+	public sealed class GridPlacementSupport : SnaplinePlacementBehavior
 	{
 		Grid grid;
 		
@@ -32,60 +32,61 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			grid = (Grid)this.ExtendedItem.Component;
 		}
 		
-		public override Rect GetPosition(PlacementOperation operation, DesignItem child)
-		{
-			FrameworkElement obj = child.Component as FrameworkElement;
-			if (obj == null) return new Rect();
+		//TODO: Is default way ok?
+		//public override Rect GetPosition(PlacementOperation operation, DesignItem child)
+		//{
+		//    FrameworkElement obj = child.Component as FrameworkElement;
+		//    if (obj == null) return new Rect();
 			
-			Thickness margin = obj.Margin;
+		//    Thickness margin = obj.Margin;
 			
-			double left, width, right;
-			switch (obj.HorizontalAlignment) {
-				case HorizontalAlignment.Stretch:
-					left = GetColumnOffset(Grid.GetColumn(obj)) + margin.Left;
-					right = GetColumnOffset(Grid.GetColumn(obj) + Grid.GetColumnSpan(obj)) - margin.Right;
-					width = right - left;
-					break;
-				case HorizontalAlignment.Left:
-					left = GetColumnOffset(Grid.GetColumn(obj)) + margin.Left;
-					width = ModelTools.GetWidth(obj);
-					right = left + width;
-					break;
-				case HorizontalAlignment.Right:
-					right = GetColumnOffset(Grid.GetColumn(obj) + Grid.GetColumnSpan(obj)) - margin.Right;
-					width = ModelTools.GetWidth(obj);
-					left = right - width;
-					break;
-				case HorizontalAlignment.Center:
-					throw new NotImplementedException();
-				default:
-					throw new NotSupportedException();
-			}
+		//    double left, width, right;
+		//    switch (obj.HorizontalAlignment) {
+		//        case HorizontalAlignment.Stretch:
+		//            left = GetColumnOffset(Grid.GetColumn(obj)) + margin.Left;
+		//            right = GetColumnOffset(Grid.GetColumn(obj) + Grid.GetColumnSpan(obj)) - margin.Right;
+		//            width = right - left;
+		//            break;
+		//        case HorizontalAlignment.Left:
+		//            left = GetColumnOffset(Grid.GetColumn(obj)) + margin.Left;
+		//            width = ModelTools.GetWidth(obj);
+		//            right = left + width;
+		//            break;
+		//        case HorizontalAlignment.Right:
+		//            right = GetColumnOffset(Grid.GetColumn(obj) + Grid.GetColumnSpan(obj)) - margin.Right;
+		//            width = ModelTools.GetWidth(obj);
+		//            left = right - width;
+		//            break;
+		//        case HorizontalAlignment.Center:
+		//            throw new NotImplementedException();
+		//        default:
+		//            throw new NotSupportedException();
+		//    }
 			
-			double top, height, bottom;
-			switch (obj.VerticalAlignment) {
-				case VerticalAlignment.Stretch:
-					top = GetRowOffset(Grid.GetRow(obj)) + margin.Top;
-					bottom = GetRowOffset(Grid.GetRow(obj) + Grid.GetRowSpan(obj)) - margin.Bottom;
-					height = bottom - top;
-					break;
-				case VerticalAlignment.Top:
-					top = GetRowOffset(Grid.GetRow(obj)) + margin.Top;
-					height = ModelTools.GetHeight(obj);
-					bottom = top + height;
-					break;
-				case VerticalAlignment.Bottom:
-					bottom = GetRowOffset(Grid.GetRow(obj) + Grid.GetRowSpan(obj)) - margin.Bottom;
-					height = ModelTools.GetHeight(obj);
-					top = bottom - height;
-					break;
-				case VerticalAlignment.Center:
-					throw new NotImplementedException();
-				default:
-					throw new NotSupportedException();
-			}
-			return new Rect(left, top, Math.Max(0, width), Math.Max(0, height));
-		}
+		//    double top, height, bottom;
+		//    switch (obj.VerticalAlignment) {
+		//        case VerticalAlignment.Stretch:
+		//            top = GetRowOffset(Grid.GetRow(obj)) + margin.Top;
+		//            bottom = GetRowOffset(Grid.GetRow(obj) + Grid.GetRowSpan(obj)) - margin.Bottom;
+		//            height = bottom - top;
+		//            break;
+		//        case VerticalAlignment.Top:
+		//            top = GetRowOffset(Grid.GetRow(obj)) + margin.Top;
+		//            height = ModelTools.GetHeight(obj);
+		//            bottom = top + height;
+		//            break;
+		//        case VerticalAlignment.Bottom:
+		//            bottom = GetRowOffset(Grid.GetRow(obj) + Grid.GetRowSpan(obj)) - margin.Bottom;
+		//            height = ModelTools.GetHeight(obj);
+		//            top = bottom - height;
+		//            break;
+		//        case VerticalAlignment.Center:
+		//            throw new NotImplementedException();
+		//        default:
+		//            throw new NotSupportedException();
+		//    }
+		//    return new Rect(left, top, Math.Max(0, width), Math.Max(0, height));
+		//}
 		
 		double GetColumnOffset(int index)
 		{

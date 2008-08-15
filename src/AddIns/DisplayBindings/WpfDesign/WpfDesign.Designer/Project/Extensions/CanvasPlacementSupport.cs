@@ -19,7 +19,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 	/// Provides <see cref="IPlacementBehavior"/> behavior for <see cref="Canvas"/>.
 	/// </summary>
 	[ExtensionFor(typeof(Canvas), OverrideExtension=typeof(DefaultPlacementBehavior))]
-	public sealed class CanvasPlacementSupport : GuideLinePlacementBehavior
+	public sealed class CanvasPlacementSupport : SnaplinePlacementBehavior
 	{
 		static double GetLeft(UIElement element)
 		{
@@ -39,15 +39,18 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				return v;
 		}	
 	
-		public override Rect GetPosition(PlacementOperation operation, DesignItem childItem)
-		{
-			UIElement child = childItem.View;
-			return new Rect(GetLeft(child), GetTop(child), ModelTools.GetWidth(child), ModelTools.GetHeight(child));
-		}		
+		//TODO: Is default way ok?
+		//public override Rect GetPosition(PlacementOperation operation, DesignItem childItem)
+		//{
+		//    UIElement child = childItem.View;
+		//    return new Rect(GetLeft(child), GetTop(child), ModelTools.GetWidth(child), ModelTools.GetHeight(child));
+		//}
 		
 		public override void SetPosition(PlacementInformation info)
 		{
 			base.SetPosition(info);
+			info.Item.Properties[FrameworkElement.MarginProperty].Reset();
+
 			UIElement child = info.Item.View;
 			Rect newPosition = info.Bounds;
 

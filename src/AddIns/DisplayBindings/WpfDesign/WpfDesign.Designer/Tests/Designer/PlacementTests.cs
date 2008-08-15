@@ -31,6 +31,7 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 		}
 		
 		[Test]
+		[Ignore] //Currently bounds calculated using visuals
 		public void MoveFixedWidthButton()
 		{
 			DesignItem button = CreateCanvasContext("<Button Width='100' Height='200'/>");
