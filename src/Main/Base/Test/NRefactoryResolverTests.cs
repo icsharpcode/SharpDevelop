@@ -1812,6 +1812,9 @@ class TestClass {
 			
 		};
 	}
+	Point field = new Point {
+		
+	};
 }
 public class Point
 {
@@ -1854,6 +1857,9 @@ public class MyCollectionType : System.Collections.IEnumerable
 			Assert.IsTrue(results.OfType<IField>().Any((IField f) => f.FullyQualifiedName == "MyCollectionType.Field"));
 			Assert.IsFalse(results.OfType<IField>().Any((IField f) => f.FullyQualifiedName == "MyCollectionType.ReadOnlyValueTypeField"));
 			Assert.IsFalse(results.OfType<IProperty>().Any((IProperty f) => f.FullyQualifiedName == "MyCollectionType.ReadOnlyValueTypeProperty"));
+			
+			results = CtrlSpaceResolveCSharp(objectInitializerTestProgram, 17, ExpressionContext.ObjectInitializer);
+			Assert.AreEqual(new[] { "X", "Y" }, (from IMember p in results orderby p.Name select p.Name).ToArray() );
 		}
 		
 		[Test]
@@ -1874,6 +1880,10 @@ public class MyCollectionType : System.Collections.IEnumerable
 			LocalResolveResult lrr = (LocalResolveResult)Resolve(objectInitializerTestProgram, "r1", 13, 1, ExpressionContext.ObjectInitializer);
 			Assert.IsNotNull(lrr);
 			Assert.AreEqual("r1", lrr.Field.Name);
+			
+			mrr = (MemberResolveResult)Resolve(objectInitializerTestProgram, "X", 17, 1, ExpressionContext.ObjectInitializer);
+			Assert.IsNotNull(mrr);
+			Assert.AreEqual("Point.X", mrr.ResolvedMember.FullyQualifiedName);
 		}
 		#endregion
 		

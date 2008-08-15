@@ -448,15 +448,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (member.Region.IsEmpty) return null;
 			int startLine = member.Region.BeginLine;
 			if (startLine < 1) return null;
-			DomRegion bodyRegion;
-			if (member is IMethodOrProperty) {
-				bodyRegion = ((IMethodOrProperty)member).BodyRegion;
-			} else if (member is IEvent) {
-				bodyRegion = ((IEvent)member).BodyRegion;
-			} else {
-				return null;
-			}
-			if (bodyRegion.IsEmpty) return null;
+			DomRegion bodyRegion = member.BodyRegion;
+			if (bodyRegion.IsEmpty) bodyRegion = member.Region;
 			int endLine = bodyRegion.EndLine;
 			
 			// Fix for SD2-511 (Code completion in inserted line)
@@ -903,6 +896,11 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					return ev;
 				}
 			}
+			foreach (IField f in callingClass.Fields) {
+				if (f.Region.IsInside(caretLine, caretColumn) || f.BodyRegion.IsInside(caretLine, caretColumn)) {
+					return f;
+				}
+			}
 			return null;
 		}
 		
@@ -1311,6 +1309,9 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					LocalVariableDeclaration lvd = expr.Parent.Parent as LocalVariableDeclaration;
 					if (lvd != null)
 						typeRef = lvd.TypeReference;
+					FieldDeclaration fd = expr.Parent.Parent as FieldDeclaration;
+					if (fd != null)
+						typeRef = fd.TypeReference;
 				}
 				return TypeVisitor.CreateReturnType(typeRef, this);
 			}
