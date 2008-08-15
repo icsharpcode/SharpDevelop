@@ -594,7 +594,7 @@ namespace ICSharpCode.FormsDesigner
 			}
 		}
 		
-		public virtual Control ToolsControl {
+		public virtual object ToolsContent {
 			get { return ToolboxProvider.FormsDesignerSideBar; }
 		}
 	}

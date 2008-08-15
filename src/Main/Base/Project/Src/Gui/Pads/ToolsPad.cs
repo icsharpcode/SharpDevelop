@@ -6,8 +6,8 @@
 // </file>
 
 using System;
-using System.Windows.Forms;
 using ICSharpCode.Core;
+using System.Windows.Controls;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -19,7 +19,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// <summary>
 		/// Gets the control to display in the tool box.
 		/// </summary>
-		Control ToolsControl { get; }
+		object ToolsContent { get; }
 	}
 	
 	/// <summary>
@@ -27,44 +27,27 @@ namespace ICSharpCode.SharpDevelop.Gui
 	/// </summary>
 	public class ToolsPad : AbstractPadContent
 	{
-		Panel panel = new Panel();
-		Label noToolsAvailable = new Label();
-		Control child;
+		ContentControl contentControl = new ContentControl();
 		
 		public override object Content {
 			get {
-				return panel;
+				return contentControl;
 			}
 		}
 		
 		public ToolsPad()
 		{
-			noToolsAvailable.Text = StringParser.Parse("${res:SharpDevelop.SideBar.NoToolsAvailableForCurrentDocument}");
-			noToolsAvailable.Dock = DockStyle.Fill;
-			panel.Controls.Add(noToolsAvailable);
-			child = noToolsAvailable;
-			
 			WorkbenchSingleton.Workbench.ActiveViewContentChanged += WorkbenchActiveContentChanged;
 			WorkbenchActiveContentChanged(null, null);
-		}
-		
-		void SetChild(Control newChild)
-		{
-			if (child != newChild) {
-				panel.Controls.Clear();
-				newChild.Dock = DockStyle.Fill;
-				panel.Controls.Add(newChild);
-				child = newChild;
-			}
 		}
 		
 		void WorkbenchActiveContentChanged(object sender, EventArgs e)
 		{
 			IToolsHost th = WorkbenchSingleton.Workbench.ActiveViewContent as IToolsHost;
-			if (th != null) {
-				SetChild(th.ToolsControl ?? noToolsAvailable);
+			if (th != null && th.ToolsContent != null) {
+				contentControl.SetContent(th.ToolsContent);
 			} else {
-				SetChild(noToolsAvailable);
+				contentControl.SetContent(StringParser.Parse("${res:SharpDevelop.SideBar.NoToolsAvailableForCurrentDocument}"));
 			}
 		}
 	}

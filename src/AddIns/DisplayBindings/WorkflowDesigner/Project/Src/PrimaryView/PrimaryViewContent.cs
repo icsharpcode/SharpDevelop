@@ -75,7 +75,7 @@ namespace WorkflowDesigner
 		}
 		#endregion
 		
-		System.Windows.Forms.Control IToolsHost.ToolsControl {
+		object IToolsHost.ToolsContent {
 			get {
 				return WorkflowSideTabService.WorkflowSideBar;
 			}

@@ -112,7 +112,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		}
 		#endregion
 		
-		Control IToolsHost.ToolsControl {
+		object IToolsHost.ToolsContent {
 			get { return TextEditorSideBar.Instance; }
 		}
 		

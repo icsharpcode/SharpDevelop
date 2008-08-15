@@ -9,8 +9,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
-using System.Windows.Forms;
-using System.Windows.Forms.Integration;
 using System.Windows.Markup;
 using System.Xml;
 
@@ -29,7 +27,6 @@ namespace ICSharpCode.WpfDesign.AddIn
 	/// </summary>
 	public class WpfViewContent : AbstractViewContentHandlingLoadErrors, IHasPropertyContainer, IToolsHost
 	{
-		ElementHost wpfHost;
 		DesignSurface designer;
 		
 		public DesignContext DesignContext {
@@ -133,7 +130,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 		}
 		#endregion
 		
-		public Control ToolsControl {
+		public object ToolsContent {
 			get { return WpfToolbox.Instance.ToolboxControl; }
 		}
 		
