@@ -190,6 +190,21 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		#endregion
 		
 		#region VB.NET
+		
+		[Test]
+		public void VBNetAnonymousType()
+		{
+			ObjectCreateExpression oce = ParseUtilVBNet.ParseExpression<ObjectCreateExpression>(
+				"New With {.Id = 1, .Name= \"Bill Gates\" }");
+			
+			Assert.IsTrue(oce.CreateType.IsNull);
+			Assert.AreEqual(0, oce.Parameters.Count);
+			Assert.AreEqual(2, oce.ObjectInitializer.CreateExpressions.Count);
+			
+			Assert.IsInstanceOfType(typeof(PrimitiveExpression), CheckPropertyInitializationExpression(oce.ObjectInitializer.CreateExpressions[0], "Id"));
+			Assert.IsInstanceOfType(typeof(NamedArgumentExpression), oce.ObjectInitializer.CreateExpressions[1]);
+		}
+		
 		[Test]
 		public void VBNetSimpleObjectCreateExpressionTest()
 		{
@@ -221,7 +236,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			
 			Assert.AreEqual("FirstName", ((NamedArgumentExpression)oce.ObjectInitializer.CreateExpressions[0]).Name);
 			Assert.AreEqual("LastName", ((NamedArgumentExpression)oce.ObjectInitializer.CreateExpressions[1]).Name);
-		
+			
 			Assert.IsInstanceOfType(typeof(PrimitiveExpression), ((NamedArgumentExpression)oce.ObjectInitializer.CreateExpressions[0]).Expression);
 			Assert.IsInstanceOfType(typeof(PrimitiveExpression), ((NamedArgumentExpression)oce.ObjectInitializer.CreateExpressions[1]).Expression);
 		}

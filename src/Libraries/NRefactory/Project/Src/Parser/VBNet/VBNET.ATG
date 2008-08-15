@@ -1938,17 +1938,18 @@ ObjectCreateExpression<out Expression oce>
 	oce = null;
 	bool canBeNormal; bool canBeReDim;
 .) =
-	"New" NonArrayTypeName<out type, false>
-	["(" NormalOrReDimArgumentList<out arguments, out canBeNormal, out canBeReDim> ")"
-		[ IF (la.kind == Tokens.OpenParenthesis)
-			ArrayTypeModifiers<out dimensions>
-			CollectionInitializer<out initializer>
-		|	CollectionInitializer<out initializer>
+	"New" 
+	[ NonArrayTypeName<out type, false>
+		["(" NormalOrReDimArgumentList<out arguments, out canBeNormal, out canBeReDim> ")"
+			[ IF (la.kind == Tokens.OpenParenthesis)
+				ArrayTypeModifiers<out dimensions>
+				CollectionInitializer<out initializer>
+			|	CollectionInitializer<out initializer>
+			]
+			(. if (canBeReDim && !canBeNormal && initializer == null) initializer = new CollectionInitializerExpression(); .)
 		]
-		(. if (canBeReDim && !canBeNormal && initializer == null) initializer = new CollectionInitializerExpression(); .)
 	]
 	(.
-		if (type == null) type = new TypeReference("Object"); // fallback type on parser errors
 		if (initializer == null) {
 			oce = new ObjectCreateExpression(type, arguments);
 			SetParent(arguments, oce);
