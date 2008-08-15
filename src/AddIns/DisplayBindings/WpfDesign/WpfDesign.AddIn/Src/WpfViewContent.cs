@@ -48,10 +48,8 @@ namespace ICSharpCode.WpfDesign.AddIn
 			if (designer == null) {
 				// initialize designer on first load
 				DragDropExceptionHandler.HandleException = ICSharpCode.Core.MessageService.ShowError;
-				wpfHost = new SharpDevelopElementHost();
 				designer = new DesignSurface();
-				wpfHost.Child = designer;
-				this.UserControl = wpfHost;
+				this.UserContent = designer;
 				InitPropertyEditor();
 			}
 			using (XmlTextReader r = new XmlTextReader(stream)) {
@@ -94,15 +92,12 @@ namespace ICSharpCode.WpfDesign.AddIn
 		
 		#region Property editor / SelectionChanged
 		
-		ElementHost propertyEditorHost;
 		PropertyGridView propertyGridView;
 		
 		void InitPropertyEditor()
 		{
-			propertyEditorHost = new SharpDevelopElementHost();
 			propertyGridView = new PropertyGridView();
-			propertyEditorHost.Child = propertyGridView;
-			propertyContainer.PropertyGridReplacementControl = propertyEditorHost;
+			propertyContainer.PropertyGridReplacementContent = propertyGridView;
 		}
 		
 		ICollection<DesignItem> oldItems = new DesignItem[0];

@@ -7,10 +7,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
 using System.IO;
-using System.Windows.Forms;
+using System.Linq;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -28,8 +29,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 	/// </summary>
 	public abstract class AbstractViewContentHandlingLoadErrors : AbstractViewContent
 	{
-		Panel panel = new Panel();
-		Control userControl;
+		ContentControl contentControl = new ContentControl();
+		object userContent;
 		
 		protected AbstractViewContentHandlingLoadErrors()
 		{
@@ -40,20 +41,16 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		
 		public sealed override object Content {
-			get { return panel; }
+			get { return contentControl; }
 		}
 		
-		protected Control UserControl {
-			get { return userControl; }
+		protected object UserContent {
+			get { return userContent; }
 			set {
-				if (userControl != value) {
-					if (errorList.Count == 0 && userControl != null) {
-						panel.Controls.Remove(userControl);
-					}
-					userControl = value;
-					userControl.Dock = DockStyle.Fill;
-					if (errorList.Count == 0 && userControl != null) {
-						panel.Controls.Add(userControl);
+				if (userContent != value) {
+					userContent = value;
+					if (errorList.Count == 0) {
+						contentControl.SetContent(userContent);
 					}
 				}
 			}
@@ -90,15 +87,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			if (errorTextBox == null) {
 				errorTextBox = new TextBox();
-				errorTextBox.Multiline = true;
-				errorTextBox.ScrollBars = ScrollBars.Both;
-				errorTextBox.ReadOnly = true;
-				errorTextBox.BackColor = SystemColors.Window;
-				errorTextBox.Dock = DockStyle.Fill;
+				errorTextBox.IsReadOnly = true;
+				errorTextBox.Background = SystemColors.WindowBrush;
 			}
 			errorTextBox.Text = ex.ToString();
-			panel.Controls.Clear();
-			panel.Controls.Add(errorTextBox);
+			contentControl.Content = errorTextBox;
 		}
 		
 		Dictionary<OpenedFile, LoadError> errorList = new Dictionary<OpenedFile, LoadError>();
@@ -110,10 +103,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				if (errorList.Count > 0) {
 					errorList.Remove(file);
 					if (errorList.Count == 0) {
-						panel.Controls.Clear();
-						if (userControl != null) {
-							panel.Controls.Add(userControl);
-						}
+						contentControl.SetContent(userContent);
 					} else {
 						ShowError(errorList.Values.First().exception);
 					}

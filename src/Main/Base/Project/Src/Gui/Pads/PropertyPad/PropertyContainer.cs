@@ -105,13 +105,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		Control propertyGridReplacementControl;
+		object propertyGridReplacementContent;
 		
-		public Control PropertyGridReplacementControl {
-			get { return propertyGridReplacementControl; }
+		public object PropertyGridReplacementContent {
+			get { return propertyGridReplacementContent; }
 			set {
-				propertyGridReplacementControl = value;
-				PropertyPad.UpdatePropertyGridReplacementControl(this);
+				propertyGridReplacementContent = value;
+				PropertyPad.UpdatePropertyGridReplacementContent(this);
 			}
 		}
 		
@@ -125,7 +125,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			Host = null;
 			SelectableObjects = null;
 			SelectedObject = null;
-			PropertyGridReplacementControl = null;
+			PropertyGridReplacementContent = null;
 		}
 	}
 }

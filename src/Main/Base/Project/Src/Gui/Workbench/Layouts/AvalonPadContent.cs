@@ -50,7 +50,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				placeholder.IsVisibleChanged -= AvalonPadContent_IsVisibleChanged;
 				content = descriptor.PadContent;
 				if (content != null) {
-					this.Content = AvalonWorkbenchWindow.WrapContent(content.Content);
+					this.SetContent(content.Content);
 					placeholder = null;
 				}
 			}

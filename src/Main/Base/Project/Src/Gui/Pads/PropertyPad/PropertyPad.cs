@@ -43,7 +43,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			UpdateHostIfActive(pc);
 			UpdateSelectedObjectIfActive(pc);
 			UpdateSelectableIfActive(pc);
-			UpdatePropertyGridReplacementControl(pc);
+			UpdatePropertyGridReplacementContent(pc);
 		}
 		
 		internal static void UpdateSelectedObjectIfActive(PropertyContainer container)
@@ -81,30 +81,23 @@ namespace ICSharpCode.SharpDevelop.Gui
 			instance.SetSelectableObjects(container.SelectableObjects);
 		}
 		
-		internal static void UpdatePropertyGridReplacementControl(PropertyContainer container)
+		internal static void UpdatePropertyGridReplacementContent(PropertyContainer container)
 		{
 			if (instance == null) return;
 			if (instance.activeContainer != container)
 				return;
 			LoggingService.Debug("UpdatePropertyGridReplacementControl");
-			if (container.PropertyGridReplacementControl != null) {
-				if (!instance.panel.Controls.Contains(container.PropertyGridReplacementControl)) {
-					instance.panel.Controls.Clear();
-					container.PropertyGridReplacementControl.Dock = DockStyle.Fill;
-					instance.panel.Controls.Add(container.PropertyGridReplacementControl);
-				}
+			if (container.PropertyGridReplacementContent != null) {
+				instance.contentControl.SetContent(container.PropertyGridReplacementContent);
 			} else {
-				if (!instance.panel.Controls.Contains(instance.grid)) {
-					instance.panel.Controls.Clear();
-					instance.panel.Controls.Add(instance.grid);
-					instance.panel.Controls.Add(instance.comboBox);
-				}
+				instance.contentControl.SetContent(instance.panel);
 			}
 		}
 		
-		Panel         panel;
-		ComboBox      comboBox;
-		PropertyGrid  grid;
+		System.Windows.Controls.ContentControl contentControl;
+		Panel panel;
+		ComboBox comboBox;
+		PropertyGrid grid;
 		IDesignerHost host;
 		
 		/// <summary>
@@ -125,7 +118,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public override object Content {
 			get {
-				return panel;
+				return contentControl;
 			}
 		}
 		
@@ -157,6 +150,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public PropertyPad()
 		{
 			instance = this;
+			contentControl = new System.Windows.Controls.ContentControl();
 			panel = new Panel();
 			
 			grid = new PropertyGrid();

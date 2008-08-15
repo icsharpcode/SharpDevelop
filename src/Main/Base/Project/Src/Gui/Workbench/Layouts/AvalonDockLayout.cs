@@ -212,6 +212,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			AvalonWorkbenchWindow window = new AvalonWorkbenchWindow(this);
 			window.ViewContents.Add(content);
+			window.ViewContents.AddRange(content.SecondaryViewContents);
 			documentPane.Items.Add(window);
 			dockingManager.Show(window);
 			return window;

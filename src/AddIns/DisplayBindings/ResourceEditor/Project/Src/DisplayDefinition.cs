@@ -57,7 +57,7 @@ namespace ResourceEditor
 		public ResourceEditWrapper(OpenedFile file)
 		{
 			this.TabPageText = "Resource editor";
-			base.UserControl = resourceEditor;
+			base.UserContent = resourceEditor;
 			resourceEditor.ResourceList.Changed += new EventHandler(SetDirty);
 			this.Files.Add(file);
 		}
