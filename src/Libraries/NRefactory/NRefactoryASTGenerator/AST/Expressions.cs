@@ -35,6 +35,7 @@ namespace NRefactoryASTGenerator.Ast
 		string     name;
 		Expression expression;
 		
+		public NamedArgumentExpression() { }
 		public NamedArgumentExpression(string name, Expression expression) {}
 	}
 	

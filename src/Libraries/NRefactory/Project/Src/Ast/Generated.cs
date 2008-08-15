@@ -2791,6 +2791,11 @@ public Location ExtendedEndLocation { get; set; }
 			}
 		}
 		
+		public NamedArgumentExpression() {
+			name = "";
+			expression = Expression.Null;
+		}
+		
 		public NamedArgumentExpression(string name, Expression expression) {
 			Name = name;
 			Expression = expression;

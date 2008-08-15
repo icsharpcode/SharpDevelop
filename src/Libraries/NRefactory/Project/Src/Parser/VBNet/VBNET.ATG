@@ -1962,6 +1962,47 @@ ObjectCreateExpression<out Expression oce>
 			oce = ace;
 		}
 	.)
+	
+	[
+		(.
+			NamedArgumentExpression memberInitializer = null;
+		.)
+		"With"
+		(.
+			CollectionInitializerExpression memberInitializers = new CollectionInitializerExpression();
+			memberInitializers.StartLocation = la.Location;
+		.)
+		"{"
+			MemberInitializer<out memberInitializer>
+			(. memberInitializers.CreateExpressions.Add(memberInitializer); .)
+			{ ","
+				MemberInitializer<out memberInitializer>
+				(. memberInitializers.CreateExpressions.Add(memberInitializer); .)
+			}
+		"}"
+		(.
+		memberInitializers.EndLocation = t.Location;
+			if(oce is ObjectCreateExpression)
+			{
+				((ObjectCreateExpression)oce).ObjectInitializer = memberInitializers;
+			}
+		.)
+	]
+.
+
+MemberInitializer<out NamedArgumentExpression memberInitializer>
+	(.
+		memberInitializer = new NamedArgumentExpression();
+		memberInitializer.StartLocation = la.Location;
+		Expression initExpr = null;
+		string name = null;
+	.) =
+	"." IdentifierOrKeyword<out name> "=" Expr<out initExpr>
+	(.
+		memberInitializer.Name = name;
+		memberInitializer.Expression = initExpr;
+		memberInitializer.EndLocation = t.EndLocation;
+	.)
 .
 
 /* 9.3.2 */

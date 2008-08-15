@@ -212,6 +212,20 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			Assert.AreEqual(1, typeRef.GenericTypes.Count);
 			Assert.AreEqual("Integer", typeRef.GenericTypes[0].Type);
 		}
+		
+		[Test]
+		public void VBNetMemberInitializationTest()
+		{
+			ObjectCreateExpression oce = ParseUtilVBNet.ParseExpression<ObjectCreateExpression>("new Contact() With { .FirstName = \"Bill\", .LastName = \"Gates\" }");
+			Assert.AreEqual(2, oce.ObjectInitializer.CreateExpressions.Count);
+			
+			Assert.AreEqual("FirstName", ((NamedArgumentExpression)oce.ObjectInitializer.CreateExpressions[0]).Name);
+			Assert.AreEqual("LastName", ((NamedArgumentExpression)oce.ObjectInitializer.CreateExpressions[1]).Name);
+		
+			Assert.IsInstanceOfType(typeof(PrimitiveExpression), ((NamedArgumentExpression)oce.ObjectInitializer.CreateExpressions[0]).Expression);
+			Assert.IsInstanceOfType(typeof(PrimitiveExpression), ((NamedArgumentExpression)oce.ObjectInitializer.CreateExpressions[1]).Expression);
+		}
+		
 		#endregion
 	}
 }
