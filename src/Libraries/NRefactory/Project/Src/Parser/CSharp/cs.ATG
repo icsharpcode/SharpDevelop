@@ -1663,7 +1663,9 @@ TryStatement<out Statement tryStatement>
 	)
 	(.
 		tryStatement = new TryCatchStatement(blockStmt, catchClauses, finallyStmt);
-		foreach (CatchClause cc in catchClauses) cc.Parent = tryStatement;
+		if (catchClauses != null) {
+			foreach (CatchClause cc in catchClauses) cc.Parent = tryStatement;
+		}
 	.)
 .
 
