@@ -17,5 +17,12 @@ namespace ICSharpCode.SharpDevelop.Project
 			FileName = fileName;
 			TypeGuid = "{00000000-0000-0000-0000-000000000000}";
 		}
+		
+		public override bool ReadOnly {
+			get {
+				// don't get the readonly flag from the project file - the project file does not exist.
+				return true;
+			}
+		}
 	}
 }
