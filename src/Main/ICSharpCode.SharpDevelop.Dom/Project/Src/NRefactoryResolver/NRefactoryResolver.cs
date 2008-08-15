@@ -759,25 +759,37 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		List<IMember> ObjectInitializerCtrlSpace(CompilationUnit parsedCu, NR.Location location, out bool isCollectionInitializer)
 		{
-			List<IMember> results = new List<IMember>();
-			isCollectionInitializer = true;
 			FindObjectInitializerExpressionContainingCaretVisitor v = new FindObjectInitializerExpressionContainingCaretVisitor(location);
 			parsedCu.AcceptVisitor(v, null);
-			if (v.result != null) {
-				ObjectCreateExpression oce = v.result.Parent as ObjectCreateExpression;
-				NamedArgumentExpression nae = v.result.Parent as NamedArgumentExpression;
+			return ObjectInitializerCtrlSpace(v.result, out isCollectionInitializer);
+		}
+		
+		List<IMember> ObjectInitializerCtrlSpace(CollectionInitializerExpression collectionInitializer, out bool isCollectionInitializer)
+		{
+			isCollectionInitializer = true;
+			List<IMember> results = new List<IMember>();
+			if (collectionInitializer != null) {
+				ObjectCreateExpression oce = collectionInitializer.Parent as ObjectCreateExpression;
+				NamedArgumentExpression nae = collectionInitializer.Parent as NamedArgumentExpression;
 				if (oce != null && !oce.IsAnonymousType) {
 					IReturnType resolvedType = TypeVisitor.CreateReturnType(oce.CreateType, this);
 					ObjectInitializerCtrlSpaceInternal(results, resolvedType, out isCollectionInitializer);
-				} else if (nae != null) {
-					bool tmp;
-					IMember member = ObjectInitializerCtrlSpace(parsedCu, nae.StartLocation, out tmp).Find(m => IsSameName(m.Name, nae.Name));
+				}
+				else if (nae != null) {
+					IMember member = ResolveNamedArgumentExpressionInObjectInitializer(nae);
 					if (member != null) {
 						ObjectInitializerCtrlSpaceInternal(results, member.ReturnType, out isCollectionInitializer);
 					}
 				}
 			}
 			return results;
+		}
+		
+		IMember ResolveNamedArgumentExpressionInObjectInitializer(NamedArgumentExpression nae)
+		{
+			CollectionInitializerExpression parentCI = nae.Parent as CollectionInitializerExpression;
+			bool tmp;
+			return ObjectInitializerCtrlSpace(parentCI, out tmp).Find(m => IsSameName(m.Name, nae.Name));
 		}
 		
 		void ObjectInitializerCtrlSpaceInternal(List<IMember> results, IReturnType resolvedType, out bool isCollectionInitializer)
@@ -1310,6 +1322,11 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				ResolveResult rr = ResolveInternal((expr.Parent as AssignmentExpression).Left, ExpressionContext.Default);
 				if (rr != null)
 					return rr.ResolvedType;
+			}
+			if (expr.Parent is NamedArgumentExpression) {
+				IMember m = ResolveNamedArgumentExpressionInObjectInitializer((NamedArgumentExpression)expr.Parent);
+				if (m != null)
+					return m.ReturnType;
 			}
 			if (expr.Parent is CollectionInitializerExpression) {
 				IReturnType collectionType;

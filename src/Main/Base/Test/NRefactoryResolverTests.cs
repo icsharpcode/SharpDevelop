@@ -2237,6 +2237,25 @@ class TestClass {
 		}
 		
 		[Test]
+		public void LambdaInObjectInitializerTest()
+		{
+				string program = @"using System;
+class X {
+	void SomeMethod() {
+		Helper h = new Helper {
+			F = i => i.ToString()
+		};
+	}
+}
+class Helper {
+	public Converter<int, string> F;
+}
+";
+			var lrr = Resolve<LocalResolveResult>(program, "i", 5, 13, ExpressionContext.Default);
+			Assert.AreEqual("System.Int32", lrr.ResolvedType.DotNetName);
+		}
+		
+		[Test]
 		public void IncompleteLambdaTest()
 		{
 			string program = @"using System;
