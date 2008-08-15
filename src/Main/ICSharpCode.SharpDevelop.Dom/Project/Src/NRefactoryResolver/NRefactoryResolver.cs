@@ -1305,30 +1305,35 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				ResolveResult rr = ResolveInternal((Expression)expr.Parent, ExpressionContext.Default);
 				if (rr != null)
 					return rr.ResolvedType;
-			}
-			if (expr.Parent is LambdaExpression) {
+			} else if (expr.Parent is LambdaExpression) {
 				IReturnType delegateType = GetExpectedTypeFromContext(expr.Parent as Expression);
 				IMethod sig = CSharp.TypeInference.GetDelegateOrExpressionTreeSignature(delegateType, true);
 				if (sig != null)
 					return sig.ReturnType;
-			}
-			if (expr.Parent is ParenthesizedExpression) {
+			} else if (expr.Parent is ReturnStatement) {
+				Expression lambda = GetParentAnonymousMethodOrLambda(expr.Parent);
+				if (lambda != null) {
+					IReturnType delegateType = GetExpectedTypeFromContext(lambda);
+					IMethod sig = CSharp.TypeInference.GetDelegateOrExpressionTreeSignature(delegateType, true);
+					if (sig != null)
+						return sig.ReturnType;
+				} else {
+					if (callingMember != null)
+						return callingMember.ReturnType;
+				}
+			} else if (expr.Parent is ParenthesizedExpression) {
 				return GetExpectedTypeFromContext(expr.Parent as Expression);
-			}
-			if (expr.Parent is VariableDeclaration) {
+			} else if (expr.Parent is VariableDeclaration) {
 				return GetTypeFromVariableDeclaration((VariableDeclaration)expr.Parent);
-			}
-			if (expr.Parent is AssignmentExpression) {
+			} else if (expr.Parent is AssignmentExpression) {
 				ResolveResult rr = ResolveInternal((expr.Parent as AssignmentExpression).Left, ExpressionContext.Default);
 				if (rr != null)
 					return rr.ResolvedType;
-			}
-			if (expr.Parent is NamedArgumentExpression) {
+			} else if (expr.Parent is NamedArgumentExpression) {
 				IMember m = ResolveNamedArgumentExpressionInObjectInitializer((NamedArgumentExpression)expr.Parent);
 				if (m != null)
 					return m.ReturnType;
-			}
-			if (expr.Parent is CollectionInitializerExpression) {
+			} else if (expr.Parent is CollectionInitializerExpression) {
 				IReturnType collectionType;
 				if (expr.Parent.Parent is ObjectCreateExpression)
 					collectionType = TypeVisitor.CreateReturnType(((ObjectCreateExpression)expr.Parent.Parent).CreateType, this);
@@ -1340,6 +1345,16 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					collectionType = null;
 				if (collectionType != null)
 					return new ElementReturnType(projectContent, collectionType);
+			}
+			return null;
+		}
+		
+		Expression GetParentAnonymousMethodOrLambda(INode node)
+		{
+			while (node != null) {
+				if (node is AnonymousMethodExpression || node is LambdaExpression)
+					return (Expression)node;
+				node = node.Parent;
 			}
 			return null;
 		}

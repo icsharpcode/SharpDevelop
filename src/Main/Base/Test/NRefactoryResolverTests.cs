@@ -2239,7 +2239,7 @@ class TestClass {
 		[Test]
 		public void LambdaInObjectInitializerTest()
 		{
-				string program = @"using System;
+			string program = @"using System;
 class X {
 	void SomeMethod() {
 		Helper h = new Helper {
@@ -2297,6 +2297,53 @@ static class TestClass {
 }";
 			var lrr = Resolve<LocalResolveResult>(program, "i", 4, 38, ExpressionContext.Default);
 			Assert.AreEqual("System.Int32", lrr.ResolvedType.DotNetName);
+		}
+		
+		[Test]
+		public void LambdaExpressionInReturnStatement()
+		{
+			string program = @"using System;
+static class TestClass {
+	static Converter<int, string> GetToString() {
+		return i => i.ToString();
+	}
+}";
+			var lrr = Resolve<LocalResolveResult>(program, "i", 4, 15, ExpressionContext.Default);
+			Assert.AreEqual("System.Int32", lrr.ResolvedType.DotNetName);
+		}
+		
+		[Test]
+		public void LambdaExpressionInReturnStatementInStatementLambda()
+		{
+			string program = @"using System;
+static class TestClass {
+	static void SomeMethod() {
+		Func<Func<string, string>> getStringTransformer = () => {
+			return s => s.ToUpper();
+		};
+	}
+	public delegate R Func<T, R>(T arg);
+	public delegate R Func<R>();
+}";
+			var lrr = Resolve<LocalResolveResult>(program, "s", 5, 16, ExpressionContext.Default);
+			Assert.AreEqual("System.String", lrr.ResolvedType.DotNetName);
+		}
+		
+		[Test]
+		public void LambdaExpressionInReturnStatementInAnonymousMethod()
+		{
+			string program = @"using System;
+static class TestClass {
+	static void SomeMethod() {
+		Func<Func<string, string>> getStringTransformer = delegate {
+			return s => s.ToUpper();
+		};
+	}
+	public delegate R Func<T, R>(T arg);
+	public delegate R Func<R>();
+}";
+			var lrr = Resolve<LocalResolveResult>(program, "s", 5, 16, ExpressionContext.Default);
+			Assert.AreEqual("System.String", lrr.ResolvedType.DotNetName);
 		}
 		
 		[Test]
