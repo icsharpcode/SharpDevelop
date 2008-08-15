@@ -94,17 +94,16 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 		
 		void addClick(object sender, EventArgs e)
 		{
-			using (InputBox box = new InputBox()) {
-				box.Label.Text = ResourceService.GetString("Dialog.HighlightingEditor.Properties.EnterName");
-				if (box.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) == DialogResult.Cancel) return;
-				
-				foreach (ListViewItem item in listView.Items) {
-					if (item.Text == box.TextBox.Text)
-						return;
-				}
-				
-				listView.Items.Add(new ListViewItem(new string[] {box.TextBox.Text, ""}));
+			string result = MessageService.ShowInputBox("", "${res:Dialog.HighlightingEditor.Properties.EnterName}", "");
+			if (string.IsNullOrEmpty(result))
+				return;
+			
+			foreach (ListViewItem item in listView.Items) {
+				if (item.Text == result)
+					return;
 			}
+			
+			listView.Items.Add(new ListViewItem(new string[] {result, ""}));
 		}
 		
 		void removeClick(object sender, EventArgs e)
@@ -118,13 +117,13 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 		{
 			if (listView.SelectedItems.Count != 1) return;
 
-			using (InputBox box = new InputBox()) {
-				box.Text = ResourceService.GetString("Dialog.HighlightingEditor.EnterText");
-				box.Label.Text = String.Format(ResourceService.GetString("Dialog.HighlightingEditor.Properties.EnterValue"), listView.SelectedItems[0].Text);
-				if (box.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) == DialogResult.Cancel) return;
-				
-				listView.SelectedItems[0].SubItems[1].Text = box.TextBox.Text;
-			}
+			string result = MessageService.ShowInputBox("${res:Dialog.HighlightingEditor.EnterText}",
+			                                            String.Format(ResourceService.GetString("Dialog.HighlightingEditor.Properties.EnterValue"), listView.SelectedItems[0].Text),
+			                                            "");
+			if (string.IsNullOrEmpty(result))
+				return;
+			
+			listView.SelectedItems[0].SubItems[1].Text = result;
 		}
 	}
 }

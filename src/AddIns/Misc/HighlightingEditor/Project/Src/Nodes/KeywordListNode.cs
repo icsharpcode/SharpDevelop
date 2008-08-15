@@ -179,18 +179,15 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 		
 		void addBtnClick(object sender, EventArgs e)
 		{
-			using (InputBox box = new InputBox()) {
-				box.Label.Text = ResourceService.GetString("Dialog.HighlightingEditor.KeywordList.EnterName");
-				if (box.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) == DialogResult.Cancel) return;
-				
-				if (box.TextBox.Text == "") return;
-				foreach (string item in listBox.Items) {
-					if (item == box.TextBox.Text)
-						return;
-				}
-				
-				listBox.Items.Add(box.TextBox.Text);
+			string result = MessageService.ShowInputBox("", "${res:Dialog.HighlightingEditor.KeywordList.EnterName}", "");
+			if (string.IsNullOrEmpty(result))
+				return;
+			foreach (string item in listBox.Items) {
+				if (item == result)
+					return;
 			}
+			
+			listBox.Items.Add(result);
 		}
 		
 		void removeBtnClick(object sender, EventArgs e)

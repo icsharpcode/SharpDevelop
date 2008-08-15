@@ -80,22 +80,19 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 		
 		void addClick(object sender, EventArgs e)
 		{
-			using (InputBox box = new InputBox()) {
-				box.Label.Text = ResourceService.GetString("Dialog.HighlightingEditor.KeywordLists.EnterName");
-				if (box.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) == DialogResult.Cancel) return;
-				
-				if (box.TextBox.Text == "") return;
-				foreach (ListViewItem item in listView.Items) {
-					if (item.Text == box.TextBox.Text)
-						return;
-				}
-				
-				KeywordListNode kwn = new KeywordListNode(box.TextBox.Text);
-				ListViewItem lv = new ListViewItem(box.TextBox.Text);
-				lv.Tag = kwn;
-				parent.Nodes.Add(kwn);
-				listView.Items.Add(lv);
+			string result = MessageService.ShowInputBox("", "${res:Dialog.HighlightingEditor.KeywordList.EnterName}", "");
+			if (string.IsNullOrEmpty(result))
+				return;
+			foreach (ListViewItem item in listView.Items) {
+				if (item.Text == result)
+					return;
 			}
+			
+			KeywordListNode kwn = new KeywordListNode(result);
+			ListViewItem lv = new ListViewItem(result);
+			lv.Tag = kwn;
+			parent.Nodes.Add(kwn);
+			listView.Items.Add(lv);
 		}
 		
 		void removeClick(object sender, EventArgs e)

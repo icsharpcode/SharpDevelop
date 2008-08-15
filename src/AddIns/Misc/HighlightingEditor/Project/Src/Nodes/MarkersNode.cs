@@ -84,22 +84,20 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 		
 		void addClick(object sender, EventArgs e)
 		{
-			using (InputBox box = new InputBox()) {
-				box.Label.Text = ResourceService.GetString("Dialog.HighlightingEditor.Markers.EnterName");
-				if (box.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) == DialogResult.Cancel) return;
-				
-				if (box.TextBox.Text == "") return;
-				foreach (ListViewItem item in listView.Items) {
-					if (item.Text == box.TextBox.Text)
-						return;
-				}
-				
-				MarkerNode rsn = new MarkerNode(box.TextBox.Text, previous);
-				ListViewItem lv = new ListViewItem(box.TextBox.Text);
-				lv.Tag = rsn;
-				parent.Nodes.Add(rsn);
-				listView.Items.Add(lv);
+			string result = MessageService.ShowInputBox("", "${res:Dialog.HighlightingEditor.Markers.EnterName}", "");
+			if (string.IsNullOrEmpty(result))
+				return;
+			
+			foreach (ListViewItem item in listView.Items) {
+				if (item.Text == result)
+					return;
 			}
+			
+			MarkerNode rsn = new MarkerNode(result, previous);
+			ListViewItem lv = new ListViewItem(result);
+			lv.Tag = rsn;
+			parent.Nodes.Add(rsn);
+			listView.Items.Add(lv);
 		}
 		
 		void removeClick(object sender, EventArgs e)

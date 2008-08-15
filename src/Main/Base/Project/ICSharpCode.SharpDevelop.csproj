@@ -325,9 +325,6 @@
     <Compile Include="Src\Gui\Components\LocalizedPropertyGrid\LocalizedProperty.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\IsProcessRunningEvaluator.cs" />
     <Compile Include="Src\Internal\Doozers\PadDoozer.cs" />
-    <Compile Include="Src\Gui\Dialogs\InputBox.cs">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="Src\Gui\Pads\CompilerMessageView\MessageViewCategory.cs" />
     <Compile Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\TaskListOptions.cs">
       <SubType>UserControl</SubType>
@@ -454,7 +451,6 @@
     <EmbeddedResource Include="Resources\ExternalToolOptions.xfrm" />
     <EmbeddedResource Include="Resources\FontSelectionPanel.xfrm" />
     <EmbeddedResource Include="Resources\NewFileWithNameDialog.xfrm" />
-    <EmbeddedResource Include="Resources\InputBox.xfrm" />
     <EmbeddedResource Include="Resources\LoadSaveOptionPanel.xfrm" />
     <EmbeddedResource Include="Resources\NewFileDialog.xfrm" />
     <EmbeddedResource Include="Resources\OutputWindowOptionsPanel.xfrm" />
