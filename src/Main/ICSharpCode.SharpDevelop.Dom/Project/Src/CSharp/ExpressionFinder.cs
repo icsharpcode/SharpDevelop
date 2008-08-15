@@ -163,7 +163,11 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 			/// <summary>
 			/// In object initializer, in the value part (after "=")
 			/// </summary>
-			ObjectInitializerValue
+			ObjectInitializerValue,
+			/// <summary>
+			/// After a keyword like "if","while","using" etc., but before the embedded statement.
+			/// </summary>
+			StatementWithEmbeddedStatement
 		}
 		
 		/// <summary>
@@ -540,6 +544,15 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 				case Tokens.Catch:
 					if (frame.type == FrameType.Statements) {
 						frame.parenthesisChildType = FrameType.Statements;
+						frame.state = FrameState.StatementWithEmbeddedStatement;
+					}
+					break;
+				case Tokens.If:
+				case Tokens.While:
+				case Tokens.Switch:
+				case Tokens.Lock:
+					if (frame.type == FrameType.Statements) {
+						frame.state = FrameState.StatementWithEmbeddedStatement;
 					}
 					break;
 				case Tokens.Throw:
@@ -665,6 +678,12 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 						frame.SetContext(ExpressionContext.FirstParameterType);
 						frame.parent.state = FrameState.MethodDecl;
 						frame.parent.curlyChildType = FrameType.Statements;
+					}
+					break;
+				case Tokens.CloseParenthesis:
+					if (frame.state == FrameState.StatementWithEmbeddedStatement) {
+						frame.state = FrameState.Normal;
+						frame.lastExpressionStart = token.EndLocation;
 					}
 					break;
 				case Tokens.Question:
