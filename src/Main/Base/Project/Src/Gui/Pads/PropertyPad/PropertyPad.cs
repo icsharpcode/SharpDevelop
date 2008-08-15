@@ -178,6 +178,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			panel.Controls.Add(grid);
 			panel.Controls.Add(comboBox);
+			contentControl.SetContent(panel);
 			
 			ProjectService.SolutionClosed += SolutionClosedEvent;
 			

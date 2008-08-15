@@ -340,6 +340,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				}
 			}
 
+			dockLayout.DocumentPane.Items.Remove(this);
 			Dispose();
 			return true;
 		}
