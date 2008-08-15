@@ -10,9 +10,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Windows;
+using System.Windows.Controls;
 
 using WinForms = System.Windows.Forms;
-using System.Windows.Controls;
+using System.Windows.Documents;
 
 namespace ICSharpCode.SharpDevelop
 {
@@ -131,6 +133,8 @@ namespace ICSharpCode.SharpDevelop
 						Child = (System.Windows.Forms.Control)content
 					};
 				}
+			} else if (content is string) {
+				contentControl.Content = new TextBlock(new Run(content.ToString())) { TextWrapping = TextWrapping.Wrap };
 			} else {
 				contentControl.Content = content;
 			}

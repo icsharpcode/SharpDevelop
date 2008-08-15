@@ -6,8 +6,8 @@
 // </file>
 
 using System;
-using ICSharpCode.Core;
 using System.Windows.Controls;
+using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {

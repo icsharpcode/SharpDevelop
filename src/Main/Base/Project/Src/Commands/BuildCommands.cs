@@ -7,10 +7,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Windows.Forms;
+using System.Windows;
+using System.Windows.Controls;
 
 using ICSharpCode.Core;
-using ICSharpCode.Core.WinForms;
+using ICSharpCode.Core.Presentation;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Gui;
 
@@ -224,108 +225,112 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		}
 	}
 	
-	public class AbortBuild : ISubmenuBuilder
+	public class AbortBuild : IMenuItemBuilder
 	{
-		public ToolStripItem[] BuildSubmenu(Codon codon, object owner)
+		public System.Collections.ICollection BuildItems(Codon codon, object owner)
 		{
-			return new[] { new MenuItem() };
+			return new[] { new MyMenuItem() };
 		}
 		
-		sealed class MenuItem : ToolStripMenuItem
+		sealed class MyMenuItem : MenuItem
 		{
-			public MenuItem()
+			public MyMenuItem()
 			{
 				WorkbenchSingleton.Workbench.ProcessCommandKey += OnProcessCommandKey;
 				ResourceService.LanguageChanged += OnLanguageChanged;
 				OnLanguageChanged(null, null);
 			}
 			
-			protected override void Dispose(bool disposing)
-			{
-				base.Dispose(disposing);
-				if (disposing) {
-					WorkbenchSingleton.Workbench.ProcessCommandKey -= OnProcessCommandKey;
-					ResourceService.LanguageChanged -= OnLanguageChanged;
-				}
-			}
-			
-			public override bool Enabled {
-				get { return BuildEngine.IsGuiBuildRunning; }
-			}
+//			protected override void Dispose(bool disposing)
+//			{
+//				base.Dispose(disposing);
+//				if (disposing) {
+//					WorkbenchSingleton.Workbench.ProcessCommandKey -= OnProcessCommandKey;
+//					ResourceService.LanguageChanged -= OnLanguageChanged;
+//				}
+//			}
+//			
+//			public override bool Enabled {
+//				get { return BuildEngine.IsGuiBuildRunning; }
+//			}
 			
 			void OnLanguageChanged(object sender, EventArgs e)
 			{
-				Text = StringParser.Parse("${res:XML.MainMenu.BuildMenu.AbortBuild}");
-				ShortcutKeyDisplayString = StringParser.Parse("${res:XML.MainMenu.BuildMenu.BreakKey}");
+				Header = StringParser.Parse("${res:XML.MainMenu.BuildMenu.AbortBuild}");
+				InputGestureText = StringParser.Parse("${res:XML.MainMenu.BuildMenu.BreakKey}");
 			}
 			
-			void OnProcessCommandKey(object sender, KeyEventArgs e)
+			void OnProcessCommandKey(object sender, System.Windows.Forms.KeyEventArgs e)
 			{
 				// ToolStripMenuItem does not support Pause/Break as shortcut key, so we handle it manually
-				if (e.KeyData == Keys.Pause) {
-					if (Enabled) {
+				if (e.KeyData == System.Windows.Forms.Keys.Pause) {
+					if (IsEnabled) {
 						LoggingService.Debug("BREAK was pressed, aborting build.");
-						PerformClick();
+						RaiseEvent(new RoutedEventArgs(ClickEvent));
 						e.Handled = true;
 					}
 				}
 			}
 			
-			protected override void OnClick(EventArgs e)
+			protected override void OnClick()
 			{
-				base.OnClick(e);
+				base.OnClick();
 				BuildEngine.CancelGuiBuild();
 			}
 		}
 	}
 	
-	public class SetConfigurationMenuBuilder : ISubmenuBuilder
+	public class SetConfigurationMenuBuilder : IMenuItemBuilder
 	{
-		public ToolStripItem[] BuildSubmenu(Codon codon, object owner)
+		public System.Collections.ICollection BuildItems(Codon codon, object owner)
 		{
 			if (ProjectService.OpenSolution == null)
-				return new ToolStripItem[0];
+				return new MenuItem[0];
 			IList<string> configurationNames = ProjectService.OpenSolution.GetConfigurationNames();
 			string activeConfiguration = ProjectService.OpenSolution.Preferences.ActiveConfiguration;
-			ToolStripMenuItem[] items = new ToolStripMenuItem[configurationNames.Count];
+			MenuItem[] items = new MenuItem[configurationNames.Count];
 			for (int i = 0; i < items.Length; i++) {
-				items[i] = new ToolStripMenuItem(configurationNames[i]);
+				items[i] = new MenuItem {
+					Header = configurationNames[i],
+					IsChecked = activeConfiguration == configurationNames[i]
+				};
 				items[i].Click += SetConfigurationItemClick;
-				items[i].Checked = activeConfiguration == configurationNames[i];
 			}
 			return items;
 		}
 		
 		void SetConfigurationItemClick(object sender, EventArgs e)
 		{
-			ToolStripMenuItem item = (ToolStripMenuItem)sender;
-			ProjectService.OpenSolution.Preferences.ActiveConfiguration = item.Text;
+			MenuItem item = (MenuItem)sender;
+			ProjectService.OpenSolution.Preferences.ActiveConfiguration = (string)item.Header;
 			ProjectService.OpenSolution.ApplySolutionConfigurationAndPlatformToProjects();
 			ProjectBrowserPad.Instance.ProjectBrowserControl.RefreshView();
 		}
 	}
 	
-	public class SetPlatformMenuBuilder : ISubmenuBuilder
+	public class SetPlatformMenuBuilder : IMenuItemBuilder
 	{
-		public ToolStripItem[] BuildSubmenu(Codon codon, object owner)
+		public System.Collections.ICollection BuildItems(Codon codon, object owner)
 		{
 			if (ProjectService.OpenSolution == null)
-				return new ToolStripItem[0];
+				return new MenuItem[0];
 			IList<string> platformNames = ProjectService.OpenSolution.GetPlatformNames();
 			string activePlatform = ProjectService.OpenSolution.Preferences.ActivePlatform;
-			ToolStripMenuItem[] items = new ToolStripMenuItem[platformNames.Count];
+			MenuItem[] items = new MenuItem[platformNames.Count];
 			for (int i = 0; i < items.Length; i++) {
-				items[i] = new ToolStripMenuItem(platformNames[i]);
+				items[i] = new MenuItem {
+					Header = platformNames[i],
+					IsChecked = activePlatform == platformNames[i]
+				};
 				items[i].Click += SetPlatformItemClick;
-				items[i].Checked = activePlatform == platformNames[i];
 			}
 			return items;
 		}
 		
 		void SetPlatformItemClick(object sender, EventArgs e)
 		{
-			ToolStripMenuItem item = (ToolStripMenuItem)sender;
-			ProjectService.OpenSolution.Preferences.ActivePlatform = item.Text;
+			MenuItem item = (MenuItem)sender;
+			ProjectService.OpenSolution.Preferences.ActivePlatform = (string)item.Header;
 			ProjectService.OpenSolution.ApplySolutionConfigurationAndPlatformToProjects();
 			ProjectBrowserPad.Instance.ProjectBrowserControl.RefreshView();
 		}
