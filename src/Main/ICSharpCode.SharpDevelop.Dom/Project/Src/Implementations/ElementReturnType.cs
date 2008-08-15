@@ -48,5 +48,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return null;
 			}
 		}
+		
+		public override string ToString()
+		{
+			return "[ElementReturnType " + enumerableType + "]";
+		}
 	}
 }

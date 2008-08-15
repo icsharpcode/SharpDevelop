@@ -916,23 +916,23 @@ StructMemberDecl<ModifierList m, List<AttributeSection> attributes>
 			fd.StartLocation = m.GetDeclarationLocation(startPos); 
 		.)
 		( IF (m.Contains(Modifiers.Fixed))
-			VariableDeclarator<variableDeclarators>
+			VariableDeclarator<fd>
 			"["
 			Expr<out expr> (. if (variableDeclarators.Count > 0)
 								variableDeclarators[variableDeclarators.Count-1].FixedArrayInitialization = expr; .)
 			"]"
 			{	","
-				VariableDeclarator<variableDeclarators>
+				VariableDeclarator<fd>
 				"["
 				Expr<out expr> (. if (variableDeclarators.Count > 0)
 									variableDeclarators[variableDeclarators.Count-1].FixedArrayInitialization = expr; .)
 				"]"
 			}
 		|	/* non-fixed field */
-			VariableDeclarator<variableDeclarators>
-			{ "," VariableDeclarator<variableDeclarators> }
+			VariableDeclarator<fd>
+			{ "," VariableDeclarator<fd> }
 		)
-		";"                                (. fd.EndLocation = t.EndLocation; fd.Fields = variableDeclarators; compilationUnit.AddChild(fd); .)
+		";" (. fd.EndLocation = t.EndLocation; compilationUnit.AddChild(fd); .)
 		
 		/*--- unqualified indexer declaration (without interface name): */
 		|                                  (. m.Check(Modifiers.Indexers); .)
@@ -1241,11 +1241,12 @@ InterfaceAccessors<out PropertyGetRegion getBlock, out PropertySetRegion setBloc
 	]
 .
 
-VariableDeclarator<List<VariableDeclaration> fieldDeclaration>
+VariableDeclarator<FieldDeclaration parentFieldDeclaration>
 (. Expression expr = null; .)
 =
 	Identifier                            (. VariableDeclaration f = new VariableDeclaration(t.val); .)
-	[ "=" VariableInitializer<out expr>   (. f.Initializer = expr; .) ] (. fieldDeclaration.Add(f); .)
+	[ "=" VariableInitializer<out expr>   (. f.Initializer = expr; .) ]
+	(. SafeAdd(parentFieldDeclaration, parentFieldDeclaration.Fields, f); .)
 .
 
 Block<out Statement stmt> /* not BlockStatement because of EmbeddedStatement */
@@ -1370,10 +1371,10 @@ CollectionInitializer<out Expression outExpr>
 =
 	"{" (. initializer.StartLocation = t.Location; .)
 	[	VariableInitializer<out expr>
-		(. if (expr != null) { initializer.CreateExpressions.Add(expr); } .)
+		(. SafeAdd(initializer, initializer.CreateExpressions, expr); .)
 		{ IF (NotFinalComma())
 			"," VariableInitializer<out expr>
-			(. if (expr != null) { initializer.CreateExpressions.Add(expr); } .)
+			(. SafeAdd(initializer, initializer.CreateExpressions, expr); .)
 		}
 		[ "," ]
 	]
@@ -1388,10 +1389,10 @@ CollectionOrObjectInitializer<out Expression outExpr>
 =
 	"{" (. initializer.StartLocation = t.Location; .)
 	[	ObjectPropertyInitializerOrVariableInitializer<out expr>
-		(. if (expr != null) { initializer.CreateExpressions.Add(expr); } .)
+		(. SafeAdd(initializer, initializer.CreateExpressions, expr); .)
 		{ IF (NotFinalComma())
 			"," ObjectPropertyInitializerOrVariableInitializer<out expr>
-			(. if (expr != null) { initializer.CreateExpressions.Add(expr); } .)
+			(. SafeAdd(initializer, initializer.CreateExpressions, expr); .)
 		}
 		[ "," ]
 	]

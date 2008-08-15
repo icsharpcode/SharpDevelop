@@ -1304,23 +1304,39 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				return GetExpectedTypeFromContext(expr.Parent as Expression);
 			}
 			if (expr.Parent is VariableDeclaration) {
-				TypeReference typeRef = (expr.Parent as VariableDeclaration).TypeReference;
-				if (typeRef == null || typeRef.IsNull) {
-					LocalVariableDeclaration lvd = expr.Parent.Parent as LocalVariableDeclaration;
-					if (lvd != null)
-						typeRef = lvd.TypeReference;
-					FieldDeclaration fd = expr.Parent.Parent as FieldDeclaration;
-					if (fd != null)
-						typeRef = fd.TypeReference;
-				}
-				return TypeVisitor.CreateReturnType(typeRef, this);
+				return GetTypeFromVariableDeclaration((VariableDeclaration)expr.Parent);
 			}
 			if (expr.Parent is AssignmentExpression) {
 				ResolveResult rr = ResolveInternal((expr.Parent as AssignmentExpression).Left, ExpressionContext.Default);
 				if (rr != null)
 					return rr.ResolvedType;
 			}
+			if (expr.Parent is CollectionInitializerExpression) {
+				IReturnType collectionType;
+				if (expr.Parent.Parent is ObjectCreateExpression)
+					collectionType = TypeVisitor.CreateReturnType(((ObjectCreateExpression)expr.Parent.Parent).CreateType, this);
+				else if (expr.Parent.Parent is ArrayCreateExpression)
+					collectionType = TypeVisitor.CreateReturnType(((ArrayCreateExpression)expr.Parent.Parent).CreateType, this);
+				else if (expr.Parent.Parent is VariableDeclaration)
+					collectionType = GetTypeFromVariableDeclaration((VariableDeclaration)expr.Parent.Parent);
+				else
+					collectionType = null;
+				if (collectionType != null)
+					return new ElementReturnType(projectContent, collectionType);
+			}
 			return null;
+		}
+
+		IReturnType GetTypeFromVariableDeclaration(VariableDeclaration varDecl)
+		{
+			TypeReference typeRef = varDecl.TypeReference;
+			if (typeRef == null || typeRef.IsNull) {
+				LocalVariableDeclaration lvd = varDecl.Parent as LocalVariableDeclaration;
+				if (lvd != null) typeRef = lvd.TypeReference;
+				FieldDeclaration fd = varDecl.Parent as FieldDeclaration;
+				if (fd != null) typeRef = fd.TypeReference;
+			}
+			return TypeVisitor.CreateReturnType(typeRef, this);
 		}
 	}
 }

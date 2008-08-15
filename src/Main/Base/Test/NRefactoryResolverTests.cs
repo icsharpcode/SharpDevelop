@@ -2161,6 +2161,82 @@ class SomeClass<T> {
 		}
 		
 		[Test]
+		public void LambdaInCollectionInitializerTest1()
+		{
+			string program = @"using System;
+class TestClass {
+	static void Main() {
+		Converter<int, string>[] arr = {
+			i => i.ToString()
+		};
+	}
+}
+";
+			var lrr = Resolve<LocalResolveResult>(program, "i", 5, 9, ExpressionContext.Default);
+			Assert.AreEqual("System.Int32", lrr.ResolvedType.DotNetName);
+		}
+		
+		[Test]
+		public void LambdaInCollectionInitializerTest2()
+		{
+			string program = @"using System; using System.Collections.Generic;
+class TestClass {
+	static void Main() {
+		a = new List<Converter<int, string>> {
+			i => i.ToString()
+		};
+	}
+}
+";
+			var lrr = Resolve<LocalResolveResult>(program, "i", 5, 9, ExpressionContext.Default);
+			Assert.AreEqual("System.Int32", lrr.ResolvedType.DotNetName);
+		}
+		
+		[Test]
+		public void LambdaInCollectionInitializerTest3()
+		{
+			string program = @"using System;
+class TestClass {
+	static void Main() {
+		a = new Converter<int, string>[] {
+			i => i.ToString()
+		};
+	}
+}
+";
+			var lrr = Resolve<LocalResolveResult>(program, "i", 5, 9, ExpressionContext.Default);
+			Assert.AreEqual("System.Int32", lrr.ResolvedType.DotNetName);
+		}
+		
+		[Test]
+		public void LambdaInCollectionInitializerTest4()
+		{
+			string program = @"using System;
+class TestClass {
+	Converter<int, string>[] field = new Converter<int, string>[] {
+		i => i.ToString()
+	};
+}
+";
+			var lrr = Resolve<LocalResolveResult>(program, "i", 4, 8, ExpressionContext.Default);
+			Assert.AreEqual("System.Int32", lrr.ResolvedType.DotNetName);
+		}
+		
+		[Test]
+		public void LambdaInCollectionInitializerTest5()
+		{
+			string program = @"using System;
+class TestClass {
+	Converter<int, string>[] field = {
+		i => i.ToString()
+	};
+}
+";
+			var lrr = Resolve<LocalResolveResult>(program, "i", 4, 8, ExpressionContext.Default);
+			Assert.AreEqual("System.Int32", lrr.ResolvedType.DotNetName);
+		}
+		
+		[Test]
 		public void IncompleteLambdaTest()
 		{
 			string program = @"using System;
