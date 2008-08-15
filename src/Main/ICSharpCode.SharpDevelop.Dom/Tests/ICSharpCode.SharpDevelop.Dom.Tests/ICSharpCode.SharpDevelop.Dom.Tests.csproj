@@ -45,6 +45,7 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="CodeSnippetConverterTests.cs" />
+    <Compile Include="NRefactoryAstConverterTests.cs" />
     <Compile Include="NRefactoryRefactoringProviderTests.cs" />
     <Compile Include="NUnitHelpers\SyntaxHelpers.cs" />
     <Compile Include="NUnitHelpers\Constraints.cs" />
