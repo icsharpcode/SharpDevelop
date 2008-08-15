@@ -18,7 +18,7 @@ namespace SearchAndReplace
 		
 		public bool CompilePattern(IProgressMonitor monitor)
 		{
-			RegexOptions regexOptions = RegexOptions.Compiled;
+			RegexOptions regexOptions = RegexOptions.Compiled | RegexOptions.Multiline;
 			if (!SearchOptions.MatchCase) {
 				regexOptions |= RegexOptions.IgnoreCase;
 			}
