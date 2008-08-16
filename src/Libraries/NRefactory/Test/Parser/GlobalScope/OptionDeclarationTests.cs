@@ -51,6 +51,33 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			Assert.AreEqual(OptionType.CompareText, opDec.OptionType);
 			Assert.IsTrue(opDec.OptionValue);
 		}
+
+		[Test]
+		public void VBNetInferOnOptionDeclarationTest()
+		{
+			string program = "Option Infer On\n";
+			OptionDeclaration opDec = ParseUtilVBNet.ParseGlobal<OptionDeclaration>(program);
+			Assert.AreEqual(OptionType.Infer, opDec.OptionType);
+			Assert.IsTrue(opDec.OptionValue);
+		}
+
+		[Test]
+		public void VBNetInferOffOptionDeclarationTest()
+		{
+			string program = "Option Infer\n";
+			OptionDeclaration opDec = ParseUtilVBNet.ParseGlobal<OptionDeclaration>(program);
+			Assert.AreEqual(OptionType.Infer, opDec.OptionType);
+			Assert.IsTrue(opDec.OptionValue);
+		}
+		
+		[Test]
+		public void VBNetInferOptionDeclarationTest()
+		{
+			string program = "Option Infer\n";
+			OptionDeclaration opDec = ParseUtilVBNet.ParseGlobal<OptionDeclaration>(program);
+			Assert.AreEqual(OptionType.Infer, opDec.OptionType);
+			Assert.IsTrue(opDec.OptionValue);
+		}
 		
 		[Test]
 		public void VBNetInvalidOptionDeclarationTest()

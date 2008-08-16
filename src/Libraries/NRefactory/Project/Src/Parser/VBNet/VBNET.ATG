@@ -253,6 +253,9 @@ OptionStmt (. INode node = null; bool val = true; .) =
 		"Compare" ( "Binary" (. node = new OptionDeclaration(OptionType.CompareBinary, val); .)
 				  | "Text" (. node = new OptionDeclaration(OptionType.CompareText, val); .)
 				  )
+		|
+		"Infer" [ OptionValue<ref val> ]
+		(. node = new OptionDeclaration(OptionType.Infer, val); .)
 	)
 	EndOfStmt
 	(.
@@ -2962,7 +2965,6 @@ IdentifierForFieldDeclaration =
 	| "Text"
 	| "Binary"
 	| "Compare"
-	/*| "Custom" Custom is not valid for field declaration */
 	| "Assembly"
 	| "Ansi"
 	| "Auto"
@@ -2971,6 +2973,7 @@ IdentifierForFieldDeclaration =
 	| "Until"
 	| "Off"
 	| "Explicit"
+	| "Infer"
 .
 
 /* 2.2 */

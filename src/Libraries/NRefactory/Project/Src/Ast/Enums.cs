@@ -362,7 +362,8 @@ namespace ICSharpCode.NRefactory.Ast
 		Explicit,
 		Strict,
 		CompareBinary,
-		CompareText
+		CompareText,
+		Infer
 	}
 	
 	/// <summary>
@@ -370,6 +371,8 @@ namespace ICSharpCode.NRefactory.Ast
 	/// </summary>
 	public enum QueryExpressionOrderingDirection
 	{
-		None, Ascending, Descending
+		None,
+		Ascending,
+		Descending
 	}
 }
