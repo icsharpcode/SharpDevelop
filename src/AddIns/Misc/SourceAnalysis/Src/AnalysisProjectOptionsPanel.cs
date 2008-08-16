@@ -8,15 +8,13 @@
 using System;
 using System.Diagnostics;
 using System.Windows.Forms;
-
+using System.IO;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace MattEverson.SourceAnalysis {
     public class AnalysisProjectOptionsPanel : AbstractProjectOptionPanel {
-		
-		public static readonly string MasterSettingsFileName = StringParser.Parse("\"${AddInPath:MattEverson.SourceAnalysis}\\Settings.SourceAnalysis\"");
 		
         public override void LoadPanelContents() {
             InitializeHelper();
@@ -25,7 +23,7 @@ namespace MattEverson.SourceAnalysis {
             if (masterSettingsFile.Length == 0) {
 
                 helper.SetProperty<string>("SourceAnalysisOverrideSettingsFile",
-                                           MasterSettingsFileName,
+                                           StyleCopWrapper.GetMasterSettingsFile(),
                                            true,
                                            PropertyStorageLocations.Base);
             }
@@ -50,7 +48,7 @@ namespace MattEverson.SourceAnalysis {
         void ModifyStyleCopSettingsClick(object sender, EventArgs e) {
             var settingsFile = helper.GetProperty<string>("SourceAnalysisOverrideSettingsFile", "", true);
  
-            if (settingsFile == MasterSettingsFileName) {
+            if (settingsFile == StyleCopWrapper.GetMasterSettingsFile()) {
                 if (ConfirmSwitchFromMaster()) {
                     settingsFile = CopyFromMaster();
                 }
@@ -110,7 +108,7 @@ namespace MattEverson.SourceAnalysis {
         private string CopyFromMaster() {
             var newSettingsFile = helper.Project.Directory + "\\Settings.SourceAnalysis";
             System.IO.File.Copy(
-                MasterSettingsFileName,
+                StyleCopWrapper.GetMasterSettingsFile(),
                 newSettingsFile,
                 true
                );

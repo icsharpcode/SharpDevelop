@@ -44,9 +44,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Settings.SourceAnalysis">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <EmbeddedResource Include="Resources\Settings.SourceAnalysis">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
     <None Include="SharpDevelop.SourceAnalysis.targets">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

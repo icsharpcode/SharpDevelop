@@ -34,9 +34,11 @@ namespace MattEverson.SourceAnalysis
 			string path = StyleCopWrapper.FindStyleCopPath();
 			if (path == null) {
 				Get<Label>("status").Text = StringParser.Parse("StyleCop not found in the given path.");
+				Get<Button>("ModifyStyleCopSettings").Enabled = false;
 			} else {
 				Get<Label>("status").Text = StringParser.Parse("StyleCop was found in: ")
 					+ Environment.NewLine + path;
+				Get<Button>("ModifyStyleCopSettings").Enabled = true;
 			}
 		}
 		
@@ -60,7 +62,7 @@ namespace MattEverson.SourceAnalysis
 		void ModifyStyleCopSettingsClick(object sender, EventArgs e)
 		{
 		    var executable = "\"" + StyleCopWrapper.FindStyleCopPath() + "\\SourceAnalysisSettingsEditor.exe\"";
-		    var parameters = AnalysisProjectOptionsPanel.MasterSettingsFileName;
+		    var parameters = StyleCopWrapper.GetMasterSettingsFile();
 		    using(Process p = Process.Start(executable, parameters))
 		    {
 		        // No need to wait for the settings dialog to close - we can leave it open.
