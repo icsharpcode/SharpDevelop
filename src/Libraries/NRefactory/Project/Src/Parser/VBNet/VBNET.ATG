@@ -2065,6 +2065,9 @@ TypeName<out TypeReference typeref>
 (. ArrayList rank = null; .)
 =
 	NonArrayTypeName<out typeref, false>
+	
+	
+	
 	ArrayTypeModifiers<out rank>
 	(.	if (rank != null && typeref != null) {
 			typeref.RankSpecifier = (int[])rank.ToArray(typeof(int));
@@ -2100,7 +2103,24 @@ NonArrayTypeName<out TypeReference typeref, bool canBeUnbound>
 		}
 	)
 	| "Object" (. typeref = new TypeReference("System.Object"); .)
+		[
+	  	"?"
+	  	(.
+		  	List<TypeReference> typeArguments = new List<TypeReference>(1);
+		  	if (typeref != null) typeArguments.Add(typeref);
+			typeref = new TypeReference("System.Nullable", typeArguments);
+		.)			
+	  ]
+	
 	| PrimitiveTypeName<out name> (. typeref = new TypeReference(name); .)
+	  [
+		"?"
+	  	(.
+		  	List<TypeReference> typeArguments = new List<TypeReference>(1);
+		  	if (typeref != null) typeArguments.Add(typeref);
+			typeref = new TypeReference("System.Nullable", typeArguments);
+		.)			
+	  ]
 .
 
 QualIdentAndTypeArguments<out TypeReference typeref, bool canBeUnbound>

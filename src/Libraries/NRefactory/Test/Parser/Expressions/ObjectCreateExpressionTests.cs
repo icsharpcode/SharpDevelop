@@ -241,6 +241,24 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			Assert.IsInstanceOfType(typeof(PrimitiveExpression), ((NamedArgumentExpression)oce.ObjectInitializer.CreateExpressions[1]).Expression);
 		}
 		
+		[Test]
+		public void VBNetNullableObjectCreateExpressionTest()
+		{
+			ObjectCreateExpression oce = ParseUtilVBNet.ParseExpression<ObjectCreateExpression>("New Integer?");
+			Assert.AreEqual("System.Nullable", oce.CreateType.SystemType);
+			Assert.AreEqual(1, oce.CreateType.GenericTypes.Count);
+			Assert.AreEqual("Integer", oce.CreateType.GenericTypes[0].Type);
+		}
+
+		[Test]
+		public void VBNetNullableObjectArrayCreateExpressionTest()
+		{
+			ObjectCreateExpression oce = ParseUtilVBNet.ParseExpression<ObjectCreateExpression>("New Integer?()");
+			Assert.AreEqual("System.Nullable", oce.CreateType.SystemType);
+			Assert.AreEqual(1, oce.CreateType.GenericTypes.Count);
+			Assert.AreEqual("Integer", oce.CreateType.GenericTypes[0].Type);
+		}
+		
 		#endregion
 	}
 }
