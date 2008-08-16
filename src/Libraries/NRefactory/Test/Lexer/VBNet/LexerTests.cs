@@ -1,13 +1,7 @@
-// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
-//     <version>$Revision$</version>
-// </file>
-
 using System;
 using System.IO;
 using NUnit.Framework;
+
 using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Parser.VB;
 using ICSharpCode.NRefactory.PrettyPrinter;
@@ -23,24 +17,10 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 		}
 
 		[Test]
-		public void TestDot()
-		{
-			ILexer lexer = GenerateLexer(new StringReader("."));
-			Assert.AreEqual(Tokens.Dot, lexer.NextToken().kind);
-		}
-
-		[Test]
 		public void TestAssign()
 		{
 			ILexer lexer = GenerateLexer(new StringReader("="));
 			Assert.AreEqual(Tokens.Assign, lexer.NextToken().kind);
-		}
-
-		[Test]
-		public void TestComma()
-		{
-			ILexer lexer = GenerateLexer(new StringReader(","));
-			Assert.AreEqual(Tokens.Comma, lexer.NextToken().kind);
 		}
 
 		[Test]
@@ -51,24 +31,17 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 		}
 
 		[Test]
-		public void TestPlus()
+		public void TestComma()
 		{
-			ILexer lexer = GenerateLexer(new StringReader("+"));
-			Assert.AreEqual(Tokens.Plus, lexer.NextToken().kind);
+			ILexer lexer = GenerateLexer(new StringReader(","));
+			Assert.AreEqual(Tokens.Comma, lexer.NextToken().kind);
 		}
 
 		[Test]
-		public void TestMinus()
+		public void TestConcatString()
 		{
-			ILexer lexer = GenerateLexer(new StringReader("-"));
-			Assert.AreEqual(Tokens.Minus, lexer.NextToken().kind);
-		}
-
-		[Test]
-		public void TestTimes()
-		{
-			ILexer lexer = GenerateLexer(new StringReader("*"));
-			Assert.AreEqual(Tokens.Times, lexer.NextToken().kind);
+			ILexer lexer = GenerateLexer(new StringReader("&"));
+			Assert.AreEqual(Tokens.ConcatString, lexer.NextToken().kind);
 		}
 
 		[Test]
@@ -86,10 +59,31 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 		}
 
 		[Test]
-		public void TestConcatString()
+		public void TestDot()
 		{
-			ILexer lexer = GenerateLexer(new StringReader("&"));
-			Assert.AreEqual(Tokens.ConcatString, lexer.NextToken().kind);
+			ILexer lexer = GenerateLexer(new StringReader("."));
+			Assert.AreEqual(Tokens.Dot, lexer.NextToken().kind);
+		}
+
+		[Test]
+		public void TestExclamationMark()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("!"));
+			Assert.AreEqual(Tokens.ExclamationMark, lexer.NextToken().kind);
+		}
+
+		[Test]
+		public void TestMinus()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("-"));
+			Assert.AreEqual(Tokens.Minus, lexer.NextToken().kind);
+		}
+
+		[Test]
+		public void TestPlus()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("+"));
+			Assert.AreEqual(Tokens.Plus, lexer.NextToken().kind);
 		}
 
 		[Test]
@@ -107,10 +101,10 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 		}
 
 		[Test]
-		public void TestExclamationMark()
+		public void TestTimes()
 		{
-			ILexer lexer = GenerateLexer(new StringReader("!"));
-			Assert.AreEqual(Tokens.ExclamationMark, lexer.NextToken().kind);
+			ILexer lexer = GenerateLexer(new StringReader("*"));
+			Assert.AreEqual(Tokens.Times, lexer.NextToken().kind);
 		}
 
 		[Test]
@@ -434,6 +428,18 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 			Assert.AreEqual(Tokens.Const, lexer.NextToken().kind);
 		}
 		[Test()]
+		public void TestContinue()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("Continue"));
+			Assert.AreEqual(Tokens.Continue, lexer.NextToken().kind);
+		}
+		[Test()]
+		public void TestCSByte()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("CSByte"));
+			Assert.AreEqual(Tokens.CSByte, lexer.NextToken().kind);
+		}
+		[Test()]
 		public void TestCShort()
 		{
 			ILexer lexer = GenerateLexer(new StringReader("CShort"));
@@ -456,6 +462,30 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 		{
 			ILexer lexer = GenerateLexer(new StringReader("CType"));
 			Assert.AreEqual(Tokens.CType, lexer.NextToken().kind);
+		}
+		[Test()]
+		public void TestCUInt()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("CUInt"));
+			Assert.AreEqual(Tokens.CUInt, lexer.NextToken().kind);
+		}
+		[Test()]
+		public void TestCULng()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("CULng"));
+			Assert.AreEqual(Tokens.CULng, lexer.NextToken().kind);
+		}
+		[Test()]
+		public void TestCUShort()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("CUShort"));
+			Assert.AreEqual(Tokens.CUShort, lexer.NextToken().kind);
+		}
+		[Test()]
+		public void TestCustom()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("Custom"));
+			Assert.AreEqual(Tokens.Custom, lexer.NextToken().kind);
 		}
 		[Test()]
 		public void TestDate()
@@ -620,6 +650,12 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 			Assert.AreEqual(Tokens.GetType, lexer.NextToken().kind);
 		}
 		[Test()]
+		public void TestGlobal()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("Global"));
+			Assert.AreEqual(Tokens.Global, lexer.NextToken().kind);
+		}
+		[Test()]
 		public void TestGoSub()
 		{
 			ILexer lexer = GenerateLexer(new StringReader("GoSub"));
@@ -662,6 +698,12 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 			Assert.AreEqual(Tokens.In, lexer.NextToken().kind);
 		}
 		[Test()]
+		public void TestInfer()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("Infer"));
+			Assert.AreEqual(Tokens.Infer, lexer.NextToken().kind);
+		}
+		[Test()]
 		public void TestInherits()
 		{
 			ILexer lexer = GenerateLexer(new StringReader("Inherits"));
@@ -684,6 +726,12 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 		{
 			ILexer lexer = GenerateLexer(new StringReader("Is"));
 			Assert.AreEqual(Tokens.Is, lexer.NextToken().kind);
+		}
+		[Test()]
+		public void TestIsNot()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("IsNot"));
+			Assert.AreEqual(Tokens.IsNot, lexer.NextToken().kind);
 		}
 		[Test()]
 		public void TestLet()
@@ -764,6 +812,12 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 			Assert.AreEqual(Tokens.Namespace, lexer.NextToken().kind);
 		}
 		[Test()]
+		public void TestNarrowing()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("Narrowing"));
+			Assert.AreEqual(Tokens.Narrowing, lexer.NextToken().kind);
+		}
+		[Test()]
 		public void TestNew()
 		{
 			ILexer lexer = GenerateLexer(new StringReader("New"));
@@ -806,6 +860,12 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 			Assert.AreEqual(Tokens.Object, lexer.NextToken().kind);
 		}
 		[Test()]
+		public void TestOf()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("Of"));
+			Assert.AreEqual(Tokens.Of, lexer.NextToken().kind);
+		}
+		[Test()]
 		public void TestOff()
 		{
 			ILexer lexer = GenerateLexer(new StringReader("Off"));
@@ -816,6 +876,12 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 		{
 			ILexer lexer = GenerateLexer(new StringReader("On"));
 			Assert.AreEqual(Tokens.On, lexer.NextToken().kind);
+		}
+		[Test()]
+		public void TestOperator()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("Operator"));
+			Assert.AreEqual(Tokens.Operator, lexer.NextToken().kind);
 		}
 		[Test()]
 		public void TestOption()
@@ -866,6 +932,12 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 			Assert.AreEqual(Tokens.ParamArray, lexer.NextToken().kind);
 		}
 		[Test()]
+		public void TestPartial()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("Partial"));
+			Assert.AreEqual(Tokens.Partial, lexer.NextToken().kind);
+		}
+		[Test()]
 		public void TestPreserve()
 		{
 			ILexer lexer = GenerateLexer(new StringReader("Preserve"));
@@ -913,6 +985,7 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 			ILexer lexer = GenerateLexer(new StringReader("ReDim"));
 			Assert.AreEqual(Tokens.ReDim, lexer.NextToken().kind);
 		}
+		
 		[Test()]
 		public void TestRemoveHandler()
 		{
@@ -930,6 +1003,12 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 		{
 			ILexer lexer = GenerateLexer(new StringReader("Return"));
 			Assert.AreEqual(Tokens.Return, lexer.NextToken().kind);
+		}
+		[Test()]
+		public void TestSByte()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("SByte"));
+			Assert.AreEqual(Tokens.SByte, lexer.NextToken().kind);
 		}
 		[Test()]
 		public void TestSelect()
@@ -1052,10 +1131,28 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 			Assert.AreEqual(Tokens.Try, lexer.NextToken().kind);
 		}
 		[Test()]
+		public void TestTryCast()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("TryCast"));
+			Assert.AreEqual(Tokens.TryCast, lexer.NextToken().kind);
+		}
+		[Test()]
 		public void TestTypeOf()
 		{
 			ILexer lexer = GenerateLexer(new StringReader("TypeOf"));
 			Assert.AreEqual(Tokens.TypeOf, lexer.NextToken().kind);
+		}
+		[Test()]
+		public void TestUInteger()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("UInteger"));
+			Assert.AreEqual(Tokens.UInteger, lexer.NextToken().kind);
+		}
+		[Test()]
+		public void TestULong()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("ULong"));
+			Assert.AreEqual(Tokens.ULong, lexer.NextToken().kind);
 		}
 		[Test()]
 		public void TestUnicode()
@@ -1068,6 +1165,18 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 		{
 			ILexer lexer = GenerateLexer(new StringReader("Until"));
 			Assert.AreEqual(Tokens.Until, lexer.NextToken().kind);
+		}
+		[Test()]
+		public void TestUShort()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("UShort"));
+			Assert.AreEqual(Tokens.UShort, lexer.NextToken().kind);
+		}
+		[Test()]
+		public void TestUsing()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("Using"));
+			Assert.AreEqual(Tokens.Using, lexer.NextToken().kind);
 		}
 		[Test()]
 		public void TestVariant()
@@ -1094,6 +1203,12 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 			Assert.AreEqual(Tokens.While, lexer.NextToken().kind);
 		}
 		[Test()]
+		public void TestWidening()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("Widening"));
+			Assert.AreEqual(Tokens.Widening, lexer.NextToken().kind);
+		}
+		[Test()]
 		public void TestWith()
 		{
 			ILexer lexer = GenerateLexer(new StringReader("With"));
@@ -1116,120 +1231,6 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 		{
 			ILexer lexer = GenerateLexer(new StringReader("Xor"));
 			Assert.AreEqual(Tokens.Xor, lexer.NextToken().kind);
-		}
-		[Test()]
-		public void TestContinue()
-		{
-			ILexer lexer = GenerateLexer(new StringReader("Continue"));
-			Assert.AreEqual(Tokens.Continue, lexer.NextToken().kind);
-		}
-		[Test()]
-		public void TestOperator()
-		{
-			ILexer lexer = GenerateLexer(new StringReader("Operator"));
-			Assert.AreEqual(Tokens.Operator, lexer.NextToken().kind);
-		}
-		[Test()]
-		public void TestUsing()
-		{
-			ILexer lexer = GenerateLexer(new StringReader("Using"));
-			Assert.AreEqual(Tokens.Using, lexer.NextToken().kind);
-		}
-		[Test()]
-		public void TestIsNot()
-		{
-			ILexer lexer = GenerateLexer(new StringReader("IsNot"));
-			Assert.AreEqual(Tokens.IsNot, lexer.NextToken().kind);
-		}
-		[Test()]
-		public void TestSByte()
-		{
-			ILexer lexer = GenerateLexer(new StringReader("SByte"));
-			Assert.AreEqual(Tokens.SByte, lexer.NextToken().kind);
-		}
-		[Test()]
-		public void TestUInteger()
-		{
-			ILexer lexer = GenerateLexer(new StringReader("UInteger"));
-			Assert.AreEqual(Tokens.UInteger, lexer.NextToken().kind);
-		}
-		[Test()]
-		public void TestULong()
-		{
-			ILexer lexer = GenerateLexer(new StringReader("ULong"));
-			Assert.AreEqual(Tokens.ULong, lexer.NextToken().kind);
-		}
-		[Test()]
-		public void TestUShort()
-		{
-			ILexer lexer = GenerateLexer(new StringReader("UShort"));
-			Assert.AreEqual(Tokens.UShort, lexer.NextToken().kind);
-		}
-		[Test()]
-		public void TestCSByte()
-		{
-			ILexer lexer = GenerateLexer(new StringReader("CSByte"));
-			Assert.AreEqual(Tokens.CSByte, lexer.NextToken().kind);
-		}
-		[Test()]
-		public void TestCUShort()
-		{
-			ILexer lexer = GenerateLexer(new StringReader("CUShort"));
-			Assert.AreEqual(Tokens.CUShort, lexer.NextToken().kind);
-		}
-		[Test()]
-		public void TestCUInt()
-		{
-			ILexer lexer = GenerateLexer(new StringReader("CUInt"));
-			Assert.AreEqual(Tokens.CUInt, lexer.NextToken().kind);
-		}
-		[Test()]
-		public void TestCULng()
-		{
-			ILexer lexer = GenerateLexer(new StringReader("CULng"));
-			Assert.AreEqual(Tokens.CULng, lexer.NextToken().kind);
-		}
-		[Test()]
-		public void TestGlobal()
-		{
-			ILexer lexer = GenerateLexer(new StringReader("Global"));
-			Assert.AreEqual(Tokens.Global, lexer.NextToken().kind);
-		}
-		[Test()]
-		public void TestTryCast()
-		{
-			ILexer lexer = GenerateLexer(new StringReader("TryCast"));
-			Assert.AreEqual(Tokens.TryCast, lexer.NextToken().kind);
-		}
-		[Test()]
-		public void TestOf()
-		{
-			ILexer lexer = GenerateLexer(new StringReader("Of"));
-			Assert.AreEqual(Tokens.Of, lexer.NextToken().kind);
-		}
-		[Test()]
-		public void TestNarrowing()
-		{
-			ILexer lexer = GenerateLexer(new StringReader("Narrowing"));
-			Assert.AreEqual(Tokens.Narrowing, lexer.NextToken().kind);
-		}
-		[Test()]
-		public void TestWidening()
-		{
-			ILexer lexer = GenerateLexer(new StringReader("Widening"));
-			Assert.AreEqual(Tokens.Widening, lexer.NextToken().kind);
-		}
-		[Test()]
-		public void TestPartial()
-		{
-			ILexer lexer = GenerateLexer(new StringReader("Partial"));
-			Assert.AreEqual(Tokens.Partial, lexer.NextToken().kind);
-		}
-		[Test()]
-		public void TestCustom()
-		{
-			ILexer lexer = GenerateLexer(new StringReader("Custom"));
-			Assert.AreEqual(Tokens.Custom, lexer.NextToken().kind);
 		}
 	}
 }

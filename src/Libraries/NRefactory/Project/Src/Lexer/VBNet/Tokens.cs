@@ -19,19 +19,19 @@ namespace ICSharpCode.NRefactory.Parser.VB
 		public const int LiteralDate          = 9;
 
 		// ----- special character -----
-		public const int Dot                  = 10;
-		public const int Assign               = 11;
+		public const int Assign               = 10;
+		public const int Colon                = 11;
 		public const int Comma                = 12;
-		public const int Colon                = 13;
-		public const int Plus                 = 14;
-		public const int Minus                = 15;
-		public const int Times                = 16;
-		public const int Div                  = 17;
-		public const int DivInteger           = 18;
-		public const int ConcatString         = 19;
+		public const int ConcatString         = 13;
+		public const int Div                  = 14;
+		public const int DivInteger           = 15;
+		public const int Dot                  = 16;
+		public const int ExclamationMark      = 17;
+		public const int Minus                = 18;
+		public const int Plus                 = 19;
 		public const int Power                = 20;
 		public const int QuestionMark         = 21;
-		public const int ExclamationMark      = 22;
+		public const int Times                = 22;
 		public const int OpenCurlyBrace       = 23;
 		public const int CloseCurlyBrace      = 24;
 		public const int OpenParenthesis      = 25;
@@ -84,142 +84,143 @@ namespace ICSharpCode.NRefactory.Parser.VB
 		public const int CObj                 = 70;
 		public const int Compare              = 71;
 		public const int Const                = 72;
-		public const int CShort               = 73;
-		public const int CSng                 = 74;
-		public const int CStr                 = 75;
-		public const int CType                = 76;
-		public const int Date                 = 77;
-		public const int Decimal              = 78;
-		public const int Declare              = 79;
-		public const int Default              = 80;
-		public const int Delegate             = 81;
-		public const int Dim                  = 82;
-		public const int DirectCast           = 83;
-		public const int Do                   = 84;
-		public const int Double               = 85;
-		public const int Each                 = 86;
-		public const int Else                 = 87;
-		public const int ElseIf               = 88;
-		public const int End                  = 89;
-		public const int EndIf                = 90;
-		public const int Enum                 = 91;
-		public const int Erase                = 92;
-		public const int Error                = 93;
-		public const int Event                = 94;
-		public const int Exit                 = 95;
-		public const int Explicit             = 96;
-		public const int False                = 97;
-		public const int Finally              = 98;
-		public const int For                  = 99;
-		public const int Friend               = 100;
-		public const int Function             = 101;
-		public const int Get                  = 102;
-		new public const int GetType              = 103;
-		public const int GoSub                = 104;
-		public const int GoTo                 = 105;
-		public const int Handles              = 106;
-		public const int If                   = 107;
-		public const int Implements           = 108;
-		public const int Imports              = 109;
-		public const int In                   = 110;
-		public const int Inherits             = 111;
-		public const int Integer              = 112;
-		public const int Interface            = 113;
-		public const int Is                   = 114;
-		public const int Let                  = 115;
-		public const int Lib                  = 116;
-		public const int Like                 = 117;
-		public const int Long                 = 118;
-		public const int Loop                 = 119;
-		public const int Me                   = 120;
-		public const int Mod                  = 121;
-		public const int Module               = 122;
-		public const int MustInherit          = 123;
-		public const int MustOverride         = 124;
-		public const int MyBase               = 125;
-		public const int MyClass              = 126;
-		public const int Namespace            = 127;
-		public const int New                  = 128;
-		public const int Next                 = 129;
-		public const int Not                  = 130;
-		public const int Nothing              = 131;
-		public const int NotInheritable       = 132;
-		public const int NotOverridable       = 133;
-		public const int Object               = 134;
-		public const int Off                  = 135;
-		public const int On                   = 136;
-		public const int Option               = 137;
-		public const int Optional             = 138;
-		public const int Or                   = 139;
-		public const int OrElse               = 140;
-		public const int Overloads            = 141;
-		public const int Overridable          = 142;
-		public const int Overrides            = 143;
-		public const int ParamArray           = 144;
-		public const int Preserve             = 145;
-		public const int Private              = 146;
-		public const int Property             = 147;
-		public const int Protected            = 148;
-		public const int Public               = 149;
-		public const int RaiseEvent           = 150;
-		public const int ReadOnly             = 151;
-		public const int ReDim                = 152;
-		public const int RemoveHandler        = 153;
-		public const int Resume               = 154;
-		public const int Return               = 155;
-		public const int Select               = 156;
-		public const int Set                  = 157;
-		public const int Shadows              = 158;
-		public const int Shared               = 159;
-		public const int Short                = 160;
-		public const int Single               = 161;
-		public const int Static               = 162;
-		public const int Step                 = 163;
-		public const int Stop                 = 164;
-		public const int Strict               = 165;
-		public const int String               = 166;
-		public const int Structure            = 167;
-		public const int Sub                  = 168;
-		public const int SyncLock             = 169;
-		public const int Text                 = 170;
-		public const int Then                 = 171;
-		public const int Throw                = 172;
-		public const int To                   = 173;
-		public const int True                 = 174;
-		public const int Try                  = 175;
-		public const int TypeOf               = 176;
-		public const int Unicode              = 177;
-		public const int Until                = 178;
-		public const int Variant              = 179;
-		public const int Wend                 = 180;
-		public const int When                 = 181;
-		public const int While                = 182;
-		public const int With                 = 183;
-		public const int WithEvents           = 184;
-		public const int WriteOnly            = 185;
-		public const int Xor                  = 186;
-		public const int Rem                  = 187;
-		public const int Continue             = 188;
-		public const int Operator             = 189;
-		public const int Using                = 190;
-		public const int IsNot                = 191;
-		public const int SByte                = 192;
+		public const int Continue             = 73;
+		public const int CSByte               = 74;
+		public const int CShort               = 75;
+		public const int CSng                 = 76;
+		public const int CStr                 = 77;
+		public const int CType                = 78;
+		public const int CUInt                = 79;
+		public const int CULng                = 80;
+		public const int CUShort              = 81;
+		public const int Custom               = 82;
+		public const int Date                 = 83;
+		public const int Decimal              = 84;
+		public const int Declare              = 85;
+		public const int Default              = 86;
+		public const int Delegate             = 87;
+		public const int Dim                  = 88;
+		public const int DirectCast           = 89;
+		public const int Do                   = 90;
+		public const int Double               = 91;
+		public const int Each                 = 92;
+		public const int Else                 = 93;
+		public const int ElseIf               = 94;
+		public const int End                  = 95;
+		public const int EndIf                = 96;
+		public const int Enum                 = 97;
+		public const int Erase                = 98;
+		public const int Error                = 99;
+		public const int Event                = 100;
+		public const int Exit                 = 101;
+		public const int Explicit             = 102;
+		public const int False                = 103;
+		public const int Finally              = 104;
+		public const int For                  = 105;
+		public const int Friend               = 106;
+		public const int Function             = 107;
+		public const int Get                  = 108;
+		new public const int GetType              = 109;
+		public const int Global               = 110;
+		public const int GoSub                = 111;
+		public const int GoTo                 = 112;
+		public const int Handles              = 113;
+		public const int If                   = 114;
+		public const int Implements           = 115;
+		public const int Imports              = 116;
+		public const int In                   = 117;
+		public const int Infer                = 118;
+		public const int Inherits             = 119;
+		public const int Integer              = 120;
+		public const int Interface            = 121;
+		public const int Is                   = 122;
+		public const int IsNot                = 123;
+		public const int Let                  = 124;
+		public const int Lib                  = 125;
+		public const int Like                 = 126;
+		public const int Long                 = 127;
+		public const int Loop                 = 128;
+		public const int Me                   = 129;
+		public const int Mod                  = 130;
+		public const int Module               = 131;
+		public const int MustInherit          = 132;
+		public const int MustOverride         = 133;
+		public const int MyBase               = 134;
+		public const int MyClass              = 135;
+		public const int Namespace            = 136;
+		public const int Narrowing            = 137;
+		public const int New                  = 138;
+		public const int Next                 = 139;
+		public const int Not                  = 140;
+		public const int Nothing              = 141;
+		public const int NotInheritable       = 142;
+		public const int NotOverridable       = 143;
+		public const int Object               = 144;
+		public const int Of                   = 145;
+		public const int Off                  = 146;
+		public const int On                   = 147;
+		public const int Operator             = 148;
+		public const int Option               = 149;
+		public const int Optional             = 150;
+		public const int Or                   = 151;
+		public const int OrElse               = 152;
+		public const int Overloads            = 153;
+		public const int Overridable          = 154;
+		public const int Overrides            = 155;
+		public const int ParamArray           = 156;
+		public const int Partial              = 157;
+		public const int Preserve             = 158;
+		public const int Private              = 159;
+		public const int Property             = 160;
+		public const int Protected            = 161;
+		public const int Public               = 162;
+		public const int RaiseEvent           = 163;
+		public const int ReadOnly             = 164;
+		public const int ReDim                = 165;
+		public const int Rem                  = 166;
+		public const int RemoveHandler        = 167;
+		public const int Resume               = 168;
+		public const int Return               = 169;
+		public const int SByte                = 170;
+		public const int Select               = 171;
+		public const int Set                  = 172;
+		public const int Shadows              = 173;
+		public const int Shared               = 174;
+		public const int Short                = 175;
+		public const int Single               = 176;
+		public const int Static               = 177;
+		public const int Step                 = 178;
+		public const int Stop                 = 179;
+		public const int Strict               = 180;
+		public const int String               = 181;
+		public const int Structure            = 182;
+		public const int Sub                  = 183;
+		public const int SyncLock             = 184;
+		public const int Text                 = 185;
+		public const int Then                 = 186;
+		public const int Throw                = 187;
+		public const int To                   = 188;
+		public const int True                 = 189;
+		public const int Try                  = 190;
+		public const int TryCast              = 191;
+		public const int TypeOf               = 192;
 		public const int UInteger             = 193;
 		public const int ULong                = 194;
-		public const int UShort               = 195;
-		public const int CSByte               = 196;
-		public const int CUShort              = 197;
-		public const int CUInt                = 198;
-		public const int CULng                = 199;
-		public const int Global               = 200;
-		public const int TryCast              = 201;
-		public const int Of                   = 202;
-		public const int Narrowing            = 203;
-		public const int Widening             = 204;
-		public const int Partial              = 205;
-		public const int Custom               = 206;
+		public const int Unicode              = 195;
+		public const int Until                = 196;
+		public const int UShort               = 197;
+		public const int Using                = 198;
+		public const int Variant              = 199;
+		public const int Wend                 = 200;
+		public const int When                 = 201;
+		public const int While                = 202;
+		public const int Widening             = 203;
+		public const int With                 = 204;
+		public const int WithEvents           = 205;
+		public const int WriteOnly            = 206;
+		public const int Xor                  = 207;
 
-		public const int MaxToken = 207;
+		public const int MaxToken = 208;
 		static BitArray NewSet(params int[] values)
 		{
 			BitArray bitArray = new BitArray(MaxToken);
@@ -245,19 +246,19 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			"<LiteralDecimal>",
 			"<LiteralDate>",
 			// ----- special character -----
-			".",
 			"=",
-			",",
 			":",
-			"+",
-			"-",
-			"*",
+			",",
+			"&",
 			"/",
 			"\\",
-			"&",
+			".",
+			"!",
+			"-",
+			"+",
 			"^",
 			"?",
-			"!",
+			"*",
 			"{",
 			"}",
 			"(",
@@ -309,10 +310,16 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			"CObj",
 			"Compare",
 			"Const",
+			"Continue",
+			"CSByte",
 			"CShort",
 			"CSng",
 			"CStr",
 			"CType",
+			"CUInt",
+			"CULng",
+			"CUShort",
+			"Custom",
 			"Date",
 			"Decimal",
 			"Declare",
@@ -340,6 +347,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			"Function",
 			"Get",
 			"GetType",
+			"Global",
 			"GoSub",
 			"GoTo",
 			"Handles",
@@ -347,10 +355,12 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			"Implements",
 			"Imports",
 			"In",
+			"Infer",
 			"Inherits",
 			"Integer",
 			"Interface",
 			"Is",
+			"IsNot",
 			"Let",
 			"Lib",
 			"Like",
@@ -364,6 +374,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			"MyBase",
 			"MyClass",
 			"Namespace",
+			"Narrowing",
 			"New",
 			"Next",
 			"Not",
@@ -371,8 +382,10 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			"NotInheritable",
 			"NotOverridable",
 			"Object",
+			"Of",
 			"Off",
 			"On",
+			"Operator",
 			"Option",
 			"Optional",
 			"Or",
@@ -381,6 +394,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			"Overridable",
 			"Overrides",
 			"ParamArray",
+			"Partial",
 			"Preserve",
 			"Private",
 			"Property",
@@ -389,9 +403,11 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			"RaiseEvent",
 			"ReadOnly",
 			"ReDim",
+			"Rem",
 			"RemoveHandler",
 			"Resume",
 			"Return",
+			"SByte",
 			"Select",
 			"Set",
 			"Shadows",
@@ -412,37 +428,23 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			"To",
 			"True",
 			"Try",
+			"TryCast",
 			"TypeOf",
+			"UInteger",
+			"ULong",
 			"Unicode",
 			"Until",
+			"UShort",
+			"Using",
 			"Variant",
 			"Wend",
 			"When",
 			"While",
+			"Widening",
 			"With",
 			"WithEvents",
 			"WriteOnly",
 			"Xor",
-			"Rem",
-			"Continue",
-			"Operator",
-			"Using",
-			"IsNot",
-			"SByte",
-			"UInteger",
-			"ULong",
-			"UShort",
-			"CSByte",
-			"CUShort",
-			"CUInt",
-			"CULng",
-			"Global",
-			"TryCast",
-			"Of",
-			"Narrowing",
-			"Widening",
-			"Partial",
-			"Custom",
 		};
 		public static string GetTokenString(int token)
 		{

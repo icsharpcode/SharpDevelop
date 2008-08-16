@@ -209,34 +209,6 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			return m.Contains(Modifiers.Abstract);
 		}
 
-		TypeReferenceExpression GetTypeReferenceExpression(Expression expr, List<TypeReference> genericTypes)
-		{
-			TypeReferenceExpression	tre = expr as TypeReferenceExpression;
-			if (tre != null) {
-				return new TypeReferenceExpression(new TypeReference(tre.TypeReference.Type, tre.TypeReference.PointerNestingLevel, tre.TypeReference.RankSpecifier, genericTypes));
-			}
-			StringBuilder b = new StringBuilder();
-			if (!WriteFullTypeName(b, expr)) {
-				// there is some TypeReferenceExpression hidden in the expression
-				while (expr is MemberReferenceExpression) {
-					expr = ((MemberReferenceExpression)expr).TargetObject;
-				}
-				tre = expr as TypeReferenceExpression;
-				if (tre != null) {
-					TypeReference typeRef = tre.TypeReference;
-					if (typeRef.GenericTypes.Count == 0) {
-						typeRef = typeRef.Clone();
-						typeRef.Type += "." + b.ToString();
-						typeRef.GenericTypes.AddRange(genericTypes);
-					} else {
-						typeRef = new InnerClassTypeReference(typeRef, b.ToString(), genericTypes);
-					}
-					return new TypeReferenceExpression(typeRef);
-				}
-			}
-			return new TypeReferenceExpression(new TypeReference(b.ToString(), 0, null, genericTypes));
-		}
-
 		/* Writes the type name represented through the expression into the string builder. */
 		/* Returns true when the expression was converted successfully, returns false when */
 		/* There was an unknown expression (e.g. TypeReferenceExpression) in it */
@@ -271,21 +243,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			if (!(expr is PrimitiveExpression) || (expr as PrimitiveExpression).StringValue != "0")
 				Error("lower bound of array must be zero");
 		}
-		
-		InvocationExpression CreateInvocationExpression(Expression target, List<Expression> parameters, List<TypeReference> typeArguments)
-		{
-			if (typeArguments != null && typeArguments.Count > 0) {
-				if (target is IdentifierExpression) {
-					((IdentifierExpression)target).TypeArguments = typeArguments;
-				} else if (target is MemberReferenceExpression) {
-					((MemberReferenceExpression)target).TypeArguments = typeArguments;
-				} else {
-					Error("Type arguments only allowed on IdentifierExpression and MemberReferenceExpression");
-				}
-			}
-			return new InvocationExpression(target, parameters);
-		}
-		
+				
 		/// <summary>
 		/// Adds a child item to a collection stored in the parent node.
 		/// Also set's the item's parent to <paramref name="parent"/>.

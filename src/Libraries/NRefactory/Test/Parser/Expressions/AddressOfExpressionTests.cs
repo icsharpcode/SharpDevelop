@@ -38,6 +38,16 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			Assert.AreEqual("X", ((IdentifierExpression)ae.Expression).TypeArguments[0].Type);
 		}
 		
+		[Test]
+		public void MemberReferenceAddressOfExpressionTest()
+		{
+			AddressOfExpression ae = ParseUtilVBNet.ParseExpression<AddressOfExpression>("AddressOf Me.t(Of X)");
+			Assert.IsNotNull(ae);
+			Assert.IsInstanceOfType(typeof(MemberReferenceExpression), ae.Expression);
+			Assert.AreEqual("t", ((MemberReferenceExpression)ae.Expression).MemberName, "t");
+			Assert.IsInstanceOfType(typeof(ThisReferenceExpression), ((MemberReferenceExpression)ae.Expression).TargetObject);
+		}
+		
 		#endregion
 		
 		#region C#
