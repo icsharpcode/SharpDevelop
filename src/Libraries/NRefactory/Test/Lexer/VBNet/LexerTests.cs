@@ -260,6 +260,12 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 			Assert.AreEqual(Tokens.AddressOf, lexer.NextToken().kind);
 		}
 		[Test()]
+		public void TestAggregate()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("Aggregate"));
+			Assert.AreEqual(Tokens.Aggregate, lexer.NextToken().kind);
+		}
+		[Test()]
 		public void TestAlias()
 		{
 			ILexer lexer = GenerateLexer(new StringReader("Alias"));
@@ -290,6 +296,12 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 			Assert.AreEqual(Tokens.As, lexer.NextToken().kind);
 		}
 		[Test()]
+		public void TestAscending()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("Ascending"));
+			Assert.AreEqual(Tokens.Ascending, lexer.NextToken().kind);
+		}
+		[Test()]
 		public void TestAssembly()
 		{
 			ILexer lexer = GenerateLexer(new StringReader("Assembly"));
@@ -318,6 +330,12 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 		{
 			ILexer lexer = GenerateLexer(new StringReader("ByRef"));
 			Assert.AreEqual(Tokens.ByRef, lexer.NextToken().kind);
+		}
+		[Test()]
+		public void TestBy()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("By"));
+			Assert.AreEqual(Tokens.By, lexer.NextToken().kind);
 		}
 		[Test()]
 		public void TestByte()
@@ -518,6 +536,12 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 			Assert.AreEqual(Tokens.Delegate, lexer.NextToken().kind);
 		}
 		[Test()]
+		public void TestDescending()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("Descending"));
+			Assert.AreEqual(Tokens.Descending, lexer.NextToken().kind);
+		}
+		[Test()]
 		public void TestDim()
 		{
 			ILexer lexer = GenerateLexer(new StringReader("Dim"));
@@ -528,6 +552,12 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 		{
 			ILexer lexer = GenerateLexer(new StringReader("DirectCast"));
 			Assert.AreEqual(Tokens.DirectCast, lexer.NextToken().kind);
+		}
+		[Test()]
+		public void TestDistinct()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("Distinct"));
+			Assert.AreEqual(Tokens.Distinct, lexer.NextToken().kind);
 		}
 		[Test()]
 		public void TestDo()
@@ -576,6 +606,12 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 		{
 			ILexer lexer = GenerateLexer(new StringReader("Enum"));
 			Assert.AreEqual(Tokens.Enum, lexer.NextToken().kind);
+		}
+		[Test()]
+		public void TestEquals()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("Equals"));
+			Assert.AreEqual(Tokens.Equals, lexer.NextToken().kind);
 		}
 		[Test()]
 		public void TestErase()
@@ -632,6 +668,12 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 			Assert.AreEqual(Tokens.Friend, lexer.NextToken().kind);
 		}
 		[Test()]
+		public void TestFrom()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("From"));
+			Assert.AreEqual(Tokens.From, lexer.NextToken().kind);
+		}
+		[Test()]
 		public void TestFunction()
 		{
 			ILexer lexer = GenerateLexer(new StringReader("Function"));
@@ -666,6 +708,12 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 		{
 			ILexer lexer = GenerateLexer(new StringReader("GoTo"));
 			Assert.AreEqual(Tokens.GoTo, lexer.NextToken().kind);
+		}
+		[Test()]
+		public void TestGroup()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("Group"));
+			Assert.AreEqual(Tokens.Group, lexer.NextToken().kind);
 		}
 		[Test()]
 		public void TestHandles()
@@ -722,6 +770,12 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 			Assert.AreEqual(Tokens.Interface, lexer.NextToken().kind);
 		}
 		[Test()]
+		public void TestInto()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("Into"));
+			Assert.AreEqual(Tokens.Into, lexer.NextToken().kind);
+		}
+		[Test()]
 		public void TestIs()
 		{
 			ILexer lexer = GenerateLexer(new StringReader("Is"));
@@ -732,6 +786,12 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 		{
 			ILexer lexer = GenerateLexer(new StringReader("IsNot"));
 			Assert.AreEqual(Tokens.IsNot, lexer.NextToken().kind);
+		}
+		[Test()]
+		public void TestJoin()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("Join"));
+			Assert.AreEqual(Tokens.Join, lexer.NextToken().kind);
 		}
 		[Test()]
 		public void TestLet()
@@ -902,6 +962,12 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 			Assert.AreEqual(Tokens.Or, lexer.NextToken().kind);
 		}
 		[Test()]
+		public void TestOrder()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("Order"));
+			Assert.AreEqual(Tokens.Order, lexer.NextToken().kind);
+		}
+		[Test()]
 		public void TestOrElse()
 		{
 			ILexer lexer = GenerateLexer(new StringReader("OrElse"));
@@ -985,7 +1051,6 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 			ILexer lexer = GenerateLexer(new StringReader("ReDim"));
 			Assert.AreEqual(Tokens.ReDim, lexer.NextToken().kind);
 		}
-		
 		[Test()]
 		public void TestRemoveHandler()
 		{
@@ -1047,6 +1112,12 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 			Assert.AreEqual(Tokens.Single, lexer.NextToken().kind);
 		}
 		[Test()]
+		public void TestSkip()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("Skip"));
+			Assert.AreEqual(Tokens.Skip, lexer.NextToken().kind);
+		}
+		[Test()]
 		public void TestStatic()
 		{
 			ILexer lexer = GenerateLexer(new StringReader("Static"));
@@ -1093,6 +1164,12 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 		{
 			ILexer lexer = GenerateLexer(new StringReader("SyncLock"));
 			Assert.AreEqual(Tokens.SyncLock, lexer.NextToken().kind);
+		}
+		[Test()]
+		public void TestTake()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("Take"));
+			Assert.AreEqual(Tokens.Take, lexer.NextToken().kind);
 		}
 		[Test()]
 		public void TestText()
@@ -1195,6 +1272,12 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 		{
 			ILexer lexer = GenerateLexer(new StringReader("When"));
 			Assert.AreEqual(Tokens.When, lexer.NextToken().kind);
+		}
+		[Test()]
+		public void TestWhere()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("Where"));
+			Assert.AreEqual(Tokens.Where, lexer.NextToken().kind);
 		}
 		[Test()]
 		public void TestWhile()

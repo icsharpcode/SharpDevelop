@@ -16,7 +16,7 @@ close(DAT);
 print "done.\n";
 
 #analyse infile
-print "starting analysation ... this could take a few minutes.\n";
+print "starting analysis... this could take a few seconds.\n";
 
 foreach (@raw_data) {
 	if ($_=~/^\s*\$(\w+)\s*=\s*(\S+)\s*$/) {
@@ -135,7 +135,7 @@ sub write_keywordfile
 
 sub write_token {
 	$formattedString = sprintf("%-20s", ucfirst $tokenName);
-	if (($tokenName eq "GetType") or ($tokenName eq "equals")) {
+	if (($tokenName eq "GetType") or ($tokenName eq "equals") or ($tokenName eq "Equals")) {
 		print DAT "\t\tnew public const int $formattedString = $tokenValue;\n";
 	} else {
 		print DAT "\t\tpublic const int $formattedString = $tokenValue;\n";
