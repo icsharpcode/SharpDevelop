@@ -45,7 +45,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public Window MainWindow { get { return this; } }
 		
 		List<PadDescriptor> padViewContentCollection = new List<PadDescriptor>();
-		List<IViewContent> viewContentCollection = new List<IViewContent>();
 		
 		ToolBar[] toolBars;
 		
@@ -101,14 +100,16 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public ICollection<IViewContent> ViewContentCollection {
 			get {
-				return viewContentCollection.AsReadOnly();
+				return WorkbenchWindowCollection.SelectMany(w => w.ViewContents).ToList().ToArray();
 			}
 		}
 		
 		public IList<IWorkbenchWindow> WorkbenchWindowCollection {
 			get {
-				return viewContentCollection.Select(vc => vc.WorkbenchWindow)
-					.Distinct().ToList().AsReadOnly();
+				if (workbenchLayout != null)
+					return workbenchLayout.WorkbenchWindows;
+				else
+					return new IWorkbenchWindow[0];
 			}
 		}
 		
@@ -231,7 +232,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (content == null)
 				throw new ArgumentNullException("content");
 			System.Diagnostics.Debug.Assert(WorkbenchLayout != null);
-			viewContentCollection.Add(content);
 			
 			WorkbenchLayout.ShowView(content);
 			content.WorkbenchWindow.SelectWindow();

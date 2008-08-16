@@ -5,9 +5,11 @@
 //     <version>$Revision$</version>
 // </file>
 using System;
+using System.Threading;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 
 namespace ICSharpCode.Core.Presentation
 {
@@ -18,7 +20,6 @@ namespace ICSharpCode.Core.Presentation
 	{
 		public PixelSnapper()
 		{
-			LayoutUpdated += new EventHandler(OnLayoutUpdated);
 		}
 		
 		public PixelSnapper(UIElement visualChild)
@@ -80,13 +81,14 @@ namespace ICSharpCode.Core.Presentation
 				_pixelOffset = GetPixelOffset();
 				//LoggingService.Debug("Arrange, Pixel Offset=" + _pixelOffset);
 				_visualChild.Arrange(new Rect(new Point(_pixelOffset.X, _pixelOffset.Y), finalRect.Size));
+				
+				// check again after the whole layout pass has finished, maybe we need to move
+				Dispatcher.BeginInvoke(DispatcherPriority.Loaded, new ThreadStart(CheckLayout));
 			}
 		}
 		
-		private void OnLayoutUpdated(object sender, EventArgs e)
+		private void CheckLayout()
 		{
-			// This event just means that layout happened somewhere.  However, this is
-			// what we need since layout anywhere could affect our pixel positioning.
 			Point pixelOffset = GetPixelOffset();
 			if (!AreClose(pixelOffset, _pixelOffset)) {
 				InvalidateArrange();

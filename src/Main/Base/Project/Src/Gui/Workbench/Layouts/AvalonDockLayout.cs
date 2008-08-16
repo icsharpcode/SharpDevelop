@@ -26,20 +26,23 @@ namespace ICSharpCode.SharpDevelop.Gui
 		WpfWorkbench workbench;
 		DockingManager dockingManager = new DockingManager();
 		DocumentPane documentPane = new DocumentPane();
+		List<IWorkbenchWindow> workbenchWindows = new List<IWorkbenchWindow>();
 		internal bool Busy;
 		
 		public DockingManager DockingManager {
 			get { return dockingManager; }
 		}
 		
-		public DocumentPane DocumentPane {
-			get { return documentPane; }
-		}
-		
 		public AvalonDockLayout()
 		{
 			dockingManager.Content = documentPane;
 			dockingManager.PropertyChanged += dockingManager_PropertyChanged;
+		}
+		
+		public void OnWorkbenchWindowClosed(AvalonWorkbenchWindow window)
+		{
+			workbenchWindows.Remove(window);
+			documentPane.Items.Remove(window);
 		}
 		
 		void dockingManager_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -69,6 +72,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 				if (window != null)
 					return window.ActiveViewContent;
 				return null;
+			}
+		}
+		
+		public IList<IWorkbenchWindow> WorkbenchWindows {
+			get {
+				return workbenchWindows.AsReadOnly();
 			}
 		}
 		
@@ -213,6 +222,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public IWorkbenchWindow ShowView(IViewContent content)
 		{
 			AvalonWorkbenchWindow window = new AvalonWorkbenchWindow(this);
+			workbenchWindows.Add(window);
 			window.ViewContents.Add(content);
 			window.ViewContents.AddRange(content.SecondaryViewContents);
 			documentPane.Items.Add(window);

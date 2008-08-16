@@ -143,69 +143,63 @@ namespace ICSharpCode.SharpDevelop.Commands
 		}
 	}
 	
-	public class RecentFilesMenuBuilder : ISubmenuBuilder
+	public class RecentFilesMenuBuilder : IMenuItemBuilder
 	{
-		public ToolStripItem[] BuildSubmenu(Codon codon, object owner)
+		public ICollection BuildItems(Codon codon, object owner)
 		{
 			RecentOpen recentOpen = FileService.RecentOpen;
 			
 			if (recentOpen.RecentFile.Count > 0) {
-				MenuCommand[] items = new MenuCommand[recentOpen.RecentFile.Count];
+				var items = new System.Windows.Controls.MenuItem[recentOpen.RecentFile.Count];
 				
 				for (int i = 0; i < recentOpen.RecentFile.Count; ++i) {
-					string accelaratorKeyPrefix = i < 10 ? "&" + ((i + 1) % 10) + " " : "";
-					items[i] = new MenuCommand(accelaratorKeyPrefix + recentOpen.RecentFile[i], new EventHandler(LoadRecentFile));
-					items[i].Tag = recentOpen.RecentFile[i].ToString();
-					items[i].Description = StringParser.Parse(ResourceService.GetString("Dialog.Componnents.RichMenuItem.LoadFileDescription"),
-					                                          new string[,] { {"FILE", recentOpen.RecentFile[i].ToString()} });
+					// variable inside loop, so that anonymous method refers to correct recent file
+					string recentFile = recentOpen.RecentFile[i];
+					string accelaratorKeyPrefix = i < 10 ? "_" + ((i + 1) % 10) + " " : "";
+					items[i] = new System.Windows.Controls.MenuItem() {
+						Header = accelaratorKeyPrefix + recentFile
+					};
+					items[i].Click += delegate {
+						FileService.OpenFile(recentFile);
+					};
 				}
 				return items;
+			} else {
+				return new [] { new System.Windows.Controls.MenuItem {
+						Header = StringParser.Parse("${res:Dialog.Componnents.RichMenuItem.NoRecentFilesString}"),
+						IsEnabled = false
+					} };
 			}
-			
-			MenuCommand defaultMenu = new MenuCommand("${res:Dialog.Componnents.RichMenuItem.NoRecentFilesString}");
-			defaultMenu.Enabled = false;
-			
-			return new MenuCommand[] { defaultMenu };
-		}
-		
-		void LoadRecentFile(object sender, EventArgs e)
-		{
-			MenuCommand item = (MenuCommand)sender;
-			
-			FileService.OpenFile(item.Tag.ToString());
 		}
 	}
 	
-	public class RecentProjectsMenuBuilder : ISubmenuBuilder
+	public class RecentProjectsMenuBuilder : IMenuItemBuilder
 	{
-		public ToolStripItem[] BuildSubmenu(Codon codon, object owner)
+		public ICollection BuildItems(Codon codon, object owner)
 		{
 			RecentOpen recentOpen = FileService.RecentOpen;
 			
-			if (recentOpen.RecentProject.Count > 0) {
-				MenuCommand[] items = new MenuCommand[recentOpen.RecentProject.Count];
+			if (recentOpen.RecentFile.Count > 0) {
+				var items = new System.Windows.Controls.MenuItem[recentOpen.RecentFile.Count];
+				
 				for (int i = 0; i < recentOpen.RecentProject.Count; ++i) {
-					string accelaratorKeyPrefix = i < 10 ? "&" + ((i + 1) % 10) + " " : "";
-					items[i] = new MenuCommand(accelaratorKeyPrefix + recentOpen.RecentProject[i], new EventHandler(LoadRecentProject));
-					items[i].Tag = recentOpen.RecentProject[i].ToString();
-					items[i].Description = StringParser.Parse(ResourceService.GetString("Dialog.Componnents.RichMenuItem.LoadProjectDescription"),
-					                                          new string[,] { {"PROJECT", recentOpen.RecentProject[i].ToString()} });
+					// variable inside loop, so that anonymous method refers to correct recent file
+					string recentProject = recentOpen.RecentProject[i];
+					string accelaratorKeyPrefix = i < 10 ? "_" + ((i + 1) % 10) + " " : "";
+					items[i] = new System.Windows.Controls.MenuItem() {
+						Header = accelaratorKeyPrefix + recentProject
+					};
+					items[i].Click += delegate {
+						ProjectService.LoadSolution(recentProject);
+					};
 				}
 				return items;
+			} else {
+				return new [] { new System.Windows.Controls.MenuItem {
+						Header = StringParser.Parse("${res:Dialog.Componnents.RichMenuItem.NoRecentProjectsString}"),
+						IsEnabled = false
+					} };
 			}
-			
-			MenuCommand defaultMenu = new MenuCommand("${res:Dialog.Componnents.RichMenuItem.NoRecentProjectsString}");
-			defaultMenu.Enabled = false;
-			
-			return new MenuCommand[] { defaultMenu };
-		}
-		void LoadRecentProject(object sender, EventArgs e)
-		{
-			MenuCommand item = (MenuCommand)sender;
-			
-			string fileName = item.Tag.ToString();
-			
-			FileUtility.ObservedLoad(new NamedFileOperationDelegate(ProjectService.LoadSolution), fileName);
 		}
 	}
 	
@@ -292,40 +286,26 @@ namespace ICSharpCode.SharpDevelop.Commands
 		}
 	}
 	
-	public class OpenContentsMenuBuilder : ISubmenuBuilder
+	public class OpenContentsMenuBuilder : IMenuItemBuilder
 	{
-		
-		class MyMenuItem : MenuCheckBox
-		{
-			IWorkbenchWindow window;
-			
-			public MyMenuItem(IWorkbenchWindow window) : base(StringParser.Parse(window.Title))
-			{
-				this.window = window;
-			}
-			
-			protected override void OnClick(EventArgs e)
-			{
-				base.OnClick(e);
-				Checked = true;
-				window.SelectWindow();
-			}
-		}
-
-		public ToolStripItem[] BuildSubmenu(Codon codon, object owner)
+		public ICollection BuildItems(Codon codon, object owner)
 		{
 			int windowCount = WorkbenchSingleton.Workbench.WorkbenchWindowCollection.Count;
 			if (windowCount == 0) {
-				return new ToolStripItem[] {};
+				return new object[] {};
 			}
-			ToolStripItem[] items = new ToolStripItem[windowCount + 1];
-			items[0] = new MenuSeparator(null, null);
+			var items = new object[windowCount + 1];
+			items[0] = new System.Windows.Controls.Separator();
 			for (int i = 0; i < windowCount; ++i) {
 				IWorkbenchWindow window = WorkbenchSingleton.Workbench.WorkbenchWindowCollection[i];
-				MenuCheckBox item = new MyMenuItem(window);
-				item.Tag = window;
-				item.Checked = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow == window;
-				item.Description = "Activate this window";
+				var item = new System.Windows.Controls.MenuItem() {
+					IsChecked = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow == window,
+					IsCheckable = true,
+					Header = StringParser.Parse(window.Title)
+				};
+				item.Click += delegate { 
+					window.SelectWindow();
+				};
 				items[i + 1] = item;
 			}
 			return items;

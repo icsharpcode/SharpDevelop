@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -21,6 +22,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// The active workbench window.
 		/// </summary>
 		IWorkbenchWindow ActiveWorkbenchWindow {
+			get;
+		}
+		
+		/// <summary>
+		/// Gets the open workbench windows.
+		/// </summary>
+		IList<IWorkbenchWindow> WorkbenchWindows {
 			get;
 		}
 		

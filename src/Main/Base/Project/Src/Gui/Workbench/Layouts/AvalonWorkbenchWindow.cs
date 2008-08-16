@@ -342,7 +342,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				}
 			}
 
-			dockLayout.DocumentPane.Items.Remove(this);
+			dockLayout.OnWorkbenchWindowClosed(this);
 			Dispose();
 			CommandManager.InvalidateRequerySuggested();
 			return true;

@@ -245,6 +245,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public static void LoadSolution(string fileName)
 		{
+			FileUtility.ObservedLoad(LoadSolutionInternal, fileName);
+		}
+		
+		static void LoadSolutionInternal(string fileName)
+		{
 			if (!Path.IsPathRooted(fileName))
 				throw new ArgumentException("Path must be rooted!");
 			BeforeLoadSolution();
@@ -308,11 +313,16 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		public static void LoadProject(string fileName)
 		{
+			FileUtility.ObservedLoad(LoadSolutionInternal, fileName);
+		}
+		
+		static void LoadProjectInternal(string fileName)
+		{
 			if (!Path.IsPathRooted(fileName))
 				throw new ArgumentException("Path must be rooted!");
 			string solutionFile = Path.ChangeExtension(fileName, ".sln");
 			if (File.Exists(solutionFile)) {
-				LoadSolution(solutionFile);
+				LoadSolutionInternal(solutionFile);
 				
 				if (openSolution != null) {
 					bool found = false;

@@ -71,9 +71,14 @@ namespace ICSharpCode.Core.Presentation
 				case "Command":
 					return new MenuCommand(inputBindingOwner, codon, descriptor.Caller, createCommand);
 				case "Menu":
-					return new CoreMenuItem(codon, descriptor.Caller) {
+					var item = new CoreMenuItem(codon, descriptor.Caller) {
 						ItemsSource = CreateMenuItems(inputBindingOwner, descriptor.SubItems)
 					};
+					item.SubmenuOpened += (sender, args) => {
+						item.ItemsSource = CreateMenuItems(inputBindingOwner, descriptor.SubItems);
+						args.Handled = true;
+					};
+					return item;
 				case "Builder":
 					return codon.AddIn.CreateObject(codon.Properties["class"]);
 				default:
