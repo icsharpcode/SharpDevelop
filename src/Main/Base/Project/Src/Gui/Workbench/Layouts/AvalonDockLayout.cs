@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media.Imaging;
 
 using AvalonDock;
@@ -44,6 +45,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void dockingManager_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == "ActiveContent") {
+				CommandManager.InvalidateRequerySuggested();
 				if (ActiveContentChanged != null)
 					ActiveContentChanged(this, e);
 			}

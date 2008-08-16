@@ -7,39 +7,36 @@
 
 using System;
 using System.Collections;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace ICSharpCode.Core.Presentation
 {
-	class MenuCommand : CoreMenuItem
+	class CommandWrapper : System.Windows.Input.ICommand
 	{
-		ICommand menuCommand;
+		bool commandCreated;
+		ICommand addInCommand;
+		readonly Codon codon;
+		readonly object caller;
 		
-		public MenuCommand(Codon codon, object caller, bool createCommand) : base(codon, caller)
+		public CommandWrapper(Codon codon, object caller, bool createCommand)
 		{
+			this.codon = codon;
+			this.caller = caller;
 			if (createCommand) {
+				commandCreated = true;
 				CreateCommand();
-			}
-		}
-		
-		protected override bool IsEnabledCore {
-			get {
-				if (!base.IsEnabledCore)
-					return false;
-				
-				if (menuCommand != null && menuCommand is IMenuCommand) {
-					return ((IMenuCommand)menuCommand).IsEnabled;
-				} else {
-					return true;
-				}
 			}
 		}
 		
 		void CreateCommand()
 		{
+			commandCreated = true;
 			try {
 				string link = codon.Properties["link"];
+				ICommand menuCommand;
 				if (link != null && link.Length > 0) {
 					if (MenuService.LinkCommandCreator == null)
 						throw new NotSupportedException("MenuCommand.LinkCommandCreator is not set, cannot create LinkCommands.");
@@ -50,20 +47,79 @@ namespace ICSharpCode.Core.Presentation
 				if (menuCommand != null) {
 					menuCommand.Owner = caller;
 				}
+				addInCommand = menuCommand;
 			} catch (Exception e) {
 				MessageService.ShowError(e, "Can't create menu command : " + codon.Id);
 			}
 		}
 		
-		protected override void OnClick()
+		void CommandManager_RequerySuggested(object sender, EventArgs e)
 		{
-			base.OnClick();
-			if (menuCommand == null) {
+			//LoggingService.Debug("Received CommandManager_RequerySuggested ");
+			if (canExecuteChanged != null)
+				canExecuteChanged(this, e);
+		}
+		
+		// keep a reference to the event handler to prevent it from being gargabe collected
+		// (CommandManager.RequerySuggested only keeps weak references to the event handlers)
+		EventHandler requerySuggestedEventHandler;
+		
+		// only attach to CommandManager.RequerySuggested if someone listens to the CanExecuteChanged event
+		EventHandler canExecuteChanged;
+		
+		public event EventHandler CanExecuteChanged {
+			add {
+				if (canExecuteChanged == null && value != null) {
+					//LoggingService.Debug("Attach CommandManager_RequerySuggested " + codon.Id);
+					if (requerySuggestedEventHandler == null)
+						requerySuggestedEventHandler = CommandManager_RequerySuggested;
+					CommandManager.RequerySuggested += requerySuggestedEventHandler;
+				}
+				canExecuteChanged += value;
+			}
+			remove {
+				canExecuteChanged -= value;
+				if (canExecuteChanged == null) {
+					//LoggingService.Debug("Detach CommandManager_RequerySuggested " + codon.Id);
+					CommandManager.RequerySuggested -= requerySuggestedEventHandler;
+				}
+			}
+		}
+		
+		public void Execute(object parameter)
+		{
+			if (!commandCreated) {
 				CreateCommand();
 			}
-			if (menuCommand != null && IsEnabledCore) {
-				menuCommand.Run();
+			LoggingService.Debug("Execute " + codon.Id);
+			if (CanExecute(parameter)) {
+				addInCommand.Run();
 			}
+		}
+		
+		public bool CanExecute(object parameter)
+		{
+			//LoggingService.Debug("CanExecute " + codon.Id);
+			if (codon.GetFailedAction(caller) != ConditionFailedAction.Nothing)
+				return false;
+			if (!commandCreated)
+				return true;
+			if (addInCommand == null)
+				return false;
+			IMenuCommand menuCommand = addInCommand as IMenuCommand;
+			if (menuCommand != null) {
+				return menuCommand.IsEnabled;
+			} else {
+				return true;
+			}
+		}
+	}
+	
+	class MenuCommand : CoreMenuItem
+	{
+		public MenuCommand(Codon codon, object caller, bool createCommand) : base(codon, caller)
+		{
+			this.Command = new CommandWrapper(codon, caller, createCommand);
 		}
 	}
 }

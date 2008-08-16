@@ -26,12 +26,13 @@ namespace ICSharpCode.Core.Presentation
 			this.codon = codon;
 			this.caller = caller;
 			
-			if (codon.Properties.Contains("shortcut")) {
-				InputGestureText = codon.Properties["shortcut"];
-			}
 			if (codon.Properties.Contains("icon")) {
 				try {
-					this.Icon = PresentationResourceService.GetImage(codon.Properties["icon"]);
+					Image image = PresentationResourceService.GetImage(codon.Properties["icon"]);
+					image.Height = 16;
+					this.Icon = new PixelSnapper {
+						Child = image
+					};
 				} catch (ResourceNotFoundException) {}
 			}
 			this.SubmenuOpened += CoreMenuItem_SubmenuOpened;
@@ -52,23 +53,10 @@ namespace ICSharpCode.Core.Presentation
 		
 		public virtual void UpdateStatus()
 		{
-			this.IsEnabled = this.IsEnabledCore;
-			if (this.IsEnabled) {
+			if (codon.GetFailedAction(caller) == ConditionFailedAction.Exclude)
+				this.Visibility = Visibility.Collapsed;
+			else
 				this.Visibility = Visibility.Visible;
-			} else {
-				if (codon.GetFailedAction(caller) == ConditionFailedAction.Exclude)
-					this.Visibility = Visibility.Collapsed;
-				else
-					this.Visibility = Visibility.Visible;
-			}
-		}
-		
-		protected override bool IsEnabledCore {
-			get {
-				ConditionFailedAction failedAction = codon.GetFailedAction(caller);
-				bool isEnabled = failedAction == ConditionFailedAction.Nothing;
-				return isEnabled;
-			}
 		}
 	}
 }

@@ -54,7 +54,7 @@ namespace ICSharpCode.Core.Presentation
 				BitmapSource bs;
 				if (bitmapCache.TryGetValue(name, out bs))
 					return bs;
-				Bitmap bmp = (Bitmap)ResourceService.GetImageResource(name);
+				System.Drawing.Bitmap bmp = (System.Drawing.Bitmap)ResourceService.GetImageResource(name);
 				if (bmp == null) {
 					throw new ResourceNotFoundException(name);
 				}

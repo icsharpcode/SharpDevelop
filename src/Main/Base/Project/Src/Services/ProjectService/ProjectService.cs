@@ -6,12 +6,13 @@
 // </file>
 
 using System;
-using System.Linq;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
+using System.Windows.Input;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -37,6 +38,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					LoggingService.Info("CurrentProject changed to " + (value == null ? "null" : value.Name));
 					currentProject = value;
 					OnCurrentProjectChanged(new ProjectEventArgs(currentProject));
+					CommandManager.InvalidateRequerySuggested();
 				}
 			}
 		}
@@ -249,6 +251,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			OnSolutionLoading(fileName);
 			try {
 				openSolution = Solution.Load(fileName);
+				CommandManager.InvalidateRequerySuggested();
 				if (openSolution == null)
 					return;
 			} catch (UnauthorizedAccessException ex) {
@@ -477,6 +480,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				openSolution = null;
 				
 				OnSolutionClosed(EventArgs.Empty);
+				CommandManager.InvalidateRequerySuggested();
 			}
 		}
 		
