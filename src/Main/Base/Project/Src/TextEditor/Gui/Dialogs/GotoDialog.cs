@@ -1,21 +1,21 @@
 ﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
+//     <owner name="Daniel Grunwald"/>
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.Core.Presentation;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Drawing;
+using System.ComponentModel;
 using System.IO;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+
 using ICSharpCode.Core;
+using ICSharpCode.Core.Presentation;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
@@ -42,12 +42,33 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public GotoDialog()
 		{
 			InitializeComponent();
-//			listView.SmallImageList = ClassBrowserIconService.ImageList;
-//			listView.ItemActivate += OKButtonClick;
-//			listView.Sorting = SortOrder.Ascending;
-//			listView.HideSelection = false;
 //			FormLocationHelper.Apply(this, "ICSharpCode.SharpDevelop.Gui.GotoDialog.Bounds", true);
 			textBox.Focus();
+		}
+		
+		class MyListBoxItem : ListBoxItem, IComparable<MyListBoxItem>
+		{
+			public readonly string Text;
+			
+			public MyListBoxItem(string text, int imageIndex)
+			{
+				this.Text = text;
+				this.Content = new StackPanel {
+					Orientation = Orientation.Horizontal,
+					Children = {
+						PresentationResourceService.GetImage(ClassBrowserIconService.ResourceNames[imageIndex]),
+						new TextBlock {
+							Text = text,
+							Margin = new Thickness(4, 0, 0, 0)
+						}
+					}
+				};
+			}
+			
+			public int CompareTo(MyListBoxItem other)
+			{
+				return Text.CompareTo(other.Text);
+			}
 		}
 		
 		void textBoxPreviewKeyDown(object sender, KeyEventArgs e)
@@ -113,12 +134,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 		Dictionary<string, object> visibleEntries = new Dictionary<string, object>();
 		int bestMatchType;
 		double bestPriority;
+		List<MyListBoxItem> newItems = new List<MyListBoxItem>();
 		ListBoxItem bestItem;
 		
 		void textBoxTextChanged(object sender, TextChangedEventArgs e)
 		{
 			string text = textBox.Text.Trim();
 			listBox.Items.Clear();
+			newItems.Clear();
 			visibleEntries.Clear();
 			bestItem = null;
 			if (text.Length == 0) {
@@ -173,6 +196,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 				AddSourceFiles(text, 0);
 				ShowCtrlSpaceCompletion(text);
 			}
+			newItems.Sort();
+			foreach (MyListBoxItem item in newItems)
+				listBox.Items.Add(item);
 			if (bestItem != null) {
 				bestItem.IsSelected = true;
 				listBox.ScrollIntoView(bestItem);
@@ -318,17 +344,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (visibleEntries.ContainsKey(text))
 				return;
 			visibleEntries.Add(text, null);
-			ListBoxItem item = new ListBoxItem();
-			item.Content = new StackPanel {
-				Orientation = Orientation.Horizontal,
-				Children = {
-					PresentationResourceService.GetImage(ClassBrowserIconService.ResourceNames[imageIndex]),
-					new TextBlock { 
-						Text = text,
-						Margin = new Thickness(4, 0, 0, 0)
-					}
-				}
-			};
+			MyListBoxItem item = new MyListBoxItem(text, imageIndex);
 			item.MouseDoubleClick += okButtonClick;
 			item.Tag = tag;
 			if (bestItem == null
@@ -340,7 +356,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				bestPriority = priority;
 				bestMatchType = matchType;
 			}
-			listBox.Items.Add(item);
+			newItems.Add(item);
 		}
 		
 		void AddItem(IClass c, int matchType)

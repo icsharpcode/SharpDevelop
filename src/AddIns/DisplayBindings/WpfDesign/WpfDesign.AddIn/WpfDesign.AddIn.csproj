@@ -59,7 +59,6 @@
     <Compile Include="Src\AbstractEventHandlerService.cs" />
     <Compile Include="Src\CSharpEventHandlerService.cs" />
     <Compile Include="Src\FileUriContext.cs" />
-    <Compile Include="Src\GetBitmapExtension.cs" />
     <Compile Include="Src\IdeChooseClassService.cs" />
     <Compile Include="Src\MyTypeFinder.cs" />
     <Compile Include="Src\ObjectEditor.xaml.cs">
