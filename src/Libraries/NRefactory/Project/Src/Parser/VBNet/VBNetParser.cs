@@ -105,6 +105,21 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			return la.kind == Tokens.Dot && (peek == Tokens.Identifier || peek >= Tokens.AddHandler);
 		}
 
+		static bool IsIdentifierToken(Token tk)
+		{
+			return Tokens.IdentifierTokens[tk.kind] || tk.kind == Tokens.Identifier;
+		}		
+		
+		bool IsIdentifiedExpressionRange()
+		{
+			return la.kind == Tokens.As || la.kind == Tokens.Assign;
+		}
+		
+		bool IsQueryExpression()
+		{
+			return (la.kind == Tokens.From || la.kind == Tokens.Aggregate) && IsIdentifierToken(Peek(1));
+		}
+		
 		bool IsEndStmtAhead()
 		{
 			int peek = Peek(1).kind;
