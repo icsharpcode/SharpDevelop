@@ -439,7 +439,6 @@
 				<ComponentRef Id="ReflectorAddInIpcServerDll"/>
 				<ComponentRef Id="ReflectorAddInIpcServerAddInDll"/>
 			
-				<ComponentRef Id="SettingsSourceAnalysis"/>
 				<ComponentRef Id="SharpDevelopSourceAnalysisTargets"/>
 				<ComponentRef Id="SourceAnalysisAddin"/>
 				<ComponentRef Id="SourceAnalysisDll"/>

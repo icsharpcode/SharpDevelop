@@ -1569,9 +1569,6 @@
 										</Component>
 									</Directory>
 									<Directory Id="SourceAnalysis" Name="SourceAnalysis">
-										<Component Guid="63031C9E-F23C-4539-A7DF-97AFAC0A21C0" Id="SettingsSourceAnalysis" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\Misc\SourceAnalysis\Settings.SourceAnalysis" Name="Settings.SourceAnalysis" Id="Settings.SourceAnalysis" KeyPath="yes" />
-										</Component>
 										<Component Guid="C9D099BC-CF4D-404A-BB2F-B13D4541DA0F" Id="SharpDevelopSourceAnalysisTargets" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\Misc\SourceAnalysis\SharpDevelop.SourceAnalysis.targets" Name="SharpDevelop.SourceAnalysis.targets" Id="SharpDevelop.SourceAnalysis.targets" KeyPath="yes" />
 										</Component>
