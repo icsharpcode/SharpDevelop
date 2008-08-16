@@ -2019,22 +2019,25 @@ LambdaExpr<out Expression expr>
 QueryExpr<out Expression expr>
 	(.
 		QueryExpression qexpr = new QueryExpression();
+		List<QueryExpressionFromClause> fromClauses = new List<QueryExpressionFromClause>();
 		expr = qexpr;
 	.) =
-	FromOrAggregateQueryOperator 
+	FromOrAggregateQueryOperator<out fromClauses>
 	{ QueryOperator }
 .
 
-FromOrAggregateQueryOperator
-	(. .) =
-	   FromQueryOperator 
-	|  AggregateQueryOperator
+FromOrAggregateQueryOperator<out List<QueryExpressionFromClause> fromClauses>
+	(. fromClauses = null; .) =
+	   FromQueryOperator<out fromClauses>
+	|  AggregateQueryOperator<out fromClauses>
 .
 
 QueryOperator
-	(. .) =
-	  FromQueryOperator
-	| AggregateQueryOperator 
+	(.
+		List<QueryExpressionFromClause> fromClauses = null;
+	.) =
+	  FromQueryOperator<out fromClauses>
+	| AggregateQueryOperator<out fromClauses>
 	| SelectQueryOperator
 	| DistinctQueryOperator
 	| WhereQueryOperator
@@ -2080,9 +2083,10 @@ GroupJoinQueryOperator
 	"Into"  ExpressionRangeVariableDeclarationList
 .
 
-FromQueryOperator
-	(. .) =
-	"From" CollectionRangeVariableDeclarationList
+FromQueryOperator<out List<QueryExpressionFromClause> fromClauses>
+	(.
+	.) =
+	"From" CollectionRangeVariableDeclarationList<out fromClauses>
 .	
 
 SelectQueryOperator
@@ -2106,9 +2110,13 @@ PartitionQueryOperator
 	| "Skip" [ "While" ] Expr<out expr>
 .
 
-AggregateQueryOperator
-	(. .) =
-	"Aggregate"  CollectionRangeVariableDeclaration { QueryOperator }
+AggregateQueryOperator<out List<QueryExpressionFromClause> fromClauses>
+	(.
+		fromClauses =new List<QueryExpressionFromClause>();
+		QueryExpressionFromClause aggreateClause = null;
+	.) =
+	"Aggregate" CollectionRangeVariableDeclaration<out aggreateClause> { QueryOperator } 
+	(. fromClauses.Add(aggreateClause); .)
 	"Into" ExpressionRangeVariableDeclarationList
 .
 
@@ -2135,27 +2143,34 @@ ExpressionRangeVariableDeclaration
 .
 
 JoinQueryOperator
-	(. .) =
-	"Join" CollectionRangeVariableDeclaration [ JoinQueryOperator ]  "On" 
+	(. QueryExpressionFromClause joinClause = null;  .) =
+	"Join" CollectionRangeVariableDeclaration<out joinClause> [ JoinQueryOperator ] "On" 
 	JoinCondition
 	{
 		"And" JoinCondition
 	}
 .
 
-CollectionRangeVariableDeclarationList
-	(. .) = 
-	CollectionRangeVariableDeclaration
-	{ "," CollectionRangeVariableDeclaration }
-.	
-
-CollectionRangeVariableDeclaration
+CollectionRangeVariableDeclarationList<out List<QueryExpressionFromClause> fromClauses>
 	(.
+		fromClauses = new List<QueryExpressionFromClause>();
+		QueryExpressionFromClause fromClause = null;
+	.) =
+	CollectionRangeVariableDeclaration<out fromClause>
+	(. fromClauses.Add(fromClause); .)
+	{ "," CollectionRangeVariableDeclaration<out fromClause> (. fromClauses.Add(fromClause); .) }
+.
+
+CollectionRangeVariableDeclaration<out QueryExpressionFromClause fromClause>
+	(.
+		fromClause = new QueryExpressionFromClause();
 		TypeReference typeName = null;
 		Expression inExpr = null;
 	.) =
 	Identifier
-	[ "As" TypeName<out typeName> ]  "In" Expr<out inExpr>
+	[ "As" TypeName<out typeName> (. fromClause.Type = typeName; .) ] 
+	"In" Expr<out inExpr>
+	(. fromClause.InExpression = inExpr; .)
 .
 
 JoinCondition

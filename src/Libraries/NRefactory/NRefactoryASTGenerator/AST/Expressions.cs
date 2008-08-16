@@ -253,9 +253,27 @@ namespace NRefactoryASTGenerator.Ast
 	
 	[ImplementNullable(NullableImplementation.Shadow)]
 	class QueryExpression : Expression {
+		
+		/// <remarks>
+		/// Either from or aggregate clause.
+		/// </remarks>
 		QueryExpressionFromClause fromClause;
+		
+		/// <remarks>
+		/// VB.NET only.
+		/// </remarks>
+		QueryExpressionAggregateClause aggregateClause;
+		
 		List<QueryExpressionClause> middleClauses;
+		
+		/// <remarks>
+		/// C# only.
+		/// </remarks>
 		QueryExpressionClause selectOrGroupClause;
+		
+		/// <remarks>
+		/// C# only.
+		/// </remarks>
 		QueryExpressionIntoClause intoClause;
 	}
 	

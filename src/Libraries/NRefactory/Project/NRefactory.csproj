@@ -140,10 +140,7 @@
     <Content Include="Src\Parser\CSharp\cs.ATG" />
     <Content Include="Src\Parser\CSharp\trace.txt" />
     <Folder Include="Src\Parser\Frames" />
-    <Content Include="Src\Parser\Frames\OldSharpCoco.exe" />
     <Content Include="Src\Parser\Frames\Parser.frame" />
-    <Content Include="Src\Parser\Frames\Parser.frame.new" />
-    <Content Include="Src\Parser\Frames\Parser.frame.old" />
     <Content Include="Src\Parser\Frames\Scanner.frame" />
     <Content Include="Src\Parser\Frames\SharpCoco.exe" />
     <Content Include="Src\Parser\Frames\trace.txt" />
