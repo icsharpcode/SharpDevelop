@@ -16,7 +16,10 @@ using System.Xml;
 
 using ICSharpCode.Core;
 using ICSharpCode.FormsDesigner;
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
 using Microsoft.CSharp;
 
@@ -51,6 +54,15 @@ namespace ICSharpCode.WixBinding
 			}
 		}
 		
+		public FormsDesignerViewContent ViewContent {
+			get { return this.view; }
+		}
+		
+		public OpenedFile DetermineDesignerCodeFile()
+		{
+			return this.view.PrimaryFile;
+		}
+		
 		public void Attach(FormsDesignerViewContent viewContent)
 		{
 			this.view = viewContent;
@@ -67,17 +79,18 @@ namespace ICSharpCode.WixBinding
 		void IWixDialogDesignerGenerator.MergeFormChanges(string dialogId, XmlElement dialogElement)
 		{
 			// Get the text region we are replacing.
-			IDocument document = view.Document;
+			IDocument document = view.DesignerCodeFileDocument;
 			DomRegion region = WixDocument.GetElementRegion(new StringReader(document.TextContent), "Dialog", dialogId);
 			if (region.IsEmpty) {
 				throw new FormsDesignerLoadException(String.Format(StringParser.Parse("${res:ICSharpCode.WixBinding.DialogDesignerGenerator.DialogIdNotFoundMessage}"), dialogId));
 			}
 			// Get the replacement dialog xml.
-			ITextEditorProperties properties = view.TextEditorControl.TextEditorProperties;
+			TextEditorControl textEditorControl = ((ITextEditorControlProvider)view.PrimaryViewContent).TextEditorControl;
+			ITextEditorProperties properties = textEditorControl.TextEditorProperties;
 			string replacementXml = WixDocument.GetXml(dialogElement, properties.LineTerminator, properties.ConvertTabsToSpaces, properties.IndentationSize);
 
 			// Replace the xml and select the inserted text.
-			WixDocumentEditor editor = new WixDocumentEditor(view.TextEditorControl.ActiveTextAreaControl);
+			WixDocumentEditor editor = new WixDocumentEditor(textEditorControl.ActiveTextAreaControl);
 			editor.Replace(region, replacementXml);
 		}
 		

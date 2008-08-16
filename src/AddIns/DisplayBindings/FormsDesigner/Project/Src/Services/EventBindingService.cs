@@ -15,9 +15,13 @@ namespace ICSharpCode.FormsDesigner.Services
 {
 	public class EventBindingService : System.ComponentModel.Design.EventBindingService
 	{
+		readonly FormsDesignerViewContent formDesigner;
 		
-		public EventBindingService(IServiceProvider provider) : base(provider)
+		public EventBindingService(FormsDesignerViewContent formDesigner, IServiceProvider provider) : base(provider)
 		{
+			if (formDesigner == null)
+				throw new ArgumentNullException("formDesigner");
+			this.formDesigner = formDesigner;
 		}
 
 		protected override string CreateUniqueMethodName(IComponent component, EventDescriptor e)
@@ -28,26 +32,11 @@ namespace ICSharpCode.FormsDesigner.Services
 		// sohuld look around in form class for compatiable methodes
 		protected override ICollection GetCompatibleMethods(EventDescriptor e)
 		{
-			IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
-			if (window != null) {
-				FormsDesignerViewContent formDesigner = window.ActiveViewContent as FormsDesignerViewContent;
-				
-				if (formDesigner != null) {
-					return formDesigner.GetCompatibleMethods(e);
-				}
-			}
-			return new string[]{};
+			return this.formDesigner.GetCompatibleMethods(e);
 		}
 		
 		protected override bool ShowCode()
 		{
-			IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
-			if (window == null) {
-				return false;
-			}
-
-			FormsDesignerViewContent formDesigner = window.ActiveViewContent as FormsDesignerViewContent;
-
 			if (formDesigner != null) {
 				formDesigner.ShowSourceCode();
 				return true;
@@ -57,13 +46,6 @@ namespace ICSharpCode.FormsDesigner.Services
 
 		protected override bool ShowCode(int lineNumber)
 		{
-			IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
-			if (window == null) {
-				return false;
-			}
-
-			FormsDesignerViewContent formDesigner = window.ActiveViewContent as FormsDesignerViewContent;
-
 			if (formDesigner != null) {
 				formDesigner.ShowSourceCode(lineNumber);
 				return true;
@@ -73,12 +55,6 @@ namespace ICSharpCode.FormsDesigner.Services
 
 		protected override bool ShowCode(IComponent component, EventDescriptor edesc, string methodName)
 		{
-			IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
-			if (window == null || edesc == null || edesc.Name == null || edesc.Name.Length == 0) {
-				return false;
-			}
-			FormsDesignerViewContent formDesigner = window.ActiveViewContent as FormsDesignerViewContent;
-			
 			if (formDesigner != null) {
 				formDesigner.ShowSourceCode(component, edesc, methodName);
 				return true;

@@ -7,12 +7,9 @@
 
 using System;
 using System.CodeDom;
-using System.CodeDom.Compiler;
-using System.IO;
+
+using ICSharpCode.FormsDesigner;
 using ICSharpCode.PythonBinding;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Document;
-using IronPython.CodeDom;
 using NUnit.Framework;
 using PythonBinding.Tests.Utils;
 
@@ -33,11 +30,13 @@ namespace PythonBinding.Tests.Designer
 		public void SetUpFixture()
 		{
 			PythonDesignerGenerator generator = new PythonDesignerGenerator();
-			DocumentFactory factory = new DocumentFactory();
-			IDocument doc = factory.CreateDocument();
-			doc.TextContent = GetFormCode();
-			DerivedPythonDesignerLoader loader = new DerivedPythonDesignerLoader(doc, generator);
-			codeCompileUnit = loader.CallParse();
+			using(FormsDesignerViewContent view = new FormsDesignerViewContent(null, new MockOpenedFile("Test.py"))) {
+				view.DesignerCodeFileContent = GetFormCode();
+				generator.Attach(view);
+				DerivedPythonDesignerLoader loader = new DerivedPythonDesignerLoader(generator);
+				codeCompileUnit = loader.CallParse();
+				generator.Detach();
+			}
 			
 			foreach (CodeNamespace n in codeCompileUnit.Namespaces) {
 				foreach (CodeTypeDeclaration typeDecl in n.Types) {

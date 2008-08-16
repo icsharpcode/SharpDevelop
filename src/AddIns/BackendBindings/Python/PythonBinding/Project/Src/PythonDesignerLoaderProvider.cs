@@ -15,16 +15,13 @@ namespace ICSharpCode.PythonBinding
 {
 	public class PythonDesignerLoaderProvider : IDesignerLoaderProvider
 	{
-		IDocument document;
-		
-		public PythonDesignerLoaderProvider(IDocument document)
+		public PythonDesignerLoaderProvider()
 		{
-			this.document = document;
 		}
 		
 		public DesignerLoader CreateLoader(IDesignerGenerator generator)
 		{
-			return new PythonDesignerLoader(document, generator);
+			return new PythonDesignerLoader(generator);
 		}	
 	}
 }

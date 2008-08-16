@@ -19,33 +19,28 @@ namespace ICSharpCode.FormsDesigner
 	
 	public class NRefactoryDesignerLoaderProvider : IDesignerLoaderProvider
 	{
-		SupportedLanguage language;
-		TextEditorControl textEditorControl;
+		readonly SupportedLanguage language;
 		
-		public NRefactoryDesignerLoaderProvider(SupportedLanguage language, TextEditorControl textEditorControl)
+		public NRefactoryDesignerLoaderProvider(SupportedLanguage language)
 		{
 			this.language = language;
-			this.textEditorControl = textEditorControl;
 		}
 		
 		public DesignerLoader CreateLoader(IDesignerGenerator generator)
 		{
-			return new NRefactoryDesignerLoader(language, textEditorControl, generator);
+			return new NRefactoryDesignerLoader(language, generator);
 		}
 	}
 	
 	public class XmlDesignerLoaderProvider : IDesignerLoaderProvider
 	{
-		TextEditorControl textEditorControl;
-		
-		public XmlDesignerLoaderProvider(TextEditorControl textEditorControl)
+		public XmlDesignerLoaderProvider()
 		{
-			this.textEditorControl = textEditorControl;
 		}
 		
 		public DesignerLoader CreateLoader(IDesignerGenerator generator)
 		{
-			return new XmlDesignerLoader(textEditorControl, generator);
+			return new XmlDesignerLoader(generator);
 		}
 	}
 }

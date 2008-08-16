@@ -30,7 +30,7 @@ namespace PythonBinding.Tests.Utils
 		bool loadingAfterOnEndLoad;
 		CodeCompileUnit codeCompileUnit;
 		
-		public DerivedPythonDesignerLoader(IDocument document, IDesignerGenerator generator) : base(document, generator)
+		public DerivedPythonDesignerLoader(IDesignerGenerator generator) : base(generator)
 		{
 		}
 		

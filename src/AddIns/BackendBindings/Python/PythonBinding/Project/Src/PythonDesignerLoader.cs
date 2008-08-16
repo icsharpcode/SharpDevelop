@@ -20,16 +20,9 @@ namespace ICSharpCode.PythonBinding
 	/// </summary>
 	public class PythonDesignerLoader : AbstractCodeDomDesignerLoader
 	{
-		IDocument document;
-		
-		public PythonDesignerLoader(IDocument document, IDesignerGenerator generator)
+		public PythonDesignerLoader(IDesignerGenerator generator)
 			: base(generator)
 		{
-			if (document == null) {
-				throw new ArgumentException("Document cannot be null", "document");
-			}
-			
-			this.document = document;
 		}
 		
 		/// <summary>
@@ -38,7 +31,7 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		protected override CodeCompileUnit Parse()
 		{
-			return PythonDesignerCodeDomGenerator.Parse(document.TextContent);
+			return PythonDesignerCodeDomGenerator.Parse(this.Generator.ViewContent.DesignerCodeFileContent);
 		}
 		
 		protected override void Write(CodeCompileUnit unit)
@@ -48,7 +41,7 @@ namespace ICSharpCode.PythonBinding
 		
 		protected override CodeDomLocalizationModel GetCurrentLocalizationModelFromDesignedFile()
 		{
-			string content = this.document.TextContent;
+			string content = this.Generator.ViewContent.DesignerCodeFileContent;
 			
 			if (content.Contains(@"resources.GetObject('$this.AutoScroll')")) {
 				return CodeDomLocalizationModel.PropertyAssignment;

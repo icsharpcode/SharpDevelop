@@ -21,6 +21,7 @@ namespace PythonBinding.Tests.Utils
 	public class MockDesignerGenerator : IDesignerGenerator
 	{
 		CodeCompileUnit codeCompileUnit;
+		FormsDesignerViewContent viewContent;
 		
 		public MockDesignerGenerator()
 		{
@@ -40,14 +41,23 @@ namespace PythonBinding.Tests.Utils
 			}
 		}
 		
+		public FormsDesignerViewContent ViewContent {
+			get { return this.viewContent; }
+		}
+		
 		public void Attach(FormsDesignerViewContent viewContent)
 		{
-			throw new NotImplementedException();
+			this.viewContent = viewContent;
 		}
 		
 		public void Detach()
 		{
-			throw new NotImplementedException();
+			this.viewContent = null;
+		}
+		
+		public ICSharpCode.SharpDevelop.OpenedFile DetermineDesignerCodeFile()
+		{
+			return this.viewContent.DesignerCodeFile;
 		}
 		
 		public void MergeFormChanges(CodeCompileUnit unit)

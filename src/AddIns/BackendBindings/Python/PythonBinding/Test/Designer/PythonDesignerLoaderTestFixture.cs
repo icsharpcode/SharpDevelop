@@ -11,9 +11,9 @@ using System.CodeDom.Compiler;
 using System.ComponentModel.Design;
 using System.ComponentModel.Design.Serialization;
 using System.IO;
-
-using ICSharpCode.TextEditor.Document;
+using ICSharpCode.FormsDesigner;
 using ICSharpCode.PythonBinding;
+using ICSharpCode.TextEditor.Document;
 using IronPython.CodeDom;
 using NUnit.Framework;
 using PythonBinding.Tests.Utils;
@@ -26,6 +26,7 @@ namespace PythonBinding.Tests.Designer
 	[TestFixture]
 	public class PythonDesignerLoaderTestFixture
 	{
+		FormsDesignerViewContent view;
 		DerivedPythonDesignerLoader loader;
 		MockDesignerGenerator generator;
 		MockTypeResolutionService mockTypeResolutionService;
@@ -36,12 +37,11 @@ namespace PythonBinding.Tests.Designer
 		public void SetUpFixture()
 		{
 			generator = new MockDesignerGenerator();
+			view = new FormsDesignerViewContent(null, new MockOpenedFile("Test.py"));
+			generator.Attach(view);
 			
-			DocumentFactory factory = new DocumentFactory();
-			IDocument document = factory.CreateDocument();
-			document.TextEditorProperties.ConvertTabsToSpaces = false;
-			document.TextContent = GetFormCode();
-			loader = new DerivedPythonDesignerLoader(document, generator);
+			view.DesignerCodeFileContent = GetFormCode();
+			loader = new DerivedPythonDesignerLoader(generator);
 	
 			// Begin load.
 			mockDesignerLoaderHost = new MockDesignerLoaderHost();

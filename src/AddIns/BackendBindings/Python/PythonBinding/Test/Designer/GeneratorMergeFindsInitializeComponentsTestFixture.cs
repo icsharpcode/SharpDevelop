@@ -56,8 +56,8 @@ namespace PythonBinding.Tests.Designer
 						
 			generator = new DerivedPythonDesignerGenerator();
 			mockViewContent = new MockTextEditorViewContent();
-			mockViewContent.TextEditorControl.Document.TextContent = GetTextEditorCode();
-			viewContent = new FormsDesignerViewContent(mockViewContent, null, null);
+			viewContent = new FormsDesignerViewContent(mockViewContent, new MockOpenedFile("Test.py"));
+			viewContent.DesignerCodeFileContent = GetTextEditorCode();
 			generator.Attach(viewContent);
 			viewContentAttached = generator.GetViewContent();
 			
@@ -133,7 +133,7 @@ namespace PythonBinding.Tests.Designer
 					"\t\tself.ClientSize = System.Drawing.Size(499, 309)\r\n" +
 					"\t\tself.Name = 'MainForm'\r\n" +
 					"\t\tself.ResumeLayout(false)\r\n"; 						
-			Assert.AreEqual(expectedText, viewContent.TextEditorControl.Document.TextContent);
+			Assert.AreEqual(expectedText, viewContent.DesignerCodeFileContent);
 		}
 		
 		string GetTextEditorCode()

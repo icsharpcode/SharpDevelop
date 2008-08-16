@@ -14,7 +14,7 @@ namespace PythonBinding.Tests.Designer
 {
 	/// <summary>
 	/// Tests that the PythonDesignerLoader throws an exception
-	/// when created with a null IDocument.
+	/// when created with a null IDesignerGenerator.
 	/// </summary>
 	[TestFixture]
 	public class NullGeneratorPassedToLoader
@@ -23,9 +23,7 @@ namespace PythonBinding.Tests.Designer
 		public void ThrowsException()
 		{
 			try {
-				DocumentFactory factory = new DocumentFactory();
-				IDocument doc = factory.CreateDocument();
-				PythonDesignerLoader loader = new PythonDesignerLoader(doc, null);
+				PythonDesignerLoader loader = new PythonDesignerLoader(null);
 				Assert.Fail("Expected an argument exception before this line.");
 			} catch (ArgumentException ex) {
 				Assert.AreEqual("generator", ex.ParamName);

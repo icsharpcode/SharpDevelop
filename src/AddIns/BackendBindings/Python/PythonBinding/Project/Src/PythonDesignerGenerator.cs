@@ -29,7 +29,7 @@ namespace ICSharpCode.PythonBinding
 	/// </summary>
 	public class PythonDesignerGenerator : IDesignerGenerator
 	{
-		PythonProvider pythonProvider = new PythonProvider();
+		readonly PythonProvider pythonProvider = new PythonProvider();
 		FormsDesignerViewContent viewContent;
 		
 		public PythonDesignerGenerator()
@@ -52,7 +52,12 @@ namespace ICSharpCode.PythonBinding
 		{
 			this.viewContent = null;
 		}
-
+		
+		public OpenedFile DetermineDesignerCodeFile()
+		{
+			return this.ViewContent.PrimaryFile;
+		}
+		
 		/// <summary>
 		/// Saves the changes made in the designer back to the source file.
 		/// </summary>
@@ -79,7 +84,7 @@ namespace ICSharpCode.PythonBinding
 			
 			// Insert the event handler at the end of the class with an extra 
 			// new line before it.
-			IDocument doc = viewContent.Document;
+			IDocument doc = viewContent.DesignerCodeFileDocument;
 			string eventHandler = CreateEventHandler(eventMethodName, body, "\t");
 			string newContent = "\r\n" + eventHandler;
 			int line = doc.LineSegmentCollection.Count;
@@ -91,7 +96,7 @@ namespace ICSharpCode.PythonBinding
 			position = line + 1;
 	
 			// Set the filename so it refers to the form being designed.
-			file = viewContent.TextEditorControl.FileName;
+			file = viewContent.DesignerCodeFile.FileName;
 			
 			return true;
 		}
@@ -103,8 +108,7 @@ namespace ICSharpCode.PythonBinding
 		public ICollection GetCompatibleMethods(EventDescriptor edesc)
 		{
 			// Get the form or user control class.
-			TextEditorControl textEditor = viewContent.TextEditorControl;
-			ParseInformation parseInfo = ParseFile(textEditor.FileName, textEditor.Text);
+			ParseInformation parseInfo = ParseFile(this.ViewContent.DesignerCodeFile.FileName, this.ViewContent.DesignerCodeFileContent);
 			
 			// Look at the form's methods and see which are compatible.
 			ArrayList methods = new ArrayList();
@@ -130,9 +134,8 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		protected virtual void MergeFormChanges(GeneratedInitializeComponentMethod generatedInitializeComponent)
 		{
-			TextEditorControl textEditor = viewContent.TextEditorControl;
-			ParseInformation parseInfo = ParseFile(textEditor.FileName, textEditor.Text);
-			generatedInitializeComponent.Merge(textEditor.Document, parseInfo.BestCompilationUnit);
+			ParseInformation parseInfo = ParseFile(this.ViewContent.DesignerCodeFile.FileName, this.ViewContent.DesignerCodeFileContent);
+			generatedInitializeComponent.Merge(this.ViewContent.DesignerCodeFileDocument, parseInfo.BestCompilationUnit);
 		}
 		
 		/// <summary>
@@ -147,7 +150,7 @@ namespace ICSharpCode.PythonBinding
 		/// <summary>
 		/// Gets the view content attached to this generator.
 		/// </summary>
-		protected FormsDesignerViewContent ViewContent {
+		public FormsDesignerViewContent ViewContent {
 			get { return viewContent; }
 		}
 		

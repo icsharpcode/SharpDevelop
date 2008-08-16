@@ -6,7 +6,6 @@
 // </file>
 
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
@@ -19,6 +18,7 @@ using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.TextEditor;
+using ICSharpCode.TextEditor.Document;
 
 namespace ICSharpCode.WixBinding
 {
@@ -61,6 +61,28 @@ namespace ICSharpCode.WixBinding
 			return null;
 		}
 		
+		// The FormsDesignerViewContent normally operates independently of any
+		// text editor. The following overrides connect the forms designer
+		// directly to the underlying XML text editor so that the caret positioning
+		// and text selection operations done by the WiX designer actually
+		// become visible in the text editor.
+		
+		public override IDocument PrimaryFileDocument {
+			get { return ((ITextEditorControlProvider)this.PrimaryViewContent).TextEditorControl.Document; }
+		}
+		
+		public override IDocument DesignerCodeFileDocument {
+			get { return this.PrimaryFileDocument; }
+		}
+		
+		public override System.Text.Encoding PrimaryFileEncoding {
+			get { return ((ITextEditorControlProvider)this.PrimaryViewContent).TextEditorControl.Encoding; }
+		}
+		
+		public override System.Text.Encoding DesignerCodeFileEncoding {
+			get { return this.PrimaryFileEncoding; }
+		}
+		
 		/// <summary>
 		/// Attempts to open the Wix dialog from the document currently
 		/// associated with this designer.
@@ -71,43 +93,78 @@ namespace ICSharpCode.WixBinding
 			JumpToDialogElement(id);
 			if (base.Host != null) {
 				// Reload so the correct dialog is displayed.
-				base.SaveToPrimary();
+				this.MergeAndUnloadDesigner();
 				DialogId = id;
-				base.LoadFromPrimary();
+				this.ReloadDesignerFromMemory();
 			} else {
 				// Need to open the designer.
 				DialogId = id;
 				OpenDesigner();
 			}
 		}
-
-		protected override void LoadFromPrimary()
+		
+		protected override void LoadInternal(OpenedFile file, Stream stream)
 		{
-			try {
-				if (!ignoreDialogIdSelectedInTextEditor) {
-					string dialogId = GetDialogIdSelectedInTextEditor();
-					if (dialogId == null) {
-						dialogId = GetFirstDialogIdInTextEditor();
-						JumpToDialogElement(dialogId);
+			if (file == this.PrimaryFile) {
+				try {
+					if (!ignoreDialogIdSelectedInTextEditor) {
+						string dialogId = GetDialogIdSelectedInTextEditor();
+						if (dialogId == null) {
+							dialogId = GetFirstDialogIdInTextEditor();
+							JumpToDialogElement(dialogId);
+						}
+						DialogId = dialogId;
 					}
-					DialogId = dialogId;
+					wixProject = GetProject();
+				} catch (XmlException ex) {
+					// Let the Wix designer loader try to load the XML and generate
+					// an error message.
+					DialogId = "InvalidXML";
+					AddToErrorList(ex);
 				}
-				wixProject = GetProject();
-			} catch (XmlException ex) {
-				// Let the Wix designer loader try to load the XML and generate
-				// an error message.
-				DialogId = "InvalidXML";
-				AddToErrorList(ex);
 			}
-			base.LoadFromPrimary();
+			base.LoadInternal(file, stream);
 		}
+		
+		#region Switch...WithoutSaveLoad
+		
+		// These four methods prevent the text editor from doing a full save/load
+		// cycle when switching views. This allows the text editor to keep its
+		// selection and caret position.
+		
+		public override bool SupportsSwitchFromThisWithoutSaveLoad(OpenedFile file, IViewContent newView)
+		{
+			return newView == this || newView == this.PrimaryViewContent;
+		}
+		
+		public override void SwitchFromThisWithoutSaveLoad(OpenedFile file, IViewContent newView)
+		{
+			if (newView != this) {
+				this.MergeAndUnloadDesigner();
+			}
+		}
+		
+		public override bool SupportsSwitchToThisWithoutSaveLoad(OpenedFile file, IViewContent oldView)
+		{
+			return this.DesignerCodeFile != null &&
+				(oldView == this || oldView == this.PrimaryViewContent);
+		}
+		
+		public override void SwitchToThisWithoutSaveLoad(OpenedFile file, IViewContent oldView)
+		{
+			if (oldView != this) {
+				this.ReloadDesignerFromMemory();
+			}
+		}
+		
+		#endregion
 		
 		/// <summary>
 		/// Gets the Wix document filename.
 		/// </summary>
 		public string DocumentFileName {
 			get {
-				return base.viewContent.PrimaryFileName;
+				return this.PrimaryFileName;
 			}
 		}
 		
@@ -125,7 +182,7 @@ namespace ICSharpCode.WixBinding
 		/// </summary>
 		public string GetDocumentXml()
 		{
-			return GetActiveTextEditorText();
+			return this.DesignerCodeFileContent;
 		}
 		
 		/// <summary>
@@ -184,23 +241,11 @@ namespace ICSharpCode.WixBinding
 		}
 		
 		/// <summary>
-		/// Gets the text from the active text editor.
-		/// </summary>
-		string GetActiveTextEditorText()
-		{
-			TextAreaControl textArea = ActiveTextAreaControl;
-			if (textArea != null) {
-				return textArea.Document.TextContent;
-			}
-			return String.Empty;
-		}
-		
-		/// <summary>
 		/// Gets the active text area control.
 		/// </summary>
 		TextAreaControl ActiveTextAreaControl {
 			get {
-				ITextEditorControlProvider provider = viewContent as ITextEditorControlProvider;
+				ITextEditorControlProvider provider = this.PrimaryViewContent as ITextEditorControlProvider;
 				if (provider != null) {
 					return provider.TextEditorControl.ActiveTextAreaControl;
 				}
@@ -211,7 +256,7 @@ namespace ICSharpCode.WixBinding
 		void AddToErrorList(XmlException ex)
 		{
 			TaskService.ClearExceptCommentTasks();
-			TaskService.Add(new Task(base.viewContent.PrimaryFileName, ex.Message, ex.LinePosition - 1, ex.LineNumber - 1, TaskType.Error));
+			TaskService.Add(new Task(this.PrimaryFileName, ex.Message, ex.LinePosition - 1, ex.LineNumber - 1, TaskType.Error));
 			WorkbenchSingleton.Workbench.GetPad(typeof(ErrorListPad)).BringPadToFront();
 		}
 		
@@ -224,7 +269,7 @@ namespace ICSharpCode.WixBinding
 			Solution openSolution = ProjectService.OpenSolution;
 			if (openSolution != null) {
 				foreach (IProject project in openSolution.Projects) {
-					if (project.IsFileInProject(base.viewContent.PrimaryFileName)) {
+					if (project.IsFileInProject(this.PrimaryFileName)) {
 						return project as WixProject;
 					}
 				}

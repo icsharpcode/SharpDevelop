@@ -11,18 +11,15 @@ using System.CodeDom.Compiler;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Drawing;
 using System.IO;
 using System.Reflection;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Refactoring;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
-using SearchAndReplace;
 using ReflectionLayer = ICSharpCode.SharpDevelop.Dom.ReflectionLayer;
 
 namespace ICSharpCode.FormsDesigner
@@ -30,7 +27,7 @@ namespace ICSharpCode.FormsDesigner
 	public abstract class AbstractDesignerGenerator : IDesignerGenerator
 	{
 		/// <summary>The currently open part of the class being designed.</summary>
-		protected IClass currentClassPart;
+		IClass currentClassPart;
 		/// <summary>The complete class being designed.</summary>
 		IClass  completeClass;
 		/// <summary>The class part containing the designer code.</summary>
@@ -38,7 +35,6 @@ namespace ICSharpCode.FormsDesigner
 		IMethod initializeComponents;
 		
 		FormsDesignerViewContent viewContent;
-		bool failedDesignerInitialize = false;
 		CodeDomProvider provider;
 		
 		public CodeDomProvider CodeDomProvider {
@@ -56,6 +52,14 @@ namespace ICSharpCode.FormsDesigner
 			}
 		}
 		
+		/// <summary>
+		/// Gets the part of the designed class that is open in the source code editor which the designer view is attached to.
+		/// </summary>
+		protected IClass CurrentClassPart {
+			get { return this.currentClassPart; }
+			set { this.currentClassPart = value; }
+		}
+		
 		public void Attach(FormsDesignerViewContent viewContent)
 		{
 			this.viewContent = viewContent;
@@ -64,6 +68,27 @@ namespace ICSharpCode.FormsDesigner
 		public void Detach()
 		{
 			this.viewContent = null;
+		}
+		
+		public OpenedFile DetermineDesignerCodeFile()
+		{
+			// get new initialize components
+			ParseInformation info = ParserService.ParseFile(this.viewContent.PrimaryFileName, this.viewContent.PrimaryFileContent, false);
+			ICompilationUnit cu = info.BestCompilationUnit;
+			foreach (IClass c in cu.Classes) {
+				if (FormsDesignerSecondaryDisplayBinding.BaseClassIsFormOrControl(c)) {
+					this.currentClassPart = c;
+					this.initializeComponents = FormsDesignerSecondaryDisplayBinding.GetInitializeComponents(c);
+					if (this.initializeComponents != null) {
+						string designerFile = this.initializeComponents.DeclaringType.CompilationUnit.FileName;
+						if (designerFile != null) {
+							return FileService.GetOrCreateOpenedFile(designerFile);
+						}
+					}
+				}
+			}
+			
+			throw new FormsDesignerLoadException("Could not find InitializeComponent method in any part of the open class.");
 		}
 		
 		/// <summary>
@@ -76,14 +101,13 @@ namespace ICSharpCode.FormsDesigner
 				Reparse();
 				IField field = GetField(formClass, fieldName);
 				if (field != null) {
-					int startOffset = document.PositionToOffset(new TextLocation(0, field.Region.BeginLine - 1));
-					int endOffset   = document.PositionToOffset(new TextLocation(0, field.Region.EndLine));
-					document.Remove(startOffset, endOffset - startOffset);
+					int startOffset = this.ViewContent.DesignerCodeFileDocument.PositionToOffset(new TextLocation(0, field.Region.BeginLine - 1));
+					int endOffset   = this.ViewContent.DesignerCodeFileDocument.PositionToOffset(new TextLocation(0, field.Region.EndLine));
+					this.ViewContent.DesignerCodeFileDocument.Remove(startOffset, endOffset - startOffset);
 				} else if ((field = GetField(completeClass, fieldName)) != null) {
 					// TODO: Remove the field in the part where it is declared
 					LoggingService.Warn("Removing field declaration in non-designer part currently not supported");
 				}
-				SaveDocument();
 			} catch (Exception ex) {
 				MessageService.ShowError(ex);
 			}
@@ -114,19 +138,18 @@ namespace ICSharpCode.FormsDesigner
 				Reparse();
 				IField oldField = GetField(formClass, newField.Name);
 				if (oldField != null) {
-					int startOffset = document.PositionToOffset(new TextLocation(0, oldField.Region.BeginLine - 1));
-					int endOffset   = document.PositionToOffset(new TextLocation(0, oldField.Region.EndLine));
-					document.Replace(startOffset, endOffset - startOffset, tabs + GenerateFieldDeclaration(domGenerator, newField) + Environment.NewLine);
+					int startOffset = this.ViewContent.DesignerCodeFileDocument.PositionToOffset(new TextLocation(0, oldField.Region.BeginLine - 1));
+					int endOffset   = this.ViewContent.DesignerCodeFileDocument.PositionToOffset(new TextLocation(0, oldField.Region.EndLine));
+					this.ViewContent.DesignerCodeFileDocument.Replace(startOffset, endOffset - startOffset, tabs + GenerateFieldDeclaration(domGenerator, newField) + Environment.NewLine);
 				} else {
 					if ((oldField = GetField(completeClass, newField.Name)) != null) {
 						// TODO: Replace the field in the part where it is declared
 						LoggingService.Warn("Field declaration replacement in non-designer part currently not supported");
 					} else {
-						int endOffset = document.PositionToOffset(new TextLocation(0, initializeComponents.BodyRegion.EndLine));
-						document.Insert(endOffset, tabs + GenerateFieldDeclaration(domGenerator, newField) + Environment.NewLine);
+						int endOffset = this.ViewContent.DesignerCodeFileDocument.PositionToOffset(new TextLocation(0, initializeComponents.BodyRegion.EndLine));
+						this.ViewContent.DesignerCodeFileDocument.Insert(endOffset, tabs + GenerateFieldDeclaration(domGenerator, newField) + Environment.NewLine);
 					}
 				}
-				SaveDocument();
 			} catch (Exception ex) {
 				MessageService.ShowError(ex);
 			}
@@ -183,14 +206,13 @@ namespace ICSharpCode.FormsDesigner
 			string statements = writer.ToString();
 			
 			// initializeComponents.BodyRegion.BeginLine + 1
-			DomRegion bodyRegion = GetReplaceRegion(document, initializeComponents);
+			DomRegion bodyRegion = GetReplaceRegion(this.ViewContent.DesignerCodeFileDocument, initializeComponents);
 			if (bodyRegion.BeginColumn <= 0 || bodyRegion.EndColumn <= 0)
 				throw new InvalidOperationException("Column must be > 0");
-			int startOffset = document.PositionToOffset(new TextLocation(bodyRegion.BeginColumn - 1, bodyRegion.BeginLine - 1));
-			int endOffset   = document.PositionToOffset(new TextLocation(bodyRegion.EndColumn - 1, bodyRegion.EndLine - 1));
+			int startOffset = this.ViewContent.DesignerCodeFileDocument.PositionToOffset(new TextLocation(bodyRegion.BeginColumn - 1, bodyRegion.BeginLine - 1));
+			int endOffset   = this.ViewContent.DesignerCodeFileDocument.PositionToOffset(new TextLocation(bodyRegion.EndColumn - 1, bodyRegion.EndLine - 1));
 			
-			document.Replace(startOffset, endOffset - startOffset, statements);
-			SaveDocument();
+			this.ViewContent.DesignerCodeFileDocument.Replace(startOffset, endOffset - startOffset, statements);
 			
 			// apply changes the designer made to field declarations
 			// first loop looks for added and changed fields
@@ -222,7 +244,7 @@ namespace ICSharpCode.FormsDesigner
 			// we must not modify the c.Fields collection while it is enumerated
 			removedFields.ForEach(RemoveField);
 			
-			ParserService.EnqueueForParsing(designerFile, document.TextContent);
+			ParserService.EnqueueForParsing(this.ViewContent.DesignerCodeFile.FileName, this.ViewContent.DesignerCodeFileDocument.TextContent);
 		}
 		
 		/// <summary>
@@ -230,7 +252,7 @@ namespace ICSharpCode.FormsDesigner
 		/// the CodeDom field declaration newField.
 		/// </summary>
 		/// <returns>true, if the fields are different in type or modifiers, otherwise false.</returns>
-		bool FieldChanged(IField oldField, CodeMemberField newField)
+		static bool FieldChanged(IField oldField, CodeMemberField newField)
 		{
 			// compare types
 			if (oldField.ReturnType != null && oldField.ReturnType.GetUnderlyingClass() != null) { // ignore type changes to untyped VB fields
@@ -263,90 +285,24 @@ namespace ICSharpCode.FormsDesigner
 			return false;
 		}
 		
-		IDocument document;
-		string saveDocumentToFile;
-		string designerFile;
-		
-		/// <summary>
-		/// The document containing the content of the <see cref="DesignerFile"/>. Can be a
-		/// text editor document or independent of a text editor if partial classes are used.
-		/// </summary>
-		protected IDocument Document {
-			get { return document; }
-			set { document = value; }
-		}
-		/// <summary>
-		/// only set when InitializeComponent was loaded from code-behind file that was not open,
-		/// is normally either null or the same value as <see cref="DesignerFile"/>.
-		/// </summary>
-		protected string SaveDocumentToFile {
-			get { return saveDocumentToFile; }
-			set { saveDocumentToFile = value; }
-		}
-		/// <summary>
-		/// file that contains InitializeComponents
-		/// </summary>
-		protected string DesignerFile {
-			get { return designerFile; }
-			set { designerFile = value; }
-		}
-		
-		void SaveDocument()
-		{
-			if (saveDocumentToFile != null) {
-				NamedFileOperationDelegate method = delegate(string fileName) {
-					using (StreamWriter writer = new StreamWriter(fileName, false, System.Text.Encoding.UTF8)) {
-						writer.Write(document.TextContent);
-					}
-				};
-				FileUtility.ObservedSave(method, saveDocumentToFile, FileErrorPolicy.Inform);
-			}
-		}
-		
 		protected void Reparse()
 		{
-			saveDocumentToFile = null;
-			
 			// get new initialize components
-			string content = viewContent.Document.TextContent;
-			ParseInformation info = ParserService.ParseFile(viewContent.TextEditorControl.FileName, content, false);
-			ICompilationUnit cu = (ICompilationUnit)info.BestCompilationUnit;
+			ParseInformation info = ParserService.ParseFile(this.ViewContent.DesignerCodeFile.FileName, this.ViewContent.DesignerCodeFileContent, false);
+			ICompilationUnit cu = info.BestCompilationUnit;
 			foreach (IClass c in cu.Classes) {
 				if (FormsDesignerSecondaryDisplayBinding.BaseClassIsFormOrControl(c)) {
-					initializeComponents = FormsDesignerSecondaryDisplayBinding.GetInitializeComponents(c);
-					if (initializeComponents != null) {
-						designerFile = initializeComponents.DeclaringType.CompilationUnit.FileName;
-						string designerContent;
-						if (FileUtility.IsEqualFileName(viewContent.TextEditorControl.FileName, designerFile)) {
-							designerContent = content;
-							document = viewContent.Document;
-						} else {
-							IViewContent designerFileViewContent = FileService.GetOpenFile(designerFile);
-							if (designerFileViewContent == null) {
-								document = new DocumentFactory().CreateDocument();
-								designerContent = ParserService.GetParseableFileContent(designerFile);
-								document.TextContent = designerContent;
-								saveDocumentToFile = designerFile;
-							} else {
-								ITextEditorControlProvider tecp = designerFileViewContent as ITextEditorControlProvider;
-								if (tecp == null)
-									throw new ApplicationException("designer file viewcontent must implement ITextEditorControlProvider");
-								document = tecp.TextEditorControl.Document;
-								designerContent = document.TextContent;
-							}
-							ParserService.ParseFile(designerFile, designerContent, false);
-							initializeComponents = FormsDesignerSecondaryDisplayBinding.GetInitializeComponents(c);
-						}
-						using (StringReader r = new StringReader(designerContent)) {
-							int count = initializeComponents.Region.BeginLine;
+					this.initializeComponents = FormsDesignerSecondaryDisplayBinding.GetInitializeComponents(c);
+					if (this.initializeComponents != null) {
+						using (StringReader r = new StringReader(this.ViewContent.DesignerCodeFileContent)) {
+							int count = this.initializeComponents.Region.BeginLine;
 							for (int i = 1; i < count; i++)
 								r.ReadLine();
 							string line = r.ReadLine();
 							tabs = GetIndentation(line);
 						}
-						this.currentClassPart = c;
 						this.completeClass = c.GetCompoundClass();
-						this.formClass = initializeComponents.DeclaringType;
+						this.formClass = this.initializeComponents.DeclaringType;
 						break;
 					}
 				}
@@ -378,19 +334,15 @@ namespace ICSharpCode.FormsDesigner
 		/// <returns></returns>
 		public virtual bool InsertComponentEvent(IComponent component, EventDescriptor edesc, string eventMethodName, string body, out string file, out int position)
 		{
-			if (this.failedDesignerInitialize) {
-				position = 0;
-				file = currentClassPart.CompilationUnit.FileName;
-				return false;
-			}
-
 			Reparse();
 			
 			foreach (IMethod method in completeClass.Methods) {
 				if (method.Name == eventMethodName) {
 					file = method.DeclaringType.CompilationUnit.FileName;
-					if (FileUtility.IsEqualFileName(file, this.designerFile)) {
-						position = GetCursorLine(document, method);
+					if (FileUtility.IsEqualFileName(file, this.ViewContent.PrimaryFileName)) {
+						position = GetCursorLine(this.ViewContent.PrimaryFileDocument, method);
+					} else if (FileUtility.IsEqualFileName(file, this.ViewContent.DesignerCodeFile.FileName)) {
+						position = GetCursorLine(this.ViewContent.DesignerCodeFileDocument, method);
 					} else {
 						try {
 							position = GetCursorLine(FindReferencesAndRenameHelper.GetDocumentInformation(file).CreateDocument(), method);
@@ -402,16 +354,18 @@ namespace ICSharpCode.FormsDesigner
 					return true;
 				}
 			}
+			
 			viewContent.MergeFormChanges();
 			Reparse();
 			
 			file = currentClassPart.CompilationUnit.FileName;
 			int line = GetEventHandlerInsertionLine(currentClassPart);
 			
-			int offset = viewContent.Document.GetLineSegment(line - 1).Offset;
+			int offset = this.viewContent.PrimaryFileDocument.GetLineSegment(line - 1).Offset;
 			
-			viewContent.Document.Insert(offset, CreateEventHandler(edesc.EventType, eventMethodName, body, tabs));
+			this.viewContent.PrimaryFileDocument.Insert(offset, CreateEventHandler(edesc.EventType, eventMethodName, body, tabs));
 			position = line + GetCursorLineAfterEventHandlerCreation();
+			this.viewContent.PrimaryFile.MakeDirty();
 			
 			return true;
 		}

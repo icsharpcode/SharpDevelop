@@ -20,8 +20,8 @@ namespace PythonBinding.Tests.Utils
 	{
 		bool mergeFormChangesCalled;
 				
-		public DerivedFormDesignerViewContent(IViewContent view, IDesignerLoaderProvider loader, IDesignerGenerator generator)
-			: base(view, loader, generator)
+		public DerivedFormDesignerViewContent(IViewContent view, ICSharpCode.SharpDevelop.OpenedFile mockFile)
+			: base(view, mockFile)
 		{
 		}
 		

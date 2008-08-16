@@ -34,8 +34,8 @@ namespace PythonBinding.Tests.Designer
 		{
 			DerivedPythonDesignerGenerator generator = new DerivedPythonDesignerGenerator();
 			MockTextEditorViewContent mockViewContent = new MockTextEditorViewContent();
-			mockViewContent.TextEditorControl.Document.TextContent = GetTextEditorCode();
-			DerivedFormDesignerViewContent viewContent = new DerivedFormDesignerViewContent(mockViewContent, null, null);
+			DerivedFormDesignerViewContent viewContent = new DerivedFormDesignerViewContent(mockViewContent, new MockOpenedFile("Test.py"));
+			viewContent.DesignerCodeFileContent = GetTextEditorCode();
 			
 			// Create parse info.
 			PythonParser parser = new PythonParser();

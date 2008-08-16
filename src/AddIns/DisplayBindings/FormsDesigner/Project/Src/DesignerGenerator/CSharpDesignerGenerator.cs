@@ -79,7 +79,7 @@ namespace ICSharpCode.FormsDesigner
 		protected string GenerateParams(Type eventType, bool paramNames)
 		{
 			CSharpOutputVisitor v = new CSharpOutputVisitor();
-			MethodDeclaration md = ConvertEventInvokeMethodToNRefactory(currentClassPart, eventType, "name");
+			MethodDeclaration md = ConvertEventInvokeMethodToNRefactory(CurrentClassPart, eventType, "name");
 			if (md != null) {
 				v.AppendCommaSeparatedList(md.Parameters);
 			}
@@ -100,7 +100,7 @@ namespace ICSharpCode.FormsDesigner
 			
 			CSharpDesignerGenerator gen = new CSharpDesignerGenerator();
 			
-			gen.currentClassPart = c;
+			gen.CurrentClassPart = c;
 			int line = gen.GetEventHandlerInsertionLine(c);
 			
 			int offset = document.GetLineSegment(line - 1).Offset;

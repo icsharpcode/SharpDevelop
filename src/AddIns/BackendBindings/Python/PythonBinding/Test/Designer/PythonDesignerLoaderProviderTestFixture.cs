@@ -8,10 +8,9 @@
 using System;
 using System.ComponentModel.Design.Serialization;
 using ICSharpCode.PythonBinding;
-using ICSharpCode.TextEditor.Document;
 using IronPython.CodeDom;
 using NUnit.Framework;
-	
+
 namespace PythonBinding.Tests.Designer
 {
 	/// <summary>
@@ -26,9 +25,7 @@ namespace PythonBinding.Tests.Designer
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			DocumentFactory factory = new DocumentFactory();
-			IDocument document = factory.CreateDocument();
-			provider = new PythonDesignerLoaderProvider(document);
+			provider = new PythonDesignerLoaderProvider();
 			generator = new PythonDesignerGenerator();
 		}
 		

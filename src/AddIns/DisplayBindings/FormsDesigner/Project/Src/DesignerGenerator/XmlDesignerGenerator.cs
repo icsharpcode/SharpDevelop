@@ -17,6 +17,8 @@ using System.Reflection;
 using System.Windows.Forms;
 using System.Xml;
 
+using ICSharpCode.SharpDevelop;
+
 namespace ICSharpCode.FormsDesigner
 {
 	public class XmlDesignerGenerator : IDesignerGenerator
@@ -29,6 +31,10 @@ namespace ICSharpCode.FormsDesigner
 			}
 		}
 		
+		public FormsDesignerViewContent ViewContent {
+			get { return this.viewContent; }
+		}
+		
 		public void Attach(FormsDesignerViewContent viewContent)
 		{
 			this.viewContent = viewContent;
@@ -37,6 +43,11 @@ namespace ICSharpCode.FormsDesigner
 		public void Detach()
 		{
 			this.viewContent = null;
+		}
+		
+		public OpenedFile DetermineDesignerCodeFile()
+		{
+			return this.viewContent.PrimaryFile;
 		}
 		
 		public void MergeFormChanges(CodeCompileUnit unit)
@@ -55,13 +66,13 @@ namespace ICSharpCode.FormsDesigner
 			}
 			xml.WriteEndElement();
 			//xml.WriteEndDocument();
-			viewContent.Document.TextContent = writer.ToString();
+			viewContent.DesignerCodeFileContent = writer.ToString();
 		}
 		
 		public bool InsertComponentEvent(IComponent component, EventDescriptor edesc, string eventMethodName, string body, out string file, out int position)
 		{
 			position = 0;
-			file = this.viewContent.TextEditorControl.FileName;
+			file = this.viewContent.PrimaryFileName;
 			return false;
 		}
 		

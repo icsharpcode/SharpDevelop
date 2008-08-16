@@ -21,6 +21,11 @@ namespace PythonBinding.Tests.Utils
 		{
 		}
 		
+		public MockOpenedFile(string fileName)
+		{
+			this.FileName = fileName;
+		}
+		
 		public override IList<IViewContent> RegisteredViewContents {
 			get {
 				throw new NotImplementedException();

@@ -39,24 +39,15 @@ namespace ICSharpCode.FormsDesigner
 	{
 		SupportedLanguage    language;
 		
-		TextEditorControl textEditorControl;
-		
-		public string TextContent {
-			get {
-				return textEditorControl.Document.TextContent;
-			}
-		}
-		
 		protected override bool IsReloadNeeded()
 		{
-			return base.IsReloadNeeded() || TextContent != lastTextContent;
+			return base.IsReloadNeeded() || this.Generator.ViewContent.DesignerCodeFileContent != lastTextContent;
 		}
 		
-		public NRefactoryDesignerLoader(SupportedLanguage language, TextEditorControl textEditorControl, IDesignerGenerator generator)
+		public NRefactoryDesignerLoader(SupportedLanguage language, IDesignerGenerator generator)
 			: base(generator)
 		{
 			this.language = language;
-			this.textEditorControl = textEditorControl;
 		}
 		
 		string lastTextContent;
@@ -101,9 +92,9 @@ namespace ICSharpCode.FormsDesigner
 		{
 			LoggingService.Debug("NRefactoryDesignerLoader.Parse()");
 			
-			lastTextContent = TextContent;
+			lastTextContent = this.Generator.ViewContent.DesignerCodeFileContent;
 			
-			ParseInformation parseInfo = ParserService.GetParseInformation(textEditorControl.FileName);
+			ParseInformation parseInfo = ParserService.GetParseInformation(this.Generator.ViewContent.DesignerCodeFile.FileName);
 			
 			IClass formClass;
 			bool isFirstClassInFile;
@@ -138,7 +129,14 @@ namespace ICSharpCode.FormsDesigner
 				}
 				if (found) continue;
 				
-				string fileContent = ParserService.GetParseableFileContent(fileName);
+				string fileContent;
+				if (FileUtility.IsEqualFileName(fileName, this.Generator.ViewContent.PrimaryFileName)) {
+					fileContent = this.Generator.ViewContent.PrimaryFileContent;
+				} else if (FileUtility.IsEqualFileName(fileName, this.Generator.ViewContent.DesignerCodeFile.FileName)) {
+					fileContent = this.Generator.ViewContent.DesignerCodeFileContent;
+				} else {
+					fileContent = ParserService.GetParseableFileContent(fileName);
+				}
 				
 				ICSharpCode.NRefactory.IParser p = ICSharpCode.NRefactory.ParserFactory.CreateParser(language, new StringReader(fileContent));
 				p.Parse();
@@ -300,7 +298,7 @@ namespace ICSharpCode.FormsDesigner
 		
 		protected override CodeDomLocalizationModel GetCurrentLocalizationModelFromDesignedFile()
 		{
-			ParseInformation parseInfo = ParserService.GetParseInformation(this.textEditorControl.FileName);
+			ParseInformation parseInfo = ParserService.ParseFile(this.Generator.ViewContent.DesignerCodeFile.FileName, this.Generator.ViewContent.DesignerCodeFileContent, false);
 			
 			IClass formClass;
 			bool isFirstClassInFile;

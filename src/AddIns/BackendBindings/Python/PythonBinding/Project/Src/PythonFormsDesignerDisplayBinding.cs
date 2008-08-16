@@ -53,8 +53,7 @@ namespace ICSharpCode.PythonBinding
 				}
 			}
 			
-			TextEditorControl textEditor = ((ITextEditorControlProvider)viewContent).TextEditorControl;
-			IDesignerLoaderProvider loader = new PythonDesignerLoaderProvider(textEditor.Document);
+			IDesignerLoaderProvider loader = new PythonDesignerLoaderProvider();
 			IDesignerGenerator generator = new PythonDesignerGenerator();
 			return new IViewContent[] { new FormsDesignerViewContent(viewContent, loader, generator) };
 		}

@@ -50,7 +50,7 @@ namespace ICSharpCode.FormsDesigner
 		protected string GenerateParams(Type eventType)
 		{
 			VBNetOutputVisitor v = new VBNetOutputVisitor();
-			MethodDeclaration md = ConvertEventInvokeMethodToNRefactory(currentClassPart, eventType, "name");
+			MethodDeclaration md = ConvertEventInvokeMethodToNRefactory(this.CurrentClassPart, eventType, "name");
 			if (md != null) {
 				v.AppendCommaSeparatedList(md.Parameters);
 			}

@@ -21,18 +21,10 @@ namespace ICSharpCode.FormsDesigner
 {
 	public class XmlDesignerLoader : BasicDesignerLoader, IObjectCreator
 	{
-		TextEditorControl textEditorControl;
 		IDesignerGenerator generator;
 		
-		public string TextContent {
-			get {
-				return textEditorControl.Document.TextContent;
-			}
-		}
-		
-		public XmlDesignerLoader(TextEditorControl textEditorControl, IDesignerGenerator generator)
+		public XmlDesignerLoader(IDesignerGenerator generator)
 		{
-			this.textEditorControl = textEditorControl;
 			this.generator = generator;
 		}
 		
@@ -51,7 +43,7 @@ namespace ICSharpCode.FormsDesigner
 		{
 			XmlLoader loader = new XmlLoader();
 			loader.ObjectCreator = this;
-			loader.CreateObjectFromXmlDefinition(TextContent);
+			loader.CreateObjectFromXmlDefinition(this.generator.ViewContent.DesignerCodeFileContent);
 		}
 		
 		protected override void PerformFlush(IDesignerSerializationManager serializationManager)

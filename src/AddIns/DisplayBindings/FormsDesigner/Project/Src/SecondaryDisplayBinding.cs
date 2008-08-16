@@ -124,15 +124,15 @@ namespace ICSharpCode.FormsDesigner
 			
 			switch (fileExtension) {
 				case ".cs":
-					loader    = new NRefactoryDesignerLoaderProvider(SupportedLanguage.CSharp, ((ITextEditorControlProvider)viewContent).TextEditorControl);
+					loader    = new NRefactoryDesignerLoaderProvider(SupportedLanguage.CSharp);
 					generator = new CSharpDesignerGenerator();
 					break;
 				case ".vb":
-					loader    = new NRefactoryDesignerLoaderProvider(SupportedLanguage.VBNet, ((ITextEditorControlProvider)viewContent).TextEditorControl);
+					loader    = new NRefactoryDesignerLoaderProvider(SupportedLanguage.VBNet);
 					generator = new VBNetDesignerGenerator();
 					break;
 				case ".xfrm":
-					loader    = new XmlDesignerLoaderProvider(((ITextEditorControlProvider)viewContent).TextEditorControl);
+					loader    = new XmlDesignerLoaderProvider();
 					generator = new XmlDesignerGenerator();
 					break;
 				default:

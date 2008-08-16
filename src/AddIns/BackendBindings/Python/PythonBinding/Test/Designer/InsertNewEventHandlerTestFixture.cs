@@ -32,10 +32,9 @@ namespace PythonBinding.Tests.Designer
 		{
 			DerivedPythonDesignerGenerator generator = new DerivedPythonDesignerGenerator();
 			mockViewContent = new MockTextEditorViewContent();
-			mockViewContent.TextEditorControl.Document.TextContent = GetTextEditorCode();
-			mockViewContent.TextEditorControl.FileName = @"C:\Projects\Python\mainform.py";
-			viewContent = new DerivedFormDesignerViewContent(mockViewContent, null, null);
+			viewContent = new DerivedFormDesignerViewContent(mockViewContent, new MockOpenedFile(@"C:\Projects\Python\mainform.py"));
 			generator.Attach(viewContent);
+			viewContent.DesignerCodeFileContent = GetTextEditorCode();
 			
 			MockEventDescriptor mockEventDescriptor = new MockEventDescriptor("Click");
 			insertedEventHandler = generator.InsertComponentEvent(null, mockEventDescriptor, "button1_click", String.Empty, out file, out position);
@@ -49,7 +48,7 @@ namespace PythonBinding.Tests.Designer
 								"\t\tpass";
 			expectedCode = expectedCode + "\r\n" + eventHandler;
 			
-			Assert.AreEqual(expectedCode, mockViewContent.TextEditorControl.Document.TextContent);
+			Assert.AreEqual(expectedCode, viewContent.DesignerCodeFileContent);
 		}
 		
 		/// <summary>
@@ -102,7 +101,7 @@ namespace PythonBinding.Tests.Designer
 		[Test]
 		public void FileNameSameAsDocumentFileName()
 		{
-			Assert.AreEqual(mockViewContent.TextEditorControl.FileName, file);
+			Assert.AreEqual(viewContent.DesignerCodeFile.FileName, file);
 		}
 	}
 }

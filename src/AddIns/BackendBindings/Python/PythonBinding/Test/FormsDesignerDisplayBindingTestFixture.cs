@@ -131,7 +131,7 @@ namespace PythonBinding.Tests
 		{
 			MockTextEditorViewContent view = new MockTextEditorViewContent();			
 			IViewContent[] views = null;
-			using (FormsDesignerViewContent formsDesigner = new FormsDesignerViewContent(view, null, null)) {
+			using (FormsDesignerViewContent formsDesigner = new FormsDesignerViewContent(view, new MockOpenedFile("test.py"))) {
 				view.SecondaryViewContents.Add(formsDesigner);
 				views = displayBinding.CreateSecondaryViewContent(view);
 			}

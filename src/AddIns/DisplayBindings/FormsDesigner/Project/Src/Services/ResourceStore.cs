@@ -67,7 +67,7 @@ namespace ICSharpCode.FormsDesigner.Services
 			}
 			resourceByFile[storage.OpenedFile] = storage;
 			// adding the opened file to the view content will load the file content into ResourceStorage.buffer
-			viewContent.Files.Add(storage.OpenedFile);
+			viewContent.AddResourceFile(storage.OpenedFile);
 		}
 		
 		public void Dispose()

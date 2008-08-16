@@ -113,7 +113,6 @@
     <Compile Include="Designer\OneCompatibleMethodTestFixture.cs" />
     <Compile Include="Designer\PythonGeneratorTestFixture.cs" />
     <Compile Include="Designer\IsFormDesignableTestFixture.cs" />
-    <Compile Include="Designer\NullDocumentPassedToLoader.cs" />
     <Compile Include="Designer\NullGeneratorPassedToLoader.cs" />
     <Compile Include="Designer\PythonDesignerLoaderProviderTestFixture.cs" />
     <Compile Include="Designer\PythonDesignerLoaderTestFixture.cs" />

@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Linq;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
@@ -38,7 +39,7 @@ namespace ICSharpCode.SharpDevelop
 			bool isWindowStateOk = false;
 			if (windowState != WindowState.None) {
 				if ((windowState & WindowState.Dirty) > 0) {
-					isWindowStateOk |= WorkbenchSingleton.Workbench.ActiveViewContent.IsDirty;
+					isWindowStateOk |= WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContents.Any(vc => vc.IsDirty);
 				} 
 				if ((windowState & WindowState.Untitled) > 0) {
 					isWindowStateOk |= IsUntitled(WorkbenchSingleton.Workbench.ActiveViewContent);
@@ -52,7 +53,7 @@ namespace ICSharpCode.SharpDevelop
 			
 			if (nowindowState != WindowState.None) {
 				if ((nowindowState & WindowState.Dirty) > 0) {
-					isWindowStateOk &= !WorkbenchSingleton.Workbench.ActiveViewContent.IsDirty;
+					isWindowStateOk &= !WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContents.Any(vc => vc.IsDirty);
 				}
 				
 				if ((nowindowState & WindowState.Untitled) > 0) {

@@ -52,7 +52,7 @@ namespace Grunwald.BooBinding.Designer
 				return new IViewContent[0];
 			}
 			
-			IDesignerLoaderProvider loader = new BooDesignerLoaderProvider(((ITextEditorControlProvider)viewContent).TextEditorControl);
+			IDesignerLoaderProvider loader = new BooDesignerLoaderProvider();
 			IDesignerGenerator generator = new BooDesignerGenerator();
 			return new IViewContent[] { new FormsDesignerViewContent(viewContent, loader, generator) };
 		}
@@ -60,16 +60,13 @@ namespace Grunwald.BooBinding.Designer
 	
 	public class BooDesignerLoaderProvider : IDesignerLoaderProvider
 	{
-		TextEditorControl textEditorControl;
-		
-		public BooDesignerLoaderProvider(TextEditorControl textEditorControl)
+		public BooDesignerLoaderProvider()
 		{
-			this.textEditorControl = textEditorControl;
 		}
 		
 		public System.ComponentModel.Design.Serialization.DesignerLoader CreateLoader(IDesignerGenerator generator)
 		{
-			return new BooDesignerLoader(textEditorControl, generator);
+			return new BooDesignerLoader(generator);
 		}
 	}
 }

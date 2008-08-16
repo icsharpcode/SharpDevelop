@@ -7,12 +7,12 @@
 
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.ComponentModel.Design.Serialization;
 using System.Drawing;
-using System.Reflection;
+using System.IO;
+using System.Text;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
@@ -21,53 +21,34 @@ using ICSharpCode.FormsDesigner.UndoRedo;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
-using ICSharpCode.SharpDevelop.Widgets.SideBar;
+using ICSharpCode.TextEditor.Util;
 
 namespace ICSharpCode.FormsDesigner
 {
-	public class FormsDesignerViewContent : AbstractSecondaryViewContent, IClipboardHandler, IUndoHandler, IHasPropertyContainer, IContextHelpProvider, IToolsHost
+	public class FormsDesignerViewContent : AbstractViewContentHandlingLoadErrors, IClipboardHandler, IUndoHandler, IHasPropertyContainer, IContextHelpProvider, IToolsHost
 	{
-		protected bool failedDesignerInitialize;
-		
-		protected IViewContent viewContent;
-		protected ITextEditorControlProvider textAreaControlProvider;
-		
 		Panel p = new Panel();
 		DesignSurface designSurface;
 		bool disposing;
+		bool loadingDesigner;
 		
-		IDesignerLoaderProvider loaderProvider;
-		IDesignerGenerator generator;
+		readonly IViewContent primaryViewContent;
+		readonly IDesignerLoaderProvider loaderProvider;
+		readonly IDesignerGenerator generator;
 		readonly ResourceStore resourceStore;
 		FormsDesignerUndoEngine undoEngine;
 		
-		public override Control Control {
-			get {
-				return p;
-			}
-		}
+		Encoding primaryFileEncoding;
+		readonly IDocument primaryFileDocument = new DocumentFactory().CreateDocument();
+		Encoding designerCodeFileEncoding;
+		OpenedFile designerCodeFile;
+		IDocument designerCodeFileDocument;
 		
-		public DesignSurface DesignSurface {
+		protected DesignSurface DesignSurface {
 			get {
 				return designSurface;
 			}
-		}
-		
-		public TextEditorControl TextEditorControl {
-			get {
-				return textAreaControlProvider.TextEditorControl;
-			}
-		}
-		public IDocument Document {
-			get {
-				return TextEditorControl.Document;
-			}
-		}
-		
-		internal new ICollection<OpenedFile> Files {
-			get { return base.Files; }
 		}
 		
 		public IDesignerHost Host {
@@ -77,8 +58,43 @@ namespace ICSharpCode.FormsDesigner
 				return (IDesignerHost)designSurface.GetService(typeof(IDesignerHost));
 			}
 		}
-		public FormsDesignerViewContent(IViewContent viewContent, IDesignerLoaderProvider loaderProvider, IDesignerGenerator generator)
-			: base(viewContent)
+		
+		public OpenedFile DesignerCodeFile {
+			get { return this.designerCodeFile; }
+		}
+		
+		public virtual IDocument PrimaryFileDocument {
+			get { return this.primaryFileDocument; }
+		}
+		
+		public string PrimaryFileContent {
+			get { return this.PrimaryFileDocument.TextContent; }
+			set { this.PrimaryFileDocument.TextContent = value; }
+		}
+		
+		public virtual Encoding PrimaryFileEncoding {
+			get { return this.primaryFileEncoding; }
+		}
+		
+		public virtual IDocument DesignerCodeFileDocument {
+			get { return this.designerCodeFileDocument; }
+		}
+		
+		public string DesignerCodeFileContent {
+			get { return this.DesignerCodeFileDocument.TextContent; }
+			set { this.DesignerCodeFileDocument.TextContent = value; }
+		}
+		
+		public virtual Encoding DesignerCodeFileEncoding {
+			get { return this.designerCodeFileEncoding; }
+		}
+		
+		public IViewContent PrimaryViewContent {
+			get { return this.primaryViewContent; }
+		}
+		
+		FormsDesignerViewContent(IViewContent primaryViewContent)
+			: base()
 		{
 			this.TabPageText = "${res:FormsDesigner.DesignTabPages.DesignTabPage}";
 			
@@ -86,16 +102,15 @@ namespace ICSharpCode.FormsDesigner
 				FormKeyHandler.Insert();
 			}
 			
-			this.loaderProvider    = loaderProvider;
-			this.generator = generator;
+			this.primaryViewContent = primaryViewContent;
+			
 			p.BackColor    = Color.White;
 			p.RightToLeft = RightToLeft.No;
 			// Make sure auto-scaling is based on the correct font.
 			// This is required on Vista, I don't know why it works correctly in XP
 			p.Font = Control.DefaultFont;
 			
-			this.viewContent             = viewContent;
-			this.textAreaControlProvider = viewContent as ITextEditorControlProvider;
+			this.UserControl = this.p;
 			
 			this.resourceStore = new ResourceStore(this);
 			
@@ -103,6 +118,122 @@ namespace ICSharpCode.FormsDesigner
 			if (WorkbenchSingleton.Workbench != null) {
 				this.IsActiveViewContentChanged += this.IsActiveViewContentChangedHandler;
 			}
+		}
+		
+		public FormsDesignerViewContent(IViewContent primaryViewContent, IDesignerLoaderProvider loaderProvider, IDesignerGenerator generator)
+			: this(primaryViewContent)
+		{
+			if (loaderProvider == null)
+				throw new ArgumentNullException("loaderProvider");
+			if (generator == null)
+				throw new ArgumentNullException("generator");
+			
+			this.loaderProvider    = loaderProvider;
+			this.generator = generator;
+			this.generator.Attach(this);
+			
+			this.Files.Add(this.primaryViewContent.PrimaryFile);
+		}
+		
+		/// <summary>
+		/// This constructor allows running in unit test mode with a mock file.
+		/// </summary>
+		public FormsDesignerViewContent(IViewContent primaryViewContent, OpenedFile mockFile)
+			: this(primaryViewContent)
+		{
+			this.primaryFileDocument = new DocumentFactory().CreateDocument();
+			this.designerCodeFileDocument = this.primaryFileDocument;
+			this.designerCodeFileEncoding = System.Text.Encoding.UTF8;
+			this.designerCodeFile = mockFile;
+		}
+		
+		protected override void LoadInternal(OpenedFile file, System.IO.Stream stream)
+		{
+			LoggingService.Debug("Forms designer: Load " + file.FileName);
+			
+			if (file == this.PrimaryFile) {
+				
+				this.primaryFileEncoding = ParserService.DefaultFileEncoding;
+				this.primaryFileDocument.TextContent = FileReader.ReadFileContent(stream, ref this.primaryFileEncoding);
+				
+				LoggingService.Debug("Forms designer: Determining designer code file for " + file.FileName);
+				OpenedFile newDesignerCodeFile = this.generator.DetermineDesignerCodeFile();
+				if (newDesignerCodeFile == null) {
+					throw new InvalidOperationException("The designer code file could not be determined.");
+				}
+				
+				if (this.designerCodeFile != null && newDesignerCodeFile != this.designerCodeFile) {
+					this.Files.Remove(this.designerCodeFile);
+				}
+				this.designerCodeFile = newDesignerCodeFile;
+				
+				if (this.designerCodeFile == this.PrimaryFile) {
+					
+					LoggingService.Debug("Forms designer: Designer code file is equal to primary file. Reloading designer.");
+					
+					this.UnloadDesigner();
+					this.designerCodeFileEncoding = this.PrimaryFileEncoding;
+					this.designerCodeFileDocument = this.PrimaryFileDocument;
+					this.LoadAndDisplayDesigner();
+					
+				} else if (!this.Files.Contains(this.designerCodeFile)) {
+					LoggingService.Debug("Forms designer: Adding designer code file " + this.designerCodeFile.FileName);
+					this.Files.Insert(1, this.designerCodeFile);
+				}
+				
+			} else if (file == this.DesignerCodeFile) {
+				
+				LoggingService.Debug("Forms designer: Reloading designer because of LoadInternal on DesignerCodeFile");
+				
+				this.UnloadDesigner();
+				this.designerCodeFileEncoding = ParserService.DefaultFileEncoding;
+				this.designerCodeFileDocument = new DocumentFactory().CreateDocument();
+				this.designerCodeFileDocument.TextContent = FileReader.ReadFileContent(stream, ref this.designerCodeFileEncoding);
+				this.LoadAndDisplayDesigner();
+				
+			} else {
+				
+				// Loading a resource file
+				
+				bool mustReload;
+				if (this.designSurface != null && !this.loadingDesigner) {
+					LoggingService.Debug("Forms designer: Reloading designer because of LoadInternal on resource file");
+					this.UnloadDesigner();
+					mustReload = true;
+				} else {
+					mustReload = false;
+				}
+				LoggingService.Debug("Forms designer: Loading " + file.FileName + " in resource store");
+				this.resourceStore.Load(file, stream);
+				if (mustReload) {
+					this.LoadAndDisplayDesigner();
+				}
+				
+			}
+		}
+		
+		protected override void SaveInternal(OpenedFile file, System.IO.Stream stream)
+		{
+			LoggingService.Debug("Forms designer: Save " + file.FileName);
+			if (hasUnmergedChanges) {
+				this.MergeFormChanges();
+			}
+			if (file == this.DesignerCodeFile) {
+				using(StreamWriter writer = new StreamWriter(stream, this.DesignerCodeFileEncoding)) {
+					writer.Write(this.DesignerCodeFileContent);
+				}
+			} else if (file == this.PrimaryFile) {
+				using(StreamWriter writer = new StreamWriter(stream, this.PrimaryFileEncoding)) {
+					writer.Write(this.PrimaryFileContent);
+				}
+			} else {
+				this.resourceStore.Save(file, stream);
+			}
+		}
+		
+		internal void AddResourceFile(OpenedFile file)
+		{
+			this.Files.Add(file);
 		}
 		
 		void LoadDesigner()
@@ -119,7 +250,7 @@ namespace ICSharpCode.FormsDesigner
 			serviceContainer.AddService(typeof(System.ComponentModel.Design.IResourceService), new DesignerResourceService(this.resourceStore));
 			AmbientProperties ambientProperties = new AmbientProperties();
 			serviceContainer.AddService(typeof(AmbientProperties), ambientProperties);
-			serviceContainer.AddService(typeof(ITypeResolutionService), new TypeResolutionService(viewContent.PrimaryFileName));
+			serviceContainer.AddService(typeof(ITypeResolutionService), new TypeResolutionService(this.PrimaryFileName));
 			serviceContainer.AddService(typeof(DesignerOptionService), new SharpDevelopDesignerOptionService());
 			serviceContainer.AddService(typeof(ITypeDiscoveryService), new TypeDiscoveryService());
 			serviceContainer.AddService(typeof(MemberRelationshipService), new DefaultMemberRelationshipService());
@@ -131,13 +262,11 @@ namespace ICSharpCode.FormsDesigner
 			designSurface = CreateDesignSurface(serviceContainer);
 			
 			serviceContainer.AddService(typeof(System.ComponentModel.Design.IMenuCommandService), new ICSharpCode.FormsDesigner.Services.MenuCommandService(p, designSurface));
-			ICSharpCode.FormsDesigner.Services.EventBindingService eventBindingService = new ICSharpCode.FormsDesigner.Services.EventBindingService(designSurface);
+			ICSharpCode.FormsDesigner.Services.EventBindingService eventBindingService = new ICSharpCode.FormsDesigner.Services.EventBindingService(this, designSurface);
 			serviceContainer.AddService(typeof(System.ComponentModel.Design.IEventBindingService), eventBindingService);
 			
 			DesignerLoader designerLoader = loaderProvider.CreateLoader(generator);
 			designSurface.BeginLoad(designerLoader);
-			
-			generator.Attach(this);
 			
 			undoEngine = new FormsDesignerUndoEngine(Host);
 			serviceContainer.AddService(typeof(UndoEngine), undoEngine);
@@ -170,27 +299,8 @@ namespace ICSharpCode.FormsDesigner
 		void MakeDirty(object sender, ComponentChangedEventArgs args)
 		{
 			hasUnmergedChanges = true;
-			this.PrimaryFile.MakeDirty();
+			this.DesignerCodeFile.MakeDirty();
 			this.resourceStore.MarkResourceFilesAsDirty();
-		}
-		
-		public override void Load(OpenedFile file, System.IO.Stream stream)
-		{
-			if (file == PrimaryFile) {
-				base.Load(file, stream);
-			} else {
-				this.resourceStore.Load(file, stream);
-			}
-		}
-		
-		public override void Save(OpenedFile file, System.IO.Stream stream)
-		{
-			if (file == PrimaryFile) {
-				base.Save(file, stream);
-			} else {
-				if (hasUnmergedChanges) SaveToPrimary();
-				this.resourceStore.Save(file, stream);
-			}
 		}
 		
 		bool shouldUpdateSelectableObjects = false;
@@ -212,14 +322,14 @@ namespace ICSharpCode.FormsDesigner
 		
 		void UnloadDesigner()
 		{
+			LoggingService.Debug("FormsDesigner unloading, setting ActiveDesignSurface to null");
 			designSurfaceManager.ActiveDesignSurface = null;
 			PropertyPad.PropertyValueChanged -= PropertyValueChanged;
-			if (generator != null) {
-				generator.Detach();
-			}
-			bool savedIsDirty = this.PrimaryFile.IsDirty;
+			bool savedIsDirty = (this.DesignerCodeFile == null) ? false : this.DesignerCodeFile.IsDirty;
 			p.Controls.Clear();
-			this.PrimaryFile.IsDirty = savedIsDirty;
+			if (this.DesignerCodeFile != null) {
+				this.DesignerCodeFile.IsDirty = savedIsDirty;
+			}
 			
 			// We cannot dispose the design surface now because of SD2-451:
 			// When the switch to the source view was triggered by a double-click on an event
@@ -259,60 +369,60 @@ namespace ICSharpCode.FormsDesigner
 			}
 		}
 		
-		public void Reload()
+		void LoadAndDisplayDesigner()
 		{
 			try {
-				failedDesignerInitialize = false;
+				
+				this.loadingDesigner = true;
+				
 				LoadDesigner();
 				
-				bool savedIsDirty = this.PrimaryFile.IsDirty;
+				bool savedIsDirty = this.DesignerCodeFile.IsDirty;
 				if (designSurface != null && p.Controls.Count == 0) {
 					Control designer = designSurface.View as Control;
 					designer.Dock = DockStyle.Fill;
 					p.Controls.Add(designer);
+					LoggingService.Debug("FormsDesigner loaded, setting ActiveDesignSurface to " + this.designSurface.ToString());
 					designSurfaceManager.ActiveDesignSurface = this.designSurface;
 				}
-				this.PrimaryFile.IsDirty = savedIsDirty;
+				this.DesignerCodeFile.IsDirty = savedIsDirty;
+				
 			} catch (Exception e) {
-				failedDesignerInitialize = true;
-				TextBox errorText = new TextBox();
-				errorText.ScrollBars = ScrollBars.Both;
-				errorText.Multiline = true;
+				
+				string mainErrorMessage;
 				if (e.InnerException is FormsDesignerLoadException) {
-					errorText.Text = e.InnerException.Message;
+					mainErrorMessage = e.InnerException.Message;
 				} else if (e is FormsDesignerLoadException) {
-					errorText.Text = e.Message;
+					mainErrorMessage = e.Message;
 				} else if (designSurface != null && !designSurface.IsLoaded && designSurface.LoadErrors != null) {
-					errorText.Text = StringParser.Parse("${res:ICSharpCode.SharpDevelop.FormDesigner.ErrorLoadingDesigner}\r\n\r\n");
+					mainErrorMessage = StringParser.Parse("${res:ICSharpCode.SharpDevelop.FormDesigner.ErrorLoadingDesigner}\r\n\r\n");
 					foreach(Exception le in designSurface.LoadErrors) {
-						errorText.Text += le.ToString();
-						errorText.Text += "\r\n";
+						mainErrorMessage += le.ToString();
+						mainErrorMessage += "\r\n";
 					}
 				} else {
-					errorText.Text = e.ToString();
+					mainErrorMessage = e.ToString();
 				}
 				
-				errorText.Dock = DockStyle.Fill;
-				p.Controls.Add(errorText);
-				Control title = new Label();
-				title.Text = StringParser.Parse("${res:ICSharpCode.SharpDevelop.FormDesigner.LoadErrorCheckSourceCodeForErrors}");
-				title.Dock = DockStyle.Top;
-				p.Controls.Add(title);
+				throw new FormsDesignerLoadException(StringParser.Parse("${res:ICSharpCode.SharpDevelop.FormDesigner.LoadErrorCheckSourceCodeForErrors}") + Environment.NewLine + mainErrorMessage + Environment.NewLine, e);
+				
+			} finally {
+				this.loadingDesigner = false;
 			}
 		}
 		
 		public virtual void MergeFormChanges()
 		{
-			if (this.failedDesignerInitialize) {
+			if (this.HasLoadError) {
 				return;
 			}
-			bool isDirty = this.PrimaryFile.IsDirty;
+			bool isDirty = this.DesignerCodeFile.IsDirty;
 			LoggingService.Info("Merging form changes...");
 			designSurface.Flush();
 			this.resourceStore.CommitAllResourceChanges();
 			LoggingService.Info("Finished merging form changes");
 			hasUnmergedChanges = false;
-			this.PrimaryFile.IsDirty = isDirty;
+			this.DesignerCodeFile.IsDirty = isDirty;
 		}
 		
 		public void ShowSourceCode()
@@ -323,7 +433,10 @@ namespace ICSharpCode.FormsDesigner
 		public void ShowSourceCode(int lineNumber)
 		{
 			ShowSourceCode();
-			textAreaControlProvider.TextEditorControl.ActiveTextAreaControl.JumpTo(lineNumber - 1);
+			ITextEditorControlProvider tecp = this.primaryViewContent as ITextEditorControlProvider;
+			if (tecp != null) {
+				tecp.TextEditorControl.ActiveTextAreaControl.JumpTo(lineNumber - 1);
+			}
 		}
 		
 		public void ShowSourceCode(IComponent component, EventDescriptor edesc, string eventMethodName)
@@ -332,7 +445,7 @@ namespace ICSharpCode.FormsDesigner
 			string file;
 			bool eventCreated = generator.InsertComponentEvent(component, edesc, eventMethodName, "", out file, out position);
 			if (eventCreated) {
-				if (FileUtility.IsEqualFileName(file, this.TextEditorControl.FileName)) {
+				if (FileUtility.IsEqualFileName(file, this.primaryViewContent.PrimaryFileName)) {
 					ShowSourceCode(position);
 				} else {
 					FileService.JumpToFilePosition(file, position - 1, 0);
@@ -360,6 +473,10 @@ namespace ICSharpCode.FormsDesigner
 		{
 			disposing = true;
 			try {
+				// base.Dispose() is called first because it may trigger a call
+				// to SaveInternal which requires the designer to be loaded.
+				base.Dispose();
+			} finally {
 				
 				this.UnloadDesigner();
 				
@@ -368,25 +485,16 @@ namespace ICSharpCode.FormsDesigner
 					this.IsActiveViewContentChanged -= this.IsActiveViewContentChangedHandler;
 				}
 				
+				if (this.generator != null) {
+					this.generator.Detach();
+				}
+				
 				this.resourceStore.Dispose();
 				
 				p.Dispose();
 				p = null;
 				
-			} finally {
-				base.Dispose();
 			}
-		}
-		
-		protected override void LoadFromPrimary()
-		{
-			UnloadDesigner();
-			Reload();
-		}
-		
-		protected override void SaveToPrimary()
-		{
-			MergeFormChanges();
 		}
 		
 		void SelectionChangedHandler(object sender, EventArgs args)
@@ -569,16 +677,29 @@ namespace ICSharpCode.FormsDesigner
 				if (e.ChangedItem.PropertyDescriptor.Name == "Language") {
 					if (!e.OldValue.Equals(e.ChangedItem.Value)) {
 						LoggingService.Debug("Reloading designer due to language change.");
-						propertyContainer.Clear();
-						if (!failedDesignerInitialize) {
-							MergeFormChanges();
-						}
-						UnloadDesigner();
-						Reload();
-						UpdatePropertyPad();
+						this.MergeAndUnloadDesigner();
+						this.ReloadDesignerFromMemory();
 					}
 				}
 			}
+		}
+		
+		protected void MergeAndUnloadDesigner()
+		{
+			propertyContainer.Clear();
+			if (!this.HasLoadError) {
+				MergeFormChanges();
+			}
+			UnloadDesigner();
+		}
+		
+		protected void ReloadDesignerFromMemory()
+		{
+			using(MemoryStream ms = new MemoryStream(this.DesignerCodeFileEncoding.GetBytes(this.DesignerCodeFileContent), false)) {
+				this.Load(this.DesignerCodeFile, ms);
+			}
+			
+			UpdatePropertyPad();
 		}
 		
 		public virtual Control ToolsControl {
