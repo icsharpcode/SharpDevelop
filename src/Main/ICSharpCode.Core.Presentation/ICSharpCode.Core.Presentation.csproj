@@ -59,7 +59,6 @@
     <Compile Include="..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="CommandService.cs" />
     <Compile Include="ConditionalSeparator.cs" />
     <Compile Include="GetBitmapExtension.cs" />
     <Compile Include="IStatusUpdate.cs" />

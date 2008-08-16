@@ -56,7 +56,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				this.Content = new StackPanel {
 					Orientation = Orientation.Horizontal,
 					Children = {
-						PresentationResourceService.GetImage(ClassBrowserIconService.ResourceNames[imageIndex]),
+						PresentationResourceService.GetPixelSnappedImage(ClassBrowserIconService.ResourceNames[imageIndex]),
 						new TextBlock {
 							Text = text,
 							Margin = new Thickness(4, 0, 0, 0)

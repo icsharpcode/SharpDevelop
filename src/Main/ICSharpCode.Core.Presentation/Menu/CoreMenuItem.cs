@@ -28,11 +28,9 @@ namespace ICSharpCode.Core.Presentation
 			
 			if (codon.Properties.Contains("icon")) {
 				try {
-					Image image = PresentationResourceService.GetImage(codon.Properties["icon"]);
+					var image = PresentationResourceService.GetImage(codon.Properties["icon"]);
 					image.Height = 16;
-					this.Icon = new PixelSnapper {
-						Child = image
-					};
+					this.Icon = new PixelSnapper(image);
 				} catch (ResourceNotFoundException) {}
 			}
 			this.SubmenuOpened += CoreMenuItem_SubmenuOpened;

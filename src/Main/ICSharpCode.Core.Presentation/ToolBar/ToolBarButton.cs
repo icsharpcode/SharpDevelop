@@ -29,12 +29,10 @@ namespace ICSharpCode.Core.Presentation
 			this.Command = new CommandWrapper(codon, caller, createCommand);
 			
 			if (codon.Properties.Contains("icon")) {
-				Image image = PresentationResourceService.GetImage(StringParser.Parse(codon.Properties["icon"]));
+				var image = PresentationResourceService.GetImage(StringParser.Parse(codon.Properties["icon"]));
 				image.Height = 16;
 				image.SetResourceReference(StyleProperty, ToolBarService.ImageStyleKey);
-				this.Content = new PixelSnapper {
-					Child = image
-				};
+				this.Content = new PixelSnapper(image);
 			}
 			UpdateText();
 			

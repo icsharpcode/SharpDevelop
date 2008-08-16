@@ -21,6 +21,12 @@ namespace ICSharpCode.Core.Presentation
 			LayoutUpdated += new EventHandler(OnLayoutUpdated);
 		}
 		
+		public PixelSnapper(UIElement visualChild)
+			: this()
+		{
+			this.Child = visualChild;
+		}
+		
 		UIElement _visualChild;
 		
 		/// <summary>

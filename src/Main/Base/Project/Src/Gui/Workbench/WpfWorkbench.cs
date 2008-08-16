@@ -5,14 +5,16 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.Core.Presentation;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+
 using ICSharpCode.Core;
+using ICSharpCode.Core.Presentation;
+using System.Windows.Input;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -62,7 +64,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				}
 			}
 			
-			mainMenu.ItemsSource = MenuService.CreateMenuItems(this, mainMenuPath);
+			mainMenu.ItemsSource = MenuService.CreateMenuItems(this, this, mainMenuPath);
 			
 			toolBars = ToolBarService.CreateToolBars(this, "/SharpDevelop/Workbench/ToolBar");
 			foreach (ToolBar tb in toolBars) {
@@ -72,12 +74,29 @@ namespace ICSharpCode.SharpDevelop.Gui
 			DockPanel.SetDock(StatusBarService.Control, Dock.Bottom);
 			dockPanel.Children.Insert(dockPanel.Children.Count - 2, StatusBarService.Control);
 			
+			UpdateMenu();
+			
+			requerySuggestedEventHandler = new EventHandler(CommandManager_RequerySuggested);
+			CommandManager.RequerySuggested += requerySuggestedEventHandler;
+			
+			StatusBarService.SetMessage("${res:MainWindow.StatusBar.ReadyMessage}");
+		}
+		
+		// keep a reference to the event handler to prevent it from being gargabe collected
+		// (CommandManager.RequerySuggested only keeps weak references to the event handlers)
+		EventHandler requerySuggestedEventHandler;
+
+		void CommandManager_RequerySuggested(object sender, EventArgs e)
+		{
+			UpdateMenu();
+		}
+		
+		void UpdateMenu()
+		{
 			MenuService.UpdateStatus(mainMenu.ItemsSource);
 			foreach (ToolBar tb in toolBars) {
 				ToolBarService.UpdateStatus(tb.ItemsSource);
 			}
-			
-			StatusBarService.SetMessage("${res:MainWindow.StatusBar.ReadyMessage}");
 		}
 		
 		public ICollection<IViewContent> ViewContentCollection {

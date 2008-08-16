@@ -9,6 +9,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
@@ -260,8 +261,8 @@ namespace ICSharpCode.SharpDevelop.Commands
 			}
 			
 			if (tool.PromptForArguments) {
-					args = MessageService.ShowInputBox(tool.MenuCommand, "${res:XML.MainMenu.ToolMenu.ExternalTools.EnterArguments}", args);
-					if (args == null)
+				args = MessageService.ShowInputBox(tool.MenuCommand, "${res:XML.MainMenu.ToolMenu.ExternalTools.EnterArguments}", args);
+				if (args == null)
 					return;
 			}
 			
@@ -479,26 +480,25 @@ namespace ICSharpCode.SharpDevelop.Commands
 				padDescriptor.BringPadToFront();
 			}
 		}
-		class MyWpfMenuItem : System.Windows.Controls.MenuItem
+		class BringPadToFrontCommand : System.Windows.Input.ICommand
 		{
 			PadDescriptor padDescriptor;
 			
-			public MyWpfMenuItem(PadDescriptor padDescriptor)
+			public BringPadToFrontCommand(PadDescriptor padDescriptor)
 			{
 				this.padDescriptor = padDescriptor;
-				this.Header = ICSharpCode.Core.Presentation.MenuService.ConvertLabel(StringParser.Parse(padDescriptor.Title));
-				if (!string.IsNullOrEmpty(padDescriptor.Icon)) {
-					this.Icon = PresentationResourceService.GetImage(padDescriptor.Icon);
-				}
-				if (padDescriptor.Shortcut != null) {
-					this.InputGestureText = padDescriptor.Shortcut;
-				}
 			}
 			
-			protected override void OnClick()
+			public event EventHandler CanExecuteChanged { add {} remove {} }
+			
+			public void Execute(object parameter)
 			{
-				base.OnClick();
 				padDescriptor.BringPadToFront();
+			}
+			
+			public bool CanExecute(object parameter)
+			{
+				return true;
 			}
 		}
 		
@@ -522,7 +522,21 @@ namespace ICSharpCode.SharpDevelop.Commands
 			ArrayList list = new ArrayList();
 			foreach (PadDescriptor padContent in WorkbenchSingleton.Workbench.PadContentCollection) {
 				if (padContent.Category == Category) {
-					list.Add(new MyWpfMenuItem(padContent));
+					var item = new System.Windows.Controls.MenuItem();
+					item.Header = ICSharpCode.Core.Presentation.MenuService.ConvertLabel(StringParser.Parse(padContent.Title));
+					if (!string.IsNullOrEmpty(padContent.Icon)) {
+						item.Icon = PresentationResourceService.GetPixelSnappedImage(padContent.Icon);
+					}
+					item.Command = new BringPadToFrontCommand(padContent);
+					if (!string.IsNullOrEmpty(padContent.Shortcut)) {
+						var kg = Core.Presentation.MenuService.ParseShortcut(padContent.Shortcut);
+						WorkbenchSingleton.MainWindow.InputBindings.Add(
+							new System.Windows.Input.InputBinding(item.Command, kg)
+						);
+						item.InputGestureText = kg.GetDisplayStringForCulture(Thread.CurrentThread.CurrentUICulture);
+					}
+					
+					list.Add(item);
 				}
 			}
 			return list;

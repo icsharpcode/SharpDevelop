@@ -8,7 +8,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace ICSharpCode.Core.Presentation
 {
@@ -33,16 +35,16 @@ namespace ICSharpCode.Core.Presentation
 			return null;
 		}
 		
-		public static IList CreateMenuItems(object owner, string addInTreePath)
+		public static IList CreateMenuItems(UIElement inputBindingOwner, object owner, string addInTreePath)
 		{
-			return CreateMenuItems(AddInTree.BuildItems<MenuItemDescriptor>(addInTreePath, owner, false));
+			return CreateMenuItems(inputBindingOwner, AddInTree.BuildItems<MenuItemDescriptor>(addInTreePath, owner, false));
 		}
 		
-		internal static IList CreateMenuItems(IEnumerable descriptors)
+		internal static IList CreateMenuItems(UIElement inputBindingOwner, IEnumerable descriptors)
 		{
 			ArrayList result = new ArrayList();
 			foreach (MenuItemDescriptor descriptor in descriptors) {
-				object item = CreateMenuItemFromDescriptor(descriptor);
+				object item = CreateMenuItemFromDescriptor(inputBindingOwner, descriptor);
 				if (item is IMenuItemBuilder) {
 					IMenuItemBuilder submenuBuilder = (IMenuItemBuilder)item;
 					result.AddRange(submenuBuilder.BuildItems(descriptor.Codon, descriptor.Caller));
@@ -53,7 +55,7 @@ namespace ICSharpCode.Core.Presentation
 			return result;
 		}
 		
-		static object CreateMenuItemFromDescriptor(MenuItemDescriptor descriptor)
+		static object CreateMenuItemFromDescriptor(UIElement inputBindingOwner, MenuItemDescriptor descriptor)
 		{
 			Codon codon = descriptor.Codon;
 			string type = codon.Properties.Contains("type") ? codon.Properties["type"] : "Command";
@@ -67,10 +69,10 @@ namespace ICSharpCode.Core.Presentation
 					//return new MenuCheckBox(codon, descriptor.Caller);
 				case "Item":
 				case "Command":
-					return new MenuCommand(codon, descriptor.Caller, createCommand);
+					return new MenuCommand(inputBindingOwner, codon, descriptor.Caller, createCommand);
 				case "Menu":
 					return new CoreMenuItem(codon, descriptor.Caller) {
-						ItemsSource = CreateMenuItems(descriptor.SubItems)
+						ItemsSource = CreateMenuItems(inputBindingOwner, descriptor.SubItems)
 					};
 				case "Builder":
 					return codon.AddIn.CreateObject(codon.Properties["class"]);
@@ -86,5 +88,13 @@ namespace ICSharpCode.Core.Presentation
 		
 		// HACK: find a better way to allow the host app to process link commands
 		public static Converter<string, ICommand> LinkCommandCreator;
+		
+		/// <summary>
+		/// Creates an KeyGesture for a shortcut.
+		/// </summary>
+		public static KeyGesture ParseShortcut(string text)
+		{
+			return (KeyGesture)new KeyGestureConverter().ConvertFromInvariantString(text.Replace(',', '+').Replace('|', '+'));
+		}
 	}
 }

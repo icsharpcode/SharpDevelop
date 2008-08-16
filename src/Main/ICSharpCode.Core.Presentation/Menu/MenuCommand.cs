@@ -8,6 +8,7 @@
 using System;
 using System.Collections;
 using System.Diagnostics;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -72,7 +73,7 @@ namespace ICSharpCode.Core.Presentation
 				if (canExecuteChanged == null && value != null) {
 					//LoggingService.Debug("Attach CommandManager_RequerySuggested " + codon.Id);
 					if (requerySuggestedEventHandler == null)
-						requerySuggestedEventHandler = CommandManager_RequerySuggested;
+						requerySuggestedEventHandler = new EventHandler(CommandManager_RequerySuggested);
 					CommandManager.RequerySuggested += requerySuggestedEventHandler;
 				}
 				canExecuteChanged += value;
@@ -117,9 +118,16 @@ namespace ICSharpCode.Core.Presentation
 	
 	class MenuCommand : CoreMenuItem
 	{
-		public MenuCommand(Codon codon, object caller, bool createCommand) : base(codon, caller)
+		public MenuCommand(UIElement inputBindingOwner, Codon codon, object caller, bool createCommand) : base(codon, caller)
 		{
 			this.Command = new CommandWrapper(codon, caller, createCommand);
+			if (!string.IsNullOrEmpty(codon.Properties["shortcut"])) {
+				KeyGesture kg = MenuService.ParseShortcut(codon.Properties["shortcut"]);
+				inputBindingOwner.InputBindings.Add(
+					new InputBinding(this.Command, kg)
+				);
+				this.InputGestureText = kg.GetDisplayStringForCulture(Thread.CurrentThread.CurrentUICulture);
+			}
 		}
 	}
 }
