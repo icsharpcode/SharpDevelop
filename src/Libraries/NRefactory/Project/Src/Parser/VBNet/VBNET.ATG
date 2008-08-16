@@ -1594,8 +1594,9 @@ EventMemberSpecifier<out string name>
 .
 
 Expr<out Expression expr>
-=
-	DisjunctionExpr<out expr>
+	(. expr = null; .) =
+		DisjunctionExpr<out expr>
+	|  	LambdaExpr<out expr>
 .
 
 AssignmentOperator<out AssignmentOperatorType op>
@@ -1684,7 +1685,7 @@ SimpleNonInvocationExpression<out Expression pexpr>
 		|	/* 11.4.5 */ "AddressOf" Expr<out expr>			(. pexpr = new AddressOfExpression(expr); .)
 		|	/* 11.5.1 */ "GetType" "(" GetTypeTypeName<out type> ")"	(. pexpr = new TypeOfExpression(type); .)
 		|	/* 11.5.2 */ "TypeOf" SimpleExpr<out expr> "Is" TypeName<out type> (. pexpr = new TypeOfIsExpression(expr, type); .)
-		|   /* 11.22 */ IF (la.kind == Tokens.If) ConditionalExpression<out pexpr>
+		|   /* 11.22 */ ConditionalExpression<out pexpr>
 		)
 	|
 		/* this form only occurs in WithStatements*/
@@ -1979,6 +1980,24 @@ ObjectCreateExpression<out Expression oce>
 			}
 		.)
 	]
+.
+
+LambdaExpr<out Expression expr>
+	(.
+		Expression inner = null;
+		LambdaExpression lambda = new LambdaExpression();
+		lambda.StartLocation = la.Location;
+	.) =
+	
+	"Function"
+	[ "(" [ FormalParameterList<lambda.Parameters> ] ")" ]
+	Expr<out inner>
+	(.
+		lambda.ExpressionBody = inner;
+		lambda.EndLocation = t.EndLocation; // la.Location?
+		
+		expr = lambda;
+	.)
 .
 
 MemberInitializer<out NamedArgumentExpression memberInitializer>
@@ -2574,6 +2593,7 @@ EmbeddedStatement<out Statement statement>
 	| /* 10.11 */
 	"Stop" (. statement = new StopStatement(); .)
 	| /* 10.8.1 */
+	IF (la.kind == Tokens.If) 
 	"If" (. Location ifStartLocation = t.Location; .) Expr<out expr> [ "Then" ] 
 	(	
 		/* multiline if statement */

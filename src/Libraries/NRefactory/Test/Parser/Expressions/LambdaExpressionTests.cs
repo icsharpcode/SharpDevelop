@@ -16,7 +16,9 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 	[TestFixture]
 	public class LambdaExpressionTests
 	{
-		static LambdaExpression Parse(string program)
+		#region C#
+		
+		static LambdaExpression ParseCSharp(string program)
 		{
 			return ParseUtilCSharp.ParseExpression<LambdaExpression>(program);
 		}
@@ -24,7 +26,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		[Test]
 		public void ImplicitlyTypedExpressionBody()
 		{
-			LambdaExpression e = Parse("(x) => x + 1");
+			LambdaExpression e = ParseCSharp("(x) => x + 1");
 			Assert.AreEqual("x", e.Parameters[0].ParameterName);
 			Assert.IsTrue(e.Parameters[0].TypeReference.IsNull);
 			Assert.IsTrue(e.ExpressionBody is BinaryOperatorExpression);
@@ -33,7 +35,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		[Test]
 		public void ImplicitlyTypedExpressionBodyWithoutParenthesis()
 		{
-			LambdaExpression e = Parse("x => x + 1");
+			LambdaExpression e = ParseCSharp("x => x + 1");
 			Assert.AreEqual("x", e.Parameters[0].ParameterName);
 			Assert.IsTrue(e.Parameters[0].TypeReference.IsNull);
 			Assert.IsTrue(e.ExpressionBody is BinaryOperatorExpression);
@@ -42,7 +44,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		[Test]
 		public void ImplicitlyTypedStatementBody()
 		{
-			LambdaExpression e = Parse("(x) => { return x + 1; }");
+			LambdaExpression e = ParseCSharp("(x) => { return x + 1; }");
 			Assert.AreEqual("x", e.Parameters[0].ParameterName);
 			Assert.IsTrue(e.Parameters[0].TypeReference.IsNull);
 			Assert.IsTrue(e.StatementBody.Children[0] is ReturnStatement);
@@ -51,7 +53,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		[Test]
 		public void ImplicitlyTypedStatementBodyWithoutParenthesis()
 		{
-			LambdaExpression e = Parse("x => { return x + 1; }");
+			LambdaExpression e = ParseCSharp("x => { return x + 1; }");
 			Assert.AreEqual("x", e.Parameters[0].ParameterName);
 			Assert.IsTrue(e.Parameters[0].TypeReference.IsNull);
 			Assert.IsTrue(e.StatementBody.Children[0] is ReturnStatement);
@@ -60,7 +62,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		[Test]
 		public void ExplicitlyTypedStatementBody()
 		{
-			LambdaExpression e = Parse("(int x) => { return x + 1; }");
+			LambdaExpression e = ParseCSharp("(int x) => { return x + 1; }");
 			Assert.AreEqual("x", e.Parameters[0].ParameterName);
 			Assert.AreEqual("int", e.Parameters[0].TypeReference.Type);
 			Assert.IsTrue(e.StatementBody.Children[0] is ReturnStatement);
@@ -69,9 +71,46 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		[Test]
 		public void LambdaExpressionContainingConditionalExpression()
 		{
-			LambdaExpression e = Parse("rr => rr != null ? rr.ResolvedType : null");
+			LambdaExpression e = ParseCSharp("rr => rr != null ? rr.ResolvedType : null");
 			Assert.AreEqual("rr", e.Parameters[0].ParameterName);
 			Assert.IsTrue(e.ExpressionBody is ConditionalExpression);
 		}
+		
+		#endregion
+		
+		#region VB.NET
+		
+		static LambdaExpression ParseVBNet(string program)
+		{
+			return ParseUtilVBNet.ParseExpression<LambdaExpression>(program);
+		}
+		
+		[Test]
+		public void VBNetLambdaWithParameters()
+		{
+			LambdaExpression e = ParseVBNet("Function(x As Boolean) x Or True");
+			Assert.AreEqual(1, e.Parameters.Count);
+			Assert.AreEqual("x", e.Parameters[0].ParameterName);
+			Assert.AreEqual("Boolean", e.Parameters[0].TypeReference.Type);
+			Assert.IsTrue(e.ExpressionBody is BinaryOperatorExpression);
+		}
+
+		[Test]
+		public void VBNetLambdaWithoutParameters()
+		{
+			LambdaExpression e = ParseVBNet("Function x Or True");
+			Assert.AreEqual(0, e.Parameters.Count);
+			Assert.IsTrue(e.ExpressionBody is BinaryOperatorExpression);
+		}
+		
+		[Test]
+		public void VBNetNestedLambda()
+		{
+			LambdaExpression e = ParseVBNet("Function(x As Boolean) Function(y As Boolean) x And y");
+			Assert.AreEqual(1, e.Parameters.Count);
+			Assert.IsTrue(e.ExpressionBody is LambdaExpression);
+		}
+		
+		#endregion
 	}
 }
