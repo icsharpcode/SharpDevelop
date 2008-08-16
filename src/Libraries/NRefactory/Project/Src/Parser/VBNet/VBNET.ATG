@@ -1646,6 +1646,9 @@ SimpleNonInvocationExpression<out Expression pexpr>
 		|	/* 11.4.4 */ Identifier
 				(. pexpr = new IdentifierExpression(t.val); .)
 				(. pexpr.StartLocation = t.Location; pexpr.EndLocation = t.EndLocation; .)
+				[ IF (la.kind == Tokens.OpenParenthesis && Peek(1).kind == Tokens.Of)
+					"(" "Of" TypeArgumentList<((IdentifierExpression)pexpr).TypeArguments> ")"
+				]
 		|	(. string val = String.Empty; .)
 			( PrimitiveTypeName<out val> | "Object" (. val = "Object"; .) )
 			"." (. t.val = ""; .) Identifier (. pexpr = new MemberReferenceExpression(new TypeReferenceExpression(val), t.val); .)

@@ -49,6 +49,7 @@
     <Compile Include="Lexer\CSharp\PreprocessingTests.cs" />
     <Compile Include="Lexer\VBNet\CustomLexerTests.cs" />
     <Compile Include="Parser\CheckParentVisitor.cs" />
+    <Compile Include="Parser\Expressions\AddressOfExpressionTests.cs" />
     <Compile Include="Parser\Expressions\LambdaExpressionTests.cs" />
     <Compile Include="Parser\Expressions\QueryExpressionTests.cs" />
     <Compile Include="Output\SnippetConversion.cs" />
