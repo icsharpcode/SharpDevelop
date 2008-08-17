@@ -84,7 +84,6 @@
     <Compile Include="Src\Services\FileUtility\FileNameEventHandler.cs" />
     <Compile Include="Src\Services\FileUtility\FileUtility.cs" />
     <Compile Include="Src\Services\FileUtility\FileUtility.Minimal.cs" />
-    <Compile Include="Src\Services\IService.cs" />
     <Compile Include="Src\Services\LoggingService\TextWriterLoggingService.cs" />
     <Compile Include="Src\Services\LoggingService\ILoggingService.cs" />
     <Compile Include="Src\Services\MessageService\TextWriterMessageService.cs" />
