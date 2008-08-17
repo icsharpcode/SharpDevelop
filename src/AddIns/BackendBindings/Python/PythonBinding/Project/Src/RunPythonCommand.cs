@@ -100,8 +100,7 @@ namespace ICSharpCode.PythonBinding
 		static MessageViewCategory PythonMessageViewCategory {
 			get {
 				if (categorySingleton == null) {
-					categorySingleton = new MessageViewCategory("Python");
-					CompilerMessageView.Instance.AddCategory(categorySingleton);
+					MessageViewCategory.Create(ref categorySingleton, "Python");
 				}
 				return categorySingleton;
 			}

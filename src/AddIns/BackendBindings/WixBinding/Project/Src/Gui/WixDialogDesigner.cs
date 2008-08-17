@@ -303,7 +303,7 @@ namespace ICSharpCode.WixBinding
 		
 		public static SharpDevelopSideBar SetupDialogControlsToolBox {
 			get {
-				Debug.Assert(WorkbenchSingleton.InvokeRequired == false);
+				WorkbenchSingleton.AssertMainThread();
 				if (setupDialogControlsToolBox == null) {
 					setupDialogControlsToolBox = new SharpDevelopSideBar();
 					setupDialogControlsToolBox.Tabs.Add(SetupDialogControlsSideTab.CreateSideTab());

@@ -87,8 +87,7 @@ namespace ICSharpCode.UnitTesting
 		public static MessageViewCategory TestRunnerCategory {
 			get {
 				if (testRunnerCategory == null) {
-					testRunnerCategory = new MessageViewCategory("${res:ICSharpCode.NUnitPad.NUnitPadContent.PadName}");
-					CompilerMessageView.Instance.AddCategory(testRunnerCategory);
+					MessageViewCategory.Create(ref testRunnerCategory, "UnitTesting", "${res:ICSharpCode.NUnitPad.NUnitPadContent.PadName}");
 				}
 				return testRunnerCategory;
 			}

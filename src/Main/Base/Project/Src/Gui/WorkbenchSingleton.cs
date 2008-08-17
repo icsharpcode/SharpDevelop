@@ -206,7 +206,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// <summary>
 		/// Throws an exception if the current thread is not the main thread.
 		/// </summary>
-		internal static void AssertMainThread()
+		public static void AssertMainThread()
 		{
 			if (InvokeRequired) {
 				throw new InvalidOperationException("This operation can be called on the main thread only.");

@@ -804,9 +804,7 @@ namespace ICSharpCode.XmlEditor
 		MessageViewCategory Category {
 			get {
 				if (category == null) {
-					category = new MessageViewCategory(CategoryName);
-					CompilerMessageView cmv = (CompilerMessageView)WorkbenchSingleton.Workbench.GetPad(typeof(CompilerMessageView)).PadContent;
-					cmv.AddCategory(category);
+					MessageViewCategory.Create(ref category, CategoryName);
 				}
 				
 				return category;
