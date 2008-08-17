@@ -15,7 +15,7 @@ namespace MattEverson.SourceAnalysis
 {
 	public static class StyleCopWrapper
 	{		
-	    public static readonly string MasterSettingsFileName = Path.Combine(PropertyService.ConfigDirectory, @"\Settings.SourceAnalysis");
+	    public static readonly string MasterSettingsFileName = Path.Combine(PropertyService.ConfigDirectory, @"Settings.SourceAnalysis");
 	    
 		public static bool IsStyleCopPath(string styleCopPath)
 		{
