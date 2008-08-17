@@ -12,7 +12,7 @@
 		Manufacturer="ic#code"
 		Language="1033"
 		Codepage="1252"
-		UpgradeCode="757486BE-1F27-4BED-9A3B-737906728F1C"
+		UpgradeCode="D6355909-87E1-4CC7-81EF-3057D540A103"
 		Version="4.0.$(var.PRODUCTBUILDVERSION)">
 
 		<Package Description="SharpDevelop 4.0.0.$(var.PRODUCTBUILDVERSION)"
@@ -20,7 +20,7 @@
 			Compressed="yes"/>
 		
 		<!-- Upgrade information -->
-		<Upgrade Id="757486BE-1F27-4BED-9A3B-737906728F1C">
+		<Upgrade Id="D6355909-87E1-4CC7-81EF-3057D540A103">
 			<!-- The UpgradeCode must be changed to allow two versions of SharpDevelop to be installed side-by-side -->
 			
 			<!-- Checks for older versions -->
@@ -42,12 +42,12 @@
 			so they never block the user from repairing, patching, or 
 			uninstalling the package after it has been installed. 
 
-			For example the user could do something odd like uninstall .NET 3.0
+			For example the user could do something odd like uninstall .NET 3.5
  			and then run the msi to uninstall SharpDevelop. Without the 
 			"Installed OR" this would not be allowed.
 		-->
 		<!--
-			Check for .NET 3.0 
+			Check for .NET 3.5 
 			http://msdn2.microsoft.com/en-us/library/aa480198.aspx#netfx30_topic14
 		-->
 		<PropertyRef Id="NETFRAMEWORK35" />
@@ -66,15 +66,6 @@
 		<!--
 			Check the user has elevated permissions. We need admin rights to NGen 
 			SharpDevelop.exe and to register the Help collection. 
-
-			At the moment we do not need admin rights since the installer only tries
-			to NGen if we have admin rights. So as long
-			as the user does not try to install it into Program Files then the
-			install will finish successfully. 
-
-			In order to get the NGen conditionally executed when the user has admin
-			rights we had to use a custom version of Wix's NetFxExtension.wxs file
-			where the custom actions conditions have been altered.
 
 			The old Setup.exe displays a RunAs dialog only because when it is named 
 			"Setup.exe". So do we display an error message or let the installation
