@@ -4,7 +4,7 @@
        description = "Can open Lutz Roeder's .NET Reflector on a selected class or member.">
 	
 	<Manifest>
-		<Identity name="ReflectorAddIn" version="@ReflectorAddIn.dll" />
+		<Identity name="ReflectorAddIn" />
 	</Manifest>
 	
 	<Runtime>

@@ -4,8 +4,7 @@
        description = "Hexadecimal Editor DisplayBinding">
 	
 	<Manifest>
-		<Identity name="SiegfriedPammer.HexEditor" version="0.0.2" />
-		<Dependency addin="SharpDevelop" version="3.0"/>
+		<Identity name="SiegfriedPammer.HexEditor" />
 	</Manifest>
 	
 	<Runtime>

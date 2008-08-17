@@ -8,8 +8,7 @@
 	</Runtime>
 	
 	<Manifest>
-		<Identity name="WorkflowDesigner" version="@WorkflowDesigner.dll"/>
-		<Dependency addin="SharpDevelop" version="3.0"/>
+		<Identity name="WorkflowDesigner"/>
 	</Manifest>
 
 	
