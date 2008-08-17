@@ -9,6 +9,8 @@ using System;
 using System.IO;
 using System.Reflection;
 using System.Text;
+using PumaCode.SvnDotNet.AprSharp;
+using PumaCode.SvnDotNet.SubversionSharp;
 
 namespace UpdateSetupInfo
 {
@@ -113,15 +115,11 @@ namespace UpdateSetupInfo
 		}
 		
 		bool SetupUserFileExists {
-			get {
-				return File.Exists(setupProjectUserFullFileName);
-			}
+			get { return File.Exists(setupProjectUserFullFileName); }
 		}
 		
 		bool SetupTemplateFileExists {
-			get {
-				return File.Exists(setupTemplateFullFileName);
-			}
+			get { return File.Exists(setupTemplateFullFileName); }
 		}
 		
 		string ReadSetupTemplate() {
@@ -160,24 +158,19 @@ namespace UpdateSetupInfo
 			try {
 				// Set working directory so msvcp70.dll and msvcr70.dll can be found
 				Environment.CurrentDirectory = Path.Combine(applicationFolder, @"..\..\..\AddIns\Misc\SubversionAddIn\RequiredLibraries");
-				Assembly asm = Assembly.LoadFrom(Path.Combine(Environment.CurrentDirectory, "NSvn.Core.dll"));
-				Type clientType = asm.GetType("NSvn.Core.Client");
-				object clientInstance = Activator.CreateInstance(clientType);
-				object statusInstance = clientType.InvokeMember("SingleStatus",
-				                                                BindingFlags.Instance | BindingFlags.InvokeMethod | BindingFlags.Public,
-				                                                null, clientInstance,
-				                                                new object[] { oldWorkingDir });
-				Type statusType = statusInstance.GetType();
-				object entryInstance = statusType.InvokeMember("Entry",
-				                                               BindingFlags.Instance | BindingFlags.GetProperty | BindingFlags.Public,
-				                                               null, statusInstance, new object[0]);
-				Type entryType = entryInstance.GetType();
-				int revision = (int)entryType.InvokeMember("Revision",
-				                                           BindingFlags.Instance | BindingFlags.GetProperty | BindingFlags.Public,
-				                                           null, entryInstance, new object[0]);
-				revisionNumber = revision.ToString();
+				SvnClient client = new SvnClient();
+				try {
+					client.Info(oldWorkingDir, new SvnRevision(Svn.Revision.Unspecified), new SvnRevision(Svn.Revision.Unspecified),
+					            delegate(IntPtr baton, SvnPath path, SvnInfo info, AprPool pool) {
+					            	revisionNumber = info.Rev.ToString();
+					            	return SvnError.NoError;
+					            },
+					            IntPtr.Zero, false);
+				} finally {
+					client.Clear();
+				}
 			} catch (Exception e) {
-				Console.WriteLine("Reading revision number with NSvn failed: " + e.ToString());
+				Console.WriteLine("Reading revision number with Svn.Net failed: " + e.ToString());
 			} finally {
 				Environment.CurrentDirectory = oldWorkingDir;
 			}

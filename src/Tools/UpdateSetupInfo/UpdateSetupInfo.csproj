@@ -36,6 +36,12 @@
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AprSharp">
+      <HintPath>..\..\AddIns\Misc\SubversionAddIn\RequiredLibraries\AprSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="SubversionSharp">
+      <HintPath>..\..\AddIns\Misc\SubversionAddIn\RequiredLibraries\SubversionSharp.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
