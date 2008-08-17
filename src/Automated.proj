@@ -11,7 +11,7 @@
 		<SharpDevelopSrc>$(ProjectDir)\src</SharpDevelopSrc>
 		<SharpDevelopBin>$(ProjectDir)\bin</SharpDevelopBin>
 		<MSBuildCommunityTasksPath>$(MSBuildProjectDirectory)\Tools\MSBuildCommunityTasks</MSBuildCommunityTasksPath>
-		<ArtefactPrefix>SharpDevelop_3.0.0.</ArtefactPrefix>
+		<ArtefactPrefix>SharpDevelop_4.0.0.</ArtefactPrefix>
 		<NUnitToolPath>$(MSBuildProjectDirectory)\Tools\NUnit</NUnitToolPath>
 		
 		<!-- we cannot use <MSBuild> to build a solution because -->
