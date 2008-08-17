@@ -29,6 +29,7 @@ namespace ICSharpCode.Svn.Commands
 		{
 			FileService.FileRemoving += FileRemoving;
 			FileService.FileRenaming += FileRenaming;
+			FileService.FileCopying += FileCopying;
 			FileService.FileCreated += FileCreated;
 			
 			ProjectService.SolutionCreated += SolutionCreated;
@@ -192,7 +193,9 @@ namespace ICSharpCode.Svn.Commands
 					switch (status.TextStatus) {
 						case StatusKind.Unversioned:
 						case StatusKind.Deleted:
-							client.Add(fullName, Recurse.None);
+							using (SharpDevelop.Gui.AsynchronousWaitDialog.ShowWaitDialog("svn add")) {
+								client.Add(fullName, Recurse.None);
+							}
 							break;
 					}
 				}
@@ -298,11 +301,48 @@ namespace ICSharpCode.Svn.Commands
 							e.Cancel = true;
 							return;
 					}
+					e.OperationAlreadyDone = true;
 					client.Delete(new string [] { fullName }, true);
 				}
-				e.OperationAlreadyDone = true;
 			} catch (Exception ex) {
 				MessageService.ShowError("File removed exception: " + ex);
+			}
+		}
+		
+		void FileCopying(object sender, FileRenamingEventArgs e)
+		{
+			if (e.Cancel) return;
+			if (!AddInOptions.AutomaticallyRenameFiles) return;
+			string fullSource = Path.GetFullPath(e.SourceFile);
+			if (!CanBeVersionControlledFile(fullSource)) return;
+			try {
+				using (SvnClientWrapper client = new SvnClientWrapper()) {
+					SvnMessageView.HandleNotifications(client);
+					
+					Status status = client.SingleStatus(fullSource);
+					switch (status.TextStatus) {
+						case StatusKind.Unversioned:
+						case StatusKind.None:
+							return; // nothing to do
+						case StatusKind.Normal:
+						case StatusKind.Modified:
+						case StatusKind.Replaced:
+						case StatusKind.Added:
+							// copy without problem
+							break;
+						default:
+							MessageService.ShowError("The file/directory cannot be copied because it is in subversion status '" + status.TextStatus + "'.");
+							e.Cancel = true;
+							return;
+					}
+					e.OperationAlreadyDone = true;
+					client.Copy(fullSource,
+					            Revision.Working,
+					            Path.GetFullPath(e.TargetFile)
+					           );
+				}
+			} catch (Exception ex) {
+				MessageService.ShowError("File renamed exception: " + ex);
 			}
 		}
 		
@@ -332,12 +372,12 @@ namespace ICSharpCode.Svn.Commands
 							e.Cancel = true;
 							return;
 					}
+					e.OperationAlreadyDone = true;
 					client.Move(fullSource,
 					            Path.GetFullPath(e.TargetFile),
 					            true
 					           );
 				}
-				e.OperationAlreadyDone = true;
 			} catch (Exception ex) {
 				MessageService.ShowError("File renamed exception: " + ex);
 			}

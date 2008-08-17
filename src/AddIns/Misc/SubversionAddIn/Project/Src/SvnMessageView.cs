@@ -40,6 +40,17 @@ namespace ICSharpCode.Svn
 			client.Notify += delegate(object sender, NotificationEventArgs e) {
 				AppendLine(e.Kind + e.Action + " " + e.Path);
 			};
+			AsynchronousWaitDialog waitDialog = null;
+			client.OperationStarted += delegate(object sender, SubversionOperationEventArgs e) {
+				if (waitDialog != null)
+					waitDialog = AsynchronousWaitDialog.ShowWaitDialog("svn " + e.Operation);
+			};
+			client.OperationFinished += delegate {
+				if (waitDialog != null) {
+					waitDialog.Dispose();
+					waitDialog = null;
+				}
+			};
 		}
 	}
 }

@@ -266,6 +266,8 @@ namespace ICSharpCode.Svn
 		#endregion
 		
 		#region Notifications
+		public event EventHandler<SubversionOperationEventArgs> OperationStarted;
+		public event EventHandler OperationFinished;
 		public event EventHandler<NotificationEventArgs> Notify;
 		
 		void OnNotify(IntPtr baton, SvnWcNotify notify, AprPool pool)
@@ -292,18 +294,22 @@ namespace ICSharpCode.Svn
 				throw new ObjectDisposedException("SvnClientWrapper");
 		}
 		
-		void BeforeOperation()
+		void BeforeOperation(string operationName)
 		{
 			// before any subversion operation, ensure the object is not disposed
 			// and register authorization if necessary
 			CheckNotDisposed();
 			OpenAuth();
+			if (OperationStarted != null)
+				OperationStarted(this, new SubversionOperationEventArgs { Operation = operationName });
 		}
 		
 		void AfterOperation()
 		{
 			// after any subversion operation, clear the memory pool
 			client.Clear();
+			if (OperationFinished != null)
+				OperationFinished(this, EventArgs.Empty);
 		}
 		
 		public void ClearStatusCache()
@@ -315,7 +321,7 @@ namespace ICSharpCode.Svn
 		public Status SingleStatus(string filename)
 		{
 			Debug("SVN: SingleStatus(" + filename + ")");
-			BeforeOperation();
+			BeforeOperation("stat");
 			try {
 				filename = FileUtility.NormalizePath(filename);
 				Status result;
@@ -357,7 +363,7 @@ namespace ICSharpCode.Svn
 		public void Add(string filename, Recurse recurse)
 		{
 			Debug("SVN: Add(" + filename + ", " + recurse + ")");
-			BeforeOperation();
+			BeforeOperation("add");
 			try {
 				client.Add3(filename, recurse == Recurse.Full, false, false);
 			} catch (SvnException ex) {
@@ -370,7 +376,7 @@ namespace ICSharpCode.Svn
 		public string GetPropertyValue(string fileName, string propertyName)
 		{
 			Debug("SVN: GetPropertyValue(" + fileName + ", " + propertyName + ")");
-			BeforeOperation();
+			BeforeOperation("propget");
 			try {
 				AprHash hash = client.PropGet2(propertyName, fileName,
 				                               Svn.Revision.Working, Svn.Revision.Working,
@@ -393,7 +399,7 @@ namespace ICSharpCode.Svn
 		public void SetPropertyValue(string fileName, string propertyName, string newPropertyValue)
 		{
 			Debug("SVN: SetPropertyValue(" + fileName + ", " + propertyName + ", " + newPropertyValue + ")");
-			BeforeOperation();
+			BeforeOperation("propset");
 			try {
 				SvnString npv;
 				if (newPropertyValue != null)
@@ -420,7 +426,7 @@ namespace ICSharpCode.Svn
 		public void Delete(string[] files, bool force)
 		{
 			Debug("SVN: Delete(" + string.Join(",", files) + ", " + force + ")");
-			BeforeOperation();
+			BeforeOperation("delete");
 			try {
 				client.Delete2(ToSvnPaths(files), force);
 			} catch (SvnException ex) {
@@ -433,7 +439,7 @@ namespace ICSharpCode.Svn
 		public void Revert(string[] files, Recurse recurse)
 		{
 			Debug("SVN: Revert(" + string.Join(",", files) + ", " + recurse + ")");
-			BeforeOperation();
+			BeforeOperation("revert");
 			try {
 				client.Revert(ToSvnPaths(files), recurse == Recurse.Full);
 			} catch (SvnException ex) {
@@ -446,9 +452,22 @@ namespace ICSharpCode.Svn
 		public void Move(string from, string to, bool force)
 		{
 			Debug("SVN: Move(" + from + ", " + to + ", " + force + ")");
-			BeforeOperation();
+			BeforeOperation("move");
 			try {
 				client.Move3(from, to, force);
+			} catch (SvnException ex) {
+				throw new SvnClientException(ex);
+			} finally {
+				AfterOperation();
+			}
+		}
+		
+		public void Copy(string from, Revision revision, string to)
+		{
+			Debug("SVN: Copy(" + from + ", " + revision + ", " + to);
+			BeforeOperation("copy");
+			try {
+				client.Copy2(from, revision, to);
 			} catch (SvnException ex) {
 				throw new SvnClientException(ex);
 			} finally {
@@ -482,7 +501,7 @@ namespace ICSharpCode.Svn
 		{
 			Debug("SVN: Log({" + string.Join(",", paths) + "}, " + start + ", " + end +
 			      ", " + limit + ", " + discoverChangePaths + ", " + strictNodeHistory + ")");
-			BeforeOperation();
+			BeforeOperation("log");
 			try {
 				client.Log2(
 					ToSvnPaths(paths),
@@ -562,6 +581,11 @@ namespace ICSharpCode.Svn
 		public string Action;
 		public string Kind;
 		public string Path;
+	}
+	
+	public class SubversionOperationEventArgs : EventArgs
+	{
+		public string Operation;
 	}
 	
 	public class LogMessage
