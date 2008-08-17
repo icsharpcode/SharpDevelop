@@ -375,4 +375,16 @@ namespace ICSharpCode.NRefactory.Ast
 		Ascending,
 		Descending
 	}
+	
+	/// <summary>
+	/// Specifies the partition type for a VB.NET
+	/// query expression.
+	/// </summary>
+	public enum QueryExpressionPartitionType
+	{
+		Take,
+		TakeWhile,
+		Skip,
+		SkipWhile
+	}
 }
