@@ -42,8 +42,12 @@ namespace ICSharpCode.Svn
 			};
 			AsynchronousWaitDialog waitDialog = null;
 			client.OperationStarted += delegate(object sender, SubversionOperationEventArgs e) {
-				if (waitDialog != null)
+				if (waitDialog == null) {
 					waitDialog = AsynchronousWaitDialog.ShowWaitDialog("svn " + e.Operation);
+//					waitDialog.Cancelled += delegate {
+//						client.Cancel();
+//					};
+				}
 			};
 			client.OperationFinished += delegate {
 				if (waitDialog != null) {

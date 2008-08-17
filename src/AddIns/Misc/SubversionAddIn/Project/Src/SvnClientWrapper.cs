@@ -131,6 +131,24 @@ namespace ICSharpCode.Svn
 		}
 		#endregion
 		
+		#region Cancel support
+		bool cancel;
+		
+		public void Cancel()
+		{
+			cancel = true;
+		}
+		
+		SvnError OnCancel(IntPtr baton)
+		{
+			// TODO: lookup correct error number
+			if (cancel)
+				return SvnError.Create(1, SvnError.NoError, "User cancelled.");
+			else
+				return SvnError.NoError;
+		}
+		#endregion
+		
 		AprPoolHandle memoryPool;
 		SvnClient client;
 		Dictionary<string, Status> statusCache = new Dictionary<string, Status>(StringComparer.InvariantCultureIgnoreCase);
@@ -142,6 +160,7 @@ namespace ICSharpCode.Svn
 			memoryPool = new AprPoolHandle();
 			client = new SvnClient(memoryPool.Pool);
 			client.Context.NotifyFunc2 = new SvnDelegate(new SvnWcNotify.Func2(OnNotify));
+			client.Context.CancelFunc = new SvnDelegate(new SvnClient.CancelFunc(OnCancel));
 		}
 		
 		public void Dispose()
@@ -300,6 +319,7 @@ namespace ICSharpCode.Svn
 			// and register authorization if necessary
 			CheckNotDisposed();
 			OpenAuth();
+			cancel = false;
 			if (OperationStarted != null)
 				OperationStarted(this, new SubversionOperationEventArgs { Operation = operationName });
 		}

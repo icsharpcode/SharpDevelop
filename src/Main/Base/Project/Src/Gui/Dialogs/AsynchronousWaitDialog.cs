@@ -106,6 +106,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void Run()
 		{
 			Thread.Sleep(ShowWaitDialogDelay);
+			bool isShowingDialog;
 			lock (lockObject) {
 				if (disposed)
 					return;
@@ -115,8 +116,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 				UpdateTask();
 				dlg.CreateControl();
 				IntPtr h = dlg.Handle; // force handle creation
+				isShowingDialog = showingDialog;
 			}
-			if (showingDialog) {
+			if (isShowingDialog) {
 				Application.Run();
 			} else {
 				Application.Run(dlg);
@@ -250,8 +252,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			get { return showingDialog; }
 			set {
 				if (showingDialog != value) {
-					showingDialog = value;
 					lock (lockObject) {
+						showingDialog = value;
 						if (dlg != null && disposed == false) {
 							if (value) {
 								dlg.BeginInvoke(new MethodInvoker(dlg.Hide));
