@@ -25,6 +25,15 @@ namespace XmlEditor.Tests.Parser
 		string namespaceURI = "http://foo.com/foo.xsd";
 		
 		[Test]
+		public void EmptyDocumentTest()
+		{
+			elementPath = XmlParser.GetActiveElementStartPathAtIndex("", 0);
+			expectedElementPath = new XmlElementPath();
+			Assert.IsTrue(elementPath.Equals(expectedElementPath), 
+			              "Incorrect active element path.");
+		}
+		
+		[Test]
 		public void PathTest1()
 		{
 			string text = "<foo xmlns='" + namespaceURI + "'><bar ";
