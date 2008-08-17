@@ -143,7 +143,7 @@ namespace ICSharpCode.SharpDevelop.Sda
 					PropertyService.Save();
 				} catch (Exception ex) {
 					LoggingService.Warn("Exception during unloading", ex);
-					if (exception != null) {
+					if (exception == null) {
 						exception = ex;
 					}
 				}
