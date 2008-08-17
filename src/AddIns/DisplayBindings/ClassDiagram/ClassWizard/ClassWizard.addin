@@ -5,8 +5,7 @@
        description = "Visually add new classes to the project.">
 	
 	<Manifest>
-		<Identity name="ClassWizard" version="@ClassWizard.dll"/>
-		<Dependency addin="SharpDevelop" version="3.0"/>
+		<Identity name="ClassWizard" />
 	</Manifest>
 	
 	<Runtime>

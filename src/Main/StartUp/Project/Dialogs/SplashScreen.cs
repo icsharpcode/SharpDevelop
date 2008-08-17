@@ -14,7 +14,7 @@ namespace ICSharpCode.SharpDevelop
 {
 	public class SplashScreenForm : Form
 	{
-		public const string VersionText = "Montferrer (3.0) build " + RevisionClass.Revision;
+		public const string VersionText = "SharpDevelop 3.0.0." + RevisionClass.Revision;
 		
 		static SplashScreenForm splashScreen;
 		static List<string> requestedFileList = new List<string>();

@@ -5,8 +5,7 @@
        description = "Shows a visual class diagram of the project.">
 	
 	<Manifest>
-		<Identity name="ClassDiagram" version="@ClassDiagramAddin.dll"/>
-		<Dependency addin="SharpDevelop" version="3.0"/>
+		<Identity name="ClassDiagram" />
 	</Manifest>
 	
 	<Runtime>

@@ -346,7 +346,6 @@
 				<ComponentRef Id="IconEditorAddInFiles"/>
 				<ComponentRef Id="IconEditorExe"/>
 				<ComponentRef Id="ResourceEditorFiles"/>
-				<ComponentRef Id="SettingsEditorFiles"/>
 				<ComponentRef Id="ClassDiagramResources"/>
 				<ComponentRef Id="ClassDiagramAddInFiles"/>
 				<ComponentRef Id="ClassCanvasDll"/>
@@ -354,12 +353,6 @@
 				<ComponentRef Id="DiagramsDll"/>
 				<ComponentRef Id="XamlBindingFiles"/>
 				<ComponentRef Id="WpfDesignFiles"/>
-				
-				<ComponentRef Id="WorkflowDesignerAddin"/>
-				<ComponentRef Id="WorkflowDesignerDll"/>
-				<ComponentRef Id="WorkflowDesignerCSharpFilesTemplates"/>
-				<ComponentRef Id="WorkflowDesignerCSharpProjectTemplates"/>
-				<ComponentRef Id="NoCodeSequentialWorkflowXft"/>
 				
 				<ComponentRef Id="XmlEditorFiles"/>
 				<ComponentRef Id="AddInManagerFiles"/>
