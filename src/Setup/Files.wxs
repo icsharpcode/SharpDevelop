@@ -5,7 +5,7 @@
 			<!-- SharpDevelop installation directory and files -->
 			<Directory Id="ProgramFilesFolder" Name="PFiles">
 				<Directory Id="SharpDevelopFolder" Name="SharpDevelop">
-					<Directory Id="INSTALLDIR" Name="3.0">
+					<Directory Id="INSTALLDIR" Name="4.0">
 						<Directory Id="BinFolder" Name="bin">
 							<Component Id="SharpDevelopExe" Guid="F632C62C-A4DD-4507-9678-C7DCFF4DBC8C" DiskId="1">
 								<File Id="SharpDevelop.exe" Name="SharpDevelop.exe" Source="..\..\bin\SharpDevelop.exe" Assembly=".net" AssemblyApplication="SharpDevelop.exe" AssemblyManifest="SharpDevelop.exe" KeyPath="yes">
@@ -1651,7 +1651,7 @@
 			</Directory>
 			<!-- SharpDevelop Start menu folder -->
 			<Directory Id="ProgramMenuFolder" Name="Programs">
-				<Directory Id="SharpDevelopProgramMenuFolder" Name="SharpDevelop 3.0">
+				<Directory Id="SharpDevelopProgramMenuFolder" Name="SharpDevelop 4.0">
 					<Component Id="SharpDevelopProgramMenuItems" Guid="AB3D8418-BD70-4EB8-8659-8ED3CEC83FEC">
 						<!--
 							Fix ICE 38 by adding a dummy registry key that is the key for this shortcut.
@@ -1676,7 +1676,7 @@
 						http://msdn.microsoft.com/library/en-us/msi/setup/ice38.asp
 					-->
 					<RegistryValue Id="SharpDevelopExeDesktopShortcutRegistryKey" Type="string" Root="HKCU" KeyPath="yes" Key="Software\SharpDevelop3" Name="DesktopShortcut" Value="1" />
-					<Shortcut Id="SharpDevelopExeDesktopShortcut" Directory="DesktopFolder" Target="[!SharpDevelop.exe]" Name="SharpDevelop 3.0" Icon="SharpDevelopIcon.exe" WorkingDirectory="BinFolder" />
+					<Shortcut Id="SharpDevelopExeDesktopShortcut" Directory="DesktopFolder" Target="[!SharpDevelop.exe]" Name="SharpDevelop 4.0" Icon="SharpDevelopIcon.exe" WorkingDirectory="BinFolder" />
 				</Component>
 			</Directory>
 		</DirectoryRef>
