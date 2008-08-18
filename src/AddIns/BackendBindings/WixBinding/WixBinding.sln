@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-# SharpDevelop 3.0.0.3122
+# SharpDevelop 3.0.0.3280
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WixBinding", "Project\WixBinding.csproj", "{e1b288a2-08ee-4318-8bbb-8ab72c69e33e}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WixBinding.Tests", "Test\WixBinding.Tests.csproj", "{388E7B64-0393-4EB4-A3E3-5C474F141853}"
@@ -56,10 +56,6 @@ Global
 		{2748AD25-9C63-4E12-877B-4DCE96FBED54}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2748AD25-9C63-4E12-877B-4DCE96FBED54}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2748AD25-9C63-4E12-877B-4DCE96FBED54}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F6A02431-167E-4347-BC43-65532C31CDB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F6A02431-167E-4347-BC43-65532C31CDB7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F6A02431-167E-4347-BC43-65532C31CDB7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F6A02431-167E-4347-BC43-65532C31CDB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D}.Release|Any CPU.Build.0 = Release|Any CPU
@@ -68,10 +64,6 @@ Global
 		{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0A386EC6-40E1-4C5A-BA6B-B483FE89E8E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0A386EC6-40E1-4C5A-BA6B-B483FE89E8E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0A386EC6-40E1-4C5A-BA6B-B483FE89E8E7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0A386EC6-40E1-4C5A-BA6B-B483FE89E8E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D3C782BA-178E-4235-A3BA-8C11DEBB6BEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D3C782BA-178E-4235-A3BA-8C11DEBB6BEE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D3C782BA-178E-4235-A3BA-8C11DEBB6BEE}.Release|Any CPU.Build.0 = Release|Any CPU
