@@ -119,7 +119,7 @@ namespace ICSharpCode.SharpDevelop.Util
 			bool exited = process.WaitForExit(timeout);
 			
 			if (exited) {
-				endOfOutput.WaitOne(timeout, false);
+				endOfOutput.WaitOne(timeout == int.MaxValue ? Timeout.Infinite : timeout, false);
 			}
 			
 			return exited;
