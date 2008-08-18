@@ -135,9 +135,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		static void EnsureDebugCategory()
 		{
 			if (debugCategory == null) {
-				debugCategory = new MessageViewCategory("Debug", "${res:MainWindow.Windows.OutputWindow.DebugCategory}");
-				CompilerMessageView compilerMessageView = (CompilerMessageView)WorkbenchSingleton.Workbench.GetPad(typeof(CompilerMessageView)).PadContent;
-				compilerMessageView.AddCategory(debugCategory);
+				MessageViewCategory.Create(ref debugCategory, "Debug", "${res:MainWindow.Windows.OutputWindow.DebugCategory}");
 			}
 		}
 

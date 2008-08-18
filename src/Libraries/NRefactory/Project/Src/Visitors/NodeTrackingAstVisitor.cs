@@ -304,6 +304,13 @@ namespace ICSharpCode.NRefactory.Visitors {
 			return result;
 		}
 		
+		public sealed override object VisitExpressionRangeVariable(ExpressionRangeVariable expressionRangeVariable, object data) {
+			this.BeginVisit(expressionRangeVariable);
+			object result = this.TrackedVisitExpressionRangeVariable(expressionRangeVariable, data);
+			this.EndVisit(expressionRangeVariable);
+			return result;
+		}
+		
 		public sealed override object VisitExpressionStatement(ExpressionStatement expressionStatement, object data) {
 			this.BeginVisit(expressionStatement);
 			object result = this.TrackedVisitExpressionStatement(expressionStatement, data);
@@ -549,6 +556,20 @@ namespace ICSharpCode.NRefactory.Visitors {
 			return result;
 		}
 		
+		public sealed override object VisitQueryExpressionAggregateClause(QueryExpressionAggregateClause queryExpressionAggregateClause, object data) {
+			this.BeginVisit(queryExpressionAggregateClause);
+			object result = this.TrackedVisitQueryExpressionAggregateClause(queryExpressionAggregateClause, data);
+			this.EndVisit(queryExpressionAggregateClause);
+			return result;
+		}
+		
+		public sealed override object VisitQueryExpressionDistinctClause(QueryExpressionDistinctClause queryExpressionDistinctClause, object data) {
+			this.BeginVisit(queryExpressionDistinctClause);
+			object result = this.TrackedVisitQueryExpressionDistinctClause(queryExpressionDistinctClause, data);
+			this.EndVisit(queryExpressionDistinctClause);
+			return result;
+		}
+		
 		public sealed override object VisitQueryExpressionFromClause(QueryExpressionFromClause queryExpressionFromClause, object data) {
 			this.BeginVisit(queryExpressionFromClause);
 			object result = this.TrackedVisitQueryExpressionFromClause(queryExpressionFromClause, data);
@@ -560,6 +581,20 @@ namespace ICSharpCode.NRefactory.Visitors {
 			this.BeginVisit(queryExpressionGroupClause);
 			object result = this.TrackedVisitQueryExpressionGroupClause(queryExpressionGroupClause, data);
 			this.EndVisit(queryExpressionGroupClause);
+			return result;
+		}
+		
+		public sealed override object VisitQueryExpressionGroupJoinVBClause(QueryExpressionGroupJoinVBClause queryExpressionGroupJoinVBClause, object data) {
+			this.BeginVisit(queryExpressionGroupJoinVBClause);
+			object result = this.TrackedVisitQueryExpressionGroupJoinVBClause(queryExpressionGroupJoinVBClause, data);
+			this.EndVisit(queryExpressionGroupJoinVBClause);
+			return result;
+		}
+		
+		public sealed override object VisitQueryExpressionGroupVBClause(QueryExpressionGroupVBClause queryExpressionGroupVBClause, object data) {
+			this.BeginVisit(queryExpressionGroupVBClause);
+			object result = this.TrackedVisitQueryExpressionGroupVBClause(queryExpressionGroupVBClause, data);
+			this.EndVisit(queryExpressionGroupVBClause);
 			return result;
 		}
 		
@@ -577,10 +612,31 @@ namespace ICSharpCode.NRefactory.Visitors {
 			return result;
 		}
 		
+		public sealed override object VisitQueryExpressionJoinConditionVB(QueryExpressionJoinConditionVB queryExpressionJoinConditionVB, object data) {
+			this.BeginVisit(queryExpressionJoinConditionVB);
+			object result = this.TrackedVisitQueryExpressionJoinConditionVB(queryExpressionJoinConditionVB, data);
+			this.EndVisit(queryExpressionJoinConditionVB);
+			return result;
+		}
+		
+		public sealed override object VisitQueryExpressionJoinVBClause(QueryExpressionJoinVBClause queryExpressionJoinVBClause, object data) {
+			this.BeginVisit(queryExpressionJoinVBClause);
+			object result = this.TrackedVisitQueryExpressionJoinVBClause(queryExpressionJoinVBClause, data);
+			this.EndVisit(queryExpressionJoinVBClause);
+			return result;
+		}
+		
 		public sealed override object VisitQueryExpressionLetClause(QueryExpressionLetClause queryExpressionLetClause, object data) {
 			this.BeginVisit(queryExpressionLetClause);
 			object result = this.TrackedVisitQueryExpressionLetClause(queryExpressionLetClause, data);
 			this.EndVisit(queryExpressionLetClause);
+			return result;
+		}
+		
+		public sealed override object VisitQueryExpressionLetVBClause(QueryExpressionLetVBClause queryExpressionLetVBClause, object data) {
+			this.BeginVisit(queryExpressionLetVBClause);
+			object result = this.TrackedVisitQueryExpressionLetVBClause(queryExpressionLetVBClause, data);
+			this.EndVisit(queryExpressionLetVBClause);
 			return result;
 		}
 		
@@ -598,10 +654,24 @@ namespace ICSharpCode.NRefactory.Visitors {
 			return result;
 		}
 		
+		public sealed override object VisitQueryExpressionPartitionVBClause(QueryExpressionPartitionVBClause queryExpressionPartitionVBClause, object data) {
+			this.BeginVisit(queryExpressionPartitionVBClause);
+			object result = this.TrackedVisitQueryExpressionPartitionVBClause(queryExpressionPartitionVBClause, data);
+			this.EndVisit(queryExpressionPartitionVBClause);
+			return result;
+		}
+		
 		public sealed override object VisitQueryExpressionSelectClause(QueryExpressionSelectClause queryExpressionSelectClause, object data) {
 			this.BeginVisit(queryExpressionSelectClause);
 			object result = this.TrackedVisitQueryExpressionSelectClause(queryExpressionSelectClause, data);
 			this.EndVisit(queryExpressionSelectClause);
+			return result;
+		}
+		
+		public sealed override object VisitQueryExpressionSelectVBClause(QueryExpressionSelectVBClause queryExpressionSelectVBClause, object data) {
+			this.BeginVisit(queryExpressionSelectVBClause);
+			object result = this.TrackedVisitQueryExpressionSelectVBClause(queryExpressionSelectVBClause, data);
+			this.EndVisit(queryExpressionSelectVBClause);
 			return result;
 		}
 		
@@ -971,6 +1041,10 @@ namespace ICSharpCode.NRefactory.Visitors {
 			return base.VisitExitStatement(exitStatement, data);
 		}
 		
+		public virtual object TrackedVisitExpressionRangeVariable(ExpressionRangeVariable expressionRangeVariable, object data) {
+			return base.VisitExpressionRangeVariable(expressionRangeVariable, data);
+		}
+		
 		public virtual object TrackedVisitExpressionStatement(ExpressionStatement expressionStatement, object data) {
 			return base.VisitExpressionStatement(expressionStatement, data);
 		}
@@ -1111,12 +1185,28 @@ namespace ICSharpCode.NRefactory.Visitors {
 			return base.VisitQueryExpression(queryExpression, data);
 		}
 		
+		public virtual object TrackedVisitQueryExpressionAggregateClause(QueryExpressionAggregateClause queryExpressionAggregateClause, object data) {
+			return base.VisitQueryExpressionAggregateClause(queryExpressionAggregateClause, data);
+		}
+		
+		public virtual object TrackedVisitQueryExpressionDistinctClause(QueryExpressionDistinctClause queryExpressionDistinctClause, object data) {
+			return base.VisitQueryExpressionDistinctClause(queryExpressionDistinctClause, data);
+		}
+		
 		public virtual object TrackedVisitQueryExpressionFromClause(QueryExpressionFromClause queryExpressionFromClause, object data) {
 			return base.VisitQueryExpressionFromClause(queryExpressionFromClause, data);
 		}
 		
 		public virtual object TrackedVisitQueryExpressionGroupClause(QueryExpressionGroupClause queryExpressionGroupClause, object data) {
 			return base.VisitQueryExpressionGroupClause(queryExpressionGroupClause, data);
+		}
+		
+		public virtual object TrackedVisitQueryExpressionGroupJoinVBClause(QueryExpressionGroupJoinVBClause queryExpressionGroupJoinVBClause, object data) {
+			return base.VisitQueryExpressionGroupJoinVBClause(queryExpressionGroupJoinVBClause, data);
+		}
+		
+		public virtual object TrackedVisitQueryExpressionGroupVBClause(QueryExpressionGroupVBClause queryExpressionGroupVBClause, object data) {
+			return base.VisitQueryExpressionGroupVBClause(queryExpressionGroupVBClause, data);
 		}
 		
 		public virtual object TrackedVisitQueryExpressionIntoClause(QueryExpressionIntoClause queryExpressionIntoClause, object data) {
@@ -1127,8 +1217,20 @@ namespace ICSharpCode.NRefactory.Visitors {
 			return base.VisitQueryExpressionJoinClause(queryExpressionJoinClause, data);
 		}
 		
+		public virtual object TrackedVisitQueryExpressionJoinConditionVB(QueryExpressionJoinConditionVB queryExpressionJoinConditionVB, object data) {
+			return base.VisitQueryExpressionJoinConditionVB(queryExpressionJoinConditionVB, data);
+		}
+		
+		public virtual object TrackedVisitQueryExpressionJoinVBClause(QueryExpressionJoinVBClause queryExpressionJoinVBClause, object data) {
+			return base.VisitQueryExpressionJoinVBClause(queryExpressionJoinVBClause, data);
+		}
+		
 		public virtual object TrackedVisitQueryExpressionLetClause(QueryExpressionLetClause queryExpressionLetClause, object data) {
 			return base.VisitQueryExpressionLetClause(queryExpressionLetClause, data);
+		}
+		
+		public virtual object TrackedVisitQueryExpressionLetVBClause(QueryExpressionLetVBClause queryExpressionLetVBClause, object data) {
+			return base.VisitQueryExpressionLetVBClause(queryExpressionLetVBClause, data);
 		}
 		
 		public virtual object TrackedVisitQueryExpressionOrderClause(QueryExpressionOrderClause queryExpressionOrderClause, object data) {
@@ -1139,8 +1241,16 @@ namespace ICSharpCode.NRefactory.Visitors {
 			return base.VisitQueryExpressionOrdering(queryExpressionOrdering, data);
 		}
 		
+		public virtual object TrackedVisitQueryExpressionPartitionVBClause(QueryExpressionPartitionVBClause queryExpressionPartitionVBClause, object data) {
+			return base.VisitQueryExpressionPartitionVBClause(queryExpressionPartitionVBClause, data);
+		}
+		
 		public virtual object TrackedVisitQueryExpressionSelectClause(QueryExpressionSelectClause queryExpressionSelectClause, object data) {
 			return base.VisitQueryExpressionSelectClause(queryExpressionSelectClause, data);
+		}
+		
+		public virtual object TrackedVisitQueryExpressionSelectVBClause(QueryExpressionSelectVBClause queryExpressionSelectVBClause, object data) {
+			return base.VisitQueryExpressionSelectVBClause(queryExpressionSelectVBClause, data);
 		}
 		
 		public virtual object TrackedVisitQueryExpressionWhereClause(QueryExpressionWhereClause queryExpressionWhereClause, object data) {

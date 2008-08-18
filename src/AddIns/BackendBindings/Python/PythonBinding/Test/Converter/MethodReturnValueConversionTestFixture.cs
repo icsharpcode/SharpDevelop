@@ -18,6 +18,7 @@ namespace PythonBinding.Tests.Converter
 	/// returns an integer.
 	/// </summary>
 	[TestFixture]
+	[Ignore("Not ported")]
 	public class MethodReturnValueConversionTestFixture
 	{
 		CSharpToPythonConverter converter;

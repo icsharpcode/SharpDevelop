@@ -2019,166 +2019,319 @@ LambdaExpr<out Expression expr>
 QueryExpr<out Expression expr>
 	(.
 		QueryExpression qexpr = new QueryExpression();
-		List<QueryExpressionFromClause> fromClauses = new List<QueryExpressionFromClause>();
+		qexpr.StartLocation = la.Location;
+		List<QueryExpressionClause> middleClauses = new List<QueryExpressionClause>();
 		expr = qexpr;
 	.) =
-	FromOrAggregateQueryOperator<out fromClauses>
-	{ QueryOperator }
-.
-
-FromOrAggregateQueryOperator<out List<QueryExpressionFromClause> fromClauses>
-	(. fromClauses = null; .) =
-	   FromQueryOperator<out fromClauses>
-	|  AggregateQueryOperator<out fromClauses>
-.
-
-QueryOperator
+	FromOrAggregateQueryOperator<middleClauses>
+	{ QueryOperator<middleClauses> }
 	(.
-		List<QueryExpressionFromClause> fromClauses = null;
+		qexpr.EndLocation = t.EndLocation;
+	.)
+.
+
+FromOrAggregateQueryOperator<List<QueryExpressionClause> middleClauses>
+	(.  .) =
+	   FromQueryOperator<middleClauses>
+	|  AggregateQueryOperator<middleClauses>
+.
+
+QueryOperator<List<QueryExpressionClause> middleClauses>
+	(.
+		QueryExpressionJoinVBClause joinClause = null;
+		QueryExpressionGroupVBClause groupByClause = null;
+		QueryExpressionPartitionVBClause partitionClause = null;
+		QueryExpressionGroupJoinVBClause groupJoinClause = null;
 	.) =
-	  FromQueryOperator<out fromClauses>
-	| AggregateQueryOperator<out fromClauses>
-	| SelectQueryOperator
-	| DistinctQueryOperator
-	| WhereQueryOperator
-	| OrderByQueryOperator
-	| PartitionQueryOperator
-	| LetQueryOperator
-	| JoinQueryOperator
-	| IF(la.kind == Tokens.Group && Peek(1).kind == Tokens.Join) GroupJoinQueryOperator
-	| GroupByQueryOperator
+	  FromQueryOperator<middleClauses>
+	| AggregateQueryOperator<middleClauses>
+	| SelectQueryOperator<middleClauses>
+	| DistinctQueryOperator<middleClauses>
+	| WhereQueryOperator<middleClauses>
+	| OrderByQueryOperator<middleClauses>
+	| PartitionQueryOperator<out partitionClause>
+	| LetQueryOperator<middleClauses>
+	| JoinQueryOperator<out joinClause>
+	  (. middleClauses.Add(joinClause); .)
+	| IF(la.kind == Tokens.Group && Peek(1).kind == Tokens.Join) GroupJoinQueryOperator<out groupJoinClause>
+	  (. middleClauses.Add(groupJoinClause); .)
+	| GroupByQueryOperator<out groupByClause>
+	  (. middleClauses.Add(groupByClause); .)
 .	
 
-OrderByQueryOperator
-	(. .) =
-	"Order" "By" OrderExpressionList
+OrderByQueryOperator<List<QueryExpressionClause> middleClauses>
+	(.
+		QueryExpressionOrderClause orderClause = new QueryExpressionOrderClause();
+		orderClause.StartLocation = la.Location;
+		List<QueryExpressionOrdering> orderings = null;
+	.) =
+	"Order" "By" OrderExpressionList<out orderings>
+	(.
+		orderClause.Orderings = orderings;
+		orderClause.EndLocation = t.EndLocation;
+		middleClauses.Add(orderClause);
+	.)
 .
 
-OrderExpressionList
-	(. .) = 
-	OrderExpression
+OrderExpressionList<out List<QueryExpressionOrdering> orderings>
+	(.
+		orderings = new List<QueryExpressionOrdering>();
+		QueryExpressionOrdering ordering = null;
+	.) =
+	OrderExpression<out ordering>
+	(. orderings.Add(ordering); .)
 	{
-		"," OrderExpression
+		"," OrderExpression<out ordering>
+		(. orderings.Add(ordering); .)
 	}
 .
 
-OrderExpression
-	(. Expression orderExpr = null; .) =
+OrderExpression<out QueryExpressionOrdering ordering>
+	(.
+		ordering = new QueryExpressionOrdering();
+		ordering.StartLocation = la.Location;
+		ordering.Direction = QueryExpressionOrderingDirection.None;
+		Expression orderExpr = null;
+	.) =
 	Expr<out orderExpr>
+	(.
+		ordering.Criteria = orderExpr;
+	.)
 	[
-		  "Ascending"
-		| "Descending"
+		  "Ascending" 	(. ordering.Direction = QueryExpressionOrderingDirection.Ascending; .)
+		| "Descending"	(. ordering.Direction = QueryExpressionOrderingDirection.Descending; .)
 	]
+	(. ordering.EndLocation = t.EndLocation; .)
 .
 
-GroupByQueryOperator
-	(. .) =
-	"Group" ExpressionRangeVariableDeclarationList "By" ExpressionRangeVariableDeclarationList
-	"Into" ExpressionRangeVariableDeclarationList
+GroupByQueryOperator<out QueryExpressionGroupVBClause groupByClause>
+	(.
+		groupByClause = new QueryExpressionGroupVBClause();
+		groupByClause.StartLocation = la.Location;
+	.) =
+	"Group" ExpressionRangeVariableDeclarationList<groupByClause.GroupVariables>
+	"By" ExpressionRangeVariableDeclarationList<groupByClause.ByVariables>
+	"Into" ExpressionRangeVariableDeclarationList<groupByClause.IntoVariables>
+	(.
+		SetParent(groupByClause.GroupVariables, groupByClause);
+		SetParent(groupByClause.ByVariables, groupByClause);
+		SetParent(groupByClause.IntoVariables, groupByClause);
+		
+		groupByClause.EndLocation = t.EndLocation;
+	.)
 .
 
-GroupJoinQueryOperator
-	(. .) =
-	"Group" JoinQueryOperator
-	"Into"  ExpressionRangeVariableDeclarationList
+GroupJoinQueryOperator<out QueryExpressionGroupJoinVBClause groupJoinClause>
+	(.
+		groupJoinClause = new QueryExpressionGroupJoinVBClause();
+		groupJoinClause.StartLocation = la.Location;
+		QueryExpressionJoinVBClause joinClause = null;
+	.) =
+	"Group" JoinQueryOperator<out joinClause>
+	"Into"  ExpressionRangeVariableDeclarationList<groupJoinClause.IntoVariables>
+	(.
+		groupJoinClause.JoinClause = joinClause;
+		groupJoinClause.EndLocation = t.EndLocation;
+	.)
 .
 
-FromQueryOperator<out List<QueryExpressionFromClause> fromClauses>
+FromQueryOperator<List<QueryExpressionClause> middleClauses>
 	(.
 	.) =
-	"From" CollectionRangeVariableDeclarationList<out fromClauses>
-.	
-
-SelectQueryOperator
-	(. .) =
-	"Select" ExpressionRangeVariableDeclarationList
+	"From" CollectionRangeVariableDeclarationList<middleClauses>
 .
 
-DistinctQueryOperator 
-	(. .) =
+SelectQueryOperator<List<QueryExpressionClause> middleClauses>
+	(.
+		QueryExpressionSelectVBClause selectClause = new QueryExpressionSelectVBClause();
+		selectClause.StartLocation = la.Location;
+	.) =
+	"Select" ExpressionRangeVariableDeclarationList<selectClause.Variables>
+	(.
+		SetParent(selectClause.Variables, selectClause);
+		selectClause.EndLocation = t.Location;
+		middleClauses.Add(selectClause);
+	.)
+.
+
+DistinctQueryOperator<List<QueryExpressionClause> middleClauses>
+	(.
+		QueryExpressionDistinctClause distinctClause = new QueryExpressionDistinctClause();
+		distinctClause.StartLocation = la.Location;
+	.) =
 	"Distinct"
-.
-
-WhereQueryOperator
-	(. Expression operand = null; .) =
-	"Where" Expr<out operand>
-.
-
-PartitionQueryOperator
-	(. Expression expr = null; .) =
-	  "Take" [ "While" ] Expr<out expr>
-	| "Skip" [ "While" ] Expr<out expr>
-.
-
-AggregateQueryOperator<out List<QueryExpressionFromClause> fromClauses>
 	(.
-		fromClauses =new List<QueryExpressionFromClause>();
-		QueryExpressionFromClause aggreateClause = null;
-	.) =
-	"Aggregate" CollectionRangeVariableDeclaration<out aggreateClause> { QueryOperator } 
-	(. fromClauses.Add(aggreateClause); .)
-	"Into" ExpressionRangeVariableDeclarationList
+		distinctClause.EndLocation = t.EndLocation;
+		middleClauses.Add(distinctClause);
+	.)
 .
 
-LetQueryOperator
-	(. .) =
-	"Let"  ExpressionRangeVariableDeclarationList
+WhereQueryOperator<List<QueryExpressionClause> middleClauses>
+	(.
+		QueryExpressionWhereClause whereClause = new QueryExpressionWhereClause();
+		whereClause.StartLocation = la.Location;
+		Expression operand = null;
+	.) =
+	"Where" Expr<out operand>
+	(.
+		whereClause.Condition = operand;
+		whereClause.EndLocation = t.EndLocation;
+		
+		middleClauses.Add(whereClause);
+	.)
+.
+
+PartitionQueryOperator<out QueryExpressionPartitionVBClause partitionClause>
+	(.
+		partitionClause = new QueryExpressionPartitionVBClause();
+		partitionClause.StartLocation = la.Location;
+		Expression expr = null;
+	.) =
+	  "Take" (. partitionClause.PartitionType = QueryExpressionPartitionType.Take; .)
+	  [ "While" (. partitionClause.PartitionType = QueryExpressionPartitionType.TakeWhile; .) ]
+	  Expr<out expr>
+	| "Skip" (. partitionClause.PartitionType = QueryExpressionPartitionType.Skip; .)
+      [ "While" ] (. partitionClause.PartitionType = QueryExpressionPartitionType.SkipWhile; .)
+	  Expr<out expr>
+	(.
+		partitionClause.Expression = expr;
+		partitionClause.EndLocation = t.EndLocation;
+	.)
+.
+
+AggregateQueryOperator<List<QueryExpressionClause> middleClauses>
+	(.
+		QueryExpressionFromClause fromClause = null;
+		QueryExpressionAggregateClause aggregateClause = new QueryExpressionAggregateClause();
+		aggregateClause.IntoVariables = new List<ExpressionRangeVariable>();
+		aggregateClause.StartLocation = la.Location;
+	.) =
+	"Aggregate" CollectionRangeVariableDeclaration<out fromClause>
+	(.
+		aggregateClause.FromClause = fromClause;
+	.)
+	{
+		QueryOperator<aggregateClause.MiddleClauses>
+	}
+	(. SetParent(aggregateClause.MiddleClauses, aggregateClause); .)
+	"Into" ExpressionRangeVariableDeclarationList<aggregateClause.IntoVariables>
+	(.
+		SetParent(aggregateClause.IntoVariables, aggregateClause);
+		aggregateClause.EndLocation = t.EndLocation;
+		middleClauses.Add(aggregateClause);
+	.)
+.
+
+LetQueryOperator<List<QueryExpressionClause> middleClauses>
+	(.
+		QueryExpressionLetVBClause letClause = new QueryExpressionLetVBClause();
+		letClause.StartLocation = la.Location;
+	.) =
+	"Let" ExpressionRangeVariableDeclarationList<letClause.Variables>
+	(.
+		letClause.EndLocation = t.EndLocation;
+		middleClauses.Add(letClause);
+	.)
 .	
 
-ExpressionRangeVariableDeclarationList
-	(. .) =
-	
-	ExpressionRangeVariableDeclaration
-	{ "," ExpressionRangeVariableDeclaration }
+ExpressionRangeVariableDeclarationList<List<ExpressionRangeVariable> variables>
+	(.
+		ExpressionRangeVariable variable = null;
+	.) =
+	ExpressionRangeVariableDeclaration<out variable>
+	(. variables.Add(variable); .)
+	{ "," ExpressionRangeVariableDeclaration<out variable> (. variables.Add(variable); .) }
 .
 
-ExpressionRangeVariableDeclaration
+ExpressionRangeVariableDeclaration<out ExpressionRangeVariable variable>
 	(.
+		variable = new ExpressionRangeVariable();
+		variable.StartLocation = la.Location;
 		Expression rhs = null;
 		TypeReference typeName = null;
 	.) =
-	[ IF(IsIdentifiedExpressionRange()) Identifier [ "As" TypeName<out typeName> ] "="
+	[
+		IF(IsIdentifiedExpressionRange()) Identifier
+		(. variable.Identifier = t.val; .)
+		[
+			"As" TypeName<out typeName>
+			(. variable.Type = typeName; .)
+		]
+		"="
 	]
 	Expr<out rhs>
-.
-
-JoinQueryOperator
-	(. QueryExpressionFromClause joinClause = null;  .) =
-	"Join" CollectionRangeVariableDeclaration<out joinClause> [ JoinQueryOperator ] "On" 
-	JoinCondition
-	{
-		"And" JoinCondition
-	}
-.
-
-CollectionRangeVariableDeclarationList<out List<QueryExpressionFromClause> fromClauses>
 	(.
-		fromClauses = new List<QueryExpressionFromClause>();
+		variable.Expression = rhs;
+		variable.EndLocation = t.EndLocation;
+	.)
+.
+
+JoinQueryOperator<out QueryExpressionJoinVBClause joinClause>
+	(.
+		joinClause = new QueryExpressionJoinVBClause();
+		joinClause.StartLocation = la.Location;
+		QueryExpressionFromClause joinVariable = null;
+		QueryExpressionJoinVBClause subJoin = null;
+		QueryExpressionJoinConditionVB condition = null;
+		
+	.) =
+	"Join" CollectionRangeVariableDeclaration<out joinVariable> 
+	(. joinClause.JoinVariable = joinVariable; .)
+	[
+		JoinQueryOperator<out subJoin>
+		(. joinClause.SubJoin = subJoin; .)
+	]
+	"On"
+	JoinCondition<out condition>
+	(. SafeAdd(joinClause, joinClause.Conditions, condition); .)
+	{
+		"And" JoinCondition<out condition>
+		(. SafeAdd(joinClause, joinClause.Conditions, condition); .)
+	}
+	(.
+		joinClause.EndLocation = t.EndLocation;
+	.)
+.
+
+CollectionRangeVariableDeclarationList<List<QueryExpressionClause> middleClauses>
+	(.
 		QueryExpressionFromClause fromClause = null;
 	.) =
 	CollectionRangeVariableDeclaration<out fromClause>
-	(. fromClauses.Add(fromClause); .)
-	{ "," CollectionRangeVariableDeclaration<out fromClause> (. fromClauses.Add(fromClause); .) }
+	(. middleClauses.Add(fromClause); .)
+	{ "," CollectionRangeVariableDeclaration<out fromClause> (. middleClauses.Add(fromClause); .) }
 .
 
 CollectionRangeVariableDeclaration<out QueryExpressionFromClause fromClause>
 	(.
 		fromClause = new QueryExpressionFromClause();
+		fromClause.StartLocation = la.Location;
 		TypeReference typeName = null;
 		Expression inExpr = null;
 	.) =
 	Identifier
 	[ "As" TypeName<out typeName> (. fromClause.Type = typeName; .) ] 
 	"In" Expr<out inExpr>
-	(. fromClause.InExpression = inExpr; .)
+	(.
+		fromClause.InExpression = inExpr;
+		fromClause.EndLocation = t.EndLocation;
+	.)
 .
 
-JoinCondition
+JoinCondition<out QueryExpressionJoinConditionVB condition>
 	(.
+		condition = new QueryExpressionJoinConditionVB();
+		condition.StartLocation = la.Location;
+		
 		Expression lhs = null;
 		Expression rhs = null;
 	.) =
 	Expr<out lhs> "Equals" Expr<out rhs>
+	(.
+		condition.LeftSide = lhs;
+		condition.RightSide = rhs;
+		condition.EndLocation = t.EndLocation;
+	.)
 .
 
 MemberInitializer<out NamedArgumentExpression memberInitializer>

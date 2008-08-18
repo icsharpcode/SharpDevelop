@@ -5,16 +5,19 @@
 //     <version>$Revision$</version>
 // </file>
 
+using Microsoft.Scripting.Compilers;
+using Microsoft.Scripting.Hosting;
 using System;
 using System.IO;
+using System.Scripting;
 
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 using IronPython;
-using IronPython.CodeDom;
 using IronPython.Compiler;
 using IronPython.Compiler.Ast;
 using IronPython.Runtime;
+using IronPython.Hosting;
 using IronPython.Runtime.Exceptions;
 
 namespace ICSharpCode.PythonBinding
@@ -25,6 +28,7 @@ namespace ICSharpCode.PythonBinding
 	public class PythonParser : IParser
 	{
 		string[] lexerTags = new string[0];
+		ScriptEngine scriptEngine;
 		
 		public PythonParser()
 		{
@@ -78,14 +82,19 @@ namespace ICSharpCode.PythonBinding
 		{
 			if (fileContent != null) {
 			//	try {
-					PythonCompilerSink sink = new PythonCompilerSink();
-					CompilerContext context = new CompilerContext(fileName, sink);
-					Parser parser = Parser.FromString(null, context, fileContent);
-					Statement statement = parser.ParseFileInput();
-	
-					PythonAstWalker walker = new PythonAstWalker(projectContent, fileName);
-					walker.Walk(statement);
-					return walker.CompilationUnit;
+				if (scriptEngine == null) {
+					scriptEngine = PythonEngine.CurrentEngine;
+				}
+
+				PythonCompilerSink sink = new PythonCompilerSink();
+				SourceUnit source = DefaultContext.DefaultPythonContext.CreateFileUnit(fileName, fileContent);
+				CompilerContext context = new CompilerContext(source, new PythonCompilerOptions(), sink);
+				Parser parser = Parser.CreateParser(context, new PythonEngineOptions());
+				PythonAst ast = parser.ParseFile(false);
+
+				PythonAstWalker walker = new PythonAstWalker(projectContent, fileName);
+				walker.Walk(ast);
+				return walker.CompilationUnit;
 			//	} catch (PythonSyntaxErrorException) { 
 					// Ignore parsing errors
 			//	}

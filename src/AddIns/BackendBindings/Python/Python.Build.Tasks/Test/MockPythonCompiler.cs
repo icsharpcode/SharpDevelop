@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Reflection.Emit;
 using ICSharpCode.Python.Build.Tasks;
 using IronPython.Hosting;
@@ -23,11 +24,14 @@ namespace Python.Build.Tasks.Tests
 		bool compileCalled;
 		bool disposeCalled;
 		PEFileKinds targetKind;
+		PortableExecutableKinds executableKind;
+		ImageFileMachine machine;
 		string mainFile;
 		string outputAssembly;
 		bool includeDebugInformation;
 		IList<string> referencedAssemblies;
 		IList<ResourceFile> resourceFiles;
+		
 		
 		public MockPythonCompiler()
 		{
@@ -81,6 +85,16 @@ namespace Python.Build.Tasks.Tests
 			set { targetKind = value; }
 		}
 		
+		public PortableExecutableKinds ExecutableKind { 
+			get { return executableKind; }
+			set { executableKind = value; }
+		}
+		
+		public ImageFileMachine Machine {
+			get { return machine; }
+			set { machine = value; }
+		}
+
 		/// <summary>
 		/// Gets or sets the file that contains the main entry point.
 		/// </summary>

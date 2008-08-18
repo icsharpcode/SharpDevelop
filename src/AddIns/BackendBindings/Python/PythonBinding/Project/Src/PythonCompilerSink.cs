@@ -7,7 +7,7 @@
 
 using System;
 using System.Collections.Generic;
-using IronPython.Hosting;
+using System.Scripting;
 
 namespace ICSharpCode.PythonBinding
 {
@@ -16,7 +16,7 @@ namespace ICSharpCode.PythonBinding
 	/// finds a parsing error. By default the simple compiler sink
 	/// throws an exception on a parsing error.
 	/// </summary>
-	public class PythonCompilerSink : CompilerSink
+	public class PythonCompilerSink : ErrorSink
 	{
 		List<PythonCompilerError> errors = new List<PythonCompilerError>();
 		
@@ -24,11 +24,11 @@ namespace ICSharpCode.PythonBinding
 		{
 		}
 		
-		public override void AddError(string path, string message, string lineText, CodeSpan location, int errorCode, Severity severity)
+		public override void Add(SourceUnit source, string message, SourceSpan span, int errorCode, Severity severity)
 		{
-			errors.Add(new PythonCompilerError(path, message, lineText, location, errorCode, severity));
+			errors.Add(new PythonCompilerError(source.Path, message, source.GetCodeLine(span.Start.Line), span, errorCode, severity));
 		}
-		
+				
 		public List<PythonCompilerError> Errors {
 			get { return errors; }
 		}

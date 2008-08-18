@@ -17,6 +17,7 @@ namespace PythonBinding.Tests.Converter
 	/// Tests a single class method is converted.
 	/// </summary>
 	[TestFixture]
+	[Ignore("Not ported")]
 	public class SingleClassMethodConversionTestFixture
 	{
 		CSharpToPythonConverter converter;

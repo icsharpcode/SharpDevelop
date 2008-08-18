@@ -78,13 +78,19 @@ namespace CSharpBinding
 
 				// new EventHandler(ClassName_EventName);
 				IClass callingClass = resolveResult.CallingClass;
+				bool inStatic = false;
+				if (resolveResult.CallingMember != null)
+					inStatic = resolveResult.CallingMember.IsStatic;
 				
 				// ...build the new handler name...
 				string newHandlerName = BuildHandlerName();
 				if (newHandlerName == null) {
 					MemberResolveResult mrr = resolveResult as MemberResolveResult;
 					IEvent eventMember = (mrr != null ? mrr.ResolvedMember as IEvent : null);
-					newHandlerName = callingClass.Name + "_" + ((eventMember != null) ? eventMember.Name : "eventMember");
+					newHandlerName =
+						((callingClass != null) ? callingClass.Name : "callingClass")
+						+ "_"
+						+ ((eventMember != null) ? eventMember.Name : "eventMember");
 				}
 
 				// ...build the completion text...
@@ -94,6 +100,8 @@ namespace CSharpBinding
 				// ...build the optional new method text...
 				StringBuilder newHandlerCodeBuilder = new StringBuilder();
 				newHandlerCodeBuilder.AppendLine().AppendLine();
+				if (inStatic)
+					newHandlerCodeBuilder.Append("static ");
 				newHandlerCodeBuilder.Append(ambience.Convert(invoke.ReturnType)).Append(" ").Append(newHandlerName);
 				newHandlerCodeBuilder.Append("(").Append(parameterString.ToString()).AppendLine(")");
 				newHandlerCodeBuilder.AppendLine("{");
@@ -111,9 +119,6 @@ namespace CSharpBinding
 				));
 				
 				if (callingClass != null) {
-					bool inStatic = false;
-					if (resolveResult.CallingMember != null)
-						inStatic = resolveResult.CallingMember.IsStatic;
 					foreach (IMethod method in callingClass.DefaultReturnType.GetMethods()) {
 						if (inStatic && !method.IsStatic)
 							continue;
@@ -230,6 +235,7 @@ namespace CSharpBinding
 				    || e.KeyCode == Keys.Return) {
 
 					textArea.BeginUpdate();
+					textArea.Document.UndoStack.StartUndoGroup();
 					
 					textArea.SelectionManager.ClearSelection();
 					
@@ -250,6 +256,7 @@ namespace CSharpBinding
 						textArea.Document.OffsetToPosition(TextUtilities.GetFirstNonWSChar(textArea.Document, segment.Offset)),
 						textArea.Document.OffsetToPosition(segment.Offset+segment.Length));
 
+					textArea.Document.UndoStack.EndUndoGroup();
 					textArea.EndUpdate();
 					
 					textArea.DoProcessDialogKey += new DialogKeyProcessor(IgnoreNextDialogKey);

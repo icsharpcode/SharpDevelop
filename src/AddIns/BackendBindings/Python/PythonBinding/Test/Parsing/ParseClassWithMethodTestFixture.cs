@@ -51,8 +51,10 @@ namespace PythonBinding.Tests.Parsing
 				doc.TextContent = python;
 				List<FoldMarker> markers = foldingStrategy.GenerateFoldMarkers(doc, @"C:\Temp\test.py", parseInfo);
 			
-				if (markers.Count > 1) {
+				if (markers.Count > 0) {
 					classMarker = markers[0];
+				}
+				if (markers.Count > 1) {
 					methodMarker = markers[1];
 				}
 			}
@@ -90,8 +92,8 @@ namespace PythonBinding.Tests.Parsing
 		{
 			int startLine = 1;
 			int startColumn = 1;
-			int endLine = 1;
-			int endColumn = 11;
+			int endLine = 3;
+			int endColumn = 7;
 			DomRegion region = new DomRegion(startLine, startColumn, endLine, endColumn);
 			Assert.AreEqual(region.ToString(), c.Region.ToString());
 		}		
@@ -114,8 +116,7 @@ namespace PythonBinding.Tests.Parsing
 		}
 		
 		/// <summary>
-		/// The method region needs to extend up to and including the
-		/// colon.
+		/// The method region needs to extend up just after the colon. It does not include the body.
 		/// </summary>
 		[Test]
 		public void MethodRegion()

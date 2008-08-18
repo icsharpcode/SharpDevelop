@@ -13,7 +13,6 @@ using System.IO;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.Visitors;
-using IronPython.CodeDom;
 
 namespace ICSharpCode.PythonBinding
 {
@@ -55,12 +54,12 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		public static string ConvertCodeCompileUnitToPython(CodeCompileUnit codeCompileUnit)
 		{
-			PythonProvider pythonProvider = new PythonProvider();
+			//PythonProvider pythonProvider = new PythonProvider();
 			StringWriter writer = new StringWriter();
 			CodeGeneratorOptions options = new CodeGeneratorOptions();
 			options.BlankLinesBetweenMembers = false;
 			options.IndentString = "\t";
-			pythonProvider.GenerateCodeFromCompileUnit(codeCompileUnit, writer, options);
+			//pythonProvider.GenerateCodeFromCompileUnit(codeCompileUnit, writer, options);
 			
 			Console.WriteLine("CompileUnit: " + writer.ToString().Trim());
 			
@@ -1203,6 +1202,56 @@ namespace ICSharpCode.PythonBinding
 		}
 		
 		public object VisitQueryExpressionWhereClause(QueryExpressionWhereClause queryExpressionWhereClause, object data)
+		{
+			return null;
+		}
+		
+		public object VisitExpressionRangeVariable(ExpressionRangeVariable expressionRangeVariable, object data)
+		{
+			return null;
+		}
+		
+		public object VisitQueryExpressionAggregateClause(QueryExpressionAggregateClause queryExpressionAggregateClause, object data)
+		{
+			return null;
+		}
+		
+		public object VisitQueryExpressionDistinctClause(QueryExpressionDistinctClause queryExpressionDistinctClause, object data)
+		{
+			return null;
+		}
+		
+		public object VisitQueryExpressionGroupJoinVBClause(QueryExpressionGroupJoinVBClause queryExpressionGroupJoinVBClause, object data)
+		{
+			return null;
+		}
+		
+		public object VisitQueryExpressionGroupVBClause(QueryExpressionGroupVBClause queryExpressionGroupVBClause, object data)
+		{
+			return null;
+		}
+		
+		public object VisitQueryExpressionJoinConditionVB(QueryExpressionJoinConditionVB queryExpressionJoinConditionVB, object data)
+		{
+			return null;
+		}
+		
+		public object VisitQueryExpressionJoinVBClause(QueryExpressionJoinVBClause queryExpressionJoinVBClause, object data)
+		{
+			return null;
+		}
+		
+		public object VisitQueryExpressionLetVBClause(QueryExpressionLetVBClause queryExpressionLetVBClause, object data)
+		{
+			return null;
+		}
+		
+		public object VisitQueryExpressionPartitionVBClause(QueryExpressionPartitionVBClause queryExpressionPartitionVBClause, object data)
+		{
+			return null;
+		}
+		
+		public object VisitQueryExpressionSelectVBClause(QueryExpressionSelectVBClause queryExpressionSelectVBClause, object data)
 		{
 			return null;
 		}

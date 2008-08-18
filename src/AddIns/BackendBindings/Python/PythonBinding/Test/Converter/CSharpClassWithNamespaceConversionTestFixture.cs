@@ -19,6 +19,7 @@ namespace PythonBinding.Tests.Converter
 	/// explicit namespace expression.
 	/// </summary>
 	[TestFixture]
+	[Ignore("Not ported")]
 	public class CSharpClassWithNamespaceConversionTestFixture
 	{
 		CSharpToPythonConverter converter;

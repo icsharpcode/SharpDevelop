@@ -5,11 +5,11 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Util;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows.Forms;
-
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Gui;
@@ -219,15 +219,6 @@ namespace ICSharpCode.SharpDevelop.Commands
 			return items;
 		}
 		
-		void ProcessExitEvent(object sender, EventArgs e)
-		{
-			Process p = (Process)sender;
-			string output = p.StandardOutput.ReadToEnd();
-			
-			TaskService.BuildMessageViewCategory.AppendText(output + Environment.NewLine + "${res:XML.MainMenu.ToolMenu.ExternalTools.ExitedWithCode} " + p.ExitCode + Environment.NewLine);
-		}
-		
-		
 		/// <summary>
 		/// This handler gets called when a tool in the Tool menu is clicked on.
 		/// </summary>
@@ -255,38 +246,58 @@ namespace ICSharpCode.SharpDevelop.Commands
 					MessageService.ShowError("${res:XML.MainMenu.ToolMenu.ExternalTools.ExecutionFailed} '" + ex.Message);
 					return;
 				}
-					
+				
 				if (tool.PromptForArguments) {
 					args = MessageService.ShowInputBox(tool.MenuCommand, "${res:XML.MainMenu.ToolMenu.ExternalTools.EnterArguments}", args);
 					if (args == null)
 						return;
 				}
-					
+				
 				try {
-					ProcessStartInfo startinfo;
-					if (args == null || args.Length == 0 || args.Trim('"', ' ').Length == 0) {
-						startinfo = new ProcessStartInfo(command);
+					if (tool.UseOutputPad) {
+						ProcessRunner processRunner = new ProcessRunner();
+						processRunner.ProcessExited += ProcessExitEvent;
+						processRunner.OutputLineReceived += process_OutputLineReceived;
+						processRunner.ErrorLineReceived += process_OutputLineReceived;
+						processRunner.WorkingDirectory = StringParser.Parse(tool.InitialDirectory);
+						if (args == null || args.Length == 0 || args.Trim('"', ' ').Length == 0) {
+							processRunner.Start(command);
+						} else {
+							processRunner.Start(command, args);
+						}
 					} else {
-						startinfo = new ProcessStartInfo(command, args);
+						ProcessStartInfo startinfo;
+						if (args == null || args.Length == 0 || args.Trim('"', ' ').Length == 0) {
+							startinfo = new ProcessStartInfo(command);
+						} else {
+							startinfo = new ProcessStartInfo(command, args);
+						}
+						startinfo.WorkingDirectory = StringParser.Parse(tool.InitialDirectory);
+						Process process = new Process();
+						process.StartInfo = startinfo;
+						process.Start();
 					}
-					
-					startinfo.WorkingDirectory = StringParser.Parse(tool.InitialDirectory);
-					if (tool.UseOutputPad) {
-						startinfo.UseShellExecute = false;
-						startinfo.RedirectStandardOutput = true;
-					}
-					Process process = new Process();
-					process.EnableRaisingEvents = true;
-					process.StartInfo = startinfo;
-					if (tool.UseOutputPad) {
-						process.Exited += new EventHandler(ProcessExitEvent);
-					}
-					process.Start();
 				} catch (Exception ex) {
 					MessageService.ShowError("${res:XML.MainMenu.ToolMenu.ExternalTools.ExecutionFailed} '" + command + " " + args + "'\n" + ex.Message);
 				}
 				return;
 			}
+		}
+
+		void ProcessExitEvent(object sender, EventArgs e)
+		{
+			WorkbenchSingleton.SafeThreadAsyncCall(
+				delegate {
+					ProcessRunner p = (ProcessRunner)sender;
+					p.WaitForExit();
+					TaskService.BuildMessageViewCategory.AppendLine("${res:XML.MainMenu.ToolMenu.ExternalTools.ExitedWithCode} " + p.ExitCode);
+					p.Dispose();
+				});
+		}
+		
+		void process_OutputLineReceived(object sender, LineReceivedEventArgs e)
+		{
+			TaskService.BuildMessageViewCategory.AppendLine(e.Line);
 		}
 	}
 	

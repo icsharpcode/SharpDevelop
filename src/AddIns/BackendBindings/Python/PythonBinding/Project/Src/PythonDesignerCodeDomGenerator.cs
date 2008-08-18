@@ -9,7 +9,6 @@ using System;
 using System.CodeDom;
 using System.CodeDom.Compiler;
 using System.IO;
-using IronPython.CodeDom;
 
 namespace ICSharpCode.PythonBinding
 {
@@ -46,11 +45,12 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		public static CodeCompileUnit Parse(TextReader reader)
 		{
-			PythonProvider provider = new PythonProvider();
-			CodeCompileUnit compileUnit = provider.Parse(reader);
+			//PythonProvider provider = new PythonProvider();
+			//CodeCompileUnit compileUnit = provider.Parse(reader);
 			
-			PythonDesignerCodeDomGenerator generator = new PythonDesignerCodeDomGenerator(compileUnit);
-			return generator.FixCompileUnit();
+			//PythonDesignerCodeDomGenerator generator = new PythonDesignerCodeDomGenerator(compileUnit);
+			//return generator.FixCompileUnit();
+			return null;
 		}
 		
 		/// <summary>
@@ -94,12 +94,12 @@ namespace ICSharpCode.PythonBinding
 			initializeComponentMethod = FindInitializeComponentMethod(formClass);			
 			AddFields();
 			
-			IronPython.CodeDom.PythonProvider provider = new IronPython.CodeDom.PythonProvider();
+			//IronPython.CodeDom.PythonProvider provider = new IronPython.CodeDom.PythonProvider();
 			CodeGeneratorOptions options = new CodeGeneratorOptions();
 			options.BlankLinesBetweenMembers = false;
 			options.IndentString = "\t";
 			StringWriter writer = new StringWriter();
-			provider.GenerateCodeFromCompileUnit(compileUnit, writer, options);
+			//provider.GenerateCodeFromCompileUnit(compileUnit, writer, options);
 			
 			Console.WriteLine("Code: " + writer.ToString());
 			

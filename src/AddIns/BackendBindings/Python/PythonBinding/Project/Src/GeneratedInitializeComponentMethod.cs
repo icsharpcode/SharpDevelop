@@ -14,7 +14,6 @@ using ICSharpCode.FormsDesigner;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
-using IronPython.CodeDom;
 
 namespace ICSharpCode.PythonBinding
 {
@@ -150,8 +149,8 @@ namespace ICSharpCode.PythonBinding
 			
 			// Generate the code.
 			StringWriter writer = new StringWriter();
-			PythonProvider provider = new PythonProvider();
-			provider.GenerateCodeFromType(type, writer, options);
+			//PythonProvider provider = new PythonProvider();
+			//provider.GenerateCodeFromType(type, writer, options);
 			
 			return writer.ToString();
 		}

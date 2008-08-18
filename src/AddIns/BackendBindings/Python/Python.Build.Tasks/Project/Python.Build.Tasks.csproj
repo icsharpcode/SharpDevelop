@@ -38,18 +38,22 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <ItemGroup>
-    <Reference Include="IronMath">
-      <HintPath>..\..\RequiredLibraries\IronMath.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
     <Reference Include="IronPython">
       <HintPath>..\..\RequiredLibraries\IronPython.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="IronPython.Modules">
+      <HintPath>..\..\RequiredLibraries\IronPython.Modules.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Build.Framework" />
     <Reference Include="Microsoft.Build.Tasks" />
     <Reference Include="Microsoft.Build.Utilities.v3.5">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="Microsoft.Scripting">
+      <HintPath>..\..\RequiredLibraries\Microsoft.Scripting.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Scripting.Core">
+      <HintPath>..\..\RequiredLibraries\Microsoft.Scripting.Core.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
@@ -62,6 +66,7 @@
     <Compile Include="Src\IPythonCompiler.cs" />
     <Compile Include="Src\PythonCompiler.cs" />
     <Compile Include="Src\PythonCompilerTask.cs" />
+    <Compile Include="Src\ResourceFile.cs" />
     <None Include="SharpDevelop.Build.Python.targets">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

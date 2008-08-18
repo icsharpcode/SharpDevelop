@@ -25,7 +25,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 		
 		public static WpfToolbox Instance {
 			get {
-				Debug.Assert(WorkbenchSingleton.InvokeRequired == false);
+				WorkbenchSingleton.AssertMainThread();
 				if (instance == null) {
 					instance = new WpfToolbox();
 				}

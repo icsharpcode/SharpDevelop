@@ -53,6 +53,13 @@ namespace ResourceToolkit.Tests.CSharp
 		}
 		
 		[Test]
+		public void AfterKey()
+		{
+			ResourceResolveResult rrr = Resolve(CodeResourceAccess, 2, 24, null);
+			TestHelper.CheckNoReference(rrr);
+		}
+		
+		[Test]
 		public void NoCompletionWrongChar()
 		{
 			ResourceResolveResult rrr = Resolve(CodeResourceAccess, 2, 15, 'x');

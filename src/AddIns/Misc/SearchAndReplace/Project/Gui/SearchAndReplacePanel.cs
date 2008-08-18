@@ -230,6 +230,9 @@ namespace SearchAndReplace
 			if (IsMultipleLineSelection(GetCurrentTextSelection())) {
 				DocumentIteratorType = DocumentIteratorType.CurrentSelection;
 			} else {
+				if (SearchOptions.DocumentIteratorType == DocumentIteratorType.CurrentSelection) {
+					SearchOptions.DocumentIteratorType = DocumentIteratorType.CurrentDocument;
+				}
 				DocumentIteratorType = SearchOptions.DocumentIteratorType;
 			}
 			

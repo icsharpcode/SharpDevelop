@@ -72,14 +72,12 @@ namespace ICSharpCode.CodeCoverage
 		MessageViewCategory Category {
 			get {
 				if (category == null) {
-					category = new MessageViewCategory(StringParser.Parse("${res:ICSharpCode.UnitTesting.CodeCoverage}"));
-					CompilerMessageView cmv = (CompilerMessageView)WorkbenchSingleton.Workbench.GetPad(typeof(CompilerMessageView)).PadContent;
-					cmv.AddCategory(category);
+					MessageViewCategory.Create(ref category, "CodeCoverage", StringParser.Parse("${res:ICSharpCode.UnitTesting.CodeCoverage}"));
 				}
 				return category;
 			}
 		}
-				
+		
 		void SetPartCoverRunnerProperties(UnitTestApplicationStartHelper helper)
 		{
 			string partCoverOutputDirectory = GetPartCoverOutputDirectory(helper.Project);
@@ -89,7 +87,7 @@ namespace ICSharpCode.CodeCoverage
 			// no include or exclude regular expressions have been
 			// set for this project. Note that the CodeCoverageResults
 			// will ignore any type that has no source code available
-			// for it even though the type may be in the Part Cover 
+			// for it even though the type may be in the Part Cover
 			// results file.
 			if (settings.Include.Count + settings.Exclude.Count == 0) {
 				settings.Include.Add("[*]*");

@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using System.Reflection.Emit;
 using IronPython.Hosting;
 using Microsoft.Build.Framework;
@@ -28,6 +29,7 @@ namespace ICSharpCode.Python.Build.Tasks
 		string mainFile;
 		string outputAssembly;
 		bool emitDebugInformation;
+		string platform;
 		
 		public PythonCompilerTask() 
 			: this(new PythonCompiler())
@@ -80,6 +82,14 @@ namespace ICSharpCode.Python.Build.Tasks
 		}
 		
 		/// <summary>
+		/// Gets or sets the platform that will be targeted by the compiler (e.g. x86).
+		/// </summary>
+		public string Platform {
+			get { return platform; }
+			set { platform = value; }
+		}
+		
+		/// <summary>
 		/// Gets or sets whether the compiler should include debug
 		/// information in the created assembly.
 		/// </summary>
@@ -106,8 +116,11 @@ namespace ICSharpCode.Python.Build.Tasks
 				// (e.g. WinExe, Exe or Dll)
 				compiler.TargetKind = GetPEFileKind(targetType);
 
-				compiler.SourceFiles = GetFiles(sources);
-				compiler.ReferencedAssemblies = GetFiles(references);
+				compiler.ExecutableKind = GetExecutableKind(platform);
+				compiler.Machine = GetMachine(platform);
+				
+				compiler.SourceFiles = GetFiles(sources, false);
+				compiler.ReferencedAssemblies = GetFiles(references, true);
 				compiler.ResourceFiles = GetResourceFiles(resources);
 				compiler.MainFile = mainFile;
 				compiler.OutputAssembly = outputAssembly;
@@ -117,6 +130,14 @@ namespace ICSharpCode.Python.Build.Tasks
 				compiler.Compile();
 			}
 			return true;
+		}
+
+		/// <summary>
+		/// Gets the current folder where this task is being executed from.
+		/// </summary>
+		protected virtual string GetCurrentFolder()
+		{
+			return Directory.GetCurrentDirectory();
 		}
 		
 		/// <summary>
@@ -140,15 +161,48 @@ namespace ICSharpCode.Python.Build.Tasks
 		/// Converts from an array of ITaskItems to a list of
 		/// strings, each containing the ITaskItem filename.
 		/// </summary>
-		IList<string> GetFiles(ITaskItem[] taskItems)
+		IList<string> GetFiles(ITaskItem[] taskItems, bool fullPath)
 		{			
 			List<string> files = new List<string>();
 			if (taskItems != null) {
 				foreach (ITaskItem item in taskItems) {
-					files.Add(item.ItemSpec);
+					string fileName = item.ItemSpec;
+					if (fullPath) {
+						fileName = GetFullPath(item.ItemSpec);
+					}
+					files.Add(fileName);
 				}
 			}
 			return files;
+		}
+		
+		/// <summary>
+		/// Converts the string into a PortableExecutableKinds enum.
+		/// </summary>
+		PortableExecutableKinds GetExecutableKind(string platform)
+		{
+			switch (platform) {
+				case "x86":
+					return PortableExecutableKinds.ILOnly | PortableExecutableKinds.Required32Bit;
+				case "Itanium":
+				case "x64":
+					return PortableExecutableKinds.ILOnly | PortableExecutableKinds.PE32Plus;
+			}
+			return PortableExecutableKinds.ILOnly;
+		}
+		
+		/// <summary>
+		/// Gets the machine associated with a PortalExecutableKind.
+		/// </summary>
+		ImageFileMachine GetMachine(string platform)
+		{
+			switch (platform) {
+				case "Itanium":
+					return ImageFileMachine.IA64;
+				case "x64":
+					return ImageFileMachine.AMD64;
+			}
+			return ImageFileMachine.I386;
 		}
 		
 		/// <summary>
@@ -164,12 +218,25 @@ namespace ICSharpCode.Python.Build.Tasks
 			List<ResourceFile> files = new List<ResourceFile>();
 			if (taskItems != null) {
 				foreach (ITaskItem item in taskItems) {
-					string resourceName = Path.GetFileName(item.ItemSpec);
-					ResourceFile resourceFile = new ResourceFile(resourceName, item.ItemSpec);
+					string resourceFileName = GetFullPath(item.ItemSpec);
+					string resourceName = Path.GetFileName(resourceFileName);
+					ResourceFile resourceFile = new ResourceFile(resourceName, resourceFileName);
 					files.Add(resourceFile);
 				}
 			}
 			return files;
 		}		
+	
+		/// <summary>
+		/// Takes a relative path to a file and turns it into the full path using the current folder
+		/// as the base directory.
+		/// </summary>
+		string GetFullPath(string fileName)
+		{
+			if (!Path.IsPathRooted(fileName)) {
+				return Path.GetFullPath(Path.Combine(GetCurrentFolder(), fileName));
+			}
+			return fileName;
+		}
 	}
 }

@@ -100,7 +100,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 					}
 				}
 				
-				FileUtility.DeepCopy(directoryName, copiedFileName, true);
+				FileService.CopyFile(directoryName, copiedFileName, true, false);
 				DirectoryNode newNode = new DirectoryNode(copiedFileName);
 				newNode.AddTo(node);
 				if (includeInProject) {
@@ -123,7 +123,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		{
 			string copiedFileName = Path.Combine(node.Directory, Path.GetFileName(fileName));
 			if (!FileUtility.IsEqualFileName(fileName, copiedFileName)) {
-				File.Copy(fileName, copiedFileName, true);
+				FileService.CopyFile(fileName, copiedFileName, false, true);
 			}
 			if (includeInProject) {
 				FileNode fileNode;

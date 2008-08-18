@@ -17,6 +17,7 @@ namespace NRefactoryASTGenerator.Ast
 	class PrimitiveExpression : Expression {}
 	
 	enum ParameterModifiers { In }
+	enum QueryExpressionPartitionType { }
 	
 	class ParameterDeclarationExpression : Expression {
 		List<AttributeSection> attributes;
@@ -259,11 +260,6 @@ namespace NRefactoryASTGenerator.Ast
 		/// </remarks>
 		QueryExpressionFromClause fromClause;
 		
-		/// <remarks>
-		/// VB.NET only.
-		/// </remarks>
-		QueryExpressionAggregateClause aggregateClause;
-		
 		List<QueryExpressionClause> middleClauses;
 		
 		/// <remarks>
@@ -299,12 +295,42 @@ namespace NRefactoryASTGenerator.Ast
 	
 	[ImplementNullable(NullableImplementation.Shadow)]
 	class QueryExpressionFromClause : QueryExpressionFromOrJoinClause { }
+
+	class QueryExpressionAggregateClause : 	QueryExpressionClause {
+		QueryExpressionFromClause fromClause;
+		List<QueryExpressionClause> middleClauses;
+		List<ExpressionRangeVariable> intoVariables;
+	}
+	
+	[ImplementNullable]
+	class ExpressionRangeVariable : AbstractNode, INullable {
+		string identifier;
+		Expression expression;
+		TypeReference type;
+	}
 	
 	class QueryExpressionJoinClause : QueryExpressionFromOrJoinClause {
 		Expression onExpression;
 		Expression equalsExpression;
 		
 		string intoIdentifier;
+	}
+	
+	[ImplementNullable(NullableImplementation.Shadow)]
+	class QueryExpressionJoinVBClause : QueryExpressionClause {
+		QueryExpressionFromClause joinVariable;
+		QueryExpressionJoinVBClause subJoin;
+		List<QueryExpressionJoinConditionVB> conditions;
+	}
+
+	class QueryExpressionPartitionVBClause : QueryExpressionClause {
+		Expression expression;
+		QueryExpressionPartitionType partitionType;
+	}
+	
+	class QueryExpressionJoinConditionVB : AbstractNode {
+		Expression leftSide;
+		Expression rightSide;
 	}
 	
 	class QueryExpressionOrderClause : QueryExpressionClause {
@@ -323,10 +349,33 @@ namespace NRefactoryASTGenerator.Ast
 	class QueryExpressionSelectClause : QueryExpressionClause {
 		Expression projection;
 	}
+
+	class QueryExpressionSelectVBClause : QueryExpressionClause {
+		List<ExpressionRangeVariable> variables;
+	}
+	
+	class QueryExpressionLetVBClause : QueryExpressionClause {
+		List<ExpressionRangeVariable> variables;
+	}
+	
+	class QueryExpressionDistinctClause : QueryExpressionClause {
+		
+	}
 	
 	class QueryExpressionGroupClause : QueryExpressionClause {
 		Expression projection;
 		Expression groupBy;
+	}
+	
+	class QueryExpressionGroupVBClause : QueryExpressionClause  {
+		List<ExpressionRangeVariable> groupVariables;
+		List<ExpressionRangeVariable> byVariables;
+		List<ExpressionRangeVariable> intoVariables;
+	}
+	
+	class QueryExpressionGroupJoinVBClause : QueryExpressionClause {
+		QueryExpressionJoinVBClause joinClause;
+		List<ExpressionRangeVariable> intoVariables;
 	}
 	
 	[ImplementNullable(NullableImplementation.Shadow)]

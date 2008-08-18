@@ -75,5 +75,65 @@ namespace NRefactoryToBooConverter
 			AddError(queryExpressionLetClause, "QueryExpressionLetClause is not supported.");
 			return null;
 		}
+		
+		public object VisitExpressionRangeVariable(ExpressionRangeVariable expressionRangeVariable, object data)
+		{
+			AddError(expressionRangeVariable, "ExpressionRangeVariable is not supported.");
+			return null;
+		}
+		
+		public object VisitQueryExpressionAggregateClause(QueryExpressionAggregateClause queryExpressionAggregateClause, object data)
+		{
+			AddError(queryExpressionAggregateClause, "QueryExpressionAggregateClause is not supported.");
+			return null;
+		}
+		
+		public object VisitQueryExpressionDistinctClause(QueryExpressionDistinctClause queryExpressionDistinctClause, object data)
+		{
+			AddError(queryExpressionDistinctClause, "QueryExpressionDistinctClause is not supported.");
+			return null;
+		}
+		
+		public object VisitQueryExpressionGroupJoinVBClause(QueryExpressionGroupJoinVBClause queryExpressionGroupJoinVBClause, object data)
+		{
+			AddError(queryExpressionGroupJoinVBClause, "QueryExpressionGroupJoinVBClause is not supported.");
+			return null;
+		}
+		
+		public object VisitQueryExpressionGroupVBClause(QueryExpressionGroupVBClause queryExpressionGroupVBClause, object data)
+		{
+			AddError(queryExpressionGroupVBClause, "QueryExpressionGroupVBClause is not supported.");
+			return null;
+		}
+		
+		public object VisitQueryExpressionJoinConditionVB(QueryExpressionJoinConditionVB queryExpressionJoinConditionVB, object data)
+		{
+			AddError(queryExpressionJoinConditionVB, "QueryExpressionJoinConditionVB is not supported.");
+			return null;
+		}
+		
+		public object VisitQueryExpressionJoinVBClause(QueryExpressionJoinVBClause queryExpressionJoinVBClause, object data)
+		{
+			AddError(queryExpressionJoinVBClause, "QueryExpressionJoinVBClause is not supported.");
+			return null;
+		}
+		
+		public object VisitQueryExpressionLetVBClause(QueryExpressionLetVBClause queryExpressionLetVBClause, object data)
+		{
+			AddError(queryExpressionLetVBClause, "QueryExpressionLetVBClause is not supported.");
+			return null;
+		}
+		
+		public object VisitQueryExpressionPartitionVBClause(QueryExpressionPartitionVBClause queryExpressionPartitionVBClause, object data)
+		{
+			AddError(queryExpressionPartitionVBClause, "QueryExpressionPartitionVBClause is not supported.");
+			return null;
+		}
+		
+		public object VisitQueryExpressionSelectVBClause(QueryExpressionSelectVBClause queryExpressionSelectVBClause, object data)
+		{
+			AddError(queryExpressionSelectVBClause, "QueryExpressionSelectVBClause is not supported.");
+			return null;
+		}
 	}
 }

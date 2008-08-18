@@ -45,6 +45,7 @@ namespace PythonBinding.Tests.Resolver
 			mockProjectContent.ClassNameForGetClass = "Test.Test1";
 
 			compilationUnit = new DefaultCompilationUnit(mockProjectContent);
+			compilationUnit.FileName = @"C:\Projects\Test\test.py";
 			parseInfo.SetCompilationUnit(compilationUnit);
 
 			string python = "a = Test1()\r\n" +
@@ -58,7 +59,7 @@ namespace PythonBinding.Tests.Resolver
 		{
 			string code = "a = Class1()";
 			PythonVariableResolver resolver = new PythonVariableResolver();
-			Assert.AreEqual("Class1", resolver.Resolve("a", code));
+			Assert.AreEqual("Class1", resolver.Resolve("a", @"C:\Projects\Test\Test.py", code));
 		}
 
 		/// <summary>
@@ -71,7 +72,7 @@ namespace PythonBinding.Tests.Resolver
 			string code = "a = Class1()\r\n" +
 						"b = Class2()";
 			PythonVariableResolver resolver = new PythonVariableResolver();
-			Assert.AreEqual("Class1", resolver.Resolve("a", code));
+			Assert.AreEqual("Class1", resolver.Resolve("a", @"C:\Projects\Test\Test.py", code));
 		}
 		
 		[Test]
@@ -79,14 +80,14 @@ namespace PythonBinding.Tests.Resolver
 		{
 			string code = "a = \"test\"";
 			PythonVariableResolver resolver = new PythonVariableResolver();
-			Assert.AreEqual(null, resolver.Resolve("a", code));
+			Assert.AreEqual(null, resolver.Resolve("a", @"C:\Projects\Test\Test.py", code));
 		}
 		
 		[Test]
 		public void NullCodeShouldNotResolve()
 		{
 			PythonVariableResolver resolver = new PythonVariableResolver();
-			Assert.AreEqual(null, resolver.Resolve("a", null));
+			Assert.AreEqual(null, resolver.Resolve("a", @"C:\Projects\Test\Test.py", null));
 		}			
 		
 		[Test]

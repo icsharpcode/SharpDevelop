@@ -5,7 +5,7 @@
 		  name        = "${res:Templates.File.WinFXPage.Name}"
 		  icon        = "Icons.32x32.XMLFileIcon"
 		  category    = "C#"
-		  subcategory = "WinFX"
+		  subcategory = "WPF"
 		  defaultname = "Page${Number}.xaml"
 		  language    = "C#"/>
 	 

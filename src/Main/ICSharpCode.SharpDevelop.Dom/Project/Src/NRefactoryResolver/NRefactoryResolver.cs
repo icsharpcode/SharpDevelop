@@ -205,6 +205,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				} else if ("global".Equals(expression, StringComparison.InvariantCultureIgnoreCase)) {
 					return new NamespaceResolveResult(null, null, "");
 				}
+			// array
 			} else if (language == NR.SupportedLanguage.CSharp && expressionResult.Context.IsTypeContext && !expressionResult.Context.IsObjectCreation) {
 				expr = ParseTypeReference(expression);
 			}
@@ -213,6 +214,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				if (expr == null) {
 					return null;
 				}
+				
+				// "new" is missing
 				if (expressionResult.Context.IsObjectCreation && !(expr is ObjectCreateExpression)) {
 					Expression tmp = expr;
 					while (tmp != null) {

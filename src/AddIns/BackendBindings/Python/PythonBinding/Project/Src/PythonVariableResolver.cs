@@ -5,25 +5,31 @@
 //     <version>$Revision$</version>
 // </file>
 
+using Microsoft.Scripting.Compilers;
+using Microsoft.Scripting.Hosting;
 using System;
 using System.Collections.Generic;
+using System.Scripting;
 using System.Text;
 
 using ICSharpCode.SharpDevelop.Dom;
+using IronPython;
 using IronPython.Compiler;
 using IronPython.Compiler.Ast;
-using IronPython.Runtime; 
+using IronPython.Runtime;
+using IronPython.Hosting;
+using IronPython.Runtime.Exceptions;
 
 namespace ICSharpCode.PythonBinding
 {
 	/// <summary>
 	/// Determines the type of a variable.
 	/// </summary>
-	public class PythonVariableResolver : AstWalker
+	public class PythonVariableResolver : PythonWalker
 	{
 		string variableName = String.Empty;
 		string typeName;
-		AssignStatement currentAssignStatement;
+		AssignmentStatement currentAssignStatement;
 		bool foundVariableAssignment;
 		
 		public PythonVariableResolver()
@@ -42,19 +48,28 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		/// <param name="variableName">Name of the variable.</param>
 		/// <param name="code">The python code containing the variable.</param>
-		public string Resolve(string variableName, string code)
+		public string Resolve(string variableName, string fileName, string code)
 		{
 			if (code != null) {
+				ScriptEngine scriptEngine = PythonEngine.CurrentEngine;
 				PythonCompilerSink sink = new PythonCompilerSink();
-				CompilerContext context = new CompilerContext(null, sink);
-				Parser parser = Parser.FromString(null, context, code);
-				Statement statement = parser.ParseFileInput();
-				return Resolve(variableName, statement);
+				SourceUnit source = DefaultContext.DefaultPythonContext.CreateFileUnit(fileName, code);
+				CompilerContext context = new CompilerContext(source, new PythonCompilerOptions(), sink);
+				Parser parser = Parser.CreateParser(context, new PythonEngineOptions());
+				PythonAst ast = parser.ParseFile(false);
+
+				return Resolve(variableName, ast);
+				
+				//PythonCompilerSink sink = new PythonCompilerSink();
+				//CompilerContext context = new CompilerContext(null, sink);
+				//Parser parser = Parser.FromString(null, context, code);
+				//Statement statement = parser.ParseFileInput();
+				//return Resolve(variableName, statement);
 			}
 			return null;
 		}
 				
-		public override bool Walk(AssignStatement node)
+		public override bool Walk(AssignmentStatement node)
 		{
 			currentAssignStatement = node;
 			foundVariableAssignment = false;
@@ -105,20 +120,20 @@ namespace ICSharpCode.PythonBinding
 		static string GetTypeName(Expression node)
 		{
 			// Collect the names that make up the type name.
-			FieldExpression fieldExpression = null;
+			NameExpression nameExpression = null;
 			List<string> names = new List<string>();
 			do {
-				NameExpression nameExpression = node as NameExpression;
-				fieldExpression = node as FieldExpression;
+				nameExpression = node as NameExpression;
+				MemberExpression memberExpression = node as MemberExpression;
 				SymbolId symbol = new SymbolId(0);
-				if (fieldExpression != null) {
-					symbol = fieldExpression.Name;
-					node = fieldExpression.Target;
+				if (memberExpression != null) {
+					symbol = memberExpression.Name;
+					node = memberExpression.Target;
 				} else if (nameExpression != null) {
 					symbol = nameExpression.Name;
 				}
 				names.Add(symbol.ToString());
-			} while (fieldExpression != null);
+			} while (nameExpression == null);
 			
 			// Create the fully qualified type name by adding the names
 			// in reverse order.
@@ -131,10 +146,10 @@ namespace ICSharpCode.PythonBinding
 			return typeName.ToString();
 		}
 		
-		string Resolve(string variableName, Statement statement)
+		string Resolve(string variableName, PythonAst ast)
 		{
 			this.variableName = variableName;
-			statement.Walk(this);
+			ast.Walk(this);
 			return TypeName;		
 		}
 	}

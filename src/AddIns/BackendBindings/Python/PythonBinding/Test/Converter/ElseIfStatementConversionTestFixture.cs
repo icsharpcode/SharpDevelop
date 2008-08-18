@@ -17,6 +17,7 @@ namespace PythonBinding.Tests.Converter
 	/// Converts a C# else if statement to Python's elif.
 	/// </summary>
 	[TestFixture]
+	[Ignore("Not ported")]
 	public class ElseIfStatementConversionTestFixture
 	{
 		CSharpToPythonConverter converter;

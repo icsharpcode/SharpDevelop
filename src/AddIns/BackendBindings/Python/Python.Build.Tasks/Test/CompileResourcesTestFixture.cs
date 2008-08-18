@@ -56,7 +56,7 @@ namespace Python.Build.Tasks.Tests
 		[Test]
 		public void ResourceFileName()
 		{
-			Assert.AreEqual(resourceTaskItem.ItemSpec, resourceFile.File);
+			Assert.AreEqual(resourceTaskItem.ItemSpec, resourceFile.FileName);
 		}
 		
 		/// <summary>

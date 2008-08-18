@@ -4,7 +4,7 @@
 	<Config
 		  name        = "${res:Templates.File.WinFXResourceDictionary.Name}"
 		  icon        = "Icons.32x32.XMLFileIcon"
-		  subcategory = "WinFX"
+		  subcategory = "WPF"
 		  category    = "C#"
 		  defaultname = "Dictionary${Number}.xaml"
 		  language    = "XML"/>

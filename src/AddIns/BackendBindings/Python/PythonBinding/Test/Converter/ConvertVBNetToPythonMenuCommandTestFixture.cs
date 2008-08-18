@@ -16,6 +16,7 @@ namespace PythonBinding.Tests.Converter
 	/// Tests the ConvertVBNetToPythonMenuCommand.
 	/// </summary>
 	[TestFixture]
+	[Ignore("Not ported")]
 	public class ConvertVBNetToPythonMenuCommandTestFixture : ConvertToPythonMenuCommand
 	{
 		string newFileText;

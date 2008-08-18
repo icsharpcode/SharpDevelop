@@ -31,9 +31,13 @@ namespace PythonBinding.Tests.Resolver
 		{
 			resolver = new PythonResolver();
 			ParseInformation parseInfo = new ParseInformation();
+
 			mockProjectContent = new MockProjectContent();
 			mockProjectContent.SearchNamespaceToReturn = "System";
-			parseInfo.SetCompilationUnit(new DefaultCompilationUnit(mockProjectContent) { ErrorsDuringCompile = true });
+			DefaultCompilationUnit cu = new DefaultCompilationUnit(mockProjectContent);
+			cu.ErrorsDuringCompile = true;
+			cu.FileName = @"C:\Projects\Test\test.py";
+			parseInfo.SetCompilationUnit(cu);
 					
 			string python = "from System.";
 			ExpressionResult expressionResult = new ExpressionResult("from System", new DomRegion(1, 14), null, null);

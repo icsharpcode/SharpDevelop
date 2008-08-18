@@ -31,7 +31,7 @@ namespace PythonBinding.Tests.Parsing
 			
 			DefaultProjectContent projectContent = new DefaultProjectContent();
 			PythonParser parser = new PythonParser();
-			compilationUnit = parser.Parse(projectContent, @"C:\Projects\Test\test.py", python);			
+			compilationUnit = parser.Parse(projectContent, @"C:\Projects\Test\test.py", python);
 			if (compilationUnit.Classes.Count > 0) {
 				c = compilationUnit.Classes[0];
 			}
@@ -81,8 +81,8 @@ namespace PythonBinding.Tests.Parsing
 		{
 			int startLine = 1;
 			int startColumn = 1;
-			int endLine = 1;
-			int endColumn = 11;
+			int endLine = 2;
+			int endColumn = 6;
 			DomRegion region = new DomRegion(startLine, startColumn, endLine, endColumn);
 			Assert.AreEqual(region.ToString(), c.Region.ToString());
 		}		

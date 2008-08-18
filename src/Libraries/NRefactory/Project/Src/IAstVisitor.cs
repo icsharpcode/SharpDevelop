@@ -93,6 +93,8 @@ namespace ICSharpCode.NRefactory {
 		
 		object VisitExitStatement(ExitStatement exitStatement, object data);
 		
+		object VisitExpressionRangeVariable(ExpressionRangeVariable expressionRangeVariable, object data);
+		
 		object VisitExpressionStatement(ExpressionStatement expressionStatement, object data);
 		
 		object VisitFieldDeclaration(FieldDeclaration fieldDeclaration, object data);
@@ -163,21 +165,39 @@ namespace ICSharpCode.NRefactory {
 		
 		object VisitQueryExpression(QueryExpression queryExpression, object data);
 		
+		object VisitQueryExpressionAggregateClause(QueryExpressionAggregateClause queryExpressionAggregateClause, object data);
+		
+		object VisitQueryExpressionDistinctClause(QueryExpressionDistinctClause queryExpressionDistinctClause, object data);
+		
 		object VisitQueryExpressionFromClause(QueryExpressionFromClause queryExpressionFromClause, object data);
 		
 		object VisitQueryExpressionGroupClause(QueryExpressionGroupClause queryExpressionGroupClause, object data);
+		
+		object VisitQueryExpressionGroupJoinVBClause(QueryExpressionGroupJoinVBClause queryExpressionGroupJoinVBClause, object data);
+		
+		object VisitQueryExpressionGroupVBClause(QueryExpressionGroupVBClause queryExpressionGroupVBClause, object data);
 		
 		object VisitQueryExpressionIntoClause(QueryExpressionIntoClause queryExpressionIntoClause, object data);
 		
 		object VisitQueryExpressionJoinClause(QueryExpressionJoinClause queryExpressionJoinClause, object data);
 		
+		object VisitQueryExpressionJoinConditionVB(QueryExpressionJoinConditionVB queryExpressionJoinConditionVB, object data);
+		
+		object VisitQueryExpressionJoinVBClause(QueryExpressionJoinVBClause queryExpressionJoinVBClause, object data);
+		
 		object VisitQueryExpressionLetClause(QueryExpressionLetClause queryExpressionLetClause, object data);
+		
+		object VisitQueryExpressionLetVBClause(QueryExpressionLetVBClause queryExpressionLetVBClause, object data);
 		
 		object VisitQueryExpressionOrderClause(QueryExpressionOrderClause queryExpressionOrderClause, object data);
 		
 		object VisitQueryExpressionOrdering(QueryExpressionOrdering queryExpressionOrdering, object data);
 		
+		object VisitQueryExpressionPartitionVBClause(QueryExpressionPartitionVBClause queryExpressionPartitionVBClause, object data);
+		
 		object VisitQueryExpressionSelectClause(QueryExpressionSelectClause queryExpressionSelectClause, object data);
+		
+		object VisitQueryExpressionSelectVBClause(QueryExpressionSelectVBClause queryExpressionSelectVBClause, object data);
 		
 		object VisitQueryExpressionWhereClause(QueryExpressionWhereClause queryExpressionWhereClause, object data);
 		

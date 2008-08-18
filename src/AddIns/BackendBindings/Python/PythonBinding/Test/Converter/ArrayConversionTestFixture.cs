@@ -17,6 +17,7 @@ namespace PythonBinding.Tests.Converter
 	/// Tests that an array is converted from C# to Python.
 	/// </summary>
 	[TestFixture]
+	[Ignore("Not ported")]
 	public class ArrayConversionTestFixture
 	{		
 		CodeArrayCreateExpression arrayCreate;

@@ -127,8 +127,10 @@ namespace ICSharpCode.SharpDevelop
 			
 			LoggingService.Debug("OpenedFileFileNameChange: " + oldName + " => " + newName);
 			
-			Debug.Assert(openedFileDict[oldName] == file);
-			Debug.Assert(!openedFileDict.ContainsKey(newName));
+			if (openedFileDict[oldName] != file)
+				throw new ArgumentException("file must be registered as oldName");
+			if (openedFileDict.ContainsKey(newName))
+				throw new ArgumentException("there already is a file with the newName");
 			
 			openedFileDict.Remove(oldName);
 			openedFileDict[newName] = file;
@@ -137,7 +139,9 @@ namespace ICSharpCode.SharpDevelop
 		/// <summary>Called by OpenedFile.UnregisterView to update the dictionary.</summary>
 		internal static void OpenedFileClosed(OpenedFile file)
 		{
-			Debug.Assert(openedFileDict[file.FileName] == file);
+			if (openedFileDict[file.FileName] != file)
+				throw new ArgumentException("file must be registered");
+			
 			openedFileDict.Remove(file.FileName);
 			LoggingService.Debug("OpenedFileClosed: " + file.FileName);
 		}
@@ -393,6 +397,47 @@ namespace ICSharpCode.SharpDevelop
 		}
 		
 		/// <summary>
+		/// Copies a file, raising the appropriate events. This method may show message boxes.
+		/// </summary>
+		public static bool CopyFile(string oldName, string newName, bool isDirectory, bool overwrite)
+		{
+			if (FileUtility.IsEqualFileName(oldName, newName))
+				return false;
+			FileRenamingEventArgs eargs = new FileRenamingEventArgs(oldName, newName, isDirectory);
+			OnFileCopying(eargs);
+			if (eargs.Cancel)
+				return false;
+			if (!eargs.OperationAlreadyDone) {
+				try {
+					if (isDirectory && Directory.Exists(oldName)) {
+						
+						if (!overwrite && Directory.Exists(newName)) {
+							MessageService.ShowMessage(StringParser.Parse("${res:Gui.ProjectBrowser.FileInUseError}"));
+							return false;
+						}
+						FileUtility.DeepCopy(oldName, newName, overwrite);
+						
+					} else if (File.Exists(oldName)) {
+						if (!overwrite && File.Exists(newName)) {
+							MessageService.ShowMessage(StringParser.Parse("${res:Gui.ProjectBrowser.FileInUseError}"));
+							return false;
+						}
+						File.Copy(oldName, newName, overwrite);
+					}
+				} catch (Exception e) {
+					if (isDirectory) {
+						MessageService.ShowError(e, "Can't copy directory " + oldName);
+					} else {
+						MessageService.ShowError(e, "Can't copy file " + oldName);
+					}
+					return false;
+				}
+			}
+			OnFileCopied(new FileRenameEventArgs(oldName, newName, isDirectory));
+			return true;
+		}
+		
+		/// <summary>
 		/// Opens the specified file and jumps to the specified file position.
 		/// Warning: Unlike parser coordinates, line and column are 0-based.
 		/// </summary>
@@ -443,7 +488,7 @@ namespace ICSharpCode.SharpDevelop
 		}
 		
 		#region Event Handlers
-				
+		
 		static void OnFileRemoved(FileEventArgs e)
 		{
 			if (FileRemoved != null) {
@@ -471,10 +516,23 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
+		static void OnFileCopied(FileRenameEventArgs e)
+		{
+			if (FileCopied != null) {
+				FileCopied(null, e);
+			}
+		}
+		
+		static void OnFileCopying(FileRenamingEventArgs e) {
+			if (FileCopying != null) {
+				FileCopying(null, e);
+			}
+		}
+		
 		#endregion Event Handlers
 		
 		#region Static event firing methods
-				
+		
 		/// <summary>
 		/// Fires the event handlers for a file being created.
 		/// </summary>
@@ -516,11 +574,14 @@ namespace ICSharpCode.SharpDevelop
 		#endregion Static event firing methods
 		
 		#region Events
-				
+		
 		public static event EventHandler<FileEventArgs> FileCreated;
 		
 		public static event EventHandler<FileRenamingEventArgs> FileRenaming;
 		public static event EventHandler<FileRenameEventArgs> FileRenamed;
+		
+		public static event EventHandler<FileRenamingEventArgs> FileCopying;
+		public static event EventHandler<FileRenameEventArgs> FileCopied;
 		
 		public static event EventHandler<FileCancelEventArgs> FileRemoving;
 		public static event EventHandler<FileEventArgs> FileRemoved;

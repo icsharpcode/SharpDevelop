@@ -16,6 +16,7 @@ namespace PythonBinding.Tests.Converter
 	/// Tests the ConvertCSharpToPythonMenuCommand.
 	/// </summary>
 	[TestFixture]
+	[Ignore("Not ported")]
 	public class ConvertCSharpToPythonMenuCommandTestFixture : ConvertToPythonMenuCommand
 	{
 		string newFileText;

@@ -18,6 +18,7 @@ namespace PythonBinding.Tests.Converter
 	/// variable in the constructor.
 	/// </summary>
 	[TestFixture]
+	[Ignore("Not ported")]
 	public class LocalVariableAssignedInConstructorTestFixture
 	{
 		CSharpToPythonConverter converter;

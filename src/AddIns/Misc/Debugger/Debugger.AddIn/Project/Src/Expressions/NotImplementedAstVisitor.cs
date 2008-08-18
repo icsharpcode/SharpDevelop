@@ -570,5 +570,55 @@ namespace Debugger.AddIn
 		{
 			throw new NotImplementedException("YieldStatement");
 		}
+		
+		public virtual object VisitExpressionRangeVariable(ICSharpCode.NRefactory.Ast.ExpressionRangeVariable expressionRangeVariable, object data)
+		{
+			throw new NotImplementedException("ExpressionRangeVariable");
+		}
+		
+		public virtual object VisitQueryExpressionAggregateClause(ICSharpCode.NRefactory.Ast.QueryExpressionAggregateClause queryExpressionAggregateClause, object data)
+		{
+			throw new NotImplementedException("QueryExpressionAggregateClause");
+		}
+		
+		public virtual object VisitQueryExpressionDistinctClause(ICSharpCode.NRefactory.Ast.QueryExpressionDistinctClause queryExpressionDistinctClause, object data)
+		{
+			throw new NotImplementedException("QueryExpressionDistinctClause");
+		}
+		
+		public virtual object VisitQueryExpressionGroupJoinVBClause(ICSharpCode.NRefactory.Ast.QueryExpressionGroupJoinVBClause queryExpressionGroupJoinVBClause, object data)
+		{
+			throw new NotImplementedException("QueryExpressionGroupJoinVBClause");
+		}
+		
+		public virtual object VisitQueryExpressionGroupVBClause(ICSharpCode.NRefactory.Ast.QueryExpressionGroupVBClause queryExpressionGroupVBClause, object data)
+		{
+			throw new NotImplementedException("QueryExpressionGroupVBClause");
+		}
+		
+		public virtual object VisitQueryExpressionJoinConditionVB(ICSharpCode.NRefactory.Ast.QueryExpressionJoinConditionVB queryExpressionJoinConditionVB, object data)
+		{
+			throw new NotImplementedException("QueryExpressionJoinConditionVB");
+		}
+		
+		public virtual object VisitQueryExpressionJoinVBClause(ICSharpCode.NRefactory.Ast.QueryExpressionJoinVBClause queryExpressionJoinVBClause, object data)
+		{
+			throw new NotImplementedException("QueryExpressionJoinVBClause");
+		}
+		
+		public virtual object VisitQueryExpressionLetVBClause(ICSharpCode.NRefactory.Ast.QueryExpressionLetVBClause queryExpressionLetVBClause, object data)
+		{
+			throw new NotImplementedException("QueryExpressionLetVBClause");
+		}
+		
+		public virtual object VisitQueryExpressionPartitionVBClause(ICSharpCode.NRefactory.Ast.QueryExpressionPartitionVBClause queryExpressionPartitionVBClause, object data)
+		{
+			throw new NotImplementedException("QueryExpressionPartitionVBClause");
+		}
+		
+		public virtual object VisitQueryExpressionSelectVBClause(ICSharpCode.NRefactory.Ast.QueryExpressionSelectVBClause queryExpressionSelectVBClause, object data)
+		{
+			throw new NotImplementedException("QueryExpressionSelectVBClause");
+		}
 	}
 }

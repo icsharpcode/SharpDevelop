@@ -18,6 +18,7 @@ namespace PythonBinding.Tests.Converter
 	/// if and else blocks both have more than one statement.
 	/// </summary>
 	[TestFixture]
+	[Ignore("Not ported")]
 	public class IfBlockStatementConversionTestFixture
 	{
 		CSharpToPythonConverter converter;

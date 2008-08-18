@@ -19,6 +19,7 @@ namespace PythonBinding.Tests.Converter
 	/// initial value assigned.
 	/// </summary>
 	[TestFixture]
+	[Ignore("Not ported")]
 	public class FieldDeclarationWithNoInitializerTestFixture
 	{
 		CSharpToPythonConverter converter;

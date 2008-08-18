@@ -19,6 +19,7 @@ namespace PythonBinding.Tests.Converter
 	/// from C#.
 	/// </summary>
 	[TestFixture]
+	[Ignore("Not ported")]
 	public class ThrowExceptionConversionTestFixture
 	{		
 		CodeThrowExceptionStatement throwException;

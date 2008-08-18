@@ -6,7 +6,7 @@
 // </file>
 
 using System;
-using IronPython.Hosting;
+using System.Scripting;
 
 namespace ICSharpCode.PythonBinding
 {
@@ -19,11 +19,11 @@ namespace ICSharpCode.PythonBinding
 		string path = String.Empty;
 		string message = String.Empty;
 		string lineText = String.Empty;
-		CodeSpan location;
+		SourceSpan location;
 		int errorCode;
 		Severity severity;
 		
-		public PythonCompilerError(string path, string message, string lineText, CodeSpan location, int errorCode, Severity severity)
+		public PythonCompilerError(string path, string message, string lineText, SourceSpan location, int errorCode, Severity severity)
 		{
 			this.path = path;
 			this.message = message;
@@ -35,7 +35,7 @@ namespace ICSharpCode.PythonBinding
 		
 		public override string ToString()
 		{
-			return String.Concat("[", errorCode, "][Sev:", severity.ToString(), "]", message, "\r\nLine: ", location.StartLine, lineText, "\r\n", path, "\r\n");
+			return String.Concat("[", errorCode, "][Sev:", severity.ToString(), "]", message, "\r\nLine: ", location.Start.Line, lineText, "\r\n", path, "\r\n");
 		}
 	}
 }

@@ -17,6 +17,7 @@ namespace PythonBinding.Tests.Converter
 	/// Tests that a VB.NET class is converted to Python successfully.
 	/// </summary>
 	[TestFixture]
+	[Ignore("Not ported")]
 	public class VBClassConversionTestFixture
 	{
 		CodeCompileUnit codeCompileUnit;

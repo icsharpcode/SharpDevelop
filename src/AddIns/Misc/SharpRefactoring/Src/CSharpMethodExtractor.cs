@@ -111,8 +111,11 @@ namespace SharpRefactoring
 						possibleReturnValues.Add(new VariableDeclaration(variable.Name, variable.Initializer, variable.TypeRef));
 						otherReturnValues.Add(new VariableDeclaration(variable.Name, variable.Initializer, variable.TypeRef));
 					}
+
+                    Location start = new Location(this.currentSelection.StartPosition.Column + 1, this.currentSelection.StartPosition.Line + 1);
+                    Location end = new Location(this.currentSelection.EndPosition.Column + 1, this.currentSelection.EndPosition.Line + 1);
 					
-					FindReferenceVisitor frv = new FindReferenceVisitor(true, variable.Name, variable.StartPos, variable.EndPos);
+					FindReferenceVisitor frv = new FindReferenceVisitor(true, variable.Name, start, end);
 					
 					parentNode.AcceptVisitor(frv, null);
 					

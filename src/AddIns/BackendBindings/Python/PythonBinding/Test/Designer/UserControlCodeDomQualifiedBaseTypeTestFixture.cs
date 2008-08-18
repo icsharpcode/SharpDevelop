@@ -19,6 +19,7 @@ namespace PythonBinding.Tests.Designer
 	/// designed has the correct fully qualified base type.
 	/// </summary>
 	[TestFixture]
+	[Ignore("Not ported")]
 	public class UserControlCodeDomQualifiedBaseTypeTestFixture
 	{
 		CodeCompileUnit unit;

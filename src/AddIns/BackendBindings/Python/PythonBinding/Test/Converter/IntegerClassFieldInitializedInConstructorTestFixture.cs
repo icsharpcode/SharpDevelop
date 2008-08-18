@@ -18,6 +18,7 @@ namespace PythonBinding.Tests.Converter
 	/// constructor when a value is assigned to one of its fields.
 	/// </summary>
 	[TestFixture]
+	[Ignore("Not ported")]
 	public class IntegerClassFieldInitializedInConstructorTestFixture
 	{
 		CSharpToPythonConverter converter;

@@ -13,23 +13,27 @@ using ICSharpCode.SharpDevelop.Gui;
 namespace ICSharpCode.Svn
 {
 	/// <summary>
-	/// Description of SvnMessageView.
+	/// Output pad category for subversion.
 	/// </summary>
 	public static class SvnMessageView
 	{
 		static MessageViewCategory category;
 		
+		/// <summary>
+		/// Gets the subversion message view category.
+		/// </summary>
 		public static MessageViewCategory Category {
 			get {
 				if (category == null) {
-					category = new MessageViewCategory("Subversion");
-					CompilerMessageView compilerMessageView = (CompilerMessageView)WorkbenchSingleton.Workbench.GetPad(typeof(CompilerMessageView)).PadContent;
-					compilerMessageView.AddCategory(category);
+					MessageViewCategory.Create(ref category, "Subversion");
 				}
 				return category;
 			}
 		}
 		
+		/// <summary>
+		/// Appends a line to the svn message view.
+		/// </summary>
 		public static void AppendLine(string text)
 		{
 			Category.AppendLine(text);
@@ -39,6 +43,21 @@ namespace ICSharpCode.Svn
 		{
 			client.Notify += delegate(object sender, NotificationEventArgs e) {
 				AppendLine(e.Kind + e.Action + " " + e.Path);
+			};
+			AsynchronousWaitDialog waitDialog = null;
+			client.OperationStarted += delegate(object sender, SubversionOperationEventArgs e) {
+				if (waitDialog == null) {
+					waitDialog = AsynchronousWaitDialog.ShowWaitDialog("svn " + e.Operation);
+//					waitDialog.Cancelled += delegate {
+//						client.Cancel();
+//					};
+				}
+			};
+			client.OperationFinished += delegate {
+				if (waitDialog != null) {
+					waitDialog.Dispose();
+					waitDialog = null;
+				}
 			};
 		}
 	}

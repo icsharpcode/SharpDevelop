@@ -1573,12 +1573,6 @@ namespace ICSharpCode.NRefactory.Ast {
 			initializer = Expression.Null;
 		}
 		
-		public bool HasRemoveRegion {
-			get {
-				return !removeRegion.IsNull;
-			}
-		}
-		
 		public bool HasAddRegion {
 			get {
 				return !addRegion.IsNull;
@@ -1588,6 +1582,12 @@ namespace ICSharpCode.NRefactory.Ast {
 		public bool HasRaiseRegion {
 			get {
 				return !raiseRegion.IsNull;
+			}
+		}
+		
+		public bool HasRemoveRegion {
+			get {
+				return !removeRegion.IsNull;
 			}
 		}
 		
@@ -1713,6 +1713,88 @@ namespace ICSharpCode.NRefactory.Ast {
 		
 		public override string ToString() {
 			return string.Format("[ExitStatement ExitType={0}]", ExitType);
+		}
+	}
+	
+	public class ExpressionRangeVariable : AbstractNode, INullable {
+		
+		string identifier;
+		
+		Expression expression;
+		
+		TypeReference type;
+		
+		public string Identifier {
+			get {
+				return identifier;
+			}
+			set {
+				identifier = value ?? "";
+			}
+		}
+		
+		public Expression Expression {
+			get {
+				return expression;
+			}
+			set {
+				expression = value ?? Expression.Null;
+				if (!expression.IsNull) expression.Parent = this;
+			}
+		}
+		
+		public TypeReference Type {
+			get {
+				return type;
+			}
+			set {
+				type = value ?? TypeReference.Null;
+			}
+		}
+		
+		public ExpressionRangeVariable() {
+			identifier = "";
+			expression = Expression.Null;
+			type = TypeReference.Null;
+		}
+		
+		public virtual bool IsNull {
+			get {
+				return false;
+			}
+		}
+		
+		public static ExpressionRangeVariable Null {
+			get {
+				return NullExpressionRangeVariable.Instance;
+			}
+		}
+		
+		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+			return visitor.VisitExpressionRangeVariable(this, data);
+		}
+		
+		public override string ToString() {
+			return string.Format("[ExpressionRangeVariable Identifier={0} Expression={1} Type={2}]", Identifier, Expression, Type);
+		}
+	}
+	
+	internal sealed class NullExpressionRangeVariable : ExpressionRangeVariable {
+		
+		internal static NullExpressionRangeVariable Instance = new NullExpressionRangeVariable();
+		
+		public override bool IsNull {
+			get {
+				return true;
+			}
+		}
+		
+		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+			return null;
+		}
+		
+		public override string ToString() {
+			return "[NullExpressionRangeVariable]";
 		}
 	}
 	
@@ -2205,11 +2287,12 @@ namespace ICSharpCode.NRefactory.Ast {
 			elseIfSections = new List<ElseIfSection>();
 		}
 		
-		public bool HasElseIfSections {
-			get {
-				return elseIfSections.Count > 0;
+
+			public IfElseStatement(Expression condition, Statement trueStatement)
+				: this(condition) {
+				this.trueStatement.Add(Statement.CheckNull(trueStatement));
+				if (trueStatement != null) trueStatement.Parent = this;
 			}
-		}
 		
 		public bool HasElseStatements {
 			get {
@@ -2217,12 +2300,11 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 		}
 		
-
-			public IfElseStatement(Expression condition, Statement trueStatement)
-				: this(condition) {
-				this.trueStatement.Add(Statement.CheckNull(trueStatement));
-				if (trueStatement != null) trueStatement.Parent = this;
+		public bool HasElseIfSections {
+			get {
+				return elseIfSections.Count > 0;
 			}
+		}
 		
 
 			public IfElseStatement(Expression condition, Statement trueStatement, Statement falseStatement)
@@ -2346,9 +2428,9 @@ namespace ICSharpCode.NRefactory.Ast {
 			setRegion = PropertySetRegion.Null;
 		}
 		
-		public bool IsWriteOnly {
+		public bool IsReadOnly {
 			get {
-				return !HasGetRegion && HasSetRegion;
+				return HasGetRegion && !HasSetRegion;
 			}
 		}
 		
@@ -2364,9 +2446,9 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 		}
 		
-		public bool IsReadOnly {
+		public bool IsWriteOnly {
 			get {
-				return HasGetRegion && !HasSetRegion;
+				return !HasGetRegion && HasSetRegion;
 			}
 		}
 		
@@ -3272,12 +3354,6 @@ public Location ExtendedEndLocation { get; set; }
 			}
 		}
 		
-		public bool IsWriteOnly {
-			get {
-				return !HasGetRegion && HasSetRegion;
-			}
-		}
-		
 		public bool HasSetRegion {
 			get {
 				return !setRegion.IsNull;
@@ -3299,6 +3375,12 @@ public Location ExtendedEndLocation { get; set; }
 			}
 			if ((modifier & Modifiers.WriteOnly) != Modifiers.WriteOnly) {
 				this.GetRegion = new PropertyGetRegion(null, null);
+			}
+		}
+		
+		public bool IsWriteOnly {
+			get {
+				return !HasGetRegion && HasSetRegion;
 			}
 		}
 		
@@ -3530,6 +3612,58 @@ public Location ExtendedEndLocation { get; set; }
 		}
 	}
 	
+	public class QueryExpressionAggregateClause : QueryExpressionClause {
+		
+		QueryExpressionFromClause fromClause;
+		
+		List<QueryExpressionClause> middleClauses;
+		
+		List<ExpressionRangeVariable> intoVariables;
+		
+		public QueryExpressionFromClause FromClause {
+			get {
+				return fromClause;
+			}
+			set {
+				fromClause = value ?? QueryExpressionFromClause.Null;
+				if (!fromClause.IsNull) fromClause.Parent = this;
+			}
+		}
+		
+		public List<QueryExpressionClause> MiddleClauses {
+			get {
+				return middleClauses;
+			}
+			set {
+				middleClauses = value ?? new List<QueryExpressionClause>();
+			}
+		}
+		
+		public List<ExpressionRangeVariable> IntoVariables {
+			get {
+				return intoVariables;
+			}
+			set {
+				intoVariables = value ?? new List<ExpressionRangeVariable>();
+			}
+		}
+		
+		public QueryExpressionAggregateClause() {
+			fromClause = QueryExpressionFromClause.Null;
+			middleClauses = new List<QueryExpressionClause>();
+			intoVariables = new List<ExpressionRangeVariable>();
+		}
+		
+		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+			return visitor.VisitQueryExpressionAggregateClause(this, data);
+		}
+		
+		public override string ToString() {
+			return string.Format("[QueryExpressionAggregateClause FromClause={0} MiddleClauses={1} IntoVariables={2" +
+					"}]", FromClause, GetCollectionString(MiddleClauses), GetCollectionString(IntoVariables));
+		}
+	}
+	
 	public abstract class QueryExpressionClause : AbstractNode, INullable {
 		
 		public virtual bool IsNull {
@@ -3561,6 +3695,20 @@ public Location ExtendedEndLocation { get; set; }
 		
 		public override string ToString() {
 			return "[NullQueryExpressionClause]";
+		}
+	}
+	
+	public class QueryExpressionDistinctClause : QueryExpressionClause {
+		
+		public QueryExpressionDistinctClause() {
+		}
+		
+		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+			return visitor.VisitQueryExpressionDistinctClause(this, data);
+		}
+		
+		public override string ToString() {
+			return "[QueryExpressionDistinctClause]";
 		}
 	}
 	
@@ -3677,6 +3825,96 @@ public Location ExtendedEndLocation { get; set; }
 		
 		public override string ToString() {
 			return string.Format("[QueryExpressionGroupClause Projection={0} GroupBy={1}]", Projection, GroupBy);
+		}
+	}
+	
+	public class QueryExpressionGroupJoinVBClause : QueryExpressionClause {
+		
+		QueryExpressionJoinVBClause joinClause;
+		
+		List<ExpressionRangeVariable> intoVariables;
+		
+		public QueryExpressionJoinVBClause JoinClause {
+			get {
+				return joinClause;
+			}
+			set {
+				joinClause = value ?? QueryExpressionJoinVBClause.Null;
+				if (!joinClause.IsNull) joinClause.Parent = this;
+			}
+		}
+		
+		public List<ExpressionRangeVariable> IntoVariables {
+			get {
+				return intoVariables;
+			}
+			set {
+				intoVariables = value ?? new List<ExpressionRangeVariable>();
+			}
+		}
+		
+		public QueryExpressionGroupJoinVBClause() {
+			joinClause = QueryExpressionJoinVBClause.Null;
+			intoVariables = new List<ExpressionRangeVariable>();
+		}
+		
+		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+			return visitor.VisitQueryExpressionGroupJoinVBClause(this, data);
+		}
+		
+		public override string ToString() {
+			return string.Format("[QueryExpressionGroupJoinVBClause JoinClause={0} IntoVariables={1}]", JoinClause, GetCollectionString(IntoVariables));
+		}
+	}
+	
+	public class QueryExpressionGroupVBClause : QueryExpressionClause {
+		
+		List<ExpressionRangeVariable> groupVariables;
+		
+		List<ExpressionRangeVariable> byVariables;
+		
+		List<ExpressionRangeVariable> intoVariables;
+		
+		public List<ExpressionRangeVariable> GroupVariables {
+			get {
+				return groupVariables;
+			}
+			set {
+				groupVariables = value ?? new List<ExpressionRangeVariable>();
+			}
+		}
+		
+		public List<ExpressionRangeVariable> ByVariables {
+			get {
+				return byVariables;
+			}
+			set {
+				byVariables = value ?? new List<ExpressionRangeVariable>();
+			}
+		}
+		
+		public List<ExpressionRangeVariable> IntoVariables {
+			get {
+				return intoVariables;
+			}
+			set {
+				intoVariables = value ?? new List<ExpressionRangeVariable>();
+			}
+		}
+		
+		public QueryExpressionGroupVBClause() {
+			groupVariables = new List<ExpressionRangeVariable>();
+			byVariables = new List<ExpressionRangeVariable>();
+			intoVariables = new List<ExpressionRangeVariable>();
+		}
+		
+		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+			return visitor.VisitQueryExpressionGroupVBClause(this, data);
+		}
+		
+		public override string ToString() {
+			return string.Format("[QueryExpressionGroupVBClause GroupVariables={0} ByVariables={1} IntoVariables={2" +
+					"}]", GetCollectionString(GroupVariables), GetCollectionString(ByVariables), GetCollectionString(IntoVariables));
 		}
 	}
 	
@@ -3797,6 +4035,123 @@ public Location ExtendedEndLocation { get; set; }
 		}
 	}
 	
+	public class QueryExpressionJoinConditionVB : AbstractNode {
+		
+		Expression leftSide;
+		
+		Expression rightSide;
+		
+		public Expression LeftSide {
+			get {
+				return leftSide;
+			}
+			set {
+				leftSide = value ?? Expression.Null;
+				if (!leftSide.IsNull) leftSide.Parent = this;
+			}
+		}
+		
+		public Expression RightSide {
+			get {
+				return rightSide;
+			}
+			set {
+				rightSide = value ?? Expression.Null;
+				if (!rightSide.IsNull) rightSide.Parent = this;
+			}
+		}
+		
+		public QueryExpressionJoinConditionVB() {
+			leftSide = Expression.Null;
+			rightSide = Expression.Null;
+		}
+		
+		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+			return visitor.VisitQueryExpressionJoinConditionVB(this, data);
+		}
+		
+		public override string ToString() {
+			return string.Format("[QueryExpressionJoinConditionVB LeftSide={0} RightSide={1}]", LeftSide, RightSide);
+		}
+	}
+	
+	public class QueryExpressionJoinVBClause : QueryExpressionClause {
+		
+		QueryExpressionFromClause joinVariable;
+		
+		QueryExpressionJoinVBClause subJoin;
+		
+		List<QueryExpressionJoinConditionVB> conditions;
+		
+		public QueryExpressionFromClause JoinVariable {
+			get {
+				return joinVariable;
+			}
+			set {
+				joinVariable = value ?? QueryExpressionFromClause.Null;
+				if (!joinVariable.IsNull) joinVariable.Parent = this;
+			}
+		}
+		
+		public QueryExpressionJoinVBClause SubJoin {
+			get {
+				return subJoin;
+			}
+			set {
+				subJoin = value ?? QueryExpressionJoinVBClause.Null;
+				if (!subJoin.IsNull) subJoin.Parent = this;
+			}
+		}
+		
+		public List<QueryExpressionJoinConditionVB> Conditions {
+			get {
+				return conditions;
+			}
+			set {
+				conditions = value ?? new List<QueryExpressionJoinConditionVB>();
+			}
+		}
+		
+		public QueryExpressionJoinVBClause() {
+			joinVariable = QueryExpressionFromClause.Null;
+			subJoin = QueryExpressionJoinVBClause.Null;
+			conditions = new List<QueryExpressionJoinConditionVB>();
+		}
+		
+		public new static QueryExpressionJoinVBClause Null {
+			get {
+				return NullQueryExpressionJoinVBClause.Instance;
+			}
+		}
+		
+		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+			return visitor.VisitQueryExpressionJoinVBClause(this, data);
+		}
+		
+		public override string ToString() {
+			return string.Format("[QueryExpressionJoinVBClause JoinVariable={0} SubJoin={1} Conditions={2}]", JoinVariable, SubJoin, GetCollectionString(Conditions));
+		}
+	}
+	
+	internal sealed class NullQueryExpressionJoinVBClause : QueryExpressionJoinVBClause {
+		
+		internal static NullQueryExpressionJoinVBClause Instance = new NullQueryExpressionJoinVBClause();
+		
+		public override bool IsNull {
+			get {
+				return true;
+			}
+		}
+		
+		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+			return null;
+		}
+		
+		public override string ToString() {
+			return "[NullQueryExpressionJoinVBClause]";
+		}
+	}
+	
 	public class QueryExpressionLetClause : QueryExpressionClause {
 		
 		string identifier;
@@ -3833,6 +4188,32 @@ public Location ExtendedEndLocation { get; set; }
 		
 		public override string ToString() {
 			return string.Format("[QueryExpressionLetClause Identifier={0} Expression={1}]", Identifier, Expression);
+		}
+	}
+	
+	public class QueryExpressionLetVBClause : QueryExpressionClause {
+		
+		List<ExpressionRangeVariable> variables;
+		
+		public List<ExpressionRangeVariable> Variables {
+			get {
+				return variables;
+			}
+			set {
+				variables = value ?? new List<ExpressionRangeVariable>();
+			}
+		}
+		
+		public QueryExpressionLetVBClause() {
+			variables = new List<ExpressionRangeVariable>();
+		}
+		
+		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+			return visitor.VisitQueryExpressionLetVBClause(this, data);
+		}
+		
+		public override string ToString() {
+			return string.Format("[QueryExpressionLetVBClause Variables={0}]", GetCollectionString(Variables));
 		}
 	}
 	
@@ -3900,6 +4281,44 @@ public Location ExtendedEndLocation { get; set; }
 		}
 	}
 	
+	public class QueryExpressionPartitionVBClause : QueryExpressionClause {
+		
+		Expression expression;
+		
+		QueryExpressionPartitionType partitionType;
+		
+		public Expression Expression {
+			get {
+				return expression;
+			}
+			set {
+				expression = value ?? Expression.Null;
+				if (!expression.IsNull) expression.Parent = this;
+			}
+		}
+		
+		public QueryExpressionPartitionType PartitionType {
+			get {
+				return partitionType;
+			}
+			set {
+				partitionType = value;
+			}
+		}
+		
+		public QueryExpressionPartitionVBClause() {
+			expression = Expression.Null;
+		}
+		
+		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+			return visitor.VisitQueryExpressionPartitionVBClause(this, data);
+		}
+		
+		public override string ToString() {
+			return string.Format("[QueryExpressionPartitionVBClause Expression={0} PartitionType={1}]", Expression, PartitionType);
+		}
+	}
+	
 	public class QueryExpressionSelectClause : QueryExpressionClause {
 		
 		Expression projection;
@@ -3924,6 +4343,32 @@ public Location ExtendedEndLocation { get; set; }
 		
 		public override string ToString() {
 			return string.Format("[QueryExpressionSelectClause Projection={0}]", Projection);
+		}
+	}
+	
+	public class QueryExpressionSelectVBClause : QueryExpressionClause {
+		
+		List<ExpressionRangeVariable> variables;
+		
+		public List<ExpressionRangeVariable> Variables {
+			get {
+				return variables;
+			}
+			set {
+				variables = value ?? new List<ExpressionRangeVariable>();
+			}
+		}
+		
+		public QueryExpressionSelectVBClause() {
+			variables = new List<ExpressionRangeVariable>();
+		}
+		
+		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+			return visitor.VisitQueryExpressionSelectVBClause(this, data);
+		}
+		
+		public override string ToString() {
+			return string.Format("[QueryExpressionSelectVBClause Variables={0}]", GetCollectionString(Variables));
 		}
 	}
 	

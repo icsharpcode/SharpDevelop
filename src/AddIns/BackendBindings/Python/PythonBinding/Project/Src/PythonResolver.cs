@@ -53,7 +53,7 @@ namespace ICSharpCode.PythonBinding
 			}
 			
 			// Search for a local variable.
-			LocalResolveResult localResolveResult = GetLocalVariable(expressionResult.Expression, fileContent);
+			LocalResolveResult localResolveResult = GetLocalVariable(expressionResult.Expression, parseInfo.BestCompilationUnit.FileName, fileContent);
 			if (localResolveResult != null) {
 				return localResolveResult;
 			}
@@ -280,10 +280,10 @@ namespace ICSharpCode.PythonBinding
 		/// <summary>
 		/// Tries to find the type that matches the local variable name.
 		/// </summary>
-		LocalResolveResult GetLocalVariable(string expression, string fileContent)
+		LocalResolveResult GetLocalVariable(string expression, string fileName, string fileContent)
 		{
 			PythonVariableResolver resolver = new PythonVariableResolver();
-			string typeName = resolver.Resolve(expression, fileContent);
+			string typeName = resolver.Resolve(expression, fileName, fileContent);
 			if (typeName != null) {
 				IClass resolvedClass = GetClass(typeName);
 				if (resolvedClass != null) {

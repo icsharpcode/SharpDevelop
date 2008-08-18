@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Reflection.Emit;
 using IronPython.Hosting;
 
@@ -42,6 +43,16 @@ namespace ICSharpCode.Python.Build.Tasks
 		/// console app or dll).
 		/// </summary>
 		PEFileKinds TargetKind { get; set; }
+		
+		/// <summary>
+		/// Gets or sets the nature of the code in the executable produced by the compiler.
+		/// </summary>
+		PortableExecutableKinds ExecutableKind { get; set; }
+		
+		/// <summary>
+		/// Gets or sets the machine that will be targeted by the compiler.
+		/// </summary>
+		ImageFileMachine Machine { get; set; }
 		
 		/// <summary>
 		/// Gets or sets the file that contains the main entry point.

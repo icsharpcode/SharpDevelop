@@ -34,7 +34,10 @@ namespace PythonBinding.Tests.Resolver
 			mockProjectContent = new MockProjectContent();
 			mockProjectContent.SearchNamespaceToReturn = "System";
 			
-			parseInfo.SetCompilationUnit(new DefaultCompilationUnit(mockProjectContent) { ErrorsDuringCompile = true });
+			DefaultCompilationUnit cu = new DefaultCompilationUnit(mockProjectContent);
+			cu.ErrorsDuringCompile = true;
+			cu.FileName = @"C:\Projects\Test\test.py";
+			parseInfo.SetCompilationUnit(cu);
 			
 			string python = "import System\r\n" +
 							"class Test:\r\n" +

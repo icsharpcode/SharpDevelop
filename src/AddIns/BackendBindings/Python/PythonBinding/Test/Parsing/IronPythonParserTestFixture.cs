@@ -5,12 +5,12 @@
 //     <version>$Revision$</version>
 // </file>
 
+using Microsoft.Scripting.Compilers;
 using System;
 using System.CodeDom;
 using System.CodeDom.Compiler;
 using System.IO;
 using IronPython;
-using IronPython.CodeDom;
 using IronPython.Compiler;
 using IronPython.Compiler.Ast;
 using IronPython.Runtime;
@@ -38,26 +38,26 @@ namespace PythonBinding.Tests.Parsing
 		[Test]
 		public void Test2()
 		{
-			string pythonScript = "print 'Hello'";
-			CompilerContext context = new CompilerContext();
-			Parser parser = Parser.FromString(null, context, pythonScript);
-			Statement statement = parser.ParseFileInput();
+//			string pythonScript = "print 'Hello'";
+//			CompilerContext context = new CompilerContext();
+//			Parser parser = Parser.FromString(null, context, pythonScript);
+//			Statement statement = parser.ParseFileInput();
 		}
 		
 		[Test]
 		public void Test3()
 		{
-			string pythonScript = "Console.WriteLine";
-			CompilerContext context = new CompilerContext();
-			Parser parser = Parser.FromString(null, context, pythonScript);
-			Statement statement = parser.ParseFileInput();
-			ResolveVisitor visitor = new ResolveVisitor();
-			statement.Walk(visitor);
-			Console.WriteLine(statement.GetType().FullName);
+//			string pythonScript = "Console.WriteLine";
+//			CompilerContext context = new CompilerContext();
+//			Parser parser = Parser.FromString(null, context, pythonScript);
+//			Statement statement = parser.ParseFileInput();
+//			ResolveVisitor visitor = new ResolveVisitor();
+//			statement.Walk(visitor);
+//			Console.WriteLine(statement.GetType().FullName);
 		}
 	}
 	
-	public class ResolveVisitor : AstWalker
+	public class ResolveVisitor : PythonWalker
 	{
 		public override bool Walk(NameExpression node)
 		{

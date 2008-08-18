@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Scripting;
 using ICSharpCode.SharpDevelop.Dom;
 using IronPython.Compiler;
 using IronPython.Compiler.Ast;
@@ -17,7 +18,7 @@ namespace ICSharpCode.PythonBinding
 	/// <summary>
 	/// Walks the python parse tree.
 	/// </summary>
-	public class PythonAstWalker : AstWalker
+	public class PythonAstWalker : PythonWalker
 	{
 		DefaultCompilationUnit compilationUnit;
 		DefaultClass currentClass;
@@ -55,8 +56,8 @@ namespace ICSharpCode.PythonBinding
 		public override bool Walk(ClassDefinition node)
 		{
 			DefaultClass c = new DefaultClass(compilationUnit, GetFullyQualifiedClassName(node));
-			c.Region = GetClassRegion(node);
-			c.BodyRegion = GetBodyRegion(node.Body);
+			c.Region = GetRegion(node);
+			c.BodyRegion = GetBodyRegion(node.Body, node.Header);
 			AddBaseTypes(c, node.Bases);
 
 			// Save the class.
@@ -77,7 +78,7 @@ namespace ICSharpCode.PythonBinding
 		{
 			if (currentClass != null) {
 				string methodName = node.Name.ToString();
-				DomRegion bodyRegion = GetBodyRegion(node.Body);
+				DomRegion bodyRegion = GetBodyRegion(node.Body, node.Header);
 				DomRegion region = GetMethodRegion(node);
 				
 				DefaultMethod method;
@@ -109,47 +110,40 @@ namespace ICSharpCode.PythonBinding
 			compilationUnit.Usings.Add(newUsing);
 			return false;
 		}
-		
+				
 		/// <summary>
-		/// Gets the body region that the AST statement node covers.
+		/// Gets the body region for a class or a method.
 		/// </summary>
 		/// <remarks>
 		/// Note that SharpDevelop line numbers are zero based but the
-		/// DomRegion values are one based. IronPython columns are zero
-		/// based but the lines are one based.
-		/// Also note that IronPython  seems to get the end column
-		/// incorrect for classes.
+		/// DomRegion values are one based. IronPython columns and lines are one based.
 		/// </remarks>
-		DomRegion GetBodyRegion(Node node)
+		/// <param name="body">The body statement.</param>
+		/// <param name="header">The location of the header. This gives the end location for the
+		/// method or class definition up to the colon.</param>
+		DomRegion GetBodyRegion(Statement body, SourceLocation header)
 		{
-			// Get the body location.
-			Location start = node.Start;
-			Location end = node.End;
-			
-			// Add two to the start column so the body region starts after the
-			// colon character. Add nothing to the end column since IronPython gets this value
-			// wrong for classes.
-			Console.WriteLine("BodyRegion: Start.Col: " + start.Column + " End.Col: " + end.Column);
-			return new DomRegion(start.Line, start.Column + 2, end.Line, end.Column);
+			// Add one so the region starts from just after the colon.
+			return new DomRegion(header.Line, header.Column + 1, body.End.Line, body.End.Column);			
 		}
 		
 		/// <summary>
-		/// Gets the region of the class declaration.
+		/// Gets the region of the scope statement (typically a ClassDefinition). 
 		/// </summary>
-		DomRegion GetClassRegion(ScopeStatement statement)
+		/// <remarks>
+		/// A class region includes the body.
+		/// </remarks>
+		DomRegion GetRegion(ScopeStatement statement)
 		{
-			return new DomRegion(statement.Start.Line, statement.Start.Column + 1, statement.Start.Line, statement.Body.Start.Column + 1);
+			return new DomRegion(statement.Start.Line, statement.Start.Column, statement.End.Line, statement.End.Column);
 		}
 		
 		/// <summary>
-		/// Gets the region of the method declaration.
+		/// Gets the region of a method. This does not include the body.
 		/// </summary>
-		/// <remarks>We add two to the method's body start column to jump
-		/// over the colon character. Should be only adding 1 though.</remarks>
-		DomRegion GetMethodRegion(ScopeStatement statement)
+		DomRegion GetMethodRegion(FunctionDefinition node)
 		{
-			Console.WriteLine("MethodRegion: Start.Col: " + statement.Start.Column + " Body.Start.Col: " + statement.Body.Start.Column);
-			return new DomRegion(statement.Start.Line, statement.Start.Column + 1, statement.Start.Line, statement.Body.Start.Column + 2);
+			return new DomRegion(node.Start.Line, node.Start.Column, node.Header.Line, node.Header.Column + 1);
 		}
 		
 		/// <summary>
@@ -160,11 +154,11 @@ namespace ICSharpCode.PythonBinding
 		{
 			foreach (Expression expression in baseTypes) {
 				NameExpression nameExpression = expression as NameExpression;
-				FieldExpression fieldExpression = expression as FieldExpression;
+				//FieldExpression fieldExpression = expression as FieldExpression;
 				if (nameExpression != null) {
 					AddBaseType(c, nameExpression.Name.ToString());
-				} else if (fieldExpression != null) {
-					AddBaseType(c, fieldExpression.Name.ToString());
+				//} else if (fieldExpression != null) {
+				//	AddBaseType(c, fieldExpression.Name.ToString());
 				}
 			}
 		}
@@ -180,19 +174,16 @@ namespace ICSharpCode.PythonBinding
 		/// <summary>
 		/// Converts from Python AST expressions to parameters.
 		/// </summary>
-		IParameter[] ConvertParameters(IList<Expression> expressions)
+		IParameter[] ConvertParameters(Parameter[] parameters)
 		{
-			List<IParameter> parameters = new List<IParameter>();
+			List<IParameter> convertedTarameters = new List<IParameter>();
 
 			// Ignore first parameter since this is the "self" parameter.
-			for (int i = 1; i < expressions.Count; ++i) {
-				NameExpression expression = expressions[i] as NameExpression;
-				if (expression != null) {
-					DefaultParameter parameter = new DefaultParameter(expression.Name.ToString(), null, new DomRegion());
-					parameters.Add(parameter);
-				}
+			for (int i = 1; i < parameters.Length; ++i) {
+				DefaultParameter parameter = new DefaultParameter(parameters[i].Name.ToString(), null, new DomRegion());
+				convertedTarameters.Add(parameter);
 			}
-			return parameters.ToArray();
+			return convertedTarameters.ToArray();
 		}
 		
 		

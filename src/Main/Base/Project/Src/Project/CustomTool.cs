@@ -84,18 +84,12 @@ namespace ICSharpCode.SharpDevelop.Project
 				});
 		}
 		
-		static object lockObject = new object();
-		static volatile MessageViewCategory customToolMessageView;
+		static MessageViewCategory customToolMessageView;
 		
 		internal static MessageViewCategory StaticMessageView {
 			get {
 				if (customToolMessageView == null) {
-					lock (lockObject) {
-						if (customToolMessageView == null) {
-							customToolMessageView = new MessageViewCategory("Custom Tool");
-							CompilerMessageView.Instance.AddCategory(customToolMessageView);
-						}
-					}
+					MessageViewCategory.Create(ref customToolMessageView, "Custom Tool");
 				}
 				return customToolMessageView;
 			}

@@ -50,6 +50,32 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.displayCategory = displayCategory;
 		}
 		
+		/// <summary>
+		/// Creates a new MessageViewCategory with the specified category
+		/// and adds it to the CompilerMessageView pad.
+		/// This method is thread-safe and works correctly even if called multiple times for the same
+		/// thread; only one messageViewCategory will be created.
+		/// </summary>
+		public static void Create(ref MessageViewCategory messageViewCategory, string category)
+		{
+			Create(ref messageViewCategory, category, category);
+		}
+		
+		/// <summary>
+		/// Creates a new MessageViewCategory with the specified category
+		/// and adds it to the CompilerMessageView pad.
+		/// This method is thread-safe and works correctly even if called concurrently for the same
+		/// category; only one messageViewCategory will be created.
+		/// </summary>
+		public static void Create(ref MessageViewCategory messageViewCategory, string category, string displayCategory)
+		{
+			MessageViewCategory newMessageViewCategory = new MessageViewCategory(category, displayCategory);
+			if (System.Threading.Interlocked.CompareExchange(ref messageViewCategory, newMessageViewCategory, null) == null) {
+				// this thread was successful creating the category, so add it
+				CompilerMessageView.Instance.AddCategory(newMessageViewCategory);
+			}
+		}
+		
 		public void AppendLine(string text)
 		{
 			AppendText(text + Environment.NewLine);

@@ -37,7 +37,8 @@ namespace PythonBinding.Tests.Utils
 		
 		public CodeDomProvider CodeDomProvider {
 			get {
-				return new IronPython.CodeDom.PythonProvider();
+//				return new IronPython.CodeDom.PythonProvider();
+				return null;
 			}
 		}
 		

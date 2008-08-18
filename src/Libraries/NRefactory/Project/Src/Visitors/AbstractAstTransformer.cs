@@ -723,6 +723,19 @@ namespace ICSharpCode.NRefactory.Visitors {
 			return null;
 		}
 		
+		public virtual object VisitExpressionRangeVariable(ExpressionRangeVariable expressionRangeVariable, object data) {
+			Debug.Assert((expressionRangeVariable != null));
+			Debug.Assert((expressionRangeVariable.Expression != null));
+			Debug.Assert((expressionRangeVariable.Type != null));
+			nodeStack.Push(expressionRangeVariable.Expression);
+			expressionRangeVariable.Expression.AcceptVisitor(this, data);
+			expressionRangeVariable.Expression = ((Expression)(nodeStack.Pop()));
+			nodeStack.Push(expressionRangeVariable.Type);
+			expressionRangeVariable.Type.AcceptVisitor(this, data);
+			expressionRangeVariable.Type = ((TypeReference)(nodeStack.Pop()));
+			return null;
+		}
+		
 		public virtual object VisitExpressionStatement(ExpressionStatement expressionStatement, object data) {
 			Debug.Assert((expressionStatement != null));
 			Debug.Assert((expressionStatement.Expression != null));
@@ -1553,6 +1566,44 @@ namespace ICSharpCode.NRefactory.Visitors {
 			return null;
 		}
 		
+		public virtual object VisitQueryExpressionAggregateClause(QueryExpressionAggregateClause queryExpressionAggregateClause, object data) {
+			Debug.Assert((queryExpressionAggregateClause != null));
+			Debug.Assert((queryExpressionAggregateClause.FromClause != null));
+			Debug.Assert((queryExpressionAggregateClause.MiddleClauses != null));
+			Debug.Assert((queryExpressionAggregateClause.IntoVariables != null));
+			nodeStack.Push(queryExpressionAggregateClause.FromClause);
+			queryExpressionAggregateClause.FromClause.AcceptVisitor(this, data);
+			queryExpressionAggregateClause.FromClause = ((QueryExpressionFromClause)(nodeStack.Pop()));
+			for (int i = 0; i < queryExpressionAggregateClause.MiddleClauses.Count; i++) {
+				QueryExpressionClause o = queryExpressionAggregateClause.MiddleClauses[i];
+				Debug.Assert(o != null);
+				nodeStack.Push(o);
+				o.AcceptVisitor(this, data);
+				o = (QueryExpressionClause)nodeStack.Pop();
+				if (o == null)
+					queryExpressionAggregateClause.MiddleClauses.RemoveAt(i--);
+				else
+					queryExpressionAggregateClause.MiddleClauses[i] = o;
+			}
+			for (int i = 0; i < queryExpressionAggregateClause.IntoVariables.Count; i++) {
+				ExpressionRangeVariable o = queryExpressionAggregateClause.IntoVariables[i];
+				Debug.Assert(o != null);
+				nodeStack.Push(o);
+				o.AcceptVisitor(this, data);
+				o = (ExpressionRangeVariable)nodeStack.Pop();
+				if (o == null)
+					queryExpressionAggregateClause.IntoVariables.RemoveAt(i--);
+				else
+					queryExpressionAggregateClause.IntoVariables[i] = o;
+			}
+			return null;
+		}
+		
+		public virtual object VisitQueryExpressionDistinctClause(QueryExpressionDistinctClause queryExpressionDistinctClause, object data) {
+			Debug.Assert((queryExpressionDistinctClause != null));
+			return null;
+		}
+		
 		public virtual object VisitQueryExpressionFromClause(QueryExpressionFromClause queryExpressionFromClause, object data) {
 			Debug.Assert((queryExpressionFromClause != null));
 			Debug.Assert((queryExpressionFromClause.Type != null));
@@ -1576,6 +1627,68 @@ namespace ICSharpCode.NRefactory.Visitors {
 			nodeStack.Push(queryExpressionGroupClause.GroupBy);
 			queryExpressionGroupClause.GroupBy.AcceptVisitor(this, data);
 			queryExpressionGroupClause.GroupBy = ((Expression)(nodeStack.Pop()));
+			return null;
+		}
+		
+		public virtual object VisitQueryExpressionGroupJoinVBClause(QueryExpressionGroupJoinVBClause queryExpressionGroupJoinVBClause, object data) {
+			Debug.Assert((queryExpressionGroupJoinVBClause != null));
+			Debug.Assert((queryExpressionGroupJoinVBClause.JoinClause != null));
+			Debug.Assert((queryExpressionGroupJoinVBClause.IntoVariables != null));
+			nodeStack.Push(queryExpressionGroupJoinVBClause.JoinClause);
+			queryExpressionGroupJoinVBClause.JoinClause.AcceptVisitor(this, data);
+			queryExpressionGroupJoinVBClause.JoinClause = ((QueryExpressionJoinVBClause)(nodeStack.Pop()));
+			for (int i = 0; i < queryExpressionGroupJoinVBClause.IntoVariables.Count; i++) {
+				ExpressionRangeVariable o = queryExpressionGroupJoinVBClause.IntoVariables[i];
+				Debug.Assert(o != null);
+				nodeStack.Push(o);
+				o.AcceptVisitor(this, data);
+				o = (ExpressionRangeVariable)nodeStack.Pop();
+				if (o == null)
+					queryExpressionGroupJoinVBClause.IntoVariables.RemoveAt(i--);
+				else
+					queryExpressionGroupJoinVBClause.IntoVariables[i] = o;
+			}
+			return null;
+		}
+		
+		public virtual object VisitQueryExpressionGroupVBClause(QueryExpressionGroupVBClause queryExpressionGroupVBClause, object data) {
+			Debug.Assert((queryExpressionGroupVBClause != null));
+			Debug.Assert((queryExpressionGroupVBClause.GroupVariables != null));
+			Debug.Assert((queryExpressionGroupVBClause.ByVariables != null));
+			Debug.Assert((queryExpressionGroupVBClause.IntoVariables != null));
+			for (int i = 0; i < queryExpressionGroupVBClause.GroupVariables.Count; i++) {
+				ExpressionRangeVariable o = queryExpressionGroupVBClause.GroupVariables[i];
+				Debug.Assert(o != null);
+				nodeStack.Push(o);
+				o.AcceptVisitor(this, data);
+				o = (ExpressionRangeVariable)nodeStack.Pop();
+				if (o == null)
+					queryExpressionGroupVBClause.GroupVariables.RemoveAt(i--);
+				else
+					queryExpressionGroupVBClause.GroupVariables[i] = o;
+			}
+			for (int i = 0; i < queryExpressionGroupVBClause.ByVariables.Count; i++) {
+				ExpressionRangeVariable o = queryExpressionGroupVBClause.ByVariables[i];
+				Debug.Assert(o != null);
+				nodeStack.Push(o);
+				o.AcceptVisitor(this, data);
+				o = (ExpressionRangeVariable)nodeStack.Pop();
+				if (o == null)
+					queryExpressionGroupVBClause.ByVariables.RemoveAt(i--);
+				else
+					queryExpressionGroupVBClause.ByVariables[i] = o;
+			}
+			for (int i = 0; i < queryExpressionGroupVBClause.IntoVariables.Count; i++) {
+				ExpressionRangeVariable o = queryExpressionGroupVBClause.IntoVariables[i];
+				Debug.Assert(o != null);
+				nodeStack.Push(o);
+				o.AcceptVisitor(this, data);
+				o = (ExpressionRangeVariable)nodeStack.Pop();
+				if (o == null)
+					queryExpressionGroupVBClause.IntoVariables.RemoveAt(i--);
+				else
+					queryExpressionGroupVBClause.IntoVariables[i] = o;
+			}
 			return null;
 		}
 		
@@ -1609,12 +1722,67 @@ namespace ICSharpCode.NRefactory.Visitors {
 			return null;
 		}
 		
+		public virtual object VisitQueryExpressionJoinConditionVB(QueryExpressionJoinConditionVB queryExpressionJoinConditionVB, object data) {
+			Debug.Assert((queryExpressionJoinConditionVB != null));
+			Debug.Assert((queryExpressionJoinConditionVB.LeftSide != null));
+			Debug.Assert((queryExpressionJoinConditionVB.RightSide != null));
+			nodeStack.Push(queryExpressionJoinConditionVB.LeftSide);
+			queryExpressionJoinConditionVB.LeftSide.AcceptVisitor(this, data);
+			queryExpressionJoinConditionVB.LeftSide = ((Expression)(nodeStack.Pop()));
+			nodeStack.Push(queryExpressionJoinConditionVB.RightSide);
+			queryExpressionJoinConditionVB.RightSide.AcceptVisitor(this, data);
+			queryExpressionJoinConditionVB.RightSide = ((Expression)(nodeStack.Pop()));
+			return null;
+		}
+		
+		public virtual object VisitQueryExpressionJoinVBClause(QueryExpressionJoinVBClause queryExpressionJoinVBClause, object data) {
+			Debug.Assert((queryExpressionJoinVBClause != null));
+			Debug.Assert((queryExpressionJoinVBClause.JoinVariable != null));
+			Debug.Assert((queryExpressionJoinVBClause.SubJoin != null));
+			Debug.Assert((queryExpressionJoinVBClause.Conditions != null));
+			nodeStack.Push(queryExpressionJoinVBClause.JoinVariable);
+			queryExpressionJoinVBClause.JoinVariable.AcceptVisitor(this, data);
+			queryExpressionJoinVBClause.JoinVariable = ((QueryExpressionFromClause)(nodeStack.Pop()));
+			nodeStack.Push(queryExpressionJoinVBClause.SubJoin);
+			queryExpressionJoinVBClause.SubJoin.AcceptVisitor(this, data);
+			queryExpressionJoinVBClause.SubJoin = ((QueryExpressionJoinVBClause)(nodeStack.Pop()));
+			for (int i = 0; i < queryExpressionJoinVBClause.Conditions.Count; i++) {
+				QueryExpressionJoinConditionVB o = queryExpressionJoinVBClause.Conditions[i];
+				Debug.Assert(o != null);
+				nodeStack.Push(o);
+				o.AcceptVisitor(this, data);
+				o = (QueryExpressionJoinConditionVB)nodeStack.Pop();
+				if (o == null)
+					queryExpressionJoinVBClause.Conditions.RemoveAt(i--);
+				else
+					queryExpressionJoinVBClause.Conditions[i] = o;
+			}
+			return null;
+		}
+		
 		public virtual object VisitQueryExpressionLetClause(QueryExpressionLetClause queryExpressionLetClause, object data) {
 			Debug.Assert((queryExpressionLetClause != null));
 			Debug.Assert((queryExpressionLetClause.Expression != null));
 			nodeStack.Push(queryExpressionLetClause.Expression);
 			queryExpressionLetClause.Expression.AcceptVisitor(this, data);
 			queryExpressionLetClause.Expression = ((Expression)(nodeStack.Pop()));
+			return null;
+		}
+		
+		public virtual object VisitQueryExpressionLetVBClause(QueryExpressionLetVBClause queryExpressionLetVBClause, object data) {
+			Debug.Assert((queryExpressionLetVBClause != null));
+			Debug.Assert((queryExpressionLetVBClause.Variables != null));
+			for (int i = 0; i < queryExpressionLetVBClause.Variables.Count; i++) {
+				ExpressionRangeVariable o = queryExpressionLetVBClause.Variables[i];
+				Debug.Assert(o != null);
+				nodeStack.Push(o);
+				o.AcceptVisitor(this, data);
+				o = (ExpressionRangeVariable)nodeStack.Pop();
+				if (o == null)
+					queryExpressionLetVBClause.Variables.RemoveAt(i--);
+				else
+					queryExpressionLetVBClause.Variables[i] = o;
+			}
 			return null;
 		}
 		
@@ -1644,12 +1812,38 @@ namespace ICSharpCode.NRefactory.Visitors {
 			return null;
 		}
 		
+		public virtual object VisitQueryExpressionPartitionVBClause(QueryExpressionPartitionVBClause queryExpressionPartitionVBClause, object data) {
+			Debug.Assert((queryExpressionPartitionVBClause != null));
+			Debug.Assert((queryExpressionPartitionVBClause.Expression != null));
+			nodeStack.Push(queryExpressionPartitionVBClause.Expression);
+			queryExpressionPartitionVBClause.Expression.AcceptVisitor(this, data);
+			queryExpressionPartitionVBClause.Expression = ((Expression)(nodeStack.Pop()));
+			return null;
+		}
+		
 		public virtual object VisitQueryExpressionSelectClause(QueryExpressionSelectClause queryExpressionSelectClause, object data) {
 			Debug.Assert((queryExpressionSelectClause != null));
 			Debug.Assert((queryExpressionSelectClause.Projection != null));
 			nodeStack.Push(queryExpressionSelectClause.Projection);
 			queryExpressionSelectClause.Projection.AcceptVisitor(this, data);
 			queryExpressionSelectClause.Projection = ((Expression)(nodeStack.Pop()));
+			return null;
+		}
+		
+		public virtual object VisitQueryExpressionSelectVBClause(QueryExpressionSelectVBClause queryExpressionSelectVBClause, object data) {
+			Debug.Assert((queryExpressionSelectVBClause != null));
+			Debug.Assert((queryExpressionSelectVBClause.Variables != null));
+			for (int i = 0; i < queryExpressionSelectVBClause.Variables.Count; i++) {
+				ExpressionRangeVariable o = queryExpressionSelectVBClause.Variables[i];
+				Debug.Assert(o != null);
+				nodeStack.Push(o);
+				o.AcceptVisitor(this, data);
+				o = (ExpressionRangeVariable)nodeStack.Pop();
+				if (o == null)
+					queryExpressionSelectVBClause.Variables.RemoveAt(i--);
+				else
+					queryExpressionSelectVBClause.Variables[i] = o;
+			}
 			return null;
 		}
 		

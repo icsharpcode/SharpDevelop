@@ -102,11 +102,13 @@ namespace Hornung.ResourceToolkit.Resolver
 			}
 			
 			// Find $ character to the left of the caret.
-			caretOffset += 1;
-			char ch;
-			do {
+			char ch = document.GetCharAt(caretOffset);
+			if (ch == '}' && caretOffset > 0) {
 				ch = document.GetCharAt(--caretOffset);
-			} while (!Char.IsWhiteSpace(ch) && ch != '$' && caretOffset > 0);
+			}
+			while (!Char.IsWhiteSpace(ch) && ch != '$' && ch != '}' && caretOffset > 0) {
+				ch = document.GetCharAt(--caretOffset);
+			}
 			
 			if (caretOffset + 6 >= document.TextLength || document.GetText(caretOffset, 6) != ResourceReferenceToken) {
 				return null;

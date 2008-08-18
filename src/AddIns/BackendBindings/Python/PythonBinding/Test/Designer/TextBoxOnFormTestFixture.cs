@@ -34,6 +34,7 @@ namespace PythonBinding.Tests.Designer
 	/// 		Value: textbox1
 	/// </summary>
 	[TestFixture]
+	[Ignore("Not ported")]
 	public class TextBoxOnFormTestFixture
 	{
 		CodeCompileUnit unit;

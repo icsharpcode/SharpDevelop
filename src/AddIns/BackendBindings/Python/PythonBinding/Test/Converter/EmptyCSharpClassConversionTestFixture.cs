@@ -18,6 +18,7 @@ namespace PythonBinding.Tests.Converter
 	/// class constructor.
 	/// </summary>
 	[TestFixture]
+	[Ignore("Not ported")]
 	public class ClassConstructorConversionTestFixture
 	{
 		CSharpToPythonConverter converter;

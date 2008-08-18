@@ -9,7 +9,6 @@ using System;
 using System.CodeDom;
 using System.CodeDom.Compiler;
 using System.IO;
-using IronPython.CodeDom;
 using NUnit.Framework;
 
 namespace PythonBinding.Tests
@@ -28,18 +27,18 @@ namespace PythonBinding.Tests
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			PythonProvider provider = new PythonProvider();
-			codeCompileUnit = provider.Parse(new StringReader(GetFormCode()));
-			foreach (CodeNamespace n in codeCompileUnit.Namespaces) {
-				foreach (CodeTypeDeclaration typeDecl in n.Types) {
-					foreach (CodeTypeMember m in typeDecl.Members) {
-						if (m.Name == "InitializeComponent") {
-							formClass = typeDecl;
-							break;
-						}
-					}
-				}
-			}
+		//	PythonProvider provider = new PythonProvider();
+		//	codeCompileUnit = provider.Parse(new StringReader(GetFormCode()));
+		//	foreach (CodeNamespace n in codeCompileUnit.Namespaces) {
+		//		foreach (CodeTypeDeclaration typeDecl in n.Types) {
+		//			foreach (CodeTypeMember m in typeDecl.Members) {
+		//				if (m.Name == "InitializeComponent") {
+		//					formClass = typeDecl;
+		//					break;
+		//				}
+		//			}
+		//		}
+		//	}
 		}
 
 		[Test]

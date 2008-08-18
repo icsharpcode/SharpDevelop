@@ -8,8 +8,10 @@
 using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Text;
 
 using ICSharpCode.Core;
+using System.Threading;
 
 namespace ICSharpCode.SharpDevelop.Util
 {
@@ -19,13 +21,12 @@ namespace ICSharpCode.SharpDevelop.Util
 	/// </summary>
 	public class ProcessRunner : IDisposable
 	{
-		readonly object lockObj = new object();
 		Process process;
-		string standardOutput = String.Empty;
-		string workingDirectory = String.Empty;
-		OutputReader standardOutputReader;
-		OutputReader standardErrorReader;
-
+		StringBuilder standardOutput = new StringBuilder();
+		StringBuilder standardError = new StringBuilder();
+		ManualResetEvent endOfOutput = new ManualResetEvent(false);
+		int outputStreamsFinished;
+		
 		/// <summary>
 		/// Triggered when the process has exited.
 		/// </summary>
@@ -51,26 +52,15 @@ namespace ICSharpCode.SharpDevelop.Util
 		/// <summary>
 		/// Gets or sets the process's working directory.
 		/// </summary>
-		public string WorkingDirectory {
-			get {
-				return workingDirectory;
-			}
-			
-			set {
-				workingDirectory = value;
-			}
-		}
+		public string WorkingDirectory { get; set; }
 
 		/// <summary>
 		/// Gets the standard output returned from the process.
 		/// </summary>
 		public string StandardOutput {
 			get {
-				string output = String.Empty;
-				if (standardOutputReader != null) {
-					output = standardOutputReader.Output;
-				}
-				return output;
+				lock (standardOutput)
+					return standardOutput.ToString();
 			}
 		}
 		
@@ -79,11 +69,8 @@ namespace ICSharpCode.SharpDevelop.Util
 		/// </summary>
 		public string StandardError {
 			get {
-				string output = String.Empty;
-				if (standardErrorReader != null) {
-					output = standardErrorReader.Output;
-				}
-				return output;
+				lock (standardError)
+					return standardError.ToString();
 			}
 		}
 		
@@ -92,6 +79,8 @@ namespace ICSharpCode.SharpDevelop.Util
 		/// </summary>
 		public void Dispose()
 		{
+			process.Dispose();
+			endOfOutput.Close();
 		}
 		
 		/// <summary>
@@ -130,8 +119,7 @@ namespace ICSharpCode.SharpDevelop.Util
 			bool exited = process.WaitForExit(timeout);
 			
 			if (exited) {
-				standardOutputReader.WaitForFinish();
-				standardErrorReader.WaitForFinish();
+				endOfOutput.WaitOne(timeout == int.MaxValue ? Timeout.Infinite : timeout, false);
 			}
 			
 			return exited;
@@ -160,9 +148,11 @@ namespace ICSharpCode.SharpDevelop.Util
 			process = new Process();
 			process.StartInfo.CreateNoWindow = true;
 			process.StartInfo.FileName = command;
-			process.StartInfo.WorkingDirectory = workingDirectory;
+			process.StartInfo.WorkingDirectory = WorkingDirectory;
 			process.StartInfo.RedirectStandardOutput = true;
+			process.OutputDataReceived += OnOutputLineReceived;
 			process.StartInfo.RedirectStandardError = true;
+			process.ErrorDataReceived += OnErrorLineReceived;
 			process.StartInfo.UseShellExecute = false;
 			process.StartInfo.Arguments = arguments;
 			
@@ -171,7 +161,6 @@ namespace ICSharpCode.SharpDevelop.Util
 				process.Exited += OnProcessExited;
 			}
 
-			lock (lockObj) {
 				bool started = false;
 				try {
 					process.Start();
@@ -183,20 +172,8 @@ namespace ICSharpCode.SharpDevelop.Util
 					}
 				}
 				
-				standardOutputReader = new OutputReader(process.StandardOutput);
-				if (OutputLineReceived != null) {
-					standardOutputReader.LineReceived += new LineReceivedEventHandler(OnOutputLineReceived);
-				}
-				
-				standardOutputReader.Start();
-				
-				standardErrorReader = new OutputReader(process.StandardError);
-				if (ErrorLineReceived != null) {
-					standardErrorReader.LineReceived += new LineReceivedEventHandler(OnErrorLineReceived);
-				}
-				
-				standardErrorReader.Start();
-			}
+				process.BeginOutputReadLine();
+				process.BeginErrorReadLine();
 		}
 		
 		/// <summary>
@@ -219,8 +196,7 @@ namespace ICSharpCode.SharpDevelop.Util
 					process.Close();
 					process.Dispose();
 					process = null;
-					standardOutputReader.WaitForFinish();
-					standardErrorReader.WaitForFinish();
+					endOfOutput.WaitOne();
 				} else {
 					process = null;
 				}
@@ -233,9 +209,8 @@ namespace ICSharpCode.SharpDevelop.Util
 		protected void OnProcessExited(object sender, EventArgs e)
 		{
 			if (ProcessExited != null) {
-				lock (lockObj) {
-					standardOutputReader.WaitForFinish();
-					standardErrorReader.WaitForFinish();
+				if (endOfOutput != null) {
+					endOfOutput.WaitOne();
 				}
 				
 				ProcessExited(this, e);
@@ -247,10 +222,18 @@ namespace ICSharpCode.SharpDevelop.Util
 		/// </summary>
 		/// <param name="sender">The event source.</param>
 		/// <param name="e">The line received event arguments.</param>
-		protected void OnOutputLineReceived(object sender, LineReceivedEventArgs e)
+		protected void OnOutputLineReceived(object sender, DataReceivedEventArgs e)
 		{
+			if (e.Data == null) {
+				if (Interlocked.Increment(ref outputStreamsFinished) == 2)
+					endOfOutput.Set();
+				return;
+			}
+			lock (standardOutput) {
+				standardOutput.AppendLine(e.Data);
+			}
 			if (OutputLineReceived != null) {
-				OutputLineReceived(this, e);
+				OutputLineReceived(this, new LineReceivedEventArgs(e.Data));
 			}
 		}
 		
@@ -259,10 +242,18 @@ namespace ICSharpCode.SharpDevelop.Util
 		/// </summary>
 		/// <param name="sender">The event source.</param>
 		/// <param name="e">The line received event arguments.</param>
-		protected void OnErrorLineReceived(object sender, LineReceivedEventArgs e)
+		protected void OnErrorLineReceived(object sender, DataReceivedEventArgs e)
 		{
+			if (e.Data == null) {
+				if (Interlocked.Increment(ref outputStreamsFinished) == 2)
+					endOfOutput.Set();
+				return;
+			}
+			lock (standardError) {
+				standardError.AppendLine(e.Data);
+			}
 			if (ErrorLineReceived != null) {
-				ErrorLineReceived(this, e);
+				ErrorLineReceived(this, new LineReceivedEventArgs(e.Data));
 			}
 		}
 	}

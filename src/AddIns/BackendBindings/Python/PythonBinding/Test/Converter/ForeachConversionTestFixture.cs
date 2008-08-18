@@ -28,6 +28,7 @@ namespace PythonBinding.Tests.Converter
 	/// 	iterator.MoveNext(); )
 	/// </summary>
 	[TestFixture]
+	[Ignore("Not ported")]
 	public class ForeachConversionTestFixture
 	{
 		CodeIterationStatement foreachStatement;
