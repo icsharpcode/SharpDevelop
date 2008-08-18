@@ -35,6 +35,7 @@ namespace PythonBinding.Tests.Converter
 	/// but this is not possible using the code dom.
 	/// </summary>
 	[TestFixture]
+	[Ignore("Not ported")]
 	public class ForLoopConversionTestFixture
 	{
 		CodeIterationStatement forStatement;

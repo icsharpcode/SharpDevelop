@@ -14,7 +14,6 @@ using System.IO;
 using System.Windows.Forms;
 using ICSharpCode.PythonBinding;
 using IronPython;
-using IronPython.CodeDom;
 using IronPython.Compiler;
 using IronPython.Compiler.Ast;
 using Microsoft.CSharp;
@@ -44,19 +43,18 @@ namespace PyWalker
 		{
 			try {
 				Clear();
-				PythonCompilerSink sink = new PythonCompilerSink();
-				CompilerContext context = new CompilerContext(String.Empty, sink);
-//				CompilerContext context = new CompilerContext(String.Empty);
-				Parser parser = Parser.FromString(null, context, codeTextBox.Text);
-				Statement statement = parser.ParseFileInput();
-				ResolveWalker walker = new ResolveWalker(this);
-				statement.Walk(walker);
-				if (sink.Errors.Count > 0) {
-					walkerOutputTextBox.Text += "\r\n";
-					foreach (PythonCompilerError error in sink.Errors) {
-						walkerOutputTextBox.Text += error.ToString() + "\r\n";
-					}
-				}
+//				PythonCompilerSink sink = new PythonCompilerSink();
+//				CompilerContext context = new CompilerContext(String.Empty, sink);
+//				Parser parser = Parser.FromString(null, context, codeTextBox.Text);
+//				Statement statement = parser.ParseFileInput();
+//				ResolveWalker walker = new ResolveWalker(this);
+//				statement.Walk(walker);
+//				if (sink.Errors.Count > 0) {
+//					walkerOutputTextBox.Text += "\r\n";
+//					foreach (PythonCompilerError error in sink.Errors) {
+//						walkerOutputTextBox.Text += error.ToString() + "\r\n";
+//					}
+//				}
 			} catch (Exception ex) {
 				walkerOutputTextBox.Text = ex.ToString();
 			}
@@ -76,10 +74,10 @@ namespace PyWalker
 		{
 			try {
 				Clear();
-				PythonProvider provider = new PythonProvider();
-				CodeCompileUnit unit = provider.Parse(new StringReader(codeTextBox.Text));
-				CodeDomVisitor visitor = new CodeDomVisitor(this);
-				visitor.Visit(unit);
+//				PythonProvider provider = new PythonProvider();
+//				CodeCompileUnit unit = provider.Parse(new StringReader(codeTextBox.Text));
+//				CodeDomVisitor visitor = new CodeDomVisitor(this);
+//				visitor.Visit(unit);
 			} catch (Exception ex) {
 				walkerOutputTextBox.Text = ex.ToString();
 			}
@@ -93,15 +91,15 @@ namespace PyWalker
 		{
 			try {
 				Clear();
-				PythonProvider provider = new PythonProvider();
-				CodeCompileUnit unit = provider.Parse(new StringReader(codeTextBox.Text));
-				StringWriter writer = new StringWriter();
-				CodeGeneratorOptions options = new CodeGeneratorOptions();
-				options.BlankLinesBetweenMembers = false;
-				options.IndentString = "\t";
-				provider.GenerateCodeFromCompileUnit(unit, writer, options);
-				
-				walkerOutputTextBox.Text = writer.ToString();
+//				PythonProvider provider = new PythonProvider();
+//				CodeCompileUnit unit = provider.Parse(new StringReader(codeTextBox.Text));
+//				StringWriter writer = new StringWriter();
+//				CodeGeneratorOptions options = new CodeGeneratorOptions();
+//				options.BlankLinesBetweenMembers = false;
+//				options.IndentString = "\t";
+//				provider.GenerateCodeFromCompileUnit(unit, writer, options);
+//				
+//				walkerOutputTextBox.Text = writer.ToString();
 			} catch (Exception ex) {
 				walkerOutputTextBox.Text = ex.ToString();
 			}
@@ -121,14 +119,14 @@ namespace PyWalker
 					NRefactory.Visitors.CodeDomVisitor visitor = new NRefactory.Visitors.CodeDomVisitor();
 					visitor.VisitCompilationUnit(parser.CompilationUnit, null);
 				
-					PythonProvider provider = new PythonProvider();
-					StringWriter writer = new StringWriter();
-					CodeGeneratorOptions options = new CodeGeneratorOptions();
-					options.BlankLinesBetweenMembers = false;
-					options.IndentString = "\t";
-					provider.GenerateCodeFromCompileUnit(visitor.codeCompileUnit, writer, options);
-	
-					walkerOutputTextBox.Text = writer.ToString();
+//					PythonProvider provider = new PythonProvider();
+//					StringWriter writer = new StringWriter();
+//					CodeGeneratorOptions options = new CodeGeneratorOptions();
+//					options.BlankLinesBetweenMembers = false;
+//					options.IndentString = "\t";
+//					provider.GenerateCodeFromCompileUnit(visitor.codeCompileUnit, writer, options);
+//	
+//					walkerOutputTextBox.Text = writer.ToString();
 				}
 			} catch (Exception ex) {
 				walkerOutputTextBox.Text = ex.ToString();

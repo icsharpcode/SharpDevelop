@@ -17,6 +17,7 @@ namespace PythonBinding.Tests.Converter
 	/// Tests that an array cast is correctly converted to Python.
 	/// </summary>
 	[TestFixture]
+	[Ignore("Not ported")]
 	public class ArrayCastConversionTestFixture
 	{
 		string csharp = "class Foo\r\n" +

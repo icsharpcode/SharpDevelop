@@ -2,7 +2,7 @@
 	<UsingTask TaskName="ICSharpCode.Python.Build.Tasks.PythonCompilerTask"
 	           AssemblyFile="$(PythonBinPath)\Python.Build.Tasks.dll"/>
 	<UsingTask TaskName="CreateCSharpManifestResourceName"
-	           AssemblyName="Microsoft.Build.Tasks, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"/>
+	           AssemblyName="Microsoft.Build.Tasks.v3.5, Version=3.5.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"/>
 	
 	<PropertyGroup>
 		<MSBuildAllProjects>$(MSBuildAllProjects);$(PythonBinPath)\SharpDevelop.Build.Python.targets</MSBuildAllProjects>
@@ -13,81 +13,92 @@
 	<PropertyGroup>
 		<CreateManifestResourceNamesDependsOn></CreateManifestResourceNamesDependsOn>
 	</PropertyGroup>
-	<Target
-		Name="CreateManifestResourceNames"
-		Condition="'@(ResxWithNoCulture)@(ResxWithCulture)@(NonResxWithNoCulture)@(NonResxWithCulture)'!=''"
-		DependsOnTargets="$(CreateManifestResourceNamesDependsOn)"
-	>
-		
-		<!-- Create the target resource names for non-culture resx files. -->
-		<CreateCSharpManifestResourceName Condition="'@(ResxWithNoCulture)'!=''"
-			ResourceFiles="@(ResxWithNoCulture)"
-			RootNamespace="$(RootNamespace)">
-			
-			<Output TaskParameter="ManifestResourceNames" ItemName="ManifestResourceWithNoCultureName"/>
-		
-		</CreateCSharpManifestResourceName>
-		
-		<!-- Create the target resource names for culture resx files. -->
-		<CreateCSharpManifestResourceName Condition="'@(ResxWithCulture)'!=''"
-			ResourceFiles="@(ResxWithCulture)"
-			RootNamespace="$(RootNamespace)">
-			
-			<Output TaskParameter="ManifestResourceNames" ItemName="ManifestResourceWithCultureName"/>
-		
-		</CreateCSharpManifestResourceName>
-		
-		<!-- Create the target resource names for non-culture non-resx files. -->
-		<CreateCSharpManifestResourceName Condition="'@(NonResxWithNoCulture)'!=''"
-			ResourceFiles="@(NonResxWithNoCulture)"
-			RootNamespace="$(RootNamespace)">
-			
-			<Output TaskParameter="ManifestResourceNames" ItemName="ManifestNonResxWithNoCulture"/>
-		
-		</CreateCSharpManifestResourceName>
-		
-		<!-- Create the target resource names for culture non-resx files. -->
-		<CreateCSharpManifestResourceName Condition="'@(NonResxWithCulture)'!=''"
-			ResourceFiles="@(NonResxWithCulture)"
-			RootNamespace="$(RootNamespace)">
-			
-			<Output TaskParameter="ManifestResourceNames" ItemName="ManifestNonResxWithCulture"/>
-		
-		</CreateCSharpManifestResourceName>
-	</Target>
+    <Target
+        Name="CreateManifestResourceNames"
+        Condition="'@(EmbeddedResource)' != ''"
+        DependsOnTargets="$(CreateManifestResourceNamesDependsOn)"
+        >
+
+        <ItemGroup>
+            <_Temporary Remove="@(_Temporary)" />
+        </ItemGroup>
+        
+        <!-- Create manifest names for culture and non-culture Resx files, and for non-culture Non-Resx resources -->
+        <CreateCSharpManifestResourceName
+              ResourceFiles="@(EmbeddedResource)"
+              RootNamespace="$(RootNamespace)"              
+              Condition="'%(EmbeddedResource.ManifestResourceName)' == '' and ('%(EmbeddedResource.WithCulture)' == 'false' or '%(EmbeddedResource.Type)' == 'Resx')">
+
+            <Output TaskParameter="ResourceFilesWithManifestResourceNames" ItemName="_Temporary" />
+
+        </CreateCSharpManifestResourceName>
+      	
+      	<!-- Create manifest names for all culture non-resx resources -->
+        <CreateCSharpManifestResourceName
+              ResourceFiles="@(EmbeddedResource)"
+              RootNamespace="$(RootNamespace)"
+              PrependCultureAsDirectory="false"
+              Condition="'%(EmbeddedResource.ManifestResourceName)' == '' and '%(EmbeddedResource.WithCulture)' == 'true' and '%(EmbeddedResource.Type)' == 'Non-Resx'">
+
+            <Output TaskParameter="ResourceFilesWithManifestResourceNames" ItemName="_Temporary" />
+
+        </CreateCSharpManifestResourceName>
+
+        <ItemGroup>
+            <EmbeddedResource Remove="@(EmbeddedResource)" Condition="'%(EmbeddedResource.ManifestResourceName)' == ''"/>
+            <EmbeddedResource Include="@(_Temporary)" />
+            <_Temporary Remove="@(_Temporary)" />
+        </ItemGroup>              
+    </Target>
 	
-	<Target
-		Name="CoreCompile"
-		Inputs="$(MSBuildAllProjects);
-		@(Compile);
-		@(ReferencePath);"
-		Outputs="@(IntermediateAssembly)"
-		DependsOnTargets="$(CoreCompileDependsOn)"
-	>
+    <Target
+        Name="CoreCompile"
+        Inputs="$(MSBuildAllProjects);
+                @(Compile);                               
+                @(_CoreCompileResourceInputs);
+                @(ReferencePath)"
+        Outputs="@(IntermediateAssembly)"
+        DependsOnTargets="$(CoreCompileDependsOn)"
+    >
 		<PythonCompilerTask
-			EmitDebugInformation="$(DebugSymbols)"
+ 			EmitDebugInformation="$(DebugSymbols)"
 			MainFile="$(MainFile)"
+			Platform="$(PlatformTarget)"
 			OutputAssembly="@(IntermediateAssembly)"
 			References="@(ReferencePath)"
-			Resources="@(ManifestResourceWithNoCulture);@(ManifestNonResxWithNoCultureOnDisk);@(CompiledLicenseFile)"
+			Resources="@(_CoreCompileResourceInputs)"
 			Sources="@(Compile)"
 			TargetType="$(OutputType)"/>
-		<!--
-	    bool AutoImportAll { get; set; }
-	    CompilerSink CompilerSink { get; set; }
-	    PortableExecutableKinds ExecutableKind { get; set; }
-	    bool IncludeDebugInformation { get; set; }
-	    ImageFileMachine Machine { get; set; }
-	    string MainFile { get; set; }
-	    string OutputAssembly { get; set; }
-	    IList<string> ReferencedAssemblies { get; set; }
-	    IList<ResourceFile> ResourceFiles { get; set; }
-	    IList<string> SourceFiles { get; set; }
-	    bool StaticTypes { get; set; }
-	    PEFileKinds TargetKind { get; set; }
-	-->
-	
 	</Target>
 	
 	<Import Project="$(MSBuildBinPath)\Microsoft.Common.targets"/>
+	
+    <PropertyGroup Condition="'$(OutputType)'=='exe' Or '$(OutputType)'=='winexe'">
+        <PrepareForRunDependsOn>
+            CopyFilesToOutputDirectory;CopyIntermediateAssemblyDllToOutputDirectory
+        </PrepareForRunDependsOn>
+    </PropertyGroup>
+    <Target 
+		Name="PrepareForRun"
+	    Condition="'$(OutputType)'=='exe' Or '$(OutputType)'=='winexe'"
+	    DependsOnTargets="$(PrepareForRunDependsOn)"
+	/>
+	
+	<ItemGroup Condition="'$(OutputType)'=='exe' Or '$(OutputType)'=='winexe'">
+		<IntermediateAssemblyDll Include="$(IntermediateOutputPath)$(TargetName).dll"/>
+	</ItemGroup>
+
+	<!-- The Python compiler generates a separate dll if an exe is compiled which needs to
+		be copied to the output folder -->
+	<Target 
+		Name="CopyIntermediateAssemblyDllToOutputDirectory"
+		Condition="'$(OutputType)'=='exe' Or '$(OutputType)'=='winexe'"
+	>
+        <Copy SourceFiles="@(IntermediateAssemblyDll)"
+		      DestinationFolder="$(OutDir)"
+              SkipUnchangedFiles="true"
+              OverwriteReadOnlyFiles="$(OverwriteReadOnlyFiles)">
+			<Output TaskParameter="DestinationFiles" ItemName="FileWrites"/>
+		</Copy>
+	</Target>
 </Project>

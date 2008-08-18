@@ -19,6 +19,7 @@ namespace PythonBinding.Tests.Converter
 	/// from C# to Python correctly.
 	/// </summary>
 	[TestFixture]
+	[Ignore("Not ported")]
 	public class BaseClassReferenceTestFixture
 	{
 		CodeMethodInvokeExpression methodInvoke;

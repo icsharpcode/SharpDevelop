@@ -17,6 +17,7 @@ namespace PythonBinding.Tests.Converter
 	/// Converts a C# try-catch-finally to python.
 	/// </summary>
 	[TestFixture]
+	[Ignore("Not ported")]
 	public class TryCatchFinallyConversionTestFixture
 	{
 		CodeTryCatchFinallyStatement tryStatement;

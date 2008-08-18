@@ -19,6 +19,7 @@ namespace PythonBinding.Tests.Converter
 	/// initialize the converted class's fields.
 	/// </summary>
 	[TestFixture]
+	[Ignore("Not ported")]
 	public class IntegerClassFieldWithConstructorTestFixture
 	{
 		CSharpToPythonConverter converter;

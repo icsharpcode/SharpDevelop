@@ -17,6 +17,7 @@ namespace PythonBinding.Tests.Converter
 	/// Tests the conversion of a C# if-else statement to python.
 	/// </summary>
 	[TestFixture]
+	[Ignore("Not ported")]
 	public class IfStatementConversionTestFixture
 	{
 		CSharpToPythonConverter converter;

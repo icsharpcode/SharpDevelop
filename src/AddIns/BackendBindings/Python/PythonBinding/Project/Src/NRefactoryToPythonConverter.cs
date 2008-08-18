@@ -13,7 +13,6 @@ using System.IO;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.Visitors;
-using IronPython.CodeDom;
 
 namespace ICSharpCode.PythonBinding
 {
@@ -55,12 +54,12 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		public static string ConvertCodeCompileUnitToPython(CodeCompileUnit codeCompileUnit)
 		{
-			PythonProvider pythonProvider = new PythonProvider();
+			//PythonProvider pythonProvider = new PythonProvider();
 			StringWriter writer = new StringWriter();
 			CodeGeneratorOptions options = new CodeGeneratorOptions();
 			options.BlankLinesBetweenMembers = false;
 			options.IndentString = "\t";
-			pythonProvider.GenerateCodeFromCompileUnit(codeCompileUnit, writer, options);
+			//pythonProvider.GenerateCodeFromCompileUnit(codeCompileUnit, writer, options);
 			
 			Console.WriteLine("CompileUnit: " + writer.ToString().Trim());
 			

@@ -412,8 +412,10 @@
 				<ComponentRef Id="PythonEmptyFileTemplate"/>	
 				<ComponentRef Id="PythonFormsProjectTemplate"/>	
 				<ComponentRef Id="IpyExe"/>	
-				<ComponentRef Id="IronMathDll"/>	
+				<ComponentRef Id="IronPythonModulesDll"/>	
 				<ComponentRef Id="IronPythonDll"/>	
+				<ComponentRef Id="MicrosoftScriptingDll"/>	
+				<ComponentRef Id="MicrosoftScriptingCoreDll"/>	
 				<ComponentRef Id="PythonBuildTasksDll"/>	
 				<ComponentRef Id="PythonBindingAddin"/>	
 				<ComponentRef Id="PythonBindingDll"/>	

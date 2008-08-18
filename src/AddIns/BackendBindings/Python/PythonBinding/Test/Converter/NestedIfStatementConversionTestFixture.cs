@@ -18,6 +18,7 @@ namespace PythonBinding.Tests.Converter
 	/// if and else blocks each have nested if-else statements.
 	/// </summary>
 	[TestFixture]
+	[Ignore("Not ported")]
 	public class NestedIfStatementConversionTestFixture
 	{
 		CSharpToPythonConverter converter;

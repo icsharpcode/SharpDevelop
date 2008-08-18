@@ -14,7 +14,6 @@ using System.IO;
 using ICSharpCode.PythonBinding;
 using ICSharpCode.FormsDesigner;
 using ICSharpCode.TextEditor.Document;
-using IronPython.CodeDom;
 
 namespace PythonBinding.Tests.Utils
 {

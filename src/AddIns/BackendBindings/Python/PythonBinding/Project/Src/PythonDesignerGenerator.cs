@@ -20,7 +20,6 @@ using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
-using IronPython.CodeDom;
 
 namespace ICSharpCode.PythonBinding
 {
@@ -29,7 +28,7 @@ namespace ICSharpCode.PythonBinding
 	/// </summary>
 	public class PythonDesignerGenerator : IDesignerGenerator
 	{
-		readonly PythonProvider pythonProvider = new PythonProvider();
+		//readonly PythonProvider pythonProvider = new PythonProvider();
 		FormsDesignerViewContent viewContent;
 		
 		public PythonDesignerGenerator()
@@ -40,7 +39,8 @@ namespace ICSharpCode.PythonBinding
 		/// Gets the Python code dom provider.
 		/// </summary>
 		public CodeDomProvider CodeDomProvider {
-			get { return pythonProvider; }
+			get { return null; }
+			//	get { return pythonProvider; }
 		}
 		
 		public void Attach(FormsDesignerViewContent viewContent)

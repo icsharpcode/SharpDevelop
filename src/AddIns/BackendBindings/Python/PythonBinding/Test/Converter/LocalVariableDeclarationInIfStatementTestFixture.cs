@@ -18,6 +18,7 @@ namespace PythonBinding.Tests.Converter
 	/// if and else block have a local variable defined.
 	/// </summary>
 	[TestFixture]
+	[Ignore("Not ported")]
 	public class LocalVariableDeclarationInIfStatementTestFixture
 	{
 		CSharpToPythonConverter converter;

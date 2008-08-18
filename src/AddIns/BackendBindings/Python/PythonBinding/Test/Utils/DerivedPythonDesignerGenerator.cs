@@ -17,7 +17,6 @@ using ICSharpCode.PythonBinding;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.TextEditor;
-using IronPython.CodeDom;
 
 namespace PythonBinding.Tests.Utils
 {

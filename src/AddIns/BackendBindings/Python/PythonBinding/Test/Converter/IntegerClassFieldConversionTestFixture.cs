@@ -22,6 +22,7 @@ namespace PythonBinding.Tests.Converter
 	/// overloaded constructors otherwise we will get duplicated code.
 	/// </summary>
 	[TestFixture]
+	[Ignore("Not ported")]
 	public class IntegerClassFieldConversionTestFixture
 	{
 		CSharpToPythonConverter converter;

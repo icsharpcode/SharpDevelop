@@ -27,6 +27,7 @@ namespace PythonBinding.Tests.Converter
 	/// class Foo: pass
 	/// </summary>
 	[TestFixture]
+	[Ignore("Not ported")]
 	public class UsingStatementConversionTestFixture
 	{
 		CSharpToPythonConverter converter;

@@ -18,6 +18,7 @@ namespace PythonBinding.Tests.Converter
 	/// correctly.
 	/// </summary>
 	[TestFixture]
+	[Ignore("Not ported")]
 	public class MethodParameterConversionTestFixture
 	{
 		CodeMemberMethod method;

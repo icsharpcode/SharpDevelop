@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Text;
 using NUnit.Framework;
 using ICSharpCode.PythonBinding;
 
@@ -36,7 +37,16 @@ namespace PythonBinding.Tests.Resolver
 		[Test]
 		public void ContainsBuiltInModule()
 		{
-			Assert.Contains("__builtin__", moduleNames);
+			Assert.Contains("__builtin__", moduleNames, "Module names: " + WriteArray(moduleNames));
+		}
+		
+		static string WriteArray(string[] items)
+		{
+			StringBuilder text = new StringBuilder();
+			foreach (string item in items) {
+				text.AppendLine(item);
+			}
+			return text.ToString();
 		}
 	}
 }

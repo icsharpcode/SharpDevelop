@@ -11,7 +11,6 @@ using System.CodeDom.Compiler;
 using System.IO;
 
 using ICSharpCode.PythonBinding;
-using IronPython.CodeDom;
 using NUnit.Framework;
 using PythonBinding.Tests.Utils;
 
@@ -24,7 +23,7 @@ namespace PythonBinding.Tests.Designer
 		[ExpectedException(typeof(InvalidOperationException))]
 		public void CannotFindFormFromCodeCompileUnit()
 		{
-			PythonProvider provider = new PythonProvider();
+			//PythonProvider provider = new PythonProvider();
 			CodeCompileUnit unit = new CodeCompileUnit();
 			PythonDesignerGenerator generator = new PythonDesignerGenerator();
 			generator.MergeFormChanges(unit);

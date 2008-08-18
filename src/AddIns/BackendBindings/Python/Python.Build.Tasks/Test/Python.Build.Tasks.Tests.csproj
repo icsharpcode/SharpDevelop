@@ -62,10 +62,14 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="CompileResourcesTestFixture.cs" />
     <Compile Include="DifferentTargetTypesTestFixture.cs" />
+    <Compile Include="DummyPythonCompilerTask.cs" />
     <Compile Include="IncludeDebugInfoTestFixture.cs" />
     <Compile Include="MainEntryPointTestFixture.cs" />
     <Compile Include="MockPythonCompiler.cs" />
     <Compile Include="CompileSingleSourceFileTestFixture.cs" />
+    <Compile Include="PlatformTestFixture.cs" />
+    <Compile Include="RelativeReferenceTestFixture.cs" />
+    <Compile Include="RelativeResourceFileTestFixture.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Project\Python.Build.Tasks.csproj">

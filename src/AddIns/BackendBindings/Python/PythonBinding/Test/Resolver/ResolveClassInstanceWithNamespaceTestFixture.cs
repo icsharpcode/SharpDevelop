@@ -31,7 +31,7 @@ namespace PythonBinding.Tests.Resolver
 		{
 			string code = "a = Test.Class1()";
 			PythonVariableResolver resolver = new PythonVariableResolver();
-			Assert.AreEqual("Test.Class1", resolver.Resolve("a", code));
+			Assert.AreEqual("Test.Class1", resolver.Resolve("a", @"C:\Projects\Test\Test.py", code));
 		}
 		
 		[Test]
@@ -39,7 +39,7 @@ namespace PythonBinding.Tests.Resolver
 		{
 			string code = "a = Root.Test.Class1()";
 			PythonVariableResolver resolver = new PythonVariableResolver();
-			Assert.AreEqual("Root.Test.Class1", resolver.Resolve("a", code));
+			Assert.AreEqual("Root.Test.Class1", resolver.Resolve("a", @"C:\Projects\Test\Test.py", code));
 		}		
 	}
 }

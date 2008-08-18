@@ -18,6 +18,7 @@ namespace PythonBinding.Tests.Converter
 	/// two get and set methods in Python.
 	/// </summary>
 	[TestFixture]
+	[Ignore("Not ported")]
 	public class PropertyWithGetSetStatementsTestFixture
 	{
 		CodeMemberProperty property;

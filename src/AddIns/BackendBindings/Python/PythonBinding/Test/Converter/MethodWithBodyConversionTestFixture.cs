@@ -18,6 +18,7 @@ namespace PythonBinding.Tests.Converter
 	/// simple integer assignment in the body.
 	/// </summary>
 	[TestFixture]
+	[Ignore("Not ported")]
 	public class MethodWithBodyConversionTestFixture
 	{
 		CSharpToPythonConverter converter;

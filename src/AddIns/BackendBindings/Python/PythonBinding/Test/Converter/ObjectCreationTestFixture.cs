@@ -18,6 +18,7 @@ namespace PythonBinding.Tests.Converter
 	/// is converted to Python correctly.
 	/// </summary>
 	[TestFixture]
+	[Ignore("Not ported")]
 	public class ObjectCreationTestFixture
 	{
 		CodeObjectCreateExpression objectCreateExpression;

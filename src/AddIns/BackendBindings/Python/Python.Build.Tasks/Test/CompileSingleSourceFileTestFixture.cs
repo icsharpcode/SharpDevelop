@@ -35,7 +35,7 @@ namespace Python.Build.Tasks.Tests
 			compiler.Sources = new ITaskItem[] {sourceTaskItem};
 			compiler.TargetType = "Exe";
 			compiler.OutputAssembly = "test.exe";
-			
+						
 			systemDataReferenceTaskItem = new TaskItem(@"C:\Windows\Microsoft.NET\Framework\2.0\System.Data.dll");
 			systemXmlReferenceTaskItem = new TaskItem(@"C:\Windows\Microsoft.NET\Framework\2.0\System.Xml.dll");
 			compiler.References = new ITaskItem[] {systemDataReferenceTaskItem, systemXmlReferenceTaskItem};

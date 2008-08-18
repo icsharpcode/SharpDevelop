@@ -7,9 +7,12 @@
 
 using System;
 using System.CodeDom;
-
+using System.CodeDom.Compiler;
+using System.IO;
 using ICSharpCode.FormsDesigner;
 using ICSharpCode.PythonBinding;
+using ICSharpCode.TextEditor;
+using ICSharpCode.TextEditor.Document;
 using NUnit.Framework;
 using PythonBinding.Tests.Utils;
 
@@ -21,6 +24,7 @@ namespace PythonBinding.Tests.Designer
 	/// so the PythonDesignerLoader fixes this when the Parse is called.
 	/// </summary>
 	[TestFixture]
+	[Ignore("Not ported")]
 	public class FormCodeTypeRefHasFullyQualifiedBaseClassTestFixture
 	{
 		CodeCompileUnit codeCompileUnit;

@@ -19,7 +19,6 @@ namespace ICSharpCode.PythonBinding
 	/// </summary>
 	public class StandardPythonModules
 	{
-		
 		public StandardPythonModules()
 		{
 		}
@@ -32,13 +31,9 @@ namespace ICSharpCode.PythonBinding
 			List<string> names = new List<string>();
 			names.Add("sys");
 			Assembly assembly = typeof(Builtin).Assembly;
-			foreach (Type type in assembly.GetTypes()) {
-				if (type.IsPublic && type.Namespace == "IronPython.Modules") {
-					PythonTypeAttribute attribute = Attribute.GetCustomAttribute(type, typeof(PythonTypeAttribute)) as PythonTypeAttribute;
-					if (attribute != null) {
-						names.Add(attribute.name);
-					}
-				}
+			foreach (Attribute customAttribute in Attribute.GetCustomAttributes(assembly, typeof(PythonModuleAttribute))) {
+				PythonModuleAttribute pythonModuleAttribute = customAttribute as PythonModuleAttribute;
+				names.Add(pythonModuleAttribute.Name);
 			}
 			return names.ToArray();
 		}

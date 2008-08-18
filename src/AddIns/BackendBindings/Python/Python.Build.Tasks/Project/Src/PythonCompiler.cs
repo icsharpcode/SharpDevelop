@@ -6,7 +6,18 @@
 // </file>
 
 using System;
-using IronPy = IronPython.Hosting;
+using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
+using System.Reflection.Emit;
+using System.Resources;
+
+using IronPython.Hosting;
+using IronPython.Runtime;
+using IronPython.Runtime.Operations;
+using Microsoft.Scripting;
+using Microsoft.Scripting.Hosting;
 
 namespace ICSharpCode.Python.Build.Tasks
 {
@@ -14,11 +25,203 @@ namespace ICSharpCode.Python.Build.Tasks
 	/// Wraps the IronPython.Hosting.PythonCompiler class so it 
 	/// implements the IPythonCompiler interface.
 	/// </summary>
-	public class PythonCompiler : IronPy.PythonCompiler, IPythonCompiler
+	public class PythonCompiler : IPythonCompiler
 	{
+		IList<string> sourceFiles;
+		IList<string> referencedAssemblies;
+		IList<ResourceFile> resourceFiles;
+		PEFileKinds targetKind = PEFileKinds.Dll;
+		PortableExecutableKinds executableKind = PortableExecutableKinds.ILOnly;
+		ImageFileMachine machine = ImageFileMachine.I386;
+		string mainFile = String.Empty;
+		bool includeDebugInformation;
+		string outputAssembly = String.Empty;
+		
 		public PythonCompiler()
-			: base(null, null)
 		{
+		}
+		
+		public IList<string> SourceFiles {
+			get { return sourceFiles; }
+			set { sourceFiles = value; }
+		}
+		
+		public IList<string> ReferencedAssemblies {
+			get { return referencedAssemblies; }
+			set { referencedAssemblies = value; }
+		}
+		
+		public IList<ResourceFile> ResourceFiles {
+			get { return resourceFiles; }
+			set { resourceFiles = value; }
+		}
+		
+		public PEFileKinds TargetKind {
+			get { return targetKind; }
+			set { targetKind = value; }
+		}
+		
+		public PortableExecutableKinds ExecutableKind {
+			get { return executableKind; }
+			set { executableKind = value; }
+		}
+		
+		public ImageFileMachine Machine {
+			get { return machine; }
+			set { machine = value; }
+		}
+		
+		public string MainFile {
+			get { return mainFile; }
+			set { mainFile = value; }
+		}
+		
+		public string OutputAssembly {
+			get { return outputAssembly; }
+			set { outputAssembly = value; }
+		}
+		
+		public bool IncludeDebugInformation {
+			get { return includeDebugInformation; }
+			set { includeDebugInformation = value; }
+		}
+		
+		/// <summary>
+		/// The compilation requires us to change into the compile output folder since the
+		/// AssemblyBuilder.Save does not use a full path when generating the assembly.
+		/// </summary>
+		public void Compile()
+		{
+			// Compile the source files to a dll first.
+			ScriptEngine engine = PythonEngine.CurrentEngine;
+			PythonDictionary dictionary = new PythonDictionary();
+			dictionary.setdefault("mainModule", mainFile);
+			string outputAssemblyDll = Path.ChangeExtension(outputAssembly, ".dll");
+			ClrModule.CompileModules(DefaultContext.Default, outputAssemblyDll, dictionary, ToStringArray(sourceFiles));
+	
+			// Generate an executable if required.
+			if (targetKind != PEFileKinds.Dll) {
+				// Change into compilation folder.
+				string originalFolder = Directory.GetCurrentDirectory();
+				try {
+					string compileFolder = Path.Combine(originalFolder, Path.GetDirectoryName(outputAssembly));
+					Directory.SetCurrentDirectory(compileFolder);
+					GenerateExecutable(outputAssemblyDll);
+				} finally {
+					Directory.SetCurrentDirectory(originalFolder);
+				}
+			}
+		}
+		
+		public void Dispose()
+		{
+		}
+		
+		/// <summary>
+		/// Generates an executable from the already compiled dll.
+		/// </summary>
+		void GenerateExecutable(string outputAssemblyDll)
+		{			
+			string outputAssemblyFileNameWithoutExtension = Path.GetFileNameWithoutExtension(outputAssembly);
+			AssemblyName assemblyName = new AssemblyName(outputAssemblyFileNameWithoutExtension); 
+			AssemblyBuilder assemblyBuilder = PythonOps.DefineDynamicAssembly(assemblyName, AssemblyBuilderAccess.RunAndSave);
+			ModuleBuilder moduleBuilder = assemblyBuilder.DefineDynamicModule(outputAssemblyFileNameWithoutExtension, assemblyName.Name + ".exe");
+			TypeBuilder typeBuilder = moduleBuilder.DefineType("PythonMain", TypeAttributes.Public);
+			MethodBuilder mainMethod = typeBuilder.DefineMethod("Main", MethodAttributes.Public | MethodAttributes.Static, typeof(int), new Type[0]);
+			
+			ILGenerator generator = mainMethod.GetILGenerator();
+			generator.Emit(OpCodes.Ldstr, Path.GetFileName(outputAssemblyDll));
+			generator.EmitCall(OpCodes.Call, typeof(Path).GetMethod("GetFullPath", new Type[] {typeof(String)}, new ParameterModifier[0]), null);
+			generator.EmitCall(OpCodes.Call, typeof(Assembly).GetMethod("LoadFile", new Type[] {typeof(String)}, new ParameterModifier[0]), null);
+			
+			generator.Emit(OpCodes.Ldstr, Path.GetFileNameWithoutExtension(mainFile));
+
+			// Add referenced assemblies.
+			AddReferences(generator);
+
+			generator.EmitCall(OpCodes.Call, typeof(PythonOps).GetMethod("InitializeModule"), new Type[0]);
+			generator.Emit(OpCodes.Ret);
+			
+			// Add resources.
+			AddResources(moduleBuilder);
+
+			// Create executable.
+			typeBuilder.CreateType();
+			assemblyBuilder.SetEntryPoint(mainMethod, targetKind);
+			assemblyBuilder.Save(assemblyName.Name + ".exe", executableKind, machine);
+		}
+		
+		/// <summary>
+		/// Converts an IList<string> into a string[].
+		/// </summary>
+		string[] ToStringArray(IList<string> items)
+		{
+			string[] array = new string[items.Count];
+			items.CopyTo(array, 0);
+			return array;
+		}
+
+		/// <summary>
+		/// Adds reference information to the IL.
+		/// </summary>
+		void AddReferences(ILGenerator generator)
+		{
+			if (referencedAssemblies.Count > 0) {
+				generator.Emit(OpCodes.Ldc_I4, referencedAssemblies.Count);
+				generator.Emit(OpCodes.Newarr, typeof(String));
+				
+				for (int i = 0; i < referencedAssemblies.Count; ++i) {
+					generator.Emit(OpCodes.Dup);
+					generator.Emit(OpCodes.Ldc_I4, i);
+					string assemblyFileName = referencedAssemblies[i];
+					Assembly assembly = Assembly.ReflectionOnlyLoadFrom(assemblyFileName);
+					generator.Emit(OpCodes.Ldstr, assembly.FullName);
+					generator.Emit(OpCodes.Stelem_Ref);
+				}
+			} else {
+				generator.Emit(OpCodes.Ldnull);
+			}			
+		}
+		
+		/// <summary>
+		/// Embeds resources into the assembly.
+		/// </summary>
+		void AddResources(ModuleBuilder moduleBuilder)
+		{
+			foreach (ResourceFile resourceFile in resourceFiles) {
+				AddResource(moduleBuilder, resourceFile);
+			}
+		}
+		
+		/// <summary>
+		/// Embeds a single resource into the assembly.
+		/// </summary>
+		void AddResource(ModuleBuilder moduleBuilder, ResourceFile resourceFile)
+		{
+			string fileName = resourceFile.FileName;
+			IResourceWriter resourceWriter = moduleBuilder.DefineResource(Path.GetFileName(fileName), resourceFile.Name, ResourceAttributes.Public);
+			string extension = Path.GetExtension(fileName).ToLowerInvariant();
+			if (extension == ".resources") {
+				ResourceReader resourceReader = new ResourceReader(fileName);
+				using (resourceReader) {
+					IDictionaryEnumerator enumerator = resourceReader.GetEnumerator();
+					while (enumerator.MoveNext()) {
+						string key = enumerator.Key as string;
+						Stream resourceStream = enumerator.Value as Stream;
+						if (resourceStream != null) {
+							BinaryReader reader = new BinaryReader(resourceStream);
+							MemoryStream stream = new MemoryStream();						
+							byte[] bytes = reader.ReadBytes((int)resourceStream.Length);
+							stream.Write(bytes, 0, bytes.Length);
+							resourceWriter.AddResource(key, stream);
+						} else {
+							resourceWriter.AddResource(key, enumerator.Value);
+						}
+					}
+				}
+			} else {
+				resourceWriter.AddResource(resourceFile.Name, File.ReadAllBytes(fileName));
+			}
 		}
 	}
 }

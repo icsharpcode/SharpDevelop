@@ -14,7 +14,6 @@ using ICSharpCode.PythonBinding;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
-using IronPython.CodeDom;
 using NUnit.Framework;
 using PythonBinding.Tests.Utils;
 
@@ -25,6 +24,7 @@ namespace PythonBinding.Tests.Designer
 	/// be used as a event handler.
 	/// </summary>
 	[TestFixture]
+	[Ignore("Not ported")]
 	public class OneCompatibleMethodTestFixture
 	{
 		ICollection compatibleMethods;

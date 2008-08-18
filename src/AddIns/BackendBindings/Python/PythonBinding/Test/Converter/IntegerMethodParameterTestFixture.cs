@@ -17,6 +17,7 @@ namespace PythonBinding.Tests.Converter
 	/// Tests that a method call is converted correctly.
 	/// </summary>
 	[TestFixture]
+	[Ignore("Not ported")]
 	public class IntegerMethodParameterTestFixture
 	{
 		string csharp = "class Foo\r\n" +

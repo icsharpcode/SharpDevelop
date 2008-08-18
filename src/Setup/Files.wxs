@@ -1251,9 +1251,6 @@
 										<Component Guid="AF97A77A-F986-4284-BC0A-9568B1419FC1" Id="IpyExe" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\BackendBindings\PythonBinding\ipy.exe" Name="ipy.exe" Id="ipy.exe" KeyPath="yes" Assembly=".net" AssemblyApplication="ipy.exe" AssemblyManifest="ipy.exe" />
 										</Component>
-										<Component Guid="F3D35EE6-D6F3-4D3A-9613-70E01C780057" Id="IronMathDll" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\BackendBindings\PythonBinding\IronMath.dll" Name="IronMath.dll" Id="IronMath.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="IronMath.dll" AssemblyManifest="IronMath.dll" />
-										</Component>
 										<Component Guid="A7C0416F-8B3F-4C64-A25C-8B48AADD957D" Id="IronPythonDll" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\BackendBindings\PythonBinding\IronPython.dll" Id="IronPython.dll" Name="IronPython.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="IronPython.dll" AssemblyManifest="IronPython.dll" />
 										</Component>
@@ -1289,6 +1286,15 @@
 												<File Source="..\..\AddIns\AddIns\BackendBindings\PythonBinding\Templates\FormsProject.xpt" Id="Templates.FormsProject.xpt" Name="FormsProject.xpt" KeyPath="yes" />
 											</Component>
 										</Directory>
+										<Component Guid="DE04B306-0C6D-434C-A6DC-6F450AAFB108" Id="IronPythonModulesDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\BackendBindings\PythonBinding\IronPython.Modules.dll" Name="IronPython.Modules.dll" Id="IronPython.Modules.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="IronPython.Modules.dll" AssemblyManifest="IronPython.Modules.dll" />
+										</Component>
+										<Component Guid="FF5C354F-51A3-405A-BB6F-0BA1128E2DC6" Id="MicrosoftScriptingCoreDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\BackendBindings\PythonBinding\Microsoft.Scripting.Core.dll" Name="Microsoft.Scripting.Core.dll" Id="Microsoft.Scripting.Core.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Microsoft.Scripting.Core.dll" AssemblyManifest="Microsoft.Scripting.Core.dll" />
+										</Component>
+										<Component Guid="DFE90264-F338-41C1-A7BA-7466B33CB044" Id="MicrosoftScriptingDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\BackendBindings\PythonBinding\Microsoft.Scripting.dll" Name="Microsoft.Scripting.dll" Id="Microsoft.Scripting.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Microsoft.Scripting.dll" AssemblyManifest="Microsoft.Scripting.dll" />
+										</Component>
 									</Directory>
 									<Directory Id="FSharpBinding" Name="FSharpBinding">
 										<Component Guid="7C6826BE-C03E-43A4-AD27-17A9325C70DD" Id="FSharpBuildTasksDll" DiskId="1">
