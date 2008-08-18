@@ -61,7 +61,7 @@ namespace PythonBinding.Tests.Parsing
 	{
 		public override bool Walk(NameExpression node)
 		{
-			Console.WriteLine("NameExpression: " + node.Name);
+			System.Console.WriteLine("NameExpression: " + node.Name);
 			return true;
 		}
 	}

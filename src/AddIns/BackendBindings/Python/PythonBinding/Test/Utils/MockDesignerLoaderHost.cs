@@ -71,7 +71,7 @@ namespace PythonBinding.Tests.Utils
 		
 		public void EndLoad(string baseClassName, bool successful, ICollection errorCollection)
 		{
-			Console.WriteLine("DesignerLoaderHost.EndLoad");
+			System.Console.WriteLine("DesignerLoaderHost.EndLoad");
 		}
 		
 		public void Reload()
@@ -113,7 +113,7 @@ namespace PythonBinding.Tests.Utils
 		
 		public Type GetType(string typeName)
 		{
-			Console.WriteLine("DesignerLoaderHost.GetType: " + typeName);
+			System.Console.WriteLine("DesignerLoaderHost.GetType: " + typeName);
 			if (typeName == "Form") {
 				return typeof(System.Windows.Forms.Form);
 			}
@@ -122,7 +122,7 @@ namespace PythonBinding.Tests.Utils
 		
 		public void AddService(Type serviceType, object serviceInstance)
 		{
-			Console.WriteLine("DesignerLoaderHost.AddService: " + serviceType.Name + " IsNull: " + (serviceInstance == null));
+			System.Console.WriteLine("DesignerLoaderHost.AddService: " + serviceType.Name + " IsNull: " + (serviceInstance == null));
 			serviceContainer.AddService(serviceType, serviceInstance);
 		}
 		
@@ -148,7 +148,7 @@ namespace PythonBinding.Tests.Utils
 		
 		public object GetService(Type serviceType)
 		{
-			Console.WriteLine("DesignerLoaderHost.GetService: " + serviceType.Name);
+			System.Console.WriteLine("DesignerLoaderHost.GetService: " + serviceType.Name);
 			return serviceContainer.GetService(serviceType);
 		}
 

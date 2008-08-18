@@ -151,4 +151,14 @@
 			          class="ICSharpCode.PythonBinding.ConvertToPythonMenuCommand"/>
 		</ComplexCondition>
 	</Path>-->
+
+	<Path name = "/SharpDevelop/Workbench/Pads">
+		<Pad id           = "PythonConsole"
+		     category     = "Tools"
+		     title        = "Python Console"
+		     insertafter  = "Bookmarks"
+		     insertbefore = "DefinitionView"
+		     icon         = "PadIcons.Output"
+		     class        = "ICSharpCode.PythonBinding.PythonConsolePad"/>
+	</Path>
 </AddIn>

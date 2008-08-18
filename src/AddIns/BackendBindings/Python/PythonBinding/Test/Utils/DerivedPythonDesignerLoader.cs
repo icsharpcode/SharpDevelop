@@ -92,24 +92,24 @@ namespace PythonBinding.Tests.Utils
 		
 		protected override void OnBeginUnload()
 		{
-			Console.WriteLine("DesignerLoader.OnBeginUnload");
+			System.Console.WriteLine("DesignerLoader.OnBeginUnload");
 			base.OnBeginUnload();
 		}
 		
 		protected override void OnModifying()
 		{
-			Console.WriteLine("DesignerLoader.OnModifying");
+			System.Console.WriteLine("DesignerLoader.OnModifying");
 			base.OnModifying();
 		}
 		
 		protected override void OnEndLoad(bool successful, ICollection errors)
 		{
-			Console.WriteLine("DesignerLoader.OnEndLoad: successful: " + successful);
+			System.Console.WriteLine("DesignerLoader.OnEndLoad: successful: " + successful);
 			if (errors != null) {
 				foreach (object o in errors) {
 					Exception ex = o as Exception;
 					if (ex != null) {
-						Console.WriteLine("DesignerLoader.OnEndLoad: Exception: " + ex.ToString());
+						System.Console.WriteLine("DesignerLoader.OnEndLoad: Exception: " + ex.ToString());
 					}
 				}
 			}
@@ -120,21 +120,21 @@ namespace PythonBinding.Tests.Utils
 		
 		protected override void OnBeginLoad()
 		{
-			Console.WriteLine("DesignerLoader.OnBeginLoad");
+			System.Console.WriteLine("DesignerLoader.OnBeginLoad");
 			base.OnBeginLoad();
 		}
 		
 		protected override void Initialize()
 		{
-			Console.WriteLine("DesignerLoader.Initialize");
+			System.Console.WriteLine("DesignerLoader.Initialize");
 			base.Initialize();
 		}
 		
 		protected override void PerformLoad(System.ComponentModel.Design.Serialization.IDesignerSerializationManager manager)
 		{
-			Console.WriteLine("DesignerLoader.PerformLoad Before");
+			System.Console.WriteLine("DesignerLoader.PerformLoad Before");
 			base.PerformLoad(manager);
-			Console.WriteLine("DesignerLoader.PerformLoad After");
+			System.Console.WriteLine("DesignerLoader.PerformLoad After");
 		}
 
 		/// <summary>
