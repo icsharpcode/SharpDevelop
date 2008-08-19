@@ -7,6 +7,7 @@ using System.Collections.ObjectModel;
 using System.Threading;
 using System.Globalization;
 using ICSharpCode.WpfDesign.PropertyGrid;
+using System.Windows.Threading;
 
 namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 {
@@ -89,9 +90,11 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 				return selectedItems;
 			}
 			set {
-				selectedItems = value;
-				Reload();
-				RaisePropertyChanged("SelectedItems");
+				Dispatcher.CurrentDispatcher.BeginInvoke(new Action(delegate {
+					selectedItems = value;
+					Reload();
+					RaisePropertyChanged("SelectedItems");
+				}), DispatcherPriority.Background);
 			}
 		}
 
