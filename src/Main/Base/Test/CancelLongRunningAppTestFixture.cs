@@ -30,7 +30,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 		public void Cancel()
 		{
 			runner.Start(GetConsoleAppFileName(), "-forever");
-	
+			
 			string processName = Path.GetFileName(GetConsoleAppFileName());
 			processName = Path.ChangeExtension(processName, null);
 			
@@ -44,7 +44,13 @@ namespace ICSharpCode.SharpDevelop.Tests
 			
 			// Check console app has been shutdown.
 			runningProcesses = Process.GetProcessesByName(processName);
-			Assert.AreEqual(0, runningProcesses.Length, "Process should have stopped.");		
+			if (runningProcesses.Length == 1) {
+				// Windows kills the process asynchronously, so sometimes we have to wait a bit
+				if (!runningProcesses[0].WaitForExit(2500))
+					Assert.Fail("Process should have stopped.");
+			} else {
+				Assert.AreEqual(0, runningProcesses.Length, "Process should have stopped.");
+			}
 		}
 	}
 }
