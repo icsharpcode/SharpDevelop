@@ -8,6 +8,7 @@
 using System;
 using System.Collections;
 using System.Drawing;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
@@ -26,11 +27,12 @@ namespace NoGoop.Controls
 		internal ArrayList          _columnHeaderPanels;
 		internal ArrayList          _columnHeaderSplitters;
 		protected int               _scrollPos;
-		protected static IntPtr     _greyPen;
+		protected static Pen     _greyPen;
 		
 		static TreeListPanel() 
 		{
-			_greyPen = Windows.CreatePen(Windows.PS_SOLID, 1, Windows.GREY);
+			SolidBrush brush = new SolidBrush(Color.LightGray);
+			_greyPen = new Pen(brush, 1);
 		}
 		
 		public TreeListPanel()
@@ -127,47 +129,31 @@ namespace NoGoop.Controls
 		
 		internal void HandleColumnsDrawing(TreeListNode tlNode, NMCUSTOMDRAW cd)
 		{
-			IntPtr oldPos;
 			RECT newRect = cd.rc;
 			// Make text align correctly - seems to be off a pixel
 			newRect.top += 1;
-			// Do each of the columns defined for the tree
-			for (int i = 0; i < _treeView.Columns.Count; i++) {
-				newRect.left = cd.rc.left + ((Splitter)_columnHeaderSplitters[i]).Bounds.X - _scrollPos;
-				Object colData = tlNode.ColumnData[i];
-				if (i == 0) {
-					// Clear out the data for the column (first time)
-					Windows.SelectObject(cd.hdc, 
-										Windows.GetSysColorBrush
-										(Windows.SYSCOLOR_WINDOW));
-					Windows.SelectObject(cd.hdc, 
-										Windows.GetStockObject
-										(Windows.WHITE_PEN));
-					// Clear out where all of the columns go; start a little
-					// before the line
-					Windows.Rectangle(cd.hdc, 
-									 newRect.left - PIXEL_PADDING,
-									 cd.rc.top, 
-									 cd.rc.right, 
-									 cd.rc.bottom);
-					// Set up for drawing grey lines
-					Windows.SelectObject(cd.hdc, _greyPen);
+			using (Graphics g = Graphics.FromHdc(cd.hdc)) {
+				// Do each of the columns defined for the tree
+				for (int i = 0; i < _treeView.Columns.Count; i++) {
+					newRect.left = cd.rc.left + ((Splitter)_columnHeaderSplitters[i]).Bounds.X - _scrollPos;
+					Object colData = tlNode.ColumnData[i];
+					if (i == 0) {
+						// Clear out the data for the column (first time)
+						g.FillRectangle(SystemBrushes.Window, newRect.left - PIXEL_PADDING, cd.rc.top, cd.rc.right, cd.rc.bottom);
+					}
+					// Vertical line to separate the columns
+					g.DrawLine(_greyPen, newRect.left, cd.rc.top, newRect.left, cd.rc.bottom);
+					// Write the actual text
+					if (colData != null) {
+						// Start the text one pixel after the line
+						newRect.left += PIXEL_PADDING;
+						g.DrawString(colData.ToString(), _treeView.Font, SystemBrushes.ControlText, newRect.left, newRect.top);
+					}
 				}
-				// Vertical line to separate the columns
-				Windows.MoveToEx(cd.hdc, newRect.left, cd.rc.top, out oldPos);
-				Windows.LineTo(cd.hdc, newRect.left, cd.rc.bottom);
-				// Write the actual text
-				if (colData != null) {
-					// Start the text one pixel after the line
-					newRect.left += PIXEL_PADDING;
-					Windows.DrawText(cd.hdc, colData.ToString(), -1, ref newRect, 0);
-				}
+				// Draw the horizontal grid lines
+				g.DrawLine(_greyPen, cd.rc.left, cd.rc.top, cd.rc.right, cd.rc.top);
+				g.DrawLine(_greyPen, cd.rc.left, cd.rc.bottom, cd.rc.right, cd.rc.bottom);
 			}
-			// Draw the horizontal grid lines
-			Windows.MoveToEx(cd.hdc, cd.rc.left, cd.rc.top, out oldPos);
-			Windows.LineTo(cd.hdc, cd.rc.right, cd.rc.top);
-			Windows.MoveToEx(cd.hdc, cd.rc.left, cd.rc.bottom, out oldPos);
-			Windows.LineTo(cd.hdc, cd.rc.right, cd.rc.bottom);
 		}
 		
 		protected override void WndProc(ref Message m)
