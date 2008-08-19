@@ -75,22 +75,22 @@ namespace ICSharpCode.SharpDevelop.Commands
 			switch (tag.ToUpperInvariant()) {
 				case "ITEMPATH":
 					try {
-						return GetCurrentItemPath();
+						return GetCurrentItemPath() ?? string.Empty;
 					} catch (Exception) {}
 					break;
 				case "ITEMDIR":
 					try {
-						return Path.GetDirectoryName(GetCurrentItemPath());
+						return Path.GetDirectoryName(GetCurrentItemPath()) ?? string.Empty;
 					} catch (Exception) {}
 					break;
 				case "ITEMFILENAME":
 					try {
-						return Path.GetFileName(GetCurrentItemPath());
+						return Path.GetFileName(GetCurrentItemPath()) ?? string.Empty;
 					} catch (Exception) {}
 					break;
 				case "ITEMEXT":
 					try {
-						return Path.GetExtension(GetCurrentItemPath());
+						return Path.GetExtension(GetCurrentItemPath()) ?? string.Empty;
 					} catch (Exception) {}
 					break;
 					
@@ -118,22 +118,22 @@ namespace ICSharpCode.SharpDevelop.Commands
 					}
 				case "TARGETPATH":
 					try {
-						return GetCurrentTargetPath();
+						return GetCurrentTargetPath() ?? string.Empty;
 					} catch (Exception) {}
 					break;
 				case "TARGETDIR":
 					try {
-						return Path.GetDirectoryName(GetCurrentTargetPath());
+						return Path.GetDirectoryName(GetCurrentTargetPath()) ?? string.Empty;
 					} catch (Exception) {}
 					break;
 				case "TARGETNAME":
 					try {
-						return Path.GetFileName(GetCurrentTargetPath());
+						return Path.GetFileName(GetCurrentTargetPath()) ?? string.Empty;
 					} catch (Exception) {}
 					break;
 				case "TARGETEXT":
 					try {
-						return Path.GetExtension(GetCurrentTargetPath());
+						return Path.GetExtension(GetCurrentTargetPath()) ?? string.Empty;
 					} catch (Exception) {}
 					break;
 					
