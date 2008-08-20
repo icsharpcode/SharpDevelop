@@ -6,16 +6,12 @@
 // </file>
 
 using System;
-using System.IO;
 using System.Collections;
-using System.Text;
+using System.IO;
 using System.Windows.Forms;
-using System.Diagnostics;
-using System.ComponentModel;
-using System.Threading;
 
-using ICSharpCode.SharpDevelop;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 
 namespace HexEditor.Util
 {
