@@ -22,7 +22,7 @@ namespace MattEverson.SourceAnalysis
 			if (string.IsNullOrEmpty(styleCopPath))
 				return false;
 			else
-				return File.Exists(Path.Combine(styleCopPath, "Microsoft.SourceAnalysis.dll"));
+				return File.Exists(Path.Combine(styleCopPath, "Microsoft.StyleCop.dll"));
 		}
 		
 		public static string FindStyleCopPath()

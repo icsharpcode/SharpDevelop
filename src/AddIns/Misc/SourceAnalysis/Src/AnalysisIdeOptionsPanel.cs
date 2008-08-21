@@ -61,9 +61,16 @@ namespace MattEverson.SourceAnalysis
 		
 		void ModifyStyleCopSettingsClick(object sender, EventArgs e)
 		{
-		    var executable = "\"" + StyleCopWrapper.FindStyleCopPath() + "\\SourceAnalysisSettingsEditor.exe\"";
+		    var executable = Path.Combine(StyleCopWrapper.FindStyleCopPath(), "StyleCopSettingsEditor.exe");
 		    var parameters = StyleCopWrapper.GetMasterSettingsFile();
-		    using(Process p = Process.Start(executable, parameters))
+
+            if (!File.Exists(executable)) {
+            	LoggingService.Debug("StyleCopSettingsEditor.exe: " + executable);
+            	MessageService.ShowWarning("Unable to find the StyleCop Settings editor. Please specify the StyleCop location in Tools Options.");
+            	return;
+            }
+		    
+		    using(Process p = Process.Start("\"" + executable + "\"", parameters))
 		    {
 		        // No need to wait for the settings dialog to close - we can leave it open.
 		    }
