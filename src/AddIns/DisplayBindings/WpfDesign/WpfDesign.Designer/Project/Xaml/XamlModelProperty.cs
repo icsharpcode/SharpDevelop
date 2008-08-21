@@ -94,8 +94,9 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 		
 		public override DesignItem Value {
 			get {
-				if (IsCollection)
-					throw new DesignerException("Cannot access Value for collection properties.");
+				// Binding...
+				//if (IsCollection)
+				//	throw new DesignerException("Cannot access Value for collection properties.");
 
 				var xamlObject = _property.PropertyValue as XamlObject;
 				if (xamlObject != null) {
@@ -129,6 +130,11 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 				_property.ValueChanged -= value;
 			}
 		}
+
+		public override event EventHandler ValueOnInstanceChanged {
+			add { _property.ValueOnIstanceChanged += value; }
+			remove { _property.ValueOnIstanceChanged -= value; }
+		}
 		
 		public override object ValueOnInstance {
 			get {
@@ -138,7 +144,9 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 		}
 		
 		public override bool IsSet {
-			get { return _property.IsSet; }
+			get { if (_property.IsSet) {
+			}
+				return _property.IsSet; }
 		}
 		
 		#if EventHandlerDebugging

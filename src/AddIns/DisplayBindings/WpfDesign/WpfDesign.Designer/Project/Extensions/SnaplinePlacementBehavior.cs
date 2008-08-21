@@ -67,7 +67,6 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			var horizontalInput = new List<Snapline>();
 			var verticalInput = new List<Snapline>();
 			var info = operation.PlacedItems[0];
-			var snapping = !Keyboard.IsKeyDown(Key.LeftCtrl);
 			
 			if (operation.Type == PlacementType.Resize) {
 				AddLines(bounds, 0, false, horizontalInput, verticalInput, info.ResizeThumbAlignment);					

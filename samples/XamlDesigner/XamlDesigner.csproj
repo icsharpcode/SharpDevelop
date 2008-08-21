@@ -134,7 +134,7 @@
   <ItemGroup>
     <None Include="NewFileTemplate.xaml">
       <SubType>Designer</SubType>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <Page Include="BitmapButton.xaml">
       <Generator>MSBuild:Compile</Generator>

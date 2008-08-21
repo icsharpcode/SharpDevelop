@@ -113,7 +113,6 @@
     <Compile Include="Extensions\ResizeThumbExtension.cs" />
     <Compile Include="Extensions\WindowResizeBehavior.cs" />
     <Compile Include="BasicMetadata.cs" />
-    <Compile Include="PropertyGrid\Category.cs" />
     <Compile Include="PropertyGrid\Editors\BoolEditor.xaml.cs">
       <DependentUpon>BoolEditor.xaml</DependentUpon>
     </Compile>

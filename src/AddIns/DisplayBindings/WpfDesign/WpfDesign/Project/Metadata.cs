@@ -53,60 +53,112 @@ namespace ICSharpCode.WpfDesign
 			return null;
 		}
 
-		static Dictionary<string, string> categories = new Dictionary<string, string>();
+		//static Dictionary<string, string> categories = new Dictionary<string, string>();
 
-		public static void AddCategory(DependencyProperty p, string category)
+		//public static void AddCategory(DependencyProperty p, string category)
+		//{
+		//    lock (categories) {
+		//        categories[p.GetFullName()] = category;
+		//    }
+		//}
+
+		//public static void AddCategory(Type type, string property, string category)
+		//{
+		//    lock (categories) {
+		//        categories[type + "." + property] = category;
+		//    }
+		//}
+
+		//public static string GetCategory(DesignItemProperty p)
+		//{
+		//    string result;
+		//    lock (categories) {
+		//        if (categories.TryGetValue(p.DependencyFullName, out result)) {
+		//            return result;
+		//        }
+		//    }
+		//    return p.Category;
+		//}
+
+		//static HashSet<string> advancedProperties = new HashSet<string>();
+
+		//public static void AddAdvancedProperty(DependencyProperty p)
+		//{
+		//    lock (advancedProperties) {
+		//        advancedProperties.Add(p.GetFullName());
+		//    }
+		//}
+
+		//public static void AddAdvancedProperty(Type type, string member)
+		//{
+		//    lock (advancedProperties) {
+		//        advancedProperties.Add(type.FullName + "." + member);
+		//    }
+		//}
+
+		//public static bool IsAdvanced(DesignItemProperty p)
+		//{
+		//    lock (advancedProperties) {
+		//        if (advancedProperties.Contains(p.DependencyFullName)) {
+		//            return true;
+		//        }
+		//    }
+		//    return p.IsAdvanced;
+		//}
+
+		static HashSet<string> hiddenProperties = new HashSet<string>();
+
+		public static void HideProperty(DependencyProperty p)
 		{
-			lock (categories) {
-				categories[p.GetFullName()] = category;
-			}
+		    lock (hiddenProperties) {
+		        hiddenProperties.Add(p.GetFullName());
+		    }
 		}
 
-		public static void AddCategory(Type type, string property, string category)
+		public static void HideProperty(Type type, string member)
 		{
-			lock (categories) {
-				categories[type + "." + property] = category;
-			}
+		    lock (hiddenProperties) {
+		        hiddenProperties.Add(type.FullName + "." + member);
+		    }
 		}
 
-		public static string GetCategory(DesignItemProperty p)
+		public static bool IsBrowsable(DesignItemProperty p)
 		{
-			string result;
-			lock (categories) {
-				if (categories.TryGetValue(p.DependencyFullName, out result)) {
-					return result;
-				}
-			}
-			return p.Category;
+		    lock (hiddenProperties) {
+		        if (hiddenProperties.Contains(p.DependencyFullName)) {
+		            return false;
+		        }
+		    }
+			return true;
 		}
 
-		static HashSet<string> advancedProperties = new HashSet<string>();
+		//public static string[] CategoryOrder { get; set; }
 
-		public static void AddAdvancedProperty(DependencyProperty p)
+		static HashSet<string> popularProperties = new HashSet<string>();
+
+		public static void AddPopularProperty(DependencyProperty p)
 		{
-			lock (advancedProperties) {
-				advancedProperties.Add(p.GetFullName());
-			}
+		    lock (popularProperties) {
+		        popularProperties.Add(p.GetFullName());
+		    }
 		}
 
-		public static void AddAdvancedProperty(Type type, string member)
+		public static void AddPopularProperty(Type type, string member)
 		{
-			lock (advancedProperties) {
-				advancedProperties.Add(type.FullName + "." + member);
-			}
+		    lock (popularProperties) {
+		        popularProperties.Add(type.FullName + "." + member);
+		    }
 		}
 
-		public static bool IsAdvanced(DesignItemProperty p)
+		public static bool IsPopular(DesignItemProperty p)
 		{
-			lock (advancedProperties) {
-				if (advancedProperties.Contains(p.DependencyFullName)) {
-					return true;
-				}
-			}
-			return p.IsAdvanced;
+		    lock (popularProperties) {
+		        if (popularProperties.Contains(p.DependencyFullName)) {
+		            return true;
+		        }
+		    }
+		    return false;
 		}
-
-		public static string[] CategoryOrder { get; set; }
 
 		static Dictionary<string, NumberRange> ranges = new Dictionary<string, NumberRange>();		
 

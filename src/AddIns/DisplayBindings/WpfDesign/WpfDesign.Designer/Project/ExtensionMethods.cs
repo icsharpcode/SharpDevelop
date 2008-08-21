@@ -51,6 +51,6 @@ namespace ICSharpCode.WpfDesign.Designer
 				if (result != null) return result;
 			}
 			return null;
-		}
+		}		
 	}
 }

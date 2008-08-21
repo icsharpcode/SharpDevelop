@@ -74,6 +74,8 @@ namespace ICSharpCode.WpfDesign
 		/// Is raised when the value of the property changes (by calling <see cref="SetValue"/> or <see cref="Reset"/>).
 		/// </summary>
 		public abstract event EventHandler ValueChanged;
+
+		public abstract event EventHandler ValueOnInstanceChanged;
 		
 		/// <summary>
 		/// Gets/Sets the value of the property on the designed instance.

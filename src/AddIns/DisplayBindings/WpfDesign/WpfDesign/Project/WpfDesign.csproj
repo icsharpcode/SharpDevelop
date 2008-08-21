@@ -52,6 +52,7 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="WindowsBase">
       <Private>False</Private>
@@ -93,6 +94,7 @@
     <Compile Include="PlacementOperation.cs" />
     <Compile Include="PlacementType.cs" />
     <Compile Include="PlacementAlignment.cs" />
+    <Compile Include="PropertyGrid\Category.cs" />
     <Compile Include="PropertyGrid\EditorManager.cs" />
     <Compile Include="PropertyGrid\Editors\ComboBoxEditor.xaml.cs">
       <DependentUpon>ComboBoxEditor.xaml</DependentUpon>
@@ -102,6 +104,7 @@
     </Compile>
     <Compile Include="PropertyGrid\PropertyEditorAttribute.cs" />
     <Compile Include="PropertyGrid\PropertyNode.cs" />
+    <Compile Include="PropertyGrid\SortedObservableCollection.cs" />
     <Compile Include="PropertyGrid\TypeEditorAttribute.cs" />
     <Compile Include="PropertyGrid\TypeHelper.cs" />
     <Compile Include="ServiceContainer.cs" />

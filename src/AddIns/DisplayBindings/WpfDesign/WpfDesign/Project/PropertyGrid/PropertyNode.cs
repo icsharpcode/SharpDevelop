@@ -7,43 +7,18 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Collections.ObjectModel;
 using System.Windows.Data;
+using System.Windows.Media;
+using System.Windows.Markup;
 
 namespace ICSharpCode.WpfDesign.PropertyGrid
 {
 	public class PropertyNode : INotifyPropertyChanged
 	{
-		public PropertyNode(DesignItemProperty[] properties)
-			: this(properties, null)
-		{
-		}
-
-		PropertyNode(DesignItemProperty[] properties, PropertyNode parent)
-		{
-			this.Properties = properties;
-			this.Parent = parent;
-			this.Level = parent == null ? 0 : parent.Level + 1;
-
-			foreach (var property in properties) {
-				property.ValueChanged += new EventHandler(property_ValueChanged);
-			}
-
-			Editor = EditorManager.CreateEditor(FirstProperty);
-			Children = new ObservableCollection<PropertyNode>();
-			MoreChildren = new ObservableCollection<PropertyNode>();
-			UpdateChildren();
-		}
-
-		void property_ValueChanged(object sender, EventArgs e)
-		{
-			if (raiseEvents) {
-				OnValueChanged();
-			}
-		}
-
 		static object Unset = new object();
 
 		public DesignItemProperty[] Properties { get; private set; }
 		bool raiseEvents = true;
+		bool hasStringConverter;
 
 		public string Name { get { return FirstProperty.Name; } }
 		public bool IsEvent { get { return FirstProperty.IsEvent; } }
@@ -53,6 +28,7 @@ namespace ICSharpCode.WpfDesign.PropertyGrid
 
 		public PropertyNode Parent { get; private set; }
 		public int Level { get; private set; }
+		public Category Category { get; set; }
 		public ObservableCollection<PropertyNode> Children { get; private set; }
 		public ObservableCollection<PropertyNode> MoreChildren { get; private set; }
 
@@ -86,7 +62,9 @@ namespace ICSharpCode.WpfDesign.PropertyGrid
 		public object Value {
 			get {
 				if (IsAmbiguous) return null;
-				return FirstProperty.ValueOnInstance;
+				var result = FirstProperty.ValueOnInstance;
+				if (result == DependencyProperty.UnsetValue) return null;
+				return result;
 			}
 			set {
 				SetValueCore(value);
@@ -95,11 +73,28 @@ namespace ICSharpCode.WpfDesign.PropertyGrid
 
 		public string ValueString {
 			get {
-				if (Value == null) return null;
-				return FirstProperty.TypeConverter.ConvertToString(Value);
+				if (ValueItem == null || ValueItem.Component is MarkupExtension) {
+					if (Value == null) return null;
+					if (hasStringConverter) {					
+						return FirstProperty.TypeConverter.ConvertToInvariantString(Value);
+					}
+					return "(" + Value.GetType().Name + ")";
+				}
+				return "(" + ValueItem.ComponentType.Name + ")";
 			}
 			set {
-				Value = FirstProperty.TypeConverter.ConvertFromString(value);
+				// TODO: Doesn't work for some reason
+				try {
+					Value = FirstProperty.TypeConverter.ConvertFromInvariantString(value);
+				} catch {
+					OnValueOnInstanceChanged();
+				}
+			}
+		}
+
+		public bool IsEnabled {
+			get {
+				return ValueItem == null && hasStringConverter;
 			}
 		}
 
@@ -118,6 +113,28 @@ namespace ICSharpCode.WpfDesign.PropertyGrid
 			}
 		}
 
+		public Brush NameForeground {
+			get {
+				if (ValueItem != null) {
+					if (ValueItem.Component is BindingBase) 
+						return Brushes.DarkGoldenrod;
+					if (ValueItem.Component is StaticResourceExtension || 
+						ValueItem.Component is DynamicResourceExtension) 
+						return Brushes.DarkGreen;
+				}
+				return SystemColors.WindowTextBrush;
+			}
+		}
+
+		public DesignItem ValueItem {
+			get {
+				if (Properties.Length == 1) {
+					return FirstProperty.Value;
+				}
+				return null;
+			}
+		}
+
 		public bool IsAmbiguous {
 			get {
 				foreach (var p in Properties) {
@@ -126,6 +143,21 @@ namespace ICSharpCode.WpfDesign.PropertyGrid
 					}
 				}
 				return false;
+			}
+		}
+
+		bool isVisible;
+
+		public bool IsVisible
+		{
+			get
+			{
+				return isVisible;
+			}
+			set
+			{
+				isVisible = value;
+				RaisePropertyChanged("IsVisible");
 			}
 		}
 
@@ -168,8 +200,65 @@ namespace ICSharpCode.WpfDesign.PropertyGrid
 			RaisePropertyChanged("ValueString");
 			RaisePropertyChanged("IsAmbiguous");
 			RaisePropertyChanged("FontWeight");
+			RaisePropertyChanged("IsEnabled");
+			RaisePropertyChanged("NameForeground");
 
 			UpdateChildren();
+		}
+
+		void OnValueOnInstanceChanged()
+		{
+			RaisePropertyChanged("Value");
+			RaisePropertyChanged("ValueString");
+		}
+
+		public PropertyNode()
+		{
+			Children = new ObservableCollection<PropertyNode>();
+			MoreChildren = new ObservableCollection<PropertyNode>();
+		}
+
+		PropertyNode(DesignItemProperty[] properties, PropertyNode parent) : this()
+		{
+			this.Parent = parent;
+			this.Level = parent == null ? 0 : parent.Level + 1;
+			Load(properties);
+		}
+
+		public void Load(DesignItemProperty[] properties)
+		{
+			if (Properties != null) {
+				foreach (var property in Properties) {
+					property.ValueChanged -= new EventHandler(property_ValueChanged);
+					property.ValueOnInstanceChanged -= new EventHandler(property_ValueOnInstanceChanged);
+				}
+			}
+
+			this.Properties = properties;			
+
+			foreach (var property in properties) {
+				property.ValueChanged += new EventHandler(property_ValueChanged);
+				property.ValueOnInstanceChanged += new EventHandler(property_ValueOnInstanceChanged);
+			}
+
+			if (Editor == null)
+				Editor = EditorManager.CreateEditor(FirstProperty);
+
+			hasStringConverter =
+			    FirstProperty.TypeConverter.CanConvertFrom(typeof(string)) &&
+			    FirstProperty.TypeConverter.CanConvertTo(typeof(string));
+
+			OnValueChanged();
+		}
+
+		void property_ValueOnInstanceChanged(object sender, EventArgs e)
+		{
+			if (raiseEvents) OnValueOnInstanceChanged();
+		}
+
+		void property_ValueChanged(object sender, EventArgs e)
+		{
+			if (raiseEvents) OnValueChanged();
 		}
 
 		void UpdateChildren()
@@ -178,18 +267,19 @@ namespace ICSharpCode.WpfDesign.PropertyGrid
 			MoreChildren.Clear();
 
 			if (Parent == null || Parent.IsExpanded) {
-				if (IsAmbiguous || FirstProperty.IsCollection || FirstProperty.Value == null) {}
-				else {
-					var item = FirstProperty.Value;
-					var list = TypeHelper.GetAvailableProperties(item.ComponentType)
+				if (ValueItem != null) {
+					var list = TypeHelper.GetAvailableProperties(ValueItem.ComponentType)
 						.OrderBy(d => d.Name)
-						.Select(d => new PropertyNode(new[] { item.Properties[d.Name] }, this));
+						.Select(d => new PropertyNode(new[] { ValueItem.Properties[d.Name] }, this));
 
 					foreach (var node in list) {
-						if (Metadata.IsAdvanced(node.FirstProperty)) {
-							MoreChildren.Add(node);
-						} else {
-							Children.Add(node);
+						if (Metadata.IsBrowsable(node.FirstProperty)) {
+							node.IsVisible = true;
+							if (Metadata.IsPopular(node.FirstProperty)) {
+								Children.Add(node);							
+							} else {
+								MoreChildren.Add(node);
+							}
 						}
 					}
 				}

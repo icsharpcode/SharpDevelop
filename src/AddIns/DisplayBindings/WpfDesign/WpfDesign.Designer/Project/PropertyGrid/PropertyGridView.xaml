@@ -165,11 +165,13 @@
             </Setter>
         </Style>
 
-        <DataTemplate DataType="{x:Type PropertyGrid:Category}">
+        <DataTemplate DataType="{x:Type PropertyGridBase:Category}">
             <Expander Header="{Binding Name}"
                       Style="{StaticResource CategoryExpanderStyle}"
-                      IsExpanded="{Binding IsExpanded}">
-                <StackPanel>
+                      IsExpanded="{Binding IsExpanded}"
+                      Visibility="{Binding IsVisible, Converter={x:Static Converters:CollapsedWhenFalse.Instance}}">
+                <ItemsControl ItemsSource="{Binding Properties}" />
+                <!--<StackPanel>
                     <ItemsControl ItemsSource="{Binding Properties}" />
                     <Expander Visibility="{Binding MoreProperties.Count, Converter={x:Static Converters:CollapsedWhenZero.Instance}}"
                               Style="{StaticResource MoreExpanderStyle}"
@@ -177,12 +179,12 @@
                         <ItemsControl ItemsSource="{Binding MoreProperties}"
                                       Background="#F9F9F4" />
                     </Expander>
-                </StackPanel>
+                </StackPanel>-->
             </Expander>
         </DataTemplate>
 
         <DataTemplate DataType="{x:Type PropertyGridBase:PropertyNode}">
-            <StackPanel>
+            <StackPanel Visibility="{Binding IsVisible, Converter={x:Static Converters:CollapsedWhenFalse.Instance}}">
                 <Border x:Name="uxPropertyNodeRow"
                         MinHeight="20"
                         BorderThickness="0 0 0 1"
@@ -202,11 +204,13 @@
                                        VerticalAlignment="Center"
                                        Margin="7 0 0 0"
                                        ToolTip="{Binding Description}"
-                                       FontWeight="{Binding FontWeight}" />
+                                       FontWeight="{Binding FontWeight}"
+                                       Foreground="{Binding NameForeground}" />
                         </DockPanel>
                         <Border BorderThickness="1 0 0 0"
                                 BorderBrush="{x:Static SystemColors.ControlBrush}">
-                            <ContentPresenter Content="{Binding Editor}"
+                            <ContentPresenter x:Name="editorConatiner"
+                                              Content="{Binding Editor}"
                                               VerticalAlignment="Center"
                                               Margin="3 0" />
                         </Border>
@@ -218,10 +222,21 @@
                     <Expander Visibility="{Binding MoreChildren.Count, Converter={x:Static Converters:CollapsedWhenZero.Instance}}"
                               Style="{StaticResource MoreExpanderStyle}">
                         <ItemsControl ItemsSource="{Binding MoreChildren}"
-                                      Background="#F9F9F4" />
+                                      Background="#F9F9F4"/>
                     </Expander>
                 </StackPanel>
             </StackPanel>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding IsEnabled}"
+                             Value="False">
+                    <Setter TargetName="editorConatiner"
+                            Property="Opacity"
+                            Value="0.5" />
+                    <Setter TargetName="editorConatiner"
+                            Property="IsHitTestVisible"
+                            Value="False" />
+                </DataTrigger>
+            </DataTemplate.Triggers>
         </DataTemplate>
 
         <!--<DataTemplate DataType="{x:Type FontFamily}">

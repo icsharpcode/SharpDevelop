@@ -116,4 +116,20 @@ namespace ICSharpCode.WpfDesign.Designer.Converters
 			throw new NotImplementedException();
 		}
 	}
+
+	// Boxed int throw exception without converter (wpf bug?)
+	public class DummyConverter : IValueConverter
+	{
+		public static DummyConverter Instance = new DummyConverter();
+
+		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+		{
+			return value;
+		}
+
+		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+		{
+			return value;
+		}
+	}
 }
