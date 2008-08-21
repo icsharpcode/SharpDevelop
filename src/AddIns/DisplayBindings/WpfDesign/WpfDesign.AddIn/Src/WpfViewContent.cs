@@ -28,18 +28,22 @@ namespace ICSharpCode.WpfDesign.AddIn
 	/// IViewContent implementation that hosts the WPF designer.
 	/// </summary>
 	public class WpfViewContent : AbstractViewContentHandlingLoadErrors, IHasPropertyContainer, IToolsHost
-	{
-		ElementHost wpfHost;
-		DesignSurface designer;
-		
-		public DesignContext DesignContext {
-			get { return designer.DesignContext; }
-		}
-		
+	{		
 		public WpfViewContent(OpenedFile file) : base(file)
 		{
 			this.TabPageText = "${res:FormsDesigner.DesignTabPages.DesignTabPage}";
 			this.IsActiveViewContentChanged += OnIsActiveViewContentChanged;
+		}
+
+		ElementHost wpfHost;
+		DesignSurface designer;
+
+		public DesignSurface DesignSurface {
+			get { return designer; }
+		}
+		
+		public DesignContext DesignContext {
+			get { return designer.DesignContext; }
 		}
 		
 		protected override void LoadInternal(OpenedFile file, System.IO.Stream stream)
@@ -48,9 +52,8 @@ namespace ICSharpCode.WpfDesign.AddIn
 			if (designer == null) {
 				// initialize designer on first load
 				DragDropExceptionHandler.HandleException = ICSharpCode.Core.MessageService.ShowError;
-				wpfHost = new SharpDevelopElementHost();
 				designer = new DesignSurface();
-				wpfHost.Child = designer;
+				wpfHost = new SharpDevelopElementHost(this, designer);				
 				this.UserControl = wpfHost;
 				InitPropertyEditor();
 			}
@@ -99,9 +102,8 @@ namespace ICSharpCode.WpfDesign.AddIn
 		
 		void InitPropertyEditor()
 		{
-			propertyEditorHost = new SharpDevelopElementHost();
 			propertyGridView = new PropertyGridView();
-			propertyEditorHost.Child = propertyGridView;
+			propertyEditorHost = new SharpDevelopElementHost(this, propertyGridView);			
 			propertyContainer.PropertyGridReplacementControl = propertyEditorHost;
 		}
 		

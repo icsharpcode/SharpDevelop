@@ -19,7 +19,7 @@ using System.Windows.Navigation;
 
 namespace ICSharpCode.WpfDesign.Designer
 {
-	public class BasicMetadata
+	public class BasicMetadata : IMetadata
 	{
 		public BasicMetadata()
 		{
@@ -190,6 +190,36 @@ namespace ICSharpCode.WpfDesign.Designer
 			Metadata.HideProperty(typeof(Window), "Owner");
 
 			//Metadata.DisablePlacement(typeof(Button));
+
+			Metadata.AddPopularControl(typeof(Button));
+			Metadata.AddPopularControl(typeof(CheckBox));
+			Metadata.AddPopularControl(typeof(ComboBox));
+			Metadata.AddPopularControl(typeof(Label));
+			Metadata.AddPopularControl(typeof(TextBox));
+			Metadata.AddPopularControl(typeof(RadioButton));
+			Metadata.AddPopularControl(typeof(Canvas));
+			Metadata.AddPopularControl(typeof(Grid));
+			Metadata.AddPopularControl(typeof(Border));
+			Metadata.AddPopularControl(typeof(DockPanel));
+			Metadata.AddPopularControl(typeof(Expander));
+			Metadata.AddPopularControl(typeof(GroupBox));
+			Metadata.AddPopularControl(typeof(Image));
+			Metadata.AddPopularControl(typeof(InkCanvas));
+			Metadata.AddPopularControl(typeof(ListBox));
+			Metadata.AddPopularControl(typeof(ListView));
+			Metadata.AddPopularControl(typeof(Menu));
+			Metadata.AddPopularControl(typeof(PasswordBox));
+			Metadata.AddPopularControl(typeof(ProgressBar));
+			Metadata.AddPopularControl(typeof(RichTextBox));
+			Metadata.AddPopularControl(typeof(ScrollViewer));
+			Metadata.AddPopularControl(typeof(Slider));
+			Metadata.AddPopularControl(typeof(StackPanel));
+			Metadata.AddPopularControl(typeof(TabControl));
+			Metadata.AddPopularControl(typeof(ToolBar));
+			Metadata.AddPopularControl(typeof(TreeView));
+			Metadata.AddPopularControl(typeof(Viewbox));
+			Metadata.AddPopularControl(typeof(Viewport3D));
+			Metadata.AddPopularControl(typeof(WrapPanel));
 		}
 	}
 }

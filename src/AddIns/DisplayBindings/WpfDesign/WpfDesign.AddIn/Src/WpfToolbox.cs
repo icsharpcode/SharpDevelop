@@ -45,7 +45,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 			sideTab.ChoosedItemChanged += OnChoosedItemChanged;
 			
 			sideTab.Items.Add(new WpfSideTabItem());
-			foreach (Type t in Designer.DesignSurface.SupportedToolboxControls)
+			foreach (Type t in Metadata.GetPopularControls())
 				sideTab.Items.Add(new WpfSideTabItem(t));
 			
 			sideBar.Tabs.Add(sideTab);

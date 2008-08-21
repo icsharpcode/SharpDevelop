@@ -27,7 +27,6 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 		static XamlDesignContext()
 		{
 			Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
-			new BasicMetadata();
 		}
 
 		readonly XamlDocument _doc;

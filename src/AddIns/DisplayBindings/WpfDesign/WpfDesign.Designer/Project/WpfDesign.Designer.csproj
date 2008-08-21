@@ -83,12 +83,14 @@
     <Compile Include="Controls\SelectionFrame.cs" />
     <Compile Include="Controls\ErrorBalloon.cs" />
     <Compile Include="Controls\ResizeThumb.cs" />
-    <Compile Include="Controls\SingleVisualChildElement.cs" />
     <Compile Include="CallExtension.cs" />
     <Compile Include="Controls\DragListener.cs" />
     <Compile Include="Controls\WindowClone.cs" />
     <Compile Include="Converters.cs" />
     <Compile Include="DesignPanel.cs" />
+    <Compile Include="DesignSurface.xaml.cs">
+      <DependentUpon>DesignSurface.xaml</DependentUpon>
+    </Compile>
     <Compile Include="DragDropExceptionHandler.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="Extensions\CanvasPlacementSupport.cs">
@@ -173,7 +175,6 @@
     <Compile Include="Services\ToolService.cs" />
     <Compile Include="Services\UndoService.cs" />
     <Compile Include="Services\ViewService.cs" />
-    <Compile Include="DesignSurface.cs" />
     <Compile Include="Services\WpfTopLevelWindowService.cs" />
     <Compile Include="SharedInstances.cs" />
     <Compile Include="Xaml\XamlLoadSettings.cs" />
@@ -205,6 +206,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Controls\ControlStyles.xaml" />
+    <Page Include="DesignSurface.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="PropertyGrid\Editors\BoolEditor.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

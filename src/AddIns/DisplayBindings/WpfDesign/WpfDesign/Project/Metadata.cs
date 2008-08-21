@@ -6,11 +6,29 @@ using System.Reflection;
 using System.Collections;
 using System.Windows;
 using System.ComponentModel;
+using System.Diagnostics;
 
 namespace ICSharpCode.WpfDesign
 {
 	public static class Metadata
 	{
+		//TODO: Another way?
+		static Metadata()
+		{
+			foreach (var a in AppDomain.CurrentDomain.GetAssemblies()) {
+				RegisterAssembly(a);
+			}
+		}
+
+		public static void RegisterAssembly(Assembly a)
+		{
+			foreach (var t in a.GetExportedTypes()) {
+				if (t.GetInterface("IMetadata") == typeof(IMetadata)) {
+				    Activator.CreateInstance(t);
+				}
+			}
+		}
+
 		public static string GetFullName(this DependencyProperty p)
 		{
 			return p.OwnerType.FullName + "." + p.Name;
@@ -150,7 +168,7 @@ namespace ICSharpCode.WpfDesign
 		    }
 		}
 
-		public static bool IsPopular(DesignItemProperty p)
+		public static bool IsPopularProperty(DesignItemProperty p)
 		{
 		    lock (popularProperties) {
 		        if (popularProperties.Contains(p.DependencyFullName)) {
@@ -158,6 +176,31 @@ namespace ICSharpCode.WpfDesign
 		        }
 		    }
 		    return false;
+		}
+
+		static HashSet<Type> popularControls = new HashSet<Type>();
+
+		public static void AddPopularControl(Type t)
+		{
+		    lock (popularControls) {
+		        popularControls.Add(t);
+		    }
+		}
+
+		public static IEnumerable<Type> GetPopularControls()
+		{
+		    lock (popularControls) {
+				foreach (var t in popularControls) {
+					yield return t;
+				}
+		    }
+		}
+
+		public static bool IsPopularControl(Type t)
+		{
+		    lock (popularControls) {
+		        return popularControls.Contains(t);
+		    }
 		}
 
 		static Dictionary<string, NumberRange> ranges = new Dictionary<string, NumberRange>();		
@@ -195,6 +238,10 @@ namespace ICSharpCode.WpfDesign
 				return placementDisabled.Contains(type);
 			}
 		}
+	}
+
+	public interface IMetadata
+	{
 	}
 
 	public class NumberRange

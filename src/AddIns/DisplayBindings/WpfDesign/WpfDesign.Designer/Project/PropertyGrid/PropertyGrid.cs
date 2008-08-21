@@ -180,7 +180,7 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 
 		Category PickCategory(PropertyNode node)
 		{
-			if (Metadata.IsPopular(node.FirstProperty)) return popularCategory;
+			if (Metadata.IsPopularProperty(node.FirstProperty)) return popularCategory;
 			var typeName = node.FirstProperty.DeclaringType.FullName;
 			if (typeName.StartsWith("System.Windows.") || typeName.StartsWith("ICSharpCode.WpfDesign.Designer.Controls."))
 				return otherCategory;

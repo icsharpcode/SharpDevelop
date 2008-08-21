@@ -1,0 +1,12 @@
+﻿<UserControl x:Class="ICSharpCode.WpfDesign.Designer.DesignSurface"
+             xmlns="http://schemas.microsoft.com/netfx/2007/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:Default="clr-namespace:ICSharpCode.WpfDesign.Designer"
+             DataContext="{x:Null}">
+    <ScrollViewer HorizontalScrollBarVisibility="Visible"
+                  VerticalScrollBarVisibility="Visible">
+        <Default:DesignPanel x:Name="_designPanel">
+            <Border x:Name="_sceneContainer" Padding="10" />
+        </Default:DesignPanel>
+    </ScrollViewer>
+</UserControl>

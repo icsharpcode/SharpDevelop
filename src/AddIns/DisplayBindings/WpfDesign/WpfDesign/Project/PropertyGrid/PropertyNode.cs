@@ -275,7 +275,7 @@ namespace ICSharpCode.WpfDesign.PropertyGrid
 					foreach (var node in list) {
 						if (Metadata.IsBrowsable(node.FirstProperty)) {
 							node.IsVisible = true;
-							if (Metadata.IsPopular(node.FirstProperty)) {
+							if (Metadata.IsPopularProperty(node.FirstProperty)) {
 								Children.Add(node);							
 							} else {
 								MoreChildren.Add(node);
