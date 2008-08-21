@@ -1233,11 +1233,11 @@
 											<Component Guid="5226A62B-AE20-42E9-8921-446B4BE6E95C" Id="EmptyWixProjectTemplate" DiskId="1">
 												<File Source="..\..\AddIns\AddIns\BackendBindings\WixBinding\Templates\EmptyWixProject.xpt" Name="EmptyWixProject.xpt" Id="EmptyWixProject.xpt" KeyPath="yes" />
 											</Component>
-											<Component Guid="7C9F2116-6FB8-4C19-B380-53B924E36CA6" Id="EmptyWixDialogTemplate" DiskId="1">
-												<File Source="..\..\AddIns\AddIns\BackendBindings\WixBinding\Templates\WixDialog.xft" Name="WixDialog.xft" Id="WixDialog.xft" KeyPath="yes" />
+											<Component Guid="533F3774-9D09-4F72-9218-5CA4AD4217C0" Id="EmptyWixDialogTemplate" DiskId="1">
+												<File Source="..\..\AddIns\AddIns\BackendBindings\WixBinding\Templates\EmptyWixDialog.xft" Name="EmptyWixDialog.xft" Id="EmptyWixDialog.xft" KeyPath="yes" />
 											</Component>
-											<Component Guid="FD65A496-FF17-4C07-996E-ECB20116984D" Id="WixDialogTemplate" DiskId="1">
-												<File Source="..\..\AddIns\AddIns\BackendBindings\WixBinding\Templates\WixGraphicalDialog.xft" Name="WixGraphicalDialog.xft" Id="WixGraphicalDialog.xft" KeyPath="yes" />
+											<Component Guid="20656F0D-CAE2-4B19-B5DE-ABF842A5939B" Id="WixDialogTemplate" DiskId="1">
+												<File Source="..\..\AddIns\AddIns\BackendBindings\WixBinding\Templates\WixDialog.xft" Name="WixDialog.xft" Id="WixDialog.xft" KeyPath="yes" />
 											</Component>
 										</Directory>
 									</Directory>
