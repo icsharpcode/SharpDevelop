@@ -46,7 +46,7 @@ namespace MattEverson.SourceAnalysis
 		{
 			using (OpenFileDialog dlg = new OpenFileDialog()) {
 				dlg.DefaultExt = "dll";
-				dlg.Filter = StringParser.Parse("StyleCop|Microsoft.SourceAnalysis.dll|${res:SharpDevelop.FileFilter.AllFiles}|*.*");
+				dlg.Filter = StringParser.Parse("StyleCop|Microsoft.StyleCop.dll|${res:SharpDevelop.FileFilter.AllFiles}|*.*");
 				if (dlg.ShowDialog() == DialogResult.OK) {
 					string path = Path.GetDirectoryName(dlg.FileName);
 					if (StyleCopWrapper.IsStyleCopPath(path)) {
