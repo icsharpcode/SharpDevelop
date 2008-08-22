@@ -36,6 +36,13 @@ namespace ICSharpCode.WpfDesign.Designer
 			this.AddCommandHandler(ApplicationCommands.SelectAll, SelectAll, CanSelectAll);
 		}
 
+		protected override void OnPreviewMouseLeftButtonDown(MouseButtonEventArgs e)
+		{
+		    if (e.OriginalSource == uxZoom.ScrollViewer) {
+				UnselectAll();
+			}
+		}
+
 		DesignContext _designContext;
 
 		/// <summary>
@@ -176,6 +183,11 @@ namespace ICSharpCode.WpfDesign.Designer
 		{
 			var items = Descendants(DesignContext.RootItem).Where(item => ModelTools.CanSelectComponent(item)).ToArray();
 			DesignContext.Services.Selection.SetSelectedComponents(items);
+		}
+
+		public void UnselectAll()
+		{
+			DesignContext.Services.Selection.SetSelectedComponents(null);
 		}
 
 		//TODO: Share with Outline / PlacementBehavior

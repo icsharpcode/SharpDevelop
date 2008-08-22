@@ -9,6 +9,80 @@
         <ResourceDictionary Source="NumericUpDown.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
+    <Style x:Key="ZoomButtonStyle"
+           TargetType="RepeatButton">
+        <Setter Property="Delay"
+                Value="0" />
+        <Setter Property="Focusable"
+                Value="False" />
+        <Setter Property="Opacity"
+                Value="0.5" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="RepeatButton">
+                    <ContentPresenter Margin="5"/>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver"
+                                 Value="True">
+                            <Setter Property="Opacity"
+                                    Value="1" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type Controls:ZoomControl}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Controls:ZoomControl}">
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
+                        <Grid>
+                            <ScrollViewer x:Name="scrollViewer"
+                                          HorizontalScrollBarVisibility="Visible"
+                                          VerticalScrollBarVisibility="Visible">
+                                <Border x:Name="container"
+                                        VerticalAlignment="Center"
+                                        HorizontalAlignment="Center">
+                                    <ContentPresenter />
+                                </Border>
+                            </ScrollViewer>
+                            <StackPanel Orientation="Vertical"
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Bottom"
+                                        Margin="3 0 0 20"
+                                        Background="#3000">
+                                <RepeatButton x:Name="uxPlus"
+                                              Style="{StaticResource ZoomButtonStyle}">
+                                    <Image Source="../Images/ZoomIn.png"
+                                           Stretch="None"/>
+                                </RepeatButton>
+                                <RepeatButton x:Name="uxMinus"
+                                              Style="{StaticResource ZoomButtonStyle}">
+                                    <Image Source="../Images/ZoomOut.png"
+                                           Stretch="None" />
+                                </RepeatButton>
+                                <RepeatButton x:Name="uxReset"
+                                              Style="{StaticResource ZoomButtonStyle}">
+                                    <Border Background="#5000"
+                                            Width="16"
+                                            Height="16">
+                                        <TextBlock Foreground="White"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Center">1</TextBlock>    
+                                    </Border>                                    
+                                </RepeatButton>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <Style TargetType="{x:Type Controls:PanelMoveAdorner}">
         <Setter Property="Template">
             <Setter.Value>

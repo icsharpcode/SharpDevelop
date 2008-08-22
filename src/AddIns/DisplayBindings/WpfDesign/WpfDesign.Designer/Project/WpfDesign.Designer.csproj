@@ -86,6 +86,7 @@
     <Compile Include="CallExtension.cs" />
     <Compile Include="Controls\DragListener.cs" />
     <Compile Include="Controls\WindowClone.cs" />
+    <Compile Include="Controls\ZoomControl.cs" />
     <Compile Include="Converters.cs" />
     <Compile Include="DesignPanel.cs" />
     <Compile Include="DesignSurface.xaml.cs">
@@ -268,5 +269,13 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\Class.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\PanToolCursor.cur" />
+    <Resource Include="Images\PanToolCursorMouseDown.cur" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\ZoomIn.png" />
+    <Resource Include="Images\ZoomOut.png" />
   </ItemGroup>
 </Project>

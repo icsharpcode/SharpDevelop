@@ -2,11 +2,14 @@
              xmlns="http://schemas.microsoft.com/netfx/2007/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:Default="clr-namespace:ICSharpCode.WpfDesign.Designer"
-             DataContext="{x:Null}">
-    <ScrollViewer HorizontalScrollBarVisibility="Visible"
-                  VerticalScrollBarVisibility="Visible">
+             xmlns:Controls="clr-namespace:ICSharpCode.WpfDesign.Designer.Controls"
+             DataContext="{x:Null}"
+             Background="{x:Static SystemColors.AppWorkspaceBrush}">
+    
+    <Controls:ZoomControl x:Name="uxZoom">
         <Default:DesignPanel x:Name="_designPanel">
-            <Border x:Name="_sceneContainer" Padding="10" />
+            <Border x:Name="_sceneContainer" />
         </Default:DesignPanel>
-    </ScrollViewer>
+    </Controls:ZoomControl>
+    
 </UserControl>
