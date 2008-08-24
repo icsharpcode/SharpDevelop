@@ -12,6 +12,7 @@ namespace ICSharpCode.XamlDesigner
 		public static SimpleCommand CloseAllCommand = new SimpleCommand("Close All");
 		public static SimpleCommand SaveAllCommand = new SimpleCommand("Save All", ModifierKeys.Control | ModifierKeys.Shift, Key.S);
 		public static SimpleCommand ExitCommand = new SimpleCommand("Exit");
+		public static SimpleCommand RefreshCommand = new SimpleCommand("Refresh", Key.F5);
 
 		static void RenameCommands()
 		{

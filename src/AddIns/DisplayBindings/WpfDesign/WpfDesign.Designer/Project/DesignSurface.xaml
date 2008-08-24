@@ -4,12 +4,12 @@
              xmlns:Default="clr-namespace:ICSharpCode.WpfDesign.Designer"
              xmlns:Controls="clr-namespace:ICSharpCode.WpfDesign.Designer.Controls"
              DataContext="{x:Null}"
-             Background="{x:Static SystemColors.AppWorkspaceBrush}">
+             Background="#888">
     
-    <Controls:ZoomControl x:Name="uxZoom">
-        <Default:DesignPanel x:Name="_designPanel">
-            <Border x:Name="_sceneContainer" />
-        </Default:DesignPanel>
-    </Controls:ZoomControl>
-    
+        <Controls:ZoomControl x:Name="uxZoom">
+            <Default:DesignPanel x:Name="_designPanel">
+                <Border x:Name="_sceneContainer" />
+            </Default:DesignPanel>
+        </Controls:ZoomControl>
+
 </UserControl>

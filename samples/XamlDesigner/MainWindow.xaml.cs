@@ -16,22 +16,27 @@ using Microsoft.Win32;
 using AvalonDock;
 using System.IO;
 using System.Collections.Specialized;
+using ICSharpCode.WpfDesign.Designer;
 
 namespace ICSharpCode.XamlDesigner
 {
 	public partial class MainWindow
 	{
 		public MainWindow()
-		{			
-			RenameCommands();
-
+		{
 			Instance = this;
 			DataContext = Shell.Instance;
+			RenameCommands();
+			BasicMetadata.Register();
+
 			InitializeComponent();
 
 			Shell.Instance.PropertyGrid = uxPropertyGridView.PropertyGrid;
 			AvalonDockWorkaround();
 			RouteDesignSurfaceCommands();
+
+			this.AddCommandHandler(RefreshCommand, Shell.Instance.Refresh, Shell.Instance.CanRefresh);			
+
 			LoadSettings();
 			ProcessPaths(App.Args);
 		}

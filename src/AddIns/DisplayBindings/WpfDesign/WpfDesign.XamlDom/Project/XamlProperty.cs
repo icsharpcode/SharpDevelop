@@ -42,7 +42,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				propertyValue.ParentProperty = this;
 			}
 
-			UpdateValueOnInstance();
+			ValueOnInstance = PropertyValue.GetValueFor(propertyInfo);
 		}
 		
 		internal XamlProperty(XamlObject parentObject, XamlPropertyInfo propertyInfo)

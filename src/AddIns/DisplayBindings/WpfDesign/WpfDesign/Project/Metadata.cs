@@ -12,23 +12,6 @@ namespace ICSharpCode.WpfDesign
 {
 	public static class Metadata
 	{
-		//TODO: Another way?
-		static Metadata()
-		{
-			foreach (var a in AppDomain.CurrentDomain.GetAssemblies()) {
-				RegisterAssembly(a);
-			}
-		}
-
-		public static void RegisterAssembly(Assembly a)
-		{
-			foreach (var t in a.GetExportedTypes()) {
-				if (t.GetInterface("IMetadata") == typeof(IMetadata)) {
-				    Activator.CreateInstance(t);
-				}
-			}
-		}
-
 		public static string GetFullName(this DependencyProperty p)
 		{
 			return p.OwnerType.FullName + "." + p.Name;
@@ -238,10 +221,6 @@ namespace ICSharpCode.WpfDesign
 				return placementDisabled.Contains(type);
 			}
 		}
-	}
-
-	public interface IMetadata
-	{
 	}
 
 	public class NumberRange

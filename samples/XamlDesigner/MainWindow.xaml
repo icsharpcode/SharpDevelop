@@ -74,6 +74,7 @@
                 <MenuItem Command="Delete" />
                 <MenuItem Command="SelectAll" />
                 <Separator />
+                <MenuItem Command="Default:MainWindow.RefreshCommand" />
                 <MenuItem Command="Find" />
             </MenuItem>
         </Menu>
@@ -99,7 +100,7 @@
 
                 <AvalonDock:DockablePane>
                     <AvalonDock:DockableContent x:Name="content3" Title="Errors">
-                        <!--<Default:ErrorListView />-->
+                        <Default:ErrorListView ItemsSource="{Binding CurrentDocument.XamlErrorService.Errors}"/>
                     </AvalonDock:DockableContent>
                 </AvalonDock:DockablePane>
                 

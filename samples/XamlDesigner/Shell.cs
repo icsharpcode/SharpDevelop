@@ -10,6 +10,7 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Windows;
 using System.Diagnostics;
+using ICSharpCode.WpfDesign.Designer.Services;
 
 namespace ICSharpCode.XamlDesigner
 {
@@ -19,6 +20,8 @@ namespace ICSharpCode.XamlDesigner
 		{
 			Documents = new ObservableCollection<Document>();
 			RecentFiles = new ObservableCollection<string>();
+			Views = new Dictionary<object, FrameworkElement>();
+
 			LoadSettings();
 		}
 
@@ -31,7 +34,8 @@ namespace ICSharpCode.XamlDesigner
         //public ErrorList ErrorList { get; set; }
 		
 		public ObservableCollection<Document> Documents { get; private set; }
-		public ObservableCollection<string> RecentFiles { get; private set; }
+		public ObservableCollection<string> RecentFiles { get; private set; }		
+		public Dictionary<object, FrameworkElement> Views { get; private set; }
 
 		Document currentDocument;
 
@@ -78,6 +82,23 @@ namespace ICSharpCode.XamlDesigner
 		public static void ReportException(Exception x)
 		{
 			MessageBox.Show(x.ToString());
+		}
+
+		public void JumpToError(XamlError error)
+		{
+			if (CurrentDocument != null) {
+				(Views[CurrentDocument] as DocumentView).JumpToError(error);
+			}
+		}
+
+		public bool CanRefresh()
+		{
+			return CurrentDocument != null;
+		}
+
+		public void Refresh()
+		{
+			CurrentDocument.Refresh();
 		}
 
 		#region Files
@@ -173,6 +194,7 @@ namespace ICSharpCode.XamlDesigner
 				}
 			}
 			Documents.Remove(doc);
+			Views.Remove(doc);
 			return true;
 		}
 

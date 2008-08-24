@@ -19,10 +19,15 @@ using System.Windows.Navigation;
 
 namespace ICSharpCode.WpfDesign.Designer
 {
-	public class BasicMetadata : IMetadata
+	public static class BasicMetadata
 	{
-		public BasicMetadata()
+		static bool registered;
+
+		public static void Register()
 		{
+			if (registered) return;
+			registered = true;
+
 			Metadata.AddStandardValues(typeof(Brush), typeof(Brushes));
 			Metadata.AddStandardValues(typeof(Color), typeof(Colors));
 			Metadata.AddStandardValues(typeof(FontStretch), typeof(FontStretches));

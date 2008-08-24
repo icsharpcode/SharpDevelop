@@ -111,6 +111,9 @@
     <Compile Include="DragListener.cs" />
     <Compile Include="DragTreeView.cs" />
     <Compile Include="DragTreeViewItem.cs" />
+    <Compile Include="ErrorListView.xaml.cs">
+      <DependentUpon>ErrorListView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="IconItem.cs" />
     <Compile Include="MainWindow_Commands.cs" />
@@ -144,6 +147,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="ErrorListView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -159,6 +166,9 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <None Include="TestFiles\3.xaml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="TestFiles\4.xaml">
       <SubType>Designer</SubType>
     </None>
     <Page Include="Themes\Generic.xaml">
@@ -187,6 +197,9 @@
       <Project>{88DA149F-21B2-48AB-82C4-28FB6BDFD783}</Project>
       <Name>WpfDesign.XamlDom</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Error.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

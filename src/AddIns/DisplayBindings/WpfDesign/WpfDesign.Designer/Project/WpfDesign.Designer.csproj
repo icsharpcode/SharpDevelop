@@ -177,6 +177,7 @@
     <Compile Include="Services\UndoService.cs" />
     <Compile Include="Services\ViewService.cs" />
     <Compile Include="Services\WpfTopLevelWindowService.cs" />
+    <Compile Include="Services\XamlErrorService.cs" />
     <Compile Include="SharedInstances.cs" />
     <Compile Include="Xaml\XamlLoadSettings.cs" />
     <Compile Include="Xaml\XamlModelCollectionElementsCollection.cs" />

@@ -15,6 +15,9 @@ using System.Xml;
 using ICSharpCode.WpfDesign.Designer.Xaml;
 using ICSharpCode.WpfDesign.Designer.Services;
 using System.Diagnostics;
+using ICSharpCode.WpfDesign.XamlDom;
+using System.Threading;
+using System.Globalization;
 
 namespace ICSharpCode.WpfDesign.Designer
 {
@@ -23,6 +26,12 @@ namespace ICSharpCode.WpfDesign.Designer
 	/// </summary>
 	public partial class DesignSurface
 	{
+		static DesignSurface()
+		{
+			//TODO: this is for converters (see PropertyGrid)
+			Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+		}
+
 		public DesignSurface()
 		{
 			InitializeComponent();
@@ -75,7 +84,10 @@ namespace ICSharpCode.WpfDesign.Designer
 			
 			_designContext = context;
 			_designPanel.Context = context;
-			_sceneContainer.Child = context.RootItem.View;
+
+			if (context.RootItem != null) {
+				_sceneContainer.Child = context.RootItem.View;
+			}
 			
 			context.Services.RunWhenAvailable<UndoService>(
 				undoService => undoService.UndoStackChanged += delegate {
