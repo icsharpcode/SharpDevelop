@@ -30,6 +30,7 @@ namespace PythonBinding.Tests.Console
 		int totalLines = 1;
 		List<Color> textColors = new List<Color>();
 		bool showCompletionWindowCalled;
+		bool makeReadOnlyCalled;
 		
 		public MockTextEditor()
 		{
@@ -63,6 +64,10 @@ namespace PythonBinding.Tests.Console
 
 		public bool IsShowCompletionWindowCalled {
 			get { return showCompletionWindowCalled; }
+		}
+		
+		public bool IsMakeCurrentContentReadOnlyCalled {
+			get { return makeReadOnlyCalled; }
 		}
 
 		public string Text {
@@ -191,6 +196,11 @@ namespace PythonBinding.Tests.Console
 		{
 			showCompletionWindowCalled = true;
 		}
+		
+		public void MakeCurrentContentReadOnly()
+		{
+			makeReadOnlyCalled = true;
+		}		
 		
 		public List<Color> WrittenTextColors {
 			get { return textColors; }

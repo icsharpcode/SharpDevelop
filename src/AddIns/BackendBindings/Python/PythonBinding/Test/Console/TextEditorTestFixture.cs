@@ -121,15 +121,17 @@ namespace PythonBinding.Tests.Console
 		}
 		
 		[Test]
-		[Ignore("Change to use read-only marker.")]
-		public void AfterEnterKeyPreviousLineIsCustomLine()
+		public void MakeCurrentTextEditorContent()
 		{
-			//textEditorControl.Document.CustomLineManager.Clear();
 			textEditorControl.Text = String.Empty;
 			textEditor.Write("abc" + Environment.NewLine);
-			//Assert.AreEqual(1, textEditorControl.Document.CustomLineManager.CustomLines.Count);
-			//Assert.AreEqual(textEditor.CustomLineColour, textEditorControl.Document.CustomLineManager.GetCustomColor(0, Color.Empty));
-			Assert.Fail("Implement...");
+			textEditor.MakeCurrentContentReadOnly();
+			
+			TextMarker readOnlyTextMarker = GetReadOnlyTextMarker(textEditorControl);
+			Assert.IsNotNull(readOnlyTextMarker);
+			Assert.AreEqual(0, readOnlyTextMarker.Offset);
+			Assert.AreEqual(textEditorControl.Text.Length, readOnlyTextMarker.Length);
+			Assert.IsFalse(textEditorControl.Document.UndoStack.CanUndo);
 		}
 		
 		[Test]
@@ -367,6 +369,24 @@ namespace PythonBinding.Tests.Console
 		{
 			keyPressed = ch;
 			return false;
+		}
+		
+		/// <summary>
+		/// Used to remove all text markers from the text editor.
+		/// </summary>
+		bool AllMarkersMatch(TextMarker marker)
+		{
+			return true;
+		}
+		
+		TextMarker GetReadOnlyTextMarker(TextEditorControl textEditorControl)
+		{
+			foreach (TextMarker marker in textEditorControl.Document.MarkerStrategy.TextMarker) {
+				if (marker.IsReadOnly) {
+					return marker;
+				}
+			}
+			return null;			
 		}
 	}
 }

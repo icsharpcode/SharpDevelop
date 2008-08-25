@@ -20,11 +20,11 @@ namespace ICSharpCode.PythonBinding
 		TextEditorControl textEditorControl;
 		TextArea textArea;
 		Color customLineColour = Color.LightGray;
+		TextMarker readOnlyMarker;
 		
 		public TextEditor(TextEditorControl textEditorControl)
 		{
 			this.textEditorControl = textEditorControl;
-			this.textEditorControl.Document.LineCountChanged += LineCountChanged;
 			this.textArea = textEditorControl.ActiveTextAreaControl.TextArea;
 			textEditorControl.TextEditorProperties.SupportReadOnlySegments = true;
 		}
@@ -68,11 +68,6 @@ namespace ICSharpCode.PythonBinding
 					textEditorControl.Refresh();
 				}
 			}
-		}
-
-		void AddCustomLine(int line)
-		{
-			//textEditorControl.Document.CustomLineManager.AddCustomLine(line, customLineColour, false);
 		}
 		
 		public int Column {
@@ -124,6 +119,22 @@ namespace ICSharpCode.PythonBinding
 				return textEditorControl.Document.GetText(lineSegment);
 			}
 		}
+
+		/// <summary>
+		/// Makes the current text read only. Text can still be entered at the end.
+		/// </summary>
+		public void MakeCurrentContentReadOnly()
+		{
+			IDocument doc = textEditorControl.Document;
+			if (readOnlyMarker == null) {
+				readOnlyMarker = new TextMarker(0, doc.TextLength, TextMarkerType.Invisible);
+				readOnlyMarker.IsReadOnly = true;
+				doc.MarkerStrategy.AddMarker(readOnlyMarker);
+			}
+			readOnlyMarker.Offset = 0;
+			readOnlyMarker.Length = doc.TextLength;
+			doc.UndoStack.ClearAll();
+		}
 		
 		public void ShowCompletionWindow()
 		{
@@ -145,16 +156,6 @@ namespace ICSharpCode.PythonBinding
 			} else {
 				textEditorControl.IndentStyle = style;
 			}
-		}
-		
-		void LineCountChanged(object source, LineCountChangeEventArgs e)
-		{
-			IDocument doc = textEditorControl.Document;
-			int totalLines = doc.TotalNumberOfLines;
-			//doc.CustomLineManager.Clear();
-			for (int line = 0; line < totalLines - 1; ++line) {
-			//	doc.CustomLineManager.AddCustomLine(line, customLineColour, false);
-			}
-		}
+		}		
 	}
 }

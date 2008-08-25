@@ -97,6 +97,7 @@ namespace ICSharpCode.PythonBinding
 
 			if (style == Style.Prompt) {
 				promptLength = text.Length;
+				textEditor.MakeCurrentContentReadOnly();
 			}
 		}
 		

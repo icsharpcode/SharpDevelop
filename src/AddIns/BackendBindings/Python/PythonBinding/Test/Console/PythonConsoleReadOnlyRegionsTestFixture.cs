@@ -32,6 +32,12 @@ namespace PythonBinding.Tests.Console
 			console = new PythonConsole(textEditor);
 			console.Write(prompt, Style.Prompt);
 		}
+		
+		[Test]
+		public void MakeCurrentContentReadOnlyIsCalled()
+		{
+			Assert.IsTrue(textEditor.IsMakeCurrentContentReadOnlyCalled);
+		}
 
 		[Test]
 		public void LeftArrowThenInsertNewCharacterInsertsText()

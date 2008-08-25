@@ -87,5 +87,10 @@ namespace ICSharpCode.PythonBinding
 		/// Shows the code completion window.
 		/// </summary>
 		void ShowCompletionWindow();
+		
+		/// <summary>
+		/// Makes the current text content read only. Text can be entered at the end.
+		/// </summary>
+		void MakeCurrentContentReadOnly();
 	}
 }
