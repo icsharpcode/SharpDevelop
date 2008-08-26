@@ -119,69 +119,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				pad = new AvalonPadContent(this, content);
 				pads.Add(content, pad);
 				padsByClass.Add(content.Class, pad);
-				GetPane(AnchorStyle.Right).Items.Add(pad);
-				dockingManager.Show(pad, DockableContentState.Docked);
-			}
-		}
-		
-		/// <summary>
-		/// Gets or creates a pane at the specified position.
-		/// </summary>
-		DockablePane GetPane(AnchorStyle dockPosition)
-		{
-			List<DockablePane> allPanes = new List<DockablePane>();
-			ListAllPanes(allPanes, dockingManager.Content);
-			// try to find an existing pane
-			DockablePane pane = allPanes.Find(p => DetectDock(p) == dockPosition);
-			if (pane == null) {
-				// none found: create a new pane
-				pane = new DockablePane();
-				UIElement content = (UIElement)dockingManager.Content;
-				ResizingPanel rp = new ResizingPanel();
-				dockingManager.Content = rp;
-				if (dockPosition == AnchorStyle.Left || dockPosition == AnchorStyle.Right) {
-					rp.Orientation = Orientation.Horizontal;
-				} else {
-					rp.Orientation = Orientation.Vertical;
-				}
-				if (dockPosition == AnchorStyle.Left || dockPosition == AnchorStyle.Top) {
-					rp.Children.Add(pane);
-					rp.Children.Add(content);
-				} else {
-					rp.Children.Add(content);
-					rp.Children.Add(pane);
-				}
-			}
-			return pane;
-		}
-		
-		/// <summary>
-		/// Detects the orientation of a DockablePane.
-		/// </summary>
-		static AnchorStyle? DetectDock(DockablePane pane)
-		{
-			ResizingPanel rp = pane.Parent as ResizingPanel;
-			if (rp != null) {
-				if (rp.Children[0] == pane) {
-					return rp.Orientation == Orientation.Vertical ? AnchorStyle.Top : AnchorStyle.Left;
-				} else if (rp.Children[rp.Children.Count - 1] == pane) {
-					return rp.Orientation == Orientation.Vertical ? AnchorStyle.Bottom : AnchorStyle.Right;
-				}
-			}
-			return null;
-		}
-		
-		/// <summary>
-		/// Puts all DockablePanes into the list.
-		/// </summary>
-		static void ListAllPanes(List<DockablePane> list, object content)
-		{
-			if (content is DockablePane) {
-				list.Add((DockablePane)content);
-			} else if (content is ResizingPanel) {
-				ResizingPanel rp = (ResizingPanel)content;
-				foreach (object o in rp.Children)
-					ListAllPanes(list, o);
+				dockingManager.Show(pad, DockableContentState.Docked, AnchorStyle.Right);
 			}
 		}
 		
