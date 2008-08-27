@@ -118,6 +118,19 @@ namespace ICSharpCode.SharpDevelop.Gui
 				pads.Add(content, pad);
 				padsByClass.Add(content.Class, pad);
 				dockingManager.Show(pad, DockableContentState.Docked, AnchorStyle.Right);
+				SetPaneSizeWorkaround(pad.ContainerPane);
+			}
+		}
+		
+		static void SetPaneSizeWorkaround(Pane pane)
+		{
+			ResizingPanel panel = pane.Parent as ResizingPanel;
+			if (panel.Orientation == Orientation.Horizontal) {
+				if (ResizingPanel.GetResizeWidth(pane) == 0)
+					ResizingPanel.SetResizeWidth(pane, 150);
+			} else if (panel.Orientation == Orientation.Vertical) {
+				if (ResizingPanel.GetResizeHeight(pane) == 0)
+					ResizingPanel.SetResizeHeight(pane, 100);
 			}
 		}
 		
@@ -148,7 +161,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public bool IsVisible(PadDescriptor padContent)
 		{
-			return pads[padContent].IsVisible;
+			AvalonPadContent pad = pads[padContent];
+			return pad.IsVisible;
 		}
 		
 		public IWorkbenchWindow ShowView(IViewContent content)
