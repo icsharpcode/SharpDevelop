@@ -131,7 +131,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void ProjectServiceEndBuild(object sender, EventArgs e)
 		{
 			if (TaskService.TaskCount > 0 && ShowAfterBuild) {
-				WorkbenchSingleton.Workbench.WorkbenchLayout.ActivatePad(this.GetType().FullName);
+				WorkbenchSingleton.Workbench.GetPad(typeof(ErrorListPad)).BringPadToFront();
 			}
 			UpdateToolstripStatus();
 		}

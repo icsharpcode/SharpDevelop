@@ -165,6 +165,7 @@
 		     title    = "${res:ICSharpCode.BooInterpreter}"
 		     icon     = "Boo.ProjectIcon"
 		     shortcut = "Control|Shift|B"
-		     class    = "Grunwald.BooBinding.InteractiveInterpreterPad"/>
+		     class    = "Grunwald.BooBinding.InteractiveInterpreterPad"
+		     defaultPosition = "Bottom, Hidden" />
 	</Path>
 </AddIn>

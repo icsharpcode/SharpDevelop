@@ -62,7 +62,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// bring it to foreground)
 		/// </summary>
 		void ActivatePad(PadDescriptor content);
-		void ActivatePad(string fullyQualifiedTypeName);
 		
 		/// <summary>
 		/// Hides a <see cref="IPadContent"/>.

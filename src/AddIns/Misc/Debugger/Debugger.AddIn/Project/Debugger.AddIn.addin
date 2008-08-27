@@ -43,42 +43,48 @@
 		     title    = "${res:MainWindow.Windows.Debug.Breakpoints}"
 		     icon     = "PadIcons.BreakPoints"
 		     shortcut = "Control|Alt|P"
-		     class = "ICSharpCode.SharpDevelop.Gui.Pads.BreakPointsPad"/>
+		     class = "ICSharpCode.SharpDevelop.Gui.Pads.BreakPointsPad"
+		     defaultPosition = "Bottom, Hidden" />
 		
 		<Pad id    = "CallStackPad"
 		     category = "Debugger"
 		     title    = "${res:MainWindow.Windows.Debug.CallStack}"
 		     icon     = "PadIcons.CallStack"
 		     shortcut = "Control|Alt|C"
-		     class = "ICSharpCode.SharpDevelop.Gui.Pads.CallStackPad"/>
+		     class = "ICSharpCode.SharpDevelop.Gui.Pads.CallStackPad"
+		     defaultPosition = "Bottom, Hidden" />
 		
 		<Pad id    = "LoadedModulesPad"
 		     category = "Debugger"
 		     title    = "${res:MainWindow.Windows.Debug.Modules}"
 		     icon     = "PadIcons.LoadedModules"
 		     shortcut = "Control|Alt|U"
-		     class = "ICSharpCode.SharpDevelop.Gui.Pads.LoadedModulesPad"/>
+		     class = "ICSharpCode.SharpDevelop.Gui.Pads.LoadedModulesPad"
+		     defaultPosition = "Bottom, Hidden" />
 		
 		<Pad id    = "RunningThreadsPad"
 		     category = "Debugger"
 		     title    = "${res:MainWindow.Windows.Debug.Threads}"
 		     icon     = "PadIcons.Threads"
 		     shortcut = "Control|Alt|H"
-		     class = "ICSharpCode.SharpDevelop.Gui.Pads.RunningThreadsPad"/>
+		     class = "ICSharpCode.SharpDevelop.Gui.Pads.RunningThreadsPad"
+		     defaultPosition = "Bottom, Hidden" />
 		
 		<Pad id    = "LocalVarPad"
 		     category = "Debugger"
 		     title    = "${res:MainWindow.Windows.Debug.LocalVariables}"
 		     icon     = "PadIcons.LocalVariables"
 		     shortcut = "Control|Alt|V"
-		     class = "ICSharpCode.SharpDevelop.Gui.Pads.LocalVarPad"/>
+		     class = "ICSharpCode.SharpDevelop.Gui.Pads.LocalVarPad"
+		     defaultPosition = "Bottom, Hidden" />
 	
 		<Pad id    = "ConsolePad"
 		     category = "Debugger"
 		     title    = "${res:MainWindow.Windows.Debug.Console}"
 		     icon     = "PadIcons.Output"
 		     shortcut = "Control|Alt|N"
-		     class = "ICSharpCode.SharpDevelop.Gui.Pads.ConsolePad"/>
+		     class = "ICSharpCode.SharpDevelop.Gui.Pads.ConsolePad"
+		     defaultPosition = "Bottom, Hidden" />
 	</Path>
 	
 	<Path name = "/SharpDevelop/Dialogs/OptionsDialog">

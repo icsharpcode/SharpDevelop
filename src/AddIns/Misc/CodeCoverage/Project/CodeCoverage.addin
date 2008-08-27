@@ -20,7 +20,8 @@
 		     insertbefore = "DefinitionView"
 		     icon         = "CodeCoverage.Icons.16x16.Pad"
 		     shortcut     = "Control|Alt|G"
-		     class        = "ICSharpCode.CodeCoverage.CodeCoveragePad"/>
+		     class        = "ICSharpCode.CodeCoverage.CodeCoveragePad"
+		     defaultPosition = "Bottom, Hidden" />
 	</Path>
 	
 	<Path name = "/SharpDevelop/Pads/CodeCoveragePad/Toolbar">

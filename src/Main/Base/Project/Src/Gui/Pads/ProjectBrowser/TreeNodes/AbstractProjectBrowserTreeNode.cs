@@ -92,7 +92,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public virtual void ShowProperties()
 		{
-			WorkbenchSingleton.Workbench.WorkbenchLayout.ActivatePad(typeof(PropertyPad).FullName);
+			WorkbenchSingleton.Workbench.GetPad(typeof(PropertyPad)).BringPadToFront();
 		}
 		
 		public static bool IsSomewhereBelow(string path, ProjectItem item)

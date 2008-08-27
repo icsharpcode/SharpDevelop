@@ -24,22 +24,26 @@
 		     category = "Help2"
 		     title    = "${res:AddIns.HtmlHelp2.Contents}"
 		     icon     = "HtmlHelp2.16x16.Toc"
-		     class    = "HtmlHelp2.HtmlHelp2TocPad"/>
+		     class    = "HtmlHelp2.HtmlHelp2TocPad"
+		     defaultPosition = "Right, Hidden" />
 		<Pad id       = "IndexPad"
 		     category = "Help2"
 		     title    = "${res:AddIns.HtmlHelp2.Index}"
 		     icon     = "HtmlHelp2.16x16.Index"
-		     class    = "HtmlHelp2.HtmlHelp2IndexPad"/>
+		     class    = "HtmlHelp2.HtmlHelp2IndexPad"
+		     defaultPosition = "Right, Hidden" />
 		<Pad id       = "SearchPad"
 		     category = "Help2"
 		     title    = "${res:AddIns.HtmlHelp2.Search}"
 		     icon     = "HtmlHelp2.16x16.Search"
-		     class    = "HtmlHelp2.HtmlHelp2SearchPad"/>
+		     class    = "HtmlHelp2.HtmlHelp2SearchPad"
+		     defaultPosition = "Right, Hidden" />
 		<Pad id       = "IndexResultsPad"
 		     category = "Help2"
 		     title    = "${res:AddIns.HtmlHelp2.IndexResults}"
 		     icon     = "HtmlHelp2.16x16.IndexResults"
-		     class    = "HtmlHelp2.HtmlHelp2IndexResultsPad"/>
+		     class    = "HtmlHelp2.HtmlHelp2IndexResultsPad"
+		     defaultPosition = "Bottom, Hidden" />
 	</Path>
 	
 	<Path name = "/SharpDevelop/Dialogs/OptionsDialog/ToolsOptions">

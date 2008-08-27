@@ -117,8 +117,19 @@ namespace ICSharpCode.SharpDevelop.Gui
 				pad = new AvalonPadContent(this, content);
 				pads.Add(content, pad);
 				padsByClass.Add(content.Class, pad);
-				dockingManager.Show(pad, DockableContentState.Docked, AnchorStyle.Right);
+				AnchorStyle style;
+				if ((content.DefaultPosition & DefaultPadPositions.Top) != 0)
+					style = AnchorStyle.Top;
+				else if ((content.DefaultPosition & DefaultPadPositions.Left) != 0)
+					style = AnchorStyle.Left;
+				else if ((content.DefaultPosition & DefaultPadPositions.Bottom) != 0)
+					style = AnchorStyle.Bottom;
+				else
+					style = AnchorStyle.Right;
+				dockingManager.Show(pad, DockableContentState.Docked, style);
 				SetPaneSizeWorkaround(pad.ContainerPane);
+				if ((content.DefaultPosition & DefaultPadPositions.Hidden) != 0)
+					dockingManager.Hide(pad);
 			}
 		}
 		
@@ -127,26 +138,27 @@ namespace ICSharpCode.SharpDevelop.Gui
 			ResizingPanel panel = pane.Parent as ResizingPanel;
 			if (panel.Orientation == Orientation.Horizontal) {
 				if (ResizingPanel.GetResizeWidth(pane) == 0)
-					ResizingPanel.SetResizeWidth(pane, 150);
+					ResizingPanel.SetResizeWidth(pane, 200);
 			} else if (panel.Orientation == Orientation.Vertical) {
 				if (ResizingPanel.GetResizeHeight(pane) == 0)
-					ResizingPanel.SetResizeHeight(pane, 100);
+					ResizingPanel.SetResizeHeight(pane, 150);
 			}
 		}
 		
 		public void ActivatePad(PadDescriptor content)
 		{
-			pads[content].BringIntoView();
-		}
-		
-		public void ActivatePad(string fullyQualifiedTypeName)
-		{
-			padsByClass[fullyQualifiedTypeName].BringIntoView();
+			AvalonPadContent p;
+			if (pads.TryGetValue(content, out p))
+				p.BringIntoView();
+			else
+				ShowPad(content);
 		}
 		
 		public void HidePad(PadDescriptor content)
 		{
-			dockingManager.Hide(pads[content]);
+			AvalonPadContent p;
+			if (pads.TryGetValue(content, out p))
+				dockingManager.Hide(p);
 		}
 		
 		public void UnloadPad(PadDescriptor content)
@@ -161,8 +173,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public bool IsVisible(PadDescriptor padContent)
 		{
-			AvalonPadContent pad = pads[padContent];
-			return pad.IsVisible;
+			AvalonPadContent p;
+			if (pads.TryGetValue(padContent, out p))
+				return p.IsVisible;
+			else
+				return false;
 		}
 		
 		public IWorkbenchWindow ShowView(IViewContent content)

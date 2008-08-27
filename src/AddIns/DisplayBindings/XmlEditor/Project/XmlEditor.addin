@@ -169,7 +169,8 @@
 		     icon = "PadIcons.XPathQuery"
 		     title = "${res:ICSharpCode.XmlEditor.XPathQueryPad.Title}"
 		     insertafter = "UnitTestingPad"
-		     class = "ICSharpCode.XmlEditor.XPathQueryPad"/>
+		     class = "ICSharpCode.XmlEditor.XPathQueryPad"
+		     defaultPosition = "Bottom, Hidden" />
 	</Path>
 
 	<!-- Menu options to turn off XPath Query result highlighting -->
