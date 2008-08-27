@@ -60,6 +60,15 @@ namespace Debugger.Expressions
 			return null;
 		}
 		
+		public Value Evaluate(Process context)
+		{
+			if (context.SelectedStackFrame != null) {
+				return Evaluate(context.SelectedStackFrame);
+			} else {
+				return Evaluate(context.SelectedThread.MostRecentStackFrame);
+			}
+		}
+		
 		public Value Evaluate(StackFrame context)
 		{
 			if (context == null) throw new ArgumentNullException("context");

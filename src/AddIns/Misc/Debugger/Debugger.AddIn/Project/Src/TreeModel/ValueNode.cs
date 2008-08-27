@@ -42,7 +42,7 @@ namespace Debugger.AddIn.TreeModel
 		public static AbstractNode Create(Expression expression)
 		{
 			try {
-				Value val = expression.Evaluate(WindowsDebugger.DebuggedProcess.SelectedStackFrame);
+				Value val = expression.Evaluate(WindowsDebugger.DebuggedProcess);
 				return new ValueNode(val);
 			} catch (GetValueException e) {
 				return new ErrorNode(expression, e);
