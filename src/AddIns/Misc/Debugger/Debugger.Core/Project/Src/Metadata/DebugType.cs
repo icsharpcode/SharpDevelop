@@ -27,6 +27,7 @@ namespace Debugger.MetaData
 		Process process;
 		ICorDebugType corType;
 		CorElementType corElementType;
+		string name;
 		string fullName;
 		
 		// Class/ValueType specific
@@ -85,6 +86,11 @@ namespace Debugger.MetaData
 				AssertClassOrValueType();
 				return classProps.Token;
 			}
+		}
+		
+		/// <summary> Gets the name of the type excluding the namespace </summary>
+		public string Name {
+			get { return name; }
 		}
 		
 		/// <summary> Returns a string describing the type including the namespace
@@ -335,7 +341,8 @@ namespace Debugger.MetaData
 				}
 			}
 			
-			this.fullName = GetFullName();
+			this.fullName = GetName(true);
+			this.name = GetName(false);
 		}
 		
 		public static DebugType Create(Module module, uint token)
@@ -452,16 +459,16 @@ namespace Debugger.MetaData
 			return types;
 		}
 		
-		string GetFullName()
+		string GetName(bool includeNamespace)
 		{
 			if (IsArray) {
-				return this.ElementType.FullName + "[" + new String(',', GetArrayRank() - 1) + "]";
+				return Trim(this.ElementType.FullName, includeNamespace) + "[" + new String(',', GetArrayRank() - 1) + "]";
 			} else if (IsClass || IsValueType) {
 				List<string> argNames = new List<string>();
 				foreach(DebugType arg in this.GenericArguments) {
-					argNames.Add(arg.FullName);
+					argNames.Add(includeNamespace ? arg.FullName : arg.Name);
 				}
-				string className = classProps.Name;
+				string className = Trim(classProps.Name, includeNamespace);
 				// Remove generic parameter count at the end
 				// '`' might be missing in nested generic classes
 				int index = className.LastIndexOf('`');
@@ -474,13 +481,26 @@ namespace Debugger.MetaData
 					return className;
 				}
 			} else if (IsPrimitive) {
-				return this.PrimitiveType.ToString();
+				return Trim(this.PrimitiveType.ToString(), includeNamespace);
 			} else if (IsPointer) {
-				return this.ElementType.FullName + (this.corElementType == CorElementType.BYREF ? "&" : "*");
+				return Trim(this.ElementType.FullName, includeNamespace) + (this.corElementType == CorElementType.BYREF ? "&" : "*");
 			} else if (IsVoid) {
-				return "System.Void";
+				return includeNamespace ? "System.Void" : "Void";
 			} else {
 				throw new DebuggerException("Unknown type: " + this.corElementType.ToString());
+			}
+		}
+		
+		string Trim(string name, bool includeNamespace)
+		{
+			if (includeNamespace) {
+				return name;
+			}
+			int index = name.LastIndexOf('.');
+			if (index == -1) {
+				return name;
+			} else {
+				return name.Substring(index + 1);
 			}
 		}
 		

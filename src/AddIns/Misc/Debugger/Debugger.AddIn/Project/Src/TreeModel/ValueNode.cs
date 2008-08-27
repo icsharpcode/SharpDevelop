@@ -82,7 +82,7 @@ namespace Debugger.AddIn.TreeModel
 			}
 			
 			if (val.Type != null) {
-				this.Type = val.Type.FullName;
+				this.Type = val.Type.Name;
 			} else {
 				this.Type = String.Empty;
 			}

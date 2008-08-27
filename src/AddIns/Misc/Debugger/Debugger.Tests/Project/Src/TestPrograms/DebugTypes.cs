@@ -129,7 +129,8 @@ namespace Debugger.Tests {
               GenericArguments="{}"
               Interfaces="{}"
               Kind="Class"
-              Module="DebugTypes.exe">
+              Module="DebugTypes.exe"
+              Name="MyClass">
               <ElementType>null</ElementType>
             </DebugType>
           </Type>
@@ -155,7 +156,8 @@ namespace Debugger.Tests {
               GenericArguments="{}"
               Interfaces="{}"
               Kind="Class"
-              Module="mscorlib.dll">
+              Module="mscorlib.dll"
+              Name="Object">
               <ElementType>null</ElementType>
             </DebugType>
           </Type>
@@ -181,7 +183,8 @@ namespace Debugger.Tests {
               GenericArguments="{}"
               Interfaces="{}"
               Kind="Primitive"
-              Module="{Exception: The type is not a class or value type.}">
+              Module="{Exception: The type is not a class or value type.}"
+              Name="String">
               <ElementType>null</ElementType>
             </DebugType>
           </Type>
@@ -207,7 +210,8 @@ namespace Debugger.Tests {
               GenericArguments="{}"
               Interfaces="{}"
               Kind="Class"
-              Module="mscorlib.dll">
+              Module="mscorlib.dll"
+              Name="Object">
               <ElementType>null</ElementType>
             </DebugType>
           </Type>
@@ -233,7 +237,8 @@ namespace Debugger.Tests {
               GenericArguments="{}"
               Interfaces="{}"
               Kind="Primitive"
-              Module="{Exception: The type is not a class or value type.}">
+              Module="{Exception: The type is not a class or value type.}"
+              Name="Int32">
               <ElementType>null</ElementType>
             </DebugType>
           </Type>
@@ -259,7 +264,8 @@ namespace Debugger.Tests {
               GenericArguments="{}"
               Interfaces="{}"
               Kind="Primitive"
-              Module="{Exception: The type is not a class or value type.}">
+              Module="{Exception: The type is not a class or value type.}"
+              Name="Int32">
               <ElementType>null</ElementType>
             </DebugType>
           </Type>
@@ -285,7 +291,8 @@ namespace Debugger.Tests {
               GenericArguments="{}"
               Interfaces="{}"
               Kind="Pointer"
-              Module="{Exception: The type is not a class or value type.}">
+              Module="{Exception: The type is not a class or value type.}"
+              Name="Int32*">
               <ElementType>
                 <DebugType
                   BaseType="System.Object"
@@ -294,7 +301,8 @@ namespace Debugger.Tests {
                   GenericArguments="{}"
                   Interfaces="{}"
                   Kind="Primitive"
-                  Module="{Exception: The type is not a class or value type.}">
+                  Module="{Exception: The type is not a class or value type.}"
+                  Name="Int32">
                   <ElementType>null</ElementType>
                 </DebugType>
               </ElementType>
@@ -322,7 +330,8 @@ namespace Debugger.Tests {
               GenericArguments="{}"
               Interfaces="{}"
               Kind="Pointer"
-              Module="{Exception: The type is not a class or value type.}">
+              Module="{Exception: The type is not a class or value type.}"
+              Name="Int32*">
               <ElementType>
                 <DebugType
                   BaseType="System.Object"
@@ -331,7 +340,8 @@ namespace Debugger.Tests {
                   GenericArguments="{}"
                   Interfaces="{}"
                   Kind="Primitive"
-                  Module="{Exception: The type is not a class or value type.}">
+                  Module="{Exception: The type is not a class or value type.}"
+                  Name="Int32">
                   <ElementType>null</ElementType>
                 </DebugType>
               </ElementType>
@@ -359,7 +369,8 @@ namespace Debugger.Tests {
               GenericArguments="{}"
               Interfaces="{}"
               Kind="Pointer"
-              Module="{Exception: The type is not a class or value type.}">
+              Module="{Exception: The type is not a class or value type.}"
+              Name="Int32**">
               <ElementType>
                 <DebugType
                   BaseType="null"
@@ -368,7 +379,8 @@ namespace Debugger.Tests {
                   GenericArguments="{}"
                   Interfaces="{}"
                   Kind="Pointer"
-                  Module="{Exception: The type is not a class or value type.}">
+                  Module="{Exception: The type is not a class or value type.}"
+                  Name="Int32*">
                   <ElementType>
                     <DebugType
                       BaseType="System.Object"
@@ -377,7 +389,8 @@ namespace Debugger.Tests {
                       GenericArguments="{}"
                       Interfaces="{}"
                       Kind="Primitive"
-                      Module="{Exception: The type is not a class or value type.}">
+                      Module="{Exception: The type is not a class or value type.}"
+                      Name="Int32">
                       <ElementType>null</ElementType>
                     </DebugType>
                   </ElementType>
@@ -407,7 +420,8 @@ namespace Debugger.Tests {
               GenericArguments="{}"
               Interfaces="{}"
               Kind="Pointer"
-              Module="{Exception: The type is not a class or value type.}">
+              Module="{Exception: The type is not a class or value type.}"
+              Name="Void*">
               <ElementType>
                 <DebugType
                   BaseType="null"
@@ -416,7 +430,8 @@ namespace Debugger.Tests {
                   GenericArguments="{}"
                   Interfaces="{}"
                   Kind="Void"
-                  Module="{Exception: The type is not a class or value type.}">
+                  Module="{Exception: The type is not a class or value type.}"
+                  Name="Void">
                   <ElementType>null</ElementType>
                 </DebugType>
               </ElementType>
@@ -444,7 +459,8 @@ namespace Debugger.Tests {
               GenericArguments="{}"
               Interfaces="{}"
               Kind="Class"
-              Module="mscorlib.dll">
+              Module="mscorlib.dll"
+              Name="Object">
               <ElementType>null</ElementType>
             </DebugType>
           </Type>
@@ -470,7 +486,8 @@ namespace Debugger.Tests {
               GenericArguments="{}"
               Interfaces="{}"
               Kind="Class"
-              Module="mscorlib.dll">
+              Module="mscorlib.dll"
+              Name="Object">
               <ElementType>null</ElementType>
             </DebugType>
           </Type>
@@ -496,7 +513,8 @@ namespace Debugger.Tests {
               GenericArguments="{}"
               Interfaces="{}"
               Kind="Array"
-              Module="{Exception: The type is not a class or value type.}">
+              Module="{Exception: The type is not a class or value type.}"
+              Name="Char[]">
               <ElementType>
                 <DebugType
                   BaseType="System.Object"
@@ -505,7 +523,8 @@ namespace Debugger.Tests {
                   GenericArguments="{}"
                   Interfaces="{}"
                   Kind="Primitive"
-                  Module="{Exception: The type is not a class or value type.}">
+                  Module="{Exception: The type is not a class or value type.}"
+                  Name="Char">
                   <ElementType>null</ElementType>
                 </DebugType>
               </ElementType>
@@ -533,7 +552,8 @@ namespace Debugger.Tests {
               GenericArguments="{}"
               Interfaces="{}"
               Kind="Array"
-              Module="{Exception: The type is not a class or value type.}">
+              Module="{Exception: The type is not a class or value type.}"
+              Name="Char[,]">
               <ElementType>
                 <DebugType
                   BaseType="System.Object"
@@ -542,7 +562,8 @@ namespace Debugger.Tests {
                   GenericArguments="{}"
                   Interfaces="{}"
                   Kind="Primitive"
-                  Module="{Exception: The type is not a class or value type.}">
+                  Module="{Exception: The type is not a class or value type.}"
+                  Name="Char">
                   <ElementType>null</ElementType>
                 </DebugType>
               </ElementType>
@@ -570,7 +591,8 @@ namespace Debugger.Tests {
               GenericArguments="{}"
               Interfaces="{}"
               Kind="ValueType"
-              Module="DebugTypes.exe">
+              Module="DebugTypes.exe"
+              Name="Point">
               <ElementType>null</ElementType>
             </DebugType>
           </Type>
@@ -596,7 +618,8 @@ namespace Debugger.Tests {
               GenericArguments="{}"
               Interfaces="{}"
               Kind="Pointer"
-              Module="{Exception: The type is not a class or value type.}">
+              Module="{Exception: The type is not a class or value type.}"
+              Name="Point*">
               <ElementType>
                 <DebugType
                   BaseType="System.ValueType"
@@ -605,7 +628,8 @@ namespace Debugger.Tests {
                   GenericArguments="{}"
                   Interfaces="{}"
                   Kind="ValueType"
-                  Module="DebugTypes.exe">
+                  Module="DebugTypes.exe"
+                  Name="Point">
                   <ElementType>null</ElementType>
                 </DebugType>
               </ElementType>
@@ -633,7 +657,8 @@ namespace Debugger.Tests {
               GenericArguments="{}"
               Interfaces="{System.IComparable, System.IFormattable, System.IConvertible}"
               Kind="ValueType"
-              Module="mscorlib.dll">
+              Module="mscorlib.dll"
+              Name="Int32">
               <ElementType>null</ElementType>
             </DebugType>
           </Type>
@@ -659,7 +684,8 @@ namespace Debugger.Tests {
               GenericArguments="{}"
               Interfaces="{MyInterface}"
               Kind="Class"
-              Module="DebugTypes.exe">
+              Module="DebugTypes.exe"
+              Name="MyInterfaceImpl">
               <ElementType>null</ElementType>
             </DebugType>
           </Type>
@@ -685,7 +711,8 @@ namespace Debugger.Tests {
               GenericArguments="{}"
               Interfaces="{MyInterface}"
               Kind="Class"
-              Module="DebugTypes.exe">
+              Module="DebugTypes.exe"
+              Name="MyInterfaceImpl">
               <ElementType>null</ElementType>
             </DebugType>
           </Type>
@@ -716,7 +743,8 @@ namespace Debugger.Tests {
               GenericArguments="{}"
               Interfaces="{}"
               Kind="Primitive"
-              Module="{Exception: The type is not a class or value type.}">
+              Module="{Exception: The type is not a class or value type.}"
+              Name="Int32">
               <ElementType>null</ElementType>
             </DebugType>
           </Type>
@@ -742,7 +770,8 @@ namespace Debugger.Tests {
               GenericArguments="{}"
               Interfaces="{}"
               Kind="Primitive"
-              Module="{Exception: The type is not a class or value type.}">
+              Module="{Exception: The type is not a class or value type.}"
+              Name="Int32">
               <ElementType>null</ElementType>
             </DebugType>
           </Type>
@@ -768,7 +797,8 @@ namespace Debugger.Tests {
               GenericArguments="{}"
               Interfaces="{}"
               Kind="Pointer"
-              Module="{Exception: The type is not a class or value type.}">
+              Module="{Exception: The type is not a class or value type.}"
+              Name="Int32*">
               <ElementType>
                 <DebugType
                   BaseType="System.Object"
@@ -777,7 +807,8 @@ namespace Debugger.Tests {
                   GenericArguments="{}"
                   Interfaces="{}"
                   Kind="Primitive"
-                  Module="{Exception: The type is not a class or value type.}">
+                  Module="{Exception: The type is not a class or value type.}"
+                  Name="Int32">
                   <ElementType>null</ElementType>
                 </DebugType>
               </ElementType>
@@ -805,7 +836,8 @@ namespace Debugger.Tests {
               GenericArguments="{}"
               Interfaces="{}"
               Kind="Pointer"
-              Module="{Exception: The type is not a class or value type.}">
+              Module="{Exception: The type is not a class or value type.}"
+              Name="Int32*">
               <ElementType>
                 <DebugType
                   BaseType="System.Object"
@@ -814,7 +846,8 @@ namespace Debugger.Tests {
                   GenericArguments="{}"
                   Interfaces="{}"
                   Kind="Primitive"
-                  Module="{Exception: The type is not a class or value type.}">
+                  Module="{Exception: The type is not a class or value type.}"
+                  Name="Int32">
                   <ElementType>null</ElementType>
                 </DebugType>
               </ElementType>
@@ -842,7 +875,8 @@ namespace Debugger.Tests {
               GenericArguments="{}"
               Interfaces="{}"
               Kind="Pointer"
-              Module="{Exception: The type is not a class or value type.}">
+              Module="{Exception: The type is not a class or value type.}"
+              Name="Int32**">
               <ElementType>
                 <DebugType
                   BaseType="null"
@@ -851,7 +885,8 @@ namespace Debugger.Tests {
                   GenericArguments="{}"
                   Interfaces="{}"
                   Kind="Pointer"
-                  Module="{Exception: The type is not a class or value type.}">
+                  Module="{Exception: The type is not a class or value type.}"
+                  Name="Int32*">
                   <ElementType>
                     <DebugType
                       BaseType="System.Object"
@@ -860,7 +895,8 @@ namespace Debugger.Tests {
                       GenericArguments="{}"
                       Interfaces="{}"
                       Kind="Primitive"
-                      Module="{Exception: The type is not a class or value type.}">
+                      Module="{Exception: The type is not a class or value type.}"
+                      Name="Int32">
                       <ElementType>null</ElementType>
                     </DebugType>
                   </ElementType>
@@ -890,7 +926,8 @@ namespace Debugger.Tests {
               GenericArguments="{}"
               Interfaces="{}"
               Kind="Pointer"
-              Module="{Exception: The type is not a class or value type.}">
+              Module="{Exception: The type is not a class or value type.}"
+              Name="Void*">
               <ElementType>
                 <DebugType
                   BaseType="null"
@@ -899,7 +936,8 @@ namespace Debugger.Tests {
                   GenericArguments="{}"
                   Interfaces="{}"
                   Kind="Void"
-                  Module="{Exception: The type is not a class or value type.}">
+                  Module="{Exception: The type is not a class or value type.}"
+                  Name="Void">
                   <ElementType>null</ElementType>
                 </DebugType>
               </ElementType>
@@ -927,7 +965,8 @@ namespace Debugger.Tests {
               GenericArguments="{}"
               Interfaces="{}"
               Kind="Class"
-              Module="mscorlib.dll">
+              Module="mscorlib.dll"
+              Name="Object">
               <ElementType>null</ElementType>
             </DebugType>
           </Type>
@@ -953,7 +992,8 @@ namespace Debugger.Tests {
               GenericArguments="{}"
               Interfaces="{}"
               Kind="Class"
-              Module="mscorlib.dll">
+              Module="mscorlib.dll"
+              Name="Object">
               <ElementType>null</ElementType>
             </DebugType>
           </Type>
@@ -979,7 +1019,8 @@ namespace Debugger.Tests {
               GenericArguments="{}"
               Interfaces="{}"
               Kind="Array"
-              Module="{Exception: The type is not a class or value type.}">
+              Module="{Exception: The type is not a class or value type.}"
+              Name="Char[]">
               <ElementType>
                 <DebugType
                   BaseType="System.Object"
@@ -988,7 +1029,8 @@ namespace Debugger.Tests {
                   GenericArguments="{}"
                   Interfaces="{}"
                   Kind="Primitive"
-                  Module="{Exception: The type is not a class or value type.}">
+                  Module="{Exception: The type is not a class or value type.}"
+                  Name="Char">
                   <ElementType>null</ElementType>
                 </DebugType>
               </ElementType>
@@ -1016,7 +1058,8 @@ namespace Debugger.Tests {
               GenericArguments="{}"
               Interfaces="{}"
               Kind="Array"
-              Module="{Exception: The type is not a class or value type.}">
+              Module="{Exception: The type is not a class or value type.}"
+              Name="Char[,]">
               <ElementType>
                 <DebugType
                   BaseType="System.Object"
@@ -1025,7 +1068,8 @@ namespace Debugger.Tests {
                   GenericArguments="{}"
                   Interfaces="{}"
                   Kind="Primitive"
-                  Module="{Exception: The type is not a class or value type.}">
+                  Module="{Exception: The type is not a class or value type.}"
+                  Name="Char">
                   <ElementType>null</ElementType>
                 </DebugType>
               </ElementType>
@@ -1053,7 +1097,8 @@ namespace Debugger.Tests {
               GenericArguments="{}"
               Interfaces="{}"
               Kind="ValueType"
-              Module="DebugTypes.exe">
+              Module="DebugTypes.exe"
+              Name="Point">
               <ElementType>null</ElementType>
             </DebugType>
           </Type>
@@ -1079,7 +1124,8 @@ namespace Debugger.Tests {
               GenericArguments="{}"
               Interfaces="{}"
               Kind="ValueType"
-              Module="DebugTypes.exe">
+              Module="DebugTypes.exe"
+              Name="Point">
               <ElementType>null</ElementType>
             </DebugType>
           </Type>
@@ -1105,7 +1151,8 @@ namespace Debugger.Tests {
               GenericArguments="{}"
               Interfaces="{}"
               Kind="Pointer"
-              Module="{Exception: The type is not a class or value type.}">
+              Module="{Exception: The type is not a class or value type.}"
+              Name="Point*">
               <ElementType>
                 <DebugType
                   BaseType="System.ValueType"
@@ -1114,7 +1161,8 @@ namespace Debugger.Tests {
                   GenericArguments="{}"
                   Interfaces="{}"
                   Kind="ValueType"
-                  Module="DebugTypes.exe">
+                  Module="DebugTypes.exe"
+                  Name="Point">
                   <ElementType>null</ElementType>
                 </DebugType>
               </ElementType>
@@ -1142,7 +1190,8 @@ namespace Debugger.Tests {
               GenericArguments="{}"
               Interfaces="{System.IComparable, System.IFormattable, System.IConvertible}"
               Kind="ValueType"
-              Module="mscorlib.dll">
+              Module="mscorlib.dll"
+              Name="Int32">
               <ElementType>null</ElementType>
             </DebugType>
           </Type>
@@ -1168,7 +1217,8 @@ namespace Debugger.Tests {
               GenericArguments="{}"
               Interfaces="{System.IComparable, System.IFormattable, System.IConvertible}"
               Kind="ValueType"
-              Module="mscorlib.dll">
+              Module="mscorlib.dll"
+              Name="Int32">
               <ElementType>null</ElementType>
             </DebugType>
           </Type>

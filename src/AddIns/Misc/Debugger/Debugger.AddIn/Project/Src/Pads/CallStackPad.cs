@@ -204,6 +204,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			bool showArgumentValues = DebuggingOptions.Instance.ShowArgumentValues;
 			
 			StringBuilder name = new StringBuilder();
+			name.Append(frame.MethodInfo.DeclaringType.Name);
+			name.Append('.');
 			name.Append(frame.MethodInfo.Name);
 			if (showArgumentNames || showArgumentValues) {
 				name.Append("(");

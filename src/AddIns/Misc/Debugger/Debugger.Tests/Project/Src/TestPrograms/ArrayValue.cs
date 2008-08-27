@@ -143,7 +143,8 @@ namespace Debugger.Tests {
         GenericArguments="{}"
         Interfaces="{}"
         Kind="Array"
-        Module="{Exception: The type is not a class or value type.}">
+        Module="{Exception: The type is not a class or value type.}"
+        Name="Int32[]">
         <BaseType>
           <DebugType
             BaseType="System.Object"
@@ -152,7 +153,8 @@ namespace Debugger.Tests {
             GenericArguments="{}"
             Interfaces="{System.ICloneable, System.Collections.IList, System.Collections.ICollection, System.Collections.IEnumerable}"
             Kind="Class"
-            Module="mscorlib.dll">
+            Module="mscorlib.dll"
+            Name="Array">
             <BaseType>
               <DebugType
                 BaseType="null"
@@ -161,7 +163,8 @@ namespace Debugger.Tests {
                 GenericArguments="{}"
                 Interfaces="{}"
                 Kind="Class"
-                Module="mscorlib.dll">
+                Module="mscorlib.dll"
+                Name="Object">
                 <BaseType>null</BaseType>
               </DebugType>
             </BaseType>

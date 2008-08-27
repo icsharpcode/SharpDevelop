@@ -73,7 +73,8 @@ namespace Debugger.Tests {
             GenericArguments="{}"
             Interfaces="{}"
             Kind="ValueType"
-            Module="ValueType.exe">
+            Module="ValueType.exe"
+            Name="ValueType">
             <BaseType>
               <DebugType
                 BaseType="System.Object"
@@ -82,7 +83,8 @@ namespace Debugger.Tests {
                 GenericArguments="{}"
                 Interfaces="{}"
                 Kind="Class"
-                Module="mscorlib.dll">
+                Module="mscorlib.dll"
+                Name="ValueType">
                 <BaseType>
                   <DebugType
                     BaseType="null"
@@ -91,7 +93,8 @@ namespace Debugger.Tests {
                     GenericArguments="{}"
                     Interfaces="{}"
                     Kind="Class"
-                    Module="mscorlib.dll">
+                    Module="mscorlib.dll"
+                    Name="Object">
                     <BaseType>null</BaseType>
                   </DebugType>
                 </BaseType>
