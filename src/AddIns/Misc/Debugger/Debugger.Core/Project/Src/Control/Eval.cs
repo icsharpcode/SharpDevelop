@@ -124,6 +124,9 @@ namespace Debugger
 					// The operation failed because it is a GC unsafe point. (Exception from HRESULT: 0x80131C23)
 					// This can probably happen when we break and the thread is in native code
 					throw new GetValueException("Thread is in GC unsafe point");
+				} else if ((uint)e.ErrorCode == 0x80131C22) {
+					// The operation is illegal because of a stack overflow.
+					throw new GetValueException("Can not evaluate after stack overflow");
 				} else {
 					throw;
 				}
