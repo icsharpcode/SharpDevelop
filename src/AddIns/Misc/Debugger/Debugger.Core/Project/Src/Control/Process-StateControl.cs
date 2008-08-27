@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.Threading;
 
 namespace Debugger
@@ -15,6 +16,7 @@ namespace Debugger
 	public partial class Process
 	{
 		internal bool TerminateCommandIssued = false;
+		internal Queue<Breakpoint> BreakpointHitEventQueue = new Queue<Breakpoint>();
 		
 		#region Events
 		
@@ -25,13 +27,17 @@ namespace Debugger
 		public virtual void OnPaused()
 		{
 			AssertPaused();
-			// No real purpose
+			// No real purpose - just additional check
 			if (callbackInterface.IsInCallback) throw new DebuggerException("Can not raise event within callback.");
 			TraceMessage ("Debugger event: OnPaused()");
 			if (Paused != null) {
 				foreach(Delegate d in Paused.GetInvocationList()) {
 					if (IsRunning) {
 						TraceMessage ("Skipping OnPaused delegate becuase process has resumed");
+						break;
+					}
+					if (this.TerminateCommandIssued || this.HasExited) {
+						TraceMessage ("Skipping OnPaused delegate becuase process has exited");
 						break;
 					}
 					d.DynamicInvoke(this, new ProcessEventArgs(this));
@@ -42,7 +48,7 @@ namespace Debugger
 		protected virtual void OnResumed()
 		{
 			AssertRunning();
-			// No real purpose
+			// No real purpose - just additional check
 			if (callbackInterface.IsInCallback) throw new DebuggerException("Can not raise event within callback.");
 			TraceMessage ("Debugger event: OnResumed()");
 			if (Resumed != null) {
@@ -108,12 +114,19 @@ namespace Debugger
 				ExceptionEventArgs args = new ExceptionEventArgs(this, this.SelectedThread.CurrentException, this.SelectedThread.CurrentExceptionType, this.SelectedThread.CurrentExceptionIsUnhandled);
 				OnExceptionThrown(args);
 				// The event could have resumed or killed the process
+				if (this.IsRunning || this.TerminateCommandIssued || this.HasExited) return;
 			}
 			
-			if (this.IsPaused && !this.HasExited) {
-				OnPaused();
-				// The event could have resumed the process
+			while(BreakpointHitEventQueue.Count > 0) {
+				Breakpoint breakpoint = BreakpointHitEventQueue.Dequeue();
+				breakpoint.NotifyHit();
+				// The event could have resumed or killed the process
+				if (this.IsRunning || this.TerminateCommandIssued || this.HasExited) return;
 			}
+			
+			OnPaused();
+			// The event could have resumed the process
+			if (this.IsRunning || this.TerminateCommandIssued || this.HasExited) return;
 		}
 		
 		#endregion

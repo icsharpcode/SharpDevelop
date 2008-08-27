@@ -165,9 +165,11 @@ namespace Debugger
 		{
 			EnterCallback(PausedReason.Breakpoint, "Breakpoint", pThread);
 			
-			pauseOnNextExit = true;
+			Breakpoint breakpoint = process.Debugger.GetBreakpoint(corBreakpoint);
+			// The event will be risen outside the callback
+			process.BreakpointHitEventQueue.Enqueue(breakpoint);
 			
-			process.Debugger.GetBreakpoint(corBreakpoint).NotifyHit();
+			pauseOnNextExit = true;
 			
 			ExitCallback();
 		}
