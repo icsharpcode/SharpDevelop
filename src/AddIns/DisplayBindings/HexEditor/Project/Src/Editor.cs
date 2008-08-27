@@ -1348,10 +1348,13 @@ namespace HexEditor
 				case Keys.ControlKey:
 					break;
 				case Keys.Tab:
-					if (this.activeView == this.hexView)
+					if (this.activeView == this.hexView) {
 						this.activeView = this.textView;
-					else
+						this.charwidth = 1;
+					} else {
 						this.activeView = this.hexView;
+						this.charwidth = 3;
+					}
 					this.handled = true;
 					break;
 				default:
