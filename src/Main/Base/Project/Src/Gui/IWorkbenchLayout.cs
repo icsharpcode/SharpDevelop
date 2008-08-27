@@ -80,11 +80,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 		bool IsVisible(PadDescriptor padContent);
 		
 		/// <summary>
-		/// Re-initializes all components of the layout manager.
-		/// </summary>
-		void RedrawAllComponents();
-		
-		/// <summary>
 		/// Shows a new <see cref="IViewContent"/>.
 		/// </summary>
 		IWorkbenchWindow ShowView(IViewContent content);

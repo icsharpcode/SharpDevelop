@@ -31,13 +31,22 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public event EventHandler ActiveContentChanged;
 		public event ViewContentEventHandler ViewOpened;
 		
-		void OnViewOpened(ViewContentEventArgs e)
+		internal void OnViewOpened(ViewContentEventArgs e)
 		{
 			if (ViewOpened != null) {
 				ViewOpened(this, e);
 			}
 		}
+		
 		public event ViewContentEventHandler ViewClosed;
+		
+		internal void OnViewClosed(ViewContentEventArgs e)
+		{
+			if (ViewClosed != null) {
+				ViewClosed(this, e);
+			}
+		}
+		
 		public event System.Windows.Forms.KeyEventHandler ProcessCommandKey;
 		
 		public System.Windows.Forms.IWin32Window MainWin32Window { get; private set; }
@@ -100,7 +109,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public ICollection<IViewContent> ViewContentCollection {
 			get {
-				return WorkbenchWindowCollection.SelectMany(w => w.ViewContents).ToList().ToArray();
+				return WorkbenchWindowCollection.SelectMany(w => w.ViewContents).ToList().AsReadOnly();
 			}
 		}
 		
@@ -162,6 +171,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void OnActiveWindowChanged(object sender, EventArgs e)
 		{
+			if (closeAll)
+				return;
+			
 			if (workbenchLayout != null) {
 				this.ActiveContent = workbenchLayout.ActiveContent;
 				this.ActiveWorkbenchWindow = workbenchLayout.ActiveWorkbenchWindow;
@@ -235,7 +247,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			WorkbenchLayout.ShowView(content);
 			content.WorkbenchWindow.SelectWindow();
-			OnViewOpened(new ViewContentEventArgs(content));
 		}
 		
 		public void ShowPad(PadDescriptor content)
@@ -264,12 +275,22 @@ namespace ICSharpCode.SharpDevelop.Gui
 			return null;
 		}
 		
-		public void CloseContent(IViewContent content)
-		{
-		}
+		/// <summary>
+		/// Flag used to prevent repeated ActiveWindowChanged events during CloseAllViews().
+		/// </summary>
+		bool closeAll;
 		
 		public void CloseAllViews()
 		{
+			try {
+				closeAll = true;
+				foreach (IWorkbenchWindow window in this.WorkbenchWindowCollection.ToArray()) {
+					window.CloseWindow(false);
+				}
+			} finally {
+				closeAll = false;
+				OnActiveWindowChanged(this, EventArgs.Empty);
+			}
 		}
 		
 		public void RedrawAllComponents()

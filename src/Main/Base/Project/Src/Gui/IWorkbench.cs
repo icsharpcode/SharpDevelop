@@ -141,11 +141,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 		PadDescriptor GetPad(Type type);
 		
 		/// <summary>
-		/// Closes the IViewContent content when content is open.
-		/// </summary>
-		void CloseContent(IViewContent content);
-		
-		/// <summary>
 		/// Closes all views inside the workbench.
 		/// </summary>
 		void CloseAllViews();

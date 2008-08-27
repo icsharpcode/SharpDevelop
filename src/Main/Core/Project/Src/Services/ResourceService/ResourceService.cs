@@ -50,6 +50,8 @@ namespace ICSharpCode.Core
 			}
 		}
 		
+		static readonly object loadLock = new object();
+		
 		/// <summary>English strings (list of resource managers)</summary>
 		static List<ResourceManager> strings = new List<ResourceManager>();
 		/// <summary>Neutral/English images (list of resource managers)</summary>
@@ -178,33 +180,34 @@ namespace ICSharpCode.Core
 		
 		static void LoadLanguageResources(string language)
 		{
+			lock (loadLock) {
+				try {
+					Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo(language);
+				} catch (Exception) {
+					try {
+						Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo(language.Split('-')[0]);
+					} catch (Exception) {}
+				}
+				
+				localStrings = Load(stringResources, language);
+				if (localStrings == null && language.IndexOf('-') > 0) {
+					localStrings = Load(stringResources, language.Split('-')[0]);
+				}
+				
+				localIcons = Load(imageResources, language);
+				if (localIcons == null && language.IndexOf('-') > 0) {
+					localIcons = Load(imageResources, language.Split('-')[0]);
+				}
+				
+				localStringsResMgrs.Clear();
+				localIconsResMgrs.Clear();
+				currentLanguage = language;
+				foreach (ResourceAssembly ra in resourceAssemblies) {
+					ra.Load();
+				}
+			}
 			if (ClearCaches != null)
 				ClearCaches(null, EventArgs.Empty);
-			
-			try {
-				Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo(language);
-			} catch (Exception) {
-				try {
-					Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo(language.Split('-')[0]);
-				} catch (Exception) {}
-			}
-			
-			localStrings = Load(stringResources, language);
-			if (localStrings == null && language.IndexOf('-') > 0) {
-				localStrings = Load(stringResources, language.Split('-')[0]);
-			}
-			
-			localIcons = Load(imageResources, language);
-			if (localIcons == null && language.IndexOf('-') > 0) {
-				localIcons = Load(imageResources, language.Split('-')[0]);
-			}
-			
-			localStringsResMgrs.Clear();
-			localIconsResMgrs.Clear();
-			currentLanguage = language;
-			foreach (ResourceAssembly ra in resourceAssemblies) {
-				ra.Load();
-			}
 		}
 		
 		static Hashtable Load(string fileName)
@@ -241,68 +244,72 @@ namespace ICSharpCode.Core
 		/// </exception>
 		public static string GetString(string name)
 		{
-			if (localStrings != null && localStrings[name] != null) {
-				return localStrings[name].ToString();
-			}
-			
-			string s = null;
-			foreach (ResourceManager resourceManger in localStringsResMgrs) {
-				try {
-					s = resourceManger.GetString(name);
+			lock (loadLock) {
+				if (localStrings != null && localStrings[name] != null) {
+					return localStrings[name].ToString();
 				}
-				catch (Exception) { }
-
-				if (s != null) {
-					break;
-				}
-			}
-			
-			if (s == null) {
-				foreach (ResourceManager resourceManger in strings) {
+				
+				string s = null;
+				foreach (ResourceManager resourceManger in localStringsResMgrs) {
 					try {
 						s = resourceManger.GetString(name);
 					}
 					catch (Exception) { }
-					
+
 					if (s != null) {
 						break;
 					}
 				}
-			}
-			if (s == null) {
-				throw new ResourceNotFoundException("string >" + name + "<");
-			}
-			
-			return s;
-		}
-		
-		public static object GetImageResource(string name)
-		{
-			object iconobj = null;
-			if (localIcons != null && localIcons[name] != null) {
-				iconobj = localIcons[name];
-			} else {
-				foreach (ResourceManager resourceManger in localIconsResMgrs) {
-					iconobj = resourceManger.GetObject(name);
-					if (iconobj != null) {
-						break;
-					}
-				}
 				
-				if (iconobj == null) {
-					foreach (ResourceManager resourceManger in icons) {
+				if (s == null) {
+					foreach (ResourceManager resourceManger in strings) {
 						try {
-							iconobj = resourceManger.GetObject(name);
+							s = resourceManger.GetString(name);
 						}
 						catch (Exception) { }
-
-						if (iconobj != null) {
+						
+						if (s != null) {
 							break;
 						}
 					}
 				}
+				if (s == null) {
+					throw new ResourceNotFoundException("string >" + name + "<");
+				}
+				
+				return s;
 			}
-			return iconobj;
+		}
+		
+		public static object GetImageResource(string name)
+		{
+			lock (loadLock) {
+				object iconobj = null;
+				if (localIcons != null && localIcons[name] != null) {
+					iconobj = localIcons[name];
+				} else {
+					foreach (ResourceManager resourceManger in localIconsResMgrs) {
+						iconobj = resourceManger.GetObject(name);
+						if (iconobj != null) {
+							break;
+						}
+					}
+					
+					if (iconobj == null) {
+						foreach (ResourceManager resourceManger in icons) {
+							try {
+								iconobj = resourceManger.GetObject(name);
+							}
+							catch (Exception) { }
+
+							if (iconobj != null) {
+								break;
+							}
+						}
+					}
+				}
+				return iconobj;
+			}
 		}
 	}
 }

@@ -29,6 +29,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 		List<IWorkbenchWindow> workbenchWindows = new List<IWorkbenchWindow>();
 		internal bool Busy;
 		
+		public WpfWorkbench Workbench {
+			get { return workbench; }
+		}
+		
 		public DockingManager DockingManager {
 			get { return dockingManager; }
 		}
@@ -37,12 +41,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			dockingManager.Content = documentPane;
 			dockingManager.PropertyChanged += dockingManager_PropertyChanged;
-		}
-		
-		public void OnWorkbenchWindowClosed(AvalonWorkbenchWindow window)
-		{
-			workbenchWindows.Remove(window);
-			documentPane.Items.Remove(window);
 		}
 		
 		void dockingManager_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -153,10 +151,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			return pads[padContent].IsVisible;
 		}
 		
-		public void RedrawAllComponents()
-		{
-		}
-		
 		public IWorkbenchWindow ShowView(IViewContent content)
 		{
 			AvalonWorkbenchWindow window = new AvalonWorkbenchWindow(this);
@@ -165,7 +159,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 			window.ViewContents.AddRange(content.SecondaryViewContents);
 			documentPane.Items.Add(window);
 			dockingManager.Show(window);
+			window.Closed += window_Closed;
 			return window;
+		}
+		
+		void window_Closed(object sender, EventArgs e)
+		{
+			workbenchWindows.Remove((IWorkbenchWindow)sender);
 		}
 		
 		public void LoadConfiguration()

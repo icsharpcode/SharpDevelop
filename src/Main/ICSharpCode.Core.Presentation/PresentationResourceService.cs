@@ -22,6 +22,18 @@ namespace ICSharpCode.Core.Presentation
 	{
 		static readonly Dictionary<string, BitmapSource> bitmapCache = new Dictionary<string, BitmapSource>();
 		
+		static PresentationResourceService()
+		{
+			ResourceService.ClearCaches += ResourceService_ClearCaches;
+		}
+		
+		static void ResourceService_ClearCaches(object sender, EventArgs e)
+		{
+			lock (bitmapCache) {
+				bitmapCache.Clear();
+			}
+		}
+		
 		/// <summary>
 		/// Creates a new System.Windows.Controls.Image object containing the image with the
 		/// specified resource name.

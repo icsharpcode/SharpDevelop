@@ -293,6 +293,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			content.TabPageTextChanged += OnTabPageTextChanged;
 			content.TitleNameChanged   += OnTitleNameChanged;
 			content.IsDirtyChanged     += OnIsDirtyChanged;
+			
+			this.dockLayout.Workbench.OnViewOpened(new ViewContentEventArgs(content));
 		}
 		
 		void UnregisterContent(IViewContent content)
@@ -302,6 +304,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			content.TabPageTextChanged -= OnTabPageTextChanged;
 			content.TitleNameChanged   -= OnTitleNameChanged;
 			content.IsDirtyChanged     -= OnIsDirtyChanged;
+			
+			this.dockLayout.Workbench.OnViewClosed(new ViewContentEventArgs(content));
 		}
 		
 		void OnTabPageTextChanged(object sender, EventArgs e)
@@ -309,9 +313,19 @@ namespace ICSharpCode.SharpDevelop.Gui
 			RefreshTabPageTexts();
 		}
 		
+		bool forceClose;
+		
 		public bool CloseWindow(bool force)
 		{
-			if (!force && this.IsDirty) {
+			forceClose = force;
+			Close();
+			return this.ViewContents.Count == 0;
+		}
+		
+		protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
+		{
+			base.OnClosing(e);
+			if (!e.Cancel && !forceClose && this.IsDirty) {
 				MessageBoxResult dr = MessageBox.Show(
 					ResourceService.GetString("MainWindow.SaveChangesMessage"),
 					ResourceService.GetString("MainWindow.SaveChangesMessageHeader") + " " + Title + " ?",
@@ -338,14 +352,17 @@ namespace ICSharpCode.SharpDevelop.Gui
 					case MessageBoxResult.No:
 						break;
 					case MessageBoxResult.Cancel:
-						return false;
+						e.Cancel = true;
+						break;
 				}
 			}
-
-			dockLayout.OnWorkbenchWindowClosed(this);
+		}
+		
+		protected override void OnClosed()
+		{
+			base.OnClosed();
 			Dispose();
 			CommandManager.InvalidateRequerySuggested();
-			return true;
 		}
 		
 		public void RedrawContent()
