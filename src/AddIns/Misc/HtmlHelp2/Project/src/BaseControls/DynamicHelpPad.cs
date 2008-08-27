@@ -48,11 +48,6 @@ namespace HtmlHelp2
 			get { return dynamicHelpBrowser; }
 		}
 
-		public override void RedrawContent()
-		{
-			dynamicHelpBrowser.RedrawContent();
-		}
-
 		[PermissionSet(SecurityAction.LinkDemand, Name="Execution")]
 		public HtmlHelp2DynamicHelpPad()
 		{
@@ -65,6 +60,7 @@ namespace HtmlHelp2
 			ProjectService.SolutionClosed          += new EventHandler(this.SolutionClosed);
 			
 			HtmlHelp2Environment.NamespaceReloaded += new EventHandler(this.NamespaceReloaded);
+			ResourceService.LanguageChanged += delegate { dynamicHelpBrowser.RedrawContent(); };
 		}
 
 		#region Dynamic Help Calls

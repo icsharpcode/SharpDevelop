@@ -37,11 +37,6 @@ namespace HtmlHelp2
 			get { return listView; }
 		}
 
-		public override void RedrawContent()
-		{
-			this.SetListViewHeader();
-		}
-
 		public ListView IndexResultsListView
 		{
 			get { return listView; }
@@ -50,6 +45,8 @@ namespace HtmlHelp2
 		public HtmlHelp2IndexResultsPad()
 		{
 			this.SetListViewHeader();
+			ResourceService.LanguageChanged += delegate { SetListViewHeader(); };
+			
 			listView.Columns.Add(title);
 			listView.Columns.Add(location);
 

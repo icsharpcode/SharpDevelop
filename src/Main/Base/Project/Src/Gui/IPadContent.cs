@@ -23,11 +23,5 @@ namespace ICSharpCode.SharpDevelop.Gui
 		object Content {
 			get;
 		}
-		
-		/// <summary>
-		/// Re-initializes all components of the pad. Don't call unless
-		/// you know what you do.
-		/// </summary>
-		void RedrawContent();
 	}
 }

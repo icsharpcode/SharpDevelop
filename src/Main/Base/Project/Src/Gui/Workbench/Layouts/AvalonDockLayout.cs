@@ -48,9 +48,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void dockingManager_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == "ActiveContent") {
-				CommandManager.InvalidateRequerySuggested();
 				if (ActiveContentChanged != null)
 					ActiveContentChanged(this, e);
+				CommandManager.InvalidateRequerySuggested();
 			}
 		}
 		

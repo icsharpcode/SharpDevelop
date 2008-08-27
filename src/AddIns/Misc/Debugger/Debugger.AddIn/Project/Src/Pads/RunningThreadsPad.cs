@@ -82,9 +82,10 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			breaked.Width = 80;
 			
 			RedrawContent();
+			ResourceService.LanguageChanged += delegate { RedrawContent(); };
 		}
 		
-		public override void RedrawContent()
+		public void RedrawContent()
 		{
 			id.Text       = ResourceService.GetString("Global.ID");
 			name.Text     = ResourceService.GetString("Global.Name");

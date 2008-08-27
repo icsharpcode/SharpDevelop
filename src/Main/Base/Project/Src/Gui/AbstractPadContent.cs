@@ -16,10 +16,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			get;
 		}
 		
-		public virtual void RedrawContent()
-		{
-		}
-		
 		public virtual void Dispose()
 		{
 		}

@@ -81,6 +81,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			instance = this;
 			
 			RedrawContent();
+			ResourceService.LanguageChanged += delegate { RedrawContent(); };
 			
 			TaskService.Cleared += new EventHandler(TaskServiceCleared);
 			TaskService.Added   += new TaskEventHandler(TaskServiceAdded);
@@ -106,7 +107,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			InternalShowResults();
 		}
 		
-		public override void RedrawContent()
+		void RedrawContent()
 		{
 			taskView.RefreshColumnNames();
 		}

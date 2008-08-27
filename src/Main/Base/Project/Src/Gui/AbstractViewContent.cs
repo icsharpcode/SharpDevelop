@@ -469,10 +469,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		#endregion
 		
-		public virtual void RedrawContent()
-		{
-		}
-		
 		public virtual void Save(OpenedFile file, Stream stream)
 		{
 		}

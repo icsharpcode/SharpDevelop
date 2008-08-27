@@ -80,12 +80,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			this.TextEditorControl.Redo();
 		}
 		
-		public override void RedrawContent()
-		{
-			this.TextEditorControl.OptionsChanged();
-			this.TextEditorControl.Refresh();
-		}
-		
 		#region IPositionable implementation
 		void IPositionable.JumpTo(int line, int column)
 		{

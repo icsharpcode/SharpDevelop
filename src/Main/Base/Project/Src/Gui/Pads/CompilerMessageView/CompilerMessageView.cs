@@ -160,14 +160,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		public override void RedrawContent()
-		{
-//			messageCategory.Items.Clear();
-//			foreach (MessageViewCategory category in messageCategories) {
-//				messageCategory.Items.Add(StringParser.Parse(category.DisplayCategory));
-//			}
-		}
-		
 		#region Category handling
 		/// <summary>
 		/// Adds a category to the compiler message view. This method is thread-safe.
@@ -318,14 +310,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			return null;
 		}
 		#endregion
-		
-		/// <summary>
-		/// Makes this pad visible (usually BEFORE build or debug events)
-		/// </summary>
-		void ActivateThisPad()
-		{
-			WorkbenchSingleton.Workbench.WorkbenchLayout.ActivatePad(this.GetType().FullName);
-		}
 		
 		/// <summary>
 		/// Occurs when the mouse pointer is over the control and a

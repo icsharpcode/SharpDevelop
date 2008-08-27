@@ -153,13 +153,5 @@ namespace ICSharpCode.SharpDevelop.Gui
 				ctl.LoadFile(fileName, true, true); // TODO: get AutoDetectEncoding from settings
 			}
 		}
-		
-		/// <summary>
-		/// Refreshes the pad
-		/// </summary>
-		public override void RedrawContent()
-		{
-			// Refresh the whole pad control here, renew all resource strings whatever.
-		}
 	}
 }

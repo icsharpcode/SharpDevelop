@@ -57,11 +57,6 @@ namespace HtmlHelp2
 			searchTerm.Focus();
 		}
 
-		public override void RedrawContent()
-		{
-			this.RedrawContentInternal();
-		}
-
 		void RedrawContentInternal()
 		{
 			searchButton.Text       = StringParser.Parse("${res:AddIns.HtmlHelp2.Search}");
@@ -83,6 +78,7 @@ namespace HtmlHelp2
 		{
 			this.InitializeComponents();
 			this.UpdateControls();
+			ResourceService.LanguageChanged += delegate { RedrawContentInternal(); };
 			
 			HtmlHelp2Environment.FilterQueryChanged += new EventHandler(FilterQueryChanged);
 			HtmlHelp2Environment.NamespaceReloaded  += new EventHandler(NamespaceReloaded);

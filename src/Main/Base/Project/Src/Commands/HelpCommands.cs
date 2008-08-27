@@ -19,15 +19,9 @@ namespace ICSharpCode.SharpDevelop.Commands
 	{
 		public override void Run()
 		{
-			IWorkbenchWindow window       = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
-			IContextHelpProvider    helpProvider = window != null ? window.ActiveViewContent as IContextHelpProvider : null;
-			foreach (PadDescriptor descriptor in WorkbenchSingleton.Workbench.PadContentCollection) {
-				if (descriptor.HasFocus && descriptor.PadContent is IContextHelpProvider) {
-					((IContextHelpProvider)descriptor.PadContent).ShowHelp();
-					return;
-				}
-			}
-			
+			IContextHelpProvider helpProvider = WorkbenchSingleton.Workbench.ActiveContent as IContextHelpProvider;
+			if (helpProvider == null)
+				helpProvider = WorkbenchSingleton.Workbench.ActiveViewContent as IContextHelpProvider;
 			if (helpProvider != null) {
 				helpProvider.ShowHelp();
 			}

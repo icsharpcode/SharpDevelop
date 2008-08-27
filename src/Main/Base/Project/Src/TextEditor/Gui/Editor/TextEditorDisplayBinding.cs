@@ -189,12 +189,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			NavigationService.ContentChanging(this.textEditorControl, e);
 		}
 		
-		public override void RedrawContent()
-		{
-			textEditorControl.OptionsChanged();
-			textEditorControl.Refresh();
-		}
-		
 		public override void Dispose()
 		{
 			if (this.PrimaryFile.IsUntitled) {

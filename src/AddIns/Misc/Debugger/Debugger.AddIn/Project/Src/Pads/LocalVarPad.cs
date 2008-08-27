@@ -100,9 +100,10 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			localVarList.AutoRowHeight = true;
 			
 			RedrawContent();
+			ResourceService.LanguageChanged += delegate { RedrawContent(); };
 		}
 		
-		public override void RedrawContent()
+		public void RedrawContent()
 		{
 			nameColumn.Header = ResourceService.GetString("Global.Name");
 			nameColumn.Width = 250;

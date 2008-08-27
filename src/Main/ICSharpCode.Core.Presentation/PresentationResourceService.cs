@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media.Imaging;
@@ -73,12 +74,20 @@ namespace ICSharpCode.Core.Presentation
 				if (bmp == null) {
 					throw new ResourceNotFoundException(name);
 				}
-				bs = Imaging.CreateBitmapSourceFromHBitmap(bmp.GetHbitmap(), IntPtr.Zero,
-				                                           Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-				bs.Freeze();
-				bitmapCache[name] = bs;
+				IntPtr hBitmap = bmp.GetHbitmap();
+				try {
+					bs = Imaging.CreateBitmapSourceFromHBitmap(hBitmap, IntPtr.Zero,
+					                                           Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+					bs.Freeze();
+					bitmapCache[name] = bs;
+				} finally {
+					DeleteObject(hBitmap);
+				}
 				return bs;
 			}
 		}
+		
+		[DllImport("gdi32.dll")]
+		static extern bool DeleteObject(IntPtr hObject);
 	}
 }

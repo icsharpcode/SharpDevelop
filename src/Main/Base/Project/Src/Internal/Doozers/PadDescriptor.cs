@@ -111,13 +111,6 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
-		public bool HasFocus {
-			get {
-				return false;
-				//return (padContent != null) ? padContent.Content.ContainsFocus : false;
-			}
-		}
-		
 		public IPadContent PadContent {
 			get {
 				CreatePad();
@@ -130,13 +123,6 @@ namespace ICSharpCode.SharpDevelop
 			if (padContent != null) {
 				padContent.Dispose();
 				padContent = null;
-			}
-		}
-		
-		public void RedrawContent()
-		{
-			if (padContent != null) {
-				padContent.RedrawContent();
 			}
 		}
 		

@@ -67,13 +67,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		
 		/// <summary>
-		/// Reinitializes the content. (Re-initializes all add-in tree stuff)
-		/// and redraws the content.
-		/// Called on certain actions like changing the UI language.
-		/// </summary>
-		void RedrawContent();
-		
-		/// <summary>
 		/// The title of the view content. This normally is the title of the primary file being edited.
 		/// </summary>
 		string TitleName {

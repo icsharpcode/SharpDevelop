@@ -288,11 +288,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		public override void RedrawContent()
-		{
-			grid.Refresh();
-		}
-		
 		public override void Dispose()
 		{
 			base.Dispose();

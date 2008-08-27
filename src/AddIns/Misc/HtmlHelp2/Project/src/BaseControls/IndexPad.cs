@@ -43,14 +43,10 @@ namespace HtmlHelp2
 			help2IndexControl.Dispose();
 		}
 
-		public override void RedrawContent()
-		{
-			help2IndexControl.RedrawContent();
-		}
-
 		public HtmlHelp2IndexPad()
 		{
 			help2IndexControl = new MSHelp2IndexControl();
+			ResourceService.LanguageChanged += delegate { help2IndexControl.RedrawContent(); };
 		}
 	}
 	

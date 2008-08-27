@@ -62,10 +62,6 @@ namespace ResourceEditor
 			this.Files.Add(file);
 		}
 		
-		public override void RedrawContent()
-		{
-		}
-		
 		public override void Dispose()
 		{
 			base.Dispose();

@@ -62,6 +62,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.displayedTokens = new Dictionary<string, bool>();
 			
 			RedrawContent();
+			ResourceService.LanguageChanged += delegate { RedrawContent(); };
 			
 			InitializeToolStrip();
 
@@ -150,7 +151,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			contentPanel.Controls.Add(toolStrip);
 		}
 		
-		public override void RedrawContent()
+		void RedrawContent()
 		{
 			taskView.RefreshColumnNames();
 		}

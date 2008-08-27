@@ -137,13 +137,6 @@ namespace ClassDiagramAddin
 			}
 		}
 		
-		public override void RedrawContent()
-		{
-			// TODO: Refresh the whole view control here, renew all resource strings
-			//       Note that you do not need to recreate the control.
-			base.RedrawContent();
-		}
-		
 		public override void Dispose()
 		{
 			ParserService.ParseInformationUpdated -= OnParseInformationUpdated;
