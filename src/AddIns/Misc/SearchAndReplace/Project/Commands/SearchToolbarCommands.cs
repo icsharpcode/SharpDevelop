@@ -6,9 +6,9 @@
 // </file>
 
 using System;
-using System.Windows.Forms;
+using System.Windows.Controls;
 using ICSharpCode.Core;
-using ICSharpCode.Core.WinForms;
+using System.Windows.Input;
 
 namespace SearchAndReplace
 {
@@ -18,6 +18,7 @@ namespace SearchAndReplace
 	public class FindComboBox : AbstractComboBoxCommand
 	{
 		ComboBox comboBox;
+		
 		public FindComboBox()
 		{
 		}
@@ -31,9 +32,9 @@ namespace SearchAndReplace
 			comboBox.Text = SearchOptions.FindPattern;
 		}
 		
-		void OnKeyPress(object sender, KeyPressEventArgs e)
+		void OnKeyPress(object sender, KeyEventArgs e)
 		{
-			if (e.KeyChar == '\r') {
+			if (e.Key == Key.Enter) {
 				CommitSearch();
 				e.Handled = true;
 			}
@@ -60,10 +61,10 @@ namespace SearchAndReplace
 		protected override void OnOwnerChanged(EventArgs e)
 		{
 			base.OnOwnerChanged(e);
-			ToolBarComboBox toolbarItem = (ToolBarComboBox)Owner;
-			comboBox = toolbarItem.ComboBox;
-			comboBox.DropDownStyle = ComboBoxStyle.DropDown;
-			comboBox.KeyPress += OnKeyPress;
+			comboBox = (ComboBox)Owner;
+			comboBox.IsEditable = true;
+			comboBox.KeyDown += OnKeyPress;
+			comboBox.Width = 130;
 			SearchOptions.Properties.PropertyChanged += new PropertyChangedEventHandler(SearchOptionsChanged);
 			
 			RefreshComboBox();

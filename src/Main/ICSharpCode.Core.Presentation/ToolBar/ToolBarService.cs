@@ -64,8 +64,7 @@ namespace ICSharpCode.Core.Presentation
 				case "Item":
 					return new ToolBarButton(codon, caller, createCommand);
 				case "ComboBox":
-					return "ComboBox";
-					//return new ToolBarComboBox(codon, caller);
+					return new ToolBarComboBox(codon, caller);
 				case "TextBox":
 					return "TextBox";
 					//return new ToolBarTextBox(codon, caller);
