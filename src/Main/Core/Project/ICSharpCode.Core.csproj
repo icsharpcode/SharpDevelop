@@ -81,6 +81,7 @@
     <Compile Include="Src\AddInTree\AddInTreeNode.cs" />
     <Compile Include="Src\AddInTree\TreePathNotFoundException.cs" />
     <Compile Include="Src\CoreException.cs" />
+    <Compile Include="Src\Services\ApplicationStateInfoService.cs" />
     <Compile Include="Src\Services\FileUtility\FileNameEventHandler.cs" />
     <Compile Include="Src\Services\FileUtility\FileUtility.cs" />
     <Compile Include="Src\Services\FileUtility\FileUtility.Minimal.cs" />

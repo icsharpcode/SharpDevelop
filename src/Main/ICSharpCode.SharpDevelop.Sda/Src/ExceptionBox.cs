@@ -141,6 +141,14 @@ namespace ICSharpCode.SharpDevelop.Sda
 				sb.AppendLine("Failed to append recent log messages.");
 				sb.AppendLine(ex.ToString());
 			}
+			sb.AppendLine();
+			sb.AppendLine("---- Post-error application state information:");
+			try {
+				ApplicationStateInfoService.AppendFormatted(sb);
+			} catch (Exception ex) {
+				sb.AppendLine("Failed to append application state information.");
+				sb.AppendLine(ex.ToString());
+			}
 			return sb.ToString();
 		}
 		

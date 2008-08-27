@@ -1186,5 +1186,12 @@ namespace ICSharpCode.SharpDevelop.Project
 			feedbackSink.Done(true);
 		}
 		#endregion
+		
+		public override string ToString()
+		{
+			return "[Solution: FileName=" + (this.FileName ?? "<null>") +
+				", HasProjects=" + this.HasProjects.ToString(System.Globalization.CultureInfo.InvariantCulture) +
+				", ReadOnly=" + this.ReadOnly.ToString(System.Globalization.CultureInfo.InvariantCulture) + "]";
+		}
 	}
 }
