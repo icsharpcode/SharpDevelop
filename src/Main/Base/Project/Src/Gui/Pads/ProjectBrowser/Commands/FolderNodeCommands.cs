@@ -161,16 +161,23 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		
 		public override void Run()
 		{
+			this.AddExistingItems();
+		}
+		
+		protected IEnumerable<FileProjectItem> AddExistingItems()
+		{
 			TreeNode selectedNode = ProjectBrowserPad.Instance.ProjectBrowserControl.SelectedNode;
 			DirectoryNode node = selectedNode as DirectoryNode;
 			if (node == null) {
 				node = selectedNode.Parent as DirectoryNode;
 			}
 			if (node == null) {
-				return;
+				return null;
 			}
 			node.Expanding();
 			node.Expand();
+			
+			List<FileProjectItem> addedItems = new List<FileProjectItem>();
 			
 			using (OpenFileDialog fdiag  = new OpenFileDialog()) {
 				fdiag.AddExtension    = true;
@@ -219,6 +226,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 								FileProjectItem fileProjectItem = new FileProjectItem(node.Project, node.Project.GetDefaultItemType(fileName), relFileName);
 								fileProjectItem.SetEvaluatedMetadata("Link", Path.Combine(node.RelativePath, Path.GetFileName(fileName)));
 								fileProjectItem.DependentUpon = pair.Value;
+								addedItems.Add(fileProjectItem);
 								fileNode.ProjectItem = fileProjectItem;
 								fileNode.AddTo(node);
 								ProjectService.AddProjectItem(node.Project, fileProjectItem);
@@ -226,11 +234,11 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 							node.Project.Save();
 							if (addedDependentFiles)
 								node.RecreateSubNodes();
-							return;
+							return addedItems.AsReadOnly();
 						}
 						if (res == 2) {
 							// Cancel
-							return;
+							return addedItems.AsReadOnly();
 						}
 						// only continue for res==0 (Copy)
 					}
@@ -249,6 +257,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 						}
 						FileProjectItem item = CopyFile(pair.Key, node, true);
 						if (item != null) {
+							addedItems.Add(item);
 							item.DependentUpon = pair.Value;
 						}
 					}
@@ -257,6 +266,8 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 						node.RecreateSubNodes();
 				}
 			}
+			
+			return addedItems.AsReadOnly();
 		}
 	}
 	
@@ -272,18 +283,26 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void Run()
 		{
+			this.AddNewItems();
+		}
+		
+		protected IEnumerable<FileProjectItem> AddNewItems()
+		{
 			DirectoryNode node = ProjectBrowserPad.Instance.ProjectBrowserControl.SelectedDirectoryNode;
 			if (node == null) {
-				return;
+				return null;
 			}	
 			node.Expand();
 			node.Expanding();
+			
+			List<FileProjectItem> addedItems = new List<FileProjectItem>();
 			
 			using (NewFileDialog nfd = new NewFileDialog(node.Directory)) {
 				if (nfd.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) == DialogResult.OK) {
 					bool additionalProperties = false;
 					foreach (KeyValuePair<string, FileDescriptionTemplate> createdFile in nfd.CreatedFiles) {
 						FileProjectItem item = node.AddNewFile(createdFile.Key);
+						addedItems.Add(item);
 						
 						if (createdFile.Value.SetProjectItemProperties(item)) {
 							additionalProperties = true;
@@ -295,6 +314,8 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 					}
 				}
 			}
+			
+			return addedItems.AsReadOnly();
 		}
 	}
 	
