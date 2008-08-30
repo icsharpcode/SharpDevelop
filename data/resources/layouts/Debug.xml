@@ -1,165 +1,22 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<!--DockPanel configuration file. Author: Weifen Luo, all rights reserved.-->
-<!--!!! AUTOMATICALLY GENERATED FILE. DO NOT MODIFY !!!-->
-<DockPanel FormatVersion="1.0" DockLeftPortion="0.196180555555556" DockRightPortion="0.171180555555556" DockTopPortion="0.25" DockBottomPortion="0.25" ActiveDocumentPane="-1" ActivePane="4">
-  <Contents Count="28">
-    <Content ID="0" PersistString="ICSharpCode.SharpDevelop.Project.ProjectBrowserPad" AutoHidePortion="0.25" IsHidden="False" IsFloat="False" />
-    <Content ID="1" PersistString="ICSharpCode.SharpDevelop.Gui.ClassBrowser.ClassBrowserPad" AutoHidePortion="0.25" IsHidden="False" IsFloat="False" />
-    <Content ID="2" PersistString="ICSharpCode.SharpDevelop.Gui.ErrorListPad" AutoHidePortion="0.25" IsHidden="False" IsFloat="False" />
-    <Content ID="3" PersistString="ICSharpCode.SharpDevelop.Gui.TaskListPad" AutoHidePortion="0.25" IsHidden="True" IsFloat="False" />
-    <Content ID="4" PersistString="ICSharpCode.SharpDevelop.Gui.CompilerMessageView" AutoHidePortion="0.25" IsHidden="False" IsFloat="False" />
-    <Content ID="5" PersistString="ICSharpCode.SharpDevelop.Gui.PropertyPad" AutoHidePortion="0.25" IsHidden="True" IsFloat="False" />
-    <Content ID="6" PersistString="ICSharpCode.SharpDevelop.Gui.FileScout" AutoHidePortion="0.25" IsHidden="True" IsFloat="False" />
-    <Content ID="7" PersistString="SearchAndReplace.SearchResultPanel" AutoHidePortion="0.25" IsHidden="True" IsFloat="False" />
-    <Content ID="8" PersistString="ICSharpCode.SharpDevelop.Bookmarks.BookmarkPad" AutoHidePortion="0.25" IsHidden="True" IsFloat="False" />
-    <Content ID="9" PersistString="ICSharpCode.CodeCoverage.CodeCoveragePad" AutoHidePortion="0.25" IsHidden="True" IsFloat="False" />
-    <Content ID="10" PersistString="ICSharpCode.SharpDevelop.Gui.DefinitionViewPad" AutoHidePortion="0.25" IsHidden="True" IsFloat="False" />
-    <Content ID="11" PersistString="ICSharpCode.SharpDevelop.Gui.Pads.BreakPointsPad" AutoHidePortion="0.25" IsHidden="True" IsFloat="False" />
-    <Content ID="12" PersistString="ICSharpCode.SharpDevelop.Gui.Pads.CallStackPad" AutoHidePortion="0.25" IsHidden="False" IsFloat="False" />
-    <Content ID="13" PersistString="ICSharpCode.SharpDevelop.Gui.Pads.LoadedModulesPad" AutoHidePortion="0.25" IsHidden="False" IsFloat="False" />
-    <Content ID="14" PersistString="ICSharpCode.SharpDevelop.Gui.Pads.RunningThreadsPad" AutoHidePortion="0.25" IsHidden="False" IsFloat="False" />
-    <Content ID="15" PersistString="ICSharpCode.SharpDevelop.Gui.Pads.LocalVarPad" AutoHidePortion="0.25" IsHidden="False" IsFloat="False" />
-    <Content ID="16" PersistString="HtmlHelp2.HtmlHelp2TocPad" AutoHidePortion="0.25" IsHidden="True" IsFloat="False" />
-    <Content ID="17" PersistString="HtmlHelp2.HtmlHelp2IndexPad" AutoHidePortion="0.25" IsHidden="True" IsFloat="False" />
-    <Content ID="18" PersistString="HtmlHelp2.HtmlHelp2SearchPad" AutoHidePortion="0.25" IsHidden="True" IsFloat="False" />
-    <Content ID="19" PersistString="HtmlHelp2.HtmlHelp2IndexResultsPad" AutoHidePortion="0.25" IsHidden="True" IsFloat="False" />
-    <Content ID="20" PersistString="HtmlHelp2.HtmlHelp2DynamicHelpPad" AutoHidePortion="0.25" IsHidden="True" IsFloat="False" />
-    <Content ID="21" PersistString="ICSharpCode.WixBinding.SetupDialogListPad" AutoHidePortion="0.25" IsHidden="True" IsFloat="False" />
-    <Content ID="22" PersistString="ICSharpCode.XmlEditor.XPathQueryPad" AutoHidePortion="0.25" IsHidden="True" IsFloat="False" />
-    <Content ID="23" PersistString="ICSharpCode.SharpDevelop.Gui.ToolsPad" AutoHidePortion="0.25" IsHidden="True" IsFloat="False" />
-    <Content ID="24" PersistString="ClassDiagramAddin.ClassEditorPad" AutoHidePortion="0.25" IsHidden="True" IsFloat="False" />
-    <Content ID="25" PersistString="ICSharpCode.UnitTesting.UnitTestsPad" AutoHidePortion="0.25" IsHidden="True" IsFloat="False" />
-    <Content ID="26" PersistString="FSharpBinding.FSharpInteractive" AutoHidePortion="0.25" IsHidden="True" IsFloat="False" />
-    <Content ID="27" PersistString="ICSharpCode.ServerTools.ServerBrowserHost" AutoHidePortion="0.25" IsHidden="True" IsFloat="False" />
-  </Contents>
-  <Panes Count="10">
-    <Pane ID="0" DockState="DockLeft" ActiveContent="0">
-      <Contents Count="3">
-        <Content ID="0" RefID="0" />
-        <Content ID="1" RefID="6" />
-        <Content ID="2" RefID="1" />
-      </Contents>
-    </Pane>
-    <Pane ID="1" DockState="Float" ActiveContent="-1">
-      <Contents Count="2">
-        <Content ID="0" RefID="7" />
-        <Content ID="1" RefID="8" />
-      </Contents>
-    </Pane>
-    <Pane ID="2" DockState="DockRight" ActiveContent="-1">
-      <Contents Count="8">
-        <Content ID="0" RefID="20" />
-        <Content ID="1" RefID="16" />
-        <Content ID="2" RefID="17" />
-        <Content ID="3" RefID="18" />
-        <Content ID="4" RefID="19" />
-        <Content ID="5" RefID="23" />
-        <Content ID="6" RefID="24" />
-        <Content ID="7" RefID="5" />
-      </Contents>
-    </Pane>
-    <Pane ID="3" DockState="Float" ActiveContent="-1">
-      <Contents Count="4">
-        <Content ID="0" RefID="2" />
-        <Content ID="1" RefID="4" />
-        <Content ID="2" RefID="3" />
-        <Content ID="3" RefID="10" />
-      </Contents>
-    </Pane>
-    <Pane ID="4" DockState="DockBottom" ActiveContent="4">
-      <Contents Count="10">
-        <Content ID="0" RefID="2" />
-        <Content ID="1" RefID="4" />
-        <Content ID="2" RefID="3" />
-        <Content ID="3" RefID="15" />
-        <Content ID="4" RefID="10" />
-        <Content ID="5" RefID="9" />
-        <Content ID="6" RefID="8" />
-        <Content ID="7" RefID="7" />
-        <Content ID="8" RefID="26" />
-        <Content ID="9" RefID="14" />
-      </Contents>
-    </Pane>
-    <Pane ID="5" DockState="Float" ActiveContent="-1">
-      <Contents Count="1">
-        <Content ID="0" RefID="5" />
-      </Contents>
-    </Pane>
-    <Pane ID="6" DockState="Float" ActiveContent="-1">
-      <Contents Count="1">
-        <Content ID="0" RefID="13" />
-      </Contents>
-    </Pane>
-    <Pane ID="7" DockState="DockBottom" ActiveContent="12">
-      <Contents Count="2">
-        <Content ID="0" RefID="12" />
-        <Content ID="1" RefID="13" />
-      </Contents>
-    </Pane>
-    <Pane ID="8" DockState="Float" ActiveContent="-1">
-      <Contents Count="3">
-        <Content ID="0" RefID="11" />
-        <Content ID="1" RefID="25" />
-        <Content ID="2" RefID="14" />
-      </Contents>
-    </Pane>
-    <Pane ID="9" DockState="DockRight" ActiveContent="-1">
-      <Contents Count="2">
-        <Content ID="0" RefID="11" />
-        <Content ID="1" RefID="25" />
-      </Contents>
-    </Pane>
-  </Panes>
-  <DockWindows>
-    <DockWindow ID="0" DockState="Document" ZOrderIndex="0">
-      <NestedPanes Count="0" />
-    </DockWindow>
-    <DockWindow ID="1" DockState="DockLeft" ZOrderIndex="3">
-      <NestedPanes Count="1">
-        <Pane ID="0" RefID="0" PrevPane="-1" Alignment="Bottom" Proportion="0.5" />
-      </NestedPanes>
-    </DockWindow>
-    <DockWindow ID="2" DockState="DockRight" ZOrderIndex="1">
-      <NestedPanes Count="2">
-        <Pane ID="0" RefID="2" PrevPane="-1" Alignment="Bottom" Proportion="0.5" />
-        <Pane ID="1" RefID="9" PrevPane="2" Alignment="Left" Proportion="0.5" />
-      </NestedPanes>
-    </DockWindow>
-    <DockWindow ID="3" DockState="DockTop" ZOrderIndex="2">
-      <NestedPanes Count="0" />
-    </DockWindow>
-    <DockWindow ID="4" DockState="DockBottom" ZOrderIndex="4">
-      <NestedPanes Count="2">
-        <Pane ID="0" RefID="4" PrevPane="-1" Alignment="Right" Proportion="0.5" />
-        <Pane ID="1" RefID="7" PrevPane="4" Alignment="Right" Proportion="0.490625" />
-      </NestedPanes>
-    </DockWindow>
-  </DockWindows>
-  <FloatWindows Count="5">
-    <FloatWindow ID="0" Bounds="367, 404, 300, 300" ZOrderIndex="0">
-      <NestedPanes Count="1">
-        <Pane ID="0" RefID="1" PrevPane="-1" Alignment="Right" Proportion="0.5" />
-      </NestedPanes>
-    </FloatWindow>
-    <FloatWindow ID="1" Bounds="1650, 609, 300, 300" ZOrderIndex="1">
-      <NestedPanes Count="1">
-        <Pane ID="0" RefID="3" PrevPane="-1" Alignment="Right" Proportion="0.5" />
-      </NestedPanes>
-    </FloatWindow>
-    <FloatWindow ID="2" Bounds="2013, 283, 300, 300" ZOrderIndex="2">
-      <NestedPanes Count="1">
-        <Pane ID="0" RefID="5" PrevPane="-1" Alignment="Right" Proportion="0.5" />
-      </NestedPanes>
-    </FloatWindow>
-    <FloatWindow ID="3" Bounds="629, 139, 550, 259" ZOrderIndex="3">
-      <NestedPanes Count="1">
-        <Pane ID="0" RefID="6" PrevPane="-1" Alignment="Right" Proportion="0.5" />
-      </NestedPanes>
-    </FloatWindow>
-    <FloatWindow ID="4" Bounds="815, 244, 300, 300" ZOrderIndex="4">
-      <NestedPanes Count="1">
-        <Pane ID="0" RefID="8" PrevPane="-1" Alignment="Right" Proportion="0.5" />
-      </NestedPanes>
-    </FloatWindow>
-  </FloatWindows>
-</DockPanel>
+<DockingManager>
+    <ResizingPanel Orientation="Horizontal">
+        <DockablePane ResizeWidth="200" Anchor="Left">
+            <DockableContent Name="ICSharpCode_SharpDevelop_Project_ProjectBrowserPad" AutoHide="false" />
+            <DockableContent Name="ICSharpCode_SharpDevelop_Gui_ToolsPad" AutoHide="false" />
+        </DockablePane>
+        <ResizingPanel Orientation="Vertical">
+            <DocumentPanePlaceHolder />
+            <DockablePane ResizeHeight="150" Anchor="Bottom">
+                <DockableContent Name="ICSharpCode_SharpDevelop_Gui_ErrorListPad" AutoHide="false" />
+                <DockableContent Name="ICSharpCode_SharpDevelop_Gui_TaskListPad" AutoHide="false" />
+                <DockableContent Name="ICSharpCode_SharpDevelop_Gui_CompilerMessageView" AutoHide="false" />
+            </DockablePane>
+        </ResizingPanel>
+        <DockablePane ResizeWidth="200" Anchor="Right">
+            <DockableContent Name="ICSharpCode_SharpDevelop_Gui_ClassBrowser_ClassBrowserPad" AutoHide="false" />
+            <DockableContent Name="ICSharpCode_SharpDevelop_Gui_PropertyPad" AutoHide="false" />
+        </DockablePane>
+    </ResizingPanel>
+    <Hidden />
+    <Windows />
+</DockingManager>

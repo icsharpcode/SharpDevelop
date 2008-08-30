@@ -147,11 +147,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public void ActivatePad(PadDescriptor content)
 		{
-			AvalonPadContent p;
-			if (pads.TryGetValue(content, out p))
-				p.BringIntoView();
-			else
-				ShowPad(content);
+			ShowPad(content);
 		}
 		
 		public void HidePad(PadDescriptor content)
