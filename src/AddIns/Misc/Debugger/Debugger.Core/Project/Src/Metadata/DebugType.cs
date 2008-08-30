@@ -531,7 +531,7 @@ namespace Debugger.MetaData
 			// Collect data
 			Dictionary<string, MethodInfo> accessors = new Dictionary<string, MethodInfo>();
 			Dictionary<string, object> propertyNames = new Dictionary<string, object>();
-			foreach(MethodInfo method in this.GetMethods(BindingFlags.All)) {
+			foreach(MethodInfo method in this.GetMethods(BindingFlags.AllInThisType)) {
 				if (method.IsSpecialName && (method.Name.StartsWith("get_") || method.Name.StartsWith("set_"))) {
 					// There can be many get_Items
 					// TODO: This returns only last, return all

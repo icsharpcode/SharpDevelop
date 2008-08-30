@@ -19,7 +19,8 @@ namespace Debugger.MetaData
 	[Flags]
 	public enum BindingFlags: uint {
 		/// Return all members
-		All = 0xFFFF,
+		All = 0xFFFFFFFF,
+		AllInThisType = 0xFFFF,
 		
 		AccessMask = 0x0F,
 		Public     = 0x01,
@@ -35,6 +36,6 @@ namespace Debugger.MetaData
 		Method      = 0x0400,
 		GetProperty = 0x0800,
 		
-		IncludeSuperType = 0x1000
+		IncludeSuperType = 0x10000
 	};
 }

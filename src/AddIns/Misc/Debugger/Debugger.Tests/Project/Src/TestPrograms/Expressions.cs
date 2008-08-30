@@ -195,19 +195,6 @@ namespace Debugger.Tests {
           ArrayDimensions="{Exception: Value is not an array}"
           ArrayLength="{Exception: Value is not an array}"
           ArrayRank="{Exception: Value is not an array}"
-          AsString="derived name"
-          Expression="this.Name"
-          IsInvalid="False"
-          IsNull="False"
-          IsReference="True"
-          PrimitiveValue="derived name"
-          Type="System.String" />
-      </Item>
-      <Item>
-        <Value
-          ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLength="{Exception: Value is not an array}"
-          ArrayRank="{Exception: Value is not an array}"
           AsString="base name"
           Expression="this.name"
           IsInvalid="False"
@@ -227,6 +214,19 @@ namespace Debugger.Tests {
           IsNull="False"
           IsReference="True"
           PrimitiveValue="base value"
+          Type="System.String" />
+      </Item>
+      <Item>
+        <Value
+          ArrayDimensions="{Exception: Value is not an array}"
+          ArrayLength="{Exception: Value is not an array}"
+          ArrayRank="{Exception: Value is not an array}"
+          AsString="derived name"
+          Expression="this.Name"
+          IsInvalid="False"
+          IsNull="False"
+          IsReference="True"
+          PrimitiveValue="derived name"
           Type="System.String" />
       </Item>
       <Item>

@@ -290,7 +290,7 @@ namespace Debugger
 		/// <summary> Get all fields and properties of an object. </summary>
 		public Value[] GetMemberValues()
 		{
-			return GetMemberValues(null, BindingFlags.All);
+			return GetMemberValues(BindingFlags.All);
 		}
 		
 		/// <summary>
@@ -298,35 +298,22 @@ namespace Debugger
 		/// </summary>
 		/// <param name="type"> Limit to type, null for all types </param>
 		/// <param name="bindingFlags"> Get only members with certain flags </param>
-		public Value[] GetMemberValues(DebugType type, BindingFlags bindingFlags)
+		public Value[] GetMemberValues(BindingFlags bindingFlags)
 		{
 			if (this.Type.IsClass || this.Type.IsValueType) {
-				return new List<Value>(GetObjectMembersEnum(type, bindingFlags)).ToArray();
+				return new List<Value>(GetObjectMembersEnum(bindingFlags)).ToArray();
 			} else {
 				return new Value[0];
 			}
 		}
 		
-		IEnumerable<Value> GetObjectMembersEnum(DebugType type, BindingFlags bindingFlags)
+		IEnumerable<Value> GetObjectMembersEnum(BindingFlags bindingFlags)
 		{
-			if (type != null) {
-				foreach(FieldInfo field in type.GetFields(bindingFlags)) {
-					yield return this.GetFieldValue(field);
-				}
-				foreach(PropertyInfo property in type.GetProperties(bindingFlags)) {
-					yield return this.GetPropertyValue(property);
-				}
-			} else {
-				DebugType currentType = this.Type;
-				while (currentType != null) {
-					foreach(FieldInfo field in currentType.GetFields(bindingFlags)) {
-						yield return this.GetFieldValue(field);
-					}
-					foreach(PropertyInfo property in currentType.GetProperties(bindingFlags)) {
-						yield return this.GetPropertyValue(property);
-					}
-					currentType = currentType.BaseType;
-				}
+			foreach(FieldInfo field in this.Type.GetFields(bindingFlags)) {
+				yield return this.GetFieldValue(field);
+			}
+			foreach(PropertyInfo property in this.Type.GetProperties(bindingFlags)) {
+				yield return this.GetPropertyValue(property);
 			}
 		}
 	}
