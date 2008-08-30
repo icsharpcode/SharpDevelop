@@ -142,5 +142,31 @@ namespace Debugger.AddIn
 		{
 			return context.GetThisValue();
 		}
+		
+		public override object VisitBinaryOperatorExpression(BinaryOperatorExpression binaryOperatorExpression, object data)
+		{
+			Value left = ((Value)binaryOperatorExpression.Left.AcceptVisitor(this, null)).GetPermanentReference();
+			Value right = ((Value)binaryOperatorExpression.Right.AcceptVisitor(this, null)).GetPermanentReference();
+			
+			if (!left.IsReference && left.Type.FullName != right.Type.FullName) {
+				throw new GetValueException(string.Format("Type {0} expected, {1} seen", left.Type.FullName, right.Type.FullName));
+			}
+			
+			Value val = Eval.NewObjectNoConstructor(DebugType.Create(context.Process, null, typeof(bool).FullName));
+			
+			switch (binaryOperatorExpression.Op)
+			{
+				case BinaryOperatorType.Equality :
+					val.PrimitiveValue = (right.PrimitiveValue.ToString() == left.PrimitiveValue.ToString());
+					break;
+				case BinaryOperatorType.InEquality :
+					val.PrimitiveValue = (right.PrimitiveValue.ToString() != left.PrimitiveValue.ToString());
+					break;
+				default :
+					throw new NotImplementedException("BinaryOperator not implemented!");
+			}
+			
+			return val;
+		}
 	}
 }

@@ -13,12 +13,35 @@ using ICSharpCode.SharpDevelop.Bookmarks;
 
 namespace ICSharpCode.SharpDevelop.Debugging
 {
+	public enum BreakpointAction {
+		Ask, Break, Continue, Terminate, Trace, Script
+	}
+	
 	public class BreakpointBookmark : SDMarkerBookmark
 	{
 		bool isHealthy = true;
 		string tooltip;
 		
 		static readonly Color defaultColor = Color.FromArgb(180, 38, 38);
+		
+		BreakpointAction action = BreakpointAction.Ask;
+		string script;
+		string scriptLanguage;
+		
+		public string ScriptLanguage {
+			get { return scriptLanguage; }
+			set { scriptLanguage = value; }
+		}
+		
+		public string Script {
+			get { return script; }
+			set { script = value; }
+		}
+		
+		public BreakpointAction Action {
+			get { return action; }
+			set { this.action = value; }
+		}
 		
 		public virtual bool IsHealthy {
 			get {
@@ -38,8 +61,11 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			set { tooltip = value; }
 		}
 		
-		public BreakpointBookmark(string fileName, IDocument document, TextLocation location) : base(fileName, document, location)
+		public BreakpointBookmark(string fileName, IDocument document, TextLocation location, BreakpointAction action, string scriptLanguage, string script) : base(fileName, document, location)
 		{
+			this.action = action;
+			this.scriptLanguage = scriptLanguage;
+			this.script = script;
 		}
 		
 		public override void Draw(IconBarMargin margin, Graphics g, Point p)

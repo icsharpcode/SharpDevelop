@@ -4,7 +4,9 @@
 	</Manifest>
 	
 	<Runtime>
-		<Import assembly="Debugger.AddIn.dll"/>
+		<Import assembly="Debugger.AddIn.dll">
+			<ConditionEvaluator name = "IsBreakpointSet" class = "Debugger.AddIn.IsBreakpointCondition"/>
+		</Import>
 		<Import assembly="Debugger.Core.dll"/>
 	</Runtime>
 	
@@ -34,6 +36,13 @@
 			<MenuItem id = "DebuggerSeparator"
 			          insertbefore = "Refactoring"
 			          type = "Separator"/>
+		</Condition>
+		<MenuItem id="BreakpointSeparator" type = "Separator" />
+		<Include id="SetBreakpoint" item="/SharpDevelop/Workbench/MainMenu/Debug/Toggle Breakpoint" />
+		<Condition name="IsBreakpointSet">
+			<MenuItem id="ChangeBreakPoint" label="${res:MainWindow.Windows.Debug.Conditional.Breakpoints.ChangeBreakpoint}" type="Menu">
+				<MenuItem id="MenuBuilder" type="Builder" class="Debugger.AddIn.BreakpointChangeMenuBuilder" />
+			</MenuItem>
 		</Condition>
 	</Path>
 	
@@ -72,7 +81,7 @@
 		     icon     = "PadIcons.LocalVariables"
 		     shortcut = "Control|Alt|V"
 		     class = "ICSharpCode.SharpDevelop.Gui.Pads.LocalVarPad"/>
-	
+		
 		<Pad id    = "ConsolePad"
 		     category = "Debugger"
 		     title    = "${res:MainWindow.Windows.Debug.Console}"

@@ -192,7 +192,7 @@ namespace ICSharpCode.SharpDevelop.Services
 				if (attachForm.ShowDialog() == DialogResult.OK) {
 					Attach(attachForm.Process);
 				}
-			}			
+			}
 		}
 		
 		public void Attach(System.Diagnostics.Process existingProcess)
@@ -211,7 +211,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			} else {
 				if (DebugStarting != null)
 					DebugStarting(this, EventArgs.Empty);
-			
+				
 				Debugger.Process process = debugger.Attach(existingProcess);
 				attached = true;
 				SelectProcess(process);
@@ -240,11 +240,11 @@ namespace ICSharpCode.SharpDevelop.Services
 					case StopAttachedProcessDialogResult.Terminate:
 						debuggedProcess.Terminate();
 						attached = false;
-					break;
+						break;
 					case StopAttachedProcessDialogResult.Detach:
 						Detach();
 						attached = false;
-					break;
+						break;
 				}
 			} else {
 				debuggedProcess.Terminate();
@@ -518,6 +518,52 @@ namespace ICSharpCode.SharpDevelop.Services
 			EventHandler<ProcessEventArgs> bp_debugger_ProcessExited = (sender, e) => {
 				setBookmarkColor();
 			};
+			
+			EventHandler<BreakpointEventArgs> bp_debugger_BreakpointHit =
+				new EventHandler<BreakpointEventArgs>(
+					delegate(object sender, BreakpointEventArgs e)
+					{
+						LoggingService.Debug(bookmark.Action + " " + bookmark.ScriptLanguage + " " + bookmark.Script);
+						
+						switch (bookmark.Action) {
+							case BreakpointAction.Ask:
+								Bitmap icon = WinFormsResourceService.GetBitmap(false ? "Icons.32x32.Error" : "Icons.32x32.Warning");
+
+								DebuggerEventForm.Result result =
+									DebuggerEventForm.Show(StringParser.Parse("${res:MainWindow.Windows.Debug.Conditional.Breakpoints.BreakpointHit}"),
+									                       string.Format(StringParser.Parse("${res:MainWindow.Windows.Debug.Conditional.Breakpoints.BreakpointHitAt}"), bookmark.LineNumber, bookmark.FileName), icon, true);
+								
+								switch (result) {
+									case DebuggerEventForm.Result.Break:
+										break;
+									case DebuggerEventForm.Result.Continue:
+										this.debuggedProcess.AsyncContinue();
+										break;
+									case DebuggerEventForm.Result.Terminate:
+										this.debuggedProcess.AsyncTerminate();
+										break;
+								}
+								break;
+							case BreakpointAction.Break:
+								break;
+							case BreakpointAction.Continue:
+								this.debuggedProcess.AsyncContinue();
+								break;
+							case BreakpointAction.Script:
+								if (Evaluate(bookmark.Script, bookmark.ScriptLanguage))
+									DebuggerService.PrintDebugMessage(string.Format(StringParser.Parse("${res:MainWindow.Windows.Debug.Conditional.Breakpoints.BreakpointHitAtBecause}") + "\n", bookmark.LineNumber + 1, bookmark.FileName, bookmark.Script));
+								else
+									this.debuggedProcess.AsyncContinue();
+								break;
+							case BreakpointAction.Terminate:
+								this.debuggedProcess.AsyncTerminate();
+								break;
+							case BreakpointAction.Trace:
+								DebuggerService.PrintDebugMessage(string.Format(StringParser.Parse("${res:MainWindow.Windows.Debug.Conditional.Breakpoints.BreakpointHitAt}") + "\n", bookmark.LineNumber + 1, bookmark.FileName));
+								break;
+						}
+					});
+			
 			BM.BookmarkEventHandler bp_bookmarkManager_Removed = null;
 			bp_bookmarkManager_Removed = (sender, e) => {
 				if (bookmark == e.Bookmark) {
@@ -526,13 +572,30 @@ namespace ICSharpCode.SharpDevelop.Services
 					// unregister the events
 					debugger.ProcessStarted -= bp_debugger_ProcessStarted;
 					debugger.ProcessExited -= bp_debugger_ProcessExited;
+					breakpoint.Hit -= bp_debugger_BreakpointHit;
 					BM.BookmarkManager.Removed -= bp_bookmarkManager_Removed;
 				}
 			};
 			// register the events
 			debugger.ProcessStarted += bp_debugger_ProcessStarted;
 			debugger.ProcessExited += bp_debugger_ProcessExited;
+			breakpoint.Hit += bp_debugger_BreakpointHit;
 			BM.BookmarkManager.Removed += bp_bookmarkManager_Removed;
+		}
+		
+		bool Evaluate(string code, string language)
+		{
+			try {
+				SupportedLanguage supportedLanguage = (SupportedLanguage)Enum.Parse(typeof(SupportedLanguage), language.Replace("#", "Sharp"), true);
+				Value val = AstEvaluator.Evaluate(code, supportedLanguage, debuggedProcess.SelectedStackFrame);
+				
+				if (val.PrimitiveValue is bool)
+					return (bool)val.PrimitiveValue;
+				else
+					return false;
+			} catch (GetValueException e) {
+				throw e;
+			}
 		}
 		
 		void LogMessage(object sender, MessageEventArgs e)
