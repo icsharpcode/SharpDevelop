@@ -23,6 +23,7 @@ namespace ICSharpCode.TextEditor.Document
 		#endif
 		
 		char[] buffer = new char[0];
+		string cachedContent;
 		
 		int gapBeginOffset = 0;
 		int gapEndOffset = 0;
@@ -42,6 +43,7 @@ namespace ICSharpCode.TextEditor.Document
 			if (text == null) {
 				text = String.Empty;
 			}
+			cachedContent = text;
 			buffer = text.ToCharArray();
 			gapBeginOffset = gapEndOffset = gapLength = 0;
 		}
@@ -71,7 +73,18 @@ namespace ICSharpCode.TextEditor.Document
 			if (length < 0 || offset + length > Length) {
 				throw new ArgumentOutOfRangeException("length", length, "0 <= length, offset(" + offset + ")+length <= " + Length.ToString());
 			}
-			
+			if (offset == 0 && length == Length) {
+				if (cachedContent != null)
+					return cachedContent;
+				else
+					return cachedContent = GetTextInternal(offset, length);
+			} else {
+				return GetTextInternal(offset, length);
+			}
+		}
+		
+		string GetTextInternal(int offset, int length)
+		{
 			int end = offset + length;
 			
 			if (end < gapBeginOffset) {
@@ -117,6 +130,8 @@ namespace ICSharpCode.TextEditor.Document
 			if (length < 0 || offset + length > Length) {
 				throw new ArgumentOutOfRangeException("length", length, "0 <= length, offset+length <= " + Length.ToString());
 			}
+			
+			cachedContent = null;
 			
 			// Math.Max is used so that if we need to resize the array
 			// the new array has enough space for all old chars
