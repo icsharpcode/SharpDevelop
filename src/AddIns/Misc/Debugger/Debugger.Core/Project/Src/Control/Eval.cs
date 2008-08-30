@@ -236,7 +236,13 @@ namespace Debugger
 				corArgs.Add(thisValue.CorValue);
 			}
 			foreach(Value arg in args) {
-				corArgs.Add(arg.CorValue);
+				// TODO: It is importatnt to pass the parameted in the correct form (boxed/unboxed)
+				// This is just a good guess
+				if (arg.Type.IsValueType) {
+					corArgs.Add(arg.CorGenericValue.CastTo<ICorDebugValue>());
+				} else {
+					corArgs.Add(arg.CorValue);
+				}
 			}
 			
 			ICorDebugType[] genericArgs = method.DeclaringType.GenericArgumentsAsCorDebugType;
