@@ -78,27 +78,22 @@ namespace ICSharpCode.SharpDevelop.Debugging
 					return true;
 				} else {
 					Console.WriteLine("Handling " + keyData);
-					throw new NotImplementedException();
-					//var i = FindItemByShortcut(Gui.WorkbenchSingleton.MainWin32Window.MainMenuStrip.Items, keyData);
-					//if (i != null)
-					//	i.PerformClick();
-					return false;
-				}
-			}
-			
-			static ToolStripMenuItem FindItemByShortcut(ToolStripItemCollection c, Keys shortcut)
-			{
-				foreach (ToolStripItem i in c) {
-					ToolStripMenuItem mi = i as ToolStripMenuItem;
-					if (mi != null) {
-						if (mi.ShortcutKeys == shortcut && mi.Enabled)
-							return mi;
-						mi = FindItemByShortcut(mi.DropDownItems, shortcut);
-						if (mi != null)
-							return mi;
+					var window = Gui.WorkbenchSingleton.MainWindow;
+					foreach (System.Windows.Input.InputBinding inputBinding in window.InputBindings) {
+						if (inputBinding.Gesture.Matches(null, new System.Windows.Input.KeyEventArgs(
+							System.Windows.Input.Keyboard.PrimaryDevice,
+							System.Windows.PresentationSource.FromVisual(window),
+							0,
+							System.Windows.Input.KeyInterop.KeyFromVirtualKey((int)(keyData & ~Keys.Modifiers))
+						))) {
+							if (inputBinding.Command.CanExecute(inputBinding.CommandParameter)) {
+								inputBinding.Command.Execute(inputBinding.CommandParameter);
+								return true;
+							}
+						}
 					}
 				}
-				return null;
+				return false;
 			}
 		}
 		
