@@ -91,6 +91,24 @@ namespace Debugger.AddIn
 			return target.GetArrayElement(indexes.ToArray());
 		}
 		
+		public override object VisitInvocationExpression(InvocationExpression invocationExpression, object data)
+		{
+			MemberReferenceExpression memberRef = invocationExpression.TargetObject as MemberReferenceExpression;
+			if (memberRef == null) {
+				throw new GetValueException("Member reference expected duting method invocation");
+			}
+			Value target = ((Value)memberRef.TargetObject.AcceptVisitor(this, null)).GetPermanentReference();
+			List<Value> args = new List<Value>();
+			foreach(Expression expr in invocationExpression.Arguments) {
+				args.Add(((Value)expr.AcceptVisitor(this, null)).GetPermanentReference());
+			}
+			MethodInfo method = target.Type.GetMember(memberRef.MemberName, BindingFlags.Method | BindingFlags.IncludeSuperType) as MethodInfo;
+			if (method == null) {
+				throw new GetValueException("Method " + memberRef.MemberName + " not found");
+			}
+			return target.InvokeMethod(method, args.ToArray());
+		}
+		
 		public override object VisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression, object data)
 		{
 			Value target = (Value)memberReferenceExpression.TargetObject.AcceptVisitor(this, null);
@@ -109,9 +127,15 @@ namespace Debugger.AddIn
 		
 		public override object VisitPrimitiveExpression(PrimitiveExpression primitiveExpression, object data)
 		{
-			Value val = Eval.NewObjectNoConstructor(DebugType.Create(context.Process, null, primitiveExpression.Value.GetType().FullName));
-			val.PrimitiveValue = primitiveExpression.Value;
-			return val;
+			if (primitiveExpression.Value == null) {
+				return Eval.CreateValue(context.Process, null);
+			} else if (primitiveExpression.Value is string) {
+				return Eval.NewString(context.Process, primitiveExpression.Value as string);
+			} else {
+				Value val = Eval.NewObjectNoConstructor(DebugType.Create(context.Process, null, primitiveExpression.Value.GetType().FullName));
+				val.PrimitiveValue = primitiveExpression.Value;
+				return val;
+			}
 		}
 		
 		public override object VisitThisReferenceExpression(ThisReferenceExpression thisReferenceExpression, object data)

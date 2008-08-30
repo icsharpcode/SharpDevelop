@@ -33,6 +33,8 @@ namespace Debugger.MetaData
 		Field       = 0x0100,
 		Property    = 0x0200,
 		Method      = 0x0400,
-		GetProperty = 0x0800
+		GetProperty = 0x0800,
+		
+		IncludeSuperType = 0x1000
 	};
 }

@@ -70,6 +70,16 @@ namespace Debugger.MetaData
 			}
 		}
 		
+		T QueryMember<T>(string name, BindingFlags bindingFlags) where T:MemberInfo
+		{
+			List<T> result = QueryMembers<T>(bindingFlags, name, null);
+			if (result.Count > 0) {
+				return result[0];
+			} else {
+				return null;
+			}
+		}
+		
 		T QueryMember<T>(uint token) where T:MemberInfo
 		{
 			List<T> result = QueryMembers<T>(BindingFlags.All, null, token);
@@ -138,6 +148,12 @@ namespace Debugger.MetaData
 				results.Add((T)memberInfo);
 			}
 			
+			// Query supertype
+			if ((bindingFlags & BindingFlags.IncludeSuperType) != 0 && this.BaseType != null) {
+				List<T> superResults = this.BaseType.QueryMembers<T>(bindingFlags, name, token);
+				results.AddRange(superResults);
+			}
+			
 			queries[query] = results;
 			return results;
 		}
@@ -172,6 +188,12 @@ namespace Debugger.MetaData
 		public MemberInfo GetMember(string name)
 		{
 			return QueryMember<MemberInfo>(name);
+		}
+		
+		/// <summary> Return first member with the given name</summary>
+		public MemberInfo GetMember(string name, BindingFlags bindingFlags)
+		{
+			return QueryMember<MemberInfo>(name, bindingFlags);
 		}
 		
 		/// <summary> Return first member with the given token</summary>

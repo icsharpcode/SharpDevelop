@@ -252,13 +252,21 @@ namespace Debugger
 		// The advantage is that it does not continue the process
 		public static Value CreateValue(Process process, object value)
 		{
-			if (value == null) throw new ArgumentNullException("value");
 			if (value is string) throw new DebuggerException("Can not create string this way");
-			CorElementType corElemType = DebugType.TypeNameToCorElementType(value.GetType().FullName);
+			CorElementType corElemType;
+			ICorDebugClass corClass = null;
+			if (value != null) {
+				corElemType = DebugType.TypeNameToCorElementType(value.GetType().FullName);
+			} else {
+				corElemType = CorElementType.CLASS;
+				corClass = DebugType.Create(process, null, typeof(object).FullName).CorType.Class;
+			}
 			ICorDebugEval corEval = CreateCorEval(process);
-			ICorDebugValue corValue = corEval.CreateValue((uint)corElemType, null);
+			ICorDebugValue corValue = corEval.CreateValue((uint)corElemType, corClass);
 			Value v = new Value(process, new Expressions.PrimitiveExpression(value), corValue);
-			v.PrimitiveValue = value;
+			if (value != null) {
+				v.PrimitiveValue = value;
+			}
 			return v;
 		}
 		
