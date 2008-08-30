@@ -40,16 +40,48 @@ namespace ICSharpCode.Core.Presentation
 			return CreateMenuItems(inputBindingOwner, AddInTree.BuildItems<MenuItemDescriptor>(addInTreePath, owner, false));
 		}
 		
+		sealed class MenuItemBuilderPlaceholder
+		{
+			readonly IMenuItemBuilder builder;
+			readonly Codon codon;
+			readonly object caller;
+			
+			public MenuItemBuilderPlaceholder(IMenuItemBuilder builder, Codon codon, object caller)
+			{
+				this.builder = builder;
+				this.codon = codon;
+				this.caller = caller;
+			}
+			
+			public ICollection BuildItems()
+			{
+				return builder.BuildItems(codon, caller);
+			}
+		}
+		
 		internal static IList CreateMenuItems(UIElement inputBindingOwner, IEnumerable descriptors)
 		{
 			ArrayList result = new ArrayList();
 			foreach (MenuItemDescriptor descriptor in descriptors) {
-				object item = CreateMenuItemFromDescriptor(inputBindingOwner, descriptor);
-				if (item is IMenuItemBuilder) {
-					IMenuItemBuilder submenuBuilder = (IMenuItemBuilder)item;
-					result.AddRange(submenuBuilder.BuildItems(descriptor.Codon, descriptor.Caller));
+				result.Add(CreateMenuItemFromDescriptor(inputBindingOwner, descriptor));
+			}
+			return result;
+		}
+		
+		internal static IList ExpandMenuBuilders(ICollection input)
+		{
+			ArrayList result = new ArrayList(input.Count);
+			foreach (object o in input) {
+				MenuItemBuilderPlaceholder p = o as MenuItemBuilderPlaceholder;
+				if (p != null) {
+					result.AddRange(p.BuildItems());
 				} else {
-					result.Add(item);
+					result.Add(o);
+					IStatusUpdate statusUpdate = o as IStatusUpdate;
+					if (statusUpdate != null) {
+						statusUpdate.UpdateStatus();
+						statusUpdate.UpdateText();
+					}
 				}
 			}
 			return result;
@@ -72,15 +104,19 @@ namespace ICSharpCode.Core.Presentation
 					return new MenuCommand(inputBindingOwner, codon, descriptor.Caller, createCommand);
 				case "Menu":
 					var item = new CoreMenuItem(codon, descriptor.Caller) {
-						ItemsSource = CreateMenuItems(inputBindingOwner, descriptor.SubItems)
+						ItemsSource = new object[1]
 					};
+					var subItems = CreateMenuItems(inputBindingOwner, descriptor.SubItems);
 					item.SubmenuOpened += (sender, args) => {
-						item.ItemsSource = CreateMenuItems(inputBindingOwner, descriptor.SubItems);
+						item.ItemsSource = ExpandMenuBuilders(subItems);
 						args.Handled = true;
 					};
 					return item;
 				case "Builder":
-					return codon.AddIn.CreateObject(codon.Properties["class"]);
+					IMenuItemBuilder builder = codon.AddIn.CreateObject(codon.Properties["class"]) as IMenuItemBuilder;
+					if (builder == null)
+						throw new NotSupportedException("Menu item builder " + codon.Properties["class"] + " does not implement IMenuItemBuilder");
+					return new MenuItemBuilderPlaceholder(builder, descriptor.Codon, descriptor.Caller);
 				default:
 					throw new System.NotSupportedException("unsupported menu item type : " + type);
 			}

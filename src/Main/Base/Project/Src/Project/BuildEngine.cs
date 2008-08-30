@@ -77,7 +77,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			public void Done(bool success)
 			{
-				WorkbenchSingleton.SafeThreadAsyncCall(delegate { guiBuildProgressMonitor = null; });
+				WorkbenchSingleton.SafeThreadAsyncCall( delegate { guiBuildProgressMonitor = null; });
 			}
 		}
 		

@@ -54,37 +54,9 @@ namespace ICSharpCode.Core.Presentation
 			}
 		}
 		
-		void CommandManager_RequerySuggested(object sender, EventArgs e)
-		{
-			//LoggingService.Debug("Received CommandManager_RequerySuggested ");
-			if (canExecuteChanged != null)
-				canExecuteChanged(this, e);
-		}
-		
-		// keep a reference to the event handler to prevent it from being gargabe collected
-		// (CommandManager.RequerySuggested only keeps weak references to the event handlers)
-		EventHandler requerySuggestedEventHandler;
-		
-		// only attach to CommandManager.RequerySuggested if someone listens to the CanExecuteChanged event
-		EventHandler canExecuteChanged;
-		
 		public event EventHandler CanExecuteChanged {
-			add {
-				if (canExecuteChanged == null && value != null) {
-					//LoggingService.Debug("Attach CommandManager_RequerySuggested " + codon.Id);
-					if (requerySuggestedEventHandler == null)
-						requerySuggestedEventHandler = new EventHandler(CommandManager_RequerySuggested);
-					CommandManager.RequerySuggested += requerySuggestedEventHandler;
-				}
-				canExecuteChanged += value;
-			}
-			remove {
-				canExecuteChanged -= value;
-				if (canExecuteChanged == null) {
-					//LoggingService.Debug("Detach CommandManager_RequerySuggested " + codon.Id);
-					CommandManager.RequerySuggested -= requerySuggestedEventHandler;
-				}
-			}
+			add { CommandManager.RequerySuggested += value; }
+			remove { CommandManager.RequerySuggested -= value; }
 		}
 		
 		public void Execute(object parameter)

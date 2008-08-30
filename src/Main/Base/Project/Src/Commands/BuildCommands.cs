@@ -14,6 +14,7 @@ using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Gui;
+using System.Windows.Input;
 
 namespace ICSharpCode.SharpDevelop.Project.Commands
 {
@@ -225,58 +226,16 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		}
 	}
 	
-	public class AbortBuild : IMenuItemBuilder
+	public class AbortBuild : AbstractMenuCommand
 	{
-		public System.Collections.ICollection BuildItems(Codon codon, object owner)
+		public override void Run()
 		{
-			return new[] { new MyMenuItem() };
+			BuildEngine.CancelGuiBuild();
 		}
 		
-		sealed class MyMenuItem : MenuItem
-		{
-			public MyMenuItem()
-			{
-				WorkbenchSingleton.Workbench.ProcessCommandKey += OnProcessCommandKey;
-				ResourceService.LanguageChanged += OnLanguageChanged;
-				OnLanguageChanged(null, null);
-			}
-			
-//			protected override void Dispose(bool disposing)
-//			{
-//				base.Dispose(disposing);
-//				if (disposing) {
-//					WorkbenchSingleton.Workbench.ProcessCommandKey -= OnProcessCommandKey;
-//					ResourceService.LanguageChanged -= OnLanguageChanged;
-//				}
-//			}
-//			
-//			public override bool Enabled {
-//				get { return BuildEngine.IsGuiBuildRunning; }
-//			}
-			
-			void OnLanguageChanged(object sender, EventArgs e)
-			{
-				Header = StringParser.Parse("${res:XML.MainMenu.BuildMenu.AbortBuild}");
-				InputGestureText = StringParser.Parse("${res:XML.MainMenu.BuildMenu.BreakKey}");
-			}
-			
-			void OnProcessCommandKey(object sender, System.Windows.Forms.KeyEventArgs e)
-			{
-				// ToolStripMenuItem does not support Pause/Break as shortcut key, so we handle it manually
-				if (e.KeyData == System.Windows.Forms.Keys.Pause) {
-					if (IsEnabled) {
-						LoggingService.Debug("BREAK was pressed, aborting build.");
-						RaiseEvent(new RoutedEventArgs(ClickEvent));
-						e.Handled = true;
-					}
-				}
-			}
-			
-			protected override void OnClick()
-			{
-				base.OnClick();
-				BuildEngine.CancelGuiBuild();
-			}
+		public override bool IsEnabled {
+			get { return BuildEngine.IsGuiBuildRunning; }
+			set { }
 		}
 	}
 	

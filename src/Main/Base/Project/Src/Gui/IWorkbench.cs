@@ -171,10 +171,5 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// Is called, when a workbench view was closed
 		/// </summary>
 		event ViewContentEventHandler ViewClosed;
-		
-		/// <summary>
-		/// Is called when a key is pressed. Can be used to intercept command keys.
-		/// </summary>
-		event System.Windows.Forms.KeyEventHandler ProcessCommandKey;
 	}
 }

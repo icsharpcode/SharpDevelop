@@ -47,8 +47,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		public event System.Windows.Forms.KeyEventHandler ProcessCommandKey;
-		
 		public System.Windows.Forms.IWin32Window MainWin32Window { get; private set; }
 		public ISynchronizeInvoke SynchronizingObject { get; set; }
 		public Window MainWindow { get { return this; } }

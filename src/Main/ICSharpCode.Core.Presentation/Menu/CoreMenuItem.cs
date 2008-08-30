@@ -33,15 +33,9 @@ namespace ICSharpCode.Core.Presentation
 					this.Icon = new PixelSnapper(image);
 				} catch (ResourceNotFoundException) {}
 			}
-			this.SubmenuOpened += CoreMenuItem_SubmenuOpened;
 			UpdateText();
 		}
 
-		void CoreMenuItem_SubmenuOpened(object sender, RoutedEventArgs e)
-		{
-			MenuService.UpdateStatus(this.ItemsSource);
-		}
-		
 		public void UpdateText()
 		{
 			if (codon != null) {
