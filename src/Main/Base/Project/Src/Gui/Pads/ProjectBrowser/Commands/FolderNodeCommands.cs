@@ -102,7 +102,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 				
 				FileService.CopyFile(directoryName, copiedFileName, true, false);
 				DirectoryNode newNode = new DirectoryNode(copiedFileName);
-				newNode.AddTo(node);
+				newNode.InsertSorted(node);
 				if (includeInProject) {
 					IncludeFileInProject.IncludeDirectoryNode(newNode, false);
 				}
@@ -141,7 +141,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 					}
 				}
 				fileNode = new FileNode(copiedFileName);
-				fileNode.AddTo(node);
+				fileNode.InsertSorted(node);
 				return IncludeFileInProject.IncludeFileNode(fileNode);
 			}
 			return null;
@@ -228,7 +228,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 								fileProjectItem.DependentUpon = pair.Value;
 								addedItems.Add(fileProjectItem);
 								fileNode.ProjectItem = fileProjectItem;
-								fileNode.AddTo(node);
+								fileNode.InsertSorted(node);
 								ProjectService.AddProjectItem(node.Project, fileProjectItem);
 							}
 							node.Project.Save();
@@ -342,7 +342,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			FileService.FireFileCreated(directoryName, true);
 			
 			DirectoryNode directoryNode = new DirectoryNode(directoryName, FileNodeStatus.InProject);
-			directoryNode.AddTo(upper);
+			directoryNode.InsertSorted(upper);
 			
 			IncludeFileInProject.IncludeDirectoryNode(directoryNode, false);
 			return directoryNode;

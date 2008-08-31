@@ -40,7 +40,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			foreach (ProjectItem item in project.Items) {
 				if (item is ReferenceProjectItem) {
 					ReferenceNode referenceNode = new ReferenceNode((ReferenceProjectItem)item);
-					referenceNode.AddTo(this);
+					referenceNode.InsertSorted(this);
 				}
 			}
 			UpdateIcon();

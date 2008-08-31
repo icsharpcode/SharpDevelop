@@ -234,7 +234,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					other.Remove();
 					((FileProjectItem)other.ProjectItem).DependentUpon = Path.GetFileName(this.FileName);
 					other.FileNodeStatus = FileNodeStatus.BehindFile;
-					other.AddTo(this);
+					other.InsertSorted(this);
 					LoggingService.Debug("-> Created new dependency, saving solution");
 					ProjectService.SaveSolution();
 				} else {

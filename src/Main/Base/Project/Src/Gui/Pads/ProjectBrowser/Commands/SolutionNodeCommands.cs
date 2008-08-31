@@ -138,7 +138,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 				solutionFolderNode.Solution.Save();
 				
 				SolutionFolderNode newSolutionFolderNode = new SolutionFolderNode(solutionFolderNode.Solution, newSolutionFolder);
-				newSolutionFolderNode.AddTo(node);
+				newSolutionFolderNode.InsertSorted(node);
 				ProjectBrowserPad.Instance.StartLabelEdit(newSolutionFolderNode);
 			}
 		}

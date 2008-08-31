@@ -318,7 +318,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 				pair.Value.DependentUpon = Path.GetFileName(fileNode.FileName);
 				pair.Key.Remove();
 				pair.Key.FileNodeStatus = FileNodeStatus.BehindFile;
-				pair.Key.AddTo(fileNode);
+				pair.Key.InsertSorted(fileNode);
 			}
 			
 			fileNode.Project.Save();

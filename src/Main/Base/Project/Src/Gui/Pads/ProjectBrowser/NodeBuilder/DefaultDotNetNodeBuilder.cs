@@ -23,7 +23,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public TreeNode AddProjectNode(TreeNode motherNode, IProject project)
 		{
 			ProjectNode projectNode = new ProjectNode(project);
-			projectNode.AddTo(motherNode);
+			projectNode.InsertSorted(motherNode);
 			
 			if (project is MissingProject) {
 				CustomNode missingNode = new CustomNode();

@@ -291,7 +291,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				foreach (string subDirectory in System.IO.Directory.GetDirectories(Directory)) {
 					if (Path.GetFileName(subDirectory) != ".svn") {
 						DirectoryNode newDirectoryNode = DirectoryNodeFactory.CreateDirectoryNode(this, Project, subDirectory);
-						newDirectoryNode.AddTo(this);
+						newDirectoryNode.InsertSorted(this);
 						directoryNodeList[Path.GetFileName(subDirectory)] = newDirectoryNode;
 					}
 				}
@@ -299,7 +299,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				foreach (string file in System.IO.Directory.GetFiles(Directory)) {
 					FileNode fileNode = new FileNode(file);
 					fileNodeDictionary[Path.GetFileName(file)] = fileNode;
-					fileNode.AddTo(this);
+					fileNode.InsertSorted(this);
 				}
 			}
 			if (Nodes.Count == 0) {
@@ -344,14 +344,14 @@ namespace ICSharpCode.SharpDevelop.Project
 						node.ProjectItem = item;
 					} else {
 						node = DirectoryNodeFactory.CreateDirectoryNode(item, FileNodeStatus.Missing);
-						node.AddTo(this);
+						node.InsertSorted(this);
 						directoryNodeList[fileName] = node;
 					}
 				} else {
 					FileNode node;
 					if (fileItem.IsLink) {
 						node = new FileNode(fileItem.FileName, FileNodeStatus.InProject);
-						node.AddTo(this);
+						node.InsertSorted(this);
 						fileNodeDictionary[fileName] = node;
 					} else {
 						if (fileNodeDictionary.TryGetValue(fileName, out node)) {
@@ -360,7 +360,7 @@ namespace ICSharpCode.SharpDevelop.Project
 							}
 						} else {
 							node = new FileNode(fileItem.FileName, FileNodeStatus.Missing);
-							node.AddTo(this);
+							node.InsertSorted(this);
 							fileNodeDictionary[fileName] = node;
 						}
 					}
@@ -383,9 +383,9 @@ namespace ICSharpCode.SharpDevelop.Project
 				if (NodeIsParent(parentNode, pair.Key)) {
 					// is pair.Key a parent of parentNode?
 					// if yes, we have a parent cycle - break it by adding one node to the directory
-					pair.Key.AddTo(this);
+					pair.Key.InsertSorted(this);
 				} else {
-					pair.Key.AddTo(parentNode);
+					pair.Key.InsertSorted(parentNode);
 					if (pair.Key.FileNodeStatus != FileNodeStatus.Missing) {
 						pair.Key.FileNodeStatus = FileNodeStatus.BehindFile;
 					}
@@ -418,7 +418,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			this.Expanding();
 			
 			FileNode fileNode = new FileNode(fileName, FileNodeStatus.InProject);
-			fileNode.AddTo(this);
+			fileNode.InsertSorted(this);
 			fileNode.EnsureVisible();
 			return IncludeFileInProject.IncludeFileNode(fileNode);
 		}
@@ -441,7 +441,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					}
 				} else {
 					node = new DirectoryNode(Path.Combine(Directory, subFolderName), FileNodeStatus.Missing);
-					node.AddTo(this);
+					node.InsertSorted(this);
 					directoryNodeList[subFolderName] = node;
 				}
 			}
@@ -713,7 +713,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				fileProjectItem.Include = relFileName;
 				fileProjectItem.SetEvaluatedMetadata("Link", Path.Combine(RelativePath, Path.GetFileName(node.FileName)));
 				fileNode.ProjectItem = fileProjectItem;
-				fileNode.AddTo(this);
+				fileNode.InsertSorted(this);
 				ProjectService.AddProjectItem(Project, fileProjectItem);
 				if (performMove) {
 					ProjectService.RemoveProjectItem(node.Project, node.ProjectItem);
@@ -821,7 +821,7 @@ namespace ICSharpCode.SharpDevelop.Project
 						} else {
 							fileNode.FileNodeStatus = FileNodeStatus.InProject;
 						}
-						fileNode.AddTo(this);
+						fileNode.InsertSorted(this);
 					}
 				} else if (dataObject.GetDataPresent(typeof(DirectoryNode))) {
 					DirectoryNode directoryNode = (DirectoryNode)dataObject.GetData(typeof(DirectoryNode));

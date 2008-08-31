@@ -74,12 +74,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			internalParent = parentNode;
 			parentNode.Nodes.Insert(index, this);
+			Refresh();
 		}
 		
 		public void Insert(int index, TreeView view)
 		{
 			internalParent = null;
 			view.Nodes.Insert(index, this);
+			Refresh();
 		}
 		
 		void AddTo(TreeNodeCollection nodes)
@@ -501,6 +503,66 @@ namespace ICSharpCode.SharpDevelop.Gui
 			get {
 				return Text;
 			}
+		}
+		
+		int GetInsertionIndex(TreeNodeCollection nodes, TreeView treeView)
+		{
+			if (treeView == null) {
+				return nodes.Count;
+			}
+			
+			Comparison<TreeNode> comparison = null;
+			
+			ExtTreeView etv = treeView as ExtTreeView;
+			if (etv == null) {
+				if (!treeView.Sorted) {
+					return nodes.Count;
+				}
+				if (treeView.TreeViewNodeSorter != null) {
+					comparison = treeView.TreeViewNodeSorter.Compare;
+				}
+			} else {
+				if (!etv.IsSorted) {
+					return nodes.Count;
+				}
+				if (etv.NodeSorter != null) {
+					comparison = etv.NodeSorter.Compare;
+				}
+			}
+			
+			if (comparison == null) {
+				return nodes.Count;
+			}
+			
+			for (int i = 0; i < nodes.Count; ++i) {
+				if (comparison(this, nodes[i]) < 0) {
+					return i;
+				}
+			}
+			
+			return nodes.Count;
+		}
+		
+		/// <summary>
+		/// Inserts this node into the specified TreeView at the position
+		/// determined by the comparer of the TreeView, assuming that
+		/// all other immediate child nodes of the TreeView are in sorted order.
+		/// </summary>
+		public void InsertSorted(TreeView treeView)
+		{
+			this.Insert(this.GetInsertionIndex(treeView.Nodes, treeView), treeView);
+		}
+		
+		/// <summary>
+		/// Inserts this node into the specified <paramref name="parentNode"/>
+		/// at the position determined by the comparer
+		/// of the TreeView which contains the <paramref name="parentNode"/>,
+		/// assuming that all other immediate child nodes of the <paramref name="parentNode"/>
+		/// are in sorted order.
+		/// </summary>
+		public void InsertSorted(TreeNode parentNode)
+		{
+			this.Insert(this.GetInsertionIndex(parentNode.Nodes, parentNode.TreeView), parentNode);
 		}
 		#endregion
 	}

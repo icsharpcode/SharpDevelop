@@ -95,7 +95,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				solution.Save();
 				
 				node = new SolutionFolderNode(solution, newSolutionFolder);
-				node.AddTo(this);
+				node.InsertSorted(this);
 			}
 			node.AddItem(fileName);
 		}
@@ -131,7 +131,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				parentNode = folderNode.Parent as AbstractProjectBrowserTreeNode;
 				
 				folderNode.Remove();
-				folderNode.AddTo(this);
+				folderNode.InsertSorted(this);
 				
 				this.solution.AddFolder(folderNode.Folder);
 			}
@@ -140,7 +140,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				parentNode = projectNode.Parent as AbstractProjectBrowserTreeNode;
 				
 				projectNode.Remove();
-				projectNode.AddTo(this);
+				projectNode.InsertSorted(this);
 				projectNode.EnsureVisible();
 				this.solution.AddFolder(projectNode.Project);
 			}
