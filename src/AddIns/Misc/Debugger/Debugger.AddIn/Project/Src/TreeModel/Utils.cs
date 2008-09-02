@@ -20,10 +20,14 @@ namespace Debugger.AddIn.TreeModel
 		/// <param name="process">Process on which to track debuggee state</param>
 		public static void DoEvents(Process process)
 		{
+			if (process == null) return;
 			DebuggeeState oldState = process.DebuggeeState;
 			//using(new PrintTimes("Application.DoEvents()"))
 			{
 				Application.DoEvents();
+			}
+			{
+			
 			}
 			DebuggeeState newState = process.DebuggeeState;
 			if (oldState != newState) {

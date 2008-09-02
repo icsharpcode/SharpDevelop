@@ -61,12 +61,14 @@
     <Compile Include="Src\Options\DebuggingSymbolsPanel.Designer.cs">
       <DependentUpon>DebuggingSymbolsPanel.cs</DependentUpon>
     </Compile>
+    <Compile Include="Src\Pads\WatchPadCommands.cs" />
     <Compile Include="Src\Pads\BreakPointsPad.cs" />
     <Compile Include="Src\Pads\CallStackPad.cs" />
     <Compile Include="Src\Pads\ConsolePad.cs" />
     <Compile Include="Src\Pads\LoadedModulesPad.cs" />
     <Compile Include="Src\Pads\LocalVarPad.cs" />
     <Compile Include="Src\Pads\RunningThreadsPad.cs" />
+    <Compile Include="Src\Pads\WatchPad.cs" />
     <Compile Include="Src\Service\AttachToProcessForm.cs" />
     <Compile Include="Src\Service\DebugeeExceptionForm.cs">
       <SubType>Form</SubType>

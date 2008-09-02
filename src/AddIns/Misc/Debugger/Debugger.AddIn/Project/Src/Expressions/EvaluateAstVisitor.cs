@@ -157,13 +157,25 @@ namespace Debugger.AddIn
 			switch (binaryOperatorExpression.Op)
 			{
 				case BinaryOperatorType.Equality :
-					val.PrimitiveValue = (right.PrimitiveValue.ToString() == left.PrimitiveValue.ToString());
+					val.PrimitiveValue = (right.PrimitiveValue == left.PrimitiveValue);
 					break;
 				case BinaryOperatorType.InEquality :
-					val.PrimitiveValue = (right.PrimitiveValue.ToString() != left.PrimitiveValue.ToString());
+					val.PrimitiveValue = (right.PrimitiveValue != left.PrimitiveValue);
 					break;
+//				case BinaryOperatorType.Add :
+//					val.PrimitiveValue = (right.PrimitiveValue.ToString() + left.PrimitiveValue.ToString());
+//					break;
+//				case BinaryOperatorType.GreaterThan :
+//					val.PrimitiveValue = (right.PrimitiveValue > left.PrimitiveValue);
+//					break;
+//				case BinaryOperatorType.LessThanOrEqual :
+//					val.PrimitiveValue = (right.PrimitiveValue <= left.PrimitiveValue);
+//					break;
+//				case BinaryOperatorType.GreaterThanOrEqual :
+//					val.PrimitiveValue = (right.PrimitiveValue >= left.PrimitiveValue);
+//					break;
 				default :
-					throw new NotImplementedException("BinaryOperator not implemented!");
+					throw new NotImplementedException("BinaryOperator: " + binaryOperatorExpression.Op + "!");
 			}
 			
 			return val;

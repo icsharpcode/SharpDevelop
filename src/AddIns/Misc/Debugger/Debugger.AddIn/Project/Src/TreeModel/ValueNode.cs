@@ -30,6 +30,12 @@ namespace Debugger.AddIn.TreeModel
 			get { return expression; }
 		}
 		
+		/// <remarks>HACK for WatchPad</remarks>
+		public void SetName(string name)
+		{
+			this.Name = name;
+		}
+		
 		/// <summary>
 		/// Factory method to create an instance.
 		/// </summary>
