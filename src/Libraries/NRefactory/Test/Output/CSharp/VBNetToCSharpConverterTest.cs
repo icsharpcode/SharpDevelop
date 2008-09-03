@@ -699,7 +699,7 @@ static int static_Test2_j = 0;");
 			            "static class Test\r\n" +
 			            "{\r\n" +
 			            "  public const int C = 0;\r\n" +
-			            "}");
+			            "}\r\n");
 		}
 	}
 }
