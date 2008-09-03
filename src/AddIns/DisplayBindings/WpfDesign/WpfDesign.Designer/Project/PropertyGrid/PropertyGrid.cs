@@ -7,43 +7,32 @@ using System.Collections.ObjectModel;
 using System.Threading;
 using System.Globalization;
 using ICSharpCode.WpfDesign.PropertyGrid;
+using System.Windows.Threading;
+using System.Diagnostics;
 
 namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 {
-	public enum PropertyGridTab
-	{
-		Properties,
-		Events
-	}
-
 	public class PropertyGrid : INotifyPropertyChanged
 	{
 		public PropertyGrid()
 		{
-			Categories = new ObservableCollection<Category>();
-			Events = new ObservableCollection<PropertyNode>();
+			Categories = new ObservableCollection<Category>(new [] { 
+				specialCategory, 
+				popularCategory, 
+				otherCategory
+			});
+
+			Events = new PropertyNodeCollection();
 		}
 
-		static SortedDictionary<string, Category> allCategories =
-			new SortedDictionary<string, Category>(CategoryNameComparer.Instance);
+		Category specialCategory = new Category("Special");
+		Category popularCategory = new Category("Popular");
+		Category otherCategory = new Category("Other");
 
-		class CategoryNameComparer : IComparer<string>
-		{
-			public static CategoryNameComparer Instance = new CategoryNameComparer();
-
-			public int Compare(string x, string y)
-			{
-				int i1 = Array.IndexOf(Metadata.CategoryOrder, x);
-				if (i1 == -1) i1 = int.MaxValue;
-				int i2 = Array.IndexOf(Metadata.CategoryOrder, y);
-				if (i2 == -1) i2 = int.MaxValue;
-				if (i1 == i2) return x.CompareTo(y);
-				return i1.CompareTo(i2);
-			}
-		}
+		Dictionary<MemberDescriptor, PropertyNode> nodeFromDescriptor = new Dictionary<MemberDescriptor, PropertyNode>();
 
 		public ObservableCollection<Category> Categories { get; private set; }
-		public ObservableCollection<PropertyNode> Events { get; private set; }
+		public PropertyNodeCollection Events { get; private set; }
 
 		PropertyGridTab currentTab;
 
@@ -89,9 +78,11 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 				return selectedItems;
 			}
 			set {
-				selectedItems = value;
-				Reload();
-				RaisePropertyChanged("SelectedItems");
+				Dispatcher.CurrentDispatcher.BeginInvoke(new Action(delegate {				
+					selectedItems = value;
+					Reload();
+					RaisePropertyChanged("SelectedItems");
+				}), DispatcherPriority.Background);
 			}
 		}
 
@@ -102,75 +93,51 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 
 		void Reload()
 		{
-			Categories.Clear();
-			Events.Clear();
-			SingleItem = null;
+			Clear();
+			
+			if (SelectedItems == null || SelectedItems.Count() == 0) return;
+			if (SelectedItems.Count() == 1) SingleItem = SelectedItems.First();
 
-			foreach (var cat in allCategories.Values) {
-				cat.Properties.Clear();
-				cat.MoreProperties.Clear();
+			foreach (var md in GetDescriptors()) {
+				if (PassesFilter(md.Name))
+					AddNode(md);
+			}
+		}
+
+		void Clear()
+		{
+			foreach (var c in Categories) {
+				c.IsVisible = false;
+				foreach (var p in c.Properties) {
+					p.IsVisible = false;
+				}
 			}
 
-			if (SelectedItems == null || SelectedItems.Count() == 0) return;
+			foreach (var e in Events) {
+				e.IsVisible = false;
+			}
 
+			SingleItem = null;
+		}
+
+		List<MemberDescriptor> GetDescriptors()
+		{
 			List<MemberDescriptor> list = new List<MemberDescriptor>();
 
 			if (SelectedItems.Count() == 1) {
-				SingleItem = SelectedItems.First();
-
 				foreach (MemberDescriptor d in TypeHelper.GetAvailableProperties(SingleItem.ComponentType)) {
 					list.Add(d);
 				}
 				foreach (MemberDescriptor d in TypeHelper.GetAvailableEvents(SingleItem.ComponentType)) {
 					list.Add(d);
 				}
-			}
-			else {
+			} else {
 				foreach (MemberDescriptor d in TypeHelper.GetCommonAvailableProperties(SelectedItems.Select(t => t.ComponentType))) {
 					list.Add(d);
 				}
 			}
 
-			var nodeList = list
-				.Where(d => PassesFilter(d.Name))
-				.OrderBy(d => d.Name)
-				.Select(d => new PropertyNode(SelectedItems.Select(t => t.Properties[d.Name]).ToArray()));
-
-			foreach (var node in nodeList) {
-				if (node.IsEvent) {
-					Events.Add(node);
-				}
-				else {
-					string catName = Metadata.GetCategory(node.FirstProperty) ?? BasicMetadata.Category_Misc;
-					Category cat;
-					if (!allCategories.TryGetValue(catName, out cat)) {
-						cat = new Category(catName);
-						allCategories[catName] = cat;
-					}
-					if (Metadata.IsAdvanced(node.FirstProperty)) {
-						cat.MoreProperties.Add(node);
-					}
-					else {
-						cat.Properties.Add(node);
-					}
-				}
-			}
-
-			foreach (var cat in allCategories.Values) {
-				if (cat.Properties.Count > 0 || cat.MoreProperties.Count > 0) {
-					if (string.IsNullOrEmpty(Filter)) {
-						if (cat.ShowMoreByFilter) {
-							cat.ShowMore = false;
-							cat.ShowMoreByFilter = false;
-						}
-					}
-					else {
-						cat.ShowMore = true;
-						cat.ShowMoreByFilter = true;
-					}
-					Categories.Add(cat);
-				}
-			}
+			return list;
 		}
 
 		bool PassesFilter(string name)
@@ -186,6 +153,40 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 			return false;
 		}
 
+		void AddNode(MemberDescriptor md)
+		{
+			var designProperties = SelectedItems.Select(item => item.Properties[md.Name]).ToArray();
+			if (!Metadata.IsBrowsable(designProperties[0])) return;
+
+			PropertyNode node;
+			if (nodeFromDescriptor.TryGetValue(md, out node)) {
+				node.Load(designProperties);
+			} else {
+				node = new PropertyNode();
+				node.Load(designProperties);
+				if (node.IsEvent) {
+					Events.AddSorted(node);
+				} else {
+					var cat = PickCategory(node);
+					cat.Properties.AddSorted(node);
+					node.Category = cat;					
+				}
+				nodeFromDescriptor[md] = node;
+			}			
+			node.IsVisible = true;
+			if (node.Category != null) 
+				node.Category.IsVisible = true;
+		}
+
+		Category PickCategory(PropertyNode node)
+		{
+			if (Metadata.IsPopularProperty(node.FirstProperty)) return popularCategory;
+			var typeName = node.FirstProperty.DeclaringType.FullName;
+			if (typeName.StartsWith("System.Windows.") || typeName.StartsWith("ICSharpCode.WpfDesign.Designer.Controls."))
+				return otherCategory;
+			return specialCategory;
+		}
+
 		#region INotifyPropertyChanged Members
 
 		public event PropertyChangedEventHandler PropertyChanged;
@@ -198,5 +199,26 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 		}
 
 		#endregion
+
+		//class CategoryNameComparer : IComparer<string>
+		//{
+		//    public static CategoryNameComparer Instance = new CategoryNameComparer();
+
+		//    public int Compare(string x, string y)
+		//    {
+		//        int i1 = Array.IndexOf(Metadata.CategoryOrder, x);
+		//        if (i1 == -1) i1 = int.MaxValue;
+		//        int i2 = Array.IndexOf(Metadata.CategoryOrder, y);
+		//        if (i2 == -1) i2 = int.MaxValue;
+		//        if (i1 == i2) return x.CompareTo(y);
+		//        return i1.CompareTo(i2);
+		//    }
+		//}
+	}
+	
+	public enum PropertyGridTab
+	{
+		Properties,
+		Events
 	}
 }

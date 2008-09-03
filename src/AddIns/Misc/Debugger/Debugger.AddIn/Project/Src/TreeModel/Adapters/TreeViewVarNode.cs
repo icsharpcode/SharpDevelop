@@ -142,7 +142,7 @@ namespace Debugger.AddIn.TreeModel
 			}
 		}
 		
-		private TreeViewVarNode(Debugger.Process process, TreeViewAdv localVarList, AbstractNode content): base(localVarList, new object())
+		public TreeViewVarNode(Debugger.Process process, TreeViewAdv localVarList, AbstractNode content): base(localVarList, new object())
 		{
 			this.process = process;
 			this.localVarList = localVarList;
@@ -262,6 +262,8 @@ namespace Debugger.AddIn.TreeModel
 		protected override void OnExpanded()
 		{
 			base.OnExpanded();
+			if (process == null)
+				return;
 			expandedNodes[FullName] = true;
 			if (process.IsRunning) {
 				MessageService.ShowMessage(

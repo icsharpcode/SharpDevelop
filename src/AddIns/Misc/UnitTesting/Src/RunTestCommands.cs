@@ -437,7 +437,7 @@ namespace ICSharpCode.UnitTesting
 		protected override void RunTests(UnitTestApplicationStartHelper helper)
 		{										
 			TestRunnerCategory.AppendLine(helper.GetCommandLine());
-			runner.Start(UnitTestApplicationStartHelper.UnitTestConsoleApplication, helper.GetArguments());
+			runner.Start(helper.UnitTestApplication, helper.GetArguments());
 		}
 		
 		protected override void OnStop()
@@ -488,7 +488,7 @@ namespace ICSharpCode.UnitTesting
 			
 			try {
 				TestRunnerCategory.AppendLine(helper.GetCommandLine());
-				ProcessStartInfo startInfo = new ProcessStartInfo(UnitTestApplicationStartHelper.UnitTestConsoleApplication);
+				ProcessStartInfo startInfo = new ProcessStartInfo(helper.UnitTestApplication);
 				startInfo.Arguments = helper.GetArguments();
 				startInfo.WorkingDirectory = UnitTestApplicationStartHelper.UnitTestApplicationDirectory;
 				DebuggerService.DebugStopped += DebuggerFinished;

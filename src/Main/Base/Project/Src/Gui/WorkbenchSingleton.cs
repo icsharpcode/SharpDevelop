@@ -19,6 +19,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		const string uiIconStyle             = "IconMenuItem.IconMenuStyle";
 		const string uiLanguageProperty      = "CoreProperties.UILanguage";
 		const string workbenchMemento        = "WorkbenchMemento";
+		const string activeContentState      = "Workbench.ActiveContent";
 		
 		static STAThreadCaller caller;
 		static IWorkbench workbench;
@@ -115,6 +116,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			workbench.SetMemento(PropertyService.Get(workbenchMemento, new Properties()));
 			workbench.WorkbenchLayout = layout;
 			
+			ApplicationStateInfoService.RegisterStateGetter(activeContentState, delegate { return WorkbenchSingleton.Workbench.ActiveContent; });
+			
 			OnWorkbenchCreated();
 			
 			// initialize workbench-dependent services:
@@ -140,6 +143,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			Project.ProjectService.CloseSolution();
 			NavigationService.Unload();
+			
+			ApplicationStateInfoService.UnregisterStateGetter(activeContentState);
 			
 			if (WorkbenchUnloaded != null) {
 				WorkbenchUnloaded(null, EventArgs.Empty);

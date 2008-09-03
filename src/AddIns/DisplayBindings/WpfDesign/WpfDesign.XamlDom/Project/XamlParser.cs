@@ -53,11 +53,9 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		/// </summary>
 		public static XamlDocument Parse(Stream stream, XamlParserSettings settings)
 		{
-			if (stream == null)
+			if (stream == null)	
 				throw new ArgumentNullException("stream");
-			XmlDocument doc = new XmlDocument();
-			doc.Load(stream);
-			return Parse(doc, settings);
+			return Parse(XmlReader.Create(stream), settings);
 		}
 		
 		/// <summary>
@@ -65,11 +63,9 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		/// </summary>
 		public static XamlDocument Parse(TextReader reader, XamlParserSettings settings)
 		{
-			if (reader == null)
+			if (reader == null) 
 				throw new ArgumentNullException("reader");
-			XmlDocument doc = new XmlDocument();
-			doc.Load(reader);
-			return Parse(doc, settings);
+			return Parse(XmlReader.Create(reader), settings);
 		}
 		
 		/// <summary>
@@ -79,9 +75,19 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		{
 			if (reader == null)
 				throw new ArgumentNullException("reader");
-			XmlDocument doc = new XmlDocument();
-			doc.Load(reader);
-			return Parse(doc, settings);
+
+			XmlDocument doc = new PositionXmlDocument();
+			var errorSink = (IXamlErrorSink)settings.ServiceProvider.GetService(typeof(IXamlErrorSink));
+
+			try {
+			    doc.Load(reader);
+			    return Parse(doc, settings);
+			} catch (XmlException x) {
+				if (errorSink != null)
+					errorSink.ReportError(x.Message, x.LineNumber, x.LinePosition);		
+			}
+
+			return null;
 		}
 		
 		/// <summary>
@@ -95,8 +101,16 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				throw new ArgumentNullException("document");
 			XamlParser p = new XamlParser();
 			p.settings = settings;
+			p.errorSink = (IXamlErrorSink)settings.ServiceProvider.GetService(typeof(IXamlErrorSink));
 			p.document = new XamlDocument(document, settings);
-			p.document.ParseComplete(p.ParseObject(document.DocumentElement));
+			
+			try {			
+				var root = p.ParseObject(document.DocumentElement);
+				p.document.ParseComplete(root);
+			} catch (Exception x) {
+				p.ReportException(x, document.DocumentElement);
+			}
+
 			return p.document;
 		}
 		#endregion
@@ -105,6 +119,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		
 		XamlDocument document;
 		XamlParserSettings settings;
+		IXamlErrorSink errorSink;
 		
 		Type FindType(string namespaceUri, string localName)
 		{
@@ -130,6 +145,21 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		readonly static object[] emptyObjectArray = new object[0];
 		XmlSpace currentXmlSpace = XmlSpace.None;
 		XamlObject currentXamlObject;
+
+		void ReportException(Exception x, XmlNode node)
+		{
+			if (errorSink != null) {
+				var lineInfo = node as IXmlLineInfo;
+				if (lineInfo != null) {
+					errorSink.ReportError(x.Message, lineInfo.LineNumber, lineInfo.LinePosition);
+				} else {
+					errorSink.ReportError(x.Message, 0, 0);
+				}
+				if (currentXamlObject != null) {
+					currentXamlObject.HasErrors = true;
+				}
+			}
+		}
 		
 		XamlObject ParseObject(XmlElement element)
 		{
@@ -317,8 +347,18 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				}
 			}
 		}
-		
+
 		XamlPropertyValue ParseValue(XmlNode childNode)
+		{
+			try {
+				return ParseValueCore(childNode);
+			} catch (Exception x) {
+				ReportException(x, childNode);
+			}
+			return null;
+		}
+		
+		XamlPropertyValue ParseValueCore(XmlNode childNode)
 		{
 			XmlText childText = childNode as XmlText;
 			if (childText != null) {
@@ -426,9 +466,13 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			propertyName = qualifiedName.Substring(pos + 1);
 		}
 		
-		static void ParseObjectAttribute(XamlObject obj, XmlAttribute attribute)
+		void ParseObjectAttribute(XamlObject obj, XmlAttribute attribute)
 		{
-			ParseObjectAttribute(obj, attribute, true);
+			try {
+				ParseObjectAttribute(obj, attribute, true);
+			} catch (Exception x) {
+				ReportException(x, attribute);
+			}			
 		}
 
 		internal static void ParseObjectAttribute(XamlObject obj, XmlAttribute attribute, bool real)

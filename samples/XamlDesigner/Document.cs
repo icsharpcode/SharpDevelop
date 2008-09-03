@@ -63,7 +63,6 @@ namespace ICSharpCode.XamlDesigner
 				RaisePropertyChanged("Mode");
 				RaisePropertyChanged("InXamlMode");
 				RaisePropertyChanged("InDesignMode");
-				RaisePropertyChanged("SelectionService");
 			}
 		}
 
@@ -137,10 +136,16 @@ namespace ICSharpCode.XamlDesigner
 
 		public ISelectionService SelectionService {
 			get {
-				if (InDesignMode && DesignContext != null) {
+				if (InDesignMode) {
 					return DesignContext.Services.Selection;
 				}
 				return null;
+			}
+		}
+
+		public XamlErrorService XamlErrorService {
+			get { 
+				return DesignContext.Services.GetService<XamlErrorService>();
 			}
 		}
 
@@ -178,38 +183,35 @@ namespace ICSharpCode.XamlDesigner
 			Save();
 		}
 
+		public void Refresh()
+		{
+			UpdateXaml();
+			UpdateDesign();
+		}
+
 		void UpdateXaml()
 		{
-			var sb = new StringBuilder();
-			using (var xmlWriter = XmlWriter.Create(sb)) {
-				try {
+			if (DesignContext.CanSave && UndoService.CanUndo) {
+				var sb = new StringBuilder();
+				using (var xmlWriter = XmlWriter.Create(sb)) {
 					DesignSurface.SaveDesigner(xmlWriter);					
 					Text = XamlFormatter.Format(sb.ToString());
-				}
-				catch (Exception x) {
-					Shell.ReportException(x);
 				}
 			}
 		}
 
 		void UpdateDesign()
 		{
-			try {
-				XamlLoadSettings settings = new XamlLoadSettings();
-				using (var xmlReader = XmlReader.Create(new StringReader(Text))) {
-					DesignSurface.LoadDesigner(xmlReader, settings);
-				}
-				if (DesignContext.RootItem == null) {
-					OutlineRoot = null;
-				}
-				else {
-					OutlineRoot = OutlineNode.Create(DesignContext.RootItem);
-				}
+			OutlineRoot = null;
+			using (var xmlReader = XmlReader.Create(new StringReader(Text))) {
+				DesignSurface.LoadDesigner(xmlReader, null);
+			}
+			if (DesignContext.RootItem != null) {
+				OutlineRoot = OutlineNode.Create(DesignContext.RootItem);
 				UndoService.UndoStackChanged += new EventHandler(UndoService_UndoStackChanged);
 			}
-			catch (Exception x) {
-				Shell.ReportException(x);
-			}
+			RaisePropertyChanged("SelectionService");
+			RaisePropertyChanged("XamlErrorService");
 		}
 
 		void UndoService_UndoStackChanged(object sender, EventArgs e)

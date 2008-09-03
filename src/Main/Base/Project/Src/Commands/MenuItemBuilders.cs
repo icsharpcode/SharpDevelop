@@ -289,7 +289,6 @@ namespace ICSharpCode.SharpDevelop.Commands
 			WorkbenchSingleton.SafeThreadAsyncCall(
 				delegate {
 					ProcessRunner p = (ProcessRunner)sender;
-					p.WaitForExit();
 					TaskService.BuildMessageViewCategory.AppendLine("${res:XML.MainMenu.ToolMenu.ExternalTools.ExitedWithCode} " + p.ExitCode);
 					p.Dispose();
 				});

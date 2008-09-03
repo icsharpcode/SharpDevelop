@@ -78,8 +78,8 @@ namespace Debugger.Tests {
     <ModuleLoaded>Metadata.exe (Has symbols)</ModuleLoaded>
     <DebuggingPaused>Break Metadata.cs:39,4-39,40</DebuggingPaused>
     <Members
-      Capacity="32"
-      Count="22">
+      Capacity="64"
+      Count="36">
       <Item>
         <FieldInfo
           DeclaringType="Debugger.Tests.TestPrograms.Metadata"
@@ -382,6 +382,202 @@ namespace Debugger.Tests {
           Module="Metadata.exe"
           Name="staticProperty"
           SetMethod="null" />
+      </Item>
+      <Item>
+        <MethodInfo
+          DeclaringType="System.Object"
+          FullName="System.Object..ctor"
+          IsInternal="False"
+          IsPrivate="False"
+          IsProtected="False"
+          IsPublic="True"
+          IsSpecialName="True"
+          IsStatic="False"
+          Module="mscorlib.dll"
+          Name=".ctor"
+          StepOver="True" />
+      </Item>
+      <Item>
+        <MethodInfo
+          DeclaringType="System.Object"
+          FullName="System.Object.ToString"
+          IsInternal="False"
+          IsPrivate="False"
+          IsProtected="False"
+          IsPublic="True"
+          IsSpecialName="False"
+          IsStatic="False"
+          Module="mscorlib.dll"
+          Name="ToString"
+          StepOver="True" />
+      </Item>
+      <Item>
+        <MethodInfo
+          DeclaringType="System.Object"
+          FullName="System.Object.Equals"
+          IsInternal="False"
+          IsPrivate="False"
+          IsProtected="False"
+          IsPublic="True"
+          IsSpecialName="False"
+          IsStatic="False"
+          Module="mscorlib.dll"
+          Name="Equals"
+          StepOver="True" />
+      </Item>
+      <Item>
+        <MethodInfo
+          DeclaringType="System.Object"
+          FullName="System.Object.InternalEquals"
+          IsInternal="True"
+          IsPrivate="False"
+          IsProtected="False"
+          IsPublic="False"
+          IsSpecialName="False"
+          IsStatic="True"
+          Module="mscorlib.dll"
+          Name="InternalEquals"
+          StepOver="True" />
+      </Item>
+      <Item>
+        <MethodInfo
+          DeclaringType="System.Object"
+          FullName="System.Object.Equals"
+          IsInternal="False"
+          IsPrivate="False"
+          IsProtected="False"
+          IsPublic="True"
+          IsSpecialName="False"
+          IsStatic="True"
+          Module="mscorlib.dll"
+          Name="Equals"
+          StepOver="True" />
+      </Item>
+      <Item>
+        <MethodInfo
+          DeclaringType="System.Object"
+          FullName="System.Object.ReferenceEquals"
+          IsInternal="False"
+          IsPrivate="False"
+          IsProtected="False"
+          IsPublic="True"
+          IsSpecialName="False"
+          IsStatic="True"
+          Module="mscorlib.dll"
+          Name="ReferenceEquals"
+          StepOver="True" />
+      </Item>
+      <Item>
+        <MethodInfo
+          DeclaringType="System.Object"
+          FullName="System.Object.GetHashCode"
+          IsInternal="False"
+          IsPrivate="False"
+          IsProtected="False"
+          IsPublic="True"
+          IsSpecialName="False"
+          IsStatic="False"
+          Module="mscorlib.dll"
+          Name="GetHashCode"
+          StepOver="True" />
+      </Item>
+      <Item>
+        <MethodInfo
+          DeclaringType="System.Object"
+          FullName="System.Object.InternalGetHashCode"
+          IsInternal="True"
+          IsPrivate="False"
+          IsProtected="False"
+          IsPublic="False"
+          IsSpecialName="False"
+          IsStatic="True"
+          Module="mscorlib.dll"
+          Name="InternalGetHashCode"
+          StepOver="True" />
+      </Item>
+      <Item>
+        <MethodInfo
+          DeclaringType="System.Object"
+          FullName="System.Object.GetType"
+          IsInternal="False"
+          IsPrivate="False"
+          IsProtected="False"
+          IsPublic="True"
+          IsSpecialName="False"
+          IsStatic="False"
+          Module="mscorlib.dll"
+          Name="GetType"
+          StepOver="True" />
+      </Item>
+      <Item>
+        <MethodInfo
+          DeclaringType="System.Object"
+          FullName="System.Object.Finalize"
+          IsInternal="False"
+          IsPrivate="False"
+          IsProtected="True"
+          IsPublic="False"
+          IsSpecialName="False"
+          IsStatic="False"
+          Module="mscorlib.dll"
+          Name="Finalize"
+          StepOver="True" />
+      </Item>
+      <Item>
+        <MethodInfo
+          DeclaringType="System.Object"
+          FullName="System.Object.MemberwiseClone"
+          IsInternal="False"
+          IsPrivate="False"
+          IsProtected="True"
+          IsPublic="False"
+          IsSpecialName="False"
+          IsStatic="False"
+          Module="mscorlib.dll"
+          Name="MemberwiseClone"
+          StepOver="True" />
+      </Item>
+      <Item>
+        <MethodInfo
+          DeclaringType="System.Object"
+          FullName="System.Object.FieldSetter"
+          IsInternal="False"
+          IsPrivate="True"
+          IsProtected="False"
+          IsPublic="False"
+          IsSpecialName="False"
+          IsStatic="False"
+          Module="mscorlib.dll"
+          Name="FieldSetter"
+          StepOver="True" />
+      </Item>
+      <Item>
+        <MethodInfo
+          DeclaringType="System.Object"
+          FullName="System.Object.FieldGetter"
+          IsInternal="False"
+          IsPrivate="True"
+          IsProtected="False"
+          IsPublic="False"
+          IsSpecialName="False"
+          IsStatic="False"
+          Module="mscorlib.dll"
+          Name="FieldGetter"
+          StepOver="True" />
+      </Item>
+      <Item>
+        <MethodInfo
+          DeclaringType="System.Object"
+          FullName="System.Object.GetFieldInfo"
+          IsInternal="False"
+          IsPrivate="True"
+          IsProtected="False"
+          IsPublic="False"
+          IsSpecialName="False"
+          IsStatic="False"
+          Module="mscorlib.dll"
+          Name="GetFieldInfo"
+          StepOver="True" />
       </Item>
     </Members>
     <Types

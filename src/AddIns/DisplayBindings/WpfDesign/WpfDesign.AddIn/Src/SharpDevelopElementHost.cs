@@ -22,13 +22,18 @@ namespace ICSharpCode.WpfDesign.AddIn
 		[ThreadStatic]
 		static bool registeredErrorHandler;
 		
-		public SharpDevelopElementHost()
+		public SharpDevelopElementHost(WpfViewContent viewContent, UIElement child)
 		{
 			if (!registeredErrorHandler) {
 				registeredErrorHandler = true;
 				Dispatcher.CurrentDispatcher.UnhandledException += CurrentDispatcher_UnhandledException;
 			}
+
+			this.viewContent = viewContent;
+			this.Child = child;
 		}
+
+		WpfViewContent viewContent;
 
 		static void CurrentDispatcher_UnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
 		{
@@ -36,14 +41,19 @@ namespace ICSharpCode.WpfDesign.AddIn
 			e.Handled = true;
 		}
 		
-		static bool IsEnabled(ICommand command)
+		bool IsEnabled(RoutedCommand command)
 		{
-			return command.CanExecute(null);
+			if (command.CanExecute(null, null)) return true;
+			return command.CanExecute(null, viewContent.DesignSurface);
 		}
 		
-		static void Run(ICommand command)
+		void Run(RoutedCommand command)
 		{
-			command.Execute(null);
+			if (command.CanExecute(null, null)) {
+				command.Execute(null, null);
+			} else {
+				command.Execute(null, viewContent.DesignSurface);
+			}
 		}
 		
 		public bool EnableUndo {

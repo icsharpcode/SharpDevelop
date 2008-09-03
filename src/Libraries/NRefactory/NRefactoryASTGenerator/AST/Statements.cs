@@ -265,10 +265,11 @@ namespace NRefactoryASTGenerator.Ast
 		Expression step;
 		
 		List<Expression> nextExpressions;
+		// either use typeReference+variableName
 		TypeReference typeReference;
 		string        variableName;
-		
-		public ForNextStatement(TypeReference typeReference, string variableName, Expression start, Expression end, Expression step, Statement embeddedStatement, List<Expression> nextExpressions) {}
+		// or use loopVariableExpression:
+		Expression loopVariableExpression;
 	}
 	
 	class OnErrorStatement : StatementWithEmbeddedStatement {

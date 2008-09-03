@@ -26,22 +26,22 @@ namespace Debugger.AddIn.TreeModel
 		
 		public string Name {
 			get { return name; }
-			protected set { name = value; }
+			set { name = value; }
 		}
 		
 		public string Text {
 			get { return text; }
-			protected set { text = value; }
+			set { text = value; }
 		}
 		
 		public string Type {
 			get { return type; }
-			protected set { type = value; }
+			set { type = value; }
 		}
 		
 		public IEnumerable<AbstractNode> ChildNodes {
 			get { return childNodes; }
-			protected set { childNodes = value; }
+			set { childNodes = value; }
 		}
 	}
 }

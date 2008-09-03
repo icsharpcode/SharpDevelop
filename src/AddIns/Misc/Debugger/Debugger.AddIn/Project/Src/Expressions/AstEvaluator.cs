@@ -27,6 +27,7 @@ namespace Debugger.AddIn
 				}
 				try {
 					EvaluateAstVisitor visitor = new EvaluateAstVisitor(context);
+					
 					return astRoot.AcceptVisitor(visitor, null) as Value;
 				} catch (NotImplementedException e) {
 					throw new GetValueException("Language feature not implemented: " + e.Message);

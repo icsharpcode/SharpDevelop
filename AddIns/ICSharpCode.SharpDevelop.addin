@@ -404,6 +404,16 @@
 					          label = "${res:ProjectComponent.ContextMenu.NewFolder}"
 					          icon  = "Icons.16x16.NewFolderIcon"
 					          class = "ICSharpCode.SharpDevelop.Project.Commands.AddNewFolderToProject"/>
+					<MenuItem id    = "AddDependentSeparator"
+					          type  = "Separator" />
+					<MenuItem id    = "NewDependentItem"
+					          label = "${res:ProjectComponent.ContextMenu.NewDependentItem}"
+					          icon  = "ProjectBrowser.CodeBehind"
+					          class = "ICSharpCode.SharpDevelop.Project.Commands.AddNewDependentItemsToProject"/>
+					<MenuItem id    = "ExistingItemAsDependent"
+					          label = "${res:ProjectComponent.ContextMenu.ExistingItemAsDependent}"
+					          icon  = "ProjectBrowser.CodeBehind"
+					          class = "ICSharpCode.SharpDevelop.Project.Commands.AddExistingItemsToProjectAsDependent"/>
 				</MenuItem>
 				<MenuItem id = "AddSeparator" type = "Separator"  />
 			</Condition>

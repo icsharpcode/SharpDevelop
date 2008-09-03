@@ -71,7 +71,8 @@ namespace ICSharpCode.TextEditor.Document
 			environmentColors["VRuler"]           = new HighlightColor("ControlLight", "Window", false, false);
 			environmentColors["InvalidLines"]     = new HighlightColor(Color.Red, false, false);
 			environmentColors["CaretMarker"]      = new HighlightColor(Color.Yellow, false, false);
-			environmentColors["LineNumbers"]      = new HighlightBackground("ControlDark", "Window", false, false);
+			environmentColors["CaretLine"] = new HighlightBackground("ControlLight", "Window", false, false);
+			environmentColors["LineNumbers"] = new HighlightBackground("ControlDark", "Window", false, false);
 			
 			environmentColors["FoldLine"]         = new HighlightColor(Color.FromArgb(0x80, 0x80, 0x80), Color.Black, false, false);
 			environmentColors["FoldMarker"]       = new HighlightColor(Color.FromArgb(0x80, 0x80, 0x80), Color.White, false, false);
@@ -786,6 +787,8 @@ namespace ICSharpCode.TextEditor.Document
 				switch (expr[i]) {
 					case '@': // "special" meaning
 						++i;
+						if (i == expr.Length)
+							throw new HighlightingDefinitionInvalidException("Unexpected end of @ sequence, use @@ to look for a single @.");
 						switch (expr[i]) {
 							case '!': // don't match the following expression
 								StringBuilder whatmatch = new StringBuilder();
@@ -819,69 +822,69 @@ namespace ICSharpCode.TextEditor.Document
 				switch (expr[i]) {
 					case '@': // "special" meaning
 						++i;
-						if (i < expr.Length) {
-							switch (expr[i]) {
-								case 'C': // match whitespace or punctuation
-									if (index + j == lineSegment.Offset || index + j >= lineSegment.Offset + lineSegment.Length) {
-										// nothing (EOL or SOL)
-									} else {
-										char ch = document.GetCharAt(lineSegment.Offset + index + j);
-										if (!Char.IsWhiteSpace(ch) && !Char.IsPunctuation(ch)) {
+						if (i == expr.Length)
+							throw new HighlightingDefinitionInvalidException("Unexpected end of @ sequence, use @@ to look for a single @.");
+						switch (expr[i]) {
+							case 'C': // match whitespace or punctuation
+								if (index + j == lineSegment.Offset || index + j >= lineSegment.Offset + lineSegment.Length) {
+									// nothing (EOL or SOL)
+								} else {
+									char ch = document.GetCharAt(lineSegment.Offset + index + j);
+									if (!Char.IsWhiteSpace(ch) && !Char.IsPunctuation(ch)) {
+										return false;
+									}
+								}
+								break;
+							case '!': // don't match the following expression
+								{
+									StringBuilder whatmatch = new StringBuilder();
+									++i;
+									while (i < expr.Length && expr[i] != '@') {
+										whatmatch.Append(expr[i++]);
+									}
+									if (lineSegment.Offset + index + j + whatmatch.Length < document.TextLength) {
+										int k = 0;
+										for (; k < whatmatch.Length; ++k) {
+											char docChar = ignoreCase ? Char.ToUpperInvariant(document.GetCharAt(lineSegment.Offset + index + j + k)) : document.GetCharAt(lineSegment.Offset + index + j + k);
+											char spanChar = ignoreCase ? Char.ToUpperInvariant(whatmatch[k]) : whatmatch[k];
+											if (docChar != spanChar) {
+												break;
+											}
+										}
+										if (k >= whatmatch.Length) {
 											return false;
 										}
 									}
-									break;
-								case '!': // don't match the following expression
-									{
-										StringBuilder whatmatch = new StringBuilder();
-										++i;
-										while (i < expr.Length && expr[i] != '@') {
-											whatmatch.Append(expr[i++]);
-										}
-										if (lineSegment.Offset + index + j + whatmatch.Length < document.TextLength) {
-											int k = 0;
-											for (; k < whatmatch.Length; ++k) {
-												char docChar = ignoreCase ? Char.ToUpperInvariant(document.GetCharAt(lineSegment.Offset + index + j + k)) : document.GetCharAt(lineSegment.Offset + index + j + k);
-												char spanChar = ignoreCase ? Char.ToUpperInvariant(whatmatch[k]) : whatmatch[k];
-												if (docChar != spanChar) {
-													break;
-												}
-											}
-											if (k >= whatmatch.Length) {
-												return false;
-											}
-										}
 //									--j;
-										break;
-									}
-								case '-': // don't match the  expression before
-									{
-										StringBuilder whatmatch = new StringBuilder();
-										++i;
-										while (i < expr.Length && expr[i] != '@') {
-											whatmatch.Append(expr[i++]);
-										}
-										if (index - whatmatch.Length >= 0) {
-											int k = 0;
-											for (; k < whatmatch.Length; ++k) {
-												char docChar = ignoreCase ? Char.ToUpperInvariant(document.GetCharAt(lineSegment.Offset + index - whatmatch.Length + k)) : document.GetCharAt(lineSegment.Offset + index - whatmatch.Length + k);
-												char spanChar = ignoreCase ? Char.ToUpperInvariant(whatmatch[k]) : whatmatch[k];
-												if (docChar != spanChar)
-													break;
-											}
-											if (k >= whatmatch.Length) {
-												return false;
-											}
-										}
-//									--j;
-										break;
-									}
-								case '@': // matches @
-									if (index + j >= lineSegment.Length || '@' != document.GetCharAt(lineSegment.Offset + index + j)) {
-										return false;
-									}
 									break;
-							}
+								}
+							case '-': // don't match the  expression before
+								{
+									StringBuilder whatmatch = new StringBuilder();
+									++i;
+									while (i < expr.Length && expr[i] != '@') {
+										whatmatch.Append(expr[i++]);
+									}
+									if (index - whatmatch.Length >= 0) {
+										int k = 0;
+										for (; k < whatmatch.Length; ++k) {
+											char docChar = ignoreCase ? Char.ToUpperInvariant(document.GetCharAt(lineSegment.Offset + index - whatmatch.Length + k)) : document.GetCharAt(lineSegment.Offset + index - whatmatch.Length + k);
+											char spanChar = ignoreCase ? Char.ToUpperInvariant(whatmatch[k]) : whatmatch[k];
+											if (docChar != spanChar)
+												break;
+										}
+										if (k >= whatmatch.Length) {
+											return false;
+										}
+									}
+//									--j;
+									break;
+								}
+							case '@': // matches @
+								if (index + j >= lineSegment.Length || '@' != document.GetCharAt(lineSegment.Offset + index + j)) {
+									return false;
+								}
+								break;
 						}
 						break;
 					default:

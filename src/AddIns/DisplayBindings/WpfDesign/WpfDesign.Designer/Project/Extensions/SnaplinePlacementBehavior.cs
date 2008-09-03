@@ -67,7 +67,6 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			var horizontalInput = new List<Snapline>();
 			var verticalInput = new List<Snapline>();
 			var info = operation.PlacedItems[0];
-			var snapping = !Keyboard.IsKeyDown(Key.LeftCtrl);
 			
 			if (operation.Type == PlacementType.Resize) {
 				AddLines(bounds, 0, false, horizontalInput, verticalInput, info.ResizeThumbAlignment);					
@@ -96,8 +95,10 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				if (operation.Type == PlacementType.Resize) {
 					if (info.ResizeThumbAlignment.Vertical == VerticalAlignment.Top) {
 						bounds.Y += delta;
+						bounds.Height = Math.Max(0, bounds.Height - delta);
+					} else {
+						bounds.Height = Math.Max(0, bounds.Height + delta);
 					}
-					bounds.Height = Math.Max(0, bounds.Height + delta);
 					info.Bounds = bounds;
 				} else {
 					foreach (var item in operation.PlacedItems) {
@@ -117,8 +118,10 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				if (operation.Type == PlacementType.Resize) {
 					if (info.ResizeThumbAlignment.Horizontal == HorizontalAlignment.Left) {
 						bounds.X += delta;
-					}
-					bounds.Width = Math.Max(0, bounds.Width + delta);
+						bounds.Width = Math.Max(0, bounds.Width - delta);
+					} else {
+						bounds.Width = Math.Max(0, bounds.Width + delta);
+					}					
 					info.Bounds = bounds;
 				} else {
 					foreach (var item in operation.PlacedItems) {

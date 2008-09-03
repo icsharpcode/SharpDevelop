@@ -162,7 +162,8 @@ namespace Debugger.Tests {
                 GenericArguments="{System.Int32, System.String}"
                 Interfaces="{}"
                 Kind="Class"
-                Module="Generics.exe" />
+                Module="Generics.exe"
+                Name="GenericClass&lt;Int32,String&gt;" />
             </DeclaringType>
           </MethodInfo>
         </MethodInfo>
@@ -229,7 +230,8 @@ namespace Debugger.Tests {
                 GenericArguments="{System.Int32, System.String}"
                 Interfaces="{}"
                 Kind="Class"
-                Module="Generics.exe" />
+                Module="Generics.exe"
+                Name="GenericClass&lt;Int32,String&gt;" />
             </DeclaringType>
           </MethodInfo>
         </MethodInfo>
@@ -296,7 +298,8 @@ namespace Debugger.Tests {
                 GenericArguments="{System.Int32, System.String}"
                 Interfaces="{}"
                 Kind="Class"
-                Module="Generics.exe" />
+                Module="Generics.exe"
+                Name="GenericClass&lt;Int32,String&gt;" />
             </DeclaringType>
           </MethodInfo>
         </MethodInfo>
@@ -363,7 +366,8 @@ namespace Debugger.Tests {
                 GenericArguments="{System.Int32, System.String}"
                 Interfaces="{}"
                 Kind="Class"
-                Module="Generics.exe" />
+                Module="Generics.exe"
+                Name="GenericClass&lt;Int32,String&gt;" />
             </DeclaringType>
           </MethodInfo>
         </MethodInfo>
@@ -430,7 +434,8 @@ namespace Debugger.Tests {
                 GenericArguments="{System.Int32, System.String}"
                 Interfaces="{}"
                 Kind="ValueType"
-                Module="Generics.exe" />
+                Module="Generics.exe"
+                Name="GenericStruct&lt;Int32,String&gt;" />
             </DeclaringType>
           </MethodInfo>
         </MethodInfo>
@@ -497,7 +502,8 @@ namespace Debugger.Tests {
                 GenericArguments="{System.Int32, System.String}"
                 Interfaces="{}"
                 Kind="ValueType"
-                Module="Generics.exe" />
+                Module="Generics.exe"
+                Name="GenericStruct&lt;Int32,String&gt;" />
             </DeclaringType>
           </MethodInfo>
         </MethodInfo>
@@ -564,7 +570,8 @@ namespace Debugger.Tests {
                 GenericArguments="{System.Int32, System.String}"
                 Interfaces="{}"
                 Kind="ValueType"
-                Module="Generics.exe" />
+                Module="Generics.exe"
+                Name="GenericStruct&lt;Int32,String&gt;" />
             </DeclaringType>
           </MethodInfo>
         </MethodInfo>
@@ -631,7 +638,8 @@ namespace Debugger.Tests {
                 GenericArguments="{System.Int32, System.String}"
                 Interfaces="{}"
                 Kind="ValueType"
-                Module="Generics.exe" />
+                Module="Generics.exe"
+                Name="GenericStruct&lt;Int32,String&gt;" />
             </DeclaringType>
           </MethodInfo>
         </MethodInfo>

@@ -203,10 +203,15 @@ namespace ICSharpCode.NRefactory.Visitors
 				start = assign.Right;
 			}
 			
-			ReplaceCurrentNode(new ForNextStatement(typeReference, iteratorIdentifier.Identifier,
-			                                        start, end,
-			                                        (step == 1) ? null : new PrimitiveExpression(step, step.ToString(System.Globalization.NumberFormatInfo.InvariantInfo)),
-			                                        forStatement.EmbeddedStatement, null));
+			ReplaceCurrentNode(
+				new ForNextStatement {
+					TypeReference = typeReference,
+					VariableName = iteratorIdentifier.Identifier,
+					Start = start,
+					End = end,
+					Step = (step == 1) ? null : new PrimitiveExpression(step, step.ToString(System.Globalization.NumberFormatInfo.InvariantInfo)),
+					EmbeddedStatement = forStatement.EmbeddedStatement
+				});
 		}
 		
 		public override object VisitCastExpression(CastExpression castExpression, object data)

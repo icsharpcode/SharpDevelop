@@ -386,6 +386,13 @@ End Using");
 		}
 		
 		[Test]
+		public void ForNextStatementWithFieldLoopVariable()
+		{
+			TestStatement("For Me.Field = 0 To 10\n" +
+			              "Next Me.Field");
+		}
+		
+		[Test]
 		public void WithStatement()
 		{
 			TestStatement("With Ejes\n" +

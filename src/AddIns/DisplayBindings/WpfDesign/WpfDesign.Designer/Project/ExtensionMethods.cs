@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Collections;
 using System.Windows;
 using System.Windows.Media;
+using System.Windows.Input;
 
 namespace ICSharpCode.WpfDesign.Designer
 {
@@ -51,6 +52,26 @@ namespace ICSharpCode.WpfDesign.Designer
 				if (result != null) return result;
 			}
 			return null;
+		}	
+	
+		public static void AddCommandHandler(this UIElement element, ICommand command, Action execute)
+		{
+			AddCommandHandler(element, command, execute, null);
+		}
+
+		public static void AddCommandHandler(this UIElement element, ICommand command, Action execute, Func<bool> canExecute)
+		{
+			var cb = new CommandBinding(command);
+			if (canExecute != null) {
+				cb.CanExecute += delegate(object sender, CanExecuteRoutedEventArgs e) {
+					e.CanExecute = canExecute();
+					e.Handled = true;
+				};
+			}
+			cb.Executed += delegate(object sender, ExecutedRoutedEventArgs e) {
+				execute();
+			};
+			element.CommandBindings.Add(cb);
 		}
 	}
 }

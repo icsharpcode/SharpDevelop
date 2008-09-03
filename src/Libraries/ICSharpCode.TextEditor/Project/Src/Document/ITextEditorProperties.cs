@@ -13,6 +13,12 @@ namespace ICSharpCode.TextEditor.Document
 {
 	public interface ITextEditorProperties
 	{
+		bool CaretLine
+		{
+			get;
+			set;
+		}
+
 		bool AutoInsertCurlyBracket { // is wrapped in text editor control
 			get;
 			set;

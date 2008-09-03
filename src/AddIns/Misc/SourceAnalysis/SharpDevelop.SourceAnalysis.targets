@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-	<UsingTask TaskName="SourceAnalysisTask"
-	           AssemblyFile="$(StyleCopDir)\Microsoft.SourceAnalysis.dll"/>
+	<UsingTask TaskName="StyleCopTask"
+	           AssemblyFile="$(StyleCopDir)\Microsoft.StyleCop.dll"/>
 	
 	<PropertyGroup>
 		<BuildDependsOn>$(BuildDependsOn);SourceAnalysis</BuildDependsOn>
@@ -30,8 +30,8 @@
       <Output TaskParameter="Include" ItemName="SourceAnalysisFiles"/>
     </CreateItem>
 
-    <!-- Run the SourceAnalysis MSBuild task. -->
-	<SourceAnalysisTask
+    <!-- Run the StyleCop MSBuild task. -->
+	<StyleCopTask
         ProjectFullPath="$(MSBuildProjectFile)"
         SourceFiles="@(SourceAnalysisFiles)"
         AdditionalAddinPaths="@(SourceAnalysisAdditionalAddinPaths)"

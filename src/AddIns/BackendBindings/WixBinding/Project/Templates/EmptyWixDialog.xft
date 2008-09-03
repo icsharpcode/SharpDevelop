@@ -1,0 +1,24 @@
+﻿<?xml version="1.0"?>
+<Template author="Matt Ward" version="1.0">
+	<Config name    = "${res:Templates.File.Wix.EmptyWixDialog.Name}"
+		icon        = "Icons.32x32.XMLFileIcon"
+		category    = "${res:Templates.File.Categories.Setup}"
+		defaultname = "Dialog${Number}.wxs"
+		language    = "XML"/>
+	 
+	<Description>${res:Templates.File.Wix.EmptyWixDialog.Description}</Description>
+
+	<Files>
+		<File name="${FullName}" language="XML"><![CDATA[<?xml version="1.0"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+	<Fragment>
+		<UI>
+			<Dialog Id="${ClassName}" Width="370" Height="270" Title="${FileNameWithoutExtension}">
+			</Dialog>
+		</UI>
+	</Fragment>
+</Wix>]]>
+		</File>
+	</Files>
+	<AdditionalOptions/>
+</Template>

@@ -48,9 +48,9 @@ namespace PythonBinding.Tests.Designer
 			mockDesignerLoaderHost.AddService(typeof(IExtenderProviderService), mockExtenderProviderService);
 			mockTypeResolutionService = new MockTypeResolutionService();
 			mockDesignerLoaderHost.AddService(typeof(ITypeResolutionService), mockTypeResolutionService);
-			Console.WriteLine("Before BeginLoad");
+			System.Console.WriteLine("Before BeginLoad");
 			loader.BeginLoad(mockDesignerLoaderHost);
-			Console.WriteLine("After BeginLoad");			
+			System.Console.WriteLine("After BeginLoad");			
 		}
 		
 		[TestFixtureTearDown]

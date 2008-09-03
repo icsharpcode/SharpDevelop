@@ -69,7 +69,6 @@
     <Compile Include="Src\Util\Caret.cs" />
     <Compile Include="Src\Util\ClipboardManager.cs" />
     <Compile Include="Src\Util\Settings.cs" />
-    <Compile Include="Src\Util\StreamedList.cs" />
     <Compile Include="Src\Util\UndoAction.cs" />
     <Compile Include="Src\Util\UndoEventArgs.cs" />
     <Compile Include="Src\Util\UndoStep.cs" />

@@ -291,7 +291,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				foreach (string subDirectory in System.IO.Directory.GetDirectories(Directory)) {
 					if (Path.GetFileName(subDirectory) != ".svn") {
 						DirectoryNode newDirectoryNode = DirectoryNodeFactory.CreateDirectoryNode(this, Project, subDirectory);
-						newDirectoryNode.AddTo(this);
+						newDirectoryNode.InsertSorted(this);
 						directoryNodeList[Path.GetFileName(subDirectory)] = newDirectoryNode;
 					}
 				}
@@ -299,7 +299,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				foreach (string file in System.IO.Directory.GetFiles(Directory)) {
 					FileNode fileNode = new FileNode(file);
 					fileNodeDictionary[Path.GetFileName(file)] = fileNode;
-					fileNode.AddTo(this);
+					fileNode.InsertSorted(this);
 				}
 			}
 			if (Nodes.Count == 0) {
@@ -344,14 +344,14 @@ namespace ICSharpCode.SharpDevelop.Project
 						node.ProjectItem = item;
 					} else {
 						node = DirectoryNodeFactory.CreateDirectoryNode(item, FileNodeStatus.Missing);
-						node.AddTo(this);
+						node.InsertSorted(this);
 						directoryNodeList[fileName] = node;
 					}
 				} else {
 					FileNode node;
 					if (fileItem.IsLink) {
 						node = new FileNode(fileItem.FileName, FileNodeStatus.InProject);
-						node.AddTo(this);
+						node.InsertSorted(this);
 						fileNodeDictionary[fileName] = node;
 					} else {
 						if (fileNodeDictionary.TryGetValue(fileName, out node)) {
@@ -360,7 +360,7 @@ namespace ICSharpCode.SharpDevelop.Project
 							}
 						} else {
 							node = new FileNode(fileItem.FileName, FileNodeStatus.Missing);
-							node.AddTo(this);
+							node.InsertSorted(this);
 							fileNodeDictionary[fileName] = node;
 						}
 					}
@@ -383,9 +383,9 @@ namespace ICSharpCode.SharpDevelop.Project
 				if (NodeIsParent(parentNode, pair.Key)) {
 					// is pair.Key a parent of parentNode?
 					// if yes, we have a parent cycle - break it by adding one node to the directory
-					pair.Key.AddTo(this);
+					pair.Key.InsertSorted(this);
 				} else {
-					pair.Key.AddTo(parentNode);
+					pair.Key.InsertSorted(parentNode);
 					if (pair.Key.FileNodeStatus != FileNodeStatus.Missing) {
 						pair.Key.FileNodeStatus = FileNodeStatus.BehindFile;
 					}
@@ -418,7 +418,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			this.Expanding();
 			
 			FileNode fileNode = new FileNode(fileName, FileNodeStatus.InProject);
-			fileNode.AddTo(this);
+			fileNode.InsertSorted(this);
 			fileNode.EnsureVisible();
 			return IncludeFileInProject.IncludeFileNode(fileNode);
 		}
@@ -441,7 +441,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					}
 				} else {
 					node = new DirectoryNode(Path.Combine(Directory, subFolderName), FileNodeStatus.Missing);
-					node.AddTo(this);
+					node.InsertSorted(this);
 					directoryNodeList[subFolderName] = node;
 				}
 			}
@@ -615,7 +615,23 @@ namespace ICSharpCode.SharpDevelop.Project
 			CopyDirectoryHere(node.Directory, performMove);
 		}
 		
+		/// <summary>
+		/// Copies or moves a file to this directory, discarding its DependentUpon value.
+		/// </summary>
+		/// <param name="fileName">The name of the file to copy or move.</param>
+		/// <param name="performMove">true to move the file, false to copy it.</param>
 		public void CopyFileHere(string fileName, bool performMove)
+		{
+			this.CopyFileHere(fileName, performMove, false);
+		}
+		
+		/// <summary>
+		/// Copies or moves a file to this directory.
+		/// </summary>
+		/// <param name="fileName">The name of the file to copy or move.</param>
+		/// <param name="performMove">true to move the file, false to copy it.</param>
+		/// <param name="keepDependency">true to copy the DependentUpon value of the file to the target if possible, false to discard the DependentUpon value.</param>
+		public void CopyFileHere(string fileName, bool performMove, bool keepDependency)
 		{
 			string shortFileName = Path.GetFileName(fileName);
 			string copiedFileName = Path.Combine(Directory, shortFileName);
@@ -644,6 +660,11 @@ namespace ICSharpCode.SharpDevelop.Project
 						continue;
 					if (newItem != null && FileUtility.IsEqualFileName(fileItem.FileName, fileName)) {
 						fileItem.CopyMetadataTo(newItem);
+						if (!keepDependency) {
+							// Prevent the DependentUpon from being copied
+							// because the referenced file is now in a different directory.
+							newItem.DependentUpon = String.Empty;
+						}
 					}
 					if (!string.Equals(fileItem.DependentUpon, shortFileName, StringComparison.OrdinalIgnoreCase))
 						continue;
@@ -651,7 +672,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					if (!FileUtility.IsEqualFileName(sourceDirectory, Path.GetDirectoryName(itemPath)))
 						continue;
 					// this file is dependend on the file being copied/moved: copy it, too
-					CopyFileHere(itemPath, performMove);
+					CopyFileHere(itemPath, performMove, true);
 					dependendElementsCopied = true;
 				}
 				if (dependendElementsCopied)
@@ -672,6 +693,12 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		/// <summary>
+		/// Copies or moves a file node (and the corresponding file, if applicable) to this directory,
+		/// discarding its DependentUpon value.
+		/// </summary>
+		/// <param name="fileNode">The file node to copy or move.</param>
+		/// <param name="performMove">true to move the file node, false to copy it.</param>
 		public void CopyFileHere(FileNode node, bool performMove)
 		{
 			if (node.FileNodeStatus == FileNodeStatus.None) {
@@ -686,7 +713,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				fileProjectItem.Include = relFileName;
 				fileProjectItem.SetEvaluatedMetadata("Link", Path.Combine(RelativePath, Path.GetFileName(node.FileName)));
 				fileNode.ProjectItem = fileProjectItem;
-				fileNode.AddTo(this);
+				fileNode.InsertSorted(this);
 				ProjectService.AddProjectItem(Project, fileProjectItem);
 				if (performMove) {
 					ProjectService.RemoveProjectItem(node.Project, node.ProjectItem);
@@ -743,6 +770,13 @@ namespace ICSharpCode.SharpDevelop.Project
 						return DragDropEffects.Copy;
 					}
 					return proposedEffect;
+				} else {
+					// Dragging a dependent file onto its parent directory
+					// removes the dependency.
+					FileProjectItem fpi = fileNode.ProjectItem as FileProjectItem;
+					if (fpi != null && !String.IsNullOrEmpty(fpi.DependentUpon)) {
+						return DragDropEffects.Move;
+					}
 				}
 			}
 			
@@ -771,7 +805,24 @@ namespace ICSharpCode.SharpDevelop.Project
 			try {
 				if (dataObject.GetDataPresent(typeof(FileNode))) {
 					FileNode fileNode = (FileNode)dataObject.GetData(typeof(FileNode));
-					CopyFileHere(fileNode, effect == DragDropEffects.Move);
+					LoggingService.Debug("ProjectBrowser: Dragging file '" + fileNode.FileName + "' onto directory '" + this.Directory + "'");
+					if (!FileUtility.IsEqualFileName(Directory, fileNode.FileName) && !FileUtility.IsEqualFileName(Directory, Path.GetDirectoryName(fileNode.FileName))
+					    && !(fileNode.ProjectItem is FileProjectItem && FileUtility.IsEqualFileName(Directory, Path.GetDirectoryName(GetFullVirtualName((FileProjectItem)fileNode.ProjectItem))))) {
+						LoggingService.Debug("-> Not in same directory, performing " + effect.ToString());
+						CopyFileHere(fileNode, effect == DragDropEffects.Move);
+					} else {
+						// Dragging a dependent file onto its parent directory
+						// removes the dependency.
+						LoggingService.Debug("-> In same directory, removing dependency");
+						((FileProjectItem)fileNode.ProjectItem).DependentUpon = String.Empty;
+						fileNode.Remove();
+						if (!File.Exists(fileNode.FileName)) {
+							fileNode.FileNodeStatus = FileNodeStatus.Missing;
+						} else {
+							fileNode.FileNodeStatus = FileNodeStatus.InProject;
+						}
+						fileNode.InsertSorted(this);
+					}
 				} else if (dataObject.GetDataPresent(typeof(DirectoryNode))) {
 					DirectoryNode directoryNode = (DirectoryNode)dataObject.GetData(typeof(DirectoryNode));
 					CopyDirectoryHere(directoryNode, effect == DragDropEffects.Move);
@@ -792,6 +843,16 @@ namespace ICSharpCode.SharpDevelop.Project
 			} catch (Exception e) {
 				MessageService.ShowError(e);
 			}
+		}
+		
+		static string GetFullVirtualName(FileProjectItem item)
+		{
+			if (Path.IsPathRooted(item.VirtualName)) {
+				return item.VirtualName;
+			} else if (item.Project != null) {
+				return Path.Combine(item.Project.Directory, item.VirtualName);
+			}
+			return item.VirtualName;
 		}
 		#endregion
 	}

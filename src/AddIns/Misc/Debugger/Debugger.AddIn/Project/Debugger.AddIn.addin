@@ -4,7 +4,9 @@
 	</Manifest>
 	
 	<Runtime>
-		<Import assembly="Debugger.AddIn.dll"/>
+		<Import assembly="Debugger.AddIn.dll">
+			<ConditionEvaluator name = "IsBreakpointSet" class = "Debugger.AddIn.IsBreakpointCondition"/>
+		</Import>
 		<Import assembly="Debugger.Core.dll"/>
 	</Runtime>
 	
@@ -34,6 +36,13 @@
 			<MenuItem id = "DebuggerSeparator"
 			          insertbefore = "Refactoring"
 			          type = "Separator"/>
+		</Condition>
+		<MenuItem id="BreakpointSeparator" type = "Separator" />
+		<Include id="SetBreakpoint" item="/SharpDevelop/Workbench/MainMenu/Debug/Toggle Breakpoint" />
+		<Condition name="IsBreakpointSet">
+			<MenuItem id="ChangeBreakPoint" label="${res:MainWindow.Windows.Debug.Conditional.Breakpoints.ChangeBreakpoint}" type="Menu">
+				<MenuItem id="MenuBuilder" type="Builder" class="Debugger.AddIn.BreakpointChangeMenuBuilder" />
+			</MenuItem>
 		</Condition>
 	</Path>
 	
@@ -72,13 +81,32 @@
 		     icon     = "PadIcons.LocalVariables"
 		     shortcut = "Control|Alt|V"
 		     class = "ICSharpCode.SharpDevelop.Gui.Pads.LocalVarPad"/>
-	
+		
 		<Pad id    = "ConsolePad"
 		     category = "Debugger"
 		     title    = "${res:MainWindow.Windows.Debug.Console}"
 		     icon     = "PadIcons.Output"
 		     shortcut = "Control|Alt|N"
 		     class = "ICSharpCode.SharpDevelop.Gui.Pads.ConsolePad"/>
+		
+		<Pad id    = "WatchPad"
+		     category = "Debugger"
+		     title    = "${res:MainWindow.Windows.Debug.Watch}"
+		     icon     = "PadIcons.LocalVariables"
+		     shortcut = "Control|Alt|W"
+		     class = "ICSharpCode.SharpDevelop.Gui.Pads.WatchPad"/>
+	</Path>
+	
+	<Path name ="/SharpDevelop/Pads/WatchPad/ContextMenu">
+		<MenuItem id="AddWatch" label="${res:MainWindow.Windows.Debug.Watch.AddWatch}" class="Debugger.AddIn.AddWatchCommand" />
+		<MenuItem id="RemoveWatch" label="${res:MainWindow.Windows.Debug.Watch.RemoveWatch}" class="Debugger.AddIn.RemoveWatchCommand" />
+		<MenuItem id="ClearWatches" label="${res:MainWindow.Windows.Debug.Watch.RemoveAll}" class="Debugger.AddIn.ClearWatchesCommand" />
+		<Condition name = "IsProcessRunning" isdebugging="True">
+			<Condition name = "IsProcessRunning" isdebugging="True" isprocessrunning="False">
+				<MenuItem id="Separator1" type="Separator" />
+				<MenuItem id="RefreshWatches" label="${res:MainWindow.Windows.Debug.Watch.Refresh}" class="Debugger.AddIn.RefreshWatchesCommand" />
+			</Condition>
+		</Condition>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Dialogs/OptionsDialog">

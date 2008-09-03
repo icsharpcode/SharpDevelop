@@ -428,6 +428,10 @@
 									<Component Guid="D67E8EC9-2D98-4889-856F-78FD2BE35947" Id="NUnitCoreInterfacesDll" DiskId="1">
 										<File Id="nunit.core.interfaces.dll" KeyPath="yes" Name="nunit.core.interfaces.dll" Assembly=".net" AssemblyApplication="nunit.core.interfaces.dll" AssemblyManifest="nunit.core.interfaces.dll" Source="..\..\bin\Tools\NUnit\nunit.core.interfaces.dll" />
 									</Component>
+									<Component Guid="C996D268-4471-4CBF-9015-43357863360A" Id="NUnitConsoleX86Files" DiskId="1">
+										<File Source="..\..\bin\Tools\NUnit\nunit-console-x86.exe" Name="nunit-console-x86.exe" Id="nunit_console_x86.exe" Assembly=".net" KeyPath="yes" AssemblyApplication="nunit_console_x86.exe" AssemblyManifest="nunit_console_x86.exe" />
+										<File Source="..\..\bin\Tools\NUnit\nunit-console-x86.exe.config" Name="nunit-console-x86.exe.config" Id="nunit_console_x86.exe.config" />
+									</Component>
 								</Directory>
 								<Directory Id="PartCover" Name="PartCover">
 									<Component Guid="CD9AB556-51BD-4DB2-9AC5-C047022991DD" Id="InteropPartCoverDll" DiskId="1">
@@ -1233,11 +1237,11 @@
 											<Component Guid="5226A62B-AE20-42E9-8921-446B4BE6E95C" Id="EmptyWixProjectTemplate" DiskId="1">
 												<File Source="..\..\AddIns\AddIns\BackendBindings\WixBinding\Templates\EmptyWixProject.xpt" Name="EmptyWixProject.xpt" Id="EmptyWixProject.xpt" KeyPath="yes" />
 											</Component>
-											<Component Guid="7C9F2116-6FB8-4C19-B380-53B924E36CA6" Id="EmptyWixDialogTemplate" DiskId="1">
-												<File Source="..\..\AddIns\AddIns\BackendBindings\WixBinding\Templates\WixDialog.xft" Name="WixDialog.xft" Id="WixDialog.xft" KeyPath="yes" />
+											<Component Guid="533F3774-9D09-4F72-9218-5CA4AD4217C0" Id="EmptyWixDialogTemplate" DiskId="1">
+												<File Source="..\..\AddIns\AddIns\BackendBindings\WixBinding\Templates\EmptyWixDialog.xft" Name="EmptyWixDialog.xft" Id="EmptyWixDialog.xft" KeyPath="yes" />
 											</Component>
-											<Component Guid="FD65A496-FF17-4C07-996E-ECB20116984D" Id="WixDialogTemplate" DiskId="1">
-												<File Source="..\..\AddIns\AddIns\BackendBindings\WixBinding\Templates\WixGraphicalDialog.xft" Name="WixGraphicalDialog.xft" Id="WixGraphicalDialog.xft" KeyPath="yes" />
+											<Component Guid="20656F0D-CAE2-4B19-B5DE-ABF842A5939B" Id="WixDialogTemplate" DiskId="1">
+												<File Source="..\..\AddIns\AddIns\BackendBindings\WixBinding\Templates\WixDialog.xft" Name="WixDialog.xft" Id="WixDialog.xft" KeyPath="yes" />
 											</Component>
 										</Directory>
 									</Directory>

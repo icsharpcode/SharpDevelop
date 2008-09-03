@@ -30,6 +30,12 @@ namespace Debugger.AddIn.TreeModel
 			get { return expression; }
 		}
 		
+		/// <remarks>HACK for WatchPad</remarks>
+		public void SetName(string name)
+		{
+			this.Name = name;
+		}
+		
 		/// <summary>
 		/// Factory method to create an instance.
 		/// </summary>
@@ -42,7 +48,7 @@ namespace Debugger.AddIn.TreeModel
 		public static AbstractNode Create(Expression expression)
 		{
 			try {
-				Value val = expression.Evaluate(WindowsDebugger.DebuggedProcess.SelectedStackFrame);
+				Value val = expression.Evaluate(WindowsDebugger.DebuggedProcess);
 				return new ValueNode(val);
 			} catch (GetValueException e) {
 				return new ErrorNode(expression, e);
@@ -82,7 +88,7 @@ namespace Debugger.AddIn.TreeModel
 			}
 			
 			if (val.Type != null) {
-				this.Type = val.Type.FullName;
+				this.Type = val.Type.Name;
 			} else {
 				this.Type = String.Empty;
 			}

@@ -317,7 +317,17 @@ namespace Debugger
 			}
 			// Method arguments can be passed 'by ref'
 			if (corValue.Type == (uint)CorElementType.BYREF) {
-				corValue = corValue.CastTo<ICorDebugReferenceValue>().Dereference();
+				try {
+					corValue = corValue.CastTo<ICorDebugReferenceValue>().Dereference();
+				} catch (COMException e) {
+					if ((uint)e.ErrorCode == 0x80131305) {
+						// A reference value was found to be bad during dereferencing.
+						// This can sometimes happen after a stack overflow
+						throw new GetValueException("Bad reference");
+					} else {
+						throw;
+					}
+				}
 			}
 			return corValue;
 		}

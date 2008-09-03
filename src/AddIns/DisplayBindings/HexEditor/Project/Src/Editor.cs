@@ -169,7 +169,7 @@ namespace HexEditor
 				case Keys.Up:
 				case Keys.Left:
 				case Keys.Right:
-					//case Keys.Tab:
+				case Keys.Tab:
 					return true;
 			}
 			return false;
@@ -1014,14 +1014,14 @@ namespace HexEditor
 				
 				buffer.RemoveBytes(start, Math.Abs(selection.End - selection.Start));
 				buffer.SetBytes(start, this.Encoding.GetBytes(text.ToCharArray()), false);
-				undoStack.AddOverwriteStep(caret.Offset, this.Encoding.GetBytes(text.ToCharArray()), old);
+				undoStack.AddOverwriteStep(start, this.Encoding.GetBytes(text.ToCharArray()), old);
 
 				caret.Offset = start + ClipboardManager.Paste().Length;
 				selection.Clear();
 			} else {
 				buffer.SetBytes(caret.Offset, this.Encoding.GetBytes(text.ToCharArray()), false);
 				
-				undoStack.AddInsertStep(caret.Offset, this.Encoding.GetBytes(text.ToCharArray()));
+				undoStack.AddRemoveStep(caret.Offset, this.Encoding.GetBytes(text.ToCharArray()));
 
 				caret.Offset += ClipboardManager.Paste().Length;
 			}
@@ -1334,7 +1334,7 @@ namespace HexEditor
 						
 						buffer.RemoveByte(caret.Offset);
 						
-						undoStack.AddRemoveStep(caret.Offset, new byte[] {b});
+						undoStack.AddInsertStep(caret.Offset, new byte[] {b});
 						
 						if (GetLineForOffset(caret.Offset) < this.topline) this.topline = GetLineForOffset(caret.Offset);
 						if (GetLineForOffset(caret.Offset) > this.topline + this.GetMaxVisibleLines() - 2) this.topline = GetLineForOffset(caret.Offset) - this.GetMaxVisibleLines() + 2;
@@ -1346,6 +1346,16 @@ namespace HexEditor
 				case Keys.CapsLock:
 				case Keys.ShiftKey:
 				case Keys.ControlKey:
+					break;
+				case Keys.Tab:
+					if (this.activeView == this.hexView) {
+						this.activeView = this.textView;
+						this.charwidth = 1;
+					} else {
+						this.activeView = this.hexView;
+						this.charwidth = 3;
+					}
+					this.handled = true;
 					break;
 				default:
 					byte asc = (byte)e.KeyValue;
@@ -1421,11 +1431,10 @@ namespace HexEditor
 				if (GetLineForOffset(caret.Offset) > this.topline + this.GetMaxVisibleLines() - 2) this.topline = GetLineForOffset(caret.Offset) - this.GetMaxVisibleLines() + 2;
 				VScrollBar.Value = this.topline;
 				
-				if (insertmode) {
-					undoStack.AddRemoveStep(caret.Offset, new byte[] {(byte)e.KeyChar});
-				} else {
-					undoStack.AddOverwriteStep(caret.Offset, new byte[] {(byte)e.KeyChar}, old);
-				}
+				if (insertmode)
+					undoStack.AddRemoveStep(caret.Offset - 1, new byte[] {(byte)e.KeyChar});
+				else
+					undoStack.AddOverwriteStep(caret.Offset - 1, new byte[] {(byte)e.KeyChar}, old);
 			}
 			caret.SetToPosition(GetPositionForOffset(caret.Offset, charwidth));
 			

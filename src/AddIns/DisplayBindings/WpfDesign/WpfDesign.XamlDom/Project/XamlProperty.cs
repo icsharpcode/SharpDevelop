@@ -42,7 +42,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				propertyValue.ParentProperty = this;
 			}
 
-			UpdateValueOnInstance();
+			ValueOnInstance = PropertyValue.GetValueFor(propertyInfo);
 		}
 		
 		internal XamlProperty(XamlObject parentObject, XamlPropertyInfo propertyInfo)
@@ -138,7 +138,9 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		/// Gets if the property is set.
 		/// </summary>
 		public bool IsSet {
-			get { return propertyValue != null || collectionElements != null; }
+			get { return propertyValue != null ||
+				_propertyElement != null; // collection 
+			}
 		}
 		
 		/// <summary>
@@ -151,17 +153,27 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		/// </summary>
 		public event EventHandler ValueChanged;
 
+		//When ME evaluated PropertyValue dosn't changed but ValueOnIstance does.
+		public event EventHandler ValueOnIstanceChanged;
+
 		void SetPropertyValue(XamlPropertyValue value)
 		{
-			if (IsCollection) {
-				throw new InvalidOperationException("Cannot set the value of collection properties.");
-			}
+			// Binding...
+			//if (IsCollection) {
+			//    throw new InvalidOperationException("Cannot set the value of collection properties.");
+			//}
 			
 			bool wasSet = this.IsSet;
 		
 			PossiblyNameChanged(propertyValue, value);
+
+			//reset expression
+			var xamlObject = propertyValue as XamlObject;
+			if (xamlObject != null && xamlObject.IsMarkupExtension)
+				propertyInfo.ResetValue(parentObject.Instance);
 			
 			ResetInternal();
+
 			propertyValue = value;			
 			propertyValue.ParentProperty = this;
 			propertyValue.AddNodeTo(this);
@@ -174,6 +186,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 					IsSetChanged(this, EventArgs.Empty);
 				}
 			}
+
 			if (ValueChanged != null) {
 				ValueChanged(this, EventArgs.Empty);
 			}
@@ -358,6 +371,8 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			}
 			set {
 				propertyInfo.SetValue(parentObject.Instance, value);
+				if (ValueOnIstanceChanged != null)
+					ValueOnIstanceChanged(this, EventArgs.Empty);
 			}
 		}
 

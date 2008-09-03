@@ -24,12 +24,6 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 	/// </summary>
 	public sealed class XamlDesignContext : DesignContext
 	{
-		static XamlDesignContext()
-		{
-			Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
-			new BasicMetadata();
-		}
-
 		readonly XamlDocument _doc;
 		readonly XamlDesignItem _rootItem;
 		internal readonly XamlComponentService _componentService;
@@ -62,6 +56,10 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			this.Services.AddService(typeof(IErrorService), new DefaultErrorService(this));
 			this.Services.AddService(typeof(ViewService), new DefaultViewService(this));
 			this.Services.AddService(typeof(OptionService), new OptionService());
+
+			var xamlErrorService = new XamlErrorService();
+			this.Services.AddService(typeof(XamlErrorService), xamlErrorService);
+			this.Services.AddService(typeof(IXamlErrorSink), xamlErrorService);
 			
 			_componentService = new XamlComponentService(this);
 			this.Services.AddService(typeof(IComponentService), _componentService);
@@ -86,7 +84,12 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			parserSettings.CreateInstanceCallback = this.Services.ExtensionManager.CreateInstanceWithCustomInstanceFactory;
 			parserSettings.ServiceProvider = this.Services;
 			_doc = XamlParser.Parse(xamlReader, parserSettings);
-			_rootItem = _componentService.RegisterXamlComponentRecursive(_doc.RootElement);
+			if (_doc != null)
+				_rootItem = _componentService.RegisterXamlComponentRecursive(_doc.RootElement);
+		}
+
+		public override bool CanSave {
+			get { return Document != null; }
 		}
 		
 		/// <summary>

@@ -7,6 +7,7 @@ using System.Collections.ObjectModel;
 using ICSharpCode.XamlDesigner.Configuration;
 using System.Windows;
 using System.Collections.Specialized;
+using ICSharpCode.WpfDesign;
 
 namespace ICSharpCode.XamlDesigner
 {
@@ -26,36 +27,6 @@ namespace ICSharpCode.XamlDesigner
 			AddAssembly(path, true);
 		}
 
-		string[] popularControls = new string[] {
-			"Border",
-			"Button",
-			"Canvas",
-			"CheckBox",
-			"ComboBox",
-			"DockPanel",
-			"Ellipse",
-			"FlowDocumentScrollViewer",
-			"Grid",
-			"GridSplitter",
-			"Label",
-			"Line",
-			"ListBox",
-			"PasswordBox",
-			"RadioButton",
-			"Rectangle",
-			"RichTextBox",
-			"ScrollBar",
-			"ScrollViewer",
-			"Slider",
-			"StackPanel",
-			"TabControl",
-			"TextBlock",
-			"TextBox",
-			"UniformGrid",
-			"Viewbox",
-			"WrapPanel"
-		};
-
         void AddAssembly(string path, bool updateSettings)
         {
             var assembly = Assembly.LoadFile(path);
@@ -64,7 +35,7 @@ namespace ICSharpCode.XamlDesigner
             node.Assembly = assembly;
             node.Path = path;
             foreach (var t in assembly.GetExportedTypes()) {
-                if (IsControl(t) && popularControls.Contains(t.Name)) {
+                if (IsControl(t) && Metadata.IsPopularControl(t)) {
                     node.Controls.Add(new ControlNode() { Type = t });
                 }
             }

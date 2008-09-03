@@ -9,6 +9,7 @@
 using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -121,16 +122,34 @@ namespace ICSharpCode.SharpDevelop.Sda
 		
 		string getClipboardString()
 		{
-			string str = Gui.AboutSharpDevelopTabPage.GetVersionInformationString();
+			StringBuilder sb = new StringBuilder();
 			
-			str += Environment.NewLine;
+			sb.Append(Gui.AboutSharpDevelopTabPage.GetVersionInformationString());
+			
+			sb.AppendLine();
 			
 			if (message != null) {
-				str += message + Environment.NewLine;
+				sb.AppendLine(message);
 			}
-			str += "Exception thrown: " + Environment.NewLine;
-			str += exceptionThrown.ToString();
-			return str;
+			sb.AppendLine("Exception thrown:");
+			sb.AppendLine(exceptionThrown.ToString());
+			sb.AppendLine();
+			sb.AppendLine("---- Recent log messages:");
+			try {
+				LogMessageRecorder.AppendRecentLogMessages(sb, log4net.LogManager.GetLogger(typeof(log4netLoggingService)));
+			} catch (Exception ex) {
+				sb.AppendLine("Failed to append recent log messages.");
+				sb.AppendLine(ex.ToString());
+			}
+			sb.AppendLine();
+			sb.AppendLine("---- Post-error application state information:");
+			try {
+				ApplicationStateInfoService.AppendFormatted(sb);
+			} catch (Exception ex) {
+				sb.AppendLine("Failed to append application state information.");
+				sb.AppendLine(ex.ToString());
+			}
+			return sb.ToString();
 		}
 		
 		void CopyInfoToClipboard()

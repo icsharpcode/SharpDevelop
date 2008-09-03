@@ -61,7 +61,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 							foreach (ProjectItem newItem in changes.NewItems) {
 								ProjectService.AddProjectItem(url.Project, newItem);
 								FileNode fileNode = new FileNode(newItem.FileName, FileNodeStatus.InProject);
-								fileNode.AddTo(node);
+								fileNode.InsertSorted(node);
 							}
 							ProjectBrowserPad.Instance.ProjectBrowserControl.TreeView.Sort();
 							url.Project.Save();

@@ -64,6 +64,8 @@ namespace ICSharpCode.SharpDevelop.Project
 				WorkbenchSingleton.Workbench.ActiveViewContentChanged += ActiveViewContentChanged;
 				FileService.FileRenamed += FileServiceFileRenamed;
 				FileService.FileRemoved += FileServiceFileRemoved;
+				ApplicationStateInfoService.RegisterStateGetter("ProjectService.OpenSolution", delegate { return OpenSolution; });
+				ApplicationStateInfoService.RegisterStateGetter("ProjectService.CurrentProject", delegate { return CurrentProject; });
 			}
 		}
 

@@ -6,20 +6,20 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using ICSharpCode.WpfDesign.PropertyGrid;
 
-namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
+namespace ICSharpCode.WpfDesign.PropertyGrid
 {
 	public class Category : INotifyPropertyChanged
 	{
 		public Category(string name)
 		{
 			Name = name;
-			Properties = new ObservableCollection<PropertyNode>();
-			MoreProperties = new ObservableCollection<PropertyNode>();
+			Properties = new PropertyNodeCollection();
+			//MoreProperties = new ObservableCollection<PropertyNode>();
 		}
 
 		public string Name { get; private set; }
-		public ObservableCollection<PropertyNode> Properties { get; private set; }
-		public ObservableCollection<PropertyNode> MoreProperties { get; private set; }
+		public PropertyNodeCollection Properties { get; private set; }
+		//public ObservableCollection<PropertyNode> MoreProperties { get; private set; }
 
 		bool isExpanded = true;
 
@@ -33,16 +33,31 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 			}
 		}
 
-		bool showMore;
-		internal bool ShowMoreByFilter;
+		//bool showMore;
+		//internal bool ShowMoreByFilter;
 
-		public bool ShowMore {
-			get {
-				return showMore;
+		//public bool ShowMore {
+		//    get {
+		//        return showMore;
+		//    }
+		//    set {
+		//        showMore = value;
+		//        RaisePropertyChanged("ShowMore");
+		//    }
+		//}
+
+		bool isVisible;
+
+		public bool IsVisible
+		{
+			get
+			{
+				return isVisible;
 			}
-			set {
-				showMore = value;
-				RaisePropertyChanged("ShowMore");
+			set
+			{
+				isVisible = value;
+				RaisePropertyChanged("IsVisible");
 			}
 		}
 

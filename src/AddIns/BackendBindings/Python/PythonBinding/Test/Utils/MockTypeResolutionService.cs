@@ -32,7 +32,7 @@ namespace PythonBinding.Tests.Utils
 		
 		public Type GetType(string name)
 		{
-			Console.WriteLine("TypeResolutionService.GetType: " + name);
+			System.Console.WriteLine("TypeResolutionService.GetType: " + name);
 			if (name == "Form") {
 				return typeof(System.Windows.Forms.Form);
 			}

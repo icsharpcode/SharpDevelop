@@ -15,7 +15,7 @@ namespace Debugger
 	// eg int, bool, string
 	public partial class Value
 	{
-		ICorDebugGenericValue CorGenericValue {
+		internal ICorDebugGenericValue CorGenericValue {
 			get {
 				if (!this.Type.IsPrimitive && !this.Type.IsValueType) throw new DebuggerException("Value is not a 'generic'");
 				

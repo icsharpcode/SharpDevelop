@@ -99,6 +99,15 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			}
 		}
 		
+		public bool CaretLine {
+			get {
+				return properties.Get("CaretLine", false);
+			}
+			set {
+				properties.Set("CaretLine", value);
+			}
+		}
+
 		public bool ShowQuickClassBrowserPanel {
 			get {
 				return properties.Get("ShowQuickClassBrowserPanel", true);

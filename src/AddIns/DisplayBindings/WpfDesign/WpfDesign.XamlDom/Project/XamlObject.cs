@@ -201,6 +201,8 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			get { return instance is MarkupExtension; }
 		}
 
+		public bool HasErrors { get; internal set; }
+
 		public DependencyObject DependencyObject {
 			get { return instance as DependencyObject; }
 		}

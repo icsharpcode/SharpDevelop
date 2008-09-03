@@ -85,7 +85,7 @@ namespace PythonBinding.Tests.Converter
 		{
 			CSharpToPythonConverter converter = new CSharpToPythonConverter();
 			string code = converter.Convert(csharp);
-			Console.WriteLine(code);
+			System.Console.WriteLine(code);
 			string expectedCode = "class Foo(object):\r\n" +
 									"\tdef GetCount(self):\r\n" +
 									"\t\tcount = 0\r\n" +

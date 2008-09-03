@@ -125,6 +125,7 @@
                             <TextBox x:Name="PART_TextBox"
                                      BorderThickness="0"
                                      Background="{x:Null}"
+                                     Foreground="{TemplateBinding Foreground}"
                                      Grid.RowSpan="2" />
                             <Controls:DragRepeatButton x:Name="PART_UpButton"
                                                 Style="{StaticResource UpButton}"

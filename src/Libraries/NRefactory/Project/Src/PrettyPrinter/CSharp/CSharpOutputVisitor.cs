@@ -1638,18 +1638,25 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.PrintToken(Tokens.For);
 			outputFormatter.Space();
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);
-			if (!forNextStatement.TypeReference.IsNull) {
-				TrackVisit(forNextStatement.TypeReference, data);
-				outputFormatter.Space();
+			if (forNextStatement.LoopVariableExpression.IsNull) {
+				if (!forNextStatement.TypeReference.IsNull) {
+					TrackVisit(forNextStatement.TypeReference, data);
+					outputFormatter.Space();
+				}
+				outputFormatter.PrintIdentifier(forNextStatement.VariableName);
+			} else {
+				TrackVisit(forNextStatement.LoopVariableExpression, data);
 			}
-			outputFormatter.PrintIdentifier(forNextStatement.VariableName);
 			outputFormatter.Space();
 			outputFormatter.PrintToken(Tokens.Assign);
 			outputFormatter.Space();
 			TrackVisit(forNextStatement.Start, data);
 			outputFormatter.PrintToken(Tokens.Semicolon);
 			outputFormatter.Space();
-			outputFormatter.PrintIdentifier(forNextStatement.VariableName);
+			if (forNextStatement.LoopVariableExpression.IsNull)
+				outputFormatter.PrintIdentifier(forNextStatement.VariableName);
+			else
+				TrackVisit(forNextStatement.LoopVariableExpression, data);
 			outputFormatter.Space();
 			PrimitiveExpression pe = forNextStatement.Step as PrimitiveExpression;
 			if ((pe == null || !(pe.Value is int) || ((int)pe.Value) >= 0)
@@ -1661,7 +1668,10 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			TrackVisit(forNextStatement.End, data);
 			outputFormatter.PrintToken(Tokens.Semicolon);
 			outputFormatter.Space();
-			outputFormatter.PrintIdentifier(forNextStatement.VariableName);
+			if (forNextStatement.LoopVariableExpression.IsNull)
+				outputFormatter.PrintIdentifier(forNextStatement.VariableName);
+			else
+				TrackVisit(forNextStatement.LoopVariableExpression, data);
 			if (forNextStatement.Step.IsNull) {
 				outputFormatter.PrintToken(Tokens.Increment);
 			} else {

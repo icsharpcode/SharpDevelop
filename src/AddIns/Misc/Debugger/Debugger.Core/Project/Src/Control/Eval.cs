@@ -124,6 +124,9 @@ namespace Debugger
 					// The operation failed because it is a GC unsafe point. (Exception from HRESULT: 0x80131C23)
 					// This can probably happen when we break and the thread is in native code
 					throw new GetValueException("Thread is in GC unsafe point");
+				} else if ((uint)e.ErrorCode == 0x80131C22) {
+					// The operation is illegal because of a stack overflow.
+					throw new GetValueException("Can not evaluate after stack overflow");
 				} else {
 					throw;
 				}
@@ -233,7 +236,13 @@ namespace Debugger
 				corArgs.Add(thisValue.CorValue);
 			}
 			foreach(Value arg in args) {
-				corArgs.Add(arg.CorValue);
+				// TODO: It is importatnt to pass the parameted in the correct form (boxed/unboxed)
+				// This is just a good guess
+				if (arg.Type.IsValueType) {
+					corArgs.Add(arg.CorGenericValue.CastTo<ICorDebugValue>());
+				} else {
+					corArgs.Add(arg.CorValue);
+				}
 			}
 			
 			ICorDebugType[] genericArgs = method.DeclaringType.GenericArgumentsAsCorDebugType;
@@ -249,13 +258,21 @@ namespace Debugger
 		// The advantage is that it does not continue the process
 		public static Value CreateValue(Process process, object value)
 		{
-			if (value == null) throw new ArgumentNullException("value");
 			if (value is string) throw new DebuggerException("Can not create string this way");
-			CorElementType corElemType = DebugType.TypeNameToCorElementType(value.GetType().FullName);
+			CorElementType corElemType;
+			ICorDebugClass corClass = null;
+			if (value != null) {
+				corElemType = DebugType.TypeNameToCorElementType(value.GetType().FullName);
+			} else {
+				corElemType = CorElementType.CLASS;
+				corClass = DebugType.Create(process, null, typeof(object).FullName).CorType.Class;
+			}
 			ICorDebugEval corEval = CreateCorEval(process);
-			ICorDebugValue corValue = corEval.CreateValue((uint)corElemType, null);
+			ICorDebugValue corValue = corEval.CreateValue((uint)corElemType, corClass);
 			Value v = new Value(process, new Expressions.PrimitiveExpression(value), corValue);
-			v.PrimitiveValue = value;
+			if (value != null) {
+				v.PrimitiveValue = value;
+			}
 			return v;
 		}
 		

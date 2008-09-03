@@ -5,11 +5,12 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.TextEditor;
+using ICSharpCode.Core;
 using System;
 using System.ComponentModel;
 using System.Globalization;
 using System.Text;
+using ICSharpCode.TextEditor;
 
 namespace ICSharpCode.SharpDevelop.Bookmarks
 {
@@ -28,11 +29,19 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		{
 			if (value is string) {
 				string[] v = ((string)value).Split('|');
-				if (v.Length != 5)
+				if (v.Length != 8)
 					return null;
 				string fileName = v[1];
 				int lineNumber = int.Parse(v[2], culture);
 				int columnNumber = int.Parse(v[3], culture);
+				Debugging.BreakpointAction action = Debugging.BreakpointAction.Break;
+				string scriptLanguage = "";
+				string script = "";
+				if (v[0] == "Breakpoint") {
+					action = (Debugging.BreakpointAction)Enum.Parse(typeof(Debugging.BreakpointAction), v[5]);
+					scriptLanguage = v[6];
+					script = v[7];
+				}
 				if (lineNumber < 0)
 					return null;
 				if (columnNumber < 0)
@@ -40,7 +49,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 				SDBookmark bookmark;
 				switch (v[0]) {
 					case "Breakpoint":
-						bookmark = new Debugging.BreakpointBookmark(fileName, null, new TextLocation(columnNumber, lineNumber));
+						bookmark = new Debugging.BreakpointBookmark(fileName, null, new TextLocation(columnNumber, lineNumber), action, scriptLanguage, script);
 						break;
 					default:
 						bookmark = new SDBookmark(fileName, null, new TextLocation(columnNumber, lineNumber));
@@ -71,6 +80,15 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 				b.Append(bookmark.ColumnNumber);
 				b.Append('|');
 				b.Append(bookmark.IsEnabled.ToString());
+				if (bookmark is Debugging.BreakpointBookmark) {
+					Debugging.BreakpointBookmark bbm = (Debugging.BreakpointBookmark)bookmark;
+					b.Append('|');
+					b.Append(bbm.Action);
+					b.Append('|');
+					b.Append(bbm.ScriptLanguage);
+					b.Append('|');
+					b.Append(bbm.Script);
+				}
 				return b.ToString();
 			} else {
 				return base.ConvertTo(context, culture, value, destinationType);

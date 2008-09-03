@@ -261,6 +261,7 @@
 				<ComponentRef Id="NUnitUiKitDll"/>
 				<ComponentRef Id="NUnitUtilDll"/>
 				<ComponentRef Id="NUnitConsoleFiles"/>
+				<ComponentRef Id="NUnitConsoleX86Files"/>
 				<ComponentRef Id="NUnitCoreDll"/>
 				<ComponentRef Id="NUnitFrameworkDll"/>
 				<ComponentRef Id="NunitConsoleRunnerDll"/>

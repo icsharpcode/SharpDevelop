@@ -148,7 +148,7 @@
     <Content Include="Templates\DefaultLicense.rtf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <None Include="Templates\WixGraphicalDialog.xft">
+    <None Include="Templates\WixDialog.xft">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Templates\WixUIFeatureTreeProject.xpt">
@@ -197,7 +197,7 @@
     <Content Include="Templates\EmptyWixFile.xft">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Templates\WixDialog.xft">
+    <Content Include="Templates\EmptyWixDialog.xft">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <ProjectReference Include="..\..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">

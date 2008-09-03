@@ -72,11 +72,15 @@
     <Compile Include="Src\IPadDescriptor.cs" />
     <Compile Include="Src\IProcessRunner.cs" />
     <Compile Include="Src\IsPythonRunningCondition.cs" />
+    <Compile Include="Src\ITextEditor.cs" />
     <Compile Include="Src\NRefactoryToPythonConverter.cs" />
     <Compile Include="Src\PythonAstWalker.cs" />
     <Compile Include="Src\PythonCodeCompletionBinding.cs" />
     <Compile Include="Src\PythonCompilerError.cs" />
     <Compile Include="Src\PythonCompilerSink.cs" />
+    <Compile Include="Src\PythonConsole.cs" />
+    <Compile Include="Src\PythonConsoleHost.cs" />
+    <Compile Include="Src\PythonConsolePad.cs" />
     <Compile Include="Src\PythonDesignerCodeDomGenerator.cs" />
     <Compile Include="Src\PythonDesignerGenerator.cs" />
     <Compile Include="Src\PythonDesignerLoader.cs" />
@@ -85,6 +89,7 @@
     <Compile Include="Src\PythonFormsDesignerDisplayBinding.cs" />
     <Compile Include="Src\PythonLanguageBinding.cs" />
     <Compile Include="Src\PythonOptionsPanel.cs" />
+    <Compile Include="Src\PythonOutputStream.cs" />
     <Compile Include="Src\PythonOutputWindowPadDescriptor.cs" />
     <Compile Include="Src\PythonParser.cs" />
     <Compile Include="Src\PythonProcessRunner.cs" />
@@ -94,6 +99,7 @@
     <Compile Include="Src\StandardPythonModules.cs" />
     <Compile Include="Src\StopPythonCommand.cs" />
     <Compile Include="Src\PythonVariableResolver.cs" />
+    <Compile Include="Src\TextEditor.cs" />
     <Compile Include="Src\VBNetToPythonConverter.cs" />
     <None Include="PythonBinding.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

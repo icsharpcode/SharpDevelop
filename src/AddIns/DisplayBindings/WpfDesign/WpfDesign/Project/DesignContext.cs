@@ -41,6 +41,8 @@ namespace ICSharpCode.WpfDesign
 		public abstract DesignItem RootItem {
 			get;
 		}
+
+		public abstract bool CanSave { get; }
 		
 		/// <summary>
 		/// Save the designed elements as XML.

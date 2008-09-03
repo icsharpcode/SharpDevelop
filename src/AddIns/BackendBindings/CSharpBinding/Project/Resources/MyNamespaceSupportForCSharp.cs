@@ -75,7 +75,7 @@ namespace MyNamespace
 					isCreating = true;
 					try {
 						instance = new T();
-					} catch (Exception ex) {
+					} catch (System.Reflection.TargetInvocationException ex) {
 						throw new InvalidOperationException(Utils.GetResourceString("WinForms_SeeInnerException", new string[] { ex.InnerException.Message }), ex.InnerException);
 					} finally {
 						isCreating = false;
@@ -106,7 +106,7 @@ namespace MyNamespace
 		[STAThread]
 		public static void Main(string[] args)
 		{
-			Application.SetCompatibleTextRenderingDefault(WindowsFormsApplicationBase.UseCompatibleTextRendering);
+			Application.SetCompatibleTextRenderingDefault(UseCompatibleTextRendering);
 			MyProject.Application.Run(args);
 		}
 	}

@@ -51,11 +51,11 @@ namespace Debugger.Tests {
 			
 			val = process.SelectedStackFrame.GetLocalVariableValue("val");
 			ObjectDump("val", val);
-			ObjectDump("val members", val.GetMemberValues(null, BindingFlags.All));
+			ObjectDump("val members", val.GetMemberValues());
 			
 			process.Continue();
 			ObjectDump("val", val);
-			ObjectDump("val members", val.GetMemberValues(null, BindingFlags.All));
+			ObjectDump("val members", val.GetMemberValues());
 			
 			EndTest();
 		}

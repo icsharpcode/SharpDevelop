@@ -59,6 +59,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="NUnitConsoleExeSelectedTestFixture.cs" />
     <Compile Include="Project\AbstractBaseClassWithTestMethodsTestFixture.cs" />
     <Compile Include="Project\BaseTestMethodTestFixture.cs" />
     <Compile Include="TestableConditionTests.cs" />

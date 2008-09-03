@@ -21,6 +21,8 @@ using ICSharpCode.WpfDesign.Designer.Services;
 using ICSharpCode.WpfDesign.Designer.Xaml;
 using ICSharpCode.WpfDesign.PropertyGrid;
 using ICSharpCode.WpfDesign.Designer.PropertyGrid;
+using System.IO;
+using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 
 namespace ICSharpCode.WpfDesign.AddIn
 {
@@ -28,29 +30,40 @@ namespace ICSharpCode.WpfDesign.AddIn
 	/// IViewContent implementation that hosts the WPF designer.
 	/// </summary>
 	public class WpfViewContent : AbstractViewContentHandlingLoadErrors, IHasPropertyContainer, IToolsHost
-	{
+	{		
+		public WpfViewContent(OpenedFile file) : base(file)
+		{
+			BasicMetadata.Register();
+
+			this.TabPageText = "${res:FormsDesigner.DesignTabPages.DesignTabPage}";
+			this.IsActiveViewContentChanged += OnIsActiveViewContentChanged;
+			this.editor = file.RegisteredViewContents[0] as TextEditorDisplayBindingWrapper;
+		}
+
 		ElementHost wpfHost;
 		DesignSurface designer;
+		List<Task> tasks = new List<Task>();
+
+		// save text from editor when designer cannot be saved (e.g. invalid xml)
+		TextEditorDisplayBindingWrapper editor;		
+
+		public DesignSurface DesignSurface {
+			get { return designer; }
+		}
 		
 		public DesignContext DesignContext {
 			get { return designer.DesignContext; }
 		}
 		
-		public WpfViewContent(OpenedFile file) : base(file)
-		{
-			this.TabPageText = "${res:FormsDesigner.DesignTabPages.DesignTabPage}";
-			this.IsActiveViewContentChanged += OnIsActiveViewContentChanged;
-		}
-		
 		protected override void LoadInternal(OpenedFile file, System.IO.Stream stream)
 		{
 			Debug.Assert(file == this.PrimaryFile);
+
 			if (designer == null) {
 				// initialize designer on first load
 				DragDropExceptionHandler.HandleException = ICSharpCode.Core.MessageService.ShowError;
-				wpfHost = new SharpDevelopElementHost();
 				designer = new DesignSurface();
-				wpfHost.Child = designer;
+				wpfHost = new SharpDevelopElementHost(this, designer);				
 				this.UserControl = wpfHost;
 				InitPropertyEditor();
 			}
@@ -68,7 +81,9 @@ namespace ICSharpCode.WpfDesign.AddIn
 				settings.TypeFinder = MyTypeFinder.Create(this.PrimaryFile);
 				
 				designer.LoadDesigner(r, settings);
-				
+
+				UpdateTasks();
+
 				propertyGridView.PropertyGrid.SelectedItems = null;
 				designer.DesignContext.Services.Selection.SelectionChanged += OnSelectionChanged;
 				designer.DesignContext.Services.GetService<UndoService>().UndoStackChanged += OnUndoStackChanged;
@@ -77,13 +92,38 @@ namespace ICSharpCode.WpfDesign.AddIn
 		
 		protected override void SaveInternal(OpenedFile file, System.IO.Stream stream)
 		{
-			XmlWriterSettings settings = new XmlWriterSettings();
-			settings.Encoding = Encoding.UTF8;
-			settings.Indent = true;
-			settings.IndentChars = ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.SharpDevelopTextEditorProperties.Instance.IndentationString;
-			settings.NewLineOnAttributes = true;
-			using (XmlWriter xmlWriter = XmlTextWriter.Create(stream, settings)) {
-				designer.SaveDesigner(xmlWriter);
+			if (designer.DesignContext.CanSave) {
+				XmlWriterSettings settings = new XmlWriterSettings();
+				settings.Encoding = Encoding.UTF8;
+				settings.Indent = true;
+				settings.IndentChars = ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.SharpDevelopTextEditorProperties.Instance.IndentationString;
+				settings.NewLineOnAttributes = true;
+				using (XmlWriter xmlWriter = XmlTextWriter.Create(stream, settings)) {
+					designer.SaveDesigner(xmlWriter);
+				}
+			} else {
+				editor.Save(file, stream);
+			}
+		}
+
+		public override bool SupportsSwitchFromThisWithoutSaveLoad(OpenedFile file, IViewContent newView)
+		{
+			return newView == editor && !designer.DesignContext.CanSave;
+		}
+
+		void UpdateTasks()
+		{
+			foreach (var task in tasks) {
+				TaskService.Remove(task);
+			}
+
+			tasks.Clear();
+
+			var xamlErrorService = designer.DesignContext.Services.GetService<XamlErrorService>();
+			foreach (var error in xamlErrorService.Errors) {
+				var task = new Task(PrimaryFile.FileName, error.Message, error.Column - 1, error.Line - 1, TaskType.Error);
+				tasks.Add(task);
+				TaskService.Add(task);
 			}
 		}
 		
@@ -99,9 +139,8 @@ namespace ICSharpCode.WpfDesign.AddIn
 		
 		void InitPropertyEditor()
 		{
-			propertyEditorHost = new SharpDevelopElementHost();
 			propertyGridView = new PropertyGridView();
-			propertyEditorHost.Child = propertyGridView;
+			propertyEditorHost = new SharpDevelopElementHost(this, propertyGridView);			
 			propertyContainer.PropertyGridReplacementControl = propertyEditorHost;
 		}
 		

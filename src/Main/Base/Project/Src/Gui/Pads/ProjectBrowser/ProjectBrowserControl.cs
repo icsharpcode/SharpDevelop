@@ -393,7 +393,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					NodeBuilders.AddProjectNode(solutionNode, (IProject)treeObject);
 				} else {
 					SolutionFolderNode folderNode = new SolutionFolderNode(solution, (SolutionFolder)treeObject);
-					folderNode.AddTo(solutionNode);
+					folderNode.InsertSorted(solutionNode);
 				}
 			}
 			

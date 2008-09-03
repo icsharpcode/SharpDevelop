@@ -94,7 +94,7 @@ namespace ICSharpCode.CodeCoverage
 			}
 			
 			runner.PartCoverFileName = GetPartCoverFileName();
-			runner.Target = UnitTestApplicationStartHelper.UnitTestConsoleApplication;
+			runner.Target = helper.UnitTestApplication;
 			runner.TargetArguments = helper.GetArguments();
 			runner.TargetWorkingDirectory = Path.GetDirectoryName(helper.Assemblies[0]);
 			runner.Output = Path.Combine(partCoverOutputDirectory, "Coverage.Xml");

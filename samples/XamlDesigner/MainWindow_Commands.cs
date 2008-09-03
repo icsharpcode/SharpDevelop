@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows.Input;
+using System.Windows;
 
 namespace ICSharpCode.XamlDesigner
 {
@@ -11,6 +12,7 @@ namespace ICSharpCode.XamlDesigner
 		public static SimpleCommand CloseAllCommand = new SimpleCommand("Close All");
 		public static SimpleCommand SaveAllCommand = new SimpleCommand("Save All", ModifierKeys.Control | ModifierKeys.Shift, Key.S);
 		public static SimpleCommand ExitCommand = new SimpleCommand("Exit");
+		public static SimpleCommand RefreshCommand = new SimpleCommand("Refresh", Key.F5);
 
 		static void RenameCommands()
 		{
@@ -66,6 +68,33 @@ namespace ICSharpCode.XamlDesigner
 		void CurrentDocument_CanExecute(object sender, CanExecuteRoutedEventArgs e)
 		{
 			e.CanExecute = Shell.Instance.CurrentDocument != null;
+		}
+
+		void RouteDesignSurfaceCommands()
+		{
+			RouteDesignSurfaceCommand(ApplicationCommands.Undo);
+			RouteDesignSurfaceCommand(ApplicationCommands.Redo);
+			RouteDesignSurfaceCommand(ApplicationCommands.Copy);
+			RouteDesignSurfaceCommand(ApplicationCommands.Cut);
+			RouteDesignSurfaceCommand(ApplicationCommands.Paste);
+			RouteDesignSurfaceCommand(ApplicationCommands.SelectAll);
+			RouteDesignSurfaceCommand(ApplicationCommands.Delete);
+		}
+
+		void RouteDesignSurfaceCommand(RoutedCommand command)
+		{
+			var cb = new CommandBinding(command);
+			cb.CanExecute += delegate(object sender, CanExecuteRoutedEventArgs e) {
+				if (Shell.Instance.CurrentDocument != null) {
+					Shell.Instance.CurrentDocument.DesignSurface.RaiseEvent(e);
+				}else {
+					e.CanExecute = false;
+				}
+			};
+			cb.Executed += delegate(object sender, ExecutedRoutedEventArgs e) {
+				Shell.Instance.CurrentDocument.DesignSurface.RaiseEvent(e);
+			};
+			CommandBindings.Add(cb);
 		}
 	}
 }

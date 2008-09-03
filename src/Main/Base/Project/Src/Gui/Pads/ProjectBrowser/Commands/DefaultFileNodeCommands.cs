@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
@@ -270,6 +271,69 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			}
 			ProjectService.SaveSolution();
 			((AbstractProjectBrowserTreeNode)node.Parent).Refresh();
+		}
+	}
+	
+	public class AddNewDependentItemsToProject : AddNewItemsToProject
+	{
+		public override void Run()
+		{
+			AddDependentItemsToProject(base.AddNewItems);
+		}
+		
+		public static void AddDependentItemsToProject(Func<IEnumerable<FileProjectItem>> itemAdder)
+		{
+			DirectoryNode dir = ProjectBrowserPad.Instance.ProjectBrowserControl.SelectedDirectoryNode;
+			if (dir == null) return;
+			
+			FileNode fileNode = ProjectBrowserPad.Instance.ProjectBrowserControl.SelectedNode as FileNode;
+			if (fileNode == null) {
+				LoggingService.Warn("ProjectBrowser: AddNewDependentItemsToProject called on node that is not a FileNode, but: " + fileNode);
+				return;
+			}
+			
+			LoggingService.Debug("ProjectBrowser: AddNewDependentItemsToProject on '" + fileNode.FileName + "'");
+			
+			// Attention: base.AddNewItems may recreate the subnodes,
+			// thus invalidating fileNode.
+			var addedItems = itemAdder();
+			if (addedItems == null) return;
+			
+			fileNode = dir.AllNodes.OfType<FileNode>().Single(node => FileUtility.IsEqualFileName(node.FileName, fileNode.FileName));
+			
+			// Find the file nodes that correspond to the added items which
+			// do not already have a dependency.
+			var dict = addedItems
+				.Where(fpi => String.IsNullOrEmpty(fpi.DependentUpon))
+				.ToDictionary(
+					fpi => dir.AllNodes.OfType<FileNode>().Single(
+						node => node.ProjectItem == fpi
+					)
+				);
+			
+			if (dict.Count == 0) return;
+			
+			foreach (KeyValuePair<FileNode, FileProjectItem> pair in dict) {
+				LoggingService.Debug("ProjectBrowser: AddNewDependentItemsToProject: Creating dependency for '" + pair.Value.FileName + "' upon '" + fileNode.FileName + "'");
+				pair.Value.DependentUpon = Path.GetFileName(fileNode.FileName);
+				pair.Key.Remove();
+				pair.Key.FileNodeStatus = FileNodeStatus.BehindFile;
+				pair.Key.InsertSorted(fileNode);
+			}
+			
+			fileNode.Project.Save();
+			
+			FileNode primaryAddedNode = dict.Keys.First();
+			primaryAddedNode.EnsureVisible();
+			primaryAddedNode.TreeView.SelectedNode = primaryAddedNode;
+		}
+	}
+	
+	public class AddExistingItemsToProjectAsDependent : AddExistingItemsToProject
+	{
+		public override void Run()
+		{
+			AddNewDependentItemsToProject.AddDependentItemsToProject(base.AddExistingItems);
 		}
 	}
 }

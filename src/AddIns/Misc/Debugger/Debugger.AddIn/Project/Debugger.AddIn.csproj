@@ -20,6 +20,7 @@
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <RunPostBuildEvent>Always</RunPostBuildEvent>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <SourceAnalysisOverrideSettingsFile>C:\Dokumente und Einstellungen\HP\Anwendungsdaten\ICSharpCode/SharpDevelop3.0\Settings.SourceAnalysis</SourceAnalysisOverrideSettingsFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -34,6 +35,10 @@
     <OutputPath>..\..\..\..\..\..\AddIns\AddIns\Misc\Debugger\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <StartAction>Program</StartAction>
+    <StartProgram>..\..\..\..\..\..\bin\SharpDevelop.exe</StartProgram>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -43,6 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="Src\IsBreakpointCondition.cs" />
     <Compile Include="Src\Expressions\AstEvaluator.cs" />
     <Compile Include="Src\Expressions\EvaluateAstVisitor.cs" />
     <Compile Include="Src\Expressions\NotImplementedAstVisitor.cs" />
@@ -55,12 +61,14 @@
     <Compile Include="Src\Options\DebuggingSymbolsPanel.Designer.cs">
       <DependentUpon>DebuggingSymbolsPanel.cs</DependentUpon>
     </Compile>
+    <Compile Include="Src\Pads\WatchPadCommands.cs" />
     <Compile Include="Src\Pads\BreakPointsPad.cs" />
     <Compile Include="Src\Pads\CallStackPad.cs" />
     <Compile Include="Src\Pads\ConsolePad.cs" />
     <Compile Include="Src\Pads\LoadedModulesPad.cs" />
     <Compile Include="Src\Pads\LocalVarPad.cs" />
     <Compile Include="Src\Pads\RunningThreadsPad.cs" />
+    <Compile Include="Src\Pads\WatchPad.cs" />
     <Compile Include="Src\Service\AttachToProcessForm.cs" />
     <Compile Include="Src\Service\DebugeeExceptionForm.cs">
       <SubType>Form</SubType>
@@ -77,6 +85,10 @@
     <EmbeddedResource Include="Src\Service\DebugeeExceptionForm.resx">
       <DependentUpon>DebugeeExceptionForm.cs</DependentUpon>
     </EmbeddedResource>
+    <Compile Include="Src\Service\EditBreakpointScriptForm.cs" />
+    <Compile Include="Src\Service\EditBreakpointScriptForm.Designer.cs">
+      <DependentUpon>EditBreakpointScriptForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Src\Service\RemotingConfigurationHelpper.cs" />
     <Compile Include="Src\Service\RunToCursorCommand.cs" />
     <Compile Include="Src\Service\WindowsDebugger.cs" />
@@ -88,6 +100,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Src\Service\DebuggerEventForm.resx">
       <DependentUpon>DebuggerEventForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Src\Service\EditBreakpointScriptForm.resx">
+      <DependentUpon>EditBreakpointScriptForm.cs</DependentUpon>
     </EmbeddedResource>
     <Compile Include="Src\Service\SetCurrentStatementCommand.cs" />
     <Compile Include="..\..\..\..\..\Main\GlobalAssemblyInfo.cs">

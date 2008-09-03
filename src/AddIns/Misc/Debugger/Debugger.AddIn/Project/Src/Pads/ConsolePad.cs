@@ -79,10 +79,12 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			}
 			try {
 				Value val = AstEvaluator.Evaluate(code, SupportedLanguage.CSharp, process.SelectedStackFrame);
-				if (val != null) {
-					return val.InvokeToString();
-				} else {
+				if (val == null) {
 					return string.Empty;
+				} if (val.IsNull) {
+					return "null";
+				} else {
+					return val.InvokeToString();
 				}
 			} catch (GetValueException e) {
 				return e.Message;

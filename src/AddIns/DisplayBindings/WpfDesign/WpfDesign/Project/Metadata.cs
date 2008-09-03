@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Collections;
 using System.Windows;
 using System.ComponentModel;
+using System.Diagnostics;
 
 namespace ICSharpCode.WpfDesign
 {
@@ -53,60 +54,137 @@ namespace ICSharpCode.WpfDesign
 			return null;
 		}
 
-		static Dictionary<string, string> categories = new Dictionary<string, string>();
+		//static Dictionary<string, string> categories = new Dictionary<string, string>();
 
-		public static void AddCategory(DependencyProperty p, string category)
+		//public static void AddCategory(DependencyProperty p, string category)
+		//{
+		//    lock (categories) {
+		//        categories[p.GetFullName()] = category;
+		//    }
+		//}
+
+		//public static void AddCategory(Type type, string property, string category)
+		//{
+		//    lock (categories) {
+		//        categories[type + "." + property] = category;
+		//    }
+		//}
+
+		//public static string GetCategory(DesignItemProperty p)
+		//{
+		//    string result;
+		//    lock (categories) {
+		//        if (categories.TryGetValue(p.DependencyFullName, out result)) {
+		//            return result;
+		//        }
+		//    }
+		//    return p.Category;
+		//}
+
+		//static HashSet<string> advancedProperties = new HashSet<string>();
+
+		//public static void AddAdvancedProperty(DependencyProperty p)
+		//{
+		//    lock (advancedProperties) {
+		//        advancedProperties.Add(p.GetFullName());
+		//    }
+		//}
+
+		//public static void AddAdvancedProperty(Type type, string member)
+		//{
+		//    lock (advancedProperties) {
+		//        advancedProperties.Add(type.FullName + "." + member);
+		//    }
+		//}
+
+		//public static bool IsAdvanced(DesignItemProperty p)
+		//{
+		//    lock (advancedProperties) {
+		//        if (advancedProperties.Contains(p.DependencyFullName)) {
+		//            return true;
+		//        }
+		//    }
+		//    return p.IsAdvanced;
+		//}
+
+		static HashSet<string> hiddenProperties = new HashSet<string>();
+
+		public static void HideProperty(DependencyProperty p)
 		{
-			lock (categories) {
-				categories[p.GetFullName()] = category;
-			}
+		    lock (hiddenProperties) {
+		        hiddenProperties.Add(p.GetFullName());
+		    }
 		}
 
-		public static void AddCategory(Type type, string property, string category)
+		public static void HideProperty(Type type, string member)
 		{
-			lock (categories) {
-				categories[type + "." + property] = category;
-			}
+		    lock (hiddenProperties) {
+		        hiddenProperties.Add(type.FullName + "." + member);
+		    }
 		}
 
-		public static string GetCategory(DesignItemProperty p)
+		public static bool IsBrowsable(DesignItemProperty p)
 		{
-			string result;
-			lock (categories) {
-				if (categories.TryGetValue(p.DependencyFullName, out result)) {
-					return result;
+		    lock (hiddenProperties) {
+		        if (hiddenProperties.Contains(p.DependencyFullName)) {
+		            return false;
+		        }
+		    }
+			return true;
+		}
+
+		//public static string[] CategoryOrder { get; set; }
+
+		static HashSet<string> popularProperties = new HashSet<string>();
+
+		public static void AddPopularProperty(DependencyProperty p)
+		{
+		    lock (popularProperties) {
+		        popularProperties.Add(p.GetFullName());
+		    }
+		}
+
+		public static void AddPopularProperty(Type type, string member)
+		{
+		    lock (popularProperties) {
+		        popularProperties.Add(type.FullName + "." + member);
+		    }
+		}
+
+		public static bool IsPopularProperty(DesignItemProperty p)
+		{
+		    lock (popularProperties) {
+		        if (popularProperties.Contains(p.DependencyFullName)) {
+		            return true;
+		        }
+		    }
+		    return false;
+		}
+
+		static HashSet<Type> popularControls = new HashSet<Type>();
+
+		public static void AddPopularControl(Type t)
+		{
+		    lock (popularControls) {
+		        popularControls.Add(t);
+		    }
+		}
+
+		public static IEnumerable<Type> GetPopularControls()
+		{
+		    lock (popularControls) {
+				foreach (var t in popularControls) {
+					yield return t;
 				}
-			}
-			return p.Category;
+		    }
 		}
 
-		static HashSet<string> advancedProperties = new HashSet<string>();
-
-		public static void AddAdvancedProperty(DependencyProperty p)
+		public static bool IsPopularControl(Type t)
 		{
-			lock (advancedProperties) {
-				advancedProperties.Add(p.GetFullName());
-			}
+		    lock (popularControls) {
+		        return popularControls.Contains(t);
+		    }
 		}
-
-		public static void AddAdvancedProperty(Type type, string member)
-		{
-			lock (advancedProperties) {
-				advancedProperties.Add(type.FullName + "." + member);
-			}
-		}
-
-		public static bool IsAdvanced(DesignItemProperty p)
-		{
-			lock (advancedProperties) {
-				if (advancedProperties.Contains(p.DependencyFullName)) {
-					return true;
-				}
-			}
-			return p.IsAdvanced;
-		}
-
-		public static string[] CategoryOrder { get; set; }
 
 		static Dictionary<string, NumberRange> ranges = new Dictionary<string, NumberRange>();		
 

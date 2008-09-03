@@ -36,6 +36,26 @@ namespace ICSharpCode.Core
 			
 			conditionEvaluators.Add("Compare", new CompareConditionEvaluator());
 			conditionEvaluators.Add("Ownerstate", new OwnerStateConditionEvaluator());
+			
+			ApplicationStateInfoService.RegisterStateGetter("Installed 3rd party AddIns", GetInstalledThirdPartyAddInsListAsString);
+		}
+		
+		static object GetInstalledThirdPartyAddInsListAsString()
+		{
+			System.Text.StringBuilder sb = new System.Text.StringBuilder();
+			foreach (AddIn addIn in AddIns) {
+				if (!FileUtility.IsBaseDirectory(FileUtility.ApplicationRootPath, addIn.FileName)) {
+					if (sb.Length > 0) sb.Append(", ");
+					sb.Append("[");
+					sb.Append(addIn.Name);
+					sb.Append(", Enabled=");
+					sb.Append(addIn.Enabled);
+					sb.Append(", Action=");
+					sb.Append(addIn.Action.ToString());
+					sb.Append("]");
+				}
+			}
+			return sb.ToString();
 		}
 		
 		/// <summary>

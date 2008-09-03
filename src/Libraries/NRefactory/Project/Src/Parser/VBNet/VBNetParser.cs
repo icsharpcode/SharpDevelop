@@ -108,7 +108,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 		static bool IsIdentifierToken(Token tk)
 		{
 			return Tokens.IdentifierTokens[tk.kind] || tk.kind == Tokens.Identifier;
-		}		
+		}
 		
 		bool IsIdentifiedExpressionRange()
 		{
@@ -158,6 +158,26 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			int peek = Peek(1).kind;
 			return la.kind == Tokens.OpenParenthesis
 				&& (peek == Tokens.Comma || peek == Tokens.CloseParenthesis);
+		}
+		
+		/*
+			True if the next token is an identifier
+		 */
+		bool IsLoopVariableDeclaration()
+		{
+			if (!IsIdentifierToken(la))
+				return false;
+			lexer.StartPeek();
+			Token x = lexer.Peek();
+			if (x.kind == Tokens.OpenParenthesis) {
+				do {
+					x = lexer.Peek();
+				} while (x.kind == Tokens.Comma);
+				if (x.kind != Tokens.CloseParenthesis)
+					return false;
+				x = lexer.Peek();
+			}
+			return x.kind == Tokens.As || x.kind == Tokens.Assign;
 		}
 
 		bool IsSize()
@@ -258,7 +278,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			if (!(expr is PrimitiveExpression) || (expr as PrimitiveExpression).StringValue != "0")
 				Error("lower bound of array must be zero");
 		}
-				
+		
 		/// <summary>
 		/// Adds a child item to a collection stored in the parent node.
 		/// Also set's the item's parent to <paramref name="parent"/>.

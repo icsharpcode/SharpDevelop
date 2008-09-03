@@ -11,6 +11,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using ICSharpCode.WpfDesign.Designer.Services;
+using System.Windows.Threading;
 
 namespace ICSharpCode.XamlDesigner
 {
@@ -19,8 +21,22 @@ namespace ICSharpCode.XamlDesigner
 		public DocumentView(Document doc)
 		{
 			InitializeComponent();
+
+			Document = doc;
+			Shell.Instance.Views[doc] = this;			
+
 			uxTextEditor.SetHighlighting("XML");
 			uxTextEditor.DataBindings.Add("Text", doc, "Text", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged);
+		}
+
+		public Document Document { get; private set; }
+
+		public void JumpToError(XamlError error)
+		{
+			Document.Mode = DocumentMode.Xaml;
+			Dispatcher.BeginInvoke(new Action(delegate {
+				uxTextEditor.ActiveTextAreaControl.JumpTo(error.Line - 1, error.Column - 1);
+			}), DispatcherPriority.Background);
 		}
 	}
 }

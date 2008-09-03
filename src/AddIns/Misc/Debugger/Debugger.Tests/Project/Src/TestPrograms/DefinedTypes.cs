@@ -73,7 +73,8 @@ namespace Debugger.Tests {
           GenericArguments="{}"
           Interfaces="{}"
           Kind="Class"
-          Module="DefinedTypes.exe" />
+          Module="DefinedTypes.exe"
+          Name="DefinedTypes_Class" />
       </Item>
       <Item>
         <DebugType
@@ -83,7 +84,8 @@ namespace Debugger.Tests {
           GenericArguments="{}"
           Interfaces="{}"
           Kind="ValueType"
-          Module="DefinedTypes.exe" />
+          Module="DefinedTypes.exe"
+          Name="DefinedTypes_Struct" />
       </Item>
     </Types>
     <ProcessExited />

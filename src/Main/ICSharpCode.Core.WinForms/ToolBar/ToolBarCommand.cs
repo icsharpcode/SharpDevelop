@@ -45,6 +45,7 @@ namespace ICSharpCode.Core.WinForms
 			}
 			if (menuCommand != null) {
 				menuCommand.Owner = caller;
+				LoggingService.Debug("Run command " + menuCommand.GetType().FullName);
 				menuCommand.Run();
 			}
 		}
