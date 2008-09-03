@@ -1433,7 +1433,11 @@
 					          class = "ICSharpCode.SharpDevelop.Project.Commands.PublishProject"/>-->
 				</Condition>
 				<MenuItem id = "Separator2" type = "Separator" />
-				<MenuItem id="AbortBuild" type="Builder" class="ICSharpCode.SharpDevelop.Project.Commands.AbortBuild"/>
+				<MenuItem id="AbortBuild"
+				          label="${res:XML.MainMenu.BuildMenu.AbortBuild}"
+				          shortcut="Pause"
+				          class="ICSharpCode.SharpDevelop.Project.Commands.AbortBuild"
+				          loadclasslazy="false"/>
 				<MenuItem id = "Separator3" type = "Separator" />
 				<MenuItem id = "SetConfiguration"
 				          label = "${res:XML.MainMenu.BuildMenu.SetConfiguration}"
