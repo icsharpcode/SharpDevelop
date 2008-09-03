@@ -489,6 +489,36 @@ namespace ICSharpCode.SharpDevelop.Tests
 			                 DefaultUsingsCSharp + "class Test\n{\n}");
 		}
 		
+		[Test]
+		public void CallMethodOnModule()
+		{
+			TestProgramVB2CS("Class Test\n" +
+			                 "  Sub A\n" +
+			                 "    Method(Field)\n" +
+			                 "  End Sub\n" +
+			                 "End Class\n" +
+			                 "Module TheModule\n" +
+			                 "  Sub Method(a As Integer)\n" +
+			                 "  End Sub\n" +
+			                 "  Public Field As Integer\n" +
+			                 "End Module",
+			                 DefaultUsingsCSharp + 
+			                 "class Test\n" +
+			                 "{\n" +
+			                 "  public void A()\n" +
+			                 "  {\n" +
+			                 "    TheModule.Method(TheModule.Field);\n" +
+			                 "  }\n" +
+			                 "}\n" +
+			                 "static class TheModule\n" +
+			                 "{\n" +
+			                 "  public static void Method(int a)\n" +
+			                 "  {\n" +
+			                 "  }\n" +
+			                 "  public static int Field;\n" +
+			                 "}");
+		}
+		
 		#region Casting
 		[Test]
 		public void CastToEnum()
