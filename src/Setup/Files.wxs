@@ -428,6 +428,10 @@
 									<Component Guid="D67E8EC9-2D98-4889-856F-78FD2BE35947" Id="NUnitCoreInterfacesDll" DiskId="1">
 										<File Id="nunit.core.interfaces.dll" KeyPath="yes" Name="nunit.core.interfaces.dll" Assembly=".net" AssemblyApplication="nunit.core.interfaces.dll" AssemblyManifest="nunit.core.interfaces.dll" Source="..\..\bin\Tools\NUnit\nunit.core.interfaces.dll" />
 									</Component>
+									<Component Guid="C996D268-4471-4CBF-9015-43357863360A" Id="NUnitConsoleX86Files" DiskId="1">
+										<File Source="..\..\bin\Tools\NUnit\nunit-console-x86.exe" Name="nunit-console-x86.exe" Id="nunit_console_x86.exe" Assembly=".net" KeyPath="yes" AssemblyApplication="nunit_console_x86.exe" AssemblyManifest="nunit_console_x86.exe" />
+										<File Source="..\..\bin\Tools\NUnit\nunit-console-x86.exe.config" Name="nunit-console-x86.exe.config" Id="nunit_console_x86.exe.config" />
+									</Component>
 								</Directory>
 								<Directory Id="PartCover" Name="PartCover">
 									<Component Guid="CD9AB556-51BD-4DB2-9AC5-C047022991DD" Id="InteropPartCoverDll" DiskId="1">

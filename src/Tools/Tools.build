@@ -13,7 +13,7 @@
 		<WixDocFiles Include="wix\doc\*"/>
 		<WixLibFiles Include="wix\lib\*"/>
 		<NUnitFiles Include="NUnit\*.dll;NUnit\*.exe"/>
-		<NUnitConfigFile Include="NUnit\nunit-console.exe.config"/>
+		<NUnitConfigFiles Include="NUnit\nunit-console.exe.config;NUnit\nunit-console-x86.exe.config"/>
 		<HelpToolFiles Include="Help\*"/>
 		<PartCoverFiles Include="PartCover\*"/>
 		<PartCoverXsltFiles Include="PartCover\xslt\*"/>
@@ -34,7 +34,7 @@
 		<Copy SourceFiles="@(WixBitmapFiles)" DestinationFolder="..\..\bin\Tools\Wix\Bitmaps" SkipUnchangedFiles="true"/>
 		<Copy SourceFiles="@(WixLibFiles)" DestinationFolder="..\..\bin\Tools\Wix\lib" SkipUnchangedFiles="true"/>
 		<Copy SourceFiles="@(NUnitFiles)" DestinationFolder="..\..\bin\Tools\NUnit" SkipUnchangedFiles="true"/>
-		<Copy SourceFiles="@(NUnitConfigFile)" DestinationFolder="..\..\bin\Tools\NUnit" SkipUnchangedFiles="true"/>
+		<Copy SourceFiles="@(NUnitConfigFiles)" DestinationFolder="..\..\bin\Tools\NUnit" SkipUnchangedFiles="true"/>
 		<Copy SourceFiles="@(ToolFiles)" DestinationFolder="..\..\bin\Tools" SkipUnchangedFiles="true"/>
 		<Copy SourceFiles="@(PartCoverFiles)" DestinationFolder="..\..\bin\Tools\PartCover" SkipUnchangedFiles="true"/>
 		<Copy SourceFiles="@(PartCoverXsltFiles)" DestinationFolder="..\..\bin\Tools\PartCover\Xslt" SkipUnchangedFiles="true"/>

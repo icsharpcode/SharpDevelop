@@ -31,16 +31,21 @@ namespace ICSharpCode.UnitTesting
 				return Path.Combine(FileUtility.ApplicationRootPath, @"bin\Tools\NUnit");
 			}
 		}
-
+				
 		/// <summary>
-		/// returns full/path/to/Tools/NUnit/nunit-console.exe
+		/// returns full/path/to/Tools/NUnit/nunit-console.exe or nunit-console-x86.exe if the
+		/// project platform target is x86.
 		/// </summary>
-		public static string UnitTestConsoleApplication {
+		public string UnitTestApplication {
 			get {
-				return Path.Combine(UnitTestApplicationDirectory, "nunit-console.exe");
+				string exe = "nunit-console.exe";
+				if (IsPlatformTarget32Bit(project)) {
+					exe = "nunit-console-x86.exe";
+				}
+				return Path.Combine(UnitTestApplicationDirectory, exe);
 			}
 		}
-				
+		
 		public readonly List<string> Assemblies = new List<string>();
 		
 		/// <summary>
@@ -129,12 +134,12 @@ namespace ICSharpCode.UnitTesting
 						
 		/// <summary>
 		/// Gets the full command line to run the unit test application.
-		/// This is the combination of the UnitTestConsoleApplication and
+		/// This is the combination of the UnitTestApplication and
 		/// the command line arguments.
 		/// </summary>
 		public string GetCommandLine()
 		{
-			return String.Concat("\"", UnitTestConsoleApplication, "\" ", GetArguments());
+			return String.Concat("\"", UnitTestApplication, "\" ", GetArguments());
 		}
 		
 		/// <summary>
@@ -188,6 +193,19 @@ namespace ICSharpCode.UnitTesting
 				b.Append('"');
 			}
 			return b.ToString();
+		}
+		
+		/// <summary>
+		/// Checks that the project's PlatformTarget is x86 for the active configuration.
+		/// </summary>
+		bool IsPlatformTarget32Bit(IProject project)
+		{
+			MSBuildBasedProject msbuildProject = project as MSBuildBasedProject;
+			if (msbuildProject != null) {
+				string platformTarget = msbuildProject.GetProperty(project.ActiveConfiguration, project.ActivePlatform, "PlatformTarget");
+				return String.Compare(platformTarget, "x86", true) == 0;
+			}
+			return false;
 		}
 	}
 }
