@@ -221,7 +221,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void Dispose()
 		{
 			// DetachContent must be called before the controls are disposed
+			List<IViewContent> viewContents = this.ViewContents.ToList();
 			this.ViewContents.Clear();
+			viewContents.Foreach(vc => vc.Dispose());
 		}
 		
 		private void CreateViewTabControl()
@@ -389,6 +391,16 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public event EventHandler TitleChanged;
 		
-		public BitmapSource Icon { get; set; }
+		BitmapSource icon;
+		
+		BitmapSource IWorkbenchWindow.Icon {
+			get { return icon; }
+			set {
+				if (icon != value) {
+					icon = value;
+					base.Icon = new PixelSnapper(new Image { Source = value });
+				}
+			}
+		}
 	}
 }

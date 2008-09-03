@@ -5,11 +5,11 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.Core.Presentation;
 using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
-
 using AvalonDock;
 using ICSharpCode.Core;
 
@@ -35,6 +35,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.Title = StringParser.Parse(descriptor.Title);
 			placeholder = new TextBlock { Text = this.Title };
 			this.Content = placeholder;
+			this.Icon = PresentationResourceService.GetPixelSnappedImage(descriptor.Icon);
 			
 			placeholder.IsVisibleChanged += AvalonPadContent_IsVisibleChanged;
 		}

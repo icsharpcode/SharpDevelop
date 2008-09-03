@@ -44,6 +44,15 @@ namespace ICSharpCode.SharpDevelop.Gui
 			InitializeComponent();
 //			FormLocationHelper.Apply(this, "ICSharpCode.SharpDevelop.Gui.GotoDialog.Bounds", true);
 			textBox.Focus();
+			ParserService.LoadSolutionProjectsThreadEnded += ParserService_LoadSolutionProjectsThreadEnded;
+		}
+
+		void ParserService_LoadSolutionProjectsThreadEnded(object sender, EventArgs e)
+		{
+			// refresh the list box contents when parsing has completed
+			Dispatcher.BeginInvoke(
+				System.Windows.Threading.DispatcherPriority.Background,
+				new Action(delegate { textBoxTextChanged(null, null); }));
 		}
 		
 		class MyListBoxItem : ListBoxItem, IComparable<MyListBoxItem>

@@ -1,13 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Window
-	x:Class="ICSharpCode.SharpDevelop.Gui.GotoDialog"
-	xmlns="http://schemas.microsoft.com/netfx/2007/xaml/presentation"
-	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	xmlns:core = "http://icsharpcode.net/sharpdevelop/core"
+	x:Class="ICSharpCode.SharpDevelop.Gui.GotoDialog" xmlns="http://schemas.microsoft.com/netfx/2007/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:core="http://icsharpcode.net/sharpdevelop/core"
 	Title="{core:Localize Dialog.Goto.DialogName}"
 	Height="298"
 	Width="578"
-	Style = "{StaticResource DialogWindow}">
+	Style="{StaticResource DialogWindow}">
 	<Grid>
 		<Label
 			Grid.Column="0"
@@ -31,7 +28,7 @@
 			HorizontalAlignment="Stretch"
 			VerticalAlignment="Stretch"
 			Margin="8,4,8,4"
-			Name="listBox"/>
+			Name="listBox" />
 		<Button
 			Content="{core:Localize Global.OKButtonText}"
 			Grid.Column="0"
@@ -56,7 +53,7 @@
 			Click="cancelButtonClick" />
 		<Grid.RowDefinitions>
 			<RowDefinition
-				Height="60" />
+				Height="70" />
 			<RowDefinition
 				Height="30" />
 			<RowDefinition
