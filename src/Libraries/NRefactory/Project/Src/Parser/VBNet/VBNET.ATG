@@ -2883,9 +2883,16 @@ EmbeddedStatement<out Statement statement>
 			Expression start = null;
 			Expression end = null;
 			Expression step = null;
-			Expression nextExpr = null;List<Expression> nextExpressions = null;
+			Expression variableExpr = null;
+			Expression nextExpr = null;
+			List<Expression> nextExpressions = null;
 		.)
-		LoopControlVariable<out typeReference, out typeName>
+		(	IF (IsLoopVariableDeclaration())
+			LoopControlVariable<out typeReference, out typeName>
+		|
+			(. typeReference = null; typeName = null; .)
+			SimpleExpr<out variableExpr>
+		)
 		"=" Expr<out start> "To" Expr<out end> [ "Step" Expr<out step> ]
 		EndOfStmt Block<out embeddedStatement>
 		"Next"
@@ -2898,7 +2905,16 @@ EmbeddedStatement<out Statement statement>
 			{ "," Expr<out nextExpr> (. nextExpressions.Add(nextExpr); .) }
 		]
 		(.
-			statement = new ForNextStatement(typeReference, typeName, start, end, step, embeddedStatement, nextExpressions);
+			statement = new ForNextStatement {
+				TypeReference = typeReference,
+				VariableName = typeName, 
+				LoopVariableExpression = variableExpr,
+				Start = start, 
+				End = end, 
+				Step = step, 
+				EmbeddedStatement = embeddedStatement, 
+				NextExpressions = nextExpressions
+			};
 			SetParent(nextExpressions, statement);
 		.)
 	)

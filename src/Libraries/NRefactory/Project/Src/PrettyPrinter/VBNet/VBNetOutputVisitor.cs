@@ -1943,13 +1943,17 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.PrintToken(Tokens.For);
 			outputFormatter.Space();
 			
-			outputFormatter.PrintIdentifier(forNextStatement.VariableName);
-			
-			if (!forNextStatement.TypeReference.IsNull) {
-				outputFormatter.Space();
-				outputFormatter.PrintToken(Tokens.As);
-				outputFormatter.Space();
-				TrackedVisit(forNextStatement.TypeReference, data);
+			if (!forNextStatement.LoopVariableExpression.IsNull) {
+				TrackedVisit(forNextStatement.LoopVariableExpression, data);
+			} else {
+				outputFormatter.PrintIdentifier(forNextStatement.VariableName);
+				
+				if (!forNextStatement.TypeReference.IsNull) {
+					outputFormatter.Space();
+					outputFormatter.PrintToken(Tokens.As);
+					outputFormatter.Space();
+					TrackedVisit(forNextStatement.TypeReference, data);
+				}
 			}
 			
 			outputFormatter.Space();

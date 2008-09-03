@@ -188,12 +188,20 @@ namespace ICSharpCode.NRefactory.Visitors
 		
 		public override object VisitForNextStatement(ForNextStatement forNextStatement, object data)
 		{
-			// uses LocalVariableDeclaration, we just have to put the end location on the stack
 			if (forNextStatement.EmbeddedStatement.EndLocation.IsEmpty) {
 				return base.VisitForNextStatement(forNextStatement, data);
 			} else {
 				endLocationStack.Push(forNextStatement.EmbeddedStatement.EndLocation);
+				AddVariable(forNextStatement.TypeReference,
+				            forNextStatement.VariableName,
+				            forNextStatement.StartLocation,
+				            forNextStatement.EndLocation,
+				            false, false,
+				            forNextStatement.Start,
+				            null);
+				
 				base.VisitForNextStatement(forNextStatement, data);
+				
 				endLocationStack.Pop();
 				return null;
 			}

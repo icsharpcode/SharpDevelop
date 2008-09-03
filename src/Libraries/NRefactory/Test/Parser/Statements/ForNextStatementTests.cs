@@ -26,6 +26,12 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		{
 			ForNextStatement forNextStatement = ParseUtilVBNet.ParseStatement<ForNextStatement>("For i=0 To 10 Step 2 : Next i");
 		}
+		
+		[Test]
+		public void VBNetForNextStatementWithComplexExpressionTest()
+		{
+			ForNextStatement forNextStatement = ParseUtilVBNet.ParseStatement<ForNextStatement>("For SomeMethod().Property = 0 To 10 : Next SomeMethod().Property");
+		}
 		#endregion
 	}
 }

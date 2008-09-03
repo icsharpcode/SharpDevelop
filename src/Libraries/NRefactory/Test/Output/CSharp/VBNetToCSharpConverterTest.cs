@@ -685,5 +685,11 @@ static int static_Test2_j = 0;");
 			TestStatement("Dim x As Char", "char x = '\\0';");
 			TestStatement("Dim x As System.DateTime", "System.DateTime x = default(System.DateTime);");
 		}
+		
+		[Test]
+		public void ExpressionAsLoopVariable()
+		{
+			TestStatement("For Me.Field = 1 To 10 : Next Me.Field", "for (this.Field = 1; this.Field <= 10; this.Field++) {\n}");
+		}
 	}
 }
