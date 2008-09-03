@@ -235,7 +235,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					if (!page.IsFocused) page.Focus();
 				};
 				viewTabControl.TabStripPlacement = Dock.Bottom;
-				this.Content = viewTabControl;
+				this.SetContent(viewTabControl);
 				
 				viewTabControl.SelectionChanged += delegate {
 					UpdateActiveViewContent();
@@ -248,7 +248,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.Content = null;
 			if (viewTabControl != null) {
 				foreach (TabItem page in viewTabControl.Items) {
-					page.Content = null;
+					page.SetContent(null);
 				}
 				viewTabControl = null;
 			}

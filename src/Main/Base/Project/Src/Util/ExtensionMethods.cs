@@ -121,22 +121,49 @@ namespace ICSharpCode.SharpDevelop
 		/// If the content is a Windows-Forms control, it is wrapped in a WindowsFormsHost.
 		/// If the content control already contains a WindowsFormsHost with that content,
 		/// the old WindowsFormsHost is kept.
+		/// When a WindowsFormsHost is replaced with another content, the host is disposed (but the control
+		/// inside the host isn't)
 		/// </summary>
 		public static void SetContent(this ContentControl contentControl, object content)
 		{
 			if (contentControl == null)
 				throw new ArgumentNullException("contentControl");
+			var host = contentControl.Content as SDWindowsFormsHost;
+			if (host != null) {
+				if (host.Child == content)
+					return;
+				host.Dispose();
+			}
 			if (content is WinForms.Control) {
-				var host = contentControl.Content as WinForms.Integration.WindowsFormsHost;
-				if (host == null || host.Child != content) {
-					contentControl.Content = new WinForms.Integration.WindowsFormsHost {
-						Child = (System.Windows.Forms.Control)content
-					};
-				}
+				contentControl.Content = new SDWindowsFormsHost((WinForms.Control)content);
 			} else if (content is string) {
 				contentControl.Content = new TextBlock(new Run(content.ToString())) { TextWrapping = TextWrapping.Wrap };
 			} else {
 				contentControl.Content = content;
+			}
+		}
+		
+		class SDWindowsFormsHost : WinForms.Integration.WindowsFormsHost
+		{
+			public SDWindowsFormsHost(WinForms.Control child)
+			{
+				this.Child = child;
+				child.Disposed += child_Disposed;
+			}
+
+			void child_Disposed(object sender, EventArgs e)
+			{
+				Dispose();
+			}
+			
+			protected override void Dispose(bool disposing)
+			{
+				if (disposing && Child != null) {
+					Child.Disposed -= child_Disposed;
+					// prevent child from being disposed
+					Child = null;
+				}
+				base.Dispose(disposing);
 			}
 		}
 	}

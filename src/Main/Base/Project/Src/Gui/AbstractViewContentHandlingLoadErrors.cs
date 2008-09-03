@@ -91,7 +91,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				errorTextBox.Background = SystemColors.WindowBrush;
 			}
 			errorTextBox.Text = ex.ToString();
-			contentControl.Content = errorTextBox;
+			contentControl.SetContent(errorTextBox);
 		}
 		
 		Dictionary<OpenedFile, LoadError> errorList = new Dictionary<OpenedFile, LoadError>();
