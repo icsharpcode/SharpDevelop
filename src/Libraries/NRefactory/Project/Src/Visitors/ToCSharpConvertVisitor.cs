@@ -37,7 +37,8 @@ namespace ICSharpCode.NRefactory.Visitors
 					}
 					FieldDeclaration fd = node as FieldDeclaration;
 					if (fd != null) {
-						fd.Modifier |= Modifiers.Static;
+						if ((fd.Modifier & Modifiers.Const) == 0)
+							fd.Modifier |= Modifiers.Static;
 					}
 				}
 			}
