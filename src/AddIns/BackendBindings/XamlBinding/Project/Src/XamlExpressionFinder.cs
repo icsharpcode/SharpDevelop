@@ -57,8 +57,12 @@ namespace XamlBinding
 		ExpressionContext GetContext(string text, int offset)
 		{
 			XmlElementPath path = XmlParser.GetActiveElementStartPathAtIndex(text, offset);
-			if (path == null || path.Elements.Count == 0)
-				return ExpressionContext.Default;
+			if (path == null || path.Elements.Count == 0) {
+				if (offset > 0 && text[offset - 1] == '<')
+					return XamlExpressionContext.Empty;
+				else
+					return ExpressionContext.Default;
+			}
 			string attributeName = XmlParser.GetAttributeNameAtIndex(text, offset);
 			if (!string.IsNullOrEmpty(attributeName)) {
 				return new XamlExpressionContext(path, attributeName, XmlParser.IsInsideAttributeValue(text, offset));

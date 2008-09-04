@@ -20,6 +20,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 	public interface ICodeCompletionBinding
 	{
 		bool HandleKeyPress(SharpDevelopTextAreaControl editor, char ch);
+		bool CtrlSpace(SharpDevelopTextAreaControl editor);
 	}
 	
 	/// <summary>
@@ -77,6 +78,20 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 						binding = (ICodeCompletionBinding)codon.AddIn.CreateObject(codon.Properties["class"]);
 					}
 					return binding.HandleKeyPress(editor, ch);
+				}
+			}
+			return false;
+		}
+		
+		public bool CtrlSpace(SharpDevelopTextAreaControl editor)
+		{
+			string ext = Path.GetExtension(editor.FileName);
+			foreach (string extension in extensions) {
+				if (ext.Equals(extension, StringComparison.InvariantCultureIgnoreCase)) {
+					if (binding == null) {
+						binding = (ICodeCompletionBinding)codon.AddIn.CreateObject(codon.Properties["class"]);
+					}
+					return binding.CtrlSpace(editor);
 				}
 			}
 			return false;
@@ -175,6 +190,14 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			// DefaultCodeCompletionBinding does not support Keyword handling, but this
 			// method can be overridden
 			return false;
+		}
+		
+		public virtual bool CtrlSpace(SharpDevelopTextAreaControl editor)
+		{
+			CtrlSpaceCompletionDataProvider provider = new CtrlSpaceCompletionDataProvider();
+			provider.AllowCompleteExistingExpression = true;
+			editor.ShowCompletionWindow(provider, '\0');
+			return true;
 		}
 	}
 }
