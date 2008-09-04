@@ -207,9 +207,6 @@
 							<Component Id="MonoCecilDll" Guid="F714FD47-9E0A-488F-8F44-11C0220721E3" DiskId="1">
 								<File Source="..\..\bin\Mono.Cecil.dll" Id="Mono.Cecil.dll" Name="Mono.Cecil.dll" Assembly=".net" AssemblyApplication="Mono.Cecil.dll" AssemblyManifest="Mono.Cecil.dll" KeyPath="yes" />
 							</Component>
-							<Component Id="WeifenLuoWinFormsUIDockingDll" Guid="AB160125-2828-434E-8810-BE642A77B0E5" DiskId="1">
-								<File Source="..\..\bin\WeifenLuo.WinFormsUI.Docking.dll" Id="WeifenLuo.WinFormsUI.Docking.dll" Name="WeifenLuo.WinFormsUI.Docking.dll" Assembly=".net" AssemblyApplication="WeifenLuo.WinFormsUI.Docking.dll" AssemblyManifest="WeifenLuo.WinFormsUI.Docking.dll" KeyPath="yes" />
-							</Component>
 							<Directory Id="ToolsFolder" Name="Tools">
 								<Directory Id="ComponentInspectorFolder" Name="ComponentInspector">
 									<Component Guid="E4175768-82FD-45F4-8E7D-BB4031E97454" Id="ComponentInspectorCoreDll" DiskId="1">
@@ -702,6 +699,12 @@
 							</Component>
 							<Component Guid="2EC34D8A-CF14-4E1F-A512-9A596A1C256D" Id="ICSharpCodeCoreWinFormsDll" DiskId="1">
 								<File Source="..\..\bin\ICSharpCode.Core.WinForms.dll" Name="ICSharpCode.Core.WinForms.dll" Id="ICSharpCode.Core.WinForms.dll" KeyPath="yes" />
+							</Component>
+							<Component Guid="A124FA3C-F094-4FC2-88BA-D253DB319DC2" Id="AvalonDockDll" DiskId="1">
+								<File Source="..\..\bin\AvalonDock.dll" Name="AvalonDock.dll" Id="AvalonDock.dll" KeyPath="yes" />
+							</Component>
+							<Component Guid="C54C86B8-EB49-473F-B7BD-639B71226E9E" Id="ICSharpCodeCorePresentationDll" DiskId="1">
+								<File Source="..\..\bin\ICSharpCode.Core.Presentation.dll" Name="ICSharpCode.Core.Presentation.dll" Id="ICSharpCode.Core.Presentation.dll" KeyPath="yes" />
 							</Component>
 						</Directory>
 						<Directory Id="DocFolder" Name="doc">

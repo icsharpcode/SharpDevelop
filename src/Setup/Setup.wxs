@@ -170,7 +170,8 @@
 				<ComponentRef Id="AgaControlsDll"/>
 				<ComponentRef Id="log4netDll"/>
 				<ComponentRef Id="MonoCecilDll"/>
-				<ComponentRef Id="WeifenLuoWinFormsUIDockingDll"/>
+				<ComponentRef Id="AvalonDockDll"/>
+				<ComponentRef Id="ICSharpCodeCorePresentationDll"/>
 				<ComponentRef Id="SharpDevelopTechNoteFiles"/>
 				<ComponentRef Id="ComponentInspectorExe"/>
 				<ComponentRef Id="ComponentInspectorCoreDll"/>
