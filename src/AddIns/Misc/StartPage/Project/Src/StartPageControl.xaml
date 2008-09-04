@@ -53,7 +53,8 @@
 					<ListView
 						Name="lastProjectsListView"
 						SelectionMode="Single"
-						MouseDoubleClick="lastProjectsDoubleClick">
+						MouseDoubleClick="lastProjectsDoubleClick"
+						KeyDown="lastProjectsKeyDown">
 						<ListView.Resources>
 							<DataTemplate x:Key="nameCellTemplate">
 								<TextBlock>

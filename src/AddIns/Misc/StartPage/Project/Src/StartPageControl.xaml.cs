@@ -10,10 +10,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Project;
-using System.Windows.Documents;
+using System.Windows.Input;
 
 namespace ICSharpCode.StartPage
 {
@@ -58,6 +59,13 @@ namespace ICSharpCode.StartPage
 			RecentOpenItem item = (RecentOpenItem)lastProjectsListView.SelectedItem;
 			if (item != null) {
 				ProjectService.LoadSolutionOrProject(item.Path);
+			}
+		}
+		
+		void lastProjectsKeyDown(object sender, KeyEventArgs e)
+		{
+			if (e.Key == Key.Return) {
+				lastProjectsDoubleClick(null, null);
 			}
 		}
 		

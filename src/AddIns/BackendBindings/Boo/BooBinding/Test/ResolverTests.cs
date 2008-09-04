@@ -59,7 +59,7 @@ namespace Grunwald.BooBinding.Tests
 			pc.ReferencedContents.Add(booLangPC);
 			ICompilationUnit cu = new BooParser().Parse(pc, fileName, prog);
 			ParserService.RegisterParseInformation(fileName, cu);
-			cu.Classes.Foreach(pc.AddClassToNamespaceList);
+			cu.Classes.ForEach(pc.AddClassToNamespaceList);
 		}
 		
 		void GetPos(string prog, string marker, out int line, out int column)
