@@ -47,12 +47,12 @@
 			"Installed OR" this would not be allowed.
 		-->
 		<!--
-			Check for .NET 3.0 
+			Check for .NET 3.5 SP1 
 			http://msdn2.microsoft.com/en-us/library/aa480198.aspx#netfx30_topic14
 		-->
-		<PropertyRef Id="NETFRAMEWORK35" />
-		<Condition Message="This setup requires the .NET Framework 3.5 to be installed.">
-			Installed OR NETFRAMEWORK35
+		<PropertyRef Id="NETFRAMEWORK35_SP_LEVEL" />
+		<Condition Message="This setup requires the .NET Framework 3.5 SP 1 to be installed.">
+			Installed OR NETFRAMEWORK35_SP_LEVEL = "#1"
 		</Condition>
 		
 		<!--
