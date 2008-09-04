@@ -78,11 +78,11 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 				return selectedItems;
 			}
 			set {
-				Dispatcher.CurrentDispatcher.BeginInvoke(new Action(delegate {				
-					selectedItems = value;
-					Reload();
-					RaisePropertyChanged("SelectedItems");
-				}), DispatcherPriority.Background);
+				Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Background, new Action(delegate {				
+				    selectedItems = value;
+				    Reload();
+				    RaisePropertyChanged("SelectedItems");
+				}));
 			}
 		}
 
