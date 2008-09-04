@@ -31,7 +31,7 @@ namespace PythonBinding.Tests.Utils
 		public event EventHandler TitleChanged;
 		public event EventHandler CloseEvent;
 		public event EventHandler ActiveViewContentChanged;
-	
+		
 		public string Title {
 			get {
 				throw new NotImplementedException();
@@ -46,7 +46,7 @@ namespace PythonBinding.Tests.Utils
 				throw new NotImplementedException();
 			}
 		}
-				
+		
 		public IViewContent ActiveViewContent {
 			get {
 				return viewContent;
@@ -81,16 +81,16 @@ namespace PythonBinding.Tests.Utils
 			if (WindowDeselected != null) {
 				WindowDeselected(this, e);
 			}
-		}	
+		}
 		
 		public void OnWindowSelected(EventArgs e)
 		{
 			if (WindowSelected != null) {
 				WindowSelected(this, e);
 			}
-		}		
-						
-		public Icon Icon {
+		}
+		
+		public System.Windows.Media.Imaging.BitmapSource Icon {
 			get {
 				throw new NotImplementedException();
 			}
@@ -111,7 +111,7 @@ namespace PythonBinding.Tests.Utils
 				TitleChanged(this, e);
 			}
 		}
-				
+		
 		protected virtual void OnCloseEvent(EventArgs e)
 		{
 			if (CloseEvent != null) {
@@ -124,6 +124,6 @@ namespace PythonBinding.Tests.Utils
 			if (ActiveViewContentChanged != null) {
 				ActiveViewContentChanged(this, e);
 			}
-		}		
+		}
 	}
 }

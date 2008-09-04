@@ -141,10 +141,6 @@
       <Link>ICSharpCode.Core.dll</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\..\..\bin\WeifenLuo.WinFormsUI.Docking.dll">
-      <Link>WeifenLuo.WinFormsUI.Docking.dll</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="..\..\..\..\bin\ICSharpCode.TextEditor.dll">
       <Link>ICSharpCode.TextEditor.dll</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

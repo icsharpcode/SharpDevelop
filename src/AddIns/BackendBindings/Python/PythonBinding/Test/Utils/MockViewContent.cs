@@ -55,7 +55,7 @@ namespace PythonBinding.Tests.Utils
 			get { return secondaryViewContents;	}
 		}
 		
-		public Control Control {
+		public object Content {
 			get {
 				throw new NotImplementedException();
 			}

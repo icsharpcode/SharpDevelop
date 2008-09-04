@@ -40,7 +40,7 @@ namespace XmlEditor.Tests.Tree
 			xmlView = new XmlView(new DefaultTextEditorProperties(), schemas);
 			xmlView.SetPrimaryFileUnitTestMode(openedFile);
 			view = new XmlTreeView(xmlView, null, null);
-			treeViewContainer = (XmlTreeViewContainerControl)view.Control;
+			treeViewContainer = (XmlTreeViewContainerControl)view.Content;
 			treeView = treeViewContainer.TreeView;
 			clipboardHandler = view as IClipboardHandler;
 			

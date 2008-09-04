@@ -24,6 +24,10 @@
   </PropertyGroup>
   <Import Project="$(FSharpBuildTasksPath)\SharpDevelop.Build.Fsc.Targets" />
   <ItemGroup>
+    <Reference Include="AvalonDock">
+      <HintPath>..\..\..\..\..\Libraries\AvalonDock\AvalonDock.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="FSharp.Build.Tasks">
       <HintPath>..\..\RequiredLibraries\FSharp.Build.Tasks.dll</HintPath>
     </Reference>
@@ -52,6 +56,12 @@
     <Reference Include="PresentationFramework">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
+    <Reference Include="PresentationUI">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="ReachFramework">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Configuration">
       <Private>False</Private>
     </Reference>
@@ -60,10 +70,18 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="System.Deployment" />
+    <Reference Include="System.DirectoryServices" />
+    <Reference Include="System.Printing">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="System.Security">
       <Private>False</Private>
     </Reference>
     <Reference Include="UIAutomationProvider">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="UIAutomationTypes">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
     <Reference Include="WindowsBase">
@@ -110,6 +128,11 @@
     <ProjectReference Include="..\..\..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
       <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
       <Name>ICSharpCode.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\Main\ICSharpCode.Core.Presentation\ICSharpCode.Core.Presentation.csproj">
+      <Project>{7E4A7172-7FF5-48D0-B719-7CD959DD1AC9}</Project>
+      <Name>ICSharpCode.Core.Presentation</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\Main\ICSharpCode.Core.WinForms\ICSharpCode.Core.WinForms.csproj">

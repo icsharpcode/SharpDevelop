@@ -19,19 +19,24 @@ namespace PythonBinding.Tests.Utils
 	/// </summary>
 	public class MockWorkbench : IWorkbench
 	{
-		IWorkbenchWindow activeWorkbenchWindow;
+		public event EventHandler ActiveWorkbenchWindowChanged { add {} remove {} }
+		public event EventHandler ActiveViewContentChanged { add {} remove {} }
+		public event EventHandler ActiveContentChanged { add {} remove {} }
+		public event ViewContentEventHandler ViewOpened { add {} remove {} }
+		public event ViewContentEventHandler ViewClosed { add {} remove {} }
 		
-		public MockWorkbench()
-		{
+		public IWin32Window MainWin32Window {
+			get { return null; }
 		}
 		
-		public event ViewContentEventHandler ViewOpened;
-		public event ViewContentEventHandler ViewClosed;
-		public event EventHandler ActiveWorkbenchWindowChanged;
-		public event EventHandler ActiveViewContentChanged;		
-		public event EventHandler ActiveContentChanged;		
-		public event KeyEventHandler ProcessCommandKey;
-				
+		public System.ComponentModel.ISynchronizeInvoke SynchronizingObject {
+			get { return null; }
+		}
+		
+		public System.Windows.Window MainWindow {
+			get { return null; }
+		}
+		
 		public string Title {
 			get {
 				throw new NotImplementedException();
@@ -41,24 +46,34 @@ namespace PythonBinding.Tests.Utils
 			}
 		}
 		
-		public List<IViewContent> ViewContentCollection {
+		public ICollection<IViewContent> ViewContentCollection {
 			get {
 				throw new NotImplementedException();
 			}
 		}
 		
-		public List<PadDescriptor> PadContentCollection {
+		public IList<IWorkbenchWindow> WorkbenchWindowCollection {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public IList<PadDescriptor> PadContentCollection {
 			get {
 				throw new NotImplementedException();
 			}
 		}
 		
 		public IWorkbenchWindow ActiveWorkbenchWindow {
+			get; set;
+		}
+		
+		public IViewContent ActiveViewContent {
 			get {
-				return activeWorkbenchWindow;
-			}
-			set {
-				activeWorkbenchWindow = value;
+				if (ActiveWorkbenchWindow != null)
+					return ActiveWorkbenchWindow.ActiveViewContent;
+				else
+					return null;
 			}
 		}
 		
@@ -83,6 +98,11 @@ namespace PythonBinding.Tests.Utils
 			}
 		}
 		
+		public void Initialize()
+		{
+			throw new NotImplementedException();
+		}
+		
 		public void ShowView(IViewContent content)
 		{
 			throw new NotImplementedException();
@@ -103,17 +123,17 @@ namespace PythonBinding.Tests.Utils
 			throw new NotImplementedException();
 		}
 		
-		public void CloseContent(IViewContent content)
-		{
-			throw new NotImplementedException();
-		}
-		
 		public void CloseAllViews()
 		{
 			throw new NotImplementedException();
 		}
 		
 		public void RedrawAllComponents()
+		{
+			throw new NotImplementedException();
+		}
+		
+		public void UpdateRenderer()
 		{
 			throw new NotImplementedException();
 		}
@@ -128,82 +148,5 @@ namespace PythonBinding.Tests.Utils
 			throw new NotImplementedException();
 		}
 		
-		public void UpdateRenderer()
-		{
-		}
-		
-		public Form MainForm {
-			get { return null; }
-		}
-		
-		public void Initialize()
-		{
-		}
-		
-		ICollection<IViewContent> IWorkbench.ViewContentCollection {
-			get {
-				throw new NotImplementedException();
-			}
-		}
-		
-		public IList<IWorkbenchWindow> WorkbenchWindowCollection {
-			get {
-				throw new NotImplementedException();
-			}
-		}
-		
-		IList<PadDescriptor> IWorkbench.PadContentCollection {
-			get {
-				throw new NotImplementedException();
-			}
-		}
-		
-		public IViewContent ActiveViewContent {
-			get {
-				throw new NotImplementedException();
-			}
-		}
-				
-		protected virtual void OnViewOpened(ViewContentEventArgs e)
-		{
-			if (ViewOpened != null) {
-				ViewOpened(this, e);
-			}
-		}	
-		
-		protected virtual void OnViewClosed(ViewContentEventArgs e)
-		{
-			if (ViewClosed != null) {
-				ViewClosed(this, e);
-			}
-		}
-		
-		protected virtual void OnActiveWorkbenchWindowChanged(EventArgs e)
-		{
-			if (ActiveWorkbenchWindowChanged != null) {
-				ActiveWorkbenchWindowChanged(this, e);
-			}
-		}
-		
-		protected virtual void OnActiveViewContentChanged(EventArgs e)
-		{
-			if (ActiveViewContentChanged != null) {
-				ActiveViewContentChanged(this, e);
-			}
-		}
-		
-		protected virtual void OnActiveContentChanged(EventArgs e)
-		{
-			if (ActiveContentChanged != null) {
-				ActiveContentChanged(this, e);
-			}
-		}
-		
-		protected virtual void OnProcessCommandKey(KeyEventArgs e)
-		{
-			if (ProcessCommandKey != null) {
-				ProcessCommandKey(this, e);
-			}
-		}		
 	}
 }
