@@ -58,7 +58,7 @@ namespace ICSharpCode.SharpDevelop.Gui
     		p = PointToScreen(p);
 			
 			using (ColorPaletteDialog clDlg = new ColorPaletteDialog(p.X, p.Y)) {
-		    	clDlg.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm);    	 
+		    	clDlg.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainWin32Window);    	 
 				if (clDlg.DialogResult == DialogResult.OK) {
 		    		CenterColor = clDlg.Color;
 				}

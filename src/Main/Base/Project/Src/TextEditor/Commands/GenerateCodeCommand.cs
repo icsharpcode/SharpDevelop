@@ -50,7 +50,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			if (currentClass != null) {
 				var generators = AddInTree.BuildItems<CodeGeneratorBase>("/AddIns/DefaultTextEditor/CodeGenerator", this, true);
 				using (CodeGenerationForm form = new CodeGenerationForm(textEditorControl, generators.ToArray(), currentClass)) {
-					form.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm);
+					form.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainWin32Window);
 				}
 			}
 		}

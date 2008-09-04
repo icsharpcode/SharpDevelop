@@ -15,6 +15,7 @@ using System.Windows.Forms;
 
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.Sda
 {
@@ -40,6 +41,13 @@ namespace ICSharpCode.SharpDevelop.Sda
 			Application.ThreadException += ShowErrorBox;
 			AppDomain.CurrentDomain.UnhandledException += ShowErrorBox;
 			MessageService.CustomErrorReporter = ShowErrorBox;
+			System.Windows.Threading.Dispatcher.CurrentDispatcher.UnhandledException += Dispatcher_UnhandledException;
+		}
+		
+		static void Dispatcher_UnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+		{
+			ShowErrorBox(e.Exception, "Unhandled WPF exception", false);
+			e.Handled = true;
 		}
 		
 		static void ShowErrorBox(object sender, ThreadExceptionEventArgs e)
@@ -69,7 +77,7 @@ namespace ICSharpCode.SharpDevelop.Sda
 			try {
 				using (ExceptionBox box = new ExceptionBox(exception, message, mustTerminate)) {
 					try {
-						box.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm);
+						box.ShowDialog(WorkbenchSingleton.MainWin32Window);
 					} catch (InvalidOperationException) {
 						box.ShowDialog();
 					}

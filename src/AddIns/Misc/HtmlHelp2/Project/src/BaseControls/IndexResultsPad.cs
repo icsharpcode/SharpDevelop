@@ -32,14 +32,9 @@ namespace HtmlHelp2
 		ColumnHeader title        = new ColumnHeader();
 		ColumnHeader location     = new ColumnHeader();
 
-		public override Control Control
+		public override object Content
 		{
 			get { return listView; }
-		}
-
-		public override void RedrawContent()
-		{
-			this.SetListViewHeader();
 		}
 
 		public ListView IndexResultsListView
@@ -50,6 +45,8 @@ namespace HtmlHelp2
 		public HtmlHelp2IndexResultsPad()
 		{
 			this.SetListViewHeader();
+			ResourceService.LanguageChanged += delegate { SetListViewHeader(); };
+			
 			listView.Columns.Add(title);
 			listView.Columns.Add(location);
 

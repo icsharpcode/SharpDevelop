@@ -376,7 +376,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				customizer.Set("ProjectCreateInformation", projectCreateInformation);
 				customizer.Set("ProjectTemplate", this);
 				WizardDialog wizard = new WizardDialog("Project Wizard", customizer, wizardpath);
-				if (wizard.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) != DialogResult.OK) {
+				if (wizard.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainWin32Window) != DialogResult.OK) {
 					return null;
 				}
 			}

@@ -41,7 +41,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// <summary>
 		/// Gets/Sets the icon of the view content.
 		/// </summary>
-		System.Drawing.Icon Icon {
+		System.Windows.Media.Imaging.BitmapSource Icon {
 			get;
 			set;
 		}
@@ -79,35 +79,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void RedrawContent();
 		
 		/// <summary>
-		/// Used internally:
-		/// This method is called by the workbench to notify the window that is was selected.
-		/// </summary>
-		void OnWindowSelected(EventArgs e);
-		
-		/// <summary>
-		/// Used internally:
-		/// This method is called by the workbench to notify the window that is was deselected.
-		/// </summary>
-		void OnWindowDeselected(EventArgs e);
-		
-		/// <summary>
-		/// Is called when the window is selected.
-		/// </summary>
-		event EventHandler WindowSelected;
-		
-		/// <summary>
-		/// Is called when the window is deselected.
-		/// </summary>
-		event EventHandler WindowDeselected;
-		
-		/// <summary>
 		/// Is called when the title of this window has changed.
 		/// </summary>
 		event EventHandler TitleChanged;
-		
-		/// <summary>
-		/// Is called after the window closes.
-		/// </summary>
-		event EventHandler CloseEvent;
 	}
 }

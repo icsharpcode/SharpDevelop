@@ -58,7 +58,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		ColumnHeader name     = new ColumnHeader();
 		ColumnHeader language = new ColumnHeader();
 		
-		public override Control Control {
+		public override object Content {
 			get {
 				return callStackList;
 			}
@@ -81,9 +81,10 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			language.Width = 50;
 
 			RedrawContent();
+			ResourceService.LanguageChanged += delegate { RedrawContent(); };
 		}
 		
-		public override void RedrawContent()
+		public void RedrawContent()
 		{
 			name.Text     = ResourceService.GetString("Global.Name");
 			language.Text = ResourceService.GetString("MainWindow.Windows.Debug.CallStack.Language");

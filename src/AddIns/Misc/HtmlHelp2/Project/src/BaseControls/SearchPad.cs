@@ -47,7 +47,7 @@ namespace HtmlHelp2
 		Label label2               = new Label();
 		bool searchIsBusy;
 
-		public override Control Control
+		public override object Content
 		{
 			get { return mainPanel; }
 		}
@@ -55,11 +55,6 @@ namespace HtmlHelp2
 		public void FocusSearchTextBox()
 		{
 			searchTerm.Focus();
-		}
-
-		public override void RedrawContent()
-		{
-			this.RedrawContentInternal();
 		}
 
 		void RedrawContentInternal()
@@ -83,6 +78,7 @@ namespace HtmlHelp2
 		{
 			this.InitializeComponents();
 			this.UpdateControls();
+			ResourceService.LanguageChanged += delegate { RedrawContentInternal(); };
 			
 			HtmlHelp2Environment.FilterQueryChanged += new EventHandler(FilterQueryChanged);
 			HtmlHelp2Environment.NamespaceReloaded  += new EventHandler(NamespaceReloaded);

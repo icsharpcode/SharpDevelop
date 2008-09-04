@@ -7,6 +7,7 @@
 
 using System;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.PInvokeAddIn
 {
@@ -15,7 +16,7 @@ namespace ICSharpCode.PInvokeAddIn
 	/// insert one or more of them into the code.
 	/// </summary>
 	public class InsertPInvokeSignaturesCommand : AbstractMenuCommand
-	{		
+	{
 		/// <summary>
 		/// Starts the command.
 		/// </summary>
@@ -23,7 +24,7 @@ namespace ICSharpCode.PInvokeAddIn
 		{
 			// Show PInvoke dialog.
 			using(InsertPInvokeSignaturesForm form = new InsertPInvokeSignaturesForm()) {
-				form.ShowDialog();				
+				form.ShowDialog(WorkbenchSingleton.MainWin32Window);
 			}
 		}
 	}

@@ -6,12 +6,13 @@
 // </file>
 
 using System;
-using System.Linq;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
+using System.Windows.Input;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -37,6 +38,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					LoggingService.Info("CurrentProject changed to " + (value == null ? "null" : value.Name));
 					currentProject = value;
 					OnCurrentProjectChanged(new ProjectEventArgs(currentProject));
+					CommandManager.InvalidateRequerySuggested();
 				}
 			}
 		}
@@ -245,12 +247,18 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public static void LoadSolution(string fileName)
 		{
+			FileUtility.ObservedLoad(LoadSolutionInternal, fileName);
+		}
+		
+		static void LoadSolutionInternal(string fileName)
+		{
 			if (!Path.IsPathRooted(fileName))
 				throw new ArgumentException("Path must be rooted!");
 			BeforeLoadSolution();
 			OnSolutionLoading(fileName);
 			try {
 				openSolution = Solution.Load(fileName);
+				CommandManager.InvalidateRequerySuggested();
 				if (openSolution == null)
 					return;
 			} catch (UnauthorizedAccessException ex) {
@@ -307,11 +315,16 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		public static void LoadProject(string fileName)
 		{
+			FileUtility.ObservedLoad(LoadSolutionInternal, fileName);
+		}
+		
+		static void LoadProjectInternal(string fileName)
+		{
 			if (!Path.IsPathRooted(fileName))
 				throw new ArgumentException("Path must be rooted!");
 			string solutionFile = Path.ChangeExtension(fileName, ".sln");
 			if (File.Exists(solutionFile)) {
-				LoadSolution(solutionFile);
+				LoadSolutionInternal(solutionFile);
 				
 				if (openSolution != null) {
 					bool found = false;
@@ -479,6 +492,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				openSolution = null;
 				
 				OnSolutionClosed(EventArgs.Empty);
+				CommandManager.InvalidateRequerySuggested();
 			}
 		}
 		

@@ -59,7 +59,7 @@ namespace ICSharpCode.SharpDevelop.Gui.ClassBrowser
 			}
 		}
 		
-		public override Control Control {
+		public override object Content {
 			get {
 				return contentPanel;
 			}

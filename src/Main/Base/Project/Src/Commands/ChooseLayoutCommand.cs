@@ -8,11 +8,10 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Windows.Forms;
 
 using ICSharpCode.Core;
-using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Gui;
+using System.Windows.Forms;
 
 namespace ICSharpCode.SharpDevelop.Commands
 {
@@ -42,7 +41,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 			if (editingLayout) return;
 			LoggingService.Debug("ChooseLayoutCommand.Run()");
 			
-			ComboBox comboBox = ((ToolBarComboBox)Owner).ComboBox;
+			var comboBox = (System.Windows.Controls.ComboBox)Owner;
 			string dataPath   = Path.Combine(PropertyService.DataDirectory, "resources" + Path.DirectorySeparatorChar + "layouts");
 			string configPath = Path.Combine(PropertyService.ConfigDirectory, "layouts");
 			if (!Directory.Exists(configPath)) {
@@ -117,7 +116,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 				frm.ClientSize = new System.Drawing.Size(400, 300);
 				frm.StartPosition = FormStartPosition.CenterParent;
 				
-				if (frm.ShowDialog(WorkbenchSingleton.MainForm) == DialogResult.OK) {
+				if (frm.ShowDialog(WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
 					IList<string> oldNames = new List<string>(CustomLayoutNames);
 					IList<string> newNames = ed.GetList();
 					// add newly added layouts
@@ -157,8 +156,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 		{
 			if (editingLayout) return;
 			LoggingService.Debug("ChooseLayoutCommand.LayoutChanged(object,EventArgs)");
-			ToolBarComboBox toolbarItem = (ToolBarComboBox)Owner;
-			ComboBox comboBox = toolbarItem.ComboBox;
+			var comboBox = (System.Windows.Controls.ComboBox)Owner;
 			for (int i = 0; i < comboBox.Items.Count; ++i) {
 				if (((LayoutConfiguration)comboBox.Items[i]).Name == LayoutConfiguration.CurrentLayoutName) {
 					comboBox.SelectedIndex = i;
@@ -169,23 +167,28 @@ namespace ICSharpCode.SharpDevelop.Commands
 		protected override void OnOwnerChanged(EventArgs e)
 		{
 			base.OnOwnerChanged(e);
-			ToolBarComboBox toolbarItem = (ToolBarComboBox)Owner;
-			ComboBox comboBox = toolbarItem.ComboBox;
-			comboBox.Items.Clear();
-			int index = 0;
-			foreach (LayoutConfiguration config in LayoutConfiguration.Layouts) {
-				if (LayoutConfiguration.CurrentLayoutName == config.Name) {
-					index = comboBox.Items.Count;
+			
+			editingLayout = true;
+			try {
+				var comboBox = (System.Windows.Controls.ComboBox)Owner;
+				comboBox.Items.Clear();
+				int index = 0;
+				foreach (LayoutConfiguration config in LayoutConfiguration.Layouts) {
+					if (LayoutConfiguration.CurrentLayoutName == config.Name) {
+						index = comboBox.Items.Count;
+					}
+					comboBox.Items.Add(config);
 				}
-				comboBox.Items.Add(config);
+				editIndex = comboBox.Items.Count;
+				
+				comboBox.Items.Add(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.ChooseLayoutCommand.EditItem}"));
+				
+				resetIndex = comboBox.Items.Count;
+				comboBox.Items.Add(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.ChooseLayoutCommand.ResetToDefaultItem}"));
+				comboBox.SelectedIndex = index;
+			} finally {
+				editingLayout = false;
 			}
-			editIndex = comboBox.Items.Count;
-			
-			comboBox.Items.Add(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.ChooseLayoutCommand.EditItem}"));
-			
-			resetIndex = comboBox.Items.Count;
-			comboBox.Items.Add(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.ChooseLayoutCommand.ResetToDefaultItem}"));
-			comboBox.SelectedIndex = index;
 		}
 	}
 }

@@ -221,7 +221,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 				fdiag.Multiselect     = true;
 				fdiag.CheckFileExists = true;
 				
-				if (fdiag.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) == DialogResult.OK) {
+				if (fdiag.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
 					ControlDictionary["fileNameTextBox"].Text = string.Join(";", fdiag.FileNames);
 				}
 			}

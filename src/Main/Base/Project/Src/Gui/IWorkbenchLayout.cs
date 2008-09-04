@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -25,12 +26,21 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		
 		/// <summary>
+		/// Gets the open workbench windows.
+		/// </summary>
+		IList<IWorkbenchWindow> WorkbenchWindows {
+			get;
+		}
+		
+		/// <summary>
 		/// The active content. This can be either a IViewContent or a IPadContent, depending on
 		/// where the focus currently is.
 		/// </summary>
 		object ActiveContent {
 			get;
 		}
+		
+		event EventHandler ActiveContentChanged;
 		
 		/// <summary>
 		/// Attaches this layout manager to a workbench object.
@@ -52,7 +62,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// bring it to foreground)
 		/// </summary>
 		void ActivatePad(PadDescriptor content);
-		void ActivatePad(string fullyQualifiedTypeName);
 		
 		/// <summary>
 		/// Hides a <see cref="IPadContent"/>.
@@ -70,11 +79,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 		bool IsVisible(PadDescriptor padContent);
 		
 		/// <summary>
-		/// Re-initializes all components of the layout manager.
-		/// </summary>
-		void RedrawAllComponents();
-		
-		/// <summary>
 		/// Shows a new <see cref="IViewContent"/>.
 		/// </summary>
 		IWorkbenchWindow ShowView(IViewContent content);
@@ -82,11 +86,5 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void LoadConfiguration();
 		void StoreConfiguration();
-		
-		/// <summary>
-		/// Is called, when the workbench window which the user has into
-		/// the foreground (e.g. editable) changed to a new one.
-		/// </summary>
-		event EventHandler ActiveWorkbenchWindowChanged;
 	}
 }

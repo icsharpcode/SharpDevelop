@@ -12,6 +12,21 @@ using ICSharpCode.SharpDevelop.Gui;
 namespace ICSharpCode.SharpDevelop
 {
 	/// <summary>
+	/// Indicates the default position for a pad.
+	/// This is a bit-flag enum, Hidden can be combined with the directions.
+	/// </summary>
+	[Flags]
+	public enum DefaultPadPositions
+	{
+		None = 0,
+		Right = 1,
+		Left = 2,
+		Bottom = 4,
+		Top = 8,
+		Hidden = 16
+	}
+	
+	/// <summary>
 	/// Describes a pad.
 	/// </summary>
 	public class PadDescriptor : IDisposable
@@ -39,6 +54,9 @@ namespace ICSharpCode.SharpDevelop
 			icon = codon.Properties["icon"];
 			title = codon.Properties["title"];
 			@class = codon.Properties["class"];
+			if (!string.IsNullOrEmpty(codon.Properties["defaultPosition"])) {
+				DefaultPosition = (DefaultPadPositions)Enum.Parse(typeof(DefaultPadPositions), codon.Properties["defaultPosition"]);
+			}
 		}
 		
 		/// <summary>
@@ -111,11 +129,10 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
-		public bool HasFocus {
-			get {
-				return (padContent != null) ? padContent.Control.ContainsFocus : false;
-			}
-		}
+		/// <summary>
+		/// Gets/sets the default position of the pad.
+		/// </summary>
+		public DefaultPadPositions DefaultPosition { get; set; }
 		
 		public IPadContent PadContent {
 			get {
@@ -129,13 +146,6 @@ namespace ICSharpCode.SharpDevelop
 			if (padContent != null) {
 				padContent.Dispose();
 				padContent = null;
-			}
-		}
-		
-		public void RedrawContent()
-		{
-			if (padContent != null) {
-				padContent.RedrawContent();
 			}
 		}
 		

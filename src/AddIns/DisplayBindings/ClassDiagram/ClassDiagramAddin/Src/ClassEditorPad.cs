@@ -157,18 +157,9 @@ namespace ClassDiagramAddin
 		/// <summary>
 		/// The <see cref="System.Windows.Forms.Control"/> representing the pad
 		/// </summary>
-		public override Control Control
+		public override object Content
 		{
 			get { return editor; }
-		}
-		
-		/// <summary>
-		/// Refreshes the pad
-		/// </summary>
-		public override void RedrawContent()
-		{
-			// TODO: Refresh the whole pad control here, renew all resource strings whatever
-			//       Note that you do not need to recreate the control.
 		}
 		
 		/// <summary>

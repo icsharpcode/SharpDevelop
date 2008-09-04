@@ -110,7 +110,7 @@ namespace ICSharpCode.FormsDesigner
 			// This is required on Vista, I don't know why it works correctly in XP
 			p.Font = Control.DefaultFont;
 			
-			this.UserControl = this.p;
+			this.UserContent = this.p;
 			
 			this.resourceStore = new ResourceStore(this);
 			
@@ -702,7 +702,7 @@ namespace ICSharpCode.FormsDesigner
 			UpdatePropertyPad();
 		}
 		
-		public virtual Control ToolsControl {
+		public virtual object ToolsContent {
 			get { return ToolboxProvider.FormsDesignerSideBar; }
 		}
 		

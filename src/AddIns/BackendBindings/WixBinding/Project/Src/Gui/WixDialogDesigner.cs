@@ -314,7 +314,7 @@ namespace ICSharpCode.WixBinding
 		}
 		
 		
-		public override System.Windows.Forms.Control ToolsControl {
+		public override object ToolsContent {
 			get {
 				return SetupDialogControlsToolBox;
 			}

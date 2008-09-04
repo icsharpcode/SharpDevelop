@@ -28,7 +28,7 @@ namespace HexEditor.View
 			file.ForceInitializeView(this);
 		}
 
-		public override System.Windows.Forms.Control Control {
+		public override object Content {
 			get { return hexEditContainer; }
 		}
 		

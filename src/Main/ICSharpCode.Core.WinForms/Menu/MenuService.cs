@@ -30,7 +30,7 @@ namespace ICSharpCode.Core.WinForms
 						((IStatusUpdate)item).UpdateStatus();
 				} else {
 					ISubmenuBuilder submenuBuilder = (ISubmenuBuilder)item;
-					collection.AddRange(submenuBuilder.BuildSubmenu(null, descriptor.Caller));
+					collection.AddRange(submenuBuilder.BuildSubmenu(descriptor.Codon, descriptor.Caller));
 				}
 			}
 		}

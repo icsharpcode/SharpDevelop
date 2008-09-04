@@ -45,7 +45,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.Files.Add(file);
 		}
 		
-		public abstract Control Control {
+		public abstract object Content {
 			get;
 		}
 		
@@ -468,10 +468,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		#endregion
-		
-		public virtual void RedrawContent()
-		{
-		}
 		
 		public virtual void Save(OpenedFile file, Stream stream)
 		{

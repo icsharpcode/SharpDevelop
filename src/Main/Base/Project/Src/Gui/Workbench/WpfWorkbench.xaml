@@ -1,0 +1,14 @@
+<Window x:Class = "ICSharpCode.SharpDevelop.Gui.WpfWorkbench"
+        xmlns = "http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x = "http://schemas.microsoft.com/winfx/2006/xaml"
+        Title = "SharpDevelop (experimental WPF build)"
+        WindowStartupLocation = "Manual"
+        Background="{DynamicResource {x:Static SystemColors.MenuBarBrushKey}}"
+>
+	<DockPanel Name="dockPanel">
+		<Menu Name="mainMenu" DockPanel.Dock="Top"/>
+		<!-- Toolbars will be inserted here (index: 1) -->
+		<!-- Statusbar will be inserted here (index: Count-2) -->
+		<ContentControl Name="mainContent"/>
+	</DockPanel>
+</Window>

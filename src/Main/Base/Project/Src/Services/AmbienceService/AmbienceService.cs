@@ -101,7 +101,7 @@ namespace ICSharpCode.SharpDevelop
 				} catch (TreePathNotFoundException) {
 					ambience = null;
 				}
-				if (ambience == null && Gui.WorkbenchSingleton.MainForm != null) {
+				if (ambience == null && Gui.WorkbenchSingleton.MainWin32Window != null) {
 					MessageService.ShowError("${res:ICSharpCode.SharpDevelop.Services.AmbienceService.AmbienceNotFoundError}");
 				}
 				defaultAmbience = ambience ?? new NetAmbience();

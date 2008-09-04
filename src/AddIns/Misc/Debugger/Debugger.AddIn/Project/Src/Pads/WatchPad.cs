@@ -104,7 +104,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		/// <remarks>
 		/// This is not used anywhere, but it is neccessary to be overridden in children of AbstractPadContent.
 		/// </remarks>
-		public override Control Control {
+		public override object Content {
 			get {
 				return watchList;
 			}
@@ -148,7 +148,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			
 			watches = new List<TextNode>();
 			
-			RedrawContent();
+			ResourceService.LanguageChanged += delegate { OnLanguageChanged(); };
+			OnLanguageChanged();
 		}
 
 		void watchList_DoubleClick(object sender, EventArgs e)
@@ -177,7 +178,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			watchList.EndUpdate();
 		}
 		
-		public override void RedrawContent()
+		void OnLanguageChanged()
 		{
 			nameColumn.Header = ResourceService.GetString("Global.Name");
 			nameColumn.Width = 250;

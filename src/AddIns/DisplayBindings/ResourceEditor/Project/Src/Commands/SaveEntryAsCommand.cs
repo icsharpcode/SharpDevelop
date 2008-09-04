@@ -52,7 +52,7 @@ namespace ResourceEditor
 				return;
 			}
 			
-			DialogResult dr = sdialog.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm);
+			DialogResult dr = sdialog.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainWin32Window);
 			sdialog.Dispose();
 			if (dr != DialogResult.OK) {
 				return;

@@ -7,9 +7,8 @@
 
 using System;
 using System.Linq;
-using System.Drawing;
-using System.Windows.Forms;
-
+using System.Windows;
+using System.Windows.Media.Imaging;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 
@@ -27,15 +26,15 @@ namespace ICSharpCode.SharpDevelop
 		public static bool Visible {
 			get {
 				System.Diagnostics.Debug.Assert(statusBar != null);
-				return statusBar.Visible;
+				return statusBar.Visibility == Visibility.Visible;
 			}
 			set {
 				System.Diagnostics.Debug.Assert(statusBar != null);
-				statusBar.Visible = value;
+				statusBar.Visibility = value ? Visibility.Visible : Visibility.Collapsed;
 			}
 		}
 		
-		public static Control Control {
+		internal static SdStatusBar Control {
 			get {
 				System.Diagnostics.Debug.Assert(statusBar != null);
 				return statusBar;
@@ -44,7 +43,7 @@ namespace ICSharpCode.SharpDevelop
 		
 		public static void SetCaretPosition(int x, int y, int charOffset)
 		{
-			statusBar.CursorStatusBarPanel.Text = StringParser.Parse(
+			statusBar.CursorStatusBarPanel.Content = StringParser.Parse(
 				"${res:StatusBarService.CursorStatusBarPanelText}",
 				new string[,] {
 					{"Line", String.Format("{0,-10}", y)},
@@ -55,7 +54,7 @@ namespace ICSharpCode.SharpDevelop
 		
 		public static void SetInsertMode(bool insertMode)
 		{
-			statusBar.ModeStatusBarPanel.Text = insertMode ? StringParser.Parse("${res:StatusBarService.CaretModes.Insert}") : StringParser.Parse("${res:StatusBarService.CaretModes.Overwrite}");
+			statusBar.ModeStatusBarPanel.Content = insertMode ? StringParser.Parse("${res:StatusBarService.CaretModes.Insert}") : StringParser.Parse("${res:StatusBarService.CaretModes.Overwrite}");
 		}
 		
 		public static void ShowErrorMessage(string message)
@@ -71,7 +70,7 @@ namespace ICSharpCode.SharpDevelop
 			statusBar.SetMessage(StringParser.Parse(message));
 		}
 		
-		public static void SetMessage(Image image, string message)
+		public static void SetMessage(BitmapSource image, string message)
 		{
 			System.Diagnostics.Debug.Assert(statusBar != null);
 			statusBar.SetMessage(image, StringParser.Parse(message));

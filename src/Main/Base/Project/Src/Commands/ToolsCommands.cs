@@ -16,12 +16,12 @@ namespace ICSharpCode.SharpDevelop.Commands
 	{
 		public static void ShowTabbedOptions(string dialogTitle, AddInTreeNode node)
 		{
-			TabbedOptions o = new TabbedOptions(dialogTitle, node);
-			o.Width  = 450;
-			o.Height = 425;
-			o.FormBorderStyle = FormBorderStyle.FixedDialog;
-			o.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm);
-			o.Dispose();
+			using (TabbedOptions o = new TabbedOptions(dialogTitle, node)) {
+				o.Width  = 450;
+				o.Height = 425;
+				o.FormBorderStyle = FormBorderStyle.FixedDialog;
+				o.ShowDialog(WorkbenchSingleton.MainWin32Window);
+			}
 		}
 		
 		public override void Run()
@@ -29,8 +29,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 			using (TreeViewOptions optionsDialog = new TreeViewOptions(AddInTree.GetTreeNode("/SharpDevelop/Dialogs/OptionsDialog"))) {
 				optionsDialog.FormBorderStyle = FormBorderStyle.FixedDialog;
 				
-				optionsDialog.Owner = WorkbenchSingleton.MainForm;
-				optionsDialog.ShowDialog(WorkbenchSingleton.MainForm);
+				optionsDialog.ShowDialog(WorkbenchSingleton.MainWin32Window);
 			}
 		}
 	}
@@ -39,9 +38,8 @@ namespace ICSharpCode.SharpDevelop.Commands
 	{
 		public override void Run()
 		{
-			((DefaultWorkbench)WorkbenchSingleton.Workbench).FullScreen = !((DefaultWorkbench)WorkbenchSingleton.Workbench).FullScreen;
+			throw new NotImplementedException();
+//			((DefaultWorkbench)WorkbenchSingleton.Workbench).FullScreen = !((DefaultWorkbench)WorkbenchSingleton.Workbench).FullScreen;
 		}
 	}
-	
-	
 }

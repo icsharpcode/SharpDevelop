@@ -33,7 +33,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			TextEditorControl textarea = ((ITextEditorControlProvider)viewContent).TextEditorControl;
 			
 			using (SharpDevelopColorDialog cd = new SharpDevelopColorDialog()) {
-				if (cd.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) == DialogResult.OK) {
+				if (cd.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
 					string ext = Path.GetExtension(textarea.FileName).ToLowerInvariant();
 					string colorstr;
 					if (ext == ".cs" || ext == ".vb" || ext == ".boo") {

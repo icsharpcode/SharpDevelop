@@ -232,8 +232,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			}
 			
 			using (SortOptionsDialog sortOptionsDialog = new SortOptionsDialog()) {
-				sortOptionsDialog.Owner = WorkbenchSingleton.MainForm;
-				if (sortOptionsDialog.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) == DialogResult.OK) {
+				if (sortOptionsDialog.ShowDialog(WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
 					TextArea textarea = ((ITextEditorControlProvider)viewContent).TextEditorControl.ActiveTextAreaControl.TextArea;
 					textarea.BeginUpdate();
 					if (textarea.SelectionManager.HasSomethingSelected) {

@@ -48,7 +48,7 @@ namespace Hornung.ResourceToolkit.CodeCompletion
 			
 			EditStringResourceDialog dialog = new EditStringResourceDialog(this.content, this.preEnteredName, null, true);
 			dialog.Text = this.Description;
-			if (dialog.ShowDialog(WorkbenchSingleton.MainForm) != DialogResult.OK) {
+			if (dialog.ShowDialog(WorkbenchSingleton.MainWin32Window) != DialogResult.OK) {
 				return false;
 			}
 			

@@ -19,13 +19,15 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 		protected TextEditorControl control;
 		protected Size              drawingSize;
 		Rectangle workingScreen;
+		IWin32Window parentWindow;
 		Form parentForm;
 		
-		protected AbstractCompletionWindow(Form parentForm, TextEditorControl control)
+		protected AbstractCompletionWindow(IWin32Window parentWindow, TextEditorControl control)
 		{
-			workingScreen = Screen.GetWorkingArea(parentForm);
+			workingScreen = Screen.GetWorkingArea(control);
 //			SetStyle(ControlStyles.Selectable, false);
-			this.parentForm = parentForm;
+			this.parentWindow = parentWindow;
+			this.parentForm = parentWindow as Form;
 			this.control  = control;
 			
 			SetLocation();
@@ -44,7 +46,7 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			int xpos = textArea.TextView.GetDrawingXPos(caretPos.Y, caretPos.X);
 			int rulerHeight = textArea.TextEditorProperties.ShowHorizontalRuler ? textArea.TextView.FontHeight : 0;
 			Point pos = new Point(textArea.TextView.DrawingPosition.X + xpos,
-			                      textArea.TextView.DrawingPosition.Y + (textArea.Document.GetVisibleLine(caretPos.Y)) * textArea.TextView.FontHeight 
+			                      textArea.TextView.DrawingPosition.Y + (textArea.Document.GetVisibleLine(caretPos.Y)) * textArea.TextView.FontHeight
 			                      - textArea.TextView.TextArea.VirtualTop.Y + textArea.TextView.FontHeight + rulerHeight);
 			
 			Point location = control.ActiveTextAreaControl.PointToScreen(pos);
@@ -110,9 +112,8 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 		
 		protected void ShowCompletionWindow()
 		{
-			Owner = parentForm;
 			Enabled = true;
-			this.Show();
+			this.Show(parentWindow);
 			
 			control.Focus();
 			
@@ -171,7 +172,9 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			base.OnClosed(e);
 			
 			// take out the inserted methods
-			parentForm.LocationChanged -= new EventHandler(ParentFormLocationChanged);
+			if (parentForm != null) {
+				parentForm.LocationChanged -= new EventHandler(ParentFormLocationChanged);
+			}
 			
 			foreach (Control c in Controls) {
 				c.MouseMove -= ControlMouseMove;

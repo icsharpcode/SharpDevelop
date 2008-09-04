@@ -32,7 +32,7 @@ namespace ResourceEditor
 				fdiag.Multiselect    = true;
 				fdiag.CheckFileExists = true;
 				
-				if (fdiag.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) == DialogResult.OK) {
+				if (fdiag.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
 					foreach (string filename in fdiag.FileNames) {
 						string oresname = Path.ChangeExtension(Path.GetFileName(filename), null);
 						if (oresname == "") oresname = "new";

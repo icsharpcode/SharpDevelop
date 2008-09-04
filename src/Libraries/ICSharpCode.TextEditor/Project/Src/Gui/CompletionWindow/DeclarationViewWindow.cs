@@ -43,13 +43,14 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 		}
 		
 		public bool HideOnClick;
+		IWin32Window parentWindow;
 		
-		public DeclarationViewWindow(Form parent)
+		public DeclarationViewWindow(IWin32Window parent)
 		{
 			SetStyle(ControlStyles.Selectable, false);
 			StartPosition   = FormStartPosition.Manual;
 			FormBorderStyle = FormBorderStyle.None;
-			Owner           = parent;
+			this.parentWindow = parent;
 			ShowInTaskbar   = false;
 			Size            = new Size(0, 0);
 			base.CreateHandle();
@@ -77,7 +78,7 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 		
 		public void ShowDeclarationViewWindow()
 		{
-			Show();
+			Show(parentWindow);
 		}
 		
 		public void CloseDeclarationViewWindow()

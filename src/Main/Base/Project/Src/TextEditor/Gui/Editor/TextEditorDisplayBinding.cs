@@ -12,7 +12,7 @@ using System.IO;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
-using ICSharpCode.Core.WinForms;
+using ICSharpCode.Core.Presentation;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.TextEditor;
@@ -123,7 +123,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			}
 		}
 		
-		public override Control Control {
+		public override object Content {
 			get {
 				return textEditorControl;
 			}
@@ -187,12 +187,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		{
 			this.PrimaryFile.MakeDirty();
 			NavigationService.ContentChanging(this.textEditorControl, e);
-		}
-		
-		public override void RedrawContent()
-		{
-			textEditorControl.OptionsChanged();
-			textEditorControl.Refresh();
 		}
 		
 		public override void Dispose()
@@ -338,7 +332,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		void SetIcon()
 		{
 			if (this.WorkbenchWindow != null) {
-				System.Drawing.Icon icon = WinFormsResourceService.GetIcon(IconService.GetImageForFile(this.PrimaryFileName));
+				var icon = PresentationResourceService.GetBitmapSource(IconService.GetImageForFile(this.PrimaryFileName));
 				if (icon != null) {
 					this.WorkbenchWindow.Icon = icon;
 				}
@@ -508,7 +502,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		}
 		#endregion
 		
-		Control IToolsHost.ToolsControl {
+		object IToolsHost.ToolsContent {
 			get { return TextEditorSideBar.Instance; }
 		}
 	}

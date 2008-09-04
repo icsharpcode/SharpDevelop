@@ -43,14 +43,9 @@ namespace HtmlHelp2
 		private string debugPreElement              = String.Empty;
 		private bool enableDebugInfo                = HtmlHelp2Environment.Config.DynamicHelpDebugInfos;
 
-		public override Control Control
+		public override object Content
 		{
 			get { return dynamicHelpBrowser; }
-		}
-
-		public override void RedrawContent()
-		{
-			dynamicHelpBrowser.RedrawContent();
 		}
 
 		[PermissionSet(SecurityAction.LinkDemand, Name="Execution")]
@@ -65,6 +60,7 @@ namespace HtmlHelp2
 			ProjectService.SolutionClosed          += new EventHandler(this.SolutionClosed);
 			
 			HtmlHelp2Environment.NamespaceReloaded += new EventHandler(this.NamespaceReloaded);
+			ResourceService.LanguageChanged += delegate { dynamicHelpBrowser.RedrawContent(); };
 		}
 
 		#region Dynamic Help Calls

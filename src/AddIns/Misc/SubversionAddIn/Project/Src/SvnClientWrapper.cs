@@ -225,7 +225,7 @@ namespace ICSharpCode.Svn
 			LoggingService.Debug("PasswordPrompt");
 			try {
 				using (LoginDialog loginDialog = new LoginDialog(realm.Value, username.Value, maySave)) {
-					if (WorkbenchSingleton.SafeThreadFunction<Form, DialogResult>(loginDialog.ShowDialog, WorkbenchSingleton.MainForm) == DialogResult.OK) {
+					if (WorkbenchSingleton.SafeThreadFunction<IWin32Window, DialogResult>(loginDialog.ShowDialog, WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
 						cred = loginDialog.CreateCredential(pool);
 					}
 				}
@@ -241,7 +241,7 @@ namespace ICSharpCode.Svn
 			LoggingService.Debug("SslServerTrustPrompt");
 			try {
 				using (SslServerTrustDialog sslServerTrustDialog = new SslServerTrustDialog(certInfo, failures, maySave)) {
-					if (WorkbenchSingleton.SafeThreadFunction<Form, DialogResult>(sslServerTrustDialog.ShowDialog, WorkbenchSingleton.MainForm) == DialogResult.OK) {
+					if (WorkbenchSingleton.SafeThreadFunction<IWin32Window, DialogResult>(sslServerTrustDialog.ShowDialog, WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
 						cred = sslServerTrustDialog.CreateCredential(pool);
 					}
 				}
@@ -257,7 +257,7 @@ namespace ICSharpCode.Svn
 			LoggingService.Debug("SslServerTrustPrompt");
 			try {
 				using (ClientCertPassphraseDialog clientCertPassphraseDialog = new ClientCertPassphraseDialog(realm.Value, maySave)) {
-					if (WorkbenchSingleton.SafeThreadFunction<Form, DialogResult>(clientCertPassphraseDialog.ShowDialog, WorkbenchSingleton.MainForm) == DialogResult.OK) {
+					if (WorkbenchSingleton.SafeThreadFunction<IWin32Window, DialogResult>(clientCertPassphraseDialog.ShowDialog, WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
 						cred = clientCertPassphraseDialog.CreateCredential(pool);
 					}
 				}
@@ -273,7 +273,7 @@ namespace ICSharpCode.Svn
 			LoggingService.Debug("SslServerTrustPrompt");
 			try {
 				using (ClientCertDialog clientCertDialog = new ClientCertDialog(realm.Value, maySave)) {
-					if (WorkbenchSingleton.SafeThreadFunction<Form, DialogResult>(clientCertDialog.ShowDialog, WorkbenchSingleton.MainForm) == DialogResult.OK) {
+					if (WorkbenchSingleton.SafeThreadFunction<IWin32Window, DialogResult>(clientCertDialog.ShowDialog, WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
 						cred = clientCertDialog.CreateCredential(pool);
 					}
 				}

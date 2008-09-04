@@ -11,6 +11,7 @@ using System.Text;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Gui;
 using Microsoft.Win32;
 
 namespace ICSharpCode.Svn
@@ -46,7 +47,7 @@ namespace ICSharpCode.Svn
 			string path = GetPathFromRegistry("ProcPath");
 			if (path == null) {
 				using (TortoiseSvnNotFoundForm form = new TortoiseSvnNotFoundForm()) {
-					form.ShowDialog();
+					form.ShowDialog(WorkbenchSingleton.MainWin32Window);
 				}
 			} else {
 				try {

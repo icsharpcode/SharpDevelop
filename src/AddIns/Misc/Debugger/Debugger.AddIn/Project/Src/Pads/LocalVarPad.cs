@@ -61,7 +61,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		/// <remarks>
 		/// This is not used anywhere, but it is neccessary to be overridden in children of AbstractPadContent.
 		/// </remarks>
-		public override Control Control {
+		public override object Content {
 			get {
 				return localVarList;
 			}
@@ -100,9 +100,10 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			localVarList.AutoRowHeight = true;
 			
 			RedrawContent();
+			ResourceService.LanguageChanged += delegate { RedrawContent(); };
 		}
 		
-		public override void RedrawContent()
+		public void RedrawContent()
 		{
 			nameColumn.Header = ResourceService.GetString("Global.Name");
 			nameColumn.Width = 250;

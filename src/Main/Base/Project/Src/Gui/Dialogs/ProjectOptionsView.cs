@@ -30,7 +30,7 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 			}
 		}
 		
-		public override Control Control {
+		public override object Content {
 			get {
 				return tabControl;
 			}

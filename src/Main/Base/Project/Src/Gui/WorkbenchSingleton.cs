@@ -7,6 +7,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Windows;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
@@ -21,16 +22,27 @@ namespace ICSharpCode.SharpDevelop.Gui
 		const string workbenchMemento        = "WorkbenchMemento";
 		const string activeContentState      = "Workbench.ActiveContent";
 		
-		static STAThreadCaller caller;
 		static IWorkbench workbench;
 		
 		/// <summary>
 		/// Gets the main form. Returns null in unit-testing mode.
 		/// </summary>
-		public static Form MainForm {
+		public static IWin32Window MainWin32Window {
 			get {
 				if (workbench != null) {
-					return workbench.MainForm;
+					return workbench.MainWin32Window;
+				}
+				return null;
+			}
+		}
+		
+		/// <summary>
+		/// Gets the main window. Returns null in unit-testing mode.
+		/// </summary>
+		public static Window MainWindow {
+			get {
+				if (workbench != null) {
+					return workbench.MainWindow;
 				}
 				return null;
 			}
@@ -47,6 +59,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public static Control ActiveControl {
 			get {
+				return null;
+				/*
 				ContainerControl container = WorkbenchSingleton.MainForm;
 				Control ctl;
 				do {
@@ -55,7 +69,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 						return container;
 					container = ctl as ContainerControl;
 				} while(container != null);
-				return ctl;
+				return ctl;*/
 			}
 		}
 		
@@ -84,10 +98,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		public static void InitializeWorkbench()
 		{
-			if (Environment.OSVersion.Platform == PlatformID.Unix)
-				InitializeWorkbench(new DefaultWorkbench(), new SimpleWorkbenchLayout());
-			else
-				InitializeWorkbench(new DefaultWorkbench(), new SdiWorkbenchLayout());
+//			if (Environment.OSVersion.Platform == PlatformID.Unix)
+//				InitializeWorkbench(new DefaultWorkbench(), new SimpleWorkbenchLayout());
+//			else
+//				InitializeWorkbench(new DefaultWorkbench(), new SdiWorkbenchLayout());
+			InitializeWorkbench(new WpfWorkbench(), new AvalonDockLayout());
 		}
 		
 		public static void InitializeWorkbench(IWorkbench workbench, IWorkbenchLayout layout)
@@ -104,13 +119,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 			Project.CustomToolsService.Initialize();
 			Project.BuildModifiedProjectsOnlyService.Initialize();
 			
-			WinFormsMessageService.DialogOwner = workbench.MainForm;
-			WinFormsMessageService.DialogSynchronizeInvoke = workbench.MainForm;
+			WinFormsMessageService.DialogOwner = workbench.MainWin32Window;
+			WinFormsMessageService.DialogSynchronizeInvoke = workbench.SynchronizingObject;
 			
 			PropertyService.PropertyChanged += new PropertyChangedEventHandler(TrackPropertyChanges);
 			ResourceService.LanguageChanged += delegate { workbench.RedrawAllComponents(); };
-			
-			caller = new STAThreadCaller(workbench.MainForm);
 			
 			workbench.Initialize();
 			workbench.SetMemento(PropertyService.Get(workbenchMemento, new Properties()));
@@ -154,47 +167,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		
 		#region Safe Thread Caller
-		/// <summary>
-		/// Helper class for invoking methods on the main thread.
-		/// </summary>
-		private sealed class STAThreadCaller
-		{
-			Control ctl;
-			
-			public STAThreadCaller(Control ctl)
-			{
-				if (ctl == null)
-					throw new ArgumentNullException("ctl");
-				this.ctl = ctl;
-			}
-			
-			public object Call(Delegate method, object[] arguments)
-			{
-				if (method == null) {
-					throw new ArgumentNullException("method");
-				}
-				return ctl.Invoke(method, arguments);
-			}
-			
-			public void BeginCall(Delegate method, object[] arguments)
-			{
-				if (method == null) {
-					throw new ArgumentNullException("method");
-				}
-				try {
-					ctl.BeginInvoke(method, arguments);
-				} catch (InvalidOperationException ex) {
-					LoggingService.Warn("Error in SafeThreadAsyncCall", ex);
-				}
-			}
-		}
-		
 		public static bool InvokeRequired {
 			get {
 				if (workbench == null)
 					return false; // unit test mode, don't crash
 				else
-					return workbench.MainForm.InvokeRequired;
+					return workbench.SynchronizingObject.InvokeRequired;
 			}
 		}
 		
@@ -227,7 +205,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		public static R SafeThreadFunction<R>(Func<R> method)
 		{
-			return (R)caller.Call(method, emptyObjectArray);
+			return (R)workbench.SynchronizingObject.Invoke(method, emptyObjectArray);
 		}
 		
 		/// <summary>
@@ -237,7 +215,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		public static R SafeThreadFunction<A, R>(Func<A, R> method, A arg1)
 		{
-			return (R)caller.Call(method, new object[] { arg1 });
+			return (R)workbench.SynchronizingObject.Invoke(method, new object[] { arg1 });
 		}
 		
 		/// <summary>
@@ -247,7 +225,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		public static void SafeThreadCall(Action method)
 		{
-			caller.Call(method, emptyObjectArray);
+			workbench.SynchronizingObject.Invoke(method, emptyObjectArray);
 		}
 		
 		/// <summary>
@@ -257,7 +235,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		public static void SafeThreadCall<A>(Action<A> method, A arg1)
 		{
-			caller.Call(method, new object[] { arg1 });
+			workbench.SynchronizingObject.Invoke(method, new object[] { arg1 });
 		}
 		
 		/// <summary>
@@ -267,7 +245,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		public static void SafeThreadCall<A, B>(Action<A, B> method, A arg1, B arg2)
 		{
-			caller.Call(method, new object[] { arg1, arg2 });
+			workbench.SynchronizingObject.Invoke(method, new object[] { arg1, arg2 });
 		}
 		
 		/// <summary>
@@ -277,7 +255,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		public static void SafeThreadCall<A, B, C>(Action<A, B, C> method, A arg1, B arg2, C arg3)
 		{
-			caller.Call(method, new object[] { arg1, arg2, arg3 });
+			workbench.SynchronizingObject.Invoke(method, new object[] { arg1, arg2, arg3 });
 		}
 		
 		/// <summary>
@@ -285,7 +263,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		public static void SafeThreadAsyncCall(Action method)
 		{
-			caller.BeginCall(method, new object[0]);
+			workbench.SynchronizingObject.BeginInvoke(method, emptyObjectArray);
 		}
 		
 		/// <summary>
@@ -293,7 +271,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		public static void SafeThreadAsyncCall<A>(Action<A> method, A arg1)
 		{
-			caller.BeginCall(method, new object[] { arg1 });
+			workbench.SynchronizingObject.BeginInvoke(method, new object[] { arg1 });
 		}
 		
 		/// <summary>
@@ -301,7 +279,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		public static void SafeThreadAsyncCall<A, B>(Action<A, B> method, A arg1, B arg2)
 		{
-			caller.BeginCall(method, new object[] { arg1, arg2 });
+			workbench.SynchronizingObject.BeginInvoke(method, new object[] { arg1, arg2 });
 		}
 		
 		/// <summary>
@@ -309,7 +287,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		public static void SafeThreadAsyncCall<A, B, C>(Action<A, B, C> method, A arg1, B arg2, C arg3)
 		{
-			caller.BeginCall(method, new object[] { arg1, arg2, arg3 });
+			workbench.SynchronizingObject.BeginInvoke(method, new object[] { arg1, arg2, arg3 });
 		}
 		#endregion
 		

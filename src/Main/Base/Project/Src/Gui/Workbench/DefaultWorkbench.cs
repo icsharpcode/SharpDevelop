@@ -94,12 +94,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 			set {
 				if (layout != null) {
-					layout.ActiveWorkbenchWindowChanged -= OnActiveWindowChanged;
+					layout.ActiveContentChanged -= OnActiveWindowChanged;
 					layout.Detach();
 				}
 				value.Attach(this);
 				layout = value;
-				layout.ActiveWorkbenchWindowChanged += OnActiveWindowChanged;
+				layout.ActiveContentChanged += OnActiveWindowChanged;
 				OnActiveWindowChanged(null, null);
 			}
 		}

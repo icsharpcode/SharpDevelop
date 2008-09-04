@@ -20,7 +20,8 @@
 		     title    = "${res:ICSharpCode.NUnitPad.NUnitPadContent.PadName}"
 		     icon     = "PadIcons.NUnitTest"
 		     shortcut = "Control|Alt|T"
-		     class    = "ICSharpCode.UnitTesting.UnitTestsPad"/>
+		     class    = "ICSharpCode.UnitTesting.UnitTestsPad"
+		     defaultPosition = "Right, Hidden" />
 	</Path>
 	
 	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/ClassMemberContextMenu">

@@ -72,7 +72,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				m.Result = new IntPtr(RESULT_FILES_HANDLED);
 				try {
 					WorkbenchSingleton.SafeThreadAsyncCall(
-						delegate { NativeMethods.SetForegroundWindow(WorkbenchSingleton.MainForm.Handle) ; }
+						delegate { NativeMethods.SetForegroundWindow(WorkbenchSingleton.MainWin32Window.Handle) ; }
 					);
 					string tempFileName = Path.Combine(Path.GetTempPath(), "sd" + fileNumber + ".tmp");
 					foreach (string file in File.ReadAllLines(tempFileName)) {

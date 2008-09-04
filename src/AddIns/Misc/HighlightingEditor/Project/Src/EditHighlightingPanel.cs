@@ -182,7 +182,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			HighlightItem item = (HighlightItem)userList.SelectedItem;
 			
 			using (EditHighlightingDialog dlg = new EditHighlightingDialog(item.Node)) {
-				DialogResult res = dlg.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm);
+				DialogResult res = dlg.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainWin32Window);
 				
 				if (res == DialogResult.OK) {
 					using (XmlTextWriter writer = new XmlTextWriter(item.FileName, Encoding.UTF8)) {

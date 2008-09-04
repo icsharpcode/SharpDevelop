@@ -44,8 +44,7 @@ namespace ClassDiagramAddin
 			canvas.CanvasItemSelected += HandleItemSelected;
 		}
 		
-		public override Control Control
-		{
+		public override object Content {
 			get { return canvas; }
 		}
 
@@ -138,13 +137,6 @@ namespace ClassDiagramAddin
 			}
 		}
 		
-		public override void RedrawContent()
-		{
-			// TODO: Refresh the whole view control here, renew all resource strings
-			//       Note that you do not need to recreate the control.
-			base.RedrawContent();
-		}
-		
 		public override void Dispose()
 		{
 			ParserService.ParseInformationUpdated -= OnParseInformationUpdated;
@@ -165,7 +157,7 @@ namespace ClassDiagramAddin
 				PadDescriptor padDesc = WorkbenchSingleton.Workbench.GetPad(typeof(ClassEditorPad));
 				if (padDesc != null)
 				{
-					((ClassEditor)padDesc.PadContent.Control).SetClass(cci.RepresentedClassType);
+					((ClassEditor)padDesc.PadContent.Content).SetClass(cci.RepresentedClassType);
 				}
 			}
 		}

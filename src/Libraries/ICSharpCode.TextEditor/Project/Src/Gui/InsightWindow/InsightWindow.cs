@@ -17,7 +17,7 @@ namespace ICSharpCode.TextEditor.Gui.InsightWindow
 {
 	public class InsightWindow : AbstractCompletionWindow
 	{
-		public InsightWindow(Form parentForm, TextEditorControl control) : base(parentForm, control)
+		public InsightWindow(IWin32Window parentWindow, TextEditorControl control) : base(parentWindow, control)
 		{
 			SetStyle(ControlStyles.UserPaint, true);
 			SetStyle(ControlStyles.OptimizedDoubleBuffer, true);

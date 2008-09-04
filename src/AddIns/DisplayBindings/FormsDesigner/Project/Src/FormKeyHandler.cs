@@ -70,16 +70,13 @@ namespace ICSharpCode.FormsDesigner
 				return false;
 			}
 			
-			if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow == null ||
-			    !WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ActiveViewContent.Control.ContainsFocus) {
-				return false;
-			}
-			
-			FormsDesignerViewContent formDesigner = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ActiveViewContent as FormsDesignerViewContent;
+			FormsDesignerViewContent formDesigner = WorkbenchSingleton.Workbench.ActiveContent as FormsDesignerViewContent;
 			
 			if (formDesigner == null || formDesigner.Host == null) {
 				return false;
 			}
+			if (!((Control)formDesigner.Content).ContainsFocus)
+				return false;
 			
 			Keys keyPressed = (Keys)m.WParam.ToInt32() | Control.ModifierKeys;
 			

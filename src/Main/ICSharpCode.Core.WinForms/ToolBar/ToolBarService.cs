@@ -29,7 +29,7 @@ namespace ICSharpCode.Core.WinForms
 					collection.Add((ToolStripItem)item);
 				} else {
 					ISubmenuBuilder submenuBuilder = (ISubmenuBuilder)item;
-					collection.AddRange(submenuBuilder.BuildSubmenu(null, owner));
+					collection.AddRange(submenuBuilder.BuildSubmenu(descriptor.Codon, owner));
 				}
 			}
 			

@@ -36,7 +36,7 @@ namespace SearchAndReplace
 		{
 			if (Instance == null) {
 				Instance = new SearchAndReplaceDialog(searchAndReplaceMode);
-				Instance.Show(WorkbenchSingleton.MainForm);
+				Instance.Show(WorkbenchSingleton.MainWin32Window);
 			} else {
 				if (searchAndReplaceMode == SearchAndReplaceMode.Search) {
 					Instance.searchButton.PerformClick();
@@ -54,7 +54,6 @@ namespace SearchAndReplace
 				
 		public SearchAndReplaceDialog(SearchAndReplaceMode searchAndReplaceMode)
 		{
-			this.Owner           = WorkbenchSingleton.MainForm;
 			this.FormBorderStyle = FormBorderStyle.FixedToolWindow;
 			this.ShowInTaskbar   = false;
 			this.TopMost         = false;

@@ -30,12 +30,12 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 		DeclarationViewWindow declarationViewWindow = null;
 		Rectangle workingScreen;
 		
-		public static CodeCompletionWindow ShowCompletionWindow(Form parent, TextEditorControl control, string fileName, ICompletionDataProvider completionDataProvider, char firstChar)
+		public static CodeCompletionWindow ShowCompletionWindow(IWin32Window parent, TextEditorControl control, string fileName, ICompletionDataProvider completionDataProvider, char firstChar)
 		{
 			return ShowCompletionWindow(parent, control, fileName, completionDataProvider, firstChar, true, true);
 		}
 		
-		public static CodeCompletionWindow ShowCompletionWindow(Form parent, TextEditorControl control, string fileName, ICompletionDataProvider completionDataProvider, char firstChar, bool showDeclarationWindow, bool fixedListViewWidth)
+		public static CodeCompletionWindow ShowCompletionWindow(IWin32Window parent, TextEditorControl control, string fileName, ICompletionDataProvider completionDataProvider, char firstChar, bool showDeclarationWindow, bool fixedListViewWidth)
 		{
 			ICompletionData[] completionData = completionDataProvider.GenerateCompletionData(fileName, control.ActiveTextAreaControl.TextArea, firstChar);
 			if (completionData == null || completionData.Length == 0) {
@@ -47,7 +47,7 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			return codeCompletionWindow;
 		}
 		
-		CodeCompletionWindow(ICompletionDataProvider completionDataProvider, ICompletionData[] completionData, Form parentForm, TextEditorControl control, bool showDeclarationWindow, bool fixedListViewWidth) : base(parentForm, control)
+		CodeCompletionWindow(ICompletionDataProvider completionDataProvider, ICompletionData[] completionData, IWin32Window parentWindow, TextEditorControl control, bool showDeclarationWindow, bool fixedListViewWidth) : base(parentWindow, control)
 		{
 			this.dataProvider = completionDataProvider;
 			this.completionData = completionData;
@@ -85,7 +85,7 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			SetLocation();
 			
 			if (declarationViewWindow == null) {
-				declarationViewWindow = new DeclarationViewWindow(parentForm);
+				declarationViewWindow = new DeclarationViewWindow(parentWindow);
 			}
 			SetDeclarationViewLocation();
 			declarationViewWindow.ShowDeclarationViewWindow();

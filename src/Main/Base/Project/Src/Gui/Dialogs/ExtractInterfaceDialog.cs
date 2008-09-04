@@ -33,7 +33,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			//
 			InitializeComponent();
 			
-			this.Owner = WorkbenchSingleton.MainForm;
 			this.TopMost = true;
 			this.possibleInterfaceMembers = new List<IMember>();
 			this.hasSetFilenameExplicitly = false;
@@ -70,7 +69,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public ExtractInterfaceOptions ShowDialog(ExtractInterfaceOptions options)
 		{
 			InitializeFields(options);
-			options.IsCancelled = (base.ShowDialog() == DialogResult.Cancel);
+			options.IsCancelled = (base.ShowDialog(WorkbenchSingleton.MainWin32Window) == DialogResult.Cancel);
 			return options;
 		}
 		

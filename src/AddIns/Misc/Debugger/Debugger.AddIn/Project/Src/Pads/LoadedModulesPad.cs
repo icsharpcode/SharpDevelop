@@ -59,7 +59,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		ColumnHeader information = new ColumnHeader();
 			
 		
-		public override Control Control {
+		public override object Content {
 			get {
 				return loadedModulesList;
 			}
@@ -86,9 +86,10 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			information.Width = 130;
 
 			RedrawContent();
+			ResourceService.LanguageChanged += delegate { RedrawContent(); };
 		}
 		
-		public override void RedrawContent()
+		public void RedrawContent()
 		{
 			name.Text         = StringParser.Parse("${res:Global.Name}");
 			address.Text      = StringParser.Parse("${res:MainWindow.Windows.Debug.Modules.AddressColumn}");

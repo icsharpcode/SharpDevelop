@@ -39,9 +39,18 @@
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Microsoft.VisualC" />
     <Reference Include="Mono.Cecil">
       <HintPath>..\..\..\..\..\Libraries\Mono.Cecil\Mono.Cecil.dll</HintPath>
       <Private>False</Private>
+    </Reference>
+    <Reference Include="PresentationCFFRasterizer" />
+    <Reference Include="PresentationCore">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="PresentationFramework">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Configuration">
       <Private>False</Private>
@@ -50,9 +59,17 @@
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
       <Private>False</Private>
     </Reference>
+    <Reference Include="System.Deployment" />
     <Reference Include="System.Security">
       <Private>False</Private>
     </Reference>
+    <Reference Include="UIAutomationProvider">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsFormsIntegration" />
     <Compile Include="Src\project.fs" />
     <Compile Include="Src\languagebinding.fs" />
     <Compile Include="Src\fsi.fs" />
@@ -75,11 +92,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj">
-      <Project>{D3C782BA-178E-4235-A3BA-8C11DEBB6BEE}</Project>
-      <Name>WinFormsUI</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj">
       <Project>{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D}</Project>
       <Name>ICSharpCode.TextEditor</Name>

@@ -35,12 +35,12 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		}
 	}
 	
-	#endregion Goto Commands	
+	#endregion Goto Commands
 	
 	#region Delete BookMark(s) commands
 	
 	public abstract class AbstractDeleteMarkClass : AbstractMenuCommand
-	{	
+	{
 		protected void deleteBookMark (BookmarkNode node) {
 			if (node.Bookmark.Document != null) {
 				node.Bookmark.Document.BookmarkManager.RemoveMark(node.Bookmark);
@@ -70,7 +70,6 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 					}
 				}
 			}
-			WorkbenchSingleton.MainForm.Refresh();			
 		}
 	}
 	
@@ -96,7 +95,6 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 						deleteBookMark(folderNode.Nodes[i] as BookmarkNode);
 					}
 				}
-				WorkbenchSingleton.MainForm.Refresh();
 			}
 		}
 	}

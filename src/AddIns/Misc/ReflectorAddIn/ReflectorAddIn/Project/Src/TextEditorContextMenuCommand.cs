@@ -137,7 +137,7 @@ namespace ReflectorAddIn
 				Application.DoEvents();
 				Cursor.Current = Cursors.WaitCursor;
 				
-				ReflectorController.TryGoTo(element, WorkbenchSingleton.MainForm);
+				ReflectorController.TryGoTo(element, WorkbenchSingleton.MainWin32Window);
 				
 			} finally {
 				Cursor.Current = Cursors.Default;

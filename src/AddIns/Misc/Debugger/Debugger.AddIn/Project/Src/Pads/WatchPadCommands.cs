@@ -26,15 +26,15 @@ namespace Debugger.AddIn
 			if (this.Owner is WatchPad) {
 				WatchPad pad = (WatchPad)this.Owner;
 				
-				((TreeViewAdv)pad.Control).BeginUpdate();
+				((TreeViewAdv)pad.Content).BeginUpdate();
 				TextNode text = new TextNode(MessageService.ShowInputBox(StringParser.Parse("${res:MainWindow.Windows.Debug.Watch.AddWatch}"),
 				                                                         StringParser.Parse("${res:MainWindow.Windows.Debug.Watch.EnterExpression}"),
 				                                                         ""));
-				TreeViewVarNode node = new TreeViewVarNode(pad.Process, (TreeViewAdv)pad.Control, text);		
+				TreeViewVarNode node = new TreeViewVarNode(pad.Process, (TreeViewAdv)pad.Content, text);		
 				
 				pad.Watches.Add(text);
-				((TreeViewAdv)pad.Control).Root.Children.Add(node);
-				((TreeViewAdv)pad.Control).EndUpdate();
+				((TreeViewAdv)pad.Content).Root.Children.Add(node);
+				((TreeViewAdv)pad.Content).EndUpdate();
 				
 				((WatchPad)this.Owner).RefreshPad();
 			}
@@ -50,18 +50,18 @@ namespace Debugger.AddIn
 								
 				// TODO : Implement remove
 				
-				TreeNodeAdv node = ((TreeViewAdv)pad.Control).SelectedNode;
+				TreeNodeAdv node = ((TreeViewAdv)pad.Content).SelectedNode;
 				
 				if (node == null)
 					return;
 				
-				while (node.Parent != ((TreeViewAdv)pad.Control).Root)
+				while (node.Parent != ((TreeViewAdv)pad.Content).Root)
 				{
 					node = node.Parent;
 				}
 				
 				pad.Watches.RemoveAt(node.Index);
-				((TreeViewAdv)pad.Control).Root.Children.Remove(node);
+				((TreeViewAdv)pad.Content).Root.Children.Remove(node);
 				
 				((WatchPad)this.Owner).RefreshPad();
 			}
@@ -85,10 +85,10 @@ namespace Debugger.AddIn
 			if (this.Owner is WatchPad) {
 				WatchPad pad = (WatchPad)this.Owner;
 				
-				((TreeViewAdv)pad.Control).BeginUpdate();					
+				((TreeViewAdv)pad.Content).BeginUpdate();					
 				pad.Watches.Clear();
-				((TreeViewAdv)pad.Control).Root.Children.Clear();
-				((TreeViewAdv)pad.Control).EndUpdate();
+				((TreeViewAdv)pad.Content).Root.Children.Clear();
+				((TreeViewAdv)pad.Content).EndUpdate();
 			}
 		}
 	}

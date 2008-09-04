@@ -365,7 +365,7 @@ namespace SearchAndReplace
 			if (monitor != null && monitor.IsCancelled)
 				return;
 			if (monitor != null) monitor.ShowingDialog = true;
-			MessageBox.Show(WorkbenchSingleton.MainForm,
+			MessageBox.Show(WorkbenchSingleton.MainWin32Window,
 			                ResourceService.GetString("Dialog.NewProject.SearchReplace.SearchStringNotFound"),
 			                ResourceService.GetString("Dialog.NewProject.SearchReplace.SearchStringNotFound.Title"),
 			                MessageBoxButtons.OK,

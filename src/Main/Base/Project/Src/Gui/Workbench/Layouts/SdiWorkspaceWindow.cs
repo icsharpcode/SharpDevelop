@@ -122,9 +122,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 				
 				window.RegisterNewContent(item);
 				
-				item.Control.Dock = DockStyle.Fill;
+				item.Content.Dock = DockStyle.Fill;
 				if (Count == 1) {
-					window.Controls.Add(item.Control);
+					window.Controls.Add(item.Content);
 				} else {
 					if (Count == 2) {
 						window.CreateViewTabControl();
@@ -132,12 +132,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 						if (oldItem == item) oldItem = this[1];
 						
 						TabPage oldPage = new TabPage(StringParser.Parse(oldItem.TabPageText));
-						oldPage.Controls.Add(oldItem.Control);
+						oldPage.Controls.Add(oldItem.Content);
 						window.viewTabControl.TabPages.Add(oldPage);
 					}
 					
 					TabPage newPage = new TabPage(StringParser.Parse(item.TabPageText));
-					newPage.Controls.Add(item.Control);
+					newPage.Controls.Add(item.Content);
 					
 					// Work around bug in TabControl: TabPages.Insert has no effect if inserting at end
 					if (index == window.viewTabControl.TabPages.Count) {
@@ -158,7 +158,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				if (Count < 2) {
 					window.ClearContent();
 					if (Count == 1) {
-						window.Controls.Add(this[0].Control);
+						window.Controls.Add(this[0].Content);
 					}
 				} else {
 					window.viewTabControl.TabPages.RemoveAt(index);
@@ -174,14 +174,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 				
 				window.RegisterNewContent(item);
 				
-				item.Control.Dock = DockStyle.Fill;
+				item.Content.Dock = DockStyle.Fill;
 				if (Count == 1) {
 					window.ClearContent();
-					window.Controls.Add(item.Control);
+					window.Controls.Add(item.Content);
 				} else {
 					TabPage page = window.viewTabControl.TabPages[index];
 					page.Controls.Clear();
-					page.Controls.Add(item.Control);
+					page.Controls.Add(item.Content);
 					page.Text = StringParser.Parse(item.TabPageText);
 				}
 				window.UpdateActiveViewContent();

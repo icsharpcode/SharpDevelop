@@ -74,73 +74,84 @@
 		     title    = "${res:MainWindow.Windows.ProjectScoutLabel}"
 		     icon     = "PadIcons.ProjectBrowser"
 		     shortcut = "Control|Alt|L"
-		     class    = "ICSharpCode.SharpDevelop.Project.ProjectBrowserPad"/>
+		     class    = "ICSharpCode.SharpDevelop.Project.ProjectBrowserPad"
+		     defaultPosition = "Left" />
 		
 		<Pad id       = "ClassBrowser"
 		     category = "Main"
 		     title    = "${res:MainWindow.Windows.ClassScoutLabel}"
 		     icon     = "PadIcons.ClassBrowser"
 		     shortcut = "Control|Shift|C"
-		     class    = "ICSharpCode.SharpDevelop.Gui.ClassBrowser.ClassBrowserPad"/>
+		     class    = "ICSharpCode.SharpDevelop.Gui.ClassBrowser.ClassBrowserPad"
+		     defaultPosition = "Right" />
 		
 		<Pad id       = "SideBar"
 		     category = "Main"
 		     title    = "${res:MainWindow.Windows.ToolbarLabel}"
 		     icon     = "PadIcons.Toolbar"
 		     shortcut = "Control|Alt|X"
-		     class    = "ICSharpCode.SharpDevelop.Gui.ToolsPad"/>
+		     class    = "ICSharpCode.SharpDevelop.Gui.ToolsPad"
+		     defaultPosition = "Left" />
 		
 		<Pad id       = "ErrorList"
 		     category = "Main"
 		     title    = "${res:MainWindow.Windows.ErrorList}"
 		     shortcut = "Control|Alt|K"
 		     icon     = "PadIcons.ErrorList"
-		     class    = "ICSharpCode.SharpDevelop.Gui.ErrorListPad"/>
+		     class    = "ICSharpCode.SharpDevelop.Gui.ErrorListPad"
+		     defaultPosition = "Bottom" />
 		
 		<Pad id       = "TaskList"
 		     category = "Main"
 		     title    = "${res:MainWindow.Windows.TaskList}"
 		     icon     = "PadIcons.TaskList"
-		     class    = "ICSharpCode.SharpDevelop.Gui.TaskListPad"/>
+		     class    = "ICSharpCode.SharpDevelop.Gui.TaskListPad"
+		     defaultPosition = "Bottom" />
 		
 		<Pad id       = "CompilerMessageView"
 		     category = "Main"
 		     title    = "${res:MainWindow.Windows.OutputWindow}"
 		     icon     = "PadIcons.Output"
 		     shortcut = "Control|Alt|O"
-		     class    = "ICSharpCode.SharpDevelop.Gui.CompilerMessageView"/>
+		     class    = "ICSharpCode.SharpDevelop.Gui.CompilerMessageView"
+		     defaultPosition = "Bottom" />
 		
 		<Pad id       = "PropertyPad"
 		     category = "Main"
 		     title    = "${res:MainWindow.Windows.PropertiesScoutLabel}"
 		     icon     = "Icons.16x16.PropertiesIcon"
 		     shortcut = "F4"
-		     class    = "ICSharpCode.SharpDevelop.Gui.PropertyPad"/>
+		     class    = "ICSharpCode.SharpDevelop.Gui.PropertyPad"
+		     defaultPosition = "Right" />
 		
 		<Pad id       = "FileScout"
 		     category = "Tools"
 		     title    = "${res:MainWindow.Windows.FileScoutLabel}"
 		     icon     = "PadIcons.FileBrowser"
 		     shortcut = "Control|Alt|F"
-		     class    = "ICSharpCode.SharpDevelop.Gui.FileScout"/>
+		     class    = "ICSharpCode.SharpDevelop.Gui.FileScout"
+		     defaultPosition = "Left, Hidden" />
 		
 		<Pad id       = "SearchResults"
 		     category = "Tools"
 		     title    = "${res:MainWindow.Windows.SearchResultsLabel}"
 		     icon     = "PadIcons.FindResults"
-		     class    = "SearchAndReplace.SearchResultPanel"/>
+		     class    = "SearchAndReplace.SearchResultPanel"
+		     defaultPosition = "Bottom, Hidden" />
 		
 		<Pad id       = "Bookmarks"
 		     category = "Tools"
 		     title    = "${res:MainWindow.Windows.BookmarksLabel}"
 		     icon     = "PadIcons.Bookmarks"
-		     class    = "ICSharpCode.SharpDevelop.Bookmarks.BookmarkPad"/>
+		     class    = "ICSharpCode.SharpDevelop.Bookmarks.BookmarkPad"
+		     defaultPosition = "Bottom, Hidden" />
 		
 		<Pad id       = "DefinitionView"
 		     category = "Tools"
 		     title    = "${res:MainWindow.Windows.DefinitionViewLabel}"
 		     icon     = "PadIcons.DefinitionView"
-		     class    = "ICSharpCode.SharpDevelop.Gui.DefinitionViewPad"/>
+		     class    = "ICSharpCode.SharpDevelop.Gui.DefinitionViewPad"
+		     defaultPosition = "Bottom, Hidden" />
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/Combine/FileFilter">
@@ -943,7 +954,7 @@
 		</Condition>
 		
 		<ToolbarItem id = "ChooseConfigurationSeparator" type = "Separator"/>
-
+		
 		<ToolbarItem id    = "ChooseLayout"
 		             type  = "ComboBox"
 		             class = "ICSharpCode.SharpDevelop.Commands.ChooseLayoutCommand" />
@@ -1432,7 +1443,11 @@
 					          class = "ICSharpCode.SharpDevelop.Project.Commands.PublishProject"/>-->
 				</Condition>
 				<MenuItem id = "Separator2" type = "Separator" />
-				<MenuItem id="AbortBuild" type="Builder" class="ICSharpCode.SharpDevelop.Project.Commands.AbortBuild"/>
+				<MenuItem id="AbortBuild"
+				          label="${res:XML.MainMenu.BuildMenu.AbortBuild}"
+				          shortcut="Pause"
+				          class="ICSharpCode.SharpDevelop.Project.Commands.AbortBuild"
+				          loadclasslazy="false"/>
 				<MenuItem id = "Separator3" type = "Separator" />
 				<MenuItem id = "SetConfiguration"
 				          label = "${res:XML.MainMenu.BuildMenu.SetConfiguration}"
@@ -1483,7 +1498,7 @@
 					          class = "ICSharpCode.SharpDevelop.Project.Commands.StopDebuggingCommand"/>
 				</Condition>
 			</Condition>
-
+			
 			<Condition name="DebuggerSupports" debuggersupports="Attaching">
 				<Condition name="IsProcessRunning" isprocessrunning="False" isdebugging="False" action="Disable">
 					<MenuItem id    = "Attach"
@@ -1491,7 +1506,7 @@
 					          class = "ICSharpCode.SharpDevelop.Project.Commands.AttachToProcessCommand"/>
 				</Condition>
 			</Condition>
-	
+			
 			<Condition name="DebuggerSupports" debuggersupports="Detaching">
 				<Condition name="IsProcessRunning" isdebugging="True" action="Disable">
 					<MenuItem id    = "Detach"

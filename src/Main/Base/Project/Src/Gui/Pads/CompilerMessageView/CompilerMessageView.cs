@@ -92,7 +92,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		public override Control Control {
+		public override object Content {
 			get {
 				return myPanel;
 			}
@@ -158,14 +158,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			} else {
 				textEditorControl.ScrollBars = RichTextBoxScrollBars.ForcedBoth;
 			}
-		}
-		
-		public override void RedrawContent()
-		{
-//			messageCategory.Items.Clear();
-//			foreach (MessageViewCategory category in messageCategories) {
-//				messageCategory.Items.Add(StringParser.Parse(category.DisplayCategory));
-//			}
 		}
 		
 		#region Category handling
@@ -289,9 +281,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 					break;
 				}
 			}
-			if (!this.IsVisible) {
-				ActivateThisPad();
-			}
+			//if (!this.IsVisible) {
+			//	ActivateThisPad();
+			//}
 		}
 		
 		void SelectCategory(string categoryName, string text)
@@ -318,14 +310,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			return null;
 		}
 		#endregion
-		
-		/// <summary>
-		/// Makes this pad visible (usually BEFORE build or debug events)
-		/// </summary>
-		void ActivateThisPad()
-		{
-			WorkbenchSingleton.Workbench.WorkbenchLayout.ActivatePad(this.GetType().FullName);
-		}
 		
 		/// <summary>
 		/// Occurs when the mouse pointer is over the control and a

@@ -23,7 +23,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			get;
 		}
 		
-		public override System.Windows.Forms.Control Control {
+		public override object Content {
 			get { return this.TextEditorControl; }
 		}
 		
@@ -80,12 +80,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			this.TextEditorControl.Redo();
 		}
 		
-		public override void RedrawContent()
-		{
-			this.TextEditorControl.OptionsChanged();
-			this.TextEditorControl.Refresh();
-		}
-		
 		#region IPositionable implementation
 		void IPositionable.JumpTo(int line, int column)
 		{
@@ -112,7 +106,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		}
 		#endregion
 		
-		Control IToolsHost.ToolsControl {
+		object IToolsHost.ToolsContent {
 			get { return TextEditorSideBar.Instance; }
 		}
 		

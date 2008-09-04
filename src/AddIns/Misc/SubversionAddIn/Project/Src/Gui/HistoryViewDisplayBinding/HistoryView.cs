@@ -15,7 +15,7 @@ namespace ICSharpCode.Svn
 	{
 		HistoryViewPanel historyViewPanel;
 		
-		public override Control Control {
+		public override object Content {
 			get {
 				return historyViewPanel;
 			}

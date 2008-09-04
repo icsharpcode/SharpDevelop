@@ -1,28 +1,30 @@
 ﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
+//     <owner name="Daniel Grunwald"/>
 //     <version>$Revision$</version>
 // </file>
 
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Drawing;
+using System.ComponentModel;
 using System.IO;
-using System.Windows.Forms;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
 
 using ICSharpCode.Core;
+using ICSharpCode.Core.Presentation;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Gui.XmlForms;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Gui.CompletionWindow;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
-	public class GotoDialog : BaseSharpDevelopForm
+	public partial class GotoDialog : Window
 	{
 		static GotoDialog Instance = null;
 		
@@ -30,65 +32,79 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			if (Instance == null) {
 				Instance = new GotoDialog();
-				Instance.Show(WorkbenchSingleton.MainForm);
+				Instance.Owner = WorkbenchSingleton.MainWindow;
+				Instance.Show();
 			} else {
-				Instance.Focus();
+				Instance.Activate();
 			}
 		}
 		
-		ListView listView;
-		TextBox textBox;
-		
 		public GotoDialog()
 		{
-			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("Resources.GotoDialog.xfrm"));
-			ControlDictionary["okButton"].Click     += new EventHandler(OKButtonClick);
-			ControlDictionary["cancelButton"].Click += new EventHandler(CancelButtonClick);
-			listView = (ListView)ControlDictionary["listView"];
-			textBox = (TextBox)ControlDictionary["textBox"];
-			textBox.TextChanged += TextBoxTextChanged;
-			textBox.KeyDown += TextBoxKeyDown;
-			listView.SmallImageList = ClassBrowserIconService.ImageList;
-			listView.ItemActivate += OKButtonClick;
-			listView.Sorting = SortOrder.Ascending;
-			listView.SizeChanged += ListViewSizeChanged;
-			listView.HideSelection = false;
-			ListViewSizeChanged(null, null);
-			Owner = WorkbenchSingleton.MainForm;
-			Icon = null;
-			FormLocationHelper.Apply(this, "ICSharpCode.SharpDevelop.Gui.GotoDialog.Bounds", true);
+			InitializeComponent();
+//			FormLocationHelper.Apply(this, "ICSharpCode.SharpDevelop.Gui.GotoDialog.Bounds", true);
+			textBox.Focus();
+			ParserService.LoadSolutionProjectsThreadEnded += ParserService_LoadSolutionProjectsThreadEnded;
+		}
+
+		void ParserService_LoadSolutionProjectsThreadEnded(object sender, EventArgs e)
+		{
+			// refresh the list box contents when parsing has completed
+			Dispatcher.BeginInvoke(
+				System.Windows.Threading.DispatcherPriority.Background,
+				new Action(delegate { textBoxTextChanged(null, null); }));
 		}
 		
-		void ListViewSizeChanged(object sender, EventArgs e)
+		class MyListBoxItem : ListBoxItem, IComparable<MyListBoxItem>
 		{
-			listView.Columns[0].Width = listView.Width - 24;
+			public readonly string Text;
+			
+			public MyListBoxItem(string text, int imageIndex)
+			{
+				this.Text = text;
+				this.Content = new StackPanel {
+					Orientation = Orientation.Horizontal,
+					Children = {
+						PresentationResourceService.GetPixelSnappedImage(ClassBrowserIconService.ResourceNames[imageIndex]),
+						new TextBlock {
+							Text = text,
+							Margin = new Thickness(4, 0, 0, 0)
+						}
+					}
+				};
+			}
+			
+			public int CompareTo(MyListBoxItem other)
+			{
+				return Text.CompareTo(other.Text);
+			}
 		}
 		
-		void TextBoxKeyDown(object sender, KeyEventArgs e)
+		void textBoxPreviewKeyDown(object sender, KeyEventArgs e)
 		{
-			if (listView.SelectedItems.Count == 0)
+			if (listBox.SelectedItem == null)
 				return;
-			if (e.KeyData == Keys.Up) {
+			if (e.Key == Key.Up) {
 				e.Handled = true;
 				ChangeIndex(-1);
-			} else if (e.KeyData == Keys.Down) {
+			} else if (e.Key == Key.Down) {
 				e.Handled = true;
 				ChangeIndex(+1);
-			} else if (e.KeyData == Keys.PageUp) {
+			} else if (e.Key == Key.PageUp) {
 				e.Handled = true;
-				ChangeIndex(-listView.ClientSize.Height / listView.Items[0].Bounds.Height);
-			} else if (e.KeyData == Keys.PageDown) {
+				ChangeIndex((int)Math.Round(-listBox.ActualHeight / ((ListBoxItem)listBox.SelectedItem).ActualHeight));
+			} else if (e.Key == Key.PageDown) {
 				e.Handled = true;
-				ChangeIndex(+listView.ClientSize.Height / listView.Items[0].Bounds.Height);
+				ChangeIndex((int)Math.Round(+listBox.ActualHeight / ((ListBoxItem)listBox.SelectedItem).ActualHeight));
 			}
 		}
 		
 		void ChangeIndex(int increment)
 		{
-			int index = listView.SelectedIndices[0];
-			index = Math.Max(0, Math.Min(listView.Items.Count - 1, index + increment));
-			listView.Items[index].Selected = true;
-			listView.EnsureVisible(index);
+			int index = listBox.SelectedIndex;
+			index = Math.Max(0, Math.Min(listBox.Items.Count - 1, index + increment));
+			((ListBoxItem)listBox.Items[index]).IsSelected = true;
+			listBox.ScrollIntoView(listBox.Items[index]);
 		}
 		
 		ICompletionData[] ctrlSpaceCompletionData;
@@ -127,21 +143,20 @@ namespace ICSharpCode.SharpDevelop.Gui
 		Dictionary<string, object> visibleEntries = new Dictionary<string, object>();
 		int bestMatchType;
 		double bestPriority;
-		ListViewItem bestItem;
+		List<MyListBoxItem> newItems = new List<MyListBoxItem>();
+		ListBoxItem bestItem;
 		
-		void TextBoxTextChanged(object sender, EventArgs e)
+		void textBoxTextChanged(object sender, TextChangedEventArgs e)
 		{
 			string text = textBox.Text.Trim();
-			listView.BeginUpdate();
-			listView.Items.Clear();
+			listBox.Items.Clear();
+			newItems.Clear();
 			visibleEntries.Clear();
 			bestItem = null;
 			if (text.Length == 0) {
-				listView.EndUpdate();
 				return;
 			}
 			if (text.Length == 1 && !char.IsDigit(text, 0)) {
-				listView.EndUpdate();
 				return;
 			}
 			int dotPos = text.IndexOf('.');
@@ -190,11 +205,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 				AddSourceFiles(text, 0);
 				ShowCtrlSpaceCompletion(text);
 			}
+			newItems.Sort();
+			foreach (MyListBoxItem item in newItems)
+				listBox.Items.Add(item);
 			if (bestItem != null) {
-				bestItem.Selected = true;
-				listView.EnsureVisible(bestItem.Index);
+				bestItem.IsSelected = true;
+				listBox.ScrollIntoView(bestItem);
 			}
-			listView.EndUpdate();
 		}
 		
 		void AddSourceFiles(string text, int lineNumber)
@@ -336,7 +353,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (visibleEntries.ContainsKey(text))
 				return;
 			visibleEntries.Add(text, null);
-			ListViewItem item = new ListViewItem(text, imageIndex);
+			MyListBoxItem item = new MyListBoxItem(text, imageIndex);
+			item.MouseDoubleClick += okButtonClick;
 			item.Tag = tag;
 			if (bestItem == null
 			    || (tag is IMember && bestItem.Tag is IClass)
@@ -347,7 +365,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				bestPriority = priority;
 				bestMatchType = matchType;
 			}
-			listView.Items.Add(item);
+			newItems.Add(item);
 		}
 		
 		void AddItem(IClass c, int matchType)
@@ -369,7 +387,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			AddItem(e.Name + " (" + e.FullyQualifiedName + ")", imageIndex, e, priority, matchType);
 		}
 		
-		void CancelButtonClick(object sender, EventArgs e)
+		void cancelButtonClick(object sender, RoutedEventArgs e)
 		{
 			Close();
 		}
@@ -390,12 +408,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 			return null;
 		}
 		
-		void OKButtonClick(object sender, EventArgs e)
+		void okButtonClick(object sender, RoutedEventArgs e)
 		{
 			try {
-				if (listView.SelectedItems.Count == 0)
+				if (listBox.SelectedItem == null)
 					return;
-				object tag = listView.SelectedItems[0].Tag;
+				object tag = ((ListBoxItem)listBox.SelectedItem).Tag;
 				if (tag is int) {
 					TextEditorControl editor = GetEditor();
 					if (editor != null) {

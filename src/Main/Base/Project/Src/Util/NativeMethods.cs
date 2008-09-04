@@ -99,7 +99,7 @@ namespace ICSharpCode.SharpDevelop
 			if (!File.Exists(fileName) && !Directory.Exists(fileName))
 				throw new FileNotFoundException("File not found.", fileName);
 			SHFILEOPSTRUCT info = new SHFILEOPSTRUCT();
-			info.hwnd = Gui.WorkbenchSingleton.MainForm.Handle;
+			info.hwnd = Gui.WorkbenchSingleton.MainWin32Window.Handle;
 			info.wFunc = FO_FUNC.FO_DELETE;
 			info.fFlags = FILEOP_FLAGS.FOF_ALLOWUNDO | FILEOP_FLAGS.FOF_NOCONFIRMATION;
 			info.lpszProgressTitle = "Delete " + Path.GetFileName(fileName);

@@ -9,8 +9,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
-using System.Windows.Forms;
-using System.Windows.Forms.Integration;
 using System.Windows.Markup;
 using System.Xml;
 
@@ -40,7 +38,6 @@ namespace ICSharpCode.WpfDesign.AddIn
 			this.editor = file.RegisteredViewContents[0] as TextEditorDisplayBindingWrapper;
 		}
 
-		ElementHost wpfHost;
 		DesignSurface designer;
 		List<Task> tasks = new List<Task>();
 
@@ -63,8 +60,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 				// initialize designer on first load
 				DragDropExceptionHandler.HandleException = ICSharpCode.Core.MessageService.ShowError;
 				designer = new DesignSurface();
-				wpfHost = new SharpDevelopElementHost(this, designer);				
-				this.UserControl = wpfHost;
+				this.UserContent = designer;
 				InitPropertyEditor();
 			}
 			using (XmlTextReader r = new XmlTextReader(stream)) {
@@ -134,14 +130,12 @@ namespace ICSharpCode.WpfDesign.AddIn
 		
 		#region Property editor / SelectionChanged
 		
-		ElementHost propertyEditorHost;
 		PropertyGridView propertyGridView;
 		
 		void InitPropertyEditor()
 		{
 			propertyGridView = new PropertyGridView();
-			propertyEditorHost = new SharpDevelopElementHost(this, propertyGridView);			
-			propertyContainer.PropertyGridReplacementControl = propertyEditorHost;
+			propertyContainer.PropertyGridReplacementContent = propertyGridView;
 		}
 		
 		ICollection<DesignItem> oldItems = new DesignItem[0];
@@ -177,7 +171,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 		}
 		#endregion
 		
-		public Control ToolsControl {
+		public object ToolsContent {
 			get { return WpfToolbox.Instance.ToolboxControl; }
 		}
 		

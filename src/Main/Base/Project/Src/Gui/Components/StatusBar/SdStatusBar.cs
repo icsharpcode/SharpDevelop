@@ -6,30 +6,33 @@
 // </file>
 
 using System;
-using System.Drawing;
-using System.Windows.Forms;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
-	public class SdStatusBar : StatusStrip
+	public class SdStatusBar : StatusBar
 	{
-		ToolStripProgressBar statusProgressBar = new ToolStripProgressBar();
-		ToolStripStatusLabel jobNamePanel      = new ToolStripStatusLabel();
+		StatusBarItem statusProgressBarItem = new StatusBarItem();
+		ProgressBar statusProgressBar = new ProgressBar();
+		StatusBarItem jobNamePanel      = new StatusBarItem();
 		
-		ToolStripStatusLabel txtStatusBarPanel    = new ToolStripStatusLabel();
-		ToolStripStatusLabel cursorStatusBarPanel = new ToolStripStatusLabel();
-		ToolStripStatusLabel modeStatusBarPanel   = new ToolStripStatusLabel();
-		ToolStripStatusLabel springLabel          = new ToolStripStatusLabel();
+		StatusBarItem txtStatusBarPanel    = new StatusBarItem();
+		StatusBarItem cursorStatusBarPanel = new StatusBarItem();
+		StatusBarItem modeStatusBarPanel   = new StatusBarItem();
 		
-		public ToolStripStatusLabel  CursorStatusBarPanel {
+		public StatusBarItem CursorStatusBarPanel {
 			get {
 				return cursorStatusBarPanel;
 			}
 		}
 		
-		public ToolStripStatusLabel  ModeStatusBarPanel {
+		public StatusBarItem ModeStatusBarPanel {
 			get {
 				return modeStatusBarPanel;
 			}
@@ -37,38 +40,21 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public SdStatusBar()
 		{
-			
-			//			txtStatusBarPanel.Width = 500;
-			//			txtStatusBarPanel.AutoSize = StatusBarPanelAutoSize.Spring;
-			//			Panels.Add(txtStatusBarPanel);
-			//	//		manager.Add(new StatusBarContributionItem("TextPanel", txtStatusBarPanel));
-			//
-			//			statusProgressBar.Width  = 200;
-			//			statusProgressBar.Height = 14;
-			//			statusProgressBar.Location = new Point(160, 6);
-			//			statusProgressBar.Minimum = 0;
-			//			statusProgressBar.Visible = false;
-			//			Controls.Add(statusProgressBar);
-			//
-			//			cursorStatusBarPanel.Width = 200;
-			//			cursorStatusBarPanel.AutoSize = StatusBarPanelAutoSize.None;
-			//			cursorStatusBarPanel.Alignment = HorizontalAlignment.Left;
-			//			Panels.Add(cursorStatusBarPanel);
-			//
-			//			modeStatusBarPanel.Width = 44;
-			//			modeStatusBarPanel.AutoSize = StatusBarPanelAutoSize.None;
-			//			modeStatusBarPanel.Alignment = HorizontalAlignment.Right;
-			//			Panels.Add(modeStatusBarPanel);
-			
-			springLabel.Spring = true;
-			cursorStatusBarPanel.AutoSize = false;
 			cursorStatusBarPanel.Width = 150;
-			modeStatusBarPanel.AutoSize = false;
 			modeStatusBarPanel.Width = 25;
-			statusProgressBar.Visible = false;
-			statusProgressBar.Width = 100;
+			statusProgressBarItem.Visibility = Visibility.Hidden;
+			statusProgressBarItem.Width = 100;
 			
-			Items.AddRange(new ToolStripItem[] { txtStatusBarPanel, springLabel, jobNamePanel, statusProgressBar, cursorStatusBarPanel, modeStatusBarPanel });
+			DockPanel.SetDock(modeStatusBarPanel, Dock.Right);
+			DockPanel.SetDock(cursorStatusBarPanel, Dock.Right);
+			DockPanel.SetDock(statusProgressBarItem, Dock.Right);
+			DockPanel.SetDock(jobNamePanel, Dock.Right);
+			
+			Items.Add(jobNamePanel);
+			Items.Add(statusProgressBarItem);
+			Items.Add(cursorStatusBarPanel);
+			Items.Add(modeStatusBarPanel);
+			Items.Add(txtStatusBarPanel);
 		}
 		
 		public void ShowErrorMessage(string message)
@@ -76,7 +62,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			SetMessage("Error : " + message);
 		}
 		
-		public void ShowErrorMessage(Image image, string message)
+		public void ShowErrorMessage(BitmapSource image, string message)
 		{
 			SetMessage(image, "Error : " + message);
 		}
@@ -90,13 +76,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			Action setMessageAction = delegate {
 				if (highlighted) {
-					txtStatusBarPanel.BackColor = SystemColors.Highlight;
-					txtStatusBarPanel.ForeColor = Color.White;
-				} else if (txtStatusBarPanel.BackColor == SystemColors.Highlight) {
-					txtStatusBarPanel.BackColor = SystemColors.Control;
-					txtStatusBarPanel.ForeColor = SystemColors.ControlText;
+					txtStatusBarPanel.Background = SystemColors.HighlightBrush;
+					txtStatusBarPanel.Foreground = SystemColors.HighlightTextBrush;
+				} else {
+					txtStatusBarPanel.Background = SystemColors.ControlBrush;
+					txtStatusBarPanel.Foreground = SystemColors.ControlTextBrush;
 				}
-				txtStatusBarPanel.Text = message;
+				txtStatusBarPanel.Content = message;
 			};
 			if (WorkbenchSingleton.InvokeRequired)
 				WorkbenchSingleton.SafeThreadAsyncCall(setMessageAction);
@@ -104,7 +90,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				setMessageAction();
 		}
 		
-		public void SetMessage(Image image, string message)
+		public void SetMessage(BitmapSource image, string message)
 		{
 			SetMessage(message);
 		}
@@ -128,14 +114,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 			WorkbenchSingleton.SafeThreadAsyncCall(
 				delegate {
 					if (!statusProgressBarIsVisible) {
-						statusProgressBar.Visible = true;
+						statusProgressBarItem.Visibility = Visibility.Visible;
 						statusProgressBarIsVisible = true;
 					}
 					
 					if (totalWork == 0) {
-						statusProgressBar.Style = ProgressBarStyle.Marquee;
+						statusProgressBar.IsIndeterminate = true;
 					} else {
-						statusProgressBar.Style = ProgressBarStyle.Continuous;
+						statusProgressBar.IsIndeterminate = false;
 						if (statusProgressBar.Maximum != totalWork) {
 							if (statusProgressBar.Value > totalWork)
 								statusProgressBar.Value = 0;
@@ -146,7 +132,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					
 					if (currentTaskName != taskName) {
 						currentTaskName = taskName;
-						jobNamePanel.Text = StringParser.Parse(taskName);
+						jobNamePanel.Content = StringParser.Parse(taskName);
 					}
 				});
 		}
@@ -156,8 +142,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			WorkbenchSingleton.SafeThreadAsyncCall(
 				delegate {
 					statusProgressBarIsVisible = false;
-					statusProgressBar.Visible = false;
-					jobNamePanel.Text = currentTaskName = "";
+					statusProgressBarItem.Visibility = Visibility.Collapsed;
+					jobNamePanel.Content = currentTaskName = "";
 				});
 		}
 	}

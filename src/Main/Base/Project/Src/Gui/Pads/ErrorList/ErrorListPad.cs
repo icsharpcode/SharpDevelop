@@ -70,7 +70,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		public override Control Control {
+		public override object Content {
 			get {
 				return contentPanel;
 			}
@@ -81,6 +81,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			instance = this;
 			
 			RedrawContent();
+			ResourceService.LanguageChanged += delegate { RedrawContent(); };
 			
 			TaskService.Cleared += new EventHandler(TaskServiceCleared);
 			TaskService.Added   += new TaskEventHandler(TaskServiceAdded);
@@ -106,7 +107,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			InternalShowResults();
 		}
 		
-		public override void RedrawContent()
+		void RedrawContent()
 		{
 			taskView.RefreshColumnNames();
 		}
@@ -130,7 +131,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void ProjectServiceEndBuild(object sender, EventArgs e)
 		{
 			if (TaskService.TaskCount > 0 && ShowAfterBuild) {
-				WorkbenchSingleton.Workbench.WorkbenchLayout.ActivatePad(this.GetType().FullName);
+				WorkbenchSingleton.Workbench.GetPad(typeof(ErrorListPad)).BringPadToFront();
 			}
 			UpdateToolstripStatus();
 		}

@@ -12,8 +12,8 @@ using System.Runtime.CompilerServices;
 [assembly: CLSCompliant(true)]
 [assembly: StringFreezing()]
 
-[assembly: AssemblyTitle("ICSharpCode.Core")]
-[assembly: AssemblyDescription("The ICSharpCode Core containing the AddInTree and service Subsystem")]
+[assembly: AssemblyTitle("ICSharpCode.Core.WinForms")]
+[assembly: AssemblyDescription("ICSharpCode.Core, Windows.Forms implementation")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

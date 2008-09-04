@@ -10,7 +10,6 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Sda;
 
 using Debugger;
 using Debugger.Expressions;
@@ -48,9 +47,7 @@ namespace Debugger.AddIn.TreeModel
 			showError.Text = StringParser.Parse("${res:MainWindow.Windows.Debug.LocalVariables.ShowFullError}");
 			showError.Checked = false;
 			showError.Click += delegate {
-				using (ExceptionBox box = new ExceptionBox(error, null, false)) {
-					box.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm);
-				}
+				MessageService.ShowError(error, null);
 			};
 			
 			menu.Items.AddRange(new ToolStripItem[] {

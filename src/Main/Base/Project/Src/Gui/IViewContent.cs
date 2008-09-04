@@ -38,9 +38,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 	public interface IViewContent : IDisposable, ICanBeDirty
 	{
 		/// <summary>
-		/// This is the Windows.Forms control for the view.
+		/// This is the UI element for the view.
+		/// You can use both Windows.Forms and WPF controls.
 		/// </summary>
-		Control Control {
+		object Content {
 			get;
 		}
 		
@@ -64,13 +65,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 		string TabPageText {
 			get;
 		}
-		
-		/// <summary>
-		/// Reinitializes the content. (Re-initializes all add-in tree stuff)
-		/// and redraws the content.
-		/// Called on certain actions like changing the UI language.
-		/// </summary>
-		void RedrawContent();
 		
 		/// <summary>
 		/// The title of the view content. This normally is the title of the primary file being edited.

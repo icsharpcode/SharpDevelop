@@ -40,6 +40,15 @@
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AvalonDock">
+      <HintPath>..\..\..\Libraries\AvalonDock\AvalonDock.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="PresentationFramework">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
@@ -52,11 +61,19 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.Build.Engine" />
+    <Reference Include="WindowsBase">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Src\Gui\AbstractSecondaryViewContent.cs" />
     <Compile Include="Src\Gui\AbstractViewContentHandlingLoadErrors.cs" />
     <Compile Include="Src\Gui\AbstractViewContentWithoutFile.cs" />
+    <Compile Include="Src\Gui\App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Src\Gui\BrowserDisplayBinding\BrowserDisplayBinding.cs" />
     <Compile Include="Src\Gui\Components\SideBar\TextEditorSideBar.cs" />
     <Compile Include="Src\Gui\Dialogs\AddOpenWithEntryDialog.cs" />
@@ -109,8 +126,12 @@
     <Compile Include="Src\Gui\Pads\SearchResultPad\SearchResultPanelToolbarCommands.cs" />
     <Compile Include="Src\Gui\Pads\TaskList\TaskListPadCommands.cs" />
     <Compile Include="Src\Gui\Pads\ToolsPad.cs" />
-    <Compile Include="Src\Gui\Workbench\Layouts\SimpleWorkbenchLayout.cs" />
+    <None Include="Src\Gui\Workbench\Layouts\SimpleWorkbenchLayout.cs" />
+    <Compile Include="Src\Gui\Workbench\Layouts\AvalonDockLayout.cs" />
+    <Compile Include="Src\Gui\Workbench\Layouts\AvalonPadContent.cs" />
+    <Compile Include="Src\Gui\Workbench\Layouts\AvalonWorkbenchWindow.cs" />
     <Compile Include="Src\Gui\Workbench\SingleInstanceHelper.cs" />
+    <Compile Include="Src\Gui\Workbench\WpfWorkbench.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\WriteableProjectEvaluator.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\WriteableSolutionEvaluator.cs" />
     <Compile Include="Src\Internal\ExternalTool\ExternalTool.cs" />
@@ -282,13 +303,13 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Src\Gui\Pads\PropertyPad\PropertyPad.cs" />
-    <Compile Include="Src\Gui\Workbench\DefaultWorkbench.cs">
+    <None Include="Src\Gui\Workbench\DefaultWorkbench.cs">
       <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Src\Gui\Workbench\Layouts\SdiWorkspaceLayout.cs" />
-    <Compile Include="Src\Gui\Workbench\Layouts\SdiWorkspaceWindow.cs">
+    </None>
+    <None Include="Src\Gui\Workbench\Layouts\SdiWorkspaceLayout.cs" />
+    <None Include="Src\Gui\Workbench\Layouts\SdiWorkspaceWindow.cs">
       <SubType>Form</SubType>
-    </Compile>
+    </None>
     <Compile Include="Src\Gui\XmlForms\SharpDevelopPropertyValueCreator.cs" />
     <Compile Include="Src\Gui\XmlForms\SharpDevelopStringValueFilter.cs" />
     <Compile Include="Src\Services\IconService.cs" />
@@ -460,7 +481,6 @@
     <EmbeddedResource Include="Resources\TreeViewOptionsDialog.xfrm" />
     <EmbeddedResource Include="Resources\WordCountDialog.xfrm" />
     <EmbeddedResource Include="Resources\BehaviorTextEditorPanel.xfrm" />
-    <EmbeddedResource Include="Resources\GotoDialog.xfrm" />
     <EmbeddedResource Include="Resources\GeneralTextEditorPanel.xfrm" />
     <EmbeddedResource Include="Resources\CodeTemplatePanel.xfrm" />
     <EmbeddedResource Include="Resources\MarkersTextEditorPanel.xfrm" />
@@ -714,6 +734,7 @@
     <Compile Include="Src\Util\GenericConverter.cs" />
     <Compile Include="Src\Internal\Templates\TemplateLoadException.cs" />
     <Compile Include="Src\Util\UnclosableStream.cs" />
+    <Compile Include="Src\Util\WpfSynchronizeInvoke.cs" />
     <EmbeddedResource Include="Resources\DefaultManifest.manifest" />
     <EmbeddedResource Include="Src\Gui\Dialogs\ExtractInterfaceDialog.resx">
       <DependentUpon>ExtractInterfaceDialog.cs</DependentUpon>
@@ -733,10 +754,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj">
-      <Project>{D3C782BA-178E-4235-A3BA-8C11DEBB6BEE}</Project>
-      <Name>WinFormsUI</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj">
       <Project>{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D}</Project>
       <Name>ICSharpCode.TextEditor</Name>
@@ -758,6 +775,11 @@
     <Folder Include="Src\Util" />
     <Folder Include="Src\Gui\Pads\ClassBrowser\NodeBuilder" />
     <Folder Include="Src\Services\NavigationService" />
+    <ProjectReference Include="..\..\ICSharpCode.Core.Presentation\ICSharpCode.Core.Presentation.csproj">
+      <Project>{7E4A7172-7FF5-48D0-B719-7CD959DD1AC9}</Project>
+      <Name>ICSharpCode.Core.Presentation</Name>
+      <Private>True</Private>
+    </ProjectReference>
     <ProjectReference Include="..\..\ICSharpCode.Core.WinForms\ICSharpCode.Core.WinForms.csproj">
       <Project>{857CA1A3-FC88-4BE0-AB6A-D1EE772AB288}</Project>
       <Name>ICSharpCode.Core.WinForms</Name>
@@ -774,8 +796,11 @@
     <ProjectReference Include="..\..\ICSharpCode.SharpDevelop.Widgets\Project\ICSharpCode.SharpDevelop.Widgets.csproj">
       <Project>{8035765F-D51F-4A0C-A746-2FD100E19419}</Project>
       <Name>ICSharpCode.SharpDevelop.Widgets</Name>
-      <Private>False</Private>
+      <Private>True</Private>
     </ProjectReference>
+    <Page Include="Src\Gui\App.xaml" />
+    <Page Include="Src\Gui\Workbench\WpfWorkbench.xaml" />
+    <Page Include="Src\TextEditor\Gui\Dialogs\GotoDialog.xaml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

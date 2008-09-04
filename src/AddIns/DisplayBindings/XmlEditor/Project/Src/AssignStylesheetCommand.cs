@@ -52,7 +52,7 @@ namespace ICSharpCode.XmlEditor
 					dialog.FilterIndex = 1;
 				}
 				
-				if (dialog.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) == DialogResult.OK) {
+				if (dialog.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
 					return dialog.FileName;
 				}
 			}

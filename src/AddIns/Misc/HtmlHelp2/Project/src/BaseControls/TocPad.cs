@@ -34,7 +34,7 @@ namespace HtmlHelp2
 	{
 		MSHelp2TocControl help2TocControl;
 
-		public override Control Control
+		public override object Content
 		{
 			get { return help2TocControl; }
 		}
@@ -44,14 +44,10 @@ namespace HtmlHelp2
 			help2TocControl.Dispose();
 		}
 
-		public override void RedrawContent()
-		{
-			help2TocControl.RedrawContent();
-		}
-
 		public HtmlHelp2TocPad()
 		{
 			help2TocControl = new MSHelp2TocControl();
+			ResourceService.LanguageChanged += delegate { help2TocControl.RedrawContent(); };
 		}
 
 		public void SyncToc(string topic)

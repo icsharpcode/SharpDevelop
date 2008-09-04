@@ -50,7 +50,7 @@ namespace ICSharpCode.SharpDevelop
 			if (file == null)
 				throw new ArgumentNullException("file");
 			this.file = file;
-			WorkbenchSingleton.MainForm.Activated += MainForm_Activated;
+			WorkbenchSingleton.MainWindow.Activated += MainForm_Activated;
 			file.FileNameChanged += file_FileNameChanged;
 			activeWatchers.Add(this);
 			SetWatcher();
@@ -66,7 +66,7 @@ namespace ICSharpCode.SharpDevelop
 			WorkbenchSingleton.AssertMainThread();
 			activeWatchers.Remove(this);
 			if (file != null) {
-				WorkbenchSingleton.MainForm.Activated -= MainForm_Activated;
+				WorkbenchSingleton.MainWindow.Activated -= MainForm_Activated;
 				file.FileNameChanged -= file_FileNameChanged;
 				file = null;
 			}
@@ -80,8 +80,8 @@ namespace ICSharpCode.SharpDevelop
 		
 		public bool Enabled {
 			get { return enabled; }
-			set { 
-				enabled = value; 
+			set {
+				enabled = value;
 				SetWatcher();
 			}
 		}
@@ -110,7 +110,8 @@ namespace ICSharpCode.SharpDevelop
 			try {
 				if (watcher == null) {
 					watcher = new FileSystemWatcher();
-					watcher.SynchronizingObject = WorkbenchSingleton.MainForm;
+					if (WorkbenchSingleton.Workbench != null)
+						watcher.SynchronizingObject = WorkbenchSingleton.Workbench.SynchronizingObject;
 					watcher.Changed += new FileSystemEventHandler(this.OnFileChangedEvent);
 				}
 				watcher.Path = Path.GetDirectoryName(fileName);

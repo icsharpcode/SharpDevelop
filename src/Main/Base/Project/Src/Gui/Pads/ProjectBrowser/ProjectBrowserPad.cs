@@ -63,7 +63,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		public override Control Control {
+		public override object Content {
 			get {
 				return projectBrowserPanel;
 			}

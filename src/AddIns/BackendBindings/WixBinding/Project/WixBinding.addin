@@ -161,7 +161,8 @@
 		     category     = "Setup"
 		     title        = "${res:ICSharpCode.WixBinding.SetupDialogListPad.Title}"
 		     icon         = "Setup.Icons.16x16.SetupDialogsPad"
-		     class        = "ICSharpCode.WixBinding.SetupDialogListPad"/>
+		     class        = "ICSharpCode.WixBinding.SetupDialogListPad"
+		     defaultPosition = "Bottom, Hidden" />
 	</Path>
 
 	<Path name = "/SharpDevelop/Pads/WixSetupDialogListPad/ContextMenu">

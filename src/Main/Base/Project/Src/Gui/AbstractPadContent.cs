@@ -12,22 +12,22 @@ namespace ICSharpCode.SharpDevelop.Gui
 {
 	public abstract class AbstractPadContent : IPadContent
 	{
-		public abstract Control Control {
+		public abstract object Content {
 			get;
-		}
-		
-		public virtual void RedrawContent()
-		{
 		}
 		
 		public virtual void Dispose()
 		{
 		}
 		
-		public bool IsVisible {
+		protected bool IsVisible {
 			get {
-				Control ctl = this.Control;
-				return ctl.Visible && ctl.Width > 0 && ctl.Height > 0;
+				if (WorkbenchSingleton.Workbench == null || WorkbenchSingleton.Workbench.WorkbenchLayout == null)
+					return false;
+				PadDescriptor d = WorkbenchSingleton.Workbench.GetPad(GetType());
+				if (d == null)
+					return false;
+				return WorkbenchSingleton.Workbench.WorkbenchLayout.IsVisible(d);
 			}
 		}
 	}
