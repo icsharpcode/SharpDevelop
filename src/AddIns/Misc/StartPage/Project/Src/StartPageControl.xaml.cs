@@ -13,6 +13,7 @@ using System.Windows.Controls;
 
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Project;
+using System.Windows.Documents;
 
 namespace ICSharpCode.StartPage
 {
@@ -58,6 +59,12 @@ namespace ICSharpCode.StartPage
 			if (item != null) {
 				ProjectService.LoadSolutionOrProject(item.Path);
 			}
+		}
+		
+		void listViewHyperlinkClick(object sender, RoutedEventArgs e)
+		{
+			RecentOpenItem item = (RecentOpenItem)((Hyperlink)sender).Tag;
+			ProjectService.LoadSolutionOrProject(item.Path);
 		}
 		
 		void openSolutionClick(object sender, RoutedEventArgs e)

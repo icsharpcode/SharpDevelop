@@ -538,7 +538,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 								if (!vc.IsDirty) continue;
 								if (vc.PrimaryFile != null) {
 									while (true) {
-										vc.Files.Foreach(ICSharpCode.SharpDevelop.Commands.SaveFile.Save);
+										vc.Files.ForEach(ICSharpCode.SharpDevelop.Commands.SaveFile.Save);
 										if (vc.IsDirty) {
 											if (MessageService.AskQuestion("${res:MainWindow.DiscardChangesMessage}")) {
 												break;

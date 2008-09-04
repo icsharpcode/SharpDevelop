@@ -1,10 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <UserControl
-	x:Class="ICSharpCode.StartPage.StartPageControl"
-	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	xmlns:gui="clr-namespace:ICSharpCode.SharpDevelop.Gui;assembly=ICSharpCode.SharpDevelop"
-	xmlns:core="http://icsharpcode.net/sharpdevelop/core"
+	x:Class="ICSharpCode.StartPage.StartPageControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:gui="clr-namespace:ICSharpCode.SharpDevelop.Gui;assembly=ICSharpCode.SharpDevelop" xmlns:core="http://icsharpcode.net/sharpdevelop/core"
 	Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}">
 	<Grid>
 		<Grid.RowDefinitions>
@@ -31,39 +27,78 @@
 				Stretch="Fill"
 				Source="../Resources/balken_mitte.gif" />
 		</DockPanel>
-		<DockPanel Grid.Row="1" VerticalAlignment="Top">
-			<Border DockPanel.Dock="Top" Background="#A8C6E3" Margin="4,20,4,0" CornerRadius="15,15,0,0" Padding="15,0,15,0">
-				<TextBlock Text="{core:Localize StartPage.StartMenu.BarNameName}"
-				           FontSize="11pt"
-				           FontWeight="Bold"
-				           Foreground="White"
-				           Margin="0,0,0,2"/>
+		<DockPanel
+			Grid.Row="1"
+			VerticalAlignment="Top">
+			<Border
+				DockPanel.Dock="Top"
+				Background="#A8C6E3"
+				Margin="4,20,4,0"
+				CornerRadius="15,15,0,0"
+				Padding="15,0,15,0">
+				<TextBlock
+					Text="{core:Localize StartPage.StartMenu.BarNameName}"
+					FontSize="11pt"
+					FontWeight="Bold"
+					Foreground="White"
+					Margin="0,0,0,2" />
 			</Border>
-			<Border Background="#DCDDDE" Margin="4,0,4,4" CornerRadius="0,0,15,15">
-				<StackPanel Orientation="Vertical" Margin="15">
-					<ListView Name="lastProjectsListView" SelectionMode="Single" MouseDoubleClick="lastProjectsDoubleClick">
+			<Border
+				Background="#DCDDDE"
+				Margin="4,0,4,4"
+				CornerRadius="0,0,15,15">
+				<StackPanel
+					Orientation="Vertical"
+					Margin="15">
+					<ListView
+						Name="lastProjectsListView"
+						SelectionMode="Single"
+						MouseDoubleClick="lastProjectsDoubleClick">
+						<ListView.Resources>
+							<DataTemplate x:Key="nameCellTemplate">
+								<TextBlock>
+									<Hyperlink Tag="{Binding}" Click="listViewHyperlinkClick">
+										<TextBlock Text="{Binding Path=Name}"/>
+									</Hyperlink>
+								</TextBlock>
+							</DataTemplate>
+						</ListView.Resources>
 						<ListView.View>
 							<GridView>
-								<GridViewColumn DisplayMemberBinding="{Binding Path=Name}"
-								                Header="{core:Localize Global.Name}" />
-								<GridViewColumn DisplayMemberBinding="{Binding Path=LastModification}"
-								                Header="{core:Localize StartPage.StartMenu.ModifiedTable}" />
-								<GridViewColumn DisplayMemberBinding="{Binding Path=Path}"
-								                Header="{core:Localize StartPage.StartMenu.LocationTable}" />
+								<GridViewColumn
+									CellTemplate="{StaticResource nameCellTemplate}"
+									Header="{core:Localize Global.Name}" />
+								<GridViewColumn
+									DisplayMemberBinding="{Binding Path=LastModification}"
+									Header="{core:Localize StartPage.StartMenu.ModifiedTable}" />
+								<GridViewColumn
+									DisplayMemberBinding="{Binding Path=Path}"
+									Header="{core:Localize StartPage.StartMenu.LocationTable}" />
 							</GridView>
 						</ListView.View>
 					</ListView>
-					<StackPanel Orientation="Horizontal" Margin="0,20,0,0">
-						<Button Content="{core:Localize StartPage.StartMenu.OpenCombineButton}" Click="openSolutionClick"/>
-						<Button Content="{core:Localize StartPage.StartMenu.NewCombineButton}" Click="newSolutionClick" Margin="8,0,0,0"/>
+					<StackPanel
+						Orientation="Horizontal"
+						Margin="0,20,0,0">
+						<Button
+							Content="{core:Localize StartPage.StartMenu.OpenCombineButton}"
+							Click="openSolutionClick" />
+						<Button
+							Content="{core:Localize StartPage.StartMenu.NewCombineButton}"
+							Click="newSolutionClick"
+							Margin="8,0,0,0" />
 					</StackPanel>
 				</StackPanel>
 			</Border>
 		</DockPanel>
-		<TextBlock Background="#A8C6E3" Grid.Row="2" Padding="4,0,4,0">
+		<TextBlock
+			Background="#A8C6E3"
+			Grid.Row="2"
+			Padding="4,0,4,0"
+			TextWrapping="Wrap">
 			Copyright ©2000-2008
 			<Hyperlink NavigateUri="mailto:webmaster@icsharpcode.net">IC#SharpCode</Hyperlink>
-			<Run Text="{x:Static gui:AboutSharpDevelopTabPage.LicenseSentence}"/>
+			<Run Text="{x:Static gui:AboutSharpDevelopTabPage.LicenseSentence}" />
 		</TextBlock>
 	</Grid>
 </UserControl>

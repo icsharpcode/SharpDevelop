@@ -26,7 +26,7 @@ namespace ICSharpCode.SharpDevelop
 		/// <summary>
 		/// Runs an action for all elements in the input.
 		/// </summary>
-		public static void Foreach<T>(this IEnumerable<T> input, Action<T> action)
+		public static void ForEach<T>(this IEnumerable<T> input, Action<T> action)
 		{
 			if (input == null)
 				throw new ArgumentNullException("input");
@@ -143,6 +143,12 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
+		/// <summary>
+		/// WindowsFormsHost that prevents its child from being disposed.
+		/// The default WindowsFormsHost disposes its child when the WPF application shuts down,
+		/// but some events in SharpDevelop occur after the WPF shutdown (e.g. SolutionClosed), so we must
+		/// not dispose pads that could still be handling them.
+		/// </summary>
 		class SDWindowsFormsHost : WinForms.Integration.WindowsFormsHost
 		{
 			public SDWindowsFormsHost(WinForms.Control child)
@@ -150,7 +156,7 @@ namespace ICSharpCode.SharpDevelop
 				this.Child = child;
 				child.Disposed += child_Disposed;
 			}
-
+			
 			void child_Disposed(object sender, EventArgs e)
 			{
 				Dispose();
