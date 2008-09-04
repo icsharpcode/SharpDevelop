@@ -6,13 +6,14 @@
 	Width="578"
 	Style="{StaticResource DialogWindow}">
 	<Grid>
-		<Label
+		<TextBlock
 			Grid.Column="0"
 			Grid.Row="0"
 			HorizontalAlignment="Stretch"
 			VerticalAlignment="Stretch"
 			Margin="8,8,8,0"
-			Content="{core:Localize Dialog.Goto.IntroText}" />
+			Text="{core:Localize Dialog.Goto.IntroText}"
+			TextWrapping="Wrap" />
 		<TextBox
 			Grid.Column="0"
 			Grid.Row="1"
@@ -53,13 +54,13 @@
 			Click="cancelButtonClick" />
 		<Grid.RowDefinitions>
 			<RowDefinition
-				Height="70" />
+				Height="Auto" />
 			<RowDefinition
-				Height="30" />
+				Height="Auto" />
 			<RowDefinition
 				Height="1*" />
 			<RowDefinition
-				Height="37" />
+				Height="Auto" />
 		</Grid.RowDefinitions>
 	</Grid>
 </Window>

@@ -831,58 +831,6 @@
 										<File Source="..\..\data\resources\layouts\LayoutConfig.xml" Id="LayoutConfig.xml" Name="LayoutConfig.xml" />
 									</Component>
 								</Directory>
-								<Directory Id="StartPageFolder" Name="startpage">
-									<Directory Id="StartPageLayoutFolder" Name="Layout">
-										<Directory Id="LayoutBlueFolder" Name="blue">
-											<Component Guid="1DFAB472-3E8E-4E0B-908F-0FD1F520792F" Id="StartPageLayoutBlueFiles" DiskId="1">
-												<File Source="..\..\data\resources\startpage\Layout\blue\balken_rechts.gif" Id="Blue_balken_rechts.gif" Name="balken_rechts.gif" />
-												<File Source="..\..\data\resources\startpage\Layout\blue\balken_links.gif" Id="Blue_balken_links.gif" Name="balken_links.gif" />
-												<File Source="..\..\data\resources\startpage\Layout\blue\balken_mitte.gif" Id="Blue_balken_mitte.gif" Name="balken_mitte.gif" />
-											</Component>
-										</Directory>
-										<Directory Id="LayoutBrownFolder" Name="brown">
-											<Component Guid="3A3A5F7B-0A62-4A53-9DB7-209F4A863EF9" Id="StartPageLayoutBrownFiles" DiskId="1">
-												<File Source="..\..\data\resources\startpage\Layout\brown\balken_rechts.gif" Id="Brown_balken_rechts.gif" Name="balken_rechts.gif" />
-												<File Source="..\..\data\resources\startpage\Layout\brown\balken_links.gif" Id="Brown_balken_links.gif" Name="balken_links.gif" />
-												<File Source="..\..\data\resources\startpage\Layout\brown\balken_mitte.gif" Id="Brown_balken_mitte.gif" Name="balken_mitte.gif" />
-											</Component>
-										</Directory>
-										<Directory Id="LayoutCommonFolder" Name="common">
-											<Component Guid="B99D6762-087A-49DA-B1BB-F24E08CF4CC2" Id="StartPageLayoutCommonFiles" DiskId="1">
-												<File Source="..\..\data\resources\startpage\Layout\common\pixel_weiss.gif" Id="pixel_weiss.gif" Name="pixel_weiss.gif" />
-												<File Source="..\..\data\resources\startpage\Layout\common\blind.gif" Name="blind.gif" Id="blind.gif" />
-												<File Source="..\..\data\resources\startpage\Layout\common\dot_listing.gif" Id="dot_listing.gif" Name="dot_listing.gif" />
-												<File Source="..\..\data\resources\startpage\Layout\common\klinker_milestone.gif" Id="klinker_milestone.gif" Name="klinker_milestone.gif" />
-												<File Source="..\..\data\resources\startpage\Layout\common\line_hor_black.gif" Id="line_hor_black.gif" Name="line_hor_black.gif" />
-												<File Source="..\..\data\resources\startpage\Layout\common\milestone_col_head.gif" Id="milestone_col_head.gif" Name="milestone_col_head.gif" />
-											</Component>
-										</Directory>
-										<Directory Id="LayoutGreenFolder" Name="green">
-											<Component Guid="81709CEC-4157-485B-854E-0ACF81D8E53D" Id="StartPageLayoutGreenFiles" DiskId="1">
-												<File Source="..\..\data\resources\startpage\Layout\green\balken_rechts.gif" Id="Green_balken_rechts.gif" Name="balken_rechts.gif" />
-												<File Source="..\..\data\resources\startpage\Layout\green\balken_links.gif" Id="Green_balken_links.gif" Name="balken_links.gif" />
-												<File Source="..\..\data\resources\startpage\Layout\green\balken_mitte.gif" Id="Green_balken_mitte.gif" Name="balken_mitte.gif" />
-											</Component>
-										</Directory>
-										<Directory Id="LayoutOrangeFolder" Name="orange">
-											<Component Guid="1AADCE06-721C-4F61-945F-42F9920685B6" Id="StartPageLayoutOrangeFiles" DiskId="1">
-												<File Source="..\..\data\resources\startpage\Layout\orange\balken_rechts.gif" Id="Orange_balken_rechts.gif" Name="balken_rechts.gif" />
-												<File Source="..\..\data\resources\startpage\Layout\orange\balken_links.gif" Id="Orange_balken_links.gif" Name="balken_links.gif" />
-												<File Source="..\..\data\resources\startpage\Layout\orange\balken_mitte.gif" Id="Orange_balken_mitte.gif" Name="balken_mitte.gif" />
-											</Component>
-										</Directory>
-										<Directory Id="LayoutRedFolder" Name="red">
-											<Component Guid="FDDB0436-8AAF-4B76-B2A3-4973567A1D57" Id="StartPageLayoutRedFiles" DiskId="1">
-												<File Source="..\..\data\resources\startpage\Layout\red\balken_rechts.gif" Id="Red_balken_rechts.gif" Name="balken_rechts.gif" />
-												<File Source="..\..\data\resources\startpage\Layout\red\balken_links.gif" Id="Red_balken_links.gif" Name="balken_links.gif" />
-												<File Source="..\..\data\resources\startpage\Layout\red\balken_mitte.gif" Id="Red_balken_mitte.gif" Name="balken_mitte.gif" />
-											</Component>
-										</Directory>
-										<Component Guid="4A3761D8-42D7-4A18-9F7E-4BE31523710B" Id="StartPageLayoutFiles" DiskId="1">
-											<File Source="..\..\data\resources\startpage\Layout\default.css" Name="default.css" Id="default.css" />
-										</Component>
-									</Directory>
-								</Directory>
 								<Component Guid="D8322576-2925-4F43-ACB0-05369DC5FC67" Id="StringResourceFiles" DiskId="1">
 									<File Source="..\..\data\resources\StringResources.tr.resources" Id="StringResources.tr.resources" Name="StringResources.tr.resources" />
 									<File Source="..\..\data\resources\StringResources.cz.resources" Id="StringResources.cz.resources" Name="StringResources.cz.resources" />

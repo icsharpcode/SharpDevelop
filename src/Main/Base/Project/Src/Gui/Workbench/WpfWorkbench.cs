@@ -8,13 +8,16 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Navigation;
 
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
-using System.Windows.Input;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -82,10 +85,23 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			UpdateMenu();
 			
+			AddHandler(Hyperlink.RequestNavigateEvent, new RequestNavigateEventHandler(OnRequestNavigate));
+			
 			requerySuggestedEventHandler = new EventHandler(CommandManager_RequerySuggested);
 			CommandManager.RequerySuggested += requerySuggestedEventHandler;
 			
 			StatusBarService.SetMessage("${res:MainWindow.StatusBar.ReadyMessage}");
+		}
+		
+		void OnRequestNavigate(object sender, RequestNavigateEventArgs e)
+		{
+			if (e.Uri.Scheme == "mailto") {
+				try {
+					Process.Start(e.Uri.ToString());
+				} catch {}
+			} else {
+				FileService.OpenFile(e.Uri.ToString());
+			}
 		}
 		
 		// keep a reference to the event handler to prevent it from being gargabe collected

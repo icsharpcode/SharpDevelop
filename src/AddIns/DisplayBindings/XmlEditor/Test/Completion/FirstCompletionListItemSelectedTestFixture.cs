@@ -33,16 +33,13 @@ namespace XmlEditor.Tests.Completion
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			Form parentForm = new Form();
-			parentForm.CreateControl();
-			
 			XmlSchemaCompletionData schema = new XmlSchemaCompletionData(ResourceManager.GetXhtmlStrictSchema());
 			XmlSchemaCompletionDataCollection schemas = new XmlSchemaCompletionDataCollection();
 			schemas.Add(schema);
 			provider = new XmlCompletionDataProvider(schemas, schema, String.Empty);
 			TextEditorControl textEditor = new TextEditorControl();
 			completionDataItems = provider.GenerateCompletionData(@"C:\Test.xml", textEditor.ActiveTextAreaControl.TextArea, '<');
-			using (CodeCompletionWindow completionWindow = CodeCompletionWindow.ShowCompletionWindow(parentForm, textEditor, @"C:\Test.xml", provider, '<')) {
+			using (CodeCompletionWindow completionWindow = CodeCompletionWindow.ShowCompletionWindow(null, textEditor, @"C:\Test.xml", provider, '<')) {
 				CodeCompletionListView listView = (CodeCompletionListView)completionWindow.Controls[0];
 				selectedCompletionData = listView.SelectedCompletionData;
 				completionWindow.Close();

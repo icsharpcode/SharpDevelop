@@ -113,7 +113,12 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 		protected void ShowCompletionWindow()
 		{
 			Enabled = true;
-			this.Show(parentWindow);
+			// only this.Show() works when running inside a non-interactive Windows Service (e.g. unit tests),
+			// so only use the Show(owner) overload when there is an owner.
+			if (parentWindow != null)
+				this.Show(parentWindow);
+			else
+				this.Show();
 			
 			control.Focus();
 			

@@ -1664,7 +1664,7 @@
 					<MenuItem id = "GotDotNet" label = "GotDotNet" icon = "Icons.16x16.WebSearchIcon" link = "http://www.gotdotnet.com/" />
 				</MenuItem>
 				<MenuItem id = "IntegratedProjects" label = "Integrated Projects" type="Menu">
-					<MenuItem id = "DockManager Control" label = "DockPanel Suite" icon = "Icons.16x16.WebSearchIcon" link = "http://sourceforge.net/projects/dockpanelsuite/" />
+					<MenuItem id = "AvalonDock" label = "AvalonDock" icon = "Icons.16x16.WebSearchIcon" link = "http://www.codeplex.com/AvalonDock/" />
 					<MenuItem id = "NUnit" label = "NUnit" icon = "PadIcons.NUnitTest" link = "http://www.nunit.org/" />
 					<MenuItem id = "WiX" label = "WiX" icon = "Icons.16x16.WebSearchIcon" link = "http://sourceforge.net/projects/wix/" />
 					<MenuItem id = "SHFB" label = "Sandcastle Help File Builder" icon = "Icons.16x16.WebSearchIcon" link = "http://www.codeplex.com/SHFB" />

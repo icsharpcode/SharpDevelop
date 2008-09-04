@@ -274,13 +274,6 @@
 				<ComponentRef Id="InstallerBitmapFiles"/>
 				<ComponentRef Id="LanguageBitmapFiles"/>
 				<ComponentRef Id="LayoutFiles"/>
-				<ComponentRef Id="StartPageLayoutBlueFiles"/>
-				<ComponentRef Id="StartPageLayoutBrownFiles"/>
-				<ComponentRef Id="StartPageLayoutCommonFiles"/>
-				<ComponentRef Id="StartPageLayoutGreenFiles"/>
-				<ComponentRef Id="StartPageLayoutOrangeFiles"/>
-				<ComponentRef Id="StartPageLayoutRedFiles"/>
-				<ComponentRef Id="StartPageLayoutFiles"/>
 				<ComponentRef Id="StringResourceFiles"/>
 				<ComponentRef Id="SchemaFiles"/>
 				<ComponentRef Id="CSharpFileTemplates"/>
