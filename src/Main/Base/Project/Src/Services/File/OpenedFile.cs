@@ -286,6 +286,16 @@ namespace ICSharpCode.SharpDevelop
 		
 		public virtual void ReloadFromDisk()
 		{
+			var r = FileUtility.ObservedLoad(ReloadFromDiskInternal, FileName);
+			if (r == FileOperationResult.Failed) {
+				if (currentView != null && currentView.WorkbenchWindow != null) {
+					currentView.WorkbenchWindow.CloseWindow(true);
+				}
+			}
+		}
+		
+		void ReloadFromDiskInternal()
+		{
 			fileData = null;
 			if (currentView != null) {
 				try {
