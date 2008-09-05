@@ -21,8 +21,7 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 	/// </summary>
 	sealed class GrayOutDesignerExceptActiveArea : FrameworkElement
 	{
-		//Geometry infiniteRectangle = new RectangleGeometry(new Rect(0, 0, double.PositiveInfinity, double.PositiveInfinity));
-		Geometry infiniteRectangle = new RectangleGeometry(new Rect(-100, -100, 10000, 10000));
+		Geometry designSurfaceRectangle;
 		Geometry activeAreaGeometry;
 		Geometry combinedGeometry;
 		Brush grayOutBrush;
@@ -46,7 +45,7 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 			get { return activeAreaGeometry; }
 			set {
 				activeAreaGeometry = value;
-				combinedGeometry = new CombinedGeometry(GeometryCombineMode.Exclude, infiniteRectangle, activeAreaGeometry);
+				combinedGeometry = new CombinedGeometry(GeometryCombineMode.Exclude, designSurfaceRectangle, activeAreaGeometry);
 			}
 		}
 		
@@ -78,10 +77,12 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 		{
 			Debug.Assert(services != null);
 			Debug.Assert(activeContainer != null);
-			IDesignPanel designPanel = services.GetService<IDesignPanel>();
+			DesignPanel designPanel = services.GetService<IDesignPanel>() as DesignPanel;
 			OptionService optionService = services.GetService<OptionService>();
 			if (designPanel != null && grayOut == null && optionService != null && optionService.GrayOutDesignSurfaceExceptParentContainerWhenDragging) {
 				grayOut = new GrayOutDesignerExceptActiveArea();
+				grayOut.designSurfaceRectangle = new RectangleGeometry(
+					new Rect(new Point(0, 0), designPanel.RenderSize));
 				grayOut.designPanel = designPanel;
 				grayOut.adornerPanel = new AdornerPanel();
 				grayOut.adornerPanel.Order = AdornerOrder.BehindForeground;
