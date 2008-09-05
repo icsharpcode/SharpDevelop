@@ -8,8 +8,10 @@
 using System;
 using System.CodeDom.Compiler;
 using System.Collections;
+using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.ComponentModel.Design.Serialization;
+using System.Reflection;
 
 using ICSharpCode.Core;
 
@@ -53,12 +55,56 @@ namespace ICSharpCode.FormsDesigner
 			this.generator = generator;
 		}
 		
+		public override void Dispose()
+		{
+			try {
+				IComponentChangeService componentChangeService = (IComponentChangeService)this.GetService(typeof(IComponentChangeService));
+				if (componentChangeService != null) {
+					LoggingService.Debug("Forms designer: Removing ComponentAdded handler for nested container setup");
+					componentChangeService.ComponentAdded -= ComponentContainerSetUp;
+				} else {
+					LoggingService.Info("Forms designer: Could not remove ComponentAdding handler because IComponentChangeService is no longer available");
+				}
+			} finally {
+				base.Dispose();
+			}
+		}
+		
 		public override void BeginLoad(IDesignerLoaderHost host)
 		{
 			this.loading = true;
 			this.typeResolutionService = (ITypeResolutionService)host.GetService(typeof(ITypeResolutionService));
 			this.designerLoaderHost = host;
+			
+			LoggingService.Debug("Forms designer: Adding ComponentAdded handler for nested container setup");
+			IComponentChangeService componentChangeService = (IComponentChangeService)host.GetService(typeof(IComponentChangeService));
+			componentChangeService.ComponentAdded += ComponentContainerSetUp;
+			
 			base.BeginLoad(host);
+		}
+		
+		static void ComponentContainerSetUp(object sender, ComponentEventArgs e)
+		{
+			// HACK: This reflection mess fixes SD2-1374 and SD2-1375. However I am not sure why it is needed in the first place.
+			// There seems to be a problem with the nested container class used
+			// by the designer. It only establishes a connection to the service
+			// provider of the DesignerHost after it has been queried for
+			// an IServiceContainer service. This does not always happen
+			// automatically, so we enforce that here. We have to use
+			// reflection because the request for IServiceContainer is
+			// not forwarded by higher-level GetService methods.
+			// Also, be very careful when trying to troubleshoot this using
+			// the debugger because it automatically gets all properties and
+			// this can cause side effects here, such as initializing that service
+			// so that the problem no longer appears.
+			INestedContainer nestedContainer = e.Component.Site.GetService(typeof(INestedContainer)) as INestedContainer;
+			if (nestedContainer != null) {
+				MethodInfo getServiceMethod = nestedContainer.GetType().GetMethod("GetService", BindingFlags.Instance | BindingFlags.NonPublic, null, new [] {typeof(Type)}, null);
+				if (getServiceMethod != null) {
+					LoggingService.Debug("Forms designer: Initializing nested service container of " + e.Component.ToString() + " using Reflection");
+					getServiceMethod.Invoke(nestedContainer, BindingFlags.InvokeMethod | BindingFlags.Instance | BindingFlags.NonPublic, null, new [] {typeof(IServiceContainer)}, null);
+				}
+			}
 		}
 		
 		protected override void Initialize()
