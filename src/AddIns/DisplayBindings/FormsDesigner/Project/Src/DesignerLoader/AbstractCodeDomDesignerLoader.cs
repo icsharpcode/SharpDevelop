@@ -76,9 +76,13 @@ namespace ICSharpCode.FormsDesigner
 			this.typeResolutionService = (ITypeResolutionService)host.GetService(typeof(ITypeResolutionService));
 			this.designerLoaderHost = host;
 			
-			LoggingService.Debug("Forms designer: Adding ComponentAdded handler for nested container setup");
 			IComponentChangeService componentChangeService = (IComponentChangeService)host.GetService(typeof(IComponentChangeService));
-			componentChangeService.ComponentAdded += ComponentContainerSetUp;
+			if (componentChangeService != null) {
+				LoggingService.Debug("Forms designer: Adding ComponentAdded handler for nested container setup");
+				componentChangeService.ComponentAdded += ComponentContainerSetUp;
+			} else {
+				LoggingService.Warn("Forms designer: Cannot add ComponentAdded handler for nested container setup because IComponentChangeService is unavailable");
+			}
 			
 			base.BeginLoad(host);
 		}
