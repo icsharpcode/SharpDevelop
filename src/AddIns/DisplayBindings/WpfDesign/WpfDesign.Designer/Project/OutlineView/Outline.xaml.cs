@@ -12,14 +12,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace ICSharpCode.XamlDesigner
+namespace ICSharpCode.WpfDesign.Designer.OutlineView
 {
-    public partial class Outline
-    {
-        public Outline()
-        {
-            InitializeComponent();
-        }
+	public partial class Outline
+	{
+		public Outline()
+		{
+			InitializeComponent();
+		}
 
 		public static readonly DependencyProperty RootProperty =
 			DependencyProperty.Register("Root", typeof(OutlineNode), typeof(Outline));
@@ -28,5 +28,5 @@ namespace ICSharpCode.XamlDesigner
 			get { return (OutlineNode)GetValue(RootProperty); }
 			set { SetValue(RootProperty, value); }
 		}
-    }
+	}
 }

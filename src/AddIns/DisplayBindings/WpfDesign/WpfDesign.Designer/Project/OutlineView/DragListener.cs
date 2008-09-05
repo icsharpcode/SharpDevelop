@@ -5,7 +5,7 @@ using System.Text;
 using System.Windows;
 using System.Windows.Input;
 
-namespace ICSharpCode.XamlDesigner
+namespace ICSharpCode.WpfDesign.Designer.OutlineView
 {
 	public class DragListener
 	{

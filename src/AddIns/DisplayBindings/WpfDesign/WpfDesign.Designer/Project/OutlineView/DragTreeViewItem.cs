@@ -13,7 +13,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Controls.Primitives;
 
-namespace ICSharpCode.XamlDesigner
+namespace ICSharpCode.WpfDesign.Designer.OutlineView
 {
 	public class DragTreeViewItem : TreeViewItem
 	{

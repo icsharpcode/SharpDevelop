@@ -6,23 +6,23 @@ using System.Windows.Controls;
 using System.Windows;
 using System.Windows.Media;
 
-namespace ICSharpCode.XamlDesigner
+namespace ICSharpCode.WpfDesign.Designer.OutlineView
 {
 	public class IconItem : Control
 	{
 		static IconItem()
 		{
-			DefaultStyleKeyProperty.OverrideMetadata(typeof(IconItem), 
-				new FrameworkPropertyMetadata(typeof(IconItem)));
+			DefaultStyleKeyProperty.OverrideMetadata(typeof(IconItem),
+			                                         new FrameworkPropertyMetadata(typeof(IconItem)));
 		}
 
 		public static readonly DependencyProperty IconProperty =
-            DependencyProperty.Register("Icon", typeof(ImageSource), typeof(IconItem));
+			DependencyProperty.Register("Icon", typeof(ImageSource), typeof(IconItem));
 
-        public ImageSource Icon {
-            get { return (ImageSource)GetValue(IconProperty); }
-            set { SetValue(IconProperty, value); }
-        }
+		public ImageSource Icon {
+			get { return (ImageSource)GetValue(IconProperty); }
+			set { SetValue(IconProperty, value); }
+		}
 
 		public static readonly DependencyProperty TextProperty =
 			DependencyProperty.Register("Text", typeof(string), typeof(IconItem));

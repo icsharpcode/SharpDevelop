@@ -9,7 +9,7 @@ using System.Collections;
 using ICSharpCode.WpfDesign.Designer;
 using ICSharpCode.WpfDesign.XamlDom;
 
-namespace ICSharpCode.XamlDesigner
+namespace ICSharpCode.WpfDesign.Designer.OutlineView
 {
 	public class OutlineNode : INotifyPropertyChanged
 	{
@@ -64,8 +64,8 @@ namespace ICSharpCode.XamlDesigner
 			set {
 				if (isSelected != value) {
 					isSelected = value;
-					SelectionService.SetSelectedComponents(new[] { DesignItem }, 
-						value ? SelectionTypes.Add : SelectionTypes.Remove);
+					SelectionService.SetSelectedComponents(new[] { DesignItem },
+					                                       value ? SelectionTypes.Add : SelectionTypes.Remove);
 					RaisePropertyChanged("IsSelected");
 				}
 			}
@@ -80,7 +80,7 @@ namespace ICSharpCode.XamlDesigner
 		public string Name {
 			get  {
 				if (string.IsNullOrEmpty(DesignItem.Name)) {
-					return DesignItem.ComponentType.Name;					
+					return DesignItem.ComponentType.Name;
 				}
 				return DesignItem.ComponentType.Name + " (" + DesignItem.Name + ")";
 			}
@@ -137,8 +137,8 @@ namespace ICSharpCode.XamlDesigner
 
 			if (DesignItem.ContentProperty.IsCollection) {
 				foreach (var node in nodes) {
-					if (!CollectionSupport.CanCollectionAdd(DesignItem.ContentProperty.ReturnType, 
-						node.DesignItem.ComponentType)) {
+					if (!CollectionSupport.CanCollectionAdd(DesignItem.ContentProperty.ReturnType,
+					                                        node.DesignItem.ComponentType)) {
 						return false;
 					}
 				}
@@ -147,7 +147,7 @@ namespace ICSharpCode.XamlDesigner
 			else {
 				return after == null && nodes.Count() == 1 &&
 					DesignItem.ContentProperty.DeclaringType.IsAssignableFrom(
-					nodes.First().DesignItem.ComponentType);
+						nodes.First().DesignItem.ComponentType);
 			}
 		}
 

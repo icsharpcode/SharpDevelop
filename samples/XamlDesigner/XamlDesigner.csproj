@@ -108,21 +108,11 @@
     <Compile Include="DocumentView.xaml.cs">
       <DependentUpon>DocumentView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="DragListener.cs" />
-    <Compile Include="DragTreeView.cs" />
-    <Compile Include="DragTreeViewItem.cs" />
     <Compile Include="ErrorListView.xaml.cs">
       <DependentUpon>ErrorListView.xaml</DependentUpon>
     </Compile>
     <Compile Include="ExtensionMethods.cs" />
-    <Compile Include="IconItem.cs" />
     <Compile Include="MainWindow_Commands.cs" />
-    <Compile Include="Outline.xaml.cs">
-      <DependentUpon>Outline.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="OutlineNode.cs" />
-    <Compile Include="OutlineTreeView.cs" />
     <Compile Include="Shell.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
@@ -161,10 +151,6 @@
     <None Include="TestFiles\2.xaml">
       <SubType>Designer</SubType>
     </None>
-    <Page Include="Outline.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <None Include="TestFiles\3.xaml">
       <SubType>Designer</SubType>
     </None>

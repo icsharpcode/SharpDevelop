@@ -1,0 +1,151 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:Default="clr-namespace:ICSharpCode.WpfDesign.Designer.OutlineView"
+	xmlns:Converters="clr-namespace:ICSharpCode.WpfDesign.Designer.Converters"
+>
+	<Converters:LevelConverter x:Key="LevelConverter" />
+	
+	<Style TargetType="{x:Type Default:IconItem}">
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="{x:Type Default:IconItem}">
+					<StackPanel Orientation="Horizontal">
+						<Image Source="{TemplateBinding Icon}"
+						       Stretch="None" />
+						<TextBlock Text="{TemplateBinding Text}"
+						           VerticalAlignment="Center"
+						           Margin="5 0 0 0" />
+					</StackPanel>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+	
+	<Style x:Key="ExpandButtonStyle"
+	       TargetType="ToggleButton">
+		<Setter Property="Focusable"
+		        Value="False" />
+		<Setter Property="ClickMode"
+		        Value="Press" />
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="ToggleButton">
+					<Border Background="Transparent">
+						<Border Width="9"
+						        Height="9"
+						        SnapsToDevicePixels="true"
+						        BorderBrush="#FF7898B5"
+						        BorderThickness="1"
+						        CornerRadius="1">
+							<Border.Background>
+								<LinearGradientBrush EndPoint="1,1"
+									StartPoint="0,0">
+									<GradientStop Color="White"
+									              Offset=".2" />
+									<GradientStop Color="#FFC0B7A6"
+									              Offset="1" />
+								</LinearGradientBrush>
+							</Border.Background>
+							<Path Margin="1,1,1,1"
+							      x:Name="ExpandPath"
+							      Fill="Black"
+							      Data="M 0 2 L 0 3 L 2 3 L 2 5 L 3 5 L 3 3 L 5 3 L 5 2 L 3 2 L 3 0 L 2 0 L 2 2 Z" />
+						</Border>
+					</Border>
+					<ControlTemplate.Triggers>
+						<Trigger Property="IsChecked"
+						         Value="True">
+							<Setter Property="Data"
+							        TargetName="ExpandPath"
+							        Value="M 0 2 L 0 3 L 5 3 L 5 2 Z" />
+						</Trigger>
+					</ControlTemplate.Triggers>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+	
+	<Brush x:Key="InsertBrush">#FFC73C</Brush>
+	
+	<Style TargetType="{x:Type Default:DragTreeView}">
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="{x:Type Default:DragTreeView}">
+					<Grid Background="White">
+						<ScrollViewer HorizontalScrollBarVisibility="Auto"
+						              VerticalScrollBarVisibility="Auto">
+							<ItemsPresenter />
+						</ScrollViewer>
+						<Border x:Name="PART_InsertLine"
+						        Background="{StaticResource InsertBrush}"
+						        Height="2"
+						        Width="50"
+						        HorizontalAlignment="Left"
+						        VerticalAlignment="Top"
+						        Visibility="Collapsed"
+						        IsHitTestVisible="False" />
+					</Grid>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+	
+	<Style TargetType="{x:Type Default:DragTreeViewItem}">
+		<Setter Property="Foreground"
+		        Value="{x:Static SystemColors.ControlTextBrush}" />
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="{x:Type Default:DragTreeViewItem}">
+					
+					<DockPanel Background="White">
+						<DockPanel x:Name="bg"
+						           DockPanel.Dock="Top"
+						           Background="{TemplateBinding Background}">
+							<ToggleButton x:Name="expandButton"
+							              Style="{StaticResource ExpandButtonStyle}"
+							              DockPanel.Dock="Left"
+							              Margin="{TemplateBinding Level, Converter={StaticResource LevelConverter}}"
+							              IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}}" />
+							<Border x:Name="contentBorder"
+							        HorizontalAlignment="Left">
+								<ContentPresenter x:Name="PART_Header"
+									ContentSource="Header" />
+							</Border>
+						</DockPanel>
+						<ItemsPresenter x:Name="itemsHost" />
+					</DockPanel>
+					
+					<ControlTemplate.Triggers>
+						<Trigger Property="IsExpanded"
+						         Value="False">
+							<Setter TargetName="itemsHost"
+							        Property="Visibility"
+							        Value="Collapsed" />
+						</Trigger>
+						<Trigger Property="HasItems"
+						         Value="False">
+							<Setter TargetName="expandButton"
+							        Property="Visibility"
+							        Value="Hidden" />
+						</Trigger>
+						<Trigger Property="IsSelected"
+						         Value="True">
+							<Setter TargetName="bg"
+							        Property="Background"
+							        Value="{x:Static SystemColors.HighlightBrush}" />
+							<Setter Property="Foreground"
+							        Value="{x:Static SystemColors.HighlightTextBrush}" />
+						</Trigger>
+						<Trigger Property="IsDragHover"
+						         Value="True">
+							<Setter TargetName="contentBorder"
+							        Property="Background"
+							        Value="{StaticResource InsertBrush}" />
+						</Trigger>
+					</ControlTemplate.Triggers>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+
+</ResourceDictionary>

@@ -375,7 +375,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			ICustomTool customTool = GetCustomTool(baseItem.CustomTool);
 			if (customTool == null) {
 				string message = "Cannot find custom tool '" + baseItem.CustomTool + "'.";
-				CustomToolContext.StaticMessageView.AppendLine(message);
+				if (!baseItem.CustomTool.StartsWith("MSBuild:")) {
+					CustomToolContext.StaticMessageView.AppendLine(message);
+				}
 				if (showMessageBoxOnErrors) {
 					MessageService.ShowError(message);
 				}

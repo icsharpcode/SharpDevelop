@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.IO;
 using ICSharpCode.WpfDesign.Designer;
 using ICSharpCode.WpfDesign.Designer.Xaml;
+using ICSharpCode.WpfDesign.Designer.OutlineView;
 using System.Xml;
 using ICSharpCode.WpfDesign;
 using ICSharpCode.WpfDesign.Designer.Services;

@@ -1,6 +1,10 @@
+using ICSharpCode.WpfDesign.Designer.OutlineView;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -11,24 +15,21 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using System.Reflection;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using ICSharpCode.WpfDesign.Designer.Services;
 
 namespace ICSharpCode.XamlDesigner
 {
-    public partial class ToolboxView
-    {
-        public ToolboxView()
-        {
+	public partial class ToolboxView
+	{
+		public ToolboxView()
+		{
 			DataContext = Toolbox.Instance;
-            InitializeComponent();
+			InitializeComponent();
 
-            new DragListener(this).DragStarted += Toolbox_DragStarted;
+			new DragListener(this).DragStarted += Toolbox_DragStarted;
 			uxTreeView.SelectedItemChanged += uxTreeView_SelectedItemChanged;
 			uxTreeView.GotKeyboardFocus += uxTreeView_GotKeyboardFocus;
-        }
+		}
 
 		void uxTreeView_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
 		{
@@ -47,7 +48,7 @@ namespace ICSharpCode.XamlDesigner
 
 		void PrepareTool(ControlNode node, bool drag)
 		{
-            if (node != null) {
+			if (node != null) {
 				var tool = new CreateComponentTool(node.Type);
 				if (Shell.Instance.CurrentDocument != null) {
 					Shell.Instance.CurrentDocument.DesignContext.Services.Tool.CurrentTool = tool;
@@ -55,22 +56,22 @@ namespace ICSharpCode.XamlDesigner
 						DragDrop.DoDragDrop(this, tool, DragDropEffects.Copy);
 					}
 				}
-            }
+			}
 		}
 
-        protected override void OnKeyDown(KeyEventArgs e)
-        {
-            if (e.Key == Key.Delete) {
-                Remove();
-            }
-        }
+		protected override void OnKeyDown(KeyEventArgs e)
+		{
+			if (e.Key == Key.Delete) {
+				Remove();
+			}
+		}
 
-        void Remove()
-        {
-            AssemblyNode node = uxTreeView.SelectedItem as AssemblyNode;
-            if (node != null) {
-                Toolbox.Instance.Remove(node);
-            }
-        }
-    }
+		void Remove()
+		{
+			AssemblyNode node = uxTreeView.SelectedItem as AssemblyNode;
+			if (node != null) {
+				Toolbox.Instance.Remove(node);
+			}
+		}
+	}
 }
