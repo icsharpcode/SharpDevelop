@@ -8,7 +8,9 @@
 using System;
 using System.IO;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
+using System.Xml;
 
 namespace ICSharpCode.WpfDesign.AddIn
 {
@@ -35,7 +37,23 @@ namespace ICSharpCode.WpfDesign.AddIn
 		
 		public bool CanAttachTo(IViewContent content)
 		{
-			return Path.GetExtension(content.PrimaryFileName).Equals(".xaml", StringComparison.OrdinalIgnoreCase);
+			if (Path.GetExtension(content.PrimaryFileName).Equals(".xaml", StringComparison.OrdinalIgnoreCase)) {
+				IEditable editable = content as IEditable;
+				if (editable != null) {
+					try {
+						XmlTextReader r = new XmlTextReader(new StringReader(editable.Text));
+						r.XmlResolver = null;
+						r.WhitespaceHandling = WhitespaceHandling.None;
+						while (r.NodeType != XmlNodeType.Element && r.Read());
+						
+						if (r.LocalName == "Window" || r.LocalName == "UserControl")
+							return true;
+					} catch (XmlException) {
+						return false;
+					}
+				}
+			}
+			return false;
 		}
 		
 		public IViewContent[] CreateSecondaryViewContent(IViewContent viewContent)
