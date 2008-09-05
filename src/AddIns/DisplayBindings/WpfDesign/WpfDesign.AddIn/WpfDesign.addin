@@ -23,4 +23,13 @@
 		                class = "ICSharpCode.WpfDesign.AddIn.WpfSecondaryDisplayBinding"
 		                fileNamePattern = "\.xaml$"/>
 	</Path>
+	
+	<Path name = "/SharpDevelop/Workbench/Pads">
+		<Pad id    = "OutlineViewPad"
+		     category = "Tools"
+		     title    = "${res:ICSharpCode.SharpDevelop.Gui.OutlinePad}"
+		     icon     = "PadIcons.BreakPoints"
+		     shortcut = "Control|Alt|I"
+		     class = "ICSharpCode.WpfDesign.AddIn.OutlineViewPad"/>
+	</Path>
 </AddIn>

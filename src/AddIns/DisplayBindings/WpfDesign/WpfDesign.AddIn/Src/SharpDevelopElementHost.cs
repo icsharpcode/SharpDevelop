@@ -22,13 +22,17 @@ namespace ICSharpCode.WpfDesign.AddIn
 		[ThreadStatic]
 		static bool registeredErrorHandler;
 		
-		public SharpDevelopElementHost(WpfViewContent viewContent, UIElement child)
+		public SharpDevelopElementHost()
 		{
 			if (!registeredErrorHandler) {
 				registeredErrorHandler = true;
 				Dispatcher.CurrentDispatcher.UnhandledException += CurrentDispatcher_UnhandledException;
 			}
-
+		}
+		
+		public SharpDevelopElementHost(WpfViewContent viewContent, UIElement child)
+			: this()
+		{
 			this.viewContent = viewContent;
 			this.Child = child;
 		}
@@ -43,15 +47,19 @@ namespace ICSharpCode.WpfDesign.AddIn
 		
 		bool IsEnabled(RoutedCommand command)
 		{
-			if (command.CanExecute(null, null)) return true;
-			return command.CanExecute(null, viewContent.DesignSurface);
+			if (command.CanExecute(null, null))
+				return true;
+			else if (viewContent != null)
+				return command.CanExecute(null, viewContent.DesignSurface);
+			else
+				return false;
 		}
 		
 		void Run(RoutedCommand command)
 		{
 			if (command.CanExecute(null, null)) {
 				command.Execute(null, null);
-			} else {
+			} else if (viewContent != null) {
 				command.Execute(null, viewContent.DesignSurface);
 			}
 		}

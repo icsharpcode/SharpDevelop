@@ -2,7 +2,7 @@
 <!--DockPanel configuration file. Author: Weifen Luo, all rights reserved.-->
 <!--!!! AUTOMATICALLY GENERATED FILE. DO NOT MODIFY !!!-->
 <DockPanel FormatVersion="1.0" DockLeftPortion="0.196180555555556" DockRightPortion="0.171180555555556" DockTopPortion="0.25" DockBottomPortion="0.25" ActiveDocumentPane="10" ActivePane="-1">
-  <Contents Count="32">
+  <Contents Count="33">
     <Content ID="0" PersistString="ICSharpCode.SharpDevelop.Project.ProjectBrowserPad" AutoHidePortion="0.25" IsHidden="False" IsFloat="False" />
     <Content ID="1" PersistString="ICSharpCode.SharpDevelop.Gui.ClassBrowser.ClassBrowserPad" AutoHidePortion="0.25" IsHidden="False" IsFloat="False" />
     <Content ID="2" PersistString="ICSharpCode.SharpDevelop.Gui.ErrorListPad" AutoHidePortion="0.25" IsHidden="False" IsFloat="False" />
@@ -33,8 +33,9 @@
     <Content ID="27" PersistString="Grunwald.BooBinding.InteractiveInterpreterPad" AutoHidePortion="0.25" IsHidden="True" IsFloat="False" />
     <Content ID="28" PersistString="ICSharpCode.SharpDevelop.Gui.Pads.ConsolePad" AutoHidePortion="0.25" IsHidden="False" IsFloat="False" />
     <Content ID="29" PersistString="ICSharpCode.SharpDevelop.Gui.Pads.WatchPad" AutoHidePortion="0.25" IsHidden="False" IsFloat="False" />
-    <Content ID="30" PersistString="ICSharpCode.SharpDevelop.Gui.SdiWorkspaceWindow" AutoHidePortion="0.25" IsHidden="False" IsFloat="False" />
-    <Content ID="31" PersistString="FSharpBinding.FSharpInteractive" AutoHidePortion="0.25" IsHidden="True" IsFloat="False" />
+    <Content ID="30" PersistString="FSharpBinding.FSharpInteractive" AutoHidePortion="0.25" IsHidden="True" IsFloat="False" />
+    <Content ID="31" PersistString="ICSharpCode.SharpDevelop.Gui.SdiWorkspaceWindow" AutoHidePortion="0.25" IsHidden="False" IsFloat="False" />
+    <Content ID="32" PersistString="ICSharpCode.WpfDesign.AddIn.OutlineViewPad" AutoHidePortion="0.25" IsHidden="True" IsFloat="False" />
   </Contents>
   <Panes Count="11">
     <Pane ID="0" DockState="DockLeft" ActiveContent="0">
@@ -76,7 +77,7 @@
         <Content ID="13" RefID="20" />
         <Content ID="14" RefID="27" />
         <Content ID="15" RefID="11" />
-        <Content ID="16" RefID="31" />
+        <Content ID="16" RefID="30" />
       </Contents>
     </Pane>
     <Pane ID="4" DockState="Float" ActiveContent="-1">
@@ -105,12 +106,13 @@
       </Contents>
     </Pane>
     <Pane ID="8" DockState="DockRight" ActiveContent="-1">
-      <Contents Count="5">
+      <Contents Count="6">
         <Content ID="0" RefID="5" />
         <Content ID="1" RefID="25" />
         <Content ID="2" RefID="17" />
         <Content ID="3" RefID="18" />
         <Content ID="4" RefID="16" />
+        <Content ID="5" RefID="32" />
       </Contents>
     </Pane>
     <Pane ID="9" DockState="Float" ActiveContent="-1">
@@ -118,9 +120,9 @@
         <Content ID="0" RefID="29" />
       </Contents>
     </Pane>
-    <Pane ID="10" DockState="Document" ActiveContent="30">
+    <Pane ID="10" DockState="Document" ActiveContent="31">
       <Contents Count="1">
-        <Content ID="0" RefID="30" />
+        <Content ID="0" RefID="31" />
       </Contents>
     </Pane>
   </Panes>
