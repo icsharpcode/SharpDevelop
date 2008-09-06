@@ -27,7 +27,7 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 		protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
 		{
 			e.Handled = true;
-			new DragMoveMouseGesture(item, false).Start(item.Services.Tool.DesignPanel, e);
+			new DragMoveMouseGesture(item, false).Start(item.Services.DesignPanel, e);
 		}
 	}
 }

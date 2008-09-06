@@ -146,7 +146,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				adornerPanel.SetAdornedElement(ExtendedItem.View, ExtendedItem);
 				AdornerPanel.SetPlacement(surface, AdornerPlacement.FillContent);
 				adornerPanel.Children.Add(surface);
-				ExtendedItem.Services.Tool.DesignPanel.Adorners.Add(adornerPanel);
+				ExtendedItem.Services.DesignPanel.Adorners.Add(adornerPanel);
 
 				BuildMaps(operation);
 
@@ -207,7 +207,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		void DeleteSurface() 
 		{
 			if (surface != null) {
-				ExtendedItem.Services.Tool.DesignPanel.Adorners.Remove(adornerPanel);
+				ExtendedItem.Services.DesignPanel.Adorners.Remove(adornerPanel);
 				adornerPanel = null;
 				surface = null;
 				horizontalMap = null;
