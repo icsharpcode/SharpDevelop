@@ -5,75 +5,58 @@
 //     <version>$Revision$</version>
 // </file>
 
+//#define IDECONTAINER_LOG_SERVICE_REQUESTS
+
 using System;
 using System.ComponentModel;
+
+using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
 	class IDEContainer : Container
 	{
-		class IDESite : ISite
+		IServiceProvider serviceProvider;
+		IComponent grid;
+		
+		public IDEContainer()
 		{
-			private string name = "";
-			private IComponent component;
-			private IDEContainer container;
-
-			public IDESite(IComponent sitedComponent, IDEContainer site, string aName)
-			{
-				component = sitedComponent;
-				container = site;
-				name = aName;
-			}
-
-			public IComponent Component{
-				get{ return component;}
-			}
-			public IContainer Container{
-				get{return container;}
-			}
-
-			public bool DesignMode{
-				get{return false;}
-			}
-
-			public string Name {
-				get{ return name;}
-				set{name=value;}
-			}
-
-			public object GetService(Type serviceType)
-			{
-				return container.GetService(serviceType);
-			}
 		}
-
-		public IDEContainer (IServiceProvider sp)
-		{
-			serviceProvider = sp;
-		}
-
+		
 		protected override object GetService(Type serviceType)
 		{
 			object service = base.GetService(serviceType);
-			if (service == null) {
+			if (service == null && serviceProvider != null) {
 				service = serviceProvider.GetService(serviceType);
 			}
+			#if IDECONTAINER_LOG_SERVICE_REQUESTS
+			if (service == null) {
+				LoggingService.Info("IDEContainer: request missing service: " + serviceType.AssemblyQualifiedName);
+			} else {
+				LoggingService.Debug("IDEContainer: get service: " + serviceType.AssemblyQualifiedName + " -> is: " + service.ToString());
+			}
+			#endif
 			return service;
 		}
-
-		public ISite CreateSite(IComponent component)
-		{
-			return CreateSite(component, "UNKNOWN_SITE");
-		}
 		
-		protected override ISite CreateSite(IComponent component,string name)
+		internal void ConnectGridAndHost(IComponent grid, IServiceProvider host)
 		{
-			ISite site = base.CreateSite(component,name);
-			if (site == null) {
+			if (this.grid != null || this.serviceProvider != null) {
+				throw new InvalidOperationException("Grid must be disconnected first.");
 			}
-			return new IDESite(component,this,name);
+			LoggingService.Debug("IDEContainer: Connecting property grid to service provider");
+			this.serviceProvider = host;
+			this.grid = grid;
+			this.Add(grid);
 		}
 		
-		private IServiceProvider serviceProvider;
+		internal void Disconnect()
+		{
+			if (this.Components.Count == 0) return;
+			LoggingService.Debug("IDEContainer: Disconnecting property grid from service provider");
+			this.Remove(grid);
+			this.grid = null;
+			this.serviceProvider = null;
+		}
 	}
 }

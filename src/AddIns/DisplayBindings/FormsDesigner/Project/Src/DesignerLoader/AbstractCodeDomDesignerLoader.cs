@@ -76,14 +76,6 @@ namespace ICSharpCode.FormsDesigner
 			this.typeResolutionService = (ITypeResolutionService)host.GetService(typeof(ITypeResolutionService));
 			this.designerLoaderHost = host;
 			
-			IComponentChangeService componentChangeService = (IComponentChangeService)host.GetService(typeof(IComponentChangeService));
-			if (componentChangeService != null) {
-				LoggingService.Debug("Forms designer: Adding ComponentAdded handler for nested container setup");
-				componentChangeService.ComponentAdded += ComponentContainerSetUp;
-			} else {
-				LoggingService.Warn("Forms designer: Cannot add ComponentAdded handler for nested container setup because IComponentChangeService is unavailable");
-			}
-			
 			base.BeginLoad(host);
 		}
 		
@@ -132,6 +124,14 @@ namespace ICSharpCode.FormsDesigner
 			IDesignerSerializationManager manager = (IDesignerSerializationManager)designerLoaderHost.GetService(typeof(IDesignerSerializationManager));
 			manager.AddSerializationProvider(localizationProvider);
 			base.Initialize();
+			
+			IComponentChangeService componentChangeService = (IComponentChangeService)this.GetService(typeof(IComponentChangeService));
+			if (componentChangeService != null) {
+				LoggingService.Debug("Forms designer: Adding ComponentAdded handler for nested container setup");
+				componentChangeService.ComponentAdded += ComponentContainerSetUp;
+			} else {
+				LoggingService.Warn("Forms designer: Cannot add ComponentAdded handler for nested container setup because IComponentChangeService is unavailable");
+			}
 		}
 		
 		/// <summary>
@@ -153,13 +153,13 @@ namespace ICSharpCode.FormsDesigner
 			try {
 				base.OnEndLoad(successful, errors);
 			} catch(ExceptionCollection e) {
-				LoggingService.Error("DesignerLoader.OnEndLoad error" + e.Message);
+				LoggingService.Error("DesignerLoader.OnEndLoad error " + e.Message, e);
 				foreach(Exception ine in e.Exceptions) {
-					LoggingService.Error("DesignerLoader.OnEndLoad error" + ine.Message);
+					LoggingService.Error("DesignerLoader.OnEndLoad error " + ine.Message, ine);
 				}
 				throw;
 			} catch(Exception e) {
-				LoggingService.Error("DesignerLoader.OnEndLoad error" + e.Message);
+				LoggingService.Error("DesignerLoader.OnEndLoad error " + e.Message, e);
 				throw;
 			}
 		}

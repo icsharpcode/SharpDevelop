@@ -26,6 +26,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		// an empty container used to reset the property grid
 		readonly PropertyContainer emptyContainer = new PropertyContainer(false);
 		
+		// The IDE container used to connect the grid to a designer host
+		readonly IDEContainer ideContainer = new IDEContainer();
+		
 		PropertyContainer activeContainer;
 		
 		internal static PropertyContainer ActiveContainer {
@@ -302,6 +305,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			base.Dispose();
 			if (grid != null) {
+				this.ideContainer.Disconnect();
 				ProjectService.SolutionClosed -= SolutionClosedEvent;
 				try {
 					grid.SelectedObjects = null;
@@ -344,17 +348,17 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void RemoveHost(IDesignerHost host)
 		{
 			this.host = null;
-			grid.Site = null;
+			this.ideContainer.Disconnect();
 		}
 		
 		void SetDesignerHost(IDesignerHost host)
 		{
 			this.host = host;
 			if (host != null) {
-				grid.Site = (new IDEContainer(host)).CreateSite(grid);
+				this.ideContainer.ConnectGridAndHost(grid, host);
 				grid.PropertyTabs.AddTabType(typeof(System.Windows.Forms.Design.EventsTab), PropertyTabScope.Document);
 			} else {
-				grid.Site = null;
+				this.ideContainer.Disconnect();
 			}
 		}
 		

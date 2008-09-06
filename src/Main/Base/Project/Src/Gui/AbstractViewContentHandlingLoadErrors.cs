@@ -51,9 +51,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 						panel.Controls.Remove(userControl);
 					}
 					userControl = value;
-					userControl.Dock = DockStyle.Fill;
-					if (errorList.Count == 0 && userControl != null) {
-						panel.Controls.Add(userControl);
+					if (userControl != null) {
+						userControl.Dock = DockStyle.Fill;
+						if (errorList.Count == 0) {
+							panel.Controls.Add(userControl);
+						}
 					}
 				}
 			}
@@ -96,12 +98,20 @@ namespace ICSharpCode.SharpDevelop.Gui
 				errorTextBox.BackColor = SystemColors.Window;
 				errorTextBox.Dock = DockStyle.Fill;
 			}
-			errorTextBox.Text = ex.ToString();
+			errorTextBox.Text = String.Concat(this.LoadErrorHeaderText, ex.ToString());
 			panel.Controls.Clear();
 			panel.Controls.Add(errorTextBox);
 		}
 		
 		Dictionary<OpenedFile, LoadError> errorList = new Dictionary<OpenedFile, LoadError>();
+		
+		/// <summary>
+		/// Gets a text to be shown above the exception when a load error occurs.
+		/// The default is an empty string.
+		/// </summary>
+		protected virtual string LoadErrorHeaderText {
+			get { return String.Empty; }
+		}
 		
 		public override sealed void Load(OpenedFile file, Stream stream)
 		{

@@ -79,6 +79,7 @@
     </Compile>
     <Compile Include="Src\Gui\SideTabDesigner.cs" />
     <Compile Include="Src\Gui\SideTabItemDesigner.cs" />
+    <Compile Include="Src\Services\DefaultMemberRelationshipService.cs" />
     <Compile Include="Src\Services\DefaultServiceContainer.cs" />
     <Compile Include="Src\Services\DesignerOptionService.cs" />
     <Compile Include="Src\Services\DesignerResourceService.cs" />
@@ -88,7 +89,6 @@
     <Compile Include="Src\Services\PropertyValueUIService.cs" />
     <Compile Include="Src\Services\ResourceStore.cs" />
     <Compile Include="Src\Services\ToolboxService.cs" />
-    <Compile Include="Src\Services\TypeDescriptorFilterService.cs" />
     <Compile Include="Src\Services\TypeResolutionService.cs" />
     <Compile Include="Src\Services\UIService.cs" />
     <Compile Include="Src\ToolboxProvider.cs" />
