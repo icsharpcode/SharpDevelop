@@ -125,7 +125,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			XmlElement newElement = e.OwnerDocument.CreateElement(prefix, e.Name, e.NamespaceURI);
 
 			foreach (XmlAttribute a in target.Attributes) {
-				if (a.Prefix == "xmlns") {
+				if (a.Prefix == "xmlns" || a.Name == "xmlns") {
 					newElement.Attributes.Append(a.Clone() as XmlAttribute);
 				}
 			}
