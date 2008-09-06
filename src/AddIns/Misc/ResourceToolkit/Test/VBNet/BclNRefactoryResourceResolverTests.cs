@@ -106,5 +106,21 @@ End Class
 			ResourceResolveResult rrr = Resolve(CodeStaticPropertySRMFieldDirectInitUsing, 12, 23, null);
 			TestHelper.CheckReference(rrr, "Test.TestResources", "TestKey", "A", "A.B");
 		}
+		
+		// ********************************************************************************************************************************
+		
+		const string CodeWithSyntaxErrorTooltipExceptionBug1 = @"Class A
+	Sub B()
+		(""OK"" & & foo)
+	End Sub
+End Class
+";
+		
+		[Test]
+		public void SyntaxErrorTooltipExceptionBug1()
+		{
+			ResourceResolveResult rrr = Resolve(CodeWithSyntaxErrorTooltipExceptionBug1, 2, 9, null);
+			TestHelper.CheckNoReference(rrr);
+		}
 	}
 }

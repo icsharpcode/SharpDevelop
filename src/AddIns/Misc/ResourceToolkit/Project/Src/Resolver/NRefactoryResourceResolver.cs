@@ -132,6 +132,11 @@ namespace Hornung.ResourceToolkit.Resolver
 					continue;
 				}
 				
+				if (!result.Region.IsEmpty) {
+					caretLine = result.Region.BeginLine - 1;
+					caretColumn = result.Region.BeginColumn - 1;
+				}
+				
 				PrimitiveExpression pe;
 				Expression expr = NRefactoryAstCacheService.ParseExpression(fileName, result.Expression, caretLine + 1, caretColumn + 1);
 				
@@ -148,9 +153,21 @@ namespace Hornung.ResourceToolkit.Resolver
 						// the next outer expression to decide
 						// whether it is a resource key.
 						
-						// Go back to the start of the string literal - 2.
-						caretOffset = document.PositionToOffset(new TextLocation(result.Region.BeginColumn - 1, result.Region.BeginLine - 1)) - 2;
-						if (caretOffset < 0) return null;
+						if (!result.Region.IsEmpty) {
+							// Go back to the start of the string literal - 2.
+							caretOffset = document.PositionToOffset(new TextLocation(result.Region.BeginColumn - 1, result.Region.BeginLine - 1)) - 2;
+							if (caretOffset < 0) return null;
+						} else {
+							LoggingService.Debug("ResourceToolkit: NRefactoryResourceResolver: Found string literal, but result region is empty. Trying to infer position from text.");
+							int newCaretOffset = document.GetText(0, Math.Min(document.TextLength, caretOffset + result.Expression.Length)).LastIndexOf(result.Expression);
+							if (newCaretOffset == -1) {
+								LoggingService.Warn("ResourceToolkit: NRefactoryResourceResolver: Could not find resolved expression in text.");
+								--caretOffset;
+								continue;
+							} else {
+								caretOffset = newCaretOffset;
+							}
+						}
 						
 						foundStringLiteral = true;
 						continue;
