@@ -73,7 +73,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 		protected override IClass GetClass(Type type)
 		{
 			IProjectContent pc = CecilReader.LoadAssembly(type.Assembly.Location, ParserService.DefaultProjectContentRegistry);
-			IClass c = (IClass)pc.GetElement(type.FullName);
+			IClass c = pc.GetClassByReflectionName(type.FullName, false);
 			Assert.IsNotNull(c);
 			return c;
 		}

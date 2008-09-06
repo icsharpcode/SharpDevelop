@@ -37,7 +37,7 @@ namespace ICSharpCode.CodeAnalysis
 				if (tag.MemberName == null)
 					p = GetAssemblyAttributeInsertionPosition(tag.ProjectContent);
 				else
-					p = tag.ProjectContent.GetPosition(tag.MemberName);
+					p = GetPosition(tag.ProjectContent, tag.TypeName, tag.MemberName);
 				if (p.CompilationUnit == null || p.FileName == null || p.Line <= 0)
 					continue;
 				IViewContent viewContent = FileService.OpenFile(p.FileName);
@@ -65,6 +65,19 @@ namespace ICSharpCode.CodeAnalysis
 				TaskService.Remove(t);
 				ParserService.ParseViewContent(viewContent);
 			}
+		}
+		
+		internal static FilePosition GetPosition(IProjectContent pc, string className, string memberName)
+		{
+			IClass c = pc.GetClassByReflectionName(className, false);
+			if (string.IsNullOrEmpty(memberName))
+				return pc.GetPosition(c);
+			if (c != null) {
+				IMember m = DefaultProjectContent.GetMemberByReflectionName(c, memberName);
+				if (m != null)
+					return pc.GetPosition(m);
+			}
+			return FilePosition.Empty;
 		}
 		
 		FilePosition GetAssemblyAttributeInsertionPosition(IProjectContent pc)

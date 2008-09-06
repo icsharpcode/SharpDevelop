@@ -14,13 +14,15 @@ namespace ICSharpCode.SharpDevelop.Dom
 	public class Constructor : DefaultMethod
 	{
 		public Constructor(ModifierEnum m, DomRegion region, DomRegion bodyRegion, IClass declaringType)
-			: base("#ctor", declaringType.DefaultReturnType,
+			: base((m & ModifierEnum.Static) != 0 ? "#cctor" : "#ctor",
+			       declaringType.DefaultReturnType,
 			       m, region, bodyRegion, declaringType)
 		{
 		}
 		
 		public Constructor(ModifierEnum m, IReturnType returnType, IClass declaringType)
-			: base("#ctor", returnType, m, DomRegion.Empty, DomRegion.Empty, declaringType)
+			: base((m & ModifierEnum.Static) != 0 ? "#cctor" : "#ctor",
+			       returnType, m, DomRegion.Empty, DomRegion.Empty, declaringType)
 		{
 		}
 		
@@ -166,7 +168,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public virtual bool IsConstructor {
 			get {
-				return Name == "#ctor";
+				return Name == "#ctor" || Name == "#cctor";
 			}
 		}
 		

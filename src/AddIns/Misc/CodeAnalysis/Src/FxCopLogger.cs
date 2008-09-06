@@ -91,7 +91,7 @@ namespace ICSharpCode.CodeAnalysis
 						if (file.StartsWith("positionof#")) {
 							string memberName = file.Substring(11);
 							file = "";
-							FilePosition pos = pc.GetPosition(memberName);
+							FilePosition pos = GetPosition(pc, memberName);
 							if (pos.IsEmpty == false && pos.CompilationUnit != null) {
 								err.FileName = pos.FileName ?? "";
 								err.Line = pos.Line;
@@ -101,68 +101,50 @@ namespace ICSharpCode.CodeAnalysis
 							}
 						}
 						
-						if (moreData.Length > 0 && moreData[0].Length > 0) {
-							err.Tag = new FxCopTaskTag(pc, moreData[0], category, checkId);
+						if (moreData.Length > 1 && !string.IsNullOrEmpty(moreData[0])) {
+							err.Tag = new FxCopTaskTag {
+								ProjectContent = pc,
+								TypeName = moreData[0],
+								MemberName = moreData[1],
+								Category = category,
+								CheckID = checkId
+							};
 						} else {
-							err.Tag = new FxCopTaskTag(pc, null, category, checkId);
+							err.Tag = new FxCopTaskTag {
+								ProjectContent = pc,
+								Category = category,
+								CheckID = checkId
+							};
 						}
 						err.ContextMenuAddInTreeEntry = "/SharpDevelop/Pads/ErrorList/CodeAnalysisTaskContextMenu";
-						if (moreData.Length > 1) {
-							(err.Tag as FxCopTaskTag).MessageID = moreData[1];
+						if (moreData.Length > 2) {
+							(err.Tag as FxCopTaskTag).MessageID = moreData[2];
 						}
 					}
 				}
+			}
+			
+			static FilePosition GetPosition(IProjectContent pc, string memberName)
+			{
+				// memberName is a special syntax used by our FxCop task:
+				// className#memberName
+				int pos = memberName.IndexOf('#');
+				if (pos <= 0)
+					return FilePosition.Empty;
+				string className = memberName.Substring(0, pos);
+				memberName = memberName.Substring(pos + 1);
+				return SuppressMessageCommand.GetPosition(pc, className, memberName);
 			}
 		}
 	}
 	
 	public class FxCopTaskTag
 	{
-		IProjectContent projectContent;
-		string memberName;
-		string category;
-		string checkID;
-		string messageID;
-		
-		public IProjectContent ProjectContent {
-			get {
-				return projectContent;
-			}
-		}
-		
-		public string MemberName {
-			get {
-				return memberName;
-			}
-		}
-		
-		public string Category {
-			get {
-				return category;
-			}
-		}
-		
-		public string CheckID {
-			get {
-				return checkID;
-			}
-		}
-		
-		public string MessageID {
-			get {
-				return messageID;
-			}
-			set {
-				messageID = value;
-			}
-		}
-		
-		public FxCopTaskTag(IProjectContent projectContent, string memberName, string category, string checkID)
-		{
-			this.projectContent = projectContent;
-			this.memberName = memberName;
-			this.category = category;
-			this.checkID = checkID;
-		}
+		public IProjectContent ProjectContent { get; set; }
+		public string TypeName { get; set; }
+		public string MemberName { get; set; }
+		public string Category { get; set; }
+		public string CheckID { get; set; }
+		public string MessageID { get; set; }
 	}
 }

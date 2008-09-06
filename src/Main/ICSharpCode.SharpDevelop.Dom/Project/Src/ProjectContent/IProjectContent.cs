@@ -102,14 +102,15 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// <summary>
 		/// Gets the position of a member in this project content (not a referenced one).
 		/// </summary>
-		/// <param name="fullMemberName">The full member name in Reflection syntax (always case sensitive, ` for generics)</param>
-		IEntity GetElement(string fullMemberName);
+		/// <param name="fullMemberName">The full class name in Reflection syntax (always case sensitive, ` for generics)</param>
+		/// <param name="lookInReferences">Whether to search in referenced project contents.</param>
+		IClass GetClassByReflectionName(string fullMemberName, bool lookInReferences);
 		
 		/// <summary>
 		/// Gets the definition position of the class/member.
 		/// </summary>
-		/// <param name="fullMemberName">The full member name in Reflection syntax (always case sensitive, ` for generics)</param>
-		FilePosition GetPosition(string fullMemberName);
+		/// <param name="entity">The entity to get the position from.</param>
+		FilePosition GetPosition(IEntity entity);
 	}
 	
 	public struct SearchTypeRequest

@@ -22,7 +22,7 @@
 	<!-- run SharpDevelop FxCop. Disabled if the Microsoft CodeAnalysis extension is installed -->
 	<Target Name="SharpDevelopFxCopRun"
 	        Condition="'$(RunCodeAnalysis)'=='true' and '$(CodeAnalysisInputAssemblyForTask)'==''"
-	        Inputs="$(SharpDevelopFxCopAssembly)"
+	        Inputs="$(SharpDevelopFxCopAssembly);@(CodeAnalysisDictionary)"
 	        Outputs="$(SharpDevelopFxCopLogFile)"
 	        DependsOnTargets="Compile">
 		<CreateItem Include = "$(SharpDevelopFxCopLogFile)">
@@ -33,6 +33,7 @@
 		       Rules          = "$(CodeAnalysisRules)"
 		       RuleAssemblies = "$(CodeAnalysisRuleAssemblies)"
 		       LogFile        = "$(SharpDevelopFxCopLogFile)"
-		       ReferencePaths = "@(ReferencePath)"/>
+		       ReferencePaths = "@(ReferencePath)"
+		       Dictionary     = "@(CodeAnalysisDictionary)"/>
 	</Target>
 </Project>

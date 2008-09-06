@@ -21,7 +21,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 		void TestClass(Type type)
 		{
 			Assert.AreSame(typeof(object).Assembly, type.Assembly);
-			IClass c = (IClass)mscorlib.GetElement(type.FullName);
+			IClass c = (IClass)mscorlib.GetClassByReflectionName(type.FullName, false);
 			Assert.AreEqual(type.FullName, c.DotNetName);
 		}
 		
@@ -34,19 +34,21 @@ namespace ICSharpCode.SharpDevelop.Tests
 			TestClass(typeof(Nullable<>));
 		}
 		
-		void TestMember(string fullName)
+		void TestMember(string className, string memberName)
 		{
-			AbstractMember d = (AbstractMember)mscorlib.GetElement(fullName);
-			Assert.AreEqual(fullName, d.DocumentationTag.Substring(2));
+			IClass c = mscorlib.GetClassByReflectionName(className, false);
+			Assert.IsNotNull(c);
+			AbstractMember m = (AbstractMember)DefaultProjectContent.GetMemberByReflectionName(c, memberName);
+			Assert.AreEqual(className + "." + memberName, m.DocumentationTag.Substring(2));
 		}
 		
 		[Test]
 		public void TestConstructor()
 		{
-			TestMember("System.Collections.ObjectModel.KeyedCollection`2.#ctor");
-			TestMember("System.Collections.ObjectModel.KeyedCollection`2.#ctor(System.Collections.Generic.IEqualityComparer{`0},System.Int32)");
-			TestMember("System.Runtime.InteropServices.CurrencyWrapper.#ctor(System.Decimal)");
-			TestMember("System.Runtime.InteropServices.CurrencyWrapper.#ctor(System.Object)");
+			TestMember("System.Collections.ObjectModel.KeyedCollection`2", "#ctor");
+			TestMember("System.Collections.ObjectModel.KeyedCollection`2", "#ctor(System.Collections.Generic.IEqualityComparer{`0},System.Int32)");
+			TestMember("System.Runtime.InteropServices.CurrencyWrapper", "#ctor(System.Decimal)");
+			TestMember("System.Runtime.InteropServices.CurrencyWrapper", "#ctor(System.Object)");
 		}
 	}
 }

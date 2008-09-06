@@ -143,12 +143,12 @@ namespace UnitTesting.Tests.Utils
 			throw new NotImplementedException();
 		}
 		
-		public FilePosition GetPosition(string fullMemberName)
+		public IClass GetClassByReflectionName(string fullMemberName, bool lookInReferences)
 		{
 			throw new NotImplementedException();
 		}
 		
-		public IEntity GetElement(string fullMemberName)
+		public FilePosition GetPosition(IEntity entity)
 		{
 			throw new NotImplementedException();
 		}
