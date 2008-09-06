@@ -139,7 +139,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		/// </summary>
 		public bool IsSet {
 			get { return propertyValue != null ||
-				_propertyElement != null; // collection 
+					_propertyElement != null; // collection
 			}
 		}
 		
@@ -153,8 +153,10 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		/// </summary>
 		public event EventHandler ValueChanged;
 
-		//When ME evaluated PropertyValue dosn't changed but ValueOnIstance does.
-		public event EventHandler ValueOnIstanceChanged;
+		/// <summary>
+		/// Occurs when MarkupExtension evaluated PropertyValue dosn't changed but ValueOnInstance does.
+		/// </summary>
+		public event EventHandler ValueOnInstanceChanged;
 
 		void SetPropertyValue(XamlPropertyValue value)
 		{
@@ -164,7 +166,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			//}
 			
 			bool wasSet = this.IsSet;
-		
+			
 			PossiblyNameChanged(propertyValue, value);
 
 			//reset expression
@@ -174,7 +176,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			
 			ResetInternal();
 
-			propertyValue = value;			
+			propertyValue = value;
 			propertyValue.ParentProperty = this;
 			propertyValue.AddNodeTo(this);
 			UpdateValueOnInstance();
@@ -235,8 +237,8 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			if (_propertyElement != null) {
 				_propertyElement.ParentNode.RemoveChild(_propertyElement);
 				_propertyElement = null;
-			}			
-		}		
+			}
+		}
 		
 		XmlElement _propertyElement;
 		
@@ -314,7 +316,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				name = PropertyName;
 
 			var element = ParentObject.XmlElement;
-			if (element.GetPrefixOfNamespace(ns) == "") {
+			if (string.IsNullOrEmpty(element.GetPrefixOfNamespace(ns))) {
 				element.SetAttribute(name, value);
 				return element.GetAttributeNode(name);
 			} else {
@@ -334,8 +336,10 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			var element = ParentObject.XmlElement;
 			string ns = ParentObject.OwnerDocument.GetNamespaceFor(PropertyTargetType);
 			var prefix = element.GetPrefixOfNamespace(ns);
-			if (prefix == "") return name;
-			return prefix + ":" + name;
+			if (string.IsNullOrEmpty(prefix))
+				return name;
+			else
+				return prefix + ":" + name;
 		}
 		
 		/// <summary>
@@ -371,15 +375,21 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			}
 			set {
 				propertyInfo.SetValue(parentObject.Instance, value);
-				if (ValueOnIstanceChanged != null)
-					ValueOnIstanceChanged(this, EventArgs.Empty);
+				if (ValueOnInstanceChanged != null)
+					ValueOnInstanceChanged(this, EventArgs.Empty);
 			}
 		}
 
+		/// <summary>
+		/// Gets if this property is considered "advanced" and should be hidden by default in a property grid.
+		/// </summary>
 		public bool IsAdvanced {
 			get { return propertyInfo.IsAdvanced; }
 		}
 
+		/// <summary>
+		/// Gets the dependency property.
+		/// </summary>
 		public DependencyProperty DependencyProperty {
 			get {
 				return propertyInfo.DependencyProperty;
@@ -387,7 +397,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		}
 
 		void PossiblyNameChanged(XamlPropertyValue oldValue, XamlPropertyValue newValue)
-		{	
+		{
 			if (PropertyName == "Name" && ReturnType == typeof(string)) {
 
 				string oldName = null;
@@ -403,8 +413,8 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				while (obj != null) {
 					var nameScope = obj.Instance as INameScope;
 					if (nameScope == null) {
-						if (obj.DependencyObject != null) 
-							nameScope = NameScope.GetNameScope(obj.DependencyObject);
+						if (obj.Instance is DependencyObject)
+							nameScope = NameScope.GetNameScope((DependencyObject)obj.Instance);
 					}
 					if (nameScope != null) {
 						if (oldName != null) {
@@ -420,10 +430,6 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			}
 		}
 
-		void PossiblyMarkupExtensionChanged(XamlPropertyValue part)
-		{
-		}		
-		
 		/*public bool IsAttributeSyntax {
 			get {
 				return attribute != null;

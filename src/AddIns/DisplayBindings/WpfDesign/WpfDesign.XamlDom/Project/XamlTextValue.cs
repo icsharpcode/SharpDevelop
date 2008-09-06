@@ -60,7 +60,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		public string Text {
 			get {
 				if (attribute != null) {
-					if (attribute.Value.StartsWith("{}"))
+					if (attribute.Value.StartsWith("{}", StringComparison.Ordinal))
 						return attribute.Value.Substring(2);
 					else
 						return attribute.Value;

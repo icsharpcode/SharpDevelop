@@ -112,6 +112,9 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			}
 		}
 
+		/// <summary>
+		/// Gets whether this XamlObject represents a markup extension in short form ("{Binding}" syntax)
+		/// </summary>
 		public bool IsMarkupExtensionRoot {
 			get { return XmlAttribute != null; }
 		}
@@ -122,7 +125,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			XmlElement newElement = e.OwnerDocument.CreateElement(prefix, e.Name, e.NamespaceURI);
 
 			foreach (XmlAttribute a in target.Attributes) {
-				if (a.Name.StartsWith("xmlns")) {
+				if (a.Prefix == "xmlns") {
 					newElement.Attributes.Append(a.Clone() as XmlAttribute);
 				}
 			}
@@ -197,16 +200,18 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			get { return instance; }
 		}
 
+		/// <summary>
+		/// Gets whether this instance represents a MarkupExtension.
+		/// </summary>
 		public bool IsMarkupExtension {
 			get { return instance is MarkupExtension; }
 		}
 
+		/// <summary>
+		/// Gets whether there were load errors for this object.
+		/// </summary>
 		public bool HasErrors { get; internal set; }
 
-		public DependencyObject DependencyObject {
-			get { return instance as DependencyObject; }
-		}
-		
 		/// <summary>
 		/// Gets the type of this object element.
 		/// </summary>
@@ -226,6 +231,9 @@ namespace ICSharpCode.WpfDesign.XamlDom
 
 		string contentPropertyName;
 
+		/// <summary>
+		/// Gets the name of the content property.
+		/// </summary>
 		public string ContentPropertyName {
 			get {
 				return contentPropertyName; 
@@ -304,6 +312,9 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				element.SetAttribute(name, XamlConstants.XamlNamespace, value);
 		}
 
+		/// <summary>
+		/// Gets/Sets the <see cref="XamlObjectServiceProvider"/> associated with this XamlObject.
+		/// </summary>
 		public XamlObjectServiceProvider ServiceProvider { get; set; }
 
 		MarkupExtensionWrapper wrapper;

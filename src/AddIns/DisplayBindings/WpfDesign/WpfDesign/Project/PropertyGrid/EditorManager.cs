@@ -19,6 +19,9 @@ namespace ICSharpCode.WpfDesign.PropertyGrid
 		// property full name => editor type
 		static Dictionary<string, Type> propertyEditors = new Dictionary<string, Type>();
 
+		/// <summary>
+		/// Creates a property editor for the specified <paramref name="property"/>
+		/// </summary>
 		public static FrameworkElement CreateEditor(DesignItemProperty property)
 		{
 			Type editorType;

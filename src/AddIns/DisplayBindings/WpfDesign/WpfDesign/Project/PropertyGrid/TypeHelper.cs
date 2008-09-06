@@ -6,8 +6,15 @@ using System.ComponentModel;
 
 namespace ICSharpCode.WpfDesign.PropertyGrid
 {
+	/// <summary>
+	/// Helper class with static methods to get the list of available properties/events.
+	/// </summary>
 	public static class TypeHelper
 	{
+		/// <summary>
+		/// Gets the available properties common to all input types.
+		/// </summary>
+		/// <param name="types">List of input types. The list must have at least one element.</param>
 		public static IEnumerable<PropertyDescriptor> GetCommonAvailableProperties(IEnumerable<Type> types)
 		{
 			foreach (var pd1 in GetAvailableProperties(types.First())) {
@@ -29,6 +36,9 @@ namespace ICSharpCode.WpfDesign.PropertyGrid
 			}
 		}
 
+		/// <summary>
+		/// Gets the available properties for the type.
+		/// </summary>
 		public static IEnumerable<PropertyDescriptor> GetAvailableProperties(Type forType)
 		{
 			foreach (PropertyDescriptor p in TypeDescriptor.GetProperties(forType)) {
@@ -39,6 +49,9 @@ namespace ICSharpCode.WpfDesign.PropertyGrid
 			}
 		}
 
+		/// <summary>
+		/// Gets the available events for the type.
+		/// </summary>
 		public static IEnumerable<EventDescriptor> GetAvailableEvents(Type forType)
 		{
 			foreach (EventDescriptor e in TypeDescriptor.GetEvents(forType)) {

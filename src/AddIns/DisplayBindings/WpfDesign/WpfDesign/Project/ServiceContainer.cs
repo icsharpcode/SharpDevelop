@@ -152,5 +152,15 @@ namespace ICSharpCode.WpfDesign
 				return GetServiceOrThrowException<Extensions.ExtensionManager>();
 			}
 		}
+		
+		/// <summary>
+		/// Gets the <see cref="IDesignPanel"/>.
+		/// Throws an exception if the service is not found.
+		/// </summary>
+		public IDesignPanel DesignPanel {
+			get {
+				return GetServiceOrThrowException<IDesignPanel>();
+			}
+		}
 	}
 }

@@ -139,7 +139,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 
 		void CreateSurface(PlacementOperation operation)
 		{
-			if (ExtendedItem.Services.Tool.DesignPanel != null) {
+			if (ExtendedItem.Services.DesignPanel != null) {
 
 				surface = new Canvas();
 				adornerPanel = new AdornerPanel();

@@ -42,6 +42,9 @@ namespace ICSharpCode.WpfDesign
 			get;
 		}
 
+		/// <summary>
+		/// Gets whether the design context can be saved.
+		/// </summary>
 		public abstract bool CanSave { get; }
 		
 		/// <summary>
