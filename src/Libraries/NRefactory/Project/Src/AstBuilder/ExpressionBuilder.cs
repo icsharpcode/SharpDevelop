@@ -53,6 +53,36 @@ namespace ICSharpCode.NRefactory.AstBuilder
 				throw new ArgumentNullException("arguments");
 			return new ObjectCreateExpression(createType, new List<Expression>(arguments));
 		}
+		
+		public static Expression CreateDefaultValueForType(TypeReference type)
+		{
+			if (type != null && !type.IsArrayType) {
+				switch (type.SystemType) {
+					case "System.SByte":
+					case "System.Byte":
+					case "System.Int16":
+					case "System.UInt16":
+					case "System.Int32":
+					case "System.UInt32":
+					case "System.Int64":
+					case "System.UInt64":
+					case "System.Single":
+					case "System.Double":
+						return new PrimitiveExpression(0, "0");
+					case "System.Char":
+						return new PrimitiveExpression('\0', "'\\0'");
+					case "System.Object":
+					case "System.String":
+						return new PrimitiveExpression(null, "null");
+					case "System.Boolean":
+						return new PrimitiveExpression(false, "false");
+					default:
+						return new DefaultValueExpression(type);
+				}
+			} else {
+				return new PrimitiveExpression(null, "null");
+			}
+		}
 	}
 	#endif
 }

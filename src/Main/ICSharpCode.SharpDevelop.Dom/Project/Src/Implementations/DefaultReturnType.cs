@@ -226,5 +226,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return c.DotNetName;
 			}
 		}
+		
+		public override Nullable<bool> IsReferenceType {
+			get {
+				return (this.c.ClassType == ClassType.Class
+				        || this.c.ClassType == ClassType.Interface
+				        || this.c.ClassType == ClassType.Delegate);
+			}
+		}
 	}
 }

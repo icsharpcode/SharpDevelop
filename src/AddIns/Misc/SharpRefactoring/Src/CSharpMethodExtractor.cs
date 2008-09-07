@@ -4,18 +4,23 @@
 //     <owner name="Siegfried Pammer" email="sie_pam@gmx.at"/>
 //     <version>$Revision: 3287 $</version>
 // </file>
+using ICSharpCode.SharpDevelop;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
-
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.NRefactory.AstBuilder;
 using ICSharpCode.NRefactory.PrettyPrinter;
 using ICSharpCode.NRefactory.Visitors;
+using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;
+using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.TextEditor.Document;
 using SharpRefactoring.Transformers;
 using SharpRefactoring.Visitors;
+using Dom = ICSharpCode.SharpDevelop.Dom;
 
 namespace SharpRefactoring
 {
@@ -52,6 +57,8 @@ namespace SharpRefactoring
 				this.specialsList = parser.Lexer.SpecialTracker.RetrieveSpecials();
 			}
 			
+			this.currentProjectContent = ParserService.GetProjectContent(ProjectService.CurrentProject);
+			
 			MethodDeclaration newMethod = new MethodDeclaration();
 			
 			List<VariableDeclaration> possibleReturnValues = new List<VariableDeclaration>();
@@ -74,7 +81,7 @@ namespace SharpRefactoring
 			
 			newMethod.Modifier = parentNode.Modifier;
 			
-			newMethod.Modifier &= ~(Modifiers.Internal | Modifiers.Protected | Modifiers.Private | Modifiers.Public);
+			newMethod.Modifier &= ~(Modifiers.Internal | Modifiers.Protected | Modifiers.Private | Modifiers.Public | Modifiers.Override);
 			
 			foreach (ParameterDeclarationExpression pde in parentNode.Parameters)
 			{
@@ -105,36 +112,40 @@ namespace SharpRefactoring
 			
 			parentNode.AcceptVisitor(ltv, null);
 			
+			Location start = new Location(this.currentSelection.StartPosition.Column + 1, this.currentSelection.StartPosition.Line + 1);
+			Location end = new Location(this.currentSelection.EndPosition.Column + 1, this.currentSelection.EndPosition.Line + 1);
+			
 			foreach (KeyValuePair<string, List<LocalLookupVariable>> pair in ltv.Variables) {
 				foreach (LocalLookupVariable variable in pair.Value) {
+					if (variable.StartPos > end)
+						continue;
+					
 					if (IsInSel(variable.StartPos, this.currentSelection) && HasOccurrencesAfter(true, this.parentNode, new Location(this.currentSelection.EndPosition.Column + 1, this.currentSelection.EndPosition.Line + 1), variable.Name, variable.StartPos, variable.EndPos)) {
 						possibleReturnValues.Add(new VariableDeclaration(variable.Name, variable.Initializer, variable.TypeRef));
 						otherReturnValues.Add(new VariableDeclaration(variable.Name, variable.Initializer, variable.TypeRef));
 					}
 
-                    Location start = new Location(this.currentSelection.StartPosition.Column + 1, this.currentSelection.StartPosition.Line + 1);
-                    Location end = new Location(this.currentSelection.EndPosition.Column + 1, this.currentSelection.EndPosition.Line + 1);
 					
 					FindReferenceVisitor frv = new FindReferenceVisitor(true, variable.Name, start, end);
 					
 					parentNode.AcceptVisitor(frv, null);
 					
 					if ((frv.Identifiers.Count > 0) && (!(IsInSel(variable.StartPos, this.currentSelection) || IsInSel(variable.EndPos, this.currentSelection)))) {
-						bool hasOccurrences = HasOccurrencesAfter(true, this.parentNode, new Location(this.currentSelection.EndPosition.Column + 1, this.currentSelection.EndPosition.Line + 1), variable.Name, variable.StartPos, variable.EndPos);
+						bool hasOccurrencesAfter = HasOccurrencesAfter(true, this.parentNode, new Location(this.currentSelection.EndPosition.Column + 1, this.currentSelection.EndPosition.Line + 1), variable.Name, variable.StartPos, variable.EndPos);
 						bool isInitialized = IsInitializedVariable(true, this.parentNode, variable);
 						bool hasAssignment = HasAssignment(newMethod, variable);
 						bool getsAssigned = pair.Value.Count > 0;
 						
-						if (hasOccurrences && isInitialized)
+						if (hasOccurrencesAfter && isInitialized)
 							newMethod.Parameters.Add(new ParameterDeclarationExpression(variable.TypeRef, variable.Name, ParameterModifiers.Ref));
 						else {
-							if (hasOccurrences && hasAssignment)
+							if (hasOccurrencesAfter && hasAssignment)
 								newMethod.Parameters.Add(new ParameterDeclarationExpression(variable.TypeRef, variable.Name, ParameterModifiers.Out));
 							else {
-								if (!hasOccurrences && getsAssigned)
+								if (!hasOccurrencesAfter && getsAssigned)
 									newMethod.Parameters.Add(new ParameterDeclarationExpression(variable.TypeRef, variable.Name, ParameterModifiers.None));
 								else {
-									if (!hasOccurrences && !isInitialized)
+									if (!hasOccurrencesAfter && !isInitialized)
 										newMethod.Body.Children.Insert(0, new LocalVariableDeclaration(new VariableDeclaration(variable.Name, variable.Initializer, variable.TypeRef)));
 									else
 										newMethod.Parameters.Add(new ParameterDeclarationExpression(variable.TypeRef, variable.Name, ParameterModifiers.In));
@@ -159,12 +170,32 @@ namespace SharpRefactoring
 					this.beforeCallDeclarations.Add(new LocalVariableDeclaration(varDecl));
 				}
 			}
-			
+
 			ReplaceUnnecessaryVariableDeclarationsTransformer t = new ReplaceUnnecessaryVariableDeclarationsTransformer(paramsAsVarDecls);
 			
 			newMethod.AcceptVisitor(t, null);
 			
 			CreateReturnStatement(newMethod, possibleReturnValues);
+
+			bool hasReturnStatement = false;
+			
+			foreach (INode node in newMethod.Body.Children) {
+				if (node is ReturnStatement) {
+					hasReturnStatement = true;
+				}
+			}
+			
+			if (!hasReturnStatement) {
+				Dom.IMember member = GetParentMember(this.textEditor, this.currentSelection.StartPosition);
+				
+				Dom.IReturnType returnType = TypeVisitor.CreateReturnType(newMethod.TypeReference, member.DeclaringType, member,
+				                                                          this.currentSelection.StartPosition.Line, this.currentSelection.StartPosition.Column, member.DeclaringType.ProjectContent, true);
+				
+				if (returnType.IsReferenceType == null || returnType.IsReferenceType == true)
+					newMethod.Body.AddChild(new ReturnStatement(new PrimitiveExpression(null, "null")));
+				else
+					newMethod.Body.AddChild(new ReturnStatement(ExpressionBuilder.CreateDefaultValueForType(newMethod.TypeReference)));
+			}
 			
 			this.extractedMethod = newMethod;
 			
