@@ -215,7 +215,7 @@ namespace ICSharpCode.UnitTesting
 			TaskService.ClearExceptCommentTasks();
 			TaskService.InUpdate = false;
 			
-			TestRunnerCategory.ClearText();			
+			TestRunnerCategory.ClearText();
 			
 			ShowUnitTestsPad();
 			ShowOutputPad();
@@ -225,7 +225,7 @@ namespace ICSharpCode.UnitTesting
 			
 			OnBeforeRunTests();
 		}
-				
+		
 		/// <summary>
 		/// Brings output pad to the front.
 		/// </summary>
@@ -252,7 +252,7 @@ namespace ICSharpCode.UnitTesting
 			}
 			if (lineRef != null) {
 				return new Task(Path.GetFullPath(lineRef.FileName),
-				                message, lineRef.Column, lineRef.Line, taskType);				
+				                message, lineRef.Column, lineRef.Line, taskType);
 			}
 			return new Task(String.Empty, message, 0, 0, taskType);
 		}
@@ -297,7 +297,7 @@ namespace ICSharpCode.UnitTesting
 		/// </summary>
 		void OnBuildComplete(BuildResults results, IProject project, string namespaceFilter, IClass fixture, IMember test)
 		{
-			if (results.ErrorCount == 0 && IsRunningTest) {	
+			if (results.ErrorCount == 0 && IsRunningTest) {
 				UnitTestApplicationStartHelper helper = new UnitTestApplicationStartHelper();
 				
 				UnitTestingOptions options = new UnitTestingOptions();
@@ -422,7 +422,7 @@ namespace ICSharpCode.UnitTesting
 			ProjectService.RaiseEventEndBuild(new BuildEventArgs(LastBuildResults));
 		}
 	}
-		
+	
 	public class RunTestInPadCommand : AbstractRunTestCommand
 	{
 		ProcessRunner runner;
@@ -430,12 +430,13 @@ namespace ICSharpCode.UnitTesting
 		public RunTestInPadCommand()
 		{
 			runner = new ProcessRunner();
+			runner.LogStandardOutputAndError = false;
 			runner.OutputLineReceived += OutputLineReceived;
 			runner.ProcessExited += ProcessExited;
 		}
-			
+		
 		protected override void RunTests(UnitTestApplicationStartHelper helper)
-		{										
+		{
 			TestRunnerCategory.AppendLine(helper.GetCommandLine());
 			runner.Start(helper.UnitTestApplication, helper.GetArguments());
 		}
@@ -456,7 +457,7 @@ namespace ICSharpCode.UnitTesting
 		}
 		
 		void ProcessExited(object source, EventArgs e)
-		{			
+		{
 			WorkbenchSingleton.SafeThreadAsyncCall(TestsFinished);
 		}
 		
@@ -472,7 +473,7 @@ namespace ICSharpCode.UnitTesting
 		{
 			if (DebuggerService.IsDebuggerLoaded && DebuggerService.CurrentDebugger.IsDebugging) {
 				if (MessageService.AskQuestion("${res:XML.MainMenu.RunMenu.Compile.StopDebuggingQuestion}",
-					"${res:XML.MainMenu.RunMenu.Compile.StopDebuggingTitle}")) 
+				                               "${res:XML.MainMenu.RunMenu.Compile.StopDebuggingTitle}"))
 				{
 					DebuggerService.CurrentDebugger.Stop();
 					base.Run();
@@ -481,7 +482,7 @@ namespace ICSharpCode.UnitTesting
 				base.Run();
 			}
 		}
-				
+		
 		protected override void RunTests(UnitTestApplicationStartHelper helper)
 		{
 			bool running = false;

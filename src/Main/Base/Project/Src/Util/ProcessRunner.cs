@@ -7,11 +7,10 @@
 
 using System;
 using System.Diagnostics;
-using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 
 using ICSharpCode.Core;
-using System.Threading;
 
 namespace ICSharpCode.SharpDevelop.Util
 {
@@ -47,6 +46,7 @@ namespace ICSharpCode.SharpDevelop.Util
 		/// </summary>
 		public ProcessRunner()
 		{
+			this.LogStandardOutputAndError = true;
 		}
 		
 		/// <summary>
@@ -54,6 +54,14 @@ namespace ICSharpCode.SharpDevelop.Util
 		/// </summary>
 		public string WorkingDirectory { get; set; }
 
+		/// <summary>
+		/// Gets or sets whether standard output is logged to the "StandardOutput" and "StandardError"
+		/// properties. When this property is false, output is still redirected to the
+		/// OutputLineReceived and ErrorLineReceived events, but the ProcessRunner uses less memory.
+		/// The default value is true.
+		/// </summary>
+		public bool LogStandardOutputAndError { get; set; }
+		
 		/// <summary>
 		/// Gets the standard output returned from the process.
 		/// </summary>
@@ -161,19 +169,19 @@ namespace ICSharpCode.SharpDevelop.Util
 				process.Exited += OnProcessExited;
 			}
 
-				bool started = false;
-				try {
-					process.Start();
-					started = true;
-				} finally {
-					if (!started) {
-						process.Exited -= OnProcessExited;
-						process = null;
-					}
+			bool started = false;
+			try {
+				process.Start();
+				started = true;
+			} finally {
+				if (!started) {
+					process.Exited -= OnProcessExited;
+					process = null;
 				}
-				
-				process.BeginOutputReadLine();
-				process.BeginErrorReadLine();
+			}
+			
+			process.BeginOutputReadLine();
+			process.BeginErrorReadLine();
 		}
 		
 		/// <summary>
@@ -229,8 +237,10 @@ namespace ICSharpCode.SharpDevelop.Util
 					endOfOutput.Set();
 				return;
 			}
-			lock (standardOutput) {
-				standardOutput.AppendLine(e.Data);
+			if (LogStandardOutputAndError) {
+				lock (standardOutput) {
+					standardOutput.AppendLine(e.Data);
+				}
 			}
 			if (OutputLineReceived != null) {
 				OutputLineReceived(this, new LineReceivedEventArgs(e.Data));
@@ -249,8 +259,10 @@ namespace ICSharpCode.SharpDevelop.Util
 					endOfOutput.Set();
 				return;
 			}
-			lock (standardError) {
-				standardError.AppendLine(e.Data);
+			if (LogStandardOutputAndError) {
+				lock (standardError) {
+					standardError.AppendLine(e.Data);
+				}
 			}
 			if (ErrorLineReceived != null) {
 				ErrorLineReceived(this, new LineReceivedEventArgs(e.Data));

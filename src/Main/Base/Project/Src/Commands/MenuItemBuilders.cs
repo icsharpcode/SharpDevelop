@@ -256,6 +256,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 				try {
 					if (tool.UseOutputPad) {
 						ProcessRunner processRunner = new ProcessRunner();
+						processRunner.LogStandardOutputAndError = false;
 						processRunner.ProcessExited += ProcessExitEvent;
 						processRunner.OutputLineReceived += process_OutputLineReceived;
 						processRunner.ErrorLineReceived += process_OutputLineReceived;
@@ -289,7 +290,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 			WorkbenchSingleton.SafeThreadAsyncCall(
 				delegate {
 					ProcessRunner p = (ProcessRunner)sender;
-					TaskService.BuildMessageViewCategory.AppendLine("${res:XML.MainMenu.ToolMenu.ExternalTools.ExitedWithCode} " + p.ExitCode);
+					TaskService.BuildMessageViewCategory.AppendLine(StringParser.Parse("${res:XML.MainMenu.ToolMenu.ExternalTools.ExitedWithCode} " + p.ExitCode));
 					p.Dispose();
 				});
 		}

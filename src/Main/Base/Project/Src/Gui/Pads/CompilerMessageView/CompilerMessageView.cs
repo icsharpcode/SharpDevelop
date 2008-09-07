@@ -7,7 +7,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
+using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -56,11 +58,25 @@ namespace ICSharpCode.SharpDevelop.Gui
 				return selectedCategory;
 			}
 			set {
+				WorkbenchSingleton.AssertMainThread();
 				if (selectedCategory != value) {
 					selectedCategory = value;
-					textEditorControl.Text = (value < 0) ? "" : StringParser.Parse(messageCategories[value].Text);
-					//textEditorControl.Refresh();
+					DisplayActiveCategory();
 					OnSelectedCategoryIndexChanged(EventArgs.Empty);
+				}
+			}
+		}
+		
+		void DisplayActiveCategory()
+		{
+			WorkbenchSingleton.DebugAssertMainThread();
+			if (selectedCategory < 0) {
+				textEditorControl.Text = "";
+			} else {
+				lock (messageCategories[selectedCategory].SyncRoot) {
+					// accessing a categories' text takes its lock - but we have to take locks in the same
+					// order as in the Append calls to prevent a deadlock
+					EnqueueAppend(new AppendCall(messageCategories[selectedCategory], messageCategories[selectedCategory].Text, true));
 				}
 			}
 		}
@@ -136,18 +152,16 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			SetWordWrap();
 			myPanel.ResumeLayout(false);
-			SetText(messageCategories[selectedCategory], messageCategories[selectedCategory].Text);
+			DisplayActiveCategory();
 			ProjectService.SolutionLoaded += SolutionLoaded;
 		}
 
 		void SolutionLoaded(object sender, SolutionEventArgs e)
 		{
-			foreach (MessageViewCategory category in messageCategories)
-			{
-				ClearText(category);
+			foreach (MessageViewCategory category in messageCategories) {
+				category.ClearText();
 			}
 		}
-		
 		
 		void SetWordWrap()
 		{
@@ -179,105 +193,111 @@ namespace ICSharpCode.SharpDevelop.Gui
 				return;
 			}
 			messageCategories.Add(category);
-			category.Cleared      += new EventHandler(CategoryTextCleared);
 			category.TextSet      += new TextEventHandler(CategoryTextSet);
 			category.TextAppended += new TextEventHandler(CategoryTextAppended);
 			
 			OnMessageCategoryAdded(EventArgs.Empty);
 		}
 		
-		void CategoryTextCleared(object sender, EventArgs e)
+		void CategoryTextSet(object sender, TextEventArgs e)
 		{
-			WorkbenchSingleton.SafeThreadAsyncCall(new Action<MessageViewCategory>(ClearText),
-			                                       (MessageViewCategory)sender);
+			EnqueueAppend(new AppendCall((MessageViewCategory)sender, e.Text, true));
 		}
-		void ClearText(MessageViewCategory category)
+		
+		struct AppendCall
 		{
-			if (messageCategories[SelectedCategoryIndex] == category) {
-				textEditorControl.Text = String.Empty;
-				//textEditorControl.Refresh();
+			internal readonly MessageViewCategory Category;
+			internal readonly string Text;
+			internal readonly bool ClearCategory;
+			
+			public AppendCall(MessageViewCategory category, string text, bool clearCategory)
+			{
+				this.Category = category;
+				this.Text = text;
+				this.ClearCategory = clearCategory;
 			}
 		}
 		
-		void CategoryTextSet(object sender, TextEventArgs e)
-		{
-			WorkbenchSingleton.SafeThreadAsyncCall(new Action<MessageViewCategory, string>(SetText),
-			                                       (MessageViewCategory)sender, e.Text);
-		}
-		
-		object appendCallLock = new object();
-		volatile int pendingAppendCalls = 0;
+		readonly object appendLock = new object();
+		List<AppendCall> appendCalls = new List<AppendCall>();
 		
 		void CategoryTextAppended(object sender, TextEventArgs e)
 		{
-			lock (appendCallLock) {
-				pendingAppendCalls += 1;
-				MessageViewCategory cat = (MessageViewCategory)sender;
-				if (pendingAppendCalls < 5) {
-					WorkbenchSingleton.SafeThreadAsyncCall(new Action<MessageViewCategory, string, string>(AppendText),
-					                                       cat, cat.Text, e.Text);
-				} else if (pendingAppendCalls == 5) {
-					WorkbenchSingleton.SafeThreadAsyncCall(new Action<MessageViewCategory>(AppendTextCombined),
-					                                       cat);
-				}
+			EnqueueAppend(new AppendCall((MessageViewCategory)sender, e.Text, false));
+		}
+		
+		void EnqueueAppend(AppendCall appendCall)
+		{
+			bool waitForMainThread;
+			lock (appendLock) {
+				appendCalls.Add(appendCall);
+				if (appendCalls.Count == 1)
+					WorkbenchSingleton.SafeThreadAsyncCall(ProcessAppendText);
+				waitForMainThread = appendCalls.Count > 2000;
+			}
+			if (waitForMainThread && WorkbenchSingleton.InvokeRequired) {
+				int sleepLength = 20;
+				do {
+					Thread.Sleep(sleepLength);
+					sleepLength += 20;
+					lock (appendLock)
+						waitForMainThread = appendCalls.Count > 2000;
+					//if (waitForMainThread) LoggingService.Debug("Extending sleep (" + sleepLength + ")");
+				} while (waitForMainThread);
 			}
 		}
 		
-		void AppendTextCombined(MessageViewCategory category)
+		void ProcessAppendText()
 		{
-			Application.DoEvents();
-			Thread.Sleep(50);
-			Application.DoEvents();
-			lock (appendCallLock) {
-				NativeMethods.SetWindowRedraw(textEditorControl.Handle, false);
-				SetText(category, category.Text);
-				NativeMethods.SetWindowRedraw(textEditorControl.Handle, true);
-				textEditorControl.SelectionStart = textEditorControl.TextLength;
-				if (LoggingService.IsDebugEnabled) {
-					LoggingService.Debug("Replaced " + pendingAppendCalls + " appends with one set call");
-				}
-				pendingAppendCalls = 0;
+			List<AppendCall> appendCalls;
+			lock (appendLock) {
+				appendCalls = this.appendCalls;
+				this.appendCalls = new List<AppendCall>();
 			}
-			textEditorControl.Refresh();
-		}
-		
-		void AppendText(MessageViewCategory category, string fullText, string text)
-		{
-			lock (appendCallLock) {
-				if (pendingAppendCalls >= 5) {
-					return;
-				}
-				pendingAppendCalls -= 1;
-			}
-			if (messageCategories[SelectedCategoryIndex] != category) {
-				SelectCategory(category.Category, fullText);
+			Debug.Assert(appendCalls.Count > 0);
+			if (appendCalls.Count == 0)
+				return;
+			
+			MessageViewCategory newCategory = appendCalls[appendCalls.Count - 1].Category;
+			if (messageCategories[SelectedCategoryIndex] != newCategory) {
+				SelectCategory(newCategory.Category);
 				return;
 			}
-			if (text != null) {
-				text = StringParser.Parse(text);
-				textEditorControl.AppendText(text);
-				textEditorControl.SelectionStart = textEditorControl.TextLength;
-				/*textEditorControl.Document.ReadOnly = false;
-				textEditorControl.Document.Insert(textEditorControl.Document.TextLength, text);
-				textEditorControl.Document.ReadOnly = true;
-				textEditorControl.ActiveTextAreaControl.Caret.Position = new Point(0, textEditorControl.Document.TotalNumberOfLines);
-				textEditorControl.ActiveTextAreaControl.ScrollTo(textEditorControl.Document.TotalNumberOfLines);*/
-			}
-		}
-		
-		void SetText(MessageViewCategory category, string text)
-		{
-			if (messageCategories[SelectedCategoryIndex] != category) {
-				SelectCategory(category.Category);
-				return;
-			}
-			if (text == null) {
-				text = String.Empty;
+			
+			bool clear;
+			string text;
+			if (appendCalls.Count == 1) {
+				//LoggingService.Debug("CompilerMessageView: Single append.");
+				clear = appendCalls[0].ClearCategory;
+				text = appendCalls[0].Text;
 			} else {
-				text = StringParser.Parse(text);
+				if (LoggingService.IsDebugEnabled) {
+					LoggingService.Debug("CompilerMessageView: Combined " + appendCalls.Count + " appends.");
+				}
+				
+				clear = false;
+				StringBuilder b = new StringBuilder();
+				foreach (AppendCall append in appendCalls) {
+					if (append.Category == newCategory) {
+						if (append.ClearCategory) {
+							b.Length = 0;
+							clear = true;
+						}
+						b.Append(append.Text);
+					}
+				}
+				text = b.ToString();
 			}
-			textEditorControl.Text = text;
-			//textEditorControl.Refresh();
+			
+			//NativeMethods.SetWindowRedraw(textEditorControl.Handle, false);
+			if (clear) {
+				textEditorControl.Text = text;
+			} else {
+				textEditorControl.SelectionStart = textEditorControl.TextLength;
+				textEditorControl.SelectedText = text;
+			}
+			//NativeMethods.SetWindowRedraw(textEditorControl.Handle, true);
+			textEditorControl.SelectionStart = textEditorControl.TextLength;
 		}
 		
 		public void SelectCategory(string categoryName)

@@ -16,9 +16,46 @@ namespace ICSharpCode.SharpDevelop.Gui
 	/// </summary>
 	public class MessageViewCategory
 	{
+		#region Static methods to create MessageViewCategories
+		/// <summary>
+		/// Creates a new MessageViewCategory with the specified category
+		/// and adds it to the CompilerMessageView pad.
+		/// This method is thread-safe and works correctly even if called multiple times for the same
+		/// thread; only one messageViewCategory will be created.
+		/// </summary>
+		public static void Create(ref MessageViewCategory messageViewCategory, string category)
+		{
+			Create(ref messageViewCategory, category, category);
+		}
+		
+		/// <summary>
+		/// Creates a new MessageViewCategory with the specified category
+		/// and adds it to the CompilerMessageView pad.
+		/// This method is thread-safe and works correctly even if called concurrently for the same
+		/// category; only one messageViewCategory will be created.
+		/// </summary>
+		public static void Create(ref MessageViewCategory messageViewCategory, string category, string displayCategory)
+		{
+			MessageViewCategory newMessageViewCategory = new MessageViewCategory(category, displayCategory);
+			if (System.Threading.Interlocked.CompareExchange(ref messageViewCategory, newMessageViewCategory, null) == null) {
+				// this thread was successful creating the category, so add it
+				CompilerMessageView.Instance.AddCategory(newMessageViewCategory);
+			}
+		}
+		#endregion
+		
 		string        category;
 		string        displayCategory;
-		StringBuilder textBuilder = new StringBuilder();
+		readonly StringBuilder textBuilder = new StringBuilder();
+		
+		/// <summary>
+		/// Gets the object on which the MessageViewCategory locks.
+		/// </summary>
+		public object SyncRoot {
+			get {
+				return textBuilder;
+			}
+		}
 		
 		public string Category {
 			get {
@@ -50,32 +87,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.displayCategory = displayCategory;
 		}
 		
-		/// <summary>
-		/// Creates a new MessageViewCategory with the specified category
-		/// and adds it to the CompilerMessageView pad.
-		/// This method is thread-safe and works correctly even if called multiple times for the same
-		/// thread; only one messageViewCategory will be created.
-		/// </summary>
-		public static void Create(ref MessageViewCategory messageViewCategory, string category)
-		{
-			Create(ref messageViewCategory, category, category);
-		}
-		
-		/// <summary>
-		/// Creates a new MessageViewCategory with the specified category
-		/// and adds it to the CompilerMessageView pad.
-		/// This method is thread-safe and works correctly even if called concurrently for the same
-		/// category; only one messageViewCategory will be created.
-		/// </summary>
-		public static void Create(ref MessageViewCategory messageViewCategory, string category, string displayCategory)
-		{
-			MessageViewCategory newMessageViewCategory = new MessageViewCategory(category, displayCategory);
-			if (System.Threading.Interlocked.CompareExchange(ref messageViewCategory, newMessageViewCategory, null) == null) {
-				// this thread was successful creating the category, so add it
-				CompilerMessageView.Instance.AddCategory(newMessageViewCategory);
-			}
-		}
-		
 		public void AppendLine(string text)
 		{
 			AppendText(text + Environment.NewLine);
@@ -85,39 +96,31 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			lock (textBuilder) {
 				textBuilder.Append(text);
+				OnTextAppended(new TextEventArgs(text));
 			}
-			OnTextAppended(new TextEventArgs(text));
 		}
 		
 		public void SetText(string text)
 		{
 			lock (textBuilder) {
+				// clear text:
 				textBuilder.Length = 0;
+				// reset capacity: we must shrink the textBuilder at some point to reclaim memory
+				textBuilder.Capacity = text.Length + 16;
 				textBuilder.Append(text);
+				OnTextSet(new TextEventArgs(text));
 			}
-			OnTextSet(new TextEventArgs(text));
 		}
 		
 		public void ClearText()
 		{
-			lock (textBuilder) {
-				textBuilder.Length = 0;
-			}
-			OnCleared(EventArgs.Empty);
+			SetText(string.Empty);
 		}
 		
 		protected virtual void OnTextAppended(TextEventArgs e)
 		{
 			if (TextAppended != null) {
 				TextAppended(this, e);
-			}
-		}
-		
-		
-		protected virtual void OnCleared(EventArgs e)
-		{
-			if (Cleared != null) {
-				Cleared(this, e);
 			}
 		}
 		
@@ -128,8 +131,21 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
+		/// <summary>
+		/// Is raised when text is appended to the MessageViewCategory.
+		/// Warning: This event is raised inside a lock held by the MessageViewCategory. This is necessary
+		/// to ensure TextAppended event handlers are called in the same order as text is appended to the category
+		/// when there are multiple threads writing to the same category.
+		/// </summary>
 		public event TextEventHandler TextAppended;
+		
+		/// <summary>
+		/// Is raised when text is appended to the MessageViewCategory.
+		/// Warning: This event is raised inside a lock held by the MessageViewCategory. This is necessary
+		/// to ensure TextAppended and TextSet event handlers are called in the same order as
+		/// text is appended or set
+		/// when there are multiple threads writing to the same category.
+		/// </summary>
 		public event TextEventHandler TextSet;
-		public event EventHandler     Cleared;
 	}
 }
