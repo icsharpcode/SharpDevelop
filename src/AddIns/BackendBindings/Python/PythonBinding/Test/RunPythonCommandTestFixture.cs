@@ -12,11 +12,11 @@ using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using NUnit.Framework;
 using PythonBinding.Tests.Utils;
- 
+
 namespace PythonBinding.Tests
 {
 	/// <summary>
-	/// Tests that the RunPythonCommand class runs the Python console 
+	/// Tests that the RunPythonCommand class runs the Python console
 	/// passing the filename of the python script active in SharpDevelop.
 	/// </summary>
 	[TestFixture]
@@ -53,8 +53,8 @@ namespace PythonBinding.Tests
 			
 			// Create the message view category.
 			messageViewCategory = new MessageViewCategory("Python");
-			messageViewCategory.Cleared += MessageViewCategoryCleared;
-	
+			messageViewCategory.TextSet += MessageViewCategoryCleared;
+			
 			// Run the command.
 			RunPythonCommand command = new RunPythonCommand(workbench, options, processRunner, messageViewCategory, padDescriptor);
 			command.Run();
@@ -118,9 +118,10 @@ namespace PythonBinding.Tests
 			Assert.IsFalse(condition.IsValid(null, null));
 		}
 		
-		void MessageViewCategoryCleared(object sender, EventArgs e)
+		void MessageViewCategoryCleared(object sender, TextEventArgs e)
 		{
-			messageViewCategoryCleared = true;
+			if (e.Text == "")
+				messageViewCategoryCleared = true;
 		}
 	}
 }
