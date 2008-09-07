@@ -80,6 +80,8 @@
     <Compile Include="Utils\MockProject.cs" />
     <Compile Include="Utils\MockProperty.cs" />
     <Compile Include="VBExpressionFinderTests.cs" />
+    <Compile Include="WebReferences\ValidReferenceNameTests.cs" />
+    <Compile Include="WebReferences\ValidWebReferenceNamespaceTests.cs" />
     <Compile Include="WebReferences\WebReferenceProjectItemsTest.cs" />
     <Compile Include="WebReferences\ProjectHasExistingWebRefFolderTest.cs" />
     <Compile Include="WebReferences\VBNetWebReferenceTest.cs" />

@@ -473,54 +473,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 			return String.Empty;
 		}
-
-		bool IsValidNamespace {
-			get {
-				bool valid = false;
-				
-				if (namespaceTextBox.Text.Length > 0) {
-					
-					// Can only begin with a letter or '_'
-					char ch = namespaceTextBox.Text[0];
-					if (Char.IsLetter(ch) || (ch == '_')) {
-						valid = true;
-						for (int i = 1; i < namespaceTextBox.Text.Length; ++i) {
-							ch = namespaceTextBox.Text[i];
-							// Can only contain letters, digits or '_'
-							if (!Char.IsLetterOrDigit(ch) && (ch != '.') && (ch != '_')) {
-								valid = false;
-								break;
-							}
-						}
-					}
-				}
-				
-				return valid;
-			}
-		}
-		
-		bool IsValidReferenceName {
-			get {
-				if (referenceNameTextBox.Text.Length > 0) {
-					if (referenceNameTextBox.Text.IndexOf('\\') == -1) {
-						if (!ContainsInvalidDirectoryChar(referenceNameTextBox.Text)) {
-							return true;
-						}
-					}
-				}
-				return false;
-			}
-		}
-		
-		bool ContainsInvalidDirectoryChar(string item)
-		{
-			foreach (char ch in Path.GetInvalidPathChars()) {
-				if (item.IndexOf(ch) >= 0) {
-					return true;
-				}
-			}
-			return false;
-		}
 		
 		/// <summary>
 		/// Starts the search for web services at the specified url.
@@ -666,12 +618,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void AddButtonClick(object sender,EventArgs e)
 		{
 			try {
-				if (!IsValidReferenceName) {
+				if (!WebReference.IsValidReferenceName(referenceNameTextBox.Text)) {
 					MessageService.ShowError(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Gui.Dialogs.AddWebReferenceDialog.InvalidReferenceNameError}"));
 					return;
 				}
 				
-				if (!IsValidNamespace) {
+				if (!WebReference.IsValidNamespace(namespaceTextBox.Text)) {
 					MessageService.ShowError(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Gui.Dialogs.AddWebReferenceDialog.InvalidNamespaceError}"));
 					return;
 				}
