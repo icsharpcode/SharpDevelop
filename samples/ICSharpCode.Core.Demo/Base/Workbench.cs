@@ -3,9 +3,9 @@
 
 using System;
 using System.ComponentModel;
-using System.Drawing;
 using System.Windows.Forms;
-using ICSharpCode.Core;
+
+using ICSharpCode.Core.WinForms;
 
 namespace Base
 {

@@ -717,14 +717,5 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 			document.EndUndoableAction();
 		}
 		#endregion
-		
-		public static NR.Expression CreateDefaultValueForType(IReturnType type)
-		{
-			if (type.IsReferenceType != null && type.IsReferenceType != false) {
-				return null; 
-			}
-			
-			return null;
-		}
 	}
 }

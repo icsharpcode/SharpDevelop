@@ -28,7 +28,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 
@@ -36,20 +35,20 @@ using ICSharpCode.SharpDevelop.Commands;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Project.Commands;
-using ICSharpCode.TextEditor;
 using ICSharpCode.SharpSnippetCompiler.Core;
+using ICSharpCode.TextEditor;
 
 namespace ICSharpCode.SharpSnippetCompiler
 {
 	public partial class MainForm : Form
-	{				
+	{
 		public MainForm()
-		{						
+		{
 			//
 			// The InitializeComponent() call is required for Windows Forms designer support.
 			//
-			InitializeComponent();						
-		}	
+			InitializeComponent();
+		}
 		
 		public Control ErrorList {
 			get {
@@ -58,7 +57,7 @@ namespace ICSharpCode.SharpSnippetCompiler
 				}
 				return null;
 			}
-			set { 
+			set {
 				errorsTabPage.Controls.Clear();
 				value.Dock = DockStyle.Fill;
 				errorsTabPage.Controls.Add(value);
@@ -72,7 +71,7 @@ namespace ICSharpCode.SharpSnippetCompiler
 				}
 				return null;
 			}
-			set { 
+			set {
 				outputTabPage.Controls.Clear();
 				value.Dock = DockStyle.Fill;
 				outputTabPage.Controls.Add(value);
@@ -94,7 +93,7 @@ namespace ICSharpCode.SharpSnippetCompiler
 		
 		public void LoadFile(string fileName)
 		{
-			// Create a new tab page.			
+			// Create a new tab page.
 			SharpSnippetCompilerControl snippetControl = new SharpSnippetCompilerControl();
 			snippetControl.Dock = DockStyle.Fill;
 			SnippetTabPage tabPage = new SnippetTabPage(snippetControl);
@@ -128,7 +127,7 @@ namespace ICSharpCode.SharpSnippetCompiler
 			SaveAll();
 			Close();
 		}
-				
+		
 		void BuildCurrentToolStripMenuItemClick(object sender, EventArgs e)
 		{
 			SaveAll();
@@ -219,7 +218,7 @@ namespace ICSharpCode.SharpSnippetCompiler
 		{
 			IProject project = ProjectService.CurrentProject;
 			using (SelectReferenceDialog referenceDialog = new SelectReferenceDialog(project)) {
-			
+				
 				// Add existing project references to dialog.
 				List<ReferenceProjectItem> references = GetReferences(project);
 				AddReferences(referenceDialog as ISelectReferenceDialog, references);
@@ -238,11 +237,9 @@ namespace ICSharpCode.SharpSnippetCompiler
 					
 					// Add new references.
 					foreach (ReferenceProjectItem reference in referenceDialog.ReferenceInformations) {
-						if (!reference.IsAddedToProject) {
-							ProjectService.AddProjectItem(project, reference);
-						}
+						ProjectService.AddProjectItem(project, reference);
 					}
-					project.Save();					
+					project.Save();
 				}
 			}
 		}

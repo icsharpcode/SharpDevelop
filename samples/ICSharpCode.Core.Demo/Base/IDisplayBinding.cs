@@ -2,7 +2,7 @@
 // Licensed under the terms of the "BSD License", see doc/license.txt
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using ICSharpCode.Core;
 
 namespace Base
@@ -21,12 +21,12 @@ namespace Base
 	
 	public static class DisplayBindingManager
 	{
-		static ArrayList items;
+		static List<IDisplayBinding> items;
 		
 		public static IViewContent CreateViewContent(string fileName)
 		{
 			if (items == null) {
-				items = AddInTree.BuildItems("/Workspace/DisplayBindings", null, true);
+				items = AddInTree.BuildItems<IDisplayBinding>("/Workspace/DisplayBindings", null, true);
 			}
 			foreach (IDisplayBinding binding in items) {
 				IViewContent content = binding.OpenFile(fileName);
