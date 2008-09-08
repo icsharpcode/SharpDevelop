@@ -117,7 +117,7 @@ namespace SharpRefactoring
 			
 			foreach (KeyValuePair<string, List<LocalLookupVariable>> pair in ltv.Variables) {
 				foreach (LocalLookupVariable variable in pair.Value) {
-					if (variable.StartPos > end)
+					if (variable.StartPos > end || variable.EndPos < start)
 						continue;
 					
 					if (IsInSel(variable.StartPos, this.currentSelection) && HasOccurrencesAfter(true, this.parentNode, new Location(this.currentSelection.EndPosition.Column + 1, this.currentSelection.EndPosition.Line + 1), variable.Name, variable.StartPos, variable.EndPos)) {
@@ -176,26 +176,6 @@ namespace SharpRefactoring
 			newMethod.AcceptVisitor(t, null);
 			
 			CreateReturnStatement(newMethod, possibleReturnValues);
-
-			bool hasReturnStatement = false;
-			
-			foreach (INode node in newMethod.Body.Children) {
-				if (node is ReturnStatement) {
-					hasReturnStatement = true;
-				}
-			}
-			
-			if (!hasReturnStatement) {
-				Dom.IMember member = GetParentMember(this.textEditor, this.currentSelection.StartPosition);
-				
-				Dom.IReturnType returnType = TypeVisitor.CreateReturnType(newMethod.TypeReference, member.DeclaringType, member,
-				                                                          this.currentSelection.StartPosition.Line, this.currentSelection.StartPosition.Column, member.DeclaringType.ProjectContent, true);
-				
-				if (returnType.IsReferenceType == null || returnType.IsReferenceType == true)
-					newMethod.Body.AddChild(new ReturnStatement(new PrimitiveExpression(null, "null")));
-				else
-					newMethod.Body.AddChild(new ReturnStatement(ExpressionBuilder.CreateDefaultValueForType(newMethod.TypeReference)));
-			}
 			
 			this.extractedMethod = newMethod;
 			
