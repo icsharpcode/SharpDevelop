@@ -97,6 +97,7 @@
     <Compile Include="Extensions\CanvasPlacementSupport.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Extensions\BorderForInvisibleControl.cs" />
     <Compile Include="Extensions\Initializers.cs" />
     <Compile Include="Extensions\DefaultPlacementBehavior.cs">
       <SubType>Code</SubType>

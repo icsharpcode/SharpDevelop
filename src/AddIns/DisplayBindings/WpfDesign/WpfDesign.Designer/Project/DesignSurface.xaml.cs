@@ -67,7 +67,10 @@ namespace ICSharpCode.WpfDesign.Designer
 		public void LoadDesigner(XmlReader xamlReader, XamlLoadSettings loadSettings)
 		{
 			UnloadDesigner();
-			InitializeDesigner(new XamlDesignContext(xamlReader, loadSettings ?? new XamlLoadSettings()));
+            loadSettings = loadSettings ?? new XamlLoadSettings();
+            loadSettings.CustomServiceRegisterFunctions.Add(
+                context => context.Services.AddService(typeof(IDesignPanel), _designPanel));
+			InitializeDesigner(new XamlDesignContext(xamlReader, loadSettings));
 		}
 		
 		/// <summary>
@@ -80,8 +83,6 @@ namespace ICSharpCode.WpfDesign.Designer
 		
 		void InitializeDesigner(DesignContext context)
 		{
-			context.Services.AddService(typeof(IDesignPanel), _designPanel);
-			
 			_designContext = context;
 			_designPanel.Context = context;
 

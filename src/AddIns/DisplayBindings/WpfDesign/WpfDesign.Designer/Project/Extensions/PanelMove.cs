@@ -11,8 +11,7 @@ using ICSharpCode.WpfDesign.Designer.Controls;
 namespace ICSharpCode.WpfDesign.Designer.Extensions
 {
 	[ExtensionFor(typeof(Panel))]
-	[ExtensionServer(typeof(PrimarySelectionExtensionServer))]
-	public class PanelMove : AdornerProvider
+	public class PanelMove : PermanentAdornerProvider
 	{
 		protected override void OnInitialized()
 		{
