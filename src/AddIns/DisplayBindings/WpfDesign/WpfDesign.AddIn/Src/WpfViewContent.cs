@@ -23,6 +23,7 @@ using ICSharpCode.WpfDesign.Designer.PropertyGrid;
 using ICSharpCode.WpfDesign.Designer.Services;
 using ICSharpCode.WpfDesign.Designer.Xaml;
 using ICSharpCode.WpfDesign.PropertyGrid;
+using System.Windows.Input;
 
 namespace ICSharpCode.WpfDesign.AddIn
 {
@@ -212,6 +213,9 @@ namespace ICSharpCode.WpfDesign.AddIn
 					if (DesignSurface != null && DesignSurface.DesignContext != null && DesignSurface.DesignContext.RootItem != null) {
 						outline.Root = OutlineNode.Create(DesignSurface.DesignContext.RootItem);
 					}
+                    // see 3522
+                    outline.AddCommandHandler(ApplicationCommands.Delete, 
+                        () => ApplicationCommands.Delete.Execute(null, designer));
 				}
 				return outline;
 			}
