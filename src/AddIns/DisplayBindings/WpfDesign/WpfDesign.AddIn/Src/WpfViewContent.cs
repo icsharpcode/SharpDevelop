@@ -63,7 +63,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 				// initialize designer on first load
 				DragDropExceptionHandler.HandleException = ICSharpCode.Core.MessageService.ShowError;
 				designer = new DesignSurface();
-				wpfHost = new SharpDevelopElementHost(this, designer);
+				wpfHost = new SharpDevelopElementHost() { ViewContent = this, Child = designer };
 				this.UserControl = wpfHost;
 				InitPropertyEditor();
 			}
@@ -147,7 +147,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 		void InitPropertyEditor()
 		{
 			propertyGridView = new PropertyGridView();
-			propertyEditorHost = new SharpDevelopElementHost(this, propertyGridView);
+			propertyEditorHost = new SharpDevelopElementHost() { ViewContent = this, Child = propertyGridView};
 			propertyContainer.PropertyGridReplacementControl = propertyEditorHost;
 		}
 		

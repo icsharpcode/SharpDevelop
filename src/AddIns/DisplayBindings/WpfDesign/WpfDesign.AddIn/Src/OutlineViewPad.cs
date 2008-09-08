@@ -31,6 +31,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 		void WorkbenchActiveViewContentChanged(object sender, EventArgs e)
 		{
 			WpfViewContent wpfView = WorkbenchSingleton.Workbench.ActiveViewContent as WpfViewContent;
+            host.ViewContent = wpfView;
 			if (wpfView != null) {
 				host.Child = wpfView.Outline;
 			} else {

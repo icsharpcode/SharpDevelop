@@ -29,15 +29,9 @@ namespace ICSharpCode.WpfDesign.AddIn
 				Dispatcher.CurrentDispatcher.UnhandledException += CurrentDispatcher_UnhandledException;
 			}
 		}
-		
-		public SharpDevelopElementHost(WpfViewContent viewContent, UIElement child)
-			: this()
-		{
-			this.viewContent = viewContent;
-			this.Child = child;
-		}
 
-		WpfViewContent viewContent;
+        //needed for command routing (SharpDevelopElementHost -> DesignSurface)
+		internal WpfViewContent ViewContent;
 
 		static void CurrentDispatcher_UnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
 		{
@@ -49,8 +43,8 @@ namespace ICSharpCode.WpfDesign.AddIn
 		{
 			if (command.CanExecute(null, null))
 				return true;
-			else if (viewContent != null)
-				return command.CanExecute(null, viewContent.DesignSurface);
+			else if (ViewContent != null)
+				return command.CanExecute(null, ViewContent.DesignSurface);
 			else
 				return false;
 		}
@@ -59,8 +53,8 @@ namespace ICSharpCode.WpfDesign.AddIn
 		{
 			if (command.CanExecute(null, null)) {
 				command.Execute(null, null);
-			} else if (viewContent != null) {
-				command.Execute(null, viewContent.DesignSurface);
+			} else if (ViewContent != null) {
+				command.Execute(null, ViewContent.DesignSurface);
 			}
 		}
 		

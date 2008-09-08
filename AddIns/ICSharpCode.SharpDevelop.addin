@@ -1280,6 +1280,7 @@
 			          label = "${res:XML.MainMenu.EditMenu.Delete}"
 			          icon = "Icons.16x16.DeleteIcon"
 			          type = "Item"
+					  shortcut = "Delete"
 			          loadclasslazy = "false"
 			          class = "ICSharpCode.SharpDevelop.Commands.Delete"/>
 			<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider" action="Disable">
