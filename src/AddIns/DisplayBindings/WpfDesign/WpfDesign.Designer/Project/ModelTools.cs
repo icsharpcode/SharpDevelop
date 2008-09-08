@@ -98,7 +98,14 @@ namespace ICSharpCode.WpfDesign.Designer
 		
 		internal static Size GetDefaultSize(DesignItem createdItem)
 		{
-			return new Size(GetWidth(createdItem.View), GetHeight(createdItem.View));
+            var s = Metadata.GetDefaultSize(createdItem.ComponentType);
+            if (double.IsNaN(s.Width)) {
+                s.Width = GetWidth(createdItem.View);
+            }
+            if (double.IsNaN(s.Height)) {
+                s.Height = GetHeight(createdItem.View);
+            }
+			return s;
 		}
 		
 		internal static double GetWidth(UIElement element)
