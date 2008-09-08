@@ -516,7 +516,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				if (visitedTypes.Contains(currentClass))
 					break;
 				visitedTypes.Add(currentClass);
-				bool isClassInInheritanceTree = callingClass.IsTypeInInheritanceTree(currentClass);
+				bool isClassInInheritanceTree = callingClass != null ? callingClass.IsTypeInInheritanceTree(currentClass) : false;
 				foreach (IClass c in currentClass.InnerClasses) {
 					if (c.IsAccessible(callingClass, isClassInInheritanceTree)) {
 						types.Add(c);

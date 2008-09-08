@@ -950,7 +950,7 @@ namespace Root.Child {
 			Assert.AreEqual("Root.Alpha", result.ResolvedType.FullyQualifiedName);
 		}
 		
-		ArrayList CtrlSpaceResolveCSharp(string program, int line, ExpressionContext context)
+		public ArrayList CtrlSpaceResolveCSharp(string program, int line, ExpressionContext context)
 		{
 			ParseInformation parseInfo = AddCompilationUnit(Parse("a.cs", program), "a.cs");
 			

@@ -99,7 +99,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				}
 				IClass currentClass = callingClass;
 				do {
-					foreach (IClass innerClass in currentClass.GetAccessibleTypes(currentClass)) {
+					foreach (IClass innerClass in currentClass.GetCompoundClass().GetAccessibleTypes(currentClass)) {
 						if (!result.Contains(innerClass))
 							result.Add(innerClass);
 					}

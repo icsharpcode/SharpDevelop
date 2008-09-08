@@ -451,9 +451,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			ArrayList ar = GetCompletionData(projectContent.Language, true);
 			if (resolvedClass != null) {
-				foreach (IClass baseClass in resolvedClass.ClassInheritanceTree) {
-					ar.AddRange(baseClass.InnerClasses);
-				}
+				ar.AddRange(resolvedClass.GetCompoundClass().GetAccessibleTypes(CallingClass));
 			}
 			return ar;
 		}
