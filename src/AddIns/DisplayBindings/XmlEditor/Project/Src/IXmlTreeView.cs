@@ -19,6 +19,11 @@ namespace ICSharpCode.XmlEditor
 		/// <param name="ex">The exception that occurred when the xml
 		/// was loaded.</param>
 		void ShowXmlIsNotWellFormedMessage(XmlException ex);
+	
+		/// <summary>
+		/// Displays an error message.
+		/// </summary>
+		void ShowErrorMessage(string message);
 		
 		/// <summary>
 		/// Gets or sets whether this view needs saving.

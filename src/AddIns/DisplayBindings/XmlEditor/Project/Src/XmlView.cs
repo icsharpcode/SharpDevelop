@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing.Printing;
 using System.IO;
+using System.Net;
 using System.Text;
 using System.Windows.Forms;
 using System.Xml;
@@ -1006,6 +1007,8 @@ namespace ICSharpCode.XmlEditor
 					return true;
 				} catch(XmlException ex) {
 					AddTask(xmlEditor.FileName, ex.Message, ex.LinePosition - 1, ex.LineNumber - 1, TaskType.Error);
+				} catch (WebException ex) {
+					AddTask(xmlEditor.FileName, ex.Message, 0, 0, TaskType.Error);
 				}
 				return false;
 			}

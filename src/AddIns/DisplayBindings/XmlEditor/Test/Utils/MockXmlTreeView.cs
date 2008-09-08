@@ -59,6 +59,10 @@ namespace XmlEditor.Tests.Utils
 			notWellFormedException = ex;
 		}
 		
+		public void ShowErrorMessage(string message)
+		{
+		}
+		
 		public bool IsDirty {
 			get {
 				return dirty;

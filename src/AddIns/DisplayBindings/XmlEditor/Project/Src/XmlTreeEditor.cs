@@ -7,8 +7,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Xml;
 
+using ICSharpCode.Core;
 using ICSharpCode.TextEditor.Gui.CompletionWindow;
 
 namespace ICSharpCode.XmlEditor
@@ -42,6 +44,9 @@ namespace ICSharpCode.XmlEditor
 				view.Document = document;
 			} catch (XmlException ex) {
 				view.ShowXmlIsNotWellFormedMessage(ex);
+			} catch (WebException ex) {
+				LoggingService.Debug(ex.ToString());
+				view.ShowErrorMessage(ex.Message);
 			}
 		}
 		
