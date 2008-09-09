@@ -176,13 +176,13 @@ namespace PythonBinding.Tests.Utils
 				
 		public XmlDoc XmlDoc {
 			get {
-				throw new NotImplementedException();
+				return null;
 			}
 		}
 		
 		public bool IsUpToDate {
 			get {
-				throw new NotImplementedException();
+				return true;
 			}
 		}
 		
@@ -214,19 +214,19 @@ namespace PythonBinding.Tests.Utils
 		
 		public object Project {
 			get {
-				throw new NotImplementedException();
+				return null;
 			}
 		}
 		
 		public SystemTypes SystemTypes {
 			get {
-				throw new NotImplementedException();
+				return new SystemTypes(this);
 			}
 		}
 		
 		public string GetXmlDocumentation(string memberTag)
 		{
-			throw new NotImplementedException();
+			return null;
 		}
 		
 		public void AddClassToNamespaceList(IClass addClass)
@@ -274,7 +274,7 @@ namespace PythonBinding.Tests.Utils
 		
 		public IClass GetClass(string typeName, int typeParameterCount, LanguageProperties language, bool lookInReferences)
 		{
-			throw new NotImplementedException();
+			return GetClass(typeName, typeParameterCount);
 		}
 		
 		public bool NamespaceExists(string name, LanguageProperties language, bool lookInReferences)

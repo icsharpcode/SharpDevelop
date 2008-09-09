@@ -191,7 +191,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 			bool supportsExtensionProperties = language.SupportsExtensionProperties;
 			if (supportsExtensionMethods || supportsExtensionProperties) {
 				ArrayList list = new ArrayList();
-				IMethod dummyMethod = new DefaultMethod("dummy", VoidReturnType.Instance, ModifierEnum.Static, DomRegion.Empty, DomRegion.Empty, callingClass);
+				IMethod dummyMethod = new DefaultMethod("dummy", callingClass.ProjectContent.SystemTypes.Void,
+				                                        ModifierEnum.Static, DomRegion.Empty, DomRegion.Empty, callingClass);
 				CtrlSpaceResolveHelper.AddContentsFromCalling(list, callingClass, dummyMethod);
 				CtrlSpaceResolveHelper.AddImportedNamespaceContents(list, callingClass.CompilationUnit, callingClass);
 				

@@ -653,7 +653,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 					case NullRTReferenceCode:
 						return null;
 					case VoidRTCode:
-						return VoidReturnType.Instance;
+						return new VoidReturnType(pc);
 					case PointerRTCode:
 						return new PointerReturnType(ReadType());
 					default:

@@ -69,7 +69,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 			if (type == null) {
 				LoggingService.Warn("CecilReader: Null type for: " + member);
-				return VoidReturnType.Instance;
+				return new VoidReturnType(pc);
 			}
 			if (type is ReferenceType) {
 				// TODO: Use ByRefRefReturnType

@@ -37,7 +37,7 @@ namespace PythonBinding.Tests.Resolver
 			ParseInformation parseInfo = new ParseInformation();
 			mockProjectContent = new MockProjectContent();
 			
-			systemConsoleClass = new MockClass("System.Console");
+			systemConsoleClass = new MockClass(mockProjectContent, "System.Console");
 			mockProjectContent.ClassToReturnFromGetClass = systemConsoleClass;
 			
 			compilationUnit = CreateCompilationUnit(mockProjectContent);

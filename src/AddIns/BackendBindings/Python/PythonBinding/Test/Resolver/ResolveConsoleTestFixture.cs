@@ -41,7 +41,7 @@ namespace PythonBinding.Tests.Resolver
 			// type is not fully qualified with its namespace.
 			mockProjectContent.ClassToReturnFromGetClass = null;
 			
-			systemConsoleClass = new MockClass("System.Console");
+			systemConsoleClass = new MockClass(mockProjectContent, "System.Console");
 			mockProjectContent.ClassesInProjectContent.Add(systemConsoleClass);
 			
 			compilationUnit = new DefaultCompilationUnit(mockProjectContent) { ErrorsDuringCompile = true };
@@ -56,7 +56,7 @@ namespace PythonBinding.Tests.Resolver
 			ExpressionResult expressionResult = new ExpressionResult("Console", new DomRegion(3, 7), null, null);
 			resolveResult = resolver.Resolve(expressionResult, parseInfo, python);
 		}
-				
+	
 		[Test]
 		public void IsTypeResolveResult()
 		{

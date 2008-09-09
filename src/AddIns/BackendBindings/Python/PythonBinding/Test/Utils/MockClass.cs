@@ -23,8 +23,8 @@ namespace PythonBinding.Tests.Utils
 		{
 		}
 		
-		public MockClass(string name)
-			: base(DefaultCompilationUnit.DummyCompilationUnit, name)
+		public MockClass(IProjectContent pc, string name)
+			: base(new DefaultCompilationUnit(pc), name)
 		{
 		}
 	}

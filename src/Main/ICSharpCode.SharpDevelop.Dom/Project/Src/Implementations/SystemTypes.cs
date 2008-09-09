@@ -12,7 +12,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 {
 	public class SystemTypes
 	{
-		public readonly IReturnType Void = VoidReturnType.Instance;
+		public readonly IReturnType Void;
 		public readonly IReturnType Object;
 		public readonly IReturnType Delegate;
 		public readonly IReturnType ValueType;
@@ -36,6 +36,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public SystemTypes(IProjectContent pc)
 		{
 			this.pc = pc;
+			Void      = new VoidReturnType(pc);
 			Object    = CreateFromName("System.Object");
 			Delegate  = CreateFromName("System.Delegate");
 			ValueType = CreateFromName("System.ValueType");
@@ -62,7 +63,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return c.DefaultReturnType;
 			} else {
 				LoggingService.Warn("SystemTypes.CreateFromName could not find " + name);
-				return VoidReturnType.Instance;
+				return Void;
 			}
 		}
 		
@@ -78,36 +79,39 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 	}
 	
-	internal sealed class VoidClass : DefaultClass
+	public sealed class VoidClass : DefaultClass
 	{
 		internal static readonly string VoidName = typeof(void).FullName;
-		public static readonly VoidClass Instance = new VoidClass();
 		
-		private VoidClass()
-			: base(DefaultCompilationUnit.DummyCompilationUnit, VoidName)
+		public VoidClass(IProjectContent pc)
+			: base(new DefaultCompilationUnit(pc), VoidName)
 		{
+			this.ClassType = ClassType.Struct;
 			this.Modifiers = ModifierEnum.Public | ModifierEnum.Sealed;
 			Freeze();
 		}
 		
 		protected override IReturnType CreateDefaultReturnType()
 		{
-			return VoidReturnType.Instance;
+			return ProjectContent.SystemTypes.Void;
 		}
 	}
 	
 	public sealed class VoidReturnType : AbstractReturnType
 	{
-		public static readonly VoidReturnType Instance = new VoidReturnType();
+		IProjectContent pc;
 		
-		private VoidReturnType()
+		public VoidReturnType(IProjectContent pc)
 		{
+			if (pc == null)
+				throw new ArgumentNullException("pc");
+			this.pc = pc;
 			FullyQualifiedName = VoidClass.VoidName;
 		}
 		
 		public override IClass GetUnderlyingClass()
 		{
-			return VoidClass.Instance;
+			return pc.GetClass("System.Void", 0, LanguageProperties.CSharp, true);
 		}
 		
 		public override List<IMethod> GetMethods()

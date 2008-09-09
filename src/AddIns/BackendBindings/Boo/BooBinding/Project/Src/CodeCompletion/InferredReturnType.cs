@@ -51,7 +51,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 						if (useLastStatementIfNoReturnStatement && v.lastExpressionStatement != null) {
 							cachedType = new BooResolver().GetTypeOfExpression(v.lastExpressionStatement.Expression, context);
 						} else {
-							cachedType = VoidReturnType.Instance;
+							cachedType = ParserService.CurrentProjectContent.SystemTypes.Void;
 						}
 					} else if (v.result is NullReturnType) {
 						cachedType = ConvertVisitor.GetDefaultReturnType(ParserService.CurrentProjectContent);
@@ -85,7 +85,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 			{
 				noReturnStatement = false;
 				if (node.Expression == null) {
-					result = VoidReturnType.Instance;
+					result = ParserService.CurrentProjectContent.SystemTypes.Void;
 				} else {
 					result = new BooResolver().GetTypeOfExpression(node.Expression, context);
 				}
