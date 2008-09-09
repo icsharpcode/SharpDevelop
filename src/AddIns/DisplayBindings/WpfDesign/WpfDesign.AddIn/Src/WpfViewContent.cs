@@ -152,16 +152,9 @@ namespace ICSharpCode.WpfDesign.AddIn
 			propertyContainer.PropertyGridReplacementControl = propertyEditorHost;
 		}
 		
-		ICollection<DesignItem> oldItems = new DesignItem[0];
-		
 		void OnSelectionChanged(object sender, DesignItemCollectionEventArgs e)
 		{
-			ISelectionService selectionService = designer.DesignContext.Services.Selection;
-			ICollection<DesignItem> items = selectionService.SelectedItems;
-			if (!IsCollectionWithSameElements(items, oldItems)) {
-				propertyGridView.PropertyGrid.SelectedItems = items;
-				oldItems = items;
-			}
+			propertyGridView.PropertyGrid.SelectedItems = DesignContext.Services.Selection.SelectedItems;
 		}
 		
 		static bool IsCollectionWithSameElements(ICollection<DesignItem> a, ICollection<DesignItem> b)

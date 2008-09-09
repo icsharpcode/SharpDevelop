@@ -146,7 +146,10 @@ namespace ICSharpCode.XamlDesigner
 
 		public XamlErrorService XamlErrorService {
 			get { 
-				return DesignContext.Services.GetService<XamlErrorService>();
+                if (DesignContext != null) {
+				    return DesignContext.Services.GetService<XamlErrorService>();
+                }
+                return null;
 			}
 		}
 

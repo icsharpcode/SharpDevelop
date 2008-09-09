@@ -180,6 +180,7 @@
     <Compile Include="Services\DragMoveMouseGesture.cs" />
     <Compile Include="Services\ErrorService.cs" />
     <Compile Include="Services\MouseGestureBase.cs" />
+    <Compile Include="Services\MoveLogic.cs" />
     <Compile Include="Services\OptionService.cs">
       <SubType>Code</SubType>
     </Compile>

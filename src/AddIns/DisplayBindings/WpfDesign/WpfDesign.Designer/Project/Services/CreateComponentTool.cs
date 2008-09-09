@@ -20,6 +20,9 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 	public class CreateComponentTool : ITool
 	{
 		readonly Type componentType;
+        MoveLogic moveLogic;
+		ChangeGroup changeGroup;
+		Point createPoint;
 		
 		/// <summary>
 		/// Creates a new CreateComponentTool instance.
@@ -45,16 +48,89 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 		public void Activate(IDesignPanel designPanel)
 		{
 			designPanel.MouseDown += OnMouseDown;
-			designPanel.DragOver += OnDragOver;
-			designPanel.Drop += OnDrop;
+			//designPanel.DragEnter += designPanel_DragOver;
+            designPanel.DragOver += designPanel_DragOver;
+            designPanel.Drop += designPanel_Drop;
+            designPanel.DragLeave += designPanel_DragLeave;
 		}
 		
 		public void Deactivate(IDesignPanel designPanel)
 		{
 			designPanel.MouseDown -= OnMouseDown;
-			designPanel.DragOver -= OnDragOver;
-			designPanel.Drop -= OnDrop;
+			//designPanel.DragEnter -= designPanel_DragOver;
+            designPanel.DragOver -= designPanel_DragOver;
+            designPanel.Drop -= designPanel_Drop;
+            designPanel.DragLeave -= designPanel_DragLeave;
 		}
+
+        void designPanel_DragOver(object sender, DragEventArgs e)
+        {
+			try {
+				IDesignPanel designPanel = (IDesignPanel)sender;
+				e.Effects = DragDropEffects.Copy;
+				e.Handled = true;
+				Point p = e.GetPosition(designPanel);
+
+				if (moveLogic == null) {
+					if (e.Data.GetData(typeof(CreateComponentTool)) != this) return;
+					// TODO: dropLayer in designPanel
+					designPanel.IsAdornerLayerHitTestVisible = false;
+					DesignPanelHitTestResult result = designPanel.HitTest(p, false, true);
+					
+					if (result.ModelHit != null) {
+						designPanel.Focus();
+						DesignItem createdItem = CreateItem(designPanel.Context);
+						if (AddItemWithDefaultSize(result.ModelHit, createdItem, e.GetPosition(result.ModelHit.View))) {
+							moveLogic = new MoveLogic(createdItem);
+							createPoint = p;
+						} else {
+							changeGroup.Abort();
+						}
+					}
+				} else if ((moveLogic.ClickedOn.View as FrameworkElement).IsLoaded) {
+					if (moveLogic.Operation == null) {
+					    moveLogic.Start(createPoint);
+					} else {
+					    moveLogic.Move(p);
+					}
+				}
+			} catch (Exception x) {
+				DragDropExceptionHandler.HandleException(x);
+			}
+        }
+
+        void designPanel_Drop(object sender, DragEventArgs e)
+        {
+			try {
+				if (moveLogic != null) {
+					moveLogic.Stop();
+					if (moveLogic.ClickedOn.Services.Tool.CurrentTool is CreateComponentTool) {
+						moveLogic.ClickedOn.Services.Tool.CurrentTool = moveLogic.ClickedOn.Services.Tool.PointerTool;
+					}
+					moveLogic.DesignPanel.IsAdornerLayerHitTestVisible = true;
+					moveLogic = null;
+					changeGroup.Commit();
+				}
+			} catch (Exception x) {
+				DragDropExceptionHandler.HandleException(x);
+			}
+        }
+
+        void designPanel_DragLeave(object sender, DragEventArgs e)
+        {
+			try {
+				if (moveLogic != null) {
+					moveLogic.Cancel();
+					moveLogic.ClickedOn.Services.Selection.SetSelectedComponents(null);
+					moveLogic.DesignPanel.IsAdornerLayerHitTestVisible = true;
+					moveLogic = null;
+					changeGroup.Abort();
+
+				}
+			} catch (Exception x) {
+				DragDropExceptionHandler.HandleException(x);
+			}
+        }
 		
 		/// <summary>
 		/// Is called to create the item used by the CreateComponentTool.
@@ -63,54 +139,18 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 		{
 			object newInstance = context.Services.ExtensionManager.CreateInstanceWithCustomInstanceFactory(componentType, null);
 			DesignItem item = context.Services.Component.RegisterComponentForDesigner(newInstance);
+			changeGroup = item.OpenGroup("Drop Control");
 			context.Services.ExtensionManager.ApplyDefaultInitializers(item);
 			return item;
 		}
 		
-		void OnDragOver(object sender, DragEventArgs e)
-		{
-			try {
-				if (e.Data.GetData(typeof(CreateComponentTool)) == this) {
-					e.Effects = DragDropEffects.Copy;
-					e.Handled = true;
-				} else {
-					e.Effects = DragDropEffects.None;
-				}
-			} catch (Exception ex) {
-				DragDropExceptionHandler.HandleException(ex);
-			}
-		}
-		
-		void OnDrop(object sender, DragEventArgs e)
-		{
-			try {
-				if (e.Data.GetData(typeof(CreateComponentTool)) != this)
-					return;
-				e.Handled = true;
-				
-				IDesignPanel designPanel = (IDesignPanel)sender;
-				DesignPanelHitTestResult result = designPanel.HitTest(e.GetPosition(designPanel), false, true);
-				if (result.ModelHit != null) {
-					designPanel.Focus();
-					
-					DesignItem createdItem = CreateItem(designPanel.Context);
-					AddItemWithDefaultSize(result.ModelHit, createdItem, e.GetPosition(result.ModelHit.View));
-				}
-				
-				if (designPanel.Context.Services.Tool.CurrentTool is CreateComponentTool) {
-					designPanel.Context.Services.Tool.CurrentTool = designPanel.Context.Services.Tool.PointerTool;
-				}
-			} catch (Exception ex) {
-				DragDropExceptionHandler.HandleException(ex);
-			}
-		}
-		
 		internal static bool AddItemWithDefaultSize(DesignItem container, DesignItem createdItem, Point position)
 		{
+			var size = ModelTools.GetDefaultSize(createdItem);
 			PlacementOperation operation = PlacementOperation.TryStartInsertNewComponents(
 				container,
 				new DesignItem[] { createdItem },
-				new Rect[] { new Rect(position, ModelTools.GetDefaultSize(createdItem)) },
+				new Rect[] { new Rect(position, size) },
 				PlacementType.AddItem
 			);
 			if (operation != null) {
