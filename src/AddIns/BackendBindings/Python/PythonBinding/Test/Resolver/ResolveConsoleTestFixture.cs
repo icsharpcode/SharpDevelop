@@ -44,9 +44,8 @@ namespace PythonBinding.Tests.Resolver
 			systemConsoleClass = new MockClass("System.Console");
 			mockProjectContent.ClassesInProjectContent.Add(systemConsoleClass);
 			
-			testClass = new MockClass("Test");
 			compilationUnit = new DefaultCompilationUnit(mockProjectContent) { ErrorsDuringCompile = true };
-			testClass.CompilationUnit = compilationUnit;
+			testClass = new MockClass(compilationUnit, "Test");
 			compilationUnit.Classes.Add(testClass);
 			parseInfo.SetCompilationUnit(compilationUnit);
 						

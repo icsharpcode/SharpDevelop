@@ -113,9 +113,8 @@ namespace PythonBinding.Tests.Resolver
 		/// </summary>
 		protected virtual ICompilationUnit CreateCompilationUnit(IProjectContent projectContent)
 		{
-			testClass = new MockClass("Test");
 			ICompilationUnit compilationUnit = new DefaultCompilationUnit(projectContent);
-			testClass.CompilationUnit = compilationUnit;
+			testClass = new MockClass(compilationUnit, "Test");
 			compilationUnit.Classes.Add(testClass);
 			return compilationUnit;
 		}
