@@ -7,7 +7,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.Parser;
 
@@ -95,8 +97,12 @@ namespace ICSharpCode.NRefactory
 					this.Specials = parser.Lexer.SpecialTracker.RetrieveSpecials();
 					this.SnippetType = SnippetType.TypeMembers;
 					result = new NodeListNode(members);
+					result.StartLocation = members[0].StartLocation;
+					result.EndLocation = members[members.Count - 1].EndLocation;
 				}
 			}
+			Debug.Assert(result is CompilationUnit || !result.StartLocation.IsEmpty);
+			Debug.Assert(result is CompilationUnit || !result.EndLocation.IsEmpty);
 			return result;
 		}
 		
@@ -118,15 +124,8 @@ namespace ICSharpCode.NRefactory
 				get { return nodes; }
 			}
 			
-			public Location StartLocation {
-				get { return Location.Empty; }
-				set { throw new NotSupportedException(); }
-			}
-			
-			public Location EndLocation {
-				get { return Location.Empty; }
-				set { throw new NotSupportedException(); }
-			}
+			public Location StartLocation { get; set; }
+			public Location EndLocation { get; set; }
 			
 			public object UserData { get; set; }
 			

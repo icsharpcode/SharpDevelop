@@ -62,9 +62,14 @@ namespace ICSharpCode.NRefactory.Parser.VB
 		public override Expression ParseExpression()
 		{
 			lexer.NextToken();
+			Location startLocation = la.Location;
 			Expression expr;
 			Expr(out expr);
 			while (la.kind == Tokens.EOL) lexer.NextToken();
+			if (expr != null) {
+				expr.StartLocation = startLocation;
+				expr.EndLocation = t.EndLocation;
+			}
 			Expect(Tokens.EOF);
 			return expr;
 		}
@@ -74,8 +79,16 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			lexer.NextToken();
 			compilationUnit = new CompilationUnit();
 			
+			Location startLocation = la.Location;
 			Statement st;
 			Block(out st);
+			if (st != null) {
+				st.StartLocation = startLocation;
+				if (t != null)
+					st.EndLocation = t.EndLocation;
+				else
+					st.EndLocation = la.Location;
+			}
 			Expect(Tokens.EOF);
 			return st as BlockStatement;
 		}

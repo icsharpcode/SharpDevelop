@@ -2697,7 +2697,7 @@ Block<out Statement stmt>
 	(.
 		BlockStatement blockStmt = new BlockStatement();
 		/* in snippet parsing mode, t might be null */
-		if (t != null) blockStmt.StartLocation = t.Location;
+		if (t != null) blockStmt.StartLocation = t.EndLocation;
 		compilationUnit.BlockStart(blockStmt);
 	.)
 	{	
