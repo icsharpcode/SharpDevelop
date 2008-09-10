@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.IO;
 using System.Windows.Forms;
 
@@ -168,7 +169,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		{
 			TreeNode selectedNode = ProjectBrowserPad.Instance.ProjectBrowserControl.SelectedNode;
 			DirectoryNode node = selectedNode as DirectoryNode;
-			if (node == null) {
+			if (node == null && selectedNode != null) {
 				node = selectedNode.Parent as DirectoryNode;
 			}
 			if (node == null) {
@@ -212,11 +213,12 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 					
 					string copiedFileName = Path.Combine(node.Directory, Path.GetFileName(fileNames[0].Key));
 					if (!FileUtility.IsEqualFileName(fileNames[0].Key, copiedFileName)) {
-						int res = MessageService.ShowCustomDialog(fdiag.Title, "${res:ProjectComponent.ContextMenu.AddExistingFiles.Question}",
-						                                          0, 2,
-						                                          "${res:ProjectComponent.ContextMenu.AddExistingFiles.Copy}",
-						                                          "${res:ProjectComponent.ContextMenu.AddExistingFiles.Link}",
-						                                          "${res:Global.CancelButtonText}");
+						int res = MessageService.ShowCustomDialog(
+							fdiag.Title, "${res:ProjectComponent.ContextMenu.AddExistingFiles.Question}",
+							0, 2,
+							"${res:ProjectComponent.ContextMenu.AddExistingFiles.Copy}",
+							"${res:ProjectComponent.ContextMenu.AddExistingFiles.Link}",
+							"${res:Global.CancelButtonText}");
 						if (res == 1) {
 							// Link
 							foreach (KeyValuePair<string, string> pair in fileNames) {
@@ -271,6 +273,65 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		}
 	}
 	
+	public class AddExistingFolderToProject : AbstractMenuCommand
+	{
+		public override void Run()
+		{
+			TreeNode selectedNode = ProjectBrowserPad.Instance.ProjectBrowserControl.SelectedNode;
+			DirectoryNode node = selectedNode as DirectoryNode;
+			if (node == null && selectedNode != null) {
+				node = selectedNode.Parent as DirectoryNode;
+			}
+			if (node == null) {
+				return;
+			}
+			node.Expanding();
+			node.Expand();
+			
+			using (FolderBrowserDialog dlg = new FolderBrowserDialog()) {
+				dlg.SelectedPath = node.Directory;
+				dlg.ShowNewFolderButton = false;
+				if (dlg.ShowDialog(WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
+					string folderName = dlg.SelectedPath;
+					string copiedFolderName = Path.Combine(node.Directory, Path.GetFileName(folderName));
+					if (!FileUtility.IsEqualFileName(folderName, copiedFolderName)) {
+						if (FileUtility.IsBaseDirectory(folderName, node.Directory)) {
+							MessageService.ShowError("Cannot copy " + folderName + " to " + copiedFolderName);
+							return;
+						}
+						if (Directory.Exists(copiedFolderName)) {
+							MessageService.ShowError("Cannot copy " + folderName + " to " + copiedFolderName + ": target already exists.");
+							return;
+						}
+						int res = MessageService.ShowCustomDialog(
+							"${res:ProjectComponent.ContextMenu.ExistingFolder}",
+							"${res:ProjectComponent.ContextMenu.ExistingFolder.CopyQuestion}",
+							0, 1,
+							"${res:ProjectComponent.ContextMenu.AddExistingFiles.Copy}",
+							"${res:Global.CancelButtonText}");
+						if (res != 0)
+							return;
+						if (!FileService.CopyFile(folderName, copiedFolderName, true, false))
+							return;
+					}
+					// ugly HACK to get IncludeDirectoryNode to work properly
+					AbstractProjectBrowserTreeNode.ShowAll = true;
+					try {
+						node.RecreateSubNodes();
+						DirectoryNode newNode = node.AllNodes.OfType<DirectoryNode>()
+							.FirstOrDefault(dir=>FileUtility.IsEqualFileName(copiedFolderName, dir.Directory));
+						if (newNode != null) {
+							newNode.Expanding();
+							IncludeFileInProject.IncludeDirectoryNode(newNode, true);
+						}
+					} finally {
+						AbstractProjectBrowserTreeNode.ShowAll = false;
+					}
+					node.RecreateSubNodes();
+				}
+			}
+		}
+	}
 	
 	/// <summary>
 	/// Menu item that display the NewFileDialog dialog and adds it to the solution.
@@ -291,7 +352,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			DirectoryNode node = ProjectBrowserPad.Instance.ProjectBrowserControl.SelectedDirectoryNode;
 			if (node == null) {
 				return null;
-			}	
+			}
 			node.Expand();
 			node.Expanding();
 			

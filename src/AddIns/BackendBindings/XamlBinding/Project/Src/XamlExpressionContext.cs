@@ -17,6 +17,8 @@ namespace XamlBinding
 	/// </summary>
 	public sealed class XamlExpressionContext : ExpressionContext
 	{
+		public static readonly XamlExpressionContext Empty = new XamlExpressionContext(new XmlElementPath(), null, false);
+		
 		public readonly XmlElementPath ElementPath;
 		public readonly string AttributeName;
 		public readonly bool InAttributeValue;
@@ -47,7 +49,7 @@ namespace XamlBinding
 				}
 				b.Append(ElementPath.Elements[i].Name);
 			}
-			if (!string.IsNullOrEmpty(AttributeName)) {
+			if (AttributeName != null) {
 				b.Append(" AttributeName=");
 				b.Append(AttributeName);
 				if (InAttributeValue) {

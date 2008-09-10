@@ -72,7 +72,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			public void ReportMessage(string message)
 			{
-				messageView.AppendLine(message);
+				messageView.AppendLine(ICSharpCode.Core.StringParser.Parse(message));
 			}
 			
 			public void Done(bool success)

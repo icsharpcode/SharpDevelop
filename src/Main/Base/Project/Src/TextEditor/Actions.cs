@@ -30,9 +30,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Actions
 		public override void Execute(TextArea textArea)
 		{
 			SharpDevelopTextAreaControl sdtac = (SharpDevelopTextAreaControl)textArea.MotherTextEditorControl;
-			CtrlSpaceCompletionDataProvider provider = new CtrlSpaceCompletionDataProvider();
-			provider.AllowCompleteExistingExpression = true;
-			sdtac.ShowCompletionWindow(provider, '\0');
+			sdtac.StartCtrlSpaceCompletion();
 		}
 	}
 	

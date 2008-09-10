@@ -19,59 +19,14 @@ namespace ICSharpCode.Build.Tasks
 {
 	public sealed class FxCop : ToolTask
 	{
-		string logFile;
 		string realLogFile;
-		string inputAssembly;
-		string[] rules;
-		string[] ruleAssemblies;
-		string[] referencePaths;
 		
-		#region Properties
-		public string LogFile {
-			get {
-				return logFile;
-			}
-			set {
-				logFile = value;
-			}
-		}
-		
-		public string InputAssembly {
-			get {
-				return inputAssembly;
-			}
-			set {
-				inputAssembly = value;
-			}
-		}
-		
-		public string[] Rules {
-			get {
-				return rules;
-			}
-			set {
-				rules = value;
-			}
-		}
-		
-		public string[] RuleAssemblies {
-			get {
-				return ruleAssemblies;
-			}
-			set {
-				ruleAssemblies = value;
-			}
-		}
-		
-		public string[] ReferencePaths {
-			get {
-				return referencePaths;
-			}
-			set {
-				referencePaths = value;
-			}
-		}
-		#endregion
+		public string LogFile { get; set; }
+		public string InputAssembly { get; set; }
+		public string[] Rules { get; set; }
+		public string[] RuleAssemblies { get; set; }
+		public string[] ReferencePaths { get; set;}
+		public ITaskItem[] Dictionary { get; set;}
 		
 		protected override string ToolName {
 			get {
@@ -91,7 +46,7 @@ namespace ICSharpCode.Build.Tasks
 					return false;
 				}
 			}
-			realLogFile = logFile ?? Path.GetTempFileName();
+			realLogFile = LogFile ?? Path.GetTempFileName();
 			try {
 				bool result = base.Execute();
 				if (File.Exists(realLogFile)) {
@@ -127,7 +82,7 @@ namespace ICSharpCode.Build.Tasks
 				}
 				return result;
 			} finally {
-				if (logFile == null) {
+				if (LogFile == null) {
 					File.Delete(realLogFile);
 				}
 			}
@@ -161,33 +116,45 @@ namespace ICSharpCode.Build.Tasks
 				
 				// Try to find additional information about this type
 				string memberName = null;
+				string typeName = null;
 				XmlNode parent = message.ParentNode;
 				while (parent != null) {
-					if (parent.Name == "Member" || parent.Name == "Type" || parent.Name == "Namespace") {
-						if (memberName == null)
-							memberName = ((XmlElement)parent).GetAttribute("Name");
-						else if (memberName.StartsWith(".ctor") || memberName.StartsWith(".cctor"))
-							memberName = ((XmlElement)parent).GetAttribute("Name") + ".#" + memberName.Substring(1);
-						else
-							memberName = ((XmlElement)parent).GetAttribute("Name") + "." + memberName;
+					if (parent.Name == "Type") {
+						if (typeName == null) {
+							typeName = ((XmlElement)parent).GetAttribute("Name");
+						} else {
+							typeName = ((XmlElement)parent).GetAttribute("Name") + "+" + typeName;
+						}
+					} else if (parent.Name == "Namespace" && typeName != null) {
+						typeName = ((XmlElement)parent).GetAttribute("Name") + "." + typeName;
+					} else if (parent.Name == "Member" && memberName == null) {
+						memberName = ((XmlElement)parent).GetAttribute("Name");
+						// first, strip the # inserted by FxCop
+						if (memberName.StartsWith("#"))
+							memberName = memberName.Substring(1);
+						// second, translate .ctor to #ctor
+						if (memberName.StartsWith(".ctor") || memberName.StartsWith(".cctor"))
+							memberName = "#" + memberName.Substring(1);
 					}
 					parent = parent.ParentNode;
 				}
 				if (issuePath.Length > 0 && issueLine.Length > 0 && issueFile.Length > 0) {
 					issueFullFile = Path.Combine(issuePath, issueFile);
 					issueLineNumber = int.Parse(issueLine, CultureInfo.InvariantCulture);
-				} else if (memberName != null) {
-					issueFullFile = "positionof#" + memberName;
+				} else if (typeName != null) {
+					issueFullFile = "positionof#" + typeName + "#" + memberName;
 				}
 				
+				string data = typeName + "|" + memberName;
+				
 				if (message.HasAttribute("Id")) {
-					memberName = memberName + "|" + message.GetAttribute("Id");
+					data = data + "|" + message.GetAttribute("Id");
 				}
 				
 				if (isWarning) {
-					Log.LogWarning(memberName, checkId, category, issueFullFile, issueLineNumber, 0, 0, 0, issueText);
+					Log.LogWarning(data, checkId, category, issueFullFile, issueLineNumber, 0, 0, 0, issueText);
 				} else {
-					Log.LogError(memberName, checkId, category, issueFullFile, issueLineNumber, 0, 0, 0, issueText);
+					Log.LogError(data, checkId, category, issueFullFile, issueLineNumber, 0, 0, 0, issueText);
 				}
 			}
 			return isWarning;
@@ -260,14 +227,14 @@ namespace ICSharpCode.Build.Tasks
 			
 			StringBuilder b = new StringBuilder();
 			AppendSwitch(b, "o", realLogFile);
-			AppendSwitch(b, "f", inputAssembly);
-			if (referencePaths != null) {
-				foreach (string path in referencePaths) {
+			AppendSwitch(b, "f", InputAssembly);
+			if (ReferencePaths != null) {
+				foreach (string path in ReferencePaths) {
 					AppendSwitch(b, "d", Path.GetDirectoryName(path));
 				}
 			}
-			if (ruleAssemblies != null) {
-				foreach (string asm in ruleAssemblies) {
+			if (RuleAssemblies != null) {
+				foreach (string asm in RuleAssemblies) {
 					if (asm.StartsWith("\\")) {
 						AppendSwitch(b, "r", ToolPath + asm);
 					} else {
@@ -275,9 +242,14 @@ namespace ICSharpCode.Build.Tasks
 					}
 				}
 			}
-			if (rules != null) {
-				foreach (string rule in rules) {
+			if (Rules != null) {
+				foreach (string rule in Rules) {
 					AppendSwitch(b, "ruleid", rule);
+				}
+			}
+			if (Dictionary != null) {
+				foreach (ITaskItem dic in Dictionary) {
+					AppendSwitch(b, "dic", dic.ItemSpec);
 				}
 			}
 			#if DEBUG

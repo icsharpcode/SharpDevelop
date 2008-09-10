@@ -117,6 +117,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return list;
 		}
 		
+		public override Nullable<bool> IsReferenceType {
+			get { return null; }
+		}
+		
 		public override string ToString()
 		{
 			return String.Format("[GenericReturnType: {0}]", typeParameter);

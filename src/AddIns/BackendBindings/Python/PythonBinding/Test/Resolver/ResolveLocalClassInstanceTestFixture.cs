@@ -36,10 +36,9 @@ namespace PythonBinding.Tests.Resolver
 		{
 			resolver = new PythonResolver();
 			
-			testClass = new MockClass("Test.Test1");
-
 			ParseInformation parseInfo = new ParseInformation();
 			mockProjectContent = new MockProjectContent();
+			testClass = new MockClass(mockProjectContent, "Test.Test1");
 			mockProjectContent.ClassesInProjectContent.Add(testClass);			
 			mockProjectContent.ClassToReturnFromGetClass = testClass;
 			mockProjectContent.ClassNameForGetClass = "Test.Test1";

@@ -275,9 +275,9 @@ namespace ClassDiagram
 			classTypeGroupCreators.Add(ClassType.Class, SetClassGroups);
 			classTypeGroupCreators.Add(ClassType.Interface, SetClassGroups);
 			classTypeGroupCreators.Add(ClassType.Struct, SetClassGroups);
+			classTypeGroupCreators.Add(ClassType.Module, SetClassGroups);
 			classTypeGroupCreators.Add(ClassType.Enum, SetEnumGroups);
 			classTypeGroupCreators.Add(ClassType.Delegate, SetDelegateGroups);
-			//classTypeGroupCreators[ClassType.Module] = SetClassGroups; //???
 		}
 		
 		private void InitTypeList()

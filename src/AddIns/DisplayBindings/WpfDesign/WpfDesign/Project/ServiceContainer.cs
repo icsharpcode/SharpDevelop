@@ -56,6 +56,7 @@ namespace ICSharpCode.WpfDesign
 		
 		/// <summary>
 		/// Gets the service object of the specified type.
+		/// Returns null when the service is not available.
 		/// </summary>
 		public object GetService(Type serviceType)
 		{
@@ -66,6 +67,7 @@ namespace ICSharpCode.WpfDesign
 		
 		/// <summary>
 		/// Gets the service object of the type T.
+		/// Returns null when the service is not available.
 		/// </summary>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
 		public T GetService<T>() where T : class
@@ -150,6 +152,16 @@ namespace ICSharpCode.WpfDesign
 		public Extensions.ExtensionManager ExtensionManager {
 			get {
 				return GetServiceOrThrowException<Extensions.ExtensionManager>();
+			}
+		}
+		
+		/// <summary>
+		/// Gets the <see cref="IDesignPanel"/>.
+		/// Throws an exception if the service is not found.
+		/// </summary>
+		public IDesignPanel DesignPanel {
+			get {
+				return GetServiceOrThrowException<IDesignPanel>();
 			}
 		}
 	}

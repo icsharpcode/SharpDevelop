@@ -47,7 +47,10 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 		
 		public bool Equals(XamlModelProperty other)
 		{
-			return this._designItem == other._designItem && this._property == other._property;
+			if (other == null)
+				return false;
+			else
+				return this._designItem == other._designItem && this._property == other._property;
 		}
 		
 		public override int GetHashCode()
@@ -107,7 +110,7 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			}
 		}
 		
-		// There may be multipley XamlModelProperty instances for the same property,
+		// There may be multiple XamlModelProperty instances for the same property,
 		// so this class may not have any mutable fields / events - instead,
 		// we forward all event handlers to the XamlProperty.
 		public override event EventHandler ValueChanged {
@@ -132,21 +135,17 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 		}
 
 		public override event EventHandler ValueOnInstanceChanged {
-			add { _property.ValueOnIstanceChanged += value; }
-			remove { _property.ValueOnIstanceChanged -= value; }
+			add { _property.ValueOnInstanceChanged += value; }
+			remove { _property.ValueOnInstanceChanged -= value; }
 		}
 		
 		public override object ValueOnInstance {
-			get {
-					return _property.ValueOnInstance;
-			}
+			get { return _property.ValueOnInstance; }
 			set { _property.ValueOnInstance = value; }
 		}
 		
 		public override bool IsSet {
-			get { if (_property.IsSet) {
-			}
-				return _property.IsSet; }
+			get { return _property.IsSet; }
 		}
 		
 		#if EventHandlerDebugging
@@ -203,8 +202,8 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 		}
 		
 		void SetValueInternal(XamlPropertyValue newValue)
-		{			
-			_property.PropertyValue = newValue;			
+		{
+			_property.PropertyValue = newValue;
 			_designItem.NotifyPropertyChanged(this);
 		}
 		
@@ -227,7 +226,7 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 		
 		public sealed class PropertyChangeAction : ITransactionItem
 		{
-			XamlModelProperty property;			
+			XamlModelProperty property;
 			XamlPropertyValue oldValue;
 			XamlPropertyValue newValue;
 			bool oldIsSet;
@@ -237,7 +236,7 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			{
 				this.property = property;
 				this.newValue = newValue;
-				this.newIsSet = newIsSet;				
+				this.newIsSet = newIsSet;
 				
 				oldIsSet = property._property.IsSet;
 				oldValue = property._property.PropertyValue;

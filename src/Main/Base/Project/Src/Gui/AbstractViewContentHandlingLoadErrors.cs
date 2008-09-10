@@ -90,11 +90,19 @@ namespace ICSharpCode.SharpDevelop.Gui
 				errorTextBox.IsReadOnly = true;
 				errorTextBox.Background = SystemColors.WindowBrush;
 			}
-			errorTextBox.Text = ex.ToString();
+			errorTextBox.Text = String.Concat(this.LoadErrorHeaderText, ex.ToString());
 			contentControl.SetContent(errorTextBox);
 		}
 		
 		Dictionary<OpenedFile, LoadError> errorList = new Dictionary<OpenedFile, LoadError>();
+		
+		/// <summary>
+		/// Gets a text to be shown above the exception when a load error occurs.
+		/// The default is an empty string.
+		/// </summary>
+		protected virtual string LoadErrorHeaderText {
+			get { return String.Empty; }
+		}
 		
 		public override sealed void Load(OpenedFile file, Stream stream)
 		{

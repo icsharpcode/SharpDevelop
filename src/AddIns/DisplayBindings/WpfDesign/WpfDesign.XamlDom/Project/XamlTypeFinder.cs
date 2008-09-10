@@ -85,7 +85,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				throw new ArgumentNullException("localName");
 			XamlNamespace ns;
 			if (!namespaces.TryGetValue(xmlNamespace, out ns)) {
-				if (xmlNamespace.StartsWith("clr-namespace:")) {
+				if (xmlNamespace.StartsWith("clr-namespace:", StringComparison.Ordinal)) {
 					ns = namespaces[xmlNamespace] = ParseNamespace(xmlNamespace);
 				} else {
 					return null;
@@ -116,7 +116,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		XamlNamespace ParseNamespace(string xmlNamespace)
 		{
 			string name = xmlNamespace;
-			Debug.Assert(name.StartsWith("clr-namespace:"));
+			Debug.Assert(name.StartsWith("clr-namespace:", StringComparison.Ordinal));
 			name = name.Substring("clr-namespace:".Length);
 			string namespaceName, assembly;
 			int pos = name.IndexOf(';');
@@ -126,7 +126,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			} else {
 				namespaceName = name.Substring(0, pos);
 				name = name.Substring(pos + 1).Trim();
-				if (!name.StartsWith("assembly=")) {
+				if (!name.StartsWith("assembly=", StringComparison.Ordinal)) {
 					throw new XamlLoadException("Expected: 'assembly='");
 				}
 				assembly = name.Substring("assembly=".Length);
@@ -227,7 +227,8 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		{
 			internal static readonly XamlTypeFinder Instance;
 			
-			[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
+			[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline",
+			                                                 Justification = "We're using an explicit constructor to get it's lazy-loading semantics.")]
 			static WpfTypeFinder()
 			{
 				Instance = new XamlTypeFinder();

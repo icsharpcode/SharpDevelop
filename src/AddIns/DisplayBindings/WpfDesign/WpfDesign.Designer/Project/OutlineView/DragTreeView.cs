@@ -12,10 +12,9 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Collections.Specialized;
-using ICSharpCode.XamlDesigner.Converters;
 using System.Collections;
 
-namespace ICSharpCode.XamlDesigner
+namespace ICSharpCode.WpfDesign.Designer.OutlineView
 {
 	// limitations:
 	// - Do not use ItemsSource (use Root)

@@ -16,18 +16,21 @@ namespace ICSharpCode.WpfDesign.PropertyGrid.Editors
 {
 	public partial class TextBoxEditor
 	{
+		/// <summary>
+		/// Creates a new TextBoxEditor instance.
+		/// </summary>
 		public TextBoxEditor()
 		{
 			InitializeComponent();
 		}
-
+		
+		/// <inheritdoc/>
 		protected override void OnKeyDown(KeyEventArgs e)
 		{
 			if (e.Key == Key.Enter) {
 				BindingOperations.GetBindingExpressionBase(this, TextProperty).UpdateSource();
 				SelectAll();
-			}
-			else if (e.Key == Key.Escape) {
+			} else if (e.Key == Key.Escape) {
 				BindingOperations.GetBindingExpression(this, TextProperty).UpdateTarget();
 			}
 		}

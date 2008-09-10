@@ -332,6 +332,14 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			return false;
 		}
 		
+		public void StartCtrlSpaceCompletion()
+		{
+			foreach (ICodeCompletionBinding ccBinding in CodeCompletionBindings) {
+				if (ccBinding.CtrlSpace(this))
+					return;
+			}
+		}
+		
 		internal bool ExpandTemplateOnTab()
 		{
 			string word = GetWordBeforeCaret();

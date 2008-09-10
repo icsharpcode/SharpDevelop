@@ -12,76 +12,67 @@ using System.Collections;
 
 namespace ICSharpCode.XamlDesigner
 {
-    static class ExtensionMethods
-    {
-        public static IEnumerable<string> Paths(this IDataObject data)
-        {
-            string[] paths = (string[])data.GetData(DataFormats.FileDrop);
-            if (paths != null) {
-                foreach (var path in paths) {
-                    yield return path;
-                }
-            }
-        }
+	static class ExtensionMethods
+	{
+		public static IEnumerable<string> Paths(this IDataObject data)
+		{
+			string[] paths = (string[])data.GetData(DataFormats.FileDrop);
+			if (paths != null) {
+				foreach (var path in paths) {
+					yield return path;
+				}
+			}
+		}
 
-        public static T GetObject<T>(this IDataObject data)
-        {
-            return (T)data.GetData(typeof(T).FullName);
-        }
-
-        public static T FindAncestor<T>(this DependencyObject d) where T : class
-        {
-            while (true) {
-                if (d == null) return null;
-                if (d is T) return d as T;
-                d = VisualTreeHelper.GetParent(d);
-            }
-        }
+		public static T GetObject<T>(this IDataObject data)
+		{
+			return (T)data.GetData(typeof(T).FullName);
+		}
 
 		public static Stream ToStream(this string s)
-        {
-            return new MemoryStream(Encoding.UTF8.GetBytes(s));
-        }
+		{
+			return new MemoryStream(Encoding.UTF8.GetBytes(s));
+		}
 
-        public static void AddRange<T>(this ObservableCollection<T> col, IEnumerable<T> items)
-        {
-            foreach (var item in items) {
-                col.Add(item);
-            }
-        }
+		public static void AddRange<T>(this ObservableCollection<T> col, IEnumerable<T> items)
+		{
+			foreach (var item in items) {
+				col.Add(item);
+			}
+		}
 
-        public static void KeepSyncronizedWith<S>(this IList target, ObservableCollection<S> source, Func<S, object> convert)
-        {
-            target.Clear();
-            foreach (var item in source) {
-                target.Add(convert(item));
-            }
+		public static void KeepSyncronizedWith<S>(this IList target, ObservableCollection<S> source, Func<S, object> convert)
+		{
+			target.Clear();
+			foreach (var item in source) {
+				target.Add(convert(item));
+			}
 
-            source.CollectionChanged += delegate(object sender, NotifyCollectionChangedEventArgs e) {
-                switch (e.Action) {
-                    case NotifyCollectionChangedAction.Add:
-                        target.Add(convert((S)e.NewItems[0]));
-                        break;
+			source.CollectionChanged += delegate(object sender, NotifyCollectionChangedEventArgs e) {
+				switch (e.Action) {
+					case NotifyCollectionChangedAction.Add:
+						target.Add(convert((S)e.NewItems[0]));
+						break;
 
-                    case NotifyCollectionChangedAction.Remove:
-                        target.RemoveAt(e.OldStartingIndex);
-                        break;
+					case NotifyCollectionChangedAction.Remove:
+						target.RemoveAt(e.OldStartingIndex);
+						break;
 
-                    case NotifyCollectionChangedAction.Move:
-                        target.RemoveAt(e.OldStartingIndex);
-                        target.Insert(e.NewStartingIndex, e.NewItems[0]);
-                        break;
+					case NotifyCollectionChangedAction.Move:
+						target.RemoveAt(e.OldStartingIndex);
+						target.Insert(e.NewStartingIndex, e.NewItems[0]);
+						break;
 
-                    case NotifyCollectionChangedAction.Replace:
-                        target[e.NewStartingIndex] = convert((S)e.NewItems[0]);
-                        break;
+					case NotifyCollectionChangedAction.Replace:
+						target[e.NewStartingIndex] = convert((S)e.NewItems[0]);
+						break;
 
-                    case NotifyCollectionChangedAction.Reset:
-                        target.Clear();
-                        break;
-                }
-            };
-        }
+					case NotifyCollectionChangedAction.Reset:
+						target.Clear();
+						break;
+				}
+			};
+		}
 
 		public static object GetDataContext(this RoutedEventArgs e)
 		{
@@ -89,5 +80,5 @@ namespace ICSharpCode.XamlDesigner
 			if (f != null) return f.DataContext;
 			return null;
 		}
-    }
+	}
 }

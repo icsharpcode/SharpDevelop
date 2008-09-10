@@ -36,4 +36,8 @@
 		        supportedextensions  = ".xaml"
 		        class = "XamlBinding.XamlParser"/>
 	</Path>
+	
+	<Path name = "/AddIns/DefaultTextEditor/CodeCompletion">
+		<CodeCompletionBinding id = "Xaml" extensions = ".xaml" class = "XamlBinding.XamlCodeCompletionBinding"/>
+	</Path>
 </AddIn>

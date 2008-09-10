@@ -5,13 +5,22 @@ using System.Text;
 
 namespace ICSharpCode.WpfDesign.XamlDom
 {
+	/// <summary>
+	/// Static class that can generate XAML markup extension code ("{Binding Path=...}").
+	/// </summary>
 	public static class MarkupExtensionPrinter
 	{
+		/// <summary>
+		/// Gets whether shorthand XAML markup extension code can be generated for the object.
+		/// </summary>
 		public static bool CanPrint(XamlObject obj)
 		{
 			return true;
 		}
-
+		
+		/// <summary>
+		/// Generates XAML markup extension code for the object.
+		/// </summary>
 		public static string Print(XamlObject obj)
 		{
 			StringBuilder sb = new StringBuilder();
@@ -22,9 +31,9 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			foreach (var property in obj.Properties) {
 				if (!property.IsSet) continue;
 
-				if (first) 
+				if (first)
 					sb.Append(" ");
-				else 
+				else
 					sb.Append(", ");
 				first = false;
 

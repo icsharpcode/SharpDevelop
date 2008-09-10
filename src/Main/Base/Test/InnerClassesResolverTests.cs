@@ -32,6 +32,56 @@ namespace ICSharpCode.SharpDevelop.Tests
 		{
 			return nrrt.ResolveVB<T>(program, expression, line);
 		}
+		
+		ArrayList CtrlSpace(string program, int line)
+		{
+			return nrrt.CtrlSpaceResolveCSharp(program, line, ExpressionContext.Default);
+		}
+		#endregion
+		
+		#region Ctrl-Space tests
+		[Test]
+		public void CtrlSpaceIncludesInnerClass()
+		{
+			string program = @"class A {
+		class Inner { }
+		
+	}";
+			Assert.IsTrue(IsInnerClassVisible(CtrlSpace(program, 3)));
+		}
+		
+		[Test]
+		public void CtrlSpaceIncludesInheritedInnerClass()
+		{
+			string program = @"class A : Outer {
+		
+	}
+	class Outer { protected class Inner { } }
+";
+			Assert.IsTrue(IsInnerClassVisible(CtrlSpace(program, 2)));
+		}
+		
+		[Test]
+		public void CtrlSpaceDoesNotIncludeInheritedPrivateInnerClass()
+		{
+			string program = @"class A : Outer {
+		
+	}
+	class Outer { class Inner { } }
+";
+			Assert.IsFalse(IsInnerClassVisible(CtrlSpace(program, 2)));
+		}
+		
+		[Test]
+		public void CtrlSpaceIncludesInnerClassFromOtherPart()
+		{
+			string program = @"partial class A {
+		
+	}
+	partial class A { class Inner { } }
+";
+			Assert.IsTrue(IsInnerClassVisible(CtrlSpace(program, 2)));
+		}
 		#endregion
 		
 		[Test]
@@ -202,7 +252,7 @@ class A {
 		public void InheritedInnerClass()
 		{
 			string program = @"class A {
-	class B { }
+	protected class B { }
 }
 class C : A {
 	void Main() {
@@ -280,5 +330,75 @@ public sealed class GL {
 			Assert.IsNotNull(c);
 			Assert.AreEqual("GL.Enums.BeginMode", c.FullyQualifiedName);
 		}
+		
+		[Test]
+		public void DoNotShowInaccessibleInnerClass()
+		{
+			string program = @"using System;
+class C {
+	
+}
+class Outer { private class Inner { } }
+";
+			TypeResolveResult trr = Resolve<TypeResolveResult>(program, "Outer", 3);
+			ArrayList l = trr.GetCompletionData(trr.ResolvedClass.ProjectContent);
+			Assert.IsFalse(IsInnerClassVisible(l));
+		}
+		
+		[Test]
+		public void ShowProtectedInnerClassFromDerivedClass()
+		{
+			string program = @"using System;
+class Derived : Outer {
+	
+}
+class Outer { protected class Inner {} }
+";
+			TypeResolveResult trr = Resolve<TypeResolveResult>(program, "Outer", 3);
+			ArrayList l = trr.GetCompletionData(trr.ResolvedClass.ProjectContent);
+			Assert.IsTrue(IsInnerClassVisible(l));
+		}
+		
+		[Test]
+		public void ShowProtectedInnerClassThroughForeignDerivedClass()
+		{
+			string program = @"using System;
+class Derived : Outer {
+	
+}
+class Derived2 : Outer { }
+class Outer { protected class Inner {} }
+";
+			TypeResolveResult trr = Resolve<TypeResolveResult>(program, "Derived2", 3);
+			ArrayList l = trr.GetCompletionData(trr.ResolvedClass.ProjectContent);
+			Assert.IsTrue(IsInnerClassVisible(l));
+		}
+		
+		[Test]
+		public void DoNotShowProtectedInnerClassThroughUnrelatedClass()
+		{
+			string program = @"using System;
+class Unrelated {
+	
+}
+class Derived : Outer { }
+class Outer { protected class Inner {} }
+";
+			TypeResolveResult trr = Resolve<TypeResolveResult>(program, "Derived", 3);
+			ArrayList l = trr.GetCompletionData(trr.ResolvedClass.ProjectContent);
+			Assert.IsFalse(IsInnerClassVisible(l));
+		}
+		
+		bool IsInnerClassVisible(ArrayList l)
+		{
+			foreach (object o in l) {
+				IClass c = o as IClass;
+				if (c != null && c.Name == "Inner")
+					return true;
+			}
+			return false;
+		}
+		
+		
 	}
 }

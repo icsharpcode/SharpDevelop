@@ -7,6 +7,8 @@
 
 using System;
 using ICSharpCode.SharpDevelop.Dom;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace XamlBinding
 {
@@ -30,6 +32,12 @@ namespace XamlBinding
 		
 		static IReturnType CreateClrNamespaceType(IProjectContent pc, string xmlNamespace, string className)
 		{
+			string namespaceName = GetNamespaceNameFromClrNamespace(xmlNamespace);
+			return new GetClassReturnType(pc, namespaceName + "." + className, 0);
+		}
+
+		static string GetNamespaceNameFromClrNamespace(string xmlNamespace)
+		{
 			string namespaceName = xmlNamespace.Substring("clr-namespace:".Length);
 			int pos = namespaceName.IndexOf(';');
 			if (pos >= 0) {
@@ -37,7 +45,7 @@ namespace XamlBinding
 				// can ignore the assembly part after the ;
 				namespaceName = namespaceName.Substring(0, pos);
 			}
-			return new GetClassReturnType(pc, namespaceName + "." + className, 0);
+			return namespaceName;
 		}
 		
 		public IReturnType FindType(string xmlNamespace, string className)
@@ -81,6 +89,38 @@ namespace XamlBinding
 				}
 			}
 			return null;
+		}
+		
+		public static ArrayList GetNamespaceMembers(IProjectContent pc, string xmlNamespace)
+		{
+			if (pc == null)
+				throw new ArgumentNullException("pc");
+			if (xmlNamespace == null)
+				return null;
+			if (xmlNamespace.StartsWith("clr-namespace:")) {
+				return pc.GetNamespaceContents(GetNamespaceNameFromClrNamespace(xmlNamespace));
+			} else {
+				ArrayList list = new ArrayList();
+				AddNamespaceMembersInAssembly(pc, xmlNamespace, list);
+				foreach (IProjectContent p in pc.ReferencedContents) {
+					AddNamespaceMembersInAssembly(p, xmlNamespace, list);
+				}
+				return list;
+			}
+		}
+		
+		static void AddNamespaceMembersInAssembly(IProjectContent projectContent, string xmlNamespace, ArrayList list)
+		{
+			foreach (IAttribute att in projectContent.GetAssemblyAttributes()) {
+				if (att.PositionalArguments.Count == 2
+				    && att.AttributeType.FullyQualifiedName == "System.Windows.Markup.XmlnsDefinitionAttribute")
+				{
+					string namespaceName = att.PositionalArguments[1] as string;
+					if (xmlNamespace.Equals(att.PositionalArguments[0]) && namespaceName != null) {
+						projectContent.AddNamespaceContents(list, namespaceName, projectContent.Language, false);
+					}
+				}
+			}
 		}
 	}
 }

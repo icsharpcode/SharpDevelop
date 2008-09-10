@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Ast;
@@ -366,7 +367,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			    && (parentIE == null || parentIE.TargetObject != identifierExpression))
 			{
 				ResolveResult rr = resolver.ResolveInternal(identifierExpression, ExpressionContext.Default);
-				if (rr is MethodGroupResolveResult) {
+				if (IsMethodGroup(rr)) {
 					ReplaceCurrentNode(new AddressOfExpression(identifierExpression));
 				}
 			}
@@ -385,12 +386,21 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			    && (parentIE == null || parentIE.TargetObject != fieldReferenceExpression))
 			{
 				ResolveResult rr = resolver.ResolveInternal(fieldReferenceExpression, ExpressionContext.Default);
-				if (rr is MethodGroupResolveResult) {
+				if (IsMethodGroup(rr)) {
 					ReplaceCurrentNode(new AddressOfExpression(fieldReferenceExpression));
 				}
 			}
 			
 			return null;
+		}
+		
+		static bool IsMethodGroup(ResolveResult rr)
+		{
+			MethodGroupResolveResult mgrr = rr as MethodGroupResolveResult;
+			if (mgrr != null) {
+				return mgrr.Methods.Any(g=>g.Count > 0);
+			}
+			return false;
 		}
 		
 		void HandleAssignmentStatement(AssignmentExpression assignmentExpression)

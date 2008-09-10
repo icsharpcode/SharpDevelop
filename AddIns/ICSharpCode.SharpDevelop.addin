@@ -292,17 +292,7 @@
 		
 		<Condition name="WriteableProject" action="Disable">
 			<MenuItem id = "ProjectAddMenu" label = "${res:ProjectComponent.ContextMenu.AddMenu}" type = "Menu" >
-				<MenuItem id    = "New Item"
-				          label = "${res:ProjectComponent.ContextMenu.NewItem}"
-				          icon  = "Icons.16x16.NewDocumentIcon"
-				          class = "ICSharpCode.SharpDevelop.Project.Commands.AddNewItemsToProject"/>
-				<MenuItem id    = "Existing Item"
-				          label = "${res:ProjectComponent.ContextMenu.ExistingItem}"
-				          class = "ICSharpCode.SharpDevelop.Project.Commands.AddExistingItemsToProject"/>
-				<MenuItem id    = "NewFolder"
-				          label = "${res:ProjectComponent.ContextMenu.NewFolder}"
-				          icon  = "Icons.16x16.NewFolderIcon"
-				          class = "ICSharpCode.SharpDevelop.Project.Commands.AddNewFolderToProject"/>
+				<Include path="/SharpDevelop/Pads/ProjectBrowser/ContextMenu/FolderNode/Add"/>
 			</MenuItem>
 			
 			<MenuItem id    = "AddReference"
@@ -404,17 +394,7 @@
 			
 			<Condition name = "Ownerstate" ownerstate = "InProject">
 				<MenuItem id = "Add" label = "${res:ProjectComponent.ContextMenu.AddMenu}" type="Menu">
-					<MenuItem id    = "New Item"
-					          label = "${res:ProjectComponent.ContextMenu.NewItem}"
-					          icon  = "Icons.16x16.NewDocumentIcon"
-					          class = "ICSharpCode.SharpDevelop.Project.Commands.AddNewItemsToProject"/>
-					<MenuItem id    = "Existing Item"
-					          label = "${res:ProjectComponent.ContextMenu.ExistingItem}"
-					          class = "ICSharpCode.SharpDevelop.Project.Commands.AddExistingItemsToProject"/>
-					<MenuItem id    = "NewFolder"
-					          label = "${res:ProjectComponent.ContextMenu.NewFolder}"
-					          icon  = "Icons.16x16.NewFolderIcon"
-					          class = "ICSharpCode.SharpDevelop.Project.Commands.AddNewFolderToProject"/>
+					<Include path="/SharpDevelop/Pads/ProjectBrowser/ContextMenu/FolderNode/Add"/>
 					<MenuItem id    = "AddDependentSeparator"
 					          type  = "Separator" />
 					<MenuItem id    = "NewDependentItem"
@@ -570,6 +550,9 @@
 				          label = "${res:ProjectComponent.ContextMenu.NewFolder}"
 				          icon  = "Icons.16x16.NewFolderIcon"
 				          class = "ICSharpCode.SharpDevelop.Project.Commands.AddNewFolderToProject"/>
+				<MenuItem id    = "ExistingFolder"
+				          label = "${res:ProjectComponent.ContextMenu.ExistingFolder}"
+				          class = "ICSharpCode.SharpDevelop.Project.Commands.AddExistingFolderToProject"/>
 			</MenuItem>
 			<MenuItem id = "AddSeparator" type = "Separator"  />
 			
@@ -1373,17 +1356,7 @@
 		<Condition name = "ProjectActive" activeproject="*">
 			<MenuItem id = "Project" label = "${res:XML.MainMenu.ProjectMenu}" type="Menu">
 				<MenuItem id = "ProjectAddMenu" label = "${res:ProjectComponent.ContextMenu.AddMenu}" type = "Menu" >
-					<MenuItem id    = "New Item"
-					          label = "${res:ProjectComponent.ContextMenu.NewItem}"
-					          icon  = "Icons.16x16.NewDocumentIcon"
-					          class = "ICSharpCode.SharpDevelop.Project.Commands.AddNewItemsToProject"/>
-					<MenuItem id    = "Existing Item"
-					          label = "${res:ProjectComponent.ContextMenu.ExistingItem}"
-					          class = "ICSharpCode.SharpDevelop.Project.Commands.AddExistingItemsToProject"/>
-					<MenuItem id    = "NewFolder"
-					          label = "${res:ProjectComponent.ContextMenu.NewFolder}"
-					          icon  = "Icons.16x16.NewFolderIcon"
-					          class = "ICSharpCode.SharpDevelop.Project.Commands.AddNewFolderToProject"/>
+					<Include path="/SharpDevelop/Pads/ProjectBrowser/ContextMenu/FolderNode/Add"/>
 				</MenuItem>
 				<MenuItem id    = "AddReference"
 				          label = "${res:ProjectComponent.ContextMenu.AddReference}"

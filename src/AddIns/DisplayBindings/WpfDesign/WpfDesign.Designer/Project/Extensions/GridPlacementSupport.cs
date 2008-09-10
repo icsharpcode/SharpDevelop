@@ -37,9 +37,9 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		//{
 		//    FrameworkElement obj = child.Component as FrameworkElement;
 		//    if (obj == null) return new Rect();
-			
+		
 		//    Thickness margin = obj.Margin;
-			
+		
 		//    double left, width, right;
 		//    switch (obj.HorizontalAlignment) {
 		//        case HorizontalAlignment.Stretch:
@@ -62,7 +62,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		//        default:
 		//            throw new NotSupportedException();
 		//    }
-			
+		
 		//    double top, height, bottom;
 		//    switch (obj.VerticalAlignment) {
 		//        case VerticalAlignment.Stretch:
@@ -199,6 +199,14 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			}
 		}
 		
+		GrayOutDesignerExceptActiveArea grayOut;
+		
+		public override void EndPlacement(PlacementOperation operation)
+		{
+			GrayOutDesignerExceptActiveArea.Stop(ref grayOut);
+			base.EndPlacement(operation);
+		}
+		
 		public override void SetPosition(PlacementInformation info)
 		{
 			base.SetPosition(info);
@@ -219,6 +227,11 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 					new Point(GetColumnOffset(leftColumnIndex), GetRowOffset(topRowIndex)),
 					new Point(GetColumnOffset(rightColumnIndex + 1), GetRowOffset(bottomRowIndex + 1))
 				);
+				if (grayOut != null) {
+					grayOut.AnimateActiveAreaRectTo(availableSpaceRect);
+				} else {
+					GrayOutDesignerExceptActiveArea.Start(ref grayOut, this.Services, this.ExtendedItem.View, availableSpaceRect);
+				}
 				
 				HorizontalAlignment ha = (HorizontalAlignment)info.Item.Properties[FrameworkElement.HorizontalAlignmentProperty].ValueOnInstance;
 				VerticalAlignment va = (VerticalAlignment)info.Item.Properties[FrameworkElement.VerticalAlignmentProperty].ValueOnInstance;

@@ -16,8 +16,14 @@ using System.Windows.Markup;
 
 namespace ICSharpCode.WpfDesign.XamlDom
 {
+	/// <summary>
+	/// Static class containing helper methods to work with collections (like the XamlParser does)
+	/// </summary>
 	public static class CollectionSupport
 	{
+		/// <summary>
+		/// Gets if the type is considered a collection in XAML.
+		/// </summary>
 		public static bool IsCollectionType(Type type)
 		{
 			return typeof(IList).IsAssignableFrom(type)
@@ -26,6 +32,10 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				|| typeof(ResourceDictionary).IsAssignableFrom(type);
 		}		
 
+		/// <summary>
+		/// Gets if the collection type <paramref name="col"/> can accepts items of type
+		/// <paramref name="item"/>.
+		/// </summary>
 		public static bool CanCollectionAdd(Type col, Type item)
 		{
 			var e = col.GetInterface("IEnumerable`1");
@@ -36,6 +46,9 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			return true;
 		}
 
+		/// <summary>
+		/// Gets if the collection type <paramref name="col"/> can accept the specified items.
+		/// </summary>
 		public static bool CanCollectionAdd(Type col, IEnumerable items)
 		{
 			foreach (var item in items) {
@@ -44,6 +57,9 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			return true;
 		}
 		
+		/// <summary>
+		/// Adds a value to the end of a collection.
+		/// </summary>
 		public static void AddToCollection(Type collectionType, object collectionInstance, XamlPropertyValue newElement)
 		{
 			IAddChild addChild = collectionInstance as IAddChild;
@@ -70,6 +86,9 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			}
 		}
 		
+			/// <summary>
+		/// Adds a value at the specified index in the collection.
+		/// </summary>
 		public static void Insert(Type collectionType, object collectionInstance, XamlPropertyValue newElement, int index)
 		{
 			collectionType.InvokeMember(
@@ -81,6 +100,10 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		
 		static readonly Type[] RemoveAtParameters = { typeof(int) };
 		
+		/// <summary>
+		/// Removes the item at the specified index of the collection.
+		/// </summary>
+		/// <returns>True if the removal succeeded, false if the collection type does not support RemoveAt.</returns>
 		public static bool RemoveItemAt(Type collectionType, object collectionInstance, int index)
 		{
 			MethodInfo m = collectionType.GetMethod("RemoveAt", RemoveAtParameters);
@@ -92,6 +115,9 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			}
 		}
 		
+		/// <summary>
+		/// Removes an item instance from the specified collection.
+		/// </summary>
 		public static void RemoveItem(Type collectionType, object collectionInstance, object item)
 		{
 			collectionType.InvokeMember(

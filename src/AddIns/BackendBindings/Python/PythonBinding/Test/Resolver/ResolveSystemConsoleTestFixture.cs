@@ -37,7 +37,7 @@ namespace PythonBinding.Tests.Resolver
 			ParseInformation parseInfo = new ParseInformation();
 			mockProjectContent = new MockProjectContent();
 			
-			systemConsoleClass = new MockClass("System.Console");
+			systemConsoleClass = new MockClass(mockProjectContent, "System.Console");
 			mockProjectContent.ClassToReturnFromGetClass = systemConsoleClass;
 			
 			compilationUnit = CreateCompilationUnit(mockProjectContent);
@@ -113,9 +113,8 @@ namespace PythonBinding.Tests.Resolver
 		/// </summary>
 		protected virtual ICompilationUnit CreateCompilationUnit(IProjectContent projectContent)
 		{
-			testClass = new MockClass("Test");
 			ICompilationUnit compilationUnit = new DefaultCompilationUnit(projectContent);
-			testClass.CompilationUnit = compilationUnit;
+			testClass = new MockClass(compilationUnit, "Test");
 			compilationUnit.Classes.Add(testClass);
 			return compilationUnit;
 		}

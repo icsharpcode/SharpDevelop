@@ -19,22 +19,9 @@ using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.Visitors;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.TextEditor;
 
 namespace ICSharpCode.FormsDesigner
 {
-	public class DefaultMemberRelationshipService : MemberRelationshipService
-	{
-		public override bool SupportsRelationship(MemberRelationship source, MemberRelationship relationship)
-		{
-			return true;
-		}
-		protected override MemberRelationship GetRelationship(MemberRelationship source)
-		{
-			return base.GetRelationship(source);
-		}
-	}
-	
 	public class NRefactoryDesignerLoader : AbstractCodeDomDesignerLoader
 	{
 		SupportedLanguage    language;

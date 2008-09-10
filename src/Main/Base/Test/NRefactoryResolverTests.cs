@@ -457,7 +457,8 @@ class A {
 ";
 			ResolveResult result = Resolve(program, "TestMethod()", 4);
 			Assert.IsNotNull(result);
-			Assert.AreSame(VoidReturnType.Instance, result.ResolvedType, result.ResolvedType.ToString());
+			Assert.AreEqual(result.CallingClass.ProjectContent.SystemTypes.Void,
+			                result.ResolvedType, result.ResolvedType.ToString());
 			Assert.AreEqual(0, result.GetCompletionData(lastPC).Count);
 		}
 		
@@ -950,7 +951,7 @@ namespace Root.Child {
 			Assert.AreEqual("Root.Alpha", result.ResolvedType.FullyQualifiedName);
 		}
 		
-		ArrayList CtrlSpaceResolveCSharp(string program, int line, ExpressionContext context)
+		public ArrayList CtrlSpaceResolveCSharp(string program, int line, ExpressionContext context)
 		{
 			ParseInformation parseInfo = AddCompilationUnit(Parse("a.cs", program), "a.cs");
 			

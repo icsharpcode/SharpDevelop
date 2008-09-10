@@ -1,6 +1,8 @@
 ﻿using System;
 using NUnit.Framework;
 using System.Windows.Markup;
+using ICSharpCode.WpfDesign.XamlDom;
+using System.IO;
 
 namespace ICSharpCode.WpfDesign.Tests.XamlDom
 {
@@ -64,6 +66,21 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
 		{
 			TestMarkupExtension("Content=\"{x:Static t:MyStaticClass.StaticString}\"");
 		}
+
+//        [Test]
+//        public void Test10()
+//        {
+//            var s =			
+//@"<Window
+//	xmlns='http://schemas.microsoft.com/netfx/2007/xaml/presentation'
+//	xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'
+//	Content='{Binding}'";
+//            var doc = XamlParser.Parse(new StringReader(s));
+//            var binding = doc.RootElement.FindOrCreateProperty("Content").PropertyValue as XamlObject;
+//            binding.FindOrCreateProperty("ElementName").PropertyValue = doc.CreatePropertyValue("name1", null);
+//            Assert.AreEqual(binding.XmlAttribute.Value, "{Binding ElementName=name1}");
+
+//        }
 
 		static void TestMarkupExtension(string s)
 		{

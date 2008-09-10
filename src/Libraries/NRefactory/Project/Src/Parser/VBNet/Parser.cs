@@ -2533,7 +2533,7 @@ out Statement stmt) {
 #line  2698 "VBNET.ATG" 
 		BlockStatement blockStmt = new BlockStatement();
 		/* in snippet parsing mode, t might be null */
-		if (t != null) blockStmt.StartLocation = t.Location;
+		if (t != null) blockStmt.StartLocation = t.EndLocation;
 		compilationUnit.BlockStart(blockStmt);
 		
 		while (StartOf(22) || 

@@ -221,6 +221,29 @@ namespace ICSharpCode.WpfDesign
 				return placementDisabled.Contains(type);
 			}
 		}
+
+        static Dictionary<Type, Size> defaultSizes = new Dictionary<Type, Size>();
+
+        public static void AddDefaultSize(Type t, Size s)
+        {
+            lock (defaultSizes) {
+                defaultSizes[t] = s;
+            }
+        }
+
+        public static Size GetDefaultSize(Type t)
+        {
+            Size s;
+            lock (defaultSizes) {
+                while (t != null) {
+                    if (defaultSizes.TryGetValue(t, out s)) {
+                        return s;
+                    }
+                    t = t.BaseType;
+                }
+            }
+            return new Size(double.NaN, double.NaN);
+        }
 	}
 
 	public class NumberRange

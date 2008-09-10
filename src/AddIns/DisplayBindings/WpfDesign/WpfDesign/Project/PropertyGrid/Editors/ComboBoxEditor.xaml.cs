@@ -19,11 +19,15 @@ namespace ICSharpCode.WpfDesign.PropertyGrid.Editors
 	[TypeEditor(typeof(Enum))]
 	public partial class ComboBoxEditor
 	{
+		/// <summary>
+		/// Create a new ComboBoxEditor instance.
+		/// </summary>
 		public ComboBoxEditor()
 		{
 			InitializeComponent();
 		}
 
+		/// <inheritdoc/>
 		public override void OnApplyTemplate()
 		{
 			base.OnApplyTemplate();

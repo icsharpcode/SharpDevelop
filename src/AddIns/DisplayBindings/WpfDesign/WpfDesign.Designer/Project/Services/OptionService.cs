@@ -17,6 +17,6 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 		/// <summary>
 		/// Gets/Sets whether the design surface should be grayed out while dragging/selection.
 		/// </summary>
-		public bool GrayOutDesignSurfaceExceptParentContainerWhenDragging = false;
+		public bool GrayOutDesignSurfaceExceptParentContainerWhenDragging = true;
 	}
 }

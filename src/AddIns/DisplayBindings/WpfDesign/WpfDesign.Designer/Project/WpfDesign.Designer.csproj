@@ -97,7 +97,8 @@
     <Compile Include="Extensions\CanvasPlacementSupport.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Extensions\ContentControlDefaultInitializer.cs" />
+    <Compile Include="Extensions\BorderForInvisibleControl.cs" />
+    <Compile Include="Extensions\Initializers.cs" />
     <Compile Include="Extensions\DefaultPlacementBehavior.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -116,6 +117,17 @@
     <Compile Include="Extensions\ResizeThumbExtension.cs" />
     <Compile Include="Extensions\WindowResizeBehavior.cs" />
     <Compile Include="BasicMetadata.cs" />
+    <Compile Include="OutlineView\DragListener.cs" />
+    <Compile Include="OutlineView\DragTreeView.cs" />
+    <Compile Include="OutlineView\DragTreeViewItem.cs" />
+    <Compile Include="OutlineView\IconItem.cs" />
+    <Compile Include="OutlineView\Outline.xaml.cs">
+      <DependentUpon>Outline.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="OutlineView\OutlineNode.cs">
+    </Compile>
+    <Compile Include="OutlineView\OutlineTreeView.cs" />
     <Compile Include="PropertyGrid\Editors\BoolEditor.xaml.cs">
       <DependentUpon>BoolEditor.xaml</DependentUpon>
     </Compile>
@@ -168,6 +180,7 @@
     <Compile Include="Services\DragMoveMouseGesture.cs" />
     <Compile Include="Services\ErrorService.cs" />
     <Compile Include="Services\MouseGestureBase.cs" />
+    <Compile Include="Services\MoveLogic.cs" />
     <Compile Include="Services\OptionService.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -186,6 +199,7 @@
     <Compile Include="Xaml\XamlDesignItem.cs" />
     <Compile Include="Xaml\XamlModelProperty.cs" />
     <Compile Include="Xaml\XamlModelPropertyCollection.cs" />
+    <Resource Include="Images\Tag.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\WpfDesign.XamlDom\Project\WpfDesign.XamlDom.csproj">
@@ -212,6 +226,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="OutlineView\Outline.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="OutlineView\OutlineView.xaml" />
     <Page Include="PropertyGrid\Editors\BoolEditor.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

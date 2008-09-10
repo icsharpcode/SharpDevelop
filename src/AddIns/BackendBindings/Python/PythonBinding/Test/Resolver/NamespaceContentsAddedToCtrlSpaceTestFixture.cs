@@ -35,7 +35,7 @@ namespace PythonBinding.Tests.Resolver
 			ParseInformation parseInfo = new ParseInformation();
 			mockProjectContent = new MockProjectContent();
 			mockProjectContent.NamespacesToAdd.Add("Test");
-			myTestClass = new MockClass("MyTestClass");
+			myTestClass = new MockClass(mockProjectContent, "MyTestClass");
 			mockProjectContent.NamespaceContentsToReturn.Add(myTestClass);
 
 			DefaultCompilationUnit cu = new DefaultCompilationUnit(mockProjectContent) { ErrorsDuringCompile = true };

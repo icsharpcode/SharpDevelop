@@ -73,7 +73,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 		protected override IClass GetClass(Type type)
 		{
 			IProjectContent pc = CecilReader.LoadAssembly(type.Assembly.Location, ParserService.DefaultProjectContentRegistry);
-			IClass c = (IClass)pc.GetElement(type.FullName);
+			IClass c = pc.GetClassByReflectionName(type.FullName, false);
 			Assert.IsNotNull(c);
 			return c;
 		}
@@ -191,7 +191,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 		{
 			IClass c = pc.GetClass("System.Void", 0);
 			Assert.IsNotNull(c, "System.Void not found");
-			Assert.AreSame(c.DefaultReturnType, VoidReturnType.Instance, "VoidReturnType.Instance is c.DefaultReturnType");
+			Assert.AreSame(c.DefaultReturnType, pc.SystemTypes.Void, "pc.SystemTypes.Void is c.DefaultReturnType");
 		}
 		
 		public class TestClass<A, B> where A : B {

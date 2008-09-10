@@ -5,22 +5,23 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.WpfDesign.Designer.OutlineView;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Text;
 using System.Windows.Markup;
 using System.Xml;
-
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.WpfDesign.Designer;
+using ICSharpCode.WpfDesign.Designer.PropertyGrid;
 using ICSharpCode.WpfDesign.Designer.Services;
 using ICSharpCode.WpfDesign.Designer.Xaml;
 using ICSharpCode.WpfDesign.PropertyGrid;
-using ICSharpCode.WpfDesign.Designer.PropertyGrid;
-using System.IO;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
+using System.Windows.Input;
 
 namespace ICSharpCode.WpfDesign.AddIn
 {
@@ -28,22 +29,22 @@ namespace ICSharpCode.WpfDesign.AddIn
 	/// IViewContent implementation that hosts the WPF designer.
 	/// </summary>
 	public class WpfViewContent : AbstractViewContentHandlingLoadErrors, IHasPropertyContainer, IToolsHost
-	{		
+	{
 		public WpfViewContent(OpenedFile file) : base(file)
 		{
 			BasicMetadata.Register();
-
+			
 			this.TabPageText = "${res:FormsDesigner.DesignTabPages.DesignTabPage}";
 			this.IsActiveViewContentChanged += OnIsActiveViewContentChanged;
 			this.editor = file.RegisteredViewContents[0] as TextEditorDisplayBindingWrapper;
 		}
-
+		
 		DesignSurface designer;
 		List<Task> tasks = new List<Task>();
-
+		
 		// save text from editor when designer cannot be saved (e.g. invalid xml)
-		TextEditorDisplayBindingWrapper editor;		
-
+		TextEditorDisplayBindingWrapper editor;
+		
 		public DesignSurface DesignSurface {
 			get { return designer; }
 		}
@@ -55,13 +56,16 @@ namespace ICSharpCode.WpfDesign.AddIn
 		protected override void LoadInternal(OpenedFile file, System.IO.Stream stream)
 		{
 			Debug.Assert(file == this.PrimaryFile);
-
+			
 			if (designer == null) {
 				// initialize designer on first load
 				DragDropExceptionHandler.HandleException = ICSharpCode.Core.MessageService.ShowError;
 				designer = new DesignSurface();
 				this.UserContent = designer;
 				InitPropertyEditor();
+			}
+			if (outline != null) {
+				outline.Root = null;
 			}
 			using (XmlTextReader r = new XmlTextReader(stream)) {
 				XamlLoadSettings settings = new XamlLoadSettings();
@@ -77,9 +81,13 @@ namespace ICSharpCode.WpfDesign.AddIn
 				settings.TypeFinder = MyTypeFinder.Create(this.PrimaryFile);
 				
 				designer.LoadDesigner(r, settings);
-
+				
 				UpdateTasks();
-
+				
+				if (outline != null && designer.DesignContext != null && designer.DesignContext.RootItem != null) {
+					outline.Root = OutlineNode.Create(designer.DesignContext.RootItem);
+				}
+				
 				propertyGridView.PropertyGrid.SelectedItems = null;
 				designer.DesignContext.Services.Selection.SelectionChanged += OnSelectionChanged;
 				designer.DesignContext.Services.GetService<UndoService>().UndoStackChanged += OnUndoStackChanged;
@@ -101,20 +109,20 @@ namespace ICSharpCode.WpfDesign.AddIn
 				editor.Save(file, stream);
 			}
 		}
-
+		
 		public override bool SupportsSwitchFromThisWithoutSaveLoad(OpenedFile file, IViewContent newView)
 		{
 			return newView == editor && !designer.DesignContext.CanSave;
 		}
-
+		
 		void UpdateTasks()
 		{
 			foreach (var task in tasks) {
 				TaskService.Remove(task);
 			}
-
+			
 			tasks.Clear();
-
+			
 			var xamlErrorService = designer.DesignContext.Services.GetService<XamlErrorService>();
 			foreach (var error in xamlErrorService.Errors) {
 				var task = new Task(PrimaryFile.FileName, error.Message, error.Column - 1, error.Line - 1, TaskType.Error);
@@ -138,17 +146,10 @@ namespace ICSharpCode.WpfDesign.AddIn
 			propertyContainer.PropertyGridReplacementContent = propertyGridView;
 		}
 		
-		ICollection<DesignItem> oldItems = new DesignItem[0];
-		
 		void OnSelectionChanged(object sender, DesignItemCollectionEventArgs e)
 		{
-			ISelectionService selectionService = designer.DesignContext.Services.Selection;
-			ICollection<DesignItem> items = selectionService.SelectedItems;
-			if (!IsCollectionWithSameElements(items, oldItems)) {
-				propertyGridView.PropertyGrid.SelectedItems = items;
-				oldItems = items;
+			propertyGridView.PropertyGrid.SelectedItems = DesignContext.Services.Selection.SelectedItems;
 			}
-		}
 		
 		static bool IsCollectionWithSameElements(ICollection<DesignItem> a, ICollection<DesignItem> b)
 		{
@@ -187,6 +188,23 @@ namespace ICSharpCode.WpfDesign.AddIn
 				if (designer != null && designer.DesignContext != null) {
 					WpfToolbox.Instance.ToolService = designer.DesignContext.Services.Tool;
 				}
+			}
+		}
+		
+		Outline outline;
+		
+		public Outline Outline {
+			get {
+				if (outline == null) {
+					outline = new Outline();
+					if (DesignSurface != null && DesignSurface.DesignContext != null && DesignSurface.DesignContext.RootItem != null) {
+						outline.Root = OutlineNode.Create(DesignSurface.DesignContext.RootItem);
+	}
+                    // see 3522
+                    outline.AddCommandHandler(ApplicationCommands.Delete, 
+                        () => ApplicationCommands.Delete.Execute(null, designer));
+				}
+				return outline;
 			}
 		}
 	}

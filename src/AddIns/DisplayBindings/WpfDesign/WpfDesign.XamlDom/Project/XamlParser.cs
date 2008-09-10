@@ -53,7 +53,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		/// </summary>
 		public static XamlDocument Parse(Stream stream, XamlParserSettings settings)
 		{
-			if (stream == null)	
+			if (stream == null)
 				throw new ArgumentNullException("stream");
 			return Parse(XmlReader.Create(stream), settings);
 		}
@@ -63,7 +63,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		/// </summary>
 		public static XamlDocument Parse(TextReader reader, XamlParserSettings settings)
 		{
-			if (reader == null) 
+			if (reader == null)
 				throw new ArgumentNullException("reader");
 			return Parse(XmlReader.Create(reader), settings);
 		}
@@ -80,11 +80,14 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			var errorSink = (IXamlErrorSink)settings.ServiceProvider.GetService(typeof(IXamlErrorSink));
 
 			try {
-			    doc.Load(reader);
-			    return Parse(doc, settings);
+				doc.Load(reader);
+				return Parse(doc, settings);
 			} catch (XmlException x) {
-				if (errorSink != null)
-					errorSink.ReportError(x.Message, x.LineNumber, x.LinePosition);		
+				if (errorSink != null) {
+					errorSink.ReportError(x.Message, x.LineNumber, x.LinePosition);
+				} else {
+					throw;
+				}
 			}
 
 			return null;
@@ -93,6 +96,8 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		/// <summary>
 		/// Creates a XAML document from an existing XmlDocument.
 		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes",
+		                                                 Justification="We need to continue parsing, and the error is reported to the user.")]
 		internal static XamlDocument Parse(XmlDocument document, XamlParserSettings settings)
 		{
 			if (settings == null)
@@ -104,7 +109,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			p.errorSink = (IXamlErrorSink)settings.ServiceProvider.GetService(typeof(IXamlErrorSink));
 			p.document = new XamlDocument(document, settings);
 			
-			try {			
+			try {
 				var root = p.ParseObject(document.DocumentElement);
 				p.document.ParseComplete(root);
 			} catch (Exception x) {
@@ -120,11 +125,6 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		XamlDocument document;
 		XamlParserSettings settings;
 		IXamlErrorSink errorSink;
-		
-		Type FindType(string namespaceUri, string localName)
-		{
-			return FindType(settings.TypeFinder, namespaceUri, localName);
-		}
 		
 		static Type FindType(XamlTypeFinder typeFinder, string namespaceUri, string localName)
 		{
@@ -158,6 +158,8 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				if (currentXamlObject != null) {
 					currentXamlObject.HasErrors = true;
 				}
+			} else {
+				throw x;
 			}
 		}
 		
@@ -214,8 +216,8 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			currentXamlObject = obj;
 			obj.ParentObject = parentXamlObject;
 
-			if (parentXamlObject == null && obj.DependencyObject != null) {
-				NameScope.SetNameScope(obj.DependencyObject, new NameScope());
+			if (parentXamlObject == null && obj.Instance is DependencyObject) {
+				NameScope.SetNameScope((DependencyObject)obj.Instance, new NameScope());
 			}
 			
 			ISupportInitialize iSupportInitializeInstance = instance as ISupportInitialize;
@@ -348,6 +350,8 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			}
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes",
+		                                                 Justification="We need to continue parsing, and the error is reported to the user.")]
 		XamlPropertyValue ParseValue(XmlNode childNode)
 		{
 			try {
@@ -466,13 +470,15 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			propertyName = qualifiedName.Substring(pos + 1);
 		}
 		
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes",
+		                                                 Justification="We need to continue parsing, and the error is reported to the user.")]
 		void ParseObjectAttribute(XamlObject obj, XmlAttribute attribute)
 		{
 			try {
 				ParseObjectAttribute(obj, attribute, true);
 			} catch (Exception x) {
 				ReportException(x, attribute);
-			}			
+			}
 		}
 
 		internal static void ParseObjectAttribute(XamlObject obj, XmlAttribute attribute, bool real)
@@ -481,18 +487,18 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			XamlPropertyValue value = null;
 
 			var valueText = attribute.Value;
-			if (valueText.StartsWith("{") && !valueText.StartsWith("{}")) {
+			if (valueText.StartsWith("{", StringComparison.Ordinal) && !valueText.StartsWith("{}", StringComparison.Ordinal)) {
 				var xamlObject = MarkupExtensionParser.Parse(valueText, obj, real ? attribute : null);
 				value = xamlObject;
 			} else {
-				if (real) 
+				if (real)
 					value = new XamlTextValue(obj.OwnerDocument, attribute);
 				else
 					value = new XamlTextValue(obj.OwnerDocument, valueText);
 			}
 
 			var property = new XamlProperty(obj, propertyInfo, value);
-			obj.AddProperty(property);			
+			obj.AddProperty(property);
 		}
 		
 		static bool ObjectChildElementIsPropertyElement(XmlElement element)
@@ -562,8 +568,8 @@ namespace ICSharpCode.WpfDesign.XamlDom
 
 		internal static object CreateObjectFromAttributeText(string valueText, Type targetType, XamlObject scope)
 		{
-			var converter = 
-				XamlNormalPropertyInfo.GetCustomTypeConverter(targetType) ?? 
+			var converter =
+				XamlNormalPropertyInfo.GetCustomTypeConverter(targetType) ??
 				TypeDescriptor.GetConverter(targetType);
 
 			return converter.ConvertFromInvariantString(

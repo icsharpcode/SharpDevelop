@@ -28,6 +28,7 @@
 using System;
 using System.Windows.Forms;
 using ICSharpCode.Core;
+using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
@@ -46,7 +47,7 @@ namespace ICSharpCode.NAnt.Gui
 		bool disposed;
 		
 		public NAntPadContent()
-		{			
+		{
 			LoggingService.Debug("NAntPadContent.ctor");
 			// Create main panel.
 			contentPanel = new Panel();
@@ -66,7 +67,7 @@ namespace ICSharpCode.NAnt.Gui
 			
 			// Tooltip.
 			ToolTip toolTip = new ToolTip();
-			toolTip.SetToolTip(textBox, StringParser.Parse("Enter NAnt properties."));			
+			toolTip.SetToolTip(textBox, StringParser.Parse("Enter NAnt properties."));
 			
 			contentPanel.Controls.Add(treeView);
 			contentPanel.Controls.Add(toolStrip);
@@ -105,7 +106,7 @@ namespace ICSharpCode.NAnt.Gui
 				PadDescriptor descriptor = WorkbenchSingleton.Workbench.GetPad(typeof(NAntPadContent));
 				return (NAntPadContent)descriptor.PadContent;
 			}
-		}	
+		}
 
 		/// <summary>
 		/// Refreshes the contents NAnt pad.
@@ -172,7 +173,7 @@ namespace ICSharpCode.NAnt.Gui
 				disposed = true;
 				
 				treeView.Dispose();
-				contentPanel.Dispose();	
+				contentPanel.Dispose();
 				
 				ProjectService.SolutionLoaded -= SolutionLoaded;
 				ProjectService.SolutionClosed -= SolutionClosed;
@@ -192,7 +193,7 @@ namespace ICSharpCode.NAnt.Gui
 			}
 		}
 		
-		#endregion		
+		#endregion
 		
 		void SolutionClosed(object sender, EventArgs e)
 		{
@@ -204,7 +205,7 @@ namespace ICSharpCode.NAnt.Gui
 		{
 			LoggingService.Debug("SolutionLoaded.");
 			AddSolutionToPad(e.Solution);
-		}	
+		}
 		
 		void AddSolutionToPad(Solution solution)
 		{
@@ -251,7 +252,7 @@ namespace ICSharpCode.NAnt.Gui
 				}
 			}
 		}
-	
+		
 		void ProjectItemRemoved(object sender, ProjectItemEventArgs e)
 		{
 			LoggingService.Debug("ProjectItemRemoved.");

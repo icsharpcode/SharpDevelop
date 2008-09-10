@@ -851,8 +851,15 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return fallbackResult;
 		}
 		
-		IClass GetClassByDotNetName(string className, bool lookInReferences)
+		/// <summary>
+		/// Gets the position of a member in this project content (not a referenced one).
+		/// </summary>
+		/// <param name="fullMemberName">The full class name in Reflection syntax (always case sensitive, ` for generics)</param>
+		/// <param name="lookInReferences">Whether to search in referenced project contents.</param>
+		public IClass GetClassByReflectionName(string className, bool lookInReferences)
 		{
+			if (className == null)
+				throw new ArgumentNullException("className");
 			className = className.Replace('+', '.');
 			if (className.Length > 2 && className[className.Length - 2] == '`') {
 				int typeParameterCount = className[className.Length - 1] - '0';
@@ -867,13 +874,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// <summary>
 		/// Gets the position of a member in this project content (not a referenced one).
 		/// </summary>
-		/// <param name="fullMemberName">The full member name in Reflection syntax (always case sensitive, ` for generics)</param>
-		public IEntity GetElement(string fullMemberName)
+		/// <param name="fullMemberName">The member name in Reflection syntax (always case sensitive, ` for generics).
+		/// member name = [ExplicitInterface .] MemberName [`TypeArgumentCount] [(Parameters)]</param>
+		public static IMember GetMemberByReflectionName(IClass curClass, string fullMemberName)
 		{
-			IClass curClass = GetClassByDotNetName(fullMemberName, false);
-			if (curClass != null) {
-				return curClass;
-			}
+			if (curClass == null)
+				return null;
 			int pos = fullMemberName.IndexOf('(');
 			if (pos > 0) {
 				// is method call
@@ -883,61 +889,60 @@ namespace ICSharpCode.SharpDevelop.Dom
 					fullMemberName = fullMemberName.Substring(0, colonPos);
 				}
 				
+				string interfaceName = null;
 				string memberName = fullMemberName.Substring(0, pos);
 				int pos2 = memberName.LastIndexOf('.');
 				if (pos2 > 0) {
-					string className = memberName.Substring(0, pos2);
+					interfaceName = memberName.Substring(0, pos2);
 					memberName = memberName.Substring(pos2 + 1);
-					curClass = GetClassByDotNetName(className, false);
-					if (curClass != null) {
-						IMethod firstMethod = null;
-						foreach (IMethod m in curClass.Methods) {
-							if (m.Name == memberName) {
-								if (firstMethod == null) firstMethod = m;
-								StringBuilder dotnetName = new StringBuilder(m.DotNetName);
-								dotnetName.Append('(');
-								for (int i = 0; i < m.Parameters.Count; i++) {
-									if (i > 0) dotnetName.Append(',');
-									if (m.Parameters[i].ReturnType != null) {
-										dotnetName.Append(m.Parameters[i].ReturnType.DotNetName);
-									}
-								}
-								dotnetName.Append(')');
-								if (dotnetName.ToString() == fullMemberName) {
-									return m;
-								}
+				}
+				
+				// put class name in front of full member name because we'll compare against it later
+				fullMemberName = curClass.DotNetName + "." + fullMemberName;
+				
+				IMethod firstMethod = null;
+				foreach (IMethod m in curClass.Methods) {
+					if (m.Name == memberName) {
+						if (firstMethod == null) firstMethod = m;
+						StringBuilder dotnetName = new StringBuilder(m.DotNetName);
+						dotnetName.Append('(');
+						for (int i = 0; i < m.Parameters.Count; i++) {
+							if (i > 0) dotnetName.Append(',');
+							if (m.Parameters[i].ReturnType != null) {
+								dotnetName.Append(m.Parameters[i].ReturnType.DotNetName);
 							}
 						}
-						return firstMethod;
+						dotnetName.Append(')');
+						if (dotnetName.ToString() == fullMemberName) {
+							return m;
+						}
 					}
 				}
+				return firstMethod;
 			} else {
-				pos = fullMemberName.LastIndexOf('.');
+				string interfaceName = null;
+				string memberName = fullMemberName;
+				pos = memberName.LastIndexOf('.');
 				if (pos > 0) {
-					string className = fullMemberName.Substring(0, pos);
-					string memberName = fullMemberName.Substring(pos + 1);
-					curClass = GetClassByDotNetName(className, false);
-					if (curClass != null) {
-						// get first method with that name, but prefer method without parameters
-						IMethod firstMethod = null;
-						foreach (IMethod m in curClass.Methods) {
-							if (m.Name == memberName) {
-								if (firstMethod == null || m.Parameters.Count == 0)
-									firstMethod = m;
-							}
-						}
-						if (firstMethod != null)
-							return firstMethod;
-						return curClass.SearchMember(memberName, LanguageProperties.CSharp);
+					interfaceName = memberName.Substring(0, pos);
+					memberName = memberName.Substring(pos + 1);
+				}
+				// get first method with that name, but prefer method without parameters
+				IMethod firstMethod = null;
+				foreach (IMethod m in curClass.Methods) {
+					if (m.Name == memberName) {
+						if (firstMethod == null || m.Parameters.Count == 0)
+							firstMethod = m;
 					}
 				}
+				if (firstMethod != null)
+					return firstMethod;
+				return curClass.SearchMember(memberName, LanguageProperties.CSharp);
 			}
-			return null;
 		}
 		
-		public FilePosition GetPosition(string fullMemberName)
+		public FilePosition GetPosition(IEntity d)
 		{
-			IEntity d = GetElement(fullMemberName);
 			IMember m = d as IMember;
 			IClass c = d as IClass;
 			if (m != null) {

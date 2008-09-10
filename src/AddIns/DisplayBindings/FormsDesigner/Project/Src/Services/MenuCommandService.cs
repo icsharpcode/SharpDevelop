@@ -20,11 +20,11 @@ namespace ICSharpCode.FormsDesigner.Services
 	class MenuCommandService : System.ComponentModel.Design.MenuCommandService
 	{
 		
-		Control panel;
+		FormsDesignerViewContent vc;
 		
-		public MenuCommandService(Control panel, IServiceProvider serviceProvider) : base(serviceProvider)
+		public MenuCommandService(FormsDesignerViewContent vc, IServiceProvider serviceProvider) : base(serviceProvider)
 		{
-			this.panel = panel;
+			this.vc = vc;
 			this.InitializeGlobalCommands( );
 		}
 
@@ -60,10 +60,13 @@ namespace ICSharpCode.FormsDesigner.Services
 			} else {
 				throw new Exception();
 			}
-			Point p = panel.PointToClient(new Point(x, y));
 			
-			
-			MenuService.ShowContextMenu(this, contextMenuPath, panel, p.X, p.Y);
+			Control panel = vc.UserContent;
+			if (panel != null) {
+				Point p = panel.PointToClient(new Point(x, y));
+				
+				MenuService.ShowContextMenu(this, contextMenuPath, panel, p.X, p.Y);
+			}
 		}
 	}
 }

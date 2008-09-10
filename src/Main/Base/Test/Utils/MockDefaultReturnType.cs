@@ -148,5 +148,11 @@ namespace ICSharpCode.SharpDevelop.Tests.Utils
 		{
 			throw new NotImplementedException();
 		}
+		
+		public Nullable<bool> IsReferenceType {
+			get {
+				throw new NotImplementedException();
+			}
+		}
 	}
 }

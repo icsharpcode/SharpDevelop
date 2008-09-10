@@ -101,7 +101,6 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			get { return element; }
 		}
 
-		// exists only for ME root
 		XmlAttribute xmlAttribute;
 
 		internal XmlAttribute XmlAttribute { 
@@ -112,17 +111,13 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			}
 		}
 
-		public bool IsMarkupExtensionRoot {
-			get { return XmlAttribute != null; }
-		}
-
 		static XmlElement VirualAttachTo(XmlElement e, XmlElement target) 
 		{
 			var prefix = target.GetPrefixOfNamespace(e.NamespaceURI);
-			XmlElement newElement = e.OwnerDocument.CreateElement(prefix, e.Name, e.NamespaceURI);
+			XmlElement newElement = e.OwnerDocument.CreateElement(prefix, e.LocalName, e.NamespaceURI);
 
 			foreach (XmlAttribute a in target.Attributes) {
-				if (a.Name.StartsWith("xmlns")) {
+				if (a.Prefix == "xmlns" || a.Name == "xmlns") {
 					newElement.Attributes.Append(a.Clone() as XmlAttribute);
 				}
 			}
@@ -135,52 +130,73 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			while (ac.Count > 0) {
 				newElement.Attributes.Append(ac[0]);
 			}
-
 			
 			return newElement;
 		}
 		
 		internal override void AddNodeTo(XamlProperty property)
-		{
-			if (!UpdateMarkupExtension(true)) {
+		{	
+			if (!UpdateXmlAttribute(true)) {
 				property.AddChildNodeToProperty(element);
 			}
+			UpdateMarkupExtensionChain();
 		}
 		
 		internal override void RemoveNodeFromParent()
-		{
+		{			
 			if (XmlAttribute != null) {
 				XmlAttribute.OwnerElement.RemoveAttribute(XmlAttribute.Name);
 				xmlAttribute = null;
 			} else {
-				element.ParentNode.RemoveChild(element);
-			}
+				if (!UpdateXmlAttribute(false)) {
+					element.ParentNode.RemoveChild(element);
+				}
+			}			
+			//TODO: PropertyValue still there
+			//UpdateMarkupExtensionChain();
 		}
 
+		//TODO: reseting path property for binding doesn't work in XamlProperty
+		//use CanResetValue()
 		internal void OnPropertyChanged(XamlProperty property)
-		{
-			UpdateMarkupExtension(false);
+		{			
+			UpdateXmlAttribute(false);
+			UpdateMarkupExtensionChain();
 		}
 
-		bool UpdateMarkupExtension(bool canCreate)
+		void UpdateMarkupExtensionChain()
 		{
-			if (IsMarkupExtension) {
-				var obj = this;
-				while (obj != null && obj.IsMarkupExtension) {
-					obj.ParentProperty.UpdateValueOnInstance();
-					if (obj.IsMarkupExtensionRoot) break;
-					obj = obj.ParentObject;
-				}
-				if (!obj.IsMarkupExtension) obj = null;
-				if (obj == null && !canCreate) return false;
-				var root = obj ?? this;
-				if (MarkupExtensionPrinter.CanPrint(root)) {
-					var s = MarkupExtensionPrinter.Print(root);
-					root.XmlAttribute = root.ParentProperty.SetAttribute(s);
-					return root == this;
-				}
+			var obj = this;
+			while (obj != null && obj.IsMarkupExtension) {
+				obj.ParentProperty.UpdateValueOnInstance();
+				obj = obj.ParentObject;
+			}			
+		}
+
+		bool UpdateXmlAttribute(bool force)
+		{
+			var holder = FindXmlAttributeHolder();
+			if (holder == null && force && IsMarkupExtension) {
+				holder = this;
+			}
+			if (holder != null && MarkupExtensionPrinter.CanPrint(holder)) {
+				var s = MarkupExtensionPrinter.Print(holder);
+				holder.XmlAttribute = holder.ParentProperty.SetAttribute(s);
+				return true;
 			}
 			return false;
+		}
+
+		XamlObject FindXmlAttributeHolder()
+		{
+			var obj = this;
+			while (obj != null && obj.IsMarkupExtension) {
+				if (obj.XmlAttribute != null) {
+					return obj;
+				}
+				obj = obj.ParentObject;
+			}
+			return null;
 		}
 		
 		/// <summary>
@@ -197,16 +213,18 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			get { return instance; }
 		}
 
+		/// <summary>
+		/// Gets whether this instance represents a MarkupExtension.
+		/// </summary>
 		public bool IsMarkupExtension {
 			get { return instance is MarkupExtension; }
 		}
 
+		/// <summary>
+		/// Gets whether there were load errors for this object.
+		/// </summary>
 		public bool HasErrors { get; internal set; }
 
-		public DependencyObject DependencyObject {
-			get { return instance as DependencyObject; }
-		}
-		
 		/// <summary>
 		/// Gets the type of this object element.
 		/// </summary>
@@ -226,6 +244,9 @@ namespace ICSharpCode.WpfDesign.XamlDom
 
 		string contentPropertyName;
 
+		/// <summary>
+		/// Gets the name of the content property.
+		/// </summary>
 		public string ContentPropertyName {
 			get {
 				return contentPropertyName; 
@@ -304,6 +325,9 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				element.SetAttribute(name, XamlConstants.XamlNamespace, value);
 		}
 
+		/// <summary>
+		/// Gets/Sets the <see cref="XamlObjectServiceProvider"/> associated with this XamlObject.
+		/// </summary>
 		public XamlObjectServiceProvider ServiceProvider { get; set; }
 
 		MarkupExtensionWrapper wrapper;

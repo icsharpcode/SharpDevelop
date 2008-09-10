@@ -126,5 +126,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		bool IsConstructedReturnType { get; }
 		ConstructedReturnType CastToConstructedReturnType();
+		
+		bool? IsReferenceType { get; }
 	}
 }

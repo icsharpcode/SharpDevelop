@@ -43,6 +43,36 @@ namespace ICSharpCode.SharpDevelop.Gui
 			GetRelativePath();
 		}
 		
+		/// <summary>
+		/// Checks that the string is valid to use for a web reference namespace.
+		/// </summary>
+		public static bool IsValidNamespace(string ns)
+		{
+			if (ns.Length > 0) {
+				try {
+					CodeNamespace codeNamespace = new CodeNamespace(ns);
+					CodeGenerator.ValidateIdentifiers(codeNamespace);
+					return true;
+				} catch (ArgumentException) { }
+			}
+			return false;			
+		}	
+		
+		/// <summary>
+		/// Checks that the string is valid to use for a web reference name.
+		/// </summary>
+		public static bool IsValidReferenceName(string name)
+		{
+			if (name.Length > 0) {
+				if (name.IndexOf('\\') == -1) {
+					if (!ContainsInvalidDirectoryChar(name)) {
+						return true;
+					}
+				}
+			}
+			return false;			
+		}
+		
 		public static bool ProjectContainsWebReferencesFolder(IProject project)
 		{
 			return GetWebReferencesProjectItem(project) != null;
@@ -124,9 +154,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		
 		public WebReferencesProjectItem WebReferencesProjectItem {
-			get {
-				return GetWebReferencesProjectItem(Items);
-			}
+			get { return GetWebReferencesProjectItem(Items); }
 		}
 		
 		public WebReferenceUrl WebReferenceUrl {
@@ -143,18 +171,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// this web reference.
 		/// </summary>
 		public string WebReferencesDirectory {
-			get {
-				return webReferencesDirectory;
-			}
+			get { return webReferencesDirectory; }
 		}
 		
 		/// <summary>
 		/// Gets the directory where the web reference files will be saved.
 		/// </summary>
 		public string Directory {
-			get {
-				return Path.Combine(project.Directory, relativePath);
-			}
+			get { return Path.Combine(project.Directory, relativePath); }
 		}
 		
 		/// <summary>
@@ -165,9 +189,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// web reference files are saved.
 		/// </remarks>
 		public string Name {
-			get {
-				return name;
-			}
+			get { return name; }
 			set {
 				name = value;
 				OnNameChanged();
@@ -175,12 +197,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		
 		public string ProxyNamespace {
-			get {
-				return proxyNamespace;
-			}
-			set {
-				proxyNamespace = value;
-			}
+			get { return proxyNamespace; }
+			set { proxyNamespace = value; }
 		}
 		
 		public List<ProjectItem> Items {
@@ -193,9 +211,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		
 		public string WebProxyFileName {
-			get {
-				return GetFullProxyFileName();
-			}
+			get { return GetFullProxyFileName(); }
 		}
 		
 		/// <summary>
@@ -447,5 +463,15 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 			return false;
 		}
+		
+		static bool ContainsInvalidDirectoryChar(string item)
+		{
+			foreach (char ch in Path.GetInvalidPathChars()) {
+				if (item.IndexOf(ch) >= 0) {
+					return true;
+				}
+			}
+			return false;
+		}		
 	}
 }

@@ -28,14 +28,11 @@ namespace ICSharpCode.WpfDesign.AddIn
 		{
 			IProjectContent pc = MyTypeFinder.GetProjectContent(file);
 			if (pc != null) {
-				string fullName = property.DeclaringType.FullName + "." + property.Name;
-				IEntity dec = pc.GetElement(fullName);
-				if (dec != null)
-					return CodeCompletionData.GetDocumentation(dec.Documentation);
-				foreach (IProjectContent rpc in pc.ReferencedContents) {
-					dec = rpc.GetElement(fullName);
-					if (dec != null)
-						return CodeCompletionData.GetDocumentation(dec.Documentation);
+				IClass c = pc.GetClassByReflectionName(property.DeclaringType.FullName, true);
+				if (c != null) {
+					IMember m = DefaultProjectContent.GetMemberByReflectionName(c, property.Name);
+					if (m != null)
+						return CodeCompletionData.GetDocumentation(m.Documentation);
 				}
 			}
 			return null;

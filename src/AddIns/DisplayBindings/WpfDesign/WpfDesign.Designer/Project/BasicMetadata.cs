@@ -225,6 +225,21 @@ namespace ICSharpCode.WpfDesign.Designer
 			Metadata.AddPopularControl(typeof(Viewbox));
 			Metadata.AddPopularControl(typeof(Viewport3D));
 			Metadata.AddPopularControl(typeof(WrapPanel));
+
+            Metadata.AddDefaultSize(typeof(UIElement), new Size(120, 100));
+            Metadata.AddDefaultSize(typeof(ContentControl), new Size(double.NaN, double.NaN));
+            Metadata.AddDefaultSize(typeof(Button), new Size(75, 23));
+
+            var s1 = new Size(120, double.NaN);
+            Metadata.AddDefaultSize(typeof(Slider), s1);
+            Metadata.AddDefaultSize(typeof(TextBox), s1);
+            Metadata.AddDefaultSize(typeof(PasswordBox), s1);
+            Metadata.AddDefaultSize(typeof(ComboBox), s1);
+            Metadata.AddDefaultSize(typeof(ProgressBar), s1);
+
+            var s2 = new Size(120, 20);
+            Metadata.AddDefaultSize(typeof(ToolBar), s2);
+            Metadata.AddDefaultSize(typeof(Menu), s2);
 		}
 	}
 }

@@ -4,17 +4,18 @@
 //     <owner name="Siegfried Pammer" email="sie_pam@gmx.at"/>
 //     <version>$Revision: 3287 $</version>
 // </file>
+using ICSharpCode.TextEditor;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.PrettyPrinter;
 using ICSharpCode.NRefactory.Visitors;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.TextEditor.Document;
 using SharpRefactoring.Visitors;
 using Dom = ICSharpCode.SharpDevelop.Dom;
@@ -36,6 +37,9 @@ namespace SharpRefactoring
 		protected IOutputAstVisitor output;
 		protected VariableDeclaration returnedVariable;
 		protected List<ISpecial> specialsList;
+		
+		protected Dom.IClass currentClass;
+		protected Dom.IProjectContent currentProjectContent;
 		
 		public Statement Caller {
 			get { return caller; }
@@ -88,19 +92,15 @@ namespace SharpRefactoring
 				if (this.parentNode is MethodDeclaration) newMethod.TypeReference = (this.parentNode as MethodDeclaration).TypeReference;
 				if (this.parentNode is PropertyDeclaration) newMethod.TypeReference = (this.parentNode as PropertyDeclaration).TypeReference;
 				if (this.parentNode is OperatorDeclaration) newMethod.TypeReference = (this.parentNode as OperatorDeclaration).TypeReference;
-			}
-			else {
+			} else {
 				if (possibleReturnValues.Count > 0) {
 					newMethod.TypeReference = possibleReturnValues[possibleReturnValues.Count - 1].TypeReference;
 					newMethod.Body.Children.Add(new ReturnStatement(new IdentifierExpression(possibleReturnValues[possibleReturnValues.Count - 1].Name)));
+					this.returnedVariable = possibleReturnValues[possibleReturnValues.Count - 1];
+				} else {
+					newMethod.TypeReference = new TypeReference("void");
+					this.returnedVariable = null;
 				}
-				else newMethod.TypeReference = new TypeReference("void");
-			}
-			
-			if (newMethod.TypeReference.Type == "void") {
-				this.returnedVariable = null;
-			} else {
-				this.returnedVariable = possibleReturnValues[possibleReturnValues.Count - 1];
 			}
 		}
 		
@@ -206,6 +206,11 @@ namespace SharpRefactoring
 		protected virtual string GenerateCode(INode unit, bool installSpecials)
 		{
 			throw new InvalidOperationException("Cannot use plain MethodExtractor, please use a language specific implementation!");
+		}
+		
+		protected Dom.IMember GetParentMember(ICSharpCode.TextEditor.TextEditorControl textEditor, TextLocation location)
+		{
+			return GetParentMember(textEditor, location.Line, location.Column);
 		}
 		
 		protected Dom.IMember GetParentMember(ICSharpCode.TextEditor.TextEditorControl textEditor, int line, int column)

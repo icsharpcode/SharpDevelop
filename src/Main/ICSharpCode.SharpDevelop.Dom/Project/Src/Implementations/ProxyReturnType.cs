@@ -217,5 +217,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			return CastToDecoratingReturnType<ConstructedReturnType>();
 		}
+		
+		public virtual bool? IsReferenceType {
+			get {
+				IReturnType baseType = BaseType;
+				bool? tmp = (baseType != null && TryEnter()) ? baseType.IsReferenceType : null;
+				Leave();
+				return tmp;
+			}
+		}
 	}
 }

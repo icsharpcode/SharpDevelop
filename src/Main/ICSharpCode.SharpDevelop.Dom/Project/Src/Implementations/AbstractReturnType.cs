@@ -129,5 +129,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			return null;
 		}
+		
+		public virtual bool? IsReferenceType { get { return null; } }
 	}
 }

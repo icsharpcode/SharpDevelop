@@ -53,10 +53,15 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		public override Expression ParseExpression()
 		{
 			lexer.NextToken();
+			Location startLocation = la.Location;
 			Expression expr;
 			Expr(out expr);
 			// SEMICOLON HACK : without a trailing semicolon, parsing expressions does not work correctly
 			if (la.kind == Tokens.Semicolon) lexer.NextToken();
+			if (expr != null) {
+				expr.StartLocation = startLocation;
+				expr.EndLocation = t.EndLocation;
+			}
 			Expect(Tokens.EOF);
 			return expr;
 		}
@@ -80,6 +85,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			}
 			
 			compilationUnit.BlockEnd();
+			blockStmt.EndLocation = t.EndLocation;
 			Expect(Tokens.EOF);
 			return blockStmt;
 		}

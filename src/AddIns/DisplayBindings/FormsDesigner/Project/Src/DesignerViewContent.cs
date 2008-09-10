@@ -28,13 +28,13 @@ namespace ICSharpCode.FormsDesigner
 {
 	public class FormsDesignerViewContent : AbstractViewContentHandlingLoadErrors, IClipboardHandler, IUndoHandler, IHasPropertyContainer, IContextHelpProvider, IToolsHost
 	{
-		Panel p = new Panel();
+		readonly Control pleaseWaitLabel = new Label() {Text=StringParser.Parse("${res:Global.PleaseWait}"), TextAlign=ContentAlignment.MiddleCenter};
 		DesignSurface designSurface;
 		bool disposing;
-		bool loadingDesigner;
 		
 		readonly IViewContent primaryViewContent;
 		readonly IDesignerLoaderProvider loaderProvider;
+		DesignerLoader loader;
 		readonly IDesignerGenerator generator;
 		readonly ResourceStore resourceStore;
 		FormsDesignerUndoEngine undoEngine;
@@ -93,6 +93,10 @@ namespace ICSharpCode.FormsDesigner
 			get { return this.primaryViewContent; }
 		}
 		
+		protected override string LoadErrorHeaderText {
+			get { return StringParser.Parse("${res:ICSharpCode.SharpDevelop.FormDesigner.LoadErrorCheckSourceCodeForErrors}") + Environment.NewLine + Environment.NewLine; }
+		}
+		
 		FormsDesignerViewContent(IViewContent primaryViewContent)
 			: base()
 		{
@@ -104,13 +108,7 @@ namespace ICSharpCode.FormsDesigner
 			
 			this.primaryViewContent = primaryViewContent;
 			
-			p.BackColor    = Color.White;
-			p.RightToLeft = RightToLeft.No;
-			// Make sure auto-scaling is based on the correct font.
-			// This is required on Vista, I don't know why it works correctly in XP
-			p.Font = Control.DefaultFont;
-			
-			this.UserContent = this.p;
+			this.UserContent = this.pleaseWaitLabel;
 			
 			this.resourceStore = new ResourceStore(this);
 			
@@ -179,6 +177,9 @@ namespace ICSharpCode.FormsDesigner
 				} else if (!this.Files.Contains(this.designerCodeFile)) {
 					LoggingService.Debug("Forms designer: Adding designer code file " + this.designerCodeFile.FileName);
 					this.Files.Insert(1, this.designerCodeFile);
+				} else if (this.HasLoadError || this.designSurface == null || !this.designSurface.IsLoaded) {
+					LoggingService.Debug("Forms designer: Having a load error. Reloading designer.");
+					this.ReloadDesignerFromMemory();
 				}
 				
 			} else if (file == this.DesignerCodeFile) {
@@ -196,7 +197,7 @@ namespace ICSharpCode.FormsDesigner
 				// Loading a resource file
 				
 				bool mustReload;
-				if (this.designSurface != null && !this.loadingDesigner) {
+				if (this.loader != null && !this.loader.Loading) {
 					LoggingService.Debug("Forms designer: Reloading designer because of LoadInternal on resource file");
 					this.UnloadDesigner();
 					mustReload = true;
@@ -260,13 +261,19 @@ namespace ICSharpCode.FormsDesigner
 			}
 			
 			designSurface = CreateDesignSurface(serviceContainer);
+			designSurface.Loaded += this.DesignerLoaded;
+			designSurface.Flushed += this.DesignerFlushed;
 			
-			serviceContainer.AddService(typeof(System.ComponentModel.Design.IMenuCommandService), new ICSharpCode.FormsDesigner.Services.MenuCommandService(p, designSurface));
+			serviceContainer.AddService(typeof(System.ComponentModel.Design.IMenuCommandService), new ICSharpCode.FormsDesigner.Services.MenuCommandService(this, designSurface));
 			ICSharpCode.FormsDesigner.Services.EventBindingService eventBindingService = new ICSharpCode.FormsDesigner.Services.EventBindingService(this, designSurface);
 			serviceContainer.AddService(typeof(System.ComponentModel.Design.IEventBindingService), eventBindingService);
 			
-			DesignerLoader designerLoader = loaderProvider.CreateLoader(generator);
-			designSurface.BeginLoad(designerLoader);
+			this.loader = loaderProvider.CreateLoader(generator);
+			designSurface.BeginLoad(this.loader);
+			
+			if (!designSurface.IsLoaded) {
+				throw new FormsDesignerLoadException(FormatLoadErrors(designSurface));
+			}
 			
 			undoEngine = new FormsDesignerUndoEngine(Host);
 			serviceContainer.AddService(typeof(UndoEngine), undoEngine);
@@ -287,7 +294,6 @@ namespace ICSharpCode.FormsDesigner
 			}
 			
 			UpdatePropertyPad();
-			PropertyPad.PropertyValueChanged += PropertyValueChanged;
 			
 			hasUnmergedChanges = false;
 			
@@ -310,7 +316,7 @@ namespace ICSharpCode.FormsDesigner
 			if (shouldUpdateSelectableObjects) {
 				// update the property pad after the transaction is *really* finished
 				// (including updating the selection)
-				p.BeginInvoke(new MethodInvoker(UpdatePropertyPad));
+				WorkbenchSingleton.SafeThreadAsyncCall(UpdatePropertyPad);
 				shouldUpdateSelectableObjects = false;
 			}
 		}
@@ -324,9 +330,10 @@ namespace ICSharpCode.FormsDesigner
 		{
 			LoggingService.Debug("FormsDesigner unloading, setting ActiveDesignSurface to null");
 			designSurfaceManager.ActiveDesignSurface = null;
-			PropertyPad.PropertyValueChanged -= PropertyValueChanged;
+			
 			bool savedIsDirty = (this.DesignerCodeFile == null) ? false : this.DesignerCodeFile.IsDirty;
-			p.Controls.Clear();
+			this.UserContent = this.pleaseWaitLabel;
+			Application.DoEvents();
 			if (this.DesignerCodeFile != null) {
 				this.DesignerCodeFile.IsDirty = savedIsDirty;
 			}
@@ -337,13 +344,34 @@ namespace ICSharpCode.FormsDesigner
 			// at design time" is thrown.
 			// This is solved by calling dispose after the double-click event has been processed.
 			if (designSurface != null) {
+				designSurface.Loaded -= this.DesignerLoaded;
+				designSurface.Flushed -= this.DesignerFlushed;
+				
+				IComponentChangeService componentChangeService = designSurface.GetService(typeof(IComponentChangeService)) as IComponentChangeService;
+				if (componentChangeService != null) {
+					componentChangeService.ComponentChanged -= MakeDirty;
+					componentChangeService.ComponentAdded   -= ComponentListChanged;
+					componentChangeService.ComponentRemoved -= ComponentListChanged;
+					componentChangeService.ComponentRename  -= ComponentListChanged;
+				}
+				if (this.Host != null) {
+					this.Host.TransactionClosed -= TransactionClose;
+				}
+				
+				ISelectionService selectionService = designSurface.GetService(typeof(ISelectionService)) as ISelectionService;
+				if (selectionService != null) {
+					selectionService.SelectionChanged -= SelectionChangedHandler;
+				}
+				
 				if (disposing) {
 					designSurface.Dispose();
 				} else {
-					p.BeginInvoke(new MethodInvoker(designSurface.Dispose));
+					WorkbenchSingleton.SafeThreadAsyncCall(designSurface.Dispose);
 				}
 				designSurface = null;
 			}
+			
+			this.loader = null;
 		}
 		
 		readonly PropertyContainer propertyContainer = new PropertyContainer();
@@ -373,42 +401,73 @@ namespace ICSharpCode.FormsDesigner
 		{
 			try {
 				
-				this.loadingDesigner = true;
-				
 				LoadDesigner();
-				
-				bool savedIsDirty = this.DesignerCodeFile.IsDirty;
-				if (designSurface != null && p.Controls.Count == 0) {
-					Control designer = designSurface.View as Control;
-					designer.Dock = DockStyle.Fill;
-					p.Controls.Add(designer);
-					LoggingService.Debug("FormsDesigner loaded, setting ActiveDesignSurface to " + this.designSurface.ToString());
-					designSurfaceManager.ActiveDesignSurface = this.designSurface;
-				}
-				this.DesignerCodeFile.IsDirty = savedIsDirty;
 				
 			} catch (Exception e) {
 				
-				string mainErrorMessage;
 				if (e.InnerException is FormsDesignerLoadException) {
-					mainErrorMessage = e.InnerException.Message;
+					throw new FormsDesignerLoadException(e.InnerException.Message, e);
 				} else if (e is FormsDesignerLoadException) {
-					mainErrorMessage = e.Message;
+					throw;
 				} else if (designSurface != null && !designSurface.IsLoaded && designSurface.LoadErrors != null) {
-					mainErrorMessage = StringParser.Parse("${res:ICSharpCode.SharpDevelop.FormDesigner.ErrorLoadingDesigner}\r\n\r\n");
-					foreach(Exception le in designSurface.LoadErrors) {
-						mainErrorMessage += le.ToString();
-						mainErrorMessage += "\r\n";
-					}
+					throw new FormsDesignerLoadException(FormatLoadErrors(designSurface), e);
 				} else {
-					mainErrorMessage = e.ToString();
+					throw;
 				}
 				
-				throw new FormsDesignerLoadException(StringParser.Parse("${res:ICSharpCode.SharpDevelop.FormDesigner.LoadErrorCheckSourceCodeForErrors}") + Environment.NewLine + mainErrorMessage + Environment.NewLine, e);
-				
-			} finally {
-				this.loadingDesigner = false;
 			}
+		}
+		
+		internal new Control UserContent {
+			get { return base.UserContent as Control; }
+			set { base.UserContent = value; }
+		}
+		
+		void DesignerLoaded(object sender, LoadedEventArgs e)
+		{
+			// This method is called when the designer has loaded.
+			
+			if (e.HasSucceeded) {
+				// Display the designer on the view content
+				bool savedIsDirty = this.DesignerCodeFile.IsDirty;
+				Control designView = (Control)this.designSurface.View;
+				
+				designView.BackColor = Color.White;
+				designView.RightToLeft = RightToLeft.No;
+				// Make sure auto-scaling is based on the correct font.
+				// This is required on Vista, I don't know why it works correctly in XP
+				designView.Font = Control.DefaultFont;
+				
+				this.UserContent = designView;
+				LoggingService.Debug("FormsDesigner loaded, setting ActiveDesignSurface to " + this.designSurface.ToString());
+				designSurfaceManager.ActiveDesignSurface = this.designSurface;
+				this.DesignerCodeFile.IsDirty = savedIsDirty;
+			} else {
+				// This method can not only be called during initialization,
+				// but also when the designer reloads itself because of
+				// a language change.
+				// When a load error occurs there, we are not somewhere
+				// below the Load method which handles load errors.
+				// That is why we create an error text box here anyway.
+				TextBox errorTextBox = new TextBox() { Multiline=true, ScrollBars=ScrollBars.Both, ReadOnly=true, BackColor=SystemColors.Window, Dock=DockStyle.Fill };
+				errorTextBox.Text = String.Concat(this.LoadErrorHeaderText, FormatLoadErrors(designSurface));
+				this.UserContent = errorTextBox;
+			}
+		}
+		
+		void DesignerFlushed(object sender, EventArgs e)
+		{
+			this.resourceStore.CommitAllResourceChanges();
+		}
+		
+		static string FormatLoadErrors(DesignSurface designSurface)
+		{
+			StringBuilder sb = new StringBuilder();
+			foreach(Exception le in designSurface.LoadErrors) {
+				sb.AppendLine(le.ToString());
+				sb.AppendLine();
+			}
+			return sb.ToString();
 		}
 		
 		public virtual void MergeFormChanges()
@@ -491,8 +550,8 @@ namespace ICSharpCode.FormsDesigner
 				
 				this.resourceStore.Dispose();
 				
-				p.Dispose();
-				p = null;
+				this.UserContent = null;
+				this.pleaseWaitLabel.Dispose();
 				
 			}
 		}
@@ -663,26 +722,6 @@ namespace ICSharpCode.FormsDesigner
 			}
 		}
 		#endregion
-		
-		/// <summary>
-		/// Reloads the form designer if the language property has changed.
-		/// </summary>
-		void PropertyValueChanged(object source, PropertyValueChangedEventArgs e)
-		{
-			if (e.ChangedItem == null || e.OldValue == null)
-				return;
-			if (!propertyContainer.IsActivePropertyContainer)
-				return;
-			if (e.ChangedItem.GridItemType == GridItemType.Property) {
-				if (e.ChangedItem.PropertyDescriptor.Name == "Language") {
-					if (!e.OldValue.Equals(e.ChangedItem.Value)) {
-						LoggingService.Debug("Reloading designer due to language change.");
-						this.MergeAndUnloadDesigner();
-						this.ReloadDesignerFromMemory();
-					}
-				}
-			}
-		}
 		
 		protected void MergeAndUnloadDesigner()
 		{

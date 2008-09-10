@@ -31,8 +31,8 @@ using System.IO;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
+using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.NAnt.Gui
@@ -62,7 +62,7 @@ namespace ICSharpCode.NAnt.Gui
 		NAntPadTreeViewState state = NAntPadTreeViewState.Nothing;
 		
 		delegate void AddSolutionInvoker(Solution solution);
-			
+		
 		public NAntPadTreeView()
 		{
 			//
@@ -95,7 +95,7 @@ namespace ICSharpCode.NAnt.Gui
 				MethodInvoker invoker = new MethodInvoker(Clear);
 				Invoke(invoker);
 			} else {
-				treeView.Nodes.Clear();			
+				treeView.Nodes.Clear();
 			}
 		}
 		
@@ -126,7 +126,7 @@ namespace ICSharpCode.NAnt.Gui
 			Debug.Assert(!InvokeRequired, "AddProject InvokeRequired");
 			
 			foreach (ProjectItem projectItem in project.Items) {
-				if (NAntBuildFile.IsBuildFile(projectItem.FileName)) {	
+				if (NAntBuildFile.IsBuildFile(projectItem.FileName)) {
 					AddBuildFile(project.Name, projectItem.FileName);
 				}
 			}
@@ -177,15 +177,15 @@ namespace ICSharpCode.NAnt.Gui
 			} else {
 				AddBuildFile(String.Empty, fileName);
 			}
-		}		
+		}
 		
 		/// <summary>
 		/// Adds a build file to the tree.
 		/// </summary>
 		/// <param name="projectName">The name of the project.</param>
 		/// <param name="fileName">The build file name.</param>
-		/// <param name="debug"><see langword="true"/> if the project's 
-		/// active configuration is debug; <see langword="false"/> 
+		/// <param name="debug"><see langword="true"/> if the project's
+		/// active configuration is debug; <see langword="false"/>
 		/// otherwise.</param>
 		public void AddBuildFile(string projectName, string fileName)
 		{
@@ -196,7 +196,7 @@ namespace ICSharpCode.NAnt.Gui
 				NAntBuildFileTreeNode node = new NAntBuildFileTreeNode(projectName, buildFile);
 				treeView.Nodes.Add(node);
 			}
-		}		
+		}
 		
 		/// <summary>
 		/// Gets the currently selected <see cref="NAntBuildFile"/>.
@@ -218,7 +218,7 @@ namespace ICSharpCode.NAnt.Gui
 				} else if(selectedNode is NAntBuildFileErrorTreeNode) {
 					NAntBuildFileErrorTreeNode errorNode = (NAntBuildFileErrorTreeNode)selectedNode;
 					NAntBuildFileTreeNode buildNode = (NAntBuildFileTreeNode)errorNode.Parent;
-					buildFile = buildNode.BuildFile;					
+					buildFile = buildNode.BuildFile;
 				}
 				
 				return buildFile;
@@ -240,7 +240,7 @@ namespace ICSharpCode.NAnt.Gui
 				
 				return target;
 			}
-		}	
+		}
 		
 		/// <summary>
 		/// Gets the current selected <see cref="NAntBuildFileError"/>
@@ -255,7 +255,7 @@ namespace ICSharpCode.NAnt.Gui
 					error = errorNode.Error;
 				}
 				
-				return error;				
+				return error;
 			}
 		}
 		
@@ -318,11 +318,11 @@ namespace ICSharpCode.NAnt.Gui
 			state = NAntPadTreeViewState.Nothing;
 			if (IsBuildFileNodeSelected) {
 				state = NAntPadTreeViewState.BuildFileSelected;
-			} 
+			}
 			
 			if (IsBuildTargetNodeSelected) {
 				state = NAntPadTreeViewState.TargetSelected;
-			}			
+			}
 			
 			if (IsBuildFileErrorNodeSelected) {
 				state = NAntPadTreeViewState.ErrorSelected;
@@ -345,7 +345,7 @@ namespace ICSharpCode.NAnt.Gui
 			get {
 				return treeView.SelectedNode is NAntBuildTargetTreeNode;
 			}
-		}	
+		}
 		
 		/// <summary>
 		/// Gets whether a build file error is selected.
@@ -354,7 +354,7 @@ namespace ICSharpCode.NAnt.Gui
 			get {
 				return treeView.SelectedNode is NAntBuildFileErrorTreeNode;
 			}
-		}		
+		}
 		
 		/// <summary>
 		/// Double clicking a node on the tree view opens the corresponding
@@ -372,8 +372,8 @@ namespace ICSharpCode.NAnt.Gui
 				if (IsBuildTargetNodeSelected) {
 					FileService.JumpToFilePosition(fileName, SelectedTarget.Line, SelectedTarget.Column);
 				} else if (IsBuildFileErrorNodeSelected) {
-					FileService.JumpToFilePosition(fileName, SelectedError.Line, SelectedError.Column);					
-				} else {					
+					FileService.JumpToFilePosition(fileName, SelectedError.Line, SelectedError.Column);
+				} else {
 					FileService.OpenFile(fileName);
 				}
 			}
@@ -390,7 +390,7 @@ namespace ICSharpCode.NAnt.Gui
 		{
 			foreach (NAntBuildFileTreeNode node in treeView.Nodes) {
 				string nodeFileName = Path.Combine(node.BuildFile.Directory, node.BuildFile.FileName);
-				if (String.Compare(Path.GetFullPath(fileName), Path.GetFullPath(nodeFileName), true) == 0) {		
+				if (String.Compare(Path.GetFullPath(fileName), Path.GetFullPath(nodeFileName), true) == 0) {
 					return node;
 				}
 			}

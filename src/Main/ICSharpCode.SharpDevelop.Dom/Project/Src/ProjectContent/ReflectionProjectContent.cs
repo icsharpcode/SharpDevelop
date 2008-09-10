@@ -134,7 +134,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			IClass voidClass = GetClassInternal(VoidClass.VoidName, 0, Language);
 			if (voidClass != null) {
 				RemoveClass(voidClass);
-				AddClassToNamespaceList(VoidClass.Instance);
+				AddClassToNamespaceList(new VoidClass(this));
 			}
 		}
 		

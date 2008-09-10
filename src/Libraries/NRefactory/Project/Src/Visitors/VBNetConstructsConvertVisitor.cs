@@ -5,10 +5,10 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.NRefactory.AstBuilder;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-
 using ICSharpCode.NRefactory.Ast;
 using Attribute = ICSharpCode.NRefactory.Ast.Attribute;
 
@@ -244,7 +244,7 @@ namespace ICSharpCode.NRefactory.Visitors
 					methodDeclaration.Body.AcceptVisitor(visitor, null);
 					if (visitor.replacementCount > 0) {
 						Expression init;
-						init = GetDefaultValueForType(methodDeclaration.TypeReference);
+						init = ExpressionBuilder.CreateDefaultValueForType(methodDeclaration.TypeReference);
 						methodDeclaration.Body.Children.Insert(0, new LocalVariableDeclaration(new VariableDeclaration(FunctionReturnValueName, init, methodDeclaration.TypeReference)));
 						methodDeclaration.Body.Children[0].Parent = methodDeclaration.Body;
 						methodDeclaration.Body.AddChild(new ReturnStatement(new IdentifierExpression(FunctionReturnValueName)));
@@ -497,41 +497,11 @@ namespace ICSharpCode.NRefactory.Visitors
 					VariableDeclaration decl = localVariableDeclaration.Variables[i];
 					if (decl.FixedArrayInitialization.IsNull && decl.Initializer.IsNull) {
 						TypeReference type = localVariableDeclaration.GetTypeForVariable(i);
-						decl.Initializer = GetDefaultValueForType(type);
+						decl.Initializer = ExpressionBuilder.CreateDefaultValueForType(type);
 					}
 				}
 			}
 			return base.VisitLocalVariableDeclaration(localVariableDeclaration, data);
-		}
-		
-		Expression GetDefaultValueForType(TypeReference type)
-		{
-			if (type != null && !type.IsArrayType) {
-				switch (type.SystemType) {
-					case "System.SByte":
-					case "System.Byte":
-					case "System.Int16":
-					case "System.UInt16":
-					case "System.Int32":
-					case "System.UInt32":
-					case "System.Int64":
-					case "System.UInt64":
-					case "System.Single":
-					case "System.Double":
-						return new PrimitiveExpression(0, "0");
-					case "System.Char":
-						return new PrimitiveExpression('\0', "'\\0'");
-					case "System.Object":
-					case "System.String":
-						return new PrimitiveExpression(null, "null");
-					case "System.Boolean":
-						return new PrimitiveExpression(false, "false");
-					default:
-						return new DefaultValueExpression(type);
-				}
-			} else {
-				return new PrimitiveExpression(null, "null");
-			}
 		}
 	}
 }

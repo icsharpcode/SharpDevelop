@@ -5,9 +5,13 @@
 	           AssemblyFile="$(SharpDevelopBinPath)\ICSharpCode.Build.Tasks.dll"/>
 	
 	<PropertyGroup>
+		<!-- Prevent problems with VSTS code analysis -->
+		<SharpDevelopRunCodeAnalysis>$(RunCodeAnalysis)</SharpDevelopRunCodeAnalysis>
+		<RunCodeAnalysis>False</RunCodeAnalysis>
+		
 		<!-- Define compilation symbols -->
-		<DefineConstants      Condition="'$(RunCodeAnalysis)'=='true' and '$(Language)'!='VB' ">$(DefineConstants);CODE_ANALYSIS</DefineConstants>
-		<FinalDefineConstants Condition="'$(RunCodeAnalysis)'=='true' and '$(Language)'=='VB' ">$(FinalDefineConstants),CODE_ANALYSIS=1</FinalDefineConstants>
+		<DefineConstants      Condition="'$(SharpDevelopRunCodeAnalysis)'=='true' and '$(Language)'!='VB' ">$(DefineConstants);CODE_ANALYSIS</DefineConstants>
+		<FinalDefineConstants Condition="'$(SharpDevelopRunCodeAnalysis)'=='true' and '$(Language)'=='VB' ">$(FinalDefineConstants),CODE_ANALYSIS=1</FinalDefineConstants>
 		
 		<!-- prepare task properties -->
 		<SharpDevelopFxCopAssembly Condition="'$(CodeAnalysisInputAssembly)'!=''">$(CodeAnalysisInputAssembly)</SharpDevelopFxCopAssembly>
@@ -19,10 +23,10 @@
 		<PrepareForRunDependsOn>$(PrepareForRunDependsOn);SharpDevelopFxCopRun</PrepareForRunDependsOn>
 	</PropertyGroup>
 	
-	<!-- run SharpDevelop FxCop. Disabled if the Microsoft CodeAnalysis extension is installed -->
+	<!-- run SharpDevelop FxCop. -->
 	<Target Name="SharpDevelopFxCopRun"
-	        Condition="'$(RunCodeAnalysis)'=='true' and '$(CodeAnalysisInputAssemblyForTask)'==''"
-	        Inputs="$(SharpDevelopFxCopAssembly)"
+	        Condition="'$(SharpDevelopRunCodeAnalysis)'=='true'"
+	        Inputs="$(SharpDevelopFxCopAssembly);@(CodeAnalysisDictionary)"
 	        Outputs="$(SharpDevelopFxCopLogFile)"
 	        DependsOnTargets="Compile">
 		<CreateItem Include = "$(SharpDevelopFxCopLogFile)">
@@ -33,6 +37,7 @@
 		       Rules          = "$(CodeAnalysisRules)"
 		       RuleAssemblies = "$(CodeAnalysisRuleAssemblies)"
 		       LogFile        = "$(SharpDevelopFxCopLogFile)"
-		       ReferencePaths = "@(ReferencePath)"/>
+		       ReferencePaths = "@(ReferencePath)"
+		       Dictionary     = "@(CodeAnalysisDictionary)"/>
 	</Target>
 </Project>

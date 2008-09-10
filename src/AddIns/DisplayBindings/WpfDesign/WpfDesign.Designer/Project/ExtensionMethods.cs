@@ -34,13 +34,22 @@ namespace ICSharpCode.WpfDesign.Designer
 		}
 
 		public static T FindAncestor<T>(this DependencyObject d, string name) where T : class
-        {
-            while (true) {
-                if (d == null) return null;
-                if (d is T && d is FrameworkElement && (d as FrameworkElement).Name == name) return d as T;
-                d = VisualTreeHelper.GetParent(d);
-            }
-        }
+		{
+			while (true) {
+				if (d == null) return null;
+				if (d is T && d is FrameworkElement && (d as FrameworkElement).Name == name) return d as T;
+				d = VisualTreeHelper.GetParent(d);
+			}
+		}
+		
+		public static T FindAncestor<T>(this DependencyObject d) where T : class
+		{
+			while (true) {
+				if (d == null) return null;
+				if (d is T) return d as T;
+				d = VisualTreeHelper.GetParent(d);
+			}
+		}
 
 		public static T FindChild<T>(this DependencyObject d) where T : class
 		{
@@ -52,8 +61,8 @@ namespace ICSharpCode.WpfDesign.Designer
 				if (result != null) return result;
 			}
 			return null;
-		}	
-	
+		}
+		
 		public static void AddCommandHandler(this UIElement element, ICommand command, Action execute)
 		{
 			AddCommandHandler(element, command, execute, null);

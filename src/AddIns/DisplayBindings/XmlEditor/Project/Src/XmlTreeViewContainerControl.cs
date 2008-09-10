@@ -142,8 +142,13 @@ namespace ICSharpCode.XmlEditor
 		
 		public void ShowXmlIsNotWellFormedMessage(XmlException ex)
 		{
+			ShowErrorMessage(ex.Message);
+		}
+		
+		public void ShowErrorMessage(string message)
+		{
 			xmlElementTreeView.Clear();
-			ErrorMessage = ex.Message;
+			ErrorMessage = message;
 			IsErrorMessageTextBoxVisible = true;
 		}
 	

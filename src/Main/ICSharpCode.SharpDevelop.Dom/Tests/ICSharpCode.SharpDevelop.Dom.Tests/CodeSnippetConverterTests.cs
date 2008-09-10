@@ -52,6 +52,20 @@ namespace ICSharpCode.SharpDevelop.Dom.Tests
 		}
 		
 		[Test]
+		public void UnknownPropertyReference()
+		{
+			Assert.AreEqual("a = Me.Font",
+			                Normalize(converter.CSharpToVB("a = this.Font;", out errors)));
+		}
+		
+		[Test]
+		public void UnknownPropertyReference2()
+		{
+			Assert.AreEqual("X(Me.Font)",
+			                Normalize(converter.CSharpToVB("X(this.Font);", out errors)));
+		}
+		
+		[Test]
 		public void FixReferenceToOtherMethodInSameClass()
 		{
 			Assert.AreEqual("public void A()\n" +
