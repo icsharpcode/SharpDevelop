@@ -418,7 +418,11 @@ namespace ICSharpCode.WpfDesign.XamlDom
 					}
 					if (nameScope != null) {
 						if (oldName != null) {
-							nameScope.UnregisterName(oldName);
+							try {
+								nameScope.UnregisterName(oldName);
+							} catch (Exception x) {
+								Debug.WriteLine(x.Message);
+							}
 						}
 						if (newName != null) {
 							nameScope.RegisterName(newName, ParentObject.Instance);

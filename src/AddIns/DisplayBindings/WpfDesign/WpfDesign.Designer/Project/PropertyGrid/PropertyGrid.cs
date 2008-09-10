@@ -9,6 +9,8 @@ using System.Globalization;
 using ICSharpCode.WpfDesign.PropertyGrid;
 using System.Windows.Threading;
 using System.Diagnostics;
+using System.Windows.Media;
+using System.Windows;
 
 namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 {
@@ -43,6 +45,7 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 			set {
 				currentTab = value;
 				RaisePropertyChanged("CurrentTab");
+				RaisePropertyChanged("NameBackground");
 			}
 		}
 
@@ -68,6 +71,44 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 			private set {
 				singleItem = value;
 				RaisePropertyChanged("SingleItem");
+				RaisePropertyChanged("Name");
+				IsNameCorrect = true;
+			}
+		}
+
+		public string Name {
+		    get {
+				if (SingleItem != null) {
+					return SingleItem.Name;
+				}
+				return null;
+			}
+			set {
+				if (SingleItem != null) {
+					try {
+						if (string.IsNullOrEmpty(value)) {
+							SingleItem.Properties["Name"].Reset();
+						} else {
+							SingleItem.Name = value;
+						}
+						IsNameCorrect = true;
+					} catch {
+						IsNameCorrect = false;
+					}
+					RaisePropertyChanged("Name");
+				}
+			}
+		}
+
+		bool isNameCorrect = true;
+
+		public bool IsNameCorrect {
+		    get {
+				return isNameCorrect;
+			}
+			set {
+				isNameCorrect = value;
+				RaisePropertyChanged("IsNameCorrect");
 			}
 		}
 

@@ -222,7 +222,7 @@
                     <Expander Visibility="{Binding MoreChildren.Count, Converter={x:Static Converters:CollapsedWhenZero.Instance}}"
                               Style="{StaticResource MoreExpanderStyle}">
                         <ItemsControl ItemsSource="{Binding MoreChildren}"
-                                      Background="#F9F9F4"/>
+                                      Background="#F9F9F4" />
                     </Expander>
                 </StackPanel>
             </StackPanel>
@@ -265,11 +265,34 @@
 
             <Controls:EnterTextBox x:Name="NameTextBox"
                                    x:FieldModifier="public"
-                                   Text="{Binding SingleItem.Name}"
+                                   Text="{Binding Name}"
                                    IsEnabled="{Binding SingleItem, Converter={x:Static Converters:FalseWhenNull.Instance}}"
                                    Margin="44.033,27.275,6,0"
                                    Height="19.277"
-                                   VerticalAlignment="Top" />
+                                   VerticalAlignment="Top">
+                <Control.Style>
+                    <Style TargetType="TextBox">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsNameCorrect}"
+                                         Value="False">
+                                <Setter Property="BorderBrush"
+                                        Value="Red" />
+                            </DataTrigger>
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding CurrentTab}"
+                                           Value="Events" />
+                                <Condition Binding="{Binding Text, RelativeSource={RelativeSource Self}}"
+                                           Value="" />
+                                    </MultiDataTrigger.Conditions>
+                                <Setter Property="BorderBrush"
+                                        Value="Red"/>
+                            </MultiDataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Control.Style>
+            </Controls:EnterTextBox>
+
             <TextBlock Text="{Binding SingleItem.ComponentType.Name}"
                        ToolTip="{Binding SingleItem.ComponentType}"
                        Margin="44.033,7.998,6,0"

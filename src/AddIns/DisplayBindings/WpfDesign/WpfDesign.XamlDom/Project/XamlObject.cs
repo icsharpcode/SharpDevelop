@@ -114,7 +114,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		static XmlElement VirualAttachTo(XmlElement e, XmlElement target) 
 		{
 			var prefix = target.GetPrefixOfNamespace(e.NamespaceURI);
-			XmlElement newElement = e.OwnerDocument.CreateElement(prefix, e.Name, e.NamespaceURI);
+			XmlElement newElement = e.OwnerDocument.CreateElement(prefix, e.LocalName, e.NamespaceURI);
 
 			foreach (XmlAttribute a in target.Attributes) {
 				if (a.Prefix == "xmlns" || a.Name == "xmlns") {
