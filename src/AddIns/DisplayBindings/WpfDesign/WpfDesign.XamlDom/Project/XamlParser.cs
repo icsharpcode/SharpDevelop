@@ -83,8 +83,11 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				doc.Load(reader);
 				return Parse(doc, settings);
 			} catch (XmlException x) {
-				if (errorSink != null)
+				if (errorSink != null) {
 					errorSink.ReportError(x.Message, x.LineNumber, x.LinePosition);
+				} else {
+					throw;
+				}
 			}
 
 			return null;
@@ -155,8 +158,9 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				if (currentXamlObject != null) {
 					currentXamlObject.HasErrors = true;
 				}
+			} else {
+				throw x;
 			}
-			// TODO: what when there's no error sink? I think we should throw exception
 		}
 		
 		XamlObject ParseObject(XmlElement element)

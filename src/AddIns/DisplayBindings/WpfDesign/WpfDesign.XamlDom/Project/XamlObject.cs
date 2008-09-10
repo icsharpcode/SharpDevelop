@@ -101,7 +101,6 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			get { return element; }
 		}
 
-		// exists only for ME root
 		XmlAttribute xmlAttribute;
 
 		internal XmlAttribute XmlAttribute { 
@@ -110,13 +109,6 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				xmlAttribute = value;
 				element = VirualAttachTo(XmlElement, value.OwnerElement);
 			}
-		}
-
-		/// <summary>
-		/// Gets whether this XamlObject represents a markup extension in short form ("{Binding}" syntax)
-		/// </summary>
-		public bool IsMarkupExtensionRoot {
-			get { return XmlAttribute != null; }
 		}
 
 		static XmlElement VirualAttachTo(XmlElement e, XmlElement target) 
@@ -138,52 +130,73 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			while (ac.Count > 0) {
 				newElement.Attributes.Append(ac[0]);
 			}
-
 			
 			return newElement;
 		}
 		
 		internal override void AddNodeTo(XamlProperty property)
-		{
-			if (!UpdateMarkupExtension(true)) {
+		{	
+			if (!UpdateXmlAttribute(true)) {
 				property.AddChildNodeToProperty(element);
 			}
+			UpdateMarkupExtensionChain();
 		}
 		
 		internal override void RemoveNodeFromParent()
-		{
+		{			
 			if (XmlAttribute != null) {
 				XmlAttribute.OwnerElement.RemoveAttribute(XmlAttribute.Name);
 				xmlAttribute = null;
 			} else {
-				element.ParentNode.RemoveChild(element);
-			}
+				if (!UpdateXmlAttribute(false)) {
+					element.ParentNode.RemoveChild(element);
+				}
+			}			
+			//TODO: PropertyValue still there
+			//UpdateMarkupExtensionChain();
 		}
 
+		//TODO: reseting path property for binding doesn't work in XamlProperty
+		//use CanResetValue()
 		internal void OnPropertyChanged(XamlProperty property)
-		{
-			UpdateMarkupExtension(false);
+		{			
+			UpdateXmlAttribute(false);
+			UpdateMarkupExtensionChain();
 		}
 
-		bool UpdateMarkupExtension(bool canCreate)
+		void UpdateMarkupExtensionChain()
 		{
-			if (IsMarkupExtension) {
-				var obj = this;
-				while (obj != null && obj.IsMarkupExtension) {
-					obj.ParentProperty.UpdateValueOnInstance();
-					if (obj.IsMarkupExtensionRoot) break;
-					obj = obj.ParentObject;
-				}
-				if (!obj.IsMarkupExtension) obj = null;
-				if (obj == null && !canCreate) return false;
-				var root = obj ?? this;
-				if (MarkupExtensionPrinter.CanPrint(root)) {
-					var s = MarkupExtensionPrinter.Print(root);
-					root.XmlAttribute = root.ParentProperty.SetAttribute(s);
-					return root == this;
-				}
+			var obj = this;
+			while (obj != null && obj.IsMarkupExtension) {
+				obj.ParentProperty.UpdateValueOnInstance();
+				obj = obj.ParentObject;
+			}			
+		}
+
+		bool UpdateXmlAttribute(bool force)
+		{
+			var holder = FindXmlAttributeHolder();
+			if (holder == null && force && IsMarkupExtension) {
+				holder = this;
+			}
+			if (holder != null && MarkupExtensionPrinter.CanPrint(holder)) {
+				var s = MarkupExtensionPrinter.Print(holder);
+				holder.XmlAttribute = holder.ParentProperty.SetAttribute(s);
+				return true;
 			}
 			return false;
+		}
+
+		XamlObject FindXmlAttributeHolder()
+		{
+			var obj = this;
+			while (obj != null && obj.IsMarkupExtension) {
+				if (obj.XmlAttribute != null) {
+					return obj;
+				}
+				obj = obj.ParentObject;
+			}
+			return null;
 		}
 		
 		/// <summary>

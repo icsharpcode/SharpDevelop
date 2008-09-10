@@ -4,7 +4,7 @@
         Name="root"
         Title="Hydralisk">
     <Window.Resources>
-        <sys:String1 x:Key="r1">Title</sys:String>
+        <sys:String x:Key="r1">Title</sys:String>
         <sys:String x:Key="r2">Width</sys:String>
     </Window.Resources>
     <StackPanel>
