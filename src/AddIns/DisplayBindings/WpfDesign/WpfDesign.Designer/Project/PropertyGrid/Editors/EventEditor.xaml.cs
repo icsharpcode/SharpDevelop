@@ -27,14 +27,8 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors
 			get { return DataContext as PropertyNode; }
 		}
 
-		public void Commit()
-		{
-			PropertyNode.Value = Text;
-
-			IEventHandlerService s = PropertyNode.Services.GetService<IEventHandlerService>();
-			if (s != null) {
-				s.CreateEventHandler(PropertyNode.FirstProperty);
-			}
+		public string ValueString {
+			get { return (string)PropertyNode.Value ?? ""; }
 		}
 
 		protected override void OnKeyDown(KeyEventArgs e)
@@ -54,13 +48,23 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors
 
 		protected override void OnPreviewLostKeyboardFocus(KeyboardFocusChangedEventArgs e)
 		{
-			if (PropertyNode != null && (string)PropertyNode.Value != Text) {
+			if (PropertyNode != null && Text != ValueString) {
+				Commit();
+			}
+		}
+
+		public void Commit()
+		{		
+			if (Text != ValueString) {
 				if (string.IsNullOrEmpty(Text)) {
 					PropertyNode.Reset();
+					return;
 				}
-				else {
-					Commit();
-				}
+				PropertyNode.Value = Text;
+			}
+			IEventHandlerService s = PropertyNode.Services.GetService<IEventHandlerService>();
+			if (s != null) {
+				s.CreateEventHandler(PropertyNode.FirstProperty);
 			}
 		}
 	}
