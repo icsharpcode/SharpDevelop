@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.ComponentModel.Design.Serialization;
@@ -44,6 +45,8 @@ namespace ICSharpCode.FormsDesigner
 		Encoding designerCodeFileEncoding;
 		OpenedFile designerCodeFile;
 		IDocument designerCodeFileDocument;
+		
+		readonly Dictionary<Type, TypeDescriptionProvider> addedTypeDescriptionProviders = new Dictionary<Type, TypeDescriptionProvider>();
 		
 		protected DesignSurface DesignSurface {
 			get {
@@ -261,6 +264,11 @@ namespace ICSharpCode.FormsDesigner
 			serviceContainer.AddService(typeof(DesignerOptionService), new SharpDevelopDesignerOptionService());
 			serviceContainer.AddService(typeof(ITypeDiscoveryService), new TypeDiscoveryService());
 			serviceContainer.AddService(typeof(MemberRelationshipService), new DefaultMemberRelationshipService());
+			serviceContainer.AddService(typeof(ProjectResourceService), new ProjectResourceService(ParserService.GetParseInformation(this.DesignerCodeFile.FileName).MostRecentCompilationUnit.ProjectContent));
+			
+			// Provide the ImageResourceEditor for all Image and Icon properties
+			this.addedTypeDescriptionProviders.Add(typeof(Image), TypeDescriptor.AddAttributes(typeof(Image), new EditorAttribute(typeof(ImageResourceEditor), typeof(System.Drawing.Design.UITypeEditor))));
+			this.addedTypeDescriptionProviders.Add(typeof(Icon), TypeDescriptor.AddAttributes(typeof(Icon), new EditorAttribute(typeof(ImageResourceEditor), typeof(System.Drawing.Design.UITypeEditor))));
 			
 			if (generator.CodeDomProvider != null) {
 				serviceContainer.AddService(typeof(System.CodeDom.Compiler.CodeDomProvider), generator.CodeDomProvider);
@@ -378,6 +386,11 @@ namespace ICSharpCode.FormsDesigner
 			}
 			
 			this.loader = null;
+			
+			foreach (KeyValuePair<Type, TypeDescriptionProvider> entry in this.addedTypeDescriptionProviders) {
+				TypeDescriptor.RemoveProvider(entry.Value, entry.Key);
+			}
+			this.addedTypeDescriptionProviders.Clear();
 		}
 		
 		readonly PropertyContainer propertyContainer = new PropertyContainer();

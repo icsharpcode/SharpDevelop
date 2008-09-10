@@ -636,6 +636,15 @@ namespace ICSharpCode.SharpDevelop
 			//if (res != null)
 			//	return res;
 			
+			OpenedFile file = FileService.GetOpenedFile(fileName);
+			if (file != null) {
+				using(Stream s = file.OpenRead()) {
+					// load file
+					Encoding encoding = DefaultFileEncoding;
+					return ICSharpCode.TextEditor.Util.FileReader.ReadFileContent(s, ref encoding);
+				}
+			}
+			
 			// load file
 			return ICSharpCode.TextEditor.Util.FileReader.ReadFileContent(fileName, DefaultFileEncoding);
 		}

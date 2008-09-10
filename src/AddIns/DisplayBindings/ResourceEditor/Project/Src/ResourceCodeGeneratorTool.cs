@@ -27,6 +27,7 @@ namespace ResourceEditor
 			IResourceReader reader;
 			if (string.Equals(Path.GetExtension(inputFilePath), ".resx", StringComparison.OrdinalIgnoreCase)) {
 				reader = new ResXResourceReader(inputFilePath);
+				((ResXResourceReader)reader).BasePath = Path.GetDirectoryName(inputFilePath);
 			} else {
 				reader = new ResourceReader(inputFilePath);
 			}
