@@ -94,9 +94,21 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public void AppendText(string text)
 		{
+			const int MaxTextSize = 50 * 1000 * 1000; // 50m chars = 100 MB
+			const string TruncatedText = "<Text was truncated because it was too long>\r\n";
+			
 			lock (textBuilder) {
-				textBuilder.Append(text);
-				OnTextAppended(new TextEventArgs(text));
+				if (textBuilder.Length + text.Length > MaxTextSize) {
+					int amountToCopy = MaxTextSize / 2 - text.Length;
+					if (amountToCopy <= 0) {
+						SetText(TruncatedText + text.Substring(text.Length - MaxTextSize / 2, MaxTextSize / 2));
+					} else {
+						SetText(TruncatedText + textBuilder.ToString(textBuilder.Length - amountToCopy, amountToCopy) + text);
+					}
+				} else {
+					textBuilder.Append(text);
+					OnTextAppended(new TextEventArgs(text));
+				}
 			}
 		}
 		
