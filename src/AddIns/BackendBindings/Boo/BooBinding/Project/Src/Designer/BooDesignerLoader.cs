@@ -189,12 +189,12 @@ namespace Grunwald.BooBinding.Designer
 			
 			public override bool EnterBinaryExpression(BinaryExpression node)
 			{
-				return this.model == CodeDomLocalizationModel.None && node.Operator == BinaryOperatorType.Assign;
+				return this.model != CodeDomLocalizationModel.PropertyReflection && node.Operator == BinaryOperatorType.Assign;
 			}
 			
 			public override bool EnterMethodInvocationExpression(MethodInvocationExpression node)
 			{
-				if (this.model != CodeDomLocalizationModel.None) return false;
+				if (this.model == CodeDomLocalizationModel.PropertyReflection) return false;
 				
 				MemberReferenceExpression member = node.Target as MemberReferenceExpression;
 				if (member != null) {

@@ -275,8 +275,10 @@ namespace ICSharpCode.FormsDesigner
 			}
 			
 			designSurface = CreateDesignSurface(serviceContainer);
+			designSurface.Loading += this.DesignerLoading;
 			designSurface.Loaded += this.DesignerLoaded;
 			designSurface.Flushed += this.DesignerFlushed;
+			designSurface.Unloading += this.DesingerUnloading;
 			
 			serviceContainer.AddService(typeof(System.ComponentModel.Design.IMenuCommandService), new ICSharpCode.FormsDesigner.Services.MenuCommandService(this.Control, designSurface));
 			ICSharpCode.FormsDesigner.Services.EventBindingService eventBindingService = new ICSharpCode.FormsDesigner.Services.EventBindingService(this, designSurface);
@@ -337,7 +339,9 @@ namespace ICSharpCode.FormsDesigner
 		
 		void ComponentListChanged(object sender, EventArgs e)
 		{
-			shouldUpdateSelectableObjects = true;
+			if (this.loader == null || !this.loader.Loading) {
+				shouldUpdateSelectableObjects = true;
+			}
 		}
 		
 		void UnloadDesigner()
@@ -358,8 +362,10 @@ namespace ICSharpCode.FormsDesigner
 			// at design time" is thrown.
 			// This is solved by calling dispose after the double-click event has been processed.
 			if (designSurface != null) {
+				designSurface.Loading -= this.DesignerLoading;
 				designSurface.Loaded -= this.DesignerLoaded;
 				designSurface.Flushed -= this.DesignerFlushed;
+				designSurface.Unloading -= this.DesingerUnloading;
 				
 				IComponentChangeService componentChangeService = designSurface.GetService(typeof(IComponentChangeService)) as IComponentChangeService;
 				if (componentChangeService != null) {
@@ -437,9 +443,26 @@ namespace ICSharpCode.FormsDesigner
 			}
 		}
 		
+		void DesignerLoading(object sender, EventArgs e)
+		{
+			LoggingService.Debug("Forms designer: DesignerLoader loading...");
+			this.UserControl = this.pleaseWaitLabel;
+			Application.DoEvents();
+		}
+		
+		void DesingerUnloading(object sender, EventArgs e)
+		{
+			LoggingService.Debug("Forms designer: DesignerLoader unloading...");
+			if (!this.disposing) {
+				this.UserControl = this.pleaseWaitLabel;
+				Application.DoEvents();
+			}
+		}
+		
 		void DesignerLoaded(object sender, LoadedEventArgs e)
 		{
 			// This method is called when the designer has loaded.
+			LoggingService.Debug("Forms designer: DesignerLoader loaded, HasSucceeded=" + e.HasSucceeded.ToString());
 			
 			if (e.HasSucceeded) {
 				// Display the designer on the view content
@@ -448,6 +471,7 @@ namespace ICSharpCode.FormsDesigner
 				LoggingService.Debug("FormsDesigner loaded, setting ActiveDesignSurface to " + this.designSurface.ToString());
 				designSurfaceManager.ActiveDesignSurface = this.designSurface;
 				this.DesignerCodeFile.IsDirty = savedIsDirty;
+				this.UpdatePropertyPad();
 			} else {
 				// This method can not only be called during initialization,
 				// but also when the designer reloads itself because of
