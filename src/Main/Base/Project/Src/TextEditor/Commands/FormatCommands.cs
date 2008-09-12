@@ -134,7 +134,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 	{
 		public override IEditAction EditAction {
 			get {
-				return new ICSharpCode.TextEditor.Actions.FormatBuffer();
+				return new ICSharpCode.TextEditor.Actions.IndentSelection();
 			}
 		}
 	}
