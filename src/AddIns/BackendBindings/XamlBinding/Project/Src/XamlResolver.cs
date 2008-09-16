@@ -217,7 +217,7 @@ namespace XamlBinding
 			ArrayList attributes = CtrlSpaceForAttributeName(fileContent, context);
 			if (attributes != null) {
 				foreach (IProperty p in attributes.OfType<IProperty>()) {
-					if (p.ReturnType != null) {
+					if (p.Name == context.AttributeName && p.ReturnType != null) {
 						IClass c = p.ReturnType.GetUnderlyingClass();
 						if (c != null && c.ClassType == ClassType.Enum) {
 							return EnumCompletion(c);
