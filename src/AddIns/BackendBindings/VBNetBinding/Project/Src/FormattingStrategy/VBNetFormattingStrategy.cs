@@ -362,7 +362,6 @@ namespace VBNetBinding.FormattingStrategy
 					prevToken = currentToken;
 				
 				if (IsBlockStart(lexer, currentToken, prevToken)) {
-					LoggingService.Debug(string.Format("Push val: {0}, line: {1}", currentToken.val, currentToken.line));
 					tokens.Push(currentToken);
 				}
 				
@@ -370,19 +369,16 @@ namespace VBNetBinding.FormattingStrategy
 					while (tokens.Count > 0 && !IsMatchingEnd(tokens.Peek(), currentToken)) {
 						Token t = null;
 						missingEnds.Add(t = tokens.Pop());
-						LoggingService.Debug(string.Format("Pop val: {0}, line: {1}", t.val, t.line));
 					}
 					if (tokens.Count != 0) {
-						if (IsMatchingEnd(tokens.Peek(), currentToken))
+						if (IsMatchingEnd(tokens.Peek(), currentToken)) {
 							tokens.Pop();
+						}
 					}
 				}
 				
 				prevToken = currentToken;
 			}
-			
-			if (tokens.Count == 0)
-				return false;
 			
 			if (missingEnds.Count > 0) {
 				return GetClosestMissing(missingEnds, statement, lineNr) != null;
@@ -682,8 +678,6 @@ namespace VBNetBinding.FormattingStrategy
 				
 				if (begin >= selBegin && begin <= selEnd)
 					SmartReplaceLine(textArea.Document, curLine, newLine);
-				
-				LoggingService.Debug("'" + newLine + "'");
 			}
 			
 			for (int i = begin; i < end; i++) {
