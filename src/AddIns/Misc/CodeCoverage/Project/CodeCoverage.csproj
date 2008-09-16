@@ -44,6 +44,9 @@
     <Compile Include="Src\CodeCoveragePad.cs" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\CodeCoverageModule.cs" />
+    <Compile Include="Src\CodeCoverageProperty.cs" />
+    <Compile Include="Src\CodeCoveragePropertyCollection.cs" />
+    <Compile Include="Src\CodeCoveragePropertyTreeNode.cs" />
     <Compile Include="Src\CodeCoverageResults.cs" />
     <Compile Include="Src\CodeCoverageMethod.cs" />
     <Compile Include="Src\CodeCoverageSequencePoint.cs" />

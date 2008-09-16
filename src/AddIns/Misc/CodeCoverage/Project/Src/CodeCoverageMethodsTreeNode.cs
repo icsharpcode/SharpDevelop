@@ -40,9 +40,7 @@ namespace ICSharpCode.CodeCoverage
 		}
 		
 		public List<CodeCoverageMethod> Methods {
-			get {
-				return methods;
-			}
+			get { return methods; }
 		}
 	}
 }

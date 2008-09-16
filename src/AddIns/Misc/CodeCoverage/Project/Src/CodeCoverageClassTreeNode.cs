@@ -30,8 +30,21 @@ namespace ICSharpCode.CodeCoverage
 		protected override void Initialize()
 		{
 			Nodes.Clear();
+
+			// Add methods.
+			CodeCoveragePropertyCollection properties = new CodeCoveragePropertyCollection();
 			foreach (CodeCoverageMethod method in Methods) {
-				CodeCoverageMethodTreeNode node = new CodeCoverageMethodTreeNode(method);
+				if (method.IsProperty) {
+					properties.Add(method);
+				} else {
+					CodeCoverageMethodTreeNode node = new CodeCoverageMethodTreeNode(method);
+					node.AddTo(this);
+				}
+			}
+			
+			// Add properties.
+			foreach (CodeCoverageProperty property in properties) {
+				CodeCoveragePropertyTreeNode node = new CodeCoveragePropertyTreeNode(property);
 				node.AddTo(this);
 			}
 			
