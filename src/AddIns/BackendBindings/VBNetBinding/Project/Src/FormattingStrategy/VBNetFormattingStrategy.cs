@@ -7,11 +7,14 @@
 
 using System;
 using System.Collections.Generic;
-using System.Drawing;
+using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.Parser;
+using ICSharpCode.NRefactory.Parser.VB;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.TextEditor;
@@ -27,8 +30,16 @@ namespace VBNetBinding.FormattingStrategy
 	public class VBFormattingStrategy : DefaultFormattingStrategy
 	{
 		List<VBStatement> statements;
-		VBStatement interfaceStatement;
 		IList<string> keywords;
+		VBStatement interfaceStatement;
+		
+		List<int> blockTokens = new List<int>(
+			new int[] {
+				Tokens.Class, Tokens.Module, Tokens.Namespace, Tokens.Interface, Tokens.Structure,
+				Tokens.Sub, Tokens.Function, Tokens.Operator,
+				Tokens.If, Tokens.For, Tokens.Do, Tokens.While, Tokens.With, Tokens.Select, Tokens.Try,
+				Tokens.Property, Tokens.Get, Tokens.Set
+			});
 		
 		bool doCasing;
 		bool doInsertion;
@@ -42,7 +53,7 @@ namespace VBNetBinding.FormattingStrategy
 			statements.Add(new VBStatement(@"\bmodule\s+\w+$", "^end module$", "End Module", 1));
 			statements.Add(new VBStatement(@"\bstructure\s+\w+\s*($|\(\s*Of)", "^end structure$", "End Structure", 1));
 			statements.Add(new VBStatement(@"^while\s+", "^end while$", "End While", 1));
-			statements.Add(new VBStatement(@"^select case", "^end select$", "End Select", 2));
+			statements.Add(new VBStatement(@"^select case", "^end select$", "End Select", 1));
 			statements.Add(new VBStatement(@"(?<!\b(delegate|mustoverride|declare(\s+(unicode|ansi|auto))?)\s+)\bsub\s+\w+", @"^end\s+sub$", "End Sub", 1));
 			statements.Add(new VBStatement(@"(?<!\bmustoverride (readonly |writeonly )?)\bproperty\s+\w+", @"^end\s+property$", "End Property", 1));
 			statements.Add(new VBStatement(@"(?<!\b(delegate|mustoverride|declare(\s+(unicode|ansi|auto))?)\s+)\bfunction\s+\w+", @"^end\s+function$", "End Function", 1));
@@ -103,154 +114,6 @@ namespace VBNetBinding.FormattingStrategy
 				// these are not keywords, but context dependend
 				"Until", "Ansi", "Unicode", "Region", "Preserve"
 			};
-		}
-		
-		/// <summary>
-		/// Define VB.net specific smart indenting for a line :)
-		/// </summary>
-		protected override int SmartIndentLine(TextArea textArea, int lineNr)
-		{
-			
-			doCasing = PropertyService.Get("VBBinding.TextEditor.EnableCasing", true);
-			IDocument document = textArea.Document;
-			if (lineNr <= 0)
-				return AutoIndentLine(textArea, lineNr);
-			LineSegment lineAbove = document.GetLineSegment(lineNr - 1);
-			string lineAboveText = document.GetText(lineAbove.Offset, lineAbove.Length).Trim();
-			
-			LineSegment curLine = document.GetLineSegment(lineNr);
-			string oldLineText = document.GetText(curLine.Offset, curLine.Length);
-			string curLineText = oldLineText.Trim();
-			
-			// remove comments
-			string texttoreplace = Regex.Replace(lineAboveText, "'.*$", "", RegexOptions.Singleline).Trim();
-			// remove string content
-			foreach (Match match in Regex.Matches(texttoreplace, "\"[^\"]*?\"")) {
-				texttoreplace = texttoreplace.Remove(match.Index, match.Length).Insert(match.Index, new String('-', match.Length));
-			}
-			
-			string curLineReplace = Regex.Replace(curLineText, "'.*$", "", RegexOptions.Singleline).Trim();
-			// remove string content
-			foreach (Match match in Regex.Matches(curLineReplace, "\"[^\"]*?\"")) {
-				curLineReplace = curLineReplace.Remove(match.Index, match.Length).Insert(match.Index, new String('-', match.Length));
-			}
-			
-			StringBuilder b = new StringBuilder(GetIndentation(textArea, lineNr - 1));
-			
-			string indentString = Tab.GetIndentationString(document);
-			
-			if (texttoreplace.IndexOf(':') > 0)
-				texttoreplace = texttoreplace.Substring(0, texttoreplace.IndexOf(':')).TrimEnd();
-			
-			bool matched = false;
-			foreach (VBStatement statement in statements) {
-				if (statement.IndentPlus == 0) continue;
-				if (Regex.IsMatch(curLineReplace, statement.EndRegex, RegexOptions.IgnoreCase)) {
-					for (int i = 0; i < statement.IndentPlus; ++i) {
-						RemoveIndent(b);
-					}
-					// We cannot reset curLineText like this - it would remove
-					// comments after the EndStatement, see SD2-1142
-					//if (doCasing && !statement.EndStatement.EndsWith(" "))
-					//	curLineText = statement.EndStatement;
-					matched = true;
-				}
-				if (Regex.IsMatch(texttoreplace, statement.StartRegex, RegexOptions.IgnoreCase)) {
-					for (int i = 0; i < statement.IndentPlus; ++i) {
-						b.Append(indentString);
-					}
-					matched = true;
-				}
-				if (matched)
-					break;
-			}
-			
-			if (lineNr >= 2) {
-				if (texttoreplace.EndsWith("_")) {
-					// Line continuation
-					char secondLastChar = ' ';
-					for (int i = texttoreplace.Length - 2; i >= 0; --i) {
-						secondLastChar = texttoreplace[i];
-						if (!Char.IsWhiteSpace(secondLastChar))
-							break;
-					}
-					if (secondLastChar != '>') {
-						// is not end of attribute
-						LineSegment line2Above = document.GetLineSegment(lineNr - 2);
-						string lineAboveText2 = document.GetText(line2Above.Offset, line2Above.Length).Trim();
-						lineAboveText2 = Regex.Replace(lineAboveText2, "'.*$", "", RegexOptions.Singleline).Trim();
-						if (!lineAboveText2.EndsWith("_")) {
-							b.Append(indentString);
-						}
-					}
-				} else {
-					LineSegment line2Above = document.GetLineSegment(lineNr - 2);
-					string lineAboveText2 = document.GetText(line2Above.Offset, line2Above.Length).Trim();
-					lineAboveText2 = StripComment(lineAboveText2);
-					if (lineAboveText2.EndsWith("_")) {
-						char secondLastChar = ' ';
-						for (int i = texttoreplace.Length - 2; i >= 0; --i) {
-							secondLastChar = texttoreplace[i];
-							if (!Char.IsWhiteSpace(secondLastChar))
-								break;
-						}
-						if (secondLastChar != '>')
-							RemoveIndent(b);
-					}
-				}
-			}
-			
-			if (IsElseConstruct(curLineText))
-				RemoveIndent(b);
-			
-			if (IsElseConstruct(lineAboveText))
-				b.Append(indentString);
-			
-			int indentLength = b.Length;
-			b.Append(curLineText);
-			string newLineText = b.ToString();
-			if (newLineText != oldLineText) {
-				textArea.Document.Replace(curLine.Offset, curLine.Length, newLineText);
-				int newIndentLength = newLineText.Length - newLineText.TrimStart().Length;
-				int oldIndentLength = oldLineText.Length - oldLineText.TrimStart().Length;
-				if (oldIndentLength != newIndentLength && lineNr == textArea.Caret.Position.Y) {
-					// fix cursor position if indentation was changed
-					int newX = textArea.Caret.Position.X - oldIndentLength + newIndentLength;
-					textArea.Caret.Position = new TextLocation(Math.Max(newX, 0), lineNr);
-				}
-			}
-			return indentLength;
-		}
-		
-		bool IsElseConstruct(string line)
-		{
-			string t = StripComment(line).ToLowerInvariant();
-			if (t.StartsWith("case ")) return true;
-			if (t == "else" || t.StartsWith("elseif ")) return true;
-			if (t == "catch" || t.StartsWith("catch ")) return true;
-			if (t == "finally") return true;
-			
-			return false;
-		}
-		
-		string StripComment(string text)
-		{
-			return Regex.Replace(text, "'.*$", "", RegexOptions.Singleline).Trim();
-		}
-		
-		void RemoveIndent(StringBuilder b)
-		{
-			if (b.Length == 0) return;
-			if (b[b.Length - 1] == '\t') {
-				b.Remove(b.Length - 1, 1);
-			} else {
-				for (int j = 0; j < 4; ++j) {
-					if (b.Length == 0) return;
-					if (b[b.Length - 1] != ' ')
-						break;
-					b.Remove(b.Length - 1, 1);
-				}
-			}
 		}
 		
 		public override void FormatLine(TextArea textArea, int lineNr, int cursorOffset, char ch) // used for comment tag formater/inserter
@@ -346,15 +209,21 @@ namespace VBNetBinding.FormattingStrategy
 					{
 						if (Regex.IsMatch(texttoreplace.Trim(), @"^If .*[^_]$", RegexOptions.IgnoreCase)) {
 							if (false == Regex.IsMatch(texttoreplace, @"\bthen\b", RegexOptions.IgnoreCase)) {
-								textArea.Document.Insert(lineAbove.Offset + lineAbove.Length, " Then");
-								texttoreplace += " Then";
+								string specialThen = "Then"; // do special check in cases like If t = True' comment
+								if (textArea.Document.GetCharAt(lineAbove.Offset + texttoreplace.Length) == '\'')
+									specialThen += " ";
+								if (textArea.Document.GetCharAt(lineAbove.Offset + texttoreplace.Length - 1) != ' ')
+									specialThen = " " + specialThen;
+								
+								textArea.Document.Insert(lineAbove.Offset + texttoreplace.Length, specialThen);
+								texttoreplace += specialThen;
 							}
 						}
 						foreach (VBStatement statement_ in statements) {
 							VBStatement statement = statement_; // allow passing statement byref
 							if (Regex.IsMatch(texttoreplace.Trim(), statement.StartRegex, RegexOptions.IgnoreCase)) {
 								string indentation = GetIndentation(textArea, lineNr - 1);
-								if (isEndStatementNeeded(textArea, ref statement, lineNr)) {
+								if (IsEndStatementNeeded(textArea, ref statement, lineNr)) {
 									textArea.Document.Replace(curLine.Offset, curLine.Length, terminator + indentation + statement.EndStatement);
 								}
 								for (int i = 0; i < statement.IndentPlus; i++) {
@@ -365,6 +234,17 @@ namespace VBNetBinding.FormattingStrategy
 								textArea.Caret.Column = indentation.Length;
 								return;
 							}
+						}
+						
+						// fix for SD2-1284
+						string prevLineText = textArea.Document.GetText(lineAbove);
+						string prevLineText2 = (lineNr > 1) ? textArea.Document.GetText(textArea.Document.GetLineSegment(lineNr - 2)) : "";
+						if (StripComment(prevLineText.ToLowerInvariant()).Trim(' ', '\t', '\n').StartsWith("case")) {
+							string indentation = GetIndentation(textArea, lineNr - 1) + Tab.GetIndentationString(textArea.Document);
+							textArea.Document.Replace(curLine.Offset, curLine.Length, indentation + curLineText.Trim());
+							SmartIndentInternal(textArea, lineNr - 1, lineNr);
+							textArea.Caret.Column = GetIndentation(textArea, lineNr).Length;
+							return;
 						}
 					}
 					
@@ -432,6 +312,137 @@ namespace VBNetBinding.FormattingStrategy
 			}
 		}
 		
+		bool IsElseConstruct(string line)
+		{
+			string t = StripComment(line).ToLowerInvariant();
+			if (t.StartsWith("case ")) return true;
+			if (t == "else" || t.StartsWith("elseif ")) return true;
+			if (t == "catch" || t.StartsWith("catch ")) return true;
+			if (t == "finally") return true;
+			
+			return false;
+		}
+		
+		bool IsInString(string start)
+		{
+			bool inString = false;
+			for (int i = 0; i < start.Length; i++) {
+				if (start[i] == '"')
+					inString = !inString;
+				if (!inString && start[i] == '\'')
+					return false;
+			}
+			return inString;
+		}
+		
+		bool IsFinishedString(string end)
+		{
+			bool inString = true;
+			for (int i = 0; i < end.Length; i++) {
+				if (end[i] == '"')
+					inString = !inString;
+				if (!inString && end[i] == '\'')
+					break;
+			}
+			return !inString;
+		}
+		
+		bool IsEndStatementNeeded(TextArea textArea, ref VBStatement statement, int lineNr)
+		{
+			Stack<Token> tokens = new Stack<Token>();
+			List<Token> missingEnds = new List<Token>();
+			
+			ILexer lexer = ParserFactory.CreateLexer(SupportedLanguage.VBNet, new StringReader(textArea.Document.TextContent));
+			
+			Token currentToken = null;
+			Token prevToken = null;
+
+			while ((currentToken = lexer.NextToken()).kind != Tokens.EOF) {
+				if (prevToken == null)
+					prevToken = currentToken;
+				
+				if (IsBlockStart(lexer, currentToken, prevToken)) {
+					LoggingService.Debug(string.Format("Push val: {0}, line: {1}", currentToken.val, currentToken.line));
+					tokens.Push(currentToken);
+				}
+				
+				if (IsBlockEnd(currentToken, prevToken)) {
+					while (tokens.Count > 0 && !IsMatchingEnd(tokens.Peek(), currentToken)) {
+						Token t = null;
+						missingEnds.Add(t = tokens.Pop());
+						LoggingService.Debug(string.Format("Pop val: {0}, line: {1}", t.val, t.line));
+					}
+					if (tokens.Count != 0) {
+						if (IsMatchingEnd(tokens.Peek(), currentToken))
+							tokens.Pop();
+					}
+				}
+				
+				prevToken = currentToken;
+			}
+			
+			if (tokens.Count == 0)
+				return false;
+			
+			if (missingEnds.Count > 0) {
+				return GetClosestMissing(missingEnds, statement, lineNr) != null;
+			} else
+				return false;
+		}
+		
+		Token GetClosestMissing(List<Token> missingEnds, VBStatement statement, int lineNr)
+		{
+			Token closest = null;
+			int diff = 0;
+			
+			foreach (Token t in missingEnds) {
+				if (IsMatchingStatement(t, statement) && ((diff = lineNr - t.line + 1) > -1)) {
+					if (closest == null)
+						closest = t;
+					else {
+						if (diff < lineNr - closest.line + 1)
+							closest = t;
+					}
+				}
+			}
+			return closest;
+		}
+		
+		bool IsMatchingEnd(Token begin, Token end)
+		{
+			if (begin.kind == end.kind)
+				return true;
+			
+			if (begin.kind == Tokens.For && end.kind == Tokens.Next)
+				return true;
+			
+			if (begin.kind == Tokens.Do && end.kind == Tokens.Loop)
+				return true;
+			
+			return false;
+		}
+		
+		bool IsMatchingStatement(Token token, VBStatement statement)
+		{
+			// funktioniert noch nicht!
+			
+			if (token.val == "For" && statement.EndStatement == "Next")
+				return true;
+			
+			if (token.val == "Do" && statement.EndStatement.StartsWith("Loop"))
+				return true;
+			
+			bool empty = !string.IsNullOrEmpty(token.val);
+			bool match = statement.EndStatement.IndexOf(token.val, StringComparison.InvariantCultureIgnoreCase) != -1;
+			
+			return empty && match;
+		}
+		
+		string StripComment(string text)
+		{
+			return Regex.Replace(text, "'.*$", "", RegexOptions.Singleline).Trim();
+		}
+		
 		bool IsInsideDocumentationComment(TextArea textArea, LineSegment curLine, int cursorOffset)
 		{
 			for (int i = curLine.Offset; i < cursorOffset; ++i) {
@@ -445,6 +456,301 @@ namespace VBNetBinding.FormattingStrategy
 				}
 			}
 			return false;
+		}
+		
+		public override void IndentLines(TextArea textArea, int begin, int end)
+		{
+			if (textArea.Document.TextEditorProperties.IndentStyle != IndentStyle.Smart) {
+				base.IndentLines(textArea, begin, end);
+				return;
+			}
+			
+			SmartIndentInternal(textArea, begin, end);
+		}
+		
+		int SmartIndentInternal(TextArea textArea, int begin, int end)
+		{
+			ILexer lexer = ParserFactory.CreateLexer(SupportedLanguage.VBNet, new StringReader(textArea.Document.TextContent));
+			
+			int indentation = 0;
+			
+			int oldLine = 0;
+			
+			bool inInterface = false;
+			bool isMustOverride = false;
+			bool isDeclare = false;
+			bool isDelegate = false;
+			
+			Token currentToken = null;
+			Token prevToken = null;
+			
+			while ((currentToken = lexer.NextToken()).kind != Tokens.EOF) {
+				if (prevToken == null)
+					prevToken = currentToken;
+				
+				if (currentToken.kind == Tokens.MustOverride)
+					isMustOverride = true;
+				
+				if (currentToken.kind == Tokens.Delegate)
+					isDelegate = true;
+				
+				if (currentToken.kind == Tokens.Declare)
+					isDeclare = true;
+				
+				if (currentToken.kind == Tokens.EOL)
+					isDelegate = isDeclare = isMustOverride = false;
+				
+				if (IsSpecialCase(currentToken, prevToken)) {
+					ApplyToRange(textArea, ref indentation, oldLine, currentToken.line - 1, begin, end);
+					indentation--;
+					ApplyToRange(textArea, ref indentation, currentToken.line - 1, currentToken.line, begin, end);
+					indentation++;
+					
+					oldLine = currentToken.line;
+				}
+				
+				if (IsBlockEnd(currentToken, prevToken)) {
+					ApplyToRange(textArea, ref indentation, oldLine, currentToken.line - 1, begin, end);
+					
+					if (currentToken.kind == Tokens.Interface)
+						inInterface = false;
+					
+					if (!inInterface && !isMustOverride && !isDeclare && !isDelegate) {
+						indentation--;
+						
+						if (currentToken.kind == Tokens.Select)
+							indentation--;
+					}
+					
+					oldLine = currentToken.line - 1;
+				}
+				
+				if (IsBlockStart(lexer, currentToken, prevToken)) {
+					ApplyToRange(textArea, ref indentation, oldLine, currentToken.line, begin, end);
+					
+					if (!inInterface && !isMustOverride && !isDeclare && !isDelegate) {
+						indentation++;
+						
+						if (currentToken.kind == Tokens.Select)
+							indentation++;
+					}
+					
+					if (currentToken.kind == Tokens.Interface)
+						inInterface = true;
+					
+					oldLine = currentToken.line;
+				}
+				
+				prevToken = currentToken;
+			}
+			
+			// do last indent step
+			ApplyToRange(textArea, ref indentation, oldLine, prevToken.line, begin, end);
+			
+			return indentation;
+		}
+		
+		bool IsBlockStart(ILexer lexer, Token current, Token prev)
+		{
+			if (blockTokens.Contains(current.kind)) {
+				if (current.kind == Tokens.If) {
+					if (prev.kind != Tokens.EOL)
+						return false;
+					
+					lexer.StartPeek();
+					
+					Token currentToken = null;
+					
+					while ((currentToken = lexer.Peek()).kind != Tokens.EOL) {
+						if (currentToken.kind == Tokens.Then) {
+							if (lexer.Peek().kind == Tokens.EOL)
+								return true;
+							else
+								return false;
+						}
+					}
+				}
+				
+				if (current.kind == Tokens.Function) {
+					lexer.StartPeek();
+					
+					if (lexer.Peek().kind == Tokens.OpenParenthesis)
+						return false;
+				}
+				
+				if (current.kind == Tokens.With && prev.kind != Tokens.EOL)
+					return false;
+				
+				if (current.kind == Tokens.While && (prev.kind == Tokens.Skip || prev.kind == Tokens.Take))
+					return false;
+				
+				if (current.kind == Tokens.Select && prev.kind != Tokens.EOL)
+					return false;
+				
+				if (current.kind == Tokens.Class || current.kind == Tokens.Structure) {
+					lexer.StartPeek();
+					
+					Token t = lexer.Peek();
+					
+					if (t.kind == Tokens.CloseParenthesis || t.kind == Tokens.CloseCurlyBrace || t.kind == Tokens.Comma)
+						return false;
+				}
+				
+				if (current.kind == Tokens.Module) {
+					lexer.StartPeek();
+					
+					Token t = lexer.Peek();
+					
+					if (t.kind == Tokens.Colon)
+						return false;
+				}
+				
+				if (prev.kind == Tokens.End ||
+				    prev.kind == Tokens.Loop ||
+				    prev.kind == Tokens.Exit ||
+				    prev.kind == Tokens.Continue ||
+				    prev.kind == Tokens.Resume ||
+				    prev.kind == Tokens.GoTo ||
+				    prev.kind == Tokens.Do)
+					return false;
+				else
+					return true;
+			}
+			
+			return false;
+		}
+		
+		bool IsBlockEnd(Token current, Token prev)
+		{
+			if (current.kind == Tokens.Next) {
+				if (prev.kind == Tokens.Resume)
+					return false;
+				else
+					return true;
+			}
+			
+			if (current.kind == Tokens.Loop)
+				return true;
+			
+			if (blockTokens.Contains(current.kind)) {
+				if (prev.kind == Tokens.End)
+					return true;
+				else
+					return false;
+			}
+			
+			return false;
+		}
+		
+		bool IsSpecialCase(Token current, Token prev)
+		{
+			switch (current.kind) {
+				case Tokens.Else:
+					return true;
+				case Tokens.Case:
+					if (prev.kind == Tokens.Select)
+						return false;
+					else
+						return true;
+				case Tokens.ElseIf:
+					return true;
+				case Tokens.Catch:
+					return true;
+				case Tokens.Finally:
+					return true;
+			}
+			
+			return false;
+		}
+		
+		bool multiLine = false;
+		bool otherMultiLine = false;
+
+		void ApplyToRange(TextArea textArea, ref int indentation, int begin, int end, int selBegin, int selEnd)
+		{
+			bool useSpaces = textArea.TextEditorProperties.ConvertTabsToSpaces;
+			int indentationSize = textArea.TextEditorProperties.IndentationSize;
+			int tabSize = textArea.TextEditorProperties.TabIndent;
+			int spaces = indentationSize * (indentation < 0 ? 0 : indentation);
+			int tabs = 0;
+			
+			if (begin >= end) {
+				LineSegment curLine = textArea.Document.GetLineSegment(begin);
+				string lineText = textArea.Document.GetText(curLine).Trim(' ', '\t', '\n');
+				
+				string newLine = new string('\t', tabs) + new string(' ', spaces) + lineText;
+				
+				if (begin >= selBegin && begin <= selEnd)
+					SmartReplaceLine(textArea.Document, curLine, newLine);
+				
+				LoggingService.Debug("'" + newLine + "'");
+			}
+			
+			for (int i = begin; i < end; i++) {
+				LineSegment curLine = textArea.Document.GetLineSegment(i);
+				string lineText = textArea.Document.GetText(curLine).Trim(' ', '\t', '\n');
+				
+				string noComments = StripComment(lineText).TrimEnd(' ', '\t', '\n');
+				
+				
+				if (otherMultiLine && noComments == "}") {
+					indentation--;
+					otherMultiLine = false;
+				}
+				
+				spaces = indentationSize * (indentation < 0 ? 0 : indentation);
+				tabs = 0;
+				
+				if (!useSpaces) {
+					tabs = (int)(spaces / tabSize);
+					spaces %= tabSize;
+				}
+
+				
+				string newLine = new string('\t', tabs) + new string(' ', spaces) + lineText;
+				
+				if (noComments.EndsWith("_") && !IsStatement(noComments) && !otherMultiLine) {
+					otherMultiLine = true;
+					indentation++;
+				}
+				
+				if (noComments.EndsWith("_") && IsStatement(noComments)) {
+					multiLine = true;
+					indentation++;
+				}
+				
+				if (!noComments.EndsWith("_") && multiLine) {
+					indentation--;
+					multiLine = false;
+				}
+				
+				if (!noComments.EndsWith("_") && otherMultiLine) {
+					indentation--;
+					otherMultiLine = false;
+				}
+				
+				if (i >= selBegin && i <= selEnd)
+					SmartReplaceLine(textArea.Document, curLine, newLine);
+				
+				LoggingService.Debug("'" + newLine + "'");
+			}
+		}
+		
+		bool IsStatement(string text)
+		{
+			foreach (VBStatement s in this.statements) {
+				if (Regex.IsMatch(text, s.StartRegex, RegexOptions.IgnoreCase))
+					return true;
+			}
+			
+			return false;
+		}
+
+		protected override int SmartIndentLine(TextArea textArea, int line)
+		{
+			if (line <= 0)
+				return AutoIndentLine(textArea, line);
+			return SmartIndentInternal(textArea, line, line);
 		}
 		
 		/// <summary>
@@ -505,88 +811,6 @@ namespace VBNetBinding.FormattingStrategy
 			}
 			return nextElement;
 		}
-		
-		bool IsInString(string start)
-		{
-			bool inString = false;
-			for (int i = 0; i < start.Length; i++) {
-				if (start[i] == '"')
-					inString = !inString;
-				if (!inString && start[i] == '\'')
-					return false;
-			}
-			return inString;
-		}
-		bool IsFinishedString(string end)
-		{
-			bool inString = true;
-			for (int i = 0; i < end.Length; i++) {
-				if (end[i] == '"')
-					inString = !inString;
-				if (!inString && end[i] == '\'')
-					break;
-			}
-			return !inString;
-		}
-		
-		bool isEndStatementNeeded(TextArea textArea, ref VBStatement statement, int lineNr)
-		{
-			int count = 0;
-			bool inInterface = false;
-			
-			for (int i = 0; i < textArea.Document.TotalNumberOfLines; i++) {
-				LineSegment line = textArea.Document.GetLineSegment(i);
-				string lineText = textArea.Document.GetText(line.Offset, line.Length).Trim();
-				
-				if (statement != interfaceStatement) {
-					if (Regex.IsMatch(lineText, interfaceStatement.StartRegex, RegexOptions.IgnoreCase)) {
-						inInterface = true;
-					} else if (Regex.IsMatch(lineText, interfaceStatement.EndRegex, RegexOptions.IgnoreCase)){
-						inInterface = false;
-					}
-					
-					if (i == lineNr && inInterface) {
-						// set IndentPlus to 0
-						statement = new VBStatement(statement.StartRegex, statement.EndRegex, statement.EndStatement, 0);
-					}
-				}
-				
-				//Omits comments and contents of interfaces
-				if (lineText.StartsWith("'") || inInterface) {
-					continue;
-				}
-				
-				if (Regex.IsMatch(lineText, statement.StartRegex, RegexOptions.IgnoreCase)) {
-					count++;
-				} else if (Regex.IsMatch(lineText, statement.EndRegex, RegexOptions.IgnoreCase)) {
-					count--;
-				}
-			}
-			
-			return count > 0;
-		}
-		
-		class VBStatement
-		{
-			public string StartRegex   = "";
-			public string EndRegex     = "";
-			public string EndStatement = "";
-			
-			public int IndentPlus = 0;
-			
-			public VBStatement()
-			{
-			}
-			
-			public VBStatement(string startRegex, string endRegex, string endStatement, int indentPlus)
-			{
-				StartRegex = startRegex;
-				EndRegex   = endRegex;
-				EndStatement = endStatement;
-				IndentPlus   = indentPlus;
-			}
-		}
-		
 		
 		#region SearchBracket
 		public override int SearchBracketBackward(IDocument document, int offset, char openBracket, char closingBracket)

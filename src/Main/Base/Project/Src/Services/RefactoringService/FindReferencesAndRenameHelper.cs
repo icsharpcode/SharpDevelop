@@ -329,6 +329,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		
 		public static void ModifyDocument(List<Modification> modifications, ICSharpCode.TextEditor.Document.IDocument doc, int offset, int length, string newName)
 		{
+			doc.UndoStack.StartUndoGroup();
 			foreach (Modification m in modifications) {
 				if (m.Document == doc) {
 					if (m.Offset < offset)
@@ -349,6 +350,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				}
 				modifications.Add(new Modification(doc, offset, lengthDifference));
 			}
+			doc.UndoStack.EndUndoGroup();
 		}
 		
 		public static void ShowAsSearchResults(string pattern, List<Reference> list)
@@ -369,15 +371,23 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			List<Modification> modifications = new List<Modification>();
 			foreach (Reference r in list) {
 				IViewContent viewContent = FileService.OpenFile(r.FileName);
+				ITextEditorControlProvider p = viewContent as ITextEditorControlProvider;
+				
 				if (!modifiedContents.Contains(viewContent)) {
 					modifiedContents.Add(viewContent);
+					if (p != null)
+						p.TextEditorControl.Document.UndoStack.StartUndoGroup();
 				}
-				ITextEditorControlProvider p = viewContent as ITextEditorControlProvider;
+				
 				if (p != null) {
 					ModifyDocument(modifications, p.TextEditorControl.Document, r.Offset, r.Length, newName);
 				}
 			}
 			foreach (IViewContent viewContent in modifiedContents) {
+				ITextEditorControlProvider p = viewContent as ITextEditorControlProvider;
+				if (p != null)
+					p.TextEditorControl.Document.UndoStack.EndUndoGroup();
+				
 				ParserService.ParseViewContent(viewContent);
 			}
 		}
