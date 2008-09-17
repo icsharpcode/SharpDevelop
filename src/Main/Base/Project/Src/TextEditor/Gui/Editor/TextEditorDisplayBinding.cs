@@ -251,13 +251,11 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			properties.Set("CaretOffset", textEditorControl.ActiveTextAreaControl.Caret.Offset);
 			properties.Set("VisibleLine", textEditorControl.ActiveTextAreaControl.TextArea.TextView.FirstVisibleLine);
 			properties.Set("HighlightingLanguage", textEditorControl.Document.HighlightingStrategy.Name);
-			properties.Set("Foldings", textEditorControl.Document.FoldingManager.SerializeToString());
 			return properties;
 		}
 		
-		public void SetMemento(Properties memento)
+		public void SetMemento(Properties properties)
 		{
-			Properties properties = (Properties)memento;
 			textEditorControl.ActiveTextAreaControl.Caret.Position =  textEditorControl.Document.OffsetToPosition(Math.Min(textEditorControl.Document.TextLength, Math.Max(0, properties.Get("CaretOffset", textEditorControl.ActiveTextAreaControl.Caret.Offset))));
 //			textAreaControl.SetDesiredColumn();
 			
@@ -269,7 +267,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			}
 			textEditorControl.ActiveTextAreaControl.TextArea.TextView.FirstVisibleLine = properties.Get("VisibleLine", 0);
 			
-			textEditorControl.Document.FoldingManager.DeserializeFromString(properties.Get("Foldings", ""));
 //			// insane check for cursor position, may be required for document reload.
 //			int lineNr = textAreaControl.Document.GetLineNumberForOffset(textAreaControl.Document.Caret.Offset);
 //			LineSegment lineSegment = textAreaControl.Document.GetLineSegment(lineNr);

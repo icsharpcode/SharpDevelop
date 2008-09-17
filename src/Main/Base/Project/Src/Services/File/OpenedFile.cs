@@ -274,11 +274,13 @@ namespace ICSharpCode.SharpDevelop
 			}
 			try {
 				inLoadOperation = true;
+				Properties memento = GetMemento(newView);
 				using (Stream sourceStream = OpenRead()) {
 					currentView = newView;
 					fileData = null;
 					newView.Load(this, sourceStream);
 				}
+				RestoreMemento(newView, memento);
 			} finally {
 				inLoadOperation = false;
 			}
@@ -300,13 +302,32 @@ namespace ICSharpCode.SharpDevelop
 			if (currentView != null) {
 				try {
 					inLoadOperation = true;
+					Properties memento = GetMemento(currentView);
 					using (Stream sourceStream = OpenRead()) {
 						currentView.Load(this, sourceStream);
 					}
 					IsDirty = false;
+					RestoreMemento(currentView, memento);
 				} finally {
 					inLoadOperation = false;
 				}
+			}
+		}
+		
+		static Properties GetMemento(IViewContent viewContent)
+		{
+			IMementoCapable mementoCapable = viewContent as IMementoCapable;
+			if (mementoCapable == null) {
+				return null;
+			} else {
+				return mementoCapable.CreateMemento();
+			}
+		}
+		
+		static void RestoreMemento(IViewContent viewContent, Properties memento)
+		{
+			if (memento != null) {
+				((IMementoCapable)viewContent).SetMemento(memento);
 			}
 		}
 	}

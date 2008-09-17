@@ -289,9 +289,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public void CloseContent(IViewContent content)
 		{
-//			if (PropertyService.Get("SharpDevelop.LoadDocumentProperties", true) && content is IMementoCapable) {
-//				StoreMemento(content);
-//			}
+			if (PropertyService.Get("SharpDevelop.LoadDocumentProperties", true) && content is IMementoCapable) {
+				StoreMemento(content);
+			}
 			if (viewContentCollection.Contains(content)) {
 				viewContentCollection.Remove(content);
 			}
@@ -317,16 +317,16 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			System.Diagnostics.Debug.Assert(layout != null);
 			viewContentCollection.Add(content);
-//			if (PropertyService.Get("SharpDevelop.LoadDocumentProperties", true) && content is IMementoCapable) {
-//				try {
-//					Properties memento = GetStoredMemento(content);
-//					if (memento != null) {
-//						((IMementoCapable)content).SetMemento(memento);
-//					}
-//				} catch (Exception e) {
-//					MessageService.ShowError(e, "Can't get/set memento");
-//				}
-//			}
+			if (PropertyService.Get("SharpDevelop.LoadDocumentProperties", true) && content is IMementoCapable) {
+				try {
+					Properties memento = GetStoredMemento(content);
+					if (memento != null) {
+						((IMementoCapable)content).SetMemento(memento);
+					}
+				} catch (Exception e) {
+					MessageService.ShowError(e, "Can't get/set memento");
+				}
+			}
 			
 			layout.ShowView(content);
 			content.WorkbenchWindow.SelectWindow();
@@ -396,15 +396,55 @@ namespace ICSharpCode.SharpDevelop.Gui
 			StatusBarService.RedrawStatusbar();
 		}
 		
-		string GetMementoFileName(string contentName)
-		{
-			string directory = Path.Combine(PropertyService.ConfigDirectory, "temp");
-			//string directoryName = Path.GetDirectoryName(contentName);
-			return Path.Combine(directory,
-			                    Path.GetFileName(contentName)
-			                    + "." + contentName.ToLowerInvariant().GetHashCode().ToString("x")
-			                    + ".xml");
+		#region Load/save view content mementos
+		
+		string viewContentMementosFileName;
+		
+		string ViewContentMementosFileName {
+			get {
+				if (viewContentMementosFileName == null) {
+					viewContentMementosFileName = Path.Combine(PropertyService.ConfigDirectory, "LastViewStates.xml");
+				}
+				return viewContentMementosFileName;
+			}
 		}
+		
+		Properties LoadOrCreateViewContentMementos()
+		{
+			return Properties.Load(this.ViewContentMementosFileName) ?? new Properties();
+		}
+		
+		static string GetMementoKeyName(IViewContent viewContent)
+		{
+			return String.Concat(viewContent.GetType().FullName.GetHashCode().ToString("x", CultureInfo.InvariantCulture), ":", FileUtility.NormalizePath(viewContent.PrimaryFileName).ToLowerInvariant());
+		}
+		
+		void StoreMemento(IViewContent viewContent)
+		{
+			if (viewContent.PrimaryFileName == null)
+				return;
+			
+			string key = GetMementoKeyName(viewContent);
+			LoggingService.Debug("Saving memento of '" + viewContent.ToString() + "' to key '" + key + "'");
+			
+			Properties memento = ((IMementoCapable)viewContent).CreateMemento();
+			Properties p = this.LoadOrCreateViewContentMementos();
+			p.Set(key, memento);
+			FileUtility.ObservedSave(new NamedFileOperationDelegate(p.Save), this.ViewContentMementosFileName, FileErrorPolicy.Inform);
+		}
+		
+		Properties GetStoredMemento(IViewContent viewContent)
+		{
+			if (viewContent.PrimaryFileName == null)
+				return null;
+			
+			string key = GetMementoKeyName(viewContent);
+			LoggingService.Debug("Trying to restore memento of '" + viewContent.ToString() + "' from key '" + key + "'");
+			
+			return this.LoadOrCreateViewContentMementos().Get<Properties>(key, null);
+		}
+		
+		#endregion
 		
 		// interface IMementoCapable
 		public Properties CreateMemento()
