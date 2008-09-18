@@ -350,6 +350,10 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 				}
 				if (text[i] == '\n') {
 					lineOffsets.Add(i + 1);
+				} else if (text[i] == '\r') {
+					if (i + 1 < text.Length && text[i + 1] != '\n') {
+						lineOffsets.Add(i + 1);
+					}
 				}
 			}
 			if (offset == text.Length) {
