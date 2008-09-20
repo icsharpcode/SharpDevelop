@@ -451,31 +451,31 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		#region ICSharpCode.SharpDevelop.Gui.IClipboardHandler interface implementation
 		public bool EnableCut {
 			get {
-				return textEditorControl.ActiveTextAreaControl.TextArea.ClipboardHandler.EnableCut;
+				return !this.IsDisposed && textEditorControl.ActiveTextAreaControl.TextArea.ClipboardHandler.EnableCut;
 			}
 		}
 		
 		public bool EnableCopy {
 			get {
-				return textEditorControl.ActiveTextAreaControl.TextArea.ClipboardHandler.EnableCopy;
+				return !this.IsDisposed && textEditorControl.ActiveTextAreaControl.TextArea.ClipboardHandler.EnableCopy;
 			}
 		}
 		
 		public bool EnablePaste {
 			get {
-				return textEditorControl.ActiveTextAreaControl.TextArea.ClipboardHandler.EnablePaste;
+				return !this.IsDisposed && textEditorControl.ActiveTextAreaControl.TextArea.ClipboardHandler.EnablePaste;
 			}
 		}
 		
 		public bool EnableDelete {
 			get {
-				return textEditorControl.ActiveTextAreaControl.TextArea.ClipboardHandler.EnableDelete;
+				return !this.IsDisposed && textEditorControl.ActiveTextAreaControl.TextArea.ClipboardHandler.EnableDelete;
 			}
 		}
 		
 		public bool EnableSelectAll {
 			get {
-				return textEditorControl.ActiveTextAreaControl.TextArea.ClipboardHandler.EnableSelectAll;
+				return !this.IsDisposed && textEditorControl.ActiveTextAreaControl.TextArea.ClipboardHandler.EnableSelectAll;
 			}
 		}
 		
