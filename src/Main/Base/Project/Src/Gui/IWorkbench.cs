@@ -33,9 +33,16 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		
 		/// <summary>
-		/// A collection in which all opened view contents are saved.
+		/// A collection in which all opened view contents (including all secondary view contents) are saved.
 		/// </summary>
 		ICollection<IViewContent> ViewContentCollection {
+			get;
+		}
+		
+		/// <summary>
+		/// A collection in which all opened primary view contents are saved.
+		/// </summary>
+		ICollection<IViewContent> PrimaryViewContents {
 			get;
 		}
 		

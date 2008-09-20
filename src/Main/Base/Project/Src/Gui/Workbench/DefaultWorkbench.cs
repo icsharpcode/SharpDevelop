@@ -31,7 +31,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		readonly static string viewContentPath = "/SharpDevelop/Workbench/Pads";
 		
 		List<PadDescriptor> padViewContentCollection = new List<PadDescriptor>();
-		List<IViewContent> viewContentCollection = new List<IViewContent>();
+		List<IViewContent> primaryViewContentCollection = new List<IViewContent>();
 		
 		bool isActiveWindow; // Gets whether SharpDevelop is the active application in Windows
 		
@@ -113,17 +113,26 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public IList<IWorkbenchWindow> WorkbenchWindowCollection {
 			get {
-				return viewContentCollection.Select(vc => vc.WorkbenchWindow)
+				return primaryViewContentCollection.Select(vc => vc.WorkbenchWindow)
 					.Distinct().ToArray().AsReadOnly();
+			}
+		}
+		
+		public ICollection<IViewContent> PrimaryViewContents {
+			get {
+//				return Linq.ToArray(Linq.Concat(Linq.Select<IWorkbenchWindow, IEnumerable<IViewContent>>(
+//					workbenchWindowCollection, delegate (IWorkbenchWindow w) { return w.ViewContents; }
+//				)));
+				return primaryViewContentCollection.AsReadOnly();
 			}
 		}
 		
 		public ICollection<IViewContent> ViewContentCollection {
 			get {
-//				return Linq.ToArray(Linq.Concat(Linq.Select<IWorkbenchWindow, IEnumerable<IViewContent>>(
-//					workbenchWindowCollection, delegate (IWorkbenchWindow w) { return w.ViewContents; }
-//				)));
-				return viewContentCollection.AsReadOnly();
+				ICollection<IViewContent> primaryContents = PrimaryViewContents;
+				List<IViewContent> contents = new List<IViewContent>(primaryContents);
+				contents.AddRange(primaryContents.SelectMany(vc => vc.SecondaryViewContents));
+				return contents.AsReadOnly();
 			}
 		}
 		
@@ -292,8 +301,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (PropertyService.Get("SharpDevelop.LoadDocumentProperties", true) && content is IMementoCapable) {
 				StoreMemento(content);
 			}
-			if (viewContentCollection.Contains(content)) {
-				viewContentCollection.Remove(content);
+			if (primaryViewContentCollection.Contains(content)) {
+				primaryViewContentCollection.Remove(content);
 			}
 			OnViewClosed(new ViewContentEventArgs(content));
 			content.Dispose();
@@ -316,7 +325,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public void ShowView(IViewContent content)
 		{
 			System.Diagnostics.Debug.Assert(layout != null);
-			viewContentCollection.Add(content);
+			primaryViewContentCollection.Add(content);
 			if (PropertyService.Get("SharpDevelop.LoadDocumentProperties", true) && content is IMementoCapable) {
 				try {
 					Properties memento = GetStoredMemento(content);

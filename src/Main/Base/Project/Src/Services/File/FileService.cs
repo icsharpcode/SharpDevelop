@@ -278,7 +278,7 @@ namespace ICSharpCode.SharpDevelop
 			List<string> fileNames = new List<string>();
 			foreach (IViewContent content in WorkbenchSingleton.Workbench.ViewContentCollection) {
 				string contentName = content.PrimaryFileName;
-				if (contentName != null)
+				if (contentName != null && !fileNames.Contains(contentName))
 					fileNames.Add(contentName);
 			}
 			return fileNames;

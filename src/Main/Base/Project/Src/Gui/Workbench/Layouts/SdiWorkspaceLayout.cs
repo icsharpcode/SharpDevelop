@@ -180,7 +180,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		void ShowViewContents()
 		{
-			foreach (IViewContent content in WorkbenchSingleton.Workbench.ViewContentCollection) {
+			foreach (IViewContent content in WorkbenchSingleton.Workbench.PrimaryViewContents) {
 				ShowView(content);
 			}
 		}

@@ -47,6 +47,12 @@ namespace PythonBinding.Tests.Utils
 			}
 		}
 		
+		public ICollection<IViewContent> PrimaryViewContents {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
 		public List<PadDescriptor> PadContentCollection {
 			get {
 				throw new NotImplementedException();
