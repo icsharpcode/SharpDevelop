@@ -154,14 +154,15 @@ namespace Debugger.AddIn
 			
 			Value val = Eval.NewObjectNoConstructor(DebugType.Create(context.Process, null, typeof(bool).FullName));
 			
-			switch (binaryOperatorExpression.Op)
-			{
-				case BinaryOperatorType.Equality :
-					val.PrimitiveValue = (right.PrimitiveValue == left.PrimitiveValue);
-					break;
-				case BinaryOperatorType.InEquality :
-					val.PrimitiveValue = (right.PrimitiveValue != left.PrimitiveValue);
-					break;
+			try {
+				switch (binaryOperatorExpression.Op)
+				{
+					case BinaryOperatorType.Equality :
+						val.PrimitiveValue = object.Equals(right.PrimitiveValue, left.PrimitiveValue);
+						break;
+					case BinaryOperatorType.InEquality :
+						val.PrimitiveValue = !object.Equals(right.PrimitiveValue, left.PrimitiveValue);
+						break;
 //				case BinaryOperatorType.Add :
 //					val.PrimitiveValue = (right.PrimitiveValue.ToString() + left.PrimitiveValue.ToString());
 //					break;
@@ -174,8 +175,11 @@ namespace Debugger.AddIn
 //				case BinaryOperatorType.GreaterThanOrEqual :
 //					val.PrimitiveValue = (right.PrimitiveValue >= left.PrimitiveValue);
 //					break;
-				default :
-					throw new NotImplementedException("BinaryOperator: " + binaryOperatorExpression.Op + "!");
+						default :
+							throw new NotImplementedException("BinaryOperator: " + binaryOperatorExpression.Op + "!");
+				}
+			} catch (System.Exception e) {
+				throw new GetValueException(e.Message);
 			}
 			
 			return val;
