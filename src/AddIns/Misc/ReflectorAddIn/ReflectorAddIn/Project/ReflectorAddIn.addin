@@ -1,7 +1,7 @@
 ﻿<AddIn name        = "ReflectorAddIn"
        author      = "Christian Hornung"
        copyright   = "prj:///doc/copyright.txt"
-       description = "Can open Lutz Roeder's .NET Reflector on a selected class or member.">
+       description = "Can open Red Gate's .NET Reflector on a selected class or member.">
 	
 	<Manifest>
 		<Identity name="ReflectorAddIn" />

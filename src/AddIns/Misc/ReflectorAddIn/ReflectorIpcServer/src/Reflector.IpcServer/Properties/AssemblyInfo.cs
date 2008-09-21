@@ -2,7 +2,7 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Christian Hornung" email="chhornung@googlemail.com"/>
-//     <version>$Revision$</version>
+//     <version>$Revision: 9 $</version>
 // </file>
 
 using System;
@@ -13,7 +13,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Reflector.IpcServer")]
-[assembly: AssemblyDescription("IPC server module for Lutz Roeder's .NET Reflector")]
+[assembly: AssemblyDescription("IPC server module for Red Gate's .NET Reflector")]
 #if DEBUG
 [assembly: AssemblyConfiguration("Debug")]
 #else
@@ -37,4 +37,4 @@ using System.Runtime.InteropServices;
 //
 // You can specify all the values or you can use the default the Revision and 
 // Build Numbers by using the '*' as shown below:
-[assembly: AssemblyVersion("5.0.0.3")]
+[assembly: AssemblyVersion("5.0.1.9")]

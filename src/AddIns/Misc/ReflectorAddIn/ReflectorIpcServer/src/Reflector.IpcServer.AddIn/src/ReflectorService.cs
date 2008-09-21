@@ -16,15 +16,24 @@ namespace Reflector.IpcServer.AddIn
 	/// <summary>
 	/// Provides the ability to remote-control Reflector.
 	/// </summary>
-	public sealed class ReflectorService : MarshalByRefObject, IReflectorService
+	public sealed class ReflectorService : MarshalByRefObject, IReflectorService, IDisposable
 	{
 		readonly IServiceProvider serviceProvider;
 		readonly Dictionary<string, DateTime> assemblyLastWriteTimes = new Dictionary<string, DateTime>(StringComparer.InvariantCultureIgnoreCase);
+		
+		DateTime lastAssemblyLoadedAt = DateTime.MinValue;
 		
 		public ReflectorService(IServiceProvider serviceProvider)
 		{
 			if (serviceProvider == null) throw new ArgumentNullException("serviceProvider");
 			this.serviceProvider = serviceProvider;
+			this.AssemblyManager.AssemblyLoaded += this.AssemblyLoaded;
+		}
+		
+		public void Dispose()
+		{
+			this.AssemblyManager.AssemblyLoaded -= this.AssemblyLoaded;
+			this.assemblyLastWriteTimes.Clear();
 		}
 		
 		/// <summary>
@@ -35,6 +44,18 @@ namespace Reflector.IpcServer.AddIn
 		public bool CheckIsThere()
 		{
 			return true;
+		}
+		
+		public bool IsReady {
+			get {
+				return this.lastAssemblyLoadedAt != DateTime.MinValue &&
+					(DateTime.UtcNow - this.lastAssemblyLoadedAt).TotalSeconds > 1;
+			}
+		}
+		
+		void AssemblyLoaded(object sender, EventArgs e)
+		{
+			this.lastAssemblyLoadedAt = DateTime.UtcNow;
 		}
 		
 		// ********************************************************************************************************************************
@@ -66,6 +87,7 @@ namespace Reflector.IpcServer.AddIn
 		public void GoTo(CodeElementInfo element)
 		{
 			if (element == null) throw new ArgumentNullException("element");
+			if (!this.IsReady) throw new InvalidOperationException("The service is not ready.");
 			WindowManager.Content.BeginInvoke(new Action<CodeElementInfo>(GoToInternal),
 			                                  new object[] { element });
 		}
@@ -97,6 +119,9 @@ namespace Reflector.IpcServer.AddIn
 			Form topForm = WindowManager.Content.FindForm();
 			if (topForm != null) {
 				// Force the Reflector window to the top
+				if (topForm.WindowState == FormWindowState.Minimized) {
+					topForm.WindowState = FormWindowState.Normal;
+				}
 				topForm.TopMost = true;
 				topForm.TopMost = false;
 			}

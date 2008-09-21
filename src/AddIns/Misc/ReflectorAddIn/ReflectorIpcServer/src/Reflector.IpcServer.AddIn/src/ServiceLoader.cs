@@ -80,6 +80,10 @@ namespace Reflector.IpcServer.AddIn
 		{
 			if (serviceInstance != null) {
 				try {
+					serviceInstance.Dispose();
+				} catch {
+				}
+				try {
 					RemotingServices.Disconnect(serviceInstance);
 				} catch (RemotingException) {
 				}

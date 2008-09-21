@@ -21,12 +21,20 @@ namespace Reflector.IpcServer
 		bool CheckIsThere();
 		
 		/// <summary>
+		/// Gets whether the Reflector service is ready to accept commands.
+		/// </summary>
+		bool IsReady {
+			get;
+		}
+		
+		/// <summary>
 		/// Positions the assembly browser of Reflector on the element
 		/// that best matches the parameters contained in the <paramref name="element"/> parameter
 		/// and brings the Reflector window to front if at least the specified assembly was found.
 		/// </summary>
 		/// <param name="element">A <see cref="CodeElementInfo"/> object that describes the element to go to.</param>
 		/// <exception cref="ArgumentNullException">The <paramref name="element"/> parameter is <c>null</c>.</exception>
+		/// <exception cref="InvalidOperationException">The service is not ready (the <see cref="IsReady"/> property is false).</exception>
 		void GoTo(CodeElementInfo element);
 	}
 }
