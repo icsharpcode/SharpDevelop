@@ -239,7 +239,7 @@ namespace VBNetBinding.FormattingStrategy
 						// fix for SD2-1284
 						string prevLineText = textArea.Document.GetText(lineAbove);
 						string prevLineText2 = (lineNr > 1) ? textArea.Document.GetText(textArea.Document.GetLineSegment(lineNr - 2)) : "";
-						if (StripComment(prevLineText.ToLowerInvariant()).Trim(' ', '\t', '\n').StartsWith("case")) {
+						if (StripComment(prevLineText.ToLowerInvariant()).Trim(' ', '\t', '\r', '\n').StartsWith("case")) {
 							string indentation = GetIndentation(textArea, lineNr - 1) + Tab.GetIndentationString(textArea.Document);
 							textArea.Document.Replace(curLine.Offset, curLine.Length, indentation + curLineText.Trim());
 							SmartIndentInternal(textArea, lineNr - 1, lineNr);
@@ -381,27 +381,47 @@ namespace VBNetBinding.FormattingStrategy
 			}
 			
 			if (missingEnds.Count > 0) {
-				return GetClosestMissing(missingEnds, statement, lineNr) != null;
+				return GetClosestMissing(missingEnds, statement, textArea, lineNr) != null;
 			} else
 				return false;
 		}
 		
-		Token GetClosestMissing(List<Token> missingEnds, VBStatement statement, int lineNr)
+		Token GetClosestMissing(List<Token> missingEnds, VBStatement statement, TextArea textArea, int lineNr)
 		{
 			Token closest = null;
 			int diff = 0;
 			
 			foreach (Token t in missingEnds) {
-				if (IsMatchingStatement(t, statement) && ((diff = lineNr - t.line + 1) > -1)) {
-					if (closest == null)
-						closest = t;
-					else {
-						if (diff < lineNr - closest.line + 1)
+				if (!IsSingleLine(t.line, textArea)) {
+					if (IsMatchingStatement(t, statement) && ((diff = lineNr - t.line + 1) > -1)) {
+						if (closest == null)
 							closest = t;
+						else {
+							if (diff < lineNr - closest.line + 1)
+								closest = t;
+						}
 					}
 				}
 			}
 			return closest;
+		}
+		
+		bool IsSingleLine(int line, TextArea textArea)
+		{
+			if (line < 1)
+				return false;
+			
+			LineSegment lineSeg = textArea.Document.GetLineSegment(line - 1);
+			
+			if (lineSeg == null)
+				return false;
+			
+			string text = textArea.Document.GetText(lineSeg);
+			
+			if (StripComment(text).Trim(' ', '\t', '\r', '\n').EndsWith("_"))
+				return true;
+			else
+				return false;
 		}
 		
 		bool IsMatchingEnd(Token begin, Token end)
@@ -672,7 +692,7 @@ namespace VBNetBinding.FormattingStrategy
 			
 			if (begin >= end) {
 				LineSegment curLine = textArea.Document.GetLineSegment(begin);
-				string lineText = textArea.Document.GetText(curLine).Trim(' ', '\t', '\n');
+				string lineText = textArea.Document.GetText(curLine).Trim(' ', '\t', '\r', '\n');
 				
 				string newLine = new string('\t', tabs) + new string(' ', spaces) + lineText;
 				
@@ -682,9 +702,9 @@ namespace VBNetBinding.FormattingStrategy
 			
 			for (int i = begin; i < end; i++) {
 				LineSegment curLine = textArea.Document.GetLineSegment(i);
-				string lineText = textArea.Document.GetText(curLine).Trim(' ', '\t', '\n');
+				string lineText = textArea.Document.GetText(curLine).Trim(' ', '\t', '\r', '\n');
 				
-				string noComments = StripComment(lineText).TrimEnd(' ', '\t', '\n');
+				string noComments = StripComment(lineText).TrimEnd(' ', '\t', '\r', '\n');
 				
 				
 				if (otherMultiLine && noComments == "}") {

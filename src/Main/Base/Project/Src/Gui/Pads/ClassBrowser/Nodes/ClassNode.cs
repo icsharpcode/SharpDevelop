@@ -75,30 +75,30 @@ namespace ICSharpCode.SharpDevelop.Gui.ClassBrowser
 			}
 			
 			if (c.BaseTypes.Count > 0) {
-				new BaseTypesNode(project, c).AddTo(this);
+				new BaseTypesNode(project, c).InsertSorted(this);
 			}
 			if ((c.Modifiers & ModifierEnum.Sealed) != ModifierEnum.Sealed) {
-				new DerivedTypesNode(project, c).AddTo(this);
+				new DerivedTypesNode(project, c).InsertSorted(this);
 			}
 			
 			foreach (IClass innerClass in c.InnerClasses) {
-				new ClassNode(project, innerClass).AddTo(this);
+				new ClassNode(project, innerClass).InsertSorted(this);
 			}
 			
 			foreach (IMethod method in c.Methods) {
-				new MemberNode(method).AddTo(this);
+				new MemberNode(method).InsertSorted(this);
 			}
 			
 			foreach (IProperty property in c.Properties) {
-				new MemberNode(property).AddTo(this);
+				new MemberNode(property).InsertSorted(this);
 			}
 			
 			foreach (IField field in c.Fields) {
-				new MemberNode(field).AddTo(this);
+				new MemberNode(field).InsertSorted(this);
 			}
 			
 			foreach (IEvent e in c.Events) {
-				new MemberNode(e).AddTo(this);
+				new MemberNode(e).InsertSorted(this);
 			}
 			UpdateVisibility();
 		}
