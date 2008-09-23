@@ -93,18 +93,28 @@ namespace Debugger.AddIn
 		
 		public override object VisitInvocationExpression(InvocationExpression invocationExpression, object data)
 		{
+			Value target;
+			string methodName;
 			MemberReferenceExpression memberRef = invocationExpression.TargetObject as MemberReferenceExpression;
-			if (memberRef == null) {
-				throw new GetValueException("Member reference expected duting method invocation");
+			if (memberRef != null) {
+				target = ((Value)memberRef.TargetObject.AcceptVisitor(this, null)).GetPermanentReference();
+				methodName = memberRef.MemberName;
+			} else {
+				IdentifierExpression ident = invocationExpression.TargetObject as IdentifierExpression;
+				if (ident != null) {
+					target = context.GetThisValue();
+					methodName = ident.Identifier;
+				} else {
+					throw new GetValueException("Member reference expected for method invocation");
+				}
 			}
-			Value target = ((Value)memberRef.TargetObject.AcceptVisitor(this, null)).GetPermanentReference();
 			List<Value> args = new List<Value>();
 			foreach(Expression expr in invocationExpression.Arguments) {
 				args.Add(((Value)expr.AcceptVisitor(this, null)).GetPermanentReference());
 			}
-			MethodInfo method = target.Type.GetMember(memberRef.MemberName, BindingFlags.Method | BindingFlags.IncludeSuperType) as MethodInfo;
+			MethodInfo method = target.Type.GetMember(methodName, BindingFlags.Method | BindingFlags.IncludeSuperType) as MethodInfo;
 			if (method == null) {
-				throw new GetValueException("Method " + memberRef.MemberName + " not found");
+				throw new GetValueException("Method " + methodName + " not found");
 			}
 			return target.InvokeMethod(method, args.ToArray());
 		}
@@ -175,8 +185,8 @@ namespace Debugger.AddIn
 //				case BinaryOperatorType.GreaterThanOrEqual :
 //					val.PrimitiveValue = (right.PrimitiveValue >= left.PrimitiveValue);
 //					break;
-						default :
-							throw new NotImplementedException("BinaryOperator: " + binaryOperatorExpression.Op + "!");
+					default:
+						throw new NotImplementedException("BinaryOperator: " + binaryOperatorExpression.Op);
 				}
 			} catch (System.Exception e) {
 				throw new GetValueException(e.Message);

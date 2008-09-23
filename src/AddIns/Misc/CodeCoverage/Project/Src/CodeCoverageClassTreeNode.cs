@@ -20,9 +20,17 @@ namespace ICSharpCode.CodeCoverage
 		public override void ActivateItem()
 		{
 			if (Nodes.Count > 0) {
-				CodeCoverageMethodTreeNode methodNode = (CodeCoverageMethodTreeNode)Nodes[0];
-				if (methodNode.Method.SequencePoints.Count > 0) {
+				CodeCoverageMethodTreeNode methodNode = Nodes[0] as CodeCoverageMethodTreeNode;
+				if (methodNode != null && methodNode.Method.SequencePoints.Count > 0) {
 					FileService.OpenFile(methodNode.Method.SequencePoints[0].Document);
+				}
+				// when the first node is a property:
+				CodeCoverageMethodsTreeNode methodsNode = Nodes[0] as CodeCoverageMethodsTreeNode;
+				if (methodsNode != null && methodsNode.Methods.Count > 0) {
+					var sequencePoints = methodsNode.Methods[0].SequencePoints;
+					if (sequencePoints != null) {
+						FileService.OpenFile(sequencePoints[0].Document);
+					}
 				}
 			}
 		}
