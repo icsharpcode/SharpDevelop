@@ -16,6 +16,7 @@ namespace ICSharpCode.PythonBinding
 	public class TextEditor : ITextEditor
 	{
 		delegate string GetLineInvoker(int index);
+		delegate void WriteInvoker(string text, Color color);
 
 		TextEditorControl textEditorControl;
 		TextArea textArea;
@@ -56,8 +57,8 @@ namespace ICSharpCode.PythonBinding
 		public void Write(string text, Color backgroundColour)
 		{
 			if (textEditorControl.InvokeRequired) {
-				Action<string, Color> action = Write;
-				textEditorControl.Invoke(action, new object[] {text, backgroundColour});
+				WriteInvoker invoker = new WriteInvoker(Write);
+				textEditorControl.Invoke(invoker, new object[] {text, backgroundColour});
 			} else {
 				int offset = textEditorControl.Document.PositionToOffset(new TextLocation(Column, Line));
 				textEditorControl.ActiveTextAreaControl.TextArea.InsertString(text);

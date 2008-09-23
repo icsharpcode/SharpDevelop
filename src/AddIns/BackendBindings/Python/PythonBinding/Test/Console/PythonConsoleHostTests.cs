@@ -37,7 +37,7 @@ namespace PythonBinding.Tests.Console
 			textEditor = new TextEditor(textEditorControl);
 			host = new DerivedPythonConsoleHost(textEditor);
 			
-			ScriptRuntime runtime = ScriptRuntime.Create();
+			ScriptRuntime runtime = IronPython.Hosting.Python.CreateRuntime();
 //			expectedEngine = runtime.GetEngine(typeof(PythonContext));
 //			host.ScriptEngineToReturn = expectedEngine;
 //			engine = host.CallCreateEngine();

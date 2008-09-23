@@ -5,10 +5,11 @@
 //     <version>$Revision$</version>
 // </file>
 
+using Microsoft.Scripting;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Scripting;
+
 using ICSharpCode.SharpDevelop.Dom;
 using IronPython.Compiler;
 using IronPython.Compiler.Ast;

@@ -93,7 +93,7 @@ namespace ICSharpCode.Python.Build.Tasks
 		public void Compile()
 		{
 			// Compile the source files to a dll first.
-			ScriptEngine engine = PythonEngine.CurrentEngine;
+			ScriptEngine engine = IronPython.Hosting.Python.CreateEngine();
 			PythonDictionary dictionary = new PythonDictionary();
 			dictionary.setdefault("mainModule", mainFile);
 			string outputAssemblyDll = Path.ChangeExtension(outputAssembly, ".dll");

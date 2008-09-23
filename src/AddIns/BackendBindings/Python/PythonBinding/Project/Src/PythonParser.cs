@@ -5,11 +5,11 @@
 //     <version>$Revision$</version>
 // </file>
 
-using Microsoft.Scripting.Compilers;
+using Microsoft.Scripting;
 using Microsoft.Scripting.Hosting;
+using Microsoft.Scripting.Runtime;
 using System;
 using System.IO;
-using System.Scripting;
 
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
@@ -83,13 +83,13 @@ namespace ICSharpCode.PythonBinding
 			if (fileContent != null) {
 			//	try {
 				if (scriptEngine == null) {
-					scriptEngine = PythonEngine.CurrentEngine;
+					scriptEngine = IronPython.Hosting.Python.CreateEngine();
 				}
 
 				PythonCompilerSink sink = new PythonCompilerSink();
 				SourceUnit source = DefaultContext.DefaultPythonContext.CreateFileUnit(fileName, fileContent);
 				CompilerContext context = new CompilerContext(source, new PythonCompilerOptions(), sink);
-				Parser parser = Parser.CreateParser(context, new PythonEngineOptions());
+				Parser parser = Parser.CreateParser(context, new PythonOptions());
 				PythonAst ast = parser.ParseFile(false);
 
 				PythonAstWalker walker = new PythonAstWalker(projectContent, fileName);
