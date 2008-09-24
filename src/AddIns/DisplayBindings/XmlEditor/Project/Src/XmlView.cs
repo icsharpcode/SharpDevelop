@@ -394,13 +394,16 @@ namespace ICSharpCode.XmlEditor
 				
 				if (IsWellFormed) {
 					if (IsValidXsl(xsl)) {
-						string transformedXml = Transform(Text, xsl);
-						ShowTransformOutput(transformedXml);
+						try {
+							string transformedXml = Transform(Text, xsl);
+							ShowTransformOutput(transformedXml);
+						} catch (XsltException ex) {
+							AddTask(GetFileNameFromInnerException(ex, StylesheetFileName), GetInnerExceptionErrorMessage(ex), ex.LineNumber - 1, ex.LinePosition - 1, TaskType.Error);
+						}
 					}
 				}
 				
-				ShowErrorList();
-				
+				ShowErrorList();				
 			} catch (Exception ex) {
 				MessageService.ShowError(ex);
 			}
@@ -942,7 +945,7 @@ namespace ICSharpCode.XmlEditor
 			XPathDocument transformDocument = new XPathDocument(transformString);
 
 			XslCompiledTransform xslTransform = new XslCompiledTransform();
-			xslTransform.Load(transformDocument, XsltSettings.Default, new XmlUrlResolver());
+			xslTransform.Load(transformDocument, XsltSettings.TrustedXslt, new XmlUrlResolver());
 			
 			MemoryStream outputStream = new MemoryStream();
 			XmlTextWriter writer = new XmlTextWriter(outputStream, Encoding.UTF8);
@@ -1030,15 +1033,7 @@ namespace ICSharpCode.XmlEditor
 
 				return true;
 			} catch(XsltCompileException ex) {
-				string message = String.Empty;
-				
-				if(ex.InnerException != null) {
-					message = ex.InnerException.Message;
-				} else {
-					message = ex.ToString();
-				}
-
-				AddTask(StylesheetFileName, message, ex.LineNumber - 1, ex.LinePosition - 1, TaskType.Error);
+				AddTask(StylesheetFileName, GetInnerExceptionErrorMessage(ex), ex.LineNumber - 1, ex.LinePosition - 1, TaskType.Error);
 			} catch(XsltException ex) {
 				AddTask(StylesheetFileName, ex.Message, ex.LinePosition - 1, ex.LineNumber - 1, TaskType.Error);
 			} catch(XmlException ex) {
@@ -1046,6 +1041,17 @@ namespace ICSharpCode.XmlEditor
 			}
 
 			return false;
+		}
+		
+		/// <summary>
+		/// Returns the inner exception message if there is one otherwise returns the exception's error message.
+		/// </summary>
+		static string GetInnerExceptionErrorMessage(Exception ex)
+		{
+			if(ex.InnerException != null) {
+				return ex.InnerException.Message;
+			}
+			return ex.Message;
 		}
 		
 		/// <summary>
@@ -1274,6 +1280,24 @@ namespace ICSharpCode.XmlEditor
 		IEditAction[] GetEditActions()
 		{
 			return AddInTree.BuildItems<IEditAction>(editActionsPath, this, false).ToArray();
+		}
+		
+		/// <summary>
+		/// Tries to get the filename from the inner exception otherwise returns the default filename.
+		/// </summary>
+		/// <param name="ex"></param>
+		/// <param name="defaultFileName"></param>
+		/// <returns></returns>
+		static string GetFileNameFromInnerException(Exception ex, string defaultFileName)
+		{
+			XmlException innerException = ex.InnerException as XmlException;
+			if (innerException != null) {
+				string fileName = innerException.SourceUri.Replace("file:///", String.Empty);
+				if (!String.IsNullOrEmpty(fileName)) {
+					return fileName;
+				}
+			}
+			return defaultFileName;
 		}
 	}
 }
