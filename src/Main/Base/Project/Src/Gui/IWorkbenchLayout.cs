@@ -75,9 +75,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void RedrawAllComponents();
 		
 		/// <summary>
-		/// Shows a new <see cref="IViewContent"/>.
+		/// Shows a new <see cref="IViewContent"/> and optionally switches to it.
 		/// </summary>
-		IWorkbenchWindow ShowView(IViewContent content);
+		IWorkbenchWindow ShowView(IViewContent content, bool switchToOpenedView);
 		
 		
 		void LoadConfiguration();

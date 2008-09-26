@@ -9,6 +9,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
@@ -181,7 +182,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void ShowViewContents()
 		{
 			foreach (IViewContent content in WorkbenchSingleton.Workbench.PrimaryViewContents) {
-				ShowView(content);
+				ShowView(content, true);
 			}
 		}
 		
@@ -548,12 +549,16 @@ namespace ICSharpCode.SharpDevelop.Gui
 			ActiveMdiChanged(this, null);
 		}
 		
-		public IWorkbenchWindow ShowView(IViewContent content)
+		public IWorkbenchWindow ShowView(IViewContent content, bool switchToOpenedView)
 		{
 			if (content.WorkbenchWindow is SdiWorkspaceWindow) {
 				SdiWorkspaceWindow oldSdiWindow = (SdiWorkspaceWindow)content.WorkbenchWindow;
 				if (!oldSdiWindow.IsDisposed) {
-					oldSdiWindow.Show(dockPanel);
+					if (switchToOpenedView) {
+						oldSdiWindow.Show(dockPanel);
+					} else {
+						this.AddWindowToDockPanelWithoutSwitching(oldSdiWindow);
+					}
 					return oldSdiWindow;
 				}
 			}
@@ -563,10 +568,27 @@ namespace ICSharpCode.SharpDevelop.Gui
 			sdiWorkspaceWindow.ViewContents.AddRange(content.SecondaryViewContents);
 			sdiWorkspaceWindow.CloseEvent += new EventHandler(CloseWindowEvent);
 			if (dockPanel != null) {
-				sdiWorkspaceWindow.Show(dockPanel);
+				if (switchToOpenedView) {
+					sdiWorkspaceWindow.Show(dockPanel);
+				} else {
+					this.AddWindowToDockPanelWithoutSwitching(sdiWorkspaceWindow);
+				}
 			}
 			
 			return sdiWorkspaceWindow;
+		}
+		
+		void AddWindowToDockPanelWithoutSwitching(SdiWorkspaceWindow sdiWorkspaceWindow)
+		{
+			sdiWorkspaceWindow.DockPanel = dockPanel;
+			SdiWorkspaceWindow otherWindow = dockPanel.ActiveContent as SdiWorkspaceWindow;
+			if (otherWindow == null) {
+				otherWindow = dockPanel.Contents.OfType<SdiWorkspaceWindow>().FirstOrDefault(c => c.Pane != null);
+			}
+			if (otherWindow != null) {
+				sdiWorkspaceWindow.Pane = otherWindow.Pane;
+			}
+			sdiWorkspaceWindow.DockState = DockState.Document;
 		}
 		
 		void ActiveMdiChanged(object sender, EventArgs e)

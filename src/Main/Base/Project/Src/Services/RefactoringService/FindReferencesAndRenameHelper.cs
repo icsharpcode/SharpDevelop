@@ -13,7 +13,6 @@ using System.Text;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.TextEditor;
@@ -133,6 +132,11 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		
 		public static void RenameClass(IClass c, string newName)
 		{
+			RenameClass(c, newName, null);
+		}
+		
+		public static void RenameClass(IClass c, string newName, IDictionary<string, ICSharpCode.TextEditor.Document.IDocument> providedFileDocuments)
+		{
 			c = c.GetCompoundClass(); // get compound class if class is partial
 			
 			List<Reference> list = RefactoringService.FindReferences(c, null);
@@ -150,7 +154,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				}
 			}
 			
-			FindReferencesAndRenameHelper.RenameReferences(list, newName);
+			FindReferencesAndRenameHelper.RenameReferences(list, newName, providedFileDocuments);
 		}
 		
 		static IList<IClass> GetClassParts(IClass c)
@@ -367,28 +371,42 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		
 		public static void RenameReferences(List<Reference> list, string newName)
 		{
-			List<IViewContent> modifiedContents = new List<IViewContent>();
+			RenameReferences(list, newName, null);
+		}
+		
+		public static void RenameReferences(List<Reference> list, string newName, IDictionary<string, ICSharpCode.TextEditor.Document.IDocument> providedFileDocuments)
+		{
+			Dictionary<ICSharpCode.TextEditor.Document.IDocument, IViewContent> modifiedDocuments = new Dictionary<ICSharpCode.TextEditor.Document.IDocument, IViewContent>();
 			List<Modification> modifications = new List<Modification>();
 			foreach (Reference r in list) {
-				IViewContent viewContent = FileService.OpenFile(r.FileName);
-				ITextEditorControlProvider p = viewContent as ITextEditorControlProvider;
+				ICSharpCode.TextEditor.Document.IDocument document;
+				IViewContent viewContent;
 				
-				if (!modifiedContents.Contains(viewContent)) {
-					modifiedContents.Add(viewContent);
-					if (p != null)
-						p.TextEditorControl.Document.UndoStack.StartUndoGroup();
+				if (providedFileDocuments == null || !providedFileDocuments.TryGetValue(FileUtility.NormalizePath(r.FileName), out document)) {
+					viewContent = FileService.OpenFile(r.FileName, false);
+					ITextEditorControlProvider p = viewContent as ITextEditorControlProvider;
+					document = (p == null) ? null : p.TextEditorControl.Document;
+				} else {
+					viewContent = null;
 				}
 				
-				if (p != null) {
-					ModifyDocument(modifications, p.TextEditorControl.Document, r.Offset, r.Length, newName);
+				if (document == null) {
+					LoggingService.Warn("RenameReferences: Could not get document for file '" + r.FileName + "'");
+					continue;
 				}
+				
+				if (!modifiedDocuments.ContainsKey(document)) {
+					modifiedDocuments.Add(document, viewContent);
+					document.UndoStack.StartUndoGroup();
+				}
+				
+				ModifyDocument(modifications, document, r.Offset, r.Length, newName);
 			}
-			foreach (IViewContent viewContent in modifiedContents) {
-				ITextEditorControlProvider p = viewContent as ITextEditorControlProvider;
-				if (p != null)
-					p.TextEditorControl.Document.UndoStack.EndUndoGroup();
-				
-				ParserService.ParseViewContent(viewContent);
+			foreach (KeyValuePair<ICSharpCode.TextEditor.Document.IDocument, IViewContent> entry in modifiedDocuments) {
+				entry.Key.UndoStack.EndUndoGroup();
+				if (entry.Value != null) {
+					ParserService.ParseViewContent(entry.Value);
+				}
 			}
 		}
 

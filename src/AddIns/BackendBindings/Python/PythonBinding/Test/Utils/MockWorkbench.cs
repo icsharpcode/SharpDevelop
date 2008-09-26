@@ -94,6 +94,11 @@ namespace PythonBinding.Tests.Utils
 			throw new NotImplementedException();
 		}
 		
+		public void ShowView(IViewContent content, bool switchToOpenedView)
+		{
+			throw new NotImplementedException();
+		}
+		
 		public void ShowPad(PadDescriptor content)
 		{
 			throw new NotImplementedException();

@@ -285,6 +285,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void UpdateTitle()
 		{
 			IViewContent content = ActiveViewContent;
+			if (content == null && this.ViewContents.Count > 0) {
+				// This can happen when the window is inactive and
+				// no tab page of the viewTabControl is selected
+				// (viewTabControl.SelectedIndex == -1)
+				// but we have multiple ViewContents.
+				content = this.ViewContents[0];
+			}
 			if (content != null) {
 				base.ToolTipText = content.PrimaryFileName;
 				

@@ -324,6 +324,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public void ShowView(IViewContent content)
 		{
+			this.ShowView(content, true);
+		}
+		
+		public void ShowView(IViewContent content, bool switchToOpenedView)
+		{
 			System.Diagnostics.Debug.Assert(layout != null);
 			primaryViewContentCollection.Add(content);
 			if (PropertyService.Get("SharpDevelop.LoadDocumentProperties", true) && content is IMementoCapable) {
@@ -337,8 +342,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 				}
 			}
 			
-			layout.ShowView(content);
-			content.WorkbenchWindow.SelectWindow();
+			layout.ShowView(content, switchToOpenedView);
+			if (switchToOpenedView) {
+				content.WorkbenchWindow.SelectWindow();
+			}
 			OnViewOpened(new ViewContentEventArgs(content));
 		}
 		
