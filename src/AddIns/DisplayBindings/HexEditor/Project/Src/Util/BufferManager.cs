@@ -6,7 +6,7 @@
 // </file>
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
 
@@ -27,7 +27,7 @@ namespace HexEditor.Util
 		/// <summary>
 		/// Currently used, but not good for really big files (like 590 MB)
 		/// </summary>
-		private ArrayList buffer;
+		List<byte> buffer;
 		
 		/// <summary>
 		/// Creates a new BufferManager and attaches it to a control.
@@ -37,7 +37,7 @@ namespace HexEditor.Util
 		{
 			this.parent = parent;
 			
-			this.buffer = new ArrayList();
+			this.buffer = new List<byte>();
 		}
 		
 		/// <summary>
@@ -102,7 +102,7 @@ namespace HexEditor.Util
 		public void Save(OpenedFile file, Stream stream)
 		{
 			BinaryWriter writer = new BinaryWriter(stream);
-			writer.Write((byte[])this.buffer.ToArray( typeof (byte) ));
+			writer.Write(this.buffer.ToArray());
 			writer.Flush();
 		}
 		
@@ -141,7 +141,7 @@ namespace HexEditor.Util
 		public byte[] Buffer {
 			get {
 				if (buffer == null) return new byte[0];
-				return (byte[]) buffer.ToArray( typeof ( byte ) );
+				return buffer.ToArray();
 			}
 		}
 		
@@ -161,7 +161,7 @@ namespace HexEditor.Util
 			if (start >= buffer.Count) start = buffer.Count;
 			if (count < 1) count = 1;
 			if (count >= (buffer.Count - start)) count = (buffer.Count - start);
-			return (byte[])(buffer.GetRange(start, count).ToArray( typeof ( byte ) ));
+			return buffer.GetRange(start, count).ToArray();
 		}
 
 		public byte GetByte(int offset)
@@ -199,12 +199,12 @@ namespace HexEditor.Util
 			return false;
 		}
 		
-		/// <remarks>Not Tested!</remarks>
 		public void SetBytes(int start, byte[] bytes, bool overwrite)
 		{
 			if (overwrite) {
 				if (bytes.Length > buffer.Count) buffer.AddRange(new byte[bytes.Length - buffer.Count]);
-				buffer.SetRange(start, bytes);
+				for (int i = start; i < start + bytes.Length; i++)
+					buffer[i] = bytes[i - start];
 			} else {
 				buffer.InsertRange(start, bytes);
 			}

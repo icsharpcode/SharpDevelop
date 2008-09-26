@@ -43,7 +43,7 @@ namespace HexEditor.View
 		{
 			if (supportedExtensions == null) {
 				System.Xml.XmlDocument doc = new System.Xml.XmlDocument();
-				string configpath = Path.GetDirectoryName(typeof(Editor).Assembly.Location) + Path.DirectorySeparatorChar + "config.xml";
+				string configpath = Path.Combine(PropertyService.ConfigDirectory, "hexeditor-config.xml");
 				
 				if (!File.Exists(configpath))
 					return new string[] {".exe",".dll"};

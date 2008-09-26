@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.Core;
 using System;
 using System.Collections;
 using System.ComponentModel;
@@ -13,7 +14,6 @@ using System.IO;
 using System.Text;
 using System.Windows.Forms;
 using System.Xml;
-
 using HexEditor.Util;
 using ICSharpCode.SharpDevelop;
 
@@ -123,7 +123,7 @@ namespace HexEditor
 		/// </summary>
 		public void LoadSettings()
 		{
-			string configpath = Path.GetDirectoryName(typeof(Editor).Assembly.Location) + Path.DirectorySeparatorChar + "config.xml";
+			string configpath = Path.Combine(PropertyService.ConfigDirectory, "hexeditor-config.xml");
 			
 			if (!File.Exists(configpath)) {
 				this.settings = Settings.CreateDefault();
