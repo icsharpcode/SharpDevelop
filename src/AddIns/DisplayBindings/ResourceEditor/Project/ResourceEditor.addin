@@ -67,5 +67,8 @@
 		<CustomTool id    = "ResXFileCodeGenerator"
 		            class = "ResourceEditor.ResourceCodeGeneratorTool"
 		            fileNamePattern = "\.res(x|ources)$"/>
+		<CustomTool id    = "PublicResXFileCodeGenerator"
+		            class = "ResourceEditor.PublicResourceCodeGeneratorTool"
+		            fileNamePattern = "\.res(x|ources)$"/>
 	</Path>
 </AddIn>

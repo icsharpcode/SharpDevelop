@@ -16,6 +16,8 @@ namespace ResourceEditor
 {
 	public class ResourceCodeGeneratorTool : ICustomTool
 	{
+		protected bool createInternalClass = true;
+		
 		public void GenerateCode(FileProjectItem item, CustomToolContext context)
 		{
 			/*context.GenerateCodeDomAsync(item, context.GetOutputFileName(item, ".Designer"),
@@ -48,11 +50,17 @@ namespace ResourceEditor
 					context.OutputNamespace, // generatedCodeNamespace
 					context.OutputNamespace, // resourcesNamespace
 					context.Project.LanguageProperties.CodeDomProvider, // codeProvider
-					true,             // internal class
+					createInternalClass,             // internal class
 					out unmatchable
 				));
 		}
-		
-		
+	}
+	
+	public class PublicResourceCodeGeneratorTool : ResourceCodeGeneratorTool
+	{
+		public PublicResourceCodeGeneratorTool()
+		{
+			base.createInternalClass = false;
+		}
 	}
 }
